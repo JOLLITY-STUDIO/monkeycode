@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NES Auto Ripper - 全自动逆向工程</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:'Courier New',monospace;background:#1a1a2e;color:#e0e0e0;display:flex;flex-direction:column;height:100vh;overflow:hidden}
+    header{background:#16213e;padding:6px 12px;display:flex;align-items:center;gap:8px;border-bottom:2px solid #0f3460;flex-shrink:0;flex-wrap:wrap;min-height:40px}
+    header h1{font-size:14px;color:#e94560}
+    .controls{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
+    button{background:#0f3460;color:#e0e0e0;border:1px solid #e94560;padding:4px 10px;cursor:pointer;font-family:inherit;font-size:11px;border-radius:3px;white-space:nowrap}
+    button:hover{background:#e94560;color:#fff}
+    button:disabled{opacity:.35;cursor:not-allowed}
+    button.active{background:#e94560}
+    button.warn{background:#8B0000;border-color:#f55}
+    label.file-btn{background:#e94560;color:#fff;border:1px solid #e94560;padding:4px 12px;cursor:pointer;font-size:11px;border-radius:3px;white-space:nowrap}
+    label.file-btn:hover{background:#c0392b}
+    input[type=file]{display:none}
+    .stat{font-size:10px;color:#aaa;margin:0 4px;white-space:nowrap}
+    .stat b{color:#e94560}
+    .main-layout{display:flex;flex:1;overflow:hidden}
+    .game-panel{background:#000;display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative}
+    #gameCanvas{image-rendering:pixelated;image-rendering:crisp-edges}
+    .inspector{flex:1;overflow-y:auto;overflow-x:hidden;background:#16213e;padding:6px;min-width:280px}
+    .tab-bar{display:flex;gap:1px;margin-bottom:6px;flex-wrap:wrap}
+    .tab-btn{background:#0f3460;color:#aaa;border:none;padding:4px 8px;cursor:pointer;font-size:10px;border-radius:3px 3px 0 0}
+    .tab-btn:hover{color:#fff}
+    .tab-btn.active{background:#e94560;color:#fff}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    canvas.pixel{image-rendering:pixelated;image-rendering:crisp-edges;border:1px solid #333;background:#000}
+    .section-title{color:#e94560;font-size:12px;margin:8px 0 4px;border-bottom:1px solid #333;padding-bottom:2px}
+    .entity-card{background:#0f3460;border:1px solid #333;margin-bottom:5px;padding:5px}
+    .entity-card h4{font-size:10px;color:#e94560;margin-bottom:3px}
+    .entity-card .meta{font-size:9px;color:#888}
+    .sheet-info{font-size:10px;color:#888;margin-top:4px}
+    .disasm-line{font-family:'Courier New',monospace;font-size:10px;padding:0 3px;white-space:pre}
+    .disasm-line.current{background:#e94560;color:#fff}
+    .disasm-line .addr{color:#888;margin-right:6px}
+    .disasm-line .bytes{color:#666;margin-right:6px}
+    .disasm-line .mnemonic{color:#0f0}
+    .disasm-line .operand{color:#ff0}
+    .cpu-table{width:100%;border-collapse:collapse;font-size:10px}
+    .cpu-table td{padding:1px 4px;border-bottom:1px solid #1a1a2e}
+    .cpu-table .label{color:#888}.cpu-table .value{color:#e94560}
+    .channel-state{margin-bottom:5px;font-size:10px}
+    .channel-state h4{color:#e94560;font-size:10px;margin-bottom:2px}
+    .asset-grid{display:flex;flex-wrap:wrap;gap:4px}
+    .asset-item{background:#0f3460;border:1px solid #333;padding:2px;text-align:center}
+    .asset-item .label{font-size:8px;color:#888}
+    .no-data{color:#666;font-size:10px;padding:10px}
+    .progress-bar{width:100%;height:4px;background:#0f3460;border-radius:2px;margin:4px 0;overflow:hidden}
+    .progress-fill{height:100%;background:#e94560;transition:width .3s}
+  </style>
+</head>
+<body>
+<header>
+  <h1>NES Auto Ripper</h1>
+  <div class="controls">
+    <label class="file-btn" for="romFile">加载 ROM 自动开始</label>
+    <input type="file" id="romFile" accept=".nes" />
+    <button id="btnStop" disabled class="warn">停止</button>
+    <button id="btnExport" disabled>导出图集</button>
+    <button id="btnDownload" disabled>下载PNG</button>
+    <button id="btnFaster" disabled>加速</button>
+    <button id="btnTakeover" disabled>接管控制</button>
+  </div>
+  <span class="stat">帧:<b id="statFrames">0</b></span>
+  <span class="stat">实体:<b id="statEntities">0</b></span>
+  <span class="stat">精灵帧:<b id="statSframes">0</b></span>
+  <span class="stat">输入:<b id="statPattern" style="color:#0f0">--</b></span>
+  <span class="stat" id="statStatus" style="color:#e94560">等待 ROM</span>
+</header>
+<div class="main-layout">
+  <div class="game-panel">
+    <canvas id="gameCanvas" width="256" height="240"></canvas>
+  </div>
+  <div class="inspector">
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="sheet">精灵图集</button>
+      <button class="tab-btn" data-tab="entities">实体聚类</button>
+      <button class="tab-btn" data-tab="cpu">CPU 反汇编</button>
+      <button class="tab-btn" data-tab="audio">APU</button>
+      <button class="tab-btn" data-tab="debug">调试面板</button>
+    </div>
+
+    <div class="tab-content active" id="tab-sheet">
+      <div class="section-title">精灵图集 (自动去重)</div>
+      <canvas class="pixel" id="sheetCanvas" width="512" height="256"></canvas>
+      <div class="sheet-info" id="sheetInfo">加载 ROM 后自动开始采集</div>
+      <div class="progress-bar"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
+      <div class="section-title">实体动画帧列表</div>
+      <div id="entityAnimList"></div>
+    </div>
+
+    <div class="tab-content" id="tab-entities">
+      <div class="section-title">实时实体检测</div>
+      <div id="entityList"></div>
+    </div>
+
+    <div class="tab-content" id="tab-cpu">
+      <div class="section-title">6502 实时反汇编</div>
+      <div id="disasmBox" style="background:#000;color:#0f0;font-size:10px;padding:4px;max-height:240px;overflow-y:auto"></div>
+      <table class="cpu-table" style="margin-top:4px">
+        <tr><td class="label">PC</td><td class="value" id="cpuPC">--</td><td class="label">A</td><td class="value" id="cpuA">--</td></tr>
+        <tr><td class="label">X</td><td class="value" id="cpuX">--</td><td class="label">Y</td><td class="value" id="cpuY">--</td></tr>
+        <tr><td class="label">SP</td><td class="value" id="cpuSP">--</td><td class="label">P</td><td class="value" id="cpuP">--</td></tr>
+      </table>
+    </div>
+
+    <div class="tab-content" id="tab-audio">
+      <div class="section-title">APU 通道</div>
+      <div class="channel-state" id="chSq1"><h4>方波1</h4></div>
+      <div class="channel-state" id="chSq2"><h4>方波2</h4></div>
+      <div class="channel-state" id="chTri"><h4>三角波</h4></div>
+      <div class="channel-state" id="chNoi"><h4>噪声</h4></div>
+      <div class="channel-state" id="chDmc"><h4>DMC</h4></div>
+      <button id="btnAudio">启用音频</button>
+      <span id="audioStatus" style="font-size:10px;color:#888"></span>
+    </div>
+
+    <div class="tab-content" id="tab-debug">
+      <div class="section-title">图案表</div>
+      <canvas class="pixel" id="ptCanvas0" width="128" height="128"></canvas>
+      <canvas class="pixel" id="ptCanvas1" width="128" height="128"></canvas>
+      <div class="section-title">名称表 NT0</div>
+      <canvas class="pixel" id="ntCanvas0" width="256" height="240"></canvas>
+      <div class="section-title">精灵可视化</div>
+      <canvas class="pixel" id="spriteVizCanvas" width="256" height="240"></canvas>
+    </div>
+  </div>
+</div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
