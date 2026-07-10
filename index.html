@@ -70,6 +70,7 @@
   <span class="stat">帧:<b id="statFrames">0</b></span>
   <span class="stat">实体:<b id="statEntities">0</b></span>
   <span class="stat">精灵帧:<b id="statSframes">0</b></span>
+  <span class="stat">场景:<b id="statScene">--</b></span>
   <span class="stat">输入:<b id="statPattern" style="color:#0f0">--</b></span>
   <span class="stat" id="statStatus" style="color:#e94560">等待 ROM</span>
 </header>
@@ -93,6 +94,8 @@
       <div class="progress-bar"><div class="progress-fill" id="progressBar" style="width:0%"></div></div>
       <div class="section-title">实体动画帧列表</div>
       <div id="entityAnimList"></div>
+      <div class="section-title" style="margin-top:8px">发现场景</div>
+      <div id="sceneList"></div>
     </div>
 
     <div class="tab-content" id="tab-entities">
@@ -119,6 +122,8 @@
       <div class="channel-state" id="chDmc"><h4>DMC</h4></div>
       <button id="btnAudio">启用音频</button>
       <span id="audioStatus" style="font-size:10px;color:#888"></span>
+      <div class="section-title" style="margin-top:8px">BGM / SFX 识别</div>
+      <div id="audioPhrases"></div>
     </div>
 
     <div class="tab-content" id="tab-debug">

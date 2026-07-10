@@ -6,6 +6,10 @@ import {
   clusterSpritesIntoTiles, resetEntityTracking,
   startRecording, stopRecording, recordFrame, getRecordingSummary,
   exportSpriteSheet,
+  getEntityTypeInfo, getAllEntityTypes, registerEntityType,
+  analyzeScene, getCurrentSceneId, getAllScenes,
+  captureAudioFingerprint, recordAudioFrame, flushAudioSamples,
+  classifyAudio, getAudioPhrases, getAudioSamples,
 } from './capture.js';
 import { renderPatternTable, renderNametable, renderSpriteViz, drawColorSwatch } from './renderers.js';
 import { AutoRunner } from './auto.js';
@@ -148,6 +152,8 @@ $('btnStop').addEventListener('click', () => {
   running = false;
   auto.stop();
   if (animId) { cancelAnimationFrame(animId); animId = null; }
+  flushAudioSamples(totalFrames);
+  classifyAudio();
   $('statStatus').textContent = '已停止';
   $('statStatus').style.color = '#e94560';
   exportCurrentSheet();
@@ -191,6 +197,12 @@ function frameLoop() {
       if (!manualMode) auto.tick();
       nes.frame();
       totalFrames++;
+
+      // 每 6 帧采样音频指纹
+      if (totalFrames % 6 === 0) {
+        const ah = captureAudioFingerprint(nes);
+        recordAudioFrame(ah, totalFrames);
+      }
     }
     frameCount++;
     if (frameCount % 10 === 0) captureAndUpdate();
@@ -218,6 +230,18 @@ function captureAndUpdate() {
         recordFrame(entities);
         $('statEntities').textContent = entities.length;
 
+        // 场景分类
+        const scene = analyzeScene(nes);
+        if (scene) {
+          $('statScene').textContent = scene.id > 0 ? `#${scene.id} ${scene.type}` : '--';
+          if (scene.isNew) {
+            $('statScene').style.color = '#ff0';
+            setTimeout(() => { $('statScene').style.color = '#0f0'; }, 2000);
+          } else {
+            $('statScene').style.color = '#0f0';
+          }
+        }
+
         // 统计新模式
         const summary = getRecordingSummary();
         let sf = 0;
@@ -242,6 +266,8 @@ function captureAndUpdate() {
     if (newFramesLastSec === 0 && totalFrames > 300) {
       const lastSheet = $('sheetInfo').textContent;
       if (!lastSheet.includes('自动导出')) {
+        flushAudioSamples(totalFrames);
+        classifyAudio();
         exportCurrentSheet();
         $('sheetInfo').textContent += ' [自动导出]';
       }
@@ -276,6 +302,8 @@ function updateProgress() {
   $('progressBar').style.width = pct + '%';
 }
 
+const CAT_LABELS_CN = { character: '角色', object: '物件', tile: '瓦片' };
+
 // ---- Sheet Panel ----
 function updateSheetPanel() {
   updateProgress();
@@ -286,8 +314,35 @@ function updateSheetPanel() {
   list.innerHTML = summary.map(s =>
     `<div class="entity-card" style="margin-bottom:3px;padding:3px;">
       <span style="font-size:10px;color:#e94560">Entity #${s.entityId}</span>
-      <span style="font-size:9px;color:#888"> ${s.frameCount} frames</span>
+      <span style="font-size:9px;color:#ff0">[${s.typeName || '?'}]</span>
+      <span style="font-size:9px;color:#0f0">[${CAT_LABELS_CN[s.category] || '物件'}]</span>
+      <span style="font-size:9px;color:#888"> ${s.frameCount}帧</span>
     </div>`).join('');
+
+  // 场景列表
+  const scenes = getAllScenes();
+  if (scenes.length > 0) {
+    $('sceneList').innerHTML = scenes.map(s =>
+      `<div class="entity-card" style="margin-bottom:2px;padding:2px;border-left:3px solid ${s.id === getCurrentSceneId() ? '#0f0' : '#444'};">
+        <span style="font-size:9px;color:#4fc3f7">#${s.id} ${s.type}</span>
+        <span style="font-size:8px;color:#888"> 精灵:${s.spriteCount} 瓦片:${s.tileVariety}种 出现:${s.visits}次</span>
+      </div>`).join('');
+  } else {
+    $('sceneList').innerHTML = '';
+  }
+
+  // BGM/SFX 摘要
+  const phrases = getAudioPhrases();
+  if (phrases.length > 0) {
+    const el = $('audioPhrasesSheet');
+    if (el) el.innerHTML = phrases.map(p =>
+      `<div style="font-size:9px;padding:2px;border-left:3px solid ${p.type==='BGM'?'#4fc3f7':'#ffb74d'};margin-bottom:2px">
+        <b>${p.name}</b> [${p.type}] x${p.occurrences} 场景:${p.scenes.map(s=>`#${s}`).join(',')}
+      </div>`).join('');
+  } else {
+    const el = $('audioPhrasesSheet');
+    if (el) el.innerHTML = '';
+  }
 }
 
 function exportCurrentSheet() {
@@ -304,19 +359,54 @@ function exportCurrentSheet() {
     img.data[i*4+2]=v&0xFF; img.data[i*4+3]=v>>>24;
   }
   ctx.putImageData(img, 0, 0);
-  const info = `${sheet.frameCount}帧 | ${sheet.frameW}x${sheet.frameH}px | ${sheet.cols}x${sheet.rows}`;
+  const cats = sheet.sections.map(s => `${s.label}x${s.frames.length}`).join(' ');
+  const info = `${sheet.frameCount}帧 | ${sheet.frameW}x${sheet.frameH}px | ${cats}`;
   $('sheetInfo').textContent = info;
   $('btnDownload').disabled = false;
 
-  // 直接保存到工作区 output/ (不弹窗)
   const base64 = cv.toDataURL('image/png').split(',')[1];
-  const fname = `sprites-${Date.now()}.png`;
+  const ts = Date.now();
+
+  // 保存 PNG 图集
   fetch('/api/save-png', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name: fname, data: base64 }),
+    body: JSON.stringify({ name: `sprites-${ts}.png`, data: base64 }),
   }).then(r => r.json()).then(j => {
-    if (j.ok) $('sheetInfo').textContent = info + ` | 已保存: output/${fname}`;
+    if (j.ok) $('sheetInfo').textContent = info + ` | 已保存: output/sprites-${ts}.png`;
+  }).catch(() => {});
+
+  // 保存 JSON 元数据（场景 + 实体类型 + 音频）
+  const scenes = getAllScenes().map(s => ({
+    id: s.id, type: s.type, spriteCount: s.spriteCount,
+    tileVariety: s.tileVariety, visits: s.visits,
+  }));
+  const entityTypes = getAllEntityTypes().map(t => ({
+    id: t.typeId, name: t.name, spriteCount: t.spriteCount,
+    width: t.width, height: t.height,
+    entityCount: t.entityCount, frameCount: t.frameCount,
+  }));
+  const audio = classifyAudio().map(a => ({
+    id: a.id, type: a.type, name: a.name,
+    occurrences: a.occurrences, totalDuration: a.totalDuration,
+    scenes: a.scenes,
+  }));
+  const metadata = {
+    game: '半熟英雄',
+    totalFrames,
+    spriteFrames: sheet.frameCount,
+    scenes,
+    entityTypes,
+    audio,
+    exportedAt: new Date().toISOString(),
+  };
+  fetch('/api/save-png', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      name: `metadata-${ts}.json`,
+      data: btoa(unescape(encodeURIComponent(JSON.stringify(metadata, null, 2)))),
+    }),
   }).catch(() => {});
 }
 
@@ -363,9 +453,10 @@ function updateEntityPanel() {
       }
       ctx.putImageData(img, 0, 0);
     }, 0);
+    const tinfo = getEntityTypeInfo(e.id);
     const scale = Math.max(e.width, e.height) > 32 ? 2 : 3;
     return `<div class="entity-card">
-      <h4>#${e.id} (${e.spriteCount} tiles)</h4>
+      <h4>#${e.id} <span style="color:#0f0;font-size:9px">${tinfo ? tinfo.name : '?'}</span> (${e.spriteCount} tiles)</h4>
       <div class="meta">${e.width}x${e.height} @ (${e.x},${e.y}) Pal:${e.palette}</div>
       <canvas id="${cid}" width="${Math.max(e.width,1)}" height="${Math.max(e.height,1)}"
         class="pixel" style="transform:scale(${scale});transform-origin:top left;margin:4px 0"></canvas>
@@ -413,6 +504,15 @@ function updateAudioPanel() {
   ch('chTri','三角波',s.triangle,s.channelEnable&4);
   ch('chNoi','噪声',s.noise,s.channelEnable&8);
   ch('chDmc','DMC',s.dmc,s.channelEnable&16);
+
+  const phrases = getAudioPhrases();
+  if (phrases.length > 0) {
+    const el = $('audioPhrases');
+    if (el) el.innerHTML = phrases.slice(0, 8).map(p =>
+      `<div style="font-size:9px;padding:2px;border-left:3px solid ${p.type==='BGM'?'#4fc3f7':'#ffb74d'}">
+        <b>${p.name}</b> [${p.type}] 出现${p.occurrences}次 场景:${p.scenes.join(',')}
+      </div>`).join('');
+  }
 }
 
 // ---- Debug Panel ----

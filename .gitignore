@@ -174,3 +174,5 @@
 *.lz
 *.lzma
 *.iso
+output/
+rom.md

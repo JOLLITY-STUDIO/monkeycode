@@ -481,16 +481,40 @@ export function resetEntityTracking() {
   entityIdCounter = 0;
   trackedEntities.clear();
   entityHistory.length = 0;
+  resetEntityTypes();
+  resetScenes();
+  resetAudioRecording();
 }
 
 // ---- 动画录制 ----
 
 const animationFrames = new Map();
+const globalContentHashes = new Set();
 let recordingEnabled = false;
+
+function hashBuffer(buf) {
+  let h1 = 5381, h2 = 52711;
+  for (let i = 0; i < buf.length; i++) {
+    h1 = ((h1 << 5) + h1 + buf[i]) | 0;
+    h2 = ((h2 << 5) - h2 + buf[i]) | 0;
+  }
+  return h1 ^ (h2 << 16);
+}
+
+function classifyEntity(spriteCount, width, height) {
+  const area = width * height;
+  if (area >= 256) return 'character';
+  if (spriteCount <= 1 && area <= 128) return 'tile';
+  return 'object';
+}
 
 export function startRecording() {
   recordingEnabled = true;
   animationFrames.clear();
+  globalContentHashes.clear();
+  resetEntityTypes();
+  resetScenes();
+  resetAudioRecording();
 }
 
 export function stopRecording() {
@@ -501,22 +525,30 @@ export function recordFrame(entities) {
   if (!recordingEnabled) return;
   for (const e of entities) {
     if (!animationFrames.has(e.id)) {
+      const typeInfo = registerEntityType(e);
       animationFrames.set(e.id, {
         id: e.id,
+        category: classifyEntity(e.spriteCount, e.width, e.height),
+        typeId: typeInfo.typeId,
+        typeName: typeInfo.name,
         frames: [],
-        seenHashes: new Set(),
       });
     }
     const data = animationFrames.get(e.id);
-    const hash = e.fingerprint;
-    if (!data.seenHashes.has(hash)) {
-      data.seenHashes.add(hash);
+    const contentHash = hashBuffer(e.buffer);
+    if (!globalContentHashes.has(contentHash)) {
+      globalContentHashes.add(contentHash);
+      const tmpl = entityTemplates.get(data.typeId);
+      if (tmpl) tmpl.frameCount++;
       data.frames.push({
         index: data.frames.length,
         width: e.width,
         height: e.height,
         buffer: new Uint32Array(e.buffer),
-        fingerprint: hash,
+        category: data.category,
+        contentHash,
+        typeId: data.typeId,
+        typeName: data.typeName,
       });
     }
   }
@@ -529,39 +561,422 @@ export function getRecordingSummary() {
       result.push({
         entityId: data.id,
         frameCount: data.frames.length,
-        frames: data.frames,
+        category: data.category,
+        typeId: data.typeId,
+        typeName: data.typeName,
       });
     }
   }
   return result;
 }
 
-export function exportSpriteSheet(entities, cols = 8) {
-  const allFrames = [];
+const CAT_LABELS = { character: '角色', object: '物件', tile: '瓦片' };
+
+export function exportSpriteSheet(cols = 8) {
+  const groups = { character: [], object: [], tile: [] };
+  let totalFrames = 0;
   for (const [, data] of animationFrames) {
-    allFrames.push(...data.frames);
+    for (const f of data.frames) {
+      groups[f.category || 'object'].push(f);
+      totalFrames++;
+    }
   }
-  if (allFrames.length === 0) return null;
 
-  const maxW = Math.max(...allFrames.map(f => f.width));
-  const maxH = Math.max(...allFrames.map(f => f.height));
-  const rows = Math.ceil(allFrames.length / cols);
-  const sheetW = cols * maxW;
-  const sheetH = rows * maxH;
+  const activeCats = Object.entries(groups).filter(([, f]) => f.length > 0);
+  if (activeCats.length === 0) return null;
+
+  const maxW = Math.max(...activeCats.flatMap(([, f]) => f.map(ff => ff.width)));
+  const maxH = Math.max(...activeCats.flatMap(([, f]) => f.map(ff => ff.height)));
+  const cellW = maxW + 2;
+  const cellH = maxH + 2;
+
+  const sections = [];
+  let totalH = 0;
+  for (const [cat, frames] of activeCats) {
+    const labelH = 14;
+    const rows = Math.ceil(frames.length / cols);
+    const secW = cols * cellW;
+    const secH = labelH + rows * cellH;
+    sections.push({ cat, label: CAT_LABELS[cat] || cat, frames, rows, secW, secH, y: totalH });
+    totalH += secH;
+  }
+
+  const sheetW = Math.max(...sections.map(s => s.secW));
+  const sheetH = totalH;
   const sheet = new Uint32Array(sheetW * sheetH);
-  sheet.fill(0);
+  sheet.fill(0xFF181818);
 
-  allFrames.forEach((f, i) => {
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    const dx = col * maxW;
-    const dy = row * maxH;
-    for (let y = 0; y < f.height; y++) {
-      for (let x = 0; x < f.width; x++) {
-        sheet[(dx + x) + (dy + y) * sheetW] = f.buffer[x + y * f.width];
+  for (const sec of sections) {
+    const baseY = sec.y;
+    // 类别标签背景色
+    const catColors = { character: 0xFF4A90D9, object: 0xFF6B8E23, tile: 0xFFCD853F };
+    const catBg = catColors[sec.cat] || 0xFF555555;
+    for (let y = 0; y < 14; y++) {
+      for (let x = 0; x < sheetW; x++) {
+        sheet[x + (baseY + y) * sheetW] = catBg;
       }
     }
-  });
+    // 渲染标签文字（简单像素字，3x5 字体）
+    const labelX = 4;
+    let cx = labelX;
+    for (const ch of sec.label) {
+      renderChar(sheet, sheetW, cx, baseY + 3, ch, 0xFFFFFFFF);
+      cx += 4;
+    }
+    // 统计信息
+    cx += 2;
+    const statText = `(${sec.frames.length}帧)`;
+    for (const ch of statText) {
+      renderChar(sheet, sheetW, cx, baseY + 3, ch, 0xFFCCCCCC);
+      cx += 4;
+    }
 
-  return { buffer: sheet, width: sheetW, height: sheetH, frameCount: allFrames.length, frameW: maxW, frameH: maxH, cols, rows };
+    const frameBaseY = baseY + 14;
+    sec.frames.forEach((f, i) => {
+      const col = i % cols;
+      const row = Math.floor(i / cols);
+      const dx = col * cellW + 1;
+      const dy = frameBaseY + row * cellH + 1;
+      for (let y = 0; y < f.height; y++) {
+        for (let x = 0; x < f.width; x++) {
+          const v = f.buffer[x + y * f.width];
+          if (v) {
+            sheet[(dx + x) + (dy + y) * sheetW] = v;
+          }
+        }
+      }
+    });
+  }
+
+  return { buffer: sheet, width: sheetW, height: sheetH, frameCount: totalFrames, frameW: maxW, frameH: maxH, cols, sections };
+}
+
+// 3x5 像素字体（大写字母 + 数字 + 符号）
+const FONT = {
+  A:[0,1,0, 1,0,1, 1,1,1, 1,0,1, 1,0,1], B:[1,1,0, 1,0,1, 1,1,0, 1,0,1, 1,1,0],
+  C:[0,1,1, 1,0,0, 1,0,0, 1,0,0, 0,1,1], D:[1,1,0, 1,0,1, 1,0,1, 1,0,1, 1,1,0],
+  E:[1,1,1, 1,0,0, 1,1,0, 1,0,0, 1,1,1], F:[1,1,1, 1,0,0, 1,1,0, 1,0,0, 1,0,0],
+  G:[0,1,1, 1,0,0, 1,0,1, 1,0,1, 0,1,1], H:[1,0,1, 1,0,1, 1,1,1, 1,0,1, 1,0,1],
+  I:[1,1,1, 0,1,0, 0,1,0, 0,1,0, 1,1,1], J:[0,0,1, 0,0,1, 0,0,1, 1,0,1, 0,1,0],
+  K:[1,0,1, 1,0,1, 1,1,0, 1,0,1, 1,0,1], L:[1,0,0, 1,0,0, 1,0,0, 1,0,0, 1,1,1],
+  M:[1,0,1, 1,1,1, 1,1,1, 1,0,1, 1,0,1], N:[1,1,1, 1,0,1, 1,0,1, 1,0,1, 1,0,1],
+  O:[0,1,0, 1,0,1, 1,0,1, 1,0,1, 0,1,0], P:[1,1,0, 1,0,1, 1,1,0, 1,0,0, 1,0,0],
+  Q:[0,1,0, 1,0,1, 1,0,1, 0,1,0, 0,0,1], R:[1,1,0, 1,0,1, 1,1,0, 1,0,1, 1,0,1],
+  S:[0,1,1, 1,0,0, 0,1,0, 0,0,1, 1,1,0], T:[1,1,1, 0,1,0, 0,1,0, 0,1,0, 0,1,0],
+  U:[1,0,1, 1,0,1, 1,0,1, 1,0,1, 0,1,0], V:[1,0,1, 1,0,1, 1,0,1, 0,1,0, 0,1,0],
+  W:[1,0,1, 1,0,1, 1,1,1, 1,1,1, 1,0,1], X:[1,0,1, 1,0,1, 0,1,0, 1,0,1, 1,0,1],
+  Y:[1,0,1, 1,0,1, 0,1,0, 0,1,0, 0,1,0], Z:[1,1,1, 0,0,1, 0,1,0, 1,0,0, 1,1,1],
+  '0':[0,1,0, 1,0,1, 1,0,1, 1,0,1, 0,1,0], '1':[0,1,0, 1,1,0, 0,1,0, 0,1,0, 1,1,1],
+  '2':[1,1,0, 0,0,1, 0,1,0, 1,0,0, 1,1,1], '3':[1,1,0, 0,0,1, 0,1,0, 0,0,1, 1,1,0],
+  '4':[1,0,1, 1,0,1, 0,1,1, 0,0,1, 0,0,1], '5':[1,1,1, 1,0,0, 1,1,0, 0,0,1, 1,1,0],
+  '6':[0,1,0, 1,0,0, 1,1,0, 1,0,1, 0,1,0], '7':[1,1,1, 0,0,1, 0,1,0, 0,1,0, 0,1,0],
+  '8':[0,1,0, 1,0,1, 0,1,0, 1,0,1, 0,1,0], '9':[0,1,0, 1,0,1, 0,1,1, 0,0,1, 0,1,0],
+  ' ':[0,0,0, 0,0,0, 0,0,0, 0,0,0, 0,0,0], '(':[0,1,0,1,0,0,1,0,0,1,0,0,0,1,0],
+  ')':[0,1,0,0,0,1,0,0,1,0,0,1,0,1,0], '.':[0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],
+};
+
+function renderChar(buf, bufW, x, y, ch, color) {
+  const glyph = FONT[ch] || FONT[' '];
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 3; col++) {
+      if (glyph[row * 3 + col]) {
+        const px = x + col, py = y + row;
+        if (px >= 0 && px < bufW && py >= 0 && py < buf.length / bufW) {
+          buf[px + py * bufW] = color;
+        }
+      }
+    }
+  }
+}
+
+// ---- 实体类型识别 ----
+
+const entityTemplates = new Map();
+let nextTypeId = 0;
+const entityTypeMap = new Map();
+
+export function entityTypeSignature(entity) {
+  return entity.sprites.map(s =>
+    `${s.tileIndex}:${s.palette}:${s.flipH ? 1 : 0}:${s.flipV ? 1 : 0}`
+  ).sort().join('|');
+}
+
+export function registerEntityType(entity) {
+  const sig = entityTypeSignature(entity);
+  for (const [tid, tmpl] of entityTemplates) {
+    if (tmpl.signature === sig) {
+      entityTypeMap.set(entity.id, tid);
+      return { typeId: tid, name: tmpl.name, isNew: false, spriteCount: entity.spriteCount };
+    }
+  }
+  const tid = ++nextTypeId;
+  const name = `Type-${String.fromCharCode(64 + tid)}`;
+  const firstFrame = new Uint32Array(entity.buffer);
+  entityTemplates.set(tid, {
+    id: tid,
+    name,
+    signature: sig,
+    spriteCount: entity.spriteCount,
+    width: entity.width,
+    height: entity.height,
+    firstFrame,
+    entityIds: new Set(),
+    frameCount: 0,
+  });
+  entityTypeMap.set(entity.id, tid);
+  return { typeId: tid, name, isNew: true, spriteCount: entity.spriteCount };
+}
+
+export function getEntityTypeInfo(entityId) {
+  const tid = entityTypeMap.get(entityId);
+  if (!tid) return null;
+  const tmpl = entityTemplates.get(tid);
+  return tmpl ? { typeId: tid, name: tmpl.name, signature: tmpl.signature } : null;
+}
+
+export function getAllEntityTypes() {
+  const result = [];
+  for (const [tid, tmpl] of entityTemplates) {
+    result.push({
+      typeId: tid,
+      name: tmpl.name,
+      spriteCount: tmpl.spriteCount,
+      width: tmpl.width,
+      height: tmpl.height,
+      entityCount: tmpl.entityIds.size,
+      frameCount: tmpl.frameCount,
+      firstFrame: tmpl.firstFrame,
+    });
+  }
+  return result;
+}
+
+export function resetEntityTypes() {
+  entityTemplates.clear();
+  entityTypeMap.clear();
+  nextTypeId = 0;
+}
+
+// ---- 场景分类 ----
+
+const sceneHistory = [];
+let currentSceneId = 0;
+let sceneIdCounter = 0;
+
+function hashNametable(nt) {
+  let h = 0;
+  for (let y = 0; y < 30; y++) {
+    for (let x = 0; x < 32; x++) {
+      h = ((h << 5) - h + nt.getTileIndex(x, y)) | 0;
+    }
+  }
+  return h;
+}
+
+function hashPalette(ppu) {
+  let h = 0;
+  for (let i = 0; i < 32; i++) {
+    h = ((h << 5) + h + ppu.vramMem[0x3F00 + i]) | 0;
+  }
+  return h;
+}
+
+export function analyzeScene(nes) {
+  const ppu = nes.ppu;
+  if (!ppu) return null;
+  const nt = ppu.nameTable[0];
+  if (!nt) return null;
+
+  const ntHash = hashNametable(nt);
+  const palHash = hashPalette(ppu);
+
+  let spriteCount = 0;
+  for (let i = 0; i < 64; i++) {
+    if (ppu.spriteMem[i * 4] < 0xEF) spriteCount++;
+  }
+
+  const sig = `${ntHash}:${palHash}:${spriteCount}`;
+
+  for (const s of sceneHistory) {
+    if (s.signature === sig) {
+      s.visits++;
+      s.lastSeen = Date.now();
+      currentSceneId = s.id;
+      return { ...s, isNew: false };
+    }
+  }
+
+  const id = ++sceneIdCounter;
+  const tileSet = new Set();
+  for (let y = 0; y < 30; y++) {
+    for (let x = 0; x < 32; x++) {
+      tileSet.add(nt.getTileIndex(x, y));
+    }
+  }
+
+  let type = '未知';
+  if (spriteCount <= 1) type = '标题';
+  else if (spriteCount <= 3 && tileSet.size < 40) type = '菜单';
+  else if (spriteCount >= 12) type = '战斗';
+  else if (tileSet.size > 80) type = '大地图';
+  else type = '城镇';
+
+  const scene = {
+    id,
+    signature: sig,
+    ntHash, palHash, spriteCount,
+    tileVariety: tileSet.size,
+    type,
+    visits: 1,
+    firstSeen: Date.now(),
+    lastSeen: Date.now(),
+  };
+  sceneHistory.push(scene);
+  currentSceneId = id;
+  return { ...scene, isNew: true };
+}
+
+export function getCurrentSceneId() { return currentSceneId; }
+
+export function getAllScenes() { return sceneHistory; }
+
+export function resetScenes() {
+  sceneHistory.length = 0;
+  currentSceneId = 0;
+  sceneIdCounter = 0;
+}
+
+// ---- BGM/SFX 音频录制与分类 ----
+
+const audioSamples = [];
+const audioPhrases = [];
+let lastAudioHash = 0;
+let audioConsecutive = 0;
+let audioPhraseIdCounter = 0;
+const AUDIO_SAMPLE_INTERVAL = 6;
+
+export function captureAudioFingerprint(nes) {
+  const s = captureAudioState(nes);
+  if (!s) return 0;
+  const chEn = s.channelEnable;
+  const parts = [];
+  if (chEn & 1) parts.push(`S1:${s.square1.dutyMode}:${s.square1.progTimerMax & ~3}:${s.square1.envVolume}`);
+  if (chEn & 2) parts.push(`S2:${s.square2.dutyMode}:${s.square2.progTimerMax & ~3}:${s.square2.envVolume}`);
+  if (chEn & 4) parts.push(`TR:${s.triangle.progTimerMax >> 2}`);
+  if (chEn & 8) parts.push(`NO:${s.noise.progTimerMax & 0x0F}:${s.noise.shiftReg & 1}`);
+  if (chEn & 16) parts.push(`DMC:${s.dmc.dmaLength}`);
+  if (parts.length === 0) return 0;
+  const raw = parts.join('|');
+  let h = 0;
+  for (let i = 0; i < raw.length; i++) {
+    h = ((h << 5) - h + raw.charCodeAt(i)) | 0;
+  }
+  return h;
+}
+
+export function recordAudioFrame(audioHash, totalFrames) {
+  if (!recordingEnabled || !audioHash) return;
+  const sceneId = currentSceneId;
+
+  if (audioHash === lastAudioHash) {
+    audioConsecutive++;
+    return;
+  }
+
+  if (lastAudioHash && audioConsecutive >= 2) {
+    audioSamples.push({
+      hash: lastAudioHash,
+      sceneId,
+      frame: totalFrames - audioConsecutive,
+      duration: audioConsecutive * AUDIO_SAMPLE_INTERVAL,
+    });
+  }
+  lastAudioHash = audioHash;
+  audioConsecutive = 1;
+}
+
+export function flushAudioSamples(totalFrames) {
+  if (lastAudioHash && audioConsecutive >= 2) {
+    audioSamples.push({
+      hash: lastAudioHash,
+      sceneId: currentSceneId,
+      frame: totalFrames - audioConsecutive,
+      duration: audioConsecutive * AUDIO_SAMPLE_INTERVAL,
+    });
+  }
+  lastAudioHash = 0;
+  audioConsecutive = 0;
+}
+
+export function classifyAudio() {
+  audioPhrases.length = 0;
+  audioPhraseIdCounter = 0;
+  if (audioSamples.length === 0) return [];
+
+  const hashCounts = new Map();
+  for (const s of audioSamples) {
+    hashCounts.set(s.hash, (hashCounts.get(s.hash) || 0) + 1);
+  }
+
+  const hashGroups = new Map();
+  for (const s of audioSamples) {
+    const key = s.hash;
+    if (!hashGroups.has(key)) hashGroups.set(key, []);
+    hashGroups.get(key).push(s);
+  }
+
+  const classified = [];
+  const usedHashes = new Set();
+
+  for (let i = 0; i < audioSamples.length; i++) {
+    const s = audioSamples[i];
+    if (usedHashes.has(s.hash)) continue;
+    const count = hashCounts.get(s.hash);
+    const group = hashGroups.get(s.hash);
+
+    // BGM: appears 8+ times across a long span
+    const span = group[group.length - 1].frame - group[0].frame;
+    const type = (count >= 8 && span > 200) ? 'BGM' : (count <= 2 ? 'SFX' : 'BGM');
+    const id = ++audioPhraseIdCounter;
+
+    // 找出该音频出现过的所有场景
+    const scenes = new Set(group.map(g => g.sceneId));
+    const avgFreq = group.reduce((a, g) => {
+      const h = g.hash;
+      // extract frequency from hash signature (rough)
+      return a;
+    }, 0);
+
+    const phrase = {
+      id,
+      type,
+      name: `${type === 'BGM' ? 'BGM' : 'SFX'}-${id}`,
+      hash: s.hash,
+      occurrences: count,
+      totalDuration: group.reduce((a, g) => a + g.duration, 0),
+      firstFrame: group[0].frame,
+      lastFrame: group[group.length - 1].frame,
+      span,
+      scenes: [...scenes],
+      samples: group,
+    };
+    audioPhrases.push(phrase);
+    classified.push(phrase);
+    usedHashes.add(s.hash);
+  }
+
+  audioPhrases.sort((a, b) => a.firstFrame - b.firstFrame);
+  return classified;
+}
+
+export function getAudioPhrases() { return audioPhrases; }
+
+export function getAudioSamples() { return audioSamples; }
+
+export function resetAudioRecording() {
+  audioSamples.length = 0;
+  audioPhrases.length = 0;
+  lastAudioHash = 0;
+  audioConsecutive = 0;
+  audioPhraseIdCounter = 0;
 }

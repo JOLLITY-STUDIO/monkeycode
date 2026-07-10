@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Langrisser II ROM Ripper</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{background:#0a0a1a;color:#ccc;font-family:monospace;font-size:12px;padding:10px}
+    header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:8px;padding:8px;background:#111122;border-radius:4px}
+    h1{color:#e94560;font-size:14px;white-space:nowrap}
+    .file-btn{cursor:pointer;background:#2a2a4a;color:#4fc3f7;padding:6px 12px;border-radius:4px;font-size:11px;border:1px solid #4fc3f7}
+    .file-btn:hover{background:#3a3a6a}
+    input[type="file"]{display:none}
+    button{background:#2a2a4a;color:#ccc;border:1px solid #555;padding:4px 8px;border-radius:3px;cursor:pointer;font-size:10px}
+    button:hover{background:#3a3a5a}
+    button.active{background:#4fc3f7;color:#000}
+    .stat{font-size:10px;color:#888;margin-right:10px}
+    .stat b{color:#4fc3f7}
+    .main-layout{display:flex;gap:8px;height:calc(100vh - 70px)}
+    .viewer{flex:1;overflow:auto;background:#0d0d24;border:1px solid #1a1a3a;border-radius:4px;padding:8px}
+    .inspector{width:370px;overflow-y:auto;background:#0d0d24;border:1px solid #1a1a3a;border-radius:4px;padding:8px}
+    .tab-bar{display:flex;gap:2px;margin-bottom:6px;flex-wrap:wrap}
+    .tab-btn{font-size:9px;padding:3px 7px;border:1px solid #333;background:#111;color:#888;cursor:pointer;border-radius:3px}
+    .tab-btn.active{background:#4fc3f7;color:#000}
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+    .section-title{font-size:9px;color:#e94560;margin:6px 0 3px;border-bottom:1px solid #1a1a3a;padding-bottom:1px}
+    canvas.pixel{image-rendering:pixelated;border:1px solid #1a1a3a;margin:2px 0;max-width:100%}
+    .nav-row{display:flex;align-items:center;gap:6px;margin:4px 0;flex-wrap:wrap}
+    .nav-row label{font-size:9px;color:#888;white-space:nowrap}
+    .nav-row input,.nav-row select{background:#1a1a3a;color:#ccc;border:1px solid #333;padding:2px 5px;font-size:10px;border-radius:3px;font-family:monospace}
+    .nav-row input{width:80px}
+    .preset-btn{font-size:9px;padding:2px 6px;border-radius:3px;cursor:pointer}
+    .preset-btn.scan{background:#1a2a1a;color:#6b8e23;border:1px solid #3a5a3a}
+    .preset-btn.scan:hover{background:#2a3a2a}
+    .preset-btn.class{background:#1a1a4a;color:#4fc3f7;border:1px solid #2a2a6a}
+    .preset-btn.class:hover{background:#2a2a5a}
+    .info-text{font-size:9px;color:#888;margin:2px 0}
+    .palette-swatch{display:inline-block;width:12px;height:12px;border:1px solid #333;margin:1px}
+    .hex-view{font-size:9px;color:#4fc3f7;background:#0a0a14;padding:4px;white-space:pre;max-height:200px;overflow-y:auto;border:1px solid #1a1a3a;margin:4px 0;font-family:monospace;line-height:1.3}
+    .scan-item{font-size:9px;padding:2px 4px;margin:1px 0;cursor:pointer;border-left:2px solid transparent}
+    .scan-item:hover{border-left-color:#4fc3f7;background:#1a1a3a}
+    .scan-item .score{color:#ffb74d}
+  </style>
+</head>
+<body>
+<header>
+  <h1>L2 ROM Ripper v2</h1>
+  <label class="file-btn" for="romFile">加载 ROM (.md/.bin)</label>
+  <input type="file" id="romFile" accept=".md,.bin,.gen" />
+  <span class="stat">大小:<b id="romSize">--</b></span>
+  <span class="stat">标题:<b id="romTitle">--</b></span>
+  <span class="stat">范围:<b id="romRange">0-?</b></span>
+  <button id="btnExport" disabled>导出PNG</button>
+</header>
+
+<div class="main-layout">
+  <div class="viewer">
+    <canvas class="pixel" id="mainCanvas" width="512" height="512"></canvas>
+    <div class="info-text" id="viewerInfo">请加载 ROM 文件</div>
+  </div>
+
+  <div class="inspector">
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="sprites">精灵浏览</button>
+      <button class="tab-btn" data-tab="scan">数据扫描</button>
+      <button class="tab-btn" data-tab="hex">Hex查看</button>
+      <button class="tab-btn" data-tab="palette">调色板</button>
+      <button class="tab-btn" data-tab="classes">角色属性</button>
+      <button class="tab-btn" data-tab="units">单位结构</button>
+      <button class="tab-btn" data-tab="magic">魔法道具</button>
+      <button class="tab-btn" data-tab="battle">战斗公式</button>
+      <button class="tab-btn" data-tab="map">地图</button>
+    </div>
+
+    <!-- 精灵浏览 -->
+    <div class="tab-content active" id="tab-sprites">
+      <div class="section-title">地址设定</div>
+      <div class="nav-row">
+        <label>起始:</label>
+        <input id="sprAddr" value="0x52800" />
+        <label>每精灵tile:</label>
+        <select id="tilesPerSprite">
+          <option value="4" selected>4 (16×16)</option>
+          <option value="6">6 (16×24)</option>
+          <option value="8">8 (32×16)</option>
+          <option value="12">12 (32×24)</option>
+          <option value="16">16 (32×32)</option>
+          <option value="1">1 (8×8)</option>
+        </select>
+      </div>
+      <div class="nav-row">
+        <label>数量:</label>
+        <input id="sprCount" value="32" style="width:50px" />
+        <label>列:</label>
+        <select id="sprCols"><option value="8">8</option><option value="10" selected>10</option><option value="16">16</option></select>
+        <label>格式:</label>
+        <select id="tileFormat">
+          <option value="planar" selected>Planar (标准MD)</option>
+          <option value="linear">Linear (高4+低4)</option>
+        </select>
+        <button id="btnLoadSprites">加载</button>
+      </div>
+      <div class="section-title">职业预设</div>
+      <div class="nav-row" style="gap:2px;flex-wrap:wrap" id="classPresets"></div>
+      <div class="info-text" id="spriteInfo">--</div>
+    </div>
+
+    <!-- 数据扫描 -->
+    <div class="tab-content" id="tab-scan">
+      <div class="section-title">ROM 数据扫描 (查找 tile 数据)</div>
+      <div class="nav-row">
+        <button id="btnScanTiles" class="preset-btn scan">扫描 tile 区域</button>
+        <button id="btnScanPalettes" class="preset-btn scan">扫描调色板</button>
+      </div>
+      <div class="section-title">Tile 候选区域</div>
+      <div id="tileCandidates" style="max-height:200px;overflow-y:auto">--</div>
+      <div class="section-title">调色板候选</div>
+      <div id="palCandidates" style="max-height:120px;overflow-y:auto">--</div>
+    </div>
+
+    <!-- Hex查看 -->
+    <div class="tab-content" id="tab-hex">
+      <div class="section-title">十六进制查看</div>
+      <div class="nav-row">
+        <label>地址:</label>
+        <input id="hexAddr" value="0x52800" />
+        <button id="btnHexView">查看</button>
+        <button id="btnHexPrev" style="font-size:9px">-256</button>
+        <button id="btnHexNext" style="font-size:9px">+256</button>
+      </div>
+      <div class="hex-view" id="hexDump"></div>
+    </div>
+
+    <!-- 调色板 -->
+    <div class="tab-content" id="tab-palette">
+      <div class="section-title">当前调色板</div>
+      <div id="paletteDisplay" style="margin-bottom:2px"></div>
+      <div class="nav-row">
+        <label>地址:</label>
+        <input id="palAddr" value="0x5D800" />
+        <label>数:</label>
+        <input id="palCount" value="64" style="width:45px" />
+        <button id="btnLoadPal">加载</button>
+      </div>
+      <div class="nav-row" style="gap:3px;flex-wrap:wrap">
+        <button class="preset-btn scan" data-paladdr="0x01F800">0x1F800</button>
+        <button class="preset-btn scan" data-paladdr="0x020000">0x20000</button>
+        <button class="preset-btn scan" data-paladdr="0x021000">0x21000</button>
+        <button class="preset-btn scan" data-paladdr="0x030000">0x30000</button>
+        <button class="preset-btn scan" data-paladdr="0x035000">0x35000</button>
+        <button id="btnGray" class="preset-btn scan" style="background:#333;color:#aaa;border-color:#555">灰阶</button>
+      </div>
+      <div class="info-text" id="palInfo">--</div>
+    </div>
+
+    <!-- 角色属性 -->
+    <div class="tab-content" id="tab-classes">
+      <div class="section-title">职业数据 (ROM 0x5EDE8)</div>
+      <div class="nav-row">
+        <label>最大职业:</label>
+        <input id="maxClasses" value="48" style="width:45px" />
+        <button id="btnLoadClasses">加载</button>
+      </div>
+      <div id="classesList" style="max-height:400px;overflow-y:auto"></div>
+    </div>
+
+    <!-- 单位结构 -->
+    <div class="tab-content" id="tab-units">
+      <div class="section-title">96字节单位结构体</div>
+      <div class="hex-view" id="unitStructRef" style="font-size:9px;max-height:150px;margin:2px 0"></div>
+      <div class="section-title">关卡单位配置 (ROM 0x18005E)</div>
+      <div class="nav-row">
+        <label>关卡:</label>
+        <input id="unitLevel" value="1" style="width:40px" />
+        <button id="btnLoadUnits">加载</button>
+      </div>
+      <div id="unitList" style="max-height:280px;overflow-y:auto"></div>
+    </div>
+
+    <!-- 魔法道具 -->
+    <div class="tab-content" id="tab-magic">
+      <div class="section-title">指令菜单槽位 (ROM 0x97660)</div>
+      <div id="cmdSlots" class="hex-view" style="font-size:9px;max-height:150px;margin:2px 0"></div>
+      <div class="section-title">装备道具表 (ROM 0x97668)</div>
+      <div id="equipList" style="max-height:180px;overflow-y:auto"></div>
+      <div class="section-title">法术名称表</div>
+      <div id="spellList" style="max-height:180px;overflow-y:auto"></div>
+    </div>
+
+    <!-- 战斗公式 -->
+    <div class="tab-content" id="tab-battle">
+      <div class="section-title">伤害计算公式</div>
+      <div class="hex-view" id="battleFormulaDoc" style="font-size:9px;max-height:300px;margin:2px 0"></div>
+      <div class="section-title">战斗模拟器</div>
+      <div class="nav-row" style="flex-wrap:wrap">
+        <label>AT:</label><input id="simAT" value="20" style="width:40px" />
+        <label>HP:</label><input id="simHP" value="10" style="width:40px" />
+        <label>兵:</label><input id="simSoldiers" value="10" style="width:40px" />
+        <label>DF:</label><input id="simDF" value="15" style="width:40px" />
+        <button id="btnSimBattle">模拟</button>
+      </div>
+      <div class="info-text" id="simResult" style="margin-top:4px"></div>
+    </div>
+
+    <!-- 地图 -->
+    <div class="tab-content" id="tab-map">
+      <div class="section-title">关卡地图 (ROM 0x61CB0)</div>
+      <div class="nav-row">
+        <label>关卡:</label>
+        <input id="mapLevel" value="0" style="width:40px" />
+        <button id="btnLoadMap">加载</button>
+        <label>缩放:</label>
+        <select id="mapScale">
+          <option value="1">1x</option><option value="2" selected>2x</option><option value="3">3x</option><option value="4">4x</option>
+        </select>
+      </div>
+      <div id="levelList" style="max-height:80px;overflow-y:auto;font-size:9px;color:#888;margin:4px 0"></div>
+      <canvas class="pixel" id="mapCanvas" width="256" height="256" style="max-width:100%"></canvas>
+      <div class="info-text" id="mapInfo">--</div>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import {
+  decodeMDTile, decodeMDTileLinear, mdColorToRGBA, parseROM,
+  scanTileRegions, scanPalettes, loadPalette, hexDump, L2_CLASSES
+} from './md.js';
+import {
+  parseAllClasses, parseClassSpriteTable, CLASS_NAMES, PROMOTION_TREE
+} from './md-classes.js';
+import {
+  UNIT_FIELDS, UNIT_SIZE, ROM_UNIT_TEMPLATE_FIELDS,
+  parseLevelUnits, parseLevelList as parseUnitLevelList,
+  parseLevelMap as parseUnitLevelMap,
+  UNIT_STRUCT_TABLE
+} from './md-units.js';
+import {
+  parseCommandMenu, parseUnitSpells, parseEquipmentTable,
+  SPELL_NAMES, ITEM_NAMES, CMD_TABLE_ADDR
+} from './md-magic.js';
+import {
+  calcDamage, simulateBattle, BATTLE_FORMULA_DOC
+} from './md-battle.js';
+import {
+  parseLevelList as parseMapLevelList, parseLevelMap, renderMapCanvas,
+  TILE_TYPES, LEVEL_MAP_TABLE, TILE_REMAP1_TABLE, TILE_REMAP2_TABLE
+} from './md-map.js';
+
+const $ = (id) => document.getElementById(id);
+let romData = null;
+let romSize = 0;
+
+const grayPal = new Uint32Array(16);
+for (let i = 0; i < 16; i++) {
+  const v = Math.round((i / 15) * 255);
+  grayPal[i] = (v << 16) | (v << 8) | v;
+}
+let currentPalette = grayPal;
+
+// ---- ROM 加载 ----
+$('romFile').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  romData = new Uint8Array(await file.arrayBuffer());
+  romSize = romData.length;
+  $('romSize').textContent = (romSize / 1024).toFixed(0) + ' KB';
+  $('romRange').textContent = `0-0x${(romSize - 1).toString(16).toUpperCase()}`;
+
+  try {
+    const info = parseROM(romData);
+    $('romTitle').textContent = info.title || '?';
+    $('viewerInfo').textContent = `系统:${info.systemType} ROM:0-0x${info.romEnd.toString(16)}`;
+  } catch { $('romTitle').textContent = '?'; }
+
+  $('btnExport').disabled = false;
+  currentPalette = grayPal;
+  renderPaletteDisplay(grayPal);
+
+  // 自动扫描
+  scanAndShowTiles();
+  scanAndShowPals();
+  renderClassButtons();
+  renderClasses();
+  renderUnitStructRef();
+
+  // 默认加载 0x52800 的 tile
+  tryLoadDefault();
+});
+
+// ---- Canvas 渲染 ----
+function renderViewer(buf, w, h) {
+  const cv = $('mainCanvas');
+  cv.width = w;
+  cv.height = h;
+  const ctx = cv.getContext('2d');
+  const img = ctx.createImageData(w, h);
+  for (let i = 0; i < w * h; i++) {
+    const v = buf[i];
+    img.data[i * 4]     = (v >> 16) & 0xFF;
+    img.data[i * 4 + 1] = (v >> 8) & 0xFF;
+    img.data[i * 4 + 2] = v & 0xFF;
+    img.data[i * 4 + 3] = (v & 0xFF000000) ? 0xFF : 0;
+  }
+  ctx.putImageData(img, 0, 0);
+}
+
+const TILE_DECODERS = {
+  planar: decodeMDTile,
+  linear: decodeMDTileLinear,
+};
+
+function renderSprites() {
+  if (!romData) return;
+  const addr = parseInt($('sprAddr').value);
+  const tps = parseInt($('tilesPerSprite').value);
+  const count = parseInt($('sprCount').value);
+  const cols = parseInt($('sprCols').value);
+  const fmt = $('tileFormat').value;
+  const decoder = TILE_DECODERS[fmt] || decodeMDTile;
+
+  const spW = tps >= 8 ? 4 : (tps >= 12 ? 4 : 2);
+  const spH = Math.ceil(tps / spW);
+  const cellW = spW * 8 + 2;
+  const cellH = spH * 8 + 2;
+  const rows = Math.ceil(count / cols);
+  const w = cols * cellW;
+  const h = rows * cellH;
+  const buf = new Uint32Array(w * h);
+  buf.fill(0xFF1A1A2E);
+
+  let shown = 0;
+  for (let i = 0; i < count; i++) {
+    const baseAddr = addr + i * tps * 32;
+    if (baseAddr + tps * 32 > romSize) break;
+    shown++;
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    for (let t = 0; t < tps; t++) {
+      const offset = baseAddr + t * 32;
+      const pixels = decoder(romData, offset);
+      const tx = t % spW, ty = Math.floor(t / spW);
+      const dx = col * cellW + 1 + tx * 8;
+      const dy = row * cellH + 1 + ty * 8;
+      for (let y = 0; y < 8; y++) {
+        for (let x = 0; x < 8; x++) {
+          const ci = pixels[y * 8 + x];
+          if (ci === 0) continue;
+          const c = currentPalette[ci] || 0xFF888888;
+          buf[(dx + x) + (dy + y) * w] = c | 0xFF000000;
+        }
+      }
+    }
+  }
+  renderViewer(buf, w, h);
+  $('spriteInfo').textContent = `${shown}/${count} 精灵 @ 0x${addr.toString(16)} [${fmt}] ${spW}×${spH}tile 调色板:${currentPalette === grayPal ? '灰阶' : '自定义'}`;
+}
+
+function renderTilesAt(addr, count, cols) {
+  if (!romData) return;
+  const cCols = cols || 32;
+  const rows = Math.ceil(count / cCols);
+  const w_ = cCols * 8, h_ = rows * 8;
+  const buf = new Uint32Array(w_ * h_);
+  buf.fill(0xFF1A1A2E);
+
+  for (let i = 0; i < count; i++) {
+    const offset = addr + i * 32;
+    if (offset + 32 > romSize) break;
+    const pixels = decodeMDTile(romData, offset);
+    const col = i % cCols, row = Math.floor(i / cCols);
+    for (let y = 0; y < 8; y++) {
+      for (let x = 0; x < 8; x++) {
+        const ci = pixels[y * 8 + x];
+        if (ci === 0) continue;
+        const c = currentPalette[ci] || 0xFF888888;
+        buf[(col * 8 + x) + (row * 8 + y) * w_] = c | 0xFF000000;
+      }
+    }
+  }
+  renderViewer(buf, w_, h_);
+  $('viewerInfo').textContent = `${count} tiles @ 0x${addr.toString(16)}`;
+}
+
+// ---- 扫描 ----
+function scanAndShowTiles() {
+  if (!romData) return;
+  const candidates = scanTileRegions(romData, 0x400);
+  const div = $('tileCandidates');
+  div.innerHTML = candidates.map(c =>
+    `<div class="scan-item" data-addr="${c.addr}">
+      0x${c.addr.toString(16).padStart(6,'0')} <span class="score">得分:${c.score}</span>
+    </div>`).join('') || '无候选区域';
+
+  div.querySelectorAll('.scan-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const addr = parseInt(el.dataset.addr);
+      $('sprAddr').value = '0x' + addr.toString(16).toUpperCase();
+      document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+      document.querySelector('.tab-btn[data-tab="sprites"]').classList.add('active');
+      document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+      $('tab-sprites').classList.add('active');
+      renderSprites();
+    });
+  });
+}
+
+function scanAndShowPals() {
+  if (!romData) return;
+  const candidates = scanPalettes(romData);
+  const div = $('palCandidates');
+  div.innerHTML = candidates.map(c =>
+    `<div class="scan-item" data-paladdr="${c.addr}">
+      0x${c.addr.toString(16).padStart(6,'0')} 有效色:${c.valid}/64
+    </div>`).join('') || '无候选区域';
+
+  div.querySelectorAll('.scan-item').forEach(el => {
+    el.addEventListener('click', () => {
+      const addr = parseInt(el.dataset.paladdr);
+      currentPalette = loadPalette(romData, addr, 64);
+      renderPaletteDisplay(currentPalette);
+      $('palInfo').textContent = `0x${addr.toString(16)} 64色`;
+      $('palAddr').value = '0x' + addr.toString(16).toUpperCase();
+    });
+  });
+}
+
+// ---- 调色板 ----
+function renderPaletteDisplay(pal) {
+  const div = $('paletteDisplay');
+  div.innerHTML = '';
+  for (let i = 0; i < 16 && i < pal.length; i++) {
+    const c = pal[i];
+    div.innerHTML += `<span class="palette-swatch" style="background:rgb(${(c>>16)&0xFF},${(c>>8)&0xFF},${c&0xFF})" title="#${i}"></span>`;
+  }
+}
+
+$('btnLoadPal').addEventListener('click', () => {
+  if (!romData) return;
+  const addr = parseInt($('palAddr').value);
+  const count = parseInt($('palCount').value);
+  if (!isNaN(addr)) {
+    currentPalette = loadPalette(romData, addr, count);
+    renderPaletteDisplay(currentPalette);
+    $('palInfo').textContent = `${count}色 @ 0x${addr.toString(16)}`;
+  }
+});
+
+$('btnGray').addEventListener('click', () => {
+  currentPalette = grayPal;
+  renderPaletteDisplay(grayPal);
+  $('palInfo').textContent = '灰阶 (0-15)';
+});
+
+document.querySelectorAll('.preset-btn[data-paladdr]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const addr = parseInt(btn.dataset.paladdr);
+    if (!romData || addr >= romSize) return;
+    currentPalette = loadPalette(romData, addr, 64);
+    renderPaletteDisplay(currentPalette);
+    $('palInfo').textContent = `0x${addr.toString(16)} 64色`;
+    $('palAddr').value = '0x' + addr.toString(16).toUpperCase();
+  });
+});
+
+// ---- Hex ----
+$('btnHexView').addEventListener('click', () => {
+  if (!romData) return;
+  const addr = parseInt($('hexAddr').value);
+  if (isNaN(addr)) return;
+  $('hexDump').textContent = hexDump(romData, addr, 16);
+});
+
+$('btnHexPrev').addEventListener('click', () => {
+  let addr = parseInt($('hexAddr').value);
+  if (isNaN(addr)) addr = 0;
+  addr = Math.max(0, addr - 256);
+  $('hexAddr').value = '0x' + addr.toString(16).toUpperCase();
+  $('btnHexView').click();
+});
+
+$('btnHexNext').addEventListener('click', () => {
+  let addr = parseInt($('hexAddr').value);
+  if (isNaN(addr)) addr = 0;
+  addr = Math.min(romSize - 256, addr + 256);
+  $('hexAddr').value = '0x' + addr.toString(16).toUpperCase();
+  $('btnHexView').click();
+});
+
+// ---- 按钮事件 ----
+$('btnLoadSprites').addEventListener('click', renderSprites);
+$('btnScanTiles').addEventListener('click', scanAndShowTiles);
+$('btnScanPalettes').addEventListener('click', scanAndShowPals);
+
+function renderClassButtons() {
+  const div = $('classPresets');
+  div.innerHTML = L2_CLASSES.map((c, i) =>
+    `<button class="preset-btn class" data-idx="${i}">${c.name}</button>`
+  ).join('');
+  div.querySelectorAll('.preset-btn.class').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.idx);
+      const tps = parseInt($('tilesPerSprite').value);
+      const start = parseInt($('sprAddr').value);
+      const addr = start + idx * tps * 32;
+      $('sprAddr').value = '0x' + addr.toString(16).toUpperCase();
+      renderSprites();
+    });
+  });
+}
+
+function tryLoadDefault() {
+  const addr = parseInt($('sprAddr').value);
+  if (!isNaN(addr) && addr < romSize) {
+    renderSprites();
+    $('btnHexView').click();
+  }
+}
+
+// Tabs
+document.querySelectorAll('.tab-btn').forEach(b => {
+  b.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    const tabId = 'tab-' + b.dataset.tab;
+    const tabEl = $(tabId);
+    tabEl.classList.add('active');
+
+    // 自动加载数据
+    if (tabLoaders[b.dataset.tab]) {
+      tabLoaders[b.dataset.tab]();
+    }
+  });
+});
+
+// ---- 角色属性 ----
+function renderClasses() {
+  if (!romData) return;
+  const max = parseInt($('maxClasses').value) || 48;
+  const classes = parseAllClasses(romData, max);
+  const div = $('classesList');
+
+  if (classes.length === 0) {
+    div.innerHTML = '<div class="info-text">未解析到职业数据。可能 ROM 地址 0x5EDE8 不包含预期数据。</div>';
+    return;
+  }
+
+  div.innerHTML = classes.map(c => {
+    const promoNames = (c.promotions || []).map(pid => {
+      if (pid === 0xFF) return 'MAX';
+      return CLASS_NAMES[pid]?.name || `?`;
+    }).join(' → ');
+
+    const promos = (c.promotions || []).map(pid => {
+      if (pid === 0xFF) return '';
+      return `<button class="preset-btn class" onclick="document.getElementById('sprAddr').value='0x'+(parseInt(document.getElementById('sprAddr').value||0x52800)+${pid}*parseInt(document.getElementById('tilesPerSprite').value)*32).toString(16);document.getElementById('btnLoadSprites').click()" style="font-size:8px;padding:1px 4px">${CLASS_NAMES[pid]?.name||pid}</button>`;
+    }).filter(x=>x).join(' ');
+
+    const growthStr = [];
+    if (c.atGrowth) growthStr.push(`AT+${c.atGrowth}`);
+    if (c.dfGrowth) growthStr.push(`DF+${c.dfGrowth}`);
+    if (c.mpGrowth) growthStr.push(`MP+${c.mpGrowth}`);
+
+    return `<div class="card" style="margin-bottom:4px">
+      <h4>${c.icon} ${c.name} <span style="font-size:9px;color:#888">(#${c.classId})</span></h4>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;font-size:10px">
+        <span style="color:#e94560">AT:${c.at||'?'}</span>
+        <span style="color:#4fc3f7">DF:${c.df||'?'}</span>
+        <span style="color:#81c784">MP:${c.mp||'?'}</span>
+        <span style="color:#ffb74d">MV:${c.mv||'?'}</span>
+        ${growthStr.length > 0 ? `<span style="color:#aaa">(${growthStr.join(' ')})</span>` : ''}
+      </div>
+      <div style="font-size:9px;color:#888;margin-top:2px;display:flex;flex-wrap:wrap;gap:3px">
+        转职: ${promos || '<span style="color:#555">最终职业</span>'}
+      </div>
+    </div>`;
+  }).join('');
+
+  $('viewerInfo').textContent = `已解析 ${classes.length} 个职业`;
+}
+
+$('btnLoadClasses').addEventListener('click', renderClasses);
+
+// ---- 单位结构 ----
+function renderUnitStructRef() {
+  $('unitStructRef').textContent = UNIT_STRUCT_TABLE;
+}
+
+function renderUnits() {
+  if (!romData) return;
+  const lv = parseInt($('unitLevel').value) || 1;
+  const units = parseLevelUnits(romData, lv);
+  const div = $('unitList');
+
+  if (units.length === 0) {
+    div.innerHTML = '<div class="info-text">该关卡未找到单位配置 (关卡索引从1开始)</div>';
+    return;
+  }
+
+  div.innerHTML = units.map(u => {
+    const typeIdx = u.typeIndex;
+    const className = CLASS_NAMES[typeIdx]?.name || `职业#${typeIdx}`;
+    const spells = parseUnitSpells(u.raw, 0);
+    const activeSpells = spells.filter(s => s.active);
+
+    return `<div class="scan-item" style="padding:3px 5px">
+      <b>#${u.index}</b> <span style="color:#4fc3f7">${className}</span>
+      <span style="color:#888">cmd:${u.commanderId}</span>
+      <span style="color:#ffb74d">(${u.x},${u.y})</span>
+      ${activeSpells.length > 0 ? '<span style="color:#e94560">法术:' + activeSpells.map(s=>s.name).join(',') + '</span>' : ''}
+      <div style="font-size:8px;color:#555">ROM:0x${u.romAddr.toString(16)}</div>
+    </div>`;
+  }).join('');
+
+  $('viewerInfo').textContent = `关卡${lv}: ${units.length} 单位`;
+}
+
+$('btnLoadUnits').addEventListener('click', renderUnits);
+
+// ---- 魔法道具 ----
+function renderMagic() {
+  if (!romData) return;
+
+  // 指令菜单
+  const cmdSlots = parseCommandMenu(romData);
+  $('cmdSlots').textContent = cmdSlots.map(s =>
+    `槽${s.slot} [${s.name}]: id=0x${s.commandId.toString(16)} paramLo=0x${s.paramLo.toString(16)} paramHi=0x${s.paramHi.toString(16)} ⌁ ${s.condition}`
+  ).join('\n');
+
+  // 装备道具
+  const items = parseEquipmentTable(romData);
+  $('equipList').innerHTML = items.map(it =>
+    `<div class="scan-item">#${it.index} ${it.name} id=0x${it.id.toString(16)} val1=0x${it.val1.toString(16)} val2=0x${it.val2.toString(16)} ROM:0x${it.romPtr.toString(16)}</div>`
+  ).join('') || '<div class="info-text">未解析到道具数据</div>';
+
+  // 法术列表
+  $('spellList').innerHTML = Object.entries(SPELL_NAMES).map(([id, name]) =>
+    `<div class="scan-item">0x${parseInt(id).toString(16).padStart(2,'0')} = ${name}</div>`
+  ).join('');
+}
+
+// Tab 切换时自动加载数据
+const tabLoaders = {
+  'units': renderUnitStructRef,
+  'magic': renderMagic,
+  'battle': renderBattleDoc,
+  'map': renderLevelList,
+};
+$('tab-units').addEventListener('tab-show', renderUnitStructRef);
+$('tab-magic').addEventListener('tab-show', renderMagic);
+$('tab-battle').addEventListener('tab-show', renderBattleDoc);
+$('tab-map').addEventListener('tab-show', renderLevelList);
+
+// ---- 战斗公式 ----
+function renderBattleDoc() {
+  $('battleFormulaDoc').textContent = BATTLE_FORMULA_DOC;
+}
+
+function doSimBattle() {
+  const at = parseInt($('simAT').value) || 20;
+  const hp = parseInt($('simHP').value) || 10;
+  const soldiers = parseInt($('simSoldiers').value) || 10;
+  const df = parseInt($('simDF').value) || 15;
+
+  const damage = calcDamage(at, hp, soldiers, hp, soldiers, 50,
+    { soldier: new Array(0x48).fill(0).map((_, i) => 100 - i * 2),
+      terrain: new Array(0x48).fill(0).map((_, i) => Math.max(0, 50 - i)) });
+
+  $('simResult').innerHTML =
+    `<span style="color:#e94560">AT:${at}</span> vs <span style="color:#4fc3f7">DF:${df}</span>
+     → 伤害: <b style="color:#ffb74d">${damage}</b>
+     (公式: ((AT-结果)*士兵系数 + 兵差*地形系数)/100)`;
+}
+
+$('btnSimBattle').addEventListener('click', doSimBattle);
+
+// ---- 地图 ----
+function renderLevelList() {
+  if (!romData) return;
+  const levels = parseMapLevelList(romData);
+  const div = $('levelList');
+  div.innerHTML = levels.map(l =>
+    `<span class="scan-item" data-lvidx="${l.index}" style="display:inline-block;margin-right:4px;cursor:pointer">
+      [${l.name}] ${l.width}×${l.height}
+    </span>`
+  ).join('') || '无有效关卡数据';
+
+  div.querySelectorAll('.scan-item').forEach(el => {
+    el.addEventListener('click', () => {
+      $('mapLevel').value = el.dataset.lvidx;
+      doLoadMap();
+    });
+  });
+}
+
+function doLoadMap() {
+  if (!romData) return;
+  const lv = parseInt($('mapLevel').value) || 0;
+  const levelData = parseLevelMap(romData, lv);
+  if (!levelData) {
+    $('mapInfo').textContent = `关卡${lv}: 无法解析地图数据`;
+    return;
+  }
+
+  const scale = parseInt($('mapScale').value) || 2;
+  const cv = $('mapCanvas');
+  cv.style.width = (levelData.width * 8 * scale) + 'px';
+  cv.style.height = (levelData.height * 8 * scale) + 'px';
+
+  const colors = [
+    '#228B22', '#006400', '#8B4513', '#4169E1',
+    '#555555', '#D2B48C', '#FFD700', '#B8860B',
+    '#A0522D', '#F4A460', '#2E8B57', '#9370DB',
+    '#A9A9A9', '#696969', '#1E90FF', '#87CEEB',
+  ];
+  renderMapCanvas(cv, levelData, colors);
+
+  const tileCounts = {};
+  for (const t of levelData.remapped) {
+    const v = t.remapped & 0xF;
+    tileCounts[v] = (tileCounts[v] || 0) + 1;
+  }
+  const typeInfo = Object.keys(tileCounts).sort((a,b) => tileCounts[b] - tileCounts[a])
+    .map(k => `${TILE_TYPES[k] || k}:${tileCounts[k]}`).join(' ');
+
+  $('mapInfo').textContent = `关卡${lv}: ${levelData.width}×${levelData.height} ROM:0x${levelData.romAddr.toString(16)} 地块:${typeInfo}`;
+}
+
+$('btnLoadMap').addEventListener('click', doLoadMap);
+$('mapScale').addEventListener('change', doLoadMap);
+
+// Export
+$('btnExport').addEventListener('click', () => {
+  const cv = $('mainCanvas');
+  const base64 = cv.toDataURL('image/png').split(',')[1];
+  fetch('/api/save-png', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'l2-export-' + Date.now() + '.png', data: base64 }),
+  }).then(r => r.json()).then(j => {
+    if (j.ok) $('viewerInfo').textContent += ' | 已保存';
+  }).catch(() => {});
+});
+</script>
+</body>
+</html>
