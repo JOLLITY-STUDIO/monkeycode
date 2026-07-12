@@ -1,0 +1,4 @@
+document.write('<br><center><table border=0 width=100%><tr><td><hr width=95% noshade color=#0000FF align="center"></td></tr><tr><td align=center>保留版权 Langrisser专题站<br>&quot;Langrisser&quot;, &quot;Der Langrisser&quot; (c) <a href=http://www.ncsx.co.jp/msya/ target=_blank>NCS/Masaya</a>.<br>Copyright 2000-2002 All Rights Reserved</td></tr></table></center>')
+window.defaultStatus='完成'
+//document.write('<p align=center><script src=http://ad.t2t2.com/textclick.asp?user=xingyin&style=1&bkcolor=no></script><br>');
+

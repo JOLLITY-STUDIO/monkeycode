@@ -20,7 +20,7 @@ const TILE_TYPES = {
 function readU32(data, addr) {
   if (addr + 3 >= data.length) return 0;
   const dv = new DataView(data.buffer, data.byteOffset, data.byteLength);
-  return dv.getUint32(addr, false) & 0xFFFFFF;
+  return dv.getUint32(addr, false);
 }
 
 function readU16(data, addr) {

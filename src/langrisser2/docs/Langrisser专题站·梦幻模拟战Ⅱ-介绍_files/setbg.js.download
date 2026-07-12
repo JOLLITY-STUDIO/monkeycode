@@ -1,0 +1,18 @@
+if (parent.frames['idinf']!=null){
+ if (parent.frames['idinf'].document.forms[0]!=null){
+	var BGsoundid=parent.frames['idinf'].document.idx.number;
+	var aname=navigator.appName;
+	var IE=aname.indexOf("Internet Explorer");
+	var i_title='Langrisser专题站＞';
+	var aname=navigator.appName;
+	if (bgid==1){BGsoundid.value=224000;if(IE!=-1){top.document.title=i_title+'Langrisser I'}}
+	 else if (bgid==2){BGsoundid.value=110000;if(IE!=-1){top.document.title=i_title+'Langrisser II'}}
+	 else if (bgid==2.5){BGsoundid.value=125000;if(IE!=-1){top.document.title=i_title+'Der Langrisser'}}
+	 else if (bgid==3){BGsoundid.value=157000;if(IE!=-1){top.document.title=i_title+'Langrisser III'}}
+	 else if (bgid==4){BGsoundid.value=271000;if(IE!=-1){top.document.title=i_title+'Langrisser IV'}}
+	 else if (bgid==5){BGsoundid.value=135000;if(IE!=-1){top.document.title=i_title+'Langrisser V'}}
+	 else if (bgid==6){BGsoundid.value=0;if(IE!=-1){top.document.title=i_title+'Langrisser Millennium'}}
+	 else{BGsoundid.value=0;if(IE!=-1){top.document.title='Langrisser专题站---http://langrisser.coolwww.net'}
+	}
+ }
+}
