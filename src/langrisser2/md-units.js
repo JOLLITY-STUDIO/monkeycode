@@ -5,10 +5,13 @@
 
 /**
  * 单位结构体字段定义 (WRAM 0xFF603C 起, 每单位 0x60=96 字节)
+ * 
+ * 交叉验证来源: PAR金手指码 (9个角色, 偏移100%一致)
+ * Elwin基址 FF603C, 级差 0x60=96字节/单位
  */
 export const UNIT_FIELDS = [
-  { offset: 0x00, size: 1, name: '职业类型索引', desc: '_DAT_ffffa4cc 表索引 (0x18字节/项)' },
-  { offset: 0x01, size: 1, name: '指挥官编号',    desc: '0-7' },
+  { offset: 0x00, size: 1, name: '职业类型索引', desc: 'class modifier (PAR验证)' },
+  { offset: 0x01, size: 1, name: '名字索引',      desc: 'name modifier (PAR验证)' },
   { offset: 0x02, size: 1, name: '状态标志0',     desc: 'bit0=已移动, bit3=已行动' },
   { offset: 0x03, size: 1, name: '状态标志1',     desc: '-' },
   { offset: 0x04, size: 1, name: '状态标志2',     desc: 'bit6=已行动标志' },
@@ -16,9 +19,9 @@ export const UNIT_FIELDS = [
   { offset: 0x06, size: 1, name: '地图 X 坐标',   desc: '网格列' },
   { offset: 0x07, size: 1, name: '地图 Y 坐标',   desc: '网格行' },
   { offset: 0x08, size: 1, name: '基础职业索引',  desc: '*in_A0' },
-  { offset: 0x09, size: 1, name: '子职业数据',    desc: '-' },
-  { offset: 0x0A, size: 1, name: '附加职业属性',  desc: '-' },
-  { offset: 0x0B, size: 1, name: '职业类别',      desc: '0x1D=特殊/英雄' },
+  { offset: 0x09, size: 1, name: '道具槽#1',      desc: 'item slot 1 (PAR验证)' },
+  { offset: 0x0A, size: 1, name: '道具槽#2',      desc: 'item slot 2 (PAR验证)' },
+  { offset: 0x0B, size: 1, name: '道具槽#3',      desc: 'item slot 3 (PAR验证)' },
   { offset: 0x0C, size: 1, name: '法术槽0-ID',    desc: '法术ID' },
   { offset: 0x0D, size: 1, name: '法术槽0-等级',  desc: '等级要求' },
   { offset: 0x0E, size: 6, name: '法术槽0-数据',  desc: '内部数据' },
@@ -36,27 +39,25 @@ export const UNIT_FIELDS = [
   { offset: 0x25, size: 1, name: '法术槽2-等级',  desc: '等级要求' },
   { offset: 0x26, size: 6, name: '预留',          desc: '-' },
   { offset: 0x2C, size: 2, name: 'AT装备奖励',    desc: '武器加成' },
-  { offset: 0x2E, size: 2, name: '基础 AT 值',    desc: '来自职业表' },
+  { offset: 0x2E, size: 1, name: '等级',          desc: 'level (PAR验证)' },
+  { offset: 0x2F, size: 1, name: '经验值',        desc: 'exp (PAR验证)' },
   { offset: 0x30, size: 1, name: '法术槽3-ID',    desc: '法术ID' },
   { offset: 0x31, size: 1, name: '法术槽3-等级',  desc: '等级要求' },
   { offset: 0x32, size: 6, name: '预留',          desc: '-' },
-  { offset: 0x38, size: 1, name: '当前 HP',       desc: '来自职业表' },
-  { offset: 0x39, size: 1, name: 'HP 上限',       desc: '来自职业表' },
-  { offset: 0x3A, size: 2, name: '基础 DF 值',    desc: '来自职业表' },
+  { offset: 0x38, size: 1, name: '当前MP',        desc: 'current MP (PAR验证)' },
+  { offset: 0x39, size: 1, name: '基础MP',        desc: 'base MP (PAR验证)' },
+  { offset: 0x3A, size: 1, name: 'AT 攻击力',     desc: 'attack (PAR验证)' },
+  { offset: 0x3B, size: 1, name: 'DF 防御力',     desc: 'defence (PAR验证)' },
   { offset: 0x3C, size: 1, name: '法术槽4-ID',    desc: '法术ID' },
   { offset: 0x3D, size: 1, name: '法术槽4-等级',  desc: '等级要求' },
   { offset: 0x3E, size: 6, name: '预留',          desc: '-' },
-  { offset: 0x44, size: 1, name: '精灵X偏移',     desc: 'LAB_0005ede8+成长修正' },
-  { offset: 0x45, size: 1, name: '精灵Y偏移',     desc: '-' },
-  { offset: 0x46, size: 1, name: '精灵Z/属性',    desc: '-' },
-  { offset: 0x47, size: 1, name: '精灵W偏移',     desc: '-' },
-  { offset: 0x48, size: 8, name: '精灵元数据',    desc: '附加图块映射' },
-  { offset: 0x50, size: 4, name: '能力标志位掩码', desc: '法术可用/物品持有/移动标志' },
-  { offset: 0x54, size: 1, name: '内部状态',      desc: '-' },
-  { offset: 0x55, size: 1, name: '等级',          desc: '来自ROM偏移0x1A' },
-  { offset: 0x56, size: 8, name: '战斗变量',      desc: '-' },
-  { offset: 0x5E, size: 1, name: '经验/击杀',     desc: '升级用' },
-  { offset: 0x5F, size: 1, name: '单位标志',      desc: '来自ROM偏移0x1C' },
+  { offset: 0x44, size: 1, name: '移动力 MV',     desc: 'movement (PAR验证)' },
+  { offset: 0x45, size: 1, name: '射程 Range',    desc: 'range (PAR验证)' },
+  { offset: 0x46, size: 1, name: '修正AT',        desc: 'adjust AT (PAR验证)' },
+  { offset: 0x47, size: 1, name: '修正DF',        desc: 'adjust DF (PAR验证)' },
+  { offset: 0x48, size: 7, name: '预留',          desc: '-' },
+  { offset: 0x4F, size: 16, name: '预留',         desc: '-' },
+  { offset: 0x5F, size: 1, name: '头像索引',      desc: 'portrait (PAR验证)' },
 ];
 
 export const UNIT_SIZE = 0x60;
