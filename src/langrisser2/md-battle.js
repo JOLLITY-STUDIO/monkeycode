@@ -1,116 +1,133 @@
 /**
- * Langrisser II 战斗伤害公式 (JS 实现)
- * 基于 FUN_00020518 (行 18417) + FUN_000204d0 (行 18379)
+ * md-battle.js — Langrisser II 战斗系统
+ * 基于 Ghidra 逆向分析 (FUN_000108c8, FUN_00010840, FUN_0000b074)
+ *
+ * 核心公式:
+ *   baseAT = CLASS_DATA[classId * 0x1C] + unit bonuses
+ *   baseDF = CLASS_DATA[classId * 0x1C] + unit bonuses
+ *   damage = (AT * typeAdvantage) - (DF + terrainBonus)
+ *   minDamage = 1
+ *
+ * 兵种克制矩阵: 0x060200 (FF分隔, 上三角8×8)
+ *   ATK/DEF 类型: 歩兵=0, 騎兵=1, 槍兵=2, 飛兵=3, 水兵=4, 僧侶=5, 魔導=6, 弓兵=7
  */
+
+const CLASS_DATA_ADDR = 0x05EDDC;
+const CLASS_ENTRY_SIZE = 0x1C;
+const TROOP_MATRIX_ADDR = 0x060200;
+
+export const TROOP_TYPE_NAMES = [
+  '歩兵', '騎兵', '槍兵', '飛兵',
+  '水兵', '僧侶', '魔導', '弓兵'
+];
 
 /**
- * 比例查表函数 (FUN_000204d0 等效)
- * 
- * 输入: 士兵差值比例 = (士兵差 * 100) / (防御方HP - 攻击方剩余HP)
- * 输出: 0~90 的比例索引 (用于后续伤害计算)
+ * 兵种克制矩阵 (徒步兵/骑兵/枪兵/飞兵/水兵/僧侣/魔导/弓兵)
+ * 代码: 01=普通 02=克制 03=强克 04=不利 05=极不利
  *
- * 表地址: ROM 0x96F02, 90 项阈值数组
+ * 来源: 从ROM 0x060200解析 + 游戏已知规则验证
+ * 格式: advantage[attacker][defender] = 倍率代码
  */
-export function calcProportionIndex(attackerRemaining, defenderHP, soldierDiff, thresholdTable) {
-  if (defenderHP <= attackerRemaining) return 0;
-  const ratio = Math.floor((soldierDiff * 100) / (defenderHP - attackerRemaining));
-  for (let i = 0; i < thresholdTable.length; i++) {
-    if (ratio < thresholdTable[i]) return i;
-  }
-  return thresholdTable.length - 1;
-}
+export const TROOP_ADVANTAGE = [
+  // 歩兵→各兵种
+  [0x01, 0x01, 0x02, 0x01, 0x01, 0x01, 0x01, 0x01],
+  // 騎兵→各兵种 (克歩兵)
+  [0x02, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01],
+  // 槍兵→各兵种 (克騎兵)
+  [0x01, 0x02, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01],
+  // 飛兵→各兵种 (克歩兵/水兵)
+  [0x02, 0x01, 0x01, 0x01, 0x02, 0x01, 0x01, 0x01],
+  // 水兵→各兵种
+  [0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01],
+  // 僧侶→各兵种 (克魔物)
+  [0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01],
+  // 魔導→各兵种
+  [0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01],
+  // 弓兵→各兵种 (克飛兵)
+  [0x01, 0x01, 0x01, 0x02, 0x01, 0x01, 0x01, 0x01],
+];
+
+export const ADVANTAGE_MULTIPLIERS = {
+  0x01: 1.00,  // 普通
+  0x02: 1.25,  // 克制 (+25%)
+  0x03: 1.50,  // 强克 (+50%)
+  0x04: 0.75,  // 不利 (-25%)
+  0x05: 0.50,  // 极不利 (-50%)
+};
+
+export const ADVANTAGE_LABELS = {
+  0x01: '普通', 0x02: '克制', 0x03: '强克',
+  0x04: '不利', 0x05: '极不',
+};
 
 /**
- * 主伤害计算 (FUN_00020518 等效)
- *
- * @param {number} attackerAT   - 攻击方 AT (基础 + 兵种奖励)
- * @param {number} attackerHP   - 攻击方剩余 HP
- * @param {number} attackerSoldiers - 攻击方存活士兵数
- * @param {number} defenderHP   - 防御方 HP
- * @param {number} defenderSoldiers - 防御方存活士兵数
- * @param {number} propIndex    - 比例索引 (来自 calcProportionIndex)
- * @param {Object} tables       - { soldierTable, terrainTable }
- * @returns {number} 最终伤害值
+ * 从ROM职业数据表读取AT/DF基础值
+ * byte[10]=defaultAT, byte[11]=defaultDF
  */
-export function calcDamage(attackerAT, attackerHP, attackerSoldiers, defenderHP, defenderSoldiers, propIndex, tables) {
-  const soldierTable = tables.soldier || new Array(0x48).fill(0);
-  const terrainTable = tables.terrain || new Array(0x48).fill(0);
-
-  // 伤害 = ((AT - 比例值) * 士兵表[索引] + 士兵差 * 地形表[索引]) / 100
-  const result = soldierTable[0x47 - propIndex] || 0;
-  const terrainMod = terrainTable[propIndex] || 0;
-  const soldierDiff = attackerSoldiers - defenderSoldiers;
-
-  const damage = Math.floor(
-    ((attackerAT - result) * soldierTable[0x47 - propIndex] + soldierDiff * terrainMod) / 100
-  );
-
-  return Math.max(0, damage);
-}
-
-/**
- * 完整战斗模拟
- *
- * @param {Object} attacker - { at, hp, soldiers, classId }
- * @param {Object} defender - { hp, df, soldiers, classId, terrain }
- * @param {Object} gameData - ROM 解析的游戏数据
- * @returns {Object} { attackerDamage, defenderDamage, attackerRemaining, defenderRemaining }
- */
-export function simulateBattle(attacker, defender, gameData) {
-  // 攻方对守方的伤害
-  const attackerToDefender = calcDamage(
-    attacker.at,
-    attacker.hp,
-    attacker.soldiers,
-    defender.hp,
-    defender.soldiers,
-    50, // 中间比例索引
-    { soldier: gameData.soldierTable || [], terrain: gameData.terrainTable || [] }
-  );
-
-  // 守方对攻方的反击伤害 (简化: 守方 DF 替代 AT 计算)
-  const defenderToAttacker = attacker.soldiers > 0 ? calcDamage(
-    defender.hp, // 简化用 HP 作为防守方"攻击力"
-    defender.hp,
-    defender.soldiers,
-    attacker.hp,
-    attacker.soldiers,
-    50,
-    { soldier: gameData.soldierTable || [], terrain: gameData.terrainTable || [] }
-  ) : 0;
-
+export function getClassBaseStats(romData, classId) {
+  const offset = CLASS_DATA_ADDR + classId * CLASS_ENTRY_SIZE;
   return {
-    attackerDamage: attackerToDefender,
-    defenderDamage: defenderToAttacker,
-    attackerRemaining: Math.max(0, attacker.soldiers - defenderToAttacker),
-    defenderRemaining: Math.max(0, defender.soldiers - attackerToDefender),
+    at: romData[offset + 10],
+    df: romData[offset + 11],
+    moveType: romData[offset + 6],
   };
 }
 
 /**
- * 战斗公式文档
+ * 计算伤害
+ * @param {number} attackerAT - 攻击方最终AT
+ * @param {number} defenderDF - 防御方最终DF
+ * @param {number} atkType - 攻击方兵种类型 (0-7)
+ * @param {number} defType - 防御方兵种类型 (0-7)
+ * @param {number} terrainBonus - 地形加成 (默认0)
+ * @returns {{ damage: number, advantage: string, mult: number }}
  */
-export const BATTLE_FORMULA_DOC = `Langrisser II 伤害计算公式
+export function calculateDamage(attackerAT, defenderDF, atkType, defType, terrainBonus = 0) {
+  const advCode = (atkType < 8 && defType < 8)
+    ? TROOP_ADVANTAGE[atkType][defType]
+    : 0x01;
+  const mult = ADVANTAGE_MULTIPLIERS[advCode] || 1.0;
+  const effectiveAT = Math.floor(attackerAT * mult);
+  const effectiveDF = defenderDF + terrainBonus;
+  const rawDamage = effectiveAT - effectiveDF;
+  const damage = Math.max(1, rawDamage);
 
-源码: FUN_00020518 (ROM 0x20518) + FUN_000204d0 (ROM 0x204D0)
+  return {
+    damage,
+    advantage: ADVANTAGE_LABELS[advCode] || '?',
+    mult,
+    effectiveAT,
+    effectiveDF,
+  };
+}
 
-步骤:
-1. 计算比例 = (士兵差 * 100) / (防御方HP - 攻击方剩余HP)
-2. 查阈值表 (ROM 0x96F02, 90项) 得到比例索引 [0,90]
-3. 查士兵表 (索引 0x47 - 比例索引) 得到士兵系数
-4. 查地形表 (比例索引) 得到地形系数
-5. 伤害 = ((攻击AT - 比例值) * 士兵系数 + 士兵差 * 地形系数) / 100
+/**
+ * 计算士兵战伤害 (10 vs 10)
+ * @param {{ at: number, df: number, hp: number, type: number }} attacker
+ * @param {{ at: number, df: number, hp: number, type: number }} defender
+ * @param {number} terrainBonus
+ * @returns {{ attackerLoss: number, defenderLoss: number }}
+ */
+export function calculateSoldierBattle(attacker, defender, terrainBonus = 0) {
+  const atkCount = Math.min(10, attacker.hp);
+  const defCount = Math.min(10, defender.hp);
 
-战斗动画序列:
-- FUN_0002490c: 战斗动画状态机
-- FUN_00024f30: 每帧动画更新
-- PTR_LAB_000248ec: 战斗子程序跳转表
-- PTR_LAB_00024f08: 战斗特效跳转表
-- PTR_LAB_00024ce8: 战斗结果处理跳转表
+  const { damage: atkDmg } = calculateDamage(
+    attacker.at, defender.df, attacker.type, defender.type, terrainBonus
+  );
+  const { damage: defDmg } = calculateDamage(
+    defender.at, attacker.at, defender.type, attacker.type, 0
+  );
 
-关键变量:
-- _DAT_ffffbe48 = 单位网格X坐标
-- _DAT_ffffbe4a = 单位网格Y坐标  
-- _DAT_ffffbe44 = 每帧随机偏移
-- VRAM地址 = ((Y + offset) * 0x40 + X + random) * 2 - 0x4000
-`;
+  return {
+    attackerLoss: Math.min(atkCount, defDmg * defCount),
+    defenderLoss: Math.min(defCount, atkDmg * atkCount),
+  };
+}
+
+/**
+ * 获取兵种类型名称
+ */
+export function getTroopTypeName(typeId) {
+  return TROOP_TYPE_NAMES[typeId] || `type${typeId}`;
+}
