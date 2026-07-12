@@ -32,14 +32,23 @@ Agent 在任务执行过程中发现的条目应遵循以下格式：
 
 ---
 
-Langrisser II MD ROM 解析项目
+Langrisser II MD ROM 地址速查
 - Date: 2026-07-12
-- Context: Langrisser II (MD/Genesis) ROM 逆向工程项目
-- Category: 工作流协作
+- Context: ROM 逆向工程地址映射
+- Category: 环境配置
 - Instructions:
-  - ROM文件: `src/langrisser2/rom.md` (2MB, 与粉丝站同一MD版本)
-  - 参考数据: `src/langrisser2/docs/` (Langrisser专题站粉丝资料, GBK编码)
-  - 关键代码: `./monkeycode-tmp-files/1b73ae22-Langrisser II (Japan).md-1.c` (Ghidra伪代码)
-  - RAM dump: `./monkeycode-tmp-files/17e953fa-Langrisser II (Japan)_68K-1.ram` (64KB)
-  - 已完成: 职业名表(151条)、职业数据(28B)、能力参考(39类)、道具(38条)、单位结构体
-  - 待完成: 转职路线、魔法数据、佣兵数据、精灵图(tiles)、游戏逻辑(战斗/AI)
+  - 职业名表: 0x05E958 (FF分隔半角假名, 151条目)
+  - 职业数据表: 0x05EDDC (28B/条目, class_id×0x1C索引)
+  - 职业能力参考: CLASS_STATS (0x02-0x28, 39玩家职业, 粉丝站验证100%)
+  - 转职路线表: 0x060000 (32B/条目, 按角色索引)
+  - 兵种克制矩阵: 0x060200 (FF分隔三角矩阵, 8种基础兵种)
+  - 道具名表: 0x060404 (FF分隔半角假名, 36条)
+  - 道具数据表: 0x060530 (8B×38条目)
+  - 地图指针表: 0x060600+ (4B指针数组)
+  - 图形数据区: 0x065000-0x07C000 (4bpp tile/RLE压缩)
+  - VDP精灵表: 0x080CBC (192B/条目)
+  - AI魔法数据: 0x08203E (AI行动参数表)
+  - 战斗公式表: 0x010932 (跳转表, 16B/条目)
+  - RAM单位结构: 55B (md-units.js已定义)
+  - Ghidra伪代码: .monkeycode-tmp-files/1b73ae22-Langrisser II (Japan).md-1.c
+  - 粉丝站资料: src/langrisser2/docs/ (职业/道具/魔法/转职/佣兵)
