@@ -1,0 +1,8 @@
+name: langrisser2
+options:
+  target_path: ./Langrisser II (Japan).md
+segments:
+  - name: rom
+    type: m68k
+    start: 0x000000
+    end: 0x200000 

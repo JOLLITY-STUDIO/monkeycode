@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Langrisser II - 精灵图浏览器</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { font-family:'Segoe UI',sans-serif; background:#1a1a2e; color:#eee; }
+h1 { text-align:center; padding:12px; color:#e94560; font-size:20px; }
+.controls { display:flex; gap:8px; padding:8px 16px; flex-wrap:wrap; align-items:center; background:#16213e; }
+.controls button { padding:6px 14px; border:none; border-radius:4px; cursor:pointer; background:#0f3460; color:#eee; font-size:13px; }
+.controls button.active { background:#e94560; color:#fff; }
+.controls select { padding:6px; border-radius:4px; background:#0f3460; color:#eee; border:1px solid #555; font-size:13px; }
+.controls input[type=file] { font-size:12px; color:#ccc; }
+.controls label { font-size:12px; color:#aaa; margin-left:8px; }
+#palette-select { width:120px; }
+#main { display:flex; height:calc(100vh - 90px); }
+#gallery { flex:1; overflow-y:auto; padding:8px; display:flex; flex-wrap:wrap; gap:4px; align-content:flex-start; }
+#info-panel { width:280px; background:#16213e; padding:12px; overflow-y:auto; font-size:12px; }
+#preview { width:260px; margin-bottom:12px; border:1px solid #333; image-rendering:pixelated; }
+#preview img { width:100%; image-rendering:pixelated; }
+.tile-item { cursor:pointer; border:2px solid transparent; }
+.tile-item:hover { border-color:#e94560; }
+.tile-item.selected { border-color:#00ff88; }
+.tile-item canvas { display:block; }
+.info-row { display:flex; justify-content:space-between; padding:3px 0; border-bottom:1px solid #222; }
+.info-row .label { color:#888; }
+.info-row .value { color:#eee; font-family:monospace; }
+.palette-preview { display:flex; gap:2px; flex-wrap:wrap; margin:4px 0; }
+.palette-swatch { width:16px; height:16px; border:1px solid #444; }
+.pixel-grid { display:grid; gap:0; margin-top:8px; }
+.pixel-cell { aspect-ratio:1; }
+</style>
+</head>
+<body>
+<h1>Langrisser II - 精灵图浏览器</h1>
+<div class="controls">
+  <input type="file" id="rom-file" accept=".md,.bin,.gen" title="加载 ROM">
+  <select id="category-select">
+    <option value="small">小精灵 (0x080CBC)</option>
+    <option value="lzss">LZSS 资源</option>
+    <option value="type2">Type2 资源</option>
+    <option value="all">所有资源</option>
+  </select>
+  <button id="btn-prev">&lt; 上一个</button>
+  <select id="palette-select">
+    <option value="0">调色板 0 (标题/文字)</option>
+    <option value="1">调色板 1 (UI/背景)</option>
+    <option value="2" selected>调色板 2 (角色精灵)</option>
+    <option value="3">调色板 3 (天空/水面)</option>
+  </select>
+  <label>缩放: </label><input type="range" id="zoom" min="1" max="8" value="2" style="width:100px">
+  <span id="status" style="margin-left:auto;color:#aaa;font-size:11px">请加载 ROM 文件</span>
+</div>
+<div id="main">
+  <div id="gallery"></div>
+  <div id="info-panel">
+    <div id="preview"><img src="" alt="preview"></div>
+    <div id="info"></div>
+    <div id="palette-view"></div>
+    <div id="pixel-view"></div>
+  </div>
+</div>
+
+<script>
+// ============ ROM 系统 ============
+let rom = null;
+let cramPalettes = null; // 4 groups × 16 colors
+
+// ============ Genesis Tile 解码 ============
+function decodeTile(data, offset) {
+  const pixels = new Uint8Array(64);
+  for (let y = 0; y < 8; y++) {
+    const o = offset + y * 4;
+    const p0 = data[o], p1 = data[o+1], p2 = data[o+2], p3 = data[o+3];
+    for (let x = 0; x < 8; x++) {
+      const bit = 7 - x;
+      pixels[y*8+x] = ((p0>>bit)&1)|((p1>>bit)&1)<<1|((p2>>bit)&1)<<2|((p3>>bit)&1)<<3;
+    }
+  }
+  return pixels;
+}
+
+// ============ LZSS 解压 ============
+function decompressLZSS(romAddr) {
+  const rd = a => rom[a & 0xFFFFF] & 0xFF;
+  const rw = a => (rd(a)<<8)|rd(a+1);
+  const ds = rw(romAddr+1), ss = romAddr+3;
+  const win = new Uint8Array(0x1000).fill(0x20);
+  let wp=0x0FEE, out=new Uint8Array(ds), op=0, sp=ss, rem=ds;
+  while (rem>0) {
+    const flag = rd(sp++);
+    for (let b=0;b<8&&rem>0;b++) {
+      if ((flag>>b)&1) {
+        const by=rd(sp++); win[wp]=by; out[op++]=by; wp=(wp+1)&0xFFF; rem--;
+      } else {
+        const b1=rd(sp++),b2=rd(sp++);
+        let off=(b1|((b2&0xF0)<<4))&0xFFF;
+        const len=(b2&0xF)+2;
+        for(let i=0;i<len&&rem>0;i++) {
+          const by=win[off]; win[wp]=by; out[op++]=by;
+          off=(off+1)&0xFFF; wp=(wp+1)&0xFFF; rem--;
+        }
+      }
+    }
+  }
+  return out;
+}
+
+// ============ Type 2 解压 ============
+function decompressType2(romAddr) {
+  const rd = a => rom[a & 0xFFFFF] & 0xFF;
+  const rw = a => (rd(a)<<8)|rd(a+1);
+  const b1=rd(romAddr+1), compressed=(b1&0x80)!==0, planes=b1&0x7F;
+  if(!compressed){const sz=rw(romAddr+2);return new Uint8Array(rom.subarray(romAddr+4,romAddr+4+sz*planes*8));}
+  const lut=new Uint8Array(16);
+  for(let i=0;i<8;i++){const b=rd(romAddr+2+i);lut[i*2]=(b>>4)&0xF;lut[i*2+1]=b&0xF;}
+  const sz=rw(romAddr+10); let pc=planes;if(pc!==2)pc^=5;
+  const cs=romAddr+12,ps=cs+sz,os=sz*planes*8,bpt=pc*8*planes,tc=Math.floor(sz/pc);
+  const out=new Uint8Array(os); let cp=cs,pp=ps;
+  for(let t=0;t<tc;t++){
+    const wb=new Uint8Array(bpt);let wp=0;
+    for(let pl=0;pl<pc;pl++){const cb=rd(cp++);
+      for(let bt=7;bt>=0;bt--){if((cb>>bt)&1){for(let p=0;p<planes;p++)wb[wp++]=rd(pp++);}else{for(let p=0;p<planes;p++)wb[wp++]=0;}}}
+    const to=new Uint8Array(32);let ow=0;const np=Math.min(pc,4);
+    for(let o=0;o<4;o++){const ps2=[];for(let p=0;p<np;p++){const bo=(o+p*4)*2;ps2.push((wb[bo]<<8)|wb[bo+1]);}
+      for(let inn=0;inn<4;inn++){let pix=0;for(let px=0;px<4;px++){
+        const b0=np>0?(ps2[0]&0x8000?1:0):0,b1=np>1?(ps2[1]&0x8000?1:0):0,b2=np>2?(ps2[2]&0x8000?1:0):0,b3=np>3?(ps2[3]&0x8000?1:0):0;
+        pix=(pix<<4)|lut[(b3<<3)|(b1<<2)|(b2<<1)|b0];for(let p=0;p<np;p++)ps2[p]=(ps2[p]<<1)&0xFFFF;}
+        to[ow*2]=(pix>>8)&0xFF;to[ow*2+1]=pix&0xFF;ow++;}}
+    out.set(to,t*32);}
+  return out;
+}
+
+// ============ CRAM 解析 ============
+function parseCRAM(data) {
+  const pals = [];
+  for (let p = 0; p < 4; p++) {
+    const pal = [];
+    for (let c = 0; c < 16; c++) {
+      const off = (p * 16 + c) * 2;
+      const w = (data[off] << 8) | data[off + 1];
+      pal.push([((w >> 1) & 0xF) * 17, ((w >> 5) & 0xF) * 17, ((w >> 9) & 0xF) * 17]);
+    }
+    pals.push(pal);
+  }
+  return pals;
+}
+
+// 默认调色板
+const DEFAULT_PALETTES = [
+  [[0,0,0],[36,36,109],[182,182,219],[0,0,36],[146,0,0],[219,146,0],[255,219,0],[73,0,146],[146,36,182],[0,0,0],[0,146,73],[255,146,0],[36,36,146],[0,0,0],[182,182,182],[0,0,0]],
+  [[0,0,0],[255,255,255],[182,182,182],[109,109,109],[36,36,36],[0,255,0],[0,219,0],[0,182,0],[0,146,0],[0,109,0],[0,73,0],[0,36,0],[73,73,73],[146,146,146],[219,219,219],[36,0,0]],
+  [[0,0,0],[36,36,36],[73,73,73],[109,109,109],[36,0,0],[146,0,0],[219,0,0],[255,0,0],[0,146,0],[0,109,0],[0,36,0],[255,182,255],[182,146,182],[219,219,219],[255,255,255],[109,0,0]],
+  [[0,0,0],[73,73,109],[0,36,73],[0,73,146],[73,109,182],[109,146,219],[146,182,255],[219,255,255],[255,0,109],[255,0,109],[255,0,109],[255,0,109],[255,0,109],[255,0,109],[182,182,182],[36,36,36]],
+];
+
+// ============ 渲染 ============
+function renderTileToCanvas(tilePixels, palette, zoom) {
+  const c = document.createElement('canvas');
+  c.width = 8 * zoom; c.height = 8 * zoom;
+  const ctx = c.getContext('2d');
+  const img = ctx.createImageData(8 * zoom, 8 * zoom);
+  for (let py = 0; py < 8; py++) {
+    for (let px = 0; px < 8; px++) {
+      const ci = tilePixels[py * 8 + px];
+      const color = palette[ci] || [255, 0, 255];
+      for (let dy = 0; dy < zoom; dy++) {
+        for (let dx = 0; dx < zoom; dx++) {
+          const ix = ((py * zoom + dy) * (8 * zoom) + (px * zoom + dx)) * 4;
+          img.data[ix] = color[0]; img.data[ix+1] = color[1]; img.data[ix+2] = color[2];
+          img.data[ix+3] = ci === 0 ? 0 : 255;
+        }
+      }
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return c;
+}
+
+function renderTilesGrid(tiles, palette, zoom, maxCols) {
+  const n = tiles.length;
+  if (n === 0) return null;
+  const cols = Math.min(maxCols || n, 16);
+  const rows = Math.ceil(n / cols);
+  const w = cols * 8, h = rows * 8;
+  const c = document.createElement('canvas');
+  c.width = w * zoom; c.height = h * zoom;
+  const ctx = c.getContext('2d');
+  const img = ctx.createImageData(w * zoom, h * zoom);
+  for (let ti = 0; ti < n; ti++) {
+    const tx = ti % cols, ty = Math.floor(ti / cols);
+    const tile = tiles[ti];
+    for (let py = 0; py < 8; py++) {
+      for (let px = 0; px < 8; px++) {
+        const ci = tile[py * 8 + px];
+        const color = palette[ci] || [255, 0, 255];
+        for (let dy = 0; dy < zoom; dy++) {
+          for (let dx = 0; dx < zoom; dx++) {
+            const ix = (((ty*8+py)*zoom+dy) * (w*zoom) + ((tx*8+px)*zoom+dx)) * 4;
+            img.data[ix]=color[0];img.data[ix+1]=color[1];img.data[ix+2]=color[2];
+            img.data[ix+3]=ci===0?0:255;
+          }
+        }
+      }
+    }
+  }
+  ctx.putImageData(img, 0, 0);
+  return c;
+}
+
+// ============ 资源表 ============
+const RES_TABLE = 0x0B0000;
+function resPtr(id, origD0) {
+  const sc = (origD0 & 0xFFFF) % 64;
+  const idx = (id & 0x7FFF) >> sc;
+  return ((rom[RES_TABLE+idx*4]&0xFF)<<24)|((rom[RES_TABLE+idx*4+1]&0xFF)<<16)|((rom[RES_TABLE+idx*4+2]&0xFF)<<8)|(rom[RES_TABLE+idx*4+3]&0xFF);
+}
+function loadResource(resId) {
+  const addr = resPtr(resId, resId | 0x8000);
+  const tp = rom[addr & 0xFFFFF] & 0xFF;
+  try {
+    if (tp === 2) return { data: decompressType2(addr), type: 2 };
+    if (tp === 3) return { data: decompressLZSS(addr), type: 3 };
+  } catch(e) {}
+  return null;
+}
+
+// ============ 常量 ============
+const SMALL_SPRITE_TABLE = 0x080CBC;
+const SMALL_SPRITE_SIZE = 0xC0; // 192 bytes = 6 tiles
+
+// ============ UI ============
+let currentCategory = 'small';
+let currentIndex = 0;
+let maxIndex = 0;
+
+const gallery = document.getElementById('gallery');
+const infoEl = document.getElementById('info');
+const paletteView = document.getElementById('palette-view');
+const previewImg = document.querySelector('#preview img');
+const statusEl = document.getElementById('status');
+const paletteSelect = document.getElementById('palette-select');
+const zoomSlider = document.getElementById('zoom');
+const categorySelect = document.getElementById('category-select');
+
+function getActivePalette() {
+  const pIdx = parseInt(paletteSelect.value);
+  if (cramPalettes) return cramPalettes[pIdx];
+  return DEFAULT_PALETTES[pIdx];
+}
+
+function getZoom() { return parseInt(zoomSlider.value); }
+
+let spriteDataCache = {}; // { 'small_0': {tiles, palette}, ... }
+
+function showSprites(category) {
+  gallery.innerHTML = '';
+  infoEl.innerHTML = '';
+  paletteView.innerHTML = '';
+  previewImg.src = '';
+  
+  const zoom = getZoom();
+  const palette = getActivePalette();
+  
+  if (!rom) { statusEl.textContent = '请先加载 ROM 文件'; return; }
+  
+  if (category === 'small') {
+    // 小精灵 (0x080CBC)
+    let count = 0;
+    for (let i = 0; i < 100; i++) {
+      const addr = SMALL_SPRITE_TABLE + i * SMALL_SPRITE_SIZE;
+      let hasData = false;
+      for (let j = 0; j < 6; j++) { if (rom[addr+j] !== 0) { hasData = true; break; } }
+      if (!hasData) continue;
+      
+      const tiles = [];
+      for (let j = 0; j < 6; j++) {
+        const td = rom.subarray(addr + j * 32, addr + (j + 1) * 32);
+        tiles.push(decodeTile(td, 0));
+      }
+      
+      const key = `small_${i}`;
+      spriteDataCache[key] = { tiles, palette, zoom, addr, index: i, name: `小精灵 #${i}` };
+      
+      const canvas = renderTilesGrid(tiles, palette, zoom, 3);
+      const div = document.createElement('div');
+      div.className = 'tile-item';
+      div.title = `小精灵 #${i} (0x${addr.toString(16)})`;
+      div.dataset.key = key;
+      div.appendChild(canvas);
+      div.onclick = () => selectSprite(key);
+      gallery.appendChild(div);
+      count++;
+    }
+    maxIndex = count;
+    statusEl.textContent = `${count} 小精灵项`;
+    
+  } else if (category === 'lzss' || category === 'type2' || category === 'all') {
+    // 资源
+    let count = 0;
+    for (let i = 0; i < 200; i++) {
+      const resId = 32768 + i * 2;
+      const res = loadResource(resId);
+      if (!res || res.data.length === 0) continue;
+      
+      const filterType = category === 'lzss' ? 3 : category === 'type2' ? 2 : null;
+      if (filterType !== null && res.type !== filterType) continue;
+      
+      const tc = Math.floor(res.data.length / 32);
+      if (tc === 0) continue;
+      
+      const tiles = [];
+      for (let j = 0; j < tc; j++) {
+        tiles.push(decodeTile(res.data, j * 32));
+      }
+      
+      const key = `res_${i}`;
+      const cols = Math.min(tc, 16);
+      spriteDataCache[key] = { tiles, palette, zoom, index: i, resId, type: res.type, tileCount: tc, name: `资源 #${i} (0x${resId.toString(16)})` };
+      
+      const canvas = renderTilesGrid(tiles, palette, zoom, cols);
+      const div = document.createElement('div');
+      div.className = 'tile-item';
+      div.title = `资源 #${i} (0x${resId.toString(16)}), ${tc} tiles, type ${res.type}`;
+      div.dataset.key = key;
+      div.appendChild(canvas);
+      div.onclick = () => selectSprite(key);
+      gallery.appendChild(div);
+      count++;
+      
+      if (count % 50 === 0) {
+        statusEl.textContent = `加载中... ${count}`;
+        // yield to browser
+        gallery.scrollTop = gallery.scrollHeight;
+      }
+    }
+    maxIndex = count;
+    const typeLabel = category === 'lzss' ? 'LZSS' : category === 'type2' ? 'Type2' : '全部';
+    statusEl.textContent = `${count} ${typeLabel} 资源项`;
+  }
+}
+
+function selectSprite(key) {
+  // Highlight
+  document.querySelectorAll('.tile-item').forEach(el => el.classList.remove('selected'));
+  const el = document.querySelector(`[data-key="${key}"]`);
+  if (el) el.classList.add('selected');
+  
+  const data = spriteDataCache[key];
+  if (!data) return;
+  
+  // Show preview
+  const canvas = renderTilesGrid(data.tiles, data.palette, getZoom(), Math.min(data.tiles.length, 16));
+  previewImg.src = canvas.toDataURL();
+  
+  // Show info
+  infoEl.innerHTML = `
+    <div class="info-row"><span class="label">名称</span><span class="value">${data.name}</span></div>
+    <div class="info-row"><span class="label">Tiles</span><span class="value">${data.tiles.length}</span></div>
+    <div class="info-row"><span class="label">像素</span><span class="value">${Math.min(data.tiles.length,16)*8}x${Math.ceil(data.tiles.length/16)*8}</span></div>
+    ${data.addr ? `<div class="info-row"><span class="label">ROM地址</span><span class="value">0x${data.addr.toString(16)}</span></div>` : ''}
+    ${data.resId ? `<div class="info-row"><span class="label">资源ID</span><span class="value">0x${data.resId.toString(16)}</span></div>` : ''}
+    ${data.type ? `<div class="info-row"><span class="label">资源类型</span><span class="value">${data.type}</span></div>` : ''}
+  `;
+  
+  // Show palette
+  const pal = data.palette;
+  paletteView.innerHTML = '<div style="font-size:11px;color:#888;margin-bottom:4px">当前调色板:</div>' +
+    '<div class="palette-preview">' + pal.map((c,i) => `<div class="palette-swatch" style="background:rgb(${c[0]},${c[1]},${c[2]})" title="#${i}: rgb(${c})"></div>`).join('') + '</div>';
+}
+
+// ============ Events ============
+document.getElementById('rom-file').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  statusEl.textContent = '加载 ROM...';
+  const buf = await file.arrayBuffer();
+  rom = new Uint8Array(buf);
+  statusEl.textContent = `ROM: ${rom.length} bytes`;
+  
+  // Try to load CRAM from the title screen dump
+  try {
+    const cramResp = await fetch('../20260713/Langrisser II (Japan)_CRAM-TITILE-SCEEN.ram');
+    if (cramResp.ok) {
+      const cramBuf = await cramResp.arrayBuffer();
+      cramPalettes = parseCRAM(new Uint8Array(cramBuf));
+      console.log('CRAM loaded:', cramPalettes.length, 'palettes');
+    }
+  } catch(e) { console.log('No CRAM file available, using defaults'); }
+  
+  showSprites(categorySelect.value);
+});
+
+categorySelect.addEventListener('change', () => {
+  spriteDataCache = {};
+  showSprites(categorySelect.value);
+});
+
+paletteSelect.addEventListener('change', () => {
+  // Re-render all with new palette
+  const palette = getActivePalette();
+  const zoom = getZoom();
+  for (const [key, data] of Object.entries(spriteDataCache)) {
+    data.palette = palette;
+    data.zoom = zoom;
+  }
+  showSprites(categorySelect.value);
+});
+
+zoomSlider.addEventListener('input', () => {
+  const zoom = getZoom();
+  for (const [key, data] of Object.entries(spriteDataCache)) {
+    data.zoom = zoom;
+  }
+  showSprites(categorySelect.value);
+});
+
+document.getElementById('btn-prev').addEventListener('click', () => {
+  if (currentIndex > 0) { currentIndex--; /* navigate */ }
+});
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+    e.preventDefault();
+    const items = document.querySelectorAll('.tile-item');
+    const selected = document.querySelector('.tile-item.selected');
+    const idx = selected ? Array.from(items).indexOf(selected) : -1;
+    if (idx < items.length - 1) items[idx + 1].click();
+  } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+    e.preventDefault();
+    const items = document.querySelectorAll('.tile-item');
+    const selected = document.querySelector('.tile-item.selected');
+    const idx = selected ? Array.from(items).indexOf(selected) : 0;
+    if (idx > 0) items[idx - 1].click();
+  }
+});
+
+// Initial load
+statusEl.textContent = '请加载 ROM 文件 (src/langrisser2/20260713/Langrisser II (Japan).md)';
+</script>
+</body>
+</html>

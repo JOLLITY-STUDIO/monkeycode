@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Type 2 资源渲染测试</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #111;
+      color: #eee;
+      font-family: monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+    h1 { font-size: 16px; margin-bottom: 12px; color: #fc0; }
+    canvas {
+      border: 2px solid #444;
+      image-rendering: pixelated;
+      background: #000;
+      width: 640px;
+      height: 448px;
+    }
+    #info {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #888;
+      max-width: 640px;
+    }
+    #controls {
+      margin-top: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    button {
+      background: #333;
+      color: #eee;
+      border: 1px solid #555;
+      padding: 6px 12px;
+      font-family: monospace;
+      cursor: pointer;
+    }
+    button:hover { background: #444; }
+    select {
+      background: #333;
+      color: #eee;
+      border: 1px solid #555;
+      padding: 4px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Type 2 位平面压缩资源渲染测试</h1>
+  <canvas id="game"></canvas>
+  <div id="controls">
+    <select id="entrySelect"></select>
+    <button id="btnRender">渲染选中</button>
+    <button id="btnNext">下一个</button>
+    <button id="btnStop">停止</button>
+  </div>
+  <div id="info">
+    <p>正在加载 ROM...</p>
+  </div>
+
+  <script type="module">
+    import { GameEngine } from '../dist/game/core/GameEngine.js';
+    import { ArrayBufferRomReader, decompressType2 } from '../dist/game/hw/resource.js';
+
+    const canvas = document.getElementById('game');
+    const info = document.getElementById('info');
+    const entrySelect = document.getElementById('entrySelect');
+    const btnRender = document.getElementById('btnRender');
+    const btnNext = document.getElementById('btnNext');
+    const btnStop = document.getElementById('btnStop');
+
+    const engine = new GameEngine();
+    let running = false;
+    let romReader = null;
+    let type2Entries = [];
+
+    // 自动加载 ROM
+    const romUrl = '../20260713/Langrisser II (Japan)_68K-gens-rom-dump.bin';
+    info.innerHTML = '<p>正在从 ' + romUrl + ' 加载 ROM...</p>';
+
+    try {
+      const response = await fetch(romUrl);
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      const buf = new Uint8Array(await response.arrayBuffer());
+      romReader = new ArrayBufferRomReader(buf);
+      console.log('[Test] ROM 加载成功:', buf.length, '字节');
+
+      // 查找所有 Type 2 资源
+      const ptrTableBase = 0x000B0000;
+      for (let entry = 0; entry < 256; entry++) {
+        const ptr = romReader.readLong(ptrTableBase + entry * 4);
+        if (ptr === 0 || ptr >= buf.length) continue;
+        const typeCode = romReader.readByte(ptr);
+        if (typeCode === 2) {
+          const b1 = romReader.readByte(ptr + 1);
+          const compressed = (b1 & 0x80) !== 0;
+          const planes = b1 & 0x7f;
+          const size = compressed ? romReader.readWord(ptr + 10) : romReader.readWord(ptr + 2);
+          type2Entries.push({ entry, ptr, planes, compressed, size });
+        }
+      }
+
+      console.log('[Test] 找到', type2Entries.length, '个 Type 2 资源');
+
+      // 填充下拉列表
+      for (const e of type2Entries) {
+        const opt = document.createElement('option');
+        opt.value = e.entry;
+        opt.textContent = `Entry ${e.entry} @ 0x${e.ptr.toString(16)} (planes=${e.planes}, size=${e.size})`;
+        entrySelect.appendChild(opt);
+      }
+
+      info.innerHTML = `<p>ROM 加载成功 (${(buf.length / 1024 / 1024).toFixed(2)} MB)，找到 ${type2Entries.length} 个 Type 2 资源</p><p>选择资源并点击"渲染选中"</p>`;
+    } catch (err) {
+      console.error('[Test] ROM 加载失败:', err);
+      info.innerHTML = '<p style="color:red;">ROM 加载失败: ' + err.message + '</p>';
+    }
+
+    function renderEntry(idx) {
+      if (!romReader || idx < 0 || idx >= type2Entries.length) return;
+
+      if (running) {
+        engine.stop();
+        running = false;
+      }
+
+      const e = type2Entries[idx];
+      console.log('[Test] 渲染 Entry', e.entry, '@ 0x' + e.ptr.toString(16));
+
+      // 清空 VRAM
+      for (let i = 0; i < 0x10000; i++) {
+        engine.vdp.writeVRAM(i, 0);
+      }
+
+      // 解压
+      const result = decompressType2(romReader, e.ptr);
+      console.log('[Test] 解压:', result.size, '字节 =', result.size / 32, 'tiles');
+
+      // 设置灰阶调色板
+      for (let i = 0; i < 16; i++) {
+        const v = i * 0x111;
+        engine.vdp.writeCRAM(i, v & 0x0EEE);
+      }
+
+      // 写入 tile 数据 (从 tile 1 开始)
+      for (let i = 0; i < result.data.length; i++) {
+        engine.vdp.writeVRAM(32 + i, result.data[i]);
+      }
+
+      const numTiles = Math.floor(result.data.length / 32);
+      const cols = 20;
+      const planeABase = engine.vdp.planeABaseAddr;
+
+      // 填充 Plane A nametable
+      for (let t = 0; t < numTiles; t++) {
+        const tx = t % cols;
+        const ty = Math.floor(t / cols);
+        if (ty >= 28) break;
+        const offsetX = 10;
+        const offsetY = 0;
+        const addr = planeABase + ((ty + offsetY) * 64 + (tx + offsetX)) * 2;
+        const word = (t + 1) & 0x07FF;
+        engine.vdp.writeVRAM(addr, (word >> 8) & 0xff);
+        engine.vdp.writeVRAM(addr + 1, word & 0xff);
+      }
+
+      engine.vdp.displayEnabled = true;
+      engine.start(() => {}, canvas);
+      running = true;
+
+      info.innerHTML =
+        `<p>Entry ${e.entry} (planes=${e.planes}, compressed=${e.compressed})</p>` +
+        `<p>解压大小: ${result.size} 字节 = ${numTiles} tiles</p>` +
+        `<p>ROM 地址: 0x${e.ptr.toString(16).toUpperCase()}</p>`;
+    }
+
+    btnRender.addEventListener('click', () => {
+      const idx = entrySelect.selectedIndex;
+      renderEntry(idx);
+    });
+
+    btnNext.addEventListener('click', () => {
+      let idx = entrySelect.selectedIndex + 1;
+      if (idx >= type2Entries.length) idx = 0;
+      entrySelect.selectedIndex = idx;
+      renderEntry(idx);
+    });
+
+    btnStop.addEventListener('click', () => {
+      engine.stop();
+      running = false;
+    });
+
+    // 自动渲染第一个
+    if (type2Entries.length > 0) {
+      renderEntry(0);
+    }
+  </script>
+</body>
+</html>

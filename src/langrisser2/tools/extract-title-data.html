@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>标题画面数据提取工具</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #fff; margin: 20px; }
+    #container { display: flex; gap: 20px; }
+    #game { width: 640px; height: 448px; border: 2px solid #444; }
+    #panel { flex: 1; }
+    button { padding: 10px 20px; margin: 5px; font-size: 14px; cursor: pointer;
+             background: #444; color: #fff; border: 1px solid #666; border-radius: 4px; }
+    button:hover { background: #555; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    #info { background: #222; padding: 15px; border-radius: 6px; margin-top: 10px;
+            font-family: monospace; font-size: 12px; white-space: pre-wrap;
+            max-height: 400px; overflow-y: auto; }
+    input[type=file] { margin: 10px 0; }
+    .section { margin-bottom: 20px; }
+    h2 { color: #8cf; margin-top: 0; }
+    .step { color: #fc8; }
+    .ok { color: #8f8; }
+    .err { color: #f88; }
+  </style>
+</head>
+<body>
+  <h1>标题画面数据提取工具</h1>
+  <p>用 Genesis.js 模拟器加载 ROM，运行到标题画面后导出 VRAM/CRAM/VSRAM 数据</p>
+
+  <div id="container">
+    <div>
+      <div id="game"></div>
+      <p style="font-size: 12px; color: #888;">
+        操作: 方向键移动, Enter=Start, Z=Mode, A=A, S=B, D=C, Q=X, W=Y, E=Z<br>
+        Ctrl+1=存档, Ctrl+2=读档
+      </p>
+    </div>
+
+    <div id="panel">
+      <div class="section">
+        <h2>1. 加载 ROM</h2>
+        <input type="file" id="romFile" accept=".bin,.md,.32x">
+        <br>
+        <button id="btnLoad" disabled>加载 ROM</button>
+      </div>
+
+      <div class="section">
+        <h2>2. 运行到标题画面</h2>
+        <button id="btnRun" disabled>运行/暂停</button>
+        <button id="btnStepFrame" disabled>单帧</button>
+        <button id="btnReset" disabled>重置</button>
+        <p class="step">等待出现 "LANGISSER Ⅱ" 标题画面后再导出</p>
+      </div>
+
+      <div class="section">
+        <h2>3. 导出数据</h2>
+        <button id="btnSaveState" disabled>保存 State</button>
+        <button id="btnDumpVRAM" disabled>导出 VRAM/CRAM/VSRAM</button>
+        <button id="btnDownloadJSON" disabled>下载 JSON</button>
+      </div>
+
+      <div id="info">等待操作...</div>
+    </div>
+  </div>
+
+  <script src="Genesis.js"></script>
+  <script>
+    const romFileInput = document.getElementById('romFile');
+    const btnLoad = document.getElementById('btnLoad');
+    const btnRun = document.getElementById('btnRun');
+    const btnStepFrame = document.getElementById('btnStepFrame');
+    const btnReset = document.getElementById('btnReset');
+    const btnSaveState = document.getElementById('btnSaveState');
+    const btnDumpVRAM = document.getElementById('btnDumpVRAM');
+    const btnDownloadJSON = document.getElementById('btnDownloadJSON');
+    const infoDiv = document.getElementById('info');
+
+    let romData = null;
+    let emulatorRunning = false;
+    let dumpData = null;
+
+    function log(msg, cls = '') {
+      const span = document.createElement('div');
+      if (cls) span.className = cls;
+      span.textContent = msg;
+      infoDiv.appendChild(span);
+      infoDiv.scrollTop = infoDiv.scrollHeight;
+    }
+
+    // ============================================================
+    // ROM 文件选择
+    // ============================================================
+    romFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        romData = new Uint8Array(ev.target.result);
+        btnLoad.disabled = false;
+        log(`ROM 已加载: ${file.name} (${romData.length} 字节)`);
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    // ============================================================
+    // 加载 ROM 到模拟器
+    // ============================================================
+    btnLoad.addEventListener('click', () => {
+      if (!romData) return;
+
+      log('正在初始化模拟器...');
+
+      embedGenesis({
+        container: 'game',
+        name: romFileInput.files[0].name,
+        rom: romData.buffer,
+        soundEnabled: false,
+        showMobileControls: false,
+        cbStarted: () => {
+          log('模拟器已启动', 'ok');
+          btnRun.disabled = false;
+          btnStepFrame.disabled = false;
+          btnReset.disabled = false;
+          btnSaveState.disabled = false;
+          btnDumpVRAM.disabled = false;
+          emulatorRunning = true;
+          btnRun.textContent = '暂停';
+        },
+        player1: {
+          up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight',
+          start: 'Enter', mode: 'KeyZ',
+          a: 'KeyA', b: 'KeyS', c: 'KeyD',
+          x: 'KeyQ', y: 'KeyW', z: 'KeyE',
+        },
+        player2: {
+          up: 'KeyI', down: 'KeyK', left: 'KeyJ', right: 'KeyL',
+          start: 'KeyH', mode: 'KeyV',
+          a: 'KeyB', b: 'KeyN', c: 'KeyM',
+          x: 'KeyU', y: 'KeyO', z: 'KeyP',
+        },
+      });
+    });
+
+    // ============================================================
+    // 运行/暂停
+    // ============================================================
+    btnRun.addEventListener('click', () => {
+      // Genesis.js 没有直接的暂停函数，我们用 reset 来模拟
+      // 实际上运行是自动的，这里只做状态切换
+      emulatorRunning = !emulatorRunning;
+      btnRun.textContent = emulatorRunning ? '暂停' : '运行';
+      log(emulatorRunning ? '模拟器运行中' : '模拟器已暂停');
+      // 注意: Genesis.js 可能没有暂停功能，这里只是标记
+    });
+
+    btnStepFrame.addEventListener('click', () => {
+      if (window.GENESIS_PICO_RUN_FRAME) {
+        window.GENESIS_PICO_RUN_FRAME();
+        log('单帧执行');
+      }
+    });
+
+    btnReset.addEventListener('click', () => {
+      if (window.GENESIS_PICO_RESET) {
+        window.GENESIS_PICO_RESET();
+        log('模拟器已重置', 'ok');
+      }
+    });
+
+    // ============================================================
+    // 保存 State
+    // ============================================================
+    btnSaveState.addEventListener('click', () => {
+      if (window.GENESIS_PICO_STATE_SAVE && window.GENESIS_PICO_GET_STATE_BUFFER &&
+          window.GENESIS_PICO_GET_STATE_SIZE) {
+        const ok = window.GENESIS_PICO_STATE_SAVE();
+        if (ok) {
+          const statePtr = window.GENESIS_PICO_GET_STATE_BUFFER();
+          const stateSize = window.GENESIS_PICO_GET_STATE_SIZE();
+          log(`State 保存成功, size=${stateSize}, ptr=0x${statePtr.toString(16)}`, 'ok');
+
+          // 读取 state buffer
+          const stateData = new Uint8Array(window.Module.HEAPU8.buffer, statePtr, stateSize);
+          log(`State 前 32 字节: ${Array.from(stateData.slice(0, 32)).map(b => b.toString(16).padStart(2, '0')).join(' ')}`);
+
+          // 下载 state 文件
+          const blob = new Blob([stateData], { type: 'application/octet-stream' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'title-state.bin';
+          a.click();
+          URL.revokeObjectURL(url);
+          log('State 文件已下载: title-state.bin');
+        } else {
+          log('State 保存失败', 'err');
+        }
+      } else {
+        log('State 功能不可用', 'err');
+      }
+    });
+
+    // ============================================================
+    // 直接导出 VRAM/CRAM/VSRAM
+    // ============================================================
+    btnDumpVRAM.addEventListener('click', () => {
+      log('尝试直接访问 VDP 内存...');
+
+      // 方法1: 通过 state buffer 提取
+      if (window.GENESIS_PICO_STATE_SAVE && window.GENESIS_PICO_GET_STATE_BUFFER) {
+        window.GENESIS_PICO_STATE_SAVE();
+        const statePtr = window.GENESIS_PICO_GET_STATE_BUFFER();
+        const stateSize = window.GENESIS_PICO_GET_STATE_SIZE();
+        const stateData = new Uint8Array(window.Module.HEAPU8.buffer, statePtr, stateSize);
+
+        log(`State 大小: ${stateSize} 字节`);
+        log(`State 前 64 字节:\n${formatHex(stateData.slice(0, 64), 0)}`);
+
+        // ============================================================
+        // 分析 state buffer 结构，提取 VRAM/CRAM/VSRAM
+        // ============================================================
+        // Genesis VDP 应该有:
+        //   VRAM: 64KB (0x10000)
+        //   CRAM: 128 字节
+        //   VSRAM: 80 字节
+        //   寄存器: 24+ 字节
+        //
+        // 我们需要找到这些区域在 state buffer 中的偏移
+
+        // 策略:
+        // 1. 搜索特征: 假设 VRAM 是 64KB 且对齐到某个边界
+        // 2. 或者用已知数据来定位 (比如如果我们知道 VRAM 0 处的数据)
+
+        // 先尝试几种常见偏移
+        const candidates = [];
+
+        // 常见的 state 结构开头是 VDP 相关的
+        // 让我们搜索 64KB 全零或特定模式的区域
+        // 或者找非零数据
+
+        log('\n搜索 VRAM 候选位置...');
+
+        // 方法: 找 64KB 的区域，看看结构
+        // 实际上，让我们先下载完整 state，然后用 Node.js 分析
+        dumpData = {
+          state: Array.from(stateData),
+          stateSize: stateSize,
+        };
+
+        log(`完整 state 已保存 (${stateSize} 字节)`);
+        log('点击"下载 JSON"获取完整数据');
+        btnDownloadJSON.disabled = false;
+      }
+    });
+
+    // ============================================================
+    // 下载 JSON
+    // ============================================================
+    btnDownloadJSON.addEventListener('click', () => {
+      if (!dumpData) return;
+      const json = JSON.stringify(dumpData);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'title-screen-dump.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      log('JSON 已下载: title-screen-dump.json', 'ok');
+    });
+
+    // ============================================================
+    // 辅助: hex dump
+    // ============================================================
+    function formatHex(data, startAddr) {
+      let str = '';
+      for (let i = 0; i < data.length; i += 16) {
+        const addr = (startAddr + i).toString(16).padStart(4, '0');
+        const bytes = [];
+        const chars = [];
+        for (let j = 0; j < 16 && i + j < data.length; j++) {
+          const b = data[i + j];
+          bytes.push(b.toString(16).padStart(2, '0'));
+          chars.push(b >= 32 && b < 127 ? String.fromCharCode(b) : '.');
+        }
+        str += `${addr}: ${bytes.join(' ').padEnd(48)} ${chars.join('')}\n`;
+      }
+      return str;
+    }
+  </script>
+</body>
+</html>

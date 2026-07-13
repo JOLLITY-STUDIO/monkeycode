@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>Langrisser II - VDP 数据导出工具</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Microsoft YaHei', sans-serif;
+    background: #1a1a2e;
+    color: #eee;
+    padding: 20px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 { color: #e94560; margin-bottom: 20px; font-size: 24px; }
+  h2 { color: #0f3460; background: #e94560; padding: 8px 16px; margin: 20px 0 10px; border-radius: 4px; font-size: 16px; }
+  .section {
+    background: #16213e;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+  }
+  .step { margin-bottom: 15px; padding-left: 20px; border-left: 3px solid #e94560; }
+  .step-title { font-weight: bold; color: #e94560; margin-bottom: 5px; }
+  button {
+    background: #e94560;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    margin: 5px;
+  }
+  button:hover { background: #ff6b6b; }
+  button:disabled { background: #555; cursor: not-allowed; }
+  .emulator-container {
+    text-align: center;
+    margin: 20px 0;
+  }
+  .status {
+    background: #0f3460;
+    padding: 10px;
+    border-radius: 4px;
+    margin: 10px 0;
+    font-family: monospace;
+  }
+  .data-preview {
+    background: #0a0a1a;
+    padding: 10px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 12px;
+    max-height: 200px;
+    overflow: auto;
+    margin: 10px 0;
+  }
+  canvas { border: 2px solid #e94560; max-width: 100%; }
+  .info-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 10px;
+    margin: 10px 0;
+  }
+  .info-item {
+    background: #0f3460;
+    padding: 10px;
+    border-radius: 4px;
+  }
+  .info-label { font-size: 12px; color: #aaa; }
+  .info-value { font-size: 18px; font-weight: bold; color: #e94560; }
+  code { background: #0a0a1a; padding: 2px 6px; border-radius: 3px; font-family: monospace; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>🎮 Langrisser II - VDP 数据导出工具</h1>
+
+  <div class="section">
+    <h2>使用步骤</h2>
+    <div class="step">
+      <div class="step-title">第 1 步: 加载 ROM</div>
+      <div>选择 <code>Langrisser II (Japan).md</code> ROM 文件</div>
+      <input type="file" id="romInput" accept=".md,.bin,.smd">
+    </div>
+    <div class="step">
+      <div class="step-title">第 2 步: 进入标题画面</div>
+      <div>等待游戏启动，直到看到"兰古瑞萨"标题画面</div>
+      <div>按 <code>Enter</code> 跳过开场动画，按 <code>Space</code> 跳过过场</div>
+    </div>
+    <div class="step">
+      <div class="step-title">第 3 步: 导出数据</div>
+      <div>点击下方按钮导出 VRAM/CRAM/VSRAM 数据</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>模拟器</h2>
+    <div class="emulator-container">
+      <canvas id="screen" width="640" height="480"></canvas>
+    </div>
+    <div class="status" id="status">等待加载 ROM...</div>
+  </div>
+
+  <div class="section">
+    <h2>VDP 状态</h2>
+    <div class="info-grid">
+      <div class="info-item">
+        <div class="info-label">VRAM 大小</div>
+        <div class="info-value" id="vramSize">-</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">CRAM 大小</div>
+        <div class="info-value" id="cramSize">-</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">VSRAM 大小</div>
+        <div class="info-value" id="vsramSize">-</div>
+      </div>
+      <div class="info-item">
+        <div class="info-label">帧数</div>
+        <div class="info-value" id="frameCount">0</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <h2>数据导出</h2>
+    <div>
+      <button id="btnDumpVdp" disabled>📥 导出 VDP 数据 (JSON)</button>
+      <button id="btnDumpState" disabled>💾 导出完整 State</button>
+      <button id="btnPreview" disabled>👁 预览当前画面</button>
+    </div>
+    <div class="data-preview" id="dataPreview">等待导出...</div>
+  </div>
+
+  <div class="section">
+    <h2>画面预览</h2>
+    <canvas id="previewCanvas" width="512" height="448" style="background:#000;"></canvas>
+  </div>
+</div>
+
+<script src="Genesis.js"></script>
+<script>
+// ============================================================
+// 工具函数
+// ============================================================
+
+function status(msg) {
+  document.getElementById('status').textContent = msg;
+  console.log('[Status]', msg);
+}
+
+function hexDump(data, offset, length) {
+  let lines = [];
+  for (let row = 0; row < Math.min(length, 256); row += 16) {
+    const off = offset + row;
+    let hex = '';
+    let ascii = '';
+    for (let col = 0; col < 16; col++) {
+      const b = data[off + col] & 0xff;
+      hex += b.toString(16).padStart(2, '0').toUpperCase() + ' ';
+      ascii += (b >= 32 && b < 127) ? String.fromCharCode(b) : '.';
+    }
+    lines.push(`${off.toString(16).padStart(6, '0')}: ${hex} |${ascii}|`);
+  }
+  return lines.join('\n');
+}
+
+// ============================================================
+// Genesis 模拟器初始化
+// ============================================================
+
+const canvas = document.getElementById('screen');
+let genesis = null;
+let frameCount = 0;
+let vdpData = null;
+
+document.getElementById('romInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  status('正在加载 ROM: ' + file.name);
+  
+  const reader = new FileReader();
+  reader.onload = function(ev) {
+    const romData = new Uint8Array(ev.target.result);
+    status('ROM 加载成功，大小: ' + romData.length + ' 字节');
+    
+    // 初始化 Genesis 模拟器
+    try {
+      genesis = new Genesis();
+      genesis.load_rom(romData);
+      genesis.init(canvas);
+      genesis.start();
+      
+      status('模拟器启动成功！等待游戏运行...');
+      
+      document.getElementById('btnDumpVdp').disabled = false;
+      document.getElementById('btnDumpState').disabled = false;
+      document.getElementById('btnPreview').disabled = false;
+      
+      // 定时更新状态
+      setInterval(updateStatus, 1000);
+      
+    } catch (err) {
+      status('初始化失败: ' + err.message);
+      console.error(err);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+function updateStatus() {
+  if (!genesis) return;
+  
+  frameCount++;
+  document.getElementById('frameCount').textContent = frameCount;
+  
+  // 尝试获取 VDP 数据
+  try {
+    const vram = getVram();
+    const cram = getCram();
+    const vsram = getVsram();
+    
+    document.getElementById('vramSize').textContent = vram ? vram.length + ' B' : '-';
+    document.getElementById('cramSize').textContent = cram ? cram.length + ' B' : '-';
+    document.getElementById('vsramSize').textContent = vsram ? vsram.length + ' B' : '-';
+  } catch (e) {
+    // 忽略
+  }
+}
+
+// ============================================================
+// VDP 数据提取
+// ============================================================
+
+function getVram() {
+  if (!genesis) return null;
+  // 尝试不同的访问路径
+  if (genesis.vdp && genesis.vdp.vram) return genesis.vdp.vram;
+  if (genesis.vdp && genesis.vdp.ram) return genesis.vdp.ram;
+  if (genesis.vdp && genesis.vdp.memory) return genesis.vdp.memory;
+  // Genesis.js 可能是 vdp.vram
+  // 也可能存放在其他地方
+  return null;
+}
+
+function getCram() {
+  if (!genesis) return null;
+  if (genesis.vdp && genesis.vdp.cram) return genesis.vdp.cram;
+  if (genesis.vdp && genesis.vdp.palette) return genesis.vdp.palette;
+  if (genesis.vdp && genesis.vdp.color_ram) return genesis.vdp.color_ram;
+  return null;
+}
+
+function getVsram() {
+  if (!genesis) return null;
+  if (genesis.vdp && genesis.vdp.vsram) return genesis.vdp.vsram;
+  if (genesis.vdp && genesis.vdp.scroll) return genesis.vdp.scroll;
+  return null;
+}
+
+function getRegisters() {
+  if (!genesis) return null;
+  if (genesis.vdp && genesis.vdp.regs) return genesis.vdp.regs;
+  if (genesis.vdp && genesis.vdp.register) return genesis.vdp.register;
+  return null;
+}
+
+// ============================================================
+// 数据导出
+// ============================================================
+
+document.getElementById('btnDumpVdp').addEventListener('click', function() {
+  if (!genesis) return;
+  
+  status('正在导出 VDP 数据...');
+  
+  const vram = getVram();
+  const cram = getCram();
+  const vsram = getVsram();
+  const regs = getRegisters();
+  
+  if (!vram) {
+    status('无法获取 VRAM！尝试查找 Genesis.js 内部结构...');
+    // 尝试通过 state 获取
+    if (typeof downloadStateGenesis === 'function') {
+      const state = downloadStateGenesis();
+      status('通过 state 导出，大小: ' + (state ? state.byteLength : 0));
+      document.getElementById('dataPreview').textContent = 
+        'State 大小: ' + (state ? state.byteLength : 0) + ' 字节\n' +
+        '请使用"导出完整 State"按钮';
+      return;
+    }
+    return;
+  }
+  
+  // 构建导出数据
+  const exportData = {
+    version: 1,
+    description: 'Langrisser II MD - VDP Dump',
+    timestamp: new Date().toISOString(),
+    frame: frameCount,
+    vram: Array.from(vram),
+    cram: Array.from(cram || []),
+    vsram: Array.from(vsram || []),
+    registers: regs ? Array.from(regs) : []
+  };
+  
+  const jsonStr = JSON.stringify(exportData);
+  const blob = new Blob([jsonStr], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'langrisser2-title-vdp.json';
+  a.click();
+  
+  URL.revokeObjectURL(url);
+  
+  document.getElementById('dataPreview').textContent =
+    `VRAM: ${vram.length} 字节\n` +
+    `CRAM: ${cram ? cram.length : 0} 字节\n` +
+    `VSRAM: ${vsram ? vsram.length : 0} 字节\n` +
+    `寄存器: ${regs ? regs.length : 0} 个\n` +
+    `JSON 大小: ${jsonStr.length} 字节\n\n` +
+    'VRAM 前 256 字节:\n' +
+    hexDump(vram, 0, 256);
+  
+  status('VDP 数据导出完成！');
+  
+  // 同时保存到全局变量供预览使用
+  vdpData = exportData;
+});
+
+document.getElementById('btnDumpState').addEventListener('click', function() {
+  if (typeof downloadStateGenesis === 'function') {
+    const state = downloadStateGenesis();
+    if (state) {
+      const blob = new Blob([state], { type: 'application/octet-stream' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'langrisser2-title.state';
+      a.click();
+      URL.revokeObjectURL(url);
+      status('完整 State 已导出！大小: ' + state.byteLength + ' 字节');
+    }
+  } else {
+    status('downloadStateGenesis 函数不存在');
+  }
+});
+
+// ============================================================
+// 画面预览 (用导出的 VRAM/CRAM 直接渲染)
+// ============================================================
+
+document.getElementById('btnPreview').addEventListener('click', function() {
+  const vram = getVram();
+  const cram = getCram();
+  
+  if (!vram || !cram) {
+    status('无法获取 VRAM/CRAM 数据');
+    return;
+  }
+  
+  renderPreview(vram, cram);
+});
+
+function renderPreview(vram, cram) {
+  const canvas = document.getElementById('previewCanvas');
+  const ctx = canvas.getContext('2d');
+  
+  const width = 320;
+  const height = 224;
+  const imgData = ctx.createImageData(width, height);
+  const pixels = imgData.data;
+  
+  // 先获取调色板
+  const palette = [];
+  for (let i = 0; i < 64; i++) {
+    const color = ((cram[i * 2] & 0xff) << 8) | (cram[i * 2 + 1] & 0xff);
+    const r = (color & 0x0E00) >> 8;
+    const g = (color & 0x00E0) >> 4;
+    const b = color & 0x000E;
+    palette.push([r * 17, g * 17, b * 17, 255]);
+  }
+  
+  // 渲染 Plane A nametable (假设在 0xC000)
+  const planeAAddr = 0xC000;
+  const tileBase = 0;
+  
+  for (let tileY = 0; tileY < 28; tileY++) {
+    for (let tileX = 0; tileX < 40; tileX++) {
+      const ntAddr = planeAAddr + (tileY * 64 + tileX) * 2;
+      const attr = ((vram[ntAddr] & 0xff) << 8) | (vram[ntAddr + 1] & 0xff);
+      
+      const tileIndex = attr & 0x07FF;
+      const hFlip = !!(attr & 0x0800);
+      const vFlip = !!(attr & 0x1000);
+      const palIndex = (attr & 0x6000) >> 13;
+      const priority = !!(attr & 0x8000);
+      
+      // 绘制 tile
+      for (let py = 0; py < 8; py++) {
+        const srcY = vFlip ? (7 - py) : py;
+        for (let px = 0; px < 8; px++) {
+          const srcX = hFlip ? (7 - px) : px;
+          
+          const tileAddr = tileBase + tileIndex * 32;
+          const rowOffset = srcY * 4;
+          
+          // 4bpp: 每个像素占 4 位，每个平面 1 位
+          let pixelVal = 0;
+          for (let plane = 0; plane < 4; plane++) {
+            const byte = vram[tileAddr + rowOffset + plane] & 0xff;
+            const bit = (byte >> (7 - srcX)) & 1;
+            pixelVal |= (bit << plane);
+          }
+          
+          const dstX = tileX * 8 + px;
+          const dstY = tileY * 8 + py;
+          
+          if (dstX < width && dstY < height) {
+            const colorIdx = palIndex * 16 + pixelVal;
+            const c = palette[colorIdx] || [0, 0, 0, 255];
+            
+            if (pixelVal !== 0 || palIndex !== 0) {
+              const offset = (dstY * width + dstX) * 4;
+              pixels[offset] = c[0];
+              pixels[offset + 1] = c[1];
+              pixels[offset + 2] = c[2];
+              pixels[offset + 3] = 255;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  ctx.putImageData(imgData, 0, 0);
+  status('画面预览完成 (Plane A only)');
+}
+</script>
+</body>
+</html>

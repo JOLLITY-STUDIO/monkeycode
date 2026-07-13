@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>标题画面数据提取 - 自动版</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #111; color: #fff; margin: 20px; }
+    #game { width: 640px; height: 448px; border: 2px solid #444; }
+    button { padding: 10px 20px; margin: 5px; font-size: 14px; cursor: pointer;
+             background: #444; color: #fff; border: 1px solid #666; border-radius: 4px; }
+    button:hover { background: #555; }
+    button:disabled { opacity: 0.5; cursor: not-allowed; }
+    #info { background: #222; padding: 15px; border-radius: 6px; margin-top: 10px;
+            font-family: monospace; font-size: 12px; white-space: pre-wrap;
+            max-height: 300px; overflow-y: auto; width: 600px; }
+    input[type=file] { margin: 10px 0; }
+    .ok { color: #8f8; }
+    .err { color: #f88; }
+    .step { color: #fc8; }
+  </style>
+</head>
+<body>
+  <h1>标题画面数据自动提取工具</h1>
+  <p>加载 ROM 后自动运行到标题画面，然后导出 VRAM/CRAM/VSRAM 数据</p>
+
+  <div id="game"></div>
+
+  <div>
+    <input type="file" id="romFile" accept=".bin,.md">
+    <br>
+    <button id="btnStart" disabled>开始自动提取</button>
+    <button id="btnDownloadJSON" disabled>下载 JSON 数据</button>
+    <button id="btnSkipAhead" disabled>快进 60 帧</button>
+  </div>
+
+  <div id="info">等待加载 ROM...</div>
+
+  <script src="Genesis.js"></script>
+  <script>
+    const romFileInput = document.getElementById('romFile');
+    const btnStart = document.getElementById('btnStart');
+    const btnDownloadJSON = document.getElementById('btnDownloadJSON');
+    const btnSkipAhead = document.getElementById('btnSkipAhead');
+    const infoDiv = document.getElementById('info');
+
+    let romData = null;
+    let titleData = null;
+    let frameCount = 0;
+    let autoExtractActive = false;
+
+    function log(msg, cls = '') {
+      const span = document.createElement('div');
+      if (cls) span.className = cls;
+      span.textContent = `[${String(frameCount).padStart(5, '0')}帧] ${msg}`;
+      infoDiv.appendChild(span);
+      infoDiv.scrollTop = infoDiv.scrollHeight;
+    }
+
+    // ROM 文件选择
+    romFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        romData = new Uint8Array(ev.target.result);
+        btnStart.disabled = false;
+        log(`ROM 已加载: ${file.name} (${romData.length} 字节)`, 'ok');
+      };
+      reader.readAsArrayBuffer(file);
+    });
+
+    // 开始自动提取
+    btnStart.addEventListener('click', () => {
+      if (!romData) return;
+      autoExtractActive = true;
+      log('开始自动提取...', 'step');
+
+      embedGenesis({
+        container: 'game',
+        name: romFileInput.files[0].name,
+        rom: romData.buffer,
+        soundEnabled: false,
+        showMobileControls: false,
+        cbStarted: () => {
+          log('模拟器已启动，等待标题画面...', 'ok');
+          btnSkipAhead.disabled = false;
+          // 开始轮询
+          requestAnimationFrame(checkTitleScreen);
+        },
+        player1: {
+          up: 'ArrowUp', down: 'ArrowDown', left: 'ArrowLeft', right: 'ArrowRight',
+          start: 'Enter', mode: 'KeyZ',
+          a: 'KeyA', b: 'KeyS', c: 'KeyD',
+          x: 'KeyQ', y: 'KeyW', z: 'KeyE',
+        },
+      });
+    });
+
+    // 快进按钮
+    btnSkipAhead.addEventListener('click', () => {
+      if (!window.GENESIS_PICO_RUN_FRAME) return;
+      for (let i = 0; i < 60; i++) {
+        window.GENESIS_PICO_RUN_FRAME();
+        frameCount++;
+      }
+      log('快进 60 帧', 'step');
+    });
+
+    // 检测标题画面
+    function checkTitleScreen() {
+      if (!autoExtractActive) return;
+      if (!window.GENESIS_PICO_RUN_FRAME) {
+        requestAnimationFrame(checkTitleScreen);
+        return;
+      }
+
+      // 运行一帧
+      window.GENESIS_PICO_RUN_FRAME();
+      frameCount++;
+
+      // 每 30 帧打印一次
+      if (frameCount % 30 === 0) {
+        log(`已运行 ${frameCount} 帧...`);
+      }
+
+      // 300 帧后尝试提取数据 (约 5 秒，应该到标题画面了)
+      if (frameCount === 300) {
+        log('5秒已过，尝试提取 state...', 'step');
+        extractData();
+        return;
+      }
+
+      requestAnimationFrame(checkTitleScreen);
+    }
+
+    // 提取数据
+    function extractData() {
+      if (!window.GENESIS_PICO_STATE_SAVE || !window.GENESIS_PICO_GET_STATE_BUFFER) {
+        log('State 功能不可用', 'err');
+        return;
+      }
+
+      const ok = window.GENESIS_PICO_STATE_SAVE();
+      if (!ok) {
+        log('State 保存失败', 'err');
+        return;
+      }
+
+      const statePtr = window.GENESIS_PICO_GET_STATE_BUFFER();
+      const stateSize = window.GENESIS_PICO_GET_STATE_SIZE();
+      log(`State 保存成功: ${stateSize} 字节`, 'ok');
+
+      const stateData = new Uint8Array(window.Module.HEAPU8.buffer, statePtr, stateSize);
+
+      // ============================================================
+      // 分析 state buffer，找出 VRAM/CRAM/VSRAM
+      // ============================================================
+      // Genesis VDP:
+      //   VRAM = 64KB (0x10000)
+      //   CRAM = 128 字节
+      //   VSRAM = 80 字节
+      //
+      // 策略: 找 64KB 的连续区域，看看结构像不像 VRAM
+      // 或者找特征: 比如 tile 数据的特征
+
+      log('正在分析 state 结构...', 'step');
+
+      // 方法: 扫描 state buffer，搜索可能的 VRAM 位置
+      // VRAM 通常有 0xC000 开始的 nametable 数据
+      // 我们可以找 "看起来像" nametable 的数据
+
+      // 先试试几个常见偏移 (很多模拟器把 VRAM 放在 state 开头附近)
+      const candidates = [];
+
+      // 常见的 state 结构:
+      //  - 68K 寄存器 (64 字节左右)
+      //  - VRAM (64KB)
+      //  - CRAM (128B)
+      //  - VSRAM (80B)
+      //  - VDP 寄存器
+      //  - 等等
+
+      // 让我们假设 VRAM 在某个位置，验证一下
+      // 验证方法: 在 VRAM 0xC000 (Plane A nametable) 处，数据应该是 16-bit 的 tile 索引
+      // 标题画面的 nametable 应该有非零数据
+
+      // 扫描 state buffer，找可能的 Plane A nametable 位置
+      // Plane A nametable = 64×32×2 = 4096 字节
+      // 特征: 很多相似的值 (tile 索引)
+
+      function findVRAM() {
+        // 尝试多种方法找 VRAM
+        // 方法1: VRAM 大小为 64KB，找连续的、有结构的区域
+
+        // 方法2: 假设 state 开头是 CPU 状态，然后是 VDP 状态
+        // 常见模拟器的布局:
+        //   0x0000: 68K 寄存器/状态
+        //   0x0100: VDP 寄存器
+        //   0x0200: VRAM
+        //   或者其他顺序
+
+        // 让我们从几个常见偏移开始试
+        const testOffsets = [
+          0x0000, 0x0100, 0x0200, 0x0400, 0x0800, 0x0C00, 0x1000,
+          0x2000, 0x4000, 0x8000, 0x10000,
+        ];
+
+        for (const off of testOffsets) {
+          if (off + 0x10000 > stateSize) continue;
+
+          // 检查 0xC000 处的数据 (Plane A nametable)
+          // 标题画面应该有非零数据
+          const planeAOff = off + 0xC000;
+          let nonZeroCount = 0;
+          let totalCount = 0;
+          for (let i = 0; i < 0x1000; i += 2) {
+            const val = stateData[planeAOff + i] * 256 + stateData[planeAOff + i + 1];
+            if (val !== 0) nonZeroCount++;
+            totalCount++;
+          }
+
+          const ratio = nonZeroCount / totalCount;
+
+          // 如果 10%-90% 非零，可能是 nametable
+          if (ratio > 0.05 && ratio < 0.95) {
+            candidates.push({
+              offset: off,
+              planeANonZero: nonZeroCount,
+              planeARatio: ratio,
+              method: 'Plane A 非零率',
+            });
+          }
+        }
+
+        // 按候选度排序
+        candidates.sort((a, b) => Math.abs(a.planeARatio - 0.3) - Math.abs(b.planeARatio - 0.3));
+
+        return candidates.length > 0 ? candidates[0].offset : -1;
+      }
+
+      const vramOffset = findVRAM();
+
+      if (vramOffset < 0) {
+        log('未能自动定位 VRAM，需要手动分析', 'err');
+        log('下载完整 state 后用 Node.js 分析', 'step');
+        // 还是保存完整 state
+        titleData = {
+          state: Array.from(stateData),
+          stateSize: stateSize,
+          frameCount: frameCount,
+          note: 'VRAM 位置未确定，需要手动分析',
+        };
+        btnDownloadJSON.disabled = false;
+        return;
+      }
+
+      log(`VRAM 候选偏移: 0x${vramOffset.toString(16)}`, 'ok');
+      log(`  Plane A nametable 非零率: ${(candidates[0].planeARatio * 100).toFixed(1)}%`);
+
+      // 提取 VRAM
+      const vram = new Uint8Array(stateData.buffer, stateData.byteOffset + vramOffset, 0x10000);
+
+      // 尝试找 CRAM (VRAM 之后？)
+      // CRAM = 128 字节，每色 2 字节，共 64 色
+      // 特征: 高字节通常是 0x00 或 0x0E (因为只有 9 位颜色)
+      let cramOffset = -1;
+      for (let off = vramOffset + 0x10000; off < stateSize - 128; off += 16) {
+        let valid = true;
+        let nonZero = 0;
+        for (let i = 0; i < 128; i += 2) {
+          const high = stateData[off + i];
+          // 颜色高字节应该在 0x00-0x0E 之间
+          if ((high & 0xF0) !== 0 && (high & 0xF0) !== 0xE0) {
+            // 可能不是 CRAM
+            valid = false;
+            break;
+          }
+          if (stateData[off + i] !== 0 || stateData[off + i + 1] !== 0) nonZero++;
+        }
+        if (valid && nonZero > 5) {
+          cramOffset = off;
+          break;
+        }
+      }
+
+      // 如果找不到，试试常见位置
+      if (cramOffset < 0) {
+        cramOffset = vramOffset + 0x10000; // 假设 VRAM 后紧跟 CRAM
+      }
+
+      log(`CRAM 候选偏移: 0x${cramOffset.toString(16)}`, 'ok');
+
+      // 提取 CRAM
+      const cram = new Uint8Array(stateData.buffer, stateData.byteOffset + cramOffset, 128);
+
+      // 尝试找 VSRAM (CRAM 之后？)
+      // VSRAM = 80 字节 (40 个 word)
+      let vsramOffset = cramOffset + 128;
+      log(`VSRAM 候选偏移: 0x${vsramOffset.toString(16)} (假设)`, 'step');
+
+      const vsram = new Uint8Array(stateData.buffer, stateData.byteOffset + vsramOffset, 80);
+
+      // 组装数据
+      titleData = {
+        frameCount: frameCount,
+        vramOffset: vramOffset,
+        cramOffset: cramOffset,
+        vsramOffset: vsramOffset,
+        stateSize: stateSize,
+        vram: Array.from(vram),
+        cram: Array.from(cram),
+        vsram: Array.from(vsram),
+      };
+
+      log('数据提取完成！', 'ok');
+      log(`  VRAM: ${titleData.vram.length} 字节`);
+      log(`  CRAM: ${titleData.cram.length} 字节`);
+      log(`  VSRAM: ${titleData.vsram.length} 字节`);
+
+      // 打印一些调色板颜色验证
+      log('\n调色板 0 颜色预览:', 'step');
+      for (let i = 0; i < 16; i++) {
+        const color = (cram[i * 2] << 8) | cram[i * 2 + 1];
+        const r = (color >> 1) & 0xE;
+        const g = (color >> 5) & 0xE;
+        const b = (color >> 9) & 0xE;
+        log(`  [${i}] 0x${color.toString(16).padStart(4, '0')} = RGB(${r},${g},${b})`);
+      }
+
+      btnDownloadJSON.disabled = false;
+      autoExtractActive = false;
+    }
+
+    // 下载 JSON
+    btnDownloadJSON.addEventListener('click', () => {
+      if (!titleData) return;
+      const json = JSON.stringify(titleData);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'title-screen-data.json';
+      a.click();
+      URL.revokeObjectURL(url);
+      log('JSON 已下载: title-screen-data.json', 'ok');
+    });
+  </script>
+</body>
+</html>
