@@ -20,7 +20,7 @@
  * @see execution-trace.md "第一部分附录: VDP 硬件结构与初始配置"
  */
 
-import { VDP } from './vdp.js';
+import { VDP, cramToRGB } from './vdp.js';
 import { renderPlane } from './plane.js';
 import { renderSprites } from './sprite.js';
 
@@ -82,9 +82,7 @@ export function fillBackgroundColor(
   const bgColorIdx = vdp.backgroundColor;
   const cramValue = vdp.readCRAM(bgColorIdx);
 
-  const r = ((cramValue >> 1) & 0x0F) * 17;
-  const g = ((cramValue >> 5) & 0x0F) * 17;
-  const b = ((cramValue >> 9) & 0x0F) * 17;
+  const { r, g, b } = cramToRGB(cramValue);
 
   for (let i = 0; i < width * height; i++) {
     output[i * 4] = r;

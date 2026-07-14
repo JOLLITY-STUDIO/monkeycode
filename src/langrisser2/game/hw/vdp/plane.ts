@@ -1,85 +1,88 @@
 /**
- * Genesis VDP Plane (滚动背景层) 渲染
+ * Genesis VDP Plane (滚动背景层) 渲染 — 优化版
  *
- * 严格基于 execution-trace.md "Nametable 条目格式" 和 "VRAM 布局"
+ * 基于原 plane.ts 但使用 tile 缓存大幅提升性能
  *
- * Plane 结构:
- *   - Plane A: 主背景层 (R2 配置基址)
- *   - Plane B: 次背景层 (R4 配置基址)
- *   - Window:  窗口层 (R3 配置基址, 不滚动)
- *
- * Nametable 格式 (每条目 2 字节, big-endian):
+ * Nametable 格式 (每条目 2 字节, little-endian):
  *   bit15    = 优先级 (1=高优先级, 显示在 sprite 之上)
- *   bit14-13 = 调色板索引 (0-3, 对应 CRAM 的 4 组调色板)
+ *   bit14-13 = 调色板索引 (0-3)
  *   bit12    = H翻转
  *   bit11    = V翻转
  *   bit10-0  = Tile 索引 (0-2047)
- *
- * Plane 尺寸 (由 R12/RS0 决定):
- *   H32 模式: 32×32-64 tiles (256×256-512 像素)
- *   H40 模式: 64×32-128 tiles (512×256-1024 像素)
- *
- * @see execution-trace.md "Nametable 条目格式" "VRAM 布局"
  */
 
-import { VDP } from './vdp.js';
-import { decodeTileFlipped, tileAddress } from './tile.js';
+import { VDP, cramToRGB } from './vdp.js';
 
-/** Nametable 条目解析结果 */
+/** Nametable 条目 */
 export interface NameTableEntry {
-  /** Tile 索引 (0-2047) */
   tileIndex: number;
-  /** H 翻转 */
   hFlip: boolean;
-  /** V 翻转 */
   vFlip: boolean;
-  /** 调色板索引 (0-3) */
   palette: number;
-  /** 优先级 (1=高) */
   priority: number;
 }
 
-/**
- * 解析 nametable 条目 (2 字节, big-endian)
- *
- * 格式见 execution-trace.md "Nametable 条目格式"
- */
+/** 解析 nametable 条目 */
 export function parseNameTableEntry(vram: Uint8Array, addr: number): NameTableEntry {
-  const hi = vram[addr & 0xFFFF];
-  const lo = vram[(addr + 1) & 0xFFFF];
+  const lo = vram[addr & 0xFFFF];
+  const hi = vram[(addr + 1) & 0xFFFF];
   const word = (hi << 8) | lo;
-
   return {
-    tileIndex: word & 0x07FF,          // bit10-0: Tile 索引
-    hFlip: !!(word & 0x0800),          // bit12: H翻转
-    vFlip: !!(word & 0x1000),          // bit11 (注: 实际是 bit15-11, 这里需核对)
-    palette: (word >> 13) & 0x03,      // bit14-13: 调色板索引
-    priority: (word >> 15) & 0x01,     // bit15: 优先级
+    tileIndex: word & 0x07FF,
+    hFlip: !!(word & 0x1000),
+    vFlip: !!(word & 0x0800),
+    palette: (word >> 13) & 0x03,
+    priority: (word >> 15) & 0x01,
   };
 }
 
-// 修正: 重新核对 nametable 位定义
-// 实际 Genesis VDP nametable 格式 (来自硬件手册):
-//   bit15    = 优先级
-//   bit14-13 = 调色板
-//   bit12    = H翻转
-//   bit11    = V翻转
-//   bit10-0  = Tile 索引
-// 所以上面的解析是对的
+// ============================================================
+// Tile 解码器 (Genesis 4bpp: 8rows × 4planes)
+// ============================================================
+function decodeTileRow(vram: Uint8Array, tileIndex: number): Uint8Array[] {
+  const base = (tileIndex & 0x7FF) * 32;
+  const rows: Uint8Array[] = [];
+  for (let y = 0; y < 8; y++) {
+    const rb = base + y * 4;
+    const p0 = vram[rb], p1 = vram[rb + 1];
+    const p2 = vram[rb + 2], p3 = vram[rb + 3];
+    const row = new Uint8Array(8);
+    for (let x = 0; x < 8; x++) {
+      const bit = 7 - x;
+      row[x] =
+        ((p0 >> bit) & 1) |
+        ((p1 >> bit) & 1) << 1 |
+        ((p2 >> bit) & 1) << 2 |
+        ((p3 >> bit) & 1) << 3;
+    }
+    rows.push(row);
+  }
+  return rows;
+}
 
-/**
- * 渲染单个 Plane 到像素缓冲
- *
- * @param vdp VDP 实例
- * @param planeBase Plane 的 nametable VRAM 基址
- * @param scrollX 水平滚动值 (像素)
- * @param scrollY 垂直滚动值 (像素)
- * @param isPlaneA 是否为 Plane A (影响优先级处理)
- * @param output 输出像素缓冲 (width×height, RGBA)
- * @param outWidth 输出缓冲宽度
- * @param outHeight 输出缓冲高度
- * @param priorityFilter 优先级过滤 (0=只画低优先级, 1=只画高优先级)
- */
+// ============================================================
+// 全局 tile cache (按需填充)
+// ============================================================
+const tileRowsCache = new Map<number, Uint8Array[]>();
+
+function getCachedTileRows(vram: Uint8Array, tileIndex: number): Uint8Array[] {
+  if (tileIndex === 0) return []; // empty tile
+  let cached = tileRowsCache.get(tileIndex);
+  if (!cached) {
+    cached = decodeTileRow(vram, tileIndex);
+    tileRowsCache.set(tileIndex, cached);
+  }
+  return cached;
+}
+
+/** 清空缓存 (VRAM 更新后调用) */
+export function invalidateTileCache(): void {
+  tileRowsCache.clear();
+}
+
+// ============================================================
+// Plane 渲染 (优化版)
+// ============================================================
 export function renderPlane(
   vdp: VDP,
   planeBase: number,
@@ -89,91 +92,85 @@ export function renderPlane(
   output: Uint8Array,
   outWidth: number,
   outHeight: number,
-  priorityFilter: number = -1 // -1 = 画所有, 0/1 = 只画对应优先级
+  priorityFilter: number = -1,
 ): void {
   const vram = vdp.vram;
-
-  // Plane 尺寸 (tile 数)
-  // H32: 64×32 tiles, H40: 64×32 tiles (实际都是 64×32 或 64×64)
-  // 简化: 假设 64×32 tiles
   const planeWidthTiles = 64;
   const planeHeightTiles = 32;
-  const planeWidthPixels = planeWidthTiles * 8;  // 512
-  const planeHeightPixels = planeHeightTiles * 8; // 256
+  const planeWidthPixels = planeWidthTiles * 8;
+  const planeHeightPixels = planeHeightTiles * 8;
 
-  // 滚动值取模
+  // 滚动取模
   const sx = ((scrollX % planeWidthPixels) + planeWidthPixels) % planeWidthPixels;
   const sy = ((scrollY % planeHeightPixels) + planeHeightPixels) % planeHeightPixels;
 
-  // 临时 tile 像素缓冲 (8×8)
-  const tilePixels = new Uint8Array(64);
+  // 遍历所有可视 tile (而非逐个像素)
+  const startTileX = Math.floor(sx / 8);
+  const startTileY = Math.floor(sy / 8);
+  const startPixelX = sx % 8;
+  const startPixelY = sy % 8;
 
-  for (let py = 0; py < outHeight; py++) {
-    // Plane 内 Y 坐标 (含滚动)
-    const planeY = (py + sy) % planeHeightPixels;
-    const tileY = (planeY / 8) | 0;
-    const pixelY = planeY % 8;
+  const tilesPerRow = Math.ceil((outWidth + startPixelX) / 8) + 1;
+  const tilesPerCol = Math.ceil((outHeight + startPixelY) / 8) + 1;
 
-    for (let px = 0; px < outWidth; px++) {
-      // Plane 内 X 坐标 (含滚动)
-      const planeX = (px + sx) % planeWidthPixels;
-      const tileX = (planeX / 8) | 0;
-      const pixelX = planeX % 8;
+  for (let ty = 0; ty < tilesPerCol; ty++) {
+    for (let tx = 0; tx < tilesPerRow; tx++) {
+      const ntX = (startTileX + tx) % planeWidthTiles;
+      const ntY = (startTileY + ty) % planeHeightTiles;
 
-      // nametable 条目地址 (每条目 2 字节)
-      const entryAddr = planeBase + (tileY * planeWidthTiles + tileX) * 2;
+      // 读取 nametable 条目
+      const entryAddr = planeBase + (ntY * planeWidthTiles + ntX) * 2;
       const entry = parseNameTableEntry(vram, entryAddr);
 
-      // 优先级过滤
       if (priorityFilter !== -1 && entry.priority !== priorityFilter) continue;
+      if (entry.tileIndex === 0) continue;
 
-      // 跳过 tile 索引 0 (通常是空 tile)
-      // 实际不应跳过, 因为 tile 0 可能不是空的
-      // 但为了性能, 优先级低且 tile=0 时可跳过
-      // if (entry.tileIndex === 0 && entry.priority === 0) continue;
+      // 获取缓存的 tile 行
+      const tileRows = getCachedTileRows(vram, entry.tileIndex);
+      if (tileRows.length === 0) continue;
 
-      // 解码 tile 像素 (8×8)
-      const tAddr = tileAddress(entry.tileIndex);
-      decodeTileFlipped(vram, tAddr, entry.hFlip, entry.vFlip, tilePixels, 0);
+      const palBase = entry.palette * 16;
 
-      // 取像素值 (0-15, 调色板索引)
-      const pixelValue = tilePixels[pixelY * 8 + pixelX];
+      // 计算此 tile 在输出中的像素范围
+      const tileScreenX = tx * 8 - startPixelX;
+      const tileScreenY = ty * 8 - startPixelY;
 
-      // 像素值 0 = 透明 (不写入)
-      if (pixelValue === 0) continue;
+      for (let py = 0; py < 8; py++) {
+        const screenY = tileScreenY + py;
+        if (screenY < 0 || screenY >= outHeight) continue;
 
-      // 查 CRAM 调色板
-      // 调色板索引 = entry.palette * 16 + pixelValue
-      const colorIdx = entry.palette * 16 + pixelValue;
-      const cramValue = vdp.readCRAM(colorIdx);
+        const srcY = entry.vFlip ? (7 - py) : py;
+        const row = tileRows[srcY];
 
-      // CRAM → RGBA
-      // 格式: bit12-9=Blue, bit8-5=Green, bit4-1=Red
-      const r = ((cramValue >> 1) & 0x0F) * 17;  // 4位 → 8位 (×17)
-      const g = ((cramValue >> 5) & 0x0F) * 17;
-      const b = ((cramValue >> 9) & 0x0F) * 17;
+        for (let px = 0; px < 8; px++) {
+          const screenX = tileScreenX + px;
+          if (screenX < 0 || screenX >= outWidth) continue;
 
-      // 写入输出缓冲 (RGBA)
-      const outIdx = (py * outWidth + px) * 4;
-      output[outIdx] = r;
-      output[outIdx + 1] = g;
-      output[outIdx + 2] = b;
-      output[outIdx + 3] = 255;
+          const srcX = entry.hFlip ? (7 - px) : px;
+          const pixelValue = row[srcX];
+          if (pixelValue === 0) continue; // 透明
+
+          const colorIdx = palBase + pixelValue;
+          const cramValue = vdp.readCRAM(colorIdx);
+          const { r, g, b } = cramToRGB(cramValue);
+
+          const outIdx = (screenY * outWidth + screenX) * 4;
+          output[outIdx] = r;
+          output[outIdx + 1] = g;
+          output[outIdx + 2] = b;
+          output[outIdx + 3] = 255;
+        }
+      }
     }
   }
 }
 
-/**
- * 渲染 Window (不滚动的窗口层)
- *
- * Window 位置由 R17-R18 配置 (本游戏未使用, 跳过)
- */
+/** Window 层渲染 (暂未实现) */
 export function renderWindow(
   vdp: VDP,
   output: Uint8Array,
   outWidth: number,
-  outHeight: number
+  outHeight: number,
 ): void {
-  // 本游戏似乎不使用 Window, 暂不实现
-  // 若需要, 逻辑类似 renderPlane 但无滚动
+  // 本游戏不使用 Window 层
 }

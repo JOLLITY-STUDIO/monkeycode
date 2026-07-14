@@ -153,6 +153,28 @@ export function displayHeight(reg1: number): number {
 }
 
 // ============================================================
+// CRAM 颜色解码
+// ============================================================
+
+/**
+ * CRAM 颜色值转 RGB (8-bit per channel)
+ *
+ * Genesis VDP CRAM 格式 (little-endian, RGB, 3-bit per channel):
+ *   bit0-2 = Red (0-7, ×36 → 0-252)
+ *   bit3-5 = Green (0-7, ×36 → 0-252)
+ *   bit6-8 = Blue (0-7, ×36 → 0-252)
+ *   bit9-15 = 保留 (应为 0)
+ *
+ * 验证依据: CRAM[4] 解码为 rgb(0,0,72) 完美匹配截图背景色
+ */
+export function cramToRGB(cramValue: number): { r: number; g: number; b: number } {
+  const r = (cramValue & 0x07) * 36;
+  const g = ((cramValue >> 3) & 0x07) * 36;
+  const b = ((cramValue >> 6) & 0x07) * 36;
+  return { r, g, b };
+}
+
+// ============================================================
 // VDP 核心
 // ============================================================
 
@@ -165,7 +187,7 @@ export function displayHeight(reg1: number): number {
 export class VDP {
   /** VRAM: 64KB, 存图案+nametable+sprite表 */
   readonly vram: Uint8Array = new Uint8Array(VRAM_SIZE);
-  /** CRAM: 128字节, 4组×16色×2字节 (big-endian) */
+  /** CRAM: 128字节, 4组×16色×2字节 (little-endian, RGB 3-bit per channel) */
   readonly cram: Uint8Array = new Uint8Array(CRAM_SIZE);
   /** VSRAM: 80字节, 40×2字节 (垂直滚动) */
   readonly vsram: Uint8Array = new Uint8Array(VSRAM_SIZE);
@@ -262,21 +284,21 @@ export class VDP {
     return this.vram[addr & 0xFFFF];
   }
 
-  /** 读取 VRAM 字 (big-endian) */
+  /** 读取 VRAM 字 (little-endian) */
   readVRAMWord(addr: number): number {
-    return (this.vram[addr & 0xFFFF] << 8) | this.vram[(addr + 1) & 0xFFFF];
+    return (this.vram[(addr + 1) & 0xFFFF] << 8) | this.vram[addr & 0xFFFF];
   }
 
-  /** 读取 CRAM 颜色 (返回 16 位, big-endian) */
+  /** 读取 CRAM 颜色 (返回 16 位, little-endian, RGB 3-bit: R=bit0-2, G=bit3-5, B=bit6-8) */
   readCRAM(index: number): number {
     const off = (index & 0x3F) * 2;
-    return (this.cram[off] << 8) | this.cram[off + 1];
+    return (this.cram[off + 1] << 8) | this.cram[off];
   }
 
-  /** 读取 VSRAM 值 (返回 16 位, big-endian) */
+  /** 读取 VSRAM 值 (返回 16 位, little-endian) */
   readVSRAM(index: number): number {
     const off = (index & 0x3F) * 2;
-    return (this.vsram[off] << 8) | this.vsram[off + 1];
+    return (this.vsram[off + 1] << 8) | this.vsram[off];
   }
 
   // ============================================================
@@ -288,25 +310,25 @@ export class VDP {
     this.vram[addr & 0xFFFF] = value & 0xFF;
   }
 
-  /** 写入 VRAM 字 (big-endian) */
+  /** 写入 VRAM 字 (little-endian) */
   writeVRAMWord(addr: number, value: number): void {
-    this.vram[addr & 0xFFFF] = (value >> 8) & 0xFF;
-    this.vram[(addr + 1) & 0xFFFF] = value & 0xFF;
+    this.vram[addr & 0xFFFF] = value & 0xFF;
+    this.vram[(addr + 1) & 0xFFFF] = (value >> 8) & 0xFF;
   }
 
-  /** 写入 CRAM 颜色 (16 位, big-endian) */
+  /** 写入 CRAM 颜色 (16 位, little-endian, RGB 3-bit: R=bit0-2, G=bit3-5, B=bit6-8) */
   writeCRAM(index: number, value: number): void {
     const off = (index & 0x3F) * 2;
     // CRAM 写入时低字节 bit0 被忽略 ( Genesis 硬件特性)
-    this.cram[off] = (value >> 8) & 0xFF;
-    this.cram[off + 1] = value & 0xFE;
+    this.cram[off] = value & 0xFE;
+    this.cram[off + 1] = (value >> 8) & 0xFF;
   }
 
-  /** 写入 VSRAM (16 位, big-endian) */
+  /** 写入 VSRAM (16 位, little-endian) */
   writeVSRAM(index: number, value: number): void {
     const off = (index & 0x3F) * 2;
-    this.vsram[off] = (value >> 8) & 0xFF;
-    this.vsram[off + 1] = value & 0xFF;
+    this.vsram[off] = value & 0xFF;
+    this.vsram[off + 1] = (value >> 8) & 0xFF;
   }
 
   // ============================================================

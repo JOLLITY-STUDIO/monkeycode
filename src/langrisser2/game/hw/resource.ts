@@ -108,16 +108,20 @@ export class ArrayBufferRomReader implements RomReader {
  * 资源指针表查找
  *
  * 对应 ROM 0x9A0E: FUN_00009a0e
- * Ghidra C 反编译错误地认为此函数是 no-op，实际功能:
- *   1. 保存 D0.W (资源ID) 到栈
- *   2. A0 = 0x000B0000 (资源指针表基址)
- *   3. D0.W = ASR.W D2, D0 (用 D2 作为移位计数)
- *   4. A0 = *(long)(A0 + D0.W) (读取32位指针)
- *   5. 恢复 D0.W
+ *
+ * 68K 机器码 (经二进制验证):
+ *   0x9A0E: 3f 00           move.w  d0, -(sp)        ; 保存 D0.W
+ *   0x9A10: 20 7c 00 0b 00 00  move.l  #0x000b0000, a0 ; A0 = 资源指针表基址
+ *   0x9A16: e5 48           lsl.w   #2, d0           ; D0.W = D0.W * 4 (每条目4字节)
+ *   0x9A18: 20 70 00 00     movea.l (a0, d0.w), a0   ; A0 = *(long)(A0 + D0.W)
+ *   0x9A1C: 30 1f           move.w  (sp)+, d0        ; 恢复 D0.W
+ *   0x9A1E: 4e 75           rts
+ *
+ * 之前 Ghidra 反编译错误地认为此函数是 no-op,
+ * 且错误识别 e5 48 为 ASR.W D2, D0, 实际是 LSL.W #2, D0 (左移2位=×4)
  *
  * @param rom ROM 读取器
- * @param resourceId 资源 ID (已清除 DMA 标志, 如 0x0001)
- * @param originalD0 原始 D0 值 (含 DMA 标志, 如 0x8001)
+ * @param resourceId 资源 ID (已清除 DMA 标志, 如 8 或 3)
  * @returns 资源数据在 ROM 中的偏移地址
  *
  * @see execution-trace.md "FUN_00009a0e — 资源指针表查找"
@@ -125,19 +129,12 @@ export class ArrayBufferRomReader implements RomReader {
 export function resolveResourcePointer(
   rom: RomReader,
   resourceId: number,
-  originalD0: number,
 ): number {
-  // ASR.W D2, D0: 移位计数 = D2.W mod 64
-  const shiftCount = (originalD0 & 0xffff) % 64;
-  // 算术右移 (对正数等同于逻辑右移)
-  const index = (resourceId & 0x7fff) >> shiftCount;
-
-  // 读取指针表条目: A0 = *(long)(0x000B0000 + index * 4)
-  // 注意: 68K 是 (A0, D0.W) 索引，D0.W 是字节偏移，这里 index 已经是值
-  // 实际指针表每条目 4 字节，所以需要 *4
-  const entryAddr = RESOURCE_POINTER_TABLE_BASE + index * 4;
-  const pointer = rom.readLong(entryAddr);
-  return pointer;
+  // D0.W = resourceId (已清除 DMA 标志)
+  // D0.W <<= 2 (×4, 每条目4字节)
+  // A0 = *(long)(0x000B0000 + D0.W)
+  const entryAddr = RESOURCE_POINTER_TABLE_BASE + (resourceId & 0x7fff) * 4;
+  return rom.readLong(entryAddr);
 }
 
 // ============================================================
@@ -462,17 +459,14 @@ export function loadResource(
   rom: RomReader,
   d0: number,
 ): LoadResourceResult {
-  // D2 = D0 (保存原始值)
-  const d2 = d0;
-
   // 检查 DMA 标志 (D0 高位)
   const dmaEnabled = (d0 & 0x8000) !== 0;
 
   // D0.W &= 0x7FFF (清除 DMA 标志)
   const resourceId = d0 & 0x7fff;
 
-  // FUN_00009a0e: 查找资源指针
-  const resourceAddr = resolveResourcePointer(rom, resourceId, d2);
+  // FUN_00009a0e: 查找资源指针 (LSL.W #2, D0 即 ×4)
+  const resourceAddr = resolveResourcePointer(rom, resourceId);
 
   // FUN_000099fa: 类型分发解压
   const result = dispatchByType(rom, resourceAddr);

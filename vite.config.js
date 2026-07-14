@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
+import { resolve } from 'path';
 
 const OUTPUT_DIR = 'output';
 
@@ -33,6 +34,15 @@ function savePlugin() {
 
 export default defineConfig({
   plugins: [savePlugin()],
+  root: '.',
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, 'index.html'),
+        l2: resolve(__dirname, 'src/langrisser2/index.html'),
+      },
+    },
+  },
   server: {
     allowedHosts: ['.monkeycode-ai.online'],
   },

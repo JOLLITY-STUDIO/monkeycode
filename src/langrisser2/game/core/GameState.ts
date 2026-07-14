@@ -1,52 +1,144 @@
 /**
  * GameState.ts — 游戏全局状态容器
  *
- * 严格对应 execution-trace.md RAM 关键地址速查表
- * 变量名 = RAM 地址对应的语义名称
+ * 严格 1:1 对应 execution-trace.md RAM 关键地址速查表
+ * 字段命名 = RAM 地址对应的语义名称
  *
- * 注意: 不模拟 Genesis 硬件，只保存游戏逻辑需要的变量
+ * 不模拟 Genesis 硬件 (68K CPU/VDP/Z80 等), 只保存游戏逻辑需要的变量
  */
 
 export class GameState {
+  // ============================================================================
+  // ROM 引用
+  // ============================================================================
   rom: Uint8Array;
 
+  // ============================================================================
+  // 任务调度 (映射 ROM 任务系统 FUN_00009498)
+  // ============================================================================
+
+  /** 当前任务函数指针 — RAM $FFFF8004 (初始值 0xC92C) */
   taskFuncPtr: number = 0x0000C92C;
-  scenarioIndex: number = 1;
-  scenarioActive: number = 0;
+
+  /** 帧计数器 — 全局 VBlank 帧序号 */
   frameCounter: number = 0;
+
+  // ============================================================================
+  // 场景/关卡 (映射 ROM 场景表 0x061CB0)
+  // ============================================================================
+
+  /** 当前场景/关卡号 — RAM $FFFFA49C (1-31, 对应 31 关) */
+  scenarioIndex: number = 1;
+
+  /** 场景激活标志 — RAM $FFFF95AE (0=等待加载, 1=已激活) */
+  scenarioActive: number = 0;
+
+  /** 关卡特殊配置参数 — RAM $FFFFAxxx */
+  scenarioSpecialConfig: number = 0;
+
+  // ============================================================================
+  // 游戏阶段 (映射 $FFFFA61C)
+  // ============================================================================
+
+  /** 游戏阶段 — RAM $FFFFA61C (5=部署/MENU, 10=战斗, 20=? ) */
   gameState: number = 0;
+
+  // ============================================================================
+  // 标题 & 新游戏 (映射 $FF78FA, $FFFFA6D4)
+  // ============================================================================
+
+  /** 新游戏标志 — RAM $FF78FA (0xFFFF=首次启动/新游戏, 0=已有存档) */
+  skipTitleFlag: number = 0xFFFF;
+
+  /** 标题画面标志 — RAM $FFFFA6D4 (0=在标题画面) */
+  titleScreenFlag: number = 0;
+
+  // ============================================================================
+  // 地图数据 (映射场景表系统 FUN_00009EC4)
+  // ============================================================================
 
   mapWidth: number = 0;
   mapHeight: number = 0;
+  /** 滚动偏移X — RAM $FFFFAxxx */
   scrollX: number = 0;
+  /** 滚动偏移Y — RAM $FFFFAxxx */
   scrollY: number = 0;
-
+  /** 地图 tile 索引 (从 ROM ptr1 解压到 RAM 0xFF3000) */
   mapTiles: Uint8Array = new Uint8Array();
+
+  // ============================================================================
+  // Tile 重映射 (映射 ROM tile remap 表)
+  // ============================================================================
 
   tileRemapLo: Uint8Array = new Uint8Array();
   tileRemapHi: Uint8Array = new Uint8Array();
   tileAttrLo: number = 0;
   tileAttrHi: number = 0;
 
+  // ============================================================================
+  // 角色数据 (映射 ROM 角色表 0x05DE00)
+  // ============================================================================
+
+  /** 角色能力表 — 10 个角色 × 24 字节 */
   charAbilityTable: Uint8Array = new Uint8Array(10 * 24);
 
+  /** 单位槽 — 20 个槽, 每槽 0x60 字节 */
   unitSlots: Uint8Array[] = [];
 
-  skipTitleFlag: number = 0xFFFF;
-  titleScreenFlag: number = 0;
+  // ============================================================================
+  // 光标控制 (映射 $FFFFA6DE/A6E0, $FFFFA612)
+  // ============================================================================
 
+  /** 地图光标 X — RAM $FFFFA6DE */
   cursorX: number = 1;
+  /** 地图光标 Y — RAM $FFFFA6E0 */
   cursorY: number = 1;
 
-  scenarioSpecialConfig: number = 0;
+  /** 假名选择/选关索引 — RAM $FFFFA612 (0-31) */
+  scenarioSelectIndex: number = 0;
+
+  // ============================================================================
+  // VDP 相关
+  // ============================================================================
 
   vdpRegState: number = 0;
   dmaBusyFlag: number = 0;
 
+  // ============================================================================
+  // 场景切换 (映射 $FFFFAE90 → $FFFFA49C)
+  // ============================================================================
+
+  /** 下一场景索引 — RAM $FFFFAE90 → $FFFFA49C (FUN_0001D1C0 设置) */
   nextScenario: number = 0;
 
-  constructor(rom: Uint8Array) {
-    this.rom = rom;
+  // ============================================================================
+  // 秘籍系统状态 (对应 CheatSystem.ts)
+  // 详细参考: execution-trace.md §秘籍逆向
+  // ============================================================================
+
+  /** 商店模式 — RAM $FFFFA6DC: 0=正常商店, 1=隐藏商店, 2=真·隐藏商店 */
+  shopMode: number = 0;
+
+  /** 音效/商店命令 ID — RAM $FFFFA6DA */
+  soundCmdId: number = 0;
+
+  /** 音效子命令 — RAM $FFFFA6DB */
+  soundCmdSub: number = 0;
+
+  /** 调试模式激活标志 — ROM $00D7C6 秘籍翻转切换 */
+  debugModeActive: boolean = false;
+
+  /** 按键历史缓冲区 — RAM $FFFF8188 (31-byte 滑动窗口) */
+  buttonHistory: number[] = new Array(31).fill(0);
+
+  /** 上一帧按键 — RAM $FFFF81A7 */
+  prevButtons: number = 0;
+
+  /** 当前帧按键 — RAM $FFFF8178/$FFFF8179 */
+  currentButtons: number = 0;
+
+  constructor(rom?: Uint8Array) {
+    this.rom = rom || new Uint8Array(0);
     this.unitSlots = [];
     for (let i = 0; i < 20; i++) {
       this.unitSlots.push(new Uint8Array(0x60));
