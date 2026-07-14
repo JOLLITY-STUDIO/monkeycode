@@ -78,7 +78,11 @@ export function parseLevelList(rom: Uint8Array): LevelInfo[] {
   return levels;
 }
 
-// === 解析单关地图 tile 数据 (含重映射, 严格按 md-map.js) ===
+// === 解析单关地图 tile 数据 (含重映射) ===
+// BUGFIX: remap table stride corrected from *4 → *8
+// ROM 0x061E24/0x061E28 are interleaved tables (each level = 8B pair)
+// ROM trace: remap_lo = *(0x061E24 + (scenario-1)*8), remap_hi = *(0x061E28 + (scenario-1)*8)
+// Cross-verified with legacy md-scenario.js which also uses *8
 export function parseLevelMap(rom: Uint8Array, levelIndex: number): LevelMapData | null {
   const ptr = read32BE(rom, LEVEL_MAP_TABLE + levelIndex * 4);
   if (ptr < 0x200) return null;
@@ -93,9 +97,9 @@ export function parseLevelMap(rom: Uint8Array, levelIndex: number): LevelMapData
     tiles.push(rom[tileStart + i]);
   }
 
-  // 读取重映射表 (与 md-map.js 一致)
-  const remap1Ptr = read32BE(rom, TILE_REMAP1_TABLE + levelIndex * 4);
-  const remap2Ptr = read32BE(rom, TILE_REMAP2_TABLE + levelIndex * 4);
+  // 读取重映射表 — stride = 8 (每关一对 4B lo + 4B hi 指针)
+  const remap1Ptr = read32BE(rom, TILE_REMAP1_TABLE + levelIndex * 8);
+  const remap2Ptr = read32BE(rom, TILE_REMAP2_TABLE + levelIndex * 8);
 
   const remap1: number[] = [];
   const remap2: number[] = [];
