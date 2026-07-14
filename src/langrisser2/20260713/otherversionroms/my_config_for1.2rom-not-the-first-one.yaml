@@ -1,0 +1,8 @@
+name: langrisser2_v12
+options:
+  target_path: "./Langrisser II (Japan) (v1.2).md"
+segments:
+  - name: rom-v12
+    type: m68k
+    start: 0x000000
+    end: 0x200000

@@ -9,9 +9,9 @@
 
 export class GameState {
   // ============================================================================
-  // ROM 引用
+  // ROM 引用 (已废弃 — 所有游戏数据硬编码为 TS 常量)
   // ============================================================================
-  rom: Uint8Array;
+  rom: Uint8Array = new Uint8Array(0);
 
   // ============================================================================
   // 任务调度 (映射 ROM 任务系统 FUN_00009498)
@@ -137,8 +137,7 @@ export class GameState {
   /** 当前帧按键 — RAM $FFFF8178/$FFFF8179 */
   currentButtons: number = 0;
 
-  constructor(rom?: Uint8Array) {
-    this.rom = rom || new Uint8Array(0);
+  constructor() {
     this.unitSlots = [];
     for (let i = 0; i < 20; i++) {
       this.unitSlots.push(new Uint8Array(0x60));

@@ -55,9 +55,11 @@ import { SaveLoadScene } from './game/scenes/SaveLoadScene.js';
 import { renderFrame } from './game/hw/vdp/renderer.js';
 import { Mapper, Button } from './game/systems/InputSystem.js';
 import { GameState } from './game/core/GameState.js';
+import { loadStage } from './game/systems/StageConfig.js';
 import {
   SaveData, createNewGameSave, loadData, saveData as doSave,
 } from './game/systems/SaveSystem.js';
+import { SoundSystem } from './game/systems/SoundSystem.js';
 
 // ============================================================
 // DOM (仅用于 Canvas 容器和状态显示，不渲染游戏 UI)
@@ -75,10 +77,11 @@ const btnLoad = document.getElementById('btnLoad') as HTMLButtonElement;
 // 全局实例
 // ============================================================
 const engine = new GameEngine();
-const state = new GameState(new Uint8Array(0));
+const state = new GameState();
 const scenes = new SceneManager(engine.vdp);
 const input = new Mapper();
 input.attach(document);
+const soundSystem = new SoundSystem();
 
 const width = engine.vdp.width;   // 320
 const height = engine.vdp.height; // 224
@@ -186,6 +189,7 @@ function openOpeningAnimation(): void {
     openingAnimScene.setOnComplete(() => openTitleScreen());
   }
   scenes.switchTo(GamePhase.OPENING, openingAnimScene);
+  soundSystem.playPhaseMusic(GamePhase.OPENING);
   setStatus('开场动画 | 按任意键跳过');
 }
 
@@ -197,6 +201,7 @@ function openOpeningAnimation(): void {
 function openTitleScreen(): void {
   if (!titleScene) titleScene = new TitleScreen(engine.vdp);
   scenes.switchTo(GamePhase.TITLE, titleScene);
+  soundSystem.playPhaseMusic(GamePhase.TITLE);
   setStatus('标题画面 | START 新游戏 / LOAD 读档');
 }
 
@@ -269,11 +274,19 @@ function openBattleMap(): void {
   if (!battleScene) {
     battleScene = new BattleScene(engine.vdp, state, saveData!);
   }
+
+  // Load stage from hardcoded TS data (zero ROM dependency)
+  const scenarioId = saveData?.scenarioId || 1;
+  const stage = loadStage(scenarioId);
+  if (stage) {
+    battleScene.setStage(stage);
+  }
+
   battleScene.setStartMenuCallback(() => openStartMenu());
   battleScene.setCharActionCallback((charIdx: number) => openCharActionMenu(charIdx));
 
   scenes.switchTo(GamePhase.BATTLE_MAP, battleScene);
-  setStatus('战斗地图 | 方向键:移动 A:角色 START:菜单');
+  setStatus(`战斗地图 — 剧本 ${scenarioId} | 方向键:移动 A:角色 START:菜单`);
 }
 
 /**
@@ -517,6 +530,9 @@ async function onBoot(): Promise<void> {
   // 创建新游戏存档 (数据来源: ROM 0x05E64A 角色初始表 + 0x05EDDC 职业数据)
   // 搬运为 TS: SaveSystem.createNewGameSave() → data/character.ts + data/classes.ts
   saveData = createNewGameSave(1);
+
+  // 初始化音频系统
+  await soundSystem.startAudio();
 
   // 进入开场动画 (ROM BIOS SEGA Logo → Opening Animation 阶段)
   // 动画完成后自动跳转标题画面, 或任意按键跳过

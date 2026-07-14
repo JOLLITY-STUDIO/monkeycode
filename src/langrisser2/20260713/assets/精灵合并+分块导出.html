@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>精灵工具-打包ZIP防下载丢失（支持BMP）</title>
+<style>
+*{box-sizing:border-box;font-family:system-ui}
+body{padding:20px;max-width:1100px;margin:0 auto}
+.section{border:1px solid #ddd;padding:16px;margin-bottom:20px;border-radius:8px}
+input[type="file"]{margin:10px 0}
+canvas{border:1px solid #ccc;image-rendering:pixelated}
+button{padding:8px 16px;cursor:pointer;margin:4px}
+input[type="number"]{width:60px;padding:4px}
+#canvasWrap{margin:15px 0;display:none}
+#splitTip{color:#666;margin:8px 0}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+</head>
+<body>
+<h2>精灵合并+分块导出（打包ZIP，支持拆分合并结果）</h2>
+
+<div class="section">
+  <h3>1. 上传原图（PNG/JPG/GIF/BMP）</h3>
+  <input type="file" id="fileInput" accept="image/png,image/gif,image/jpeg,image/bmp">
+</div>
+
+<div class="section">
+  <h3>功能A：16×8 两两上下合并为16×16整图</h3>
+  <button id="mergeBtn">执行合并并预览</button>
+  <div id="canvasWrap">
+    <h4>合并结果预览</h4>
+    <canvas id="resultCanvas"></canvas>
+    <br>
+    <button id="downloadMergeBtn">下载合并后整张PNG</button>
+    <button id="splitMergeZipBtn">拆分【当前合并成品】打包ZIP</button>
+  </div>
+</div>
+
+<div class="section">
+  <h3>功能B：直接拆分原始上传图片</h3>
+  块宽：<input type="number" id="splitW" value="16">
+  块高：<input type="number" id="splitH" value="16">
+  <br>
+  <button id="splitZipBtn">拆分原图并打包ZIP下载</button>
+  <div id="splitTip"></div>
+</div>
+
+<script>
+const BLOCK_W_ORIG = 16;
+const BLOCK_H_ORIG = 8;
+
+const fileInput = document.getElementById('fileInput');
+const mergeBtn = document.getElementById('mergeBtn');
+const splitZipBtn = document.getElementById('splitZipBtn');
+const splitMergeZipBtn = document.getElementById('splitMergeZipBtn');
+const canvasWrap = document.getElementById('canvasWrap');
+const canvas = document.getElementById('resultCanvas');
+const ctx = canvas.getContext('2d');
+const downloadMergeBtn = document.getElementById('downloadMergeBtn');
+const splitTip = document.getElementById('splitTip');
+const splitWInput = document.getElementById('splitW');
+const splitHInput = document.getElementById('splitH');
+
+let sourceImg = null;
+
+// 加载图片兼容BMP
+fileInput.onchange = async (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  sourceImg = new Image();
+  sourceImg.src = URL.createObjectURL(file);
+  await new Promise((res, rej)=>{
+    sourceImg.onload = res;
+    sourceImg.onerror = ()=>rej("BMP/图片加载失败，请使用24/32位无压缩BMP");
+  });
+  splitTip.textContent = `原图尺寸：${sourceImg.width} × ${sourceImg.height}`;
+  canvasWrap.style.display = 'none';
+};
+
+// 功能A：16x8两两合并成16x16大图
+mergeBtn.onclick = ()=>{
+  if(!sourceImg){alert("请先上传图片");return;}
+  const img = sourceImg;
+  const srcW = img.width;
+  const srcH = img.height;
+  const cols = Math.floor(srcW / BLOCK_W_ORIG);
+  const rows = Math.floor(srcH / BLOCK_H_ORIG);
+  const total = cols * rows;
+  if(total % 2 !== 0){
+    alert(`总块数${total}为奇数，无法两两配对`);
+    return;
+  }
+  const blocks = [];
+  for(let y=0;y<rows;y++){
+    for(let x=0;x<cols;x++){
+      const offX = x * BLOCK_W_ORIG;
+      const offY = y * BLOCK_H_ORIG;
+      const bCanv = document.createElement('canvas');
+      bCanv.width = BLOCK_W_ORIG;
+      bCanv.height = BLOCK_H_ORIG;
+      const bCtx = bCanv.getContext('2d');
+      bCtx.drawImage(img, offX, offY, BLOCK_W_ORIG, BLOCK_H_ORIG, 0,0,BLOCK_W_ORIG,BLOCK_H_ORIG);
+      blocks.push(bCanv);
+    }
+  }
+  const newBlocks = [];
+  for(let i=0;i<blocks.length;i+=2){
+    const top = blocks[i];
+    const bot = blocks[i+1];
+    const comb = document.createElement('canvas');
+    comb.width = BLOCK_W_ORIG;
+    comb.height = BLOCK_H_ORIG * 2;
+    const cCtx = comb.getContext('2d');
+    cCtx.drawImage(top, 0,0);
+    cCtx.drawImage(bot, 0, BLOCK_H_ORIG);
+    newBlocks.push(comb);
+  }
+  const newBlockW = 16;
+  const newBlockH = 16;
+  const newTotal = newBlocks.length;
+  const newRows = Math.ceil(newTotal / cols);
+  const finalW = cols * newBlockW;
+  const finalH = newRows * newBlockH;
+  canvas.width = finalW;
+  canvas.height = finalH;
+  ctx.clearRect(0,0,finalW,finalH);
+  newBlocks.forEach((blk, idx)=>{
+    const x = idx % cols;
+    const y = Math.floor(idx / cols);
+    ctx.drawImage(blk, x*newBlockW, y*newBlockH);
+  });
+  canvasWrap.style.display = 'block';
+  splitTip.textContent = "合并完成，可拆分当前合并成品";
+};
+
+// 下载合并整张图
+downloadMergeBtn.onclick = ()=>{
+  const link = document.createElement('a');
+  link.download = 'merged_16x16_sprite.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+};
+
+// 拆分【当前合并后的画布图片】打包ZIP
+splitMergeZipBtn.onclick = async ()=>{
+  if(canvasWrap.style.display === 'none'){
+    alert("请先执行合并生成预览图，再拆分合并结果");
+    return;
+  }
+  const w = Number(splitWInput.value);
+  const h = Number(splitHInput.value);
+  if(w<=0||h<=0){alert("宽高必须大于0");return;}
+  const imgW = canvas.width;
+  const imgH = canvas.height;
+  const cols = Math.floor(imgW / w);
+  const rows = Math.floor(imgH / h);
+  const total = cols * rows;
+  splitTip.textContent = `正在拆分合并成品，共 ${total} 张 ${w}×${h} 图片打包...`;
+
+  const zip = new JSZip();
+  for(let y=0;y<rows;y++){
+    for(let x=0;x<cols;x++){
+      const offX = x * w;
+      const offY = y * h;
+      const tempCanv = document.createElement('canvas');
+      tempCanv.width = w;
+      tempCanv.height = h;
+      const tCtx = tempCanv.getContext('2d');
+      tCtx.drawImage(canvas, offX, offY, w, h, 0,0,w,h);
+      const blob = await new Promise(res=>tempCanv.toBlob(res, 'image/png'));
+      zip.file(`merged_block_y${y}_x${x}.png`, blob);
+    }
+  }
+  const zipBlob = await zip.generateAsync({type:"blob"});
+  const link = document.createElement('a');
+  link.download = `split_merged_${w}x${h}.zip`;
+  link.href = URL.createObjectURL(zipBlob);
+  link.click();
+  URL.revokeObjectURL(link.href);
+  splitTip.textContent += " 合并图拆分打包完成！";
+};
+
+// 功能B：拆分原始上传图打包ZIP
+splitZipBtn.onclick = async ()=>{
+  if(!sourceImg){alert("请先上传图片");return;}
+  const w = Number(splitWInput.value);
+  const h = Number(splitHInput.value);
+  if(w<=0||h<=0){alert("宽高必须大于0");return;}
+  const img = sourceImg;
+  const cols = Math.floor(img.width / w);
+  const rows = Math.floor(img.height / h);
+  const total = cols * rows;
+  splitTip.textContent = `正在拆分原图，共 ${total} 张 ${w}×${h} 图片打包...`;
+
+  const zip = new JSZip();
+  for(let y=0;y<rows;y++){
+    for(let x=0;x<cols;x++){
+      const offX = x * w;
+      const offY = y * h;
+      const tempCanv = document.createElement('canvas');
+      tempCanv.width = w;
+      tempCanv.height = h;
+      const tCtx = tempCanv.getContext('2d');
+      tCtx.drawImage(img, offX, offY, w, h, 0,0,w,h);
+      const blob = await new Promise(res=>tempCanv.toBlob(res, 'image/png'));
+      zip.file(`origin_block_y${y}_x${x}.png`, blob);
+    }
+  }
+  const zipBlob = await zip.generateAsync({type:"blob"});
+  const link = document.createElement('a');
+  link.download = `split_origin_${w}x${h}.zip`;
+  link.href = URL.createObjectURL(zipBlob);
+  link.click();
+  URL.revokeObjectURL(link.href);
+  splitTip.textContent += "原图拆分打包完成！";
+};
+</script>
+</body>
+</html>
