@@ -102,14 +102,30 @@ export interface LevelUnit {
   x: number;              // 初始X (ROM偏移0x18)
   y: number;              // 初始Y (ROM偏移0x19)
   raw: Uint8Array;        // 原始0x1E字节数据
+  /** 阵营: 从 attr_block_2 (ROM offset 0x08) bit0 读取: 1=玩家, 0=敌方/其他 */
+  isPlayer: boolean;
+  /** attr_block_0 (ROM offset 0x00, → RAM 0x08): 基础职业等 */
+  attr0: number;
+  /** attr_block_1 (ROM offset 0x04, → RAM 0x14): 移动类型/范围/指挥 */
+  attr1: number;
+  /** attr_block_2 (ROM offset 0x08, → RAM 0x20): bit0=玩家方, bit?=NPC/AI */
+  attr2: number;
+  /** attr_block_3 (ROM offset 0x0C, → RAM 0x2C): 基础AT */
+  attr3: number;
+  /** attr_block_4 (ROM offset 0x10, → RAM 0x38): HP/DF */
+  attr4: number;
+  /** attr_block_5 (ROM offset 0x14, → RAM 0x50): 能力标志位 */
+  attr5: number;
+  /** 额外标志 (ROM offset 0x1C, → RAM 0x5F): 头像/单位标志 */
+  extraFlags: number;
 }
 
 // === 解析关卡单位配置 (严格按 md-units.js parseLevelUnits) ===
 //
-// PTR_LAB_0018005e[关卡-1] → 配置结构 → 0x0C偏移 → 单位列表(每单位0x12字节)
+// PTR_LAB_0018005e[关卡-1] → 配置结构 → 0x0C偏移 → 单位列表(每单位0x1E字节)
 //
-// 注意: md-units.js 中实际读取的是 0x1E 字节, 但步长是 0x12 字节
-// 这是一个已知的待确认问题, 严格按照原代码转写
+// BUGFIX: stride 从 0x12 修正为 0x1E，与 ROM 单位模板 0x1E 字节一致
+// legacy md-units.js 的 0x12 步长导致重叠读取、坐标错位
 export function parseLevelUnits(rom: Uint8Array, levelIndex: number): LevelUnit[] {
   const ptrTableAddr = 0x18005E;
   if (ptrTableAddr + levelIndex * 4 + 3 > rom.length) return [];
@@ -120,9 +136,10 @@ export function parseLevelUnits(rom: Uint8Array, levelIndex: number): LevelUnit[
   const unitListPtr = read32BE(rom, configPtr + 0x0C) & 0xFFFFFF;
   if (unitListPtr < 0x200 || unitListPtr > rom.length) return [];
 
+  const STRIDE = 0x1E; // 单位模板大小 (30 字节)
   const units: LevelUnit[] = [];
   let off = 0;
-  while (unitListPtr + off + 0x12 <= rom.length) {
+  while (unitListPtr + off + STRIDE <= rom.length) {
     const addr = unitListPtr + off;
     const typeIndex = rom[addr + 0x1B];
     const commanderId = rom[addr + 0x1A];
@@ -132,16 +149,30 @@ export function parseLevelUnits(rom: Uint8Array, levelIndex: number): LevelUnit[
     const x = rom[addr + 0x18];
     const y = rom[addr + 0x19];
 
+    // 解析 6 个 attr_block (dword each), 映射到 RAM 单位槽
+    const attr0 = read32BE(rom, addr + 0x00);  // → RAM 0x08
+    const attr1 = read32BE(rom, addr + 0x04);  // → RAM 0x14
+    const attr2 = read32BE(rom, addr + 0x08);  // → RAM 0x20
+    const attr3 = read32BE(rom, addr + 0x0C);  // → RAM 0x2C
+    const attr4 = read32BE(rom, addr + 0x10);  // → RAM 0x38
+    const attr5 = read32BE(rom, addr + 0x14);  // → RAM 0x50
+    const extraFlags = rom[addr + 0x1C];        // → RAM 0x5F
+
+    // faction 判定: attr_block_2 bit0 = 玩家方 (ROM 逻辑: unit[0x20] & 1)
+    const isPlayer = (attr2 & 1) !== 0;
+
     units.push({
       index: units.length,
       romAddr: addr,
       typeIndex,
       commanderId,
-      x,
-      y,
+      x, y,
       raw: rom.slice(addr, addr + 0x1E),
+      isPlayer,
+      attr0, attr1, attr2, attr3, attr4, attr5,
+      extraFlags,
     });
-    off += 0x12;
+    off += STRIDE;
   }
   return units;
 }
