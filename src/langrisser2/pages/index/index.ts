@@ -160,14 +160,17 @@ Page({
       this.setData({ statusText: '启动任务调度系统...' });
       this._taskSystem = new RomTaskSystem(this._rom.getData(), this._ram, this._vdp);
 
-      // 5. 输出 VDP 状态
+      // 5. 通知任务系统初始化已完成，驱动状态机
+      this._taskSystem.markInitsDone();
+
+      // 6. 输出 VDP 状态
       console.log('[Page] VDP 寄存器:', Array.from(this._vdp.reg).map((v, i) =>
         `R${i}=${v.toString(16).padStart(2, '0')}`).join(' '));
       console.log('[Page] ✓ 翻译路径就绪, 开始 60fps 主循环');
 
       this.setData({ statusText: 'Langrisser II — 翻译路径运行中' });
 
-      // 6. 开始 60fps 主循环
+      // 7. 开始 60fps 主循环
       this._running = true;
       this._translationLoop();
 
