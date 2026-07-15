@@ -188,8 +188,8 @@ export class SceneManager {
       [GamePhase.START_MENU]:    [GamePhase.BATTLE_MAP, GamePhase.SAVE_LOAD],
       [GamePhase.BATTLE_ANIM]:   [GamePhase.BATTLE_MAP],
       [GamePhase.SHOP]:          [GamePhase.BATTLE_MAP, GamePhase.DEPLOY],
-      [GamePhase.DIALOGUE]:      [GamePhase.BATTLE_MAP, GamePhase.INTERMISSION],
-      [GamePhase.INTERMISSION]:  [GamePhase.DEPLOY],
+      [GamePhase.DIALOGUE]:      [GamePhase.BATTLE_MAP, GamePhase.INTERMISSION, GamePhase.DEPLOY],
+      [GamePhase.INTERMISSION]:  [GamePhase.DEPLOY, GamePhase.DIALOGUE],
       [GamePhase.SAVE_LOAD]:     [GamePhase.BATTLE_MAP, GamePhase.DEPLOY, GamePhase.TITLE],
       [GamePhase.OPENING]:       [GamePhase.TITLE],
     };

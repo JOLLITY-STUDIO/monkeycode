@@ -2,6 +2,7 @@
  * DialogueScene.ts — 剧情对话/过场场景 (Canvas UI)
  *
  * ROM 入口: 0x09FFE — 文本/剧本系统 (execution-trace.md §2.7)
+ * 数据源: ROM $05E000-$06FFFF (SJIS 脚本) → english-script.txt → DialogueData.ts
  *
  * 用途:
  *   - 开场剧情 (战斗前剧情提要)
@@ -11,19 +12,13 @@
  * 按键:
  *   A/START: 推进对话/跳过
  *   B: 加速跳过
- *
- * 后续: 文本从 ROM 0x0C0000 区域提取 (SJIS 编码)
  */
 
 import { VDP } from '../hw/vdp/vdp.js';
 import { Scene } from '../core/SceneManager.js';
 import { Mapper, Button } from '../systems/InputSystem.js';
 import { drawPanel, drawTextLines, drawStatusBar, TextLine } from '../rendering/UI.js';
-
-interface DialogueLine {
-  speaker: string;
-  text: string;
-}
+import type { DialogueLine } from '../data/DialogueData.js';
 
 export class DialogueScene implements Scene {
   readonly name = 'Dialogue';

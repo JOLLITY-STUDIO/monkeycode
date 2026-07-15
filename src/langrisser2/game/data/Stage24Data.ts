@@ -283,244 +283,324 @@ export const TILE_DEF_BONUS: number[] = [
 
 export interface Stage24Unit {
   classId: number;
-  commanderId: number;
   x: number;
   y: number;
   /** 0=player, 1=NPC, 2=enemy */
   faction: number;
-  attr0: number;
-  attr1: number;
-  attr2: number;
-  attr3: number;
-  attr4: number;
-  attr5: number;
+  flag: number;
+  item: number;
+  hp: number;
   extraFlags: number;
+  /** 6 mercenary type IDs (0xFF = none) */
+  mercTypes: number[];
+  raw: {
+    dword0: number;
+    word2: number;
+    wordField: number;
+    wordEquip: number;
+    dword3: number;
+    dword4: number;
+    dword5: number;
+  };
 }
 
 export const UNITS: Stage24Unit[] = [
   {
-    "classId": 19,
-    "commanderId": 16,
-    "x": 0,
+    "classId": 14,
+    "x": 1,
     "y": 0,
     "faction": 2,
-    "attr0": 720910,
-    "attr1": 0,
-    "attr2": 16779264,
-    "attr3": 0,
-    "attr4": 167785267,
-    "attr5": 975765504,
-    "extraFlags": 14
+    "flag": 8,
+    "item": 0,
+    "hp": 4115,
+    "extraFlags": 74,
+    "mercTypes": [
+      255,
+      255,
+      255,
+      255,
+      255,
+      255
+    ],
+    "raw": {
+      "dword0": 917504,
+      "word2": 256,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 2560,
+      "dword4": 858995241,
+      "dword5": 0
+    }
   },
   {
-    "classId": 30,
-    "commanderId": 46,
-    "x": 64,
-    "y": 64,
-    "faction": 2,
-    "attr0": 1258291199,
-    "attr1": 4294967295,
-    "attr2": 0,
-    "attr3": 1342177536,
-    "attr4": 67108864,
-    "attr5": 256,
-    "extraFlags": 0
-  },
-  {
-    "classId": 0,
-    "commanderId": 0,
-    "x": 0,
+    "classId": 101,
+    "x": 1,
     "y": 0,
-    "faction": 0,
-    "attr0": 33889545,
-    "attr1": 1700643839,
-    "attr2": 2307492233,
-    "attr3": 2290614272,
-    "attr4": 20480,
-    "attr5": 16778240,
-    "extraFlags": 1
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 7433,
+    "extraFlags": 195,
+    "mercTypes": [
+      137,
+      137,
+      137,
+      137,
+      136,
+      136
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 1342177536,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 256,
+      "dword4": 1077947934,
+      "dword5": 262661
+    }
   },
   {
-    "classId": 0,
-    "commanderId": 1,
-    "x": 90,
+    "classId": 102,
+    "x": 1,
     "y": 0,
-    "faction": 0,
-    "attr0": 1077947934,
-    "attr1": 262661,
-    "attr2": 520906333,
-    "attr3": 3288304009,
-    "attr4": 2307491976,
-    "attr5": 0,
-    "extraFlags": 4
-  },
-  {
-    "classId": 0,
-    "commanderId": 0,
-    "x": 134,
-    "y": 134,
     "faction": 2,
-    "attr0": 0,
-    "attr1": 117450021,
-    "attr2": 622657536,
-    "attr3": 270867215,
-    "attr4": 1163442687,
-    "attr5": 2004318071,
-    "extraFlags": 0
+    "flag": 4,
+    "item": 0,
+    "hp": 7948,
+    "extraFlags": 195,
+    "mercTypes": [
+      137,
+      137,
+      137,
+      137,
+      136,
+      136
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 1342177536,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 256,
+      "dword4": 1077947934,
+      "dword5": 262661
+    }
   },
   {
-    "classId": 119,
-    "commanderId": 119,
-    "x": 185,
-    "y": 255,
-    "faction": 2,
-    "attr0": 1509949696,
-    "attr1": 67108864,
-    "attr2": 1792,
-    "attr3": 623191325,
-    "attr4": 4133,
-    "attr5": 420759128,
-    "extraFlags": 119
-  },
-  {
-    "classId": 22,
-    "commanderId": 27,
-    "x": 0,
-    "y": 1,
-    "faction": 2,
-    "attr0": 2256928768,
-    "attr1": 10240,
-    "attr2": 16778240,
-    "attr3": 0,
-    "attr4": 167775501,
-    "attr5": 622592002,
-    "extraFlags": 77
-  },
-  {
-    "classId": 29,
-    "commanderId": 37,
-    "x": 37,
-    "y": 37,
-    "faction": 2,
-    "attr0": 2986314635,
-    "attr1": 2341178251,
-    "attr2": 0,
-    "attr3": 1509949696,
-    "attr4": 67108864,
-    "attr5": 1792,
-    "extraFlags": 0
-  },
-  {
-    "classId": 0,
-    "commanderId": 0,
-    "x": 0,
+    "classId": 69,
+    "x": 1,
     "y": 0,
-    "faction": 0,
-    "attr0": 270867226,
-    "attr1": 1196997119,
-    "attr2": 2004318071,
-    "attr3": 2256928768,
-    "attr4": 10240,
-    "attr5": 16778240,
-    "extraFlags": 10
-  },
-  {
-    "classId": 0,
-    "commanderId": 1,
-    "x": 40,
-    "y": 0,
-    "faction": 1,
-    "attr0": 218965276,
-    "attr1": 131073,
-    "attr2": 454970962,
-    "attr3": 2986314635,
-    "attr4": 2341178251,
-    "attr5": 0,
-    "extraFlags": 4
-  },
-  {
-    "classId": 0,
-    "commanderId": 0,
-    "x": 139,
-    "y": 139,
-    "faction": 1,
-    "attr0": 0,
-    "attr1": 167775501,
-    "attr2": 622592002,
-    "attr3": 73248,
-    "attr4": 1330819583,
-    "attr5": 2341178251,
-    "extraFlags": 0
-  },
-  {
-    "classId": 137,
-    "commanderId": 137,
-    "x": 195,
-    "y": 255,
     "faction": 2,
-    "attr0": 1342177536,
-    "attr1": 67108864,
-    "attr2": 512,
-    "attr3": 1111633438,
-    "attr4": 2565,
-    "attr5": 472016733,
-    "extraFlags": 137
+    "flag": 4,
+    "item": 0,
+    "hp": 6927,
+    "extraFlags": 185,
+    "mercTypes": [
+      119,
+      119,
+      119,
+      119,
+      134,
+      134
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 1509949696,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 1792,
+      "dword4": 623191325,
+      "dword5": 4133
+    }
   },
   {
-    "classId": 23,
-    "commanderId": 16,
-    "x": 32,
-    "y": 37,
-    "faction": 2,
-    "attr0": 2290614272,
-    "attr1": 21760,
-    "attr2": 16778240,
-    "attr3": 0,
-    "attr4": 16792893,
-    "attr5": 723648512,
-    "extraFlags": 74
-  },
-  {
-    "classId": 1,
-    "commanderId": 0,
-    "x": 0,
-    "y": 9,
-    "faction": 0,
-    "attr0": 3321858441,
-    "attr1": 2307491719,
-    "attr2": 131081,
-    "attr3": 1584422,
-    "attr4": 1584442,
-    "attr5": 1584480,
-    "extraFlags": 0
-  },
-  {
-    "classId": 24,
-    "commanderId": 0,
-    "x": 0,
-    "y": 16,
-    "faction": 1,
-    "attr0": 262152,
-    "attr1": 458761,
-    "attr2": 393218,
-    "attr3": 196608,
-    "attr4": 393241,
-    "attr5": 720920,
-    "extraFlags": 0
-  },
-  {
-    "classId": 0,
-    "commanderId": 0,
-    "x": 0,
+    "classId": 70,
+    "x": 1,
     "y": 0,
-    "faction": 0,
-    "attr0": 1572890,
-    "attr1": 1638409,
-    "attr2": 1835021,
-    "attr3": 1769491,
-    "attr4": 1769495,
-    "attr5": 1835020,
-    "extraFlags": 0
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 6420,
+    "extraFlags": 185,
+    "mercTypes": [
+      119,
+      119,
+      119,
+      119,
+      134,
+      134
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 1509949696,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 1792,
+      "dword4": 623191325,
+      "dword5": 4133
+    }
+  },
+  {
+    "classId": 77,
+    "x": 1,
+    "y": 0,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 6934,
+    "extraFlags": 177,
+    "mercTypes": [
+      139,
+      139,
+      139,
+      139,
+      139,
+      139
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 671088896,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 2560,
+      "dword4": 218965276,
+      "dword5": 131073
+    }
+  },
+  {
+    "classId": 71,
+    "x": 1,
+    "y": 0,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 6938,
+    "extraFlags": 185,
+    "mercTypes": [
+      119,
+      119,
+      119,
+      119,
+      134,
+      134
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 1509949696,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 1792,
+      "dword4": 623191325,
+      "dword5": 4133
+    }
+  },
+  {
+    "classId": 78,
+    "x": 1,
+    "y": 0,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 6942,
+    "extraFlags": 177,
+    "mercTypes": [
+      139,
+      139,
+      139,
+      139,
+      139,
+      139
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 671088896,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 2560,
+      "dword4": 218965276,
+      "dword5": 131073
+    }
+  },
+  {
+    "classId": 79,
+    "x": 1,
+    "y": 0,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 7712,
+    "extraFlags": 177,
+    "mercTypes": [
+      139,
+      139,
+      139,
+      139,
+      139,
+      139
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 671088896,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 2560,
+      "dword4": 218965276,
+      "dword5": 131073
+    }
+  },
+  {
+    "classId": 103,
+    "x": 1,
+    "y": 0,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 7202,
+    "extraFlags": 195,
+    "mercTypes": [
+      137,
+      137,
+      137,
+      137,
+      136,
+      136
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 1342177536,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 512,
+      "dword4": 1111633438,
+      "dword5": 2565
+    }
+  },
+  {
+    "classId": 74,
+    "x": 1,
+    "y": 0,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 4119,
+    "extraFlags": 197,
+    "mercTypes": [
+      137,
+      137,
+      137,
+      137,
+      135,
+      135
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 1426063616,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 256,
+      "dword4": 1027418914,
+      "dword5": 8229
+    }
   }
 ];
 

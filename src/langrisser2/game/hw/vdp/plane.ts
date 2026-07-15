@@ -66,7 +66,7 @@ function decodeTileRow(vram: Uint8Array, tileIndex: number): Uint8Array[] {
 const tileRowsCache = new Map<number, Uint8Array[]>();
 
 function getCachedTileRows(vram: Uint8Array, tileIndex: number): Uint8Array[] {
-  if (tileIndex === 0) return []; // empty tile
+  // Genesis VDP: tile index 0 is valid — transparency is pixel value 0, not tile index
   let cached = tileRowsCache.get(tileIndex);
   if (!cached) {
     cached = decodeTileRow(vram, tileIndex);
@@ -123,7 +123,8 @@ export function renderPlane(
       const entry = parseNameTableEntry(vram, entryAddr);
 
       if (priorityFilter !== -1 && entry.priority !== priorityFilter) continue;
-      if (entry.tileIndex === 0) continue;
+      // Genesis VDP: tile index 0 is valid; transparency is pixel value 0
+      // (former skip removed — tile 0 is a legitimate tile in opening animation)
 
       // 获取缓存的 tile 行
       const tileRows = getCachedTileRows(vram, entry.tileIndex);

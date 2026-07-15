@@ -1,0 +1,33 @@
+<!--
+  pages/index/index.wxml — 游戏主页面
+
+  布局:
+    - Canvas (Genesis VDP 320×224, 3x scale)
+    - 状态栏 + 操作提示
+
+  触摸事件: Canvas 2D 是原生组件, 触摸事件必须直接绑定在 canvas 上,
+  wrapper view 无法穿透原生 Canvas 层.
+-->
+<view class="game-container">
+  <!-- 游戏 Canvas (触摸事件必须直接绑定在 canvas 上, Canvas 2D 是原生组件) -->
+  <view class="canvas-wrapper">
+    <canvas
+      type="2d"
+      id="gameCanvas"
+      class="game-canvas"
+      style="width: {{canvasDisplayW}}px; height: {{canvasDisplayH}}px;"
+      bindtouchstart="onCanvasTouch"
+      bindtouchmove="onCanvasTouch"
+      bindtouchend="onCanvasTouch"
+      bindtouchcancel="onCanvasTouch"
+    />
+  </view>
+
+  <!-- 底部信息栏 -->
+  <view class="status-bar">
+    <text class="status-text">{{statusText}}</text>
+  </view>
+  <view class="hints">
+    <text class="hint-text">左侧方向键 | 右侧 A/B/C/START</text>
+  </view>
+</view>

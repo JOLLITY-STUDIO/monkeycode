@@ -1,0 +1,46 @@
+{
+  "description": "Langrisser II — 纯 TypeScript 实现 (微信小程序版)",
+  "setting": {
+    "es6": true,
+    "postcss": true,
+    "minified": true,
+    "uglifyFileName": false,
+    "enhance": true,
+    "packNpmRelationList": [],
+    "babelSetting": {
+      "ignore": [],
+      "disablePlugins": [],
+      "outputPath": ""
+    },
+    "useCompilerPlugins": ["typescript"],
+    "minifyWXML": true,
+    "condition": false
+  },
+  "compileType": "miniprogram",
+  "simulatorPluginLibVersion": {},
+  "packOptions": {
+    "ignore": [
+      { "type": "folder", "value": "20260713" },
+      { "type": "folder", "value": "docs" },
+      { "type": "folder", "value": "monkeycode-tmp-files" },
+      { "type": "folder", "value": "output" },
+      { "type": "folder", "value": "savestage" },
+      { "type": "folder", "value": "scripts" },
+      { "type": "folder", "value": "test" },
+      { "type": "folder", "value": "tools" },
+      { "type": "file", "value": "english-script.txt" },
+      { "type": "file", "value": "Genesis.htm" },
+      { "type": "file", "value": "Genesis.js" },
+      { "type": "file", "value": "Genesis.min.js" },
+      { "type": "file", "value": "Genesis-dumper.htm" },
+      { "type": "file", "value": "index.html" },
+      { "type": "file", "value": "main.ts" }
+    ],
+    "include": []
+  },
+  "appid": "wxa5186294d8f02117",
+  "editorSetting": {
+    "tabIndent": "insertSpaces",
+    "tabSize": 2
+  }
+}

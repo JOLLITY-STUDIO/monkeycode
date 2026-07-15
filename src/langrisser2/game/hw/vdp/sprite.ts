@@ -57,7 +57,7 @@ function decodeTileRows(vram: Uint8Array, tileIndex: number): Uint8Array[] {
 const _spriteTileCache = new Map<number, Uint8Array[]>();
 
 function getSpriteTileRows(vram: Uint8Array, tileIndex: number): Uint8Array[] {
-  if (tileIndex === 0) return [];
+  // Genesis VDP: tile index 0 is valid — transparency is pixel value 0, not tile index
   let cached = _spriteTileCache.get(tileIndex);
   if (!cached) {
     cached = decodeTileRows(vram, tileIndex);
@@ -100,7 +100,8 @@ export function parseSprites(vdp: VDP): SpriteAttr[] {
 
     const xLo = vram[addr + 6];
     const xHi = vram[addr + 7];
-    const x = ((xHi << 8) | xLo) & 0x3FF;
+    // Genesis sprite X uses 0x80 offset: X=0x80 → screen pixel 0
+    const x = (((xHi << 8) | xLo) & 0x3FF) - 128;
 
     result.push({
       index: link,

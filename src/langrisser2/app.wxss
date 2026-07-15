@@ -1,0 +1,13 @@
+/**
+ * app.wxss — 全局样式
+ * 
+ * 暗色主题, 适配游戏画面
+ */
+
+page {
+  background: #0a0a0a;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  font-family: 'Courier New', monospace;
+}

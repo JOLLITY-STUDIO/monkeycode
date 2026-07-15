@@ -217,21 +217,353 @@ export const TILE_DEF_BONUS: number[] = [
 
 export interface Stage15Unit {
   classId: number;
-  commanderId: number;
   x: number;
   y: number;
   /** 0=player, 1=NPC, 2=enemy */
   faction: number;
-  attr0: number;
-  attr1: number;
-  attr2: number;
-  attr3: number;
-  attr4: number;
-  attr5: number;
+  flag: number;
+  item: number;
+  hp: number;
   extraFlags: number;
+  /** 6 mercenary type IDs (0xFF = none) */
+  mercTypes: number[];
+  raw: {
+    dword0: number;
+    word2: number;
+    wordField: number;
+    wordEquip: number;
+    dword3: number;
+    dword4: number;
+    dword5: number;
+  };
 }
 
-export const UNITS: Stage15Unit[] = [];
+export const UNITS: Stage15Unit[] = [
+  {
+    "classId": 6,
+    "x": 0,
+    "y": 0,
+    "faction": 0,
+    "flag": 1,
+    "item": 0,
+    "hp": 65535,
+    "extraFlags": 21,
+    "mercTypes": [
+      112,
+      112,
+      112,
+      112,
+      255,
+      255
+    ],
+    "raw": {
+      "dword0": 2147483648,
+      "word2": 503316480,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 2304,
+      "dword4": 33692438,
+      "dword5": 131073
+    }
+  },
+  {
+    "classId": 47,
+    "x": 1,
+    "y": 128,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 2829,
+    "extraFlags": 165,
+    "mercTypes": [
+      120,
+      120,
+      120,
+      120,
+      255,
+      255
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 384,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 256,
+      "dword4": 67378455,
+      "dword5": 0
+    }
+  },
+  {
+    "classId": 43,
+    "x": 1,
+    "y": 64,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 5904,
+    "extraFlags": 165,
+    "mercTypes": [
+      120,
+      120,
+      120,
+      120,
+      118,
+      118
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 1174405440,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 1792,
+      "dword4": 101064731,
+      "dword5": 131137
+    }
+  },
+  {
+    "classId": 21,
+    "x": 1,
+    "y": 33,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 5909,
+    "extraFlags": 87,
+    "mercTypes": [
+      115,
+      115,
+      122,
+      122,
+      119,
+      119
+    ],
+    "raw": {
+      "dword0": 30,
+      "word2": 1342243105,
+      "wordField": 5909,
+      "wordEquip": 0,
+      "dword3": 1536,
+      "dword4": 404237856,
+      "dword5": 264201
+    }
+  },
+  {
+    "classId": 46,
+    "x": 1,
+    "y": 64,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 8720,
+    "extraFlags": 165,
+    "mercTypes": [
+      120,
+      120,
+      120,
+      120,
+      118,
+      118
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 1174405440,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 1792,
+      "dword4": 101064731,
+      "dword5": 131137
+    }
+  },
+  {
+    "classId": 42,
+    "x": 1,
+    "y": 1,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 3604,
+    "extraFlags": 131,
+    "mercTypes": [
+      119,
+      119,
+      119,
+      119,
+      119,
+      119
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 1677787393,
+      "wordField": 3604,
+      "wordEquip": 0,
+      "dword3": 768,
+      "dword4": 454762006,
+      "dword5": 16513
+    }
+  },
+  {
+    "classId": 44,
+    "x": 1,
+    "y": 1,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 7189,
+    "extraFlags": 135,
+    "mercTypes": [
+      116,
+      116,
+      116,
+      116,
+      116,
+      116
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 671088897,
+      "wordField": 7189,
+      "wordEquip": 0,
+      "dword3": 1024,
+      "dword4": 84221722,
+      "dword5": 132097
+    }
+  },
+  {
+    "classId": 45,
+    "x": 1,
+    "y": 1,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 9748,
+    "extraFlags": 121,
+    "mercTypes": [
+      119,
+      119,
+      119,
+      119,
+      119,
+      119
+    ],
+    "raw": {
+      "dword0": 0,
+      "word2": 1593835777,
+      "wordField": 9748,
+      "wordEquip": 0,
+      "dword3": 1280,
+      "dword4": 336861977,
+      "dword5": 36873
+    }
+  },
+  {
+    "classId": 62,
+    "x": 1,
+    "y": 0,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 65535,
+    "extraFlags": 178,
+    "mercTypes": [
+      133,
+      133,
+      133,
+      133,
+      133,
+      133
+    ],
+    "raw": {
+      "dword0": 2147483648,
+      "word2": 1342243072,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 2560,
+      "dword4": 336864282,
+      "dword5": 4194369
+    }
+  },
+  {
+    "classId": 12,
+    "x": 1,
+    "y": 0,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 65535,
+    "extraFlags": 90,
+    "mercTypes": [
+      135,
+      135,
+      135,
+      135,
+      255,
+      255
+    ],
+    "raw": {
+      "dword0": 2147483648,
+      "word2": 1342243072,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 256,
+      "dword4": 640033825,
+      "dword5": 270369
+    }
+  },
+  {
+    "classId": 63,
+    "x": 1,
+    "y": 0,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 65535,
+    "extraFlags": 178,
+    "mercTypes": [
+      133,
+      133,
+      133,
+      133,
+      133,
+      133
+    ],
+    "raw": {
+      "dword0": 2147483648,
+      "word2": 1342243072,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 2560,
+      "dword4": 336864282,
+      "dword5": 4194369
+    }
+  },
+  {
+    "classId": 82,
+    "x": 1,
+    "y": 0,
+    "faction": 2,
+    "flag": 4,
+    "item": 0,
+    "hp": 65535,
+    "extraFlags": 182,
+    "mercTypes": [
+      130,
+      130,
+      130,
+      130,
+      255,
+      255
+    ],
+    "raw": {
+      "dword0": 2147483648,
+      "word2": 838861056,
+      "wordField": 0,
+      "wordEquip": 0,
+      "dword3": 256,
+      "dword4": 168434969,
+      "dword5": 9
+    }
+  }
+];
 
 // ============================================================================
 // Scenario config (4 segments × 8 dwords)

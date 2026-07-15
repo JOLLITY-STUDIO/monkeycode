@@ -79,28 +79,60 @@ for (let LEVEL = 0; LEVEL < TOTAL_SCENARIOS; LEVEL++) {
   }
 
   // ==================== UNITS ====================
+  // ROM unit deploy struct (from ASM loc_010D1E, confirmed via RAM analysis):
+  //   Stride: 0x24 (36 bytes)
+  //   +0x00: dword — leader/unit ID
+  //   +0x04: word  — flag
+  //   +0x06: byte  — X position (1-based, 0 = auto/default)
+  //   +0x07: byte  — Y position (1-based, 0 = auto/default)
+  //   +0x08: byte  — flag/attribute (bit0=player, bit1=NPC)
+  //   +0x09: byte  — item
+  //   +0x0A: word  — field
+  //   +0x0C: word  — equipment
+  //   +0x18: word  — HP
+  //   +0x1A: byte  — classId
+  //   +0x1C: byte  — extra attribute
+  //   +0x1E-0x23: 6 mercenary type bytes (FF = none)
   const cfgPtr = readU32(0x18005E + LEVEL * 4) & 0xFFFFFF;
   const ulPtr = readU32(cfgPtr + 0x0C) & 0xFFFFFF;
+  const unitCount = readU16(ulPtr);
   const unitData = [];
-  const STRIDE = 0x1E;
-  let off = 0;
-  while (ulPtr + off + STRIDE <= rom.length) {
-    const a = ulPtr + off;
-    const cls = rom[a + 0x1B], cmd = rom[a + 0x1A];
-    // 0xFF = end-of-list sentinel (both class & commander)
-    // NOTE: cmd==0 is valid (unit with no mercenaries/soldiers)
-    if (cls === 0xFF && cmd === 0xFF) break;
-    const attr2 = readU32(a + 0x08);
-    const isPlayer = (attr2 & 1) !== 0, isNPC = (attr2 & 2) !== 0;
-    let faction = 2;
+  const STRIDE = 0x24;
+  const startOff = ulPtr + 2; // skip the 2-byte count
+  for (let i = 0; i < unitCount; i++) {
+    const a = startOff + i * STRIDE;
+    if (a + STRIDE > rom.length) break;
+    const classId = rom[a + 0x1A];
+    const x = rom[a + 0x06], y = rom[a + 0x07];
+    const attr0 = readU32(a);
+    const attr1 = readU32(a + 0x04);
+    const flag = rom[a + 0x08];
+    const isPlayer = (flag & 1) !== 0, isNPC = (flag & 2) !== 0;
+    let faction = 2; // enemy default
     if (isPlayer) faction = 0; else if (isNPC) faction = 1;
     unitData.push({
-      classId: cls, commanderId: cmd, x: rom[a + 0x18], y: rom[a + 0x19],
-      faction, attr0: readU32(a), attr1: readU32(a + 0x04), attr2,
-      attr3: readU32(a + 0x0C), attr4: readU32(a + 0x10), attr5: readU32(a + 0x14),
+      classId,
+      x, y,
+      faction,
+      flag,
+      item: rom[a + 0x09],
+      hp: readU16(a + 0x18),
       extraFlags: rom[a + 0x1C],
+      // mercenary types
+      mercTypes: [
+        rom[a + 0x1E], rom[a + 0x1F], rom[a + 0x20],
+        rom[a + 0x21], rom[a + 0x22], rom[a + 0x23],
+      ],
+      raw: {
+        dword0: attr0,
+        word2: attr1,
+        wordField: readU16(a + 0x0A),
+        wordEquip: readU16(a + 0x0C),
+        dword3: readU32(a + 0x0C),
+        dword4: readU32(a + 0x10),
+        dword5: readU32(a + 0x14),
+      },
     });
-    off += STRIDE;
   }
 
   // ==================== SCENARIO CONFIG ====================
@@ -165,18 +197,25 @@ export const TILE_DEF_BONUS: number[] = ${fmtUArr(defBonus)};
 
 export interface Stage${scenarioId}Unit {
   classId: number;
-  commanderId: number;
   x: number;
   y: number;
   /** 0=player, 1=NPC, 2=enemy */
   faction: number;
-  attr0: number;
-  attr1: number;
-  attr2: number;
-  attr3: number;
-  attr4: number;
-  attr5: number;
+  flag: number;
+  item: number;
+  hp: number;
   extraFlags: number;
+  /** 6 mercenary type IDs (0xFF = none) */
+  mercTypes: number[];
+  raw: {
+    dword0: number;
+    word2: number;
+    wordField: number;
+    wordEquip: number;
+    dword3: number;
+    dword4: number;
+    dword5: number;
+  };
 }
 
 export const UNITS: Stage${scenarioId}Unit[] = ${JSON.stringify(unitData, null, 2)};

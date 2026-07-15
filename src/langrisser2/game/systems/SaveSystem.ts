@@ -157,7 +157,7 @@ export function createNewGameSave(slot: number): SaveData {
     gold: 200,
     totalKills: 0,
     shopMode: 0,
-    characters: createDefaultCharacters(rom),
+    characters: createDefaultCharacters(),
     inventory: [],
     unlockedScenarios: [1],
     defeatedClassIds: [],

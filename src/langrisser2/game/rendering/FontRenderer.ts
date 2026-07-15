@@ -51,6 +51,27 @@ export class FontRenderer {
     if (!img) return;
 
     if (palette) {
+      // 小程序无 document: 通过 ImageData 直接操作像素
+      if (typeof document === 'undefined') {
+        // fallback: 直接用 ctx.fillRect 逐像素 (仅 no-DOM 环境)
+        const imgData = ctx.createImageData(tile.width, tile.height);
+        const data = imgData.data;
+        for (let py = 0; py < tile.height; py++) {
+          for (let px = 0; px < tile.width; px++) {
+            const idx = py * tile.width + px;
+            const pxIdx = tile.pixels[idx];
+            const color = palette(pxIdx);
+            const i = idx * 4;
+            data[i] = color[0];
+            data[i + 1] = color[1];
+            data[i + 2] = color[2];
+            data[i + 3] = pxIdx === 0 ? 0 : 255;
+          }
+        }
+        ctx.putImageData(imgData, x, y);
+        return;
+      }
+
       ctx.save();
       const tempCanvas = document.createElement('canvas');
       tempCanvas.width = tile.width;
@@ -81,6 +102,12 @@ export class FontRenderer {
     const hash = this.tileHash(tile);
     if (this.imageCache.has(hash)) {
       return this.imageCache.get(hash) ?? null;
+    }
+
+    // 小程序无 document, offline canvas fallback
+    if (typeof document === 'undefined') {
+      this.imageCache.set(hash, null);
+      return null;
     }
 
     try {
@@ -237,14 +264,21 @@ export class FontRenderer {
 
   measureText(text: string, fontSize?: number): { width: number; height: number } {
     if (this.renderMode === 'fillText') {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      if (!ctx) return { width: 0, height: fontSize ?? 11 };
-
       const fs = fontSize ?? 11;
-      ctx.font = `${fs}px "Noto Sans JP", sans-serif`;
+      // 优先使用 Canvas 2D measureText (浏览器)。
+      // 小程序没有 document, 但 Canvas 2D ctx.measureText 同样可用,
+      // 此处避免创建临时 canvas (document 不存在时回退到估算)。
+      if (typeof document !== 'undefined') {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.font = `${fs}px "Noto Sans JP", sans-serif`;
+          return { width: ctx.measureText(text).width, height: fs };
+        }
+      }
+      // 小程序/无 DOM 环境: 粗略估算 (等宽字体)
       return {
-        width: ctx.measureText(text).width,
+        width: text.length * fs * 0.6,
         height: fs,
       };
     }

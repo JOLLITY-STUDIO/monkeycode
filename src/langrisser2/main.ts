@@ -60,6 +60,7 @@ import {
   SaveData, createNewGameSave, loadData, saveData as doSave,
 } from './game/systems/SaveSystem.js';
 import { SoundSystem } from './game/systems/SoundSystem.js';
+import { getDialogueLines, getPrologue } from './game/data/DialogueData.js';
 
 // ============================================================
 // DOM (仅用于 Canvas 容器和状态显示，不渲染游戏 UI)
@@ -180,8 +181,6 @@ function drawFrame(): void {
 function openOpeningAnimation(): void {
   if (!openingAnimScene) {
     openingAnimScene = new OpeningAnimation(engine.vdp, {
-      frameInterval: 60,   // 16FPS, 模拟原版动画速度
-      loop: false,
       onComplete: () => openTitleScreen(),
     });
   } else {
@@ -401,6 +400,37 @@ function openShop(): void {
 }
 
 /**
+ * 剧情对话 (ROM 0x09FFE 文本系统)
+ * GamePhase.DIALOGUE
+ * 触发: 关卡内事件 (剧情触发) / 战后过渡
+ * 来源: ROM $05E000-$06FFFF (SJIS 脚本) → english-script.txt 翻译 → DialogueData.ts
+ */
+function openDialogue(): void {
+  if (!dialogueScene) dialogueScene = new DialogueScene(engine.vdp);
+
+  const scenarioId = saveData?.scenarioId || 1;
+  const lines = getDialogueLines(scenarioId);
+
+  if (lines.length > 0) {
+    // 对话格式: { speaker, text }[]
+    dialogueScene.open(lines, () => {
+      // 对话完成后 → 返回战斗地图或进入部署
+      if (scenes.phase === GamePhase.DIALOGUE) {
+        // In-battle dialogue → back to battle
+        openBattleMap();
+      }
+    });
+  } else {
+    // 无对话数据 → 直接跳过
+    console.log(`[Dialogue] Scenario ${scenarioId}: 无对话数据, 跳过`);
+    return;
+  }
+
+  scenes.switchTo(GamePhase.DIALOGUE, dialogueScene);
+  setStatus(`对话 — Scenario ${scenarioId} | A/START: 继续`);
+}
+
+/**
  * 战后结算 (场景切换)
  * GamePhase.INTERMISSION (10) → ROM FUN_0001D1C0
  * 触发: 胜利条件达成 / START 菜单"当天指令终了"
@@ -420,12 +450,31 @@ function openIntermission(): void {
         saveData!.scenarioId++;
         state.scenarioIndex = saveData!.scenarioId;
       }
-      // 回到部署 (MENU I) — 下一关
-      openDeploy();
+      // 剧情对话 → 部署 (下一关)
+      openDialogueThenDeploy();
     },
   );
   scenes.switchTo(GamePhase.INTERMISSION, intermissionScene);
   setStatus('战斗结算 | A/START 继续');
+}
+
+/**
+ * 先播放剧情对话, 完成后进入部署 (下一关)
+ */
+function openDialogueThenDeploy(): void {
+  if (!dialogueScene) dialogueScene = new DialogueScene(engine.vdp);
+
+  const scenarioId = saveData?.scenarioId || 1;
+  const lines = getDialogueLines(scenarioId);
+
+  if (lines.length > 0) {
+    dialogueScene.open(lines, () => openDeploy());
+    scenes.switchTo(GamePhase.DIALOGUE, dialogueScene);
+    setStatus(`对话 — Scenario ${scenarioId} | A/START: 继续`);
+  } else {
+    // 无对话 → 直接进入部署
+    openDeploy();
+  }
 }
 
 // ============================================================
@@ -465,7 +514,9 @@ function gameLoop(): void {
   // --- 开场动画: 任意按键 → 跳过 → 标题 (ROM: 按键检测后跳 0xC92C) ---
   if (scenes.phase === GamePhase.OPENING) {
     if (input.isAnyJustPressed()) {
-      openTitleScreen();
+      if (openingAnimScene && !openingAnimScene.finished) {
+        openingAnimScene.skip(); // skip() → _finish() → onComplete → openTitleScreen()
+      }
     }
   }
 
