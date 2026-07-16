@@ -391,12 +391,12 @@ export class RomInits extends RomProgram {
     // ROM: move.w #$000F, ($FFFF95A8)
     this.ram.write16(0xFF95A8, 0x0F);
 
-    // 阶段索引起始值
+    // 阶段索引起始值 (由 RomTaskSystem 1C854 分派器读取)
     this.ram.write16(0xFFAE90, 0);
 
-    // ROM: move.l #$0001C834, ($FFFF8004) → 队列 1C834 为下一任务
-    // 此处写入 TASK_PTR, 由 RomTaskSystem 在 _runInitChain 中驱动
-    this.ram.write32(RAM_VARS.TASK_PTR, 0);  // 等 RomTaskSystem 队列 1C834
+    // Ghidra 反编译 (L5841-5901): C80C 以 return 结束, 不队列任务
+    // 任务调度由 RomTaskSystem._runInitChain() step 0 手动队列 1C834
+    this.ram.write32(RAM_VARS.TASK_PTR, 0);
   }
 
   // ================================================================
