@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>天使之翼2 — ROM 数据伴侣 | 球员属性查看 + 导出</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0b1219;
+  --surface: #131e2a;
+  --surface2: #1a2a3a;
+  --border: #253545;
+  --text: #c8d6e5;
+  --muted: #6b7d8e;
+  --red: #ff6b6b;
+  --red2: #ff5252;
+  --green: #1dd1a1;
+  --green2: #10ac84;
+  --gold: #feca57;
+  --blue: #54a0ff;
+  --purple: #a29bfe;
+  --teamA-bg: #1a2a40;
+  --teamB-bg: #2a1a30;
+  --card-bg: #172330;
+}
+body { font-family: 'Segoe UI','Microsoft YaHei','PingFang SC',sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+.wrapper { max-width: 1400px; margin: 0 auto; }
+header { background: linear-gradient(135deg, #1a2733, #0f1923); border-bottom: 2px solid var(--border); padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+header h1 { font-size: 1.2em; color: var(--red); }
+header .sub { color: var(--muted); font-size: 0.8em; }
+.tab-bar { display: flex; gap: 2px; background: var(--surface); padding: 4px 24px; border-bottom: 1px solid var(--border); }
+.tab { padding: 8px 20px; cursor: pointer; border-radius: 6px 6px 0 0; font-size: 0.85em; font-weight: 600;
+  color: var(--muted); transition: all 0.2s; border: 1px solid transparent; }
+.tab:hover { color: var(--text); background: var(--surface2); }
+.tab.active { color: var(--red); background: var(--surface2); border-color: var(--border); border-bottom-color: var(--surface2); }
+
+/* Drop zone */
+.dropzone { border: 2px dashed var(--border); border-radius: 10px; padding: 40px; text-align: center; cursor: pointer;
+  transition: all 0.3s; background: var(--surface); margin: 16px 24px; }
+.dropzone:hover,.dropzone.active { border-color: var(--red); background: #1a2a3a; }
+.dropzone .icon { font-size: 2.5em; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 18px; border: none; border-radius: 6px;
+  cursor: pointer; font-size: 0.85em; font-weight: 600; transition: all 0.2s; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-red { background: var(--red); color: #fff; }
+.btn-red:hover:not(:disabled) { background: var(--red2); }
+.btn-green { background: var(--green); color: #0b1219; }
+.btn-green:hover:not(:disabled) { background: var(--green2); }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+.btn-outline:hover:not(:disabled) { border-color: var(--blue); color: var(--blue); }
+.btn-sm { padding: 4px 10px; font-size: 0.75em; }
+
+.content { padding: 16px 24px 32px; }
+.hidden { display: none !important; }
+
+/* Match View */
+.match-header { display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
+.match-header select { padding: 6px 12px; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; font-size: 0.9em; min-width: 200px; }
+.match-header .vs { font-size: 1.4em; font-weight: 700; color: var(--gold); }
+.match-header .match-info { font-size: 0.8em; color: var(--muted); }
+.teams-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+@media (max-width: 800px) { .teams-row { grid-template-columns: 1fr; } }
+.team-panel { background: var(--surface); border-radius: 10px; border: 1px solid var(--border); overflow: hidden; }
+.team-panel h3 { padding: 10px 14px; font-size: 0.9em; text-align: center; }
+.team-panel.teamA h3 { background: var(--teamA-bg); color: var(--blue); }
+.team-panel.teamB h3 { background: var(--teamB-bg); color: var(--red2); }
+.player-list { display: flex; flex-direction: column; gap: 4px; padding: 8px; max-height: 650px; overflow-y: auto; }
+.player-row { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border-radius: 6px; cursor: pointer;
+  transition: all 0.15s; border: 1px solid transparent; background: var(--card-bg); }
+.player-row:hover { border-color: var(--blue); background: var(--surface2); transform: translateX(2px); }
+.player-row .pos-label { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-weight: 700; font-size: 0.75em; flex-shrink: 0; }
+.pos-gk { background: #e17055; color: #fff; }
+.pos-df { background: #00b894; color: #fff; }
+.pos-mf { background: #0984e3; color: #fff; }
+.pos-fw { background: #e84393; color: #fff; }
+.player-row .pid { font-family: 'Consolas','Monaco',monospace; font-size: 0.85em; color: var(--gold); min-width: 52px; }
+.player-row .pname { flex: 1; font-size: 0.85em; }
+.player-row .pstats { display: flex; gap: 4px; }
+.player-row .pstats span { font-size: 0.7em; background: var(--surface2); padding: 2px 6px; border-radius: 3px; color: var(--muted); }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100;
+  display: flex; align-items: center; justify-content: center; }
+.modal { background: var(--surface); border-radius: 12px; border: 1px solid var(--border);
+  width: 90%; max-width: 900px; max-height: 85vh; overflow-y: auto; }
+.modal-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center;
+  justify-content: space-between; position: sticky; top: 0; background: var(--surface2); z-index: 1; }
+.modal-header h2 { font-size: 1em; }
+.modal-header .pid-big { color: var(--gold); }
+.modal-close { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--border);
+  background: transparent; color: var(--text); font-size: 1.2em; cursor: pointer; }
+.modal-body { padding: 20px; }
+.modal-body h4 { color: var(--blue); font-size: 0.85em; margin: 14px 0 6px; border-bottom: 1px solid var(--border); padding-bottom: 4px; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 8px; }
+.stat-item { background: var(--card-bg); border-radius: 6px; padding: 10px; text-align: center; border: 1px solid var(--border); }
+.stat-item label { display: block; font-size: 0.7em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+.stat-item .val { font-size: 1.3em; font-weight: 700; color: var(--green); }
+.stat-item .val-hex { font-family: 'Consolas',monospace; font-size: 0.75em; color: var(--muted); margin-top: 2px; }
+.stat-item.unknown .val { color: var(--muted); font-size: 0.9em; }
+.stat-raw { font-family: 'Consolas','Monaco',monospace; font-size: 0.8em; color: var(--purple); word-break: break-all; }
+
+/* All Players */
+.search-bar { display: flex; gap: 10px; margin-bottom: 16px; align-items: center; flex-wrap: wrap; }
+.search-bar input { padding: 8px 14px; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; font-size: 0.9em; width: 250px; }
+.search-bar input:focus { outline: none; border-color: var(--blue); }
+.search-bar .result-count { color: var(--muted); font-size: 0.8em; }
+.all-players-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 10px; }
+.player-card { background: var(--card-bg); border-radius: 8px; padding: 12px; cursor: pointer;
+  border: 1px solid var(--border); transition: all 0.15s; }
+.player-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+.player-card .card-pid { font-family: 'Consolas',monospace; font-size: 1em; color: var(--gold); }
+.player-card .card-class { font-size: 0.75em; color: var(--muted); margin-top: 2px; }
+.player-card .card-quick { display: flex; gap: 3px; margin-top: 6px; flex-wrap: wrap; }
+.player-card .card-quick span { font-size: 0.65em; background: var(--surface2); padding: 2px 5px; border-radius: 3px; color: var(--muted); }
+
+/* Export */
+.export-section { display: grid; gap: 16px; }
+.summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; }
+.card { background: var(--surface); border-radius: 8px; padding: 14px; border: 1px solid var(--border); }
+.card label { display: block; font-size: 0.75em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+.card .val { font-size: 1.5em; font-weight: 700; color: var(--green); }
+pre { background: #0a1218; border-radius: 8px; padding: 14px; overflow-x: auto; font-size: 0.75em;
+  line-height: 1.5; color: #dfe6e9; max-height: 300px; overflow-y: auto; white-space: pre-wrap; word-break: break-all; border: 1px solid var(--border); }
+.step { margin: 4px 0; padding: 4px 8px; border-radius: 4px; font-size: 0.8em; }
+.step.ok { background: #0a3d2a; color: var(--green); }
+.step.info { background: var(--surface2); color: var(--muted); }
+.step.warn { background: #3d2a0a; color: var(--gold); }
+.dl-link { display: inline-block; margin: 4px 8px 4px 0; padding: 7px 16px; background: var(--green); color: #0b1219;
+  border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 0.85em; }
+.dl-link:hover { background: var(--green2); }
+.pos-legend { display: flex; gap: 12px; padding: 8px 0; flex-wrap: wrap; }
+.pos-legend span { display: flex; align-items: center; gap: 4px; font-size: 0.75em; color: var(--muted); }
+.pos-legend .dot { width: 10px; height: 10px; border-radius: 50%; }
+.empty-state { text-align: center; padding: 60px 20px; color: var(--muted); }
+.empty-state .icon { font-size: 3em; margin-bottom: 10px; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+<header>
+  <div>
+    <h1>⚽ 天使之翼2 · ROM 数据伴侣</h1>
+    <span class="sub">Captain Tsubasa II — Player Stats Viewer &amp; Data Extractor</span>
+  </div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <span id="romStatus" style="font-size:0.8em;color:var(--muted)">📂 未加载 ROM</span>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <div class="tab active" data-tab="roster">🏆 比赛阵容</div>
+  <div class="tab" data-tab="allplayers">👥 全部球员</div>
+  <div class="tab" data-tab="export">📥 数据导出</div>
+</div>
+
+<div id="dropzoneWrap"><div class="dropzone" id="dropzone">
+  <div class="icon">📂</div>
+  <p>拖入 .nes ROM 文件，或点击选择</p>
+  <p style="font-size:0.75em;color:var(--muted)">Captain Tsubasa II - Super Striker (Japan).nes</p>
+</div></div>
+
+<div id="mainContent" class="content hidden">
+  <!-- TAB: ROSTER -->
+  <div id="tab-roster">
+    <div class="match-header">
+      <label for="matchSelect" style="color:var(--muted);font-size:0.85em">选择比赛:</label>
+      <select id="matchSelect"></select>
+      <button class="btn btn-outline btn-sm" onclick="prevMatch()">◀</button>
+      <button class="btn btn-outline btn-sm" onclick="nextMatch()">▶</button>
+      <span class="match-info" id="matchInfo"></span>
+    </div>
+    <div class="pos-legend">
+      <span><span class="dot pos-gk"></span> GK</span>
+      <span><span class="dot pos-df"></span> DF</span>
+      <span><span class="dot pos-mf"></span> MF</span>
+      <span><span class="dot pos-fw"></span> FW</span>
+    </div>
+    <div class="teams-row">
+      <div class="team-panel teamA"><h3>🔵 主队 (Team A)</h3><div class="player-list" id="teamAList"></div></div>
+      <div class="team-panel teamB"><h3>🔴 客队 (Team B)</h3><div class="player-list" id="teamBList"></div></div>
+    </div>
+  </div>
+
+  <!-- TAB: ALL PLAYERS -->
+  <div id="tab-allplayers" class="hidden">
+    <div class="search-bar">
+      <input type="text" id="playerSearch" placeholder="搜索球员 ID (如 0xF3, F3, 243)..."
+        oninput="filterPlayers()">
+      <span class="result-count" id="resultCount"></span>
+    </div>
+    <div class="all-players-grid" id="allPlayersGrid"></div>
+  </div>
+
+  <!-- TAB: EXPORT -->
+  <div id="tab-export" class="hidden export-section">
+    <div id="progress"></div>
+    <div class="summary" id="summary"></div>
+    <div id="downloads" style="margin-top:12px"></div>
+  </div>
+</div>
+</div>
+
+<!-- MODAL -->
+<div id="modalOverlay" class="modal-overlay hidden" onclick="if(event.target===this)closeModal()">
+  <div class="modal" id="modal">
+    <div class="modal-header">
+      <h2>球员详情 — <span class="pid-big" id="modalPid"></span></h2>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script>
+/* ====== CONSTANTS ====== */
+const HEADER_SIZE = 16, BANK_SIZE = 16384, BANK_ADDR_OFFSET = 0x8000;
+function bankOff(bank, addr) { return HEADER_SIZE + bank * BANK_SIZE + (addr - BANK_ADDR_OFFSET); }
+function toArr(b, s, n) { return Array.from(new Uint8Array(b, s ?? 0, n ?? b.byteLength - (s ?? 0))); }
+
+const POS_NAMES = ['GK','DF','DF','DF','MF','MF','MF','FW','FW','FW','FW'];
+const STAT_NAMES = ['Ground','Pass','Shoot','Dribble','Block','Tackle'];
+
+let romData = null;
+let allData = null;
+let currentMatch = 0;
+
+/* ====== RLE DECODER (from prg.txt line 19455-19463) ====== */
+function decodeRLE(body) {
+  const out = [];
+  for (let i = 0; i < body.length; i++) {
+    const b = body[i];
+    if (b & 0x80) {
+      const n = b & 0x7F;
+      for (let k = 0; k < n; k++) out.push(0);
+    } else {
+      const n = b;
+      for (let k = 0; k < n; k++) {
+        i++;
+        if (i < body.length) out.push(body[i]);
+      }
+    }
+  }
+  return out;
+}
+
+/* ====== EXTRACTION ====== */
+function extractAll(romBuf) {
+  const r = new Uint8Array(romBuf);
+  const log = (msg, t) => {
+    const el = document.getElementById('progress');
+    if (el) el.innerHTML += `<div class="step ${t||'info'}">${msg}</div>`;
+  };
+  log(`ROM: ${r.length}B, PRG ${Math.floor((r.length-16)/BANK_SIZE)} banks`, 'ok');
+
+  // 1. Roster matches
+  // CORRECTED: $AA47 is in $A000-$BFFF, mapped via MMC3 reg7 → Bank 3
+  // Verified: ROM 0x6A47 (Bank 3, offset 0xA47) = [243,0,225,...] with 11/11 data marks
+  const rosStart = bankOff(3, 0xAA47);
+  const rosEnd = rosStart + 16384; // enough range
+  const MS = 128;
+  const matches = [];
+  for (let off = rosStart; off + MS <= rosEnd; off += MS) {
+    const buf = r.subarray(off, off + MS);
+    if (buf.every(b => b === 0xFF) && matches.length > 0) break;
+    matches.push({
+      teamA: toArr(buf, 0, 11),
+      teamB: toArr(buf, 0x0C, 11),
+      formation: Array.from({length:10}, (_,i) => toArr(buf, 0x18+i*4, 4)),
+      ctrl2C: buf[0x40],
+      aa75: toArr(buf, 0x41, 64),
+    });
+  }
+  log(`Roster: ${matches.length} matches`, 'ok');
+
+  // 2. Pointer table ($8DC2 in Bank $0C $8000-$9FFF)
+  const ptrFrom = bankOff(0x0C, 0x8DC2);
+  const ptrs = [];
+  for (let i = 0; i < 160; i++) {
+    const lo = r[ptrFrom + i*2], hi = r[ptrFrom + i*2 + 1];
+    ptrs.push({index: i, addr: lo | (hi<<8), lo, hi});
+  }
+
+  // 3. Class/type table ($86B8 in Bank $0C)
+  const ctStart = bankOff(0x0C, 0x86B8);
+  const classType = toArr(r, ctStart, 256);
+
+  // 4. $86E8 table (referenced at prg.txt line 19520)
+  const e8Start = bankOff(0x0C, 0x86E8);
+  const table86E8 = toArr(r, e8Start, 512);
+
+  // 5. Bank $03 stats (6-byte records at $03:951B)
+  // These map by classType: classType → 6-byte record
+  const s3Start = bankOff(0x03, 0x951B);
+  const s3Raw = toArr(r, s3Start, 1024);
+  const s3Recs = [];
+  for (let i = 0; i + 6 <= s3Raw.length; i += 6) s3Recs.push(s3Raw.slice(i, i+6));
+  log(`Bank $03: ${s3Recs.length} recs (6-byte)`, 'ok');
+
+  // 6. Type markers ($09:1360 → Bank 9 $8000-$9FFF)
+  const tmStart = bankOff(0x09, 0x9360);
+  const tmRaw = toArr(r, tmStart, 512);
+  const tmRecs = [];
+  for (let i = 0; i + 6 <= tmRaw.length; i += 6) tmRecs.push(tmRaw.slice(i, i+6));
+
+  // 7. Skills ($09:1620)
+  const skStart = bankOff(0x09, 0x9620);
+  const skRaw = toArr(r, skStart, 228);
+  const skRecs = [];
+  for (let i = 0; i + 6 <= skRaw.length; i += 6) skRecs.push(skRaw.slice(i, i+6));
+
+  // 8. Action table ($09:1720)
+  const acStart = bankOff(0x09, 0x9720);
+  const acRaw = toArr(r, acStart, 512);
+  const acRecs = [];
+  for (let i = 0; i + 2 <= acRaw.length; i += 2) acRecs.push(acRaw.slice(i, i+2));
+
+  // 9. Attribute blocks from ALL pointer targets (not just Bank $0C range!)
+  // Read up to 128 bytes from each pointer target
+  const attrBlocks = [];
+  for (let i = 0; i < ptrs.length; i++) {
+    const addr = ptrs[i].addr;
+    let fileOff;
+    // Try Bank $0C first (most pointers are here)
+    if (addr >= 0x8000 && addr < 0xC000) {
+      fileOff = bankOff(0x0C, addr);
+    } else if (addr >= 0xC000 && addr < 0xE000) {
+      fileOff = bankOff(0x0C, addr); // fixed bank
+    } else {
+      // Pointer outside expected range - skip
+      continue;
+    }
+    if (fileOff < HEADER_SIZE || fileOff + 3 > romBuf.byteLength) continue;
+    const hdr = toArr(r, fileOff, 3);
+    // Read body: up to 128 bytes or until zero byte
+    let body = [];
+    for (let j = 0; j < 128 && fileOff + 3 + j < romBuf.byteLength; j++) {
+      body.push(r[fileOff + 3 + j]);
+    }
+    // Also try shorter body (until first standalone 0 after marker)
+    let blen = 0;
+    for (let j = 0; fileOff + 3 + j < romBuf.byteLength && j < 32; j++) {
+      const b = r[fileOff + 3 + j];
+      blen++;
+      if (b === 0 && j > 2) { blen--; break; }
+    }
+    const shortBody = blen > 0 ? toArr(r, fileOff + 3, blen) : toArr(r, fileOff + 3, 3);
+    attrBlocks.push({
+      ptrIndex: i, addr,
+      header: hdr,
+      body: body.slice(0, 32), // keep 32 bytes
+      shortBody,
+      decodedRLE: decodeRLE(shortBody),
+    });
+  }
+  log(`Attr blocks: ${attrBlocks.length}`, 'ok');
+
+  return {
+    description: 'Captain Tsubasa II — Player Data',
+    extractedAt: new Date().toISOString(),
+    matches, ptrs, classType, table86E8,
+    statBlock03: {raw: s3Raw, records: s3Recs},
+    typeMarkers: {raw: tmRaw, records: tmRecs},
+    skills: {raw: skRaw, records: skRecs},
+    actions: {raw: acRaw, records: acRecs},
+    attrBlocks,
+  };
+}
+
+/* ====== PLAYER STAT LOOKUP ====== */
+function getPlayerStats(id) {
+  if (!allData) return null;
+  const idx = id >> 2;
+  const stats = { id, idx };
+
+  // Class/type
+  if (idx < allData.classType.length) {
+    stats.classTypeRaw = allData.classType[idx];
+  }
+
+  // Pointer
+  if (idx < allData.ptrs.length) stats.ptr = allData.ptrs[idx];
+
+  // Attribute block (with RLE decode)
+  stats.attrBlock = allData.attrBlocks.find(b => b.ptrIndex === idx);
+
+  // Bank $03 record: indexed by classType
+  const ctIdx = stats.classTypeRaw;
+  if (ctIdx < allData.statBlock03.records.length) {
+    stats.bank03Rec = allData.statBlock03.records[ctIdx];
+  }
+
+  // Skills etc
+  if (idx < allData.skills.records.length) stats.skills = allData.skills.records[idx];
+  if (idx < allData.typeMarkers.records.length) stats.typeMarkers = allData.typeMarkers.records[idx];
+  if (idx < allData.actions.records.length) stats.actions = allData.actions.records[idx];
+
+  return stats;
+}
+
+/* ====== UI HELPERS ====== */
+function hex(b) { return '0x' + b.toString(16).toUpperCase().padStart(2,'0'); }
+function hexNum(n, w=2) { return '0x' + n.toString(16).toUpperCase().padStart(w,'0'); }
+function posClass(i) { return i===0?'pos-gk':i<=3?'pos-df':i<=6?'pos-mf':'pos-fw'; }
+
+function renderPlayerRow(id, pos) {
+  const stats = getPlayerStats(id);
+  if (!stats) {
+    return `<div class="player-row" style="opacity:0.5">
+      <span class="pos-label ${posClass(pos)}">${POS_NAMES[pos]}</span>
+      <span class="pid">${hex(id)}</span><span class="pname">— <span style="color:var(--muted)">无数据</span></span>
+    </div>`;
+  }
+  const ct = hex(stats.classTypeRaw);
+  const b3 = stats.bank03Rec || [];
+  const b3str = b3.slice(0,3).map(v=>v.toString().padStart(3)).join(' ');
+  const rle = stats.attrBlock ? stats.attrBlock.decodedRLE : [];
+  const rleStr = rle.slice(0, 4).join(',');
+  
+  return `<div class="player-row" onclick="viewPlayer(0x${id.toString(16).toUpperCase()})" title="点击查看详情">
+    <span class="pos-label ${posClass(pos)}">${POS_NAMES[pos]}</span>
+    <span class="pid">${hex(id)}</span>
+    <span class="pname">CT:${ct}${b3str ? ' · B3:'+b3str : ''}</span>
+    <span class="pstats">${rleStr ? `<span>RLE:[${rleStr}]</span>` : ''}</span>
+  </div>`;
+}
+
+/* ====== MATCH VIEW ====== */
+function prevMatch() { if (allData && currentMatch > 0) { currentMatch--; renderMatch(); } }
+function nextMatch() { if (allData && currentMatch < allData.matches.length-1) { currentMatch++; renderMatch(); } }
+function renderMatch() {
+  const m = allData.matches[currentMatch];
+  document.getElementById('matchInfo').textContent =
+    `CTRL 2C: ${hex(m.ctrl2C)} | AA75: ${m.aa75.slice(0,8).map(hex).join(' ')}...`;
+  document.getElementById('matchSelect').value = currentMatch;
+  document.getElementById('teamAList').innerHTML =
+    m.teamA.map((id,i) => renderPlayerRow(id, i)).join('');
+  document.getElementById('teamBList').innerHTML =
+    m.teamB.map((id,i) => renderPlayerRow(id, i)).join('');
+}
+
+function renderAllMatches() {
+  const sel = document.getElementById('matchSelect');
+  sel.innerHTML = allData.matches.map((_,i) =>
+    `<option value="${i}">Match #${i+1}</option>`).join('');
+  sel.onchange = () => { currentMatch = parseInt(sel.value); renderMatch(); };
+  currentMatch = 0;
+  renderMatch();
+}
+
+/* ====== ALL PLAYERS VIEW ====== */
+function filterPlayers() { renderAllPlayers(document.getElementById('playerSearch').value.trim()); }
+function renderAllPlayers(filter) {
+  const seen = new Set();
+  for (const m of allData.matches) {
+    for (const id of m.teamA) seen.add(id);
+    for (const id of m.teamB) seen.add(id);
+  }
+  let ids = Array.from(seen).sort((a,b)=>a-b);
+  if (filter) {
+    const f = filter.toLowerCase().replace('0x','');
+    ids = ids.filter(id => id.toString(16).toUpperCase().includes(f.toUpperCase()) || id.toString(10).includes(f));
+  }
+  document.getElementById('resultCount').textContent = `${ids.length} players`;
+  const grid = document.getElementById('allPlayersGrid');
+  if (ids.length === 0) {
+    grid.innerHTML = '<div class="empty-state"><div class="icon">🔍</div><p>Not found</p></div>';
+    return;
+  }
+  grid.innerHTML = ids.map(id => {
+    const s = getPlayerStats(id);
+    const b3 = s && s.bank03Rec ? s.bank03Rec.slice(0,4).map(v=>`<span>${v}</span>`).join('') : '';
+    const rle = s && s.attrBlock && s.attrBlock.decodedRLE.length > 0 ? 
+      '<span>RLE:'+s.attrBlock.decodedRLE.slice(0,3).join(',')+'</span>' : '';
+    return `<div class="player-card" onclick="viewPlayer(0x${id.toString(16).toUpperCase()})">
+      <div class="card-pid">${hex(id)}</div>
+      <div class="card-class">CT:${s?hex(s.classTypeRaw):'??'}</div>
+      <div class="card-quick">${b3} ${rle}</div>
+    </div>`;
+  }).join('');
+}
+
+/* ====== PLAYER DETAIL MODAL ====== */
+function viewPlayer(id) {
+  const s = getPlayerStats(id);
+  if (!s) { alert('No data for player ' + hexNum(id, 2)); return; }
+  document.getElementById('modalPid').textContent = hexNum(id, 2);
+  let html = '';
+
+  // Overview
+  html += `<h4>📋 Overview</h4><div class="stat-grid" style="grid-template-columns:repeat(4,1fr)">`;
+  html += `<div class="stat-item"><label>Player ID</label><div class="val">${hex(id)}</div></div>`;
+  html += `<div class="stat-item"><label>ID >> 2</label><div class="val">${id>>2}</div></div>`;
+  html += `<div class="stat-item"><label>ClassType</label><div class="val">${s.classTypeRaw}</div><div class="val-hex">${hex(s.classTypeRaw)}</div></div>`;
+  html += `<div class="stat-item"><label>Ptr Addr</label><div class="val">${s.ptr?hexNum(s.ptr.addr,4):'N/A'}</div></div>`;
+  html += `</div>`;
+
+  // Bank $03 Record (by classType)
+  if (s.bank03Rec) {
+    html += `<h4>📊 Bank $03 Record [classType=${s.classTypeRaw}] — 6 bytes</h4>`;
+    html += `<div class="stat-grid">${s.bank03Rec.map((v,i) => 
+      `<div class="stat-item"><label>B3[${i}]</label><div class="val">${v}</div><div class="val-hex">${hex(v)}</div></div>`
+    ).join('')}</div>`;
+    html += `<div class="stat-raw">Raw: ${s.bank03Rec.map(hex).join(' ')}</div>`;
+  }
+
+  // Attribute Block with RLE decode
+  if (s.attrBlock) {
+    html += `<h4>📦 Attr Block [${hexNum(s.attrBlock.addr,4)}] — ${s.attrBlock.body.length}B raw</h4>`;
+    html += `<div class="stat-grid">`;
+    html += `<div class="stat-item"><label>Header[0]</label><div class="val">${s.attrBlock.header[0]}</div><div class="val-hex">${hex(s.attrBlock.header[0])}</div></div>`;
+    html += `<div class="stat-item"><label>Header[1]</label><div class="val">${s.attrBlock.header[1]}</div><div class="val-hex">${hex(s.attrBlock.header[1])}</div></div>`;
+    html += `<div class="stat-item"><label>Header[2]</label><div class="val">${s.attrBlock.header[2]}</div><div class="val-hex">${hex(s.attrBlock.header[2])}</div></div>`;
+    html += `</div>`;
+    html += `<div class="stat-raw">Body hex: ${s.attrBlock.body.map(hex).join(' ')}</div>`;
+    html += `<div class="stat-raw" style="color:var(--green)">Body dec: ${s.attrBlock.body.join(' ')}</div>`;
+    
+    const rle = s.attrBlock.decodedRLE;
+    html += `<div class="stat-raw" style="color:var(--gold)">RLE decoded (${rle.length}B): ${rle.join(' ')}</div>`;
+    if (rle.length >= 6) {
+      html += `<div class="stat-grid">`;
+      for (let i = 0; i < Math.min(rle.length, 12); i++) {
+        html += `<div class="stat-item"><label>RLE[${i}]</label><div class="val">${rle[i]}</div></div>`;
+      }
+      html += `</div>`;
+    }
+  }
+
+  // Skills
+  if (s.skills) {
+    html += `<h4>⚡ Skills (Bank $09 $1620)</h4>`;
+    html += `<div class="stat-raw">Raw: ${s.skills.map(hex).join(' ')}</div>`;
+    html += `<div class="stat-grid">${s.skills.map((v,i)=>`<div class="stat-item"><label>Skill[${i}]</label><div class="val">${v}</div><div class="val-hex">${hex(v)}</div></div>`).join('')}</div>`;
+  }
+
+  // Type Markers
+  if (s.typeMarkers) {
+    html += `<h4>🏷️ Type Markers (Bank $09 $1360)</h4>`;
+    html += `<div class="stat-raw">Raw: ${s.typeMarkers.map(hex).join(' ')}</div>`;
+  }
+
+  // Actions
+  if (s.actions) {
+    html += `<h4>🎬 Actions (Bank $09 $1720)</h4>`;
+    html += `<div class="stat-raw">Raw: ${s.actions.map(hex).join(' ')}</div>`;
+  }
+
+  // Full dump
+  html += `<h4>📝 All Data (raw)</h4>`;
+  html += `<div class="stat-grid" style="grid-template-columns:1fr 1fr">`;
+  html += statRow('Player ID', hexNum(id,2));
+  html += statRow('ClassType', `${s.classTypeRaw} (${hex(s.classTypeRaw)})`);
+  html += statRow('Ptr Addr', s.ptr ? hexNum(s.ptr.addr,4) : 'N/A');
+  html += statRow('Bank 3 Rec', s.bank03Rec ? s.bank03Rec.join(' ') : 'N/A');
+  html += statRow('Attr Hdr', s.attrBlock ? s.attrBlock.header.map(hex).join(' ') : 'N/A');
+  html += statRow('Attr Body (hex)', s.attrBlock ? s.attrBlock.body.map(hex).join(' ') : 'N/A');
+  html += statRow('Attr RLE Decoded', s.attrBlock ? s.attrBlock.decodedRLE.join(' ') : 'N/A');
+  html += statRow('Skills', s.skills ? s.skills.join(' ') : 'N/A');
+  html += statRow('Type Markers', s.typeMarkers ? s.typeMarkers.join(' ') : 'N/A');
+  html += statRow('Actions', s.actions ? s.actions.join(' ') : 'N/A');
+  html += `</div>`;
+
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').classList.remove('hidden');
+}
+
+function statRow(label, value) {
+  return `<div style="display:flex;justify-content:space-between;padding:4px 8px;
+    border-bottom:1px solid var(--border);font-size:0.8em">
+    <span style="color:var(--muted)">${label}</span>
+    <span style="font-family:Consolas,monospace;color:var(--green)">${value}</span></div>`;
+}
+function closeModal() { document.getElementById('modalOverlay').classList.add('hidden'); }
+
+/* ====== TAB SWITCHING ====== */
+document.querySelectorAll('.tab').forEach(t => {
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.tab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    const tab = t.dataset.tab;
+    document.querySelectorAll('[id^="tab-"]').forEach(el => {
+      if (el.id === 'tab-' + tab) el.classList.remove('hidden');
+      else el.classList.add('hidden');
+    });
+    if (tab === 'allplayers') renderAllPlayers();
+  });
+});
+
+/* ====== EXPORT ====== */
+function updateExport(data) {
+  const items = [
+    ['比赛阵容', `${data.matches.length} 场`],
+    ['指针表', `${data.ptrs.length} 条`],
+    ['Class/Type', `${data.classType.length} bytes`],
+    ['属性值 Bank $03', `${data.statBlock03.records.length} 条 (6-byte)`],
+    ['类型标记', `${data.typeMarkers.records.length} 条 (6-byte)`],
+    ['特技/技能ID', `${data.skills.records.length} 条 (6-byte)`],
+    ['动作/动画', `${data.actions.records.length} 条 (2-byte)`],
+    ['属性块 Bank $0C', `${data.attrBlocks.length} 块`],
+  ];
+  document.getElementById('summary').innerHTML = items.map(([l,v]) =>
+    `<div class="card"><label>${l}</label><div class="val">${v}</div></div>`).join('');
+}
+
+function downloadJSON(data) {
+  return URL.createObjectURL(new Blob([JSON.stringify(data,null,2)], {type:'application/json'}));
+}
+function downloadTS(data) {
+  const ts = `/**
+ * 天使之翼2 — 球员初始数据表
+ * AUTO-GENERATED — ${data.extractedAt}
+ */
+export const PLAYER_DATA = ${JSON.stringify(data, null, 2)} as const;
+`;
+  return URL.createObjectURL(new Blob([ts], {type:'text/typescript'}));
+}
+
+/* ====== FILE HANDLING ====== */
+function handleFile(file) {
+  if (!file.name.toLowerCase().endsWith('.nes')) {
+    alert('请选择 .nes ROM 文件');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onerror = () => alert('读取文件失败!');
+  reader.onload = () => {
+    try {
+      romData = reader.result;
+      allData = extractAll(romData);
+      document.getElementById('romStatus').innerHTML =
+        '✅ ROM 已加载 · ' + file.name.split('.')[0].substring(0,20) + '...';
+      document.getElementById('dropzoneWrap').classList.add('hidden');
+      document.getElementById('mainContent').classList.remove('hidden');
+      renderAllMatches();
+
+      // Auto-sync to export tab
+      updateExport(allData);
+      const dlDiv = document.getElementById('downloads');
+      dlDiv.innerHTML = `
+        <a class="dl-link" href="${downloadJSON(allData)}" download="_player_data.json">📥 下载 JSON</a>
+        <a class="dl-link" href="${downloadTS(allData)}" download="_player_data.ts">📥 下载 TypeScript</a>
+        <span style="color:var(--muted);font-size:0.8em;margin-left:12px">
+          放到 src/nes/tsubasa/data/
+        </span>
+      `;
+    } catch(e) {
+      alert('解析出错: ' + e.message);
+      console.error(e);
+    }
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+const dz = document.getElementById('dropzone');
+dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('active'); });
+dz.addEventListener('dragleave', () => dz.classList.remove('active'));
+dz.addEventListener('drop', e => {
+  e.preventDefault(); dz.classList.remove('active');
+  if (e.dataTransfer.files[0]) handleFile(e.dataTransfer.files[0]);
+});
+dz.addEventListener('click', () => {
+  const inp = document.createElement('input'); inp.type='file'; inp.accept='.nes';
+  inp.onchange = () => { if (inp.files[0]) handleFile(inp.files[0]); };
+  inp.click();
+});
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+  if (!allData) return;
+  if (e.key === 'ArrowLeft') { prevMatch(); e.preventDefault(); }
+  if (e.key === 'ArrowRight') { nextMatch(); e.preventDefault(); }
+});
+</script>
+</body>
+</html>
