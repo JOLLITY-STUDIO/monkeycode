@@ -1,0 +1,161 @@
+/** 游戏页面样式 — 双 Canvas 对比调试 */
+
+/* 容器 */
+.game-container {
+  width: 100vw;
+  height: 100vh;
+  background: #0f0f23;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* 双 Canvas 并排 */
+.canvas-row {
+  display: flex;
+  flex-direction: row;
+  width: 100vw;
+  max-height: calc(100vh - 180px);
+  justify-content: center;
+  gap: 4px;
+}
+
+.canvas-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  max-width: 50vw;
+}
+
+.canvas-label {
+  color: #aaa;
+  font-size: 10px;
+  padding: 2px 0;
+  text-align: center;
+}
+
+/* Canvas — 缩放适配 */
+.dual-canvas {
+  width: 100%;
+  height: auto;
+  max-width: 48vw;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+/* 状态栏 */
+.status-bar {
+  width: 100%;
+  padding: 4px 12px;
+  box-sizing: border-box;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.status-text {
+  color: #aaa;
+  font-size: 12px;
+}
+
+/* ================================
+   虚拟方向键 (十字键布局)
+   ================================ */
+
+.dpad {
+  position: fixed;
+  left: 20px;
+  bottom: 40px;
+  width: 120px;
+  height: 120px;
+  z-index: 10;
+}
+
+.dpad-btn {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+}
+
+.dpad-up    { left: 40px; top: 0; }
+.dpad-down  { left: 40px; bottom: 0; }
+.dpad-left  { left: 0;    top: 40px; }
+.dpad-right { right: 0;   top: 40px; }
+
+.dpad-center {
+  position: absolute;
+  left: 40px;
+  top: 40px;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.dpad-btn:active {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+/* ================================
+   功能按键 (A / B / START / SELECT)
+   ================================ */
+
+.action-buttons {
+  position: fixed;
+  right: 20px;
+  bottom: 40px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  z-index: 10;
+  justify-content: flex-end;
+  width: 140px;
+}
+
+.action-btn {
+  padding: 0 16px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  user-select: none;
+}
+
+.action-btn:active {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(0.95);
+}
+
+.btn-a {
+  background: rgba(220, 50, 50, 0.3);
+  border-color: rgba(220, 50, 50, 0.5);
+  font-size: 20px;
+}
+
+.btn-b {
+  background: rgba(220, 180, 50, 0.3);
+  border-color: rgba(220, 180, 50, 0.5);
+  font-size: 20px;
+}
+
+.btn-start {
+  background: rgba(100, 100, 100, 0.3);
+  border-color: rgba(100, 100, 100, 0.5);
+  font-size: 11px;
+}
+
+.btn-select {
+  background: rgba(100, 100, 100, 0.3);
+  border-color: rgba(100, 100, 100, 0.5);
+  font-size: 11px;
+}

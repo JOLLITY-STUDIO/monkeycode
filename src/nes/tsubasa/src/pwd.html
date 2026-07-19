@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>天使之翼 II — 密码 RAM 抓取</title>
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #0a0a0a; color: #ccc; font: 13px/1.5 monospace; display: flex; }
+#left { padding: 10px; min-width: 240px; max-width: 320px; }
+#right { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 10px; }
+canvas { border: 2px solid #333; image-rendering: pixelated; width: 512px; height: 480px; }
+h2 { color: #e94560; margin: 0 0 6px; font-size: 14px; }
+button { display: block; margin: 4px 0; padding: 6px 10px; background: #1a1a2e; color: #0f0; border: 1px solid #333; cursor: pointer; font: inherit; }
+button:hover { background: #16213e; }
+button:disabled { color: #555; }
+button.seq { background: #0a2a0a; }
+#ram { margin-top: 8px; font-size: 11px; max-height: 360px; overflow-y: auto; background: #0d0d0d; padding: 4px; }
+#ram pre { margin: 1px 0; white-space: pre-wrap; word-break: break-all; }
+#ram .hdr { color: #e94560; }
+#ram .val { color: #4fc3f7; }
+#info { margin: 4px 0; color: #888; font-size: 11px; }
+.kbd { margin-top: 8px; font-size: 10px; color: #555; line-height: 1.7; }
+.kbd b { color: #888; }
+#loader { margin-top: 6px; }
+input[type=file] { display: none; }
+</style>
+</head>
+<body>
+<div id="left">
+  <h2>天使之翼 II 密码抓取</h2>
+  <button id="btnLoad">📁 加载 ROM</button>
+  <button id="btnSeq" disabled class="seq">▶ 自动序列: START START B A DOWN A</button>
+  <button id="btnDump" disabled>📋 抓取当前 RAM</button>
+  <button id="btnCopy" disabled style="color:#e94560;">📄 复制全部数据</button>
+  <div id="info"></div>
+  <div id="ram"></div>
+  <div class="kbd">
+    按键映射:<br>
+    <b>Z</b> = A &emsp; <b>X</b> = B<br>
+    <b>Enter</b> = START<br>
+    <b>Space</b> = SELECT<br>
+    <b>↑↓←→</b> = 方向键
+  </div>
+</div>
+<div id="right">
+  <canvas id="gameCanvas" width="256" height="240"></canvas>
+</div>
+
+<script src="../../../node_modules/jsnes/dist/jsnes.js"></script>
+<script>
+// ── NES 初始化 ──
+const SCREEN_W = 256, SCREEN_H = 240;
+const $ = (id) => document.getElementById(id);
+const gameCanvas = $('gameCanvas');
+const gameCtx = gameCanvas.getContext('2d');
+const gameImg = gameCtx.createImageData(SCREEN_W, SCREEN_H);
+const gameBuf = new Uint32Array(gameImg.data.buffer);
+
+const nes = new jsnes.NES({
+  onFrame: (b) => {
+    for (let i = 0; i < SCREEN_W * SCREEN_H; i++) gameBuf[i] = 0xFF000000 | b[i];
+    gameImg.data.set(new Uint8ClampedArray(gameImg.data.buffer));
+    gameCtx.putImageData(gameImg, 0, 0);
+  },
+  onStatusUpdate: (m) => {
+    console.log('[NES]', m);
+    $('info').textContent = m;
+  },
+});
+
+const BTN = { A: 0, B: 1, SELECT: 2, START: 3, UP: 4, DOWN: 5, LEFT: 6, RIGHT: 7 };
+const hex8 = (v) => (v & 0xFF).toString(16).padStart(2, '0').toUpperCase();
+const hex16 = (v) => (v & 0xFFFF).toString(16).padStart(4, '0').toUpperCase();
+
+let frameCount = 0, animId = null, loaded = false;
+
+function ram(addr) { return nes.cpu.mem[addr] & 0xFF; }
+function pc() { return nes.cpu.REG_PC; }
+function range(start, end) { return Array.from({length: end-start}, (_, i)=>start+i); }
+
+// ── 帧循环（加载 ROM 后才跑） ──
+function frameLoop() {
+  try {
+    nes.frame();
+    frameCount++;
+  } catch(e) {
+    console.error('帧错误:', e);
+    return;
+  }
+  animId = requestAnimationFrame(frameLoop);
+}
+// 先不跑，等加载 ROM
+
+// ── ROM 加载 ──
+$('btnLoad').addEventListener('click', () => {
+  const inp = document.createElement('input');
+  inp.type = 'file'; inp.accept = '.nes';
+  inp.onchange = (e) => {
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = () => {
+      const buf = new Uint8Array(r.result);
+      nes.loadROM(buf);
+      loaded = true;
+      frameLoop(); // ROM 好了，开始跑
+      $('btnSeq').disabled = false;
+      $('btnDump').disabled = false;
+      $('btnCopy').disabled = false;
+      $('info').innerHTML = `${f.name} (${buf.length}B) mapper ${(buf[6]>>4)|(buf[7]&0xF0)} · 运行中`;
+    };
+    r.readAsArrayBuffer(f);
+  };
+  inp.click();
+});
+
+// ── 键盘输入 ──
+const KEY_MAP = {
+  ArrowUp: BTN.UP, ArrowDown: BTN.DOWN, ArrowLeft: BTN.LEFT, ArrowRight: BTN.RIGHT,
+  KeyZ: BTN.A, KeyX: BTN.B, Enter: BTN.START, Space: BTN.SELECT,
+};
+window.addEventListener('keydown', (e) => {
+  const btn = KEY_MAP[e.code];
+  if (btn != null) { e.preventDefault(); nes.buttonDown(1, btn); }
+  // 自动 dump 在控制台
+  if (loaded) console.log('RAM:', dumpText());
+});
+window.addEventListener('keyup', (e) => {
+  const btn = KEY_MAP[e.code];
+  if (btn != null) { e.preventDefault(); nes.buttonUp(1, btn); }
+});
+
+// ── RAM dump ──
+function dumpText() {
+  const data = [
+    `PC=$${hex16(pc())}  A=$${hex8(nes.cpu.REG_ACC)}  F=${frameCount}`,
+    `$0026:    ${hex8(ram(0x26))}`,
+    `$E1-E2:   ${hex8(ram(0xE1))} ${hex8(ram(0xE2))}`,
+    `$0446:    ${hex8(ram(0x446))}`,
+    `$0448:    ${hex8(ram(0x448))}`,
+    `$044D:    ${hex8(ram(0x44D))}`,
+    `$0656-5F: ${[0,1,2,3,4,5,6,7,8,9].map(i=>hex8(ram(0x656+i))).join(' ')}`,
+    `$0660-63: ${hex8(ram(0x660))} ${hex8(ram(0x661))} ${hex8(ram(0x662))} ${hex8(ram(0x663))}`,
+  ];
+  data.push(`$05E0-05EF: ${range(0x5E0,0x5F0).map(i=>hex8(ram(i))).join(' ')}`);
+  data.push(`$05F0-05FF: ${range(0x5F0,0x600).map(i=>hex8(ram(i))).join(' ')}`);
+  data.push(`$0600-061F: ${range(0x600,0x620).map(i=>hex8(ram(i))).join(' ')}`);
+  data.push(`$0620-063F: ${range(0x620,0x640).map(i=>hex8(ram(i))).join(' ')}`);
+  data.push('\n── OAM ($0200-$02FF) 精灵数据 ──');
+  for (let row = 0; row < 16; row++) {
+    const base = 0x200 + row * 16;
+    data.push(`$${hex16(base)}: ${range(base, base+16).map(i=>hex8(ram(i))).join(' ')}`);
+  }
+  data.push(ppuTextDump());
+  return data.join('\n');
+}
+
+function ppuTextDump() {
+  const ppu = nes.ppu;
+  if (!ppu || !ppu.nameTable) return 'PPU 未初始化';
+  let out = [];
+  for (let nt = 0; nt < 2; nt++) {
+    out.push(`\n── Nametable ${nt} 文本区 (Y=18..25) ──`);
+    for (let ty = 18; ty <= 25; ty++) {
+      let row = [];
+      for (let tx = 0; tx < 32; tx++) {
+        const tile = ppu.nameTable[nt].tile[ty * 32 + tx] || 0;
+        row.push(hex8(tile));
+      }
+      out.push(`Y=${ty}: ${row.join(' ')}`);
+    }
+  }
+  return out.join('\n');
+}
+
+function dumpHTML() {
+  const d = dumpText().split('\n');
+  return d.map((l,i) => {
+    const parts = l.split(': ');
+    return `<pre><span class="hdr">${parts[0]}:</span> <span class="val">${parts[1]||''}</span></pre>`;
+  }).join('');
+}
+
+$('btnDump').addEventListener('click', () => {
+  if (!loaded) return;
+  $('ram').innerHTML = dumpHTML();
+  console.log(dumpText());
+});
+
+$('btnCopy').addEventListener('click', async () => {
+  if (!loaded) return;
+  const text = dumpText();
+  try {
+    await navigator.clipboard.writeText(text);
+    $('btnCopy').textContent = '✅ 已复制!';
+    setTimeout(() => { $('btnCopy').textContent = '📄 复制全部数据'; }, 1500);
+  } catch(e) {
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.left = '-9999px';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    $('btnCopy').textContent = '✅ 已复制!';
+    setTimeout(() => { $('btnCopy').textContent = '📄 复制全部数据'; }, 1500);
+  }
+});
+
+// ── 自动序列 ──
+const BTN_NAME = ['A','B','SELECT','START','UP','DOWN','LEFT','RIGHT'];
+function autoSeq() {
+  const seq = [BTN.START, BTN.START, BTN.B, BTN.A, BTN.DOWN, BTN.A];
+  let i = 0;
+  let holding = false;
+
+  function step() {
+    if (i >= seq.length) {
+      $('info').textContent = '序列完成，等 2 秒渲染后自动抓数据…';
+      setTimeout(() => {
+        $('ram').innerHTML = dumpHTML();
+        console.log('===== SEQUENCE DONE =====');
+        console.log(dumpText());
+        $('info').textContent = '数据已抓取'; $('btnSeq').disabled = false;
+      }, 2000);
+      return;
+    }
+    const btn = seq[i];
+    holding = true;
+    $('info').textContent = `按键 ${i+1}/${seq.length}: ${BTN_NAME[btn]}…`;
+    nes.buttonDown(1, btn);
+    setTimeout(() => {
+      nes.buttonUp(1, btn);
+      holding = false;
+      i++;
+      setTimeout(step, 200); // 间隔 200ms
+    }, 150); // 按住 150ms
+  }
+
+  // 先跑一两秒等标题
+  $('info').textContent = '等 1.5 秒标题…';
+  setTimeout(step, 1500);
+}
+
+$('btnSeq').addEventListener('click', () => {
+  if (!loaded) return;
+  $('btnSeq').disabled = true;
+  $('btnSeq').textContent = '⏳ 执行中…';
+  autoSeq();
+});
+</script>
+</body>
+</html>

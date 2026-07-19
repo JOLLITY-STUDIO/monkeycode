@@ -1,0 +1,15 @@
+{
+  "chrBanks": 16,
+  "eachBank": "8KB = 256 tiles × 16 bytes",
+  "tileSize": "8×8 px",
+  "pngScale": "2× (每 tile 16×16 px)",
+  "usage": {
+    "grayscale": "chr_bank_{N}_grayscale.png — 静态预览/调试用",
+    "runtime": "渲染时使用 TileCache 动态解码 CHR RAM + 应用当前调色板"
+  },
+  "palettes": {
+    "reference": "palette/nes_palette.png",
+    "json": "palette/palette.json",
+    "source": "与 src/types.ts NES_PALETTE 完全一致"
+  }
+}

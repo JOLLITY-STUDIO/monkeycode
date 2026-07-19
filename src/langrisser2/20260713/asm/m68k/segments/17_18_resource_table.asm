@@ -1,0 +1,24268 @@
+; ==================================================================
+; DATA: 资源指针表
+; ROM: $0B0000–$0B8000 | Lines: 504855–529111
+; Type: DATA (mis-disassembled!)
+; ==================================================================
+;
+; ⚠ WARNING: 此区域为 DATA, 被错误反汇编为 68K 指令!
+;
+; 资源指针表: 4字节/条目 × 8192, 每个=ROM绝对地址→[type:1B][outSize:2B][data]
+;
+
+; $0B0000
+	ori.b	#$B4,a3
+; $0B0004
+	ori.b	#$84,a3
+; $0B0008
+	ori.b	#$32,a3
+; $0B000C
+	ori.b	#$BC,a3
+; $0B0010
+	ori.b	#$50,a3
+; $0B0014
+	ori.b	#$12,a3
+; $0B0018
+	ori.b	#$B0,a3
+; $0B001C
+	ori.b	#$68,a3
+; $0B0020
+	ori.b	#$BC,a3
+; $0B0024
+	ori.b	#$0A,a3
+; $0B0028
+	ori.b	#$52,a3
+; $0B002C
+	ori.b	#$DA,a3
+; $0B0030
+	ori.b	#$1C,a3
+; $0B0034
+	ori.b	#$34,a3
+; $0B0038
+	ori.b	#$9E,a3
+; $0B003C
+	ori.b	#$24,a3
+; $0B0040
+	ori.b	#$B2,a4
+; $0B0044
+	ori.b	#$0E,a4
+; $0B0048
+	ori.b	#$4C,a4
+; $0B004C
+	ori.b	#$10,a4
+; $0B0050
+	ori.b	#$A0,a4
+; $0B0054
+	ori.b	#$DC,a4
+; $0B0058
+	ori.b	#$F8,a4
+; $0B005C
+	ori.b	#$60,a4
+; $0B0060
+	ori.b	#$14,a4
+; $0B0064
+	ori.b	#$4C,a4
+; $0B0068
+	ori.b	#$E6,a4
+; $0B006C
+	ori.b	#$6A,a4
+; $0B0070
+	ori.b	#$66,a4
+; $0B0074
+	ori.b	#$56,a4
+; $0B0078
+	ori.b	#$4C,a4
+; $0B007C
+	ori.b	#$A4,a4
+; $0B0080
+	ori.b	#$06,a4
+; $0B0084
+	ori.b	#$28,a4
+; $0B0088
+	ori.b	#$FC,a4
+; $0B008C
+	ori.b	#$D0,a4
+; $0B0090
+	ori.b	#$30,a4
+; $0B0094
+	ori.b	#$A8,a4
+; $0B0098
+	ori.b	#$C6,a5
+; $0B009C
+	ori.b	#$46,a5
+; $0B00A0
+	ori.b	#$76,a5
+; $0B00A4
+	ori.b	#$26,a5
+; $0B00A8
+	ori.b	#$A2,a5
+; $0B00AC
+	ori.b	#$66,a5
+; $0B00B0
+	ori.b	#$0E,a5
+; $0B00B4
+	ori.b	#$48,a5
+; $0B00B8
+	ori.b	#$D8,a5
+; $0B00BC
+	ori.b	#$0E,a5
+; $0B00C0
+	ori.b	#$E6,a5
+; $0B00C4
+	ori.b	#$A8,a5
+; $0B00C8
+	ori.b	#$5A,a5
+; $0B00CC
+	ori.b	#$A6,a5
+; $0B00D0
+	ori.b	#$B2,a5
+; $0B00D4
+	ori.b	#$96,a5
+; $0B00D8
+	ori.b	#$1C,a5
+; $0B00DC
+	ori.b	#$76,a5
+; $0B00E0
+	ori.b	#$84,a5
+; $0B00E4
+	ori.b	#$12,a5
+; $0B00E8
+	ori.b	#$C0,a5
+; $0B00EC
+	ori.b	#$9E,a5
+; $0B00F0
+	ori.b	#$46,a5
+; $0B00F4
+	ori.b	#$FA,a5
+; $0B00F8
+	ori.b	#$3C,a5
+; $0B00FC
+	ori.b	#$F4,a5
+; $0B0100
+	ori.b	#$36,a5
+; $0B0104
+	ori.b	#$A0,a5
+; $0B0108
+	ori.b	#$B2,a5
+; $0B010C
+	ori.b	#$8A,a5
+; $0B0110
+	ori.b	#$E2,a5
+; $0B0114
+	ori.b	#$B6,a5
+; $0B0118
+	ori.b	#$0A,a5
+; $0B011C
+	ori.b	#$E6,a5
+; $0B0120
+	ori.b	#$98,a5
+; $0B0124
+	ori.b	#$D6,a5
+; $0B0128
+	ori.b	#$0A,a5
+; $0B012C
+	ori.b	#$4E,a5
+; $0B0130
+	ori.b	#$5C,a5
+; $0B0134
+	ori.b	#$20,a5
+; $0B0138
+	ori.b	#$E6,a5
+; $0B013C
+	ori.b	#$CA,a5
+; $0B0140
+	ori.b	#$DA,a5
+; $0B0144
+	ori.b	#$5A,a5
+; $0B0148
+	ori.b	#$E2,a5
+; $0B014C
+	ori.b	#$A2,a5
+; $0B0150
+	ori.b	#$74,a5
+; $0B0154
+	ori.b	#$1A,a5
+; $0B0158
+	ori.b	#$54,a5
+; $0B015C
+	ori.b	#$8C,a5
+; $0B0160
+	ori.b	#$66,a5
+; $0B0164
+	ori.b	#$D8,a5
+; $0B0168
+	ori.b	#$CC,a6
+; $0B016C
+	ori.b	#$8E,a6
+; $0B0170
+	ori.b	#$88,a6
+; $0B0174
+	ori.b	#$6E,a6
+; $0B0178
+	ori.b	#$AA,a6
+; $0B017C
+	ori.b	#$D8,a6
+; $0B0180
+	ori.b	#$AE,a6
+; $0B0184
+	ori.b	#$42,a6
+; $0B0188
+	ori.b	#$F2,a6
+; $0B018C
+	ori.b	#$5E,a6
+; $0B0190
+	ori.b	#$D2,a6
+; $0B0194
+	ori.b	#$9C,a6
+; $0B0198
+	ori.b	#$64,a6
+; $0B019C
+	ori.b	#$F6,a6
+; $0B01A0
+	ori.b	#$A0,a6
+; $0B01A4
+	ori.b	#$1C,a6
+; $0B01A8
+	ori.b	#$EE,a6
+; $0B01AC
+	ori.b	#$DE,a6
+; $0B01B0
+	ori.b	#$32,a6
+; $0B01B4
+	ori.b	#$1A,a6
+; $0B01B8
+	ori.b	#$C2,a6
+; $0B01BC
+	ori.b	#$52,a6
+; $0B01C0
+	ori.b	#$AC,a6
+; $0B01C4
+	ori.b	#$7A,a6
+; $0B01C8
+	ori.b	#$56,a6
+; $0B01CC
+	ori.b	#$5E,a6
+; $0B01D0
+	ori.b	#$18,a6
+; $0B01D4
+	ori.b	#$F0,a6
+; $0B01D8
+	ori.b	#$E6,a6
+; $0B01DC
+	ori.b	#$72,a6
+; $0B01E0
+	ori.b	#$A6,a6
+; $0B01E4
+	ori.b	#$E0,a6
+; $0B01E8
+	ori.b	#$62,a6
+; $0B01EC
+	ori.b	#$2A,a6
+; $0B01F0
+	ori.b	#$B6,a6
+; $0B01F4
+	ori.b	#$72,a6
+; $0B01F8
+	ori.b	#$FA,a6
+; $0B01FC
+	ori.b	#$10,a6
+; $0B0200
+	ori.b	#$18,a6
+; $0B0204
+	ori.b	#$C2,a6
+; $0B0208
+	ori.b	#$62,a6
+; $0B020C
+	ori.b	#$12,a6
+; $0B0210
+	ori.b	#$70,a6
+; $0B0214
+	ori.b	#$06,a6
+; $0B0218
+	ori.b	#$40,a6
+; $0B021C
+	ori.b	#$8E,a6
+; $0B0220
+	ori.b	#$4A,a6
+; $0B0224
+	ori.b	#$08,a6
+; $0B0228
+	ori.b	#$16,a6
+; $0B022C
+	ori.b	#$84,a6
+; $0B0230
+	ori.b	#$D8,a6
+; $0B0234
+	ori.b	#$18,a6
+; $0B0238
+	ori.b	#$B8,a6
+; $0B023C
+	ori.b	#$78,a6
+; $0B0240
+	ori.b	#$2C,a6
+; $0B0244
+	ori.b	#$D2,a6
+; $0B0248
+	ori.b	#$A0,a6
+; $0B024C
+	ori.b	#$36,a6
+; $0B0250
+	ori.b	#$0C,a6
+; $0B0254
+	ori.b	#$78,a6
+; $0B0258
+	ori.b	#$AE,a6
+; $0B025C
+	ori.b	#$02,a6
+; $0B0260
+	ori.b	#$40,a6
+; $0B0264
+	ori.b	#$18,a6
+; $0B0268
+	ori.b	#$8A,a6
+; $0B026C
+	ori.b	#$62,a6
+; $0B0270
+	ori.b	#$18,a6
+; $0B0274
+	ori.b	#$BE,a6
+; $0B0278
+	ori.b	#$96,a6
+; $0B027C
+	ori.b	#$14,a6
+; $0B0280
+	ori.b	#$2A,a7
+; $0B0284
+	ori.b	#$84,a7
+; $0B0288
+	ori.b	#$2A,a7
+; $0B028C
+	ori.b	#$DE,a7
+; $0B0290
+	ori.b	#$C0,a7
+; $0B0294
+	ori.b	#$74,a7
+; $0B0298
+	ori.b	#$22,a7
+; $0B029C
+	ori.b	#$5A,a7
+; $0B02A0
+	ori.b	#$00,a7
+; $0B02A4
+	ori.b	#$AC,a7
+; $0B02A8
+	ori.b	#$90,a7
+; $0B02AC
+	ori.b	#$46,a7
+; $0B02B0
+	ori.b	#$F4,a7
+; $0B02B4
+	ori.b	#$2C,a7
+; $0B02B8
+	ori.b	#$8A,a7
+; $0B02BC
+	ori.b	#$EE,a7
+; $0B02C0
+	ori.b	#$7A,a7
+; $0B02C4
+	ori.b	#$E4,a7
+; $0B02C8
+	ori.b	#$68,a7
+; $0B02CC
+	ori.b	#$B2,a7
+; $0B02D0
+	ori.b	#$2C,a7
+; $0B02D4
+	ori.b	#$8C,a7
+; $0B02D8
+	ori.b	#$CC,a7
+; $0B02DC
+	ori.b	#$3C,a7
+; $0B02E0
+	ori.b	#$2A,a7
+; $0B02E4
+	ori.b	#$80,a7
+; $0B02E8
+	ori.b	#$6C,a7
+; $0B02EC
+	ori.b	#$1E,a7
+; $0B02F0
+	ori.b	#$E2,a7
+; $0B02F4
+	ori.b	#$92,a7
+; $0B02F8
+	ori.b	#$2C,a7
+; $0B02FC
+	ori.b	#$EE,a7
+; $0B0300
+	ori.b	#$EA,a7
+; $0B0304
+	ori.b	#$48,a7
+; $0B0308
+	ori.b	#$A6,a7
+; $0B030C
+	ori.b	#$0E,a7
+; $0B0310
+	ori.b	#$88,a7
+; $0B0314
+	ori.b	#$C4,a7
+; $0B0318
+	ori.b	#$6E,a7
+; $0B031C
+	ori.b	#$28,a7
+; $0B0320
+	ori.b	#$B8,a7
+; $0B0324
+	ori.b	#$8C,a7
+; $0B0328
+	ori.b	#$20,a7
+; $0B032C
+	ori.b	#$A8,a7
+; $0B0330
+	ori.b	#$46,a7
+; $0B0334
+	ori.b	#$BC,a7
+; $0B0338
+	ori.b	#$B2,a7
+; $0B033C
+	ori.b	#$A8,a7
+; $0B0340
+	ori.b	#$98,a7
+; $0B0344
+	ori.b	#$06,a7
+; $0B0348
+	ori.b	#$78,a7
+; $0B034C
+	ori.b	#$0A,a7
+; $0B0350
+	ori.b	#$7C,a7
+; $0B0354
+	ori.b	#$BC,a7
+; $0B0358
+	ori.b	#$B0,a7
+; $0B035C
+	ori.b	#$E2,a7
+; $0B0360
+	ori.b	#$82,a7
+; $0B0364
+	ori.b	#$2C,a7
+; $0B0368
+	ori.b	#$CC,a7
+; $0B036C
+	ori.b	#$48,a7
+; $0B0370
+	ori.b	#$90,a7
+; $0B0374
+	ori.b	#$A4,a7
+; $0B0378
+	ori.b	#$4E,a7
+; $0B037C
+	ori.b	#$2A,a7
+; $0B0380
+	ori.b	#$5E,a7
+; $0B0384
+	ori.b	#$4E,a7
+; $0B0388
+	ori.b	#$7A,a7
+; $0B038C
+	ori.b	#$5C,a7
+; $0B0390
+	ori.b	#$1C,(a0)
+; $0B0394
+	ori.b	#$0E,(a0)
+; $0B0398
+	ori.b	#$52,(a0)
+; $0B039C
+	ori.b	#$66,(a0)
+; $0B03A0
+	ori.b	#$62,(a0)
+; $0B03A4
+	ori.b	#$22,(a0)
+; $0B03A8
+	ori.b	#$02,(a0)
+; $0B03AC
+	ori.b	#$BE,(a0)
+; $0B03B0
+	ori.b	#$A4,(a0)
+; $0B03B4
+	ori.b	#$76,(a0)
+; $0B03B8
+	ori.b	#$6C,(a0)
+; $0B03BC
+	ori.b	#$3A,(a0)
+; $0B03C0
+	ori.b	#$38,(a0)
+; $0B03C4
+	ori.b	#$40,(a0)
+; $0B03C8
+	ori.b	#$38,(a0)
+; $0B03CC
+	ori.b	#$28,(a0)
+; $0B03D0
+	ori.b	#$C8,(a0)
+; $0B03D4
+	ori.b	#$4A,(a0)
+; $0B03D8
+	ori.b	#$E0,(a0)
+; $0B03DC
+	ori.b	#$60,(a0)
+; $0B03E0
+	ori.b	#$F8,(a0)
+; $0B03E4
+	ori.b	#$AE,(a0)
+; $0B03E8
+	ori.b	#$78,(a0)
+; $0B03EC
+	ori.b	#$22,(a0)
+; $0B03F0
+	ori.b	#$48,(a0)
+; $0B03F4
+	ori.b	#$86,(a0)
+; $0B03F8
+	ori.b	#$A6,(a0)
+; $0B03FC
+	ori.b	#$58,(a0)
+; $0B0400
+	ori.b	#$66,(a0)
+; $0B0404
+	ori.b	#$A4,(a0)
+; $0B0408
+	ori.b	#$9E,(a0)
+; $0B040C
+	ori.b	#$5C,(a0)
+; $0B0410
+	ori.b	#$12,(a0)
+; $0B0414
+	ori.b	#$CE,(a0)
+; $0B0418
+	ori.b	#$64,(a0)
+; $0B041C
+	ori.b	#$00,(a0)
+; $0B0420
+	ori.b	#$7A,(a0)
+; $0B0424
+	ori.b	#$F4,(a0)
+; $0B0428
+	ori.b	#$A4,(a0)
+; $0B042C
+	ori.b	#$DE,(a0)
+; $0B0430
+	ori.b	#$A4,(a0)
+; $0B0434
+	ori.b	#$5E,(a0)
+; $0B0438
+	ori.b	#$06,(a0)
+; $0B043C
+	ori.b	#$B2,(a0)
+; $0B0440
+	ori.b	#$42,(a0)
+; $0B0444
+	ori.b	#$B4,(a0)
+; $0B0448
+	ori.b	#$66,(a0)
+; $0B044C
+	ori.b	#$AA,(a0)
+; $0B0450
+	ori.b	#$1C,(a0)
+; $0B0454
+	ori.b	#$66,(a0)
+; $0B0458
+	ori.b	#$D6,(a0)
+; $0B045C
+	ori.b	#$8C,(a0)
+; $0B0460
+	ori.b	#$6A,(a0)
+; $0B0464
+	ori.b	#$60,(a0)
+; $0B0468
+	ori.b	#$64,(a0)
+; $0B046C
+	ori.b	#$00,(a0)
+; $0B0470
+	ori.b	#$B6,(a0)
+; $0B0474
+	ori.b	#$DC,(a0)
+; $0B0478
+	ori.b	#$2E,(a0)
+; $0B047C
+	ori.b	#$68,(a0)
+; $0B0480
+	ori.b	#$28,(a0)
+; $0B0484
+	ori.b	#$CA,(a0)
+; $0B0488
+	ori.b	#$78,(a0)
+; $0B048C
+	ori.b	#$22,(a0)
+; $0B0490
+	ori.b	#$E2,(a0)
+; $0B0494
+	ori.b	#$9E,(a0)
+; $0B0498
+	ori.b	#$60,(a0)
+; $0B049C
+	ori.b	#$BA,(a0)
+; $0B04A0
+	ori.b	#$88,(a0)
+; $0B04A4
+	ori.b	#$B8,(a0)
+; $0B04A8
+	ori.b	#$80,(a1)
+; $0B04AC
+	ori.b	#$00,(a1)
+; $0B04B0
+	ori.b	#$88,(a1)
+; $0B04B4
+	ori.b	#$F0,(a1)
+; $0B04B8
+	ori.b	#$46,(a1)
+; $0B04BC
+	ori.b	#$AE,(a1)
+; $0B04C0
+	ori.b	#$54,(a1)
+; $0B04C4
+	ori.b	#$0C,(a1)
+; $0B04C8
+	ori.b	#$84,(a1)
+; $0B04CC
+	ori.b	#$22,(a1)
+; $0B04D0
+	ori.b	#$BC,(a1)
+; $0B04D4
+	ori.b	#$6E,(a1)
+; $0B04D8
+	ori.b	#$2E,(a1)
+; $0B04DC
+	ori.b	#$B8,(a1)
+; $0B04E0
+	ori.b	#$44,(a1)
+; $0B04E4
+	ori.b	#$76,(a1)
+; $0B04E8
+	ori.b	#$CA,(a1)
+; $0B04EC
+	ori.b	#$1A,(a1)
+; $0B04F0
+	ori.b	#$5A,(a1)
+; $0B04F4
+	ori.b	#$D4,(a1)
+; $0B04F8
+	ori.b	#$96,(a1)
+; $0B04FC
+	ori.b	#$4C,(a1)
+; $0B0500
+	ori.b	#$EA,(a1)
+; $0B0504
+	ori.b	#$6A,(a1)
+; $0B0508
+	ori.b	#$0C,(a1)
+; $0B050C
+	ori.b	#$7C,(a1)
+; $0B0510
+	ori.b	#$EC,(a1)
+; $0B0514
+	ori.b	#$1E,(a1)
+; $0B0518
+	ori.b	#$7C,(a1)
+; $0B051C
+	ori.b	#$7E,(a1)
+; $0B0520
+	ori.b	#$66,(a1)
+; $0B0524
+	ori.b	#$72,(a1)
+; $0B0528
+	ori.b	#$8E,(a1)
+; $0B052C
+	ori.b	#$F0,(a1)
+; $0B0530
+	ori.b	#$4A,(a1)
+; $0B0534
+	ori.b	#$6C,(a1)
+; $0B0538
+	ori.b	#$AC,(a1)
+; $0B053C
+	ori.b	#$1E,(a1)
+; $0B0540
+	ori.b	#$9C,(a1)
+; $0B0544
+	ori.b	#$82,(a1)
+; $0B0548
+	ori.b	#$D8,(a1)
+; $0B054C
+	ori.b	#$2C,(a1)
+; $0B0550
+	ori.b	#$A8,(a1)
+; $0B0554
+	ori.b	#$70,(a1)
+; $0B0558
+	ori.b	#$FC,(a1)
+; $0B055C
+	ori.b	#$EC,(a1)
+; $0B0560
+	ori.b	#$6A,(a1)
+; $0B0564
+	ori.b	#$A4,(a1)
+; $0B0568
+	ori.b	#$F6,(a1)
+; $0B056C
+	ori.b	#$9A,(a1)
+; $0B0570
+	ori.b	#$06,(a1)
+; $0B0574
+	ori.b	#$A8,(a1)
+; $0B0578
+	ori.b	#$02,(a1)
+; $0B057C
+	ori.b	#$88,(a1)
+; $0B0580
+	ori.b	#$22,(a1)
+; $0B0584
+	ori.b	#$CA,(a1)
+; $0B0588
+	ori.b	#$44,(a1)
+; $0B058C
+	ori.b	#$68,(a1)
+; $0B0590
+	ori.b	#$8C,(a1)
+; $0B0594
+	ori.b	#$D0,(a1)
+; $0B0598
+	ori.b	#$4C,(a1)
+; $0B059C
+	ori.b	#$DE,(a1)
+; $0B05A0
+	ori.b	#$BA,(a1)
+; $0B05A4
+	ori.b	#$BA,(a1)
+; $0B05A8
+	ori.b	#$96,(a1)
+; $0B05AC
+	ori.b	#$2E,(a1)
+; $0B05B0
+	ori.b	#$38,(a1)
+; $0B05B4
+	ori.b	#$60,(a1)
+; $0B05B8
+	ori.b	#$98,(a1)
+; $0B05BC
+	ori.b	#$CC,(a1)
+; $0B05C0
+	ori.b	#$FA,(a1)
+; $0B05C4
+	ori.b	#$20,(a1)
+; $0B05C8
+	ori.b	#$4E,(a1)
+; $0B05CC
+	ori.b	#$7E,(a1)
+; $0B05D0
+	ori.b	#$AC,(a1)
+; $0B05D4
+	ori.b	#$CC,(a1)
+; $0B05D8
+	ori.b	#$16,(a1)
+; $0B05DC
+	ori.b	#$3A,(a1)
+; $0B05E0
+	ori.b	#$6A,(a1)
+; $0B05E4
+	ori.b	#$88,(a1)
+; $0B05E8
+	ori.b	#$B2,(a1)
+; $0B05EC
+	ori.b	#$E2,(a1)
+; $0B05F0
+	ori.b	#$02,(a1)
+; $0B05F4
+	ori.b	#$30,(a1)
+; $0B05F8
+	ori.b	#$5A,(a1)
+; $0B05FC
+	ori.b	#$7E,(a1)
+; $0B0600
+	ori.b	#$A6,(a1)
+; $0B0604
+	ori.b	#$BE,(a1)
+; $0B0608
+	ori.b	#$CE,(a1)
+; $0B060C
+	ori.b	#$E2,(a1)
+; $0B0610
+	ori.b	#$FE,(a1)
+; $0B0614
+	ori.b	#$20,(a1)
+; $0B0618
+	ori.b	#$98,(a1)
+; $0B061C
+	ori.b	#$E4,(a1)
+; $0B0620
+	ori.b	#$EE,(a2)
+; $0B0624
+	ori.b	#$EE,(a2)
+; $0B0628
+	ori.b	#$4C,(a2)
+; $0B062C
+	ori.b	#$B6,(a2)
+; $0B0630
+	ori.b	#$46,(a2)
+; $0B0634
+	ori.b	#$38,(a2)
+; $0B0638
+	ori.b	#$5E,(a2)
+; $0B063C
+	ori.b	#$D4,(a2)
+; $0B0640
+	ori.b	#$AE,(a2)
+; $0B0644
+	ori.b	#$52,(a2)
+; $0B0648
+	ori.b	#$FE,(a2)
+; $0B064C
+	ori.b	#$54,(a2)
+; $0B0650
+	ori.b	#$52,(a2)
+; $0B0654
+	ori.b	#$9C,(a2)
+; $0B0658
+	ori.b	#$D8,(a2)
+; $0B065C
+	ori.b	#$14,(a2)
+; $0B0660
+	ori.b	#$1A,(a2)
+; $0B0664
+	ori.b	#$E8,(a2)
+; $0B0668
+	ori.b	#$AA,(a2)
+; $0B066C
+	ori.b	#$8E,(a2)
+; $0B0670
+	ori.b	#$C2,(a2)
+; $0B0674
+	ori.b	#$28,(a2)
+; $0B0678
+	ori.b	#$3C,(a2)
+; $0B067C
+	ori.b	#$48,(a3)
+; $0B0680
+	ori.b	#$24,(a3)
+; $0B0684
+	ori.b	#$00,(a3)
+; $0B0688
+	ori.b	#$3E,(a3)
+; $0B068C
+	ori.b	#$5E,(a3)
+; $0B0690
+	ori.b	#$2A,(a3)
+; $0B0694
+	ori.b	#$88,(a3)
+; $0B0698
+	ori.b	#$3E,(a3)
+; $0B069C
+	ori.b	#$EC,(a3)
+; $0B06A0
+	ori.b	#$38,(a3)
+; $0B06A4
+	ori.b	#$64,(a3)
+; $0B06A8
+	ori.b	#$FC,(a3)
+; $0B06AC
+	ori.b	#$BC,(a3)
+; $0B06B0
+	ori.b	#$7E,(a3)
+; $0B06B4
+	btst	d1,d6
+; $0B06B6
+	move.l	($EEFF00).l,(a0)+
+; $0B06BC
+	btst	d7,d0
+; $0B06BE
+	btst	d0,(a1)
+; $0B06C0
+	ori.b	#$16,d1
+; $0B06C4
+	beq.w	loc_0B1C2C
+; $0B06C8
+	bne.s	loc_0B06CB
+; $0B06CA
+	scs	?ea(7,6)
+; $0B06CC
+	move.b	d1,d6
+; $0B06CE
+	addq.w	#3,-(a6)
+; $0B06D0
+	move.b	(a5),$5661(a2)
+; $0B06D4
+	move.b	(a7),(a2)+
+; $0B06D6
+	subq.w	#2,(a5)
+; $0B06D8
+	move.b	d2,d3
+; $0B06DA
+	btst	d0,(a1)
+; $0B06DC
+	move.w	d0,d1
+; $0B06DE
+	dc.w	$7778
+; $0B06E0
+	eor.l	d7,a0
+; $0B06E2
+	or.w	d4,(-$78,a7,d7.w)
+; $0B06E6
+	or.b	loc_0B084F(pc),d4
+; $0B06EA
+	roxr.b	d2,d6
+; $0B06EC
+	ori.b	#$00,($66,a2,d0.w)
+; $0B06F2
+	move.l	d4,d7
+; $0B06F4
+	ori.l	#$9ABFA100,(a1)+
+; $0B06FA
+	sub.l	d4,(a1)+
+; $0B06FC
+	dc.w	$A101
+; $0B06FE
+	addq.b	#5,d0
+; $0B0700
+	move.b	-$7667(a7),loc_0A9819(pc)
+; $0B0706
+	move.w	d0,d1
+; $0B0708
+	subq.l	#2,a0
+; $0B070A
+	suba.l	(a3),a4
+; $0B070C
+	sub.w	d0,(a5)
+; $0B070E
+	andi.b	#$04,d2
+; $0B0712
+	bne.s	loc_0B075E
+; $0B0714
+	ori.w	#$66FD,(a6)
+; $0B0718
+	beq.s	loc_0B0797
+; $0B071A
+	andi.w	#$6661,(a5)
+; $0B071E
+	move.b	(a5),$667B(a0)
+; $0B0722
+	movea.b	($5,a7,d2.l),a3
+; $0B0726
+	or.l	a0,d4
+; $0B0728
+	sub.l	d4,(a1)+
+; $0B072A
+	sub.b	d1,d3
+; $0B072C
+	asr.b	d0,d7
+; $0B072E
+	ori.l	#$02320296,(a5)+
+; $0B0734
+	ori.b	#$AA,$300(a6)
+; $0B073A
+	dc.w	$FFA1
+; $0B073C
+	ori.b	#$A1,(a1)
+; $0B0740
+	bclr	d0,-(a6)
+; $0B0742
+	suba.w	($15,a3,a2.w),a5
+; $0B0746
+	eor.b	d6,d2
+; $0B0748
+	beq.w	loc_0B5DE3
+; $0B074C
+	dc.w	$A155
+; $0B074E
+	exg	a0,a6
+; $0B0750
+	move.l	d5,d7
+; $0B0752
+	clr.b	d1
+; $0B0754
+	clr.b	d1
+; $0B0756
+	tst.b	d1
+; $0B0758
+	add.b	d2,d7
+; $0B075A
+	bsr.s	loc_0B076D
+; $0B075C
+	add.b	d7,(a1)
+
+loc_0B075E:				; $0B075E
+	bsr.s	loc_0B0777
+; $0B0760
+	dc.w	$7778
+; $0B0762
+	move.l	d5,d7
+; $0B0764
+	or.l	d4,(a1)+
+; $0B0766
+	bset	d1,(a2)+
+; $0B0768
+	dc.w	$AAF6
+; $0B076A
+	bset	d0,(a7)
+; $0B076C
+	ori.?	#?,?ea(7,5)
+; $0B076E
+	andi.l	#$02F6002E,(a2)
+; $0B0774
+	andi.?	#?,(a2)
+; $0B0776
+	andi.b	#$13,d0
+; $0B077A
+	move.b	(a2),d6
+; $0B077C
+	move.b	d1,d2
+; $0B077E
+	dc.w	$0E07
+; $0B0780
+	move.b	a0,(a4)
+; $0B0782
+	subq.b	#7,d0
+; $0B0784
+	move.b	($FFFF8801).w,$3600(a3)
+; $0B078A
+	move.b	loc_0B07E4(pc),d3
+; $0B078E
+	clr.b	(a1)
+; $0B0790
+	dc.w	$7F00
+; $0B0792
+	move.b	(a1),d1
+; $0B0794
+	ori.b	#$00,(a0)
+; $0B0798
+	sub.w	d0,(a2)
+; $0B079A
+	move.b	(-$6F,pc,a0.l),d0
+; $0B079E
+	addq.b	#4,(a0)
+; $0B07A0
+	sub.b	d4,(a0)
+; $0B07A2
+	ori.w	#$13F8,$61(a2)
+; $0B07A8
+	addq.b	#7,(a1)
+; $0B07AA
+	bgt.s	loc_0B07CB
+; $0B07AC
+	moveq	#26,d6
+; $0B07AE
+	movea.b	(a5),a2
+; $0B07B0
+	subq.w	#8,-(a6)
+; $0B07B2
+	movea.b	($51,a7,d4.w),a2
+; $0B07B6
+	addq.l	#3,(a2)
+; $0B07B8
+	movea.b	d4,a1
+; $0B07BA
+	subq.w	#8,(a5)
+; $0B07BC
+	sub.b	(a3),d5
+; $0B07BE
+	move.w	d1,-$5EEE(a6)
+; $0B07C2
+	move.b	d4,$4415(a1)
+; $0B07C6
+	add.b	d2,d7
+; $0B07C8
+	clr.b	d0
+; $0B07CA
+	add.l	($47,a2,d1.w),d4
+
+loc_0B07CE:				; $0B07CE
+	bclr	d0,($66,pc,d0.l)
+; $0B07D2
+	dc.w	$776A
+; $0B07D4
+	ori.w	#$88A5,d5
+; $0B07D8
+	divs.w	(a0),d4
+; $0B07DA
+	movea.b	d4,a1
+; $0B07DC
+	move.w	d0,d1
+; $0B07DE
+	add.b	d4,(a2)
+; $0B07E0
+	moveq	#-33,d4
+; $0B07E2
+	move.b	d1,($11,a0,a3.l)
+; $0B07E6
+	neg.w	($11,a7,a0.l)
+; $0B07EA
+	neg.l	a7
+; $0B07EC
+	movea.b	-(a7),a0
+; $0B07EE
+	move.l	$1466(a6),(a5)+
+; $0B07F2
+	or.b	d7,(a0)
+; $0B07F4
+	bsr.s	loc_0B0789
+; $0B07F6
+	movea.b	-(a6),a0
+; $0B07F8
+	dc.w	$FE11
+; $0B07FA
+	sub.b	d5,(a0)
+; $0B07FC
+	bra.s	loc_0B0803
+; $0B07FE
+	move.l	($37,a6,d0.w),d1
+; $0B0802
+	subi.?	#?,(a2)
+; $0B0804
+	bchg	d7,a5
+; $0B0806
+	move.b	(a5),$55CF(a0)
+; $0B080A
+	move.b	-(a4),(a0)
+; $0B080C
+	move.w	-(a2),-(a0)
+; $0B080E
+	add.b	d5,(a0)
+; $0B0810
+	scs	-(a7)
+; $0B0812
+	move.b	?ea(7,5),d0
+; $0B0814
+	move.l	d5,$4224(a0)
+; $0B0818
+	neg.b	-(a5)
+; $0B081A
+	movea.b	a2,a3
+; $0B081C
+	ori.b	#$00,(a6)
+; $0B0820
+	addq.b	#1,-(a1)
+; $0B0822
+	move.b	d7,($5A,a2,d0.w)
+; $0B0826
+	move.l	(a7)+,(a0)+
+; $0B0828
+	dc.w	$7715
+; $0B082A
+	addq.w	#3,-(a1)
+; $0B082C
+	beq.s	loc_0B0890
+; $0B082E
+	movea.l	(a5),a1
+; $0B0830
+	bsr.s	loc_0B07B3
+; $0B0832
+	bne.s	loc_0B07CE
+; $0B0834
+	bset	d1,(a4)+
+; $0B0836
+	bset	d1,-(a6)
+; $0B0838
+	btst	d2,(-$7F,a6,d0.w)
+; $0B083C
+	move.l	($189A82A).l,-(a0)
+; $0B0842
+	move.b	$115B(a2),-(a0)
+; $0B0846
+	move.b	(a5),d0
+; $0B0848
+	eor.b	d1,d0
+; $0B084A
+	move.b	(a6),(-$6F,a2,d2.w)
+; $0B084E
+	add.b	d3,d0
+; $0B0850
+	bclr	d0,(a5)
+; $0B0852
+	dc.w	$A224
+; $0B0854
+	dc.w	$454A
+; $0B0856
+	move.b	-(a6),$6655(a0)
+; $0B085A
+	dc.w	$7179
+; $0B085C
+	ori.w	#$617D,($0,a1,d7.l)
+; $0B0862
+	ori.b	#$00,(a7)
+; $0B0866
+	eor.b	d0,(a6)
+; $0B0868
+	exg	d0,d3
+; $0B086A
+	rol.b	#7,d0
+; $0B086C
+	bpl.s	loc_0B087F
+; $0B086E
+	move.b	a0,(a4)
+; $0B0870
+	add.b	-(a2),d0
+; $0B0872
+	sub.l	d0,(-$2E,a5,d1.l)
+; $0B0876
+	movea.b	($22,a1,a5.l),a0
+; $0B087A
+	or.l	(a1)+,d4
+; $0B087C
+	lsr.b	d1,d1
+; $0B087E
+	dc.w	$77F0
+; $0B0880
+	add.b	-(a0),d5
+; $0B0882
+	moveq	#31,d6
+; $0B0884
+	addq.b	#8,(a3)
+; $0B0886
+	andi.b	#$51,($44,a5,d0.w)
+; $0B088C
+	move.w	d1,-(a7)
+; $0B088E
+	movea.w	d4,a2
+
+loc_0B0890:				; $0B0890
+	dc.w	$4500
+; $0B0892
+	move.b	(a4),d2
+; $0B0894
+	move.w	$10FC(a2),(a0)
+; $0B0898
+	move.b	d0,-(a1)
+; $0B089A
+	add.b	d4,(a1)
+; $0B089C
+	move.b	(a3),-(a0)
+; $0B089E
+	move.w	($13,a4,d4.w),-(a1)
+; $0B08A2
+	dc.w	$AB33
+; $0B08A4
+	move.w	(a1)+,($11172300).l
+; $0B08AA
+	bsr.s	loc_0B08CF
+; $0B08AC
+	ori.w	#$9955,-(a7)
+; $0B08B0
+	move.b	d0,-(a7)
+; $0B08B2
+	move.w	($11,a1,d1.w),d5
+; $0B08B6
+	ori.b	#$00,-(a0)
+; $0B08BA
+	neg.?	#$3A30
+; $0B08BE
+	lsr.b	#5,d0
+; $0B08C0
+	movea.w	(-$7F,a7,d7.l),a2
+; $0B08C4
+	move.w	(a7),d2
+; $0B08C6
+	subq.w	#7,($FFFF8133).w
+; $0B08CA
+	move.b	($35,a7,d5.l),$7161(a3)
+; $0B08D0
+	move.w	$1663(a5),(a1)+
+; $0B08D4
+	movea.w	d4,a0
+; $0B08D6
+	lea	(a3)+,a0
+; $0B08D8
+	movea.b	d1,a0
+; $0B08DA
+	subq.w	#2,(a6)
+; $0B08DC
+	cmp.l	-(a3),d5
+; $0B08DE
+	movea.b	(a5),a0
+; $0B08E0
+	moveq	#49,d3
+; $0B08E2
+	movea.w	d1,a2
+; $0B08E4
+	dc.w	$457D
+; $0B08E6
+	move.w	(a1),$F33(a0)
+; $0B08EA
+	dc.w	$4144
+; $0B08EC
+	subq.l	#2,d6
+; $0B08EE
+	move.w	d6,$2B3(a0)
+; $0B08F2
+	move.b	(-$10,a7,d0.l),$3201(a0)
+; $0B08F8
+	and.b	(a1),d5
+; $0B08FA
+	and.b	(a1),d5
+; $0B08FC
+	add.b	d5,(a0)
+; $0B08FE
+	neg.l	d1
+; $0B0900
+	move.b	(-$4F,a4,a6.l),-(a0)
+; $0B0904
+	move.w	($71,a3,d4.w),d2
+; $0B0908
+	eor.b	d5,($11,a0,d1.w)
+; $0B090C
+	move.w	$345B(a1),$30C5(a1)
+; $0B0912
+	move.w	($20,a3,d6.l),-(a0)
+; $0B0916
+	move.b	(a5),-(a0)
+; $0B0918
+	or.b	d7,(a0)
+; $0B091A
+	svc	(a2)
+; $0B091C
+	move.w	a6,(-$71,a0,d1.w)
+; $0B0920
+	move.b	(a1),-(a1)
+; $0B0922
+	movea.b	d6,a2
+; $0B0924
+	move.w	(a4),d0
+; $0B0926
+	tst.b	($11,a0,a6.w)
+; $0B092A
+	move.b	(a0)+,-(a0)
+; $0B092C
+	dc.w	$4100
+; $0B092E
+	dc.w	$F033
+; $0B0930
+	bne.s	loc_0B09A9
+; $0B0932
+	move.b	d6,($33,pc,a7.l)
+; $0B0936
+	beq.s	loc_0B094F
+; $0B0938
+	eor.b	d2,(a0)
+; $0B093A
+	subi.w	#$BF20,d0
+; $0B093E
+	sub.b	d0,d0
+; $0B0940
+	move.b	(a4),-(a5)
+; $0B0942
+	dc.w	$450E
+; $0B0944
+	negx.w	d4
+; $0B0946
+	or.b	d0,(a3)
+; $0B0948
+	dc.w	$4112
+; $0B094A
+	move.w	(a2)+,d0
+; $0B094C
+	dc.w	$432F
+; $0B094E
+	move.w	d4,-$7EED(a1)
+; $0B0952
+	movea.l	d2,a2
+; $0B0954
+	move.w	($1B,a2,d1.w),(a2)+
+; $0B0958
+	ori.b	#$20,($15,pc,d4.w)
+; $0B095E
+	move.b	(a6),$1177(a2)
+; $0B0962
+	movea.w	d1,a0
+; $0B0964
+	dc.w	$4165
+; $0B0966
+	bne.s	loc_0B09E7
+; $0B0968
+	movea.w	(a6),a0
+; $0B096A
+	lsr.b	d5,d1
+; $0B096C
+	dc.w	$FB30
+; $0B096E
+	or.w	($20,a7,a6.w),d4
+; $0B0972
+	dc.w	$4367
+; $0B0974
+	dc.w	$71D8
+; $0B0976
+	ori.w	#$40FA,(a3)+
+; $0B097A
+	move.w	(a3)+,$1000(a4)
+; $0B097E
+	bgt.s	loc_0B09C5
+; $0B0980
+	exg	d4,a1
+; $0B0982
+	subq.b	#3,(a1)
+; $0B0984
+	addq.b	#1,(a0)
+; $0B0986
+	or.w	?ea(7,7),d4
+; $0B0988
+	dc.w	$415B
+; $0B098A
+	move.b	a0,(a0)
+; $0B098C
+	divs.w	($0,a7,d0.w),d0
+; $0B0990
+	move.b	$3012(a3),d1
+; $0B0994
+	move.l	($5E,a3,d3.w),-(a1)
+; $0B0998
+	move.w	d1,d1
+; $0B099A
+	move.b	-(a2),d1
+; $0B099C
+	move.w	($43,a3,a1.l),-(a1)
+; $0B09A0
+	move.l	-(a1),(-$44,a1,d4.w)
+; $0B09A4
+	move.w	d1,d1
+; $0B09A6
+	tst.b	($45,a1,d4.w)
+; $0B09AA
+	subq.w	#2,(a1)
+; $0B09AC
+	move.w	d0,d1
+; $0B09AE
+	move.b	d1,(a3)
+; $0B09B0
+	neg.w	a2
+; $0B09B2
+	move.w	loc_0B4AC7(pc),(a0)
+; $0B09B6
+	move.w	d1,(a0)+
+; $0B09B8
+	clr.b	($6A,a2,d0.w)
+; $0B09BC
+	move.w	-(a3),d0
+; $0B09BE
+	dc.w	$FB66
+; $0B09C0
+	beq.s	loc_0B0992
+; $0B09C2
+	clr.b	-(a2)
+; $0B09C4
+	bne.s	loc_0B0A2C
+; $0B09C6
+	move.b	(a2),d0
+; $0B09C8
+	move.w	(a2)+,(a7)+
+; $0B09CA
+	dc.w	$4156
+; $0B09CC
+	bsr.w	loc_0B0B1F
+; $0B09D0
+	addq.b	#1,(a0)
+; $0B09D2
+	addq.b	#1,(a1)
+; $0B09D4
+	dc.w	$FF33
+; $0B09D6
+	move.w	d4,$4533(a0)
+; $0B09DA
+	move.w	(a4),d2
+; $0B09DC
+	dc.w	$452F
+; $0B09DE
+	move.w	($11,a3,d4.w),-(a1)
+; $0B09E2
+	move.l	(-$6D,a0,d4.w),-(a5)
+; $0B09E6
+	negx.?	?ea(7,5)
+; $0B09E8
+	clr.b	d0
+; $0B09EA
+	dc.w	$F941
+; $0B09EC
+	move.w	d1,-(a0)
+; $0B09EE
+	move.w	($0,a2,d7.l),d3
+; $0B09F2
+	dc.w	$A232
+; $0B09F4
+	move.b	d0,-(a7)
+; $0B09F6
+	not.b	($35,a1,d4.w)
+; $0B09FA
+	or.b	($71,a2,d0.w),d7
+; $0B09FE
+	move.l	($51,a3,d2.l),-(a1)
+; $0B0A02
+	sub.w	d0,d4
+; $0B0A04
+	move.w	(a0),$12FF(a0)
+; $0B0A08
+	move.w	-(a7),$7112(a1)
+; $0B0A0C
+	move.l	-(a7),$7101(a1)
+; $0B0A10
+	rol.b	d3,d3
+; $0B0A12
+	bne.s	loc_0B0A85
+; $0B0A14
+	subq.b	#8,d2
+; $0B0A16
+	move.b	($55,a0,d5.w),d3
+; $0B0A1A
+	move.w	d0,-(a0)
+; $0B0A1C
+	ror.b	d3,d0
+; $0B0A1E
+	dc.w	$F740
+; $0B0A20
+	eor.b	d5,($30,a0,a0.l)
+; $0B0A24
+	move.b	($52,a0,d5.l),-(a1)
+; $0B0A28
+	dc.w	$FB40
+; $0B0A2A
+	not.b	d2
+
+loc_0B0A2C:				; $0B0A2C
+	and.l	?ea(7,7),d0
+; $0B0A2E
+	move.l	?ea(7,6),(a0)
+; $0B0A30
+	move.l	a4,($0041A6).w
+; $0B0A34
+	move.w	a7,d1
+; $0B0A36
+	addq.b	#2,?ea(7,6)
+; $0B0A38
+	move.w	(a1),-(a1)
+; $0B0A3A
+	move.b	(a5),($FFFF8193).w
+; $0B0A3E
+	negx.w	($40,a1,a1.l)
+; $0B0A42
+	dc.w	$7793
+; $0B0A44
+	addq.b	#1,-(a3)
+; $0B0A46
+	move.w	-(a2),($53,a0,a1.l)
+; $0B0A4A
+	move.l	-(a1),(a1)
+; $0B0A4C
+	addq.b	#1,(-$1A,a2,d0.w)
+; $0B0A50
+	move.w	(a4),-(a2)
+; $0B0A52
+	add.b	d4,(a0)
+; $0B0A54
+	move.w	$4415(a3),(a2)+
+; $0B0A58
+	dc.w	$7D30
+; $0B0A5A
+	move.b	a1,($14,a2,d3.w)
+; $0B0A5E
+	subq.b	#2,($11,a3,d2.l)
+; $0B0A62
+	move.b	a5,(a2)
+; $0B0A64
+	movea.w	($30,a1,a1.w),a2
+; $0B0A68
+	dc.w	$71A1
+; $0B0A6A
+	move.w	d1,($001A48).w
+; $0B0A6E
+	dc.w	$AA33
+; $0B0A70
+	sub.b	d0,d2
+; $0B0A72
+	or.w	d5,d0
+; $0B0A74
+	or.l	d2,d4
+; $0B0A76
+	negx.?	($78,a2,d5.w)
+; $0B0A7A
+	dc.w	$F752
+; $0B0A7C
+	bset	d3,d1
+; $0B0A7E
+	ori.w	#$5201,($54,a7,a7.l)
+; $0B0A84
+	btst	d1,-(a0)
+; $0B0A86
+	ori.?	#?,($EEFFFC).l
+; $0B0A8C
+	dc.w	$FA3C
+; $0B0A8E
+	bne.s	loc_0B0AF6
+; $0B0A90
+	bhi.s	loc_0B0AF8
+; $0B0A92
+	dc.w	$FF55
+; $0B0A94
+	bcs.s	loc_0B0B08
+; $0B0A96
+	beq.s	loc_0B0AEF
+; $0B0A98
+	subq.w	#3,(-$1,a2,d2.w)
+; $0B0A9C
+	move.l	-(a2),-(a3)
+; $0B0A9E
+	move.l	-(a6),$723C(a3)
+; $0B0AA2
+	bne.s	loc_0B0B09
+; $0B0AA4
+	dc.w	$4F72
+; $0B0AA6
+	and.w	(a5),d3
+; $0B0AA8
+	dc.w	$7715
+; $0B0AAA
+	ori.b	#$3F,(a2)+
+; $0B0AAE
+	move.l	d0,d7
+; $0B0AB0
+	dc.w	$FF26
+; $0B0AB2
+	bhi.s	loc_0B0AD6
+; $0B0AB4
+	move.l	(-$45,a2,d2.l),(-$1,a1,a7.l)
+; $0B0ABA
+	eor.l	d5,($2C,a2,a4.l)
+; $0B0ABE
+	eor.l	d5,(-$3E,pc,d2.l)
+; $0B0AC2
+	dble	d4,loc_0AD725
+; $0B0AC6
+	ble.s	loc_0B0B3F
+; $0B0AC8
+	not.b	d0
+; $0B0ACA
+	movea.l	a2,a1
+; $0B0ACC
+	ori.?	#?,?ea(7,6)
+; $0B0ACE
+	move.l	d1,d7
+; $0B0AD0
+	move.w	-(a2),d1
+; $0B0AD2
+	movea.l	-(a2),a3
+; $0B0AD4
+	dc.w	$AFBB
+
+loc_0B0AD6:				; $0B0AD6
+	mulu.w	?ea(7,7),d1
+; $0B0AD8
+	move.l	d2,?ea(7,5)
+; $0B0ADA
+	cmp.b	-$44D4(a3),d6
+
+loc_0B0ADE:				; $0B0ADE
+	dc.w	$F2BB
+; $0B0AE0
+	add.l	d7,($16,pc,a7.w)
+; $0B0AE4
+	mulu.w	a4,d6
+; $0B0AE6
+	not.b	d5
+; $0B0AE8
+	move.l	loc_0B0A94(pc),-(a7)
+; $0B0AEC
+	move.w	-(a2),-(a7)
+; $0B0AEE
+	move.l	#$2AFBB2FF,?ea(7,7)
+; $0B0AF4
+	dc.w	$F2A3
+
+loc_0B0AF6:				; $0B0AF6
+	move.l	(-$56,a2,d3.w),?ea(7,7)
+; $0B0AFA
+	cmp.b	-$DE(a7),d1
+; $0B0AFE
+	move.l	($76,a7,d6.w),(a7)+
+; $0B0B02
+	bhi.s	loc_0B0B80
+; $0B0B04
+	move.l	($33,pc,d6.w),($2,pc,d4.l)
+; $0B0B0A
+	dc.w	$AAAF
+; $0B0B0C
+	move.w	-(a2),(a1)
+; $0B0B0E
+	muls.w	?ea(7,7),d7
+; $0B0B10
+	dc.w	$F222
+; $0B0B12
+	dc.w	$AE2F
+; $0B0B14
+	move.l	?ea(7,7),($23,a5,a6.l)
+; $0B0B18
+	dc.w	$FF2F
+; $0B0B1A
+	dc.w	$F2D2
+; $0B0B1C
+	move.l	($26,a2,d2.l),(a1)+
+; $0B0B20
+	beq.s	loc_0B0AE1
+; $0B0B22
+	movea.l	?ea(7,7),a3
+; $0B0B24
+	move.w	-(a6),$72C7(a1)
+; $0B0B28
+	tst.b	d1
+; $0B0B2A
+	move.b	-(a7),(a1)+
+; $0B0B2C
+	moveq	#-13,d7
+; $0B0B2E
+	blt.s	loc_0B0ADE
+; $0B0B30
+	bset	d7,#$77
+; $0B0B34
+	rol.w	d3,d2
+; $0B0B36
+	dc.w	$F921
+; $0B0B38
+	and.b	a7,d7
+; $0B0B3A
+	add.b	d7,d6
+; $0B0B3C
+	move.w	?ea(7,7),d5
+; $0B0B3E
+	move.w	(-$1,a2,d3.w),?ea(7,7)
+; $0B0B42
+	dc.w	$A22C
+; $0B0B44
+	dc.w	$A323
+; $0B0B46
+	move.l	d2,($23,a1,a4.l)
+; $0B0B4A
+	dc.w	$FF28
+; $0B0B4C
+	clr.?	loc_0B2E40(pc)
+; $0B0B50
+	move.l	-(a2),(-$1,a7,a4.w)
+; $0B0B54
+	exg	d1,d4
+; $0B0B56
+	move.l	-$2DD3(a7),d1
+; $0B0B5A
+	dc.w	$FCF2
+; $0B0B5C
+	dc.w	$FE4A
+; $0B0B5E
+	ori.?	#?,(a4)+
+; $0B0B60
+	move.w	?ea(7,7),-(a1)
+; $0B0B62
+	and.b	-$30CD(a5),d5
+; $0B0B66
+	dc.w	$FFFC
+; $0B0B68
+	move.l	-(a2),d1
+; $0B0B6A
+	dc.w	$AC33
+; $0B0B6C
+	dc.w	$FBDC
+; $0B0B6E
+	dc.w	$FFFF
+; $0B0B70
+	dc.w	$F33B
+; $0B0B72
+	cmp.b	-$300D(a2),d1
+; $0B0B76
+	cmpa.l	(a4)+,a5
+; $0B0B78
+	dc.w	$FFF2
+; $0B0B7A
+	move.l	($2C,pc,a3.w),-(a7)
+; $0B0B7E
+	move.l	a7,(a1)+
+
+loc_0B0B80:				; $0B0B80
+	dc.w	$FFFF
+; $0B0B82
+	mulu.w	a7,d1
+; $0B0B84
+	and.l	-$3DE(a4),d5
+; $0B0B88
+	dc.w	$AF3F
+; $0B0B8A
+	dc.w	$FF22
+; $0B0B8C
+	dc.w	$FDB2
+; $0B0B8E
+	dc.w	$F32B
+; $0B0B90
+	move.w	(a3)+,?ea(7,7)
+; $0B0B92
+	move.l	?ea(7,7),(a6)+
+; $0B0B94
+	dc.w	$FCF3
+; $0B0B96
+	move.w	d2,?ea(7,7)
+; $0B0B98
+	move.l	-(a2),-(a5)
+; $0B0B9A
+	move.l	?ea(7,7),?ea(7,6)
+; $0B0B9C
+	add.l	d7,($2B,pc,a4.l)
+; $0B0BA0
+	dc.w	$ACFF
+; $0B0BA2
+	tst.b	d1
+; $0B0BA4
+	dc.w	$AC3A
+; $0B0BA6
+	dc.w	$FFCA
+; $0B0BA8
+	exg	d1,d2
+; $0B0BAA
+	exg	d1,d5
+; $0B0BAC
+	move.w	#$2FFF,(a1)+
+; $0B0BB0
+	eor.b	d7,-(a3)
+; $0B0BB2
+	move.l	-$DCC(a5),-(a7)
+; $0B0BB6
+	dc.w	$F322
+; $0B0BB8
+	dc.w	$FFF2
+; $0B0BBA
+	neg.b	-$551(a4)
+; $0B0BBE
+	move.l	d2,(a4)+
+; $0B0BC0
+	move.l	?ea(7,7),(a6)+
+; $0B0BC2
+	dc.w	$ACF2
+; $0B0BC4
+	muls.w	(-$51,a2,a7.w),d7
+; $0B0BC8
+	move.w	-$5D(a4),(a6)
+; $0B0BCC
+	and.b	-(a3),d5
+; $0B0BCE
+	add.b	#$42,d1
+; $0B0BD2
+	dc.w	$FBFF
+; $0B0BD4
+	dc.w	$F2CF
+; $0B0BD6
+	nbcd	-$2D0E(a7)
+; $0B0BDA
+	or.b	d1,-$DE(a7)
+; $0B0BDE
+	move.w	(-$51,a2,a7.l),-(a7)
+; $0B0BE2
+	and.b	-$3541(a7),d1
+; $0B0BE6
+	and.b	-$5D1(a4),d1
+; $0B0BEA
+	move.l	#$2E12F3FF,?ea(7,7)
+; $0B0BF0
+	dc.w	$FA22
+; $0B0BF2
+	cmp.b	?ea(7,7),d1
+; $0B0BF4
+	move.l	(a7)+,?ea(7,5)
+; $0B0BF6
+	muls.w	d2,d7
+; $0B0BF8
+	dc.w	$FFBD
+; $0B0BFA
+	dc.w	$F3B2
+; $0B0BFC
+	move.l	(-$45,a3,d3.l),(a6)+
+; $0B0C00
+	dc.w	$FFBF
+; $0B0C02
+	add.b	-(a2),d1
+; $0B0C04
+	dc.w	$FFCA
+; $0B0C06
+	cmpa.w	(a4)+,a1
+; $0B0C08
+	tst.b	(a2)
+; $0B0C0A
+	dc.w	$F3BB
+; $0B0C0C
+	move.w	a5,($1310D233).l
+; $0B0C12
+	and.w	a4,d5
+; $0B0C14
+	ori.?	#?,?ea(7,7)
+; $0B0C16
+	dc.w	$FFCD
+; $0B0C18
+	cmpa.l	#$A22BB32F,a7
+; $0B0C1E
+	muls.w	?ea(7,5),d6
+; $0B0C20
+	eor.b	d5,?ea(7,7)
+; $0B0C22
+	move.b	($2C,a3,a7.w),(a0)
+; $0B0C26
+	dc.w	$FFFC
+; $0B0C28
+	move.l	?ea(7,7),(a1)+
+; $0B0C2A
+	move.l	(-$5D,a3,a7.w),?ea(7,7)
+; $0B0C2E
+	move.w	d2,(a5)+
+; $0B0C30
+	move.l	-(a3),d5
+; $0B0C32
+	dc.w	$FFFC
+; $0B0C34
+	move.l	(-$51,a2,d3.w),d4
+; $0B0C38
+	move.l	d2,(a2)
+; $0B0C3A
+	move.w	?ea(7,7),(a1)+
+; $0B0C3C
+	move.l	($22,a2,d2.l),(a5)+
+; $0B0C40
+	move.l	d3,(a1)+
+; $0B0C42
+	move.w	-$2831(a4),d6
+; $0B0C46
+	add.b	$A11(a5),d1
+; $0B0C4A
+	move.l	$25(a6),-(a7)
+; $0B0C4E
+	move.l	?ea(7,7),?ea(7,7)
+; $0B0C50
+	moveq	#-14,d1
+; $0B0C52
+	move.w	$3F23(a4),-(a1)
+; $0B0C56
+	move.w	(-$E,a7,a7.l),($33,a1,d2.w)
+; $0B0C5C
+	movea.l	($33,a2,d2.w),a6
+; $0B0C60
+	dc.w	$F77F
+; $0B0C62
+	move.l	-(a2),-(a7)
+; $0B0C64
+	move.w	#$C7C7,$254A(a1)
+; $0B0C6A
+	ori.?	#?,($52,pc,d7.w)
+; $0B0C6E
+	move.l	d0,d7
+; $0B0C70
+	subq.b	#2,$27F2(a7)
+; $0B0C74
+	scs	?ea(7,7)
+; $0B0C76
+	shi	($55,a3,a4.w)
+; $0B0C7A
+	addq.b	#1,$2B55(a7)
+; $0B0C7E
+	dc.w	$FF52
+; $0B0C80
+	move.l	d2,($22,pc,d5.w)
+
+loc_0B0C84:				; $0B0C84
+	dc.w	$F27F
+; $0B0C86
+	addq.l	#1,$7C7C(a7)
+; $0B0C8A
+	exg	d3,d7
+; $0B0C8C
+	dc.w	$4B04
+; $0B0C8E
+	movea.l	(a3),a1
+; $0B0C90
+	ori.l	#$C223BBBC,(-$45,pc,a7.l)
+; $0B0C98
+	move.l	loc_0ACC29(pc),?ea(7,5)
+; $0B0C9C
+	dc.w	$F2BB
+; $0B0C9E
+	move.l	a4,(a6)+
+; $0B0CA0
+	clr.b	-(a0)
+; $0B0CA2
+	not.b	a1
+; $0B0CA4
+	move.w	d0,d1
+; $0B0CA6
+	move.l	?ea(7,5),(a1)+
+; $0B0CA8
+	move.w	?ea(7,5),d1
+; $0B0CAA
+	ori.l	#$BBC2BBB3,-$4D35(a7)
+; $0B0CB2
+	move.l	($29,pc,d4.w),?ea(7,7)
+; $0B0CB6
+	move.b	(a0),-(a2)
+; $0B0CB8
+	move.l	d2,(a1)+
+; $0B0CBA
+	sbcd	d0,d3
+; $0B0CBC
+	move.l	?ea(7,7),(a6)+
+; $0B0CBE
+	dc.w	$F226
+; $0B0CC0
+	bhi.s	loc_0B0C84
+; $0B0CC2
+	move.l	(a2),d6
+; $0B0CC4
+	move.l	-(a3),d5
+; $0B0CC6
+	dc.w	$FFCC
+; $0B0CC8
+	dc.w	$F2A3
+; $0B0CCA
+	move.l	(a7),d6
+; $0B0CCC
+	and.l	-$3841(a2),d1
+; $0B0CD0
+	moveq	#-62,d1
+; $0B0CD2
+	move.l	-(a2),d7
+; $0B0CD4
+	movea.l	#$4A01CFFE,a6
+; $0B0CDA
+	dc.w	$A600
+; $0B0CDC
+	move.l	-(a6),d6
+; $0B0CDE
+	bhi.s	loc_0B0D0F
+; $0B0CE0
+	and.l	-(a2),d1
+; $0B0CE2
+	move.l	?ea(7,7),($FFFFC22C).w
+; $0B0CE6
+	dc.w	$AE2F
+; $0B0CE8
+	and.b	($2C,a2,a6.l),d6
+; $0B0CEC
+	dc.w	$FF71
+; $0B0CEE
+	mulu.w	(a2),d1
+; $0B0CF0
+	move.l	-(a2),d6
+; $0B0CF2
+	moveq	#34,d6
+; $0B0CF4
+	muls.w	(-$53,a5,a4.w),d3
+; $0B0CF8
+	andi.b	#$00,(a1)
+; $0B0CFC
+	move.b	(a2),-(a0)
+; $0B0CFE
+	dc.w	$7575
+; $0B0D00
+	rol.b	#7,d1
+; $0B0D02
+	move.b	-(a7),-(a0)
+; $0B0D04
+	addq.l	#3,loc_0B2F18(pc)
+; $0B0D08
+	dc.w	$7563
+; $0B0D0A
+	dc.w	$F8B2
+; $0B0D0C
+	move.l	a2,($0005B3).w
+; $0B0D10
+	move.l	(a2),$5221(a0)
+; $0B0D14
+	move.b	-(a5),-(a0)
+; $0B0D16
+	btst	d5,-(a2)
+; $0B0D18
+	move.b	(a1)+,($002266).w
+; $0B0D1C
+	add.b	d3,-(a0)
+; $0B0D1E
+	eor.b	d1,-(a1)
+; $0B0D20
+	add.b	d1,d5
+; $0B0D22
+	roxl.b	#6,d0
+; $0B0D24
+	dc.w	$FF25
+; $0B0D26
+	move.w	-(a2),d1
+; $0B0D28
+	and.b	($23,a3,d2.w),d1
+; $0B0D2C
+	move.l	(-$4E,pc,d3.w),($FB10BF2C).l
+; $0B0D34
+	move.l	($5F,a3,a4.w),-(a1)
+; $0B0D38
+	muls.w	d2,d3
+; $0B0D3A
+	move.w	#$F708,$2222(a1)
+; $0B0D40
+	dc.w	$0E20
+; $0B0D42
+	dc.w	$FF32
+; $0B0D44
+	subq.b	#2,$2223(a4)
+; $0B0D48
+	subq.w	#2,(a2)
+; $0B0D4A
+	move.w	?ea(7,5),(a1)+
+; $0B0D4C
+	move.w	(a2)+,d1
+; $0B0D4E
+	move.l	d2,($FB552C7C).l
+; $0B0D54
+	movea.w	($7C,a7,d5.w),a6
+; $0B0D58
+	dc.w	$7FA9
+; $0B0D5A
+	andi.b	#$73,?ea(7,7)
+; $0B0D5E
+	move.w	-(a0),-(a0)
+; $0B0D60
+	dc.w	$F7C3
+; $0B0D62
+	moveq	#-77,d1
+; $0B0D64
+	andi.b	#$2F,-(a0)
+; $0B0D68
+	move.l	d2,(-$4E,pc,a7.l)
+; $0B0D6C
+	movea.l	(-$34,a2,d2.l),a6
+; $0B0D70
+	dc.w	$AC2F
+; $0B0D72
+	dc.w	$F2AF
+; $0B0D74
+	dc.w	$77CC
+; $0B0D76
+	dc.w	$7F2C
+; $0B0D78
+	tst.b	d1
+; $0B0D7A
+	dc.w	$7FF2
+; $0B0D7C
+	move.b	($22,a3,a7.l),(a0)+
+; $0B0D80
+	dc.w	$F3C7
+; $0B0D82
+	muls.w	#$2C37,d7
+; $0B0D86
+	move.l	?ea(7,7),(a1)+
+; $0B0D88
+	exg	d7,d2
+; $0B0D8A
+	muls.w	#$22C3,d7
+; $0B0D8E
+	dc.w	$A32C
+; $0B0D90
+	dc.w	$7FFF
+; $0B0D92
+	exg	d7,d2
+; $0B0D94
+	exg	a3,a2
+; $0B0D96
+	moveq	#-49,d5
+; $0B0D98
+	tst.b	d0
+; $0B0D9A
+	dc.w	$FD7C
+; $0B0D9C
+	move.b	-(a0),-(a1)
+; $0B0D9E
+	dc.w	$F77C
+; $0B0DA0
+	move.w	-(a2),-(a7)
+; $0B0DA2
+	move.w	(-$3E,a3,a6.l),-$3004(a7)
+; $0B0DA8
+	dc.w	$FC6D
+; $0B0DAA
+	move.l	loc_0B49CE(pc),d0
+; $0B0DAE
+	dc.w	$FFCF
+; $0B0DB0
+	dc.w	$A3FF
+; $0B0DB2
+	muls.w	d2,d7
+; $0B0DB4
+	dc.w	$FCA7
+; $0B0DB6
+	move.l	?ea(7,5),(-$57,pc,d7.l)
+; $0B0DBA
+	bchg	d0,($23,a3,d3.w)
+; $0B0DBE
+	dc.w	$F327
+; $0B0DC0
+	move.w	?ea(7,6),(a6)+
+; $0B0DC2
+	tst.b	d0
+; $0B0DC4
+	dc.w	$F27F
+; $0B0DC6
+	move.w	$72F2(a4),-(a5)
+; $0B0DCA
+	muls.w	?ea(7,7),d5
+; $0B0DCC
+	and.b	-(a7),d1
+; $0B0DCE
+	and.b	$2FF2(a3),d1
+; $0B0DD2
+	mulu.w	a4,d5
+; $0B0DD4
+	dc.w	$F7C2
+; $0B0DD6
+	dc.w	$F7CC
+; $0B0DD8
+	dc.w	$4902
+; $0B0DDA
+	move.b	(a1),-(a0)
+; $0B0DDC
+	dc.w	$F111
+; $0B0DDE
+	dc.w	$FF11
+; $0B0DE0
+	move.b	d2,($11,a1,d1.w)
+; $0B0DE4
+	dc.w	$F882
+; $0B0DE6
+	move.b	(a7)+,($001F88).w
+; $0B0DEA
+	or.b	(a1),d1
+; $0B0DEC
+	move.b	($11,pc,d3.w),(a1)
+; $0B0DF0
+	movea.l	-$4BD0(a2),a4
+; $0B0DF4
+	move.b	($11,a4,d3.w),(a1)
+; $0B0DF8
+	dc.w	$AD33
+; $0B0DFA
+	move.b	d3,($30,a0,a4.l)
+; $0B0DFE
+	roxl.l	#6,d0
+; $0B0E00
+	cmp.b	(-$71,a0,a0.l),d0
+; $0B0E04
+	add.b	d2,($21,a0,a0.w)
+; $0B0E08
+	move.b	(a1)+,-(a0)
+; $0B0E0A
+	divu.w	(a3)+,d4
+; $0B0E0C
+	move.l	-(a0),(a0)+
+; $0B0E0E
+	move.w	(a1),d0
+; $0B0E10
+	move.b	a1,(a1)+
+; $0B0E12
+	move.w	$3FFC(a6),(a0)+
+; $0B0E16
+	move.w	?ea(7,7),(a5)+
+; $0B0E18
+	move.b	($11,a3,d3.w),-(a1)
+; $0B0E1C
+	move.w	-(a2),-(a1)
+; $0B0E1E
+	move.w	(a1),-(a1)
+; $0B0E20
+	move.l	($16,a3,d2.w),-(a5)
+; $0B0E24
+	negx.b	($40,a3,d1.w)
+; $0B0E28
+	move.l	(a6),d1
+; $0B0E2A
+	clr.b	-(a1)
+; $0B0E2C
+	clr.?	($1229401A).l
+; $0B0E32
+	negx.b	(a1)
+; $0B0E34
+	move.b	($21,a3,d2.w),d1
+; $0B0E38
+	or.b	(a5),d5
+; $0B0E3A
+	negx.b	(a1)
+; $0B0E3C
+	movea.w	a6,a3
+; $0B0E3E
+	move.b	($F,a5,d4.w),d1
+; $0B0E42
+	dc.w	$4957
+; $0B0E44
+	dc.w	$4933
+; $0B0E46
+	btst	d3,($12,a2,d2.w)
+; $0B0E4A
+	cmp.b	-(a0),d2
+; $0B0E4C
+	movea.l	d1,a7
+; $0B0E4E
+	sbcd	d0,d4
+; $0B0E50
+	move.b	d0,$3940(a3)
+; $0B0E54
+	moveq	#15,d4
+; $0B0E56
+	clr.w	$4044(a4)
+; $0B0E5A
+	dc.w	$4711
+; $0B0E5C
+	move.w	(a1),-(a0)
+; $0B0E5E
+	move.b	(a5),-(a1)
+; $0B0E60
+	dc.w	$4772
+; $0B0E62
+	move.b	a7,$2114(a5)
+; $0B0E66
+	negx.w	(a5)
+; $0B0E68
+	dc.w	$4E13
+; $0B0E6A
+	move.l	($40,a2,d3.w),-(a1)
+; $0B0E6E
+	ori.?	#?,(a3)+
+; $0B0E70
+	movea.l	a3,a0
+; $0B0E72
+	lea	a1,a0
+; $0B0E74
+	move.w	($78,a7,d4.l),d0
+; $0B0E78
+	dc.w	$4130
+; $0B0E7A
+	negx.w	($4F,a3,d4.w)
+; $0B0E7E
+	dc.w	$4D00
+; $0B0E80
+	beq.s	loc_0B0EC2
+; $0B0E82
+	moveq	#69,d7
+; $0B0E84
+	or.w	d1,d5
+; $0B0E86
+	dc.w	$AE4A
+; $0B0E88
+	sub.w	d5,a6
+; $0B0E8A
+	roxr.w	#6,d1
+; $0B0E8C
+	moveq	#79,d0
+; $0B0E8E
+	lsr.w	#1,d1
+; $0B0E90
+	lsr.b	#5,d1
+; $0B0E92
+	dc.w	$4331
+; $0B0E94
+	eor.b	d0,($D,a0,d3.w)
+; $0B0E98
+	negx.b	($11,a3,d3.w)
+; $0B0E9C
+	btst	d3,-(a3)
+; $0B0E9E
+	move.w	-(a2),d1
+; $0B0EA0
+	addq.w	#3,(a1)
+; $0B0EA2
+	and.b	($42,a2,d0.l),d5
+; $0B0EA6
+	bcc.s	loc_0B0EF8
+; $0B0EA8
+	ble.s	loc_0B0F00
+; $0B0EAA
+	move.b	(a2),-$4ED0(a0)
+; $0B0EAE
+	and.w	d3,d4
+; $0B0EB0
+	bhi.s	loc_0B0F04
+; $0B0EB2
+	movea.b	$5407(a0),a1
+; $0B0EB6
+	not.b	$40C0(a0)
+; $0B0EBA
+	dc.w	$4B55
+; $0B0EBC
+	dc.w	$A65F
+; $0B0EBE
+	cmp.w	(a0)+,d1
+; $0B0EC0
+	add.w	d5,d1
+
+loc_0B0EC2:				; $0B0EC2
+	dc.w	$4C54
+; $0B0EC4
+	cmp.b	-(a1),d2
+; $0B0EC6
+	move.w	-$DF(a5),(a1)
+; $0B0ECA
+	move.b	-$23DF(a2),d1
+; $0B0ECE
+	move.b	-$30F1(a5),(a1)
+
+loc_0B0ED2:				; $0B0ED2
+	move.l	(a2),-(a0)
+; $0B0ED4
+	adda.w	#$E421,a6
+; $0B0ED8
+	bclr	d4,a7
+; $0B0EDA
+	eor.w	d3,a1
+; $0B0EDC
+	beq.s	loc_0B0F1E
+; $0B0EDE
+	bchg	#83,-(a6)
+; $0B0EE2
+	addq.b	#8,d6
+; $0B0EE4
+	bra.s	loc_0B0EF7
+; $0B0EE6
+	addq.w	#7,(a0)
+; $0B0EE8
+	blt.s	loc_0B0F44
+; $0B0EEA
+	addq.w	#5,(a0)
+; $0B0EEC
+	add.w	d0,(a1)
+; $0B0EEE
+	negx.b	d5
+; $0B0EF0
+	bra.s	loc_0B0F02
+; $0B0EF2
+	dc.w	$432C
+; $0B0EF4
+	negx.b	d5
+; $0B0EF6
+	bhi.s	loc_0B0F36
+
+loc_0B0EF8:				; $0B0EF8
+	subq.w	#6,a6
+; $0B0EFA
+	dc.w	$4112
+; $0B0EFC
+	move.b	d0,-$7FF4(a1)
+
+loc_0B0F00:				; $0B0F00
+	subq.b	#8,d6
+
+loc_0B0F02:				; $0B0F02
+	bls.s	loc_0B0ED2
+
+loc_0B0F04:				; $0B0F04
+	dc.w	$4366
+; $0B0F06
+	dc.w	$4552
+; $0B0F08
+	addq.w	#1,(a4)+
+; $0B0F0A
+	st	d2
+; $0B0F0C
+	negx.b	(a1)
+; $0B0F0E
+	btst	d0,($65,a3,d7.w)
+; $0B0F12
+	move.l	d1,-$3CBF(a7)
+; $0B0F16
+	exg	d5,d0
+; $0B0F18
+	movea.l	(a5)+,a7
+; $0B0F1A
+	addq.w	#1,-(a4)
+; $0B0F1C
+	bcs.s	loc_0B0F64
+
+loc_0B0F1E:				; $0B0F1E
+	ori.b	#$7E,(a2)
+; $0B0F22
+	clr.?	a7
+; $0B0F24
+	dc.w	$410F
+; $0B0F26
+	chk.w	$4103(a5),d0
+; $0B0F2A
+	bvc.s	loc_0B0F5A
+; $0B0F2C
+	subq.b	#1,$4000(a0)
+; $0B0F30
+	exg	a1,a1
+; $0B0F32
+	bls.s	loc_0B0F85
+
+loc_0B0F34:				; $0B0F34
+	exg	a3,a1
+
+loc_0B0F36:				; $0B0F36
+	dc.w	$4348
+; $0B0F38
+	dc.w	$0E49
+; $0B0F3A
+	movea.w	-(a3),a5
+; $0B0F3C
+	and.w	$E49(a3),d0
+; $0B0F40
+	dc.w	$7123
+; $0B0F42
+	sub.w	d5,(a2)
+
+loc_0B0F44:				; $0B0F44
+	add.w	d3,d1
+; $0B0F46
+	and.w	-(a6),d3
+; $0B0F48
+	move.b	($7A,a3,d3.w),-(a0)
+; $0B0F4C
+	bra.s	loc_0B0EEB
+; $0B0F4E
+	move.w	($21,a2,d7.l),-(a1)
+; $0B0F52
+	move.w	($40,a2,d2.l),-(a1)
+; $0B0F56
+	bvc.s	loc_0B0FAA
+; $0B0F58
+	move.b	d1,$3252(a1)
+; $0B0F5C
+	dc.w	$71D4
+; $0B0F5E
+	bhi.s	loc_0B0F34
+; $0B0F60
+	clr.w	(a6)
+; $0B0F62
+	dc.w	$7116
+
+loc_0B0F64:				; $0B0F64
+	subq.b	#8,-(a2)
+; $0B0F66
+	exg	a5,a4
+; $0B0F68
+	dc.w	$4D13
+; $0B0F6A
+	or.w	d7,d0
+; $0B0F6C
+	move.b	($61,a1,d1.w),d1
+; $0B0F70
+	asr.b	d4,d0
+; $0B0F72
+	move.w	a6,(a1)
+; $0B0F74
+	negx.?	-(a3)
+; $0B0F76
+	move.l	-(a3),-(a0)
+; $0B0F78
+	lsr.b	d5,d0
+; $0B0F7A
+	lsl.b	d5,d5
+; $0B0F7C
+	ble.s	loc_0B0FD0
+; $0B0F7E
+	move.l	(a3),$32EF(a0)
+; $0B0F82
+	move.b	-(a1),-(a1)
+; $0B0F84
+	move.w	($40,a5,d6.w),d1
+; $0B0F88
+	move.w	-(a3),d1
+; $0B0F8A
+	move.l	($32977096).l,d1
+; $0B0F90
+	dc.w	$7122
+; $0B0F92
+	move.l	(a3),d1
+; $0B0F94
+	dc.w	$A154
+; $0B0F96
+	add.w	d5,-(a2)
+; $0B0F98
+	cmpa.w	(a1)+,a0
+; $0B0F9A
+	bcc.s	loc_0B0F55
+; $0B0F9C
+	moveq	#103,d3
+; $0B0F9E
+	addq.l	#1,(a2)+
+; $0B0FA0
+	subq.b	#8,($33,a3,d2.w)
+; $0B0FA4
+	moveq	#33,d0
+; $0B0FA6
+	dc.w	$4113
+; $0B0FA8
+	bra.s	loc_0B0FFA
+
+loc_0B0FAA:				; $0B0FAA
+	cmp.w	($56,a4,a0.w),d4
+; $0B0FAE
+	roxr.w	d6,d1
+; $0B0FB0
+	add.w	(-$63,a3,d3.w),d0
+; $0B0FB4
+	moveq	#3,d0
+; $0B0FB6
+	move.w	($70,a2,a2.w),-(a2)
+
+loc_0B0FBA:				; $0B0FBA
+	sub.w	d6,($71,a0,a5.w)
+; $0B0FBE
+	movea.b	($61,a3,a6.w),a5
+; $0B0FC2
+	add.w	d0,d1
+; $0B0FC4
+	dc.w	$7F32
+; $0B0FC6
+	move.l	-(a1),-(a1)
+; $0B0FC8
+	move.b	($52,a2,d1.w),-(a2)
+; $0B0FCC
+	addq.w	#1,($66,a2,d3.l)
+
+loc_0B0FD0:				; $0B0FD0
+	negx.w	(a2)
+; $0B0FD2
+	dc.w	$7313
+; $0B0FD4
+	move.w	(a2),d1
+; $0B0FD6
+	movea.l	(a2),a1
+; $0B0FD8
+	bra.s	loc_0B104D
+; $0B0FDA
+	bsr.s	loc_0B1027
+; $0B0FDC
+	movea.w	(a3),a1
+; $0B0FDE
+	add.w	d3,($5,a0,d1.w)
+; $0B0FE2
+	bra.s	loc_0B0FBA
+; $0B0FE4
+	dc.w	$7123
+; $0B0FE6
+	move.l	d3,($33,a0,d3.w)
+; $0B0FEA
+	exg	a3,a0
+; $0B0FEC
+	move.l	-(a2),-$A90(a5)
+; $0B0FF0
+	move.w	(-$7E,a3,d0.w),-(a2)
+; $0B0FF4
+	movea.b	($56,a3,d6.w),a6
+; $0B0FF8
+	moveq	#83,d0
+
+loc_0B0FFA:				; $0B0FFA
+	or.b	(a2)+,d0
+; $0B0FFC
+	moveq	#43,d0
+; $0B0FFE
+	or.b	$5221(a4),d0
+; $0B1002
+	move.l	(a3),($70031332).l
+; $0B1008
+	move.b	d0,(a3)
+; $0B100A
+	dc.w	$7786
+; $0B100C
+	addq.w	#3,(-$-80,a0,d4.w)
+; $0B1010
+	tst.b	d0
+; $0B1012
+	move.b	(a1),-$6505(a4)
+; $0B1016
+	moveq	#34,d0
+; $0B1018
+	subq.w	#1,($12,a0,d1.w)
+; $0B101C
+	move.w	d3,(a5)
+; $0B101E
+	movea.l	-(a0),a6
+; $0B1020
+	movea.w	d1,a1
+; $0B1022
+	move.b	(a5)+,-(a0)
+; $0B1024
+	or.w	$402D(a2),d1
+; $0B1028
+	or.w	-(a4),d0
+; $0B102A
+	or.l	(a3),d0
+; $0B102C
+	or.b	d1,-(a2)
+; $0B102E
+	movea.b	-(a1),a1
+; $0B1030
+	adda.w	(a0)+,a0
+; $0B1032
+	dc.w	$716F
+; $0B1034
+	subq.l	#2,a3
+; $0B1036
+	dbf	d6,loc_0B838B
+; $0B103A
+	beq.s	loc_0B10AD
+; $0B103C
+	move.l	($23,a3,d2.l),-(a0)
+; $0B1040
+	addq.l	#2,d0
+; $0B1042
+	move.l	-(a3),-(a0)
+; $0B1044
+	move.b	(a0),$5319(a3)
+; $0B1048
+	moveq	#104,d0
+; $0B104A
+	lea	#$3481EE83,a1
+; $0B1050
+	move.b	($53,a2,d5.w),d1
+; $0B1054
+	move.w	($53,a2,d5.w),-(a1)
+; $0B1058
+	move.l	-(a5),d1
+; $0B105A
+	move.w	d0,($1,a1,d1.w)
+; $0B105E
+	sub.b	-(a2),d1
+; $0B1060
+	dc.w	$4B71
+; $0B1062
+	andi.b	#$23,a7
+; $0B1066
+	movea.w	d0,a2
+; $0B1068
+	dc.w	$7B52
+; $0B106A
+	moveq	#88,d0
+; $0B106C
+	bset	d7,d1
+; $0B106E
+	dc.w	$4B51
+; $0B1070
+	subq.w	#5,(a1)
+; $0B1072
+	jsr	(a2)
+; $0B1074
+	or.b	(a1),d0
+; $0B1076
+	move.b	($42,a5,a5.w),-(a0)
+; $0B107A
+	movea.b	(a2),a3
+; $0B107C
+	move.l	(a0)+,-(a2)
+; $0B107E
+	dc.w	$7180
+; $0B1080
+	bvc.s	loc_0B10C6
+; $0B1082
+	subq.w	#1,($72,a0,a5.w)
+; $0B1086
+	dc.w	$7361
+; $0B1088
+	bclr	d7,d0
+; $0B108A
+	addq.w	#3,($50,a0,d5.w)
+; $0B108E
+	move.l	(a5),-(a1)
+; $0B1090
+	move.w	a0,$7032(a0)
+; $0B1094
+	cmp.b	-(a0),d2
+
+loc_0B1096:				; $0B1096
+	move.l	(a3),d1
+; $0B1098
+	bsr.s	loc_0B1109
+; $0B109A
+	addq.l	#5,-(a3)
+; $0B109C
+	or.w	d1,d0
+; $0B109E
+	move.b	d3,(a1)
+; $0B10A0
+	or.w	d1,-$6F54(a1)
+; $0B10A4
+	or.w	-(a1),d0
+; $0B10A6
+	sub.b	d1,($83533480).l
+; $0B10AC
+	btst	d7,-(a5)
+; $0B10AE
+	move.l	-(a1),-(a1)
+; $0B10B0
+	move.b	$709C(a3),($52,a1,a0.w)
+; $0B10B6
+	bsr.s	loc_0B111A
+; $0B10B8
+	sub.b	d0,-(a4)
+; $0B10BA
+	move.w	d1,(a4)
+
+loc_0B10BC:				; $0B10BC
+	move.w	d0,(a4)
+; $0B10BE
+	sls	d0
+; $0B10C0
+	negx.w	d3
+; $0B10C2
+	sub.b	(a3),d0
+; $0B10C4
+	add.l	d1,d2
+
+loc_0B10C6:				; $0B10C6
+	subq.w	#7,(a0)
+; $0B10C8
+	moveq	#105,d5
+; $0B10CA
+	negx.b	(a5)
+; $0B10CC
+	sub.w	d5,d0
+; $0B10CE
+	movea.w	(a2),a1
+; $0B10D0
+	subq.w	#1,(a2)
+; $0B10D2
+	add.w	(-$12,a1,a4.l),d3
+; $0B10D6
+	or.w	(a1),d3
+; $0B10D8
+	subq.w	#1,(a2)
+; $0B10DA
+	not.l	d1
+; $0B10DC
+	bpl.s	loc_0B1063
+; $0B10DE
+	movea.l	(a2),a1
+; $0B10E0
+	dc.w	$7123
+; $0B10E2
+	dc.w	$7F83
+; $0B10E4
+	sub.l	d5,d3
+; $0B10E6
+	exg	d0,a6
+; $0B10E8
+	subq.b	#1,-(a2)
+; $0B10EA
+	move.l	(a5),($915A15A3).l
+; $0B10F0
+	move.l	(a2),($80322505).l
+; $0B10F6
+	or.b	(-$7B,a5,a2.l),d0
+; $0B10FA
+	clr.?	($35,a1,a1.l)
+; $0B10FE
+	subq.l	#7,d1
+; $0B1100
+	rol.l	#7,d2
+; $0B1102
+	dc.w	$FC80
+; $0B1104
+	bvs.s	loc_0B1096
+; $0B1106
+	move.b	($81FEFD80).l,(a1)
+; $0B110C
+	subq.b	#1,-(a2)
+; $0B110E
+	move.w	(a2),$2222(a1)
+; $0B1112
+	move.l	loc_0B4CB4(pc),$2221(a2)
+; $0B1118
+	dc.w	$A033
+
+loc_0B111A:				; $0B111A
+	subq.b	#8,(a3)
+; $0B111C
+	addq.b	#1,($0,a4,d7.w)
+; $0B1120
+	chk.w	d4,d4
+; $0B1122
+	pea	($70,a0,a2.w)
+; $0B1126
+	moveq	#80,d5
+; $0B1128
+	ori.l	#$C2885E82,-(a7)
+; $0B112E
+	or.l	d7,$6234(a4)
+; $0B1132
+	or.w	(a2),d0
+; $0B1134
+	bne.s	loc_0B10BC
+; $0B1136
+	move.w	-(a4),($71,a6,d5.w)
+; $0B113A
+	move.b	(-$70,a2,d3.l),-(a2)
+; $0B113E
+	or.b	(a3),d1
+; $0B1140
+	bsr.s	loc_0B1195
+; $0B1142
+	moveq	#81,d6
+; $0B1144
+	pea	d3
+; $0B1146
+	bcc.s	loc_0B1198
+; $0B1148
+	dc.w	$A270
+; $0B114A
+	add.l	-(a0),d0
+; $0B114C
+	subq.w	#1,(-$3,a1,d5.w)
+; $0B1150
+	dc.w	$73F6
+; $0B1152
+	moveq	#96,d0
+; $0B1154
+	dc.w	$A052
+; $0B1156
+	move.l	(a2),-$980(a1)
+; $0B115A
+	movea.l	$7033(a1),a7
+; $0B115E
+	addq.w	#1,(a3)
+; $0B1160
+	subq.l	#8,(a1)
+; $0B1162
+	move.l	loc_0AB427(pc),(a1)
+; $0B1166
+	dc.w	$A060
+; $0B1168
+	cmp.l	-(a1),d5
+; $0B116A
+	bhi.s	loc_0B11DE
+; $0B116C
+	rol.l	d7,d0
+; $0B116E
+	tst.l	-(a1)
+; $0B1170
+	or.l	-(a5),d7
+; $0B1172
+	move.l	(a1),$12A0(a1)
+; $0B1176
+	or.l	(a3)+,d1
+; $0B1178
+	subq.b	#8,-(a3)
+; $0B117A
+	moveq	#81,d6
+; $0B117C
+	moveq	#80,d6
+; $0B117E
+	move.w	-(a0),($61,a5,d2.l)
+; $0B1182
+	movea.b	(a0),a5
+; $0B1184
+	move.w	d1,$326D(a0)
+; $0B1188
+	sub.l	(a1)+,d0
+; $0B118A
+	or.w	a4,d0
+; $0B118C
+	sub.b	d0,d5
+; $0B118E
+	bra.s	loc_0B11C9
+; $0B1190
+	cmp.b	(-$7F,a1,a0.l),d1
+; $0B1194
+	or.l	-$7EFB(a2),d4
+
+loc_0B1198:				; $0B1198
+	lea	(a1)+,a3
+; $0B119A
+	bra.s	loc_0B11BF
+; $0B119C
+	subi.w	#$A090,-(a1)
+; $0B11A0
+	subq.l	#5,($0,a0,d1.w)
+; $0B11A4
+	dc.w	$7F52
+; $0B11A6
+	sub.w	($50,a1,d5.l),d1
+; $0B11AA
+	ble.s	loc_0B115C
+; $0B11AC
+	move.l	($70,a1,a2.w),(a7)
+; $0B11B0
+	dc.w	$AB70
+; $0B11B2
+	moveq	#-79,d0
+; $0B11B4
+	btst	d1,-(a2)
+; $0B11B6
+	move.b	a6,($FFFF90E9).w
+; $0B11BA
+	clr.w	a2
+; $0B11BC
+	bset	d0,(a1)
+; $0B11BE
+	eor.l	d7,(a4)+
+; $0B11C0
+	cmpa.l	#$F1FFFC20,a3
+; $0B11C6
+	exg	d7,d0
+; $0B11C8
+	muls.w	?ea(7,7),d7
+; $0B11CA
+	dc.w	$FC20
+; $0B11CC
+	dc.w	$F722
+; $0B11CE
+	dc.w	$FF22
+; $0B11D0
+	eor.l	d2,(-$4,a1,d0.w)
+; $0B11D4
+	move.l	a7,(a1)+
+; $0B11D6
+	exg	d1,d0
+; $0B11D8
+	move.l	d5,(a1)+
+; $0B11DA
+	cmpa.w	#$F1B2,a0
+
+loc_0B11DE:				; $0B11DE
+	subq.l	#7,(a4)
+; $0B11E0
+	subq.b	#7,(a0)+
+; $0B11E2
+	or.l	?ea(7,5),d4
+; $0B11E4
+	divs.w	-(a2),d0
+; $0B11E6
+	move.w	a0,(a0)
+; $0B11E8
+	move.b	a0,(-$6,a0,d2.w)
+; $0B11EC
+	cmpm.l	(a0)+,(a0)+
+; $0B11EE
+	dc.w	$A2FA
+; $0B11F0
+	cmp.b	-(a2),d0
+; $0B11F2
+	dc.w	$FAB2
+; $0B11F4
+	move.l	(a2),-$2B4F(a4)
+; $0B11F8
+	divu.w	(-$7E,a3,a3.l),d4
+; $0B11FC
+	or.b	d1,d1
+; $0B11FE
+	and.b	-(a2),d0
+; $0B1200
+	dc.w	$F9B0
+; $0B1202
+	or.w	d3,d4
+; $0B1204
+	dc.w	$0ECF
+; $0B1206
+	move.l	d1,(a0)+
+; $0B1208
+	subi.?	#?,a3
+; $0B120A
+	move.b	-(a5),(-$37,a0,a4.w)
+; $0B120E
+	move.w	a4,(a0)+
+; $0B1210
+	scc	d1
+; $0B1212
+	sls	d0
+; $0B1214
+	mulu.w	$30C2(a0),d6
+; $0B1218
+	dc.w	$FCC9
+; $0B121A
+	move.w	-(a1),(a0)
+; $0B121C
+	addq.b	#4,(a7)+
+; $0B121E
+	dc.w	$FFF2
+; $0B1220
+	move.b	?ea(7,7),($0022EF).w
+; $0B1224
+	dc.w	$FF21
+; $0B1226
+	move.l	($40,a2,d2.l),?ea(7,7)
+; $0B122A
+	move.l	(-$65,a1,d1.w),?ea(7,7)
+; $0B122E
+	dc.w	$FF12
+; $0B1230
+	moveq	#-64,d4
+; $0B1232
+	dc.w	$FFF2
+; $0B1234
+	bvs.s	loc_0B1299
+; $0B1236
+	exg	d4,d0
+; $0B1238
+	dc.w	$FFFF
+; $0B123A
+	dc.w	$FFFF
+; $0B123C
+	move.l	-(a2),-(a0)
+; $0B123E
+	move.l	?ea(7,7),?ea(7,7)
+; $0B1240
+	move.l	(a1),-(a0)
+; $0B1242
+	or.l	d7,d7
+; $0B1244
+	and.b	(a7)+,d0
+; $0B1246
+	dc.w	$FF22
+; $0B1248
+	suba.w	d1,a5
+; $0B124A
+	suba.l	d3,a0
+; $0B124C
+	dc.w	$4B54
+; $0B124E
+	move.b	(a5)+,-$80(a7)
+; $0B1252
+	and.b	-(a2),d0
+; $0B1254
+	dc.w	$FF11
+; $0B1256
+	suba.w	d0,a2
+; $0B1258
+	move.l	(a0)+,(-$4,a0,a4.w)
+; $0B125C
+	cmpa.l	d0,a4
+; $0B125E
+	divu.w	a4,d2
+; $0B1260
+	move.b	(a7)+,-(a0)
+; $0B1262
+	dc.w	$F1FF
+; $0B1264
+	dc.w	$F1FF
+; $0B1266
+	dc.w	$FDF2
+; $0B1268
+	suba.w	d0,a1
+; $0B126A
+	dc.w	$F2FF
+; $0B126C
+	move.l	-$D01(a7),-(a7)
+; $0B1270
+	sub.b	d6,-(a2)
+; $0B1272
+	asr.w	d0
+; $0B1274
+	move.l	(a7)+,-(a0)
+; $0B1276
+	dc.w	$F20A
+; $0B1278
+	suba.l	#$F109FF33,a0
+; $0B127E
+	sub.l	($39,a2,d0.w),d2
+; $0B1282
+	chk.w	(-$1,a2,d0.w),d5
+; $0B1286
+	sub.l	($9,pc,a3.w),d2
+; $0B128A
+	chk.w	($4,a4,a3.w),d5
+; $0B128E
+	dc.w	$FFBB
+; $0B1290
+	neg.l	(-$45,a2,d0.l)
+; $0B1294
+	eor.l	d5,(-$4,a2,d0.w)
+; $0B1298
+	dc.w	$ABB4
+; $0B129A
+	dc.w	$FCF2
+; $0B129C
+	move.w	d4,$2000(a4)
+; $0B12A0
+	sub.w	a3,d2
+; $0B12A2
+	dc.w	$FF20
+; $0B12A4
+	ori.w	#$BB20,d4
+; $0B12A8
+	ori.w	#$B4E7,a3
+; $0B12AC
+	move.l	d0,d0
+; $0B12AE
+	move.l	a0,(a1)+
+; $0B12B0
+	cmpa.l	#$FA034200,a1
+; $0B12B6
+	move.w	d0,-(a7)
+; $0B12B8
+	subi.l	#$020DD7FC,($0,a2,d0.w)
+; $0B12C0
+	dc.w	$F1FF
+; $0B12C2
+	btst	d7,($72,a3,d3.l)
+; $0B12C6
+	btst	d1,($72,a3,a0.l)
+; $0B12CA
+	dc.w	$FF03
+; $0B12CC
+	move.w	d7,(a4)
+; $0B12CE
+	moveq	#3,d1
+; $0B12D0
+	or.w	($0072FF).w,d4
+; $0B12D4
+	bset	#114,d7
+; $0B12D8
+	bclr	d3,($72,a7,d7.w)
+; $0B12DC
+	dc.w	$FE0A
+; $0B12DE
+	add.b	($0,a3,a0.l),d5
+; $0B12E2
+	ori.b	#$00,($FFFF8720).w
+; $0B12E8
+	or.w	($0,a7,d2.w),d4
+; $0B12EC
+	or.w	d3,($0025DF).w
+; $0B12F0
+	cmp.b	(-$7E,a7,a5.w),d7
+; $0B12F4
+	ori.b	#$72,d0
+; $0B12F8
+	lea	(a6)+,a0
+; $0B12FA
+	bchg	d6,?ea(7,7)
+; $0B12FC
+	move.w	a6,($A2033DEA).l
+; $0B1302
+	dc.w	$A203
+; $0B1304
+	dc.w	$FFDE
+; $0B1306
+	dc.w	$AAA2
+; $0B1308
+	cmpi.?	#?,-$515E(a2)
+; $0B130C
+	dc.w	$0E7F
+; $0B130E
+	dc.w	$AAEE
+; $0B1310
+	dc.w	$A20A
+; $0B1312
+	dc.w	$AAAA
+; $0B1314
+	dc.w	$A20A
+; $0B1316
+	adda.w	?ea(7,7),a5
+; $0B1318
+	move.w	$2000(a6),(a6)+
+; $0B131C
+	mulu.w	$2000(a2),d7
+; $0B1320
+	move.w	-$55E0(a6),?ea(7,7)
+; $0B1324
+	ori.?	#?,-$517B(a2)
+; $0B1328
+	add.b	d7,($1F,a7,a5.w)
+; $0B132C
+	lsr.b	#1,d0
+; $0B132E
+	ori.b	#$41,a6
+; $0B1332
+	add.l	-(a4),d5
+; $0B1334
+	or.w	-(a5),d0
+; $0B1336
+	clr.?	a1
+; $0B1338
+	move.l	(a3),d1
+; $0B133A
+	or.b	a6,d0
+; $0B133C
+	or.w	d0,(a3)
+; $0B133E
+	dc.w	$F970
+; $0B1340
+	chk.w	-(a0),d3
+; $0B1342
+	movea.w	(a3),a1
+; $0B1344
+	bls.s	loc_0B1379
+; $0B1346
+	move.l	(a7),-$5FD6(a1)
+; $0B134A
+	exg	a1,a0
+; $0B134C
+	eor.b	d1,(a5)
+; $0B134E
+	move.w	a6,(a1)+
+; $0B1350
+	dc.w	$A272
+; $0B1352
+	move.w	-(a4),?ea(7,5)
+; $0B1354
+	sls	-(a4)
+; $0B1356
+	move.l	a2,(a0)
+; $0B1358
+	dc.w	$4153
+; $0B135A
+	move.w	($20,a5,a3.w),-(a1)
+; $0B135E
+	or.b	d3,-(a3)
+; $0B1360
+	move.l	(a5),$3BA0(a0)
+; $0B1364
+	add.w	($70,a0,d6.l),d1
+; $0B1368
+	dc.w	$AC71
+; $0B136A
+	move.w	a7,loc_0B34BF(pc)
+; $0B136E
+	move.w	(a2),$2A92(a1)
+; $0B1372
+	move.b	d0,(a1)
+; $0B1374
+	move.l	(a1),d1
+; $0B1376
+	dc.w	$A477
+; $0B1378
+	or.l	(a4)+,d0
+; $0B137A
+	dc.w	$7113
+; $0B137C
+	rol.l	d3,d0
+; $0B137E
+	move.w	d0,(a4)
+; $0B1380
+	move.l	-(a4),-$1FDF(a0)
+
+loc_0B1384:				; $0B1384
+	btst	d0,-(a2)
+; $0B1386
+	add.w	d7,(-$6E,a5,d2.w)
+; $0B138A
+	bvc.s	loc_0B13FC
+; $0B138C
+	move.b	(a0),(-$6D,a1,a0.w)
+; $0B1390
+	move.w	($70,a0,d6.l),(a1)
+; $0B1394
+	dc.w	$F125
+; $0B1396
+	sub.w	d5,(a5)
+; $0B1398
+	cmp.l	-(a1),d6
+; $0B139A
+	suba.l	-(a4),a1
+; $0B139C
+	move.b	(a5),-(a0)
+; $0B139E
+	move.w	-(a1),-(a2)
+; $0B13A0
+	negx.w	-$1FCB(a0)
+; $0B13A4
+	addq.l	#1,-(a6)
+; $0B13A6
+	roxl.w	d2,d4
+; $0B13A8
+	dbf	d6,loc_0AFBE3
+; $0B13AC
+	lsr.b	d1,d5
+; $0B13AE
+	moveq	#80,d5
+; $0B13B0
+	addq.b	#8,-(a6)
+; $0B13B2
+	dc.w	$A069
+; $0B13B4
+	bls.s	loc_0B1384
+; $0B13B6
+	roxl.w	#2,d3
+; $0B13B8
+	or.b	(a5),d0
+; $0B13BA
+	sub.l	d0,d0
+; $0B13BC
+	move.b	(a7),($2024AC71).l
+; $0B13C2
+	and.l	(a0),d7
+; $0B13C4
+	move.w	-$7E84(a2),($11,a0,d5.w)
+; $0B13CA
+	dc.w	$75E2
+; $0B13CC
+	tst.b	d0
+; $0B13CE
+	move.l	a6,(a4)+
+; $0B13D0
+	ror.w	a6
+; $0B13D2
+	negx.b	d5
+; $0B13D4
+	or.b	(-$7F,a2,d6.l),d0
+; $0B13D8
+	subq.l	#8,d1
+; $0B13DA
+	moveq	#69,d0
+; $0B13DC
+	cmp.b	(a4),d0
+; $0B13DE
+	move.b	(-$5E,a0,d7.w),loc_0B3507(pc)
+; $0B13E4
+	asr.b	d0,d1
+; $0B13E6
+	sub.w	(-$1F,a0,d2.w),d7
+; $0B13EA
+	dc.w	$AA32
+; $0B13EC
+	ori.l	#$A2D770E2,?ea(7,7)
+; $0B13F2
+	asr.w	d0,d7
+; $0B13F4
+	cmp.l	-(a4),d2
+; $0B13F6
+	sub.b	(a5),d0
+; $0B13F8
+	negx.?	(a3)+
+; $0B13FA
+	divu.w	$4010(a1),d0
+; $0B13FE
+	dc.w	$4D51
+; $0B1400
+	or.w	-(a2),d0
+; $0B1402
+	suba.l	-(a3),a6
+
+loc_0B1404:				; $0B1404
+	bne.s	loc_0B1446
+; $0B1406
+	move.l	($55,pc,a6.w),loc_0AB458(pc)
+; $0B140C
+	or.l	d0,a4
+; $0B140E
+	tst.l	(-$6E,a2,d2.w)
+; $0B1412
+	move.l	(a1),-(a1)
+; $0B1414
+	move.l	-(a1),(a1)
+; $0B1416
+	move.w	-(a0),#$6D92
+; $0B141A
+	move.l	d0,(a1)
+; $0B141C
+	dc.w	$7780
+; $0B141E
+	dc.w	$4D40
+; $0B1420
+	bvc.s	loc_0B1404
+; $0B1422
+	bclr	d7,d0
+; $0B1424
+	addq.w	#7,-(a0)
+; $0B1426
+	move.b	d0,(-$6E,a0,d2.l)
+; $0B142A
+	move.w	d5,-(a2)
+; $0B142C
+	move.l	($21,a6,a7.w),-(a0)
+; $0B1430
+	ori.?	#?,(-$F,a1,a3.l)
+; $0B1434
+	dc.w	$AB32
+; $0B1436
+	dc.w	$AC71
+; $0B1438
+	not.?	-(a0)
+; $0B143A
+	dc.w	$FA37
+; $0B143C
+	sub.b	d0,(a5)
+
+loc_0B143E:				; $0B143E
+	add.w	-(a1),d4
+; $0B1440
+	move.w	(a1),-(a1)
+; $0B1442
+	addq.w	#1,(a3)
+; $0B1444
+	dbls	d7,loc_0B6978
+; $0B1448
+	move.w	-(a5),-(a2)
+; $0B144A
+	addq.l	#3,-(a0)
+; $0B144C
+	bpl.s	loc_0B143E
+; $0B144E
+	bchg	d7,?ea(7,7)
+; $0B1450
+	cmpa.l	?ea(7,7),a1
+; $0B1452
+	move.l	-(a2),(a0)+
+; $0B1454
+	muls.w	(a2),d0
+; $0B1456
+	moveq	#34,d1
+; $0B1458
+	bchg	d1,($F2FF7F22).l
+; $0B145E
+	bchg	d7,(-$1,a2,d2.l)
+; $0B1462
+	dc.w	$FF22
+; $0B1464
+	eori.?	#?,(a0)
+; $0B1466
+	dc.w	$7F20
+; $0B1468
+	ori.b	#$00,a7
+; $0B146C
+	ori.?	#?,?ea(7,7)
+; $0B146E
+	move.b	d0,d0
+; $0B1470
+	move.l	-(a3),-(a1)
+; $0B1472
+	move.w	($D018040F).l,d1
+; $0B1478
+	andi.?	#?,?ea(7,7)
+; $0B147A
+	roxl.w	(a2)
+; $0B147C
+	ror.w	(-$1,a5,a7.l)
+; $0B1480
+	add.w	d1,(-$50,a0,d1.l)
+; $0B1484
+	move.l	d3,d1
+; $0B1486
+	move.w	-(a2),-(a1)
+; $0B1488
+	movea.l	(a7),a0
+; $0B148A
+	dc.w	$FFF2
+; $0B148C
+	move.l	-(a6),d0
+; $0B148E
+	ori.?	#?,?ea(7,7)
+; $0B1490
+	eori.b	#$EE,(a1)
+; $0B1494
+	dc.w	$F516
+; $0B1496
+	shi	-(a0)
+; $0B1498
+	move.w	d0,d1
+; $0B149A
+	chk.w	d0,d3
+; $0B149C
+	ori.?	#?,(a3)
+; $0B149E
+	moveq	#-30,d0
+; $0B14A0
+	abcd	d6,d0
+; $0B14A2
+	bset	d3,a0
+; $0B14A4
+	move.l	d0,d4
+; $0B14A6
+	rol.w	(-$10,a0,a7.l)
+; $0B14AA
+	move.l	(a2),d0
+; $0B14AC
+	negx.w	($246022F).l
+; $0B14B2
+	divs.w	?ea(7,7),d1
+; $0B14B4
+	movea.l	d2,a1
+; $0B14B6
+	adda.l	(a2)+,a0
+; $0B14B8
+	and.l	-$7E19(a3),d1
+; $0B14BC
+	add.b	(a2)+,d0
+; $0B14BE
+	addq.b	#8,-(a0)
+; $0B14C0
+	ori.w	#$01E2,(a6)
+; $0B14C4
+	and.b	d7,d1
+; $0B14C6
+	ori.w	#$202D,a2
+; $0B14CA
+	addi.l	#$819A01D2,a0
+; $0B14D0
+	dc.w	$7100
+; $0B14D2
+	bhi.s	loc_0B14DD
+; $0B14D4
+	or.b	d3,d7
+; $0B14D6
+	dc.w	$F4F1
+; $0B14D8
+	sub.l	d0,d0
+; $0B14DA
+	dc.w	$7900
+; $0B14DC
+	move.b	d0,d5
+; $0B14DE
+	btst	d6,d3
+; $0B14E0
+	btst	d7,d1
+; $0B14E2
+	and.w	d3,d0
+; $0B14E4
+	adda.w	-$6E6(a6),a0
+; $0B14E8
+	moveq	#-67,d0
+; $0B14EA
+	subi.b	#$EE,d4
+; $0B14EE
+	cmpi.b	#$01,(-$10,a2,d0.w)
+; $0B14F4
+	dc.w	$0E00
+; $0B14F6
+	ror.w	($3,a0,a4.l)
+; $0B14FA
+	move.l	?ea(7,7),(a0)+
+; $0B14FC
+	dc.w	$F0FF
+; $0B14FE
+	suba.w	-(a0),a0
+; $0B1500
+	and.b	($32,a2,d7.l),d0
+; $0B1504
+	move.b	(-$E,a6,a4.w),-$394F(a0)
+; $0B150A
+	dc.w	$A902
+; $0B150C
+	bchg	d1,a3
+; $0B150E
+	ori.b	#$52,($70,a0,d1.l)
+; $0B1514
+	move.b	(a1)+,($30,a0,d0.w)
+; $0B1518
+	move.l	?ea(7,7),$303(a1)
+; $0B151C
+	btst	d1,-(a3)
+; $0B151E
+	ori.b	#$A0,($1F,a0,d0.w)
+; $0B1524
+	or.l	d4,(a2)
+; $0B1526
+	move.w	(a2),($12,pc,d7.w)
+; $0B152A
+	beq.s	loc_0B153C
+; $0B152C
+	dc.w	$7B11
+; $0B152E
+	movea.w	($0,a4,a5.w),a0
+; $0B1532
+	dc.w	$FCE6
+; $0B1534
+	add.l	-$4900(a0),d0
+; $0B1538
+	btst	d1,($3,a3,d0.w)
+
+loc_0B153C:				; $0B153C
+	move.w	-(a0),(a0)+
+; $0B153E
+	or.b	d1,(a0)
+; $0B1540
+	moveq	#16,d5
+; $0B1542
+	sub.b	(a5),d7
+; $0B1544
+	sub.b	d2,d2
+; $0B1546
+	dc.w	$ABB1
+; $0B1548
+	move.w	d0,d0
+; $0B154A
+	andi.b	#$B2,loc_0B2F9C(pc)
+; $0B1550
+	move.b	($2,a0,d0.w),d1
+; $0B1554
+	sub.b	d5,(a0)
+; $0B1556
+	eor.b	d6,(a2)
+; $0B1558
+	ori.b	#$52,-$7F64(a5)
+; $0B155E
+	move.b	-(a4),$1F76(a7)
+; $0B1562
+	move.b	a0,(-$66,a7,d1.l)
+; $0B1566
+	move.b	$1F00(a4),($1F,a7,a3.l)
+; $0B156C
+	add.b	(a7)+,d0
+; $0B156E
+	lsr.b	#1,d7
+; $0B1570
+	dc.w	$F41F
+; $0B1572
+	addi.b	#$2F,$182F(a7)
+; $0B1578
+	move.w	-$4DD(a7),d6
+; $0B157C
+	subq.w	#2,loc_0B7628(pc)
+; $0B1580
+	move.l	(a2),$5A3A(a1)
+; $0B1584
+	dc.w	$FFE2
+; $0B1586
+	move.w	(a2)+,-$512E(a2)
+; $0B158A
+	move.w	($7E,a2,a6.l),-(a1)
+; $0B158E
+	and.b	-(a0),d7
+; $0B1590
+	move.l	($25,a2,d5.w),d1
+; $0B1594
+	move.w	(a5),$90(a1)
+; $0B1598
+	add.w	d4,(a2)
+; $0B159A
+	subq.l	#3,-(a0)
+; $0B159C
+	dc.w	$AC80
+; $0B159E
+	subq.b	#1,(-$-80,a5,d5.w)
+; $0B15A2
+	move.w	(a3),-$AD(a1)
+; $0B15A6
+	move.l	(a2),$3552(a2)
+; $0B15AA
+	subq.w	#2,(a5)
+; $0B15AC
+	move.l	($31,a2,d2.l),$5506(a2)
+; $0B15B2
+	move.w	$3132(a2),d0
+; $0B15B6
+	move.w	(a5),$23A0(a1)
+; $0B15BA
+	dc.w	$FFAA
+; $0B15BC
+	move.l	(a3),$2A3A(a1)
+; $0B15C0
+	roxl.b	d2,d3
+; $0B15C2
+	move.l	(-$2B,a7,a2.l),(a5)
+; $0B15C6
+	scs	(a6)+
+; $0B15C8
+	move.l	-(a5),d0
+; $0B15CA
+	move.l	(a5),-$5FAB(a1)
+; $0B15CE
+	dc.w	$FF33
+; $0B15D0
+	addq.b	#1,-(a5)
+; $0B15D2
+	move.l	($23,a5,d2.w),-(a2)
+; $0B15D6
+	move.w	?ea(7,7),loc_0B682A(pc)
+; $0B15DA
+	move.l	(a3),$2252(a1)
+; $0B15DE
+	move.l	($30,a2,d4.w),-(a2)
+; $0B15E2
+	move.w	$312F(a7),d0
+; $0B15E6
+	move.w	($33,a6,d3.w),d0
+; $0B15EA
+	move.w	?ea(7,6),d0
+; $0B15EC
+	move.w	-(a5),d1
+; $0B15EE
+	move.l	-(a0),(a1)
+; $0B15F0
+	move.w	-(a2),-(a7)
+; $0B15F2
+	move.w	($25,a2,d2.w),-(a2)
+; $0B15F6
+	move.l	a5,$335B(a1)
+; $0B15FA
+	move.w	d0,(a1)
+; $0B15FC
+	addq.b	#4,($32,a0,d5.w)
+; $0B1600
+	move.l	-(a1),($4030E720).l
+; $0B1606
+	lsr.b	d1,d1
+; $0B1608
+	add.b	-(a0),d1
+; $0B160A
+	subq.b	#2,-$29E0(a2)
+; $0B160E
+	move.w	(a2)+,($2035DE20).l
+; $0B1614
+	dbhi	d6,loc_0B3718
+; $0B1618
+	move.w	d0,-(a4)
+; $0B161A
+	dc.w	$FE21
+; $0B161C
+	dc.w	$FA21
+; $0B161E
+	dc.w	$F621
+; $0B1620
+	dc.w	$F221
+; $0B1622
+	ror.b	d7,d1
+; $0B1624
+	move.l	($32,a1,d2.w),d5
+; $0B1628
+	move.l	($55,a0,d5.w),-(a1)
+; $0B162C
+	add.b	-(a0),d1
+; $0B162E
+	move.w	(a7),-(a1)
+; $0B1630
+	movea.w	(a3),a0
+; $0B1632
+	move.b	(-$22,a0,d2.w),-(a5)
+; $0B1636
+	movea.l	#$0E31A902,a0
+; $0B163C
+	move.w	($20,a0,d3.w),d0
+; $0B1640
+	movea.w	-(a0),a0
+; $0B1642
+	move.l	($33D431D4).l,(a0)+
+; $0B1648
+	move.w	($0,a3,d3.w),d0
+; $0B164C
+	move.l	d0,-(a1)
+; $0B164E
+	or.b	d1,(-$64,a3,d3.w)
+; $0B1652
+	eor.b	d2,?ea(7,6)
+; $0B1654
+	move.l	(a2)+,($3D,a0,d2.w)
+; $0B1658
+	move.l	($3,a6,d3.w),(a1)+
+; $0B165C
+	andi.b	#$30,?ea(7,7)
+; $0B1660
+	eori.?	#?,(a1)
+; $0B1662
+	dc.w	$4D23
+; $0B1664
+	add.b	d1,?ea(7,7)
+; $0B1666
+	roxl.b	d2,d7
+; $0B1668
+	dc.w	$F73F
+; $0B166A
+	bclr	d4,a7
+; $0B166C
+	or.b	(a3)+,d0
+; $0B166E
+	dc.w	$4F2D
+; $0B1670
+	dc.w	$4F3F
+; $0B1672
+	movem.l	(a1)+,d0/d2/d3/d4/d6/d7/a1/a3/a5
+; $0B1676
+	subq.w	#1,-(a6)
+; $0B1678
+	addq.w	#3,-(a5)
+; $0B167A
+	addq.b	#8,d0
+; $0B167C
+	dc.w	$FD0F
+; $0B167E
+	btst	d6,d1
+; $0B1680
+	dc.w	$FF20
+; $0B1682
+	btst	d7,-(a2)
+; $0B1684
+	move.l	-(a0),-(a7)
+; $0B1686
+	adda.l	($2,a2,d2.w),a7
+; $0B168A
+	dc.w	$F22F
+; $0B168C
+	eor.w	d2,d0
+; $0B168E
+	bchg	d7,(-$1,a0,d6.l)
+; $0B1692
+	move.l	d2,d0
+; $0B1694
+	move.l	a0,?ea(7,7)
+; $0B1696
+	cmp.b	d2,d0
+; $0B1698
+	move.l	a5,(a0)+
+; $0B169A
+	cmp.b	d0,d3
+; $0B169C
+	ror.l	#7,d2
+; $0B169E
+	subq.w	#3,(-$5E,a0,a3.l)
+; $0B16A2
+	add.w	-(a1),d4
+; $0B16A4
+	moveq	#80,d6
+; $0B16A6
+	move.l	d5,(a5)+
+; $0B16A8
+	add.l	(-$20,a3,d4.w),d2
+; $0B16AC
+	eori.l	#$F013C450,-(a4)
+; $0B16B2
+	movea.b	(-$39,pc,d7.w),a1
+; $0B16B6
+	dc.w	$A44E
+; $0B16B8
+	cmp.b	($0,pc,a0.w),d5
+; $0B16BC
+	sls	-(a0)
+; $0B16BE
+	exg	d2,a2
+; $0B16C0
+	suba.w	($5B,a2,a2.w),a7
+; $0B16C4
+	sub.w	(a2),d5
+; $0B16C6
+	move.b	(a2),($73,a1,a6.l)
+; $0B16CA
+	sub.w	(a3)+,d7
+; $0B16CC
+	move.b	-(a4),d0
+; $0B16CE
+	bhi.s	loc_0B16A5
+; $0B16D0
+	bls.s	loc_0B170B
+; $0B16D2
+	asr.w	d0,d6
+; $0B16D4
+	eor.b	d0,(a2)
+; $0B16D6
+	dc.w	$A348
+; $0B16D8
+	exg	d6,a1
+; $0B16DA
+	not.w	(a1)
+; $0B16DC
+	ori.b	#$3C,(a2)
+; $0B16E0
+	lsl.w	d7
+; $0B16E2
+	moveq	#-37,d2
+; $0B16E4
+	cmp.w	-$E32(a0),d5
+; $0B16E8
+	lsl.w	-$6DB5(a6)
+; $0B16EC
+	addq.l	#4,($53,a0,d4.w)
+; $0B16F0
+	dc.w	$A090
+; $0B16F2
+	eor.w	d3,(a2)+
+; $0B16F4
+	move.l	(a3)+,$1323(a5)
+; $0B16F8
+	bra.s	loc_0B16AB
+; $0B16FA
+	move.l	d0,($1D72FAE0).l
+; $0B1700
+	divs.w	d6,d4
+; $0B1702
+	and.w	a0,d7
+; $0B1704
+	or.l	d4,(a2)
+; $0B1706
+	ror.w	#7,d5
+; $0B1708
+	move.b	-(a5),d1
+; $0B170A
+	btst	d2,-(a5)
+; $0B170C
+	moveq	#97,d2
+; $0B170E
+	shi	?ea(7,5)
+; $0B1710
+	clr.w	-(a7)
+; $0B1712
+	eor.w	d0,d6
+; $0B1714
+	asr.w	(a7)+
+; $0B1716
+	dc.w	$75F6
+; $0B1718
+	neg.b	d0
+; $0B171A
+	roxl.w	#2,d0
+; $0B171C
+	roxr.l	d6,d0
+; $0B171E
+	not.?	-(a1)
+; $0B1720
+	bclr	d1,(a5)
+; $0B1722
+	bclr	d3,(a5)
+; $0B1724
+	add.w	d1,d6
+; $0B1726
+	exg	d7,a1
+; $0B1728
+	smi	-(a2)
+; $0B172A
+	ori.w	#$F2FD,(-$29,pc,d7.w)
+; $0B1730
+	dc.w	$434D
+; $0B1732
+	cmpm.l	(a6)+,(a2)+
+; $0B1734
+	or.l	a5,d1
+; $0B1736
+	movea.w	d2,a0
+; $0B1738
+	bne.s	loc_0B175E
+; $0B173A
+	subq.b	#8,(a4)
+; $0B173C
+	dc.w	$FB56
+; $0B173E
+	moveq	#-12,d0
+; $0B1740
+	move.l	?ea(7,7),loc_0AAB95(pc)
+; $0B1744
+	move.w	-(a3),(a5)+
+; $0B1746
+	add.l	(a0),d0
+; $0B1748
+	exg	a4,a0
+; $0B174A
+	ori.?	#?,a4
+; $0B174C
+	dc.w	$F32E
+; $0B174E
+	eor.w	d0,-$4891(a5)
+; $0B1752
+	cmp.l	#$F052718C,d0
+; $0B1758
+	cmp.b	d0,d0
+; $0B175A
+	dc.w	$F280
+; $0B175C
+	move.l	($70,a1,a5.w),(a7)
+; $0B1760
+	eor.w	d4,(-$70,a0,d5.l)
+; $0B1764
+	bclr	d7,-(a2)
+; $0B1766
+	move.w	(a1),(a2)
+; $0B1768
+	dc.w	$A043
+; $0B176A
+	move.b	d0,($74,a1,a4.l)
+; $0B176E
+	movea.b	(a1),a7
+; $0B1770
+	divu.w	-(a2),d1
+; $0B1772
+	exg	d6,a1
+; $0B1774
+	bls.s	loc_0B17DE
+; $0B1776
+	dc.w	$4362
+; $0B1778
+	move.b	d1,($1,a7,d2.w)
+; $0B177C
+	move.w	?ea(7,7),d1
+; $0B177E
+	sub.l	$6100(a0),d0
+; $0B1782
+	dc.w	$73C5
+; $0B1784
+	dc.w	$716A
+; $0B1786
+	bvc.s	loc_0B1751
+; $0B1788
+	dc.w	$F03F
+; $0B178A
+	bvs.s	loc_0B17CC
+; $0B178C
+	move.b	-(a1),(a0)+
+; $0B178E
+	dc.w	$A853
+; $0B1790
+	dc.w	$A292
+; $0B1792
+	dc.w	$AF81
+; $0B1794
+	suba.w	-(a0),a3
+; $0B1796
+	moveq	#-31,d7
+; $0B1798
+	move.b	?ea(7,5),-$1FE8(a2)
+; $0B179C
+	st	(-$A,a2,d6.w)
+; $0B17A0
+	neg.?	-(a0)
+; $0B17A2
+	move.w	(a2),$16F2(a1)
+; $0B17A6
+	moveq	#117,d1
+; $0B17A8
+	move.l	($3A,a1,d0.l),(-$76,a0,a2.w)
+; $0B17AE
+	exg	d2,a6
+; $0B17B0
+	sub.b	d1,-(a3)
+; $0B17B2
+	eor.w	d2,($61,a1,a1.l)
+; $0B17B6
+	move.b	d0,($71,a0,a5.w)
+; $0B17BA
+	bra.s	loc_0B1753
+; $0B17BC
+	bra.s	loc_0B1807
+; $0B17BE
+	suba.w	d7,a0
+; $0B17C0
+	dc.w	$A152
+; $0B17C2
+	dc.w	$7316
+; $0B17C4
+	asl.b	d0,d3
+; $0B17C6
+	addq.l	#1,d0
+; $0B17C8
+	asl.b	#8,d0
+; $0B17CA
+	dc.w	$0E75
+
+loc_0B17CC:				; $0B17CC
+	tst.l	(-$E,a5,d5.l)
+; $0B17D0
+	dc.w	$7DE4
+; $0B17D2
+	move.b	a5,(a1)+
+; $0B17D4
+	asl.w	d3
+; $0B17D6
+	dc.w	$A027
+; $0B17D8
+	eor.b	d0,d4
+; $0B17DA
+	and.l	d4,d5
+; $0B17DC
+	dc.w	$FD80
+
+loc_0B17DE:				; $0B17DE
+	move.l	($E22E9398).l,d1
+
+loc_0B17E4:				; $0B17E4
+	moveq	#101,d1
+; $0B17E6
+	moveq	#100,d4
+; $0B17E8
+	dc.w	$7508
+; $0B17EA
+	moveq	#-9,d0
+; $0B17EC
+	move.l	(a1),(a1)
+; $0B17EE
+	bne.s	loc_0B1855
+; $0B17F0
+	move.w	(-$2F,a3,a1.w),($31,a0,a2.w)
+; $0B17F6
+	divu.w	($40,a0,d2.w),d3
+; $0B17FA
+	cmpa.l	-(a2),a4
+; $0B17FC
+	dc.w	$A7F4
+; $0B17FE
+	dc.w	$4556
+; $0B1800
+	move.b	d6,(a5)
+; $0B1802
+	dc.w	$FF6F
+; $0B1804
+	clr.w	-(a3)
+; $0B1806
+	subq.w	#8,($00510C).w
+; $0B180A
+	move.l	(-$4F,a0,d5.l),(a7)+
+; $0B180E
+	move.l	-(a5),-(a0)
+; $0B1810
+	subq.w	#7,(-$1B,a2,d2.l)
+; $0B1814
+	addq.l	#3,a2
+; $0B1816
+	moveq	#82,d3
+; $0B1818
+	asr.b	#8,d1
+; $0B181A
+	bls.s	loc_0B1886
+; $0B181C
+	bcs.s	loc_0B17E4
+; $0B181E
+	sle	($005B86).w
+; $0B1822
+	sub.b	d1,-(a5)
+; $0B1824
+	move.w	(a5),d1
+; $0B1826
+	btst	d0,(-$50,a1,d6.w)
+; $0B182A
+	subq.w	#7,(a1)
+; $0B182C
+	eor.l	d5,(a0)
+; $0B182E
+	addq.w	#2,(-$5E,a0,d4.l)
+; $0B1832
+	dc.w	$7581
+; $0B1834
+	or.l	(a3),d3
+; $0B1836
+	move.w	(a3),-$7B50(a0)
+; $0B183A
+	movea.l	(-$20,a1,d5.l),a2
+; $0B183E
+	subq.b	#1,-(a3)
+; $0B1840
+	add.w	d2,-(a0)
+; $0B1842
+	cmpa.w	-(a0),a4
+; $0B1844
+	ori.?	#?,$479C(a2)
+; $0B1848
+	or.w	d2,a7
+; $0B184A
+	dc.w	$F279
+; $0B184C
+	sub.w	d0,(-$34,pc,d5.w)
+; $0B1850
+	dc.w	$775E
+; $0B1852
+	dc.w	$F1C0
+; $0B1854
+	dc.w	$710D
+; $0B1856
+	subq.l	#1,d3
+; $0B1858
+	asr.b	#8,d3
+; $0B185A
+	subq.l	#8,($FFFFA184).w
+; $0B185E
+	dbcs	d6,loc_0AFDB2
+; $0B1862
+	bls.s	loc_0B17E4
+; $0B1864
+	mulu.w	-(a7),d6
+; $0B1866
+	move.l	-(a0),(a7)
+; $0B1868
+	move.l	($53,a0,d2.l),(a5)
+; $0B186C
+	or.l	(a4),d3
+; $0B186E
+	movea.l	($40,a4,a6.w),a0
+; $0B1872
+	move.b	(a0)+,loc_0ABCE4(pc)
+; $0B1876
+	beq.s	loc_0B185D
+; $0B1878
+	dc.w	$A140
+; $0B187A
+	move.b	(-$10,a5,a1.w),-(a2)
+; $0B187E
+	move.l	(a1),-$50EF(a1)
+; $0B1882
+	move.w	(a2),d1
+; $0B1884
+	move.w	-(a6),-$3FDD(a2)
+; $0B1888
+	dc.w	$AFF0
+; $0B188A
+	move.b	($47,a0,a2.w),(a1)+
+; $0B188E
+	or.w	d1,-(a5)
+; $0B1890
+	or.b	d6,($51,a0,a5.l)
+; $0B1894
+	subq.b	#1,-(a3)
+; $0B1896
+	move.l	(a2),-$3BCD(a1)
+; $0B189A
+	or.w	d0,?ea(7,5)
+; $0B189C
+	cmp.b	-(a2),d0
+; $0B189E
+	move.l	d5,#$D28550F1
+; $0B18A4
+	move.l	($68,a5,a0.w),-(a2)
+
+loc_0B18A8:				; $0B18A8
+	st	(a3)
+; $0B18AA
+	dc.w	$F125
+; $0B18AC
+	dc.w	$A191
+; $0B18AE
+	move.b	-(a0),#$F2
+; $0B18B2
+	dc.w	$A471
+; $0B18B4
+	move.l	d0,d1
+; $0B18B6
+	bcs.s	loc_0B18A8
+; $0B18B8
+	addq.l	#8,d4
+; $0B18BA
+	rol.l	#7,d4
+; $0B18BC
+	chk.w	d3,d4
+; $0B18BE
+	adda.w	(-$7F,a4,d4.w),a0
+; $0B18C2
+	bchg	d7,-(a0)
+; $0B18C4
+	and.w	-(a0),d3
+; $0B18C6
+	or.b	d1,-(a1)
+; $0B18C8
+	subq.w	#1,?ea(7,6)
+; $0B18CA
+	dc.w	$F0A7
+; $0B18CC
+	dc.w	$F05A
+; $0B18CE
+	sub.w	d0,a5
+; $0B18D0
+	cmpa.l	a6,a0
+; $0B18D2
+	lsr.b	#1,d3
+; $0B18D4
+	move.b	($52,a1,d1.w),-(a7)
+; $0B18D8
+	movea.b	(a3),a1
+; $0B18DA
+	not.?	-(a1)
+; $0B18DC
+	dc.w	$F8A1
+; $0B18DE
+	bra.s	loc_0B1880
+; $0B18E0
+	btst	d0,($43,a5,a0.l)
+; $0B18E4
+	add.w	d3,d3
+; $0B18E6
+	cmpa.w	-(a0),a4
+; $0B18E8
+	divs.w	-(a5),d7
+; $0B18EA
+	dc.w	$A971
+; $0B18EC
+	divu.w	-(a1),d4
+; $0B18EE
+	dc.w	$FB72
+; $0B18F0
+	or.l	a4,d0
+; $0B18F2
+	dc.w	$F3FA
+; $0B18F4
+	dc.w	$7194
+; $0B18F6
+	bra.s	loc_0B196F
+; $0B18F8
+	dc.w	$A024
+; $0B18FA
+	subq.w	#8,-$7735(a3)
+; $0B18FE
+	dc.w	$A053
+; $0B1900
+	ori.l	#$58D0E986,(a3)+
+; $0B1906
+	bcs.s	loc_0B193A
+; $0B1908
+	dc.w	$79AE
+; $0B190A
+	dc.w	$AF4C
+; $0B190C
+	moveq	#-57,d0
+; $0B190E
+	moveq	#114,d2
+; $0B1910
+	sub.w	d3,d2
+; $0B1912
+	adda.l	-(a1),a4
+; $0B1914
+	subq.l	#1,d5
+; $0B1916
+	moveq	#71,d3
+; $0B1918
+	bra.s	loc_0B1995
+; $0B191A
+	dc.w	$A1F1
+; $0B191C
+	dc.w	$A215
+; $0B191E
+	chk.w	(a0),d1
+; $0B1920
+	btst	d1,(a2)
+; $0B1922
+	move.l	-(a6),($004146).w
+; $0B1926
+	asr.w	-(a7)
+; $0B1928
+	addq.b	#8,-$6EA8(a1)
+; $0B192C
+	dc.w	$F770
+; $0B192E
+	cmp.b	(-$7E,a6,d3.w),d1
+; $0B1932
+	move.w	-(a1),-(a1)
+; $0B1934
+	move.l	-(a0),(a0)+
+; $0B1936
+	move.b	(-$20,a3,a7.l),-(a0)
+
+loc_0B193A:				; $0B193A
+	mulu.w	$6E(a5),d6
+; $0B193E
+	cmp.b	-(a3),d2
+; $0B1940
+	sub.b	$79BE(a2),d2
+; $0B1944
+	dc.w	$F1B5
+; $0B1946
+	bsr.s	loc_0B19A2
+; $0B1948
+	eor.l	d2,-(a6)
+; $0B194A
+	subq.l	#4,(a2)
+; $0B194C
+	bsr.w	loc_0AB72F
+; $0B1950
+	dc.w	$A061
+; $0B1952
+	dc.w	$F983
+; $0B1954
+	bcc.s	loc_0B19D0
+; $0B1956
+	addq.w	#2,(a2)
+; $0B1958
+	subq.l	#3,(a3)
+; $0B195A
+	add.l	(a1),d4
+; $0B195C
+	sub.w	d5,-(a0)
+; $0B195E
+	ori.b	#$8C,($12,a6,d6.w)
+; $0B1964
+	dc.w	$4C4E
+; $0B1966
+	addq.b	#4,loc_0AFE13(pc)
+; $0B196A
+	eor.w	d7,a4
+; $0B196C
+	asr.w	d0,d7
+; $0B196E
+	divu.w	($0039E1).w,d0
+; $0B1972
+	lsl.w	d1,d0
+; $0B1974
+	move.l	(a2),($11,a4,d1.l)
+; $0B1978
+	move.b	(a3),-(a7)
+; $0B197A
+	dc.w	$F2FF
+; $0B197C
+	dc.w	$F162
+; $0B197E
+	move.w	?ea(7,7),(a2)
+; $0B1980
+	move.l	$4B44(a7),d3
+; $0B1984
+	dc.w	$FF62
+; $0B1986
+	move.b	($72,a4,d4.w),(a3)
+; $0B198A
+	movea.b	-(a4),a1
+; $0B198C
+	suba.l	?ea(7,7),a3
+; $0B198E
+	move.l	(a1),d3
+; $0B1990
+	move.l	($12,a2,d2.w),-$DD1(a3)
+; $0B1996
+	eor.b	d3,-(a1)
+; $0B1998
+	move.b	(-$40,a1,d7.w),($0023F1).w
+; $0B199E
+	dc.w	$F5B6
+; $0B19A0
+	move.l	?ea(7,7),(a3)+
+
+loc_0B19A2:				; $0B19A2
+	cmp.w	d4,d2
+; $0B19A4
+	dc.w	$7162
+; $0B19A6
+	bcc.s	loc_0B193F
+; $0B19A8
+	move.l	-(a2),-(a0)
+; $0B19AA
+	move.l	-(a7),-(a3)
+; $0B19AC
+	moveq	#17,d1
+; $0B19AE
+	eori.?	#?,d2
+; $0B19B0
+	dc.w	$A140
+; $0B19B2
+	dc.w	$F332
+; $0B19B4
+	mulu.w	$2125(a6),d0
+; $0B19B8
+	cmp.b	loc_0ADA75(pc),d1
+; $0B19BC
+	move.w	d0,(a7)+
+; $0B19BE
+	ror.b	d7,d1
+; $0B19C0
+	ble.s	loc_0B1A08
+; $0B19C2
+	and.l	a2,d0
+; $0B19C4
+	dc.w	$454A
+; $0B19C6
+	move.w	d5,(a1)+
+; $0B19C8
+	clr.b	loc_0ADA65(pc)
+; $0B19CC
+	move.w	a7,?ea(7,7)
+; $0B19CE
+	move.w	d6,($00443A).w
+; $0B19D2
+	and.b	(a1),d0
+; $0B19D4
+	sub.w	d4,(a7)+
+; $0B19D6
+	exg	a7,a1
+; $0B19D8
+	exg	a3,a2
+; $0B19DA
+	and.l	(a1)+,d0
+; $0B19DC
+	sgt	d0
+; $0B19DE
+	divu.w	a7,d1
+; $0B19E0
+	moveq	#-60,d2
+; $0B19E2
+	or.w	loc_0ADA7D(pc),d1
+; $0B19E6
+	moveq	#-64,d7
+; $0B19E8
+	dc.w	$A2CF
+; $0B19EA
+	cmpa.w	a7,a2
+; $0B19EC
+	mulu.w	a7,d3
+; $0B19EE
+	adda.w	d1,a4
+; $0B19F0
+	neg.w	(a2)
+; $0B19F2
+	adda.l	d0,a6
+; $0B19F4
+	suba.l	-(a1),a4
+; $0B19F6
+	muls.w	($42,a3,a4.w),d7
+; $0B19FA
+	dc.w	$FEC0
+; $0B19FC
+	sub.b	d5,d2
+; $0B19FE
+	add.l	d7,a2
+; $0B1A00
+	dc.w	$F4C6
+; $0B1A02
+	neg.?	?ea(7,6)
+; $0B1A04
+	and.l	(a1)+,d0
+; $0B1A06
+	move.l	(a7)+,(a1)+
+
+loc_0B1A08:				; $0B1A08
+	move.w	a7,(a2)+
+; $0B1A0A
+	not.?	(a7)+
+; $0B1A0C
+	movea.l	a3,a1
+; $0B1A0E
+	move.l	-(a2),(a1)+
+; $0B1A10
+	spl	(a0)
+; $0B1A12
+	add.w	d5,(a7)+
+; $0B1A14
+	add.w	d7,(a1)
+; $0B1A16
+	adda.w	$5AD0(a6),a3
+; $0B1A1A
+	move.b	(a5)+,($007FDF).w
+; $0B1A1E
+	suba.l	(a7),a0
+; $0B1A20
+	moveq	#-48,d5
+; $0B1A22
+	add.w	d6,?ea(7,6)
+; $0B1A24
+	add.l	-(a2),d0
+; $0B1A26
+	add.l	d7,(a4)
+; $0B1A28
+	add.l	-(a2),d2
+; $0B1A2A
+	suba.w	(a0),a5
+; $0B1A2C
+	add.l	d6,(a6)+
+; $0B1A2E
+	adda.w	d2,a0
+; $0B1A30
+	adda.l	(a4),a7
+; $0B1A32
+	adda.l	-(a2),a2
+; $0B1A34
+	adda.l	(a0),a6
+; $0B1A36
+	add.l	d5,(a4)
+; $0B1A38
+	asl.w	(a7)+
+; $0B1A3A
+	adda.l	(a6),a1
+; $0B1A3C
+	ror.w	(a5)+
+; $0B1A3E
+	adda.w	(a5)+,a0
+; $0B1A40
+	bchg	d0,$13E7(a7)
+; $0B1A44
+	lsr.w	#1,d2
+; $0B1A46
+	move.b	-(a0),(a7)+
+; $0B1A48
+	add.b	d5,-(a2)
+; $0B1A4A
+	rol.b	#7,d4
+; $0B1A4C
+	ror.w	$1EE0(a6)
+; $0B1A50
+	add.w	d6,d2
+; $0B1A52
+	asl.l	#4,d4
+; $0B1A54
+	or.b	d0,d5
+; $0B1A56
+	sbcd	d0,d4
+; $0B1A58
+	move.w	(a2),-$4BE0(a2)
+; $0B1A5C
+	move.b	(a0),-(a6)
+; $0B1A5E
+	moveq	#-15,d6
+; $0B1A60
+	subq.w	#1,(a2)+
+; $0B1A62
+	move.b	(a2),-(a4)
+; $0B1A64
+	move.l	a3,($34332085).l
+; $0B1A6A
+	move.l	($0,a2,d5.l),d0
+; $0B1A6E
+	dc.w	$FE76
+; $0B1A70
+	move.w	d2,d0
+; $0B1A72
+	move.w	(a3),$5200(a1)
+; $0B1A76
+	move.l	($20,a5,d7.l),-(a2)
+; $0B1A7A
+	ori.b	#$20,-(a3)
+; $0B1A7E
+	andi.b	#$5D,(-$20,a5,a1.l)
+; $0B1A84
+	ori.?	#?,$2182(a6)
+; $0B1A88
+	lsr.l	d1,d7
+; $0B1A8A
+	dc.w	$717B
+; $0B1A8C
+	dc.w	$F132
+; $0B1A8E
+	move.l	(a2),$10B5(a1)
+; $0B1A92
+	move.l	-(a1),(a0)
+; $0B1A94
+	asr.b	#8,d0
+; $0B1A96
+	ori.?	#?,a3
+; $0B1A98
+	negx.b	d2
+; $0B1A9A
+	dc.w	$A0E0
+; $0B1A9C
+	mulu.w	-(a3),d7
+; $0B1A9E
+	tst.b	(a0)
+; $0B1AA0
+	move.b	($52,a5,d3.w),-(a3)
+; $0B1AA4
+	add.w	d0,d3
+; $0B1AA6
+	addq.l	#1,loc_0AFB69(pc)
+; $0B1AAA
+	asr.l	d0,d0
+; $0B1AAC
+	asr.w	($20,a6,d7.w)
+; $0B1AB0
+	move.l	-$7B00(a4),d1
+; $0B1AB4
+	dc.w	$F2CF
+; $0B1AB6
+	dc.w	$FF2F
+; $0B1AB8
+	dc.w	$FFB4
+; $0B1ABA
+	cmpa.w	a5,a1
+; $0B1ABC
+	and.w	a1,d1
+; $0B1ABE
+	cmp.b	-(a2),d6
+; $0B1AC0
+	dc.w	$FCFF
+; $0B1AC2
+	cmpa.l	d2,a5
+; $0B1AC4
+	move.b	$2C21(a7),-(a0)
+; $0B1AC8
+	move.b	-$203E(a7),-(a0)
+; $0B1ACC
+	move.b	(a1),-(a0)
+; $0B1ACE
+	move.l	(a2),?ea(7,7)
+; $0B1AD0
+	and.l	($22,a1,d2.w),d5
+; $0B1AD4
+	dc.w	$F046
+; $0B1AD6
+	ori.l	#$BF89502F,$2CE(a0)
+; $0B1ADE
+	and.b	-(a2),d1
+; $0B1AE0
+	dc.w	$FFFF
+; $0B1AE2
+	dc.w	$FC2F
+; $0B1AE4
+	dc.w	$F2DC
+; $0B1AE6
+	move.l	a3,-$DDE(a5)
+; $0B1AEA
+	dc.w	$FFCB
+; $0B1AEC
+	sub.b	$112C(a4),d2
+; $0B1AF0
+	cmpa.l	a7,a5
+; $0B1AF2
+	move.b	?ea(7,7),(-$3E,a0,d1.w)
+; $0B1AF6
+	dc.w	$F211
+; $0B1AF8
+	move.b	$45F0(a4),-(a0)
+; $0B1AFC
+	move.l	d0,-(a6)
+; $0B1AFE
+	move.l	d2,?ea(7,5)
+; $0B1B00
+	jmp	?ea(7,7)
+; $0B1B02
+	sge	(-$70,a7,a6.l)
+; $0B1B06
+	lea	(-$1,a0,d7.w),a2
+; $0B1B0A
+	moveq	#-11,d5
+; $0B1B0C
+	eori.?	#?,($6,a1,d0.w)
+; $0B1B10
+	dc.w	$F203
+; $0B1B12
+	dc.w	$F0FE
+; $0B1B14
+	asl.w	loc_0AFD0C(pc)
+; $0B1B18
+	asl.w	(-$12,a2,a6.w)
+; $0B1B1C
+	asl.b	#8,d4
+; $0B1B1E
+	dc.w	$FF02
+; $0B1B20
+	cmpi.?	#?,?ea(7,5)
+; $0B1B22
+	move.l	d5,-$CBD(a6)
+; $0B1B26
+	dc.w	$F13F
+; $0B1B28
+	dc.w	$F03A
+; $0B1B2A
+	dc.w	$F136
+; $0B1B2C
+	dc.w	$F132
+; $0B1B2E
+	dc.w	$F100
+; $0B1B30
+	move.l	($4,a1,d0.w),(a7)+
+; $0B1B34
+	asr.w	?ea(7,5)
+; $0B1B36
+	ori.?	#?,-$EFE(a6)
+; $0B1B3A
+	move.l	-(a2),d1
+; $0B1B3C
+	ori.b	#$02,-$5581(a2)
+; $0B1B42
+	dc.w	$A333
+; $0B1B44
+	move.w	d2,-(a1)
+; $0B1B46
+	dc.w	$A3F1
+; $0B1B48
+	dc.w	$F046
+; $0B1B4A
+	dc.w	$FFF8
+; $0B1B4C
+	ori.b	#$0F,-(a3)
+; $0B1B50
+	move.b	a2,d5
+; $0B1B52
+	move.l	d4,d6
+; $0B1B54
+	move.l	($1,a6,d0.w),d1
+; $0B1B58
+	move.w	loc_0B1B86(pc),-(a1)
+; $0B1B5C
+	bclr	d3,d7
+; $0B1B5E
+	bclr	d7,(a1)+
+; $0B1B60
+	bchg	d7,-$DF5(a6)
+; $0B1B64
+	btst	d0,a3
+; $0B1B66
+	bchg	d0,(a5)
+; $0B1B68
+	movea.l	(-$56,a2,d0.l),a1
+; $0B1B6C
+	ror.w	(-$76,a0,a2.w)
+; $0B1B70
+	btst	d0,d7
+; $0B1B72
+	dc.w	$77BF
+; $0B1B74
+	moveq	#-94,d5
+; $0B1B76
+	moveq	#-86,d5
+; $0B1B78
+	dc.w	$AAA2
+; $0B1B7A
+	dc.w	$FBF0
+; $0B1B7C
+	move.w	(a7)+,($33,pc,a2.w)
+; $0B1B80
+	bne.s	loc_0B1BEC
+; $0B1B82
+	dc.w	$AAA2
+; $0B1B84
+	ori.b	#$72,-$5505(a2)
+; $0B1B8A
+	dc.w	$F3F0
+; $0B1B8C
+	move.l	$7A77(a2),(a1)
+; $0B1B90
+	move.l	loc_0AC993(pc),(a0)+
+; $0B1B94
+	move.l	$622(a7),(a1)
+; $0B1B98
+	move.l	$22E1(a2),(a0)
+; $0B1B9C
+	dc.w	$FF33
+; $0B1B9E
+	move.l	(a3),d7
+; $0B1BA0
+	move.w	$3331(a6),($EEFA3A01).l
+; $0B1BA8
+	lsr.w	a2
+; $0B1BAA
+	ori.b	#$12,($33,a1,d1.w)
+; $0B1BB0
+	eor.b	d7,$11EE(a6)
+; $0B1BB4
+	movea.l	(-$40,a2,d2.w),a1
+; $0B1BB8
+	ori.l	#$03360020,-$34C(a2)
+; $0B1BC0
+	move.w	(a0),-(a1)
+; $0B1BC2
+	ori.b	#$AF,d0
+; $0B1BC6
+	move.w	d0,-(a0)
+; $0B1BC8
+	ori.b	#$00,(a3)
+; $0B1BCC
+	move.l	($2,a2,d0.w),($0052F6).w
+; $0B1BD2
+	btst	#0,d0
+; $0B1BD6
+	dc.w	$F1F0
+; $0B1BD8
+	move.b	-$FDF(a6),($F0F1822C).l
+; $0B1BE0
+	subi.b	#$14,d3
+; $0B1BE4
+	move.b	(a5),-(a4)
+; $0B1BE6
+	move.w	(a7)+,d0
+; $0B1BE8
+	ror.w	($0,a0,a6.l)
+
+loc_0B1BEC:				; $0B1BEC
+	ori.?	#?,?ea(7,7)
+; $0B1BEE
+	move.w	d0,-(a0)
+; $0B1BF0
+	move.w	-(a0),-(a1)
+; $0B1BF2
+	move.w	-$5DE0(a2),($FF3EAA22).l
+; $0B1BFA
+	ori.?	#?,-(a3)
+; $0B1BFC
+	dc.w	$A220
+; $0B1BFE
+	ori.w	#$AA2A,?ea(7,7)
+; $0B1C02
+	moveq	#0,d0
+; $0B1C04
+	dc.w	$A227
+; $0B1C06
+	dc.w	$A735
+; $0B1C08
+	ori.b	#$A0,?ea(7,7)
+; $0B1C0C
+	move.l	d2,d0
+; $0B1C0E
+	move.l	($1,a2,d3.w),d5
+; $0B1C12
+	dc.w	$F300
+; $0B1C14
+	dc.w	$F700
+; $0B1C16
+	move.b	($0,a0,d1.l),-(a1)
+; $0B1C1A
+	move.w	d0,d1
+; $0B1C1C
+	btst	d3,d2
+; $0B1C1E
+	dc.w	$FF26
+; $0B1C20
+	move.l	-(a3),($2,a3,d0.w)
+; $0B1C24
+	bpl.s	loc_0B1BCD
+; $0B1C26
+	ori.?	#?,?ea(7,7)
+; $0B1C28
+	bset	d3,-(a3)
+; $0B1C2A
+	move.l	d0,d1
+
+loc_0B1C2C:				; $0B1C2C
+	eori.l	#$6000FF7A,-(a2)
+; $0B1C32
+	moveq	#38,d1
+; $0B1C34
+	ori.l	#$006FA720,$2022(a2)
+; $0B1C3C
+	andi.b	#$00,d7
+; $0B1C40
+	eori.w	#$9E79,($14,a2,a1.l)
+; $0B1C46
+	ori.b	#$EE,a2
+; $0B1C4A
+	ror.l	d7,d2
+; $0B1C4C
+	bchg	d0,-$D8D(a6)
+; $0B1C50
+	dc.w	$FE98
+; $0B1C52
+	ori.l	#$72E2A722,-(a7)
+; $0B1C58
+	move.l	-(a2),(a1)+
+; $0B1C5A
+	addq.w	#1,($E2EEF0).l
+; $0B1C60
+	exg	d0,d6
+; $0B1C62
+	bra.s	loc_0B1C23
+; $0B1C64
+	move.b	-(a6),d0
+; $0B1C66
+	eor.b	d7,(a0)
+; $0B1C68
+	dc.w	$FF22
+; $0B1C6A
+	bra.w	loc_0AFE6E
+; $0B1C6E
+	move.l	(a2),-(a3)
+; $0B1C70
+	lsr.w	?ea(7,7)
+; $0B1C72
+	ori.b	#$22,-(a1)
+; $0B1C76
+	ori.b	#$32,-(a2)
+; $0B1C7A
+	dc.w	$F7EE
+; $0B1C7C
+	ror.b	d7,d3
+; $0B1C7E
+	move.w	d1,d3
+; $0B1C80
+	move.l	d0,d0
+; $0B1C82
+	moveq	#-89,d5
+; $0B1C84
+	dc.w	$FF72
+; $0B1C86
+	eori.l	#$33A77A72,-(a3)
+; $0B1C8C
+	move.l	($3A9310F9).l,(a1)+
+; $0B1C92
+	move.b	d7,d0
+; $0B1C94
+	move.w	loc_0B3C9D(pc),d5
+; $0B1C98
+	dc.w	$FFA2
+; $0B1C9A
+	dc.w	$A720
+; $0B1C9C
+	eori.l	#$22200A16,-(a2)
+; $0B1CA2
+	sbcd	d0,d4
+; $0B1CA4
+	andi.w	#$2AEE,loc_0B0E96(pc)
+; $0B1CAA
+	dc.w	$F015
+; $0B1CAC
+	move.l	($190291E).l,-$120F(a0)
+; $0B1CB4
+	move.w	$402D(a1),d1
+; $0B1CB8
+	moveq	#110,d0
+; $0B1CBA
+	bclr	d0,($7A,a3,d1.w)
+; $0B1CBE
+	eor.l	d7,-(a3)
+; $0B1CC0
+	moveq	#0,d0
+; $0B1CC2
+	movea.l	loc_0B5720(pc),a1
+; $0B1CC6
+	move.l	$2732(a2),(a0)
+; $0B1CCA
+	ori.b	#$10,d2
+; $0B1CCE
+	move.w	d0,-(a2)
+; $0B1CD0
+	move.w	($39,a3,d1.w),$4B(a1)
+; $0B1CD6
+	move.l	($0,a3,a5.l),d0
+; $0B1CDA
+	move.l	(-$D,a3,d2.w),-$FE0(a1)
+; $0B1CE0
+	bgt.s	loc_0B1D07
+; $0B1CE2
+	cmp.b	(-$13,a5,d0.w),d4
+; $0B1CE6
+	dc.w	$F23A
+; $0B1CE8
+	ori.b	#$21,($22,a2,d2.w)
+; $0B1CEE
+	move.w	?ea(7,7),$2200(a1)
+; $0B1CF2
+	btst	d1,($0,a2,d2.w)
+; $0B1CF6
+	movea.w	($7,a4,d2.w),a1
+; $0B1CFA
+	move.l	($7D,a2,d2.w),-(a2)
+; $0B1CFE
+	move.l	($76,pc,d0.w),d0
+; $0B1D02
+	move.l	a0,(-$6F,a0,d2.w)
+; $0B1D06
+	move.l	d1,(a0)+
+; $0B1D08
+	move.w	($4B,a1,d2.w),(a0)
+; $0B1D0C
+	move.b	(a0),(a0)
+; $0B1D0E
+	move.l	(-$13,a2,a7.w),(a1)+
+; $0B1D12
+	dc.w	$F72C
+; $0B1D14
+	and.w	?ea(7,7),d6
+; $0B1D16
+	and.b	d2,d6
+; $0B1D18
+	exg	d5,a3
+; $0B1D1A
+	eor.b	d5,d2
+; $0B1D1C
+	muls.w	($46,a1,a7.w),d5
+; $0B1D20
+	add.b	d7,$2B(a0)
+; $0B1D24
+	roxr.b	d6,d7
+; $0B1D26
+	dc.w	$FA2A
+; $0B1D28
+	move.l	a0,-(a7)
+; $0B1D2A
+	eor.b	d5,(a2)+
+; $0B1D2C
+	move.w	($2F,a0,d4.w),d0
+; $0B1D30
+	move.l	?ea(7,7),-(a7)
+; $0B1D32
+	move.w	($1D312BB0).l,d6
+; $0B1D38
+	dc.w	$F1F0
+; $0B1D3A
+	dc.w	$4E3F
+; $0B1D3C
+	movea.l	(a7),a6
+; $0B1D3E
+	movea.w	a3,a1
+; $0B1D40
+	move.w	a3,-(a1)
+; $0B1D42
+	cmpm.w	(a4)+,(a1)+
+; $0B1D44
+	move.w	-(a0),d0
+; $0B1D46
+	dc.w	$733C
+; $0B1D48
+	moveq	#2,d4
+; $0B1D4A
+	or.w	$3F80(a6),d0
+; $0B1D4E
+	move.w	(a5),($4D,a3,d3.w)
+; $0B1D52
+	move.w	(-$53,a6,d3.l),(-$D,a7,d1.w)
+; $0B1D58
+	dc.w	$F124
+; $0B1D5A
+	dc.w	$FF44
+; $0B1D5C
+	neg.b	d2
+; $0B1D5E
+	lea	?ea(7,7),a7
+; $0B1D60
+	dc.w	$FF02
+; $0B1D62
+	chk.w	a4,d7
+; $0B1D64
+	dc.w	$F1F0
+; $0B1D66
+	add.b	d7,($00002F).w
+; $0B1D6A
+	roxr.b	d6,d7
+; $0B1D6C
+	dc.w	$FA3A
+; $0B1D6E
+	move.l	a0,-(a7)
+; $0B1D70
+	dc.w	$FFF0
+; $0B1D72
+	movea.b	d0,a5
+; $0B1D74
+	move.w	?ea(7,7),d6
+; $0B1D76
+	move.l	a7,$3D4A(a7)
+; $0B1D7A
+	lea	($F,a4,d4.w),a7
+; $0B1D7E
+	dc.w	$FFF3
+; $0B1D80
+	move.w	($42,a4,d4.l),($223FF4FB).l
+; $0B1D88
+	move.l	d2,d0
+; $0B1D8A
+	subq.w	#4,d0
+; $0B1D8C
+	subi.b	#$20,?ea(7,7)
+; $0B1D90
+	subi.?	#?,?ea(7,7)
+; $0B1D92
+	dc.w	$F2F4
+; $0B1D94
+	move.l	a7,d0
+; $0B1D96
+	dc.w	$F222
+; $0B1D98
+	move.l	a7,d0
+; $0B1D9A
+	negx.b	(a5)+
+; $0B1D9C
+	negx.?	(a6)+
+; $0B1D9E
+	move.w	($1D,pc,d3.w),(a1)+
+; $0B1DA2
+	move.l	$2FA0(a7),-(a7)
+; $0B1DA6
+	trap	#0
+; $0B1DA8
+	ror.w	(-$D,a0,a7.l)
+; $0B1DAC
+	dc.w	$7310
+; $0B1DAE
+	lea	($0,a3,d4.w),a7
+; $0B1DB2
+	movea.l	a7,a1
+; $0B1DB4
+	btst	d2,?ea(7,7)
+; $0B1DB6
+	cmp.w	d0,d6
+; $0B1DB8
+	dc.w	$FF65
+; $0B1DBA
+	move.l	d0,d3
+; $0B1DBC
+	btst	d1,-(a0)
+; $0B1DBE
+	ori.w	#$FCF0,($EEFFFE).l
+; $0B1DC6
+	ori.b	#$10,d0
+; $0B1DCA
+	ori.w	#$1709,$F01(a4)
+; $0B1DD0
+	bchg	d7,?ea(7,7)
+; $0B1DD2
+	dc.w	$FEF2
+; $0B1DD4
+	dc.w	$4555
+; $0B1DD6
+	move.l	d3,-(a7)
+; $0B1DD8
+	exg	a0,a4
+; $0B1DDA
+	move.w	d0,-(a2)
+; $0B1DDC
+	move.w	d4,-(a0)
+; $0B1DDE
+	move.l	d1,-(a7)
+; $0B1DE0
+	move.l	d3,d7
+; $0B1DE2
+	move.l	d0,d7
+; $0B1DE4
+	mulu.w	a4,d6
+; $0B1DE6
+	dc.w	$7FCC
+; $0B1DE8
+	scs	d5
+; $0B1DEA
+	dbge	d4,loc_0AE3B8
+; $0B1DEE
+	dc.w	$4D01
+; $0B1DF0
+	dc.w	$FBCC
+; $0B1DF2
+	addq.w	#6,(a3)+
+; $0B1DF4
+	ori.?	#?,a4
+; $0B1DF6
+	mulu.w	d5,d6
+; $0B1DF8
+	muls.w	a4,d2
+; $0B1DFA
+	dc.w	$FD4F
+; $0B1DFC
+	bra.w	loc_0B5FCA
+; $0B1E00
+	exg	a2,a4
+; $0B1E02
+	addq.w	#2,(a5)
+; $0B1E04
+	dc.w	$FFCC
+; $0B1E06
+	and.w	d5,d2
+; $0B1E08
+	scs	d5
+; $0B1E0A
+	lea	a4,a2
+; $0B1E0C
+	sge	?ea(7,7)
+; $0B1E0E
+	addq.w	#6,(a4)+
+; $0B1E10
+	and.w	(a4)+,d2
+; $0B1E12
+	lea	d5,a2
+; $0B1E14
+	dbcc	d4,loc_0AD56A
+; $0B1E18
+	exg	a2,a4
+; $0B1E1A
+	addq.b	#7,d0
+; $0B1E1C
+	addq.w	#6,(a5)
+; $0B1E1E
+	addq.b	#2,d0
+; $0B1E20
+	addq.w	#6,a7
+; $0B1E22
+	dbge	d4,loc_0B6AE9
+; $0B1E26
+	or.b	d0,d7
+; $0B1E28
+	moveq	#0,d3
+; $0B1E2A
+	addq.l	#6,a6
+; $0B1E2C
+	bchg	d7,-$67FD(a4)
+; $0B1E30
+	move.l	a7,d7
+; $0B1E32
+	dbcs	d4,loc_0B6A34
+; $0B1E36
+	dc.w	$4F55
+; $0B1E38
+	addq.l	#6,-(a7)
+; $0B1E3A
+	exg	a2,a1
+; $0B1E3C
+	subq.w	#2,$AE(a3)
+; $0B1E40
+	bchg	d6,a4
+; $0B1E42
+	move.w	d0,d4
+; $0B1E44
+	addq.w	#6,(a5)+
+; $0B1E46
+	and.w	d4,d6
+; $0B1E48
+	ori.?	#?,a4
+; $0B1E4A
+	exg	a2,a5
+; $0B1E4C
+	or.b	d0,d5
+; $0B1E4E
+	scs	?ea(7,6)
+; $0B1E50
+	dc.w	$FFF4
+; $0B1E52
+	dc.w	$FC0B
+; $0B1E54
+	move.w	d1,d2
+; $0B1E56
+	move.w	$23(a7),($25,a1,d3.w)
+; $0B1E5C
+	scs	?ea(7,7)
+; $0B1E5E
+	move.w	-(a3),d1
+; $0B1E60
+	move.w	($22,a3,d2.w),-(a1)
+; $0B1E64
+	move.l	($12,a3,a4.w),d1
+; $0B1E68
+	move.l	-(a1),d1
+; $0B1E6A
+	move.b	(a0),d7
+; $0B1E6C
+	move.l	(a3),-(a2)
+; $0B1E6E
+	neg.b	d0
+; $0B1E70
+	dc.w	$4555
+; $0B1E72
+	eor.w	d7,(a3)
+; $0B1E74
+	move.w	(a2),$2332(a2)
+; $0B1E78
+	move.w	($001032).w,-(a1)
+; $0B1E7C
+	subq.b	#5,($25,a2,d3.w)
+
+loc_0B1E80:				; $0B1E80
+	move.b	-(a1),d2
+; $0B1E82
+	move.b	(a6)+,d1
+; $0B1E84
+	move.b	(a1),d0
+; $0B1E86
+	move.l	(a1),d6
+; $0B1E88
+	subq.w	#7,(a4)
+; $0B1E8A
+	addq.b	#2,($55,a5,d5.w)
+; $0B1E8E
+	move.w	(a0),d5
+; $0B1E90
+	move.l	(a2)+,-(a1)
+; $0B1E92
+	move.b	(a1),($002325).w
+; $0B1E96
+	move.b	d7,$1123(a0)
+; $0B1E9A
+	move.b	(a3),$6B11(a2)
+; $0B1E9E
+	move.w	-(a1),d1
+; $0B1EA0
+	eor.b	d7,-(a2)
+; $0B1EA2
+	dc.w	$4532
+; $0B1EA4
+	move.b	(a1),-(a7)
+; $0B1EA6
+	addq.b	#2,?ea(7,6)
+; $0B1EA8
+	movea.b	(a5),a0
+; $0B1EAA
+	dc.w	$FE5D
+; $0B1EAC
+	movea.b	(a5),a0
+; $0B1EAE
+	subq.b	#1,($45,a1,d2.w)
+; $0B1EB2
+	subq.b	#1,($7D,a2,a7.l)
+; $0B1EB6
+	move.b	?ea(7,6),d0
+; $0B1EB8
+	move.b	-(a1),-(a0)
+; $0B1EBA
+	move.b	-(a2),-(a2)
+; $0B1EBC
+	move.l	$54CF(a7),d1
+; $0B1EC0
+	move.b	-(a2),-(a0)
+; $0B1EC2
+	move.l	d4,$1E10(a0)
+; $0B1EC6
+	sub.b	d0,(a0)
+; $0B1EC8
+	move.l	(a5),d1
+; $0B1ECA
+	dc.w	$F247
+; $0B1ECC
+	move.b	(a5),d0
+; $0B1ECE
+	move.l	(a0),-(a1)
+; $0B1ED0
+	sub.b	d0,(a0)
+; $0B1ED2
+	move.l	(a5),-(a0)
+; $0B1ED4
+	move.w	-$78(a1),$7859(a4)
+; $0B1EDA
+	sub.w	d3,($53,a6,a0.l)
+; $0B1EDE
+	suba.l	?ea(7,7),a4
+; $0B1EE0
+	dc.w	$7786
+; $0B1EE2
+	move.w	($97884316).l,-(a2)
+; $0B1EE8
+	dc.w	$FF97
+; $0B1EEA
+	or.w	d2,d4
+; $0B1EEC
+	move.w	(a1)+,($22,a1,d7.l)
+; $0B1EF0
+	move.w	?ea(7,7),(a1)+
+; $0B1EF2
+	sub.w	-(a7),d3
+; $0B1EF4
+	move.b	-(a3),-(a1)
+; $0B1EF6
+	sub.l	d4,d7
+; $0B1EF8
+	bvc.s	loc_0B1E80
+; $0B1EFA
+	dc.w	$FF77
+; $0B1EFC
+	bls.s	loc_0B1F66
+; $0B1EFE
+	or.l	d3,a1
+; $0B1F00
+	bhi.s	loc_0B1F78
+; $0B1F02
+	divs.w	?ea(7,7),d3
+; $0B1F04
+	dc.w	$7765
+; $0B1F06
+	moveq	#-121,d3
+; $0B1F08
+	or.b	d4,-(a5)
+; $0B1F0A
+	bvc.s	loc_0B1F83
+; $0B1F0C
+	dc.w	$FF91
+; $0B1F0E
+	move.l	a0,(-$6E,a1,d7.w)
+; $0B1F12
+	move.w	d7,(-$61,a2,d7.l)
+; $0B1F16
+	move.l	(a3),-$789A(a0)
+; $0B1F1A
+	sub.w	d1,(a2)
+; $0B1F1C
+	movea.b	d3,a0
+; $0B1F1E
+	subi.w	#$EB55,(a4)
+; $0B1F22
+	addq.l	#6,$C5(a7)
+; $0B1F26
+	asr.b	#8,d2
+; $0B1F28
+	scs	d5
+; $0B1F2A
+	and.l	a2,d2
+; $0B1F2C
+	asl.b	#4,d0
+; $0B1F2E
+	sge	d6
+; $0B1F30
+	ori.w	#$4D00,a4
+; $0B1F34
+	abcd	d0,d1
+; $0B1F36
+	subq.b	#1,d0
+; $0B1F38
+	lea	$55CC(a7),a0
+; $0B1F3C
+	neg.w	(a4)
+; $0B1F3E
+	dc.w	$AC00
+; $0B1F40
+	lea	d5,a2
+; $0B1F42
+	mulu.w	?ea(7,7),d6
+; $0B1F44
+	and.w	(a5),d2
+; $0B1F46
+	dc.w	$4C5C
+; $0B1F48
+	scc	d4
+; $0B1F4A
+	addq.w	#6,(a5)
+; $0B1F4C
+	bclr	d7,a4
+; $0B1F4E
+	scs	d5
+; $0B1F50
+	muls.w	(-$3,a1,d1.w),d2
+; $0B1F54
+	move.b	d0,(a0)+
+; $0B1F56
+	bchg	d0,d6
+; $0B1F58
+	ori.w	#$3722,d2
+; $0B1F5C
+	addq.w	#2,-(a0)
+; $0B1F5E
+	ori.?	#?,-(a1)
+; $0B1F60
+	ori.w	#$211E,a0
+; $0B1F64
+	move.l	d4,(a0)+
+
+loc_0B1F66:				; $0B1F66
+	btst	d2,-(a1)
+; $0B1F68
+	dc.w	$7F54
+; $0B1F6A
+	mulu.w	d5,d2
+; $0B1F6C
+	dc.w	$4C4C
+; $0B1F6E
+	scs	d4
+; $0B1F70
+	subq.b	#8,-(a0)
+; $0B1F72
+	dc.w	$FD45
+; $0B1F74
+	addq.b	#3,d0
+; $0B1F76
+	sge	d4
+
+loc_0B1F78:				; $0B1F78
+	dc.w	$4C5C
+; $0B1F7A
+	exg	a2,a4
+; $0B1F7C
+	move.b	a4,$4C88(a5)
+; $0B1F80
+	ori.?	#?,a4
+; $0B1F82
+	movem.w	d5,a0/a5/a7
+; $0B1F86
+	ori.w	#$0044,-(a1)
+; $0B1F8A
+	subq.b	#1,d1
+; $0B1F8C
+	addq.b	#5,d0
+; $0B1F8E
+	addq.l	#6,(a1)+
+; $0B1F90
+	ori.?	#?,d0
+; $0B1F92
+	ori.b	#$CC,(a7)+
+; $0B1F96
+	dc.w	$AE08
+; $0B1F98
+	dc.w	$F2F9
+; $0B1F9A
+	move.b	(a4)+,-$41FD(a0)
+; $0B1F9E
+	dc.w	$FC12
+; $0B1FA0
+	addq.w	#6,(a5)
+; $0B1FA2
+	dc.w	$455C
+; $0B1FA4
+	sub.w	d1,d5
+; $0B1FA6
+	dc.w	$4C4F
+; $0B1FA8
+	move.l	-(a1),$2DC5(a7)
+; $0B1FAC
+	moveq	#47,d1
+; $0B1FAE
+	or.b	-$3BF8(a7),d2
+; $0B1FB2
+	move.w	-(a5),-(a1)
+; $0B1FB4
+	move.w	d0,d4
+; $0B1FB6
+	rol.b	#3,d0
+; $0B1FB8
+	dc.w	$454F
+; $0B1FBA
+	ori.?	#?,?ea(7,7)
+; $0B1FBC
+	move.b	-(a4),d1
+; $0B1FBE
+	move.b	-(a4),-(a1)
+; $0B1FC0
+	move.b	?ea(7,5),(a2)+
+; $0B1FC2
+	move.b	-(a2),-(a0)
+; $0B1FC4
+	move.b	(a1),d0
+; $0B1FC6
+	move.b	(a2),-(a0)
+; $0B1FC8
+	move.b	(a5),-(a7)
+; $0B1FCA
+	neg.b	$5115(a3)
+; $0B1FCE
+	move.l	(a0),-(a7)
+; $0B1FD0
+	addq.b	#2,($00001F).w
+; $0B1FD4
+	bhi.s	loc_0B1FE8
+; $0B1FD6
+	move.l	(a3),-(a2)
+; $0B1FD8
+	dc.w	$FD12
+; $0B1FDA
+	move.b	($44,a1,a7.w),d7
+; $0B1FDE
+	subq.b	#8,(a1)
+; $0B1FE0
+	movea.b	(a5),a2
+; $0B1FE2
+	dc.w	$F06C
+; $0B1FE4
+	ori.w	#$0332,d1
+
+loc_0B1FE8:				; $0B1FE8
+	movea.w	(a5),a3
+; $0B1FEA
+	move.w	-(a2),d1
+; $0B1FEC
+	move.l	(a7)+,d1
+; $0B1FEE
+	move.b	?ea(7,7),($22,a0,d2.w)
+; $0B1FF2
+	move.b	(a4),-(a0)
+; $0B1FF4
+	move.b	(a2),-(a0)
+; $0B1FF6
+	move.w	d0,d3
+; $0B1FF8
+	move.l	?ea(7,6),($FFFFAF02).w
+; $0B1FFC
+	move.w	($52,a2,d2.w),-(a1)
+; $0B2000
+	move.w	(-$A,a2,d1.w),-(a1)
+; $0B2004
+	moveq	#48,d1
+; $0B2006
+	movea.l	d3,a1
+; $0B2008
+	subq.b	#6,(a0)
+; $0B200A
+	dc.w	$4533
+; $0B200C
+	move.l	(a2),-(a0)
+; $0B200E
+	add.w	d2,(a4)
+; $0B2010
+	move.l	(a0),-(a0)
+; $0B2012
+	addq.w	#2,?ea(7,7)
+; $0B2014
+	move.b	(a3),-(a0)
+; $0B2016
+	move.w	(a2),d7
+; $0B2018
+	move.b	-(a1),-(a2)
+; $0B201A
+	rol.w	(-$B,a1,d1.w)
+; $0B201E
+	move.l	a7,($11,a0,d1.w)
+; $0B2022
+	dc.w	$4512
+; $0B2024
+	dc.w	$7B22
+; $0B2026
+	movea.b	a5,a2
+; $0B2028
+	move.w	($22,a4,d5.w),(a0)+
+; $0B202C
+	move.l	-(a0),(-$1,a0,d3.w)
+; $0B2030
+	move.l	(a5),-(a0)
+; $0B2032
+	dc.w	$4553
+; $0B2034
+	move.w	(a1)+,($22,a4,d6.w)
+; $0B2038
+	dc.w	$FF29
+; $0B203A
+	sub.l	(a0)+,d4
+; $0B203C
+	clr.l	(a1)+
+; $0B203E
+	sub.l	d4,a0
+; $0B2040
+	move.l	?ea(7,7),($97978632).l
+; $0B2046
+	sub.l	d4,(a1)+
+; $0B2048
+	moveq	#82,d4
+; $0B204A
+	dc.w	$FF38
+; $0B204C
+	sub.l	d3,(a7)
+; $0B204E
+	subq.b	#1,(-$68,a3,d6.l)
+; $0B2052
+	move.b	?ea(7,7),(a1)+
+; $0B2054
+	subq.w	#1,($86868996).l
+; $0B205A
+	move.l	a0,(-$69,a2,a7.l)
+; $0B205E
+	sub.b	d4,($79,a3,a0.l)
+; $0B2062
+	or.b	d4,(-$1,a2,a0.l)
+; $0B2066
+	sub.l	d3,(a6)
+; $0B2068
+	addq.l	#2,(a1)+
+; $0B206A
+	moveq	#99,d4
+; $0B206C
+	move.l	(a0)+,($76,a2,a7.l)
+; $0B2070
+	bhi.s	loc_0B2084
+; $0B2072
+	moveq	#99,d3
+; $0B2074
+	move.b	-(a2),-(a1)
+; $0B2076
+	bne.s	loc_0B208F
+; $0B2078
+	move.w	($6E,a2,d3.w),d1
+; $0B207C
+	bclr	d6,(a4)+
+; $0B207E
+	dc.w	$7F01
+; $0B2080
+	moveq	#1,d2
+; $0B2082
+	addq.b	#3,d0
+
+loc_0B2084:				; $0B2084
+	ror.w	d7,d2
+; $0B2086
+	ori.w	#$C5C4,a4
+; $0B208A
+	subq.b	#2,d1
+; $0B208C
+	addq.w	#6,(a4)+
+; $0B208E
+	movem.l	?ea(7,6),d4/a2
+; $0B2092
+	dc.w	$4C4C
+; $0B2094
+	lea	d5,a2
+; $0B2096
+	exg	a2,a4
+; $0B2098
+	neg.w	?ea(7,7)
+; $0B209A
+	mulu.w	d4,d6
+; $0B209C
+	dc.w	$4C45
+; $0B209E
+	addq.w	#6,(a4)
+; $0B20A0
+	sge	(a6)+
+; $0B20A2
+	move.l	d1,(a0)+
+; $0B20A4
+	muls.w	(a5)+,d2
+; $0B20A6
+	movea.l	(a1),a1
+; $0B20A8
+	bchg	d7,(a6)+
+; $0B20AA
+	move.l	($5F,a2,d4.w),-(a0)
+; $0B20AE
+	andi.w	#$C51D,d4
+; $0B20B2
+	dc.w	$4C65
+; $0B20B4
+	move.l	d5,($FFFFCC54).w
+; $0B20B8
+	sbcd	d0,d5
+; $0B20BA
+	not.w	d1
+; $0B20BC
+	move.w	-(a0),d7
+; $0B20BE
+	dc.w	$A3CC
+; $0B20C0
+	dc.w	$4C05
+; $0B20C2
+	move.w	(a1),(a0)+
+; $0B20C4
+	move.l	$4044(a6),d0
+; $0B20C8
+	subq.b	#5,d0
+; $0B20CA
+	dc.w	$4570
+; $0B20CC
+	sub.b	d2,d1
+; $0B20CE
+	dc.w	$4942
+; $0B20D0
+	not.w	d0
+; $0B20D2
+	subq.w	#6,d1
+; $0B20D4
+	mulu.w	d5,d6
+; $0B20D6
+	and.l	(a2)+,d2
+; $0B20D8
+	btst	d0,-$30DF(a6)
+; $0B20DC
+	dc.w	$4555
+; $0B20DE
+	sge	(a7)+
+; $0B20E0
+	bclr	d0,d5
+; $0B20E2
+	dc.w	$F710
+; $0B20E4
+	dc.w	$A123
+; $0B20E6
+	bclr	d0,(a4)
+; $0B20E8
+	dc.w	$F520
+; $0B20EA
+	sub.b	d5,-(a1)
+; $0B20EC
+	move.w	-(a1),d4
+; $0B20EE
+	or.w	d0,d7
+; $0B20F0
+	trap	#5
+; $0B20F2
+	add.b	d6,d0
+; $0B20F4
+	dc.w	$AC21
+; $0B20F6
+	move.w	d0,(a6)
+; $0B20F8
+	ori.?	#?,?ea(7,6)
+; $0B20FA
+	move.w	d5,(a0)+
+; $0B20FC
+	dc.w	$4C54
+; $0B20FE
+	addq.l	#6,($20652100).l
+; $0B2104
+	bgt.s	loc_0B214E
+; $0B2106
+	move.l	d2,-$1CDF(a5)
+; $0B210A
+	addi.w	#$8521,d1
+; $0B210E
+	or.b	d0,d5
+; $0B2110
+	movea.l	d1,a7
+; $0B2112
+	dc.w	$0E21
+; $0B2114
+	divu.w	-(a1),d0
+; $0B2116
+	ori.w	#$1021,$FD(a5)
+; $0B211C
+	move.l	d0,(a0)+
+; $0B211E
+	btst	d0,(a4)+
+; $0B2120
+	negx.l	-(a3)
+; $0B2122
+	dc.w	$4333
+; $0B2124
+	dc.w	$FF23
+; $0B2126
+	subq.w	#1,d3
+; $0B2128
+	sub.b	d4,($23,a2,d3.w)
+; $0B212C
+	suba.w	?ea(7,7),a3
+; $0B212E
+	sub.l	(a1)+,d3
+; $0B2130
+	sub.l	d4,(a6)
+; $0B2132
+	dc.w	$7977
+; $0B2134
+	sub.w	($FF998997).l,d3
+; $0B213A
+	sub.l	d4,(a1)+
+; $0B213C
+	sub.l	d4,(a0)+
+; $0B213E
+	bne.l	loc_988488C7
+; $0B2144
+	or.w	$7751(a0),d3
+; $0B2148
+	add.b	d5,($D,a4,d3.w)
+; $0B214C
+	addq.b	#8,(a3)
+
+loc_0B214E:				; $0B214E
+	move.w	-(a2),-(a1)
+; $0B2150
+	addq.b	#8,($7F,a2,a1.l)
+; $0B2154
+	bvs.s	loc_0B20EF
+; $0B2156
+	sub.l	d4,(a7)
+; $0B2158
+	sub.w	d3,($982350FF).l
+; $0B215E
+	sub.w	d4,($68999896).l
+; $0B2164
+	moveq	#-119,d4
+; $0B2166
+	dc.w	$FF76
+; $0B2168
+	move.l	d3,$5233(a2)
+
+loc_0B216C:				; $0B216C
+	subq.b	#1,-(a3)
+; $0B216E
+	move.w	($33,a7,d6.l),#$3922
+; $0B2174
+	addq.w	#8,-(a6)
+; $0B2176
+	dc.w	$7989
+; $0B2178
+	suba.l	(-$77,pc,d7.l),a4
+; $0B217C
+	move.w	(a0),$7996(a5)
+
+loc_0B2180:				; $0B2180
+	or.l	d3,(a0)+
+; $0B2182
+	bvs.s	loc_0B21C3
+; $0B2184
+	or.l	d7,d4
+; $0B2186
+	bne.s	loc_0B211F
+; $0B2188
+	or.w	(a5),d3
+; $0B218A
+	or.b	d3,(a1)
+; $0B218C
+	or.b	d1,(a0)
+; $0B218E
+	addq.l	#6,d6
+; $0B2190
+	move.w	(a5)+,d1
+; $0B2192
+	movea.b	d2,a0
+; $0B2194
+	move.w	(a2),d1
+; $0B2196
+	blt.s	loc_0B21AD
+; $0B2198
+	move.b	$11BC(a6),-$55CF(a0)
+; $0B219E
+	or.b	d7,(a0)
+; $0B21A0
+	subq.b	#2,(a2)
+; $0B21A2
+	move.l	(a1),d1
+; $0B21A4
+	dc.w	$4D30
+; $0B21A6
+	move.l	(a1),($004544).w
+; $0B21AA
+	movea.b	a5,a0
+; $0B21AC
+	move.w	(a0)+,(a0)
+; $0B21AE
+	subq.b	#8,-(a2)
+; $0B21B0
+	dc.w	$4D31
+; $0B21B2
+	move.b	-(a3),-(a2)
+; $0B21B4
+	dc.w	$FEC3
+; $0B21B6
+	move.b	(-$6A,a3,d5.w),d0
+; $0B21BA
+	beq.s	loc_0B220F
+; $0B21BC
+	move.w	(a1)+,(-$7A,a3,a7.l)
+; $0B21C0
+	addq.l	#1,(a7)
+; $0B21C2
+	sub.w	(-$67,a7,d3.w),d3
+; $0B21C6
+	suba.w	?ea(7,7),a4
+; $0B21C8
+	dc.w	$7719
+; $0B21CA
+	or.l	d4,(a7)
+; $0B21CC
+	moveq	#55,d3
+; $0B21CE
+	sub.w	d4,-$98(a1)
+; $0B21D2
+	bvs.s	loc_0B224A
+; $0B21D4
+	bvs.s	loc_0B216C
+; $0B21D6
+	or.b	d4,(-$1,a5,d3.w)
+; $0B21DA
+	subq.w	#2,($23213489).l
+; $0B21E0
+	sub.b	d0,-(a3)
+; $0B21E2
+	dc.w	$FF25
+; $0B21E4
+	sub.l	d3,(a6)
+; $0B21E6
+	move.w	-(a5),d1
+; $0B21E8
+	bvs.s	loc_0B2173
+; $0B21EA
+	divs.w	?ea(7,7),d1
+; $0B21EC
+	subq.l	#2,(a6)
+; $0B21EE
+	sub.l	d4,(a3)
+; $0B21F0
+	move.b	-$7867(a1),-$8D(a2)
+; $0B21F6
+	bne.s	loc_0B2180
+; $0B21F8
+	sub.l	(a3),d3
+; $0B21FA
+	scs	d4
+; $0B21FC
+	neg.b	d4
+
+loc_0B21FE:				; $0B21FE
+	btst	d4,-(a1)
+; $0B2200
+	bsr.s	loc_0B2242
+; $0B2202
+	addq.b	#6,d5
+; $0B2204
+	move.l	d4,(a0)
+; $0B2206
+	ori.?	#?,(a6)+
+; $0B2208
+	move.l	d6,d0
+; $0B220A
+	move.l	(-$40,a4,d2.w),-(a0)
+; $0B220E
+	dc.w	$A522
+; $0B2210
+	move.l	d1,-$3BC0(a2)
+; $0B2214
+	beq.s	loc_0B2257
+
+loc_0B2216:				; $0B2216
+	bne.s	loc_0B2239
+; $0B2218
+	addq.b	#7,d2
+; $0B221A
+	mulu.w	d3,d6
+; $0B221C
+	addi.b	#$5D,$40C2(a6)
+; $0B2222
+	bset	d0,d7
+; $0B2224
+	dc.w	$4161
+; $0B2226
+	negx.?	d1
+; $0B2228
+	bclr	d0,d2
+; $0B222A
+	dc.w	$4120
+; $0B222C
+	add.b	-(a3),d3
+; $0B222E
+	roxl.w	#2,d1
+; $0B2230
+	sub.b	d0,d3
+; $0B2232
+	sub.b	-(a3),d6
+; $0B2234
+	neg.w	d3
+; $0B2236
+	exg	d1,d6
+; $0B2238
+	dc.w	$4F48
+; $0B223A
+	dc.w	$4355
+; $0B223C
+	and.w	$CC(a7),d6
+; $0B2240
+	dc.w	$7300
+
+loc_0B2242:				; $0B2242
+	movea.w	(-$34,a7,d0.w),a6
+; $0B2246
+	dc.w	$FB3F
+; $0B2248
+	negx.l	a5
+
+loc_0B224A:				; $0B224A
+	negx.b	(-$70,a5,d2.w)
+; $0B224E
+	negx.b	($000F4A).w
+; $0B2252
+	subi.l	#$01C36200,a1
+; $0B2258
+	dc.w	$71C2
+; $0B225A
+	asr.w	#8,d2
+; $0B225C
+	sub.w	d7,$7642(a5)
+; $0B2260
+	and.w	(a4)+,d6
+; $0B2262
+	move.w	?ea(7,7),d6
+; $0B2264
+	bcc.s	loc_0B2216
+; $0B2266
+	sub.w	$655(a5),d7
+; $0B226A
+	dc.w	$F621
+; $0B226C
+	sub.w	$5555(a7),d5
+; $0B2270
+	movea.l	(a0),a5
+; $0B2272
+	divu.w	?ea(7,7),d4
+; $0B2274
+	bne.s	loc_0B21FE
+; $0B2276
+	or.w	-(a7),d3
+; $0B2278
+	or.w	($007877).w,d4
+; $0B227C
+	dc.w	$FF87
+; $0B227E
+	or.w	d3,($77,a6,d6.w)
+; $0B2282
+	moveq	#99,d4
+; $0B2284
+	move.l	?ea(7,7),-$789A(a0)
+; $0B2288
+	move.w	-(a3),-(a1)
+; $0B228A
+	bne.s	loc_0B22AF
+; $0B228C
+	move.b	$10FF(a4),-(a1)
+; $0B2290
+	addq.w	#2,(a5)
+; $0B2292
+	or.w	($FFFF8776).w,d3
+; $0B2296
+	or.l	d6,d4
+; $0B2298
+	dc.w	$FF88
+; $0B229A
+	or.l	a0,d4
+; $0B229C
+	moveq	#-121,d4
+; $0B229E
+	moveq	#102,d4
+; $0B22A0
+	divs.w	?ea(7,7),d3
+; $0B22A2
+	dc.w	$7776
+; $0B22A4
+	or.w	-(a6),d1
+; $0B22A6
+	bne.s	loc_0B222F
+; $0B22A8
+	subq.b	#1,(a2)
+; $0B22AA
+	dc.w	$FF23
+; $0B22AC
+	bne.s	loc_0B22C0
+; $0B22AE
+	movea.l	(a5),a2
+; $0B22B0
+	move.w	-(a2),d1
+; $0B22B2
+	neg.?	?ea(7,7)
+; $0B22B4
+	move.w	(a5),-$789A(a2)
+; $0B22B8
+	or.l	d3,d6
+; $0B22BA
+	or.w	d3,($FFFFFF67).w
+; $0B22BE
+	moveq	#-120,d4
+
+loc_0B22C0:				; $0B22C0
+	beq.s	loc_0B224A
+; $0B22C2
+	or.l	d7,d4
+; $0B22C4
+	dc.w	$77FF
+; $0B22C6
+	dc.w	$7776
+; $0B22C8
+	bne.s	loc_0B2251
+; $0B22CA
+	moveq	#119,d4
+; $0B22CC
+	move.l	(a2),-(a0)
+; $0B22CE
+	dc.w	$7F36
+; $0B22D0
+	bvc.s	loc_0B22E4
+; $0B22D2
+	movea.w	(a2),a1
+; $0B22D4
+	move.w	-(a3),-(a1)
+; $0B22D6
+	neg.b	d0
+; $0B22D8
+	eor.l	d7,(a4)+
+; $0B22DA
+	mulu.w	a4,d6
+; $0B22DC
+	move.w	(a7)+,($70,a1,a5.l)
+; $0B22E0
+	dc.w	$713C
+; $0B22E2
+	subq.b	#2,-(a3)
+
+loc_0B22E4:				; $0B22E4
+	moveq	#112,d1
+; $0B22E6
+	and.w	($3C,a2,d7.w),d6
+; $0B22EA
+	moveq	#115,d7
+; $0B22EC
+	move.w	d1,(-$22,a1,d7.w)
+; $0B22F0
+	movea.l	-(a0),a1
+; $0B22F2
+	move.w	d3,($333C5B10).l
+; $0B22F8
+	move.w	-(a3),d6
+; $0B22FA
+	blt.s	loc_0B231F
+; $0B22FC
+	addq.b	#4,d1
+; $0B22FE
+	move.w	d3,($8E703333).l
+; $0B2304
+	sub.w	d3,($23,a0,a7.w)
+; $0B2308
+	movea.w	(a0)+,a6
+; $0B230A
+	btst	d0,-(a3)
+; $0B230C
+	bsr.s	loc_0B2341
+; $0B230E
+	move.w	a7,(a6)+
+; $0B2310
+	adda.w	($2C,a7,d2.w),a6
+; $0B2314
+	exg	a7,a3
+; $0B2316
+	moveq	#-49,d0
+; $0B2318
+	add.b	(-$56,a3,a4.w),d6
+; $0B231C
+	cmp.w	(-$4C,a0,d3.w),d6
+; $0B2320
+	moveq	#35,d0
+; $0B2322
+	cmp.w	(-$32,a3,a7.l),d4
+; $0B2326
+	moveq	#-35,d0
+; $0B2328
+	lsr.w	(a2)
+; $0B232A
+	moveq	#-36,d0
+; $0B232C
+	add.w	($62,a0,a5.w),d3
+; $0B2330
+	dc.w	$AB72
+; $0B2332
+	muls.w	a4,d1
+; $0B2334
+	move.w	#$E670,(a6)+
+; $0B2338
+	ble.s	loc_0B23AA
+; $0B233A
+	and.w	#$EE87,d6
+; $0B233E
+	move.w	-$22(a4),$7699(a1)
+; $0B2344
+	divu.w	a5,d4
+; $0B2346
+	roxr.l	#6,d1
+; $0B2348
+	move.w	?ea(7,7),(a6)+
+; $0B234A
+	muls.w	$6833(a4),d6
+; $0B234E
+	mulu.w	(a4)+,d6
+; $0B2350
+	sub.b	d4,#$C9
+; $0B2354
+	and.l	(a6),d6
+; $0B2356
+	move.w	#$9692,-(a1)
+; $0B235A
+	move.w	(a7),(a6)+
+; $0B235C
+	exg	d4,a1
+; $0B235E
+	move.l	($43,pc,d6.w),(a6)+
+; $0B2362
+	dc.w	$F763
+; $0B2364
+	move.w	(a3),-$8AC(a2)
+; $0B2368
+	subq.w	#2,(a3)
+; $0B236A
+	move.b	(a0),d1
+; $0B236C
+	move.w	($53,a3,d5.w),-(a1)
+; $0B2370
+	dc.w	$F712
+; $0B2372
+	movea.w	(a3),a1
+; $0B2374
+	move.b	(a0),d6
+; $0B2376
+	subq.b	#2,($33,a5,d5.w)
+; $0B237A
+	subq.b	#7,($33,a5,d5.w)
+; $0B237E
+	move.w	(-$7F,a3,d3.w),-(a0)
+; $0B2382
+	move.w	-(a6),(a1)
+; $0B2384
+	moveq	#-8,d0
+; $0B2386
+	dc.w	$4710
+; $0B2388
+	bhi.s	loc_0B23A3
+; $0B238A
+	move.b	(a2),d1
+; $0B238C
+	move.w	($32,a5,d3.w),-(a2)
+; $0B2390
+	move.w	($54,a5,d3.l),($10231D10).l
+; $0B2398
+	move.w	(a2),-(a1)
+; $0B239A
+	move.b	-(a2),d1
+; $0B239C
+	movea.l	(a4)+,a5
+; $0B239E
+	or.b	d0,-(a2)
+; $0B23A0
+	move.w	(a1),d7
+; $0B23A2
+	move.l	loc_0B88D8(pc),($6C314300).l
+
+loc_0B23AA:				; $0B23AA
+	dc.w	$F212
+; $0B23AC
+	move.b	($31,a2,d6.l),-(a0)
+; $0B23B0
+	addq.b	#1,(a0)
+; $0B23B2
+	move.l	($55,a3,d4.w),-(a1)
+; $0B23B6
+	dc.w	$FFCF
+; $0B23B8
+	dc.w	$FFFF
+; $0B23BA
+	move.b	a7,?ea(7,7)
+; $0B23BC
+	move.b	-$1111(a6),(a7)+
+; $0B23C0
+	muls.w	-$1213(a5),d7
+; $0B23C4
+	add.w	($1F,a1,a7.l),d3
+; $0B23C8
+	roxl.b	d6,d7
+; $0B23CA
+	muls.w	-$1113(a6),d7
+; $0B23CE
+	sub.l	d1,d3
+; $0B23D0
+	muls.w	(a6),d7
+; $0B23D2
+	dc.w	$719F
+; $0B23D4
+	divu.w	-(a5),d0
+; $0B23D6
+	dc.w	$FFA3
+; $0B23D8
+	or.b	(a6)+,d0
+; $0B23DA
+	dc.w	$A780
+; $0B23DC
+	sub.l	d4,d3
+; $0B23DE
+	dc.w	$FFF1
+; $0B23E0
+	dc.w	$F1E2
+; $0B23E2
+	sub.l	d1,d0
+; $0B23E4
+	ror.l	#7,d7
+; $0B23E6
+	or.l	(a1)+,d0
+; $0B23E8
+	or.w	d4,d1
+; $0B23EA
+	bclr	d1,(a2)
+; $0B23EC
+	move.l	(a5),-$AB(a2)
+; $0B23F0
+	subq.b	#8,($54,a5,d5.w)
+; $0B23F4
+	move.l	(a3),$55FD(a1)
+; $0B23F8
+	scs	(a5)
+; $0B23FA
+	or.b	-(a2),d0
+; $0B23FC
+	subq.b	#2,($12,a2,d2.w)
+; $0B2400
+	subq.l	#1,?ea(7,7)
+; $0B2402
+	move.w	-(a5),-(a1)
+; $0B2404
+	move.l	($24,a2,d2.w),-(a2)
+; $0B2408
+	move.w	d0,(a1)
+; $0B240A
+	subq.w	#2,?ea(7,7)
+; $0B240C
+	move.w	($99352999).l,-(a0)
+; $0B2412
+	sub.l	d4,$30BF(a6)
+; $0B2416
+	sub.b	d4,-(a3)
+; $0B2418
+	sub.l	d4,(a1)+
+; $0B241A
+	or.b	d4,(a1)+
+; $0B241C
+	movea.b	(a0),a4
+; $0B241E
+	move.w	-$6677(a7),#$6699
+; $0B2424
+	move.l	(a0),$3225(a0)
+; $0B2428
+	lea	?ea(7,7),a2
+; $0B242A
+	clr.l	(a1)
+; $0B242C
+	move.b	(-$67,a5,d3.w),d1
+; $0B2430
+	sub.b	d4,-(a5)
+; $0B2432
+	move.b	(a5),-$6667(a7)
+; $0B2436
+	sub.b	d0,-(a3)
+; $0B2438
+	move.l	(a0),$3551(a0)
+; $0B243C
+	move.l	(a3),(a1)
+; $0B243E
+	dc.w	$AF97
+; $0B2440
+	sub.l	d3,(a1)+
+; $0B2442
+	move.l	($006035).w,loc_0AF8C6(pc)
+; $0B2448
+	move.w	$4122(a7),loc_0B699D(pc)
+; $0B244E
+	move.b	(a0),-(a0)
+; $0B2450
+	movea.l	(a2),a1
+; $0B2452
+	shi	?ea(7,7)
+
+loc_0B2454:				; $0B2454
+	subq.b	#2,-(a3)
+; $0B2456
+	move.l	(-$6D,a2,d2.w),-(a1)
+; $0B245A
+	move.w	($25,a3,a7.l),-(a2)
+; $0B245E
+	sub.b	d1,(a3)
+; $0B2460
+	addq.w	#1,(a5)
+; $0B2462
+	dc.w	$F1FF
+; $0B2464
+	move.b	($EDC38499).l,-$7D13(a0)
+; $0B246C
+	muls.w	(-$4D,a1,a7.w),d7
+; $0B2470
+	divu.w	(-$7E,a4,a2.w),d0
+; $0B2474
+	add.w	($5E,a1,d7.w),d3
+; $0B2478
+	moveq	#104,d0
+; $0B247A
+	beq.s	loc_0B24F2
+; $0B247C
+	divu.w	?ea(7,7),d4
+; $0B247E
+	or.w	(-$7A,a7,d6.l),d4
+; $0B2482
+	moveq	#120,d3
+; $0B2484
+	or.w	d3,$7A6E(a0)
+; $0B2488
+	sub.w	(-$70,a7,d6.l),d0
+; $0B248C
+	moveq	#102,d3
+; $0B248E
+	or.w	($52,a6,d2.l),d4
+; $0B2492
+	eor.l	d3,d7
+; $0B2494
+	or.w	(-$70,a7,a0.l),d3
+; $0B2498
+	bvc.s	loc_0B2421
+; $0B249A
+	or.l	(a0),d3
+; $0B249C
+	divs.w	?ea(7,7),d3
+; $0B249E
+	or.w	-(a7),d4
+; $0B24A0
+	moveq	#104,d3
+; $0B24A2
+	bvc.s	loc_0B251B
+; $0B24A4
+	bvc.s	loc_0B251C
+; $0B24A6
+	lsr.w	d5,d6
+; $0B24A8
+	sub.w	(-$70,a6,d6.l),d0
+; $0B24AC
+	bvc.s	loc_0B2528
+; $0B24AE
+	sub.w	(-$7A,a6,d6.l),d0
+; $0B24B2
+	dc.w	$FB78
+; $0B24B4
+	bne.s	loc_0B2454
+; $0B24B6
+	sub.w	-(a7),d0
+; $0B24B8
+	moveq	#103,d3
+; $0B24BA
+	or.w	($76,a7,d0.l),d3
+; $0B24BE
+	or.w	(-$52,a6,d7.l),d4
+; $0B24C2
+	sub.l	-$6FAE(a7),d1
+; $0B24C6
+	moveq	#105,d0
+; $0B24C8
+	dbt	d7,loc_0AAC50
+; $0B24CC
+	move.w	#$9270,d6
+; $0B24D0
+	lsl.w	d5,d0
+; $0B24D2
+	move.w	#$0122,-(a1)
+; $0B24D6
+	add.l	d0,(a0)
+; $0B24D8
+	cmp.w	(-$70,a1,a4.l),d0
+; $0B24DC
+	lsl.w	d5,d0
+; $0B24DE
+	add.l	(a0),d4
+; $0B24E0
+	asl.w	d4,d2
+; $0B24E2
+	move.w	d0,d2
+; $0B24E4
+	add.l	(a5),d1
+; $0B24E6
+	negx.w	(a5)
+; $0B24E8
+	add.l	d6,d0
+; $0B24EA
+	dc.w	$F490
+; $0B24EC
+	addq.l	#2,d1
+; $0B24EE
+	or.w	d0,(a3)
+; $0B24F0
+	move.b	(a4),-(a0)
+
+loc_0B24F2:				; $0B24F2
+	dc.w	$F390
+; $0B24F4
+	bpl.s	loc_0B2566
+; $0B24F6
+	addq.l	#1,d2
+; $0B24F8
+	or.b	($10,a3,d3.w),d0
+; $0B24FC
+	moveq	#19,d0
+; $0B24FE
+	bcs.s	loc_0B2485
+; $0B2500
+	dc.w	$F873
+; $0B2502
+	move.b	?ea(7,7),d0
+; $0B2504
+	move.b	(a4),d4
+; $0B2506
+	dc.w	$A099
+; $0B2508
+	move.w	($23,a2,a1.l),-(a1)
+; $0B250C
+	add.b	d7,($99939979).l
+; $0B2512
+	move.l	(a2),-$66C7(a0)
+; $0B2516
+	dc.w	$FC3B
+; $0B2518
+	addq.b	#8,($37,a5,a2.w)
+
+loc_0B251C:				; $0B251C
+	bne.s	loc_0B24A7
+; $0B251E
+	suba.l	a1,a4
+; $0B2520
+	suba.l	-$7867(a7),a4
+; $0B2524
+	bvs.s	loc_0B255F
+; $0B2526
+	cmp.l	(a0),d0
+
+loc_0B2528:				; $0B2528
+	dc.w	$7993
+; $0B252A
+	beq.l	loc_99A2AB9F
+; $0B2530
+	sub.l	d4,(a1)+
+; $0B2532
+	moveq	#51,d3
+; $0B2534
+	ble.s	loc_0B24CF
+; $0B2536
+	sub.l	(a0)+,d3
+; $0B2538
+	move.l	?ea(7,5),($8032972E).l
+; $0B253E
+	dc.w	$A03F
+; $0B2540
+	or.b	(-$3D,a3,a1.w),d1
+; $0B2544
+	move.w	-(a1),-(a1)
+; $0B2546
+	move.w	(a0),(a6)
+; $0B2548
+	move.l	d0,(a2)
+; $0B254A
+	ble.s	loc_0B256E
+; $0B254C
+	move.l	-(a3),-(a1)
+; $0B254E
+	move.w	(a7)+,-(a2)
+
+loc_0B2550:				; $0B2550
+	move.b	-(a3),d0
+; $0B2552
+	move.b	(a4),d1
+; $0B2554
+	dc.w	$A3E0
+; $0B2556
+	subq.b	#6,(a0)
+; $0B2558
+	move.l	-(a3),(a4)
+; $0B255A
+	dc.w	$F591
+; $0B255C
+	dc.w	$4304
+; $0B255E
+	dc.w	$AE02
+; $0B2560
+	move.w	(-$2,a5,d3.w),-(a1)
+; $0B2564
+	move.b	(a0),-(a4)
+
+loc_0B2566:				; $0B2566
+	subq.w	#2,(a5)
+; $0B2568
+	move.w	($45,a3,d5.w),-(a0)
+; $0B256C
+	move.l	(-$7D,a2,d6.l),($52E180AE).l
+; $0B2574
+	ori.b	#$55,-(a5)
+; $0B2578
+	move.l	?ea(7,7),loc_0B789C(pc)
+; $0B257C
+	subq.w	#8,(a5)
+; $0B257E
+	addq.b	#1,($23,a2,d5.w)
+; $0B2582
+	dc.w	$F731
+; $0B2584
+	move.w	-(a4),-(a1)
+; $0B2586
+	addq.w	#1,(a0)
+; $0B2588
+	subq.b	#2,-(a2)
+; $0B258A
+	move.w	(a7),($55,a4,a7.l)
+; $0B258E
+	subq.b	#1,-(a1)
+; $0B2590
+	move.w	($23,a2,d3.w),-(a4)
+; $0B2594
+	suba.w	(a4)+,a4
+; $0B2596
+	movea.w	(a1),a2
+; $0B2598
+	subq.w	#3,(a1)
+; $0B259A
+	move.w	(a1)+,($3C,a4,d7.w)
+; $0B259E
+	addq.l	#8,(a1)+
+; $0B25A0
+	dc.w	$79FE
+; $0B25A2
+	roxr.l	d2,d0
+; $0B25A4
+	dc.w	$7787
+; $0B25A6
+	bne.s	loc_0B261F
+; $0B25A8
+	or.l	d3,(a1)+
+; $0B25AA
+	dc.w	$79FF
+; $0B25AC
+	dc.w	$7998
+; $0B25AE
+	dc.w	$7999
+; $0B25B0
+	or.l	a0,d3
+; $0B25B2
+	bvs.s	loc_0B254B
+; $0B25B4
+	dc.w	$FF86
+; $0B25B6
+	beq.s	loc_0B2550
+; $0B25B8
+	dc.w	$7769
+; $0B25BA
+	sub.l	d3,(a7)
+; $0B25BC
+	moveq	#-88,d4
+; $0B25BE
+	moveq	#-112,d5
+; $0B25C0
+	addq.w	#3,(-$6F,a0,a3.w)
+; $0B25C4
+	moveq	#-77,d4
+; $0B25C6
+	sub.w	($E5A067FD).l,d0
+; $0B25CC
+	bne.s	loc_0B2610
+; $0B25CE
+	subq.l	#8,(a6)
+; $0B25D0
+	sub.w	d4,-$7788(a0)
+; $0B25D4
+	dc.w	$79DF
+; $0B25D6
+	moveq	#105,d3
+; $0B25D8
+	beq.s	loc_0B2570
+; $0B25DA
+	bne.s	loc_0B2651
+; $0B25DC
+	sub.l	a0,d0
+; $0B25DE
+	dc.w	$77FB
+; $0B25E0
+	bne.s	loc_0B256B
+; $0B25E2
+	moveq	#-112,d1
+; $0B25E4
+	or.l	d4,(a1)+
+; $0B25E6
+	move.w	-(a3),-(a0)
+; $0B25E8
+	move.w	(-$77,a3,a1.l),(a1)
+; $0B25EC
+	move.w	-(a0),($50,a2,d2.w)
+; $0B25F0
+	or.w	($595067CF).l,d4
+; $0B25F6
+	sub.l	d3,(a1)+
+; $0B25F8
+	bne.s	loc_0B2580
+; $0B25FA
+	rol.l	d3,d0
+; $0B25FC
+	move.w	($79,a0,a1.l),(-$68,a5,a7.l)
+; $0B2602
+	suba.l	$1122(a5),a3
+; $0B2606
+	addq.w	#1,(a5)
+; $0B2608
+	dc.w	$4511
+; $0B260A
+	eor.w	d5,(a2)
+; $0B260C
+	move.b	(a4),$1025(a2)
+
+loc_0B2610:				; $0B2610
+	subq.l	#2,(a3)
+; $0B2612
+	or.l	d0,d3
+; $0B2614
+	suba.w	?ea(7,7),a1
+; $0B2616
+	subq.b	#1,(-$6D,a5,d2.w)
+; $0B261A
+	subq.w	#1,(a5)
+; $0B261C
+	move.l	d3,($31,a2,d1.w)
+; $0B2620
+	move.w	(-$70,a2,d7.l),-(a2)
+; $0B2624
+	bne.s	loc_0B2694
+; $0B2626
+	sub.w	d2,($79,a2,a1.w)
+; $0B262A
+	sub.b	d0,d1
+; $0B262C
+	or.l	(a1),d3
+; $0B262E
+	moveq	#-112,d3
+; $0B2630
+	dc.w	$79B2
+; $0B2632
+	moveq	#-112,d1
+; $0B2634
+	sub.l	d6,(a2)
+; $0B2636
+	sub.l	(a1),d1
+; $0B2638
+	movea.l	(a0),a5
+; $0B263A
+	addq.w	#1,($76,a0,d0.l)
+; $0B263E
+	dc.w	$7D91
+; $0B2640
+	dc.w	$A090
+; $0B2642
+	moveq	#-103,d3
+; $0B2644
+	cmp.l	loc_0ABCF9(pc),d1
+; $0B2648
+	sub.l	($20,a2,a1.w),d0
+; $0B264C
+	eor.l	d5,(a0)
+; $0B264E
+	and.l	(a1),d3
+; $0B2650
+	cmp.l	(a1),d3
+; $0B2652
+	cmp.l	(a1),d1
+; $0B2654
+	and.l	(a1)+,d7
+; $0B2656
+	dc.w	$FFDA
+; $0B2658
+	cmpa.w	d3,a0
+; $0B265A
+	or.w	(-$2E,a5,a6.l),d0
+; $0B265E
+	dc.w	$71CC
+; $0B2660
+	roxr.l	d2,d1
+; $0B2662
+	mulu.w	a4,d6
+; $0B2664
+	add.w	d6,(a3)
+; $0B2666
+	move.b	$2254(a3),(a0)+
+; $0B266A
+	moveq	#16,d7
+
+loc_0B266C:				; $0B266C
+	subq.b	#2,?ea(7,5)
+; $0B266E
+	movea.b	d3,a0
+; $0B2670
+	subq.b	#8,($22,a2,d6.w)
+; $0B2674
+	move.w	a3,(-$79,a1,d3.w)
+; $0B2678
+	movea.b	$1021(a5),a0
+; $0B267C
+	move.b	?ea(7,6),-(a0)
+; $0B267E
+	move.b	(-$67,pc,d2.l),($FFFFA870).w
+; $0B2684
+	sub.b	d4,(-$37,a3,a4.l)
+; $0B2688
+	bls.s	loc_0B2709
+; $0B268A
+	move.w	(a0)+,(-$67,a4,a4.l)
+; $0B268E
+	sub.l	a1,d3
+; $0B2690
+	move.w	(a3)+,(a3)+
+; $0B2692
+	dc.w	$A2EB
+
+loc_0B2694:				; $0B2694
+	move.w	(a1)+,(-$-80,a4,a7.w)
+; $0B2698
+	or.b	(a0)+,d1
+; $0B269A
+	addq.l	#8,d3
+; $0B269C
+	sub.l	d4,(a7)
+; $0B269E
+	exg	a7,a6
+; $0B26A0
+	bvs.s	loc_0B26D5
+; $0B26A2
+	suba.l	($3A,a1,a2.w),a4
+; $0B26A6
+	addq.l	#8,d3
+; $0B26A8
+	divu.w	?ea(7,7),d3
+; $0B26AA
+	bvs.s	loc_0B2645
+; $0B26AC
+	dc.w	$7397
+; $0B26AE
+	movea.w	$2396(a1),a1
+; $0B26B2
+	dc.w	$FF33
+; $0B26B4
+	move.l	($88933299).l,d4
+; $0B26BA
+	sub.w	?ea(7,7),d3
+; $0B26BC
+	bvs.s	loc_0B26F1
+; $0B26BE
+	sub.b	d1,($FFFF96CC).w
+; $0B26C2
+	sub.w	d1,(a7)
+; $0B26C4
+	subq.l	#8,-(a7)
+; $0B26C6
+	sub.l	d4,(a1)+
+; $0B26C8
+	beq.s	loc_0B26ED
+; $0B26CA
+	addq.w	#8,(a1)+
+; $0B26CC
+	and.w	?ea(7,6),d0
+; $0B26CE
+	addq.w	#6,(a0)
+; $0B26D0
+	roxl.w	?ea(7,7)
+; $0B26D2
+	or.w	d1,($97EC9338).l
+; $0B26D8
+	suba.w	(a4)+,a7
+; $0B26DA
+	dc.w	$F933
+; $0B26DC
+	dc.w	$AE9F
+; $0B26DE
+	and.l	(a3),d0
+; $0B26E0
+	divs.w	(a0)+,d6
+; $0B26E2
+	beq.s	loc_0B266C
+
+loc_0B26E4:				; $0B26E4
+	dc.w	$FEAF
+; $0B26E6
+	and.l	d7,d3
+; $0B26E8
+	or.b	-(a3),d3
+; $0B26EA
+	bvs.s	loc_0B275C
+; $0B26EC
+	move.l	$3012(a4),(a1)+
+; $0B26F0
+	dc.w	$A723
+; $0B26F2
+	move.w	(a3),-$7B60(a1)
+; $0B26F6
+	dc.w	$4D30
+; $0B26F8
+	movea.b	a5,a1
+; $0B26FA
+	move.w	(a3),d0
+; $0B26FC
+	dc.w	$7925
+; $0B26FE
+	bmi.s	loc_0B2680
+; $0B2700
+	dc.w	$79A0
+; $0B2702
+	move.l	($53,a5,d5.w),d1
+; $0B2706
+	dc.w	$F880
+; $0B2708
+	rol.b	d7,d2
+; $0B270A
+	sub.l	d4,(a6)
+; $0B270C
+	clr.w	(a7)
+; $0B270E
+	addq.b	#8,($77,a2,d1.l)
+; $0B2712
+	dc.w	$FF76
+; $0B2714
+	subq.b	#1,($78992299).l
+; $0B271A
+	suba.l	?ea(7,7),a4
+; $0B271C
+	or.w	d3,(a1)+
+; $0B271E
+	or.w	d4,$7739(a1)
+; $0B2722
+	sub.w	-(a7),d4
+; $0B2724
+	dc.w	$FF66
+; $0B2726
+	moveq	#121,d3
+; $0B2728
+	sub.l	d6,d4
+; $0B272A
+	sub.w	d4,(-$5,a6,d7.w)
+; $0B272E
+	bvc.s	loc_0B26B7
+; $0B2730
+	or.l	d3,(a0)
+; $0B2732
+	sub.l	a0,d3
+; $0B2734
+	moveq	#118,d4
+; $0B2736
+	sub.w	?ea(7,7),d3
+; $0B2738
+	moveq	#120,d4
+; $0B273A
+	moveq	#119,d3
+; $0B273C
+	or.w	-(a6),d4
+; $0B273E
+	bvc.s	loc_0B2764
+; $0B2740
+	cmp.l	-(a5),d0
+; $0B2742
+	or.b	d3,(-$79,a7,d7.w)
+; $0B2746
+	bgt.s	loc_0B26E4
+; $0B2748
+	dc.w	$71B1
+; $0B274A
+	dc.w	$7D6E
+; $0B274C
+	sub.w	-$417A(a6),d0
+; $0B2750
+	sub.w	-$787A(a6),d0
+; $0B2754
+	beq.s	loc_0B2745
+; $0B2756
+	or.l	(a2),d7
+; $0B2758
+	adda.w	?ea(7,7),a6
+; $0B275A
+	bvc.s	loc_0B26E3
+
+loc_0B275C:				; $0B275C
+	adda.w	$7687(a5),a7
+; $0B2760
+	dc.w	$FFED
+; $0B2762
+	dc.w	$FFC6
+
+loc_0B2764:				; $0B2764
+	bvc.s	loc_0B2764
+; $0B2766
+	roxl.w	a0
+; $0B2768
+	moveq	#-1,d3
+; $0B276A
+	ror.w	?ea(7,7)
+; $0B276C
+	and.w	(-$23,a6,a7.l),d6
+; $0B2770
+	adda.w	a0,a6
+; $0B2772
+	dc.w	$FDDD
+; $0B2774
+	dc.w	$FFDE
+; $0B2776
+	and.l	d6,d6
+; $0B2778
+	or.l	d3,(a1)+
+; $0B277A
+	bne.s	loc_0B2704
+; $0B277C
+	bne.s	loc_0B27F5
+; $0B277E
+	dc.w	$7999
+; $0B2780
+	bvc.s	loc_0B278C
+; $0B2782
+	sub.l	d6,d0
+; $0B2784
+	or.w	d3,(-$60,a7,a7.w)
+; $0B2788
+	dc.w	$FF77
+; $0B278A
+	dc.w	$7767
+
+loc_0B278C:				; $0B278C
+	or.w	-(a6),d4
+; $0B278E
+	bvs.s	loc_0B2716
+; $0B2790
+	moveq	#-18,d4
+; $0B2792
+	lsr.w	d1
+; $0B2794
+	moveq	#103,d4
+; $0B2796
+	dc.w	$7735
+; $0B2798
+	or.l	(a7),d0
+; $0B279A
+	sub.b	d4,($54,a1,a7.l)
+; $0B279E
+	or.l	d4,(a1)+
+; $0B27A0
+	move.w	(a5),$6999(a2)
+; $0B27A4
+	suba.l	?ea(7,7),a1
+; $0B27A6
+	move.w	-(a6),-$666D(a2)
+; $0B27AA
+	move.l	-$7669(a1),-$CB(a1)
+; $0B27B0
+	dc.w	$7969
+; $0B27B2
+	sub.w	d4,(-$68,a5,d6.w)
+; $0B27B6
+	or.l	d4,d5
+; $0B27B8
+	sub.b	d1,$5078(a2)
+; $0B27BC
+	or.l	($70,a4,d2.l),d1
+; $0B27C0
+	move.b	(-$70,a0,d7.l),$78AB(a6)
+; $0B27C6
+	bne.s	loc_0B283F
+; $0B27C8
+	or.l	(-$72,a0,d6.w),d2
+; $0B27CC
+	eor.w	d0,-(a6)
+; $0B27CE
+	movea.l	($50,a1,d6.w),a7
+; $0B27D2
+	dc.w	$A790
+; $0B27D4
+	sub.l	(a1),d3
+; $0B27D6
+	ble.s	loc_0B27A8
+; $0B27D8
+	or.l	(-$7B,a0,d7.l),d6
+; $0B27DC
+	add.l	d6,d1
+; $0B27DE
+	rol.w	d4
+; $0B27E0
+	asr.w	#8,d6
+; $0B27E2
+	moveq	#5,d2
+; $0B27E4
+	cmpm.w	(a6)+,(a1)+
+; $0B27E6
+	moveq	#-81,d1
+; $0B27E8
+	add.l	d6,d4
+; $0B27EA
+	sub.w	($FFFFCCCE).w,d0
+; $0B27EE
+	dc.w	$FFEC
+; $0B27F0
+	mulu.w	a4,d6
+; $0B27F2
+	muls.w	(a4)+,d6
+; $0B27F4
+	and.l	(a1)+,d6
+; $0B27F6
+	suba.w	(-$67,a3,a4.l),a6
+; $0B27FA
+	adda.w	(a2),a3
+; $0B27FC
+	adda.l	(a0)+,a6
+; $0B27FE
+	bvc.s	loc_0B2866
+; $0B2800
+	sub.l	(a0)+,d3
+; $0B2802
+	dc.w	$F552
+; $0B2804
+	move.b	(a0),d7
+; $0B2806
+	clr.w	?ea(7,6)
+; $0B2808
+	dc.w	$A055
+; $0B280A
+	move.b	(a7)+,-(a0)
+; $0B280C
+	move.b	(a7)+,($00452F).w
+; $0B2810
+	move.b	-(a2),d1
+; $0B2812
+	scs	-$2FAE(a6)
+; $0B2816
+	lea	?ea(7,7),a2
+; $0B2818
+	move.b	-(a2),-(a0)
+; $0B281A
+	subq.b	#2,-(a4)
+; $0B281C
+	move.l	-(a2),d1
+; $0B281E
+	addq.w	#2,(a4)
+; $0B2820
+	dc.w	$FF51
+; $0B2822
+	move.b	a1,(a1)
+; $0B2824
+	or.l	(a0)+,d3
+; $0B2826
+	move.l	-$7781(a1),($9999DEE9).l
+; $0B282E
+	sub.l	d4,(a1)+
+; $0B2830
+	and.b	(a6),d6
+; $0B2832
+	asr.w	(a7)+
+; $0B2834
+	suba.w	a5,a6
+; $0B2836
+	adda.w	-$6692(a4),a7
+; $0B283A
+	moveq	#105,d0
+
+loc_0B283C:				; $0B283C
+	suba.l	$2CC9(a7),a4
+; $0B2840
+	bls.s	loc_0B2865
+; $0B2842
+	addq.w	#3,(a2)
+; $0B2844
+	sub.l	d1,(a7)
+; $0B2846
+	bne.s	loc_0B283C
+; $0B2848
+	move.l	(a0),?ea(7,7)
+; $0B284A
+	move.l	(a2),(a1)
+; $0B284C
+	moveq	#55,d4
+; $0B284E
+	subq.w	#8,(-$67,a6,a1.w)
+; $0B2852
+	suba.l	($39,pc,d3.l),a1
+; $0B2856
+	move.w	(a0),d4
+; $0B2858
+	sub.b	d4,(-$34,a2,d3.l)
+; $0B285C
+	move.w	(a7)+,#$9EC9
+; $0B2860
+	move.w	(a7),($35,a1,d7.l)
+; $0B2864
+	dc.w	$A0ED
+
+loc_0B2866:				; $0B2866
+	suba.l	?ea(7,7),a4
+; $0B2868
+	sub.l	d1,d7
+; $0B286A
+	add.l	(a1)+,d6
+; $0B286C
+	sub.l	d4,(a6)+
+; $0B286E
+	exg	d4,a1
+; $0B2870
+	dc.w	$FB86
+; $0B2872
+	suba.l	(a4)+,a6
+
+loc_0B2874:				; $0B2874
+	add.l	d6,d1
+; $0B2876
+	sub.w	d6,-(a6)
+; $0B2878
+	suba.l	-$27(a6),a4
+; $0B287C
+	dc.w	$FEC8
+; $0B287E
+	moveq	#120,d3
+; $0B2880
+	ror.w	a4
+; $0B2882
+	moveq	#-1,d4
+; $0B2884
+	bne.s	loc_0B2874
+; $0B2886
+	add.l	(a0)+,d6
+; $0B2888
+	beq.s	loc_0B2877
+; $0B288A
+	add.l	(a1)+,d7
+; $0B288C
+	dc.w	$FF67
+; $0B288E
+	roxl.w	(a5)+
+; $0B2890
+	asl.w	d4,d0
+; $0B2892
+	adda.w	(a5)+,a7
+; $0B2894
+	sub.w	d4,(a7)+
+; $0B2896
+	divu.w	a4,d4
+; $0B2898
+	adda.w	a1,a6
+; $0B289A
+	dc.w	$77D4
+; $0B289C
+	add.w	-(a7),d0
+; $0B289E
+	neg.b	(a0)
+; $0B28A0
+	moveq	#-91,d7
+; $0B28A2
+	and.b	-(a1),d0
+; $0B28A4
+	move.l	(a1),-(a2)
+; $0B28A6
+	move.l	(a1),d1
+; $0B28A8
+	addq.l	#2,a7
+; $0B28AA
+	asr.w	?ea(7,6)
+; $0B28AC
+	sub.w	d0,(a0)
+; $0B28AE
+	addq.w	#2,(a5)
+; $0B28B0
+	move.b	($55,a2,d5.w),(a1)+
+; $0B28B4
+	move.l	$1125(a7),(a1)
+; $0B28B8
+	addq.b	#2,-(a2)
+; $0B28BA
+	sub.b	d7,(-$7E,a0,d1.w)
+; $0B28BE
+	add.b	(a6),d0
+; $0B28C0
+	dc.w	$FF88
+; $0B28C2
+	moveq	#104,d3
+; $0B28C4
+	movea.l	$6866(a0),a3
+; $0B28C8
+	sf	$6778(a7)
+; $0B28CC
+	or.w	(a2),d3
+; $0B28CE
+	dc.w	$71B0
+
+loc_0B28D0:				; $0B28D0
+	move.w	(a3),d1
+; $0B28D2
+	bvc.l	loc_785E4C0A
+; $0B28D8
+	beq.s	loc_0B292D
+; $0B28DA
+	move.b	-(a1),d1
+; $0B28DC
+	roxr.l	#2,d1
+; $0B28DE
+	cmp.l	(a0),d0
+; $0B28E0
+	sub.w	(-$50,a6,a1.l),d0
+; $0B28E4
+	sub.l	d3,(a0)
+; $0B28E6
+	beq.s	loc_0B294F
+; $0B28E8
+	or.l	d3,(a1)+
+; $0B28EA
+	bvc.s	loc_0B28C7
+; $0B28EC
+	asr.b	d0,d6
+; $0B28EE
+	add.w	$764E(a0),d0
+; $0B28F2
+	moveq	#105,d0
+; $0B28F4
+	addq.w	#8,-(a7)
+; $0B28F6
+	dc.w	$FEFF
+; $0B28F8
+	dc.w	$A1EF
+; $0B28FA
+	dc.w	$7766
+; $0B28FC
+	divs.w	$6867(a7),d6
+; $0B2900
+	dc.w	$FFDE
+; $0B2902
+	ror.w	d7,d0
+; $0B2904
+	beq.s	loc_0B28F5
+; $0B2906
+	ror.w	d7,d6
+; $0B2908
+	dc.w	$79FF
+; $0B290A
+	rol.w	?ea(7,7)
+; $0B290C
+	bne.s	loc_0B289B
+; $0B290E
+	dc.w	$FFFF
+; $0B2910
+	or.w	?ea(7,6),d4
+; $0B2912
+	dc.w	$FFEF
+; $0B2914
+	dc.w	$FE68
+; $0B2916
+	suba.w	(a7)+,a7
+; $0B2918
+	ror.w	?ea(7,5)
+; $0B291A
+	roxl.w	?ea(7,7)
+; $0B291C
+	adda.l	-$1022(a6),a6
+; $0B2920
+	adda.l	-$2212(a7),a6
+; $0B2924
+	dc.w	$FFCE
+; $0B2926
+	rol.w	(a6)+
+; $0B2928
+	roxl.w	a4
+; $0B292A
+	adda.w	-$2101(a5),a7
+; $0B292E
+	adda.w	(a5)+,a6
+; $0B2930
+	roxl.w	-$2233(a5)
+; $0B2934
+	adda.l	-$4023(a5),a6
+; $0B2938
+	adda.w	(a6)+,a6
+; $0B293A
+	adda.l	(a6)+,a6
+; $0B293C
+	roxl.l	#6,d6
+; $0B293E
+	sub.l	a0,d0
+; $0B2940
+	sub.l	(a2),d6
+; $0B2942
+	sub.b	(a1),d0
+; $0B2944
+	moveq	#118,d0
+; $0B2946
+	bvc.s	loc_0B28D0
+; $0B2948
+	cmpa.l	-(a0),a5
+; $0B294A
+	or.l	(a1),d6
+; $0B294C
+	divu.w	($68,pc,d6.w),d3
+; $0B2950
+	dc.w	$4F70
+; $0B2952
+	bne.s	loc_0B29BA
+; $0B2954
+	or.l	d7,d3
+; $0B2956
+	or.w	?ea(7,5),d4
+; $0B2958
+	or.w	d4,d4
+; $0B295A
+	dc.w	$F063
+; $0B295C
+	moveq	#103,d4
+; $0B295E
+	beq.s	loc_0B29C3
+; $0B2960
+	dc.w	$AD90
+; $0B2962
+	add.b	d7,(-$7A,a5,a0.w)
+; $0B2966
+	moveq	#34,d3
+; $0B2968
+	lea	(-$7A,a0,d6.w),a7
+; $0B296C
+	dc.w	$FF76
+; $0B296E
+	bne.s	loc_0B29A2
+; $0B2970
+	or.w	d3,-(a6)
+; $0B2972
+	move.b	($3,a3,a0.w),d1
+; $0B2976
+	bhi.s	loc_0B29AD
+; $0B2978
+	or.w	(a2),d5
+; $0B297A
+	move.w	($32,a0,d5.l),-(a4)
+; $0B297E
+	move.l	(a5),-(a1)
+; $0B2980
+	move.l	(a1)+,d1
+; $0B2982
+	moveq	#-8,d6
+; $0B2984
+	ori.b	#$25,$3844(a7)
+; $0B298A
+	move.b	($F65F1CCE).l,$4E59(a2)
+; $0B2992
+	andi.?	#?,(a4)+
+; $0B2994
+	dc.w	$F3FE
+; $0B2996
+	roxr.w	#6,d2
+; $0B2998
+	addq.w	#2,(a2)
+; $0B299A
+	movea.b	(a5),a1
+; $0B299C
+	subq.w	#2,d2
+; $0B299E
+	move.b	$5542(a7),d1
+
+loc_0B29A2:				; $0B29A2
+	neg.w	d1
+; $0B29A4
+	dc.w	$AF00
+; $0B29A6
+	clr.w	d3
+; $0B29A8
+	bchg	d0,($006009).w
+; $0B29AC
+	neg.w	d3
+; $0B29AE
+	ori.b	#$55,d5
+; $0B29B2
+	dc.w	$A9E0
+; $0B29B4
+	cmpa.w	($30,a7,d5.l),a2
+; $0B29B8
+	subq.b	#6,($22,a0,a7.l)
+; $0B29BC
+	move.b	-(a4),d0
+; $0B29BE
+	move.b	($12,a2,a5.w),(a0)+
+; $0B29C2
+	clr.b	-(a1)
+; $0B29C4
+	move.b	-(a2),-(a0)
+; $0B29C6
+	dc.w	$FF87
+; $0B29C8
+	suba.l	(a6)+,a4
+; $0B29CA
+	dc.w	$FE66
+; $0B29CC
+	suba.w	-$1201(a6),a3
+; $0B29D0
+	or.l	(a1)+,d4
+; $0B29D2
+	add.l	(a5)+,d7
+; $0B29D4
+	dc.w	$7989
+; $0B29D6
+	sub.l	d6,(a1)+
+; $0B29D8
+	subq.w	#5,-$76BE(a1)
+; $0B29DC
+	subq.l	#8,(a7)
+; $0B29DE
+	sub.w	d4,d2
+; $0B29E0
+	add.l	(a0)+,d0
+; $0B29E2
+	divu.w	(a1),d5
+; $0B29E4
+	dc.w	$FFDC
+; $0B29E6
+	adda.l	(a6)+,a6
+; $0B29E8
+	adda.l	-$2333(a6),a6
+; $0B29EC
+	exg	d6,d7
+; $0B29EE
+	dc.w	$FEDC
+; $0B29F0
+	asl.l	#4,d1
+; $0B29F2
+	adda.l	-$1B60(a5),a6
+; $0B29F6
+	movea.b	(a0),a4
+; $0B29F8
+	dc.w	$FA32
+; $0B29FA
+	cmp.w	$2250(a0),d0
+; $0B29FE
+	or.l	d3,(a0)+
+; $0B2A00
+	or.l	d3,(a1)+
+; $0B2A02
+	divs.w	($004014).w,d3
+; $0B2A06
+	move.l	(a1),d2
+; $0B2A08
+	dc.w	$4B10
+; $0B2A0A
+	move.b	(a2),d1
+; $0B2A0C
+	move.b	-(a1),d1
+; $0B2A0E
+	move.l	$454A(a1),(a2)+
+; $0B2A12
+	move.b	loc_0AFA38(pc),(a0)+
+; $0B2A16
+	dc.w	$A9E0
+; $0B2A18
+	neg.w	(a5)
+; $0B2A1A
+	move.b	?ea(7,7),($001245).w
+; $0B2A1E
+	scs	($44,a1,a7.w)
+; $0B2A22
+	subq.b	#2,-(a4)
+; $0B2A24
+	sub.l	$2F(a6),d0
+; $0B2A28
+	move.b	d2,($0061F1).w
+; $0B2A2C
+	sub.w	d0,(a5)
+; $0B2A2E
+	move.l	($31,a0,d2.l),d5
+; $0B2A32
+	move.l	?ea(7,7),loc_0B7D57(pc)
+; $0B2A36
+	bne.s	loc_0B2A4D
+; $0B2A38
+	move.w	-(a2),-(a1)
+; $0B2A3A
+	move.w	(-$79,a2,a7.l),d3
+; $0B2A3E
+	move.b	(-$50,a2,d3.w),-$5FCD(a0)
+; $0B2A44
+	addq.b	#2,-(a5)
+; $0B2A46
+	clr.b	(a5)
+; $0B2A48
+	dc.w	$ACF3
+; $0B2A4A
+	suba.w	(a5),a0
+; $0B2A4C
+	or.w	d5,d0
+; $0B2A4E
+	move.w	a5,-$E99(a2)
+; $0B2A52
+	lsr.w	d0
+; $0B2A54
+	move.w	?ea(7,7),(a3)+
+; $0B2A56
+	bvc.s	loc_0B2AC0
+; $0B2A58
+	or.b	(a2),d3
+; $0B2A5A
+	bvc.s	loc_0B2AD4
+; $0B2A5C
+	or.w	d3,(a2)
+; $0B2A5E
+	dc.w	$FF36
+; $0B2A60
+	dc.w	$7788
+; $0B2A62
+	move.w	(-$7A,a3,d6.w),-(a0)
+; $0B2A66
+	move.w	?ea(7,7),loc_0B7B9E(pc)
+; $0B2A6A
+	moveq	#83,d4
+; $0B2A6C
+	move.w	(a6),d1
+; $0B2A6E
+	dc.w	$7778
+; $0B2A70
+	move.w	($57,pc,a1.w),(a4)
+; $0B2A74
+	moveq	#113,d0
+; $0B2A76
+	and.l	a0,d0
+; $0B2A78
+	beq.s	loc_0B2AE2
+; $0B2A7A
+	dc.w	$7190
+; $0B2A7C
+	dc.w	$F600
+; $0B2A7E
+	add.l	d5,a0
+; $0B2A80
+	bne.s	loc_0B2AC3
+; $0B2A82
+	add.w	(-$5A,a6,d6.w),d0
+; $0B2A86
+	add.w	-(a7),d0
+; $0B2A88
+	beq.s	loc_0B2A19
+; $0B2A8A
+	dc.w	$7776
+; $0B2A8C
+	moveq	#-122,d4
+; $0B2A8E
+	dc.w	$71B1
+; $0B2A90
+	sub.l	(a0),d6
+; $0B2A92
+	sub.l	(a0),d6
+; $0B2A94
+	bvc.s	loc_0B2AA8
+; $0B2A96
+	ror.b	#7,d1
+; $0B2A98
+	bne.s	loc_0B2AB0
+; $0B2A9A
+	move.b	-(a4),(a0)+
+; $0B2A9C
+	and.l	d7,d0
+; $0B2A9E
+	sub.l	(a0),d2
+; $0B2AA0
+	and.l	(a0),d4
+; $0B2AA2
+	clr.?	(a0)
+; $0B2AA4
+	dc.w	$FF66
+; $0B2AA6
+	bvc.s	loc_0B2B0E
+
+loc_0B2AA8:				; $0B2AA8
+	bne.s	loc_0B2B10
+; $0B2AAA
+	beq.s	loc_0B2B12
+; $0B2AAC
+	move.w	?ea(7,7),($33778332).l
+; $0B2AB2
+	movea.b	($13,a6,d6.w),a1
+; $0B2AB6
+	dc.w	$FF33
+; $0B2AB8
+	moveq	#53,d3
+; $0B2ABA
+	move.b	($31,a3,d6.w),d1
+; $0B2ABE
+	move.b	?ea(7,7),($35633252).l
+; $0B2AC4
+	move.l	d6,($15,a2,d3.w)
+; $0B2AC8
+	eor.b	d7,($31,a3,d3.w)
+; $0B2ACC
+	move.w	-(a5),-(a1)
+; $0B2ACE
+	move.l	(a7),($80355735).l
+
+loc_0B2AD4:				; $0B2AD4
+	move.l	d5,-$A6F(a2)
+; $0B2AD8
+	sf	(a5)
+; $0B2ADA
+	or.b	(-$70,a3,a7.l),d0
+; $0B2ADE
+	ori.l	#$6183F4C2,-(a5)
+; $0B2AE4
+	dc.w	$F8A6
+; $0B2AE6
+	dc.w	$F199
+; $0B2AE8
+	dc.w	$FAC4
+; $0B2AEA
+	dc.w	$F770
+; $0B2AEC
+	dc.w	$F523
+; $0B2AEE
+	dc.w	$A822
+; $0B2AF0
+	dc.w	$A2F2
+; $0B2AF2
+	dc.w	$F182
+; $0B2AF4
+	dc.w	$F174
+; $0B2AF6
+	andi.l	#$FE4C2261,(a0)+
+; $0B2AFC
+	move.l	-(a1),$7AA9(a1)
+; $0B2B00
+	moveq	#92,d0
+; $0B2B02
+	add.b	(a1),d3
+; $0B2B04
+	move.w	d3,(a6)+
+; $0B2B06
+	and.w	(a4)+,d6
+; $0B2B08
+	move.l	-(a0),$3755(a1)
+; $0B2B0C
+	exg	d1,d4
+
+loc_0B2B0E:				; $0B2B0E
+	dc.w	$F530
+
+loc_0B2B10:				; $0B2B10
+	move.w	#$5F01,d6
+; $0B2B14
+	move.w	($22,a0,a4.w),(a1)
+; $0B2B18
+	sub.w	d2,d7
+; $0B2B1A
+	eor.b	d0,($22,a6,a4.w)
+; $0B2B1E
+	addq.w	#8,(a5)+
+; $0B2B20
+	addq.b	#8,-(a2)
+; $0B2B22
+	addq.b	#8,(a4)
+; $0B2B24
+	clr.?	(a5)+
+; $0B2B26
+	chk.w	a7,d0
+; $0B2B28
+	ori.b	#$44,-(a5)
+; $0B2B2C
+	btst	#84,d1
+; $0B2B30
+	and.l	a6,d0
+; $0B2B32
+	move.l	$308E(a2),d2
+; $0B2B36
+	move.l	-(a7),(a2)
+; $0B2B38
+	dc.w	$F175
+; $0B2B3A
+	andi.w	#$8022,-(a1)
+; $0B2B3E
+	dc.w	$F1FC
+; $0B2B40
+	ori.?	#?,-(a0)
+; $0B2B42
+	subq.b	#7,($42,a0,d5.w)
+; $0B2B46
+	move.b	-(a2),-(a0)
+; $0B2B48
+	addq.w	#2,d5
+; $0B2B4A
+	not.?	($45,a4,a5.w)
+; $0B2B4E
+	subq.l	#2,(a6)+
+; $0B2B50
+	move.b	-(a2),d2
+; $0B2B52
+	btst	d0,$21(a3)
+; $0B2B56
+	muls.w	($11,a0,a7.l),d0
+; $0B2B5A
+	move.b	(a1),d1
+; $0B2B5C
+	move.l	$1244(a7),d1
+; $0B2B60
+	move.b	($122E902A).l,($003011).w
+; $0B2B68
+	movea.b	d5,a2
+; $0B2B6A
+	subq.b	#2,(a4)
+; $0B2B6C
+	subq.w	#7,d1
+; $0B2B6E
+	subq.w	#2,(a4)
+; $0B2B70
+	movea.l	d5,a2
+; $0B2B72
+	move.b	-(a0),d6
+; $0B2B74
+	dc.w	$4500
+; $0B2B76
+	andi.b	#$24,#$63
+; $0B2B7C
+	adda.w	a5,a6
+; $0B2B7E
+	sub.l	d4,d6
+; $0B2B80
+	move.w	(-$70,a1,d0.l),($77,a3,d6.w)
+; $0B2B86
+	move.w	d0,-(a7)
+; $0B2B88
+	sub.b	-(a1),d3
+; $0B2B8A
+	addq.l	#8,(a5)+
+; $0B2B8C
+	movea.l	-(a7),a0
+; $0B2B8E
+	suba.w	a3,a4
+; $0B2B90
+	addq.l	#8,(-$30,a6,d3.w)
+; $0B2B94
+	sub.w	($000290).w,d3
+; $0B2B98
+	sub.b	d4,(a1)+
+; $0B2B9A
+	move.w	d0,-(a7)
+; $0B2B9C
+	move.l	$4350(a2),$5118(a4)
+; $0B2BA2
+	addq.w	#8,(a2)
+; $0B2BA4
+	roxr.l	d2,d0
+; $0B2BA6
+	move.w	(a3),d1
+; $0B2BA8
+	dc.w	$F880
+; $0B2BAA
+	dc.w	$FC33
+; $0B2BAC
+	dc.w	$A0CA
+; $0B2BAE
+	asr.l	#8,d1
+; $0B2BB0
+	move.l	(a2),$3768(a2)
+; $0B2BB4
+	movea.b	?ea(7,7),a1
+; $0B2BB6
+	subq.b	#8,-(a3)
+; $0B2BB8
+	movea.l	(a3),a3
+; $0B2BBA
+	move.w	(a2),$27D3(a2)
+; $0B2BBE
+	or.l	loc_0AE8C0(pc),d0
+; $0B2BC2
+	move.b	(a1)+,-(a1)
+; $0B2BC4
+	or.w	d0,(a5)
+; $0B2BC6
+	addq.w	#1,(a4)
+; $0B2BC8
+	add.l	d7,d1
+; $0B2BCA
+	scs	(a5)+
+; $0B2BCC
+	move.l	(a0)+,-(a2)
+; $0B2BCE
+	moveq	#102,d0
+; $0B2BD0
+	beq.s	loc_0B2C49
+; $0B2BD2
+	adda.w	d0,a3
+; $0B2BD4
+	bne.s	loc_0B2B5E
+; $0B2BD6
+	dc.w	$FF87
+; $0B2BD8
+	move.l	($77,a3,d6.w),-(a1)
+; $0B2BDC
+	subq.w	#8,(a2)
+; $0B2BDE
+	move.w	?ea(7,7),(a3)+
+; $0B2BE0
+	beq.s	loc_0B2C14
+; $0B2BE2
+	move.w	(a3),-(a1)
+; $0B2BE4
+	bne.s	loc_0B2C28
+; $0B2BE6
+	move.l	($27,a3,a5.w),-(a2)
+; $0B2BEA
+	dc.w	$F691
+; $0B2BEC
+	suba.w	(a0),a1
+; $0B2BEE
+	move.b	(-$9,a0,d6.w),$2063(a0)
+; $0B2BF4
+	move.w	?ea(7,7),loc_0BA37D(pc)
+; $0B2BF8
+	move.w	-(a5),-(a0)
+; $0B2BFA
+	moveq	#49,d3
+; $0B2BFC
+	move.b	-(a2),d1
+; $0B2BFE
+	dc.w	$FF66
+; $0B2C00
+	move.l	-(a3),d1
+; $0B2C02
+	subq.b	#1,(a2)
+; $0B2C04
+	move.l	(a2),$54FD(a2)
+; $0B2C08
+	move.l	(a4),(a1)+
+; $0B2C0A
+	or.w	-(a3),d0
+; $0B2C0C
+	move.l	(a1),$3565(a2)
+; $0B2C10
+	subq.w	#1,a7
+; $0B2C12
+	subq.b	#1,($35,a5,d3.w)
+; $0B2C16
+	dc.w	$F860
+; $0B2C18
+	bhi.s	loc_0B2C2B
+; $0B2C1A
+	move.l	a6,-$4EFC(a1)
+; $0B2C1E
+	add.l	d1,d7
+; $0B2C20
+	dc.w	$F863
+
+loc_0B2C22:				; $0B2C22
+	ori.w	#$3F5C,a6
+; $0B2C26
+	movea.w	a6,a5
+
+loc_0B2C28:				; $0B2C28
+	move.l	a6,(a2)
+; $0B2C2A
+	move.b	(a7)+,-(a3)
+; $0B2C2C
+	ori.l	#$C3F32B00,d0
+; $0B2C32
+	dc.w	$75F1
+; $0B2C34
+	suba.l	($005D21).w,a4
+; $0B2C38
+	or.b	d7,(a0)+
+; $0B2C3A
+	divu.w	loc_0B3ED4(pc),d2
+; $0B2C3E
+	suba.w	loc_0AD837(pc),a4
+; $0B2C42
+	move.l	d0,-$3CB4(a6)
+; $0B2C46
+	rol.w	#3,d1
+; $0B2C48
+	move.w	d0,-$3A80(a0)
+; $0B2C4C
+	add.b	($62,a1,a2.l),d4
+; $0B2C50
+	add.w	d7,d0
+; $0B2C52
+	dc.w	$A841
+; $0B2C54
+	move.l	d0,$1D24(a6)
+; $0B2C58
+	dc.w	$FA90
+; $0B2C5A
+	addq.b	#2,a0
+; $0B2C5C
+	eor.l	d0,-(a0)
+; $0B2C5E
+	lsr.l	#1,d0
+; $0B2C60
+	sub.w	d7,$25C4(a2)
+; $0B2C64
+	bcc.s	loc_0B2CAC
+; $0B2C66
+	move.w	($0060F9).w,($00312A).w
+; $0B2C6C
+	lsr.b	d5,d1
+; $0B2C6E
+	scc	#$21
+; $0B2C72
+	add.l	d2,d0
+; $0B2C74
+	dc.w	$F10C
+; $0B2C76
+	lea	-(a5),a2
+; $0B2C78
+	move.l	(a7)+,(a0)+
+; $0B2C7A
+	move.l	($55,a4,d2.w),-(a0)
+; $0B2C7E
+	move.l	($FFFFA052).w,(-$1,a1,d5.w)
+; $0B2C84
+	move.b	(a5),$2F21(a0)
+; $0B2C88
+	move.b	-(a5),-(a7)
+; $0B2C8A
+	move.b	?ea(7,7),($005FFF).w
+; $0B2C8E
+	move.l	?ea(7,7),($0011FF).w
+; $0B2C92
+	dc.w	$0E49
+; $0B2C94
+	move.l	($F07B1124).l,(a1)+
+; $0B2C9A
+	move.w	d0,$2225(a7)
+; $0B2C9E
+	clr.b	(a7)+
+; $0B2CA0
+	bsr.s	loc_0B2C22
+; $0B2CA2
+	asl.w	(-$60,a1,d7.l)
+; $0B2CA6
+	ror.b	d7,d0
+; $0B2CA8
+	asl.l	#8,d1
+; $0B2CAA
+	dc.w	$AFA2
+
+loc_0B2CAC:				; $0B2CAC
+	movea.b	(a5),a1
+; $0B2CAE
+	subq.b	#8,?ea(7,7)
+; $0B2CB0
+	move.b	-(a5),d1
+; $0B2CB2
+	move.l	(a1),$2322(a2)
+; $0B2CB6
+	or.l	d3,d0
+; $0B2CB8
+	bgt.s	loc_0B2D04
+; $0B2CBA
+	cmp.b	(-$40,a2,d4.w),d6
+; $0B2CBE
+	bmi.s	loc_0B2CF3
+; $0B2CC0
+	move.l	-(a2),-(a1)
+; $0B2CC2
+	move.b	($8021840C).l,d1
+; $0B2CC8
+	dc.w	$A07B
+; $0B2CCA
+	dc.w	$A033
+; $0B2CCC
+	bls.s	loc_0B2C4E
+; $0B2CCE
+	dc.w	$FCB0
+; $0B2CD0
+	dc.w	$AE40
+; $0B2CD2
+	sub.w	(-$17,a0,d2.w),d2
+; $0B2CD6
+	move.w	(-$6A,a3,d4.w),(a1)
+; $0B2CDA
+	and.b	(-$10,a3,a2.l),d0
+; $0B2CDE
+	move.l	-(a1),-(a1)
+; $0B2CE0
+	move.b	($1F,a7,a7.w),?ea(7,7)
+; $0B2CE4
+	movea.l	d7,a1
+; $0B2CE6
+	negx.b	(a2)
+; $0B2CE8
+	move.b	(a7)+,-(a7)
+; $0B2CEA
+	dc.w	$FFFF
+; $0B2CEC
+	move.b	(-$F,a1,d1.l),($002F11).w
+; $0B2CF2
+	move.b	(-$1,a1,d6.l),?ea(7,7)
+; $0B2CF6
+	move.l	(a7)+,-(a0)
+; $0B2CF8
+	move.b	a2,?ea(7,7)
+; $0B2CFA
+	negx.b	(a1)
+; $0B2CFC
+	move.w	-(a5),($3D,a1,a7.w)
+; $0B2D00
+	move.b	?ea(7,6),(-$1,a7,a0.w)
+
+loc_0B2D04:				; $0B2D04
+	dc.w	$FFF2
+; $0B2D06
+	dc.w	$FFF6
+; $0B2D08
+	clr.?	$40C9(a0)
+; $0B2D0C
+	dc.w	$F1F9
+; $0B2D0E
+	negx.w	a6
+; $0B2D10
+	suba.w	?ea(7,7),a0
+; $0B2D12
+	dc.w	$F963
+; $0B2D14
+	ori.b	#$55,d2
+; $0B2D18
+	dc.w	$F954
+; $0B2D1A
+	beq.s	loc_0B2D3D
+
+loc_0B2D1C:				; $0B2D1C
+	bsr.s	loc_0B2D2E
+; $0B2D1E
+	move.l	(a2),$1F21(a2)
+; $0B2D22
+	addq.l	#1,?ea(7,7)
+; $0B2D24
+	move.b	-(a1),d1
+; $0B2D26
+	subq.b	#2,-(a1)
+; $0B2D28
+	dc.w	$F11F
+; $0B2D2A
+	dc.w	$F862
+; $0B2D2C
+	shi	$2552(a3)
+; $0B2D30
+	move.w	-(a0),d7
+; $0B2D32
+	move.l	a2,$4022(a2)
+; $0B2D36
+	move.b	?ea(7,7),?ea(7,7)
+; $0B2D38
+	dc.w	$7512
+; $0B2D3A
+	lsr.w	#1,d1
+; $0B2D3C
+	move.l	(a4)+,(a1)+
+; $0B2D3E
+	negx.b	(a1)
+; $0B2D40
+	dc.w	$F1F1
+; $0B2D42
+	dc.w	$F4B0
+; $0B2D44
+	mulu.w	($6015A202).l,d1
+; $0B2D4A
+	dc.w	$7920
+; $0B2D4C
+	asr.l	#8,d1
+; $0B2D4E
+	ror.b	d3,d0
+; $0B2D50
+	move.b	-(a5),d1
+; $0B2D52
+	or.w	d4,(a1)
+; $0B2D54
+	dc.w	$75A0
+; $0B2D56
+	addq.l	#8,d0
+; $0B2D58
+	move.l	$2118(a1),(a1)+
+; $0B2D5C
+	or.l	-$3FAD(a5),d1
+; $0B2D60
+	dc.w	$FF53
+; $0B2D62
+	subq.b	#2,-(a1)
+; $0B2D64
+	move.l	#$332CCCBF,-(a1)
+; $0B2D6A
+	movea.l	(a1),a6
+; $0B2D6C
+	move.l	#$CC11E870,d6
+; $0B2D72
+	move.l	$3C23(a7),loc_0AF9C9(pc)
+
+loc_0B2D78:				; $0B2D78
+	move.l	d0,(a0)
+; $0B2D7A
+	move.w	d3,(a6)+
+; $0B2D7C
+	move.l	?ea(7,7),loc_0B62B0(pc)
+; $0B2D80
+	move.l	(a2),d6
+; $0B2D82
+	move.w	a4,($C1339F53).l
+; $0B2D88
+	mulu.w	d3,d6
+; $0B2D8A
+	exg	d1,d2
+; $0B2D8C
+	add.b	d7,(a0)
+; $0B2D8E
+	move.l	-(a1),-$3C6E(a1)
+; $0B2D92
+	dc.w	$A970
+
+loc_0B2D94:				; $0B2D94
+	muls.w	d1,d1
+; $0B2D96
+	bne.s	loc_0B2D78
+; $0B2D98
+	move.l	-(a1),d0
+; $0B2D9A
+	blt.s	loc_0B2D1C
+; $0B2D9C
+	move.b	(a0),(-$9,a1,d5.w)
+; $0B2DA0
+	move.w	d2,($23915023).l
+; $0B2DA6
+	dbcs	d4,loc_0B60BB
+; $0B2DAA
+	move.w	(-$D,a5,a5.l),d1
+; $0B2DAE
+	movea.w	-(a1),a6
+; $0B2DB0
+	and.l	a4,d2
+; $0B2DB2
+	moveq	#98,d0
+; $0B2DB4
+	bhi.s	loc_0B2DD8
+; $0B2DB6
+	bhi.w	loc_0B02CA
+; $0B2DBA
+	ble.s	loc_0B2E2C
+; $0B2DBC
+	dc.w	$A562
+; $0B2DBE
+	dc.w	$F5D0
+; $0B2DC0
+	add.l	d0,d2
+; $0B2DC2
+	addq.l	#1,($33,a0,d4.w)
+; $0B2DC6
+	move.b	d0,(a5)
+; $0B2DC8
+	adda.w	?ea(7,5),a6
+; $0B2DCA
+	dc.w	$F0E2
+; $0B2DCC
+	or.w	d5,d0
+; $0B2DCE
+	move.l	(a7)+,-(a0)
+; $0B2DD0
+	sbcd	d0,d0
+; $0B2DD2
+	move.l	(a5),-$DF(a7)
+; $0B2DD6
+	dc.w	$FFFF
+
+loc_0B2DD8:				; $0B2DD8
+	addq.b	#1,-$1(a7)
+; $0B2DDC
+	move.l	-(a7),(-$F,a2,d1.w)
+; $0B2DE0
+	move.b	(a3),-(a7)
+; $0B2DE2
+	bra.s	loc_0B2DE1
+; $0B2DE4
+	dc.w	$4111
+; $0B2DE6
+	add.w	d7,d1
+; $0B2DE8
+	dc.w	$FF69
+; $0B2DEA
+	dc.w	$F147
+; $0B2DEC
+	negx.l	?ea(7,6)
+; $0B2DEE
+	or.b	(a7)+,d0
+; $0B2DF0
+	movea.l	-(a1),a5
+; $0B2DF2
+	dc.w	$F1FF
+; $0B2DF4
+	move.b	-(a0),-$40F(a5)
+; $0B2DF8
+	move.l	-(a7),(a1)+
+; $0B2DFA
+	negx.b	(a3)
+; $0B2DFC
+	move.b	($23,a1,d1.w),?ea(7,7)
+; $0B2E00
+	dc.w	$7FFF
+; $0B2E02
+	move.l	-(a2),-(a0)
+; $0B2E04
+	move.l	?ea(7,7),($F12185A0).l
+; $0B2E0A
+	dc.w	$AF11
+; $0B2E0C
+	move.l	(a2),d1
+; $0B2E0E
+	move.l	-(a5),($21,a7,a7.w)
+; $0B2E12
+	bvc.s	loc_0B2D94
+; $0B2E14
+	move.w	?ea(7,6),d1
+; $0B2E16
+	subq.l	#5,d0
+; $0B2E18
+	move.l	(a2),-(a0)
+; $0B2E1A
+	move.w	-(a3),-(a1)
+; $0B2E1C
+	muls.w	#$B093,d1
+; $0B2E20
+	moveq	#47,d0
+; $0B2E22
+	move.w	(-$3D,a3,a4.l),d1
+; $0B2E26
+	beq.s	loc_0B2DA8
+; $0B2E28
+	addq.w	#1,-(a2)
+; $0B2E2A
+	negx.l	d5
+
+loc_0B2E2C:				; $0B2E2C
+	dc.w	$A0BF
+; $0B2E2E
+	move.w	($32,a1,d3.w),d1
+; $0B2E32
+	move.w	(-$6F,a5,d4.w),-(a1)
+; $0B2E36
+	move.w	-(a1),($311F002B).l
+; $0B2E3C
+	or.l	-(a2),d0
+; $0B2E3E
+	moveq	#-117,d0
+; $0B2E40
+	or.w	(a2),d0
+; $0B2E42
+	move.l	(-$4F,a5,a4.w),-(a2)
+; $0B2E46
+	dc.w	$A096
+; $0B2E48
+	lea	(-$40,a1,a7.w),a0
+; $0B2E4C
+	ori.l	#$820B4052,d0
+; $0B2E52
+	scs	?ea(7,7)
+; $0B2E54
+	movea.w	d2,a1
+; $0B2E56
+	move.b	($32,a5,d3.w),d1
+; $0B2E5A
+	move.w	(a1),d1
+; $0B2E5C
+	dc.w	$7F22
+; $0B2E5E
+	move.w	($23,a2,d1.l),-(a1)
+; $0B2E62
+	move.l	(-$60,a1,d7.w),-(a1)
+; $0B2E66
+	add.l	d4,d7
+; $0B2E68
+	dc.w	$F033
+; $0B2E6A
+	move.b	-(a1),d1
+; $0B2E6C
+	move.w	-(a0),-$7FDD(a1)
+; $0B2E70
+	move.w	?ea(7,5),($0021B5).w
+; $0B2E74
+	negx.b	(a1)
+; $0B2E76
+	move.b	($11,a2,d2.w),(a1)+
+; $0B2E7A
+	move.b	?ea(7,5),($78,a0,d1.w)
+; $0B2E7E
+	dc.w	$F02F
+; $0B2E80
+	dc.w	$F112
+; $0B2E82
+	move.l	($1F,pc,a5.w),?ea(7,7)
+; $0B2E86
+	eor.b	d7,-(a1)
+; $0B2E88
+	move.b	-$EE(a7),d1
+; $0B2E8C
+	move.l	($11,pc,d5.w),d1
+; $0B2E90
+	dc.w	$A12F
+; $0B2E92
+	move.l	-(a0),-$9BF(a5)
+; $0B2E96
+	movea.w	$4467(a7),a1
+; $0B2E9A
+	addq.b	#1,-(a3)
+; $0B2E9C
+	bra.s	loc_0B2EBF
+; $0B2E9E
+	ror.b	#7,d7
+; $0B2EA0
+	ori.b	#$21,(a1)
+; $0B2EA4
+	move.w	-(a0),-(a5)
+; $0B2EA6
+	dc.w	$FF1F
+; $0B2EA8
+	move.l	?ea(7,7),$2112(a0)
+; $0B2EAC
+	move.b	(a2),$222F(a0)
+; $0B2EB0
+	dc.w	$F2C2
+; $0B2EB2
+	dc.w	$A039
+; $0B2EB4
+	movea.b	a0,a1
+; $0B2EB6
+	moveq	#98,d0
+; $0B2EB8
+	move.l	-(a3),d0
+; $0B2EBA
+	move.w	(a7)+,-(a1)
+; $0B2EBC
+	move.b	-(a0),($41,a2,a4.l)
+; $0B2EC0
+	eor.b	d7,-(a3)
+; $0B2EC2
+	move.w	-(a3),d1
+; $0B2EC4
+	move.l	(-$72,a2,d3.w),d6
+; $0B2EC8
+	and.b	-(a2),d0
+; $0B2ECA
+	dc.w	$AF33
+; $0B2ECC
+	move.l	-(a3),d6
+; $0B2ECE
+	move.b	a2,($4023B742).l
+; $0B2ED4
+	move.w	d7,loc_0B61F8(pc)
+; $0B2ED8
+	move.w	?ea(7,6),(a1)
+; $0B2EDA
+	negx.l	$608E(a6)
+; $0B2EDE
+	and.b	($53,a3,d2.w),d0
+; $0B2EE2
+	and.b	($50,a2,a2.l),d6
+; $0B2EE6
+	dc.w	$A251
+; $0B2EE8
+	exg	d1,a3
+; $0B2EEA
+	addq.b	#8,#$11
+; $0B2EEE
+	dc.w	$7D43
+; $0B2EF0
+	add.l	d1,(a1)
+; $0B2EF2
+	move.b	d3,(a6)+
+; $0B2EF4
+	move.w	d2,(a6)+
+; $0B2EF6
+	move.l	-(a2),(a6)+
+; $0B2EF8
+	addq.b	#1,$6470(a6)
+; $0B2EFC
+	exg	d1,d4
+; $0B2EFE
+	move.w	#$5053,-$1770(a0)
+; $0B2F04
+	lsr.w	d1,d1
+; $0B2F06
+	mulu.w	-(a2),d2
+; $0B2F08
+	sls	-(a1)
+; $0B2F0A
+	shi	d2
+; $0B2F0C
+	add.w	d7,(a3)
+; $0B2F0E
+	add.b	d1,(a2)
+; $0B2F10
+	asr.l	#4,d1
+; $0B2F12
+	muls.w	d3,d1
+; $0B2F14
+	dc.w	$FE5A
+; $0B2F16
+	or.b	d0,(a3)
+; $0B2F18
+	move.l	(-$34,a2,d3.w),-(a1)
+; $0B2F1C
+	move.w	($3C,a3,d7.l),d1
+; $0B2F20
+	exg	d1,d2
+; $0B2F22
+	move.w	d2,($3331B140).l
+; $0B2F28
+	dc.w	$FF11
+; $0B2F2A
+	dc.w	$F332
+; $0B2F2C
+	move.w	($23,a1,d1.w),($002203).w
+; $0B2F32
+	move.w	-(a5),-(a7)
+; $0B2F34
+	dc.w	$A653
+; $0B2F36
+	add.b	d7,(a0)
+; $0B2F38
+	lsl.w	#5,d0
+; $0B2F3A
+	add.l	(a0),d5
+; $0B2F3C
+	dc.w	$A251
+; $0B2F3E
+	asl.l	#4,d1
+; $0B2F40
+	eor.b	d6,($55,a2,a5.l)
+; $0B2F44
+	clr.b	(a1)
+; $0B2F46
+	move.l	?ea(7,7),($005160).w
+; $0B2F4A
+	dc.w	$F25F
+; $0B2F4C
+	subq.b	#8,-(a2)
+; $0B2F4E
+	move.l	(a7)+,-(a0)
+; $0B2F50
+	addq.b	#1,a6
+; $0B2F52
+	moveq	#85,d0
+; $0B2F54
+	lsr.w	d5,d0
+; $0B2F56
+	move.b	(a2),-$2FA0(a0)
+; $0B2F5A
+	subq.b	#5,-(a0)
+; $0B2F5C
+	move.w	-(a1),-(a3)
+; $0B2F5E
+	move.l	a0,(-$5,a0,d3.w)
+; $0B2F62
+	add.b	$F9(a3),d0
+; $0B2F66
+	move.b	a6,(a1)
+; $0B2F68
+	move.w	($21,a2,d1.w),(a0)
+; $0B2F6C
+	dc.w	$F111
+; $0B2F6E
+	move.l	?ea(7,7),(a1)+
+; $0B2F70
+	roxr.l	d6,d3
+; $0B2F72
+	move.b	(a7)+,d0
+; $0B2F74
+	btst	d0,(a1)
+; $0B2F76
+	move.b	(a6)+,-(a0)
+; $0B2F78
+	moveq	#33,d0
+; $0B2F7A
+	move.w	?ea(7,7),($7F221132).l
+; $0B2F80
+	move.b	-(a3),d1
+; $0B2F82
+	move.b	($30,a2,a3.w),d1
+; $0B2F86
+	cmp.b	d3,d0
+; $0B2F88
+	and.l	d5,d0
+; $0B2F8A
+	dc.w	$A0C4
+; $0B2F8C
+	dc.w	$F234
+; $0B2F8E
+	moveq	#51,d0
+; $0B2F90
+	move.b	a1,($32,a1,d6.w)
+; $0B2F94
+	dc.w	$7723
+; $0B2F96
+	and.b	#$60,d1
+; $0B2F9A
+	and.b	(-$57,a3,d1.w),d6
+; $0B2F9E
+	addq.b	#8,(a5)+
+; $0B2FA0
+	move.b	(a0),($90233CC2).l
+; $0B2FA6
+	dc.w	$AE70
+; $0B2FA8
+	subq.l	#1,d0
+; $0B2FAA
+	cmp.w	($33,a1,d1.l),d5
+; $0B2FAE
+	move.w	d3,($33CC5470).l
+; $0B2FB4
+	or.w	-(a0),d1
+; $0B2FB6
+	add.w	($22,a0,a1.w),d4
+; $0B2FBA
+	move.w	$70D4(a6),(a6)
+; $0B2FBE
+	suba.l	d3,a0
+; $0B2FC0
+	beq.s	loc_0B3022
+; $0B2FC2
+	or.w	(-$41,a0,d2.w),d1
+; $0B2FC6
+	move.w	-(a5),-(a1)
+; $0B2FC8
+	move.w	-(a5),-(a2)
+; $0B2FCA
+	move.w	($40,a5,d3.l),-(a1)
+; $0B2FCE
+	move.w	(a5),($53A5C035).l
+; $0B2FD4
+	dc.w	$F3B0
+; $0B2FD6
+	move.w	(a1)+,-$4FDE(a1)
+; $0B2FDA
+	move.l	-(a5),-$33C6(a2)
+; $0B2FDE
+	moveq	#34,d0
+; $0B2FE0
+	or.w	($60,a0,a3.l),d6
+; $0B2FE4
+	dc.w	$FF32
+; $0B2FE6
+	dc.w	$F370
+; $0B2FE8
+	subq.b	#2,($70,a1,a7.w)
+; $0B2FEC
+	movea.w	d5,a1
+; $0B2FEE
+	addq.b	#8,($60,a2,a6.l)
+; $0B2FF2
+	move.l	d3,d1
+; $0B2FF4
+	or.w	d7,(-$71,a0,d1.w)
+; $0B2FF8
+	move.l	a7,(-$71,a3,d3.l)
+; $0B2FFC
+	chk.w	d0,d5
+; $0B2FFE
+	addq.b	#1,-(a1)
+; $0B3000
+	move.w	(-$2,pc,d4.w),d1
+; $0B3004
+	dc.w	$AAA0
+; $0B3006
+	move.l	-(a2),-(a2)
+; $0B3008
+	move.w	d5,$1232(a1)
+; $0B300C
+	move.w	a4,(a1)+
+; $0B300E
+	dc.w	$F490
+; $0B3010
+	dc.w	$FD30
+
+loc_0B3012:				; $0B3012
+	subq.b	#8,-(a3)
+; $0B3014
+	moveq	#32,d7
+; $0B3016
+	dc.w	$A3A0
+; $0B3018
+	dc.w	$4555
+; $0B301A
+	movea.b	-$7E8A(a5),a2
+; $0B301E
+	dc.w	$A0CC
+; $0B3020
+	cmp.w	-(a0),d1
+
+loc_0B3022:				; $0B3022
+	move.l	-$7FB7(a1),(a6)
+; $0B3026
+	moveq	#-116,d0
+; $0B3028
+	addq.w	#8,?ea(7,7)
+; $0B302A
+	move.l	#$3C453323,d1
+; $0B3030
+	exg	d2,a0
+; $0B3032
+	dc.w	$411A
+; $0B3034
+	or.w	(-$18,a0,a4.w),d1
+; $0B3038
+	sub.w	(a4)+,d0
+; $0B303A
+	exg	a1,a7
+; $0B303C
+	suba.w	-(a0),a0
+; $0B303E
+	move.w	(a3)+,($0050F6).w
+; $0B3042
+	roxr.b	d2,d1
+; $0B3044
+	lea	d5,a2
+; $0B3046
+	or.b	-(a4),d3
+; $0B3048
+	move.w	(a2),$3CCC(a1)
+; $0B304C
+	dc.w	$FF55
+; $0B304E
+	move.b	#$55,d1
+; $0B3052
+	move.l	a4,($214F5535).l
+; $0B3058
+	exg	d1,d7
+; $0B305A
+	neg.b	($51,a0,d6.w)
+; $0B305E
+	move.w	(-$4,a6,a1.w),($90405780).l
+; $0B3066
+	move.b	d2,(a1)+
+; $0B3068
+	muls.w	d3,d1
+; $0B306A
+	move.l	#$F723C312,-(a7)
+; $0B3070
+	bgt.s	loc_0B3012
+; $0B3072
+	move.b	($23,a2,a7.l),d1
+; $0B3076
+	move.w	($35,a2,d3.w),?ea(7,7)
+; $0B307A
+	movea.l	(a2),a1
+; $0B307C
+	subq.b	#1,a4
+; $0B307E
+	dc.w	$A090
+; $0B3080
+	dc.w	$4156
+; $0B3082
+	subq.w	#5,-(a0)
+; $0B3084
+	move.w	-(a3),-(a2)
+
+loc_0B3086:				; $0B3086
+	bne.s	loc_0B30D8
+; $0B3088
+	movea.b	(a7)+,a1
+; $0B308A
+	cmp.b	($40,a5,d7.l),d0
+; $0B308E
+	exg	a5,a3
+; $0B3090
+	move.b	(a4)+,$1235(a2)
+; $0B3094
+	or.w	d6,d5
+; $0B3096
+	dc.w	$AA72
+; $0B3098
+	and.b	#$22,d6
+; $0B309C
+	move.w	a4,($231CCC2C).l
+; $0B30A2
+	move.l	d2,(a1)+
+; $0B30A4
+	lsr.w	d1,d1
+; $0B30A6
+	muls.w	-(a2),d1
+; $0B30A8
+	dc.w	$F2E0
+; $0B30AA
+	move.b	(a5),(a0)+
+
+loc_0B30AC:				; $0B30AC
+	addq.l	#8,(a5)+
+; $0B30AE
+	asr.b	#8,d1
+; $0B30B0
+	dc.w	$F15F
+; $0B30B2
+	move.l	(a1),-(a0)
+; $0B30B4
+	dc.w	$FF11
+; $0B30B6
+	addq.l	#1,d4
+; $0B30B8
+	dc.w	$F052
+; $0B30BA
+	moveq	#-16,d1
+; $0B30BC
+	bge.s	loc_0B30AC
+; $0B30BE
+	add.w	d0,(a5)
+; $0B30C0
+	bra.s	loc_0B30D5
+; $0B30C2
+	subq.l	#8,($53,pc,d6.w)
+; $0B30C6
+	move.w	(-$30,a1,d2.w),-(a2)
+; $0B30CA
+	move.w	-(a1),d3
+; $0B30CC
+	cmp.w	-(a1),d6
+; $0B30CE
+	bchg	d5,d0
+; $0B30D0
+	eor.w	d3,d1
+; $0B30D2
+	movea.l	-(a0),a1
+; $0B30D4
+	move.l	-(a3),d0
+; $0B30D6
+	move.b	-(a3),?ea(7,7)
+
+loc_0B30D8:				; $0B30D8
+	dc.w	$F222
+; $0B30DA
+	exg	a5,a0
+; $0B30DC
+	addq.w	#4,-(a0)
+; $0B30DE
+	dc.w	$FB80
+; $0B30E0
+	move.w	(a2),d1
+; $0B30E2
+	move.b	(a5),($0023A5).w
+; $0B30E6
+	dc.w	$F033
+; $0B30E8
+	move.l	d0,d1
+; $0B30EA
+	move.w	($32,a5,d7.w),d1
+; $0B30EE
+	move.w	(a4)+,(-$-80,a0,d4.l)
+; $0B30F2
+	divu.w	($2F,a0,d3.w),d2
+; $0B30F6
+	move.b	?ea(7,7),(a1)
+; $0B30F8
+	chk.w	d7,d0
+
+loc_0B30FA:				; $0B30FA
+	divu.w	d3,d0
+; $0B30FC
+	mulu.w	d6,d7
+; $0B30FE
+	addq.b	#8,#$CC
+; $0B3102
+	cmp.w	d0,d7
+; $0B3104
+	bsr.s	loc_0B3086
+; $0B3106
+	move.w	#$568E,d1
+; $0B310A
+	and.b	-(a3),d0
+; $0B310C
+	move.l	a4,(a1)
+; $0B310E
+	or.b	(-$-80,a3,a0.l),d0
+; $0B3112
+	move.l	(a7)+,-$7DAF(a1)
+; $0B3116
+	move.w	d3,($66,a1,d7.w)
+; $0B311A
+	dc.w	$71E1
+; $0B311C
+	dc.w	$7133
+
+loc_0B311E:				; $0B311E
+	add.b	(a0),d7
+; $0B3120
+	move.l	-(a4),$708D(a1)
+; $0B3124
+	move.w	(a1),(a1)+
+; $0B3126
+	suba.w	d3,a0
+; $0B3128
+	move.l	(a0),(a6)+
+; $0B312A
+	cmp.w	-$7DE7(a4),d0
+; $0B312E
+	dc.w	$A035
+; $0B3130
+	dc.w	$F4CA
+; $0B3132
+	addq.l	#8,-(a2)
+; $0B3134
+	sf	d5
+; $0B3136
+	add.l	(a0),d1
+; $0B3138
+	dc.w	$4C3C
+; $0B313A
+	move.w	(-$3B,a5,a3.l),-(a1)
+; $0B313E
+	move.w	$1022(a1),($F111E180).l
+; $0B3146
+	move.l	-(a1),($FFFFFF17).w
+; $0B314A
+	bra.s	loc_0B313D
+
+loc_0B314C:				; $0B314C
+	bra.s	loc_0B3172
+; $0B314E
+	bsr.s	loc_0B314C
+; $0B3150
+	bra.l	loc_222C9351
+; $0B3156
+	dc.w	$7D00
+; $0B3158
+	bpl.s	loc_0B319A
+; $0B315A
+	exg	d2,a0
+; $0B315C
+	bset	d7,-(a1)
+; $0B315E
+	move.b	-(a3),-(a0)
+; $0B3160
+	move.l	-(a0),(-$5D,a1,a7.l)
+; $0B3164
+	dc.w	$F1B2
+; $0B3166
+	sub.l	($33,pc,d4.w),d0
+; $0B316A
+	move.w	(a3),d1
+; $0B316C
+	move.l	($31,a3,d4.w),-(a1)
+; $0B3170
+	subq.l	#5,-(a1)
+
+loc_0B3172:				; $0B3172
+	beq.s	loc_0B3115
+; $0B3174
+	addq.w	#6,-(a0)
+; $0B3176
+	blt.s	loc_0B30F9
+; $0B3178
+	blt.s	loc_0B30FA
+; $0B317A
+	movea.w	(-$70,a4,a0.w),a6
+; $0B317E
+	addq.l	#2,d1
+; $0B3180
+	dc.w	$AF70
+; $0B3182
+	or.l	d3,d0
+; $0B3184
+	dc.w	$FAA0
+; $0B3186
+	move.w	-$6D66(a1),($5F,a1,d0.w)
+; $0B318C
+	dc.w	$FCA4
+; $0B318E
+	negx.b	a5
+; $0B3190
+	addq.b	#8,-(a2)
+; $0B3192
+	rol.w	#7,d5
+; $0B3194
+	shi	-$1101(a6)
+; $0B3198
+	addq.w	#2,(a1)
+
+loc_0B319A:				; $0B319A
+	ror.w	?ea(7,6)
+; $0B319C
+	subq.b	#2,(a2)
+; $0B319E
+	ror.w	-$A2(a7)
+; $0B31A2
+	roxl.w	#2,d5
+; $0B31A4
+	scs	-$12B(a7)
+; $0B31A8
+	scs	?ea(7,7)
+; $0B31AA
+	dc.w	$FEEE
+; $0B31AC
+	roxl.w	#6,d5
+; $0B31AE
+	dc.w	$FFEE
+; $0B31B0
+	adda.l	(a6)+,a6
+; $0B31B2
+	dc.w	$7FFF
+; $0B31B4
+	roxl.w	(a4)+
+; $0B31B6
+	adda.l	?ea(7,7),a7
+; $0B31B8
+	adda.l	a4,a6
+; $0B31BA
+	asr.l	d0,d0
+; $0B31BC
+	cmpa.l	a5,a7
+
+loc_0B31BE:				; $0B31BE
+	ror.w	-$1223(a6)
+; $0B31C2
+	roxl.w	d6,d7
+; $0B31C4
+	movea.l	d5,a2
+; $0B31C6
+	dc.w	$F5D5
+; $0B31C8
+	sub.w	d0,d0
+; $0B31CA
+	roxl.w	d6,d5
+; $0B31CC
+	negx.?	-$32EB(a4)
+; $0B31D0
+	addq.w	#2,?ea(7,7)
+; $0B31D2
+	roxl.w	a4
+; $0B31D4
+	movea.l	(a5),a1
+; $0B31D6
+	adda.l	a4,a6
+; $0B31D8
+	add.w	-(a5),d1
+; $0B31DA
+	cmp.l	-(a1),d0
+; $0B31DC
+	exg	d1,a5
+; $0B31DE
+	and.b	-$5EC4(a4),d0
+; $0B31E2
+	dc.w	$A1BF
+; $0B31E4
+	dc.w	$411F
+; $0B31E6
+	addi.l	#$12FEDDA1,(a0)
+; $0B31EC
+	move.w	(a3),d1
+; $0B31EE
+	move.b	d3,($23221361).l
+; $0B31F4
+	and.l	(-$44,a7,d7.w),d6
+; $0B31F8
+	negx.w	(a2)+
+; $0B31FA
+	bra.s	loc_0B31AD
+; $0B31FC
+	negx.b	-(a2)
+; $0B31FE
+	move.l	a7,(a6)
+; $0B3200
+	sub.b	d0,d0
+; $0B3202
+	or.w	d1,(a0)
+; $0B3204
+	roxl.w	d2,d0
+; $0B3206
+	bmi.s	loc_0B3278
+; $0B3208
+	or.w	($50,a1,a6.w),d6
+; $0B320C
+	divs.w	(-$3F,a1,d0.l),d2
+; $0B3210
+	dc.w	$F140
+; $0B3212
+	move.w	-(a2),-(a5)
+; $0B3214
+	move.w	($23,a0,a2.w),(-$E,a1,d3.w)
+; $0B321A
+	lsr.l	d1,d1
+; $0B321C
+	bne.s	loc_0B31BE
+; $0B321E
+	dc.w	$FF23
+; $0B3220
+	move.b	a4,(a1)+
+; $0B3222
+	move.l	(-$3B,a1,d1.w),-(a1)
+; $0B3226
+	neg.?	?ea(7,7)
+; $0B3228
+	exg	a2,a4
+; $0B322A
+	and.w	(a4)+,d6
+; $0B322C
+	and.w	a4,d2
+; $0B322E
+	muls.w	a4,d2
+; $0B3230
+	add.w	d7,(a4)
+; $0B3232
+	addq.w	#6,a4
+; $0B3234
+	movem.l	a4,d0/d1/d2/d5/a2/a3
+; $0B3238
+	addq.w	#6,(a4)
+; $0B323A
+	dc.w	$AFCC
+; $0B323C
+	exg	a2,a4
+; $0B323E
+	scc	(a7)
+; $0B3240
+	dc.w	$F04C
+; $0B3242
+	adda.l	(-$69,a0,d5.l),a3
+; $0B3246
+	addq.b	#1,-(a2)
+; $0B3248
+	move.l	($25,a6,d5.w),loc_0AFB4C(pc)
+; $0B324E
+	moveq	#34,d7
+; $0B3250
+	move.l	(a4),-(a2)
+; $0B3252
+	dc.w	$F4B1
+; $0B3254
+	move.b	(a0),(a7)
+; $0B3256
+	move.l	($12,a1,d5.w),-(a0)
+
+loc_0B325A:				; $0B325A
+	move.l	(a1),($60,a5,d4.w)
+; $0B325E
+	move.w	-(a1),(a5)
+; $0B3260
+	lsl.b	d5,d1
+; $0B3262
+	addq.l	#1,$4025(a7)
+; $0B3266
+	move.w	-(a0),($23,a4,d5.w)
+; $0B326A
+	move.b	#$30,($33A02121).l
+; $0B3272
+	dc.w	$F235
+; $0B3274
+	clr.b	-(a1)
+; $0B3276
+	or.b	($32,a5,d2.w),d7
+; $0B327A
+	move.w	($70,a1,a3.w),(a1)+
+; $0B327E
+	move.l	-(a0),($61,a1,d5.l)
+; $0B3282
+	move.l	d4,-$7140(a0)
+; $0B3286
+	addi.l	#$23B5404B,(a0)
+; $0B328C
+	moveq	#89,d0
+; $0B328E
+	bra.s	loc_0B32B3
+; $0B3290
+	moveq	#-96,d2
+; $0B3292
+	move.w	-(a3),-(a3)
+; $0B3294
+	move.w	a4,(a1)+
+; $0B3296
+	bsr.s	loc_0B3218
+; $0B3298
+	and.b	($50,a2,a2.w),d6
+; $0B329C
+	sub.l	d5,-(a1)
+; $0B329E
+	or.l	($0070D8).w,d2
+; $0B32A2
+	moveq	#44,d0
+; $0B32A4
+	or.l	d3,d1
+; $0B32A6
+	or.l	d1,d0
+; $0B32A8
+	addq.l	#1,-(a0)
+; $0B32AA
+	or.l	-(a0),d0
+; $0B32AC
+	and.l	(a1),d6
+; $0B32AE
+	move.l	(a5),($1084A054).l
+; $0B32B4
+	mulu.w	d3,d0
+; $0B32B6
+	dc.w	$FBA0
+; $0B32B8
+	bne.s	loc_0B325A
+; $0B32BA
+	move.w	-$3A3B(a7),loc_0B660A(pc)
+; $0B32C0
+	lsr.b	#5,d1
+; $0B32C2
+	and.b	($7F,a3,d3.l),d1
+; $0B32C6
+	movea.w	(a4)+,a6
+; $0B32C8
+	move.w	d3,loc_0B688E(pc)
+; $0B32CC
+	muls.w	$10F7(a1),d2
+; $0B32D0
+	scs	d3
+; $0B32D2
+	and.w	-(a0),d2
+; $0B32D4
+	sub.w	d0,(a4)+
+; $0B32D6
+	lea	d5,a2
+; $0B32D8
+	exg	d1,a7
+; $0B32DA
+	exg	a2,a5
+; $0B32DC
+	addq.l	#6,d1
+; $0B32DE
+	sub.w	a6,d0
+; $0B32E0
+	bvc.s	loc_0B3334
+; $0B32E2
+	moveq	#92,d0
+; $0B32E4
+	bne.s	loc_0B3309
+; $0B32E6
+	move.b	d2,(a0)
+; $0B32E8
+	or.l	(a3)+,d0
+; $0B32EA
+	dc.w	$A054
+; $0B32EC
+	or.w	-(a5),d0
+; $0B32EE
+	bra.s	loc_0B3301
+; $0B32F0
+	dc.w	$7FC0
+; $0B32F2
+	or.w	d4,-(a2)
+; $0B32F4
+	or.w	-(a1),d5
+; $0B32F6
+	move.b	loc_0BA3DF(pc),d0
+; $0B32FA
+	dc.w	$A04C
+; $0B32FC
+	or.w	d0,-$7F3D(a5)
+; $0B3300
+	subq.l	#7,d1
+; $0B3302
+	moveq	#80,d6
+; $0B3304
+	jmp	d0
+; $0B3306
+	dc.w	$A05C
+; $0B3308
+	bra.s	loc_0B328A
+; $0B330A
+	or.w	d1,(-$79,a2,a0.w)
+; $0B330E
+	divu.w	($32,a4,a4.w),d0
+; $0B3312
+	moveq	#-128,d0
+; $0B3314
+	shi	?ea(7,7)
+; $0B3316
+	move.l	-$10AE(a7),(a7)+
+; $0B331A
+	move.b	-$21BF(a7),(a7)+
+; $0B331E
+	dc.w	$F7EE
+; $0B3320
+	dc.w	$FEDF
+; $0B3322
+	move.l	($52,a0,a5.l),(-$13,a3,a6.l)
+; $0B3328
+	dc.w	$FFEE
+; $0B332A
+	sls	-$2203(a7)
+; $0B332E
+	move.b	-$2101(a5),(a1)+
+; $0B3332
+	roxl.b	#6,d1
+
+loc_0B3334:				; $0B3334
+	move.l	?ea(7,6),(a7)+
+; $0B3336
+	adda.l	?ea(7,7),a6
+; $0B3338
+	adda.l	(a5)+,a6
+; $0B333A
+	dc.w	$7FEC
+; $0B333C
+	dc.w	$FDEE
+; $0B333E
+	adda.w	a4,a7
+; $0B3340
+	dc.w	$FEDD
+; $0B3342
+	move.w	(a0),(-$13,pc,a7.l)
+; $0B3346
+	roxr.w	(a4)+
+; $0B3348
+	rol.w	(a5)+
+; $0B334A
+	mulu.w	(a4)+,d6
+; $0B334C
+	rol.w	?ea(7,7)
+; $0B334E
+	adda.w	(a4)+,a7
+; $0B3350
+	adda.w	?ea(7,6),a7
+; $0B3352
+	adda.w	a4,a7
+; $0B3354
+	roxl.w	(a6)+
+; $0B3356
+	dc.w	$F7EE
+; $0B3358
+	muls.w	$6AB1(a5),d6
+; $0B335C
+	mulu.w	(a4)+,d7
+; $0B335E
+	exg	d1,d2
+; $0B3360
+	rol.w	a6
+; $0B3362
+	adda.w	a4,a6
+; $0B3364
+	move.w	(a7)+,d1
+; $0B3366
+	dc.w	$F022
+; $0B3368
+	adda.w	(a5)+,a7
+; $0B336A
+	dc.w	$FE60
+; $0B336C
+	moveq	#-51,d0
+; $0B336E
+	and.b	-(a3),d6
+; $0B3370
+	adda.w	(a4)+,a6
+; $0B3372
+	exg	d1,d3
+; $0B3374
+	adda.l	(a4)+,a7
+; $0B3376
+	mulu.w	a4,d6
+; $0B3378
+	move.w	($70,a1,a5.l),-(a2)
+; $0B337C
+	move.w	#$072C,-(a7)
+; $0B3380
+	and.b	-(a1),d6
+; $0B3382
+	dc.w	$A951
+; $0B3384
+	dc.w	$7370
+; $0B3386
+	add.w	d2,(-$70,a2,a5.w)
+; $0B338A
+	bmi.s	loc_0B33EC
+; $0B338C
+	exg	d0,d4
+; $0B338E
+	add.l	(a0),d6
+; $0B3390
+	roxr.w	#2,d6
+; $0B3392
+	or.w	d7,($15,a7,a5.w)
+; $0B3396
+	rol.w	#3,d2
+; $0B3398
+	move.l	(-$3D,a2,d3.w),d6
+; $0B339C
+	move.w	d1,?ea(7,6)
+; $0B339E
+	exg	a0,a1
+; $0B33A0
+	dc.w	$A0C3
+; $0B33A2
+	exg	a1,a7
+; $0B33A4
+	moveq	#-71,d0
+; $0B33A6
+	moveq	#-6,d0
+; $0B33A8
+	muls.w	d0,d2
+; $0B33AA
+	move.l	d6,(a1)
+; $0B33AC
+	moveq	#-62,d0
+; $0B33AE
+	move.b	(a3),-(a7)
+; $0B33B0
+	move.l	d1,(a1)+
+; $0B33B2
+	add.b	d5,(-$18,a3,d1.w)
+; $0B33B6
+	addq.w	#8,(a5)
+; $0B33B8
+	mulu.w	(a3),d1
+; $0B33BA
+	move.b	#$DF,d1
+; $0B33BE
+	move.l	-(a3),d6
+; $0B33C0
+	move.w	d5,(a6)+
+; $0B33C2
+	move.w	(a2)+,(a1)+
+; $0B33C4
+	dc.w	$F022
+; $0B33C6
+	muls.w	?ea(7,7),d1
+; $0B33C8
+	and.w	a7,d6
+; $0B33CA
+	exg	d0,d3
+; $0B33CC
+	exg	a2,a1
+; $0B33CE
+	move.l	d5,(a1)+
+; $0B33D0
+	or.w	d3,d4
+; $0B33D2
+	addq.w	#2,d1
+; $0B33D4
+	dc.w	$7B40
+; $0B33D6
+	dc.w	$F650
+; $0B33D8
+	dc.w	$F533
+; $0B33DA
+	bhi.s	loc_0B33ED
+; $0B33DC
+	move.l	(a2),-(a2)
+; $0B33DE
+	or.w	d5,d0
+; $0B33E0
+	move.l	#$F1A24342,loc_0BA546(pc)
+; $0B33E8
+	or.w	d1,d0
+; $0B33EA
+	dc.w	$4120
+
+loc_0B33EC:				; $0B33EC
+	dc.w	$FB52
+; $0B33EE
+	move.l	($23,a2,d5.w),($41112555).l
+; $0B33F6
+	move.l	(a1),$2335(a3)
+; $0B33FA
+	bset	d4,-(a0)
+; $0B33FC
+	dc.w	$A242
+; $0B33FE
+	move.l	a2,-$3ECF(a2)
+; $0B3402
+	dc.w	$A0F5
+; $0B3404
+	move.b	($A01210C0).l,-(a1)
+; $0B340A
+	move.l	(a5),$2422(a0)
+; $0B340E
+	movea.b	($22,pc,d4.w),a3
+; $0B3412
+	movea.b	d5,a1
+; $0B3414
+	movea.w	(a2),a0
+; $0B3416
+	dc.w	$AA42
+
+loc_0B3418:				; $0B3418
+	bcc.s	loc_0B348A
+; $0B341A
+	moveq	#80,d6
+; $0B341C
+	add.w	($3C,a5,a4.w),d3
+; $0B3420
+	exg	a2,a6
+; $0B3422
+	asr.w	#8,d4
+; $0B3424
+	adda.l	(a0),a5
+; $0B3426
+	exg	d2,d3
+; $0B3428
+	dc.w	$F75C
+; $0B342A
+	addq.w	#6,a4
+; $0B342C
+	adda.w	($5C,a0,a4.w),a2
+; $0B3430
+	dc.w	$4C55
+; $0B3432
+	dc.w	$FD55
+; $0B3434
+	bne.s	loc_0B3418
+; $0B3436
+	subq.b	#1,#$C4
+; $0B343A
+	and.b	(-$23,a4,a4.w),d1
+; $0B343E
+	eor.w	d0,(a4)+
+; $0B3440
+	exg	d2,a7
+; $0B3442
+	and.w	-(a4),d1
+; $0B3444
+	sub.l	d0,-(a2)
+; $0B3446
+	dc.w	$4152
+; $0B3448
+	move.l	?ea(7,6),loc_0ADB0A(pc)
+; $0B344C
+	addq.w	#1,(a4)+
+; $0B344E
+	addq.w	#6,(a2)
+; $0B3450
+	shi	d4
+; $0B3452
+	muls.w	-(a7),d2
+; $0B3454
+	addq.w	#2,(a5)
+; $0B3456
+	addq.b	#6,-(a0)
+; $0B3458
+	move.l	-(a6),d2
+; $0B345A
+	negx.w	d5
+; $0B345C
+	subq.b	#2,-(a2)
+; $0B345E
+	move.b	($43,a4,a2.l),-(a4)
+; $0B3462
+	bne.s	loc_0B33E4
+; $0B3464
+	move.l	d2,($D690D290).l
+; $0B346A
+	addq.l	#5,d0
+; $0B346C
+	bchg	d0,d3
+; $0B346E
+	addq.l	#7,a7
+; $0B3470
+	moveq	#-128,d0
+; $0B3472
+	roxr.w	d0
+; $0B3474
+	asl.w	#8,d0
+; $0B3476
+	or.l	d2,d2
+; $0B3478
+	or.l	d0,d3
+; $0B347A
+	dc.w	$71C0
+; $0B347C
+	andi.l	#$8823D870,d4
+; $0B3482
+	or.l	-(a1),d7
+; $0B3484
+	or.l	-(a0),d7
+; $0B3486
+	eori.l	#$BDD1FCB5,(-$3F,a1,a4.w)
+; $0B348E
+	asr.l	d0,d1
+; $0B3490
+	or.b	-(a3),d1
+; $0B3492
+	move.l	-$22AE(a6),(a1)+
+; $0B3496
+	move.b	?ea(7,7),(a1)+
+; $0B3498
+	move.w	(a7)+,?ea(7,6)
+; $0B349A
+	subq.b	#2,-(a2)
+; $0B349C
+	move.w	?ea(7,6),($45527B23).l
+; $0B34A2
+	move.w	($23,a1,d5.w),d6
+; $0B34A6
+	subq.w	#2,d5
+; $0B34A8
+	subq.l	#1,d1
+; $0B34AA
+	suba.w	?ea(7,6),a0
+; $0B34AC
+	moveq	#35,d7
+; $0B34AE
+	adda.w	(a5)+,a7
+; $0B34B0
+	adda.w	-$1224(a5),a7
+; $0B34B4
+	exg	d6,a7
+; $0B34B6
+	mulu.w	-$2323(a4),d6
+; $0B34BA
+	muls.w	$52AA(a1),d6
+; $0B34BE
+	subq.b	#8,#$74
+; $0B34C2
+	suba.w	(a4),a0
+; $0B34C4
+	dc.w	$F055
+; $0B34C6
+	subq.w	#2,(a4)+
+; $0B34C8
+	add.b	(a0),d5
+; $0B34CA
+	muls.w	d5,d1
+; $0B34CC
+	move.l	(a5)+,#$E410D7F0
+; $0B34D2
+	exg	a2,a4
+; $0B34D4
+	moveq	#85,d0
+; $0B34D6
+	divs.w	d0,d3
+; $0B34D8
+	add.l	d6,($6D,a1,a6.l)
+; $0B34DC
+	asl.w	#8,d5
+; $0B34DE
+	suba.w	-(a1),a5
+; $0B34E0
+	move.l	(a2),-$5FCF(a0)
+; $0B34E4
+	move.b	-$43D(a4),-(a1)
+; $0B34E8
+	move.l	(a2),-$3FCF(a7)
+; $0B34EC
+	move.l	(a3),d1
+; $0B34EE
+	exg	d1,d3
+; $0B34F0
+	dc.w	$7F11
+; $0B34F2
+	move.l	($31,a2,d2.w),-(a0)
+; $0B34F6
+	move.w	?ea(7,7),-(a0)
+; $0B34F8
+	move.w	d4,($32,a7,a5.w)
+; $0B34FC
+	or.w	(-$2A,a0,a4.w),d6
+; $0B3500
+	asl.b	d0,d3
+; $0B3502
+	moveq	#96,d5
+; $0B3504
+	move.l	-$34(a4),d6
+; $0B3508
+	move.b	-(a1),-(a7)
+; $0B350A
+	move.w	($32,a1,a7.w),-(a1)
+; $0B350E
+	move.b	a6,($40,a0,a7.w)
+; $0B3512
+	move.b	-(a1),-(a0)
+; $0B3514
+	move.w	?ea(7,6),-$4F8A(a0)
+; $0B3518
+	eor.w	d0,-(a0)
+; $0B351A
+	move.l	($32,a1,a6.l),d0
+; $0B351E
+	move.l	($44,a1,a7.w),(a1)+
+; $0B3522
+	dc.w	$A012
+; $0B3524
+	move.l	(-$20,a1,a6.l),d1
+; $0B3528
+	or.l	($22,a7,d6.w),d0
+; $0B352C
+	move.b	d6,($13,a1,d1.w)
+; $0B3530
+	and.w	d5,d6
+; $0B3532
+	rol.w	#7,d5
+; $0B3534
+	mulu.w	d4,d2
+; $0B3536
+	mulu.w	(a4),d2
+; $0B3538
+	movea.w	(a4),a0
+; $0B353A
+	mulu.w	d5,d2
+; $0B353C
+	dc.w	$FF4C
+; $0B353E
+	dc.w	$4C55
+; $0B3540
+	neg.w	d5
+; $0B3542
+	muls.w	d4,d2
+; $0B3544
+	dc.w	$457C
+; $0B3546
+	scc	(-$50,a0,a5.w)
+; $0B354A
+	sge	d5
+; $0B354C
+	addq.w	#2,a4
+; $0B354E
+	dc.w	$4C00
+; $0B3550
+	btst	d1,-(a0)
+; $0B3552
+	ori.?	#?,($EEFFFD).l
+; $0B3558
+	dc.w	$FBFF
+; $0B355A
+	dc.w	$FF00
+; $0B355C
+	btst	d7,d0
+; $0B355E
+	abcd	d0,d1
+; $0B3560
+	dc.w	$F012
+; $0B3562
+	btst	d0,a5
+; $0B3564
+	ori.b	#$12,(a2)+
+; $0B3568
+	ori.b	#$7B,d0
+; $0B356C
+	dc.w	$FFFF
+; $0B356E
+	move.b	d0,-(a4)
+; $0B3570
+	ori.b	#$55,d0
+; $0B3574
+	move.l	d3,-(a7)
+; $0B3576
+	exg	a0,a4
+; $0B3578
+	move.w	d0,-(a2)
+; $0B357A
+	move.w	d4,-(a0)
+; $0B357C
+	move.l	d1,-(a7)
+; $0B357E
+	move.l	d3,d7
+; $0B3580
+	move.l	d0,d7
+; $0B3582
+	mulu.w	a5,d6
+; $0B3584
+	dc.w	$FE4E
+; $0B3586
+	ori.?	#?,a4
+; $0B3588
+	mulu.w	(a4)+,d6
+; $0B358A
+	mulu.w	?ea(7,7),d6
+; $0B358C
+	dc.w	$FFCC
+; $0B358E
+	dc.w	$FFDD
+; $0B3590
+	ror.w	-$3212(a6)
+; $0B3594
+	adda.l	(a5)+,a6
+; $0B3596
+	mulu.w	($DD620052).l,d7
+; $0B359C
+	ori.?	#?,a4
+; $0B359E
+	move.w	($33,a3,d3.l),d6
+; $0B35A2
+	dc.w	$FFEF
+; $0B35A4
+	dc.w	$FFCD
+; $0B35A6
+	roxl.w	?ea(7,7)
+; $0B35A8
+	dc.w	$FFCE
+; $0B35AA
+	ror.w	?ea(7,7)
+; $0B35AC
+	dc.w	$FEEE
+; $0B35AE
+	mulu.w	?ea(7,7),d7
+; $0B35B0
+	ror.w	-$3323(a6)
+; $0B35B4
+	dc.w	$FFEF
+; $0B35B6
+	ror.w	a4
+; $0B35B8
+	mulu.w	-$134(a7),d6
+; $0B35BC
+	and.l	-$207D(a5),d6
+; $0B35C0
+	bchg	d1,(a4)+
+; $0B35C2
+	roxl.l	#6,d6
+; $0B35C4
+	ori.?	#?,?ea(7,6)
+; $0B35C6
+	sub.b	d0,d1
+; $0B35C8
+	dc.w	$FFE4
+; $0B35CA
+	sub.b	d0,d3
+; $0B35CC
+	or.b	d1,d7
+; $0B35CE
+	add.l	(a6)+,d6
+; $0B35D0
+	ori.w	#$04CC,a6
+; $0B35D4
+	roxl.w	(a4)+
+; $0B35D6
+	and.l	$ED(a2),d7
+; $0B35DA
+	dc.w	$FFFD
+; $0B35DC
+	sub.b	d0,d2
+; $0B35DE
+	eor.b	d1,d0
+; $0B35E0
+	ror.w	$7FED(a6)
+; $0B35E4
+	roxl.w	-$1124(a6)
+; $0B35E8
+	adda.w	?ea(7,6),a6
+; $0B35EA
+	dc.w	$7F00
+; $0B35EC
+	dc.w	$7BFF
+; $0B35EE
+	roxl.w	d2
+; $0B35F0
+	bchg	d0,-$2301(a5)
+; $0B35F4
+	roxl.w	d6,d2
+; $0B35F6
+	btst	d0,d5
+; $0B35F8
+	cmpa.l	(a2),a5
+; $0B35FA
+	ori.?	#?,-$2A00(a6)
+; $0B35FE
+	bne.s	loc_0B3601
+; $0B3600
+	and.b	a5,d7
+; $0B3602
+	bne.s	loc_0B3605
+; $0B3604
+	add.b	d1,d1
+; $0B3606
+	scc	$FF8(a6)
+; $0B360A
+	bset	d1,$E10(a2)
+; $0B360E
+	move.w	(a2),-(a1)
+; $0B3610
+	move.b	-(a2),d0
+; $0B3612
+	move.b	(a0),d3
+; $0B3614
+	movea.b	-(a6),a2
+; $0B3616
+	btst	d0,a6
+; $0B3618
+	move.b	a5,?ea(7,6)
+; $0B361A
+	move.l	(a0),d7
+; $0B361C
+	rol.b	d7,d2
+; $0B361E
+	movea.b	-(a2),a0
+; $0B3620
+	bset	d0,(a2)
+; $0B3622
+	bclr	d2,d0
+; $0B3624
+	move.w	(a1)+,d7
+; $0B3626
+	move.l	(a7)+,d7
+; $0B3628
+	negx.b	(a7)+
+; $0B362A
+	addq.b	#1,(a7)+
+; $0B362C
+	bcc.s	loc_0B3646
+; $0B362E
+	add.b	d0,d3
+; $0B3630
+	and.l	(a5),d7
+; $0B3632
+	ori.l	#$CFCE941F,d3
+; $0B3638
+	sub.b	(a1),d5
+; $0B363A
+	add.b	d1,d3
+; $0B363C
+	addq.b	#7,(a5)+
+; $0B363E
+	addq.b	#7,(a1)+
+; $0B3640
+	ror.w	?ea(7,7)
+; $0B3642
+	ror.w	(a6)+
+; $0B3644
+	adda.w	?ea(7,7),a6
+
+loc_0B3646:				; $0B3646
+	dc.w	$FEDD
+; $0B3648
+	roxr.w	?ea(7,7)
+
+loc_0B364A:				; $0B364A
+	bls.s	loc_0B364A
+; $0B364C
+	adda.w	(a5),a6
+; $0B364E
+	move.b	(a3)+,?ea(7,7)
+; $0B3650
+	move.b	$12DC(a2),d0
+; $0B3654
+	roxl.w	(-$1,a1,d1.w)
+; $0B3658
+	adda.w	a4,a6
+; $0B365A
+	mulu.w	(a4)+,d7
+; $0B365C
+	mulu.w	a4,d6
+; $0B365E
+	mulu.w	-$43D(a4),d7
+; $0B3662
+	move.w	(a2),$2CC(a1)
+; $0B3666
+	mulu.w	d3,d6
+; $0B3668
+	mulu.w	-$C34(a4),d7
+; $0B366C
+	muls.w	$5EA(a2),d1
+; $0B3670
+	bchg	d2,d3
+; $0B3672
+	move.w	d3,($33309E01).l
+; $0B3678
+	move.b	-(a0),-(a7)
+; $0B367A
+	move.l	-(a2),-(a3)
+; $0B367C
+	lsr.b	#5,d2
+; $0B367E
+	adda.w	a5,a7
+; $0B3680
+	dc.w	$A100
+; $0B3682
+	move.w	-(a0),d2
+; $0B3684
+	sgt	($10C333CE).l
+; $0B368A
+	dc.w	$FCA0
+; $0B368C
+	ori.?	#?,a4
+; $0B368E
+	move.l	-(a1),d6
+; $0B3690
+	move.w	($20,a3,d0.l),-(a6)
+; $0B3694
+	move.l	-(a2),d6
+; $0B3696
+	move.l	-(a2),d6
+; $0B3698
+	bgt.s	loc_0B36AB
+; $0B369A
+	bmi.w	loc_0ABBD8
+; $0B369E
+	dc.w	$4F20
+; $0B36A0
+	movea.l	$116A(a6),a6
+; $0B36A4
+	bclr	d0,a6
+; $0B36A6
+	move.l	d6,(-$14,a2,d0.w)
+; $0B36AA
+	roxr.l	#2,d6
+; $0B36AC
+	ori.w	#$6E24,$21DC(a5)
+; $0B36B2
+	dc.w	$7126
+; $0B36B4
+	adda.w	-$3371(a6),a7
+; $0B36B8
+	roxr.w	-$2312(a6)
+; $0B36BC
+	dc.w	$A102
+; $0B36BE
+	dc.w	$AA01
+; $0B36C0
+	or.b	-(a1),d7
+; $0B36C2
+	ror.b	d7,d7
+; $0B36C4
+	roxr.w	-$13B2(a6)
+; $0B36C8
+	bset	d0,(a2)+
+; $0B36CA
+	move.l	-$3500(a6),loc_0AFCD3(pc)
+; $0B36D0
+	move.l	$21EE(a6),(a3)
+; $0B36D4
+	roxr.w	d4
+; $0B36D6
+	bset	d1,loc_0B5AC6(pc)
+; $0B36DA
+	abcd	d0,d2
+; $0B36DC
+	add.b	d7,d6
+; $0B36DE
+	ori.?	#?,$5D2(a2)
+; $0B36E2
+	move.l	$11EE(a6),$2F00(a6)
+; $0B36E8
+	move.w	a6,-(a3)
+; $0B36EA
+	move.b	$512(a2),loc_0B6FF6(pc)
+; $0B36F0
+	addq.b	#7,(a1)+
+; $0B36F2
+	moveq	#17,d1
+; $0B36F4
+	add.b	d1,d3
+; $0B36F6
+	add.w	d2,d7
+; $0B36F8
+	movea.w	-(a2),a0
+; $0B36FA
+	bclr	d0,$112E(a6)
+; $0B36FE
+	move.w	-(a0),?ea(7,7)
+; $0B3700
+	negx.b	?ea(7,7)
+; $0B3702
+	addq.b	#1,?ea(7,7)
+; $0B3704
+	bcc.s	loc_0B373D
+; $0B3706
+	sub.b	(a7)+,d5
+; $0B3708
+	sub.b	(-$2,a5,a7.l),d2
+; $0B370C
+	exg	d7,a1
+; $0B370E
+	and.l	($5E,a0,d1.l),d7
+; $0B3712
+	move.b	(a2),(-$52,a2,d0.w)
+; $0B3716
+	move.b	(a3)+,(a1)+
+
+loc_0B3718:				; $0B3718
+	move.b	(a1),?ea(7,7)
+; $0B371A
+	move.w	?ea(7,6),(a1)+
+; $0B371C
+	dc.w	$FED3
+; $0B371E
+	move.w	-$1224(a6),(a0)+
+; $0B3722
+	roxr.w	a6
+; $0B3724
+	roxr.b	d6,d3
+; $0B3726
+	sle	d2
+; $0B3728
+	muls.w	#$CCDC,d7
+; $0B372C
+	dc.w	$F230
+; $0B372E
+	move.w	($79,a6,d3.w),($C3191105).l
+; $0B3736
+	move.l	-(a2),d3
+; $0B3738
+	and.b	-(a2),d1
+; $0B373A
+	and.l	(a6)+,d1
+; $0B373C
+	bchg	d0,$2724(a2)
+; $0B3740
+	move.w	a7,-(a1)
+; $0B3742
+	negx.b	-(a2)
+; $0B3744
+	move.l	$22C2(a1),d1
+; $0B3748
+	mulu.w	a3,d7
+; $0B374A
+	roxr.w	(a4)+
+; $0B374C
+	dc.w	$F530
+; $0B374E
+	muls.w	?ea(7,5),d1
+; $0B3750
+	move.w	($30C22281).l,($FFFFCF41).w
+; $0B3758
+	movea.l	(a6),a5
+; $0B375A
+	move.l	(a2)+,$272(a2)
+; $0B375E
+	bclr	d0,($79,a2,d0.w)
+; $0B3762
+	ori.?	#?,a7
+; $0B3764
+	move.w	a7,(a6)
+; $0B3766
+	move.b	-(a2),$1EF(a0)
+; $0B376A
+	dc.w	$FFCC
+; $0B376C
+	roxr.w	d6,d6
+; $0B376E
+	ori.w	#$CEFF,$40FB(a5)
+; $0B3774
+	moveq	#65,d3
+; $0B3776
+	adda.l	-$3001(a7),a7
+; $0B377A
+	adda.w	?ea(7,7),a7
+; $0B377C
+	dc.w	$FECE
+; $0B377E
+	ror.w	(a6)+
+; $0B3780
+	ror.w	a6
+; $0B3782
+	adda.w	a5,a7
+; $0B3784
+	bchg	d3,-$3223(a5)
+; $0B3788
+	sub.b	-(a1),d7
+; $0B378A
+	bhi.s	loc_0B378D
+; $0B378C
+	and.b	(a3)+,d1
+; $0B378E
+	bra.s	loc_0B37C7
+; $0B3790
+	cmp.b	-(a0),d7
+; $0B3792
+	adda.l	?ea(7,6),a5
+; $0B3794
+	adda.l	(a1),a6
+; $0B3796
+	move.b	?ea(7,7),(a0)+
+; $0B3798
+	dc.w	$FCB4
+; $0B379A
+	lea	?ea(7,6),a2
+; $0B379C
+	dc.w	$FDFF
+; $0B379E
+	ror.w	-$1013(a4)
+; $0B37A2
+	adda.w	(a4)+,a7
+; $0B37A4
+	ror.w	-$23(a5)
+; $0B37A8
+	adda.w	(a6)+,a6
+; $0B37AA
+	adda.w	a7,a6
+; $0B37AC
+	muls.w	-$126B(a5),d6
+; $0B37B0
+	muls.w	(-$31,pc,d1.w),d7
+; $0B37B4
+	sub.b	d0,d3
+; $0B37B6
+	and.l	(-$31,a7,d0.w),d7
+; $0B37BA
+	negx.?	-$33(a5)
+; $0B37BE
+	dc.w	$FDDD
+; $0B37C0
+	adda.w	a5,a7
+; $0B37C2
+	dc.w	$FDCD
+; $0B37C4
+	ror.l	#7,d1
+; $0B37C6
+	mulu.w	-(a7),d7
+; $0B37C8
+	negx.l	a6
+; $0B37CA
+	btst	d0,$35AE(a2)
+; $0B37CE
+	move.b	(a0)+,(-$14,a7,d0.w)
+; $0B37D2
+	move.b	-$156A(a4),(a1)+
+; $0B37D6
+	ori.?	#?,(a4)+
+; $0B37D8
+	add.b	d0,d3
+; $0B37DA
+	add.l	a5,d6
+; $0B37DC
+	ori.?	#?,(a4)+
+; $0B37DE
+	roxl.w	a5
+; $0B37E0
+	scs	(a6)+
+; $0B37E2
+	dc.w	$AB00
+; $0B37E4
+	add.l	$DE(a1),d7
+; $0B37E8
+	btst	d2,-(a1)
+; $0B37EA
+	mulu.w	(a6),d6
+; $0B37EC
+	bset	d0,d0
+; $0B37EE
+	moveq	#17,d1
+; $0B37F0
+	bpl.s	loc_0B3807
+; $0B37F2
+	add.b	d1,d3
+; $0B37F4
+	or.b	d1,d7
+; $0B37F6
+	bhi.s	loc_0B3829
+; $0B37F8
+	move.l	(a2),d5
+; $0B37FA
+	movea.w	d0,a0
+; $0B37FC
+	adda.w	?ea(7,7),a7
+; $0B37FE
+	adda.l	?ea(7,5),a7
+; $0B3800
+	roxl.w	a6
+; $0B3802
+	add.l	d7,(a5)+
+; $0B3804
+	roxr.w	a5
+; $0B3806
+	bchg	d7,-$6124(a1)
+; $0B380A
+	roxr.w	d6,d6
+; $0B380C
+	ori.?	#?,(a1)
+; $0B380E
+	negx.w	(a7)+
+; $0B3810
+	ori.b	#$40,-(a7)
+; $0B3814
+	move.l	(a4)+,-$61FF(a7)
+; $0B3818
+	clr.w	(a1)+
+; $0B381A
+	and.w	a7,d7
+; $0B381C
+	dc.w	$F040
+; $0B381E
+	bls.s	loc_0B3824
+; $0B3820
+	and.l	a6,d6
+; $0B3822
+	btst	d0,(a0)
+
+loc_0B3824:				; $0B3824
+	rol.w	#7,d4
+; $0B3826
+	or.b	d1,d7
+; $0B3828
+	bhi.s	loc_0B382F
+; $0B382A
+	roxr.w	#6,d0
+; $0B382C
+	roxr.b	#6,d6
+; $0B382E
+	subq.l	#6,(a3)+
+; $0B3830
+	bset	d0,-(a3)
+; $0B3832
+	subq.l	#2,loc_0AC784(pc)
+; $0B3836
+	and.b	(-$1,a4,d0.w),d6
+; $0B383A
+	dc.w	$FF55
+; $0B383C
+	addq.b	#5,a7
+; $0B383E
+	move.w	?ea(7,7),(a6)+
+; $0B3840
+	move.w	$6776(a0),$6868(a1)
+; $0B3846
+	dc.w	$7768
+; $0B3848
+	subq.w	#7,(-$1,a6,d7.w)
+; $0B384C
+	dc.w	$FF87
+; $0B384E
+	dc.w	$FA5F
+; $0B3850
+	move.w	(a1)+,d6
+; $0B3852
+	move.w	d1,(a1)+
+; $0B3854
+	lsl.b	d5,d2
+; $0B3856
+	bra.s	loc_0B3886
+; $0B3858
+	subq.l	#2,(a6)+
+; $0B385A
+	bset	d0,(a2)
+; $0B385C
+	bset	d0,(a2)
+
+loc_0B385E:				; $0B385E
+	lea	-$118B(a5),a2
+; $0B3862
+	roxl.w	(a1)+
+; $0B3864
+	andi.?	#?,(a6)+
+; $0B3866
+	move.l	(a4),-$2323(a5)
+; $0B386A
+	adda.w	d5,a6
+; $0B386C
+	subq.l	#1,#$FB24E653
+; $0B3872
+	adda.w	a5,a6
+; $0B3874
+	muls.w	(a5)+,d6
+; $0B3876
+	moveq	#96,d2
+; $0B3878
+	roxl.b	#6,d4
+; $0B387A
+	dc.w	$A100
+; $0B387C
+	dc.w	$7761
+; $0B387E
+	adda.l	($5F,pc,d1.w),a6
+; $0B3882
+	bcc.s	loc_0B385E
+; $0B3884
+	bclr	d2,-(a2)
+
+loc_0B3886:				; $0B3886
+	bset	d0,(a6)+
+; $0B3888
+	bchg	d0,($FFFFFA25).w
+; $0B388C
+	bhi.s	loc_0B3893
+; $0B388E
+	add.b	d2,d5
+; $0B3890
+	mulu.w	(a5)+,d7
+; $0B3892
+	mulu.w	(a5)+,d6
+; $0B3894
+	abcd	d7,d6
+; $0B3896
+	adda.l	a4,a6
+; $0B3898
+	add.l	($75,a3,d6.w),d6
+; $0B389C
+	bra.s	loc_0B38CA
+; $0B389E
+	move.b	($66,a4,d6.w),(a0)
+; $0B38A2
+	btst	d0,d0
+; $0B38A4
+	lsr.w	#5,d1
+; $0B38A6
+	and.w	-$2399(a7),d7
+; $0B38AA
+	cmp.b	?ea(7,7),d2
+; $0B38AC
+	ori.w	#$CB40,(a4)+
+; $0B38B0
+	dc.w	$0E7F
+; $0B38B2
+	movea.b	($66,a7,a7.w),a6
+; $0B38B6
+	move.w	(a6)+,(-$25,a2,d0.w)
+; $0B38BA
+	subi.w	#$69DD,-(a6)
+; $0B38BE
+	muls.w	(a4)+,d6
+; $0B38C0
+	add.w	d6,a7
+; $0B38C2
+	muls.w	a6,d6
+; $0B38C4
+	adda.w	a5,a6
+; $0B38C6
+	addq.w	#2,($0,a0,a2.w)
+
+loc_0B38CA:				; $0B38CA
+	add.l	(-$-80,a1,d6.w),d6
+; $0B38CE
+	addq.w	#8,($70,a0,d5.w)
+; $0B38D2
+	addq.w	#5,($79,a1,d3.l)
+; $0B38D6
+	movea.w	?ea(7,7),a3
+; $0B38D8
+	add.b	d5,-(a7)
+; $0B38DA
+	dc.w	$A252
+; $0B38DC
+	exg	d6,a0
+; $0B38DE
+	bcc.w	loc_0B3E01
+; $0B38E2
+	beq.s	loc_0B3915
+; $0B38E4
+	move.l	(a1),-(a5)
+; $0B38E6
+	ble.s	loc_0B395D
+; $0B38E8
+	add.l	d7,($0060DE).w
+; $0B38EC
+	ori.l	#$01B3757B,($006064).w
+; $0B38F4
+	moveq	#-113,d4
+; $0B38F6
+	dc.w	$7598
+; $0B38F8
+	bra.s	loc_0B3925
+; $0B38FA
+	move.b	-(a2),(-$4,a0,d5.w)
+; $0B38FE
+	asl.w	#8,d1
+; $0B3900
+	sub.w	d6,-(a1)
+; $0B3902
+	mulu.w	a5,d6
+; $0B3904
+	cmpa.l	a3,a6
+; $0B3906
+	cmpa.l	a3,a5
+; $0B3908
+	dc.w	$FDDB
+; $0B390A
+	dc.w	$F070
+; $0B390C
+	cmpa.l	a6,a5
+; $0B390E
+	cmpa.w	(a3)+,a7
+; $0B3910
+	cmpa.l	(a4)+,a5
+; $0B3912
+	dc.w	$F7DC
+; $0B3914
+	exg	d5,a3
+; $0B3916
+	ror.w	d7,d2
+; $0B3918
+	cmpa.l	a6,a5
+; $0B391A
+	ror.w	a6
+; $0B391C
+	ror.b	d7,d5
+; $0B391E
+	bhi.s	loc_0B38ED
+; $0B3920
+	eor.l	d6,?ea(7,5)
+; $0B3922
+	rol.w	d7,d0
+; $0B3924
+	adda.l	(a3)+,a5
+; $0B3926
+	mulu.w	#$3260,d7
+; $0B392A
+	sub.b	d1,d7
+; $0B392C
+	eor.l	d6,?ea(7,5)
+; $0B392E
+	exg	d6,a5
+; $0B3930
+	cmpa.l	(a3)+,a5
+; $0B3932
+	dc.w	$FFCB
+; $0B3934
+	add.l	d5,?ea(7,6)
+; $0B3936
+	cmpa.w	a3,a7
+; $0B3938
+	cmpa.l	(a4)+,a6
+; $0B393A
+	add.b	-$2401(a1),d6
+; $0B393E
+	dc.w	$73F3
+; $0B3940
+	moveq	#-51,d0
+; $0B3942
+	bset	d2,d0
+; $0B3944
+	add.b	d5,-$7F02(a1)
+; $0B3948
+	moveq	#31,d2
+; $0B394A
+	adda.l	a6,a5
+; $0B394C
+	cmpa.w	a6,a7
+; $0B394E
+	cmp.w	($4F,a6,d7.w),d7
+; $0B3952
+	dc.w	$717D
+
+loc_0B3954:				; $0B3954
+	bra.s	loc_0B394B
+; $0B3956
+	mulu.w	(a5)+,d7
+; $0B3958
+	ori.?	#?,a6
+; $0B395A
+	or.w	d7,(a0)
+; $0B395C
+	muls.w	a4,d6
+; $0B395E
+	mulu.w	(a6)+,d7
+; $0B3960
+	and.l	d6,d0
+; $0B3962
+	bra.s	loc_0B3941
+; $0B3964
+	bchg	d0,(-$6A,a3,d1.w)
+; $0B3968
+	dc.w	$71F2
+; $0B396A
+	movea.b	-(a0),a0
+; $0B396C
+	ori.?	#?,a6
+; $0B396E
+	roxl.b	#6,d1
+; $0B3970
+	mulu.w	a5,d7
+; $0B3972
+	move.l	(a5),-$7E4B(a0)
+; $0B3976
+	bsr.s	loc_0B3954
+; $0B3978
+	bra.w	loc_0BADFA
+; $0B397C
+	dc.w	$F112
+; $0B397E
+	bchg	d6,(a5)+
+; $0B3980
+	roxr.w	#2,d0
+; $0B3982
+	roxl.w	(a5)+
+; $0B3984
+	roxl.b	#6,d0
+; $0B3986
+	dc.w	$A150
+; $0B3988
+	addq.w	#2,($63,a0,a3.w)
+; $0B398C
+	dc.w	$FEAB
+; $0B398E
+	bchg	d0,(a4)+
+; $0B3990
+	mulu.w	d3,d6
+; $0B3992
+	exg	d1,d4
+; $0B3994
+	move.w	a4,(a6)+
+; $0B3996
+	dc.w	$A533
+; $0B3998
+	cmpi.b	#$B0,-(a0)
+; $0B399C
+	or.l	d0,($FFFF80C3).w
+; $0B39A0
+	ori.b	#$C1,-(a0)
+; $0B39A4
+	move.w	?ea(7,7),(a6)
+; $0B39A6
+	or.l	($2C,a6,a0.w),d0
+; $0B39AA
+	bra.s	loc_0B3973
+
+loc_0B39AC:				; $0B39AC
+	or.l	($3C,pc,a0.w),d0
+; $0B39B0
+	abcd	-(a0),-(a1)
+; $0B39B2
+	dc.w	$AE83
+; $0B39B4
+	cmp.l	d0,d4
+; $0B39B6
+	move.b	-(a0),-(a6)
+; $0B39B8
+	and.l	($D,pc,a0.w),d6
+; $0B39BC
+	move.l	d4,(a0)+
+; $0B39BE
+	or.l	-$7024(a6),d0
+; $0B39C2
+	and.l	a3,d0
+; $0B39C4
+	move.l	d3,-(a7)
+; $0B39C6
+	move.w	($16,a5,d5.w),-(a2)
+; $0B39CA
+	sub.w	(a5),d0
+; $0B39CC
+	move.l	?ea(7,5),($002364).w
+; $0B39D0
+	move.l	a4,(a0)+
+; $0B39D2
+	movea.l	(a1),a6
+; $0B39D4
+	move.l	#$CCFD11F1,d6
+; $0B39DA
+	or.b	-(a5),d0
+; $0B39DC
+	move.w	-(a3),d6
+; $0B39DE
+	and.b	(-$1,a3,d2.w),d6
+; $0B39E2
+	move.w	d3,($3232333C).l
+; $0B39E8
+	move.w	(a1),d1
+; $0B39EA
+	dc.w	$FF23
+; $0B39EC
+	move.w	($13,a2,d2.w),-(a1)
+; $0B39F0
+	move.w	-(a2),-(a1)
+; $0B39F2
+	move.b	?ea(7,7),(a1)+
+; $0B39F4
+	move.b	-(a3),-(a0)
+; $0B39F6
+	move.l	(a2),-(a0)
+; $0B39F8
+	move.w	($23,a2,d2.l),d1
+; $0B39FC
+	dc.w	$7F12
+; $0B39FE
+	move.l	($12,a2,d2.w),(a1)+
+; $0B3A02
+	move.b	(-$-80,a3,a4.w),d1
+; $0B3A06
+	dc.w	$FC2B
+; $0B3A08
+	bhi.s	loc_0B3A6D
+; $0B3A0A
+	move.l	(-$12,a2,d3.w),-(a0)
+; $0B3A0E
+	move.w	($3F,a3,d3.l),-(a1)
+; $0B3A12
+	ror.b	d7,d2
+; $0B3A14
+	move.w	-$DE(a6),(a7)+
+; $0B3A18
+	movea.w	(a0),a2
+; $0B3A1A
+	bvc.s	loc_0B39AC
+; $0B3A1C
+	dc.w	$FFFE
+; $0B3A1E
+	move.w	d3,(a6)+
+; $0B3A20
+	move.w	$333E(a6),(a7)+
+; $0B3A24
+	rol.b	#7,d3
+; $0B3A26
+	dc.w	$FE3F
+; $0B3A28
+	exg	d6,d0
+; $0B3A2A
+	roxl.w	d6,d0
+; $0B3A2C
+	dc.w	$FE39
+; $0B3A2E
+	dbhi	d3,loc_0B4BF0
+; $0B3A32
+	move.w	?ea(7,7),(a2)+
+; $0B3A34
+	roxl.w	(a3)
+; $0B3A36
+	move.l	(a1),-(a0)
+; $0B3A38
+	ror.w	(a5)+
+; $0B3A3A
+	move.w	(a1),d1
+; $0B3A3C
+	dc.w	$FDEE
+; $0B3A3E
+	or.l	(a0),d7
+; $0B3A40
+	rol.w	?ea(7,5)
+; $0B3A42
+	add.b	d6,(-$11,a3,a6.l)
+; $0B3A46
+	dc.w	$7BED
+; $0B3A48
+	add.l	d6,(a1)
+; $0B3A4A
+	ori.?	#?,(a6)+
+; $0B3A4C
+	roxl.w	(a6)+
+; $0B3A4E
+	rol.w	d0
+; $0B3A50
+	addq.w	#8,?ea(7,7)
+; $0B3A52
+	dc.w	$FEED
+; $0B3A54
+	dc.w	$FF12
+; $0B3A56
+	move.l	-(a2),d1
+; $0B3A58
+	move.b	($7B,a7,a1.w),-(a0)
+; $0B3A5C
+	move.l	-(a2),-(a0)
+; $0B3A5E
+	move.w	(a0),(a4)
+; $0B3A60
+	move.w	(-$3D,a3,d2.w),-(a1)
+; $0B3A64
+	move.l	(a0),(a7)
+; $0B3A66
+	dc.w	$FFDC
+; $0B3A68
+	move.w	(-$12,a2,d1.w),-(a1)
+; $0B3A6C
+	and.b	(-$7D,a1,d3.w),d6
+; $0B3A70
+	adda.w	(a4)+,a7
+; $0B3A72
+	eor.l	d6,(a0)
+; $0B3A74
+	move.b	(a0),d1
+; $0B3A76
+	cmp.l	(a1),d4
+
+loc_0B3A78:				; $0B3A78
+	add.l	(a1),d2
+; $0B3A7A
+	move.w	(a0),(a2)
+; $0B3A7C
+	move.l	a3,($332CBC91).l
+
+loc_0B3A82:				; $0B3A82
+	move.w	(a4)+,-(a1)
+; $0B3A84
+	suba.w	(a1)+,a0
+; $0B3A86
+	sub.b	d0,(-$6,a3,d3.w)
+; $0B3A8A
+	dc.w	$0E83
+; $0B3A8C
+	eor.b	d5,(a5)
+; $0B3A8E
+	or.l	d5,?ea(7,5)
+; $0B3A90
+	muls.w	(a3)+,d5
+; $0B3A92
+	lsl.w	-$3A33(a5)
+; $0B3A96
+	move.l	d1,(-$12,a4,a5.l)
+; $0B3A9A
+	moveq	#3,d0
+; $0B3A9C
+	dc.w	$A0F0
+; $0B3A9E
+	moveq	#-67,d0
+; $0B3AA0
+	mulu.w	a5,d7
+; $0B3AA2
+	lsl.w	loc_0BB562(pc)
+; $0B3AA6
+	and.b	(a1)+,d7
+; $0B3AA8
+	or.b	a6,d1
+; $0B3AAA
+	divu.w	-$414C(a6),d3
+; $0B3AAE
+	chk.w	d2,d4
+; $0B3AB0
+	move.b	d1,(a7)
+; $0B3AB2
+	add.b	d5,-(a3)
+; $0B3AB4
+	divu.w	-$14D8(a6),d0
+; $0B3AB8
+	divu.w	(a3)+,d1
+; $0B3ABA
+	move.b	(a6),(a7)+
+; $0B3ABC
+	dc.w	$71ED
+; $0B3ABE
+	roxl.w	-$329D(a4)
+; $0B3AC2
+	or.l	d4,d0
+; $0B3AC4
+	bsr.s	loc_0B3B2A
+; $0B3AC6
+	ori.w	#$B270,($FFFFCD00).w
+; $0B3ACC
+	movea.l	(a0),a2
+; $0B3ACE
+	adda.w	a6,a7
+; $0B3AD0
+	roxr.w	a6
+; $0B3AD2
+	dc.w	$A090
+; $0B3AD4
+	muls.w	(a4)+,d2
+; $0B3AD6
+	bge.s	loc_0B3A78
+; $0B3AD8
+	add.w	($53,a0,a0.w),d6
+; $0B3ADC
+	moveq	#123,d0
+; $0B3ADE
+	bra.s	loc_0B3AAC
+; $0B3AE0
+	roxl.w	d6
+; $0B3AE2
+	sub.l	d3,d0
+; $0B3AE4
+	mulu.w	a5,d7
+; $0B3AE6
+	eor.w	d1,($0,a0,d6.w)
+; $0B3AEA
+	addq.w	#7,-(a0)
+; $0B3AEC
+	roxl.w	-$2FAA(a4)
+; $0B3AF0
+	bhi.s	loc_0B3B47
+; $0B3AF2
+	or.w	d0,-(a0)
+; $0B3AF4
+	bra.s	loc_0B3A82
+; $0B3AF6
+	dc.w	$A1DD
+; $0B3AF8
+	sub.b	d2,-(a0)
+; $0B3AFA
+	adda.l	a6,a6
+; $0B3AFC
+	ori.b	#$90,-(a4)
+; $0B3B00
+	move.l	-$703F(a7),(a0)+
+; $0B3B04
+	divs.w	(a3),d7
+; $0B3B06
+	divs.w	-(a5),d7
+; $0B3B08
+	or.l	d7,(-$37,a7,a2.l)
+; $0B3B0C
+	dc.w	$A2F5
+; $0B3B0E
+	sge	-(a3)
+; $0B3B10
+	dc.w	$A043
+; $0B3B12
+	dc.w	$F3A0
+; $0B3B14
+	move.w	(a4)+,-(a1)
+; $0B3B16
+	exg	d1,d4
+; $0B3B18
+	cmpa.l	d2,a1
+; $0B3B1A
+	move.l	a5,d6
+; $0B3B1C
+	move.l	d5,(a1)+
+; $0B3B1E
+	dc.w	$A13C
+; $0B3B20
+	move.w	(a4)+,-(a0)
+; $0B3B22
+	sub.w	(a3),d0
+; $0B3B24
+	dc.w	$FF33
+; $0B3B26
+	move.w	a4,(a6)+
+; $0B3B28
+	move.b	-(a1),-(a1)
+
+loc_0B3B2A:				; $0B3B2A
+	move.l	$22FF(a6),-(a1)
+; $0B3B2E
+	move.l	($21,a2,d1.l),-(a0)
+; $0B3B32
+	move.b	-(a1),d1
+; $0B3B34
+	move.b	-(a1),d7
+; $0B3B36
+	rol.b	#7,d2
+; $0B3B38
+	move.b	$3190(a6),($FFFF9032).w
+; $0B3B3E
+	move.l	-$12(a6),-(a0)
+; $0B3B42
+	move.l	(a2),d1
+; $0B3B44
+	ror.w	$111E(a6)
+; $0B3B48
+	rol.w	#7,d3
+; $0B3B4A
+	dc.w	$FFEE
+; $0B3B4C
+	moveq	#-108,d7
+; $0B3B4E
+	jsr	(-$6B,a5,d7.l)
+; $0B3B52
+	dc.w	$7940
+; $0B3B54
+	rol.l	d7,d3
+; $0B3B56
+	ori.?	#?,(a2)+
+; $0B3B58
+	move.w	(a1),-$124C(a4)
+; $0B3B5C
+	ori.?	#?,(a6)+
+; $0B3B5E
+	dc.w	$FE9F
+; $0B3B60
+	suba.w	?ea(7,6),a0
+; $0B3B62
+	dc.w	$FDB3
+; $0B3B64
+	adda.l	(a5)+,a6
+; $0B3B66
+	dc.w	$7BB0
+; $0B3B68
+	sub.w	-(a2),d3
+; $0B3B6A
+	adda.l	(a7)+,a6
+; $0B3B6C
+	bhi.w	loc_0B287B
+; $0B3B70
+	add.l	a5,d7
+; $0B3B72
+	negx.?	(a4)+
+; $0B3B74
+	add.w	(-$2A,a3,d6.w),d7
+
+loc_0B3B78:				; $0B3B78
+	dc.w	$7165
+; $0B3B7A
+	bchg	d0,(a4)+
+; $0B3B7C
+	moveq	#108,d0
+; $0B3B7E
+	sub.w	($70,a2,a1.w),d3
+; $0B3B82
+	roxr.w	a4
+; $0B3B84
+	eor.b	d6,-(a0)
+; $0B3B86
+	mulu.w	(a5)+,d6
+; $0B3B88
+	dc.w	$4D40
+; $0B3B8A
+	dc.w	$AA60
+; $0B3B8C
+	bra.s	loc_0B3BCA
+; $0B3B8E
+	dc.w	$A170
+; $0B3B90
+	move.w	a6,$70C3(a1)
+; $0B3B94
+	sub.w	d5,(-$A,a2,a6.l)
+; $0B3B98
+	dc.w	$A100
+; $0B3B9A
+	adda.w	-$2400(a7),a7
+; $0B3B9E
+	adda.w	(a4)+,a7
+; $0B3BA0
+	move.w	($23,a3,d4.w),d6
+; $0B3BA4
+	move.b	(a0),(a6)
+; $0B3BA6
+	move.l	(a0),(-$70,a7,d2.l)
+; $0B3BAA
+	move.b	($61,a1,d2.l),-(a3)
+; $0B3BAE
+	mulu.w	-(a6),d1
+; $0B3BB0
+	sub.l	d4,d0
+; $0B3BB2
+	dc.w	$4520
+
+loc_0B3BB4:				; $0B3BB4
+	btst	d0,-(a0)
+; $0B3BB6
+	muls.w	-$6F10(a5),d1
+; $0B3BBA
+	moveq	#23,d2
+; $0B3BBC
+	dc.w	$A610
+; $0B3BBE
+	dc.w	$A0BB
+; $0B3BC0
+	dc.w	$71CE
+; $0B3BC2
+	move.w	-(a0),(-$51,a2,d2.l)
+; $0B3BC6
+	move.b	a1,(a5)
+; $0B3BC8
+	lsl.w	-$3405(a3)
+; $0B3BCC
+	moveq	#4,d0
+; $0B3BCE
+	move.l	d7,(a6)
+; $0B3BD0
+	move.b	-$11B8(a6),(a3)
+; $0B3BD4
+	or.w	a4,d2
+; $0B3BD6
+	exg	a0,a7
+; $0B3BD8
+	dc.w	$A373
+; $0B3BDA
+	bra.s	loc_0B3BB4
+; $0B3BDC
+	moveq	#-4,d1
+; $0B3BDE
+	reset
+; $0B3BE0
+	or.w	d7,(a0)
+; $0B3BE2
+	adda.l	a4,a6
+; $0B3BE4
+	adda.w	(a6)+,a7
+; $0B3BE6
+	adda.w	(a4)+,a6
+; $0B3BE8
+	muls.w	a6,d1
+; $0B3BEA
+	and.w	(-$40,pc,a0.w),d6
+; $0B3BEE
+	bsr.s	loc_0B3B7B
+; $0B3BF0
+	negx.w	(a1)
+; $0B3BF2
+	moveq	#-35,d0
+; $0B3BF4
+	roxl.b	#6,d0
+; $0B3BF6
+	bhi.s	loc_0B3B78
+; $0B3BF8
+	eor.w	d1,($51,a0,a2.w)
+; $0B3BFC
+	subq.b	#4,d0
+; $0B3BFE
+	dc.w	$A2A0
+; $0B3C00
+	dc.w	$FA11
+; $0B3C02
+	dc.w	$F110
+; $0B3C04
+	dc.w	$7381
+; $0B3C06
+	ori.w	#$609D,(a5)+
+; $0B3C0A
+	ori.?	#?,a1
+; $0B3C0C
+	negx.w	-$3C54(a0)
+; $0B3C10
+	cmpa.w	(a4)+,a0
+; $0B3C12
+	ori.?	#?,-$5040(a6)
+; $0B3C16
+	dc.w	$AFF0
+; $0B3C18
+	add.l	-$1B51(a7),d1
+; $0B3C1C
+	cmpa.w	a7,a3
+; $0B3C1E
+	mulu.w	d3,d4
+; $0B3C20
+	move.w	(a2),$3CCC(a1)
+; $0B3C24
+	dc.w	$FF55
+; $0B3C26
+	move.b	#$55,d1
+; $0B3C2A
+	move.l	a4,($21FF5535).l
+; $0B3C30
+	exg	d1,d7
+; $0B3C32
+	subq.w	#2,(a5)
+; $0B3C34
+	move.l	-(a3),-(a2)
+; $0B3C36
+	sub.w	d3,(a5)
+; $0B3C38
+	subq.b	#2,-(a3)
+; $0B3C3A
+	bset	d6,(a1)
+; $0B3C3C
+	subq.b	#1,$166(a7)
+; $0B3C40
+	suba.w	?ea(7,7),a0
+; $0B3C42
+	dc.w	$F523
+; $0B3C44
+	dc.w	$7D90
+; $0B3C46
+	move.w	(a6),($22,a0,d0.w)
+; $0B3C4A
+	rol.w	?ea(7,6)
+; $0B3C4C
+	ror.l	#7,d5
+; $0B3C4E
+	movea.w	($2E,a2,d1.w),a1
+; $0B3C52
+	cmp.b	d0,d2
+; $0B3C54
+	move.w	(a0),?ea(7,5)
+; $0B3C56
+	exg	d2,d0
+; $0B3C58
+	or.l	(a1),d2
+; $0B3C5A
+	ror.w	#7,d5
+; $0B3C5C
+	dc.w	$FD7C
+; $0B3C5E
+	suba.w	$6B90(a5),a0
+; $0B3C62
+	adda.l	d5,a6
+; $0B3C64
+	move.w	(a6)+,(a0)+
+; $0B3C66
+	dc.w	$F840
+; $0B3C68
+	sub.l	(a1),d7
+; $0B3C6A
+	ori.?	#?,-$1201(a7)
+; $0B3C6E
+	ror.l	d7,d4
+; $0B3C70
+	sub.b	(-$21,pc,a5.w),d0
+; $0B3C74
+	dc.w	$F7FF
+; $0B3C76
+	ror.w	(a5)+
+; $0B3C78
+	cmp.b	-(a0),d4
+; $0B3C7A
+	adda.w	?ea(7,7),a7
+; $0B3C7C
+	adda.l	-$4021(a6),a6
+; $0B3C80
+	adda.w	-$1221(a6),a7
+; $0B3C84
+	ror.w	#7,d4
+; $0B3C86
+	adda.l	(a7)+,a0
+; $0B3C88
+	dc.w	$FFDD
+; $0B3C8A
+	dc.w	$FEEF
+; $0B3C8C
+	adda.l	-$1123(a5),a6
+; $0B3C90
+	dc.w	$FD6E
+; $0B3C92
+	sbcd	d1,d7
+; $0B3C94
+	adda.l	a4,a6
+; $0B3C96
+	rol.w	a4
+; $0B3C98
+	move.l	-$216C(a5),(a0)+
+; $0B3C9C
+	add.b	d0,(a0)
+; $0B3C9E
+	or.w	(a0),d0
+; $0B3CA0
+	divs.w	d1,d0
+; $0B3CA2
+	eor.w	d1,(-$5F,a0,a0.l)
+; $0B3CA6
+	add.w	a6,d7
+; $0B3CA8
+	moveq	#-36,d0
+; $0B3CAA
+	ori.w	#$0080,?ea(7,7)
+; $0B3CAE
+	bcs.s	loc_0B3C50
+; $0B3CB0
+	dc.w	$7371
+; $0B3CB2
+	subq.b	#1,d0
+; $0B3CB4
+	move.w	-(a5),d2
+; $0B3CB6
+	exg	a3,a2
+; $0B3CB8
+	or.w	d1,-(a0)
+; $0B3CBA
+	dc.w	$4321
+; $0B3CBC
+	roxl.w	(a2)+
+; $0B3CBE
+	bvs.w	loc_0B2B8D
+; $0B3CC2
+	cmpa.w	(a6)+,a0
+; $0B3CC4
+	roxr.w	(-$33,a3,a4.w)
+; $0B3CC8
+	and.l	(-$4,a1,a4.w),d6
+; $0B3CCC
+	move.l	a5,d0
+; $0B3CCE
+	move.l	d1,-(a0)
+; $0B3CD0
+	move.l	d3,($FFFFC5EE).w
+; $0B3CD4
+	add.w	(a4)+,d0
+; $0B3CD6
+	mulu.w	(-$12,a2,a5.w),d0
+; $0B3CDA
+	adda.l	($FFFFD312).w,a7
+; $0B3CDE
+	move.b	(a1),-(a0)
+; $0B3CE0
+	rol.b	#7,d4
+; $0B3CE2
+	rol.l	#3,d1
+; $0B3CE4
+	sub.w	d4,(a7)+
+; $0B3CE6
+	sub.l	(a1)+,d3
+; $0B3CE8
+	sub.l	d4,a1
+; $0B3CEA
+	sub.b	d4,($79,a4,a6.w)
+; $0B3CEE
+	move.w	-(a2),(a2)+
+; $0B3CF0
+	move.l	$34E1(a1),-$76C4(a2)
+; $0B3CF6
+	lsr.w	$3CB(a2)
+; $0B3CFA
+	sls	-(a2)
+; $0B3CFC
+	addq.b	#1,d0
+; $0B3CFE
+	bset	d0,#$E1
+; $0B3D02
+	sgt	-(a2)
+; $0B3D04
+	slt	-(a2)
+; $0B3D06
+	lsr.b	#5,d5
+; $0B3D08
+	cmpa.w	(a1),a5
+; $0B3D0A
+	lsr.b	d5,d6
+; $0B3D0C
+	moveq	#-22,d5
+; $0B3D0E
+	and.b	d6,d1
+; $0B3D10
+	move.l	#$06216701,-(a0)
+; $0B3D16
+	dc.w	$0E26
+; $0B3D18
+	suba.w	-(a5),a1
+; $0B3D1A
+	and.b	#$2E,d6
+; $0B3D1E
+	btst	d0,-(a5)
+; $0B3D20
+	move.l	(a1),?ea(7,5)
+; $0B3D22
+	move.w	d0,-(a2)
+; $0B3D24
+	move.b	(a2),d1
+; $0B3D26
+	move.l	(a5),-$40DF(a2)
+; $0B3D2A
+	move.b	-(a1),-(a0)
+; $0B3D2C
+	move.l	-(a1),d1
+; $0B3D2E
+	move.b	d3,-$6F0E(a0)
+; $0B3D32
+	eor.b	d7,(a2)
+; $0B3D34
+	move.w	-(a1),d1
+; $0B3D36
+	dc.w	$F123
+; $0B3D38
+	move.l	$552(a6),-(a1)
+; $0B3D3C
+	dc.w	$FE37
+; $0B3D3E
+	andi.b	#$22,-(a5)
+; $0B3D42
+	movea.w	(a1),a2
+; $0B3D44
+	subq.b	#2,-(a3)
+; $0B3D46
+	dc.w	$7F31
+; $0B3D48
+	move.l	(a5),-(a2)
+; $0B3D4A
+	move.w	-(a1),d1
+; $0B3D4C
+	movea.b	(a5),a1
+; $0B3D4E
+	eor.l	d0,(a0)
+; $0B3D50
+	dc.w	$F955
+; $0B3D52
+	dc.w	$FDFF
+; $0B3D54
+	dc.w	$FCEB
+; $0B3D56
+	subq.w	#1,(a3)
+; $0B3D58
+	move.w	(a5),$3CFF(a1)
+; $0B3D5C
+	exg	d1,d5
+; $0B3D5E
+	move.w	($12,a2,d2.l),-(a2)
+; $0B3D62
+	move.w	a4,($97C13353).l
+; $0B3D68
+	ror.w	d0
+
+loc_0B3D6A:				; $0B3D6A
+	move.w	(a5),(a1)+
+; $0B3D6C
+	exg	d0,a6
+; $0B3D6E
+	roxr.w	d3
+; $0B3D70
+	dc.w	$A922
+; $0B3D72
+	move.w	(a1),($0,pc,a1.w)
+; $0B3D76
+	move.l	($00301F).w,-$7C0(a7)
+; $0B3D7C
+	move.b	$1FFF(a7),?ea(7,7)
+; $0B3D80
+	move.l	(a1),d1
+; $0B3D82
+	move.w	(-$1,a1,d1.w),loc_0B2F85(pc)
+; $0B3D88
+	dc.w	$F111
+; $0B3D8A
+	dc.w	$F223
+; $0B3D8C
+	dc.w	$FEFF
+; $0B3D8E
+	ror.w	(a6)+
+; $0B3D90
+	and.b	($65,pc,a5.w),d2
+; $0B3D94
+	adda.w	$4EF0(a6),a0
+; $0B3D98
+	bne.s	loc_0B3D6A
+; $0B3D9A
+	cmp.b	d0,d3
+; $0B3D9C
+	move.l	(a6)+,(a7)+
+; $0B3D9E
+	dc.w	$FFEE
+; $0B3DA0
+	ror.w	(a2)
+; $0B3DA2
+	add.b	d6,-$11CE(a6)
+; $0B3DA6
+	move.l	loc_0AFDF8(pc),(a7)+
+; $0B3DAA
+	adda.w	a5,a7
+; $0B3DAC
+	ori.?	#?,-$2222(a6)
+; $0B3DB0
+	adda.w	-$5C23(a6),a7
+; $0B3DB4
+	ror.l	d7,d5
+; $0B3DB6
+	sub.w	d5,d0
+; $0B3DB8
+	bra.s	loc_0B3E21
+; $0B3DBA
+	adda.w	(a6)+,a0
+; $0B3DBC
+	sle	(a0)
+; $0B3DBE
+	add.b	d6,(a1)+
+; $0B3DC0
+	dc.w	$FE50
+; $0B3DC2
+	dc.w	$F0ED
+; $0B3DC4
+	lea	a5,a0
+; $0B3DC6
+	adda.l	(a7)+,a6
+; $0B3DC8
+	subq.w	#8,(a3)
+; $0B3DCA
+	dc.w	$A091
+; $0B3DCC
+	dc.w	$F000
+; $0B3DCE
+	suba.w	($73,a1,a1.l),a0
+; $0B3DD2
+	sub.w	(-$30,a1,a2.l),d0
+; $0B3DD6
+	subq.w	#7,-(a0)
+; $0B3DD8
+	cmp.w	-(a0),d4
+; $0B3DDA
+	moveq	#-29,d2
+; $0B3DDC
+	moveq	#115,d4
+; $0B3DDE
+	divu.w	$22C(a2),d0
+; $0B3DE2
+	move.l	(-$40,a6,a4.w),(a0)+
+; $0B3DE6
+	abcd	d7,d0
+; $0B3DE8
+	move.l	-$5F17(a5),(a0)
+; $0B3DEC
+	eor.b	d0,($1D,a2,a7.l)
+; $0B3DF0
+	move.l	-(a2),d0
+; $0B3DF2
+	and.b	($21,a3,d2.w),d6
+; $0B3DF6
+	and.b	($11,a2,a7.l),d6
+; $0B3DFA
+	move.b	($1F,a3,d3.w),-(a7)
+; $0B3DFE
+	dc.w	$FF32
+; $0B3E00
+	move.l	?ea(7,7),?ea(7,7)
+; $0B3E02
+	move.b	?ea(7,7),($002221).w
+; $0B3E06
+	move.l	-(a2),d1
+; $0B3E08
+	subq.b	#1,(a3)
+; $0B3E0A
+	dc.w	$FF32
+; $0B3E0C
+	move.l	(a5),$3321(a0)
+; $0B3E10
+	move.b	(a3),$32FF(a0)
+; $0B3E14
+	move.b	-(a2),d1
+; $0B3E16
+	addq.b	#2,($22,a2,d2.w)
+; $0B3E1A
+	subq.w	#2,(a3)
+; $0B3E1C
+	dc.w	$FB33
+; $0B3E1E
+	move.w	-(a7),d1
+; $0B3E20
+	add.b	($23,a3,d5.w),d0
+; $0B3E24
+	subq.b	#2,-(a2)
+; $0B3E26
+	subq.b	#6,-(a1)
+; $0B3E28
+	dc.w	$AE90
+; $0B3E2A
+	dc.w	$FFF2
+; $0B3E2C
+	movea.l	d7,a1
+; $0B3E2E
+	sub.b	-(a2),d0
+; $0B3E30
+	move.w	(a1),(a5)
+; $0B3E32
+	move.w	-(a1),-(a7)
+; $0B3E34
+	move.b	-(a2),d1
+; $0B3E36
+	move.l	-(a1),-(a7)
+; $0B3E38
+	move.w	d2,(a1)+
+; $0B3E3A
+	asr.b	d0,d6
+; $0B3E3C
+	suba.w	?ea(7,7),a0
+; $0B3E3E
+	move.l	(a1),d1
+; $0B3E40
+	move.l	(a2),d1
+; $0B3E42
+	move.l	($21,a2,d2.w),-(a1)
+; $0B3E46
+	dc.w	$FF25
+; $0B3E48
+	move.l	($55,a1,d1.w),?ea(7,7)
+; $0B3E4C
+	dc.w	$F112
+; $0B3E4E
+	move.l	(a7)+,(a1)+
+; $0B3E50
+	subq.b	#2,(a2)
+; $0B3E52
+	move.l	($2F,a5,d4.w),d1
+; $0B3E56
+	ori.w	#$22FF,(a5)
+; $0B3E5A
+	movea.b	(a2),a1
+; $0B3E5C
+	move.l	($52,a3,d1.w),-(a2)
+; $0B3E60
+	move.w	?ea(7,7),loc_0AED74(pc)
+; $0B3E64
+	dc.w	$4355
+; $0B3E66
+	addq.b	#1,(a5)+
+; $0B3E68
+	move.l	-(a5),d0
+; $0B3E6A
+	suba.w	-(a0),a1
+; $0B3E6C
+	addq.l	#1,($20,a2,d0.w)
+; $0B3E70
+	subq.w	#2,(a1)
+; $0B3E72
+	sub.b	-(a3),d0
+; $0B3E74
+	add.b	#$B7,d0
+; $0B3E78
+	sub.w	(a5),d0
+; $0B3E7A
+	sub.w	d7,(a3)
+; $0B3E7C
+	move.l	d3,($5553BA91).l
+; $0B3E82
+	move.b	(-$7D,a0,d3.w),(a2)
+; $0B3E86
+	move.l	#$CD921E20,-(a1)
+; $0B3E8C
+	dc.w	$F6C0
+; $0B3E8E
+	dc.w	$F4C2
+; $0B3E90
+	mulu.w	d0,d1
+; $0B3E92
+	exg	a1,a0
+; $0B3E94
+	addq.b	#3,-(a1)
+; $0B3E96
+	eor.l	d4,(a1)
+; $0B3E98
+	addq.l	#8,(a1)
+; $0B3E9A
+	ror.l	#3,d0
+; $0B3E9C
+	exg	d2,d3
+; $0B3E9E
+	move.w	a4,-(a1)
+; $0B3EA0
+	asr.w	d0,d4
+; $0B3EA2
+	dc.w	$F6D0
+; $0B3EA4
+	mulu.w	d0,d2
+; $0B3EA6
+	subq.l	#2,(a6)+
+; $0B3EA8
+	bchg	d0,d3
+; $0B3EAA
+	addq.w	#6,(a4)+
+; $0B3EAC
+	asl.w	-(a0)
+; $0B3EAE
+	eor.b	d6,-(a3)
+; $0B3EB0
+	chk.w	(a0),d0
+; $0B3EB2
+	move.l	($12,a3,d2.l),-(a1)
+; $0B3EB6
+	move.l	d0,d7
+; $0B3EB8
+	move.l	?ea(7,7),(a1)+
+; $0B3EBA
+	move.w	($21,a2,d1.w),-(a1)
+; $0B3EBE
+	move.w	-$DED(a7),d1
+; $0B3EC2
+	add.b	d7,($23,a3,d1.w)
+; $0B3EC6
+	move.b	($0,a3,d2.l),d1
+; $0B3ECA
+	move.w	($21,a2,a3.l),(a1)+
+; $0B3ECE
+	dc.w	$F1C1
+; $0B3ED0
+	asl.b	d0,d2
+; $0B3ED2
+	move.l	(a1),-(a2)
+; $0B3ED4
+	move.b	d0,d4
+; $0B3ED6
+	dc.w	$F1AF
+; $0B3ED8
+	move.w	-(a2),d1
+; $0B3EDA
+	move.b	($0,a2,a3.w),(a1)+
+; $0B3EDE
+	move.l	a2,($000021).w
+; $0B3EE2
+	addq.b	#7,(a5)+
+; $0B3EE4
+	ori.b	#$13,(a2)
+; $0B3EE8
+	move.l	($21,a2,a6.w),(-$20,a1,a4.l)
+; $0B3EEE
+	dc.w	$A712
+; $0B3EF0
+	move.l	(a4),-$1620(a2)
+; $0B3EF4
+	move.l	(a0),(a1)+
+; $0B3EF6
+	move.l	-(a2),d2
+; $0B3EF8
+	add.b	-(a5),d0
+; $0B3EFA
+	rol.w	#7,d5
+; $0B3EFC
+	dc.w	$4532
+; $0B3EFE
+	move.l	#$E0225555,($23,a2,d0.l)
+; $0B3F06
+	dc.w	$F10D
+; $0B3F08
+	move.l	a5,d2
+; $0B3F0A
+	move.l	d2,($FFFF93E3).w
+; $0B3F0E
+	suba.w	-(a2),a3
+; $0B3F10
+	move.l	($40,a0,d0.l),(-$F,a5,a7.l)
+; $0B3F16
+	move.l	($22,a2,d1.l),-(a1)
+; $0B3F1A
+	move.w	($76,a3,a7.w),-(a1)
+; $0B3F1E
+	add.l	($33,a0,d1.w),d4
+; $0B3F22
+	eor.l	d3,(a0)
+; $0B3F24
+	move.w	(a2),-(a0)
+; $0B3F26
+	move.l	?ea(7,5),(-$11,a1,a1.w)
+; $0B3F2A
+	and.b	($32,a3,d3.w),d6
+; $0B3F2E
+	muls.w	d0,d5
+; $0B3F30
+	move.l	?ea(7,5),-(a1)
+; $0B3F32
+	move.w	-(a5),?ea(7,6)
+; $0B3F34
+	add.b	d6,(-$22,a3,d1.w)
+; $0B3F38
+	roxr.l	#2,d4
+; $0B3F3A
+	eor.l	d5,(a0)
+; $0B3F3C
+	move.w	$3347(a4),d1
+; $0B3F40
+	move.w	#$C333,-(a0)
+; $0B3F44
+	move.b	a7,(a0)
+; $0B3F46
+	andi.w	#$F0ED,-(a3)
+; $0B3F4A
+	movea.b	-(a0),a5
+; $0B3F4C
+	dc.w	$F071
+; $0B3F4E
+	move.b	(a4),(-$62,a0,a0.w)
+; $0B3F52
+	add.w	$12ED(a6),d0
+; $0B3F56
+	ror.b	d7,d3
+; $0B3F58
+	ror.l	#7,d7
+; $0B3F5A
+	roxl.w	(a6)+
+; $0B3F5C
+	move.w	($70,a3,a4.w),d6
+; $0B3F60
+	or.l	d0,(a6)+
+; $0B3F62
+	or.b	d0,#$DD
+; $0B3F66
+	adda.w	d3,a6
+; $0B3F68
+	bcs.s	loc_0B3EEB
+; $0B3F6A
+	move.w	(a5)+,($4710DDFF).l
+; $0B3F70
+	exg	d1,d3
+; $0B3F72
+	move.w	(a5)+,(a1)+
+; $0B3F74
+	move.w	(-$23,a3,d2.w),-(a1)
+; $0B3F78
+	dc.w	$7933
+; $0B3F7A
+	move.w	(a0),(a1)
+; $0B3F7C
+	nbcd	(a0)
+; $0B3F7E
+	muls.w	d3,d1
+; $0B3F80
+	move.l	-(a2),d1
+; $0B3F82
+	dc.w	$A310
+; $0B3F84
+	dc.w	$FD22
+; $0B3F86
+	addq.b	#7,(a0)
+; $0B3F88
+	move.b	($2F,a3,d3.w),-(a7)
+; $0B3F8C
+	dc.w	$FF33
+; $0B3F8E
+	dc.w	$7732
+; $0B3F90
+	dc.w	$FF11
+; $0B3F92
+	rol.w	($2F,a0,d1.w)
+; $0B3F96
+	dc.w	$F1EC
+; $0B3F98
+	dc.w	$F0DF
+; $0B3F9A
+	dc.w	$FFFF
+; $0B3F9C
+	dc.w	$F12F
+; $0B3F9E
+	dc.w	$FFCB
+; $0B3FA0
+	move.b	(-$1,a1,a7.l),(a0)+
+; $0B3FA4
+	move.b	(-$F,a1,d1.l),(a1)+
+; $0B3FA8
+	move.l	(a1),d1
+; $0B3FAA
+	move.b	($13,a1,a3.l),?ea(7,7)
+; $0B3FAE
+	move.b	($23,a1,d1.w),?ea(7,7)
+; $0B3FB2
+	dc.w	$FFB6
+; $0B3FB4
+	suba.w	?ea(7,7),a0
+; $0B3FB6
+	dc.w	$FFF1
+; $0B3FB8
+	move.l	-(a3),-(a0)
+; $0B3FBA
+	move.w	($22,a5,d5.w),d1
+; $0B3FBE
+	subq.l	#1,?ea(7,7)
+; $0B3FC0
+	subq.w	#2,(a2)
+; $0B3FC2
+	move.l	(a5),$4552(a0)
+; $0B3FC6
+	btst	d5,(a0)
+; $0B3FC8
+	move.l	?ea(7,6),($10,a1,d0.l)
+; $0B3FCC
+	move.l	($35,a3,d2.w),d1
+; $0B3FD0
+	move.l	($21,a1,d1.w),($FFF15542).l
+; $0B3FD8
+	move.b	(a1),-(a7)
+; $0B3FDA
+	move.l	-(a1),-(a0)
+; $0B3FDC
+	move.l	?ea(7,7),(a1)+
+; $0B3FDE
+	move.w	-(a2),-(a7)
+; $0B3FE0
+	move.b	-(a1),d1
+; $0B3FE2
+	dc.w	$FF21
+; $0B3FE4
+	move.b	(a7)+,-(a0)
+; $0B3FE6
+	move.w	(a1),-(a7)
+; $0B3FE8
+	move.w	(a1),-(a0)
+; $0B3FEA
+	dc.w	$FFFF
+; $0B3FEC
+	move.l	a7,($00103F).w
+; $0B3FF0
+	dc.w	$F095
+; $0B3FF2
+	move.b	(a4)+,(a1)+
+; $0B3FF4
+	move.b	(a2),d0
+; $0B3FF6
+	move.l	d0,-(a4)
+; $0B3FF8
+	move.w	(-$47,a3,d0.w),-(a1)
+; $0B3FFC
+	asr.b	d0,d5
+; $0B3FFE
+	dc.w	$F945
+; $0B4000
+	dc.w	$AE90
+; $0B4002
+	move.w	d3,-(a2)
+; $0B4004
+	move.l	($22,a2,d4.w),-(a1)
+; $0B4008
+	move.w	($55,a7,d2.w),(a1)+
+; $0B400C
+	move.l	$22(a5),($223525EF).l
+; $0B4014
+	subq.b	#2,-$3CDE(a4)
+; $0B4018
+	move.b	(a0),(a3)+
+; $0B401A
+	movea.w	(a5),a1
+; $0B401C
+	addq.l	#1,?ea(7,7)
+; $0B401E
+	move.w	($52,a3,d5.w),-(a1)
+; $0B4022
+	move.l	d3,(a6)+
+; $0B4024
+	move.l	(a0),(a6)+
+; $0B4026
+	movea.w	$27D0(a6),a6
+; $0B402A
+	move.l	(a5),$520F(a1)
+; $0B402E
+	dc.w	$F055
+; $0B4030
+	move.l	-(a5),$11CD(a1)
+; $0B4034
+	and.l	$1123(a5),d6
+; $0B4038
+	move.l	-(a5),(a6)+
+; $0B403A
+	muls.w	(a7)+,d0
+; $0B403C
+	and.b	(-$1C,a2,d2.w),d0
+; $0B4040
+	mulu.w	d0,d0
+; $0B4042
+	ble.s	loc_0B4045
+; $0B4044
+	move.w	-(a1),d6
+; $0B4046
+	dc.w	$F0B0
+; $0B4048
+	move.b	d5,(a0)+
+; $0B404A
+	exg	d1,d3
+; $0B404C
+	dc.w	$FF3C
+; $0B404E
+	addq.w	#6,(a2)
+; $0B4050
+	move.w	(-$3B,a3,d3.w),-(a2)
+; $0B4054
+	subq.l	#2,?ea(7,7)
+; $0B4056
+	move.w	#$5C55,-(a1)
+; $0B405A
+	and.b	($20,a3,a1.l),d6
+; $0B405E
+	muls.w	(a7)+,d1
+; $0B4060
+	addq.w	#6,(a5)
+; $0B4062
+	move.w	a4,($C55E0211).l
+; $0B4068
+	move.l	?ea(7,5),($31AE0032).l
+; $0B406E
+	move.l	($23,a1,d3.w),($22ED22B1).l
+; $0B4076
+	andi.b	#$BE,(a2)
+; $0B407A
+	move.l	$3321(a7),d0
+; $0B407E
+	move.w	-(a1),-(a7)
+; $0B4080
+	move.b	-(a2),-(a0)
+; $0B4082
+	move.l	(a2),d1
+; $0B4084
+	move.l	(a5)+,d1
+; $0B4086
+	ori.?	#?,-(a6)
+; $0B4088
+	asr.w	(a7)+
+; $0B408A
+	move.l	-(a3),-(a1)
+; $0B408C
+	move.w	(-$4E,a2,d3.w),-(a0)
+; $0B4090
+	sub.b	-(a3),d0
+; $0B4092
+	move.b	($10,a6,a4.w),$1211(a0)
+; $0B4098
+	roxl.b	#2,d0
+; $0B409A
+	move.l	($21,a2,d1.w),d1
+; $0B409E
+	ori.?	#?,?ea(7,7)
+; $0B40A0
+	move.l	-(a2),d1
+; $0B40A2
+	move.l	(a2),-(a7)
+; $0B40A4
+	addq.w	#1,(a5)
+; $0B40A6
+	move.b	-(a2),-(a0)
+; $0B40A8
+	eor.b	d4,-(a5)
+; $0B40AA
+	cmpa.l	-(a0),a4
+; $0B40AC
+	dc.w	$F800
+; $0B40AE
+	move.l	(a5),d1
+; $0B40B0
+	move.l	a7,loc_0B6107(pc)
+; $0B40B4
+	dc.w	$F913
+; $0B40B6
+	move.l	d0,-(a6)
+; $0B40B8
+	clr.b	-(a0)
+; $0B40BA
+	move.l	-(a3),-(a2)
+; $0B40BC
+	move.l	(-$1,a2,d2.w),d1
+; $0B40C0
+	muls.w	a4,d1
+; $0B40C2
+	move.w	(a2),-(a1)
+; $0B40C4
+	mulu.w	d3,d1
+; $0B40C6
+	exg	d1,d7
+; $0B40C8
+	dc.w	$FF3C
+; $0B40CA
+	move.l	d3,($12332133).l
+; $0B40D0
+	movea.b	?ea(7,7),a1
+; $0B40D2
+	move.w	?ea(7,7),(a1)+
+; $0B40D4
+	move.l	($35,a2,d3.w),($226720F9).l
+; $0B40DC
+	move.w	a5,d1
+; $0B40DE
+	suba.w	a7,a1
+; $0B40E0
+	suba.w	d2,a0
+; $0B40E2
+	move.l	d2,($33CCD523).l
+; $0B40E8
+	dc.w	$F6C0
+; $0B40EA
+	move.b	?ea(7,6),($13,a1,a4.w)
+; $0B40EE
+	move.l	-(a0),$233C(a5)
+; $0B40F2
+	move.b	d2,#$90
+; $0B40F6
+	lsr.l	d1,d0
+; $0B40F8
+	move.w	d3,(a6)+
+; $0B40FA
+	dc.w	$AD11
+; $0B40FC
+	movea.b	d1,a3
+; $0B40FE
+	adda.l	d0,a7
+; $0B4100
+	clr.w	(a6)
+; $0B4102
+	suba.w	d3,a0
+; $0B4104
+	or.b	(a0),d5
+; $0B4106
+	movea.l	-(a2),a5
+; $0B4108
+	subq.b	#4,($30,a2,d4.l)
+; $0B410C
+	exg	d1,d7
+; $0B410E
+	suba.w	d0,a0
+; $0B4110
+	dc.w	$4710
+; $0B4112
+	move.l	-(a0),-$76FE(a5)
+; $0B4116
+	dc.w	$AD11
+; $0B4118
+	moveq	#50,d0
+; $0B411A
+	adda.w	(-$3D,a0,d2.w),a4
+; $0B411E
+	eor.b	d5,-(a3)
+; $0B4120
+	move.l	(a7)+,(a1)+
+; $0B4122
+	exg	d0,d3
+; $0B4124
+	move.l	?ea(7,7),($FFFFC320).w
+; $0B4128
+	dc.w	$F25F
+; $0B412A
+	move.w	-(a2),-(a0)
+; $0B412C
+	move.l	(a7)+,-(a0)
+; $0B412E
+	move.l	-$FCE(a6),d1
+; $0B4132
+	and.b	(a0),d5
+; $0B4134
+	tst.l	($12,a1,a1.w)
+; $0B4138
+	lsr.b	#1,d0
+; $0B413A
+	move.b	-$6F39(a7),(a1)
+; $0B413E
+	move.l	-$33E0(a7),d1
+; $0B4142
+	cmp.b	$1F(a2),d5
+; $0B4146
+	and.b	-(a0),d6
+; $0B4148
+	dc.w	$F112
+; $0B414A
+	move.l	-(a0),(-$1,a0,d3.w)
+; $0B414E
+	roxr.b	d6,d6
+; $0B4150
+	ori.b	#$21,-(a4)
+; $0B4154
+	move.b	a5,-(a0)
+; $0B4156
+	move.l	(a2),d0
+; $0B4158
+	move.l	($40,a3,a1.l),-(a0)
+; $0B415C
+	dc.w	$F032
+; $0B415E
+	move.b	-(a3),d1
+; $0B4160
+	move.b	(-$49,pc,a7.w),(a1)+
+; $0B4164
+	ori.b	#$B8,-(a2)
+; $0B4168
+	move.l	-(a1),(a0)+
+; $0B416A
+	move.w	loc_0B418E(pc),(a0)
+; $0B416E
+	move.b	($22,a3,d1.w),d1
+; $0B4172
+	add.w	d7,(a5)
+; $0B4174
+	addq.b	#1,(a1)
+; $0B4176
+	movea.l	(a4),a1
+; $0B4178
+	exg	d4,d0
+; $0B417A
+	addq.b	#1,(a2)
+; $0B417C
+	dc.w	$F721
+; $0B417E
+	move.b	d2,-$1E00(a0)
+; $0B4182
+	addq.b	#1,-(a2)
+; $0B4184
+	move.w	-(a1),-(a0)
+; $0B4186
+	sub.w	d7,(a3)
+; $0B4188
+	move.w	-(a2),-(a1)
+; $0B418A
+	move.b	-(a3),-(a7)
+; $0B418C
+	lea	($20,a0,d1.w),a0
+; $0B4190
+	dc.w	$F2D2
+; $0B4192
+	cmp.l	(a0),d3
+; $0B4194
+	move.w	a1,(a1)+
+; $0B4196
+	move.l	-$FE1(a7),(a0)+
+; $0B419A
+	move.b	-(a0),-(a2)
+; $0B419C
+	dc.w	$FFF2
+; $0B419E
+	exg	d1,d7
+; $0B41A0
+	dc.w	$FFCD
+; $0B41A2
+	ori.l	#$301700DE,-(a3)
+; $0B41A8
+	movea.w	(a2),a2
+; $0B41AA
+	move.w	?ea(7,7),(-$E,a2,d1.l)
+; $0B41AE
+	addq.b	#1,($12,a5,a7.w)
+; $0B41B2
+	move.b	(a0),(-$2D,a4,d2.w)
+; $0B41B6
+	subq.w	#2,d5
+; $0B41B8
+	add.b	d1,d0
+; $0B41BA
+	dc.w	$4920
+; $0B41BC
+	move.w	-(a2),$32(a1)
+; $0B41C0
+	move.l	#$033122D0,loc_0B7E18(pc)
+; $0B41C8
+	addq.b	#1,-(a3)
+; $0B41CA
+	move.l	(a5),$18BA(a1)
+; $0B41CE
+	sub.b	$3157(a5),d0
+; $0B41D2
+	move.l	a4,(a0)+
+
+loc_0B41D4:				; $0B41D4
+	move.w	a5,(a1)+
+; $0B41D6
+	sub.l	d0,a4
+; $0B41D8
+	move.w	($0001A0).w,-$77FE(a0)
+; $0B41DE
+	sub.b	d1,d2
+; $0B41E0
+	adda.l	d0,a0
+; $0B41E2
+	rol.l	#3,d1
+; $0B41E4
+	ror.w	(a1)
+; $0B41E6
+	move.l	d5,(a1)+
+; $0B41E8
+	and.b	($49,a2,d2.w),d0
+; $0B41EC
+	move.w	(a4)+,(a1)+
+; $0B41EE
+	suba.w	d5,a0
+; $0B41F0
+	lsl.l	d1,d0
+; $0B41F2
+	bchg	d6,-(a0)
+; $0B41F4
+	exg	d1,a1
+; $0B41F6
+	lea	d5,a0
+; $0B41F8
+	and.w	(a3),d0
+; $0B41FA
+	move.w	(-$3F,a5,a7.w),-(a1)
+; $0B41FE
+	subq.l	#8,(a0)
+; $0B4200
+	move.w	(a0)+,loc_0AF2C5(pc)
+; $0B4204
+	dc.w	$FCEF
+; $0B4206
+	add.l	#$4BCEE5F0,d0
+; $0B420C
+	scc	$5152(a6)
+; $0B4210
+	adda.w	-(a0),a2
+; $0B4212
+	clr.b	-(a5)
+; $0B4214
+	and.w	(a3),d7
+; $0B4216
+	dc.w	$4143
+; $0B4218
+	move.w	d3,($CEE029D0).l
+; $0B421E
+	move.l	-(a3),-(a2)
+; $0B4220
+	moveq	#-16,d7
+; $0B4222
+	addq.b	#8,($25,a3,d5.w)
+; $0B4226
+	move.l	$255F(a4),-(a1)
+; $0B422A
+	ori.l	#$23F0C01C,d1
+; $0B4230
+	sub.l	?ea(7,6),d0
+; $0B4232
+	sub.b	(a4),d0
+; $0B4234
+	adda.w	a7,a0
+; $0B4236
+	asr.w	a6
+; $0B4238
+	lsr.b	#1,d3
+; $0B423A
+	move.w	($21,a0,d0.w),(a6)+
+; $0B423E
+	add.b	(a2),d0
+; $0B4240
+	move.w	($30,a5,d5.w),-(a2)
+; $0B4244
+	move.w	(a1),d0
+; $0B4246
+	dc.w	$F0ED
+; $0B4248
+	move.l	(a5)+,($32,a1,d2.w)
+; $0B424C
+	move.w	(-$11,a4,a7.w),-$2122(a2)
+; $0B4252
+	addq.l	#3,a0
+; $0B4254
+	adda.w	-$215C(a6),a0
+; $0B4258
+	suba.w	$7C10(a7),a0
+; $0B425C
+	ror.w	d7,d3
+; $0B425E
+	move.b	-(a4),(a0)+
+; $0B4260
+	dc.w	$79F1
+; $0B4262
+	move.l	a1,usp
+; $0B4264
+	add.w	d6,($70,a7,a3.w)
+; $0B4268
+	st	(a6)+
+; $0B426A
+	adda.l	(a4)+,a6
+; $0B426C
+	dc.w	$A05E
+; $0B426E
+	add.w	d0,a6
+; $0B4270
+	cmpa.w	$6075(a5),a0
+
+loc_0B4274:				; $0B4274
+	addq.w	#8,(a5)+
+; $0B4276
+	cmpa.l	?ea(7,6),a0
+; $0B4278
+	jsr	($3,a0,a6.l)
+; $0B427C
+	ror.w	?ea(7,6)
+; $0B427E
+	cmpa.l	(a1),a5
+; $0B4280
+	muls.w	(a1),d6
+; $0B4282
+	blt.s	loc_0B4274
+; $0B4284
+	divs.w	(a0),d3
+; $0B4286
+	svc	(-$4C,a0,d5.l)
+; $0B428A
+	movea.l	#$52FEEEA4,a3
+; $0B4290
+	sub.l	(a5),d0
+; $0B4292
+	divu.w	a5,d0
+; $0B4294
+	movea.w	(a0),a1
+; $0B4296
+	divu.w	($6A,a0,a4.w),d5
+; $0B429A
+	suba.w	-$27F(a6),a0
+; $0B429E
+	move.b	-(a3),($77,a0,a1.l)
+; $0B42A2
+	suba.l	(a7)+,a0
+; $0B42A4
+	roxl.w	#6,d2
+; $0B42A6
+	divu.w	d0,d0
+; $0B42A8
+	roxr.w	d6,d4
+; $0B42AA
+	dc.w	$A060
+; $0B42AC
+	bra.s	loc_0B430E
+; $0B42AE
+	exg	d0,a4
+; $0B42B0
+	dc.w	$71EE
+; $0B42B2
+	sf	d0
+; $0B42B4
+	move.l	($77,a5,a5.w),(a0)
+; $0B42B8
+	move.b	($78,a2,a2.w),-$F52(a0)
+; $0B42BE
+	dc.w	$F0ED
+; $0B42C0
+	lsl.w	d5,d0
+; $0B42C2
+	cmpa.l	(a1),a2
+; $0B42C4
+	ori.w	#$617C,(a0)+
+; $0B42C8
+	mulu.w	-(a6),d0
+; $0B42CA
+	sf	-(a1)
+; $0B42CC
+	negx.?	(-$2C,a3,d0.w)
+; $0B42D0
+	asl.b	d0,d7
+; $0B42D2
+	negx.b	a4
+; $0B42D4
+	ori.?	#?,(a3)+
+; $0B42D6
+	move.l	-(a5),-(a2)
+; $0B42D8
+	move.l	d0,d2
+; $0B42DA
+	subq.b	#2,-(a1)
+; $0B42DC
+	dc.w	$A930
+; $0B42DE
+	move.l	(a2),-(a7)
+; $0B42E0
+	move.w	$3055(a4),(a7)+
+; $0B42E4
+	addq.b	#1,(a2)
+; $0B42E6
+	subq.w	#2,(a1)
+; $0B42E8
+	cmpa.l	-(a2),a0
+; $0B42EA
+	cmpa.w	-(a1),a2
+; $0B42EC
+	dc.w	$FF55
+; $0B42EE
+	addq.b	#1,-(a5)
+; $0B42F0
+	addq.b	#1,-(a5)
+; $0B42F2
+	move.b	($3E,a2,d2.w),d1
+; $0B42F6
+	dc.w	$F120
+; $0B42F8
+	move.l	-(a2),d1
+; $0B42FA
+	dc.w	$F122
+; $0B42FC
+	move.w	loc_0B94AD(pc),($FFFFE2C9).w
+; $0B4302
+	addq.b	#1,(a5)+
+; $0B4304
+	bra.s	loc_0B42F9
+; $0B4306
+	move.b	-(a2),d0
+; $0B4308
+	asl.w	-(a0)
+; $0B430A
+	cmp.b	($23,a1,d2.w),d5
+
+loc_0B430E:				; $0B430E
+	subq.b	#3,-$EDE(a7)
+; $0B4312
+	add.b	d7,-(a0)
+; $0B4314
+	move.w	$5122(a6),(a1)+
+; $0B4318
+	asl.w	#8,d0
+; $0B431A
+	asl.w	($20,a1,a7.l)
+; $0B431E
+	add.b	d5,(a0)
+; $0B4320
+	move.w	(a6),($33,a1,d3.w)
+; $0B4324
+	move.w	($12,a2,d1.l),($006162).w
+; $0B432A
+	move.w	(a2),-(a7)
+; $0B432C
+	move.l	a5,-(a1)
+; $0B432E
+	shi	(a5)
+; $0B4330
+	asr.w	?ea(7,6)
+; $0B4332
+	negx.?	($12,pc,d3.w)
+; $0B4336
+	move.l	(a0),(a7)
+; $0B4338
+	move.b	d3,($003C22).w
+; $0B433C
+	move.l	$2CA7(a5),$102C(a0)
+; $0B4342
+	move.l	(-$3E,a2,a1.w),-(a1)
+; $0B4346
+	move.w	a3,-(a1)
+; $0B4348
+	move.b	?ea(7,6),d0
+; $0B434A
+	adda.w	-(a2),a1
+; $0B434C
+	move.w	-(a5),-(a1)
+; $0B434E
+	subq.b	#8,($F,a3,d3.l)
+; $0B4352
+	negx.?	d4
+; $0B4354
+	ori.?	#?,(-$3D,a7,d2.w)
+; $0B4358
+	move.b	($1F,a3,d0.w),($3C,a0,d1.w)
+; $0B435E
+	move.w	a7,d1
+; $0B4360
+	move.b	-(a3),-(a7)
+; $0B4362
+	move.l	($48,a2,a4.l),d6
+; $0B4366
+	move.l	a2,usp
+; $0B4368
+	cmpa.l	-(a0),a3
+; $0B436A
+	move.l	(a1),#$FE0D9052
+; $0B4370
+	movea.w	(a5),a1
+; $0B4372
+	dc.w	$4525
+; $0B4374
+	movea.w	d2,a1
+; $0B4376
+	suba.w	-$3F7C(a1),a0
+; $0B437A
+	move.l	-(a0),(a1)+
+; $0B437C
+	eor.l	d0,?ea(7,6)
+; $0B437E
+	and.b	-$7AFF(a4),d0
+; $0B4382
+	move.l	(a0),($0,a5,d3.w)
+; $0B4386
+	move.l	($30,a0,d3.w),(a0)+
+; $0B438A
+	dc.w	$4911
+; $0B438C
+	bmi.s	loc_0B43BE
+; $0B438E
+	muls.w	(a0),d7
+; $0B4390
+	subq.l	#3,(a2)
+
+loc_0B4392:				; $0B4392
+	mulu.w	d1,d5
+; $0B4394
+	dc.w	$7720
+; $0B4396
+	mulu.w	(-$34,a7,a4.w),d7
+; $0B439A
+	exg	d1,d4
+; $0B439C
+	rol.w	d1
+; $0B439E
+	dc.w	$7501
+; $0B43A0
+	move.l	($2,a3,a5.w),-(a1)
+; $0B43A4
+	move.w	($20,a1,d7.w),d0
+; $0B43A8
+	dc.w	$4B31
+; $0B43AA
+	and.b	?ea(7,6),d1
+; $0B43AC
+	move.b	(-$1,a3,d3.w),d0
+; $0B43B0
+	move.b	($31,a3,d3.w),($FFFFF113).w
+; $0B43B6
+	move.l	-(a2),-(a1)
+; $0B43B8
+	dc.w	$FB3F
+; $0B43BA
+	move.l	a2,(-$1,a2,a3.w)
+
+loc_0B43BE:				; $0B43BE
+	adda.w	(a5)+,a7
+; $0B43C0
+	adda.l	?ea(7,7),a7
+; $0B43C2
+	sub.w	($40,pc,a7.w),d4
+; $0B43C6
+	addq.w	#8,(-$21,a3,a7.w)
+; $0B43CA
+	dc.w	$FD7A
+; $0B43CC
+	dc.w	$F07A
+; $0B43CE
+	adda.w	(a5)+,a0
+; $0B43D0
+	moveq	#-117,d2
+; $0B43D2
+	dc.w	$F05D
+; $0B43D4
+	adda.l	(a7)+,a0
+; $0B43D6
+	ble.s	loc_0B4389
+; $0B43D8
+	dc.w	$FFFF
+; $0B43DA
+	add.w	-$4FE0(a5),d7
+; $0B43DE
+	bcc.s	loc_0B4431
+; $0B43E0
+	blt.s	loc_0B4392
+; $0B43E2
+	smi	(-$70,a0,d7.l)
+; $0B43E6
+	move.w	(a0),?ea(7,7)
+; $0B43E8
+	dc.w	$FE67
+; $0B43EA
+	subq.l	#8,a3
+; $0B43EC
+	dc.w	$F0A7
+; $0B43EE
+	dc.w	$FEEF
+; $0B43F0
+	rol.w	#7,d6
+; $0B43F2
+	moveq	#113,d0
+; $0B43F4
+	move.b	?ea(7,6),(a0)+
+
+loc_0B43F6:				; $0B43F6
+	suba.l	(-$34,a0,a6.l),a0
+; $0B43FA
+	suba.l	(-$30,a0,a1.l),a0
+; $0B43FE
+	adda.l	$6FF0(a7),a6
+; $0B4402
+	movea.w	(a1),a2
+; $0B4404
+	roxr.w	(a4)+
+; $0B4406
+	divs.w	-$6D50(a6),d0
+; $0B440A
+	subq.w	#1,(a0)
+; $0B440C
+	sub.l	d1,-(a1)
+; $0B440E
+	add.w	d5,($70,a1,a4.l)
+; $0B4412
+	moveq	#-63,d3
+; $0B4414
+	roxl.l	#6,d3
+; $0B4416
+	mulu.w	(a4)+,d6
+; $0B4418
+	suba.w	(-$67,a0,a4.l),a7
+; $0B441C
+	or.l	-$E26(a5),d0
+; $0B4420
+	st	(a4)+
+; $0B4422
+	bchg	d1,(a6)+
+; $0B4424
+	ror.w	d7,d0
+; $0B4426
+	and.l	($6E,a5,a5.w),d0
+; $0B442A
+	dc.w	$A0A0
+; $0B442C
+	cmp.l	-(a5),d1
+; $0B442E
+	or.l	(a7),d0
+; $0B4430
+	cmp.b	d0,d0
+; $0B4432
+	bra.s	loc_0B43B4
+; $0B4434
+	bra.s	loc_0B43F6
+; $0B4436
+	dc.w	$A070
+; $0B4438
+	cmpa.l	(a0),a6
+; $0B443A
+	sub.w	(-$10,a0,a2.l),d3
+; $0B443E
+	subq.l	#1,d0
+; $0B4440
+	sub.l	-(a3),d5
+; $0B4442
+	addq.w	#6,-(a2)
+; $0B4444
+	and.b	(a2),d0
+; $0B4446
+	dc.w	$4111
+; $0B4448
+	move.b	-(a2),-(a1)
+; $0B444A
+	move.w	d0,d1
+; $0B444C
+	move.w	(a3)+,(a1)+
+; $0B444E
+	move.b	(-$1,a7,d2.w),(a0)
+; $0B4452
+	move.b	(a6)+,(a1)
+; $0B4454
+	move.w	(a2),d0
+; $0B4456
+	move.b	(a3)+,-(a0)
+; $0B4458
+	move.l	($22,a1,a1.w),(a0)+
+; $0B445C
+	dc.w	$FF11
+; $0B445E
+	bset	d0,d0
+; $0B4460
+	dc.w	$F2CD
+; $0B4462
+	move.l	$6012(a2),d0
+; $0B4466
+	adda.l	($40,a1,d0.w),a0
+; $0B446A
+	pea	-(a0)
+; $0B446C
+	dc.w	$4760
+; $0B446E
+	move.b	(a3)+,(a1)+
+; $0B4470
+	move.b	(a7)+,d0
+; $0B4472
+	move.b	$11CB(a1),$1028(a7)
+; $0B4478
+	or.b	(a7)+,d0
+; $0B447A
+	dc.w	$4361
+; $0B447C
+	move.b	-(a1),-(a7)
+; $0B447E
+	cmp.b	-(a0),d2
+; $0B4480
+	cmpi.?	#?,(a6)
+; $0B4482
+	ori.b	#$FF,(a1)+
+; $0B4486
+	move.b	d6,-(a0)
+; $0B4488
+	negx.w	d2
+; $0B448A
+	movea.l	a0,a0
+; $0B448C
+	bra.s	loc_0B44C4
+; $0B448E
+	sub.l	($0,a6,a3.w),d1
+; $0B4492
+	move.w	$3310(a7),d6
+; $0B4496
+	move.l	-(a3),-(a0)
+; $0B4498
+	add.b	d5,-(a0)
+; $0B449A
+	move.b	-(a1),($235E1048).l
+; $0B44A0
+	move.b	(a4)+,(a0)+
+; $0B44A2
+	suba.w	(a6),a0
+; $0B44A4
+	move.l	($32,a3,d3.l),d0
+; $0B44A8
+	dc.w	$FE2E
+; $0B44AA
+	suba.w	d2,a0
+; $0B44AC
+	move.w	(-$3E,a1,a4.w),d1
+; $0B44B0
+	move.w	-(a1),-(a1)
+; $0B44B2
+	tst.w	(a0)
+; $0B44B4
+	sub.b	$1FF0(a7),d0
+; $0B44B8
+	move.l	a3,($FFFFC084).w
+; $0B44BC
+	negx.b	(-$10,a2,a5.l)
+; $0B44C0
+	move.w	-(a3),-(a5)
+; $0B44C2
+	move.w	-(a7),($FFFFB021).w
+; $0B44C6
+	move.b	-(a3),-(a7)
+; $0B44C8
+	cmp.b	-(a0),d7
+; $0B44CA
+	move.w	(a0),-(a1)
+; $0B44CC
+	eor.b	d6,(a2)
+; $0B44CE
+	or.b	-(a0),d0
+; $0B44D0
+	move.l	-(a2),-(a0)
+; $0B44D2
+	mulu.w	a4,d6
+; $0B44D4
+	addq.l	#3,d0
+; $0B44D6
+	exg	d1,d5
+; $0B44D8
+	move.b	#$F2,($2C,a7,d3.w)
+; $0B44DE
+	move.w	($60,a1,a2.l),-(a6)
+; $0B44E2
+	bvc.s	loc_0B4505
+; $0B44E4
+	exg	a7,a3
+; $0B44E6
+	move.l	(a4),$2268(a1)
+; $0B44EA
+	ori.b	#$52,(a6)
+; $0B44EE
+	scc	?ea(7,6)
+; $0B44F0
+	addq.b	#6,d0
+; $0B44F2
+	move.w	#$2253,d1
+; $0B44F6
+	move.w	#$C200,d6
+; $0B44FA
+	add.l	($30,a0,d1.w),d0
+; $0B44FE
+	dc.w	$7342
+; $0B4500
+	dc.w	$F360
+; $0B4502
+	lsr.l	#5,d0
+; $0B4504
+	adda.l	(a0),a1
+; $0B4506
+	cmpa.w	d1,a7
+; $0B4508
+	mulu.w	d2,d4
+; $0B450A
+	asr.w	(-$1B,pc,a4.w)
+; $0B450E
+	cmpa.l	d4,a0
+; $0B4510
+	mulu.w	(a5)+,d0
+; $0B4512
+	muls.w	d3,d0
+; $0B4514
+	exg	d0,d3
+; $0B4516
+	move.l	d3,(a6)+
+; $0B4518
+	move.w	d5,d4
+; $0B451A
+	addq.l	#8,(a0)
+; $0B451C
+	asr.w	?ea(7,6)
+; $0B451E
+	or.b	d0,($2C,a3,a4.w)
+; $0B4522
+	rol.l	d3,d1
+; $0B4524
+	lsr.l	#5,d0
+; $0B4526
+	dc.w	$FD23
+; $0B4528
+	btst	d1,-(a0)
+; $0B452A
+	move.l	(a5),$1233(a1)
+; $0B452E
+	move.w	(a5),-$42CB(a2)
+; $0B4532
+	btst	d5,(a0)
+; $0B4534
+	subq.b	#1,(a5)
+; $0B4536
+	move.l	d5,$29D0(a2)
+; $0B453A
+	move.w	$1153(a6),-(a2)
+; $0B453E
+	subq.w	#2,(a5)
+; $0B4540
+	add.w	d6,-$4F22(a1)
+; $0B4544
+	subq.l	#6,(-$6F,a0,a0.w)
+; $0B4548
+	clr.l	(a7)
+; $0B454A
+	shi	-$67B0(a7)
+; $0B454E
+	lea	(a5),a1
+; $0B4550
+	addq.w	#1,(-$70,a0,d6.l)
+; $0B4554
+	dc.w	$FD62
+; $0B4556
+	adda.l	(-$2F,a0,d5.w),a0
+; $0B455A
+	bvs.s	loc_0B45CC
+; $0B455C
+	slt	(a7)+
+; $0B455E
+	ble.s	loc_0B4533
+; $0B4560
+	adda.l	?ea(7,7),a6
+; $0B4562
+	adda.l	$57DF(a5),a6
+; $0B4566
+	adda.w	$7CD0(a5),a7
+; $0B456A
+	exg	d6,a0
+; $0B456C
+	adda.w	a6,a6
+; $0B456E
+	lsl.w	d1,d0
+; $0B4570
+	ori.l	#$D194A072,-(a3)
+; $0B4576
+	dc.w	$A09D
+; $0B4578
+	add.w	(a0),d0
+; $0B457A
+	dc.w	$A0A3
+; $0B457C
+	add.l	(a7),d4
+; $0B457E
+	cmp.w	(a1)+,d0
+; $0B4580
+	dc.w	$A100
+; $0B4582
+	cmpi.?	#?,d0
+; $0B4584
+	muls.w	(a1),d0
+; $0B4586
+	cmpi.?	#?,d0
+; $0B4588
+	cmpa.w	(a2),a3
+; $0B458A
+	bhi.s	loc_0B454C
+; $0B458C
+	dc.w	$A4D0
+; $0B458E
+	mulu.w	(a1),d5
+; $0B4590
+	sub.w	d6,($70,a3,a0.w)
+; $0B4594
+	subq.l	#8,(a7)
+; $0B4596
+	dc.w	$A070
+; $0B4598
+	addq.l	#8,(a6)+
+; $0B459A
+	dc.w	$71DC
+; $0B459C
+	addq.w	#8,($50,a1,a6.w)
+; $0B45A0
+	muls.w	a5,d0
+; $0B45A2
+	sgt	d2
+; $0B45A4
+	move.w	-(a2),d0
+; $0B45A6
+	move.l	?ea(7,7),?ea(7,7)
+; $0B45A8
+	move.b	(a7),-(a0)
+; $0B45AA
+	move.l	(a1),d0
+; $0B45AC
+	andi.l	#$C6160022,d0
+; $0B45B2
+	move.l	?ea(7,5),(a1)+
+; $0B45B4
+	movea.l	(-$73,a3,d6.w),a0
+; $0B45B8
+	bcc.s	loc_0B45DB
+; $0B45BA
+	move.b	#$80,?ea(7,7)
+; $0B45BE
+	asr.b	d0,d0
+; $0B45C0
+	movea.l	(a2),a1
+; $0B45C2
+	move.b	(a2),-(a0)
+; $0B45C4
+	subq.w	#2,(a2)
+; $0B45C6
+	btst	d1,-(a2)
+; $0B45C8
+	move.b	-(a1),($004007).w
+
+loc_0B45CC:				; $0B45CC
+	move.b	-(a3),d0
+; $0B45CE
+	dc.w	$A73F
+; $0B45D0
+	or.b	($A,a0,a2.w),d0
+; $0B45D4
+	move.w	d6,-(a0)
+; $0B45D6
+	move.w	(a0),-(a1)
+; $0B45D8
+	addq.w	#1,(a3)
+; $0B45DA
+	dc.w	$4320
+; $0B45DC
+	eor.b	d5,d0
+; $0B45DE
+	and.w	-(a2),d3
+; $0B45E0
+	rol.b	#7,d1
+; $0B45E2
+	or.b	d0,d7
+; $0B45E4
+	dc.w	$4521
+; $0B45E6
+	moveq	#97,d5
+; $0B45E8
+	move.l	$57(a5),-(a1)
+; $0B45EC
+	dc.w	$A059
+; $0B45EE
+	dc.w	$A032
+; $0B45F0
+	or.w	d6,d1
+; $0B45F2
+	asr.b	d4,d7
+; $0B45F4
+	dc.w	$A0A4
+; $0B45F6
+	andi.w	#$8020,($31,a3,d2.w)
+; $0B45FC
+	move.l	-(a3),d1
+; $0B45FE
+	movea.l	($C3898065).l,a6
+; $0B4604
+	move.b	d3,(a0)+
+; $0B4606
+	move.w	(-$72,a2,d3.w),d6
+; $0B460A
+	move.l	(a6)+,(a0)+
+; $0B460C
+	dc.w	$FAD2
+; $0B460E
+	subq.w	#2,(a5)
+; $0B4610
+	muls.w	($60,a3,a6.w),d2
+; $0B4614
+	move.l	($3C,a2,d6.w),-(a1)
+; $0B4618
+	move.w	(a2),d1
+; $0B461A
+	dc.w	$7F20
+; $0B461C
+	sub.l	d0,d1
+; $0B461E
+	exg	d1,d3
+; $0B4620
+	eor.b	d0,(a1)
+; $0B4622
+	addi.l	#$005C53F6,(a4)
+; $0B4628
+	add.l	d1,#$4FBCABE1
+; $0B462E
+	divu.w	d5,d2
+; $0B4630
+	abcd	d0,d0
+; $0B4632
+	divs.w	-(a2),d7
+; $0B4634
+	move.b	(-$1C,a3,a0.l),(a6)
+; $0B4638
+	mulu.w	d0,d4
+; $0B463A
+	lsr.l	d5,d2
+; $0B463C
+	adda.l	d0,a2
+; $0B463E
+	suba.w	-(a2),a0
+
+loc_0B4640:				; $0B4640
+	move.l	(-$18,a1,d0.w),(a5)+
+; $0B4644
+	dc.w	$A169
+; $0B4646
+	asr.w	a6
+; $0B4648
+	dc.w	$A5CE
+; $0B464A
+	exg	a0,a7
+; $0B464C
+	move.w	(a6)+,-(a0)
+; $0B464E
+	move.b	-$3C57(a3),(a3)+
+; $0B4652
+	cmpa.w	#$A1C0,a0
+; $0B4656
+	suba.l	(a0),a1
+; $0B4658
+	adda.w	?ea(7,5),a7
+; $0B465A
+	roxr.w	a4
+; $0B465C
+	rol.w	(a6)+
+; $0B465E
+	dc.w	$77CC
+; $0B4660
+	mulu.w	-$6F3E(a4),d6
+; $0B4664
+	mulu.w	a4,d6
+; $0B4666
+	dc.w	$FC3E
+; $0B4668
+	cmp.b	d0,d0
+; $0B466A
+	sge	d2
+; $0B466C
+	bvs.s	loc_0B4655
+; $0B466E
+	divu.w	-(a1),d0
+; $0B4670
+	divu.w	-(a1),d0
+; $0B4672
+	exg	a1,a0
+; $0B4674
+	eor.w	d5,(a1)
+; $0B4676
+	sub.l	(-$50,a2,d3.l),d4
+; $0B467A
+	cmp.l	-(a3),d7
+; $0B467C
+	dc.w	$F0DC
+; $0B467E
+	roxr.w	a7
+; $0B4680
+	adda.w	a6,a6
+; $0B4682
+	cmp.w	(-$2,a1,a5.l),d1
+; $0B4686
+	movea.w	(a0),a1
+; $0B4688
+	adda.l	-$2003(a7),a6
+; $0B468C
+	roxl.w	(a7)+
+; $0B468E
+	add.w	d7,?ea(7,6)
+; $0B4690
+	movea.w	(-$23,a1,a5.l),a1
+; $0B4694
+	dc.w	$FDDD
+; $0B4696
+	adda.w	$6EF0(a7),a7
+; $0B469A
+	move.w	?ea(7,6),loc_0BB5AC(pc)
+; $0B469E
+	roxr.w	d6,d6
+; $0B46A0
+	sf	(a4)+
+; $0B46A2
+	roxl.w	d3
+; $0B46A4
+	cmpa.w	(a3)+,a0
+; $0B46A6
+	sub.b	d0,(a4)+
+; $0B46A8
+	cmpa.w	(-$10,a1,a2.w),a1
+; $0B46AC
+	mulu.w	(a4)+,d6
+; $0B46AE
+	add.w	d7,($001186).w
+; $0B46B2
+	muls.w	a5,d0
+; $0B46B4
+	adda.l	-$392E(a4),a0
+; $0B46B8
+	jsr	($FFFFCCCD).w
+; $0B46BC
+	moveq	#-16,d5
+; $0B46BE
+	adda.l	(a4)+,a6
+; $0B46C0
+	dc.w	$FEA6
+; $0B46C2
+	suba.w	(-$32,a0,a4.l),a7
+; $0B46C6
+	move.w	(-$4F,a0,a5.l),(-$55,a5,a5.l)
+; $0B46CC
+	moveq	#-19,d0
+; $0B46CE
+	asl.w	a7
+; $0B46D0
+	mulu.w	(a0),d0
+; $0B46D2
+	asl.l	#8,d1
+; $0B46D4
+	dc.w	$FDC8
+; $0B46D6
+	move.l	(a1),d0
+; $0B46D8
+	move.b	-(a2),-(a7)
+; $0B46DA
+	btst	d1,(a1)
+; $0B46DC
+	move.l	(a5)+,?ea(7,7)
+; $0B46DE
+	move.b	(a5)+,d0
+; $0B46E0
+	move.l	$30A5(a1),(-$47,a0,d3.w)
+; $0B46E6
+	move.w	(a6),-(a0)
+; $0B46E8
+	ori.?	#?,($002661).w
+; $0B46EC
+	eor.b	d4,($60,a0,d2.l)
+; $0B46F0
+	move.l	(a2),-(a0)
+; $0B46F2
+	move.b	($4F,a1,d1.w),($00551F).w
+; $0B46F8
+	move.b	(a5),-$2B00(a0)
+; $0B46FC
+	subi.l	#$45B1E200,-(a2)
+; $0B4702
+	mulu.w	-(a0),d7
+; $0B4704
+	asl.b	d0,d0
+; $0B4706
+	move.w	-(a3),-$28B9(a1)
+; $0B470A
+	dc.w	$0E56
+; $0B470C
+	move.b	(a1),-$4351(a0)
+; $0B4710
+	and.w	a4,d0
+; $0B4712
+	bclr	#26,(a3)
+; $0B4716
+	dc.w	$A0F8
+; $0B4718
+	ori.w	#$D4E1,(a1)
+; $0B471C
+	move.w	a5,(a7)+
+; $0B471E
+	dc.w	$FA80
+; $0B4720
+	movea.b	($5C,a0,d6.l),a4
+; $0B4724
+	or.b	-(a2),d0
+; $0B4726
+	move.w	($10,a1,a3.l),d1
+; $0B472A
+	movea.w	(a2),a6
+; $0B472C
+	dc.w	$A2A0
+; $0B472E
+	btst	d7,-(a2)
+; $0B4730
+	addq.b	#1,-(a1)
+; $0B4732
+	move.l	-(a1),($41F61191).l
+; $0B4738
+	dc.w	$A049
+; $0B473A
+	negx.?	($30,a4,d0.l)
+; $0B473E
+	nbcd	(a0)
+; $0B4740
+	move.b	a5,(-$3D,a0,d4.w)
+; $0B4744
+	move.l	(a3),d1
+; $0B4746
+	movea.b	?ea(7,7),a1
+; $0B4748
+	exg	d1,d1
+; $0B474A
+	move.w	-(a1),d1
+; $0B474C
+	move.w	a4,($31E93000).l
+; $0B4752
+	adda.w	($42,a0,a1.l),a4
+; $0B4756
+	move.b	(-$7E,a1,a7.w),($16,a5,d1.w)
+; $0B475C
+	roxl.l	#2,d1
+; $0B475E
+	dc.w	$7900
+; $0B4760
+	andi.l	#$E7FCCB76,(-$66,a6,d0.w)
+; $0B4768
+	negx.w	a7
+; $0B476A
+	ori.l	#$E0810198,(a2)+
+; $0B4770
+	lsr.w	d4
+; $0B4772
+	dc.w	$F020
+; $0B4774
+	suba.w	-(a1),a4
+; $0B4776
+	suba.w	-(a3),a1
+; $0B4778
+	adda.l	(a1),a6
+; $0B477A
+	divs.w	$6FE5(a5),d0
+; $0B477E
+	mulu.w	$50CA(a0),d6
+; $0B4782
+	cmpa.w	(-$4F,a4,a2.l),a1
+; $0B4786
+	dc.w	$AED0
+; $0B4788
+	dc.w	$FDB4
+; $0B478A
+	dc.w	$F0FE
+; $0B478C
+	adda.w	a5,a6
+; $0B478E
+	add.b	d7,-(a1)
+; $0B4790
+	dc.w	$FDC9
+; $0B4792
+	addq.l	#8,#$70B391E3
+; $0B4798
+	moveq	#-20,d0
+; $0B479A
+	dc.w	$A1F0
+; $0B479C
+	dc.w	$7751
+; $0B479E
+	dc.w	$AE6E
+; $0B47A0
+	dc.w	$F0ED
+; $0B47A2
+	adda.l	(a7)+,a6
+; $0B47A4
+	blt.s	loc_0B4796
+; $0B47A6
+	rol.b	d7,d7
+; $0B47A8
+	moveq	#-17,d1
+; $0B47AA
+	ori.l	#$F04D504A,d1
+; $0B47B0
+	add.l	d7,d1
+; $0B47B2
+	ror.l	#3,d0
+; $0B47B4
+	asl.w	-(a4)
+; $0B47B6
+	st	-(a3)
+; $0B47B8
+	addq.w	#1,($40,a1,a6.w)
+; $0B47BC
+	eor.l	d3,(-$22,a2,d3.l)
+; $0B47C0
+	and.l	($D170CED1).l,d1
+; $0B47C6
+	divu.w	-(a2),d0
+; $0B47C8
+	adda.l	-(a4),a7
+; $0B47CA
+	moveq	#-1,d0
+; $0B47CC
+	dc.w	$FDCC
+; $0B47CE
+	muls.w	a6,d6
+; $0B47D0
+	ror.w	(a4)+
+; $0B47D2
+	adda.w	-$2601(a7),a6
+; $0B47D6
+	eor.w	d5,($10,a0,d7.l)
+; $0B47DA
+	mulu.w	-$33DE(a7),d6
+; $0B47DE
+	move.b	(a7)+,d1
+; $0B47E0
+	dc.w	$FD55
+; $0B47E2
+	eori.l	#$52FFF125,d0
+; $0B47E8
+	addq.b	#1,$5BF2(a7)
+; $0B47EC
+	move.l	(a5),$6025(a2)
+; $0B47F0
+	move.l	d2,-(a2)
+; $0B47F2
+	asl.b	d0,d2
+; $0B47F4
+	cmpa.l	-(a0),a5
+; $0B47F6
+	exg	a2,a2
+; $0B47F8
+	dc.w	$AFE4
+; $0B47FA
+	move.l	($10,a7,a4.l),d2
+; $0B47FE
+	shi	-(a7)
+; $0B4800
+	asr.w	#8,d5
+; $0B4802
+	move.b	?ea(7,6),-(a0)
+; $0B4804
+	btst	d3,(a0)
+; $0B4806
+	movea.b	(a2),a1
+; $0B4808
+	movea.l	(a5),a2
+; $0B480A
+	move.l	(a6)+,-(a2)
+; $0B480C
+	dc.w	$A1D8
+; $0B480E
+	asr.w	#8,d2
+; $0B4810
+	cmpa.w	-(a0),a1
+; $0B4812
+	chk.w	($25,a2,a6.w),d2
+; $0B4816
+	lea	a7,a5
+; $0B4818
+	dblt	d7,loc_0B9E19
+; $0B481C
+	movea.l	a0,a0
+; $0B481E
+	addq.b	#5,-(a0)
+; $0B4820
+	add.w	d0,d3
+; $0B4822
+	or.w	d6,-(a1)
+; $0B4824
+	move.w	(-$3F,a7,a6.w),$6143(a1)
+; $0B482A
+	muls.w	-(a0),d7
+; $0B482C
+	move.b	(a3),$1151(a0)
+; $0B4830
+	mulu.w	-(a0),d7
+; $0B4832
+	cmpa.w	-(a1),a1
+; $0B4834
+	shi	(a6)
+; $0B4836
+	pea	d1
+; $0B4838
+	and.b	(-$9,a3,d1.w),d5
+; $0B483C
+	move.l	-(a1),d1
+; $0B483E
+	move.l	($12,pc,a0.w),$3CC2(a1)
+; $0B4844
+	shi	$7580(a6)
+; $0B4848
+	addq.b	#1,-(a2)
+; $0B484A
+	movea.l	(a1)+,a6
+; $0B484C
+	move.l	-(a2),d0
+; $0B484E
+	and.w	(a5),d6
+; $0B4850
+	bclr	d6,(a1)
+; $0B4852
+	dc.w	$4320
+; $0B4854
+	move.l	-(a3),-(a2)
+; $0B4856
+	add.l	d2,d1
+; $0B4858
+	move.l	(-$F,a2,a4.l),(-$5F,a3,a7.w)
+; $0B485E
+	ori.?	#?,loc_0AEB69(pc)
+; $0B4862
+	moveq	#-30,d0
+; $0B4864
+	exg	d1,d4
+; $0B4866
+	add.b	(a3),d1
+; $0B4868
+	move.b	-(a5),-(a2)
+; $0B486A
+	add.b	d1,-(a2)
+; $0B486C
+	cmpa.l	(a6)+,a2
+; $0B486E
+	dc.w	$A4E0
+; $0B4870
+	dc.w	$FBA3
+; $0B4872
+	subi.w	#$F8A5,($11,a1,d1.w)
+; $0B4878
+	move.b	(a4),#$33
+; $0B487C
+	add.b	d0,d7
+; $0B487E
+	add.w	d0,($51,a1,d7.w)
+; $0B4882
+	exg	a6,a0
+; $0B4884
+	blt.s	loc_0B48D6
+; $0B4886
+	move.w	(-$10,a0,a1.w),(-$70,a0,d7.w)
+; $0B488C
+	subq.w	#4,(a0)
+; $0B488E
+	lsr.b	d1,d5
+; $0B4890
+	sf	-$3BB0(a6)
+; $0B4894
+	and.w	(a0),d6
+; $0B4896
+	add.w	d7,(-$23,a1,a4.l)
+; $0B489A
+	and.l	-$314F(a2),d6
+; $0B489E
+	dc.w	$FE36
+; $0B48A0
+	st	$4471(a4)
+; $0B48A4
+	add.b	(-$14,a7,d7.w),d6
+; $0B48A8
+	ror.w	d7,d7
+; $0B48AA
+	move.b	(a4)+,($FFFFEDDD).w
+; $0B48AE
+	bgt.s	loc_0B4880
+; $0B48B0
+	ror.w	(a6)+
+; $0B48B2
+	adda.l	?ea(7,7),a7
+; $0B48B4
+	adda.w	-$1021(a7),a7
+; $0B48B8
+	adda.l	?ea(7,6),a7
+; $0B48BA
+	roxl.w	a4
+; $0B48BC
+	move.l	?ea(7,6),?ea(7,6)
+; $0B48BE
+	or.w	d7,(-$14,a0,a7.l)
+; $0B48C2
+	add.l	(-$6F,a1,a5.l),d2
+; $0B48C6
+	dbt	d3,loc_0B1A6F
+; $0B48CA
+	adda.w	a4,a6
+; $0B48CC
+	roxr.w	-(a7)
+; $0B48CE
+	cmpa.w	(a5)+,a0
+; $0B48D0
+	adda.w	(a4)+,a0
+; $0B48D2
+	exg	a2,a0
+; $0B48D4
+	add.b	d6,d3
+
+loc_0B48D6:				; $0B48D6
+	ror.w	(a7)+
+; $0B48D8
+	sub.w	d3,(-$10,a0,a0.l)
+; $0B48DC
+	movea.l	(-$50,a0,d3.l),a7
+; $0B48E0
+	move.l	(a0),(a7)+
+; $0B48E2
+	dc.w	$AE91
+; $0B48E4
+	roxr.l	d6,d5
+; $0B48E6
+	sub.l	loc_0AD9C5(pc),d1
+; $0B48EA
+	and.w	a5,d6
+; $0B48EC
+	dc.w	$F0DD
+; $0B48EE
+	adda.l	a6,a6
+; $0B48F0
+	ror.l	#7,d3
+; $0B48F2
+	suba.w	(a4)+,a0
+; $0B48F4
+	roxr.w	$5FF0(a7)
+; $0B48F8
+	adda.w	?ea(7,5),a6
+; $0B48FA
+	and.l	?ea(7,7),d7
+; $0B48FC
+	roxr.w	(a5)+
+; $0B48FE
+	roxl.w	a6
+; $0B4900
+	adda.w	(a6)+,a6
+; $0B4902
+	cmp.w	(a0),d1
+; $0B4904
+	add.b	d7,d1
+; $0B4906
+	add.l	d7,a2
+; $0B4908
+	sub.w	-(a1),d0
+; $0B490A
+	moveq	#-95,d0
+; $0B490C
+	addq.w	#8,d5
+; $0B490E
+	moveq	#-78,d0
+; $0B4910
+	eor.b	d0,d0
+; $0B4912
+	btst	d1,-(a0)
+; $0B4914
+	ori.?	#?,($EEFFFD).l
+; $0B491A
+	dc.w	$FBFF
+; $0B491C
+	dc.w	$FF00
+; $0B491E
+	btst	d7,d0
+; $0B4920
+	dc.w	$7B00
+; $0B4922
+	dc.w	$F0FD
+; $0B4924
+	dc.w	$F0F0
+; $0B4926
+	ori.b	#$FD,a7
+; $0B492A
+	dc.w	$F1B1
+; $0B492C
+	dc.w	$F012
+; $0B492E
+	andi.b	#$FD,a7
+; $0B4932
+	dc.w	$F145
+; $0B4934
+	subq.b	#2,$354(a7)
+; $0B4938
+	ori.b	#$2F,($31,a5,d0.w)
+; $0B493E
+	btst	d0,$32E(a6)
+; $0B4942
+	ori.?	#?,?ea(7,5)
+; $0B4944
+	dc.w	$FF5C
+; $0B4946
+	bclr	d5,d4
+; $0B4948
+	bchg	d1,?ea(7,7)
+; $0B494A
+	addq.b	#1,-(a5)
+; $0B494C
+	subq.w	#2,(a5)
+; $0B494E
+	subq.b	#8,($51,a5,d5.w)
+; $0B4952
+	dc.w	$FF23
+; $0B4954
+	movea.l	(a5),a7
+; $0B4956
+	subq.b	#8,-$AB(a6)
+; $0B495A
+	move.l	?ea(7,7),?ea(7,7)
+; $0B495C
+	move.w	?ea(7,6),(a7)+
+; $0B495E
+	move.l	(a2),d2
+; $0B4960
+	move.w	$2521(a5),(a1)+
+; $0B4964
+	dc.w	$FF32
+; $0B4966
+	move.l	-(a4),-(a1)
+; $0B4968
+	move.w	(a3),$2355(a2)
+; $0B496C
+	move.w	?ea(7,7),($003D33).w
+; $0B4970
+	move.w	(a6)+,?ea(7,6)
+; $0B4972
+	add.b	d6,?ea(7,6)
+; $0B4974
+	move.w	-$13(a7),(a1)+
+; $0B4978
+	suba.w	(a3),a7
+; $0B497A
+	adda.w	?ea(7,6),a7
+; $0B497C
+	move.w	(a5)+,#$3EFF
+; $0B4980
+	add.l	d6,(a6)+
+; $0B4982
+	add.b	d1,?ea(7,5)
+; $0B4984
+	add.w	d4,-(a6)
+; $0B4986
+	move.w	($33,a3,a7.l),-(a1)
+; $0B498A
+	suba.l	-(a2),a6
+; $0B498C
+	move.l	d5,$4231(a2)
+; $0B4990
+	move.b	?ea(7,7),(a1)+
+; $0B4992
+	move.w	(-$1D,a5,d3.w),-(a2)
+; $0B4996
+	move.l	-$662D(a6),?ea(7,7)
+; $0B499A
+	dc.w	$FF3E
+; $0B499C
+	ror.b	d7,d5
+; $0B499E
+	dc.w	$FEDE
+; $0B49A0
+	move.w	(a6)+,(-$1,a1,a6.l)
+; $0B49A4
+	add.b	d1,(-$22,a2,a1.l)
+; $0B49A8
+	lsl.b	d1,d3
+; $0B49AA
+	sub.l	d1,(a3)
+; $0B49AC
+	add.l	d3,(a5)+
+; $0B49AE
+	move.w	-(a5),-(a1)
+; $0B49B0
+	move.w	d0,d4
+; $0B49B2
+	move.w	($3E,a4,d0.w),-$1(a2)
+; $0B49B8
+	movea.l	d5,a1
+; $0B49BA
+	sgt	?ea(7,6)
+; $0B49BC
+	move.w	(a5),$2EDD(a1)
+; $0B49C0
+	dc.w	$FF52
+; $0B49C2
+	scs	(a5)+
+; $0B49C4
+	move.l	(-$1,a2,d2.w),-(a1)
+; $0B49C8
+	roxl.l	#6,d7
+; $0B49CA
+	add.b	d1,-(a5)
+; $0B49CC
+	dc.w	$FEDD
+; $0B49CE
+	add.w	a5,d1
+; $0B49D0
+	bchg	d7,#$77
+; $0B49D4
+	dc.w	$FF66
+; $0B49D6
+	or.w	d3,($006867).w
+; $0B49DA
+	sub.l	(a0)+,d3
+; $0B49DC
+	divs.w	?ea(7,7),d4
+; $0B49DE
+	dc.w	$7B68
+; $0B49E0
+	sub.w	(-$69,a6,a6.l),d3
+; $0B49E4
+	bvs.s	loc_0B4A61
+; $0B49E6
+	dc.w	$FFED
+; $0B49E8
+	sub.l	d3,(a7)
+; $0B49EA
+	dc.w	$7799
+; $0B49EC
+	sub.l	d3,(-$1,a6,d6.w)
+; $0B49F0
+	cmp.w	?ea(7,7),d4
+; $0B49F2
+	roxl.l	#6,d7
+; $0B49F4
+	divs.w	(a6)+,d5
+; $0B49F6
+	add.l	d6,d7
+; $0B49F8
+	dc.w	$FF86
+; $0B49FA
+	dc.w	$7786
+; $0B49FC
+	cmpa.w	-(a6),a7
+; $0B49FE
+	bvc.s	loc_0B4987
+; $0B4A00
+	suba.l	?ea(7,7),a7
+; $0B4A02
+	add.l	d6,(a6)
+; $0B4A04
+	or.l	d4,a1
+; $0B4A06
+	add.l	d4,(a6)
+; $0B4A08
+	bvc.s	loc_0B4A72
+; $0B4A0A
+	dc.w	$FF99
+; $0B4A0C
+	bvs.s	loc_0B4A89
+; $0B4A0E
+	or.w	($69D677FF).l,d4
+; $0B4A14
+	sub.l	d4,?ea(7,7)
+; $0B4A16
+	roxl.l	#6,d1
+; $0B4A18
+	dc.w	$7BFF
+; $0B4A1A
+	add.w	d6,-$7A(a1)
+; $0B4A1E
+	moveq	#102,d4
+; $0B4A20
+	bvs.s	loc_0B4A99
+; $0B4A22
+	bvc.s	loc_0B4A8B
+; $0B4A24
+	moveq	#-1,d3
+; $0B4A26
+	bgt.s	loc_0B4A25
+
+loc_0B4A28:				; $0B4A28
+	dc.w	$7776
+; $0B4A2A
+	cmpa.l	-$6798(a5),a4
+; $0B4A2E
+	eor.l	d7,a5
+; $0B4A30
+	roxl.l	#6,d6
+; $0B4A32
+	bvs.s	loc_0B49BD
+; $0B4A34
+	sub.b	d4,a7
+; $0B4A36
+	move.b	($FF88DD66).l,(a0)
+; $0B4A3C
+	sub.l	d3,d6
+; $0B4A3E
+	dc.w	$7766
+; $0B4A40
+	suba.l	?ea(7,7),a3
+; $0B4A42
+	moveq	#104,d4
+; $0B4A44
+	sub.w	d3,(-$78,a6,a0.l)
+; $0B4A48
+	dc.w	$7768
+; $0B4A4A
+	dc.w	$FF86
+; $0B4A4C
+	moveq	#120,d3
+; $0B4A4E
+	roxl.w	d6,d0
+; $0B4A50
+	dc.w	$7766
+; $0B4A52
+	cmpa.l	?ea(7,7),a6
+; $0B4A54
+	sub.w	d3,(-$67,a7,d6.w)
+; $0B4A58
+	moveq	#107,d3
+; $0B4A5A
+	or.w	($6B,a6,a5.l),d4
+; $0B4A5E
+	or.l	d3,d6
+; $0B4A60
+	bvc.s	loc_0B4A19
+; $0B4A62
+	move.l	(a1),d7
+; $0B4A64
+	eor.l	d3,d6
+; $0B4A66
+	dc.w	$FF68
+; $0B4A68
+	or.w	d3,-(a6)
+; $0B4A6A
+	or.w	(-$78,a6,a0.w),d4
+; $0B4A6E
+	beq.l	loc_D673B307
+; $0B4A74
+	eor.w	d4,($77,a6,a3.l)
+; $0B4A78
+	dc.w	$FB98
+; $0B4A7A
+	moveq	#14,d3
+; $0B4A7C
+	movea.b	-$4987(a3),a0
+; $0B4A80
+	or.w	d3,($68,a6,a7.l)
+; $0B4A84
+	dc.w	$4F10
+; $0B4A86
+	sub.w	(-$13,a7,d6.l),d4
+; $0B4A8A
+	dc.w	$7B7B
+; $0B4A8C
+	roxl.l	#6,d6
+; $0B4A8E
+	dc.w	$7310
+; $0B4A90
+	cmp.l	(a1)+,d3
+; $0B4A92
+	dc.w	$AE11
+; $0B4A94
+	blt.s	loc_0B4A73
+; $0B4A96
+	moveq	#-1,d4
+; $0B4A98
+	bne.s	loc_0B4A28
+; $0B4A9A
+	add.w	d4,-(a7)
+; $0B4A9C
+	or.l	a1,d4
+; $0B4A9E
+	sub.l	d4,d7
+; $0B4AA0
+	eor.l	d4,(a6)
+; $0B4AA2
+	dc.w	$FC0F
+; $0B4AA4
+	add.b	(a3)+,d6
+; $0B4AA6
+	or.l	d3,d6
+; $0B4AA8
+	moveq	#-84,d4
+; $0B4AAA
+	movea.b	-(a7),a0
+; $0B4AAC
+	dc.w	$FF66
+; $0B4AAE
+	moveq	#103,d3
+; $0B4AB0
+	or.w	-(a6),d4
+; $0B4AB2
+	moveq	#103,d4
+; $0B4AB4
+	or.l	(a7)+,d4
+; $0B4AB6
+	bvc.s	loc_0B4B1F
+; $0B4AB8
+	or.w	(-$2,a7,a0.w),d3
+; $0B4ABC
+	move.b	a7,$1077(a0)
+; $0B4AC0
+	dc.w	$FF86
+; $0B4AC2
+	moveq	#-122,d4
+; $0B4AC4
+	moveq	#-122,d3
+; $0B4AC6
+	moveq	#119,d3
+; $0B4AC8
+	moveq	#-66,d3
+; $0B4ACA
+	move.b	(a0),-(a0)
+; $0B4ACC
+	bvc.s	loc_0B4B46
+; $0B4ACE
+	bvc.s	loc_0B4B48
+; $0B4AD0
+	or.b	(a6),d3
+; $0B4AD2
+	move.l	-(a7),-$4079(a0)
+; $0B4AD6
+	beq.s	loc_0B4B50
+; $0B4AD8
+	beq.s	loc_0B4B51
+; $0B4ADA
+	beq.s	loc_0B4AE7
+; $0B4ADC
+	move.l	-(a7),-$49DA(a0)
+; $0B4AE0
+	move.l	(-$5B,a7,d7.l),$1168(a0)
+; $0B4AE6
+	bne.s	loc_0B4A81
+; $0B4AE8
+	move.b	d6,(a0)
+; $0B4AEA
+	add.l	d7,d7
+; $0B4AEC
+	bvc.s	loc_0B4B55
+; $0B4AEE
+	or.w	($10,a6,a7.l),d4
+; $0B4AF2
+	moveq	#119,d3
+; $0B4AF4
+	dc.w	$FF86
+; $0B4AF6
+	dc.w	$7768
+; $0B4AF8
+	bne.s	loc_0B4B72
+; $0B4AFA
+	bne.s	loc_0B4B64
+; $0B4AFC
+	moveq	#-5,d3
+; $0B4AFE
+	bvc.s	loc_0B4B66
+; $0B4B00
+	dc.w	$7101
+; $0B4B02
+	subq.w	#2,(a5)
+; $0B4B04
+	movea.l	a6,a1
+; $0B4B06
+	scs	?ea(7,7)
+; $0B4B08
+	subq.b	#2,(a1)
+; $0B4B0A
+	move.b	(a5),$2553(a7)
+; $0B4B0E
+	ror.w	#7,d1
+; $0B4B10
+	dc.w	$FF51
+; $0B4B12
+	move.l	(-$1E,a2,d5.w),d1
+
+loc_0B4B16:				; $0B4B16
+	dc.w	$FE33
+; $0B4B18
+	move.l	?ea(7,7),(a2)+
+; $0B4B1A
+	move.l	-$2CAB(a5),(a1)+
+; $0B4B1E
+	adda.l	(a2),a6
+; $0B4B20
+	add.w	d1,(a5)
+; $0B4B22
+	dc.w	$FF13
+; $0B4B24
+	move.l	($32,a2,a7.l),-(a0)
+; $0B4B28
+	dc.w	$FE33
+; $0B4B2A
+	ror.l	d7,d7
+; $0B4B2C
+	move.w	-$1C1D(a6),($23EDAA00).l
+; $0B4B34
+	adda.l	?ea(7,7),a6
+; $0B4B36
+	move.w	(a6)+,($E23C33DF).l
+; $0B4B3C
+	move.l	(a2),?ea(7,6)
+; $0B4B3E
+	dc.w	$FFE9
+; $0B4B40
+	adda.w	-$2C6D(a5),a7
+; $0B4B44
+	move.w	(-$1,a3,d7.l),-(a1)
+
+loc_0B4B48:				; $0B4B48
+	asr.w	?ea(7,6)
+; $0B4B4A
+	roxl.l	#6,d6
+; $0B4B4C
+	divs.w	?ea(7,7),d4
+; $0B4B4E
+	roxl.l	#6,d6
+
+loc_0B4B50:				; $0B4B50
+	dc.w	$FF97
+; $0B4B52
+	lsr.w	(a5)+
+; $0B4B54
+	add.l	d4,(a7)
+; $0B4B56
+	adda.w	-$6601(a5),a7
+; $0B4B5A
+	moveq	#-98,d7
+; $0B4B5C
+	sub.w	d4,-(a7)
+; $0B4B5E
+	sub.l	d4,(a1)+
+; $0B4B60
+	sub.l	d3,(a6)
+; $0B4B62
+	dc.w	$FF97
+
+loc_0B4B64:				; $0B4B64
+	move.w	(a7),(a7)
+
+loc_0B4B66:				; $0B4B66
+	sub.w	-(a7),d4
+; $0B4B68
+	dc.w	$7973
+; $0B4B6A
+	move.w	?ea(7,7),($33679EFE).l
+; $0B4B70
+	add.l	d1,(a1)+
+
+loc_0B4B72:				; $0B4B72
+	suba.l	-$13(a6),a7
+; $0B4B76
+	bls.s	loc_0B4B16
+; $0B4B78
+	adda.l	(a5)+,a6
+; $0B4B7A
+	dc.w	$7999
+; $0B4B7C
+	roxl.w	?ea(7,7)
+; $0B4B7E
+	roxl.w	d6,d1
+; $0B4B80
+	roxl.l	#6,d5
+; $0B4B82
+	add.l	d1,(a1)+
+; $0B4B84
+	add.l	d6,(a1)+
+; $0B4B86
+	dc.w	$FF99
+; $0B4B88
+	bvc.s	loc_0B4B23
+; $0B4B8A
+	sub.b	($EDDE23FF).l,d3
+; $0B4B90
+	move.w	-$1CCD(a5),(a1)+
+; $0B4B94
+	lsl.b	d1,d3
+; $0B4B96
+	move.w	?ea(7,7),($FFE332E3).l
+; $0B4B9C
+	rol.w	(a5)+
+; $0B4B9E
+	move.w	?ea(7,5),-(a1)
+; $0B4BA0
+	roxl.w	?ea(7,7)
+; $0B4BA2
+	adda.w	-$1213(a7),a7
+; $0B4BA6
+	rol.w	?ea(7,6)
+; $0B4BA8
+	adda.l	(a1)+,a6
+; $0B4BAA
+	eor.b	d7,(-$27,a3,a1.l)
+; $0B4BAE
+	move.w	($2F,a3,d3.w),-(a1)
+; $0B4BB2
+	ori.b	#$52,-(a2)
+; $0B4BB6
+	subq.w	#2,d5
+; $0B4BB8
+	move.b	(a2),$1555(a0)
+; $0B4BBC
+	adda.l	($25,pc,d3.w),a1
+; $0B4BC0
+	dc.w	$F920
+; $0B4BC2
+	move.w	(a5),$3F53(a7)
+; $0B4BC6
+	move.w	?ea(7,7),loc_0B70FA(pc)
+; $0B4BCA
+	subq.w	#1,(a5)
+; $0B4BCC
+	move.l	($35,a3,d3.w),-(a2)
+; $0B4BD0
+	add.b	d7,(-$67,a2,d7.l)
+; $0B4BD4
+	ror.w	(a5)+
+; $0B4BD6
+	moveq	#16,d7
+; $0B4BD8
+	sub.l	d4,(a0)+
+; $0B4BDA
+	dc.w	$FCA4
+; $0B4BDC
+	move.l	$2096(a4),(a0)
+; $0B4BE0
+	dc.w	$7B78
+; $0B4BE2
+	or.l	d4,(-$1,pc,d6.l)
+; $0B4BE6
+	or.w	(-$77,a6,a6.l),d4
+; $0B4BEA
+	dc.w	$796E
+; $0B4BEC
+	dc.w	$FE68
+; $0B4BEE
+	dc.w	$FFDD
+
+loc_0B4BF0:				; $0B4BF0
+	cmpa.l	-$4792(a7),a7
+; $0B4BF4
+	dc.w	$FEDD
+; $0B4BF6
+	suba.l	?ea(7,7),a4
+; $0B4BF8
+	dc.w	$7DFD
+; $0B4BFA
+	roxl.w	d6,d1
+; $0B4BFC
+	divs.w	-$1279(a5),d5
+; $0B4C00
+	dc.w	$FF8D
+; $0B4C02
+	add.l	(a1)+,d7
+
+loc_0B4C04:				; $0B4C04
+	moveq	#103,d4
+; $0B4C06
+	sub.l	d4,(a3)+
+; $0B4C08
+	roxl.w	$6697(a7)
+; $0B4C0C
+	bvs.s	loc_0B4BFB
+; $0B4C0E
+	sub.b	d3,(a0)
+; $0B4C10
+	add.l	d6,(a1)+
+; $0B4C12
+	bvs.l	loc_87E4D78A
+; $0B4C18
+	moveq	#-103,d4
+; $0B4C1A
+	or.w	($FFFFFF69).w,d3
+; $0B4C1E
+	sub.w	d4,($67,a7,a1.l)
+; $0B4C22
+	sub.l	(-$1,a7,d6.l),d4
+; $0B4C26
+	eor.l	d3,(a6)
+; $0B4C28
+	dc.w	$FED6
+; $0B4C2A
+	moveq	#-65,d4
+; $0B4C2C
+	roxl.w	(a7)
+; $0B4C2E
+	dc.w	$FF88
+; $0B4C30
+	adda.l	(a6)+,a7
+; $0B4C32
+	add.w	d4,(-$23,a7,a6.l)
+; $0B4C36
+	suba.l	?ea(7,7),a4
+; $0B4C38
+	sub.w	d3,(-$79,a6,d7.l)
+; $0B4C3C
+	bne.s	loc_0B4CB5
+; $0B4C3E
+	bvs.s	loc_0B4BCB
+; $0B4C40
+	rol.w	d7,d0
+; $0B4C42
+	bvc.s	loc_0B4BFB
+; $0B4C44
+	moveq	#-4,d3
+; $0B4C46
+	movea.b	($76,a6,a0.l),a0
+; $0B4C4A
+	dc.w	$FD79
+; $0B4C4C
+	move.w	-(a0),-(a1)
+; $0B4C4E
+	divu.w	(a6)+,d4
+; $0B4C50
+	add.l	d3,a1
+; $0B4C52
+	dc.w	$796D
+; $0B4C54
+	dc.w	$FFB9
+; $0B4C56
+	bvc.s	loc_0B4CBF
+; $0B4C58
+	suba.l	(a6),a6
+; $0B4C5A
+	bvs.s	loc_0B4CC3
+; $0B4C5C
+	moveq	#-17,d3
+; $0B4C5E
+	bvc.s	loc_0B4CC9
+; $0B4C60
+	sub.w	d3,$4220(a0)
+; $0B4C64
+	bvc.s	loc_0B4BED
+; $0B4C66
+	divs.w	?ea(7,7),d3
+; $0B4C68
+	or.w	-$7888(a0),d7
+; $0B4C6C
+	blt.s	loc_0B4C04
+; $0B4C6E
+	bmi.s	loc_0B4CE7
+; $0B4C70
+	rol.w	d7,d3
+; $0B4C72
+	or.w	d3,$7697(a0)
+; $0B4C76
+	move.b	d7,(a0)
+
+loc_0B4C78:				; $0B4C78
+	or.l	(a0)+,d3
+; $0B4C7A
+	add.l	d2,d7
+; $0B4C7C
+	dc.w	$A630
+; $0B4C7E
+	moveq	#-82,d4
+; $0B4C80
+	move.b	($005310).w,($7B,a0,d6.l)
+; $0B4C86
+	dc.w	$FE54
+; $0B4C88
+	move.b	(a5)+,(a0)+
+; $0B4C8A
+	moveq	#120,d3
+; $0B4C8C
+	divs.w	-$6868(a5),d5
+; $0B4C90
+	exg	a1,a6
+; $0B4C92
+	sub.w	d4,d4
+; $0B4C94
+	movea.l	(a3),a0
+; $0B4C96
+	move.b	(a4)+,(a0)+
+; $0B4C98
+	move.b	(a4)+,?ea(7,7)
+; $0B4C9A
+	move.w	($FFFF87D7).w,-$7779(a5)
+; $0B4CA0
+	moveq	#-15,d4
+; $0B4CA2
+	movea.w	($32,a7,a7.w),a0
+; $0B4CA6
+	dc.w	$7787
+; $0B4CA8
+	dc.w	$7776
+; $0B4CAA
+	or.w	d3,($20,a7,d4.w)
+; $0B4CAE
+	moveq	#118,d3
+; $0B4CB0
+	bvc.s	loc_0B4CE0
+; $0B4CB2
+	movea.l	($41,a2,d0.w),a0
+
+loc_0B4CB6:				; $0B4CB6
+	bne.s	loc_0B4CF9
+; $0B4CB8
+	move.l	a6,d0
+; $0B4CBA
+	clr.w	-(a7)
+; $0B4CBC
+	moveq	#103,d3
+; $0B4CBE
+	movea.b	d1,a3
+; $0B4CC0
+	dc.w	$7B86
+; $0B4CC2
+	divs.w	(-$79,a6,d1.w),d3
+; $0B4CC6
+	moveq	#119,d3
+; $0B4CC8
+	or.w	(-$69,a0,d3.w),d4
+; $0B4CCC
+	or.w	-(a6),d4
+; $0B4CCE
+	bne.s	loc_0B4C78
+; $0B4CD0
+	movea.w	($40,a7,d2.l),a0
+; $0B4CD4
+	movea.w	d4,a0
+; $0B4CD6
+	bne.s	loc_0B4CB6
+; $0B4CD8
+	move.w	d0,$6666(a1)
+; $0B4CDC
+	beq.s	loc_0B4D55
+; $0B4CDE
+	move.w	d1,-$799A(a7)
+; $0B4CE2
+	dc.w	$FD87
+; $0B4CE4
+	not.w	d1
+; $0B4CE6
+	slt	?ea(7,6)
+; $0B4CE8
+	add.b	d6,-(a3)
+; $0B4CEA
+	sls	-$CE(a5)
+; $0B4CEE
+	movea.w	d2,a3
+; $0B4CF0
+	move.w	($32,a3,a1.l),-(a1)
+; $0B4CF4
+	move.b	?ea(7,7),(a1)+
+; $0B4CF6
+	move.w	$5333(a6),?ea(7,6)
+; $0B4CFA
+	dc.w	$7F2D
+; $0B4CFC
+	move.l	(-$67,a3,a7.l),d1
+; $0B4D00
+	add.w	d6,(a3)
+; $0B4D02
+	move.w	(a6)+,#$D932
+; $0B4D06
+	suba.w	?ea(7,7),a4
+; $0B4D08
+	sub.l	d4,(a6)
+; $0B4D0A
+	roxl.w	(a5)+
+; $0B4D0C
+	move.w	(a6),?ea(7,6)
+; $0B4D0E
+	move.w	(a3),($3E,a1,d7.l)
+; $0B4D12
+	add.l	d4,(a5)+
+; $0B4D14
+	adda.w	-$6662(a1),a4
+; $0B4D18
+	bmi.s	loc_0B4D5A
+; $0B4D1A
+	dc.w	$FF9E
+; $0B4D1C
+	add.w	($007697).w,d4
+; $0B4D20
+	add.l	d6,(a1)+
+; $0B4D22
+	bgt.l	loc_89F4E5B2
+; $0B4D28
+	moveq	#-103,d4
+; $0B4D2A
+	sub.l	a1,d4
+; $0B4D2C
+	dc.w	$FF97
+; $0B4D2E
+	bne.s	loc_0B4CB7
+; $0B4D30
+	asl.b	d4,d5
+; $0B4D32
+	roxl.l	#6,d7
+; $0B4D34
+	suba.l	?ea(7,7),a4
+; $0B4D36
+	dc.w	$79ED
+; $0B4D38
+	sub.w	(-$27,a7,a0.l),d3
+; $0B4D3C
+	or.l	d3,d6
+; $0B4D3E
+	dc.w	$FF87
+; $0B4D40
+	sub.l	d4,a6
+; $0B4D42
+	suba.w	(a1)+,a3
+; $0B4D44
+	moveq	#105,d4
+; $0B4D46
+	suba.w	-(a5),a4
+; $0B4D48
+	adda.l	?ea(7,6),a4
+; $0B4D4A
+	move.b	(a6),(a0)
+; $0B4D4C
+	dc.w	$AF30
+; $0B4D4E
+	or.b	(a0),d5
+; $0B4D50
+	sub.w	d4,-$1601(a1)
+; $0B4D54
+	dc.w	$7993
+
+loc_0B4D56:				; $0B4D56
+	or.l	d4,(a1)+
+; $0B4D58
+	bvs.s	loc_0B4CF3
+
+loc_0B4D5A:				; $0B4D5A
+	asr.l	#4,d7
+; $0B4D5C
+	rol.w	d7,d1
+; $0B4D5E
+	sub.l	d4,(a0)+
+; $0B4D60
+	sbcd	d6,d3
+; $0B4D62
+	negx.?	?ea(7,6)
+; $0B4D64
+	move.l	($FF679E39).l,$6967(a6)
+; $0B4D6C
+	dc.w	$7999
+; $0B4D6E
+	bne.l	loc_9994E76E
+; $0B4D74
+	add.l	d4,(a3)
+; $0B4D76
+	suba.l	-$2D(a5),a4
+; $0B4D7A
+	sub.l	d4,(a5)+
+; $0B4D7C
+	roxl.l	#6,d1
+
+loc_0B4D7E:				; $0B4D7E
+	sub.w	d3,($D9DF8689).l
+; $0B4D84
+	dc.w	$7779
+; $0B4D86
+	bgt.s	loc_0B4D56
+; $0B4D88
+	negx.l	d6
+; $0B4D8A
+	suba.w	?ea(7,7),a4
+; $0B4D8C
+	asr.l	#4,d7
+; $0B4D8E
+	dc.w	$7999
+; $0B4D90
+	sub.w	d4,-(a7)
+; $0B4D92
+	add.b	d1,($33,a1,a7.l)
+; $0B4D96
+	move.w	(a6)+,($993154D9).l
+; $0B4D9C
+	asl.w	?ea(7,7)
+; $0B4D9E
+	move.w	(a5),$6399(a2)
+; $0B4DA2
+	sub.b	d1,(-$63,a5,d6.w)
+; $0B4DA6
+	dc.w	$FFD3
+; $0B4DA8
+	move.l	(a1)+,(-$2,a1,a0.l)
+; $0B4DAC
+	move.w	($6EFFDD75).l,-$6963(a2)
+; $0B4DB4
+	or.l	d4,(a3)
+; $0B4DB6
+	divs.w	-$92(a5),d3
+; $0B4DBA
+	add.w	d6,-$6622(a1)
+; $0B4DBE
+	add.l	d6,a0
+; $0B4DC0
+	dc.w	$7DFF
+; $0B4DC2
+	add.l	d4,(a1)+
+; $0B4DC4
+	moveq	#-119,d4
+; $0B4DC6
+	sub.l	d4,(a7)
+; $0B4DC8
+	moveq	#-121,d4
+; $0B4DCA
+	eor.w	d7,$7978(a0)
+; $0B4DCE
+	bne.s	loc_0B4D89
+; $0B4DD0
+	dc.w	$79CE
+; $0B4DD2
+	negx.l	(a0)+
+; $0B4DD4
+	dc.w	$FF67
+; $0B4DD6
+	moveq	#-103,d3
+; $0B4DD8
+	bne.s	loc_0B4DB3
+; $0B4DDA
+	moveq	#-121,d4
+; $0B4DDC
+	cmpa.w	($66,pc,a5.l),a3
+; $0B4DE0
+	eor.w	d5,d0
+; $0B4DE2
+	divs.w	-$787A(a5),d5
+; $0B4DE6
+	bgt.l	loc_ED81D4A6
+; $0B4DEC
+	add.l	d6,(a6)
+; $0B4DEE
+	beq.s	loc_0B4D7E
+; $0B4DF0
+	add.l	d7,(a1)+
+
+loc_0B4DF2:				; $0B4DF2
+	sub.l	d6,d4
+; $0B4DF4
+	sub.l	d4,(a1)+
+; $0B4DF6
+	dc.w	$F130
+; $0B4DF8
+	sub.l	d7,d4
+; $0B4DFA
+	dc.w	$FF99
+; $0B4DFC
+	add.l	d6,(a7)
+; $0B4DFE
+	or.l	a1,d3
+; $0B4E00
+	sub.l	d4,(a1)+
+; $0B4E02
+	divu.w	?ea(7,7),d4
+; $0B4E04
+	moveq	#-103,d3
+; $0B4E06
+	sub.w	(-$22,a7,a0.l),d3
+; $0B4E0A
+	or.l	d3,(a6)
+; $0B4E0C
+	dc.w	$FF8E
+
+loc_0B4E0E:				; $0B4E0E
+	roxl.l	#6,d7
+; $0B4E10
+	sub.l	d7,d3
+; $0B4E12
+	add.l	d4,(a7)
+
+loc_0B4E14:				; $0B4E14
+	or.l	(-$39,a1,d7.l),d4
+; $0B4E18
+	move.w	(a6),(a0)
+; $0B4E1A
+	move.b	$4069(a5),(a0)
+; $0B4E1E
+	dc.w	$7996
+; $0B4E20
+	move.b	(a7),(a0)
+; $0B4E22
+	lsr.w	d5,d6
+; $0B4E24
+	move.b	(a0)+,($30,a0,d7.w)
+; $0B4E28
+	dc.w	$7BBF
+; $0B4E2A
+	negx.w	?ea(7,6)
+; $0B4E2C
+	cmp.l	($76,a7,a7.l),d3
+; $0B4E30
+	blt.s	loc_0B4E0B
+; $0B4E32
+	bne.s	loc_0B4E9D
+; $0B4E34
+	bvs.s	loc_0B4DCC
+; $0B4E36
+	bvc.s	loc_0B4E95
+; $0B4E38
+	bne.s	loc_0B4E29
+; $0B4E3A
+	move.b	-(a7),$66B7(a0)
+; $0B4E3E
+	or.b	d0,(-$76,a0,d7.w)
+; $0B4E42
+	move.b	(a7)+,(a0)+
+; $0B4E44
+	dc.w	$7DE6
+; $0B4E46
+	or.l	d4,($007BC7).w
+; $0B4E4A
+	movea.b	-$6791(a1),a0
+; $0B4E4E
+	or.w	(-$77,a7,a0.l),d3
+; $0B4E52
+	dc.w	$F231
+; $0B4E54
+	or.w	d3,-(a6)
+; $0B4E56
+	sub.w	d0,d6
+; $0B4E58
+	adda.w	loc_0B5F15(pc),a7
+; $0B4E5C
+	bvs.s	loc_0B4DE4
+; $0B4E5E
+	eor.l	d3,$5189(a6)
+; $0B4E62
+	bne.s	loc_0B4E5F
+; $0B4E64
+	eor.l	d3,($50,a6,a3.w)
+; $0B4E68
+	ror.w	d7,d6
+; $0B4E6A
+	bmi.s	loc_0B4DF2
+; $0B4E6C
+	add.w	d4,(a2)
+; $0B4E6E
+	sub.b	(a0),d3
+; $0B4E70
+	suba.l	(a4)+,a4
+; $0B4E72
+	move.w	(a4)+,?ea(7,7)
+; $0B4E74
+	subq.w	#5,-(a7)
+; $0B4E76
+	btst	d7,-(a0)
+; $0B4E78
+	bne.s	loc_0B4E6B
+; $0B4E7A
+	addq.b	#4,$4A21(a0)
+; $0B4E7E
+	ori.w	#$9410,-(a0)
+; $0B4E82
+	beq.s	loc_0B4E89
+; $0B4E84
+	bhi.s	loc_0B4E0E
+; $0B4E86
+	bclr	d0,-(a0)
+; $0B4E88
+	dc.w	$0E62
+; $0B4E8A
+	eor.l	d3,d6
+; $0B4E8C
+	bvc.s	loc_0B4E14
+; $0B4E8E
+	movea.b	-(a0),a3
+; $0B4E90
+	moveq	#120,d3
+; $0B4E92
+	move.b	-(a0),$77FE(a5)
+; $0B4E96
+	dc.w	$4B20
+; $0B4E98
+	dc.w	$7776
+; $0B4E9A
+	or.w	-(a6),d4
+; $0B4E9C
+	dc.w	$7768
+; $0B4E9E
+	or.w	(a3),d4
+; $0B4EA0
+	bvc.s	loc_0B4F18
+; $0B4EA2
+	dc.w	$F150
+; $0B4EA4
+	movea.l	-(a2),a7
+; $0B4EA6
+	bne.s	loc_0B4ED3
+; $0B4EA8
+	negx.w	$3861(a0)
+; $0B4EAC
+	rol.l	#7,d0
+; $0B4EAE
+	or.w	-(a6),d3
+; $0B4EB0
+	or.w	d0,d4
+; $0B4EB2
+	bra.s	loc_0B4F2C
+; $0B4EB4
+	or.w	($46,a6,a7.l),d4
+; $0B4EB8
+	bsr.s	loc_0B4ECD
+; $0B4EBA
+	movea.l	-(a6),a4
+; $0B4EBC
+	rol.b	#7,d3
+; $0B4EBE
+	move.w	?ea(7,5),d4
+; $0B4EC0
+	dc.w	$FFDE
+; $0B4EC2
+	move.l	-(a3),?ea(7,7)
+; $0B4EC4
+	bls.s	loc_0B4EA3
+; $0B4EC6
+	sgt	-(a3)
+; $0B4EC8
+	move.w	($52,a7,d3.l),(a1)+
+; $0B4ECC
+	adda.l	d3,a6
+; $0B4ECE
+	ori.?	#?,(a7)+
+; $0B4ED0
+	dc.w	$FED3
+; $0B4ED2
+	subq.w	#1,?ea(7,7)
+; $0B4ED4
+	move.l	(a5)+,?ea(7,7)
+; $0B4ED6
+	movea.l	(a3),a1
+; $0B4ED8
+	move.b	d1,?ea(7,6)
+; $0B4EDA
+	move.w	$11FF(a6),d7
+; $0B4EDE
+	sub.w	d3,(-$69,a6,a6.l)
+; $0B4EE2
+	sub.l	d3,a5
+; $0B4EE4
+	add.l	(a7),d7
+; $0B4EE6
+	dc.w	$FF97
+; $0B4EE8
+	bls.s	loc_0B4E83
+; $0B4EEA
+	or.w	-(a3),d4
+; $0B4EEC
+	move.l	($0036FD).w,-(a1)
+; $0B4EF0
+	lsl.l	#1,d2
+; $0B4EF2
+	move.l	?ea(7,5),d0
+; $0B4EF4
+	rol.w	?ea(7,6)
+; $0B4EF6
+	roxl.b	d6,d5
+; $0B4EF8
+	dc.w	$FFFB
+; $0B4EFA
+	adda.l	(a5)+,a6
+; $0B4EFC
+	dc.w	$AE10
+; $0B4EFE
+	asl.w	d4,d0
+; $0B4F00
+	rol.w	d3,d0
+; $0B4F02
+	suba.l	?ea(7,6),a4
+; $0B4F04
+	move.w	-(a2),d7
+; $0B4F06
+	dc.w	$FEE9
+; $0B4F08
+	moveq	#104,d4
+; $0B4F0A
+	roxl.l	#6,d1
+; $0B4F0C
+	bne.l	loc_6891E874
+; $0B4F12
+	move.w	?ea(7,5),-(a3)
+; $0B4F14
+	add.l	d4,a0
+; $0B4F16
+	dc.w	$F33D
+
+loc_0B4F18:				; $0B4F18
+	add.w	d4,$1110(a4)
+; $0B4F1C
+	move.b	(-$78,a6,a0.l),-$1201(a0)
+; $0B4F22
+	sub.l	d6,d4
+; $0B4F24
+	moveq	#-35,d3
+; $0B4F26
+	sub.w	d3,$7799(a0)
+; $0B4F2A
+	dc.w	$FF87
+
+loc_0B4F2C:				; $0B4F2C
+	moveq	#119,d7
+; $0B4F2E
+	bgt.s	loc_0B4F07
+; $0B4F30
+	ror.w	d7,d1
+; $0B4F32
+	divs.w	(-$1,pc,a1.l),d4
+; $0B4F36
+	bgt.s	loc_0B4F88
+; $0B4F38
+	asl.l	#4,d7
+; $0B4F3A
+	divu.w	-$6701(a5),d3
+; $0B4F3E
+	sub.l	d3,a6
+; $0B4F40
+	move.l	(a3),(-$77,a4,d6.w)
+; $0B4F44
+	sub.w	d4,-$78(a0)
+; $0B4F48
+	beq.s	loc_0B4FC9
+; $0B4F4A
+	ror.w	(a5)+
+; $0B4F4C
+	dc.w	$77DE
+; $0B4F4E
+	adda.w	?ea(7,7),a3
+; $0B4F50
+	roxl.l	#6,d1
+
+loc_0B4F52:				; $0B4F52
+	suba.l	(a5)+,a6
+; $0B4F54
+	add.l	(a6),d6
+; $0B4F56
+	suba.l	(a3),a1
+; $0B4F58
+	dc.w	$FF32
+; $0B4F5A
+	move.w	(a3),($236ED937).l
+; $0B4F60
+	move.w	?ea(7,7),(a1)+
+; $0B4F62
+	move.w	(a5)+,($63,a6,d3.w)
+; $0B4F66
+	dc.w	$79DD
+; $0B4F68
+	sub.b	d1,($23,a5,a7.l)
+; $0B4F6C
+	add.b	$2232(a5),d7
+; $0B4F70
+	dc.w	$FED3
+; $0B4F72
+	move.w	?ea(7,7),($0032ED).w
+; $0B4F76
+	exg	d6,d2
+; $0B4F78
+	move.l	a4,($32330F22).l
+; $0B4F7E
+	move.w	(-$24,a5,d5.w),d1
+; $0B4F82
+	subq.b	#7,(a7)+
+; $0B4F84
+	dc.w	$7F31
+; $0B4F86
+	dc.w	$7F43
+
+loc_0B4F88:				; $0B4F88
+	dc.w	$7F00
+; $0B4F8A
+	subq.w	#2,?ea(7,7)
+; $0B4F8C
+	beq.s	loc_0B500D
+; $0B4F8E
+	dc.w	$797F
+; $0B4F90
+	or.w	d5,?ea(7,7)
+; $0B4F92
+	sub.w	d6,?ea(7,7)
+; $0B4F94
+	dc.w	$AF7F
+; $0B4F96
+	exg	a0,a7
+; $0B4F98
+	add.w	d1,?ea(7,7)
+; $0B4F9A
+	mulu.w	(a4)+,d1
+; $0B4F9C
+	dc.w	$7586
+; $0B4F9E
+	ori.w	#$1760,-(a0)
+; $0B4FA2
+	move.l	-(a0),-$98D(a5)
+; $0B4FA6
+	or.w	d3,-$1C78(a0)
+; $0B4FAA
+	divu.w	$30AD(a7),d4
+; $0B4FAE
+	move.w	d4,d0
+; $0B4FB0
+	or.l	d0,d6
+; $0B4FB2
+	or.w	d3,($68,a7,d1.w)
+; $0B4FB6
+	or.l	d3,a0
+; $0B4FB8
+	move.l	d0,$7812(a2)
+; $0B4FBC
+	or.b	(a6)+,d1
+; $0B4FBE
+	addq.b	#8,a0
+; $0B4FC0
+	bra.s	loc_0B4F52
+; $0B4FC2
+	ori.w	#$8031,-(a0)
+; $0B4FC6
+	move.l	d0,-$AD0(a4)
+; $0B4FCA
+	bvc.s	loc_0B4FF7
+; $0B4FCC
+	bra.s	loc_0B4FFC
+; $0B4FCE
+	or.l	a0,d1
+; $0B4FD0
+	rol.l	#7,d0
+; $0B4FD2
+	or.w	$7738(a0),d4
+; $0B4FD6
+	or.w	d0,(-$78,a7,d7.l)
+; $0B4FDA
+	dc.w	$F82D
+; $0B4FDC
+	movea.l	d2,a0
+; $0B4FDE
+	divu.w	(a1)+,d0
+; $0B4FE0
+	bra.s	loc_0B5059
+; $0B4FE2
+	bvc.s	loc_0B5009
+; $0B4FE4
+	sls	(a3)
+; $0B4FE6
+	dc.w	$FFD3
+; $0B4FE8
+	move.b	(a3),-$1123(a2)
+; $0B4FEC
+	move.w	-(a2),d1
+; $0B4FEE
+	dc.w	$FFFF
+; $0B4FF0
+	roxl.w	#6,d5
+; $0B4FF2
+	sgt	?ea(7,6)
+; $0B4FF4
+	add.w	(a5),d6
+; $0B4FF6
+	move.l	-$34(a5),?ea(7,7)
+; $0B4FFA
+	addq.b	#2,$33E5(a6)
+; $0B4FFE
+	subq.b	#2,-(a2)
+; $0B5000
+	move.l	?ea(7,6),(a1)+
+; $0B5002
+	dc.w	$7500
+; $0B5004
+	dc.w	$4535
+; $0B5006
+	move.l	(a7)+,($EECD33FF).l
+; $0B500C
+	adda.w	(a4)+,a7
+; $0B500E
+	muls.w	(a2),d6
+; $0B5010
+	move.w	a5,($D3D2FF23).l
+; $0B5016
+	move.w	-(a3),-(a1)
+; $0B5018
+	add.b	d6,($33,a1,d3.w)
+; $0B501C
+	move.w	?ea(7,7),($003223).w
+; $0B5020
+	lsl.b	d1,d5
+; $0B5022
+	sf	?ea(7,7)
+; $0B5024
+	lsl.w	#1,d3
+; $0B5026
+	rol.b	d7,d5
+; $0B5028
+	dc.w	$FED3
+; $0B502A
+	move.w	?ea(7,7),(a4)
+; $0B502C
+	move.w	-(a2),d0
+; $0B502E
+	move.w	a0,(a4)
+; $0B5030
+	add.w	d7,-(a6)
+; $0B5032
+	move.l	(-$19,a7,a0.l),d1
+; $0B5036
+	roxr.w	d6,d1
+; $0B5038
+	move.l	-$C7(a5),d1
+; $0B503C
+	sub.b	d4,?ea(7,5)
+; $0B503E
+	dc.w	$FE33
+; $0B5040
+	or.b	-$1305(a5),d4
+; $0B5044
+	move.w	?ea(7,6),d3
+; $0B5046
+	addi.w	#$8963,($78,a1,d7.w)
+; $0B504C
+	suba.l	(-$27,pc,a6.l),a3
+; $0B5050
+	add.w	d3,d0
+; $0B5052
+	add.w	d4,-$6713(a5)
+; $0B5056
+	suba.l	?ea(7,7),a4
+; $0B5058
+	asr.w	d4,d1
+; $0B505A
+	sub.l	d4,(a6)
+; $0B505C
+	sub.w	d7,-$669A(a0)
+; $0B5060
+	dc.w	$FF6F
+; $0B5062
+	or.l	d4,(a7)
+; $0B5064
+	lsl.b	d1,d3
+; $0B5066
+	bne.s	loc_0B5055
+; $0B5068
+	move.w	?ea(7,7),($2333E3FE).l
+; $0B506E
+	add.l	(a5)+,d6
+; $0B5070
+	and.b	?ea(7,5),d6
+; $0B5072
+	dc.w	$FFC3
+; $0B5074
+	sub.b	d1,(-$1,a3,d2.w)
+; $0B5078
+	adda.w	-(a3),a7
+; $0B507A
+	move.w	?ea(7,7),(a1)+
+; $0B507C
+	dc.w	$FEFE
+; $0B507E
+	add.b	d6,(a3)
+; $0B5080
+	dc.w	$FDFE
+; $0B5082
+	add.b	(a2),d6
+; $0B5084
+	dc.w	$FFED
+; $0B5086
+	move.l	(a4)+,?ea(7,6)
+; $0B5088
+	move.b	(-$3E,a5,a6.l),-(a1)
+; $0B508C
+	shi	?ea(7,7)
+; $0B508E
+	move.l	($11,a2,d3.w),-(a2)
+; $0B5092
+	move.w	($12,a2,d2.w),-(a1)
+; $0B5096
+	dc.w	$FF25
+; $0B5098
+	roxl.w	#6,d2
+; $0B509A
+	move.l	($35,a5,a6.l),d1
+; $0B509E
+	move.l	-(a7),-(a2)
+; $0B50A0
+	lea	(a4)+,a2
+; $0B50A2
+	add.w	d2,($75,a6,d0.w)
+; $0B50A6
+	ori.b	#$01,($0,a3,d3.w)
+; $0B50AC
+	dc.w	$F8DC
+; $0B50AE
+	dc.w	$7F1C
+; $0B50B0
+	suba.l	a4,a5
+; $0B50B2
+	divu.w	d3,d0
+; $0B50B4
+	move.w	($3C,a2,d3.w),d1
+; $0B50B8
+	dc.w	$F732
+; $0B50BA
+	move.b	-(a3),-(a0)
+; $0B50BC
+	dc.w	$F180
+; $0B50BE
+	move.b	($12,a3,d2.w),-(a1)
+; $0B50C2
+	dc.w	$FF11
+; $0B50C4
+	move.l	-(a1),-(a1)
+; $0B50C6
+	move.b	($2F,a2,d3.w),d1
+; $0B50CA
+	move.l	?ea(7,7),($1222F222).l
+; $0B50D0
+	move.b	(a2),d1
+; $0B50D2
+	move.w	d3,($7FC33333).l
+; $0B50D8
+	move.w	(-$34,a3,a4.l),d6
+; $0B50DC
+	addq.l	#1,(a0)
+; $0B50DE
+	dc.w	$FB2C
+; $0B50E0
+	movea.w	($33,a5,d2.w),a1
+; $0B50E4
+	move.w	$323E(a6),(a7)+
+; $0B50E8
+	cmpa.l	-$DE(a6),a7
+; $0B50EC
+	ror.w	-$1098(a6)
+
+loc_0B50F0:				; $0B50F0
+	suba.w	?ea(7,6),a0
+; $0B50F2
+	dc.w	$FF3C
+; $0B50F4
+	exg	d1,d6
+; $0B50F6
+	ror.b	d7,d3
+; $0B50F8
+	move.w	-$101(a7),(a7)+
+; $0B50FC
+	move.w	-$2(a6),?ea(7,7)
+; $0B5100
+	ror.w	?ea(7,7)
+; $0B5102
+	dc.w	$FFFE
+; $0B5104
+	lsl.w	-$81(a7)
+; $0B5108
+	sub.w	d1,loc_0AE189(pc)
+; $0B510C
+	suba.l	?ea(7,6),a0
+; $0B510E
+	roxl.w	(a3)
+; $0B5110
+	add.b	d5,-(a1)
+; $0B5112
+	move.b	(a4),-$7FEF(a0)
+; $0B5116
+	ror.l	#7,d6
+; $0B5118
+	suba.w	-$201(a7),a0
+; $0B511C
+	add.b	d6,(-$11,a3,a6.l)
+; $0B5120
+	roxl.w	(a5)+
+; $0B5122
+	roxl.w	?ea(7,6)
+; $0B5124
+	dc.w	$FBFE
+; $0B5126
+	adda.w	-(a0),a7
+; $0B5128
+	move.l	(a5)+,(a1)+
+; $0B512A
+	dc.w	$FEED
+; $0B512C
+	dc.w	$FF12
+; $0B512E
+	eor.b	d3,-(a2)
+; $0B5130
+	move.l	(a1),d1
+; $0B5132
+	move.w	(a0),($22,a3,d2.w)
+; $0B5136
+	move.w	(a0),(a4)
+; $0B5138
+	move.w	($23,a7,d3.w),($C3CC80DC).l
+; $0B5140
+	move.w	($7,a2,d1.w),-(a1)
+; $0B5144
+	ror.w	a4
+; $0B5146
+	move.w	(-$43,a2,a0.w),-$6F56(a0)
+; $0B514C
+	ori.l	#$91EE3490,($FFFF91D4).w
+; $0B5154
+	move.l	(-$44,a3,d2.l),-(a1)
+; $0B5158
+	sub.b	d0,($3C,a3,d2.w)
+; $0B515C
+	addq.l	#1,$3C(a2)
+; $0B5160
+	cmp.l	(a0),d5
+; $0B5162
+	moveq	#48,d0
+; $0B5164
+	moveq	#13,d4
+; $0B5166
+	bra.s	loc_0B50F0
+; $0B5168
+	ori.w	#$ED78,d0
+; $0B516C
+	bgt.s	loc_0B519E
+; $0B516E
+	moveq	#102,d4
+; $0B5170
+	pea	d0
+; $0B5172
+	moveq	#102,d4
+; $0B5174
+	or.b	?ea(7,5),d3
+; $0B5176
+	bne.s	loc_0B517B
+; $0B5178
+	dc.w	$A067
+; $0B517A
+	or.w	d3,($FFFF8804).w
+; $0B517E
+	move.l	loc_0B8188(pc),(a0)+
+; $0B5182
+	dc.w	$F670
+; $0B5184
+	clr.l	d0
+; $0B5186
+	move.b	d0,(a2)
+; $0B5188
+	divu.w	$5037(a6),d3
+; $0B518C
+	bra.s	loc_0B51A4
+; $0B518E
+	movea.l	d6,a0
+; $0B5190
+	or.b	d0,$7700(a1)
+; $0B5194
+	negx.l	$1188(a6)
+; $0B5198
+	cmpi.w	#$673E,-(a0)
+; $0B519C
+	or.b	d0,(a0)
+
+loc_0B519E:				; $0B519E
+	move.l	(a6)+,d0
+; $0B51A0
+	move.w	-(a0),$6688(a3)
+
+loc_0B51A4:				; $0B51A4
+	bvc.s	loc_0B521E
+; $0B51A6
+	btst	d7,(a0)
+; $0B51A8
+	rol.b	d7,d0
+; $0B51AA
+	dc.w	$AF50
+; $0B51AC
+	dc.w	$FC1C
+; $0B51AE
+	sub.w	d7,(a4)+
+; $0B51B0
+	dc.w	$AB25
+; $0B51B2
+	slt	(a5)+
+; $0B51B4
+	move.w	(a2),-(a1)
+; $0B51B6
+	slt	(a7)+
+; $0B51B8
+	add.b	d1,-(a3)
+; $0B51BA
+	subq.b	#1,($7D,a2,d2.w)
+; $0B51BE
+	ori.b	#$FF,-(a5)
+; $0B51C2
+	subq.w	#2,(a2)
+; $0B51C4
+	move.l	(a1),d1
+; $0B51C6
+	subq.w	#2,(a2)
+; $0B51C8
+	move.w	(a1),d1
+; $0B51CA
+	dc.w	$FF52
+; $0B51CC
+	move.l	-(a2),d2
+; $0B51CE
+	move.l	(a2),$1255(a2)
+; $0B51D2
+	move.l	?ea(7,7),loc_0B2F07(pc)
+; $0B51D6
+	move.w	(a6),($FED3FFEE).l
+; $0B51DC
+	dc.w	$FFED
+; $0B51DE
+	adda.w	?ea(7,6),a1
+; $0B51E0
+	asl.b	d4,d3
+; $0B51E2
+	move.w	?ea(7,5),($DCF75152).l
+; $0B51E8
+	move.w	d7,d6
+
+loc_0B51EA:				; $0B51EA
+	moveq	#28,d0
+; $0B51EC
+	move.w	d2,$25FB(a1)
+; $0B51F0
+	move.w	-(a3),-(a1)
+; $0B51F2
+	move.l	d0,-(a7)
+; $0B51F4
+	subq.w	#1,-$202E(a1)
+; $0B51F8
+	move.l	?ea(7,7),(a6)+
+; $0B51FA
+	bls.s	loc_0B522A
+; $0B51FC
+	add.b	($22,a3,a0.w),d6
+; $0B5200
+	move.w	(-$63,a5,a7.l),-(a1)
+; $0B5204
+	move.w	-(a1),d6
+; $0B5206
+	move.l	(a7)+,loc_0B3E1A(pc)
+; $0B520A
+	move.l	?ea(7,7),(a1)+
+; $0B520C
+	bgt.s	loc_0B51EA
+; $0B520E
+	move.l	(a3),$1ECD(a1)
+; $0B5212
+	addq.w	#1,(a4)
+; $0B5214
+	dc.w	$FD22
+; $0B5216
+	moveq	#0,d2
+; $0B5218
+	move.w	-(a5),-(a1)
+; $0B521A
+	subq.b	#8,($53,a5,d3.w)
+
+loc_0B521E:				; $0B521E
+	dc.w	$4F53
+; $0B5220
+	move.w	($38,a3,d3.w),-(a2)
+; $0B5224
+	ori.b	#$23,d2
+; $0B5228
+	ror.b	d7,d1
+
+loc_0B522A:				; $0B522A
+	bclr	d3,(a5)
+; $0B522C
+	subq.b	#2,-(a5)
+; $0B522E
+	move.w	d4,-(a3)
+; $0B5230
+	addq.l	#6,-$51(a7)
+; $0B5234
+	move.b	?ea(7,7),(-$49,a0,d1.l)
+; $0B5238
+	dc.w	$FF13
+; $0B523A
+	move.l	-(a3),-(a0)
+; $0B523C
+	move.l	-(a2),d7
+; $0B523E
+	move.l	(-$1,a2,d1.l),-(a0)
+; $0B5242
+	move.l	(a2),-(a0)
+; $0B5244
+	move.l	(a6)+,-(a0)
+; $0B5246
+	move.l	(a2),-(a0)
+; $0B5248
+	move.b	-$2CF(a6),($FFFF9090).w
+; $0B524E
+	move.w	-(a1),d1
+; $0B5250
+	move.l	$2212(a6),(a7)+
+; $0B5254
+	dc.w	$7FEE
+; $0B5256
+	ror.b	#7,d1
+; $0B5258
+	move.b	-$12(a7),(a7)+
+; $0B525C
+	moveq	#-108,d7
+; $0B525E
+	add.w	a6,d4
+; $0B5260
+	eor.w	d2,?ea(7,6)
+; $0B5262
+	sub.w	d2,(a5)+
+; $0B5264
+	cmpa.w	-$184(a7),a0
+; $0B5268
+	suba.l	-$11(a5),a1
+; $0B526C
+	dc.w	$FEFF
+; $0B526E
+	adda.w	?ea(7,6),a7
+; $0B5270
+	sub.l	d7,(a0)
+; $0B5272
+	dc.w	$FEFD
+; $0B5274
+	add.l	d6,($DD7BB07F).l
+; $0B527A
+	cmpa.l	(a4)+,a0
+; $0B527C
+	adda.l	(a7)+,a6
+
+loc_0B527E:				; $0B527E
+	dc.w	$7FB0
+; $0B5280
+	roxl.w	?ea(7,7)
+; $0B5282
+	adda.w	(a5)+,a7
+; $0B5284
+	ror.w	-$2322(a4)
+; $0B5288
+	roxl.w	(a4)+
+; $0B528A
+	dc.w	$FDCD
+; $0B528C
+	or.l	d1,(-$23,a0,a4.l)
+; $0B5290
+	mulu.w	a4,d6
+; $0B5292
+	mulu.w	a5,d6
+; $0B5294
+	dc.w	$F898
+; $0B5296
+	cmp.l	(a4),d0
+; $0B5298
+	cmp.l	-(a0),d0
+; $0B529A
+	cmpa.l	-$3313(a4),a0
+; $0B529E
+	ror.w	-$34(a4)
+; $0B52A2
+	adda.l	$333C(a4),a6
+; $0B52A6
+	adda.w	(a5)+,a6
+; $0B52A8
+	mulu.w	?ea(7,7),d6
+; $0B52AA
+	move.w	(a5)+,(a6)+
+; $0B52AC
+	muls.w	a4,d6
+; $0B52AE
+	move.w	(a5)+,($CDDCFBC3).l
+; $0B52B4
+	add.l	(a2)+,d6
+; $0B52B6
+	cmpa.w	(a5)+,a0
+; $0B52B8
+	roxr.w	(a4)+
+; $0B52BA
+	mulu.w	a5,d6
+; $0B52BC
+	dc.w	$FBDE
+
+loc_0B52BE:				; $0B52BE
+	rol.w	d0
+; $0B52C0
+	cmpa.w	(a6)+,a0
+; $0B52C2
+	add.b	#$23,d6
+; $0B52C6
+	bra.s	loc_0B52AD
+; $0B52C8
+	sub.b	-$6F34(a7),d0
+; $0B52CC
+	or.l	$56(a2),d0
+; $0B52D0
+	suba.l	a4,a0
+; $0B52D2
+	mulu.w	-(a6),d1
+; $0B52D4
+	suba.w	?ea(7,5),a0
+; $0B52D6
+	mulu.w	(a5),d6
+; $0B52D8
+	cmpa.w	a4,a0
+; $0B52DA
+	mulu.w	d3,d6
+; $0B52DC
+	move.w	($38,a6,d6.l),$A1(a1)
+; $0B52E2
+	move.b	(a0),d0
+; $0B52E4
+	dc.w	$AD30
+; $0B52E6
+	bvc.s	loc_0B5350
+; $0B52E8
+	divu.w	-$6F53(a7),d3
+; $0B52EC
+	sf	$77F7(a1)
+; $0B52F0
+	move.b	$6067(a3),d0
+; $0B52F4
+	bclr	d6,d0
+; $0B52F6
+	beq.s	loc_0B527E
+; $0B52F8
+	bvc.s	loc_0B52BE
+; $0B52FA
+	and.b	($60,a0,d2.l),d5
+; $0B52FE
+	bvc.s	loc_0B5301
+; $0B5300
+	move.l	-$4FE9(a7),(a0)+
+; $0B5304
+	negx.w	($6,a7,d6.w)
+; $0B5308
+	dc.w	$A432
+; $0B530A
+	beq.s	loc_0B5372
+; $0B530C
+	ror.w	d7,d0
+; $0B530E
+	btst	d7,-(a2)
+; $0B5310
+	dc.w	$F071
+; $0B5312
+	move.b	-(a0),($10,a2,d7.w)
+; $0B5316
+	cmpi.b	#$6E,(a4)+
+; $0B531A
+	movea.w	($27,a7,d7.w),a0
+; $0B531E
+	muls.w	?ea(7,7),d0
+; $0B5320
+	dbf	d5,loc_0B9280
+; $0B5324
+	abcd	d0,d7
+; $0B5326
+	moveq	#-49,d0
+; $0B5328
+	divu.w	a7,d1
+; $0B532A
+	suba.w	a7,a2
+; $0B532C
+	dc.w	$A6CF
+; $0B532E
+	cmpa.w	a7,a4
+; $0B5330
+	mulu.w	a7,d5
+; $0B5332
+	adda.w	a7,a6
+; $0B5334
+	ror.w	a7
+; $0B5336
+	cmp.b	d0,d0
+; $0B5338
+	add.b	d7,(a2)
+; $0B533A
+	add.b	d7,(a4)+
+; $0B533C
+	add.w	-(a6),d3
+; $0B533E
+	suba.w	?ea(7,7),a0
+; $0B5340
+	move.l	?ea(7,5),-$6FCF(a1)
+; $0B5344
+	dc.w	$FE7F
+; $0B5346
+	sub.b	-(a2),d0
+; $0B5348
+	rol.w	?ea(7,6)
+; $0B534A
+	ror.b	d7,d2
+; $0B534C
+	rol.w	$73EF(a7)
+
+loc_0B5350:				; $0B5350
+	movea.l	($3B,a2,a3.w),a7
+; $0B5354
+	adda.w	?ea(7,7),a0
+; $0B5356
+	dc.w	$FEFE
+; $0B5358
+	or.l	(a1),d2
+; $0B535A
+	dc.w	$ABEE
+; $0B535C
+	dc.w	$FD7C
+; $0B535E
+	suba.w	$6B90(a5),a0
+; $0B5362
+	add.w	d6,a1
+; $0B5364
+	adda.w	(a6)+,a0
+; $0B5366
+	move.w	d4,(a6)
+; $0B5368
+	sub.l	-(a2),d0
+; $0B536A
+	suba.w	-$1201(a7),a0
+; $0B536E
+	ror.l	d7,d4
+; $0B5370
+	sub.b	(-$1,pc,a5.w),d0
+; $0B5374
+	adda.l	?ea(7,7),a7
+; $0B5376
+	ror.w	(a5)+
+; $0B5378
+	dc.w	$FFED
+; $0B537A
+	ror.w	(a6)+
+; $0B537C
+	dc.w	$FFFF
+; $0B537E
+	adda.l	-$2022(a6),a6
+; $0B5382
+	ror.w	-$2003(a5)
+; $0B5386
+	ror.w	#7,d4
+; $0B5388
+	adda.l	(a7)+,a0
+; $0B538A
+	adda.l	?ea(7,6),a6
+; $0B538C
+	rol.w	(a5)+
+; $0B538E
+	roxl.w	?ea(7,7)
+; $0B5390
+	ror.w	(a5)+
+; $0B5392
+	dc.w	$FDED
+; $0B5394
+	roxl.w	-$123(a5)
+; $0B5398
+	dc.w	$7FCC
+; $0B539A
+	rol.w	-$1234(a6)
+; $0B539E
+	roxl.w	(a6)+
+; $0B53A0
+	suba.w	(a1),a2
+; $0B53A2
+	adda.l	(a4)+,a7
+; $0B53A4
+	adda.w	-$2123(a6),a6
+; $0B53A8
+	suba.l	(a0),a2
+; $0B53AA
+	adda.l	a4,a6
+; $0B53AC
+	dc.w	$A684
+; $0B53AE
+	cmpa.w	(a4)+,a0
+; $0B53B0
+	add.l	loc_0B0472(pc),d7
+; $0B53B4
+	cmpa.w	-$364E(a6),a0
+; $0B53B8
+	exg	d6,d5
+; $0B53BA
+	exg	d6,a4
+; $0B53BC
+	adda.l	(a4)+,a0
+; $0B53BE
+	dc.w	$ACD0
+; $0B53C0
+	cmpa.w	(a2),a4
+; $0B53C2
+	exg	d6,a1
+; $0B53C4
+	eor.l	d0,(a6)
+; $0B53C6
+	cmp.w	?ea(7,6),d0
+; $0B53C8
+	cmp.l	(-$13,a0,d3.w),d7
+; $0B53CC
+	and.b	#$EE,d6
+; $0B53D0
+	exg	d6,a0
+; $0B53D2
+	ble.s	loc_0B53B2
+; $0B53D4
+	roxr.w	a4
+; $0B53D6
+	move.w	(a4)+,(-$3D,a1,a3.w)
+; $0B53DA
+	muls.w	(a7)+,d6
+; $0B53DC
+	add.b	a4,d0
+; $0B53DE
+	sub.l	(-$70,a0,d5.w),d5
+; $0B53E2
+	mulu.w	d3,d6
+; $0B53E4
+	move.b	(a7)+,(a6)+
+; $0B53E6
+	dc.w	$FFDF
+; $0B53E8
+	move.b	$23EF(a7),($000035).w
+; $0B53EE
+	rol.w	#7,d7
+; $0B53F0
+	rol.w	#7,d1
+; $0B53F2
+	rol.w	d7,d3
+; $0B53F4
+	rol.w	d7,d5
+; $0B53F6
+	rol.l	#7,d7
+; $0B53F8
+	rol.l	#7,d4
+; $0B53FA
+	asl.b	d4,d6
+; $0B53FC
+	bchg	d0,($0,a6,d7.w)
+; $0B5400
+	subq.b	#2,-(a2)
+; $0B5402
+	move.w	d0,-(a2)
+; $0B5404
+	move.b	(a2),d1
+; $0B5406
+	move.l	(a5),-$40DF(a2)
+; $0B540A
+	move.b	-(a1),-(a0)
+; $0B540C
+	move.l	-(a1),d1
+; $0B540E
+	move.b	d3,-$6F0E(a0)
+; $0B5412
+	eor.b	d7,(a2)
+; $0B5414
+	move.w	-(a1),d1
+; $0B5416
+	dc.w	$F123
+; $0B5418
+	move.l	$552(a6),-(a1)
+; $0B541C
+	dc.w	$FE37
+; $0B541E
+	andi.b	#$22,-(a5)
+; $0B5422
+	movea.w	(a1),a2
+; $0B5424
+	subq.b	#2,-(a3)
+; $0B5426
+	move.b	($15,a1,d2.w),-(a3)
+; $0B542A
+	dc.w	$F280
+; $0B542C
+	subq.l	#2,(-$13,a1,a1.w)
+
+loc_0B5430:				; $0B5430
+	dc.w	$AFFE
+; $0B5432
+	rol.w	#7,d0
+; $0B5434
+	move.b	?ea(7,7),(a0)+
+; $0B5436
+	move.l	(a1)+,($37D17F90).l
+; $0B543C
+	move.l	(a4)+,-$4FE1(a7)
+; $0B5440
+	or.l	(a0),d2
+; $0B5442
+	add.b	d7,(a7)+
+; $0B5444
+	move.b	?ea(7,7),?ea(7,7)
+; $0B5446
+	move.l	(a1),d1
+; $0B5448
+	move.w	(-$1,a1,d1.w),loc_0B543D(pc)
+; $0B544E
+	dc.w	$F111
+; $0B5450
+	dc.w	$F223
+; $0B5452
+	dc.w	$FEFF
+; $0B5454
+	ror.l	#7,d1
+; $0B5456
+	add.b	($65,pc,a5.w),d7
+; $0B545A
+	adda.w	$4EF0(a6),a0
+; $0B545E
+	bne.s	loc_0B5430
+; $0B5460
+	moveq	#-112,d4
+; $0B5462
+	move.l	?ea(7,7),(a7)+
+; $0B5464
+	adda.w	-$112E(a6),a7
+; $0B5468
+	add.b	d6,-$11CE(a6)
+; $0B546C
+	dc.w	$FD2E
+; $0B546E
+	dc.w	$A990
+; $0B5470
+	adda.w	-$2223(a5),a7
+; $0B5474
+	ror.w	(a5)+
+; $0B5476
+	sle	(a6)+
+; $0B5478
+	adda.w	-$2212(a6),a7
+; $0B547C
+	dc.w	$A590
+; $0B547E
+	dc.w	$FE71
+; $0B5480
+	dc.w	$F0B7
+; $0B5482
+	dc.w	$FEED
+; $0B5484
+	add.l	(a4),d7
+; $0B5486
+	dc.w	$A0DD
+; $0B5488
+	dc.w	$FE50
+; $0B548A
+	dc.w	$F0EE
+; $0B548C
+	dc.w	$FE8C
+; $0B548E
+	adda.w	a5,a0
+; $0B5490
+	adda.l	-$1224(a5),a6
+; $0B5494
+	adda.l	$9EC(a5),a6
+; $0B5498
+	suba.w	(-$F,a1,a1.w),a0
+; $0B549C
+	and.w	?ea(7,7),d6
+; $0B549E
+	cmp.l	(a5)+,d0
+; $0B54A0
+	cmp.l	-(a4),d0
+; $0B54A2
+	add.l	-$2FF2(a2),d0
+; $0B54A6
+	or.l	(-$34,a0,a5.l),d2
+; $0B54AA
+	add.l	loc_0B2667(pc),d6
+; $0B54AE
+	add.l	?ea(7,6),d0
+; $0B54B0
+	eor.l	d0,(-$65,pc,a7.w)
+; $0B54B4
+	move.w	d3,($E4D03CC3).l
+; $0B54BA
+	chk.w	(a0),d7
+; $0B54BC
+	lsr.w	(a1)
+; $0B54BE
+	adda.w	(-$50,a4,a6.l),a6
+; $0B54C2
+	lsr.l	d5,d0
+; $0B54C4
+	move.w	-$4FDE(a3),(a1)+
+; $0B54C8
+	and.b	(-$1,a3,d2.w),d6
+; $0B54CC
+	move.l	a4,($003211).w
+; $0B54D0
+	move.b	($1F,a3,d3.w),-(a7)
+; $0B54D4
+	dc.w	$FFFF
+; $0B54D6
+	move.w	$11FF(a7),d1
+; $0B54DA
+	move.l	-(a1),d1
+; $0B54DC
+	move.l	?ea(7,7),(a1)+
+; $0B54DE
+	movea.l	(a3),a1
+; $0B54E0
+	move.b	($55,a2,d2.w),-(a1)
+; $0B54E4
+	move.w	-(a1),-(a1)
+; $0B54E6
+	dc.w	$FF11
+; $0B54E8
+	subq.b	#1,($22,a2,d1.w)
+; $0B54EC
+	addq.b	#2,(-$21,a2,d2.w)
+; $0B54F0
+	movea.l	(a5),a1
+; $0B54F2
+	subq.b	#1,(-$55,a3,d3.w)
+; $0B54F6
+	dc.w	$A033
+; $0B54F8
+	shi	$2355(a7)
+; $0B54FC
+	move.l	-(a1),d1
+; $0B54FE
+	dc.w	$AE90
+; $0B5500
+	dc.w	$FFF2
+; $0B5502
+	move.l	loc_0B9C94(pc),(a1)+
+; $0B5506
+	move.l	loc_0AE629(pc),d1
+; $0B550A
+	move.b	-(a2),d1
+; $0B550C
+	move.l	-(a1),-(a7)
+; $0B550E
+	dc.w	$F932
+; $0B5510
+	mulu.w	-(a0),d1
+; $0B5512
+	move.w	(a0),(a7)
+; $0B5514
+	move.l	(a1),d1
+; $0B5516
+	move.l	(a2),d1
+; $0B5518
+	move.l	?ea(7,7),($32222125).l
+; $0B551E
+	move.l	($55,a1,d1.w),?ea(7,7)
+; $0B5522
+	dc.w	$FFF1
+; $0B5524
+	move.b	-(a2),d1
+; $0B5526
+	subq.b	#2,(a2)
+; $0B5528
+	move.l	(-$2,a5,d4.w),d1
+; $0B552C
+	move.l	d0,-(a7)
+; $0B552E
+	subq.b	#2,-(a2)
+; $0B5530
+	movea.b	(a2),a1
+; $0B5532
+	move.l	($7F,a3,d1.w),-(a2)
+; $0B5536
+	addq.b	#1,($12,a5,a7.l)
+; $0B553A
+	dc.w	$4355
+; $0B553C
+	shi	-$4FA1(a3)
+; $0B5540
+	move.l	#$CCCC5254,-(a2)
+; $0B5546
+	sub.w	(a5),d0
+; $0B5548
+	subq.l	#8,(a0)
+; $0B554A
+	dc.w	$F355
+; $0B554C
+	move.l	(a4)+,$B7(a1)
+; $0B5550
+	sub.w	(a5),d0
+; $0B5552
+	subq.b	#1,-(a3)
+; $0B5554
+	exg	a1,a3
+; $0B5556
+	subq.w	#2,(a3)
+; $0B5558
+	cmp.l	(a1),d5
+; $0B555A
+	add.l	($23,a0,d3.w),d6
+; $0B555E
+	move.w	a5,(a6)+
+; $0B5560
+	sub.l	(a1),d1
+; $0B5562
+	exg	a1,a6
+; $0B5564
+	suba.w	(a3),a0
+; $0B5566
+	adda.w	d6,a0
+; $0B5568
+	dc.w	$F133
+; $0B556A
+	mulu.w	(-$70,a0,d5.w),d4
+; $0B556E
+	move.w	($FFFFB991).w,(a6)+
+; $0B5572
+	addq.l	#8,(a1)
+; $0B5574
+	ror.l	#3,d0
+; $0B5576
+	exg	d2,d3
+; $0B5578
+	move.w	(a4)+,$5CFF(a1)
+; $0B557C
+	move.w	d5,($C5C53C3C).l
+; $0B5582
+	movea.w	(a5),a6
+; $0B5584
+	dc.w	$AE9E
+; $0B5586
+	bchg	d0,d3
+; $0B5588
+	addq.w	#6,(a4)+
+; $0B558A
+	asl.w	-(a0)
+; $0B558C
+	move.l	d1,-$6FDD(a1)
+; $0B5590
+	dc.w	$F733
+; $0B5592
+	move.l	(a2),-(a7)
+; $0B5594
+	move.l	d0,d7
+; $0B5596
+	move.l	($11,a3,d3.w),d1
+; $0B559A
+	dc.w	$FF21
+; $0B559C
+	move.w	-$DED(a7),d1
+; $0B55A0
+	move.w	(a1),-(a1)
+; $0B55A2
+	move.l	($33,pc,d1.w),$2A00(a1)
+; $0B55A8
+	move.w	(-$F,a2,d2.w),(a1)+
+; $0B55AC
+	muls.w	-(a1),d0
+; $0B55AE
+	dc.w	$F722
+; $0B55B0
+	move.l	(a1),-(a2)
+; $0B55B2
+	move.b	d0,d4
+; $0B55B4
+	dc.w	$F132
+; $0B55B6
+	move.l	(a2),d1
+; $0B55B8
+	adda.l	($0,a2,a3.w),a2
+; $0B55BC
+	move.l	a2,($000021).w
+; $0B55C0
+	move.b	d0,-(a6)
+; $0B55C2
+	move.b	(a2),d1
+; $0B55C4
+	lsl.b	#5,d3
+; $0B55C6
+	move.l	($21,a2,a6.w),(-$20,a1,a4.l)
+; $0B55CC
+	move.b	-(a5),d1
+; $0B55CE
+	scc	(-$20,a4,a6.l)
+; $0B55D2
+	add.l	d6,-(a0)
+; $0B55D4
+	move.l	(a5)+,(a2)+
+; $0B55D6
+	dc.w	$A025
+; $0B55D8
+	subq.w	#2,d5
+; $0B55DA
+	move.w	-(a5),(a1)+
+; $0B55DC
+	move.l	#$E022ECAF,(-$22,a2,d1.l)
+; $0B55E4
+	dc.w	$F123
+; $0B55E6
+	move.w	(a7)+,(a1)+
+; $0B55E8
+	move.b	-(a2),-(a7)
+; $0B55EA
+	move.w	(-$28,a3,a7.w),-(a1)
+; $0B55EE
+	cmp.b	(a2),d0
+; $0B55F0
+	move.w	-$4870(a6),($311223BD).l
+; $0B55F8
+	suba.w	a4,a1
+; $0B55FA
+	move.w	($32,a3,a3.l),-(a1)
+; $0B55FE
+	sub.b	d2,d0
+; $0B5600
+	move.l	?ea(7,5),-(a1)
+; $0B5602
+	move.w	(a5)+,?ea(7,6)
+; $0B5604
+	move.w	(a0),-(a1)
+; $0B5606
+	adda.w	#$E494,a7
+; $0B560A
+	eor.l	d5,(a0)
+; $0B560C
+	move.w	$3331(a4),d1
+; $0B5610
+	move.w	d3,(a6)+
+; $0B5612
+	add.b	(-$71,a3,d1.w),d4
+; $0B5616
+	andi.w	#$F0ED,-(a3)
+; $0B561A
+	add.w	d6,$13DD(a7)
+; $0B561E
+	adda.l	($DE9ED06E).l,a6
+; $0B5624
+	move.b	-$11DD(a5),(a1)+
+; $0B5628
+	ror.w	-$3022(a5)
+; $0B562C
+	move.w	(-$6C,a3,a4.w),d6
+; $0B5630
+	cmp.l	(a5)+,d0
+; $0B5632
+	cmpa.w	(a4)+,a0
+; $0B5634
+	exg	a6,a7
+; $0B5636
+	move.w	(a5)+,(a6)+
+; $0B5638
+	adda.w	d3,a6
+; $0B563A
+	mulu.w	(a1),d5
+; $0B563C
+	move.w	(a5)+,($4710EFDD).l
+; $0B5642
+	exg	d1,d3
+; $0B5644
+	move.w	a6,(a1)
+; $0B5646
+	dc.w	$A022
+; $0B5648
+	add.b	d6,($32,a3,a3.l)
+; $0B564C
+	sub.w	a0,d0
+; $0B564E
+	move.b	d3,(a0)+
+; $0B5650
+	exg	d1,d2
+; $0B5652
+	move.l	-(a3),(a1)
+; $0B5654
+	move.b	-(a2),d0
+; $0B5656
+	dc.w	$FE5E
+; $0B5658
+	move.b	(a7)+,d0
+; $0B565A
+	move.w	(-$1,a3,d2.l),-(a1)
+; $0B565E
+	move.w	(-$1,a2,a3.l),-(a1)
+; $0B5662
+	move.b	-(a7),($FFFFF011).w
+; $0B5666
+	move.l	(-$10,a1,a6.l),?ea(7,7)
+; $0B566A
+	dc.w	$FFEF
+; $0B566C
+	dc.w	$FFF1
+; $0B566E
+	move.l	?ea(7,7),?ea(7,7)
+; $0B5670
+	exg	d5,d0
+; $0B5672
+	dc.w	$F1FF
+; $0B5674
+	move.b	?ea(7,7),(a1)+
+; $0B5676
+	dc.w	$F11F
+; $0B5678
+	dc.w	$F122
+; $0B567A
+	move.b	(a7)+,-(a0)
+; $0B567C
+	dc.w	$F113
+; $0B567E
+	add.b	d7,(a7)+
+; $0B5680
+	dc.w	$F111
+; $0B5682
+	move.l	?ea(7,7),($B690FFF1).l
+; $0B5688
+	dc.w	$FF21
+; $0B568A
+	move.l	($55,a2,d3.w),-(a1)
+; $0B568E
+	movea.l	(a3),a1
+; $0B5690
+	subq.w	#2,(a7)+
+; $0B5692
+	addq.b	#1,-(a1)
+; $0B5694
+	subq.w	#2,d5
+; $0B5696
+	addq.b	#1,a3
+; $0B5698
+	move.b	-(a3),d0
+; $0B569A
+	btst	d5,(a0)
+; $0B569C
+	add.b	d7,-(a2)
+; $0B569E
+	move.w	-(a2),-(a1)
+; $0B56A0
+	move.w	-(a3),-(a2)
+; $0B56A2
+	dc.w	$F110
+; $0B56A4
+	move.l	($55,a1,a7.l),($00421F).w
+; $0B56AA
+	move.b	-(a1),-(a0)
+; $0B56AC
+	move.l	-(a2),-(a0)
+; $0B56AE
+	move.w	?ea(7,7),?ea(7,7)
+; $0B56B0
+	move.l	(a2),d1
+; $0B56B2
+	move.l	?ea(7,7),($002111).w
+; $0B56B6
+	move.b	(a1),-(a7)
+; $0B56B8
+	sub.b	d7,(-$1,a1,d1.w)
+; $0B56BC
+	dc.w	$FF21
+; $0B56BE
+	exg	d7,d0
+; $0B56C0
+	move.w	(-$36,a0,d1.w),?ea(7,7)
+; $0B56C4
+	add.b	(a0),d6
+; $0B56C6
+	move.b	$33(a1),d1
+; $0B56CA
+	move.w	d0,-(a1)
+; $0B56CC
+	cmpa.l	-(a0),a4
+; $0B56CE
+	move.w	d5,-$352(a2)
+; $0B56D2
+	sub.b	($23,a5,d0.w),d0
+; $0B56D6
+	movea.w	d5,a1
+; $0B56D8
+	move.l	(-$5,a2,d2.w),d1
+; $0B56DC
+	subq.b	#2,-(a3)
+; $0B56DE
+	roxl.b	#6,d0
+; $0B56E0
+	move.l	-(a2),d1
+; $0B56E2
+	move.w	-(a5),-(a2)
+; $0B56E4
+	scs	$2CC3(a7)
+; $0B56E8
+	movea.l	(a5),a1
+; $0B56EA
+	addi.w	#$335F,($52,a0,d5.w)
+; $0B56F0
+	move.w	(a5),$522C(a1)
+; $0B56F4
+	muls.w	?ea(7,6),d1
+; $0B56F6
+	move.b	#$A0,d0
+; $0B56FA
+	move.b	-(a3),-(a7)
+; $0B56FC
+	subq.w	#2,(a2)
+; $0B56FE
+	subq.b	#1,(-$60,a3,a5.l)
+; $0B5702
+	bcs.s	loc_0B5715
+; $0B5704
+	bclr	d3,(-$45,a0,d2.l)
+; $0B5708
+	sub.b	-$370F(a4),d0
+; $0B570C
+	move.w	(a7),(a6)+
+; $0B570E
+	dc.w	$F023
+; $0B5710
+	chk.w	(a0),d7
+; $0B5712
+	ble.s	loc_0B5715
+; $0B5714
+	dc.w	$FB3C
+; $0B5716
+	movea.w	($32,a5,d0.w),a1
+; $0B571A
+	muls.w	d5,d1
+; $0B571C
+	exg	d1,d3
+; $0B571E
+	dc.w	$F73C
+; $0B5720
+	addq.w	#6,(a2)
+; $0B5722
+	add.l	d2,-(a0)
+; $0B5724
+	exg	a2,a5
+; $0B5726
+	move.w	#$EF5C,-(a1)
+; $0B572A
+	dbcs	d4,loc_0B8AC4
+; $0B572E
+	move.l	d3,(a0)+
+; $0B5730
+	addq.w	#6,(a5)
+; $0B5732
+	dc.w	$7733
+; $0B5734
+	mulu.w	d5,d6
+; $0B5736
+	addq.b	#7,d2
+; $0B5738
+	move.b	-(a3),-(a0)
+; $0B573A
+	move.w	$7F(a6),($23,a0,d3.w)
+; $0B5740
+	dc.w	$F133
+; $0B5742
+	move.l	-(a2),-(a1)
+; $0B5744
+	move.l	(-$5,a1,d0.w),(a1)
+; $0B5748
+	move.b	-(a1),d1
+; $0B574A
+	cmp.b	-(a0),d7
+; $0B574C
+	move.l	($21,a3,d2.w),-(a7)
+; $0B5750
+	move.b	a7,($002222).w
+; $0B5754
+	move.b	-(a2),d1
+; $0B5756
+	move.b	d0,-(a6)
+; $0B5758
+	dc.w	$F280
+; $0B575A
+	move.l	-(a3),-(a1)
+; $0B575C
+	bge.s	loc_0B57DD
+; $0B575E
+	or.l	($23,a2,a1.w),d0
+; $0B5762
+	move.b	d5,($001012).w
+; $0B5766
+	move.b	-(a5),($0000F7).w
+; $0B576A
+	move.l	($21,a2,d1.w),d1
+; $0B576E
+	ori.b	#$2F,-(a2)
+; $0B5772
+	move.b	($55,a7,d5.w),(a1)
+; $0B5776
+	move.b	-$7FEE(a0),$12F8(a0)
+; $0B577C
+	ori.b	#$15,-(a2)
+; $0B5780
+	move.l	a7,loc_0B77D7(pc)
+; $0B5784
+	move.b	$42(a5),-(a1)
+; $0B5788
+	move.l	-(a5),d0
+; $0B578A
+	exg	d7,d3
+; $0B578C
+	move.l	($1C,a2,d2.w),d1
+; $0B5790
+	move.b	-(a0),-(a7)
+; $0B5792
+	sub.b	(-$41,a3,d3.w),d6
+; $0B5796
+	and.b	-(a3),d1
+; $0B5798
+	and.b	($23,a3,a4.l),d1
+; $0B579C
+	muls.w	(-$11,a0,d1.w),d3
+; $0B57A0
+	exg	d1,d4
+; $0B57A2
+	exg	d1,d3
+; $0B57A4
+	addq.l	#1,(a0)
+; $0B57A6
+	move.l	#$C24C5090,-(a1)
+; $0B57AC
+	lsr.l	d1,d0
+; $0B57AE
+	move.w	d3,(a6)+
+; $0B57B0
+	dc.w	$AD11
+; $0B57B2
+	dc.w	$7B00
+; $0B57B4
+	move.w	#$2042,$5690(a1)
+; $0B57BA
+	exg	d1,a2
+; $0B57BC
+	move.b	a3,(a0)
+; $0B57BE
+	bclr	d0,(a0)+
+; $0B57C0
+	move.w	a2,$30C3(a1)
+; $0B57C4
+	move.l	(a0),($47,a7,a4.w)
+; $0B57C8
+	movea.b	(a2),a0
+; $0B57CA
+	sub.l	a1,d0
+; $0B57CC
+	andi.l	#$32D8F023,$1170(a5)
+; $0B57D4
+	exg	a1,a3
+; $0B57D6
+	move.l	-(a2),-(a1)
+; $0B57D8
+	moveq	#32,d6
+; $0B57DA
+	move.w	(-$1,a3,d2.w),-(a1)
+; $0B57DE
+	exg	d1,d0
+; $0B57E0
+	cmpa.l	($22,a2,d3.w),a7
+; $0B57E4
+	move.l	(a7)+,-(a0)
+; $0B57E6
+	move.l	-$FCE(a6),d1
+; $0B57EA
+	suba.w	a2,a2
+; $0B57EC
+	move.b	($12,a1,a1.w),(a0)
+; $0B57F0
+	lsr.b	#1,d0
+; $0B57F2
+	move.b	-$6F39(a7),(a1)
+; $0B57F6
+	move.l	$74CC(a7),d1
+; $0B57FA
+	move.l	$1F(a2),d0
+; $0B57FE
+	and.b	-(a0),d6
+; $0B5800
+	dc.w	$F112
+; $0B5802
+	move.l	-(a0),(-$27,a0,d3.w)
+; $0B5806
+	dc.w	$FF36
+; $0B5808
+	ori.b	#$21,-(a4)
+; $0B580C
+	move.b	a5,-(a0)
+; $0B580E
+	move.l	(a2),d0
+; $0B5810
+	move.l	?ea(7,5),-(a0)
+; $0B5812
+	move.w	d0,-$FCE(a1)
+; $0B5816
+	move.b	-(a3),d1
+; $0B5818
+	move.b	(-$49,pc,a7.w),(a1)+
+; $0B581C
+	ori.?	#?,(-$48,a1,d2.w)
+; $0B5820
+	move.l	-(a1),(a0)+
+; $0B5822
+	move.w	loc_0B5846(pc),(a0)
+; $0B5826
+	move.b	(-$41,a3,d1.w),d1
+; $0B582A
+	movea.l	(a5),a1
+; $0B582C
+	addq.b	#1,(a1)
+; $0B582E
+	movea.l	(a4),a1
+; $0B5830
+	exg	d4,d0
+; $0B5832
+	shi	$1221(a7)
+; $0B5836
+	move.b	d2,-$1E00(a0)
+; $0B583A
+	addq.b	#1,-(a2)
+; $0B583C
+	move.w	?ea(7,7),-(a0)
+; $0B583E
+	move.l	(a3),$3322(a0)
+; $0B5842
+	move.b	-(a3),-(a7)
+; $0B5844
+	lea	($20,a0,d1.w),a0
+; $0B5848
+	dc.w	$A5F2
+; $0B584A
+	cmp.l	(a0),d3
+; $0B584C
+	move.w	a1,(a1)+
+; $0B584E
+	move.l	-$FE1(a7),(a0)+
+; $0B5852
+	move.b	-(a0),-(a2)
+; $0B5854
+	dc.w	$FF87
+; $0B5856
+	dc.w	$F21F
+; $0B5858
+	dc.w	$FFCD
+; $0B585A
+	ori.l	#$301700DE,-(a3)
+; $0B5860
+	movea.w	(a2),a2
+; $0B5862
+	dc.w	$7F35
+; $0B5864
+	move.b	($35,a2,d5.w),?ea(7,7)
+; $0B5868
+	dc.w	$F112
+; $0B586A
+	addi.b	#$22,-(a0)
+; $0B586E
+	subq.w	#2,d5
+; $0B5870
+	add.b	d1,d0
+; $0B5872
+	bne.s	loc_0B57F4
+; $0B5874
+	move.w	-(a2),$32(a1)
+; $0B5878
+	dc.w	$F925
+; $0B587A
+	btst	d1,(-$60,a1,a5.l)
+; $0B587E
+	movea.w	(a2),a6
+; $0B5880
+	addq.b	#1,-(a3)
+; $0B5882
+	move.l	$55BA(a1),-$6FA6(a1)
+; $0B5888
+	ori.b	#$32,($20,a3,d5.w)
+; $0B588E
+	exg	d6,a1
+; $0B5890
+	or.l	a4,d0
+; $0B5892
+	move.w	($000188).w,$293(a0)
+; $0B5898
+	andi.w	#$91E6,(-$19,pc,d2.w)
+; $0B589E
+	add.b	d0,-(a2)
+; $0B58A0
+	subq.b	#8,#$30
+; $0B58A4
+	dc.w	$4932
+; $0B58A6
+	add.l	(a0),d6
+; $0B58A8
+	muls.w	-(a6),d2
+; $0B58AA
+	sub.w	(a4)+,d0
+; $0B58AC
+	dc.w	$7900
+; $0B58AE
+	movem.w	(a1),d1/d7/a0/a5/a7
+; $0B58B2
+	negx.b	(-$38,a3,d3.w)
+; $0B58B6
+	dc.w	$F067
+; $0B58B8
+	move.w	(-$50,a5,a5.l),-(a0)
+; $0B58BC
+	movem.l	d0/d1/d3/d4/d5/d6/d7/a0/a3/a4/a5/a6/a7,-$1031(a5)
+; $0B58C2
+	lsr.w	#1,d4
+; $0B58C4
+	rol.l	d3,d4
+; $0B58C6
+	bset	d3,(a0)
+; $0B58C8
+	shi	(a4)
+; $0B58CA
+	asr.l	d0,d3
+; $0B58CC
+	clr.b	-(a5)
+; $0B58CE
+	subq.w	#1,d1
+; $0B58D0
+	dc.w	$4333
+; $0B58D2
+	muls.w	a6,d1
+; $0B58D4
+	asr.w	#8,d3
+; $0B58D6
+	dc.w	$FAE4
+; $0B58D8
+	dc.w	$A023
+; $0B58DA
+	add.w	d0,d3
+; $0B58DC
+	move.w	(a2),$2523(a1)
+; $0B58E0
+	move.l	?ea(7,5),d6
+; $0B58E2
+	move.l	(a7)+,$23(a2)
+; $0B58E6
+	exg	d1,d4
+; $0B58E8
+	move.w	-(a5),(a6)+
+; $0B58EA
+	sub.l	?ea(7,6),d0
+; $0B58EC
+	suba.w	-(a3),a0
+; $0B58EE
+	move.w	#$BC4F,d6
+; $0B58F2
+	movea.b	(a3)+,a6
+; $0B58F4
+	moveq	#-16,d2
+; $0B58F6
+	rol.w	(a6)+
+; $0B58F8
+	add.w	(a6),d7
+; $0B58FA
+	divu.w	(a0),d4
+; $0B58FC
+	ror.w	(a6)+
+; $0B58FE
+	dc.w	$A490
+; $0B5900
+	rol.l	#7,d6
+; $0B5902
+	adda.w	$7B10(a6),a0
+; $0B5906
+	bne.s	loc_0B5981
+; $0B5908
+	dc.w	$F1ED
+; $0B590A
+	ror.l	#7,d0
+; $0B590C
+	add.l	(a7)+,d0
+; $0B590E
+	suba.w	a4,a0
+; $0B5910
+	and.l	(a6)+,d6
+; $0B5912
+	add.b	($5E,a1,a5.l),d0
+; $0B5916
+	add.w	d0,a6
+; $0B5918
+	cmp.w	loc_0AEA08(pc),d0
+; $0B591C
+	rol.w	d7,d7
+; $0B591E
+	cmp.w	($E,pc,a1.w),d0
+; $0B5922
+	jsr	(-$12,a0,a6.l)
+; $0B5926
+	dc.w	$FEBB
+; $0B5928
+	adda.l	a5,a0
+; $0B592A
+	add.w	d0,-$F79(a5)
+; $0B592E
+	adda.w	(a0)+,a0
+; $0B5930
+	svc	(-$4C,a0,d5.l)
+; $0B5934
+	moveq	#82,d6
+; $0B5936
+	dc.w	$FEEE
+; $0B5938
+	dc.w	$A490
+; $0B593A
+	adda.l	(a6)+,a6
+; $0B593C
+	bls.s	loc_0B590B
+; $0B593E
+	exg	d6,d2
+; $0B5940
+	addq.l	#8,a2
+; $0B5942
+	dc.w	$F068
+; $0B5944
+	suba.w	-$27F(a6),a0
+; $0B5948
+	move.b	#$98,-(a0)
+; $0B594C
+	dc.w	$7791
+; $0B594E
+	adda.l	-$2122(a5),a7
+; $0B5952
+	and.l	(-$F,a0,a2.l),d1
+; $0B5956
+	move.b	-(a0),(a5)
+; $0B5958
+	cmpa.w	a5,a0
+; $0B595A
+	dc.w	$AEF1
+; $0B595C
+	muls.w	-$3230(a6),d6
+; $0B5960
+	cmpa.l	(a1),a2
+; $0B5962
+	dc.w	$7711
+; $0B5964
+	move.l	-$7B50(a5),?ea(7,6)
+; $0B5968
+	ror.w	(a6)+
+; $0B596A
+	dc.w	$AEF0
+; $0B596C
+	roxl.w	-(a2)
+; $0B596E
+	add.l	($5,a5,a5.w),d0
+; $0B5972
+	add.l	-$2E13(a5),d7
+; $0B5976
+	roxl.w	#2,d2
+; $0B5978
+	asl.w	#8,d0
+; $0B597A
+	dc.w	$F302
+; $0B597C
+	adda.w	-(a1),a2
+; $0B597E
+	bvc.s	loc_0B5901
+; $0B5980
+	add.b	$25(a7),d5
+; $0B5984
+	move.l	d0,d2
+; $0B5986
+	subq.b	#2,-(a1)
+; $0B5988
+	dc.w	$A930
+; $0B598A
+	move.l	(a2),-(a7)
+; $0B598C
+	mulu.w	$3055(a4),d5
+; $0B5990
+	or.l	-(a0),d5
+; $0B5992
+	subq.l	#8,(-$4C,a1,a6.w)
+; $0B5996
+	asl.w	#8,d5
+; $0B5998
+	addq.l	#1,?ea(7,7)
+; $0B599A
+	move.l	(a2),$2512(a2)
+; $0B599E
+	move.w	-(a5),d1
+; $0B59A0
+	dc.w	$F120
+
+loc_0B59A2:				; $0B59A2
+	movea.l	a7,a1
+; $0B59A4
+	move.l	($31,a1,d2.w),(a1)+
+; $0B59A8
+	bvc.s	loc_0B592B
+; $0B59AA
+	dc.w	$AFE2
+; $0B59AC
+	addq.b	#1,(a5)+
+; $0B59AE
+	bra.s	loc_0B59A2
+; $0B59B0
+	dc.w	$F310
+; $0B59B2
+	move.l	-$1F46(a1),(a1)+
+; $0B59B6
+	move.w	-(a2),-(a0)
+; $0B59B8
+	move.l	-$EAB(a7),-(a1)
+; $0B59BC
+	move.l	(a7)+,(a1)+
+; $0B59BE
+	move.l	($51,a2,a6.l),d0
+; $0B59C2
+	move.l	-(a1),(a1)+
+; $0B59C4
+	negx.?	($20,a1,a7.l)
+; $0B59C8
+	moveq	#-37,d5
+; $0B59CA
+	move.b	($30,a3,a1.w),d0
+; $0B59CE
+	move.w	($12,a1,a7.w),-(a1)
+; $0B59D2
+	bsr.s	loc_0B5A36
+; $0B59D4
+	exg	d3,d7
+; $0B59D6
+	move.b	-(a3),d1
+; $0B59D8
+	bsr.s	loc_0B59FA
+; $0B59DA
+	adda.l	-(a2),a1
+; $0B59DC
+	dc.w	$FE40
+; $0B59DE
+	move.w	(a2),d1
+; $0B59E0
+	moveq	#-52,d7
+; $0B59E2
+	or.b	(a1),d0
+; $0B59E4
+	exg	d1,d4
+; $0B59E6
+	move.l	-(a1),d1
+; $0B59E8
+	move.l	-(a7),(a6)
+; $0B59EA
+	move.b	(a3)+,d0
+; $0B59EC
+	move.l	-(a3),d6
+; $0B59EE
+	move.w	(a0),(a1)
+; $0B59F0
+	and.b	($10,a3,d0.l),d1
+; $0B59F4
+	adda.w	-(a2),a1
+; $0B59F6
+	and.l	-(a0),d7
+; $0B59F8
+	dc.w	$7333
+
+loc_0B59FA:				; $0B59FA
+	move.w	a7,d6
+; $0B59FC
+	negx.?	d4
+; $0B59FE
+	ori.b	#$11,-(a3)
+; $0B5A02
+	eor.b	d1,d0
+; $0B5A04
+	dc.w	$FF1F
+; $0B5A06
+	move.b	#$1F,d1
+; $0B5A0A
+	move.l	$32C0(a4),-(a1)
+; $0B5A0E
+	and.w	a0,d7
+; $0B5A10
+	move.l	a2,usp
+; $0B5A12
+	bset	d3,(a0)
+; $0B5A14
+	dc.w	$F140
+; $0B5A16
+	bset	d2,(a0)
+; $0B5A18
+	or.l	-(a0),d1
+; $0B5A1A
+	subq.w	#2,d5
+; $0B5A1C
+	move.w	-(a5),-(a7)
+; $0B5A1E
+	movea.w	d2,a1
+; $0B5A20
+	mulu.w	a4,d6
+; $0B5A22
+	move.w	d4,(a6)
+; $0B5A24
+	move.l	-(a0),(a1)+
+; $0B5A26
+	eor.b	d0,a2
+; $0B5A28
+	move.w	(-$7B,a0,d2.l),-(a5)
+; $0B5A2C
+	btst	d0,#$70
+; $0B5A30
+	or.w	d3,d0
+; $0B5A32
+	move.w	($11,a0,d4.l),d3
+
+loc_0B5A36:				; $0B5A36
+	sub.w	$3055(a3),d0
+; $0B5A3A
+	sub.w	(a7),d0
+; $0B5A3C
+	suba.w	-(a1),a1
+; $0B5A3E
+	bra.s	loc_0B5A73
+; $0B5A40
+	dc.w	$7720
+; $0B5A42
+	mulu.w	(-$3D,a0,a4.l),d4
+; $0B5A46
+	exg	d1,d4
+; $0B5A48
+	moveq	#32,d5
+; $0B5A4A
+	cmpi.w	#$1E5E,(a7)+
+; $0B5A4E
+	divu.w	(-$23,a0,a5.l),d1
+; $0B5A52
+	bls.s	loc_0B5A33
+; $0B5A54
+	dc.w	$FF7B
+
+loc_0B5A56:				; $0B5A56
+	dc.w	$F040
+; $0B5A58
+	addq.w	#8,(-$21,a3,a7.w)
+; $0B5A5C
+	dc.w	$FDA5
+; $0B5A5E
+	suba.w	(a2),a0
+; $0B5A60
+	moveq	#-48,d5
+; $0B5A62
+	add.l	d6,(a2)
+; $0B5A64
+	add.w	(a5)+,d0
+; $0B5A66
+	adda.l	(a7)+,a0
+; $0B5A68
+	ble.s	loc_0B5A1B
+; $0B5A6A
+	dc.w	$FFFF
+; $0B5A6C
+	divs.w	(a6)+,d0
+; $0B5A6E
+	moveq	#-112,d7
+; $0B5A70
+	bcc.s	loc_0B5AC3
+; $0B5A72
+	moveq	#-112,d7
+; $0B5A74
+	jmp	(a0)
+; $0B5A76
+	moveq	#-112,d5
+; $0B5A78
+	move.w	(a0),?ea(7,7)
+; $0B5A7A
+	dc.w	$FE9C
+; $0B5A7C
+	beq.s	loc_0B5ACF
+; $0B5A7E
+	suba.w	(a0),a1
+; $0B5A80
+	dc.w	$FEEF
+; $0B5A82
+	rol.w	#7,d6
+; $0B5A84
+	moveq	#113,d0
+; $0B5A86
+	move.b	?ea(7,6),(a0)+
+; $0B5A88
+	move.w	(a1),(a1)
+; $0B5A8A
+	dc.w	$F0EE
+; $0B5A8C
+	suba.l	(-$30,a0,a1.l),a0
+; $0B5A90
+	adda.l	$6FF0(a7),a6
+; $0B5A94
+	movea.w	(a1),a2
+; $0B5A96
+	move.l	-$2312(a4),(-$50,pc,a1.w)
+; $0B5A9C
+	subq.w	#1,(a0)
+; $0B5A9E
+	adda.w	-(a3),a6
+; $0B5AA0
+	subq.l	#8,(a5)+
+; $0B5AA2
+	cmp.l	($CD90F094).l,d0
+; $0B5AA8
+	cmpa.w	-$3324(a5),a0
+; $0B5AAC
+	suba.w	($38,a0,a4.l),a7
+; $0B5AB0
+	dc.w	$A7B0
+; $0B5AB2
+	dc.w	$ADF1
+; $0B5AB4
+	add.w	(a0),d5
+; $0B5AB6
+	adda.w	(a6)+,a6
+; $0B5AB8
+	ror.l	d7,d6
+; $0B5ABA
+	addq.l	#8,(-$3D,a5,a5.w)
+; $0B5ABE
+	adda.l	-$3B50(a5),a6
+; $0B5AC2
+	dc.w	$A2B0
+; $0B5AC4
+	sub.w	(-$50,a0,a1.w),d7
+; $0B5AC8
+	roxl.w	a5
+; $0B5ACA
+	move.l	?ea(7,5),(a0)
+; $0B5ACC
+	subq.l	#8,-(a0)
+; $0B5ACE
+	moveq	#-67,d0
+; $0B5AD0
+	add.l	(a6),d0
+; $0B5AD2
+	moveq	#-82,d0
+; $0B5AD4
+	dc.w	$F0DC
+; $0B5AD6
+	dc.w	$ABF2
+; $0B5AD8
+	sub.b	d0,(a1)
+; $0B5ADA
+	cmpa.l	(a4)+,a5
+; $0B5ADC
+	exg	d6,d2
+; $0B5ADE
+	dc.w	$4111
+; $0B5AE0
+	move.b	-(a2),-(a1)
+; $0B5AE2
+	move.w	d0,d1
+; $0B5AE4
+	movea.w	-$24F0(a6),a1
+; $0B5AE8
+	move.l	?ea(7,7),(a1)+
+; $0B5AEA
+	move.b	(a6)+,(a1)
+; $0B5AEC
+	move.w	(a2),d0
+; $0B5AEE
+	move.b	(a3)+,-(a0)
+; $0B5AF0
+	move.l	-$EDE(a7),d0
+; $0B5AF4
+	dc.w	$FF11
+; $0B5AF6
+	bset	d0,d0
+; $0B5AF8
+	dc.w	$F2CD
+; $0B5AFA
+	move.l	$60A3(a2),d0
+; $0B5AFE
+	move.b	($40,a1,d0.w),(a1)+
+; $0B5B02
+	pea	-(a0)
+; $0B5B04
+	dc.w	$4760
+; $0B5B06
+	move.b	(a3)+,(a1)+
+; $0B5B08
+	move.b	(a7)+,d0
+; $0B5B0A
+	add.b	d1,(a7)+
+; $0B5B0C
+	move.b	a3,($001028).w
+; $0B5B10
+	or.b	(a7)+,d0
+; $0B5B12
+	dc.w	$4361
+; $0B5B14
+	move.b	-(a1),-(a7)
+; $0B5B16
+	move.b	(-$2A,a4,d2.w),(a4)
+; $0B5B1A
+	ori.b	#$FF,(a1)+
+; $0B5B1E
+	move.b	d6,-(a0)
+; $0B5B20
+	negx.w	d2
+; $0B5B22
+	movea.l	a0,a0
+; $0B5B24
+	bra.s	loc_0B5B92
+; $0B5B26
+	move.w	(a2),(a3)
+; $0B5B28
+	cmp.b	d0,d3
+; $0B5B2A
+	move.w	$3310(a7),d6
+; $0B5B2E
+	move.l	-(a3),-(a0)
+; $0B5B30
+	add.b	d5,-(a0)
+; $0B5B32
+	asl.b	#8,d3
+; $0B5B34
+	dc.w	$7B80
+; $0B5B36
+	cmp.l	(a0),d5
+; $0B5B38
+	or.w	d6,d1
+; $0B5B3A
+	dc.w	$7F80
+; $0B5B3C
+	move.w	?ea(7,7),-(a1)
+; $0B5B3E
+	move.w	?ea(7,6),(a1)+
+; $0B5B40
+	and.l	d0,d6
+; $0B5B42
+	and.b	(-$3E,a2,d3.w),d1
+; $0B5B46
+	and.b	($3E,a3,d2.w),d1
+; $0B5B4A
+	addq.l	#8,(a0)
+; $0B5B4C
+	move.l	d3,?ea(7,7)
+; $0B5B4E
+	exg	d1,d2
+; $0B5B50
+	move.l	(a5),(-$7C,a0,d0.w)
+; $0B5B54
+	negx.?	$32DD(a5)
+; $0B5B58
+	dc.w	$F023
+; $0B5B5A
+	move.w	(a5),($FFFFB021).w
+; $0B5B5E
+	move.b	-(a3),-(a7)
+; $0B5B60
+	dc.w	$F4BE
+; $0B5B62
+	move.l	($12,a3,d1.w),d0
+; $0B5B66
+	or.b	-(a0),d0
+; $0B5B68
+	move.l	-(a2),-(a0)
+; $0B5B6A
+	mulu.w	a4,d6
+; $0B5B6C
+	moveq	#86,d3
+; $0B5B6E
+	divu.w	d3,d0
+; $0B5B70
+	move.b	#$F2,($2C,a7,d3.w)
+; $0B5B76
+	move.w	(-$53,a1,d3.l),-(a6)
+
+loc_0B5B7A:				; $0B5B7A
+	bra.s	loc_0B5BE4
+; $0B5B7C
+	move.l	(a3),$2354(a0)
+; $0B5B80
+	movea.l	$52(a0),a1
+; $0B5B84
+	move.l	($54,pc,d5.w),(a0)+
+; $0B5B88
+	addq.b	#6,d0
+; $0B5B8A
+	move.w	#$2253,d1
+; $0B5B8E
+	move.w	d3,d6
+; $0B5B90
+	move.w	d2,(a6)+
+
+loc_0B5B92:				; $0B5B92
+	add.l	($50,a0,d0.w),d0
+; $0B5B96
+	dc.w	$7342
+; $0B5B98
+	dc.w	$F360
+; $0B5B9A
+	lsr.l	#5,d0
+; $0B5B9C
+	adda.l	(a0),a1
+; $0B5B9E
+	ori.b	#$E1,(-$36,pc,d3.w)
+; $0B5BA4
+	bra.s	loc_0B5BA8
+; $0B5BA6
+	moveq	#-27,d0
+
+loc_0B5BA8:				; $0B5BA8
+	eor.l	d0,-(a2)
+; $0B5BAA
+	ori.w	#$30CF,(a2)+
+; $0B5BAE
+	bra.s	loc_0B5B7A
+; $0B5BB0
+	dc.w	$FD61
+; $0B5BB2
+	abcd	d5,d1
+; $0B5BB4
+	dbt	d4,loc_0B5F06
+; $0B5BB8
+	dc.w	$FF80
+; $0B5BBA
+	move.w	d3,($212CE7B1).l
+; $0B5BC0
+	bclr	d6,?ea(7,7)
+; $0B5BC2
+	move.b	(a5)+,$69B0(a7)
+; $0B5BC6
+	add.w	(a5)+,d7
+; $0B5BC8
+	cmp.l	d6,d0
+; $0B5BCA
+	sub.w	d0,d2
+; $0B5BCC
+	sub.w	d3,(a2)
+; $0B5BCE
+	rol.l	#7,d0
+; $0B5BD0
+	addq.w	#8,d3
+; $0B5BD2
+	add.w	d2,(a2)
+; $0B5BD4
+	moveq	#104,d0
+; $0B5BD6
+	suba.w	?ea(7,5),a0
+; $0B5BD8
+	bhi.s	loc_0B5BAB
+; $0B5BDA
+	dc.w	$F056
+; $0B5BDC
+	add.w	d0,$705D(a1)
+; $0B5BE0
+	add.w	d7,-$2C23(a7)
+
+loc_0B5BE4:				; $0B5BE4
+	dc.w	$FFDD
+; $0B5BE6
+	roxl.w	#6,d7
+; $0B5BE8
+	adda.l	(a6)+,a7
+; $0B5BEA
+	roxl.w	d6,d4
+; $0B5BEC
+	adda.w	a5,a0
+; $0B5BEE
+	divu.w	(a4)+,d0
+; $0B5BF0
+	and.l	-$1000(a3),d7
+; $0B5BF4
+	dc.w	$A3D1
+; $0B5BF6
+	lsl.w	#1,d0
+; $0B5BF8
+	add.w	(a0),d1
+; $0B5BFA
+	suba.l	(a0),a6
+; $0B5BFC
+	sub.l	(a0),d4
+; $0B5BFE
+	dc.w	$A3D8
+; $0B5C00
+	sub.l	d3,(-$2F,a0,a2.l)
+; $0B5C04
+	bchg	d0,(a4)+
+; $0B5C06
+	cmpa.w	(a3),a3
+; $0B5C08
+	eor.l	d2,(a0)
+; $0B5C0A
+	cmpa.w	(a2),a3
+; $0B5C0C
+	lsl.w	d5,d0
+; $0B5C0E
+	dc.w	$A4D0
+; $0B5C10
+	mulu.w	(a1),d5
+; $0B5C12
+	sub.w	d6,($70,a3,d0.w)
+; $0B5C16
+	sf	(a1)
+; $0B5C18
+	moveq	#112,d0
+; $0B5C1A
+	addq.l	#8,(a6)+
+; $0B5C1C
+	dc.w	$71E2
+; $0B5C1E
+	add.l	(a2)+,d0
+; $0B5C20
+	cmp.l	(-$3C,a2,a7.w),d0
+; $0B5C24
+	cmp.w	(a6)+,d0
+; $0B5C26
+	and.b	($2F,a0,d2.w),d1
+; $0B5C2A
+	dc.w	$FF11
+; $0B5C2C
+	move.b	-(a0),-(a3)
+; $0B5C2E
+	move.b	d2,-(a0)
+; $0B5C30
+	divu.w	d6,d0
+; $0B5C32
+	move.b	d0,d3
+; $0B5C34
+	move.l	-(a2),d1
+; $0B5C36
+	dc.w	$FD20
+; $0B5C38
+	dc.w	$7360
+; $0B5C3A
+	or.w	d6,-(a4)
+; $0B5C3C
+	move.l	(a7)+,-(a0)
+; $0B5C3E
+	move.w	d6,d6
+
+loc_0B5C40:				; $0B5C40
+	divu.w	-(a0),d0
+; $0B5C42
+	move.l	-(a2),d0
+; $0B5C44
+	addq.b	#1,(a1)
+; $0B5C46
+	movea.b	?ea(7,6),a1
+; $0B5C48
+	dc.w	$A1E1
+; $0B5C4A
+	negx.?	d0
+; $0B5C4C
+	btst	d3,(a0)
+; $0B5C4E
+	move.l	-(a7),(-$-80,a1,d3.l)
+; $0B5C52
+	move.w	-(a3),(a0)
+; $0B5C54
+	eori.b	#$53,($10,a1,d3.w)
+; $0B5C5A
+	dc.w	$A043
+; $0B5C5C
+	move.l	(-$3A,pc,d0.w),(a0)
+; $0B5C60
+	bhi.s	loc_0B5C51
+; $0B5C62
+	bset	d0,a6
+; $0B5C64
+	ori.b	#$61,-(a1)
+; $0B5C68
+	move.l	a0,-(a1)
+; $0B5C6A
+	move.l	d0,-(a6)
+; $0B5C6C
+	subq.l	#3,-(a0)
+; $0B5C6E
+	subq.l	#4,-(a0)
+; $0B5C70
+	move.w	a5,(a1)
+; $0B5C72
+	dc.w	$413F
+; $0B5C74
+	dc.w	$A0A4
+; $0B5C76
+	andi.?	#?,(a1)+
+; $0B5C78
+	cmp.b	?ea(7,5),d0
+; $0B5C7A
+	move.w	d0,($22,a0,d2.w)
+; $0B5C7E
+	move.l	-$3C77(a4),-(a1)
+; $0B5C82
+	or.w	-(a5),d0
+; $0B5C84
+	move.b	-$3CC4(a7),(a0)
+; $0B5C88
+	move.w	($20,a5,a0.l),d1
+; $0B5C8C
+	addq.l	#6,d6
+; $0B5C8E
+	dc.w	$A0C5
+; $0B5C90
+	rol.w	#7,d5
+; $0B5C92
+	scs	d5
+; $0B5C94
+	dc.w	$F353
+; $0B5C96
+	move.l	-(a3),d0
+; $0B5C98
+	move.w	#$3332,d1
+; $0B5C9C
+	movea.b	?ea(7,7),a1
+; $0B5C9E
+	move.l	(a2),(a0)
+; $0B5CA0
+	divu.w	d3,d0
+; $0B5CA2
+	move.l	(-$6C,a1,d1.w),($3B,a1,d0.w)
+; $0B5CA8
+	addq.w	#6,(a3)
+; $0B5CAA
+	sub.b	d7,d0
+; $0B5CAC
+	exg	a2,a4
+; $0B5CAE
+	addq.b	#6,(a4)+
+; $0B5CB0
+	sub.l	d7,?ea(7,7)
+; $0B5CB2
+	dc.w	$AF00
+; $0B5CB4
+	add.l	d0,-$1C51(a7)
+; $0B5CB8
+	dc.w	$F5AF
+; $0B5CBA
+	bset	d3,?ea(7,7)
+; $0B5CBC
+	move.b	?ea(7,7),(-$41,a4,d2.l)
+; $0B5CC0
+	move.w	?ea(7,7),(-$41,a6,d4.l)
+; $0B5CC4
+	asr.w	d4,d1
+; $0B5CC6
+	eor.w	d7,($7C,a3,a3.l)
+; $0B5CCA
+	eor.w	d2,(-$4F,a7,a7.w)
+; $0B5CCE
+	beq.s	loc_0B5D46
+; $0B5CD0
+	or.l	$3AC0(a2),d4
+; $0B5CD4
+	or.w	d0,d3
+; $0B5CD6
+	and.w	-$7150(a0),d0
+; $0B5CDA
+	dc.w	$778E
+; $0B5CDC
+	cmp.w	($66,a6,a7.l),d0
+; $0B5CE0
+	move.l	d0,(-$7A,pc,a0.w)
+; $0B5CE4
+	bvc.s	loc_0B5D5D
+; $0B5CE6
+	or.l	d3,d6
+; $0B5CE8
+	roxl.w	d6,d7
+; $0B5CEA
+	dc.w	$AFB0
+; $0B5CEC
+	bvc.s	loc_0B5C75
+; $0B5CEE
+	dc.w	$A6B0
+; $0B5CF0
+	or.l	d3,a0
+; $0B5CF2
+	beq.s	loc_0B5CBD
+; $0B5CF4
+	moveq	#17,d3
+; $0B5CF6
+	and.b	loc_0B1D6E(pc),d1
+; $0B5CFA
+	or.l	(-$40,a0,d3.l),d7
+; $0B5CFE
+	or.w	d3,($68,a6,a4.l)
+; $0B5D02
+	or.w	($006612).w,d3
+; $0B5D06
+	and.b	(a7)+,d0
+; $0B5D08
+	and.l	d6,d0
+; $0B5D0A
+	dc.w	$77F2
+; $0B5D0C
+	move.l	d0,(a3)+
+; $0B5D0E
+	moveq	#-50,d4
+; $0B5D10
+	cmpa.w	a7,a1
+; $0B5D12
+	cmp.l	d7,d0
+; $0B5D14
+	moveq	#103,d4
+; $0B5D16
+	divu.w	loc_0B5ED8(pc),d4
+; $0B5D1A
+	divu.w	a0,d3
+; $0B5D1C
+	move.l	(a1),d0
+; $0B5D1E
+	move.b	-(a2),-(a7)
+; $0B5D20
+	move.b	$DD(a7),-(a0)
+; $0B5D24
+	move.b	(a5)+,d0
+; $0B5D26
+	move.l	$30A5(a1),(-$47,a0,d3.w)
+; $0B5D2C
+	move.w	(a6),-(a0)
+; $0B5D2E
+	ori.b	#$B9,-(a6)
+; $0B5D32
+	move.w	?ea(7,6),(a0)+
+; $0B5D34
+	move.l	-(a0),$2112(a4)
+; $0B5D38
+	move.b	($55,a1,d1.w),($001F13).w
+; $0B5D3E
+	move.b	(a5),-$2B00(a0)
+; $0B5D42
+	subi.l	#$451462CE,-(a2)
+; $0B5D48
+	asr.w	-(a1)
+; $0B5D4A
+	move.w	d0,d0
+; $0B5D4C
+	move.w	-(a3),-$28B9(a1)
+; $0B5D50
+	muls.w	-(a1),d7
+; $0B5D52
+	mulu.w	-(a3),d7
+; $0B5D54
+	mulu.w	-(a0),d7
+; $0B5D56
+	moveq	#-65,d6
+; $0B5D58
+	and.w	a4,d0
+; $0B5D5A
+	subq.w	#1,d1
+; $0B5D5C
+	neg.b	(a2)+
+; $0B5D5E
+	dc.w	$A0F8
+; $0B5D60
+	movea.l	(a1),a0
+; $0B5D62
+	adda.w	-(a1),a2
+; $0B5D64
+	move.w	a5,(a7)+
+; $0B5D66
+	dc.w	$FA80
+; $0B5D68
+	move.w	d0,d1
+; $0B5D6A
+	addq.l	#8,($20,a6,a3.w)
+; $0B5D6E
+	move.w	($10,a1,a3.l),d1
+; $0B5D72
+	movea.w	(a2),a6
+; $0B5D74
+	dc.w	$A2A0
+; $0B5D76
+	move.l	d7,d1
+; $0B5D78
+	addq.b	#1,-(a1)
+; $0B5D7A
+	move.l	-(a1),($41F61191).l
+; $0B5D80
+	dc.w	$A049
+; $0B5D82
+	negx.b	a2
+; $0B5D84
+	move.w	loc_0BA596(pc),(a0)+
+; $0B5D88
+	move.b	a5,(-$3D,a0,d4.w)
+; $0B5D8C
+	move.l	(a3),d1
+; $0B5D8E
+	move.b	d3,(a1)+
+; $0B5D90
+	eor.b	d7,($21,a1,d3.w)
+; $0B5D94
+	move.w	a4,($31E930C3).l
+; $0B5D9A
+	btst	d0,(-$31,a2,d5.l)
+; $0B5D9E
+	adda.l	a7,a7
+; $0B5DA0
+	dc.w	$F1CF
+; $0B5DA2
+	bchg	d1,(a7)+
+; $0B5DA4
+	move.b	(a7)+,loc_0B8585(pc)
+; $0B5DA8
+	move.w	(a7)+,#$204B
+; $0B5DAC
+	add.w	d7,(a5)+
+; $0B5DAE
+	add.w	d7,-$2084(a7)
+; $0B5DB2
+	adda.l	a2,a4
+; $0B5DB4
+	cmp.w	-(a6),d0
+; $0B5DB6
+	or.l	(-$50,a5,a1.w),d7
+; $0B5DBA
+	ori.l	#$B2A6B196,(a1)+
+; $0B5DC0
+	cmp.l	(a1)+,d0
+; $0B5DC2
+	add.l	(a2),d1
+; $0B5DC4
+	cmp.l	?ea(7,5),d0
+; $0B5DC6
+	cmp.l	(-$56,a2,a3.w),d1
+; $0B5DCA
+	cmp.b	(a2),d0
+; $0B5DCC
+	ror.l	d3,d0
+; $0B5DCE
+	moveq	#-99,d3
+; $0B5DD0
+	cmpa.l	d0,a0
+; $0B5DD2
+	cmp.w	(-$2E,a6,a3.l),d0
+; $0B5DD6
+	add.l	(-$50,a6,a5.w),d5
+; $0B5DDA
+	mulu.w	(a2),d0
+; $0B5DDC
+	cmpa.w	(a3)+,a1
+; $0B5DDE
+	cmpa.w	-(a6),a0
+; $0B5DE0
+	cmpa.l	(a6),a0
+; $0B5DE2
+	cmpa.l	(a2),a0
+; $0B5DE4
+	cmpa.l	a4,a0
+; $0B5DE6
+	move.l	(a2),d1
+; $0B5DE8
+	move.b	?ea(7,5),?ea(7,7)
+; $0B5DEA
+	subq.b	#2,a2
+; $0B5DEC
+	or.w	(a2),d0
+; $0B5DEE
+	dc.w	$FFF1
+; $0B5DF0
+	move.l	(a2),$2F5B(a2)
+; $0B5DF4
+	dc.w	$F225
+; $0B5DF6
+	subq.w	#2,-(a0)
+; $0B5DF8
+	move.l	-(a5),-(a2)
+; $0B5DFA
+	andi.?	#?,-(a1)
+; $0B5DFC
+	move.l	(-$3B,a4,d5.w),(a1)+
+; $0B5E00
+	clr.l	-$1BDC(a7)
+; $0B5E04
+	move.w	a7,(-$3E,pc,d2.l)
+; $0B5E08
+	rol.w	-(a0)
+; $0B5E0A
+	subq.b	#2,(a1)
+; $0B5E0C
+	move.w	d7,d7
+; $0B5E0E
+	move.b	(a2),d0
+; $0B5E10
+	addq.b	#1,-(a4)
+; $0B5E12
+	subq.b	#2,-(a5)
+; $0B5E14
+	move.b	-(a1),(a7)
+; $0B5E16
+	adda.w	-(a0),a4
+; $0B5E18
+	tst.?	($45,pc,d5.w)
+; $0B5E1C
+	cmpa.w	-(a1),a1
+; $0B5E1E
+	move.l	a3,-$30A3(a2)
+; $0B5E22
+	exg	a7,a5
+; $0B5E24
+	dc.w	$FF20
+; $0B5E26
+	pea	(a2)+
+; $0B5E28
+	move.l	(a6),(a0)+
+; $0B5E2A
+	negx.l	a5
+; $0B5E2C
+	bsr.s	loc_0B5E61
+; $0B5E2E
+	dc.w	$77E0
+; $0B5E30
+	exg	a0,a1
+; $0B5E32
+	lea	a7,a1
+; $0B5E34
+	asr.b	#8,d1
+; $0B5E36
+	subq.b	#1,-$3E32(a2)
+; $0B5E3A
+	asr.l	d0,d2
+; $0B5E3C
+	asl.w	#8,d2
+; $0B5E3E
+	add.w	a0,d3
+; $0B5E40
+	lea	a2,a0
+; $0B5E42
+	move.w	(a0),-(a1)
+; $0B5E44
+	dc.w	$F722
+; $0B5E46
+	move.l	-(a3),-(a0)
+; $0B5E48
+	dc.w	$7B80
+; $0B5E4A
+	move.b	#$52,d1
+; $0B5E4E
+	ror.w	d7,d5
+; $0B5E50
+	or.w	(a2),d0
+; $0B5E52
+	move.l	$5920(a4),d1
+; $0B5E56
+	move.l	a4,(a1)+
+; $0B5E58
+	subq.b	#2,(a5)+
+; $0B5E5A
+	subq.w	#8,d3
+; $0B5E5C
+	move.l	-(a5),d0
+; $0B5E5E
+	move.l	-(a3),-(a1)
+; $0B5E60
+	sge	-$2011(a7)
+; $0B5E64
+	dc.w	$F1EF
+; $0B5E66
+	ori.b	#$15,d3
+; $0B5E6A
+	dc.w	$FF27
+; $0B5E6C
+	dc.w	$FF39
+; $0B5E6E
+	dc.w	$FF4B
+; $0B5E70
+	dc.w	$FF5D
+; $0B5E72
+	dc.w	$FF6F
+; $0B5E74
+	dc.w	$FF7C
+; $0B5E76
+	dc.w	$F9CA
+; $0B5E78
+	dc.w	$AAB0
+; $0B5E7A
+	moveq	#-94,d4
+; $0B5E7C
+	add.l	d6,d2
+; $0B5E7E
+	divs.w	(a1),d7
+; $0B5E80
+	sub.l	d5,($66,a1,d7.l)
+; $0B5E84
+	add.w	d2,(-$30,a7,a2.w)
+; $0B5E88
+	bne.s	loc_0B5E38
+; $0B5E8A
+	add.w	d0,-(a6)
+; $0B5E8C
+	suba.l	($67,a0,d7.w),a4
+; $0B5E90
+	adda.w	d7,a0
+; $0B5E92
+	cmp.l	(-$71,a6,a3.w),d0
+; $0B5E96
+	dc.w	$F0AC
+; $0B5E98
+	add.w	($FFFFA5F2).w,d0
+; $0B5E9C
+	or.w	(-$78,a7,d0.l),d3
+; $0B5EA0
+	divs.w	-(a1),d3
+; $0B5EA2
+	add.l	d7,d0
+; $0B5EA4
+	lsr.l	d5,d1
+; $0B5EA6
+	lsr.w	(a5)
+; $0B5EA8
+	mulu.w	(-$8,a2,a4.l),d7
+; $0B5EAC
+	andi.l	#$B0780320,-(a6)
+; $0B5EB2
+	ori.l	#$FA0F00F0,($EEFFFC).l
+; $0B5EBC
+	btst	d6,a3
+; $0B5EBE
+	dc.w	$FFF5
+; $0B5EC0
+	dc.w	$FFFC
+; $0B5EC2
+	dc.w	$F0F0
+; $0B5EC4
+	move.l	d4,-(a0)
+; $0B5EC6
+	ori.b	#$55,d0
+; $0B5ECA
+	or.b	$354(a7),d1
+; $0B5ECE
+	move.w	d0,-(a2)
+; $0B5ED0
+	move.w	d4,-(a0)
+; $0B5ED2
+	move.l	d1,-(a7)
+; $0B5ED4
+	move.l	d3,d7
+; $0B5ED6
+	move.l	d0,d7
+; $0B5ED8
+	mulu.w	?ea(7,5),d6
+; $0B5EDA
+	exg	a6,a6
+; $0B5EDC
+	ori.?	#?,a4
+; $0B5EDE
+	mulu.w	(a4)+,d6
+; $0B5EE0
+	mulu.w	?ea(7,7),d6
+; $0B5EE2
+	dc.w	$FFFF
+; $0B5EE4
+	mulu.w	(a5)+,d6
+; $0B5EE6
+	ror.w	-$3212(a6)
+; $0B5EEA
+	adda.l	(a5)+,a6
+; $0B5EEC
+	dc.w	$F3CE
+; $0B5EEE
+	add.w	d6,-(a2)
+; $0B5EF0
+	ori.w	#$00CC,(a2)
+; $0B5EF4
+	move.w	(-$1,a3,d3.l),d6
+; $0B5EF8
+	move.w	-$33(a7),($EDFFFFCE).l
+; $0B5F00
+	dc.w	$FFEE
+; $0B5F02
+	dc.w	$FEEE
+; $0B5F04
+	mulu.w	?ea(7,7),d7
+
+loc_0B5F06:				; $0B5F06
+	ror.w	-$3301(a6)
+; $0B5F0A
+	adda.l	-$1134(a7),a6
+; $0B5F0E
+	mulu.w	-$134(a7),d6
+; $0B5F12
+	dbmi	d4,loc_0B3E97
+; $0B5F16
+	bchg	d1,(a4)+
+; $0B5F18
+	roxl.l	#6,d6
+; $0B5F1A
+	ori.?	#?,?ea(7,6)
+; $0B5F1C
+	sub.b	d0,d1
+; $0B5F1E
+	muls.w	?ea(7,7),d4
+; $0B5F20
+	sub.b	d0,d3
+; $0B5F22
+	or.b	d1,d7
+; $0B5F24
+	add.l	(a6)+,d6
+; $0B5F26
+	ori.w	#$04CC,a6
+; $0B5F2A
+	roxl.l	#6,d5
+; $0B5F2C
+	add.l	$ED(a2),d6
+; $0B5F30
+	dc.w	$FFFD
+; $0B5F32
+	sub.b	d0,d2
+; $0B5F34
+	eor.b	d1,d0
+; $0B5F36
+	ror.w	?ea(7,7)
+; $0B5F38
+	ror.w	-$1212(a5)
+; $0B5F3C
+	ror.w	(a4)+
+; $0B5F3E
+	adda.w	?ea(7,6),a6
+; $0B5F40
+	dc.w	$F67F
+; $0B5F42
+	ori.?	#?,?ea(7,7)
+; $0B5F44
+	roxl.w	d2
+; $0B5F46
+	bchg	d0,-$2301(a5)
+; $0B5F4A
+	roxl.b	#6,d2
+; $0B5F4C
+	bhi.s	loc_0B5F4F
+; $0B5F4E
+	cmpa.l	(a2),a5
+; $0B5F50
+	ori.?	#?,-$2A00(a6)
+; $0B5F54
+	bne.s	loc_0B5F57
+; $0B5F56
+	and.b	a5,d7
+; $0B5F58
+	bne.s	loc_0B5F5B
+; $0B5F5A
+	dc.w	$A8D2
+; $0B5F5C
+	bchg	d0,$FF8(a6)
+; $0B5F60
+	bset	d1,$E10(a2)
+; $0B5F64
+	move.w	(a2),-(a1)
+; $0B5F66
+	move.b	-(a2),d0
+; $0B5F68
+	move.l	(a6),d4
+; $0B5F6A
+	movea.b	-(a6),a0
+; $0B5F6C
+	btst	d0,a6
+; $0B5F6E
+	move.b	a5,?ea(7,6)
+; $0B5F70
+	move.l	(a0),d7
+; $0B5F72
+	rol.b	d7,d2
+; $0B5F74
+	movea.b	-(a2),a0
+; $0B5F76
+	bset	d0,d0
+; $0B5F78
+	sub.b	d5,d1
+; $0B5F7A
+	move.w	(a1)+,d7
+; $0B5F7C
+	move.l	(a7)+,d7
+; $0B5F7E
+	negx.b	(a7)+
+; $0B5F80
+	addq.b	#1,(a7)+
+; $0B5F82
+	bcc.s	loc_0B5F9C
+; $0B5F84
+	add.b	d0,d3
+; $0B5F86
+	and.b	d6,d7
+; $0B5F88
+	sub.b	d2,d0
+; $0B5F8A
+	muls.w	a6,d7
+; $0B5F8C
+	sub.b	(a7)+,d2
+; $0B5F8E
+	sub.b	(a1),d5
+; $0B5F90
+	add.b	d1,d3
+; $0B5F92
+	addq.b	#7,(a5)+
+; $0B5F94
+	addq.b	#7,(a1)+
+; $0B5F96
+	dc.w	$FFEE
+; $0B5F98
+	ror.w	(a6)+
+; $0B5F9A
+	adda.w	?ea(7,7),a6
+
+loc_0B5F9C:				; $0B5F9C
+	dc.w	$FEDD
+; $0B5F9E
+	roxr.w	d7
+; $0B5FA0
+	dc.w	$FFFE
+; $0B5FA2
+	adda.w	(a5),a6
+; $0B5FA4
+	move.b	(a3)+,?ea(7,7)
+; $0B5FA6
+	move.b	$12DC(a2),d0
+; $0B5FAA
+	roxl.w	?ea(7,6)
+; $0B5FAC
+	dc.w	$F110
+; $0B5FAE
+	adda.w	a4,a6
+; $0B5FB0
+	mulu.w	(a4)+,d7
+; $0B5FB2
+	mulu.w	a4,d6
+; $0B5FB4
+	mulu.w	(-$3D,a7,a6.l),d7
+; $0B5FB8
+	move.w	(a2),$2CC(a1)
+; $0B5FBC
+	mulu.w	d3,d6
+; $0B5FBE
+	mulu.w	-(a7),d7
+; $0B5FC0
+	roxr.w	a4
+; $0B5FC2
+	muls.w	$5EA(a2),d1
+; $0B5FC6
+	bchg	d2,d3
+; $0B5FC8
+	move.w	d3,($61339E01).l
+; $0B5FCE
+	move.b	-(a0),-(a7)
+; $0B5FD0
+	move.l	-(a2),-(a3)
+; $0B5FD2
+	lsr.b	#5,d2
+; $0B5FD4
+	adda.w	a5,a7
+; $0B5FD6
+	dc.w	$A100
+; $0B5FD8
+	cmp.b	(-$7,a4,d2.w),d6
+; $0B5FDC
+	move.b	d3,(a0)+
+; $0B5FDE
+	move.w	a6,($FCA000CC).l
+; $0B5FE4
+	moveq	#44,d5
+; $0B5FE6
+	move.l	($20,a3,d0.l),-(a0)
+; $0B5FEA
+	move.l	-(a2),d6
+; $0B5FEC
+	move.l	-(a2),d6
+; $0B5FEE
+	bgt.s	loc_0B6001
+; $0B5FF0
+	eori.w	#$4F20,$3C(a3)
+; $0B5FF6
+	movea.l	$116A(a6),a6
+; $0B5FFA
+	bclr	d0,a6
+; $0B5FFC
+	move.l	d6,(-$37,a2,d0.w)
+; $0B6000
+	roxr.l	#6,d6
+; $0B6002
+	ori.w	#$6E24,$21DC(a5)
+; $0B6008
+	dc.w	$7126
+; $0B600A
+	adda.w	$1FCC(a6),a7
+; $0B600E
+	roxr.w	-$2312(a6)
+; $0B6012
+	dc.w	$A102
+; $0B6014
+	dc.w	$AA01
+; $0B6016
+	or.b	-(a1),d7
+; $0B6018
+	lea	-$1312(a6),a7
+; $0B601C
+	roxr.w	#6,d6
+; $0B601E
+	bset	d0,(a2)+
+; $0B6020
+	move.l	-$3500(a6),loc_0BACEA(pc)
+; $0B6026
+	bset	d2,$21EE(a6)
+; $0B602A
+	roxr.w	d4
+; $0B602C
+	bset	d1,loc_0B841C(pc)
+; $0B6030
+	abcd	d0,d2
+; $0B6032
+	ori.?	#?,(a4)+
+; $0B6034
+	bchg	d3,$5D2(a2)
+; $0B6038
+	move.l	$11EE(a6),$2F00(a6)
+; $0B603E
+	move.w	a6,-(a3)
+; $0B6040
+	move.b	$510(a2),loc_0B727D(pc)
+; $0B6046
+	addq.b	#7,(a1)+
+; $0B6048
+	moveq	#17,d1
+; $0B604A
+	add.b	d1,d3
+; $0B604C
+	add.w	d2,d7
+; $0B604E
+	movea.w	-(a2),a0
+; $0B6050
+	bclr	d0,$11C0(a6)
+; $0B6054
+	move.l	?ea(7,7),d7
+; $0B6056
+	negx.b	?ea(7,7)
+; $0B6058
+	addq.b	#1,?ea(7,7)
+; $0B605A
+	bcc.s	loc_0B6093
+; $0B605C
+	sub.b	(a7)+,d5
+; $0B605E
+	sub.b	(-$2,a5,a7.l),d2
+; $0B6062
+	bchg	d1,a7
+; $0B6064
+	and.l	($5E,a0,d1.l),d7
+; $0B6068
+	move.b	(a2),(-$52,a2,d0.w)
+; $0B606C
+	move.b	(a3)+,(a1)+
+; $0B606E
+	move.b	(a1),?ea(7,7)
+; $0B6070
+	move.w	?ea(7,5),(a1)+
+; $0B6072
+	dc.w	$FED3
+; $0B6074
+	move.w	-$1224(a6),(a0)+
+; $0B6078
+	roxr.w	a6
+; $0B607A
+	roxr.l	d6,d7
+; $0B607C
+	move.w	d2,($CFFCCCDC).l
+; $0B6082
+	dc.w	$F230
+; $0B6084
+	move.w	($33,a2,a7.w),($C3191105).l
+; $0B608C
+	move.l	-(a2),d3
+; $0B608E
+	and.b	-(a2),d1
+; $0B6090
+	mulu.w	(a4),d1
+; $0B6092
+	sub.b	d1,d7
+; $0B6094
+	move.l	-(a4),-(a3)
+; $0B6096
+	move.w	a7,-(a1)
+; $0B6098
+	negx.b	-(a2)
+; $0B609A
+	move.l	$22C2(a1),d1
+; $0B609E
+	suba.l	a6,a3
+; $0B60A0
+	roxr.w	(a4)+
+; $0B60A2
+	dc.w	$F530
+; $0B60A4
+	muls.w	?ea(7,5),d1
+; $0B60A6
+	move.w	($30C20322).l,($FFFFCF41).w
+; $0B60AE
+	movea.l	(a6),a5
+; $0B60B0
+	move.l	(a2)+,$272(a2)
+; $0B60B4
+	bclr	d0,($79,a2,d0.w)
+; $0B60B8
+	ori.w	#$01EF,($CF8F1162).l
+; $0B60C0
+	dc.w	$FFCC
+; $0B60C2
+	roxr.w	d6,d6
+; $0B60C4
+	ori.?	#?,($40,a6,d6.l)
+; $0B60C8
+	mulu.w	?ea(7,7),d7
+; $0B60CA
+	moveq	#65,d3
+; $0B60CC
+	adda.l	-$3001(a7),a7
+; $0B60D0
+	dc.w	$FFDE
+; $0B60D2
+	dc.w	$FECE
+; $0B60D4
+	ror.w	(a6)+
+; $0B60D6
+	ror.w	a6
+; $0B60D8
+	add.b	a7,d7
+; $0B60DA
+	muls.w	-$3223(a5),d6
+; $0B60DE
+	sub.b	-(a1),d7
+; $0B60E0
+	bhi.s	loc_0B60E3
+; $0B60E2
+	and.b	(a3)+,d1
+; $0B60E4
+	bra.s	loc_0B611D
+; $0B60E6
+	cmp.l	?ea(7,6),d3
+; $0B60E8
+	move.l	?ea(7,6),(a0)+
+; $0B60EA
+	adda.l	(a1),a6
+; $0B60EC
+	move.b	?ea(7,7),(a0)+
+; $0B60EE
+	dc.w	$FCB4
+; $0B60F0
+	lea	?ea(7,6),a2
+; $0B60F2
+	dc.w	$FFFD
+; $0B60F4
+	ror.w	-$1013(a4)
+; $0B60F8
+	adda.w	(a4)+,a7
+; $0B60FA
+	ror.w	?ea(7,7)
+; $0B60FC
+	roxl.w	(a5)+
+; $0B60FE
+	adda.w	(a6)+,a6
+; $0B6100
+	adda.w	a7,a6
+; $0B6102
+	muls.w	$2BED(a5),d6
+; $0B6106
+	muls.w	(-$31,pc,d1.w),d7
+; $0B610A
+	sub.b	d0,d3
+; $0B610C
+	and.l	(-$31,a7,d0.w),d7
+; $0B6110
+	negx.?	?ea(7,7)
+; $0B6112
+	roxl.w	a5
+; $0B6114
+	dc.w	$FDDD
+; $0B6116
+	adda.w	a5,a7
+; $0B6118
+	dc.w	$FDCD
+; $0B611A
+	bchg	d1,-$3119(a6)
+; $0B611E
+	negx.l	a6
+; $0B6120
+	btst	d0,$35AE(a2)
+; $0B6124
+	move.b	(a0)+,(-$14,a7,d0.w)
+; $0B6128
+	move.b	(a5),(a1)+
+; $0B612A
+	roxr.l	#6,d6
+; $0B612C
+	ori.?	#?,(a4)+
+; $0B612E
+	add.b	d0,d3
+; $0B6130
+	add.l	a5,d6
+; $0B6132
+	ori.?	#?,(a4)+
+; $0B6134
+	roxl.l	d6,d3
+; $0B6136
+	muls.w	(a6)+,d6
+; $0B6138
+	dc.w	$AB00
+; $0B613A
+	add.l	$DE(a1),d7
+; $0B613E
+	btst	d2,-(a1)
+; $0B6140
+	and.b	d0,d6
+; $0B6142
+	add.b	d1,d3
+; $0B6144
+	moveq	#17,d1
+; $0B6146
+	bpl.s	loc_0B615D
+; $0B6148
+	add.b	d1,d3
+; $0B614A
+	or.b	d1,d7
+; $0B614C
+	bhi.s	loc_0B617F
+; $0B614E
+	move.l	(a2),d5
+; $0B6150
+	movea.w	d0,a0
+; $0B6152
+	dc.w	$FFDE
+; $0B6154
+	adda.l	?ea(7,5),a7
+; $0B6156
+	roxl.w	a6
+; $0B6158
+	add.l	d7,(a5)+
+; $0B615A
+	roxr.b	#6,d7
+; $0B615C
+	muls.w	-$6124(a1),d6
+; $0B6160
+	roxr.w	d6,d6
+; $0B6162
+	ori.?	#?,(a1)
+; $0B6164
+	negx.w	(a7)+
+; $0B6166
+	ori.l	#$27502F5C,d0
+; $0B616C
+	sub.b	d1,d7
+; $0B616E
+	clr.w	(a1)+
+; $0B6170
+	and.w	a7,d7
+; $0B6172
+	dc.w	$F040
+; $0B6174
+	bls.s	loc_0B617A
+; $0B6176
+	and.b	-(a0),d6
+; $0B6178
+	or.b	d1,d7
+
+loc_0B617A:				; $0B617A
+	rol.w	#7,d4
+; $0B617C
+	or.b	d1,d7
+; $0B617E
+	bhi.s	loc_0B6185
+; $0B6180
+	roxr.w	#6,d0
+; $0B6182
+	roxr.b	#6,d6
+; $0B6184
+	subq.l	#6,(a3)+
+; $0B6186
+	bclr	d0,($55,a4,a2.w)
+; $0B618A
+	or.w	d7,(a0)
+; $0B618C
+	and.b	(-$1,a4,d0.w),d6
+; $0B6190
+	dc.w	$FF55
+; $0B6192
+	addq.b	#5,a7
+; $0B6194
+	dc.w	$FF3C
+; $0B6196
+	move.w	$6776(a0),$6868(a1)
+; $0B619C
+	dc.w	$77BF
+; $0B619E
+	bvc.s	loc_0B6216
+; $0B61A0
+	dc.w	$77FF
+; $0B61A2
+	dc.w	$FF87
+; $0B61A4
+	dc.w	$FA5F
+; $0B61A6
+	move.w	d2,(a6)
+; $0B61A8
+	move.b	($32,a2,a6.l),-(a4)
+; $0B61AC
+	bra.s	loc_0B61DC
+; $0B61AE
+	subq.l	#2,(a6)+
+; $0B61B0
+	bset	d0,(a2)
+; $0B61B2
+	bset	d0,(a2)
+
+loc_0B61B4:				; $0B61B4
+	lea	-$1412(a5),a2
+; $0B61B8
+	roxl.w	(a1)+
+; $0B61BA
+	andi.?	#?,(a6)+
+; $0B61BC
+	move.l	(a4),-$2323(a5)
+; $0B61C0
+	add.w	($FFFFC553).w,d6
+; $0B61C4
+	dc.w	$FB24
+; $0B61C6
+	ror.w	#3,d3
+; $0B61C8
+	adda.w	a5,a6
+; $0B61CA
+	muls.w	(a5)+,d6
+; $0B61CC
+	moveq	#96,d2
+; $0B61CE
+	bchg	d4,-$5F00(a5)
+; $0B61D2
+	dc.w	$7761
+; $0B61D4
+	adda.l	($5F,pc,d1.w),a6
+; $0B61D8
+	bcc.s	loc_0B61B4
+; $0B61DA
+	bclr	d2,-(a2)
+
+loc_0B61DC:				; $0B61DC
+	bchg	d0,($1,a0,a1.l)
+; $0B61E0
+	dc.w	$FA25
+; $0B61E2
+	bhi.s	loc_0B61E9
+; $0B61E4
+	add.b	d2,d5
+; $0B61E6
+	mulu.w	(a5)+,d7
+; $0B61E8
+	mulu.w	(a5)+,d6
+; $0B61EA
+	bchg	d7,a5
+; $0B61EC
+	adda.l	a4,a6
+; $0B61EE
+	add.l	($75,a3,d6.w),d6
+; $0B61F2
+	bra.s	loc_0B6220
+; $0B61F4
+	move.b	($0,a4,d6.w),(a0)
+; $0B61F8
+	bne.s	loc_0B61FB
+; $0B61FA
+	lsr.w	#5,d1
+; $0B61FC
+	and.w	-$2399(a7),d7
+; $0B6200
+	cmp.b	?ea(7,7),d2
+; $0B6202
+	ori.w	#$CB40,(a4)+
+; $0B6206
+	dc.w	$0E7F
+; $0B6208
+	asr.b	#8,d4
+; $0B620A
+	dc.w	$7766
+; $0B620C
+	move.w	(a6)+,(-$25,a2,d0.w)
+; $0B6210
+	subi.w	#$69DD,-(a6)
+; $0B6214
+	muls.w	(a4)+,d6
+
+loc_0B6216:				; $0B6216
+	suba.l	(a5)+,a7
+; $0B6218
+	muls.w	a6,d6
+; $0B621A
+	adda.w	a5,a6
+; $0B621C
+	addq.w	#2,($0,a0,a2.w)
+
+loc_0B6220:				; $0B6220
+	add.b	d0,d6
+; $0B6222
+	eor.w	d0,-(a0)
+; $0B6224
+	addq.w	#8,($70,a0,d5.w)
+; $0B6228
+	addq.w	#5,($79,a1,d3.l)
+; $0B622C
+	movea.w	?ea(7,7),a3
+; $0B622E
+	add.b	d5,-(a7)
+; $0B6230
+	dc.w	$A252
+; $0B6232
+	lea	a5,a0
+; $0B6234
+	bcc.w	loc_0B6757
+; $0B6238
+	beq.s	loc_0B626B
+; $0B623A
+	move.l	(a1),-(a5)
+; $0B623C
+	ble.s	loc_0B62B3
+; $0B623E
+	add.l	d7,($006001).w
+; $0B6242
+	add.l	($006064).w,d7
+; $0B6246
+	bset	d0,($7B,a3,d7.w)
+; $0B624A
+	moveq	#-113,d4
+; $0B624C
+	dc.w	$7598
+; $0B624E
+	bra.s	loc_0B627B
+; $0B6250
+	move.b	($FFFFA255).w,($FFFFE151).w
+; $0B6256
+	sub.w	d6,-(a1)
+; $0B6258
+	mulu.w	a5,d6
+; $0B625A
+	cmpa.l	a3,a6
+; $0B625C
+	cmpa.l	(-$25,pc,a4.l),a5
+; $0B6260
+	dc.w	$F070
+; $0B6262
+	cmpa.l	a6,a5
+; $0B6264
+	cmpa.w	(a3)+,a7
+; $0B6266
+	cmpa.l	-$2324(a7),a5
+; $0B626A
+	exg	d5,a3
+; $0B626C
+	ror.w	d7,d2
+; $0B626E
+	cmpa.l	a6,a5
+; $0B6270
+	ror.w	(a5)+
+; $0B6272
+	and.b	?ea(7,5),d7
+; $0B6274
+	bhi.s	loc_0B6243
+; $0B6276
+	eor.l	d6,?ea(7,5)
+; $0B6278
+	rol.w	d7,d0
+; $0B627A
+	adda.l	(a3)+,a5
+; $0B627C
+	dc.w	$F9CE
+; $0B627E
+	movea.w	-(a0),a1
+; $0B6280
+	sub.b	d1,d7
+; $0B6282
+	eor.l	d6,?ea(7,5)
+; $0B6284
+	exg	d6,a5
+; $0B6286
+	cmpa.l	?ea(7,7),a5
+; $0B6288
+	adda.l	a3,a5
+; $0B628A
+	add.l	d5,?ea(7,6)
+; $0B628C
+	cmpa.w	a3,a7
+; $0B628E
+	cmpa.l	(a4)+,a6
+; $0B6290
+	sls	(a4)+
+; $0B6292
+	adda.l	?ea(7,7),a5
+; $0B6294
+	dc.w	$73F3
+; $0B6296
+	moveq	#-51,d0
+; $0B6298
+	bset	d2,d0
+; $0B629A
+	add.b	d5,-$7FC2(a1)
+; $0B629E
+	dc.w	$FE74
+; $0B62A0
+	adda.l	a6,a5
+; $0B62A2
+	cmpa.w	a6,a7
+; $0B62A4
+	cmp.w	($4F,a6,d7.w),d7
+; $0B62A8
+	dc.w	$71EA
+
+loc_0B62AA:				; $0B62AA
+	dc.w	$7D60
+; $0B62AC
+	mulu.w	(a5)+,d7
+; $0B62AE
+	ori.?	#?,a6
+; $0B62B0
+	or.w	d7,(a0)
+; $0B62B2
+	muls.w	a4,d6
+; $0B62B4
+	and.l	d1,d7
+; $0B62B6
+	add.l	d6,d7
+; $0B62B8
+	bra.s	loc_0B6297
+; $0B62BA
+	bchg	d0,(-$6A,a3,d1.w)
+; $0B62BE
+	dc.w	$71F2
+; $0B62C0
+	movea.b	-(a0),a0
+; $0B62C2
+	ori.?	#?,a6
+; $0B62C4
+	move.l	-$3133(a5),($215581B5).l
+; $0B62CC
+	bsr.s	loc_0B62AA
+; $0B62CE
+	bra.w	loc_0BD750
+; $0B62D2
+	move.b	(-$23,a1,d1.w),(a5)+
+; $0B62D6
+	roxr.w	#2,d0
+; $0B62D8
+	roxl.w	(a5)+
+; $0B62DA
+	roxl.b	#6,d0
+; $0B62DC
+	dc.w	$A150
+; $0B62DE
+	addq.w	#2,(-$4D,a0,a7.l)
+; $0B62E2
+	bls.s	loc_0B628F
+; $0B62E4
+	bchg	d0,(a4)+
+; $0B62E6
+	mulu.w	d3,d6
+; $0B62E8
+	exg	d1,d4
+; $0B62EA
+	movea.w	a3,a6
+; $0B62EC
+	and.b	($20,a3,d0.l),d6
+; $0B62F0
+	move.w	(-$48,a0,a0.w),(a6)
+; $0B62F4
+	divu.w	d3,d0
+; $0B62F6
+	ori.b	#$3C,-(a0)
+; $0B62FA
+	move.w	?ea(7,7),(a6)
+; $0B62FC
+	or.l	($2C,a6,a0.w),d0
+; $0B6300
+	bra.s	loc_0B62C9
+; $0B6302
+	or.l	($3C,pc,a0.w),d0
+; $0B6306
+	move.b	d3,($FFFFAE83).w
+; $0B630A
+	cmp.l	d0,d4
+; $0B630C
+	move.b	-(a0),-(a6)
+; $0B630E
+	and.l	($D,pc,a0.w),d6
+; $0B6312
+	move.l	d4,(a0)+
+; $0B6314
+	or.l	($FFFFAE8F).w,d0
+; $0B6318
+	and.l	a3,d0
+; $0B631A
+	move.l	d3,-(a7)
+; $0B631C
+	move.w	($16,a5,d5.w),-(a2)
+; $0B6320
+	sub.w	(a5),d0
+; $0B6322
+	dc.w	$FB21
+; $0B6324
+	move.l	-(a4),$20CC(a1)
+; $0B6328
+	movea.l	(a1),a6
+; $0B632A
+	move.l	#$FBCC11F1,d6
+; $0B6330
+	or.b	-(a5),d0
+; $0B6332
+	move.w	-(a3),d6
+; $0B6334
+	and.b	($23,a3,a7.l),d6
+; $0B6338
+	move.w	d3,($3232333C).l
+; $0B633E
+	move.w	?ea(7,7),(a1)+
+; $0B6340
+	move.b	-(a3),-(a0)
+; $0B6342
+	move.w	($13,a2,d2.w),-(a1)
+; $0B6346
+	move.w	-(a2),-(a1)
+; $0B6348
+	dc.w	$FF12
+; $0B634A
+	move.b	-(a3),-(a0)
+; $0B634C
+	move.l	(a2),-(a0)
+; $0B634E
+	move.w	(-$1,a2,d2.l),d1
+; $0B6352
+	move.l	(a2),-(a1)
+; $0B6354
+	move.l	($12,a2,d2.w),(a1)+
+; $0B6358
+	move.b	(-$40,a3,a7.l),d1
+; $0B635C
+	or.b	$6263(a3),d0
+; $0B6360
+	move.l	(-$12,a2,d3.w),-(a0)
+; $0B6364
+	move.w	($3E,a3,d7.l),-(a1)
+; $0B6368
+	ror.b	d7,d2
+; $0B636A
+	move.w	-$DE(a6),(a7)+
+; $0B636E
+	movea.w	(a0),a2
+; $0B6370
+	dc.w	$FE68
+; $0B6372
+	suba.w	?ea(7,6),a0
+; $0B6374
+	move.w	d3,(a6)+
+; $0B6376
+	move.w	$333E(a6),(a7)+
+; $0B637A
+	move.l	-$1C1(a7),($30,pc,a4.l)
+; $0B6380
+	roxl.w	d6,d0
+; $0B6382
+	dc.w	$FE39
+; $0B6384
+	dbhi	d3,loc_0B7584
+; $0B6388
+	and.b	(-$2D,a4,a6.l),d0
+; $0B638C
+	move.l	(a1),-(a0)
+; $0B638E
+	ror.w	(a5)+
+; $0B6390
+	move.w	(-$12,pc,d1.w),(a1)+
+; $0B6394
+	or.l	(a0),d7
+; $0B6396
+	rol.w	?ea(7,5)
+; $0B6398
+	add.b	d6,(-$9,a3,a6.l)
+; $0B639C
+	rol.w	-$226F(a5)
+; $0B63A0
+	ori.?	#?,(a6)+
+; $0B63A2
+	roxl.w	(a6)+
+; $0B63A4
+	rol.w	?ea(7,6)
+; $0B63A6
+	and.w	(a0),d0
+; $0B63A8
+	dc.w	$FEED
+; $0B63AA
+	dc.w	$FF12
+; $0B63AC
+	move.l	-(a2),d1
+; $0B63AE
+	move.b	(-$70,a6,d3.w),($002122).w
+; $0B63B4
+	move.w	(a0),(a4)
+; $0B63B6
+	move.w	(-$3D,a3,d2.w),-(a1)
+; $0B63BA
+	dc.w	$FE2E
+; $0B63BC
+	suba.w	(a4)+,a0
+; $0B63BE
+	move.w	(-$12,a2,d1.w),-(a1)
+; $0B63C2
+	and.b	($33,a1,d0.w),d6
+; $0B63C6
+	adda.w	(a4)+,a7
+; $0B63C8
+	eor.l	d6,(a0)
+; $0B63CA
+	move.b	(a0),d1
+; $0B63CC
+	cmp.l	(a1),d4
+
+loc_0B63CE:				; $0B63CE
+	add.l	(a1),d2
+; $0B63D0
+	move.w	(a0),(a2)
+; $0B63D2
+	sub.b	d3,-(a3)
+; $0B63D4
+	move.w	-$436F(a4),-(a1)
+
+loc_0B63D8:				; $0B63D8
+	move.w	(a4)+,-(a1)
+; $0B63DA
+	suba.w	(a1)+,a0
+; $0B63DC
+	sub.b	d0,($33,a3,a7.w)
+; $0B63E0
+	dc.w	$0E83
+; $0B63E2
+	eor.b	d5,(a5)
+; $0B63E4
+	or.l	d5,?ea(7,5)
+; $0B63E6
+	muls.w	(a3)+,d5
+; $0B63E8
+	lsl.l	#5,d3
+; $0B63EA
+	roxl.w	a5
+; $0B63EC
+	move.l	d1,(-$12,a4,a5.l)
+; $0B63F0
+	moveq	#3,d0
+; $0B63F2
+	dc.w	$A0F0
+; $0B63F4
+	moveq	#-67,d0
+; $0B63F6
+	suba.l	a6,a5
+; $0B63F8
+	lsl.w	loc_0BDEB8(pc)
+; $0B63FC
+	and.b	(a1)+,d7
+; $0B63FE
+	or.b	a6,d1
+; $0B6400
+	divu.w	$69BE(a6),d3
+; $0B6404
+	chk.w	d2,d4
+; $0B6406
+	move.b	d1,(a7)
+; $0B6408
+	add.b	d5,-(a3)
+; $0B640A
+	divu.w	-$14D8(a6),d0
+; $0B640E
+	or.b	?ea(7,5),d1
+; $0B6410
+	adda.l	(a6),a5
+; $0B6412
+	dc.w	$71ED
+; $0B6414
+	roxl.w	-$329D(a4)
+; $0B6418
+	or.l	d4,d0
+; $0B641A
+	bsr.s	loc_0B640C
+; $0B641C
+	bcc.w	loc_0B311E
+; $0B6420
+	cmp.w	($50,a0,d2.w),d1
+; $0B6424
+	adda.w	a6,a7
+; $0B6426
+	roxr.w	a6
+; $0B6428
+	or.l	-(a0),d5
+; $0B642A
+	suba.w	(a4)+,a0
+; $0B642C
+	bge.s	loc_0B63CE
+; $0B642E
+	add.w	($53,a0,a0.w),d6
+; $0B6432
+	moveq	#123,d0
+; $0B6434
+	bra.s	loc_0B6402
+; $0B6436
+	divs.w	-$6880(a5),d6
+; $0B643A
+	mulu.w	a5,d7
+; $0B643C
+	eor.w	d1,($0,a0,d6.w)
+; $0B6440
+	addq.w	#7,-(a0)
+; $0B6442
+	roxl.l	d6,d1
+; $0B6444
+	roxr.w	#6,d6
+; $0B6446
+	bhi.s	loc_0B649D
+; $0B6448
+	or.w	d0,-(a0)
+; $0B644A
+	bra.s	loc_0B63D8
+; $0B644C
+	dc.w	$A1DD
+; $0B644E
+	sub.b	d2,-(a0)
+; $0B6450
+	add.b	d6,d1
+; $0B6452
+	and.b	-(a4),d7
+; $0B6454
+	subq.l	#8,(a0)
+; $0B6456
+	move.l	-$703F(a7),(a0)+
+; $0B645A
+	divs.w	(a3),d7
+; $0B645C
+	divs.w	-(a5),d7
+; $0B645E
+	or.l	d7,(-$16,a7,a2.l)
+; $0B6462
+	exg	d4,a2
+; $0B6464
+	sge	-(a3)
+; $0B6466
+	dc.w	$A043
+; $0B6468
+	dc.w	$F3A0
+; $0B646A
+	move.w	(a4)+,-(a1)
+; $0B646C
+	exg	a1,a7
+; $0B646E
+	move.w	d2,(a6)+
+; $0B6470
+	move.l	a5,d6
+; $0B6472
+	move.l	d5,(a1)+
+; $0B6474
+	dc.w	$A13C
+; $0B6476
+	move.w	(a4)+,-(a0)
+; $0B6478
+	suba.w	?ea(7,7),a0
+; $0B647A
+	subq.b	#1,(-$34,a3,d3.l)
+; $0B647E
+	move.b	-(a1),-(a1)
+; $0B6480
+	move.l	-$DE(a6),-(a1)
+; $0B6484
+	move.l	($21,a2,d1.l),-(a0)
+; $0B6488
+	move.b	-(a1),d1
+; $0B648A
+	move.b	(a7)+,(a7)+
+; $0B648C
+	move.l	(a2),-(a0)
+; $0B648E
+	move.b	$3190(a6),($FFFF9032).w
+; $0B6494
+	move.l	?ea(7,7),($002EEE).w
+; $0B6498
+	move.l	(a2),d1
+; $0B649A
+	ror.w	$111E(a6)
+; $0B649E
+	divs.w	-$12(a7),d3
+; $0B64A2
+	moveq	#-108,d7
+; $0B64A4
+	jsr	(-$6B,a5,d7.l)
+; $0B64A8
+	dc.w	$7940
+; $0B64AA
+	rol.l	d7,d4
+; $0B64AC
+	eor.b	d1,d0
+; $0B64AE
+	move.w	(a1),-$124C(a4)
+; $0B64B2
+	ori.?	#?,(a6)+
+; $0B64B4
+	dc.w	$FE9F
+; $0B64B6
+	suba.w	?ea(7,6),a0
+; $0B64B8
+	beq.s	loc_0B64B7
+; $0B64BA
+	adda.l	(a5)+,a6
+; $0B64BC
+	dc.w	$7BB0
+; $0B64BE
+	sub.w	-(a2),d3
+; $0B64C0
+	adda.l	(a7)+,a6
+; $0B64C2
+	bhi.w	loc_0B80B1
+; $0B64C6
+	add.l	a5,d7
+; $0B64C8
+	negx.?	(a4)+
+; $0B64CA
+	add.w	(-$2A,a3,d6.w),d7
+; $0B64CE
+	dc.w	$7165
+; $0B64D0
+	bchg	d0,(a0)+
+; $0B64D2
+	add.w	($72,a0,a1.w),d6
+; $0B64D6
+	sub.w	d3,(-$34,a0,a6.l)
+; $0B64DA
+	eor.b	d6,-(a0)
+; $0B64DC
+	mulu.w	(a5)+,d6
+; $0B64DE
+	addq.w	#2,a5
+; $0B64E0
+	negx.w	-(a0)
+; $0B64E2
+	bra.s	loc_0B6520
+; $0B64E4
+	dc.w	$A170
+; $0B64E6
+	move.w	a6,$70C3(a1)
+; $0B64EA
+	sub.w	d5,(-$14,a2,a6.l)
+; $0B64EE
+	dc.w	$A100
+; $0B64F0
+	adda.w	-$2400(a7),a7
+; $0B64F4
+	adda.w	(a4)+,a7
+; $0B64F6
+	move.w	d3,(a6)
+; $0B64F8
+	move.w	-(a3),-(a1)
+; $0B64FA
+	move.b	(a0),(a6)
+; $0B64FC
+	move.l	(a0),(-$70,a7,d2.l)
+; $0B6500
+	move.b	($61,a1,d2.l),-(a3)
+; $0B6504
+	and.b	a0,d1
+; $0B6506
+	ror.l	#3,d0
+; $0B6508
+	dc.w	$4520
+; $0B650A
+	btst	d0,-(a0)
+; $0B650C
+	muls.w	-$6F10(a5),d1
+; $0B6510
+	moveq	#23,d2
+; $0B6512
+	dc.w	$A610
+; $0B6514
+	dc.w	$A0E3
+; $0B6516
+	cmpa.l	a6,a5
+; $0B6518
+	move.w	-(a0),(-$51,a2,d2.l)
+; $0B651C
+	move.b	a1,(a5)
+; $0B651E
+	lsl.w	-$34F8(a3)
+; $0B6522
+	dc.w	$FB70
+; $0B6524
+	move.l	d7,(a6)
+; $0B6526
+	move.b	-$11B8(a6),(a3)
+
+loc_0B652A:				; $0B652A
+	or.w	a4,d2
+; $0B652C
+	exg	a0,a7
+; $0B652E
+	dc.w	$A373
+; $0B6530
+	bra.s	loc_0B652A
+; $0B6532
+	add.w	($70,a2,d4.l),d4
+; $0B6536
+	or.w	d7,(a0)
+; $0B6538
+	adda.l	a4,a6
+; $0B653A
+	adda.w	(a6)+,a7
+; $0B653C
+	add.l	d7,d6
+; $0B653E
+	adda.w	a6,a6
+; $0B6540
+	and.w	(-$40,pc,a0.w),d6
+; $0B6544
+	bsr.s	loc_0B64D1
+; $0B6546
+	negx.w	(a1)
+; $0B6548
+	moveq	#-35,d0
+; $0B654A
+	bchg	d0,$6280(a5)
+; $0B654E
+	eor.w	d1,($51,a0,a2.w)
+; $0B6552
+	subq.b	#4,d0
+; $0B6554
+	dc.w	$A2A0
+; $0B6556
+	dc.w	$FA11
+; $0B6558
+	dc.w	$F110
+; $0B655A
+	ori.w	#$609D,($5D,a3,a0.w)
+; $0B6560
+	ori.?	#?,a1
+; $0B6562
+	negx.w	-$3C54(a0)
+; $0B6566
+	cmpa.w	(a4)+,a0
+; $0B6568
+	ori.?	#?,-$5020(a6)
+; $0B656C
+	and.l	-$2D51(a7),d0
+; $0B6570
+	roxr.l	d2,d7
+; $0B6572
+	cmpa.w	a7,a3
+; $0B6574
+	mulu.w	d3,d4
+; $0B6576
+	move.w	(a2),$3CFF(a1)
+; $0B657A
+	and.w	(a5),d6
+; $0B657C
+	move.b	#$55,d1
+; $0B6580
+	move.l	a4,($FF215535).l
+; $0B6586
+	exg	d1,d7
+; $0B6588
+	subq.w	#2,(a5)
+; $0B658A
+	move.l	$2355(a7),-(a2)
+; $0B658E
+	subq.b	#2,-(a3)
+; $0B6590
+	bset	d6,(a1)
+; $0B6592
+	subq.b	#1,$166(a7)
+; $0B6596
+	suba.w	-$DD(a3),a0
+; $0B659A
+	dc.w	$7D90
+; $0B659C
+	move.w	(a6),($22,a0,d0.w)
+; $0B65A0
+	rol.w	?ea(7,6)
+; $0B65A2
+	bchg	d5,$3272(a6)
+
+loc_0B65A6:				; $0B65A6
+	move.b	-$4C00(a6),d0
+; $0B65AA
+	move.w	(a0),?ea(7,5)
+; $0B65AC
+	exg	d2,d0
+; $0B65AE
+	or.l	(a1),d2
+; $0B65B0
+	dc.w	$ABEE
+; $0B65B2
+	dc.w	$FD7C
+; $0B65B4
+	suba.w	$6B90(a5),a0
+; $0B65B8
+	adda.l	d5,a6
+; $0B65BA
+	move.w	(a6)+,(a0)+
+; $0B65BC
+	move.w	($004091).w,(a6)+
+; $0B65C0
+	ori.?	#?,-$1201(a7)
+; $0B65C4
+	ror.l	d7,d4
+; $0B65C6
+	sub.b	(-$11,pc,a5.w),d0
+; $0B65CA
+	adda.l	?ea(7,7),a7
+; $0B65CC
+	ror.w	(a5)+
+; $0B65CE
+	cmp.b	-(a0),d4
+; $0B65D0
+	adda.w	?ea(7,7),a7
+; $0B65D2
+	add.w	d6,?ea(7,7)
+; $0B65D4
+	ror.w	(a7)+
+; $0B65D6
+	adda.w	-$1221(a6),a7
+; $0B65DA
+	ror.w	#7,d4
+; $0B65DC
+	adda.l	?ea(7,7),a0
+; $0B65DE
+	adda.l	(a5)+,a7
+; $0B65E0
+	dc.w	$FEEF
+; $0B65E2
+	adda.l	-$1123(a5),a6
+; $0B65E6
+	adda.l	?ea(7,5),a6
+; $0B65E8
+	sbcd	d1,d7
+; $0B65EA
+	adda.l	a4,a6
+
+loc_0B65EC:				; $0B65EC
+	rol.w	a4
+; $0B65EE
+	move.l	-$21E0(a5),(a0)+
+; $0B65F2
+	suba.w	(a1),a2
+; $0B65F4
+	or.w	(a0),d0
+; $0B65F6
+	divs.w	d1,d0
+; $0B65F8
+	eor.w	d1,(-$5F,a0,a0.l)
+; $0B65FC
+	add.w	a6,d7
+; $0B65FE
+	moveq	#-36,d0
+; $0B6600
+	ori.b	#$00,d0
+; $0B6604
+	bcs.s	loc_0B65A6
+; $0B6606
+	dc.w	$7371
+; $0B6608
+	subq.b	#1,d0
+; $0B660A
+	move.w	-(a5),d2
+; $0B660C
+	exg	a3,a2
+; $0B660E
+	or.w	d1,-(a0)
+; $0B6610
+	dc.w	$4321
+; $0B6612
+	cmpa.l	$6900(a5),a2
+; $0B6616
+	ror.w	a5
+; $0B6618
+	cmpa.w	(a6)+,a0
+; $0B661A
+	roxr.w	(-$33,a3,a4.w)
+; $0B661E
+	bls.s	loc_0B65EC
+; $0B6620
+	muls.w	#$200D,d1
+; $0B6624
+	move.l	d1,-(a0)
+; $0B6626
+	move.l	d3,($FFFFC5EE).w
+; $0B662A
+	add.l	d1,d0
+; $0B662C
+	sge	(-$12,a2,a5.w)
+; $0B6630
+	adda.l	($FFFFD312).w,a7
+; $0B6634
+	move.b	(a1),-(a0)
+; $0B6636
+	rol.b	#7,d4
+; $0B6638
+	rol.l	#3,d1
+; $0B663A
+	eor.l	d7,(a1)+
+; $0B663C
+	sub.l	(a1)+,d3
+; $0B663E
+	sub.l	d4,a1
+; $0B6640
+	sub.b	d4,($79,a4,a6.w)
+; $0B6644
+	tst.b	($69,a4,a6.w)
+; $0B6648
+	move.w	-(a1),(a2)+
+; $0B664A
+	or.b	d4,#$EA
+; $0B664E
+	bchg	d1,a3
+; $0B6650
+	sls	-(a2)
+; $0B6652
+	andi.w	#$00BC,(a2)
+; $0B6656
+	svc	-(a1)
+; $0B6658
+	sgt	-(a2)
+; $0B665A
+	slt	-(a2)
+; $0B665C
+	lsr.b	#5,d5
+; $0B665E
+	cmpa.w	(a1),a5
+; $0B6660
+	lsr.b	d5,d6
+; $0B6662
+	or.w	loc_0B506A(pc),d2
+; $0B6666
+	move.l	#$06216701,-(a0)
+; $0B666C
+	dc.w	$0E26
+; $0B666E
+	suba.w	-(a5),a1
+; $0B6670
+	mulu.w	-(a5),d6
+
+loc_0B6672:				; $0B6672
+	move.w	$125(a6),d6
+; $0B6676
+	move.l	(a1),?ea(7,5)
+; $0B6678
+	move.w	d0,-(a2)
+; $0B667A
+	move.b	(a2),d1
+; $0B667C
+	move.l	?ea(7,7),$5521(a2)
+; $0B6680
+	move.b	-(a1),-(a0)
+; $0B6682
+	move.l	-(a1),d1
+; $0B6684
+	move.b	d3,-$6F81(a0)
+; $0B6688
+	dc.w	$F212
+; $0B668A
+	move.w	-(a1),d1
+; $0B668C
+	dc.w	$F123
+; $0B668E
+	move.l	$5FD(a6),-(a1)
+; $0B6692
+	addq.b	#1,($25,a7,d0.w)
+; $0B6696
+	subq.b	#2,-(a2)
+; $0B6698
+	movea.w	(a1),a2
+; $0B669A
+	scs	?ea(7,7)
+; $0B669C
+	move.l	($15,a1,d2.w),-(a1)
+; $0B66A0
+	move.w	-(a1),d1
+; $0B66A2
+	movea.b	(a5),a1
+; $0B66A4
+	dc.w	$F2B1
+; $0B66A6
+	sub.w	(a5),d0
+; $0B66A8
+	dc.w	$FCFF
+; $0B66AA
+	dc.w	$FCEB
+; $0B66AC
+	subq.w	#1,(a3)
+; $0B66AE
+	move.w	(a5),-$C4(a1)
+; $0B66B2
+	exg	d1,d5
+; $0B66B4
+	move.w	($12,a2,d2.l),-(a2)
+; $0B66B8
+	move.w	-$333F(a7),-(a1)
+; $0B66BC
+	move.w	(a3),-$1140(a1)
+
+loc_0B66C0:				; $0B66C0
+	move.w	(a5),(a1)+
+; $0B66C2
+	exg	d0,a6
+; $0B66C4
+	roxr.w	#2,d3
+; $0B66C6
+	exg	d1,d2
+; $0B66C8
+	move.w	(a1),($0,pc,a1.w)
+; $0B66CC
+	move.l	($00301F).w,-$7C0(a7)
+; $0B66D2
+	add.b	d7,(a7)+
+; $0B66D4
+	move.b	?ea(7,7),?ea(7,7)
+; $0B66D6
+	move.l	(a1),d1
+; $0B66D8
+	move.w	(-$1,a1,d1.w),loc_0B66CD(pc)
+; $0B66DE
+	dc.w	$F111
+; $0B66E0
+	dc.w	$F223
+; $0B66E2
+	dc.w	$FEFF
+; $0B66E4
+	ror.l	#7,d1
+; $0B66E6
+	add.b	($65,pc,a5.w),d7
+; $0B66EA
+	adda.w	$4EF0(a6),a0
+; $0B66EE
+	bne.s	loc_0B66C0
+; $0B66F0
+	cmp.b	d0,d3
+; $0B66F2
+	move.l	?ea(7,7),(a7)+
+; $0B66F4
+	adda.w	-$112E(a6),a7
+; $0B66F8
+	add.b	d6,-$11CE(a6)
+; $0B66FC
+	dc.w	$F52E
+; $0B66FE
+	and.w	(a0),d0
+; $0B6700
+	adda.w	a5,a7
+; $0B6702
+	ori.?	#?,-$2222(a6)
+; $0B6706
+	add.w	d7,d7
+; $0B6708
+	ror.w	(a5)+
+; $0B670A
+	ror.l	d7,d5
+; $0B670C
+	sub.w	d5,d0
+; $0B670E
+	bra.s	loc_0B6777
+; $0B6710
+	adda.w	(a6)+,a0
+; $0B6712
+	sle	(a0)
+; $0B6714
+	move.w	(a5)+,($FE50F0ED).l
+; $0B671A
+	lea	a5,a0
+; $0B671C
+	adda.l	(a7)+,a6
+; $0B671E
+	subq.w	#8,(a3)
+; $0B6720
+	dc.w	$A000
+; $0B6722
+	suba.l	(-$F,a0,a1.w),a0
+; $0B6726
+	sub.w	($71,a3,a1.w),d7
+; $0B672A
+	dc.w	$AAD0
+; $0B672C
+	subq.w	#7,-(a0)
+; $0B672E
+	cmp.w	-(a0),d4
+; $0B6730
+	moveq	#-29,d2
+; $0B6732
+	ori.w	#$022C,($0073EA).w
+; $0B6738
+	move.l	(-$40,a6,a4.w),(a0)+
+; $0B673C
+	abcd	d7,d0
+; $0B673E
+	move.l	-$5F17(a5),(a0)
+; $0B6742
+	cmpa.l	?ea(7,5),a0
+; $0B6744
+	move.w	(a5)+,d1
+; $0B6746
+	move.l	-(a2),d0
+; $0B6748
+	and.b	($21,a3,d2.w),d6
+; $0B674C
+	mulu.w	?ea(7,7),d6
+; $0B674E
+	move.w	(a1),d1
+; $0B6750
+	move.b	($1F,a3,d3.w),-(a7)
+; $0B6754
+	dc.w	$FF32
+; $0B6756
+	dc.w	$FF2F
+; $0B6758
+	move.b	?ea(7,7),($002221).w
+; $0B675C
+	move.l	-(a2),d1
+; $0B675E
+	sls	?ea(7,7)
+; $0B6760
+	move.b	($55,a2,d2.w),-(a1)
+; $0B6764
+	move.w	-(a1),-(a1)
+; $0B6766
+	move.b	(a3),-$CE(a0)
+; $0B676A
+	move.b	-(a2),d1
+; $0B676C
+	addq.b	#2,($22,a2,d2.w)
+; $0B6770
+	scs	($33,a7,d5.w)
+; $0B6774
+	move.w	-(a7),d1
+; $0B6776
+	add.b	($23,a3,d5.w),d0
+; $0B677A
+	subq.l	#2,($21,pc,d2.w)
+; $0B677E
+	dc.w	$AE90
+; $0B6780
+	dc.w	$FFF2
+; $0B6782
+	movea.l	d7,a1
+; $0B6784
+	sub.b	-(a2),d0
+; $0B6786
+	moveq	#58,d7
+; $0B6788
+	sub.b	d0,-(a1)
+; $0B678A
+	move.b	-(a2),d1
+; $0B678C
+	move.l	-(a1),-(a7)
+; $0B678E
+	move.w	d2,(a1)+
+; $0B6790
+	asr.w	?ea(7,6)
+; $0B6792
+	move.w	(a0),(a7)
+; $0B6794
+	move.l	(a1),d1
+; $0B6796
+	move.l	(a2),d1
+; $0B6798
+	move.l	(-$1,a2,d2.w),-(a1)
+; $0B679C
+	move.l	-(a5),-(a0)
+; $0B679E
+	move.l	($55,a1,d1.w),?ea(7,7)
+; $0B67A2
+	dc.w	$F112
+; $0B67A4
+	eor.b	d7,-(a2)
+; $0B67A6
+	subq.b	#2,(a2)
+; $0B67A8
+	move.l	($2F,a5,d4.w),d1
+; $0B67AC
+	ori.w	#$FF22,(a5)
+; $0B67B0
+	movea.b	(a2),a1
+; $0B67B2
+	move.l	($52,a3,d1.w),-(a2)
+; $0B67B6
+	move.w	(a7)+,-$EE(a2)
+; $0B67BA
+	dc.w	$4355
+; $0B67BC
+	addq.b	#1,(a5)+
+; $0B67BE
+	move.l	-(a5),d0
+; $0B67C0
+	suba.w	-(a0),a1
+; $0B67C2
+	bcs.s	loc_0B6816
+; $0B67C4
+	btst	d0,-(a0)
+; $0B67C6
+	subq.w	#2,(a1)
+; $0B67C8
+	sub.b	-(a3),d0
+; $0B67CA
+	add.b	#$B7,d0
+; $0B67CE
+	sub.b	?ea(7,7),d0
+; $0B67D0
+	subq.w	#2,(a3)
+; $0B67D2
+	move.l	d3,($5553BA91).l
+; $0B67D8
+	move.b	($32,a0,d0.w),(a2)
+; $0B67DC
+	move.l	#$CD921E20,-(a1)
+; $0B67E2
+	dc.w	$F6C0
+; $0B67E4
+	dc.w	$F4C2
+; $0B67E6
+	mulu.w	d0,d1
+; $0B67E8
+	asl.w	d3
+; $0B67EA
+	addq.b	#3,-(a1)
+; $0B67EC
+	eor.l	d4,(a1)
+; $0B67EE
+	addq.l	#8,(a1)
+; $0B67F0
+	ror.l	#3,d0
+; $0B67F2
+	exg	d2,d3
+; $0B67F4
+	move.w	$CE0(a0),($F6D0C4C0).l
+; $0B67FC
+	subq.l	#2,(a6)+
+; $0B67FE
+	bchg	d0,d3
+; $0B6800
+	addq.w	#6,(a4)+
+; $0B6802
+	moveq	#-23,d5
+; $0B6804
+	asr.b	d0,d3
+; $0B6806
+	chk.w	(a0),d0
+; $0B6808
+	move.l	($12,a3,d2.l),-(a1)
+; $0B680C
+	move.l	d0,d7
+; $0B680E
+	dc.w	$FF22
+; $0B6810
+	move.w	($21,a2,d1.w),-(a1)
+; $0B6814
+	move.w	-$D41(a7),d1
+; $0B6818
+	move.b	($23,a3,d1.w),-(a1)
+; $0B681C
+	move.b	($0,a3,d2.l),d1
+; $0B6820
+	movea.w	($21,a7,a7.w),a1
+; $0B6824
+	dc.w	$F1C1
+; $0B6826
+	asl.b	d0,d2
+; $0B6828
+	move.l	(a1),-(a2)
+; $0B682A
+	move.b	d0,d4
+; $0B682C
+	sle	($22,a1,d3.w)
+; $0B6830
+	move.b	($0,a2,a3.w),(a1)+
+; $0B6834
+	move.l	a2,($0000BD).w
+; $0B6838
+	move.l	(a5)+,-(a0)
+; $0B683A
+	ori.b	#$13,(a2)
+; $0B683E
+	move.l	($21,a2,a6.w),(-$31,a1,d4.l)
+; $0B6844
+	asr.b	#8,d2
+; $0B6846
+	move.l	(a4),-$1620(a2)
+; $0B684A
+	move.l	(a0),(a1)+
+; $0B684C
+	move.l	-(a2),d2
+; $0B684E
+	adda.w	(a7)+,a0
+; $0B6850
+	move.l	(a5),$4532(a2)
+; $0B6854
+	move.l	#$E0225511,($23,a2,d5.w)
+; $0B685C
+	dc.w	$F10D
+; $0B685E
+	move.l	a5,d2
+; $0B6860
+	move.l	d2,($FFFF93E3).w
+; $0B6864
+	suba.w	-(a2),a3
+; $0B6866
+	move.l	($C,a0,a7.l),(-$F,a5,d4.w)
+; $0B686C
+	move.l	($22,a2,d1.l),-(a1)
+; $0B6870
+	move.w	(-$F,a3,a6.l),-(a1)
+; $0B6874
+	add.l	($33,a0,d1.w),d4
+; $0B6878
+	eor.l	d3,(a0)
+; $0B687A
+	move.w	(a2),-(a0)
+; $0B687C
+	move.l	(a6)+,($BD92CC33).l
+; $0B6882
+	move.w	(-$40,a2,a4.l),-(a1)
+; $0B6886
+	move.l	?ea(7,5),-(a1)
+; $0B6888
+	exg	d5,d5
+; $0B688A
+	add.b	d6,(-$22,a3,d1.w)
+; $0B688E
+	roxr.l	#2,d4
+; $0B6890
+	eor.l	d5,(a0)
+; $0B6892
+	move.w	-$70CD(a4),d1
+; $0B6896
+	move.w	#$C333,-(a0)
+; $0B689A
+	move.b	a7,(a0)
+; $0B689C
+	andi.w	#$F0ED,-(a3)
+; $0B68A0
+	asr.b	#8,d2
+; $0B68A2
+	bra.s	loc_0B6915
+; $0B68A4
+	move.b	(a4),(-$62,a0,a0.w)
+; $0B68A8
+	add.w	$12ED(a6),d0
+; $0B68AC
+	ror.b	d7,d3
+; $0B68AE
+	move.w	-$1222(a6),?ea(7,7)
+; $0B68B2
+	move.w	($70,a3,a4.w),d6
+; $0B68B6
+	or.l	d0,(a6)+
+; $0B68B8
+	or.w	d0,$3CDD(a7)
+; $0B68BC
+	adda.w	d3,a6
+; $0B68BE
+	bcs.s	loc_0B6841
+; $0B68C0
+	move.w	(a5)+,($4710FFDD).l
+; $0B68C6
+	exg	d1,d3
+; $0B68C8
+	move.w	(a5)+,(a1)+
+; $0B68CA
+	move.w	(-$D,a3,d2.w),-(a1)
+; $0B68CE
+	add.b	d6,(-$70,a3,d3.w)
+; $0B68D2
+	nbcd	(a0)
+; $0B68D4
+	muls.w	d3,d1
+; $0B68D6
+	move.l	-(a2),d1
+; $0B68D8
+	dc.w	$FAA3
+; $0B68DA
+	move.b	-(a2),d0
+; $0B68DC
+	addq.b	#7,(a0)
+; $0B68DE
+	move.b	($2F,a3,d3.w),-(a7)
+; $0B68E2
+	dc.w	$FFEF
+; $0B68E4
+	move.w	($11,a2,a7.l),-(a1)
+; $0B68E8
+	rol.w	($2F,a0,d1.w)
+; $0B68EC
+	dc.w	$F1BE
+; $0B68EE
+	roxr.w	(-$1,a0,a7.l)
+; $0B68F2
+	dc.w	$F12F
+; $0B68F4
+	dc.w	$FFCB
+; $0B68F6
+	move.b	(-$1,a1,a7.l),(a0)+
+; $0B68FA
+	move.b	(-$F,a1,d1.l),(a1)+
+; $0B68FE
+	move.l	(a1),d1
+; $0B6900
+	move.b	?ea(7,7),-$EED(a7)
+; $0B6904
+	move.b	($23,a1,d1.w),?ea(7,7)
+; $0B6908
+	dc.w	$FFB6
+; $0B690A
+	suba.w	?ea(7,7),a0
+; $0B690C
+	dc.w	$FFF1
+; $0B690E
+	move.l	-(a3),-(a0)
+; $0B6910
+	move.w	($22,a5,d5.w),d1
+; $0B6914
+	dc.w	$7F53
+; $0B6916
+	subq.w	#2,(a2)
+; $0B6918
+	move.l	(a5),$4552(a0)
+; $0B691C
+	btst	d5,(a0)
+; $0B691E
+	dc.w	$7D23
+; $0B6920
+	btst	d5,(a0)
+; $0B6922
+	move.l	($35,a3,d2.w),d1
+; $0B6926
+	move.l	(-$1,a1,d1.w),($21F15542).l
+; $0B692E
+	move.b	(a1),-(a7)
+; $0B6930
+	move.l	-(a1),-(a0)
+; $0B6932
+	dc.w	$FF22
+; $0B6934
+	move.w	-(a2),-(a7)
+; $0B6936
+	move.b	-(a1),d1
+; $0B6938
+	dc.w	$FF21
+; $0B693A
+	move.b	?ea(7,7),$1F11(a0)
+; $0B693E
+	move.w	(a1),-(a0)
+; $0B6940
+	dc.w	$FFFF
+; $0B6942
+	move.l	a7,($00102A).w
+; $0B6946
+	move.w	(-$24,a0,d1.w),?ea(7,7)
+; $0B694A
+	move.b	(a2),d0
+; $0B694C
+	move.l	d0,-(a4)
+; $0B694E
+	move.w	(-$47,a3,d0.w),-(a1)
+; $0B6952
+	asr.w	($45,a3,d3.w)
+; $0B6956
+	dc.w	$AE90
+; $0B6958
+	move.w	d3,-(a2)
+; $0B695A
+	move.l	($22,a2,d4.w),-(a1)
+; $0B695E
+	rol.b	d7,d2
+; $0B6960
+	move.l	(a5),$23ED(a1)
+; $0B6964
+	ori.b	#$35,-(a2)
+; $0B6968
+	add.b	d7,-(a5)
+; $0B696A
+	subq.b	#2,-$3CDE(a4)
+; $0B696E
+	move.b	(a0),(a3)+
+; $0B6970
+	movea.w	(a5),a1
+; $0B6972
+	dc.w	$7F52
+; $0B6974
+	move.w	($52,a3,d5.w),-(a1)
+
+loc_0B6978:				; $0B6978
+	move.l	d3,(a6)+
+; $0B697A
+	move.l	(a0),(a6)+
+; $0B697C
+	add.b	d6,#$D0
+; $0B6980
+	move.l	(a5),$520F(a1)
+; $0B6984
+	dc.w	$F055
+; $0B6986
+	move.l	(a2)+,($11,a1,d6.w)
+; $0B698A
+	and.l	$1123(a5),d6
+; $0B698E
+	move.l	-(a5),(a6)+
+; $0B6990
+	muls.w	(a7)+,d0
+; $0B6992
+	and.b	($23,a2,a4.l),d0
+; $0B6996
+	mulu.w	d0,d0
+; $0B6998
+	ble.s	loc_0B699B
+; $0B699A
+	move.w	-(a1),d6
+; $0B699C
+	dc.w	$F0B0
+; $0B699E
+	move.b	d5,(a0)+
+; $0B69A0
+	muls.w	?ea(7,7),d1
+; $0B69A2
+	move.l	#$5C523533,-(a1)
+; $0B69A8
+	move.w	d5,loc_0BE8FF(pc)
+; $0B69AC
+	move.w	#$5C55,-(a1)
+; $0B69B0
+	and.b	($20,a3,a1.l),d6
+; $0B69B4
+	cmpa.l	d3,a7
+; $0B69B6
+	addq.w	#6,(a5)
+; $0B69B8
+	move.w	a4,($C55E0211).l
+; $0B69BE
+	dc.w	$FB23
+; $0B69C0
+	move.w	$32(a6),(-$F,a0,d2.w)
+; $0B69C6
+	move.w	-(a3),-(a1)
+; $0B69C8
+	add.b	d5,-(a2)
+; $0B69CA
+	move.l	($12,a1,d0.w),(a1)
+; $0B69CE
+	move.l	?ea(7,6),($2F,a0,d2.w)
+; $0B69D2
+	move.w	?ea(7,7),$2121(a1)
+; $0B69D6
+	move.b	-(a2),-(a0)
+; $0B69D8
+	move.l	(a2),d1
+; $0B69DA
+	move.l	(a5)+,d1
+; $0B69DC
+	ori.l	#$E6E02323,?ea(7,6)
+; $0B69E2
+	move.w	(-$4E,a2,d3.w),-(a0)
+; $0B69E6
+	sub.b	-(a3),d0
+; $0B69E8
+	roxl.b	#6,d1
+; $0B69EA
+	exg	d2,d0
+; $0B69EC
+	move.b	(a1),d1
+; $0B69EE
+	roxl.b	#2,d0
+; $0B69F0
+	move.l	(-$2,a2,d1.w),d1
+; $0B69F4
+	move.l	d0,-(a0)
+; $0B69F6
+	move.l	-(a2),d1
+; $0B69F8
+	move.l	(a2),-(a7)
+; $0B69FA
+	addq.w	#1,(a5)
+; $0B69FC
+	move.b	($25,a3,d2.w),-$4620(a0)
+; $0B6A02
+	dc.w	$F800
+; $0B6A04
+	move.l	(a5),d1
+; $0B6A06
+	move.l	a7,loc_0B8AFB(pc)
+; $0B6A0A
+	subq.b	#2,(a3)
+; $0B6A0C
+	move.l	d0,-(a6)
+; $0B6A0E
+	clr.b	-(a0)
+; $0B6A10
+	move.l	-(a3),-(a2)
+; $0B6A12
+	move.l	($22,a2,a7.l),d1
+; $0B6A16
+	muls.w	a4,d1
+; $0B6A18
+	move.w	(a2),-(a1)
+; $0B6A1A
+	mulu.w	d3,d1
+; $0B6A1C
+	muls.w	?ea(7,7),d1
+; $0B6A1E
+	move.l	#$23C31233,-(a7)
+; $0B6A24
+	move.l	($12,a3,a7.l),-(a0)
+; $0B6A28
+	move.w	?ea(7,7),(a1)+
+; $0B6A2A
+	move.l	($35,a2,d3.w),($22F26720).l
+; $0B6A32
+	move.w	a5,d1
+
+loc_0B6A34:				; $0B6A34
+	suba.w	a7,a1
+; $0B6A36
+	suba.w	d2,a0
+; $0B6A38
+	move.l	d2,($33ABCC23).l
+; $0B6A3E
+	dc.w	$F6C0
+; $0B6A40
+	move.b	?ea(7,6),($13,a1,a4.w)
+; $0B6A44
+	move.l	-(a0),$2333(a5)
+; $0B6A48
+	move.w	d2,(a6)+
+; $0B6A4A
+	addq.l	#8,(a0)
+; $0B6A4C
+	lsr.l	d1,d0
+; $0B6A4E
+	move.w	d3,(a6)+
+; $0B6A50
+	dc.w	$AD11
+; $0B6A52
+	movea.b	d1,a3
+; $0B6A54
+	divu.w	(a7)+,d2
+; $0B6A56
+	and.w	(a6),d0
+; $0B6A58
+	suba.w	d3,a0
+; $0B6A5A
+	or.b	(a0),d5
+; $0B6A5C
+	movea.l	-(a2),a5
+; $0B6A5E
+	subq.b	#4,($30,a2,d4.l)
+; $0B6A62
+	exg	d1,a0
+; $0B6A64
+	move.l	(a0),($10,a7,d4.w)
+; $0B6A68
+	move.l	-(a0),-$76FE(a5)
+; $0B6A6C
+	dc.w	$AD11
+; $0B6A6E
+	moveq	#50,d0
+; $0B6A70
+	adda.w	($77,a0,d2.w),a4
+; $0B6A74
+	exg	d1,d3
+; $0B6A76
+	move.l	(a7)+,(a1)+
+; $0B6A78
+	exg	d0,d3
+; $0B6A7A
+	move.l	?ea(7,7),($FFFFC320).w
+; $0B6A7E
+	cmpa.l	($22,a2,d3.w),a7
+; $0B6A82
+	move.l	(a7)+,-(a0)
+; $0B6A84
+	move.l	-$FCE(a6),d1
+; $0B6A88
+	suba.w	a2,a2
+; $0B6A8A
+	move.b	($12,a1,a1.w),(a0)
+; $0B6A8E
+	lsr.b	#1,d0
+; $0B6A90
+	move.b	-$6F39(a7),(a1)
+; $0B6A94
+	move.l	$74CC(a7),d1
+; $0B6A98
+	move.l	$1F(a2),d0
+; $0B6A9C
+	and.b	-(a0),d6
+; $0B6A9E
+	dc.w	$F112
+; $0B6AA0
+	move.l	-(a0),(-$27,a0,d3.w)
+; $0B6AA4
+	dc.w	$FF36
+; $0B6AA6
+	ori.b	#$21,-(a4)
+; $0B6AAA
+	move.b	a5,-(a0)
+; $0B6AAC
+	move.l	(a2),d0
+; $0B6AAE
+	move.l	?ea(7,5),-(a0)
+; $0B6AB0
+	move.w	d0,-$FCE(a1)
+; $0B6AB4
+	move.b	-(a3),d1
+; $0B6AB6
+	move.b	(-$49,pc,a7.w),(a1)+
+; $0B6ABA
+	ori.?	#?,(-$48,a1,d2.w)
+; $0B6ABE
+	move.l	-(a1),(a0)+
+; $0B6AC0
+	move.w	loc_0B6AE4(pc),(a0)
+; $0B6AC4
+	move.b	(-$41,a3,d1.w),d1
+; $0B6AC8
+	movea.l	(a5),a1
+; $0B6ACA
+	addq.b	#1,(a1)
+; $0B6ACC
+	movea.l	(a4),a1
+; $0B6ACE
+	exg	d4,d0
+; $0B6AD0
+	shi	$1221(a7)
+; $0B6AD4
+	move.b	d2,-$1E00(a0)
+; $0B6AD8
+	addq.b	#1,-(a2)
+; $0B6ADA
+	move.w	?ea(7,7),-(a0)
+; $0B6ADC
+	move.l	(a3),$3322(a0)
+; $0B6AE0
+	move.b	-(a3),-(a7)
+; $0B6AE2
+	lea	($20,a0,d1.w),a0
+; $0B6AE6
+	dc.w	$A5F2
+; $0B6AE8
+	cmp.l	(a0),d3
+; $0B6AEA
+	move.w	a1,(a1)+
+; $0B6AEC
+	move.l	-$FE1(a7),(a0)+
+; $0B6AF0
+	move.b	-(a0),-(a2)
+; $0B6AF2
+	dc.w	$FF87
+; $0B6AF4
+	dc.w	$F21F
+; $0B6AF6
+	dc.w	$FFCD
+; $0B6AF8
+	ori.l	#$301700DE,-(a3)
+; $0B6AFE
+	movea.w	(a2),a2
+; $0B6B00
+	dc.w	$7F35
+; $0B6B02
+	move.b	($35,a2,d5.w),?ea(7,7)
+; $0B6B06
+	dc.w	$F112
+; $0B6B08
+	move.b	(a0),($22,a4,a2.w)
+; $0B6B0C
+	subq.w	#2,d5
+; $0B6B0E
+	add.b	d1,d0
+; $0B6B10
+	dc.w	$4920
+; $0B6B12
+	move.w	-(a2),$32(a1)
+; $0B6B16
+	dc.w	$F925
+; $0B6B18
+	btst	d1,(-$30,a1,d2.w)
+; $0B6B1C
+	movea.w	(a2),a6
+; $0B6B1E
+	addq.b	#1,-(a3)
+; $0B6B20
+	move.l	(-$46,a1,d5.w),-(a1)
+; $0B6B24
+	sub.b	$3157(a5),d0
+; $0B6B28
+	move.l	a4,(a0)+
+; $0B6B2A
+	move.w	a5,(a1)+
+; $0B6B2C
+	sub.l	d0,a4
+; $0B6B2E
+	move.w	d0,$7801(a0)
+; $0B6B32
+	or.b	d2,d4
+; $0B6B34
+	sub.b	d1,d2
+; $0B6B36
+	adda.l	d0,a0
+; $0B6B38
+	rol.l	#3,d1
+; $0B6B3A
+	ror.w	(a1)
+; $0B6B3C
+	move.l	d5,(a1)+
+; $0B6B3E
+	and.w	a1,d0
+; $0B6B40
+	movea.w	a1,a1
+; $0B6B42
+	move.w	(a4)+,(a1)+
+; $0B6B44
+	suba.w	d5,a0
+; $0B6B46
+	lsl.l	d1,d0
+; $0B6B48
+	bchg	d6,-(a0)
+; $0B6B4A
+	exg	d1,a1
+; $0B6B4C
+	chk.w	-(a6),d0
+; $0B6B4E
+	muls.w	d0,d2
+; $0B6B50
+	move.w	(-$3F,a5,a7.w),-(a1)
+; $0B6B54
+	subq.l	#8,(a0)
+; $0B6B56
+	move.w	(a0)+,loc_0B1C1B(pc)
+; $0B6B5A
+	dc.w	$A0FC
+; $0B6B5C
+	rol.l	d7,d4
+; $0B6B5E
+	lea	a6,a5
+; $0B6B60
+	roxl.w	(-$12,a0,d5.w)
+; $0B6B64
+	subq.w	#8,(a2)
+; $0B6B66
+	adda.w	-(a0),a2
+; $0B6B68
+	clr.l	(a5)+
+; $0B6B6A
+	move.l	(a3),$4143(a2)
+; $0B6B6E
+	move.w	d3,($CEE029D0).l
+; $0B6B74
+	move.l	?ea(7,5),loc_0B8F66(pc)
+; $0B6B78
+	addq.b	#8,($25,a3,d5.w)
+; $0B6B7C
+	move.l	$2502(a4),-(a1)
+; $0B6B80
+	subq.b	#7,d0
+; $0B6B82
+	move.l	($1C,a0,a4.w),($90BE9014).l
+; $0B6B8A
+	adda.w	a7,a0
+; $0B6B8C
+	asr.w	a6
+; $0B6B8E
+	lsr.w	d1,d1
+; $0B6B90
+	move.b	($21,a0,d0.w),($D0123535).l
+; $0B6B98
+	subq.b	#2,(-$26,a0,d3.w)
+; $0B6B9C
+	move.b	(-$63,a0,d2.w),($002032).w
+; $0B6BA2
+	move.w	(-$11,a4,a7.w),-$2153(a2)
+; $0B6BA8
+	add.l	a0,d7
+; $0B6BAA
+	adda.w	-$215C(a6),a0
+; $0B6BAE
+	suba.w	$7C10(a7),a0
+; $0B6BB2
+	ror.w	a0
+; $0B6BB4
+	dc.w	$7B10
+; $0B6BB6
+	dc.w	$79F1
+; $0B6BB8
+	move.l	a1,usp
+; $0B6BBA
+	add.w	d6,($70,a7,a3.w)
+; $0B6BBE
+	st	(a6)+
+; $0B6BC0
+	add.w	d6,d1
+; $0B6BC2
+	add.w	(a6)+,d6
+; $0B6BC4
+	add.w	d0,a6
+; $0B6BC6
+	cmpa.w	$6075(a5),a0
+
+loc_0B6BCA:				; $0B6BCA
+	addq.w	#8,(a5)+
+; $0B6BCC
+	cmpa.l	?ea(7,6),a0
+; $0B6BCE
+	jsr	(-$13,a0,d0.w)
+; $0B6BD2
+	ror.w	?ea(7,6)
+; $0B6BD4
+	cmpa.l	(a1),a5
+; $0B6BD6
+	muls.w	(a1),d6
+; $0B6BD8
+	blt.s	loc_0B6BCA
+; $0B6BDA
+	divs.w	(a0),d3
+; $0B6BDC
+	svc	($58,a0,d4.l)
+; $0B6BE0
+	cmp.w	#$52FE,d2
+; $0B6BE4
+	ror.l	d7,d4
+; $0B6BE6
+	sub.l	(a5),d0
+; $0B6BE8
+	divu.w	a5,d0
+; $0B6BEA
+	movea.w	(a0),a1
+; $0B6BEC
+	or.l	a2,d6
+; $0B6BEE
+	dc.w	$F06A
+; $0B6BF0
+	suba.w	-$27F(a6),a0
+; $0B6BF4
+	move.b	-(a3),($77,a0,a1.l)
+; $0B6BF8
+	suba.l	(a7)+,a0
+; $0B6BFA
+	divs.w	-$7F40(a5),d2
+; $0B6BFE
+	roxr.w	d6,d4
+; $0B6C00
+	dc.w	$A060
+; $0B6C02
+	bra.s	loc_0B6C64
+; $0B6C04
+	exg	d0,a4
+; $0B6C06
+	dc.w	$71EE
+; $0B6C08
+	negx.w	(a1)
+; $0B6C0A
+	and.l	($77,a5,a5.w),d0
+; $0B6C0E
+	move.b	($78,a2,a2.w),-$F52(a0)
+; $0B6C14
+	dc.w	$F0ED
+; $0B6C16
+	lsl.w	d5,d0
+; $0B6C18
+	ori.l	#$617CC0E6,($58,a5,a5.w)
+; $0B6C20
+	sf	-(a1)
+; $0B6C22
+	negx.?	(-$2C,a3,d0.w)
+; $0B6C26
+	asl.b	d0,d7
+; $0B6C28
+	negx.l	($0,a6,d0.l)
+; $0B6C2C
+	move.l	-(a5),-(a2)
+; $0B6C2E
+	move.l	d0,d2
+; $0B6C30
+	subq.b	#2,-(a1)
+; $0B6C32
+	dc.w	$A930
+; $0B6C34
+	move.l	?ea(7,5),$12EC(a7)
+; $0B6C38
+	movea.w	(a5),a0
+; $0B6C3A
+	addq.b	#1,(a2)
+; $0B6C3C
+	subq.w	#2,(a1)
+; $0B6C3E
+	cmpa.l	-(a2),a0
+; $0B6C40
+	dc.w	$FEB4
+; $0B6C42
+	asl.w	#8,d5
+; $0B6C44
+	addq.b	#1,-(a5)
+; $0B6C46
+	addq.b	#1,-(a5)
+; $0B6C48
+	move.b	($25,a2,d7.l),d1
+; $0B6C4C
+	dc.w	$F120
+; $0B6C4E
+	move.l	-(a2),d1
+; $0B6C50
+	dc.w	$F122
+; $0B6C52
+	move.w	loc_0BBDE6(pc),($FFFFAFE2).w
+; $0B6C58
+	addq.b	#1,(a5)+
+; $0B6C5A
+	bra.s	loc_0B6C4F
+; $0B6C5C
+	move.b	-(a2),d0
+; $0B6C5E
+	asl.w	-(a0)
+; $0B6C60
+	cmp.b	(-$51,a1,d2.w),d5
+
+loc_0B6C64:				; $0B6C64
+	move.l	-$EDE(a7),-(a1)
+; $0B6C68
+	add.b	d7,-(a0)
+; $0B6C6A
+	move.w	$5122(a6),(a1)+
+; $0B6C6E
+	adda.w	-(a1),a1
+; $0B6C70
+	negx.?	($20,a1,a7.l)
+; $0B6C74
+	add.b	d5,(a0)
+; $0B6C76
+	move.w	(a6),($33,a1,d3.w)
+; $0B6C7A
+	move.w	($12,pc,a7.w),-(a0)
+; $0B6C7E
+	bsr.s	loc_0B6CE2
+; $0B6C80
+	move.w	(a2),-(a7)
+; $0B6C82
+	move.l	a5,-(a1)
+; $0B6C84
+	shi	(a5)
+; $0B6C86
+	asr.w	($40,a6,a7.l)
+; $0B6C8A
+	move.w	(a2),d1
+; $0B6C8C
+	move.l	(a0),(a7)
+; $0B6C8E
+	move.b	d3,($003C22).w
+; $0B6C92
+	add.b	d5,-(a1)
+; $0B6C94
+	move.l	-(a7),(a6)
+; $0B6C96
+	move.b	$2332(a4),d0
+; $0B6C9A
+	suba.w	d2,a0
+; $0B6C9C
+	move.w	#$0B10,-$2D1E(a1)
+; $0B6CA2
+	move.w	-(a5),-(a1)
+; $0B6CA4
+	subq.b	#8,($F,a3,d3.l)
+; $0B6CA8
+	negx.?	-$3C00(a6)
+; $0B6CAC
+	move.l	d3,($11B3001F).l
+; $0B6CB2
+	move.b	#$32,d1
+; $0B6CB6
+	move.b	-(a3),-(a7)
+; $0B6CB8
+	move.l	($48,a2,a4.l),d6
+; $0B6CBC
+	move.l	a2,usp
+; $0B6CBE
+	cmpa.l	-(a0),a3
+; $0B6CC0
+	dc.w	$FC29
+; $0B6CC2
+	add.b	d0,a5
+; $0B6CC4
+	sub.w	(a2),d0
+; $0B6CC6
+	movea.w	(a5),a1
+; $0B6CC8
+	dc.w	$4525
+; $0B6CCA
+	move.w	-(a1),d1
+; $0B6CCC
+	clr.?	-$3F7C(a1)
+; $0B6CD0
+	move.l	-(a0),(a1)+
+; $0B6CD2
+	eor.l	d0,?ea(7,6)
+; $0B6CD4
+	and.b	-$7AFF(a4),d0
+; $0B6CD8
+	move.l	(a0),($32,a5,d0.w)
+; $0B6CDC
+	move.l	($30,a0,d3.w),(a0)+
+; $0B6CE0
+	dc.w	$4911
+
+loc_0B6CE2:				; $0B6CE2
+	bmi.s	loc_0B6D14
+
+loc_0B6CE4:				; $0B6CE4
+	muls.w	(a0),d7
+; $0B6CE6
+	subq.l	#3,(a2)
+
+loc_0B6CE8:				; $0B6CE8
+	mulu.w	d1,d5
+; $0B6CEA
+	sub.w	(-$9,a7,d2.w),d6
+; $0B6CEE
+	mulu.w	a4,d0
+; $0B6CF0
+	exg	d1,d4
+; $0B6CF2
+	rol.w	d1
+; $0B6CF4
+	dc.w	$7501
+; $0B6CF6
+	move.l	-(a5),($2,a1,d3.w)
+; $0B6CFA
+	move.w	($20,a1,d7.w),d0
+; $0B6CFE
+	dc.w	$4B31
+; $0B6D00
+	and.b	?ea(7,6),d1
+; $0B6D02
+	move.b	($33,a3,a7.l),d0
+; $0B6D06
+	move.b	($31,a3,d3.w),($FFFFF113).w
+; $0B6D0C
+	move.l	($3F,a7,d2.w),($258AB0FF).l
+
+loc_0B6D14:				; $0B6D14
+	adda.w	(a5)+,a7
+; $0B6D16
+	add.b	d7,($7B,a1,a7.l)
+; $0B6D1A
+	dc.w	$F040
+; $0B6D1C
+	addq.w	#8,(-$21,a3,a7.w)
+; $0B6D20
+	dc.w	$FD7A
+; $0B6D22
+	dc.w	$F07A
+; $0B6D24
+	adda.w	-$2275(a1),a0
+; $0B6D28
+	dc.w	$F05D
+; $0B6D2A
+	adda.l	(a7)+,a0
+; $0B6D2C
+	ble.s	loc_0B6CDF
+; $0B6D2E
+	dc.w	$FFFF
+; $0B6D30
+	add.w	d0,d7
+; $0B6D32
+	blt.s	loc_0B6CE4
+; $0B6D34
+	bcc.s	loc_0B6D87
+; $0B6D36
+	blt.s	loc_0B6CE8
+; $0B6D38
+	smi	(-$70,a0,d7.l)
+; $0B6D3C
+	move.w	(a0),?ea(7,7)
+; $0B6D3E
+	dc.w	$FE67
+; $0B6D40
+	subq.w	#8,a6
+; $0B6D42
+	divs.w	(-$11,a0,a7.l),d5
+; $0B6D46
+	rol.w	#7,d6
+; $0B6D48
+	moveq	#113,d0
+; $0B6D4A
+	move.b	?ea(7,6),(a0)+
+
+loc_0B6D4C:				; $0B6D4C
+	suba.l	(-$12,a0,a1.l),a0
+; $0B6D50
+	suba.l	(-$30,a0,a1.l),a0
+; $0B6D54
+	adda.l	$6FF0(a7),a6
+; $0B6D58
+	movea.w	(a1),a2
+; $0B6D5A
+	roxr.b	#6,d3
+; $0B6D5C
+	adda.w	-$6D50(a6),a6
+; $0B6D60
+	subq.w	#1,(a0)
+; $0B6D62
+	sub.l	d1,-(a1)
+; $0B6D64
+	add.w	d5,($70,a1,a4.l)
+; $0B6D68
+	moveq	#-63,d3
+; $0B6D6A
+	move.b	-$3324(a5),(-$10,pc,a1.l)
+; $0B6D70
+	exg	d6,a1
+; $0B6D72
+	or.l	-$E26(a5),d0
+; $0B6D76
+	addq.b	#8,d7
+; $0B6D78
+	adda.w	(a6)+,a6
+; $0B6D7A
+	ror.w	d7,d0
+; $0B6D7C
+	and.l	($6E,a5,a5.w),d0
+; $0B6D80
+	dc.w	$A0A0
+; $0B6D82
+	cmp.l	-(a5),d1
+; $0B6D84
+	or.b	d0,d0
+; $0B6D86
+	sub.l	d3,(-$-80,a0,d6.w)
+; $0B6D8A
+	bra.s	loc_0B6D4C
+; $0B6D8C
+	dc.w	$A070
+; $0B6D8E
+	cmpa.l	(a0),a6
+; $0B6D90
+	sub.w	(-$10,a0,a2.l),d3
+; $0B6D94
+	subq.l	#1,d0
+; $0B6D96
+	cmp.l	(a2)+,d4
+; $0B6D98
+	dc.w	$A362
+; $0B6D9A
+	and.b	(a2),d0
+; $0B6D9C
+	dc.w	$4111
+; $0B6D9E
+	move.b	-(a2),-(a1)
+; $0B6DA0
+	move.w	d0,d1
+; $0B6DA2
+	movea.w	-$24F0(a6),a1
+; $0B6DA6
+	move.l	?ea(7,7),(a1)+
+; $0B6DA8
+	move.b	(a6)+,(a1)
+; $0B6DAA
+	move.w	(a2),d0
+; $0B6DAC
+	move.b	(a3)+,-(a0)
+; $0B6DAE
+	move.l	-$EDE(a7),d0
+; $0B6DB2
+	dc.w	$FF11
+; $0B6DB4
+	bset	d0,d0
+; $0B6DB6
+	dc.w	$F2CD
+; $0B6DB8
+	move.l	$60A3(a2),d0
+; $0B6DBC
+	move.b	($40,a1,d0.w),(a1)+
+; $0B6DC0
+	pea	-(a0)
+; $0B6DC2
+	dc.w	$4760
+; $0B6DC4
+	move.b	(a3)+,(a1)+
+; $0B6DC6
+	move.b	(a7)+,d0
+; $0B6DC8
+	add.b	d1,(a7)+
+; $0B6DCA
+	move.b	a3,($001028).w
+; $0B6DCE
+	or.b	(a7)+,d0
+; $0B6DD0
+	dc.w	$4361
+; $0B6DD2
+	move.b	-(a1),-(a7)
+; $0B6DD4
+	move.b	(-$2A,a4,d2.w),(a4)
+; $0B6DD8
+	ori.b	#$FF,(a1)+
+; $0B6DDC
+	move.b	d6,-(a0)
+; $0B6DDE
+	negx.w	d2
+; $0B6DE0
+	movea.l	a0,a0
+; $0B6DE2
+	bra.s	loc_0B6E50
+; $0B6DE4
+	move.w	(a2),(a3)
+; $0B6DE6
+	cmp.b	d0,d3
+; $0B6DE8
+	move.w	$3310(a7),d6
+; $0B6DEC
+	move.l	-(a3),-(a0)
+; $0B6DEE
+	add.b	d5,-(a0)
+; $0B6DF0
+	exg	d1,d3
+; $0B6DF2
+	move.l	(a6)+,$1048(a1)
+; $0B6DF6
+	move.b	(a4)+,(a0)+
+; $0B6DF8
+	suba.w	(a6),a0
+; $0B6DFA
+	move.l	(-$3,a3,d3.l),d0
+; $0B6DFE
+	move.w	-$6F3E(a6),d1
+; $0B6E02
+	move.w	(-$3E,a1,a4.w),d1
+; $0B6E06
+	move.w	(a5),($50,a1,d2.w)
+; $0B6E0A
+	sub.b	$1FF0(a7),d0
+; $0B6E0E
+	move.l	a3,($FFFFC084).w
+; $0B6E12
+	negx.b	(-$23,a2,d7.w)
+; $0B6E16
+	dc.w	$F023
+; $0B6E18
+	move.w	-(a7),($FFFFB021).w
+; $0B6E1C
+	move.b	-(a3),-(a7)
+; $0B6E1E
+	cmp.b	-(a0),d7
+; $0B6E20
+	moveq	#51,d5
+; $0B6E22
+	move.b	(a2),d0
+; $0B6E24
+	or.b	-(a0),d0
+; $0B6E26
+	move.l	-(a2),-(a0)
+; $0B6E28
+	mulu.w	a4,d6
+; $0B6E2A
+	addq.l	#3,d0
+; $0B6E2C
+	move.w	d3,?ea(7,5)
+; $0B6E2E
+	move.b	#$F2,($2C,a7,d3.w)
+; $0B6E34
+	move.w	($60,a1,a2.l),-(a6)
+; $0B6E38
+	sub.w	$2153(a0),d7
+; $0B6E3C
+	move.l	(a4),$2268(a1)
+; $0B6E40
+	ori.b	#$52,(a6)
+; $0B6E44
+	dc.w	$FD54
+; $0B6E46
+	addq.b	#6,d0
+; $0B6E48
+	move.w	#$2253,d1
+; $0B6E4C
+	move.w	#$01C2,d6
+
+loc_0B6E50:				; $0B6E50
+	add.l	($30,a0,d1.w),d0
+; $0B6E54
+	dc.w	$7342
+; $0B6E56
+	dc.w	$F360
+; $0B6E58
+	lsr.l	#5,d0
+; $0B6E5A
+	adda.l	(a0),a1
+; $0B6E5C
+	cmpa.w	d1,a7
+; $0B6E5E
+	mulu.w	a0,d0
+; $0B6E60
+	mulu.w	(-$1B,pc,a4.w),d1
+; $0B6E64
+	cmpa.l	d4,a0
+; $0B6E66
+	mulu.w	(a5)+,d0
+; $0B6E68
+	muls.w	d3,d0
+; $0B6E6A
+	exg	d0,d3
+; $0B6E6C
+	movea.l	($5,a1,a4.w),a6
+; $0B6E70
+	addq.l	#8,(a0)
+; $0B6E72
+	asr.w	?ea(7,6)
+; $0B6E74
+	or.b	d0,($2C,a3,a4.w)
+; $0B6E78
+	rol.l	d3,d1
+; $0B6E7A
+	dc.w	$FAEA
+; $0B6E7C
+	sub.b	-(a3),d0
+; $0B6E7E
+	btst	d1,-(a0)
+; $0B6E80
+	move.l	(a5),$1233(a1)
+; $0B6E84
+	move.w	($35,pc,d5.w),$B10(a2)
+; $0B6E8A
+	subq.b	#1,(a5)
+; $0B6E8C
+	move.l	d5,$29D0(a2)
+; $0B6E90
+	subq.b	#6,($53,a5,d1.w)
+; $0B6E94
+	subq.w	#2,(a5)
+; $0B6E96
+	add.w	d6,-$4F22(a1)
+; $0B6E9A
+	subq.l	#6,(-$7A,a0,a0.w)
+; $0B6E9E
+	sub.l	d0,(a7)
+; $0B6EA0
+	shi	-$67B0(a7)
+; $0B6EA4
+	lea	(a5),a1
+; $0B6EA6
+	addq.w	#1,(-$70,a0,d6.l)
+; $0B6EAA
+	dc.w	$FDE0
+; $0B6EAC
+	bhi.s	loc_0B6E7F
+; $0B6EAE
+	sne	(a1)
+; $0B6EB0
+	bvs.s	loc_0B6F22
+; $0B6EB2
+	slt	(a7)+
+; $0B6EB4
+	ble.s	loc_0B6E89
+; $0B6EB6
+	adda.l	?ea(7,7),a6
+; $0B6EB8
+	add.l	d6,-$1221(a7)
+; $0B6EBC
+	adda.w	$7CD0(a5),a7
+; $0B6EC0
+	exg	d6,a0
+; $0B6EC2
+	adda.w	a6,a6
+; $0B6EC4
+	ori.?	#?,-(a3)
+; $0B6EC6
+	moveq	#-93,d0
+; $0B6EC8
+	add.l	d0,(a4)
+; $0B6ECA
+	dc.w	$A072
+; $0B6ECC
+	dc.w	$A09D
+; $0B6ECE
+	add.w	(a0),d0
+; $0B6ED0
+	dc.w	$A0A3
+; $0B6ED2
+	add.l	(a7),d4
+; $0B6ED4
+	cmp.b	d0,d0
+; $0B6ED6
+	subq.l	#4,-(a1)
+; $0B6ED8
+	cmpi.?	#?,d0
+; $0B6EDA
+	muls.w	(a1),d0
+; $0B6EDC
+	cmpi.?	#?,d0
+; $0B6EDE
+	cmpa.w	(a2),a3
+; $0B6EE0
+	bhi.s	loc_0B6EA2
+; $0B6EE2
+	dc.w	$A4D0
+; $0B6EE4
+	mulu.w	(a1),d5
+; $0B6EE6
+	ori.l	#$73705197,(a5)+
+; $0B6EEC
+	dc.w	$A070
+; $0B6EEE
+	addq.l	#8,(a6)+
+; $0B6EF0
+	dc.w	$71DC
+; $0B6EF2
+	addq.w	#8,($50,a1,a6.w)
+; $0B6EF6
+	exg	d0,a5
+; $0B6EF8
+	muls.w	d2,d6
+; $0B6EFA
+	move.w	-(a2),d0
+; $0B6EFC
+	move.l	?ea(7,7),?ea(7,7)
+; $0B6EFE
+	move.b	(a7),-(a0)
+; $0B6F00
+	move.l	(a1),d0
+; $0B6F02
+	or.b	d2,d6
+; $0B6F04
+	or.b	(a6),d0
+; $0B6F06
+	ori.b	#$FD,-(a2)
+; $0B6F0A
+	movea.l	(-$73,a3,d6.w),a0
+; $0B6F0E
+	bcc.s	loc_0B6F31
+; $0B6F10
+	dc.w	$F91F
+; $0B6F12
+	addi.l	#$E0202252,d0
+; $0B6F18
+	move.b	(a2),-(a0)
+; $0B6F1A
+	subq.b	#2,d7
+; $0B6F1C
+	addq.b	#1,-(a2)
+; $0B6F1E
+	move.b	-(a1),($004007).w
+
+loc_0B6F22:				; $0B6F22
+	move.b	-(a3),d0
+; $0B6F24
+	dc.w	$A73F
+; $0B6F26
+	or.b	($C,a0,a2.w),d0
+; $0B6F2A
+	eori.b	#$53,($10,a1,d3.w)
+; $0B6F30
+	dc.w	$4320
+; $0B6F32
+	eor.b	d5,d0
+; $0B6F34
+	and.w	-(a2),d3
+; $0B6F36
+	rol.b	#7,d1
+; $0B6F38
+	or.l	a6,d5
+; $0B6F3A
+	ori.b	#$61,-(a1)
+; $0B6F3E
+	move.l	$57(a5),-(a1)
+; $0B6F42
+	dc.w	$A059
+; $0B6F44
+	dc.w	$A032
+; $0B6F46
+	add.l	a5,d0
+; $0B6F48
+	dc.w	$413F
+; $0B6F4A
+	dc.w	$A0A4
+; $0B6F4C
+	andi.w	#$8020,($31,a3,d2.w)
+; $0B6F52
+	move.l	-(a3),d1
+; $0B6F54
+	dc.w	$F32C
+; $0B6F56
+	exg	d1,a1
+; $0B6F58
+	or.w	-(a5),d0
+; $0B6F5A
+	move.b	d3,(a0)+
+; $0B6F5C
+	move.w	(-$44,a2,d3.w),d6
+; $0B6F60
+	or.b	-(a0),d7
+; $0B6F62
+	dc.w	$FAD2
+; $0B6F64
+	subq.w	#2,(a5)
+; $0B6F66
+	muls.w	($60,a3,a6.w),d2
+; $0B6F6A
+	move.l	a7,($323C3212).l
+; $0B6F70
+	dc.w	$7F20
+; $0B6F72
+	sub.l	d0,d1
+; $0B6F74
+	exg	d1,d3
+; $0B6F76
+	cmpi.l	#$005C53F6,(-$6C,a1,d1.w)
+; $0B6F7E
+	add.l	d1,#$4FBCABE1
+; $0B6F84
+	or.b	d0,d2
+; $0B6F86
+	muls.w	d1,d2
+; $0B6F88
+	divs.w	-(a2),d7
+; $0B6F8A
+	move.b	(-$1C,a3,a0.l),(a6)
+; $0B6F8E
+	mulu.w	d0,d4
+; $0B6F90
+	lsr.l	d5,d2
+; $0B6F92
+	adda.l	d0,a2
+; $0B6F94
+	suba.w	-(a2),a0
+; $0B6F96
+	ori.b	#$69,-$E18(a2)
+; $0B6F9C
+	asr.w	a6
+; $0B6F9E
+	dc.w	$A5CE
+; $0B6FA0
+	exg	a0,a7
+; $0B6FA2
+	move.w	(a6)+,-(a0)
+; $0B6FA4
+	move.b	-$3C08(a3),(a3)+
+; $0B6FA8
+	dc.w	$A9B0
+; $0B6FAA
+	dc.w	$A1C0
+; $0B6FAC
+	suba.l	(a0),a1
+; $0B6FAE
+	adda.w	?ea(7,5),a7
+; $0B6FB0
+	roxr.w	a4
+; $0B6FB2
+	rol.w	-$2134(a7)
+; $0B6FB6
+	mulu.w	-$6F3E(a4),d6
+; $0B6FBA
+	mulu.w	a4,d6
+; $0B6FBC
+	dc.w	$FC00
+; $0B6FBE
+	move.w	(-$3E,a0,d5.l),(a7)
+; $0B6FC2
+	bvs.s	loc_0B6FAB
+; $0B6FC4
+	divu.w	-(a1),d0
+; $0B6FC6
+	divu.w	-(a1),d0
+; $0B6FC8
+	exg	a1,a0
+; $0B6FCA
+	eor.w	d5,(a1)
+; $0B6FCC
+	sub.l	($3B,a2,d7.l),d4
+; $0B6FD0
+	cmp.l	-(a3),d0
+; $0B6FD2
+	dc.w	$F0DC
+; $0B6FD4
+	roxr.w	a7
+; $0B6FD6
+	adda.w	a6,a6
+; $0B6FD8
+	cmp.w	(-$22,a1,a7.l),d1
+; $0B6FDC
+	movea.w	(a0),a1
+; $0B6FDE
+	adda.l	-$2003(a7),a6
+; $0B6FE2
+	roxl.w	(a7)+
+; $0B6FE4
+	dc.w	$FDDF
+; $0B6FE6
+	movea.w	(-$23,a1,a5.l),a1
+; $0B6FEA
+	dc.w	$FDDD
+; $0B6FEC
+	adda.w	$6A6E(a7),a7
+; $0B6FF0
+	dc.w	$F0FE
+; $0B6FF2
+	ble.s	loc_0B7004
+; $0B6FF4
+	roxr.w	d6,d6
+; $0B6FF6
+	sf	(a4)+
+; $0B6FF8
+	roxl.w	d3
+; $0B6FFA
+	cmp.b	($FFFFDB91).w,d0
+; $0B6FFE
+	cmpa.w	(-$10,a1,a2.w),a1
+; $0B7002
+	mulu.w	(a4)+,d6
+
+loc_0B7004:				; $0B7004
+	add.w	d7,($001186).w
+; $0B7008
+	muls.w	(a0)+,d0
+; $0B700A
+	muls.w	(a1),d6
+; $0B700C
+	mulu.w	(a2),d3
+; $0B700E
+	jsr	($FFFFCCCD).w
+; $0B7012
+	moveq	#-16,d5
+; $0B7014
+	adda.l	(a4)+,a6
+; $0B7016
+	lea	?ea(7,6),a6
+; $0B7018
+	suba.w	(-$32,a0,a4.l),a7
+; $0B701C
+	move.w	(-$4F,a0,a5.l),(-$55,a5,a5.l)
+; $0B7022
+	moveq	#-45,d0
+; $0B7024
+	roxl.w	a7
+; $0B7026
+	mulu.w	(a0),d0
+; $0B7028
+	asl.l	#8,d1
+; $0B702A
+	dc.w	$FDC8
+; $0B702C
+	move.l	(a1),d0
+; $0B702E
+	move.b	d7,-(a7)
+; $0B7030
+	move.l	(a1),d1
+; $0B7032
+	move.l	(a5)+,?ea(7,7)
+; $0B7034
+	move.b	(a5)+,d0
+; $0B7036
+	move.l	$30A5(a1),(-$47,a0,d3.w)
+; $0B703C
+	move.w	($0,a0,d1.w),($002661).w
+; $0B7042
+	eor.b	d4,($60,a0,d2.l)
+; $0B7046
+	move.l	(a2),-(a0)
+; $0B7048
+	move.b	($14,a1,a1.l),($00551F).w
+; $0B704E
+	move.b	(a5),-$2B00(a0)
+; $0B7052
+	subi.l	#$4500B1E2,-(a2)
+; $0B7058
+	mulu.w	-(a0),d7
+; $0B705A
+	asl.b	d0,d0
+; $0B705C
+	move.w	-(a3),-$28B9(a1)
+; $0B7060
+	dc.w	$0E56
+; $0B7062
+	move.b	(a1),-$4351(a0)
+; $0B7066
+	move.b	d0,(a0)+
+; $0B7068
+	dc.w	$4C53
+; $0B706A
+	dc.w	$411A
+; $0B706C
+	dc.w	$A0F8
+; $0B706E
+	ori.w	#$D4E1,(a1)
+; $0B7072
+	move.w	a5,(a7)+
+; $0B7074
+	dc.w	$FA80
+; $0B7076
+	add.b	(a0)+,d6
+; $0B7078
+	moveq	#92,d0
+; $0B707A
+	or.b	-(a2),d0
+; $0B707C
+	move.w	($10,a1,a3.l),d1
+; $0B7080
+	movea.w	(a2),a6
+; $0B7082
+	move.b	-(a2),(a7)
+; $0B7084
+	dc.w	$A022
+; $0B7086
+	addq.b	#1,-(a1)
+; $0B7088
+	move.l	-(a1),($41F61191).l
+; $0B708E
+	dc.w	$A0E8
+; $0B7090
+	dc.w	$4940
+; $0B7092
+	eori.b	#$8D,($10,a0,d4.l)
+; $0B7098
+	negx.?	d3
+; $0B709A
+	move.l	(a3),d1
+; $0B709C
+	dc.w	$FF12
+; $0B709E
+	exg	d1,d1
+; $0B70A0
+	move.w	-(a1),d1
+; $0B70A2
+	move.w	a4,($3100E930).l
+; $0B70A8
+	adda.w	($42,a0,a1.l),a4
+; $0B70AC
+	move.b	(-$7E,a1,a7.w),($16,a5,d1.w)
+; $0B70B2
+	roxl.l	#2,d1
+; $0B70B4
+	dc.w	$7900
+; $0B70B6
+	ori.b	#$9A,d2
+; $0B70BA
+	rol.w	#$CB76
+; $0B70BE
+	negx.w	a7
+; $0B70C0
+	ori.l	#$E0810198,(a2)+
+; $0B70C6
+	lsr.w	#1,d0
+; $0B70C8
+	mulu.w	(-$1F,a0,a1.l),d2
+; $0B70CC
+	suba.w	-(a3),a1
+; $0B70CE
+	adda.l	(a1),a6
+; $0B70D0
+	divs.w	$6FE5(a5),d0
+; $0B70D4
+	mulu.w	$50E8(a0),d6
+; $0B70D8
+	and.l	(-$4F,a2,a2.l),d5
+; $0B70DC
+	dc.w	$AED0
+; $0B70DE
+	dc.w	$FDB4
+; $0B70E0
+	dc.w	$F0FE
+; $0B70E2
+	adda.w	a5,a6
+; $0B70E4
+	lea	(a7)+,a1
+; $0B70E6
+	dc.w	$FDC9
+; $0B70E8
+	addq.l	#8,#$70B391E3
+; $0B70EE
+	moveq	#-20,d0
+; $0B70F0
+	dc.w	$A1F0
+; $0B70F2
+	addq.w	#6,($6E,a7,d5.w)
+; $0B70F6
+	dc.w	$F0ED
+; $0B70F8
+	adda.l	(a7)+,a6
+; $0B70FA
+	blt.s	loc_0B70EC
+; $0B70FC
+	rol.b	d7,d7
+; $0B70FE
+	moveq	#1,d1
+; $0B7100
+	rol.l	#7,d1
+; $0B7102
+	dc.w	$F04D
+; $0B7104
+	addq.w	#8,a2
+; $0B7106
+	add.l	d7,d1
+; $0B7108
+	ror.l	#3,d0
+; $0B710A
+	asl.w	-(a4)
+; $0B710C
+	st	-(a3)
+; $0B710E
+	addq.l	#1,d0
+; $0B7110
+	dc.w	$71E1
+; $0B7112
+	eor.l	d3,(-$22,a2,d3.l)
+; $0B7116
+	and.l	($D170CED1).l,d1
+; $0B711C
+	divu.w	-(a2),d0
+; $0B711E
+	adda.l	?ea(7,6),a7
+; $0B7120
+	roxr.w	d2,d0
+; $0B7122
+	dc.w	$FDCC
+; $0B7124
+	muls.w	a6,d6
+; $0B7126
+	ror.w	(a4)+
+; $0B7128
+	add.l	(-$1,a3,a6.l),d6
+; $0B712C
+	eor.w	d5,($10,a0,d7.l)
+; $0B7130
+	mulu.w	-$33DE(a7),d6
+; $0B7134
+	move.b	($55,pc,d1.l),(a1)+
+; $0B7138
+	eori.l	#$52FFF125,d0
+; $0B713E
+	addq.l	#1,(-$E,a7,d2.l)
+; $0B7142
+	move.l	(a5),$6025(a2)
+; $0B7146
+	move.l	d2,-(a2)
+; $0B7148
+	asl.b	d0,d2
+; $0B714A
+	or.l	($42,pc,a6.w),d5
+; $0B714E
+	dc.w	$AFE4
+; $0B7150
+	move.l	($10,a7,a4.l),d2
+; $0B7154
+	shi	-(a7)
+; $0B7156
+	asr.w	#8,d5
+; $0B7158
+	dc.w	$7D11
+; $0B715A
+	btst	d3,(a0)
+; $0B715C
+	movea.b	(a2),a1
+; $0B715E
+	movea.l	(a5),a2
+; $0B7160
+	move.l	(a6)+,-(a2)
+; $0B7162
+	dc.w	$A194
+; $0B7164
+	adda.w	-(a0),a4
+; $0B7166
+	cmpa.w	-(a0),a1
+; $0B7168
+	chk.w	($25,a2,a6.w),d2
+; $0B716C
+	lea	a7,a5
+; $0B716E
+	dblt	d7,loc_0BC700
+; $0B7172
+	dc.w	$FF20
+; $0B7174
+	addq.b	#5,-(a0)
+; $0B7176
+	add.w	d0,d3
+; $0B7178
+	or.w	d6,-(a1)
+; $0B717A
+	move.w	(-$3F,a7,a6.w),$6143(a1)
+; $0B7180
+	move.l	a7,(a1)+
+; $0B7182
+	asr.w	#8,d3
+; $0B7184
+	move.b	(a1),-$3120(a0)
+; $0B7188
+	cmpa.w	-(a1),a1
+; $0B718A
+	shi	(a6)
+; $0B718C
+	pea	d1
+; $0B718E
+	mulu.w	$3310(a6),d5
+; $0B7192
+	move.l	-(a1),d1
+; $0B7194
+	move.l	($12,pc,a0.w),$3CC2(a1)
+; $0B719A
+	add.w	d6,(a2)
+; $0B719C
+	dc.w	$7580
+; $0B719E
+	addq.b	#1,-(a2)
+; $0B71A0
+	movea.l	(a1)+,a6
+; $0B71A2
+	move.l	-(a2),d0
+; $0B71A4
+	and.b	(a3)+,d6
+; $0B71A6
+	subq.w	#2,(a1)
+; $0B71A8
+	dc.w	$4320
+; $0B71AA
+	move.l	-(a3),-(a2)
+; $0B71AC
+	add.l	d2,d1
+; $0B71AE
+	move.l	(-$F,a2,a4.l),(-$D,a3,d0.w)
+; $0B71B4
+	dc.w	$A1FA
+; $0B71B6
+	dc.w	$A309
+; $0B71B8
+	moveq	#-30,d0
+; $0B71BA
+	exg	d1,d4
+; $0B71BC
+	add.b	(a3),d1
+; $0B71BE
+	move.b	-(a5),-(a2)
+; $0B71C0
+	add.b	d1,-(a2)
+; $0B71C2
+	cmpa.l	d0,a2
+; $0B71C4
+	add.l	-(a4),d7
+; $0B71C6
+	dc.w	$FBA3
+; $0B71C8
+	subi.w	#$F8A5,($11,a1,d1.w)
+; $0B71CE
+	move.b	(a4),#$33
+; $0B71D2
+	bchg	d0,(a6)+
+; $0B71D4
+	add.w	d0,($51,a1,d7.w)
+; $0B71D8
+	exg	a6,a0
+; $0B71DA
+	blt.s	loc_0B722C
+; $0B71DC
+	move.w	(-$10,a0,a1.w),(-$70,a0,d7.w)
+; $0B71E2
+	and.w	(a1)+,d2
+; $0B71E4
+	addq.b	#8,?ea(7,5)
+; $0B71E6
+	sf	-$3BB0(a6)
+; $0B71EA
+	and.w	(a0),d6
+; $0B71EC
+	add.w	d7,(-$23,a1,a4.l)
+; $0B71F0
+	dbcs	d4,loc_0B40A3
+; $0B71F4
+	dc.w	$FE36
+; $0B71F6
+	st	$4471(a4)
+; $0B71FA
+	add.b	(-$23,a7,d7.w),d6
+; $0B71FE
+	roxr.w	d6,d7
+; $0B7200
+	move.b	(a4)+,($FFFFEDDD).w
+; $0B7204
+	bgt.s	loc_0B71D6
+; $0B7206
+	ror.w	(a6)+
+; $0B7208
+	dc.w	$FFDF
+; $0B720A
+	adda.w	-$1021(a7),a7
+; $0B720E
+	adda.l	?ea(7,6),a7
+; $0B7210
+	roxl.w	#6,d3
+; $0B7212
+	mulu.w	?ea(7,6),d6
+; $0B7214
+	or.w	d7,(-$14,a0,a7.l)
+; $0B7218
+	add.l	(-$6F,a1,a5.l),d2
+; $0B721C
+	addq.w	#8,a6
+; $0B721E
+	muls.w	(a1),d5
+; $0B7220
+	adda.w	a4,a6
+; $0B7222
+	roxr.w	-(a7)
+; $0B7224
+	cmpa.w	(a5)+,a0
+; $0B7226
+	adda.w	(a4)+,a0
+; $0B7228
+	exg	a2,a0
+; $0B722A
+	bchg	d3,(a5)+
+
+loc_0B722C:				; $0B722C
+	ror.w	(a7)+
+; $0B722E
+	sub.w	d3,(-$10,a0,a0.l)
+; $0B7232
+	movea.l	(-$50,a0,d3.l),a7
+; $0B7236
+	move.l	(a0),(a7)+
+; $0B7238
+	add.l	-$6E43(a6),d4
+; $0B723C
+	sub.l	loc_0B031B(pc),d1
+; $0B7240
+	and.w	a5,d6
+; $0B7242
+	dc.w	$F0DD
+; $0B7244
+	adda.l	(a5)+,a6
+; $0B7246
+	and.l	d3,d7
+; $0B7248
+	suba.w	(a4)+,a0
+; $0B724A
+	roxr.w	$5FF0(a7)
+; $0B724E
+	adda.w	?ea(7,5),a6
+; $0B7250
+	dc.w	$7FCE
+; $0B7252
+	roxr.w	(a5)+
+; $0B7254
+	roxl.w	a6
+; $0B7256
+	adda.w	(a6)+,a6
+; $0B7258
+	cmp.w	(a0),d1
+; $0B725A
+	bchg	d1,(a7)+
+; $0B725C
+	add.l	d7,a2
+; $0B725E
+	sub.w	-(a1),d0
+; $0B7260
+	moveq	#-95,d0
+; $0B7262
+	addq.w	#8,d5
+; $0B7264
+	moveq	#-78,d0
+; $0B7266
+	eor.b	d0,d0
+; $0B7268
+	btst	d1,-(a0)
+; $0B726A
+	ori.?	#?,($EEFFFC).l
+; $0B7270
+	dc.w	$FA0F
+; $0B7272
+	dc.w	$FFFF
+; $0B7274
+	dc.w	$F00F
+; $0B7276
+	and.b	a3,d4
+; $0B7278
+	btst	d0,a3
+; $0B727A
+	bchg	d1,#$F0
+; $0B727E
+	move.b	d1,d7
+; $0B7280
+	move.b	d4,d5
+; $0B7282
+	ori.w	#$0555,d5
+; $0B7286
+	move.l	d3,-(a7)
+; $0B7288
+	addq.b	#2,($31,a5,d0.w)
+; $0B728C
+	subi.b	#$2E,$12E(a7)
+; $0B7292
+	ori.?	#?,?ea(7,5)
+; $0B7294
+	eor.w	d5,a6
+; $0B7296
+	bset	#190,?ea(7,6)
+; $0B729A
+	cmpa.w	-$1181(a3),a7
+; $0B729E
+	ror.w	-$1102(a7)
+; $0B72A2
+	cmpa.w	?ea(7,6),a7
+; $0B72A4
+	ror.w	#7,d6
+; $0B72A6
+	ori.?	#?,-$112(a7)
+; $0B72AA
+	ror.l	d7,d6
+; $0B72AC
+	dc.w	$4E02
+; $0B72AE
+	lsl.w	-$441F(a3)
+; $0B72B2
+	cmp.w	($65,a6,d0.w),d7
+; $0B72B6
+	ori.w	#$00EE,sr
+; $0B72BC
+	cmpa.w	$47B(a6),a7
+; $0B72C0
+	ori.w	#$00BE,(a3)+
+; $0B72C4
+	blt.s	loc_0B72C9
+; $0B72C6
+	dc.w	$7100
+; $0B72C8
+	moveq	#1,d3
+; $0B72CA
+	moveq	#0,d7
+; $0B72CC
+	subq.b	#5,d0
+; $0B72CE
+	move.l	?ea(7,7),?ea(7,7)
+; $0B72D0
+	ror.l	d7,d6
+; $0B72D2
+	dc.w	$FF6A
+; $0B72D4
+	ori.?	#?,$6B00(a7)
+; $0B72D8
+	sbcd	d0,d1
+; $0B72DA
+	movea.b	(-$11,a0,d0.w),a7
+; $0B72DE
+	dc.w	$FEBE
+; $0B72E0
+	eor.w	d7,$A8(a2)
+; $0B72E4
+	bclr	d0,($14,pc,d0.w)
+; $0B72E8
+	dc.w	$7B00
+; $0B72EA
+	sbcd	d1,d0
+; $0B72EC
+	lsl.w	#5,d6
+; $0B72EE
+	ori.?	#?,?ea(7,6)
+; $0B72F0
+	blt.w	loc_0BEDF2
+; $0B72F4
+	dc.w	$7500
+; $0B72F6
+	dc.w	$F1BB
+; $0B72F8
+	sub.b	d4,d0
+; $0B72FA
+	and.b	d1,d4
+; $0B72FC
+	sub.b	d1,d4
+; $0B72FE
+	lsl.w	?ea(7,6)
+; $0B7300
+	ror.w	?ea(7,6)
+; $0B7302
+	lsl.w	-$10AD(a7)
+; $0B7306
+	bclr	d2,(-$6B,a2,d0.w)
+; $0B730A
+	ori.?	#?,?ea(7,6)
+; $0B730C
+	cmpa.w	$1FEF(a3),a7
+; $0B7310
+	rol.w	-$4102(a7)
+
+loc_0B7314:				; $0B7314
+	eor.b	d3,d2
+; $0B7316
+	abcd	d2,d4
+; $0B7318
+	dc.w	$FCFF
+; $0B731A
+	dc.w	$F81C
+; $0B731C
+	move.b	a6,$94E(a5)
+; $0B7320
+	subi.l	#$B5257FBB,(-$45,a2,a3.l)
+; $0B7328
+	cmp.b	-(a2),d1
+; $0B732A
+	move.l	-(a2),-(a2)
+; $0B732C
+	dc.w	$4522
+; $0B732E
+	dc.w	$4D01
+; $0B7330
+	dc.w	$FFB5
+; $0B7332
+	eor.b	d5,-(a2)
+; $0B7334
+	movea.b	(a5),a1
+; $0B7336
+	cmp.b	(a5),d1
+; $0B7338
+	scc	(a3)+
+; $0B733A
+	subq.b	#2,(a5)
+; $0B733C
+	move.l	d0,-(a7)
+; $0B733E
+	move.l	-(a2),-(a2)
+; $0B7340
+	move.l	d0,-(a7)
+; $0B7342
+	addq.b	#1,-(a2)
+; $0B7344
+	lsr.b	d5,d6
+; $0B7346
+	ori.w	#$4302,(a2)
+; $0B734A
+	move.l	a6,$55(a1)
+; $0B734E
+	move.l	(-$45,pc,a7.l),d1
+; $0B7352
+	addq.w	#2,(a2)
+; $0B7354
+	move.l	($52,pc,d5.w),($5F,a1,d5.w)
+; $0B735A
+	move.w	(a5),$5452(a1)
+; $0B735E
+	movea.l	$1042(a0),a1
+; $0B7362
+	beq.s	loc_0B7374
+; $0B7364
+	dc.w	$F952
+; $0B7366
+	tst.b	a5
+; $0B7368
+	dc.w	$4E01
+; $0B736A
+	move.l	(-$45,pc,a3.l),-(a1)
+; $0B736E
+	shi	?ea(7,7)
+; $0B7370
+	move.l	-(a3),-(a0)
+; $0B7372
+	move.w	(a2),$5255(a5)
+; $0B7376
+	subq.w	#1,(a5)
+; $0B7378
+	rol.w	#3,d2
+; $0B737A
+	addq.b	#1,-(a2)
+; $0B737C
+	move.b	(a7)+,d6
+; $0B737E
+	cmp.b	(a3)+,d6
+; $0B7380
+	or.l	d3,d6
+; $0B7382
+	moveq	#-1,d4
+; $0B7384
+	or.w	d3,($67,a6,d6.l)
+; $0B7388
+	bne.s	loc_0B7400
+; $0B738A
+	beq.s	loc_0B7314
+; $0B738C
+	dc.w	$FF66
+; $0B738E
+	moveq	#103,d4
+; $0B7390
+	or.w	$6786(a0),d4
+; $0B7394
+	dc.w	$77FD
+; $0B7396
+	divs.w	(a6)+,d3
+; $0B7398
+	move.b	d6,($66,a0,d7.l)
+; $0B739C
+	dc.w	$7786
+; $0B739E
+	moveq	#-1,d4
+; $0B73A0
+	or.w	(-$23,a6,a4.l),d3
+; $0B73A4
+	muls.w	a5,d6
+; $0B73A6
+	add.w	d6,(a4)+
+; $0B73A8
+	dc.w	$FFDD
+; $0B73AA
+	adda.w	d5,a6
+; $0B73AC
+	adda.l	(a5)+,a6
+; $0B73AE
+	muls.w	(a4)+,d6
+; $0B73B0
+	adda.l	?ea(7,7),a6
+; $0B73B2
+	add.w	(a4)+,d6
+; $0B73B4
+	muls.w	a5,d2
+; $0B73B6
+	muls.w	d5,d6
+; $0B73B8
+	adda.l	(a4)+,a2
+; $0B73BA
+	bmi.s	loc_0B7418
+; $0B73BC
+	adda.w	?ea(7,7),a6
+; $0B73BE
+	move.b	a5,(a0)+
+; $0B73C0
+	btst	d1,-(a0)
+; $0B73C2
+	adda.l	a5,a2
+; $0B73C4
+	dc.w	$0E20
+; $0B73C6
+	move.w	d3,d4
+; $0B73C8
+	move.l	d5,d0
+; $0B73CA
+	move.l	(-$24,a0,d1.w),(a0)+
+; $0B73CE
+	adda.l	d5,a2
+; $0B73D0
+	rol.b	#7,d0
+; $0B73D2
+	btst	d1,-(a0)
+; $0B73D4
+	move.w	(a4)+,-$3233(a7)
+; $0B73D8
+	and.w	(a5)+,d6
+; $0B73DA
+	add.b	$200E(a2),d6
+; $0B73DE
+	move.l	(a1)+,d1
+; $0B73E0
+	add.b	d6,$240B(a4)
+; $0B73E4
+	movea.l	(a5)+,a1
+; $0B73E6
+	exg	d2,d3
+; $0B73E8
+	move.l	?ea(7,5),(a0)+
+; $0B73EA
+	move.b	$220F(a1),-(a0)
+; $0B73EE
+	lsl.w	-$115(a6)
+; $0B73F2
+	or.b	d0,d2
+; $0B73F4
+	dc.w	$7B02
+; $0B73F6
+	moveq	#0,d3
+
+loc_0B73F8:				; $0B73F8
+	bne.s	loc_0B73FB
+; $0B73FA
+	ori.w	#$20E4,(a1)
+; $0B73FE
+	andi.?	#?,-(a1)
+
+loc_0B7400:				; $0B7400
+	bchg	d2,d3
+; $0B7402
+	andi.w	#$0061,-(a6)
+; $0B7406
+	movea.l	($5A,pc,d0.w),a1
+; $0B740A
+	move.l	d0,d1
+; $0B740C
+	add.b	d7,d1
+; $0B740E
+	dc.w	$7123
+; $0B7410
+	sbcd	d1,d1
+; $0B7412
+	add.b	d6,a0
+; $0B7414
+	sub.b	d1,d6
+; $0B7416
+	and.b	d0,d6
+
+loc_0B7418:				; $0B7418
+	btst	d3,(a2)
+; $0B741A
+	bcc.s	loc_0B7442
+; $0B741C
+	ori.w	#$2575,(a5)+
+; $0B7420
+	move.l	a1,(-$22,a0,d0.w)
+; $0B7424
+	bset	d2,-(a6)
+; $0B7426
+	bclr	d0,$17B(a2)
+; $0B742A
+	bset	d0,($200DF02).l
+; $0B7430
+	sub.b	-(a2),d2
+; $0B7432
+	exg	d0,d2
+; $0B7434
+	moveq	#0,d7
+; $0B7436
+	sub.b	d2,d3
+; $0B7438
+	abcd	d2,d3
+; $0B743A
+	bcc.s	loc_0B7463
+; $0B743C
+	dc.w	$4E04
+; $0B743E
+	sub.l	d2,($34,a1,d1.w)
+
+loc_0B7442:				; $0B7442
+	movea.l	a6,a1
+; $0B7444
+	ori.b	#$10,(a1)
+; $0B7448
+	dc.w	$4510
+; $0B744A
+	move.l	$4511(a6),$55F2(a2)
+; $0B7450
+	addq.w	#1,(a5)+
+; $0B7452
+	move.b	-(a2),-(a1)
+; $0B7454
+	move.l	($000069).w,-(a2)
+; $0B7458
+	move.l	($3B,a3,d0.w),-(a2)
+; $0B745C
+	move.w	(a2),$3B31(a0)
+; $0B7460
+	subq.b	#2,-(a5)
+; $0B7462
+	move.l	d0,d7
+; $0B7464
+	dc.w	$FF77
+; $0B7466
+	moveq	#118,d4
+; $0B7468
+	dc.w	$7766
+; $0B746A
+	or.w	d3,$66FF(a0)
+; $0B746E
+	or.l	d3,a0
+; $0B7470
+	beq.s	loc_0B73F8
+; $0B7472
+	or.w	d3,$6788(a0)
+; $0B7476
+	dc.w	$FD76
+; $0B7478
+	add.b	(a0),d7
+; $0B747A
+	moveq	#119,d3
+; $0B747C
+	or.w	($66,a7,d6.l),d3
+; $0B7480
+	dc.w	$FF78
+; $0B7482
+	bne.s	loc_0B74EC
+; $0B7484
+	moveq	#104,d3
+; $0B7486
+	bne.s	loc_0B74F0
+; $0B7488
+	bvc.s	loc_0B7485
+; $0B748A
+	or.w	$6E32(a0),d4
+; $0B748E
+	or.l	a0,d4
+; $0B7490
+	or.w	$775E(a0),d4
+; $0B7494
+	moveq	#49,d4
+; $0B7496
+	dc.w	$7778
+; $0B7498
+	or.w	-(a7),d4
+; $0B749A
+	or.b	(-$7A,a2,d6.l),d0
+; $0B749E
+	move.w	($55,a7,d4.w),$253B(a0)
+; $0B74A4
+	movea.w	(a2),a0
+; $0B74A6
+	addq.w	#1,(a4)
+; $0B74A8
+	bhi.s	loc_0B74BA
+; $0B74AA
+	bgt.s	loc_0B74E1
+; $0B74AC
+	movea.w	(a5),a0
+; $0B74AE
+	subq.b	#2,-(a4)
+; $0B74B0
+	or.b	d0,(a1)
+; $0B74B2
+	subq.b	#2,-(a2)
+; $0B74B4
+	move.w	($2E,a2,d4.l),d5
+; $0B74B8
+	ori.l	#$10BB339B,(a7)+
+; $0B74BE
+	move.b	($52,a2,d3.w),($30,a0,a3.w)
+; $0B74C4
+	roxl.b	d6,d2
+; $0B74C6
+	bgt.s	loc_0B74D8
+; $0B74C8
+	subq.w	#2,(a2)
+; $0B74CA
+	moveq	#16,d0
+; $0B74CC
+	subq.b	#1,(-$1,a3,a3.l)
+; $0B74D0
+	move.l	-(a3),-(a2)
+; $0B74D2
+	move.w	(-$79,pc,d7.l),(a1)
+; $0B74D6
+	or.l	d7,d4
+
+loc_0B74D8:				; $0B74D8
+	dc.w	$F578
+; $0B74DA
+	add.b	d0,(-$2D,a0,d7.w)
+; $0B74DE
+	movea.w	($76,a7,a0.w),a1
+; $0B74E2
+	or.b	d3,(a5)+
+; $0B74E4
+	dc.w	$7761
+; $0B74E6
+	movea.w	($68,a6,d7.w),a0
+; $0B74EA
+	dc.w	$4E30
+
+loc_0B74EC:				; $0B74EC
+	ror.b	d3,d1
+; $0B74EE
+	move.l	-(a0),-(a3)
+
+loc_0B74F0:				; $0B74F0
+	dc.w	$FFCD
+; $0B74F2
+	sge	(a5)
+; $0B74F4
+	adda.l	(a4)+,a2
+; $0B74F6
+	dblt	d4,loc_0BD1F6
+; $0B74FA
+	ori.b	#$5C,-(a0)
+; $0B74FE
+	exg	a6,a4
+; $0B7500
+	muls.w	a4,d6
+; $0B7502
+	sge	?ea(7,7)
+; $0B7504
+	muls.w	a4,d2
+; $0B7506
+	dbge	d4,loc_0B41D4
+; $0B750A
+	addq.w	#6,(a5)
+; $0B750C
+	dc.w	$FA04
+; $0B750E
+	negx.?	(a5)+
+; $0B7510
+	btst	d3,-(a0)
+; $0B7512
+	addq.w	#6,(a5)+
+; $0B7514
+	sge	(a5)+
+; $0B7516
+	mulu.w	d0,d6
+; $0B7518
+	dc.w	$FF10
+; $0B751A
+	dc.w	$4320
+; $0B751C
+	subi.w	#$0240,d0
+; $0B7520
+	move.l	d1,$240(a0)
+; $0B7524
+	and.w	(a5),d6
+; $0B7526
+	muls.w	a4,d5
+; $0B7528
+	mulu.w	$35C5(a6),d6
+; $0B752C
+	rol.b	d7,d1
+; $0B752E
+	movea.b	d1,a6
+; $0B7530
+	muls.w	a4,d2
+; $0B7532
+	move.w	a5,($001C41).w
+; $0B7536
+	move.l	d0,$3A40(a5)
+; $0B753A
+	dbcs	d4,loc_0BA45B
+; $0B753E
+	addq.w	#6,a3
+; $0B7540
+	asr.w	(a6)+
+; $0B7542
+	bclr	#160,(-$2,a1,d2.w)
+; $0B7548
+	sub.b	-(a4),d7
+; $0B754A
+	dc.w	$FFEE
+; $0B754C
+	rol.w	?ea(7,6)
+; $0B754E
+	dc.w	$A301
+; $0B7550
+	dc.w	$FFFE
+; $0B7552
+	rol.w	?ea(7,7)
+; $0B7554
+	dc.w	$FFFE
+; $0B7556
+	dc.w	$FFD7
+; $0B7558
+	dc.w	$FFFF
+; $0B755A
+	ror.l	d7,d1
+; $0B755C
+	negx.?	-$60C0(a5)
+; $0B7560
+	adda.l	-$4225(a5),a6
+; $0B7564
+	moveq	#0,d7
+; $0B7566
+	add.l	d6,?ea(7,6)
+; $0B7568
+	cmpa.w	-$51C0(a7),a7
+; $0B756C
+	adda.w	?ea(7,7),a7
+; $0B756E
+	roxl.w	(a5)+
+; $0B7570
+	cmpa.w	(a5)+,a7
+; $0B7572
+	ror.w	-$2223(a5)
+; $0B7576
+	dc.w	$FFFE
+; $0B7578
+	dc.w	$FEDE
+; $0B757A
+	adda.l	(a6)+,a6
+; $0B757C
+	rol.w	-$1249(a5)
+; $0B7580
+	adda.l	?ea(7,6),a6
+; $0B7582
+	roxl.w	d6,d6
+
+loc_0B7584:				; $0B7584
+	lea	-$144D(a3),a7
+; $0B7588
+	negx.l	?ea(7,6)
+; $0B758A
+	lsr.l	d1,d6
+; $0B758C
+	lea	(a6)+,a0
+; $0B758E
+	eor.w	d1,d0
+; $0B7590
+	and.w	a7,d7
+; $0B7592
+	ori	#$DE,ccr
+; $0B7598
+	move.l	($2F,a0,d5.w),-(a3)
+; $0B759C
+	move.b	-(a4),d1
+; $0B759E
+	subq.b	#6,(a2)
+; $0B75A0
+	move.b	(a4),$552(a0)
+; $0B75A4
+	sub.b	($5E,a1,d2.w),d0
+; $0B75A8
+	move.b	a2,$31BC(a0)
+; $0B75AC
+	move.b	d0,?ea(7,7)
+; $0B75AE
+	move.b	(a5),(a6)+
+; $0B75B0
+	move.w	($30,a4,a5.l),(a0)+
+; $0B75B4
+	subq.w	#8,(a3)
+; $0B75B6
+	bne.s	loc_0B760B
+; $0B75B8
+	addq.w	#8,-(a6)
+; $0B75BA
+	bne.s	loc_0B7623
+; $0B75BC
+	dc.w	$77AE
+; $0B75BE
+	subq.w	#7,(a1)
+; $0B75C0
+	or.w	-(a6),d3
+; $0B75C2
+	or.w	d3,-(a6)
+; $0B75C4
+	subq.w	#8,-$19F0(a0)
+; $0B75C8
+	or.w	($6789307E).l,d4
+; $0B75CE
+	move.w	($78,a7,d7.w),$667E(a0)
+; $0B75D4
+	st	-$7798(a7)
+; $0B75D8
+	moveq	#102,d4
+; $0B75DA
+	add.b	d0,(-$79,a0,a0.l)
+; $0B75DE
+	bne.s	loc_0B75B3
+; $0B75E0
+	or.l	d3,d6
+; $0B75E2
+	movea.w	(a7)+,a6
+; $0B75E4
+	sub.w	(a3)+,d6
+; $0B75E6
+	movea.l	$1055(a5),a1
+; $0B75EA
+	move.l	?ea(7,7),($3B,a1,d2.w)
+; $0B75EE
+	addq.b	#2,-(a3)
+; $0B75F0
+	move.w	($10,pc,d5.l),-(a1)
+; $0B75F4
+	move.w	a7,?ea(7,5)
+; $0B75F6
+	subq.b	#2,-(a2)
+; $0B75F8
+	move.l	($10,a3,d5.l),d1
+; $0B75FC
+	exg	a0,a0
+; $0B75FE
+	subq.b	#2,($44,a3,d1.w)
+; $0B7602
+	ori.w	#$67E2,(a3)
+; $0B7606
+	movea.w	-(a6),a0
+; $0B7608
+	add.w	d0,(a0)+
+; $0B760A
+	bpl.s	loc_0B763E
+; $0B760C
+	blt.s	loc_0B763E
+; $0B760E
+	dc.w	$F787
+; $0B7610
+	bne.s	loc_0B7679
+; $0B7612
+	roxl.w	#2,d2
+; $0B7614
+	muls.w	d5,d2
+; $0B7616
+	mulu.w	d4,d6
+; $0B7618
+	exg	a5,a4
+; $0B761A
+	exg	d2,d4
+; $0B761C
+	negx.?	d4
+; $0B761E
+	addi.w	#$F150,d0
+; $0B7622
+	and.w	(a4),d6
+; $0B7624
+	roxr.b	d2,d0
+; $0B7626
+	dc.w	$4102
+; $0B7628
+	negx.w	a4
+; $0B762A
+	move.l	d1,$3D40(a2)
+; $0B762E
+	addq.w	#6,(a4)+
+; $0B7630
+	muls.w	?ea(7,7),d2
+; $0B7632
+	exg	a2,a4
+; $0B7634
+	and.w	(a4),d6
+; $0B7636
+	addq.w	#6,d5
+; $0B7638
+	addq.w	#6,(a4)
+; $0B763A
+	dc.w	$FFCC
+; $0B763C
+	lea	a4,a2
+
+loc_0B763E:				; $0B763E
+	mulu.w	d5,d6
+; $0B7640
+	neg.?	a4
+; $0B7642
+	exg	d2,a5
+; $0B7644
+	abcd	-(a2),-(a2)
+; $0B7646
+	negx.?	d4
+; $0B7648
+	dc.w	$4C02
+; $0B764A
+	negx.w	(a5)
+; $0B764C
+	movea.l	d2,a1
+; $0B764E
+	exg	d2,a5
+; $0B7650
+	movem.l	($60,pc,d0.l),d1/d3/d7/a0/a1/a5
+; $0B7656
+	and.b	d5,d2
+; $0B7658
+	negx.?	?ea(7,7)
+; $0B765A
+	addq.w	#8,(a4)+
+; $0B765C
+	subq.w	#8,(a5)
+; $0B765E
+	bclr	d2,d0
+; $0B7660
+	move.b	-(a0),$D60(a5)
+; $0B7664
+	mulu.w	(-$23,a6,d0.w),d6
+; $0B7668
+	dc.w	$7500
+; $0B766A
+	rol.w	(a5)+
+; $0B766C
+	adda.l	(a5)+,a6
+; $0B766E
+	ror.w	#7,d6
+; $0B7670
+	bhi.s	loc_0B765F
+; $0B7672
+	adda.w	?ea(7,6),a7
+; $0B7674
+	cmpa.l	(a5)+,a3
+; $0B7676
+	adda.l	(a6)+,a6
+; $0B7678
+	subq.w	#4,-(a0)
+; $0B767A
+	ror.w	-$39C0(a6)
+; $0B767E
+	dc.w	$FF62
+; $0B7680
+	bvc.w	loc_0B7681
+; $0B7684
+	ori.l	#$429E40FF,-(a4)
+; $0B768A
+	rol.l	d7,d1
+; $0B768C
+	lea	-$60BF(a0),a0
+; $0B7690
+	moveq	#98,d2
+; $0B7692
+	sub.w	d6,d2
+; $0B7694
+	add.l	d6,-(a0)
+; $0B7696
+	negx.?	(a6)+
+; $0B7698
+	dc.w	$FFEF
+; $0B769A
+	ror.w	a2
+; $0B769C
+	negx.?	?ea(7,5)
+
+loc_0B769E:				; $0B769E
+	roxl.w	a6
+; $0B76A0
+	and.w	d0,d0
+; $0B76A2
+	adda.l	-$1251(a5),a6
+; $0B76A6
+	adda.w	(a4)+,a6
+; $0B76A8
+	adda.w	(a7)+,a7
+; $0B76AA
+	sub.w	d7,-(a1)
+; $0B76AC
+	add.w	(a0)+,d7
+
+loc_0B76AE:				; $0B76AE
+	bsr.s	loc_0B769E
+; $0B76B0
+	bchg	d7,-$2323(a5)
+; $0B76B4
+	adda.w	(-$4B,a7,d1.w),a7
+; $0B76B8
+	bra.s	loc_0B76B1
+; $0B76BA
+	move.b	?ea(7,5),(a0)
+; $0B76BC
+	bra.s	loc_0B76B7
+; $0B76BE
+	add.l	d6,(-$60,a2,d6.w)
+; $0B76C2
+	bra.s	loc_0B7691
+
+loc_0B76C4:				; $0B76C4
+	adda.l	-$2324(a6),a6
+; $0B76C8
+	ble.s	loc_0B76A7
+; $0B76CA
+	roxr.w	(a3)+
+; $0B76CC
+	lsl.l	d5,d6
+; $0B76CE
+	bsr.s	loc_0B76BD
+; $0B76D0
+	add.l	d6,(-$51,a3,d6.w)
+; $0B76D4
+	roxl.w	(a5)+
+; $0B76D6
+	mulu.w	(a6)+,d7
+; $0B76D8
+	eor.w	d4,-(a1)
+; $0B76DA
+	roxl.w	a0
+; $0B76DC
+	bra.s	loc_0B76BB
+; $0B76DE
+	dc.w	$A7ED
+; $0B76E0
+	adda.l	a4,a6
+; $0B76E2
+	cmp.w	-(a0),d2
+; $0B76E4
+	add.w	d7,d2
+; $0B76E6
+	eor.l	d6,(-$22,a4,d6.w)
+; $0B76EA
+	suba.l	-$54A0(a5),a0
+; $0B76EE
+	cmp.w	-(a1),d2
+; $0B76F0
+	roxr.w	d2,d1
+; $0B76F2
+	adda.l	(a7),a6
+; $0B76F4
+	bra.s	loc_0B76B3
+; $0B76F6
+	bra.s	loc_0B76C4
+; $0B76F8
+	bcs.s	loc_0B76D7
+; $0B76FA
+	subq.b	#7,(a1)
+; $0B76FC
+	move.w	($7D,pc,d3.w),d1
+; $0B7700
+	movea.b	(a5),a0
+; $0B7702
+	move.l	(-$1,pc,d3.w),-(a1)
+; $0B7706
+	move.w	-(a4),-(a0)
+; $0B7708
+	subq.w	#2,(a5)
+; $0B770A
+	move.l	-(a5),-(a0)
+; $0B770C
+	subq.w	#2,d5
+; $0B770E
+	move.b	(a2),-(a0)
+; $0B7710
+	move.w	($5F,a0,d2.l),d5
+; $0B7714
+	move.w	?ea(7,7),$76D1(a5)
+; $0B7718
+	addq.w	#8,a6
+; $0B771A
+	moveq	#126,d1
+; $0B771C
+	addq.l	#8,#$6B30DC50
+; $0B7722
+	or.l	d6,d4
+; $0B7724
+	bne.s	loc_0B76AE
+; $0B7726
+	bra.s	loc_0B7798
+; $0B7728
+	moveq	#83,d4
+; $0B772A
+	or.w	($71,a6,d6.w),d4
+; $0B772E
+	lsr.b	d1,d0
+; $0B7730
+	moveq	#108,d4
+; $0B7732
+	move.w	d6,(a0)
+; $0B7734
+	moveq	#48,d3
+; $0B7736
+	dc.w	$FF67
+; $0B7738
+	or.w	($68,a7,d6.l),d4
+; $0B773C
+	moveq	#120,d3
+; $0B773E
+	moveq	#50,d3
+; $0B7740
+	add.b	($5D,a0,d7.w),d2
+; $0B7744
+	movea.w	(a1)+,a0
+; $0B7746
+	dc.w	$7168
+; $0B7748
+	beq.s	loc_0B7786
+; $0B774A
+	dc.w	$7F9C
+; $0B774C
+	dc.w	$7B4A
+; $0B774E
+	move.l	d0,d7
+; $0B7750
+	move.w	$53(a7),d6
+; $0B7754
+	move.w	d0,d3
+; $0B7756
+	exg	a2,a1
+; $0B7758
+	subq.b	#1,(-$2B,a5,d0.w)
+; $0B775C
+	addq.l	#6,($43,a3,d7.w)
+; $0B7760
+	move.l	d0,-(a7)
+; $0B7762
+	movea.w	d4,a6
+; $0B7764
+	ori.w	#$86C8,(a4)+
+; $0B7768
+	moveq	#114,d1
+; $0B776A
+	dc.w	$7570
+; $0B776C
+	add.w	d2,($76,a4,a0.w)
+; $0B7770
+	move.w	a7,(a0)+
+; $0B7772
+	move.w	d7,(a0)
+; $0B7774
+	moveq	#94,d3
+; $0B7776
+	lsl.w	d1,d2
+; $0B7778
+	or.l	d7,d3
+; $0B777A
+	and.w	d5,d6
+; $0B777C
+	move.l	d0,$5404(a5)
+; $0B7780
+	negx.w	a1
+; $0B7782
+	neg.b	?ea(7,5)
+; $0B7784
+	negx.?	(-$3C,a3,d5.w)
+; $0B7788
+	movea.l	d1,a5
+; $0B778A
+	eori.w	#$C543,d0
+; $0B778E
+	bsr.s	loc_0B77FA
+; $0B7790
+	bclr	d1,-(a0)
+; $0B7792
+	and.w	d3,d2
+; $0B7794
+	bra.s	loc_0B775B
+; $0B7796
+	bclr	d3,-(a0)
+
+loc_0B7798:				; $0B7798
+	and.w	d5,d2
+; $0B779A
+	bclr	d6,-(a0)
+; $0B779C
+	andi.b	#$62,$404C(a3)
+; $0B77A2
+	dc.w	$FD50
+; $0B77A4
+	move.l	-(a1),$2B40(a1)
+; $0B77A8
+	ror.w	d7,d7
+; $0B77AA
+	ori.l	#$FCFD5005,d2
+; $0B77B0
+	negx.w	d4
+; $0B77B2
+	sge	d5
+; $0B77B4
+	adda.l	-$114D(a7),a6
+; $0B77B8
+	dc.w	$FFDE
+; $0B77BA
+	sub.w	d6,d1
+; $0B77BC
+	sub.w	d0,d7
+; $0B77BE
+	ror.w	-$5BFF(a7)
+; $0B77C2
+	rol.w	#7,d4
+; $0B77C4
+	chk.w	d0,d7
+; $0B77C6
+	moveq	#96,d0
+; $0B77C8
+	dc.w	$FE9B
+; $0B77CA
+	negx.l	-(a1)
+; $0B77CC
+	negx.l	(a4)
+; $0B77CE
+	negx.?	?ea(7,5)
+; $0B77D0
+	sub.w	d0,d6
+; $0B77D2
+	adda.l	$6100(a5),a4
+; $0B77D6
+	sub.w	d0,-(a0)
+; $0B77D8
+	dc.w	$FEDE
+; $0B77DA
+	dc.w	$A340
+; $0B77DC
+	roxl.w	?ea(7,6)
+; $0B77DE
+	and.w	(-$5C,a3,a0.w),d6
+; $0B77E2
+	negx.?	-$1A5(a5)
+; $0B77E6
+	divu.w	d7,d0
+; $0B77E8
+	negx.?	(a5)+
+; $0B77EA
+	rol.w	?ea(7,7)
+; $0B77EC
+	dc.w	$FDEE
+; $0B77EE
+	adda.w	?ea(7,7),a7
+; $0B77F0
+	adda.l	-$2022(a5),a6
+; $0B77F4
+	dc.w	$FFEE
+; $0B77F6
+	adda.w	(a7)+,a6
+; $0B77F8
+	ror.w	-$3311(a5)
+; $0B77FC
+	ror.w	(-$33,pc,a5.l)
+; $0B7800
+	dc.w	$7F80
+; $0B7802
+	ror.w	?ea(7,6)
+; $0B7804
+	adda.w	-$41(a5),a7
+; $0B7808
+	roxl.w	-$123(a5)
+; $0B780C
+	muls.w	-$4EA0(a7),d6
+; $0B7810
+	roxl.w	?ea(7,7)
+; $0B7812
+	adda.w	-$3213(a5),a7
+; $0B7816
+	adda.w	(a4)+,a7
+; $0B7818
+	adda.w	$3DE(a6),a6
+; $0B781C
+	add.l	d6,($800671C6).l
+; $0B7822
+	or.b	d5,d1
+; $0B7824
+	move.l	($0010FA).w,(a0)+
+; $0B7828
+	movea.b	-(a0),a0
+; $0B782A
+	rol.b	#7,d0
+; $0B782C
+	add.l	d0,d0
+; $0B782E
+	move.b	-(a0),d2
+; $0B7830
+	rol.b	#7,d1
+; $0B7832
+	add.l	d5,d3
+; $0B7834
+	adda.l	(a4)+,a6
+; $0B7836
+	exg	d1,a2
+; $0B7838
+	dc.w	$FECD
+; $0B783A
+	divs.w	(a4)+,d0
+; $0B783C
+	muls.w	-$2334(a4),d6
+; $0B7840
+	adda.w	(a6)+,a7
+; $0B7842
+	move.w	-$2222(a4),?ea(7,7)
+; $0B7846
+	mulu.w	(a5)+,d6
+; $0B7848
+	roxl.w	#6,d5
+; $0B784A
+	bra.s	loc_0B78AC
+; $0B784C
+	ori.w	#$DEFE,a7
+; $0B7850
+	dc.w	$FFCD
+; $0B7852
+	sub.w	d0,d3
+; $0B7854
+	move.l	d1,d7
+; $0B7856
+	move.b	loc_0BA917(pc),-(a0)
+; $0B785A
+	move.l	-(a2),-(a0)
+; $0B785C
+	addq.w	#2,(a2)
+; $0B785E
+	move.b	(a2),-(a7)
+; $0B7860
+	movea.b	(a0),a2
+; $0B7862
+	move.b	?ea(7,7),($001F11).w
+; $0B7866
+	move.l	($22,a1,d2.w),($002122).w
+; $0B786C
+	sub.b	d7,-(a1)
+; $0B786E
+	move.b	(a7)+,d1
+; $0B7870
+	dc.w	$F113
+; $0B7872
+	bcc.s	loc_0B7885
+; $0B7874
+	move.l	d2,-(a7)
+; $0B7876
+	shi	?ea(7,6)
+; $0B7878
+	move.w	d2,-(a3)
+; $0B787A
+	move.l	(a5),$1124(a2)
+; $0B787E
+	subq.w	#8,(a5)
+; $0B7880
+	dc.w	$F1FF
+; $0B7882
+	move.b	-(a5),-(a0)
+; $0B7884
+	move.b	(a2),-(a2)
+; $0B7886
+	move.l	(a2),-(a0)
+; $0B7888
+	subq.b	#2,(a1)
+; $0B788A
+	btst	d1,$112D(a7)
+; $0B788E
+	dc.w	$7F5E
+; $0B7890
+	sub.w	d7,(-$5D,a0,a1.l)
+; $0B7894
+	dc.w	$7B31
+; $0B7896
+	bclr	d6,$10FF(a0)
+; $0B789A
+	addq.w	#1,d2
+; $0B789C
+	move.l	(a2),$2323(a2)
+; $0B78A0
+	subq.w	#2,d3
+; $0B78A2
+	dc.w	$AB33
+; $0B78A4
+	exg	d1,a6
+; $0B78A6
+	sub.w	(a3),d0
+; $0B78A8
+	addq.b	#6,(a0)
+; $0B78AA
+	move.l	($3C,a6,d0.w),-(a1)
+; $0B78AE
+	dc.w	$FF52
+; $0B78B0
+	move.l	-(a3),-(a2)
+; $0B78B2
+	move.l	-(a5),d6
+; $0B78B4
+	move.l	(-$1,a3,d3.l),-(a1)
+; $0B78B8
+	move.l	(-$34,a3,d3.w),-(a1)
+; $0B78BC
+	move.l	(-$34,a2,d3.w),-(a1)
+
+loc_0B78C0:				; $0B78C0
+	rol.b	d7,d3
+; $0B78C2
+	and.b	-(a3),d1
+; $0B78C4
+	and.w	(a2)+,d6
+; $0B78C6
+	addq.w	#8,($006888).w
+; $0B78CA
+	lsl.w	d1,d6
+; $0B78CC
+	divu.w	-(a0),d4
+; $0B78CE
+	movea.w	?ea(7,7),a0
+; $0B78D0
+	dc.w	$717D
+; $0B78D2
+	addq.l	#8,d7
+; $0B78D4
+	dc.w	$7778
+; $0B78D6
+	dc.w	$F766
+; $0B78D8
+	or.w	-(a6),d3
+; $0B78DA
+	lsl.l	#1,d0
+; $0B78DC
+	beq.s	loc_0B7865
+; $0B78DE
+	moveq	#-120,d4
+; $0B78E0
+	dc.w	$A177
+; $0B78E2
+	dc.w	$F350
+; $0B78E4
+	movea.l	d0,a1
+; $0B78E6
+	move.l	d1,($50,a5,a6.l)
+; $0B78EA
+	abcd	d6,d1
+; $0B78EC
+	negx.?	d3
+; $0B78EE
+	dc.w	$FA24
+; $0B78F0
+	dc.w	$415C
+; $0B78F2
+	exg	a0,a0
+; $0B78F4
+	exg	a2,a5
+; $0B78F6
+	cmp.l	($53,a5,a3.w),d2
+; $0B78FA
+	cmp.w	(a4),d2
+; $0B78FC
+	addi.w	#$2281,d1
+; $0B7900
+	move.w	d6,d6
+; $0B7902
+	negx.b	#$61
+; $0B7906
+	muls.w	d5,d7
+; $0B7908
+	and.w	(a4)+,d2
+; $0B790A
+	addq.b	#2,a7
+; $0B790C
+	bra.s	loc_0B7914
+; $0B790E
+	dc.w	$A0B5
+; $0B7910
+	addq.l	#2,a3
+; $0B7912
+	eor.l	d2,($50,a5,a7.w)
+; $0B7916
+	subq.b	#2,$60EF(a1)
+; $0B791A
+	suba.w	loc_0B0AE1(pc),a1
+; $0B791E
+	asl.w	d3
+; $0B7920
+	dc.w	$FA70
+; $0B7922
+	clr.w	-(a0)
+; $0B7924
+	subq.b	#2,(a1)+
+; $0B7926
+	or.w	a4,d0
+; $0B7928
+	addq.l	#6,(-$4C,a5,a1.w)
+; $0B792C
+	add.l	d6,-(a2)
+; $0B792E
+	negx.w	a6
+; $0B7930
+	dc.w	$A1DF
+; $0B7932
+	moveq	#96,d4
+; $0B7934
+	subq.l	#3,d2
+; $0B7936
+	rol.w	(a7)
+; $0B7938
+	dc.w	$FFDD
+; $0B793A
+	ror.w	#7,d5
+; $0B793C
+	dc.w	$A1ED
+; $0B793E
+	bvs.s	loc_0B78C0
+; $0B7940
+	ror.w	?ea(7,5)
+; $0B7942
+	move.w	-$101(a4),(-$-80,pc,a0.l)
+; $0B7948
+	dc.w	$FEEE
+; $0B794A
+	or.l	d2,d0
+; $0B794C
+	dc.w	$A540
+; $0B794E
+	dc.w	$7BEE
+; $0B7950
+	dc.w	$FF89
+; $0B7952
+	divs.w	-$2122(a5),d0
+
+loc_0B7956:				; $0B7956
+	ror.w	a0
+; $0B7958
+	bra.s	loc_0B7956
+; $0B795A
+	cmp.w	d0,d5
+; $0B795C
+	dc.w	$FA80
+; $0B795E
+	ror.w	a6
+; $0B7960
+	roxl.w	a5
+; $0B7962
+	adda.w	-$1824(a6),a6
+; $0B7966
+	adda.l	a6,a6
+; $0B7968
+	and.l	d2,d3
+; $0B796A
+	bra.s	loc_0B79CD
+; $0B796C
+	ror.w	?ea(7,5)
+; $0B796E
+	add.b	d6,-$6A80(a6)
+; $0B7972
+	adda.l	a5,a6
+; $0B7974
+	dc.w	$FEC6
+; $0B7976
+	negx.?	-$459D(a4)
+; $0B797A
+	bclr	d2,(-$8,a2,d0.w)
+; $0B797E
+	move.b	d6,-(a0)
+; $0B7980
+	moveq	#-39,d1
+; $0B7982
+	or.b	d1,(a7)
+; $0B7984
+	move.l	$20B6(a2),-(a0)
+; $0B7988
+	dc.w	$A2CC
+; $0B798A
+	dc.w	$A1E0
+; $0B798C
+	divs.w	-(a0),d1
+; $0B798E
+	move.l	-(a3),-(a6)
+; $0B7990
+	and.w	-(a0),d6
+; $0B7992
+	dc.w	$F010
+; $0B7994
+	move.w	-(a0),-(a1)
+; $0B7996
+	dc.w	$A862
+; $0B7998
+	rol.w	(a4)+
+; $0B799A
+	adda.w	(a7)+,a7
+; $0B799C
+	roxl.w	#$DDCD
+
+loc_0B79A0:				; $0B79A0
+	add.w	d7,-(a1)
+; $0B79A2
+	bra.s	loc_0B79A0
+; $0B79A4
+	ror.l	d7,d7
+; $0B79A6
+	adda.l	a7,a6
+; $0B79A8
+	and.w	$60A2(a1),d7
+; $0B79AC
+	divu.w	-$4180(a6),d0
+; $0B79B0
+	adda.w	?ea(7,7),a6
+; $0B79B2
+	roxl.w	-$E0D(a5)
+; $0B79B6
+	move.l	($22,a2,d1.w),d1
+; $0B79BA
+	dc.w	$FF32
+; $0B79BC
+	move.l	($33,a1,d1.w),($231121FF).l
+; $0B79C4
+	move.w	($1F,a2,d1.w),-(a1)
+; $0B79C8
+	move.w	($1F,a3,d1.w),d1
+; $0B79CC
+	dc.w	$FF33
+; $0B79CE
+	move.w	(a2),-(a1)
+; $0B79D0
+	move.l	(a3),-(a7)
+; $0B79D2
+	move.w	(-$19,a2,d1.w),($13233224).l
+; $0B79DA
+	sub.b	-$4FCB(a6),d0
+; $0B79DE
+	move.w	-(a2),-(a1)
+; $0B79E0
+	rol.b	d7,d3
+; $0B79E2
+	move.w	(-$3A,a3,d3.w),-(a0)
+; $0B79E6
+	sub.b	($32,a3,d3.w),d0
+; $0B79EA
+	rol.b	d7,d3
+; $0B79EC
+	move.l	($3F,a3,d2.w),-(a1)
+; $0B79F0
+	cmp.b	($21,a2,d3.w),d0
+; $0B79F4
+	dc.w	$AD22
+; $0B79F6
+	movea.b	($21,a1,d5.w),a1
+; $0B79FA
+	or.l	d7,(a0)
+; $0B79FC
+	move.b	($21,a7,d3.w),d1
+; $0B7A00
+	dc.w	$F511
+; $0B7A02
+	movea.l	($34,a0,d1.w),a0
+; $0B7A06
+	move.w	(a5),d0
+; $0B7A08
+	subq.w	#2,d5
+; $0B7A0A
+	move.l	-(a2),-(a0)
+; $0B7A0C
+	sub.b	($5F,a0,d2.w),d0
+; $0B7A10
+	move.b	a6,(a0)
+; $0B7A12
+	sub.l	-(a1),d4
+; $0B7A14
+	move.w	(a4),-$4F6F(a1)
+; $0B7A18
+	and.w	(a0),d4
+; $0B7A1A
+	dc.w	$FF55
+; $0B7A1C
+	addq.b	#1,($45,a2,d5.w)
+; $0B7A20
+	move.l	(-$1,a2,d4.w),-(a2)
+; $0B7A24
+	and.b	($23,a3,d3.w),d6
+; $0B7A28
+	exg	d1,d3
+; $0B7A2A
+	and.b	(-$3D,a3,a7.l),d1
+; $0B7A2E
+	or.l	d7,($33,a0,a4.w)
+; $0B7A32
+	move.w	$3C3C(a4),d1
+; $0B7A36
+	dc.w	$FE99
+; $0B7A38
+	cmpa.w	d3,a0
+; $0B7A3A
+	move.w	#$CC3C,d1
+; $0B7A3E
+	move.w	-$43D(a4),d1
+; $0B7A42
+	exg	d1,d6
+; $0B7A44
+	cmp.b	($32,a3,a4.l),d0
+; $0B7A48
+	move.w	#$DFCC,-(a1)
+; $0B7A4C
+	move.l	-(a3),-(a1)
+; $0B7A4E
+	muls.w	a4,d1
+; $0B7A50
+	sub.l	d6,($33,a1,d2.w)
+; $0B7A54
+	ble.s	loc_0B7A22
+; $0B7A56
+	move.w	-(a2),d6
+; $0B7A58
+	move.w	#$B02C,(a6)
+; $0B7A5C
+	muls.w	d5,d1
+; $0B7A5E
+	suba.w	-$3C34(a7),a0
+; $0B7A62
+	moveq	#104,d3
+; $0B7A64
+	asr.l	#8,d1
+; $0B7A66
+	or.w	d3,($0068CE).w
+; $0B7A6A
+	roxl.w	d2,d0
+; $0B7A6C
+	bvc.s	loc_0B7AD6
+; $0B7A6E
+	divu.w	a7,d3
+; $0B7A70
+	sub.w	(a1)+,d0
+; $0B7A72
+	addq.l	#8,d7
+; $0B7A74
+	dc.w	$775C
+; $0B7A76
+	add.b	d3,(a0)
+; $0B7A78
+	ble.s	loc_0B7AAA
+; $0B7A7A
+	beq.s	loc_0B7AF2
+; $0B7A7C
+	bne.s	loc_0B7ACC
+; $0B7A7E
+	ori.w	#$4E01,a3
+; $0B7A82
+	dc.w	$F98B
+; $0B7A84
+	dc.w	$F6B0
+; $0B7A86
+	dc.w	$7130
+; $0B7A88
+	bvc.s	loc_0B7B03
+; $0B7A8A
+	sub.l	d4,a1
+; $0B7A8C
+	suba.l	?ea(7,7),a3
+; $0B7A8E
+	sub.l	d4,(a1)+
+; $0B7A90
+	sub.l	d4,(a0)+
+; $0B7A92
+	bne.s	loc_0B7A2C
+; $0B7A94
+	dc.w	$7967
+; $0B7A96
+	move.w	d7,($68,a7,a0.w)
+; $0B7A9A
+	dc.w	$775B
+; $0B7A9C
+	subq.w	#5,a6
+; $0B7A9E
+	bchg	d1,(-$11,a6,a3.w)
+; $0B7AA2
+	sub.w	d3,-(a7)
+; $0B7AA4
+	dc.w	$7998
+; $0B7AA6
+	bchg	d1,d0
+; $0B7AA8
+	sub.w	d4,($683F9998).l
+; $0B7AAE
+	sub.w	($FFFF8976).w,d3
+; $0B7AB2
+	bchg	d7,d4
+; $0B7AB4
+	dc.w	$F5B6
+; $0B7AB6
+	dc.w	$FF99
+; $0B7AB8
+	dc.w	$7989
+; $0B7ABA
+	bvs.s	loc_0B7A55
+; $0B7ABC
+	sub.w	d4,($96778798).l
+; $0B7AC2
+	bvs.s	loc_0B7A4D
+; $0B7AC4
+	addq.l	#8,(a7)
+
+loc_0B7AC6:				; $0B7AC6
+	divu.w	(a5)+,d3
+; $0B7AC8
+	and.w	d0,d2
+; $0B7ACA
+	bvs.s	loc_0B7ABB
+
+loc_0B7ACC:				; $0B7ACC
+	bclr	d2,(-$-80,a0,a2.l)
+; $0B7AD0
+	exg	d6,a2
+; $0B7AD2
+	bra.s	loc_0B7AB0
+; $0B7AD4
+	exg	d6,a5
+
+loc_0B7AD6:				; $0B7AD6
+	bra.s	loc_0B7AE4
+; $0B7AD8
+	and.l	-$195E(a2),d1
+; $0B7ADC
+	adda.l	(a6)+,a6
+; $0B7ADE
+	ror.l	#3,d2
+; $0B7AE0
+	lsl.l	d1,d1
+; $0B7AE2
+	subi.w	#$16B8,($61,a1,a3.l)
+; $0B7AE8
+	bra.s	loc_0B7AC6
+; $0B7AEA
+	add.l	(-$12,a2,d6.w),d6
+; $0B7AEE
+	and.w	-(a0),d0
+; $0B7AF0
+	exg	d1,a1
+
+loc_0B7AF2:				; $0B7AF2
+	exg	a4,a0
+; $0B7AF4
+	addq.l	#6,($5,a3,d6.w)
+; $0B7AF8
+	move.l	-$2214(a5),(a0)+
+; $0B7AFC
+	asl.l	d4,d1
+; $0B7AFE
+	roxl.w	(a0)
+; $0B7B00
+	dc.w	$A200
+; $0B7B02
+	add.l	d6,-(a5)
+; $0B7B04
+	dc.w	$ADCF
+; $0B7B06
+	cmpa.l	a7,a7
+; $0B7B08
+	adda.l	a7,a0
+; $0B7B0A
+	move.l	-(a2),-(a5)
+; $0B7B0C
+	and.w	-(a0),d5
+; $0B7B0E
+	asl.l	#4,d0
+; $0B7B10
+	moveq	#-58,d3
+; $0B7B12
+	dc.w	$FCE0
+; $0B7B14
+	divu.w	a4,d1
+; $0B7B16
+	divs.w	(a4)+,d2
+; $0B7B18
+	add.b	(a2),d6
+; $0B7B1A
+	move.b	(a3),-(a7)
+; $0B7B1C
+	move.l	?ea(7,7),($22122233).l
+; $0B7B22
+	move.w	(a1),d1
+; $0B7B24
+	move.l	($32,a3,a7.l),-(a1)
+; $0B7B28
+	move.l	?ea(7,7),-(a0)
+; $0B7B2A
+	cmp.b	-(a2),d0
+; $0B7B2C
+	move.l	($22,a3,d2.w),-(a1)
+; $0B7B30
+	eor.b	d6,(a3)
+; $0B7B32
+	chk.w	($33,a0,d1.w),d3
+; $0B7B36
+	move.w	-(a2),-(a1)
+; $0B7B38
+	move.l	(-$69,a1,d3.w),(a6)
+; $0B7B3C
+	move.l	($48,a3,d1.w),d1
+; $0B7B40
+	cmp.b	(a2),d0
+; $0B7B42
+	negx.l	(-$2F,a0,d3.w)
+; $0B7B46
+	move.b	$48B0(a0),($43B120D0).l
+; $0B7B4E
+	move.w	-$4FE1(a5),-(a1)
+; $0B7B52
+	move.b	(a2),-$AB(a0)
+; $0B7B56
+	move.b	(a1),-(a0)
+; $0B7B58
+	move.l	(a5),$12F1(a2)
+; $0B7B5C
+	scc	?ea(7,7)
+; $0B7B5E
+	subq.b	#2,($15,a1,d1.l)
+; $0B7B62
+	move.l	-(a1),-(a2)
+; $0B7B64
+	move.b	-(a2),d1
+; $0B7B66
+	dc.w	$FF55
+; $0B7B68
+	move.b	(a2),-(a0)
+; $0B7B6A
+	move.w	-(a2),d1
+; $0B7B6C
+	move.l	-(a3),-(a0)
+; $0B7B6E
+	move.w	a7,(a1)+
+; $0B7B70
+	move.l	-(a1),-(a2)
+; $0B7B72
+	move.l	($10,a3,d6.w),d1
+; $0B7B76
+	moveq	#16,d6
+; $0B7B78
+	subq.w	#2,(a3)
+; $0B7B7A
+	dc.w	$F723
+; $0B7B7C
+	addq.b	#2,-(a2)
+; $0B7B7E
+	dc.w	$A890
+; $0B7B80
+	subq.b	#2,-(a3)
+; $0B7B82
+	move.w	(a2),-$AC(a1)
+; $0B7B86
+	move.w	($32,a2,d5.w),d1
+; $0B7B8A
+	move.w	-(a3),d1
+; $0B7B8C
+	sls	?ea(7,7)
+; $0B7B8E
+	move.w	($23,a2,d3.l),d6
+; $0B7B92
+	move.l	($2C,a2,d3.l),-(a1)
+; $0B7B96
+	muls.w	d3,d7
+; $0B7B98
+	move.w	-(a3),-(a1)
+; $0B7B9A
+	move.w	a7,(a6)
+; $0B7B9C
+	add.l	-(a2),d0
+; $0B7B9E
+	cmp.b	(-$9,a3,d2.w),d0
+; $0B7BA2
+	and.b	#$95,d6
+; $0B7BA6
+	adda.w	a4,a0
+; $0B7BA8
+	exg	d1,d4
+; $0B7BAA
+	move.w	-(a3),d6
+; $0B7BAC
+	move.l	#$40B092D1,-(a1)
+; $0B7BB2
+	cmp.l	(-$3D,a0,a4.l),d7
+; $0B7BB6
+	cmp.l	-$4E0F(a6),d0
+; $0B7BBA
+	exg	d1,a2
+; $0B7BBC
+	eor.l	d0,(a5)
+; $0B7BBE
+	eor.l	d0,-(a4)
+; $0B7BC0
+	add.b	#$C3,d0
+; $0B7BC4
+	muls.w	$3CA0(a5),d1
+; $0B7BC8
+	adda.w	a4,a0
+; $0B7BCA
+	or.w	$7267(a6),d3
+; $0B7BCE
+	bvc.s	loc_0B7C48
+; $0B7BD0
+	dc.w	$F768
+; $0B7BD2
+	moveq	#-122,d4
+; $0B7BD4
+	adda.w	(a1),a3
+; $0B7BD6
+	beq.s	loc_0B7B5F
+; $0B7BD8
+	beq.s	loc_0B7C52
+; $0B7BDA
+	move.w	-(a7),$7767(a3)
+; $0B7BDE
+	lsl.b	#5,d0
+; $0B7BE0
+	or.w	-(a7),d3
+; $0B7BE2
+	ror.w	(a1)
+; $0B7BE4
+	bls.s	loc_0B7C2F
+; $0B7BE6
+	cmp.w	(-$12,a2,d0.w),d7
+; $0B7BEA
+	eor.l	d5,?ea(7,6)
+; $0B7BEC
+	rol.w	?ea(7,7)
+; $0B7BEE
+	or.w	d5,d0
+; $0B7BF0
+	dc.w	$FEB8
+; $0B7BF2
+	dc.w	$FAD2
+; $0B7BF4
+	addq.b	#1,d6
+; $0B7BF6
+	addq.b	#5,d1
+; $0B7BF8
+	dc.w	$FEEF
+; $0B7BFA
+	cmp.l	(a7)+,d7
+; $0B7BFC
+	negx.?	-$1F8F(a7)
+; $0B7C00
+	bra.s	loc_0B7C6C
+; $0B7C02
+	or.l	$3F0(a3),d1
+; $0B7C06
+	subi.w	#$FEFE,$43FE(a4)
+; $0B7C0C
+	negx.?	?ea(7,7)
+; $0B7C0E
+	add.w	($603AE053).l,d0
+; $0B7C14
+	move.l	(a4)+,$4B8C(a1)
+; $0B7C18
+	ori.?	#?,$5A81(a3)
+; $0B7C1C
+	or.w	-$7F02(a2),d1
+; $0B7C20
+	dc.w	$7F01
+; $0B7C22
+	addq.w	#6,a2
+; $0B7C24
+	bchg	d4,-(a3)
+; $0B7C26
+	sub.b	d2,d2
+; $0B7C28
+	move.w	-(a0),(a5)+
+; $0B7C2A
+	dc.w	$FE08
+; $0B7C2C
+	addq.b	#1,-(a1)
+; $0B7C2E
+	subq.w	#6,a7
+
+loc_0B7C30:				; $0B7C30
+	dc.w	$4E03
+; $0B7C32
+	rol.w	?ea(7,7)
+; $0B7C34
+	move.l	a6,$28E(a1)
+; $0B7C38
+	sub.b	d0,(-$66,pc,d3.w)
+; $0B7C3C
+	dc.w	$7DB1
+; $0B7C3E
+	move.b	(a3)+,d1
+; $0B7C40
+	sub.b	-(a1),d0
+; $0B7C42
+	move.b	-(a6),-(a0)
+; $0B7C44
+	sub.w	-(a2),d0
+; $0B7C46
+	add.b	(-$E,a2,d7.l),d0
+; $0B7C4A
+	move.b	(-$F,a2,d2.w),d1
+; $0B7C4E
+	move.l	-(a3),-(a1)
+; $0B7C50
+	move.l	(a5)+,(a7)
+
+loc_0B7C52:				; $0B7C52
+	dc.w	$FF22
+; $0B7C54
+	movea.w	(a1),a2
+; $0B7C56
+	subq.b	#2,-(a3)
+; $0B7C58
+	move.w	-(a5),-(a0)
+; $0B7C5A
+	move.b	a5,($47,a2,d3.w)
+; $0B7C5E
+	sub.b	-(a2),d0
+; $0B7C60
+	move.b	a4,-$6004(a0)
+; $0B7C64
+	roxl.b	d6,d0
+; $0B7C66
+	add.b	-(a2),d0
+; $0B7C68
+	bvc.s	loc_0B7CB2
+; $0B7C6A
+	cmp.w	d7,d0
+
+loc_0B7C6C:				; $0B7C6C
+	cmp.b	?ea(7,5),d0
+; $0B7C6E
+	cmp.b	-(a3),d0
+; $0B7C70
+	lea	(a0),a2
+; $0B7C72
+	move.l	(a2),-(a1)
+; $0B7C74
+	move.w	($12,a0,a6.w),(-$10,a6,d1.w)
+; $0B7C7A
+	dc.w	$77D0
+; $0B7C7C
+	negx.l	(-$50,a0,d3.w)
+; $0B7C80
+	move.l	(-$11,a1,d1.l),d1
+; $0B7C84
+	move.b	(-$F,a2,d3.w),d1
+; $0B7C88
+	move.w	($12,a0,d1.w),(-$15,a3,d2.w)
+; $0B7C8E
+	move.w	(-$70,a2,d2.w),($FFFFF28A).w
+; $0B7C94
+	adda.w	($32,a2,d2.w),a0
+; $0B7C98
+	add.b	d4,(-$10,a2,d2.w)
+; $0B7C9C
+	chk.w	($22,a0,d2.w),d5
+; $0B7CA0
+	move.b	($12,a0,d2.w),($32,a1,a5.w)
+; $0B7CA6
+	move.l	(a0),(a0)+
+; $0B7CA8
+	dc.w	$ADD0
+; $0B7CAA
+	dc.w	$ADD0
+; $0B7CAC
+	move.l	(a0)+,-(a0)
+; $0B7CAE
+	add.b	d0,-(a2)
+; $0B7CB0
+	move.l	d3,($11,a1,d3.w)
+; $0B7CB4
+	move.l	(a0),(a7)+
+; $0B7CB6
+	move.b	(-$30,a1,d1.l),(a5)+
+
+loc_0B7CBA:				; $0B7CBA
+	move.w	(-$30,a0,d1.w),(a7)
+; $0B7CBE
+	move.w	d2,(a1)+
+; $0B7CC0
+	suba.l	(a1),a0
+; $0B7CC2
+	movea.l	?ea(7,5),a1
+; $0B7CC4
+	dc.w	$F2B8
+; $0B7CC6
+	add.l	(a7)+,d0
+; $0B7CC8
+	cmp.w	d5,d0
+; $0B7CCA
+	cmpa.w	a4,a0
+; $0B7CCC
+	move.w	-(a3),($32CC8AF0).l
+; $0B7CD2
+	mulu.w	(a0),d4
+; $0B7CD4
+	and.l	(a0),d4
+; $0B7CD6
+	exg	d1,d3
+; $0B7CD8
+	movea.w	a3,a6
+; $0B7CDA
+	move.w	a4,(a6)+
+; $0B7CDC
+	eor.l	d1,(-$51,a0,a4.l)
+; $0B7CE0
+	add.l	d0,-(a1)
+; $0B7CE2
+	dc.w	$F1C3
+; $0B7CE4
+	sub.l	(-$64,a0,d1.w),d5
+; $0B7CE8
+	dc.w	$F0A1
+; $0B7CEA
+	add.l	-(a3),d0
+; $0B7CEC
+	dc.w	$F0AF
+; $0B7CEE
+	add.b	d0,-(a3)
+; $0B7CF0
+	dc.w	$A6B0
+; $0B7CF2
+	suba.l	(-$2F,a0,a4.w),a6
+; $0B7CF6
+	dc.w	$4B33
+; $0B7CF8
+	move.l	(a2),(a1)
+; $0B7CFA
+	dc.w	$F066
+; $0B7CFC
+	bsr.s	loc_0B7D2E
+; $0B7CFE
+	mulu.w	(-$7A,a2,d6.w),d7
+; $0B7D02
+	moveq	#118,d0
+; $0B7D04
+	adda.l	(-$79,a0,a0.w),a3
+; $0B7D08
+	add.b	(a0),d3
+; $0B7D0A
+	or.w	d3,(-$77,a6,d7.w)
+; $0B7D0E
+	st	(-$78,a3,d7.w)
+; $0B7D12
+	addq.w	#4,(-$70,a0,d2.w)
+; $0B7D16
+	movea.l	(a3),a1
+; $0B7D18
+	move.b	($21,a2,a7.l),-(a1)
+; $0B7D1C
+	subq.b	#2,($11,a3,d2.w)
+; $0B7D20
+	subq.b	#1,(-$2D,a2,d1.w)
+; $0B7D24
+	movea.l	(a4),a1
+; $0B7D26
+	move.l	($30,a0,a4.w),(a7)
+; $0B7D2A
+	move.w	($33,a3,d7.w),(a1)
+
+loc_0B7D2E:				; $0B7D2E
+	shi	?ea(7,7)
+; $0B7D30
+	move.l	(a5),$2221(a1)
+; $0B7D34
+	dc.w	$FF12
+; $0B7D36
+	move.l	?ea(7,7),(a1)+
+; $0B7D38
+	rol.w	($23,a2,d2.w)
+; $0B7D3C
+	movea.b	(a2),a1
+; $0B7D3E
+	dc.w	$F021
+; $0B7D40
+	move.b	($5E,a3,a6.l),-(a1)
+; $0B7D44
+	add.b	$2132(a7),d0
+; $0B7D48
+	mulu.w	-(a0),d1
+; $0B7D4A
+	move.l	(a2),d1
+; $0B7D4C
+	move.b	$2211(a7),($002212).w
+; $0B7D52
+	move.l	($25,a0,d2.w),(-$11,a6,d2.l)
+; $0B7D58
+	dc.w	$F112
+; $0B7D5A
+	scs	(-$30,a1,d5.l)
+; $0B7D5E
+	move.b	-(a2),d1
+; $0B7D60
+	move.w	?ea(7,5),loc_0BC291(pc)
+; $0B7D64
+	ori.w	#$2212,(a5)
+; $0B7D68
+	addq.b	#1,-(a5)
+; $0B7D6A
+	move.w	?ea(7,7),($125235FF).l
+; $0B7D70
+	movea.b	d3,a1
+; $0B7D72
+	subq.w	#2,(a2)
+; $0B7D74
+	lsr.l	d5,d4
+; $0B7D76
+	dc.w	$F025
+; $0B7D78
+	move.b	-(a0),(-$51,a3,d5.w)
+; $0B7D7C
+	add.w	(a5),d0
+; $0B7D7E
+	move.w	($3C,a3,a4.l),-(a1)
+; $0B7D82
+	dc.w	$7BD0
+; $0B7D84
+	movea.w	(a5),a6
+; $0B7D86
+	move.b	(a0),?ea(7,7)
+; $0B7D88
+	dc.w	$73D0
+; $0B7D8A
+	exg	a1,a5
+; $0B7D8C
+	bclr	d0,(a3)
+; $0B7D8E
+	move.b	(-$F,a1,a0.l),(a4)+
+; $0B7D92
+	suba.l	(a1),a0
+; $0B7D94
+	move.w	(-$10,a0,a2.l),(a7)
+; $0B7D98
+	mulu.w	(a0),d0
+; $0B7D9A
+	cmpa.l	(a0),a3
+; $0B7D9C
+	and.w	?ea(7,7),d0
+; $0B7D9E
+	bset	d0,(a2)
+; $0B7DA0
+	add.l	-$FD5(a0),d0
+; $0B7DA4
+	dc.w	$F1AC
+; $0B7DA6
+	cmp.l	(a7)+,d0
+; $0B7DA8
+	cmpa.l	d5,a0
+; $0B7DAA
+	move.l	a7,$335C(a1)
+; $0B7DAE
+	addq.b	#6,(-$60,a3,d1.l)
+; $0B7DB2
+	exg	d1,a0
+; $0B7DB4
+	subq.l	#2,(a6)+
+; $0B7DB6
+	bchg	d0,?ea(7,5)
+
+loc_0B7DB8:				; $0B7DB8
+	abcd	d4,d1
+; $0B7DBA
+	dc.w	$A022
+; $0B7DBC
+	move.b	-(a3),-(a0)
+; $0B7DBE
+	move.l	-(a1),-(a1)
+; $0B7DC0
+	move.b	-(a7),(a1)+
+; $0B7DC2
+	move.l	($63,a3,d2.l),-(a1)
+; $0B7DC6
+	add.b	d0,(a4)
+; $0B7DC8
+	add.b	d0,-(a1)
+; $0B7DCA
+	move.w	$7FF2(a7),d1
+; $0B7DCE
+	move.b	($23,a3,d1.w),-(a1)
+; $0B7DD2
+	move.b	($0,a3,d2.l),d1
+; $0B7DD6
+	add.b	d1,($22,a2,a7.w)
+; $0B7DDA
+	sub.b	-(a3),d0
+; $0B7DDC
+	btst	d0,-(a5)
+; $0B7DDE
+	move.b	(-$F,a0,d2.w),(a1)
+; $0B7DE2
+	dc.w	$AF32
+; $0B7DE4
+	move.l	(a2),d1
+; $0B7DE6
+	dc.w	$F2B2
+; $0B7DE8
+	ori.b	#$F0,-(a1)
+; $0B7DEC
+	move.l	a6,$5ED0(a0)
+; $0B7DF0
+	move.b	(a2),d1
+; $0B7DF2
+	move.b	(a2)+,-(a1)
+; $0B7DF4
+	dc.w	$7151
+
+loc_0B7DF6:				; $0B7DF6
+	cmp.b	-(a2),d3
+; $0B7DF8
+	subq.l	#5,($23,a0,a1.l)
+; $0B7DFC
+	move.b	($70,a0,d1.l),$4532(a7)
+; $0B7E02
+	beq.s	loc_0B7DB8
+; $0B7E04
+	beq.s	loc_0B7DF6
+; $0B7E06
+	move.w	(a5),(a1)
+; $0B7E08
+	move.b	loc_0B2E1D(pc),-(a0)
+; $0B7E0C
+	lea	(a0),a2
+; $0B7E0E
+	dc.w	$F320
+; $0B7E10
+	add.l	($33,a3,d0.w),d0
+; $0B7E14
+	move.l	-(a1),-(a3)
+; $0B7E16
+	move.b	(-$50,a2,d3.w),-(a1)
+; $0B7E1A
+	move.w	(-$4A,a0,d2.w),($37,a5,d0.w)
+; $0B7E20
+	add.l	(a4),d0
+
+loc_0B7E22:				; $0B7E22
+	move.l	(a2),d7
+; $0B7E24
+	move.l	(-$76,a0,d3.w),(a6)
+; $0B7E28
+	add.b	(-$C,a1,d7.w),d0
+; $0B7E2C
+	clr.b	(a2)
+; $0B7E2E
+	move.b	-(a1),d1
+; $0B7E30
+	move.w	a0,($101018).l
+; $0B7E36
+	add.b	$23(a4),d0
+; $0B7E3A
+	move.l	(-$10,a0,d4.l),(a6)
+; $0B7E3E
+	bls.s	loc_0B7E63
+; $0B7E40
+	move.l	(a3)+,d1
+; $0B7E42
+	cmp.b	(a6),d0
+; $0B7E44
+	add.b	d0,$131(a3)
+; $0B7E48
+	move.w	-(a4),(a6)
+; $0B7E4A
+	cmp.b	d7,d0
+; $0B7E4C
+	move.w	d3,($22A0F0A5).l
+; $0B7E52
+	add.l	(-$38,a1,a3.w),d0
+; $0B7E56
+	suba.w	d4,a0
+; $0B7E58
+	add.b	d0,d0
+; $0B7E5A
+	muls.w	(-$F,a1,a0.l),d0
+; $0B7E5E
+	dc.w	$FC92
+; $0B7E60
+	dc.w	$FA91
+; $0B7E62
+	muls.w	(a0),d4
+; $0B7E64
+	move.b	-(a1),(a4)
+; $0B7E66
+	move.b	-(a1),(a4)
+; $0B7E68
+	divs.w	($17,a0,d0.w),d2
+; $0B7E6C
+	dc.w	$A0C2
+; $0B7E6E
+	muls.w	(a0),d4
+; $0B7E70
+	or.b	d4,(a2)
+; $0B7E72
+	dc.w	$A0B0
+; $0B7E74
+	dc.w	$AAF1
+; $0B7E76
+	muls.w	(a1),d4
+; $0B7E78
+	divs.w	(-$6B,a0,d2.w),d2
+; $0B7E7C
+	move.b	-(a6),(-$5A,a1,a3.w)
+; $0B7E80
+	dc.w	$F1A3
+; $0B7E82
+	dc.w	$F0E6
+; $0B7E84
+	cmp.w	-(a6),d0
+; $0B7E86
+	and.b	(a2),d7
+; $0B7E88
+	add.w	(-$2A,a0,a5.w),d1
+; $0B7E8C
+	movea.b	(-$25,a6,d7.l),a0
+; $0B7E90
+	movea.b	($30,a7,d6.l),a0
+; $0B7E94
+	dc.w	$7776
+; $0B7E96
+	dc.w	$FB88
+; $0B7E98
+	bne.s	loc_0B7E22
+; $0B7E9A
+	movea.w	$3235(a0),a0
+; $0B7E9E
+	subq.b	#2,-(a2)
+; $0B7EA0
+	eor.w	d7,(a3)
+; $0B7EA2
+	subq.w	#2,(a2)
+; $0B7EA4
+	move.l	(a5),$4598(a0)
+; $0B7EA8
+	movea.w	(a5),a0
+; $0B7EAA
+	eor.b	d6,-(a3)
+; $0B7EAC
+	btst	d5,(a1)
+; $0B7EAE
+	move.w	-(a2),-(a1)
+; $0B7EB0
+	move.w	-(a3),-(a2)
+; $0B7EB2
+	dc.w	$F110
+; $0B7EB4
+	move.l	($55,a7,a7.w),($004220).w
+; $0B7EBA
+	sub.b	-(a1),d0
+; $0B7EBC
+	move.l	?ea(7,7),d1
+; $0B7EBE
+	move.l	$1221(a7),(a1)+
+; $0B7EC2
+	dc.w	$FF21
+; $0B7EC4
+	move.b	(a0),($11,a7,d3.w)
+; $0B7EC8
+	dc.w	$FFFF
+; $0B7ECA
+	dc.w	$FF21
+; $0B7ECC
+	dc.w	$FFFF
+; $0B7ECE
+	dc.w	$F11F
+; $0B7ED0
+	dc.w	$FF22
+; $0B7ED2
+	dc.w	$7712
+; $0B7ED4
+	dc.w	$F122
+; $0B7ED6
+	move.w	($22,a0,d1.w),?ea(7,5)
+; $0B7EDA
+	move.w	(-$1A,a3,d0.w),-(a1)
+; $0B7EDE
+	cmpa.l	-(a0),a4
+; $0B7EE0
+	move.w	d5,$F00(a2)
+; $0B7EE4
+	move.w	d3,-(a2)
+; $0B7EE6
+	move.l	(-$8,a2,d4.w),-(a1)
+; $0B7EEA
+	move.b	($50,a0,a3.w),(-$20,a1,a5.l)
+; $0B7EF0
+	move.l	($55,a5,d2.w),d1
+; $0B7EF4
+	move.l	?ea(7,5),(a6)+
+; $0B7EF6
+	exg	d1,a6
+; $0B7EF8
+	dbt	d4,loc_0BB14F
+; $0B7EFC
+	addq.b	#1,(-$31,a3,d3.w)
+; $0B7F00
+	subq.w	#2,(a2)
+; $0B7F02
+	move.l	d3,(a6)+
+; $0B7F04
+	move.w	($70,a0,a3.w),d2
+; $0B7F08
+	subq.b	#1,-(a3)
+; $0B7F0A
+	sub.w	d5,(a5)
+; $0B7F0C
+	addq.w	#1,($23,a0,a5.w)
+; $0B7F10
+	exg	d1,a4
+; $0B7F12
+	dc.w	$F13D
+; $0B7F14
+	eor.b	d0,-(a3)
+; $0B7F16
+	sub.b	d4,-$6430(a4)
+; $0B7F1A
+	cmp.b	(a1),d5
+; $0B7F1C
+	move.w	-(a3),d1
+; $0B7F1E
+	suba.l	(a1),a3
+; $0B7F20
+	moveq	#17,d7
+; $0B7F22
+	move.w	?ea(7,6),(a1)+
+; $0B7F24
+	suba.w	(a0),a1
+; $0B7F26
+	move.w	d3,(a1)+
+; $0B7F28
+	muls.w	d3,d2
+; $0B7F2A
+	move.l	#$5CFF5235,-(a1)
+; $0B7F30
+	move.w	($55,a5,a4.w),-(a1)
+; $0B7F34
+	move.w	#$FA09,-(a1)
+; $0B7F38
+	negx.b	($20,a3,a1.l)
+; $0B7F3C
+	exg	a1,a4
+; $0B7F3E
+	subq.b	#2,($1D,a3,a4.l)
+; $0B7F42
+	exg	a2,a6
+; $0B7F44
+	andi.b	#$31,(a1)
+; $0B7F48
+	dc.w	$AE00
+; $0B7F4A
+	move.b	(-$30,a0,d2.w),(a2)
+; $0B7F4E
+	dc.w	$F522
+; $0B7F50
+	eor.b	d0,d2
+; $0B7F52
+	movea.b	-(a2),a1
+; $0B7F54
+	dc.w	$F012
+; $0B7F56
+	move.l	(-$39,a3,d2.w),-(a7)
+; $0B7F5A
+	move.l	(a1),-(a0)
+; $0B7F5C
+	move.l	(a2),d1
+; $0B7F5E
+	add.w	(a6)+,d0
+; $0B7F60
+	adda.w	-(a6),a0
+; $0B7F62
+	asr.b	d0,d3
+; $0B7F64
+	move.l	$3132(a7),($3311AF00).l
+; $0B7F6C
+	move.b	(a1),-(a0)
+; $0B7F6E
+	movea.w	($12,a7,d1.l),a1
+; $0B7F72
+	move.b	-(a5),($000022).w
+; $0B7F76
+	move.w	(a2),d1
+; $0B7F78
+	move.l	d0,-(a0)
+; $0B7F7A
+	add.b	d3,-(a2)
+; $0B7F7C
+	move.l	$F50(a7),d1
+; $0B7F80
+	move.b	(a3)+,($12,a0,d3.w)
+; $0B7F84
+	move.b	-$800(a6),(a1)
+; $0B7F88
+	move.l	(a5),d1
+; $0B7F8A
+	move.l	a7,loc_0B9FE1(pc)
+; $0B7F8E
+	move.l	(-$79,a2,d3.w),(a6)
+; $0B7F92
+	move.l	-(a5),-(a1)
+; $0B7F94
+	move.l	-$2FD6(a7),-(a1)
+; $0B7F98
+	movea.b	(a7)+,a0
+; $0B7F9A
+	dc.w	$F177
+; $0B7F9C
+	add.b	($48,a1,d0.w),d0
+; $0B7FA0
+	dc.w	$F03A
+; $0B7FA2
+	move.b	-(a7),d0
+; $0B7FA4
+	move.b	(a4),d0
+; $0B7FA6
+	add.l	-$2FDC(a4),d0
+
+loc_0B7FAA:				; $0B7FAA
+	move.b	-(a5),d0
+; $0B7FAC
+	move.w	(a7),-(a0)
+; $0B7FAE
+	cmp.b	d0,d0
+; $0B7FB0
+	move.l	($31,a2,d2.l),($39316BF1).l
+; $0B7FB8
+	beq.s	loc_0B7FAA
+; $0B7FBA
+	move.w	(-$50,a0,d3.l),(a5)
+; $0B7FBE
+	svs	($21,a2,a2.w)
+; $0B7FC2
+	tst.?	(a1)
+; $0B7FC4
+	bchg	d7,(-$10,a3,d4.l)
+; $0B7FC8
+	move.b	(a0),(a4)+
+; $0B7FCA
+	move.w	($31,a3,a5.w),-(a0)
+; $0B7FCE
+	ori.b	#$B0,$4(a4)
+; $0B7FD4
+	cmp.w	($11AD119A).l,d0
+; $0B7FDA
+	dc.w	$F1A4
+; $0B7FDC
+	dc.w	$F09A
+; $0B7FDE
+	add.w	d1,d0
+; $0B7FE0
+	move.w	(a6)+,(-$60,a1,a3.w)
+; $0B7FE4
+	eor.l	d0,-$2F39(a7)
+; $0B7FE8
+	sub.l	a6,d0
+; $0B7FEA
+	move.w	d2,(a1)+
+; $0B7FEC
+	mulu.w	(a0),d0
+; $0B7FEE
+	negx.?	loc_0B1071(pc)
+; $0B7FF2
+	bset	d0,-(a3)
+; $0B7FF4
+	move.b	d3,(a0)
+; $0B7FF6
+	move.b	-$F56(a4),(a0)
+; $0B7FFA
+	dc.w	$F1CC
+; $0B7FFC
+	dc.w	$7D00
+; $0B7FFE
+	or.l	(a3)+,d1
+; ★ ━━━ 资源数据区开始 (压缩图形/精灵/地图资源) ━━━
+; ★ ━━━ 压缩图形/精灵/地图资源数据 ($0B8000-$1DBFFF) ━━━
+; $0B8000

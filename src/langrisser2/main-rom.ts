@@ -148,9 +148,10 @@ function gameLoop(): void {
   if (!running) return;
 
   // 1. 任务调度系统更新 (翻译后的 ROM 逻辑)
+  //    包括: 任务链推进 + 显示队列处理 (VRAM/CRAM DMA)
   taskSystem?.frameUpdate();
 
-  // 2. VDP 帧步进
+  // 2. VDP 帧步进 (重置计数器, 推进帧号)
   vdp.stepFrame();
 
   // 3. 渲染到 Canvas

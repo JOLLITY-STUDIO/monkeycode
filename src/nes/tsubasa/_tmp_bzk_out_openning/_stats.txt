@@ -1,0 +1,37 @@
+; === BZK-style CDL-aware disassembly of 32 MMC3 banks ===
+; CDL flags: C=code D=data [bank#] J=jump_target I=indirect_ref A=absolute_access
+; ROM file: Captain Tsubasa II - Super Striker (Japan).nes
+; CDL file: Captain Tsubasa II - Super Striker (Japan)-openning.cdl
+
+Bank 00: code=4629 data= 191 unacc=3372  CPU=$8000
+Bank 01: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 02: code= 736 data=  14 unacc=7442  CPU=$8000
+Bank 03: code=   0 data= 641 unacc=7551  CPU=$8000
+Bank 04: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 05: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 06: code=   0 data= 711 unacc=7481  CPU=$8000
+Bank 07: code=   0 data= 340 unacc=7852  CPU=$8000
+Bank 08: code=   0 data=1411 unacc=6781  CPU=$8000
+Bank 09: code=   0 data= 144 unacc=8048  CPU=$8000
+Bank 10: code=   0 data=2123 unacc=6069  CPU=$8000
+Bank 11: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 12: code=1414 data= 940 unacc=5838  CPU=$8000
+Bank 13: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 14: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 15: code=   0 data=2117 unacc=6075  CPU=$8000
+Bank 16: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 17: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 18: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 19: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 20: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 21: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 22: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 23: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 24: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 25: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 26: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 27: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 28: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 29: code=   0 data=   0 unacc=8192  CPU=$8000
+Bank 30: code= 170 data= 705 unacc=7317  CPU=$C000
+Bank 31: code=   0 data=   4 unacc=8188  CPU=$E000

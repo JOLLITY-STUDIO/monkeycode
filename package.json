@@ -5,15 +5,13 @@
   "type": "module",
   "scripts": {
     "dev": "node serve.mjs",
-    "build": "node build.mjs",
-    "test": "vitest run src/nes/tsubasa/test/",
-    "test:watch": "vitest src/nes/tsubasa/test/"
+    "build": "node build.mjs"
   },
   "dependencies": {
+    "esbuild": "^0.28.1",
     "jsnes": "^2.1.0"
   },
   "devDependencies": {
-    "tsx": "^4.23.1",
-    "vitest": "^4.1.10"
+    "tsx": "^4.23.1"
   }
 }

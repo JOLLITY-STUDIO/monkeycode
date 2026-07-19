@@ -1,0 +1,1042 @@
+; ==================================================================
+; 显示队列 & DMA 主入口
+; ROM: $008A70–$009020 | Lines: 23378–24410
+; Type: CODE
+; ==================================================================
+;
+; 显示队列 ($8A6C)。DMA 主入口 ($8ABA)。
+;
+
+; $008A6E
+	movem.l	a7/a6/a5/a4/a3/a2/a1/a0/d7/d6/d5/d4/d3/d2/d1,-(a7)
+; $008A72
+	not.?	#$2700
+; $008A76
+	move.w	#$0100,(Z80_BUSREQ).l
+
+loc_008A7E:				; $008A7E
+	move.w	(Z80_BUSREQ).l,d0
+; $008A84
+	btst	#8,d0
+; $008A88
+	bne.s	loc_008A7E
+; $008A8A
+	bset	#4,($FFFF81A9).w
+; $008A90
+	lea	($FFFF81C0).l,a0
+; $008A96
+	lea	($FFFF81CC).l,a1
+; $008A9C
+	movea.l	($FFFF81C4).l,a2
+; $008AA2
+	cmpa.l	#$FFFF8DCC,a2
+; $008AA8
+	bls.w	loc_008ABA
+
+loc_008AAC:				; $008AAC
+	nop
+; $008AAE
+	nop
+; $008AB0
+	nop
+; $008AB2
+	nop
+; $008AB4
+	nop
+; $008AB6
+	bra.w	loc_008AAC
+
+; ★ ═══ DMA 拷贝主入口 $8ABA ═══
+loc_008ABA:				; $008ABA
+	lea	(VDP_CTRL).l,a3
+; $008AC0
+	lea	(VDP_DATA).l,a4
+; $008AC6
+	lea	loc_008AD8(pc),a6
+; $008ACA
+	cmpa.l	($FFFF81C8).l,a2
+; $008AD0
+	bcs.s	loc_008AD8
+; $008AD2
+	move.l	a2,($FFFF81C8).l
+
+loc_008AD8:				; $008AD8
+	cmpa.l	a1,a2
+; $008ADA
+	bls.w	loc_008F22
+; $008ADE
+	move.w	(a1)+,d1
+; $008AE0
+	cmpi.w	#$FFF5,d1
+; $008AE4
+	bcc.s	loc_008B00
+; $008AE6
+	move.w	d1,d5
+; $008AE8
+	andi.w	#$3FFF,d5
+; $008AEC
+	ori.w	#$4000,d5
+; $008AF0
+	move.w	d5,(a3)
+; $008AF2
+	move.w	d1,d5
+; $008AF4
+	andi.w	#$C000,d5
+; $008AF8
+	roxl.w	#2,d5
+; $008AFA
+	move.w	d5,(a3)
+; $008AFC
+	move.w	(a1)+,(a4)
+; $008AFE
+	jmp	(a6)
+
+loc_008B00:				; $008B00
+	subi.w	#$FFF5,d1
+; $008B04
+	add.w	d1,d1
+; $008B06
+	move.w	($6,pc,d1.w),d1
+; $008B0A
+	jmp	($2,pc,d1.w)
+; $008B0E
+	ori.b	#$8A,(a6)
+; $008B12
+	ori.w	#$0078,(a2)
+; $008B16
+	btst	d0,a0
+; $008B18
+	andi.b	#$92,a4
+; $008B1C
+	btst	d1,-(a0)
+; $008B1E
+	bset	d1,a6
+; $008B20
+	subi.b	#$10,a4
+; $008B24
+	move.w	(a1)+,d1
+; $008B26
+	move.w	(a1)+,d2
+; $008B28
+	move.w	(a1)+,d3
+; $008B2A
+	move.w	(a1)+,d4
+; $008B2C
+	move.w	#$8100,d7
+; $008B30
+	move.b	($FFFF81A9).w,d7
+; $008B34
+	bchg	#4,d7
+; $008B38
+	move.w	d7,(a3)
+; $008B3A
+	addi.w	#$8F00,d4
+; $008B3E
+	move.w	d4,(a3)
+; $008B40
+	move.w	d1,d5
+; $008B42
+	andi.w	#$3FFF,d5
+; $008B46
+	ori.w	#$4000,d5
+; $008B4A
+	move.w	d5,(a3)
+; $008B4C
+	move.w	d1,d5
+; $008B4E
+	andi.w	#$C000,d5
+; $008B52
+	roxl.w	#2,d5
+; $008B54
+	move.w	d5,(a3)
+; $008B56
+	subq.w	#1,d3
+
+loc_008B58:				; $008B58
+	move.w	d2,(a4)
+; $008B5A
+	dbf	d3,loc_008B58
+; $008B5E
+	jmp	(a6)
+; $008B60
+	move.w	(a1)+,d1
+; $008B62
+	movea.l	(a1)+,a5
+; $008B64
+	move.w	(a1)+,d3
+; $008B66
+	move.w	#$8F02,(a3)
+; $008B6A
+	move.w	d1,d5
+; $008B6C
+	andi.w	#$3FFF,d5
+; $008B70
+	move.w	d5,(a3)
+; $008B72
+	move.w	d1,d5
+; $008B74
+	andi.w	#$C000,d5
+; $008B78
+	roxl.w	#2,d5
+; $008B7A
+	move.w	d5,(a3)
+; $008B7C
+	subq.w	#1,d3
+
+loc_008B7E:				; $008B7E
+	move.w	(a4),(a5)+
+; $008B80
+	dbf	d3,loc_008B7E
+; $008B84
+	jmp	(a6)
+; $008B86
+	move.w	(a1)+,d1
+; $008B88
+	move.w	#$8100,d7
+; $008B8C
+	move.b	($FFFF81A9).w,d7
+; $008B90
+	bchg	#4,d7
+; $008B94
+	move.w	d7,(a3)
+; $008B96
+	move.w	#$8F02,(a3)
+; $008B9A
+	move.w	#$9400,d3
+; $008B9E
+	move.b	(a1)+,d3
+; $008BA0
+	move.w	#$9300,d5
+; $008BA4
+	move.b	(a1)+,d5
+; $008BA6
+	move.w	d5,(a3)
+; $008BA8
+	move.w	d3,(a3)
+; $008BAA
+	move.l	a1,d2
+; $008BAC
+	lsr.l	#1,d2
+; $008BAE
+	move.w	d2,d5
+; $008BB0
+	move.w	#$9500,d6
+; $008BB4
+	move.b	d5,d6
+; $008BB6
+	move.w	d6,(a3)
+; $008BB8
+	asr.w	#8,d5
+; $008BBA
+	move.w	#$9600,d6
+; $008BBE
+	move.b	d5,d6
+; $008BC0
+	move.w	d6,(a3)
+; $008BC2
+	pea	d2
+; $008BC4
+	andi.w	#$007F,d2
+; $008BC8
+	ori.w	#$9700,d2
+; $008BCC
+	move.w	d2,(a3)
+; $008BCE
+	move.w	d1,d6
+; $008BD0
+	andi.w	#$3FFF,d6
+; $008BD4
+	ori.w	#$4000,d6
+; $008BD8
+	move.w	d6,(a3)
+; $008BDA
+	move.w	d1,d5
+; $008BDC
+	andi.w	#$C000,d5
+; $008BE0
+	roxl.w	#2,d5
+; $008BE2
+	ori.w	#$0080,d5
+; $008BE6
+	move.w	d5,(a0)
+; $008BE8
+	move.w	(a0),(a3)
+; $008BEA
+	pea	d6
+; $008BEC
+	andi.w	#$C000,d1
+; $008BF0
+	roxl.w	#2,d1
+; $008BF2
+	move.w	d1,d6
+; $008BF4
+	move.w	(a1),d5
+; $008BF6
+	move.w	-$2(a1),d4
+; $008BFA
+	add.w	d4,d4
+; $008BFC
+	adda.w	d4,a1
+; $008BFE
+	moveq	#2,d7
+
+loc_008C00:				; $008C00
+	move.w	(a3),d0
+; $008C02
+	and.w	d7,d0
+; $008C04
+	bne.s	loc_008C00
+; $008C06
+	move.w	#$8100,d7
+; $008C0A
+	move.b	($FFFF81A9).w,d7
+; $008C0E
+	move.w	d7,(a3)
+; $008C10
+	move.l	d6,(a3)
+; $008C12
+	move.w	d5,(a4)
+; $008C14
+	jmp	(a6)
+; $008C16
+	move.w	(a1)+,d1
+; $008C18
+	move.l	(a1)+,d2
+; $008C1A
+	movea.l	d2,a5
+; $008C1C
+	move.w	#$8100,d7
+; $008C20
+	move.b	($FFFF81A9).w,d7
+; $008C24
+	bchg	#4,d7
+; $008C28
+	move.w	d7,(a3)
+; $008C2A
+	move.w	#$8F02,(a3)
+; $008C2E
+	move.w	#$9400,d3
+; $008C32
+	move.b	(a1)+,d3
+; $008C34
+	move.w	#$9300,d5
+; $008C38
+	move.b	(a1)+,d5
+; $008C3A
+	move.w	d5,(a3)
+; $008C3C
+	move.w	d3,(a3)
+; $008C3E
+	lsr.l	#1,d2
+; $008C40
+	move.w	d2,d5
+; $008C42
+	move.w	#$9500,d6
+; $008C46
+	move.b	d5,d6
+; $008C48
+	move.w	d6,(a3)
+; $008C4A
+	asr.w	#8,d5
+; $008C4C
+	move.w	#$9600,d6
+; $008C50
+	move.b	d5,d6
+; $008C52
+	move.w	d6,(a3)
+; $008C54
+	pea	d2
+; $008C56
+	andi.w	#$007F,d2
+; $008C5A
+	ori.w	#$9700,d2
+; $008C5E
+	move.w	d2,(a3)
+; $008C60
+	move.w	d1,d6
+; $008C62
+	andi.w	#$3FFF,d6
+; $008C66
+	ori.w	#$4000,d6
+; $008C6A
+	move.w	d6,(a3)
+; $008C6C
+	pea	d6
+; $008C6E
+	andi.w	#$C000,d1
+; $008C72
+	roxl.w	#2,d1
+; $008C74
+	move.w	d1,d6
+; $008C76
+	ori.w	#$0080,d1
+; $008C7A
+	move.w	d1,(a0)
+; $008C7C
+	move.w	(a0),(a3)
+; $008C7E
+	move.w	(a5),d5
+; $008C80
+	moveq	#2,d7
+
+loc_008C82:				; $008C82
+	move.w	(a3),d0
+; $008C84
+	and.w	d7,d0
+; $008C86
+	bne.s	loc_008C82
+; $008C88
+	move.w	#$8100,d7
+; $008C8C
+	move.b	($FFFF81A9).w,d7
+; $008C90
+	move.w	d7,(a3)
+; $008C92
+	move.l	d6,(a3)
+; $008C94
+	move.w	d5,(a4)
+; $008C96
+	jmp	(a6)
+; $008C98
+	move.w	(a1)+,d1
+; $008C9A
+	move.l	(a1)+,d2
+; $008C9C
+	movea.l	d2,a5
+; $008C9E
+	move.w	#$8100,d7
+; $008CA2
+	move.b	($FFFF81A9).w,d7
+; $008CA6
+	bchg	#4,d7
+; $008CAA
+	move.w	d7,(a3)
+; $008CAC
+	move.w	#$8F80,(a3)
+; $008CB0
+	move.w	#$9400,d3
+; $008CB4
+	move.b	(a1)+,d3
+; $008CB6
+	move.w	#$9300,d5
+; $008CBA
+	move.b	(a1)+,d5
+; $008CBC
+	move.w	d5,(a3)
+; $008CBE
+	move.w	d3,(a3)
+; $008CC0
+	lsr.l	#1,d2
+; $008CC2
+	move.w	d2,d5
+; $008CC4
+	move.w	#$9500,d6
+; $008CC8
+	move.b	d5,d6
+; $008CCA
+	move.w	d6,(a3)
+; $008CCC
+	asr.w	#8,d5
+; $008CCE
+	move.w	#$9600,d6
+; $008CD2
+	move.b	d5,d6
+; $008CD4
+	move.w	d6,(a3)
+; $008CD6
+	pea	d2
+; $008CD8
+	andi.w	#$007F,d2
+; $008CDC
+	ori.w	#$9700,d2
+; $008CE0
+	move.w	d2,(a3)
+; $008CE2
+	move.w	d1,d6
+; $008CE4
+	andi.w	#$3FFF,d6
+; $008CE8
+	ori.w	#$4000,d6
+; $008CEC
+	move.w	d6,(a3)
+; $008CEE
+	pea	d6
+; $008CF0
+	andi.w	#$C000,d1
+; $008CF4
+	roxl.w	#2,d1
+; $008CF6
+	move.w	d1,d6
+; $008CF8
+	ori.w	#$0080,d1
+; $008CFC
+	move.w	d1,(a0)
+; $008CFE
+	move.w	(a0),(a3)
+; $008D00
+	move.w	(a5),d5
+; $008D02
+	moveq	#2,d7
+
+loc_008D04:				; $008D04
+	move.w	(a3),d0
+; $008D06
+	and.w	d7,d0
+; $008D08
+	bne.s	loc_008D04
+; $008D0A
+	move.w	#$8100,d7
+; $008D0E
+	move.b	($FFFF81A9).w,d7
+; $008D12
+	move.w	d7,(a3)
+; $008D14
+	move.l	d6,(a3)
+; $008D16
+	move.w	d5,(a4)
+; $008D18
+	jmp	(a6)
+; $008D1A
+	move.w	(a1)+,d1
+; $008D1C
+	move.l	(a1)+,d2
+; $008D1E
+	movea.l	d2,a5
+; $008D20
+	move.w	#$8100,d7
+; $008D24
+	move.b	($FFFF81A9).w,d7
+; $008D28
+	bchg	#4,d7
+; $008D2C
+	move.w	d7,(a3)
+; $008D2E
+	move.w	#$8F02,(a3)
+; $008D32
+	move.w	#$9400,d3
+; $008D36
+	move.b	(a1)+,d3
+; $008D38
+	move.w	#$9300,d5
+; $008D3C
+	move.b	(a1)+,d5
+; $008D3E
+	move.w	d5,(a3)
+; $008D40
+	move.w	d3,(a3)
+; $008D42
+	lsr.l	#1,d2
+; $008D44
+	move.w	d2,d5
+; $008D46
+	move.w	#$9500,d6
+; $008D4A
+	move.b	d5,d6
+; $008D4C
+	move.w	d6,(a3)
+; $008D4E
+	asr.w	#8,d5
+; $008D50
+	move.w	#$9600,d6
+; $008D54
+	move.b	d5,d6
+; $008D56
+	move.w	d6,(a3)
+; $008D58
+	pea	d2
+; $008D5A
+	andi.w	#$007F,d2
+; $008D5E
+	ori.w	#$9700,d2
+; $008D62
+	move.w	d2,(a3)
+; $008D64
+	move.w	d1,d6
+; $008D66
+	ori.w	#$C000,d6
+; $008D6A
+	move.w	d6,(a3)
+; $008D6C
+	move.w	d1,d5
+; $008D6E
+	andi.w	#$C000,d5
+; $008D72
+	roxl.w	#2,d5
+; $008D74
+	ori.w	#$0080,d5
+; $008D78
+	move.w	d5,(a0)
+; $008D7A
+	move.w	(a0),(a3)
+; $008D7C
+	pea	d6
+; $008D7E
+	andi.w	#$C000,d1
+; $008D82
+	roxl.w	#2,d1
+; $008D84
+	move.w	d1,d6
+; $008D86
+	move.w	(a5),d5
+; $008D88
+	moveq	#2,d7
+
+loc_008D8A:				; $008D8A
+	move.w	(a3),d0
+; $008D8C
+	and.w	d7,d0
+; $008D8E
+	bne.s	loc_008D8A
+; $008D90
+	move.w	#$8100,d7
+; $008D94
+	move.b	($FFFF81A9).w,d7
+; $008D98
+	move.w	d7,(a3)
+; $008D9A
+	move.l	d6,(a3)
+; $008D9C
+	move.w	d5,(a4)
+; $008D9E
+	jmp	(a6)
+; $008DA0
+	move.w	(a1)+,d1
+; $008DA2
+	move.l	(a1)+,d2
+; $008DA4
+	movea.l	d2,a5
+; $008DA6
+	move.w	#$8100,d7
+; $008DAA
+	move.b	($FFFF81A9).w,d7
+; $008DAE
+	bchg	#4,d7
+; $008DB2
+	move.w	d7,(a3)
+; $008DB4
+	move.w	#$8F02,(a3)
+; $008DB8
+	move.w	#$9400,d3
+; $008DBC
+	move.b	(a1)+,d3
+; $008DBE
+	move.w	#$9300,d5
+; $008DC2
+	move.b	(a1)+,d5
+; $008DC4
+	move.w	d5,(a3)
+; $008DC6
+	move.w	d3,(a3)
+; $008DC8
+	lsr.l	#1,d2
+; $008DCA
+	move.w	d2,d5
+; $008DCC
+	move.w	#$9500,d6
+; $008DD0
+	move.b	d5,d6
+; $008DD2
+	move.w	d6,(a3)
+; $008DD4
+	asr.w	#8,d5
+; $008DD6
+	move.w	#$9600,d6
+; $008DDA
+	move.b	d5,d6
+; $008DDC
+	move.w	d6,(a3)
+; $008DDE
+	pea	d2
+; $008DE0
+	andi.w	#$007F,d2
+; $008DE4
+	ori.w	#$9700,d2
+; $008DE8
+	move.w	d2,(a3)
+; $008DEA
+	move.w	d1,d6
+; $008DEC
+	andi.w	#$3FFF,d6
+; $008DF0
+	ori.w	#$4000,d6
+; $008DF4
+	move.w	d6,(a3)
+; $008DF6
+	move.w	d1,d5
+; $008DF8
+	andi.w	#$C000,d5
+; $008DFC
+	roxl.w	#2,d5
+; $008DFE
+	ori.w	#$0090,d5
+; $008E02
+	move.w	d5,(a0)
+; $008E04
+	move.w	(a0),(a3)
+; $008E06
+	pea	d6
+; $008E08
+	andi.w	#$C000,d1
+; $008E0C
+	roxl.w	#2,d1
+; $008E0E
+	ori.w	#$0010,d1
+; $008E12
+	move.w	d1,d6
+; $008E14
+	move.w	(a5),d5
+; $008E16
+	moveq	#2,d7
+
+loc_008E18:				; $008E18
+	move.w	(a3),d0
+; $008E1A
+	and.w	d7,d0
+; $008E1C
+	bne.s	loc_008E18
+; $008E1E
+	move.w	#$8100,d7
+; $008E22
+	move.b	($FFFF81A9).w,d7
+; $008E26
+	move.w	d7,(a3)
+; $008E28
+	move.l	d6,(a3)
+; $008E2A
+	move.w	d5,(a4)
+; $008E2C
+	jmp	(a6)
+; $008E2E
+	move.w	(a1)+,d1
+; $008E30
+	move.w	(a1)+,d2
+; $008E32
+	move.w	(a1)+,d3
+; $008E34
+	move.w	(a1)+,d4
+; $008E36
+	move.w	#$8100,d7
+; $008E3A
+	move.b	($FFFF81A9).w,d7
+; $008E3E
+	bchg	#4,d7
+; $008E42
+	move.w	d7,(a3)
+; $008E44
+	move.w	d4,d5
+; $008E46
+	ori.w	#$8F00,d5
+; $008E4A
+	move.w	d5,(a3)
+; $008E4C
+	move.w	d3,d5
+; $008E4E
+	andi.w	#$00FF,d5
+; $008E52
+	ori.w	#$9300,d5
+; $008E56
+	move.w	d5,(a3)
+; $008E58
+	move.w	d3,d5
+; $008E5A
+	asr.w	#8,d5
+; $008E5C
+	ori.w	#$9400,d5
+; $008E60
+	move.w	d5,(a3)
+; $008E62
+	move.w	#$9780,(a3)
+; $008E66
+	move.w	d1,d5
+; $008E68
+	andi.w	#$3FFF,d5
+; $008E6C
+	ori.w	#$4000,d5
+; $008E70
+	move.w	d5,(a3)
+; $008E72
+	move.w	d1,d5
+; $008E74
+	andi.w	#$C000,d5
+; $008E78
+	roxl.w	#2,d5
+; $008E7A
+	ori.w	#$0080,d5
+; $008E7E
+	move.w	d5,(a0)
+; $008E80
+	move.w	(a0),(a3)
+; $008E82
+	move.w	d2,(a4)
+; $008E84
+	moveq	#2,d7
+
+loc_008E86:				; $008E86
+	move.w	(a3),d0
+; $008E88
+	and.w	d7,d0
+; $008E8A
+	bne.s	loc_008E86
+; $008E8C
+	bsr.w	loc_008F3A
+; $008E90
+	move.w	#$8100,d7
+; $008E94
+	move.b	($FFFF81A9).w,d7
+; $008E98
+	move.w	d7,(a3)
+; $008E9A
+	jmp	(a6)
+; $008E9C
+	move.w	(a1)+,d1
+; $008E9E
+	move.w	(a1)+,d2
+; $008EA0
+	move.w	(a1)+,d3
+; $008EA2
+	move.w	(a1)+,d4
+; $008EA4
+	move.w	#$8100,d7
+; $008EA8
+	move.b	($FFFF81A9).w,d7
+; $008EAC
+	bchg	#4,d7
+; $008EB0
+	move.w	d7,(a3)
+; $008EB2
+	move.w	d4,d5
+; $008EB4
+	ori.w	#$8F00,d5
+; $008EB8
+	move.w	d5,(a3)
+; $008EBA
+	move.w	d3,d5
+; $008EBC
+	andi.w	#$00FF,d5
+; $008EC0
+	ori.w	#$9300,d5
+; $008EC4
+	move.w	d5,(a3)
+; $008EC6
+	move.w	d3,d5
+; $008EC8
+	asr.w	#8,d5
+; $008ECA
+	ori.w	#$9400,d5
+; $008ECE
+	move.w	d5,(a3)
+; $008ED0
+	move.w	d1,d5
+; $008ED2
+	andi.w	#$00FF,d5
+; $008ED6
+	ori.w	#$9500,d5
+; $008EDA
+	move.w	d5,(a3)
+; $008EDC
+	move.w	d1,d5
+; $008EDE
+	asr.w	#8,d5
+; $008EE0
+	ori.w	#$9600,d5
+; $008EE4
+	move.w	d5,(a3)
+; $008EE6
+	move.w	#$97C0,(a3)
+; $008EEA
+	move.w	d2,d5
+; $008EEC
+	andi.w	#$3FFF,d5
+; $008EF0
+	move.w	d5,(a3)
+; $008EF2
+	move.w	d2,d5
+; $008EF4
+	andi.w	#$C000,d5
+; $008EF8
+	roxl.w	#2,d5
+; $008EFA
+	ori.w	#$00C0,d5
+; $008EFE
+	move.w	d5,(a0)
+; $008F00
+	move.w	(a0),(a3)
+; $008F02
+	moveq	#2,d7
+
+loc_008F04:				; $008F04
+	move.w	(a3),d0
+; $008F06
+	and.w	d7,d0
+; $008F08
+	bne.s	loc_008F04
+; $008F0A
+	bsr.w	loc_008F3A
+; $008F0E
+	move.w	#$8100,d7
+; $008F12
+	move.b	($FFFF81A9).w,d7
+; $008F16
+	move.w	d7,(a3)
+; $008F18
+	jmp	(a6)
+; $008F1A
+	move.w	(a1)+,(a3)
+; $008F1C
+	jmp	(a6)
+; $008F1E
+	move.w	(a1)+,(a4)
+; $008F20
+	jmp	(a6)
+
+loc_008F22:				; $008F22
+	move.l	#$FFFF81CC,($FFFF81C4).l
+; $008F2C
+	move.w	#$0000,(Z80_BUSREQ).l
+; $008F34
+	movem.l	(a7)+,d1/d2/d3/d4/d5/d6/d7/a0/a1/a2/a3/a4/a5/a6/a7
+; $008F38
+	rte
+
+loc_008F3A:				; $008F3A
+	movem.l	a6,-(a7)
+; $008F3E
+	move.w	#$000F,d1
+; $008F42
+	bsr.w	loc_0089C4
+; $008F46
+	move.w	d0,(a3)
+; $008F48
+	movem.l	(a7)+,a6
+; $008F4C
+	rts
+
+loc_008F4E:				; $008F4E
+	negx.?	-(a7)
+; $008F50
+	movem.l	a7/a6/a5/a4/a3/a2/a1/a0/d7/d6/d5/d4/d3/d2/d1,-(a7)
+; $008F54
+	not.?	#$2700
+; $008F58
+	move.w	#$0100,(Z80_BUSREQ).l
+
+loc_008F60:				; $008F60
+	move.w	(Z80_BUSREQ).l,d0
+; $008F66
+	btst	#8,d0
+; $008F6A
+	bne.s	loc_008F60
+; $008F6C
+	bset	#4,($FFFF81A9).w
+; $008F72
+	lea	($FFFF81C2).l,a0
+; $008F78
+	lea	(VDP_CTRL).l,a3
+; $008F7E
+	lea	(VDP_DATA).l,a4
+; $008F84
+	move.w	#$0040,d1
+; $008F88
+	move.l	#$FFFF9462,d2
+; $008F8E
+	movea.l	d2,a5
+; $008F90
+	move.w	#$8100,d7
+; $008F94
+	move.b	($FFFF81A9).w,d7
+; $008F98
+	bchg	#4,d7
+; $008F9C
+	move.w	d7,(a3)
+; $008F9E
+	move.w	#$8F02,(a3)
+; $008FA2
+	move.w	#$9400,d3
+; $008FA6
+	move.b	#$00,d3
+; $008FAA
+	move.w	#$9300,d5
+; $008FAE
+	move.b	#$20,d5
+; $008FB2
+	move.w	d5,(a3)
+; $008FB4
+	move.w	d3,(a3)
+; $008FB6
+	lsr.l	#1,d2
+; $008FB8
+	move.w	d2,d5
+; $008FBA
+	move.w	#$9500,d6
+; $008FBE
+	move.b	d5,d6
+; $008FC0
+	move.w	d6,(a3)
+; $008FC2
+	asr.w	#8,d5
+; $008FC4
+	move.w	#$9600,d6
+; $008FC8
+	move.b	d5,d6
+; $008FCA
+	move.w	d6,(a3)
+; $008FCC
+	pea	d2
+; $008FCE
+	andi.w	#$007F,d2
+; $008FD2
+	ori.w	#$9700,d2
+; $008FD6
+	move.w	d2,(a3)
+; $008FD8
+	move.w	d1,d6
+; $008FDA
+	ori.w	#$C000,d6
+; $008FDE
+	move.w	d6,(a3)
+; $008FE0
+	move.w	d1,d5
+; $008FE2
+	andi.w	#$C000,d5
+; $008FE6
+	roxl.w	#2,d5
+; $008FE8
+	ori.w	#$0080,d5
+; $008FEC
+	move.w	d5,(a0)
+; $008FEE
+	move.w	(a0),(a3)
+; $008FF0
+	pea	d6
+; $008FF2
+	andi.w	#$C000,d1
+; $008FF6
+	roxl.w	#2,d1
+; $008FF8
+	move.w	d1,d6
+; $008FFA
+	move.w	(a5),d5
+; $008FFC
+	moveq	#2,d7
+
+loc_008FFE:				; $008FFE
+	move.w	(a3),d0
+; $009000
+	and.w	d7,d0
+; $009002
+	bne.s	loc_008FFE
+; $009004
+	move.w	#$8100,d7
+; $009008
+	move.b	($FFFF81A9).w,d7
+; $00900C
+	move.w	d7,(a3)
+; $00900E
+	move.l	d6,(a3)
+; $009010
+	move.w	d5,(a4)
+; $009012
+	move.w	#$0000,(Z80_BUSREQ).l
+; $00901A
+	movem.l	(a7)+,d1/d2/d3/d4/d5/d6/d7/a0/a1/a2/a3/a4/a5/a6/a7
+; $00901E

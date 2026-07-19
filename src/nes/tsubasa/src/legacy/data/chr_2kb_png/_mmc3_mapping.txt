@@ -1,0 +1,17 @@
+MMC3 2KB sub-bank → PPU mapping reference
+===============================================
+Each 8KB ROM bank = 4 × 2KB sub-banks (sub_0..sub_3)
+
+PPU Table 0 (BG, $0000-$0FFF, tiles $00-$7F):
+  $0000-$07FF (tiles $00-$3F) ← MMC3 CHR reg 0 → some sub-bank
+  $0800-$0FFF (tiles $40-$7F) ← MMC3 CHR reg 1 → some sub-bank
+
+PPU Table 1 (SPR, $1000-$1FFF, tiles $80-$FF):
+  $1000-$17FF (tiles $80-$BF) ← MMC3 CHR reg 2+3 → some sub-bank(s)
+  $1800-$1FFF (tiles $C0-$FF) ← MMC3 CHR reg 4+5 → some sub-bank(s)
+
+Example: if chr_bank0_sub0 matches PPU table 0 tiles $00-3F,
+then MMC3 reg 0 = 0 (points to bank 0 sub-bank 0).
+
+Each 2KB sub-bank PNG shows 128 tiles (16×8 grid).
+The sub-bank index in ROM is: (bank_8kb * 4 + sub_idx) × 2KB

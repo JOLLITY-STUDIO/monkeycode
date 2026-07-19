@@ -181,11 +181,11 @@ function drawFrame(): void {
 function openOpeningAnimation(): void {
   if (!openingAnimScene) {
     openingAnimScene = new OpeningAnimation(engine.vdp, {
-      onComplete: () => openTitleScreen(),
+      onComplete: () => openTitleScreenFromOpening(),
     });
   } else {
     openingAnimScene.restart();
-    openingAnimScene.setOnComplete(() => openTitleScreen());
+    openingAnimScene.setOnComplete(() => openTitleScreenFromOpening());
   }
   scenes.switchTo(GamePhase.OPENING, openingAnimScene);
   soundSystem.playPhaseMusic(GamePhase.OPENING);
@@ -200,6 +200,25 @@ function openOpeningAnimation(): void {
 function openTitleScreen(): void {
   if (!titleScene) titleScene = new TitleScreen(engine.vdp);
   scenes.switchTo(GamePhase.TITLE, titleScene);
+  soundSystem.playPhaseMusic(GamePhase.TITLE);
+  setStatus('标题画面 | START 新游戏 / LOAD 读档');
+}
+
+/**
+ * 从开场动画过渡到标题画面 (保留 VDP 状态)
+ *
+ * OpeningAnimation 帧2 已加载完整标题画面 VRAM:
+ *   Plane A @ 0xA000 (R2=0x28)
+ *   Sprite @ 0xF000 (R5=0x78)
+ *   H40 mode (R12=0x81)
+ *   CRAM 128B 完整调色板
+ *
+ * 此函数跳过 vdp.reset(), TitleScreen 只做逻辑接管 (按键响应/状态栏)
+ */
+function openTitleScreenFromOpening(): void {
+  // 始终新建 (fromScratch=false), 不缓存 → 避免与 openTitleScreen() 的缓存冲突
+  const scene = new TitleScreen(engine.vdp, false);
+  scenes.switchTo(GamePhase.TITLE, scene, true); // noReset=true
   soundSystem.playPhaseMusic(GamePhase.TITLE);
   setStatus('标题画面 | START 新游戏 / LOAD 读档');
 }
@@ -515,7 +534,7 @@ function gameLoop(): void {
   if (scenes.phase === GamePhase.OPENING) {
     if (input.isAnyJustPressed()) {
       if (openingAnimScene && !openingAnimScene.finished) {
-        openingAnimScene.skip(); // skip() → _finish() → onComplete → openTitleScreen()
+        openingAnimScene.skip(); // skip() → _finish() → onComplete → openTitleScreenFromOpening()
       }
     }
   }

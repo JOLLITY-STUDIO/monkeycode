@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>天使之翼2 — Banks Runner</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #1a1a2e; color: #e0e0e0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex; justify-content: center; align-items: center;
+      min-height: 100vh; flex-direction: column;
+    }
+    h1 { margin-bottom: 8px; font-size: 22px; color: #ffd700; }
+    .version { font-size: 11px; color: #666; margin-bottom: 12px; }
+    canvas#game {
+      image-rendering: pixelated; border: 2px solid #333;
+      background: #000; width: 512px; height: 480px; margin-bottom: 10px;
+    }
+    .controls { margin: 10px 0; }
+    button {
+      background: #3a3a5c; color: #fff; border: 1px solid #555;
+      padding: 8px 16px; margin: 0 4px; cursor: pointer;
+      border-radius: 4px; font-size: 14px;
+    }
+    button:hover { background: #4a4a7c; }
+    #status { font-size: 12px; color: #888; margin-top: 6px; }
+    .key-hints { font-size: 11px; color: #666; margin-top: 10px; line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <h1>天使之翼2 (Banks Runner)</h1>
+  <div class="version">v0.4.0 — ROM_DATA · 640KB · CHR RAM</div>
+  <canvas id="game" width="256" height="240"></canvas>
+  <div class="controls">
+    <button id="btnStart">▶ 开始</button>
+    <button id="btnStop">■ 停止</button>
+    <button id="btnReset">↻ 重置</button>
+  </div>
+  <div id="status">初始化中...</div>
+  <div class="key-hints">
+    🎮 方向键: 移动 | Z/A: 确认 | X/S: 取消 | Enter: Start | Shift: Select
+  </div>
+  <script type="module" src="./runner.ts"></script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<title>天使之翼2 CHR 导出 PNG</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI','Microsoft YaHei',sans-serif;background:#0b1219;color:#c8d6e5;min-height:100vh;padding:20px}
+.box{border:2px dashed #253545;border-radius:8px;padding:32px 20px;text-align:center;cursor:pointer;margin-bottom:14px;font-size:.85em}
+.box.active{border-color:#ff6b6b;background:#1a2a3a}
+.btn{padding:6px 14px;border:none;border-radius:5px;cursor:pointer;font-size:.8em;font-weight:600;background:#54a0ff;color:#fff;margin:3px}
+.btn.all{background:#1dd1a1}
+#status{margin-bottom:14px;font-size:.85em}
+#banks{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:10px}
+hr{border-color:#253545;margin:16px 0}
+</style>
+</head>
+<body>
+<h2 style="color:#ff6b6b;margin-bottom:8px">CHR → PNG 导出</h2>
+<p style="color:#6b7d8e;font-size:.75em;margin-bottom:16px">拖入 <b>.nes ROM</b> 和/或 <b>chrBanks.json</b>，即可下载 bank 精灵图 PNG。每个 tile 16x 放大，带网格和 tile 编号。</p>
+
+<div class="box" id="dropROM">📂 拖入 ROM 文件 (.nes) <span style="color:#6b7d8e">— 或点击选择</span></div>
+<div class="box" id="dropJSON">📄 拖入 chrBanks.json <span style="color:#6b7d8e">— 或点击选择</span></div>
+
+<div id="status">等待文件 …</div>
+<div id="banks"></div>
+
+<script>
+const H=16,B=16384,O=0x8000;
+let rom=null, chrOff=0;
+let chrData={};
+
+const statusEl=document.getElementById('status');
+const banksEl=document.getElementById('banks');
+
+function toU8(v){
+  if(v instanceof Uint8Array)return v;
+  if(Array.isArray(v))return new Uint8Array(v);
+  if(v&&typeof v==='object'&&Array.isArray(v.data))return new Uint8Array(v.data);
+  return new Uint8Array(0);
+}
+
+function handleJSONFile(file){
+  const r=new FileReader();
+  r.onload=()=>{
+    try{
+      const j=JSON.parse(r.result);
+      chrData={};
+      for(const k of Object.keys(j)){
+        const m=k.match(/^bank_(\d+)$/i);
+        if(m){
+          const idx=parseInt(m[1],10);
+          const u8=toU8(j[k]);
+          if(u8.length>=16)chrData[idx]=u8;
+        }
+      }
+      const ids=Object.keys(chrData).map(Number).sort((a,b)=>a-b);
+      if(ids.length===0){statusEl.innerHTML='<span style="color:#ff6b6b">JSON 中没有找到 bank_0/bank_1 … 数据</span>';return}
+      statusEl.innerHTML='<span style="color:#1dd1a1">已加载 chrBanks.json：「'+file.name+'」('+ids.length+' banks, '+chrData[ids[0]].length+' bytes/bank)</span>';
+      renderButtons(ids, true);
+    }catch(e){alert('JSON 解析失败: '+e.message)}
+  };
+  r.readAsText(file);
+}
+
+function handleROMFile(file){
+  const r=new FileReader();
+  r.onload=()=>{
+    rom=new Uint8Array(r.result);
+    const prg=Math.floor((rom.length-H)/B);
+    chrOff=H+prg*B;
+    const chrBnks=Math.floor((rom.length-chrOff)/8192);
+    if(chrBnks===0){
+      statusEl.innerHTML+='<br><span style="color:#e17055">ROM 无 CHR 数据 (CHR-RAM)，请拖入 chrBanks.json</span>';
+      return;
+    }
+    statusEl.innerHTML='<span style="color:#1dd1a1">已加载 ROM：「'+file.name+'」('+prg+' PRG, '+chrBnks+' CHR banks)</span>';
+    renderButtons(Array.from({length:chrBnks},(_,i)=>i), false);
+  };
+  r.readAsArrayBuffer(file);
+}
+
+function renderButtons(ids, fromJSON){
+  banksEl.innerHTML='';
+  for(const i of ids){
+    const btn=document.createElement('button');
+    btn.className='btn';btn.textContent='Bank '+i;
+    btn.onclick=()=>exportBank(i, fromJSON);
+    banksEl.appendChild(btn);
+  }
+  if(ids.length>1){
+    const all=document.createElement('button');
+    all.className='btn all';all.textContent='📦 导出全部';
+    all.onclick=()=>ids.forEach((i,idx)=>setTimeout(()=>exportBank(i, fromJSON), idx*200));
+    banksEl.appendChild(all);
+  }
+}
+
+function getTileData(bank, fromJSON, t){
+  if(fromJSON){
+    const d=chrData[bank];if(!d)return null;
+    const off=t*16;if(off+16>d.length)return null;
+    return d.subarray(off,off+16);
+  }
+  if(!rom)return null;
+  const bs=chrOff+bank*8192;
+  return rom.subarray(bs+t*16,bs+t*16+16);
+}
+
+function exportBank(bank, fromJSON){
+  const scale=16,grid=1,tilesX=16,tilesY=16;
+  const pw=8*scale,ph=8*scale;
+  const W=tilesX*pw+(tilesX-1)*grid;
+  const Himg=tilesY*ph+(tilesY-1)*grid;
+  const cv=document.createElement('canvas');cv.width=W;cv.height=Himg;
+  const ctx=cv.getContext('2d');
+  ctx.fillStyle='#0b1219';ctx.fillRect(0,0,W,Himg);
+  for(let ty=0;ty<tilesY;ty++){
+    for(let tx=0;tx<tilesX;tx++){
+      const t=ty*16+tx;
+      const td=getTileData(bank, fromJSON, t);
+      if(!td)continue;
+      const px=tx*(pw+grid),py=ty*(ph+grid);
+      for(let y=0;y<8;y++){
+        const p0=td[y],p1=td[y+8];
+        for(let x=0;x<8;x++){
+          const bit=1<<(7-x);
+          const c=((p0&bit)?1:0)+((p1&bit)?2:0);
+          const v=[0,96,176,255][c];
+          ctx.fillStyle=c===0?'rgba(0,0,0,0)':`rgb(${v},${v},${v})`;
+          ctx.fillRect(px+x*scale,py+y*scale,scale,scale);
+        }
+      }
+    }
+  }
+  ctx.strokeStyle='#253545';ctx.lineWidth=1;
+  for(let i=0;i<=tilesX;i++){const x=i*(pw+grid)-0.5;ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,Himg);ctx.stroke();}
+  for(let i=0;i<=tilesY;i++){const y=i*(ph+grid)-0.5;ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+  ctx.fillStyle='#ff6b6b';ctx.font=`${Math.floor(scale/2)}px monospace`;ctx.textAlign='center';
+  for(let ty=0;ty<tilesY;ty++){
+    for(let tx=0;tx<tilesX;tx++){
+      const t=ty*16+tx;
+      const px=tx*(pw+grid)+pw/2,py=ty*(ph+grid)+ph-2;
+      ctx.fillText(t.toString(16).toUpperCase().padStart(2,'0'),px,py);
+    }
+  }
+  const a=document.createElement('a');
+  a.href=cv.toDataURL('image/png');
+  a.download=`chr_bank_${bank}.png`;
+  a.click();
+}
+
+// ==== drag-drop & click handlers ====
+function bindDrop(el, accept, handler){
+  const input=()=>{
+    const inp=document.createElement('input');inp.type='file';inp.accept=accept;
+    inp.onchange=()=>{if(inp.files[0])handler(inp.files[0])};
+    inp.click();
+  };
+  el.addEventListener('click', input);
+  ['dragover','dragenter'].forEach(e=>el.addEventListener(e,ev=>{ev.preventDefault();el.classList.add('active')}));
+  el.addEventListener('dragleave',()=>el.classList.remove('active'));
+  el.addEventListener('drop',ev=>{
+    ev.preventDefault();el.classList.remove('active');
+    if(ev.dataTransfer.files[0])handler(ev.dataTransfer.files[0]);
+  });
+}
+
+bindDrop(document.getElementById('dropROM'), '.nes', handleROMFile);
+bindDrop(document.getElementById('dropJSON'), '.json', handleJSONFile);
+</script>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<!-- 天使之翼2 — 双 Canvas 对比调试 -->
+<view class="game-container">
+  <!-- 双 Canvas 并排区域 -->
+  <view class="canvas-row">
+    <!-- 左侧: 手写 TS 内核输出 -->
+    <view class="canvas-col">
+      <view class="canvas-label">TS 内核</view>
+      <canvas 
+        type="2d" 
+        id="game-canvas" 
+        class="dual-canvas"
+        bindtouchstart="onTouchStart"
+        bindtouchmove="onTouchMove"
+        bindtouchend="onTouchEnd"
+      ></canvas>
+    </view>
+
+    <!-- 右侧: jsnes 渲染输出 -->
+    <view class="canvas-col">
+      <view class="canvas-label">jsnes 参考</view>
+      <canvas 
+        type="2d" 
+        id="jsnes-canvas" 
+        class="dual-canvas"
+      ></canvas>
+    </view>
+  </view>
+  
+  <!-- 状态栏 -->
+  <view class="status-bar">
+    <text class="status-text">{{statusText}}</text>
+  </view>
+  
+  <!-- 虚拟方向键 -->
+  <view class="dpad">
+    <view class="dpad-btn dpad-up"    data-dir="up"    bindtouchstart="onDpadDown" bindtouchend="onDpadUp"></view>
+    <view class="dpad-btn dpad-down"  data-dir="down"  bindtouchstart="onDpadDown" bindtouchend="onDpadUp"></view>
+    <view class="dpad-btn dpad-left"  data-dir="left"  bindtouchstart="onDpadDown" bindtouchend="onDpadUp"></view>
+    <view class="dpad-btn dpad-right" data-dir="right" bindtouchstart="onDpadDown" bindtouchend="onDpadUp"></view>
+    <view class="dpad-center"></view>
+  </view>
+  
+  <!-- 功能键 -->
+  <view class="action-buttons">
+    <view class="action-btn btn-a" data-btn="a" bindtouchstart="onBtnDown" bindtouchend="onBtnUp">A</view>
+    <view class="action-btn btn-b" data-btn="b" bindtouchstart="onBtnDown" bindtouchend="onBtnUp">B</view>
+    <view class="action-btn btn-start"  data-btn="start"  bindtouchstart="onBtnDown" bindtouchend="onBtnUp">START</view>
+    <view class="action-btn btn-select" data-btn="select" bindtouchstart="onBtnDown" bindtouchend="onBtnUp">SELECT</view>
+  </view>
+</view>

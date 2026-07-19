@@ -1,229 +1,152 @@
 # Langrisser II — TypeScript Web 实现
 
-> **项目定位**: Sega 梦幻模拟战 II 的纯 TypeScript + Canvas 版本，包含游戏代码、资源和渲染，不需要额外的模拟器和原始 ROM。
+> **项目定位**: Sega 梦幻模拟战 II 的 ROM-to-TypeScript 翻译器。将 68K 汇编直接翻译为 TypeScript 逻辑，不使用 CPU 模拟器。
 
 > **架构原则**: 所有界面通过 Canvas 渲染 (VDP tile + Canvas 2D UI 叠加)，**不使用 HTML DOM 渲染游戏界面**。
 
 ---
 
+此项目将 ROM 68K 汇编按照 execution-trace.md 追踪的执行流逐函数翻译为 TypeScript。ROM 视为"源代码"，TypeScript 是"编译结果"。
+
 ## 一、项目结构
 
 ```
 src/langrisser2/
-├── 20260713/                    # ROM分析核心目录
-│   ├── Langrisser II (Japan).md  # ★ 唯一ROM依据(2MB)
-│   ├── analysis/                 # ROM分析报告
-│   │   ├── rom-analysis-report.md        # ROM分析主报告
-│   │   └── _vdp_analysis_report.md       # VDP/VRAM分析报告
-│   ├── asm/m68k/                 # 68K反汇编
-│   │   └── rom.asm               # sega2asm生成的反汇编
-│   ├── assets/                   # 提取的游戏素材图片
-│   │   ├── battles/              # 战斗场景背景
-│   │   ├── characters/           # 角色/指挥官头像
-│   │   ├── maps/                 # 关卡地图
-│   │   └── units/                # 单位图标
-│   ├── stages/                   # 关卡RAM dump
-│   └── otherversionroms/         # 其他版本ROM
-├── docs/                         # 游戏资料
-│   ├── execution-trace.md        # 启动流程追踪文档
-│   └── Langrisser专题站·*/       # 粉丝制作的游戏说明
-├── game/                         # ★ TypeScript游戏实现
-│   ├── core/                     # 游戏核心引擎
-│   │   ├── GameEngine.ts         # 游戏主引擎
-│   │   ├── GameState.ts          # 游戏状态管理
-│   │   ├── SceneManager.ts       # 场景管理器
-│   │   └── types.ts              # 类型定义
-│   ├── data/                     # ROM提取的数据
-│   │   ├── music/                # 38首音乐数据
-│   │   ├── Stage{N}Data.ts       # 31关关卡数据
-│   │   ├── DialogueData.ts       # ★ 关卡对话(27关英文翻译)
-│   │   ├── TitleScreenData.ts    # 标题画面数据
-│   │   ├── OpeningAnimationData.ts
-│   │   ├── FontData8001.ts       # 字体数据
-│   │   ├── character.ts          # 角色定义
-│   │   ├── classes.ts            # 职业定义
-│   │   ├── units.ts              # 单位数据
-│   │   ├── troops.ts             # 部队配置
-│   │   ├── map.ts                # 地图数据
-│   │   └── scenario.ts           # 关卡配置
-│   ├── hw/                       # 硬件抽象层
-│   │   ├── vdp/                  # VDP显示系统
-│   │   │   ├── vdp.ts            # VDP主控制器
-│   │   │   ├── tile.ts           # Tile渲染
-│   │   │   ├── sprite.ts         # 精灵渲染
-│   │   │   ├── plane.ts          # 平面渲染
-│   │   │   └── renderer.ts       # 渲染器
-│   │   ├── fm/                   # 音频系统
-│   │   │   └── YM2612.ts         # YM2612 FM合成器
-│   │   └── resource.ts           # 资源加载系统
-│   ├── rendering/                # 渲染层
-│   │   ├── FontRenderer.ts       # 字体渲染
-│   │   ├── TileRenderer.ts       # Tile渲染
-│   │   └── UI.ts                 # UI组件
-│   ├── scenes/                   # 游戏场景
-│   │   ├── TitleScreen.ts        # 标题画面
-│   │   ├── OpeningAnimation.ts   # 开场动画
-│   │   ├── BattleScene.ts        # 战斗场景
-│   │   ├── DeployScene.ts        # 出击场景
-│   │   ├── DialogueScene.ts      # 对话场景
-│   │   └── ...                   # 其他场景
-│   └── systems/                  # 游戏子系统
-│       ├── CombatSystem.ts       # 战斗系统
-│       ├── MagicSystem.ts        # 魔法系统
-│       ├── ItemSystem.ts         # 道具系统
-│       ├── InputSystem.ts        # 输入系统
-│       ├── SoundSystem.ts        # 音效系统
-│       └── SaveSystem.ts         # 存档系统
-├── scripts/                      # 分析脚本
-│   ├── generate-rom-analysis.mjs # ROM分析报告生成
-│   ├── parse-english-script.mjs  # ★ 对话脚本解析(english-script.txt→DialogueData.ts)
-│   ├── extract-title-data.mjs    # 标题数据提取
-│   ├── extract-opening-data.mjs  # 开场动画提取
-│   ├── extract-music-data.mjs    # 音乐数据提取
-│   └── ...                       # 其他分析脚本
-└── main.ts                       # 游戏入口
+├── 20260713/                    # ROM 分析和 RAM dump 数据
+│   ├── analysis/                 # execution-trace.md + rom-analysis-report
+│   ├── asm/                      # Ghidra C 反编译 + M68K 反汇编
+│   │   ├── Langrisser II (Japan).md.c  # Ghidra 反编译 (39K行)
+│   │   └── m68k/rom.asm               # M68K 反汇编
+│   └── output/                  # 验证截图
+├── game/                        # ★ TypeScript ROM 翻译
+│   ├── core/                    # ROM 加载器 + RAM + 类型定义
+│   │   ├── RomLoader.ts         # ROM 文件解析
+│   │   ├── Ram.ts               # 68K RAM (64KB)
+│   │   └── types.ts             # VDP/GENESIS 常量
+│   ├── cpu/                     # CPU 模拟器 (备选路径, 非翻译路径)
+│   │   ├── Cpu.ts               # 68K CPU
+│   │   └── Memory.ts            # 地址空间映射
+│   ├── vdp/                     # VDP 显示系统
+│   │   ├── VdpChip.ts           # VDP 芯片 (24寄存器)
+│   │   ├── VdpPorts.ts          # 端口 I/O
+│   │   ├── Vram.ts              # VRAM (64KB)
+│   │   ├── Cram.ts              # CRAM (64色)
+│   │   └── Renderer.ts          # Canvas 渲染器
+│   ├── rom/                     # ★ ROM 翻译路径 (核心)
+│   │   ├── RomProgram.ts        # 翻译基类 (VDP桥接/解压/寄存器)
+│   │   ├── RomInits.ts          # 步骤6-13: 系统初始化 (866C/C80C等)
+│   │   ├── RomTaskSystem.ts     # 任务调度 (1C834→C92C→C93A→C944→C9AA→CA00)
+│   │   └── RomDisplayQueue.ts   # 显示队列处理器 (8A6C/9400/9498/9232)
+│   ├── boot/                    # ROM Boot (步骤1-5)
+│   │   └── BootRom.ts           # TMSS/VDP/Z80/校验/RAM
+│   └── resource/                # 解压算法
+│       ├── Lzss.ts              # LZSS 解压
+│       ├── NibbleRle.ts         # Nibble RLE 解压
+│       └── Bitplane.ts          # 位平面解压
+├── main-rom.ts                  # ★ 翻译路径入口 (不使用 CPU 模拟器)
+├── main.ts                      # 模拟器路径入口 (使用 CPU 模拟器)
+├── index-rom.html               # 翻译路径 HTML
+└── index.html                   # 模拟器路径 HTML
 ```
 
 ---
 
-## 二、ROM 分析报告
+## 二、翻译架构
 
-### 2.1 核心报告
+### 2.1 翻译 vs 模拟器
 
-| 报告文件 | 内容 |
-|---------|------|
-| [rom-analysis-report.md](file:///d:/studio/github/monkeycode/src/langrisser2/20260713/analysis/rom-analysis-report.md) | ROM完整分析报告 |
-| [_vdp_analysis_report.md](file:///d:/studio/github/monkeycode/src/langrisser2/20260713/_vdp_analysis_report.md) | VDP/VRAM/CRAM分析 |
-| [execution-trace.md](file:///d:/studio/github/monkeycode/src/langrisser2/docs/execution-trace.md) | 启动流程追踪 |
+项目有两条并行路径:
 
-### 2.2 ROM 内存映射
+| 路径 | 入口 | CPU | 原理 |
+|------|------|-----|------|
+| **翻译路径** | `main-rom.ts` | ❌ 不使用 | ROM 68K 汇编 → 逐函数翻译为 TS |
+| **模拟器路径** | `main.ts` | ✅ 使用 | M68K 模拟器逐指令执行 ROM |
 
-| 地址范围 | 大小 | 类型 | 用途 |
-|---------|------|------|------|
-| \$000000-\$0000FF | 256B | 向量表 | 中断向量 |
-| \$000100-\$0001FF | 256B | ROM头 | SEGA标志/游戏信息 |
-| \$000200-\$007FFF | 31.5KB | 代码 | 启动/VDP初始化 |
-| \$008000-\$00FFFF | 56KB | 代码 | 核心系统(VBLANK/DMA) |
-| \$010000-\$05DFFF | 312KB | 代码 | 游戏逻辑 |
-| \$05E000-\$06FFFF | 88KB | 数据 | 角色能力/对话脚本 |
-| \$070000-\$08FFFF | 128KB | 数据 | 地图/场景配置 |
-| \$090000-\$0AFFFF | 128KB | 数据 | 单位/音乐指针 |
-| \$0B0000-\$0B7FFF | 32KB | 数据 | **资源指针表** |
-| \$0B8000-\$1DBFFF | 16.5MB | 数据 | 压缩图形资源 |
-| \$1DC000-\$1FFFFF | 256KB | 数据 | **Z80音乐数据** |
+翻译路径的流程:
 
-### 2.3 关键函数
+```
+ROM 文件 → RomLoader 解析
+  → BootRom (步骤1-5): TMSS/VDP/Z80/校验/RAM
+  → RomInits (步骤6-13): 控制器/显示队列/输入/任务/游戏初始化(C80C)
+  → RomTaskSystem: 任务链推进 (1C834→1C854→C92C→C93A→C944→C9AA→CA00)
+  → RomDisplayQueue: 显示队列处理 (8A6C: VRAM/CRAM DMA)
+  → VDP + Canvas: 每帧渲染
+```
 
-| 地址 | 函数 | 用途 |
-|------|------|------|
-| \$00800A | Reset | 系统复位入口 |
-| \$0082B4 | VBLANK | 60Hz主心跳 |
-| \$00C80C | FUN_0000c80c | 游戏主初始化 |
-| \$0099B2 | FUN_000099b2 | 资源加载 |
-| \$00FFF8 | FUN_0000fff8 | Nibble RLE解压 |
-| \$00FC1A | FUN_0000fc1a | YM2612音频播放 |
+### 2.2 翻译函数覆盖
+
+| ROM 地址 | 函数 | 翻译状态 | 对应 TS 文件 |
+|---------|------|:---:|------|
+| `$800A` | Reset 入口 | ✅ | BootRom.ts |
+| `$866C` | 控制器初始化 | ✅ | RomInits.initController() |
+| `$86B4` | Z80/DMA 初始化 | ✅ | RomInits.initZ80Dma() |
+| `$8A6C` | **显示队列处理器** | ✅ | RomDisplayQueue.processDisplayQueue() |
+| `$9020` | 输入状态初始化 | ✅ | RomInits.initInputState() |
+| `$9172` | 显示列表初始化 | ✅ | RomInits.initDisplayList() |
+| `$9232` | 调色板插值 | ✅ | RomDisplayQueue.paletteInterpolate() |
+| `$92E6` | 调色板淡入淡出 | ✅ | RomDisplayQueue.paletteFadeDriver() |
+| `$93B0` | CRAM DMA 推送 | ✅ | RomDisplayQueue.pushCramDmaCommand() |
+| `$9400` | 场景更新推送 | ✅ | RomDisplayQueue.pushSceneCramUpdate() |
+| `$942A` | 任务列表清零 | ✅ | RomDisplayQueue.clearTaskLists() |
+| `$9498` | 主任务列表迭代器 | ✅ | RomDisplayQueue.iterateTaskList() |
+| `$99B2` | 资源加载+解压+DMA | ✅ | RomProgram.decompressResource() + RomTaskSystem |
+| `$C80C` | 游戏主初始化 | ✅ | RomInits.initGameMain() |
+| `$C92C` | 标题入口 | ✅ | RomTaskSystem._transl_C92C() |
+| `$C93A/C944` | 标题画面设置 | ✅ | RomTaskSystem._transl_C93A/_transl_C944() |
+| `$C9AA` | 场景过渡+资源加载 | ✅ | RomTaskSystem._transl_C9AA() |
+| `$CA00` | 部署主循环 | △ 占位 | RomTaskSystem._transl_CA00() |
+
+### 2.3 显示队列命令 (FUN_00008a6c)
+
+| 命令 | 作用 | TS 处理 |
+|:---:|------|---------|
+| `$FFF5` | VRAM fill | ✅ `_cmdVramFill()` |
+| `$FFF6` | VRAM copy DMA | ✅ `_cmdVramCopy()` |
+| `$FFF7` | VRAM read→RAM | ✅ `_cmdVramRead()` |
+| `$FFF9` | VRAM DMA (ROM→VRAM) | ✅ `_cmdVramDma()` |
+| `$FFFA` | CRAM DMA (调色板) | ✅ `_cmdCramDma()` |
+| `$FFFB` | VSRAM DMA | ✅ `_cmdVsramDma()` |
+| `$FFFC` | VRAM fill single | ✅ `_cmdVramFillSingle()` |
+| `$FFFE` | VDP CTRL write | ✅ `_cmdVdpCtrl()` |
+| `$FFFF` | VDP DATA write | ✅ `_cmdVdpData()` |
+| 默认 | VRAM word write | ✅ `_cmdVramDefault()` |
 
 ---
 
-## 三、资源加载系统
+## 三、ROM 内存映射
 
-### 3.1 资源类型
-
-| 类型码 | 算法 | 用途 |
-|--------|------|------|
-| 0x01 | Nibble RLE | 4bpp tile图案 |
-| 0x02 | 位平面压缩 | 2/4/6-plane tile |
-| 0x03 | LZSS | 通用数据 |
-
-### 3.2 加载流程
-
-```
-资源ID → FUN_000099b2 → FUN_00009a0e(指针表查找)
-    → FUN_000099fa(类型分发) → 解压到RAM → DMA到VRAM
-```
-
----
-
-## 四、VDP 显示系统
-
-### 4.1 VRAM 布局
-
-| VRAM地址 | 大小 | 用途 |
+| 地址范围 | 大小 | 用途 |
 |---------|------|------|
-| \$0000-\$BFFF | 49KB | Tile图案数据 |
-| \$C000-\$CFFF | 4KB | Plane A Nametable |
-| \$D800-\$DBFF | 1KB | Sprite Attribute Table |
-| \$E000-\$EFFF | 4KB | Plane B Nametable |
-| \$F000-\$FFFF | 4KB | Window Nametable |
+| `$000000-$0000FF` | 256B | 中断向量表 |
+| `$000100-$0001FF` | 256B | ROM 头 (SEGA 标志) |
+| `$000200-$007FFF` | 31.5KB | 启动代码 |
+| `$008000-$00FFFF` | 56KB | 核心系统 (VBLANK/显示队列) |
+| `$010000-$05DFFF` | 312KB | 游戏逻辑 |
+| `$05E000-$06FFFF` | 88KB | 角色能力/对话 |
+| `$0B0000-$0B7FFF` | 32KB | **资源指针表** |
+| `$0B8000-$1DBFFF` | ~1.2MB | 压缩图形资源 |
+| `$1DC000-$1FFFFF` | 256KB | Z80 音乐数据 |
 
 ---
 
-## 五、开发指南
+## 四、开发指南
 
-### 5.1 数据提取状态
-
-| 数据类型 | 状态 | 文件 |
-|---------|------|------|
-| 标题画面 | ✅完成 | TitleScreenData.ts |
-| 开场动画 | ✅完成 | OpeningAnimationData.ts |
-| 字体 | ✅完成 | FontData8001.ts |
-| 音乐(38首) | ✅完成 | music/*.ts |
-| 关卡数据(31关) | ✅完成 | Stage{N}Data.ts |
-| 角色定义 | ✅完成 | character.ts |
-| 职业定义 | ✅完成 | classes.ts |
-| 对话脚本 | ✅完成 | DialogueData.ts (27关英文翻译) |
-| 魔法数据 | ✅完成 | MagicSystem.ts (21个法术) |
-| 道具数据 | ✅完成 | ItemSystem.ts (37个道具) |
-
-### 5.2 系统实现状态
-
-| 系统 | 状态 | 文件 |
-|------|------|------|
-| 游戏引擎 | ✅完成 | GameEngine.ts |
-| 场景管理 | ✅完成 | SceneManager.ts |
-| VDP渲染 | ✅完成 | hw/vdp/ |
-| YM2612音频 | ✅完成 | hw/fm/YM2612.ts |
-| 资源加载(3种解压) | ✅完成 | hw/resource.ts |
-| 战斗系统 | ✅完成 | CombatSystem.ts |
-| 魔法系统 | ✅完成 | MagicSystem.ts |
-| 道具系统 | ✅完成 | ItemSystem.ts |
-| 输入系统 | ✅完成 | InputSystem.ts |
-| 存档系统 | ✅完成 | SaveSystem.ts |
-| 对话系统 | ✅完成 | DialogueScene.ts + DialogueData.ts |
-
----
-
-## 六、分析脚本使用
+### 翻译路径使用
 
 ```bash
-# 生成ROM分析报告
-node scripts/generate-rom-analysis.mjs
+# 安装依赖
+npm install
 
-# 解析对话脚本 (english-script.txt → DialogueData.ts)
-node scripts/parse-english-script.mjs
+# 启动开发服务器
+npm run dev
 
-# 提取标题画面数据
-node scripts/extract-title-data.mjs
-
-# 提取音乐数据
-node scripts/extract-music-data.mjs
+# 打开 index-rom.html → 选择 ROM 文件 → 自动启动
 ```
 
----
+## 五、参考文档
 
-## 七、技术栈
-
-- **语言**: TypeScript
-- **渲染**: HTML5 Canvas
-- **音频**: Web Audio API (YM2612 FM合成)
-- **构建**: Vite
-- **数据来源**: Langrisser II (Japan) ROM (MD格式)
-
----
-
-## 八、参考文档
-
-1. [execution-trace.md](file:///d:/studio/github/monkeycode/src/langrisser2/docs/execution-trace.md) - 启动流程追踪
-2. [_vdp_analysis_report.md](file:///d:/studio/github/monkeycode/src/langrisser2/20260713/_vdp_analysis_report.md) - VDP分析
+- `20260713/analysis/execution-trace.md` — 启动流程追踪
+- `20260713/asm/Langrisser II (Japan).md.c` — Ghidra 反编译
+- `20260713/asm/m68k/rom.asm` — M68K 反汇编
 3. [rom-analysis-report.md](file:///d:/studio/github/monkeycode/src/langrisser2/20260713/analysis/rom-analysis-report.md) - ROM分析报告
 4. Langrisser专题站 - 游戏资料(职业/道具/魔法表)

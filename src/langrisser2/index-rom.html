@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Langrisser II — ROM Boot</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      color: #ccc;
+      font-family: 'Courier New', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    canvas {
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      border: 2px solid #333;
+      background: #000;
+      width: 960px;
+      height: 672px;
+    }
+    #info {
+      margin-top: 12px;
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+      max-width: 960px;
+    }
+    #info .rom-name { color: #e94560; }
+    #info .ok { color: #4caf50; }
+    #info .err { color: #f44336; }
+    #controls {
+      margin-top: 8px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    button {
+      background: #1a1a2e;
+      color: #ccc;
+      border: 1px solid #444;
+      padding: 8px 18px;
+      font-family: inherit;
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 3px;
+    }
+    button:hover { background: #2a2a4e; border-color: #e94560; }
+    button:disabled { opacity: 0.4; cursor: not-allowed; }
+    button.primary { background: #2a1a3a; border-color: #e94560; }
+    h1 { font-size: 16px; margin-bottom: 10px; color: #e94560; }
+    #log {
+      margin-top: 10px;
+      width: 960px;
+      max-height: 150px;
+      overflow-y: auto;
+      font-size: 11px;
+      color: #666;
+      line-height: 1.6;
+      background: #0d0d0d;
+      border: 1px solid #222;
+      padding: 8px;
+    }
+    #log .dim { color: #555; }
+    #log .warn { color: #ff9800; }
+  </style>
+</head>
+<body>
+  <h1>Langrisser II — ROM Boot 测试</h1>
+  <div id="game-wrapper">
+    <canvas id="gameCanvas" width="320" height="224"></canvas>
+  </div>
+  <div id="info">等待选择 ROM 文件...</div>
+  <div id="controls">
+    <button id="btnRom" class="primary">选择 ROM 并启动</button>
+    <button id="btnStop" disabled>停止</button>
+    <button id="btnDumpVram">导出 VRAM</button>
+    <button id="btnDumpReg">查看 VDP 寄存器</button>
+  </div>
+  <pre id="log"></pre>
+
+  <script type="module" src="./main-rom.ts"></script>
+</body>
+</html>

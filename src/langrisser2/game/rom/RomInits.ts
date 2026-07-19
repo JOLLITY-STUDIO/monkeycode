@@ -120,31 +120,32 @@ export class RomInits extends RomProgram {
   }
 
   // ================================================================
-  // 8. 显示队列初始化 — ROM FUN_00008a6c ($8A6C)
+  // 8. 显示队列初始化 — ROM Reset 的显示队列设置
   //
-  // 68K 原文 (摘要):
-  //   move.w #$2700, SR          ; 关中断
-  //   move.w #$100, (Z80_BUSREQ) ; 锁 Z80 总线
-  //   bset #4, ($FFFF81A9)       ; 设置标志
-  //   lea ($FFFF81C0), a0        ; 显示队列头
-  //   lea ($FFFF81CC), a1        ; 显示队列尾
-  //   (后续初始化显示队列结构...)
+  // ROM 原文 (Ghidra + M68K 验证):
+  //   显示队列结构在 $FF81C0-$FF8DCC:
+  //     $FF81C0: 队列头指针 (通常 = $FF81CC)
+  //     $FF81C4: 队列当前写指针 (生产者)
+  //     $FF81C8: 队列最大写位置 (调试)
+  //     $FF81CC-$FF8DCC: 命令数据区 ($C00 bytes = 3072 bytes)
+  //   初始化时写指针 = 数据区起始 $FF81CC
   //
-  // 翻译: 清空 VDP 显示命令队列
-  //       $FFFF81C0-$FFFF81FF = 显示命令缓冲区头尾指针
+  // 翻译: 设置显示队列指针, 清空数据区
   // ================================================================
   initDisplayQueue(): void {
-    // 显示队列区域: $FF81C0-$FF81CF
-    // $FF81C0: 队列头指针
-    // $FF81C4: 队列当前写指针
-    // $FF81C8: 队列末尾指针
-    // $FF81CC: 队列容量上限
+    // ROM 在 Boot 级已清零全部 RAM, 这里显式设置指针
 
-    // 初始化队列指针 (ROM 在 Boot 级已清零, 这里做显式设置)
-    this.ram.write32(DISP_QUEUE_START,     DISP_QUEUE_START); // head
-    this.ram.write32(DISP_QUEUE_START + 4, DISP_QUEUE_START); // curr
-    this.ram.write32(DISP_QUEUE_START + 8, DISP_QUEUE_START); // end
-    this.ram.write32(DISP_QUEUE_START + 12, DISP_QUEUE_START + 0x200); // limit
+    // $FF81C0: 读指针/头指针 (processDisplayQueue 不使用, 但保留)
+    this.ram.write16(0xFF81C0, 0xFF81CC);
+
+    // $FF81C4: ★ 写指针 = 数据区起始 (空队列)
+    this.ram.write16(0xFF81C4, 0xFF81CC);
+
+    // $FF81C8: 最大写位置追踪 (初始 = 数据区起始)
+    this.ram.write16(0xFF81C8, 0xFF81CC);
+
+    // 数据区起始 $FF81CC 不需要显式设置 (已清零)
+    // 容量上限 $FF8DCC 是硬编码上限, 不需要存储
   }
 
   // ================================================================
@@ -332,7 +333,7 @@ export class RomInits extends RomProgram {
     // TODO: FUN_00011f88() — SRAM 读取/存档初始化, 暂无存档, 跳过
 
     // ── §2.2: 游戏状态变量初始化 (L194-213) ──
-    this.ram.write16(0xFF78FA, 0xFFFF);  // 全局标志
+    this.ram.write16(0xFF78FA, 0x0000);  // 新游戏标志: 0=首次启动→显示标题画面, 0xFFFF=从存档继续
     this.ram.write16(0xFFA49C, 1);       // ★ 场景索引 = 1 (标题画面)
     this.ram.write16(0xFFA49E, 0);       // 场景子索引
     this.ram.write16(0xFFA4A0, 1);       // 状态标志

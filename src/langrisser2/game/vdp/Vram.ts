@@ -131,14 +131,17 @@ export class Vram {
     return (this.data[a] << 8) | this.data[a + 1];
   }
 
-  /** 按小端序读 16-bit word (TS 内部格式)
-   *  nametable/tile 数据按 Genesis 大端序写入, 但渲染器用小端序解析
-   *  实际上是同一件事: lo = vram[addr], hi = vram[addr+1] → word = (hi<<8)|lo
+  /** 按小端序读 16-bit word
+   *  标题画面 nametable 数据为 [lo, hi] 字节对 (来自 game-old 提取)
+   *  VRAM 中: byte[a]=lo, byte[a+1]=hi → word = (hi<<8)|lo
+   *
+   *  BUG FIX #1: 之前实现与大端序 readWord() 完全相同,
+   *  导致 nametable entry 被错误解析 (tile 索引错误, 花屏)
    */
   readWordLE(vramAddr: number): number {
     const a = vramAddr & 0xFFFF;
-    const hi = this.data[a];      // 高位字节
-    const lo = this.data[a + 1];  // 低位字节
+    const lo = this.data[a];      // 低位字节 (小端序: 低地址=低字节)
+    const hi = this.data[a + 1];  // 高位字节 (小端序: 高地址=高字节)
     return (hi << 8) | lo;
   }
 

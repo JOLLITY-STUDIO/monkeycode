@@ -1,0 +1,16 @@
+{
+  "frame": 0,
+  "scene": 255,
+  "ntBank": 255,
+  "ntIndex": 255,
+  "jmpIdx": 255,
+  "sceneStatus": 255,
+  "mmc3_8000": 255,
+  "mmc3_A000": 255,
+  "scriptLo": 255,
+  "scriptHi": 255,
+  "nmiTrigger": 255,
+  "joypad1": 255,
+  "joypad1New": 255,
+  "mmc3_r0": 165
+}
