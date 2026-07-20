@@ -1,0 +1,1031 @@
+/** 游戏页面 — 四层架构: 背景(z:0) + 透明壳(z:1) + 画布(z:2) + HUD(z:3) */
+
+/* ================================
+   页面根容器
+   ================================ */
+.page-root {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #000;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* ================================
+   z:0 — 底层: 纯黑背景 + 主板孔纹理
+   ================================ */
+.bg-layer {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  background: #000;
+  pointer-events: none;
+}
+
+/* 主板螺丝孔 / 过孔纹理 */
+.bg-holes {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  /* 用径向渐变模拟 PCB 过孔排列 */
+  background:
+    radial-gradient(circle at 20px 20px, rgba(255,255,255,0.03) 2px, transparent 2.5px),
+    radial-gradient(circle at calc(100% - 20px) 20px, rgba(255,255,255,0.03) 2px, transparent 2.5px),
+    radial-gradient(circle at 20px calc(100% - 20px), rgba(255,255,255,0.03) 2px, transparent 2.5px),
+    radial-gradient(circle at calc(100% - 20px) calc(100% - 20px), rgba(255,255,255,0.03) 2px, transparent 2.5px),
+    radial-gradient(circle at 40px 40px, rgba(255,255,255,0.02) 1.5px, transparent 2px),
+    radial-gradient(circle at 60px 40px, rgba(255,255,255,0.02) 1.5px, transparent 2px),
+    radial-gradient(circle at 40px 60px, rgba(255,255,255,0.02) 1.5px, transparent 2px),
+    radial-gradient(circle at 60px 60px, rgba(255,255,255,0.02) 1.5px, transparent 2px);
+  background-size: 80px 80px, 80px 80px, 80px 80px, 80px 80px, 80px 80px, 80px 80px, 80px 80px, 80px 80px;
+}
+
+/* ================================
+   z:1 — 透明掌机外壳装饰 (全屏覆盖, 不参与布局)
+   ================================ */
+.shell-overlay {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 1;
+  margin: 0 2px 2px;
+  border-radius: 24px;
+  border: 3px solid transparent;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* 顶部塑料高光条纹 */
+.shell-gloss {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 35%;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 40%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 4;
+}
+
+/* 外壳内发光边框 */
+.shell-border {
+  position: absolute;
+  top: 2px; left: 2px; right: 2px; bottom: 2px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* ====== 紫色外壳 (默认) ====== */
+.page-root.shell-purple .shell-overlay {
+  background: linear-gradient(180deg,
+      rgba(30, 15, 60, 0.92) 0%,
+      rgba(45, 25, 85, 0.95) 30%,
+      rgba(60, 20, 100, 0.95) 60%,
+      rgba(30, 10, 60, 0.94) 100%);
+  border-color: rgba(180, 130, 255, 0.3);
+  box-shadow:
+    0 0 30px rgba(140, 60, 220, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+}
+.page-root.shell-purple .power-led { background: #0f0; box-shadow: 0 0 6px rgba(0, 255, 0, 0.6); }
+.page-root.shell-purple .shell-model { color: rgba(255, 255, 255, 0.55); text-shadow: 0 0 8px rgba(160, 120, 255, 0.3); }
+/* purple buttons */
+.page-root.shell-purple .dpad-btn { background: rgba(50, 30, 80, 0.5); border-color: rgba(180, 140, 255, 0.2); }
+.page-root.shell-purple .dpad-center { background: rgba(80, 50, 120, 0.4); }
+.page-root.shell-purple .dpad-joystick { background: rgba(180, 140, 255, 0.12); }
+.page-root.shell-purple .ab-btn { background: rgba(40, 20, 60, 0.6); border-color: rgba(180, 140, 255, 0.22); }
+.page-root.shell-purple .btn-b::after { background: linear-gradient(135deg, rgba(200,160,50,0.7), rgba(160,110,20,0.75)); }
+.page-root.shell-purple .btn-a::after { background: linear-gradient(135deg, rgba(220,60,60,0.7), rgba(160,30,30,0.75)); }
+.page-root.shell-purple .ctrl-btn { background: rgba(50, 40, 70, 0.5); border-color: rgba(180, 140, 255, 0.2); }
+.page-root.shell-purple .ctrl-btn::after { background: linear-gradient(180deg, #3c3c46, #14141c); }
+.page-root.shell-purple .settings-panel { background: rgba(30, 10, 60, 0.94); border-color: rgba(180, 140, 255, 0.25); }
+.page-root.shell-purple .settings-item-value { color: rgba(180, 140, 255, 0.6); }
+
+/* ====== 奶白色外壳 ====== */
+.page-root.shell-cream .shell-overlay {
+  background: linear-gradient(180deg,
+      rgba(250, 245, 235, 0.92) 0%,
+      rgba(245, 238, 225, 0.95) 30%,
+      rgba(235, 225, 210, 0.95) 60%,
+      rgba(225, 215, 200, 0.94) 100%);
+  border-color: rgba(200, 190, 170, 0.4);
+  box-shadow:
+    0 0 20px rgba(200, 180, 150, 0.15),
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+}
+.page-root.shell-cream .power-led { background: #f44; box-shadow: 0 0 6px rgba(255, 60, 60, 0.6); }
+.page-root.shell-cream .shell-model { color: rgba(80, 60, 40, 0.7); text-shadow: none; }
+/* cream buttons */
+.page-root.shell-cream .dpad-btn { background: rgba(180, 160, 140, 0.5); border-color: rgba(140, 120, 100, 0.25); }
+.page-root.shell-cream .dpad-center { background: rgba(200, 180, 160, 0.4); }
+.page-root.shell-cream .dpad-joystick { background: rgba(160, 140, 120, 0.15); }
+.page-root.shell-cream .ab-btn { background: rgba(180, 160, 140, 0.55); border-color: rgba(140, 120, 100, 0.25); }
+.page-root.shell-cream .btn-b::after { background: linear-gradient(135deg, rgba(220,180,50,0.7), rgba(180,130,20,0.75)); }
+.page-root.shell-cream .btn-a::after { background: linear-gradient(135deg, rgba(235,80,80,0.65), rgba(170,40,40,0.7)); }
+.page-root.shell-cream .ctrl-btn { background: rgba(160, 150, 135, 0.55); border-color: rgba(140, 120, 100, 0.25); }
+.page-root.shell-cream .ctrl-btn::after { background: linear-gradient(180deg, #d8d4cc, #b0a898); }
+.page-root.shell-cream .settings-panel { background: rgba(255, 250, 240, 0.96); border-color: rgba(180, 170, 150, 0.3); }
+.page-root.shell-cream .settings-item-value { color: rgba(140, 100, 60, 0.7); }
+.page-root.shell-cream .settings-item-label { color: rgba(60, 40, 20, 0.75); }
+.page-root.shell-cream .settings-section-title { color: rgba(160, 130, 90, 0.6); }
+
+/* ====== 粉色外壳 ====== */
+.page-root.shell-pink .shell-overlay {
+  background: linear-gradient(180deg,
+      rgba(255, 200, 215, 0.92) 0%,
+      rgba(250, 185, 200, 0.95) 30%,
+      rgba(240, 170, 190, 0.95) 60%,
+      rgba(230, 155, 180, 0.94) 100%);
+  border-color: rgba(240, 150, 170, 0.4);
+  box-shadow:
+    0 0 20px rgba(255, 150, 180, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+}
+.page-root.shell-pink .power-led { background: #fff; box-shadow: 0 0 8px rgba(255, 255, 255, 0.8); }
+.page-root.shell-pink .shell-model { color: rgba(120, 50, 70, 0.65); text-shadow: none; }
+/* pink buttons */
+.page-root.shell-pink .dpad-btn { background: rgba(220, 170, 180, 0.55); border-color: rgba(200, 140, 155, 0.3); }
+.page-root.shell-pink .dpad-center { background: rgba(235, 195, 205, 0.45); }
+.page-root.shell-pink .dpad-joystick { background: rgba(240, 200, 210, 0.18); }
+.page-root.shell-pink .ab-btn { background: rgba(220, 170, 180, 0.6); border-color: rgba(200, 140, 155, 0.3); }
+.page-root.shell-pink .btn-b::after { background: linear-gradient(135deg, rgba(250, 200, 80, 0.65), rgba(200, 150, 30, 0.7)); }
+.page-root.shell-pink .btn-a::after { background: linear-gradient(135deg, rgba(255, 90, 90, 0.6), rgba(190, 50, 50, 0.65)); }
+.page-root.shell-pink .ctrl-btn { background: rgba(210, 165, 175, 0.55); border-color: rgba(200, 140, 155, 0.3); }
+.page-root.shell-pink .ctrl-btn::after { background: linear-gradient(180deg, #e8d0d8, #c8a0a8); }
+.page-root.shell-pink .settings-panel { background: rgba(255, 245, 248, 0.96); border-color: rgba(240, 180, 195, 0.35); }
+.page-root.shell-pink .settings-item-value { color: rgba(180, 100, 120, 0.7); }
+.page-root.shell-pink .settings-item-label { color: rgba(90, 40, 55, 0.75); }
+.page-root.shell-pink .settings-section-title { color: rgba(200, 130, 150, 0.65); }
+
+/* ====== 纯黑外壳 ====== */
+.page-root.shell-black .shell-overlay {
+  background: linear-gradient(180deg,
+      rgba(15, 15, 18, 0.96) 0%,
+      rgba(22, 22, 26, 0.97) 30%,
+      rgba(28, 28, 32, 0.97) 60%,
+      rgba(10, 10, 14, 0.96) 100%);
+  border-color: rgba(80, 80, 90, 0.35);
+  box-shadow:
+    0 0 30px rgba(0, 0, 0, 0.5),
+    0 8px 32px rgba(0, 0, 0, 0.6),
+    inset 0 1px 0 rgba(255, 255, 255, 0.03),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+}
+.page-root.shell-black .power-led { background: #0ff; box-shadow: 0 0 8px rgba(0, 255, 255, 0.7); }
+.page-root.shell-black .shell-model { color: rgba(255, 255, 255, 0.3); text-shadow: 0 0 4px rgba(100, 100, 255, 0.2); }
+/* black buttons */
+.page-root.shell-black .dpad-btn { background: rgba(40, 40, 50, 0.6); border-color: rgba(80, 80, 100, 0.25); }
+.page-root.shell-black .dpad-center { background: rgba(60, 60, 70, 0.45); }
+.page-root.shell-black .dpad-joystick { background: rgba(100, 100, 120, 0.15); }
+.page-root.shell-black .ab-btn { background: rgba(40, 40, 50, 0.7); border-color: rgba(80, 80, 100, 0.28); }
+.page-root.shell-black .btn-b::after { background: linear-gradient(135deg, rgba(180,150,40,0.6), rgba(130,100,20,0.65)); }
+.page-root.shell-black .btn-a::after { background: linear-gradient(135deg, rgba(210,50,50,0.55), rgba(140,20,20,0.6)); }
+.page-root.shell-black .ctrl-btn { background: rgba(45, 45, 55, 0.6); border-color: rgba(80, 80, 100, 0.25); }
+.page-root.shell-black .ctrl-btn::after { background: linear-gradient(180deg, #3a3a42, #181820); }
+.page-root.shell-black .settings-panel { background: rgba(20, 20, 26, 0.96); border-color: rgba(80, 80, 100, 0.3); }
+.page-root.shell-black .settings-item-value { color: rgba(180, 180, 200, 0.5); }
+.page-root.shell-black .ctrl-label { color: rgba(255, 255, 255, 0.1); }
+
+/* 信号灯 (LED indicator) */
+.power-led {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-right: 8px;
+}
+
+/* ================================
+   顶部标题条 (参与流式布局)
+   ================================ */
+.shell-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px 6px;
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+}
+
+.shell-model {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(160, 120, 255, 0.3);
+}
+
+.shell-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+/* 第三个 dot 作为设置入口 — 用伪元素扩大触摸区域到 44x44 */
+.settings-dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.18);
+  position: relative;
+  pointer-events: auto;
+}
+
+/* 扩大触摸区域到 44x44，但视觉上保持小圆点 */
+.settings-dot::after {
+  content: '';
+  position: absolute;
+  top: -19px; left: -19px;
+  right: -19px; bottom: -19px;
+}
+
+.settings-dot.active {
+  background: rgba(180, 140, 255, 0.5);
+  box-shadow: 0 0 4px rgba(180, 140, 255, 0.3);
+}
+
+/* 设置面板 */
+.settings-panel {
+  position: absolute;
+  top: 36px;
+  right: 14px;
+  width: 200px;
+  max-height: 340px;
+  background: rgba(30, 10, 60, 0.94);
+  border: 1px solid rgba(180, 140, 255, 0.25);
+  border-radius: 10px;
+  padding: 10px;
+  z-index: 20;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.95);
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  overflow: hidden;
+}
+
+.settings-panel.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.settings-section-title {
+  color: rgba(180, 140, 255, 0.6);
+  font-size: 9px;
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+.settings-sep {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 6px 0;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.settings-item-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+}
+
+.settings-item-value {
+  color: rgba(180, 140, 255, 0.6);
+  font-size: 10px;
+}
+
+/* switch 开关 */
+.settings-item-switch {
+  width: 32px;
+  height: 18px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.12);
+  position: relative;
+  transition: background 0.2s;
+}
+
+.settings-item-switch.on {
+  background: rgba(140, 80, 220, 0.5);
+}
+
+.switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  transition: left 0.2s;
+}
+
+.settings-item-switch.on .switch-knob {
+  left: 16px;
+}
+
+/* 版本号 */
+.settings-version {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 9px;
+}
+
+/* 存档槽列表 */
+.save-slot-list {
+  max-height: 200px;
+}
+
+.save-slot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.save-slot-name {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 10px;
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.save-slot-time {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 8px;
+  flex: 1;
+  margin: 0 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.save-slot-empty {
+  color: rgba(255, 255, 255, 0.12);
+  font-size: 9px;
+  flex: 1;
+}
+
+.save-slot-btns {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.save-btn {
+  width: 18px;
+  height: 16px;
+  border-radius: 3px;
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+}
+
+.save-btn-save {
+  color: rgba(140, 200, 255, 0.7);
+  background: rgba(140, 200, 255, 0.08);
+  border-color: rgba(140, 200, 255, 0.2);
+}
+
+.save-btn-load {
+  color: rgba(140, 255, 160, 0.7);
+  background: rgba(140, 255, 160, 0.08);
+  border-color: rgba(140, 255, 160, 0.2);
+}
+
+.save-btn-export {
+  color: rgba(255, 200, 100, 0.7);
+  background: rgba(255, 200, 100, 0.08);
+  border-color: rgba(255, 200, 100, 0.2);
+}
+
+.save-btn-import {
+  color: rgba(200, 160, 255, 0.7);
+  background: rgba(200, 160, 255, 0.08);
+  border-color: rgba(200, 160, 255, 0.2);
+}
+
+.save-btn-del {
+  color: rgba(255, 100, 100, 0.7);
+  background: rgba(255, 100, 100, 0.08);
+  border-color: rgba(255, 100, 100, 0.2);
+}
+
+/* FPS 叠加显示 */
+.fps-overlay {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(180, 140, 255, 0.2);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.fps-text {
+  color: #0f0;
+  font-size: 10px;
+  font-family: monospace;
+  text-shadow: 0 0 4px rgba(0, 255, 0, 0.4);
+}
+
+/* ================================
+   z:2 — 画布层: 独立居中, flex 子元素
+   ================================ */
+.game-screen {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  z-index: 3;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.game-canvas-full {
+  display: block;
+  background: #000;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  max-width: 100%;
+  max-height: 100%;
+  flex-shrink: 0;
+}
+
+/* ================================
+   浮动工具栏 (视频播放器风格)
+   ================================ */
+.toolbar {
+  position: absolute;
+  top: 0; left: 0;
+  height: 36px;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 5px;
+  padding: 0 10px;
+  background: linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.2) 70%, transparent 100%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+
+.toolbar-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.tbar-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 13px;
+}
+
+.tbar-btn:active {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.tbar-btn-active {
+  background: rgba(140, 80, 220, 0.3);
+  border-color: rgba(180, 140, 255, 0.35);
+}
+
+.tbar-label {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* ================================
+   z:3 — HUD 浮动按键层
+   ================================ */
+
+/* ---- 竖屏 (portrait): HUD 作为 flex 子元素, 固定高度在画布下方 ---- */
+.hud {
+  position: relative;
+  top: auto; left: auto; right: auto; bottom: auto;
+  flex: none;
+  height: 170px;
+  z-index: 4;
+  pointer-events: auto;
+}
+
+/* 左侧 — 十字键 */
+.hud-dpad {
+  position: absolute;
+  left: 16px;
+  top: 12px;
+}
+
+/* 右侧 — A/B 键容器 */
+.hud-ab {
+  position: absolute;
+  right: 16px;
+  top: 12px;
+  width: 100px;
+  height: 92px;
+  pointer-events: auto;
+}
+
+/* 中下 — SELECT / START / TURBO */
+.hud-func {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 20px;
+  pointer-events: auto;
+}
+
+.func-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+/* ====== 右下角喇叭 ====== */
+.speaker {
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(20, 10, 40, 0.5);
+  border: 2px solid rgba(180, 140, 255, 0.15);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* 喇叭圆孔阵列 */
+.speaker-holes {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.55) 1.2px, transparent 1.5px);
+  background-size: 7px 7px;
+  background-position: 2px 2px;
+}
+
+/* ====== 十字键 ====== */
+.dpad {
+  position: relative;
+  width: 108px;
+  height: 108px;
+}
+
+.dpad-btn {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  background: rgba(40, 20, 60, 0.6);
+  border: 1px solid rgba(180, 140, 255, 0.25);
+  border-radius: 5px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+/* 十字键 — 硅胶块 (缩小一圈纯黑, 顶部光泽) */
+.dpad-btn::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px; right: 3px; bottom: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #3c3c46 0%, #14141c 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.5);
+}
+
+.dpad-up    { left: 36px; top: 0;     border-radius: 6px 6px 2px 2px; }
+.dpad-down  { left: 36px; bottom: 0;  border-radius: 2px 2px 6px 6px; }
+.dpad-left  { left: 0;    top: 36px;  border-radius: 6px 2px 2px 6px; }
+.dpad-right { right: 0;   top: 36px;  border-radius: 2px 6px 6px 2px; }
+
+.dpad-center {
+  position: absolute;
+  left: 36px; top: 36px;
+  width: 36px; height: 36px;
+  background: rgba(30, 15, 50, 0.7);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+/* 十字键中心 — 硅胶块 */
+.dpad-center::after {
+  content: '';
+  position: absolute;
+  top: 3px; left: 3px; right: 3px; bottom: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #363640 0%, #101018 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.5);
+}
+
+.dpad-btn:active {
+  background: rgba(180, 140, 255, 0.3);
+}
+
+.dpad-btn:active::after {
+  background: linear-gradient(180deg, #2a2a32 0%, #0a0a10 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+/* 摇杆激活时高亮对应方向按钮 */
+.dpad-btn.joy-active {
+  background: rgba(180, 140, 255, 0.45) !important;
+  border-color: rgba(180, 140, 255, 0.6) !important;
+  box-shadow: 0 0 8px rgba(180, 140, 255, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.dpad-btn.joy-active::after {
+  background: linear-gradient(180deg, #5a5080 0%, #3a2560 100%) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* 圆圈摇杆触摸层 — 覆盖整个 dpad 区域 */
+.dpad-joystick {
+  position: absolute;
+  top: -8px; left: -8px;
+  right: -8px; bottom: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(180, 140, 255, 0.15);
+  background: rgba(140, 80, 220, 0.04);
+  z-index: 5;
+}
+
+/* ====== A/B 圆形按键 ====== */
+.ab-btn {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(40, 20, 60, 0.6);
+  border: 2px solid rgba(180, 140, 255, 0.22);
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.05);
+}
+
+/* A/B 硅胶块 */
+.ab-btn::after {
+  content: '';
+  position: absolute;
+  top: 4px; left: 4px; right: 4px; bottom: 4px;
+  border-radius: 50%;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.15),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.4);
+  z-index: 0;
+}
+
+.ab-btn.btn-b {
+  left: -20px;
+  bottom: 8px;
+}
+
+.ab-btn.btn-b::after {
+  background: linear-gradient(135deg, rgba(200, 160, 50, 0.7) 0%, rgba(160, 110, 20, 0.75) 100%);
+}
+
+.ab-btn.btn-a {
+  right: 8px;
+  top: 18px;
+}
+
+.ab-btn.btn-a::after {
+  background: linear-gradient(135deg, rgba(220, 50, 70, 0.7) 0%, rgba(170, 20, 40, 0.75) 100%);
+}
+
+.ab-btn:active {
+  transform: scale(0.9);
+}
+
+.ab-btn:active::after {
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.55);
+}
+
+.ab-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+  position: relative;
+}
+
+/* ====== SELECT / START 硅胶按键 ====== */
+.ctrl-btn {
+  width: 42px;
+  height: 14px;
+  border-radius: 7px;
+  background: rgba(80, 80, 100, 0.35);
+  border: 1px solid rgba(180, 160, 200, 0.2);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.ctrl-btn::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px; right: 2px; bottom: 2px;
+  border-radius: 5px;
+  background: linear-gradient(180deg, #3c3c46 0%, #14141c 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -2px 3px rgba(0, 0, 0, 0.5);
+}
+
+.ctrl-btn:active {
+  background: rgba(180, 160, 200, 0.2);
+  transform: scaleY(0.85);
+}
+
+.ctrl-btn:active::after {
+  background: linear-gradient(180deg, #2a2a32 0%, #0a0a10 100%);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.6);
+}
+
+.ctrl-label {
+  color: rgba(255, 255, 255, 0.16);
+  font-size: 7px;
+  letter-spacing: 1px;
+}
+
+/* turbo 按钮 */
+.turbo-btn {
+  background: rgba(60, 60, 80, 0.35) !important;
+  border-color: rgba(180, 160, 200, 0.2) !important;
+}
+.turbo-btn.active {
+  background: rgba(255, 100, 0, 0.35) !important;
+  border-color: rgba(255, 150, 50, 0.5) !important;
+  box-shadow: 0 0 8px rgba(255, 100, 0, 0.3) !important;
+}
+
+/* ================================
+   横屏 (landscape) — HUD 绝对定位覆盖画布内
+   ================================ */
+
+.page-root.landscape .shell-overlay {
+  margin: 0;
+  border-radius: 16px;
+}
+
+.page-root.landscape .shell-border {
+  border-radius: 14px;
+}
+
+/* 标题条压缩 */
+.page-root.landscape .shell-topbar {
+  padding: 4px 16px 2px;
+}
+
+.page-root.landscape .shell-model {
+  font-size: 9px;
+}
+
+.page-root.landscape .shell-dots {
+  gap: 4px;
+}
+
+.page-root.landscape .dot {
+  width: 3px;
+  height: 3px;
+}
+
+/* 画布不变 — game-screen 在 flex column 里自动撑满 */
+
+/* 十字键 — 靠左偏下 */
+.page-root.landscape .hud-dpad {
+  left: 24px;
+  bottom: 30px;
+  top: auto;
+  transform: none;
+}
+
+.page-root.landscape .dpad {
+  width: 96px;
+  height: 96px;
+}
+
+.page-root.landscape .dpad-btn {
+  width: 32px;
+  height: 32px;
+}
+
+.page-root.landscape .dpad-up    { left: 32px; }
+.page-root.landscape .dpad-down  { left: 32px; }
+.page-root.landscape .dpad-left  { top: 32px; }
+.page-root.landscape .dpad-right { top: 32px; }
+.page-root.landscape .dpad-center { left: 32px; top: 32px; width: 32px; height: 32px; }
+
+/* A/B 键 — 靠右偏下 */
+.page-root.landscape .hud-ab {
+  right: 24px;
+  bottom: 30px;
+  top: auto;
+  transform: none;
+  width: 96px;
+  height: 88px;
+}
+
+.page-root.landscape .ab-btn {
+  width: 38px;
+  height: 38px;
+}
+
+.page-root.landscape .ab-btn.btn-b {
+  left: -4px; bottom: 8px;
+}
+
+.page-root.landscape .ab-btn.btn-a {
+  right: 4px; top: 10px;
+}
+
+/* 功能键 — 底中 */
+.page-root.landscape .hud-func {
+  bottom: 18px;
+  gap: 24px;
+}
+
+.page-root.landscape .ctrl-btn {
+  width: 42px;
+  height: 14px;
+}
+
+.page-root.landscape .ctrl-label {
+  font-size: 7px;
+}
+
+/* 喇叭微调 */
+.page-root.landscape .speaker {
+  right: 8px;
+  bottom: 6px;
+  width: 36px;
+  height: 36px;
+}
+
+.page-root.landscape .speaker-holes {
+  background-size: 5px 5px;
+  background-position: 1px 1px;
+}
+
+/* 横屏 HUD — 绝对覆盖在画布上 */
+.page-root.landscape .hud {
+  position: absolute !important;
+  top: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  flex: none !important;
+  height: auto !important;
+  pointer-events: none;
+}
+
+/* ================================
+   缩放 & HUD 显隐 (放末尾确保优先级)
+   ================================ */
+
+/* ---- fit + stretch: 隐藏顶部标题条和喇叭装饰 ---- */
+.page-root.scale-fit .shell-topbar,
+.page-root.scale-stretch .shell-topbar,
+.page-root.scale-fit .speaker,
+.page-root.scale-stretch .speaker {
+  display: none !important;
+}
+
+/* ---- fit: 保持 256:240 比例居中 ---- */
+.page-root.scale-fit .game-screen {
+  flex: 1 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 0 !important;
+}
+
+/* ---- stretch: 画布铺满容器 ---- */
+.page-root.scale-stretch .game-screen {
+  flex: 1 !important;
+  min-height: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.page-root.scale-stretch .game-canvas-full {
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+}
+
+/* ---- native: 画布固定 256x240, 居中 ---- */
+.page-root.scale-native .game-screen {
+  flex: 1 !important;
+  min-height: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.page-root.scale-native .game-canvas-full {
+  flex-shrink: 0 !important;
+}
+
+/* ---- 非满屏 (fit / native) 画布圆角边框, 模拟 LCD 屏幕 ---- */
+.page-root.scale-fit .game-canvas-full,
+.page-root.scale-native .game-canvas-full {
+  border-radius: 6px;
+  box-shadow:
+    0 0 0 2px rgba(0, 0, 0, 0.55),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+/* ---- stretch: HUD 从流式变为绝对覆盖, 画布才能全屏 ---- */
+.page-root.scale-stretch .hud {
+  position: absolute !important;
+  top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+  flex: none !important;
+  height: auto !important;
+  pointer-events: none;
+}
+
+.page-root.scale-stretch .game-screen {
+  flex: 1 !important;
+  min-height: 0 !important;
+}
+
+/* ---- stretch: HUD 按键全部 25% 透明 (避免遮挡画面) ---- */
+.page-root.scale-stretch .hud-dpad,
+.page-root.scale-stretch .hud-ab,
+.page-root.scale-stretch .hud-func {
+  opacity: 0.25 !important;
+}
+
+/* ---- fit: SELECT/START/TURBO 底部按钮半透 (压在画布底边上) ---- */
+.page-root.scale-fit .hud-func {
+  opacity: 0.5;
+}
+
+/* ---- hide-hud: 隐藏虚拟按键 ---- */
+.page-root.hide-hud .hud {
+  display: none !important;
+}

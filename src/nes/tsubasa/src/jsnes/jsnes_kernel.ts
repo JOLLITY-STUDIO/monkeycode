@@ -166,7 +166,7 @@ export class JsnesKernel {
 
   /** ImageData 复用 */
   private imageData: ImageData | null = null;
-  /** Canvas 2D context */
+  /** Canvas 2D context (主画布) */
   private ctx: CanvasRenderingContext2D | null = null;
 
   /** CPU 追踪器 (ROM 加载后创建) */
@@ -189,6 +189,8 @@ export class JsnesKernel {
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     if (!ctx) throw new Error('[jsnes] Cannot get 2d context');
     this.ctx = ctx;
+    // 像素画关平滑
+    ctx.imageSmoothingEnabled = false;
     this.imageData = ctx.createImageData(SCREEN_W, SCREEN_H);
 
     // ~200ms 立体声缓冲
@@ -364,7 +366,17 @@ export class JsnesKernel {
     }
   }
 
-  /** 渲染当前帧缓冲到 Canvas (putImageData) */
+  /** 拉伸/全屏时调用: 修改主 canvas 像素尺寸, drawImage 会自动 GPU 放大 */
+  resizeCanvas(w: number, h: number): void {
+    if (!this.canvas) return;
+    this.canvas.width = w;
+    this.canvas.height = h;
+    if (this.ctx) {
+      this.ctx.imageSmoothingEnabled = false;
+    }
+  }
+
+  /** 渲染当前帧缓冲到 Canvas (同步 putImageData) */
   renderToCanvas(): void {
     if (!this.frameBuffer || !this.ctx || !this.imageData) return;
 

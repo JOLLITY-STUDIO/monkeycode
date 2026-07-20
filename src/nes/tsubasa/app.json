@@ -1,11 +1,18 @@
 {
   "pages": [
+    "pages/launcher/launcher",
     "pages/game/game"
   ],
   "subPackages": [
     {
       "root": "subpkg/rom",
       "pages": []
+    },
+    {
+      "root": "subpkg/nes-emulator",
+      "pages": [
+        "pages/index/index"
+      ]
     }
   ],
   "window": {

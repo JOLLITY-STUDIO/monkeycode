@@ -1,0 +1,87 @@
+page {
+  background: linear-gradient(180deg, #0e0e24 0%, #060612 100%);
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 40px 24px;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: bold;
+  color: #fff;
+  letter-spacing: 4px;
+  text-shadow: 0 0 20px rgba(140, 80, 220, 0.5);
+}
+
+.subtitle {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 6px;
+  margin-bottom: 48px;
+  letter-spacing: 1px;
+}
+
+.entries {
+  width: 100%;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.entry-card {
+  display: flex;
+  align-items: center;
+  padding: 16px 18px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  transition: background 0.15s;
+}
+
+.entry-card:active {
+  background: rgba(140, 80, 220, 0.15);
+  border-color: rgba(180, 140, 255, 0.3);
+}
+
+.card-icon {
+  font-size: 28px;
+  margin-right: 14px;
+}
+
+.card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.card-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.card-desc {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.3);
+  margin-top: 2px;
+}
+
+.card-arrow {
+  font-size: 18px;
+  color: rgba(255, 255, 255, 0.2);
+}
+
+.version {
+  position: absolute;
+  bottom: 24px;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.12);
+}

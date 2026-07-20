@@ -1,0 +1,26 @@
+<view class="container">
+  <text class="title">天使之翼2</text>
+  <text class="subtitle">Captain Tsubasa II - Super Striker</text>
+
+  <view class="entries">
+    <view class="entry-card" bindtap="onGame">
+      <view class="card-icon">⚽</view>
+      <view class="card-info">
+        <text class="card-name">Game 模式</text>
+        <text class="card-desc">TS 翻译双 Canvas 对比</text>
+      </view>
+      <text class="card-arrow">▸</text>
+    </view>
+
+    <view class="entry-card" bindtap="onNesEmulator">
+      <view class="card-icon">🎮</view>
+      <view class="card-info">
+        <text class="card-name">NES Emulator</text>
+        <text class="card-desc">纯 jsnes 模拟器 (分包)</text>
+      </view>
+      <text class="card-arrow">▸</text>
+    </view>
+  </view>
+
+  <text class="version">v1.0.1</text>
+</view>

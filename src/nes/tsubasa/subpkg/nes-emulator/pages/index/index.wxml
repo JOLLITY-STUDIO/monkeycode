@@ -1,0 +1,170 @@
+<!-- 天使之翼2 — 四层架构: 背景(z:0) + 透明壳(z:1) + 画布(z:2) + HUD(z:3) -->
+<view class="page-root shell-{{shellColor}} {{isLandscape ? 'landscape' : 'portrait'}} scale-{{scaleMode}} {{!showHud ? 'hide-hud' : ''}}" style="padding-top: {{isLandscape ? 0 : shellTop}}px;">
+
+  <!-- ====== z:0 — 底部纯黑背景 + 主板纹理孔 ====== -->
+  <view class="bg-layer">
+    <view class="bg-holes"></view>
+  </view>
+
+  <!-- ====== z:1 — 透明掌机外壳装饰 (全屏覆盖, 不参与布局) ====== -->
+  <view class="shell-overlay">
+    <view class="shell-gloss"></view>
+    <view class="shell-border"></view>
+    <!-- 外壳喇叭装饰 (右下角) -->
+    <view class="speaker">
+      <view class="speaker-holes"></view>
+    </view>
+  </view>
+
+  <!-- ====== 标题栏 (参与流式布局) ====== -->
+  <view class="shell-topbar" catchtap="onNoop">
+    <!-- 信号灯 (左侧) -->
+    <view class="power-led"></view>
+    <text class="shell-model">{{romTitle}}</text>
+    <view class="shell-dots">
+      <view class="dot"></view>
+      <view class="dot"></view>
+      <view class="dot settings-dot {{settingsOpen ? 'active' : ''}}" bindtap="onSettingsToggle"></view>
+    </view>
+  </view>
+
+  <!-- ====== z:2 — 画布层: 独立居中 ====== -->
+  <view class="game-screen" bindtap="onCanvasTap">
+    <!-- 浮动工具栏 (视频播放器风格, 顶部半透明) -->
+    <view class="toolbar {{showToolbar ? 'toolbar-visible' : ''}}" catchtap="onToolbarAction">
+      <view class="tbar-btn {{lockLandscape ? 'tbar-btn-active' : ''}}" catchtap="onToolbarLock">
+        <text>{{lockLandscape ? '🔒' : '🔓'}}</text>
+      </view>
+      <view class="tbar-btn" catchtap="onToolbarHud">
+        <text>🎮</text>
+      </view>
+      <view class="tbar-btn" catchtap="onToolbarScale">
+        <text class="tbar-label">{{scaleMode === 'fit' ? '⊡' : (scaleMode === 'stretch' ? '⬜' : '📺')}}</text>
+      </view>
+      <view class="tbar-btn" catchtap="onToolbarSettings">
+        <text>⚙</text>
+      </view>
+    </view>
+    <canvas type="2d" id="jsnes-canvas" class="game-canvas-full" style="{{canvasStyle}}"></canvas>
+    <view class="fps-overlay" wx:if="{{showFps}}">
+      <text class="fps-text">{{fps}} FPS</text>
+    </view>
+  </view>
+
+  <!-- ====== z:3 — HUD 浮动按键 ====== -->
+  <view class="hud" wx:if="{{showHud}}">
+    <!-- 左侧 — 十字键 -->
+    <view class="hud-dpad" catchtap="onNoop">
+      <view class="dpad">
+        <view class="dpad-joystick"
+          bindtouchstart="onJoystickStart"
+          bindtouchmove="onJoystickMove"
+          bindtouchend="onJoystickEnd"
+          catchlongpress="onNoop"></view>
+        <view class="dpad-btn dpad-up {{joystickDir === 'up' ? 'joy-active' : ''}}"></view>
+        <view class="dpad-btn dpad-down {{joystickDir === 'down' ? 'joy-active' : ''}}"></view>
+        <view class="dpad-btn dpad-left {{joystickDir === 'left' ? 'joy-active' : ''}}"></view>
+        <view class="dpad-btn dpad-right {{joystickDir === 'right' ? 'joy-active' : ''}}"></view>
+        <view class="dpad-center"></view>
+      </view>
+    </view>
+
+    <!-- 右侧 — A/B 键 -->
+    <view class="hud-ab" catchtap="onNoop">
+      <view class="ab-btn btn-b" data-btn="b" bindtouchstart="onBtnDown" bindtouchend="onBtnUp" catchlongpress="onNoop">
+        <text class="ab-label">B</text>
+      </view>
+      <view class="ab-btn btn-a" data-btn="a" bindtouchstart="onBtnDown" bindtouchend="onBtnUp" catchlongpress="onNoop">
+        <text class="ab-label">A</text>
+      </view>
+    </view>
+
+    <!-- 中下 — SELECT / START / TURBO -->
+    <view class="hud-func" catchtap="onNoop">
+      <view class="func-col">
+        <view class="ctrl-btn btn-select" data-btn="select" bindtouchstart="onBtnDown" bindtouchend="onBtnUp" catchlongpress="onNoop"></view>
+        <text class="ctrl-label">SELECT</text>
+      </view>
+      <view class="func-col">
+        <view class="ctrl-btn btn-start" data-btn="start" bindtouchstart="onBtnDown" bindtouchend="onBtnUp" catchlongpress="onNoop"></view>
+        <text class="ctrl-label">START</text>
+      </view>
+      <view class="func-col">
+        <view class="ctrl-btn turbo-btn {{turbo ? 'active' : ''}}" bindtap="onTurboToggle"></view>
+        <block wx:if="{{turbo === 2}}"><text class="ctrl-label turbo-label">TURBO 2x</text></block>
+        <block wx:elif="{{turbo === 3}}"><text class="ctrl-label turbo-label">TURBO 3x</text></block>
+        <block wx:else><text class="ctrl-label turbo-label">TURBO</text></block>
+      </view>
+    </view>
+  </view>
+
+  <!-- ====== z:4 — 设置面板 ====== -->
+  <view class="settings-panel {{settingsOpen ? 'open' : ''}}">
+
+    <!-- ====== 主菜单 ====== -->
+    <block wx:if="{{settingsPage === ''}}">
+      <view class="settings-section-title">显示</view>
+      <view class="settings-item" bindtap="onFpsToggle">
+        <text class="settings-item-label">显示 FPS</text>
+        <view class="settings-item-switch {{showFps ? 'on' : ''}}">
+          <view class="switch-knob"></view>
+        </view>
+      </view>
+      <view class="settings-item" bindtap="onLockLandscapeToggle">
+        <text class="settings-item-label">锁定横屏</text>
+        <view class="settings-item-switch {{lockLandscape ? 'on' : ''}}">
+          <view class="switch-knob"></view>
+        </view>
+      </view>
+      <view class="settings-item" bindtap="onScaleModeToggle">
+        <text class="settings-item-label">缩放模式</text>
+        <text class="settings-item-value">{{scaleMode === 'fit' ? '比例撑满' : (scaleMode === 'stretch' ? '全屏拉伸' : '原始大小')}}</text>
+      </view>
+      <view class="settings-item" bindtap="onHudToggle">
+        <text class="settings-item-label">虚拟按键</text>
+        <view class="settings-item-switch {{showHud ? 'on' : ''}}">
+          <view class="switch-knob"></view>
+        </view>
+      </view>
+
+      <view class="settings-sep"></view>
+      <view class="settings-section-title">外观</view>
+      <view class="settings-item" bindtap="onShellColorToggle">
+        <text class="settings-item-label">外壳颜色</text>
+        <text class="settings-item-value">{{shellColor === 'purple' ? '🟣 紫' : (shellColor === 'cream' ? '🥛 奶白' : (shellColor === 'pink' ? '🌸 粉' : '⚫ 黑'))}}</text>
+      </view>
+
+      <view class="settings-sep"></view>
+      <view class="settings-item settings-submenu" bindtap="onSettingsPage" data-page="save">
+        <text class="settings-item-label">💾 存档管理</text>
+        <text class="settings-arrow">▸</text>
+      </view>
+
+      <view class="settings-sep"></view>
+      <view class="settings-version">v1.0.1</view>
+    </block>
+
+    <!-- ====== 存档子页面 ====== -->
+    <block wx:if="{{settingsPage === 'save'}}">
+      <view class="settings-back" bindtap="onSettingsPage" data-page="">
+        <text class="settings-arrow back">◂</text>
+        <text class="settings-section-title">返回</text>
+      </view>
+      <view class="settings-section-title">存档 (10 槽)</view>
+      <scroll-view class="save-slot-list" scroll-y="true" wx:for="{{saveSlots}}" wx:key="index" wx:for-index="i">
+        <view class="save-slot">
+          <text class="save-slot-name">{{item.name}}</text>
+          <text class="save-slot-time" wx:if="{{item.time}}">{{item.time}}</text>
+          <text class="save-slot-empty" wx:else>空</text>
+          <view class="save-slot-btns">
+            <view class="save-btn save-btn-save" catchtap="onSaveSlot" data-index="{{i}}">存</view>
+            <view class="save-btn save-btn-load" catchtap="onLoadSlot" data-index="{{i}}" wx:if="{{item.time}}">读</view>
+            <view class="save-btn save-btn-export" catchtap="onExportSave" data-index="{{i}}" wx:if="{{item.time}}">出</view>
+            <view class="save-btn save-btn-import" catchtap="onImportSave" data-index="{{i}}">入</view>
+            <view class="save-btn save-btn-del" catchtap="onDeleteSlot" data-index="{{i}}" wx:if="{{item.time}}">✕</view>
+          </view>
+        </view>
+      </scroll-view>
+    </block>
+  </view>
+</view>
