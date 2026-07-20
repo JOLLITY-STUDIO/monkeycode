@@ -285,6 +285,9 @@ Page({
 
   /** 当前输入 */
   computeInput(): number {
+    // 防御: 小程序热更新可能丢失非 data 属性
+    if (!this.dpadState) this.dpadState = { up: false, down: false, left: false, right: false };
+    if (!this.btnState)  this.btnState  = { a: false, b: false, start: false, select: false };
     let m = 0;
     if (this.dpadState.up)    m |= BUTTON.UP;
     if (this.dpadState.down)  m |= BUTTON.DOWN;
@@ -298,6 +301,8 @@ Page({
   },
 
   updateInput() {
+    // 防御: 小程序热更新可能丢失非 data 属性
+    if (!this.dpadState && !this.btnState) return;
     const mask = this.computeInput();
     this.gameHandle?.setInput(mask);
     this.jsnesKernel?.setInput(mask);
@@ -344,6 +349,9 @@ Page({
       // 未匹配到映射，静默忽略
       return;
     }
+    // 防御: 小程序热更新可能丢失非 data 属性
+    if (!this.dpadState) this.dpadState = { up: false, down: false, left: false, right: false };
+    if (!this.btnState)  this.btnState  = { a: false, b: false, start: false, select: false };
     // 方向键在 dpadState
     if (dir === 'up' || dir === 'down' || dir === 'left' || dir === 'right') {
       (this.dpadState as any)[dir] = pressed;
@@ -606,12 +614,14 @@ Page({
   // ---- 方向键 ----
 
   onDpadDown(e: any) {
+    if (!this.dpadState) this.dpadState = { up: false, down: false, left: false, right: false };
     const dir = e.currentTarget.dataset.dir;
     (this.dpadState as any)[dir] = true;
     this.updateInput();
   },
 
   onDpadUp(e: any) {
+    if (!this.dpadState) this.dpadState = { up: false, down: false, left: false, right: false };
     const dir = e.currentTarget.dataset.dir;
     (this.dpadState as any)[dir] = false;
     this.updateInput();
@@ -620,12 +630,14 @@ Page({
   // ---- 功能键 ----
 
   onBtnDown(e: any) {
+    if (!this.btnState) this.btnState = { a: false, b: false, start: false, select: false };
     const btn = e.currentTarget.dataset.btn;
     (this.btnState as any)[btn] = true;
     this.updateInput();
   },
 
   onBtnUp(e: any) {
+    if (!this.btnState) this.btnState = { a: false, b: false, start: false, select: false };
     const btn = e.currentTarget.dataset.btn;
     (this.btnState as any)[btn] = false;
     this.updateInput();
