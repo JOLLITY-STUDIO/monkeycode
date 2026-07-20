@@ -328,6 +328,31 @@ export class JsnesKernel {
     }
   }
 
+  /** 暂停 — 保留完整状态，仅停止帧循环 */
+  pause(): void {
+    this.running = false;
+  }
+
+  /** 恢复 — 重新激活帧循环 */
+  resume(): void {
+    this.running = true;
+  }
+
+  /** 序列化 emulator 完整状态 (存档) */
+  saveState(): object {
+    return this.nes.toJSON();
+  }
+
+  /** 从存档恢复 emulator 完整状态 */
+  loadState(state: object): void {
+    this.nes.fromJSON(state);
+    this.frameBuffer = null;
+    // fromJSON 内部重置了 CPU/PPU，需重建 tracer
+    if (this._tracer) {
+      this._tracer = new CpuTracer(this.nes);
+    }
+  }
+
   /** 执行一帧 */
   frame(): void {
     if (!this.running) return;

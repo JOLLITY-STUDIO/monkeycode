@@ -14,6 +14,9 @@ function ts(): string {
   return `${pad(d.getMonth() + 1)}${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}`;
 }
 
+/** 补零两位 */
+function pad2(n: number) { return n.toString().padStart(2, '0'); }
+
 Page({
   data: {
     statusText: '初始化中...',
@@ -28,14 +31,18 @@ Page({
     romTitle: '',
     /** trace 文件是否已生成 */
     traceReady: false,
-    /** turbo 快进模式 */
-    turbo: false,
+    /** turbo 快进模式: 0=正常 2=2x 3=3x */
+    turbo: 0,
     /** 设置面板是否展开 */
     settingsOpen: false,
     /** 是否显示 FPS */
     showFps: false,
     /** 当前 FPS 数值 (jsnes) */
     fps: 0,
+    /** 存档槽列表 */
+    saveSlots: [] as { name: string; time: string; size: number }[],
+    /** 摇杆当前方向 (用于视觉高亮) */
+    joystickDir: '',
   },
 
   gameHandle: null as MiniGameHandle | null,
@@ -229,20 +236,20 @@ Page({
   jsnesFrameLoop(): void {
     if (!this.jsnesKernel?.running) return;
 
-    const input = this.computeInput();
-    this.jsnesKernel.setInput(input);
-
     if (this.data.turbo) {
-      // turbo: 每 2ms 跑一帧 (不渲染), 每隔 4 帧渲染一次
-      this._turboTick = (this._turboTick || 0) + 1;
-      this.jsnesKernel.frame();
-      if (this._turboTick >= 4) {
-        this._turboTick = 0;
-        this.jsnesKernel.renderToCanvas();
+      // turbo: 每轮 ~14ms 内模拟多帧，实现加速
+      // 2x=每轮2帧, 3x=每轮3帧；每帧都传输入保证比赛操作不丢失
+      const turboFrames = this.data.turbo; // 2 or 3
+      for (let f = 0; f < turboFrames; f++) {
+        this.jsnesKernel.setInput(this.computeInput());
+        this.jsnesKernel.frame();
       }
-      this.jsnesAnimId = setTimeout(() => this.jsnesFrameLoop(), 2) as any;
+      this.jsnesKernel.renderToCanvas();
+      // 用 0ms 让帧循环无间歇连续执行
+      this.jsnesAnimId = setTimeout(() => this.jsnesFrameLoop(), 0) as any;
     } else {
-      // 正常: 16ms 每帧
+      // 正常: ~16ms 每帧
+      this.jsnesKernel.setInput(this.computeInput());
       this.jsnesKernel.frame();
       this.jsnesKernel.renderToCanvas();
       this.jsnesAnimId = setTimeout(() => this.jsnesFrameLoop(), 16) as any;
@@ -370,24 +377,33 @@ Page({
     }).exec();
   },
 
-  /** 根据触点相对圆心角度，返回方向 */
+  /** 根据触点相对圆心位置，返回方向 (基于 XY 轴分割，45° 对角线) */
   _joyDir(tx: number, ty: number): string {
     const r = this._dpadSize / 2;
-    const dx = tx - this._dpadX - r, dy = ty - this._dpadY - r;
+    const cx = this._dpadX + r, cy = this._dpadY + r;
+    const dx = tx - cx, dy = ty - cy;
     const dist = Math.sqrt(dx * dx + dy * dy);
-    if (dist < r * 0.22) return ''; // 死区
-    const angle = Math.atan2(dy, dx);
-    if (angle > -Math.PI / 4 && angle <= Math.PI / 4) return 'right';
-    if (angle > Math.PI / 4 && angle <= 3 * Math.PI / 4) return 'down';
-    if (angle > 3 * Math.PI / 4 || angle <= -3 * Math.PI / 4) return 'left';
-    return 'up';
+    const deadRad = r * 0.22;
+    if (dist < deadRad) return ''; // 死区
+
+    // 用绝对值比较简化方向判断：以 |dx| vs |dy| 分主方向,
+    // 再用 dx/dy 符号判定具体方向。
+    // 45° 分界线：|dx| > |dy| 为水平主导（左/右），否则垂直主导（上/下）
+    if (Math.abs(dx) > Math.abs(dy)) {
+      return dx > 0 ? 'right' : 'left';
+    } else {
+      return dy > 0 ? 'down' : 'up';
+    }
   },
 
   onJoystickStart(e: any) {
     const t = e.touches[0];
     if (!t) return;
     this._joyTouchId = t.identifier;
-    const dir = this._joyDir(t.x, t.y);
+    // 小程序 touch 对象没有 t.x/t.y，用 clientX/clientY（视口坐标）配合 _dpadX/_dpadY
+    const tx = t.clientX !== undefined ? t.clientX : t.x;
+    const ty = t.clientY !== undefined ? t.clientY : t.y;
+    const dir = this._joyDir(tx, ty);
     this._applyJoy(dir);
   },
 
@@ -395,7 +411,9 @@ Page({
     for (let i = 0; i < e.touches.length; i++) {
       if (e.touches[i].identifier === this._joyTouchId) {
         const t = e.touches[i];
-        const dir = this._joyDir(t.x, t.y);
+        const tx = t.clientX !== undefined ? t.clientX : t.x;
+        const ty = t.clientY !== undefined ? t.clientY : t.y;
+        const dir = this._joyDir(tx, ty);
         this._applyJoy(dir);
         return;
       }
@@ -414,17 +432,35 @@ Page({
 
   _applyJoy(dir: string) {
     if (dir === this._joystickActive) return;
-    // 清除旧方向
-    if (this._joystickActive) (this.dpadState as any)[this._joystickActive] = false;
+    // 防御：小程序热更新可能丢失非 data 属性
+    if (!this.dpadState) {
+      this.dpadState = { up: false, down: false, left: false, right: false };
+    }
+    if (this._joystickActive) {
+      (this.dpadState as any)[this._joystickActive] = false;
+    }
     this._joystickActive = dir || null;
     if (dir) (this.dpadState as any)[dir] = true;
     this.updateInput();
+    this.setData({ joystickDir: dir });
   },
 
   // ---- 设置面板 ----
 
   onSettingsToggle() {
-    this.setData({ settingsOpen: !this.data.settingsOpen });
+    const opening = !this.data.settingsOpen;
+    this.setData({ settingsOpen: opening });
+    if (opening) {
+      // 打开设置时暂停游戏
+      this.jsnesKernel?.pause();
+      this._refreshSaveSlots();
+    } else {
+      // 关闭设置时恢复游戏
+      this.jsnesKernel?.resume();
+      if (this.jsnesKernel?.running) {
+        this.jsnesFrameLoop();
+      }
+    }
   },
 
   onFpsToggle() {
@@ -437,12 +473,134 @@ Page({
     }
   },
 
+  // ---- 存档管理 ----
+
+  SAVE_DIR: `${wx.env.USER_DATA_PATH}/saves`,
+
+  /** 刷新存档槽列表 */
+  _refreshSaveSlots() {
+    try {
+      const fs = wx.getFileSystemManager();
+      const dir = this.SAVE_DIR;
+      try { fs.accessSync(dir); } catch (_) { fs.mkdirSync(dir, true); }
+      const slots: { name: string; time: string; size: number }[] = [];
+      for (let i = 0; i < 10; i++) {
+        const path = `${dir}/slot_${i}.json`;
+        try {
+          const stat = fs.statSync(path);
+          const d = new Date(stat.lastModifiedTime);
+          const time = `${d.getMonth()+1}/${d.getDate()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+          slots.push({ name: `存档 ${i + 1}`, time, size: stat.size });
+        } catch (_) {
+          slots.push({ name: `存档 ${i + 1}`, time: '', size: 0 });
+        }
+      }
+      this.setData({ saveSlots: slots });
+    } catch (e) { /* ignore */ }
+  },
+
+  /** 保存到指定槽位 */
+  onSaveSlot(e: any) {
+    const idx: number = e.currentTarget.dataset.index;
+    if (!this.jsnesKernel) return;
+    try {
+      const state = this.jsnesKernel.saveState();
+      const json = JSON.stringify(state);
+      const fs = wx.getFileSystemManager();
+      const dir = this.SAVE_DIR;
+      try { fs.accessSync(dir); } catch (_) { fs.mkdirSync(dir, true); }
+      const path = `${dir}/slot_${idx}.json`;
+      fs.writeFileSync(path, json, 'utf8');
+      wx.showToast({ title: `已保存到槽 ${idx + 1}`, icon: 'success', duration: 1200 });
+      this._refreshSaveSlots();
+    } catch (e: any) {
+      wx.showToast({ title: '保存失败: ' + (e.errMsg || e.message), icon: 'none' });
+    }
+  },
+
+  /** 从指定槽位加载 */
+  onLoadSlot(e: any) {
+    const idx: number = e.currentTarget.dataset.index;
+    if (!this.jsnesKernel) return;
+    try {
+      const fs = wx.getFileSystemManager();
+      const path = `${this.SAVE_DIR}/slot_${idx}.json`;
+      const json = fs.readFileSync(path, 'utf8');
+      const state = JSON.parse(json);
+      this.jsnesKernel.loadState(state);
+      wx.showToast({ title: `已加载存档 ${idx + 1}`, icon: 'success', duration: 1200 });
+    } catch (e: any) {
+      wx.showToast({ title: '加载失败: 存档不存在', icon: 'none' });
+    }
+  },
+
+  /** 删除指定槽位 */
+  onDeleteSlot(e: any) {
+    const idx: number = e.currentTarget.dataset.index;
+    try {
+      const fs = wx.getFileSystemManager();
+      const path = `${this.SAVE_DIR}/slot_${idx}.json`;
+      try { fs.unlinkSync(path); } catch (_) { /* ignore */ }
+      wx.showToast({ title: `已删除存档 ${idx + 1}`, icon: 'success', duration: 1200 });
+      this._refreshSaveSlots();
+    } catch (e: any) {
+      wx.showToast({ title: '删除失败', icon: 'none' });
+    }
+  },
+
+  /** 导出存档到剪贴板 (JSON 文本) */
+  onExportSave(e: any) {
+    const idx: number = e.currentTarget.dataset.index;
+    try {
+      const fs = wx.getFileSystemManager();
+      const path = `${this.SAVE_DIR}/slot_${idx}.json`;
+      const json = fs.readFileSync(path, 'utf8');
+      wx.setClipboardData({
+        data: json,
+        success: () => wx.showToast({ title: `存档 ${idx + 1} 已复制`, icon: 'success', duration: 1500 }),
+        fail: (err: any) => wx.showToast({ title: '复制失败', icon: 'none' }),
+      });
+    } catch (e: any) {
+      wx.showToast({ title: '导出失败: 存档不存在', icon: 'none' });
+    }
+  },
+
+  /** 从剪贴板导入存档到指定槽位 (会覆盖已有存档) */
+  onImportSave(e: any) {
+    const idx: number = e.currentTarget.dataset.index;
+    const that = this;
+    wx.getClipboardData({
+      success(res: any) {
+        const text = res.data;
+        if (!text || text.length < 10) {
+          wx.showToast({ title: '剪贴板无有效存档数据', icon: 'none' });
+          return;
+        }
+        try {
+          JSON.parse(text); // 验证 JSON 合法性
+          const fs = wx.getFileSystemManager();
+          const dir = that.SAVE_DIR;
+          try { fs.accessSync(dir); } catch (_) { fs.mkdirSync(dir, true); }
+          const path = `${dir}/slot_${idx}.json`;
+          fs.writeFileSync(path, text, 'utf8');
+          wx.showToast({ title: `已导入到存档 ${idx + 1}`, icon: 'success', duration: 1500 });
+          that._refreshSaveSlots();
+        } catch (e: any) {
+          wx.showToast({ title: '无效的存档数据', icon: 'none' });
+        }
+      },
+      fail() {
+        wx.showToast({ title: '无法读取剪贴板', icon: 'none' });
+      },
+    });
+  },
+
   // ---- turbo 切换 ----
 
-  _turboTick: 0 as number,
-
   onTurboToggle() {
-    this.setData({ turbo: !this.data.turbo });
+    // 循环: 0(正常) → 2(2x) → 3(3x) → 0
+    const next = this.data.turbo === 0 ? 2 : this.data.turbo === 2 ? 3 : 0;
+    this.setData({ turbo: next });
   },
 
   // ---- 方向键 ----

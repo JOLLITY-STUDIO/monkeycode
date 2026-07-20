@@ -7,6 +7,11 @@
     <view class="shell-gloss"></view>
     <view class="shell-border"></view>
 
+    <!-- 内部 PCB 主板背景 — Game Boy 风格 -->
+    <view class="pcb-bg">
+      <image class="pcb-img" src="../../src/assets/pcb/pcb_bg.png" mode="scaleToFill" />
+    </view>
+
     <!-- 顶部标题条 -->
     <view class="shell-topbar">
       <text class="shell-model">{{romTitle}}</text>
@@ -65,10 +70,10 @@
               bindtouchstart="onJoystickStart"
               bindtouchmove="onJoystickMove"
               bindtouchend="onJoystickEnd"></view>
-            <view class="dpad-btn dpad-up"></view>
-            <view class="dpad-btn dpad-down"></view>
-            <view class="dpad-btn dpad-left"></view>
-            <view class="dpad-btn dpad-right"></view>
+            <view class="dpad-btn dpad-up {{joystickDir === 'up' ? 'joy-active' : ''}}"></view>
+            <view class="dpad-btn dpad-down {{joystickDir === 'down' ? 'joy-active' : ''}}"></view>
+            <view class="dpad-btn dpad-left {{joystickDir === 'left' ? 'joy-active' : ''}}"></view>
+            <view class="dpad-btn dpad-right {{joystickDir === 'right' ? 'joy-active' : ''}}"></view>
             <view class="dpad-center"></view>
           </view>
         </view>
@@ -96,7 +101,7 @@
         </view>
         <view class="ctrl-col">
           <view class="ctrl-btn turbo-btn {{turbo ? 'active' : ''}}" bindtap="onTurboToggle"></view>
-          <text class="ctrl-label" style="color:{{turbo ? '#ff6600' : ''}};">TURBO</text>
+          <text class="ctrl-label" style="color:{{turbo === 3 ? '#ff6600' : (turbo === 2 ? '#ff9900' : '')}};">{{turbo === 3 ? 'TURBO 3x' : (turbo === 2 ? 'TURBO 2x' : 'TURBO')}}</text>
         </view>
       </view>
 
@@ -114,12 +119,32 @@
 
     <!-- 设置面板弹出层 — 放在 shell 最末尾确保不被遮挡 -->
     <view class="settings-panel {{settingsOpen ? 'open' : ''}}">
+      <view class="settings-section-title">显示</view>
       <view class="settings-item" bindtap="onFpsToggle">
         <text class="settings-item-label">显示 FPS</text>
         <view class="settings-item-switch {{showFps ? 'on' : ''}}">
           <view class="switch-knob"></view>
         </view>
       </view>
+
+      <view class="settings-sep"></view>
+      <view class="settings-section-title">存档 (10 槽)</view>
+      <scroll-view class="save-slot-list" scroll-y="true" wx:for="{{saveSlots}}" wx:key="index" wx:for-index="i">
+        <view class="save-slot">
+          <text class="save-slot-name">{{item.name}}</text>
+          <text class="save-slot-time" wx:if="{{item.time}}">{{item.time}}</text>
+          <text class="save-slot-empty" wx:else>空</text>
+          <view class="save-slot-btns">
+            <view class="save-btn save-btn-save" catchtap="onSaveSlot" data-index="{{i}}">存</view>
+            <view class="save-btn save-btn-load" catchtap="onLoadSlot" data-index="{{i}}" wx:if="{{item.time}}">读</view>
+            <view class="save-btn save-btn-export" catchtap="onExportSave" data-index="{{i}}" wx:if="{{item.time}}">出</view>
+            <view class="save-btn save-btn-import" catchtap="onImportSave" data-index="{{i}}">入</view>
+            <view class="save-btn save-btn-del" catchtap="onDeleteSlot" data-index="{{i}}" wx:if="{{item.time}}">✕</view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="settings-sep"></view>
       <view class="settings-version">v1.0.1</view>
     </view>
   </view>
