@@ -33,15 +33,12 @@ export function createMiniPlatform(): MiniGameHandle {
       return inputMask;
     },
     requestFrame(callback: () => void): any {
-      if (canvasNode?.requestAnimationFrame) {
-        return canvasNode.requestAnimationFrame(callback);
-      }
+      // setTimeout 替代 canvas.requestAnimationFrame，避免微信内部
+      // __subPageFrameEndTime__ 崩溃
       return setTimeout(callback, 16) as any;
     },
     cancelFrame(id: any): void {
-      if (canvasNode?.cancelAnimationFrame) {
-        canvasNode.cancelAnimationFrame(id);
-      } else if (typeof id === 'number') {
+      if (typeof id === 'number') {
         clearTimeout(id);
       }
     },

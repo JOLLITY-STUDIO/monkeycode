@@ -2,8 +2,14 @@
   "pages": [
     "pages/game/game"
   ],
+  "subPackages": [
+    {
+      "root": "subpkg/rom",
+      "pages": []
+    }
+  ],
   "window": {
-    "navigationBarTitleText": "天使之翼2",
+    "navigationBarTitleText": "天使之翼2 v1.0.1",
     "navigationBarBackgroundColor": "#1a1a2e",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#0f0f23"

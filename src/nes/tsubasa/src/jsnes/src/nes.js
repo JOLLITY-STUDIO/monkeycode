@@ -81,7 +81,9 @@ class NES {
 
           // Clock APU with the full cycle count. The frame counter portion
           // subtracts any cycles already advanced by APU catch-up.
-          papu.clockFrameCounter(cycles, cpu.apuCatchupCycles);
+          if (this.opts.emulateSound) {
+            papu.clockFrameCounter(cycles, cpu.apuCatchupCycles);
+          }
           cpu.apuCatchupCycles = 0;
 
           // Check if VBlank fired during inline PPU stepping.
@@ -95,7 +97,9 @@ class NES {
           for (let i = 0; i < chunk; i++) {
             ppu.advanceDots(3);
           }
-          papu.clockFrameCounter(chunk);
+          if (this.opts.emulateSound) {
+            papu.clockFrameCounter(chunk);
+          }
           cpu.cyclesToHalt -= chunk;
           cpu._cpuCycleBase += chunk;
 

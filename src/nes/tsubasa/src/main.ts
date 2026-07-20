@@ -17,7 +17,7 @@ import {
 import { GameContext } from './disasm/_context';
 import { allBanks } from './disasm/banks/index';
 import type { RomReader, BankRomSlice } from './disasm/banks/_bank_types';
-import { ROM_DATA } from './disasm/banks/_romdata';
+import { ROM_DATA, loadRomData } from './disasm/banks/_romdata';
 import { resolveBank, getBank } from './disasm/banks/_crossbank';
 
 // ============================================================================
@@ -42,7 +42,7 @@ export interface GamePlatform {
 // ============================================================================
 
 const PRG_BANK_SIZE = 0x2000;       // 8KB per bank
-const TOTAL_PRG_BANKS = ROM_DATA.length; // 48 banks
+const TOTAL_PRG_BANKS = 48;         // 48 banks (fixed)
 const CHR_RAM_SIZE = 0x2000;        // 8KB CHR RAM
 
 // ============================================================================
@@ -283,21 +283,20 @@ function processDisplayListEntries(): void {
   if (ctrlFlag & 0x40) return; // 忙, 跳过
 
   // 遍历 $05E8 区域的条目
-  // 格式: [控制字节][PPU低字节][PPU高字节/数据]... 0x00 结束
+  // 格式: [控制字节][PPU低字节][PPU高字节]... 0x00 结束
   let pos = 0;
   while (pos < endFlag) {
     const ctrl = ctx.ram.u8(0x05E8 + pos);
     if (ctrl === 0) break; // 终止符
 
-    // ppuAttrTransfer 写的格式: ctrl=0x20, then dataLo, dataHi
-    // 写入 PPUADDR: dataLo(高字节), dataHi(低字节)
-    // 然后后续的 dispLookup 写的是单字节 palette 数据
+    // ppuAttrTransfer 写的格式: ctrl=0x20, then dataLo(低), dataHi(高)
+    // 写入 PPUADDR: 先写高字节(dataHi), 再写低字节(dataLo) — NES 2006 写入顺序
     if (ctrl === 0x20 && pos + 2 < endFlag) {
       const dataLo = ctx.ram.u8(0x05E9 + pos);
       const dataHi = ctx.ram.u8(0x05EA + pos);
-      // 设置 PPU 地址 (通过 PPU bridge)
-      ctx.ram.setU8(0x2006, dataLo); // 高字节 (e.g., $3F)
-      ctx.ram.setU8(0x2006, dataHi); // 低字节 (e.g., $00)
+      // 高字节先写 → 低字节后写
+      ctx.ram.setU8(0x2006, dataHi);
+      ctx.ram.setU8(0x2006, dataLo);
       pos += 3; // 跳过 3 字节表头
 
       // 后续是 palette 数据字节, 写到 PPUDATA
@@ -312,8 +311,9 @@ function processDisplayListEntries(): void {
       if (pos + 3 < endFlag) {
         const lo = ctx.ram.u8(0x05E9 + pos);
         const hi = ctx.ram.u8(0x05EA + pos);
-        ctx.ram.setU8(0x2006, lo);
+        // 高字节先写 → 低字节后写
         ctx.ram.setU8(0x2006, hi);
+        ctx.ram.setU8(0x2006, lo);
         const data = ctx.ram.u8(0x05EB + pos);
         ctx.ram.setU8(0x2007, data);
         pos += 4;
@@ -400,7 +400,11 @@ function frameLoop(): void {
 // 初始化
 // ============================================================================
 
-function init(): void {
+async function init(): Promise<void> {
+  console.log('[init] Loading ROM data from subpackage...');
+  await loadRomData();
+  console.log('[init] ROM data loaded, %d banks', ROM_DATA.length);
+
   console.log('[init] Building ROM...');
   rom = buildRom();
   console.log('[init] ROM built: PRG banks=%d, CHR RAM=%d bytes', TOTAL_PRG_BANKS, CHR_RAM_SIZE);
@@ -484,10 +488,10 @@ function init(): void {
 // ============================================================================
 
 /** 创建并启动游戏 */
-export function startGame(p: GamePlatform): void {
+export async function startGame(p: GamePlatform): Promise<void> {
   console.log('[main] startGame called, platform=%s', typeof p.canvas);
   platform = p;
-  init();
+  await init();
   running = true;
   console.log('[main] Starting frame loop...');
   animId = platform.requestFrame(frameLoop);
@@ -505,9 +509,9 @@ export function stopGame(): void {
 }
 
 /** 重置游戏 */
-export function resetGame(): void {
+export async function resetGame(): Promise<void> {
   stopGame();
-  init();
+  await init();
   running = true;
   animId = platform.requestFrame(frameLoop);
 }

@@ -17,9 +17,19 @@
   "compileType": "miniprogram",
   "simulatorPluginLibVersion": {},
   "packOptions": {
-    "ignore": [],
+    "ignore": [
+      {
+        "type": "folder",
+        "value": "src/legacy"
+      },
+      {
+        "type": "folder",
+        "value": "src/docs"
+      }
+    ],
     "include": []
   },
   "appid": "wxa5186294d8f02117",
+  "version": "1.0.1",
   "editorSetting": {}
 }

@@ -1,50 +1,126 @@
-<!-- 天使之翼2 — 双 Canvas 对比调试 -->
-<view class="game-container">
-  <!-- 双 Canvas 并排区域 -->
-  <view class="canvas-row">
-    <!-- 左侧: 手写 TS 内核输出 -->
-    <view class="canvas-col">
-      <view class="canvas-label">TS 内核</view>
-      <canvas 
-        type="2d" 
-        id="game-canvas" 
-        class="dual-canvas"
-        bindtouchstart="onTouchStart"
-        bindtouchmove="onTouchMove"
-        bindtouchend="onTouchEnd"
-      ></canvas>
+<!-- 天使之翼2 — 双 Canvas 对比调试，紫色半透明外壳 -->
+<view class="page-root {{isLandscape ? 'landscape' : ''}}" style="padding-top: {{shellTop}}px;">
+  <!-- ====== 紫色半透外壳 ====== -->
+  <view class="shell">
+
+    <!-- 外壳光效 -->
+    <view class="shell-gloss"></view>
+    <view class="shell-border"></view>
+
+    <!-- 顶部标题条 -->
+    <view class="shell-topbar">
+      <text class="shell-model">{{romTitle}}</text>
+      <view class="shell-dots">
+        <view class="dot"></view>
+        <view class="dot"></view>
+        <view class="dot settings-dot {{settingsOpen ? 'active' : ''}}" bindtap="onSettingsToggle"></view>
+      </view>
     </view>
 
-    <!-- 右侧: jsnes 渲染输出 -->
-    <view class="canvas-col">
-      <view class="canvas-label">jsnes 参考</view>
-      <canvas 
-        type="2d" 
-        id="jsnes-canvas" 
-        class="dual-canvas"
-      ></canvas>
+    <!-- ====== 屏幕外框 (bezel) — 内部结构在此可见 ====== -->
+    <view class="screen-bezel">
+      <!-- 内部结构层：螺丝、走线 — 画在 bezel 边框区域，canvas 不遮挡 -->
+      <view class="bezel-inner">
+        <!-- 四角螺丝 -->
+        <view class="screw screw-tl"><view class="screw-cross"></view></view>
+        <view class="screw screw-tr"><view class="screw-cross"></view></view>
+        <view class="screw screw-bl"><view class="screw-cross"></view></view>
+        <view class="screw screw-br"><view class="screw-cross"></view></view>
+        <!-- PCB 走线 -->
+        <view class="pcb-line line-l1"></view>
+        <view class="pcb-line line-l2"></view>
+        <view class="pcb-line line-r1"></view>
+        <view class="pcb-line line-r2"></view>
+        <!-- 小圆点焊盘 -->
+        <view class="dot-decor d1"></view>
+        <view class="dot-decor d2"></view>
+        <view class="dot-decor d3"></view>
+      </view>
+
+      <!-- 双 Canvas 屏幕区域 -->
+      <view class="canvas-row">
+        <view class="canvas-col">
+          <view class="canvas-label">TS disasm</view>
+          <canvas type="2d" id="game-canvas" class="dual-canvas"></canvas>
+        </view>
+        <view class="canvas-col">
+          <view class="canvas-label">jsnes 参考</view>
+          <canvas type="2d" id="jsnes-canvas" class="dual-canvas"></canvas>
+          <view class="fps-overlay" wx:if="{{showFps}}">
+            <text class="fps-text">{{fps}} FPS</text>
+          </view>
+        </view>
+      </view>
     </view>
-  </view>
+
+    <!-- ====== 按键区 — 经典掌机布局 ====== -->
+    <view class="controls-area">
+      <!-- 上排: 左十字键 + 右 AB 键 -->
+      <view class="controls-top-row">
+        <!-- 左侧十字键 (圆圈摇杆覆盖，容错率更高) -->
+        <view class="dpad-wrapper">
+          <view class="dpad">
+            <!-- 圆圈摇杆触摸层 — 根据触点和圆心的角度判断方向 -->
+            <view class="dpad-joystick" 
+              bindtouchstart="onJoystickStart"
+              bindtouchmove="onJoystickMove"
+              bindtouchend="onJoystickEnd"></view>
+            <view class="dpad-btn dpad-up"></view>
+            <view class="dpad-btn dpad-down"></view>
+            <view class="dpad-btn dpad-left"></view>
+            <view class="dpad-btn dpad-right"></view>
+            <view class="dpad-center"></view>
+          </view>
+        </view>
+
+        <!-- 右侧 A/B 按键 (B 左下, A 右上斜角) -->
+        <view class="ab-wrapper">
+          <view class="ab-btn btn-b" data-btn="b" bindtouchstart="onBtnDown" bindtouchend="onBtnUp">
+            <text class="ab-label">B</text>
+          </view>
+          <view class="ab-btn btn-a" data-btn="a" bindtouchstart="onBtnDown" bindtouchend="onBtnUp">
+            <text class="ab-label">A</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 下排: SELECT / START 居中，文字在按钮下方 -->
+      <view class="controls-bottom-row">
+        <view class="ctrl-col">
+          <view class="ctrl-btn btn-select" data-btn="select" bindtouchstart="onBtnDown" bindtouchend="onBtnUp"></view>
+          <text class="ctrl-label">SELECT</text>
+        </view>
+        <view class="ctrl-col">
+          <view class="ctrl-btn btn-start" data-btn="start" bindtouchstart="onBtnDown" bindtouchend="onBtnUp"></view>
+          <text class="ctrl-label">START</text>
+        </view>
+        <view class="ctrl-col">
+          <view class="ctrl-btn turbo-btn {{turbo ? 'active' : ''}}" bindtap="onTurboToggle"></view>
+          <text class="ctrl-label" style="color:{{turbo ? '#ff6600' : ''}};">TURBO</text>
+        </view>
+      </view>
+
   
-  <!-- 状态栏 -->
-  <view class="status-bar">
-    <text class="status-text">{{statusText}}</text>
-  </view>
-  
-  <!-- 虚拟方向键 -->
-  <view class="dpad">
-    <view class="dpad-btn dpad-up"    data-dir="up"    bindtouchstart="onDpadDown" bindtouchend="onDpadUp"></view>
-    <view class="dpad-btn dpad-down"  data-dir="down"  bindtouchstart="onDpadDown" bindtouchend="onDpadUp"></view>
-    <view class="dpad-btn dpad-left"  data-dir="left"  bindtouchstart="onDpadDown" bindtouchend="onDpadUp"></view>
-    <view class="dpad-btn dpad-right" data-dir="right" bindtouchstart="onDpadDown" bindtouchend="onDpadUp"></view>
-    <view class="dpad-center"></view>
-  </view>
-  
-  <!-- 功能键 -->
-  <view class="action-buttons">
-    <view class="action-btn btn-a" data-btn="a" bindtouchstart="onBtnDown" bindtouchend="onBtnUp">A</view>
-    <view class="action-btn btn-b" data-btn="b" bindtouchstart="onBtnDown" bindtouchend="onBtnUp">B</view>
-    <view class="action-btn btn-start"  data-btn="start"  bindtouchstart="onBtnDown" bindtouchend="onBtnUp">START</view>
-    <view class="action-btn btn-select" data-btn="select" bindtouchstart="onBtnDown" bindtouchend="onBtnUp">SELECT</view>
+    <!-- 右下角喇叭 -->
+      <view class="speaker">
+        <view class="speaker-holes"></view>
+      </view>
+    </view>
+
+    <!-- trace 导出按钮 (trace ready 时才显示) -->
+    <view class="trace-export" wx:if="{{traceReady}}" bindtap="exportTrace">
+      <text>📋 导出 trace</text>
+    </view>
+
+    <!-- 设置面板弹出层 — 放在 shell 最末尾确保不被遮挡 -->
+    <view class="settings-panel {{settingsOpen ? 'open' : ''}}">
+      <view class="settings-item" bindtap="onFpsToggle">
+        <text class="settings-item-label">显示 FPS</text>
+        <view class="settings-item-switch {{showFps ? 'on' : ''}}">
+          <view class="switch-knob"></view>
+        </view>
+      </view>
+      <view class="settings-version">v1.0.1</view>
+    </view>
   </view>
 </view>
