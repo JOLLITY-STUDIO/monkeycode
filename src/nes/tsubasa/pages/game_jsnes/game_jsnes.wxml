@@ -1,0 +1,130 @@
+<!-- 天使之翼2 — tsnes 单画布，紫色半透明外壳 -->
+<view class="page-root {{isLandscape ? 'landscape' : ''}}" style="padding-top: {{shellTop}}px;">
+  <!-- ====== 紫色半透外壳 ====== -->
+  <view class="shell">
+    <view class="shell-gloss"></view>
+    <view class="shell-border"></view>
+
+    <!-- 内部 PCB 主板背景 -->
+    <view class="pcb-bg">
+      <image class="pcb-img" src="../../src/assets/pcb/pcb_bg.png" mode="scaleToFill" />
+    </view>
+
+    <!-- 顶部标题条 -->
+    <view class="shell-topbar">
+      <text class="shell-model">{{romTitle}}</text>
+      <view class="shell-dots">
+        <view class="dot"></view>
+        <view class="dot"></view>
+        <view class="dot settings-dot {{settingsOpen ? 'active' : ''}}" bindtap="onSettingsToggle"></view>
+      </view>
+    </view>
+
+    <!-- ====== 屏幕外框 ====== -->
+    <view class="screen-bezel">
+      <view class="bezel-inner">
+        <view class="screw screw-tl"><view class="screw-cross"></view></view>
+        <view class="screw screw-tr"><view class="screw-cross"></view></view>
+        <view class="screw screw-bl"><view class="screw-cross"></view></view>
+        <view class="screw screw-br"><view class="screw-cross"></view></view>
+        <view class="pcb-line line-l1"></view>
+        <view class="pcb-line line-l2"></view>
+        <view class="pcb-line line-r1"></view>
+        <view class="pcb-line line-r2"></view>
+        <view class="dot-decor d1"></view>
+        <view class="dot-decor d2"></view>
+        <view class="dot-decor d3"></view>
+      </view>
+
+      <!-- 单 Canvas 屏幕区域 -->
+      <view class="canvas-row single">
+        <canvas type="2d" id="game-canvas" class="single-canvas"></canvas>
+        <view class="fps-overlay" wx:if="{{showFps}}">
+          <text class="fps-text">{{fps}} FPS</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- ====== 按键区 ====== -->
+    <view class="controls-area">
+      <view class="controls-top-row">
+        <!-- 左侧十字键 -->
+        <view class="dpad-wrapper">
+          <view class="dpad">
+            <view class="dpad-joystick"
+              bindtouchstart="onJoystickStart"
+              bindtouchmove="onJoystickMove"
+              bindtouchend="onJoystickEnd"></view>
+            <view class="dpad-btn dpad-up {{joystickDir === 'up' ? 'joy-active' : ''}}"></view>
+            <view class="dpad-btn dpad-down {{joystickDir === 'down' ? 'joy-active' : ''}}"></view>
+            <view class="dpad-btn dpad-left {{joystickDir === 'left' ? 'joy-active' : ''}}"></view>
+            <view class="dpad-btn dpad-right {{joystickDir === 'right' ? 'joy-active' : ''}}"></view>
+            <view class="dpad-center"></view>
+          </view>
+        </view>
+
+        <!-- 右侧 A/B 键 -->
+        <view class="ab-wrapper">
+          <view class="ab-btn btn-b" data-btn="b" bindtouchstart="onBtnDown" bindtouchend="onBtnUp">
+            <text class="ab-label">B</text>
+          </view>
+          <view class="ab-btn btn-a" data-btn="a" bindtouchstart="onBtnDown" bindtouchend="onBtnUp">
+            <text class="ab-label">A</text>
+          </view>
+        </view>
+      </view>
+
+      <!-- 下排: SELECT / START -->
+      <view class="controls-bottom-row">
+        <view class="ctrl-col">
+          <view class="ctrl-btn btn-select" data-btn="select" bindtouchstart="onBtnDown" bindtouchend="onBtnUp"></view>
+          <text class="ctrl-label">SELECT</text>
+        </view>
+        <view class="ctrl-col">
+          <view class="ctrl-btn btn-start" data-btn="start" bindtouchstart="onBtnDown" bindtouchend="onBtnUp"></view>
+          <text class="ctrl-label">START</text>
+        </view>
+        <view class="ctrl-col">
+          <view class="ctrl-btn turbo-btn {{turbo ? 'active' : ''}}" bindtap="onTurboToggle"></view>
+          <text class="ctrl-label" style="color:{{turbo === 3 ? '#ff6600' : (turbo === 2 ? '#ff9900' : '')}};">{{turbo === 3 ? 'TURBO 3x' : (turbo === 2 ? 'TURBO 2x' : 'TURBO')}}</text>
+        </view>
+      </view>
+
+      <!-- 右下角喇叭 -->
+      <view class="speaker">
+        <view class="speaker-holes"></view>
+      </view>
+    </view>
+
+    <!-- 设置面板弹出层 -->
+    <view class="settings-panel {{settingsOpen ? 'open' : ''}}">
+      <view class="settings-section-title">显示</view>
+      <view class="settings-item" bindtap="onFpsToggle">
+        <text class="settings-item-label">显示 FPS</text>
+        <view class="settings-item-switch {{showFps ? 'on' : ''}}">
+          <view class="switch-knob"></view>
+        </view>
+      </view>
+
+      <view class="settings-sep"></view>
+      <view class="settings-section-title">存档 (10 槽)</view>
+      <scroll-view class="save-slot-list" scroll-y="true" wx:for="{{saveSlots}}" wx:key="index" wx:for-index="i">
+        <view class="save-slot">
+          <text class="save-slot-name">{{item.name}}</text>
+          <text class="save-slot-time" wx:if="{{item.time}}">{{item.time}}</text>
+          <text class="save-slot-empty" wx:else>空</text>
+          <view class="save-slot-btns">
+            <view class="save-btn save-btn-save" catchtap="onSaveSlot" data-index="{{i}}">存</view>
+            <view class="save-btn save-btn-load" catchtap="onLoadSlot" data-index="{{i}}" wx:if="{{item.time}}">读</view>
+            <view class="save-btn save-btn-export" catchtap="onExportSave" data-index="{{i}}" wx:if="{{item.time}}">出</view>
+            <view class="save-btn save-btn-import" catchtap="onImportSave" data-index="{{i}}">入</view>
+            <view class="save-btn save-btn-del" catchtap="onDeleteSlot" data-index="{{i}}" wx:if="{{item.time}}">✕</view>
+          </view>
+        </view>
+      </scroll-view>
+
+      <view class="settings-sep"></view>
+      <view class="settings-version">tsnes v1.0</view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,750 @@
+/** 游戏页面 — tsnes 单画布版，紫色半透明塑料外壳 + 经典掌机按键布局 */
+
+/* ================================
+   页面根容器
+   ================================ */
+.page-root {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: radial-gradient(ellipse at 50% 30%, #1a1a3a 0%, #0a0a18 100%);
+  box-sizing: border-box;
+}
+
+/* ================================
+   紫色半透外壳
+   ================================ */
+.shell {
+  margin: 0 2px 2px;
+  border-radius: 24px;
+  background:
+    linear-gradient(180deg,
+      rgba(200, 170, 255, 0.15) 0%,
+      rgba(140, 60, 220, 0.08) 20%,
+      rgba(60, 20, 120, 0.35) 50%,
+      rgba(40, 10, 80, 0.45) 100%
+    );
+  border: 3px solid rgba(180, 130, 255, 0.3);
+  box-shadow:
+    0 0 30px rgba(140, 60, 220, 0.2),
+    0 8px 32px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.shell-gloss {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 35%;
+  background: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(255, 255, 255, 0.02) 40%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 0;
+}
+
+.shell-border {
+  position: absolute;
+  top: 2px; left: 2px; right: 2px; bottom: 2px;
+  border-radius: 22px;
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.pcb-bg {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  opacity: 0.15;
+  border-radius: 22px;
+}
+
+.pcb-img {
+  width: 100%;
+  height: 100%;
+}
+
+/* ================================
+   外壳顶部标题条
+   ================================ */
+.shell-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 20px 6px;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+.shell-model {
+  color: rgba(255, 255, 255, 0.55);
+  font-size: 10px;
+  letter-spacing: 1px;
+  text-shadow: 0 0 8px rgba(160, 120, 255, 0.3);
+}
+
+.shell-dots {
+  display: flex;
+  gap: 5px;
+}
+
+.dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.settings-dot {
+  width: 6px;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.18);
+  position: relative;
+}
+
+.settings-dot::after {
+  content: '';
+  position: absolute;
+  top: -19px; left: -19px;
+  right: -19px; bottom: -19px;
+}
+
+.settings-dot.active {
+  background: rgba(180, 140, 255, 0.5);
+  box-shadow: 0 0 4px rgba(180, 140, 255, 0.3);
+}
+
+/* 设置面板 */
+.settings-panel {
+  position: absolute;
+  top: 36px;
+  right: 14px;
+  width: 200px;
+  max-height: 340px;
+  background: rgba(30, 10, 60, 0.94);
+  border: 1px solid rgba(180, 140, 255, 0.25);
+  border-radius: 10px;
+  padding: 10px;
+  z-index: 20;
+  opacity: 0;
+  transform: translateY(-6px) scale(0.95);
+  pointer-events: none;
+  transition: opacity 0.15s, transform 0.15s;
+  overflow: hidden;
+}
+
+.settings-panel.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.settings-section-title {
+  color: rgba(180, 140, 255, 0.6);
+  font-size: 9px;
+  margin-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+.settings-sep {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.06);
+  margin: 6px 0;
+}
+
+.settings-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0;
+}
+
+.settings-item-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 11px;
+}
+
+.settings-item-switch {
+  width: 32px;
+  height: 18px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.12);
+  position: relative;
+  transition: background 0.2s;
+}
+
+.settings-item-switch.on {
+  background: rgba(140, 80, 220, 0.5);
+}
+
+.switch-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.8);
+  transition: left 0.2s;
+}
+
+.settings-item-switch.on .switch-knob {
+  left: 16px;
+}
+
+.settings-version {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  text-align: center;
+  color: rgba(255, 255, 255, 0.2);
+  font-size: 9px;
+}
+
+.save-slot-list {
+  max-height: 200px;
+}
+
+.save-slot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.save-slot-name {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 10px;
+  width: 40px;
+  flex-shrink: 0;
+}
+
+.save-slot-time {
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 8px;
+  flex: 1;
+  margin: 0 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.save-slot-empty {
+  color: rgba(255, 255, 255, 0.12);
+  font-size: 9px;
+  flex: 1;
+}
+
+.save-slot-btns {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.save-btn {
+  width: 18px;
+  height: 16px;
+  border-radius: 3px;
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid;
+}
+
+.save-btn-save {
+  color: rgba(140, 200, 255, 0.7);
+  background: rgba(140, 200, 255, 0.08);
+  border-color: rgba(140, 200, 255, 0.2);
+}
+
+.save-btn-load {
+  color: rgba(140, 255, 160, 0.7);
+  background: rgba(140, 255, 160, 0.08);
+  border-color: rgba(140, 255, 160, 0.2);
+}
+
+.save-btn-export {
+  color: rgba(255, 200, 100, 0.7);
+  background: rgba(255, 200, 100, 0.08);
+  border-color: rgba(255, 200, 100, 0.2);
+}
+
+.save-btn-import {
+  color: rgba(200, 160, 255, 0.7);
+  background: rgba(200, 160, 255, 0.08);
+  border-color: rgba(200, 160, 255, 0.2);
+}
+
+.save-btn-del {
+  color: rgba(255, 100, 100, 0.7);
+  background: rgba(255, 100, 100, 0.08);
+  border-color: rgba(255, 100, 100, 0.2);
+}
+
+/* FPS 叠加显示 */
+.fps-overlay {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(180, 140, 255, 0.2);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.fps-text {
+  color: #0f0;
+  font-size: 10px;
+  font-family: monospace;
+  text-shadow: 0 0 4px rgba(0, 255, 0, 0.4);
+}
+
+/* ================================
+   屏幕外框
+   ================================ */
+.screen-bezel {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  z-index: 1;
+  padding: 6px 10px;
+  box-sizing: border-box;
+}
+
+.bezel-inner {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* 螺丝钉 */
+.screw {
+  position: absolute;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: rgba(60, 60, 70, 0.5);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.04);
+}
+
+.screw-cross {
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 5px;
+  height: 2px;
+  background: rgba(30, 30, 40, 0.6);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.screw-cross::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 5px;
+  height: 2px;
+  background: rgba(30, 30, 40, 0.6);
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.screw-tl { top: 8px;  left: 14px; }
+.screw-tr { top: 8px;  right: 14px; }
+.screw-bl { bottom: 8px; left: 14px; }
+.screw-br { bottom: 8px; right: 14px; }
+
+/* PCB 走线 */
+.pcb-line {
+  position: absolute;
+  background: rgba(80, 200, 100, 0.06);
+  border-radius: 1px;
+}
+
+.line-l1 { top: 30%; left: 12px; width: 3px; height: 40%; }
+.line-l2 { top: 20%; left: 18px; width: 2px; height: 60%; }
+.line-r1 { top: 25%; right: 12px; width: 3px; height: 50%; }
+.line-r2 { top: 35%; right: 18px; width: 2px; height: 30%; }
+
+.dot-decor {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(180, 160, 220, 0.06);
+  border: 1px solid rgba(180, 160, 220, 0.1);
+}
+
+.dot-decor.d1 { top: 28%; left: 20px; }
+.dot-decor.d2 { bottom: 28%; right: 20px; }
+.dot-decor.d3 { top: 50%; right: 14px; width: 6px; height: 6px; }
+
+/* ================================
+   单 Canvas 屏幕
+   ================================ */
+.canvas-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+
+.canvas-row.single {
+  border-radius: 10px;
+  border: 2px solid rgba(180, 130, 255, 0.12);
+  background: #000;
+  overflow: hidden;
+}
+
+.single-canvas {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ================================
+   按键控制区
+   ================================ */
+.controls-area {
+  flex-shrink: 0;
+  padding: 6px 12px 4px;
+  box-sizing: border-box;
+  position: relative;
+  z-index: 1;
+}
+
+.controls-top-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4px;
+}
+
+.controls-bottom-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 20px;
+  padding: 6px 0 4px;
+  margin-top: 2px;
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+.ctrl-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+
+/* 喇叭 */
+.speaker {
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(20, 10, 40, 0.5);
+  border: 2px solid rgba(180, 140, 255, 0.15);
+  box-shadow:
+    inset 0 2px 6px rgba(0, 0, 0, 0.4),
+    0 1px 0 rgba(255, 255, 255, 0.03);
+  overflow: hidden;
+}
+
+.speaker-holes {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 0, 0, 0.55) 1.2px, transparent 1.5px);
+  background-size: 7px 7px;
+  background-position: 2px 2px;
+}
+
+/* 十字键 */
+.dpad-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.dpad {
+  position: relative;
+  width: 108px;
+  height: 108px;
+}
+
+.dpad-btn {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  background: rgba(40, 20, 60, 0.6);
+  border: 1px solid rgba(180, 140, 255, 0.25);
+  border-radius: 5px;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.06),
+    0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.dpad-up    { left: 36px; top: 0;     border-radius: 6px 6px 2px 2px; }
+.dpad-down  { left: 36px; bottom: 0;  border-radius: 2px 2px 6px 6px; }
+.dpad-left  { left: 0;    top: 36px;  border-radius: 6px 2px 2px 6px; }
+.dpad-right { right: 0;   top: 36px;  border-radius: 2px 6px 6px 2px; }
+
+.dpad-center {
+  position: absolute;
+  left: 36px; top: 36px;
+  width: 36px; height: 36px;
+  background: rgba(30, 15, 50, 0.7);
+  border-radius: 4px;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.dpad-btn:active {
+  background: rgba(180, 140, 255, 0.3);
+}
+
+.dpad-btn.joy-active {
+  background: rgba(180, 140, 255, 0.45) !important;
+  border-color: rgba(180, 140, 255, 0.6) !important;
+  box-shadow: 0 0 8px rgba(180, 140, 255, 0.35), inset 0 2px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+.dpad-joystick {
+  position: absolute;
+  top: -8px; left: -8px;
+  right: -8px; bottom: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(180, 140, 255, 0.15);
+  background: rgba(140, 80, 220, 0.04);
+  z-index: 5;
+}
+
+/* A/B 圆形按键 */
+.ab-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 100px;
+  height: 92px;
+}
+
+.ab-btn {
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 3px 6px rgba(0, 0, 0, 0.4),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.ab-btn.btn-b {
+  left: -20px;
+  bottom: 8px;
+  background: linear-gradient(135deg, rgba(200, 160, 50, 0.5) 0%, rgba(180, 130, 30, 0.6) 100%);
+  border: 2px solid rgba(255, 210, 80, 0.3);
+}
+
+.ab-btn.btn-a {
+  right: 8px;
+  top: 18px;
+  background: linear-gradient(135deg, rgba(220, 50, 70, 0.5) 0%, rgba(190, 30, 50, 0.6) 100%);
+  border: 2px solid rgba(255, 80, 100, 0.3);
+}
+
+.ab-btn:active {
+  transform: scale(0.9);
+}
+
+.ab-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 18px;
+  font-weight: bold;
+  text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+}
+
+/* SELECT / START 硅胶按键 */
+.ctrl-btn {
+  width: 42px;
+  height: 14px;
+  border-radius: 7px;
+  background: rgba(80, 80, 100, 0.35);
+  border: 1px solid rgba(180, 160, 200, 0.2);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.05),
+    0 1px 2px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.ctrl-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 2px; right: 2px;
+  height: 40%;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 3px;
+}
+
+.ctrl-btn:active {
+  background: rgba(180, 160, 200, 0.2);
+  transform: scaleY(0.85);
+}
+
+.ctrl-label {
+  color: rgba(255, 255, 255, 0.16);
+  font-size: 7px;
+  letter-spacing: 1px;
+}
+
+.turbo-btn {
+  background: rgba(60, 60, 80, 0.35) !important;
+  border-color: rgba(180, 160, 200, 0.2) !important;
+}
+
+.turbo-btn.active {
+  background: rgba(255, 100, 0, 0.35) !important;
+  border-color: rgba(255, 150, 50, 0.5) !important;
+  box-shadow: 0 0 8px rgba(255, 100, 0, 0.3) !important;
+}
+
+/* ================================
+   横屏布局
+   ================================ */
+.page-root.landscape .shell {
+  margin: 0;
+  border-radius: 16px;
+}
+
+.page-root.landscape .shell-border {
+  border-radius: 14px;
+}
+
+.page-root.landscape .screen-bezel {
+  flex: 1;
+  min-width: 0;
+}
+
+.page-root.landscape .canvas-row.single {
+  width: 100%;
+  height: 100%;
+}
+
+.page-root.landscape .controls-area {
+  flex-shrink: 0;
+  padding: 6px 8px;
+}
+
+.page-root.landscape .controls-top-row {
+  flex-direction: column;
+  justify-content: center;
+  gap: 12px;
+}
+
+.page-root.landscape .controls-bottom-row {
+  gap: 12px;
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(255,255,255,0.03);
+}
+
+.page-root.landscape .ctrl-col {
+  gap: 2px;
+}
+
+.page-root.landscape .dpad {
+  width: 90px;
+  height: 90px;
+}
+
+.page-root.landscape .dpad-btn {
+  width: 30px;
+  height: 30px;
+}
+
+.page-root.landscape .dpad-up    { left: 30px; }
+.page-root.landscape .dpad-down  { left: 30px; }
+.page-root.landscape .dpad-left  { top: 30px; }
+.page-root.landscape .dpad-right { top: 30px; }
+.page-root.landscape .dpad-center { left: 30px; top: 30px; width: 30px; height: 30px; }
+
+.page-root.landscape .ab-wrapper {
+  width: 90px;
+  height: 82px;
+}
+
+.page-root.landscape .ab-btn {
+  width: 36px;
+  height: 36px;
+}
+
+.page-root.landscape .ab-btn.btn-b {
+  left: -2px; bottom: 9px;
+}
+
+.page-root.landscape .ab-btn.btn-a {
+  right: 4px; top: 9px;
+}
+
+.page-root.landscape .ctrl-btn {
+  width: 34px;
+  height: 12px;
+}
+
+.page-root.landscape .ctrl-label {
+  font-size: 6px;
+}
+
+.page-root.landscape .speaker {
+  right: 6px;
+  bottom: 4px;
+  width: 40px;
+  height: 40px;
+}
+
+.page-root.landscape .speaker-holes {
+  background-size: 6px 6px;
+  background-position: 2px 2px;
+}
+
+.page-root.landscape .shell-topbar {
+  padding: 4px 16px 2px;
+}
+
+.page-root.landscape .shell-model {
+  font-size: 9px;
+}
+
+.page-root.landscape .shell-dots {
+  gap: 4px;
+}
+
+.page-root.landscape .dot {
+  width: 3px;
+  height: 3px;
+}

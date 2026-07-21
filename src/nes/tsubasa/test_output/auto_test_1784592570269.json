@@ -1,0 +1,703 @@
+{
+  "totalFrames": 60,
+  "sceneChanges": 0,
+  "finalPhase": "title",
+  "finalScene": "01",
+  "finalJmpIdx": "01",
+  "finalSStat": "00",
+  "scenesSeen": [
+    "00",
+    "01"
+  ],
+  "blockerCount": 68,
+  "blockers": [
+    {
+      "frame": 2,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 3,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 4,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 5,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 6,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 7,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 8,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 9,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 10,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 11,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 12,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 13,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 14,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 15,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 16,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 17,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 18,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 19,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 20,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 21,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 22,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 23,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 24,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 25,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 26,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 27,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 28,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 29,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 30,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 31,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 32,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 33,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 34,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 35,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 36,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 37,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 38,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 39,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 40,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 41,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 42,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 43,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 44,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 45,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 46,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 47,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 48,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 49,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 50,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 51,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 51,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$01 repeated 50x (scene=$01, sStat=$00, b8=$00, bA=$01)",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 52,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 52,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$01 repeated 51x (scene=$01, sStat=$00, b8=$00, bA=$01)",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 53,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 53,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$01 repeated 52x (scene=$01, sStat=$00, b8=$00, bA=$01)",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 54,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 54,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$01 repeated 53x (scene=$01, sStat=$00, b8=$00, bA=$01)",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 55,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 55,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$01 repeated 54x (scene=$01, sStat=$00, b8=$00, bA=$01)",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 56,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 56,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$01 repeated 55x (scene=$01, sStat=$00, b8=$00, bA=$01)",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 57,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 57,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$01 repeated 56x (scene=$01, sStat=$00, b8=$00, bA=$01)",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 58,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 58,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$01 repeated 57x (scene=$01, sStat=$00, b8=$00, bA=$01)",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 59,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 59,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$01 repeated 58x (scene=$01, sStat=$00, b8=$00, bA=$01)",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 60,
+      "type": "CRASH",
+      "message": "Assignment to constant variable.",
+      "scene": 1,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    }
+  ],
+  "warningCount": 59,
+  "phaseResult": "",
+  "timeline": [
+    {
+      "frame": 0,
+      "tag": "boot_pre",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "00",
+      "joyHeld": "00",
+      "scriptLo": "00",
+      "scriptHi": "00",
+      "sceneType": "00",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 0,
+      "tag": "boot_post",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "00",
+      "joyHeld": "00",
+      "scriptLo": "00",
+      "scriptHi": "00",
+      "sceneType": "00",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 1,
+      "tag": "title_start",
+      "scene": "01",
+      "jmpIdx": "01",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "00",
+      "joyHeld": "00",
+      "scriptLo": "E5",
+      "scriptHi": "00",
+      "sceneType": "A0",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 60,
+      "tag": "exit",
+      "scene": "01",
+      "jmpIdx": "01",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "00",
+      "joyHeld": "00",
+      "scriptLo": "ED",
+      "scriptHi": "20",
+      "sceneType": "A0",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    }
+  ]
+}

@@ -47,6 +47,9 @@ export interface TileCache {
   /** 全部失效 (全屏刷新 / reset 时调用) */
   invalidateAll(): void;
 
+  /** 调色板变化时使所有 ARGB 缓存失效 (保留原始 tile 解码) */
+  markPaletteDirty(): void;
+
   /** 获取缓存统计 */
   getStats(): Readonly<{ hits: number; misses: number; invalidations: number }>;
 }
@@ -145,9 +148,16 @@ export function createTileCache(chrRam: Uint8Array): TileCache {
     tileArgbDirty.fill(true);
   }
 
+  function markPaletteDirty(): void {
+    // 调色板变化只影响 ARGB 渲染缓存，原始 tile 解码不变
+    tileArgb.fill(null);
+    tileArgbDirty.fill(true);
+    stats.invalidations += tileArgb.length;
+  }
+
   function getStats() {
     return stats as Readonly<typeof stats>;
   }
 
-  return { getTile, markDirty, invalidateAll, getStats };
+  return { getTile, markDirty, invalidateAll, markPaletteDirty, getStats };
 }

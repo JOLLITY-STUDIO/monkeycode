@@ -23,6 +23,8 @@ import { _cfg } from './disasm/banks/bank_00_dispatch';
 _cfg.verbose = false;
 _cfg.fastSceneLoad = false;
 import { ROM as bank00 } from './disasm/banks/_romdata/bank_00_data';
+import { initPaletteCache, getCacheStats } from './palette/PaletteCache';
+import { romUint8Array } from './rom_data';
 import { ROM as bank01 } from './disasm/banks/_romdata/bank_01_data';
 import { ROM as bank02 } from './disasm/banks/_romdata/bank_02_data';
 import { ROM as bank03 } from './disasm/banks/_romdata/bank_03_data';
@@ -165,6 +167,12 @@ let platform: GamePlatform;
 // 诊断: CHR RAM 写入计数
 const _chrDiag = { writes: 0, nonZeroWrites: 0, firstNonZeroAddr: -1, lastNonZeroAddr: -1 };
 
+// 延迟调色板脏标记: 避免在 PPU bridge 中频繁调用 markPaletteDirty
+let _paletteDirty = false;
+
+// ★ 诊断: palette 写入计数
+let _palWriteCount = 0;
+
 // MMC3 bank 映射 (运行时可变)
 let bank8000 = 0;
 let bankA000 = 1;
@@ -174,19 +182,20 @@ let bankA000 = 1;
 // ============================================================================
 
 function buildRom(): NesRom {
-  // 从 bank_XX.json 加载 PRG bank 数据
-  const prg = new Uint8Array(TOTAL_PRG_BANKS * PRG_BANK_SIZE);
-  for (let i = 0; i < TOTAL_PRG_BANKS; i++) {
-    prg.set(_romBanks[i], i * PRG_BANK_SIZE);
-  }
+  // 从完整的 .nes ROM 提取 PRG 数据（避免 _romBanks 16KB→8KB 映射错误）
+  const fullRom = romUint8Array();
+  const prgUnits = fullRom[4];      // iNES header: PRG size in 16KB units
+  const prgSize = prgUnits * 16384;  // PRG data length
+  const prg = fullRom.slice(16, 16 + prgSize);
+
   // CHR RAM (8KB, 游戏运行时通过 PPU 写入)
   chrRam = new Uint8Array(CHR_RAM_SIZE);
 
   return {
     header: {
-      prgSize: TOTAL_PRG_BANKS / 2, // 16KB units → 24
-      chrSize: 0,                     // CHR RAM (no CHR ROM)
-      mapper: 4,                      // MMC3
+      prgSize: prgUnits,
+      chrSize: 0,
+      mapper: 4,
       mirroring: 'horizontal',
       battery: true,
       trainer: false,
@@ -215,20 +224,18 @@ function bankSlice(bankNum: number): BankRomSlice {
 }
 
 function createRomReader(): RomReader {
+  const totalPrgBanks = Math.floor(rom.prg.length / PRG_BANK_SIZE);
   return {
     bank(addr: number): BankRomSlice {
       const cpuAddr = addr & 0xFFFF;
       let bn: number;
       if (cpuAddr >= 0xE000) {
-        bn = TOTAL_PRG_BANKS - 1; // last PRG bank ($E000-$FFFF)
+        bn = totalPrgBanks - 1; // last PRG bank ($E000-$FFFF)
       } else if (cpuAddr >= 0xC000) {
-        bn = TOTAL_PRG_BANKS - 2; // second-last ($C000-$DFFF)
+        bn = totalPrgBanks - 2; // second-last ($C000-$DFFF)
       } else if (cpuAddr >= 0xA000) {
-        // ★ FIX: 使用 MMC3 追踪的全局变量而非 $25 RAM
-        // $25 仅由 disasm 层手动设置，与 MMC3 硬件写入不同步
         bn = bankA000;
       } else {
-        // ★ FIX: 使用 MMC3 追踪的全局变量而非 $24 RAM
         bn = bank8000;
       }
       return bankSlice(bn);
@@ -286,8 +293,11 @@ function createPpuBridge() {
         break;
       case 0x2007: // PPUDATA
         if ((ppu.v & 0x3F00) === 0x3F00) {
-          // Palette write — 缓存无需失效 (渲染时按当前 palette 查询)
-          ppu.palette[(ppu.v & 0x1F) % 32] = val;
+          // Palette write
+          const _palIdx = (ppu.v & 0x1F) % 32;
+          ppu.palette[_palIdx] = val;
+          _paletteDirty = true; // deferred: markPaletteDirty in frameLoop
+          _palWriteCount++;
         } else if ((ppu.v & 0x2000) === 0x0000) {
           // CHR RAM pattern table write ($0000-$1FFF)
           const chrAddr = ppu.v & 0x1FFF;
@@ -482,40 +492,37 @@ function frameLoop(): void {
   frameCount++;
   const _fc = frameCount;
 
+  // ★ 重置 per-frame 诊断计数器
+  _palWriteCount = 0;
+
   // VBlank 开始: 触发 NMI
   ppu.status |= 0x80;
 
   const reader = createRomReader();
+
+  // ★ 先消费上帧的显示列表 (防止 stale palette 覆盖当前帧的正确值)
+  processDisplayListEntries();
 
   // ★ 执行 NMI 逻辑: bank_00 dispatch 读取 $27 (jump index) → 调用场景处理器
   if (bank8000 === 0) {
     const bank0 = allBanks[0];
     if (_fc <= 1) {
       // 第一帧: 通过 sceneLoopEntry 调用 opening 初始化
-      // (sceneLoopEntry 内部检查 $26 状态, 避免重复初始化)
       const loopEntry = bank0?.fns?.['$8017'];
       if (loopEntry) {
         console.log('[frame] calling sceneLoopEntry for opening init');
-        // ★ 诊断: 检查 display list 在 scenePreProcess 前后的状态
-        console.log('[diag] BEFORE sceneLoopEntry: $0628=%d $0629=%s $05E8[0..5]=%s',
-          ctx.ram.u8(0x0628),
-          ctx.ram.u8(0x0629).toString(16),
-          Array.from({length:6},(_,i)=>ctx.ram.u8(0x05E8+i).toString(16)).join(' '));
         try { loopEntry(ctx, reader); } catch (e) { console.error('[frame] sceneLoopEntry error:', e); }
-        console.log('[diag] AFTER sceneLoopEntry: $0628=%d $0629=%s $05E8[0..5]=%s $26=%d $27=%d $048=%d $049=%d $04A=%d $04B=%d',
-          ctx.ram.u8(0x0628),
-          ctx.ram.u8(0x0629).toString(16),
-          Array.from({length:6},(_,i)=>ctx.ram.u8(0x05E8+i).toString(16)).join(' '),
-          ctx.ram.u8(0x26), ctx.ram.u8(0x27),
-          ctx.ram.u8(0x48), ctx.ram.u8(0x49), ctx.ram.u8(0x4A), ctx.ram.u8(0x4B));
+        // 诊断: sceneLoopEntry 后关键状态
+        if (_fc <= 3) {
+          console.log('[frame] after sceneLoopEntry: $26=%d $27=%d $48=%d $49=%d $4A=%d $4B=%d $0628=%d',
+            ctx.ram.u8(0x26), ctx.ram.u8(0x27),
+            ctx.ram.u8(0x48), ctx.ram.u8(0x49), ctx.ram.u8(0x4A), ctx.ram.u8(0x4B),
+            ctx.ram.u8(0x0628));
+        }
       }
-      // 处理显示列表 (scenePreProcess 写入了 palette 数据到 display list)
-      processDisplayListEntries();
     } else {
       // 后续帧: 正常 dispatch
       bank0?.dispatch(ctx, reader);
-      // 处理 dispatch 中产生的显示列表
-      processDisplayListEntries();
     }
   }
 
@@ -545,10 +552,9 @@ function frameLoop(): void {
       chrNonZeroCount, CHR_RAM_SIZE);
   }
 
-  // ★★★ 兜底: 如果 display list / PPU bridge 未填充有效背景，则显示绿屏避免全黑 ★★★
-  // TODO: 当 scene handler (handleJump1 等) 正确调用 ppuAttrTransfer 填充 $0628 后移除。
+  // ★ 兜底: 如果 nametable 空白，用测试图案填充（不覆盖调色板）
+  // ppuAttrTransfer 已在 dispatch 阶段写入正确调色板，此处只补 nametable
   {
-    // 检查当前活动 nametable 是否几乎全是 tile 0 (空)
     const _ntId = ppu.ctrl & 0x03;
     const _ntBase = (_ntId << 10) & 0x07FF;
     let _ntZeroCount = 0;
@@ -557,23 +563,26 @@ function frameLoop(): void {
     }
     const _ntIsBlank = _ntZeroCount > 900; // > 93% 的 tile 为 0 → 视为空白
     if (_ntIsBlank) {
-      // 填满绿屏: 所有 tile = 1, 所有 attribute = 0, 调色板强制绿色
+      // 仅填充 nametable tile 索引，不碰调色板 (调色板已由 ppuAttrTransfer 写入)
       const _fillBase = _ntBase;
       for (let i = 0; i < 0x03C0; i++) {
-        ppu.vram[(_fillBase + i) & 0x07FF] = 1;
+        ppu.vram[(_fillBase + i) & 0x07FF] = 1; // tile 1 = 纯色条纹
       }
       for (let i = 0x03C0; i < 0x0400; i++) {
-        ppu.vram[(_fillBase + i) & 0x07FF] = 0x00;
+        ppu.vram[(_fillBase + i) & 0x07FF] = 0x00; // attribute: 全用 palette 0
       }
-      // 强制 palette[0..3] = 绿屏 ($0F=黑, $1A=绿, $1A, $1A)
-      ppu.palette[0] = 0x0F;
-      ppu.palette[1] = 0x1A;
-      ppu.palette[2] = 0x1A;
-      ppu.palette[3] = 0x1A;
       if (_fc <= 3 || _fc % 60 === 0) {
-        console.log('[frame %d] WARN: nametable blank → GREEN fallback (nt nz=%d)', _fc, 0x03C0 - _ntZeroCount);
+        console.log('[frame %d] nametable blank → filled tiles (nt nz=%d), palette preserved: [%s]',
+          _fc, 0x03C0 - _ntZeroCount,
+          Array.from({length:4},(_,i)=>'0x'+ppu.palette[i].toString(16).toUpperCase()).join(','));
       }
     }
+  }
+
+  // 延迟 palette 缓存失效 (避免在 PPU bridge 中每次写都调用)
+  if (_paletteDirty) {
+    tileCache.markPaletteDirty();
+    _paletteDirty = false;
   }
 
   // 渲染到 Canvas
@@ -591,9 +600,14 @@ function frameLoop(): void {
 
   // 每 60 帧打一次日志
   if (_fc <= 3 || _fc % 60 === 0) {
-    console.log('[frame %d] bank8000=%d, jumpIdx($27)=%d, sceneState($26)=%d, nmiTrigger($E0)=%d, ppuCtrl=%s, joypad=0x%s',
+    const palCacheSz = getCacheStats().size;
+    const pal0_3 = Array.from({length:4},(_,i)=>ppu.palette[i].toString(16).padStart(2,'0')).join(' ');
+    console.log('[frame %d] bank8000=%d, jumpIdx($27)=%d, sceneState($26)=%d, nmiTrigger($E0)=%d, ppuCtrl=%s, joypad=0x%s | pal[0..3]=%s $48=%d $49=%d $4A=%d $4B=%d palWrites=%d palCache=%d',
       _fc, bank8000, ctx.ram.u8(0x27), ctx.ram.u8(0x26),
-      ctx.ram.u8(0xE0), ppu.ctrl.toString(16), newJoy.toString(16));
+      ctx.ram.u8(0xE0), ppu.ctrl.toString(16), newJoy.toString(16),
+      pal0_3,
+      ctx.ram.u8(0x48), ctx.ram.u8(0x49), ctx.ram.u8(0x4A), ctx.ram.u8(0x4B),
+      _palWriteCount, palCacheSz);
   }
 
   // 请求下一帧
@@ -607,7 +621,33 @@ function frameLoop(): void {
 async function init(): Promise<void> {
   console.log('[init] Building ROM...');
   rom = buildRom();
-  console.log('[init] ROM built: PRG banks=%d, CHR RAM=%d bytes', TOTAL_PRG_BANKS, CHR_RAM_SIZE);
+  console.log('[init] ROM built: PRG banks=%d, CHR RAM=%d bytes', rom.prg.length / PRG_BANK_SIZE, CHR_RAM_SIZE);
+
+  // ★ FIX: ppuInitTransfer($C503) 是桩代码，未从 ROM 加载 CHR 数据。
+  //    从原始 .nes ROM 提取 CHR 区域填充到 chrRam，使背景 tile 有图案。
+  //    iNES: header=16, PRG=16×16KB=262144, CHR=16×8KB=131072
+  try {
+    const fullRom = romUint8Array();
+    const chrOffset = 16 + 16 * 16384; // 262160
+    const chrLen = Math.min(CHR_RAM_SIZE, fullRom.length - chrOffset);
+    if (chrLen > 0) {
+      for (let i = 0; i < chrLen; i++) {
+        chrRam[i] = fullRom[chrOffset + i];
+      }
+      let nz = 0;
+      for (let i = 0; i < chrLen; i++) if (chrRam[i] !== 0) nz++;
+      console.log('[init] CHR data loaded from ROM offset %d: %d bytes (nonZero=%d)',
+        chrOffset, chrLen, nz);
+    } else {
+      console.warn('[init] ROM too short, no CHR data loaded');
+    }
+  } catch (e) {
+    console.warn('[init] Failed to load CHR data from rom_data:', e);
+  }
+
+  // 初始化调色板缓存 ($9EA2 lookup 表)
+  initPaletteCache(bank00);
+  console.log('[init] Palette cache initialized (bank_00 $9EA2 lookup)');
 
   // PPU 状态
   ppu = {

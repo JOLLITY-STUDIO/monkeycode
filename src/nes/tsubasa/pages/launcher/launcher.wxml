@@ -12,6 +12,15 @@
       <text class="card-arrow">▸</text>
     </view>
 
+    <view class="entry-card" bindtap="onGameJsnes">
+      <view class="card-icon">🔧</view>
+      <view class="card-info">
+        <text class="card-name">jsnes Copy</text>
+        <text class="card-desc">jsnes 副本 — 逐步翻译为 TS</text>
+      </view>
+      <text class="card-arrow">▸</text>
+    </view>
+
     <view class="entry-card" bindtap="onNesEmulator">
       <view class="card-icon">🎮</view>
       <view class="card-info">

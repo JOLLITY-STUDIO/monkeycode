@@ -1,0 +1,382 @@
+{
+  "totalFrames": 30,
+  "sceneChanges": 29,
+  "finalPhase": "story",
+  "finalScene": "1E",
+  "finalJmpIdx": "01",
+  "finalSStat": "00",
+  "scenesSeen": [
+    "00",
+    "01",
+    "02",
+    "04",
+    "1E"
+  ],
+  "blockerCount": 28,
+  "blockers": [
+    {
+      "frame": 2,
+      "type": "LOOP",
+      "message": "Dispatch took 24692ms (deadline=2000ms) — possible infinite loop",
+      "scene": 2,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 3,
+      "type": "LOOP",
+      "message": "Dispatch took 23246ms (deadline=2000ms) — possible infinite loop",
+      "scene": 3,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 4,
+      "type": "LOOP",
+      "message": "Dispatch took 25103ms (deadline=2000ms) — possible infinite loop",
+      "scene": 4,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 5,
+      "type": "LOOP",
+      "message": "Dispatch took 24956ms (deadline=2000ms) — possible infinite loop",
+      "scene": 5,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 6,
+      "type": "LOOP",
+      "message": "Dispatch took 23828ms (deadline=2000ms) — possible infinite loop",
+      "scene": 6,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 7,
+      "type": "LOOP",
+      "message": "Dispatch took 30063ms (deadline=2000ms) — possible infinite loop",
+      "scene": 7,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 8,
+      "type": "LOOP",
+      "message": "Dispatch took 30385ms (deadline=2000ms) — possible infinite loop",
+      "scene": 8,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 9,
+      "type": "LOOP",
+      "message": "Dispatch took 36040ms (deadline=2000ms) — possible infinite loop",
+      "scene": 9,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 10,
+      "type": "LOOP",
+      "message": "Dispatch took 34801ms (deadline=2000ms) — possible infinite loop",
+      "scene": 10,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 11,
+      "type": "LOOP",
+      "message": "Dispatch took 37171ms (deadline=2000ms) — possible infinite loop",
+      "scene": 11,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 12,
+      "type": "LOOP",
+      "message": "Dispatch took 31469ms (deadline=2000ms) — possible infinite loop",
+      "scene": 12,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 13,
+      "type": "LOOP",
+      "message": "Dispatch took 27768ms (deadline=2000ms) — possible infinite loop",
+      "scene": 13,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 14,
+      "type": "LOOP",
+      "message": "Dispatch took 28389ms (deadline=2000ms) — possible infinite loop",
+      "scene": 14,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 15,
+      "type": "LOOP",
+      "message": "Dispatch took 21126ms (deadline=2000ms) — possible infinite loop",
+      "scene": 15,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 16,
+      "type": "LOOP",
+      "message": "Dispatch took 23412ms (deadline=2000ms) — possible infinite loop",
+      "scene": 16,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 18,
+      "type": "LOOP",
+      "message": "Dispatch took 17042ms (deadline=2000ms) — possible infinite loop",
+      "scene": 18,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 19,
+      "type": "LOOP",
+      "message": "Dispatch took 16902ms (deadline=2000ms) — possible infinite loop",
+      "scene": 19,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 20,
+      "type": "LOOP",
+      "message": "Dispatch took 22289ms (deadline=2000ms) — possible infinite loop",
+      "scene": 20,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 21,
+      "type": "LOOP",
+      "message": "Dispatch took 23853ms (deadline=2000ms) — possible infinite loop",
+      "scene": 21,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 22,
+      "type": "LOOP",
+      "message": "Dispatch took 27567ms (deadline=2000ms) — possible infinite loop",
+      "scene": 22,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 23,
+      "type": "LOOP",
+      "message": "Dispatch took 29190ms (deadline=2000ms) — possible infinite loop",
+      "scene": 23,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 24,
+      "type": "LOOP",
+      "message": "Dispatch took 22969ms (deadline=2000ms) — possible infinite loop",
+      "scene": 24,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 25,
+      "type": "LOOP",
+      "message": "Dispatch took 19360ms (deadline=2000ms) — possible infinite loop",
+      "scene": 25,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 26,
+      "type": "LOOP",
+      "message": "Dispatch took 20106ms (deadline=2000ms) — possible infinite loop",
+      "scene": 26,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 27,
+      "type": "LOOP",
+      "message": "Dispatch took 19444ms (deadline=2000ms) — possible infinite loop",
+      "scene": 27,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 28,
+      "type": "LOOP",
+      "message": "Dispatch took 22709ms (deadline=2000ms) — possible infinite loop",
+      "scene": 28,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 29,
+      "type": "LOOP",
+      "message": "Dispatch took 17986ms (deadline=2000ms) — possible infinite loop",
+      "scene": 29,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 30,
+      "type": "LOOP",
+      "message": "Dispatch took 15987ms (deadline=2000ms) — possible infinite loop",
+      "scene": 30,
+      "jmpIdx": 1,
+      "bank8": 0,
+      "bankA": 1
+    }
+  ],
+  "warningCount": 0,
+  "phaseResult": "",
+  "timeline": [
+    {
+      "frame": 0,
+      "tag": "boot_pre",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "00",
+      "joyHeld": "00",
+      "scriptLo": "00",
+      "scriptHi": "00",
+      "sceneType": "00",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 0,
+      "tag": "boot_post",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "00",
+      "joyHeld": "00",
+      "scriptLo": "00",
+      "scriptHi": "00",
+      "sceneType": "00",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 1,
+      "tag": "opening_start",
+      "scene": "01",
+      "jmpIdx": "01",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "00",
+      "joyHeld": "00",
+      "scriptLo": "E5",
+      "scriptHi": "00",
+      "sceneType": "A0",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 2,
+      "tag": "title_start",
+      "scene": "02",
+      "jmpIdx": "01",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "4C",
+      "joyHeld": "00",
+      "scriptLo": "ED",
+      "scriptHi": "20",
+      "sceneType": "A0",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 4,
+      "tag": "menu_start",
+      "scene": "04",
+      "jmpIdx": "01",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "4C",
+      "joyHeld": "00",
+      "scriptLo": "ED",
+      "scriptHi": "20",
+      "sceneType": "A0",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 30,
+      "tag": "exit",
+      "scene": "1E",
+      "jmpIdx": "01",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "4C",
+      "joyHeld": "00",
+      "scriptLo": "ED",
+      "scriptHi": "20",
+      "sceneType": "A0",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    }
+  ]
+}

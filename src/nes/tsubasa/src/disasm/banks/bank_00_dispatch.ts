@@ -46,9 +46,11 @@ import {
   TERMINATOR, SENTINEL,
   TEAM_SLOT, DISPLAY_LIST_END, DISPLAY_LIST_ATTR, ATTR_BUF,
   SCENE_STATE_MODE_16, SCENE_STATE_RUNNING,
+  MMC3_BANK_SEL, MMC3_BANK_DATA,
 } from '../_constants';
 import type { BankFn, BankModule, BankRomSlice, RomReader } from './_bank_types';
 import { crossBankCall } from './_crossbank';
+import { computePalette } from '../../palette/PaletteCache';
 
 // ============================================================
 // ROM 數據表 (從 bank_00.asm 的數據段擷取)
@@ -380,7 +382,9 @@ function sceneStateNormal(ctx: GameContext, rom: RomReader): void {
   // $80E6: JSR $9BA0 → initDisplay (internal: PPU reset + OAM clear)
   initDisplay(ctx, rom);
   // $80EB: JSR $8464 → scene data load (ASM: LDA #$60; JSR $8464)
+  console.log('>>> sceneStateNormal: about to call sceneDataLoad(0x60)');
   sceneDataLoad(ctx, rom, 0x60);
+  console.log('>>> sceneStateNormal: sceneDataLoad returned');
   // $80EE: JSR $82B5 → resetScrollAndWait
   resetScrollAndWait(ctx, rom);
 
@@ -533,7 +537,9 @@ function resetScrollAndWait(ctx: GameContext, rom: RomReader): void {
   // $82B5-$82C5: saveContext + wait loop
   saveContext(ctx, rom, 1);
   // $82C2: JSR $9BA0 → initDisplay (internal)
-  initDisplay(ctx, rom);
+  // NOTE: skip VRAM clear here — charOutput writes tiles directly to PPU
+  // (original ASM uses display-list buffer in RAM, which survives ppuReset)
+  initDisplay(ctx, rom, false);
   
   // $82C6-$82EC: ZP clear
   const clearAddrs = [
@@ -836,7 +842,7 @@ function forceClearTask(ctx: GameContext, rom: RomReader): void {
  *   LDA $20; ORA #$80; STA $20; STA $2000  ; 啟用 NMI
  *   RTS
  */
-function ppuReset(ctx: GameContext): void {
+function ppuReset(ctx: GameContext, clearVRam: boolean = true): void {
   const ppu = ctx.ram; // 使用 RAM 物件存取 PPU
   // LDA $20; AND #$7F
   const ctrl = ppu.u8(ZP_PPUCONTROL_MIRROR) & 0x7F;
@@ -846,13 +852,15 @@ function ppuReset(ctx: GameContext): void {
   const mask = ppu.u8(0x21) & 0xE7;
   ppu.setU8(0x2001, mask); // STA $2001
   ppu.setU8(0x21, mask);
-  // VRAM addr = $2000
-  ppu.setU8(0x2006, 0x20);
-  ppu.setU8(0x2006, 0x00);
-  // 清空 8 頁 (2KB) VRAM
-  for (let page = 0; page < 8; page++) {
-    for (let i = 0; i < 256; i++) {
-      ppu.setU8(0x2007, 0x00);
+  if (clearVRam) {
+    // VRAM addr = $2000
+    ppu.setU8(0x2006, 0x20);
+    ppu.setU8(0x2006, 0x00);
+    // 清空 8 頁 (2KB) VRAM
+    for (let page = 0; page < 8; page++) {
+      for (let i = 0; i < 256; i++) {
+        ppu.setU8(0x2007, 0x00);
+      }
     }
   }
   // 恢復 PPU 渲染
@@ -920,11 +928,11 @@ function initPalettes(ctx: GameContext): void {
  *
  * ASM: JSR $99F0; JSR $98A0; JMP $9B7F
  */
-function initDisplay(ctx: GameContext, rom: RomReader): void {
+function initDisplay(ctx: GameContext, rom: RomReader, clearVRam: boolean = true): void {
   // JSR $99F0 → 亮度漸變到 0
   brightnessFrameLoop(ctx, rom);
   // JSR $98A0
-  ppuReset(ctx);
+  ppuReset(ctx, clearVRam);
   // JMP $9B7F
   clearOAM(ctx);
 }
@@ -995,6 +1003,7 @@ function brightnessFrameLoop(ctx: GameContext, rom: RomReader): void {
  * 模擬器簡化: 直接透過 PPU 橋接寫入 $2006/$2007,
  * 避免 display list 3 字節格式與 processDisplayListEntries 4 字節格式不兼容。
  */
+/** charOutput 堆疊暫存 */ const COUT_HIST: number[] = [];
 function charOutput(ctx: GameContext, rom: RomReader, char: number, x: number, y: number): number {
   let tileIdx: number;
   if (char < 0xA0) {
@@ -1003,6 +1012,7 @@ function charOutput(ctx: GameContext, rom: RomReader, char: number, x: number, y
     // $A0-$FF: 查 ROM $8A14 表做字符映射 (日文字符)
     tileIdx = rom.u8(0x8A14 + char);
   }
+  if (COUT_HIST.length < 8) COUT_HIST.push(tileIdx);
   // 寫入 PPU nametable: PPUADDR = [x][y], PPUDATA = tileIdx
   ctx.ram.setU8(0x2006, x);
   ctx.ram.setU8(0x2006, y);
@@ -1021,8 +1031,15 @@ function sceneDataLoad(ctx: GameContext, rom: RomReader, param: number): void {
   // === 步驟 1: 查表找到場景數據指針 ===
   // ($8464-$847D)
   // 使用 $8AEE 表: Y=0→偶數索引, 比對 A >= $8AEE,Y 前進
-  let y = 1; // LDY #$00 → INY; INY → 起始 Y=2
-  while (true) {
+  // 实际布局($8AEC-$8AF6) — 三张平行表共用 Y 索引:
+  //   offset[$8AEC+0]=$78 bank[$8AED+0]=$F0 threshold[$8AEE+0]=$00 (entry#0, skip)
+  //   offset[$8AEC+2]=$00 bank[$8AED+2]=$03 threshold[$8AEE+2]=$10 (entry#1)
+  //   offset[$8AEC+4]=$10 bank[$8AED+4]=$04 threshold[$8AEE+4]=$20 (entry#2)
+  //   offset[$8AEC+6]=$20 bank[$8AED+6]=$05 threshold[$8AEE+6]=$60 (entry#3)
+  //   offset[$8AEC+8]=$60 bank[$8AED+8]=$06 threshold[$8AEE+8]=$FF (entry#4, sentinel)
+  let y = 2; // LDY #$00 → INY → INY → 起始 Y=2 (skip entry#0)
+  const MAX_Y = 0x10; // 安全上限: 避免越界读到代码段
+  while (y < MAX_Y) {
     const tableEntry = rom.u8(0x8AEE + y);
     if (param < tableEntry) break; // BCS $8466 → 如果 param >= entry 繼續
     y += 2;
@@ -1057,6 +1074,8 @@ function sceneDataLoad(ctx: GameContext, rom: RomReader, param: number): void {
   const ptrLo2 = rom.u8((ptrHi << 8) | ptrLo);
   const ptrHi2 = rom.u8((ptrHi << 8) | ptrLo + 1);
   let dataPtr = (ptrHi2 << 8) | ptrLo2;  // mutable: $F0 can advance this
+  console.log('[diag] sceneDataLoad deref: param=$%s bank=%d $A000+%s → ($%s%02X)=$%04X',
+    param.toString(16), dataBank, loadIdx.toString(16), ptrHi.toString(16), ptrLo, dataPtr);
   ctx.ram.setU8(0x4D, ptrLo2);
   ctx.ram.setU8(0x4E, ptrHi2);
   
@@ -1098,24 +1117,38 @@ function sceneDataLoad(ctx: GameContext, rom: RomReader, param: number): void {
   
   // === 步驟 3: ($84E7) 主字節碼解釋循環 ===
   // FAST PATH: skip bytecode interpreter when scene DataLoad runs in auto-test mode
-  // (the PPU output chars/attributes are not consumed by our simulator anyway)
   if (_cfg.fastSceneLoad) {
-    // Still update key RAM state that subsequent code may depend on
-    ctx.ram.setU8(0x4A, 0); // brightness 0
+    ctx.ram.setU8(0x4A, 0);
     ctx.ram.setU8(0x4B, 0);
     return;
   }
-  
+
+  // ★ FIX: 主循環需要讀取 dataBank 的數據，但 xcall 已恢復 bankA000 為 savedBank。
+  // 此處臨時切回 dataBank，循環結束後再恢復。
+  // (內聯 MMC3 R7 寫入，模擬 switchBankA000 的邏輯)
+  ctx.ram.setU8(0x25, dataBank);
+  ctx.ram.setU8(MMC3_BANK_SEL, u8(7 | ctx.ram.u8(0x22)));
+  ctx.ram.setU8(MMC3_BANK_DATA, dataBank);
+
+  // ★ DIAG: dump bytecode header before execution
+  const _bcDump: string[] = [];
+  for (let _i = 0; _i < 32; _i++) _bcDump.push(rom.u8(dataPtr + _i).toString(16));
+  console.log('[diag] sceneDataLoad BC START: param=$%s dataPtr=$%s dataBank=%d savedBank=%d $25=%d',
+    param.toString(16), dataPtr.toString(16), dataBank, savedBank, ctx.ram.u8(0x25));
+  console.log('[diag] sceneDataLoad BC FIRST32: %s', _bcDump.join(' '));
+
   let dataOffset = 0;
   let handled = false;
-  
-  while (dataOffset < 500) { // safety limit (scene data typically < 200 bytes per screen)
+  let _charCount = 0;
+
+  while (dataOffset < 500) { // safety limit
     const b = rom.u8(dataPtr + dataOffset);
     handled = true;
     
     if (b < 0xD8) {
       // 直接字符輸出: $00-$D7
       // $84EF-$8501: JSR $88CA (write char); INC $53
+      _charCount++;
       charOutput(ctx, rom, b, colHi, colLo);
       colLo = u8(cursorLo + 1);
       ctx.ram.setU8(0x53, colLo);
@@ -1359,8 +1392,16 @@ function sceneDataLoad(ctx: GameContext, rom: RomReader, param: number): void {
   }
   
   if (!handled) {
-    _log('[bank_00] sceneDataLoad: end of data or no bytes processed');
+    console.log('[diag] sceneDataLoad: no bytes processed');
   }
+  console.log('[diag] sceneDataLoad BC END: offsets=%d charOutputs=%d first_tiles=%s',
+    dataOffset, _charCount, COUT_HIST.join(','));
+  COUT_HIST.length = 0;
+
+  // ★ FIX: 恢復 bankA000 為 savedBank（模擬原版 $84C1-$84C3 JMP $C4B9 的 bank 恢復）
+  ctx.ram.setU8(0x25, savedBank);
+  ctx.ram.setU8(MMC3_BANK_SEL, u8(7 | ctx.ram.u8(0x22)));
+  ctx.ram.setU8(MMC3_BANK_DATA, savedBank);
 }
 
 /**
@@ -1478,7 +1519,9 @@ function scenePreProcess(ctx: GameContext, rom: RomReader): void {
   // LDX $E9; JSR $C4B9 → restore bank, wait NMI
   const savedBank = ctx.ram.u8(0xE9);
   ctx.ram.setU8(0x25, savedBank);
-  xcall(ctx, rom, '$C4B9');
+  // ★ FIX: 必须传入 savedBank，否则 switchBankA000 默认切到 bank 2，
+  //    导致 ppuAttrTransfer 的 computePalette 读取错误的 ROM 区域
+  xcall(ctx, rom, '$C4B9', undefined, undefined, savedBank);
 
   // LDA #$0F; STA $4A; STA $4B → full brightness
   ctx.ram.setU8(0x4A, 0x0F);
@@ -1687,75 +1730,34 @@ function dispLookup(ctx: GameContext, rom: RomReader, idx: number, y: number): n
 }
 
 /**
- * $9AB8 loadPaletteDataA: 從 ROM $B000 區域加載 16 字節調色板數據
- *   offset = $48 * 16 → ROM addr = $B000 + ($48 << 4)
- *   寫入 $062A + offset, 16 bytes
+ * $9A71 ppuAttrTransfer: PPU 屬性區塊傳輸
  *
- * ASM (lines 4832-4850):
- *   LDA #$00; STA $E7
- *   LDA $48; ASL A×4; ROL $E7×4  ; $E6:E7 = $48 * 16
- *   CLC; ADC #$00; STA $E6
- *   LDA $E7; ADC #$B0; STA $E7   ; base = $B000
- *   LDX offset (0 or 16); JMP copyLoop
+ * 將 ROM 調色板數據 ($48/$49 索引) 通過 $9EA2 lookup 表和亮度 ($4A/$4B) 轉換後，
+ * 直接寫入 PPU palette RAM ($3F00-$3F1F)。
+ *
+ * 使用 PaletteCache 預計算緩存，避免每幀重複查 ROM。
+ * display list 不再參與調色板寫入，由 frame loop 調序保證不衝突。
+ *
+ * ASM: LDA #$20; LDY #$00; LDX #$3F; JSR $9B28 ... JSR $9B5E; RTS
  */
-function loadPaletteData(ctx: GameContext, rom: RomReader, val48: number, xOffset: number): void {
-  // $E6:E7 = val48 * 16 + $B000
-  const addr = (val48 << 4) + 0xB000;
-  
-  // copy 16 bytes → $062A + xOffset
-  for (let i = 0; i < 16; i++) {
-    ctx.ram.setU8(0x062A + xOffset + i, rom.u8(addr + i));
+function ppuAttrTransfer(ctx: GameContext, _rom: RomReader): void {
+  // ★ FIX: 原游戏 $9A71 直接从 $062A 缓冲读取 palette 数据写入 PPU。
+  //    之前用 computePalette 重新查 ROM，导致 bank 切换后读错区域。
+  //    $062A 已在 scenePreProcess / sceneDataLoad 开头由 loadPaletteData 正确填充。
+  ctx.ram.setU8(0x2006, 0x3F);
+  ctx.ram.setU8(0x2006, 0x00);
+  for (let i = 0; i < 32; i++) {
+    ctx.ram.setU8(0x2007, ctx.ram.u8(0x062A + i));
   }
 }
 
-/**
- * $9A71 ppuAttrTransfer: PPU 屬性區塊傳輸 (使用 display list)
- *
- * ASM (lines 4798-4820):
- *   LDA #$20; LDY #$00; LDX #$3F
- *   JSR $9B28  → dispListEntry(PPU_ADDR, 0, $3F) (wait for DMA)
- *   STX $E7    → save cursor
- *   ; 前 16 bytes loop: $062A,Y → process via lookup + $4A
- *   ; 後 16 bytes loop: $062A+16,Y → process via lookup + $4B
- *   LDX $E7; JSR $9B5E → end display list
- *   RTS
- */
-function ppuAttrTransfer(ctx: GameContext, rom: RomReader): void {
-  // PPU address setup: $2000 → $3F (palette RAM)
-  const idx = dispListEntry(ctx, 0x20, 0x00, 0x3F);
-  ctx.ram.setU8(0xE7, idx);
-  
-  const brightA = ctx.ram.u8(0x4A);
-  const brightB = ctx.ram.u8(0x4B);
-  
-  // ★ 诊断: ppuAttrTransfer 输入
-  console.log('[diag] ppuAttrTransfer: idx=%d brightA=%s brightB=%s $062A[0..3]=%s',
-    idx, brightA.toString(16), brightB.toString(16),
-    Array.from({length:4},(_,i)=>ctx.ram.u8(0x062A+i).toString(16)).join(' '));
-  
-  let y = 0;
-  // Process first 16 palette entries ($062A-$0639)
-  for (; y < 16; y++) {
-    const pal = ctx.ram.u8(0x062A + y);
-    const attr = (pal & 0x30) + brightA;
-    y = dispLookup(ctx, rom, attr, y);
-    ctx.ram.setU8(0xE7, ctx.ram.u8(0xE7)); // ensure cursor advance
+// loadPaletteData 不再需要 (緩存內部處理 ROM 讀取)
+// 保留 dispLookup 供其他模塊使用
+function loadPaletteData(ctx: GameContext, rom: RomReader, val48: number, xOffset: number): void {
+  const addr = (val48 << 4) + 0xB000;
+  for (let i = 0; i < 16; i++) {
+    ctx.ram.setU8(0x062A + xOffset + i, rom.u8(addr + i));
   }
-  
-  // Process second 16 palette entries ($063A-$0649)
-  for (; y < 32; y++) {
-    const pal = ctx.ram.u8(0x062A + y);
-    const attr = (pal & 0x30) + brightB;
-    dispLookup(ctx, rom, attr, y);
-    ctx.ram.setU8(0xE7, ctx.ram.u8(0xE7));
-  }
-  
-  const finalIdx = ctx.ram.u8(0xE7);
-  console.log('[diag] ppuAttrTransfer done: finalIdx=%d $05E8[0..7]=%s', finalIdx,
-    Array.from({length:8},(_,i)=>ctx.ram.u8(0x05E8+i).toString(16)).join(' '));
-  dispListEnd(ctx, finalIdx);
-  console.log('[diag] ppuAttrTransfer after dispListEnd: $0628=%d $0629=%s',
-    ctx.ram.u8(0x0628), ctx.ram.u8(0x0629).toString(16));
 }
 
 /**
