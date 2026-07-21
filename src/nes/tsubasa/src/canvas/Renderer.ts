@@ -28,13 +28,27 @@ export function renderPpuFrame(
   // 2. 渲染精灵 (sprites, back-to-front)
   renderSprites(ppu, tileCache, buf);
 
-  // 诊断: 非零像素统计
-  let _nonZeroPx = 0;
-  for (let i = 0; i < buf.length; i++) { if (buf[i] !== 0) _nonZeroPx++; }
-  console.log('[render] frame output: %d/%d non-zero pixels (pal[0]=#%s, nt[0]=$%s)',
-    _nonZeroPx, buf.length,
-    (ppu.palette[0] & 0x3F).toString(16).toUpperCase(),
-    ppu.vram[0].toString(16).toUpperCase());
+  // 诊断: 非零像素统计 + palette / nametable 快照
+  let _nonZeroPx = 0, _nonZeroRgb = 0;
+  for (let i = 0; i < buf.length; i++) {
+    if (buf[i] !== 0) { _nonZeroPx++; if ((buf[i] & 0x00FFFFFF) !== 0) _nonZeroRgb++; }
+  }
+  // 统计 nametable 非零字节、attribute 非零字节
+  const _ntId = ppu.ctrl & 0x03;
+  const _ntBase = (_ntId << 10) & 0x07FF;
+  let _ntNonZero = 0, _atNonZero = 0;
+  for (let i = 0; i < 0x03C0; i++) { if (ppu.vram[(_ntBase + i) & 0x07FF]) _ntNonZero++; }
+  for (let i = 0x03C0; i < 0x0400; i++) { if (ppu.vram[(_ntBase + i) & 0x07FF]) _atNonZero++; }
+  // palette 子调色板摘要
+  const pals = [];
+  for (let p = 0; p < 4; p++) {
+    const off = p * 4;
+    pals.push([ppu.palette[off] & 0x3F, ppu.palette[off+1] & 0x3F, ppu.palette[off+2] & 0x3F, ppu.palette[off+3] & 0x3F].map(v=>'$'+v.toString(16).toUpperCase().padStart(2,'0')).join(','));
+  }
+  console.log('[render] frame output: %d/%d non-zero px (%d non-black rgb) | nt[0]=$%s | nt nz=%d at nz=%d | bg.pal=[%s]',
+    _nonZeroPx, buf.length, _nonZeroRgb,
+    ppu.vram[_ntBase].toString(16).toUpperCase(),
+    _ntNonZero, _atNonZero, pals.join(' ; '));
 
   ctx.putImageData(imageData, 0, 0);
 }
@@ -51,7 +65,11 @@ function renderBackground(
   if (!(ppu.mask & 0x08)) return; // background disabled
 
   const ntId = ppu.ctrl & 0x03;
-  const ntOffset = ntId << 10;
+  // VRAM 仅 2KB (0x800), 需做 nametable 镜像
+  // Horizontal mirroring: nt0/1 → 0x000, nt2/3 → 0x400
+  // Vertical mirroring:   nt0/2 → 0x000, nt1/3 → 0x400
+  // 通用公式: (ntId << 10) & 0x07FF
+  const ntBase = (ntId << 10) & 0x07FF;
   const basePattern = (ppu.ctrl & 0x10) ? 256 : 0; // 0 or 256 tile offset
 
   // 诊断: nametable tile 统计 (仅前3帧)
@@ -62,13 +80,13 @@ function renderBackground(
   for (let tileY = 0; tileY < 30; tileY++) {
     for (let tileX = 0; tileX < 32; tileX++) {
       const ntIndex = tileY * 32 + tileX;
-      const tileId = basePattern + ppu.vram[ntIndex];
+      const tileId = basePattern + ppu.vram[(ntBase + ntIndex) & 0x07FF];
 
       // Attribute table: 每 2×2 tile 块共享一个 palette
       const attrX = tileX >> 2;
       const attrY = tileY >> 2;
       const attrIndex = 0x03C0 + attrY * 8 + attrX;
-      const attrByte = ppu.vram[attrIndex];
+      const attrByte = ppu.vram[(ntBase + attrIndex) & 0x07FF];
       const quadrant = ((tileY & 0x02) << 1) | (tileX & 0x02);
       const palIdx = (attrByte >> quadrant) & 0x03;
 

@@ -18,6 +18,10 @@ import { GameContext } from './disasm/_context';
 import { allBanks } from './disasm/banks/index';
 import type { RomReader, BankRomSlice } from './disasm/banks/_bank_types';
 import { resolveBank, getBank } from './disasm/banks/_crossbank';
+import { _cfg } from './disasm/banks/bank_00_dispatch';
+// Suppress verbose logging in production (speeds up frame loop dramatically)
+_cfg.verbose = false;
+_cfg.fastSceneLoad = false;
 import { ROM as bank00 } from './disasm/banks/_romdata/bank_00_data';
 import { ROM as bank01 } from './disasm/banks/_romdata/bank_01_data';
 import { ROM as bank02 } from './disasm/banks/_romdata/bank_02_data';
@@ -220,12 +224,12 @@ function createRomReader(): RomReader {
       } else if (cpuAddr >= 0xC000) {
         bn = TOTAL_PRG_BANKS - 2; // second-last ($C000-$DFFF)
       } else if (cpuAddr >= 0xA000) {
-        // 从 RAM $25 读取当前 $A000-$BFFF 映射的 bank
-        // (这样 $C4B9 切换 bank 后, ROM 读操作能立即生效)
-        bn = ctx.ram.u8(0x25);
+        // ★ FIX: 使用 MMC3 追踪的全局变量而非 $25 RAM
+        // $25 仅由 disasm 层手动设置，与 MMC3 硬件写入不同步
+        bn = bankA000;
       } else {
-        // 从 RAM $24 读取当前 $8000-$9FFF 映射的 bank
-        bn = ctx.ram.u8(0x24);
+        // ★ FIX: 使用 MMC3 追踪的全局变量而非 $24 RAM
+        bn = bank8000;
       }
       return bankSlice(bn);
     },
@@ -380,14 +384,30 @@ function execFromPC(_ctx: GameContext, _reader: RomReader): number {
 // ============================================================================
 
 // NMI 模拟辅助: 处理显示列表 (将 $05E8 的 PPU 写操作执行到 PPU 桥)
+// 诊断: 跟踪 processDisplayListEntries 被跳过的情况
+let _dlSkipCount = 0;
+let _dlBusyCount = 0;
 function processDisplayListEntries(): void {
   // 读取 $0628 (DISPLAY_LIST_END): 非零表示有待处理数据
   const endFlag = ctx.ram.u8(0x0628);
-  if (endFlag === 0) return;
+  if (endFlag === 0) {
+    // 仅每 60 帧报告一次避免刷屏
+    if (++_dlSkipCount <= 3 || _dlSkipCount % 60 === 0) {
+      console.log('[displayList] SKIP endFlag=0 (count=%d), $0629=%s',
+        _dlSkipCount, ctx.ram.u8(0x0629).toString(16).toUpperCase());
+    }
+    return;
+  }
 
   // 读取 $0629 (控制旗标): bit6=busy
   const ctrlFlag = ctx.ram.u8(0x0629);
-  if (ctrlFlag & 0x40) return; // 忙, 跳过
+  if (ctrlFlag & 0x40) {
+    if (++_dlBusyCount <= 3 || _dlBusyCount % 60 === 0) {
+      console.log('[displayList] BUSY endFlag=%d $0629=%s (count=%d)',
+        endFlag, ctrlFlag.toString(16).toUpperCase(), _dlBusyCount);
+    }
+    return;
+  }
 
   // 诊断: 跟踪 display list 写入的 PPU 地址范围
   let _dlChrWrites = 0, _dlNtWrites = 0, _dlPalWrites = 0;
@@ -447,8 +467,13 @@ function processDisplayListEntries(): void {
 
   // 诊断: 显示列表目标地址分布
   if (_dlChrWrites + _dlPalWrites + _dlNtWrites > 0) {
-    console.log('[displayList] CHR=%d NT=%d PAL=%d (total=%d)',
-      _dlChrWrites, _dlNtWrites, _dlPalWrites, _dlChrWrites + _dlNtWrites + _dlPalWrites);
+    // 检查写入后的 nametable / palette 状态
+    let _ntNz = 0, _palNz = 0;
+    for (let i = 0; i < 0x03C0; i++) { if (ppu.vram[i]) _ntNz++; }
+    for (let i = 0; i < 32; i++) { if ((ppu.palette[i] & 0x3F) !== 0x0F) _palNz++; }
+    console.log('[displayList] CHR=%d NT=%d PAL=%d (total=%d) | vram[0..3BF] nz=%d | pal non-0F=%d/32',
+      _dlChrWrites, _dlNtWrites, _dlPalWrites, _dlChrWrites + _dlNtWrites + _dlPalWrites,
+      _ntNz, _palNz);
   }
 }
 
@@ -471,7 +496,18 @@ function frameLoop(): void {
       const loopEntry = bank0?.fns?.['$8017'];
       if (loopEntry) {
         console.log('[frame] calling sceneLoopEntry for opening init');
+        // ★ 诊断: 检查 display list 在 scenePreProcess 前后的状态
+        console.log('[diag] BEFORE sceneLoopEntry: $0628=%d $0629=%s $05E8[0..5]=%s',
+          ctx.ram.u8(0x0628),
+          ctx.ram.u8(0x0629).toString(16),
+          Array.from({length:6},(_,i)=>ctx.ram.u8(0x05E8+i).toString(16)).join(' '));
         try { loopEntry(ctx, reader); } catch (e) { console.error('[frame] sceneLoopEntry error:', e); }
+        console.log('[diag] AFTER sceneLoopEntry: $0628=%d $0629=%s $05E8[0..5]=%s $26=%d $27=%d $048=%d $049=%d $04A=%d $04B=%d',
+          ctx.ram.u8(0x0628),
+          ctx.ram.u8(0x0629).toString(16),
+          Array.from({length:6},(_,i)=>ctx.ram.u8(0x05E8+i).toString(16)).join(' '),
+          ctx.ram.u8(0x26), ctx.ram.u8(0x27),
+          ctx.ram.u8(0x48), ctx.ram.u8(0x49), ctx.ram.u8(0x4A), ctx.ram.u8(0x4B));
       }
       // 处理显示列表 (scenePreProcess 写入了 palette 数据到 display list)
       processDisplayListEntries();
@@ -509,19 +545,34 @@ function frameLoop(): void {
       chrNonZeroCount, CHR_RAM_SIZE);
   }
 
-  // ★★★ 修复: 填充 nametable — ppuReset 清零 VRAM 后重新写入可见 tile ★★★
-  // TODO: 彻底修复 ppuInitTransfer 后移除这段代码
-  if (_fc <= 60) {
-    // 填充 nametable (32×30 = 960 tiles)
-    for (let row = 0; row < 30; row++) {
-      const tileId = 1 + (row & 3); // tile 1-4 循环
-      for (let col = 0; col < 32; col++) {
-        ppu.vram[row * 32 + col] = tileId;
-      }
+  // ★★★ 兜底: 如果 display list / PPU bridge 未填充有效背景，则显示绿屏避免全黑 ★★★
+  // TODO: 当 scene handler (handleJump1 等) 正确调用 ppuAttrTransfer 填充 $0628 后移除。
+  {
+    // 检查当前活动 nametable 是否几乎全是 tile 0 (空)
+    const _ntId = ppu.ctrl & 0x03;
+    const _ntBase = (_ntId << 10) & 0x07FF;
+    let _ntZeroCount = 0;
+    for (let i = 0; i < 0x03C0; i++) {
+      if (ppu.vram[(_ntBase + i) & 0x07FF] === 0) _ntZeroCount++;
     }
-    // 填充 attribute table (64 bytes, 全用 palette 0)
-    for (let i = 0x03C0; i < 0x0400; i++) {
-      ppu.vram[i] = 0x00;
+    const _ntIsBlank = _ntZeroCount > 900; // > 93% 的 tile 为 0 → 视为空白
+    if (_ntIsBlank) {
+      // 填满绿屏: 所有 tile = 1, 所有 attribute = 0, 调色板强制绿色
+      const _fillBase = _ntBase;
+      for (let i = 0; i < 0x03C0; i++) {
+        ppu.vram[(_fillBase + i) & 0x07FF] = 1;
+      }
+      for (let i = 0x03C0; i < 0x0400; i++) {
+        ppu.vram[(_fillBase + i) & 0x07FF] = 0x00;
+      }
+      // 强制 palette[0..3] = 绿屏 ($0F=黑, $1A=绿, $1A, $1A)
+      ppu.palette[0] = 0x0F;
+      ppu.palette[1] = 0x1A;
+      ppu.palette[2] = 0x1A;
+      ppu.palette[3] = 0x1A;
+      if (_fc <= 3 || _fc % 60 === 0) {
+        console.log('[frame %d] WARN: nametable blank → GREEN fallback (nt nz=%d)', _fc, 0x03C0 - _ntZeroCount);
+      }
     }
   }
 

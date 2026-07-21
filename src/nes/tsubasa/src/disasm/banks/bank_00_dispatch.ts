@@ -989,27 +989,25 @@ function brightnessFrameLoop(ctx: GameContext, rom: RomReader): void {
 // ============================================================
 
 /**
- * $88CA charOutput: 輸出單個字符到 PPU (透過 display list)
+ * $88CA charOutput: 輸出單個字符到 PPU
  *
- * ASM (lines 1242-1264):
- *   PHA; LDA #$82; JSR $9B28  → dispListEntry(0x82, (cursor), (char))
- *   PLA; CMP #$A0; BCC simple  ; < $A0: 直接寫入
- *   CMP #$C8; ADC #$94         ; $A0-$C7: 查 $8A14 表 (字符映射)
- *   STA $05E8,X; INX            ; 寫入映射值
- *   PLA; TAY; LDA $8A14,Y; STA $05E8,X  ; 查表
- *   INX; JSR $9B5E; RTS
+ * ASM 原始邏輯: 寫入 display list ($82 格式) → NMI 消費後寫 PPU。
+ * 模擬器簡化: 直接透過 PPU 橋接寫入 $2006/$2007,
+ * 避免 display list 3 字節格式與 processDisplayListEntries 4 字節格式不兼容。
  */
 function charOutput(ctx: GameContext, rom: RomReader, char: number, x: number, y: number): number {
-  const idx = dispListEntry(ctx, 0x82, y & 0xFF, char);
+  let tileIdx: number;
   if (char < 0xA0) {
-    ctx.ram.setU8(0x05E9 + idx, char);
-    ctx.ram.setU8(0x05E8 + idx, 0);
-    return idx + 1;
+    tileIdx = char;
+  } else {
+    // $A0-$FF: 查 ROM $8A14 表做字符映射 (日文字符)
+    tileIdx = rom.u8(0x8A14 + char);
   }
-  // $A0-$FF: 查 ROM $8A14 表做字符映射 (日文字符)
-  const mapped = rom.u8(0x8A14 + char);
-  ctx.ram.setU8(0x05E8 + idx, mapped & 0xFF);
-  return idx + 2;
+  // 寫入 PPU nametable: PPUADDR = [x][y], PPUDATA = tileIdx
+  ctx.ram.setU8(0x2006, x);
+  ctx.ram.setU8(0x2006, y);
+  ctx.ram.setU8(0x2007, tileIdx);
+  return 1; // 字節碼解釋器不依賴返回值 (cursor 獨立追蹤)
 }
 
 /**
@@ -1382,39 +1380,21 @@ function sceneDataLoad(ctx: GameContext, rom: RomReader, param: number): void {
 function fillDisplayList(ctx: GameContext, rows: number, cols: number, ppuLo: number, ppuHi: number): void {
   ctx.ram.setU8(ZP_E5, 0); // STA $EB → 寫入模式 = 0
 
-  // $98EC: LDA $4A; ORA $4B; BEQ $992C
-  const dlHead = ctx.ram.u8(0x4A);
-  const dlTail = ctx.ram.u8(0x4B);
-  if ((dlHead | dlTail) === 0) {
-    // $992C: 直接寫 PPU (簡化: 跳過 display list, 直接操作 VRAM)
-    return;
+  // ★ 模擬器直寫 PPU VRAM，避免 display list 污染
+  // 原 ASM 透過 display list 隊列寫入 PPU，模擬器中 display list 由
+  // ppuAttrTransfer 獨佔使用，直接寫 VRAM 更安全且效果等價。
+  let lo = ppuLo;
+  let hi = ppuHi;
+  for (let r = 0; r < rows; r++) {
+    ctx.ram.setU8(0x2006, hi);
+    ctx.ram.setU8(0x2006, lo);
+    for (let c = 0; c < cols; c++) {
+      ctx.ram.setU8(0x2007, 0); // tile index 0 = blank
+    }
+    lo = (lo + 0x20) & 0xFF;
+    if (lo === 0) hi = (hi + 1) & 0xFF;
   }
-
-  // 保存 Y→$E8, X→$E9
-  let row = rows; // Y
-  let width = cols; // X
-
-  // $98F6 loop:
-  while (true) {
-    // 從 display list 分配槽位
-    const bufPtr = (dlHead << 8) | dlTail; // 16-bit 指針從 display list
-    // $9903: STA $05E8,X — 寫入 OAM attr 緩衝區
-    ctx.ram.setU8(0x05E8 + width, ppuLo & 0xFF);
-
-    // 更新 display list 指針 (JSR $9B5E)
-    ctx.ram.setU8(0x4A, (dlHead + 1) & 0xFF);
-    ctx.ram.setU8(0x4B, dlTail); // 簡化
-
-    // $9916-$9921: $E6 += $20 (下一行 VRAM)
-    const newLo = (ppuLo + 0x20) & 0xFF;
-    ppuLo = newLo;
-    ctx.ram.setU8(ZP_PPUADDR_LO, newLo);
-
-    // $9923: DEC $E8 (行數 --)
-    row--;
-    // $9925-$9929: LDA $E8; AND #$7F; BNE $98F6
-    if ((row & 0x7F) === 0) break;
-  }
+  ctx.ram.setU8(ZP_PPUADDR_LO, lo);
 }
 
 /**
@@ -1482,6 +1462,10 @@ function sceneTransitionSetup(ctx: GameContext, rom: RomReader): void {
  *   JMP $9A71 → ppuAttrTransfer
  */
 function scenePreProcess(ctx: GameContext, rom: RomReader): void {
+  // ★ 诊断: 入口
+  console.log('[diag] scenePreProcess ENTER: $48=%d $49=%d $0628=%d $0629=%s',
+    ctx.ram.u8(0x48), ctx.ram.u8(0x49),
+    ctx.ram.u8(0x0628), ctx.ram.u8(0x0629).toString(16));
   // JSR $9B07 → save bank, wait NMI
   saveBankAndWaitNmi(ctx, rom);
 
@@ -1500,8 +1484,12 @@ function scenePreProcess(ctx: GameContext, rom: RomReader): void {
   ctx.ram.setU8(0x4A, 0x0F);
   ctx.ram.setU8(0x4B, 0x0F);
 
+  console.log('[diag] scenePreProcess after load: $062A[0..7]=%s $062A[16..23]=%s',
+    Array.from({length:8},(_,i)=>ctx.ram.u8(0x062A+i).toString(16)).join(' '),
+    Array.from({length:8},(_,i)=>ctx.ram.u8(0x062A+16+i).toString(16)).join(' '));
   // JMP $9A71 → PPU attribute transfer
   ppuAttrTransfer(ctx, rom);
+  console.log('[diag] scenePreProcess EXIT: $0628=%d', ctx.ram.u8(0x0628));
 }
 
 // ============================================================
@@ -1648,7 +1636,10 @@ function dispListEntry(ctx: GameContext, ppuReg: number, dataLo: number, dataHi:
   ctx.ram.setU8(0x05E9 + idx, dataLo);    // entry[+1]
   ctx.ram.setU8(0x05E8 + idx, ctrl & 0xBF); // entry[+0]
   
-  return idx + 3;
+  const nextIdx = idx + 3;
+  // ★ 原 ASM: INX:INX:INX; STX $0628 → 必须写回游标，否则后续调用全部覆盖同一位置
+  ctx.ram.setU8(0x0628, nextIdx);
+  return nextIdx;
 }
 
 /**
@@ -1737,6 +1728,11 @@ function ppuAttrTransfer(ctx: GameContext, rom: RomReader): void {
   const brightA = ctx.ram.u8(0x4A);
   const brightB = ctx.ram.u8(0x4B);
   
+  // ★ 诊断: ppuAttrTransfer 输入
+  console.log('[diag] ppuAttrTransfer: idx=%d brightA=%s brightB=%s $062A[0..3]=%s',
+    idx, brightA.toString(16), brightB.toString(16),
+    Array.from({length:4},(_,i)=>ctx.ram.u8(0x062A+i).toString(16)).join(' '));
+  
   let y = 0;
   // Process first 16 palette entries ($062A-$0639)
   for (; y < 16; y++) {
@@ -1755,7 +1751,11 @@ function ppuAttrTransfer(ctx: GameContext, rom: RomReader): void {
   }
   
   const finalIdx = ctx.ram.u8(0xE7);
+  console.log('[diag] ppuAttrTransfer done: finalIdx=%d $05E8[0..7]=%s', finalIdx,
+    Array.from({length:8},(_,i)=>ctx.ram.u8(0x05E8+i).toString(16)).join(' '));
   dispListEnd(ctx, finalIdx);
+  console.log('[diag] ppuAttrTransfer after dispListEnd: $0628=%d $0629=%s',
+    ctx.ram.u8(0x0628), ctx.ram.u8(0x0629).toString(16));
 }
 
 /**
@@ -2243,6 +2243,8 @@ function previousSceneTransition(ctx: GameContext, rom: RomReader): void {
   ctx.ram.setU8(ZP_SCENE_STATE, nextScene);
   // JSR $C578 → bank_30 post-processing
   xcall(ctx, rom, '$C578');
+  // === 场景回退后写入 PPU palette 到 display list ===
+  ppuAttrTransfer(ctx, rom);
   // JMP $80FD → sceneStateMachine
   sceneStateMachine(ctx, rom);
 }
@@ -2303,6 +2305,9 @@ function advanceScene(ctx: GameContext, rom: RomReader): void {
   ctx.ram.setU8(0x0700, 1);
   xcall(ctx, rom, '$C578');
   ctx.ram.setU8(ZP_SCENE_STATE, u8(scene + 1));
+  // === 场景切换后写入 PPU palette 到 display list ===
+  // 原 NES 中下一帧 NMI 会拉取 scene data 写 PPU; 模拟器中需显式触发
+  ppuAttrTransfer(ctx, rom);
   // JMP $8017 → back to scene loop
 }
 

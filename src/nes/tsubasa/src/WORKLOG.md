@@ -1769,3 +1769,54 @@ PPU pattern table (2×256 tiles active)
 
 ※ 这些需要在 Mesen2 里通过「场景触发时 trace 对应 bank 的读取地址」来确认，纯静态分析难以定论。
 
+
+
+---
+
+## 2026-07-21
+
+---
+
+### Step 16: Opening scene render blockage diagnosis
+
+**Symptom**: After multiple frames, screen only shows fallback test pattern (blue tiles 1-4), no actual game graphics.
+
+**Diagnosis**:
+
+#### CRITICAL 1: Display list perpetually empty
+
+- `$0628` (DISPLAY_LIST_END) always = 0, main.ts `processDisplayListEntries()` SKIPs every frame
+- Display list is the ONLY path for PPU data: nametable, palette, CHR pattern all go through it
+- No display list = zero visual data enters PPU pipeline
+
+#### CRITICAL 2: All three picture layers missing
+
+```
+Picture = CHR tile pattern + Nametable + Palette
+            UNLOADED         UNLOADED    dl empty
+            $C503 stub       scene scr.  scenePreProcess
+```
+
+| Data layer | Theoretical source | Actual status |
+|------------|-------------------|---------------|
+| CHR pattern | bank_30 `$C503`/ppuInitTransfer from PRG ROM | BROKEN: stub, bridge writes=0 |
+| Nametable | Scene script bytecode -> fillDisplayList -> display list | BROKEN: dl always empty |
+| Palette | scenePreProcess -> ppuAttrTransfer -> display list | BROKEN: dl always empty |
+
+#### CONFIRMED: main.ts vs bank_30 NO conflict
+
+- `bank_30_sys.ts` processDisplayListEntries is ROM translation, **never called** by main.ts
+- `main.ts` own processDisplayListEntries is the actual runtime version
+- No double-processing issue 鈥?purely that display list never gets filled
+
+#### Injected workarounds (masking real problem)
+
+- `main.ts` L669: Hardcoded CHR RAM tile 1-4 test patterns
+- `main.ts` L537: Nametable blank detection -> auto-fill tiles 1-4
+- `main.ts` L660: Hardcoded default palette (gray/blue)
+
+#### NEXT: Must trace immediately
+
+1. **scenePreProcess output**: Is ppuAttrTransfer called? Display list filled then cleared?
+2. **Opening scene script**: Does bytecode contain nametable load cmds? Execution path?
+3. **$C503/CHR loading**: CHR pattern data reorganization from buildRom?
