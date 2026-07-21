@@ -458,6 +458,11 @@ function createNesRam(
       return 0; // 超出範圍
     },
 
+    i8(addr: number): number {
+      const v = this.u8(addr);
+      return v < 128 ? v : v - 256; // 有符號 byte (-128..127)
+    },
+
     setU8(addr: number, val: Byte): void {
       if (addr < 256) { zp[addr] = val; return; }
       if (addr < 512) { stk[addr - 256] = val; return; }

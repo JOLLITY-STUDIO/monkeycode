@@ -28,6 +28,14 @@ export function renderPpuFrame(
   // 2. 渲染精灵 (sprites, back-to-front)
   renderSprites(ppu, tileCache, buf);
 
+  // 诊断: 非零像素统计
+  let _nonZeroPx = 0;
+  for (let i = 0; i < buf.length; i++) { if (buf[i] !== 0) _nonZeroPx++; }
+  console.log('[render] frame output: %d/%d non-zero pixels (pal[0]=#%s, nt[0]=$%s)',
+    _nonZeroPx, buf.length,
+    (ppu.palette[0] & 0x3F).toString(16).toUpperCase(),
+    ppu.vram[0].toString(16).toUpperCase());
+
   ctx.putImageData(imageData, 0, 0);
 }
 
@@ -46,6 +54,11 @@ function renderBackground(
   const ntOffset = ntId << 10;
   const basePattern = (ppu.ctrl & 0x10) ? 256 : 0; // 0 or 256 tile offset
 
+  // 诊断: nametable tile 统计 (仅前3帧)
+  let _ntTileSet: Set<number> | null = null;
+  if (typeof (renderBackground as any)._diagCount === 'undefined') (renderBackground as any)._diagCount = 0;
+  if (++(renderBackground as any)._diagCount <= 3) _ntTileSet = new Set<number>();
+
   for (let tileY = 0; tileY < 30; tileY++) {
     for (let tileX = 0; tileX < 32; tileX++) {
       const ntIndex = tileY * 32 + tileX;
@@ -62,11 +75,21 @@ function renderBackground(
       // 从缓存获取预渲染 tile
       const tilePx = tc.getTile(tileId, palIdx, ppu.palette);
 
+      // 诊断: 收集 unique tile ID
+      if (_ntTileSet) _ntTileSet.add(tileId);
+
       // 拷贝 8×8 像素到帧缓冲
       const dstX = tileX * 8;
       const dstY = tileY * 8;
       blit8x8(tilePx, buf, SCREEN_W, dstX, dstY);
     }
+  }
+
+  // 诊断: 输出 nametable tile 分布
+  if (_ntTileSet && _ntTileSet.size > 0) {
+    const sorted = [..._ntTileSet].sort((a, b) => a - b);
+    console.log('[renderBG] unique tiles: %d, tileIds=[%s]',
+      sorted.length, sorted.slice(0, 20).join(',') + (sorted.length > 20 ? '...' : ''));
   }
 }
 

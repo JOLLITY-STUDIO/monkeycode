@@ -1,36 +1,113 @@
 /**
- * ROM 数据 lazy loader — 从分包 subpkg/rom/ 异步加载
- * (原 1964KB _romdata.ts 已移到分包)
+ * ROM 数据统一导出 — 48 banks 的原始字节数据
  *
- * 关键设计: 预分配 48 个 Uint8Array → bank 文件 import 时拿到非 null 引用
- *            loadRomData() 用 .set() 在原位填入数据, bank 文件的引用自动生效
+ * 由 _romdata/ 目录下各 bank_XX_data.ts 汇总导出。
+ * 供测试脚本和独立 Node.js 运行环境使用。
  */
+export { ROM as _00 } from './_romdata/bank_00_data';
+export { ROM as _01 } from './_romdata/bank_01_data';
+export { ROM as _02 } from './_romdata/bank_02_data';
+export { ROM as _03 } from './_romdata/bank_03_data';
+export { ROM as _04 } from './_romdata/bank_04_data';
+export { ROM as _05 } from './_romdata/bank_05_data';
+export { ROM as _06 } from './_romdata/bank_06_data';
+export { ROM as _07 } from './_romdata/bank_07_data';
+export { ROM as _08 } from './_romdata/bank_08_data';
+export { ROM as _09 } from './_romdata/bank_09_data';
+export { ROM as _10 } from './_romdata/bank_10_data';
+export { ROM as _11 } from './_romdata/bank_11_data';
+export { ROM as _12 } from './_romdata/bank_12_data';
+export { ROM as _13 } from './_romdata/bank_13_data';
+export { ROM as _14 } from './_romdata/bank_14_data';
+export { ROM as _15 } from './_romdata/bank_15_data';
+export { ROM as _16 } from './_romdata/bank_16_data';
+export { ROM as _17 } from './_romdata/bank_17_data';
+export { ROM as _18 } from './_romdata/bank_18_data';
+export { ROM as _19 } from './_romdata/bank_19_data';
+export { ROM as _20 } from './_romdata/bank_20_data';
+export { ROM as _21 } from './_romdata/bank_21_data';
+export { ROM as _22 } from './_romdata/bank_22_data';
+export { ROM as _23 } from './_romdata/bank_23_data';
+export { ROM as _24 } from './_romdata/bank_24_data';
+export { ROM as _25 } from './_romdata/bank_25_data';
+export { ROM as _26 } from './_romdata/bank_26_data';
+export { ROM as _27 } from './_romdata/bank_27_data';
+export { ROM as _28 } from './_romdata/bank_28_data';
+export { ROM as _29 } from './_romdata/bank_29_data';
+export { ROM as _30 } from './_romdata/bank_30_data';
+export { ROM as _31 } from './_romdata/bank_31_data';
+export { ROM as _32 } from './_romdata/bank_32_data';
+export { ROM as _33 } from './_romdata/bank_33_data';
+export { ROM as _34 } from './_romdata/bank_34_data';
+export { ROM as _35 } from './_romdata/bank_35_data';
+export { ROM as _36 } from './_romdata/bank_36_data';
+export { ROM as _37 } from './_romdata/bank_37_data';
+export { ROM as _38 } from './_romdata/bank_38_data';
+export { ROM as _39 } from './_romdata/bank_39_data';
+export { ROM as _40 } from './_romdata/bank_40_data';
+export { ROM as _41 } from './_romdata/bank_41_data';
+export { ROM as _42 } from './_romdata/bank_42_data';
+export { ROM as _43 } from './_romdata/bank_43_data';
+export { ROM as _44 } from './_romdata/bank_44_data';
+export { ROM as _45 } from './_romdata/bank_45_data';
+export { ROM as _46 } from './_romdata/bank_46_data';
+export { ROM as _47 } from './_romdata/bank_47_data';
 
-/** 预分配 48 个空 8KB slot — bank 文件在最上层 import 时拿到的就是这些引用 */
-const SLOTS: Uint8Array[] = Array.from({ length: 48 }, () => new Uint8Array(0x2000));
-export const ROM_DATA: ReadonlyArray<Uint8Array> = SLOTS;
+// 汇总数组 (48 entries)
+import { ROM as r00 } from './_romdata/bank_00_data';
+import { ROM as r01 } from './_romdata/bank_01_data';
+import { ROM as r02 } from './_romdata/bank_02_data';
+import { ROM as r03 } from './_romdata/bank_03_data';
+import { ROM as r04 } from './_romdata/bank_04_data';
+import { ROM as r05 } from './_romdata/bank_05_data';
+import { ROM as r06 } from './_romdata/bank_06_data';
+import { ROM as r07 } from './_romdata/bank_07_data';
+import { ROM as r08 } from './_romdata/bank_08_data';
+import { ROM as r09 } from './_romdata/bank_09_data';
+import { ROM as r10 } from './_romdata/bank_10_data';
+import { ROM as r11 } from './_romdata/bank_11_data';
+import { ROM as r12 } from './_romdata/bank_12_data';
+import { ROM as r13 } from './_romdata/bank_13_data';
+import { ROM as r14 } from './_romdata/bank_14_data';
+import { ROM as r15 } from './_romdata/bank_15_data';
+import { ROM as r16 } from './_romdata/bank_16_data';
+import { ROM as r17 } from './_romdata/bank_17_data';
+import { ROM as r18 } from './_romdata/bank_18_data';
+import { ROM as r19 } from './_romdata/bank_19_data';
+import { ROM as r20 } from './_romdata/bank_20_data';
+import { ROM as r21 } from './_romdata/bank_21_data';
+import { ROM as r22 } from './_romdata/bank_22_data';
+import { ROM as r23 } from './_romdata/bank_23_data';
+import { ROM as r24 } from './_romdata/bank_24_data';
+import { ROM as r25 } from './_romdata/bank_25_data';
+import { ROM as r26 } from './_romdata/bank_26_data';
+import { ROM as r27 } from './_romdata/bank_27_data';
+import { ROM as r28 } from './_romdata/bank_28_data';
+import { ROM as r29 } from './_romdata/bank_29_data';
+import { ROM as r30 } from './_romdata/bank_30_data';
+import { ROM as r31 } from './_romdata/bank_31_data';
+import { ROM as r32 } from './_romdata/bank_32_data';
+import { ROM as r33 } from './_romdata/bank_33_data';
+import { ROM as r34 } from './_romdata/bank_34_data';
+import { ROM as r35 } from './_romdata/bank_35_data';
+import { ROM as r36 } from './_romdata/bank_36_data';
+import { ROM as r37 } from './_romdata/bank_37_data';
+import { ROM as r38 } from './_romdata/bank_38_data';
+import { ROM as r39 } from './_romdata/bank_39_data';
+import { ROM as r40 } from './_romdata/bank_40_data';
+import { ROM as r41 } from './_romdata/bank_41_data';
+import { ROM as r42 } from './_romdata/bank_42_data';
+import { ROM as r43 } from './_romdata/bank_43_data';
+import { ROM as r44 } from './_romdata/bank_44_data';
+import { ROM as r45 } from './_romdata/bank_45_data';
+import { ROM as r46 } from './_romdata/bank_46_data';
+import { ROM as r47 } from './_romdata/bank_47_data';
 
-let _loaded = false;
-let _promise: Promise<Uint8Array[]> | null = null;
-
-/** 从分包异步加载 ROM 原始数据 → 填入预分配的 slot (引用不变) */
-export function loadRomData(): Promise<Uint8Array[]> {
-  if (_loaded) return Promise.resolve(SLOTS);
-  if (_promise) return _promise;
-
-  _promise = new Promise((resolve, reject) => {
-    // @ts-ignore — require.async 分包懒加载
-    require.async('../../../subpkg/rom/_romdata', (mod: any) => {
-      const src = mod.ROM_DATA as Uint8Array[];
-      for (let i = 0; i < src.length && i < SLOTS.length; i++) {
-        SLOTS[i].set(src[i]);  // 原位填入, 不改变引用
-      }
-      _loaded = true;
-      resolve(SLOTS);
-    }, ({ errMsg }: any) => {
-      reject(new Error(errMsg || 'subpkg rom load failed'));
-    });
-  });
-
-  return _promise;
-}
+export const ROM_DATA: Array<Uint8Array | undefined> = [
+  r00, r01, r02, r03, r04, r05, r06, r07,
+  r08, r09, r10, r11, r12, r13, r14, r15,
+  r16, r17, r18, r19, r20, r21, r22, r23,
+  r24, r25, r26, r27, r28, r29, r30, r31,
+  r32, r33, r34, r35, r36, r37, r38, r39,
+  r40, r41, r42, r43, r44, r45, r46, r47,
+];

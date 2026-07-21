@@ -17,8 +17,105 @@ import {
 import { GameContext } from './disasm/_context';
 import { allBanks } from './disasm/banks/index';
 import type { RomReader, BankRomSlice } from './disasm/banks/_bank_types';
-import { ROM_DATA, loadRomData } from './disasm/banks/_romdata';
 import { resolveBank, getBank } from './disasm/banks/_crossbank';
+import { ROM as bank00 } from './disasm/banks/_romdata/bank_00_data';
+import { ROM as bank01 } from './disasm/banks/_romdata/bank_01_data';
+import { ROM as bank02 } from './disasm/banks/_romdata/bank_02_data';
+import { ROM as bank03 } from './disasm/banks/_romdata/bank_03_data';
+import { ROM as bank04 } from './disasm/banks/_romdata/bank_04_data';
+import { ROM as bank05 } from './disasm/banks/_romdata/bank_05_data';
+import { ROM as bank06 } from './disasm/banks/_romdata/bank_06_data';
+import { ROM as bank07 } from './disasm/banks/_romdata/bank_07_data';
+import { ROM as bank08 } from './disasm/banks/_romdata/bank_08_data';
+import { ROM as bank09 } from './disasm/banks/_romdata/bank_09_data';
+import { ROM as bank10 } from './disasm/banks/_romdata/bank_10_data';
+import { ROM as bank11 } from './disasm/banks/_romdata/bank_11_data';
+import { ROM as bank12 } from './disasm/banks/_romdata/bank_12_data';
+import { ROM as bank13 } from './disasm/banks/_romdata/bank_13_data';
+import { ROM as bank14 } from './disasm/banks/_romdata/bank_14_data';
+import { ROM as bank15 } from './disasm/banks/_romdata/bank_15_data';
+import { ROM as bank16 } from './disasm/banks/_romdata/bank_16_data';
+import { ROM as bank17 } from './disasm/banks/_romdata/bank_17_data';
+import { ROM as bank18 } from './disasm/banks/_romdata/bank_18_data';
+import { ROM as bank19 } from './disasm/banks/_romdata/bank_19_data';
+import { ROM as bank20 } from './disasm/banks/_romdata/bank_20_data';
+import { ROM as bank21 } from './disasm/banks/_romdata/bank_21_data';
+import { ROM as bank22 } from './disasm/banks/_romdata/bank_22_data';
+import { ROM as bank23 } from './disasm/banks/_romdata/bank_23_data';
+import { ROM as bank24 } from './disasm/banks/_romdata/bank_24_data';
+import { ROM as bank25 } from './disasm/banks/_romdata/bank_25_data';
+import { ROM as bank26 } from './disasm/banks/_romdata/bank_26_data';
+import { ROM as bank27 } from './disasm/banks/_romdata/bank_27_data';
+import { ROM as bank28 } from './disasm/banks/_romdata/bank_28_data';
+import { ROM as bank29 } from './disasm/banks/_romdata/bank_29_data';
+import { ROM as bank30 } from './disasm/banks/_romdata/bank_30_data';
+import { ROM as bank31 } from './disasm/banks/_romdata/bank_31_data';
+import { ROM as bank32 } from './disasm/banks/_romdata/bank_32_data';
+import { ROM as bank33 } from './disasm/banks/_romdata/bank_33_data';
+import { ROM as bank34 } from './disasm/banks/_romdata/bank_34_data';
+import { ROM as bank35 } from './disasm/banks/_romdata/bank_35_data';
+import { ROM as bank36 } from './disasm/banks/_romdata/bank_36_data';
+import { ROM as bank37 } from './disasm/banks/_romdata/bank_37_data';
+import { ROM as bank38 } from './disasm/banks/_romdata/bank_38_data';
+import { ROM as bank39 } from './disasm/banks/_romdata/bank_39_data';
+import { ROM as bank40 } from './disasm/banks/_romdata/bank_40_data';
+import { ROM as bank41 } from './disasm/banks/_romdata/bank_41_data';
+import { ROM as bank42 } from './disasm/banks/_romdata/bank_42_data';
+import { ROM as bank43 } from './disasm/banks/_romdata/bank_43_data';
+import { ROM as bank44 } from './disasm/banks/_romdata/bank_44_data';
+import { ROM as bank45 } from './disasm/banks/_romdata/bank_45_data';
+import { ROM as bank46 } from './disasm/banks/_romdata/bank_46_data';
+import { ROM as bank47 } from './disasm/banks/_romdata/bank_47_data';
+const _romBanks = [
+  bank00,
+  bank01,
+  bank02,
+  bank03,
+  bank04,
+  bank05,
+  bank06,
+  bank07,
+  bank08,
+  bank09,
+  bank10,
+  bank11,
+  bank12,
+  bank13,
+  bank14,
+  bank15,
+  bank16,
+  bank17,
+  bank18,
+  bank19,
+  bank20,
+  bank21,
+  bank22,
+  bank23,
+  bank24,
+  bank25,
+  bank26,
+  bank27,
+  bank28,
+  bank29,
+  bank30,
+  bank31,
+  bank32,
+  bank33,
+  bank34,
+  bank35,
+  bank36,
+  bank37,
+  bank38,
+  bank39,
+  bank40,
+  bank41,
+  bank42,
+  bank43,
+  bank44,
+  bank45,
+  bank46,
+  bank47,
+];
 
 // ============================================================================
 // 平台适配接口
@@ -61,6 +158,9 @@ let animId: number | any = null;
 let frameCount = 0;
 let platform: GamePlatform;
 
+// 诊断: CHR RAM 写入计数
+const _chrDiag = { writes: 0, nonZeroWrites: 0, firstNonZeroAddr: -1, lastNonZeroAddr: -1 };
+
 // MMC3 bank 映射 (运行时可变)
 let bank8000 = 0;
 let bankA000 = 1;
@@ -70,10 +170,10 @@ let bankA000 = 1;
 // ============================================================================
 
 function buildRom(): NesRom {
-  // 拼接 48 个 PRG bank
+  // 从 bank_XX.json 加载 PRG bank 数据
   const prg = new Uint8Array(TOTAL_PRG_BANKS * PRG_BANK_SIZE);
   for (let i = 0; i < TOTAL_PRG_BANKS; i++) {
-    prg.set(ROM_DATA[i], i * PRG_BANK_SIZE);
+    prg.set(_romBanks[i], i * PRG_BANK_SIZE);
   }
   // CHR RAM (8KB, 游戏运行时通过 PPU 写入)
   chrRam = new Uint8Array(CHR_RAM_SIZE);
@@ -190,6 +290,13 @@ function createPpuBridge() {
           if (chrAddr < CHR_RAM_SIZE) {
             chrRam[chrAddr] = val;
             tileCache.markDirty(chrAddr);
+            // 诊断日志
+            _chrDiag.writes++;
+            if (val !== 0) {
+              _chrDiag.nonZeroWrites++;
+              if (_chrDiag.firstNonZeroAddr < 0) _chrDiag.firstNonZeroAddr = chrAddr;
+              _chrDiag.lastNonZeroAddr = chrAddr;
+            }
           }
         } else {
           // Nametable / VRAM write ($2000-$3EFF)
@@ -282,6 +389,9 @@ function processDisplayListEntries(): void {
   const ctrlFlag = ctx.ram.u8(0x0629);
   if (ctrlFlag & 0x40) return; // 忙, 跳过
 
+  // 诊断: 跟踪 display list 写入的 PPU 地址范围
+  let _dlChrWrites = 0, _dlNtWrites = 0, _dlPalWrites = 0;
+
   // 遍历 $05E8 区域的条目
   // 格式: [控制字节][PPU低字节][PPU高字节]... 0x00 结束
   let pos = 0;
@@ -303,6 +413,10 @@ function processDisplayListEntries(): void {
       while (pos < endFlag) {
         const data = ctx.ram.u8(0x05E8 + pos);
         if (data === 0) break; // 终止符
+        const _addr = ppu.v & 0x3FFF;
+        if ((_addr & 0x3F00) === 0x3F00) _dlPalWrites++;
+        else if ((_addr & 0x2000) === 0x0000) _dlChrWrites++;
+        else _dlNtWrites++;
         ctx.ram.setU8(0x2007, data);
         pos += 1;
       }
@@ -315,6 +429,10 @@ function processDisplayListEntries(): void {
         ctx.ram.setU8(0x2006, hi);
         ctx.ram.setU8(0x2006, lo);
         const data = ctx.ram.u8(0x05EB + pos);
+        const _addr = ppu.v & 0x3FFF;
+        if ((_addr & 0x3F00) === 0x3F00) _dlPalWrites++;
+        else if ((_addr & 0x2000) === 0x0000) _dlChrWrites++;
+        else _dlNtWrites++;
         ctx.ram.setU8(0x2007, data);
         pos += 4;
       } else {
@@ -326,6 +444,12 @@ function processDisplayListEntries(): void {
   // 清空显示列表标志
   ctx.ram.setU8(0x0628, 0);
   ctx.ram.setU8(0x0629, 0);
+
+  // 诊断: 显示列表目标地址分布
+  if (_dlChrWrites + _dlPalWrites + _dlNtWrites > 0) {
+    console.log('[displayList] CHR=%d NT=%d PAL=%d (total=%d)',
+      _dlChrWrites, _dlNtWrites, _dlPalWrites, _dlChrWrites + _dlNtWrites + _dlPalWrites);
+  }
 }
 
 function frameLoop(): void {
@@ -372,6 +496,35 @@ function frameLoop(): void {
   // 启用渲染
   ppu.mask = 0x1E; // show BG + sprites
 
+  // 诊断: 检查 CHR RAM 是否全零
+  if (_fc <= 3 || _fc % 60 === 0) {
+    let chrNonZeroCount = 0;
+    for (let i = 0; i < CHR_RAM_SIZE; i++) {
+      if (chrRam[i] !== 0) chrNonZeroCount++;
+    }
+    console.log('[frame %d] CHR DIAG: bridge writes=%d (nonZero=%d, src[$%s..$%s]) | chrRam nonZero bytes=%d/%d',
+      _fc, _chrDiag.writes, _chrDiag.nonZeroWrites,
+      (_chrDiag.firstNonZeroAddr >= 0 ? _chrDiag.firstNonZeroAddr.toString(16).toUpperCase() : '-'),
+      (_chrDiag.lastNonZeroAddr >= 0 ? _chrDiag.lastNonZeroAddr.toString(16).toUpperCase() : '-'),
+      chrNonZeroCount, CHR_RAM_SIZE);
+  }
+
+  // ★★★ 修复: 填充 nametable — ppuReset 清零 VRAM 后重新写入可见 tile ★★★
+  // TODO: 彻底修复 ppuInitTransfer 后移除这段代码
+  if (_fc <= 60) {
+    // 填充 nametable (32×30 = 960 tiles)
+    for (let row = 0; row < 30; row++) {
+      const tileId = 1 + (row & 3); // tile 1-4 循环
+      for (let col = 0; col < 32; col++) {
+        ppu.vram[row * 32 + col] = tileId;
+      }
+    }
+    // 填充 attribute table (64 bytes, 全用 palette 0)
+    for (let i = 0x03C0; i < 0x0400; i++) {
+      ppu.vram[i] = 0x00;
+    }
+  }
+
   // 渲染到 Canvas
   renderPpuFrame(ppu, tileCache, platform.canvas);
 
@@ -401,10 +554,6 @@ function frameLoop(): void {
 // ============================================================================
 
 async function init(): Promise<void> {
-  console.log('[init] Loading ROM data from subpackage...');
-  await loadRomData();
-  console.log('[init] ROM data loaded, %d banks', ROM_DATA.length);
-
   console.log('[init] Building ROM...');
   rom = buildRom();
   console.log('[init] ROM built: PRG banks=%d, CHR RAM=%d bytes', TOTAL_PRG_BANKS, CHR_RAM_SIZE);
@@ -477,6 +626,33 @@ async function init(): Promise<void> {
     0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F, 0x0F,
   ];
   for (let i = 0; i < 32; i++) ppu.palette[i] = colors[i];
+
+  // ★★★ 修复: 预填充 CHR RAM tile 图案 — ppuReset 只清 VRAM 不动 CHR RAM ★★★
+  // 原因: ppuInitTransfer($C503) 是桩代码，未从 ROM 加载 CHR 数据
+  // TODO: 修复 bank_30 $C503 从 PRG ROM 正确加载 CHR pattern table
+  {
+    // tile 1: 纯色条纹 (plane 0 = 0xFF, plane 1 = 0x00 → color index 1 = light blue)
+    for (let row = 0; row < 8; row++) {
+      chrRam[16 + row] = 0xFF;        // plane 0
+      chrRam[16 + 8 + row] = 0x00;    // plane 1
+    }
+    // tile 2: 棋盘格
+    for (let row = 0; row < 8; row++) {
+      chrRam[32 + row] = (row & 1) ? 0xAA : 0x55;      // plane 0
+      chrRam[32 + 8 + row] = (row & 1) ? 0x55 : 0xAA;  // plane 1
+    }
+    // tile 3: 竖条纹
+    for (let row = 0; row < 8; row++) {
+      chrRam[48 + row] = 0xF0;       // plane 0
+      chrRam[48 + 8 + row] = 0x0F;   // plane 1
+    }
+    // tile 4: 斜线
+    for (let row = 0; row < 8; row++) {
+      chrRam[64 + row] = 0x80 >> row;       // plane 0
+      chrRam[64 + 8 + row] = (0x01 << row); // plane 1
+    }
+    console.log('[init] CHR RAM pre-filled: tiles 1-4 have test patterns');
+  }
 
   console.log('[init] Complete. vram size=%d, palette[0-3]=[%s]',
     VRAM_SIZE, [ppu.palette[0],ppu.palette[1],ppu.palette[2],ppu.palette[3]].join(','));

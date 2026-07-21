@@ -352,6 +352,8 @@ export interface NesRam {
 
   /** 讀取 byte */
   u8(addr: number): Byte;
+  /** 讀取 signed byte (-128..127) */
+  i8(addr: number): number;
   /** 寫入 byte */
   setU8(addr: number, val: Byte): void;
   /** 讀取 little-endian word */

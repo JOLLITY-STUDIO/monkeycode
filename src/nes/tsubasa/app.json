@@ -5,10 +5,6 @@
   ],
   "subPackages": [
     {
-      "root": "subpkg/rom",
-      "pages": []
-    },
-    {
       "root": "subpkg/nes-emulator",
       "pages": [
         "pages/index/index"

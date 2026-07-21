@@ -4,7 +4,7 @@
  * 将 48 个 bank 模块连接到 Canvas 渲染循环
  * ============================================================
  *
- * ROM 数据来自 _romdata.ts (ROM_DATA), 不需拖放 .nes 文件。
+ * ROM 数据来自 _romdata/bank_XX.json, 不需拖放 .nes 文件。
  * PPU 渲染使用 CHR RAM (游戏运行时写入 pattern table)。
  */
 
@@ -17,7 +17,104 @@ import {
 import { GameContext } from '../_context';
 import { allBanks } from './index';
 import type { RomReader, BankRomSlice } from './_bank_types';
-import { ROM_DATA } from './_romdata';
+import { ROM as bank00 } from './_romdata/bank_00_data';
+import { ROM as bank01 } from './_romdata/bank_01_data';
+import { ROM as bank02 } from './_romdata/bank_02_data';
+import { ROM as bank03 } from './_romdata/bank_03_data';
+import { ROM as bank04 } from './_romdata/bank_04_data';
+import { ROM as bank05 } from './_romdata/bank_05_data';
+import { ROM as bank06 } from './_romdata/bank_06_data';
+import { ROM as bank07 } from './_romdata/bank_07_data';
+import { ROM as bank08 } from './_romdata/bank_08_data';
+import { ROM as bank09 } from './_romdata/bank_09_data';
+import { ROM as bank10 } from './_romdata/bank_10_data';
+import { ROM as bank11 } from './_romdata/bank_11_data';
+import { ROM as bank12 } from './_romdata/bank_12_data';
+import { ROM as bank13 } from './_romdata/bank_13_data';
+import { ROM as bank14 } from './_romdata/bank_14_data';
+import { ROM as bank15 } from './_romdata/bank_15_data';
+import { ROM as bank16 } from './_romdata/bank_16_data';
+import { ROM as bank17 } from './_romdata/bank_17_data';
+import { ROM as bank18 } from './_romdata/bank_18_data';
+import { ROM as bank19 } from './_romdata/bank_19_data';
+import { ROM as bank20 } from './_romdata/bank_20_data';
+import { ROM as bank21 } from './_romdata/bank_21_data';
+import { ROM as bank22 } from './_romdata/bank_22_data';
+import { ROM as bank23 } from './_romdata/bank_23_data';
+import { ROM as bank24 } from './_romdata/bank_24_data';
+import { ROM as bank25 } from './_romdata/bank_25_data';
+import { ROM as bank26 } from './_romdata/bank_26_data';
+import { ROM as bank27 } from './_romdata/bank_27_data';
+import { ROM as bank28 } from './_romdata/bank_28_data';
+import { ROM as bank29 } from './_romdata/bank_29_data';
+import { ROM as bank30 } from './_romdata/bank_30_data';
+import { ROM as bank31 } from './_romdata/bank_31_data';
+import { ROM as bank32 } from './_romdata/bank_32_data';
+import { ROM as bank33 } from './_romdata/bank_33_data';
+import { ROM as bank34 } from './_romdata/bank_34_data';
+import { ROM as bank35 } from './_romdata/bank_35_data';
+import { ROM as bank36 } from './_romdata/bank_36_data';
+import { ROM as bank37 } from './_romdata/bank_37_data';
+import { ROM as bank38 } from './_romdata/bank_38_data';
+import { ROM as bank39 } from './_romdata/bank_39_data';
+import { ROM as bank40 } from './_romdata/bank_40_data';
+import { ROM as bank41 } from './_romdata/bank_41_data';
+import { ROM as bank42 } from './_romdata/bank_42_data';
+import { ROM as bank43 } from './_romdata/bank_43_data';
+import { ROM as bank44 } from './_romdata/bank_44_data';
+import { ROM as bank45 } from './_romdata/bank_45_data';
+import { ROM as bank46 } from './_romdata/bank_46_data';
+import { ROM as bank47 } from './_romdata/bank_47_data';
+const _romBanks = [
+  bank00,
+  bank01,
+  bank02,
+  bank03,
+  bank04,
+  bank05,
+  bank06,
+  bank07,
+  bank08,
+  bank09,
+  bank10,
+  bank11,
+  bank12,
+  bank13,
+  bank14,
+  bank15,
+  bank16,
+  bank17,
+  bank18,
+  bank19,
+  bank20,
+  bank21,
+  bank22,
+  bank23,
+  bank24,
+  bank25,
+  bank26,
+  bank27,
+  bank28,
+  bank29,
+  bank30,
+  bank31,
+  bank32,
+  bank33,
+  bank34,
+  bank35,
+  bank36,
+  bank37,
+  bank38,
+  bank39,
+  bank40,
+  bank41,
+  bank42,
+  bank43,
+  bank44,
+  bank45,
+  bank46,
+  bank47,
+];
 
 // ============================================================
 // DOM refs
@@ -49,18 +146,18 @@ let bank8000 = 0;
 let bankA000 = 1;
 
 // ============================================================
-// Build NesRom from embedded ROM_DATA
+// Build NesRom — 从 bank_XX.json 加载数据
 // ============================================================
 
 const PRG_BANK_SIZE = 0x2000; // 8KB
-const TOTAL_PRG_BANKS = ROM_DATA.length; // 48 banks
+const TOTAL_PRG_BANKS = 48; // 48 banks
 const CHR_RAM_SIZE = 0x2000; // 8KB CHR RAM
 
 function buildRom(): NesRom {
   // 拼接所有 PRG bank 到连续数组
   const prg = new Uint8Array(TOTAL_PRG_BANKS * PRG_BANK_SIZE);
   for (let i = 0; i < TOTAL_PRG_BANKS; i++) {
-    prg.set(ROM_DATA[i], i * PRG_BANK_SIZE);
+    prg.set(_romBanks[i], i * PRG_BANK_SIZE);
   }
 
   // CHR RAM (8KB, 游戏运行时通过 PPU $2007 写入)
@@ -285,11 +382,12 @@ function frameLoop(): void {
 
   // Execute NMI logic:
   //   bank_00 dispatch reads $27 (jump index) → calls scene handler
+  //   $27 is managed by the state machine (handleForward/1/2/3/4),
+  //   must NOT be reset every frame or the FSM never advances.
   const reader = createRomReader();
 
   if (bank8000 === 0) {
     const bank0 = allBanks[0];
-    ctx.ram.setU8(0x27, 0); // jumpIdx = 0 (main scene loop entry)
     bank0?.dispatch(ctx, reader);
   }
 
