@@ -118,36 +118,60 @@ function processDisplayList(ctx: GameContext, rom: RomReader): void {
     return;
   }
   
-  // $8014-$8040: 繪製循環
-  // LDA #$00; STA $2001  ; 關閉 PPU 渲染
-  // LDX #$00
-  // ; loop $801B:
-  //   LDY #$80        ; 每組處理 128 次 (? 實際上 4 次)
-  //   LDA $05E8,X     ; attr
-  //   BPL $8026       ; bit7=0 → nametable 0/1
-  //   AND #$3F; LDY #$84  ; bit7=1 → nametable 2/3, 設置 PPUCTRL
-  //   STY $2000
-  //   TAY → 用 Y 保存 flag
-  //   ; $802A-$8039: 寫入 PPUADDR
-  //   LDA $05EA,X → PPU hi
-  //   LDA $05E9,X → PPU lo
-  //   STA $2006; STA $2006
-  //   ; $8036-$803E: tile loop
-  //   LDA $05EB,X → PPUDATA
-  //   INX; DEY; BNE → 繼續直到 Y=0
-  //   INX;INX;INX → skip next attr + PPU addr
-  //   (實際上每組只處理 1 tile, Y count 來自前面的 flag)
-  //   LDA $05E8,X → 檢查下一組 attr
-  //   BNE $801B    → 繼續
-    
-  // 實際上, 這是逐個 tile 寫入 PPU
-  // attr.bit7 → nametable 選擇
-  // PPU_LO/HI → PPU 位址
-  // tile → 寫入 $2007
+  // $8014: LDA #$00; STA $2001  → 關閉 PPU 渲染
+  ctx.ram.setU8(PPUMASK, 0);
+
+  // $8019: LDX #$00
+  let x = 0;
+
+  // 外循環 $801B: 遍歷顯示列表每組
+  while (true) {
+    // $801B: LDY #$80
+    let y = 0x80;
+
+    // $801D: LDA $05E8,X → 讀 attr
+    const attr = ctx.ram.u8(DISPLAY_LIST + x);
+
+    // $8020: BPL $8026 → bit7=0 跳過 nametable 切換
+    if (attr & 0x80) {
+      // $8022-$8024: AND #$3F; LDY #$84
+      // attr bit7=1 → PPUCTRL = $84
+      y = 0x84;
+    }
+
+    // $8026: STY $2000 → 寫 PPUCTRL
+    ctx.ram.setU8(PPUCTRL, y);
+
+    // $8029: TAY → Y = attr & $7F (循環計數 = 重複次數)
+    // 如果走了 BPL, A = attr (bit7=0), Y = attr
+    // 如果走了 AND, A = attr & $3F, Y = attr & $3F
+    const tileCount = attr & 0x3F;
+
+    // $802A-$8033: 寫入 PPUADDR
+    const ppuHi = ctx.ram.u8(DISPLAY_LIST + 2 + x);  // $05EA,X
+    const ppuLo = ctx.ram.u8(DISPLAY_LIST + 1 + x);  // $05E9,X
+    ctx.ram.setU8(PPUADDR, ppuHi);
+    ctx.ram.setU8(PPUADDR, ppuLo);
+
+    // $8036-$803E: inner loop → 寫入 tile 數據
+    // LDA $05EB,X; STA $2007; INX; DEY; BNE $8036
+    for (let i = 0; i < tileCount; i++) {
+      const tile = ctx.ram.u8(DISPLAY_LIST + 3 + x + i);
+      ctx.ram.setU8(PPUDATA, tile);
+    }
+    x += tileCount;  // inner loop 的 INX 累積
+
+    // $8040-$8042: INX;INX;INX → 跳過本組的 attr+addr (3 bytes)
+    x += 3;
+
+    // $8043-$8046: LDA $05E8,X; BNE $801B → 檢查下一組 attr
+    const nextAttr = ctx.ram.u8(DISPLAY_LIST + x);
+    if (nextAttr === 0) break;
+  }
 
   // $8048: 寫完後清除 $0628
   ctx.ram.setU8(DISPLAY_LIST_END, 0);
-  
+
   goto$804D(ctx);
 }
 
@@ -400,63 +424,95 @@ function processJoypadInput(ctx: GameContext): void {
 //   (bit7=1 → PPUADDR 模式)
 // ============================================================
 
-function nmiSubStateDispatch(ctx: GameContext, rom: RomReader): void {
-  // $8160-$8165: IRQ disable
-  ctx.ram.setU8(0xE000, 0); // STA $E000
-  ctx.ram.setU8(0xE001, 0); // STA $E001
-  
-  const nmiTimer = ctx.ram.u8(ZP_NMI_TIMER); // LDX $78
-  
-  // $8168: LDA $78,X → 從 NMI 狀態表讀取
-  // 表位置在 RAM $78+X？不, 這是 indirect 讀取
-  // 實際上: $78+偏移 指向 RAM 中的 NMI 子狀態數據
-  
-  // 檢查 bit7
-  if (bit(nmiTimer, 7)) {
-    // $816C-$818A: PPUADDR 寫入模式
-    // DEY 延遲
-    // LDA $79,X; LDY $7A,X → 讀取 PPU 位址
-    // STA $2006; STY $2006
-    // 設置 PPUCTRL nametable bits
-    // 清除 $2005 scroll
-    // JMP $A1A8 → 繼續 NMI
-    gotoNmiContinue(ctx);
+function nmiSubStateDispatch(ctx: GameContext, _rom: RomReader): void {
+  // $8160-$8163: IRQ disable
+  ctx.ram.setU8(0xE000, 0);
+  ctx.ram.setU8(0xE001, 0);
+
+  const x = ctx.ram.u8(ZP_NMI_TIMER); // $8166: LDX $78
+
+  // $8168: LDA $78,X — 查子狀態表 (基址 $78, 偏移 X)
+  const state = ctx.ram.u8(ZP_NMI_TIMER + x);
+
+  // $816A: BPL $818D — bit7=0 → 滾動模式
+  if (state & 0x80) {
+    // ===== PPUADDR 直接寫入模式 ($816C-$818A) =====
+    // 延時循環 (LDY #$06; DEY; BNE $816E) — 省略
+
+    // $8171: LDA $79,X
+    const ppuHi = ctx.ram.u8(0x79 + x);
+    // $8173: LDY $7A,X
+    const ppuLo = ctx.ram.u8(0x7A + x);
+
+    // $8175-$8178: STY $2006; STA $2006
+    ctx.ram.setU8(PPUADDR, ppuLo);
+    ctx.ram.setU8(PPUADDR, ppuHi);
+
+    // $817B-$817F: LDA $20; AND #$FC; STA $2000
+    const ppuctrl = ctx.ram.u8(ZP_PPUCTRL_MIRROR) & 0xFC;
+    ctx.ram.setU8(PPUCTRL, ppuctrl);
+
+    // $8182-$8187: LDA #$00; STA $2005; STA $2005
+    ctx.ram.setU8(PPUSCROLL, 0);
+    ctx.ram.setU8(PPUSCROLL, 0);
+
+    // $818A: JMP $A1A8 → fall through
   } else {
-    // $818D-$819A: 滾動模式
-    // DEY 延遲
-    // LSR $20 → 準備 nametable bit
-    // LDA $7A,X → 滾動 Y
-    // 寫入 $2000 和 $2005
-    gotoNmiContinue(ctx);
+    // ===== 滾動模式 ($818D-$81A7) =====
+    // 延時循環 (LDY #$02; DEY; BNE $818F) — 省略
+
+    // $8192: LSR $20 — 右移, bit0→C, bit7=0
+    let ppuctrl = ctx.ram.u8(ZP_PPUCTRL_MIRROR);
+    ppuctrl >>= 1;
+
+    // $8194: LDA $7A,X
+    // $8196: LSR A — bit0→C
+    // $8197: ROL $20 — C→bit0, bit7→C
+    const scrollVal = ctx.ram.u8(0x7A + x);
+    ppuctrl = ((ppuctrl << 1) | (scrollVal & 1)) & 0xFF;
+
+    // $8199-$819B: LDA $20; STA $2000
+    ctx.ram.setU8(ZP_PPUCTRL_MIRROR, ppuctrl);
+    ctx.ram.setU8(PPUCTRL, ppuctrl);
+
+    // $819E-$81A5: LDA $79,X; STA $2005; LDA #$00; STA $2005
+    ctx.ram.setU8(PPUSCROLL, ctx.ram.u8(0x79 + x));
+    ctx.ram.setU8(PPUSCROLL, 0);
   }
+
+  // $818A/$81A7: JMP/fall through to $A1A8
+  gotoNmiContinue(ctx, x);
 }
 
-function gotoNmiContinue(ctx: GameContext): void {
-  // $81A8-$81BF: 繼續 NMI 處理
-  // 檢查子狀態索引, 遞增 $78
-  const nmiTimer = ctx.ram.u8(ZP_NMI_TIMER);
-  const masked = nmiTimer & MASK_CLR_SIGN; // AND #$7F
-  
-  if (masked === 0) {
-    // BEQ $81C0 → 結束 NMI
-    // STA $E000; STA $78 → 清除
-    ctx.ram.setU8(0xE000, 0);
-    ctx.ram.setU8(ZP_NMI_TIMER, 0);
-    // JSR $A1CB → NMI 結束後處理
-    // RTS
+function gotoNmiContinue(ctx: GameContext, xVal: number): void {
+  // $81A8-$81BF / $81C0-$81CA
+  const x = xVal;
+
+  // $81A8: LDA $78,X
+  const state = ctx.ram.u8(ZP_NMI_TIMER + x);
+  // $81AA: AND #$7F
+  const masked = state & 0x7F;
+
+  // $81AC: BEQ $81C0 — 結束 NMI
+  if (masked === 0 || x === 0x13) { // $81AE: CPX #$13; BEQ $81C0
+    // $81C0-$81C4: STA $E000; STA $78
+    ctx.ram.setU8(0xE000, masked);
+    ctx.ram.setU8(ZP_NMI_TIMER, masked);
+    // $81C5-$81CA: LDY #$18; JSR $A1CB
+    nmiBankSwitch(ctx, 0x18, 0);
     return;
   }
-  
-  // $81AE: CPX #$13; BEQ $81C0 → 特殊情況跳過
-  // $81B2: INC $78,3 → NMI timer += 3
+
+  // $81B2-$81B6: INC $78 ×3
+  const nmiTimer = ctx.ram.u8(ZP_NMI_TIMER);
   ctx.ram.setU8(ZP_NMI_TIMER, u8(nmiTimer + 3));
-  
-  // $81B8: ASL A; STA $C000,C001 → IRQ latch
-  const irqVal = u8(masked * 2);
+
+  // $81B8: ASL A
+  const irqVal = u8(masked << 1);
+  // $81B9-$81BC: STA $C000; STA $C001
   ctx.ram.setU8(0xC000, irqVal);
   ctx.ram.setU8(0xC001, irqVal);
-  
-  // RTS → 返回 NMI 主程式
+  // $81BF: RTS
 }
 
 // ============================================================
