@@ -1,0 +1,22632 @@
+// Merged: 15 banks, all JSR/JMP/branches inline
+#include "6502_nes.h"
+
+// ===== Bank 0 (prg_bank_00.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 00 =====
+// ; ROM: 0x000010-0x00200F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=7274 data=427 unaccessed=491
+B0_8000: LDA_ZP(0x27)
+B0_8002: ASL_A()
+B0_8003: TAX()
+B0_8004: LDA_ABS_X(0x800e)
+B0_8007: PHA()
+B0_8008: LDA_ABS_X(0x800d)
+B0_800b: PHA()
+B0_800c: RTS()
+B0_8017: LDX_IMM(0x02)
+B0_8019: CYCLE(6); SetStack(SP, 27); SetStack(SP - 1, 128); SP -= 2; goto B30_c4b9;
+B0_801c: PC = 0xa203; /* UNRES JMP $a203 */ goto LABEL_END;
+B0_801f: CYCLE(6); SetStack(SP, 33); SetStack(SP - 1, 128); SP -= 2; goto B26_9ba0;
+B0_8022: LDA_IMM(0x00)
+B0_8024: CYCLE(6); SetStack(SP, 38); SetStack(SP - 1, 128); SP -= 2; goto B26_8464;
+B0_8027: LDA_IMM(0x01)
+B0_8029: CYCLE(6); SetStack(SP, 43); SetStack(SP - 1, 128); SP -= 2; goto B0_9fa8;
+B0_802c: LDA_ZP(0x1E)
+B0_802e: AND_IMM(0x10)
+B0_8030: CYCLE(2); if (SR_Z) goto B0_8027;
+B0_8032: LDA_IMM(0x00)
+B0_8034: STA_ZP(0x05)
+B0_8036: STA_ZP(0x06)
+B0_8038: STA_ZP(0x09)
+B0_803a: STA_ZP(0x0A)
+B0_803c: STA_ZP(0x11)
+B0_803e: STA_ZP(0x12)
+B0_8040: STA_ZP(0x0D)
+B0_8042: STA_ZP(0x0E)
+B0_8044: STA_ZP(0x4C)
+B0_8046: STA_ZP(0x5B)
+B0_8048: LDA_IMM(0x01)
+B0_804a: STA_ABS(0x0700)
+B0_804d: LDA_ZP(0x1B)
+B0_804f: AND_IMM(0x01)
+B0_8051: CYCLE(2); if (!SR_Z) goto B0_807a;
+B0_8053: CYCLE(6); SetStack(SP, 85); SetStack(SP - 1, 128); SP -= 2; goto B26_9b11;
+B0_8056: LDA_IMM(0x02)
+B0_8058: CYCLE(6); SetStack(SP, 90); SetStack(SP - 1, 128); SP -= 2; goto B0_9fa8;
+B0_805b: CYCLE(6); SetStack(SP, 93); SetStack(SP - 1, 128); SP -= 2; goto B0_9b7f;
+B0_805e: CYCLE(6); SetStack(SP, 96); SetStack(SP - 1, 128); SP -= 2; goto B0_98a0;
+B0_8061: LDA_IMM(0x0D)
+B0_8063: CYCLE(6); SetStack(SP, 101); SetStack(SP - 1, 128); SP -= 2; goto B28_8297;
+B0_8066: LDA_IMM(0x00)
+B0_8068: STA_ZP(0x7B)
+B0_806a: LDA_IMM(0x17)
+B0_806c: CYCLE(6); SetStack(SP, 110); SetStack(SP - 1, 128); SP -= 2; goto B1_8af7;
+B0_806f: LDA_IMM(0x30)
+B0_8071: CYCLE(6); SetStack(SP, 115); SetStack(SP - 1, 128); SP -= 2; goto B26_890c;
+B0_8074: CYCLE(6); SetStack(SP, 118); SetStack(SP - 1, 128); SP -= 2; goto B26_88fb;
+B0_8077: CYCLE(6); SetStack(SP, 121); SetStack(SP - 1, 128); SP -= 2; goto B0_9a35;
+B0_807a: LDA_IMM(0x00)
+B0_807c: CYCLE(6); SetStack(SP, 126); SetStack(SP - 1, 128); SP -= 2; goto B16_8920;
+B0_807f: LDA_IMM(0x00)
+B0_8081: STA_ZP(0x90)
+B0_8083: LDA_IMM(0x02)
+B0_8085: STA_ZP(0x91)
+B0_8087: LDA_ZP(0x1B)
+B0_8089: AND_IMM(0xFE)
+B0_808b: STA_ZP(0x1B)
+B0_808d: LDA_IMM(0x0A)
+B0_808f: STA_ZP(0xED)
+B0_8091: LDA_ZP(0xED)
+B0_8093: STA_ZP(0xE6)
+B0_8095: LDA_IMM(0x22)
+B0_8097: STA_ZP(0xE7)
+B0_8099: LDY_IMM(0x01)
+B0_809b: LDX_IMM(0x01)
+B0_809d: LDA_IMM(0x7F)
+B0_809f: CYCLE(6); SetStack(SP, 161); SetStack(SP - 1, 128); SP -= 2; goto B26_98ea;
+B0_80a2: LDA_IMM(0x01)
+B0_80a4: CYCLE(6); SetStack(SP, 166); SetStack(SP - 1, 128); SP -= 2; goto B0_9fa8;
+B0_80a7: LDA_ZP(0x1E)
+B0_80a9: AND_IMM(0x3C)
+B0_80ab: CYCLE(2); if (SR_Z) goto B0_80a2;
+B0_80ad: ASL_A()
+B0_80ae: ASL_A()
+B0_80af: CYCLE(2); if (SR_N) goto B0_80bc;
+B0_80b1: ASL_A()
+B0_80b2: CYCLE(2); if (SR_N) goto B0_80d4;
+B0_80b4: ASL_A()
+B0_80b5: AND_IMM(0x40)
+B0_80b7: ORA_IMM(0x0A)
+B0_80b9: CYCLE(3); PC = 0x80c0; goto B22_80c0;
+B0_80bc: LDA_ZP(0xED)
+B0_80be: EOR_IMM(0x40)
+B0_80c0: STA_ZP(0xED)
+B0_80c2: LDA_IMM(0x0A)
+B0_80c4: STA_ZP(0xE6)
+B0_80c6: LDA_IMM(0x22)
+B0_80c8: STA_ZP(0xE7)
+B0_80ca: LDY_IMM(0x03)
+B0_80cc: LDX_IMM(0x01)
+B0_80ce: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 128); SP -= 2; goto B0_98e8;
+B0_80d1: CYCLE(3); PC = 0x8091; goto B26_8091;
+B0_80d4: LDA_ZP(0x1C)
+B0_80d6: AND_IMM(0xC0)
+B0_80d8: CMP_IMM(0xC0)
+B0_80da: CYCLE(2); if (!SR_Z) goto B0_80df;
+B0_80df: BIT_ZP(0xED)
+B0_80e1: CYCLE(2); if (!SR_V) goto B0_80e6;
+B0_80e3: CYCLE(3); PC = 0x826a; goto B28_826a;
+B0_80e6: CYCLE(6); SetStack(SP, 232); SetStack(SP - 1, 128); SP -= 2; goto B26_9ba0;
+B0_80e9: LDA_IMM(0x01)
+B0_80eb: CYCLE(6); SetStack(SP, 237); SetStack(SP - 1, 128); SP -= 2; goto B26_8464;
+B0_80ee: CYCLE(6); SetStack(SP, 240); SetStack(SP - 1, 128); SP -= 2; goto B24_82b5;
+B0_80f1: LDA_IMM(0xC0)
+B0_80f3: STA_ZP(0xE0)
+B0_80f5: LDX_IMM(0x02)
+B0_80f7: CYCLE(6); SetStack(SP, 249); SetStack(SP - 1, 128); SP -= 2; goto B30_c4b9;
+B0_80fa: CYCLE(6); SetStack(SP, 252); SetStack(SP - 1, 128); SP -= 2; PC = 0xa20f; /* UNRES JSR $a20f */ goto LABEL_END;
+B0_80fd: LDA_IMM(0x00)
+B0_80ff: STA_ZP(0x28)
+B0_8101: STA_ZP(0x29)
+B0_8103: STA_ZP(0x27)
+B0_8105: LDA_IMM(0x01)
+B0_8107: STA_ABS(0x0700)
+B0_810a: LDX_IMM(0x02)
+B0_810c: CYCLE(6); SetStack(SP, 14); SetStack(SP - 1, 129); SP -= 2; goto B30_c4b9;
+B0_810f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 129); SP -= 2; PC = 0xa20c; /* UNRES JSR $a20c */ goto LABEL_END;
+B0_8112: LDA_IMM(0x00)
+B0_8114: CYCLE(6); SetStack(SP, 22); SetStack(SP - 1, 129); SP -= 2; goto B16_8920;
+B0_8117: LDX_IMM(0x01)
+B0_8119: CYCLE(6); SetStack(SP, 27); SetStack(SP - 1, 129); SP -= 2; goto B30_c4b9;
+B0_811c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 129); SP -= 2; PC = 0xa006; /* UNRES JSR $a006 */ goto LABEL_END;
+B0_811f: CYCLE(6); SetStack(SP, 33); SetStack(SP - 1, 129); SP -= 2; goto B30_c572;
+B0_8122: LDX_IMM(0x55)
+B0_8124: LDA_ZP(0x26)
+B0_8126: CMP_IMM(0x20)
+B0_8128: CYCLE(2); if (!SR_C) goto B0_812c;
+B0_812a: LDX_IMM(0x4C)
+B0_812c: STX_ABS(0x0700)
+B0_812f: LDA_IMM(0x00)
+B0_8131: STA_ABS(0x0450)
+B0_8134: STA_ABS(0x0451)
+B0_8137: STA_ABS(0x0452)
+B0_813a: STA_ABS(0x0453)
+B0_813d: LDX_IMM(0x01)
+B0_813f: CYCLE(6); SetStack(SP, 65); SetStack(SP - 1, 129); SP -= 2; goto B30_c4b9;
+B0_8142: CYCLE(6); SetStack(SP, 68); SetStack(SP - 1, 129); SP -= 2; PC = 0xa009; /* UNRES JSR $a009 */ goto LABEL_END;
+B0_8145: BIT_ZP(0xE0)
+B0_8147: CYCLE(2); if (SR_N) goto B0_814f;
+B0_8149: LDA_ZP(0xE4)
+B0_814b: CMP_ZP(0x26)
+B0_814d: CYCLE(2); if (SR_C) goto B0_8163;
+B0_814f: LDX_ABS(0x0026)
+B0_8152: LDA_ABS_X(0x83dc)
+B0_8155: CYCLE(2); if (SR_Z) goto B0_8163;
+B0_8157: CYCLE(6); SetStack(SP, 89); SetStack(SP - 1, 129); SP -= 2; goto B26_8464;
+B0_815a: CYCLE(6); SetStack(SP, 92); SetStack(SP - 1, 129); SP -= 2; goto B24_82b5;
+B0_815d: LDA_ZP(0xE0)
+B0_815f: AND_IMM(0x7F)
+B0_8161: STA_ZP(0xE0)
+B0_8163: CYCLE(3); PC = 0x8017; goto B24_8017;
+B0_8166: LDA_IMM(0x01)
+B0_8168: STA_ZP(0x27)
+B0_816a: CYCLE(6); SetStack(SP, 108); SetStack(SP - 1, 129); SP -= 2; goto B30_c56c;
+B0_816d: CYCLE(6); SetStack(SP, 111); SetStack(SP - 1, 129); SP -= 2; goto B28_8285;
+B0_8170: LDA_ZP(0x26)
+B0_8172: CMP_ZP(0xE4)
+B0_8174: CYCLE(2); if (SR_Z) goto B0_8188;
+B0_8176: CYCLE(2); if (!SR_C) goto B0_8188;
+B0_8178: STA_ZP(0xE4)
+B0_817a: LDX_ABS(0x0026)
+B0_817d: LDA_ABS_X(0x83fe)
+B0_8180: CYCLE(2); if (SR_Z) goto B0_8188;
+B0_8182: CYCLE(6); SetStack(SP, 132); SetStack(SP - 1, 129); SP -= 2; goto B26_8464;
+B0_8185: CYCLE(6); SetStack(SP, 135); SetStack(SP - 1, 129); SP -= 2; goto B24_82b5;
+B0_8188: CYCLE(3); PC = 0x8017; goto B24_8017;
+B0_818b: LDA_ZP(0x28)
+B0_818d: CMP_ZP(0x29)
+B0_818f: CYCLE(2); if (SR_Z) goto B0_8196;
+B0_8191: CYCLE(2); if (SR_C) goto B0_8206;
+B0_8193: CYCLE(3); PC = 0x81e6; goto B26_81e6;
+B0_8196: LDX_ZP(0x26)
+B0_8198: LDA_ABS_X(0x83ba)
+B0_819b: CYCLE(2); if (SR_Z) goto B0_81e6;
+B0_819d: CMP_IMM(0x01)
+B0_819f: CYCLE(2); if (SR_Z) goto B0_81d4;
+B0_81a1: LDA_IMM(0x02)
+B0_81a3: STA_ZP(0x27)
+B0_81a5: CYCLE(6); SetStack(SP, 167); SetStack(SP - 1, 129); SP -= 2; goto B30_c56c;
+B0_81a8: CYCLE(6); SetStack(SP, 170); SetStack(SP - 1, 129); SP -= 2; goto B28_8285;
+B0_81ab: CYCLE(3); PC = 0x8017; goto B24_8017;
+B0_81ae: LDA_IMM(0x03)
+B0_81b0: STA_ZP(0x27)
+B0_81b2: CYCLE(3); PC = 0x8017; goto B24_8017;
+B0_81b5: LDA_ZP(0x28)
+B0_81b7: CMP_ZP(0x29)
+B0_81b9: CYCLE(2); if (SR_Z) goto B0_81c0;
+B0_81bb: CYCLE(2); if (SR_C) goto B0_8206;
+B0_81bd: CYCLE(3); PC = 0x81e6; goto B26_81e6;
+B0_81c0: LDX_ZP(0x26)
+B0_81c2: LDA_ABS_X(0x83ba)
+B0_81c5: CMP_IMM(0x03)
+B0_81c7: CYCLE(2); if (SR_Z) goto B0_81d4;
+B0_81d4: LDA_IMM(0x04)
+B0_81d6: STA_ZP(0x27)
+B0_81d8: CYCLE(3); PC = 0x8017; goto B24_8017;
+B0_81db: LDA_ZP(0x28)
+B0_81dd: CMP_ZP(0x29)
+B0_81df: CYCLE(2); if (SR_Z) goto B0_81e6;
+B0_81e1: CYCLE(2); if (SR_C) goto B0_8206;
+B0_81e3: CYCLE(3); PC = 0x81e6; goto B26_81e6;
+B0_81e6: LDX_IMM(0x01)
+B0_81e8: CYCLE(6); SetStack(SP, 234); SetStack(SP - 1, 129); SP -= 2; goto B30_c4b9;
+B0_81eb: CYCLE(6); SetStack(SP, 237); SetStack(SP - 1, 129); SP -= 2; PC = 0xa015; /* UNRES JSR $a015 */ goto LABEL_END;
+B0_81ee: LDA_IMM(0x60)
+B0_81f0: CYCLE(6); SetStack(SP, 242); SetStack(SP - 1, 129); SP -= 2; goto B26_8464;
+B0_81f3: CYCLE(6); SetStack(SP, 245); SetStack(SP - 1, 129); SP -= 2; goto B24_82b5;
+B0_81f6: CYCLE(6); SetStack(SP, 248); SetStack(SP - 1, 129); SP -= 2; goto B26_99f0;
+B0_81f9: LDX_ZP(0x26)
+B0_81fb: LDA_ABS_X(0x8398)
+B0_81fe: STA_ZP(0x26)
+B0_8200: CYCLE(6); SetStack(SP, 2); SetStack(SP - 1, 130); SP -= 2; goto B30_c578;
+B0_8203: CYCLE(3); PC = 0x80fd; goto B22_80fd;
+B0_8206: LDX_IMM(0x01)
+B0_8208: CYCLE(6); SetStack(SP, 10); SetStack(SP - 1, 130); SP -= 2; goto B30_c4b9;
+B0_820b: CYCLE(6); SetStack(SP, 13); SetStack(SP - 1, 130); SP -= 2; PC = 0xa012; /* UNRES JSR $a012 */ goto LABEL_END;
+B0_820e: BIT_ZP(0xE0)
+B0_8210: CYCLE(2); if (SR_V) goto B0_821c;
+B0_8212: LDA_ZP(0x26)
+B0_8214: CMP_ZP(0xE5)
+B0_8216: CYCLE(2); if (SR_Z) goto B0_822f;
+B0_8218: CYCLE(2); if (!SR_C) goto B0_822f;
+B0_821a: STA_ZP(0xE5)
+B0_821c: LDX_ZP(0x26)
+B0_821e: LDA_ABS_X(0x8420)
+B0_8221: CYCLE(2); if (SR_Z) goto B0_822f;
+B0_8223: CYCLE(6); SetStack(SP, 37); SetStack(SP - 1, 130); SP -= 2; goto B26_8464;
+B0_8226: CYCLE(6); SetStack(SP, 40); SetStack(SP - 1, 130); SP -= 2; goto B24_82b5;
+B0_8229: LDA_ZP(0xE0)
+B0_822b: AND_IMM(0xBF)
+B0_822d: STA_ZP(0xE0)
+B0_822f: LDX_ABS(0x0026)
+B0_8232: LDA_ABS_X(0x8442)
+B0_8235: CYCLE(2); if (SR_Z) goto B0_8243;
+B0_8237: CYCLE(6); SetStack(SP, 57); SetStack(SP - 1, 130); SP -= 2; goto B26_8464;
+B0_823a: CYCLE(6); SetStack(SP, 60); SetStack(SP - 1, 130); SP -= 2; goto B28_82a9;
+B0_823d: LDA_ZP(0x26)
+B0_823f: CMP_IMM(0x20)
+B0_8241: CYCLE(2); if (SR_C) goto B0_8263;
+B0_8243: LDA_IMM(0x01)
+B0_8245: STA_ABS(0x0700)
+B0_8248: CYCLE(6); SetStack(SP, 74); SetStack(SP - 1, 130); SP -= 2; goto B30_c578;
+B0_824b: INC_ZP(0x26)
+B0_824d: LDX_IMM(0x01)
+B0_824f: CYCLE(6); SetStack(SP, 81); SetStack(SP - 1, 130); SP -= 2; goto B30_c4b9;
+B0_8252: CYCLE(6); SetStack(SP, 84); SetStack(SP - 1, 130); SP -= 2; PC = 0xa018; /* UNRES JSR $a018 */ goto LABEL_END;
+B0_8255: LDA_ZP(0x26)
+B0_8257: CMP_IMM(0x03)
+B0_8259: CYCLE(2); if (!SR_C) goto B0_8260;
+B0_825b: LDX_IMM(0x05)
+B0_825d: STX_ABS(0x0446)
+B0_8260: CYCLE(3); PC = 0x80fd; goto B22_80fd;
+B0_8263: LDA_IMM(0x05)
+B0_8265: STA_ZP(0x27)
+B0_8267: CYCLE(3); PC = 0xc57b; goto B30_c57b;
+B0_826a: LDX_IMM(0x01)
+B0_826c: CYCLE(6); SetStack(SP, 110); SetStack(SP - 1, 130); SP -= 2; goto B30_c4b9;
+B0_826f: CYCLE(6); SetStack(SP, 113); SetStack(SP - 1, 130); SP -= 2; PC = 0xa003; /* UNRES JSR $a003 */ goto LABEL_END;
+B0_8272: LDX_IMM(0x02)
+B0_8274: CYCLE(6); SetStack(SP, 118); SetStack(SP - 1, 130); SP -= 2; goto B30_c4b9;
+B0_8277: CYCLE(6); SetStack(SP, 121); SetStack(SP - 1, 130); SP -= 2; PC = 0xa20f; /* UNRES JSR $a20f */ goto LABEL_END;
+B0_827a: LDX_IMM(0x01)
+B0_827c: CYCLE(6); SetStack(SP, 126); SetStack(SP - 1, 130); SP -= 2; goto B30_c4b9;
+B0_827f: CYCLE(6); SetStack(SP, 129); SetStack(SP - 1, 130); SP -= 2; PC = 0xa01b; /* UNRES JSR $a01b */ goto LABEL_END;
+B0_8282: CYCLE(3); PC = 0x80fd; goto B22_80fd;
+B0_8285: LDA_IMM(0x01)
+B0_8287: STA_ABS(0x0700)
+B0_828a: LDA_IMM(0x01)
+B0_828c: CYCLE(6); SetStack(SP, 142); SetStack(SP - 1, 130); SP -= 2; goto B0_9fa8;
+B0_828f: LDX_IMM(0x01)
+B0_8291: CYCLE(6); SetStack(SP, 147); SetStack(SP - 1, 130); SP -= 2; goto B30_c4b9;
+B0_8294: PC = 0xa00c; /* UNRES JMP $a00c */ goto LABEL_END;
+B0_8297: STA_ZP(0xE7)
+B0_8299: LDA_IMM(0x01)
+B0_829b: STA_ZP(0xE6)
+B0_829d: LDA_IMM(0xE5)
+B0_829f: STA_ZP(0x4D)
+B0_82a1: LDA_IMM(0x00)
+B0_82a3: STA_ZP(0x4E)
+B0_82a5: CYCLE(6); SetStack(SP, 167); SetStack(SP - 1, 130); SP -= 2; goto B26_9085;
+B0_82a8: RTS()
+B0_82a9: LDA_IMM(0x01)
+B0_82ab: CYCLE(6); SetStack(SP, 173); SetStack(SP - 1, 130); SP -= 2; goto B0_9fa8;
+B0_82ae: LDA_ZP(0x4D)
+B0_82b0: ORA_ZP(0x4E)
+B0_82b2: CYCLE(2); if (!SR_Z) goto B0_82a9;
+B0_82b4: RTS()
+B0_82b5: LDA_IMM(0x01)
+B0_82b7: CYCLE(6); SetStack(SP, 185); SetStack(SP - 1, 130); SP -= 2; goto B0_9fa8;
+B0_82ba: LDA_ZP(0x4D)
+B0_82bc: ORA_ZP(0x4E)
+B0_82be: CYCLE(2); if (SR_Z) goto B0_82c6;
+B0_82c0: LDA_ZP(0x1E)
+B0_82c2: AND_IMM(0x20)
+B0_82c4: CYCLE(2); if (SR_Z) goto B0_82b5;
+B0_82c6: LDA_IMM(0x00)
+B0_82c8: STA_ZP(0x05)
+B0_82ca: STA_ZP(0x06)
+B0_82cc: STA_ZP(0x09)
+B0_82ce: STA_ZP(0x0A)
+B0_82d0: STA_ZP(0x11)
+B0_82d2: STA_ZP(0x12)
+B0_82d4: STA_ZP(0x0D)
+B0_82d6: STA_ZP(0x0E)
+B0_82d8: STA_ZP(0x4C)
+B0_82da: LDA_IMM(0x01)
+B0_82dc: STA_ABS(0x0700)
+B0_82df: CYCLE(6); SetStack(SP, 225); SetStack(SP - 1, 130); SP -= 2; goto B26_9ba0;
+B0_82e2: LDA_IMM(0x00)
+B0_82e4: STA_ZP(0x44)
+B0_82e6: STA_ZP(0x45)
+B0_82e8: STA_ZP(0x7A)
+B0_82ea: STA_ZP(0x7B)
+B0_82ec: RTS()
+B0_82ed: CYCLE(6); SetStack(SP, 239); SetStack(SP - 1, 130); SP -= 2; goto B20_838a;
+B0_82f0: LDA_ZP(0x4C)
+B0_82f2: CYCLE(2); if (!SR_N) goto B0_82ed;
+B0_82f4: ASL_A()
+B0_82f5: TAX()
+B0_82f6: LDA_ABS_X(0xb800)
+B0_82f9: STA_ZP(0xEC)
+B0_82fb: LDA_ABS_X(0xb801)
+B0_82fe: STA_ZP(0xED)
+B0_8300: LDY_IMM(0x00)
+B0_8302: LDA_IDY(0xEC)
+B0_8304: CYCLE(2); if (SR_N) goto B0_8355;
+B0_8306: STA_ZP(0xE9)
+B0_8308: LDA_IMM(0x01)
+B0_830a: STA_ZP(0xEB)
+B0_830c: LDY_ZP(0xEB)
+B0_830e: LDA_IDY(0xEC)
+B0_8310: CMP_IMM(0xFE)
+B0_8312: CYCLE(2); if (SR_Z) goto B0_8308;
+B0_8314: CMP_IMM(0xFF)
+B0_8316: CYCLE(2); if (SR_Z) goto B0_8383;
+B0_8318: STA_ZP(0xEA)
+B0_831a: LDX_ZP(0xE9)
+B0_831c: LDA_IMM(0x03)
+B0_831e: STA_ZP(0xEB)
+B0_8320: INY()
+B0_8321: INX()
+B0_8322: LDA_IDY(0xEC)
+B0_8324: CYCLE(2); if (SR_Z) goto B0_8329;
+B0_8326: STA_ABS_X(0x062a)
+B0_8329: DEC_ZP(0xEB)
+B0_832b: CYCLE(2); if (!SR_Z) goto B0_8320;
+B0_832d: INY()
+B0_832e: STY_ZP(0xEB)
+B0_8330: LDA_IMM(0x20)
+B0_8332: CLC()
+B0_8333: ADC_ABS(0x0628)
+B0_8336: CMP_IMM(0x3D)
+B0_8338: CYCLE(2); if (!SR_C) goto B0_8344;
+B0_833a: CYCLE(6); SetStack(SP, 60); SetStack(SP - 1, 131); SP -= 2; goto B20_838a;
+B0_833d: LDA_ZP(0x4C)
+B0_833f: CYCLE(2); if (SR_N) goto B0_8330;
+B0_8341: CYCLE(3); PC = 0x8383; goto B16_8383;
+B0_8344: CYCLE(6); SetStack(SP, 70); SetStack(SP - 1, 131); SP -= 2; goto B0_9a43;
+B0_8347: CYCLE(6); SetStack(SP, 73); SetStack(SP - 1, 131); SP -= 2; goto B20_838a;
+B0_834a: LDA_ZP(0x4C)
+B0_834c: CYCLE(2); if (!SR_N) goto B0_8383;
+B0_834e: DEC_ZP(0xEA)
+B0_8350: CYCLE(2); if (!SR_Z) goto B0_8347;
+B0_8352: CYCLE(3); PC = 0x830c; goto B26_830c;
+B0_8355: AND_IMM(0x01)
+B0_8357: STA_ZP(0xE9)
+B0_8359: LDA_IMM(0x01)
+B0_835b: STA_ZP(0xEB)
+B0_835d: LDY_ZP(0xEB)
+B0_835f: LDA_IDY(0xEC)
+B0_8361: CMP_IMM(0xFE)
+B0_8363: CYCLE(2); if (SR_Z) goto B0_8359;
+B0_8365: CMP_IMM(0xFF)
+B0_8367: CYCLE(2); if (SR_Z) goto B0_8383;
+B0_8369: LDX_ZP(0xE9)
+B0_836b: STA_ZP_X(0x8E)
+B0_836d: INY()
+B0_836e: LDA_IDY(0xEC)
+B0_8370: STA_ZP(0xEA)
+B0_8372: INY()
+B0_8373: STY_ZP(0xEB)
+B0_8375: CYCLE(6); SetStack(SP, 119); SetStack(SP - 1, 131); SP -= 2; goto B20_838a;
+B0_8378: LDA_ZP(0x4C)
+B0_837a: CYCLE(2); if (!SR_N) goto B0_8383;
+B0_837c: DEC_ZP(0xEA)
+B0_837e: CYCLE(2); if (!SR_Z) goto B0_8375;
+B0_8380: CYCLE(3); PC = 0x835d; goto B20_835d;
+B0_8383: LDA_IMM(0x00)
+B0_8385: STA_ZP(0x4C)
+B0_8387: CYCLE(3); PC = 0x82ed; goto B28_82ed;
+B0_838a: LDX_IMM(0x02)
+B0_838c: CYCLE(6); SetStack(SP, 142); SetStack(SP - 1, 131); SP -= 2; goto B30_c4b9;
+B0_838f: CYCLE(6); SetStack(SP, 145); SetStack(SP - 1, 131); SP -= 2; PC = 0xa215; /* UNRES JSR $a215 */ goto LABEL_END;
+B0_8392: LDX_IMM(0x06)
+B0_8394: CYCLE(6); SetStack(SP, 150); SetStack(SP - 1, 131); SP -= 2; goto B30_c4b9;
+B0_8397: RTS()
+B0_8464: LDY_IMM(0x00)
+B0_8466: INY()
+B0_8467: INY()
+B0_8468: CMP_ABS_Y(0x8aee)
+B0_846b: CYCLE(2); if (SR_C) goto B0_8466;
+B0_846d: SEC()
+B0_846e: SBC_ABS_Y(0x8aec)
+B0_8471: LDX_ABS_Y(0x8aed)
+B0_8474: ASL_A()
+B0_8475: ADC_IMM(0x00)
+B0_8477: STA_ZP(0x4D)
+B0_8479: LDA_IMM(0x00)
+B0_847b: ADC_IMM(0xA0)
+B0_847d: STA_ZP(0x4E)
+B0_847f: STX_ZP(0x56)
+B0_8481: LDA_ZP(0x25)
+B0_8483: STA_ZP(0xED)
+B0_8485: CYCLE(6); SetStack(SP, 135); SetStack(SP - 1, 132); SP -= 2; goto B30_c4b9;
+B0_8488: LDY_IMM(0x00)
+B0_848a: LDA_IDY(0x4D)
+B0_848c: TAX()
+B0_848d: INY()
+B0_848e: LDA_IDY(0x4D)
+B0_8490: STA_ZP(0x4E)
+B0_8492: STX_ZP(0x4D)
+B0_8494: LDX_IMM(0x05)
+B0_8496: LDA_IMM(0xC5)
+B0_8498: STA_ZP_X(0x00)
+B0_849a: LDA_IMM(0x84)
+B0_849c: STA_ZP_X(0x01)
+B0_849e: LDY_IMM(0x50)
+B0_84a0: LDA_IMM(0x00)
+B0_84a2: CYCLE(6); SetStack(SP, 164); SetStack(SP - 1, 132); SP -= 2; goto B0_9f69;
+B0_84a5: LDA_IMM(0x00)
+B0_84a7: STA_ZP(0x0D)
+B0_84a9: STA_ZP(0x0E)
+B0_84ab: LDA_IMM(0x00)
+B0_84ad: STA_ABS(0x0652)
+B0_84b0: LDA_IMM(0xE0)
+B0_84b2: STA_ZP(0xE6)
+B0_84b4: LDA_IMM(0x23)
+B0_84b6: STA_ZP(0xE7)
+B0_84b8: LDY_IMM(0x01)
+B0_84ba: LDX_IMM(0x20)
+B0_84bc: LDA_IMM(0x55)
+B0_84be: CYCLE(6); SetStack(SP, 192); SetStack(SP - 1, 132); SP -= 2; goto B26_98ea;
+B0_84c1: LDX_ZP(0xED)
+B0_84c3: CYCLE(3); PC = 0xc4b9; goto B30_c4b9;
+B0_84c6: LDX_ZP(0x56)
+B0_84c8: CYCLE(6); SetStack(SP, 202); SetStack(SP - 1, 132); SP -= 2; goto B30_c4b9;
+B0_84cb: LDA_IMM(0x08)
+B0_84cd: STA_ZP(0x55)
+B0_84cf: LDA_IMM(0x49)
+B0_84d1: STA_ZP(0x4F)
+B0_84d3: LDA_IMM(0x22)
+B0_84d5: STA_ZP(0x50)
+B0_84d7: LDA_ZP(0x4F)
+B0_84d9: STA_ZP(0x51)
+B0_84db: AND_IMM(0x1F)
+B0_84dd: STA_ZP(0x54)
+B0_84df: LDA_ZP(0x50)
+B0_84e1: STA_ZP(0x52)
+B0_84e3: LDA_ZP(0x51)
+B0_84e5: STA_ZP(0x53)
+B0_84e7: LDY_IMM(0x00)
+B0_84e9: LDA_IDY(0x4D)
+B0_84eb: CMP_IMM(0xD8)
+B0_84ed: CYCLE(2); if (SR_C) goto B0_8504;
+B0_84ef: LDX_ZP(0x52)
+B0_84f1: LDY_ZP(0x53)
+B0_84f3: CYCLE(6); SetStack(SP, 245); SetStack(SP - 1, 132); SP -= 2; goto B1_88ca;
+B0_84f6: INC_ZP(0x53)
+B0_84f8: LDA_ZP(0x55)
+B0_84fa: CYCLE(2); if (SR_Z) goto B0_84ff;
+B0_84fc: CYCLE(6); SetStack(SP, 254); SetStack(SP - 1, 132); SP -= 2; goto B26_895d;
+B0_84ff: LDA_IMM(0x01)
+B0_8501: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_8504: CMP_IMM(0xE0)
+B0_8506: CYCLE(2); if (SR_C) goto B0_851c;
+B0_8508: SEC()
+B0_8509: SBC_IMM(0xD8)
+B0_850b: TAX()
+B0_850c: LDA_ABS_X(0x8ae6)
+B0_850f: PHA()
+B0_8510: CYCLE(6); SetStack(SP, 18); SetStack(SP - 1, 133); SP -= 2; goto B24_899a;
+B0_8513: PLA()
+B0_8514: CYCLE(6); SetStack(SP, 22); SetStack(SP - 1, 133); SP -= 2; goto B0_9fa8;
+B0_8517: LDA_IMM(0x01)
+B0_8519: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_851c: CMP_IMM(0xE8)
+B0_851e: CYCLE(2); if (SR_C) goto B0_8537;
+B0_8520: SEC()
+B0_8521: SBC_IMM(0xE1)
+B0_8523: EOR_IMM(0xFF)
+B0_8525: CLC()
+B0_8526: ADC_ZP(0x53)
+B0_8528: STA_ZP(0x53)
+B0_852a: AND_IMM(0x1F)
+B0_852c: CMP_ZP(0x54)
+B0_852e: CYCLE(2); if (SR_C) goto B0_8532;
+B0_8530: STA_ZP(0x54)
+B0_8532: LDA_IMM(0x01)
+B0_8534: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_8537: SEC()
+B0_8538: SBC_IMM(0xE8)
+B0_853a: ASL_A()
+B0_853b: TAX()
+B0_853c: LDA_ABS_X(0x8546)
+B0_853f: PHA()
+B0_8540: LDA_ABS_X(0x8545)
+B0_8543: PHA()
+B0_8544: RTS()
+B0_8575: INY()
+B0_8576: LDA_IDY(0x4D)
+B0_8578: CYCLE(6); SetStack(SP, 122); SetStack(SP - 1, 133); SP -= 2; goto B16_8920;
+B0_857b: LDA_IMM(0x02)
+B0_857d: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_8580: LDA_IMM(0x02)
+B0_8582: CYCLE(6); SetStack(SP, 132); SetStack(SP - 1, 133); SP -= 2; goto B0_9fa8;
+B0_8585: CYCLE(6); SetStack(SP, 135); SetStack(SP - 1, 133); SP -= 2; goto B26_997e;
+B0_8588: LDA_IMM(0x01)
+B0_858a: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_858d: CYCLE(6); SetStack(SP, 143); SetStack(SP - 1, 133); SP -= 2; goto B26_99f0;
+B0_8590: CYCLE(6); SetStack(SP, 146); SetStack(SP - 1, 133); SP -= 2; goto B0_9b7f;
+B0_8593: LDA_IMM(0x00)
+B0_8595: STA_ZP(0xE6)
+B0_8597: LDA_IMM(0x20)
+B0_8599: STA_ZP(0xE7)
+B0_859b: LDY_IMM(0x10)
+B0_859d: LDX_IMM(0x20)
+B0_859f: CYCLE(6); SetStack(SP, 161); SetStack(SP - 1, 133); SP -= 2; goto B0_98e8;
+B0_85a2: LDA_IMM(0x00)
+B0_85a4: STA_ZP(0xE6)
+B0_85a6: LDA_IMM(0x24)
+B0_85a8: STA_ZP(0xE7)
+B0_85aa: LDY_IMM(0x20)
+B0_85ac: LDX_IMM(0x20)
+B0_85ae: CYCLE(6); SetStack(SP, 176); SetStack(SP - 1, 133); SP -= 2; goto B0_98e8;
+B0_85b1: LDA_IMM(0x00)
+B0_85b3: STA_ZP(0x4C)
+B0_85b5: STA_ZP(0x7B)
+B0_85b7: STA_ZP(0x4C)
+B0_85b9: LDA_IMM(0x00)
+B0_85bb: STA_ZP(0x0D)
+B0_85bd: STA_ZP(0x0E)
+B0_85bf: LDA_IMM(0x01)
+B0_85c1: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_85c4: CYCLE(6); SetStack(SP, 198); SetStack(SP - 1, 133); SP -= 2; goto B24_899a;
+B0_85c7: CYCLE(6); SetStack(SP, 201); SetStack(SP - 1, 133); SP -= 2; goto B1_89a3;
+B0_85ca: CYCLE(6); SetStack(SP, 204); SetStack(SP - 1, 133); SP -= 2; goto B2_88b1;
+B0_85cd: LDA_IMM(0x01)
+B0_85cf: CYCLE(3); PC = 0x8887; goto B26_8887;
+B0_85d2: LDY_IMM(0x01)
+B0_85d4: LDA_IDY(0x4D)
+B0_85d6: CMP_IMM(0xFF)
+B0_85d8: CYCLE(2); if (SR_Z) goto B0_85e2;
+B0_85da: CYCLE(6); SetStack(SP, 220); SetStack(SP - 1, 133); SP -= 2; goto B26_89d2;
+B0_85dd: LDA_IMM(0x02)
+B0_85df: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_85e2: LDA_IMM(0x00)
+B0_85e4: STA_ABS(0x0652)
+B0_85e7: LDA_IMM(0x02)
+B0_85e9: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_85ec: LDX_IMM(0x00)
+B0_85ee: LDA_ABS_X(0x0700)
+B0_85f1: CYCLE(2); if (SR_Z) goto B0_85f8;
+B0_85f3: INX()
+B0_85f4: CPX_IMM(0x05)
+B0_85f6: CYCLE(2); if (!SR_Z) goto B0_85ee;
+B0_85f8: LDY_IMM(0x01)
+B0_85fa: LDA_IDY(0x4D)
+B0_85fc: STA_ABS_X(0x0700)
+B0_85ff: LDA_IMM(0x02)
+B0_8601: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_8604: LDA_IMM(0x21)
+B0_8606: STA_ZP(0xE6)
+B0_8608: LDA_IMM(0x22)
+B0_860a: STA_ZP(0xE7)
+B0_860c: LDY_IMM(0x0B)
+B0_860e: LDX_IMM(0x1E)
+B0_8610: CYCLE(6); SetStack(SP, 18); SetStack(SP - 1, 134); SP -= 2; goto B0_98e8;
+B0_8613: LDA_IMM(0x01)
+B0_8615: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_8618: LDA_IMM(0x02)
+B0_861a: CYCLE(6); SetStack(SP, 28); SetStack(SP - 1, 134); SP -= 2; goto B0_9fa8;
+B0_861d: LDA_ZP(0x99)
+B0_861f: AND_IMM(0x80)
+B0_8621: EOR_IMM(0x80)
+B0_8623: ORA_IMM(0x40)
+B0_8625: STA_ZP(0x99)
+B0_8627: LDA_IMM(0x01)
+B0_8629: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_862c: INY()
+B0_862d: LDA_IDY(0x4D)
+B0_862f: STA_ZP(0x4F)
+B0_8631: STA_ZP(0x51)
+B0_8633: INY()
+B0_8634: LDA_IDY(0x4D)
+B0_8636: STA_ZP(0x50)
+B0_8638: STA_ZP(0x52)
+B0_863a: LDA_ZP(0x4D)
+B0_863c: CLC()
+B0_863d: ADC_IMM(0x03)
+B0_863f: STA_ZP(0x4D)
+B0_8641: LDA_ZP(0x4E)
+B0_8643: ADC_IMM(0x00)
+B0_8645: STA_ZP(0x4E)
+B0_8647: CYCLE(3); PC = 0x84e3; goto B26_84e3;
+B0_864a: LDA_IMM(0x21)
+B0_864c: STA_ZP(0xE6)
+B0_864e: LDA_IMM(0x22)
+B0_8650: STA_ZP(0xE7)
+B0_8652: LDY_IMM(0x0B)
+B0_8654: LDX_IMM(0x1E)
+B0_8656: CYCLE(6); SetStack(SP, 88); SetStack(SP - 1, 134); SP -= 2; goto B0_98e8;
+B0_8659: LDY_IMM(0x01)
+B0_865b: LDA_IDY(0x4D)
+B0_865d: ASL_A()
+B0_865e: TAY()
+B0_865f: LDX_IMM(0x06)
+B0_8661: CYCLE(6); SetStack(SP, 99); SetStack(SP - 1, 134); SP -= 2; goto B30_c4b9;
+B0_8664: LDX_ABS_Y(0xbb41)
+B0_8667: LDA_ABS_Y(0xbb40)
+B0_866a: TAY()
+B0_866b: CYCLE(6); SetStack(SP, 109); SetStack(SP - 1, 134); SP -= 2; goto B26_97b6;
+B0_866e: LDX_ZP(0x56)
+B0_8670: CYCLE(6); SetStack(SP, 114); SetStack(SP - 1, 134); SP -= 2; goto B30_c4b9;
+B0_8673: LDA_IMM(0x02)
+B0_8675: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_8678: INY()
+B0_8679: LDA_IDY(0x4D)
+B0_867b: STA_ZP(0x55)
+B0_867d: LDA_IMM(0x02)
+B0_867f: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_8682: INY()
+B0_8683: LDA_IDY(0x4D)
+B0_8685: CYCLE(2); if (!SR_Z) goto B0_868f;
+B0_8687: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 134); SP -= 2; goto B0_9a35;
+B0_868a: LDY_IMM(0x02)
+B0_868c: CYCLE(3); PC = 0x86b4; goto B12_86b4;
+B0_868f: CMP_IMM(0xFF)
+B0_8691: CYCLE(2); if (SR_Z) goto B0_86a7;
+B0_8693: CYCLE(2); if (SR_N) goto B0_869d;
+B0_8695: CYCLE(6); SetStack(SP, 151); SetStack(SP - 1, 134); SP -= 2; goto B0_9a4c;
+B0_8698: LDY_IMM(0x02)
+B0_869a: CYCLE(3); PC = 0x86b4; goto B12_86b4;
+B0_869d: AND_IMM(0x7F)
+B0_869f: CYCLE(6); SetStack(SP, 161); SetStack(SP - 1, 134); SP -= 2; goto B26_9a60;
+B0_86a2: LDY_IMM(0x02)
+B0_86a4: CYCLE(3); PC = 0x86b4; goto B12_86b4;
+B0_86a7: LDY_IMM(0x03)
+B0_86a9: LDA_IDY(0x4D)
+B0_86ab: TAX()
+B0_86ac: DEY()
+B0_86ad: LDA_IDY(0x4D)
+B0_86af: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 134); SP -= 2; goto B0_9a31;
+B0_86b2: LDY_IMM(0x04)
+B0_86b4: TYA()
+B0_86b5: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_86b8: INY()
+B0_86b9: LDA_IDY(0x4D)
+B0_86bb: ASL_A()
+B0_86bc: TAX()
+B0_86bd: LDA_ABS_X(0x86c7)
+B0_86c0: PHA()
+B0_86c1: LDA_ABS_X(0x86c6)
+B0_86c4: PHA()
+B0_86c5: RTS()
+B0_86de: CYCLE(6); SetStack(SP, 224); SetStack(SP - 1, 134); SP -= 2; goto B0_99d1;
+B0_86e1: LDA_IMM(0x02)
+B0_86e3: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_86e6: CYCLE(6); SetStack(SP, 232); SetStack(SP - 1, 134); SP -= 2; goto B26_9a0d;
+B0_86e9: LDA_IMM(0x02)
+B0_86eb: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_86ee: CYCLE(6); SetStack(SP, 240); SetStack(SP - 1, 134); SP -= 2; goto B0_9a1f;
+B0_86f1: LDA_IMM(0x02)
+B0_86f3: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_86f6: LDA_IMM(0x04)
+B0_86f8: STA_ZP(0xED)
+B0_86fa: LDX_ZP(0xED)
+B0_86fc: LDA_ABS_X(0x87b3)
+B0_86ff: STA_ABS(0x0631)
+B0_8702: CYCLE(6); SetStack(SP, 4); SetStack(SP - 1, 135); SP -= 2; goto B26_9a71;
+B0_8705: LDA_IMM(0x04)
+B0_8707: CYCLE(6); SetStack(SP, 9); SetStack(SP - 1, 135); SP -= 2; goto B0_9fa8;
+B0_870a: DEC_ZP(0xED)
+B0_870c: CYCLE(2); if (!SR_Z) goto B0_86fa;
+B0_870e: LDA_IMM(0x02)
+B0_8710: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_8713: LDA_IMM(0x00)
+B0_8715: STA_ZP(0xED)
+B0_8717: LDX_ZP(0xED)
+B0_8719: LDA_ABS_X(0x87b4)
+B0_871c: STA_ABS(0x0631)
+B0_871f: CYCLE(6); SetStack(SP, 33); SetStack(SP - 1, 135); SP -= 2; goto B26_9a71;
+B0_8722: LDA_IMM(0x04)
+B0_8724: CYCLE(6); SetStack(SP, 38); SetStack(SP - 1, 135); SP -= 2; goto B0_9fa8;
+B0_8727: INC_ZP(0xED)
+B0_8729: LDA_ZP(0xED)
+B0_872b: CMP_IMM(0x04)
+B0_872d: CYCLE(2); if (!SR_C) goto B0_8717;
+B0_872f: LDA_IMM(0x02)
+B0_8731: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_8734: LDY_IMM(0xFC)
+B0_8736: LDA_ABS_Y(0x88d2)
+B0_8739: STA_ABS_Y(0x0468)
+B0_873c: INY()
+B0_873d: CYCLE(2); if (!SR_Z) goto B0_8736;
+B0_873f: LDX_IMM(0xF8)
+B0_8741: LDY_IMM(0x00)
+B0_8743: LDA_IMM(0x01)
+B0_8745: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 135); SP -= 2; goto B0_9fa8;
+B0_8748: BIT_ZP(0x1E)
+B0_874a: CYCLE(2); if (SR_N) goto B0_8763;
+B0_874c: LDA_ZP(0x1C)
+B0_874e: AND_IMM(0x44)
+B0_8750: CMP_IMM(0x44)
+B0_8752: CYCLE(2); if (SR_Z) goto B0_876e;
+B0_8754: INY()
+B0_8755: CPY_IMM(0x14)
+B0_8757: CYCLE(2); if (SR_Z) goto B0_8734;
+B0_8759: CPY_IMM(0x0C)
+B0_875b: CYCLE(2); if (!SR_Z) goto B0_8743;
+B0_875d: STX_ABS(0x0564)
+B0_8760: CYCLE(3); PC = 0x8743; goto B28_8743;
+B0_8763: STX_ABS(0x0564)
+B0_8766: CYCLE(6); SetStack(SP, 104); SetStack(SP - 1, 135); SP -= 2; goto B2_88b1;
+B0_8769: LDA_IMM(0x03)
+B0_876b: CYCLE(3); PC = 0x8887; goto B26_8887;
+B0_87b8: INY()
+B0_87b9: LDX_IMM(0x00)
+B0_87bb: LDA_IDY(0x4D)
+B0_87bd: CMP_IMM(0xFF)
+B0_87bf: CYCLE(2); if (SR_Z) goto B0_87c4;
+B0_87c1: ORA_IMM(0x80)
+B0_87c3: TAX()
+B0_87c4: STX_ZP(0x4C)
+B0_87c6: LDA_IMM(0x02)
+B0_87c8: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_87cb: CYCLE(6); SetStack(SP, 205); SetStack(SP - 1, 135); SP -= 2; goto B24_899a;
+B0_87ce: INY()
+B0_87cf: LDA_IDY(0x4D)
+B0_87d1: CYCLE(6); SetStack(SP, 211); SetStack(SP - 1, 135); SP -= 2; goto B0_9fa8;
+B0_87d4: LDA_IMM(0x02)
+B0_87d6: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_87d9: LDA_ZP(0x09)
+B0_87db: CYCLE(2); if (SR_Z) goto B0_87e5;
+B0_87e5: LDA_ZP(0x7B)
+B0_87e7: EOR_IMM(0x01)
+B0_87e9: STA_ZP(0x7B)
+B0_87eb: LDA_IMM(0x00)
+B0_87ed: STA_ZP(0x7A)
+B0_87ef: STA_ZP(0x44)
+B0_87f1: STA_ZP(0x45)
+B0_87f3: LDA_IMM(0x01)
+B0_87f5: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_87f8: INY()
+B0_87f9: LDA_IDY(0x4D)
+B0_87fb: STA_ZP(0xED)
+B0_87fd: INY()
+B0_87fe: LDA_IDY(0x4D)
+B0_8800: STA_ZP(0xEC)
+B0_8802: LDX_IMM(0x02)
+B0_8804: CYCLE(6); SetStack(SP, 6); SetStack(SP - 1, 136); SP -= 2; goto B30_c4b9;
+B0_8807: CYCLE(6); SetStack(SP, 9); SetStack(SP - 1, 136); SP -= 2; PC = 0xa212; /* UNRES JSR $a212 */ goto LABEL_END;
+B0_880a: TAY()
+B0_880b: LDX_ZP(0x56)
+B0_880d: CYCLE(6); SetStack(SP, 15); SetStack(SP - 1, 136); SP -= 2; goto B30_c4b9;
+B0_8810: TYA()
+B0_8811: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_8814: LDA_ZP(0x5B)
+B0_8816: AND_IMM(0xFB)
+B0_8818: CYCLE(3); PC = 0x881f; goto B28_881f;
+B0_881b: LDA_ZP(0x5B)
+B0_881d: ORA_IMM(0x04)
+B0_881f: STA_ZP(0x5B)
+B0_8821: INY()
+B0_8822: LDA_IDY(0x4D)
+B0_8824: CYCLE(6); SetStack(SP, 38); SetStack(SP - 1, 136); SP -= 2; goto B1_8af7;
+B0_8827: LDX_ZP(0x56)
+B0_8829: CYCLE(6); SetStack(SP, 43); SetStack(SP - 1, 136); SP -= 2; goto B30_c4b9;
+B0_882c: LDA_IMM(0x02)
+B0_882e: CYCLE(3); PC = 0x8879; goto B28_8879;
+B0_8831: CYCLE(6); SetStack(SP, 51); SetStack(SP - 1, 136); SP -= 2; goto B26_9085;
+B0_8834: CYCLE(3); PC = 0x84e7; goto B20_84e7;
+B0_8837: CYCLE(6); SetStack(SP, 57); SetStack(SP - 1, 136); SP -= 2; goto B24_899a;
+B0_883a: LDA_IMM(0x04)
+B0_883c: CYCLE(6); SetStack(SP, 62); SetStack(SP - 1, 136); SP -= 2; goto B0_9fa8;
+B0_883f: LDA_ZP(0x51)
+B0_8841: CLC()
+B0_8842: ADC_IMM(0x40)
+B0_8844: STA_ZP(0x51)
+B0_8846: LDA_ZP(0x52)
+B0_8848: ADC_IMM(0x00)
+B0_884a: STA_ZP(0x52)
+B0_884c: INC_ZP(0x4D)
+B0_884e: CYCLE(2); if (!SR_Z) goto B0_8852;
+B0_8850: INC_ZP(0x4E)
+B0_8852: CYCLE(3); PC = 0x84e3; goto B26_84e3;
+B0_8855: CYCLE(6); SetStack(SP, 87); SetStack(SP - 1, 136); SP -= 2; goto B2_88b1;
+B0_8858: LDA_IMM(0x04)
+B0_885a: CYCLE(6); SetStack(SP, 92); SetStack(SP - 1, 136); SP -= 2; goto B0_9fa8;
+B0_885d: LDA_IMM(0x01)
+B0_885f: CYCLE(3); PC = 0x8887; goto B26_8887;
+B0_8862: INY()
+B0_8863: LDA_IDY(0x4D)
+B0_8865: TAX()
+B0_8866: INY()
+B0_8867: LDA_IDY(0x4D)
+B0_8869: STA_ZP(0x4E)
+B0_886b: STX_ZP(0x4D)
+B0_886d: CYCLE(3); PC = 0x84e7; goto B20_84e7;
+B0_8870: LDA_IMM(0x00)
+B0_8872: STA_ZP(0x4D)
+B0_8874: STA_ZP(0x4E)
+B0_8876: CYCLE(3); PC = 0x9f7e; goto B0_9f7e;
+B0_8879: CLC()
+B0_887a: ADC_ZP(0x4D)
+B0_887c: STA_ZP(0x4D)
+B0_887e: LDA_ZP(0x4E)
+B0_8880: ADC_IMM(0x00)
+B0_8882: STA_ZP(0x4E)
+B0_8884: CYCLE(3); PC = 0x84e7; goto B20_84e7;
+B0_8887: CLC()
+B0_8888: ADC_ZP(0x4D)
+B0_888a: STA_ZP(0x4D)
+B0_888c: LDA_ZP(0x4E)
+B0_888e: ADC_IMM(0x00)
+B0_8890: STA_ZP(0x4E)
+B0_8892: CYCLE(3); PC = 0x84d7; goto B28_84d7;
+B0_8895: STA_ZP(0x57)
+B0_8897: LDX_IMM(0x0D)
+B0_8899: LDA_IMM(0xA8)
+B0_889b: STA_ZP_X(0x00)
+B0_889d: LDA_IMM(0x88)
+B0_889f: STA_ZP_X(0x01)
+B0_88a1: LDY_IMM(0xA0)
+B0_88a3: LDA_IMM(0x00)
+B0_88a5: CYCLE(6); SetStack(SP, 167); SetStack(SP - 1, 136); SP -= 2; goto B0_9f69;
+B0_88a8: RTS()
+B0_88a9: LDX_IMM(0x02)
+B0_88ab: CYCLE(6); SetStack(SP, 173); SetStack(SP - 1, 136); SP -= 2; goto B30_c4b9;
+B0_88ae: PC = 0xa206; /* UNRES JMP $a206 */ goto LABEL_END;
+B0_88b1: LDA_ZP(0x54)
+B0_88b3: EOR_IMM(0xFF)
+B0_88b5: CLC()
+B0_88b6: ADC_IMM(0x1F)
+B0_88b8: TAX()
+B0_88b9: LDY_IMM(0x08)
+B0_88bb: LDA_ZP(0x4F)
+B0_88bd: AND_IMM(0xE0)
+B0_88bf: ORA_ZP(0x54)
+B0_88c1: STA_ZP(0xE6)
+B0_88c3: LDA_ZP(0x50)
+B0_88c5: STA_ZP(0xE7)
+B0_88c7: CYCLE(3); PC = 0x98e8; goto B0_98e8;
+B0_88ca: PHA()
+B0_88cb: LDA_IMM(0x82)
+B0_88cd: CYCLE(6); SetStack(SP, 207); SetStack(SP - 1, 136); SP -= 2; goto B26_9b28;
+B0_88d0: PLA()
+B0_88d1: CMP_IMM(0xA0)
+B0_88d3: CYCLE(2); if (!SR_C) goto B0_88ed;
+B0_88d5: PHA()
+B0_88d6: CMP_IMM(0xC8)
+B0_88d8: LDA_IMM(0x94)
+B0_88da: ADC_IMM(0x00)
+B0_88dc: STA_ABS_X(0x05e8)
+B0_88df: INX()
+B0_88e0: PLA()
+B0_88e1: TAY()
+B0_88e2: LDA_ABS_Y(0x8a14)
+B0_88e5: STA_ABS_X(0x05e8)
+B0_88e8: INX()
+B0_88e9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 136); SP -= 2; goto B0_9b5e;
+B0_88ec: RTS()
+B0_88ed: STA_ABS_X(0x05e9)
+B0_88f0: LDA_IMM(0x00)
+B0_88f2: STA_ABS_X(0x05e8)
+B0_88f5: INX()
+B0_88f6: INX()
+B0_88f7: CYCLE(6); SetStack(SP, 249); SetStack(SP - 1, 136); SP -= 2; goto B0_9b5e;
+B0_88fa: RTS()
+B0_88fb: LDX_IMM(0x00)
+B0_88fd: LDA_ABS_X(0x046a)
+B0_8900: EOR_IMM(0x20)
+B0_8902: STA_ABS_X(0x046a)
+B0_8905: INX()
+B0_8906: INX()
+B0_8907: INX()
+B0_8908: INX()
+B0_8909: CYCLE(2); if (!SR_Z) goto B0_88fd;
+B0_890b: RTS()
+B0_890c: STA_ZP(0xED)
+B0_890e: LDX_IMM(0x00)
+B0_8910: LDA_ABS_X(0x0468)
+B0_8913: CLC()
+B0_8914: ADC_ZP(0xED)
+B0_8916: STA_ABS_X(0x0468)
+B0_8919: INX()
+B0_891a: INX()
+B0_891b: INX()
+B0_891c: INX()
+B0_891d: CYCLE(2); if (!SR_Z) goto B0_8910;
+B0_891f: RTS()
+B0_8920: LDX_IMM(0x13)
+B0_8922: CYCLE(6); SetStack(SP, 36); SetStack(SP - 1, 137); SP -= 2; goto B0_9dee;
+B0_8925: LDA_ZP(0xEC)
+B0_8927: CLC()
+B0_8928: ADC_IMM(0x00)
+B0_892a: STA_ZP(0xEC)
+B0_892c: LDA_ZP(0xED)
+B0_892e: ADC_IMM(0xBF)
+B0_8930: STA_ZP(0xED)
+B0_8932: LDA_ZP(0x25)
+B0_8934: STA_ZP(0xEA)
+B0_8936: LDX_IMM(0x06)
+B0_8938: CYCLE(6); SetStack(SP, 58); SetStack(SP - 1, 137); SP -= 2; goto B30_c4b9;
+B0_893b: LDA_ZP(0x78)
+B0_893d: CYCLE(2); if (!SR_Z) goto B0_893b;
+B0_893f: LDY_IMM(0x00)
+B0_8941: LDA_IDY(0xEC)
+B0_8943: STA_ABS(0x0079)
+B0_8946: LDA_IMM(0x00)
+B0_8948: STA_ABS(0x007a)
+B0_894b: INY()
+B0_894c: LDX_IMM(0x12)
+B0_894e: LDA_IDY(0xEC)
+B0_8950: STA_ABS_Y(0x007b)
+B0_8953: INY()
+B0_8954: DEX()
+B0_8955: CYCLE(2); if (!SR_Z) goto B0_894e;
+B0_8957: LDX_ZP(0xEA)
+B0_8959: CYCLE(6); SetStack(SP, 91); SetStack(SP - 1, 137); SP -= 2; goto B30_c4b9;
+B0_895c: RTS()
+B0_895d: TAX()
+B0_895e: LDA_ZP(0x99)
+B0_8960: CYCLE(2); if (!SR_N) goto B0_8966;
+B0_8962: EOR_IMM(0x41)
+B0_8964: STA_ZP(0x99)
+B0_8966: LDA_IMM(0x01)
+B0_8968: CYCLE(6); SetStack(SP, 106); SetStack(SP - 1, 137); SP -= 2; goto B0_9fa8;
+B0_896b: TXA()
+B0_896c: PHA()
+B0_896d: CYCLE(6); SetStack(SP, 111); SetStack(SP - 1, 137); SP -= 2; goto B26_89ff;
+B0_8970: PLA()
+B0_8971: TAX()
+B0_8972: DEX()
+B0_8973: CYCLE(2); if (!SR_Z) goto B0_8966;
+B0_8975: RTS()
+B0_8976: LDA_ZP(0x4D)
+B0_8978: STA_ZP(0xEA)
+B0_897a: LDA_ZP(0x4E)
+B0_897c: STA_ZP(0xEB)
+B0_897e: LDA_IMM(0x02)
+B0_8980: STA_ZP(0xE6)
+B0_8982: STX_ZP(0xE7)
+B0_8984: STY_ZP(0xE8)
+B0_8986: LDA_IMM(0xE5)
+B0_8988: STA_ZP(0x4D)
+B0_898a: LDA_IMM(0x00)
+B0_898c: STA_ZP(0x4E)
+B0_898e: CYCLE(6); SetStack(SP, 144); SetStack(SP - 1, 137); SP -= 2; goto B26_9085;
+B0_8991: LDA_ZP(0xEA)
+B0_8993: STA_ZP(0x4D)
+B0_8995: LDA_ZP(0xEB)
+B0_8997: STA_ZP(0x4E)
+B0_8999: RTS()
+B0_899a: LDA_ZP(0x99)
+B0_899c: AND_IMM(0x80)
+B0_899e: ORA_IMM(0x40)
+B0_89a0: STA_ZP(0x99)
+B0_89a2: RTS()
+B0_89a3: LDY_IMM(0xFC)
+B0_89a5: LDA_ABS_Y(0x88d2)
+B0_89a8: STA_ABS_Y(0x0468)
+B0_89ab: INY()
+B0_89ac: CYCLE(2); if (!SR_Z) goto B0_89a5;
+B0_89ae: LDX_IMM(0xF8)
+B0_89b0: LDY_IMM(0x00)
+B0_89b2: LDA_IMM(0x01)
+B0_89b4: CYCLE(6); SetStack(SP, 182); SetStack(SP - 1, 137); SP -= 2; goto B0_9fa8;
+B0_89b7: LDA_ZP(0x1E)
+B0_89b9: CYCLE(2); if (SR_N) goto B0_89ca;
+B0_89bb: INY()
+B0_89bc: CPY_IMM(0x28)
+B0_89be: CYCLE(2); if (SR_Z) goto B0_89a3;
+B0_89c0: CPY_IMM(0x18)
+B0_89c2: CYCLE(2); if (!SR_Z) goto B0_89b2;
+B0_89c4: STX_ABS(0x0564)
+B0_89c7: CYCLE(3); PC = 0x89b2; goto B24_89b2;
+B0_89ca: STX_ABS(0x0564)
+B0_89cd: RTS()
+B0_89d2: TAY()
+B0_89d3: LDX_IMM(0x06)
+B0_89d5: CYCLE(6); SetStack(SP, 215); SetStack(SP - 1, 137); SP -= 2; goto B30_c4b9;
+B0_89d8: TYA()
+B0_89d9: ASL_A()
+B0_89da: TAX()
+B0_89db: LDA_ABS_X(0xbd00)
+B0_89de: STA_ABS(0x0654)
+B0_89e1: LDA_ABS_X(0xbd01)
+B0_89e4: STA_ABS(0x0655)
+B0_89e7: LDA_IMM(0x80)
+B0_89e9: STA_ABS(0x0652)
+B0_89ec: LDA_IMM(0x01)
+B0_89ee: STA_ABS(0x0653)
+B0_89f1: LDA_IMM(0x00)
+B0_89f3: STA_ZP(0x90)
+B0_89f5: LDA_IMM(0x02)
+B0_89f7: STA_ZP(0x91)
+B0_89f9: LDX_ZP(0x56)
+B0_89fb: CYCLE(6); SetStack(SP, 253); SetStack(SP - 1, 137); SP -= 2; goto B30_c4b9;
+B0_89fe: RTS()
+B0_89ff: LDA_ABS(0x0652)
+B0_8a02: CYCLE(2); if (SR_N) goto B0_8a07;
+B0_8a04: CYCLE(3); PC = 0x8a90; goto B24_8a90;
+B0_8a07: DEC_ABS(0x0653)
+B0_8a0a: CYCLE(2); if (SR_Z) goto B0_8a0f;
+B0_8a0c: CYCLE(3); PC = 0x8a90; goto B24_8a90;
+B0_8a0f: LDX_IMM(0x06)
+B0_8a11: CYCLE(6); SetStack(SP, 19); SetStack(SP - 1, 138); SP -= 2; goto B30_c4b9;
+B0_8a14: LDA_ABS(0x0654)
+B0_8a17: STA_ZP(0xE6)
+B0_8a19: LDA_ABS(0x0655)
+B0_8a1c: STA_ZP(0xE7)
+B0_8a1e: LDA_ABS(0x0652)
+B0_8a21: INC_ABS(0x0652)
+B0_8a24: AND_IMM(0x3F)
+B0_8a26: CLC()
+B0_8a27: ADC_ZP(0xE6)
+B0_8a29: STA_ZP(0xE6)
+B0_8a2b: LDA_ZP(0xE7)
+B0_8a2d: ADC_IMM(0x00)
+B0_8a2f: STA_ZP(0xE7)
+B0_8a31: LDY_IMM(0x00)
+B0_8a33: LDA_IDY(0xE6)
+B0_8a35: CMP_IMM(0xFF)
+B0_8a37: CYCLE(2); if (SR_Z) goto B0_8a86;
+B0_8a39: CMP_IMM(0xFE)
+B0_8a3b: CYCLE(2); if (SR_Z) goto B0_8a7b;
+B0_8a3d: AND_IMM(0xF8)
+B0_8a3f: STA_ZP(0xE8)
+B0_8a41: LSR_A()
+B0_8a42: CLC()
+B0_8a43: ADC_ZP(0xE8)
+B0_8a45: STA_ZP(0xE8)
+B0_8a47: LDA_IMM(0x00)
+B0_8a49: ADC_IMM(0x00)
+B0_8a4b: STA_ZP(0xE9)
+B0_8a4d: LDA_ZP(0xE8)
+B0_8a4f: CLC()
+B0_8a50: ADC_IMM(0x80)
+B0_8a52: STA_ZP(0xE8)
+B0_8a54: LDA_ZP(0xE9)
+B0_8a56: ADC_IMM(0xBD)
+B0_8a58: STA_ZP(0xE9)
+B0_8a5a: LDY_IMM(0x02)
+B0_8a5c: LDX_IMM(0x23)
+B0_8a5e: CYCLE(6); SetStack(SP, 96); SetStack(SP - 1, 138); SP -= 2; goto B28_8a91;
+B0_8a61: LDY_IMM(0x03)
+B0_8a63: LDX_IMM(0x23)
+B0_8a65: CYCLE(6); SetStack(SP, 103); SetStack(SP - 1, 138); SP -= 2; goto B28_8a91;
+B0_8a68: LDY_IMM(0x04)
+B0_8a6a: LDX_IMM(0x23)
+B0_8a6c: CYCLE(6); SetStack(SP, 110); SetStack(SP - 1, 138); SP -= 2; goto B28_8a91;
+B0_8a6f: LDY_IMM(0x01)
+B0_8a71: LDA_IDY(0xE6)
+B0_8a73: AND_IMM(0x07)
+B0_8a75: STA_ABS(0x0653)
+B0_8a78: CYCLE(3); PC = 0x8a8b; goto B28_8a8b;
+B0_8a7b: LDA_ABS(0x0652)
+B0_8a7e: AND_IMM(0xC0)
+B0_8a80: STA_ABS(0x0652)
+B0_8a83: CYCLE(3); PC = 0x8a14; goto B28_8a14;
+B0_8a8b: LDX_ZP(0x56)
+B0_8a8d: CYCLE(6); SetStack(SP, 143); SetStack(SP - 1, 138); SP -= 2; goto B30_c4b9;
+B0_8a90: RTS()
+B0_8a91: LDA_IMM(0x84)
+B0_8a93: CYCLE(6); SetStack(SP, 149); SetStack(SP - 1, 138); SP -= 2; goto B26_9b28;
+B0_8a96: LDY_IMM(0x00)
+B0_8a98: LDA_IDY(0xE8)
+B0_8a9a: STA_ABS_X(0x05e8)
+B0_8a9d: INX()
+B0_8a9e: INY()
+B0_8a9f: CPY_IMM(0x04)
+B0_8aa1: CYCLE(2); if (!SR_Z) goto B0_8a98;
+B0_8aa3: CYCLE(6); SetStack(SP, 165); SetStack(SP - 1, 138); SP -= 2; goto B0_9b5e;
+B0_8aa6: LDA_ZP(0xE8)
+B0_8aa8: CLC()
+B0_8aa9: ADC_IMM(0x04)
+B0_8aab: STA_ZP(0xE8)
+B0_8aad: LDA_ZP(0xE9)
+B0_8aaf: ADC_IMM(0x00)
+B0_8ab1: STA_ZP(0xE9)
+B0_8ab3: RTS()
+B0_8af7: STA_ZP(0xED)
+B0_8af9: LDA_IMM(0x00)
+B0_8afb: STA_ZP(0x09)
+B0_8afd: STA_ZP(0x0A)
+B0_8aff: STA_ZP(0x0D)
+B0_8b01: STA_ZP(0x0E)
+B0_8b03: LDA_ZP(0x5B)
+B0_8b05: AND_IMM(0x7F)
+B0_8b07: STA_ZP(0x5B)
+B0_8b09: LDA_ZP(0x25)
+B0_8b0b: STA_ZP(0x77)
+B0_8b0d: LDX_IMM(0x07)
+B0_8b0f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 139); SP -= 2; goto B30_c4b9;
+B0_8b12: LDA_IMM(0x00)
+B0_8b14: LDY_IMM(0xF8)
+B0_8b16: STA_ABS_Y(0x0552)
+B0_8b19: INY()
+B0_8b1a: CYCLE(2); if (!SR_Z) goto B0_8b16;
+B0_8b1c: LDA_ZP(0xED)
+B0_8b1e: ASL_A()
+B0_8b1f: TAX()
+B0_8b20: LDA_IMM(0x00)
+B0_8b22: ROL_A()
+B0_8b23: TAY()
+B0_8b24: TXA()
+B0_8b25: CLC()
+B0_8b26: ADC_IMM(0x00)
+B0_8b28: STA_ZP(0x63)
+B0_8b2a: TYA()
+B0_8b2b: ADC_IMM(0xA0)
+B0_8b2d: STA_ZP(0x64)
+B0_8b2f: LDY_IMM(0x00)
+B0_8b31: LDA_IDY(0x63)
+B0_8b33: TAX()
+B0_8b34: INY()
+B0_8b35: LDA_IDY(0x63)
+B0_8b37: STA_ZP(0x64)
+B0_8b39: STX_ZP(0x63)
+B0_8b3b: LDY_IMM(0x00)
+B0_8b3d: LDA_IDY(0x63)
+B0_8b3f: STA_ZP(0x75)
+B0_8b41: INY()
+B0_8b42: LDA_IDY(0x63)
+B0_8b44: STA_ZP(0x76)
+B0_8b46: INY()
+B0_8b47: LDA_IDY(0x63)
+B0_8b49: TAX()
+B0_8b4a: AND_IMM(0x3F)
+B0_8b4c: STA_ZP(0x48)
+B0_8b4e: TXA()
+B0_8b4f: LSR_ZP(0x5B)
+B0_8b51: ROL_A()
+B0_8b52: ROL_ZP(0x5B)
+B0_8b54: INY()
+B0_8b55: LDA_IDY(0x63)
+B0_8b57: STA_ZP(0x5E)
+B0_8b59: INY()
+B0_8b5a: LDA_IDY(0x63)
+B0_8b5c: STA_ZP(0x5F)
+B0_8b5e: INY()
+B0_8b5f: LDA_IDY(0x63)
+B0_8b61: AND_IMM(0xF8)
+B0_8b63: STA_ZP(0x5C)
+B0_8b65: LDA_IMM(0x02)
+B0_8b67: STA_ZP(0x5D)
+B0_8b69: ASL_ZP(0x5C)
+B0_8b6b: ROL_ZP(0x5D)
+B0_8b6d: ASL_ZP(0x5C)
+B0_8b6f: ROL_ZP(0x5D)
+B0_8b71: LDA_IDY(0x63)
+B0_8b73: AND_IMM(0x07)
+B0_8b75: ORA_ZP(0x5C)
+B0_8b77: STA_ZP(0x5C)
+B0_8b79: ASL_ZP(0x5C)
+B0_8b7b: ROL_ZP(0x5D)
+B0_8b7d: ASL_ZP(0x5C)
+B0_8b7f: ROL_ZP(0x5D)
+B0_8b81: LDA_ZP(0x5D)
+B0_8b83: AND_IMM(0x0C)
+B0_8b85: CYCLE(2); if (!SR_Z) goto B0_8b93;
+B0_8b87: LDA_ZP(0x7B)
+B0_8b89: ASL_A()
+B0_8b8a: ASL_A()
+B0_8b8b: EOR_ZP(0x5B)
+B0_8b8d: AND_IMM(0x04)
+B0_8b8f: ORA_ZP(0x5D)
+B0_8b91: STA_ZP(0x5D)
+B0_8b93: LDA_ZP(0x5E)
+B0_8b95: CMP_IMM(0x09)
+B0_8b97: CYCLE(2); if (!SR_C) goto B0_8b9f;
+B0_8b99: CYCLE(6); SetStack(SP, 155); SetStack(SP - 1, 139); SP -= 2; goto B19_9071;
+B0_8b9c: CYCLE(3); PC = 0x8bab; goto B24_8bab;
+B0_8b9f: LDA_ZP(0x5D)
+B0_8ba1: AND_IMM(0x04)
+B0_8ba3: CYCLE(2); if (!SR_Z) goto B0_8bab;
+B0_8ba5: CYCLE(6); SetStack(SP, 167); SetStack(SP - 1, 139); SP -= 2; goto B19_9071;
+B0_8ba8: CYCLE(3); PC = 0x8bae; goto B26_8bae;
+B0_8bab: CYCLE(6); SetStack(SP, 173); SetStack(SP - 1, 139); SP -= 2; goto B19_9076;
+B0_8bae: LDA_IMM(0x01)
+B0_8bb0: CYCLE(6); SetStack(SP, 178); SetStack(SP - 1, 139); SP -= 2; goto B0_9fa8;
+B0_8bb3: LDA_ZP(0x63)
+B0_8bb5: CLC()
+B0_8bb6: ADC_IMM(0x06)
+B0_8bb8: STA_ZP(0x63)
+B0_8bba: LDA_ZP(0x64)
+B0_8bbc: ADC_IMM(0x00)
+B0_8bbe: STA_ZP(0x64)
+B0_8bc0: LDA_ZP(0x5E)
+B0_8bc2: LDX_ZP(0x5F)
+B0_8bc4: CYCLE(6); SetStack(SP, 198); SetStack(SP - 1, 139); SP -= 2; goto B0_9dee;
+B0_8bc7: LDA_ZP(0x63)
+B0_8bc9: CLC()
+B0_8bca: ADC_ZP(0xEC)
+B0_8bcc: STA_ZP(0x70)
+B0_8bce: LDA_ZP(0x64)
+B0_8bd0: ADC_ZP(0xED)
+B0_8bd2: STA_ZP(0x71)
+B0_8bd4: LDA_IMM(0x00)
+B0_8bd6: STA_ZP(0x60)
+B0_8bd8: LDY_IMM(0x01)
+B0_8bda: LDA_IDY(0x70)
+B0_8bdc: AND_IMM(0xE0)
+B0_8bde: STA_ZP(0x62)
+B0_8be0: LDA_IDY(0x70)
+B0_8be2: AND_IMM(0x1F)
+B0_8be4: TAX()
+B0_8be5: LSR_A()
+B0_8be6: ROR_ZP(0x60)
+B0_8be8: LSR_A()
+B0_8be9: ROR_ZP(0x60)
+B0_8beb: STA_ZP(0x61)
+B0_8bed: TXA()
+B0_8bee: CYCLE(2); if (SR_Z) goto B0_8bf3;
+B0_8bf0: INY()
+B0_8bf1: LDA_IDY(0x70)
+B0_8bf3: STA_ZP(0x72)
+B0_8bf5: LDA_ZP(0x62)
+B0_8bf7: AND_IMM(0xC0)
+B0_8bf9: CYCLE(2); if (SR_Z) goto B0_8c43;
+B0_8bfb: CMP_IMM(0x40)
+B0_8bfd: CYCLE(2); if (SR_Z) goto B0_8c15;
+B0_8bff: CMP_IMM(0x80)
+B0_8c01: CYCLE(2); if (SR_Z) goto B0_8c0c;
+B0_8c03: LDA_IMM(0x04)
+B0_8c05: LDX_IMM(0x01)
+B0_8c07: LDY_ZP(0x5F)
+B0_8c09: CYCLE(3); PC = 0x8c59; goto B26_8c59;
+B0_8c0c: LDA_IMM(0x04)
+B0_8c0e: LDX_IMM(0x01)
+B0_8c10: LDY_ZP(0x5F)
+B0_8c12: CYCLE(3); PC = 0x8c59; goto B26_8c59;
+B0_8c15: LDA_ZP(0x5E)
+B0_8c17: LDX_ZP(0x5F)
+B0_8c19: CYCLE(6); SetStack(SP, 27); SetStack(SP - 1, 140); SP -= 2; goto B0_9dee;
+B0_8c1c: LDA_ZP(0xEC)
+B0_8c1e: SEC()
+B0_8c1f: SBC_IMM(0x01)
+B0_8c21: STA_ZP(0xEC)
+B0_8c23: LDA_ZP(0xED)
+B0_8c25: SBC_IMM(0x00)
+B0_8c27: STA_ZP(0xED)
+B0_8c29: LDA_ZP(0x63)
+B0_8c2b: CLC()
+B0_8c2c: ADC_ZP(0xEC)
+B0_8c2e: STA_ZP(0x63)
+B0_8c30: LDA_ZP(0x64)
+B0_8c32: ADC_ZP(0xED)
+B0_8c34: STA_ZP(0x64)
+B0_8c36: LDA_IMM(0x00)
+B0_8c38: SEC()
+B0_8c39: SBC_ZP(0x5F)
+B0_8c3b: TAY()
+B0_8c3c: LDA_IMM(0xFC)
+B0_8c3e: LDX_IMM(0xFF)
+B0_8c40: CYCLE(3); PC = 0x8c59; goto B26_8c59;
+B0_8c43: LDA_ZP(0x5F)
+B0_8c45: SEC()
+B0_8c46: SBC_IMM(0x01)
+B0_8c48: CLC()
+B0_8c49: ADC_ZP(0x63)
+B0_8c4b: STA_ZP(0x63)
+B0_8c4d: LDA_ZP(0x64)
+B0_8c4f: ADC_IMM(0x00)
+B0_8c51: STA_ZP(0x64)
+B0_8c53: LDA_IMM(0xFC)
+B0_8c55: LDX_IMM(0xFF)
+B0_8c57: LDY_ZP(0x5F)
+B0_8c59: STA_ZP(0x6D)
+B0_8c5b: STX_ZP(0x6E)
+B0_8c5d: STY_ZP(0x6F)
+B0_8c5f: LDA_ZP(0x5E)
+B0_8c61: CMP_IMM(0x07)
+B0_8c63: CYCLE(2); if (!SR_C) goto B0_8c89;
+B0_8c65: SEC()
+B0_8c66: SBC_IMM(0x07)
+B0_8c68: STA_ZP(0x5E)
+B0_8c6a: LDY_IMM(0x07)
+B0_8c6c: LDX_ZP(0x5F)
+B0_8c6e: CYCLE(6); SetStack(SP, 112); SetStack(SP - 1, 140); SP -= 2; goto B1_8e15;
+B0_8c71: LDA_IMM(0x01)
+B0_8c73: STA_ZP(0x7B)
+B0_8c75: LDX_IMM(0x09)
+B0_8c77: LDA_IMM(0xB9)
+B0_8c79: STA_ZP_X(0x00)
+B0_8c7b: LDA_IMM(0x8C)
+B0_8c7d: STA_ZP_X(0x01)
+B0_8c7f: LDY_IMM(0x78)
+B0_8c81: LDA_IMM(0x00)
+B0_8c83: CYCLE(6); SetStack(SP, 133); SetStack(SP - 1, 140); SP -= 2; goto B0_9f69;
+B0_8c86: CYCLE(3); PC = 0x8ca5; goto B26_8ca5;
+B0_8c89: LDY_ZP(0x5E)
+B0_8c8b: LDX_ZP(0x5F)
+B0_8c8d: CYCLE(6); SetStack(SP, 143); SetStack(SP - 1, 140); SP -= 2; goto B1_8e15;
+B0_8c90: LDA_ZP(0x72)
+B0_8c92: CYCLE(2); if (SR_Z) goto B0_8ca5;
+B0_8c94: LDX_IMM(0x09)
+B0_8c96: LDA_IMM(0x21)
+B0_8c98: STA_ZP_X(0x00)
+B0_8c9a: LDA_IMM(0x8D)
+B0_8c9c: STA_ZP_X(0x01)
+B0_8c9e: LDY_IMM(0x78)
+B0_8ca0: LDA_IMM(0x00)
+B0_8ca2: CYCLE(6); SetStack(SP, 164); SetStack(SP - 1, 140); SP -= 2; goto B0_9f69;
+B0_8ca5: LDA_ZP(0x75)
+B0_8ca7: STA_ZP(0x8E)
+B0_8ca9: LDA_ZP(0x76)
+B0_8cab: STA_ZP(0x8F)
+B0_8cad: LDA_IMM(0x00)
+B0_8caf: STA_ZP(0x44)
+B0_8cb1: STA_ZP(0x45)
+B0_8cb3: STA_ZP(0x7A)
+B0_8cb5: LDX_ZP(0x77)
+B0_8cb7: CYCLE(3); PC = 0xc4b9; goto B30_c4b9;
+B0_8cba: LDX_IMM(0x07)
+B0_8cbc: CYCLE(6); SetStack(SP, 190); SetStack(SP - 1, 140); SP -= 2; goto B30_c4b9;
+B0_8cbf: LDA_IMM(0x00)
+B0_8cc1: STA_ZP(0x69)
+B0_8cc3: STA_ZP(0x6A)
+B0_8cc5: BIT_ZP(0x62)
+B0_8cc7: CYCLE(2); if (SR_N) goto B0_8cd6;
+B0_8cc9: LDA_IMM(0x00)
+B0_8ccb: SEC()
+B0_8ccc: SBC_ZP(0x60)
+B0_8cce: STA_ZP(0x60)
+B0_8cd0: LDA_IMM(0x00)
+B0_8cd2: SBC_ZP(0x61)
+B0_8cd4: STA_ZP(0x61)
+B0_8cd6: LDA_IMM(0x01)
+B0_8cd8: CYCLE(6); SetStack(SP, 218); SetStack(SP - 1, 140); SP -= 2; goto B0_9fa8;
+B0_8cdb: LDA_ZP(0x60)
+B0_8cdd: CLC()
+B0_8cde: ADC_ZP(0x69)
+B0_8ce0: STA_ZP(0x69)
+B0_8ce2: LDA_IMM(0x00)
+B0_8ce4: ADC_ZP(0x61)
+B0_8ce6: TAX()
+B0_8ce7: CYCLE(6); SetStack(SP, 233); SetStack(SP - 1, 140); SP -= 2; goto B0_9ba9;
+B0_8cea: TXA()
+B0_8ceb: CYCLE(2); if (!SR_N) goto B0_8cf2;
+B0_8ced: EOR_IMM(0xFF)
+B0_8cef: CLC()
+B0_8cf0: ADC_IMM(0x01)
+B0_8cf2: CLC()
+B0_8cf3: ADC_ZP(0x6A)
+B0_8cf5: STA_ZP(0x6A)
+B0_8cf7: SEC()
+B0_8cf8: SBC_IMM(0x20)
+B0_8cfa: CYCLE(2); if (!SR_C) goto B0_8cd6;
+B0_8cfc: STA_ZP(0x6A)
+B0_8cfe: LDA_ZP(0x5B)
+B0_8d00: CYCLE(2); if (!SR_N) goto B0_8d0a;
+B0_8d0a: LDX_IMM(0x0D)
+B0_8d0c: LDA_IMM(0xFE)
+B0_8d0e: STA_ZP_X(0x00)
+B0_8d10: LDA_IMM(0x8D)
+B0_8d12: STA_ZP_X(0x01)
+B0_8d14: LDY_IMM(0xA0)
+B0_8d16: LDA_IMM(0x00)
+B0_8d18: CYCLE(6); SetStack(SP, 26); SetStack(SP - 1, 141); SP -= 2; goto B0_9f69;
+B0_8d1b: DEC_ZP(0x5E)
+B0_8d1d: CYCLE(2); if (!SR_Z) goto B0_8cd6;
+B0_8d1f: CYCLE(3); PC = 0x8d59; goto B28_8d59;
+B0_8d22: LDX_IMM(0x07)
+B0_8d24: CYCLE(6); SetStack(SP, 38); SetStack(SP - 1, 141); SP -= 2; goto B30_c4b9;
+B0_8d27: LDX_IMM(0x02)
+B0_8d29: LDY_IMM(0x00)
+B0_8d2b: LDA_IDY(0x70)
+B0_8d2d: CYCLE(2); if (SR_Z) goto B0_8d3a;
+B0_8d2f: ASL_A()
+B0_8d30: CYCLE(2); if (!SR_C) goto B0_8d3b;
+B0_8d32: TAX()
+B0_8d33: LDA_IMM(0xFE)
+B0_8d35: CYCLE(6); SetStack(SP, 55); SetStack(SP - 1, 141); SP -= 2; goto B0_9fa8;
+B0_8d38: INX()
+B0_8d39: INX()
+B0_8d3a: TXA()
+B0_8d3b: CYCLE(6); SetStack(SP, 61); SetStack(SP - 1, 141); SP -= 2; goto B0_9fa8;
+B0_8d3e: LDA_IMM(0x00)
+B0_8d40: STA_ZP(0x69)
+B0_8d42: STA_ZP(0x6A)
+B0_8d44: BIT_ZP(0x62)
+B0_8d46: CYCLE(2); if (SR_N) goto B0_8d55;
+B0_8d48: LDA_IMM(0x00)
+B0_8d4a: SEC()
+B0_8d4b: SBC_ZP(0x60)
+B0_8d4d: STA_ZP(0x60)
+B0_8d4f: LDA_IMM(0x00)
+B0_8d51: SBC_ZP(0x61)
+B0_8d53: STA_ZP(0x61)
+B0_8d55: BIT_ZP(0x62)
+B0_8d57: CYCLE(2); if (!SR_V) goto B0_8d88;
+B0_8d59: LDA_IMM(0x01)
+B0_8d5b: CYCLE(6); SetStack(SP, 93); SetStack(SP - 1, 141); SP -= 2; goto B0_9fa8;
+B0_8d5e: LDA_ZP(0x60)
+B0_8d60: CLC()
+B0_8d61: ADC_ZP(0x69)
+B0_8d63: STA_ZP(0x69)
+B0_8d65: LDA_IMM(0x00)
+B0_8d67: ADC_ZP(0x61)
+B0_8d69: TAX()
+B0_8d6a: CYCLE(6); SetStack(SP, 108); SetStack(SP - 1, 141); SP -= 2; goto B0_9ba9;
+B0_8d6d: TXA()
+B0_8d6e: CYCLE(2); if (!SR_N) goto B0_8d75;
+B0_8d70: EOR_IMM(0xFF)
+B0_8d72: CLC()
+B0_8d73: ADC_IMM(0x01)
+B0_8d75: CLC()
+B0_8d76: ADC_ZP(0x6A)
+B0_8d78: STA_ZP(0x6A)
+B0_8d7a: SEC()
+B0_8d7b: SBC_IMM(0x20)
+B0_8d7d: CYCLE(2); if (!SR_C) goto B0_8d59;
+B0_8d7f: STA_ZP(0x6A)
+B0_8d81: DEC_ZP(0x72)
+B0_8d83: CYCLE(2); if (!SR_Z) goto B0_8d59;
+B0_8d85: CYCLE(3); PC = 0x8dc8; goto B28_8dc8;
+B0_8d88: LDA_IMM(0x01)
+B0_8d8a: CYCLE(6); SetStack(SP, 140); SetStack(SP - 1, 141); SP -= 2; goto B0_9fa8;
+B0_8d8d: LDA_ZP(0x60)
+B0_8d8f: CLC()
+B0_8d90: ADC_ZP(0x69)
+B0_8d92: STA_ZP(0x69)
+B0_8d94: LDA_IMM(0x00)
+B0_8d96: ADC_ZP(0x61)
+B0_8d98: TAX()
+B0_8d99: CYCLE(6); SetStack(SP, 155); SetStack(SP - 1, 141); SP -= 2; goto B26_9bca;
+B0_8d9c: TXA()
+B0_8d9d: CYCLE(2); if (!SR_N) goto B0_8da4;
+B0_8d9f: EOR_IMM(0xFF)
+B0_8da1: CLC()
+B0_8da2: ADC_IMM(0x01)
+B0_8da4: CLC()
+B0_8da5: ADC_ZP(0x6A)
+B0_8da7: STA_ZP(0x6A)
+B0_8da9: SEC()
+B0_8daa: SBC_IMM(0x20)
+B0_8dac: CYCLE(2); if (!SR_C) goto B0_8d88;
+B0_8dae: STA_ZP(0x6A)
+B0_8db0: DEC_ZP(0x72)
+B0_8db2: CYCLE(2); if (!SR_Z) goto B0_8d88;
+B0_8db4: LDA_ZP(0x7A)
+B0_8db6: SEC()
+B0_8db7: SBC_ZP(0x6A)
+B0_8db9: STA_ZP(0x7A)
+B0_8dbb: LDA_ZP(0x7B)
+B0_8dbd: SBC_IMM(0x00)
+B0_8dbf: STA_ZP(0x7B)
+B0_8dc1: LDA_ZP(0x47)
+B0_8dc3: SEC()
+B0_8dc4: SBC_ZP(0x6A)
+B0_8dc6: STA_ZP(0x47)
+B0_8dc8: LDA_ZP(0x62)
+B0_8dca: AND_IMM(0x20)
+B0_8dcc: CYCLE(2); if (!SR_Z) goto B0_8dfc;
+B0_8dce: LDA_ZP(0x70)
+B0_8dd0: CLC()
+B0_8dd1: ADC_IMM(0x03)
+B0_8dd3: STA_ZP(0x70)
+B0_8dd5: LDA_ZP(0x71)
+B0_8dd7: ADC_IMM(0x00)
+B0_8dd9: STA_ZP(0x71)
+B0_8ddb: LDA_IMM(0x00)
+B0_8ddd: STA_ZP(0x60)
+B0_8ddf: LDY_IMM(0x01)
+B0_8de1: LDA_IDY(0x70)
+B0_8de3: AND_IMM(0xE0)
+B0_8de5: STA_ZP(0x62)
+B0_8de7: LDA_IDY(0x70)
+B0_8de9: AND_IMM(0x1F)
+B0_8deb: TAX()
+B0_8dec: LSR_A()
+B0_8ded: ROR_ZP(0x60)
+B0_8def: LSR_A()
+B0_8df0: ROR_ZP(0x60)
+B0_8df2: STA_ZP(0x61)
+B0_8df4: INY()
+B0_8df5: LDA_IDY(0x70)
+B0_8df7: STA_ZP(0x72)
+B0_8df9: CYCLE(3); PC = 0x8d22; goto B0_8d22;
+B0_8dfc: CYCLE(3); PC = 0x9f7e; goto B0_9f7e;
+B0_8dff: LDA_ZP(0x5B)
+B0_8e01: ORA_IMM(0x80)
+B0_8e03: STA_ZP(0x5B)
+B0_8e05: LDY_IMM(0x01)
+B0_8e07: LDX_ZP(0x5F)
+B0_8e09: CYCLE(6); SetStack(SP, 11); SetStack(SP - 1, 142); SP -= 2; goto B1_8e15;
+B0_8e0c: LDA_ZP(0x5B)
+B0_8e0e: AND_IMM(0x7F)
+B0_8e10: STA_ZP(0x5B)
+B0_8e12: CYCLE(3); PC = 0x9f7e; goto B0_9f7e;
+B0_8e15: STY_ZP(0x6C)
+B0_8e17: STX_ZP(0x6B)
+B0_8e19: LDA_ZP(0x63)
+B0_8e1b: STA_ZP(0x65)
+B0_8e1d: LDA_ZP(0x64)
+B0_8e1f: STA_ZP(0x66)
+B0_8e21: LDA_ZP(0x6B)
+B0_8e23: STA_ZP(0xED)
+B0_8e25: LDA_ZP(0x5C)
+B0_8e27: STA_ZP(0x73)
+B0_8e29: LDA_ZP(0x5D)
+B0_8e2b: STA_ZP(0x74)
+B0_8e2d: LDY_IMM(0x00)
+B0_8e2f: LDA_IDY(0x63)
+B0_8e31: CYCLE(6); SetStack(SP, 51); SetStack(SP - 1, 142); SP -= 2; goto B26_8ef0;
+B0_8e34: LDA_ZP(0x5C)
+B0_8e36: TAX()
+B0_8e37: CLC()
+B0_8e38: ADC_ZP(0x6D)
+B0_8e3a: STA_ZP(0x5C)
+B0_8e3c: TXA()
+B0_8e3d: EOR_ZP(0x5C)
+B0_8e3f: AND_IMM(0x20)
+B0_8e41: CYCLE(2); if (SR_Z) goto B0_8e58;
+B0_8e43: LDA_ZP(0x6D)
+B0_8e45: ASL_A()
+B0_8e46: ASL_A()
+B0_8e47: ASL_A()
+B0_8e48: EOR_IMM(0xFF)
+B0_8e4a: CLC()
+B0_8e4b: ADC_IMM(0x01)
+B0_8e4d: CLC()
+B0_8e4e: ADC_ZP(0x5C)
+B0_8e50: STA_ZP(0x5C)
+B0_8e52: LDA_ZP(0x5D)
+B0_8e54: EOR_IMM(0x04)
+B0_8e56: STA_ZP(0x5D)
+B0_8e58: LDA_ZP(0x6E)
+B0_8e5a: PHA()
+B0_8e5b: CLC()
+B0_8e5c: ADC_ZP(0x63)
+B0_8e5e: STA_ZP(0x63)
+B0_8e60: PLA()
+B0_8e61: CYCLE(2); if (SR_N) goto B0_8e6a;
+B0_8e63: LDA_ZP(0x64)
+B0_8e65: ADC_IMM(0x00)
+B0_8e67: CYCLE(3); PC = 0x8e6e; goto B26_8e6e;
+B0_8e6a: LDA_ZP(0x64)
+B0_8e6c: SBC_IMM(0x00)
+B0_8e6e: STA_ZP(0x64)
+B0_8e70: DEC_ZP(0xED)
+B0_8e72: CYCLE(2); if (!SR_Z) goto B0_8e2d;
+B0_8e74: LDA_ZP(0x6F)
+B0_8e76: PHA()
+B0_8e77: CLC()
+B0_8e78: ADC_ZP(0x65)
+B0_8e7a: STA_ZP(0x63)
+B0_8e7c: PLA()
+B0_8e7d: CYCLE(2); if (SR_N) goto B0_8e86;
+B0_8e7f: LDA_ZP(0x66)
+B0_8e81: ADC_IMM(0x00)
+B0_8e83: CYCLE(3); PC = 0x8e8a; goto B0_8e8a;
+B0_8e86: LDA_ZP(0x66)
+B0_8e88: SBC_IMM(0x00)
+B0_8e8a: STA_ZP(0x64)
+B0_8e8c: LDA_ZP(0x62)
+B0_8e8e: AND_IMM(0xC0)
+B0_8e90: CMP_IMM(0x40)
+B0_8e92: CYCLE(2); if (SR_Z) goto B0_8ec2;
+B0_8e94: LDA_ZP(0x73)
+B0_8e96: CLC()
+B0_8e97: ADC_IMM(0x80)
+B0_8e99: STA_ZP(0x5C)
+B0_8e9b: TAX()
+B0_8e9c: LDA_ZP(0x74)
+B0_8e9e: ADC_IMM(0x00)
+B0_8ea0: STA_ZP(0x5D)
+B0_8ea2: TXA()
+B0_8ea3: SEC()
+B0_8ea4: SBC_IMM(0x40)
+B0_8ea6: CYCLE(2); if (!SR_N) goto B0_8ee8;
+B0_8ea8: LDA_ZP(0x5D)
+B0_8eaa: SBC_IMM(0x00)
+B0_8eac: AND_IMM(0x03)
+B0_8eae: CMP_IMM(0x03)
+B0_8eb0: CYCLE(2); if (!SR_Z) goto B0_8ee8;
+B0_8eb2: LDA_ZP(0x5C)
+B0_8eb4: SEC()
+B0_8eb5: SBC_IMM(0xC0)
+B0_8eb7: STA_ZP(0x5C)
+B0_8eb9: LDA_ZP(0x5D)
+B0_8ebb: SBC_IMM(0x03)
+B0_8ebd: STA_ZP(0x5D)
+B0_8ebf: CYCLE(3); PC = 0x8ee8; goto B26_8ee8;
+B0_8ec2: LDA_ZP(0x73)
+B0_8ec4: SEC()
+B0_8ec5: SBC_IMM(0x80)
+B0_8ec7: STA_ZP(0x5C)
+B0_8ec9: TAX()
+B0_8eca: LDA_ZP(0x74)
+B0_8ecc: SBC_IMM(0x00)
+B0_8ece: STA_ZP(0x5D)
+B0_8ed0: TXA()
+B0_8ed1: CYCLE(2); if (!SR_N) goto B0_8ee8;
+B0_8ed3: LDA_ZP(0x5D)
+B0_8ed5: AND_IMM(0x03)
+B0_8ed7: CMP_IMM(0x03)
+B0_8ed9: CYCLE(2); if (!SR_Z) goto B0_8ee8;
+B0_8edb: LDA_ZP(0x5C)
+B0_8edd: CLC()
+B0_8ede: ADC_IMM(0xC0)
+B0_8ee0: STA_ZP(0x5C)
+B0_8ee2: LDA_ZP(0x5D)
+B0_8ee4: ADC_IMM(0x03)
+B0_8ee6: STA_ZP(0x5D)
+B0_8ee8: DEC_ZP(0x6C)
+B0_8eea: CYCLE(2); if (SR_Z) goto B0_8eef;
+B0_8eec: CYCLE(3); PC = 0x8e19; goto B1_8e19;
+B0_8eef: RTS()
+B0_8ef0: TAX()
+B0_8ef1: LDA_ZP(0x5C)
+B0_8ef3: STA_ZP(0x67)
+B0_8ef5: LDA_ZP(0x5D)
+B0_8ef7: STA_ZP(0x68)
+B0_8ef9: LDA_ZP(0x5B)
+B0_8efb: AND_IMM(0x01)
+B0_8efd: TAY()
+B0_8efe: STA_ZP(0xEB)
+B0_8f00: TXA()
+B0_8f01: STA_ZP(0xEA)
+B0_8f03: ASL_A()
+B0_8f04: ROL_ZP(0xEB)
+B0_8f06: ASL_A()
+B0_8f07: ROL_ZP(0xEB)
+B0_8f09: ASL_A()
+B0_8f0a: ROL_ZP(0xEB)
+B0_8f0c: ASL_A()
+B0_8f0d: ROL_ZP(0xEB)
+B0_8f0f: CLC()
+B0_8f10: ADC_ZP(0xEA)
+B0_8f12: STA_ZP(0xEA)
+B0_8f14: TYA()
+B0_8f15: ADC_ZP(0xEB)
+B0_8f17: STA_ZP(0xEB)
+B0_8f19: LDA_ZP(0xEA)
+B0_8f1b: CLC()
+B0_8f1c: ADC_IMM(0x00)
+B0_8f1e: STA_ZP(0xEA)
+B0_8f20: LDA_ZP(0xEB)
+B0_8f22: ADC_IMM(0xA0)
+B0_8f24: STA_ZP(0xEB)
+B0_8f26: LDX_IMM(0x08)
+B0_8f28: CYCLE(6); SetStack(SP, 42); SetStack(SP - 1, 143); SP -= 2; goto B30_c4b9;
+B0_8f2b: LDY_IMM(0x00)
+B0_8f2d: LDA_IDY(0xEA)
+B0_8f2f: STA_ZP(0xE7)
+B0_8f31: CYCLE(6); SetStack(SP, 51); SetStack(SP - 1, 143); SP -= 2; goto B26_8fd1;
+B0_8f34: INC_ZP(0xEA)
+B0_8f36: CYCLE(2); if (!SR_Z) goto B0_8f3a;
+B0_8f38: INC_ZP(0xEB)
+B0_8f3a: LDA_IMM(0x04)
+B0_8f3c: STA_ZP(0xE8)
+B0_8f3e: LDY_ZP(0x67)
+B0_8f40: LDX_ZP(0x68)
+B0_8f42: LDA_IMM(0x04)
+B0_8f44: CYCLE(6); SetStack(SP, 70); SetStack(SP - 1, 143); SP -= 2; goto B26_9b28;
+B0_8f47: LDY_IMM(0x00)
+B0_8f49: LDA_IDY(0xEA)
+B0_8f4b: STA_ABS_X(0x05e8)
+B0_8f4e: INX()
+B0_8f4f: INY()
+B0_8f50: CPY_IMM(0x04)
+B0_8f52: CYCLE(2); if (!SR_Z) goto B0_8f49;
+B0_8f54: CYCLE(6); SetStack(SP, 86); SetStack(SP - 1, 143); SP -= 2; goto B0_9b5e;
+B0_8f57: DEC_ZP(0xE8)
+B0_8f59: CYCLE(2); if (SR_Z) goto B0_8fcb;
+B0_8f5b: LDA_ZP(0xEA)
+B0_8f5d: CLC()
+B0_8f5e: ADC_IMM(0x04)
+B0_8f60: STA_ZP(0xEA)
+B0_8f62: LDA_ZP(0xEB)
+B0_8f64: ADC_IMM(0x00)
+B0_8f66: STA_ZP(0xEB)
+B0_8f68: LDA_ZP(0x67)
+B0_8f6a: CLC()
+B0_8f6b: ADC_IMM(0x20)
+B0_8f6d: STA_ZP(0x67)
+B0_8f6f: LDA_ZP(0x68)
+B0_8f71: ADC_IMM(0x00)
+B0_8f73: STA_ZP(0x68)
+B0_8f75: AND_IMM(0x03)
+B0_8f77: CMP_IMM(0x03)
+B0_8f79: CYCLE(2); if (!SR_Z) goto B0_8f3e;
+B0_8f7b: LDA_ZP(0x67)
+B0_8f7d: CMP_IMM(0xC0)
+B0_8f7f: CYCLE(2); if (!SR_C) goto B0_8f3e;
+B0_8f81: LDA_ZP(0x67)
+B0_8f83: SEC()
+B0_8f84: SBC_IMM(0xC0)
+B0_8f86: STA_ZP(0x67)
+B0_8f88: LDA_ZP(0x68)
+B0_8f8a: SBC_IMM(0x03)
+B0_8f8c: STA_ZP(0x68)
+B0_8f8e: CYCLE(6); SetStack(SP, 144); SetStack(SP - 1, 143); SP -= 2; goto B26_9049;
+B0_8f91: LDA_IMM(0x01)
+B0_8f93: CYCLE(6); SetStack(SP, 149); SetStack(SP - 1, 143); SP -= 2; goto B26_9b28;
+B0_8f96: LDA_ZP(0x67)
+B0_8f98: LSR_A()
+B0_8f99: LSR_A()
+B0_8f9a: AND_IMM(0x07)
+B0_8f9c: TAY()
+B0_8f9d: LDA_ZP(0x62)
+B0_8f9f: AND_IMM(0xC0)
+B0_8fa1: CMP_IMM(0x40)
+B0_8fa3: CYCLE(2); if (SR_Z) goto B0_8fb8;
+B0_8fa5: LDA_ZP(0xE7)
+B0_8fa7: LSR_A()
+B0_8fa8: LSR_A()
+B0_8fa9: LSR_A()
+B0_8faa: LSR_A()
+B0_8fab: STA_ABS_X(0x05e8)
+B0_8fae: STA_ABS_Y(0x064a)
+B0_8fb1: INX()
+B0_8fb2: CYCLE(6); SetStack(SP, 180); SetStack(SP - 1, 143); SP -= 2; goto B0_9b5e;
+B0_8fb5: CYCLE(3); PC = 0x8f3e; goto B1_8f3e;
+B0_8fb8: LDA_ZP(0xE7)
+B0_8fba: LSR_A()
+B0_8fbb: LSR_A()
+B0_8fbc: LSR_A()
+B0_8fbd: LSR_A()
+B0_8fbe: ORA_ABS_Y(0x064a)
+B0_8fc1: STA_ABS_X(0x05e8)
+B0_8fc4: INX()
+B0_8fc5: CYCLE(6); SetStack(SP, 199); SetStack(SP - 1, 143); SP -= 2; goto B0_9b5e;
+B0_8fc8: CYCLE(3); PC = 0x8f3e; goto B1_8f3e;
+B0_8fcb: LDX_IMM(0x07)
+B0_8fcd: CYCLE(6); SetStack(SP, 207); SetStack(SP - 1, 143); SP -= 2; goto B30_c4b9;
+B0_8fd0: RTS()
+B0_8fd1: CYCLE(6); SetStack(SP, 211); SetStack(SP - 1, 143); SP -= 2; goto B26_9049;
+B0_8fd4: BIT_ZP(0x67)
+B0_8fd6: CYCLE(2); if (!SR_V) goto B0_903a;
+B0_8fd8: STY_ZP(0xE8)
+B0_8fda: STX_ZP(0xE9)
+B0_8fdc: LDA_IMM(0x01)
+B0_8fde: CYCLE(6); SetStack(SP, 224); SetStack(SP - 1, 143); SP -= 2; goto B26_9b28;
+B0_8fe1: LDA_ZP(0x67)
+B0_8fe3: LSR_A()
+B0_8fe4: LSR_A()
+B0_8fe5: AND_IMM(0x07)
+B0_8fe7: TAY()
+B0_8fe8: LDA_ZP(0x62)
+B0_8fea: AND_IMM(0xC0)
+B0_8fec: CMP_IMM(0x40)
+B0_8fee: CYCLE(2); if (SR_Z) goto B0_900b;
+B0_900b: LDA_ZP(0xE7)
+B0_900d: ASL_A()
+B0_900e: ASL_A()
+B0_900f: ASL_A()
+B0_9010: ASL_A()
+B0_9011: PHA()
+B0_9012: STA_ABS_X(0x05e8)
+B0_9015: INX()
+B0_9016: LDA_ZP(0xE7)
+B0_9018: LSR_A()
+B0_9019: LSR_A()
+B0_901a: LSR_A()
+B0_901b: LSR_A()
+B0_901c: ORA_ABS_Y(0x064a)
+B0_901f: STA_ZP(0xE6)
+B0_9021: PLA()
+B0_9022: STA_ABS_Y(0x064a)
+B0_9025: CYCLE(6); SetStack(SP, 39); SetStack(SP - 1, 144); SP -= 2; goto B0_9b5e;
+B0_9028: LDA_ZP(0xE8)
+B0_902a: CLC()
+B0_902b: ADC_IMM(0x08)
+B0_902d: TAY()
+B0_902e: LDX_ZP(0xE9)
+B0_9030: LDA_IMM(0x01)
+B0_9032: CYCLE(6); SetStack(SP, 52); SetStack(SP - 1, 144); SP -= 2; goto B26_9b28;
+B0_9035: LDA_ZP(0xE6)
+B0_9037: CYCLE(3); PC = 0x9041; goto B0_9041;
+B0_903a: LDA_IMM(0x01)
+B0_903c: CYCLE(6); SetStack(SP, 62); SetStack(SP - 1, 144); SP -= 2; goto B26_9b28;
+B0_903f: LDA_ZP(0xE7)
+B0_9041: STA_ABS_X(0x05e8)
+B0_9044: INX()
+B0_9045: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 144); SP -= 2; goto B0_9b5e;
+B0_9048: RTS()
+B0_9049: LDA_ZP(0x67)
+B0_904b: AND_IMM(0x9C)
+B0_904d: LSR_A()
+B0_904e: LSR_A()
+B0_904f: STA_ZP(0xE6)
+B0_9051: AND_IMM(0x20)
+B0_9053: LSR_A()
+B0_9054: LSR_A()
+B0_9055: ORA_ZP(0xE6)
+B0_9057: AND_IMM(0x0F)
+B0_9059: STA_ZP(0xE6)
+B0_905b: LDA_ZP(0x68)
+B0_905d: ASL_A()
+B0_905e: ASL_A()
+B0_905f: ASL_A()
+B0_9060: ASL_A()
+B0_9061: AND_IMM(0x30)
+B0_9063: CLC()
+B0_9064: ADC_IMM(0xC0)
+B0_9066: ORA_ZP(0xE6)
+B0_9068: TAY()
+B0_9069: LDA_ZP(0x68)
+B0_906b: AND_IMM(0xFC)
+B0_906d: ADC_IMM(0x03)
+B0_906f: TAX()
+B0_9070: RTS()
+B0_9071: LDA_IMM(0x20)
+B0_9073: CYCLE(3); PC = 0x9078; goto B26_9078;
+B0_9076: LDA_IMM(0x24)
+B0_9078: STA_ZP(0xE7)
+B0_907a: LDA_IMM(0x00)
+B0_907c: STA_ZP(0xE6)
+B0_907e: LDY_IMM(0x10)
+B0_9080: LDX_IMM(0x20)
+B0_9082: CYCLE(3); PC = 0x98e8; goto B0_98e8;
+B0_9085: LDA_IMM(0x00)
+B0_9087: LDY_IMM(0x01)
+B0_9089: STA_ABS_Y(0x0467)
+B0_908c: INY()
+B0_908d: CYCLE(2); if (!SR_Z) goto B0_9089;
+B0_908f: LDA_IMM(0x00)
+B0_9091: STA_ZP(0x97)
+B0_9093: LDY_IMM(0x01)
+B0_9095: LDA_IDY(0x4D)
+B0_9097: STA_ZP(0xEC)
+B0_9099: LDA_ZP(0x4D)
+B0_909b: CLC()
+B0_909c: ADC_IMM(0x02)
+B0_909e: STA_ZP(0x4D)
+B0_90a0: LDA_ZP(0x4E)
+B0_90a2: ADC_IMM(0x00)
+B0_90a4: STA_ZP(0x4E)
+B0_90a6: LDA_IMM(0x68)
+B0_90a8: STA_ZP(0x94)
+B0_90aa: LDA_IMM(0x05)
+B0_90ac: STA_ZP(0x95)
+B0_90ae: LDX_ZP(0x25)
+B0_90b0: STX_ZP(0xED)
+B0_90b2: LDY_IMM(0x00)
+B0_90b4: LDA_IDY(0x4D)
+B0_90b6: TAY()
+B0_90b7: LDX_IMM(0x09)
+B0_90b9: CMP_IMM(0x6D)
+B0_90bb: CYCLE(2); if (!SR_C) goto B0_90c2;
+B0_90bd: SEC()
+B0_90be: SBC_IMM(0x6D)
+B0_90c0: TAY()
+B0_90c1: INX()
+B0_90c2: CYCLE(6); SetStack(SP, 196); SetStack(SP - 1, 144); SP -= 2; goto B30_c4b9;
+B0_90c5: TYA()
+B0_90c6: ASL_A()
+B0_90c7: TAY()
+B0_90c8: LDA_IMM(0x00)
+B0_90ca: ADC_IMM(0x00)
+B0_90cc: TAX()
+B0_90cd: TYA()
+B0_90ce: CLC()
+B0_90cf: ADC_IMM(0x00)
+B0_90d1: STA_ZP(0x92)
+B0_90d3: TXA()
+B0_90d4: ADC_IMM(0xA0)
+B0_90d6: STA_ZP(0x93)
+B0_90d8: LDY_IMM(0x00)
+B0_90da: LDA_IDY(0x92)
+B0_90dc: TAX()
+B0_90dd: INY()
+B0_90de: LDA_IDY(0x92)
+B0_90e0: STA_ZP(0x93)
+B0_90e2: STX_ZP(0x92)
+B0_90e4: LDY_IMM(0x00)
+B0_90e6: LDA_ABS_Y(0x978b)
+B0_90e9: STA_IDY(0x94)
+B0_90eb: INY()
+B0_90ec: CPY_IMM(0x20)
+B0_90ee: CYCLE(2); if (!SR_Z) goto B0_90e6;
+B0_90f0: LDA_ZP(0x25)
+B0_90f2: SEC()
+B0_90f3: SBC_IMM(0x09)
+B0_90f5: LDY_IMM(0x00)
+B0_90f7: ORA_IDY(0x94)
+B0_90f9: STA_IDY(0x94)
+B0_90fb: LDY_IMM(0x00)
+B0_90fd: LDA_IDY(0x92)
+B0_90ff: STA_ZP(0x49)
+B0_9101: INC_ZP(0x92)
+B0_9103: CYCLE(2); if (!SR_Z) goto B0_9107;
+B0_9105: INC_ZP(0x93)
+B0_9107: LDY_IMM(0x02)
+B0_9109: LDA_ZP(0x92)
+B0_910b: STA_IDY(0x94)
+B0_910d: INY()
+B0_910e: LDA_ZP(0x93)
+B0_9110: STA_IDY(0x94)
+B0_9112: LDX_ZP(0xED)
+B0_9114: CYCLE(6); SetStack(SP, 22); SetStack(SP - 1, 145); SP -= 2; goto B30_c4b9;
+B0_9117: INC_ZP(0x4D)
+B0_9119: CYCLE(2); if (!SR_Z) goto B0_911d;
+B0_911d: LDA_ZP(0x94)
+B0_911f: CLC()
+B0_9120: ADC_IMM(0x20)
+B0_9122: STA_ZP(0x94)
+B0_9124: LDA_ZP(0x95)
+B0_9126: ADC_IMM(0x00)
+B0_9128: STA_ZP(0x95)
+B0_912a: DEC_ZP(0xEC)
+B0_912c: CYCLE(2); if (SR_Z) goto B0_9131;
+B0_912e: CYCLE(3); PC = 0x90ae; goto B26_90ae;
+B0_9131: LDX_IMM(0x11)
+B0_9133: LDA_IMM(0x47)
+B0_9135: STA_ZP_X(0x00)
+B0_9137: LDA_IMM(0x91)
+B0_9139: STA_ZP_X(0x01)
+B0_913b: LDY_IMM(0xC8)
+B0_913d: LDA_IMM(0x00)
+B0_913f: CYCLE(6); SetStack(SP, 65); SetStack(SP - 1, 145); SP -= 2; goto B0_9f69;
+B0_9142: RTS()
+B0_9143: LDA_IMM(0x01)
+B0_9145: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 145); SP -= 2; goto B0_9fa8;
+B0_9148: LDA_IMM(0x68)
+B0_914a: STA_ZP(0x94)
+B0_914c: LDA_IMM(0x05)
+B0_914e: STA_ZP(0x95)
+B0_9150: LDA_IMM(0x04)
+B0_9152: STA_ZP(0x96)
+B0_9154: LDY_IMM(0x00)
+B0_9156: LDA_IDY(0x94)
+B0_9158: CYCLE(2); if (SR_N) goto B0_915d;
+B0_915a: CYCLE(3); PC = 0x94c1; goto B0_94c1;
+B0_915d: TAX()
+B0_915e: LDY_IMM(0x04)
+B0_9160: CYCLE(6); SetStack(SP, 98); SetStack(SP - 1, 145); SP -= 2; goto B0_974a;
+B0_9163: LDY_IMM(0x06)
+B0_9165: CYCLE(6); SetStack(SP, 103); SetStack(SP - 1, 145); SP -= 2; goto B0_974a;
+B0_9168: TXA()
+B0_9169: AND_IMM(0x10)
+B0_916b: CYCLE(2); if (!SR_Z) goto B0_91a6;
+B0_916d: TXA()
+B0_916e: AND_IMM(0x20)
+B0_9170: CYCLE(2); if (!SR_Z) goto B0_9175;
+B0_9172: CYCLE(3); PC = 0x91f3; goto B19_91f3;
+B0_9175: LDX_IMM(0x04)
+B0_9177: LDY_IMM(0x0A)
+B0_9179: CYCLE(6); SetStack(SP, 123); SetStack(SP - 1, 145); SP -= 2; goto B0_975b;
+B0_917c: LDA_ZP(0x9A)
+B0_917e: STA_ZP(0xE6)
+B0_9180: LDY_IMM(0x04)
+B0_9182: CYCLE(6); SetStack(SP, 132); SetStack(SP - 1, 145); SP -= 2; goto B0_974a;
+B0_9185: LDA_ZP(0x9A)
+B0_9187: SEC()
+B0_9188: SBC_ZP(0xE6)
+B0_918a: STA_ZP(0xE6)
+B0_918c: LDX_IMM(0x06)
+B0_918e: LDY_IMM(0x0E)
+B0_9190: CYCLE(6); SetStack(SP, 146); SetStack(SP - 1, 145); SP -= 2; goto B0_975b;
+B0_9193: LDA_ZP(0x9C)
+B0_9195: STA_ZP(0xE8)
+B0_9197: LDY_IMM(0x06)
+B0_9199: CYCLE(6); SetStack(SP, 155); SetStack(SP - 1, 145); SP -= 2; goto B0_974a;
+B0_919c: LDA_ZP(0x9C)
+B0_919e: SEC()
+B0_919f: SBC_ZP(0xE8)
+B0_91a1: STA_ZP(0xE8)
+B0_91a3: CYCLE(3); PC = 0x91b4; goto B26_91b4;
+B0_91a6: LDA_IMM(0x00)
+B0_91a8: SEC()
+B0_91a9: SBC_ZP(0x46)
+B0_91ab: STA_ZP(0xE6)
+B0_91ad: LDA_IMM(0x00)
+B0_91af: SEC()
+B0_91b0: SBC_ZP(0x47)
+B0_91b2: STA_ZP(0xE8)
+B0_91b4: LDY_IMM(0x10)
+B0_91b6: LDA_IDY(0x94)
+B0_91b8: TAX()
+B0_91b9: INY()
+B0_91ba: LDA_IDY(0x94)
+B0_91bc: LSR_A()
+B0_91bd: LSR_A()
+B0_91be: TAY()
+B0_91bf: LDA_ZP(0xE6)
+B0_91c1: CLC()
+B0_91c2: ADC_ABS_X(0x0468)
+B0_91c5: STA_ABS_X(0x0468)
+B0_91c8: ROR_A()
+B0_91c9: EOR_ZP(0xE6)
+B0_91cb: CYCLE(2); if (!SR_N) goto B0_91d5;
+B0_91cd: LDA_ABS_X(0x046a)
+B0_91d0: EOR_IMM(0x08)
+B0_91d2: STA_ABS_X(0x046a)
+B0_91d5: LDA_ZP(0xE8)
+B0_91d7: CLC()
+B0_91d8: ADC_ABS_X(0x046b)
+B0_91db: STA_ABS_X(0x046b)
+B0_91de: ROR_A()
+B0_91df: EOR_ZP(0xE8)
+B0_91e1: CYCLE(2); if (!SR_N) goto B0_91eb;
+B0_91e3: LDA_ABS_X(0x046a)
+B0_91e6: EOR_IMM(0x04)
+B0_91e8: STA_ABS_X(0x046a)
+B0_91eb: TXA()
+B0_91ec: CLC()
+B0_91ed: ADC_IMM(0x04)
+B0_91ef: TAX()
+B0_91f0: DEY()
+B0_91f1: CYCLE(2); if (!SR_Z) goto B0_91bf;
+B0_91f3: LDY_IMM(0x01)
+B0_91f5: LDA_IDY(0x94)
+B0_91f7: SEC()
+B0_91f8: SBC_IMM(0x01)
+B0_91fa: STA_IDY(0x94)
+B0_91fc: CYCLE(2); if (SR_Z) goto B0_9201;
+B0_91fe: CYCLE(3); PC = 0x94c1; goto B0_94c1;
+B0_9201: LDY_IMM(0x00)
+B0_9203: LDA_IDY(0x94)
+B0_9205: AND_IMM(0x01)
+B0_9207: CLC()
+B0_9208: ADC_IMM(0x09)
+B0_920a: TAX()
+B0_920b: CYCLE(6); SetStack(SP, 13); SetStack(SP - 1, 146); SP -= 2; goto B30_c4b9;
+B0_920e: LDY_IMM(0x02)
+B0_9210: LDA_IDY(0x94)
+B0_9212: STA_ZP(0x92)
+B0_9214: INY()
+B0_9215: LDA_IDY(0x94)
+B0_9217: STA_ZP(0x93)
+B0_9219: LDY_IMM(0x00)
+B0_921b: LDA_IDY(0x94)
+B0_921d: AND_IMM(0x02)
+B0_921f: CYCLE(2); if (SR_Z) goto B0_9224;
+B0_9221: CYCLE(3); PC = 0x9459; goto B26_9459;
+B0_9224: LDY_IMM(0x00)
+B0_9226: LDA_IDY(0x92)
+B0_9228: CYCLE(2); if (SR_N) goto B0_9241;
+B0_922a: INY()
+B0_922b: ASL_A()
+B0_922c: STA_IDY(0x94)
+B0_922e: LDY_IMM(0x02)
+B0_9230: LDA_ZP(0x92)
+B0_9232: CLC()
+B0_9233: ADC_IMM(0x01)
+B0_9235: STA_IDY(0x94)
+B0_9237: INY()
+B0_9238: LDA_ZP(0x93)
+B0_923a: ADC_IMM(0x00)
+B0_923c: STA_IDY(0x94)
+B0_923e: CYCLE(3); PC = 0x94c1; goto B0_94c1;
+B0_9241: CMP_IMM(0xA0)
+B0_9243: CYCLE(2); if (SR_C) goto B0_9258;
+B0_9245: CLC()
+B0_9246: ADC_IMM(0x20)
+B0_9248: STA_ZP(0xE7)
+B0_924a: LDY_IMM(0x01)
+B0_924c: LDA_IDY(0x92)
+B0_924e: STA_ZP(0xE6)
+B0_9250: CYCLE(6); SetStack(SP, 82); SetStack(SP - 1, 146); SP -= 2; goto B0_94d8;
+B0_9253: LDA_IMM(0x02)
+B0_9255: CYCLE(3); PC = 0x94ae; goto B0_94ae;
+B0_9258: CMP_IMM(0xC0)
+B0_925a: CYCLE(2); if (SR_C) goto B0_9268;
+B0_925c: TAX()
+B0_925d: LDY_IMM(0x01)
+B0_925f: LDA_IDY(0x92)
+B0_9261: STA_ZP(0x92)
+B0_9263: STX_ZP(0x93)
+B0_9265: CYCLE(3); PC = 0x9224; goto B26_9224;
+B0_9268: CMP_IMM(0xE0)
+B0_926a: CYCLE(2); if (SR_C) goto B0_92a0;
+B0_92a0: CMP_IMM(0xF0)
+B0_92a2: CYCLE(2); if (SR_C) goto B0_92d7;
+B0_92a4: TAX()
+B0_92a5: LDY_IMM(0x13)
+B0_92a7: LDA_IDY(0x94)
+B0_92a9: CMP_IMM(0x04)
+B0_92ab: CYCLE(2); if (SR_C) goto B0_92ab;
+B0_92ad: CLC()
+B0_92ae: ADC_IMM(0x01)
+B0_92b0: STA_IDY(0x94)
+B0_92b2: CLC()
+B0_92b3: ADC_IMM(0x13)
+B0_92b5: TAY()
+B0_92b6: TXA()
+B0_92b7: SEC()
+B0_92b8: SBC_IMM(0xE0)
+B0_92ba: STA_IDY(0x94)
+B0_92bc: TYA()
+B0_92bd: ASL_A()
+B0_92be: SEC()
+B0_92bf: SBC_IMM(0x10)
+B0_92c1: TAY()
+B0_92c2: LDA_ZP(0x92)
+B0_92c4: CLC()
+B0_92c5: ADC_IMM(0x01)
+B0_92c7: STA_ZP(0x92)
+B0_92c9: STA_IDY(0x94)
+B0_92cb: INY()
+B0_92cc: LDA_ZP(0x93)
+B0_92ce: ADC_IMM(0x00)
+B0_92d0: STA_ZP(0x93)
+B0_92d2: STA_IDY(0x94)
+B0_92d4: CYCLE(3); PC = 0x9224; goto B26_9224;
+B0_92d7: SEC()
+B0_92d8: SBC_IMM(0xF0)
+B0_92da: ASL_A()
+B0_92db: TAX()
+B0_92dc: LDA_ABS_X(0x92e6)
+B0_92df: PHA()
+B0_92e0: LDA_ABS_X(0x92e5)
+B0_92e3: PHA()
+B0_92e4: RTS()
+B0_9305: LDY_IMM(0x13)
+B0_9307: LDA_IDY(0x94)
+B0_9309: CYCLE(2); if (SR_Z) goto B0_9309;
+B0_930b: TAX()
+B0_930c: CLC()
+B0_930d: ADC_IMM(0x13)
+B0_930f: TAY()
+B0_9310: LDA_IDY(0x94)
+B0_9312: SEC()
+B0_9313: SBC_IMM(0x01)
+B0_9315: STA_IDY(0x94)
+B0_9317: CYCLE(2); if (SR_Z) goto B0_932b;
+B0_9319: TXA()
+B0_931a: ASL_A()
+B0_931b: CLC()
+B0_931c: ADC_IMM(0x16)
+B0_931e: TAY()
+B0_931f: LDA_IDY(0x94)
+B0_9321: STA_ZP(0x92)
+B0_9323: INY()
+B0_9324: LDA_IDY(0x94)
+B0_9326: STA_ZP(0x93)
+B0_9328: CYCLE(3); PC = 0x9224; goto B26_9224;
+B0_932b: LDY_IMM(0x13)
+B0_932d: LDA_IDY(0x94)
+B0_932f: SEC()
+B0_9330: SBC_IMM(0x01)
+B0_9332: STA_IDY(0x94)
+B0_9334: LDA_IMM(0x01)
+B0_9336: CYCLE(3); PC = 0x94ae; goto B0_94ae;
+B0_9339: LDY_IMM(0x01)
+B0_933b: LDA_IDY(0x92)
+B0_933d: LDY_IMM(0x04)
+B0_933f: CYCLE(6); SetStack(SP, 65); SetStack(SP - 1, 147); SP -= 2; goto B0_9735;
+B0_9342: LDY_IMM(0x02)
+B0_9344: LDA_IDY(0x92)
+B0_9346: LDY_IMM(0x06)
+B0_9348: CYCLE(6); SetStack(SP, 74); SetStack(SP - 1, 147); SP -= 2; goto B0_9735;
+B0_934b: LDA_IMM(0x03)
+B0_934d: CYCLE(3); PC = 0x94ae; goto B0_94ae;
+B0_938d: LDY_IMM(0x00)
+B0_938f: LDA_IDY(0x94)
+B0_9391: ORA_IMM(0x40)
+B0_9393: STA_IDY(0x94)
+B0_9395: LDA_IMM(0x01)
+B0_9397: CYCLE(3); PC = 0x94ae; goto B0_94ae;
+B0_939a: LDY_IMM(0x00)
+B0_939c: LDA_IDY(0x94)
+B0_939e: AND_IMM(0xBF)
+B0_93a0: STA_IDY(0x94)
+B0_93a2: LDA_IMM(0x01)
+B0_93a4: CYCLE(3); PC = 0x94ae; goto B0_94ae;
+B0_93a7: LDY_IMM(0x01)
+B0_93a9: LDA_IDY(0x92)
+B0_93ab: LSR_A()
+B0_93ac: LSR_A()
+B0_93ad: LSR_A()
+B0_93ae: LSR_A()
+B0_93af: LSR_A()
+B0_93b0: LDY_IMM(0x09)
+B0_93b2: STA_IDY(0x94)
+B0_93b4: AND_IMM(0x04)
+B0_93b6: CYCLE(2); if (!SR_Z) goto B0_93c7;
+B0_93b8: ROR_A()
+B0_93b9: DEY()
+B0_93ba: STA_IDY(0x94)
+B0_93bc: LDY_IMM(0x02)
+B0_93be: LDA_IDY(0x92)
+B0_93c0: LDY_IMM(0x0A)
+B0_93c2: STA_IDY(0x94)
+B0_93c4: CYCLE(3); PC = 0x93de; goto B26_93de;
+B0_93c7: LDA_IDY(0x94)
+B0_93c9: ORA_IMM(0xF8)
+B0_93cb: STA_IDY(0x94)
+B0_93cd: LDA_IMM(0x00)
+B0_93cf: ROR_A()
+B0_93d0: DEY()
+B0_93d1: STA_IDY(0x94)
+B0_93d3: LDY_IMM(0x02)
+B0_93d5: LDA_IMM(0x00)
+B0_93d7: SEC()
+B0_93d8: SBC_IDY(0x92)
+B0_93da: LDY_IMM(0x0A)
+B0_93dc: STA_IDY(0x94)
+B0_93de: LDY_IMM(0x01)
+B0_93e0: LDA_IDY(0x92)
+B0_93e2: AND_IMM(0x0F)
+B0_93e4: LSR_A()
+B0_93e5: LDY_IMM(0x0D)
+B0_93e7: STA_IDY(0x94)
+B0_93e9: AND_IMM(0x04)
+B0_93eb: CYCLE(2); if (!SR_Z) goto B0_93fc;
+B0_93ed: ROR_A()
+B0_93ee: DEY()
+B0_93ef: STA_IDY(0x94)
+B0_93f1: LDY_IMM(0x03)
+B0_93f3: LDA_IDY(0x92)
+B0_93f5: LDY_IMM(0x0E)
+B0_93f7: STA_IDY(0x94)
+B0_93f9: CYCLE(3); PC = 0x9413; goto B26_9413;
+B0_93fc: LDA_IDY(0x94)
+B0_93fe: ORA_IMM(0xF8)
+B0_9400: STA_IDY(0x94)
+B0_9402: LDA_IMM(0x00)
+B0_9404: ROR_A()
+B0_9405: DEY()
+B0_9406: STA_IDY(0x94)
+B0_9408: LDY_IMM(0x03)
+B0_940a: LDA_IMM(0x00)
+B0_940c: SEC()
+B0_940d: SBC_IDY(0x92)
+B0_940f: LDY_IMM(0x0E)
+B0_9411: STA_IDY(0x94)
+B0_9413: LDA_IMM(0x00)
+B0_9415: LDY_IMM(0x0B)
+B0_9417: STA_IDY(0x94)
+B0_9419: LDY_IMM(0x0F)
+B0_941b: STA_IDY(0x94)
+B0_941d: LDY_IMM(0x00)
+B0_941f: LDA_IDY(0x94)
+B0_9421: ORA_IMM(0x20)
+B0_9423: STA_IDY(0x94)
+B0_9425: LDA_IMM(0x04)
+B0_9427: CYCLE(3); PC = 0x94ae; goto B0_94ae;
+B0_9435: LDY_IMM(0x00)
+B0_9437: LDA_IDY(0x94)
+B0_9439: ORA_IMM(0x10)
+B0_943b: STA_IDY(0x94)
+B0_943d: LDA_IMM(0x01)
+B0_943f: CYCLE(3); PC = 0x94ae; goto B0_94ae;
+B0_9442: LDY_IMM(0x00)
+B0_9444: LDA_IDY(0x94)
+B0_9446: ORA_IMM(0x02)
+B0_9448: STA_IDY(0x94)
+B0_944a: LDA_IMM(0xC0)
+B0_944c: STA_ZP(0x99)
+B0_944e: LDY_IMM(0x02)
+B0_9450: LDA_ZP(0x92)
+B0_9452: STA_IDY(0x94)
+B0_9454: INY()
+B0_9455: LDA_ZP(0x93)
+B0_9457: STA_IDY(0x94)
+B0_9459: BIT_ZP(0x99)
+B0_945b: CYCLE(2); if (!SR_V) goto B0_947a;
+B0_945d: LDA_ZP(0x99)
+B0_945f: AND_IMM(0x01)
+B0_9461: SEC()
+B0_9462: ROL_A()
+B0_9463: TAY()
+B0_9464: LDA_IDY(0x92)
+B0_9466: STA_ZP(0xE6)
+B0_9468: INY()
+B0_9469: LDA_IDY(0x92)
+B0_946b: STA_ZP(0xE7)
+B0_946d: CYCLE(6); SetStack(SP, 111); SetStack(SP - 1, 148); SP -= 2; goto B0_94d8;
+B0_9470: LDA_ZP(0x99)
+B0_9472: CMP_IMM(0xFE)
+B0_9474: CYCLE(2); if (SR_Z) goto B0_9482;
+B0_9476: AND_IMM(0xBF)
+B0_9478: STA_ZP(0x99)
+B0_947a: LDA_IMM(0x01)
+B0_947c: TAY()
+B0_947d: STA_IDY(0x94)
+B0_947f: CYCLE(3); PC = 0x94c1; goto B0_94c1;
+B0_94ae: CLC()
+B0_94af: ADC_ZP(0x92)
+B0_94b1: STA_ZP(0x92)
+B0_94b3: LDA_ZP(0x93)
+B0_94b5: ADC_IMM(0x00)
+B0_94b7: STA_ZP(0x93)
+B0_94b9: CYCLE(3); PC = 0x9224; goto B26_9224;
+B0_94bc: LDA_IMM(0x00)
+B0_94be: TAY()
+B0_94bf: STA_IDY(0x94)
+B0_94c1: LDA_ZP(0x94)
+B0_94c3: CLC()
+B0_94c4: ADC_IMM(0x20)
+B0_94c6: STA_ZP(0x94)
+B0_94c8: LDA_ZP(0x95)
+B0_94ca: ADC_IMM(0x00)
+B0_94cc: STA_ZP(0x95)
+B0_94ce: DEC_ZP(0x96)
+B0_94d0: CYCLE(2); if (SR_Z) goto B0_94d5;
+B0_94d2: CYCLE(3); PC = 0x9154; goto B0_9154;
+B0_94d5: CYCLE(3); PC = 0x9143; goto B26_9143;
+B0_94d8: LDY_IMM(0x00)
+B0_94da: LDA_IDY(0xE6)
+B0_94dc: ORA_IMM(0x80)
+B0_94de: STA_ZP(0x9E)
+B0_94e0: INY()
+B0_94e1: LDA_IDY(0xE6)
+B0_94e3: STA_ZP(0x9F)
+B0_94e5: LDY_IMM(0x02)
+B0_94e7: LDA_IDY(0xE6)
+B0_94e9: STA_ZP(0xA0)
+B0_94eb: INY()
+B0_94ec: LDA_IDY(0xE6)
+B0_94ee: STA_ZP(0xA1)
+B0_94f0: LDA_ZP(0xE6)
+B0_94f2: CLC()
+B0_94f3: ADC_IMM(0x04)
+B0_94f5: STA_ZP(0xE6)
+B0_94f7: LDA_ZP(0xE7)
+B0_94f9: ADC_IMM(0x00)
+B0_94fb: STA_ZP(0xE7)
+B0_94fd: LDY_IMM(0x00)
+B0_94ff: LDA_IDY(0x94)
+B0_9501: LDY_IMM(0x10)
+B0_9503: AND_IMM(0x08)
+B0_9505: CYCLE(2); if (!SR_Z) goto B0_950b;
+B0_9507: LDA_ZP(0x97)
+B0_9509: STA_IDY(0x94)
+B0_950b: LDA_IDY(0x94)
+B0_950d: STA_ZP(0x98)
+B0_950f: LDA_IMM(0x00)
+B0_9511: STA_ZP(0xE8)
+B0_9513: STA_ZP(0xE9)
+B0_9515: LDY_IMM(0x00)
+B0_9517: LDA_IDY(0xE6)
+B0_9519: CYCLE(2); if (SR_N) goto B0_9589;
+B0_951b: LDX_ZP(0x98)
+B0_951d: AND_IMM(0x3C)
+B0_951f: ASL_A()
+B0_9520: ASL_A()
+B0_9521: CYCLE(2); if (SR_N) goto B0_9533;
+B0_9523: LSR_A()
+B0_9524: CLC()
+B0_9525: ADC_ZP(0x9A)
+B0_9527: STA_ABS_X(0x0468)
+B0_952a: STA_ZP(0xEA)
+B0_952c: LDA_IMM(0x00)
+B0_952e: ADC_ZP(0x9B)
+B0_9530: CYCLE(3); PC = 0x9541; goto B26_9541;
+B0_9533: SEC()
+B0_9534: ROR_A()
+B0_9535: CLC()
+B0_9536: ADC_ZP(0x9A)
+B0_9538: STA_ABS_X(0x0468)
+B0_953b: STA_ZP(0xEA)
+B0_953d: LDA_IMM(0x00)
+B0_953f: SBC_ZP(0x9B)
+B0_9541: AND_IMM(0x01)
+B0_9543: STA_ZP(0xEB)
+B0_9545: ASL_A()
+B0_9546: STA_ZP(0xEC)
+B0_9548: LDA_ZP(0xE8)
+B0_954a: STA_ABS_X(0x046b)
+B0_954d: LDA_ZP(0xE9)
+B0_954f: AND_IMM(0x01)
+B0_9551: ORA_ZP(0xEC)
+B0_9553: ASL_A()
+B0_9554: ASL_A()
+B0_9555: STA_ZP(0xEC)
+B0_9557: LDY_IMM(0x00)
+B0_9559: LDA_IDY(0xE6)
+B0_955b: EOR_IDY(0x94)
+B0_955d: AND_IMM(0x40)
+B0_955f: ORA_ZP(0xEC)
+B0_9561: STA_ZP(0xEC)
+B0_9563: LDA_IDY(0xE6)
+B0_9565: AND_IMM(0x03)
+B0_9567: ORA_ZP(0xEC)
+B0_9569: STA_ABS_X(0x046a)
+B0_956c: INY()
+B0_956d: LDA_IDY(0xE6)
+B0_956f: STA_ABS_X(0x0469)
+B0_9572: LDA_ZP(0x98)
+B0_9574: CLC()
+B0_9575: ADC_IMM(0x04)
+B0_9577: STA_ZP(0x98)
+B0_9579: LDA_ZP(0xE6)
+B0_957b: CLC()
+B0_957c: ADC_IMM(0x02)
+B0_957e: STA_ZP(0xE6)
+B0_9580: LDA_ZP(0xE7)
+B0_9582: ADC_IMM(0x00)
+B0_9584: STA_ZP(0xE7)
+B0_9586: CYCLE(3); PC = 0x9515; goto B0_9515;
+B0_9589: CMP_IMM(0xA0)
+B0_958b: CYCLE(2); if (SR_C) goto B0_95af;
+B0_958d: LDX_IMM(0x00)
+B0_958f: ASL_A()
+B0_9590: ASL_A()
+B0_9591: ASL_A()
+B0_9592: STA_ZP(0xEA)
+B0_9594: CYCLE(2); if (!SR_N) goto B0_9597;
+B0_9596: DEX()
+B0_9597: STX_ZP(0xEB)
+B0_9599: LDA_ZP(0x9A)
+B0_959b: CLC()
+B0_959c: ADC_ZP(0xEA)
+B0_959e: STA_ZP(0xEA)
+B0_95a0: LDA_ZP(0x9B)
+B0_95a2: ADC_ZP(0xEB)
+B0_95a4: STA_ZP(0xEB)
+B0_95a6: INC_ZP(0xE6)
+B0_95a8: CYCLE(2); if (!SR_Z) goto B0_95ac;
+B0_95ac: CYCLE(3); PC = 0x9515; goto B0_9515;
+B0_95af: CMP_IMM(0xC0)
+B0_95b1: CYCLE(2); if (SR_C) goto B0_95e5;
+B0_95b3: TAX()
+B0_95b4: LDY_IMM(0x00)
+B0_95b6: LDA_IDY(0x94)
+B0_95b8: ASL_A()
+B0_95b9: CYCLE(2); if (!SR_N) goto B0_95c2;
+B0_95bb: TXA()
+B0_95bc: EOR_IMM(0xFF)
+B0_95be: CLC()
+B0_95bf: ADC_IMM(0x01)
+B0_95c1: TAX()
+B0_95c2: TXA()
+B0_95c3: LDX_IMM(0x00)
+B0_95c5: ASL_A()
+B0_95c6: ASL_A()
+B0_95c7: ASL_A()
+B0_95c8: STA_ZP(0xE8)
+B0_95ca: CYCLE(2); if (!SR_N) goto B0_95cd;
+B0_95cc: DEX()
+B0_95cd: STX_ZP(0xE9)
+B0_95cf: LDA_ZP(0x9C)
+B0_95d1: CLC()
+B0_95d2: ADC_ZP(0xE8)
+B0_95d4: STA_ZP(0xE8)
+B0_95d6: LDA_ZP(0x9D)
+B0_95d8: ADC_ZP(0xE9)
+B0_95da: STA_ZP(0xE9)
+B0_95dc: INC_ZP(0xE6)
+B0_95de: CYCLE(2); if (!SR_Z) goto B0_95e2;
+B0_95e0: INC_ZP(0xE7)
+B0_95e2: CYCLE(3); PC = 0x9515; goto B0_9515;
+B0_95e5: CMP_IMM(0xD0)
+B0_95e7: CYCLE(2); if (!SR_C) goto B0_95ec;
+B0_95e9: CYCLE(3); PC = 0x9684; goto B0_9684;
+B0_95ec: TAX()
+B0_95ed: LDY_IMM(0x00)
+B0_95ef: LDA_IDY(0x94)
+B0_95f1: ASL_A()
+B0_95f2: CYCLE(2); if (!SR_N) goto B0_95fb;
+B0_95f4: TXA()
+B0_95f5: EOR_IMM(0xFF)
+B0_95f7: CLC()
+B0_95f8: ADC_IMM(0x01)
+B0_95fa: TAX()
+B0_95fb: TXA()
+B0_95fc: AND_IMM(0x08)
+B0_95fe: CYCLE(2); if (!SR_Z) goto B0_9608;
+B0_9600: TXA()
+B0_9601: AND_IMM(0x07)
+B0_9603: LDY_IMM(0x00)
+B0_9605: CYCLE(3); PC = 0x960d; goto B0_960d;
+B0_9608: TXA()
+B0_9609: ORA_IMM(0xF0)
+B0_960b: LDY_IMM(0xFF)
+B0_960d: CLC()
+B0_960e: ADC_ZP(0xE8)
+B0_9610: LDX_ZP(0x98)
+B0_9612: STA_ABS_X(0x046b)
+B0_9615: TYA()
+B0_9616: ADC_ZP(0xE9)
+B0_9618: AND_IMM(0x01)
+B0_961a: STA_ZP(0xEC)
+B0_961c: LDY_IMM(0x01)
+B0_961e: LDA_IDY(0xE6)
+B0_9620: AND_IMM(0x3C)
+B0_9622: LSR_A()
+B0_9623: LSR_A()
+B0_9624: TAY()
+B0_9625: AND_IMM(0x08)
+B0_9627: CYCLE(2); if (!SR_Z) goto B0_9637;
+B0_9629: TYA()
+B0_962a: CLC()
+B0_962b: ADC_ZP(0xEA)
+B0_962d: STA_ABS_X(0x0468)
+B0_9630: LDA_ZP(0xEB)
+B0_9632: ADC_IMM(0x00)
+B0_9634: CYCLE(3); PC = 0x9645; goto B26_9645;
+B0_9637: TYA()
+B0_9638: CLC()
+B0_9639: ADC_IMM(0xF0)
+B0_963b: CLC()
+B0_963c: ADC_ZP(0xEA)
+B0_963e: STA_ABS_X(0x0468)
+B0_9641: LDA_ZP(0xEB)
+B0_9643: SBC_IMM(0x00)
+B0_9645: AND_IMM(0x01)
+B0_9647: ASL_A()
+B0_9648: ORA_ZP(0xEC)
+B0_964a: ASL_A()
+B0_964b: ASL_A()
+B0_964c: STA_ZP(0xEC)
+B0_964e: LDY_IMM(0x01)
+B0_9650: LDA_IDY(0xE6)
+B0_9652: LDY_IMM(0x00)
+B0_9654: EOR_IDY(0x94)
+B0_9656: AND_IMM(0x40)
+B0_9658: ORA_ZP(0xEC)
+B0_965a: STA_ZP(0xEC)
+B0_965c: LDY_IMM(0x01)
+B0_965e: LDA_IDY(0xE6)
+B0_9660: AND_IMM(0x03)
+B0_9662: ORA_ZP(0xEC)
+B0_9664: STA_ABS_X(0x046a)
+B0_9667: INY()
+B0_9668: LDA_IDY(0xE6)
+B0_966a: STA_ABS_X(0x0469)
+B0_966d: LDA_ZP(0x98)
+B0_966f: CLC()
+B0_9670: ADC_IMM(0x04)
+B0_9672: STA_ZP(0x98)
+B0_9674: LDA_ZP(0xE6)
+B0_9676: CLC()
+B0_9677: ADC_IMM(0x03)
+B0_9679: STA_ZP(0xE6)
+B0_967b: LDA_ZP(0xE7)
+B0_967d: ADC_IMM(0x00)
+B0_967f: STA_ZP(0xE7)
+B0_9681: CYCLE(3); PC = 0x9515; goto B0_9515;
+B0_9684: SEC()
+B0_9685: SBC_IMM(0xF8)
+B0_9687: ASL_A()
+B0_9688: TAX()
+B0_9689: LDA_ABS_X(0x9693)
+B0_968c: PHA()
+B0_968d: LDA_ABS_X(0x9692)
+B0_9690: PHA()
+B0_9691: RTS()
+B0_96a5: LDY_IMM(0x13)
+B0_96a7: LDA_IDY(0x94)
+B0_96a9: CMP_IMM(0x04)
+B0_96ab: CYCLE(2); if (SR_C) goto B0_96ab;
+B0_96ad: TAX()
+B0_96ae: CLC()
+B0_96af: ADC_IMM(0x01)
+B0_96b1: STA_IDY(0x94)
+B0_96b3: TXA()
+B0_96b4: ASL_A()
+B0_96b5: CLC()
+B0_96b6: ADC_IMM(0x18)
+B0_96b8: TAY()
+B0_96b9: LDA_ZP(0xE6)
+B0_96bb: CLC()
+B0_96bc: ADC_IMM(0x03)
+B0_96be: STA_IDY(0x94)
+B0_96c0: LDA_ZP(0xE7)
+B0_96c2: ADC_IMM(0x00)
+B0_96c4: INY()
+B0_96c5: STA_IDY(0x94)
+B0_96c7: LDY_IMM(0x01)
+B0_96c9: LDA_IDY(0xE6)
+B0_96cb: TAX()
+B0_96cc: INY()
+B0_96cd: LDA_IDY(0xE6)
+B0_96cf: STA_ZP(0xE7)
+B0_96d1: STX_ZP(0xE6)
+B0_96d3: CYCLE(3); PC = 0x9515; goto B0_9515;
+B0_96d6: LDY_IMM(0x13)
+B0_96d8: LDA_IDY(0x94)
+B0_96da: CYCLE(2); if (SR_Z) goto B0_96da;
+B0_96dc: SEC()
+B0_96dd: SBC_IMM(0x01)
+B0_96df: STA_IDY(0x94)
+B0_96e1: ASL_A()
+B0_96e2: CLC()
+B0_96e3: ADC_IMM(0x18)
+B0_96e5: TAY()
+B0_96e6: LDA_IDY(0x94)
+B0_96e8: STA_ZP(0xE6)
+B0_96ea: INY()
+B0_96eb: LDA_IDY(0x94)
+B0_96ed: STA_ZP(0xE7)
+B0_96ef: CYCLE(3); PC = 0x9515; goto B0_9515;
+B0_96f2: LDY_IMM(0x00)
+B0_96f4: LDA_IDY(0x94)
+B0_96f6: AND_IMM(0x08)
+B0_96f8: CYCLE(2); if (!SR_Z) goto B0_9703;
+B0_96fa: LDA_IDY(0x94)
+B0_96fc: ORA_IMM(0x08)
+B0_96fe: STA_IDY(0x94)
+B0_9700: CYCLE(3); PC = 0x9727; goto B0_9727;
+B0_9703: LDY_IMM(0x10)
+B0_9705: LDA_IDY(0x94)
+B0_9707: INY()
+B0_9708: CLC()
+B0_9709: ADC_IDY(0x94)
+B0_970b: SEC()
+B0_970c: SBC_ZP(0x98)
+B0_970e: CYCLE(2); if (SR_Z) goto B0_9734;
+B0_9710: CYCLE(2); if (!SR_C) goto B0_9727;
+B0_9712: LSR_A()
+B0_9713: LSR_A()
+B0_9714: TAY()
+B0_9715: LDX_ZP(0x98)
+B0_9717: LDA_IMM(0xF8)
+B0_9719: STA_ABS_X(0x0468)
+B0_971c: TXA()
+B0_971d: CLC()
+B0_971e: ADC_IMM(0x04)
+B0_9720: TAX()
+B0_9721: DEY()
+B0_9722: CYCLE(2); if (!SR_Z) goto B0_9717;
+B0_9724: CYCLE(3); PC = 0x9734; goto B0_9734;
+B0_9727: LDA_ZP(0x98)
+B0_9729: TAX()
+B0_972a: LDY_IMM(0x10)
+B0_972c: SEC()
+B0_972d: SBC_IDY(0x94)
+B0_972f: INY()
+B0_9730: STA_IDY(0x94)
+B0_9732: STX_ZP(0x97)
+B0_9734: RTS()
+B0_9735: TAX()
+B0_9736: LDA_IMM(0x00)
+B0_9738: STA_IDY(0x94)
+B0_973a: INY()
+B0_973b: TXA()
+B0_973c: STA_IDY(0x94)
+B0_973e: ASL_A()
+B0_973f: STA_ABS_Y(0x0095)
+B0_9742: LDA_IMM(0x00)
+B0_9744: ADC_IMM(0x00)
+B0_9746: STA_ABS_Y(0x0096)
+B0_9749: RTS()
+B0_974a: LDA_IDY(0x94)
+B0_974c: ASL_A()
+B0_974d: INY()
+B0_974e: LDA_IDY(0x94)
+B0_9750: ROL_A()
+B0_9751: STA_ABS_Y(0x0095)
+B0_9754: LDA_IMM(0x00)
+B0_9756: ROL_A()
+B0_9757: STA_ABS_Y(0x0096)
+B0_975a: RTS()
+B0_975b: STX_ZP(0xED)
+B0_975d: LDA_IDY(0x94)
+B0_975f: ROL_A()
+B0_9760: ROL_A()
+B0_9761: AND_IMM(0x01)
+B0_9763: EOR_IMM(0xFF)
+B0_9765: CLC()
+B0_9766: ADC_IMM(0x01)
+B0_9768: TAX()
+B0_9769: LDA_IDY(0x94)
+B0_976b: DEY()
+B0_976c: DEY()
+B0_976d: CLC()
+B0_976e: ADC_IDY(0x94)
+B0_9770: STA_IDY(0x94)
+B0_9772: STA_ZP(0xEC)
+B0_9774: INY()
+B0_9775: TXA()
+B0_9776: ADC_IDY(0x94)
+B0_9778: STA_IDY(0x94)
+B0_977a: TAX()
+B0_977b: LDY_ZP(0xED)
+B0_977d: LDA_ZP(0xEC)
+B0_977f: CLC()
+B0_9780: ADC_IDY(0x94)
+B0_9782: STA_IDY(0x94)
+B0_9784: TXA()
+B0_9785: INY()
+B0_9786: ADC_IDY(0x94)
+B0_9788: STA_IDY(0x94)
+B0_978a: RTS()
+B0_97ab: LDA_IMM(0x00)
+B0_97ad: STA_ZP(0xE9)
+B0_97af: LDA_IMM(0x01)
+B0_97b1: STA_ZP(0xEB)
+B0_97b3: CYCLE(3); PC = 0x97c4; goto B26_97c4;
+B0_97b6: LDA_IMM(0x00)
+B0_97b8: STA_ZP(0xE9)
+B0_97ba: LDA_ZP(0x4A)
+B0_97bc: ORA_ZP(0x4B)
+B0_97be: CYCLE(2); if (SR_Z) goto B0_9819;
+B0_97c0: LDA_IMM(0x00)
+B0_97c2: STA_ZP(0xEB)
+B0_97c4: STY_ZP(0xE6)
+B0_97c6: STX_ZP(0xE7)
+B0_97c8: LDY_IMM(0x01)
+B0_97ca: LDA_IDY(0xE6)
+B0_97cc: CLC()
+B0_97cd: ADC_ZP(0xE9)
+B0_97cf: STA_ZP(0xE8)
+B0_97d1: INY()
+B0_97d2: LDA_IMM(0x00)
+B0_97d4: BIT_ZP(0xE9)
+B0_97d6: CYCLE(2); if (!SR_N) goto B0_97da;
+B0_97d8: LDA_IMM(0xFF)
+B0_97da: ADC_IDY(0xE6)
+B0_97dc: TAX()
+B0_97dd: LDY_IMM(0x00)
+B0_97df: LDA_IDY(0xE6)
+B0_97e1: LDY_ZP(0xE8)
+B0_97e3: STA_ZP(0xE8)
+B0_97e5: AND_IMM(0xBF)
+B0_97e7: CYCLE(6); SetStack(SP, 233); SetStack(SP - 1, 151); SP -= 2; goto B26_9b28;
+B0_97ea: LDA_ZP(0xE8)
+B0_97ec: AND_IMM(0x3F)
+B0_97ee: LDY_IMM(0x03)
+B0_97f0: PHA()
+B0_97f1: LDA_IDY(0xE6)
+B0_97f3: STA_ABS_X(0x05e8)
+B0_97f6: INY()
+B0_97f7: INX()
+B0_97f8: PLA()
+B0_97f9: SEC()
+B0_97fa: SBC_IMM(0x01)
+B0_97fc: CYCLE(2); if (!SR_Z) goto B0_97f0;
+B0_97fe: TYA()
+B0_97ff: CLC()
+B0_9800: ADC_ZP(0xE6)
+B0_9802: STA_ZP(0xE6)
+B0_9804: LDA_ZP(0xE7)
+B0_9806: ADC_IMM(0x00)
+B0_9808: STA_ZP(0xE7)
+B0_980a: CYCLE(6); SetStack(SP, 12); SetStack(SP - 1, 152); SP -= 2; goto B0_9b5e;
+B0_980d: LDA_ZP(0xEB)
+B0_980f: CYCLE(2); if (SR_Z) goto B0_9814;
+B0_9811: CYCLE(6); SetStack(SP, 19); SetStack(SP - 1, 152); SP -= 2; goto B0_9fa8;
+B0_9814: BIT_ZP(0xE8)
+B0_9816: CYCLE(2); if (!SR_V) goto B0_97c8;
+B0_9818: RTS()
+B0_9819: LDA_ZP(0x20)
+B0_981b: AND_IMM(0x7F)
+B0_981d: STA_ABS(0x2000)
+B0_9820: STA_ZP(0x20)
+B0_9822: LDA_ZP(0x21)
+B0_9824: AND_IMM(0xE7)
+B0_9826: STA_ABS(0x2001)
+B0_9829: STA_ZP(0x21)
+B0_982b: STY_ZP(0xE6)
+B0_982d: STX_ZP(0xE7)
+B0_982f: LDY_IMM(0x01)
+B0_9831: LDA_IDY(0xE6)
+B0_9833: CLC()
+B0_9834: ADC_ZP(0xE9)
+B0_9836: TAX()
+B0_9837: INY()
+B0_9838: LDA_IMM(0x00)
+B0_983a: BIT_ZP(0xE9)
+B0_983c: CYCLE(2); if (!SR_N) goto B0_9840;
+B0_983e: LDA_IMM(0xFF)
+B0_9840: ADC_IDY(0xE6)
+B0_9842: STA_ABS(0x2006)
+B0_9845: STX_ABS(0x2006)
+B0_9848: LDX_IMM(0x00)
+B0_984a: LDY_IMM(0x00)
+B0_984c: LDA_IDY(0xE6)
+B0_984e: CYCLE(2); if (!SR_N) goto B0_9852;
+B0_9850: LDX_IMM(0x04)
+B0_9852: STX_ABS(0x2000)
+B0_9855: PHA()
+B0_9856: AND_IMM(0x3F)
+B0_9858: TAX()
+B0_9859: LDY_IMM(0x03)
+B0_985b: LDA_IDY(0xE6)
+B0_985d: STA_ABS(0x2007)
+B0_9860: INY()
+B0_9861: DEX()
+B0_9862: CYCLE(2); if (!SR_Z) goto B0_985b;
+B0_9864: PLA()
+B0_9865: ASL_A()
+B0_9866: CYCLE(2); if (SR_N) goto B0_9877;
+B0_9868: TYA()
+B0_9869: CLC()
+B0_986a: ADC_ZP(0xE6)
+B0_986c: STA_ZP(0xE6)
+B0_986e: LDA_ZP(0xE7)
+B0_9870: ADC_IMM(0x00)
+B0_9872: STA_ZP(0xE7)
+B0_9874: CYCLE(3); PC = 0x982f; goto B26_982f;
+B0_9877: LDA_ZP(0x21)
+B0_9879: ORA_IMM(0x18)
+B0_987b: STA_ABS(0x2001)
+B0_987e: STA_ZP(0x21)
+B0_9880: LDA_ZP(0x20)
+B0_9882: ORA_IMM(0x80)
+B0_9884: STA_ZP(0x20)
+B0_9886: STA_ABS(0x2000)
+B0_9889: RTS()
+B0_9895: STY_ZP(0xE6)
+B0_9897: STX_ZP(0xE7)
+B0_9899: LDX_ZP(0xE9)
+B0_989b: LDY_IMM(0x01)
+B0_989d: CYCLE(3); PC = 0x98ea; goto B26_98ea;
+B0_98a0: LDA_ZP(0x20)
+B0_98a2: AND_IMM(0x7F)
+B0_98a4: STA_ABS(0x2000)
+B0_98a7: STA_ZP(0x20)
+B0_98a9: LDA_ZP(0x21)
+B0_98ab: AND_IMM(0xE7)
+B0_98ad: STA_ABS(0x2001)
+B0_98b0: STA_ZP(0x21)
+B0_98b2: LDA_IMM(0x20)
+B0_98b4: STA_ABS(0x2006)
+B0_98b7: LDA_IMM(0x00)
+B0_98b9: STA_ABS(0x2006)
+B0_98bc: LDY_IMM(0x08)
+B0_98be: LDA_IMM(0x00)
+B0_98c0: TAX()
+B0_98c1: STA_ABS(0x2007)
+B0_98c4: INX()
+B0_98c5: CYCLE(2); if (!SR_Z) goto B0_98c1;
+B0_98c7: DEY()
+B0_98c8: CYCLE(2); if (!SR_Z) goto B0_98c1;
+B0_98ca: LDA_ZP(0x21)
+B0_98cc: ORA_IMM(0x18)
+B0_98ce: STA_ABS(0x2001)
+B0_98d1: STA_ZP(0x21)
+B0_98d3: LDA_ZP(0x20)
+B0_98d5: ORA_IMM(0x80)
+B0_98d7: STA_ZP(0x20)
+B0_98d9: STA_ABS(0x2000)
+B0_98dc: RTS()
+B0_98e8: LDA_IMM(0x00)
+B0_98ea: STA_ZP(0xEB)
+B0_98ec: LDA_ZP(0x4A)
+B0_98ee: ORA_ZP(0x4B)
+B0_98f0: CYCLE(2); if (SR_Z) goto B0_992c;
+B0_98f2: STY_ZP(0xE8)
+B0_98f4: STX_ZP(0xE9)
+B0_98f6: LDA_ZP(0xE9)
+B0_98f8: LDY_ZP(0xE6)
+B0_98fa: LDX_ZP(0xE7)
+B0_98fc: CYCLE(6); SetStack(SP, 254); SetStack(SP - 1, 152); SP -= 2; goto B26_9b28;
+B0_98ff: LDY_ZP(0xE9)
+B0_9901: LDA_ZP(0xEB)
+B0_9903: STA_ABS_X(0x05e8)
+B0_9906: INX()
+B0_9907: DEY()
+B0_9908: CYCLE(2); if (!SR_Z) goto B0_9903;
+B0_990a: CYCLE(6); SetStack(SP, 12); SetStack(SP - 1, 153); SP -= 2; goto B0_9b5e;
+B0_990d: LDA_ZP(0xE8)
+B0_990f: CYCLE(2); if (!SR_N) goto B0_9916;
+B0_9916: LDA_ZP(0xE6)
+B0_9918: CLC()
+B0_9919: ADC_IMM(0x20)
+B0_991b: STA_ZP(0xE6)
+B0_991d: LDA_ZP(0xE7)
+B0_991f: ADC_IMM(0x00)
+B0_9921: STA_ZP(0xE7)
+B0_9923: DEC_ZP(0xE8)
+B0_9925: LDA_ZP(0xE8)
+B0_9927: AND_IMM(0x7F)
+B0_9929: CYCLE(2); if (!SR_Z) goto B0_98f6;
+B0_992b: RTS()
+B0_992c: LDA_ZP(0x20)
+B0_992e: AND_IMM(0x7F)
+B0_9930: STA_ABS(0x2000)
+B0_9933: STA_ZP(0x20)
+B0_9935: LDA_ZP(0x21)
+B0_9937: AND_IMM(0xE7)
+B0_9939: STA_ABS(0x2001)
+B0_993c: STA_ZP(0x21)
+B0_993e: STX_ZP(0xE9)
+B0_9940: STY_ZP(0xE8)
+B0_9942: LDY_ZP(0xE9)
+B0_9944: LDA_ZP(0xE7)
+B0_9946: STA_ABS(0x2006)
+B0_9949: LDA_ZP(0xE6)
+B0_994b: STA_ABS(0x2006)
+B0_994e: LDA_ZP(0xEB)
+B0_9950: STA_ABS(0x2007)
+B0_9953: DEY()
+B0_9954: CYCLE(2); if (!SR_Z) goto B0_9950;
+B0_9956: LDA_ZP(0xE6)
+B0_9958: CLC()
+B0_9959: ADC_IMM(0x20)
+B0_995b: STA_ZP(0xE6)
+B0_995d: LDA_ZP(0xE7)
+B0_995f: ADC_IMM(0x00)
+B0_9961: STA_ZP(0xE7)
+B0_9963: DEC_ZP(0xE8)
+B0_9965: CYCLE(2); if (!SR_Z) goto B0_9942;
+B0_9967: LDA_ZP(0x21)
+B0_9969: ORA_IMM(0x18)
+B0_996b: STA_ABS(0x2001)
+B0_996e: STA_ZP(0x21)
+B0_9970: LDA_ZP(0x20)
+B0_9972: ORA_IMM(0x80)
+B0_9974: STA_ZP(0x20)
+B0_9976: STA_ABS(0x2000)
+B0_9979: RTS()
+B0_997a: STA_ZP(0x48)
+B0_997c: STX_ZP(0x49)
+B0_997e: CYCLE(6); SetStack(SP, 128); SetStack(SP - 1, 153); SP -= 2; goto B0_9b07;
+B0_9981: CYCLE(6); SetStack(SP, 131); SetStack(SP - 1, 153); SP -= 2; goto B0_9ab8;
+B0_9984: CYCLE(6); SetStack(SP, 134); SetStack(SP - 1, 153); SP -= 2; goto B0_9ada;
+B0_9987: LDX_ZP(0xE9)
+B0_9989: CYCLE(6); SetStack(SP, 139); SetStack(SP - 1, 153); SP -= 2; goto B30_c4b9;
+B0_998c: LDA_ZP(0x4A)
+B0_998e: CMP_IMM(0x0F)
+B0_9990: CYCLE(2); if (SR_C) goto B0_9994;
+B0_9992: INC_ZP(0x4A)
+B0_9994: LDA_ZP(0x4B)
+B0_9996: CMP_IMM(0x0F)
+B0_9998: CYCLE(2); if (SR_C) goto B0_999c;
+B0_999a: INC_ZP(0x4B)
+B0_999c: CYCLE(6); SetStack(SP, 158); SetStack(SP - 1, 153); SP -= 2; goto B26_9a71;
+B0_999f: LDA_IMM(0x01)
+B0_99a1: CYCLE(6); SetStack(SP, 163); SetStack(SP - 1, 153); SP -= 2; goto B0_9fa8;
+B0_99a4: LDA_ZP(0x4A)
+B0_99a6: CLC()
+B0_99a7: ADC_ZP(0x4B)
+B0_99a9: CMP_IMM(0x1E)
+B0_99ab: CYCLE(2); if (!SR_C) goto B0_998c;
+B0_99ad: RTS()
+B0_99d1: CYCLE(6); SetStack(SP, 211); SetStack(SP - 1, 153); SP -= 2; goto B0_9b07;
+B0_99d4: CYCLE(6); SetStack(SP, 214); SetStack(SP - 1, 153); SP -= 2; goto B0_9ada;
+B0_99d7: LDX_ZP(0xE9)
+B0_99d9: CYCLE(6); SetStack(SP, 219); SetStack(SP - 1, 153); SP -= 2; goto B30_c4b9;
+B0_99dc: LDA_ZP(0x4B)
+B0_99de: CMP_IMM(0x0F)
+B0_99e0: CYCLE(2); if (SR_C) goto B0_99ef;
+B0_99e2: INC_ZP(0x4B)
+B0_99e4: CYCLE(6); SetStack(SP, 230); SetStack(SP - 1, 153); SP -= 2; goto B26_9a71;
+B0_99e7: LDA_IMM(0x01)
+B0_99e9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 153); SP -= 2; goto B0_9fa8;
+B0_99ec: CYCLE(3); PC = 0x99dc; goto B0_99dc;
+B0_99ef: RTS()
+B0_99f0: LDA_ZP(0x4A)
+B0_99f2: ORA_ZP(0x4B)
+B0_99f4: CYCLE(2); if (SR_Z) goto B0_9a0c;
+B0_99f6: TAX()
+B0_99f7: CYCLE(2); if (SR_Z) goto B0_99fb;
+B0_99f9: DEC_ZP(0x4A)
+B0_99fb: LDA_ZP(0x4B)
+B0_99fd: CYCLE(2); if (SR_Z) goto B0_9a01;
+B0_99ff: DEC_ZP(0x4B)
+B0_9a01: CYCLE(6); SetStack(SP, 3); SetStack(SP - 1, 154); SP -= 2; goto B26_9a71;
+B0_9a04: LDA_IMM(0x01)
+B0_9a06: CYCLE(6); SetStack(SP, 8); SetStack(SP - 1, 154); SP -= 2; goto B0_9fa8;
+B0_9a09: CYCLE(3); PC = 0x99f0; goto B26_99f0;
+B0_9a0c: RTS()
+B0_9a0d: LDA_ZP(0x4A)
+B0_9a0f: CYCLE(2); if (SR_Z) goto B0_9a1e;
+B0_9a11: DEC_ZP(0x4A)
+B0_9a13: CYCLE(6); SetStack(SP, 21); SetStack(SP - 1, 154); SP -= 2; goto B26_9a71;
+B0_9a16: LDA_IMM(0x01)
+B0_9a18: CYCLE(6); SetStack(SP, 26); SetStack(SP - 1, 154); SP -= 2; goto B0_9fa8;
+B0_9a1b: CYCLE(3); PC = 0x9a0d; goto B26_9a0d;
+B0_9a1e: RTS()
+B0_9a1f: LDA_ZP(0x4B)
+B0_9a21: CYCLE(2); if (SR_Z) goto B0_9a30;
+B0_9a23: DEC_ZP(0x4B)
+B0_9a25: CYCLE(6); SetStack(SP, 39); SetStack(SP - 1, 154); SP -= 2; goto B26_9a71;
+B0_9a28: LDA_IMM(0x01)
+B0_9a2a: CYCLE(6); SetStack(SP, 44); SetStack(SP - 1, 154); SP -= 2; goto B0_9fa8;
+B0_9a2d: CYCLE(3); PC = 0x9a1f; goto B0_9a1f;
+B0_9a30: RTS()
+B0_9a31: STA_ZP(0x48)
+B0_9a33: STX_ZP(0x49)
+B0_9a35: CYCLE(6); SetStack(SP, 55); SetStack(SP - 1, 154); SP -= 2; goto B0_9b07;
+B0_9a38: CYCLE(6); SetStack(SP, 58); SetStack(SP - 1, 154); SP -= 2; goto B0_9ab8;
+B0_9a3b: CYCLE(6); SetStack(SP, 61); SetStack(SP - 1, 154); SP -= 2; goto B0_9ada;
+B0_9a3e: LDX_ZP(0xE9)
+B0_9a40: CYCLE(6); SetStack(SP, 66); SetStack(SP - 1, 154); SP -= 2; goto B30_c4b9;
+B0_9a43: LDA_IMM(0x0F)
+B0_9a45: STA_ZP(0x4A)
+B0_9a47: STA_ZP(0x4B)
+B0_9a49: CYCLE(3); PC = 0x9a71; goto B26_9a71;
+B0_9a4c: STA_ZP(0x48)
+B0_9a4e: CYCLE(6); SetStack(SP, 80); SetStack(SP - 1, 154); SP -= 2; goto B0_9b07;
+B0_9a51: CYCLE(6); SetStack(SP, 83); SetStack(SP - 1, 154); SP -= 2; goto B0_9ab8;
+B0_9a54: LDX_ZP(0xE9)
+B0_9a56: CYCLE(6); SetStack(SP, 88); SetStack(SP - 1, 154); SP -= 2; goto B30_c4b9;
+B0_9a59: LDA_IMM(0x0F)
+B0_9a5b: STA_ZP(0x4A)
+B0_9a5d: CYCLE(3); PC = 0x9a71; goto B26_9a71;
+B0_9a60: STA_ZP(0x49)
+B0_9a62: CYCLE(6); SetStack(SP, 100); SetStack(SP - 1, 154); SP -= 2; goto B0_9b07;
+B0_9a65: CYCLE(6); SetStack(SP, 103); SetStack(SP - 1, 154); SP -= 2; goto B0_9ada;
+B0_9a68: LDX_ZP(0xE9)
+B0_9a6a: CYCLE(6); SetStack(SP, 108); SetStack(SP - 1, 154); SP -= 2; goto B30_c4b9;
+B0_9a6d: LDA_IMM(0x0F)
+B0_9a6f: STA_ZP(0x4B)
+B0_9a71: LDA_IMM(0x20)
+B0_9a73: LDY_IMM(0x00)
+B0_9a75: LDX_IMM(0x3F)
+B0_9a77: CYCLE(6); SetStack(SP, 121); SetStack(SP - 1, 154); SP -= 2; goto B26_9b28;
+B0_9a7a: STX_ZP(0xE7)
+B0_9a7c: LDY_IMM(0x00)
+B0_9a7e: LDA_ABS_Y(0x062a)
+B0_9a81: AND_IMM(0x30)
+B0_9a83: CLC()
+B0_9a84: ADC_ZP(0x4A)
+B0_9a86: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 154); SP -= 2; goto B0_9aa2;
+B0_9a89: CPY_IMM(0x10)
+B0_9a8b: CYCLE(2); if (!SR_Z) goto B0_9a7e;
+B0_9a8d: LDA_ABS_Y(0x062a)
+B0_9a90: AND_IMM(0x30)
+B0_9a92: CLC()
+B0_9a93: ADC_ZP(0x4B)
+B0_9a95: CYCLE(6); SetStack(SP, 151); SetStack(SP - 1, 154); SP -= 2; goto B0_9aa2;
+B0_9a98: CPY_IMM(0x20)
+B0_9a9a: CYCLE(2); if (!SR_Z) goto B0_9a8d;
+B0_9a9c: LDX_ZP(0xE7)
+B0_9a9e: CYCLE(6); SetStack(SP, 160); SetStack(SP - 1, 154); SP -= 2; goto B0_9b5e;
+B0_9aa1: RTS()
+B0_9aa2: TAX()
+B0_9aa3: LDA_ABS_X(0x9ea2)
+B0_9aa6: STA_ZP(0xE6)
+B0_9aa8: LDA_ABS_Y(0x062a)
+B0_9aab: AND_IMM(0x0F)
+B0_9aad: ORA_ZP(0xE6)
+B0_9aaf: LDX_ZP(0xE7)
+B0_9ab1: STA_ABS_X(0x05e8)
+B0_9ab4: INC_ZP(0xE7)
+B0_9ab6: INY()
+B0_9ab7: RTS()
+B0_9ab8: LDA_IMM(0x00)
+B0_9aba: STA_ZP(0xE7)
+B0_9abc: LDA_ZP(0x48)
+B0_9abe: ASL_A()
+B0_9abf: ROL_ZP(0xE7)
+B0_9ac1: ASL_A()
+B0_9ac2: ROL_ZP(0xE7)
+B0_9ac4: ASL_A()
+B0_9ac5: ROL_ZP(0xE7)
+B0_9ac7: ASL_A()
+B0_9ac8: ROL_ZP(0xE7)
+B0_9aca: CLC()
+B0_9acb: ADC_IMM(0x00)
+B0_9acd: STA_ZP(0xE6)
+B0_9acf: LDA_ZP(0xE7)
+B0_9ad1: ADC_IMM(0xB0)
+B0_9ad3: STA_ZP(0xE7)
+B0_9ad5: LDX_IMM(0x00)
+B0_9ad7: CYCLE(3); PC = 0x9af9; goto B0_9af9;
+B0_9ada: LDA_IMM(0x00)
+B0_9adc: STA_ZP(0xE7)
+B0_9ade: LDA_ZP(0x49)
+B0_9ae0: ASL_A()
+B0_9ae1: ROL_ZP(0xE7)
+B0_9ae3: ASL_A()
+B0_9ae4: ROL_ZP(0xE7)
+B0_9ae6: ASL_A()
+B0_9ae7: ROL_ZP(0xE7)
+B0_9ae9: ASL_A()
+B0_9aea: ROL_ZP(0xE7)
+B0_9aec: CLC()
+B0_9aed: ADC_IMM(0x00)
+B0_9aef: STA_ZP(0xE6)
+B0_9af1: LDA_ZP(0xE7)
+B0_9af3: ADC_IMM(0xB3)
+B0_9af5: STA_ZP(0xE7)
+B0_9af7: LDX_IMM(0x10)
+B0_9af9: LDY_IMM(0x00)
+B0_9afb: LDA_IDY(0xE6)
+B0_9afd: STA_ABS_X(0x062a)
+B0_9b00: INX()
+B0_9b01: INY()
+B0_9b02: CPY_IMM(0x10)
+B0_9b04: CYCLE(2); if (!SR_Z) goto B0_9afb;
+B0_9b06: RTS()
+B0_9b07: LDA_ZP(0x25)
+B0_9b09: STA_ZP(0xE9)
+B0_9b0b: LDX_IMM(0x06)
+B0_9b0d: CYCLE(6); SetStack(SP, 15); SetStack(SP - 1, 155); SP -= 2; goto B30_c4b9;
+B0_9b10: RTS()
+B0_9b11: LDA_IMM(0x00)
+B0_9b13: STA_ZP(0x48)
+B0_9b15: STA_ZP(0x49)
+B0_9b17: STA_ZP(0x4A)
+B0_9b19: STA_ZP(0x4B)
+B0_9b1b: LDA_IMM(0x0F)
+B0_9b1d: LDY_IMM(0xE0)
+B0_9b1f: STA_ABS_Y(0x054a)
+B0_9b22: INY()
+B0_9b23: CYCLE(2); if (!SR_Z) goto B0_9b1f;
+B0_9b25: CYCLE(3); PC = 0x9a71; goto B26_9a71;
+B0_9b28: PHA()
+B0_9b29: BIT_ABS(0x0629)
+B0_9b2c: CYCLE(2); if (!SR_V) goto B0_9b37;
+B0_9b2e: LDA_IMM(0x01)
+B0_9b30: CYCLE(6); SetStack(SP, 50); SetStack(SP - 1, 155); SP -= 2; goto B0_9fa8;
+B0_9b33: PLA()
+B0_9b34: CYCLE(3); PC = 0x9b28; goto B26_9b28;
+B0_9b37: AND_IMM(0x3F)
+B0_9b39: CLC()
+B0_9b3a: ADC_ABS(0x0628)
+B0_9b3d: CMP_IMM(0x3D)
+B0_9b3f: CYCLE(2); if (SR_C) goto B0_9b2e;
+B0_9b41: PLA()
+B0_9b42: ORA_IMM(0x40)
+B0_9b44: STA_ABS(0x0629)
+B0_9b47: TXA()
+B0_9b48: LDX_ABS(0x0628)
+B0_9b4b: STA_ABS_X(0x05ea)
+B0_9b4e: TYA()
+B0_9b4f: STA_ABS_X(0x05e9)
+B0_9b52: LDA_ABS(0x0629)
+B0_9b55: AND_IMM(0xBF)
+B0_9b57: STA_ABS_X(0x05e8)
+B0_9b5a: INX()
+B0_9b5b: INX()
+B0_9b5c: INX()
+B0_9b5d: RTS()
+B0_9b5e: LDA_IMM(0x00)
+B0_9b60: STA_ABS_X(0x05e8)
+B0_9b63: STX_ABS(0x0628)
+B0_9b66: LDA_ABS(0x0629)
+B0_9b69: AND_IMM(0xBF)
+B0_9b6b: STA_ABS(0x0629)
+B0_9b6e: RTS()
+B0_9b6f: STX_ZP(0x9E)
+B0_9b71: STY_ZP(0x9F)
+B0_9b73: RTS()
+B0_9b74: STX_ZP(0xA0)
+B0_9b76: STY_ZP(0xA1)
+B0_9b78: LDA_ZP(0x9E)
+B0_9b7a: ORA_IMM(0x80)
+B0_9b7c: STA_ZP(0x9E)
+B0_9b7e: RTS()
+B0_9b7f: LDX_IMM(0x00)
+B0_9b81: LDA_IMM(0xF8)
+B0_9b83: STA_ABS_X(0x0468)
+B0_9b86: INX()
+B0_9b87: CYCLE(2); if (!SR_Z) goto B0_9b83;
+B0_9b89: LDA_IMM(0xF8)
+B0_9b8b: STA_ABS_X(0x0200)
+B0_9b8e: INX()
+B0_9b8f: CYCLE(2); if (!SR_Z) goto B0_9b8b;
+B0_9b91: LDA_IMM(0x00)
+B0_9b93: STA_ABS(0x0568)
+B0_9b96: STA_ABS(0x0588)
+B0_9b99: STA_ABS(0x05a8)
+B0_9b9c: STA_ABS(0x05c8)
+B0_9b9f: RTS()
+B0_9ba0: CYCLE(6); SetStack(SP, 162); SetStack(SP - 1, 155); SP -= 2; goto B26_99f0;
+B0_9ba3: CYCLE(6); SetStack(SP, 165); SetStack(SP - 1, 155); SP -= 2; goto B0_98a0;
+B0_9ba6: CYCLE(3); PC = 0x9b7f; goto B0_9b7f;
+B0_9ba9: STA_ZP(0x46)
+B0_9bab: TAY()
+B0_9bac: CYCLE(2); if (SR_N) goto B0_9bbc;
+B0_9bae: CLC()
+B0_9baf: ADC_ZP(0x44)
+B0_9bb1: CMP_IMM(0xF0)
+B0_9bb3: CYCLE(2); if (!SR_C) goto B0_9bb9;
+B0_9bb5: ADC_IMM(0x0F)
+B0_9bb7: INC_ZP(0x45)
+B0_9bb9: STA_ZP(0x44)
+B0_9bbb: RTS()
+B0_9bbc: CLC()
+B0_9bbd: ADC_ZP(0x44)
+B0_9bbf: CMP_IMM(0xF0)
+B0_9bc1: CYCLE(2); if (!SR_C) goto B0_9bc7;
+B0_9bc3: SBC_IMM(0x10)
+B0_9bc5: DEC_ZP(0x45)
+B0_9bc7: STA_ZP(0x44)
+B0_9bc9: RTS()
+B0_9bca: STA_ZP(0x47)
+B0_9bcc: PHA()
+B0_9bcd: CLC()
+B0_9bce: ADC_ZP(0x7A)
+B0_9bd0: STA_ZP(0x7A)
+B0_9bd2: PLA()
+B0_9bd3: CYCLE(2); if (SR_N) goto B0_9bdc;
+B0_9bd5: LDA_ZP(0x7B)
+B0_9bd7: ADC_IMM(0x00)
+B0_9bd9: CYCLE(3); PC = 0x9be0; goto B0_9be0;
+B0_9bdc: LDA_ZP(0x7B)
+B0_9bde: SBC_IMM(0x00)
+B0_9be0: STA_ZP(0x7B)
+B0_9be2: RTS()
+B0_9be3: STX_ZP(0xE7)
+B0_9be5: STY_ZP(0xE6)
+B0_9be7: TAY()
+B0_9be8: LDA_IMM(0x01)
+B0_9bea: CYCLE(6); SetStack(SP, 236); SetStack(SP - 1, 155); SP -= 2; goto B0_9fa8;
+B0_9bed: LDA_ZP(0x1E)
+B0_9bef: CYCLE(6); SetStack(SP, 241); SetStack(SP - 1, 155); SP -= 2; goto B26_9ce7;
+B0_9bf2: LDA_ZP(0x1E)
+B0_9bf4: AND_IMM(0x90)
+B0_9bf6: CYCLE(2); if (!SR_N) goto B0_9be8;
+B0_9bf8: LDA_ABS_Y(0x0468)
+B0_9bfb: TAX()
+B0_9bfc: SEC()
+B0_9bfd: SBC_ZP(0xE7)
+B0_9bff: LSR_A()
+B0_9c00: LSR_A()
+B0_9c01: LSR_A()
+B0_9c02: STA_ZP(0xE7)
+B0_9c04: LDA_IMM(0xF8)
+B0_9c06: STA_ABS_Y(0x0468)
+B0_9c09: LDA_ZP(0xE7)
+B0_9c0b: CLC()
+B0_9c0c: RTS()
+B0_9c0d: LDA_IMM(0x01)
+B0_9c0f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 156); SP -= 2; goto B0_9fa8;
+B0_9c12: LDA_ZP(0x1E)
+B0_9c14: CYCLE(6); SetStack(SP, 22); SetStack(SP - 1, 156); SP -= 2; goto B26_9ce7;
+B0_9c17: LDA_ZP(0x1E)
+B0_9c19: AND_IMM(0x90)
+B0_9c1b: CYCLE(2); if (!SR_Z) goto B0_9bf8;
+B0_9c1d: BIT_ZP(0x1E)
+B0_9c1f: CYCLE(2); if (!SR_V) goto B0_9c0d;
+B0_9c21: LDA_IMM(0xF8)
+B0_9c23: STA_ABS_Y(0x0468)
+B0_9c26: SEC()
+B0_9c27: RTS()
+B0_9c28: STY_ZP(0xE6)
+B0_9c2a: STX_ZP(0xE7)
+B0_9c2c: TAY()
+B0_9c2d: LDA_IDY(0xE6)
+B0_9c2f: TAX()
+B0_9c30: INY()
+B0_9c31: LDA_IDY(0xE6)
+B0_9c33: STA_ZP(0xE7)
+B0_9c35: STX_ZP(0xE6)
+B0_9c37: CYCLE(5); PC = GetMem(231) << 8 | GetMem(230); CHECK_CYCLE(); goto _RET_MAP;
+B0_9c3a: LDA_IMM(0x00)
+B0_9c3c: STA_ZP(0xE9)
+B0_9c3e: STY_ZP(0xE6)
+B0_9c40: STX_ZP(0xE7)
+B0_9c42: LDY_IMM(0x00)
+B0_9c44: LDA_IDY(0xE6)
+B0_9c46: TAX()
+B0_9c47: INY()
+B0_9c48: LDA_IDY(0xE6)
+B0_9c4a: STA_ZP(0xE8)
+B0_9c4c: CMP_ZP(0xE9)
+B0_9c4e: CYCLE(2); if (!SR_Z) goto B0_9c53;
+B0_9c50: CLC()
+B0_9c51: ADC_IMM(0x10)
+B0_9c53: STA_ABS_X(0x0468)
+B0_9c56: INX()
+B0_9c57: INY()
+B0_9c58: LDA_IDY(0xE6)
+B0_9c5a: STA_ABS_X(0x0468)
+B0_9c5d: INX()
+B0_9c5e: INY()
+B0_9c5f: CPY_IMM(0x05)
+B0_9c61: CYCLE(2); if (!SR_Z) goto B0_9c58;
+B0_9c63: LDA_IDY(0xE6)
+B0_9c65: STA_ZP(0xE6)
+B0_9c67: TXA()
+B0_9c68: SEC()
+B0_9c69: SBC_IMM(0x04)
+B0_9c6b: TAY()
+B0_9c6c: LDA_ZP(0xE8)
+B0_9c6e: STA_ZP(0xE7)
+B0_9c70: RTS()
+B0_9c71: LDA_IMM(0x10)
+B0_9c73: STA_ZP(0xE8)
+B0_9c75: LDA_ZP(0x1C)
+B0_9c77: CYCLE(6); SetStack(SP, 121); SetStack(SP - 1, 156); SP -= 2; goto B26_9ce7;
+B0_9c7a: CYCLE(2); if (!SR_C) goto B0_9cc8;
+B0_9c7c: LDX_ZP(0xE9)
+B0_9c7e: CPX_IMM(0xFF)
+B0_9c80: CYCLE(2); if (SR_Z) goto B0_9c89;
+B0_9c82: CMP_ZP(0xE9)
+B0_9c84: CYCLE(2); if (SR_Z) goto B0_9c75;
+B0_9c86: CYCLE(3); PC = 0x9cb3; goto B26_9cb3;
+B0_9c89: CMP_ZP(0xEB)
+B0_9c8b: CYCLE(2); if (SR_Z) goto B0_9c75;
+B0_9c8d: LDA_ABS(0x055c)
+B0_9c90: CMP_IMM(0xB8)
+B0_9c92: CYCLE(2); if (!SR_C) goto B0_9c97;
+B0_9c94: SEC()
+B0_9c95: SBC_IMM(0x10)
+B0_9c97: TAY()
+B0_9c98: LDX_ABS(0x055f)
+B0_9c9b: CYCLE(6); SetStack(SP, 157); SetStack(SP - 1, 156); SP -= 2; goto B0_9d08;
+B0_9c9e: LDY_IMM(0x00)
+B0_9ca0: LDA_IDY(0x34)
+B0_9ca2: LDY_IMM(0xF4)
+B0_9ca4: CMP_ABS(0x0451)
+B0_9ca7: CYCLE(2); if (SR_Z) goto B0_9c75;
+B0_9ca9: CMP_ABS(0x0452)
+B0_9cac: CYCLE(2); if (SR_Z) goto B0_9c75;
+B0_9cae: CMP_ABS(0x0453)
+B0_9cb1: CYCLE(2); if (SR_Z) goto B0_9c75;
+B0_9cb3: LDA_IMM(0x01)
+B0_9cb5: CYCLE(6); SetStack(SP, 183); SetStack(SP - 1, 156); SP -= 2; goto B0_9fa8;
+B0_9cb8: LDX_ZP(0x1C)
+B0_9cba: LDA_ABS_X(0x9ee2)
+B0_9cbd: CYCLE(2); if (SR_Z) goto B0_9cc8;
+B0_9cbf: DEC_ZP(0xE8)
+B0_9cc1: CYCLE(2); if (!SR_Z) goto B0_9cb3;
+B0_9cc3: LDA_IMM(0x08)
+B0_9cc5: CYCLE(3); PC = 0x9c73; goto B0_9c73;
+B0_9cc8: RTS()
+B0_9cc9: LDA_IMM(0x00)
+B0_9ccb: CYCLE(6); SetStack(SP, 205); SetStack(SP - 1, 156); SP -= 2; goto B26_9cd3;
+B0_9cce: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 156); SP -= 2; goto B0_9c71;
+B0_9cd1: LDA_IMM(0x02)
+B0_9cd3: LDX_ABS_Y(0x046b)
+B0_9cd6: CYCLE(2); if (SR_N) goto B0_9ce6;
+B0_9cd8: PHA()
+B0_9cd9: LDA_ABS_Y(0x0468)
+B0_9cdc: SEC()
+B0_9cdd: SBC_ZP(0xE7)
+B0_9cdf: LSR_A()
+B0_9ce0: LSR_A()
+B0_9ce1: TAX()
+B0_9ce2: PLA()
+B0_9ce3: STA_ABS_X(0x046a)
+B0_9ce6: RTS()
+B0_9ce7: AND_IMM(0x0F)
+B0_9ce9: TAX()
+B0_9cea: LDA_ABS_X(0x9ee2)
+B0_9ced: CYCLE(2); if (SR_Z) goto B0_9d06;
+B0_9cef: CLC()
+B0_9cf0: ADC_ABS_Y(0x0468)
+B0_9cf3: CMP_ZP(0xE7)
+B0_9cf5: CYCLE(2); if (SR_C) goto B0_9cf9;
+B0_9cf7: LDA_ZP(0xE6)
+B0_9cf9: CMP_ZP(0xE6)
+B0_9cfb: CYCLE(2); if (SR_Z) goto B0_9d01;
+B0_9cfd: CYCLE(2); if (!SR_C) goto B0_9d01;
+B0_9cff: LDA_ZP(0xE7)
+B0_9d01: STA_ABS_Y(0x0468)
+B0_9d04: SEC()
+B0_9d05: RTS()
+B0_9d06: CLC()
+B0_9d07: RTS()
+B0_9d08: TXA()
+B0_9d09: CYCLE(2); if (SR_N) goto B0_9d1a;
+B0_9d0b: TYA()
+B0_9d0c: EOR_IMM(0xFF)
+B0_9d0e: SEC()
+B0_9d0f: SBC_IMM(0x28)
+B0_9d11: LSR_A()
+B0_9d12: LSR_A()
+B0_9d13: LSR_A()
+B0_9d14: LSR_A()
+B0_9d15: STA_ZP(0xED)
+B0_9d17: CYCLE(3); PC = 0xc50c; goto B30_c50c;
+B0_9d1a: TYA()
+B0_9d1b: LSR_A()
+B0_9d1c: LSR_A()
+B0_9d1d: LSR_A()
+B0_9d1e: LSR_A()
+B0_9d1f: CLC()
+B0_9d20: ADC_IMM(0x14)
+B0_9d22: STA_ZP(0xED)
+B0_9d24: CYCLE(3); PC = 0xc50c; goto B30_c50c;
+B0_9d27: STY_ZP(0xE6)
+B0_9d29: STX_ZP(0xE7)
+B0_9d2b: LDY_IMM(0x00)
+B0_9d2d: LDA_IDY(0xE6)
+B0_9d2f: STA_ZP(0xE8)
+B0_9d31: INY()
+B0_9d32: LDA_IDY(0xE6)
+B0_9d34: STA_ZP(0xE9)
+B0_9d36: STY_ZP(0xEB)
+B0_9d38: CYCLE(6); SetStack(SP, 58); SetStack(SP - 1, 157); SP -= 2; goto B0_9d58;
+B0_9d3b: TAX()
+B0_9d3c: INC_ZP(0xEB)
+B0_9d3e: LDA_ZP(0xEB)
+B0_9d40: CLC()
+B0_9d41: ADC_ZP(0xE6)
+B0_9d43: STA_ZP(0xE6)
+B0_9d45: LDA_ZP(0xE7)
+B0_9d47: ADC_IMM(0x00)
+B0_9d49: STA_ZP(0xE7)
+B0_9d4b: CPX_IMM(0xFF)
+B0_9d4d: CYCLE(2); if (!SR_Z) goto B0_9d2b;
+B0_9d4f: RTS()
+B0_9d50: STY_ZP(0xE6)
+B0_9d52: STX_ZP(0xE7)
+B0_9d54: LDA_IMM(0xFF)
+B0_9d56: STA_ZP(0xEB)
+B0_9d58: INC_ZP(0xEB)
+B0_9d5a: LDY_ZP(0xEB)
+B0_9d5c: LDA_IDY(0xE6)
+B0_9d5e: CMP_IMM(0xFC)
+B0_9d60: CYCLE(2); if (SR_C) goto B0_9d72;
+B0_9d62: LDY_ZP(0xE8)
+B0_9d64: LDX_ZP(0xE9)
+B0_9d66: CYCLE(6); SetStack(SP, 104); SetStack(SP - 1, 157); SP -= 2; goto B1_88ca;
+B0_9d69: INC_ZP(0xE8)
+B0_9d6b: CYCLE(2); if (!SR_Z) goto B0_9d6f;
+B0_9d6f: CYCLE(3); PC = 0x9d58; goto B0_9d58;
+B0_9d72: RTS()
+B0_9d73: STA_ZP(0xE8)
+B0_9d75: CYCLE(6); SetStack(SP, 119); SetStack(SP - 1, 157); SP -= 2; goto B26_9b28;
+B0_9d78: LDA_ZP(0xE8)
+B0_9d7a: AND_IMM(0x3F)
+B0_9d7c: STA_ZP(0xE8)
+B0_9d7e: LDY_IMM(0x00)
+B0_9d80: LDA_IDY(0xE6)
+B0_9d82: STA_ABS_X(0x05e8)
+B0_9d85: INY()
+B0_9d86: INX()
+B0_9d87: DEC_ZP(0xE8)
+B0_9d89: CYCLE(2); if (!SR_Z) goto B0_9d80;
+B0_9d8b: CYCLE(3); PC = 0x9b5e; goto B0_9b5e;
+B0_9d8e: STA_ZP(0xEC)
+B0_9d90: LDA_IMM(0x02)
+B0_9d92: CYCLE(6); SetStack(SP, 148); SetStack(SP - 1, 157); SP -= 2; goto B26_9b28;
+B0_9d95: LDA_ZP(0xEC)
+B0_9d97: LSR_A()
+B0_9d98: LSR_A()
+B0_9d99: LSR_A()
+B0_9d9a: LSR_A()
+B0_9d9b: CYCLE(2); if (!SR_Z) goto B0_9d9f;
+B0_9d9d: LDA_IMM(0xCD)
+B0_9d9f: CLC()
+B0_9da0: ADC_IMM(0x33)
+B0_9da2: STA_ABS_X(0x05e8)
+B0_9da5: INX()
+B0_9da6: LDA_ZP(0xEC)
+B0_9da8: AND_IMM(0x0F)
+B0_9daa: CLC()
+B0_9dab: ADC_IMM(0x33)
+B0_9dad: STA_ABS_X(0x05e8)
+B0_9db0: INX()
+B0_9db1: CYCLE(6); SetStack(SP, 179); SetStack(SP - 1, 157); SP -= 2; goto B0_9b5e;
+B0_9db4: RTS()
+B0_9db5: LDA_IMM(0x04)
+B0_9db7: CYCLE(6); SetStack(SP, 185); SetStack(SP - 1, 157); SP -= 2; goto B26_9b28;
+B0_9dba: LDA_IMM(0x00)
+B0_9dbc: STA_ZP(0xE7)
+B0_9dbe: LDA_ZP(0xED)
+B0_9dc0: CYCLE(6); SetStack(SP, 194); SetStack(SP - 1, 157); SP -= 2; goto B26_9dda;
+B0_9dc3: LDA_ZP(0xED)
+B0_9dc5: CYCLE(6); SetStack(SP, 199); SetStack(SP - 1, 157); SP -= 2; goto B0_9dde;
+B0_9dc8: LDA_ZP(0xEC)
+B0_9dca: CYCLE(6); SetStack(SP, 204); SetStack(SP - 1, 157); SP -= 2; goto B26_9dda;
+B0_9dcd: LDA_IMM(0x33)
+B0_9dcf: STA_ZP(0xE7)
+B0_9dd1: LDA_ZP(0xEC)
+B0_9dd3: CYCLE(6); SetStack(SP, 213); SetStack(SP - 1, 157); SP -= 2; goto B0_9dde;
+B0_9dd6: CYCLE(6); SetStack(SP, 216); SetStack(SP - 1, 157); SP -= 2; goto B0_9b5e;
+B0_9dd9: RTS()
+B0_9dda: LSR_A()
+B0_9ddb: LSR_A()
+B0_9ddc: LSR_A()
+B0_9ddd: LSR_A()
+B0_9dde: AND_IMM(0x0F)
+B0_9de0: CYCLE(2); if (SR_Z) goto B0_9de6;
+B0_9de2: LDY_IMM(0x33)
+B0_9de4: STY_ZP(0xE7)
+B0_9de6: CLC()
+B0_9de7: ADC_ZP(0xE7)
+B0_9de9: STA_ABS_X(0x05e8)
+B0_9dec: INX()
+B0_9ded: RTS()
+B0_9dee: STA_ZP(0xED)
+B0_9df0: LDA_IMM(0x00)
+B0_9df2: STA_ZP(0xEC)
+B0_9df4: LDY_IMM(0x08)
+B0_9df6: ASL_ZP(0xEC)
+B0_9df8: ROL_ZP(0xED)
+B0_9dfa: CYCLE(2); if (!SR_C) goto B0_9e08;
+B0_9dfc: TXA()
+B0_9dfd: CLC()
+B0_9dfe: ADC_ZP(0xEC)
+B0_9e00: STA_ZP(0xEC)
+B0_9e02: LDA_ZP(0xED)
+B0_9e04: ADC_IMM(0x00)
+B0_9e06: STA_ZP(0xED)
+B0_9e08: DEY()
+B0_9e09: CYCLE(2); if (!SR_Z) goto B0_9df6;
+B0_9e0b: RTS()
+B0_9e0c: LDA_IMM(0x00)
+B0_9e0e: STA_ZP(0xE8)
+B0_9e10: STA_ZP(0xE9)
+B0_9e12: LDX_IMM(0x10)
+B0_9e14: ASL_ZP(0xEC)
+B0_9e16: ROL_ZP(0xED)
+B0_9e18: ROL_ZP(0xE8)
+B0_9e1a: ROL_ZP(0xE9)
+B0_9e1c: LDA_ZP(0xE8)
+B0_9e1e: SEC()
+B0_9e1f: SBC_ZP(0xEA)
+B0_9e21: TAY()
+B0_9e22: LDA_ZP(0xE9)
+B0_9e24: SBC_ZP(0xEB)
+B0_9e26: CYCLE(2); if (!SR_C) goto B0_9e32;
+B0_9e28: STA_ZP(0xE9)
+B0_9e2a: STY_ZP(0xE8)
+B0_9e2c: INC_ZP(0xEC)
+B0_9e2e: CYCLE(2); if (!SR_Z) goto B0_9e32;
+B0_9e32: DEX()
+B0_9e33: CYCLE(2); if (!SR_Z) goto B0_9e14;
+B0_9e35: RTS()
+B0_9e36: LDA_IMM(0x00)
+B0_9e38: STA_ZP(0xEA)
+B0_9e3a: LDX_IMM(0x08)
+B0_9e3c: ASL_ZP(0xED)
+B0_9e3e: ROL_ZP(0xEA)
+B0_9e40: LDA_ZP(0xEA)
+B0_9e42: SEC()
+B0_9e43: SBC_ZP(0xEC)
+B0_9e45: CYCLE(2); if (!SR_C) goto B0_9e4b;
+B0_9e47: STA_ZP(0xEA)
+B0_9e49: INC_ZP(0xED)
+B0_9e4b: DEX()
+B0_9e4c: CYCLE(2); if (!SR_Z) goto B0_9e3c;
+B0_9e4e: RTS()
+B0_9e4f: LDA_IMM(0x0A)
+B0_9e51: STA_ZP(0xEA)
+B0_9e53: LDA_IMM(0x00)
+B0_9e55: STA_ZP(0xEB)
+B0_9e57: LDA_IMM(0x03)
+B0_9e59: STA_ZP(0xE6)
+B0_9e5b: CYCLE(6); SetStack(SP, 93); SetStack(SP - 1, 158); SP -= 2; goto B26_9e0c;
+B0_9e5e: LDA_ZP(0xE8)
+B0_9e60: STA_ZP(0xE7)
+B0_9e62: CYCLE(6); SetStack(SP, 100); SetStack(SP - 1, 158); SP -= 2; goto B26_9e0c;
+B0_9e65: LDA_ZP(0xE8)
+B0_9e67: ASL_A()
+B0_9e68: ASL_A()
+B0_9e69: ASL_A()
+B0_9e6a: ASL_A()
+B0_9e6b: ORA_ZP(0xE7)
+B0_9e6d: PHA()
+B0_9e6e: DEC_ZP(0xE6)
+B0_9e70: CYCLE(2); if (!SR_Z) goto B0_9e5b;
+B0_9e72: PLA()
+B0_9e73: STA_ZP(0xEA)
+B0_9e75: PLA()
+B0_9e76: STA_ZP(0xE9)
+B0_9e78: PLA()
+B0_9e79: STA_ZP(0xE8)
+B0_9e7b: RTS()
+B0_9e7c: STA_ZP(0xED)
+B0_9e7e: LDA_IMM(0x0A)
+B0_9e80: STA_ZP(0xEC)
+B0_9e82: CYCLE(6); SetStack(SP, 132); SetStack(SP - 1, 158); SP -= 2; goto B26_9e36;
+B0_9e85: LDA_ZP(0xEA)
+B0_9e87: STA_ZP(0xEB)
+B0_9e89: CYCLE(6); SetStack(SP, 139); SetStack(SP - 1, 158); SP -= 2; goto B26_9e36;
+B0_9e8c: LDA_ZP(0xEA)
+B0_9e8e: ASL_A()
+B0_9e8f: ASL_A()
+B0_9e90: ASL_A()
+B0_9e91: ASL_A()
+B0_9e92: ORA_ZP(0xEB)
+B0_9e94: STA_ZP(0xEB)
+B0_9e96: CYCLE(6); SetStack(SP, 152); SetStack(SP - 1, 158); SP -= 2; goto B26_9e36;
+B0_9e99: LDA_ZP(0xEA)
+B0_9e9b: STA_ZP(0xED)
+B0_9e9d: LDA_ZP(0xEB)
+B0_9e9f: STA_ZP(0xEC)
+B0_9ea1: RTS()
+B0_9eed: LDX_IMM(0x01)
+B0_9eef: LDA_ZP_X(0x00)
+B0_9ef1: CYCLE(2); if (SR_Z) goto B0_9efb;
+B0_9ef3: CMP_IMM(0xFF)
+B0_9ef5: CYCLE(2); if (SR_Z) goto B0_9f52;
+B0_9ef7: DEC_ZP_X(0x00)
+B0_9ef9: CYCLE(2); if (SR_Z) goto B0_9f0f;
+B0_9efb: TXA()
+B0_9efc: CLC()
+B0_9efd: ADC_IMM(0x04)
+B0_9eff: TAX()
+B0_9f00: CPX_IMM(0x19)
+B0_9f02: CYCLE(2); if (!SR_Z) goto B0_9eef;
+B0_9f04: LDA_ZP(0x1B)
+B0_9f06: CYCLE(2); if (!SR_N) goto B0_9f04;
+B0_9f08: AND_IMM(0x7F)
+B0_9f0a: STA_ZP(0x1B)
+B0_9f0c: CYCLE(3); PC = 0x9eed; goto B0_9eed;
+B0_9f0f: STX_ZP(0x00)
+B0_9f11: LDA_IMM(0x07)
+B0_9f13: ORA_ZP(0x22)
+B0_9f15: STA_ZP(0x23)
+B0_9f17: STA_ABS(0x8000)
+B0_9f1a: LDA_ZP_X(0x03)
+B0_9f1c: STA_ZP(0x25)
+B0_9f1e: STA_ABS(0x8001)
+B0_9f21: LDA_IMM(0x06)
+B0_9f23: ORA_ZP(0x22)
+B0_9f25: STA_ZP(0x23)
+B0_9f27: STA_ABS(0x8000)
+B0_9f2a: LDA_ZP_X(0x02)
+B0_9f2c: STA_ZP(0x24)
+B0_9f2e: STA_ABS(0x8001)
+B0_9f31: LDA_ZP_X(0x01)
+B0_9f33: TAX()
+B0_9f34: TXS()
+B0_9f35: PLA()
+B0_9f36: STA_ZP(0xE6)
+B0_9f38: PLA()
+B0_9f39: STA_ZP(0xE7)
+B0_9f3b: PLA()
+B0_9f3c: STA_ZP(0xE8)
+B0_9f3e: PLA()
+B0_9f3f: STA_ZP(0xE9)
+B0_9f41: PLA()
+B0_9f42: STA_ZP(0xEA)
+B0_9f44: PLA()
+B0_9f45: STA_ZP(0xEB)
+B0_9f47: PLA()
+B0_9f48: STA_ZP(0xEC)
+B0_9f4a: PLA()
+B0_9f4b: STA_ZP(0xED)
+B0_9f4d: PLA()
+B0_9f4e: TAY()
+B0_9f4f: PLA()
+B0_9f50: TAX()
+B0_9f51: RTS()
+B0_9f52: STX_ZP(0x00)
+B0_9f54: LDA_IMM(0x06)
+B0_9f56: ORA_ZP(0x22)
+B0_9f58: STA_ZP(0x23)
+B0_9f5a: STA_ABS(0x8000)
+B0_9f5d: LDA_ZP_X(0x02)
+B0_9f5f: STA_ZP(0x24)
+B0_9f61: STA_ABS(0x8001)
+B0_9f64: LDA_ZP_X(0x01)
+B0_9f66: TAX()
+B0_9f67: TXS()
+B0_9f68: RTS()
+B0_9f69: STA_ZP_X(0x02)
+B0_9f6b: DEY()
+B0_9f6c: DEY()
+B0_9f6d: LDA_ZP_X(0x00)
+B0_9f6f: STA_ABS_Y(0x0101)
+B0_9f72: LDA_ZP_X(0x01)
+B0_9f74: STA_ABS_Y(0x0102)
+B0_9f77: STY_ZP_X(0x01)
+B0_9f79: LDA_IMM(0xFF)
+B0_9f7b: STA_ZP_X(0x00)
+B0_9f7d: RTS()
+B0_9f7e: LDA_IMM(0x00)
+B0_9f80: LDX_ZP(0x00)
+B0_9f82: STA_ZP_X(0x00)
+B0_9f84: STA_ZP_X(0x01)
+B0_9f86: CYCLE(3); PC = 0x9efb; goto B0_9efb;
+B0_9f89: LDA_ZP_X(0x01)
+B0_9f8b: CYCLE(2); if (SR_Z) goto B0_9f95;
+B0_9f8d: LDA_ZP_X(0x00)
+B0_9f8f: CYCLE(2); if (!SR_Z) goto B0_9f95;
+B0_9f91: LDA_IMM(0x01)
+B0_9f93: STA_ZP_X(0x00)
+B0_9f95: RTS()
+B0_9f96: LDA_ZP_X(0x00)
+B0_9f98: CMP_IMM(0xFF)
+B0_9f9a: CYCLE(2); if (!SR_Z) goto B0_9fa1;
+B0_9f9c: LDA_IMM(0x01)
+B0_9f9e: CYCLE(6); SetStack(SP, 160); SetStack(SP - 1, 159); SP -= 2; goto B0_9fa8;
+B0_9fa1: LDA_IMM(0x00)
+B0_9fa3: STA_ZP_X(0x00)
+B0_9fa5: RTS()
+B0_9fa8: STA_ZP(0x19)
+B0_9faa: TXA()
+B0_9fab: PHA()
+B0_9fac: TYA()
+B0_9fad: PHA()
+B0_9fae: LDA_ZP(0xED)
+B0_9fb0: PHA()
+B0_9fb1: LDA_ZP(0xEC)
+B0_9fb3: PHA()
+B0_9fb4: LDA_ZP(0xEB)
+B0_9fb6: PHA()
+B0_9fb7: LDA_ZP(0xEA)
+B0_9fb9: PHA()
+B0_9fba: LDA_ZP(0xE9)
+B0_9fbc: PHA()
+B0_9fbd: LDA_ZP(0xE8)
+B0_9fbf: PHA()
+B0_9fc0: LDA_ZP(0xE7)
+B0_9fc2: PHA()
+B0_9fc3: LDA_ZP(0xE6)
+B0_9fc5: PHA()
+B0_9fc6: TSX()
+B0_9fc7: TXA()
+B0_9fc8: LDX_ZP(0x00)
+B0_9fca: STA_ZP_X(0x01)
+B0_9fcc: LDA_ABS(0x0024)
+B0_9fcf: STA_ZP_X(0x02)
+B0_9fd1: LDA_ABS(0x0025)
+B0_9fd4: STA_ZP_X(0x03)
+B0_9fd6: LDA_ZP(0x19)
+B0_9fd8: CYCLE(2); if (SR_Z) goto B0_9fde;
+B0_9fda: CMP_IMM(0xFF)
+B0_9fdc: CYCLE(2); if (!SR_Z) goto B0_9fe0;
+B0_9fde: LDA_IMM(0xFE)
+B0_9fe0: STA_ZP_X(0x00)
+B0_9fe2: CYCLE(3); PC = 0x9efb; goto B0_9efb;
+
+
+
+// ===== Bank 1 (prg_bank_01.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 01 =====
+// ; ROM: 0x002010-0x00400F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=4239 data=3556 unaccessed=397
+B1_8003: PC = 0xa10d; /* UNRES JMP $a10d */ goto LABEL_END;
+B1_8006: PC = 0xa4eb; /* UNRES JMP $a4eb */ goto LABEL_END;
+B1_8009: PC = 0xa64c; /* UNRES JMP $a64c */ goto LABEL_END;
+B1_800c: PC = 0xa6d2; /* UNRES JMP $a6d2 */ goto LABEL_END;
+B1_800f: PC = 0xafc2; /* UNRES JMP $afc2 */ goto LABEL_END;
+B1_8012: PC = 0xaf79; /* UNRES JMP $af79 */ goto LABEL_END;
+B1_8015: PC = 0xaf8a; /* UNRES JMP $af8a */ goto LABEL_END;
+B1_8018: PC = 0xb050; /* UNRES JMP $b050 */ goto LABEL_END;
+B1_801b: PC = 0xa39b; /* UNRES JMP $a39b */ goto LABEL_END;
+B1_801e: LDA_ABS(0x0448)
+B1_8021: LSR_A()
+B1_8022: LDA_ZP(0x26)
+B1_8024: ROL_A()
+B1_8025: CLC()
+B1_8026: LDX_ABS(0x0446)
+B1_8029: CPX_IMM(0x05)
+B1_802b: ROL_A()
+B1_802c: STA_ABS(0x0660)
+B1_802f: LDA_ABS(0x044d)
+B1_8032: ROR_A()
+B1_8033: LDA_ZP(0xE1)
+B1_8035: ROR_A()
+B1_8036: AND_IMM(0xB0)
+B1_8038: STA_ABS(0x0661)
+B1_803b: LDA_IMM(0x00)
+B1_803d: PHA()
+B1_803e: CYCLE(6); SetStack(SP, 64); SetStack(SP - 1, 128); SP -= 2; PC = 0xb016; /* UNRES JSR $b016 */ goto LABEL_END;
+B1_8041: STY_ZP(0xEC)
+B1_8043: STX_ZP(0xED)
+B1_8045: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 128); SP -= 2; PC = 0xb02e; /* UNRES JSR $b02e */ goto LABEL_END;
+B1_8048: STA_ZP(0xE7)
+B1_804a: CYCLE(6); SetStack(SP, 76); SetStack(SP - 1, 128); SP -= 2; PC = 0xb045; /* UNRES JSR $b045 */ goto LABEL_END;
+B1_804d: STY_ZP(0xEA)
+B1_804f: STX_ZP(0xEB)
+B1_8051: LDA_ZP(0xEC)
+B1_8053: SEC()
+B1_8054: SBC_ZP(0xEA)
+B1_8056: STA_ZP(0xEC)
+B1_8058: LDA_ZP(0xED)
+B1_805a: SBC_ZP(0xEB)
+B1_805c: STA_ZP(0xED)
+B1_805e: LDA_ZP(0xE7)
+B1_8060: CLC()
+B1_8061: ADC_IMM(0x01)
+B1_8063: CYCLE(6); SetStack(SP, 101); SetStack(SP - 1, 128); SP -= 2; PC = 0xb045; /* UNRES JSR $b045 */ goto LABEL_END;
+B1_8066: TYA()
+B1_8067: SEC()
+B1_8068: SBC_ZP(0xEA)
+B1_806a: STA_ZP(0xEA)
+B1_806c: TXA()
+B1_806d: SBC_ZP(0xEB)
+B1_806f: STA_ZP(0xEB)
+B1_8071: LSR_ZP(0xEB)
+B1_8073: ROR_ZP(0xEA)
+B1_8075: LSR_ZP(0xEB)
+B1_8077: ROR_ZP(0xEA)
+B1_8079: CYCLE(6); SetStack(SP, 123); SetStack(SP - 1, 128); SP -= 2; goto B26_9e0c;
+B1_807c: PLA()
+B1_807d: TAX()
+B1_807e: LDA_ZP(0xE7)
+B1_8080: ASL_A()
+B1_8081: ASL_A()
+B1_8082: ORA_ZP(0xEC)
+B1_8084: STA_ABS_X(0x0656)
+B1_8087: INX()
+B1_8088: TXA()
+B1_8089: CMP_IMM(0x0A)
+B1_808b: CYCLE(2); if (!SR_Z) goto B1_803d;
+B1_808d: LDA_ZP(0xE2)
+B1_808f: AND_IMM(0xF0)
+B1_8091: STA_ABS(0x0663)
+B1_8094: LSR_A()
+B1_8095: LSR_A()
+B1_8096: LSR_A()
+B1_8097: LSR_A()
+B1_8098: ORA_ABS(0x0661)
+B1_809b: STA_ZP(0xEB)
+B1_809d: CYCLE(6); SetStack(SP, 159); SetStack(SP - 1, 128); SP -= 2; PC = 0xa402; /* UNRES JSR $a402 */ goto LABEL_END;
+B1_80a0: LDA_ZP(0xEC)
+B1_80a2: STA_ABS(0x0662)
+B1_80a5: LDA_ZP(0xED)
+B1_80a7: AND_IMM(0x0F)
+B1_80a9: ORA_ABS(0x0661)
+B1_80ac: STA_ABS(0x0661)
+B1_80af: LDA_IMM(0x00)
+B1_80b1: STA_ZP(0xED)
+B1_80b3: LDX_ZP(0xED)
+B1_80b5: CYCLE(6); SetStack(SP, 183); SetStack(SP - 1, 128); SP -= 2; PC = 0xa438; /* UNRES JSR $a438 */ goto LABEL_END;
+B1_80b8: LDX_IMM(0xFF)
+B1_80ba: INX()
+B1_80bb: CMP_ABS_X(0xb255)
+B1_80be: CYCLE(2); if (!SR_Z) goto B1_80ba;
+B1_80c0: LDA_ZP(0xED)
+B1_80c2: CMP_IMM(0x0F)
+B1_80c4: CYCLE(2); if (SR_C) goto B1_80cf;
+B1_80c6: INC_ZP(0xEB)
+B1_80c8: TXA()
+B1_80c9: CLC()
+B1_80ca: ADC_ZP(0xEB)
+B1_80cc: AND_IMM(0x3F)
+B1_80ce: TAX()
+B1_80cf: LDA_ABS_X(0xbc6e)
+B1_80d2: STA_ZP(0xEC)
+B1_80d4: LDX_ZP(0xED)
+B1_80d6: LDA_ABS_X(0xb241)
+B1_80d9: CLC()
+B1_80da: ADC_IMM(0x80)
+B1_80dc: TAY()
+B1_80dd: LDX_IMM(0x22)
+B1_80df: LDA_ZP(0xEC)
+B1_80e1: CYCLE(6); SetStack(SP, 227); SetStack(SP - 1, 128); SP -= 2; goto B1_88ca;
+B1_80e4: LDA_ZP(0x99)
+B1_80e6: CYCLE(2); if (!SR_N) goto B1_80ec;
+B1_80ec: INC_ZP(0xED)
+B1_80ee: LDA_ZP(0xED)
+B1_80f0: CMP_IMM(0x12)
+B1_80f2: CYCLE(2); if (!SR_C) goto B1_80b3;
+B1_80f4: LDA_IMM(0x01)
+B1_80f6: CYCLE(6); SetStack(SP, 248); SetStack(SP - 1, 128); SP -= 2; goto B0_9fa8;
+B1_80f9: LDA_ZP(0x1E)
+B1_80fb: CYCLE(2); if (!SR_N) goto B1_80f4;
+B1_80fd: LDA_IMM(0x8A)
+B1_80ff: STA_ZP(0xE6)
+B1_8101: LDA_IMM(0x22)
+B1_8103: STA_ZP(0xE7)
+B1_8105: LDY_IMM(0x04)
+B1_8107: LDX_IMM(0x0B)
+B1_8109: CYCLE(6); SetStack(SP, 11); SetStack(SP - 1, 129); SP -= 2; goto B0_98e8;
+B1_810c: RTS()
+B1_810d: CYCLE(6); SetStack(SP, 15); SetStack(SP - 1, 129); SP -= 2; goto B26_9ba0;
+B1_8110: LDA_IMM(0x00)
+B1_8112: LDY_IMM(0xF0)
+B1_8114: STA_ABS_Y(0x0566)
+B1_8117: INY()
+B1_8118: CYCLE(2); if (!SR_Z) goto B1_8114;
+B1_811a: LDX_IMM(0x2C)
+B1_811c: LDY_IMM(0x2D)
+B1_811e: CYCLE(6); SetStack(SP, 32); SetStack(SP - 1, 129); SP -= 2; goto B0_9b6f;
+B1_8121: LDX_IMM(0x2E)
+B1_8123: LDY_IMM(0x2F)
+B1_8125: CYCLE(6); SetStack(SP, 39); SetStack(SP - 1, 129); SP -= 2; goto B26_9b74;
+B1_8128: LDA_IMM(0x00)
+B1_812a: STA_ZP(0x8E)
+B1_812c: STA_ZP(0x90)
+B1_812e: STA_ZP(0x7B)
+B1_8130: LDA_IMM(0x2E)
+B1_8132: STA_ZP(0x8F)
+B1_8134: STA_ZP(0x91)
+B1_8136: LDA_IMM(0x09)
+B1_8138: CYCLE(6); SetStack(SP, 58); SetStack(SP - 1, 129); SP -= 2; goto B16_8920;
+B1_813b: LDA_IMM(0x6E)
+B1_813d: STA_ZP(0xE6)
+B1_813f: LDA_IMM(0xBC)
+B1_8141: STA_ZP(0xE7)
+B1_8143: LDA_IMM(0xC4)
+B1_8145: STA_ZP(0xE8)
+B1_8147: LDA_IMM(0x21)
+B1_8149: STA_ZP(0xE9)
+B1_814b: LDA_IMM(0x00)
+B1_814d: STA_ZP(0xEC)
+B1_814f: LDA_IMM(0x05)
+B1_8151: STA_ZP(0xEB)
+B1_8153: LDA_IMM(0x0D)
+B1_8155: STA_ZP(0xED)
+B1_8157: LDY_ZP(0xEC)
+B1_8159: LDA_IDY(0xE6)
+B1_815b: LDY_ZP(0xE8)
+B1_815d: LDX_ZP(0xE9)
+B1_815f: CYCLE(6); SetStack(SP, 97); SetStack(SP - 1, 129); SP -= 2; goto B1_88ca;
+B1_8162: INC_ZP(0xE8)
+B1_8164: INC_ZP(0xE8)
+B1_8166: INC_ZP(0xEC)
+B1_8168: DEC_ZP(0xED)
+B1_816a: CYCLE(2); if (!SR_Z) goto B1_8157;
+B1_816c: LDA_ZP(0xE8)
+B1_816e: CLC()
+B1_816f: ADC_IMM(0x26)
+B1_8171: STA_ZP(0xE8)
+B1_8173: LDA_ZP(0xE9)
+B1_8175: ADC_IMM(0x00)
+B1_8177: STA_ZP(0xE9)
+B1_8179: DEC_ZP(0xEB)
+B1_817b: CYCLE(2); if (!SR_Z) goto B1_8153;
+B1_817d: LDY_IMM(0xF8)
+B1_817f: LDA_ABS_Y(0xb205)
+B1_8182: STA_ABS_Y(0x0460)
+B1_8185: INY()
+B1_8186: CYCLE(2); if (!SR_Z) goto B1_817f;
+B1_8188: LDY_IMM(0x96)
+B1_818a: LDX_IMM(0xB2)
+B1_818c: CYCLE(6); SetStack(SP, 142); SetStack(SP - 1, 129); SP -= 2; PC = 0xb0c0; /* UNRES JSR $b0c0 */ goto LABEL_END;
+B1_818f: LDA_IMM(0x04)
+B1_8191: LDX_IMM(0x30)
+B1_8193: CYCLE(6); SetStack(SP, 149); SetStack(SP - 1, 129); SP -= 2; goto B0_997a;
+B1_8196: LDA_IMM(0x8A)
+B1_8198: STA_ZP(0x4C)
+B1_819a: LDA_IMM(0x33)
+B1_819c: STA_ABS(0x0700)
+B1_819f: LDA_IMM(0x00)
+B1_81a1: STA_ZP(0xED)
+B1_81a3: PC = 0xa201; /* UNRES JMP $a201 */ goto LABEL_END;
+B1_81a6: LDA_IMM(0x01)
+B1_81a8: CYCLE(6); SetStack(SP, 170); SetStack(SP - 1, 129); SP -= 2; goto B0_9fa8;
+B1_81ab: CYCLE(6); SetStack(SP, 173); SetStack(SP - 1, 129); SP -= 2; PC = 0xa3d0; /* UNRES JSR $a3d0 */ goto LABEL_END;
+B1_81ae: BIT_ZP(0x1E)
+B1_81b0: CYCLE(2); if (!SR_N) goto B1_81b5;
+B1_81b2: PC = 0xa231; /* UNRES JMP $a231 */ goto LABEL_END;
+B1_81b5: CYCLE(2); if (!SR_V) goto B1_81ba;
+B1_81b7: PC = 0xa260; /* UNRES JMP $a260 */ goto LABEL_END;
+B1_81ba: LDA_ZP(0x1E)
+B1_81bc: AND_IMM(0x20)
+B1_81be: CYCLE(2); if (SR_Z) goto B1_81c3;
+B1_81c0: PC = 0xa252; /* UNRES JMP $a252 */ goto LABEL_END;
+B1_81c3: LDA_ZP(0x1E)
+B1_81c5: AND_IMM(0x10)
+B1_81c7: CYCLE(2); if (SR_Z) goto B1_81cc;
+B1_81cc: LDA_ZP(0x1C)
+B1_81ce: AND_IMM(0x0F)
+B1_81d0: CYCLE(2); if (SR_Z) goto B1_81a6;
+B1_81d2: LDY_IMM(0x14)
+B1_81d4: STY_ZP(0xEA)
+B1_81d6: LDX_ZP(0xEC)
+B1_81d8: LDA_ABS_X(0xb1e8)
+B1_81db: LDY_IMM(0x00)
+B1_81dd: CYCLE(6); SetStack(SP, 223); SetStack(SP - 1, 129); SP -= 2; PC = 0xa4d8; /* UNRES JSR $a4d8 */ goto LABEL_END;
+B1_81e0: LDA_ZP(0x1C)
+B1_81e2: AND_IMM(0x0F)
+B1_81e4: TAX()
+B1_81e5: LDA_ABS_X(0xb2ed)
+B1_81e8: CYCLE(2); if (SR_N) goto B1_81f7;
+B1_81ea: CLC()
+B1_81eb: ADC_ZP(0xEC)
+B1_81ed: CMP_IMM(0x41)
+B1_81ef: CYCLE(2); if (!SR_C) goto B1_8201;
+B1_81f1: SEC()
+B1_81f2: SBC_IMM(0x41)
+B1_81f4: PC = 0xa201; /* UNRES JMP $a201 */ goto LABEL_END;
+B1_81f7: CLC()
+B1_81f8: ADC_ZP(0xEC)
+B1_81fa: CMP_IMM(0x41)
+B1_81fc: CYCLE(2); if (!SR_C) goto B1_8201;
+B1_81fe: CLC()
+B1_81ff: ADC_IMM(0x41)
+B1_8201: STA_ZP(0xEC)
+B1_8203: TAX()
+B1_8204: LDA_ABS_X(0xb1e8)
+B1_8207: AND_IMM(0xC0)
+B1_8209: ASL_A()
+B1_820a: ROL_A()
+B1_820b: ROL_A()
+B1_820c: TAY()
+B1_820d: LDA_ABS_Y(0xb229)
+B1_8210: TAY()
+B1_8211: LDA_ABS_X(0xb1e8)
+B1_8214: CYCLE(6); SetStack(SP, 22); SetStack(SP - 1, 130); SP -= 2; PC = 0xa4d8; /* UNRES JSR $a4d8 */ goto LABEL_END;
+B1_8217: LDA_IMM(0x01)
+B1_8219: CYCLE(6); SetStack(SP, 27); SetStack(SP - 1, 130); SP -= 2; goto B0_9fa8;
+B1_821c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 130); SP -= 2; PC = 0xa3d0; /* UNRES JSR $a3d0 */ goto LABEL_END;
+B1_821f: LDA_ZP(0x1C)
+B1_8221: AND_IMM(0x0F)
+B1_8223: CYCLE(2); if (!SR_Z) goto B1_8228;
+B1_8225: PC = 0xa1a6; /* UNRES JMP $a1a6 */ goto LABEL_END;
+B1_8228: DEC_ZP(0xEA)
+B1_822a: CYCLE(2); if (!SR_Z) goto B1_8217;
+B1_822c: LDY_IMM(0x08)
+B1_822e: PC = 0xa1d4; /* UNRES JMP $a1d4 */ goto LABEL_END;
+B1_8231: LDX_ZP(0xEC)
+B1_8233: LDA_ABS_X(0xb255)
+B1_8236: CMP_IMM(0xFF)
+B1_8238: CYCLE(2); if (SR_Z) goto B1_826c;
+B1_823a: TXA()
+B1_823b: LDY_ZP(0xED)
+B1_823d: STA_ABS_Y(0x0664)
+B1_8240: LDA_ABS_X(0xbc6e)
+B1_8243: LDX_ZP(0xED)
+B1_8245: LDY_ABS_X(0xb241)
+B1_8248: LDX_IMM(0x21)
+B1_824a: CYCLE(6); SetStack(SP, 76); SetStack(SP - 1, 130); SP -= 2; goto B1_88ca;
+B1_824d: LDA_IMM(0x12)
+B1_824f: STA_ABS(0x0701)
+B1_8252: LDX_ZP(0xED)
+B1_8254: INX()
+B1_8255: CPX_IMM(0x12)
+B1_8257: CYCLE(2); if (!SR_C) goto B1_825b;
+B1_8259: LDX_IMM(0x00)
+B1_825b: STX_ZP(0xED)
+B1_825d: PC = 0xa1a6; /* UNRES JMP $a1a6 */ goto LABEL_END;
+B1_8260: LDX_ZP(0xED)
+B1_8262: DEX()
+B1_8263: CYCLE(2); if (!SR_N) goto B1_8267;
+B1_8267: STX_ZP(0xED)
+B1_8269: PC = 0xa1a6; /* UNRES JMP $a1a6 */ goto LABEL_END;
+B1_826c: LDX_ZP(0xEC)
+B1_826e: LDA_ABS_X(0xb1e8)
+B1_8271: LDY_IMM(0x00)
+B1_8273: CYCLE(6); SetStack(SP, 117); SetStack(SP - 1, 130); SP -= 2; PC = 0xa4d8; /* UNRES JSR $a4d8 */ goto LABEL_END;
+B1_8276: LDX_ABS(0x0673)
+B1_8279: LDA_ABS_X(0xb255)
+B1_827c: AND_IMM(0x30)
+B1_827e: STA_ZP(0xEB)
+B1_8280: LDX_ABS(0x0675)
+B1_8283: LDA_ABS_X(0xb255)
+B1_8286: AND_IMM(0x0F)
+B1_8288: ORA_ZP(0xEB)
+B1_828a: STA_ZP(0xEB)
+B1_828c: LDX_IMM(0x00)
+B1_828e: LDA_ABS_X(0x0664)
+B1_8291: CPX_IMM(0x0F)
+B1_8293: CYCLE(2); if (SR_C) goto B1_829c;
+B1_8295: INC_ZP(0xEB)
+B1_8297: SEC()
+B1_8298: SBC_ZP(0xEB)
+B1_829a: AND_IMM(0x3F)
+B1_829c: TAY()
+B1_829d: LDA_ABS_Y(0xb255)
+B1_82a0: CYCLE(6); SetStack(SP, 162); SetStack(SP - 1, 130); SP -= 2; PC = 0xa474; /* UNRES JSR $a474 */ goto LABEL_END;
+B1_82a3: INX()
+B1_82a4: CPX_IMM(0x12)
+B1_82a6: CYCLE(2); if (!SR_Z) goto B1_828e;
+B1_82a8: CYCLE(6); SetStack(SP, 170); SetStack(SP - 1, 130); SP -= 2; PC = 0xa402; /* UNRES JSR $a402 */ goto LABEL_END;
+B1_82ab: LDA_ABS(0x0662)
+B1_82ae: CMP_ZP(0xEC)
+B1_82b0: CYCLE(2); if (!SR_Z) goto B1_82bb;
+B1_82b2: LDA_ABS(0x0661)
+B1_82b5: AND_IMM(0x0F)
+B1_82b7: CMP_ZP(0xED)
+B1_82b9: CYCLE(2); if (SR_Z) goto B1_82dd;
+B1_82bb: LDA_IMM(0xF8)
+B1_82bd: STA_ABS(0x0558)
+B1_82c0: STA_ABS(0x055c)
+B1_82c3: LDA_IMM(0x43)
+B1_82c5: STA_ABS(0x0700)
+B1_82c8: LDA_IMM(0x01)
+B1_82ca: STA_ZP(0x7E)
+B1_82cc: LDA_IMM(0x78)
+B1_82ce: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 130); SP -= 2; goto B0_9fa8;
+B1_82d1: LDA_IMM(0x00)
+B1_82d3: STA_ZP(0x7E)
+B1_82d5: LDA_IMM(0x33)
+B1_82d7: STA_ABS(0x0700)
+B1_82da: PC = 0xa19f; /* UNRES JMP $a19f */ goto LABEL_END;
+B1_82dd: LDA_IMM(0x00)
+B1_82df: STA_ZP(0xE6)
+B1_82e1: TAX()
+B1_82e2: LDA_ABS_X(0x0656)
+B1_82e5: LSR_A()
+B1_82e6: LSR_A()
+B1_82e7: STA_ZP(0xE7)
+B1_82e9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 130); SP -= 2; PC = 0xb045; /* UNRES JSR $b045 */ goto LABEL_END;
+B1_82ec: STY_ZP(0xEC)
+B1_82ee: STX_ZP(0xED)
+B1_82f0: LDA_ZP(0xE7)
+B1_82f2: CMP_IMM(0x3F)
+B1_82f4: CYCLE(2); if (SR_C) goto B1_8352;
+B1_82f6: CLC()
+B1_82f7: ADC_IMM(0x01)
+B1_82f9: CYCLE(6); SetStack(SP, 251); SetStack(SP - 1, 130); SP -= 2; PC = 0xb045; /* UNRES JSR $b045 */ goto LABEL_END;
+B1_82fc: TYA()
+B1_82fd: SEC()
+B1_82fe: SBC_ZP(0xEC)
+B1_8300: STA_ZP(0xEA)
+B1_8302: TXA()
+B1_8303: SBC_ZP(0xED)
+B1_8305: STA_ZP(0xEB)
+B1_8307: LSR_ZP(0xEB)
+B1_8309: ROR_ZP(0xEA)
+B1_830b: LSR_ZP(0xEB)
+B1_830d: ROR_ZP(0xEA)
+B1_830f: LDX_ZP(0xE6)
+B1_8311: LDA_ABS_X(0x0656)
+B1_8314: LDY_ZP(0xEA)
+B1_8316: LDX_ZP(0xEB)
+B1_8318: AND_IMM(0x03)
+B1_831a: CYCLE(2); if (SR_Z) goto B1_8338;
+B1_831c: ASL_ZP(0xEA)
+B1_831e: ROL_ZP(0xEB)
+B1_8320: CMP_IMM(0x02)
+B1_8322: CYCLE(2); if (SR_Z) goto B1_832d;
+B1_8324: CYCLE(2); if (!SR_C) goto B1_8338;
+B1_832d: TYA()
+B1_832e: CLC()
+B1_832f: ADC_ZP(0xEA)
+B1_8331: STA_ZP(0xEA)
+B1_8333: TXA()
+B1_8334: ADC_ZP(0xEB)
+B1_8336: STA_ZP(0xEB)
+B1_8338: LDA_ZP(0xEC)
+B1_833a: CLC()
+B1_833b: ADC_ZP(0xEA)
+B1_833d: STA_ZP(0xEC)
+B1_833f: LDA_ZP(0xED)
+B1_8341: ADC_ZP(0xEB)
+B1_8343: STA_ZP(0xED)
+B1_8345: LDA_ZP(0xEC)
+B1_8347: SEC()
+B1_8348: SBC_IMM(0x01)
+B1_834a: STA_ZP(0xEC)
+B1_834c: LDA_ZP(0xED)
+B1_834e: SBC_IMM(0x00)
+B1_8350: STA_ZP(0xED)
+B1_8352: LDA_ZP(0xE6)
+B1_8354: ASL_A()
+B1_8355: TAX()
+B1_8356: LDA_ZP(0xEC)
+B1_8358: STA_ABS_X(0x0454)
+B1_835b: LDA_ZP(0xED)
+B1_835d: STA_ABS_X(0x0455)
+B1_8360: INC_ZP(0xE6)
+B1_8362: LDA_ZP(0xE6)
+B1_8364: CMP_IMM(0x0A)
+B1_8366: CYCLE(2); if (SR_Z) goto B1_836b;
+B1_8368: PC = 0xa2df; /* UNRES JMP $a2df */ goto LABEL_END;
+B1_836b: LDA_ABS(0x0660)
+B1_836e: LSR_A()
+B1_836f: LSR_A()
+B1_8370: STA_ZP(0x26)
+B1_8372: LDA_ABS(0x0660)
+B1_8375: AND_IMM(0x03)
+B1_8377: LSR_A()
+B1_8378: STA_ABS(0x0448)
+B1_837b: LDA_IMM(0x00)
+B1_837d: CYCLE(2); if (!SR_C) goto B1_8381;
+B1_837f: LDA_IMM(0x05)
+B1_8381: STA_ABS(0x0446)
+B1_8384: LDA_ABS(0x0661)
+B1_8387: ROL_A()
+B1_8388: LDA_IMM(0x00)
+B1_838a: ROL_A()
+B1_838b: STA_ABS(0x044d)
+B1_838e: LDA_IMM(0x00)
+B1_8390: STA_ZP(0x4C)
+B1_8392: LDA_IMM(0x01)
+B1_8394: STA_ABS(0x0700)
+B1_8397: CYCLE(6); SetStack(SP, 153); SetStack(SP - 1, 131); SP -= 2; goto B26_9ba0;
+B1_839a: RTS()
+B1_839b: LDA_IMM(0x00)
+B1_839d: STA_ZP(0xEA)
+B1_839f: LDA_IMM(0x0B)
+B1_83a1: CYCLE(6); SetStack(SP, 163); SetStack(SP - 1, 131); SP -= 2; PC = 0xa3b4; /* UNRES JSR $a3b4 */ goto LABEL_END;
+B1_83a4: LDA_ZP(0x26)
+B1_83a6: CMP_IMM(0x10)
+B1_83a8: CYCLE(2); if (!SR_C) goto B1_83b3;
+B1_83b3: RTS()
+B1_83b4: STA_ZP(0xEB)
+B1_83b6: LDA_ZP(0xEA)
+B1_83b8: CYCLE(6); SetStack(SP, 186); SetStack(SP - 1, 131); SP -= 2; goto B30_c50c;
+B1_83bb: LDY_IMM(0x00)
+B1_83bd: LDA_IDY(0x34)
+B1_83bf: CYCLE(6); SetStack(SP, 193); SetStack(SP - 1, 131); SP -= 2; PC = 0xb013; /* UNRES JSR $b013 */ goto LABEL_END;
+B1_83c2: CYCLE(6); SetStack(SP, 196); SetStack(SP - 1, 131); SP -= 2; PC = 0xb02e; /* UNRES JSR $b02e */ goto LABEL_END;
+B1_83c5: LDY_IMM(0x03)
+B1_83c7: STA_IDY(0x34)
+B1_83c9: INC_ZP(0xEA)
+B1_83cb: DEC_ZP(0xEB)
+B1_83cd: CYCLE(2); if (!SR_Z) goto B1_83b6;
+B1_83cf: RTS()
+B1_83d0: LDA_ZP(0x3A)
+B1_83d2: AND_IMM(0x04)
+B1_83d4: CYCLE(2); if (SR_Z) goto B1_83f9;
+B1_83d6: LDX_ZP(0xED)
+B1_83d8: LDA_ABS_X(0xb22d)
+B1_83db: AND_IMM(0x80)
+B1_83dd: LSR_A()
+B1_83de: SEC()
+B1_83df: ROR_A()
+B1_83e0: LSR_A()
+B1_83e1: STA_ABS(0x0558)
+B1_83e4: CLC()
+B1_83e5: ADC_IMM(0x08)
+B1_83e7: STA_ABS(0x055c)
+B1_83ea: LDA_ABS_X(0xb22d)
+B1_83ed: AND_IMM(0x7F)
+B1_83ef: CLC()
+B1_83f0: ADC_IMM(0x50)
+B1_83f2: STA_ABS(0x055b)
+B1_83f5: STA_ABS(0x055f)
+B1_83f8: RTS()
+B1_83f9: LDA_IMM(0xF8)
+B1_83fb: STA_ABS(0x0558)
+B1_83fe: STA_ABS(0x055c)
+B1_8401: RTS()
+B1_8402: LDA_ABS(0x0661)
+B1_8405: AND_IMM(0xF0)
+B1_8407: CLC()
+B1_8408: ADC_ABS(0x0663)
+B1_840b: STA_ZP(0xEC)
+B1_840d: LDA_IMM(0x00)
+B1_840f: ADC_IMM(0x00)
+B1_8411: STA_ZP(0xED)
+B1_8413: LDX_IMM(0x00)
+B1_8415: LDA_ABS_X(0x0656)
+B1_8418: CLC()
+B1_8419: ADC_ZP(0xEC)
+B1_841b: STA_ZP(0xEC)
+B1_841d: LDA_ZP(0xED)
+B1_841f: ADC_IMM(0x00)
+B1_8421: STA_ZP(0xED)
+B1_8423: INX()
+B1_8424: CPX_IMM(0x0B)
+B1_8426: CYCLE(2); if (!SR_Z) goto B1_8415;
+B1_8428: LDA_ZP(0xEC)
+B1_842a: CLC()
+B1_842b: ADC_IMM(0x09)
+B1_842d: STA_ZP(0xEC)
+B1_842f: LDA_ZP(0xED)
+B1_8431: ADC_IMM(0x03)
+B1_8433: AND_IMM(0x0F)
+B1_8435: STA_ZP(0xED)
+B1_8437: RTS()
+B1_8438: LDY_ABS_X(0xad8a)
+B1_843b: TXA()
+B1_843c: AND_IMM(0x03)
+B1_843e: CYCLE(2); if (SR_Z) goto B1_846e;
+B1_8440: CMP_IMM(0x01)
+B1_8442: CYCLE(2); if (SR_Z) goto B1_845e;
+B1_8444: CMP_IMM(0x02)
+B1_8446: CYCLE(2); if (SR_Z) goto B1_844e;
+B1_8448: LDA_ABS_Y(0x0656)
+B1_844b: AND_IMM(0x3F)
+B1_844d: RTS()
+B1_844e: LDA_ABS_Y(0x0657)
+B1_8451: ASL_A()
+B1_8452: STA_ZP(0xEC)
+B1_8454: LDA_ABS_Y(0x0656)
+B1_8457: AND_IMM(0x0F)
+B1_8459: ROL_A()
+B1_845a: ASL_ZP(0xEC)
+B1_845c: ROL_A()
+B1_845d: RTS()
+B1_845e: LDA_ABS_Y(0x0656)
+B1_8461: LSR_A()
+B1_8462: STA_ZP(0xEC)
+B1_8464: LDA_ABS_Y(0x0657)
+B1_8467: ROR_A()
+B1_8468: LSR_ZP(0xEC)
+B1_846a: ROR_A()
+B1_846b: LSR_A()
+B1_846c: LSR_A()
+B1_846d: RTS()
+B1_846e: LDA_ABS_Y(0x0656)
+B1_8471: LSR_A()
+B1_8472: LSR_A()
+B1_8473: RTS()
+B1_8474: AND_IMM(0x3F)
+B1_8476: STA_ZP(0xEC)
+B1_8478: LDY_ABS_X(0xad8a)
+B1_847b: TXA()
+B1_847c: AND_IMM(0x03)
+B1_847e: CYCLE(2); if (SR_Z) goto B1_84c9;
+B1_8480: CMP_IMM(0x01)
+B1_8482: CYCLE(2); if (SR_Z) goto B1_84ac;
+B1_8484: CMP_IMM(0x02)
+B1_8486: CYCLE(2); if (SR_Z) goto B1_8493;
+B1_8488: LDA_ABS_Y(0x0656)
+B1_848b: AND_IMM(0xC0)
+B1_848d: ORA_ZP(0xEC)
+B1_848f: STA_ABS_Y(0x0656)
+B1_8492: RTS()
+B1_8493: LDA_ABS_Y(0x0657)
+B1_8496: ASL_A()
+B1_8497: ASL_A()
+B1_8498: LSR_ZP(0xEC)
+B1_849a: ROR_A()
+B1_849b: LSR_ZP(0xEC)
+B1_849d: ROR_A()
+B1_849e: STA_ABS_Y(0x0657)
+B1_84a1: LDA_ABS_Y(0x0656)
+B1_84a4: AND_IMM(0xF0)
+B1_84a6: ORA_ZP(0xEC)
+B1_84a8: STA_ABS_Y(0x0656)
+B1_84ab: RTS()
+B1_84ac: ASL_ZP(0xEC)
+B1_84ae: ASL_ZP(0xEC)
+B1_84b0: LDA_ABS_Y(0x0656)
+B1_84b3: LSR_A()
+B1_84b4: LSR_A()
+B1_84b5: ASL_ZP(0xEC)
+B1_84b7: ROL_A()
+B1_84b8: ASL_ZP(0xEC)
+B1_84ba: ROL_A()
+B1_84bb: STA_ABS_Y(0x0656)
+B1_84be: LDA_ABS_Y(0x0657)
+B1_84c1: AND_IMM(0x0F)
+B1_84c3: ORA_ZP(0xEC)
+B1_84c5: STA_ABS_Y(0x0657)
+B1_84c8: RTS()
+B1_84c9: ASL_ZP(0xEC)
+B1_84cb: ASL_ZP(0xEC)
+B1_84cd: LDA_ABS_Y(0x0656)
+B1_84d0: AND_IMM(0x03)
+B1_84d2: ORA_ZP(0xEC)
+B1_84d4: STA_ABS_Y(0x0656)
+B1_84d7: RTS()
+B1_84d8: STY_ZP(0xE8)
+B1_84da: AND_IMM(0x3F)
+B1_84dc: CLC()
+B1_84dd: ADC_IMM(0xD8)
+B1_84df: TAY()
+B1_84e0: LDX_IMM(0x23)
+B1_84e2: LDA_IMM(0x01)
+B1_84e4: STA_ZP(0xE9)
+B1_84e6: LDA_ZP(0xE8)
+B1_84e8: CYCLE(3); PC = 0x9895; goto B0_9895;
+B1_84eb: LDX_IMM(0x6A)
+B1_84ed: LDY_IMM(0x6B)
+B1_84ef: CYCLE(6); SetStack(SP, 241); SetStack(SP - 1, 132); SP -= 2; goto B0_9b6f;
+B1_84f2: LDX_IMM(0x7A)
+B1_84f4: LDY_IMM(0x7B)
+B1_84f6: CYCLE(6); SetStack(SP, 248); SetStack(SP - 1, 132); SP -= 2; goto B26_9b74;
+B1_84f9: CYCLE(6); SetStack(SP, 251); SetStack(SP - 1, 132); SP -= 2; goto B0_9b7f;
+B1_84fc: LDY_IMM(0x05)
+B1_84fe: LDX_IMM(0xB3)
+B1_8500: CYCLE(6); SetStack(SP, 2); SetStack(SP - 1, 133); SP -= 2; PC = 0xb0c0; /* UNRES JSR $b0c0 */ goto LABEL_END;
+B1_8503: LDA_IMM(0x00)
+B1_8505: STA_ZP(0x44)
+B1_8507: STA_ZP(0x45)
+B1_8509: LDY_IMM(0xCC)
+B1_850b: LDA_ABS_Y(0xb271)
+B1_850e: STA_ABS_Y(0x039c)
+B1_8511: INY()
+B1_8512: CYCLE(2); if (!SR_Z) goto B1_850b;
+B1_8514: LDX_ZP(0x26)
+B1_8516: LDA_ABS_X(0xbcd1)
+B1_8519: AND_IMM(0xF0)
+B1_851b: LSR_A()
+B1_851c: LSR_A()
+B1_851d: LSR_A()
+B1_851e: TAX()
+B1_851f: LDY_ABS_X(0xbcf3)
+B1_8522: LDA_ABS_X(0xbcf4)
+B1_8525: TAX()
+B1_8526: CYCLE(6); SetStack(SP, 40); SetStack(SP - 1, 133); SP -= 2; goto B0_9d27;
+B1_8529: LDX_ZP(0x26)
+B1_852b: LDA_ABS_X(0xbcd1)
+B1_852e: AND_IMM(0x0F)
+B1_8530: ASL_A()
+B1_8531: TAX()
+B1_8532: LDY_ABS_X(0xbd64)
+B1_8535: LDA_ABS_X(0xbd65)
+B1_8538: TAX()
+B1_8539: LDA_IMM(0x07)
+B1_853b: STA_ZP(0xE8)
+B1_853d: LDA_IMM(0x22)
+B1_853f: STA_ZP(0xE9)
+B1_8541: CYCLE(6); SetStack(SP, 67); SetStack(SP - 1, 133); SP -= 2; goto B0_9d50;
+B1_8544: LDA_ZP(0x2A)
+B1_8546: LDY_IMM(0xD0)
+B1_8548: LDX_IMM(0x21)
+B1_854a: CYCLE(6); SetStack(SP, 76); SetStack(SP - 1, 133); SP -= 2; PC = 0xa63c; /* UNRES JSR $a63c */ goto LABEL_END;
+B1_854d: LDA_IMM(0x24)
+B1_854f: CMP_ZP(0x2B)
+B1_8551: LDA_ZP(0x2B)
+B1_8553: SBC_IMM(0x00)
+B1_8555: LDY_IMM(0x50)
+B1_8557: LDX_IMM(0x22)
+B1_8559: CYCLE(6); SetStack(SP, 91); SetStack(SP - 1, 133); SP -= 2; PC = 0xa63c; /* UNRES JSR $a63c */ goto LABEL_END;
+B1_855c: LDA_IMM(0x00)
+B1_855e: STA_ZP(0x7B)
+B1_8560: LDA_IMM(0x00)
+B1_8562: STA_ZP(0x8E)
+B1_8564: LDA_IMM(0x2E)
+B1_8566: STA_ZP(0x8F)
+B1_8568: LDA_IMM(0x04)
+B1_856a: LDX_IMM(0x37)
+B1_856c: CYCLE(6); SetStack(SP, 110); SetStack(SP - 1, 133); SP -= 2; goto B0_997a;
+B1_856f: LDX_IMM(0xF0)
+B1_8571: LDA_IMM(0x01)
+B1_8573: CYCLE(6); SetStack(SP, 117); SetStack(SP - 1, 133); SP -= 2; goto B0_9fa8;
+B1_8576: LDA_ZP(0x1E)
+B1_8578: CYCLE(2); if (SR_N) goto B1_857d;
+B1_857a: DEX()
+B1_857b: CYCLE(2); if (!SR_Z) goto B1_8571;
+B1_857d: CYCLE(6); SetStack(SP, 127); SetStack(SP - 1, 133); SP -= 2; goto B26_99f0;
+B1_8580: CYCLE(6); SetStack(SP, 130); SetStack(SP - 1, 133); SP -= 2; goto B0_98a0;
+B1_8583: LDA_IMM(0x00)
+B1_8585: STA_ZP(0xED)
+B1_8587: STA_ZP(0xEC)
+B1_8589: LDA_IMM(0x0B)
+B1_858b: CYCLE(6); SetStack(SP, 141); SetStack(SP - 1, 133); SP -= 2; PC = 0xa611; /* UNRES JSR $a611 */ goto LABEL_END;
+B1_858e: LDA_ZP(0x26)
+B1_8590: CMP_IMM(0x10)
+B1_8592: CYCLE(2); if (!SR_C) goto B1_859d;
+B1_8594: LDA_IMM(0x16)
+B1_8596: STA_ZP(0xED)
+B1_8598: LDA_IMM(0x0A)
+B1_859a: CYCLE(6); SetStack(SP, 156); SetStack(SP - 1, 133); SP -= 2; PC = 0xa611; /* UNRES JSR $a611 */ goto LABEL_END;
+B1_859d: LDA_ZP(0xE4)
+B1_859f: CMP_ZP(0x26)
+B1_85a1: CYCLE(2); if (SR_C) goto B1_85b1;
+B1_85a3: LDA_ZP(0x26)
+B1_85a5: CMP_IMM(0x06)
+B1_85a7: CYCLE(2); if (SR_Z) goto B1_8610;
+B1_85a9: CMP_IMM(0x0C)
+B1_85ab: CYCLE(2); if (SR_Z) goto B1_8610;
+B1_85ad: CMP_IMM(0x10)
+B1_85af: CYCLE(2); if (SR_Z) goto B1_8610;
+B1_85b1: LDA_ZP(0xEC)
+B1_85b3: CYCLE(2); if (SR_Z) goto B1_8610;
+B1_85b5: LDX_ZP(0x26)
+B1_85b7: LDA_ABS_X(0xb3f9)
+B1_85ba: CYCLE(6); SetStack(SP, 188); SetStack(SP - 1, 133); SP -= 2; goto B26_8464;
+B1_85bd: CYCLE(6); SetStack(SP, 191); SetStack(SP - 1, 133); SP -= 2; goto B28_82a9;
+B1_85c0: LDA_IMM(0x00)
+B1_85c2: STA_ZP(0xED)
+B1_85c4: STA_ZP(0xEA)
+B1_85c6: LDX_ZP(0xED)
+B1_85c8: LDA_ABS_X(0x0656)
+B1_85cb: CYCLE(6); SetStack(SP, 205); SetStack(SP - 1, 133); SP -= 2; goto B30_c53c;
+B1_85ce: LDA_ZP(0xEA)
+B1_85d0: ASL_A()
+B1_85d1: TAX()
+B1_85d2: LDA_ABS_X(0xbc58)
+B1_85d5: STA_ZP(0xE8)
+B1_85d7: LDA_ABS_X(0xbc59)
+B1_85da: STA_ZP(0xE9)
+B1_85dc: LDY_ZP(0x30)
+B1_85de: LDX_ZP(0x31)
+B1_85e0: CYCLE(6); SetStack(SP, 226); SetStack(SP - 1, 133); SP -= 2; goto B0_9d50;
+B1_85e3: INC_ZP(0xEA)
+B1_85e5: INC_ZP(0xED)
+B1_85e7: DEC_ZP(0xEC)
+B1_85e9: CYCLE(2); if (SR_Z) goto B1_860a;
+B1_85eb: LDA_ZP(0xED)
+B1_85ed: CMP_IMM(0x0B)
+B1_85ef: CYCLE(2); if (!SR_Z) goto B1_85c6;
+B1_85f1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 133); SP -= 2; goto B1_89a3;
+B1_85f4: LDA_IMM(0x44)
+B1_85f6: STA_ZP(0xE6)
+B1_85f8: LDA_IMM(0x22)
+B1_85fa: STA_ZP(0xE7)
+B1_85fc: LDY_IMM(0x08)
+B1_85fe: LDX_IMM(0x18)
+B1_8600: CYCLE(6); SetStack(SP, 2); SetStack(SP - 1, 134); SP -= 2; goto B0_98e8;
+B1_8603: LDA_IMM(0x00)
+B1_8605: STA_ZP(0xEA)
+B1_8607: PC = 0xa5c6; /* UNRES JMP $a5c6 */ goto LABEL_END;
+B1_860a: CYCLE(6); SetStack(SP, 12); SetStack(SP - 1, 134); SP -= 2; goto B1_89a3;
+B1_860d: CYCLE(6); SetStack(SP, 15); SetStack(SP - 1, 134); SP -= 2; goto B26_99f0;
+B1_8610: RTS()
+B1_8611: STA_ZP(0xEB)
+B1_8613: LDA_ZP(0xED)
+B1_8615: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 134); SP -= 2; goto B30_c50c;
+B1_8618: LDY_IMM(0x00)
+B1_861a: LDA_IDY(0x34)
+B1_861c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 134); SP -= 2; PC = 0xb013; /* UNRES JSR $b013 */ goto LABEL_END;
+B1_861f: CYCLE(6); SetStack(SP, 33); SetStack(SP - 1, 134); SP -= 2; PC = 0xb02e; /* UNRES JSR $b02e */ goto LABEL_END;
+B1_8622: LDY_IMM(0x03)
+B1_8624: CMP_IDY(0x34)
+B1_8626: CYCLE(2); if (SR_Z) goto B1_8635;
+B1_8628: STA_IDY(0x34)
+B1_862a: LDY_IMM(0x00)
+B1_862c: LDA_IDY(0x34)
+B1_862e: LDX_ZP(0xEC)
+B1_8630: STA_ABS_X(0x0656)
+B1_8633: INC_ZP(0xEC)
+B1_8635: INC_ZP(0xED)
+B1_8637: DEC_ZP(0xEB)
+B1_8639: CYCLE(2); if (!SR_Z) goto B1_8613;
+B1_863b: RTS()
+B1_863c: STY_ZP(0xE8)
+B1_863e: STX_ZP(0xE9)
+B1_8640: ASL_A()
+B1_8641: TAX()
+B1_8642: LDY_ABS_X(0xbda8)
+B1_8645: LDA_ABS_X(0xbda9)
+B1_8648: TAX()
+B1_8649: CYCLE(3); PC = 0x9d50; goto B0_9d50;
+B1_864c: CYCLE(6); SetStack(SP, 78); SetStack(SP - 1, 134); SP -= 2; goto B0_98a0;
+B1_864f: CYCLE(6); SetStack(SP, 81); SetStack(SP - 1, 134); SP -= 2; goto B0_9b7f;
+B1_8652: LDX_ZP(0x26)
+B1_8654: LDA_ABS_X(0xb393)
+B1_8657: CYCLE(6); SetStack(SP, 89); SetStack(SP - 1, 134); SP -= 2; goto B26_8464;
+B1_865a: CYCLE(6); SetStack(SP, 92); SetStack(SP - 1, 134); SP -= 2; goto B28_82a9;
+B1_865d: LDA_IMM(0x01)
+B1_865f: CYCLE(6); SetStack(SP, 97); SetStack(SP - 1, 134); SP -= 2; goto B16_8920;
+B1_8662: LDY_IMM(0xD0)
+B1_8664: LDX_IMM(0xAD)
+B1_8666: CYCLE(6); SetStack(SP, 104); SetStack(SP - 1, 134); SP -= 2; goto B0_9c3a;
+B1_8669: CYCLE(6); SetStack(SP, 107); SetStack(SP - 1, 134); SP -= 2; goto B0_9be8;
+B1_866c: LDY_IMM(0x73)
+B1_866e: LDX_IMM(0xA6)
+B1_8670: CYCLE(3); PC = 0x9c28; goto B0_9c28;
+B1_867b: LDX_ZP(0x26)
+B1_867d: LDA_ABS_X(0xb371)
+B1_8680: CYCLE(6); SetStack(SP, 130); SetStack(SP - 1, 134); SP -= 2; goto B26_8464;
+B1_8683: LDA_IMM(0x01)
+B1_8685: CYCLE(6); SetStack(SP, 135); SetStack(SP - 1, 134); SP -= 2; goto B0_9fa8;
+B1_8688: LDA_ZP(0x4D)
+B1_868a: ORA_ZP(0x4E)
+B1_868c: CYCLE(2); if (SR_Z) goto B1_8662;
+B1_868e: LDA_ZP(0x1E)
+B1_8690: AND_IMM(0x10)
+B1_8692: CYCLE(2); if (SR_Z) goto B1_8683;
+B1_869f: CYCLE(6); SetStack(SP, 161); SetStack(SP - 1, 134); SP -= 2; goto B26_99f0;
+B1_86a2: LDX_ZP(0x26)
+B1_86a4: LDA_ABS_X(0xb3d7)
+B1_86a7: CYCLE(6); SetStack(SP, 169); SetStack(SP - 1, 134); SP -= 2; goto B26_8464;
+B1_86aa: CYCLE(6); SetStack(SP, 172); SetStack(SP - 1, 134); SP -= 2; goto B28_82a9;
+B1_86ad: CYCLE(6); SetStack(SP, 175); SetStack(SP - 1, 134); SP -= 2; PC = 0xa01e; /* UNRES JSR $a01e */ goto LABEL_END;
+B1_86b0: LDA_IMM(0x4E)
+B1_86b2: CYCLE(6); SetStack(SP, 180); SetStack(SP - 1, 134); SP -= 2; goto B26_8464;
+B1_86b5: CYCLE(6); SetStack(SP, 183); SetStack(SP - 1, 134); SP -= 2; goto B28_82a9;
+B1_86b8: CYCLE(6); SetStack(SP, 186); SetStack(SP - 1, 134); SP -= 2; goto B26_99f0;
+B1_86bb: PC = 0xa64c; /* UNRES JMP $a64c */ goto LABEL_END;
+B1_86be: CYCLE(6); SetStack(SP, 192); SetStack(SP - 1, 134); SP -= 2; PC = 0xa721; /* UNRES JSR $a721 */ goto LABEL_END;
+B1_86c1: PC = 0xa64c; /* UNRES JMP $a64c */ goto LABEL_END;
+B1_86c4: LDX_ZP(0x26)
+B1_86c6: LDA_ABS_X(0xb41b)
+B1_86c9: CYCLE(6); SetStack(SP, 203); SetStack(SP - 1, 134); SP -= 2; goto B26_8464;
+B1_86cc: CYCLE(6); SetStack(SP, 206); SetStack(SP - 1, 134); SP -= 2; goto B28_82a9;
+B1_86cf: PC = 0xa715; /* UNRES JMP $a715 */ goto LABEL_END;
+B1_86d2: LDA_IMM(0x55)
+B1_86d4: STA_ABS(0x0700)
+B1_86d7: CYCLE(6); SetStack(SP, 217); SetStack(SP - 1, 134); SP -= 2; goto B0_98a0;
+B1_86da: CYCLE(6); SetStack(SP, 220); SetStack(SP - 1, 134); SP -= 2; goto B0_9b7f;
+B1_86dd: LDX_ZP(0x26)
+B1_86df: LDA_ABS_X(0xb3b5)
+B1_86e2: CYCLE(6); SetStack(SP, 228); SetStack(SP - 1, 134); SP -= 2; goto B26_8464;
+B1_86e5: PC = 0xa6f9; /* UNRES JMP $a6f9 */ goto LABEL_END;
+B1_86e8: CYCLE(6); SetStack(SP, 234); SetStack(SP - 1, 134); SP -= 2; goto B0_98a0;
+B1_86eb: CYCLE(6); SetStack(SP, 237); SetStack(SP - 1, 134); SP -= 2; goto B0_9b7f;
+B1_86ee: LDX_ZP(0x26)
+B1_86f0: LDA_ABS_X(0xb3b5)
+B1_86f3: CLC()
+B1_86f4: ADC_IMM(0x01)
+B1_86f6: CYCLE(6); SetStack(SP, 248); SetStack(SP - 1, 134); SP -= 2; goto B26_8464;
+B1_86f9: CYCLE(6); SetStack(SP, 251); SetStack(SP - 1, 134); SP -= 2; goto B28_82a9;
+B1_86fc: LDY_IMM(0xD6)
+B1_86fe: LDX_IMM(0xAD)
+B1_8700: CYCLE(6); SetStack(SP, 2); SetStack(SP - 1, 135); SP -= 2; goto B0_9c3a;
+B1_8703: CYCLE(6); SetStack(SP, 5); SetStack(SP - 1, 135); SP -= 2; goto B0_9be8;
+B1_8706: CMP_IMM(0x02)
+B1_8708: CYCLE(2); if (SR_Z) goto B1_8710;
+B1_870a: CYCLE(6); SetStack(SP, 12); SetStack(SP - 1, 135); SP -= 2; PC = 0xa721; /* UNRES JSR $a721 */ goto LABEL_END;
+B1_870d: PC = 0xa6e8; /* UNRES JMP $a6e8 */ goto LABEL_END;
+B1_8710: LDA_IMM(0x31)
+B1_8712: STA_ABS(0x0700)
+B1_8715: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 135); SP -= 2; goto B26_9ba0;
+B1_8718: RTS()
+B1_8719: LDY_IMM(0x83)
+B1_871b: LDX_IMM(0xB5)
+B1_871d: CYCLE(6); SetStack(SP, 31); SetStack(SP - 1, 135); SP -= 2; goto B0_97ab;
+B1_8720: RTS()
+B1_8721: CYCLE(6); SetStack(SP, 35); SetStack(SP - 1, 135); SP -= 2; goto B26_9ba0;
+B1_8724: LDX_IMM(0x1F)
+B1_8726: LDY_IMM(0x2E)
+B1_8728: CYCLE(6); SetStack(SP, 42); SetStack(SP - 1, 135); SP -= 2; goto B0_9b6f;
+B1_872b: LDA_IMM(0x00)
+B1_872d: STA_ZP(0x7B)
+B1_872f: CYCLE(6); SetStack(SP, 49); SetStack(SP - 1, 135); SP -= 2; goto B16_8920;
+B1_8732: LDA_IMM(0x00)
+B1_8734: STA_ZP(0x8E)
+B1_8736: LDA_IMM(0x2E)
+B1_8738: STA_ZP(0x8F)
+B1_873a: LDA_ZP(0x2A)
+B1_873c: CMP_IMM(0x02)
+B1_873e: CYCLE(2); if (!SR_Z) goto B1_8743;
+B1_8740: PC = 0xa84e; /* UNRES JMP $a84e */ goto LABEL_END;
+B1_8743: LDY_IMM(0x3D)
+B1_8745: LDX_IMM(0xB4)
+B1_8747: CYCLE(6); SetStack(SP, 73); SetStack(SP - 1, 135); SP -= 2; PC = 0xb0c0; /* UNRES JSR $b0c0 */ goto LABEL_END;
+B1_874a: LDA_IMM(0x00)
+B1_874c: CYCLE(6); SetStack(SP, 78); SetStack(SP - 1, 135); SP -= 2; PC = 0xade9; /* UNRES JSR $ade9 */ goto LABEL_END;
+B1_874f: LDA_IMM(0x88)
+B1_8751: STA_ZP(0xE6)
+B1_8753: LDA_IMM(0x20)
+B1_8755: STA_ZP(0xE7)
+B1_8757: CYCLE(6); SetStack(SP, 89); SetStack(SP - 1, 135); SP -= 2; PC = 0xaeac; /* UNRES JSR $aeac */ goto LABEL_END;
+B1_875a: LDA_IMM(0x00)
+B1_875c: CYCLE(6); SetStack(SP, 94); SetStack(SP - 1, 135); SP -= 2; PC = 0xae01; /* UNRES JSR $ae01 */ goto LABEL_END;
+B1_875f: LDY_IMM(0xFC)
+B1_8761: LDA_ABS_Y(0xaca2)
+B1_8764: STA_ABS_Y(0x0468)
+B1_8767: INY()
+B1_8768: CYCLE(2); if (!SR_Z) goto B1_8761;
+B1_876a: LDA_IMM(0x03)
+B1_876c: LDX_IMM(0x39)
+B1_876e: CYCLE(6); SetStack(SP, 112); SetStack(SP - 1, 135); SP -= 2; goto B0_997a;
+B1_8771: LDA_IMM(0xFC)
+B1_8773: LDX_IMM(0x38)
+B1_8775: LDY_IMM(0x78)
+B1_8777: CYCLE(6); SetStack(SP, 121); SetStack(SP - 1, 135); SP -= 2; goto B0_9be3;
+B1_877a: LDY_IMM(0x81)
+B1_877c: LDX_IMM(0xA7)
+B1_877e: CYCLE(3); PC = 0x9c28; goto B0_9c28;
+B1_878b: LDY_IMM(0xEB)
+B1_878d: LDX_IMM(0xB6)
+B1_878f: CYCLE(6); SetStack(SP, 145); SetStack(SP - 1, 135); SP -= 2; goto B0_97ab;
+B1_8792: LDX_IMM(0x90)
+B1_8794: CYCLE(6); SetStack(SP, 150); SetStack(SP - 1, 135); SP -= 2; PC = 0xae1e; /* UNRES JSR $ae1e */ goto LABEL_END;
+B1_8797: LDA_IMM(0x00)
+B1_8799: CYCLE(6); SetStack(SP, 155); SetStack(SP - 1, 135); SP -= 2; PC = 0xae3a; /* UNRES JSR $ae3a */ goto LABEL_END;
+B1_879c: LDA_IMM(0xF8)
+B1_879e: STA_ABS(0x0560)
+B1_87a1: CYCLE(6); SetStack(SP, 163); SetStack(SP - 1, 135); SP -= 2; PC = 0xaa77; /* UNRES JSR $aa77 */ goto LABEL_END;
+B1_87a4: LDA_IMM(0x38)
+B1_87a6: STA_ABS(0x0564)
+B1_87a9: PC = 0xa771; /* UNRES JMP $a771 */ goto LABEL_END;
+B1_87ac: LDY_IMM(0x90)
+B1_87ae: LDX_IMM(0xB7)
+B1_87b0: CYCLE(6); SetStack(SP, 178); SetStack(SP - 1, 135); SP -= 2; goto B0_97ab;
+B1_87b3: LDY_IMM(0xA2)
+B1_87b5: LDX_IMM(0xAD)
+B1_87b7: CYCLE(6); SetStack(SP, 185); SetStack(SP - 1, 135); SP -= 2; PC = 0xae77; /* UNRES JSR $ae77 */ goto LABEL_END;
+B1_87ba: CYCLE(6); SetStack(SP, 188); SetStack(SP - 1, 135); SP -= 2; PC = 0xaa77; /* UNRES JSR $aa77 */ goto LABEL_END;
+B1_87bd: LDA_IMM(0x48)
+B1_87bf: STA_ABS(0x0564)
+B1_87c2: PC = 0xa771; /* UNRES JMP $a771 */ goto LABEL_END;
+B1_87c5: LDA_IMM(0x58)
+B1_87c7: STA_ABS(0x0564)
+B1_87ca: LDA_IMM(0x94)
+B1_87cc: STA_ZP(0x4C)
+B1_87ce: LDY_IMM(0xA8)
+B1_87d0: LDX_IMM(0xAD)
+B1_87d2: CYCLE(6); SetStack(SP, 212); SetStack(SP - 1, 135); SP -= 2; goto B0_9c3a;
+B1_87d5: LDA_IMM(0x01)
+B1_87d7: CYCLE(6); SetStack(SP, 217); SetStack(SP - 1, 135); SP -= 2; goto B0_9fa8;
+B1_87da: CYCLE(6); SetStack(SP, 220); SetStack(SP - 1, 135); SP -= 2; goto B0_9cc9;
+B1_87dd: BIT_ZP(0x1E)
+B1_87df: CYCLE(2); if (SR_V) goto B1_883c;
+B1_87e1: CYCLE(2); if (!SR_N) goto B1_87d5;
+B1_87e3: LDA_IMM(0x01)
+B1_87e5: STA_ABS(0x0562)
+B1_87e8: CYCLE(6); SetStack(SP, 234); SetStack(SP - 1, 135); SP -= 2; goto B26_9cd3;
+B1_87eb: LDY_IMM(0xAE)
+B1_87ed: LDX_IMM(0xAD)
+B1_87ef: LDA_ABS(0x0560)
+B1_87f2: CYCLE(6); SetStack(SP, 244); SetStack(SP - 1, 135); SP -= 2; goto B0_9c3c;
+B1_87f5: LDA_IMM(0x01)
+B1_87f7: CYCLE(6); SetStack(SP, 249); SetStack(SP - 1, 135); SP -= 2; goto B0_9fa8;
+B1_87fa: CYCLE(6); SetStack(SP, 252); SetStack(SP - 1, 135); SP -= 2; goto B0_9cc9;
+B1_87fd: BIT_ZP(0x1E)
+B1_87ff: CYCLE(2); if (SR_V) goto B1_883c;
+B1_8801: CYCLE(2); if (!SR_N) goto B1_87f5;
+B1_8803: LDY_ABS(0x0560)
+B1_8806: LDX_IMM(0x00)
+B1_8808: CYCLE(6); SetStack(SP, 10); SetStack(SP - 1, 136); SP -= 2; goto B0_9d08;
+B1_880b: LDA_ZP(0x34)
+B1_880d: STA_ZP(0xE6)
+B1_880f: LDA_ZP(0x35)
+B1_8811: STA_ZP(0xE7)
+B1_8813: LDY_ABS(0x055c)
+B1_8816: LDX_IMM(0x00)
+B1_8818: CYCLE(6); SetStack(SP, 26); SetStack(SP - 1, 136); SP -= 2; goto B0_9d08;
+B1_881b: CYCLE(6); SetStack(SP, 29); SetStack(SP - 1, 136); SP -= 2; PC = 0xaf67; /* UNRES JSR $af67 */ goto LABEL_END;
+B1_881e: LDA_IMM(0x88)
+B1_8820: STA_ZP(0xE6)
+B1_8822: LDA_IMM(0x20)
+B1_8824: STA_ZP(0xE7)
+B1_8826: CYCLE(6); SetStack(SP, 40); SetStack(SP - 1, 136); SP -= 2; PC = 0xaeac; /* UNRES JSR $aeac */ goto LABEL_END;
+B1_8829: LDA_IMM(0xF8)
+B1_882b: STA_ABS(0x055c)
+B1_882e: STA_ABS(0x0560)
+B1_8831: LDA_IMM(0x00)
+B1_8833: STA_ABS(0x0562)
+B1_8836: CYCLE(6); SetStack(SP, 56); SetStack(SP - 1, 136); SP -= 2; PC = 0xae01; /* UNRES JSR $ae01 */ goto LABEL_END;
+B1_8839: PC = 0xa7ce; /* UNRES JMP $a7ce */ goto LABEL_END;
+B1_883c: LDA_IMM(0x00)
+B1_883e: STA_ZP(0x4C)
+B1_8840: CYCLE(6); SetStack(SP, 66); SetStack(SP - 1, 136); SP -= 2; PC = 0xae01; /* UNRES JSR $ae01 */ goto LABEL_END;
+B1_8843: LDA_IMM(0xF8)
+B1_8845: STA_ABS(0x055c)
+B1_8848: STA_ABS(0x0560)
+B1_884b: PC = 0xa771; /* UNRES JMP $a771 */ goto LABEL_END;
+B1_884e: LDY_IMM(0x51)
+B1_8850: LDX_IMM(0xB4)
+B1_8852: CYCLE(6); SetStack(SP, 84); SetStack(SP - 1, 136); SP -= 2; PC = 0xb0c0; /* UNRES JSR $b0c0 */ goto LABEL_END;
+B1_8855: LDA_IMM(0xFC)
+B1_8857: CYCLE(6); SetStack(SP, 89); SetStack(SP - 1, 136); SP -= 2; PC = 0xade9; /* UNRES JSR $ade9 */ goto LABEL_END;
+B1_885a: LDA_IMM(0x85)
+B1_885c: STA_ZP(0xE6)
+B1_885e: LDA_IMM(0x20)
+B1_8860: STA_ZP(0xE7)
+B1_8862: CYCLE(6); SetStack(SP, 100); SetStack(SP - 1, 136); SP -= 2; PC = 0xaeac; /* UNRES JSR $aeac */ goto LABEL_END;
+B1_8865: LDA_IMM(0x99)
+B1_8867: STA_ZP(0xE6)
+B1_8869: LDA_IMM(0x20)
+B1_886b: STA_ZP(0xE7)
+B1_886d: CYCLE(6); SetStack(SP, 111); SetStack(SP - 1, 136); SP -= 2; PC = 0xaebe; /* UNRES JSR $aebe */ goto LABEL_END;
+B1_8870: LDA_IMM(0xD8)
+B1_8872: CYCLE(6); SetStack(SP, 116); SetStack(SP - 1, 136); SP -= 2; PC = 0xae01; /* UNRES JSR $ae01 */ goto LABEL_END;
+B1_8875: CYCLE(6); SetStack(SP, 119); SetStack(SP - 1, 136); SP -= 2; PC = 0xb0a1; /* UNRES JSR $b0a1 */ goto LABEL_END;
+B1_8878: CYCLE(6); SetStack(SP, 122); SetStack(SP - 1, 136); SP -= 2; PC = 0xaa7f; /* UNRES JSR $aa7f */ goto LABEL_END;
+B1_887b: LDY_IMM(0xFC)
+B1_887d: LDA_ABS_Y(0xacb8)
+B1_8880: STA_ABS_Y(0x0468)
+B1_8883: INY()
+B1_8884: CYCLE(2); if (!SR_Z) goto B1_887d;
+B1_8886: LDA_IMM(0x03)
+B1_8888: LDX_IMM(0x39)
+B1_888a: CYCLE(6); SetStack(SP, 140); SetStack(SP - 1, 136); SP -= 2; goto B0_997a;
+B1_888d: LDA_IMM(0xFC)
+B1_888f: LDX_IMM(0x38)
+B1_8891: LDY_IMM(0x78)
+B1_8893: CYCLE(6); SetStack(SP, 149); SetStack(SP - 1, 136); SP -= 2; goto B0_9be3;
+B1_8896: LDY_IMM(0x9D)
+B1_8898: LDX_IMM(0xA8)
+B1_889a: CYCLE(3); PC = 0x9c28; goto B0_9c28;
+B1_88a7: LDY_IMM(0xEB)
+B1_88a9: LDX_IMM(0xB6)
+B1_88ab: LDA_IMM(0xFB)
+B1_88ad: CYCLE(6); SetStack(SP, 175); SetStack(SP - 1, 136); SP -= 2; goto B0_97ad;
+B1_88b0: LDX_IMM(0x68)
+B1_88b2: CYCLE(6); SetStack(SP, 180); SetStack(SP - 1, 136); SP -= 2; PC = 0xae1e; /* UNRES JSR $ae1e */ goto LABEL_END;
+B1_88b5: LDA_IMM(0xD8)
+B1_88b7: CYCLE(6); SetStack(SP, 185); SetStack(SP - 1, 136); SP -= 2; PC = 0xae3a; /* UNRES JSR $ae3a */ goto LABEL_END;
+B1_88ba: LDA_IMM(0xF8)
+B1_88bc: STA_ABS(0x0560)
+B1_88bf: CYCLE(6); SetStack(SP, 193); SetStack(SP - 1, 136); SP -= 2; PC = 0xa719; /* UNRES JSR $a719 */ goto LABEL_END;
+B1_88c2: LDA_IMM(0x38)
+B1_88c4: STA_ABS(0x0564)
+B1_88c7: PC = 0xa88d; /* UNRES JMP $a88d */ goto LABEL_END;
+B1_88ca: LDY_IMM(0x90)
+B1_88cc: LDX_IMM(0xB7)
+B1_88ce: LDA_IMM(0xFB)
+B1_88d0: CYCLE(6); SetStack(SP, 210); SetStack(SP - 1, 136); SP -= 2; goto B0_97ad;
+B1_88d3: LDY_IMM(0xB8)
+B1_88d5: LDX_IMM(0xAD)
+B1_88d7: CYCLE(6); SetStack(SP, 217); SetStack(SP - 1, 136); SP -= 2; PC = 0xae77; /* UNRES JSR $ae77 */ goto LABEL_END;
+B1_88da: CYCLE(6); SetStack(SP, 220); SetStack(SP - 1, 136); SP -= 2; PC = 0xa719; /* UNRES JSR $a719 */ goto LABEL_END;
+B1_88dd: LDA_IMM(0x48)
+B1_88df: STA_ABS(0x0564)
+B1_88e2: PC = 0xa88d; /* UNRES JMP $a88d */ goto LABEL_END;
+B1_88e5: LDA_IMM(0x58)
+B1_88e7: STA_ABS(0x0564)
+B1_88ea: LDA_IMM(0x94)
+B1_88ec: STA_ZP(0x4C)
+B1_88ee: LDY_IMM(0xBE)
+B1_88f0: LDX_IMM(0xAD)
+B1_88f2: CYCLE(6); SetStack(SP, 244); SetStack(SP - 1, 136); SP -= 2; goto B0_9c3a;
+B1_88f5: LDA_ABS(0x0450)
+B1_88f8: CMP_IMM(0x03)
+B1_88fa: CYCLE(2); if (!SR_C) goto B1_8900;
+B1_88fc: LDA_IMM(0xB8)
+B1_88fe: STA_ZP(0xE6)
+B1_8900: LDA_IMM(0x01)
+B1_8902: CYCLE(6); SetStack(SP, 4); SetStack(SP - 1, 137); SP -= 2; goto B0_9fa8;
+B1_8905: CYCLE(6); SetStack(SP, 7); SetStack(SP - 1, 137); SP -= 2; goto B0_9cc9;
+B1_8908: BIT_ZP(0x1E)
+B1_890a: CYCLE(2); if (!SR_V) goto B1_890f;
+B1_890c: PC = 0xaa5f; /* UNRES JMP $aa5f */ goto LABEL_END;
+B1_890f: CYCLE(2); if (!SR_N) goto B1_8900;
+B1_8911: LDA_IMM(0x01)
+B1_8913: STA_ABS(0x0562)
+B1_8916: LDA_ABS(0x0560)
+B1_8919: CMP_IMM(0xC8)
+B1_891b: CYCLE(2); if (!SR_C) goto B1_8920;
+B1_891d: PC = 0xa9c0; /* UNRES JMP $a9c0 */ goto LABEL_END;
+B1_8920: LDA_IMM(0x01)
+B1_8922: CYCLE(6); SetStack(SP, 36); SetStack(SP - 1, 137); SP -= 2; goto B26_9cd3;
+B1_8925: LDY_IMM(0xC4)
+B1_8927: LDX_IMM(0xAD)
+B1_8929: LDA_ABS(0x0560)
+B1_892c: CYCLE(6); SetStack(SP, 46); SetStack(SP - 1, 137); SP -= 2; goto B0_9c3c;
+B1_892f: LDA_ABS(0x0450)
+B1_8932: CMP_IMM(0x03)
+B1_8934: CYCLE(2); if (SR_C) goto B1_8944;
+B1_8936: LDA_IMM(0xB8)
+B1_8938: STA_ZP(0xE6)
+B1_893a: LDA_ZP(0xE9)
+B1_893c: STA_ZP(0xEB)
+B1_893e: STA_ZP(0xEA)
+B1_8940: LDA_IMM(0xFF)
+B1_8942: STA_ZP(0xE9)
+B1_8944: LDA_IMM(0x01)
+B1_8946: CYCLE(6); SetStack(SP, 72); SetStack(SP - 1, 137); SP -= 2; goto B0_9fa8;
+B1_8949: CYCLE(6); SetStack(SP, 75); SetStack(SP - 1, 137); SP -= 2; goto B0_9cc9;
+B1_894c: LDA_ABS(0x0450)
+B1_894f: CMP_IMM(0x03)
+B1_8951: CYCLE(2); if (SR_C) goto B1_89b4;
+B1_8953: LDA_ZP(0x1E)
+B1_8955: AND_IMM(0x03)
+B1_8957: CYCLE(2); if (SR_Z) goto B1_89b4;
+B1_8959: LSR_A()
+B1_895a: CYCLE(2); if (SR_C) goto B1_8977;
+B1_895c: LDA_IMM(0x20)
+B1_895e: STA_ABS(0x055f)
+B1_8961: LDA_IMM(0xB8)
+B1_8963: STA_ZP(0xE6)
+B1_8965: LDA_ZP(0xEA)
+B1_8967: STA_ZP(0xEB)
+B1_8969: CMP_ABS(0x055c)
+B1_896c: CYCLE(2); if (!SR_Z) goto B1_89b4;
+B1_8977: LDA_IMM(0x00)
+B1_8979: CYCLE(6); SetStack(SP, 123); SetStack(SP - 1, 137); SP -= 2; goto B26_9cd3;
+B1_897c: LDA_IMM(0xC0)
+B1_897e: STA_ABS(0x055f)
+B1_8981: LDA_IMM(0x00)
+B1_8983: STA_ZP(0xEB)
+B1_8985: LDA_IMM(0x98)
+B1_8987: STA_ZP(0xE6)
+B1_8989: LDA_ABS(0x055c)
+B1_898c: CMP_IMM(0xA8)
+B1_898e: CYCLE(2); if (!SR_C) goto B1_8995;
+B1_8990: LDA_IMM(0x98)
+B1_8992: STA_ABS(0x055c)
+B1_8995: LDY_ABS(0x055c)
+B1_8998: LDX_ABS(0x055f)
+B1_899b: CYCLE(6); SetStack(SP, 157); SetStack(SP - 1, 137); SP -= 2; PC = 0xaabf; /* UNRES JSR $aabf */ goto LABEL_END;
+B1_899e: CYCLE(2); if (!SR_C) goto B1_89b2;
+B1_89a0: LDA_ABS(0x055c)
+B1_89a3: CLC()
+B1_89a4: ADC_IMM(0x10)
+B1_89a6: CMP_IMM(0xA8)
+B1_89a8: CYCLE(2); if (!SR_C) goto B1_89ac;
+B1_89ac: STA_ABS(0x055c)
+B1_89af: PC = 0xa995; /* UNRES JMP $a995 */ goto LABEL_END;
+B1_89b2: LDY_IMM(0xF4)
+B1_89b4: BIT_ZP(0x1E)
+B1_89b6: CYCLE(2); if (!SR_V) goto B1_89bb;
+B1_89b8: PC = 0xaa5f; /* UNRES JMP $aa5f */ goto LABEL_END;
+B1_89bb: CYCLE(2); if (!SR_N) goto B1_8944;
+B1_89bd: PC = 0xa9fb; /* UNRES JMP $a9fb */ goto LABEL_END;
+B1_89c0: LDY_IMM(0xCA)
+B1_89c2: LDX_IMM(0xAD)
+B1_89c4: CYCLE(6); SetStack(SP, 198); SetStack(SP - 1, 137); SP -= 2; goto B0_9c3a;
+B1_89c7: LDA_IMM(0xFF)
+B1_89c9: STA_ZP(0xE9)
+B1_89cb: LDY_IMM(0xA8)
+B1_89cd: LDX_IMM(0xC0)
+B1_89cf: CYCLE(6); SetStack(SP, 209); SetStack(SP - 1, 137); SP -= 2; PC = 0xaabf; /* UNRES JSR $aabf */ goto LABEL_END;
+B1_89d2: CYCLE(2); if (!SR_C) goto B1_89e2;
+B1_89e2: LDY_IMM(0xF4)
+B1_89e4: LDA_IMM(0x01)
+B1_89e6: CYCLE(6); SetStack(SP, 232); SetStack(SP - 1, 137); SP -= 2; goto B0_9fa8;
+B1_89e9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 137); SP -= 2; goto B0_9cc9;
+B1_89ec: BIT_ZP(0x1E)
+B1_89ee: CYCLE(2); if (SR_V) goto B1_8a5f;
+B1_89f0: CYCLE(2); if (!SR_N) goto B1_89e4;
+B1_89f2: LDA_ABS(0x055c)
+B1_89f5: SEC()
+B1_89f6: SBC_IMM(0x10)
+B1_89f8: STA_ABS(0x055c)
+B1_89fb: LDY_ABS(0x0560)
+B1_89fe: LDX_ABS(0x0563)
+B1_8a01: CYCLE(6); SetStack(SP, 3); SetStack(SP - 1, 138); SP -= 2; goto B0_9d08;
+B1_8a04: LDA_ZP(0x34)
+B1_8a06: STA_ZP(0xE6)
+B1_8a08: LDA_ZP(0x35)
+B1_8a0a: STA_ZP(0xE7)
+B1_8a0c: LDY_ABS(0x055c)
+B1_8a0f: LDX_ABS(0x055f)
+B1_8a12: CYCLE(6); SetStack(SP, 20); SetStack(SP - 1, 138); SP -= 2; goto B0_9d08;
+B1_8a15: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 138); SP -= 2; PC = 0xaf67; /* UNRES JSR $af67 */ goto LABEL_END;
+B1_8a18: LDA_IMM(0xF8)
+B1_8a1a: STA_ABS(0x055c)
+B1_8a1d: STA_ABS(0x0560)
+B1_8a20: LDA_ABS(0x055f)
+B1_8a23: CYCLE(2); if (!SR_N) goto B1_8a3c;
+B1_8a25: LDA_ZP(0x27)
+B1_8a27: CYCLE(2); if (SR_Z) goto B1_8a3c;
+B1_8a29: INC_ABS(0x0450)
+B1_8a2c: LDY_IMM(0x00)
+B1_8a2e: LDA_IDY(0x34)
+B1_8a30: LDX_ABS(0x0450)
+B1_8a33: STA_ABS_X(0x0450)
+B1_8a36: CYCLE(6); SetStack(SP, 56); SetStack(SP - 1, 138); SP -= 2; PC = 0xb0a1; /* UNRES JSR $b0a1 */ goto LABEL_END;
+B1_8a39: CYCLE(6); SetStack(SP, 59); SetStack(SP - 1, 138); SP -= 2; PC = 0xaa7f; /* UNRES JSR $aa7f */ goto LABEL_END;
+B1_8a3c: LDA_IMM(0x85)
+B1_8a3e: STA_ZP(0xE6)
+B1_8a40: LDA_IMM(0x20)
+B1_8a42: STA_ZP(0xE7)
+B1_8a44: CYCLE(6); SetStack(SP, 70); SetStack(SP - 1, 138); SP -= 2; PC = 0xaeac; /* UNRES JSR $aeac */ goto LABEL_END;
+B1_8a47: LDA_IMM(0x99)
+B1_8a49: STA_ZP(0xE6)
+B1_8a4b: LDA_IMM(0x20)
+B1_8a4d: STA_ZP(0xE7)
+B1_8a4f: CYCLE(6); SetStack(SP, 81); SetStack(SP - 1, 138); SP -= 2; PC = 0xaebe; /* UNRES JSR $aebe */ goto LABEL_END;
+B1_8a52: LDA_IMM(0x00)
+B1_8a54: STA_ABS(0x0562)
+B1_8a57: LDA_IMM(0xD8)
+B1_8a59: CYCLE(6); SetStack(SP, 91); SetStack(SP - 1, 138); SP -= 2; PC = 0xae01; /* UNRES JSR $ae01 */ goto LABEL_END;
+B1_8a5c: PC = 0xa8ee; /* UNRES JMP $a8ee */ goto LABEL_END;
+B1_8a5f: LDA_IMM(0x00)
+B1_8a61: STA_ZP(0x4C)
+B1_8a63: LDA_IMM(0xD8)
+B1_8a65: CYCLE(6); SetStack(SP, 103); SetStack(SP - 1, 138); SP -= 2; PC = 0xae01; /* UNRES JSR $ae01 */ goto LABEL_END;
+B1_8a68: LDA_IMM(0xF8)
+B1_8a6a: STA_ABS(0x055c)
+B1_8a6d: STA_ABS(0x0560)
+B1_8a70: PC = 0xa88d; /* UNRES JMP $a88d */ goto LABEL_END;
+B1_8a73: CYCLE(6); SetStack(SP, 117); SetStack(SP - 1, 138); SP -= 2; goto B26_99f0;
+B1_8a76: RTS()
+B1_8a77: LDY_IMM(0xB3)
+B1_8a79: LDX_IMM(0xB4)
+B1_8a7b: CYCLE(6); SetStack(SP, 125); SetStack(SP - 1, 138); SP -= 2; goto B0_97ab;
+B1_8a7e: RTS()
+B1_8a7f: LDA_ABS(0x0450)
+B1_8a82: CYCLE(2); if (SR_Z) goto B1_8abe;
+B1_8a84: LDA_IMM(0x28)
+B1_8a86: STA_ZP(0xE7)
+B1_8a88: LDY_ZP(0xE7)
+B1_8a8a: LDX_IMM(0xC0)
+B1_8a8c: CYCLE(6); SetStack(SP, 142); SetStack(SP - 1, 138); SP -= 2; PC = 0xaabf; /* UNRES JSR $aabf */ goto LABEL_END;
+B1_8a8f: CYCLE(2); if (!SR_C) goto B1_8ab3;
+B1_8a91: TXA()
+B1_8a92: ASL_A()
+B1_8a93: ASL_A()
+B1_8a94: CLC()
+B1_8a95: ADC_IMM(0xE0)
+B1_8a97: TAX()
+B1_8a98: LDA_ZP(0xE7)
+B1_8a9a: CMP_IMM(0xA8)
+B1_8a9c: CYCLE(2); if (!SR_C) goto B1_8aa1;
+B1_8a9e: CLC()
+B1_8a9f: ADC_IMM(0x10)
+B1_8aa1: STA_ABS_X(0x0468)
+B1_8aa4: LDA_IMM(0xC0)
+B1_8aa6: STA_ABS_X(0x046b)
+B1_8aa9: LDA_IMM(0x72)
+B1_8aab: STA_ABS_X(0x0469)
+B1_8aae: LDA_IMM(0x00)
+B1_8ab0: STA_ABS_X(0x046a)
+B1_8ab3: LDA_ZP(0xE7)
+B1_8ab5: CLC()
+B1_8ab6: ADC_IMM(0x10)
+B1_8ab8: STA_ZP(0xE7)
+B1_8aba: CMP_IMM(0xB9)
+B1_8abc: CYCLE(2); if (!SR_C) goto B1_8a88;
+B1_8abe: RTS()
+B1_8abf: CYCLE(6); SetStack(SP, 193); SetStack(SP - 1, 138); SP -= 2; goto B0_9d08;
+B1_8ac2: LDX_IMM(0x00)
+B1_8ac4: LDY_IMM(0x00)
+B1_8ac6: LDA_IDY(0x34)
+B1_8ac8: CMP_ABS(0x0451)
+B1_8acb: CYCLE(2); if (SR_Z) goto B1_8ad9;
+B1_8acd: INX()
+B1_8ace: CMP_ABS(0x0452)
+B1_8ad1: CYCLE(2); if (SR_Z) goto B1_8ad9;
+B1_8ad3: INX()
+B1_8ad4: CMP_ABS(0x0453)
+B1_8ad7: CYCLE(2); if (!SR_Z) goto B1_8adb;
+B1_8ad9: SEC()
+B1_8ada: RTS()
+B1_8adb: CLC()
+B1_8adc: RTS()
+B1_8add: LDA_IMM(0x28)
+B1_8adf: STA_ZP(0x60)
+B1_8ae1: LDA_IMM(0x18)
+B1_8ae3: STA_ZP(0x61)
+B1_8ae5: CYCLE(6); SetStack(SP, 231); SetStack(SP - 1, 138); SP -= 2; goto B26_9ba0;
+B1_8ae8: LDY_IMM(0x81)
+B1_8aea: LDX_IMM(0xB8)
+B1_8aec: CYCLE(6); SetStack(SP, 238); SetStack(SP - 1, 138); SP -= 2; PC = 0xb0c0; /* UNRES JSR $b0c0 */ goto LABEL_END;
+B1_8aef: LDA_IMM(0x84)
+B1_8af1: STA_ZP(0xE6)
+B1_8af3: LDA_IMM(0x20)
+B1_8af5: STA_ZP(0xE7)
+B1_8af7: CYCLE(6); SetStack(SP, 249); SetStack(SP - 1, 138); SP -= 2; PC = 0xaeac; /* UNRES JSR $aeac */ goto LABEL_END;
+B1_8afa: LDA_IMM(0xAA)
+B1_8afc: STA_ZP(0x5C)
+B1_8afe: LDA_IMM(0x20)
+B1_8b00: STA_ZP(0x5D)
+B1_8b02: LDA_IMM(0x0A)
+B1_8b04: STA_ZP(0x5E)
+B1_8b06: CYCLE(6); SetStack(SP, 8); SetStack(SP - 1, 139); SP -= 2; PC = 0xaf37; /* UNRES JSR $af37 */ goto LABEL_END;
+B1_8b09: DEC_ZP(0x5E)
+B1_8b0b: LDA_ZP(0x5E)
+B1_8b0d: CYCLE(2); if (!SR_N) goto B1_8b06;
+B1_8b0f: LDA_ZP(0x2A)
+B1_8b11: CMP_IMM(0x02)
+B1_8b13: CYCLE(2); if (!SR_Z) goto B1_8b37;
+B1_8b15: LDA_IMM(0x92)
+B1_8b17: STA_ZP(0xE6)
+B1_8b19: LDA_IMM(0x20)
+B1_8b1b: STA_ZP(0xE7)
+B1_8b1d: CYCLE(6); SetStack(SP, 31); SetStack(SP - 1, 139); SP -= 2; PC = 0xaeb5; /* UNRES JSR $aeb5 */ goto LABEL_END;
+B1_8b20: LDA_IMM(0xB8)
+B1_8b22: STA_ZP(0x5C)
+B1_8b24: LDA_IMM(0x20)
+B1_8b26: STA_ZP(0x5D)
+B1_8b28: LDA_IMM(0x16)
+B1_8b2a: STA_ZP(0x5E)
+B1_8b2c: CYCLE(6); SetStack(SP, 46); SetStack(SP - 1, 139); SP -= 2; PC = 0xaf37; /* UNRES JSR $af37 */ goto LABEL_END;
+B1_8b2f: INC_ZP(0x5E)
+B1_8b31: LDA_ZP(0x5E)
+B1_8b33: CMP_IMM(0x20)
+B1_8b35: CYCLE(2); if (!SR_Z) goto B1_8b2c;
+B1_8b37: CYCLE(6); SetStack(SP, 57); SetStack(SP - 1, 139); SP -= 2; goto B26_997e;
+B1_8b3a: LDY_IMM(0xDC)
+B1_8b3c: LDX_IMM(0xAD)
+B1_8b3e: CYCLE(6); SetStack(SP, 64); SetStack(SP - 1, 139); SP -= 2; goto B0_9c3a;
+B1_8b41: LDA_ZP(0x60)
+B1_8b43: STA_ABS(0x055c)
+B1_8b46: LDA_ZP(0x61)
+B1_8b48: STA_ABS(0x055f)
+B1_8b4b: CYCLE(2); if (!SR_N) goto B1_8b51;
+B1_8b4d: LDA_IMM(0xB8)
+B1_8b4f: STA_ZP(0xE6)
+B1_8b51: LDA_IMM(0x01)
+B1_8b53: CYCLE(6); SetStack(SP, 85); SetStack(SP - 1, 139); SP -= 2; goto B0_9fa8;
+B1_8b56: CYCLE(6); SetStack(SP, 88); SetStack(SP - 1, 139); SP -= 2; goto B0_9c71;
+B1_8b59: LDA_ZP(0x2A)
+B1_8b5b: CMP_IMM(0x02)
+B1_8b5d: CYCLE(2); if (!SR_Z) goto B1_8b87;
+B1_8b5f: LDA_ZP(0x1E)
+B1_8b61: AND_IMM(0x03)
+B1_8b63: CYCLE(2); if (SR_Z) goto B1_8b87;
+B1_8b65: LSR_A()
+B1_8b66: CYCLE(2); if (SR_C) goto B1_8b74;
+B1_8b68: LDA_IMM(0x18)
+B1_8b6a: STA_ABS(0x055f)
+B1_8b6d: LDA_IMM(0xC8)
+B1_8b6f: STA_ZP(0xE6)
+B1_8b71: PC = 0xab87; /* UNRES JMP $ab87 */ goto LABEL_END;
+B1_8b74: LDA_IMM(0x88)
+B1_8b76: STA_ABS(0x055f)
+B1_8b79: LDA_IMM(0xB8)
+B1_8b7b: STA_ZP(0xE6)
+B1_8b7d: LDX_ABS(0x055c)
+B1_8b80: CPX_IMM(0xC8)
+B1_8b82: CYCLE(2); if (!SR_Z) goto B1_8b87;
+B1_8b84: STA_ABS(0x055c)
+B1_8b87: BIT_ZP(0x1E)
+B1_8b89: CYCLE(2); if (!SR_V) goto B1_8b8e;
+B1_8b8b: PC = 0xa721; /* UNRES JMP $a721 */ goto LABEL_END;
+B1_8b8e: CYCLE(2); if (!SR_N) goto B1_8b51;
+B1_8b90: CYCLE(6); SetStack(SP, 146); SetStack(SP - 1, 139); SP -= 2; goto B26_99f0;
+B1_8b93: LDY_ABS(0x055c)
+B1_8b96: LDX_ABS(0x055f)
+B1_8b99: STY_ZP(0x60)
+B1_8b9b: STX_ZP(0x61)
+B1_8b9d: CYCLE(6); SetStack(SP, 159); SetStack(SP - 1, 139); SP -= 2; goto B0_9d08;
+B1_8ba0: LDA_IMM(0xF8)
+B1_8ba2: STA_ABS(0x055c)
+B1_8ba5: LDA_ZP(0xED)
+B1_8ba7: STA_ZP(0x5F)
+B1_8ba9: LDY_IMM(0x00)
+B1_8bab: LDA_IDY(0x34)
+B1_8bad: LDY_IMM(0x46)
+B1_8baf: LDX_IMM(0x20)
+B1_8bb1: CYCLE(6); SetStack(SP, 179); SetStack(SP - 1, 139); SP -= 2; PC = 0xaf05; /* UNRES JSR $af05 */ goto LABEL_END;
+B1_8bb4: LDY_IMM(0x03)
+B1_8bb6: LDA_IDY(0x34)
+B1_8bb8: CLC()
+B1_8bb9: ADC_IMM(0x01)
+B1_8bbb: CYCLE(6); SetStack(SP, 189); SetStack(SP - 1, 139); SP -= 2; goto B26_9e7c;
+B1_8bbe: LDY_IMM(0xAB)
+B1_8bc0: LDX_IMM(0x20)
+B1_8bc2: CYCLE(6); SetStack(SP, 196); SetStack(SP - 1, 139); SP -= 2; goto B0_9d8e;
+B1_8bc5: LDA_ZP(0x5F)
+B1_8bc7: LDX_IMM(0x00)
+B1_8bc9: CYCLE(6); SetStack(SP, 203); SetStack(SP - 1, 139); SP -= 2; goto B30_c527;
+B1_8bcc: LDA_ZP(0x32)
+B1_8bce: STA_ZP(0xEC)
+B1_8bd0: LDA_ZP(0x33)
+B1_8bd2: STA_ZP(0xED)
+B1_8bd4: CYCLE(6); SetStack(SP, 214); SetStack(SP - 1, 139); SP -= 2; goto B0_9e4f;
+B1_8bd7: LDY_IMM(0x29)
+B1_8bd9: LDX_IMM(0x21)
+B1_8bdb: LDA_ZP(0xE8)
+B1_8bdd: STA_ZP(0xEC)
+B1_8bdf: LDA_ZP(0xE9)
+B1_8be1: STA_ZP(0xED)
+B1_8be3: CYCLE(6); SetStack(SP, 229); SetStack(SP - 1, 139); SP -= 2; goto B26_9db5;
+B1_8be6: LDA_ZP(0x5F)
+B1_8be8: CYCLE(2); if (SR_Z) goto B1_8bfa;
+B1_8bea: CMP_IMM(0x1E)
+B1_8bec: CYCLE(2); if (SR_C) goto B1_8bfa;
+B1_8bee: LDY_IMM(0xA9)
+B1_8bf0: LDX_IMM(0xB8)
+B1_8bf2: CYCLE(6); SetStack(SP, 244); SetStack(SP - 1, 139); SP -= 2; PC = 0xb0c0; /* UNRES JSR $b0c0 */ goto LABEL_END;
+B1_8bf5: LDY_IMM(0x00)
+B1_8bf7: PC = 0xac03; /* UNRES JMP $ac03 */ goto LABEL_END;
+B1_8bfa: LDY_IMM(0xB0)
+B1_8bfc: LDX_IMM(0xB8)
+B1_8bfe: CYCLE(6); SetStack(SP, 0); SetStack(SP - 1, 140); SP -= 2; PC = 0xb0c0; /* UNRES JSR $b0c0 */ goto LABEL_END;
+B1_8c01: LDY_IMM(0x31)
+B1_8c03: STY_ZP(0xE6)
+B1_8c05: LDY_ZP(0xE6)
+B1_8c07: LDX_ABS_Y(0xb981)
+B1_8c0a: CPX_IMM(0xFF)
+B1_8c0c: CYCLE(2); if (SR_Z) goto B1_8c2e;
+B1_8c0e: LDA_ZP(0x5F)
+B1_8c10: CYCLE(6); SetStack(SP, 18); SetStack(SP - 1, 140); SP -= 2; goto B30_c527;
+B1_8c13: LDA_ZP(0x32)
+B1_8c15: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 140); SP -= 2; goto B26_9e7c;
+B1_8c18: LDY_ZP(0xE6)
+B1_8c1a: LDA_ABS_Y(0xb982)
+B1_8c1d: LDX_ABS_Y(0xb983)
+B1_8c20: TAY()
+B1_8c21: CYCLE(6); SetStack(SP, 35); SetStack(SP - 1, 140); SP -= 2; goto B26_9db5;
+B1_8c24: LDA_ZP(0xE6)
+B1_8c26: CLC()
+B1_8c27: ADC_IMM(0x03)
+B1_8c29: STA_ZP(0xE6)
+B1_8c2b: PC = 0xac05; /* UNRES JMP $ac05 */ goto LABEL_END;
+B1_8c2e: CYCLE(6); SetStack(SP, 48); SetStack(SP - 1, 140); SP -= 2; goto B26_997e;
+B1_8c31: LDA_IMM(0x01)
+B1_8c33: CYCLE(6); SetStack(SP, 53); SetStack(SP - 1, 140); SP -= 2; goto B0_9fa8;
+B1_8c36: BIT_ZP(0x1E)
+B1_8c38: CYCLE(2); if (!SR_V) goto B1_8c3d;
+B1_8c3a: PC = 0xaae5; /* UNRES JMP $aae5 */ goto LABEL_END;
+B1_8c3d: CYCLE(2); if (!SR_N) goto B1_8c31;
+B1_8c3f: LDY_IMM(0x00)
+B1_8c41: LDA_IDY(0x34)
+B1_8c43: LDX_IMM(0x27)
+B1_8c45: DEX()
+B1_8c46: DEX()
+B1_8c47: DEX()
+B1_8c48: CYCLE(2); if (!SR_N) goto B1_8c4d;
+B1_8c4a: PC = 0xaae5; /* UNRES JMP $aae5 */ goto LABEL_END;
+B1_8c4d: CMP_ABS_X(0xbb2e)
+B1_8c50: CYCLE(2); if (!SR_Z) goto B1_8c45;
+B1_8c52: LDA_ABS_X(0xbb2f)
+B1_8c55: STA_ZP(0x5C)
+B1_8c57: LDA_ABS_X(0xbb30)
+B1_8c5a: STA_ZP(0x5D)
+B1_8c5c: LDA_IMM(0x00)
+B1_8c5e: STA_ZP(0x5E)
+B1_8c60: LDY_IMM(0x00)
+B1_8c62: LDA_IDY(0x5C)
+B1_8c64: CYCLE(2); if (!SR_N) goto B1_8c83;
+B1_8c66: CMP_IMM(0xFF)
+B1_8c68: CYCLE(2); if (!SR_Z) goto B1_8c6d;
+B1_8c6a: PC = 0xad23; /* UNRES JMP $ad23 */ goto LABEL_END;
+B1_8c6d: CMP_IMM(0xFE)
+B1_8c6f: CYCLE(2); if (!SR_Z) goto B1_8c7b;
+B1_8c71: LDA_ABS(0x0446)
+B1_8c74: CMP_IMM(0x05)
+B1_8c76: CYCLE(2); if (SR_Z) goto B1_8c8c;
+B1_8c78: PC = 0xad13; /* UNRES JMP $ad13 */ goto LABEL_END;
+B1_8c7b: LDA_ABS(0x0448)
+B1_8c7e: LSR_A()
+B1_8c7f: CYCLE(2); if (SR_C) goto B1_8c8c;
+B1_8c81: LDA_IMM(0x1E)
+B1_8c83: CMP_ZP(0x26)
+B1_8c85: CYCLE(2); if (!SR_C) goto B1_8c8c;
+B1_8c87: CYCLE(2); if (SR_Z) goto B1_8c8c;
+B1_8c89: PC = 0xad13; /* UNRES JMP $ad13 */ goto LABEL_END;
+B1_8c8c: INY()
+B1_8c8d: LDA_IDY(0x5C)
+B1_8c8f: CYCLE(6); SetStack(SP, 145); SetStack(SP - 1, 140); SP -= 2; goto B30_c53c;
+B1_8c92: LDA_ZP(0x5E)
+B1_8c94: ASL_A()
+B1_8c95: TAX()
+B1_8c96: LDA_ABS_X(0xbc48)
+B1_8c99: STA_ZP(0xE8)
+B1_8c9b: LDA_ABS_X(0xbc49)
+B1_8c9e: STA_ZP(0xE9)
+B1_8ca0: LDY_IMM(0x00)
+B1_8ca2: LDA_IDY(0x30)
+B1_8ca4: CMP_IMM(0xFC)
+B1_8ca6: CYCLE(2); if (SR_C) goto B1_8cbe;
+B1_8ca8: LDY_ZP(0xE8)
+B1_8caa: LDX_ZP(0xE9)
+B1_8cac: CYCLE(6); SetStack(SP, 174); SetStack(SP - 1, 140); SP -= 2; goto B1_88ca;
+B1_8caf: INC_ZP(0x30)
+B1_8cb1: CYCLE(2); if (!SR_Z) goto B1_8cb5;
+B1_8cb5: INC_ZP(0xE8)
+B1_8cb7: CYCLE(2); if (!SR_Z) goto B1_8cbb;
+B1_8cbb: PC = 0xaca0; /* UNRES JMP $aca0 */ goto LABEL_END;
+B1_8cbe: LDA_IMM(0x00)
+B1_8cc0: STA_ABS(0x044e)
+B1_8cc3: LDY_IMM(0x02)
+B1_8cc5: LDA_IDY(0x5C)
+B1_8cc7: STA_ABS(0x043b)
+B1_8cca: STA_ABS(0x043d)
+B1_8ccd: INY()
+B1_8cce: LDA_IDY(0x5C)
+B1_8cd0: STA_ABS(0x043c)
+B1_8cd3: STA_ABS(0x043e)
+B1_8cd6: LDA_ZP(0x5F)
+B1_8cd8: STA_ABS(0x0441)
+B1_8cdb: STA_ABS(0x0442)
+B1_8cde: INY()
+B1_8cdf: LDA_IDY(0x5C)
+B1_8ce1: CYCLE(6); SetStack(SP, 227); SetStack(SP - 1, 140); SP -= 2; goto B30_c54b;
+B1_8ce4: LDA_ABS(0x043f)
+B1_8ce7: STA_ZP(0xEC)
+B1_8ce9: LDA_ABS(0x0440)
+B1_8cec: STA_ZP(0xED)
+B1_8cee: CYCLE(6); SetStack(SP, 240); SetStack(SP - 1, 140); SP -= 2; goto B0_9e4f;
+B1_8cf1: LDA_ZP(0xE8)
+B1_8cf3: STA_ZP(0xEC)
+B1_8cf5: LDA_ZP(0xE9)
+B1_8cf7: STA_ZP(0xED)
+B1_8cf9: LDA_ZP(0x5E)
+B1_8cfb: ASL_A()
+B1_8cfc: TAX()
+B1_8cfd: LDA_ABS_X(0xbc48)
+B1_8d00: AND_IMM(0xE0)
+B1_8d02: ORA_IMM(0x15)
+B1_8d04: CLC()
+B1_8d05: ADC_IMM(0x20)
+B1_8d07: TAY()
+B1_8d08: LDA_ABS_X(0xbc49)
+B1_8d0b: ADC_IMM(0x00)
+B1_8d0d: TAX()
+B1_8d0e: CYCLE(6); SetStack(SP, 16); SetStack(SP - 1, 141); SP -= 2; goto B26_9db5;
+B1_8d11: INC_ZP(0x5E)
+B1_8d13: LDA_ZP(0x5C)
+B1_8d15: CLC()
+B1_8d16: ADC_IMM(0x05)
+B1_8d18: STA_ZP(0x5C)
+B1_8d1a: LDA_ZP(0x5D)
+B1_8d1c: ADC_IMM(0x00)
+B1_8d1e: STA_ZP(0x5D)
+B1_8d20: PC = 0xac60; /* UNRES JMP $ac60 */ goto LABEL_END;
+B1_8d23: LDA_ZP(0x5E)
+B1_8d25: TAX()
+B1_8d26: ASL_A()
+B1_8d27: ASL_A()
+B1_8d28: ASL_A()
+B1_8d29: CLC()
+B1_8d2a: ADC_IMM(0x17)
+B1_8d2c: STA_ZP(0x7C)
+B1_8d2e: LDA_IMM(0x40)
+B1_8d30: CYCLE(6); SetStack(SP, 50); SetStack(SP - 1, 141); SP -= 2; goto B0_9dee;
+B1_8d33: LDA_ZP(0xEC)
+B1_8d35: CLC()
+B1_8d36: ADC_IMM(0x63)
+B1_8d38: TAY()
+B1_8d39: LDA_ZP(0xED)
+B1_8d3b: ADC_IMM(0x25)
+B1_8d3d: TAX()
+B1_8d3e: LDA_IMM(0x67)
+B1_8d40: STA_ZP(0xE6)
+B1_8d42: LDA_IMM(0xB9)
+B1_8d44: STA_ZP(0xE7)
+B1_8d46: LDA_IMM(0x1A)
+B1_8d48: CYCLE(6); SetStack(SP, 74); SetStack(SP - 1, 141); SP -= 2; goto B0_9d73;
+B1_8d4b: LDA_IMM(0x18)
+B1_8d4d: STA_ZP(0x79)
+B1_8d4f: LDA_IMM(0x01)
+B1_8d51: STA_ZP(0x7E)
+B1_8d53: LDA_ZP(0x8E)
+B1_8d55: STA_ZP(0x90)
+B1_8d57: LDA_ZP(0x8F)
+B1_8d59: STA_ZP(0x91)
+B1_8d5b: LDA_IMM(0x01)
+B1_8d5d: CYCLE(6); SetStack(SP, 95); SetStack(SP - 1, 141); SP -= 2; goto B0_9fa8;
+B1_8d60: BIT_ZP(0x1E)
+B1_8d62: CYCLE(2); if (SR_V) goto B1_8d78;
+B1_8d64: CYCLE(2); if (!SR_N) goto B1_8d5b;
+B1_8d66: LDA_IMM(0x00)
+B1_8d68: STA_ZP(0x7E)
+B1_8d6a: LDA_IMM(0x01)
+B1_8d6c: CYCLE(6); SetStack(SP, 110); SetStack(SP - 1, 141); SP -= 2; goto B0_9fa8;
+B1_8d6f: BIT_ZP(0x1E)
+B1_8d71: CYCLE(2); if (SR_V) goto B1_8d4b;
+B1_8d73: CYCLE(2); if (!SR_N) goto B1_8d6a;
+B1_8d75: PC = 0xaae5; /* UNRES JMP $aae5 */ goto LABEL_END;
+B1_8d78: LDA_IMM(0x00)
+B1_8d7a: STA_ZP(0x7E)
+B1_8d7c: LDA_IMM(0x01)
+B1_8d7e: CYCLE(6); SetStack(SP, 128); SetStack(SP - 1, 141); SP -= 2; goto B0_9fa8;
+B1_8d81: BIT_ZP(0x1E)
+B1_8d83: CYCLE(2); if (SR_N) goto B1_8d4b;
+B1_8d85: CYCLE(2); if (!SR_V) goto B1_8d7c;
+B1_8d87: PC = 0xaae5; /* UNRES JMP $aae5 */ goto LABEL_END;
+B1_8de9: STA_ZP(0xEC)
+B1_8deb: LDA_ZP(0x2A)
+B1_8ded: ASL_A()
+B1_8dee: ASL_A()
+B1_8def: ASL_A()
+B1_8df0: ASL_A()
+B1_8df1: CLC()
+B1_8df2: ADC_IMM(0xBB)
+B1_8df4: TAY()
+B1_8df5: LDA_IMM(0x00)
+B1_8df7: ADC_IMM(0xB6)
+B1_8df9: TAX()
+B1_8dfa: LDA_ABS(0x00ec)
+B1_8dfd: CYCLE(6); SetStack(SP, 255); SetStack(SP - 1, 141); SP -= 2; goto B26_97b8;
+B1_8e00: RTS()
+B1_8e01: STA_ZP(0xE7)
+B1_8e03: LDY_IMM(0x24)
+B1_8e05: LDX_IMM(0x00)
+B1_8e07: LDA_ABS_X(0xb823)
+B1_8e0a: STA_ABS_Y(0x0469)
+B1_8e0d: LDA_IMM(0x00)
+B1_8e0f: STA_ABS_Y(0x046a)
+B1_8e12: INX()
+B1_8e13: DEY()
+B1_8e14: DEY()
+B1_8e15: DEY()
+B1_8e16: DEY()
+B1_8e17: CYCLE(2); if (!SR_N) goto B1_8e07;
+B1_8e19: LDY_ZP(0x2C)
+B1_8e1b: PC = 0xae8f; /* UNRES JMP $ae8f */ goto LABEL_END;
+B1_8e1e: STA_ZP(0xE7)
+B1_8e20: LDA_IMM(0x71)
+B1_8e22: STA_ABS(0x0561)
+B1_8e25: LDA_IMM(0x00)
+B1_8e27: STA_ABS(0x0562)
+B1_8e2a: STX_ABS(0x0563)
+B1_8e2d: LDA_ZP(0x2C)
+B1_8e2f: ASL_A()
+B1_8e30: ASL_A()
+B1_8e31: ASL_A()
+B1_8e32: ASL_A()
+B1_8e33: CLC()
+B1_8e34: ADC_IMM(0x48)
+B1_8e36: STA_ABS(0x0560)
+B1_8e39: RTS()
+B1_8e3a: STA_ZP(0xE7)
+B1_8e3c: LDA_ZP(0x2C)
+B1_8e3e: STA_ZP(0xE6)
+B1_8e40: LDA_IMM(0x01)
+B1_8e42: CYCLE(6); SetStack(SP, 68); SetStack(SP - 1, 142); SP -= 2; goto B0_9fa8;
+B1_8e45: LDA_ZP(0x1E)
+B1_8e47: AND_IMM(0x0C)
+B1_8e49: CYCLE(2); if (SR_Z) goto B1_8e67;
+B1_8e4b: EOR_IMM(0x0C)
+B1_8e4d: LSR_A()
+B1_8e4e: SEC()
+B1_8e4f: SBC_IMM(0x03)
+B1_8e51: CLC()
+B1_8e52: ADC_ZP(0xE6)
+B1_8e54: AND_IMM(0x03)
+B1_8e56: STA_ZP(0xE6)
+B1_8e58: ASL_A()
+B1_8e59: ASL_A()
+B1_8e5a: ASL_A()
+B1_8e5b: ASL_A()
+B1_8e5c: CLC()
+B1_8e5d: ADC_IMM(0x48)
+B1_8e5f: STA_ABS(0x0560)
+B1_8e62: LDY_ZP(0xE6)
+B1_8e64: CYCLE(6); SetStack(SP, 102); SetStack(SP - 1, 142); SP -= 2; PC = 0xae8f; /* UNRES JSR $ae8f */ goto LABEL_END;
+B1_8e67: BIT_ZP(0x1E)
+B1_8e69: CYCLE(2); if (SR_V) goto B1_8e72;
+B1_8e6b: CYCLE(2); if (!SR_N) goto B1_8e40;
+B1_8e6d: LDA_ZP(0xE6)
+B1_8e6f: STA_ZP(0x2C)
+B1_8e71: RTS()
+B1_8e72: LDY_ZP(0x2C)
+B1_8e74: PC = 0xae8f; /* UNRES JMP $ae8f */ goto LABEL_END;
+B1_8e77: CYCLE(6); SetStack(SP, 121); SetStack(SP - 1, 142); SP -= 2; goto B0_9c3a;
+B1_8e7a: LDA_ZP(0x2D)
+B1_8e7c: ASL_A()
+B1_8e7d: ASL_A()
+B1_8e7e: ASL_A()
+B1_8e7f: ASL_A()
+B1_8e80: CLC()
+B1_8e81: ADC_IMM(0x58)
+B1_8e83: STA_ABS(0x0560)
+B1_8e86: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 142); SP -= 2; goto B0_9c0d;
+B1_8e89: CYCLE(2); if (SR_C) goto B1_8e8e;
+B1_8e8b: LSR_A()
+B1_8e8c: STA_ZP(0x2D)
+B1_8e8e: RTS()
+B1_8e8f: LDX_ABS_Y(0xb82d)
+B1_8e92: LDY_IMM(0x24)
+B1_8e94: LDA_ABS_X(0xb831)
+B1_8e97: STA_ABS_Y(0x0468)
+B1_8e9a: LDA_ABS_X(0xb832)
+B1_8e9d: CLC()
+B1_8e9e: ADC_ZP(0xE7)
+B1_8ea0: STA_ABS_Y(0x046b)
+B1_8ea3: INX()
+B1_8ea4: INX()
+B1_8ea5: DEY()
+B1_8ea6: DEY()
+B1_8ea7: DEY()
+B1_8ea8: DEY()
+B1_8ea9: CYCLE(2); if (!SR_N) goto B1_8e94;
+B1_8eab: RTS()
+B1_8eac: LDA_IMM(0x0A)
+B1_8eae: LDX_IMM(0x0B)
+B1_8eb0: LDY_IMM(0xFF)
+B1_8eb2: PC = 0xaeda; /* UNRES JMP $aeda */ goto LABEL_END;
+B1_8eb5: LDA_IMM(0x16)
+B1_8eb7: LDX_IMM(0x0A)
+B1_8eb9: LDY_IMM(0x01)
+B1_8ebb: PC = 0xaeda; /* UNRES JMP $aeda */ goto LABEL_END;
+B1_8ebe: LDA_IMM(0x16)
+B1_8ec0: LDX_IMM(0x08)
+B1_8ec2: LDY_IMM(0x01)
+B1_8ec4: CYCLE(6); SetStack(SP, 198); SetStack(SP - 1, 142); SP -= 2; PC = 0xaeda; /* UNRES JSR $aeda */ goto LABEL_END;
+B1_8ec7: LDA_ZP(0xE6)
+B1_8ec9: CLC()
+B1_8eca: ADC_IMM(0x40)
+B1_8ecc: STA_ZP(0xE6)
+B1_8ece: LDA_ZP(0xE7)
+B1_8ed0: ADC_IMM(0x00)
+B1_8ed2: STA_ZP(0xE7)
+B1_8ed4: LDA_IMM(0x1E)
+B1_8ed6: LDX_IMM(0x02)
+B1_8ed8: LDY_IMM(0x01)
+B1_8eda: STA_ZP(0xE8)
+B1_8edc: STX_ZP(0xE9)
+B1_8ede: STY_ZP(0xEB)
+B1_8ee0: LDA_ZP(0xE8)
+B1_8ee2: CYCLE(6); SetStack(SP, 228); SetStack(SP - 1, 142); SP -= 2; goto B30_c50c;
+B1_8ee5: LDY_IMM(0x00)
+B1_8ee7: LDA_IDY(0x34)
+B1_8ee9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 142); SP -= 2; PC = 0xaf09; /* UNRES JSR $af09 */ goto LABEL_END;
+B1_8eec: LDA_ZP(0xE8)
+B1_8eee: CLC()
+B1_8eef: ADC_ZP(0xEB)
+B1_8ef1: STA_ZP(0xE8)
+B1_8ef3: LDA_ZP(0xE6)
+B1_8ef5: CLC()
+B1_8ef6: ADC_IMM(0x40)
+B1_8ef8: STA_ZP(0xE6)
+B1_8efa: LDA_ZP(0xE7)
+B1_8efc: ADC_IMM(0x00)
+B1_8efe: STA_ZP(0xE7)
+B1_8f00: DEC_ZP(0xE9)
+B1_8f02: CYCLE(2); if (!SR_Z) goto B1_8ee0;
+B1_8f04: RTS()
+B1_8f05: STY_ZP(0xE6)
+B1_8f07: STX_ZP(0xE7)
+B1_8f09: CYCLE(6); SetStack(SP, 11); SetStack(SP - 1, 143); SP -= 2; goto B30_c53c;
+B1_8f0c: LDA_IMM(0x05)
+B1_8f0e: STA_ZP(0xED)
+B1_8f10: LDX_IMM(0x00)
+B1_8f12: LDY_IMM(0x00)
+B1_8f14: LDA_IDY(0x30)
+B1_8f16: CMP_IMM(0xFC)
+B1_8f18: CYCLE(2); if (SR_C) goto B1_8f21;
+B1_8f1a: INC_ZP(0x30)
+B1_8f1c: CYCLE(2); if (!SR_Z) goto B1_8f20;
+B1_8f20: TAX()
+B1_8f21: TXA()
+B1_8f22: LDY_ZP(0xE6)
+B1_8f24: LDX_ZP(0xE7)
+B1_8f26: CYCLE(6); SetStack(SP, 40); SetStack(SP - 1, 143); SP -= 2; goto B1_88ca;
+B1_8f29: INC_ZP(0xE6)
+B1_8f2b: DEC_ZP(0xED)
+B1_8f2d: CYCLE(2); if (!SR_Z) goto B1_8f10;
+B1_8f2f: LDA_ZP(0xE6)
+B1_8f31: SEC()
+B1_8f32: SBC_IMM(0x05)
+B1_8f34: STA_ZP(0xE6)
+B1_8f36: RTS()
+B1_8f37: LDA_ZP(0x5E)
+B1_8f39: CYCLE(6); SetStack(SP, 59); SetStack(SP - 1, 143); SP -= 2; goto B30_c50c;
+B1_8f3c: LDY_IMM(0x01)
+B1_8f3e: LDA_IDY(0x34)
+B1_8f40: STA_ZP(0xEC)
+B1_8f42: INY()
+B1_8f43: LDA_IDY(0x34)
+B1_8f45: STA_ZP(0xED)
+B1_8f47: CYCLE(6); SetStack(SP, 73); SetStack(SP - 1, 143); SP -= 2; goto B0_9e4f;
+B1_8f4a: LDY_ZP(0x5C)
+B1_8f4c: LDX_ZP(0x5D)
+B1_8f4e: LDA_ZP(0xE8)
+B1_8f50: STA_ZP(0xEC)
+B1_8f52: LDA_ZP(0xE9)
+B1_8f54: STA_ZP(0xED)
+B1_8f56: CYCLE(6); SetStack(SP, 88); SetStack(SP - 1, 143); SP -= 2; goto B26_9db5;
+B1_8f59: LDA_ZP(0x5C)
+B1_8f5b: CLC()
+B1_8f5c: ADC_IMM(0x40)
+B1_8f5e: STA_ZP(0x5C)
+B1_8f60: LDA_ZP(0x5D)
+B1_8f62: ADC_IMM(0x00)
+B1_8f64: STA_ZP(0x5D)
+B1_8f66: RTS()
+B1_8f67: LDY_IMM(0x00)
+B1_8f69: LDA_IDY(0xE6)
+B1_8f6b: TAX()
+B1_8f6c: LDA_IDY(0x34)
+B1_8f6e: STA_IDY(0xE6)
+B1_8f70: TXA()
+B1_8f71: STA_IDY(0x34)
+B1_8f73: INY()
+B1_8f74: CPY_IMM(0x04)
+B1_8f76: CYCLE(2); if (!SR_Z) goto B1_8f69;
+B1_8f78: RTS()
+B1_8f79: LDA_ZP(0x26)
+B1_8f7b: ASL_A()
+B1_8f7c: TAX()
+B1_8f7d: LDA_ABS_X(0xba4c)
+B1_8f80: STA_ZP(0xE6)
+B1_8f82: LDA_ABS_X(0xba4d)
+B1_8f85: STA_ZP(0xE7)
+B1_8f87: PC = 0xaf9e; /* UNRES JMP $af9e */ goto LABEL_END;
+B1_8f8a: LDA_ZP(0x26)
+B1_8f8c: ASL_A()
+B1_8f8d: TAX()
+B1_8f8e: LDA_ABS_X(0xba4c)
+B1_8f91: STA_ZP(0xE6)
+B1_8f93: LDA_ABS_X(0xba4d)
+B1_8f96: LSR_A()
+B1_8f97: ROR_ZP(0xE6)
+B1_8f99: LSR_A()
+B1_8f9a: ROR_ZP(0xE6)
+B1_8f9c: STA_ZP(0xE7)
+B1_8f9e: LDX_IMM(0x00)
+B1_8fa0: LDA_ABS_X(0x0454)
+B1_8fa3: CLC()
+B1_8fa4: ADC_ZP(0xE6)
+B1_8fa6: STA_ABS_X(0x0454)
+B1_8fa9: LDA_ABS_X(0x0455)
+B1_8fac: ADC_ZP(0xE7)
+B1_8fae: STA_ABS_X(0x0455)
+B1_8fb1: CYCLE(2); if (!SR_C) goto B1_8fbb;
+B1_8fbb: INX()
+B1_8fbc: INX()
+B1_8fbd: CPX_IMM(0x16)
+B1_8fbf: CYCLE(2); if (!SR_C) goto B1_8fa0;
+B1_8fc1: RTS()
+B1_8fc2: STX_ZP(0xEC)
+B1_8fc4: CYCLE(6); SetStack(SP, 198); SetStack(SP - 1, 143); SP -= 2; PC = 0xb023; /* UNRES JSR $b023 */ goto LABEL_END;
+B1_8fc7: STA_ZP(0xEB)
+B1_8fc9: AND_IMM(0xF0)
+B1_8fcb: LSR_A()
+B1_8fcc: CLC()
+B1_8fcd: ADC_ZP(0xEC)
+B1_8fcf: TAX()
+B1_8fd0: LDA_ABS_X(0xba1c)
+B1_8fd3: TAX()
+B1_8fd4: LDA_ZP(0x26)
+B1_8fd6: ASL_A()
+B1_8fd7: TAY()
+B1_8fd8: LDA_ABS_Y(0xba4d)
+B1_8fdb: STA_ZP(0xED)
+B1_8fdd: LDA_ABS_Y(0xba4c)
+B1_8fe0: ROR_ZP(0xED)
+B1_8fe2: LSR_A()
+B1_8fe3: ROR_ZP(0xED)
+B1_8fe5: LSR_A()
+B1_8fe6: CYCLE(6); SetStack(SP, 232); SetStack(SP - 1, 143); SP -= 2; goto B0_9dee;
+B1_8fe9: ASL_ZP(0xEC)
+B1_8feb: ROL_ZP(0xED)
+B1_8fed: ASL_ZP(0xEC)
+B1_8fef: ROL_ZP(0xED)
+B1_8ff1: LDA_ZP(0xEB)
+B1_8ff3: AND_IMM(0x0F)
+B1_8ff5: ASL_A()
+B1_8ff6: TAX()
+B1_8ff7: LDA_ABS_X(0x0454)
+B1_8ffa: CLC()
+B1_8ffb: ADC_ZP(0xED)
+B1_8ffd: STA_ABS_X(0x0454)
+B1_9000: LDA_ABS_X(0x0455)
+B1_9003: ADC_IMM(0x00)
+B1_9005: STA_ABS_X(0x0455)
+B1_9008: CYCLE(2); if (!SR_C) goto B1_9012;
+B1_9012: RTS()
+B1_9013: CYCLE(6); SetStack(SP, 21); SetStack(SP - 1, 144); SP -= 2; PC = 0xb023; /* UNRES JSR $b023 */ goto LABEL_END;
+B1_9016: AND_IMM(0x0F)
+B1_9018: ASL_A()
+B1_9019: TAX()
+B1_901a: LDA_ABS_X(0x0454)
+B1_901d: TAY()
+B1_901e: LDA_ABS_X(0x0455)
+B1_9021: TAX()
+B1_9022: RTS()
+B1_9023: LDX_ZP(0x2A)
+B1_9025: CLC()
+B1_9026: ADC_ABS_X(0xb9d3)
+B1_9029: TAX()
+B1_902a: LDA_ABS_X(0xb9d6)
+B1_902d: RTS()
+B1_902e: STY_ZP(0xE6)
+B1_9030: STX_ZP(0xE7)
+B1_9032: LDX_IMM(0x80)
+B1_9034: DEX()
+B1_9035: DEX()
+B1_9036: LDA_ZP(0xE6)
+B1_9038: CMP_ABS_X(0xba90)
+B1_903b: LDA_ZP(0xE7)
+B1_903d: SBC_ABS_X(0xba91)
+B1_9040: CYCLE(2); if (!SR_C) goto B1_9034;
+B1_9042: TXA()
+B1_9043: LSR_A()
+B1_9044: RTS()
+B1_9045: ASL_A()
+B1_9046: TAX()
+B1_9047: LDA_ABS_X(0xba90)
+B1_904a: TAY()
+B1_904b: LDA_ABS_X(0xba91)
+B1_904e: TAX()
+B1_904f: RTS()
+B1_9050: LDA_ZP(0x26)
+B1_9052: CMP_IMM(0x10)
+B1_9054: CYCLE(2); if (SR_Z) goto B1_906c;
+B1_9056: CMP_IMM(0x0C)
+B1_9058: CYCLE(2); if (SR_Z) goto B1_9065;
+B1_905a: CMP_IMM(0x06)
+B1_905c: CYCLE(2); if (!SR_Z) goto B1_90a0;
+B1_905e: LDY_IMM(0x10)
+B1_9060: LDX_IMM(0xBB)
+B1_9062: PC = 0xb070; /* UNRES JMP $b070 */ goto LABEL_END;
+B1_9065: LDY_IMM(0x1A)
+B1_9067: LDX_IMM(0xBB)
+B1_9069: PC = 0xb070; /* UNRES JMP $b070 */ goto LABEL_END;
+B1_906c: LDY_IMM(0x24)
+B1_906e: LDX_IMM(0xBB)
+B1_9070: STY_ZP(0xE6)
+B1_9072: STX_ZP(0xE7)
+B1_9074: LDY_IMM(0xEC)
+B1_9076: LDA_ABS_Y(0x0368)
+B1_9079: STA_ABS_Y(0x056a)
+B1_907c: INY()
+B1_907d: CYCLE(2); if (!SR_Z) goto B1_9076;
+B1_907f: LDA_IMM(0x00)
+B1_9081: STA_ZP(0xE9)
+B1_9083: LSR_A()
+B1_9084: TAY()
+B1_9085: LDA_IDY(0xE6)
+B1_9087: TAX()
+B1_9088: LDY_ZP(0xE9)
+B1_908a: LDA_ABS_X(0x0656)
+B1_908d: STA_ABS_Y(0x0454)
+B1_9090: LDA_ABS_X(0x0657)
+B1_9093: STA_ABS_Y(0x0455)
+B1_9096: INC_ZP(0xE9)
+B1_9098: INC_ZP(0xE9)
+B1_909a: LDA_ZP(0xE9)
+B1_909c: CMP_IMM(0x14)
+B1_909e: CYCLE(2); if (!SR_Z) goto B1_9083;
+B1_90a0: RTS()
+B1_90a1: LDX_ZP(0x27)
+B1_90a3: CYCLE(2); if (SR_Z) goto B1_90bf;
+B1_90a5: LDY_IMM(0xC8)
+B1_90a7: LDX_IMM(0xB9)
+B1_90a9: CYCLE(6); SetStack(SP, 171); SetStack(SP - 1, 144); SP -= 2; goto B26_97b6;
+B1_90ac: LDY_IMM(0x52)
+B1_90ae: LDX_IMM(0x22)
+B1_90b0: LDA_IMM(0x01)
+B1_90b2: STA_ZP(0xE9)
+B1_90b4: LDA_ABS(0x0450)
+B1_90b7: EOR_IMM(0xFF)
+B1_90b9: CLC()
+B1_90ba: ADC_IMM(0x37)
+B1_90bc: CYCLE(6); SetStack(SP, 190); SetStack(SP - 1, 144); SP -= 2; goto B0_9895;
+B1_90bf: RTS()
+B1_90c0: STY_ZP(0xEC)
+B1_90c2: STX_ZP(0xED)
+B1_90c4: LDY_IMM(0x00)
+B1_90c6: LDA_IDY(0xEC)
+B1_90c8: ASL_A()
+B1_90c9: TAX()
+B1_90ca: LDA_ABS_X(0xb0d7)
+B1_90cd: STA_ZP(0xE6)
+B1_90cf: LDA_ABS_X(0xb0d8)
+B1_90d2: STA_ZP(0xE7)
+B1_90d4: CYCLE(5); PC = GetMem(231) << 8 | GetMem(230); CHECK_CYCLE(); goto _RET_MAP;
+B1_90f7: CYCLE(6); SetStack(SP, 249); SetStack(SP - 1, 144); SP -= 2; PC = 0xb1c9; /* UNRES JSR $b1c9 */ goto LABEL_END;
+B1_90fa: CYCLE(6); SetStack(SP, 252); SetStack(SP - 1, 144); SP -= 2; goto B26_97b6;
+B1_90fd: LDA_IMM(0x03)
+B1_90ff: PC = 0xb1bb; /* UNRES JMP $b1bb */ goto LABEL_END;
+B1_9102: LDY_IMM(0x03)
+B1_9104: LDA_IDY(0xEC)
+B1_9106: PHA()
+B1_9107: CYCLE(6); SetStack(SP, 9); SetStack(SP - 1, 145); SP -= 2; PC = 0xb1c9; /* UNRES JSR $b1c9 */ goto LABEL_END;
+B1_910a: PLA()
+B1_910b: CYCLE(6); SetStack(SP, 13); SetStack(SP - 1, 145); SP -= 2; goto B26_97b8;
+B1_910e: LDA_IMM(0x04)
+B1_9110: PC = 0xb1bb; /* UNRES JMP $b1bb */ goto LABEL_END;
+B1_912f: CYCLE(6); SetStack(SP, 49); SetStack(SP - 1, 145); SP -= 2; PC = 0xb1d3; /* UNRES JSR $b1d3 */ goto LABEL_END;
+B1_9132: CYCLE(6); SetStack(SP, 52); SetStack(SP - 1, 145); SP -= 2; PC = 0xb1de; /* UNRES JSR $b1de */ goto LABEL_END;
+B1_9135: LDY_ZP(0xE9)
+B1_9137: LDX_IMM(0x01)
+B1_9139: CYCLE(2); if (!SR_N) goto B1_9145;
+B1_913b: CYCLE(6); SetStack(SP, 61); SetStack(SP - 1, 145); SP -= 2; PC = 0xb1d3; /* UNRES JSR $b1d3 */ goto LABEL_END;
+B1_913e: CYCLE(6); SetStack(SP, 64); SetStack(SP - 1, 145); SP -= 2; PC = 0xb1de; /* UNRES JSR $b1de */ goto LABEL_END;
+B1_9141: LDX_ZP(0xE9)
+B1_9143: LDY_IMM(0x01)
+B1_9145: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 145); SP -= 2; goto B26_98ea;
+B1_9148: LDA_IMM(0x05)
+B1_914a: PC = 0xb1bb; /* UNRES JMP $b1bb */ goto LABEL_END;
+B1_9199: CYCLE(6); SetStack(SP, 155); SetStack(SP - 1, 145); SP -= 2; PC = 0xb1c9; /* UNRES JSR $b1c9 */ goto LABEL_END;
+B1_919c: CYCLE(6); SetStack(SP, 158); SetStack(SP - 1, 145); SP -= 2; goto B0_9d27;
+B1_919f: LDA_IMM(0x03)
+B1_91a1: PC = 0xb1bb; /* UNRES JMP $b1bb */ goto LABEL_END;
+B1_91a4: CYCLE(6); SetStack(SP, 166); SetStack(SP - 1, 145); SP -= 2; goto B0_98a0;
+B1_91a7: LDA_IMM(0x01)
+B1_91a9: PC = 0xb1bb; /* UNRES JMP $b1bb */ goto LABEL_END;
+B1_91ac: INY()
+B1_91ad: LDA_IDY(0xEC)
+B1_91af: TAX()
+B1_91b0: INY()
+B1_91b1: LDA_IDY(0xEC)
+B1_91b3: STA_ZP(0xED)
+B1_91b5: STX_ZP(0xEC)
+B1_91b7: PC = 0xb0c4; /* UNRES JMP $b0c4 */ goto LABEL_END;
+B1_91ba: RTS()
+B1_91bb: CLC()
+B1_91bc: ADC_ZP(0xEC)
+B1_91be: STA_ZP(0xEC)
+B1_91c0: LDA_ZP(0xED)
+B1_91c2: ADC_IMM(0x00)
+B1_91c4: STA_ZP(0xED)
+B1_91c6: PC = 0xb0c4; /* UNRES JMP $b0c4 */ goto LABEL_END;
+B1_91c9: LDY_IMM(0x02)
+B1_91cb: LDA_IDY(0xEC)
+B1_91cd: TAX()
+B1_91ce: DEY()
+B1_91cf: LDA_IDY(0xEC)
+B1_91d1: TAY()
+B1_91d2: RTS()
+B1_91d3: INY()
+B1_91d4: LDA_IDY(0xEC)
+B1_91d6: STA_ZP(0xE6)
+B1_91d8: INY()
+B1_91d9: LDA_IDY(0xEC)
+B1_91db: STA_ZP(0xE7)
+B1_91dd: RTS()
+B1_91de: INY()
+B1_91df: LDA_IDY(0xEC)
+B1_91e1: STA_ZP(0xE9)
+B1_91e3: INY()
+B1_91e4: LDA_IDY(0xEC)
+B1_91e6: INY()
+B1_91e7: RTS()
+
+
+
+// ===== Bank 2 (prg_bank_02.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 02 =====
+// ; ROM: 0x004010-0x00600F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=1828 data=245 unaccessed=6119
+B2_8000: LDA_IMM(0x00)
+B2_8002: STA_ABS(0x2003)
+B2_8005: LDA_IMM(0x02)
+B2_8007: STA_ABS(0x4014)
+B2_800a: LDA_ABS(0x0628)
+B2_800d: CYCLE(2); if (SR_Z) goto B2_805d;
+B2_800f: BIT_ABS(0x0629)
+B2_8012: CYCLE(2); if (SR_V) goto B2_805d;
+B2_8014: LDA_IMM(0x00)
+B2_8016: STA_ABS(0x2001)
+B2_8019: LDX_IMM(0x00)
+B2_801b: LDY_IMM(0x80)
+B2_801d: LDA_ABS_X(0x05e8)
+B2_8020: CYCLE(2); if (!SR_N) goto B2_8026;
+B2_8022: AND_IMM(0x3F)
+B2_8024: LDY_IMM(0x84)
+B2_8026: STY_ABS(0x2000)
+B2_8029: TAY()
+B2_802a: LDA_ABS_X(0x05ea)
+B2_802d: STA_ABS(0x2006)
+B2_8030: LDA_ABS_X(0x05e9)
+B2_8033: STA_ABS(0x2006)
+B2_8036: LDA_ABS_X(0x05eb)
+B2_8039: STA_ABS(0x2007)
+B2_803c: INX()
+B2_803d: DEY()
+B2_803e: CYCLE(2); if (!SR_Z) goto B2_8036;
+B2_8040: INX()
+B2_8041: INX()
+B2_8042: INX()
+B2_8043: LDA_ABS_X(0x05e8)
+B2_8046: CYCLE(2); if (!SR_Z) goto B2_801b;
+B2_8048: LDA_IMM(0x00)
+B2_804a: STA_ABS(0x0628)
+B2_804d: LDA_IMM(0x3F)
+B2_804f: STA_ABS(0x2006)
+B2_8052: LDA_IMM(0x00)
+B2_8054: STA_ABS(0x2006)
+B2_8057: STA_ABS(0x2006)
+B2_805a: STA_ABS(0x2006)
+B2_805d: LDA_ZP(0x21)
+B2_805f: STA_ABS(0x2001)
+B2_8062: LDA_ZP(0x79)
+B2_8064: CYCLE(2); if (!SR_N) goto B2_8073;
+B2_8073: LSR_ZP(0x20)
+B2_8075: LSR_ZP(0x20)
+B2_8077: LDA_ZP(0x45)
+B2_8079: LSR_A()
+B2_807a: ROL_ZP(0x20)
+B2_807c: LDA_ZP(0x7B)
+B2_807e: LSR_A()
+B2_807f: ROL_ZP(0x20)
+B2_8081: LDA_ZP(0x20)
+B2_8083: STA_ABS(0x2000)
+B2_8086: LDA_ZP(0x7A)
+B2_8088: STA_ABS(0x2005)
+B2_808b: LDX_ZP(0x44)
+B2_808d: DEX()
+B2_808e: STX_ABS(0x2005)
+B2_8091: LDY_IMM(0x16)
+B2_8093: CYCLE(6); SetStack(SP, 149); SetStack(SP - 1, 128); SP -= 2; PC = 0xa1cb; /* UNRES JSR $a1cb */ goto LABEL_END;
+B2_8096: LDA_ZP(0x79)
+B2_8098: CYCLE(2); if (SR_Z) goto B2_80aa;
+B2_809a: ASL_A()
+B2_809b: STA_ABS(0xc000)
+B2_809e: STA_ABS(0xc001)
+B2_80a1: STA_ABS(0xe001)
+B2_80a4: LDA_IMM(0x04)
+B2_80a6: STA_ZP(0x78)
+B2_80a8: CYCLE(2); if (!SR_N) goto B2_80af;
+B2_80aa: STA_ABS(0xe000)
+B2_80ad: STA_ZP(0x78)
+B2_80af: LDA_IMM(0x02)
+B2_80b1: STA_ABS(0x8000)
+B2_80b4: LDA_ZP(0x9E)
+B2_80b6: STA_ABS(0x8001)
+B2_80b9: LDA_IMM(0x03)
+B2_80bb: STA_ABS(0x8000)
+B2_80be: LDA_ZP(0x9F)
+B2_80c0: STA_ABS(0x8001)
+B2_80c3: LDA_IMM(0x04)
+B2_80c5: STA_ABS(0x8000)
+B2_80c8: LDA_ZP(0xA0)
+B2_80ca: STA_ABS(0x8001)
+B2_80cd: LDA_IMM(0x05)
+B2_80cf: STA_ABS(0x8000)
+B2_80d2: LDA_ZP(0xA1)
+B2_80d4: STA_ABS(0x8001)
+B2_80d7: LDX_IMM(0x02)
+B2_80d9: LDA_IMM(0x04)
+B2_80db: STA_ZP(0x40)
+B2_80dd: LDA_ZP_X(0x1B)
+B2_80df: STA_ZP(0x41)
+B2_80e1: LDA_IMM(0x01)
+B2_80e3: STA_ABS(0x4016)
+B2_80e6: LDA_IMM(0x00)
+B2_80e8: STA_ABS(0x4016)
+B2_80eb: LDY_IMM(0x08)
+B2_80ed: LDA_ABS_X(0x4015)
+B2_80f0: LSR_A()
+B2_80f1: ROL_ZP(0x3F)
+B2_80f3: AND_IMM(0x01)
+B2_80f5: ORA_ZP(0x3F)
+B2_80f7: STA_ZP(0x3F)
+B2_80f9: DEY()
+B2_80fa: CYCLE(2); if (!SR_Z) goto B2_80ed;
+B2_80fc: CMP_ZP(0x41)
+B2_80fe: CYCLE(2); if (SR_Z) goto B2_8107;
+B2_8100: DEC_ZP(0x40)
+B2_8102: CYCLE(2); if (!SR_Z) goto B2_80df;
+B2_8107: LDA_ZP_X(0x1B)
+B2_8109: EOR_ZP(0x3F)
+B2_810b: AND_ZP(0x3F)
+B2_810d: STA_ZP_X(0x1D)
+B2_810f: LDA_ZP(0x3F)
+B2_8111: STA_ZP_X(0x1B)
+B2_8113: DEX()
+B2_8114: CYCLE(2); if (!SR_Z) goto B2_80dd;
+B2_8116: CLC()
+B2_8117: LDA_ZP(0xE1)
+B2_8119: ADC_IMM(0x83)
+B2_811b: STA_ZP(0xE1)
+B2_811d: LDA_ZP(0xE2)
+B2_811f: ADC_IMM(0x0D)
+B2_8121: STA_ZP(0xE2)
+B2_8123: LDA_ZP(0xE3)
+B2_8125: ADC_IMM(0x11)
+B2_8127: STA_ZP(0xE3)
+B2_8129: LDA_IMM(0x00)
+B2_812b: STA_ZP(0x46)
+B2_812d: STA_ZP(0x47)
+B2_812f: LDA_ZP(0x1B)
+B2_8131: ORA_IMM(0x80)
+B2_8133: STA_ZP(0x1B)
+B2_8135: INC_ZP(0x3A)
+B2_8137: RTS()
+B2_8160: STA_ABS(0xe000)
+B2_8163: STA_ABS(0xe001)
+B2_8166: LDX_ZP(0x78)
+B2_8168: LDA_ZP_X(0x78)
+B2_816a: CYCLE(2); if (!SR_N) goto B2_818d;
+B2_816c: LDY_IMM(0x06)
+B2_816e: DEY()
+B2_816f: CYCLE(2); if (!SR_Z) goto B2_816e;
+B2_8171: LDA_ZP_X(0x79)
+B2_8173: LDY_ZP_X(0x7A)
+B2_8175: STY_ABS(0x2006)
+B2_8178: STA_ABS(0x2006)
+B2_817b: LDA_ZP(0x20)
+B2_817d: AND_IMM(0xFC)
+B2_817f: STA_ABS(0x2000)
+B2_8182: LDA_IMM(0x00)
+B2_8184: STA_ABS(0x2005)
+B2_8187: STA_ABS(0x2005)
+B2_818a: PC = 0xa1a8; /* UNRES JMP $a1a8 */ goto LABEL_END;
+B2_818d: LDY_IMM(0x02)
+B2_818f: DEY()
+B2_8190: CYCLE(2); if (!SR_Z) goto B2_818f;
+B2_8192: LSR_ZP(0x20)
+B2_8194: LDA_ZP_X(0x7A)
+B2_8196: LSR_A()
+B2_8197: ROL_ZP(0x20)
+B2_8199: LDA_ZP(0x20)
+B2_819b: STA_ABS(0x2000)
+B2_819e: LDA_ZP_X(0x79)
+B2_81a0: STA_ABS(0x2005)
+B2_81a3: LDA_IMM(0x00)
+B2_81a5: STA_ABS(0x2005)
+B2_81a8: LDA_ZP_X(0x78)
+B2_81aa: AND_IMM(0x7F)
+B2_81ac: CYCLE(2); if (SR_Z) goto B2_81c0;
+B2_81ae: CPX_IMM(0x13)
+B2_81b0: CYCLE(2); if (SR_Z) goto B2_81c0;
+B2_81b2: INC_ZP(0x78)
+B2_81b4: INC_ZP(0x78)
+B2_81b6: INC_ZP(0x78)
+B2_81b8: ASL_A()
+B2_81b9: STA_ABS(0xc000)
+B2_81bc: STA_ABS(0xc001)
+B2_81bf: RTS()
+B2_81c0: STA_ABS(0xe000)
+B2_81c3: STA_ZP(0x78)
+B2_81c5: LDY_IMM(0x18)
+B2_81c7: CYCLE(6); SetStack(SP, 201); SetStack(SP - 1, 129); SP -= 2; PC = 0xa1cb; /* UNRES JSR $a1cb */ goto LABEL_END;
+B2_81ca: RTS()
+B2_81cb: LDX_ZP_Y(0x78)
+B2_81cd: LDA_IMM(0x00)
+B2_81cf: ORA_ZP(0x22)
+B2_81d1: STA_ABS(0x8000)
+B2_81d4: STX_ABS(0x8001)
+B2_81d7: LDX_ZP_Y(0x79)
+B2_81d9: LDA_IMM(0x01)
+B2_81db: ORA_ZP(0x22)
+B2_81dd: STA_ABS(0x8000)
+B2_81e0: STX_ABS(0x8001)
+B2_81e3: RTS()
+B2_8200: PC = 0xa21b; /* UNRES JMP $a21b */ goto LABEL_END;
+B2_8203: PC = 0xa2af; /* UNRES JMP $a2af */ goto LABEL_END;
+B2_8206: PC = 0xa2e8; /* UNRES JMP $a2e8 */ goto LABEL_END;
+B2_820c: PC = 0xa855; /* UNRES JMP $a855 */ goto LABEL_END;
+B2_820f: PC = 0xa86e; /* UNRES JMP $a86e */ goto LABEL_END;
+B2_8212: PC = 0xa484; /* UNRES JMP $a484 */ goto LABEL_END;
+B2_8215: PC = 0xa8ce; /* UNRES JMP $a8ce */ goto LABEL_END;
+B2_821b: LDX_IMM(0xFF)
+B2_821d: TXS()
+B2_821e: PHA()
+B2_821f: LDA_IMM(0x00)
+B2_8221: STA_ABS(0xa000)
+B2_8224: LDA_ZP(0x1B)
+B2_8226: ORA_IMM(0x40)
+B2_8228: STA_ZP(0x1B)
+B2_822a: LDA_IMM(0x00)
+B2_822c: LDY_IMM(0xE8)
+B2_822e: STA_ABS_Y(0xff19)
+B2_8231: INY()
+B2_8232: CYCLE(2); if (!SR_Z) goto B2_822e;
+B2_8234: LDA_IMM(0x00)
+B2_8236: LDY_IMM(0x5A)
+B2_8238: STA_ABS_Y(0xffe0)
+B2_823b: INY()
+B2_823c: CYCLE(2); if (!SR_Z) goto B2_8238;
+B2_823e: LDA_IMM(0x98)
+B2_8240: LDX_IMM(0x02)
+B2_8242: LDY_IMM(0x68)
+B2_8244: STY_ZP(0xEC)
+B2_8246: LDY_IMM(0x04)
+B2_8248: CYCLE(6); SetStack(SP, 74); SetStack(SP - 1, 130); SP -= 2; PC = 0xaa06; /* UNRES JSR $aa06 */ goto LABEL_END;
+B2_824b: LDA_IMM(0x0F)
+B2_824d: LDY_IMM(0xE0)
+B2_824f: STA_ABS_Y(0x054a)
+B2_8252: INY()
+B2_8253: CYCLE(2); if (!SR_Z) goto B2_824f;
+B2_8255: CYCLE(6); SetStack(SP, 87); SetStack(SP - 1, 130); SP -= 2; goto B0_9a43;
+B2_8258: LDA_IMM(0x00)
+B2_825a: STA_ZP(0x4A)
+B2_825c: STA_ZP(0x4B)
+B2_825e: CYCLE(6); SetStack(SP, 96); SetStack(SP - 1, 130); SP -= 2; goto B0_98a0;
+B2_8261: CYCLE(6); SetStack(SP, 99); SetStack(SP - 1, 130); SP -= 2; goto B0_9b7f;
+B2_8264: LDA_IMM(0x02)
+B2_8266: STA_ZP(0x8F)
+B2_8268: STA_ZP(0x91)
+B2_826a: PLA()
+B2_826b: CYCLE(2); if (SR_Z) goto B2_8281;
+B2_826d: LDX_IMM(0x01)
+B2_826f: LDA_IMM(0xFF)
+B2_8271: STA_ZP_X(0x00)
+B2_8273: LDA_IMM(0x7F)
+B2_8275: STA_ZP_X(0x01)
+B2_8277: LDY_IMM(0x28)
+B2_8279: LDA_IMM(0x00)
+B2_827b: CYCLE(6); SetStack(SP, 125); SetStack(SP - 1, 130); SP -= 2; goto B0_9f69;
+B2_827e: PC = 0xa292; /* UNRES JMP $a292 */ goto LABEL_END;
+B2_8281: LDX_IMM(0x01)
+B2_8283: LDA_IMM(0x1E)
+B2_8285: STA_ZP_X(0x00)
+B2_8287: LDA_IMM(0x80)
+B2_8289: STA_ZP_X(0x01)
+B2_828b: LDY_IMM(0x28)
+B2_828d: LDA_IMM(0x00)
+B2_828f: CYCLE(6); SetStack(SP, 145); SetStack(SP - 1, 130); SP -= 2; goto B0_9f69;
+B2_8292: LDX_IMM(0x15)
+B2_8294: LDA_IMM(0xEC)
+B2_8296: STA_ZP_X(0x00)
+B2_8298: LDA_IMM(0x82)
+B2_829a: STA_ZP_X(0x01)
+B2_829c: LDY_IMM(0xF0)
+B2_829e: LDA_IMM(0x00)
+B2_82a0: CYCLE(6); SetStack(SP, 162); SetStack(SP - 1, 130); SP -= 2; goto B0_9f69;
+B2_82a3: LDA_ZP(0x20)
+B2_82a5: ORA_IMM(0x80)
+B2_82a7: STA_ZP(0x20)
+B2_82a9: STA_ABS(0x2000)
+B2_82ac: CYCLE(3); PC = 0x9eed; goto B0_9eed;
+B2_82af: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 130); SP -= 2; goto B26_99f0;
+B2_82b2: CYCLE(6); SetStack(SP, 180); SetStack(SP - 1, 130); SP -= 2; goto B0_98a0;
+B2_82b5: CYCLE(6); SetStack(SP, 183); SetStack(SP - 1, 130); SP -= 2; goto B0_9b7f;
+B2_82b8: LDA_ZP(0x20)
+B2_82ba: AND_IMM(0x7F)
+B2_82bc: STA_ABS(0x2000)
+B2_82bf: STA_ZP(0x20)
+B2_82c1: STA_ABS(0xe000)
+B2_82c4: LDA_IMM(0x00)
+B2_82c6: LDY_IMM(0xE8)
+B2_82c8: STA_ABS_Y(0xff19)
+B2_82cb: INY()
+B2_82cc: CYCLE(2); if (!SR_Z) goto B2_82c8;
+B2_82ce: LDA_IMM(0x00)
+B2_82d0: LDY_IMM(0x5A)
+B2_82d2: STA_ABS_Y(0xffe0)
+B2_82d5: INY()
+B2_82d6: CYCLE(2); if (!SR_Z) goto B2_82d2;
+B2_82d8: LDA_IMM(0x98)
+B2_82da: LDX_IMM(0x02)
+B2_82dc: LDY_IMM(0x68)
+B2_82de: STY_ZP(0xEC)
+B2_82e0: LDY_IMM(0x04)
+B2_82e2: CYCLE(6); SetStack(SP, 228); SetStack(SP - 1, 130); SP -= 2; PC = 0xaa06; /* UNRES JSR $aa06 */ goto LABEL_END;
+B2_82e5: CYCLE(3); PC = 0xc557; goto B30_c557;
+B2_82e8: LDA_ZP(0x57)
+B2_82ea: CYCLE(2); if (SR_N) goto B2_8338;
+B2_82ec: STA_ZP(0xED)
+B2_82ee: LDA_IMM(0x00)
+B2_82f0: LDY_IMM(0xFA)
+B2_82f2: STA_ABS_Y(0xffec)
+B2_82f5: INY()
+B2_82f6: CYCLE(2); if (!SR_Z) goto B2_82f2;
+B2_82f8: LDA_IMM(0x01)
+B2_82fa: CYCLE(6); SetStack(SP, 252); SetStack(SP - 1, 130); SP -= 2; goto B0_9fa8;
+B2_82fd: LDY_ZP(0xED)
+B2_82ff: LDA_IMM(0x00)
+B2_8301: STA_ZP(0xEC)
+B2_8303: TYA()
+B2_8304: AND_IMM(0x0F)
+B2_8306: LSR_A()
+B2_8307: TAX()
+B2_8308: LDA_ABS_Y(0xaadf)
+B2_830b: CLC()
+B2_830c: ADC_ZP_X(0xE6)
+B2_830e: STA_ZP_X(0xE6)
+B2_8310: LDX_ZP(0xEC)
+B2_8312: LDA_ABS_Y(0xaae0)
+B2_8315: ADC_ZP_X(0x7A)
+B2_8317: STA_ZP_X(0x7A)
+B2_8319: LDA_ABS_Y(0xaae0)
+B2_831c: CYCLE(2); if (!SR_N) goto B2_8322;
+B2_831e: LDA_IMM(0xFF)
+B2_8320: CYCLE(2); if (!SR_Z) goto B2_8324;
+B2_8322: LDA_IMM(0x00)
+B2_8324: ADC_ZP_X(0x7B)
+B2_8326: STA_ZP_X(0x7B)
+B2_8328: INY()
+B2_8329: INY()
+B2_832a: LDA_ZP(0xEC)
+B2_832c: CLC()
+B2_832d: ADC_IMM(0x03)
+B2_832f: STA_ZP(0xEC)
+B2_8331: CMP_IMM(0x0F)
+B2_8333: CYCLE(2); if (!SR_Z) goto B2_8303;
+B2_8335: PC = 0xa2f8; /* UNRES JMP $a2f8 */ goto LABEL_END;
+B2_8338: CMP_IMM(0x81)
+B2_833a: CYCLE(2); if (SR_Z) goto B2_83a3;
+B2_833c: LDX_IMM(0x67)
+B2_833e: LDA_IMM(0x05)
+B2_8340: CYCLE(6); SetStack(SP, 66); SetStack(SP - 1, 131); SP -= 2; goto B30_c4bd;
+B2_8343: LDA_IMM(0x00)
+B2_8345: STA_ZP(0xED)
+B2_8347: TAY()
+B2_8348: LDX_IMM(0x78)
+B2_834a: LDA_ZP(0xEC)
+B2_834c: AND_IMM(0x01)
+B2_834e: ORA_IMM(0xF2)
+B2_8350: STA_ABS_X(0x0469)
+B2_8353: LDA_IMM(0x03)
+B2_8355: STA_ABS_X(0x046a)
+B2_8358: TYA()
+B2_8359: STA_ABS_X(0x0468)
+B2_835c: CLC()
+B2_835d: ADC_IMM(0x03)
+B2_835f: TAY()
+B2_8360: LDA_ZP(0xEC)
+B2_8362: STA_ABS_X(0x046b)
+B2_8365: CLC()
+B2_8366: ADC_IMM(0x0D)
+B2_8368: STA_ZP(0xEC)
+B2_836a: INX()
+B2_836b: INX()
+B2_836c: INX()
+B2_836d: INX()
+B2_836e: CPX_IMM(0xFC)
+B2_8370: CYCLE(2); if (!SR_Z) goto B2_834a;
+B2_8372: LDA_IMM(0x01)
+B2_8374: CYCLE(6); SetStack(SP, 118); SetStack(SP - 1, 131); SP -= 2; goto B0_9fa8;
+B2_8377: LDX_IMM(0x78)
+B2_8379: TXA()
+B2_837a: AND_IMM(0x0C)
+B2_837c: TAY()
+B2_837d: LDA_ABS_X(0x0468)
+B2_8380: CMP_ABS_Y(0xab1f)
+B2_8383: CYCLE(2); if (!SR_C) goto B2_8387;
+B2_8385: LDA_IMM(0x00)
+B2_8387: CLC()
+B2_8388: ADC_ABS_Y(0xab21)
+B2_838b: STA_ABS_X(0x0468)
+B2_838e: LDA_ABS_X(0x046b)
+B2_8391: CLC()
+B2_8392: ADC_ABS_Y(0xab22)
+B2_8395: STA_ABS_X(0x046b)
+B2_8398: INX()
+B2_8399: INX()
+B2_839a: INX()
+B2_839b: INX()
+B2_839c: CPX_IMM(0xFC)
+B2_839e: CYCLE(2); if (!SR_Z) goto B2_8379;
+B2_83a0: PC = 0xa372; /* UNRES JMP $a372 */ goto LABEL_END;
+B2_83a3: LDA_ABS(0x0568)
+B2_83a6: ORA_IMM(0x10)
+B2_83a8: STA_ABS(0x0568)
+B2_83ab: LDA_IMM(0x04)
+B2_83ad: CYCLE(6); SetStack(SP, 175); SetStack(SP - 1, 131); SP -= 2; goto B0_9fa8;
+B2_83b0: LDA_IMM(0x08)
+B2_83b2: STA_ZP(0x44)
+B2_83b4: STA_ZP(0x46)
+B2_83b6: LDA_ABS(0x056d)
+B2_83b9: SEC()
+B2_83ba: SBC_IMM(0x04)
+B2_83bc: STA_ABS(0x056d)
+B2_83bf: LDA_IMM(0x04)
+B2_83c1: CYCLE(6); SetStack(SP, 195); SetStack(SP - 1, 131); SP -= 2; goto B0_9fa8;
+B2_83c4: LDA_IMM(0x00)
+B2_83c6: STA_ZP(0x44)
+B2_83c8: LDA_IMM(0xF8)
+B2_83ca: STA_ZP(0x46)
+B2_83cc: LDA_ABS(0x056d)
+B2_83cf: CLC()
+B2_83d0: ADC_IMM(0x04)
+B2_83d2: STA_ABS(0x056d)
+B2_83d5: PC = 0xa3ab; /* UNRES JMP $a3ab */ goto LABEL_END;
+B2_8484: LDA_ZP(0xED)
+B2_8486: ASL_A()
+B2_8487: TAX()
+B2_8488: LDA_ABS_X(0xa492)
+B2_848b: PHA()
+B2_848c: LDA_ABS_X(0xa491)
+B2_848f: PHA()
+B2_8490: RTS()
+B2_84c1: CYCLE(6); SetStack(SP, 195); SetStack(SP - 1, 132); SP -= 2; goto B26_9a0d;
+B2_84c4: LDA_IMM(0x10)
+B2_84c6: CYCLE(6); SetStack(SP, 200); SetStack(SP - 1, 132); SP -= 2; goto B0_9fa8;
+B2_84c9: LDY_IMM(0x30)
+B2_84cb: LDA_IMM(0x01)
+B2_84cd: CYCLE(6); SetStack(SP, 207); SetStack(SP - 1, 132); SP -= 2; goto B0_9fa8;
+B2_84d0: LDA_IMM(0x01)
+B2_84d2: CYCLE(6); SetStack(SP, 212); SetStack(SP - 1, 132); SP -= 2; goto B26_890c;
+B2_84d5: DEY()
+B2_84d6: CYCLE(2); if (!SR_Z) goto B2_84cb;
+B2_84d8: LDA_IMM(0x00)
+B2_84da: STA_ZP(0x5B)
+B2_84dc: STA_ZP(0x7B)
+B2_84de: LDA_IMM(0x17)
+B2_84e0: CYCLE(6); SetStack(SP, 226); SetStack(SP - 1, 132); SP -= 2; goto B1_8af7;
+B2_84e3: LDA_IMM(0x68)
+B2_84e5: STA_ZP(0x44)
+B2_84e7: LDA_IMM(0x03)
+B2_84e9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 132); SP -= 2; goto B16_8920;
+B2_84ec: LDA_ZP(0x8E)
+B2_84ee: STA_ZP(0x90)
+B2_84f0: LDA_ZP(0x8F)
+B2_84f2: STA_ZP(0x91)
+B2_84f4: LDA_IMM(0x04)
+B2_84f6: CYCLE(6); SetStack(SP, 248); SetStack(SP - 1, 132); SP -= 2; goto B0_9fa8;
+B2_84f9: CYCLE(6); SetStack(SP, 251); SetStack(SP - 1, 132); SP -= 2; goto B0_9a35;
+B2_84fc: CYCLE(6); SetStack(SP, 254); SetStack(SP - 1, 132); SP -= 2; goto B26_88fb;
+B2_84ff: LDA_IMM(0x01)
+B2_8501: CYCLE(6); SetStack(SP, 3); SetStack(SP - 1, 133); SP -= 2; goto B0_9fa8;
+B2_8504: INC_ZP(0x79)
+B2_8506: DEC_ZP(0x7C)
+B2_8508: DEC_ZP(0x7C)
+B2_850a: LDA_ZP(0x44)
+B2_850c: SEC()
+B2_850d: SBC_IMM(0x02)
+B2_850f: STA_ZP(0x44)
+B2_8511: CMP_IMM(0x03)
+B2_8513: CYCLE(2); if (SR_C) goto B2_84ff;
+B2_8515: LDA_IMM(0x00)
+B2_8517: CYCLE(6); SetStack(SP, 25); SetStack(SP - 1, 133); SP -= 2; goto B16_8920;
+B2_851a: LDA_ZP(0x1B)
+B2_851c: ORA_IMM(0x01)
+B2_851e: STA_ZP(0x1B)
+B2_8520: LDA_IMM(0xF0)
+B2_8522: CYCLE(6); SetStack(SP, 36); SetStack(SP - 1, 133); SP -= 2; goto B0_9fa8;
+B2_8525: LDA_IMM(0x3C)
+B2_8527: CYCLE(6); SetStack(SP, 41); SetStack(SP - 1, 133); SP -= 2; goto B0_9fa8;
+B2_852a: LDA_ZP(0x1B)
+B2_852c: AND_IMM(0xFE)
+B2_852e: STA_ZP(0x1B)
+B2_8530: LDA_IMM(0x00)
+B2_8532: STA_ZP(0x90)
+B2_8534: LDA_IMM(0x02)
+B2_8536: STA_ZP(0x91)
+B2_8538: CYCLE(6); SetStack(SP, 58); SetStack(SP - 1, 133); SP -= 2; goto B26_99f0;
+B2_853b: CYCLE(6); SetStack(SP, 61); SetStack(SP - 1, 133); SP -= 2; goto B0_9b7f;
+B2_853e: CYCLE(6); SetStack(SP, 64); SetStack(SP - 1, 133); SP -= 2; goto B0_98a0;
+B2_8541: LDA_IMM(0xC0)
+B2_8543: STA_ZP(0xE6)
+B2_8545: LDA_IMM(0x23)
+B2_8547: STA_ZP(0xE7)
+B2_8549: LDY_IMM(0x02)
+B2_854b: LDX_IMM(0x20)
+B2_854d: LDA_IMM(0x55)
+B2_854f: CYCLE(6); SetStack(SP, 81); SetStack(SP - 1, 133); SP -= 2; goto B26_98ea;
+B2_8552: LDA_IMM(0x01)
+B2_8554: CYCLE(6); SetStack(SP, 86); SetStack(SP - 1, 133); SP -= 2; goto B16_8920;
+B2_8557: LDA_IMM(0x02)
+B2_8559: RTS()
+B2_855a: LDA_IMM(0x00)
+B2_855c: STA_ZP(0x60)
+B2_855e: LDA_ZP(0xEC)
+B2_8560: LSR_A()
+B2_8561: ROR_ZP(0x60)
+B2_8563: LSR_A()
+B2_8564: ROR_ZP(0x60)
+B2_8566: STA_ZP(0x61)
+B2_8568: BIT_ZP(0x62)
+B2_856a: CYCLE(2); if (SR_N) goto B2_8579;
+B2_856c: LDA_IMM(0x00)
+B2_856e: SEC()
+B2_856f: SBC_ZP(0x60)
+B2_8571: STA_ZP(0x60)
+B2_8573: LDA_IMM(0x00)
+B2_8575: SBC_ZP(0x61)
+B2_8577: STA_ZP(0x61)
+B2_8579: LDA_IMM(0x03)
+B2_857b: RTS()
+B2_857c: CYCLE(6); SetStack(SP, 126); SetStack(SP - 1, 133); SP -= 2; goto B26_9b91;
+B2_857f: LDA_IMM(0x02)
+B2_8581: RTS()
+B2_85a9: LDX_IMM(0x09)
+B2_85ab: CYCLE(6); SetStack(SP, 173); SetStack(SP - 1, 133); SP -= 2; goto B0_9f96;
+B2_85ae: LDA_IMM(0x02)
+B2_85b0: RTS()
+B2_85b1: LDX_IMM(0x09)
+B2_85b3: CYCLE(6); SetStack(SP, 181); SetStack(SP - 1, 133); SP -= 2; goto B0_9f89;
+B2_85b6: LDA_IMM(0x02)
+B2_85b8: RTS()
+B2_85dc: LDA_IMM(0x00)
+B2_85de: CYCLE(6); SetStack(SP, 224); SetStack(SP - 1, 133); SP -= 2; goto B28_8895;
+B2_85e1: LDA_IMM(0x05)
+B2_85e3: CYCLE(6); SetStack(SP, 229); SetStack(SP - 1, 133); SP -= 2; goto B16_8920;
+B2_85e6: LDA_IMM(0x02)
+B2_85e8: RTS()
+B2_85e9: LDA_ZP(0x0D)
+B2_85eb: CYCLE(2); if (!SR_Z) goto B2_85fa;
+B2_85ed: LDA_IMM(0x10)
+B2_85ef: CYCLE(6); SetStack(SP, 241); SetStack(SP - 1, 133); SP -= 2; goto B28_8895;
+B2_85f2: LDA_IMM(0x06)
+B2_85f4: CYCLE(6); SetStack(SP, 246); SetStack(SP - 1, 133); SP -= 2; goto B16_8920;
+B2_85f7: LDA_IMM(0x02)
+B2_85f9: RTS()
+B2_85fa: LDA_IMM(0x00)
+B2_85fc: STA_ZP(0x0D)
+B2_85fe: STA_ZP(0x0E)
+B2_8600: LDA_IMM(0x02)
+B2_8602: RTS()
+B2_8603: LDA_ZP(0x0D)
+B2_8605: CYCLE(2); if (!SR_Z) goto B2_8614;
+B2_8607: LDA_IMM(0x30)
+B2_8609: CYCLE(6); SetStack(SP, 11); SetStack(SP - 1, 134); SP -= 2; goto B28_8895;
+B2_860c: LDA_IMM(0x08)
+B2_860e: CYCLE(6); SetStack(SP, 16); SetStack(SP - 1, 134); SP -= 2; goto B16_8920;
+B2_8611: LDA_IMM(0x02)
+B2_8613: RTS()
+B2_8614: LDA_IMM(0x00)
+B2_8616: STA_ZP(0x0D)
+B2_8618: STA_ZP(0x0E)
+B2_861a: LDA_IMM(0x02)
+B2_861c: RTS()
+B2_861d: LDA_IMM(0x20)
+B2_861f: CYCLE(6); SetStack(SP, 33); SetStack(SP - 1, 134); SP -= 2; goto B28_8895;
+B2_8622: LDA_IMM(0x07)
+B2_8624: CYCLE(6); SetStack(SP, 38); SetStack(SP - 1, 134); SP -= 2; goto B16_8920;
+B2_8627: LDA_IMM(0x02)
+B2_8629: RTS()
+B2_862a: LDX_IMM(0xBD)
+B2_862c: LDY_IMM(0x23)
+B2_862e: CYCLE(6); SetStack(SP, 48); SetStack(SP - 1, 134); SP -= 2; goto B24_8976;
+B2_8631: CYCLE(6); SetStack(SP, 51); SetStack(SP - 1, 134); SP -= 2; goto B0_9a35;
+B2_8634: LDA_IMM(0x01)
+B2_8636: CYCLE(6); SetStack(SP, 56); SetStack(SP - 1, 134); SP -= 2; goto B0_9fa8;
+B2_8639: LDA_ABS(0x058f)
+B2_863c: AND_IMM(0x7F)
+B2_863e: STA_ABS(0x058f)
+B2_8641: LDA_IMM(0x82)
+B2_8643: STA_ZP(0x4C)
+B2_8645: LDY_IMM(0x28)
+B2_8647: LDX_IMM(0x20)
+B2_8649: LDA_IMM(0xC8)
+B2_864b: CYCLE(6); SetStack(SP, 77); SetStack(SP - 1, 134); SP -= 2; PC = 0xa82f; /* UNRES JSR $a82f */ goto LABEL_END;
+B2_864e: LDA_IMM(0x02)
+B2_8650: RTS()
+B2_8651: LDA_IMM(0x00)
+B2_8653: STA_ZP(0xED)
+B2_8655: LDY_ZP(0xED)
+B2_8657: LDA_ABS_Y(0xaa97)
+B2_865a: STA_ZP(0xEA)
+B2_865c: AND_IMM(0x7F)
+B2_865e: STA_ZP(0xEB)
+B2_8660: LDA_ZP(0x7B)
+B2_8662: AND_IMM(0x01)
+B2_8664: ASL_A()
+B2_8665: ASL_A()
+B2_8666: ORA_ZP(0xEB)
+B2_8668: TAX()
+B2_8669: INY()
+B2_866a: LDA_ABS_Y(0xaa97)
+B2_866d: STA_ZP(0xEB)
+B2_866f: INY()
+B2_8670: LDA_ABS_Y(0xaa97)
+B2_8673: INY()
+B2_8674: STY_ZP(0xED)
+B2_8676: LDY_ZP(0xEB)
+B2_8678: CYCLE(6); SetStack(SP, 122); SetStack(SP - 1, 134); SP -= 2; goto B26_9b28;
+B2_867b: AND_IMM(0x7F)
+B2_867d: STA_ZP(0xEB)
+B2_867f: LDA_IMM(0x00)
+B2_8681: STA_ABS_X(0x05e8)
+B2_8684: INX()
+B2_8685: DEC_ZP(0xEB)
+B2_8687: CYCLE(2); if (!SR_Z) goto B2_8681;
+B2_8689: CYCLE(6); SetStack(SP, 139); SetStack(SP - 1, 134); SP -= 2; goto B0_9b5e;
+B2_868c: BIT_ZP(0xEA)
+B2_868e: CYCLE(2); if (SR_N) goto B2_869a;
+B2_8690: CYCLE(2); if (!SR_V) goto B2_8655;
+B2_8692: LDA_IMM(0x02)
+B2_8694: CYCLE(6); SetStack(SP, 150); SetStack(SP - 1, 134); SP -= 2; goto B0_9fa8;
+B2_8697: PC = 0xa655; /* UNRES JMP $a655 */ goto LABEL_END;
+B2_869a: LDA_IMM(0x02)
+B2_869c: RTS()
+B2_869d: LDA_ABS(0x04e5)
+B2_86a0: CMP_IMM(0xFF)
+B2_86a2: CYCLE(2); if (SR_Z) goto B2_86d4;
+B2_86a4: CYCLE(6); SetStack(SP, 166); SetStack(SP - 1, 134); SP -= 2; PC = 0xa767; /* UNRES JSR $a767 */ goto LABEL_END;
+B2_86a7: LDY_IMM(0x80)
+B2_86a9: LDA_IMM(0x00)
+B2_86ab: STA_ZP(0xEA)
+B2_86ad: LDX_IMM(0x2F)
+B2_86af: LDA_IMM(0xFF)
+B2_86b1: STA_ZP(0xED)
+B2_86b3: LDA_IMM(0xFE)
+B2_86b5: STA_ZP(0xEC)
+B2_86b7: LDA_IMM(0x07)
+B2_86b9: STA_ZP(0xEB)
+B2_86bb: LDA_IMM(0xF7)
+B2_86bd: CYCLE(6); SetStack(SP, 191); SetStack(SP - 1, 134); SP -= 2; PC = 0xa72c; /* UNRES JSR $a72c */ goto LABEL_END;
+B2_86c0: LDY_IMM(0xD8)
+B2_86c2: LDX_IMM(0x30)
+B2_86c4: LDA_IMM(0x01)
+B2_86c6: STA_ZP(0xED)
+B2_86c8: LDA_IMM(0xFF)
+B2_86ca: STA_ZP(0xEC)
+B2_86cc: LDA_IMM(0xFC)
+B2_86ce: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 134); SP -= 2; PC = 0xa72c; /* UNRES JSR $a72c */ goto LABEL_END;
+B2_86d1: LDA_IMM(0x02)
+B2_86d3: RTS()
+B2_86d4: CYCLE(6); SetStack(SP, 214); SetStack(SP - 1, 134); SP -= 2; PC = 0xa767; /* UNRES JSR $a767 */ goto LABEL_END;
+B2_86d7: LDY_IMM(0x80)
+B2_86d9: LDX_IMM(0x2F)
+B2_86db: LDA_IMM(0x02)
+B2_86dd: STA_ZP(0xEA)
+B2_86df: LDA_IMM(0xFF)
+B2_86e1: STA_ZP(0xED)
+B2_86e3: LDA_IMM(0xFE)
+B2_86e5: STA_ZP(0xEC)
+B2_86e7: LDA_IMM(0x07)
+B2_86e9: STA_ZP(0xEB)
+B2_86eb: LDA_IMM(0xF7)
+B2_86ed: CYCLE(6); SetStack(SP, 239); SetStack(SP - 1, 134); SP -= 2; PC = 0xa72c; /* UNRES JSR $a72c */ goto LABEL_END;
+B2_86f0: LDX_IMM(0x08)
+B2_86f2: LDA_IMM(0xFE)
+B2_86f4: CYCLE(6); SetStack(SP, 246); SetStack(SP - 1, 134); SP -= 2; PC = 0xa72c; /* UNRES JSR $a72c */ goto LABEL_END;
+B2_86f7: LDY_IMM(0xFC)
+B2_86f9: LDA_ABS_Y(0xa67b)
+B2_86fc: STA_ABS_Y(0x0460)
+B2_86ff: INY()
+B2_8700: CYCLE(2); if (!SR_Z) goto B2_86f9;
+B2_8702: LDY_IMM(0xB8)
+B2_8704: LDX_IMM(0x1C)
+B2_8706: LDA_IMM(0x02)
+B2_8708: STA_ZP(0xED)
+B2_870a: LDA_IMM(0xFF)
+B2_870c: STA_ZP(0xEC)
+B2_870e: LDA_IMM(0x03)
+B2_8710: STA_ZP(0xEB)
+B2_8712: LDA_IMM(0xF6)
+B2_8714: CYCLE(6); SetStack(SP, 22); SetStack(SP - 1, 135); SP -= 2; PC = 0xa72c; /* UNRES JSR $a72c */ goto LABEL_END;
+B2_8717: LDY_IMM(0xD8)
+B2_8719: LDA_ABS_Y(0x046a)
+B2_871c: ORA_IMM(0x02)
+B2_871e: STA_ABS_Y(0x046a)
+B2_8721: INY()
+B2_8722: INY()
+B2_8723: INY()
+B2_8724: INY()
+B2_8725: CPY_IMM(0xF0)
+B2_8727: CYCLE(2); if (!SR_C) goto B2_8719;
+B2_8729: LDA_IMM(0x02)
+B2_872b: RTS()
+B2_872c: STA_ZP(0xE9)
+B2_872e: LDA_ABS(0x04e4)
+B2_8731: CLC()
+B2_8732: ADC_ZP(0xED)
+B2_8734: STA_ABS(0x04e4)
+B2_8737: LDA_ABS(0x04e7)
+B2_873a: CLC()
+B2_873b: ADC_ZP(0xEC)
+B2_873d: STA_ABS(0x04e7)
+B2_8740: AND_ZP(0xEB)
+B2_8742: CYCLE(2); if (!SR_Z) goto B2_875e;
+B2_8744: LDA_ABS(0x04e4)
+B2_8747: STA_ABS_Y(0x0468)
+B2_874a: LDA_ZP(0xE9)
+B2_874c: STA_ABS_Y(0x0469)
+B2_874f: LDA_ZP(0xEA)
+B2_8751: STA_ABS_Y(0x046a)
+B2_8754: LDA_ABS(0x04e7)
+B2_8757: STA_ABS_Y(0x046b)
+B2_875a: INY()
+B2_875b: INY()
+B2_875c: INY()
+B2_875d: INY()
+B2_875e: LDA_IMM(0x01)
+B2_8760: CYCLE(6); SetStack(SP, 98); SetStack(SP - 1, 135); SP -= 2; goto B0_9fa8;
+B2_8763: DEX()
+B2_8764: CYCLE(2); if (!SR_Z) goto B2_872e;
+B2_8766: RTS()
+B2_8767: LDY_IMM(0xFC)
+B2_8769: LDA_ABS_Y(0xa677)
+B2_876c: STA_ABS_Y(0x03e8)
+B2_876f: INY()
+B2_8770: CYCLE(2); if (!SR_Z) goto B2_8769;
+B2_8772: RTS()
+B2_877b: LDA_IMM(0x80)
+B2_877d: CYCLE(6); SetStack(SP, 127); SetStack(SP - 1, 135); SP -= 2; goto B28_8895;
+B2_8780: LDA_IMM(0x02)
+B2_8782: RTS()
+B2_8783: LDA_IMM(0x02)
+B2_8785: CYCLE(6); SetStack(SP, 135); SetStack(SP - 1, 135); SP -= 2; goto B0_9fa8;
+B2_8788: CYCLE(6); SetStack(SP, 138); SetStack(SP - 1, 135); SP -= 2; goto B26_88fb;
+B2_878b: LDA_IMM(0x02)
+B2_878d: RTS()
+B2_87be: LDA_IMM(0x01)
+B2_87c0: CYCLE(6); SetStack(SP, 194); SetStack(SP - 1, 135); SP -= 2; goto B0_9fa8;
+B2_87c3: LDY_IMM(0x28)
+B2_87c5: LDX_IMM(0x64)
+B2_87c7: LDA_IMM(0xB0)
+B2_87c9: CYCLE(6); SetStack(SP, 203); SetStack(SP - 1, 135); SP -= 2; PC = 0xa82f; /* UNRES JSR $a82f */ goto LABEL_END;
+B2_87cc: LDA_IMM(0x02)
+B2_87ce: RTS()
+B2_87cf: LDA_IMM(0x81)
+B2_87d1: CYCLE(6); SetStack(SP, 211); SetStack(SP - 1, 135); SP -= 2; goto B28_8895;
+B2_87d4: LDA_IMM(0x02)
+B2_87d6: RTS()
+B2_87d7: LDY_IMM(0x80)
+B2_87d9: LDA_IMM(0x01)
+B2_87db: CYCLE(6); SetStack(SP, 221); SetStack(SP - 1, 135); SP -= 2; goto B0_9fa8;
+B2_87de: LDX_IMM(0x20)
+B2_87e0: LDA_ABS_X(0x0468)
+B2_87e3: CYCLE(2); if (!SR_N) goto B2_87ed;
+B2_87e5: LDA_ABS_X(0x046a)
+B2_87e8: ORA_IMM(0x04)
+B2_87ea: STA_ABS_X(0x046a)
+B2_87ed: INX()
+B2_87ee: INX()
+B2_87ef: INX()
+B2_87f0: INX()
+B2_87f1: CPX_IMM(0xC4)
+B2_87f3: CYCLE(2); if (!SR_Z) goto B2_87e0;
+B2_87f5: DEY()
+B2_87f6: CYCLE(2); if (!SR_Z) goto B2_87d9;
+B2_87f8: LDA_IMM(0x02)
+B2_87fa: RTS()
+B2_882f: STA_ZP(0xEC)
+B2_8831: STX_ZP(0xED)
+B2_8833: LDA_IMM(0x01)
+B2_8835: CYCLE(6); SetStack(SP, 55); SetStack(SP - 1, 136); SP -= 2; goto B0_9fa8;
+B2_8838: LDX_ZP(0xED)
+B2_883a: LDA_ABS_X(0x0468)
+B2_883d: CMP_IMM(0x82)
+B2_883f: CYCLE(2); if (SR_C) goto B2_8849;
+B2_8841: LDA_ABS_X(0x046a)
+B2_8844: AND_IMM(0xF3)
+B2_8846: STA_ABS_X(0x046a)
+B2_8849: INX()
+B2_884a: INX()
+B2_884b: INX()
+B2_884c: INX()
+B2_884d: CPX_ZP(0xEC)
+B2_884f: CYCLE(2); if (!SR_Z) goto B2_883a;
+B2_8851: DEY()
+B2_8852: CYCLE(2); if (!SR_Z) goto B2_8833;
+B2_8854: RTS()
+B2_8855: LDA_ZP(0xE4)
+B2_8857: CMP_ZP(0x26)
+B2_8859: CYCLE(2); if (SR_C) goto B2_88a8;
+B2_885b: LDA_ZP(0x26)
+B2_885d: CYCLE(2); if (SR_Z) goto B2_887c;
+B2_885f: CMP_IMM(0x06)
+B2_8861: CYCLE(2); if (SR_Z) goto B2_8884;
+B2_8863: CMP_IMM(0x0C)
+B2_8865: CYCLE(2); if (SR_Z) goto B2_887c;
+B2_8867: CMP_IMM(0x10)
+B2_8869: CYCLE(2); if (SR_Z) goto B2_888c;
+B2_886b: PC = 0xa8a8; /* UNRES JMP $a8a8 */ goto LABEL_END;
+B2_886e: LDA_ZP(0x26)
+B2_8870: CMP_IMM(0x06)
+B2_8872: CYCLE(2); if (!SR_C) goto B2_887c;
+B2_887c: LDX_IMM(0x00)
+B2_887e: CYCLE(6); SetStack(SP, 128); SetStack(SP - 1, 136); SP -= 2; PC = 0xa8b7; /* UNRES JSR $a8b7 */ goto LABEL_END;
+B2_8881: PC = 0xa8a3; /* UNRES JMP $a8a3 */ goto LABEL_END;
+B2_8884: LDX_IMM(0x0C)
+B2_8886: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 136); SP -= 2; PC = 0xa8b7; /* UNRES JSR $a8b7 */ goto LABEL_END;
+B2_8889: PC = 0xa8a3; /* UNRES JMP $a8a3 */ goto LABEL_END;
+B2_888c: LDX_IMM(0x18)
+B2_888e: CYCLE(6); SetStack(SP, 144); SetStack(SP - 1, 136); SP -= 2; PC = 0xa8b7; /* UNRES JSR $a8b7 */ goto LABEL_END;
+B2_8891: LDY_IMM(0x00)
+B2_8893: LDA_ABS_X(0xaa47)
+B2_8896: STA_ABS_Y(0x0408)
+B2_8899: INX()
+B2_889a: TYA()
+B2_889b: CLC()
+B2_889c: ADC_IMM(0x04)
+B2_889e: TAY()
+B2_889f: CMP_IMM(0x28)
+B2_88a1: CYCLE(2); if (!SR_C) goto B2_8893;
+B2_88a3: LDA_ABS_X(0xaa47)
+B2_88a6: STA_ZP(0x2C)
+B2_88a8: LDX_ZP(0x26)
+B2_88aa: LDA_ABS_X(0xaa75)
+B2_88ad: STA_ZP(0x2A)
+B2_88af: LDA_ZP(0x26)
+B2_88b1: CLC()
+B2_88b2: ADC_IMM(0x03)
+B2_88b4: STA_ZP(0x2B)
+B2_88b6: RTS()
+B2_88b7: LDA_IMM(0x0B)
+B2_88b9: STA_ZP(0xED)
+B2_88bb: LDY_IMM(0x00)
+B2_88bd: LDA_ABS_X(0xaa47)
+B2_88c0: STA_ABS_Y(0x0300)
+B2_88c3: INX()
+B2_88c4: TYA()
+B2_88c5: CLC()
+B2_88c6: ADC_IMM(0x0C)
+B2_88c8: TAY()
+B2_88c9: CMP_IMM(0x84)
+B2_88cb: CYCLE(2); if (!SR_C) goto B2_88bd;
+B2_88cd: RTS()
+B2_88ce: LDA_IMM(0x01)
+B2_88d0: CYCLE(6); SetStack(SP, 210); SetStack(SP - 1, 136); SP -= 2; goto B0_9fa8;
+B2_88d3: LDY_IMM(0x00)
+B2_88d5: LDX_ABS_Y(0x0468)
+B2_88d8: LDA_ABS_Y(0x046a)
+B2_88db: AND_IMM(0x0C)
+B2_88dd: CYCLE(2); if (SR_Z) goto B2_88e1;
+B2_88df: LDX_IMM(0xF8)
+B2_88e1: TXA()
+B2_88e2: STA_ABS_Y(0x0200)
+B2_88e5: LDA_ABS_Y(0x0469)
+B2_88e8: STA_ABS_Y(0x0201)
+B2_88eb: LDA_ABS_Y(0x046a)
+B2_88ee: STA_ABS_Y(0x0202)
+B2_88f1: LDA_ABS_Y(0x046b)
+B2_88f4: STA_ABS_Y(0x0203)
+B2_88f7: INY()
+B2_88f8: INY()
+B2_88f9: INY()
+B2_88fa: INY()
+B2_88fb: CYCLE(2); if (!SR_Z) goto B2_88d5;
+B2_88fd: RTS()
+B2_8a06: STY_ZP(0xED)
+B2_8a08: INX()
+B2_8a09: LDY_IMM(0x00)
+B2_8a0b: PHA()
+B2_8a0c: LDA_IMM(0x00)
+B2_8a0e: STA_IDY(0xEC)
+B2_8a10: INC_ZP(0xEC)
+B2_8a12: CYCLE(2); if (!SR_Z) goto B2_8a16;
+B2_8a14: INC_ZP(0xED)
+B2_8a16: PLA()
+B2_8a17: SEC()
+B2_8a18: SBC_IMM(0x01)
+B2_8a1a: CYCLE(2); if (!SR_Z) goto B2_8a0b;
+B2_8a1c: DEX()
+B2_8a1d: CYCLE(2); if (!SR_Z) goto B2_8a0b;
+B2_8a1f: RTS()
+
+
+
+// ===== Bank 11 (prg_bank_11.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 11 =====
+// ; ROM: 0x016010-0x01800F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=1477 data=5958 unaccessed=757
+B11_8000: CYCLE(3); PC = 0x800c; goto B28_800c;
+B11_8003: CYCLE(3); PC = 0x8083; goto B28_8083;
+B11_8006: CYCLE(3); PC = 0x84a1; goto B28_84a1;
+B11_8009: CYCLE(3); PC = 0x814c; goto B26_814c;
+B11_800c: LDA_IMM(0x01)
+B11_800e: CYCLE(6); SetStack(SP, 16); SetStack(SP - 1, 128); SP -= 2; goto B30_c515;
+B11_8011: LDA_ABS(0x05d4)
+B11_8014: BIT_ABS(0x05d7)
+B11_8017: CYCLE(2); if (!SR_N) goto B11_801e;
+B11_8019: EOR_IMM(0xFF)
+B11_801b: CLC()
+B11_801c: ADC_IMM(0x11)
+B11_801e: AND_IMM(0xE0)
+B11_8020: CMP_ABS(0x05d8)
+B11_8023: CYCLE(2); if (!SR_Z) goto B11_8028;
+B11_8025: CYCLE(3); PC = 0x800c; goto B28_800c;
+B11_8028: STA_ABS(0x05d8)
+B11_802b: CYCLE(6); SetStack(SP, 45); SetStack(SP - 1, 128); SP -= 2; goto B28_810c;
+B11_802e: LDA_ZP(0x3B)
+B11_8030: AND_IMM(0xFE)
+B11_8032: CYCLE(6); SetStack(SP, 52); SetStack(SP - 1, 128); SP -= 2; goto B28_812b;
+B11_8035: LDA_IMM(0xE0)
+B11_8037: BIT_ABS(0x05d7)
+B11_803a: CYCLE(2); if (!SR_N) goto B11_803e;
+B11_803c: LDA_IMM(0xA0)
+B11_803e: CLC()
+B11_803f: ADC_ABS(0x05d4)
+B11_8042: AND_IMM(0xE0)
+B11_8044: LSR_A()
+B11_8045: LSR_A()
+B11_8046: ORA_IMM(0x40)
+B11_8048: STA_ZP(0x5A)
+B11_804a: LDA_IMM(0x04)
+B11_804c: PHA()
+B11_804d: LDA_IMM(0x01)
+B11_804f: CYCLE(6); SetStack(SP, 81); SetStack(SP - 1, 128); SP -= 2; goto B30_c515;
+B11_8052: LDA_ABS(0x0515)
+B11_8055: CYCLE(2); if (!SR_Z) goto B11_804d;
+B11_8057: LDA_IMM(0x01)
+B11_8059: STA_ABS(0x0515)
+B11_805c: LDX_IMM(0x00)
+B11_805e: LDA_IMM(0x02)
+B11_8060: PHA()
+B11_8061: LDA_ZP(0x5A)
+B11_8063: AND_IMM(0x3F)
+B11_8065: TAY()
+B11_8066: LDA_IDY(0x58)
+B11_8068: LDY_ZP(0x5A)
+B11_806a: CYCLE(6); SetStack(SP, 108); SetStack(SP - 1, 128); SP -= 2; goto B28_85c2;
+B11_806d: INC_ZP(0x5A)
+B11_806f: PLA()
+B11_8070: SEC()
+B11_8071: SBC_IMM(0x01)
+B11_8073: CYCLE(2); if (!SR_Z) goto B11_8060;
+B11_8075: LDA_IMM(0x80)
+B11_8077: STA_ABS(0x0515)
+B11_807a: PLA()
+B11_807b: SEC()
+B11_807c: SBC_IMM(0x01)
+B11_807e: CYCLE(2); if (!SR_Z) goto B11_804c;
+B11_8080: CYCLE(3); PC = 0x800c; goto B28_800c;
+B11_8083: LDA_IMM(0x01)
+B11_8085: CYCLE(6); SetStack(SP, 135); SetStack(SP - 1, 128); SP -= 2; goto B30_c515;
+B11_8088: LDA_ABS(0x05d4)
+B11_808b: BIT_ABS(0x05d7)
+B11_808e: CYCLE(2); if (!SR_N) goto B11_8095;
+B11_8090: EOR_IMM(0xFF)
+B11_8092: CLC()
+B11_8093: ADC_IMM(0x01)
+B11_8095: AND_IMM(0xE0)
+B11_8097: CMP_ABS(0x05d8)
+B11_809a: CYCLE(2); if (!SR_Z) goto B11_809f;
+B11_809c: CYCLE(3); PC = 0x8083; goto B28_8083;
+B11_809f: STA_ABS(0x05d8)
+B11_80a2: CYCLE(6); SetStack(SP, 164); SetStack(SP - 1, 128); SP -= 2; goto B28_810c;
+B11_80a5: LDA_IMM(0xE0)
+B11_80a7: LDY_IMM(0xFF)
+B11_80a9: BIT_ABS(0x05d7)
+B11_80ac: CYCLE(2); if (!SR_N) goto B11_80b0;
+B11_80ae: LDA_IMM(0x00)
+B11_80b0: CLC()
+B11_80b1: ADC_ABS(0x05d4)
+B11_80b4: TAX()
+B11_80b5: TYA()
+B11_80b6: ADC_ABS(0x05d5)
+B11_80b9: TAY()
+B11_80ba: TXA()
+B11_80bb: LSR_A()
+B11_80bc: LSR_A()
+B11_80bd: LSR_A()
+B11_80be: LSR_A()
+B11_80bf: LSR_A()
+B11_80c0: STA_ZP(0x5A)
+B11_80c2: TYA()
+B11_80c3: LSR_A()
+B11_80c4: LDA_IMM(0x00)
+B11_80c6: CYCLE(2); if (!SR_C) goto B11_80ca;
+B11_80ca: ORA_ZP(0x5A)
+B11_80cc: STA_ZP(0x5A)
+B11_80ce: LDA_IMM(0x02)
+B11_80d0: PHA()
+B11_80d1: LDA_IMM(0x01)
+B11_80d3: CYCLE(6); SetStack(SP, 213); SetStack(SP - 1, 128); SP -= 2; goto B30_c515;
+B11_80d6: LDA_ABS(0x0515)
+B11_80d9: CYCLE(2); if (!SR_Z) goto B11_80d1;
+B11_80db: LDA_IMM(0x01)
+B11_80dd: STA_ABS(0x0515)
+B11_80e0: LDX_IMM(0x00)
+B11_80e2: LDA_IMM(0x02)
+B11_80e4: PHA()
+B11_80e5: LDA_ZP(0x5A)
+B11_80e7: AND_IMM(0x3F)
+B11_80e9: TAY()
+B11_80ea: LDA_IDY(0x58)
+B11_80ec: LDY_ZP(0x5A)
+B11_80ee: CYCLE(6); SetStack(SP, 240); SetStack(SP - 1, 128); SP -= 2; goto B28_85c2;
+B11_80f1: LDA_ZP(0x5A)
+B11_80f3: CLC()
+B11_80f4: ADC_IMM(0x08)
+B11_80f6: STA_ZP(0x5A)
+B11_80f8: PLA()
+B11_80f9: SEC()
+B11_80fa: SBC_IMM(0x01)
+B11_80fc: CYCLE(2); if (!SR_Z) goto B11_80e4;
+B11_80fe: LDA_IMM(0x80)
+B11_8100: STA_ABS(0x0515)
+B11_8103: PLA()
+B11_8104: SEC()
+B11_8105: SBC_IMM(0x01)
+B11_8107: CYCLE(2); if (!SR_Z) goto B11_80d0;
+B11_8109: CYCLE(3); PC = 0x8083; goto B28_8083;
+B11_810c: LDX_ABS(0x05d4)
+B11_810f: LDY_ABS(0x05d5)
+B11_8112: CYCLE(2); if (!SR_N) goto B11_8120;
+B11_8114: TXA()
+B11_8115: EOR_IMM(0xFF)
+B11_8117: TAX()
+B11_8118: TYA()
+B11_8119: EOR_IMM(0xFF)
+B11_811b: TAY()
+B11_811c: INX()
+B11_811d: CYCLE(2); if (!SR_Z) goto B11_8120;
+B11_8120: TXA()
+B11_8121: CLC()
+B11_8122: ADC_IMM(0xE0)
+B11_8124: STA_ZP(0x3A)
+B11_8126: TYA()
+B11_8127: ADC_IMM(0x01)
+B11_8129: STA_ZP(0x3B)
+B11_812b: TAY()
+B11_812c: LDA_IDY(0x5B)
+B11_812e: CYCLE(6); SetStack(SP, 48); SetStack(SP - 1, 129); SP -= 2; goto B26_86d3;
+B11_8131: LDX_IMM(0x00)
+B11_8133: STX_ZP(0x58)
+B11_8135: LSR_A()
+B11_8136: ROR_ZP(0x58)
+B11_8138: LSR_A()
+B11_8139: ROR_ZP(0x58)
+B11_813b: LSR_A()
+B11_813c: ROR_ZP(0x58)
+B11_813e: TAX()
+B11_813f: LDA_ZP(0x58)
+B11_8141: CLC()
+B11_8142: ADC_IMM(0x64)
+B11_8144: STA_ZP(0x58)
+B11_8146: TXA()
+B11_8147: ADC_IMM(0x8B)
+B11_8149: STA_ZP(0x59)
+B11_814b: RTS()
+B11_814c: LDA_IMM(0xF6)
+B11_814e: STA_ZP(0x52)
+B11_8150: LDA_IMM(0x87)
+B11_8152: STA_ZP(0x53)
+B11_8154: LDA_ABS(0x0524)
+B11_8157: CMP_IMM(0xFF)
+B11_8159: CYCLE(2); if (SR_Z) goto B11_819c;
+B11_815b: ASL_A()
+B11_815c: CYCLE(2); if (!SR_C) goto B11_8160;
+B11_8160: TAY()
+B11_8161: LDA_IDY(0x52)
+B11_8163: TAX()
+B11_8164: INY()
+B11_8165: LDA_IDY(0x52)
+B11_8167: STA_ZP(0x53)
+B11_8169: STX_ZP(0x52)
+B11_816b: LDA_IMM(0x00)
+B11_816d: STA_ABS(0x05d1)
+B11_8170: STA_ZP(0x3A)
+B11_8172: LDY_ZP(0x3A)
+B11_8174: LDA_IDY(0x52)
+B11_8176: CMP_IMM(0xF0)
+B11_8178: CYCLE(2); if (!SR_C) goto B11_8188;
+B11_817a: CYCLE(6); SetStack(SP, 124); SetStack(SP - 1, 129); SP -= 2; goto B27_81bc;
+B11_817d: LDA_IMM(0x02)
+B11_817f: STA_ABS(0x05d0)
+B11_8182: STA_ABS(0x0525)
+B11_8185: CYCLE(3); PC = 0x819c; goto B26_819c;
+B11_8188: STA_ABS(0x0525)
+B11_818b: TYA()
+B11_818c: CLC()
+B11_818d: ADC_ZP(0x52)
+B11_818f: STA_ZP(0x52)
+B11_8191: CYCLE(2); if (!SR_C) goto B11_8195;
+B11_8195: LDY_IMM(0x01)
+B11_8197: LDA_IDY(0x52)
+B11_8199: CYCLE(6); SetStack(SP, 155); SetStack(SP - 1, 129); SP -= 2; goto B26_81a7;
+B11_819c: LDA_ABS(0x0516)
+B11_819f: ORA_IMM(0x10)
+B11_81a1: STA_ABS(0x0516)
+B11_81a4: CYCLE(3); PC = 0xc512; goto B30_c512;
+B11_81a7: CYCLE(6); SetStack(SP, 169); SetStack(SP - 1, 129); SP -= 2; goto B30_c509;
+B11_81bc: LDX_IMM(0x00)
+B11_81be: STX_ABS(0x0525)
+B11_81c1: AND_IMM(0x0F)
+B11_81c3: CYCLE(6); SetStack(SP, 197); SetStack(SP - 1, 129); SP -= 2; goto B30_c509;
+B11_81cc: CYCLE(6); SetStack(SP, 206); SetStack(SP - 1, 129); SP -= 2; goto B24_82f7;
+B11_81cf: LDA_ABS_X(0x81d5)
+B11_81d2: CYCLE(3); PC = 0x832b; goto B28_832b;
+B11_824d: LDA_ABS(0x0441)
+B11_8250: CYCLE(6); SetStack(SP, 82); SetStack(SP - 1, 130); SP -= 2; goto B30_c50c;
+B11_8253: LDA_ABS(0x0638)
+B11_8256: CYCLE(6); SetStack(SP, 88); SetStack(SP - 1, 130); SP -= 2; goto B30_c536;
+B11_8259: TXA()
+B11_825a: LDY_IMM(0x06)
+B11_825c: SEC()
+B11_825d: SBC_IDY(0x34)
+B11_825f: LDY_ABS(0x05fb)
+B11_8262: CYCLE(2); if (SR_Z) goto B11_8269;
+B11_8264: EOR_IMM(0xFF)
+B11_8266: CLC()
+B11_8267: ADC_IMM(0x01)
+B11_8269: TAX()
+B11_826a: CYCLE(2); if (!SR_N) goto B11_8270;
+B11_826c: TYA()
+B11_826d: EOR_IMM(0x0B)
+B11_826f: TAY()
+B11_8270: CYCLE(6); SetStack(SP, 114); SetStack(SP - 1, 130); SP -= 2; goto B28_82fe;
+B11_8273: CYCLE(3); PC = 0x8279; goto B24_8279;
+B11_8279: LDA_ABS_X(0x827f)
+B11_827c: CYCLE(3); PC = 0x832b; goto B28_832b;
+B11_82f7: LDY_ABS(0x05fb)
+B11_82fa: CYCLE(6); SetStack(SP, 252); SetStack(SP - 1, 130); SP -= 2; goto B28_82fe;
+B11_82fd: RTS()
+B11_82fe: LDA_ABS(0x0637)
+B11_8301: SEC()
+B11_8302: SBC_IMM(0x50)
+B11_8304: AND_IMM(0xF0)
+B11_8306: LSR_A()
+B11_8307: STA_ZP(0x3A)
+B11_8309: LSR_A()
+B11_830a: LSR_A()
+B11_830b: ADC_ZP(0x3A)
+B11_830d: STA_ZP(0x3A)
+B11_830f: LDA_ABS(0x0635)
+B11_8312: SEC()
+B11_8313: SBC_IMM(0x30)
+B11_8315: AND_IMM(0xF0)
+B11_8317: LSR_A()
+B11_8318: LSR_A()
+B11_8319: LSR_A()
+B11_831a: LSR_A()
+B11_831b: ADC_ZP(0x3A)
+B11_831d: TAX()
+B11_831e: TYA()
+B11_831f: CYCLE(2); if (SR_Z) goto B11_8326;
+B11_8321: TXA()
+B11_8322: CLC()
+B11_8323: ADC_IMM(0x3C)
+B11_8325: TAX()
+B11_8326: RTS()
+B11_8327: LDY_IMM(0x02)
+B11_8329: LDA_IDY(0x52)
+B11_832b: STA_ABS(0x05cc)
+B11_832e: LDY_ABS(0x05cd)
+B11_8331: CYCLE(6); SetStack(SP, 51); SetStack(SP - 1, 131); SP -= 2; goto B16_8525;
+B11_8334: LDA_IMM(0x01)
+B11_8336: STA_ABS(0x05cb)
+B11_8339: LDA_ABS(0x05cd)
+B11_833c: CYCLE(2); if (SR_Z) goto B11_8342;
+B11_833e: AND_IMM(0x20)
+B11_8340: ORA_IMM(0x80)
+B11_8342: STA_ABS(0x05ce)
+B11_8345: ORA_IMM(0x80)
+B11_8347: EOR_IMM(0x20)
+B11_8349: STA_ABS(0x05cd)
+B11_834c: LDA_IMM(0x00)
+B11_834e: STA_ABS(0x05db)
+B11_8351: STA_ABS(0x05dc)
+B11_8354: STA_ABS(0x05dd)
+B11_8357: RTS()
+B11_8358: CYCLE(6); SetStack(SP, 90); SetStack(SP - 1, 131); SP -= 2; goto B24_84d9;
+B11_835b: LDA_IMM(0x80)
+B11_835d: STA_ABS(0x05d1)
+B11_8360: LDY_IMM(0x04)
+B11_8362: CYCLE(2); if (!SR_Z) goto B11_8329;
+B11_8364: CYCLE(6); SetStack(SP, 102); SetStack(SP - 1, 131); SP -= 2; goto B24_84d9;
+B11_8367: LDA_IMM(0x80)
+B11_8369: STA_ABS(0x05d1)
+B11_836c: LDY_IMM(0x04)
+B11_836e: BIT_ABS(0x052a)
+B11_8371: CYCLE(2); if (!SR_V) goto B11_8374;
+B11_8373: INY()
+B11_8374: CYCLE(3); PC = 0x8329; goto B24_8329;
+B11_8377: CYCLE(6); SetStack(SP, 121); SetStack(SP - 1, 131); SP -= 2; goto B26_84cf;
+B11_837a: LDY_IMM(0x04)
+B11_837c: LDA_IDY(0x52)
+B11_837e: STA_ABS(0x05e2)
+B11_8381: LDA_IMM(0x00)
+B11_8383: STA_ABS(0x05e1)
+B11_8386: LDA_IMM(0x01)
+B11_8388: STA_ABS(0x046b)
+B11_838b: LDY_IMM(0xA0)
+B11_838d: LDA_ABS(0x05cc)
+B11_8390: CYCLE(6); SetStack(SP, 146); SetStack(SP - 1, 131); SP -= 2; goto B16_8525;
+B11_8393: LDA_IMM(0xA0)
+B11_8395: CYCLE(6); SetStack(SP, 151); SetStack(SP - 1, 131); SP -= 2; goto B28_84a1;
+B11_8398: LDA_IMM(0x01)
+B11_839a: CYCLE(6); SetStack(SP, 156); SetStack(SP - 1, 131); SP -= 2; goto B30_c515;
+B11_839d: LDY_IMM(0x05)
+B11_839f: LDA_IDY(0x52)
+B11_83a1: LDY_IMM(0x00)
+B11_83a3: STY_ABS(0x05ce)
+B11_83a6: CYCLE(6); SetStack(SP, 168); SetStack(SP - 1, 131); SP -= 2; goto B16_8525;
+B11_83a9: LDY_IMM(0x06)
+B11_83ab: LDA_IDY(0x52)
+B11_83ad: LDY_IMM(0x80)
+B11_83af: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 131); SP -= 2; goto B16_8525;
+B11_83b2: LDA_IMM(0x00)
+B11_83b4: STA_ABS(0x05cb)
+B11_83b7: LDA_IMM(0x60)
+B11_83b9: STA_ABS(0x05cd)
+B11_83bc: LDA_IMM(0x00)
+B11_83be: STA_ABS(0x05db)
+B11_83c1: STA_ABS(0x05dc)
+B11_83c4: STA_ABS(0x05dd)
+B11_83c7: STA_ABS(0x05e0)
+B11_83ca: LDA_IMM(0x82)
+B11_83cc: STA_ABS(0x05d1)
+B11_83cf: CYCLE(3); PC = 0x8493; goto B28_8493;
+B11_83d2: CYCLE(6); SetStack(SP, 212); SetStack(SP - 1, 131); SP -= 2; goto B24_84d9;
+B11_83d5: LDY_IMM(0x04)
+B11_83d7: LDA_IDY(0x52)
+B11_83d9: STA_ABS(0x05e2)
+B11_83dc: LDA_IMM(0x00)
+B11_83de: STA_ABS(0x05e1)
+B11_83e1: CYCLE(6); SetStack(SP, 227); SetStack(SP - 1, 131); SP -= 2; goto B28_847f;
+B11_83e4: CYCLE(3); PC = 0x8386; goto B20_8386;
+B11_83e7: LDA_IMM(0xC0)
+B11_83e9: STA_ABS(0x05d1)
+B11_83ec: CYCLE(2); if (!SR_Z) goto B11_840a;
+B11_83ee: LDA_IMM(0xC2)
+B11_83f0: STA_ABS(0x05d1)
+B11_83f3: CYCLE(6); SetStack(SP, 245); SetStack(SP - 1, 131); SP -= 2; goto B26_84cf;
+B11_83f6: CYCLE(6); SetStack(SP, 248); SetStack(SP - 1, 131); SP -= 2; goto B26_845c;
+B11_83f9: CYCLE(6); SetStack(SP, 251); SetStack(SP - 1, 131); SP -= 2; goto B28_847f;
+B11_83fc: CYCLE(3); PC = 0x840d; goto B26_840d;
+B11_840a: CYCLE(6); SetStack(SP, 12); SetStack(SP - 1, 132); SP -= 2; goto B26_84cf;
+B11_840d: LDA_IMM(0x01)
+B11_840f: STA_ABS(0x046b)
+B11_8412: LDY_IMM(0x00)
+B11_8414: LDA_ABS(0x05cc)
+B11_8417: CYCLE(6); SetStack(SP, 25); SetStack(SP - 1, 132); SP -= 2; goto B16_8525;
+B11_841a: LDA_IMM(0x00)
+B11_841c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 132); SP -= 2; goto B28_84a1;
+B11_841f: LDY_IMM(0x05)
+B11_8421: LDA_IDY(0x52)
+B11_8423: LDY_IMM(0x80)
+B11_8425: CYCLE(6); SetStack(SP, 39); SetStack(SP - 1, 132); SP -= 2; goto B16_8525;
+B11_8428: LDY_IMM(0x06)
+B11_842a: LDA_IDY(0x52)
+B11_842c: LDY_IMM(0xA0)
+B11_842e: CYCLE(6); SetStack(SP, 48); SetStack(SP - 1, 132); SP -= 2; goto B16_8525;
+B11_8431: LDA_IMM(0x00)
+B11_8433: STA_ABS(0x05cb)
+B11_8436: LDA_IMM(0x40)
+B11_8438: STA_ABS(0x05ce)
+B11_843b: LDA_IMM(0x00)
+B11_843d: STA_ABS(0x05cd)
+B11_8440: LDA_IMM(0x00)
+B11_8442: STA_ABS(0x05db)
+B11_8445: LDA_IMM(0xE0)
+B11_8447: LDX_IMM(0xFF)
+B11_8449: STA_ABS(0x05dc)
+B11_844c: STX_ABS(0x05dd)
+B11_844f: BIT_ABS(0x05df)
+B11_8452: CYCLE(2); if (!SR_N) goto B11_8456;
+B11_8454: LDA_IMM(0x20)
+B11_8456: STA_ABS(0x05e0)
+B11_8459: CYCLE(3); PC = 0x8493; goto B28_8493;
+B11_845c: LDY_IMM(0x04)
+B11_845e: LDA_IDY(0x52)
+B11_8460: BIT_ABS(0x05df)
+B11_8463: CYCLE(2); if (SR_N) goto B11_8471;
+B11_8471: LDX_IMM(0x1C)
+B11_8473: LSR_A()
+B11_8474: CYCLE(2); if (!SR_C) goto B11_8478;
+B11_8476: LDX_IMM(0x8C)
+B11_8478: STX_ABS(0x05e1)
+B11_847b: STA_ABS(0x05e2)
+B11_847e: RTS()
+B11_847f: LDY_IMM(0x05)
+B11_8481: BIT_ABS(0x052a)
+B11_8484: CYCLE(2); if (!SR_V) goto B11_8488;
+B11_8486: INY()
+B11_8487: INY()
+B11_8488: LDA_IDY(0x52)
+B11_848a: TAX()
+B11_848b: INY()
+B11_848c: LDA_IDY(0x52)
+B11_848e: STA_ZP(0x53)
+B11_8490: STX_ZP(0x52)
+B11_8492: RTS()
+B11_8493: LDA_IMM(0x05)
+B11_8495: CLC()
+B11_8496: ADC_ZP(0x52)
+B11_8498: STA_ZP(0x5B)
+B11_849a: LDA_ZP(0x53)
+B11_849c: ADC_IMM(0x00)
+B11_849e: STA_ZP(0x5C)
+B11_84a0: RTS()
+B11_84a1: LDX_IMM(0x02)
+B11_84a3: CMP_IMM(0x80)
+B11_84a5: CYCLE(2); if (SR_C) goto B11_84ad;
+B11_84a7: DEX()
+B11_84a8: CMP_IMM(0x40)
+B11_84aa: CYCLE(2); if (SR_C) goto B11_84ad;
+B11_84ac: DEX()
+B11_84ad: LDY_IMM(0x74)
+B11_84af: AND_IMM(0x3F)
+B11_84b1: CMP_IMM(0x20)
+B11_84b3: CYCLE(2); if (SR_C) goto B11_84bb;
+B11_84b5: LDY_IMM(0xE4)
+B11_84b7: TXA()
+B11_84b8: EOR_IMM(0x02)
+B11_84ba: TAX()
+B11_84bb: LDA_ZP(0x20)
+B11_84bd: AND_IMM(0xFC)
+B11_84bf: STA_ZP(0x20)
+B11_84c1: TXA()
+B11_84c2: ORA_ZP(0x20)
+B11_84c4: STA_ZP(0x20)
+B11_84c6: STY_ZP(0x4B)
+B11_84c8: LDA_ABS(0x05cb)
+B11_84cb: STA_ABS(0x046b)
+B11_84ce: RTS()
+B11_84cf: CYCLE(6); SetStack(SP, 209); SetStack(SP - 1, 132); SP -= 2; goto B16_84f4;
+B11_84d2: STX_ABS(0x05de)
+B11_84d5: STY_ABS(0x05df)
+B11_84d8: RTS()
+B11_84d9: CYCLE(6); SetStack(SP, 219); SetStack(SP - 1, 132); SP -= 2; goto B16_84f4;
+B11_84dc: BIT_ABS(0x052a)
+B11_84df: CYCLE(2); if (!SR_V) goto B11_84ed;
+B11_84e1: TXA()
+B11_84e2: EOR_IMM(0xFF)
+B11_84e4: TAX()
+B11_84e5: TYA()
+B11_84e6: EOR_IMM(0xFF)
+B11_84e8: TAY()
+B11_84e9: INX()
+B11_84ea: CYCLE(2); if (!SR_Z) goto B11_84ed;
+B11_84ec: INY()
+B11_84ed: STX_ABS(0x05de)
+B11_84f0: STY_ABS(0x05df)
+B11_84f3: RTS()
+B11_84f4: LDY_IMM(0x02)
+B11_84f6: LDA_IDY(0x52)
+B11_84f8: TAX()
+B11_84f9: INY()
+B11_84fa: LDA_IDY(0x52)
+B11_84fc: TAY()
+B11_84fd: CMP_IMM(0x80)
+B11_84ff: CYCLE(2); if (SR_Z) goto B11_8502;
+B11_8501: RTS()
+B11_8502: LDA_ABS(0x061d)
+B11_8505: STA_ZP(0x3A)
+B11_8507: LDA_ABS(0x061c)
+B11_850a: ASL_A()
+B11_850b: ROL_ZP(0x3A)
+B11_850d: ASL_A()
+B11_850e: ROL_ZP(0x3A)
+B11_8510: ASL_A()
+B11_8511: ROL_ZP(0x3A)
+B11_8513: CPX_IMM(0x01)
+B11_8515: CYCLE(2); if (SR_Z) goto B11_851a;
+B11_8517: ASL_A()
+B11_8518: ROL_ZP(0x3A)
+B11_851a: LDY_ZP(0x3A)
+B11_851c: CLC()
+B11_851d: ADC_IMM(0xC0)
+B11_851f: TAX()
+B11_8520: TYA()
+B11_8521: ADC_IMM(0x00)
+B11_8523: TAY()
+B11_8524: RTS()
+B11_8525: STY_ABS(0x05c8)
+B11_8528: PHA()
+B11_8529: TAX()
+B11_852a: LDA_IMM(0xEE)
+B11_852c: STA_ZP(0x54)
+B11_852e: LDA_IMM(0x86)
+B11_8530: STA_ZP(0x55)
+B11_8532: TXA()
+B11_8533: ASL_A()
+B11_8534: CYCLE(2); if (!SR_C) goto B11_8538;
+B11_8536: INC_ZP(0x55)
+B11_8538: TAY()
+B11_8539: LDA_IDY(0x54)
+B11_853b: ORA_IMM(0x80)
+B11_853d: STA_ABS(0x0526)
+B11_8540: INY()
+B11_8541: LDA_IDY(0x54)
+B11_8543: STA_ABS(0x0527)
+B11_8546: PLA()
+B11_8547: CYCLE(6); SetStack(SP, 73); SetStack(SP - 1, 133); SP -= 2; goto B26_86d3;
+B11_854a: LDX_IMM(0x00)
+B11_854c: STX_ZP(0x54)
+B11_854e: LSR_A()
+B11_854f: ROR_ZP(0x54)
+B11_8551: LSR_A()
+B11_8552: ROR_ZP(0x54)
+B11_8554: LSR_A()
+B11_8555: ROR_ZP(0x54)
+B11_8557: TAX()
+B11_8558: LDA_ZP(0x54)
+B11_855a: CLC()
+B11_855b: ADC_IMM(0x64)
+B11_855d: STA_ZP(0x54)
+B11_855f: TXA()
+B11_8560: ADC_IMM(0x8B)
+B11_8562: STA_ZP(0x55)
+B11_8564: LDA_IMM(0x20)
+B11_8566: STA_ABS(0x05c9)
+B11_8569: LDA_ABS(0x05ca)
+B11_856c: PHA()
+B11_856d: LDA_IMM(0x01)
+B11_856f: CYCLE(6); SetStack(SP, 113); SetStack(SP - 1, 133); SP -= 2; goto B30_c515;
+B11_8572: LDA_ABS(0x0515)
+B11_8575: CYCLE(2); if (!SR_Z) goto B11_856d;
+B11_8577: LDA_IMM(0x01)
+B11_8579: STA_ABS(0x0515)
+B11_857c: LDA_IMM(0x00)
+B11_857e: STA_ABS(0x05c7)
+B11_8581: LDA_IMM(0x03)
+B11_8583: TAX()
+B11_8584: PLA()
+B11_8585: STA_ABS(0x05ca)
+B11_8588: PHA()
+B11_8589: TXA()
+B11_858a: PHA()
+B11_858b: LDA_IMM(0x20)
+B11_858d: SEC()
+B11_858e: SBC_ABS(0x05c9)
+B11_8591: TAY()
+B11_8592: LDA_IDY(0x54)
+B11_8594: LDX_ABS(0x05c7)
+B11_8597: LDY_ABS(0x05c8)
+B11_859a: CYCLE(6); SetStack(SP, 156); SetStack(SP - 1, 133); SP -= 2; goto B28_85c2;
+B11_859d: STX_ABS(0x05c7)
+B11_85a0: INC_ABS(0x05c8)
+B11_85a3: PLA()
+B11_85a4: DEC_ABS(0x05c9)
+B11_85a7: CYCLE(2); if (SR_Z) goto B11_85b6;
+B11_85a9: SEC()
+B11_85aa: SBC_IMM(0x01)
+B11_85ac: CYCLE(2); if (!SR_Z) goto B11_8583;
+B11_85ae: LDA_IMM(0x80)
+B11_85b0: STA_ABS(0x0515)
+B11_85b3: CYCLE(3); PC = 0x856d; goto B20_856d;
+B11_85b6: PLA()
+B11_85b7: LDA_IMM(0x80)
+B11_85b9: STA_ABS(0x0515)
+B11_85bc: LDA_IMM(0x01)
+B11_85be: CYCLE(6); SetStack(SP, 192); SetStack(SP - 1, 133); SP -= 2; goto B30_c515;
+B11_85c1: RTS()
+B11_85c2: STA_ZP(0x56)
+B11_85c4: TYA()
+B11_85c5: AND_IMM(0x07)
+B11_85c7: ASL_A()
+B11_85c8: ASL_A()
+B11_85c9: STA_ABS_X(0x04a6)
+B11_85cc: LDA_IMM(0x00)
+B11_85ce: STA_ABS_X(0x04a7)
+B11_85d1: TYA()
+B11_85d2: AND_IMM(0x38)
+B11_85d4: ASL_A()
+B11_85d5: ASL_A()
+B11_85d6: ASL_A()
+B11_85d7: ROL_ABS_X(0x04a7)
+B11_85da: ASL_A()
+B11_85db: ROL_ABS_X(0x04a7)
+B11_85de: ORA_ABS_X(0x04a6)
+B11_85e1: STA_ABS_X(0x04a6)
+B11_85e4: TYA()
+B11_85e5: AND_IMM(0xC0)
+B11_85e7: LSR_A()
+B11_85e8: LSR_A()
+B11_85e9: LSR_A()
+B11_85ea: LSR_A()
+B11_85eb: ORA_IMM(0x20)
+B11_85ed: ORA_ABS_X(0x04a7)
+B11_85f0: STA_ABS_X(0x04a7)
+B11_85f3: STA_ABS_X(0x04ae)
+B11_85f6: STA_ABS_X(0x04b5)
+B11_85f9: STA_ABS_X(0x04bc)
+B11_85fc: LDA_ABS_X(0x04a6)
+B11_85ff: CLC()
+B11_8600: ADC_IMM(0x20)
+B11_8602: STA_ABS_X(0x04ad)
+B11_8605: ADC_IMM(0x20)
+B11_8607: STA_ABS_X(0x04b4)
+B11_860a: ADC_IMM(0x20)
+B11_860c: STA_ABS_X(0x04bb)
+B11_860f: TYA()
+B11_8610: AND_IMM(0x3F)
+B11_8612: ORA_IMM(0xC0)
+B11_8614: STA_ABS_X(0x04c2)
+B11_8617: TYA()
+B11_8618: AND_IMM(0xC0)
+B11_861a: LSR_A()
+B11_861b: LSR_A()
+B11_861c: LSR_A()
+B11_861d: LSR_A()
+B11_861e: ORA_IMM(0x23)
+B11_8620: STA_ABS_X(0x04c3)
+B11_8623: LDA_IMM(0x04)
+B11_8625: STA_ABS_X(0x04a5)
+B11_8628: STA_ABS_X(0x04ac)
+B11_862b: STA_ABS_X(0x04b3)
+B11_862e: STA_ABS_X(0x04ba)
+B11_8631: LDA_IMM(0x01)
+B11_8633: STA_ABS_X(0x04c1)
+B11_8636: TYA()
+B11_8637: PHA()
+B11_8638: TXA()
+B11_8639: PHA()
+B11_863a: LDY_ZP(0x56)
+B11_863c: LDA_IMM(0xE4)
+B11_863e: STA_ZP(0x56)
+B11_8640: LDA_ABS(0x05ca)
+B11_8643: CLC()
+B11_8644: ADC_IMM(0x9B)
+B11_8646: STA_ZP(0x57)
+B11_8648: LDA_IDY(0x56)
+B11_864a: STA_ABS_X(0x04c4)
+B11_864d: LDA_ABS(0x05ca)
+B11_8650: STA_ZP(0x3A)
+B11_8652: LDA_IMM(0x00)
+B11_8654: STA_ZP(0x56)
+B11_8656: TYA()
+B11_8657: LSR_ZP(0x3A)
+B11_8659: ROR_A()
+B11_865a: ROR_ZP(0x56)
+B11_865c: LSR_ZP(0x3A)
+B11_865e: ROR_A()
+B11_865f: ROR_ZP(0x56)
+B11_8661: LSR_A()
+B11_8662: ROR_ZP(0x56)
+B11_8664: LSR_A()
+B11_8665: ROR_ZP(0x56)
+B11_8667: PHA()
+B11_8668: AND_IMM(0x1F)
+B11_866a: ORA_IMM(0xA0)
+B11_866c: STA_ZP(0x57)
+B11_866e: PLA()
+B11_866f: AND_IMM(0x20)
+B11_8671: PHP()
+B11_8672: LDA_IMM(0x12)
+B11_8674: PLP()
+B11_8675: CYCLE(2); if (SR_Z) goto B11_8679;
+B11_8677: LDA_IMM(0x13)
+B11_8679: PHA()
+B11_867a: LDA_ZP(0x22)
+B11_867c: ORA_IMM(0x07)
+B11_867e: STA_ZP(0x23)
+B11_8680: STA_ABS(0x8000)
+B11_8683: PLA()
+B11_8684: STA_ABS(0x0025)
+B11_8687: STA_ABS(0x8001)
+B11_868a: LDA_IMM(0x04)
+B11_868c: LDY_IMM(0x00)
+B11_868e: PHA()
+B11_868f: LDA_IMM(0x04)
+B11_8691: PHA()
+B11_8692: LDA_IDY(0x56)
+B11_8694: STA_ABS_X(0x04a8)
+B11_8697: INX()
+B11_8698: INY()
+B11_8699: PLA()
+B11_869a: SEC()
+B11_869b: SBC_IMM(0x01)
+B11_869d: CYCLE(2); if (!SR_Z) goto B11_8691;
+B11_869f: INX()
+B11_86a0: INX()
+B11_86a1: INX()
+B11_86a2: PLA()
+B11_86a3: SEC()
+B11_86a4: SBC_IMM(0x01)
+B11_86a6: CYCLE(2); if (!SR_Z) goto B11_868e;
+B11_86a8: PLA()
+B11_86a9: TAX()
+B11_86aa: LDA_IMM(0x00)
+B11_86ac: STA_ABS_X(0x04c5)
+B11_86af: PLA()
+B11_86b0: AND_IMM(0x3F)
+B11_86b2: CMP_IMM(0x38)
+B11_86b4: CYCLE(2); if (SR_C) goto B11_86bc;
+B11_86b6: TXA()
+B11_86b7: CLC()
+B11_86b8: ADC_IMM(0x20)
+B11_86ba: TAX()
+B11_86bb: RTS()
+B11_86bc: TXA()
+B11_86bd: TAY()
+B11_86be: CLC()
+B11_86bf: ADC_IMM(0x12)
+B11_86c1: TAX()
+B11_86c2: LDA_IMM(0x05)
+B11_86c4: PHA()
+B11_86c5: LDA_ABS_Y(0x04c1)
+B11_86c8: STA_ABS_Y(0x04b3)
+B11_86cb: INY()
+B11_86cc: PLA()
+B11_86cd: SEC()
+B11_86ce: SBC_IMM(0x01)
+B11_86d0: CYCLE(2); if (!SR_Z) goto B11_86c4;
+B11_86d2: RTS()
+B11_86d3: PHA()
+B11_86d4: AND_IMM(0x03)
+B11_86d6: TAX()
+B11_86d7: PLA()
+B11_86d8: PHA()
+B11_86d9: LSR_A()
+B11_86da: LSR_A()
+B11_86db: TAY()
+B11_86dc: LDA_ABS_Y(0x8b42)
+B11_86df: DEX()
+B11_86e0: CYCLE(2); if (SR_N) goto B11_86e7;
+B11_86e2: LSR_A()
+B11_86e3: LSR_A()
+B11_86e4: CYCLE(3); PC = 0x86df; goto B26_86df;
+B11_86e7: AND_IMM(0x03)
+B11_86e9: STA_ABS(0x05ca)
+B11_86ec: PLA()
+B11_86ed: RTS()
+
+
+
+// ===== Bank 12 (prg_bank_12.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 12 =====
+// ; ROM: 0x018010-0x01A00F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=1674 data=6088 unaccessed=430
+B12_8000: LDX_IMM(0x05)
+B12_8002: LDY_ABS_X(0x0700)
+B12_8005: CPY_IMM(0x32)
+B12_8007: CYCLE(2); if (SR_C) goto B12_8017;
+B12_8009: LDY_IMM(0x07)
+B12_800b: STY_ABS(0x8000)
+B12_800e: LDY_ABS(0x07fc)
+B12_8011: STY_ABS(0x8001)
+B12_8014: CYCLE(3); PC = 0x805e; goto B28_805e;
+B12_8017: CPY_IMM(0x44)
+B12_8019: CYCLE(2); if (SR_C) goto B12_802b;
+B12_801b: LDY_IMM(0x07)
+B12_801d: STY_ABS(0x8000)
+B12_8020: LDY_IMM(0x0D)
+B12_8022: STY_ABS(0x8001)
+B12_8025: STY_ABS(0x07fc)
+B12_8028: CYCLE(3); PC = 0x805e; goto B28_805e;
+B12_802b: CPY_IMM(0x51)
+B12_802d: CYCLE(2); if (SR_C) goto B12_803f;
+B12_802f: LDY_IMM(0x07)
+B12_8031: STY_ABS(0x8000)
+B12_8034: LDY_IMM(0x0E)
+B12_8036: STY_ABS(0x8001)
+B12_8039: STY_ABS(0x07fc)
+B12_803c: CYCLE(3); PC = 0x805e; goto B28_805e;
+B12_803f: CPY_IMM(0x5C)
+B12_8041: CYCLE(2); if (SR_C) goto B12_8053;
+B12_8043: LDY_IMM(0x07)
+B12_8045: STY_ABS(0x8000)
+B12_8048: LDY_IMM(0x0F)
+B12_804a: STY_ABS(0x8001)
+B12_804d: STY_ABS(0x07fc)
+B12_8050: CYCLE(3); PC = 0x805e; goto B28_805e;
+B12_8053: LDY_IMM(0x07)
+B12_8055: STY_ABS(0x8000)
+B12_8058: LDY_ABS(0x07fc)
+B12_805b: STY_ABS(0x8001)
+B12_805e: DEX()
+B12_805f: CYCLE(2); if (!SR_N) goto B12_8002;
+B12_8061: LDX_IMM(0x05)
+B12_8063: LDY_ABS_X(0x0700)
+B12_8066: CYCLE(2); if (SR_Z) goto B12_80b7;
+B12_8068: CPY_IMM(0x72)
+B12_806a: CYCLE(2); if (SR_C) goto B12_80b7;
+B12_806c: CPY_IMM(0x31)
+B12_806e: CYCLE(2); if (!SR_Z) goto B12_80af;
+B12_8070: LDA_IMM(0x19)
+B12_8072: STA_ABS(0x07df)
+B12_8075: STA_ABS(0x07cf)
+B12_8078: STA_ABS(0x07d1)
+B12_807b: STA_ABS(0x07d2)
+B12_807e: STA_ABS(0x07d3)
+B12_8081: STA_ABS(0x07d5)
+B12_8084: STA_ABS(0x07d6)
+B12_8087: STA_ABS(0x07d7)
+B12_808a: STA_ABS(0x07d9)
+B12_808d: STA_ABS(0x07da)
+B12_8090: STA_ABS(0x07db)
+B12_8093: STA_ABS(0x07dd)
+B12_8096: STA_ABS(0x07de)
+B12_8099: LDA_IMM(0x0A)
+B12_809b: STA_ABS(0x07d0)
+B12_809e: STA_ABS(0x07d4)
+B12_80a1: STA_ABS(0x07d8)
+B12_80a4: STA_ABS(0x07dc)
+B12_80a7: LDA_IMM(0x00)
+B12_80a9: STA_ABS_X(0x0700)
+B12_80ac: CYCLE(3); PC = 0x80b7; goto B20_80b7;
+B12_80af: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 128); SP -= 2; goto B28_8349;
+B12_80b2: LDA_IMM(0x00)
+B12_80b4: STA_ABS_X(0x0700)
+B12_80b7: DEX()
+B12_80b8: CYCLE(2); if (!SR_N) goto B12_8063;
+B12_80ba: LDA_IMM(0x27)
+B12_80bc: STA_ZP(0xF0)
+B12_80be: LDA_IMM(0x07)
+B12_80c0: STA_ZP(0xF1)
+B12_80c2: LDA_IMM(0x00)
+B12_80c4: STA_ZP(0xF2)
+B12_80c6: LDY_IMM(0x08)
+B12_80c8: STY_ZP(0xF3)
+B12_80ca: LDA_ABS(0x0706)
+B12_80cd: LSR_A()
+B12_80ce: CYCLE(2); if (!SR_C) goto B12_80d2;
+B12_80d0: ORA_IMM(0x80)
+B12_80d2: STA_ABS(0x0706)
+B12_80d5: CYCLE(2); if (!SR_C) goto B12_810c;
+B12_80d7: LDX_ZP(0xF2)
+B12_80d9: DEC_ABS_X(0x0707)
+B12_80dc: CYCLE(2); if (!SR_Z) goto B12_80e1;
+B12_80de: CYCLE(6); SetStack(SP, 224); SetStack(SP - 1, 128); SP -= 2; goto B12_83cb;
+B12_80e1: LDX_ZP(0xF2)
+B12_80e3: DEC_ABS_X(0x0709)
+B12_80e6: CYCLE(2); if (!SR_Z) goto B12_8109;
+B12_80e8: LDY_IMM(0x02)
+B12_80ea: LDA_IDY(0xF0)
+B12_80ec: STA_ZP(0xF6)
+B12_80ee: INY()
+B12_80ef: LDA_IDY(0xF0)
+B12_80f1: STA_ZP(0xF7)
+B12_80f3: INY()
+B12_80f4: LDA_IDY(0xF0)
+B12_80f6: PHA()
+B12_80f7: CLC()
+B12_80f8: ADC_IMM(0x02)
+B12_80fa: STA_IDY(0xF0)
+B12_80fc: PLA()
+B12_80fd: TAY()
+B12_80fe: LDA_IDY(0xF6)
+B12_8100: STA_ABS_X(0x0709)
+B12_8103: INY()
+B12_8104: LDA_IDY(0xF6)
+B12_8106: STA_ABS_X(0x070a)
+B12_8109: CYCLE(6); SetStack(SP, 11); SetStack(SP - 1, 129); SP -= 2; goto B27_81db;
+B12_810c: CLC()
+B12_810d: LDA_IMM(0x10)
+B12_810f: ADC_ZP(0xF0)
+B12_8111: STA_ZP(0xF0)
+B12_8113: LDA_IMM(0x04)
+B12_8115: ADC_ZP(0xF2)
+B12_8117: STA_ZP(0xF2)
+B12_8119: DEC_ZP(0xF3)
+B12_811b: CYCLE(2); if (!SR_Z) goto B12_80ca;
+B12_811d: LDA_IMM(0x27)
+B12_811f: STA_ZP(0xF0)
+B12_8121: STA_ZP(0xFC)
+B12_8123: LDA_IMM(0x07)
+B12_8125: STA_ZP(0xF1)
+B12_8127: STA_ZP(0xFD)
+B12_8129: LDA_IMM(0x03)
+B12_812b: STA_ZP(0xF2)
+B12_812d: LDA_IMM(0x11)
+B12_812f: STA_ZP(0xF3)
+B12_8131: LDA_ABS(0x0706)
+B12_8134: AND_ZP(0xF3)
+B12_8136: CYCLE(2); if (SR_Z) goto B12_814c;
+B12_8138: AND_IMM(0x0F)
+B12_813a: CYCLE(2); if (!SR_Z) goto B12_8149;
+B12_813c: CLC()
+B12_813d: LDA_IMM(0x40)
+B12_813f: ADC_ZP(0xF0)
+B12_8141: STA_ZP(0xF0)
+B12_8143: LDA_IMM(0x00)
+B12_8145: ADC_ZP(0xF1)
+B12_8147: STA_ZP(0xF1)
+B12_8149: CYCLE(6); SetStack(SP, 75); SetStack(SP - 1, 129); SP -= 2; goto B27_816e;
+B12_814c: CLC()
+B12_814d: LDA_IMM(0x10)
+B12_814f: ADC_ZP(0xFC)
+B12_8151: STA_ZP(0xFC)
+B12_8153: STA_ZP(0xF0)
+B12_8155: LDA_IMM(0x00)
+B12_8157: ADC_ZP(0xFD)
+B12_8159: STA_ZP(0xFD)
+B12_815b: STA_ZP(0xF1)
+B12_815d: ASL_ZP(0xF3)
+B12_815f: DEC_ZP(0xF2)
+B12_8161: CYCLE(2); if (!SR_N) goto B12_8131;
+B12_8163: LDA_ABS(0x07e9)
+B12_8166: CYCLE(2); if (SR_Z) goto B12_816d;
+B12_816d: RTS()
+B12_816e: LDA_IMM(0x03)
+B12_8170: EOR_ZP(0xF2)
+B12_8172: ASL_A()
+B12_8173: ASL_A()
+B12_8174: TAX()
+B12_8175: LDY_IMM(0x06)
+B12_8177: LDA_IDY(0xF0)
+B12_8179: PHA()
+B12_817a: LDA_ZP(0xF2)
+B12_817c: STA_ZP(0xFB)
+B12_817e: CMP_IMM(0x01)
+B12_8180: CYCLE(2); if (!SR_Z) goto B12_8189;
+B12_8182: PLA()
+B12_8183: AND_IMM(0x0F)
+B12_8185: ORA_IMM(0x80)
+B12_8187: CYCLE(2); if (!SR_Z) goto B12_81a4;
+B12_8189: PLA()
+B12_818a: ORA_IMM(0x30)
+B12_818c: STA_ABS_X(0x4000)
+B12_818f: LDA_IMM(0x10)
+B12_8191: LDY_IMM(0x05)
+B12_8193: AND_IDY(0xF0)
+B12_8195: CYCLE(2); if (!SR_Z) goto B12_81a7;
+B12_8197: LDA_IMM(0x08)
+B12_8199: LDY_ZP(0xFB)
+B12_819b: STA_ABS_Y(0x07e4)
+B12_819e: STA_ABS_X(0x4001)
+B12_81a1: CYCLE(3); PC = 0x81b1; goto B28_81b1;
+B12_81a4: STA_ABS_X(0x4000)
+B12_81a7: LDY_IMM(0x08)
+B12_81a9: LDA_IDY(0xF0)
+B12_81ab: CYCLE(2); if (!SR_N) goto B12_81da;
+B12_81ad: AND_IMM(0x7F)
+B12_81af: STA_IDY(0xF0)
+B12_81b1: LDY_IMM(0x07)
+B12_81b3: LDA_IDY(0xF0)
+B12_81b5: STA_ABS_X(0x4002)
+B12_81b8: INY()
+B12_81b9: LDA_IDY(0xF0)
+B12_81bb: ORA_IMM(0x18)
+B12_81bd: LDY_ZP(0xFB)
+B12_81bf: CYCLE(2); if (SR_Z) goto B12_81ca;
+B12_81c1: CPY_IMM(0x01)
+B12_81c3: CYCLE(2); if (SR_Z) goto B12_81ca;
+B12_81c5: CMP_ABS_Y(0x07e0)
+B12_81c8: CYCLE(2); if (SR_Z) goto B12_81da;
+B12_81ca: STA_ABS_X(0x4003)
+B12_81cd: STA_ABS_Y(0x07e0)
+B12_81d0: LDA_ABS_Y(0x07e4)
+B12_81d3: CYCLE(2); if (!SR_Z) goto B12_81da;
+B12_81d5: LDA_IMM(0x00)
+B12_81d7: STA_ABS_Y(0x07e0)
+B12_81da: RTS()
+B12_81db: LDY_IMM(0x05)
+B12_81dd: LDA_IDY(0xF0)
+B12_81df: TAX()
+B12_81e0: AND_IMM(0xF0)
+B12_81e2: STA_ZP(0xF6)
+B12_81e4: AND_IMM(0x20)
+B12_81e6: CYCLE(2); if (SR_Z) goto B12_81ee;
+B12_81e8: LDA_IMM(0x0F)
+B12_81ea: STA_ZP(0xF7)
+B12_81ec: CYCLE(2); if (!SR_Z) goto B12_8233;
+B12_81ee: TXA()
+B12_81ef: AND_IMM(0x0F)
+B12_81f1: STA_ZP(0xF7)
+B12_81f3: LDY_ZP(0xF3)
+B12_81f5: DEY()
+B12_81f6: LDX_ABS_Y(0x07cf)
+B12_81f9: CYCLE(2); if (SR_Z) goto B12_8233;
+B12_81fb: DEX()
+B12_81fc: TXA()
+B12_81fd: STA_ABS_Y(0x07cf)
+B12_8200: CYCLE(2); if (!SR_Z) goto B12_8233;
+B12_8202: LDA_ZP(0xF7)
+B12_8204: CLC()
+B12_8205: ADC_IMM(0x01)
+B12_8207: CMP_IMM(0x0F)
+B12_8209: STA_ZP(0xF7)
+B12_820b: CYCLE(2); if (!SR_Z) goto B12_8217;
+B12_820d: LDA_IMM(0x00)
+B12_820f: STA_ABS_Y(0x07d7)
+B12_8212: LDA_IMM(0x80)
+B12_8214: STA_ABS(0x07e8)
+B12_8217: LDA_ZP(0xF7)
+B12_8219: ORA_ZP(0xF6)
+B12_821b: TAX()
+B12_821c: LDY_IMM(0x05)
+B12_821e: STA_IDY(0xF0)
+B12_8220: TXA()
+B12_8221: AND_IMM(0x0F)
+B12_8223: STA_ZP(0xF7)
+B12_8225: LDY_ZP(0xF3)
+B12_8227: DEY()
+B12_8228: LDX_ABS_Y(0x07cf)
+B12_822b: CYCLE(2); if (!SR_Z) goto B12_8233;
+B12_822d: LDA_ABS_Y(0x07d7)
+B12_8230: STA_ABS_Y(0x07cf)
+B12_8233: LDX_ZP(0xF2)
+B12_8235: LDA_ABS_X(0x070a)
+B12_8238: SEC()
+B12_8239: SBC_ZP(0xF7)
+B12_823b: CYCLE(2); if (!SR_N) goto B12_823f;
+B12_823d: LDA_IMM(0x00)
+B12_823f: ORA_ZP(0xF6)
+B12_8241: LDY_IMM(0x06)
+B12_8243: STA_IDY(0xF0)
+B12_8245: LDX_ZP(0xF3)
+B12_8247: DEX()
+B12_8248: LDA_ABS_X(0x07af)
+B12_824b: CMP_IMM(0x01)
+B12_824d: CYCLE(2); if (SR_Z) goto B12_8257;
+B12_824f: CMP_IMM(0x02)
+B12_8251: CYCLE(2); if (!SR_Z) goto B12_8256;
+B12_8253: CYCLE(3); PC = 0x82d2; goto B20_82d2;
+B12_8256: RTS()
+B12_8257: LDA_ABS_X(0x07c7)
+B12_825a: ASL_A()
+B12_825b: TAY()
+B12_825c: LDA_ABS_Y(0x8269)
+B12_825f: STA_ZP(0xF9)
+B12_8261: LDA_ABS_Y(0x826a)
+B12_8264: STA_ZP(0xFA)
+B12_8266: CYCLE(5); PC = GetMem(250) << 8 | GetMem(249); CHECK_CYCLE(); goto _RET_MAP;
+B12_827d: LDA_IMM(0x01)
+B12_827f: CLC()
+B12_8280: ADC_ABS_X(0x07b7)
+B12_8283: LDY_IMM(0x07)
+B12_8285: STA_IDY(0xF0)
+B12_8287: LDA_ABS_X(0x07bf)
+B12_828a: ADC_IMM(0x00)
+B12_828c: INY()
+B12_828d: STA_IDY(0xF0)
+B12_828f: CYCLE(3); PC = 0x82a4; goto B28_82a4;
+B12_8292: LDA_IMM(0x02)
+B12_8294: CYCLE(3); PC = 0x827f; goto B24_827f;
+B12_8297: LDA_ABS_X(0x07b7)
+B12_829a: LDY_IMM(0x07)
+B12_829c: STA_IDY(0xF0)
+B12_829e: LDA_ABS_X(0x07bf)
+B12_82a1: INY()
+B12_82a2: STA_IDY(0xF0)
+B12_82a4: LDA_ABS_X(0x07c7)
+B12_82a7: CLC()
+B12_82a8: ADC_IMM(0x01)
+B12_82aa: CMP_IMM(0x0A)
+B12_82ac: CYCLE(2); if (!SR_Z) goto B12_82b0;
+B12_82ae: LDA_IMM(0x00)
+B12_82b0: STA_ABS_X(0x07c7)
+B12_82b3: RTS()
+B12_82b4: LDA_ABS_X(0x07b7)
+B12_82b7: SEC()
+B12_82b8: SBC_IMM(0x01)
+B12_82ba: LDY_IMM(0x07)
+B12_82bc: STA_IDY(0xF0)
+B12_82be: LDA_ABS_X(0x07bf)
+B12_82c1: SBC_IMM(0x00)
+B12_82c3: INY()
+B12_82c4: STA_IDY(0xF0)
+B12_82c6: CYCLE(3); PC = 0x82a4; goto B28_82a4;
+B12_82c9: LDA_ABS_X(0x07b7)
+B12_82cc: SEC()
+B12_82cd: SBC_IMM(0x02)
+B12_82cf: CYCLE(3); PC = 0x82ba; goto B28_82ba;
+B12_82d2: LDA_ABS_X(0x07c7)
+B12_82d5: ASL_A()
+B12_82d6: TAY()
+B12_82d7: LDA_ABS_Y(0x82e4)
+B12_82da: STA_ZP(0xF9)
+B12_82dc: LDA_ABS_Y(0x82e5)
+B12_82df: STA_ZP(0xFA)
+B12_82e1: CYCLE(5); PC = GetMem(250) << 8 | GetMem(249); CHECK_CYCLE(); goto _RET_MAP;
+B12_82f4: LDA_IMM(0x03)
+B12_82f6: CLC()
+B12_82f7: ADC_ABS_X(0x07b7)
+B12_82fa: LDY_IMM(0x07)
+B12_82fc: STA_IDY(0xF0)
+B12_82fe: LDA_ABS_X(0x07bf)
+B12_8301: ADC_IMM(0x00)
+B12_8303: INY()
+B12_8304: STA_IDY(0xF0)
+B12_8306: CYCLE(3); PC = 0x831b; goto B26_831b;
+B12_8309: LDA_IMM(0x06)
+B12_830b: CYCLE(3); PC = 0x82f6; goto B28_82f6;
+B12_830e: LDA_ABS_X(0x07b7)
+B12_8311: LDY_IMM(0x07)
+B12_8313: STA_IDY(0xF0)
+B12_8315: LDA_ABS_X(0x07bf)
+B12_8318: INY()
+B12_8319: STA_IDY(0xF0)
+B12_831b: LDA_ABS_X(0x07c7)
+B12_831e: CLC()
+B12_831f: ADC_IMM(0x01)
+B12_8321: CMP_IMM(0x08)
+B12_8323: CYCLE(2); if (!SR_Z) goto B12_8327;
+B12_8325: LDA_IMM(0x00)
+B12_8327: STA_ABS_X(0x07c7)
+B12_832a: RTS()
+B12_832b: LDA_ABS_X(0x07b7)
+B12_832e: SEC()
+B12_832f: SBC_IMM(0x03)
+B12_8331: LDY_IMM(0x07)
+B12_8333: STA_IDY(0xF0)
+B12_8335: LDA_ABS_X(0x07bf)
+B12_8338: SBC_IMM(0x00)
+B12_833a: INY()
+B12_833b: STA_IDY(0xF0)
+B12_833d: CYCLE(3); PC = 0x831b; goto B26_831b;
+B12_8340: LDA_ABS_X(0x07b7)
+B12_8343: SEC()
+B12_8344: SBC_IMM(0x06)
+B12_8346: CYCLE(3); PC = 0x8331; goto B28_8331;
+B12_8349: STX_ZP(0xF5)
+B12_834b: LDA_IMM(0x00)
+B12_834d: STA_ABS_X(0x0700)
+B12_8350: DEY()
+B12_8351: TYA()
+B12_8352: ASL_A()
+B12_8353: TAY()
+B12_8354: LDA_ABS_Y(0x8bda)
+B12_8357: STA_ZP(0xF0)
+B12_8359: LDA_ABS_Y(0x8bdb)
+B12_835c: STA_ZP(0xF1)
+B12_835e: LDY_IMM(0x00)
+B12_8360: LDA_IDY(0xF0)
+B12_8362: CYCLE(2); if (!SR_N) goto B12_836c;
+B12_8364: LDX_IMM(0x0F)
+B12_8366: STX_ABS(0x4015)
+B12_8369: LDX_ZP(0xF5)
+B12_836b: RTS()
+B12_836c: STA_ZP(0xF4)
+B12_836e: LDA_IMM(0x08)
+B12_8370: CLC()
+B12_8371: SBC_ZP(0xF4)
+B12_8373: TAX()
+B12_8374: LDA_IMM(0x00)
+B12_8376: STA_ABS_X(0x07a7)
+B12_8379: STA_ABS_X(0x07af)
+B12_837c: STA_ABS(0x07e3)
+B12_837f: STA_ABS(0x07e2)
+B12_8382: STA_ABS_X(0x07ea)
+B12_8385: STA_ABS_X(0x07cf)
+B12_8388: STA_ABS_X(0x07d7)
+B12_838b: STA_ABS(0x07df)
+B12_838e: STA_ABS_X(0x07f4)
+B12_8391: STA_ABS(0x07e8)
+B12_8394: LDA_ZP(0xF4)
+B12_8396: ASL_A()
+B12_8397: ASL_A()
+B12_8398: ASL_A()
+B12_8399: ASL_A()
+B12_839a: TAX()
+B12_839b: INY()
+B12_839c: LDA_IDY(0xF0)
+B12_839e: STA_ABS_X(0x0727)
+B12_83a1: INY()
+B12_83a2: LDA_IDY(0xF0)
+B12_83a4: STA_ABS_X(0x0728)
+B12_83a7: LDA_IMM(0x00)
+B12_83a9: STA_ABS_X(0x072c)
+B12_83ac: LDA_IMM(0x0F)
+B12_83ae: STA_ABS_X(0x0730)
+B12_83b1: LDA_ZP(0xF4)
+B12_83b3: ASL_A()
+B12_83b4: ASL_A()
+B12_83b5: TAX()
+B12_83b6: LDA_IMM(0x01)
+B12_83b8: STA_ABS_X(0x0707)
+B12_83bb: LSR_A()
+B12_83bc: LDX_ZP(0xF4)
+B12_83be: ROL_A()
+B12_83bf: DEX()
+B12_83c0: CYCLE(2); if (!SR_N) goto B12_83be;
+B12_83c2: ORA_ABS(0x0706)
+B12_83c5: STA_ABS(0x0706)
+B12_83c8: INY()
+B12_83c9: CYCLE(2); if (!SR_N) goto B12_8360;
+B12_83cb: LDA_IMM(0xCF)
+B12_83cd: LDY_IMM(0x05)
+B12_83cf: AND_IDY(0xF0)
+B12_83d1: STA_IDY(0xF0)
+B12_83d3: LDY_IMM(0x00)
+B12_83d5: LDA_IDY(0xF0)
+B12_83d7: STA_ZP(0xF4)
+B12_83d9: INY()
+B12_83da: LDA_IDY(0xF0)
+B12_83dc: STA_ZP(0xF5)
+B12_83de: DEY()
+B12_83df: LDA_IDY(0xF4)
+B12_83e1: CYCLE(2); if (!SR_N) goto B12_8404;
+B12_83e3: INY()
+B12_83e4: CMP_IMM(0xE0)
+B12_83e6: CYCLE(2); if (!SR_C) goto B12_83ed;
+B12_83e8: CYCLE(6); SetStack(SP, 234); SetStack(SP - 1, 131); SP -= 2; goto B20_84c9;
+B12_83eb: CYCLE(2); if (!SR_N) goto B12_83df;
+B12_83ed: CMP_IMM(0xB0)
+B12_83ef: CYCLE(2); if (!SR_C) goto B12_83f4;
+B12_83f4: AND_IMM(0x3F)
+B12_83f6: TAX()
+B12_83f7: LDA_ABS_X(0x8725)
+B12_83fa: LDX_ZP(0xF2)
+B12_83fc: STA_ABS_X(0x0707)
+B12_83ff: STA_ABS_X(0x0708)
+B12_8402: CYCLE(2); if (!SR_N) goto B12_83df;
+B12_8404: INY()
+B12_8405: PHA()
+B12_8406: TYA()
+B12_8407: LDY_IMM(0x00)
+B12_8409: CLC()
+B12_840a: ADC_ZP(0xF4)
+B12_840c: STA_IDY(0xF0)
+B12_840e: INY()
+B12_840f: LDA_IMM(0x00)
+B12_8411: ADC_ZP(0xF5)
+B12_8413: STA_IDY(0xF0)
+B12_8415: PLA()
+B12_8416: LDX_IMM(0x05)
+B12_8418: CPX_ZP(0xF3)
+B12_841a: CYCLE(2); if (SR_Z) goto B12_8422;
+B12_841c: LDX_IMM(0x01)
+B12_841e: CPX_ZP(0xF3)
+B12_8420: CYCLE(2); if (!SR_C) goto B12_842e;
+B12_8422: CMP_IMM(0x10)
+B12_8424: CYCLE(2); if (SR_Z) goto B12_8435;
+B12_8426: STA_ZP(0xF4)
+B12_8428: LDA_IMM(0x00)
+B12_842a: STA_ZP(0xF5)
+B12_842c: CYCLE(2); if (SR_Z) goto B12_845c;
+B12_842e: TAX()
+B12_842f: AND_IMM(0x0F)
+B12_8431: CMP_IMM(0x0C)
+B12_8433: CYCLE(2); if (!SR_Z) goto B12_843f;
+B12_8435: LDY_IMM(0x05)
+B12_8437: LDA_IMM(0x20)
+B12_8439: ORA_IDY(0xF0)
+B12_843b: STA_IDY(0xF0)
+B12_843d: CYCLE(2); if (!SR_Z) goto B12_84a6;
+B12_843f: ASL_A()
+B12_8440: TAY()
+B12_8441: LDA_ABS_Y(0x870d)
+B12_8444: STA_ZP(0xF4)
+B12_8446: LDA_ABS_Y(0x870e)
+B12_8449: STA_ZP(0xF5)
+B12_844b: TXA()
+B12_844c: AND_IMM(0xF0)
+B12_844e: LSR_A()
+B12_844f: LSR_A()
+B12_8450: LSR_A()
+B12_8451: LSR_A()
+B12_8452: TAX()
+B12_8453: CYCLE(2); if (SR_Z) goto B12_845c;
+B12_8455: LSR_ZP(0xF5)
+B12_8457: ROR_ZP(0xF4)
+B12_8459: DEX()
+B12_845a: CYCLE(2); if (!SR_Z) goto B12_8455;
+B12_845c: LDA_ZP(0xF4)
+B12_845e: LDX_ZP(0xF3)
+B12_8460: DEX()
+B12_8461: LDY_ABS_X(0x07f4)
+B12_8464: CYCLE(2); if (SR_Z) goto B12_848f;
+B12_8466: SEC()
+B12_8467: SBC_ABS_X(0x07a7)
+B12_846a: CYCLE(2); if (!SR_C) goto B12_8478;
+B12_846c: LDY_IMM(0x07)
+B12_846e: STA_IDY(0xF0)
+B12_8470: STA_ABS_X(0x07b7)
+B12_8473: LDA_ZP(0xF5)
+B12_8475: CYCLE(3); PC = 0x8484; goto B26_8484;
+B12_8478: LDY_IMM(0x07)
+B12_847a: STA_IDY(0xF0)
+B12_847c: STA_ABS_X(0x07b7)
+B12_847f: LDA_ZP(0xF5)
+B12_8481: SEC()
+B12_8482: SBC_IMM(0x01)
+B12_8484: ORA_IMM(0x80)
+B12_8486: INY()
+B12_8487: STA_IDY(0xF0)
+B12_8489: STA_ABS_X(0x07bf)
+B12_848c: CYCLE(3); PC = 0x84a6; goto B28_84a6;
+B12_848f: CLC()
+B12_8490: ADC_ABS_X(0x07a7)
+B12_8493: LDY_IMM(0x07)
+B12_8495: STA_IDY(0xF0)
+B12_8497: STA_ABS_X(0x07b7)
+B12_849a: INY()
+B12_849b: LDA_ZP(0xF5)
+B12_849d: ADC_IMM(0x00)
+B12_849f: ORA_IMM(0x80)
+B12_84a1: STA_IDY(0xF0)
+B12_84a3: STA_ABS_X(0x07bf)
+B12_84a6: LDX_ZP(0xF3)
+B12_84a8: DEX()
+B12_84a9: LDA_IMM(0x00)
+B12_84ab: STA_ABS_X(0x07f4)
+B12_84ae: LDA_ABS_X(0x07ea)
+B12_84b1: CYCLE(2); if (!SR_Z) goto B12_84c0;
+B12_84b3: LDX_ZP(0xF2)
+B12_84b5: LDA_IMM(0x01)
+B12_84b7: STA_ABS_X(0x0709)
+B12_84ba: LDA_IMM(0x00)
+B12_84bc: LDY_IMM(0x04)
+B12_84be: STA_IDY(0xF0)
+B12_84c0: LDX_ZP(0xF2)
+B12_84c2: LDA_ABS_X(0x0708)
+B12_84c5: STA_ABS_X(0x0707)
+B12_84c8: RTS()
+B12_84c9: AND_IMM(0x1F)
+B12_84cb: ASL_A()
+B12_84cc: TAX()
+B12_84cd: LDA_ABS_X(0x84da)
+B12_84d0: STA_ZP(0xF6)
+B12_84d2: LDA_ABS_X(0x84db)
+B12_84d5: STA_ZP(0xF7)
+B12_84d7: CYCLE(5); PC = GetMem(247) << 8 | GetMem(246); CHECK_CYCLE(); goto _RET_MAP;
+B12_851a: LDA_IMM(0x00)
+B12_851c: STA_ABS(0x07f2)
+B12_851f: STA_ABS(0x0700)
+B12_8522: STA_ABS(0x0701)
+B12_8525: STA_ABS(0x0702)
+B12_8528: STA_ABS(0x0703)
+B12_852b: STA_ABS(0x0704)
+B12_852e: STA_ABS(0x0705)
+B12_8531: RTS()
+B12_8532: LDX_ZP(0xF3)
+B12_8534: DEX()
+B12_8535: LDA_IMM(0x00)
+B12_8537: STA_ABS_X(0x07ea)
+B12_853a: RTS()
+B12_853b: LDX_ZP(0xF3)
+B12_853d: DEX()
+B12_853e: LDA_IMM(0x0F)
+B12_8540: STA_ABS_X(0x07ea)
+B12_8543: RTS()
+B12_8544: LDA_IDY(0xF4)
+B12_8546: INY()
+B12_8547: STY_ZP(0xF6)
+B12_8549: ASL_A()
+B12_854a: TAX()
+B12_854b: LDA_ABS_X(0x8754)
+B12_854e: TAY()
+B12_854f: LDA_ABS_X(0x8755)
+B12_8552: TAX()
+B12_8553: TYA()
+B12_8554: LDY_IMM(0x02)
+B12_8556: STA_IDY(0xF0)
+B12_8558: INY()
+B12_8559: TXA()
+B12_855a: STA_IDY(0xF0)
+B12_855c: LDY_ZP(0xF6)
+B12_855e: RTS()
+B12_855f: LDA_IDY(0xF4)
+B12_8561: INY()
+B12_8562: STY_ZP(0xF6)
+B12_8564: LDY_ABS(0x07df)
+B12_8567: CYCLE(2); if (!SR_Z) goto B12_8575;
+B12_8569: STA_ZP(0xF7)
+B12_856b: LDA_IMM(0xF0)
+B12_856d: LDY_IMM(0x05)
+B12_856f: AND_IDY(0xF0)
+B12_8571: ORA_ZP(0xF7)
+B12_8573: STA_IDY(0xF0)
+B12_8575: LDY_ZP(0xF6)
+B12_8577: RTS()
+B12_8578: LDA_IDY(0xF4)
+B12_857a: INY()
+B12_857b: TAX()
+B12_857c: LDA_IDY(0xF4)
+B12_857e: STX_ZP(0xF4)
+B12_8580: STA_ZP(0xF5)
+B12_8582: LDY_IMM(0x00)
+B12_8584: RTS()
+B12_8585: LDA_IDY(0xF4)
+B12_8587: INY()
+B12_8588: TAX()
+B12_8589: LDA_IDY(0xF4)
+B12_858b: INY()
+B12_858c: PHA()
+B12_858d: TYA()
+B12_858e: PHA()
+B12_858f: LDY_IMM(0x09)
+B12_8591: LDA_IDY(0xF0)
+B12_8593: TAY()
+B12_8594: PLA()
+B12_8595: CLC()
+B12_8596: ADC_ZP(0xF4)
+B12_8598: STA_IDY(0xF0)
+B12_859a: DEY()
+B12_859b: LDA_IMM(0x00)
+B12_859d: ADC_ZP(0xF5)
+B12_859f: STA_IDY(0xF0)
+B12_85a1: DEY()
+B12_85a2: TYA()
+B12_85a3: LDY_IMM(0x09)
+B12_85a5: STA_IDY(0xF0)
+B12_85a7: STX_ZP(0xF4)
+B12_85a9: PLA()
+B12_85aa: STA_ZP(0xF5)
+B12_85ac: LDY_IMM(0x00)
+B12_85ae: RTS()
+B12_85af: LDY_IMM(0x09)
+B12_85b1: LDA_IDY(0xF0)
+B12_85b3: TAY()
+B12_85b4: INY()
+B12_85b5: LDA_IDY(0xF0)
+B12_85b7: INY()
+B12_85b8: STA_ZP(0xF5)
+B12_85ba: LDA_IDY(0xF0)
+B12_85bc: STA_ZP(0xF4)
+B12_85be: TYA()
+B12_85bf: LDY_IMM(0x09)
+B12_85c1: STA_IDY(0xF0)
+B12_85c3: LDY_IMM(0x00)
+B12_85c5: RTS()
+B12_85c6: LDA_IDY(0xF4)
+B12_85c8: INY()
+B12_85c9: TAX()
+B12_85ca: TYA()
+B12_85cb: PHA()
+B12_85cc: LDY_IMM(0x09)
+B12_85ce: LDA_IDY(0xF0)
+B12_85d0: TAY()
+B12_85d1: PLA()
+B12_85d2: CLC()
+B12_85d3: ADC_ZP(0xF4)
+B12_85d5: STA_ZP(0xF4)
+B12_85d7: STA_IDY(0xF0)
+B12_85d9: DEY()
+B12_85da: LDA_IMM(0x00)
+B12_85dc: ADC_ZP(0xF5)
+B12_85de: STA_ZP(0xF5)
+B12_85e0: STA_IDY(0xF0)
+B12_85e2: DEY()
+B12_85e3: TXA()
+B12_85e4: STA_IDY(0xF0)
+B12_85e6: DEY()
+B12_85e7: TYA()
+B12_85e8: LDY_IMM(0x09)
+B12_85ea: STA_IDY(0xF0)
+B12_85ec: LDY_IMM(0x00)
+B12_85ee: RTS()
+B12_85ef: STY_ZP(0xF6)
+B12_85f1: LDY_IMM(0x09)
+B12_85f3: LDA_IDY(0xF0)
+B12_85f5: TAY()
+B12_85f6: INY()
+B12_85f7: LDA_IDY(0xF0)
+B12_85f9: SEC()
+B12_85fa: SBC_IMM(0x01)
+B12_85fc: STA_IDY(0xF0)
+B12_85fe: CYCLE(2); if (SR_Z) goto B12_860d;
+B12_8600: INY()
+B12_8601: LDA_IDY(0xF0)
+B12_8603: INY()
+B12_8604: STA_ZP(0xF5)
+B12_8606: LDA_IDY(0xF0)
+B12_8608: STA_ZP(0xF4)
+B12_860a: LDY_IMM(0x00)
+B12_860c: RTS()
+B12_860d: INY()
+B12_860e: INY()
+B12_860f: TYA()
+B12_8610: LDY_IMM(0x09)
+B12_8612: STA_IDY(0xF0)
+B12_8614: LDY_ZP(0xF6)
+B12_8616: RTS()
+B12_8617: STY_ZP(0xF6)
+B12_8619: LDY_IMM(0x05)
+B12_861b: LDA_IDY(0xF0)
+B12_861d: ORA_IMM(0x10)
+B12_861f: STA_IDY(0xF0)
+B12_8621: LDX_ZP(0xF3)
+B12_8623: DEX()
+B12_8624: TXA()
+B12_8625: EOR_IMM(0x07)
+B12_8627: ASL_A()
+B12_8628: ASL_A()
+B12_8629: AND_IMM(0x0F)
+B12_862b: TAX()
+B12_862c: LDY_ZP(0xF6)
+B12_862e: LDA_IDY(0xF4)
+B12_8630: STA_ABS_X(0x4001)
+B12_8633: INY()
+B12_8634: LDX_ZP(0xF3)
+B12_8636: DEX()
+B12_8637: TXA()
+B12_8638: AND_IMM(0x03)
+B12_863a: TAX()
+B12_863b: LDA_IMM(0x00)
+B12_863d: STA_ABS_X(0x07e4)
+B12_8640: RTS()
+B12_8641: LDA_IDY(0xF4)
+B12_8643: INY()
+B12_8644: STY_ZP(0xF6)
+B12_8646: STA_ZP(0xF7)
+B12_8648: LDY_IMM(0x05)
+B12_864a: LDA_IMM(0x3F)
+B12_864c: AND_IDY(0xF0)
+B12_864e: ORA_ZP(0xF7)
+B12_8650: STA_IDY(0xF0)
+B12_8652: LDY_ZP(0xF6)
+B12_8654: RTS()
+B12_8655: LDA_IMM(0x7F)
+B12_8657: AND_ABS(0x0706)
+B12_865a: STA_ABS(0x0706)
+B12_865d: LDX_ZP(0xF3)
+B12_865f: DEX()
+B12_8660: TXA()
+B12_8661: EOR_IMM(0x07)
+B12_8663: ASL_A()
+B12_8664: ASL_A()
+B12_8665: AND_IMM(0x0F)
+B12_8667: TAX()
+B12_8668: LDA_IMM(0x30)
+B12_866a: STA_ABS_X(0x4000)
+B12_866d: PLA()
+B12_866e: PLA()
+B12_866f: RTS()
+B12_8670: LDX_ZP(0xF3)
+B12_8672: DEX()
+B12_8673: LDA_IDY(0xF4)
+B12_8675: INY()
+B12_8676: ASL_A()
+B12_8677: CYCLE(2); if (SR_C) goto B12_867c;
+B12_8679: STA_ABS_X(0x07f4)
+B12_867c: LSR_A()
+B12_867d: STA_ABS_X(0x07a7)
+B12_8680: RTS()
+B12_8681: LDX_ZP(0xF3)
+B12_8683: DEX()
+B12_8684: LDA_IDY(0xF4)
+B12_8686: STA_ABS_X(0x07af)
+B12_8689: LDA_IMM(0x00)
+B12_868b: STA_ABS_X(0x07c7)
+B12_868e: INY()
+B12_868f: RTS()
+B12_8690: LDX_ZP(0xF3)
+B12_8692: DEX()
+B12_8693: LDA_IMM(0x00)
+B12_8695: STA_ABS_X(0x07af)
+B12_8698: RTS()
+B12_8699: LDA_IMM(0x0F)
+B12_869b: STA_ABS(0x4015)
+B12_869e: LDA_ABS(0x07e8)
+B12_86a1: CYCLE(2); if (!SR_Z) goto B12_86b7;
+B12_86a3: LDA_IMM(0x0F)
+B12_86a5: STA_ABS(0x4010)
+B12_86a8: LDA_IMM(0x00)
+B12_86aa: STA_ABS(0x4012)
+B12_86ad: LDA_IMM(0x0C)
+B12_86af: STA_ABS(0x4013)
+B12_86b2: LDA_IMM(0x1F)
+B12_86b4: STA_ABS(0x4015)
+B12_86b7: RTS()
+B12_86b8: LDA_IMM(0x0F)
+B12_86ba: STA_ABS(0x4015)
+B12_86bd: LDA_ABS(0x07e8)
+B12_86c0: CYCLE(2); if (!SR_Z) goto B12_86d6;
+B12_86c2: LDA_IMM(0x0F)
+B12_86c4: STA_ABS(0x4010)
+B12_86c7: LDA_IMM(0x03)
+B12_86c9: STA_ABS(0x4012)
+B12_86cc: LDA_IMM(0x20)
+B12_86ce: STA_ABS(0x4013)
+B12_86d1: LDA_IMM(0x1F)
+B12_86d3: STA_ABS(0x4015)
+B12_86d6: RTS()
+B12_86d7: LDA_IMM(0x0F)
+B12_86d9: STA_ABS(0x4015)
+B12_86dc: LDA_ABS(0x07e8)
+B12_86df: CYCLE(2); if (!SR_Z) goto B12_86f5;
+B12_86e1: LDA_IMM(0x0F)
+B12_86e3: STA_ABS(0x4010)
+B12_86e6: LDA_IMM(0x0B)
+B12_86e8: STA_ABS(0x4012)
+B12_86eb: LDA_IMM(0x13)
+B12_86ed: STA_ABS(0x4013)
+B12_86f0: LDA_IMM(0x1F)
+B12_86f2: STA_ABS(0x4015)
+B12_86f5: RTS()
+
+
+
+// ===== Bank 16 (prg_bank_16.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 16 =====
+// ; ROM: 0x020010-0x02200F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=1860 data=4599 unaccessed=1733
+B16_8000: CYCLE(3); PC = 0x8006; goto B28_8006;
+B16_8003: CYCLE(3); PC = 0x8021; goto B26_8021;
+B16_8006: LDX_IMM(0x89)
+B16_8008: LDA_ABS(0x0518)
+B16_800b: ASL_A()
+B16_800c: TAY()
+B16_800d: CYCLE(2); if (!SR_C) goto B16_8010;
+B16_8010: LDA_IMM(0xBF)
+B16_8012: STA_ZP(0x5D)
+B16_8014: STX_ZP(0x5E)
+B16_8016: LDA_IDY(0x5D)
+B16_8018: TAX()
+B16_8019: INY()
+B16_801a: LDA_IDY(0x5D)
+B16_801c: STA_ZP(0x5E)
+B16_801e: STX_ZP(0x5D)
+B16_8020: RTS()
+B16_8021: LDA_ABS(0x0517)
+B16_8024: STA_ABS(0x052a)
+B16_8027: LDA_ABS(0x0516)
+B16_802a: AND_IMM(0xFB)
+B16_802c: STA_ABS(0x0516)
+B16_802f: LDA_IMM(0x00)
+B16_8031: STA_ABS(0x052b)
+B16_8034: STA_ABS(0x052d)
+B16_8037: STA_ABS(0x052c)
+B16_803a: STA_ABS(0x0530)
+B16_803d: STA_ZP(0x3A)
+B16_803f: LDY_ZP(0x3A)
+B16_8041: INC_ZP(0x3A)
+B16_8043: LDA_IDY(0x5D)
+B16_8045: CMP_IMM(0xF0)
+B16_8047: CYCLE(2); if (!SR_C) goto B16_804f;
+B16_8049: CYCLE(6); SetStack(SP, 75); SetStack(SP - 1, 128); SP -= 2; goto B28_80a9;
+B16_804c: CYCLE(3); PC = 0x803f; goto B22_803f;
+B16_804f: STA_ABS(0x0523)
+B16_8052: LDA_ABS(0x0516)
+B16_8055: ORA_IMM(0x40)
+B16_8057: AND_IMM(0xEF)
+B16_8059: STA_ABS(0x0516)
+B16_805c: LDY_ZP(0x3A)
+B16_805e: INC_ZP(0x3A)
+B16_8060: LDA_IDY(0x5D)
+B16_8062: CMP_IMM(0xF0)
+B16_8064: CYCLE(2); if (!SR_C) goto B16_8069;
+B16_8066: CYCLE(6); SetStack(SP, 104); SetStack(SP - 1, 128); SP -= 2; goto B24_8991;
+B16_8069: STA_ABS(0x0524)
+B16_806c: LDY_ZP(0x3A)
+B16_806e: INC_ZP(0x3A)
+B16_8070: LDA_IDY(0x5D)
+B16_8072: CMP_IMM(0xF0)
+B16_8074: CYCLE(2); if (!SR_C) goto B16_8079;
+B16_8076: CYCLE(6); SetStack(SP, 120); SetStack(SP - 1, 128); SP -= 2; goto B28_899c;
+B16_8079: STA_ABS(0x0528)
+B16_807c: LDY_ZP(0x3A)
+B16_807e: INC_ZP(0x3A)
+B16_8080: LDA_IDY(0x5D)
+B16_8082: CMP_IMM(0xF0)
+B16_8084: CYCLE(2); if (!SR_C) goto B16_8089;
+B16_8086: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 128); SP -= 2; goto B16_89a7;
+B16_8089: STA_ABS(0x0529)
+B16_808c: LDA_ZP(0x3A)
+B16_808e: CLC()
+B16_808f: ADC_ZP(0x5D)
+B16_8091: STA_ZP(0x5D)
+B16_8093: CYCLE(2); if (!SR_C) goto B16_8097;
+B16_8095: INC_ZP(0x5E)
+B16_8097: LDX_IMM(0x15)
+B16_8099: LDA_IMM(0xF0)
+B16_809b: STA_ZP_X(0x01)
+B16_809d: LDA_IMM(0x0B)
+B16_809f: STA_ZP_X(0x02)
+B16_80a1: LDA_IMM(0x80)
+B16_80a3: LDY_IMM(0x08)
+B16_80a5: CYCLE(6); SetStack(SP, 167); SetStack(SP - 1, 128); SP -= 2; goto B30_c50f;
+B16_80a8: RTS()
+B16_80a9: SEC()
+B16_80aa: SBC_IMM(0xF0)
+B16_80ac: CYCLE(6); SetStack(SP, 174); SetStack(SP - 1, 128); SP -= 2; goto B30_c509;
+B16_80cf: LDA_IMM(0x00)
+B16_80d1: STA_ABS(0x052a)
+B16_80d4: LDA_IMM(0x08)
+B16_80d6: BIT_ABS(0x0516)
+B16_80d9: CYCLE(2); if (!SR_Z) goto B16_80e6;
+B16_80db: ORA_ABS(0x0516)
+B16_80de: STA_ABS(0x0516)
+B16_80e1: LDX_IMM(0x05)
+B16_80e3: CYCLE(6); SetStack(SP, 229); SetStack(SP - 1, 128); SP -= 2; goto B30_c51b;
+B16_80e6: LDA_IMM(0x00)
+B16_80e8: STA_ABS(0x0522)
+B16_80eb: LDA_ZP(0x21)
+B16_80ed: AND_IMM(0x1E)
+B16_80ef: STA_ZP(0x21)
+B16_80f1: PLA()
+B16_80f2: PLA()
+B16_80f3: RTS()
+B16_80f4: LDY_ZP(0x3A)
+B16_80f6: LDA_IDY(0x5D)
+B16_80f8: TAX()
+B16_80f9: INY()
+B16_80fa: LDA_IDY(0x5D)
+B16_80fc: STA_ZP(0x5E)
+B16_80fe: STX_ZP(0x5D)
+B16_8100: LDA_IMM(0x00)
+B16_8102: STA_ZP(0x3A)
+B16_8104: RTS()
+B16_8105: LDY_ZP(0x3A)
+B16_8107: LDA_IDY(0x5D)
+B16_8109: PHA()
+B16_810a: CYCLE(6); SetStack(SP, 12); SetStack(SP - 1, 129); SP -= 2; goto B27_816e;
+B16_810d: PLA()
+B16_810e: CYCLE(2); if (!SR_N) goto B16_812f;
+B16_8110: TXA()
+B16_8111: SEC()
+B16_8112: ADC_ZP(0x3A)
+B16_8114: CLC()
+B16_8115: ADC_ZP(0x5D)
+B16_8117: STA_ZP(0x5D)
+B16_8119: CYCLE(2); if (!SR_C) goto B16_811d;
+B16_811b: INC_ZP(0x5E)
+B16_811d: LDY_IMM(0x00)
+B16_811f: LDA_IDY(0x5D)
+B16_8121: CLC()
+B16_8122: ADC_ZP(0x5D)
+B16_8124: STA_ZP(0x5D)
+B16_8126: CYCLE(2); if (!SR_C) goto B16_812a;
+B16_8128: INC_ZP(0x5E)
+B16_812a: LDA_IMM(0x00)
+B16_812c: STA_ZP(0x3A)
+B16_812e: RTS()
+B16_812f: TXA()
+B16_8130: ASL_A()
+B16_8131: SEC()
+B16_8132: ADC_ZP(0x3A)
+B16_8134: TAY()
+B16_8135: CYCLE(3); PC = 0x80f6; goto B22_80f6;
+B16_8138: AND_IMM(0xFC)
+B16_813a: CYCLE(2); if (SR_Z) goto B16_814d;
+B16_813c: LSR_A()
+B16_813d: STA_ZP(0x3B)
+B16_813f: LDA_ABS(0x00e2)
+B16_8142: CMP_ZP(0x3B)
+B16_8144: CYCLE(2); if (!SR_C) goto B16_814b;
+B16_8146: SBC_ZP(0x3B)
+B16_8148: CYCLE(3); PC = 0x8142; goto B27_8142;
+B16_814b: ADC_ZP(0x3B)
+B16_814d: LDX_IMM(0x00)
+B16_814f: RTS()
+B16_8150: CYCLE(6); SetStack(SP, 82); SetStack(SP - 1, 129); SP -= 2; goto B30_c50c;
+B16_8153: LDY_IMM(0x01)
+B16_8155: LDA_IDY(0x34)
+B16_8157: SEC()
+B16_8158: SBC_IMM(0x40)
+B16_815a: TAX()
+B16_815b: INY()
+B16_815c: LDA_IDY(0x34)
+B16_815e: SBC_IMM(0x00)
+B16_8160: CYCLE(2); if (!SR_N) goto B16_8165;
+B16_8162: LDX_IMM(0x00)
+B16_8164: TXA()
+B16_8165: STA_IDY(0x34)
+B16_8167: DEY()
+B16_8168: TXA()
+B16_8169: STA_IDY(0x34)
+B16_816b: LDX_IMM(0x01)
+B16_816d: RTS()
+B16_816e: AND_IMM(0x7F)
+B16_8170: CYCLE(6); SetStack(SP, 114); SetStack(SP - 1, 129); SP -= 2; goto B30_c509;
+B16_8207: CYCLE(6); SetStack(SP, 9); SetStack(SP - 1, 130); SP -= 2; goto B30_c50c;
+B16_820a: LDY_IMM(0x00)
+B16_820c: LDA_IDY(0x34)
+B16_820e: LDX_IMM(0x00)
+B16_8210: RTS()
+B16_8211: CYCLE(2); if (SR_Z) goto B16_821b;
+B16_8213: LDA_ABS(0x0516)
+B16_8216: ORA_IMM(0x04)
+B16_8218: STA_ABS(0x0516)
+B16_821b: RTS()
+B16_821c: LDA_ABS(0x0442)
+B16_821f: CYCLE(6); SetStack(SP, 33); SetStack(SP - 1, 130); SP -= 2; goto B30_c50c;
+B16_8222: LDY_IMM(0x00)
+B16_8224: LDX_IMM(0x00)
+B16_8226: LDA_IDY(0x34)
+B16_8228: CYCLE(2); if (!SR_Z) goto B16_822b;
+B16_822a: INX()
+B16_822b: RTS()
+B16_822c: LDA_ABS(0x0444)
+B16_822f: LDY_ABS(0x0612)
+B16_8232: CPY_IMM(0x02)
+B16_8234: CYCLE(2); if (!SR_C) goto B16_8239;
+B16_8236: LDA_ABS(0x0445)
+B16_8239: CYCLE(6); SetStack(SP, 59); SetStack(SP - 1, 130); SP -= 2; goto B28_8138;
+B16_823c: CMP_IMM(0x80)
+B16_823e: CYCLE(2); if (!SR_C) goto B16_8250;
+B16_8240: LDA_ABS(0x0442)
+B16_8243: LDX_ABS(0x0612)
+B16_8246: CPX_IMM(0x02)
+B16_8248: CYCLE(2); if (!SR_C) goto B16_824d;
+B16_824a: LDA_ABS(0x0441)
+B16_824d: CYCLE(6); SetStack(SP, 79); SetStack(SP - 1, 130); SP -= 2; goto B28_8150;
+B16_8250: RTS()
+B16_8251: LDX_ABS(0x043d)
+B16_8254: RTS()
+B16_8255: LDX_ABS(0x0612)
+B16_8258: RTS()
+B16_8259: LDX_ABS(0x044e)
+B16_825c: CYCLE(2); if (SR_Z) goto B16_825f;
+B16_825e: DEX()
+B16_825f: RTS()
+B16_8260: LDX_ABS(0x0616)
+B16_8263: RTS()
+B16_8264: LDX_IMM(0x00)
+B16_8266: LDA_ABS(0x0442)
+B16_8269: CYCLE(2); if (SR_Z) goto B16_826f;
+B16_826b: CMP_IMM(0x0B)
+B16_826d: CYCLE(2); if (!SR_Z) goto B16_8270;
+B16_826f: INX()
+B16_8270: RTS()
+B16_8271: LDX_ABS(0x0612)
+B16_8274: RTS()
+B16_8275: LDX_IMM(0x02)
+B16_8277: LDA_ABS(0x0442)
+B16_827a: CYCLE(2); if (SR_Z) goto B16_8289;
+B16_827c: CMP_IMM(0x0B)
+B16_827e: CYCLE(2); if (SR_Z) goto B16_8289;
+B16_8280: DEX()
+B16_8281: LDA_ABS(0x043d)
+B16_8284: CMP_IMM(0x03)
+B16_8286: CYCLE(2); if (SR_Z) goto B16_8289;
+B16_8288: DEX()
+B16_8289: RTS()
+B16_828a: LDY_ABS(0x043b)
+B16_828d: LDX_ABS_Y(0x8291)
+B16_8290: RTS()
+B16_8297: LDX_ABS(0x043d)
+B16_829a: RTS()
+B16_829b: LDX_ABS(0x0612)
+B16_829e: RTS()
+B16_829f: LDX_IMM(0x00)
+B16_82a1: LDA_ABS(0x043b)
+B16_82a4: CYCLE(2); if (!SR_Z) goto B16_82b1;
+B16_82a6: LDA_ABS(0x043c)
+B16_82a9: AND_IMM(0x7F)
+B16_82ab: CMP_IMM(0x03)
+B16_82ad: CYCLE(2); if (!SR_C) goto B16_82b9;
+B16_82af: CYCLE(2); if (SR_C) goto B16_82b8;
+B16_82b1: LDA_ABS(0x043c)
+B16_82b4: AND_IMM(0x7F)
+B16_82b6: CYCLE(2); if (SR_Z) goto B16_82b9;
+B16_82b8: INX()
+B16_82b9: RTS()
+B16_82ba: LDA_ABS(0x0443)
+B16_82bd: CMP_IMM(0x06)
+B16_82bf: CYCLE(2); if (SR_Z) goto B16_82da;
+B16_82c1: LDA_ABS(0x062c)
+B16_82c4: CYCLE(2); if (!SR_N) goto B16_82cb;
+B16_82c6: EOR_IMM(0xFF)
+B16_82c8: CLC()
+B16_82c9: ADC_IMM(0x01)
+B16_82cb: CMP_IMM(0x40)
+B16_82cd: CYCLE(2); if (!SR_C) goto B16_82d3;
+B16_82cf: EOR_IMM(0xFF)
+B16_82d1: AND_IMM(0x3F)
+B16_82d3: CMP_IMM(0x20)
+B16_82d5: CYCLE(2); if (!SR_C) goto B16_82da;
+B16_82d7: INC_ABS(0x0443)
+B16_82da: LDA_ABS(0x0443)
+B16_82dd: ASL_A()
+B16_82de: ASL_A()
+B16_82df: ADC_ABS(0x0443)
+B16_82e2: TAY()
+B16_82e3: LDX_IMM(0x00)
+B16_82e5: LDA_ABS(0x00e3)
+B16_82e8: CMP_ABS_Y(0x8308)
+B16_82eb: CYCLE(2); if (SR_C) goto B16_82f3;
+B16_82ed: CYCLE(2); if (SR_Z) goto B16_82f3;
+B16_82ef: INX()
+B16_82f0: INY()
+B16_82f1: CYCLE(2); if (!SR_Z) goto B16_82e8;
+B16_82f3: TXA()
+B16_82f4: PHA()
+B16_82f5: CYCLE(6); SetStack(SP, 247); SetStack(SP - 1, 130); SP -= 2; goto B16_82fb;
+B16_82f8: PLA()
+B16_82f9: TAX()
+B16_82fa: RTS()
+B16_82fb: CYCLE(6); SetStack(SP, 253); SetStack(SP - 1, 130); SP -= 2; goto B30_c509;
+B16_832d: CYCLE(6); SetStack(SP, 47); SetStack(SP - 1, 131); SP -= 2; goto B24_8350;
+B16_8330: LDA_IMM(0x02)
+B16_8332: STA_ABS(0x0612)
+B16_8335: RTS()
+B16_8336: RTS()
+B16_8337: LDA_IMM(0x02)
+B16_8339: STA_ABS(0x0612)
+B16_833c: INC_ABS(0x0616)
+B16_833f: RTS()
+B16_8340: CYCLE(6); SetStack(SP, 66); SetStack(SP - 1, 131); SP -= 2; goto B24_8350;
+B16_8343: CYCLE(6); SetStack(SP, 69); SetStack(SP - 1, 131); SP -= 2; goto B16_835c;
+B16_8346: LDA_IMM(0x02)
+B16_8348: STA_ABS(0x043c)
+B16_834b: RTS()
+B16_834c: CYCLE(6); SetStack(SP, 78); SetStack(SP - 1, 131); SP -= 2; goto B24_8350;
+B16_834f: RTS()
+B16_8350: LDA_ABS(0x05fb)
+B16_8353: EOR_IMM(0x0B)
+B16_8355: CYCLE(6); SetStack(SP, 87); SetStack(SP - 1, 131); SP -= 2; goto B30_c548;
+B16_8358: STA_ABS(0x0442)
+B16_835b: RTS()
+B16_835c: LDA_ABS(0x05fb)
+B16_835f: CYCLE(6); SetStack(SP, 97); SetStack(SP - 1, 131); SP -= 2; goto B30_c548;
+B16_8362: STA_ABS(0x0441)
+B16_8365: RTS()
+B16_8366: LDX_ABS(0x043b)
+B16_8369: RTS()
+B16_836a: LDX_ABS(0x0612)
+B16_836d: RTS()
+B16_836e: LDX_IMM(0x00)
+B16_8370: LDA_ABS(0x043b)
+B16_8373: CMP_IMM(0x01)
+B16_8375: CYCLE(2); if (SR_Z) goto B16_837b;
+B16_8377: CYCLE(6); SetStack(SP, 121); SetStack(SP - 1, 131); SP -= 2; goto B16_8677;
+B16_837a: INX()
+B16_837b: RTS()
+B16_837c: LDX_ABS(0x0612)
+B16_837f: RTS()
+B16_8380: LDX_ABS(0x0612)
+B16_8383: RTS()
+B16_8384: CYCLE(6); SetStack(SP, 134); SetStack(SP - 1, 131); SP -= 2; goto B20_838b;
+B16_8387: LDX_ABS(0x0612)
+B16_838a: RTS()
+B16_838b: LDA_ABS(0x0612)
+B16_838e: CYCLE(6); SetStack(SP, 144); SetStack(SP - 1, 131); SP -= 2; goto B30_c509;
+B16_8397: RTS()
+B16_8398: LDA_ABS(0x05fb)
+B16_839b: EOR_IMM(0x0B)
+B16_839d: CYCLE(6); SetStack(SP, 159); SetStack(SP - 1, 131); SP -= 2; goto B30_c548;
+B16_83a0: STA_ABS(0x0442)
+B16_83a3: RTS()
+B16_83a4: LDX_ABS(0x0612)
+B16_83a7: RTS()
+B16_83a8: LDY_ABS(0x043d)
+B16_83ab: LDX_ABS_Y(0x83af)
+B16_83ae: RTS()
+B16_83b4: LDY_ABS(0x043b)
+B16_83b7: LDX_ABS_Y(0x83bb)
+B16_83ba: RTS()
+B16_83c2: LDX_ABS(0x0612)
+B16_83c5: RTS()
+B16_83c6: LDA_ABS(0x0441)
+B16_83c9: CYCLE(6); SetStack(SP, 203); SetStack(SP - 1, 131); SP -= 2; goto B27_8207;
+B16_83cc: CMP_IMM(0x1C)
+B16_83ce: CYCLE(2); if (SR_Z) goto B16_83d5;
+B16_83d0: CMP_IMM(0x48)
+B16_83d2: CYCLE(2); if (SR_Z) goto B16_83d5;
+B16_83d4: INX()
+B16_83d5: RTS()
+B16_83e4: LDA_ABS(0x043e)
+B16_83e7: AND_IMM(0x7F)
+B16_83e9: TAX()
+B16_83ea: RTS()
+B16_83eb: LDA_ABS(0x043c)
+B16_83ee: AND_IMM(0x7F)
+B16_83f0: TAX()
+B16_83f1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 131); SP -= 2; goto B27_8211;
+B16_83f4: RTS()
+B16_83f5: LDA_IMM(0x01)
+B16_83f7: CYCLE(6); SetStack(SP, 249); SetStack(SP - 1, 131); SP -= 2; goto B27_8211;
+B16_83fa: LDA_ABS(0x043c)
+B16_83fd: AND_IMM(0x7F)
+B16_83ff: TAX()
+B16_8400: RTS()
+B16_8401: LDA_ABS(0x043c)
+B16_8404: AND_IMM(0x7F)
+B16_8406: TAX()
+B16_8407: CYCLE(3); PC = 0x8211; goto B27_8211;
+B16_840a: LDX_ABS(0x043b)
+B16_840d: RTS()
+B16_840e: LDA_ABS(0x05fb)
+B16_8411: EOR_IMM(0x0B)
+B16_8413: CYCLE(6); SetStack(SP, 21); SetStack(SP - 1, 132); SP -= 2; goto B27_8207;
+B16_8416: LDX_IMM(0x02)
+B16_8418: CMP_IMM(0x74)
+B16_841a: CYCLE(2); if (SR_Z) goto B16_842a;
+B16_841c: DEX()
+B16_841d: CMP_IMM(0x22)
+B16_841f: CYCLE(2); if (SR_Z) goto B16_842a;
+B16_8421: CMP_IMM(0x39)
+B16_8423: CYCLE(2); if (SR_Z) goto B16_842a;
+B16_8425: CMP_IMM(0x4C)
+B16_8427: CYCLE(2); if (SR_Z) goto B16_842a;
+B16_8429: DEX()
+B16_842a: RTS()
+B16_842b: LDX_IMM(0x00)
+B16_842d: LDA_ABS(0x061c)
+B16_8430: CMP_IMM(0x60)
+B16_8432: CYCLE(2); if (!SR_C) goto B16_8435;
+B16_8434: INX()
+B16_8435: RTS()
+B16_8436: LDX_ABS(0x05fb)
+B16_8439: CYCLE(2); if (SR_Z) goto B16_843d;
+B16_843b: LDX_IMM(0x01)
+B16_843d: RTS()
+B16_843e: LDX_ABS(0x002a)
+B16_8441: RTS()
+B16_844e: LDX_ABS(0x0447)
+B16_8451: CYCLE(2); if (!SR_Z) goto B16_8456;
+B16_8453: INC_ABS(0x0447)
+B16_8456: RTS()
+B16_8457: LDX_IMM(0x00)
+B16_8459: LDA_ABS(0x002b)
+B16_845c: CMP_IMM(0x22)
+B16_845e: CYCLE(2); if (!SR_Z) goto B16_847d;
+B16_8460: LDY_IMM(0x00)
+B16_8462: LDA_ABS(0x0028)
+B16_8465: SEC()
+B16_8466: SBC_ABS(0x0029)
+B16_8469: CYCLE(2); if (!SR_C) goto B16_847a;
+B16_846b: CYCLE(2); if (SR_Z) goto B16_847a;
+B16_846d: LDY_IMM(0x80)
+B16_846f: LDA_IMM(0xCA)
+B16_8471: STA_ABS(0x03fe)
+B16_8474: LDA_ABS(0x05fb)
+B16_8477: CYCLE(2); if (!SR_Z) goto B16_847a;
+B16_8479: INX()
+B16_847a: STY_ABS(0x03fd)
+B16_847d: RTS()
+B16_847e: LDA_ABS(0x0442)
+B16_8481: CYCLE(6); SetStack(SP, 131); SetStack(SP - 1, 132); SP -= 2; goto B27_8207;
+B16_8484: TAY()
+B16_8485: LDX_ABS_Y(0x86f4)
+B16_8488: CYCLE(2); if (SR_Z) goto B16_8497;
+B16_848a: LDA_ABS(0x0441)
+B16_848d: CYCLE(6); SetStack(SP, 143); SetStack(SP - 1, 132); SP -= 2; goto B27_8207;
+B16_8490: TAY()
+B16_8491: LDX_ABS_Y(0x86f4)
+B16_8494: CYCLE(6); SetStack(SP, 150); SetStack(SP - 1, 132); SP -= 2; goto B27_8211;
+B16_8497: RTS()
+B16_8498: LDA_ABS(0x0441)
+B16_849b: CYCLE(6); SetStack(SP, 157); SetStack(SP - 1, 132); SP -= 2; goto B27_8207;
+B16_849e: TAY()
+B16_849f: LDX_ABS_Y(0x86f4)
+B16_84a2: CYCLE(2); if (SR_Z) goto B16_84b1;
+B16_84a4: LDA_ABS(0x0442)
+B16_84a7: CYCLE(6); SetStack(SP, 169); SetStack(SP - 1, 132); SP -= 2; goto B27_8207;
+B16_84aa: TAY()
+B16_84ab: LDX_ABS_Y(0x86f4)
+B16_84ae: CYCLE(6); SetStack(SP, 176); SetStack(SP - 1, 132); SP -= 2; goto B27_8211;
+B16_84b1: RTS()
+B16_84b2: LDX_IMM(0x00)
+B16_84b4: BIT_ABS(0x043e)
+B16_84b7: CYCLE(2); if (!SR_N) goto B16_84c6;
+B16_84b9: LDA_ABS(0x0442)
+B16_84bc: CYCLE(6); SetStack(SP, 190); SetStack(SP - 1, 132); SP -= 2; goto B27_8207;
+B16_84bf: TAY()
+B16_84c0: LDX_ABS_Y(0x86f4)
+B16_84c3: CYCLE(6); SetStack(SP, 197); SetStack(SP - 1, 132); SP -= 2; goto B27_8211;
+B16_84c6: RTS()
+B16_84c7: LDA_ABS(0x0441)
+B16_84ca: LDX_ABS(0x05fb)
+B16_84cd: CYCLE(2); if (SR_Z) goto B16_84d2;
+B16_84cf: LDA_ABS(0x0442)
+B16_84d2: CYCLE(6); SetStack(SP, 212); SetStack(SP - 1, 132); SP -= 2; goto B30_c50c;
+B16_84d5: LDX_IMM(0x00)
+B16_84d7: LDY_IMM(0x01)
+B16_84d9: LDA_IDY(0x34)
+B16_84db: SEC()
+B16_84dc: SBC_IMM(0x64)
+B16_84de: INY()
+B16_84df: LDA_IDY(0x34)
+B16_84e1: SBC_IMM(0x00)
+B16_84e3: CYCLE(2); if (SR_C) goto B16_84e6;
+B16_84e6: RTS()
+B16_84e7: LDX_ABS(0x0600)
+B16_84ea: CYCLE(2); if (SR_Z) goto B16_84ee;
+B16_84ec: LDX_IMM(0x01)
+B16_84ee: RTS()
+B16_84ef: LDX_IMM(0x00)
+B16_84f1: LDA_ABS(0x043c)
+B16_84f4: AND_IMM(0x7F)
+B16_84f6: CMP_IMM(0x13)
+B16_84f8: CYCLE(2); if (!SR_Z) goto B16_84fb;
+B16_84fa: INX()
+B16_84fb: RTS()
+B16_84fc: CYCLE(6); SetStack(SP, 254); SetStack(SP - 1, 132); SP -= 2; goto B30_c551;
+B16_84ff: LDX_IMM(0x00)
+B16_8501: LDY_IMM(0x07)
+B16_8503: LDA_IDY(0x34)
+B16_8505: CMP_IMM(0x18)
+B16_8507: CYCLE(2); if (!SR_C) goto B16_850a;
+B16_8509: INX()
+B16_850a: RTS()
+B16_850b: LDX_IMM(0x00)
+B16_850d: BIT_ABS(0x043e)
+B16_8510: CYCLE(2); if (!SR_N) goto B16_8526;
+B16_8512: LDA_ABS(0x0442)
+B16_8515: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 133); SP -= 2; goto B27_8207;
+B16_8518: CMP_IMM(0x0F)
+B16_851a: CYCLE(2); if (SR_Z) goto B16_8525;
+B16_851c: CMP_IMM(0x21)
+B16_851e: CYCLE(2); if (SR_Z) goto B16_8524;
+B16_8520: CMP_IMM(0x40)
+B16_8522: CYCLE(2); if (!SR_Z) goto B16_8526;
+B16_8524: INX()
+B16_8525: INX()
+B16_8526: RTS()
+B16_8527: LDA_ABS(0x0441)
+B16_852a: CYCLE(6); SetStack(SP, 44); SetStack(SP - 1, 133); SP -= 2; goto B27_8207;
+B16_852d: LDX_IMM(0x02)
+B16_852f: CMP_IMM(0x60)
+B16_8531: CYCLE(2); if (SR_Z) goto B16_8539;
+B16_8533: DEX()
+B16_8534: CMP_IMM(0x01)
+B16_8536: CYCLE(2); if (SR_Z) goto B16_8539;
+B16_8538: DEX()
+B16_8539: RTS()
+B16_853a: LDA_ABS(0x0441)
+B16_853d: CYCLE(6); SetStack(SP, 63); SetStack(SP - 1, 133); SP -= 2; goto B27_8207;
+B16_8540: CMP_IMM(0x15)
+B16_8542: CYCLE(2); if (SR_Z) goto B16_8545;
+B16_8544: INX()
+B16_8545: RTS()
+B16_8546: LDA_ABS(0x0441)
+B16_8549: CYCLE(6); SetStack(SP, 75); SetStack(SP - 1, 133); SP -= 2; goto B27_8207;
+B16_854c: CMP_IMM(0x1B)
+B16_854e: CYCLE(2); if (SR_Z) goto B16_8555;
+B16_8550: CMP_IMM(0x4A)
+B16_8552: CYCLE(2); if (SR_Z) goto B16_8555;
+B16_8554: INX()
+B16_8555: RTS()
+B16_8556: LDA_ABS(0x043e)
+B16_8559: AND_IMM(0x7F)
+B16_855b: TAX()
+B16_855c: CYCLE(2); if (SR_Z) goto B16_856b;
+B16_855e: LDA_ABS(0x0442)
+B16_8561: CYCLE(6); SetStack(SP, 99); SetStack(SP - 1, 133); SP -= 2; goto B27_8207;
+B16_8564: TAY()
+B16_8565: LDX_ABS_Y(0x876a)
+B16_8568: CYCLE(6); SetStack(SP, 106); SetStack(SP - 1, 133); SP -= 2; goto B27_8211;
+B16_856b: RTS()
+B16_856c: LDX_ABS(0x044e)
+B16_856f: RTS()
+B16_8570: LDA_ABS(0x043d)
+B16_8573: AND_IMM(0x0F)
+B16_8575: TAY()
+B16_8576: LDX_ABS_Y(0x857a)
+B16_8579: RTS()
+B16_8580: LDA_ABS(0x043e)
+B16_8583: AND_IMM(0x7F)
+B16_8585: TAX()
+B16_8586: RTS()
+B16_8587: LDA_ABS(0x043e)
+B16_858a: AND_IMM(0x7F)
+B16_858c: TAX()
+B16_858d: CYCLE(2); if (SR_Z) goto B16_8591;
+B16_858f: LDX_IMM(0x01)
+B16_8591: RTS()
+B16_8592: LDA_ABS(0x0441)
+B16_8595: CYCLE(6); SetStack(SP, 151); SetStack(SP - 1, 133); SP -= 2; goto B27_8207;
+B16_8598: CMP_IMM(0x1A)
+B16_859a: CYCLE(2); if (SR_Z) goto B16_85a1;
+B16_859c: CMP_IMM(0x41)
+B16_859e: CYCLE(2); if (SR_Z) goto B16_85a1;
+B16_85a0: INX()
+B16_85a1: RTS()
+B16_85a2: LDA_ABS(0x0441)
+B16_85a5: CYCLE(6); SetStack(SP, 167); SetStack(SP - 1, 133); SP -= 2; goto B27_8207;
+B16_85a8: CMP_IMM(0x1D)
+B16_85aa: CYCLE(2); if (SR_Z) goto B16_85b1;
+B16_85ac: CMP_IMM(0x4B)
+B16_85ae: CYCLE(2); if (SR_Z) goto B16_85b1;
+B16_85b0: INX()
+B16_85b1: RTS()
+B16_85b2: LDA_ABS(0x0441)
+B16_85b5: CYCLE(6); SetStack(SP, 183); SetStack(SP - 1, 133); SP -= 2; goto B27_8207;
+B16_85b8: CMP_IMM(0x3E)
+B16_85ba: CYCLE(2); if (SR_Z) goto B16_85bd;
+B16_85bc: INX()
+B16_85bd: RTS()
+B16_85be: LDA_ABS(0x0441)
+B16_85c1: CYCLE(6); SetStack(SP, 195); SetStack(SP - 1, 133); SP -= 2; goto B27_8207;
+B16_85c4: CMP_IMM(0x2B)
+B16_85c6: CYCLE(2); if (SR_Z) goto B16_85c9;
+B16_85c8: INX()
+B16_85c9: RTS()
+B16_85ca: LDA_ABS(0x0441)
+B16_85cd: CYCLE(6); SetStack(SP, 207); SetStack(SP - 1, 133); SP -= 2; goto B27_8207;
+B16_85d0: CMP_IMM(0x20)
+B16_85d2: CYCLE(2); if (SR_Z) goto B16_85d9;
+B16_85d4: CMP_IMM(0x45)
+B16_85d6: CYCLE(2); if (SR_Z) goto B16_85d9;
+B16_85d8: INX()
+B16_85d9: RTS()
+B16_85da: LDA_ABS(0x0441)
+B16_85dd: CYCLE(6); SetStack(SP, 223); SetStack(SP - 1, 133); SP -= 2; goto B27_8207;
+B16_85e0: CMP_IMM(0x11)
+B16_85e2: CYCLE(2); if (SR_Z) goto B16_85e5;
+B16_85e5: RTS()
+B16_85e6: LDA_ABS(0x043b)
+B16_85e9: SEC()
+B16_85ea: SBC_IMM(0x07)
+B16_85ec: STA_ZP(0x3B)
+B16_85ee: ASL_A()
+B16_85ef: ADC_ZP(0x3B)
+B16_85f1: STA_ZP(0x3B)
+B16_85f3: LDA_ABS(0x043d)
+B16_85f6: SEC()
+B16_85f7: SBC_IMM(0x07)
+B16_85f9: CLC()
+B16_85fa: ADC_ZP(0x3B)
+B16_85fc: TAX()
+B16_85fd: RTS()
+B16_85fe: LDX_ABS(0x0612)
+B16_8601: RTS()
+B16_8602: LDA_ABS(0x0441)
+B16_8605: CYCLE(6); SetStack(SP, 7); SetStack(SP - 1, 134); SP -= 2; goto B27_8207;
+B16_8608: TAY()
+B16_8609: LDX_ABS_Y(0x86f4)
+B16_860c: CYCLE(6); SetStack(SP, 14); SetStack(SP - 1, 134); SP -= 2; goto B27_8211;
+B16_860f: RTS()
+B16_8610: LDA_ABS(0x05fb)
+B16_8613: EOR_IMM(0x0B)
+B16_8615: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 134); SP -= 2; goto B27_8207;
+B16_8618: LDX_IMM(0x04)
+B16_861a: CMP_ABS_X(0x8622)
+B16_861d: CYCLE(2); if (SR_Z) goto B16_8622;
+B16_861f: DEX()
+B16_8620: CYCLE(2); if (!SR_Z) goto B16_861a;
+B16_8622: RTS()
+B16_8627: LDA_ABS(0x00e2)
+B16_862a: AND_IMM(0x01)
+B16_862c: TAX()
+B16_862d: RTS()
+B16_862e: LDY_ABS(0x043d)
+B16_8631: LDX_ABS_Y(0x8635)
+B16_8634: RTS()
+B16_863b: LDA_ABS(0x043d)
+B16_863e: AND_IMM(0x0F)
+B16_8640: TAY()
+B16_8641: LDX_ABS_Y(0x8645)
+B16_8644: RTS()
+B16_864a: LDX_IMM(0x00)
+B16_864c: LDA_ABS(0x0612)
+B16_864f: CMP_IMM(0x03)
+B16_8651: CYCLE(2); if (SR_C) goto B16_8676;
+B16_8653: LDA_ABS(0x0444)
+B16_8656: CYCLE(6); SetStack(SP, 88); SetStack(SP - 1, 134); SP -= 2; goto B28_8138;
+B16_8659: CMP_IMM(0x80)
+B16_865b: CYCLE(2); if (!SR_C) goto B16_8676;
+B16_865d: LDA_ABS(0x05fb)
+B16_8660: EOR_IMM(0x0B)
+B16_8662: CYCLE(6); SetStack(SP, 100); SetStack(SP - 1, 134); SP -= 2; goto B30_c50c;
+B16_8665: LDY_IMM(0x05)
+B16_8667: LDA_IDY(0x34)
+B16_8669: CLC()
+B16_866a: ADC_IMM(0x00)
+B16_866c: CMP_IMM(0x80)
+B16_866e: CYCLE(2); if (!SR_C) goto B16_8672;
+B16_8672: STA_IDY(0x34)
+B16_8674: LDX_IMM(0x01)
+B16_8676: RTS()
+B16_8677: LDX_IMM(0x00)
+B16_8679: LDA_ABS(0x0444)
+B16_867c: CYCLE(6); SetStack(SP, 126); SetStack(SP - 1, 134); SP -= 2; goto B28_8138;
+B16_867f: CMP_IMM(0x80)
+B16_8681: CYCLE(2); if (!SR_C) goto B16_8689;
+B16_8683: LDA_ABS(0x0442)
+B16_8686: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 134); SP -= 2; goto B28_8150;
+B16_8689: RTS()
+B16_868a: LDA_ABS(0x0441)
+B16_868d: CYCLE(6); SetStack(SP, 143); SetStack(SP - 1, 134); SP -= 2; goto B27_8207;
+B16_8690: LDY_IMM(0x00)
+B16_8692: CMP_ABS_Y(0x86a6)
+B16_8695: CYCLE(2); if (SR_Z) goto B16_869d;
+B16_8697: INY()
+B16_8698: INY()
+B16_8699: CPY_IMM(0x0E)
+B16_869b: CYCLE(2); if (!SR_Z) goto B16_8692;
+B16_869d: LDX_ABS_Y(0x86a7)
+B16_86a0: LDA_IMM(0x01)
+B16_86a2: CYCLE(6); SetStack(SP, 164); SetStack(SP - 1, 134); SP -= 2; goto B27_8211;
+B16_86a5: RTS()
+B16_86b6: LDX_IMM(0x00)
+B16_86b8: LDA_ABS(0x043c)
+B16_86bb: AND_IMM(0x7F)
+B16_86bd: CMP_ABS_X(0x86c8)
+B16_86c0: CYCLE(2); if (SR_Z) goto B16_86c7;
+B16_86c2: INX()
+B16_86c3: CPX_IMM(0x04)
+B16_86c5: CYCLE(2); if (!SR_Z) goto B16_86bd;
+B16_86c7: RTS()
+B16_86cc: LDA_ABS(0x0441)
+B16_86cf: CYCLE(6); SetStack(SP, 209); SetStack(SP - 1, 134); SP -= 2; goto B27_8207;
+B16_86d2: LDX_IMM(0x00)
+B16_86d4: CMP_ABS_X(0x86e3)
+B16_86d7: CYCLE(2); if (SR_Z) goto B16_86de;
+B16_86d9: INX()
+B16_86da: CPX_IMM(0x11)
+B16_86dc: CYCLE(2); if (!SR_Z) goto B16_86d4;
+B16_86de: CPX_IMM(0x11)
+B16_86e0: CYCLE(3); PC = 0x8211; goto B27_8211;
+B16_87e0: LDA_IMM(0x40)
+B16_87e2: STA_ABS(0x052a)
+B16_87e5: RTS()
+B16_87e6: LDA_IMM(0x00)
+B16_87e8: STA_ABS(0x052a)
+B16_87eb: RTS()
+B16_87ec: LDA_IMM(0x40)
+B16_87ee: EOR_ABS(0x052a)
+B16_87f1: STA_ABS(0x052a)
+B16_87f4: RTS()
+B16_87f5: LDY_ZP(0x3A)
+B16_87f7: INC_ZP(0x3A)
+B16_87f9: LDA_IDY(0x5D)
+B16_87fb: STA_ABS(0x052b)
+B16_87fe: RTS()
+B16_87ff: LDY_ZP(0x3A)
+B16_8801: INC_ZP(0x3A)
+B16_8803: LDA_IDY(0x5D)
+B16_8805: STA_ABS(0x052c)
+B16_8808: RTS()
+B16_8809: LDY_ZP(0x3A)
+B16_880b: LDA_IDY(0x5D)
+B16_880d: STA_ABS(0x0530)
+B16_8810: INY()
+B16_8811: LDA_IDY(0x5D)
+B16_8813: STA_ABS(0x0531)
+B16_8816: INY()
+B16_8817: STY_ZP(0x3A)
+B16_8819: RTS()
+B16_881a: LDX_ABS(0x0522)
+B16_881d: LDA_ZP(0x3A)
+B16_881f: TAY()
+B16_8820: CLC()
+B16_8821: ADC_IMM(0x02)
+B16_8823: ADC_ZP(0x5D)
+B16_8825: STA_ABS_X(0x051a)
+B16_8828: LDA_ZP(0x5E)
+B16_882a: ADC_IMM(0x00)
+B16_882c: STA_ABS_X(0x051b)
+B16_882f: INX()
+B16_8830: INX()
+B16_8831: STX_ABS(0x0522)
+B16_8834: CYCLE(3); PC = 0x80f6; goto B22_80f6;
+B16_8837: LDX_ABS(0x0522)
+B16_883a: DEX()
+B16_883b: DEX()
+B16_883c: STX_ABS(0x0522)
+B16_883f: CYCLE(2); if (!SR_N) goto B16_8844;
+B16_8841: CYCLE(3); PC = 0x80cf; goto B22_80cf;
+B16_8844: LDA_ABS_X(0x051a)
+B16_8847: STA_ZP(0x5D)
+B16_8849: LDA_ABS_X(0x051b)
+B16_884c: STA_ZP(0x5E)
+B16_884e: LDA_IMM(0x00)
+B16_8850: STA_ZP(0x3A)
+B16_8852: RTS()
+B16_8853: LDY_ZP(0x3A)
+B16_8855: INC_ZP(0x3A)
+B16_8857: LDA_IDY(0x5D)
+B16_8859: STA_ABS(0x052d)
+B16_885c: RTS()
+B16_885d: LDY_ZP(0x3A)
+B16_885f: INC_ZP(0x3A)
+B16_8861: LDA_IDY(0x5D)
+B16_8863: CYCLE(6); SetStack(SP, 101); SetStack(SP - 1, 136); SP -= 2; goto B28_886a;
+B16_8866: STX_ABS(0x052a)
+B16_8869: RTS()
+B16_886a: CYCLE(6); SetStack(SP, 108); SetStack(SP - 1, 136); SP -= 2; goto B30_c509;
+B16_8877: LDA_IMM(0x00)
+B16_8879: STA_ZP(0x3B)
+B16_887b: LDA_ABS(0x0441)
+B16_887e: CYCLE(6); SetStack(SP, 128); SetStack(SP - 1, 136); SP -= 2; goto B30_c50c;
+B16_8881: LDA_ABS(0x0638)
+B16_8884: CYCLE(6); SetStack(SP, 134); SetStack(SP - 1, 136); SP -= 2; goto B30_c536;
+B16_8887: TYA()
+B16_8888: LDY_IMM(0x08)
+B16_888a: SEC()
+B16_888b: SBC_IDY(0x34)
+B16_888d: CYCLE(2); if (SR_C) goto B16_8891;
+B16_888f: INC_ZP(0x3B)
+B16_8891: TXA()
+B16_8892: LDY_IMM(0x06)
+B16_8894: SEC()
+B16_8895: SBC_IDY(0x34)
+B16_8897: CYCLE(2); if (SR_C) goto B16_889d;
+B16_8899: INC_ZP(0x3B)
+B16_889b: INC_ZP(0x3B)
+B16_889d: LDX_IMM(0x40)
+B16_889f: LDA_ZP(0x3B)
+B16_88a1: CYCLE(2); if (SR_Z) goto B16_88a9;
+B16_88a3: CMP_IMM(0x03)
+B16_88a5: CYCLE(2); if (SR_Z) goto B16_88a9;
+B16_88a7: LDX_IMM(0x00)
+B16_88a9: RTS()
+B16_88aa: LDX_IMM(0x00)
+B16_88ac: LDA_ABS(0x0616)
+B16_88af: LSR_A()
+B16_88b0: CYCLE(2); if (!SR_C) goto B16_88b4;
+B16_88b2: LDX_IMM(0x40)
+B16_88b4: RTS()
+B16_88b5: LDX_IMM(0x00)
+B16_88b7: LDA_ABS(0x05fb)
+B16_88ba: CYCLE(2); if (SR_Z) goto B16_88be;
+B16_88bc: LDX_IMM(0x40)
+B16_88be: RTS()
+B16_88bf: LDA_ABS(0x0441)
+B16_88c2: CYCLE(6); SetStack(SP, 196); SetStack(SP - 1, 136); SP -= 2; goto B30_c50c;
+B16_88c5: LDY_IMM(0x08)
+B16_88c7: LDA_IDY(0x34)
+B16_88c9: LDX_ABS(0x05fb)
+B16_88cc: CYCLE(2); if (SR_Z) goto B16_88d0;
+B16_88ce: EOR_IMM(0xFF)
+B16_88d0: LDX_IMM(0x00)
+B16_88d2: CMP_IMM(0x80)
+B16_88d4: CYCLE(2); if (SR_C) goto B16_88d8;
+B16_88d6: LDX_IMM(0x40)
+B16_88d8: RTS()
+B16_88d9: LDX_IMM(0x00)
+B16_88db: BIT_ABS(0x062c)
+B16_88de: CYCLE(2); if (!SR_N) goto B16_88e2;
+B16_88e0: LDX_IMM(0x40)
+B16_88e2: RTS()
+B16_88e3: LDY_ZP(0x3A)
+B16_88e5: INC_ZP(0x3A)
+B16_88e7: LDA_IDY(0x5D)
+B16_88e9: STA_ABS(0x0539)
+B16_88ec: RTS()
+B16_88ed: LDY_ZP(0x3A)
+B16_88ef: LDA_IDY(0x5D)
+B16_88f1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 136); SP -= 2; goto B30_c509;
+B16_890d: LDA_ABS(0x05fb)
+B16_8910: CYCLE(2); if (!SR_Z) goto B16_8938;
+B16_8912: LDA_ABS(0x002b)
+B16_8915: CMP_IMM(0x05)
+B16_8917: CYCLE(2); if (!SR_Z) goto B16_8938;
+B16_8919: LDX_ABS(0x0446)
+B16_891c: CYCLE(2); if (SR_Z) goto B16_893a;
+B16_891e: LDX_IMM(0x01)
+B16_8920: LDA_ABS(0x043c)
+B16_8923: CMP_IMM(0x03)
+B16_8925: CYCLE(2); if (SR_Z) goto B16_893a;
+B16_8927: LDX_ABS(0x0446)
+B16_892a: CPX_IMM(0x04)
+B16_892c: CYCLE(2); if (SR_C) goto B16_8938;
+B16_892e: LDA_ABS(0x043c)
+B16_8931: CYCLE(2); if (SR_Z) goto B16_8938;
+B16_8933: INC_ABS(0x0446)
+B16_8936: CYCLE(2); if (!SR_Z) goto B16_893a;
+B16_8938: LDX_IMM(0x00)
+B16_893a: CYCLE(3); PC = 0x812f; goto B28_812f;
+B16_8942: LDX_IMM(0x00)
+B16_8944: LDA_ABS(0x05fb)
+B16_8947: CYCLE(2); if (!SR_Z) goto B16_898e;
+B16_8949: LDA_IMM(0x01)
+B16_894b: PHA()
+B16_894c: CYCLE(6); SetStack(SP, 78); SetStack(SP - 1, 137); SP -= 2; goto B30_c50c;
+B16_894f: LDY_IMM(0x00)
+B16_8951: LDA_IDY(0x34)
+B16_8953: TAY()
+B16_8954: LDX_IMM(0x00)
+B16_8956: PLA()
+B16_8957: CPY_IMM(0x1A)
+B16_8959: CYCLE(2); if (SR_Z) goto B16_8964;
+B16_895b: CLC()
+B16_895c: ADC_IMM(0x01)
+B16_895e: CMP_IMM(0x0B)
+B16_8960: CYCLE(2); if (!SR_Z) goto B16_894b;
+B16_8962: CYCLE(2); if (SR_Z) goto B16_898e;
+B16_8964: LDA_ABS(0x043c)
+B16_8967: CMP_IMM(0x03)
+B16_8969: CYCLE(2); if (!SR_C) goto B16_898e;
+B16_896b: BIT_ABS(0x0449)
+B16_896e: CYCLE(2); if (SR_N) goto B16_898e;
+B16_8970: INC_ABS(0x0449)
+B16_8973: LDA_ABS(0x0449)
+B16_8976: CMP_IMM(0x02)
+B16_8978: CYCLE(2); if (!SR_Z) goto B16_898e;
+B16_897a: LDA_IMM(0x00)
+B16_897c: LDY_ABS(0x00e2)
+B16_897f: CPY_IMM(0x20)
+B16_8981: CYCLE(2); if (SR_C) goto B16_898b;
+B16_8983: LDA_IMM(0x1E)
+B16_8985: STA_ABS(0x044a)
+B16_8988: LDA_IMM(0x80)
+B16_898a: INX()
+B16_898b: STA_ABS(0x0449)
+B16_898e: CYCLE(3); PC = 0x812f; goto B28_812f;
+B16_8991: SEC()
+B16_8992: SBC_IMM(0xF0)
+B16_8994: CYCLE(6); SetStack(SP, 150); SetStack(SP - 1, 137); SP -= 2; goto B30_c509;
+B16_8999: LDA_IMM(0xFF)
+B16_899b: RTS()
+B16_899c: SEC()
+B16_899d: SBC_IMM(0xF0)
+B16_899f: CYCLE(6); SetStack(SP, 161); SetStack(SP - 1, 137); SP -= 2; goto B30_c509;
+B16_89a4: LDA_IMM(0xFF)
+B16_89a6: RTS()
+B16_89a7: SEC()
+B16_89a8: SBC_IMM(0xF0)
+B16_89aa: CYCLE(6); SetStack(SP, 172); SetStack(SP - 1, 137); SP -= 2; goto B30_c509;
+B16_89b1: LDA_IMM(0xFF)
+B16_89b3: RTS()
+
+
+
+// ===== Bank 19 (prg_bank_19.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 19 =====
+// ; ROM: 0x026010-0x02800F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=877 data=5021 unaccessed=2294
+B19_9000: LDA_IMM(0x00)
+B19_9002: STA_ABS(0x0490)
+B19_9005: LDA_IMM(0x02)
+B19_9007: STA_ABS(0x0491)
+B19_900a: STA_ABS(0x0087)
+B19_900d: LDA_IMM(0x67)
+B19_900f: STA_ZP(0x88)
+B19_9011: LDA_IMM(0xB4)
+B19_9013: STA_ZP(0x89)
+B19_9015: LDA_IMM(0x00)
+B19_9017: STA_ABS(0x05fb)
+B19_901a: LDA_IMM(0x09)
+B19_901c: STA_ABS(0x0441)
+B19_901f: LDA_IMM(0x14)
+B19_9021: STA_ABS(0x0442)
+B19_9024: LDA_IMM(0x80)
+B19_9026: STA_ABS(0x063f)
+B19_9029: LDA_IMM(0x00)
+B19_902b: STA_ZP(0x8A)
+B19_902d: LDY_ZP(0x8A)
+B19_902f: LDA_IDY(0x88)
+B19_9031: CMP_IMM(0xE0)
+B19_9033: CYCLE(2); if (!SR_C) goto B19_903d;
+B19_9035: INC_ZP(0x8A)
+B19_9037: CYCLE(6); SetStack(SP, 57); SetStack(SP - 1, 144); SP -= 2; PC = 0xb15a; /* UNRES JSR $b15a */ goto LABEL_END;
+B19_903a: PC = 0xb02d; /* UNRES JMP $b02d */ goto LABEL_END;
+B19_903d: CYCLE(6); SetStack(SP, 63); SetStack(SP - 1, 144); SP -= 2; PC = 0xb043; /* UNRES JSR $b043 */ goto LABEL_END;
+B19_9040: PC = 0xb02d; /* UNRES JMP $b02d */ goto LABEL_END;
+B19_9043: BIT_ABS(0x063f)
+B19_9046: CYCLE(2); if (!SR_V) goto B19_904b;
+B19_9048: PC = 0xb0af; /* UNRES JMP $b0af */ goto LABEL_END;
+B19_904b: LDA_IMM(0x01)
+B19_904d: CYCLE(6); SetStack(SP, 79); SetStack(SP - 1, 144); SP -= 2; goto B30_c515;
+B19_9050: LDA_ABS(0x0515)
+B19_9053: CYCLE(2); if (!SR_Z) goto B19_904b;
+B19_9055: LDA_IMM(0x01)
+B19_9057: STA_ABS(0x0515)
+B19_905a: LDX_IMM(0x47)
+B19_905c: LDA_IMM(0x00)
+B19_905e: STA_ABS_X(0x04a5)
+B19_9061: DEX()
+B19_9062: CYCLE(2); if (!SR_N) goto B19_905e;
+B19_9064: LDA_IMM(0x20)
+B19_9066: STA_ABS(0x04a5)
+B19_9069: STA_ABS(0x04c8)
+B19_906c: INX()
+B19_906d: STX_ZP(0x3A)
+B19_906f: LDA_ZP(0x8B)
+B19_9071: AND_IMM(0x07)
+B19_9073: ORA_IMM(0x88)
+B19_9075: LSR_A()
+B19_9076: ROR_ZP(0x3A)
+B19_9078: LSR_A()
+B19_9079: ROR_ZP(0x3A)
+B19_907b: STA_ABS(0x04a7)
+B19_907e: STA_ABS(0x04ca)
+B19_9081: LDA_ZP(0x3A)
+B19_9083: STA_ABS(0x04a6)
+B19_9086: CLC()
+B19_9087: ADC_IMM(0x20)
+B19_9089: STA_ABS(0x04c9)
+B19_908c: LDA_ZP(0x8B)
+B19_908e: LSR_A()
+B19_908f: LSR_A()
+B19_9090: LSR_A()
+B19_9091: TAX()
+B19_9092: LDY_ZP(0x8A)
+B19_9094: LDA_IDY(0x88)
+B19_9096: CMP_IMM(0xE0)
+B19_9098: CYCLE(2); if (SR_C) goto B19_90a9;
+B19_909a: CYCLE(6); SetStack(SP, 156); SetStack(SP - 1, 144); SP -= 2; goto B30_c524;
+B19_909d: STA_ABS_X(0x04cb)
+B19_90a0: TYA()
+B19_90a1: STA_ABS_X(0x04a8)
+B19_90a4: INX()
+B19_90a5: INC_ZP(0x8A)
+B19_90a7: CYCLE(2); if (!SR_Z) goto B19_9092;
+B19_90a9: LDA_IMM(0x80)
+B19_90ab: STA_ABS(0x0515)
+B19_90ae: RTS()
+B19_90af: LDY_ZP(0x8A)
+B19_90b1: LDA_IDY(0x88)
+B19_90b3: CMP_IMM(0xE0)
+B19_90b5: CYCLE(2); if (!SR_C) goto B19_90b8;
+B19_90b7: RTS()
+B19_90b8: INC_ZP(0x8A)
+B19_90ba: PHA()
+B19_90bb: LDA_IMM(0x01)
+B19_90bd: CYCLE(6); SetStack(SP, 191); SetStack(SP - 1, 144); SP -= 2; goto B30_c515;
+B19_90c0: LDA_ABS(0x0515)
+B19_90c3: CYCLE(2); if (!SR_Z) goto B19_90bb;
+B19_90c5: LDA_IMM(0x01)
+B19_90c7: STA_ABS(0x0515)
+B19_90ca: LDX_IMM(0x00)
+B19_90cc: STX_ABS(0x04ad)
+B19_90cf: STX_ZP(0x3A)
+B19_90d1: INX()
+B19_90d2: STX_ABS(0x04a5)
+B19_90d5: STX_ABS(0x04a9)
+B19_90d8: LDA_ZP(0x8B)
+B19_90da: AND_IMM(0x07)
+B19_90dc: ORA_IMM(0x88)
+B19_90de: LSR_A()
+B19_90df: ROR_ZP(0x3A)
+B19_90e1: LSR_A()
+B19_90e2: ROR_ZP(0x3A)
+B19_90e4: STA_ABS(0x04a7)
+B19_90e7: STA_ABS(0x04ab)
+B19_90ea: LDA_ZP(0x8B)
+B19_90ec: LSR_A()
+B19_90ed: LSR_A()
+B19_90ee: LSR_A()
+B19_90ef: CLC()
+B19_90f0: ADC_ZP(0x3A)
+B19_90f2: STA_ABS(0x04a6)
+B19_90f5: CLC()
+B19_90f6: ADC_IMM(0x20)
+B19_90f8: STA_ABS(0x04aa)
+B19_90fb: PLA()
+B19_90fc: CYCLE(6); SetStack(SP, 254); SetStack(SP - 1, 144); SP -= 2; goto B30_c524;
+B19_90ff: STA_ABS(0x04ac)
+B19_9102: STY_ABS(0x04a8)
+B19_9105: LDA_IMM(0x80)
+B19_9107: STA_ABS(0x0515)
+B19_910a: LDA_IMM(0x00)
+B19_910c: PHA()
+B19_910d: CYCLE(6); SetStack(SP, 15); SetStack(SP - 1, 145); SP -= 2; PC = 0xb127; /* UNRES JSR $b127 */ goto LABEL_END;
+B19_9110: LDA_IMM(0x01)
+B19_9112: CYCLE(6); SetStack(SP, 20); SetStack(SP - 1, 145); SP -= 2; goto B30_c515;
+B19_9115: PLA()
+B19_9116: CLC()
+B19_9117: ADC_IMM(0x02)
+B19_9119: CMP_IMM(0x08)
+B19_911b: CYCLE(2); if (!SR_Z) goto B19_910c;
+B19_911d: LDA_ZP(0x8B)
+B19_911f: CLC()
+B19_9120: ADC_IMM(0x08)
+B19_9122: STA_ZP(0x8B)
+B19_9124: PC = 0xb0af; /* UNRES JMP $b0af */ goto LABEL_END;
+B19_9127: STA_ZP(0x3A)
+B19_9129: LDA_IMM(0x01)
+B19_912b: STA_ABS(0x02f9)
+B19_912e: STA_ABS(0x02fd)
+B19_9131: LDA_IMM(0x00)
+B19_9133: STA_ABS(0x02fa)
+B19_9136: STA_ABS(0x02fe)
+B19_9139: LDA_ZP(0x8B)
+B19_913b: AND_IMM(0x07)
+B19_913d: ASL_A()
+B19_913e: ASL_A()
+B19_913f: ASL_A()
+B19_9140: ASL_A()
+B19_9141: CLC()
+B19_9142: ADC_IMM(0x7C)
+B19_9144: STA_ABS(0x02f8)
+B19_9147: ADC_IMM(0x08)
+B19_9149: STA_ABS(0x02fc)
+B19_914c: LDA_ZP(0x8B)
+B19_914e: AND_IMM(0xF8)
+B19_9150: CLC()
+B19_9151: ADC_ZP(0x3A)
+B19_9153: STA_ABS(0x02fb)
+B19_9156: STA_ABS(0x02ff)
+B19_9159: RTS()
+B19_915a: CYCLE(6); SetStack(SP, 92); SetStack(SP - 1, 145); SP -= 2; PC = 0xb160; /* UNRES JSR $b160 */ goto LABEL_END;
+B19_915d: PC = 0xb339; /* UNRES JMP $b339 */ goto LABEL_END;
+B19_9160: SEC()
+B19_9161: SBC_IMM(0xE0)
+B19_9163: CYCLE(6); SetStack(SP, 101); SetStack(SP - 1, 145); SP -= 2; goto B30_c509;
+B19_91a6: CYCLE(6); SetStack(SP, 168); SetStack(SP - 1, 145); SP -= 2; goto B30_c52d;
+B19_91a9: LDY_ZP(0x8A)
+B19_91ab: INC_ZP(0x8A)
+B19_91ad: LDA_IDY(0x88)
+B19_91af: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 145); SP -= 2; goto B30_c54e;
+B19_91b2: LDA_IMM(0x01)
+B19_91b4: CYCLE(6); SetStack(SP, 182); SetStack(SP - 1, 145); SP -= 2; goto B30_c515;
+B19_91b7: LDA_ABS(0x0516)
+B19_91ba: CYCLE(2); if (!SR_Z) goto B19_91b2;
+B19_91bc: LDA_IMM(0x00)
+B19_91be: STA_ZP(0x11)
+B19_91c0: STA_ZP(0x12)
+B19_91c2: LDA_IMM(0x00)
+B19_91c4: STA_ZP(0x0D)
+B19_91c6: STA_ZP(0x0E)
+B19_91c8: LDA_IMM(0x00)
+B19_91ca: STA_ABS(0x05d2)
+B19_91cd: TAX()
+B19_91ce: LDA_IMM(0xFF)
+B19_91d0: STA_ABS_X(0x0558)
+B19_91d3: STA_ABS_X(0x0557)
+B19_91d6: TXA()
+B19_91d7: CLC()
+B19_91d8: ADC_IMM(0x15)
+B19_91da: TAX()
+B19_91db: CPX_IMM(0x7E)
+B19_91dd: CYCLE(2); if (!SR_Z) goto B19_91ce;
+B19_91df: RTS()
+B19_91e0: LDY_ZP(0x8A)
+B19_91e2: INC_ZP(0x8A)
+B19_91e4: LDA_IDY(0x88)
+B19_91e6: PHA()
+B19_91e7: LDA_IMM(0x01)
+B19_91e9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 145); SP -= 2; goto B30_c515;
+B19_91ec: PLA()
+B19_91ed: SEC()
+B19_91ee: SBC_IMM(0x01)
+B19_91f0: CYCLE(2); if (!SR_Z) goto B19_91e6;
+B19_91f2: RTS()
+B19_91f3: LDY_ZP(0x8A)
+B19_91f5: LDA_IDY(0x88)
+B19_91f7: TAX()
+B19_91f8: INY()
+B19_91f9: LDA_IDY(0x88)
+B19_91fb: PHA()
+B19_91fc: INY()
+B19_91fd: LDA_IDY(0x88)
+B19_91ff: INY()
+B19_9200: STY_ZP(0x8A)
+B19_9202: CMP_IMM(0x0B)
+B19_9204: CYCLE(2); if (SR_C) goto B19_920c;
+B19_9206: STX_ABS(0x002a)
+B19_9209: PC = 0xb20f; /* UNRES JMP $b20f */ goto LABEL_END;
+B19_920c: STX_ABS(0x002b)
+B19_920f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 146); SP -= 2; goto B30_c50c;
+B19_9212: PLA()
+B19_9213: LDY_IMM(0x00)
+B19_9215: STA_IDY(0x34)
+B19_9217: RTS()
+B19_9218: PC = 0xb349; /* UNRES JMP $b349 */ goto LABEL_END;
+B19_921b: LDY_ZP(0x8A)
+B19_921d: INC_ZP(0x8A)
+B19_921f: LDA_IDY(0x88)
+B19_9221: STA_ZP(0x8B)
+B19_9223: RTS()
+B19_9224: LDY_ZP(0x8A)
+B19_9226: INC_ZP(0x8A)
+B19_9228: LDA_IDY(0x88)
+B19_922a: CYCLE(6); SetStack(SP, 44); SetStack(SP - 1, 146); SP -= 2; goto B30_c509;
+B19_9235: LDA_ABS(0x063f)
+B19_9238: ORA_IMM(0x40)
+B19_923a: STA_ABS(0x063f)
+B19_923d: RTS()
+B19_923e: LDA_IMM(0x0F)
+B19_9240: STA_ABS(0x0472)
+B19_9243: PC = 0xb2f7; /* UNRES JMP $b2f7 */ goto LABEL_END;
+B19_92a6: LDA_IMM(0x30)
+B19_92a8: PHA()
+B19_92a9: LDA_IMM(0x02)
+B19_92ab: CYCLE(6); SetStack(SP, 173); SetStack(SP - 1, 146); SP -= 2; goto B30_c515;
+B19_92ae: PLA()
+B19_92af: STA_ZP(0x3A)
+B19_92b1: LDX_IMM(0x00)
+B19_92b3: TXA()
+B19_92b4: AND_IMM(0x03)
+B19_92b6: CYCLE(2); if (SR_Z) goto B19_92c8;
+B19_92b8: LDA_ABS_X(0x046f)
+B19_92bb: AND_IMM(0x0F)
+B19_92bd: ORA_ZP(0x3A)
+B19_92bf: LDY_ZP(0x3A)
+B19_92c1: CYCLE(2); if (!SR_Z) goto B19_92c5;
+B19_92c3: LDA_IMM(0x0F)
+B19_92c5: STA_ABS_X(0x046f)
+B19_92c8: INX()
+B19_92c9: CPX_IMM(0x20)
+B19_92cb: CYCLE(2); if (!SR_Z) goto B19_92b3;
+B19_92cd: CYCLE(6); SetStack(SP, 207); SetStack(SP - 1, 146); SP -= 2; goto B30_c533;
+B19_92d3: LDA_ZP(0x3A)
+B19_92d5: SEC()
+B19_92d6: SBC_IMM(0x10)
+B19_92d8: CYCLE(2); if (!SR_N) goto B19_92a8;
+B19_92da: RTS()
+B19_92db: LDA_IMM(0x10)
+B19_92dd: PHA()
+B19_92de: LDA_IMM(0x02)
+B19_92e0: CYCLE(6); SetStack(SP, 226); SetStack(SP - 1, 146); SP -= 2; goto B30_c515;
+B19_92e3: PLA()
+B19_92e4: PHA()
+B19_92e5: STA_ABS(0x0472)
+B19_92e8: CYCLE(6); SetStack(SP, 234); SetStack(SP - 1, 146); SP -= 2; goto B30_c533;
+B19_92ee: PLA()
+B19_92ef: CLC()
+B19_92f0: ADC_IMM(0x10)
+B19_92f2: CMP_IMM(0x40)
+B19_92f4: CYCLE(2); if (!SR_Z) goto B19_92dd;
+B19_92f6: RTS()
+B19_92f7: LDX_IMM(0x00)
+B19_92f9: STA_ABS_X(0x046f)
+B19_92fc: INX()
+B19_92fd: INX()
+B19_92fe: INX()
+B19_92ff: INX()
+B19_9300: CPX_IMM(0x20)
+B19_9302: CYCLE(2); if (!SR_Z) goto B19_92f9;
+B19_9304: CYCLE(6); SetStack(SP, 6); SetStack(SP - 1, 147); SP -= 2; goto B30_c533;
+B19_930a: LDA_IMM(0x01)
+B19_930c: CYCLE(6); SetStack(SP, 14); SetStack(SP - 1, 147); SP -= 2; goto B30_c515;
+B19_930f: RTS()
+B19_9333: LDA_IMM(0x80)
+B19_9335: STA_ABS(0x0515)
+B19_9338: RTS()
+B19_9339: LDA_ZP(0x8A)
+B19_933b: CLC()
+B19_933c: ADC_ZP(0x88)
+B19_933e: STA_ZP(0x88)
+B19_9340: CYCLE(2); if (!SR_C) goto B19_9344;
+B19_9342: INC_ZP(0x89)
+B19_9344: LDA_IMM(0x00)
+B19_9346: STA_ZP(0x8A)
+B19_9348: RTS()
+B19_9349: CYCLE(6); SetStack(SP, 75); SetStack(SP - 1, 147); SP -= 2; PC = 0xb2a6; /* UNRES JSR $b2a6 */ goto LABEL_END;
+B19_934c: LDA_IMM(0x01)
+B19_934e: STA_ABS(0x046b)
+B19_9351: LDA_IMM(0x00)
+B19_9353: STA_ZP(0x4B)
+B19_9355: STA_ABS(0x0517)
+B19_9358: STA_ABS(0x053c)
+B19_935b: LDA_IMM(0x80)
+B19_935d: STA_ABS(0x053a)
+B19_9360: LDA_IMM(0x24)
+B19_9362: STA_ZP(0x4A)
+B19_9364: LDA_IMM(0x20)
+B19_9366: CYCLE(6); SetStack(SP, 104); SetStack(SP - 1, 147); SP -= 2; PC = 0xb406; /* UNRES JSR $b406 */ goto LABEL_END;
+B19_9369: LDA_IMM(0x28)
+B19_936b: CYCLE(6); SetStack(SP, 109); SetStack(SP - 1, 147); SP -= 2; PC = 0xb406; /* UNRES JSR $b406 */ goto LABEL_END;
+B19_936e: LDA_ZP(0x20)
+B19_9370: AND_IMM(0xFC)
+B19_9372: STA_ZP(0x20)
+B19_9374: LDX_IMM(0x10)
+B19_9376: LDA_IMM(0x15)
+B19_9378: CYCLE(6); SetStack(SP, 122); SetStack(SP - 1, 147); SP -= 2; goto B30_c530;
+B19_937b: LDX_IMM(0x00)
+B19_937d: LDA_IMM(0x16)
+B19_937f: CYCLE(6); SetStack(SP, 129); SetStack(SP - 1, 147); SP -= 2; goto B30_c530;
+B19_9382: CYCLE(6); SetStack(SP, 132); SetStack(SP - 1, 147); SP -= 2; goto B30_c533;
+B19_9388: LDX_IMM(0x03)
+B19_938a: LDA_ABS_X(0xb402)
+B19_938d: STA_ABS_X(0x0494)
+B19_9390: DEX()
+B19_9391: CYCLE(2); if (!SR_N) goto B19_938a;
+B19_9393: LDA_IMM(0x7C)
+B19_9395: STA_ABS(0x0490)
+B19_9398: LDA_IMM(0x7E)
+B19_939a: STA_ABS(0x0491)
+B19_939d: LDA_IMM(0xFF)
+B19_939f: STA_ABS(0x0557)
+B19_93a2: STA_ABS(0x0558)
+B19_93a5: STA_ABS(0x0541)
+B19_93a8: LDA_IMM(0xFF)
+B19_93aa: STA_ABS(0x054f)
+B19_93ad: LDA_IMM(0xDD)
+B19_93af: STA_ABS(0x0553)
+B19_93b2: LDA_IMM(0x80)
+B19_93b4: STA_ABS(0x0547)
+B19_93b7: LDA_IMM(0x31)
+B19_93b9: STA_ABS(0x0559)
+B19_93bc: CYCLE(6); SetStack(SP, 190); SetStack(SP - 1, 147); SP -= 2; goto B30_c533;
+B19_93c2: LDA_IMM(0x60)
+B19_93c4: CYCLE(6); SetStack(SP, 198); SetStack(SP - 1, 147); SP -= 2; goto B30_c515;
+B19_93c7: LDA_IMM(0x00)
+B19_93c9: STA_ZP(0x8A)
+B19_93cb: LDA_IMM(0x01)
+B19_93cd: CYCLE(6); SetStack(SP, 207); SetStack(SP - 1, 147); SP -= 2; goto B30_c515;
+B19_93d0: LDA_ZP(0x8A)
+B19_93d2: CLC()
+B19_93d3: ADC_IMM(0x60)
+B19_93d5: STA_ZP(0x8A)
+B19_93d7: CYCLE(2); if (!SR_C) goto B19_93cb;
+B19_93d9: DEC_ABS(0x054f)
+B19_93dc: DEC_ZP(0x4A)
+B19_93de: CYCLE(2); if (SR_Z) goto B19_93fa;
+B19_93e0: LDX_IMM(0x06)
+B19_93e2: LDA_ZP(0x4A)
+B19_93e4: CMP_IMM(0x14)
+B19_93e6: CYCLE(2); if (SR_Z) goto B19_93ee;
+B19_93e8: LDX_IMM(0x16)
+B19_93ea: CMP_IMM(0x08)
+B19_93ec: CYCLE(2); if (!SR_Z) goto B19_93cb;
+B19_93ee: STX_ABS(0x0470)
+B19_93f1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 147); SP -= 2; goto B30_c533;
+B19_93f7: PC = 0xb3cb; /* UNRES JMP $b3cb */ goto LABEL_END;
+B19_93fa: LDA_IMM(0x01)
+B19_93fc: CYCLE(6); SetStack(SP, 254); SetStack(SP - 1, 147); SP -= 2; goto B30_c515;
+B19_93ff: PC = 0xb3fa; /* UNRES JMP $b3fa */ goto LABEL_END;
+B19_9406: PHA()
+B19_9407: LDX_IMM(0x00)
+B19_9409: STX_ZP(0x8B)
+B19_940b: STX_ZP(0x8A)
+B19_940d: LDA_IMM(0x01)
+B19_940f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 148); SP -= 2; goto B30_c515;
+B19_9412: LDA_ABS(0x0515)
+B19_9415: CYCLE(2); if (!SR_Z) goto B19_940d;
+B19_9417: LDA_IMM(0x01)
+B19_9419: STA_ABS(0x0515)
+B19_941c: LDX_IMM(0x24)
+B19_941e: LDA_IMM(0x00)
+B19_9420: STA_ABS_X(0x04a5)
+B19_9423: DEX()
+B19_9424: CYCLE(2); if (!SR_N) goto B19_9420;
+B19_9426: LDA_IMM(0x20)
+B19_9428: STA_ABS(0x04a5)
+B19_942b: LDX_ZP(0x8A)
+B19_942d: STX_ABS(0x04a6)
+B19_9430: PLA()
+B19_9431: PHA()
+B19_9432: ORA_ZP(0x8B)
+B19_9434: STA_ABS(0x04a7)
+B19_9437: LDA_IMM(0x80)
+B19_9439: STA_ABS(0x0515)
+B19_943c: TXA()
+B19_943d: CLC()
+B19_943e: ADC_IMM(0x20)
+B19_9440: STA_ZP(0x8A)
+B19_9442: LDA_ZP(0x8B)
+B19_9444: ADC_IMM(0x00)
+B19_9446: STA_ZP(0x8B)
+B19_9448: CMP_IMM(0x04)
+B19_944a: CYCLE(2); if (!SR_C) goto B19_940d;
+B19_944c: PLA()
+B19_944d: RTS()
+
+
+
+// ===== Bank 20 (prg_bank_20.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 20 =====
+// ; ROM: 0x028010-0x02A00F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=2002 data=6070 unaccessed=120
+B20_8000: CYCLE(3); PC = 0x800f; goto B26_800f;
+B20_8003: CYCLE(3); PC = 0x84dc; goto B24_84dc;
+B20_8006: CYCLE(3); PC = 0x83d9; goto B24_83d9;
+B20_8009: CYCLE(3); PC = 0x8624; goto B26_8624;
+B20_800c: CYCLE(3); PC = 0x8796; goto B28_8796;
+B20_800f: LDA_ABS(0x053a)
+B20_8012: CYCLE(2); if (SR_Z) goto B20_8083;
+B20_8014: CYCLE(2); if (!SR_N) goto B20_8067;
+B20_8016: LDX_IMM(0x01)
+B20_8018: STX_ABS(0x053a)
+B20_801b: LDA_ABS(0x053c)
+B20_801e: LDX_IMM(0x68)
+B20_8020: STX_ZP(0x4C)
+B20_8022: LDX_IMM(0x89)
+B20_8024: STX_ZP(0x4D)
+B20_8026: ASL_A()
+B20_8027: CYCLE(2); if (!SR_C) goto B20_802b;
+B20_8029: INC_ZP(0x4D)
+B20_802b: TAY()
+B20_802c: LDA_IDY(0x4C)
+B20_802e: TAX()
+B20_802f: INY()
+B20_8030: LDA_IDY(0x4C)
+B20_8032: STX_ZP(0x4C)
+B20_8034: STA_ZP(0x4D)
+B20_8036: LDX_IMM(0x00)
+B20_8038: LDA_IMM(0x00)
+B20_803a: STA_ABS_X(0x0547)
+B20_803d: TXA()
+B20_803e: CLC()
+B20_803f: ADC_IMM(0x15)
+B20_8041: TAX()
+B20_8042: CMP_IMM(0x7E)
+B20_8044: CYCLE(2); if (!SR_Z) goto B20_8038;
+B20_8046: LDA_IMM(0x01)
+B20_8048: STA_ABS(0x053b)
+B20_804b: LDA_IMM(0x00)
+B20_804d: STA_ABS(0x053d)
+B20_8050: STA_ABS(0x0540)
+B20_8053: LDA_IMM(0xFF)
+B20_8055: STA_ABS(0x0541)
+B20_8058: LDA_IMM(0x01)
+B20_805a: STA_ABS(0x0543)
+B20_805d: LDA_IMM(0x23)
+B20_805f: STA_ABS(0x0544)
+B20_8062: LDA_IMM(0x45)
+B20_8064: STA_ABS(0x0545)
+B20_8067: DEC_ABS(0x053b)
+B20_806a: CYCLE(2); if (SR_Z) goto B20_806d;
+B20_806c: RTS()
+B20_806d: LDY_IMM(0x00)
+B20_806f: LDA_IDY(0x4C)
+B20_8071: CMP_IMM(0xF0)
+B20_8073: CYCLE(2); if (!SR_C) goto B20_807b;
+B20_8075: CYCLE(6); SetStack(SP, 119); SetStack(SP - 1, 128); SP -= 2; goto B28_8084;
+B20_8078: CYCLE(3); PC = 0x806d; goto B22_806d;
+B20_807b: STA_ABS(0x053b)
+B20_807e: LDA_IMM(0x01)
+B20_8080: CYCLE(6); SetStack(SP, 130); SetStack(SP - 1, 128); SP -= 2; goto B24_83cf;
+B20_8083: RTS()
+B20_8084: SEC()
+B20_8085: SBC_IMM(0xF0)
+B20_8087: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 128); SP -= 2; goto B30_c509;
+B20_80a2: PLA()
+B20_80a3: PLA()
+B20_80a4: LDA_IMM(0x00)
+B20_80a6: STA_ABS(0x053a)
+B20_80a9: RTS()
+B20_80aa: LDY_IMM(0x05)
+B20_80ac: LDA_IDY(0x4C)
+B20_80ae: AND_IMM(0x1C)
+B20_80b0: LSR_A()
+B20_80b1: TAX()
+B20_80b2: LDA_ABS_X(0x88e4)
+B20_80b5: STA_ZP(0x3A)
+B20_80b7: LDA_ABS_X(0x88e5)
+B20_80ba: STA_ZP(0x3B)
+B20_80bc: LDY_IMM(0x00)
+B20_80be: TYA()
+B20_80bf: STA_IDY(0x3A)
+B20_80c1: INY()
+B20_80c2: CPY_IMM(0x15)
+B20_80c4: CYCLE(2); if (!SR_Z) goto B20_80bf;
+B20_80c6: LDY_IMM(0x01)
+B20_80c8: LDA_IDY(0x4C)
+B20_80ca: LDX_IMM(0xB4)
+B20_80cc: STX_ZP(0x3E)
+B20_80ce: LDX_IMM(0xA1)
+B20_80d0: ASL_A()
+B20_80d1: CYCLE(2); if (!SR_C) goto B20_80d4;
+B20_80d3: INX()
+B20_80d4: STX_ZP(0x3F)
+B20_80d6: TAY()
+B20_80d7: LDA_IDY(0x3E)
+B20_80d9: TAX()
+B20_80da: INY()
+B20_80db: LDA_IDY(0x3E)
+B20_80dd: LDY_IMM(0x02)
+B20_80df: STA_IDY(0x3A)
+B20_80e1: DEY()
+B20_80e2: TXA()
+B20_80e3: STA_IDY(0x3A)
+B20_80e5: LDY_IMM(0x02)
+B20_80e7: LDA_IDY(0x4C)
+B20_80e9: LDX_IMM(0x47)
+B20_80eb: STX_ZP(0x3E)
+B20_80ed: LDX_IMM(0xAC)
+B20_80ef: ASL_A()
+B20_80f0: CYCLE(2); if (!SR_C) goto B20_80f3;
+B20_80f2: INX()
+B20_80f3: STX_ZP(0x3F)
+B20_80f5: TAY()
+B20_80f6: LDA_IDY(0x3E)
+B20_80f8: TAX()
+B20_80f9: INY()
+B20_80fa: LDA_IDY(0x3E)
+B20_80fc: LDY_IMM(0x04)
+B20_80fe: STA_IDY(0x3A)
+B20_8100: DEY()
+B20_8101: TXA()
+B20_8102: STA_IDY(0x3A)
+B20_8104: LDY_IMM(0x03)
+B20_8106: LDA_IDY(0x4C)
+B20_8108: LDY_IMM(0x08)
+B20_810a: STA_IDY(0x3A)
+B20_810c: LDY_IMM(0x04)
+B20_810e: LDA_IDY(0x4C)
+B20_8110: LDY_IMM(0x0C)
+B20_8112: STA_IDY(0x3A)
+B20_8114: LDY_IMM(0x05)
+B20_8116: LDA_IDY(0x4C)
+B20_8118: TAX()
+B20_8119: AND_IMM(0x03)
+B20_811b: STA_ZP(0x3C)
+B20_811d: ORA_ZP(0x3C)
+B20_811f: ORA_IMM(0x80)
+B20_8121: LDY_IMM(0x00)
+B20_8123: STA_IDY(0x3A)
+B20_8125: LDA_IMM(0x06)
+B20_8127: CYCLE(6); SetStack(SP, 41); SetStack(SP - 1, 129); SP -= 2; goto B24_83cf;
+B20_812a: RTS()
+B20_8142: LDY_IMM(0x01)
+B20_8144: LDA_IDY(0x4C)
+B20_8146: STA_ABS_Y(0x0493)
+B20_8149: INY()
+B20_814a: CPY_IMM(0x05)
+B20_814c: CYCLE(2); if (!SR_Z) goto B20_8144;
+B20_814e: LDA_IMM(0x05)
+B20_8150: CYCLE(3); PC = 0x83cf; goto B24_83cf;
+B20_8153: LDY_IMM(0x01)
+B20_8155: LDA_IDY(0x4C)
+B20_8157: CYCLE(2); if (!SR_N) goto B20_815f;
+B20_8159: CYCLE(6); SetStack(SP, 91); SetStack(SP - 1, 129); SP -= 2; goto B28_81ba;
+B20_815c: CYCLE(3); PC = 0x8164; goto B28_8164;
+B20_815f: LDX_IMM(0x10)
+B20_8161: CYCLE(6); SetStack(SP, 99); SetStack(SP - 1, 129); SP -= 2; goto B30_c530;
+B20_8164: CYCLE(6); SetStack(SP, 102); SetStack(SP - 1, 129); SP -= 2; goto B30_c533;
+B20_816a: LDA_IMM(0x02)
+B20_816c: CYCLE(3); PC = 0x83cf; goto B24_83cf;
+B20_816f: LDY_IMM(0x01)
+B20_8171: LDA_IDY(0x4C)
+B20_8173: TAX()
+B20_8174: INY()
+B20_8175: LDA_IDY(0x4C)
+B20_8177: STX_ZP(0x4C)
+B20_8179: STA_ZP(0x4D)
+B20_817b: RTS()
+B20_817c: LDY_IMM(0x01)
+B20_817e: LDA_IDY(0x4C)
+B20_8180: STA_ABS(0x0542)
+B20_8183: INY()
+B20_8184: TYA()
+B20_8185: CLC()
+B20_8186: ADC_ZP(0x4C)
+B20_8188: STA_ZP(0x4E)
+B20_818a: LDA_ZP(0x4D)
+B20_818c: ADC_IMM(0x00)
+B20_818e: STA_ZP(0x4F)
+B20_8190: LDA_IMM(0x02)
+B20_8192: CYCLE(3); PC = 0x83cf; goto B24_83cf;
+B20_8195: LDA_IMM(0x01)
+B20_8197: DEC_ABS(0x0542)
+B20_819a: CYCLE(2); if (SR_Z) goto B20_81a6;
+B20_819c: LDA_ZP(0x4E)
+B20_819e: STA_ZP(0x4C)
+B20_81a0: LDA_ZP(0x4F)
+B20_81a2: STA_ZP(0x4D)
+B20_81a4: LDA_IMM(0x00)
+B20_81a6: CYCLE(3); PC = 0x83cf; goto B24_83cf;
+B20_81a9: LDY_IMM(0x01)
+B20_81ab: LDA_IDY(0x4C)
+B20_81ad: STA_ABS_Y(0x0542)
+B20_81b0: INY()
+B20_81b1: CPY_IMM(0x04)
+B20_81b3: CYCLE(2); if (!SR_Z) goto B20_81ab;
+B20_81b5: LDA_IMM(0x04)
+B20_81b7: CYCLE(3); PC = 0x83cf; goto B24_83cf;
+B20_81ba: AND_IMM(0x7F)
+B20_81bc: CYCLE(6); SetStack(SP, 190); SetStack(SP - 1, 129); SP -= 2; goto B30_c509;
+B20_81cf: LDA_ABS(0x0441)
+B20_81d2: CYCLE(3); PC = 0x81ec; goto B24_81ec;
+B20_81d5: LDA_ABS(0x05fc)
+B20_81d8: CYCLE(3); PC = 0x81ec; goto B24_81ec;
+B20_81db: LDA_ABS(0x05fb)
+B20_81de: CYCLE(3); PC = 0x81ec; goto B24_81ec;
+B20_81e1: LDA_ABS(0x05fb)
+B20_81e4: EOR_IMM(0x0B)
+B20_81e6: CYCLE(3); PC = 0x81ec; goto B24_81ec;
+B20_81e9: LDA_ABS(0x0442)
+B20_81ec: STA_ZP(0x3A)
+B20_81ee: CYCLE(6); SetStack(SP, 240); SetStack(SP - 1, 129); SP -= 2; goto B30_c50c;
+B20_81f1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 129); SP -= 2; goto B28_826a;
+B20_81f4: LDY_IMM(0x00)
+B20_81f6: LDA_IDY(0x34)
+B20_81f8: CYCLE(2); if (SR_Z) goto B20_8201;
+B20_81fa: CYCLE(6); SetStack(SP, 252); SetStack(SP - 1, 129); SP -= 2; goto B20_8282;
+B20_81fd: LDX_IMM(0x00)
+B20_81ff: CYCLE(2); if (SR_Z) goto B20_8213;
+B20_8201: LDA_ABS(0x002b)
+B20_8204: SEC()
+B20_8205: SBC_IMM(0x03)
+B20_8207: LDX_IMM(0x02)
+B20_8209: LDY_ZP(0x3A)
+B20_820b: CYCLE(2); if (SR_Z) goto B20_8211;
+B20_820d: CPY_IMM(0x0B)
+B20_820f: CYCLE(2); if (!SR_Z) goto B20_8213;
+B20_8211: LDX_IMM(0x04)
+B20_8213: STA_ZP(0x3A)
+B20_8215: LDY_IMM(0x00)
+B20_8217: STY_ZP(0x3B)
+B20_8219: TAY()
+B20_821a: ASL_A()
+B20_821b: ROL_ZP(0x3B)
+B20_821d: ASL_A()
+B20_821e: ROL_ZP(0x3B)
+B20_8220: ADC_ZP(0x3A)
+B20_8222: STA_ZP(0x3A)
+B20_8224: LDA_IMM(0x00)
+B20_8226: ADC_ZP(0x3B)
+B20_8228: STA_ZP(0x3B)
+B20_822a: CLC()
+B20_822b: LDA_ZP(0x3A)
+B20_822d: ADC_ABS_X(0x8264)
+B20_8230: STA_ZP(0x3A)
+B20_8232: LDA_ZP(0x3B)
+B20_8234: ADC_ABS_X(0x8265)
+B20_8237: STA_ZP(0x3B)
+B20_8239: LDY_IMM(0x00)
+B20_823b: LDA_IDY(0x3A)
+B20_823d: INY()
+B20_823e: PHA()
+B20_823f: LDX_IMM(0x00)
+B20_8241: TXA()
+B20_8242: AND_IMM(0x03)
+B20_8244: CYCLE(2); if (SR_Z) goto B20_825d;
+B20_8246: CMP_IMM(0x01)
+B20_8248: CYCLE(2); if (SR_Z) goto B20_8258;
+B20_824a: CMP_IMM(0x02)
+B20_824c: CYCLE(2); if (SR_Z) goto B20_8253;
+B20_824e: PLA()
+B20_824f: PHA()
+B20_8250: CYCLE(3); PC = 0x825a; goto B27_825a;
+B20_8253: LDA_IDY(0x3A)
+B20_8255: INY()
+B20_8256: CYCLE(2); if (!SR_Z) goto B20_825a;
+B20_8258: LDA_IMM(0x0F)
+B20_825a: STA_ABS_X(0x047f)
+B20_825d: INX()
+B20_825e: CPX_IMM(0x10)
+B20_8260: CYCLE(2); if (!SR_Z) goto B20_8241;
+B20_8262: PLA()
+B20_8263: RTS()
+B20_826a: LDY_IMM(0x00)
+B20_826c: LDA_IDY(0x34)
+B20_826e: PHP()
+B20_826f: TAX()
+B20_8270: LDA_ABS_X(0x88f0)
+B20_8273: PLP()
+B20_8274: CYCLE(2); if (!SR_Z) goto B20_827e;
+B20_8276: LDX_ZP(0x3A)
+B20_8278: CPX_IMM(0x0B)
+B20_827a: CYCLE(2); if (!SR_Z) goto B20_827e;
+B20_827c: LDA_IMM(0x04)
+B20_827e: STA_ABS(0x0546)
+B20_8281: RTS()
+B20_8282: LDX_IMM(0x01)
+B20_8284: STA_ZP(0x3B)
+B20_8286: CMP_IMM(0x01)
+B20_8288: CYCLE(2); if (SR_Z) goto B20_8296;
+B20_828a: LDX_IMM(0x00)
+B20_828c: CMP_IMM(0x0F)
+B20_828e: CYCLE(2); if (!SR_C) goto B20_8296;
+B20_8290: CMP_IMM(0x17)
+B20_8292: CYCLE(2); if (SR_C) goto B20_8296;
+B20_8294: LDX_IMM(0x02)
+B20_8296: TXA()
+B20_8297: CYCLE(6); SetStack(SP, 153); SetStack(SP - 1, 130); SP -= 2; goto B30_c509;
+B20_82a0: LDA_ZP(0x3B)
+B20_82a2: RTS()
+B20_82a3: LDA_IMM(0x01)
+B20_82a5: LDX_ABS(0x002a)
+B20_82a8: CYCLE(2); if (SR_Z) goto B20_82ac;
+B20_82aa: LDA_IMM(0x76)
+B20_82ac: RTS()
+B20_82ad: LDA_IMM(0x00)
+B20_82af: LDX_ABS(0x002a)
+B20_82b2: CPX_IMM(0x01)
+B20_82b4: CYCLE(2); if (SR_Z) goto B20_82b8;
+B20_82b6: LDA_IMM(0x68)
+B20_82b8: CLC()
+B20_82b9: ADC_ZP(0x3B)
+B20_82bb: RTS()
+B20_82bc: LDY_IMM(0x02)
+B20_82be: LDA_IDY(0x4C)
+B20_82c0: CYCLE(2); if (!SR_N) goto B20_82c5;
+B20_82c2: CYCLE(6); SetStack(SP, 196); SetStack(SP - 1, 130); SP -= 2; goto B28_8316;
+B20_82c5: LDX_IMM(0x00)
+B20_82c7: STX_ZP(0x3B)
+B20_82c9: ASL_A()
+B20_82ca: ROL_ZP(0x3B)
+B20_82cc: ASL_A()
+B20_82cd: ROL_ZP(0x3B)
+B20_82cf: ASL_A()
+B20_82d0: ROL_ZP(0x3B)
+B20_82d2: ASL_A()
+B20_82d3: ROL_ZP(0x3B)
+B20_82d5: ADC_IMM(0xCF)
+B20_82d7: STA_ZP(0x3A)
+B20_82d9: LDA_ZP(0x3B)
+B20_82db: ADC_IMM(0xBA)
+B20_82dd: STA_ZP(0x3B)
+B20_82df: LDA_ABS_X(0x82f6)
+B20_82e2: CYCLE(2); if (!SR_N) goto B20_82e9;
+B20_82e4: AND_IMM(0x7F)
+B20_82e6: TAY()
+B20_82e7: LDA_IDY(0x3A)
+B20_82e9: STA_ABS_X(0x046f)
+B20_82ec: INX()
+B20_82ed: CPX_IMM(0x20)
+B20_82ef: CYCLE(2); if (!SR_Z) goto B20_82df;
+B20_82f1: LDA_IMM(0x01)
+B20_82f3: CYCLE(3); PC = 0x83cf; goto B24_83cf;
+B20_8316: AND_IMM(0x7F)
+B20_8318: CYCLE(6); SetStack(SP, 26); SetStack(SP - 1, 131); SP -= 2; goto B30_c509;
+B20_832b: LDA_IMM(0x00)
+B20_832d: LDX_ABS(0x002a)
+B20_8330: CYCLE(2); if (SR_Z) goto B20_8334;
+B20_8332: LDA_IMM(0x01)
+B20_8334: RTS()
+B20_8335: LDA_IMM(0x03)
+B20_8337: LDX_ABS(0x002a)
+B20_833a: CPX_IMM(0x01)
+B20_833c: CYCLE(2); if (SR_Z) goto B20_8341;
+B20_833e: CLC()
+B20_833f: ADC_IMM(0x01)
+B20_8341: RTS()
+B20_8342: LDA_IMM(0x05)
+B20_8344: CYCLE(3); PC = 0x8337; goto B24_8337;
+B20_8347: CLC()
+B20_8348: PHP()
+B20_8349: LDA_IMM(0x2E)
+B20_834b: LDX_ABS(0x002b)
+B20_834e: CPX_IMM(0x12)
+B20_8350: CYCLE(2); if (SR_Z) goto B20_835d;
+B20_8352: LDA_IMM(0x07)
+B20_8354: LDX_ABS(0x002a)
+B20_8357: CPX_IMM(0x01)
+B20_8359: CYCLE(2); if (SR_Z) goto B20_835d;
+B20_835b: LDA_IMM(0x09)
+B20_835d: PLP()
+B20_835e: ADC_IMM(0x00)
+B20_8360: RTS()
+B20_8361: SEC()
+B20_8362: CYCLE(3); PC = 0x8348; goto B20_8348;
+B20_8365: LDA_IMM(0x0B)
+B20_8367: CYCLE(3); PC = 0x8337; goto B24_8337;
+B20_837f: LDX_IMM(0x00)
+B20_8381: LDA_ABS(0x05fb)
+B20_8384: CYCLE(2); if (SR_Z) goto B20_8387;
+B20_8386: INX()
+B20_8387: LDA_ABS_X(0x002a)
+B20_838a: ASL_A()
+B20_838b: TAY()
+B20_838c: LDX_IMM(0x00)
+B20_838e: LDA_ABS_X(0x83a6)
+B20_8391: STA_ABS_X(0x047f)
+B20_8394: INX()
+B20_8395: CPX_IMM(0x08)
+B20_8397: CYCLE(2); if (!SR_Z) goto B20_838e;
+B20_8399: LDA_ABS_Y(0xba87)
+B20_839c: STA_ABS(0x0481)
+B20_839f: LDA_ABS_Y(0xba88)
+B20_83a2: STA_ABS(0x0482)
+B20_83a5: RTS()
+B20_83ae: LDY_IMM(0x01)
+B20_83b0: LDA_IDY(0x4C)
+B20_83b2: TAX()
+B20_83b3: LDA_IMM(0x00)
+B20_83b5: STA_ABS_X(0x0547)
+B20_83b8: LDA_IMM(0x02)
+B20_83ba: CYCLE(3); PC = 0x83cf; goto B24_83cf;
+B20_83bd: LDY_IMM(0x01)
+B20_83bf: LDA_IDY(0x4C)
+B20_83c1: STA_ABS(0x0540)
+B20_83c4: INY()
+B20_83c5: LDA_IDY(0x4C)
+B20_83c7: STA_ABS(0x0541)
+B20_83ca: LDA_IMM(0x03)
+B20_83cc: CYCLE(3); PC = 0x83cf; goto B24_83cf;
+B20_83cf: CLC()
+B20_83d0: ADC_ZP(0x4C)
+B20_83d2: STA_ZP(0x4C)
+B20_83d4: CYCLE(2); if (!SR_C) goto B20_83d8;
+B20_83d6: INC_ZP(0x4D)
+B20_83d8: RTS()
+B20_83d9: LDY_IMM(0x10)
+B20_83db: LDA_IDY(0x3C)
+B20_83dd: CYCLE(2); if (SR_Z) goto B20_83e9;
+B20_83df: CMP_IMM(0xFF)
+B20_83e1: CYCLE(2); if (SR_Z) goto B20_83e8;
+B20_83e3: SEC()
+B20_83e4: SBC_IMM(0x01)
+B20_83e6: STA_IDY(0x3C)
+B20_83e8: RTS()
+B20_83e9: LDY_IMM(0x00)
+B20_83eb: LDA_IDY(0x3C)
+B20_83ed: AND_IMM(0x9F)
+B20_83ef: STA_IDY(0x3C)
+B20_83f1: LDY_IMM(0x13)
+B20_83f3: LDA_IMM(0x00)
+B20_83f5: STA_IDY(0x3C)
+B20_83f7: INY()
+B20_83f8: STA_IDY(0x3C)
+B20_83fa: LDY_IMM(0x03)
+B20_83fc: LDA_IDY(0x3C)
+B20_83fe: STA_ZP(0x3E)
+B20_8400: INY()
+B20_8401: LDA_IDY(0x3C)
+B20_8403: STA_ZP(0x3F)
+B20_8405: LDY_IMM(0x00)
+B20_8407: STY_ZP(0x40)
+B20_8409: LDY_ZP(0x40)
+B20_840b: INC_ZP(0x40)
+B20_840d: LDA_IDY(0x3E)
+B20_840f: CMP_IMM(0xF0)
+B20_8411: CYCLE(2); if (!SR_C) goto B20_8419;
+B20_8413: CYCLE(6); SetStack(SP, 21); SetStack(SP - 1, 132); SP -= 2; goto B26_8438;
+B20_8416: CYCLE(3); PC = 0x8409; goto B24_8409;
+B20_8419: TAX()
+B20_841a: INY()
+B20_841b: TYA()
+B20_841c: PHA()
+B20_841d: LDA_IDY(0x3E)
+B20_841f: LDY_IMM(0x12)
+B20_8421: STA_IDY(0x3C)
+B20_8423: TXA()
+B20_8424: LDY_IMM(0x10)
+B20_8426: STA_IDY(0x3C)
+B20_8428: PLA()
+B20_8429: LDY_IMM(0x03)
+B20_842b: SEC()
+B20_842c: ADC_ZP(0x3E)
+B20_842e: STA_IDY(0x3C)
+B20_8430: INY()
+B20_8431: LDA_IMM(0x00)
+B20_8433: ADC_ZP(0x3F)
+B20_8435: STA_IDY(0x3C)
+B20_8437: RTS()
+B20_8438: SEC()
+B20_8439: SBC_IMM(0xF0)
+B20_843b: CYCLE(6); SetStack(SP, 61); SetStack(SP - 1, 132); SP -= 2; goto B30_c509;
+B20_8450: LDY_IMM(0x10)
+B20_8452: LDA_IMM(0xFF)
+B20_8454: STA_IDY(0x3C)
+B20_8456: PLA()
+B20_8457: PLA()
+B20_8458: RTS()
+B20_8459: LDA_IMM(0x20)
+B20_845b: CYCLE(2); if (!SR_Z) goto B20_845f;
+B20_845d: LDA_IMM(0x40)
+B20_845f: LDY_IMM(0x00)
+B20_8461: ORA_IDY(0x3C)
+B20_8463: STA_IDY(0x3C)
+B20_8465: RTS()
+B20_8466: LDY_ZP(0x40)
+B20_8468: LDA_IDY(0x3E)
+B20_846a: TAX()
+B20_846b: INY()
+B20_846c: LDA_IDY(0x3E)
+B20_846e: STA_ZP(0x3F)
+B20_8470: STX_ZP(0x3E)
+B20_8472: LDA_IMM(0x00)
+B20_8474: STA_ZP(0x40)
+B20_8476: RTS()
+B20_8477: LDY_ZP(0x40)
+B20_8479: LDA_IDY(0x3E)
+B20_847b: PHA()
+B20_847c: INY()
+B20_847d: STY_ZP(0x40)
+B20_847f: TYA()
+B20_8480: LDX_ZP(0x3F)
+B20_8482: CLC()
+B20_8483: ADC_ZP(0x3E)
+B20_8485: CYCLE(2); if (!SR_C) goto B20_8488;
+B20_8488: LDY_IMM(0x0E)
+B20_848a: STA_IDY(0x3C)
+B20_848c: TXA()
+B20_848d: INY()
+B20_848e: STA_IDY(0x3C)
+B20_8490: LDY_IMM(0x0D)
+B20_8492: PLA()
+B20_8493: STA_IDY(0x3C)
+B20_8495: RTS()
+B20_8496: LDY_IMM(0x0D)
+B20_8498: LDA_IDY(0x3C)
+B20_849a: SEC()
+B20_849b: SBC_IMM(0x01)
+B20_849d: CYCLE(2); if (!SR_Z) goto B20_84a0;
+B20_849f: RTS()
+B20_84a0: STA_IDY(0x3C)
+B20_84a2: LDY_IMM(0x0E)
+B20_84a4: LDA_IDY(0x3C)
+B20_84a6: TAX()
+B20_84a7: INY()
+B20_84a8: LDA_IDY(0x3C)
+B20_84aa: STA_ZP(0x3F)
+B20_84ac: STX_ZP(0x3E)
+B20_84ae: LDA_IMM(0x00)
+B20_84b0: STA_ZP(0x40)
+B20_84b2: RTS()
+B20_84b3: LDY_ZP(0x40)
+B20_84b5: LDA_IDY(0x3E)
+B20_84b7: TAX()
+B20_84b8: INY()
+B20_84b9: LDA_IDY(0x3E)
+B20_84bb: INY()
+B20_84bc: STY_ZP(0x40)
+B20_84be: LDY_IMM(0x14)
+B20_84c0: STA_IDY(0x3C)
+B20_84c2: DEY()
+B20_84c3: TXA()
+B20_84c4: STA_IDY(0x3C)
+B20_84c6: RTS()
+B20_84c7: LDY_ZP(0x40)
+B20_84c9: LDA_IDY(0x3E)
+B20_84cb: LDY_IMM(0x12)
+B20_84cd: STA_IDY(0x3C)
+B20_84cf: CYCLE(3); PC = 0x8450; goto B24_8450;
+B20_84d2: LDY_ZP(0x40)
+B20_84d4: INC_ZP(0x40)
+B20_84d6: LDA_IDY(0x3E)
+B20_84d8: STA_ABS(0x0546)
+B20_84db: RTS()
+B20_84dc: LDY_IMM(0x11)
+B20_84de: LDA_IDY(0x3C)
+B20_84e0: CYCLE(2); if (SR_Z) goto B20_84ef;
+B20_84e2: CMP_IMM(0xFF)
+B20_84e4: CYCLE(2); if (!SR_Z) goto B20_84e7;
+B20_84e6: RTS()
+B20_84e7: SEC()
+B20_84e8: SBC_IMM(0x01)
+B20_84ea: STA_IDY(0x3C)
+B20_84ec: CYCLE(3); PC = 0x852a; goto B24_852a;
+B20_84ef: STA_ZP(0x40)
+B20_84f1: LDY_IMM(0x01)
+B20_84f3: LDA_IDY(0x3C)
+B20_84f5: STA_ZP(0x3E)
+B20_84f7: INY()
+B20_84f8: LDA_IDY(0x3C)
+B20_84fa: STA_ZP(0x3F)
+B20_84fc: LDY_IMM(0x00)
+B20_84fe: LDA_IDY(0x3C)
+B20_8500: AND_IMM(0x10)
+B20_8502: CYCLE(2); if (SR_Z) goto B20_850f;
+B20_8504: LDA_IMM(0x04)
+B20_8506: CLC()
+B20_8507: ADC_ZP(0x3E)
+B20_8509: STA_ZP(0x3E)
+B20_850b: CYCLE(2); if (!SR_C) goto B20_850f;
+B20_850d: INC_ZP(0x3F)
+B20_850f: LDY_IMM(0x00)
+B20_8511: LDA_IDY(0x3C)
+B20_8513: AND_IMM(0xEF)
+B20_8515: STA_IDY(0x3C)
+B20_8517: CYCLE(6); SetStack(SP, 25); SetStack(SP - 1, 133); SP -= 2; goto B26_857a;
+B20_851a: LDA_ZP(0x40)
+B20_851c: LDY_IMM(0x01)
+B20_851e: CLC()
+B20_851f: ADC_ZP(0x3E)
+B20_8521: STA_IDY(0x3C)
+B20_8523: INY()
+B20_8524: LDA_ZP(0x3F)
+B20_8526: ADC_IMM(0x00)
+B20_8528: STA_IDY(0x3C)
+B20_852a: LDA_IMM(0x00)
+B20_852c: STA_ZP(0x42)
+B20_852e: STA_ZP(0x43)
+B20_8530: LDY_IMM(0x00)
+B20_8532: LDA_IDY(0x3C)
+B20_8534: AND_IMM(0xFC)
+B20_8536: STA_ZP(0x41)
+B20_8538: LDA_IDY(0x3C)
+B20_853a: LSR_A()
+B20_853b: ROL_ZP(0x42)
+B20_853d: LSR_A()
+B20_853e: ROL_ZP(0x43)
+B20_8540: LDX_IMM(0x00)
+B20_8542: LDY_IMM(0x05)
+B20_8544: CYCLE(6); SetStack(SP, 70); SetStack(SP - 1, 133); SP -= 2; goto B28_85f2;
+B20_8547: LDX_IMM(0x01)
+B20_8549: LDY_IMM(0x09)
+B20_854b: CYCLE(6); SetStack(SP, 77); SetStack(SP - 1, 133); SP -= 2; goto B28_85f2;
+B20_854e: LDA_IMM(0x00)
+B20_8550: LSR_ZP(0x43)
+B20_8552: ROL_A()
+B20_8553: LSR_ZP(0x42)
+B20_8555: ROL_A()
+B20_8556: ORA_ZP(0x41)
+B20_8558: LDY_IMM(0x00)
+B20_855a: STA_IDY(0x3C)
+B20_855c: AND_IMM(0x10)
+B20_855e: CYCLE(2); if (SR_Z) goto B20_8579;
+B20_8560: LDY_IMM(0x01)
+B20_8562: LDA_IDY(0x3C)
+B20_8564: STA_ZP(0x3E)
+B20_8566: INY()
+B20_8567: LDA_IDY(0x3C)
+B20_8569: STA_ZP(0x3F)
+B20_856b: LDX_IMM(0x05)
+B20_856d: LDY_IMM(0x01)
+B20_856f: CYCLE(6); SetStack(SP, 113); SetStack(SP - 1, 133); SP -= 2; goto B20_860d;
+B20_8572: LDX_IMM(0x09)
+B20_8574: LDY_IMM(0x03)
+B20_8576: CYCLE(6); SetStack(SP, 120); SetStack(SP - 1, 133); SP -= 2; goto B20_860d;
+B20_8579: RTS()
+B20_857a: LDY_ZP(0x40)
+B20_857c: INC_ZP(0x40)
+B20_857e: LDA_IDY(0x3E)
+B20_8580: CYCLE(6); SetStack(SP, 130); SetStack(SP - 1, 133); SP -= 2; goto B30_c509;
+B20_858d: LDY_ZP(0x40)
+B20_858f: LDA_IDY(0x3E)
+B20_8591: TAX()
+B20_8592: INY()
+B20_8593: LDA_IDY(0x3E)
+B20_8595: STA_ZP(0x3F)
+B20_8597: STX_ZP(0x3E)
+B20_8599: LDA_IMM(0x00)
+B20_859b: STA_ZP(0x40)
+B20_859d: CYCLE(3); PC = 0x857a; goto B26_857a;
+B20_85a0: LDY_IMM(0x11)
+B20_85a2: LDA_IMM(0xFF)
+B20_85a4: STA_IDY(0x3C)
+B20_85a6: PLA()
+B20_85a7: PLA()
+B20_85a8: RTS()
+B20_85a9: CYCLE(6); SetStack(SP, 171); SetStack(SP - 1, 133); SP -= 2; goto B28_85e7;
+B20_85ac: LDY_ZP(0x40)
+B20_85ae: LDA_IDY(0x3E)
+B20_85b0: TAX()
+B20_85b1: INY()
+B20_85b2: LDA_IDY(0x3E)
+B20_85b4: INY()
+B20_85b5: STY_ZP(0x40)
+B20_85b7: LDY_IMM(0x07)
+B20_85b9: STA_IDY(0x3C)
+B20_85bb: DEY()
+B20_85bc: DEY()
+B20_85bd: TXA()
+B20_85be: STA_IDY(0x3C)
+B20_85c0: LDY_ZP(0x40)
+B20_85c2: LDA_IDY(0x3E)
+B20_85c4: TAX()
+B20_85c5: INY()
+B20_85c6: LDA_IDY(0x3E)
+B20_85c8: INY()
+B20_85c9: STY_ZP(0x40)
+B20_85cb: LDY_IMM(0x0B)
+B20_85cd: STA_IDY(0x3C)
+B20_85cf: DEY()
+B20_85d0: DEY()
+B20_85d1: TXA()
+B20_85d2: STA_IDY(0x3C)
+B20_85d4: RTS()
+B20_85d5: CYCLE(6); SetStack(SP, 215); SetStack(SP - 1, 133); SP -= 2; goto B28_85e7;
+B20_85d8: LDY_IMM(0x00)
+B20_85da: LDA_IDY(0x3C)
+B20_85dc: ORA_IMM(0x10)
+B20_85de: STA_IDY(0x3C)
+B20_85e0: RTS()
+B20_85e1: CYCLE(6); SetStack(SP, 227); SetStack(SP - 1, 133); SP -= 2; goto B20_85a9;
+B20_85e4: CYCLE(3); PC = 0x85d8; goto B26_85d8;
+B20_85e7: LDY_ZP(0x40)
+B20_85e9: LDA_IDY(0x3E)
+B20_85eb: LDY_IMM(0x11)
+B20_85ed: STA_IDY(0x3C)
+B20_85ef: INC_ZP(0x40)
+B20_85f1: RTS()
+B20_85f2: CLC()
+B20_85f3: LDA_IDY(0x3C)
+B20_85f5: INY()
+B20_85f6: ADC_IDY(0x3C)
+B20_85f8: STA_IDY(0x3C)
+B20_85fa: INY()
+B20_85fb: LDA_IDY(0x3C)
+B20_85fd: CYCLE(2); if (!SR_N) goto B20_8601;
+B20_85ff: DEC_ZP_X(0x42)
+B20_8601: INY()
+B20_8602: ADC_IDY(0x3C)
+B20_8604: STA_IDY(0x3C)
+B20_8606: LDA_ZP_X(0x42)
+B20_8608: ADC_IMM(0x00)
+B20_860a: STA_ZP_X(0x42)
+B20_860c: RTS()
+B20_860d: LDA_IDY(0x3E)
+B20_860f: PHA()
+B20_8610: DEY()
+B20_8611: LDA_IDY(0x3E)
+B20_8613: PHA()
+B20_8614: TXA()
+B20_8615: TAY()
+B20_8616: PLA()
+B20_8617: CLC()
+B20_8618: ADC_IDY(0x3C)
+B20_861a: STA_IDY(0x3C)
+B20_861c: INY()
+B20_861d: INY()
+B20_861e: PLA()
+B20_861f: ADC_IDY(0x3C)
+B20_8621: STA_IDY(0x3C)
+B20_8623: RTS()
+B20_8624: LDA_ABS(0x062d)
+B20_8627: AND_IMM(0x0F)
+B20_8629: CMP_IMM(0x05)
+B20_862b: CYCLE(2); if (!SR_Z) goto B20_8630;
+B20_862d: CYCLE(3); PC = 0x8861; goto B24_8861;
+B20_8630: CYCLE(6); SetStack(SP, 50); SetStack(SP - 1, 134); SP -= 2; goto B20_8753;
+B20_8633: LDA_IMM(0x00)
+B20_8635: STA_ZP(0x46)
+B20_8637: LDA_ZP(0x46)
+B20_8639: CYCLE(2); if (!SR_Z) goto B20_863e;
+B20_863b: CYCLE(3); PC = 0x86cf; goto B20_86cf;
+B20_863e: CMP_IMM(0x0B)
+B20_8640: CYCLE(2); if (!SR_Z) goto B20_8645;
+B20_8642: CYCLE(3); PC = 0x86cf; goto B20_86cf;
+B20_8645: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 134); SP -= 2; goto B20_86db;
+B20_8648: CYCLE(2); if (SR_C) goto B20_864d;
+B20_864a: CYCLE(3); PC = 0x86cf; goto B20_86cf;
+B20_864d: LDX_ZP(0x3B)
+B20_864f: LDY_IMM(0x06)
+B20_8651: LDA_IDY(0x34)
+B20_8653: CMP_IMM(0x34)
+B20_8655: CYCLE(2); if (SR_C) goto B20_8659;
+B20_8657: LDA_IMM(0x34)
+B20_8659: CMP_IMM(0xCC)
+B20_865b: CYCLE(2); if (!SR_C) goto B20_865f;
+B20_865d: LDA_IMM(0xCC)
+B20_865f: PHA()
+B20_8660: LDA_ABS(0x062d)
+B20_8663: AND_IMM(0x0F)
+B20_8665: TAY()
+B20_8666: PLA()
+B20_8667: CLC()
+B20_8668: ADC_ABS_Y(0x88da)
+B20_866b: STA_ABS_X(0x0203)
+B20_866e: LDY_IMM(0x08)
+B20_8670: LDA_IDY(0x34)
+B20_8672: CMP_IMM(0x54)
+B20_8674: CYCLE(2); if (SR_C) goto B20_8678;
+B20_8676: LDA_IMM(0x54)
+B20_8678: CMP_IMM(0xAC)
+B20_867a: CYCLE(2); if (!SR_C) goto B20_867e;
+B20_867c: LDA_IMM(0xAC)
+B20_867e: PHA()
+B20_867f: LDA_ABS(0x062d)
+B20_8682: AND_IMM(0x0F)
+B20_8684: TAY()
+B20_8685: PLA()
+B20_8686: CLC()
+B20_8687: ADC_ABS_Y(0x88df)
+B20_868a: STA_ABS_X(0x0200)
+B20_868d: LDA_IMM(0x03)
+B20_868f: STA_ABS_X(0x0202)
+B20_8692: BIT_ABS(0x0615)
+B20_8695: CYCLE(2); if (!SR_N) goto B20_86a8;
+B20_8697: LDA_ABS(0x05fb)
+B20_869a: CYCLE(2); if (SR_Z) goto B20_86a8;
+B20_869c: LDA_ZP(0x46)
+B20_869e: CMP_IMM(0x0B)
+B20_86a0: CYCLE(2); if (SR_C) goto B20_86a8;
+B20_86a2: CYCLE(6); SetStack(SP, 164); SetStack(SP - 1, 134); SP -= 2; goto B20_86f2;
+B20_86a5: CYCLE(3); PC = 0x86b5; goto B24_86b5;
+B20_86a8: LDA_ZP(0x46)
+B20_86aa: CMP_ABS(0x0441)
+B20_86ad: CYCLE(2); if (!SR_Z) goto B20_86b5;
+B20_86af: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 134); SP -= 2; goto B28_881d;
+B20_86b2: CYCLE(3); PC = 0x86c4; goto B20_86c4;
+B20_86b5: CMP_IMM(0x0B)
+B20_86b7: CYCLE(2); if (!SR_C) goto B20_86bb;
+B20_86b9: SBC_IMM(0x01)
+B20_86bb: CLC()
+B20_86bc: ADC_IMM(0x11)
+B20_86be: CMP_IMM(0x20)
+B20_86c0: CYCLE(2); if (!SR_C) goto B20_86c4;
+B20_86c2: ADC_IMM(0x0F)
+B20_86c4: STA_ABS_X(0x0201)
+B20_86c7: INX()
+B20_86c8: INX()
+B20_86c9: INX()
+B20_86ca: INX()
+B20_86cb: STX_ZP(0x3B)
+B20_86cd: INC_ZP(0x48)
+B20_86cf: INC_ZP(0x46)
+B20_86d1: LDA_ZP(0x46)
+B20_86d3: CMP_IMM(0x16)
+B20_86d5: CYCLE(2); if (SR_Z) goto B20_86da;
+B20_86d7: CYCLE(3); PC = 0x8637; goto B28_8637;
+B20_86da: RTS()
+B20_86db: CYCLE(6); SetStack(SP, 221); SetStack(SP - 1, 134); SP -= 2; goto B30_c50c;
+B20_86de: LDA_ABS(0x062d)
+B20_86e1: AND_IMM(0x0F)
+B20_86e3: CYCLE(6); SetStack(SP, 229); SetStack(SP - 1, 134); SP -= 2; goto B30_c509;
+B20_86f2: LDA_ZP(0x46)
+B20_86f4: CMP_ABS(0x05fd)
+B20_86f7: CYCLE(2); if (!SR_Z) goto B20_871c;
+B20_86f9: LDA_ABS(0x062e)
+B20_86fc: CYCLE(2); if (!SR_Z) goto B20_870f;
+B20_86fe: LDY_IMM(0x07)
+B20_8700: LDA_ABS(0x062d)
+B20_8703: EOR_IMM(0x40)
+B20_8705: STA_ABS(0x062d)
+B20_8708: CYCLE(2); if (SR_V) goto B20_870c;
+B20_870a: LDY_IMM(0x04)
+B20_870c: STY_ABS(0x062e)
+B20_870f: DEC_ABS(0x062e)
+B20_8712: LDA_ZP(0x46)
+B20_8714: BIT_ABS(0x062d)
+B20_8717: CYCLE(2); if (SR_V) goto B20_871c;
+B20_8719: CLC()
+B20_871a: ADC_IMM(0x0B)
+B20_871c: RTS()
+B20_871d: SEC()
+B20_871e: RTS()
+B20_871f: LDA_ZP(0x46)
+B20_8721: CMP_IMM(0x0B)
+B20_8723: CYCLE(2); if (SR_C) goto B20_8739;
+B20_8725: CMP_ABS(0x0441)
+B20_8728: CYCLE(2); if (SR_Z) goto B20_8739;
+B20_872a: LDX_ABS(0x0430)
+B20_872d: CYCLE(2); if (SR_Z) goto B20_8737;
+B20_872f: CMP_ABS_X(0x0430)
+B20_8732: CYCLE(2); if (SR_Z) goto B20_8739;
+B20_8734: DEX()
+B20_8735: CYCLE(2); if (!SR_Z) goto B20_872f;
+B20_8737: CLC()
+B20_8738: RTS()
+B20_8739: SEC()
+B20_873a: RTS()
+B20_873b: LDA_ZP(0x46)
+B20_873d: CMP_ABS(0x0441)
+B20_8740: CYCLE(2); if (SR_Z) goto B20_8751;
+B20_8742: LDX_ABS(0x0600)
+B20_8745: CYCLE(2); if (SR_Z) goto B20_874f;
+B20_8747: CMP_ABS_X(0x0600)
+B20_874a: CYCLE(2); if (SR_Z) goto B20_8751;
+B20_874c: DEX()
+B20_874d: CYCLE(2); if (!SR_Z) goto B20_8747;
+B20_874f: SEC()
+B20_8750: RTS()
+B20_8751: CLC()
+B20_8752: RTS()
+B20_8753: LDA_ABS(0x062d)
+B20_8756: AND_IMM(0x0F)
+B20_8758: CYCLE(6); SetStack(SP, 90); SetStack(SP - 1, 135); SP -= 2; goto B30_c509;
+B20_8767: RTS()
+B20_8768: LDA_ABS(0x0624)
+B20_876b: CYCLE(6); SetStack(SP, 109); SetStack(SP - 1, 135); SP -= 2; goto B30_c536;
+B20_876e: CYCLE(3); PC = 0x87e7; goto B20_87e7;
+B20_8771: LDA_ABS(0x05fc)
+B20_8774: CYCLE(6); SetStack(SP, 118); SetStack(SP - 1, 135); SP -= 2; goto B30_c50c;
+B20_8777: LDY_IMM(0x06)
+B20_8779: LDA_IDY(0x34)
+B20_877b: TAX()
+B20_877c: LDY_IMM(0x08)
+B20_877e: LDA_IDY(0x34)
+B20_8780: TAY()
+B20_8781: CYCLE(3); PC = 0x87e7; goto B20_87e7;
+B20_8784: LDA_ABS(0x0624)
+B20_8787: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 135); SP -= 2; goto B20_87a7;
+B20_878a: PHA()
+B20_878b: LDA_ABS(0x0624)
+B20_878e: CYCLE(6); SetStack(SP, 144); SetStack(SP - 1, 135); SP -= 2; goto B28_87c7;
+B20_8791: PLA()
+B20_8792: TAX()
+B20_8793: CYCLE(3); PC = 0x87e7; goto B20_87e7;
+B20_8796: LDA_IMM(0x10)
+B20_8798: CYCLE(6); SetStack(SP, 154); SetStack(SP - 1, 135); SP -= 2; goto B20_87a7;
+B20_879b: STA_ABS(0x0635)
+B20_879e: LDA_IMM(0x10)
+B20_87a0: CYCLE(6); SetStack(SP, 162); SetStack(SP - 1, 135); SP -= 2; goto B28_87c7;
+B20_87a3: STA_ABS(0x0637)
+B20_87a6: RTS()
+B20_87a7: STA_ZP(0x3E)
+B20_87a9: LDA_ABS(0x062c)
+B20_87ac: CYCLE(6); SetStack(SP, 174); SetStack(SP - 1, 135); SP -= 2; goto B30_c545;
+B20_87af: STX_ZP(0x3C)
+B20_87b1: STY_ZP(0x3D)
+B20_87b3: LDX_ABS(0x0639)
+B20_87b6: LDY_ABS(0x0635)
+B20_87b9: CLC()
+B20_87ba: TXA()
+B20_87bb: ADC_ZP(0x3C)
+B20_87bd: TAX()
+B20_87be: TYA()
+B20_87bf: ADC_ZP(0x3D)
+B20_87c1: TAY()
+B20_87c2: DEC_ZP(0x3E)
+B20_87c4: CYCLE(2); if (!SR_N) goto B20_87b9;
+B20_87c6: RTS()
+B20_87c7: STA_ZP(0x3E)
+B20_87c9: LDA_ABS(0x062c)
+B20_87cc: CYCLE(6); SetStack(SP, 206); SetStack(SP - 1, 135); SP -= 2; goto B30_c542;
+B20_87cf: STX_ZP(0x3C)
+B20_87d1: STY_ZP(0x3D)
+B20_87d3: LDX_ABS(0x063b)
+B20_87d6: LDY_ABS(0x0637)
+B20_87d9: CLC()
+B20_87da: TXA()
+B20_87db: ADC_ZP(0x3C)
+B20_87dd: TAX()
+B20_87de: TYA()
+B20_87df: ADC_ZP(0x3D)
+B20_87e1: TAY()
+B20_87e2: DEC_ZP(0x3E)
+B20_87e4: CYCLE(2); if (!SR_N) goto B20_87d9;
+B20_87e6: RTS()
+B20_87e7: TXA()
+B20_87e8: CLC()
+B20_87e9: ADC_IMM(0xFD)
+B20_87eb: LDX_ZP(0x3B)
+B20_87ed: STA_ABS_X(0x0203)
+B20_87f0: TYA()
+B20_87f1: CLC()
+B20_87f2: ADC_IMM(0xC7)
+B20_87f4: STA_ABS_X(0x0200)
+B20_87f7: LDA_IMM(0x3C)
+B20_87f9: LDY_ABS(0x062d)
+B20_87fc: CPY_IMM(0x83)
+B20_87fe: PHP()
+B20_87ff: LDY_IMM(0x01)
+B20_8801: PLP()
+B20_8802: CYCLE(2); if (!SR_Z) goto B20_8808;
+B20_8804: LDY_IMM(0x03)
+B20_8806: LDA_IMM(0x11)
+B20_8808: STA_ABS_X(0x0201)
+B20_880b: TYA()
+B20_880c: STA_ABS_X(0x0202)
+B20_880f: INX()
+B20_8810: INX()
+B20_8811: INX()
+B20_8812: INX()
+B20_8813: STX_ZP(0x3B)
+B20_8815: INC_ZP(0x48)
+B20_8817: LDA_IMM(0x01)
+B20_8819: STA_ABS(0x0532)
+B20_881c: RTS()
+B20_881d: LDY_ABS(0x0640)
+B20_8820: CYCLE(2); if (!SR_Z) goto B20_8834;
+B20_8822: LDY_ABS(0x0641)
+B20_8825: INY()
+B20_8826: CPY_IMM(0x03)
+B20_8828: CYCLE(2); if (!SR_Z) goto B20_882c;
+B20_882a: LDY_IMM(0x00)
+B20_882c: STY_ABS(0x0641)
+B20_882f: LDA_IMM(0x04)
+B20_8831: STA_ABS(0x0640)
+B20_8834: LDA_IMM(0x00)
+B20_8836: LDY_ABS(0x05fb)
+B20_8839: PHP()
+B20_883a: LDY_ABS(0x0641)
+B20_883d: PLP()
+B20_883e: CYCLE(2); if (!SR_Z) goto B20_8847;
+B20_8840: TYA()
+B20_8841: CLC()
+B20_8842: ADC_IMM(0x03)
+B20_8844: TAY()
+B20_8845: LDA_IMM(0x80)
+B20_8847: BIT_ABS(0x0637)
+B20_884a: CYCLE(2); if (SR_N) goto B20_884e;
+B20_884c: EOR_IMM(0x80)
+B20_884e: ORA_ABS_X(0x0202)
+B20_8851: STA_ABS_X(0x0202)
+B20_8854: LDA_ABS_Y(0x885b)
+B20_8857: DEC_ABS(0x0640)
+B20_885a: RTS()
+B20_8861: LDA_ABS(0x002c)
+B20_8864: ASL_A()
+B20_8865: STA_ZP(0x46)
+B20_8867: ASL_A()
+B20_8868: ASL_A()
+B20_8869: ADC_ZP(0x46)
+B20_886b: TAX()
+B20_886c: LDA_IMM(0x00)
+B20_886e: STA_ZP(0x46)
+B20_8870: LDY_ZP(0x46)
+B20_8872: LDA_ABS_Y(0x88d0)
+B20_8875: LDY_ZP(0x3B)
+B20_8877: STA_ABS_Y(0x0201)
+B20_887a: LDA_ABS_X(0x88a8)
+B20_887d: PHA()
+B20_887e: AND_IMM(0xF0)
+B20_8880: LSR_A()
+B20_8881: CLC()
+B20_8882: ADC_IMM(0xA0)
+B20_8884: STA_ABS_Y(0x0203)
+B20_8887: PLA()
+B20_8888: AND_IMM(0x0F)
+B20_888a: ASL_A()
+B20_888b: ASL_A()
+B20_888c: ADC_IMM(0xA2)
+B20_888e: STA_ABS_Y(0x0200)
+B20_8891: LDA_IMM(0x00)
+B20_8893: STA_ABS_Y(0x0202)
+B20_8896: INX()
+B20_8897: INY()
+B20_8898: INY()
+B20_8899: INY()
+B20_889a: INY()
+B20_889b: STY_ZP(0x3B)
+B20_889d: INC_ZP(0x48)
+B20_889f: INC_ZP(0x46)
+B20_88a1: LDA_ZP(0x46)
+B20_88a3: CMP_IMM(0x0A)
+B20_88a5: CYCLE(2); if (!SR_Z) goto B20_8870;
+B20_88a7: RTS()
+
+
+
+// ===== Bank 22 (prg_bank_22.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 22 =====
+// ; ROM: 0x02C010-0x02E00F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=453 data=7388 unaccessed=351
+B22_8000: CYCLE(3); PC = 0x8003; goto B28_8003;
+B22_8003: LDY_IMM(0x00)
+B22_8005: STY_ZP(0x3F)
+B22_8007: STY_ZP(0x41)
+B22_8009: LDA_IDY(0x3C)
+B22_800b: LSR_A()
+B22_800c: ROL_ZP(0x3F)
+B22_800e: LSR_A()
+B22_800f: ROL_ZP(0x41)
+B22_8011: LDA_IDY(0x3C)
+B22_8013: AND_IMM(0x60)
+B22_8015: ASL_A()
+B22_8016: EOR_ABS(0x0517)
+B22_8019: STA_ZP(0x49)
+B22_801b: LDY_IMM(0x08)
+B22_801d: LDA_IDY(0x3C)
+B22_801f: SEC()
+B22_8020: SBC_IMM(0x80)
+B22_8022: TAX()
+B22_8023: LDA_ZP(0x3F)
+B22_8025: SBC_IMM(0x00)
+B22_8027: TAY()
+B22_8028: LDA_IMM(0x00)
+B22_802a: STA_ZP(0x3F)
+B22_802c: LDA_ABS(0x0538)
+B22_802f: EOR_IMM(0xFF)
+B22_8031: CLC()
+B22_8032: ADC_IMM(0x01)
+B22_8034: CYCLE(2); if (!SR_N) goto B22_8038;
+B22_8036: DEC_ZP(0x3F)
+B22_8038: STA_ZP(0x3E)
+B22_803a: TXA()
+B22_803b: CLC()
+B22_803c: ADC_ZP(0x3E)
+B22_803e: TAX()
+B22_803f: TYA()
+B22_8040: ADC_ZP(0x3F)
+B22_8042: TAY()
+B22_8043: BIT_ABS(0x0517)
+B22_8046: CYCLE(2); if (!SR_V) goto B22_8055;
+B22_8048: TXA()
+B22_8049: EOR_IMM(0xFF)
+B22_804b: TAX()
+B22_804c: TYA()
+B22_804d: EOR_IMM(0xFF)
+B22_804f: TAY()
+B22_8050: INX()
+B22_8051: CYCLE(2); if (!SR_Z) goto B22_8054;
+B22_8053: INY()
+B22_8054: INY()
+B22_8055: BIT_ZP(0x49)
+B22_8057: CYCLE(2); if (!SR_V) goto B22_8062;
+B22_8059: SEC()
+B22_805a: TXA()
+B22_805b: SBC_IMM(0x08)
+B22_805d: TAX()
+B22_805e: TYA()
+B22_805f: SBC_IMM(0x00)
+B22_8061: TAY()
+B22_8062: STX_ZP(0x3E)
+B22_8064: STY_ZP(0x3F)
+B22_8066: LDY_IMM(0x0C)
+B22_8068: LDA_IDY(0x3C)
+B22_806a: SEC()
+B22_806b: BIT_ZP(0x49)
+B22_806d: CYCLE(2); if (!SR_N) goto B22_8072;
+B22_806f: SBC_IMM(0x88)
+B22_8071: BIT_ABS(0x80e9)
+B22_8074: STA_ZP(0x40)
+B22_8076: LDA_ZP(0x41)
+B22_8078: SBC_IMM(0x00)
+B22_807a: STA_ZP(0x41)
+B22_807c: LDA_IMM(0x80)
+B22_807e: STA_ZP(0x42)
+B22_8080: LDA_IMM(0x82)
+B22_8082: STA_ZP(0x43)
+B22_8084: LDY_IMM(0x12)
+B22_8086: LDA_IDY(0x3C)
+B22_8088: ASL_A()
+B22_8089: CYCLE(2); if (!SR_C) goto B22_808d;
+B22_808b: INC_ZP(0x43)
+B22_808d: TAY()
+B22_808e: LDA_IDY(0x42)
+B22_8090: TAX()
+B22_8091: INY()
+B22_8092: LDA_IDY(0x42)
+B22_8094: STA_ZP(0x43)
+B22_8096: STX_ZP(0x42)
+B22_8098: CYCLE(6); SetStack(SP, 154); SetStack(SP - 1, 128); SP -= 2; goto B28_8187;
+B22_809b: LDY_IMM(0x00)
+B22_809d: STY_ZP(0x44)
+B22_809f: LDY_ZP(0x44)
+B22_80a1: LDA_IDY(0x42)
+B22_80a3: AND_IMM(0x07)
+B22_80a5: CYCLE(2); if (!SR_Z) goto B22_80ad;
+B22_80a7: CYCLE(6); SetStack(SP, 169); SetStack(SP - 1, 128); SP -= 2; goto B22_80c0;
+B22_80aa: CYCLE(3); PC = 0x809f; goto B26_809f;
+B22_80ad: CYCLE(6); SetStack(SP, 175); SetStack(SP - 1, 128); SP -= 2; goto B28_80b3;
+B22_80b0: CYCLE(3); PC = 0x809f; goto B26_809f;
+B22_80b3: INC_ZP(0x44)
+B22_80b5: CYCLE(6); SetStack(SP, 183); SetStack(SP - 1, 128); SP -= 2; goto B30_c509;
+B22_80c0: LDY_ZP(0x44)
+B22_80c2: LDA_IDY(0x42)
+B22_80c4: AND_IMM(0x38)
+B22_80c6: LSR_A()
+B22_80c7: LSR_A()
+B22_80c8: LSR_A()
+B22_80c9: STA_ZP(0x45)
+B22_80cb: INY()
+B22_80cc: LDA_IDY(0x42)
+B22_80ce: TAX()
+B22_80cf: LDA_ABS_X(0x81d2)
+B22_80d2: LDX_IMM(0x00)
+B22_80d4: BIT_ZP(0x49)
+B22_80d6: CYCLE(2); if (!SR_N) goto B22_80dd;
+B22_80d8: EOR_IMM(0xFF)
+B22_80da: CLC()
+B22_80db: ADC_IMM(0x01)
+B22_80dd: PHA()
+B22_80de: PLA()
+B22_80df: CYCLE(2); if (!SR_N) goto B22_80e2;
+B22_80e1: DEX()
+B22_80e2: CLC()
+B22_80e3: ADC_ZP(0x40)
+B22_80e5: STA_ZP(0x46)
+B22_80e7: TXA()
+B22_80e8: ADC_ZP(0x41)
+B22_80ea: CYCLE(2); if (!SR_Z) goto B22_80fd;
+B22_80ec: LDA_ZP(0x46)
+B22_80ee: CMP_ABS(0x0540)
+B22_80f1: CYCLE(2); if (!SR_C) goto B22_80fd;
+B22_80f3: CMP_ABS(0x0541)
+B22_80f6: CYCLE(2); if (SR_Z) goto B22_8109;
+B22_80f8: CYCLE(2); if (SR_C) goto B22_80fd;
+B22_80fa: CYCLE(3); PC = 0x8109; goto B28_8109;
+B22_80fd: INY()
+B22_80fe: LDA_IMM(0xF8)
+B22_8100: INY()
+B22_8101: INY()
+B22_8102: DEC_ZP(0x45)
+B22_8104: CYCLE(2); if (!SR_N) goto B22_8100;
+B22_8106: STY_ZP(0x44)
+B22_8108: RTS()
+B22_8109: INY()
+B22_810a: LDA_IDY(0x42)
+B22_810c: LSR_A()
+B22_810d: LSR_A()
+B22_810e: TAX()
+B22_810f: LDA_ABS_X(0x81fa)
+B22_8112: LDX_IMM(0x00)
+B22_8114: BIT_ZP(0x49)
+B22_8116: CYCLE(2); if (!SR_V) goto B22_811d;
+B22_8118: EOR_IMM(0xFF)
+B22_811a: CLC()
+B22_811b: ADC_IMM(0x01)
+B22_811d: PHA()
+B22_811e: PLA()
+B22_811f: CYCLE(2); if (!SR_N) goto B22_8122;
+B22_8121: DEX()
+B22_8122: CLC()
+B22_8123: ADC_ZP(0x3E)
+B22_8125: STA_ZP(0x47)
+B22_8127: TXA()
+B22_8128: ADC_ZP(0x3F)
+B22_812a: CYCLE(2); if (SR_Z) goto B22_8136;
+B22_812c: LDX_ZP(0x3B)
+B22_812e: LDA_IMM(0xF8)
+B22_8130: STA_ABS_X(0x0200)
+B22_8133: INY()
+B22_8134: CYCLE(2); if (!SR_Z) goto B22_8159;
+B22_8136: LDX_ZP(0x3B)
+B22_8138: LDA_ZP(0x46)
+B22_813a: STA_ABS_X(0x0200)
+B22_813d: LDA_ZP(0x47)
+B22_813f: STA_ABS_X(0x0203)
+B22_8142: LDA_IDY(0x42)
+B22_8144: AND_IMM(0x03)
+B22_8146: ORA_ZP(0x49)
+B22_8148: STA_ABS_X(0x0202)
+B22_814b: INY()
+B22_814c: LDA_IDY(0x42)
+B22_814e: STA_ABS_X(0x0201)
+B22_8151: INX()
+B22_8152: INX()
+B22_8153: INX()
+B22_8154: INX()
+B22_8155: STX_ZP(0x3B)
+B22_8157: INC_ZP(0x48)
+B22_8159: INY()
+B22_815a: DEC_ZP(0x45)
+B22_815c: CYCLE(2); if (!SR_N) goto B22_810a;
+B22_815e: STY_ZP(0x44)
+B22_8160: RTS()
+B22_8161: PLA()
+B22_8162: PLA()
+B22_8163: RTS()
+B22_8164: LDY_ZP(0x44)
+B22_8166: LDA_IDY(0x42)
+B22_8168: TAX()
+B22_8169: INY()
+B22_816a: LDA_IDY(0x42)
+B22_816c: STA_ZP(0x43)
+B22_816e: STX_ZP(0x42)
+B22_8170: LDA_IMM(0x00)
+B22_8172: STA_ZP(0x44)
+B22_8174: RTS()
+B22_8175: LDA_ABS(0x0546)
+B22_8178: CMP_IMM(0x0C)
+B22_817a: CYCLE(2); if (!SR_C) goto B22_817e;
+B22_817c: SBC_IMM(0x0C)
+B22_817e: ASL_A()
+B22_817f: CLC()
+B22_8180: ADC_ZP(0x44)
+B22_8182: STA_ZP(0x44)
+B22_8184: CYCLE(3); PC = 0x8164; goto B28_8164;
+B22_8187: LDY_IMM(0x00)
+B22_8189: LDA_IDY(0x3C)
+B22_818b: EOR_ABS(0x0517)
+B22_818e: AND_IMM(0x40)
+B22_8190: PHP()
+B22_8191: LDY_IMM(0x13)
+B22_8193: LDA_IDY(0x3C)
+B22_8195: CYCLE(2); if (SR_Z) goto B22_81b1;
+B22_8197: LDX_IMM(0x00)
+B22_8199: PLP()
+B22_819a: PHP()
+B22_819b: CYCLE(2); if (SR_Z) goto B22_81a2;
+B22_819d: EOR_IMM(0xFF)
+B22_819f: CLC()
+B22_81a0: ADC_IMM(0x01)
+B22_81a2: PHA()
+B22_81a3: PLA()
+B22_81a4: CYCLE(2); if (!SR_N) goto B22_81a7;
+B22_81a6: DEX()
+B22_81a7: CLC()
+B22_81a8: ADC_ZP(0x3E)
+B22_81aa: STA_ZP(0x3E)
+B22_81ac: TXA()
+B22_81ad: ADC_ZP(0x3F)
+B22_81af: STA_ZP(0x3F)
+B22_81b1: INY()
+B22_81b2: LDA_IDY(0x3C)
+B22_81b4: CYCLE(2); if (SR_Z) goto B22_81d0;
+B22_81b6: LDX_IMM(0x00)
+B22_81b8: PLP()
+B22_81b9: PHP()
+B22_81ba: CYCLE(2); if (!SR_N) goto B22_81c1;
+B22_81c1: PHA()
+B22_81c2: PLA()
+B22_81c3: CYCLE(2); if (!SR_N) goto B22_81c6;
+B22_81c5: DEX()
+B22_81c6: CLC()
+B22_81c7: ADC_ZP(0x40)
+B22_81c9: STA_ZP(0x40)
+B22_81cb: TXA()
+B22_81cc: ADC_ZP(0x41)
+B22_81ce: STA_ZP(0x41)
+B22_81d0: PLP()
+B22_81d1: RTS()
+
+
+
+// ===== Bank 24 (prg_bank_24.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 24 =====
+// ; ROM: 0x030010-0x03200F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=2774 data=4686 unaccessed=732
+B24_8000: CYCLE(3); PC = 0x800f; goto B26_800f;
+B24_8003: CYCLE(3); PC = 0x86f8; goto B26_86f8;
+B24_8006: CYCLE(3); PC = 0x8779; goto B26_8779;
+B24_8009: CYCLE(3); PC = 0x87e6; goto B26_87e6;
+B24_800c: CYCLE(3); PC = 0x8851; goto B28_8851;
+B24_800f: BIT_ABS(0x063f)
+B24_8012: CYCLE(2); if (!SR_N) goto B24_8017;
+B24_8014: CYCLE(3); PC = 0xc512; goto B30_c512;
+B24_8017: LDA_IMM(0x20)
+B24_8019: STA_ZP(0x5F)
+B24_801b: LDA_IMM(0x92)
+B24_801d: STA_ZP(0x60)
+B24_801f: LDA_ABS(0x05ea)
+B24_8022: ASL_A()
+B24_8023: CYCLE(2); if (!SR_C) goto B24_8027;
+B24_8025: INC_ZP(0x60)
+B24_8027: TAY()
+B24_8028: LDA_IDY(0x5F)
+B24_802a: TAX()
+B24_802b: INY()
+B24_802c: LDA_IDY(0x5F)
+B24_802e: STA_ZP(0x60)
+B24_8030: STX_ZP(0x5F)
+B24_8032: LDA_IMM(0x00)
+B24_8034: STA_ABS(0x05e9)
+B24_8037: STA_ABS(0x05e5)
+B24_803a: STA_ABS(0x05e4)
+B24_803d: STA_ABS(0x05f4)
+B24_8040: LDA_IMM(0x01)
+B24_8042: STA_ABS(0x05e3)
+B24_8045: LDA_IMM(0x01)
+B24_8047: CYCLE(6); SetStack(SP, 73); SetStack(SP - 1, 128); SP -= 2; goto B30_c515;
+B24_804a: CYCLE(6); SetStack(SP, 76); SetStack(SP - 1, 128); SP -= 2; goto B28_8053;
+B24_804d: CYCLE(6); SetStack(SP, 79); SetStack(SP - 1, 128); SP -= 2; goto B30_c560;
+B24_8050: CYCLE(3); PC = 0x8045; goto B28_8045;
+B24_8053: LDA_ABS(0x05e3)
+B24_8056: CYCLE(2); if (!SR_Z) goto B24_8059;
+B24_8058: RTS()
+B24_8059: LDA_ABS(0x05e9)
+B24_805c: CYCLE(2); if (SR_Z) goto B24_8062;
+B24_805e: DEC_ABS(0x05e9)
+B24_8061: RTS()
+B24_8062: LDA_ABS(0x05e4)
+B24_8065: CYCLE(6); SetStack(SP, 103); SetStack(SP - 1, 128); SP -= 2; goto B30_c509;
+B24_806e: LDY_ABS(0x05e5)
+B24_8071: INC_ABS(0x05e5)
+B24_8074: LDA_IDY(0x5F)
+B24_8076: CMP_IMM(0xF0)
+B24_8078: CYCLE(2); if (!SR_C) goto B24_8080;
+B24_807a: CYCLE(6); SetStack(SP, 124); SetStack(SP - 1, 128); SP -= 2; goto B26_8087;
+B24_807d: CYCLE(3); PC = 0x806e; goto B28_806e;
+B24_8080: STA_ABS(0x05e9)
+B24_8083: INC_ABS(0x05e4)
+B24_8086: RTS()
+B24_8087: AND_IMM(0x0F)
+B24_8089: CYCLE(6); SetStack(SP, 139); SetStack(SP - 1, 128); SP -= 2; goto B30_c509;
+B24_8098: LDA_IMM(0x00)
+B24_809a: STA_ABS(0x05e3)
+B24_809d: PLA()
+B24_809e: PLA()
+B24_809f: RTS()
+B24_80b5: CYCLE(3); PC = 0xc52d; goto B30_c52d;
+B24_80b8: LDY_ABS(0x05e5)
+B24_80bb: LDA_IDY(0x5F)
+B24_80bd: TAX()
+B24_80be: INY()
+B24_80bf: LDA_IDY(0x5F)
+B24_80c1: STA_ZP(0x60)
+B24_80c3: STX_ZP(0x5F)
+B24_80c5: LDA_IMM(0x00)
+B24_80c7: STA_ABS(0x05e5)
+B24_80ca: RTS()
+B24_80cb: LDY_ABS(0x05e5)
+B24_80ce: LDA_IDY(0x5F)
+B24_80d0: CYCLE(6); SetStack(SP, 210); SetStack(SP - 1, 128); SP -= 2; goto B28_80ea;
+B24_80d3: TXA()
+B24_80d4: ASL_A()
+B24_80d5: SEC()
+B24_80d6: ADC_ABS(0x05e5)
+B24_80d9: TAY()
+B24_80da: LDA_IDY(0x5F)
+B24_80dc: TAX()
+B24_80dd: INY()
+B24_80de: LDA_IDY(0x5F)
+B24_80e0: STX_ZP(0x5F)
+B24_80e2: STA_ZP(0x60)
+B24_80e4: LDA_IMM(0x00)
+B24_80e6: STA_ABS(0x05e5)
+B24_80e9: RTS()
+B24_80ea: CYCLE(6); SetStack(SP, 236); SetStack(SP - 1, 128); SP -= 2; goto B30_c509;
+B24_8106: LDX_ABS(0x05fb)
+B24_8109: CYCLE(2); if (SR_Z) goto B24_810d;
+B24_810b: LDX_IMM(0x01)
+B24_810d: RTS()
+B24_810e: LDX_ABS(0x0600)
+B24_8111: CYCLE(2); if (SR_Z) goto B24_811b;
+B24_8113: DEX()
+B24_8114: CPX_IMM(0x03)
+B24_8116: CYCLE(2); if (!SR_C) goto B24_811a;
+B24_8118: LDX_IMM(0x02)
+B24_811a: RTS()
+B24_811e: LDX_ABS(0x0629)
+B24_8121: RTS()
+B24_8122: LDX_IMM(0x00)
+B24_8124: LDA_ZP(0x26)
+B24_8126: CMP_ABS_X(0x8131)
+B24_8129: CYCLE(2); if (!SR_C) goto B24_8130;
+B24_812b: CYCLE(2); if (SR_Z) goto B24_8130;
+B24_812d: INX()
+B24_812e: CYCLE(2); if (!SR_Z) goto B24_8126;
+B24_8130: RTS()
+B24_8138: LDA_ZP(0x27)
+B24_813a: CYCLE(6); SetStack(SP, 60); SetStack(SP - 1, 129); SP -= 2; goto B30_c509;
+B24_8147: LDX_IMM(0x02)
+B24_8149: LDA_ABS(0x0028)
+B24_814c: CMP_ABS(0x0029)
+B24_814f: CYCLE(2); if (SR_Z) goto B24_8155;
+B24_8151: DEX()
+B24_8152: CYCLE(2); if (!SR_C) goto B24_8155;
+B24_8154: DEX()
+B24_8155: RTS()
+B24_8156: LDY_ZP(0x26)
+B24_8158: LDA_ABS_Y(0x81ac)
+B24_815b: STA_ZP(0x49)
+B24_815d: LDA_ABS(0x0028)
+B24_8160: CMP_ABS(0x0029)
+B24_8163: CYCLE(2); if (!SR_Z) goto B24_818b;
+B24_8165: LDX_IMM(0x0D)
+B24_8167: LDA_ABS(0x0027)
+B24_816a: CMP_IMM(0x01)
+B24_816c: CYCLE(2); if (SR_Z) goto B24_817e;
+B24_816e: BIT_ZP(0x49)
+B24_8170: CYCLE(2); if (!SR_V) goto B24_8174;
+B24_8172: INX()
+B24_8173: RTS()
+B24_817e: LDX_IMM(0x0C)
+B24_8180: BIT_ZP(0x49)
+B24_8182: CYCLE(2); if (SR_N) goto B24_818a;
+B24_8184: INX()
+B24_8185: BIT_ZP(0x49)
+B24_8187: CYCLE(2); if (!SR_V) goto B24_818a;
+B24_8189: INX()
+B24_818a: RTS()
+B24_818b: CYCLE(2); if (SR_C) goto B24_8197;
+B24_818d: LDX_IMM(0x0A)
+B24_818f: LDA_ZP(0x27)
+B24_8191: CMP_IMM(0x04)
+B24_8193: CYCLE(2); if (!SR_Z) goto B24_8196;
+B24_8195: INX()
+B24_8196: RTS()
+B24_8197: LDA_ZP(0x49)
+B24_8199: AND_IMM(0x07)
+B24_819b: CLC()
+B24_819c: ADC_IMM(0x03)
+B24_819e: TAX()
+B24_819f: CPX_IMM(0x03)
+B24_81a1: CYCLE(2); if (!SR_Z) goto B24_81ab;
+B24_81a3: LDA_ZP(0x27)
+B24_81a5: CMP_IMM(0x03)
+B24_81a7: CYCLE(2); if (!SR_Z) goto B24_81ab;
+B24_81a9: LDX_IMM(0x09)
+B24_81ab: RTS()
+B24_81ce: LDA_ABS(0x0616)
+B24_81d1: LSR_A()
+B24_81d2: LDX_IMM(0x00)
+B24_81d4: CMP_IMM(0x01)
+B24_81d6: CYCLE(2); if (!SR_C) goto B24_81e3;
+B24_81d8: INX()
+B24_81d9: CMP_IMM(0x05)
+B24_81db: CYCLE(2); if (!SR_C) goto B24_81e3;
+B24_81dd: INX()
+B24_81de: CMP_IMM(0x06)
+B24_81e0: CYCLE(2); if (!SR_C) goto B24_81e3;
+B24_81e2: INX()
+B24_81e3: RTS()
+B24_81e4: LDA_ABS(0x05fb)
+B24_81e7: EOR_IMM(0x0B)
+B24_81e9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 129); SP -= 2; goto B30_c50c;
+B24_81ec: LDX_IMM(0x00)
+B24_81ee: LDY_IMM(0x07)
+B24_81f0: LDA_IDY(0x34)
+B24_81f2: CMP_IMM(0x19)
+B24_81f4: CYCLE(2); if (!SR_C) goto B24_81fc;
+B24_81f6: INX()
+B24_81f7: CMP_IMM(0x36)
+B24_81f9: CYCLE(2); if (!SR_C) goto B24_81fc;
+B24_81fb: INX()
+B24_81fc: RTS()
+B24_81fd: CYCLE(6); SetStack(SP, 255); SetStack(SP - 1, 129); SP -= 2; goto B30_c52d;
+B24_8200: LDA_IMM(0x0D)
+B24_8202: STA_ABS(0x05f3)
+B24_8205: LDA_IMM(0x80)
+B24_8207: STA_ABS(0x05f4)
+B24_820a: LDY_ABS(0x05e5)
+B24_820d: LDA_IDY(0x5F)
+B24_820f: STA_ABS(0x05e9)
+B24_8212: INC_ABS(0x05e5)
+B24_8215: PLA()
+B24_8216: PLA()
+B24_8217: RTS()
+B24_8218: LDY_ABS(0x05e5)
+B24_821b: LDA_IDY(0x5F)
+B24_821d: CMP_IMM(0x90)
+B24_821f: CYCLE(2); if (SR_C) goto B24_822e;
+B24_8221: AND_IMM(0x0F)
+B24_8223: STA_ABS(0x05f3)
+B24_8226: LDA_IMM(0x80)
+B24_8228: STA_ABS(0x05f4)
+B24_822b: CYCLE(3); PC = 0x8234; goto B24_8234;
+B24_822e: CYCLE(6); SetStack(SP, 48); SetStack(SP - 1, 130); SP -= 2; goto B30_c52d;
+B24_8231: LDY_ABS(0x05e5)
+B24_8234: LDA_IDY(0x5F)
+B24_8236: LSR_A()
+B24_8237: LSR_A()
+B24_8238: LSR_A()
+B24_8239: LSR_A()
+B24_823a: TAX()
+B24_823b: LDA_ABS_X(0x86b8)
+B24_823e: STA_ABS(0x05e6)
+B24_8241: TXA()
+B24_8242: ASL_A()
+B24_8243: PHA()
+B24_8244: TAX()
+B24_8245: LDA_ABS_X(0x8dc2)
+B24_8248: STA_ZP(0x61)
+B24_824a: LDA_ABS_X(0x8dc3)
+B24_824d: STA_ZP(0x62)
+B24_824f: LDY_IMM(0x00)
+B24_8251: LDA_IDY(0x61)
+B24_8253: PHA()
+B24_8254: INY()
+B24_8255: LDA_IDY(0x61)
+B24_8257: PHA()
+B24_8258: INY()
+B24_8259: LDA_IDY(0x61)
+B24_825b: STA_ABS(0x05e7)
+B24_825e: INY()
+B24_825f: LDA_IMM(0x06)
+B24_8261: STA_ABS(0x05e8)
+B24_8264: LDA_IMM(0x01)
+B24_8266: CYCLE(6); SetStack(SP, 104); SetStack(SP - 1, 130); SP -= 2; goto B30_c515;
+B24_8269: LDA_ABS(0x0515)
+B24_826c: CYCLE(2); if (!SR_Z) goto B24_8264;
+B24_826e: LDA_IMM(0x01)
+B24_8270: STA_ABS(0x0515)
+B24_8273: LDA_IMM(0x02)
+B24_8275: STA_ZP(0x3B)
+B24_8277: LDX_IMM(0x00)
+B24_8279: LDA_ABS(0x05e7)
+B24_827c: STA_ABS_X(0x04a5)
+B24_827f: PLA()
+B24_8280: STA_ABS_X(0x04a7)
+B24_8283: PLA()
+B24_8284: STA_ABS_X(0x04a6)
+B24_8287: CLC()
+B24_8288: ADC_IMM(0x20)
+B24_828a: PHA()
+B24_828b: LDA_ABS_X(0x04a7)
+B24_828e: ADC_IMM(0x00)
+B24_8290: PHA()
+B24_8291: INX()
+B24_8292: INX()
+B24_8293: INX()
+B24_8294: LDA_IDY(0x61)
+B24_8296: CYCLE(2); if (!SR_N) goto B24_82a9;
+B24_8298: AND_IMM(0x7F)
+B24_829a: STA_ZP(0x3A)
+B24_829c: INY()
+B24_829d: LDA_IMM(0x00)
+B24_829f: STA_ABS_X(0x04a5)
+B24_82a2: INX()
+B24_82a3: DEC_ZP(0x3A)
+B24_82a5: CYCLE(2); if (!SR_Z) goto B24_829f;
+B24_82a7: CYCLE(2); if (SR_Z) goto B24_82b7;
+B24_82a9: STA_ZP(0x3A)
+B24_82ab: INY()
+B24_82ac: LDA_IDY(0x61)
+B24_82ae: STA_ABS_X(0x04a5)
+B24_82b1: INY()
+B24_82b2: INX()
+B24_82b3: DEC_ZP(0x3A)
+B24_82b5: CYCLE(2); if (!SR_Z) goto B24_82ac;
+B24_82b7: TXA()
+B24_82b8: SEC()
+B24_82b9: SBC_IMM(0x03)
+B24_82bb: CMP_ABS(0x04a5)
+B24_82be: CYCLE(2); if (SR_Z) goto B24_8279;
+B24_82c0: CYCLE(2); if (!SR_C) goto B24_8294;
+B24_82c2: SBC_ABS(0x04a5)
+B24_82c5: SBC_IMM(0x03)
+B24_82c7: CMP_ABS(0x04a5)
+B24_82ca: CYCLE(2); if (!SR_C) goto B24_8294;
+B24_82cc: LDA_IMM(0x00)
+B24_82ce: STA_ABS_X(0x04a5)
+B24_82d1: LDA_IMM(0x80)
+B24_82d3: STA_ABS(0x0515)
+B24_82d6: DEC_ABS(0x05e8)
+B24_82d9: CYCLE(2); if (!SR_Z) goto B24_8264;
+B24_82db: PLA()
+B24_82dc: PLA()
+B24_82dd: PLA()
+B24_82de: TAX()
+B24_82df: LDA_ABS_X(0x86c8)
+B24_82e2: STA_ABS(0x05e7)
+B24_82e5: LDA_ABS_X(0x86c9)
+B24_82e8: STA_ABS(0x05e8)
+B24_82eb: INC_ABS(0x05e5)
+B24_82ee: INC_ABS(0x05e4)
+B24_82f1: RTS()
+B24_82f2: LDA_IMM(0x01)
+B24_82f4: CYCLE(6); SetStack(SP, 246); SetStack(SP - 1, 130); SP -= 2; goto B30_c515;
+B24_82f7: LDA_ABS(0x0515)
+B24_82fa: CYCLE(2); if (!SR_Z) goto B24_82f2;
+B24_82fc: LDA_IMM(0x01)
+B24_82fe: STA_ABS(0x0515)
+B24_8301: LDA_ABS(0x05e6)
+B24_8304: ASL_A()
+B24_8305: CLC()
+B24_8306: ADC_IMM(0x06)
+B24_8308: TAY()
+B24_8309: INY()
+B24_830a: LDX_IMM(0x00)
+B24_830c: TXA()
+B24_830d: STA_ABS_X(0x04a5)
+B24_8310: INX()
+B24_8311: DEY()
+B24_8312: CYCLE(2); if (!SR_N) goto B24_830d;
+B24_8314: LDA_ABS(0x05e6)
+B24_8317: CLC()
+B24_8318: ADC_IMM(0x03)
+B24_831a: STA_ZP(0x3A)
+B24_831c: TAX()
+B24_831d: LDA_ABS(0x05e6)
+B24_8320: STA_ABS(0x04a5)
+B24_8323: STA_ABS_X(0x04a5)
+B24_8326: LDA_ABS(0x05e7)
+B24_8329: ASL_A()
+B24_832a: TAY()
+B24_832b: LDA_ABS_Y(0x86e8)
+B24_832e: STA_ABS(0x04a6)
+B24_8331: CLC()
+B24_8332: ADC_IMM(0x20)
+B24_8334: STA_ABS_X(0x04a6)
+B24_8337: LDA_ABS_Y(0x86e9)
+B24_833a: STA_ABS(0x04a7)
+B24_833d: ADC_IMM(0x00)
+B24_833f: STA_ABS_X(0x04a7)
+B24_8342: LDA_IMM(0x00)
+B24_8344: STA_ZP(0x3B)
+B24_8346: LDY_ABS(0x05e5)
+B24_8349: INC_ABS(0x05e5)
+B24_834c: LDA_IDY(0x5F)
+B24_834e: CMP_IMM(0xE0)
+B24_8350: CYCLE(2); if (!SR_C) goto B24_8358;
+B24_8352: CYCLE(6); SetStack(SP, 84); SetStack(SP - 1, 131); SP -= 2; goto B26_835e;
+B24_8355: CYCLE(3); PC = 0x8346; goto B26_8346;
+B24_8358: CYCLE(6); SetStack(SP, 90); SetStack(SP - 1, 131); SP -= 2; goto B28_8629;
+B24_835b: CYCLE(3); PC = 0x8346; goto B26_8346;
+B24_835e: SEC()
+B24_835f: SBC_IMM(0xE0)
+B24_8361: CYCLE(6); SetStack(SP, 99); SetStack(SP - 1, 131); SP -= 2; goto B30_c509;
+B24_83a4: LDA_ABS(0x043b)
+B24_83a7: CMP_IMM(0x01)
+B24_83a9: CYCLE(2); if (!SR_Z) goto B24_83b2;
+B24_83ab: BIT_ABS(0x0628)
+B24_83ae: CYCLE(2); if (!SR_N) goto B24_83b2;
+B24_83b2: TAX()
+B24_83b3: LDA_ABS(0x043c)
+B24_83b6: AND_IMM(0x7F)
+B24_83b8: CLC()
+B24_83b9: ADC_ABS_X(0x83bf)
+B24_83bc: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_83ca: LDA_ABS(0x043d)
+B24_83cd: AND_IMM(0x1F)
+B24_83cf: TAX()
+B24_83d0: LDA_ABS(0x043e)
+B24_83d3: AND_IMM(0x7F)
+B24_83d5: CLC()
+B24_83d6: ADC_ABS_X(0x83dc)
+B24_83d9: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_83e2: LDA_ABS(0x043c)
+B24_83e5: CYCLE(2); if (!SR_N) goto B24_8413;
+B24_83e7: AND_IMM(0x7F)
+B24_83e9: CYCLE(2); if (SR_Z) goto B24_83fb;
+B24_83eb: LDX_ABS(0x043b)
+B24_83ee: CYCLE(2); if (!SR_Z) goto B24_83fb;
+B24_83f0: CMP_IMM(0x03)
+B24_83f2: CYCLE(2); if (SR_C) goto B24_8413;
+B24_83f4: TAX()
+B24_83f5: LDA_ABS_X(0x8440)
+B24_83f8: CYCLE(3); PC = 0x8410; goto B26_8410;
+B24_83fb: LDX_ABS(0x043b)
+B24_83fe: CPX_IMM(0x01)
+B24_8400: CYCLE(2); if (!SR_Z) goto B24_8409;
+B24_8402: BIT_ABS(0x0628)
+B24_8405: CYCLE(2); if (!SR_N) goto B24_8409;
+B24_8407: LDX_IMM(0x0A)
+B24_8409: LDA_ABS_X(0x8435)
+B24_840c: CMP_IMM(0xFF)
+B24_840e: CYCLE(2); if (SR_Z) goto B24_8413;
+B24_8410: CYCLE(6); SetStack(SP, 18); SetStack(SP - 1, 132); SP -= 2; goto B28_863c;
+B24_8413: LDA_ABS(0x043b)
+B24_8416: CMP_IMM(0x01)
+B24_8418: CYCLE(2); if (!SR_Z) goto B24_8421;
+B24_841a: BIT_ABS(0x0628)
+B24_841d: CYCLE(2); if (!SR_N) goto B24_8421;
+B24_841f: LDA_IMM(0x0A)
+B24_8421: TAX()
+B24_8422: PHP()
+B24_8423: LDA_ABS_X(0x83bf)
+B24_8426: PLP()
+B24_8427: CYCLE(2); if (!SR_Z) goto B24_8432;
+B24_8429: LDA_ABS(0x043c)
+B24_842c: AND_IMM(0x03)
+B24_842e: CLC()
+B24_842f: ADC_ABS_X(0x83bf)
+B24_8432: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_8443: BIT_ABS(0x043e)
+B24_8446: CYCLE(2); if (!SR_N) goto B24_8455;
+B24_8448: LDX_ABS(0x043d)
+B24_844b: LDA_ABS_X(0x8461)
+B24_844e: CMP_IMM(0xFF)
+B24_8450: CYCLE(2); if (SR_Z) goto B24_8455;
+B24_8452: CYCLE(6); SetStack(SP, 84); SetStack(SP - 1, 132); SP -= 2; goto B28_863c;
+B24_8455: LDA_ABS(0x043d)
+B24_8458: AND_IMM(0x3F)
+B24_845a: TAX()
+B24_845b: LDA_ABS_X(0x83dc)
+B24_845e: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_8467: LDA_ABS(0x0441)
+B24_846a: CYCLE(3); PC = 0x8653; goto B28_8653;
+B24_846d: LDA_ABS(0x05fb)
+B24_8470: EOR_IMM(0x0B)
+B24_8472: CYCLE(3); PC = 0x8478; goto B26_8478;
+B24_8475: LDA_ABS(0x05fb)
+B24_8478: LDY_ABS(0x002a)
+B24_847b: TAX()
+B24_847c: CYCLE(2); if (SR_Z) goto B24_8486;
+B24_847e: LDY_ABS(0x002b)
+B24_8481: CPY_IMM(0x24)
+B24_8483: CYCLE(2); if (!SR_Z) goto B24_8486;
+B24_8486: TYA()
+B24_8487: CLC()
+B24_8488: ADC_IMM(0x76)
+B24_848a: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_848d: LDA_ABS(0x0600)
+B24_8490: CYCLE(3); PC = 0x86b2; goto B24_86b2;
+B24_8493: LDA_ABS(0x0601)
+B24_8496: CYCLE(3); PC = 0x8653; goto B28_8653;
+B24_8499: LDA_ABS(0x0602)
+B24_849c: CYCLE(3); PC = 0x8653; goto B28_8653;
+B24_849f: LDA_ABS(0x0603)
+B24_84a2: CYCLE(3); PC = 0x8653; goto B28_8653;
+B24_84a5: LDA_ABS(0x05fc)
+B24_84a8: CYCLE(3); PC = 0x8653; goto B28_8653;
+B24_84ab: LDX_ABS(0x043d)
+B24_84ae: LDA_ABS_X(0x84c7)
+B24_84b1: CYCLE(2); if (SR_Z) goto B24_84c6;
+B24_84b3: BIT_ABS(0x043e)
+B24_84b6: CYCLE(2); if (!SR_N) goto B24_84bd;
+B24_84b8: LDA_IMM(0xE6)
+B24_84ba: CYCLE(6); SetStack(SP, 188); SetStack(SP - 1, 132); SP -= 2; goto B28_863c;
+B24_84bd: LDX_ABS(0x043d)
+B24_84c0: LDA_ABS_X(0x84c7)
+B24_84c3: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_84ce: LDA_ABS(0x05fb)
+B24_84d1: EOR_IMM(0x0B)
+B24_84d3: CYCLE(3); PC = 0x8653; goto B28_8653;
+B24_84d6: LDA_ABS(0x0442)
+B24_84d9: CYCLE(3); PC = 0x8653; goto B28_8653;
+B24_84dc: LDA_ABS(0x0616)
+B24_84df: LSR_A()
+B24_84e0: CLC()
+B24_84e1: ADC_IMM(0x34)
+B24_84e3: CYCLE(3); PC = 0x8629; goto B28_8629;
+B24_84e6: LDA_ABS(0x002a)
+B24_84e9: CYCLE(3); PC = 0x84ef; goto B24_84ef;
+B24_84ec: LDA_ABS(0x002b)
+B24_84ef: CMP_IMM(0x24)
+B24_84f1: CYCLE(2); if (!SR_Z) goto B24_84f5;
+B24_84f5: CLC()
+B24_84f6: ADC_IMM(0x76)
+B24_84f8: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_84fb: LDA_ABS(0x0441)
+B24_84fe: CYCLE(6); SetStack(SP, 0); SetStack(SP - 1, 133); SP -= 2; goto B28_8513;
+B24_8501: LDA_ABS(0x0442)
+B24_8504: CYCLE(3); PC = 0x8534; goto B28_8534;
+B24_8507: LDA_ABS(0x0442)
+B24_850a: CYCLE(6); SetStack(SP, 12); SetStack(SP - 1, 133); SP -= 2; goto B28_8513;
+B24_850d: LDA_ABS(0x0441)
+B24_8510: CYCLE(3); PC = 0x8534; goto B28_8534;
+B24_8513: CYCLE(6); SetStack(SP, 21); SetStack(SP - 1, 133); SP -= 2; goto B30_c50c;
+B24_8516: LDY_IMM(0x00)
+B24_8518: LDA_IDY(0x34)
+B24_851a: LDX_IMM(0x00)
+B24_851c: CMP_ABS_X(0x852c)
+B24_851f: CYCLE(2); if (SR_Z) goto B24_8528;
+B24_8521: INX()
+B24_8522: CPX_IMM(0x08)
+B24_8524: CYCLE(2); if (!SR_Z) goto B24_851c;
+B24_8526: CLC()
+B24_8527: RTS()
+B24_8528: STX_ZP(0x3D)
+B24_852a: SEC()
+B24_852b: RTS()
+B24_8534: PHP()
+B24_8535: CYCLE(6); SetStack(SP, 55); SetStack(SP - 1, 133); SP -= 2; goto B30_c50c;
+B24_8538: PLP()
+B24_8539: CYCLE(2); if (!SR_C) goto B24_8572;
+B24_853b: LDA_ZP(0x3D)
+B24_853d: ASL_A()
+B24_853e: TAX()
+B24_853f: LDA_ABS_X(0x8589)
+B24_8542: STA_ZP(0x3E)
+B24_8544: LDA_ABS_X(0x858a)
+B24_8547: STA_ZP(0x3F)
+B24_8549: LDY_IMM(0x00)
+B24_854b: LDA_IDY(0x34)
+B24_854d: TAX()
+B24_854e: LDY_IMM(0x00)
+B24_8550: LDA_IDY(0x3E)
+B24_8552: CYCLE(2); if (SR_Z) goto B24_8572;
+B24_8554: TXA()
+B24_8555: CMP_IDY(0x3E)
+B24_8557: CYCLE(2); if (SR_Z) goto B24_855c;
+B24_8559: INY()
+B24_855a: CYCLE(2); if (!SR_Z) goto B24_8550;
+B24_855c: TXA()
+B24_855d: CYCLE(6); SetStack(SP, 95); SetStack(SP - 1, 133); SP -= 2; goto B28_863c;
+B24_8560: LDA_ZP(0x3D)
+B24_8562: ASL_A()
+B24_8563: TAX()
+B24_8564: LDA_ABS_X(0x857a)
+B24_8567: PHA()
+B24_8568: LDA_ABS_X(0x8579)
+B24_856b: CYCLE(6); SetStack(SP, 109); SetStack(SP - 1, 133); SP -= 2; goto B28_8629;
+B24_856e: PLA()
+B24_856f: CYCLE(3); PC = 0x8629; goto B28_8629;
+B24_8572: LDY_IMM(0x00)
+B24_8574: LDA_IDY(0x34)
+B24_8576: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_85b1: LDA_IMM(0xED)
+B24_85b3: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_85b6: LDA_IMM(0xEE)
+B24_85b8: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_85bb: LDY_ABS(0x05e5)
+B24_85be: INC_ABS(0x05e5)
+B24_85c1: LDA_IDY(0x5F)
+B24_85c3: PHA()
+B24_85c4: LDA_IMM(0x7C)
+B24_85c6: CYCLE(6); SetStack(SP, 200); SetStack(SP - 1, 133); SP -= 2; goto B28_8629;
+B24_85c9: PLA()
+B24_85ca: SEC()
+B24_85cb: SBC_IMM(0x01)
+B24_85cd: CYCLE(2); if (!SR_Z) goto B24_85c3;
+B24_85cf: RTS()
+B24_85d0: LDA_IMM(0xEF)
+B24_85d2: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_85d6: LDA_IMM(0x80)
+B24_85d8: STA_ABS(0x0515)
+B24_85db: LDA_ABS(0x05e7)
+B24_85de: CMP_ABS(0x05e8)
+B24_85e1: CYCLE(2); if (!SR_Z) goto B24_85ec;
+B24_85e3: LDA_IMM(0x00)
+B24_85e5: STA_ABS(0x05e4)
+B24_85e8: LDA_IMM(0x01)
+B24_85ea: CYCLE(2); if (!SR_Z) goto B24_85f7;
+B24_85ec: INC_ABS(0x05e7)
+B24_85ef: LDY_ABS(0x05e5)
+B24_85f2: INC_ABS(0x05e5)
+B24_85f5: LDA_IMM(0x01)
+B24_85f7: STA_ABS(0x05e9)
+B24_85fa: PLA()
+B24_85fb: PLA()
+B24_85fc: RTS()
+B24_8629: CYCLE(6); SetStack(SP, 43); SetStack(SP - 1, 134); SP -= 2; goto B30_c524;
+B24_862c: LDX_ZP(0x3A)
+B24_862e: STA_ABS_X(0x04a8)
+B24_8631: LDX_ZP(0x3B)
+B24_8633: TYA()
+B24_8634: STA_ABS_X(0x04a8)
+B24_8637: INC_ZP(0x3A)
+B24_8639: INC_ZP(0x3B)
+B24_863b: RTS()
+B24_863c: CYCLE(6); SetStack(SP, 62); SetStack(SP - 1, 134); SP -= 2; goto B30_c53c;
+B24_863f: LDA_IMM(0x00)
+B24_8641: STA_ZP(0x3C)
+B24_8643: LDY_ZP(0x3C)
+B24_8645: LDA_IDY(0x30)
+B24_8647: CMP_IMM(0xE0)
+B24_8649: CYCLE(2); if (SR_C) goto B24_8652;
+B24_864b: CYCLE(6); SetStack(SP, 77); SetStack(SP - 1, 134); SP -= 2; goto B28_8629;
+B24_864e: INC_ZP(0x3C)
+B24_8650: CYCLE(2); if (!SR_Z) goto B24_8643;
+B24_8652: RTS()
+B24_8653: STA_ZP(0x3D)
+B24_8655: CYCLE(6); SetStack(SP, 87); SetStack(SP - 1, 134); SP -= 2; goto B30_c50c;
+B24_8658: LDY_IMM(0x00)
+B24_865a: LDA_IDY(0x34)
+B24_865c: CYCLE(2); if (SR_Z) goto B24_866b;
+B24_865e: CYCLE(6); SetStack(SP, 96); SetStack(SP - 1, 134); SP -= 2; goto B28_863c;
+B24_8661: LDA_IMM(0x08)
+B24_8663: CYCLE(6); SetStack(SP, 101); SetStack(SP - 1, 134); SP -= 2; goto B28_8629;
+B24_8666: LDA_IMM(0x2E)
+B24_8668: CYCLE(3); PC = 0x8629; goto B28_8629;
+B24_866b: LDA_ZP(0x3D)
+B24_866d: SEC()
+B24_866e: SBC_IMM(0x0B)
+B24_8670: ASL_A()
+B24_8671: ASL_A()
+B24_8672: TAX()
+B24_8673: LDY_IMM(0x00)
+B24_8675: LDA_ABS_X(0x8686)
+B24_8678: STA_ABS_Y(0x05ee)
+B24_867b: INX()
+B24_867c: INY()
+B24_867d: CPY_IMM(0x04)
+B24_867f: CYCLE(2); if (!SR_Z) goto B24_8675;
+B24_8681: LDA_IMM(0x00)
+B24_8683: CYCLE(3); PC = 0x863c; goto B28_863c;
+B24_86b2: CLC()
+B24_86b3: ADC_IMM(0x33)
+B24_86b5: CYCLE(3); PC = 0x8629; goto B28_8629;
+B24_86f8: LDA_ABS(0x0532)
+B24_86fb: CYCLE(2); if (SR_Z) goto B24_8722;
+B24_86fd: CYCLE(2); if (!SR_N) goto B24_871a;
+B24_86ff: AND_IMM(0x7F)
+B24_8701: STA_ABS(0x0532)
+B24_8704: CYCLE(2); if (SR_Z) goto B24_8722;
+B24_8706: SEC()
+B24_8707: SBC_IMM(0x01)
+B24_8709: ASL_A()
+B24_870a: TAX()
+B24_870b: LDA_ABS_X(0xad6e)
+B24_870e: STA_ZP(0x79)
+B24_8710: LDA_ABS_X(0xad6f)
+B24_8713: STA_ZP(0x7A)
+B24_8715: LDA_IMM(0x00)
+B24_8717: STA_ABS(0x0533)
+B24_871a: LDA_ABS(0x0533)
+B24_871d: CYCLE(2); if (SR_Z) goto B24_8723;
+B24_871f: DEC_ABS(0x0533)
+B24_8722: RTS()
+B24_8723: LDY_IMM(0x00)
+B24_8725: LDA_IDY(0x79)
+B24_8727: AND_IMM(0x07)
+B24_8729: TAX()
+B24_872a: LDA_IDY(0x79)
+B24_872c: LSR_A()
+B24_872d: LSR_A()
+B24_872e: LSR_A()
+B24_872f: CYCLE(2); if (!SR_Z) goto B24_873c;
+B24_8731: CPX_IMM(0x00)
+B24_8733: CYCLE(2); if (SR_Z) goto B24_8765;
+B24_8735: CPX_IMM(0x01)
+B24_8737: CYCLE(2); if (SR_Z) goto B24_876b;
+B24_873c: STA_ABS(0x0533)
+B24_873f: LDA_IDY(0x79)
+B24_8741: AND_IMM(0x07)
+B24_8743: STA_ZP(0x3A)
+B24_8745: INY()
+B24_8746: LDA_IDY(0x79)
+B24_8748: TAX()
+B24_8749: INY()
+B24_874a: LDA_IDY(0x79)
+B24_874c: STA_ABS_X(0x046f)
+B24_874f: INY()
+B24_8750: DEC_ZP(0x3A)
+B24_8752: CYCLE(2); if (!SR_Z) goto B24_8746;
+B24_8754: TYA()
+B24_8755: CLC()
+B24_8756: ADC_ZP(0x79)
+B24_8758: STA_ZP(0x79)
+B24_875a: CYCLE(2); if (!SR_C) goto B24_875e;
+B24_875c: INC_ZP(0x7A)
+B24_875e: CYCLE(6); SetStack(SP, 96); SetStack(SP - 1, 135); SP -= 2; goto B30_c533;
+B24_8764: RTS()
+B24_8765: LDA_IMM(0x00)
+B24_8767: STA_ABS(0x0532)
+B24_876a: RTS()
+B24_876b: INY()
+B24_876c: LDA_IDY(0x79)
+B24_876e: TAX()
+B24_876f: INY()
+B24_8770: LDA_IDY(0x79)
+B24_8772: STA_ZP(0x7A)
+B24_8774: STX_ZP(0x79)
+B24_8776: CYCLE(3); PC = 0x8723; goto B28_8723;
+B24_8779: LDA_ABS(0x0534)
+B24_877c: CYCLE(2); if (SR_Z) goto B24_87a3;
+B24_877e: CYCLE(2); if (!SR_N) goto B24_879b;
+B24_8780: AND_IMM(0x7F)
+B24_8782: STA_ABS(0x0534)
+B24_8785: CYCLE(2); if (SR_Z) goto B24_87a3;
+B24_8787: SEC()
+B24_8788: SBC_IMM(0x01)
+B24_878a: ASL_A()
+B24_878b: TAX()
+B24_878c: LDA_ABS_X(0xad1c)
+B24_878f: STA_ZP(0x7B)
+B24_8791: LDA_ABS_X(0xad1d)
+B24_8794: STA_ZP(0x7C)
+B24_8796: LDA_IMM(0x00)
+B24_8798: STA_ABS(0x0535)
+B24_879b: LDA_ABS(0x0535)
+B24_879e: CYCLE(2); if (SR_Z) goto B24_87a4;
+B24_87a0: DEC_ABS(0x0535)
+B24_87a3: RTS()
+B24_87a4: LDY_IMM(0x00)
+B24_87a6: LDA_IDY(0x7B)
+B24_87a8: CMP_IMM(0xF0)
+B24_87aa: CYCLE(2); if (!SR_C) goto B24_87b7;
+B24_87ac: CMP_IMM(0xF0)
+B24_87ae: CYCLE(2); if (SR_Z) goto B24_87d2;
+B24_87b0: CMP_IMM(0xF1)
+B24_87b2: CYCLE(2); if (SR_Z) goto B24_87d8;
+B24_87b7: STA_ABS(0x0535)
+B24_87ba: INY()
+B24_87bb: LDA_IDY(0x7B)
+B24_87bd: STA_ABS(0x0490)
+B24_87c0: INY()
+B24_87c1: LDA_IDY(0x7B)
+B24_87c3: STA_ABS(0x0491)
+B24_87c6: INY()
+B24_87c7: TYA()
+B24_87c8: CLC()
+B24_87c9: ADC_ZP(0x7B)
+B24_87cb: STA_ZP(0x7B)
+B24_87cd: CYCLE(2); if (!SR_C) goto B24_87d1;
+B24_87d1: RTS()
+B24_87d8: INY()
+B24_87d9: LDA_IDY(0x7B)
+B24_87db: TAX()
+B24_87dc: INY()
+B24_87dd: LDA_IDY(0x7B)
+B24_87df: STA_ZP(0x7C)
+B24_87e1: STX_ZP(0x7B)
+B24_87e3: CYCLE(3); PC = 0x87a4; goto B28_87a4;
+B24_87e6: LDA_ABS(0x0536)
+B24_87e9: CYCLE(2); if (SR_Z) goto B24_8811;
+B24_87eb: CYCLE(2); if (!SR_N) goto B24_8808;
+B24_87ed: AND_IMM(0x7F)
+B24_87ef: STA_ABS(0x0536)
+B24_87f2: CYCLE(2); if (SR_Z) goto B24_8811;
+B24_87f4: SEC()
+B24_87f5: SBC_IMM(0x01)
+B24_87f7: ASL_A()
+B24_87f8: TAX()
+B24_87f9: LDA_ABS_X(0xad54)
+B24_87fc: STA_ZP(0x7D)
+B24_87fe: LDA_ABS_X(0xad55)
+B24_8801: STA_ZP(0x7E)
+B24_8803: LDA_IMM(0x00)
+B24_8805: STA_ABS(0x0537)
+B24_8808: LDA_ABS(0x0537)
+B24_880b: CYCLE(2); if (SR_Z) goto B24_8815;
+B24_880d: DEC_ABS(0x0537)
+B24_8810: RTS()
+B24_8811: STA_ABS(0x0538)
+B24_8814: RTS()
+B24_8815: LDY_IMM(0x00)
+B24_8817: LDA_IDY(0x7D)
+B24_8819: CMP_IMM(0xF0)
+B24_881b: CYCLE(2); if (!SR_C) goto B24_8828;
+B24_881d: CMP_IMM(0xF0)
+B24_881f: CYCLE(2); if (SR_Z) goto B24_883d;
+B24_8821: CMP_IMM(0xF1)
+B24_8823: CYCLE(2); if (SR_Z) goto B24_8843;
+B24_8828: STA_ABS(0x0537)
+B24_882b: INY()
+B24_882c: LDA_IDY(0x7D)
+B24_882e: STA_ABS(0x0538)
+B24_8831: INY()
+B24_8832: TYA()
+B24_8833: CLC()
+B24_8834: ADC_ZP(0x7D)
+B24_8836: STA_ZP(0x7D)
+B24_8838: CYCLE(2); if (!SR_C) goto B24_883c;
+B24_883c: RTS()
+B24_8843: INY()
+B24_8844: LDA_IDY(0x7D)
+B24_8846: TAX()
+B24_8847: INY()
+B24_8848: LDA_IDY(0x7D)
+B24_884a: STA_ZP(0x7E)
+B24_884c: STX_ZP(0x7D)
+B24_884e: CYCLE(3); PC = 0x8815; goto B28_8815;
+B24_8851: TAY()
+B24_8852: ASL_A()
+B24_8853: TAX()
+B24_8854: LDA_ABS_X(0xb3cf)
+B24_8857: STA_ZP(0x50)
+B24_8859: LDA_ABS_X(0xb3d0)
+B24_885c: STA_ZP(0x51)
+B24_885e: TYA()
+B24_885f: AND_IMM(0x03)
+B24_8861: TAX()
+B24_8862: TYA()
+B24_8863: LSR_A()
+B24_8864: LSR_A()
+B24_8865: TAY()
+B24_8866: LDA_ABS_Y(0xb3bd)
+B24_8869: DEX()
+B24_886a: CYCLE(2); if (SR_N) goto B24_8871;
+B24_886c: LSR_A()
+B24_886d: LSR_A()
+B24_886e: CYCLE(3); PC = 0x8869; goto B24_8869;
+B24_8871: AND_IMM(0x03)
+B24_8873: STA_ABS(0x05c6)
+B24_8876: ASL_A()
+B24_8877: ASL_A()
+B24_8878: ASL_A()
+B24_8879: ADC_ABS(0x05c6)
+B24_887c: STA_ABS(0x05c6)
+B24_887f: LDA_IMM(0x00)
+B24_8881: STA_ABS(0x05c5)
+B24_8884: LDA_IMM(0x01)
+B24_8886: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 136); SP -= 2; goto B30_c515;
+B24_8889: LDA_ABS(0x0515)
+B24_888c: CYCLE(2); if (!SR_Z) goto B24_8884;
+B24_888e: LDA_IMM(0x01)
+B24_8890: STA_ABS(0x0515)
+B24_8893: LDY_IMM(0x02)
+B24_8895: LDA_IDY(0x50)
+B24_8897: ASL_A()
+B24_8898: CLC()
+B24_8899: ADC_IMM(0x06)
+B24_889b: TAX()
+B24_889c: LDA_IMM(0x00)
+B24_889e: STA_ABS_X(0x04a5)
+B24_88a1: DEX()
+B24_88a2: CYCLE(2); if (!SR_N) goto B24_889e;
+B24_88a4: LDX_IMM(0x00)
+B24_88a6: CYCLE(6); SetStack(SP, 168); SetStack(SP - 1, 136); SP -= 2; goto B24_88b9;
+B24_88a9: CYCLE(2); if (SR_Z) goto B24_88b8;
+B24_88ab: LDY_IMM(0x02)
+B24_88ad: LDA_IDY(0x50)
+B24_88af: CLC()
+B24_88b0: ADC_IMM(0x03)
+B24_88b2: TAX()
+B24_88b3: CYCLE(6); SetStack(SP, 181); SetStack(SP - 1, 136); SP -= 2; goto B24_88b9;
+B24_88b6: CYCLE(2); if (!SR_Z) goto B24_8884;
+B24_88b8: RTS()
+B24_88b9: LDA_IMM(0xFF)
+B24_88bb: STA_ZP(0x45)
+B24_88bd: LDY_IMM(0x02)
+B24_88bf: LDA_IDY(0x50)
+B24_88c1: STA_ABS_X(0x04a5)
+B24_88c4: LDA_IMM(0x00)
+B24_88c6: STA_ZP(0x3A)
+B24_88c8: LDA_ABS(0x05c5)
+B24_88cb: LSR_A()
+B24_88cc: ROR_ZP(0x3A)
+B24_88ce: LSR_A()
+B24_88cf: ROR_ZP(0x3A)
+B24_88d1: LSR_A()
+B24_88d2: ROR_ZP(0x3A)
+B24_88d4: STA_ZP(0x3B)
+B24_88d6: LDY_IMM(0x00)
+B24_88d8: LDA_IDY(0x50)
+B24_88da: CLC()
+B24_88db: ADC_ZP(0x3A)
+B24_88dd: STA_ABS_X(0x04a6)
+B24_88e0: INY()
+B24_88e1: LDA_IDY(0x50)
+B24_88e3: ADC_ZP(0x3B)
+B24_88e5: STA_ABS_X(0x04a7)
+B24_88e8: CMP_IMM(0x22)
+B24_88ea: CYCLE(2); if (SR_C) goto B24_88f9;
+B24_88ec: LDA_ABS(0x05ce)
+B24_88ef: LSR_A()
+B24_88f0: LSR_A()
+B24_88f1: LSR_A()
+B24_88f2: LSR_A()
+B24_88f3: ORA_ABS_X(0x04a7)
+B24_88f6: STA_ABS_X(0x04a7)
+B24_88f9: STX_ZP(0x3A)
+B24_88fb: LDX_IMM(0x00)
+B24_88fd: LDY_IMM(0x05)
+B24_88ff: LDA_IDY(0x50)
+B24_8901: CMP_ABS(0x05c5)
+B24_8904: CYCLE(2); if (SR_Z) goto B24_8918;
+B24_8906: CYCLE(2); if (SR_C) goto B24_8949;
+B24_8908: LDY_IMM(0x07)
+B24_890a: CLC()
+B24_890b: ADC_IDY(0x50)
+B24_890d: LDX_IMM(0x06)
+B24_890f: CMP_ABS(0x05c5)
+B24_8912: CYCLE(2); if (SR_Z) goto B24_8918;
+B24_8914: CYCLE(2); if (!SR_C) goto B24_8949;
+B24_8916: LDX_IMM(0x03)
+B24_8918: LDY_IMM(0x06)
+B24_891a: LDA_IDY(0x50)
+B24_891c: SEC()
+B24_891d: SBC_IMM(0x02)
+B24_891f: STA_ZP(0x3B)
+B24_8921: LDA_ZP(0x3A)
+B24_8923: LDY_IMM(0x04)
+B24_8925: CLC()
+B24_8926: ADC_IDY(0x50)
+B24_8928: TAY()
+B24_8929: STX_ZP(0x45)
+B24_892b: TXA()
+B24_892c: CLC()
+B24_892d: ADC_ABS(0x05c6)
+B24_8930: TAX()
+B24_8931: LDA_ABS_X(0x8d9e)
+B24_8934: STA_ABS_Y(0x04a8)
+B24_8937: LDA_ABS_X(0x8d9f)
+B24_893a: INY()
+B24_893b: STA_ABS_Y(0x04a8)
+B24_893e: INY()
+B24_893f: DEC_ZP(0x3B)
+B24_8941: CYCLE(2); if (!SR_Z) goto B24_893b;
+B24_8943: LDA_ABS_X(0x8da0)
+B24_8946: STA_ABS_Y(0x04a8)
+B24_8949: LDY_IMM(0x08)
+B24_894b: LDA_IDY(0x50)
+B24_894d: CYCLE(2); if (SR_Z) goto B24_8976;
+B24_894f: STA_ZP(0x3B)
+B24_8951: INY()
+B24_8952: LDA_IMM(0x00)
+B24_8954: STA_ZP(0x3C)
+B24_8956: LDA_IDY(0x50)
+B24_8958: CMP_ABS(0x05c5)
+B24_895b: CYCLE(2); if (SR_Z) goto B24_8967;
+B24_895d: SEC()
+B24_895e: SBC_IMM(0x01)
+B24_8960: INC_ZP(0x3C)
+B24_8962: CMP_ABS(0x05c5)
+B24_8965: CYCLE(2); if (!SR_Z) goto B24_896e;
+B24_8967: STY_ZP(0x48)
+B24_8969: CYCLE(6); SetStack(SP, 107); SetStack(SP - 1, 137); SP -= 2; goto B24_8986;
+B24_896c: LDY_ZP(0x48)
+B24_896e: INY()
+B24_896f: INY()
+B24_8970: INY()
+B24_8971: INY()
+B24_8972: DEC_ZP(0x3B)
+B24_8974: CYCLE(2); if (!SR_Z) goto B24_8952;
+B24_8976: LDA_IMM(0x80)
+B24_8978: STA_ABS(0x0515)
+B24_897b: LDA_ABS(0x05c5)
+B24_897e: INC_ABS(0x05c5)
+B24_8981: LDY_IMM(0x03)
+B24_8983: CMP_IDY(0x50)
+B24_8985: RTS()
+B24_8986: INY()
+B24_8987: LDA_IDY(0x50)
+B24_8989: CLC()
+B24_898a: ADC_ZP(0x3A)
+B24_898c: STA_ZP(0x3D)
+B24_898e: INY()
+B24_898f: LDA_IDY(0x50)
+B24_8991: STA_ZP(0x3E)
+B24_8993: INY()
+B24_8994: LDA_IDY(0x50)
+B24_8996: STA_ZP(0x3F)
+B24_8998: LDA_IMM(0x00)
+B24_899a: STA_ZP(0x40)
+B24_899c: LDY_ZP(0x40)
+B24_899e: INC_ZP(0x40)
+B24_89a0: LDA_IDY(0x3E)
+B24_89a2: CMP_IMM(0xE0)
+B24_89a4: CYCLE(2); if (!SR_C) goto B24_89ac;
+B24_89a6: CYCLE(6); SetStack(SP, 168); SetStack(SP - 1, 137); SP -= 2; goto B24_89b4;
+B24_89a9: CYCLE(3); PC = 0x899c; goto B28_899c;
+B24_89ac: CYCLE(6); SetStack(SP, 174); SetStack(SP - 1, 137); SP -= 2; goto B30_c524;
+B24_89af: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 137); SP -= 2; goto B26_8c9f;
+B24_89b2: CYCLE(2); if (!SR_Z) goto B24_899c;
+B24_89b4: SEC()
+B24_89b5: SBC_IMM(0xE0)
+B24_89b7: CYCLE(6); SetStack(SP, 185); SetStack(SP - 1, 137); SP -= 2; goto B30_c509;
+B24_89fa: LDA_ABS(0x0441)
+B24_89fd: CYCLE(3); PC = 0x8cdc; goto B26_8cdc;
+B24_8a00: LDA_ABS(0x0441)
+B24_8a03: CYCLE(3); PC = 0x8ca5; goto B26_8ca5;
+B24_8a06: LDA_ABS(0x05fc)
+B24_8a09: CYCLE(3); PC = 0x8cdc; goto B26_8cdc;
+B24_8a0c: LDA_ABS(0x05fc)
+B24_8a0f: CYCLE(3); PC = 0x8ca5; goto B26_8ca5;
+B24_8a12: LDA_ABS(0x043b)
+B24_8a15: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 138); SP -= 2; goto B30_c509;
+B24_8a20: LDY_ZP(0x40)
+B24_8a22: LDA_IDY(0x3E)
+B24_8a24: CYCLE(2); if (!SR_Z) goto B24_8a2f;
+B24_8a26: LDA_ABS(0x044e)
+B24_8a29: CLC()
+B24_8a2a: ADC_IMM(0x9A)
+B24_8a2c: CYCLE(3); PC = 0x8a56; goto B28_8a56;
+B24_8a2f: LDA_IMM(0x9A)
+B24_8a31: CYCLE(3); PC = 0x8a43; goto B26_8a43;
+B24_8a34: LDA_IMM(0xC4)
+B24_8a36: CYCLE(3); PC = 0x8a43; goto B26_8a43;
+B24_8a39: LDA_IMM(0xBD)
+B24_8a3b: CYCLE(3); PC = 0x8a43; goto B26_8a43;
+B24_8a3e: LDA_IMM(0xC8)
+B24_8a40: CYCLE(3); PC = 0x8a43; goto B26_8a43;
+B24_8a43: TAX()
+B24_8a44: LDY_ZP(0x40)
+B24_8a46: INC_ZP(0x40)
+B24_8a48: LDA_IDY(0x3E)
+B24_8a4a: CYCLE(2); if (SR_Z) goto B24_8a55;
+B24_8a4c: TAY()
+B24_8a4d: TXA()
+B24_8a4e: CLC()
+B24_8a4f: ADC_ABS_Y(0x0430)
+B24_8a52: CYCLE(3); PC = 0x8a56; goto B28_8a56;
+B24_8a55: TXA()
+B24_8a56: STA_ZP(0x47)
+B24_8a58: CYCLE(6); SetStack(SP, 90); SetStack(SP - 1, 138); SP -= 2; goto B30_c53c;
+B24_8a5b: LDA_ZP(0x47)
+B24_8a5d: LDY_IMM(0x09)
+B24_8a5f: CMP_IMM(0xAA)
+B24_8a61: CYCLE(2); if (SR_Z) goto B24_8a6e;
+B24_8a63: LDY_IMM(0x00)
+B24_8a65: LDA_IDY(0x30)
+B24_8a67: CMP_IMM(0xFC)
+B24_8a69: CYCLE(2); if (SR_Z) goto B24_8a6e;
+B24_8a6b: INY()
+B24_8a6c: CYCLE(2); if (!SR_Z) goto B24_8a65;
+B24_8a6e: TYA()
+B24_8a6f: STA_ZP(0x49)
+B24_8a71: LDA_IMM(0x00)
+B24_8a73: STA_ZP(0x46)
+B24_8a75: LDY_ZP(0x46)
+B24_8a77: LDA_IDY(0x30)
+B24_8a79: CYCLE(6); SetStack(SP, 123); SetStack(SP - 1, 138); SP -= 2; goto B30_c524;
+B24_8a7c: CYCLE(6); SetStack(SP, 126); SetStack(SP - 1, 138); SP -= 2; goto B26_8c9f;
+B24_8a7f: INC_ZP(0x46)
+B24_8a81: DEC_ZP(0x49)
+B24_8a83: CYCLE(2); if (!SR_Z) goto B24_8a75;
+B24_8a85: RTS()
+B24_8a86: LDY_ZP(0x40)
+B24_8a88: INC_ZP(0x40)
+B24_8a8a: LDA_IDY(0x3E)
+B24_8a8c: TAX()
+B24_8a8d: LDA_ABS_X(0x0601)
+B24_8a90: CYCLE(3); PC = 0x8d1a; goto B28_8d1a;
+B24_8a93: LDY_ZP(0x40)
+B24_8a95: INC_ZP(0x40)
+B24_8a97: LDA_IDY(0x3E)
+B24_8a99: CYCLE(2); if (SR_Z) goto B24_8a9f;
+B24_8a9b: TAX()
+B24_8a9c: LDA_ABS_X(0x0430)
+B24_8a9f: LDX_ABS(0x061e)
+B24_8aa2: LDY_ABS_X(0x060b)
+B24_8aa5: CLC()
+B24_8aa6: ADC_ABS_Y(0x8aac)
+B24_8aa9: CYCLE(3); PC = 0x8d6c; goto B28_8d6c;
+B24_8aaf: LDX_ABS(0x061e)
+B24_8ab2: LDA_ABS_X(0x0601)
+B24_8ab5: CYCLE(3); PC = 0x8cdc; goto B26_8cdc;
+B24_8ab8: LDX_ABS(0x061e)
+B24_8abb: LDA_ABS_X(0x0601)
+B24_8abe: CYCLE(3); PC = 0x8ca5; goto B26_8ca5;
+B24_8ac1: LDY_ZP(0x40)
+B24_8ac3: INC_ZP(0x40)
+B24_8ac5: LDA_IDY(0x3E)
+B24_8ac7: TAX()
+B24_8ac8: LDA_ABS_X(0x0431)
+B24_8acb: INX()
+B24_8acc: CPX_ABS(0x0430)
+B24_8acf: CYCLE(2); if (!SR_C) goto B24_8ad4;
+B24_8ad1: CYCLE(2); if (SR_Z) goto B24_8ad4;
+B24_8ad3: RTS()
+B24_8ad4: CYCLE(3); PC = 0x8d1a; goto B28_8d1a;
+B24_8ad7: LDA_ABS(0x05fb)
+B24_8ada: EOR_IMM(0x0B)
+B24_8adc: CYCLE(3); PC = 0x8cdc; goto B26_8cdc;
+B24_8adf: LDA_ABS(0x05fb)
+B24_8ae2: EOR_IMM(0x0B)
+B24_8ae4: CYCLE(3); PC = 0x8ca5; goto B26_8ca5;
+B24_8ae7: LDY_ZP(0x40)
+B24_8ae9: INC_ZP(0x40)
+B24_8aeb: LDX_ABS(0x002a)
+B24_8aee: LDA_IDY(0x3E)
+B24_8af0: CYCLE(2); if (SR_Z) goto B24_8af5;
+B24_8af2: LDX_ABS(0x002b)
+B24_8af5: LDA_ABS_X(0x8b0a)
+B24_8af8: PHA()
+B24_8af9: TXA()
+B24_8afa: CLC()
+B24_8afb: ADC_IMM(0x76)
+B24_8afd: CMP_IMM(0x9A)
+B24_8aff: CYCLE(2); if (!SR_C) goto B24_8b03;
+B24_8b03: CYCLE(6); SetStack(SP, 5); SetStack(SP - 1, 139); SP -= 2; goto B30_c53c;
+B24_8b06: PLA()
+B24_8b07: CYCLE(3); PC = 0x8a6f; goto B28_8a6f;
+B24_8b2f: LDY_ZP(0x40)
+B24_8b31: INC_ZP(0x40)
+B24_8b33: LDA_IDY(0x3E)
+B24_8b35: TAX()
+B24_8b36: LDA_ABS_X(0x0028)
+B24_8b39: LDY_ABS(0x0027)
+B24_8b3c: CPY_IMM(0x04)
+B24_8b3e: CYCLE(2); if (!SR_Z) goto B24_8b43;
+B24_8b40: LDA_ABS_X(0x0610)
+B24_8b43: LDX_IMM(0x00)
+B24_8b45: CYCLE(3); PC = 0x8c55; goto B26_8c55;
+B24_8b48: LDA_IMM(0x00)
+B24_8b4a: STA_ZP(0x47)
+B24_8b4c: LDA_ABS(0x0027)
+B24_8b4f: ASL_A()
+B24_8b50: ASL_A()
+B24_8b51: ADC_ABS(0x0027)
+B24_8b54: ADC_ZP(0x47)
+B24_8b56: TAX()
+B24_8b57: LDA_ABS_X(0x8b72)
+B24_8b5a: CMP_IMM(0xFF)
+B24_8b5c: CYCLE(2); if (SR_Z) goto B24_8b67;
+B24_8b5e: CYCLE(6); SetStack(SP, 96); SetStack(SP - 1, 139); SP -= 2; goto B30_c524;
+B24_8b61: CYCLE(6); SetStack(SP, 99); SetStack(SP - 1, 139); SP -= 2; goto B26_8c9f;
+B24_8b64: CYCLE(3); PC = 0x8b69; goto B28_8b69;
+B24_8b67: INC_ZP(0x3D)
+B24_8b69: INC_ZP(0x47)
+B24_8b6b: LDA_ZP(0x47)
+B24_8b6d: CMP_IMM(0x05)
+B24_8b6f: CYCLE(2); if (!SR_Z) goto B24_8b4c;
+B24_8b71: RTS()
+B24_8b8b: LDX_IMM(0x00)
+B24_8b8d: LDA_ABS(0x05f7)
+B24_8b90: LDY_ABS(0x05f8)
+B24_8b93: SEC()
+B24_8b94: SBC_IMM(0x06)
+B24_8b96: CYCLE(2); if (SR_C) goto B24_8b9b;
+B24_8b98: DEY()
+B24_8b99: CYCLE(2); if (SR_N) goto B24_8b9e;
+B24_8b9b: INX()
+B24_8b9c: CYCLE(2); if (!SR_Z) goto B24_8b93;
+B24_8b9e: ADC_IMM(0x06)
+B24_8ba0: ASL_A()
+B24_8ba1: TAY()
+B24_8ba2: TXA()
+B24_8ba3: PHA()
+B24_8ba4: LDA_ABS_Y(0x8bc9)
+B24_8ba7: PHA()
+B24_8ba8: LDA_ABS_Y(0x8bca)
+B24_8bab: LDY_IMM(0x00)
+B24_8bad: CYCLE(6); SetStack(SP, 175); SetStack(SP - 1, 139); SP -= 2; goto B24_8c85;
+B24_8bb0: DEC_ZP(0x3D)
+B24_8bb2: PLA()
+B24_8bb3: LDY_IMM(0x00)
+B24_8bb5: CYCLE(6); SetStack(SP, 183); SetStack(SP - 1, 139); SP -= 2; goto B24_8c85;
+B24_8bb8: DEC_ZP(0x3D)
+B24_8bba: LDA_IMM(0x77)
+B24_8bbc: LDY_IMM(0x00)
+B24_8bbe: CYCLE(6); SetStack(SP, 192); SetStack(SP - 1, 139); SP -= 2; goto B24_8c85;
+B24_8bc1: DEC_ZP(0x3D)
+B24_8bc3: PLA()
+B24_8bc4: LDX_IMM(0x00)
+B24_8bc6: CYCLE(3); PC = 0x8c55; goto B26_8c55;
+B24_8bd5: LDY_ZP(0x40)
+B24_8bd7: INC_ZP(0x40)
+B24_8bd9: LDA_IDY(0x3E)
+B24_8bdb: CYCLE(3); PC = 0x8d1a; goto B28_8d1a;
+B24_8bde: LDA_ABS(0x05fd)
+B24_8be1: CYCLE(3); PC = 0x8d1a; goto B28_8d1a;
+B24_8bea: LDA_ABS(0x0441)
+B24_8bed: CYCLE(3); PC = 0x8d1a; goto B28_8d1a;
+B24_8bf0: LDY_ZP(0x40)
+B24_8bf2: INC_ZP(0x40)
+B24_8bf4: LDA_IDY(0x3E)
+B24_8bf6: CYCLE(6); SetStack(SP, 248); SetStack(SP - 1, 139); SP -= 2; goto B30_c50c;
+B24_8bf9: LDY_IMM(0x02)
+B24_8bfb: LDA_IDY(0x34)
+B24_8bfd: TAX()
+B24_8bfe: DEY()
+B24_8bff: LDA_IDY(0x34)
+B24_8c01: CYCLE(3); PC = 0x8c55; goto B26_8c55;
+B24_8c04: LDA_ABS(0x0441)
+B24_8c07: STA_ZP(0x49)
+B24_8c09: LDA_ZP(0x49)
+B24_8c0b: CMP_IMM(0x0B)
+B24_8c0d: CYCLE(2); if (SR_Z) goto B24_8c46;
+B24_8c0f: LDX_ABS(0x0430)
+B24_8c12: CYCLE(2); if (SR_Z) goto B24_8c22;
+B24_8c14: CMP_ABS_X(0x0430)
+B24_8c17: CYCLE(2); if (SR_Z) goto B24_8c1e;
+B24_8c19: DEX()
+B24_8c1a: CYCLE(2); if (!SR_Z) goto B24_8c14;
+B24_8c1c: CYCLE(2); if (SR_Z) goto B24_8c22;
+B24_8c1e: INC_ZP(0x49)
+B24_8c20: CYCLE(2); if (!SR_Z) goto B24_8c09;
+B24_8c22: INC_ZP(0x49)
+B24_8c24: CYCLE(6); SetStack(SP, 38); SetStack(SP - 1, 140); SP -= 2; goto B28_8d1a;
+B24_8c27: LDY_ZP(0x3C)
+B24_8c29: DEY()
+B24_8c2a: CYCLE(2); if (SR_Z) goto B24_8c46;
+B24_8c2c: LDA_IMM(0x17)
+B24_8c2e: STA_ZP(0x3D)
+B24_8c30: LDA_ZP(0x49)
+B24_8c32: SEC()
+B24_8c33: SBC_IMM(0x01)
+B24_8c35: LDX_IMM(0x01)
+B24_8c37: CYCLE(6); SetStack(SP, 57); SetStack(SP - 1, 140); SP -= 2; goto B30_c527;
+B24_8c3a: LDA_ZP(0x32)
+B24_8c3c: LDX_ZP(0x33)
+B24_8c3e: CYCLE(6); SetStack(SP, 64); SetStack(SP - 1, 140); SP -= 2; goto B26_8c55;
+B24_8c41: LDA_ZP(0x49)
+B24_8c43: STA_ABS(0x0441)
+B24_8c46: RTS()
+B24_8c47: LDA_ABS(0x05fd)
+B24_8c4a: CLC()
+B24_8c4b: ADC_IMM(0x01)
+B24_8c4d: LDX_IMM(0x00)
+B24_8c4f: CYCLE(3); PC = 0x8c55; goto B26_8c55;
+B24_8c52: PLA()
+B24_8c53: PLA()
+B24_8c54: RTS()
+B24_8c55: LDY_ZP(0x3C)
+B24_8c57: DEY()
+B24_8c58: CYCLE(2); if (SR_Z) goto B24_8c84;
+B24_8c5a: STA_ZP(0x6F)
+B24_8c5c: STX_ZP(0x70)
+B24_8c5e: LDA_IMM(0x0A)
+B24_8c60: STA_ZP(0x71)
+B24_8c62: LDA_IMM(0x00)
+B24_8c64: STA_ZP(0x74)
+B24_8c66: CYCLE(6); SetStack(SP, 104); SetStack(SP - 1, 140); SP -= 2; goto B30_c51e;
+B24_8c69: LDA_ZP(0x72)
+B24_8c6b: CYCLE(6); SetStack(SP, 109); SetStack(SP - 1, 140); SP -= 2; goto B28_8c7a;
+B24_8c6e: LDA_ZP(0x70)
+B24_8c70: CYCLE(2); if (!SR_Z) goto B24_8c66;
+B24_8c72: LDA_ZP(0x6F)
+B24_8c74: CYCLE(2); if (SR_Z) goto B24_8c84;
+B24_8c76: CMP_IMM(0x0A)
+B24_8c78: CYCLE(2); if (SR_C) goto B24_8c66;
+B24_8c7a: CLC()
+B24_8c7b: ADC_IMM(0x33)
+B24_8c7d: LDY_IMM(0x00)
+B24_8c7f: CYCLE(6); SetStack(SP, 129); SetStack(SP - 1, 140); SP -= 2; goto B24_8c85;
+B24_8c82: DEC_ZP(0x3D)
+B24_8c84: RTS()
+B24_8c85: LDX_ZP(0x3D)
+B24_8c87: DEC_ZP(0x3C)
+B24_8c89: CYCLE(2); if (!SR_Z) goto B24_8c99;
+B24_8c8b: TYA()
+B24_8c8c: CYCLE(2); if (SR_Z) goto B24_8c9c;
+B24_8c8e: LDY_ABS(0x05c6)
+B24_8c91: CPY_IMM(0x1B)
+B24_8c93: CYCLE(2); if (SR_Z) goto B24_8c99;
+B24_8c95: LDY_ZP(0x45)
+B24_8c97: CYCLE(2); if (SR_Z) goto B24_8c9c;
+B24_8c99: STA_ABS_X(0x04a8)
+B24_8c9c: INC_ZP(0x3C)
+B24_8c9e: RTS()
+B24_8c9f: CYCLE(6); SetStack(SP, 161); SetStack(SP - 1, 140); SP -= 2; goto B24_8c85;
+B24_8ca2: INC_ZP(0x3D)
+B24_8ca4: RTS()
+B24_8ca5: PHA()
+B24_8ca6: LDY_ZP(0x40)
+B24_8ca8: INC_ZP(0x40)
+B24_8caa: LDA_IDY(0x3E)
+B24_8cac: CYCLE(2); if (!SR_Z) goto B24_8cbd;
+B24_8cae: PLA()
+B24_8caf: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 140); SP -= 2; goto B30_c50c;
+B24_8cb2: LDY_IMM(0x02)
+B24_8cb4: LDA_IDY(0x34)
+B24_8cb6: TAX()
+B24_8cb7: DEY()
+B24_8cb8: LDA_IDY(0x34)
+B24_8cba: CYCLE(3); PC = 0x8cd9; goto B28_8cd9;
+B24_8cbd: AND_IMM(0x7F)
+B24_8cbf: CMP_IMM(0x07)
+B24_8cc1: CYCLE(2); if (!SR_C) goto B24_8cd0;
+B24_8cc3: CMP_IMM(0x18)
+B24_8cc5: CYCLE(2); if (SR_C) goto B24_8cd0;
+B24_8cc7: LDX_ABS(0x044e)
+B24_8cca: DEX()
+B24_8ccb: CYCLE(2); if (SR_Z) goto B24_8cd0;
+B24_8ccd: CLC()
+B24_8cce: ADC_IMM(0x08)
+B24_8cd0: TAX()
+B24_8cd1: PLA()
+B24_8cd2: CYCLE(6); SetStack(SP, 212); SetStack(SP - 1, 140); SP -= 2; goto B30_c527;
+B24_8cd5: LDA_ZP(0x32)
+B24_8cd7: LDX_ZP(0x33)
+B24_8cd9: CYCLE(3); PC = 0x8c55; goto B26_8c55;
+B24_8cdc: PHA()
+B24_8cdd: CMP_IMM(0x0B)
+B24_8cdf: CYCLE(2); if (!SR_C) goto B24_8ce3;
+B24_8ce3: ASL_A()
+B24_8ce4: PHA()
+B24_8ce5: TAX()
+B24_8ce6: LDA_ABS_X(0x8d04)
+B24_8ce9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 140); SP -= 2; goto B30_c524;
+B24_8cec: CYCLE(6); SetStack(SP, 238); SetStack(SP - 1, 140); SP -= 2; goto B26_8c9f;
+B24_8cef: PLA()
+B24_8cf0: TAX()
+B24_8cf1: LDA_ABS_X(0x8d05)
+B24_8cf4: CYCLE(6); SetStack(SP, 246); SetStack(SP - 1, 140); SP -= 2; goto B30_c524;
+B24_8cf7: CYCLE(6); SetStack(SP, 249); SetStack(SP - 1, 140); SP -= 2; goto B26_8c9f;
+B24_8cfa: LDA_IMM(0x00)
+B24_8cfc: TAY()
+B24_8cfd: CYCLE(6); SetStack(SP, 255); SetStack(SP - 1, 140); SP -= 2; goto B26_8c9f;
+B24_8d00: PLA()
+B24_8d01: CYCLE(3); PC = 0x8d1a; goto B28_8d1a;
+B24_8d1a: STA_ZP(0x47)
+B24_8d1c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 141); SP -= 2; goto B30_c50c;
+B24_8d1f: LDY_IMM(0x00)
+B24_8d21: LDA_IDY(0x34)
+B24_8d23: CYCLE(2); if (!SR_Z) goto B24_8d6c;
+B24_8d25: LDA_ZP(0x47)
+B24_8d27: SEC()
+B24_8d28: SBC_IMM(0x0B)
+B24_8d2a: ASL_A()
+B24_8d2b: ASL_A()
+B24_8d2c: TAX()
+B24_8d2d: LDY_IMM(0x00)
+B24_8d2f: LDA_ABS_X(0x8d40)
+B24_8d32: STA_ABS_Y(0x05ee)
+B24_8d35: INX()
+B24_8d36: INY()
+B24_8d37: CPY_IMM(0x04)
+B24_8d39: CYCLE(2); if (!SR_Z) goto B24_8d2f;
+B24_8d3b: LDA_IMM(0x00)
+B24_8d3d: CYCLE(3); PC = 0x8d6c; goto B28_8d6c;
+B24_8d6c: CYCLE(6); SetStack(SP, 110); SetStack(SP - 1, 141); SP -= 2; goto B30_c53c;
+B24_8d6f: LDY_IMM(0x00)
+B24_8d71: LDA_IDY(0x30)
+B24_8d73: CMP_IMM(0xE0)
+B24_8d75: CYCLE(2); if (SR_C) goto B24_8d86;
+B24_8d77: TYA()
+B24_8d78: PHA()
+B24_8d79: LDA_IDY(0x30)
+B24_8d7b: CYCLE(6); SetStack(SP, 125); SetStack(SP - 1, 141); SP -= 2; goto B30_c524;
+B24_8d7e: CYCLE(6); SetStack(SP, 128); SetStack(SP - 1, 141); SP -= 2; goto B26_8c9f;
+B24_8d81: PLA()
+B24_8d82: TAY()
+B24_8d83: INY()
+B24_8d84: CYCLE(2); if (!SR_Z) goto B24_8d71;
+B24_8d86: TYA()
+B24_8d87: SEC()
+B24_8d88: SBC_IMM(0x05)
+B24_8d8a: CYCLE(2); if (!SR_N) goto B24_8d9d;
+B24_8d8c: EOR_IMM(0xFF)
+B24_8d8e: CLC()
+B24_8d8f: ADC_IMM(0x01)
+B24_8d91: STA_ZP(0x47)
+B24_8d93: LDA_IMM(0x00)
+B24_8d95: TAY()
+B24_8d96: CYCLE(6); SetStack(SP, 152); SetStack(SP - 1, 141); SP -= 2; goto B26_8c9f;
+B24_8d99: DEC_ZP(0x47)
+B24_8d9b: CYCLE(2); if (!SR_Z) goto B24_8d93;
+B24_8d9d: RTS()
+
+
+
+// ===== Bank 26 (prg_bank_26.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 26 =====
+// ; ROM: 0x034010-0x03600F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=7331 data=584 unaccessed=277
+B26_8000: PC = 0xa103; /* UNRES JMP $a103 */ goto LABEL_END;
+B26_8003: CYCLE(3); PC = 0x803c; goto B26_803c;
+B26_8006: CYCLE(3); PC = 0x84f8; goto B28_84f8;
+B26_8009: CYCLE(3); PC = 0x86f6; goto B26_86f6;
+B26_800c: CYCLE(3); PC = 0x8835; goto B28_8835;
+B26_800f: CYCLE(3); PC = 0x87e1; goto B26_87e1;
+B26_8012: CYCLE(3); PC = 0x888d; goto B28_888d;
+B26_8015: CYCLE(3); PC = 0x88a8; goto B28_88a8;
+B26_8018: CYCLE(3); PC = 0x88f3; goto B28_88f3;
+B26_801b: CYCLE(3); PC = 0x8be5; goto B26_8be5;
+B26_801e: CYCLE(3); PC = 0x8b4a; goto B26_8b4a;
+B26_8021: CYCLE(3); PC = 0x8f72; goto B26_8f72;
+B26_8024: CYCLE(3); PC = 0x8ca4; goto B26_8ca4;
+B26_8027: CYCLE(3); PC = 0x8127; goto B28_8127;
+B26_802a: PC = 0xa1eb; /* UNRES JMP $a1eb */ goto LABEL_END;
+B26_8030: CYCLE(3); PC = 0x95e1; goto B26_95e1;
+B26_8033: CYCLE(3); PC = 0x8e86; goto B26_8e86;
+B26_8036: CYCLE(3); PC = 0x85ac; goto B28_85ac;
+B26_8039: CYCLE(3); PC = 0x904e; goto B26_904e;
+B26_803c: LDA_IMM(0x00)
+B26_803e: STA_ABS(0x044e)
+B26_8041: STA_ABS(0x0621)
+B26_8044: CYCLE(6); SetStack(SP, 70); SetStack(SP - 1, 128); SP -= 2; goto B30_c600;
+B26_8047: LDA_IMM(0x02)
+B26_8049: CYCLE(6); SetStack(SP, 75); SetStack(SP - 1, 128); SP -= 2; goto B30_c54b;
+B26_804c: CYCLE(6); SetStack(SP, 78); SetStack(SP - 1, 128); SP -= 2; goto B26_8f72;
+B26_804f: LDA_ABS(0x0600)
+B26_8052: CYCLE(2); if (!SR_Z) goto B26_805a;
+B26_8054: STA_ABS(0x0617)
+B26_8057: CYCLE(3); PC = 0x8127; goto B28_8127;
+B26_805a: CYCLE(6); SetStack(SP, 92); SetStack(SP - 1, 128); SP -= 2; goto B26_8223;
+B26_805d: LDA_IMM(0x00)
+B26_805f: STA_ABS(0x0616)
+B26_8062: LDA_ABS(0x00e2)
+B26_8065: AND_IMM(0x07)
+B26_8067: CMP_ABS(0x0600)
+B26_806a: CYCLE(2); if (!SR_C) goto B26_8071;
+B26_806c: SBC_ABS(0x0600)
+B26_806f: CYCLE(2); if (SR_C) goto B26_8067;
+B26_8071: STA_ABS(0x0617)
+B26_8074: LDX_ABS(0x0617)
+B26_8077: CYCLE(2); if (SR_N) goto B26_8081;
+B26_8079: CPX_ABS(0x0616)
+B26_807c: CYCLE(2); if (!SR_Z) goto B26_8081;
+B26_807e: CYCLE(6); SetStack(SP, 128); SetStack(SP - 1, 128); SP -= 2; goto B27_8176;
+B26_8081: LDX_ABS(0x0616)
+B26_8084: LDA_ABS_X(0x060b)
+B26_8087: CMP_IMM(0x06)
+B26_8089: CYCLE(2); if (!SR_Z) goto B26_808e;
+B26_808b: CYCLE(3); PC = 0x80dc; goto B28_80dc;
+B26_808e: STA_ABS(0x043d)
+B26_8091: LDY_ABS_X(0x0606)
+B26_8094: STY_ABS(0x043e)
+B26_8097: CMP_IMM(0x00)
+B26_8099: CYCLE(2); if (!SR_Z) goto B26_80ab;
+B26_809b: CPY_IMM(0x01)
+B26_809d: CYCLE(2); if (!SR_Z) goto B26_80ab;
+B26_809f: LDA_ABS(0x043b)
+B26_80a2: CMP_IMM(0x00)
+B26_80a4: CYCLE(2); if (SR_Z) goto B26_80ab;
+B26_80a6: LDA_IMM(0x00)
+B26_80a8: STA_ABS(0x043e)
+B26_80ab: LDA_ABS_X(0x0601)
+B26_80ae: STA_ABS(0x0442)
+B26_80b1: LDA_IMM(0x07)
+B26_80b3: CYCLE(6); SetStack(SP, 181); SetStack(SP - 1, 128); SP -= 2; goto B30_c54b;
+B26_80b6: CYCLE(6); SetStack(SP, 184); SetStack(SP - 1, 128); SP -= 2; goto B26_8ff3;
+B26_80b9: LDX_ABS(0x0616)
+B26_80bc: LDA_ABS_X(0x0606)
+B26_80bf: STA_ABS(0x043e)
+B26_80c2: LDA_ABS(0x043b)
+B26_80c5: ASL_A()
+B26_80c6: ASL_A()
+B26_80c7: ADC_ABS(0x043d)
+B26_80ca: TAX()
+B26_80cb: ASL_A()
+B26_80cc: STA_ZP(0x3B)
+B26_80ce: LDA_IMM(0x00)
+B26_80d0: LDY_ABS_X(0x827c)
+B26_80d3: CYCLE(6); SetStack(SP, 213); SetStack(SP - 1, 128); SP -= 2; goto B26_8ee9;
+B26_80d6: CYCLE(6); SetStack(SP, 216); SetStack(SP - 1, 128); SP -= 2; goto B28_8132;
+B26_80d9: CYCLE(6); SetStack(SP, 219); SetStack(SP - 1, 128); SP -= 2; goto B26_814c;
+B26_80dc: INC_ABS(0x0616)
+B26_80df: LDA_ABS(0x0616)
+B26_80e2: CMP_ABS(0x0600)
+B26_80e5: CYCLE(2); if (SR_Z) goto B26_80ea;
+B26_80e7: CYCLE(3); PC = 0x8074; goto B26_8074;
+B26_80ea: CYCLE(6); SetStack(SP, 236); SetStack(SP - 1, 128); SP -= 2; goto B26_9085;
+B26_80ed: CYCLE(6); SetStack(SP, 239); SetStack(SP - 1, 128); SP -= 2; goto B30_c606;
+B26_80f0: LDA_ABS(0x043b)
+B26_80f3: CYCLE(6); SetStack(SP, 245); SetStack(SP - 1, 128); SP -= 2; goto B30_c509;
+B26_80fe: CYCLE(6); SetStack(SP, 0); SetStack(SP - 1, 129); SP -= 2; goto B28_8170;
+B26_8101: LDX_IMM(0x50)
+B26_8103: TXS()
+B26_8104: CYCLE(3); PC = 0xc618; goto B30_c618;
+B26_8107: CYCLE(6); SetStack(SP, 9); SetStack(SP - 1, 129); SP -= 2; goto B30_c61e;
+B26_810a: LDA_IMM(0x0A)
+B26_810c: CYCLE(6); SetStack(SP, 14); SetStack(SP - 1, 129); SP -= 2; goto B30_c54b;
+B26_810f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 129); SP -= 2; goto B28_8170;
+B26_8112: LDX_IMM(0x50)
+B26_8114: TXS()
+B26_8115: CYCLE(3); PC = 0xc612; goto B30_c612;
+B26_8118: LDX_IMM(0x50)
+B26_811a: TXS()
+B26_811b: CYCLE(3); PC = 0xc60f; goto B30_c60f;
+B26_811e: CYCLE(6); SetStack(SP, 32); SetStack(SP - 1, 129); SP -= 2; goto B28_8170;
+B26_8121: LDX_IMM(0x50)
+B26_8123: TXS()
+B26_8124: CYCLE(3); PC = 0xc621; goto B30_c621;
+B26_8127: CYCLE(6); SetStack(SP, 41); SetStack(SP - 1, 129); SP -= 2; goto B26_90dd;
+B26_812a: LDA_IMM(0x00)
+B26_812c: STA_ABS(0x0617)
+B26_812f: CYCLE(3); PC = 0x80ed; goto B28_80ed;
+B26_8132: PHA()
+B26_8133: LDA_ABS(0x043d)
+B26_8136: ASL_A()
+B26_8137: ASL_A()
+B26_8138: TAX()
+B26_8139: PLA()
+B26_813a: LDY_IMM(0x00)
+B26_813c: CMP_ABS_X(0x828c)
+B26_813f: CYCLE(2); if (SR_C) goto B26_8145;
+B26_8141: INY()
+B26_8142: INX()
+B26_8143: CYCLE(2); if (!SR_Z) goto B26_813c;
+B26_8145: CYCLE(3); PC = 0x8148; goto B28_8148;
+B26_8148: STY_ABS(0x0612)
+B26_814b: RTS()
+B26_814c: BIT_ABS(0x0617)
+B26_814f: CYCLE(2); if (SR_N) goto B26_8154;
+B26_8151: CYCLE(6); SetStack(SP, 83); SetStack(SP - 1, 129); SP -= 2; goto B26_8e33;
+B26_8154: LDA_IMM(0x00)
+B26_8156: CYCLE(6); SetStack(SP, 88); SetStack(SP - 1, 129); SP -= 2; goto B30_c54e;
+B26_8159: LDA_ABS(0x0612)
+B26_815c: CYCLE(6); SetStack(SP, 94); SetStack(SP - 1, 129); SP -= 2; goto B30_c509;
+B26_8169: CYCLE(6); SetStack(SP, 107); SetStack(SP - 1, 129); SP -= 2; goto B26_8bba;
+B26_816c: SEC()
+B26_816d: CYCLE(3); PC = 0x9095; goto B26_9095;
+B26_8170: BIT_ABS(0x0617)
+B26_8173: CYCLE(2); if (!SR_N) goto B26_8176;
+B26_8175: RTS()
+B26_8176: LDX_ABS(0x043b)
+B26_8179: CPX_IMM(0x02)
+B26_817b: CYCLE(2); if (SR_Z) goto B26_819b;
+B26_817d: LDA_IMM(0x00)
+B26_817f: STA_ABS(0x062d)
+B26_8182: LDA_ABS_X(0x8278)
+B26_8185: CYCLE(6); SetStack(SP, 135); SetStack(SP - 1, 129); SP -= 2; goto B30_c54e;
+B26_8188: LDA_ABS(0x0444)
+B26_818b: AND_IMM(0x03)
+B26_818d: STA_ABS(0x044e)
+B26_8190: CYCLE(6); SetStack(SP, 146); SetStack(SP - 1, 129); SP -= 2; goto B30_c624;
+B26_8193: LDA_ABS(0x0617)
+B26_8196: ORA_IMM(0x80)
+B26_8198: STA_ABS(0x0617)
+B26_819b: RTS()
+B26_819c: CYCLE(6); SetStack(SP, 158); SetStack(SP - 1, 129); SP -= 2; goto B26_8bba;
+B26_819f: SEC()
+B26_81a0: LDA_ABS(0x061c)
+B26_81a3: SBC_ABS(0x0619)
+B26_81a6: TAX()
+B26_81a7: LDA_ABS(0x061d)
+B26_81aa: SBC_IMM(0x00)
+B26_81ac: CYCLE(2); if (!SR_N) goto B26_81b2;
+B26_81b2: STX_ABS(0x061c)
+B26_81b5: STA_ABS(0x061d)
+B26_81b8: SEC()
+B26_81b9: CYCLE(3); PC = 0x9095; goto B26_9095;
+B26_81bc: CYCLE(6); SetStack(SP, 190); SetStack(SP - 1, 129); SP -= 2; goto B26_8bc8;
+B26_81bf: CLC()
+B26_81c0: CYCLE(6); SetStack(SP, 194); SetStack(SP - 1, 129); SP -= 2; goto B26_9095;
+B26_81c3: LDA_IMM(0x00)
+B26_81c5: STA_ABS(0x0600)
+B26_81c8: CYCLE(6); SetStack(SP, 202); SetStack(SP - 1, 129); SP -= 2; goto B26_81ed;
+B26_81cb: LDX_IMM(0x50)
+B26_81cd: TXS()
+B26_81ce: CYCLE(3); PC = 0x8bdf; goto B26_8bdf;
+B26_81d1: CYCLE(6); SetStack(SP, 211); SetStack(SP - 1, 129); SP -= 2; goto B26_8bc8;
+B26_81d4: CLC()
+B26_81d5: CYCLE(6); SetStack(SP, 215); SetStack(SP - 1, 129); SP -= 2; goto B26_9095;
+B26_81d8: CYCLE(6); SetStack(SP, 218); SetStack(SP - 1, 129); SP -= 2; goto B30_c606;
+B26_81db: CYCLE(6); SetStack(SP, 221); SetStack(SP - 1, 129); SP -= 2; goto B26_81ed;
+B26_81de: LDA_ABS(0x0442)
+B26_81e1: CYCLE(6); SetStack(SP, 227); SetStack(SP - 1, 129); SP -= 2; goto B26_8e6e;
+B26_81e4: LDX_IMM(0x50)
+B26_81e6: TXS()
+B26_81e7: CYCLE(3); PC = 0xc60f; goto B30_c60f;
+B26_81ea: CYCLE(3); PC = 0x9366; goto B26_9366;
+B26_81ed: LDA_ABS(0x043b)
+B26_81f0: CMP_IMM(0x00)
+B26_81f2: CYCLE(2); if (!SR_Z) goto B26_8222;
+B26_81f4: LDA_ABS(0x043d)
+B26_81f7: CMP_IMM(0x00)
+B26_81f9: CYCLE(2); if (!SR_Z) goto B26_8222;
+B26_81fb: LDA_ABS(0x043e)
+B26_81fe: AND_IMM(0x7F)
+B26_8200: CMP_IMM(0x01)
+B26_8202: CYCLE(2); if (!SR_Z) goto B26_8222;
+B26_8204: LDA_ABS(0x0442)
+B26_8207: CYCLE(6); SetStack(SP, 9); SetStack(SP - 1, 130); SP -= 2; goto B30_c50c;
+B26_820a: LDA_IMM(0x50)
+B26_820c: STA_ABS(0x043f)
+B26_820f: LDA_IMM(0x00)
+B26_8211: STA_ABS(0x0440)
+B26_8214: CYCLE(6); SetStack(SP, 22); SetStack(SP - 1, 130); SP -= 2; goto B26_8ffb;
+B26_8217: LDA_IMM(0x00)
+B26_8219: STA_ABS(0x0600)
+B26_821c: LDX_IMM(0x50)
+B26_821e: TXS()
+B26_821f: CYCLE(3); PC = 0x8bdf; goto B26_8bdf;
+B26_8222: RTS()
+B26_8223: LDX_IMM(0x00)
+B26_8225: LDA_ABS_X(0x0601)
+B26_8228: CYCLE(6); SetStack(SP, 42); SetStack(SP - 1, 130); SP -= 2; goto B30_c50c;
+B26_822b: LDY_IMM(0x00)
+B26_822d: LDA_IDY(0x34)
+B26_822f: CMP_IMM(0x14)
+B26_8231: CYCLE(2); if (SR_Z) goto B26_823e;
+B26_8233: CMP_IMM(0x49)
+B26_8235: CYCLE(2); if (SR_Z) goto B26_823e;
+B26_8237: INX()
+B26_8238: CPX_ABS(0x0600)
+B26_823b: CYCLE(2); if (!SR_Z) goto B26_8225;
+B26_823d: RTS()
+B26_823e: LDA_ABS(0x043b)
+B26_8241: CYCLE(2); if (!SR_Z) goto B26_8277;
+B26_8243: LDA_ABS_X(0x060b)
+B26_8246: CYCLE(2); if (!SR_Z) goto B26_8277;
+B26_8248: LDA_ABS_X(0x0606)
+B26_824b: CMP_IMM(0x01)
+B26_824d: CYCLE(2); if (!SR_Z) goto B26_8277;
+B26_824f: LDA_ABS_X(0x0601)
+B26_8252: PHA()
+B26_8253: LDY_ABS(0x0600)
+B26_8256: DEY()
+B26_8257: LDA_ABS_Y(0x0601)
+B26_825a: STA_ABS_X(0x0601)
+B26_825d: LDA_ABS_Y(0x060b)
+B26_8260: STA_ABS_X(0x060b)
+B26_8263: LDA_ABS_Y(0x0606)
+B26_8266: STA_ABS_X(0x0606)
+B26_8269: LDA_IMM(0x01)
+B26_826b: STA_ABS_Y(0x0606)
+B26_826e: LDA_IMM(0x00)
+B26_8270: STA_ABS_Y(0x060b)
+B26_8273: PLA()
+B26_8274: STA_ABS_Y(0x0601)
+B26_8277: RTS()
+B26_8298: LDA_IMM(0x02)
+B26_829a: CYCLE(6); SetStack(SP, 156); SetStack(SP - 1, 130); SP -= 2; goto B30_c54b;
+B26_829d: CYCLE(6); SetStack(SP, 159); SetStack(SP - 1, 130); SP -= 2; goto B26_8f72;
+B26_82a0: LDA_IMM(0x01)
+B26_82a2: CYCLE(6); SetStack(SP, 164); SetStack(SP - 1, 130); SP -= 2; goto B30_c54e;
+B26_82a5: LDA_ABS(0x0600)
+B26_82a8: CYCLE(2); if (!SR_Z) goto B26_82b6;
+B26_82aa: STA_ABS(0x0612)
+B26_82ad: STA_ABS(0x0617)
+B26_82b0: CYCLE(6); SetStack(SP, 178); SetStack(SP - 1, 130); SP -= 2; goto B26_90dd;
+B26_82b3: CYCLE(3); PC = 0x83f5; goto B26_83f5;
+B26_82b6: LDA_IMM(0x00)
+B26_82b8: STA_ABS(0x0616)
+B26_82bb: LDX_ABS(0x0616)
+B26_82be: LDY_ABS_X(0x060b)
+B26_82c1: LDA_ABS_X(0x0601)
+B26_82c4: STA_ABS(0x0442)
+B26_82c7: CYCLE(2); if (SR_Z) goto B26_82d1;
+B26_82c9: CMP_IMM(0x0B)
+B26_82cb: CYCLE(2); if (SR_Z) goto B26_82d1;
+B26_82cd: CPY_IMM(0x06)
+B26_82cf: CYCLE(2); if (SR_Z) goto B26_82e4;
+B26_82d1: STY_ABS(0x043d)
+B26_82d4: LDA_ABS_X(0x0606)
+B26_82d7: STA_ABS(0x043e)
+B26_82da: LDA_IMM(0x02)
+B26_82dc: CYCLE(6); SetStack(SP, 222); SetStack(SP - 1, 130); SP -= 2; goto B30_c54e;
+B26_82df: LDA_IMM(0x14)
+B26_82e1: CYCLE(6); SetStack(SP, 227); SetStack(SP - 1, 130); SP -= 2; goto B30_c515;
+B26_82e4: INC_ABS(0x0616)
+B26_82e7: LDA_ABS(0x0616)
+B26_82ea: CMP_ABS(0x0600)
+B26_82ed: CYCLE(2); if (!SR_Z) goto B26_82bb;
+B26_82ef: LDA_IMM(0x04)
+B26_82f1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 130); SP -= 2; goto B30_c54e;
+B26_82f4: LDA_IMM(0x00)
+B26_82f6: STA_ABS(0x0616)
+B26_82f9: STA_ABS(0x0617)
+B26_82fc: LDA_IMM(0x01)
+B26_82fe: CYCLE(6); SetStack(SP, 0); SetStack(SP - 1, 131); SP -= 2; goto B30_c515;
+B26_8301: LDA_IMM(0x00)
+B26_8303: STA_ABS(0x0612)
+B26_8306: LDX_ABS(0x0616)
+B26_8309: LDA_ABS_X(0x060b)
+B26_830c: STA_ABS(0x043d)
+B26_830f: LDA_ABS_X(0x0606)
+B26_8312: STA_ABS(0x043e)
+B26_8315: LDA_ABS_X(0x0601)
+B26_8318: STA_ABS(0x0442)
+B26_831b: CYCLE(2); if (SR_Z) goto B26_8321;
+B26_831d: CMP_IMM(0x0B)
+B26_831f: CYCLE(2); if (!SR_Z) goto B26_8333;
+B26_8321: LDA_ABS_X(0x060b)
+B26_8324: CMP_IMM(0x04)
+B26_8326: CYCLE(2); if (!SR_Z) goto B26_832b;
+B26_8328: CYCLE(3); PC = 0x83a2; goto B26_83a2;
+B26_832b: LDA_IMM(0x08)
+B26_832d: CYCLE(6); SetStack(SP, 47); SetStack(SP - 1, 131); SP -= 2; goto B30_c54b;
+B26_8330: CYCLE(3); PC = 0x8349; goto B28_8349;
+B26_8333: LDA_ABS_X(0x060b)
+B26_8336: CMP_IMM(0x06)
+B26_8338: CYCLE(2); if (!SR_Z) goto B26_833d;
+B26_833a: CYCLE(3); PC = 0x83a2; goto B26_83a2;
+B26_833d: CMP_IMM(0x05)
+B26_833f: CYCLE(2); if (!SR_Z) goto B26_8344;
+B26_8341: CYCLE(3); PC = 0x83a2; goto B26_83a2;
+B26_8344: LDA_IMM(0x07)
+B26_8346: CYCLE(6); SetStack(SP, 72); SetStack(SP - 1, 131); SP -= 2; goto B30_c54b;
+B26_8349: CYCLE(6); SetStack(SP, 75); SetStack(SP - 1, 131); SP -= 2; goto B26_8ff3;
+B26_834c: LDX_ABS(0x043b)
+B26_834f: LDA_ABS_X(0x83d7)
+B26_8352: ASL_A()
+B26_8353: ASL_A()
+B26_8354: STA_ZP(0x3B)
+B26_8356: LDX_ABS(0x043d)
+B26_8359: LDA_IMM(0x02)
+B26_835b: LDY_ABS(0x0442)
+B26_835e: CYCLE(2); if (SR_Z) goto B26_8367;
+B26_8360: CPY_IMM(0x0B)
+B26_8362: CYCLE(2); if (SR_Z) goto B26_8367;
+B26_8364: LDA_ABS_X(0x83dd)
+B26_8367: CLC()
+B26_8368: ADC_ZP(0x3B)
+B26_836a: TAX()
+B26_836b: ASL_A()
+B26_836c: STA_ZP(0x3B)
+B26_836e: LDA_IMM(0x01)
+B26_8370: LDY_ABS_X(0x83e1)
+B26_8373: CYCLE(6); SetStack(SP, 117); SetStack(SP - 1, 131); SP -= 2; goto B26_8ee9;
+B26_8376: CMP_ABS_X(0x83f1)
+B26_8379: CYCLE(2); if (SR_C) goto B26_837f;
+B26_837b: INX()
+B26_837c: INY()
+B26_837d: CYCLE(2); if (!SR_Z) goto B26_8376;
+B26_837f: CYCLE(6); SetStack(SP, 129); SetStack(SP - 1, 131); SP -= 2; goto B28_8148;
+B26_8382: CYCLE(6); SetStack(SP, 132); SetStack(SP - 1, 131); SP -= 2; goto B26_8e33;
+B26_8385: LDA_IMM(0x06)
+B26_8387: LDX_IMM(0x01)
+B26_8389: LDY_ABS(0x0612)
+B26_838c: CPY_IMM(0x02)
+B26_838e: CYCLE(2); if (!SR_C) goto B26_8393;
+B26_8390: DEX()
+B26_8391: LDA_IMM(0x05)
+B26_8393: PHA()
+B26_8394: TXA()
+B26_8395: LSR_A()
+B26_8396: CYCLE(6); SetStack(SP, 152); SetStack(SP - 1, 131); SP -= 2; goto B26_9095;
+B26_8399: PLA()
+B26_839a: CYCLE(6); SetStack(SP, 156); SetStack(SP - 1, 131); SP -= 2; goto B30_c54e;
+B26_839d: LDA_IMM(0x07)
+B26_839f: CYCLE(6); SetStack(SP, 161); SetStack(SP - 1, 131); SP -= 2; goto B30_c54e;
+B26_83a2: LDA_ABS(0x0612)
+B26_83a5: CMP_IMM(0x03)
+B26_83a7: CYCLE(2); if (SR_C) goto B26_83bc;
+B26_83a9: LDA_ABS(0x0442)
+B26_83ac: CYCLE(2); if (SR_Z) goto B26_83b2;
+B26_83ae: CMP_IMM(0x0B)
+B26_83b0: CYCLE(2); if (!SR_Z) goto B26_83bc;
+B26_83b2: LDA_ABS(0x043d)
+B26_83b5: CMP_IMM(0x03)
+B26_83b7: CYCLE(2); if (!SR_Z) goto B26_83bc;
+B26_83b9: INC_ABS(0x0617)
+B26_83bc: LDA_ABS(0x0612)
+B26_83bf: CMP_IMM(0x02)
+B26_83c1: CYCLE(2); if (SR_C) goto B26_83d4;
+B26_83c3: INC_ABS(0x0616)
+B26_83c6: LDA_ABS(0x0616)
+B26_83c9: CMP_ABS(0x0600)
+B26_83cc: CYCLE(2); if (SR_Z) goto B26_83d1;
+B26_83ce: CYCLE(3); PC = 0x82fc; goto B28_82fc;
+B26_83d1: CYCLE(6); SetStack(SP, 211); SetStack(SP - 1, 131); SP -= 2; goto B26_9085;
+B26_83d4: CYCLE(3); PC = 0x83f5; goto B26_83f5;
+B26_83f5: CYCLE(6); SetStack(SP, 247); SetStack(SP - 1, 131); SP -= 2; goto B30_c606;
+B26_83f8: LDA_ABS(0x0612)
+B26_83fb: CYCLE(6); SetStack(SP, 253); SetStack(SP - 1, 131); SP -= 2; goto B30_c509;
+B26_8408: CYCLE(6); SetStack(SP, 10); SetStack(SP - 1, 132); SP -= 2; goto B26_8bba;
+B26_840b: LDA_IMM(0x08)
+B26_840d: CYCLE(6); SetStack(SP, 15); SetStack(SP - 1, 132); SP -= 2; goto B30_c54e;
+B26_8410: SEC()
+B26_8411: CYCLE(6); SetStack(SP, 19); SetStack(SP - 1, 132); SP -= 2; goto B26_9095;
+B26_8414: CYCLE(6); SetStack(SP, 22); SetStack(SP - 1, 132); SP -= 2; goto B28_847f;
+B26_8417: LDA_ABS(0x043b)
+B26_841a: CYCLE(6); SetStack(SP, 28); SetStack(SP - 1, 132); SP -= 2; goto B30_c509;
+B26_8429: LDA_ABS(0x0617)
+B26_842c: CYCLE(2); if (!SR_Z) goto B26_8436;
+B26_842e: LDA_IMM(0x00)
+B26_8430: STA_ABS(0x0621)
+B26_8433: CYCLE(3); PC = 0xc618; goto B30_c618;
+B26_8436: LDX_IMM(0x50)
+B26_8438: TXS()
+B26_8439: CYCLE(3); PC = 0x88f3; goto B28_88f3;
+B26_843f: CYCLE(6); SetStack(SP, 65); SetStack(SP - 1, 132); SP -= 2; goto B26_8bc8;
+B26_8442: CYCLE(6); SetStack(SP, 68); SetStack(SP - 1, 132); SP -= 2; goto B28_847f;
+B26_8445: LDX_IMM(0x50)
+B26_8447: TXS()
+B26_8448: CYCLE(3); PC = 0x8bdf; goto B26_8bdf;
+B26_844b: CYCLE(6); SetStack(SP, 77); SetStack(SP - 1, 132); SP -= 2; goto B26_8bc8;
+B26_844e: LDA_ABS(0x0442)
+B26_8451: CYCLE(2); if (SR_Z) goto B26_8470;
+B26_8453: CMP_IMM(0x0B)
+B26_8455: CYCLE(2); if (SR_Z) goto B26_8470;
+B26_8457: LDX_ABS(0x043d)
+B26_845a: CPX_IMM(0x02)
+B26_845c: CYCLE(2); if (!SR_Z) goto B26_846a;
+B26_845e: LDA_ABS(0x0442)
+B26_8461: CYCLE(6); SetStack(SP, 99); SetStack(SP - 1, 132); SP -= 2; goto B26_8e6e;
+B26_8464: LDX_IMM(0x50)
+B26_8466: TXS()
+B26_8467: CYCLE(3); PC = 0xc60f; goto B30_c60f;
+B26_846a: LDX_IMM(0x50)
+B26_846c: TXS()
+B26_846d: CYCLE(3); PC = 0xc630; goto B30_c630;
+B26_8470: STA_ABS(0x05fb)
+B26_8473: CYCLE(6); SetStack(SP, 117); SetStack(SP - 1, 132); SP -= 2; goto B26_8e6e;
+B26_8476: LDX_IMM(0x50)
+B26_8478: TXS()
+B26_8479: CYCLE(3); PC = 0xc633; goto B30_c633;
+B26_847c: CYCLE(3); PC = 0x9366; goto B26_9366;
+B26_847f: LDA_ABS(0x0617)
+B26_8482: CYCLE(2); if (!SR_Z) goto B26_8485;
+B26_8484: RTS()
+B26_8485: CYCLE(6); SetStack(SP, 135); SetStack(SP - 1, 132); SP -= 2; goto B30_c551;
+B26_8488: LDY_IMM(0x0A)
+B26_848a: LDA_IMM(0x06)
+B26_848c: STA_IDY(0x34)
+B26_848e: RTS()
+B26_848f: CYCLE(6); SetStack(SP, 145); SetStack(SP - 1, 132); SP -= 2; goto B30_c551;
+B26_8492: LDY_IMM(0x0A)
+B26_8494: LDA_IDY(0x34)
+B26_8496: CYCLE(2); if (!SR_Z) goto B26_84ee;
+B26_8498: LDA_ABS(0x0635)
+B26_849b: CYCLE(2); if (!SR_N) goto B26_84a2;
+B26_849d: EOR_IMM(0xFF)
+B26_849f: CLC()
+B26_84a0: ADC_IMM(0x01)
+B26_84a2: TAX()
+B26_84a3: LDA_ABS(0x0637)
+B26_84a6: CYCLE(2); if (!SR_N) goto B26_84ad;
+B26_84a8: EOR_IMM(0xFF)
+B26_84aa: CLC()
+B26_84ab: ADC_IMM(0x01)
+B26_84ad: TAY()
+B26_84ae: CYCLE(6); SetStack(SP, 176); SetStack(SP - 1, 132); SP -= 2; goto B30_c539;
+B26_84b1: LDX_IMM(0x08)
+B26_84b3: CMP_ABS_X(0x84ef)
+B26_84b6: CYCLE(2); if (SR_Z) goto B26_84bd;
+B26_84b8: DEX()
+B26_84b9: CYCLE(2); if (!SR_N) goto B26_84b3;
+B26_84bb: CYCLE(2); if (SR_N) goto B26_84ee;
+B26_84bd: LDA_IMM(0x33)
+B26_84bf: CPX_IMM(0x06)
+B26_84c1: CYCLE(2); if (!SR_C) goto B26_84c5;
+B26_84c3: LDA_IMM(0x55)
+B26_84c5: CMP_ABS(0x00e2)
+B26_84c8: CYCLE(2); if (!SR_C) goto B26_84ee;
+B26_84ca: LDX_ABS(0x0600)
+B26_84cd: CPX_IMM(0x05)
+B26_84cf: CYCLE(2); if (SR_C) goto B26_84ee;
+B26_84d1: LDA_ABS(0x05fb)
+B26_84d4: CYCLE(2); if (SR_Z) goto B26_84da;
+B26_84d6: CPX_IMM(0x04)
+B26_84d8: CYCLE(2); if (SR_C) goto B26_84ee;
+B26_84da: LDA_ABS_X(0x0600)
+B26_84dd: STA_ABS_X(0x0601)
+B26_84e0: DEX()
+B26_84e1: CYCLE(2); if (!SR_N) goto B26_84da;
+B26_84e3: LDA_ABS(0x05fb)
+B26_84e6: EOR_IMM(0x0B)
+B26_84e8: STA_ABS(0x0601)
+B26_84eb: INC_ABS(0x0600)
+B26_84ee: RTS()
+B26_84f8: LDA_IMM(0x01)
+B26_84fa: STA_ABS(0x0600)
+B26_84fd: LDA_ABS(0x05fb)
+B26_8500: PHP()
+B26_8501: EOR_IMM(0x0B)
+B26_8503: STA_ABS(0x0601)
+B26_8506: STA_ABS(0x0442)
+B26_8509: PLP()
+B26_850a: CYCLE(2); if (!SR_Z) goto B26_8514;
+B26_850c: LDA_IMM(0x02)
+B26_850e: CYCLE(6); SetStack(SP, 16); SetStack(SP - 1, 133); SP -= 2; goto B30_c54b;
+B26_8511: CYCLE(3); PC = 0x852f; goto B26_852f;
+B26_8514: LDA_IMM(0x14)
+B26_8516: CYCLE(6); SetStack(SP, 24); SetStack(SP - 1, 133); SP -= 2; goto B30_c515;
+B26_8519: LDA_IMM(0x00)
+B26_851b: STA_ZP(0x11)
+B26_851d: STA_ZP(0x12)
+B26_851f: CYCLE(6); SetStack(SP, 33); SetStack(SP - 1, 133); SP -= 2; goto B30_c52d;
+B26_8522: LDA_IMM(0x32)
+B26_8524: CYCLE(6); SetStack(SP, 38); SetStack(SP - 1, 133); SP -= 2; goto B30_c54e;
+B26_8527: LDA_IMM(0x04)
+B26_8529: STA_ABS(0x0621)
+B26_852c: CYCLE(6); SetStack(SP, 46); SetStack(SP - 1, 133); SP -= 2; goto B30_c600;
+B26_852f: LDA_IMM(0x08)
+B26_8531: CYCLE(6); SetStack(SP, 51); SetStack(SP - 1, 133); SP -= 2; goto B30_c54b;
+B26_8534: CYCLE(6); SetStack(SP, 54); SetStack(SP - 1, 133); SP -= 2; goto B26_8ff3;
+B26_8537: CYCLE(6); SetStack(SP, 57); SetStack(SP - 1, 133); SP -= 2; goto B30_c551;
+B26_853a: LDX_IMM(0xF3)
+B26_853c: LDY_IMM(0x00)
+B26_853e: LDA_IDY(0x34)
+B26_8540: CMP_IMM(0x21)
+B26_8542: CYCLE(2); if (SR_Z) goto B26_8548;
+B26_8544: CMP_IMM(0x40)
+B26_8546: CYCLE(2); if (!SR_Z) goto B26_854a;
+B26_8548: LDX_IMM(0xCD)
+B26_854a: LDA_IMM(0x00)
+B26_854c: CPX_ABS(0x00e2)
+B26_854f: CYCLE(2); if (SR_C) goto B26_8553;
+B26_8551: LDA_IMM(0x80)
+B26_8553: LDX_IMM(0x00)
+B26_8555: STX_ZP(0x3B)
+B26_8557: TAX()
+B26_8558: PHP()
+B26_8559: LDA_IMM(0x03)
+B26_855b: PLP()
+B26_855c: CYCLE(6); SetStack(SP, 94); SetStack(SP - 1, 133); SP -= 2; goto B26_8f1f;
+B26_855f: LDY_IMM(0x00)
+B26_8561: CMP_ABS_Y(0x86b9)
+B26_8564: CYCLE(2); if (SR_C) goto B26_856b;
+B26_8566: CYCLE(2); if (SR_Z) goto B26_856b;
+B26_8568: INY()
+B26_8569: CYCLE(2); if (!SR_Z) goto B26_8561;
+B26_856b: LDX_ABS(0x05fb)
+B26_856e: CYCLE(2); if (!SR_Z) goto B26_8591;
+B26_8570: LDX_ABS(0x002b)
+B26_8573: CPX_IMM(0x05)
+B26_8575: CYCLE(2); if (!SR_Z) goto B26_8591;
+B26_8577: LDX_ABS(0x0446)
+B26_857a: CYCLE(2); if (SR_Z) goto B26_8591;
+B26_857c: LDA_ABS(0x043c)
+B26_857f: CYCLE(2); if (SR_Z) goto B26_8591;
+B26_8581: CMP_IMM(0x03)
+B26_8583: CYCLE(2); if (SR_Z) goto B26_8589;
+B26_8585: CPX_IMM(0x04)
+B26_8587: CYCLE(2); if (SR_C) goto B26_8591;
+B26_8589: LDY_IMM(0x02)
+B26_858b: BIT_ABS(0x00e2)
+B26_858e: CYCLE(2); if (!SR_N) goto B26_8591;
+B26_8590: INY()
+B26_8591: CYCLE(6); SetStack(SP, 147); SetStack(SP - 1, 133); SP -= 2; goto B28_8148;
+B26_8594: LDA_IMM(0x00)
+B26_8596: STA_ABS(0x0616)
+B26_8599: LDA_IMM(0x09)
+B26_859b: CYCLE(6); SetStack(SP, 157); SetStack(SP - 1, 133); SP -= 2; goto B30_c54e;
+B26_859e: LDA_ABS(0x0612)
+B26_85a1: CYCLE(6); SetStack(SP, 163); SetStack(SP - 1, 133); SP -= 2; goto B30_c509;
+B26_85ac: LDX_IMM(0x00)
+B26_85ae: LDA_ABS(0x0441)
+B26_85b1: CYCLE(6); SetStack(SP, 179); SetStack(SP - 1, 133); SP -= 2; goto B26_8bd4;
+B26_85b4: CYCLE(6); SetStack(SP, 182); SetStack(SP - 1, 133); SP -= 2; goto B26_85e3;
+B26_85b7: LDA_IMM(0x30)
+B26_85b9: CYCLE(6); SetStack(SP, 187); SetStack(SP - 1, 133); SP -= 2; goto B30_c54e;
+B26_85bc: CYCLE(6); SetStack(SP, 190); SetStack(SP - 1, 133); SP -= 2; goto B26_987b;
+B26_85bf: LDA_ABS(0x05fb)
+B26_85c2: EOR_IMM(0x0B)
+B26_85c4: STA_ABS(0x05fb)
+B26_85c7: CYCLE(6); SetStack(SP, 201); SetStack(SP - 1, 133); SP -= 2; goto B30_c50c;
+B26_85ca: LDA_IMM(0x00)
+B26_85cc: LDY_IMM(0x05)
+B26_85ce: STA_IDY(0x34)
+B26_85d0: LDY_IMM(0x07)
+B26_85d2: STA_IDY(0x34)
+B26_85d4: LDY_IMM(0x0A)
+B26_85d6: STA_IDY(0x34)
+B26_85d8: LDA_IMM(0x04)
+B26_85da: STA_ABS(0x0629)
+B26_85dd: LDX_IMM(0x50)
+B26_85df: TXS()
+B26_85e0: CYCLE(3); PC = 0xc636; goto B30_c636;
+B26_85e3: LDX_ABS(0x05fb)
+B26_85e6: CYCLE(2); if (SR_Z) goto B26_85ed;
+B26_85e8: CYCLE(6); SetStack(SP, 234); SetStack(SP - 1, 133); SP -= 2; goto B26_904e;
+B26_85eb: LDX_IMM(0x01)
+B26_85ed: INC_ABS_X(0x0028)
+B26_85f0: LDA_IMM(0x01)
+B26_85f2: CYCLE(6); SetStack(SP, 244); SetStack(SP - 1, 133); SP -= 2; goto B30_c52a;
+B26_85f5: RTS()
+B26_85f6: BIT_ABS(0x063e)
+B26_85f9: CYCLE(2); if (!SR_N) goto B26_8601;
+B26_85fb: LDA_IMM(0x32)
+B26_85fd: CYCLE(6); SetStack(SP, 255); SetStack(SP - 1, 133); SP -= 2; goto B30_c55d;
+B26_8600: RTS()
+B26_8601: CYCLE(6); SetStack(SP, 3); SetStack(SP - 1, 134); SP -= 2; goto B30_c56f;
+B26_8604: RTS()
+B26_8605: LDA_ABS(0x043c)
+B26_8608: AND_IMM(0x3F)
+B26_860a: CMP_IMM(0x03)
+B26_860c: CYCLE(2); if (!SR_C) goto B26_85ac;
+B26_860e: LDA_ABS(0x05fb)
+B26_8611: EOR_IMM(0x0B)
+B26_8613: STA_ABS(0x05fb)
+B26_8616: LDX_IMM(0x50)
+B26_8618: TXS()
+B26_8619: CYCLE(3); PC = 0xc633; goto B30_c633;
+B26_861c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 134); SP -= 2; goto B26_8bc8;
+B26_861f: LDA_IMM(0x00)
+B26_8621: STA_ABS(0x0600)
+B26_8624: CYCLE(6); SetStack(SP, 38); SetStack(SP - 1, 134); SP -= 2; goto B26_86d3;
+B26_8627: CYCLE(6); SetStack(SP, 41); SetStack(SP - 1, 134); SP -= 2; goto B28_86bd;
+B26_862a: LDA_ABS(0x0616)
+B26_862d: CYCLE(2); if (SR_Z) goto B26_8640;
+B26_862f: LDA_IMM(0xB0)
+B26_8631: LDX_ABS(0x05fb)
+B26_8634: CYCLE(2); if (SR_Z) goto B26_8638;
+B26_8636: LDA_IMM(0x50)
+B26_8638: STA_ABS(0x0635)
+B26_863b: LDA_IMM(0x80)
+B26_863d: STA_ABS(0x0637)
+B26_8640: LDX_IMM(0x50)
+B26_8642: TXS()
+B26_8643: CYCLE(3); PC = 0x8bdf; goto B26_8bdf;
+B26_8646: CYCLE(6); SetStack(SP, 72); SetStack(SP - 1, 134); SP -= 2; goto B26_8bc8;
+B26_8649: CYCLE(6); SetStack(SP, 75); SetStack(SP - 1, 134); SP -= 2; goto B28_86bd;
+B26_864c: LDA_ABS(0x043d)
+B26_864f: CMP_IMM(0x01)
+B26_8651: CYCLE(2); if (SR_Z) goto B26_8661;
+B26_8653: LDA_ABS(0x05fb)
+B26_8656: EOR_IMM(0x0B)
+B26_8658: CYCLE(6); SetStack(SP, 90); SetStack(SP - 1, 134); SP -= 2; goto B26_8e6e;
+B26_865b: LDX_IMM(0x50)
+B26_865d: TXS()
+B26_865e: CYCLE(3); PC = 0xc633; goto B30_c633;
+B26_8661: LDA_ABS(0x00e2)
+B26_8664: AND_IMM(0x07)
+B26_8666: LDY_ABS(0x05fb)
+B26_8669: CYCLE(2); if (!SR_Z) goto B26_866d;
+B26_866b: EOR_IMM(0x07)
+B26_866d: TAX()
+B26_866e: ASL_A()
+B26_866f: ASL_A()
+B26_8670: ASL_A()
+B26_8671: STA_ZP(0x3A)
+B26_8673: LDA_IMM(0x30)
+B26_8675: LDY_ABS(0x05fb)
+B26_8678: CYCLE(2); if (!SR_Z) goto B26_867c;
+B26_867a: LDA_IMM(0x90)
+B26_867c: CLC()
+B26_867d: ADC_ZP(0x3A)
+B26_867f: STA_ABS(0x0635)
+B26_8682: LDA_ABS(0x00e3)
+B26_8685: AND_IMM(0x0F)
+B26_8687: CMP_ABS_X(0x86b1)
+B26_868a: CYCLE(2); if (!SR_C) goto B26_8692;
+B26_868c: SBC_ABS_X(0x86b1)
+B26_868f: CYCLE(3); PC = 0x8687; goto B28_8687;
+B26_8692: ASL_A()
+B26_8693: ASL_A()
+B26_8694: ASL_A()
+B26_8695: ADC_IMM(0x50)
+B26_8697: BIT_ABS(0x00e3)
+B26_869a: CYCLE(2); if (!SR_N) goto B26_869e;
+B26_869c: EOR_IMM(0xFF)
+B26_869e: STA_ABS(0x0637)
+B26_86a1: LDA_IMM(0x01)
+B26_86a3: STA_ABS(0x05ff)
+B26_86a6: LDA_IMM(0x00)
+B26_86a8: STA_ABS(0x0600)
+B26_86ab: CYCLE(6); SetStack(SP, 173); SetStack(SP - 1, 134); SP -= 2; goto B26_86d3;
+B26_86ae: CYCLE(3); PC = 0x8be5; goto B26_8be5;
+B26_86bd: CYCLE(6); SetStack(SP, 191); SetStack(SP - 1, 134); SP -= 2; goto B30_c551;
+B26_86c0: LDA_IMM(0x07)
+B26_86c2: LDX_ABS(0x0443)
+B26_86c5: CPX_IMM(0x02)
+B26_86c7: CYCLE(2); if (!SR_C) goto B26_86cb;
+B26_86c9: LDA_IMM(0x0B)
+B26_86cb: LDY_IMM(0x05)
+B26_86cd: CLC()
+B26_86ce: ADC_IDY(0x34)
+B26_86d0: STA_IDY(0x34)
+B26_86d2: RTS()
+B26_86d3: LDA_ABS(0x00e2)
+B26_86d6: CMP_IMM(0x40)
+B26_86d8: CYCLE(2); if (SR_C) goto B26_86f5;
+B26_86da: CYCLE(6); SetStack(SP, 220); SetStack(SP - 1, 134); SP -= 2; goto B30_c551;
+B26_86dd: LDY_IMM(0x07)
+B26_86df: LDA_IDY(0x34)
+B26_86e1: CMP_IMM(0x50)
+B26_86e3: CYCLE(2); if (SR_C) goto B26_86f5;
+B26_86e5: ADC_IMM(0x4F)
+B26_86e7: CMP_IMM(0x80)
+B26_86e9: CYCLE(2); if (!SR_C) goto B26_86ed;
+B26_86eb: LDA_IMM(0x7F)
+B26_86ed: STA_IDY(0x34)
+B26_86ef: LDY_IMM(0x06)
+B26_86f1: LDA_IMM(0x04)
+B26_86f3: STA_IDY(0x34)
+B26_86f5: RTS()
+B26_86f6: LDA_IMM(0x03)
+B26_86f8: STA_ABS(0x0621)
+B26_86fb: LDA_IMM(0x01)
+B26_86fd: STA_ABS(0x0600)
+B26_8700: LDA_ABS(0x05fb)
+B26_8703: EOR_IMM(0x0B)
+B26_8705: STA_ABS(0x0601)
+B26_8708: STA_ABS(0x0442)
+B26_870b: LDA_IMM(0x02)
+B26_870d: CYCLE(6); SetStack(SP, 15); SetStack(SP - 1, 135); SP -= 2; goto B30_c54b;
+B26_8710: LDA_IMM(0x31)
+B26_8712: CYCLE(6); SetStack(SP, 20); SetStack(SP - 1, 135); SP -= 2; goto B30_c54e;
+B26_8715: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 135); SP -= 2; goto B30_c600;
+B26_8718: CYCLE(6); SetStack(SP, 26); SetStack(SP - 1, 135); SP -= 2; goto B26_8f72;
+B26_871b: LDA_ABS(0x043b)
+B26_871e: CMP_IMM(0x01)
+B26_8720: CYCLE(2); if (!SR_Z) goto B26_8732;
+B26_8722: LDA_IMM(0x00)
+B26_8724: STA_ABS(0x044e)
+B26_8727: LDA_IMM(0x18)
+B26_8729: CYCLE(6); SetStack(SP, 43); SetStack(SP - 1, 135); SP -= 2; goto B30_c54e;
+B26_872c: LDX_IMM(0x50)
+B26_872e: TXS()
+B26_872f: CYCLE(3); PC = 0xc612; goto B30_c612;
+B26_8732: LDA_IMM(0x08)
+B26_8734: CYCLE(6); SetStack(SP, 54); SetStack(SP - 1, 135); SP -= 2; goto B30_c54b;
+B26_8737: CYCLE(6); SetStack(SP, 57); SetStack(SP - 1, 135); SP -= 2; goto B26_8ff3;
+B26_873a: LDA_ABS(0x043d)
+B26_873d: SEC()
+B26_873e: SBC_IMM(0x05)
+B26_8740: STA_ZP(0x3B)
+B26_8742: LDA_ABS(0x043b)
+B26_8745: ASL_A()
+B26_8746: ADC_ZP(0x3B)
+B26_8748: TAX()
+B26_8749: ASL_A()
+B26_874a: STA_ZP(0x3B)
+B26_874c: LDA_IMM(0x04)
+B26_874e: LDY_ABS_X(0x87d7)
+B26_8751: CYCLE(6); SetStack(SP, 83); SetStack(SP - 1, 135); SP -= 2; goto B26_8ee9;
+B26_8754: STA_ZP(0x3A)
+B26_8756: CYCLE(6); SetStack(SP, 88); SetStack(SP - 1, 135); SP -= 2; goto B26_8f59;
+B26_8759: LSR_A()
+B26_875a: LSR_A()
+B26_875b: CLC()
+B26_875c: ADC_ZP(0x3A)
+B26_875e: CYCLE(2); if (!SR_C) goto B26_8762;
+B26_8760: LDA_IMM(0xFF)
+B26_8762: LDY_IMM(0x00)
+B26_8764: CMP_ABS_Y(0x87dd)
+B26_8767: CYCLE(2); if (SR_C) goto B26_876e;
+B26_8769: CYCLE(2); if (SR_Z) goto B26_876e;
+B26_876b: INY()
+B26_876c: CYCLE(2); if (!SR_Z) goto B26_8764;
+B26_876e: CYCLE(6); SetStack(SP, 112); SetStack(SP - 1, 135); SP -= 2; goto B28_8148;
+B26_8771: CYCLE(6); SetStack(SP, 115); SetStack(SP - 1, 135); SP -= 2; goto B26_8e33;
+B26_8774: LDA_IMM(0x0A)
+B26_8776: CYCLE(6); SetStack(SP, 120); SetStack(SP - 1, 135); SP -= 2; goto B30_c54e;
+B26_8779: LDA_ABS(0x0612)
+B26_877c: CYCLE(6); SetStack(SP, 126); SetStack(SP - 1, 135); SP -= 2; goto B30_c509;
+B26_8789: CYCLE(6); SetStack(SP, 139); SetStack(SP - 1, 135); SP -= 2; goto B26_8bba;
+B26_878c: CYCLE(6); SetStack(SP, 142); SetStack(SP - 1, 135); SP -= 2; goto B28_8485;
+B26_878f: LDA_ABS(0x043b)
+B26_8792: CMP_IMM(0x00)
+B26_8794: CYCLE(2); if (!SR_Z) goto B26_8799;
+B26_8796: CYCLE(3); PC = 0x88f3; goto B28_88f3;
+B26_8799: LDX_IMM(0x50)
+B26_879b: TXS()
+B26_879c: CYCLE(3); PC = 0x892a; goto B26_892a;
+B26_879f: CYCLE(6); SetStack(SP, 161); SetStack(SP - 1, 135); SP -= 2; goto B26_8bba;
+B26_87a2: CYCLE(6); SetStack(SP, 164); SetStack(SP - 1, 135); SP -= 2; goto B28_8485;
+B26_87a5: LDA_ABS(0x00e2)
+B26_87a8: CMP_IMM(0x40)
+B26_87aa: CYCLE(2); if (SR_C) goto B26_87b1;
+B26_87ac: LDA_IMM(0x24)
+B26_87ae: CYCLE(6); SetStack(SP, 176); SetStack(SP - 1, 135); SP -= 2; goto B28_8cf5;
+B26_87b1: LDX_IMM(0x50)
+B26_87b3: TXS()
+B26_87b4: CYCLE(3); PC = 0x8bdf; goto B26_8bdf;
+B26_87b7: CYCLE(6); SetStack(SP, 185); SetStack(SP - 1, 135); SP -= 2; goto B26_8bc8;
+B26_87ba: CYCLE(6); SetStack(SP, 188); SetStack(SP - 1, 135); SP -= 2; goto B28_8485;
+B26_87bd: LDX_IMM(0x50)
+B26_87bf: TXS()
+B26_87c0: CYCLE(3); PC = 0x8bdf; goto B26_8bdf;
+B26_87c3: CYCLE(6); SetStack(SP, 197); SetStack(SP - 1, 135); SP -= 2; goto B26_8bc8;
+B26_87c6: LDA_ABS(0x05fb)
+B26_87c9: EOR_IMM(0x0B)
+B26_87cb: CYCLE(6); SetStack(SP, 205); SetStack(SP - 1, 135); SP -= 2; goto B26_8e6e;
+B26_87ce: LDX_IMM(0x50)
+B26_87d0: TXS()
+B26_87d1: CYCLE(3); PC = 0xc633; goto B30_c633;
+B26_87d4: CYCLE(3); PC = 0x9366; goto B26_9366;
+B26_87e1: LDA_ABS(0x05fb)
+B26_87e4: EOR_IMM(0x0B)
+B26_87e6: STA_ZP(0x41)
+B26_87e8: INC_ZP(0x41)
+B26_87ea: LDA_IMM(0x0A)
+B26_87ec: STA_ZP(0x3B)
+B26_87ee: LDA_ZP(0x41)
+B26_87f0: CYCLE(6); SetStack(SP, 242); SetStack(SP - 1, 135); SP -= 2; goto B30_c50c;
+B26_87f3: LDY_IMM(0x0A)
+B26_87f5: LDA_IDY(0x34)
+B26_87f7: CYCLE(2); if (!SR_Z) goto B26_882e;
+B26_87f9: LDY_IMM(0x06)
+B26_87fb: LDA_IDY(0x34)
+B26_87fd: TAX()
+B26_87fe: LDY_IMM(0x08)
+B26_8800: LDA_IDY(0x34)
+B26_8802: TAY()
+B26_8803: CYCLE(6); SetStack(SP, 5); SetStack(SP - 1, 136); SP -= 2; goto B30_c539;
+B26_8806: CMP_ABS(0x05fe)
+B26_8809: CYCLE(2); if (!SR_Z) goto B26_882e;
+B26_880b: LDX_ABS(0x0600)
+B26_880e: CPX_IMM(0x05)
+B26_8810: CYCLE(2); if (SR_C) goto B26_882e;
+B26_8812: LDA_ABS(0x05fb)
+B26_8815: CYCLE(2); if (SR_Z) goto B26_881b;
+B26_8817: CPX_IMM(0x04)
+B26_8819: CYCLE(2); if (SR_C) goto B26_882e;
+B26_881b: LDA_ABS(0x00e2)
+B26_881e: SBC_ABS(0x00e3)
+B26_8821: CMP_ABS(0x061a)
+B26_8824: CYCLE(2); if (SR_C) goto B26_882e;
+B26_8826: LDA_ZP(0x41)
+B26_8828: STA_ABS_X(0x0601)
+B26_882b: INC_ABS(0x0600)
+B26_882e: INC_ZP(0x41)
+B26_8830: DEC_ZP(0x3B)
+B26_8832: CYCLE(2); if (!SR_Z) goto B26_87ee;
+B26_8834: RTS()
+B26_8835: LDA_ABS(0x0600)
+B26_8838: CYCLE(2); if (!SR_Z) goto B26_883b;
+B26_883a: RTS()
+B26_883b: LDA_IMM(0x00)
+B26_883d: STA_ABS(0x0616)
+B26_8840: LDA_IMM(0x01)
+B26_8842: CYCLE(6); SetStack(SP, 68); SetStack(SP - 1, 136); SP -= 2; goto B30_c515;
+B26_8845: LDA_ABS(0x044e)
+B26_8848: PHA()
+B26_8849: LDA_IMM(0x00)
+B26_884b: STA_ABS(0x044e)
+B26_884e: LDX_ABS(0x0616)
+B26_8851: LDA_ABS_X(0x0601)
+B26_8854: STA_ABS(0x0442)
+B26_8857: LDX_ABS(0x061b)
+B26_885a: LDA_ABS_X(0x888b)
+B26_885d: STA_ABS(0x043d)
+B26_8860: LDA_IMM(0x00)
+B26_8862: STA_ABS(0x043e)
+B26_8865: LDA_ABS(0x0442)
+B26_8868: LDA_IMM(0x07)
+B26_886a: CYCLE(6); SetStack(SP, 108); SetStack(SP - 1, 136); SP -= 2; goto B30_c54b;
+B26_886d: CYCLE(6); SetStack(SP, 111); SetStack(SP - 1, 136); SP -= 2; goto B28_888d;
+B26_8870: PLA()
+B26_8871: STA_ABS(0x044e)
+B26_8874: CYCLE(6); SetStack(SP, 118); SetStack(SP - 1, 136); SP -= 2; goto B28_88a8;
+B26_8877: INC_ABS(0x0616)
+B26_887a: LDA_ABS(0x0616)
+B26_887d: CMP_ABS(0x0600)
+B26_8880: CYCLE(2); if (!SR_Z) goto B26_8840;
+B26_8882: LDA_IMM(0x00)
+B26_8884: STA_ABS(0x0600)
+B26_8887: STA_ABS(0x05ff)
+B26_888a: RTS()
+B26_888d: LDA_IMM(0x00)
+B26_888f: STA_ZP(0x3A)
+B26_8891: LDA_ABS(0x043b)
+B26_8894: ASL_A()
+B26_8895: ASL_A()
+B26_8896: ADC_ABS(0x043d)
+B26_8899: TAX()
+B26_889a: ASL_A()
+B26_889b: STA_ZP(0x3B)
+B26_889d: LDA_IMM(0x05)
+B26_889f: LDY_ABS_X(0x88eb)
+B26_88a2: CYCLE(6); SetStack(SP, 164); SetStack(SP - 1, 136); SP -= 2; goto B26_8ee9;
+B26_88a5: CYCLE(3); PC = 0x8132; goto B28_8132;
+B26_88a8: LDA_IMM(0x0B)
+B26_88aa: CYCLE(6); SetStack(SP, 172); SetStack(SP - 1, 136); SP -= 2; goto B30_c54e;
+B26_88ad: LDA_ABS(0x0612)
+B26_88b0: CYCLE(6); SetStack(SP, 178); SetStack(SP - 1, 136); SP -= 2; goto B30_c509;
+B26_88bb: CYCLE(6); SetStack(SP, 189); SetStack(SP - 1, 136); SP -= 2; goto B26_8bc8;
+B26_88be: LDA_ABS(0x0442)
+B26_88c1: CYCLE(6); SetStack(SP, 195); SetStack(SP - 1, 136); SP -= 2; goto B30_c50c;
+B26_88c4: LDY_IMM(0x06)
+B26_88c6: LDA_IDY(0x34)
+B26_88c8: STA_ABS(0x0635)
+B26_88cb: LDY_IMM(0x08)
+B26_88cd: LDA_IDY(0x34)
+B26_88cf: STA_ABS(0x0637)
+B26_88d2: CYCLE(3); PC = 0x81bc; goto B27_81bc;
+B26_88d5: CYCLE(6); SetStack(SP, 215); SetStack(SP - 1, 136); SP -= 2; goto B26_8bc8;
+B26_88d8: CLC()
+B26_88d9: CYCLE(6); SetStack(SP, 219); SetStack(SP - 1, 136); SP -= 2; goto B26_9095;
+B26_88dc: LDA_ABS(0x0442)
+B26_88df: CYCLE(6); SetStack(SP, 225); SetStack(SP - 1, 136); SP -= 2; goto B26_8e6e;
+B26_88e2: CYCLE(6); SetStack(SP, 228); SetStack(SP - 1, 136); SP -= 2; goto B30_c606;
+B26_88e5: LDX_IMM(0x50)
+B26_88e7: TXS()
+B26_88e8: CYCLE(3); PC = 0xc60f; goto B30_c60f;
+B26_88f3: LDA_IMM(0x00)
+B26_88f5: STA_ABS(0x043b)
+B26_88f8: LDA_ABS(0x05fb)
+B26_88fb: EOR_IMM(0x0B)
+B26_88fd: STA_ABS(0x0442)
+B26_8900: LDA_ABS(0x00e2)
+B26_8903: LDY_IMM(0x00)
+B26_8905: CMP_ABS_Y(0x8928)
+B26_8908: CYCLE(2); if (SR_C) goto B26_890f;
+B26_890a: CYCLE(2); if (SR_Z) goto B26_890f;
+B26_890c: INY()
+B26_890d: CYCLE(2); if (!SR_Z) goto B26_8905;
+B26_890f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 137); SP -= 2; goto B28_8148;
+B26_8912: LDA_IMM(0x00)
+B26_8914: STA_ABS(0x0616)
+B26_8917: LDA_IMM(0x0C)
+B26_8919: CYCLE(6); SetStack(SP, 27); SetStack(SP - 1, 137); SP -= 2; goto B30_c54e;
+B26_891c: LDA_ABS(0x0612)
+B26_891f: CYCLE(6); SetStack(SP, 33); SetStack(SP - 1, 137); SP -= 2; goto B30_c509;
+B26_892a: LDY_IMM(0x00)
+B26_892c: LDA_IMM(0x00)
+B26_892e: STA_ABS(0x043b)
+B26_8931: STA_ABS(0x043c)
+B26_8934: LDA_ABS(0x00e2)
+B26_8937: CMP_ABS_Y(0x8975)
+B26_893a: CYCLE(2); if (SR_C) goto B26_8941;
+B26_893c: CYCLE(2); if (SR_Z) goto B26_8941;
+B26_893e: INY()
+B26_893f: CYCLE(2); if (!SR_Z) goto B26_8937;
+B26_8941: CYCLE(6); SetStack(SP, 67); SetStack(SP - 1, 137); SP -= 2; goto B28_8148;
+B26_8944: LDA_IMM(0x0D)
+B26_8946: CYCLE(6); SetStack(SP, 72); SetStack(SP - 1, 137); SP -= 2; goto B30_c54e;
+B26_8949: LDA_ABS(0x0612)
+B26_894c: CYCLE(6); SetStack(SP, 78); SetStack(SP - 1, 137); SP -= 2; goto B30_c509;
+B26_8955: BIT_ABS(0x044c)
+B26_8958: CYCLE(2); if (!SR_N) goto B26_896f;
+B26_895a: LDA_ABS(0x0441)
+B26_895d: CMP_IMM(0x14)
+B26_895f: CYCLE(2); if (!SR_Z) goto B26_896f;
+B26_8961: CYCLE(6); SetStack(SP, 99); SetStack(SP - 1, 137); SP -= 2; goto B26_9070;
+B26_8964: CYCLE(6); SetStack(SP, 102); SetStack(SP - 1, 137); SP -= 2; goto B26_85e3;
+B26_8967: LDA_IMM(0x47)
+B26_8969: CYCLE(6); SetStack(SP, 107); SetStack(SP - 1, 137); SP -= 2; goto B30_c54e;
+B26_896c: CYCLE(3); PC = 0x85bc; goto B28_85bc;
+B26_896f: CYCLE(3); PC = 0x85ac; goto B28_85ac;
+B26_8972: CYCLE(3); PC = 0x8bdf; goto B26_8bdf;
+B26_8978: LDA_IMM(0x02)
+B26_897a: CYCLE(6); SetStack(SP, 124); SetStack(SP - 1, 137); SP -= 2; goto B30_c54b;
+B26_897d: CYCLE(6); SetStack(SP, 127); SetStack(SP - 1, 137); SP -= 2; goto B26_8f72;
+B26_8980: LDA_IMM(0x0E)
+B26_8982: CYCLE(6); SetStack(SP, 132); SetStack(SP - 1, 137); SP -= 2; goto B30_c54e;
+B26_8985: LDA_ABS(0x0600)
+B26_8988: CYCLE(2); if (!SR_Z) goto B26_8993;
+B26_898a: STA_ABS(0x0612)
+B26_898d: CYCLE(6); SetStack(SP, 143); SetStack(SP - 1, 137); SP -= 2; goto B26_90dd;
+B26_8990: CYCLE(3); PC = 0x8a6f; goto B28_8a6f;
+B26_8993: LDA_IMM(0x00)
+B26_8995: STA_ABS(0x0616)
+B26_8998: LDX_ABS(0x0616)
+B26_899b: LDA_ABS_X(0x060b)
+B26_899e: CMP_IMM(0x06)
+B26_89a0: CYCLE(2); if (SR_Z) goto B26_89bb;
+B26_89a2: STA_ABS(0x043d)
+B26_89a5: LDA_ABS_X(0x0601)
+B26_89a8: STA_ABS(0x0442)
+B26_89ab: LDA_ABS_X(0x0606)
+B26_89ae: STA_ABS(0x043e)
+B26_89b1: LDA_IMM(0x0F)
+B26_89b3: CYCLE(6); SetStack(SP, 181); SetStack(SP - 1, 137); SP -= 2; goto B30_c54e;
+B26_89b6: LDA_IMM(0x14)
+B26_89b8: CYCLE(6); SetStack(SP, 186); SetStack(SP - 1, 137); SP -= 2; goto B30_c515;
+B26_89bb: INC_ABS(0x0616)
+B26_89be: LDA_ABS(0x0616)
+B26_89c1: CMP_ABS(0x0600)
+B26_89c4: CYCLE(2); if (!SR_Z) goto B26_8998;
+B26_89c6: LDA_IMM(0x04)
+B26_89c8: CYCLE(6); SetStack(SP, 202); SetStack(SP - 1, 137); SP -= 2; goto B30_c54e;
+B26_89cb: LDA_IMM(0x00)
+B26_89cd: STA_ABS(0x0616)
+B26_89d0: LDA_IMM(0x01)
+B26_89d2: CYCLE(6); SetStack(SP, 212); SetStack(SP - 1, 137); SP -= 2; goto B30_c515;
+B26_89d5: LDA_IMM(0x00)
+B26_89d7: STA_ABS(0x0612)
+B26_89da: LDX_ABS(0x0616)
+B26_89dd: LDA_ABS_X(0x0601)
+B26_89e0: STA_ABS(0x0442)
+B26_89e3: LDA_ABS_X(0x0606)
+B26_89e6: STA_ABS(0x043e)
+B26_89e9: LDA_ABS_X(0x060b)
+B26_89ec: STA_ABS(0x043d)
+B26_89ef: CMP_IMM(0x06)
+B26_89f1: CYCLE(2); if (!SR_Z) goto B26_89f6;
+B26_89f3: CYCLE(3); PC = 0x8a4f; goto B26_8a4f;
+B26_89f6: CMP_IMM(0x05)
+B26_89f8: CYCLE(2); if (!SR_Z) goto B26_89fd;
+B26_89fa: CYCLE(3); PC = 0x8a4f; goto B26_8a4f;
+B26_89fd: LDA_IMM(0x07)
+B26_89ff: CYCLE(6); SetStack(SP, 1); SetStack(SP - 1, 138); SP -= 2; goto B30_c54b;
+B26_8a02: CYCLE(6); SetStack(SP, 4); SetStack(SP - 1, 138); SP -= 2; goto B26_8ff3;
+B26_8a05: LDX_ABS(0x043b)
+B26_8a08: LDA_ABS_X(0x8a63)
+B26_8a0b: ASL_A()
+B26_8a0c: ASL_A()
+B26_8a0d: LDX_ABS(0x043d)
+B26_8a10: ADC_ABS_X(0x8a6a)
+B26_8a13: TAX()
+B26_8a14: ASL_A()
+B26_8a15: STA_ZP(0x3B)
+B26_8a17: LDA_IMM(0x08)
+B26_8a19: LDY_ABS_X(0x83e1)
+B26_8a1c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 138); SP -= 2; goto B26_8ee9;
+B26_8a1f: CMP_ABS_X(0x8aac)
+B26_8a22: CYCLE(2); if (SR_C) goto B26_8a28;
+B26_8a24: INX()
+B26_8a25: INY()
+B26_8a26: CYCLE(2); if (!SR_Z) goto B26_8a1f;
+B26_8a28: CYCLE(6); SetStack(SP, 42); SetStack(SP - 1, 138); SP -= 2; goto B28_8148;
+B26_8a2b: LDA_IMM(0x11)
+B26_8a2d: LDX_IMM(0x01)
+B26_8a2f: LDY_ABS(0x0612)
+B26_8a32: CPY_IMM(0x02)
+B26_8a34: CYCLE(2); if (!SR_C) goto B26_8a39;
+B26_8a36: DEX()
+B26_8a37: LDA_IMM(0x10)
+B26_8a39: PHA()
+B26_8a3a: TXA()
+B26_8a3b: LSR_A()
+B26_8a3c: CYCLE(6); SetStack(SP, 62); SetStack(SP - 1, 138); SP -= 2; goto B26_9095;
+B26_8a3f: PLA()
+B26_8a40: CYCLE(6); SetStack(SP, 66); SetStack(SP - 1, 138); SP -= 2; goto B30_c54e;
+B26_8a43: LDA_IMM(0x12)
+B26_8a45: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 138); SP -= 2; goto B30_c54e;
+B26_8a48: LDY_ABS(0x0612)
+B26_8a4b: CPY_IMM(0x02)
+B26_8a4d: CYCLE(2); if (SR_C) goto B26_8a60;
+B26_8a4f: INC_ABS(0x0616)
+B26_8a52: LDA_ABS(0x0616)
+B26_8a55: CMP_ABS(0x0600)
+B26_8a58: CYCLE(2); if (SR_Z) goto B26_8a5d;
+B26_8a5a: CYCLE(3); PC = 0x89d0; goto B26_89d0;
+B26_8a5d: CYCLE(6); SetStack(SP, 95); SetStack(SP - 1, 138); SP -= 2; goto B26_9085;
+B26_8a60: CYCLE(3); PC = 0x8a6f; goto B28_8a6f;
+B26_8a6f: CYCLE(6); SetStack(SP, 113); SetStack(SP - 1, 138); SP -= 2; goto B30_c606;
+B26_8a72: LDA_ABS(0x0612)
+B26_8a75: CYCLE(6); SetStack(SP, 119); SetStack(SP - 1, 138); SP -= 2; goto B30_c509;
+B26_8a80: CYCLE(6); SetStack(SP, 130); SetStack(SP - 1, 138); SP -= 2; goto B26_8bba;
+B26_8a83: LDA_IMM(0x13)
+B26_8a85: CYCLE(6); SetStack(SP, 135); SetStack(SP - 1, 138); SP -= 2; goto B30_c54e;
+B26_8a88: LDA_ABS(0x043b)
+B26_8a8b: CYCLE(6); SetStack(SP, 141); SetStack(SP - 1, 138); SP -= 2; goto B30_c509;
+B26_8a9c: CYCLE(6); SetStack(SP, 158); SetStack(SP - 1, 138); SP -= 2; goto B26_8bc8;
+B26_8a9f: LDA_ABS(0x043d)
+B26_8aa2: CMP_IMM(0x02)
+B26_8aa4: CYCLE(2); if (!SR_Z) goto B26_8aa9;
+B26_8aa6: CYCLE(3); PC = 0x81de; goto B28_81de;
+B26_8aa9: CYCLE(3); PC = 0x8bdf; goto B26_8bdf;
+B26_8ab0: LDA_ABS(0x0441)
+B26_8ab3: LDX_IMM(0x02)
+B26_8ab5: CYCLE(6); SetStack(SP, 183); SetStack(SP - 1, 138); SP -= 2; goto B26_8b3a;
+B26_8ab8: LDA_ABS(0x00e2)
+B26_8abb: AND_IMM(0x03)
+B26_8abd: CMP_IMM(0x03)
+B26_8abf: CYCLE(2); if (!SR_Z) goto B26_8ac3;
+B26_8ac1: LDA_IMM(0x00)
+B26_8ac3: CLC()
+B26_8ac4: ADC_IMM(0x03)
+B26_8ac6: STA_ZP(0x3A)
+B26_8ac8: LDA_ABS(0x05fb)
+B26_8acb: EOR_IMM(0x0B)
+B26_8acd: CLC()
+B26_8ace: ADC_ZP(0x3A)
+B26_8ad0: STA_ABS(0x0442)
+B26_8ad3: STA_ABS(0x0601)
+B26_8ad6: LDX_IMM(0x03)
+B26_8ad8: CYCLE(6); SetStack(SP, 218); SetStack(SP - 1, 138); SP -= 2; goto B26_8b3a;
+B26_8adb: LDA_IMM(0x00)
+B26_8add: STA_ABS(0x043d)
+B26_8ae0: LDA_IMM(0x00)
+B26_8ae2: STA_ABS(0x043e)
+B26_8ae5: STA_ABS(0x044e)
+B26_8ae8: CYCLE(6); SetStack(SP, 234); SetStack(SP - 1, 138); SP -= 2; goto B26_8f72;
+B26_8aeb: LDA_IMM(0x07)
+B26_8aed: CYCLE(6); SetStack(SP, 239); SetStack(SP - 1, 138); SP -= 2; goto B30_c54b;
+B26_8af0: LDA_IMM(0x0A)
+B26_8af2: LDX_IMM(0x00)
+B26_8af4: STX_ZP(0x3B)
+B26_8af6: LDX_IMM(0x80)
+B26_8af8: CYCLE(6); SetStack(SP, 250); SetStack(SP - 1, 138); SP -= 2; goto B26_8ee9;
+B26_8afb: LDY_IMM(0x00)
+B26_8afd: LDX_ABS(0x0612)
+B26_8b00: CYCLE(2); if (!SR_Z) goto B26_8b0a;
+B26_8b02: CMP_ABS_Y(0x8b46)
+B26_8b05: CYCLE(2); if (SR_C) goto B26_8b0a;
+B26_8b07: INY()
+B26_8b08: CYCLE(2); if (!SR_Z) goto B26_8b02;
+B26_8b0a: CYCLE(6); SetStack(SP, 12); SetStack(SP - 1, 139); SP -= 2; goto B28_8148;
+B26_8b0d: LDA_ABS(0x0441)
+B26_8b10: LDX_IMM(0xFE)
+B26_8b12: CYCLE(6); SetStack(SP, 20); SetStack(SP - 1, 139); SP -= 2; goto B26_8b3a;
+B26_8b15: LDA_ABS(0x0442)
+B26_8b18: LDX_IMM(0xFD)
+B26_8b1a: CYCLE(6); SetStack(SP, 28); SetStack(SP - 1, 139); SP -= 2; goto B26_8b3a;
+B26_8b1d: LDA_IMM(0x14)
+B26_8b1f: CYCLE(6); SetStack(SP, 33); SetStack(SP - 1, 139); SP -= 2; goto B30_c54e;
+B26_8b22: LDA_IMM(0x00)
+B26_8b24: STA_ABS(0x061a)
+B26_8b27: LDA_IMM(0x02)
+B26_8b29: STA_ABS(0x05ff)
+B26_8b2c: LDA_ABS(0x0612)
+B26_8b2f: CYCLE(6); SetStack(SP, 49); SetStack(SP - 1, 139); SP -= 2; goto B30_c509;
+B26_8b3a: CYCLE(6); SetStack(SP, 60); SetStack(SP - 1, 139); SP -= 2; goto B30_c50c;
+B26_8b3d: LDY_IMM(0x03)
+B26_8b3f: TXA()
+B26_8b40: CLC()
+B26_8b41: ADC_IDY(0x34)
+B26_8b43: STA_IDY(0x34)
+B26_8b45: RTS()
+B26_8b4a: CYCLE(6); SetStack(SP, 76); SetStack(SP - 1, 139); SP -= 2; goto B26_8b9c;
+B26_8b4d: CYCLE(2); if (SR_C) goto B26_8b50;
+B26_8b4f: RTS()
+B26_8b50: CYCLE(6); SetStack(SP, 82); SetStack(SP - 1, 139); SP -= 2; goto B30_c624;
+B26_8b53: LDA_IMM(0x00)
+B26_8b55: STA_ABS(0x0600)
+B26_8b58: TXA()
+B26_8b59: LDX_IMM(0x02)
+B26_8b5b: EOR_ABS(0x05fb)
+B26_8b5e: CYCLE(2); if (SR_Z) goto B26_8b62;
+B26_8b60: LDX_IMM(0x01)
+B26_8b62: STX_ABS(0x0621)
+B26_8b65: LDA_IMM(0xFF)
+B26_8b67: STA_ABS(0x061a)
+B26_8b6a: CYCLE(6); SetStack(SP, 108); SetStack(SP - 1, 139); SP -= 2; goto B26_87e1;
+B26_8b6d: LDX_IMM(0x50)
+B26_8b6f: TXS()
+B26_8b70: CYCLE(3); PC = 0x8b73; goto B26_8b73;
+B26_8b73: LDA_IMM(0x0A)
+B26_8b75: CYCLE(6); SetStack(SP, 119); SetStack(SP - 1, 139); SP -= 2; goto B30_c609;
+B26_8b78: LDA_IMM(0x3F)
+B26_8b7a: LDX_ABS(0x0621)
+B26_8b7d: CPX_IMM(0x02)
+B26_8b7f: CYCLE(2); if (SR_Z) goto B26_8b86;
+B26_8b81: CYCLE(6); SetStack(SP, 131); SetStack(SP - 1, 139); SP -= 2; goto B28_848f;
+B26_8b84: LDA_IMM(0x2F)
+B26_8b86: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 139); SP -= 2; goto B30_c54e;
+B26_8b89: CYCLE(6); SetStack(SP, 139); SetStack(SP - 1, 139); SP -= 2; goto B26_8e86;
+B26_8b8c: CYCLE(6); SetStack(SP, 142); SetStack(SP - 1, 139); SP -= 2; goto B30_c600;
+B26_8b8f: LDA_ABS(0x0621)
+B26_8b92: CMP_IMM(0x01)
+B26_8b94: CYCLE(2); if (!SR_Z) goto B26_8b99;
+B26_8b96: CYCLE(3); PC = 0x8298; goto B28_8298;
+B26_8b99: CYCLE(3); PC = 0x8978; goto B28_8978;
+B26_8b9c: LDA_ABS(0x0637)
+B26_8b9f: CMP_IMM(0x60)
+B26_8ba1: CYCLE(2); if (!SR_C) goto B26_8bb6;
+B26_8ba3: CMP_IMM(0xA0)
+B26_8ba5: CYCLE(2); if (SR_C) goto B26_8bb6;
+B26_8ba7: LDX_IMM(0x00)
+B26_8ba9: LDA_ABS(0x0635)
+B26_8bac: CMP_IMM(0x50)
+B26_8bae: CYCLE(2); if (!SR_C) goto B26_8bb8;
+B26_8bb0: LDX_IMM(0x0B)
+B26_8bb2: CMP_IMM(0xB0)
+B26_8bb4: CYCLE(2); if (SR_C) goto B26_8bb8;
+B26_8bb6: CLC()
+B26_8bb7: RTS()
+B26_8bb8: SEC()
+B26_8bb9: RTS()
+B26_8bba: LDA_ABS(0x0600)
+B26_8bbd: CYCLE(2); if (SR_Z) goto B26_8bc7;
+B26_8bbf: LDA_ABS(0x0441)
+B26_8bc2: LDX_IMM(0x01)
+B26_8bc4: CYCLE(3); PC = 0x8bd4; goto B26_8bd4;
+B26_8bc7: RTS()
+B26_8bc8: LDX_IMM(0x03)
+B26_8bca: LDA_ABS(0x0442)
+B26_8bcd: CYCLE(2); if (SR_Z) goto B26_8bd4;
+B26_8bcf: CMP_IMM(0x0B)
+B26_8bd1: CYCLE(2); if (SR_Z) goto B26_8bd4;
+B26_8bd3: DEX()
+B26_8bd4: CYCLE(6); SetStack(SP, 214); SetStack(SP - 1, 139); SP -= 2; goto B30_c50c;
+B26_8bd7: LDY_IMM(0x00)
+B26_8bd9: LDA_IDY(0x34)
+B26_8bdb: CYCLE(6); SetStack(SP, 221); SetStack(SP - 1, 139); SP -= 2; goto B30_c4c8;
+B26_8bde: RTS()
+B26_8bdf: CYCLE(6); SetStack(SP, 225); SetStack(SP - 1, 139); SP -= 2; goto B26_9070;
+B26_8be2: CYCLE(6); SetStack(SP, 228); SetStack(SP - 1, 139); SP -= 2; goto B26_8c6d;
+B26_8be5: CYCLE(6); SetStack(SP, 231); SetStack(SP - 1, 139); SP -= 2; goto B30_c606;
+B26_8be8: CYCLE(6); SetStack(SP, 234); SetStack(SP - 1, 139); SP -= 2; goto B26_8c42;
+B26_8beb: CYCLE(2); if (SR_C) goto B26_8c12;
+B26_8bed: LDA_IMM(0x00)
+B26_8bef: CYCLE(6); SetStack(SP, 241); SetStack(SP - 1, 139); SP -= 2; goto B30_c548;
+B26_8bf2: STA_ZP(0x3A)
+B26_8bf4: LDA_ZP(0x47)
+B26_8bf6: PHA()
+B26_8bf7: LDA_IMM(0x0B)
+B26_8bf9: CYCLE(6); SetStack(SP, 251); SetStack(SP - 1, 139); SP -= 2; goto B30_c548;
+B26_8bfc: TAX()
+B26_8bfd: PLA()
+B26_8bfe: CMP_ZP(0x47)
+B26_8c00: CYCLE(2); if (!SR_C) goto B26_8c10;
+B26_8c02: CYCLE(2); if (SR_Z) goto B26_8c09;
+B26_8c04: STX_ZP(0x3A)
+B26_8c06: CYCLE(3); PC = 0x8c10; goto B26_8c10;
+B26_8c09: BIT_ABS(0x00e2)
+B26_8c0c: CYCLE(2); if (!SR_N) goto B26_8c10;
+B26_8c0e: STX_ZP(0x3A)
+B26_8c10: LDA_ZP(0x3A)
+B26_8c12: CYCLE(6); SetStack(SP, 20); SetStack(SP - 1, 140); SP -= 2; goto B26_8e6e;
+B26_8c15: LDA_ABS(0x0441)
+B26_8c18: CYCLE(6); SetStack(SP, 26); SetStack(SP - 1, 140); SP -= 2; goto B30_c50c;
+B26_8c1b: LDY_IMM(0x06)
+B26_8c1d: LDA_ABS(0x0635)
+B26_8c20: STA_IDY(0x34)
+B26_8c22: LDY_IMM(0x08)
+B26_8c24: LDA_ABS(0x0637)
+B26_8c27: STA_IDY(0x34)
+B26_8c29: LDA_IMM(0x00)
+B26_8c2b: STA_ABS(0x043c)
+B26_8c2e: CYCLE(6); SetStack(SP, 48); SetStack(SP - 1, 140); SP -= 2; goto B30_c624;
+B26_8c31: CYCLE(6); SetStack(SP, 51); SetStack(SP - 1, 140); SP -= 2; goto B26_8b4a;
+B26_8c34: LDA_IMM(0x2C)
+B26_8c36: CYCLE(6); SetStack(SP, 56); SetStack(SP - 1, 140); SP -= 2; goto B30_c54e;
+B26_8c39: CYCLE(6); SetStack(SP, 59); SetStack(SP - 1, 140); SP -= 2; goto B26_8e86;
+B26_8c3c: LDX_IMM(0x50)
+B26_8c3e: TXS()
+B26_8c3f: CYCLE(3); PC = 0xc60f; goto B30_c60f;
+B26_8c42: LDA_ABS(0x0600)
+B26_8c45: CYCLE(2); if (SR_Z) goto B26_8c5f;
+B26_8c47: LDX_IMM(0x00)
+B26_8c49: LDA_ABS_X(0x0601)
+B26_8c4c: CYCLE(2); if (SR_Z) goto B26_8c59;
+B26_8c4e: CMP_IMM(0x0B)
+B26_8c50: CYCLE(2); if (SR_Z) goto B26_8c59;
+B26_8c52: LDA_ABS_X(0x060b)
+B26_8c55: CMP_IMM(0x05)
+B26_8c57: CYCLE(2); if (SR_Z) goto B26_8c61;
+B26_8c59: INX()
+B26_8c5a: CPX_ABS(0x0600)
+B26_8c5d: CYCLE(2); if (!SR_Z) goto B26_8c49;
+B26_8c5f: CLC()
+B26_8c60: RTS()
+B26_8c61: LDA_ABS(0x00e2)
+B26_8c64: CMP_IMM(0x40)
+B26_8c66: CYCLE(2); if (SR_C) goto B26_8c5f;
+B26_8c68: LDA_ABS_X(0x0601)
+B26_8c6b: SEC()
+B26_8c6c: RTS()
+B26_8c6d: LDA_ABS(0x00e2)
+B26_8c70: AND_IMM(0x83)
+B26_8c72: LDX_ABS(0x0637)
+B26_8c75: CYCLE(6); SetStack(SP, 119); SetStack(SP - 1, 140); SP -= 2; goto B26_8c92;
+B26_8c78: STA_ABS(0x0637)
+B26_8c7b: LDA_ABS(0x00e3)
+B26_8c7e: AND_IMM(0x83)
+B26_8c80: STA_ABS(0x062c)
+B26_8c83: LDX_ABS(0x0635)
+B26_8c86: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 140); SP -= 2; goto B26_8c92;
+B26_8c89: STA_ABS(0x0635)
+B26_8c8c: LDA_IMM(0x00)
+B26_8c8e: CYCLE(6); SetStack(SP, 144); SetStack(SP - 1, 140); SP -= 2; goto B26_8ca4;
+B26_8c91: RTS()
+B26_8c92: ASL_A()
+B26_8c93: PHP()
+B26_8c94: ASL_A()
+B26_8c95: ASL_A()
+B26_8c96: PLP()
+B26_8c97: CYCLE(2); if (!SR_C) goto B26_8c9d;
+B26_8c99: EOR_IMM(0xFF)
+B26_8c9b: ADC_IMM(0x00)
+B26_8c9d: STA_ZP(0x3A)
+B26_8c9f: TXA()
+B26_8ca0: CLC()
+B26_8ca1: ADC_ZP(0x3A)
+B26_8ca3: RTS()
+B26_8ca4: LSR_A()
+B26_8ca5: PHP()
+B26_8ca6: LDA_ABS(0x0635)
+B26_8ca9: CMP_IMM(0x30)
+B26_8cab: CYCLE(2); if (!SR_C) goto B26_8ccb;
+B26_8cad: CMP_IMM(0xD0)
+B26_8caf: CYCLE(2); if (SR_C) goto B26_8ccb;
+B26_8cb1: LDA_ABS(0x0637)
+B26_8cb4: CMP_IMM(0x50)
+B26_8cb6: CYCLE(2); if (!SR_C) goto B26_8cbe;
+B26_8cb8: CMP_IMM(0xB0)
+B26_8cba: CYCLE(2); if (SR_C) goto B26_8cbe;
+B26_8cbc: PLP()
+B26_8cbd: RTS()
+B26_8cbe: PLP()
+B26_8cbf: CYCLE(6); SetStack(SP, 193); SetStack(SP - 1, 140); SP -= 2; goto B26_8cea;
+B26_8cc2: CYCLE(6); SetStack(SP, 196); SetStack(SP - 1, 140); SP -= 2; goto B30_c55a;
+B26_8cc5: LDX_IMM(0x50)
+B26_8cc7: TXS()
+B26_8cc8: CYCLE(3); PC = 0x911c; goto B26_911c;
+B26_8ccb: PLP()
+B26_8ccc: CYCLE(6); SetStack(SP, 206); SetStack(SP - 1, 140); SP -= 2; goto B26_8cea;
+B26_8ccf: CYCLE(6); SetStack(SP, 209); SetStack(SP - 1, 140); SP -= 2; goto B30_c55a;
+B26_8cd2: LDA_ABS(0x05fb)
+B26_8cd5: CYCLE(2); if (SR_Z) goto B26_8cd9;
+B26_8cd7: LDA_IMM(0x80)
+B26_8cd9: EOR_ABS(0x0635)
+B26_8cdc: CYCLE(2); if (!SR_N) goto B26_8ce4;
+B26_8cde: LDX_IMM(0x50)
+B26_8ce0: TXS()
+B26_8ce1: CYCLE(3); PC = 0x92ee; goto B26_92ee;
+B26_8ce4: LDX_IMM(0x50)
+B26_8ce6: TXS()
+B26_8ce7: CYCLE(3); PC = 0x955e; goto B26_955e;
+B26_8cea: CYCLE(2); if (!SR_C) goto B26_8cf4;
+B26_8cec: LDA_ABS(0x05fb)
+B26_8cef: EOR_IMM(0x0B)
+B26_8cf1: STA_ABS(0x05fb)
+B26_8cf4: RTS()
+B26_8cf5: PHA()
+B26_8cf6: CYCLE(6); SetStack(SP, 248); SetStack(SP - 1, 140); SP -= 2; goto B30_c551;
+B26_8cf9: PLA()
+B26_8cfa: LDY_IMM(0x07)
+B26_8cfc: CLC()
+B26_8cfd: ADC_IDY(0x34)
+B26_8cff: CYCLE(2); if (!SR_N) goto B26_8d03;
+B26_8d03: STA_IDY(0x34)
+B26_8d05: RTS()
+B26_8d06: PHP()
+B26_8d07: ASL_A()
+B26_8d08: TAX()
+B26_8d09: LDA_ABS_X(0x8d93)
+B26_8d0c: STA_ZP(0x3C)
+B26_8d0e: LDA_ABS_X(0x8d94)
+B26_8d11: STA_ZP(0x3D)
+B26_8d13: LDA_ABS(0x00e2)
+B26_8d16: ADC_ABS(0x00e3)
+B26_8d19: ROR_A()
+B26_8d1a: LDX_IMM(0x00)
+B26_8d1c: PLP()
+B26_8d1d: CYCLE(2); if (!SR_N) goto B26_8d4a;
+B26_8d1f: BIT_ZP(0x3A)
+B26_8d21: CYCLE(2); if (SR_N) goto B26_8d4a;
+B26_8d23: LDY_ABS(0x0621)
+B26_8d26: CPY_IMM(0x04)
+B26_8d28: CYCLE(2); if (!SR_Z) goto B26_8d33;
+B26_8d2a: LDY_ABS(0x0442)
+B26_8d2d: CYCLE(2); if (SR_Z) goto B26_8d3a;
+B26_8d2f: CPY_IMM(0x0B)
+B26_8d31: CYCLE(2); if (SR_Z) goto B26_8d3a;
+B26_8d33: LDY_ABS(0x00e3)
+B26_8d36: CPY_IMM(0xF8)
+B26_8d38: CYCLE(2); if (!SR_C) goto B26_8d4a;
+B26_8d3a: INX()
+B26_8d3b: TAY()
+B26_8d3c: LDA_ABS(0x043e)
+B26_8d3f: ORA_IMM(0x80)
+B26_8d41: STA_ABS(0x043e)
+B26_8d44: TYA()
+B26_8d45: AND_IMM(0x7F)
+B26_8d47: CYCLE(3); PC = 0x8d60; goto B28_8d60;
+B26_8d4a: LDY_ZP(0x3B)
+B26_8d4c: CMP_IDY(0x3C)
+B26_8d4e: CYCLE(2); if (!SR_C) goto B26_8d57;
+B26_8d50: CYCLE(2); if (SR_Z) goto B26_8d57;
+B26_8d52: SBC_IDY(0x3C)
+B26_8d54: CYCLE(3); PC = 0x8d4c; goto B26_8d4c;
+B26_8d57: LDX_IMM(0x00)
+B26_8d59: INY()
+B26_8d5a: CLC()
+B26_8d5b: ADC_IDY(0x3C)
+B26_8d5d: CYCLE(2); if (!SR_C) goto B26_8d60;
+B26_8d5f: INX()
+B26_8d60: BIT_ZP(0x3A)
+B26_8d62: CYCLE(2); if (!SR_N) goto B26_8d74;
+B26_8d64: LSR_ZP(0x33)
+B26_8d66: ROR_ZP(0x32)
+B26_8d68: LSR_ZP(0x33)
+B26_8d6a: ROR_ZP(0x32)
+B26_8d6c: LSR_ZP(0x33)
+B26_8d6e: ROR_ZP(0x32)
+B26_8d70: LSR_ZP(0x33)
+B26_8d72: ROR_ZP(0x32)
+B26_8d74: STA_ZP(0x67)
+B26_8d76: STX_ZP(0x68)
+B26_8d78: LDA_ZP(0x32)
+B26_8d7a: STA_ZP(0x69)
+B26_8d7c: LDA_ZP(0x33)
+B26_8d7e: STA_ZP(0x6A)
+B26_8d80: CYCLE(6); SetStack(SP, 130); SetStack(SP - 1, 141); SP -= 2; goto B30_c521;
+B26_8d83: LDA_IMM(0x00)
+B26_8d85: STA_ABS(0x0074)
+B26_8d88: LDA_ZP(0x6C)
+B26_8d8a: LDY_ZP(0x6D)
+B26_8d8c: CYCLE(2); if (SR_Z) goto B26_8d90;
+B26_8d8e: LDA_IMM(0xFF)
+B26_8d90: STA_ZP(0x71)
+B26_8d92: RTS()
+B26_8e33: LDA_ABS(0x0600)
+B26_8e36: CYCLE(2); if (SR_Z) goto B26_8e6d;
+B26_8e38: LDX_ABS(0x043d)
+B26_8e3b: LDA_ABS(0x0442)
+B26_8e3e: CYCLE(2); if (SR_Z) goto B26_8e44;
+B26_8e40: CMP_IMM(0x0B)
+B26_8e42: CYCLE(2); if (!SR_Z) goto B26_8e4a;
+B26_8e44: CPX_IMM(0x04)
+B26_8e46: CYCLE(2); if (SR_Z) goto B26_8e6d;
+B26_8e48: CYCLE(2); if (!SR_Z) goto B26_8e52;
+B26_8e4a: CPX_IMM(0x05)
+B26_8e4c: CYCLE(2); if (SR_Z) goto B26_8e6d;
+B26_8e4e: CPX_IMM(0x06)
+B26_8e50: CYCLE(2); if (SR_Z) goto B26_8e6d;
+B26_8e52: CYCLE(6); SetStack(SP, 84); SetStack(SP - 1, 142); SP -= 2; goto B26_8b9c;
+B26_8e55: LDA_ABS(0x0612)
+B26_8e58: CYCLE(2); if (!SR_Z) goto B26_8e6d;
+B26_8e5a: LDA_IMM(0x0F)
+B26_8e5c: CYCLE(2); if (SR_C) goto B26_8e60;
+B26_8e5e: LDA_IMM(0x3F)
+B26_8e60: CMP_ABS(0x00e2)
+B26_8e63: CYCLE(2); if (!SR_C) goto B26_8e6d;
+B26_8e65: LDA_IMM(0x04)
+B26_8e67: STA_ABS(0x0612)
+B26_8e6a: CYCLE(6); SetStack(SP, 108); SetStack(SP - 1, 142); SP -= 2; goto B30_c55a;
+B26_8e6d: RTS()
+B26_8e6e: STA_ABS(0x0441)
+B26_8e71: LDX_IMM(0x00)
+B26_8e73: CMP_IMM(0x0B)
+B26_8e75: CYCLE(2); if (!SR_C) goto B26_8e79;
+B26_8e77: LDX_IMM(0x0B)
+B26_8e79: TXA()
+B26_8e7a: EOR_ABS(0x05fb)
+B26_8e7d: STX_ABS(0x05fb)
+B26_8e80: CYCLE(2); if (SR_Z) goto B26_8e85;
+B26_8e82: CYCLE(6); SetStack(SP, 132); SetStack(SP - 1, 142); SP -= 2; goto B30_c56f;
+B26_8e85: RTS()
+B26_8e86: LDA_ABS(0x0446)
+B26_8e89: CMP_IMM(0x05)
+B26_8e8b: CYCLE(2); if (SR_Z) goto B26_8ee8;
+B26_8e8d: CMP_IMM(0x04)
+B26_8e8f: CYCLE(2); if (!SR_Z) goto B26_8ee8;
+B26_8e91: LDA_ABS(0x05fb)
+B26_8e94: CYCLE(2); if (!SR_Z) goto B26_8ee8;
+B26_8e96: LDA_ABS(0x0441)
+B26_8e99: CYCLE(6); SetStack(SP, 155); SetStack(SP - 1, 142); SP -= 2; goto B30_c50c;
+B26_8e9c: LDY_IMM(0x00)
+B26_8e9e: LDA_IDY(0x34)
+B26_8ea0: CMP_IMM(0x01)
+B26_8ea2: CYCLE(2); if (SR_Z) goto B26_8ee8;
+B26_8ea4: LDY_IMM(0x06)
+B26_8ea6: LDA_IDY(0x34)
+B26_8ea8: CYCLE(2); if (!SR_N) goto B26_8ee8;
+B26_8eaa: LDA_ABS(0x0441)
+B26_8ead: STA_ABS(0x05fc)
+B26_8eb0: LDA_IMM(0x01)
+B26_8eb2: PHA()
+B26_8eb3: CYCLE(6); SetStack(SP, 181); SetStack(SP - 1, 142); SP -= 2; goto B30_c50c;
+B26_8eb6: LDY_IMM(0x00)
+B26_8eb8: LDA_IDY(0x34)
+B26_8eba: CMP_IMM(0x01)
+B26_8ebc: CYCLE(2); if (SR_Z) goto B26_8ec4;
+B26_8ebe: PLA()
+B26_8ebf: CLC()
+B26_8ec0: ADC_IMM(0x01)
+B26_8ec2: CYCLE(2); if (!SR_Z) goto B26_8eb2;
+B26_8ec4: PLA()
+B26_8ec5: STA_ABS(0x0441)
+B26_8ec8: INC_ABS(0x0446)
+B26_8ecb: LDA_IMM(0x00)
+B26_8ecd: STA_ABS(0x0615)
+B26_8ed0: STA_ABS(0x062d)
+B26_8ed3: LDA_IMM(0x17)
+B26_8ed5: CYCLE(6); SetStack(SP, 215); SetStack(SP - 1, 142); SP -= 2; goto B30_c54e;
+B26_8ed8: LDA_IMM(0x00)
+B26_8eda: STA_ABS(0x043b)
+B26_8edd: LDA_IMM(0x04)
+B26_8edf: STA_ABS(0x043c)
+B26_8ee2: LDX_IMM(0x50)
+B26_8ee4: TXS()
+B26_8ee5: CYCLE(3); PC = 0x85ac; goto B28_85ac;
+B26_8ee8: RTS()
+B26_8ee9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 142); SP -= 2; goto B28_8d06;
+B26_8eec: LDA_ZP(0x71)
+B26_8eee: LSR_A()
+B26_8eef: LSR_A()
+B26_8ef0: STA_ABS(0x0619)
+B26_8ef3: LDA_ABS(0x061d)
+B26_8ef6: STA_ZP(0x70)
+B26_8ef8: LDA_ABS(0x061c)
+B26_8efb: ASL_A()
+B26_8efc: ROL_ZP(0x70)
+B26_8efe: ASL_A()
+B26_8eff: ROL_ZP(0x70)
+B26_8f01: ASL_A()
+B26_8f02: ROL_ZP(0x70)
+B26_8f04: ASL_A()
+B26_8f05: ROL_ZP(0x70)
+B26_8f07: ASL_A()
+B26_8f08: ROL_ZP(0x70)
+B26_8f0a: ASL_A()
+B26_8f0b: ROL_ZP(0x70)
+B26_8f0d: STA_ZP(0x6F)
+B26_8f0f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 143); SP -= 2; goto B30_c51e;
+B26_8f12: LDA_ZP(0x6F)
+B26_8f14: LDY_ZP(0x70)
+B26_8f16: CYCLE(2); if (SR_Z) goto B26_8f1a;
+B26_8f18: LDA_IMM(0xFF)
+B26_8f1a: LDX_IMM(0x00)
+B26_8f1c: LDY_IMM(0x00)
+B26_8f1e: RTS()
+B26_8f1f: CYCLE(6); SetStack(SP, 33); SetStack(SP - 1, 143); SP -= 2; goto B28_8d06;
+B26_8f22: LDA_ABS(0x061c)
+B26_8f25: STA_ZP(0x67)
+B26_8f27: LDA_ABS(0x061d)
+B26_8f2a: STA_ZP(0x68)
+B26_8f2c: LDA_IMM(0xC0)
+B26_8f2e: STA_ZP(0x69)
+B26_8f30: LDA_IMM(0x00)
+B26_8f32: STA_ZP(0x6A)
+B26_8f34: CYCLE(6); SetStack(SP, 54); SetStack(SP - 1, 143); SP -= 2; goto B30_c521;
+B26_8f37: LDA_ZP(0x6B)
+B26_8f39: STA_ZP(0x6F)
+B26_8f3b: LDA_ZP(0x6C)
+B26_8f3d: STA_ZP(0x70)
+B26_8f3f: CYCLE(6); SetStack(SP, 65); SetStack(SP - 1, 143); SP -= 2; goto B30_c51e;
+B26_8f42: LDA_ZP(0x6F)
+B26_8f44: LDY_ZP(0x70)
+B26_8f46: CYCLE(2); if (SR_Z) goto B26_8f4a;
+B26_8f48: LDA_IMM(0xFF)
+B26_8f4a: STA_ZP(0x3A)
+B26_8f4c: CYCLE(6); SetStack(SP, 78); SetStack(SP - 1, 143); SP -= 2; goto B26_8f59;
+B26_8f4f: CLC()
+B26_8f50: ADC_ZP(0x3A)
+B26_8f52: CYCLE(2); if (!SR_C) goto B26_8f56;
+B26_8f54: LDA_IMM(0xFF)
+B26_8f56: LDY_IMM(0x00)
+B26_8f58: RTS()
+B26_8f59: CYCLE(6); SetStack(SP, 91); SetStack(SP - 1, 143); SP -= 2; goto B30_c551;
+B26_8f5c: LDY_IMM(0x05)
+B26_8f5e: LDA_IDY(0x34)
+B26_8f60: SEC()
+B26_8f61: SBC_ABS(0x062b)
+B26_8f64: CYCLE(2); if (SR_C) goto B26_8f68;
+B26_8f66: LDA_IMM(0x00)
+B26_8f68: LDY_IMM(0x07)
+B26_8f6a: CLC()
+B26_8f6b: ADC_IDY(0x34)
+B26_8f6d: CYCLE(2); if (!SR_C) goto B26_8f71;
+B26_8f71: RTS()
+B26_8f72: LDA_ABS(0x0441)
+B26_8f75: LDA_IMM(0x06)
+B26_8f77: CYCLE(6); SetStack(SP, 121); SetStack(SP - 1, 143); SP -= 2; goto B30_c54b;
+B26_8f7a: LDA_IMM(0x00)
+B26_8f7c: STA_ZP(0x3A)
+B26_8f7e: LDA_ABS(0x05fb)
+B26_8f81: CYCLE(2); if (!SR_Z) goto B26_8f9a;
+B26_8f83: LDA_ABS(0x043b)
+B26_8f86: CMP_IMM(0x02)
+B26_8f88: CYCLE(2); if (!SR_Z) goto B26_8f97;
+B26_8f8a: LDA_ABS(0x0600)
+B26_8f8d: CYCLE(2); if (!SR_Z) goto B26_8f97;
+B26_8f8f: LDA_IMM(0x00)
+B26_8f91: STA_ABS(0x043f)
+B26_8f94: STA_ABS(0x0440)
+B26_8f97: CYCLE(6); SetStack(SP, 153); SetStack(SP - 1, 143); SP -= 2; goto B26_8ffb;
+B26_8f9a: BIT_ZP(0x3A)
+B26_8f9c: CYCLE(2); if (SR_N) goto B26_8fad;
+B26_8f9e: LDA_ABS(0x00e2)
+B26_8fa1: CMP_IMM(0x08)
+B26_8fa3: CYCLE(2); if (SR_C) goto B26_8fad;
+B26_8fa5: LDA_ABS(0x043c)
+B26_8fa8: ORA_IMM(0x80)
+B26_8faa: STA_ABS(0x043c)
+B26_8fad: LDX_IMM(0x00)
+B26_8faf: LDA_ABS(0x00e2)
+B26_8fb2: ADC_ABS(0x00e3)
+B26_8fb5: ROR_A()
+B26_8fb6: ORA_IMM(0x80)
+B26_8fb8: BIT_ABS(0x043c)
+B26_8fbb: CYCLE(2); if (!SR_N) goto B26_8fc0;
+B26_8fbd: INX()
+B26_8fbe: AND_IMM(0x7F)
+B26_8fc0: ADC_IMM(0x00)
+B26_8fc2: CYCLE(2); if (!SR_C) goto B26_8fc5;
+B26_8fc4: INX()
+B26_8fc5: STA_ZP(0x67)
+B26_8fc7: STX_ZP(0x68)
+B26_8fc9: BIT_ZP(0x3A)
+B26_8fcb: CYCLE(2); if (!SR_N) goto B26_8fdd;
+B26_8fcd: LSR_ZP(0x33)
+B26_8fcf: ROR_ZP(0x32)
+B26_8fd1: LSR_ZP(0x33)
+B26_8fd3: ROR_ZP(0x32)
+B26_8fd5: LSR_ZP(0x33)
+B26_8fd7: ROR_ZP(0x32)
+B26_8fd9: LSR_ZP(0x33)
+B26_8fdb: ROR_ZP(0x32)
+B26_8fdd: LDA_ZP(0x32)
+B26_8fdf: STA_ZP(0x69)
+B26_8fe1: LDA_ZP(0x33)
+B26_8fe3: STA_ZP(0x6A)
+B26_8fe5: CYCLE(6); SetStack(SP, 231); SetStack(SP - 1, 143); SP -= 2; goto B30_c521;
+B26_8fe8: LDA_ZP(0x6C)
+B26_8fea: STA_ABS(0x061c)
+B26_8fed: LDA_ZP(0x6D)
+B26_8fef: STA_ABS(0x061d)
+B26_8ff2: RTS()
+B26_8ff3: LDA_ABS(0x05fb)
+B26_8ff6: CYCLE(2); if (!SR_Z) goto B26_8ffb;
+B26_8ff8: STA_ZP(0x3A)
+B26_8ffa: RTS()
+B26_8ffb: LDA_IMM(0x00)
+B26_8ffd: STA_ZP(0x3A)
+B26_8fff: LDY_IMM(0x00)
+B26_9001: LDA_IDY(0x34)
+B26_9003: CMP_IMM(0x20)
+B26_9005: CYCLE(2); if (!SR_Z) goto B26_902f;
+B26_9007: LDA_ABS(0x05fb)
+B26_900a: CYCLE(2); if (!SR_Z) goto B26_9018;
+B26_900c: LDA_ABS(0x043b)
+B26_900f: CYCLE(2); if (!SR_Z) goto B26_9018;
+B26_9011: LDA_ABS(0x043c)
+B26_9014: CMP_IMM(0x03)
+B26_9016: CYCLE(2); if (SR_C) goto B26_902f;
+B26_9018: LDA_ABS(0x0440)
+B26_901b: LSR_A()
+B26_901c: TAX()
+B26_901d: LDA_ABS(0x043f)
+B26_9020: ROR_A()
+B26_9021: CLC()
+B26_9022: ADC_ABS(0x043f)
+B26_9025: STA_ABS(0x043f)
+B26_9028: TXA()
+B26_9029: ADC_ABS(0x0440)
+B26_902c: STA_ABS(0x0440)
+B26_902f: LDY_IMM(0x01)
+B26_9031: SEC()
+B26_9032: LDA_IDY(0x34)
+B26_9034: SBC_ABS(0x043f)
+B26_9037: TAX()
+B26_9038: INY()
+B26_9039: LDA_IDY(0x34)
+B26_903b: SBC_ABS(0x0440)
+B26_903e: CYCLE(2); if (!SR_N) goto B26_9047;
+B26_9040: LDX_IMM(0x00)
+B26_9042: LDA_IMM(0x00)
+B26_9044: SEC()
+B26_9045: ROR_ZP(0x3A)
+B26_9047: STA_IDY(0x34)
+B26_9049: DEY()
+B26_904a: TXA()
+B26_904b: STA_IDY(0x34)
+B26_904d: RTS()
+B26_904e: BIT_ABS(0x044b)
+B26_9051: CYCLE(2); if (!SR_N) goto B26_906f;
+B26_9053: LDA_IMM(0x00)
+B26_9055: STA_ABS(0x044b)
+B26_9058: STA_ABS(0x002f)
+B26_905b: LDA_IMM(0x0C)
+B26_905d: PHA()
+B26_905e: CYCLE(6); SetStack(SP, 96); SetStack(SP - 1, 144); SP -= 2; goto B30_c50c;
+B26_9061: LDY_IMM(0x01)
+B26_9063: LDA_IMM(0x00)
+B26_9065: STA_IDY(0x34)
+B26_9067: PLA()
+B26_9068: CLC()
+B26_9069: ADC_IMM(0x01)
+B26_906b: CMP_IMM(0x16)
+B26_906d: CYCLE(2); if (!SR_Z) goto B26_905d;
+B26_906f: RTS()
+B26_9070: BIT_ABS(0x044c)
+B26_9073: CYCLE(2); if (!SR_N) goto B26_9084;
+B26_9075: LDA_ABS(0x0441)
+B26_9078: CMP_IMM(0x14)
+B26_907a: CYCLE(2); if (!SR_Z) goto B26_9084;
+B26_907c: LDA_IMM(0x00)
+B26_907e: STA_ABS(0x044c)
+B26_9081: STA_ABS(0x03f1)
+B26_9084: RTS()
+B26_9085: LDX_ABS(0x043b)
+B26_9088: LDA_ABS_X(0x908e)
+B26_908b: CYCLE(3); PC = 0xc603; goto B30_c603;
+B26_9095: PHP()
+B26_9096: LDA_ABS(0x043d)
+B26_9099: ASL_A()
+B26_909a: TAX()
+B26_909b: PLP()
+B26_909c: CYCLE(2); if (!SR_C) goto B26_909f;
+B26_909e: INX()
+B26_909f: LDA_ABS_X(0x90f4)
+B26_90a2: LDY_ABS(0x0442)
+B26_90a5: CYCLE(2); if (SR_Z) goto B26_90da;
+B26_90a7: CPY_IMM(0x0B)
+B26_90a9: CYCLE(2); if (SR_Z) goto B26_90da;
+B26_90ab: TXA()
+B26_90ac: PHA()
+B26_90ad: LSR_A()
+B26_90ae: CYCLE(2); if (!SR_C) goto B26_90c3;
+B26_90b0: LDA_ABS(0x0442)
+B26_90b3: CYCLE(6); SetStack(SP, 181); SetStack(SP - 1, 144); SP -= 2; goto B30_c50c;
+B26_90b6: LDX_ABS(0x043d)
+B26_90b9: LDA_ABS_X(0x9102)
+B26_90bc: LDY_IMM(0x0A)
+B26_90be: STA_IDY(0x34)
+B26_90c0: CYCLE(3); PC = 0x90d5; goto B26_90d5;
+B26_90c3: LDA_ABS(0x0441)
+B26_90c6: CYCLE(2); if (SR_Z) goto B26_90d5;
+B26_90c8: CMP_IMM(0x0B)
+B26_90ca: CYCLE(2); if (SR_Z) goto B26_90d5;
+B26_90cc: CYCLE(6); SetStack(SP, 206); SetStack(SP - 1, 144); SP -= 2; goto B30_c50c;
+B26_90cf: LDY_IMM(0x0A)
+B26_90d1: LDA_IMM(0x05)
+B26_90d3: STA_IDY(0x34)
+B26_90d5: PLA()
+B26_90d6: TAX()
+B26_90d7: LDA_ABS_X(0x90e6)
+B26_90da: CYCLE(3); PC = 0xc603; goto B30_c603;
+B26_90dd: LDX_ABS(0x043b)
+B26_90e0: LDA_ABS_X(0x9109)
+B26_90e3: CYCLE(3); PC = 0xc603; goto B30_c603;
+B26_9110: CLC()
+B26_9111: ADC_ABS(0x05f9)
+B26_9114: STA_ABS(0x05f9)
+B26_9117: TXA()
+B26_9118: CYCLE(6); SetStack(SP, 26); SetStack(SP - 1, 145); SP -= 2; goto B30_c603;
+B26_911b: RTS()
+B26_911c: LDA_IMM(0x29)
+B26_911e: CYCLE(6); SetStack(SP, 32); SetStack(SP - 1, 145); SP -= 2; goto B30_c54e;
+B26_9121: CYCLE(6); SetStack(SP, 35); SetStack(SP - 1, 145); SP -= 2; goto B26_987b;
+B26_9124: LDA_ABS(0x0635)
+B26_9127: AND_IMM(0xF8)
+B26_9129: CLC()
+B26_912a: ADC_IMM(0x04)
+B26_912c: STA_ABS(0x0635)
+B26_912f: LDA_IMM(0x4C)
+B26_9131: BIT_ABS(0x0637)
+B26_9134: CYCLE(2); if (!SR_N) goto B26_9138;
+B26_9136: LDA_IMM(0xB4)
+B26_9138: STA_ABS(0x0637)
+B26_913b: LDX_IMM(0x00)
+B26_913d: BIT_ABS(0x0635)
+B26_9140: CYCLE(2); if (!SR_N) goto B26_9143;
+B26_9142: INX()
+B26_9143: BIT_ABS(0x0637)
+B26_9146: CYCLE(2); if (!SR_N) goto B26_914a;
+B26_9148: INX()
+B26_9149: INX()
+B26_914a: LDA_ABS(0x05fb)
+B26_914d: CYCLE(2); if (SR_Z) goto B26_9153;
+B26_914f: TXA()
+B26_9150: EOR_IMM(0x03)
+B26_9152: TAX()
+B26_9153: LDA_ABS_X(0x92ea)
+B26_9156: CLC()
+B26_9157: ADC_ABS(0x05fb)
+B26_915a: STA_ABS(0x0441)
+B26_915d: CYCLE(6); SetStack(SP, 95); SetStack(SP - 1, 145); SP -= 2; goto B30_c50c;
+B26_9160: LDY_IMM(0x06)
+B26_9162: LDA_ABS(0x0635)
+B26_9165: STA_IDY(0x34)
+B26_9167: LDY_IMM(0x08)
+B26_9169: LDA_ABS(0x0637)
+B26_916c: STA_IDY(0x34)
+B26_916e: LDX_ABS(0x0635)
+B26_9171: LDA_IMM(0x08)
+B26_9173: BIT_ABS(0x0637)
+B26_9176: CYCLE(2); if (!SR_N) goto B26_917a;
+B26_9178: LDA_IMM(0xF8)
+B26_917a: CLC()
+B26_917b: ADC_ABS(0x0637)
+B26_917e: TAY()
+B26_917f: CYCLE(6); SetStack(SP, 129); SetStack(SP - 1, 145); SP -= 2; goto B30_c539;
+B26_9182: STA_ABS(0x0624)
+B26_9185: STA_ABS(0x061e)
+B26_9188: CYCLE(6); SetStack(SP, 138); SetStack(SP - 1, 145); SP -= 2; goto B26_91d2;
+B26_918b: LDA_IMM(0x2A)
+B26_918d: CYCLE(6); SetStack(SP, 143); SetStack(SP - 1, 145); SP -= 2; goto B30_c54e;
+B26_9190: LDA_IMM(0x02)
+B26_9192: LDX_IMM(0x0A)
+B26_9194: CYCLE(6); SetStack(SP, 150); SetStack(SP - 1, 145); SP -= 2; goto B26_9110;
+B26_9197: CYCLE(6); SetStack(SP, 153); SetStack(SP - 1, 145); SP -= 2; goto B26_85f6;
+B26_919a: LDA_ABS(0x0441)
+B26_919d: CYCLE(6); SetStack(SP, 159); SetStack(SP - 1, 145); SP -= 2; goto B30_c50c;
+B26_91a0: LDA_ABS(0x061e)
+B26_91a3: STA_ABS(0x05fe)
+B26_91a6: CYCLE(6); SetStack(SP, 168); SetStack(SP - 1, 145); SP -= 2; goto B30_c536;
+B26_91a9: TYA()
+B26_91aa: LDY_IMM(0x08)
+B26_91ac: STA_IDY(0x34)
+B26_91ae: STA_ABS(0x0637)
+B26_91b1: TXA()
+B26_91b2: LDY_IMM(0x06)
+B26_91b4: STA_IDY(0x34)
+B26_91b6: STA_ABS(0x0635)
+B26_91b9: LDA_ABS(0x0624)
+B26_91bc: STA_ABS(0x0638)
+B26_91bf: LDA_IMM(0x00)
+B26_91c1: STA_ABS(0x043c)
+B26_91c4: STA_ABS(0x061a)
+B26_91c7: LDA_IMM(0x01)
+B26_91c9: STA_ABS(0x061b)
+B26_91cc: CYCLE(6); SetStack(SP, 206); SetStack(SP - 1, 145); SP -= 2; goto B30_c60c;
+B26_91cf: CYCLE(3); PC = 0xc63c; goto B30_c63c;
+B26_91d2: LDA_IMM(0x00)
+B26_91d4: STA_ZP(0x11)
+B26_91d6: STA_ZP(0x12)
+B26_91d8: LDA_ABS(0x05fb)
+B26_91db: CYCLE(2); if (SR_Z) goto B26_91e0;
+B26_91dd: CYCLE(3); PC = 0x9298; goto B26_9298;
+B26_91e0: LDA_IMM(0x38)
+B26_91e2: CYCLE(6); SetStack(SP, 228); SetStack(SP - 1, 145); SP -= 2; goto B30_c54e;
+B26_91e5: LDA_IMM(0x81)
+B26_91e7: STA_ABS(0x062d)
+B26_91ea: LDA_IMM(0x1F)
+B26_91ec: STA_ABS(0x0494)
+B26_91ef: LDA_IMM(0x0F)
+B26_91f1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 145); SP -= 2; goto B30_c52a;
+B26_91f4: LDA_IMM(0x00)
+B26_91f6: STA_ABS(0x0626)
+B26_91f9: STA_ABS(0x0627)
+B26_91fc: LDA_IMM(0x01)
+B26_91fe: CYCLE(6); SetStack(SP, 0); SetStack(SP - 1, 146); SP -= 2; goto B30_c515;
+B26_9201: LDA_ABS(0x001c)
+B26_9204: AND_IMM(0x03)
+B26_9206: CYCLE(2); if (SR_Z) goto B26_9234;
+B26_9208: LSR_A()
+B26_9209: LDA_IMM(0x0C)
+B26_920b: CYCLE(2); if (SR_C) goto B26_920f;
+B26_920d: LDA_IMM(0xF4)
+B26_920f: CLC()
+B26_9210: ADC_ABS(0x0626)
+B26_9213: TAX()
+B26_9214: CYCLE(2); if (!SR_N) goto B26_921b;
+B26_9216: EOR_IMM(0xFF)
+B26_9218: CLC()
+B26_9219: ADC_IMM(0x01)
+B26_921b: CMP_IMM(0x3C)
+B26_921d: CYCLE(2); if (!SR_C) goto B26_9222;
+B26_921f: LDX_ABS(0x0626)
+B26_9222: TXA()
+B26_9223: CLC()
+B26_9224: ADC_ABS(0x061e)
+B26_9227: CMP_IMM(0xF0)
+B26_9229: CYCLE(2); if (!SR_C) goto B26_922e;
+B26_922e: STX_ABS(0x0626)
+B26_9231: CYCLE(3); PC = 0x925f; goto B26_925f;
+B26_9234: LDA_ABS(0x001c)
+B26_9237: AND_IMM(0x0C)
+B26_9239: CYCLE(2); if (SR_Z) goto B26_9280;
+B26_923b: LSR_A()
+B26_923c: LSR_A()
+B26_923d: LSR_A()
+B26_923e: LDA_IMM(0x01)
+B26_9240: CYCLE(2); if (SR_C) goto B26_9244;
+B26_9242: LDA_IMM(0xFF)
+B26_9244: BIT_ABS(0x0637)
+B26_9247: CYCLE(2); if (!SR_N) goto B26_924e;
+B26_9249: EOR_IMM(0xFF)
+B26_924b: CLC()
+B26_924c: ADC_IMM(0x01)
+B26_924e: CLC()
+B26_924f: ADC_ABS(0x0627)
+B26_9252: CYCLE(2); if (!SR_N) goto B26_9256;
+B26_9254: LDA_IMM(0x00)
+B26_9256: CMP_IMM(0x05)
+B26_9258: CYCLE(2); if (!SR_C) goto B26_925c;
+B26_925a: LDA_IMM(0x04)
+B26_925c: STA_ABS(0x0627)
+B26_925f: LDA_ABS(0x061e)
+B26_9262: CLC()
+B26_9263: ADC_ABS(0x0626)
+B26_9266: STA_ABS(0x0624)
+B26_9269: LDA_ABS(0x0627)
+B26_926c: BIT_ABS(0x0637)
+B26_926f: CYCLE(2); if (!SR_N) goto B26_9276;
+B26_9271: EOR_IMM(0xFF)
+B26_9273: CLC()
+B26_9274: ADC_IMM(0x01)
+B26_9276: CLC()
+B26_9277: ADC_ABS(0x0624)
+B26_927a: STA_ABS(0x0624)
+B26_927d: CYCLE(6); SetStack(SP, 127); SetStack(SP - 1, 146); SP -= 2; goto B30_c63f;
+B26_9280: LDA_IMM(0x80)
+B26_9282: AND_ABS(0x001e)
+B26_9285: CYCLE(2); if (!SR_Z) goto B26_928a;
+B26_9287: CYCLE(3); PC = 0x91fc; goto B26_91fc;
+B26_928a: CYCLE(6); SetStack(SP, 140); SetStack(SP - 1, 146); SP -= 2; goto B30_c642;
+B26_928d: CYCLE(2); if (SR_C) goto B26_9292;
+B26_928f: CYCLE(3); PC = 0x91fc; goto B26_91fc;
+B26_9292: LDA_IMM(0x00)
+B26_9294: STA_ABS(0x062d)
+B26_9297: RTS()
+B26_9298: LDA_IMM(0x0C)
+B26_929a: STA_ZP(0x3A)
+B26_929c: LDA_ZP(0x3A)
+B26_929e: CYCLE(6); SetStack(SP, 160); SetStack(SP - 1, 146); SP -= 2; goto B30_c50c;
+B26_92a1: LDY_IMM(0x06)
+B26_92a3: LDA_IDY(0x34)
+B26_92a5: SEC()
+B26_92a6: SBC_ABS(0x0635)
+B26_92a9: CYCLE(2); if (SR_C) goto B26_92af;
+B26_92ab: EOR_IMM(0xFF)
+B26_92ad: ADC_IMM(0x01)
+B26_92af: CMP_IMM(0x20)
+B26_92b1: CYCLE(2); if (SR_C) goto B26_92c5;
+B26_92b3: LDY_IMM(0x08)
+B26_92b5: LDA_IDY(0x34)
+B26_92b7: SEC()
+B26_92b8: SBC_ABS(0x0637)
+B26_92bb: CYCLE(2); if (SR_C) goto B26_92c1;
+B26_92bd: EOR_IMM(0xFF)
+B26_92bf: ADC_IMM(0x01)
+B26_92c1: CMP_IMM(0x20)
+B26_92c3: CYCLE(2); if (!SR_C) goto B26_92e4;
+B26_92c5: INC_ZP(0x3A)
+B26_92c7: LDA_ZP(0x3A)
+B26_92c9: CMP_IMM(0x16)
+B26_92cb: CYCLE(2); if (!SR_Z) goto B26_929c;
+B26_92e4: LDA_ZP(0x3A)
+B26_92e6: STA_ABS(0x05fc)
+B26_92e9: RTS()
+B26_92ee: LDA_IMM(0x24)
+B26_92f0: CYCLE(6); SetStack(SP, 242); SetStack(SP - 1, 146); SP -= 2; goto B30_c54e;
+B26_92f3: LDA_IMM(0x00)
+B26_92f5: STA_ABS(0x044e)
+B26_92f8: CYCLE(6); SetStack(SP, 250); SetStack(SP - 1, 146); SP -= 2; goto B26_987b;
+B26_92fb: LDX_IMM(0x06)
+B26_92fd: BIT_ABS(0x0637)
+B26_9300: CYCLE(2); if (!SR_N) goto B26_9303;
+B26_9302: INX()
+B26_9303: STX_ABS(0x061e)
+B26_9306: LDA_ABS(0x05fb)
+B26_9309: CYCLE(2); if (SR_Z) goto B26_9313;
+B26_930b: LDA_IMM(0x09)
+B26_930d: CYCLE(6); SetStack(SP, 15); SetStack(SP - 1, 147); SP -= 2; goto B30_c54b;
+B26_9310: CYCLE(3); PC = 0x9318; goto B26_9318;
+B26_9313: LDA_IMM(0x2E)
+B26_9315: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 147); SP -= 2; goto B26_9e5a;
+B26_9318: LDA_ABS(0x061e)
+B26_931b: CYCLE(6); SetStack(SP, 29); SetStack(SP - 1, 147); SP -= 2; goto B26_9e0d;
+B26_931e: CYCLE(6); SetStack(SP, 32); SetStack(SP - 1, 147); SP -= 2; goto B26_9c0f;
+B26_9321: CYCLE(2); if (SR_C) goto B26_9328;
+B26_9328: LDA_ABS(0x05fb)
+B26_932b: CYCLE(2); if (!SR_Z) goto B26_9335;
+B26_932d: LDA_IMM(0x04)
+B26_932f: STA_ABS(0x0621)
+B26_9332: CYCLE(6); SetStack(SP, 52); SetStack(SP - 1, 147); SP -= 2; goto B30_c600;
+B26_9335: CYCLE(6); SetStack(SP, 55); SetStack(SP - 1, 147); SP -= 2; goto B26_8f72;
+B26_9338: LDA_IMM(0x01)
+B26_933a: LDX_IMM(0x12)
+B26_933c: CYCLE(6); SetStack(SP, 62); SetStack(SP - 1, 147); SP -= 2; goto B26_9110;
+B26_933f: CYCLE(6); SetStack(SP, 65); SetStack(SP - 1, 147); SP -= 2; goto B26_85f6;
+B26_9342: LDA_ABS(0x043b)
+B26_9345: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 147); SP -= 2; goto B30_c509;
+B26_934c: LDA_IMM(0x25)
+B26_934e: CYCLE(6); SetStack(SP, 80); SetStack(SP - 1, 147); SP -= 2; goto B30_c54e;
+B26_9351: LDA_IMM(0x66)
+B26_9353: STA_ABS(0x061a)
+B26_9356: CYCLE(3); PC = 0xc61b; goto B30_c61b;
+B26_9359: LDA_IMM(0x26)
+B26_935b: CYCLE(6); SetStack(SP, 93); SetStack(SP - 1, 147); SP -= 2; goto B30_c54e;
+B26_935e: LDA_IMM(0x4D)
+B26_9360: STA_ABS(0x061a)
+B26_9363: CYCLE(3); PC = 0xc615; goto B30_c615;
+B26_9366: LDA_IMM(0x00)
+B26_9368: STA_ABS(0x044e)
+B26_936b: CYCLE(6); SetStack(SP, 109); SetStack(SP - 1, 147); SP -= 2; goto B26_8b9c;
+B26_936e: CYCLE(2); if (!SR_C) goto B26_9379;
+B26_9370: TXA()
+B26_9371: EOR_ABS(0x05fb)
+B26_9374: CYCLE(2); if (SR_Z) goto B26_9379;
+B26_9376: CYCLE(3); PC = 0x94cf; goto B26_94cf;
+B26_9379: LDA_IMM(0x2B)
+B26_937b: CYCLE(6); SetStack(SP, 125); SetStack(SP - 1, 147); SP -= 2; goto B30_c54e;
+B26_937e: CYCLE(6); SetStack(SP, 128); SetStack(SP - 1, 147); SP -= 2; goto B26_987b;
+B26_9381: LDA_ABS(0x0635)
+B26_9384: LDX_ABS(0x05fb)
+B26_9387: CYCLE(2); if (SR_Z) goto B26_938e;
+B26_9389: EOR_IMM(0xFF)
+B26_938b: CLC()
+B26_938c: ADC_IMM(0x01)
+B26_938e: CMP_IMM(0xA0)
+B26_9390: CYCLE(2); if (!SR_C) goto B26_9395;
+B26_9392: CYCLE(3); PC = 0x93e4; goto B26_93e4;
+B26_9395: LDA_ABS(0x05fb)
+B26_9398: CYCLE(2); if (SR_Z) goto B26_93bc;
+B26_939a: LDA_ABS(0x00e2)
+B26_939d: AND_IMM(0x0F)
+B26_939f: CMP_IMM(0x0A)
+B26_93a1: CYCLE(2); if (!SR_C) goto B26_93a6;
+B26_93a3: SEC()
+B26_93a4: SBC_IMM(0x0A)
+B26_93a6: SEC()
+B26_93a7: ADC_IMM(0x0B)
+B26_93a9: CMP_ABS(0x0441)
+B26_93ac: CYCLE(2); if (!SR_Z) goto B26_93b7;
+B26_93ae: CLC()
+B26_93af: ADC_IMM(0x01)
+B26_93b1: CMP_IMM(0x16)
+B26_93b3: CYCLE(2); if (!SR_C) goto B26_93b7;
+B26_93b5: LDA_IMM(0x0C)
+B26_93b7: STA_ABS(0x05fc)
+B26_93ba: CYCLE(2); if (!SR_Z) goto B26_93bf;
+B26_93bc: CYCLE(6); SetStack(SP, 190); SetStack(SP - 1, 147); SP -= 2; goto B26_93de;
+B26_93bf: LDA_IMM(0x01)
+B26_93c1: STA_ABS(0x043b)
+B26_93c4: LDA_IMM(0x00)
+B26_93c6: STA_ABS(0x043c)
+B26_93c9: LDA_IMM(0x18)
+B26_93cb: CYCLE(6); SetStack(SP, 205); SetStack(SP - 1, 147); SP -= 2; goto B30_c54e;
+B26_93ce: LDA_IMM(0x04)
+B26_93d0: LDX_IMM(0x12)
+B26_93d2: CYCLE(6); SetStack(SP, 212); SetStack(SP - 1, 147); SP -= 2; goto B26_9110;
+B26_93d5: CYCLE(6); SetStack(SP, 215); SetStack(SP - 1, 147); SP -= 2; goto B26_85f6;
+B26_93d8: LDX_IMM(0x50)
+B26_93da: TXS()
+B26_93db: CYCLE(3); PC = 0xc612; goto B30_c612;
+B26_93de: CYCLE(6); SetStack(SP, 224); SetStack(SP - 1, 147); SP -= 2; goto B30_c648;
+B26_93e4: TAX()
+B26_93e5: LDA_ABS(0x0637)
+B26_93e8: LDY_ABS(0x05fb)
+B26_93eb: CYCLE(2); if (SR_Z) goto B26_93ef;
+B26_93ed: EOR_IMM(0xFF)
+B26_93ef: TAY()
+B26_93f0: CYCLE(6); SetStack(SP, 242); SetStack(SP - 1, 147); SP -= 2; goto B30_c539;
+B26_93f3: STA_ZP(0x3B)
+B26_93f5: LDA_IMM(0x00)
+B26_93f7: PHA()
+B26_93f8: ASL_A()
+B26_93f9: TAX()
+B26_93fa: LDA_ABS_X(0x9fb9)
+B26_93fd: STA_ZP(0x3C)
+B26_93ff: LDA_ABS_X(0x9fba)
+B26_9402: STA_ZP(0x3D)
+B26_9404: LDY_IMM(0x00)
+B26_9406: LDA_IDY(0x3C)
+B26_9408: CMP_IMM(0xFF)
+B26_940a: CYCLE(2); if (SR_Z) goto B26_9413;
+B26_940c: CMP_ZP(0x3B)
+B26_940e: CYCLE(2); if (SR_Z) goto B26_9420;
+B26_9410: INY()
+B26_9411: CYCLE(2); if (!SR_Z) goto B26_9406;
+B26_9413: PLA()
+B26_9414: CLC()
+B26_9415: ADC_IMM(0x01)
+B26_9417: CMP_IMM(0x05)
+B26_9419: CYCLE(2); if (!SR_Z) goto B26_941e;
+B26_941b: CYCLE(3); PC = 0x9395; goto B26_9395;
+B26_941e: CYCLE(2); if (!SR_Z) goto B26_93f7;
+B26_9420: PLA()
+B26_9421: STA_ABS(0x0612)
+B26_9424: LDA_IMM(0x27)
+B26_9426: CYCLE(6); SetStack(SP, 40); SetStack(SP - 1, 148); SP -= 2; goto B26_9e5a;
+B26_9429: LDA_ABS(0x0612)
+B26_942c: CYCLE(6); SetStack(SP, 46); SetStack(SP - 1, 148); SP -= 2; goto B26_9e0d;
+B26_942f: CYCLE(6); SetStack(SP, 49); SetStack(SP - 1, 148); SP -= 2; goto B26_9c0f;
+B26_9432: CYCLE(2); if (!SR_C) goto B26_9424;
+B26_9434: LDA_ABS(0x05fb)
+B26_9437: CYCLE(2); if (!SR_Z) goto B26_9441;
+B26_9439: LDA_IMM(0x04)
+B26_943b: STA_ABS(0x0621)
+B26_943e: CYCLE(6); SetStack(SP, 64); SetStack(SP - 1, 148); SP -= 2; goto B30_c600;
+B26_9441: CYCLE(6); SetStack(SP, 67); SetStack(SP - 1, 148); SP -= 2; goto B26_9470;
+B26_9444: CYCLE(2); if (!SR_C) goto B26_9434;
+B26_9446: LDA_IMM(0x0E)
+B26_9448: CYCLE(6); SetStack(SP, 74); SetStack(SP - 1, 148); SP -= 2; goto B30_c54b;
+B26_944b: LDA_IMM(0x18)
+B26_944d: LDX_ABS(0x043b)
+B26_9450: CPX_IMM(0x01)
+B26_9452: CYCLE(2); if (SR_Z) goto B26_9456;
+B26_9454: LDA_IMM(0x1D)
+B26_9456: CYCLE(6); SetStack(SP, 88); SetStack(SP - 1, 148); SP -= 2; goto B30_c54e;
+B26_9459: LDA_IMM(0x04)
+B26_945b: LDX_IMM(0x12)
+B26_945d: CYCLE(6); SetStack(SP, 95); SetStack(SP - 1, 148); SP -= 2; goto B26_9110;
+B26_9460: CYCLE(6); SetStack(SP, 98); SetStack(SP - 1, 148); SP -= 2; goto B26_85f6;
+B26_9463: LDA_ABS(0x043b)
+B26_9466: CMP_IMM(0x01)
+B26_9468: CYCLE(2); if (!SR_Z) goto B26_946d;
+B26_946a: CYCLE(3); PC = 0xc612; goto B30_c612;
+B26_946d: CYCLE(3); PC = 0x8ab0; goto B26_8ab0;
+B26_9470: LDX_IMM(0x03)
+B26_9472: LDA_ABS(0x05fb)
+B26_9475: CYCLE(2); if (!SR_Z) goto B26_9481;
+B26_9477: DEX()
+B26_9478: LDA_ABS(0x043b)
+B26_947b: CMP_IMM(0x00)
+B26_947d: CYCLE(2); if (SR_Z) goto B26_9481;
+B26_947f: SEC()
+B26_9480: RTS()
+B26_9481: STX_ABS(0x0612)
+B26_9484: TXA()
+B26_9485: CLC()
+B26_9486: ADC_IMM(0x28)
+B26_9488: CYCLE(6); SetStack(SP, 138); SetStack(SP - 1, 148); SP -= 2; goto B30_c52a;
+B26_948b: LDA_ABS(0x05fb)
+B26_948e: CYCLE(2); if (!SR_Z) goto B26_9495;
+B26_9490: LDA_IMM(0x03)
+B26_9492: CYCLE(6); SetStack(SP, 148); SetStack(SP - 1, 148); SP -= 2; goto B30_c52a;
+B26_9495: LDA_ABS(0x0612)
+B26_9498: CYCLE(6); SetStack(SP, 154); SetStack(SP - 1, 148); SP -= 2; goto B26_9d1b;
+B26_949b: LDA_IMM(0x01)
+B26_949d: CYCLE(6); SetStack(SP, 159); SetStack(SP - 1, 148); SP -= 2; goto B30_c515;
+B26_94a0: LDA_IMM(0x0C)
+B26_94a2: AND_ABS(0x001e)
+B26_94a5: CYCLE(2); if (SR_Z) goto B26_94b2;
+B26_94a7: LDA_ABS(0x0612)
+B26_94aa: EOR_IMM(0x40)
+B26_94ac: STA_ABS(0x0612)
+B26_94af: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 148); SP -= 2; goto B26_9d1b;
+B26_94b2: LDA_IMM(0x40)
+B26_94b4: AND_ABS(0x001e)
+B26_94b7: CYCLE(2); if (SR_Z) goto B26_94bb;
+B26_94bb: LDA_IMM(0x80)
+B26_94bd: AND_ABS(0x001e)
+B26_94c0: CYCLE(2); if (SR_Z) goto B26_949b;
+B26_94c2: LDX_IMM(0x00)
+B26_94c4: BIT_ABS(0x0612)
+B26_94c7: CYCLE(2); if (!SR_V) goto B26_94ca;
+B26_94c9: INX()
+B26_94ca: STX_ABS(0x0612)
+B26_94cd: SEC()
+B26_94ce: RTS()
+B26_94cf: LDA_IMM(0x1F)
+B26_94d1: CYCLE(6); SetStack(SP, 211); SetStack(SP - 1, 148); SP -= 2; goto B30_c54e;
+B26_94d4: CYCLE(6); SetStack(SP, 214); SetStack(SP - 1, 148); SP -= 2; goto B26_987b;
+B26_94d7: LDA_IMM(0x2F)
+B26_94d9: CYCLE(6); SetStack(SP, 219); SetStack(SP - 1, 148); SP -= 2; goto B26_9e5a;
+B26_94dc: LDA_IMM(0x20)
+B26_94de: CYCLE(6); SetStack(SP, 224); SetStack(SP - 1, 148); SP -= 2; goto B30_c54e;
+B26_94e1: LDA_IMM(0x05)
+B26_94e3: CYCLE(6); SetStack(SP, 229); SetStack(SP - 1, 148); SP -= 2; goto B26_9e0d;
+B26_94e6: CYCLE(6); SetStack(SP, 232); SetStack(SP - 1, 148); SP -= 2; goto B30_c645;
+B26_94e9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 148); SP -= 2; goto B26_9509;
+B26_94ec: LDA_IMM(0x21)
+B26_94ee: CYCLE(6); SetStack(SP, 240); SetStack(SP - 1, 148); SP -= 2; goto B30_c54e;
+B26_94f1: LDA_IMM(0x05)
+B26_94f3: LDX_IMM(0x00)
+B26_94f5: CYCLE(6); SetStack(SP, 247); SetStack(SP - 1, 148); SP -= 2; goto B26_9110;
+B26_94f8: LDA_IMM(0x01)
+B26_94fa: STA_ABS(0x0616)
+B26_94fd: LDA_ABS(0x0612)
+B26_9500: CYCLE(6); SetStack(SP, 2); SetStack(SP - 1, 149); SP -= 2; goto B30_c509;
+B26_9509: LDA_IMM(0x00)
+B26_950b: STA_ABS(0x043c)
+B26_950e: STA_ABS(0x043e)
+B26_9511: STA_ABS(0x044e)
+B26_9514: LDA_IMM(0x05)
+B26_9516: STA_ABS(0x0621)
+B26_9519: CYCLE(6); SetStack(SP, 27); SetStack(SP - 1, 149); SP -= 2; goto B30_c600;
+B26_951c: LDA_IMM(0x0D)
+B26_951e: CYCLE(6); SetStack(SP, 32); SetStack(SP - 1, 149); SP -= 2; goto B30_c54b;
+B26_9521: CYCLE(6); SetStack(SP, 35); SetStack(SP - 1, 149); SP -= 2; goto B26_8f72;
+B26_9524: LDA_IMM(0x08)
+B26_9526: CYCLE(6); SetStack(SP, 40); SetStack(SP - 1, 149); SP -= 2; goto B30_c54b;
+B26_9529: LDA_IMM(0x00)
+B26_952b: STA_ZP(0x3A)
+B26_952d: STA_ZP(0x3B)
+B26_952f: LDA_IMM(0x09)
+B26_9531: LDX_IMM(0x80)
+B26_9533: CYCLE(6); SetStack(SP, 53); SetStack(SP - 1, 149); SP -= 2; goto B26_8f1f;
+B26_9536: PHA()
+B26_9537: LDY_IMM(0x00)
+B26_9539: LDX_ABS(0x043b)
+B26_953c: CPX_ABS(0x043d)
+B26_953f: CYCLE(2); if (!SR_Z) goto B26_9546;
+B26_9541: CMP_IMM(0xC8)
+B26_9543: CYCLE(2); if (SR_C) goto B26_9546;
+B26_9545: INY()
+B26_9546: TYA()
+B26_9547: CYCLE(2); if (!SR_Z) goto B26_9559;
+B26_9549: LDA_ABS(0x043b)
+B26_954c: CMP_IMM(0x08)
+B26_954e: CYCLE(2); if (SR_Z) goto B26_9559;
+B26_9550: LDA_ABS(0x00e2)
+B26_9553: CMP_IMM(0x1F)
+B26_9555: CYCLE(2); if (SR_C) goto B26_9559;
+B26_9557: LDY_IMM(0x02)
+B26_9559: PLA()
+B26_955a: CYCLE(6); SetStack(SP, 92); SetStack(SP - 1, 149); SP -= 2; goto B28_8148;
+B26_955d: RTS()
+B26_955e: LDA_ABS(0x05fb)
+B26_9561: CYCLE(6); SetStack(SP, 99); SetStack(SP - 1, 149); SP -= 2; goto B30_c50c;
+B26_9564: LDY_IMM(0x0A)
+B26_9566: LDA_IMM(0x00)
+B26_9568: STA_IDY(0x34)
+B26_956a: LDA_IMM(0x05)
+B26_956c: LDX_ABS(0x05fb)
+B26_956f: STX_ABS(0x0441)
+B26_9572: CYCLE(2); if (SR_Z) goto B26_9576;
+B26_9574: LDA_IMM(0xE9)
+B26_9576: STA_ABS(0x05fe)
+B26_9579: CYCLE(6); SetStack(SP, 123); SetStack(SP - 1, 149); SP -= 2; goto B30_c536;
+B26_957c: STX_ABS(0x0635)
+B26_957f: STY_ABS(0x0637)
+B26_9582: LDA_IMM(0x27)
+B26_9584: CYCLE(6); SetStack(SP, 134); SetStack(SP - 1, 149); SP -= 2; goto B30_c54e;
+B26_9587: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 149); SP -= 2; goto B26_987b;
+B26_958a: LDA_IMM(0x0A)
+B26_958c: CYCLE(6); SetStack(SP, 142); SetStack(SP - 1, 149); SP -= 2; goto B26_9e0d;
+B26_958f: LDA_ABS(0x00e2)
+B26_9592: AND_IMM(0x0F)
+B26_9594: CMP_IMM(0x0A)
+B26_9596: CYCLE(2); if (!SR_C) goto B26_959a;
+B26_9598: SBC_IMM(0x0A)
+B26_959a: SEC()
+B26_959b: ADC_ABS(0x05fb)
+B26_959e: STA_ABS(0x05fc)
+B26_95a1: CYCLE(6); SetStack(SP, 163); SetStack(SP - 1, 149); SP -= 2; goto B30_c56f;
+B26_95a4: CYCLE(6); SetStack(SP, 166); SetStack(SP - 1, 149); SP -= 2; goto B30_c61e;
+B26_95a7: LDA_ABS(0x05fb)
+B26_95aa: CYCLE(6); SetStack(SP, 172); SetStack(SP - 1, 149); SP -= 2; goto B26_8e6e;
+B26_95ad: LDA_IMM(0x01)
+B26_95af: STA_ABS(0x043b)
+B26_95b2: LDA_IMM(0x00)
+B26_95b4: STA_ABS(0x043c)
+B26_95b7: LDA_IMM(0x28)
+B26_95b9: CYCLE(6); SetStack(SP, 187); SetStack(SP - 1, 149); SP -= 2; goto B30_c54e;
+B26_95bc: LDA_IMM(0x02)
+B26_95be: LDX_IMM(0x0C)
+B26_95c0: CYCLE(6); SetStack(SP, 194); SetStack(SP - 1, 149); SP -= 2; goto B26_9110;
+B26_95c3: LDA_IMM(0x1A)
+B26_95c5: STA_ABS(0x061a)
+B26_95c8: LDA_IMM(0x01)
+B26_95ca: STA_ABS(0x061b)
+B26_95cd: CYCLE(6); SetStack(SP, 207); SetStack(SP - 1, 149); SP -= 2; goto B30_c60c;
+B26_95d0: LDA_ABS(0x05fc)
+B26_95d3: STA_ABS(0x0441)
+B26_95d6: LDA_IMM(0x1C)
+B26_95d8: CYCLE(6); SetStack(SP, 218); SetStack(SP - 1, 149); SP -= 2; goto B30_c54e;
+B26_95db: LDX_IMM(0x50)
+B26_95dd: TXS()
+B26_95de: CYCLE(3); PC = 0xc60f; goto B30_c60f;
+B26_95e1: CYCLE(6); SetStack(SP, 227); SetStack(SP - 1, 149); SP -= 2; goto B26_96cc;
+B26_95e4: LDA_IMM(0x00)
+B26_95e6: STA_ABS(0x0616)
+B26_95e9: STA_ABS(0x038e)
+B26_95ec: STA_ABS(0x038b)
+B26_95ef: STA_ABS(0x030a)
+B26_95f2: STA_ABS(0x0307)
+B26_95f5: BIT_ABS(0x00e2)
+B26_95f8: CYCLE(2); if (!SR_N) goto B26_95fc;
+B26_95fa: LDA_IMM(0x0B)
+B26_95fc: STA_ABS(0x05fb)
+B26_95ff: STA_ABS(0x0619)
+B26_9602: LDA_IMM(0x41)
+B26_9604: CYCLE(6); SetStack(SP, 6); SetStack(SP - 1, 150); SP -= 2; goto B30_c52a;
+B26_9607: LDA_IMM(0x33)
+B26_9609: CYCLE(6); SetStack(SP, 11); SetStack(SP - 1, 150); SP -= 2; goto B30_c55d;
+B26_960c: LDA_IMM(0x39)
+B26_960e: CYCLE(6); SetStack(SP, 16); SetStack(SP - 1, 150); SP -= 2; goto B30_c54e;
+B26_9611: LDA_ABS(0x0616)
+B26_9614: LSR_A()
+B26_9615: STA_ABS(0x0617)
+B26_9618: CYCLE(2); if (SR_C) goto B26_9623;
+B26_961a: CMP_IMM(0x05)
+B26_961c: CYCLE(2); if (!SR_Z) goto B26_9623;
+B26_961e: LDA_IMM(0x45)
+B26_9620: CYCLE(6); SetStack(SP, 34); SetStack(SP - 1, 150); SP -= 2; goto B30_c54e;
+B26_9623: LDA_ABS(0x0617)
+B26_9626: CMP_IMM(0x0A)
+B26_9628: CYCLE(2); if (!SR_C) goto B26_962e;
+B26_962e: TAX()
+B26_962f: LDA_ABS(0x05fb)
+B26_9632: CYCLE(2); if (SR_Z) goto B26_963c;
+B26_9634: STX_ZP(0x3A)
+B26_9636: LDA_IMM(0x09)
+B26_9638: SEC()
+B26_9639: SBC_ZP(0x3A)
+B26_963b: TAX()
+B26_963c: LDA_ABS_X(0x0431)
+B26_963f: LDX_ABS(0x05fb)
+B26_9642: CYCLE(2); if (SR_Z) goto B26_9647;
+B26_9644: CLC()
+B26_9645: ADC_IMM(0x0B)
+B26_9647: STA_ABS(0x0441)
+B26_964a: LDA_IMM(0x22)
+B26_964c: CYCLE(6); SetStack(SP, 78); SetStack(SP - 1, 150); SP -= 2; goto B30_c54e;
+B26_964f: CYCLE(6); SetStack(SP, 81); SetStack(SP - 1, 150); SP -= 2; goto B26_9509;
+B26_9652: LDA_IMM(0x23)
+B26_9654: CYCLE(6); SetStack(SP, 86); SetStack(SP - 1, 150); SP -= 2; goto B30_c54e;
+B26_9657: CYCLE(6); SetStack(SP, 89); SetStack(SP - 1, 150); SP -= 2; goto B26_96ae;
+B26_965a: LDA_ABS(0x0616)
+B26_965d: INC_ABS(0x0616)
+B26_9660: LSR_A()
+B26_9661: PHP()
+B26_9662: STA_ZP(0x3A)
+B26_9664: SEC()
+B26_9665: LDA_IMM(0x03)
+B26_9667: SBC_ZP(0x3A)
+B26_9669: TAX()
+B26_966a: CYCLE(2); if (SR_C) goto B26_966e;
+B26_966c: LDX_IMM(0xFF)
+B26_966e: INX()
+B26_966f: INX()
+B26_9670: PLP()
+B26_9671: CYCLE(2); if (SR_C) goto B26_9674;
+B26_9673: INX()
+B26_9674: STX_ZP(0x3A)
+B26_9676: LDA_ABS(0x0610)
+B26_9679: SEC()
+B26_967a: SBC_ABS(0x0611)
+B26_967d: CYCLE(2); if (SR_C) goto B26_9683;
+B26_967f: EOR_IMM(0xFF)
+B26_9681: ADC_IMM(0x01)
+B26_9683: CMP_ZP(0x3A)
+B26_9685: CYCLE(2); if (SR_C) goto B26_9692;
+B26_9687: LDA_ABS(0x05fb)
+B26_968a: EOR_IMM(0x0B)
+B26_968c: STA_ABS(0x05fb)
+B26_968f: CYCLE(3); PC = 0x9611; goto B26_9611;
+B26_9692: LDX_IMM(0x00)
+B26_9694: CYCLE(6); SetStack(SP, 150); SetStack(SP - 1, 150); SP -= 2; goto B26_96a3;
+B26_9697: INX()
+B26_9698: CYCLE(6); SetStack(SP, 154); SetStack(SP - 1, 150); SP -= 2; goto B26_96a3;
+B26_969b: LDA_IMM(0x33)
+B26_969d: CYCLE(6); SetStack(SP, 159); SetStack(SP - 1, 150); SP -= 2; goto B30_c54e;
+B26_96a0: CYCLE(3); PC = 0xc554; goto B30_c554;
+B26_96a3: LDA_ABS_X(0x0610)
+B26_96a6: CLC()
+B26_96a7: ADC_ABS_X(0x0028)
+B26_96aa: STA_ABS_X(0x0028)
+B26_96ad: RTS()
+B26_96ae: LDA_ABS(0x0612)
+B26_96b1: CYCLE(6); SetStack(SP, 179); SetStack(SP - 1, 150); SP -= 2; goto B30_c509;
+B26_96ba: LDX_ABS(0x05fb)
+B26_96bd: CYCLE(2); if (SR_Z) goto B26_96c1;
+B26_96bf: LDX_IMM(0x01)
+B26_96c1: INC_ABS_X(0x0610)
+B26_96c4: LDA_IMM(0x41)
+B26_96c6: CYCLE(6); SetStack(SP, 200); SetStack(SP - 1, 150); SP -= 2; goto B30_c52a;
+B26_96c9: RTS()
+B26_96ca: RTS()
+B26_96cb: RTS()
+B26_96cc: LDA_IMM(0x01)
+B26_96ce: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 150); SP -= 2; goto B30_c55d;
+B26_96d1: LDA_IMM(0x00)
+B26_96d3: STA_ZP(0x11)
+B26_96d5: STA_ZP(0x12)
+B26_96d7: LDA_IMM(0x00)
+B26_96d9: STA_ABS(0x0430)
+B26_96dc: STA_ABS(0x053c)
+B26_96df: LDA_IMM(0x80)
+B26_96e1: STA_ABS(0x053a)
+B26_96e4: LDX_IMM(0x00)
+B26_96e6: LDA_IMM(0x12)
+B26_96e8: CYCLE(6); SetStack(SP, 234); SetStack(SP - 1, 150); SP -= 2; goto B30_c530;
+B26_96eb: CYCLE(6); SetStack(SP, 237); SetStack(SP - 1, 150); SP -= 2; goto B30_c533;
+B26_96f1: LDA_IMM(0x02)
+B26_96f3: CYCLE(6); SetStack(SP, 245); SetStack(SP - 1, 150); SP -= 2; goto B30_c515;
+B26_96f6: LDA_IMM(0x00)
+B26_96f8: STA_ABS(0x0469)
+B26_96fb: LDA_IMM(0x00)
+B26_96fd: STA_ABS(0x0469)
+B26_9700: STA_ABS(0xe000)
+B26_9703: LDA_IMM(0x00)
+B26_9705: STA_ABS(0x0490)
+B26_9708: LDA_IMM(0x2E)
+B26_970a: STA_ABS(0x0491)
+B26_970d: LDA_IMM(0x00)
+B26_970f: STA_ABS(0x05ce)
+B26_9712: STA_ZP(0x4A)
+B26_9714: STA_ZP(0x4B)
+B26_9716: LDA_ZP(0x20)
+B26_9718: AND_IMM(0xFC)
+B26_971a: STA_ZP(0x20)
+B26_971c: LDA_IMM(0x3E)
+B26_971e: CYCLE(6); SetStack(SP, 32); SetStack(SP - 1, 151); SP -= 2; goto B30_c52a;
+B26_9721: CYCLE(6); SetStack(SP, 35); SetStack(SP - 1, 151); SP -= 2; goto B26_986b;
+B26_9724: LDX_IMM(0x00)
+B26_9726: LDA_IMM(0x13)
+B26_9728: CYCLE(6); SetStack(SP, 42); SetStack(SP - 1, 151); SP -= 2; goto B30_c530;
+B26_972b: CYCLE(6); SetStack(SP, 45); SetStack(SP - 1, 151); SP -= 2; goto B30_c533;
+B26_9731: LDA_IMM(0x00)
+B26_9733: STA_ABS(0x0624)
+B26_9736: CYCLE(6); SetStack(SP, 56); SetStack(SP - 1, 151); SP -= 2; goto B26_9828;
+B26_9739: LDA_IMM(0x01)
+B26_973b: CYCLE(6); SetStack(SP, 61); SetStack(SP - 1, 151); SP -= 2; goto B30_c515;
+B26_973e: LDA_IMM(0x0C)
+B26_9740: AND_ABS(0x001e)
+B26_9743: CYCLE(2); if (SR_Z) goto B26_9777;
+B26_9745: PHA()
+B26_9746: LDA_IMM(0x09)
+B26_9748: SEC()
+B26_9749: SBC_ABS(0x0430)
+B26_974c: STA_ZP(0x3A)
+B26_974e: PLA()
+B26_974f: LDX_IMM(0x01)
+B26_9751: AND_IMM(0x04)
+B26_9753: CYCLE(2); if (!SR_Z) goto B26_9757;
+B26_9755: LDX_IMM(0xFF)
+B26_9757: TXA()
+B26_9758: CLC()
+B26_9759: ADC_ABS(0x0624)
+B26_975c: CYCLE(2); if (SR_N) goto B26_9777;
+B26_975e: CMP_ZP(0x3A)
+B26_9760: CYCLE(2); if (!SR_C) goto B26_9764;
+B26_9762: LDA_ZP(0x3A)
+B26_9764: CMP_ABS(0x0624)
+B26_9767: CYCLE(2); if (SR_Z) goto B26_9777;
+B26_9769: PHA()
+B26_976a: LDA_ABS(0x0624)
+B26_976d: CYCLE(6); SetStack(SP, 111); SetStack(SP - 1, 151); SP -= 2; goto B26_982c;
+B26_9770: PLA()
+B26_9771: STA_ABS(0x0624)
+B26_9774: CYCLE(6); SetStack(SP, 118); SetStack(SP - 1, 151); SP -= 2; goto B26_9828;
+B26_9777: LDA_IMM(0x40)
+B26_9779: AND_ABS(0x001e)
+B26_977c: CYCLE(2); if (SR_Z) goto B26_9789;
+B26_9789: LDA_IMM(0x80)
+B26_978b: AND_ABS(0x001e)
+B26_978e: CYCLE(2); if (SR_Z) goto B26_97f6;
+B26_9790: LDA_ABS(0x0430)
+B26_9793: CMP_IMM(0x05)
+B26_9795: CYCLE(2); if (!SR_Z) goto B26_979a;
+B26_9797: CYCLE(3); PC = 0x97f9; goto B26_97f9;
+B26_979a: LDA_ABS(0x0624)
+B26_979d: STA_ZP(0x3A)
+B26_979f: LDA_IMM(0x01)
+B26_97a1: STA_ZP(0x3B)
+B26_97a3: LDA_IMM(0x00)
+B26_97a5: STA_ZP(0x3C)
+B26_97a7: LDA_ZP(0x3B)
+B26_97a9: LDX_ABS(0x0430)
+B26_97ac: CYCLE(2); if (SR_Z) goto B26_97bc;
+B26_97ae: CMP_ABS_X(0x0430)
+B26_97b1: CYCLE(2); if (SR_Z) goto B26_97b8;
+B26_97b3: DEX()
+B26_97b4: CYCLE(2); if (!SR_Z) goto B26_97ae;
+B26_97b6: CYCLE(2); if (SR_Z) goto B26_97bc;
+B26_97b8: INC_ZP(0x3B)
+B26_97ba: CYCLE(2); if (!SR_Z) goto B26_97a7;
+B26_97bc: LDA_ZP(0x3C)
+B26_97be: INC_ZP(0x3C)
+B26_97c0: CMP_ZP(0x3A)
+B26_97c2: CYCLE(2); if (SR_Z) goto B26_97c8;
+B26_97c4: INC_ZP(0x3B)
+B26_97c6: CYCLE(2); if (!SR_Z) goto B26_97a7;
+B26_97c8: LDA_ZP(0x3B)
+B26_97ca: LDX_ABS(0x0430)
+B26_97cd: STA_ABS_X(0x0431)
+B26_97d0: INC_ABS(0x0430)
+B26_97d3: LDA_IMM(0x09)
+B26_97d5: SEC()
+B26_97d6: SBC_ABS(0x0430)
+B26_97d9: STA_ZP(0x3A)
+B26_97db: LDA_ABS(0x0624)
+B26_97de: SBC_ZP(0x3A)
+B26_97e0: CYCLE(2); if (!SR_C) goto B26_97f3;
+B26_97e2: LDA_ABS(0x0624)
+B26_97e5: LDX_ZP(0x3A)
+B26_97e7: STX_ABS(0x0624)
+B26_97ea: CYCLE(6); SetStack(SP, 236); SetStack(SP - 1, 151); SP -= 2; goto B26_982c;
+B26_97ed: LDA_ABS(0x0624)
+B26_97f0: CYCLE(6); SetStack(SP, 242); SetStack(SP - 1, 151); SP -= 2; goto B26_9828;
+B26_97f3: CYCLE(6); SetStack(SP, 245); SetStack(SP - 1, 151); SP -= 2; goto B26_986b;
+B26_97f6: CYCLE(3); PC = 0x9739; goto B26_9739;
+B26_97f9: LDA_IMM(0x01)
+B26_97fb: STA_ZP(0x3A)
+B26_97fd: LDY_IMM(0x0A)
+B26_97ff: LDX_IMM(0x00)
+B26_9801: LDA_ZP(0x3A)
+B26_9803: CMP_ABS_X(0x0431)
+B26_9806: CYCLE(2); if (SR_Z) goto B26_9816;
+B26_9808: INX()
+B26_9809: CPX_IMM(0x05)
+B26_980b: CYCLE(2); if (!SR_Z) goto B26_9803;
+B26_980d: LDX_ABS(0x0430)
+B26_9810: STA_ABS_X(0x0431)
+B26_9813: INC_ABS(0x0430)
+B26_9816: INC_ZP(0x3A)
+B26_9818: DEY()
+B26_9819: CYCLE(2); if (!SR_Z) goto B26_97ff;
+B26_981b: CYCLE(6); SetStack(SP, 29); SetStack(SP - 1, 152); SP -= 2; goto B30_c569;
+B26_981e: LDA_IMM(0x00)
+B26_9820: STA_ZP(0x8E)
+B26_9822: LDA_IMM(0x01)
+B26_9824: STA_ABS(0x0469)
+B26_9827: RTS()
+B26_9828: LDX_IMM(0xB1)
+B26_982a: CYCLE(2); if (!SR_Z) goto B26_982e;
+B26_982c: LDX_IMM(0x00)
+B26_982e: PHA()
+B26_982f: LDA_IMM(0x01)
+B26_9831: CYCLE(6); SetStack(SP, 51); SetStack(SP - 1, 152); SP -= 2; goto B30_c515;
+B26_9834: LDA_ABS(0x0515)
+B26_9837: CYCLE(2); if (!SR_Z) goto B26_982f;
+B26_9839: LDA_IMM(0x01)
+B26_983b: STA_ABS(0x0515)
+B26_983e: LDY_IMM(0x01)
+B26_9840: STY_ABS(0x04a5)
+B26_9843: DEY()
+B26_9844: STY_ABS(0x04a9)
+B26_9847: STX_ABS(0x04a8)
+B26_984a: PLA()
+B26_984b: STY_ABS(0x04a6)
+B26_984e: LSR_A()
+B26_984f: ROR_ABS(0x04a6)
+B26_9852: LSR_A()
+B26_9853: ROR_ABS(0x04a6)
+B26_9856: PHA()
+B26_9857: LDA_ABS(0x04a6)
+B26_985a: ADC_IMM(0x02)
+B26_985c: STA_ABS(0x04a6)
+B26_985f: PLA()
+B26_9860: ADC_IMM(0x21)
+B26_9862: STA_ABS(0x04a7)
+B26_9865: LDA_IMM(0x80)
+B26_9867: STA_ABS(0x0515)
+B26_986a: RTS()
+B26_986b: LDA_IMM(0x01)
+B26_986d: STA_ABS(0x0441)
+B26_9870: LDA_IMM(0x3F)
+B26_9872: CYCLE(6); SetStack(SP, 116); SetStack(SP - 1, 152); SP -= 2; goto B30_c52a;
+B26_9875: LDA_IMM(0x40)
+B26_9877: CYCLE(6); SetStack(SP, 121); SetStack(SP - 1, 152); SP -= 2; goto B30_c52a;
+B26_987a: RTS()
+B26_987b: LDA_IMM(0x37)
+B26_987d: CYCLE(6); SetStack(SP, 127); SetStack(SP - 1, 152); SP -= 2; goto B30_c54e;
+B26_9880: LDA_IMM(0x00)
+B26_9882: STA_ZP(0x11)
+B26_9884: STA_ZP(0x12)
+B26_9886: LDA_IMM(0x01)
+B26_9888: CYCLE(6); SetStack(SP, 138); SetStack(SP - 1, 152); SP -= 2; goto B30_c515;
+B26_988b: CYCLE(6); SetStack(SP, 141); SetStack(SP - 1, 152); SP -= 2; goto B30_c52d;
+B26_988e: LDA_IMM(0x2E)
+B26_9890: STA_ZP(0x87)
+B26_9892: LDA_IMM(0x00)
+B26_9894: STA_ABS(0x062d)
+B26_9897: CYCLE(6); SetStack(SP, 153); SetStack(SP - 1, 152); SP -= 2; goto B26_990c;
+B26_989a: LDA_IMM(0x33)
+B26_989c: CYCLE(6); SetStack(SP, 158); SetStack(SP - 1, 152); SP -= 2; goto B30_c52a;
+B26_989f: LDA_IMM(0x04)
+B26_98a1: STA_ABS(0x0624)
+B26_98a4: CYCLE(6); SetStack(SP, 166); SetStack(SP - 1, 152); SP -= 2; goto B26_9d1b;
+B26_98a7: LDA_IMM(0x01)
+B26_98a9: CYCLE(6); SetStack(SP, 171); SetStack(SP - 1, 152); SP -= 2; goto B30_c515;
+B26_98ac: LDA_IMM(0x0C)
+B26_98ae: AND_ABS(0x001e)
+B26_98b1: CYCLE(2); if (SR_Z) goto B26_98be;
+B26_98b3: LDA_ABS(0x0624)
+B26_98b6: EOR_IMM(0x40)
+B26_98b8: STA_ABS(0x0624)
+B26_98bb: CYCLE(6); SetStack(SP, 189); SetStack(SP - 1, 152); SP -= 2; goto B26_9d1b;
+B26_98be: BIT_ABS(0x001c)
+B26_98c1: CYCLE(2); if (!SR_N) goto B26_98a7;
+B26_98c3: CYCLE(6); SetStack(SP, 197); SetStack(SP - 1, 152); SP -= 2; goto B26_990c;
+B26_98c6: BIT_ABS(0x0624)
+B26_98c9: CYCLE(2); if (SR_V) goto B26_98d0;
+B26_98cb: LDA_IMM(0x02)
+B26_98cd: STA_ZP(0x87)
+B26_98cf: RTS()
+B26_98d0: LDA_IMM(0x00)
+B26_98d2: STA_ABS(0x0624)
+B26_98d5: LDA_IMM(0x34)
+B26_98d7: CYCLE(6); SetStack(SP, 217); SetStack(SP - 1, 152); SP -= 2; goto B30_c52a;
+B26_98da: LDA_IMM(0x03)
+B26_98dc: STA_ABS(0x063d)
+B26_98df: CYCLE(6); SetStack(SP, 225); SetStack(SP - 1, 152); SP -= 2; goto B30_c566;
+B26_98e2: LDA_IMM(0x85)
+B26_98e4: STA_ABS(0x062d)
+B26_98e7: LDA_ABS(0x0624)
+B26_98ea: STA_ABS(0x0622)
+B26_98ed: LDA_IMM(0x04)
+B26_98ef: CYCLE(6); SetStack(SP, 241); SetStack(SP - 1, 152); SP -= 2; goto B30_c563;
+B26_98f2: CYCLE(2); if (!SR_C) goto B26_9892;
+B26_98f4: CMP_IMM(0x04)
+B26_98f6: CYCLE(2); if (SR_Z) goto B26_9892;
+B26_98f8: STA_ABS(0x0624)
+B26_98fb: CYCLE(6); SetStack(SP, 253); SetStack(SP - 1, 152); SP -= 2; goto B26_9901;
+B26_98fe: CYCLE(3); PC = 0x98d5; goto B26_98d5;
+B26_9901: CYCLE(6); SetStack(SP, 3); SetStack(SP - 1, 153); SP -= 2; goto B30_c509;
+B26_990c: CYCLE(6); SetStack(SP, 14); SetStack(SP - 1, 153); SP -= 2; goto B30_c52d;
+B26_990f: LDA_IMM(0x00)
+B26_9911: CYCLE(6); SetStack(SP, 19); SetStack(SP - 1, 153); SP -= 2; goto B30_c52a;
+B26_9914: LDA_IMM(0x01)
+B26_9916: CYCLE(6); SetStack(SP, 24); SetStack(SP - 1, 153); SP -= 2; goto B30_c52a;
+B26_9919: RTS()
+B26_991a: LDA_IMM(0x35)
+B26_991c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 153); SP -= 2; goto B30_c52a;
+B26_991f: LDA_ABS(0x002c)
+B26_9922: STA_ABS(0x0622)
+B26_9925: LDA_ABS(0x002c)
+B26_9928: STA_ABS(0x0627)
+B26_992b: LDA_IMM(0x05)
+B26_992d: CYCLE(6); SetStack(SP, 47); SetStack(SP - 1, 153); SP -= 2; goto B30_c563;
+B26_9930: LDX_ABS(0x0627)
+B26_9933: CYCLE(2); if (!SR_C) goto B26_9936;
+B26_9935: TAX()
+B26_9936: STX_ABS(0x002c)
+B26_9939: RTS()
+B26_993a: LDA_IMM(0x36)
+B26_993c: CYCLE(6); SetStack(SP, 62); SetStack(SP - 1, 153); SP -= 2; goto B30_c52a;
+B26_993f: LDA_ABS(0x002d)
+B26_9942: STA_ABS(0x0622)
+B26_9945: LDA_IMM(0x06)
+B26_9947: CYCLE(6); SetStack(SP, 73); SetStack(SP - 1, 153); SP -= 2; goto B30_c563;
+B26_994a: CYCLE(2); if (!SR_C) goto B26_994f;
+B26_994c: STA_ABS(0x002d)
+B26_994f: RTS()
+B26_9950: LDA_ABS(0x002a)
+B26_9953: CMP_IMM(0x02)
+B26_9955: CYCLE(2); if (SR_Z) goto B26_995a;
+B26_9957: CYCLE(3); PC = 0x9ac7; goto B26_9ac7;
+B26_995a: LDA_IMM(0x37)
+B26_995c: CYCLE(6); SetStack(SP, 94); SetStack(SP - 1, 153); SP -= 2; goto B30_c52a;
+B26_995f: LDA_IMM(0x00)
+B26_9961: STA_ABS(0x0622)
+B26_9964: LDA_IMM(0x07)
+B26_9966: CYCLE(6); SetStack(SP, 104); SetStack(SP - 1, 153); SP -= 2; goto B30_c563;
+B26_9969: CYCLE(2); if (SR_C) goto B26_996c;
+B26_996b: RTS()
+B26_996c: CYCLE(6); SetStack(SP, 110); SetStack(SP - 1, 153); SP -= 2; goto B26_9972;
+B26_996f: CYCLE(3); PC = 0x990c; goto B26_990c;
+B26_9972: CYCLE(6); SetStack(SP, 116); SetStack(SP - 1, 153); SP -= 2; goto B30_c509;
+B26_9979: LDA_ABS(0x0450)
+B26_997c: CMP_IMM(0x03)
+B26_997e: CYCLE(2); if (!SR_C) goto B26_9992;
+B26_9980: LDA_IMM(0x38)
+B26_9982: CYCLE(6); SetStack(SP, 132); SetStack(SP - 1, 153); SP -= 2; goto B30_c52a;
+B26_9985: LDA_IMM(0x01)
+B26_9987: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 153); SP -= 2; goto B30_c515;
+B26_998a: LDA_IMM(0xC0)
+B26_998c: AND_ABS(0x001e)
+B26_998f: CYCLE(2); if (SR_Z) goto B26_9985;
+B26_9991: RTS()
+B26_9992: LDA_IMM(0x00)
+B26_9994: STA_ABS(0x062d)
+B26_9997: LDA_IMM(0x3A)
+B26_9999: CYCLE(6); SetStack(SP, 155); SetStack(SP - 1, 153); SP -= 2; goto B30_c52a;
+B26_999c: LDA_IMM(0x00)
+B26_999e: PHA()
+B26_999f: CYCLE(6); SetStack(SP, 161); SetStack(SP - 1, 153); SP -= 2; goto B26_9aac;
+B26_99a2: CYCLE(2); if (!SR_C) goto B26_99ad;
+B26_99a4: PLA()
+B26_99a5: PHA()
+B26_99a6: LDY_IMM(0x2C)
+B26_99a8: LDX_IMM(0xB2)
+B26_99aa: CYCLE(6); SetStack(SP, 172); SetStack(SP - 1, 153); SP -= 2; goto B26_9f41;
+B26_99ad: PLA()
+B26_99ae: CLC()
+B26_99af: ADC_IMM(0x01)
+B26_99b1: CMP_IMM(0x0A)
+B26_99b3: CYCLE(2); if (!SR_Z) goto B26_999e;
+B26_99b5: LDA_IMM(0x00)
+B26_99b7: PHA()
+B26_99b8: CYCLE(6); SetStack(SP, 186); SetStack(SP - 1, 153); SP -= 2; goto B26_9aac;
+B26_99bb: PLA()
+B26_99bc: CYCLE(2); if (!SR_C) goto B26_99c5;
+B26_99be: CLC()
+B26_99bf: ADC_IMM(0x01)
+B26_99c1: CMP_IMM(0x0A)
+B26_99c3: CYCLE(2); if (!SR_Z) goto B26_99b7;
+B26_99c5: STA_ABS(0x0625)
+B26_99c8: LDY_IMM(0x2C)
+B26_99ca: CYCLE(6); SetStack(SP, 204); SetStack(SP - 1, 153); SP -= 2; goto B26_9f37;
+B26_99cd: LDA_IMM(0x01)
+B26_99cf: CYCLE(6); SetStack(SP, 209); SetStack(SP - 1, 153); SP -= 2; goto B30_c515;
+B26_99d2: LDA_ABS(0x0625)
+B26_99d5: CYCLE(6); SetStack(SP, 215); SetStack(SP - 1, 153); SP -= 2; goto B26_9b90;
+B26_99d8: CYCLE(2); if (!SR_C) goto B26_99fe;
+B26_99da: LDA_ABS_X(0x9f0f)
+B26_99dd: PHA()
+B26_99de: CYCLE(6); SetStack(SP, 224); SetStack(SP - 1, 153); SP -= 2; goto B26_9aac;
+B26_99e1: PLA()
+B26_99e2: CYCLE(2); if (!SR_C) goto B26_99ec;
+B26_99e4: LDX_ZP(0x3A)
+B26_99e6: CYCLE(6); SetStack(SP, 232); SetStack(SP - 1, 153); SP -= 2; goto B26_9ba4;
+B26_99e9: CYCLE(3); PC = 0x99da; goto B26_99da;
+B26_99ec: PHA()
+B26_99ed: LDA_ABS(0x0625)
+B26_99f0: LDY_IMM(0x2C)
+B26_99f2: CYCLE(6); SetStack(SP, 244); SetStack(SP - 1, 153); SP -= 2; goto B26_9f3f;
+B26_99f5: PLA()
+B26_99f6: STA_ABS(0x0625)
+B26_99f9: LDY_IMM(0x2C)
+B26_99fb: CYCLE(6); SetStack(SP, 253); SetStack(SP - 1, 153); SP -= 2; goto B26_9f37;
+B26_99fe: LDA_IMM(0x80)
+B26_9a00: AND_ABS(0x001e)
+B26_9a03: CYCLE(2); if (!SR_Z) goto B26_9a0d;
+B26_9a05: LDA_IMM(0x40)
+B26_9a07: AND_ABS(0x001e)
+B26_9a0a: CYCLE(2); if (SR_Z) goto B26_99cd;
+B26_9a0c: RTS()
+B26_9a0d: LDA_IMM(0x3B)
+B26_9a0f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 154); SP -= 2; goto B30_c52a;
+B26_9a12: LDA_IMM(0x01)
+B26_9a14: LDX_ABS(0x0625)
+B26_9a17: CPX_IMM(0x08)
+B26_9a19: CYCLE(2); if (!SR_C) goto B26_9a1d;
+B26_9a1b: LDA_IMM(0x00)
+B26_9a1d: STA_ABS(0x0626)
+B26_9a20: LDY_IMM(0x16)
+B26_9a22: CYCLE(6); SetStack(SP, 36); SetStack(SP - 1, 154); SP -= 2; goto B26_9f37;
+B26_9a25: LDA_IMM(0x01)
+B26_9a27: CYCLE(6); SetStack(SP, 41); SetStack(SP - 1, 154); SP -= 2; goto B30_c515;
+B26_9a2a: LDA_ABS(0x0626)
+B26_9a2d: CYCLE(2); if (SR_Z) goto B26_9a49;
+B26_9a2f: CYCLE(6); SetStack(SP, 49); SetStack(SP - 1, 154); SP -= 2; goto B26_9b90;
+B26_9a32: CYCLE(2); if (!SR_C) goto B26_9a49;
+B26_9a34: LDA_ABS_X(0x9eb7)
+B26_9a37: PHA()
+B26_9a38: LDA_ABS(0x0626)
+B26_9a3b: LDY_IMM(0x16)
+B26_9a3d: CYCLE(6); SetStack(SP, 63); SetStack(SP - 1, 154); SP -= 2; goto B26_9f3f;
+B26_9a40: PLA()
+B26_9a41: STA_ABS(0x0626)
+B26_9a44: LDY_IMM(0x16)
+B26_9a46: CYCLE(6); SetStack(SP, 72); SetStack(SP - 1, 154); SP -= 2; goto B26_9f37;
+B26_9a49: LDA_IMM(0x40)
+B26_9a4b: AND_ABS(0x001e)
+B26_9a4e: CYCLE(2); if (SR_Z) goto B26_9a53;
+B26_9a50: CYCLE(3); PC = 0x9979; goto B26_9979;
+B26_9a53: LDA_IMM(0x80)
+B26_9a55: AND_ABS(0x001e)
+B26_9a58: CYCLE(2); if (SR_Z) goto B26_9a25;
+B26_9a5a: LDA_ABS(0x0625)
+B26_9a5d: CLC()
+B26_9a5e: ADC_IMM(0x16)
+B26_9a60: CYCLE(6); SetStack(SP, 98); SetStack(SP - 1, 154); SP -= 2; goto B30_c50c;
+B26_9a63: LDA_ZP(0x34)
+B26_9a65: STA_ZP(0x3A)
+B26_9a67: LDA_ZP(0x35)
+B26_9a69: STA_ZP(0x3B)
+B26_9a6b: LDA_ABS(0x0626)
+B26_9a6e: CYCLE(6); SetStack(SP, 112); SetStack(SP - 1, 154); SP -= 2; goto B30_c50c;
+B26_9a71: LDY_IMM(0x00)
+B26_9a73: LDA_IDY(0x3A)
+B26_9a75: TAX()
+B26_9a76: LDA_IDY(0x34)
+B26_9a78: STA_IDY(0x3A)
+B26_9a7a: TXA()
+B26_9a7b: STA_IDY(0x34)
+B26_9a7d: INY()
+B26_9a7e: CPY_IMM(0x04)
+B26_9a80: CYCLE(2); if (!SR_Z) goto B26_9a73;
+B26_9a82: LDY_IMM(0x00)
+B26_9a84: LDA_IDY(0x3A)
+B26_9a86: LDX_ABS(0x0450)
+B26_9a89: STA_ABS_X(0x0451)
+B26_9a8c: INX()
+B26_9a8d: STX_ABS(0x0450)
+B26_9a90: LDA_IMM(0x3B)
+B26_9a92: CYCLE(6); SetStack(SP, 148); SetStack(SP - 1, 154); SP -= 2; goto B30_c52a;
+B26_9a95: LDA_IMM(0x01)
+B26_9a97: CYCLE(6); SetStack(SP, 153); SetStack(SP - 1, 154); SP -= 2; goto B30_c515;
+B26_9a9a: LDA_ABS(0x001c)
+B26_9a9d: AND_IMM(0xC0)
+B26_9a9f: CYCLE(2); if (SR_Z) goto B26_9a95;
+B26_9aa1: LDX_ABS(0x0450)
+B26_9aa4: CPX_IMM(0x03)
+B26_9aa6: CYCLE(2); if (SR_C) goto B26_9aab;
+B26_9aa8: CYCLE(3); PC = 0x9979; goto B26_9979;
+B26_9aab: RTS()
+B26_9aac: CLC()
+B26_9aad: ADC_IMM(0x16)
+B26_9aaf: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 154); SP -= 2; goto B30_c50c;
+B26_9ab2: LDY_IMM(0x00)
+B26_9ab4: LDA_IDY(0x34)
+B26_9ab6: LDX_ABS(0x0450)
+B26_9ab9: CYCLE(2); if (SR_Z) goto B26_9ac5;
+B26_9abb: CMP_ABS_X(0x0450)
+B26_9abe: CYCLE(2); if (!SR_Z) goto B26_9ac2;
+B26_9ac0: SEC()
+B26_9ac1: RTS()
+B26_9ac2: DEX()
+B26_9ac3: CYCLE(2); if (!SR_Z) goto B26_9abb;
+B26_9ac5: CLC()
+B26_9ac6: RTS()
+B26_9ac7: LDA_IMM(0x00)
+B26_9ac9: STA_ABS(0x062d)
+B26_9acc: LDA_IMM(0x39)
+B26_9ace: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 154); SP -= 2; goto B30_c52a;
+B26_9ad1: LDA_IMM(0x01)
+B26_9ad3: STA_ABS(0x0625)
+B26_9ad6: LDY_IMM(0x16)
+B26_9ad8: CYCLE(6); SetStack(SP, 218); SetStack(SP - 1, 154); SP -= 2; goto B26_9f37;
+B26_9adb: LDA_IMM(0x01)
+B26_9add: CYCLE(6); SetStack(SP, 223); SetStack(SP - 1, 154); SP -= 2; goto B30_c515;
+B26_9ae0: LDA_ABS(0x0625)
+B26_9ae3: CYCLE(6); SetStack(SP, 229); SetStack(SP - 1, 154); SP -= 2; goto B26_9b90;
+B26_9ae6: CYCLE(2); if (!SR_C) goto B26_9afd;
+B26_9ae8: LDA_ABS_X(0x9eb7)
+B26_9aeb: PHA()
+B26_9aec: LDA_ABS(0x0625)
+B26_9aef: LDY_IMM(0x16)
+B26_9af1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 154); SP -= 2; goto B26_9f3f;
+B26_9af4: PLA()
+B26_9af5: STA_ABS(0x0625)
+B26_9af8: LDY_IMM(0x16)
+B26_9afa: CYCLE(6); SetStack(SP, 252); SetStack(SP - 1, 154); SP -= 2; goto B26_9f37;
+B26_9afd: LDA_IMM(0x80)
+B26_9aff: AND_ABS(0x001e)
+B26_9b02: CYCLE(2); if (!SR_Z) goto B26_9b0f;
+B26_9b04: LDA_IMM(0x40)
+B26_9b06: AND_ABS(0x001e)
+B26_9b09: CYCLE(2); if (SR_Z) goto B26_9adb;
+B26_9b0b: CYCLE(6); SetStack(SP, 13); SetStack(SP - 1, 155); SP -= 2; goto B26_990c;
+B26_9b0e: RTS()
+B26_9b0f: LDA_IMM(0x01)
+B26_9b11: CMP_ABS(0x0625)
+B26_9b14: CYCLE(2); if (!SR_Z) goto B26_9b18;
+B26_9b16: LDA_IMM(0x02)
+B26_9b18: STA_ABS(0x0626)
+B26_9b1b: LDY_IMM(0x16)
+B26_9b1d: CYCLE(6); SetStack(SP, 31); SetStack(SP - 1, 155); SP -= 2; goto B26_9f37;
+B26_9b20: LDA_IMM(0x01)
+B26_9b22: CYCLE(6); SetStack(SP, 36); SetStack(SP - 1, 155); SP -= 2; goto B30_c515;
+B26_9b25: LDA_ABS(0x0626)
+B26_9b28: CYCLE(6); SetStack(SP, 42); SetStack(SP - 1, 155); SP -= 2; goto B26_9b90;
+B26_9b2b: CYCLE(2); if (!SR_C) goto B26_9b4f;
+B26_9b2d: LDA_ABS_X(0x9eb7)
+B26_9b30: CMP_ABS(0x0625)
+B26_9b33: CYCLE(2); if (!SR_Z) goto B26_9b3d;
+B26_9b35: LDX_ZP(0x3A)
+B26_9b37: CYCLE(6); SetStack(SP, 57); SetStack(SP - 1, 155); SP -= 2; goto B26_9ba4;
+B26_9b3a: LDA_ABS_X(0x9eb7)
+B26_9b3d: PHA()
+B26_9b3e: LDA_ABS(0x0626)
+B26_9b41: LDY_IMM(0x16)
+B26_9b43: CYCLE(6); SetStack(SP, 69); SetStack(SP - 1, 155); SP -= 2; goto B26_9f3f;
+B26_9b46: PLA()
+B26_9b47: STA_ABS(0x0626)
+B26_9b4a: LDY_IMM(0x16)
+B26_9b4c: CYCLE(6); SetStack(SP, 78); SetStack(SP - 1, 155); SP -= 2; goto B26_9f37;
+B26_9b4f: LDA_IMM(0x80)
+B26_9b51: AND_ABS(0x001e)
+B26_9b54: CYCLE(2); if (!SR_Z) goto B26_9b68;
+B26_9b56: LDA_IMM(0x40)
+B26_9b58: AND_ABS(0x001e)
+B26_9b5b: CYCLE(2); if (SR_Z) goto B26_9b20;
+B26_9b5d: LDA_ABS(0x0626)
+B26_9b60: LDY_IMM(0x16)
+B26_9b62: CYCLE(6); SetStack(SP, 100); SetStack(SP - 1, 155); SP -= 2; goto B26_9f3f;
+B26_9b65: CYCLE(3); PC = 0x9adb; goto B26_9adb;
+B26_9b68: LDA_ABS(0x0625)
+B26_9b6b: CYCLE(6); SetStack(SP, 109); SetStack(SP - 1, 155); SP -= 2; goto B30_c50c;
+B26_9b6e: LDA_ZP(0x34)
+B26_9b70: STA_ZP(0x3A)
+B26_9b72: LDA_ZP(0x35)
+B26_9b74: STA_ZP(0x3B)
+B26_9b76: LDA_ABS(0x0626)
+B26_9b79: CYCLE(6); SetStack(SP, 123); SetStack(SP - 1, 155); SP -= 2; goto B30_c50c;
+B26_9b7c: LDY_IMM(0x00)
+B26_9b7e: LDA_IDY(0x3A)
+B26_9b80: TAX()
+B26_9b81: LDA_IDY(0x34)
+B26_9b83: STA_IDY(0x3A)
+B26_9b85: TXA()
+B26_9b86: STA_IDY(0x34)
+B26_9b88: INY()
+B26_9b89: CPY_IMM(0x04)
+B26_9b8b: CYCLE(2); if (!SR_Z) goto B26_9b7e;
+B26_9b8d: CYCLE(3); PC = 0x9ac7; goto B26_9ac7;
+B26_9b90: PHA()
+B26_9b91: LDA_IMM(0x0F)
+B26_9b93: AND_ABS(0x001e)
+B26_9b96: CYCLE(2); if (!SR_Z) goto B26_9b9b;
+B26_9b98: PLA()
+B26_9b99: CLC()
+B26_9b9a: RTS()
+B26_9b9b: LDX_IMM(0x00)
+B26_9b9d: LSR_A()
+B26_9b9e: CYCLE(2); if (SR_C) goto B26_9ba3;
+B26_9ba0: INX()
+B26_9ba1: CYCLE(2); if (!SR_Z) goto B26_9b9d;
+B26_9ba3: PLA()
+B26_9ba4: STX_ZP(0x3A)
+B26_9ba6: ASL_A()
+B26_9ba7: ASL_A()
+B26_9ba8: ADC_ZP(0x3A)
+B26_9baa: TAX()
+B26_9bab: SEC()
+B26_9bac: RTS()
+B26_9bad: LDA_IMM(0x00)
+B26_9baf: STA_ABS(0x062d)
+B26_9bb2: LDA_IMM(0x3C)
+B26_9bb4: CYCLE(6); SetStack(SP, 182); SetStack(SP - 1, 155); SP -= 2; goto B30_c52a;
+B26_9bb7: LDA_IMM(0x01)
+B26_9bb9: CYCLE(6); SetStack(SP, 187); SetStack(SP - 1, 155); SP -= 2; goto B30_c515;
+B26_9bbc: LDA_IMM(0x80)
+B26_9bbe: AND_ABS(0x001e)
+B26_9bc1: CYCLE(2); if (!SR_Z) goto B26_9bcc;
+B26_9bc3: LDA_IMM(0x40)
+B26_9bc5: AND_ABS(0x001e)
+B26_9bc8: CYCLE(2); if (!SR_Z) goto B26_9beb;
+B26_9bca: CYCLE(2); if (SR_Z) goto B26_9bb7;
+B26_9bcc: LDA_ABS(0x002a)
+B26_9bcf: CMP_IMM(0x02)
+B26_9bd1: CYCLE(2); if (!SR_Z) goto B26_9beb;
+B26_9bd3: LDA_IMM(0x3D)
+B26_9bd5: CYCLE(6); SetStack(SP, 215); SetStack(SP - 1, 155); SP -= 2; goto B30_c52a;
+B26_9bd8: LDA_IMM(0x01)
+B26_9bda: CYCLE(6); SetStack(SP, 220); SetStack(SP - 1, 155); SP -= 2; goto B30_c515;
+B26_9bdd: LDA_IMM(0x40)
+B26_9bdf: AND_ABS(0x001e)
+B26_9be2: CYCLE(2); if (!SR_Z) goto B26_9bad;
+B26_9be4: LDA_IMM(0x80)
+B26_9be6: AND_ABS(0x001e)
+B26_9be9: CYCLE(2); if (SR_Z) goto B26_9bd8;
+B26_9beb: CYCLE(3); PC = 0x990c; goto B26_990c;
+B26_9bee: CMP_IMM(0xFF)
+B26_9bf0: CYCLE(2); if (SR_Z) goto B26_9c0e;
+B26_9bf2: CYCLE(6); SetStack(SP, 244); SetStack(SP - 1, 155); SP -= 2; goto B30_c536;
+B26_9bf5: LDA_ABS(0x05fb)
+B26_9bf8: CYCLE(2); if (SR_Z) goto B26_9c04;
+B26_9bfa: TYA()
+B26_9bfb: EOR_IMM(0xFF)
+B26_9bfd: TAY()
+B26_9bfe: TXA()
+B26_9bff: EOR_IMM(0xFF)
+B26_9c01: TAX()
+B26_9c02: INY()
+B26_9c03: INX()
+B26_9c04: TYA()
+B26_9c05: LDY_IMM(0x08)
+B26_9c07: STA_IDY(0x34)
+B26_9c09: TXA()
+B26_9c0a: LDY_IMM(0x06)
+B26_9c0c: STA_IDY(0x34)
+B26_9c0e: RTS()
+B26_9c0f: LDA_ABS(0x05fc)
+B26_9c12: STA_ABS(0x0626)
+B26_9c15: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 156); SP -= 2; goto B26_9c1f;
+B26_9c18: LDA_ABS(0x0626)
+B26_9c1b: STA_ABS(0x05fc)
+B26_9c1e: RTS()
+B26_9c1f: LDA_IMM(0x28)
+B26_9c21: CYCLE(6); SetStack(SP, 35); SetStack(SP - 1, 156); SP -= 2; goto B30_c52a;
+B26_9c24: LDA_IMM(0x00)
+B26_9c26: STA_ABS(0x0624)
+B26_9c29: CYCLE(6); SetStack(SP, 43); SetStack(SP - 1, 156); SP -= 2; goto B26_9d1b;
+B26_9c2c: LDA_IMM(0x01)
+B26_9c2e: CYCLE(6); SetStack(SP, 48); SetStack(SP - 1, 156); SP -= 2; goto B30_c515;
+B26_9c31: LDA_IMM(0x0C)
+B26_9c33: AND_ABS(0x001e)
+B26_9c36: CYCLE(2); if (SR_Z) goto B26_9c43;
+B26_9c38: LDA_ABS(0x0624)
+B26_9c3b: EOR_IMM(0x40)
+B26_9c3d: STA_ABS(0x0624)
+B26_9c40: CYCLE(6); SetStack(SP, 66); SetStack(SP - 1, 156); SP -= 2; goto B26_9d1b;
+B26_9c43: LDA_IMM(0x40)
+B26_9c45: AND_ABS(0x001e)
+B26_9c48: CYCLE(2); if (SR_Z) goto B26_9c4c;
+B26_9c4a: CLC()
+B26_9c4b: RTS()
+B26_9c4c: LDA_IMM(0x80)
+B26_9c4e: AND_ABS(0x001e)
+B26_9c51: CYCLE(2); if (SR_Z) goto B26_9c2c;
+B26_9c53: BIT_ABS(0x0624)
+B26_9c56: CYCLE(2); if (SR_V) goto B26_9c5a;
+B26_9c58: SEC()
+B26_9c59: RTS()
+B26_9c5a: LDA_IMM(0x38)
+B26_9c5c: CYCLE(6); SetStack(SP, 94); SetStack(SP - 1, 156); SP -= 2; goto B30_c54e;
+B26_9c5f: LDA_IMM(0x29)
+B26_9c61: CYCLE(6); SetStack(SP, 99); SetStack(SP - 1, 156); SP -= 2; goto B30_c52a;
+B26_9c64: LDA_IMM(0x01)
+B26_9c66: STA_ABS(0x0625)
+B26_9c69: CYCLE(6); SetStack(SP, 107); SetStack(SP - 1, 156); SP -= 2; goto B26_9d1b;
+B26_9c6c: LDA_ABS(0x05fe)
+B26_9c6f: STA_ABS(0x0624)
+B26_9c72: LDA_IMM(0x01)
+B26_9c74: CYCLE(6); SetStack(SP, 118); SetStack(SP - 1, 156); SP -= 2; goto B30_c515;
+B26_9c77: LDA_IMM(0x84)
+B26_9c79: STA_ABS(0x062d)
+B26_9c7c: LDA_IMM(0x0C)
+B26_9c7e: AND_ABS(0x001e)
+B26_9c81: CYCLE(2); if (SR_Z) goto B26_9c8e;
+B26_9c83: LDA_ABS(0x0625)
+B26_9c86: EOR_IMM(0x40)
+B26_9c88: STA_ABS(0x0625)
+B26_9c8b: CYCLE(6); SetStack(SP, 141); SetStack(SP - 1, 156); SP -= 2; goto B26_9d1b;
+B26_9c8e: LDA_IMM(0x80)
+B26_9c90: AND_ABS(0x001e)
+B26_9c93: CYCLE(2); if (SR_Z) goto B26_9c72;
+B26_9c95: BIT_ABS(0x0625)
+B26_9c98: CYCLE(2); if (!SR_V) goto B26_9ca1;
+B26_9c9a: LDA_IMM(0x00)
+B26_9c9c: STA_ABS(0x062d)
+B26_9c9f: SEC()
+B26_9ca0: RTS()
+B26_9ca1: LDA_IMM(0x81)
+B26_9ca3: CYCLE(6); SetStack(SP, 165); SetStack(SP - 1, 156); SP -= 2; goto B26_9d1b;
+B26_9ca6: LDA_IMM(0x81)
+B26_9ca8: STA_ABS(0x062d)
+B26_9cab: CYCLE(6); SetStack(SP, 173); SetStack(SP - 1, 156); SP -= 2; goto B26_9dd4;
+B26_9cae: LDA_IMM(0x01)
+B26_9cb0: CYCLE(6); SetStack(SP, 178); SetStack(SP - 1, 156); SP -= 2; goto B30_c515;
+B26_9cb3: CYCLE(6); SetStack(SP, 181); SetStack(SP - 1, 156); SP -= 2; goto B26_9d9b;
+B26_9cb6: CMP_ABS(0x0624)
+B26_9cb9: STA_ABS(0x0624)
+B26_9cbc: CYCLE(2); if (SR_Z) goto B26_9cc1;
+B26_9cbe: CYCLE(6); SetStack(SP, 192); SetStack(SP - 1, 156); SP -= 2; goto B26_9dd4;
+B26_9cc1: LDA_IMM(0x40)
+B26_9cc3: AND_ABS(0x001e)
+B26_9cc6: CYCLE(2); if (SR_Z) goto B26_9cd1;
+B26_9cd1: LDA_IMM(0x80)
+B26_9cd3: AND_ABS(0x001e)
+B26_9cd6: CYCLE(2); if (SR_Z) goto B26_9cae;
+B26_9cd8: LDA_ABS(0x05fc)
+B26_9cdb: CMP_IMM(0xFF)
+B26_9cdd: CYCLE(2); if (SR_Z) goto B26_9cae;
+B26_9cdf: LDA_ABS(0x0624)
+B26_9ce2: STA_ABS(0x0616)
+B26_9ce5: LDA_IMM(0x01)
+B26_9ce7: CYCLE(6); SetStack(SP, 233); SetStack(SP - 1, 156); SP -= 2; goto B30_c515;
+B26_9cea: CYCLE(6); SetStack(SP, 236); SetStack(SP - 1, 156); SP -= 2; goto B26_9d9b;
+B26_9ced: CMP_ABS(0x0624)
+B26_9cf0: STA_ABS(0x0624)
+B26_9cf3: CYCLE(2); if (SR_Z) goto B26_9cf8;
+B26_9cf5: CYCLE(6); SetStack(SP, 247); SetStack(SP - 1, 156); SP -= 2; goto B26_9dbd;
+B26_9cf8: LDA_IMM(0x40)
+B26_9cfa: AND_ABS(0x001e)
+B26_9cfd: CYCLE(2); if (SR_Z) goto B26_9d0b;
+B26_9d0b: LDA_IMM(0x80)
+B26_9d0d: AND_ABS(0x001e)
+B26_9d10: CYCLE(2); if (SR_Z) goto B26_9ce5;
+B26_9d12: LDA_ABS(0x0625)
+B26_9d15: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 157); SP -= 2; goto B26_9d1b;
+B26_9d18: CYCLE(3); PC = 0x9c72; goto B26_9c72;
+B26_9d1b: PHA()
+B26_9d1c: LDA_IMM(0x01)
+B26_9d1e: CYCLE(6); SetStack(SP, 32); SetStack(SP - 1, 157); SP -= 2; goto B30_c515;
+B26_9d21: LDA_ABS(0x0515)
+B26_9d24: CYCLE(2); if (!SR_Z) goto B26_9d1c;
+B26_9d26: LDA_IMM(0x01)
+B26_9d28: STA_ABS(0x0515)
+B26_9d2b: PLA()
+B26_9d2c: STA_ABS(0x04a5)
+B26_9d2f: AND_IMM(0x0F)
+B26_9d31: ASL_A()
+B26_9d32: ASL_A()
+B26_9d33: TAX()
+B26_9d34: LDA_ABS_X(0x9d82)
+B26_9d37: STA_ABS(0x04a6)
+B26_9d3a: LDA_ABS_X(0x9d83)
+B26_9d3d: STA_ABS(0x04a7)
+B26_9d40: LDA_ABS_X(0x9d84)
+B26_9d43: STA_ABS(0x04aa)
+B26_9d46: LDA_ABS_X(0x9d85)
+B26_9d49: STA_ABS(0x04ab)
+B26_9d4c: LDA_ABS(0x04a5)
+B26_9d4f: AND_IMM(0x0F)
+B26_9d51: TAX()
+B26_9d52: LDA_IMM(0x00)
+B26_9d54: BIT_ABS(0x04a5)
+B26_9d57: CYCLE(2); if (SR_N) goto B26_9d5e;
+B26_9d59: CYCLE(2); if (SR_V) goto B26_9d5e;
+B26_9d5b: LDA_ABS_X(0x9d96)
+B26_9d5e: STA_ABS(0x04a8)
+B26_9d61: LDA_IMM(0x00)
+B26_9d63: BIT_ABS(0x04a5)
+B26_9d66: CYCLE(2); if (SR_N) goto B26_9d6d;
+B26_9d68: CYCLE(2); if (!SR_V) goto B26_9d6d;
+B26_9d6a: LDA_ABS_X(0x9d96)
+B26_9d6d: STA_ABS(0x04ac)
+B26_9d70: LDX_IMM(0x01)
+B26_9d72: STX_ABS(0x04a5)
+B26_9d75: STX_ABS(0x04a9)
+B26_9d78: DEX()
+B26_9d79: STX_ABS(0x04ad)
+B26_9d7c: LDA_IMM(0x80)
+B26_9d7e: STA_ABS(0x0515)
+B26_9d81: RTS()
+B26_9d9b: LDA_IMM(0x0F)
+B26_9d9d: AND_ABS(0x001e)
+B26_9da0: CYCLE(2); if (SR_Z) goto B26_9db5;
+B26_9da2: LDX_IMM(0x00)
+B26_9da4: LSR_A()
+B26_9da5: CYCLE(2); if (SR_C) goto B26_9daa;
+B26_9da7: INX()
+B26_9da8: CYCLE(2); if (!SR_Z) goto B26_9da4;
+B26_9daa: LDA_ABS_X(0x9db9)
+B26_9dad: CLC()
+B26_9dae: ADC_ABS(0x0624)
+B26_9db1: CMP_IMM(0xF0)
+B26_9db3: CYCLE(2); if (!SR_C) goto B26_9db8;
+B26_9db5: LDA_ABS(0x0624)
+B26_9db8: RTS()
+B26_9dbd: LDA_ABS(0x05fc)
+B26_9dc0: CYCLE(6); SetStack(SP, 194); SetStack(SP - 1, 157); SP -= 2; goto B30_c50c;
+B26_9dc3: LDA_ABS(0x0624)
+B26_9dc6: CYCLE(6); SetStack(SP, 200); SetStack(SP - 1, 157); SP -= 2; goto B30_c536;
+B26_9dc9: TYA()
+B26_9dca: LDY_IMM(0x08)
+B26_9dcc: STA_IDY(0x34)
+B26_9dce: TXA()
+B26_9dcf: LDY_IMM(0x06)
+B26_9dd1: STA_IDY(0x34)
+B26_9dd3: RTS()
+B26_9dd4: LDA_IMM(0x01)
+B26_9dd6: STA_ZP(0x3A)
+B26_9dd8: LDA_ZP(0x3A)
+B26_9dda: CMP_ABS(0x0441)
+B26_9ddd: CYCLE(2); if (SR_Z) goto B26_9df4;
+B26_9ddf: CYCLE(6); SetStack(SP, 225); SetStack(SP - 1, 157); SP -= 2; goto B30_c50c;
+B26_9de2: LDY_IMM(0x06)
+B26_9de4: LDA_IDY(0x34)
+B26_9de6: TAX()
+B26_9de7: LDY_IMM(0x08)
+B26_9de9: LDA_IDY(0x34)
+B26_9deb: TAY()
+B26_9dec: CYCLE(6); SetStack(SP, 238); SetStack(SP - 1, 157); SP -= 2; goto B30_c539;
+B26_9def: CMP_ABS(0x0624)
+B26_9df2: CYCLE(2); if (SR_Z) goto B26_9e02;
+B26_9df4: INC_ZP(0x3A)
+B26_9df6: LDA_ZP(0x3A)
+B26_9df8: CMP_IMM(0x0B)
+B26_9dfa: CYCLE(2); if (!SR_Z) goto B26_9dd8;
+B26_9dfc: LDX_IMM(0xFF)
+B26_9dfe: LDA_IMM(0x1C)
+B26_9e00: CYCLE(2); if (!SR_Z) goto B26_9e06;
+B26_9e02: LDA_IMM(0x1D)
+B26_9e04: LDX_ZP(0x3A)
+B26_9e06: STX_ABS(0x05fc)
+B26_9e09: CYCLE(6); SetStack(SP, 11); SetStack(SP - 1, 158); SP -= 2; goto B30_c52a;
+B26_9e0c: RTS()
+B26_9e0d: STA_ZP(0x3A)
+B26_9e0f: ASL_A()
+B26_9e10: TAX()
+B26_9e11: LDA_ABS_X(0x9ff0)
+B26_9e14: STA_ZP(0x3C)
+B26_9e16: LDA_ABS_X(0x9ff1)
+B26_9e19: STA_ZP(0x3D)
+B26_9e1b: LDA_IMM(0x00)
+B26_9e1d: STA_ZP(0x3B)
+B26_9e1f: LDA_ZP(0x3B)
+B26_9e21: CYCLE(6); SetStack(SP, 35); SetStack(SP - 1, 158); SP -= 2; goto B30_c50c;
+B26_9e24: LDX_ZP(0x3B)
+B26_9e26: CPX_ABS(0x0441)
+B26_9e29: CYCLE(2); if (SR_Z) goto B26_9e46;
+B26_9e2b: LDY_ABS(0x05fb)
+B26_9e2e: CPX_IMM(0x0B)
+B26_9e30: CYCLE(2); if (!SR_C) goto B26_9e3a;
+B26_9e32: TXA()
+B26_9e33: SBC_IMM(0x0B)
+B26_9e35: TAX()
+B26_9e36: TYA()
+B26_9e37: EOR_IMM(0x0B)
+B26_9e39: TAY()
+B26_9e3a: STX_ZP(0x3E)
+B26_9e3c: TYA()
+B26_9e3d: CLC()
+B26_9e3e: ADC_ZP(0x3E)
+B26_9e40: TAY()
+B26_9e41: LDA_IDY(0x3C)
+B26_9e43: CYCLE(3); PC = 0x9e4b; goto B26_9e4b;
+B26_9e46: LDX_ZP(0x3A)
+B26_9e48: LDA_ABS_X(0xa0f8)
+B26_9e4b: CYCLE(6); SetStack(SP, 77); SetStack(SP - 1, 158); SP -= 2; goto B26_9bee;
+B26_9e4e: INC_ZP(0x3B)
+B26_9e50: LDA_ZP(0x3B)
+B26_9e52: CMP_IMM(0x16)
+B26_9e54: CYCLE(2); if (!SR_Z) goto B26_9e1f;
+B26_9e56: CYCLE(6); SetStack(SP, 88); SetStack(SP - 1, 158); SP -= 2; goto B30_c645;
+B26_9e59: RTS()
+B26_9e5a: PHA()
+B26_9e5b: LDA_IMM(0x01)
+B26_9e5d: CYCLE(6); SetStack(SP, 95); SetStack(SP - 1, 158); SP -= 2; goto B30_c515;
+B26_9e60: CYCLE(6); SetStack(SP, 98); SetStack(SP - 1, 158); SP -= 2; goto B30_c52d;
+B26_9e63: PLA()
+B26_9e64: LDX_ABS(0x05fb)
+B26_9e67: CYCLE(2); if (SR_Z) goto B26_9e6f;
+B26_9e69: LDA_IMM(0x14)
+B26_9e6b: STA_ABS(0x0441)
+B26_9e6e: RTS()
+B26_9e6f: CYCLE(6); SetStack(SP, 113); SetStack(SP - 1, 158); SP -= 2; goto B30_c52a;
+B26_9e72: LDA_IMM(0x01)
+B26_9e74: STA_ABS(0x0441)
+B26_9e77: LDY_IMM(0x00)
+B26_9e79: CYCLE(6); SetStack(SP, 123); SetStack(SP - 1, 158); SP -= 2; goto B26_9f3b;
+B26_9e7c: LDA_IMM(0x01)
+B26_9e7e: CYCLE(6); SetStack(SP, 128); SetStack(SP - 1, 158); SP -= 2; goto B30_c515;
+B26_9e81: LDA_IMM(0x0F)
+B26_9e83: AND_ABS(0x001e)
+B26_9e86: CYCLE(2); if (SR_Z) goto B26_9eaf;
+B26_9e88: LDX_IMM(0x00)
+B26_9e8a: LSR_A()
+B26_9e8b: CYCLE(2); if (SR_C) goto B26_9e90;
+B26_9e8d: INX()
+B26_9e8e: CYCLE(2); if (!SR_Z) goto B26_9e8a;
+B26_9e90: STX_ZP(0x3A)
+B26_9e92: LDA_ABS(0x0441)
+B26_9e95: ASL_A()
+B26_9e96: ASL_A()
+B26_9e97: ADC_ZP(0x3A)
+B26_9e99: TAX()
+B26_9e9a: LDA_ABS_X(0x9eb7)
+B26_9e9d: PHA()
+B26_9e9e: LDA_ABS(0x0441)
+B26_9ea1: LDY_IMM(0x00)
+B26_9ea3: CYCLE(6); SetStack(SP, 165); SetStack(SP - 1, 158); SP -= 2; goto B26_9f3f;
+B26_9ea6: PLA()
+B26_9ea7: STA_ABS(0x0441)
+B26_9eaa: LDY_IMM(0x00)
+B26_9eac: CYCLE(6); SetStack(SP, 174); SetStack(SP - 1, 158); SP -= 2; goto B26_9f3b;
+B26_9eaf: LDA_IMM(0x80)
+B26_9eb1: AND_ABS(0x001e)
+B26_9eb4: CYCLE(2); if (SR_Z) goto B26_9e7c;
+B26_9eb6: RTS()
+B26_9f37: LDX_IMM(0xB1)
+B26_9f39: CYCLE(2); if (!SR_Z) goto B26_9f41;
+B26_9f3b: LDX_IMM(0xF6)
+B26_9f3d: CYCLE(2); if (!SR_Z) goto B26_9f41;
+B26_9f3f: LDX_IMM(0x00)
+B26_9f41: PHA()
+B26_9f42: LDA_IMM(0x01)
+B26_9f44: CYCLE(6); SetStack(SP, 70); SetStack(SP - 1, 159); SP -= 2; goto B30_c515;
+B26_9f47: LDA_ABS(0x0515)
+B26_9f4a: CYCLE(2); if (!SR_Z) goto B26_9f42;
+B26_9f4c: LDA_IMM(0x01)
+B26_9f4e: STA_ABS(0x0515)
+B26_9f51: STX_ABS(0x04a8)
+B26_9f54: STY_ABS(0x04a5)
+B26_9f57: PLA()
+B26_9f58: ASL_A()
+B26_9f59: ADC_ABS(0x04a5)
+B26_9f5c: TAX()
+B26_9f5d: LDA_IMM(0x01)
+B26_9f5f: STA_ABS(0x04a5)
+B26_9f62: LDA_ABS_X(0x9f79)
+B26_9f65: STA_ABS(0x04a6)
+B26_9f68: LDA_ABS_X(0x9f7a)
+B26_9f6b: STA_ABS(0x04a7)
+B26_9f6e: LDA_IMM(0x00)
+B26_9f70: STA_ABS(0x04a9)
+B26_9f73: LDA_IMM(0x80)
+B26_9f75: STA_ABS(0x0515)
+B26_9f78: RTS()
+
+
+
+// ===== Bank 27 (prg_bank_27.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 27 =====
+// ; ROM: 0x036010-0x03800F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=384 data=6021 unaccessed=1787
+B27_8103: PHA()
+B27_8104: CYCLE(6); SetStack(SP, 6); SetStack(SP - 1, 129); SP -= 2; goto B30_c50c;
+B27_8107: LDX_IMM(0x00)
+B27_8109: STX_ZP(0x3D)
+B27_810b: LDA_ABS(0x062a)
+B27_810e: AND_IMM(0x7F)
+B27_8110: TAY()
+B27_8111: PLA()
+B27_8112: PHA()
+B27_8113: CMP_IMM(0x0B)
+B27_8115: PHP()
+B27_8116: CYCLE(2); if (!SR_C) goto B27_8122;
+B27_8118: SBC_IMM(0x0B)
+B27_811a: PHA()
+B27_811b: LDA_ABS_Y(0xa1dc)
+B27_811e: TAY()
+B27_811f: INX()
+B27_8120: INX()
+B27_8121: PLA()
+B27_8122: PHA()
+B27_8123: TYA()
+B27_8124: ASL_A()
+B27_8125: ASL_A()
+B27_8126: STA_ZP(0x3C)
+B27_8128: ASL_A()
+B27_8129: ASL_A()
+B27_812a: ADC_ZP(0x3C)
+B27_812c: STA_ZP(0x3C)
+B27_812e: ROL_ZP(0x3D)
+B27_8130: PLA()
+B27_8131: SEC()
+B27_8132: SBC_IMM(0x01)
+B27_8134: LSR_ABS(0x00e2)
+B27_8137: ROL_A()
+B27_8138: STA_ZP(0x3E)
+B27_813a: PLP()
+B27_813b: PHP()
+B27_813c: LDA_ABS(0x05fb)
+B27_813f: CYCLE(2); if (SR_Z) goto B27_8147;
+B27_8141: PHP()
+B27_8142: PLA()
+B27_8143: EOR_IMM(0x01)
+B27_8145: PHA()
+B27_8146: PLP()
+B27_8147: CYCLE(2); if (SR_C) goto B27_815c;
+B27_8149: LDA_IMM(0x25)
+B27_814b: STA_ZP(0x3F)
+B27_814d: LDA_ABS_X(0x002c)
+B27_8150: ASL_A()
+B27_8151: TAX()
+B27_8152: LDA_ABS_X(0xa6ae)
+B27_8155: TAY()
+B27_8156: LDA_ABS_X(0xa6ad)
+B27_8159: PC = 0xa179; /* UNRES JMP $a179 */ goto LABEL_END;
+B27_815c: LDA_IMM(0x26)
+B27_815e: STA_ZP(0x3F)
+B27_8160: LDA_ABS_X(0x002c)
+B27_8163: ASL_A()
+B27_8164: STA_ZP(0x3A)
+B27_8166: ASL_A()
+B27_8167: ADC_ZP(0x3A)
+B27_8169: STA_ZP(0x3A)
+B27_816b: LDA_ABS_X(0x002d)
+B27_816e: ASL_A()
+B27_816f: ADC_ZP(0x3A)
+B27_8171: TAX()
+B27_8172: LDA_ABS_X(0xab66)
+B27_8175: TAY()
+B27_8176: LDA_ABS_X(0xab65)
+B27_8179: CLC()
+B27_817a: ADC_ZP(0x3C)
+B27_817c: STA_ZP(0x3A)
+B27_817e: TYA()
+B27_817f: ADC_ZP(0x3D)
+B27_8181: STA_ZP(0x3B)
+B27_8183: LDY_ZP(0x3E)
+B27_8185: LDA_IDY(0x3A)
+B27_8187: PLP()
+B27_8188: CYCLE(2); if (!SR_C) goto B27_819e;
+B27_818a: CMP_IMM(0xF0)
+B27_818c: CYCLE(2); if (SR_Z) goto B27_819e;
+B27_818e: CYCLE(6); SetStack(SP, 144); SetStack(SP - 1, 129); SP -= 2; goto B30_c536;
+B27_8191: TXA()
+B27_8192: EOR_IMM(0xFF)
+B27_8194: TAX()
+B27_8195: TYA()
+B27_8196: EOR_IMM(0xFF)
+B27_8198: TAY()
+B27_8199: INX()
+B27_819a: INY()
+B27_819b: CYCLE(6); SetStack(SP, 157); SetStack(SP - 1, 129); SP -= 2; goto B30_c539;
+B27_819e: LDY_IMM(0x09)
+B27_81a0: STA_IDY(0x34)
+B27_81a2: PLA()
+B27_81a3: PHA()
+B27_81a4: LDX_ZP(0x3F)
+B27_81a6: CYCLE(6); SetStack(SP, 168); SetStack(SP - 1, 129); SP -= 2; goto B30_c527;
+B27_81a9: PLA()
+B27_81aa: LDX_ZP(0x32)
+B27_81ac: CPX_ABS(0x00e2)
+B27_81af: CYCLE(2); if (SR_C) goto B27_81b2;
+B27_81b1: RTS()
+B27_81b2: LDX_ZP(0x3F)
+B27_81b4: CPX_IMM(0x25)
+B27_81b6: CYCLE(2); if (SR_Z) goto B27_81bc;
+B27_81b8: LDA_IMM(0xF0)
+B27_81ba: CYCLE(2); if (!SR_Z) goto B27_81d7;
+B27_81bc: CMP_IMM(0x0B)
+B27_81be: CYCLE(2); if (!SR_C) goto B27_81c2;
+B27_81c0: SBC_IMM(0x0B)
+B27_81c2: CMP_IMM(0x05)
+B27_81c4: CYCLE(2); if (SR_C) goto B27_81db;
+B27_81c6: LDX_IMM(0xC8)
+B27_81c8: LDA_ABS(0x05fb)
+B27_81cb: CYCLE(2); if (SR_Z) goto B27_81cf;
+B27_81cd: LDX_IMM(0x38)
+B27_81cf: LDY_IMM(0x08)
+B27_81d1: LDA_IDY(0x34)
+B27_81d3: TAY()
+B27_81d4: CYCLE(6); SetStack(SP, 214); SetStack(SP - 1, 129); SP -= 2; goto B30_c539;
+B27_81d7: LDY_IMM(0x09)
+B27_81d9: STA_IDY(0x34)
+B27_81db: RTS()
+B27_81eb: LDA_ABS(0x05f4)
+B27_81ee: CYCLE(2); if (!SR_Z) goto B27_81f1;
+B27_81f0: RTS()
+B27_81f1: CYCLE(2); if (!SR_N) goto B27_820c;
+B27_81f3: LDA_IMM(0x01)
+B27_81f5: STA_ABS(0x05f4)
+B27_81f8: LDA_ABS(0x05f3)
+B27_81fb: ASL_A()
+B27_81fc: TAX()
+B27_81fd: LDA_ABS_X(0xa292)
+B27_8200: STA_ZP(0x63)
+B27_8202: LDA_ABS_X(0xa293)
+B27_8205: STA_ZP(0x64)
+B27_8207: LDA_IMM(0x00)
+B27_8209: STA_ABS(0x05f5)
+B27_820c: LDA_ABS(0x05f5)
+B27_820f: CYCLE(2); if (SR_Z) goto B27_8215;
+B27_8211: DEC_ABS(0x05f5)
+B27_8214: RTS()
+B27_8215: LDA_IMM(0x01)
+B27_8217: CYCLE(6); SetStack(SP, 25); SetStack(SP - 1, 130); SP -= 2; goto B30_c515;
+B27_821a: LDA_ABS(0x0515)
+B27_821d: CYCLE(2); if (!SR_Z) goto B27_8215;
+B27_821f: LDA_IMM(0x01)
+B27_8221: STA_ABS(0x0515)
+B27_8224: LDY_IMM(0x00)
+B27_8226: LDA_IDY(0x63)
+B27_8228: CMP_IMM(0xFF)
+B27_822a: CYCLE(2); if (!SR_Z) goto B27_8242;
+B27_822c: INY()
+B27_822d: LDA_IDY(0x63)
+B27_822f: TAX()
+B27_8230: INY()
+B27_8231: LDA_IDY(0x63)
+B27_8233: STA_ZP(0x64)
+B27_8235: STX_ZP(0x63)
+B27_8237: LDA_ABS(0x05e3)
+B27_823a: CYCLE(2); if (!SR_Z) goto B27_8224;
+B27_823c: STA_ABS(0x05f4)
+B27_823f: PC = 0xa224; /* UNRES JMP $a224 */ goto LABEL_END;
+B27_8242: STA_ABS(0x05f5)
+B27_8245: INY()
+B27_8246: LDA_IDY(0x63)
+B27_8248: ASL_A()
+B27_8249: TAX()
+B27_824a: LDA_ABS_X(0xa42a)
+B27_824d: STA_ZP(0x3A)
+B27_824f: LDA_ABS_X(0xa42b)
+B27_8252: STA_ZP(0x3B)
+B27_8254: LDY_IMM(0x00)
+B27_8256: LDX_IMM(0x00)
+B27_8258: LDA_IDY(0x3A)
+B27_825a: CYCLE(2); if (SR_Z) goto B27_827e;
+B27_825c: STA_ABS_X(0x04a5)
+B27_825f: STA_ZP(0x3C)
+B27_8261: INY()
+B27_8262: LDA_IDY(0x3A)
+B27_8264: STA_ABS_X(0x04a6)
+B27_8267: INY()
+B27_8268: LDA_IDY(0x3A)
+B27_826a: STA_ABS_X(0x04a7)
+B27_826d: INY()
+B27_826e: INX()
+B27_826f: INX()
+B27_8270: INX()
+B27_8271: LDA_IDY(0x3A)
+B27_8273: STA_ABS_X(0x04a5)
+B27_8276: INX()
+B27_8277: INY()
+B27_8278: DEC_ZP(0x3C)
+B27_827a: CYCLE(2); if (!SR_Z) goto B27_8271;
+B27_827c: CYCLE(2); if (SR_Z) goto B27_8258;
+B27_827e: STA_ABS_X(0x04a5)
+B27_8281: LDA_IMM(0x80)
+B27_8283: STA_ABS(0x0515)
+B27_8286: LDA_ZP(0x63)
+B27_8288: CLC()
+B27_8289: ADC_IMM(0x02)
+B27_828b: STA_ZP(0x63)
+B27_828d: CYCLE(2); if (!SR_C) goto B27_8291;
+B27_828f: INC_ZP(0x64)
+B27_8291: RTS()
+
+
+
+// ===== Bank 28 (prg_bank_28.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 28 =====
+// ; ROM: 0x038010-0x03A00F
+// ; CPU: $8000-$9FFF
+// ; CDL: code=2871 data=4189 unaccessed=1132
+B28_8000: CYCLE(3); PC = 0x802d; goto B28_802d;
+B28_8003: CYCLE(3); PC = 0x8b22; goto B28_8b22;
+B28_8006: CYCLE(3); PC = 0x8609; goto B28_8609;
+B28_8009: CYCLE(3); PC = 0x8c06; goto B28_8c06;
+B28_800c: CYCLE(3); PC = 0x8d58; goto B28_8d58;
+B28_8012: CYCLE(3); PC = 0x819d; goto B28_819d;
+B28_8015: CYCLE(3); PC = 0x8224; goto B28_8224;
+B28_8018: CYCLE(3); PC = 0x828f; goto B28_828f;
+B28_801b: CYCLE(3); PC = 0x852e; goto B28_852e;
+B28_801e: CYCLE(3); PC = 0x846a; goto B28_846a;
+B28_8024: CYCLE(3); PC = 0x82ca; goto B28_82ca;
+B28_8027: CYCLE(3); PC = 0x84ff; goto B28_84ff;
+B28_802a: CYCLE(3); PC = 0x84c1; goto B28_84c1;
+B28_802d: CYCLE(6); SetStack(SP, 47); SetStack(SP - 1, 128); SP -= 2; goto B28_803a;
+B28_8030: LDA_ABS_Y(0x9e4e)
+B28_8033: STA_ZP(0x32)
+B28_8035: LDA_IMM(0x00)
+B28_8037: STA_ZP(0x33)
+B28_8039: RTS()
+B28_803a: PHA()
+B28_803b: CYCLE(6); SetStack(SP, 61); SetStack(SP - 1, 128); SP -= 2; goto B30_c50c;
+B28_803e: LDY_IMM(0x00)
+B28_8040: LDA_IDY(0x34)
+B28_8042: CYCLE(2); if (!SR_Z) goto B28_8050;
+B28_8044: PLA()
+B28_8045: PHA()
+B28_8046: SEC()
+B28_8047: SBC_IMM(0x0B)
+B28_8049: TAY()
+B28_804a: LDA_ABS_Y(0x818e)
+B28_804d: TAY()
+B28_804e: LDA_IDY(0x38)
+B28_8050: CMP_IMM(0x23)
+B28_8052: PHP()
+B28_8053: CYCLE(2); if (!SR_C) goto B28_8064;
+B28_8055: PHA()
+B28_8056: LDY_IMM(0x01)
+B28_8058: LDA_IDY(0x34)
+B28_805a: CYCLE(2); if (!SR_N) goto B28_8061;
+B28_805c: PLA()
+B28_805d: INY()
+B28_805e: LDA_IDY(0x34)
+B28_8060: PHA()
+B28_8061: PLA()
+B28_8062: SBC_IMM(0x23)
+B28_8064: LDY_IMM(0x00)
+B28_8066: STY_ZP(0x33)
+B28_8068: ASL_A()
+B28_8069: ROL_ZP(0x33)
+B28_806b: ASL_A()
+B28_806c: ROL_ZP(0x33)
+B28_806e: STA_ZP(0x32)
+B28_8070: PLP()
+B28_8071: CYCLE(2); if (!SR_C) goto B28_8083;
+B28_8073: LDY_ZP(0x33)
+B28_8075: ASL_A()
+B28_8076: ROL_ZP(0x33)
+B28_8078: ADC_ZP(0x32)
+B28_807a: STA_ZP(0x32)
+B28_807c: TYA()
+B28_807d: ADC_ZP(0x33)
+B28_807f: STA_ZP(0x33)
+B28_8081: LDY_IMM(0x02)
+B28_8083: CLC()
+B28_8084: LDA_ZP(0x32)
+B28_8086: ADC_ABS_Y(0x8199)
+B28_8089: STA_ZP(0x32)
+B28_808b: LDA_ZP(0x33)
+B28_808d: ADC_ABS_Y(0x819a)
+B28_8090: STA_ZP(0x33)
+B28_8092: PLA()
+B28_8093: CPX_IMM(0x1F)
+B28_8095: CYCLE(2); if (!SR_C) goto B28_809a;
+B28_8097: CYCLE(3); PC = 0x813f; goto B28_813f;
+B28_809a: PHA()
+B28_809b: PLA()
+B28_809c: CYCLE(2); if (SR_Z) goto B28_80a8;
+B28_809e: CMP_IMM(0x0B)
+B28_80a0: CYCLE(2); if (SR_Z) goto B28_80a8;
+B28_80a2: CMP_IMM(0x1E)
+B28_80a4: CYCLE(2); if (SR_Z) goto B28_80a8;
+B28_80a6: CMP_IMM(0x1F)
+B28_80a8: PHP()
+B28_80a9: LDY_IMM(0x00)
+B28_80ab: LDA_IDY(0x32)
+B28_80ad: STY_ZP(0x33)
+B28_80af: PLP()
+B28_80b0: CYCLE(2); if (!SR_Z) goto B28_80d1;
+B28_80b2: ASL_A()
+B28_80b3: ROL_ZP(0x33)
+B28_80b5: ASL_A()
+B28_80b6: ROL_ZP(0x33)
+B28_80b8: ASL_A()
+B28_80b9: ROL_ZP(0x33)
+B28_80bb: ADC_IMM(0x86)
+B28_80bd: STA_ZP(0x32)
+B28_80bf: LDA_ZP(0x33)
+B28_80c1: ADC_IMM(0xAE)
+B28_80c3: STA_ZP(0x33)
+B28_80c5: TXA()
+B28_80c6: CYCLE(2); if (SR_Z) goto B28_80cb;
+B28_80c8: SEC()
+B28_80c9: SBC_IMM(0x17)
+B28_80cb: TAY()
+B28_80cc: LDA_IDY(0x32)
+B28_80ce: CYCLE(3); PC = 0x80f9; goto B28_80f9;
+B28_80d1: ASL_A()
+B28_80d2: ROL_ZP(0x33)
+B28_80d4: ASL_A()
+B28_80d5: ROL_ZP(0x33)
+B28_80d7: ASL_A()
+B28_80d8: ROL_ZP(0x33)
+B28_80da: LDY_ZP(0x33)
+B28_80dc: STA_ZP(0x32)
+B28_80de: ASL_A()
+B28_80df: ROL_ZP(0x33)
+B28_80e1: ADC_ZP(0x32)
+B28_80e3: STA_ZP(0x32)
+B28_80e5: TYA()
+B28_80e6: ADC_ZP(0x33)
+B28_80e8: STA_ZP(0x33)
+B28_80ea: CLC()
+B28_80eb: LDA_ZP(0x32)
+B28_80ed: ADC_IMM(0xCE)
+B28_80ef: STA_ZP(0x32)
+B28_80f1: LDA_ZP(0x33)
+B28_80f3: ADC_IMM(0x9F)
+B28_80f5: STA_ZP(0x33)
+B28_80f7: TXA()
+B28_80f8: TAY()
+B28_80f9: TXA()
+B28_80fa: CYCLE(2); if (SR_Z) goto B28_8113;
+B28_80fc: LDA_IDY(0x32)
+B28_80fe: PHA()
+B28_80ff: LDY_IMM(0x03)
+B28_8101: LDA_IDY(0x34)
+B28_8103: ASL_A()
+B28_8104: STA_ZP(0x32)
+B28_8106: PLA()
+B28_8107: ADC_ZP(0x32)
+B28_8109: TAY()
+B28_810a: CPY_IMM(0xC0)
+B28_810c: CYCLE(2); if (!SR_C) goto B28_8110;
+B28_8110: STY_ZP(0x32)
+B28_8112: RTS()
+B28_8113: LDA_IDY(0x32)
+B28_8115: PHA()
+B28_8116: LDY_IMM(0x03)
+B28_8118: LDA_IDY(0x34)
+B28_811a: STA_ZP(0x32)
+B28_811c: PLA()
+B28_811d: ADC_ZP(0x32)
+B28_811f: CMP_IMM(0x5F)
+B28_8121: CYCLE(2); if (!SR_C) goto B28_8125;
+B28_8125: LDY_IMM(0x9F)
+B28_8127: ASL_A()
+B28_8128: CYCLE(2); if (!SR_C) goto B28_812b;
+B28_812b: STY_ZP(0x33)
+B28_812d: LDY_IMM(0x0E)
+B28_812f: STY_ZP(0x32)
+B28_8131: TAY()
+B28_8132: LDA_IDY(0x32)
+B28_8134: TAX()
+B28_8135: INY()
+B28_8136: LDA_IDY(0x32)
+B28_8138: STA_ZP(0x33)
+B28_813a: STX_ZP(0x32)
+B28_813c: CYCLE(3); PC = 0x818b; goto B28_818b;
+B28_813f: CPX_IMM(0x25)
+B28_8141: CYCLE(2); if (SR_C) goto B28_817e;
+B28_8143: LDY_IMM(0x01)
+B28_8145: LDA_IDY(0x32)
+B28_8147: DEY()
+B28_8148: STY_ZP(0x33)
+B28_814a: ASL_A()
+B28_814b: ROL_ZP(0x33)
+B28_814d: ASL_A()
+B28_814e: ROL_ZP(0x33)
+B28_8150: STA_ZP(0x32)
+B28_8152: LDY_ZP(0x33)
+B28_8154: ASL_A()
+B28_8155: ROL_ZP(0x33)
+B28_8157: ADC_ZP(0x32)
+B28_8159: STA_ZP(0x32)
+B28_815b: TYA()
+B28_815c: ADC_ZP(0x33)
+B28_815e: TAY()
+B28_815f: LDA_ZP(0x32)
+B28_8161: CLC()
+B28_8162: ADC_IMM(0xAE)
+B28_8164: STA_ZP(0x32)
+B28_8166: TYA()
+B28_8167: ADC_IMM(0xAF)
+B28_8169: STA_ZP(0x33)
+B28_816b: TXA()
+B28_816c: SEC()
+B28_816d: SBC_IMM(0x1F)
+B28_816f: ASL_A()
+B28_8170: TAY()
+B28_8171: LDA_IDY(0x32)
+B28_8173: TAX()
+B28_8174: INY()
+B28_8175: LDA_IDY(0x32)
+B28_8177: STA_ZP(0x33)
+B28_8179: STX_ZP(0x32)
+B28_817b: CYCLE(3); PC = 0x818b; goto B28_818b;
+B28_817e: TXA()
+B28_817f: SEC()
+B28_8180: SBC_IMM(0x23)
+B28_8182: TAY()
+B28_8183: LDA_IDY(0x32)
+B28_8185: STA_ZP(0x32)
+B28_8187: LDA_IMM(0x00)
+B28_8189: STA_ZP(0x33)
+B28_818b: PLA()
+B28_818c: PLA()
+B28_818d: RTS()
+B28_819d: LDA_ABS(0x043b)
+B28_81a0: PHP()
+B28_81a1: ASL_A()
+B28_81a2: ADC_ABS(0x043b)
+B28_81a5: ADC_ABS(0x044e)
+B28_81a8: TAY()
+B28_81a9: PLP()
+B28_81aa: CYCLE(2); if (!SR_Z) goto B28_81bb;
+B28_81ac: LDA_ABS(0x043c)
+B28_81af: AND_IMM(0x7F)
+B28_81b1: CMP_IMM(0x03)
+B28_81b3: CYCLE(2); if (!SR_C) goto B28_81bb;
+B28_81b5: TYA()
+B28_81b6: SEC()
+B28_81b7: SBC_ABS(0x044e)
+B28_81ba: TAY()
+B28_81bb: LDX_ABS_Y(0x8206)
+B28_81be: CPX_IMM(0xFF)
+B28_81c0: CYCLE(2); if (SR_Z) goto B28_8203;
+B28_81c2: LDA_ABS(0x0441)
+B28_81c5: CYCLE(6); SetStack(SP, 199); SetStack(SP - 1, 129); SP -= 2; goto B28_803a;
+B28_81c8: TYA()
+B28_81c9: PHA()
+B28_81ca: LDA_ABS(0x043b)
+B28_81cd: ASL_A()
+B28_81ce: TAX()
+B28_81cf: LDA_ABS_X(0x9460)
+B28_81d2: STA_ZP(0x32)
+B28_81d4: LDA_ABS_X(0x9461)
+B28_81d7: STA_ZP(0x33)
+B28_81d9: LDA_ABS(0x043c)
+B28_81dc: ASL_A()
+B28_81dd: ASL_A()
+B28_81de: TAY()
+B28_81df: LDA_IDY(0x32)
+B28_81e1: STA_ABS(0x0444)
+B28_81e4: INY()
+B28_81e5: LDA_IDY(0x32)
+B28_81e7: TAX()
+B28_81e8: INY()
+B28_81e9: LDA_IDY(0x32)
+B28_81eb: STA_ABS(0x043f)
+B28_81ee: INY()
+B28_81ef: LDA_IDY(0x32)
+B28_81f1: AND_IMM(0x03)
+B28_81f3: STA_ABS(0x0440)
+B28_81f6: LDA_IDY(0x32)
+B28_81f8: AND_IMM(0xF8)
+B28_81fa: LSR_A()
+B28_81fb: LSR_A()
+B28_81fc: LSR_A()
+B28_81fd: STA_ABS(0x0443)
+B28_8200: CYCLE(3); PC = 0x8278; goto B28_8278;
+B28_8224: LDA_ABS(0x043d)
+B28_8227: ASL_A()
+B28_8228: ADC_ABS(0x043d)
+B28_822b: ADC_ABS(0x044e)
+B28_822e: TAY()
+B28_822f: LDX_ABS_Y(0x824c)
+B28_8232: LDA_ABS(0x0442)
+B28_8235: CYCLE(6); SetStack(SP, 55); SetStack(SP - 1, 130); SP -= 2; goto B28_803a;
+B28_8238: TYA()
+B28_8239: PHA()
+B28_823a: LDA_ABS(0x043d)
+B28_823d: ASL_A()
+B28_823e: TAX()
+B28_823f: LDA_ABS_X(0x9554)
+B28_8242: STA_ZP(0x32)
+B28_8244: LDA_ABS_X(0x9555)
+B28_8247: STA_ZP(0x33)
+B28_8249: CYCLE(3); PC = 0x825b; goto B28_825b;
+B28_825b: LDA_ABS(0x043e)
+B28_825e: ASL_A()
+B28_825f: ASL_A()
+B28_8260: TAY()
+B28_8261: LDA_IDY(0x32)
+B28_8263: STA_ABS(0x0445)
+B28_8266: INY()
+B28_8267: LDA_IDY(0x32)
+B28_8269: TAX()
+B28_826a: INY()
+B28_826b: LDA_IDY(0x32)
+B28_826d: STA_ABS(0x043f)
+B28_8270: INY()
+B28_8271: LDA_IDY(0x32)
+B28_8273: AND_IMM(0x03)
+B28_8275: STA_ABS(0x0440)
+B28_8278: STX_ZP(0x32)
+B28_827a: PLA()
+B28_827b: CLC()
+B28_827c: ADC_ZP(0x32)
+B28_827e: CMP_IMM(0xC0)
+B28_8280: CYCLE(2); if (!SR_C) goto B28_8284;
+B28_8284: TAX()
+B28_8285: LDA_ABS_X(0x9e4e)
+B28_8288: STA_ZP(0x32)
+B28_828a: LDA_IMM(0x00)
+B28_828c: STA_ZP(0x33)
+B28_828e: RTS()
+B28_828f: LDY_ABS(0x043d)
+B28_8292: CPY_IMM(0x03)
+B28_8294: CYCLE(2); if (!SR_Z) goto B28_829c;
+B28_8296: DEY()
+B28_8297: TYA()
+B28_8298: CLC()
+B28_8299: ADC_IMM(0x03)
+B28_829b: TAY()
+B28_829c: LDX_ABS_Y(0x82c0)
+B28_829f: LDA_ABS(0x05fb)
+B28_82a2: EOR_IMM(0x0B)
+B28_82a4: CYCLE(6); SetStack(SP, 166); SetStack(SP - 1, 130); SP -= 2; goto B28_803a;
+B28_82a7: TYA()
+B28_82a8: PHA()
+B28_82a9: LDA_ABS(0x043d)
+B28_82ac: ASL_A()
+B28_82ad: TAX()
+B28_82ae: LDA_ABS_X(0x959e)
+B28_82b1: STA_ZP(0x32)
+B28_82b3: LDA_ABS_X(0x959f)
+B28_82b6: STA_ZP(0x33)
+B28_82b8: LDA_IMM(0x00)
+B28_82ba: STA_ABS(0x0445)
+B28_82bd: CYCLE(3); PC = 0x825b; goto B28_825b;
+B28_82ca: CYCLE(6); SetStack(SP, 204); SetStack(SP - 1, 130); SP -= 2; goto B30_c52d;
+B28_82cd: LDA_IMM(0x00)
+B28_82cf: STA_ZP(0x11)
+B28_82d1: STA_ZP(0x12)
+B28_82d3: LDA_IMM(0x4A)
+B28_82d5: STA_ZP(0x61)
+B28_82d7: LDA_IMM(0x83)
+B28_82d9: STA_ZP(0x62)
+B28_82db: LDA_IMM(0x00)
+B28_82dd: PHA()
+B28_82de: LDA_IMM(0x01)
+B28_82e0: CYCLE(6); SetStack(SP, 226); SetStack(SP - 1, 130); SP -= 2; goto B30_c515;
+B28_82e3: LDA_ABS(0x0515)
+B28_82e6: CYCLE(2); if (!SR_Z) goto B28_82de;
+B28_82e8: LDA_IMM(0x01)
+B28_82ea: STA_ABS(0x0515)
+B28_82ed: PLA()
+B28_82ee: PHA()
+B28_82ef: LDX_IMM(0x00)
+B28_82f1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 130); SP -= 2; goto B28_830a;
+B28_82f4: PLA()
+B28_82f5: CLC()
+B28_82f6: ADC_IMM(0x01)
+B28_82f8: PHA()
+B28_82f9: CYCLE(6); SetStack(SP, 251); SetStack(SP - 1, 130); SP -= 2; goto B28_830a;
+B28_82fc: LDA_IMM(0x80)
+B28_82fe: STA_ABS(0x0515)
+B28_8301: PLA()
+B28_8302: CLC()
+B28_8303: ADC_IMM(0x01)
+B28_8305: CMP_IMM(0x0C)
+B28_8307: CYCLE(2); if (!SR_Z) goto B28_82dd;
+B28_8309: RTS()
+B28_830a: PHA()
+B28_830b: LDA_IMM(0x18)
+B28_830d: STA_ABS_X(0x04a5)
+B28_8310: LDA_IMM(0x40)
+B28_8312: STA_ABS_X(0x04a6)
+B28_8315: PLA()
+B28_8316: CLC()
+B28_8317: ADC_IMM(0x11)
+B28_8319: LSR_A()
+B28_831a: ROR_ABS_X(0x04a6)
+B28_831d: LSR_A()
+B28_831e: ROR_ABS_X(0x04a6)
+B28_8321: LSR_A()
+B28_8322: ROR_ABS_X(0x04a6)
+B28_8325: ORA_IMM(0x20)
+B28_8327: STA_ABS_X(0x04a7)
+B28_832a: INX()
+B28_832b: INX()
+B28_832c: INX()
+B28_832d: LDY_IMM(0x00)
+B28_832f: LDA_IDY(0x61)
+B28_8331: STA_ABS_X(0x04a5)
+B28_8334: INX()
+B28_8335: INY()
+B28_8336: CPY_IMM(0x18)
+B28_8338: CYCLE(2); if (!SR_Z) goto B28_832f;
+B28_833a: LDA_IMM(0x00)
+B28_833c: STA_ABS_X(0x04a5)
+B28_833f: TYA()
+B28_8340: CLC()
+B28_8341: ADC_ZP(0x61)
+B28_8343: STA_ZP(0x61)
+B28_8345: CYCLE(2); if (!SR_C) goto B28_8349;
+B28_8347: INC_ZP(0x62)
+B28_8349: RTS()
+B28_846a: LDA_IMM(0x00)
+B28_846c: STA_ABS(0x0628)
+B28_846f: LDA_ABS(0x043c)
+B28_8472: AND_IMM(0x3F)
+B28_8474: CYCLE(2); if (!SR_Z) goto B28_8498;
+B28_8476: LDX_ABS(0x0635)
+B28_8479: LDY_ABS(0x0637)
+B28_847c: CYCLE(6); SetStack(SP, 126); SetStack(SP - 1, 132); SP -= 2; goto B28_8499;
+B28_847f: TAX()
+B28_8480: CYCLE(2); if (!SR_Z) goto B28_8498;
+B28_8482: LDA_ABS(0x0638)
+B28_8485: CYCLE(6); SetStack(SP, 135); SetStack(SP - 1, 132); SP -= 2; goto B30_c536;
+B28_8488: CYCLE(6); SetStack(SP, 138); SetStack(SP - 1, 132); SP -= 2; goto B28_8499;
+B28_848b: CMP_IMM(0x00)
+B28_848d: CYCLE(2); if (SR_Z) goto B28_8498;
+B28_848f: CMP_IMM(0x04)
+B28_8491: CYCLE(2); if (SR_Z) goto B28_8498;
+B28_8493: LDA_IMM(0x80)
+B28_8495: STA_ABS(0x0628)
+B28_8498: RTS()
+B28_8499: LDA_ABS(0x05fb)
+B28_849c: CYCLE(2); if (!SR_Z) goto B28_84a2;
+B28_849e: TXA()
+B28_849f: EOR_IMM(0xFF)
+B28_84a1: TAX()
+B28_84a2: CPX_IMM(0x60)
+B28_84a4: CYCLE(2); if (SR_C) goto B28_84be;
+B28_84a6: TYA()
+B28_84a7: CYCLE(2); if (!SR_N) goto B28_84ab;
+B28_84a9: EOR_IMM(0xFF)
+B28_84ab: TAY()
+B28_84ac: CYCLE(6); SetStack(SP, 174); SetStack(SP - 1, 132); SP -= 2; goto B30_c539;
+B28_84af: LDX_IMM(0x00)
+B28_84b1: CMP_ABS_X(0x8bbe)
+B28_84b4: CYCLE(2); if (SR_Z) goto B28_84ba;
+B28_84b6: INX()
+B28_84b7: INX()
+B28_84b8: CYCLE(2); if (!SR_Z) goto B28_84b1;
+B28_84ba: LDA_ABS_X(0x8bbf)
+B28_84bd: RTS()
+B28_84be: PLA()
+B28_84bf: PLA()
+B28_84c0: RTS()
+B28_84c1: LDA_ABS(0x05fb)
+B28_84c4: CYCLE(2); if (SR_Z) goto B28_84f3;
+B28_84c6: LDA_IMM(0x00)
+B28_84c8: STA_ABS(0x043c)
+B28_84cb: STA_ABS(0x043e)
+B28_84ce: LDX_IMM(0x00)
+B28_84d0: LDA_ABS(0x00e2)
+B28_84d3: CMP_IMM(0x1F)
+B28_84d5: CYCLE(2); if (SR_C) goto B28_84df;
+B28_84d7: CYCLE(6); SetStack(SP, 217); SetStack(SP - 1, 132); SP -= 2; goto B28_8a20;
+B28_84da: CYCLE(6); SetStack(SP, 220); SetStack(SP - 1, 132); SP -= 2; goto B28_8a09;
+B28_84dd: LDX_IMM(0x01)
+B28_84df: STX_ABS(0x043b)
+B28_84e2: LDA_ABS(0x0441)
+B28_84e5: CYCLE(6); SetStack(SP, 231); SetStack(SP - 1, 132); SP -= 2; goto B28_8c06;
+B28_84e8: LDA_ABS(0x0430)
+B28_84eb: CYCLE(2); if (SR_Z) goto B28_84f0;
+B28_84ed: LDA_ABS(0x0431)
+B28_84f0: STA_ABS(0x043c)
+B28_84f3: LDA_ABS(0x00e3)
+B28_84f6: AND_IMM(0x01)
+B28_84f8: EOR_ABS(0x0612)
+B28_84fb: STA_ABS(0x0612)
+B28_84fe: RTS()
+B28_84ff: LDX_ABS(0x05fb)
+B28_8502: CYCLE(2); if (SR_Z) goto B28_8506;
+B28_8504: LDX_IMM(0x03)
+B28_8506: LDA_ABS(0x00e2)
+B28_8509: ADC_ABS(0x00e3)
+B28_850c: LDY_IMM(0x00)
+B28_850e: CMP_ABS_X(0x8528)
+B28_8511: CYCLE(2); if (SR_C) goto B28_8517;
+B28_8513: INY()
+B28_8514: INX()
+B28_8515: CYCLE(2); if (!SR_Z) goto B28_850e;
+B28_8517: TYA()
+B28_8518: CLC()
+B28_8519: ADC_IMM(0x07)
+B28_851b: LDX_ABS(0x05fb)
+B28_851e: CYCLE(2); if (SR_Z) goto B28_8524;
+B28_8520: STA_ABS(0x043b)
+B28_8523: RTS()
+B28_8524: STA_ABS(0x043d)
+B28_8527: RTS()
+B28_852e: LDY_IMM(0x06)
+B28_8530: LDA_IDY(0x38)
+B28_8532: AND_IMM(0x01)
+B28_8534: ASL_A()
+B28_8535: ADC_ABS(0x061e)
+B28_8538: STA_ABS(0x061e)
+B28_853b: LDA_IDY(0x38)
+B28_853d: LSR_A()
+B28_853e: LSR_A()
+B28_853f: LSR_A()
+B28_8540: LSR_A()
+B28_8541: CLC()
+B28_8542: ADC_IMM(0x0A)
+B28_8544: STA_ABS(0x0441)
+B28_8547: LDA_IMM(0x00)
+B28_8549: STA_ZP(0x3C)
+B28_854b: LDY_IMM(0x07)
+B28_854d: LDA_IDY(0x38)
+B28_854f: CYCLE(6); SetStack(SP, 81); SetStack(SP - 1, 133); SP -= 2; goto B28_8aeb;
+B28_8552: CLC()
+B28_8553: LDA_ZP(0x3C)
+B28_8555: ADC_IMM(0x2E)
+B28_8557: STA_ZP(0x3C)
+B28_8559: TXA()
+B28_855a: ADC_IMM(0xB1)
+B28_855c: STA_ZP(0x3D)
+B28_855e: LDA_IMM(0x00)
+B28_8560: STA_ABS(0x043c)
+B28_8563: STA_ZP(0x3E)
+B28_8565: CYCLE(6); SetStack(SP, 103); SetStack(SP - 1, 133); SP -= 2; goto B28_8b0b;
+B28_8568: STA_ABS(0x043b)
+B28_856b: LDA_ABS(0x043b)
+B28_856e: CYCLE(6); SetStack(SP, 112); SetStack(SP - 1, 133); SP -= 2; goto B30_c509;
+B28_8583: LDY_IMM(0x08)
+B28_8585: LDA_IDY(0x38)
+B28_8587: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 133); SP -= 2; goto B28_895e;
+B28_858a: LSR_A()
+B28_858b: LSR_A()
+B28_858c: CMP_IMM(0x0F)
+B28_858e: CYCLE(2); if (!SR_Z) goto B28_8596;
+B28_8596: CLC()
+B28_8597: ADC_IMM(0x0A)
+B28_8599: CMP_ABS(0x0441)
+B28_859c: CYCLE(2); if (!SR_Z) goto B28_85a7;
+B28_859e: CLC()
+B28_859f: ADC_IMM(0x01)
+B28_85a1: CMP_IMM(0x16)
+B28_85a3: CYCLE(2); if (!SR_C) goto B28_85a7;
+B28_85a7: CYCLE(6); SetStack(SP, 169); SetStack(SP - 1, 133); SP -= 2; goto B28_8a09;
+B28_85aa: LDA_IMM(0x01)
+B28_85ac: STA_ABS(0x043b)
+B28_85af: LDA_IMM(0x00)
+B28_85b1: STA_ABS(0x043c)
+B28_85b4: RTS()
+B28_85b5: LDA_IMM(0x00)
+B28_85b7: STA_ZP(0x3D)
+B28_85b9: LDX_ABS(0x0621)
+B28_85bc: LDY_ABS_X(0x8604)
+B28_85bf: TYA()
+B28_85c0: ASL_A()
+B28_85c1: ASL_A()
+B28_85c2: STA_ZP(0x3E)
+B28_85c4: INY()
+B28_85c5: INY()
+B28_85c6: INY()
+B28_85c7: INY()
+B28_85c8: LDA_IDY(0x3A)
+B28_85ca: ASL_A()
+B28_85cb: ROL_ZP(0x3D)
+B28_85cd: ASL_A()
+B28_85ce: ROL_ZP(0x3D)
+B28_85d0: STA_ZP(0x3C)
+B28_85d2: LDX_ZP(0x3D)
+B28_85d4: ASL_A()
+B28_85d5: ROL_ZP(0x3D)
+B28_85d7: ADC_ZP(0x3C)
+B28_85d9: STA_ZP(0x3C)
+B28_85db: TXA()
+B28_85dc: ADC_ZP(0x3D)
+B28_85de: TAX()
+B28_85df: LDA_ZP(0x3C)
+B28_85e1: CLC()
+B28_85e2: ADC_IMM(0x2E)
+B28_85e4: STA_ZP(0x3C)
+B28_85e6: TXA()
+B28_85e7: ADC_IMM(0xBA)
+B28_85e9: STA_ZP(0x3D)
+B28_85eb: CYCLE(6); SetStack(SP, 237); SetStack(SP - 1, 133); SP -= 2; goto B28_8b0b;
+B28_85ee: STA_ABS(0x043d)
+B28_85f1: TAX()
+B28_85f2: LDA_ABS(0x0442)
+B28_85f5: CYCLE(6); SetStack(SP, 247); SetStack(SP - 1, 133); SP -= 2; goto B28_8da6;
+B28_85f8: LDA_ABS(0x0430)
+B28_85fb: CYCLE(2); if (SR_Z) goto B28_8600;
+B28_85fd: LDA_ABS(0x0431)
+B28_8600: STA_ABS(0x043e)
+B28_8603: RTS()
+B28_8609: LDA_ABS(0x05fb)
+B28_860c: CYCLE(2); if (SR_Z) goto B28_8611;
+B28_860e: CYCLE(3); PC = 0x875d; goto B28_875d;
+B28_8611: LDA_ABS(0x0600)
+B28_8614: CYCLE(2); if (SR_Z) goto B28_863e;
+B28_8616: LDA_IMM(0x00)
+B28_8618: PHA()
+B28_8619: LDA_IMM(0x01)
+B28_861b: CYCLE(6); SetStack(SP, 29); SetStack(SP - 1, 134); SP -= 2; goto B30_c515;
+B28_861e: PLA()
+B28_861f: PHA()
+B28_8620: STA_ZP(0x40)
+B28_8622: TAX()
+B28_8623: LDA_ABS_X(0x0601)
+B28_8626: CYCLE(6); SetStack(SP, 40); SetStack(SP - 1, 134); SP -= 2; goto B28_863f;
+B28_8629: PLA()
+B28_862a: TAX()
+B28_862b: LDA_ABS(0x043d)
+B28_862e: STA_ABS_X(0x060b)
+B28_8631: LDA_ABS(0x043e)
+B28_8634: STA_ABS_X(0x0606)
+B28_8637: INX()
+B28_8638: TXA()
+B28_8639: CMP_ABS(0x0600)
+B28_863c: CYCLE(2); if (!SR_Z) goto B28_8618;
+B28_863e: RTS()
+B28_863f: STA_ABS(0x0442)
+B28_8642: CYCLE(6); SetStack(SP, 68); SetStack(SP - 1, 134); SP -= 2; goto B28_8a62;
+B28_8645: LDA_IMM(0x00)
+B28_8647: STA_ZP(0x3C)
+B28_8649: LDA_ABS(0x0442)
+B28_864c: CMP_IMM(0x0B)
+B28_864e: CYCLE(2); if (!SR_Z) goto B28_8653;
+B28_8650: CYCLE(3); PC = 0x85b5; goto B28_85b5;
+B28_8653: LDY_ABS(0x0621)
+B28_8656: LDA_ABS_Y(0x86b5)
+B28_8659: STA_ZP(0x3C)
+B28_865b: CYCLE(2); if (SR_Z) goto B28_8663;
+B28_865d: CYCLE(6); SetStack(SP, 95); SetStack(SP - 1, 134); SP -= 2; goto B28_8ab3;
+B28_8660: CYCLE(3); PC = 0x868e; goto B28_868e;
+B28_8663: LDA_ABS(0x0635)
+B28_8666: EOR_IMM(0xFF)
+B28_8668: TAX()
+B28_8669: LDA_IMM(0x14)
+B28_866b: CPX_IMM(0xA0)
+B28_866d: CYCLE(2); if (SR_C) goto B28_868e;
+B28_866f: LDA_IMM(0x10)
+B28_8671: CPX_IMM(0x60)
+B28_8673: CYCLE(2); if (SR_C) goto B28_868e;
+B28_8675: LDA_ABS(0x0637)
+B28_8678: CYCLE(2); if (!SR_N) goto B28_867c;
+B28_867a: EOR_IMM(0xFF)
+B28_867c: TAY()
+B28_867d: CYCLE(6); SetStack(SP, 127); SetStack(SP - 1, 134); SP -= 2; goto B30_c539;
+B28_8680: LDX_IMM(0x00)
+B28_8682: CMP_ABS_X(0x8bbe)
+B28_8685: CYCLE(2); if (SR_Z) goto B28_868b;
+B28_8687: INX()
+B28_8688: INX()
+B28_8689: CYCLE(2); if (!SR_Z) goto B28_8682;
+B28_868b: LDA_ABS_X(0x8bbf)
+B28_868e: LDY_IMM(0x07)
+B28_8690: CYCLE(6); SetStack(SP, 146); SetStack(SP - 1, 134); SP -= 2; goto B28_8ade;
+B28_8693: CLC()
+B28_8694: LDA_ZP(0x3C)
+B28_8696: ADC_IMM(0xAE)
+B28_8698: STA_ZP(0x3C)
+B28_869a: TXA()
+B28_869b: ADC_IMM(0xB8)
+B28_869d: STA_ZP(0x3D)
+B28_869f: CYCLE(6); SetStack(SP, 161); SetStack(SP - 1, 134); SP -= 2; goto B28_8b0b;
+B28_86a2: STA_ABS(0x043d)
+B28_86a5: LDA_IMM(0x00)
+B28_86a7: STA_ABS(0x043e)
+B28_86aa: LDA_ZP(0x3F)
+B28_86ac: CYCLE(6); SetStack(SP, 174); SetStack(SP - 1, 134); SP -= 2; goto B30_c509;
+B28_86ba: LDA_ABS(0x043d)
+B28_86bd: CYCLE(6); SetStack(SP, 191); SetStack(SP - 1, 134); SP -= 2; goto B30_c509;
+B28_86c8: LDA_IMM(0x01)
+B28_86ca: STA_ABS(0x043d)
+B28_86cd: CYCLE(3); PC = 0x8732; goto B28_8732;
+B28_86d0: LDA_IMM(0x02)
+B28_86d2: STA_ABS(0x043d)
+B28_86d5: CYCLE(3); PC = 0x8732; goto B28_8732;
+B28_86d8: LDA_IMM(0x00)
+B28_86da: STA_ABS(0x043d)
+B28_86dd: CYCLE(3); PC = 0x8732; goto B28_8732;
+B28_86e0: LDA_IMM(0x01)
+B28_86e2: STA_ABS(0x043d)
+B28_86e5: LDA_IMM(0x05)
+B28_86e7: STA_ABS(0x043e)
+B28_86ea: RTS()
+B28_86eb: LDA_ABS(0x043d)
+B28_86ee: CYCLE(6); SetStack(SP, 240); SetStack(SP - 1, 134); SP -= 2; goto B30_c509;
+B28_86f9: LDA_IMM(0x05)
+B28_86fb: STA_ABS(0x043d)
+B28_86fe: RTS()
+B28_86ff: LDA_IMM(0x04)
+B28_8701: STA_ABS(0x043d)
+B28_8704: RTS()
+B28_8705: CYCLE(3); PC = 0x86d0; goto B28_86d0;
+B28_8708: LDA_IMM(0x01)
+B28_870a: STA_ABS(0x043e)
+B28_870d: CYCLE(3); PC = 0x86ff; goto B28_86ff;
+B28_8710: LDA_ABS(0x043d)
+B28_8713: CYCLE(6); SetStack(SP, 21); SetStack(SP - 1, 135); SP -= 2; goto B30_c509;
+B28_871e: CYCLE(3); PC = 0x86f9; goto B28_86f9;
+B28_8721: LDA_IMM(0x03)
+B28_8723: STA_ABS(0x043d)
+B28_8726: RTS()
+B28_8727: CYCLE(3); PC = 0x86d0; goto B28_86d0;
+B28_872a: LDA_IMM(0x01)
+B28_872c: STA_ABS(0x043e)
+B28_872f: CYCLE(3); PC = 0x8721; goto B28_8721;
+B28_8732: LDA_ABS(0x0442)
+B28_8735: LDX_ABS(0x043d)
+B28_8738: CYCLE(6); SetStack(SP, 58); SetStack(SP - 1, 135); SP -= 2; goto B28_8d58;
+B28_873b: LDA_ABS(0x0430)
+B28_873e: CYCLE(2); if (SR_Z) goto B28_8743;
+B28_8740: LDA_ABS(0x0431)
+B28_8743: STA_ABS(0x043e)
+B28_8746: RTS()
+B28_875d: LDA_ABS(0x0441)
+B28_8760: CYCLE(6); SetStack(SP, 98); SetStack(SP - 1, 135); SP -= 2; goto B28_8a62;
+B28_8763: LDY_ABS(0x0621)
+B28_8766: LDA_ABS_Y(0x87c3)
+B28_8769: STA_ZP(0x3C)
+B28_876b: CYCLE(2); if (SR_Z) goto B28_8773;
+B28_876d: CYCLE(6); SetStack(SP, 111); SetStack(SP - 1, 135); SP -= 2; goto B28_8ab3;
+B28_8770: CYCLE(3); PC = 0x879c; goto B28_879c;
+B28_8773: LDA_IMM(0x14)
+B28_8775: LDX_ABS(0x0635)
+B28_8778: CPX_IMM(0xA0)
+B28_877a: CYCLE(2); if (SR_C) goto B28_879c;
+B28_877c: LDA_IMM(0x10)
+B28_877e: CPX_IMM(0x60)
+B28_8780: CYCLE(2); if (SR_C) goto B28_879c;
+B28_8782: LDY_ABS(0x0637)
+B28_8785: CYCLE(2); if (!SR_N) goto B28_878b;
+B28_8787: TYA()
+B28_8788: EOR_IMM(0xFF)
+B28_878a: TAY()
+B28_878b: CYCLE(6); SetStack(SP, 141); SetStack(SP - 1, 135); SP -= 2; goto B30_c539;
+B28_878e: LDX_IMM(0x00)
+B28_8790: CMP_ABS_X(0x8bbe)
+B28_8793: CYCLE(2); if (SR_Z) goto B28_8799;
+B28_8795: INX()
+B28_8796: INX()
+B28_8797: CYCLE(2); if (!SR_Z) goto B28_8790;
+B28_8799: LDA_ABS_X(0x8bbf)
+B28_879c: LDY_IMM(0x04)
+B28_879e: CYCLE(6); SetStack(SP, 160); SetStack(SP - 1, 135); SP -= 2; goto B28_8ade;
+B28_87a1: CLC()
+B28_87a2: LDA_ZP(0x3C)
+B28_87a4: ADC_IMM(0x2E)
+B28_87a6: STA_ZP(0x3C)
+B28_87a8: TXA()
+B28_87a9: ADC_IMM(0xB1)
+B28_87ab: STA_ZP(0x3D)
+B28_87ad: CYCLE(6); SetStack(SP, 175); SetStack(SP - 1, 135); SP -= 2; goto B28_8b0b;
+B28_87b0: STA_ABS(0x043b)
+B28_87b3: LDA_IMM(0x00)
+B28_87b5: STA_ABS(0x043c)
+B28_87b8: LDA_ZP(0x3F)
+B28_87ba: CYCLE(6); SetStack(SP, 188); SetStack(SP - 1, 135); SP -= 2; goto B30_c509;
+B28_87c7: LDA_ABS(0x043b)
+B28_87ca: CYCLE(6); SetStack(SP, 204); SetStack(SP - 1, 135); SP -= 2; goto B30_c509;
+B28_87e9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 135); SP -= 2; goto B28_8927;
+B28_87ec: CYCLE(3); PC = 0x8a3f; goto B28_8a3f;
+B28_87ef: CYCLE(3); PC = 0x8933; goto B28_8933;
+B28_87f2: LDA_IMM(0x02)
+B28_87f4: STA_ABS(0x043b)
+B28_87f7: CYCLE(3); PC = 0x8a3f; goto B28_8a3f;
+B28_87fa: LDA_IMM(0x03)
+B28_87fc: STA_ABS(0x043b)
+B28_87ff: CYCLE(6); SetStack(SP, 1); SetStack(SP - 1, 136); SP -= 2; goto B28_8a3f;
+B28_8802: LDA_ABS(0x043c)
+B28_8805: CYCLE(2); if (!SR_Z) goto B28_8849;
+B28_8807: LDA_IMM(0x0C)
+B28_8809: STA_ZP(0x3A)
+B28_880b: LDA_ZP(0x3A)
+B28_880d: CMP_ABS(0x0441)
+B28_8810: CYCLE(2); if (SR_Z) goto B28_8839;
+B28_8812: CYCLE(6); SetStack(SP, 20); SetStack(SP - 1, 136); SP -= 2; goto B30_c50c;
+B28_8815: LDY_IMM(0x06)
+B28_8817: LDA_IDY(0x34)
+B28_8819: SEC()
+B28_881a: SBC_ABS(0x0635)
+B28_881d: CYCLE(2); if (SR_C) goto B28_8823;
+B28_881f: EOR_IMM(0xFF)
+B28_8821: ADC_IMM(0x01)
+B28_8823: CMP_IMM(0x14)
+B28_8825: CYCLE(2); if (SR_C) goto B28_8839;
+B28_8827: LDY_IMM(0x08)
+B28_8829: LDA_IDY(0x34)
+B28_882b: SEC()
+B28_882c: SBC_ABS(0x0637)
+B28_882f: CYCLE(2); if (SR_C) goto B28_8835;
+B28_8831: EOR_IMM(0xFF)
+B28_8833: ADC_IMM(0x01)
+B28_8835: CMP_IMM(0x14)
+B28_8837: CYCLE(2); if (!SR_C) goto B28_8844;
+B28_8839: INC_ZP(0x3A)
+B28_883b: LDA_ZP(0x3A)
+B28_883d: CMP_IMM(0x16)
+B28_883f: CYCLE(2); if (!SR_Z) goto B28_880b;
+B28_8841: CYCLE(3); PC = 0x87f2; goto B28_87f2;
+B28_8844: LDA_ZP(0x3A)
+B28_8846: CYCLE(6); SetStack(SP, 72); SetStack(SP - 1, 136); SP -= 2; goto B28_8a09;
+B28_8849: RTS()
+B28_884a: LDA_IMM(0x00)
+B28_884c: STA_ABS(0x043b)
+B28_884f: LDA_IMM(0x0C)
+B28_8851: STA_ABS(0x043c)
+B28_8854: RTS()
+B28_8855: LDA_IMM(0x00)
+B28_8857: STA_ABS(0x043b)
+B28_885a: LDA_IMM(0x0D)
+B28_885c: STA_ABS(0x043c)
+B28_885f: RTS()
+B28_8860: LDA_IMM(0x02)
+B28_8862: STA_ABS(0x043b)
+B28_8865: BIT_ABS(0x044b)
+B28_8868: CYCLE(2); if (SR_N) goto B28_88a7;
+B28_886a: LDA_IMM(0x80)
+B28_886c: STA_ABS(0x044b)
+B28_886f: LDA_IMM(0x0C)
+B28_8871: PHA()
+B28_8872: CYCLE(6); SetStack(SP, 116); SetStack(SP - 1, 136); SP -= 2; goto B30_c50c;
+B28_8875: LDY_IMM(0x01)
+B28_8877: LDA_IMM(0x80)
+B28_8879: STA_IDY(0x34)
+B28_887b: INY()
+B28_887c: LDA_IMM(0xC8)
+B28_887e: STA_IDY(0x34)
+B28_8880: PLA()
+B28_8881: CLC()
+B28_8882: ADC_IMM(0x01)
+B28_8884: CMP_IMM(0x16)
+B28_8886: CYCLE(2); if (!SR_Z) goto B28_8871;
+B28_8888: LDA_IMM(0x01)
+B28_888a: STA_ABS(0x002f)
+B28_888d: LDA_IMM(0x00)
+B28_888f: STA_ABS(0x062d)
+B28_8892: LDA_ABS(0x0615)
+B28_8895: AND_IMM(0xBF)
+B28_8897: STA_ABS(0x0615)
+B28_889a: LDA_IMM(0x15)
+B28_889c: CYCLE(6); SetStack(SP, 158); SetStack(SP - 1, 136); SP -= 2; goto B30_c54e;
+B28_889f: BIT_ABS(0x0615)
+B28_88a2: CYCLE(2); if (!SR_N) goto B28_88a7;
+B28_88a4: CYCLE(6); SetStack(SP, 166); SetStack(SP - 1, 136); SP -= 2; goto B30_c575;
+B28_88a7: RTS()
+B28_88a8: LDA_IMM(0x02)
+B28_88aa: STA_ABS(0x043b)
+B28_88ad: BIT_ABS(0x044c)
+B28_88b0: CYCLE(2); if (SR_N) goto B28_88d9;
+B28_88b2: LDA_IMM(0x80)
+B28_88b4: STA_ABS(0x044c)
+B28_88b7: STA_ABS(0x03f1)
+B28_88ba: LDA_IMM(0xC9)
+B28_88bc: STA_ABS(0x03f2)
+B28_88bf: LDA_IMM(0x00)
+B28_88c1: STA_ABS(0x062d)
+B28_88c4: LDA_ABS(0x0615)
+B28_88c7: AND_IMM(0xBF)
+B28_88c9: STA_ABS(0x0615)
+B28_88cc: LDA_IMM(0x16)
+B28_88ce: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 136); SP -= 2; goto B30_c54e;
+B28_88d1: BIT_ABS(0x0615)
+B28_88d4: CYCLE(2); if (!SR_N) goto B28_88d9;
+B28_88d6: CYCLE(6); SetStack(SP, 216); SetStack(SP - 1, 136); SP -= 2; goto B30_c575;
+B28_88d9: RTS()
+B28_88da: LDA_ABS(0x043b)
+B28_88dd: CYCLE(6); SetStack(SP, 223); SetStack(SP - 1, 136); SP -= 2; goto B30_c509;
+B28_88e8: CYCLE(6); SetStack(SP, 234); SetStack(SP - 1, 136); SP -= 2; goto B28_8927;
+B28_88eb: CYCLE(3); PC = 0x8a3f; goto B28_8a3f;
+B28_88ee: LDA_IMM(0x05)
+B28_88f0: STA_ABS(0x043b)
+B28_88f3: RTS()
+B28_88f4: CYCLE(3); PC = 0x8933; goto B28_8933;
+B28_88f7: LDA_IMM(0x04)
+B28_88f9: STA_ABS(0x043b)
+B28_88fc: RTS()
+B28_88fd: LDA_ABS(0x043b)
+B28_8900: CYCLE(6); SetStack(SP, 2); SetStack(SP - 1, 137); SP -= 2; goto B30_c509;
+B28_890b: LDA_IMM(0x04)
+B28_890d: STA_ABS(0x043b)
+B28_8910: RTS()
+B28_8911: LDA_IMM(0x06)
+B28_8913: STA_ABS(0x043b)
+B28_8916: RTS()
+B28_8917: CYCLE(3); PC = 0x8933; goto B28_8933;
+B28_891a: LDA_IMM(0x06)
+B28_891c: STA_ABS(0x043b)
+B28_891f: LDA_IMM(0x01)
+B28_8921: STA_ABS(0x043c)
+B28_8924: CYCLE(3); PC = 0x8911; goto B28_8911;
+B28_8927: LDA_IMM(0x00)
+B28_8929: STA_ABS(0x043b)
+B28_892c: LDA_ABS(0x044e)
+B28_892f: STA_ABS(0x043c)
+B28_8932: RTS()
+B28_8933: LDY_IMM(0x0A)
+B28_8935: LDA_IDY(0x3A)
+B28_8937: CYCLE(6); SetStack(SP, 57); SetStack(SP - 1, 137); SP -= 2; goto B28_895e;
+B28_893a: AND_IMM(0x03)
+B28_893c: PHA()
+B28_893d: LDA_IDY(0x3C)
+B28_893f: LSR_A()
+B28_8940: LSR_A()
+B28_8941: CMP_IMM(0x0F)
+B28_8943: CYCLE(2); if (SR_Z) goto B28_894d;
+B28_8945: CLC()
+B28_8946: ADC_IMM(0x0A)
+B28_8948: CMP_ABS(0x0441)
+B28_894b: CYCLE(2); if (!SR_Z) goto B28_8950;
+B28_894d: CYCLE(6); SetStack(SP, 79); SetStack(SP - 1, 137); SP -= 2; goto B28_8a20;
+B28_8950: STA_ZP(0x3C)
+B28_8952: PLA()
+B28_8953: CYCLE(6); SetStack(SP, 85); SetStack(SP - 1, 137); SP -= 2; goto B30_c509;
+B28_895e: LDX_IMM(0x00)
+B28_8960: STX_ZP(0x3D)
+B28_8962: ASL_A()
+B28_8963: ROL_ZP(0x3D)
+B28_8965: ASL_A()
+B28_8966: ROL_ZP(0x3D)
+B28_8968: ASL_A()
+B28_8969: ROL_ZP(0x3D)
+B28_896b: ADC_IMM(0x2E)
+B28_896d: STA_ZP(0x3C)
+B28_896f: LDA_ZP(0x3D)
+B28_8971: ADC_IMM(0xB7)
+B28_8973: STA_ZP(0x3D)
+B28_8975: LDA_ABS(0x00e2)
+B28_8978: AND_IMM(0x07)
+B28_897a: TAY()
+B28_897b: LDA_IDY(0x3C)
+B28_897d: RTS()
+B28_897e: CYCLE(6); SetStack(SP, 128); SetStack(SP - 1, 137); SP -= 2; goto B28_89b3;
+B28_8981: CYCLE(3); PC = 0x89a5; goto B28_89a5;
+B28_8984: CYCLE(6); SetStack(SP, 134); SetStack(SP - 1, 137); SP -= 2; goto B28_89b3;
+B28_8987: ROR_ABS(0x00e2)
+B28_898a: CYCLE(6); SetStack(SP, 140); SetStack(SP - 1, 137); SP -= 2; goto B28_8a20;
+B28_898d: CYCLE(6); SetStack(SP, 143); SetStack(SP - 1, 137); SP -= 2; goto B28_89b3;
+B28_8990: CYCLE(3); PC = 0x89a5; goto B28_89a5;
+B28_8993: CYCLE(6); SetStack(SP, 149); SetStack(SP - 1, 137); SP -= 2; goto B28_89b3;
+B28_8996: CYCLE(6); SetStack(SP, 152); SetStack(SP - 1, 137); SP -= 2; goto B28_89da;
+B28_8999: CYCLE(3); PC = 0x8987; goto B28_8987;
+B28_899c: CYCLE(6); SetStack(SP, 158); SetStack(SP - 1, 137); SP -= 2; goto B28_89da;
+B28_899f: CYCLE(6); SetStack(SP, 161); SetStack(SP - 1, 137); SP -= 2; goto B28_89b3;
+B28_89a2: CYCLE(3); PC = 0x8987; goto B28_8987;
+B28_89a5: LDX_ABS(0x0621)
+B28_89a8: LDA_ABS_X(0x89af)
+B28_89ab: STA_ABS(0x043b)
+B28_89ae: RTS()
+B28_89b3: LDA_ZP(0x3C)
+B28_89b5: CYCLE(6); SetStack(SP, 183); SetStack(SP - 1, 137); SP -= 2; goto B30_c50c;
+B28_89b8: LDY_IMM(0x06)
+B28_89ba: LDA_ABS(0x0635)
+B28_89bd: SEC()
+B28_89be: SBC_IDY(0x34)
+B28_89c0: CYCLE(2); if (SR_C) goto B28_89ca;
+B28_89c2: LDA_ABS(0x0635)
+B28_89c5: CMP_IMM(0x60)
+B28_89c7: CYCLE(2); if (!SR_C) goto B28_89ca;
+B28_89c9: RTS()
+B28_89ca: LDA_ZP(0x3C)
+B28_89cc: CYCLE(6); SetStack(SP, 206); SetStack(SP - 1, 137); SP -= 2; goto B28_8a09;
+B28_89cf: LDA_IMM(0x01)
+B28_89d1: STA_ABS(0x043b)
+B28_89d4: CYCLE(6); SetStack(SP, 214); SetStack(SP - 1, 137); SP -= 2; goto B28_8a3f;
+B28_89d7: PLA()
+B28_89d8: PLA()
+B28_89d9: RTS()
+B28_89da: LDA_IMM(0x0C)
+B28_89dc: STA_ZP(0x3E)
+B28_89de: LDA_ZP(0x3E)
+B28_89e0: CMP_ABS(0x0441)
+B28_89e3: CYCLE(2); if (SR_Z) goto B28_89f0;
+B28_89e5: CYCLE(6); SetStack(SP, 231); SetStack(SP - 1, 137); SP -= 2; goto B30_c50c;
+B28_89e8: LDY_IMM(0x06)
+B28_89ea: LDA_IDY(0x34)
+B28_89ec: CMP_IMM(0x60)
+B28_89ee: CYCLE(2); if (!SR_C) goto B28_89f9;
+B28_89f0: INC_ZP(0x3E)
+B28_89f2: LDA_ZP(0x3E)
+B28_89f4: CMP_IMM(0x16)
+B28_89f6: CYCLE(2); if (!SR_Z) goto B28_89de;
+B28_89f8: RTS()
+B28_89f9: LDA_ZP(0x3E)
+B28_89fb: CYCLE(6); SetStack(SP, 253); SetStack(SP - 1, 137); SP -= 2; goto B28_8a09;
+B28_89fe: LDA_IMM(0x01)
+B28_8a00: STA_ABS(0x043b)
+B28_8a03: CYCLE(6); SetStack(SP, 5); SetStack(SP - 1, 138); SP -= 2; goto B28_8a3f;
+B28_8a06: PLA()
+B28_8a07: PLA()
+B28_8a08: RTS()
+B28_8a09: STA_ABS(0x05fc)
+B28_8a0c: CYCLE(6); SetStack(SP, 14); SetStack(SP - 1, 138); SP -= 2; goto B30_c50c;
+B28_8a0f: LDY_IMM(0x06)
+B28_8a11: LDA_IDY(0x34)
+B28_8a13: TAX()
+B28_8a14: LDY_IMM(0x08)
+B28_8a16: LDA_IDY(0x34)
+B28_8a18: TAY()
+B28_8a19: CYCLE(6); SetStack(SP, 27); SetStack(SP - 1, 138); SP -= 2; goto B30_c539;
+B28_8a1c: STA_ABS(0x0638)
+B28_8a1f: RTS()
+B28_8a20: LDA_ABS(0x00e2)
+B28_8a23: ADC_ABS(0x00e3)
+B28_8a26: AND_IMM(0x0F)
+B28_8a28: CMP_IMM(0x0A)
+B28_8a2a: CYCLE(2); if (!SR_C) goto B28_8a2e;
+B28_8a2c: SBC_IMM(0x0A)
+B28_8a2e: CLC()
+B28_8a2f: ADC_IMM(0x0C)
+B28_8a31: CMP_ABS(0x0441)
+B28_8a34: CYCLE(2); if (!SR_Z) goto B28_8a3e;
+B28_8a36: ADC_IMM(0x01)
+B28_8a38: CMP_IMM(0x16)
+B28_8a3a: CYCLE(2); if (!SR_C) goto B28_8a3e;
+B28_8a3c: LDA_IMM(0x0C)
+B28_8a3e: RTS()
+B28_8a3f: LDA_ABS(0x0441)
+B28_8a42: LDX_ABS(0x043b)
+B28_8a45: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 138); SP -= 2; goto B28_8c06;
+B28_8a48: LDA_ABS(0x0430)
+B28_8a4b: CYCLE(2); if (SR_Z) goto B28_8a50;
+B28_8a4d: LDA_ABS(0x0431)
+B28_8a50: STA_ABS(0x043c)
+B28_8a53: TAX()
+B28_8a54: CYCLE(2); if (!SR_Z) goto B28_8a61;
+B28_8a56: LDA_ABS(0x043b)
+B28_8a59: CYCLE(2); if (!SR_Z) goto B28_8a61;
+B28_8a5b: LDA_ABS(0x044e)
+B28_8a5e: STA_ABS(0x043c)
+B28_8a61: RTS()
+B28_8a62: PHA()
+B28_8a63: CYCLE(6); SetStack(SP, 101); SetStack(SP - 1, 138); SP -= 2; goto B30_c50c;
+B28_8a66: LDY_IMM(0x00)
+B28_8a68: LDA_IDY(0x34)
+B28_8a6a: CYCLE(2); if (!SR_Z) goto B28_8a74;
+B28_8a6c: PLA()
+B28_8a6d: PHA()
+B28_8a6e: TAX()
+B28_8a6f: LDY_ABS_X(0x8a9d)
+B28_8a72: LDA_IDY(0x38)
+B28_8a74: TAX()
+B28_8a75: LDY_IMM(0x01)
+B28_8a77: LDA_IDY(0x34)
+B28_8a79: CYCLE(2); if (!SR_N) goto B28_8a7f;
+B28_8a7b: INY()
+B28_8a7c: LDA_IDY(0x34)
+B28_8a7e: TAX()
+B28_8a7f: TXA()
+B28_8a80: SEC()
+B28_8a81: SBC_IMM(0x23)
+B28_8a83: LDX_IMM(0x00)
+B28_8a85: STX_ZP(0x3B)
+B28_8a87: ASL_A()
+B28_8a88: ROL_ZP(0x3B)
+B28_8a8a: ASL_A()
+B28_8a8b: ROL_ZP(0x3B)
+B28_8a8d: STA_ZP(0x3A)
+B28_8a8f: LDX_ZP(0x3B)
+B28_8a91: ASL_A()
+B28_8a92: ROL_ZP(0x3B)
+B28_8a94: ADC_ZP(0x3A)
+B28_8a96: PHA()
+B28_8a97: TXA()
+B28_8a98: ADC_ZP(0x3B)
+B28_8a9a: TAX()
+B28_8a9b: PLA()
+B28_8a9c: CLC()
+B28_8a9d: ADC_IMM(0x62)
+B28_8a9f: STA_ZP(0x3A)
+B28_8aa1: TXA()
+B28_8aa2: ADC_IMM(0x96)
+B28_8aa4: STA_ZP(0x3B)
+B28_8aa6: PLA()
+B28_8aa7: RTS()
+B28_8ab3: LDA_ABS(0x0635)
+B28_8ab6: CYCLE(2); if (!SR_N) goto B28_8aba;
+B28_8ab8: EOR_IMM(0xFF)
+B28_8aba: TAX()
+B28_8abb: LDA_ABS(0x0637)
+B28_8abe: CYCLE(2); if (!SR_N) goto B28_8ac2;
+B28_8ac0: EOR_IMM(0xFF)
+B28_8ac2: TAY()
+B28_8ac3: CYCLE(6); SetStack(SP, 197); SetStack(SP - 1, 138); SP -= 2; goto B30_c539;
+B28_8ac6: LDX_IMM(0x00)
+B28_8ac8: CMP_ABS_X(0x8b9e)
+B28_8acb: CYCLE(2); if (SR_Z) goto B28_8ad1;
+B28_8acd: INX()
+B28_8ace: INX()
+B28_8acf: CYCLE(2); if (!SR_Z) goto B28_8ac8;
+B28_8ad1: LDA_ABS_X(0x8b9f)
+B28_8ad4: LDX_ZP(0x3C)
+B28_8ad6: CPX_IMM(0x01)
+B28_8ad8: CYCLE(2); if (SR_Z) goto B28_8add;
+B28_8ada: CLC()
+B28_8adb: ADC_IMM(0x0C)
+B28_8add: RTS()
+B28_8ade: STA_ZP(0x3E)
+B28_8ae0: LDA_ZP(0x3C)
+B28_8ae2: STA_ZP(0x3F)
+B28_8ae4: TYA()
+B28_8ae5: CLC()
+B28_8ae6: ADC_ZP(0x3C)
+B28_8ae8: TAY()
+B28_8ae9: LDA_IDY(0x3A)
+B28_8aeb: LDY_IMM(0x00)
+B28_8aed: STY_ZP(0x3D)
+B28_8aef: ASL_A()
+B28_8af0: ROL_ZP(0x3D)
+B28_8af2: ASL_A()
+B28_8af3: ROL_ZP(0x3D)
+B28_8af5: ASL_A()
+B28_8af6: ROL_ZP(0x3D)
+B28_8af8: ASL_A()
+B28_8af9: ROL_ZP(0x3D)
+B28_8afb: STA_ZP(0x3C)
+B28_8afd: LDX_ZP(0x3D)
+B28_8aff: ASL_A()
+B28_8b00: ROL_ZP(0x3D)
+B28_8b02: ADC_ZP(0x3C)
+B28_8b04: STA_ZP(0x3C)
+B28_8b06: TXA()
+B28_8b07: ADC_ZP(0x3D)
+B28_8b09: TAX()
+B28_8b0a: RTS()
+B28_8b0b: LDA_ABS(0x00e2)
+B28_8b0e: AND_IMM(0x07)
+B28_8b10: LSR_A()
+B28_8b11: PHP()
+B28_8b12: CLC()
+B28_8b13: ADC_ZP(0x3E)
+B28_8b15: TAY()
+B28_8b16: LDA_IDY(0x3C)
+B28_8b18: PLP()
+B28_8b19: CYCLE(2); if (SR_C) goto B28_8b1f;
+B28_8b1b: LSR_A()
+B28_8b1c: LSR_A()
+B28_8b1d: LSR_A()
+B28_8b1e: LSR_A()
+B28_8b1f: AND_IMM(0x0F)
+B28_8b21: RTS()
+B28_8b22: LDA_IMM(0x0B)
+B28_8b24: PHA()
+B28_8b25: CYCLE(6); SetStack(SP, 39); SetStack(SP - 1, 139); SP -= 2; goto B30_c50c;
+B28_8b28: LDY_IMM(0x00)
+B28_8b2a: LDA_IMM(0x00)
+B28_8b2c: STA_IDY(0x34)
+B28_8b2e: INY()
+B28_8b2f: STA_IDY(0x34)
+B28_8b31: PLA()
+B28_8b32: CLC()
+B28_8b33: ADC_IMM(0x01)
+B28_8b35: CMP_IMM(0x16)
+B28_8b37: CYCLE(2); if (!SR_Z) goto B28_8b24;
+B28_8b39: LDA_ABS(0x002b)
+B28_8b3c: SEC()
+B28_8b3d: SBC_IMM(0x03)
+B28_8b3f: ASL_A()
+B28_8b40: TAX()
+B28_8b41: LDA_ABS_X(0xbab2)
+B28_8b44: STA_ZP(0x38)
+B28_8b46: LDA_ABS_X(0xbab3)
+B28_8b49: STA_ZP(0x39)
+B28_8b4b: LDY_IMM(0x00)
+B28_8b4d: LDA_IDY(0x38)
+B28_8b4f: AND_IMM(0x0F)
+B28_8b51: STA_ABS(0x002e)
+B28_8b54: LDA_IDY(0x38)
+B28_8b56: LSR_A()
+B28_8b57: LSR_A()
+B28_8b58: LSR_A()
+B28_8b59: LSR_A()
+B28_8b5a: STA_ABS(0x002f)
+B28_8b5d: LDY_IMM(0x09)
+B28_8b5f: STY_ZP(0x3A)
+B28_8b61: LDY_ZP(0x3A)
+B28_8b63: LDA_IDY(0x38)
+B28_8b65: CMP_IMM(0x0F)
+B28_8b67: CYCLE(2); if (SR_Z) goto B28_8b7e;
+B28_8b69: CLC()
+B28_8b6a: ADC_IMM(0x0A)
+B28_8b6c: CYCLE(6); SetStack(SP, 110); SetStack(SP - 1, 139); SP -= 2; goto B30_c50c;
+B28_8b6f: LDY_ZP(0x3A)
+B28_8b71: INY()
+B28_8b72: LDA_IDY(0x38)
+B28_8b74: INY()
+B28_8b75: STY_ZP(0x3A)
+B28_8b77: LDY_IMM(0x00)
+B28_8b79: STA_IDY(0x34)
+B28_8b7b: CYCLE(3); PC = 0x8b61; goto B28_8b61;
+B28_8b7e: LDX_ABS(0x0446)
+B28_8b81: CPX_IMM(0x05)
+B28_8b83: CYCLE(2); if (SR_Z) goto B28_8b90;
+B28_8b85: LDX_IMM(0x00)
+B28_8b87: LDA_ABS(0x0384)
+B28_8b8a: CMP_IMM(0x26)
+B28_8b8c: CYCLE(2); if (!SR_Z) goto B28_8b90;
+B28_8b8e: INX()
+B28_8b8f: INX()
+B28_8b90: STX_ABS(0x0446)
+B28_8b93: RTS()
+B28_8c06: CPX_IMM(0x04)
+B28_8c08: CYCLE(2); if (SR_C) goto B28_8c26;
+B28_8c0a: LDY_ABS(0x044e)
+B28_8c0d: CYCLE(2); if (SR_Z) goto B28_8c13;
+B28_8c0f: CPX_IMM(0x02)
+B28_8c11: CYCLE(2); if (SR_C) goto B28_8c26;
+B28_8c13: CYCLE(6); SetStack(SP, 21); SetStack(SP - 1, 140); SP -= 2; goto B28_8dc9;
+B28_8c16: LDA_ABS(0x0430)
+B28_8c19: ASL_A()
+B28_8c1a: TAY()
+B28_8c1b: LDA_IDY(0x48)
+B28_8c1d: INY()
+B28_8c1e: CMP_IDY(0x48)
+B28_8c20: CYCLE(2); if (!SR_Z) goto B28_8c2c;
+B28_8c22: CMP_IMM(0x00)
+B28_8c24: CYCLE(2); if (!SR_Z) goto B28_8c2c;
+B28_8c26: LDA_IMM(0x00)
+B28_8c28: STA_ABS(0x0430)
+B28_8c2b: RTS()
+B28_8c2c: TAX()
+B28_8c2d: LDA_IDY(0x48)
+B28_8c2f: STA_ZP(0x49)
+B28_8c31: STX_ZP(0x48)
+B28_8c33: LDA_ABS(0x0430)
+B28_8c36: LDX_IMM(0x00)
+B28_8c38: STX_ABS(0x0430)
+B28_8c3b: CYCLE(6); SetStack(SP, 61); SetStack(SP - 1, 140); SP -= 2; goto B30_c509;
+B28_8c46: LDA_IMM(0x00)
+B28_8c48: STA_ZP(0x46)
+B28_8c4a: LDY_ZP(0x46)
+B28_8c4c: LDA_IDY(0x48)
+B28_8c4e: LSR_A()
+B28_8c4f: LSR_A()
+B28_8c50: STA_ZP(0x47)
+B28_8c52: LDA_IDY(0x48)
+B28_8c54: AND_IMM(0x03)
+B28_8c56: CMP_IMM(0x03)
+B28_8c58: CYCLE(2); if (SR_Z) goto B28_8c7e;
+B28_8c5a: CMP_ABS(0x044e)
+B28_8c5d: CYCLE(2); if (!SR_Z) goto B28_8c62;
+B28_8c5f: CYCLE(6); SetStack(SP, 97); SetStack(SP - 1, 140); SP -= 2; goto B28_8c7f;
+B28_8c62: INC_ZP(0x46)
+B28_8c64: LDA_ZP(0x47)
+B28_8c66: CMP_IMM(0x08)
+B28_8c68: CYCLE(2); if (SR_Z) goto B28_8c7a;
+B28_8c6a: CMP_IMM(0x09)
+B28_8c6c: CYCLE(2); if (SR_Z) goto B28_8c7a;
+B28_8c6e: CMP_IMM(0x0A)
+B28_8c70: CYCLE(2); if (SR_Z) goto B28_8c7a;
+B28_8c72: CMP_IMM(0x11)
+B28_8c74: CYCLE(2); if (SR_Z) goto B28_8c7a;
+B28_8c76: CMP_IMM(0x13)
+B28_8c78: CYCLE(2); if (!SR_Z) goto B28_8c4a;
+B28_8c7a: INC_ZP(0x46)
+B28_8c7c: CYCLE(2); if (!SR_Z) goto B28_8c4a;
+B28_8c7e: RTS()
+B28_8c7f: LDA_ZP(0x47)
+B28_8c81: SEC()
+B28_8c82: SBC_IMM(0x03)
+B28_8c84: CYCLE(6); SetStack(SP, 134); SetStack(SP - 1, 140); SP -= 2; goto B30_c509;
+B28_8cc7: LDA_ZP(0x47)
+B28_8cc9: CYCLE(3); PC = 0x8e11; goto B28_8e11;
+B28_8ccc: LDA_ABS(0x0446)
+B28_8ccf: CMP_IMM(0x05)
+B28_8cd1: CYCLE(2); if (SR_Z) goto B28_8cc7;
+B28_8cd3: RTS()
+B28_8cd4: LDY_ZP(0x46)
+B28_8cd6: INY()
+B28_8cd7: LDA_IDY(0x48)
+B28_8cd9: CMP_IMM(0xFF)
+B28_8cdb: CYCLE(2); if (SR_Z) goto B28_8cf7;
+B28_8cdd: STA_ZP(0x45)
+B28_8cdf: LDA_IMM(0x01)
+B28_8ce1: PHA()
+B28_8ce2: CYCLE(6); SetStack(SP, 228); SetStack(SP - 1, 140); SP -= 2; goto B30_c50c;
+B28_8ce5: LDY_IMM(0x00)
+B28_8ce7: LDA_IDY(0x34)
+B28_8ce9: CMP_ZP(0x45)
+B28_8ceb: CYCLE(2); if (SR_Z) goto B28_8cf6;
+B28_8ced: PLA()
+B28_8cee: CLC()
+B28_8cef: ADC_IMM(0x01)
+B28_8cf1: CMP_IMM(0x0B)
+B28_8cf3: CYCLE(2); if (!SR_Z) goto B28_8ce1;
+B28_8cf5: RTS()
+B28_8cf6: PLA()
+B28_8cf7: CYCLE(3); PC = 0x8cc7; goto B28_8cc7;
+B28_8cfa: LDY_ZP(0x46)
+B28_8cfc: INY()
+B28_8cfd: LDA_IDY(0x48)
+B28_8cff: CMP_IMM(0xFF)
+B28_8d01: CYCLE(2); if (!SR_Z) goto B28_8d06;
+B28_8d03: CYCLE(3); PC = 0x8cc7; goto B28_8cc7;
+B28_8d06: LDA_IMM(0x01)
+B28_8d08: PHA()
+B28_8d09: CYCLE(6); SetStack(SP, 11); SetStack(SP - 1, 141); SP -= 2; goto B30_c50c;
+B28_8d0c: LDY_IMM(0x00)
+B28_8d0e: LDA_IDY(0x34)
+B28_8d10: CMP_IMM(0x1C)
+B28_8d12: CYCLE(2); if (SR_Z) goto B28_8d1d;
+B28_8d14: PLA()
+B28_8d15: CLC()
+B28_8d16: ADC_IMM(0x01)
+B28_8d18: CMP_IMM(0x0B)
+B28_8d1a: CYCLE(2); if (!SR_Z) goto B28_8d08;
+B28_8d1c: RTS()
+B28_8d1d: PLA()
+B28_8d1e: CYCLE(3); PC = 0x8cd4; goto B28_8cd4;
+B28_8d21: BIT_ABS(0x0449)
+B28_8d24: CYCLE(2); if (!SR_N) goto B28_8d29;
+B28_8d26: CYCLE(3); PC = 0x8cd4; goto B28_8cd4;
+B28_8d29: RTS()
+B28_8d2a: LDA_ABS(0x0621)
+B28_8d2d: CMP_IMM(0x04)
+B28_8d2f: CYCLE(2); if (SR_Z) goto B28_8d3d;
+B28_8d31: LDA_ABS(0x002b)
+B28_8d34: CMP_IMM(0x21)
+B28_8d36: CYCLE(2); if (SR_C) goto B28_8d3e;
+B28_8d38: LDA_ABS(0x0448)
+B28_8d3b: CYCLE(2); if (!SR_Z) goto B28_8d3e;
+B28_8d3d: RTS()
+B28_8d3e: CYCLE(3); PC = 0x8cc7; goto B28_8cc7;
+B28_8d41: LDA_ABS(0x044e)
+B28_8d44: CYCLE(2); if (!SR_Z) goto B28_8d4d;
+B28_8d46: LDY_IMM(0x00)
+B28_8d48: LDA_IDY(0x48)
+B28_8d4a: CYCLE(3); PC = 0x8e11; goto B28_8e11;
+B28_8d4d: RTS()
+B28_8d4e: LDY_IMM(0x00)
+B28_8d50: LDA_IDY(0x48)
+B28_8d52: CYCLE(3); PC = 0x8e11; goto B28_8e11;
+B28_8d55: CYCLE(3); PC = 0x8de2; goto B28_8de2;
+B28_8d58: TAY()
+B28_8d59: CYCLE(2); if (!SR_Z) goto B28_8d5e;
+B28_8d5b: CYCLE(3); PC = 0x8da6; goto B28_8da6;
+B28_8d5e: CMP_IMM(0x0B)
+B28_8d60: CYCLE(2); if (!SR_Z) goto B28_8d65;
+B28_8d65: CPX_IMM(0x03)
+B28_8d67: CYCLE(2); if (SR_C) goto B28_8d88;
+B28_8d69: LDY_ABS(0x044e)
+B28_8d6c: CYCLE(2); if (SR_Z) goto B28_8d72;
+B28_8d6e: CPX_IMM(0x02)
+B28_8d70: CYCLE(2); if (!SR_Z) goto B28_8d88;
+B28_8d72: CYCLE(6); SetStack(SP, 116); SetStack(SP - 1, 141); SP -= 2; goto B28_8dc9;
+B28_8d75: LDA_ABS(0x0430)
+B28_8d78: CLC()
+B28_8d79: ADC_IMM(0x04)
+B28_8d7b: ASL_A()
+B28_8d7c: TAY()
+B28_8d7d: LDA_IDY(0x48)
+B28_8d7f: INY()
+B28_8d80: CMP_IDY(0x48)
+B28_8d82: CYCLE(2); if (!SR_Z) goto B28_8d8e;
+B28_8d84: CMP_IMM(0x00)
+B28_8d86: CYCLE(2); if (!SR_Z) goto B28_8d8e;
+B28_8d88: LDA_IMM(0x00)
+B28_8d8a: STA_ABS(0x0430)
+B28_8d8d: RTS()
+B28_8d8e: TAX()
+B28_8d8f: LDA_IDY(0x48)
+B28_8d91: STA_ZP(0x49)
+B28_8d93: STX_ZP(0x48)
+B28_8d95: LDA_ABS(0x0430)
+B28_8d98: LDX_IMM(0x00)
+B28_8d9a: STX_ABS(0x0430)
+B28_8d9d: CYCLE(6); SetStack(SP, 159); SetStack(SP - 1, 141); SP -= 2; goto B30_c509;
+B28_8da6: CPX_IMM(0x00)
+B28_8da8: CYCLE(2); if (!SR_Z) goto B28_8dba;
+B28_8daa: CYCLE(6); SetStack(SP, 172); SetStack(SP - 1, 141); SP -= 2; goto B28_8dc9;
+B28_8dad: LDY_IMM(0x00)
+B28_8daf: LDA_IDY(0x48)
+B28_8db1: INY()
+B28_8db2: CMP_IDY(0x48)
+B28_8db4: CYCLE(2); if (!SR_Z) goto B28_8dc0;
+B28_8db6: CMP_IMM(0x00)
+B28_8db8: CYCLE(2); if (!SR_Z) goto B28_8dc0;
+B28_8dba: LDA_IMM(0x00)
+B28_8dbc: STA_ABS(0x0430)
+B28_8dbf: RTS()
+B28_8dc0: STA_ABS(0x0431)
+B28_8dc3: LDA_IMM(0x01)
+B28_8dc5: STA_ABS(0x0430)
+B28_8dc8: RTS()
+B28_8dc9: STX_ABS(0x0430)
+B28_8dcc: STA_ZP(0x47)
+B28_8dce: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 141); SP -= 2; goto B30_c50c;
+B28_8dd1: LDY_IMM(0x00)
+B28_8dd3: LDA_IDY(0x34)
+B28_8dd5: ASL_A()
+B28_8dd6: TAX()
+B28_8dd7: LDA_ABS_X(0x8e1b)
+B28_8dda: STA_ZP(0x48)
+B28_8ddc: LDA_ABS_X(0x8e1c)
+B28_8ddf: STA_ZP(0x49)
+B28_8de1: RTS()
+B28_8de2: LDY_IMM(0x00)
+B28_8de4: LDA_IDY(0x48)
+B28_8de6: CYCLE(2); if (!SR_N) goto B28_8ded;
+B28_8de8: AND_IMM(0x7F)
+B28_8dea: CYCLE(3); PC = 0x8e11; goto B28_8e11;
+B28_8ded: INY()
+B28_8dee: LDA_IDY(0x48)
+B28_8df0: STA_ZP(0x45)
+B28_8df2: LDA_IMM(0x01)
+B28_8df4: PHA()
+B28_8df5: CYCLE(6); SetStack(SP, 247); SetStack(SP - 1, 141); SP -= 2; goto B30_c50c;
+B28_8df8: LDY_IMM(0x00)
+B28_8dfa: LDA_IDY(0x34)
+B28_8dfc: CMP_ZP(0x45)
+B28_8dfe: CYCLE(2); if (SR_Z) goto B28_8e09;
+B28_8e00: PLA()
+B28_8e01: CLC()
+B28_8e02: ADC_IMM(0x01)
+B28_8e04: CMP_IMM(0x0B)
+B28_8e06: CYCLE(2); if (!SR_Z) goto B28_8df4;
+B28_8e08: RTS()
+B28_8e09: PLA()
+B28_8e0a: LDY_IMM(0x00)
+B28_8e0c: LDA_IDY(0x48)
+B28_8e0e: CYCLE(3); PC = 0x8e11; goto B28_8e11;
+B28_8e11: LDX_ABS(0x0430)
+B28_8e14: STA_ABS_X(0x0431)
+B28_8e17: INC_ABS(0x0430)
+B28_8e1a: RTS()
+
+
+
+// ===== Bank 30 (prg_bank_30.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 30 =====
+// ; ROM: 0x03C010-0x03E00F
+// ; CPU: $C000-$DFFF
+// ; CDL: code=6350 data=1495 unaccessed=347
+B30_c400: TAY()
+B30_c401: LDA_IMM(0x08)
+B30_c403: STA_ZP(0x20)
+B30_c405: STA_ABS(0x2000)
+B30_c408: LDA_IMM(0x1E)
+B30_c40a: STA_ZP(0x21)
+B30_c40c: STA_ABS(0x2001)
+B30_c40f: LDA_IMM(0x00)
+B30_c411: STA_ZP(0x22)
+B30_c413: LDX_IMM(0x00)
+B30_c415: CYCLE(6); SetStack(SP, 23); SetStack(SP - 1, 196); SP -= 2; goto B30_c4b2;
+B30_c418: LDX_IMM(0x02)
+B30_c41a: CYCLE(6); SetStack(SP, 28); SetStack(SP - 1, 196); SP -= 2; goto B30_c4b9;
+B30_c41d: TYA()
+B30_c41e: PC = 0xa200; /* UNRES JMP $a200 */ goto LABEL_END;
+B30_c421: BIT_ZP(0x3B)
+B30_c423: CYCLE(2); if (SR_N) goto B30_c472;
+B30_c425: SEC()
+B30_c426: ROR_ZP(0x3B)
+B30_c428: STA_ZP(0x3C)
+B30_c42a: STX_ZP(0x3D)
+B30_c42c: STY_ZP(0x3E)
+B30_c42e: LDA_ZP(0x22)
+B30_c430: ORA_IMM(0x07)
+B30_c432: STA_ABS(0x8000)
+B30_c435: LDA_IMM(0x02)
+B30_c437: STA_ABS(0x8001)
+B30_c43a: CYCLE(6); SetStack(SP, 60); SetStack(SP - 1, 196); SP -= 2; PC = 0xa000; /* UNRES JSR $a000 */ goto LABEL_END;
+B30_c43d: LDA_ZP(0x22)
+B30_c43f: ORA_IMM(0x06)
+B30_c441: STA_ABS(0x8000)
+B30_c444: LDA_IMM(0x0C)
+B30_c446: STA_ABS(0x8001)
+B30_c449: CYCLE(6); SetStack(SP, 75); SetStack(SP - 1, 196); SP -= 2; goto B28_8000;
+B30_c44c: LDA_ZP(0x22)
+B30_c44e: ORA_IMM(0x06)
+B30_c450: STA_ABS(0x8000)
+B30_c453: LDA_ZP(0x24)
+B30_c455: STA_ABS(0x8001)
+B30_c458: LDA_ZP(0x22)
+B30_c45a: ORA_IMM(0x07)
+B30_c45c: STA_ABS(0x8000)
+B30_c45f: LDA_ZP(0x25)
+B30_c461: STA_ABS(0x8001)
+B30_c464: LDA_ZP(0x23)
+B30_c466: STA_ABS(0x8000)
+B30_c469: LDY_ZP(0x3E)
+B30_c46b: LDX_ZP(0x3D)
+B30_c46d: LDA_ZP(0x3C)
+B30_c46f: LSR_ZP(0x3B)
+B30_c471: RTI()
+B30_c472: PHA()
+B30_c473: LDA_ABS(0x2002)
+B30_c476: PLA()
+B30_c477: RTI()
+B30_c478: BIT_ZP(0x3B)
+B30_c47a: CYCLE(2); if (SR_N) goto B30_c4ae;
+B30_c47c: SEC()
+B30_c47d: ROR_ZP(0x3B)
+B30_c47f: STA_ZP(0x3C)
+B30_c481: STX_ZP(0x3D)
+B30_c483: STY_ZP(0x3E)
+B30_c485: LDA_ZP(0x22)
+B30_c487: ORA_IMM(0x07)
+B30_c489: STA_ABS(0x8000)
+B30_c48c: LDA_IMM(0x02)
+B30_c48e: STA_ABS(0x8001)
+B30_c491: CYCLE(6); SetStack(SP, 147); SetStack(SP - 1, 196); SP -= 2; PC = 0xa160; /* UNRES JSR $a160 */ goto LABEL_END;
+B30_c494: LDA_ZP(0x22)
+B30_c496: ORA_IMM(0x07)
+B30_c498: STA_ABS(0x8000)
+B30_c49b: LDA_ZP(0x25)
+B30_c49d: STA_ABS(0x8001)
+B30_c4a0: LDA_ZP(0x23)
+B30_c4a2: STA_ABS(0x8000)
+B30_c4a5: LDY_ZP(0x3E)
+B30_c4a7: LDX_ZP(0x3D)
+B30_c4a9: LDA_ZP(0x3C)
+B30_c4ab: LSR_ZP(0x3B)
+B30_c4ad: RTI()
+B30_c4b2: STX_ZP(0x24)
+B30_c4b4: LDA_IMM(0x06)
+B30_c4b6: CYCLE(3); PC = 0xc4bd; goto B30_c4bd;
+B30_c4b9: STX_ZP(0x25)
+B30_c4bb: LDA_IMM(0x07)
+B30_c4bd: ORA_ZP(0x22)
+B30_c4bf: STA_ZP(0x23)
+B30_c4c1: STA_ABS(0x8000)
+B30_c4c4: STX_ABS(0x8001)
+B30_c4c7: RTS()
+B30_c4c8: CMP_IMM(0x23)
+B30_c4ca: CYCLE(2); if (SR_C) goto B30_c4f3;
+B30_c4cc: TAY()
+B30_c4cd: CYCLE(2); if (SR_Z) goto B30_c4f3;
+B30_c4cf: STX_ZP(0xED)
+B30_c4d1: LDA_ZP(0x24)
+B30_c4d3: STA_ZP(0xEE)
+B30_c4d5: LDA_ZP(0x25)
+B30_c4d7: STA_ZP(0xEF)
+B30_c4d9: LDX_IMM(0x00)
+B30_c4db: CYCLE(6); SetStack(SP, 221); SetStack(SP - 1, 196); SP -= 2; goto B30_c4b2;
+B30_c4de: LDX_IMM(0x01)
+B30_c4e0: CYCLE(6); SetStack(SP, 226); SetStack(SP - 1, 196); SP -= 2; goto B30_c4b9;
+B30_c4e3: TYA()
+B30_c4e4: LDX_ZP(0xED)
+B30_c4e6: CYCLE(6); SetStack(SP, 232); SetStack(SP - 1, 196); SP -= 2; PC = 0xa00f; /* UNRES JSR $a00f */ goto LABEL_END;
+B30_c4e9: LDX_ZP(0xEF)
+B30_c4eb: CYCLE(6); SetStack(SP, 237); SetStack(SP - 1, 196); SP -= 2; goto B30_c4b9;
+B30_c4ee: LDX_ZP(0xEE)
+B30_c4f0: CYCLE(6); SetStack(SP, 242); SetStack(SP - 1, 196); SP -= 2; goto B30_c4b2;
+B30_c4f3: RTS()
+B30_c500: CYCLE(3); PC = 0xc76e; goto B30_c76e;
+B30_c503: CYCLE(3); PC = 0xc64e; goto B30_c64e;
+B30_c506: CYCLE(3); PC = 0xc821; goto B30_c821;
+B30_c509: CYCLE(3); PC = 0xcb99; goto B30_cb99;
+B30_c50c: CYCLE(3); PC = 0xcd7c; goto B30_cd7c;
+B30_c50f: CYCLE(3); PC = 0xcae7; goto B30_cae7;
+B30_c512: CYCLE(3); PC = 0xcaf7; goto B30_caf7;
+B30_c515: CYCLE(3); PC = 0xcb0f; goto B30_cb0f;
+B30_c51b: CYCLE(3); PC = 0xcb02; goto B30_cb02;
+B30_c51e: CYCLE(3); PC = 0xcd3c; goto B30_cd3c;
+B30_c521: CYCLE(3); PC = 0xcd0d; goto B30_cd0d;
+B30_c524: CYCLE(3); PC = 0xcbc2; goto B30_cbc2;
+B30_c527: CYCLE(3); PC = 0xce08; goto B30_ce08;
+B30_c52a: CYCLE(3); PC = 0xef7f; goto B31_ef7f;
+B30_c52d: CYCLE(3); PC = 0xcc46; goto B30_cc46;
+B30_c530: CYCLE(3); PC = 0xcc02; goto B30_cc02;
+B30_c533: CYCLE(3); PC = 0xccd2; goto B30_ccd2;
+B30_c536: CYCLE(3); PC = 0xcdc9; goto B30_cdc9;
+B30_c539: CYCLE(3); PC = 0xcde2; goto B30_cde2;
+B30_c53c: CYCLE(3); PC = 0xf30f; goto B31_f30f;
+B30_c542: CYCLE(3); PC = 0xce4d; goto B30_ce4d;
+B30_c545: CYCLE(3); PC = 0xce4a; goto B30_ce4a;
+B30_c548: CYCLE(3); PC = 0xce99; goto B30_ce99;
+B30_c54b: CYCLE(3); PC = 0xce6e; goto B30_ce6e;
+B30_c54e: CYCLE(3); PC = 0xcbb0; goto B30_cbb0;
+B30_c551: CYCLE(3); PC = 0xcd77; goto B30_cd77;
+B30_c554: CYCLE(3); PC = 0xcefe; goto B30_cefe;
+B30_c557: CYCLE(3); PC = 0xc6be; goto B30_c6be;
+B30_c55a: CYCLE(3); PC = 0xcf4f; goto B30_cf4f;
+B30_c55d: CYCLE(3); PC = 0xcbf1; goto B30_cbf1;
+B30_c560: CYCLE(3); PC = 0xcf72; goto B30_cf72;
+B30_c563: CYCLE(3); PC = 0xcf8f; goto B30_cf8f;
+B30_c566: CYCLE(3); PC = 0xf013; goto B31_f013;
+B30_c569: CYCLE(3); PC = 0xcb35; goto B30_cb35;
+B30_c56c: CYCLE(3); PC = 0xd022; goto B30_d022;
+B30_c56f: CYCLE(3); PC = 0xd093; goto B30_d093;
+B30_c572: CYCLE(3); PC = 0xdb62; goto B30_db62;
+B30_c575: CYCLE(3); PC = 0xe233; goto B31_e233;
+B30_c578: CYCLE(3); PC = 0xd0d1; goto B30_d0d1;
+B30_c57b: CYCLE(3); PC = 0xc6be; goto B30_c6be;
+B30_c600: CYCLE(3); PC = 0xd565; goto B30_d565;
+B30_c603: CYCLE(3); PC = 0xd193; goto B30_d193;
+B30_c606: CYCLE(3); PC = 0xe074; goto B31_e074;
+B30_c609: CYCLE(3); PC = 0xe4d7; goto B31_e4d7;
+B30_c60c: CYCLE(3); PC = 0xe73e; goto B31_e73e;
+B30_c60f: CYCLE(3); PC = 0xe0df; goto B31_e0df;
+B30_c612: CYCLE(3); PC = 0xde52; goto B30_de52;
+B30_c615: CYCLE(3); PC = 0xde5e; goto B30_de5e;
+B30_c618: CYCLE(3); PC = 0xdcfd; goto B30_dcfd;
+B30_c61b: CYCLE(3); PC = 0xdd02; goto B30_dd02;
+B30_c61e: CYCLE(3); PC = 0xe059; goto B31_e059;
+B30_c621: CYCLE(3); PC = 0xdfd9; goto B30_dfd9;
+B30_c624: CYCLE(3); PC = 0xdcdf; goto B30_dcdf;
+B30_c627: CYCLE(3); PC = 0xe54c; goto B31_e54c;
+B30_c62a: CYCLE(3); PC = 0xe596; goto B31_e596;
+B30_c62d: CYCLE(3); PC = 0xe688; goto B31_e688;
+B30_c630: CYCLE(3); PC = 0xe678; goto B31_e678;
+B30_c633: CYCLE(3); PC = 0xddfd; goto B30_ddfd;
+B30_c636: CYCLE(3); PC = 0xdaaa; goto B30_daaa;
+B30_c63c: CYCLE(3); PC = 0xde6c; goto B30_de6c;
+B30_c63f: CYCLE(3); PC = 0xd8f7; goto B30_d8f7;
+B30_c642: CYCLE(3); PC = 0xd852; goto B30_d852;
+B30_c645: CYCLE(3); PC = 0xe6ec; goto B31_e6ec;
+B30_c648: CYCLE(3); PC = 0xd7e8; goto B30_d7e8;
+B30_c64e: LDA_IMM(0x08)
+B30_c650: STA_ABS(0x2000)
+B30_c653: SEI()
+B30_c654: CLD()
+B30_c655: LDX_IMM(0xFF)
+B30_c657: TXS()
+B30_c658: LDA_ABS(0x2002)
+B30_c65b: CYCLE(2); if (!SR_N) goto B30_c658;
+B30_c65d: LDA_ABS(0x2002)
+B30_c660: CYCLE(2); if (!SR_N) goto B30_c65d;
+B30_c662: LDA_IMM(0xC0)
+B30_c664: STA_ABS(0xa001)
+B30_c667: LDA_IMM(0x00)
+B30_c669: STA_ZP(0x00)
+B30_c66b: STA_ZP(0x01)
+B30_c66d: TAY()
+B30_c66e: LDX_IMM(0x08)
+B30_c670: STA_IDY(0x00)
+B30_c672: INY()
+B30_c673: CYCLE(2); if (!SR_Z) goto B30_c670;
+B30_c675: INC_ZP(0x01)
+B30_c677: DEX()
+B30_c678: CYCLE(2); if (!SR_Z) goto B30_c670;
+B30_c67a: LDA_IMM(0x08)
+B30_c67c: STA_ZP(0x20)
+B30_c67e: LDA_IMM(0x06)
+B30_c680: STA_ZP(0x21)
+B30_c682: STA_ABS(0x2001)
+B30_c685: LDA_IMM(0x00)
+B30_c687: STA_ABS(0x4010)
+B30_c68a: LDA_IMM(0x40)
+B30_c68c: STA_ABS(0x4017)
+B30_c68f: LDA_ABS(0x2002)
+B30_c692: LDA_IMM(0x10)
+B30_c694: TAX()
+B30_c695: STA_ABS(0x2006)
+B30_c698: STA_ABS(0x2006)
+B30_c69b: EOR_IMM(0x00)
+B30_c69d: DEX()
+B30_c69e: CYCLE(2); if (!SR_Z) goto B30_c695;
+B30_c6a0: LDA_IMM(0x00)
+B30_c6a2: STA_ABS(0x0022)
+B30_c6a5: CYCLE(6); SetStack(SP, 167); SetStack(SP - 1, 198); SP -= 2; goto B30_cb35;
+B30_c6a8: CYCLE(6); SetStack(SP, 170); SetStack(SP - 1, 198); SP -= 2; goto B30_cb8b;
+B30_c6ab: LDA_IMM(0x00)
+B30_c6ad: STA_ABS(0x0469)
+B30_c6b0: LDA_IMM(0x00)
+B30_c6b2: STA_ABS(0x0469)
+B30_c6b5: STA_ABS(0xe000)
+B30_c6b8: CLI()
+B30_c6b9: LDA_IMM(0x00)
+B30_c6bb: CYCLE(3); PC = 0xcefe; goto B30_cefe;
+B30_c6be: LDX_IMM(0xE0)
+B30_c6c0: TXS()
+B30_c6c1: LDA_IMM(0x00)
+B30_c6c3: STA_ZP(0x01)
+B30_c6c5: STA_ZP(0x02)
+B30_c6c7: LDA_IMM(0x00)
+B30_c6c9: STA_ZP(0x05)
+B30_c6cb: STA_ZP(0x06)
+B30_c6cd: LDA_IMM(0x00)
+B30_c6cf: STA_ZP(0x09)
+B30_c6d1: STA_ZP(0x0A)
+B30_c6d3: LDA_IMM(0x00)
+B30_c6d5: STA_ZP(0x0D)
+B30_c6d7: STA_ZP(0x0E)
+B30_c6d9: LDA_IMM(0x00)
+B30_c6db: STA_ZP(0x11)
+B30_c6dd: STA_ZP(0x12)
+B30_c6df: LDA_IMM(0x00)
+B30_c6e1: STA_ZP(0x15)
+B30_c6e3: STA_ZP(0x16)
+B30_c6e5: CYCLE(6); SetStack(SP, 231); SetStack(SP - 1, 198); SP -= 2; goto B30_cf1f;
+B30_c6e8: LDA_IMM(0x00)
+B30_c6ea: STA_ZP(0x1B)
+B30_c6ec: STA_ABS(0x063f)
+B30_c6ef: LDA_IMM(0x08)
+B30_c6f1: STA_ZP(0x20)
+B30_c6f3: LDA_IMM(0x1E)
+B30_c6f5: STA_ZP(0x21)
+B30_c6f7: LDA_IMM(0x20)
+B30_c6f9: STA_ABS(0x046c)
+B30_c6fc: LDA_IMM(0x00)
+B30_c6fe: STA_ABS(0x046d)
+B30_c701: LDA_IMM(0x3F)
+B30_c703: STA_ABS(0x046e)
+B30_c706: LDX_IMM(0x00)
+B30_c708: LDA_IMM(0x12)
+B30_c70a: CYCLE(6); SetStack(SP, 12); SetStack(SP - 1, 199); SP -= 2; goto B30_cc02;
+B30_c70d: LDX_IMM(0x10)
+B30_c70f: LDA_IMM(0x12)
+B30_c711: CYCLE(6); SetStack(SP, 19); SetStack(SP - 1, 199); SP -= 2; goto B30_cc02;
+B30_c714: CYCLE(6); SetStack(SP, 22); SetStack(SP - 1, 199); SP -= 2; goto B30_ccd2;
+B30_c71a: LDX_IMM(0x07)
+B30_c71c: LDA_ABS_X(0xc766)
+B30_c71f: STA_ABS_X(0x05eb)
+B30_c722: DEX()
+B30_c723: CYCLE(2); if (!SR_N) goto B30_c71c;
+B30_c725: LDX_IMM(0x01)
+B30_c727: LDA_IMM(0x28)
+B30_c729: STA_ZP_X(0x01)
+B30_c72b: LDA_IMM(0x00)
+B30_c72d: STA_ZP_X(0x02)
+B30_c72f: LDA_IMM(0xCA)
+B30_c731: LDY_IMM(0x21)
+B30_c733: CYCLE(6); SetStack(SP, 53); SetStack(SP - 1, 199); SP -= 2; goto B30_cae7;
+B30_c736: LDX_IMM(0x05)
+B30_c738: LDA_IMM(0x50)
+B30_c73a: STA_ZP_X(0x01)
+B30_c73c: LDA_IMM(0x00)
+B30_c73e: STA_ZP_X(0x02)
+B30_c740: LDA_IMM(0xD1)
+B30_c742: LDY_IMM(0x1D)
+B30_c744: CYCLE(6); SetStack(SP, 70); SetStack(SP - 1, 199); SP -= 2; goto B30_cae7;
+B30_c747: LDX_IMM(0x09)
+B30_c749: LDA_IMM(0x78)
+B30_c74b: STA_ZP_X(0x01)
+B30_c74d: LDA_IMM(0x00)
+B30_c74f: STA_ZP_X(0x02)
+B30_c751: LDA_IMM(0xEB)
+B30_c753: LDY_IMM(0x85)
+B30_c755: CYCLE(6); SetStack(SP, 87); SetStack(SP - 1, 199); SP -= 2; goto B30_cae7;
+B30_c758: LDA_ZP(0x20)
+B30_c75a: ORA_IMM(0x80)
+B30_c75c: STA_ZP(0x20)
+B30_c75e: STA_ZP(0x19)
+B30_c760: STA_ABS(0x2000)
+B30_c763: CYCLE(3); PC = 0xca97; goto B30_ca97;
+B30_c76e: BIT_ZP(0x1B)
+B30_c770: CYCLE(2); if (!SR_V) goto B30_c775;
+B30_c772: CYCLE(3); PC = 0xc421; goto B30_c421;
+B30_c775: PHA()
+B30_c776: TXA()
+B30_c777: PHA()
+B30_c778: TYA()
+B30_c779: PHA()
+B30_c77a: LDA_ZP(0x20)
+B30_c77c: AND_IMM(0x7F)
+B30_c77e: STA_ABS(0x2000)
+B30_c781: STA_ZP(0x20)
+B30_c783: TSX()
+B30_c784: TXA()
+B30_c785: LDX_IMM(0xFF)
+B30_c787: TXS()
+B30_c788: PHA()
+B30_c789: LDA_IMM(0x00)
+B30_c78b: STA_ABS(0x2003)
+B30_c78e: LDA_IMM(0x02)
+B30_c790: STA_ABS(0x4014)
+B30_c793: LDA_ABS(0x046b)
+B30_c796: STA_ABS(0xa000)
+B30_c799: CYCLE(6); SetStack(SP, 155); SetStack(SP - 1, 199); SP -= 2; goto B30_c8fb;
+B30_c79c: BIT_ABS(0x2002)
+B30_c79f: LDA_IMM(0x3F)
+B30_c7a1: STA_ABS(0x2006)
+B30_c7a4: LDA_IMM(0x00)
+B30_c7a6: STA_ABS(0x2006)
+B30_c7a9: STA_ABS(0x2006)
+B30_c7ac: STA_ABS(0x2006)
+B30_c7af: LDA_ZP(0x20)
+B30_c7b1: STA_ABS(0x2000)
+B30_c7b4: BIT_ABS(0x2002)
+B30_c7b7: LDA_ZP(0x4A)
+B30_c7b9: CLC()
+B30_c7ba: ADC_ABS(0x0538)
+B30_c7bd: STA_ABS(0x2005)
+B30_c7c0: LDA_ZP(0x4B)
+B30_c7c2: STA_ABS(0x2005)
+B30_c7c5: LDA_ZP(0x21)
+B30_c7c7: STA_ABS(0x2001)
+B30_c7ca: CYCLE(6); SetStack(SP, 204); SetStack(SP - 1, 199); SP -= 2; goto B30_c9e9;
+B30_c7cd: LDX_ZP(0x8E)
+B30_c7cf: STX_ZP(0x8C)
+B30_c7d1: STX_ZP(0x8D)
+B30_c7d3: LDA_ABS_X(0xc8f7)
+B30_c7d6: AND_IMM(0x7F)
+B30_c7d8: STA_ABS(0xc000)
+B30_c7db: STA_ABS(0xc001)
+B30_c7de: LDX_ABS(0x0469)
+B30_c7e1: STA_ABS_X(0xe000)
+B30_c7e4: CYCLE(6); SetStack(SP, 230); SetStack(SP - 1, 199); SP -= 2; goto B30_c9c5;
+B30_c7e7: CYCLE(6); SetStack(SP, 233); SetStack(SP - 1, 199); SP -= 2; goto B30_c982;
+B30_c7ea: LDA_ZP(0x1B)
+B30_c7ec: ORA_IMM(0x80)
+B30_c7ee: STA_ZP(0x1B)
+B30_c7f0: LDA_ZP(0x22)
+B30_c7f2: ORA_IMM(0x07)
+B30_c7f4: STA_ABS(0x8000)
+B30_c7f7: LDA_ZP(0x25)
+B30_c7f9: STA_ABS(0x8001)
+B30_c7fc: LDA_ZP(0x22)
+B30_c7fe: ORA_IMM(0x06)
+B30_c800: STA_ABS(0x8000)
+B30_c803: LDA_ZP(0x24)
+B30_c805: STA_ABS(0x8001)
+B30_c808: PLA()
+B30_c809: TAX()
+B30_c80a: TXS()
+B30_c80b: LDA_ZP(0x23)
+B30_c80d: STA_ABS(0x8000)
+B30_c810: LDA_ZP(0x20)
+B30_c812: ORA_IMM(0x80)
+B30_c814: STA_ZP(0x20)
+B30_c816: STA_ZP(0x19)
+B30_c818: STA_ABS(0x2000)
+B30_c81b: PLA()
+B30_c81c: TAY()
+B30_c81d: PLA()
+B30_c81e: TAX()
+B30_c81f: PLA()
+B30_c820: RTI()
+B30_c821: BIT_ZP(0x1B)
+B30_c823: CYCLE(2); if (!SR_V) goto B30_c828;
+B30_c825: CYCLE(3); PC = 0xc478; goto B30_c478;
+B30_c828: LSR_ABS(0xe000)
+B30_c82b: LSR_ABS(0xe001)
+B30_c82e: LSR_ZP(0x19)
+B30_c830: STA_ZP(0x80)
+B30_c832: STX_ZP(0x81)
+B30_c834: STY_ZP(0x82)
+B30_c836: TSX()
+B30_c837: TXA()
+B30_c838: LDX_IMM(0xFF)
+B30_c83a: TXS()
+B30_c83b: PHA()
+B30_c83c: CYCLE(6); SetStack(SP, 62); SetStack(SP - 1, 200); SP -= 2; goto B30_c852;
+B30_c83f: PLA()
+B30_c840: TAX()
+B30_c841: TXS()
+B30_c842: LDY_ZP(0x82)
+B30_c844: LDX_ZP(0x81)
+B30_c846: LDA_ABS(0x0023)
+B30_c849: STA_ABS(0x8000)
+B30_c84c: LDA_ZP(0x80)
+B30_c84e: SEC()
+B30_c84f: ROR_ZP(0x19)
+B30_c851: RTI()
+B30_c852: LDX_ZP(0x8D)
+B30_c854: LDA_ABS_X(0xc8f7)
+B30_c857: CYCLE(2); if (SR_N) goto B30_c876;
+B30_c859: LDY_IMM(0x02)
+B30_c85b: DEY()
+B30_c85c: CYCLE(2); if (!SR_Z) goto B30_c85b;
+B30_c85e: INX()
+B30_c85f: STX_ZP(0x8D)
+B30_c861: LDA_ABS_X(0xc8f7)
+B30_c864: AND_IMM(0x7F)
+B30_c866: STA_ABS(0xc000)
+B30_c869: STA_ABS(0xc001)
+B30_c86c: BIT_ABS(0x2002)
+B30_c86f: LDA_ABS(0x0643)
+B30_c872: STA_ABS(0x2005)
+B30_c875: RTS()
+B30_c876: LDX_IMM(0x07)
+B30_c878: DEX()
+B30_c879: CYCLE(2); if (!SR_Z) goto B30_c878;
+B30_c87b: LDA_ABS(0x2002)
+B30_c87e: LDA_IMM(0x22)
+B30_c880: STA_ABS(0x2006)
+B30_c883: LDA_IMM(0x00)
+B30_c885: STA_ABS(0x2006)
+B30_c888: LDA_ZP(0x20)
+B30_c88a: AND_IMM(0xFE)
+B30_c88c: STA_ABS(0x2000)
+B30_c88f: BIT_ABS(0x2002)
+B30_c892: LDA_IMM(0x00)
+B30_c894: STA_ABS(0x2005)
+B30_c897: STA_ABS(0x2005)
+B30_c89a: LDA_ABS(0x0022)
+B30_c89d: STA_ABS(0x8000)
+B30_c8a0: LDA_IMM(0x00)
+B30_c8a2: STA_ABS(0x8001)
+B30_c8a5: LDA_ABS(0x0022)
+B30_c8a8: ORA_IMM(0x01)
+B30_c8aa: STA_ABS(0x8000)
+B30_c8ad: LDA_ZP(0x87)
+B30_c8af: STA_ABS(0x8001)
+B30_c8b2: LDA_ABS(0x0022)
+B30_c8b5: ORA_IMM(0x02)
+B30_c8b7: STA_ABS(0x8000)
+B30_c8ba: LDA_IMM(0x1F)
+B30_c8bc: STA_ABS(0x8001)
+B30_c8bf: LDA_ABS(0x0022)
+B30_c8c2: ORA_IMM(0x03)
+B30_c8c4: STA_ABS(0x8000)
+B30_c8c7: LDA_IMM(0x2E)
+B30_c8c9: STA_ABS(0x8001)
+B30_c8cc: LSR_ABS(0xe000)
+B30_c8cf: LDA_ZP(0x22)
+B30_c8d1: ORA_IMM(0x06)
+B30_c8d3: STA_ABS(0x8000)
+B30_c8d6: LDA_IMM(0x0C)
+B30_c8d8: STA_ABS(0x8001)
+B30_c8db: CYCLE(6); SetStack(SP, 221); SetStack(SP - 1, 200); SP -= 2; goto B28_8000;
+B30_c8de: LDA_ZP(0x22)
+B30_c8e0: ORA_IMM(0x07)
+B30_c8e2: STA_ABS(0x8000)
+B30_c8e5: LDA_ZP(0x25)
+B30_c8e7: STA_ABS(0x8001)
+B30_c8ea: LDA_ZP(0x22)
+B30_c8ec: ORA_IMM(0x06)
+B30_c8ee: STA_ABS(0x8000)
+B30_c8f1: LDA_ZP(0x24)
+B30_c8f3: STA_ABS(0x8001)
+B30_c8f6: RTS()
+B30_c8fb: LDA_ABS(0x0498)
+B30_c8fe: CYCLE(2); if (SR_Z) goto B30_c951;
+B30_c900: DEC_ABS(0x0498)
+B30_c903: SEC()
+B30_c904: SBC_IMM(0x01)
+B30_c906: ASL_A()
+B30_c907: ADC_ABS(0x0498)
+B30_c90a: TAX()
+B30_c90b: LDA_ABS_X(0x0499)
+B30_c90e: TAY()
+B30_c90f: LDA_ABS_X(0x049a)
+B30_c912: STA_ZP(0x77)
+B30_c914: LDA_ABS_X(0x049b)
+B30_c917: STA_ZP(0x78)
+B30_c919: CYCLE(2); if (!SR_N) goto B30_c92c;
+B30_c91b: LDX_IMM(0x06)
+B30_c91d: AND_IMM(0x20)
+B30_c91f: CYCLE(2); if (SR_Z) goto B30_c922;
+B30_c921: INX()
+B30_c922: TXA()
+B30_c923: ORA_ABS(0x0022)
+B30_c926: STA_ABS(0x8000)
+B30_c929: STY_ABS(0x8001)
+B30_c92c: LDY_IMM(0x00)
+B30_c92e: LDA_IDY(0x77)
+B30_c930: CYCLE(2); if (SR_Z) goto B30_c950;
+B30_c932: TAX()
+B30_c933: INY()
+B30_c934: LDA_IDY(0x77)
+B30_c936: PHA()
+B30_c937: INY()
+B30_c938: LDA_IDY(0x77)
+B30_c93a: BIT_ABS(0x2002)
+B30_c93d: STA_ABS(0x2006)
+B30_c940: PLA()
+B30_c941: STA_ABS(0x2006)
+B30_c944: INY()
+B30_c945: LDA_IDY(0x77)
+B30_c947: STA_ABS(0x2007)
+B30_c94a: INY()
+B30_c94b: DEX()
+B30_c94c: CYCLE(2); if (!SR_Z) goto B30_c945;
+B30_c94e: CYCLE(2); if (SR_Z) goto B30_c92e;
+B30_c950: RTS()
+B30_c951: LDA_ABS(0x0515)
+B30_c954: CYCLE(2); if (!SR_N) goto B30_c981;
+B30_c956: LDX_IMM(0x00)
+B30_c958: STX_ABS(0x0515)
+B30_c95b: LDA_ABS_X(0x04a5)
+B30_c95e: CYCLE(2); if (SR_Z) goto B30_c981;
+B30_c960: TAY()
+B30_c961: INX()
+B30_c962: LDA_ABS_X(0x04a5)
+B30_c965: PHA()
+B30_c966: INX()
+B30_c967: LDA_ABS_X(0x04a5)
+B30_c96a: BIT_ABS(0x2002)
+B30_c96d: STA_ABS(0x2006)
+B30_c970: PLA()
+B30_c971: STA_ABS(0x2006)
+B30_c974: INX()
+B30_c975: LDA_ABS_X(0x04a5)
+B30_c978: STA_ABS(0x2007)
+B30_c97b: INX()
+B30_c97c: DEY()
+B30_c97d: CYCLE(2); if (!SR_Z) goto B30_c975;
+B30_c97f: CYCLE(2); if (SR_Z) goto B30_c95b;
+B30_c981: RTS()
+B30_c982: LDX_IMM(0x00)
+B30_c984: LDA_ABS(0x001c)
+B30_c987: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 201); SP -= 2; goto B30_c98b;
+B30_c98a: RTS()
+B30_c98b: STA_ZP(0x84)
+B30_c98d: LDY_IMM(0x01)
+B30_c98f: STY_ABS(0x4016)
+B30_c992: DEY()
+B30_c993: STY_ABS(0x4016)
+B30_c996: LDA_IMM(0x04)
+B30_c998: STA_ZP(0x85)
+B30_c99a: LDY_IMM(0x08)
+B30_c99c: LDA_ABS_X(0x4016)
+B30_c99f: LSR_A()
+B30_c9a0: ROL_ZP(0x83)
+B30_c9a2: AND_IMM(0x01)
+B30_c9a4: ORA_ZP(0x83)
+B30_c9a6: STA_ZP(0x83)
+B30_c9a8: DEY()
+B30_c9a9: CYCLE(2); if (!SR_Z) goto B30_c99c;
+B30_c9ab: CMP_ZP(0x84)
+B30_c9ad: CYCLE(2); if (SR_Z) goto B30_c9b5;
+B30_c9af: DEC_ZP(0x85)
+B30_c9b1: CYCLE(2); if (!SR_Z) goto B30_c98b;
+B30_c9b5: LDA_ABS_X(0x001c)
+B30_c9b8: EOR_ZP(0x83)
+B30_c9ba: AND_ZP(0x83)
+B30_c9bc: STA_ABS_X(0x001e)
+B30_c9bf: LDA_ZP(0x83)
+B30_c9c1: STA_ABS_X(0x001c)
+B30_c9c4: RTS()
+B30_c9c5: LDX_ABS(0x00e1)
+B30_c9c8: LDA_ABS_X(0x0300)
+B30_c9cb: ADC_ABS_X(0x0700)
+B30_c9ce: ROL_ABS(0x00e2)
+B30_c9d1: EOR_IMM(0xFF)
+B30_c9d3: ROL_ABS(0x00e2)
+B30_c9d6: ADC_ABS(0x00e2)
+B30_c9d9: STA_ABS(0x00e2)
+B30_c9dc: SBC_ABS_X(0x0780)
+B30_c9df: ADC_ABS(0x00e1)
+B30_c9e2: STA_ABS(0x00e3)
+B30_c9e5: INC_ABS(0x00e1)
+B30_c9e8: RTS()
+B30_c9e9: LDX_IMM(0x00)
+B30_c9eb: BIT_ZP(0x22)
+B30_c9ed: CYCLE(2); if (!SR_N) goto B30_c9f1;
+B30_c9f1: LDA_ZP(0x22)
+B30_c9f3: STA_ABS(0x8000)
+B30_c9f6: LDA_ABS_X(0x0490)
+B30_c9f9: STA_ABS(0x8001)
+B30_c9fc: LDA_ZP(0x22)
+B30_c9fe: ORA_IMM(0x01)
+B30_ca00: STA_ABS(0x8000)
+B30_ca03: LDA_ABS_X(0x0491)
+B30_ca06: STA_ABS(0x8001)
+B30_ca09: TXA()
+B30_ca0a: EOR_IMM(0x04)
+B30_ca0c: TAX()
+B30_ca0d: LDY_IMM(0x02)
+B30_ca0f: TYA()
+B30_ca10: ORA_ZP(0x22)
+B30_ca12: STA_ABS(0x8000)
+B30_ca15: LDA_ABS_X(0x0490)
+B30_ca18: STA_ABS(0x8001)
+B30_ca1b: INX()
+B30_ca1c: INY()
+B30_ca1d: CPY_IMM(0x06)
+B30_ca1f: CYCLE(2); if (!SR_Z) goto B30_ca0f;
+B30_ca21: RTS()
+B30_ca22: LDA_ZP(0x21)
+B30_ca24: ORA_IMM(0x1E)
+B30_ca26: STA_ZP(0x21)
+B30_ca28: LDA_IMM(0x00)
+B30_ca2a: STA_ABS(0x0490)
+B30_ca2d: LDA_IMM(0x02)
+B30_ca2f: STA_ABS(0x0491)
+B30_ca32: STA_ABS(0x0087)
+B30_ca35: LDA_IMM(0x00)
+B30_ca37: STA_ZP(0x8E)
+B30_ca39: LDA_IMM(0x01)
+B30_ca3b: STA_ABS(0x0469)
+B30_ca3e: LDA_IMM(0x01)
+B30_ca40: STA_ABS(0x0543)
+B30_ca43: LDA_IMM(0x23)
+B30_ca45: STA_ABS(0x0544)
+B30_ca48: LDA_IMM(0x45)
+B30_ca4a: STA_ABS(0x0545)
+B30_ca4d: LDA_IMM(0x01)
+B30_ca4f: CYCLE(6); SetStack(SP, 81); SetStack(SP - 1, 202); SP -= 2; goto B30_cb0f;
+B30_ca52: CYCLE(6); SetStack(SP, 84); SetStack(SP - 1, 202); SP -= 2; goto B31_ee9f;
+B30_ca55: CYCLE(6); SetStack(SP, 87); SetStack(SP - 1, 202); SP -= 2; goto B31_e3ca;
+B30_ca58: CYCLE(3); PC = 0xca4d; goto B30_ca4d;
+B30_ca97: LDX_IMM(0x01)
+B30_ca99: LDA_ZP_X(0x00)
+B30_ca9b: CYCLE(2); if (SR_Z) goto B30_caa5;
+B30_ca9d: CMP_IMM(0xFF)
+B30_ca9f: CYCLE(2); if (SR_Z) goto B30_cad4;
+B30_caa1: DEC_ZP_X(0x00)
+B30_caa3: CYCLE(2); if (SR_Z) goto B30_cab9;
+B30_caa5: TXA()
+B30_caa6: CLC()
+B30_caa7: ADC_IMM(0x04)
+B30_caa9: TAX()
+B30_caaa: CPX_IMM(0x19)
+B30_caac: CYCLE(2); if (!SR_Z) goto B30_ca99;
+B30_caae: LDA_ZP(0x1B)
+B30_cab0: CYCLE(2); if (!SR_N) goto B30_caae;
+B30_cab2: AND_IMM(0x7F)
+B30_cab4: STA_ZP(0x1B)
+B30_cab6: CYCLE(3); PC = 0xca97; goto B30_ca97;
+B30_cab9: LSR_ZP(0x19)
+B30_cabb: STX_ZP(0x00)
+B30_cabd: LDA_ZP_X(0x02)
+B30_cabf: STA_ZP(0x24)
+B30_cac1: LDA_ZP_X(0x03)
+B30_cac3: STA_ZP(0x25)
+B30_cac5: CYCLE(6); SetStack(SP, 199); SetStack(SP - 1, 202); SP -= 2; goto B30_ce2d;
+B30_cac8: LDA_ZP_X(0x01)
+B30_caca: TAX()
+B30_cacb: TXS()
+B30_cacc: SEC()
+B30_cacd: ROR_ZP(0x19)
+B30_cacf: PLA()
+B30_cad0: TAY()
+B30_cad1: PLA()
+B30_cad2: TAX()
+B30_cad3: RTS()
+B30_cad4: STX_ZP(0x00)
+B30_cad6: LDA_ZP_X(0x02)
+B30_cad8: STA_ZP(0x24)
+B30_cada: CLC()
+B30_cadb: ADC_IMM(0x01)
+B30_cadd: STA_ZP(0x25)
+B30_cadf: CYCLE(6); SetStack(SP, 225); SetStack(SP - 1, 202); SP -= 2; goto B30_ce2d;
+B30_cae2: LDA_ZP_X(0x01)
+B30_cae4: TAX()
+B30_cae5: TXS()
+B30_cae6: RTS()
+B30_cae7: PHA()
+B30_cae8: TYA()
+B30_cae9: LDY_ZP_X(0x01)
+B30_caeb: STA_ABS_Y(0x0101)
+B30_caee: PLA()
+B30_caef: STA_ABS_Y(0x0102)
+B30_caf2: LDA_IMM(0xFF)
+B30_caf4: STA_ZP_X(0x00)
+B30_caf6: RTS()
+B30_caf7: LDA_IMM(0x00)
+B30_caf9: LDX_ZP(0x00)
+B30_cafb: STA_ZP_X(0x00)
+B30_cafd: STA_ZP_X(0x01)
+B30_caff: CYCLE(3); PC = 0xcaa5; goto B30_caa5;
+B30_cb02: LDA_ZP_X(0x01)
+B30_cb04: CYCLE(2); if (SR_Z) goto B30_cb0c;
+B30_cb06: LDA_ZP_X(0x00)
+B30_cb08: CYCLE(2); if (!SR_Z) goto B30_cb0c;
+B30_cb0a: INC_ZP_X(0x00)
+B30_cb0c: RTS()
+B30_cb0f: STA_ZP(0x7F)
+B30_cb11: TXA()
+B30_cb12: PHA()
+B30_cb13: TYA()
+B30_cb14: PHA()
+B30_cb15: LDX_ZP(0x00)
+B30_cb17: LDA_ZP(0x24)
+B30_cb19: STA_ZP_X(0x02)
+B30_cb1b: LDA_ZP(0x25)
+B30_cb1d: STA_ZP_X(0x03)
+B30_cb1f: LDA_ZP(0x7F)
+B30_cb21: STA_ZP_X(0x00)
+B30_cb23: TXA()
+B30_cb24: TAY()
+B30_cb25: TSX()
+B30_cb26: STX_ZP_Y(0x01)
+B30_cb28: LDX_ZP(0x00)
+B30_cb2a: CYCLE(3); PC = 0xcaa5; goto B30_caa5;
+B30_cb35: LDA_ZP(0x20)
+B30_cb37: AND_IMM(0x7F)
+B30_cb39: STA_ZP(0x20)
+B30_cb3b: STA_ABS(0x2000)
+B30_cb3e: LDA_IMM(0x06)
+B30_cb40: STA_ABS(0x2001)
+B30_cb43: LDA_IMM(0x20)
+B30_cb45: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 203); SP -= 2; goto B30_cb5c;
+B30_cb48: LDA_IMM(0x24)
+B30_cb4a: CYCLE(6); SetStack(SP, 76); SetStack(SP - 1, 203); SP -= 2; goto B30_cb5c;
+B30_cb4d: LDA_IMM(0x1E)
+B30_cb4f: STA_ABS(0x2001)
+B30_cb52: LDA_ZP(0x20)
+B30_cb54: ORA_IMM(0x80)
+B30_cb56: STA_ZP(0x20)
+B30_cb58: STA_ABS(0x2000)
+B30_cb5b: RTS()
+B30_cb5c: BIT_ABS(0x2002)
+B30_cb5f: STA_ABS(0x2006)
+B30_cb62: LDA_IMM(0x00)
+B30_cb64: STA_ABS(0x2006)
+B30_cb67: LDA_IMM(0x00)
+B30_cb69: LDX_IMM(0xC0)
+B30_cb6b: LDY_IMM(0x04)
+B30_cb6d: STA_ABS(0x2007)
+B30_cb70: DEX()
+B30_cb71: CYCLE(2); if (!SR_Z) goto B30_cb6d;
+B30_cb73: DEY()
+B30_cb74: CYCLE(2); if (!SR_Z) goto B30_cb6d;
+B30_cb76: TXA()
+B30_cb77: LDX_IMM(0x40)
+B30_cb79: STA_ABS(0x2007)
+B30_cb7c: DEX()
+B30_cb7d: CYCLE(2); if (!SR_Z) goto B30_cb79;
+B30_cb7f: BIT_ABS(0x2002)
+B30_cb82: LDA_IMM(0x00)
+B30_cb84: STA_ABS(0x2005)
+B30_cb87: STA_ABS(0x2005)
+B30_cb8a: RTS()
+B30_cb8b: LDY_IMM(0x00)
+B30_cb8d: LDA_IMM(0xF8)
+B30_cb8f: STA_ABS_Y(0x0200)
+B30_cb92: INY()
+B30_cb93: INY()
+B30_cb94: INY()
+B30_cb95: INY()
+B30_cb96: CYCLE(2); if (!SR_Z) goto B30_cb8f;
+B30_cb98: RTS()
+B30_cb99: ASL_A()
+B30_cb9a: TAY()
+B30_cb9b: PLA()
+B30_cb9c: STA_ZP(0x36)
+B30_cb9e: PLA()
+B30_cb9f: STA_ZP(0x37)
+B30_cba1: INY()
+B30_cba2: LDA_IDY(0x36)
+B30_cba4: PHA()
+B30_cba5: INY()
+B30_cba6: LDA_IDY(0x36)
+B30_cba8: STA_ZP(0x37)
+B30_cbaa: PLA()
+B30_cbab: STA_ZP(0x36)
+B30_cbad: CYCLE(5); PC = GetMem(55) << 8 | GetMem(54); CHECK_CYCLE(); goto _RET_MAP;
+B30_cbb0: STA_ABS(0x0518)
+B30_cbb3: LDA_IMM(0x80)
+B30_cbb5: STA_ABS(0x0516)
+B30_cbb8: LDA_IMM(0x00)
+B30_cbba: STA_ZP(0x05)
+B30_cbbc: LDA_IMM(0x00)
+B30_cbbe: CYCLE(6); SetStack(SP, 192); SetStack(SP - 1, 203); SP -= 2; goto B30_cb0f;
+B30_cbc1: RTS()
+B30_cbc2: LDY_IMM(0x00)
+B30_cbc4: CMP_IMM(0xA0)
+B30_cbc6: CYCLE(2); if (!SR_C) goto B30_cbf0;
+B30_cbc8: LDY_IMM(0x94)
+B30_cbca: CMP_IMM(0xC8)
+B30_cbcc: CYCLE(2); if (!SR_C) goto B30_cbda;
+B30_cbce: LDY_IMM(0x95)
+B30_cbd0: SBC_IMM(0xAE)
+B30_cbd2: CMP_IMM(0x1F)
+B30_cbd4: CYCLE(2); if (!SR_C) goto B30_cbf0;
+B30_cbd6: SBC_IMM(0x05)
+B30_cbd8: CYCLE(2); if (SR_C) goto B30_cbed;
+B30_cbda: CMP_IMM(0xB4)
+B30_cbdc: PHP()
+B30_cbdd: CYCLE(2); if (!SR_C) goto B30_cbe1;
+B30_cbdf: SBC_IMM(0x14)
+B30_cbe1: SEC()
+B30_cbe2: SBC_IMM(0x9A)
+B30_cbe4: CMP_IMM(0x15)
+B30_cbe6: CYCLE(2); if (!SR_C) goto B30_cbea;
+B30_cbe8: ADC_IMM(0x04)
+B30_cbea: PLP()
+B30_cbeb: CYCLE(2); if (!SR_C) goto B30_cbf0;
+B30_cbed: CLC()
+B30_cbee: ADC_IMM(0x40)
+B30_cbf0: RTS()
+B30_cbf1: LDX_IMM(0x00)
+B30_cbf3: LDY_ABS_X(0x0700)
+B30_cbf6: CYCLE(2); if (SR_Z) goto B30_cbfe;
+B30_cbf8: INX()
+B30_cbf9: CPX_IMM(0x05)
+B30_cbfb: CYCLE(2); if (!SR_Z) goto B30_cbf3;
+B30_cbfe: STA_ABS_X(0x0700)
+B30_cc01: RTS()
+B30_cc02: LDY_IMM(0x00)
+B30_cc04: STY_ZP(0x66)
+B30_cc06: ASL_A()
+B30_cc07: ROL_ZP(0x66)
+B30_cc09: ASL_A()
+B30_cc0a: TAY()
+B30_cc0b: ROL_ZP(0x66)
+B30_cc0d: ASL_A()
+B30_cc0e: ROL_ZP(0x66)
+B30_cc10: STA_ZP(0x65)
+B30_cc12: TYA()
+B30_cc13: ADC_ZP(0x65)
+B30_cc15: CYCLE(2); if (!SR_C) goto B30_cc19;
+B30_cc17: INC_ZP(0x66)
+B30_cc19: CLC()
+B30_cc1a: ADC_IMM(0xCC)
+B30_cc1c: STA_ZP(0x65)
+B30_cc1e: LDA_ZP(0x66)
+B30_cc20: ADC_IMM(0xFB)
+B30_cc22: STA_ZP(0x66)
+B30_cc24: LDA_IMM(0x10)
+B30_cc26: STA_ABS(0x046c)
+B30_cc29: LDY_IMM(0x00)
+B30_cc2b: TXA()
+B30_cc2c: AND_IMM(0x03)
+B30_cc2e: CYCLE(2); if (SR_Z) goto B30_cc35;
+B30_cc30: LDA_IDY(0x65)
+B30_cc32: INY()
+B30_cc33: CYCLE(2); if (!SR_Z) goto B30_cc37;
+B30_cc35: LDA_IMM(0x0F)
+B30_cc37: STA_ABS_X(0x046f)
+B30_cc3a: INX()
+B30_cc3b: DEC_ABS(0x046c)
+B30_cc3e: CYCLE(2); if (!SR_Z) goto B30_cc2b;
+B30_cc40: LDA_IMM(0x20)
+B30_cc42: STA_ABS(0x046c)
+B30_cc45: RTS()
+B30_cc46: LDA_IMM(0x00)
+B30_cc48: STA_ABS(0x05f4)
+B30_cc4b: LDA_IMM(0x06)
+B30_cc4d: PHA()
+B30_cc4e: LDA_IMM(0x01)
+B30_cc50: CYCLE(6); SetStack(SP, 82); SetStack(SP - 1, 204); SP -= 2; goto B30_cb0f;
+B30_cc53: LDA_ABS(0x0515)
+B30_cc56: CYCLE(2); if (!SR_Z) goto B30_cc4e;
+B30_cc58: LDA_IMM(0x01)
+B30_cc5a: STA_ABS(0x0515)
+B30_cc5d: LDY_IMM(0x4F)
+B30_cc5f: LDX_IMM(0x00)
+B30_cc61: TXA()
+B30_cc62: STA_ABS_X(0x04a5)
+B30_cc65: INX()
+B30_cc66: DEY()
+B30_cc67: CYCLE(2); if (!SR_Z) goto B30_cc62;
+B30_cc69: LDA_IMM(0x18)
+B30_cc6b: STA_ABS(0x04a5)
+B30_cc6e: STA_ABS(0x04c0)
+B30_cc71: LDA_IMM(0x20)
+B30_cc73: STA_ABS(0x04a6)
+B30_cc76: PLA()
+B30_cc77: PHA()
+B30_cc78: ORA_IMM(0x08)
+B30_cc7a: LSR_A()
+B30_cc7b: ROR_ABS(0x04a6)
+B30_cc7e: LSR_A()
+B30_cc7f: ROR_ABS(0x04a6)
+B30_cc82: ORA_IMM(0x20)
+B30_cc84: STA_ABS(0x04a7)
+B30_cc87: STA_ABS(0x04c2)
+B30_cc8a: LDA_ABS(0x04a6)
+B30_cc8d: CLC()
+B30_cc8e: ADC_IMM(0x20)
+B30_cc90: STA_ABS(0x04c1)
+B30_cc93: LDA_IMM(0x80)
+B30_cc95: STA_ABS(0x0515)
+B30_cc98: PLA()
+B30_cc99: SEC()
+B30_cc9a: SBC_IMM(0x01)
+B30_cc9c: CYCLE(2); if (!SR_N) goto B30_cc4d;
+B30_cc9e: LDA_IMM(0x01)
+B30_cca0: CYCLE(6); SetStack(SP, 162); SetStack(SP - 1, 204); SP -= 2; goto B30_cb0f;
+B30_cca3: LDA_ABS(0x0515)
+B30_cca6: CYCLE(2); if (!SR_Z) goto B30_cc9e;
+B30_cca8: LDA_IMM(0x01)
+B30_ccaa: STA_ABS(0x0515)
+B30_ccad: LDA_IMM(0x20)
+B30_ccaf: STA_ABS(0x04a5)
+B30_ccb2: LDA_IMM(0xE0)
+B30_ccb4: STA_ABS(0x04a6)
+B30_ccb7: LDA_IMM(0x23)
+B30_ccb9: STA_ABS(0x04a7)
+B30_ccbc: LDX_IMM(0x00)
+B30_ccbe: TXA()
+B30_ccbf: STA_ABS_X(0x04a8)
+B30_ccc2: INX()
+B30_ccc3: CPX_IMM(0x21)
+B30_ccc5: CYCLE(2); if (!SR_Z) goto B30_ccbf;
+B30_ccc7: LDA_IMM(0x80)
+B30_ccc9: STA_ABS(0x0515)
+B30_cccc: LDA_IMM(0x01)
+B30_ccce: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 204); SP -= 2; goto B30_cb0f;
+B30_ccd1: RTS()
+B30_ccd2: TSX()
+B30_ccd3: LDA_ABS_X(0x0101)
+B30_ccd6: STA_ZP(0x75)
+B30_ccd8: PHA()
+B30_ccd9: LDA_ABS_X(0x0102)
+B30_ccdc: STA_ZP(0x76)
+B30_ccde: PLA()
+B30_ccdf: CLC()
+B30_cce0: ADC_IMM(0x03)
+B30_cce2: STA_ABS_X(0x0101)
+B30_cce5: CYCLE(2); if (!SR_C) goto B30_ccea;
+B30_ccea: TYA()
+B30_cceb: PHA()
+B30_ccec: LDA_ABS(0x0498)
+B30_ccef: ASL_A()
+B30_ccf0: ADC_ABS(0x0498)
+B30_ccf3: TAX()
+B30_ccf4: LDY_IMM(0x01)
+B30_ccf6: LDA_IDY(0x75)
+B30_ccf8: STA_ABS_X(0x0499)
+B30_ccfb: INY()
+B30_ccfc: LDA_IDY(0x75)
+B30_ccfe: STA_ABS_X(0x049a)
+B30_cd01: INY()
+B30_cd02: LDA_IDY(0x75)
+B30_cd04: STA_ABS_X(0x049b)
+B30_cd07: INC_ABS(0x0498)
+B30_cd0a: PLA()
+B30_cd0b: TAY()
+B30_cd0c: RTS()
+B30_cd0d: TXA()
+B30_cd0e: PHA()
+B30_cd0f: LDA_IMM(0x00)
+B30_cd11: STA_ZP(0x6B)
+B30_cd13: STA_ZP(0x6C)
+B30_cd15: STA_ZP(0x6D)
+B30_cd17: STA_ZP(0x6E)
+B30_cd19: LDX_IMM(0x10)
+B30_cd1b: ROR_ZP(0x68)
+B30_cd1d: ROR_ZP(0x67)
+B30_cd1f: CYCLE(2); if (!SR_C) goto B30_cd2e;
+B30_cd21: CLC()
+B30_cd22: LDA_ZP(0x6D)
+B30_cd24: ADC_ZP(0x69)
+B30_cd26: STA_ZP(0x6D)
+B30_cd28: LDA_ZP(0x6E)
+B30_cd2a: ADC_ZP(0x6A)
+B30_cd2c: STA_ZP(0x6E)
+B30_cd2e: ROR_ZP(0x6E)
+B30_cd30: ROR_ZP(0x6D)
+B30_cd32: ROR_ZP(0x6C)
+B30_cd34: ROR_ZP(0x6B)
+B30_cd36: DEX()
+B30_cd37: CYCLE(2); if (!SR_Z) goto B30_cd1b;
+B30_cd39: PLA()
+B30_cd3a: TAX()
+B30_cd3b: RTS()
+B30_cd3c: TXA()
+B30_cd3d: PHA()
+B30_cd3e: LDA_IMM(0x00)
+B30_cd40: STA_ZP(0x72)
+B30_cd42: STA_ZP(0x73)
+B30_cd44: LDX_IMM(0x10)
+B30_cd46: ROL_ZP(0x6F)
+B30_cd48: ROL_ZP(0x70)
+B30_cd4a: ROL_ZP(0x72)
+B30_cd4c: ROL_ZP(0x73)
+B30_cd4e: CYCLE(2); if (SR_C) goto B30_cd60;
+B30_cd50: LDA_ZP(0x73)
+B30_cd52: CMP_ZP(0x74)
+B30_cd54: CYCLE(2); if (SR_Z) goto B30_cd5a;
+B30_cd56: CYCLE(2); if (!SR_C) goto B30_cd6d;
+B30_cd58: CYCLE(2); if (SR_C) goto B30_cd60;
+B30_cd5a: LDA_ZP(0x72)
+B30_cd5c: CMP_ZP(0x71)
+B30_cd5e: CYCLE(2); if (!SR_C) goto B30_cd6d;
+B30_cd60: LDA_ZP(0x72)
+B30_cd62: SBC_ZP(0x71)
+B30_cd64: STA_ZP(0x72)
+B30_cd66: LDA_ZP(0x73)
+B30_cd68: SBC_ZP(0x74)
+B30_cd6a: STA_ZP(0x73)
+B30_cd6c: SEC()
+B30_cd6d: ROL_ZP(0x6F)
+B30_cd6f: ROL_ZP(0x70)
+B30_cd71: DEX()
+B30_cd72: CYCLE(2); if (!SR_Z) goto B30_cd4a;
+B30_cd74: PLA()
+B30_cd75: TAX()
+B30_cd76: RTS()
+B30_cd77: LDA_ABS(0x05fb)
+B30_cd7a: EOR_IMM(0x0B)
+B30_cd7c: ASL_A()
+B30_cd7d: TAY()
+B30_cd7e: LDA_ABS_Y(0xcd89)
+B30_cd81: STA_ZP(0x34)
+B30_cd83: LDA_ABS_Y(0xcd8a)
+B30_cd86: STA_ZP(0x35)
+B30_cd88: RTS()
+B30_cdc9: LDX_IMM(0x00)
+B30_cdcb: CMP_IMM(0x0C)
+B30_cdcd: CYCLE(2); if (!SR_C) goto B30_cdd4;
+B30_cdcf: SBC_IMM(0x0C)
+B30_cdd1: INX()
+B30_cdd2: CYCLE(2); if (!SR_Z) goto B30_cdcb;
+B30_cdd4: ASL_A()
+B30_cdd5: ASL_A()
+B30_cdd6: ASL_A()
+B30_cdd7: ADC_IMM(0x54)
+B30_cdd9: TAY()
+B30_cdda: TXA()
+B30_cddb: ASL_A()
+B30_cddc: ASL_A()
+B30_cddd: ASL_A()
+B30_cdde: ADC_IMM(0x34)
+B30_cde0: TAX()
+B30_cde1: RTS()
+B30_cde2: TXA()
+B30_cde3: SEC()
+B30_cde4: SBC_IMM(0x30)
+B30_cde6: CYCLE(2); if (!SR_C) goto B30_ce05;
+B30_cde8: CMP_IMM(0xA0)
+B30_cdea: CYCLE(2); if (SR_C) goto B30_ce05;
+B30_cdec: LSR_A()
+B30_cded: LSR_A()
+B30_cdee: LSR_A()
+B30_cdef: TAX()
+B30_cdf0: TYA()
+B30_cdf1: SEC()
+B30_cdf2: SBC_IMM(0x50)
+B30_cdf4: CYCLE(2); if (!SR_C) goto B30_ce05;
+B30_cdf6: CMP_IMM(0x60)
+B30_cdf8: CYCLE(2); if (SR_C) goto B30_ce05;
+B30_cdfa: LSR_A()
+B30_cdfb: LSR_A()
+B30_cdfc: LSR_A()
+B30_cdfd: DEX()
+B30_cdfe: CYCLE(2); if (SR_N) goto B30_ce07;
+B30_ce00: CLC()
+B30_ce01: ADC_IMM(0x0C)
+B30_ce03: CYCLE(2); if (!SR_Z) goto B30_cdfd;
+B30_ce05: LDA_IMM(0xFF)
+B30_ce07: RTS()
+B30_ce08: TAY()
+B30_ce09: LDA_ABS(0x0024)
+B30_ce0c: PHA()
+B30_ce0d: LDA_ABS(0x0025)
+B30_ce10: PHA()
+B30_ce11: TYA()
+B30_ce12: PHA()
+B30_ce13: LDA_ZP(0x22)
+B30_ce15: LDA_IMM(0x1C)
+B30_ce17: STA_ZP(0x24)
+B30_ce19: LDA_IMM(0x1D)
+B30_ce1b: STA_ZP(0x25)
+B30_ce1d: CYCLE(6); SetStack(SP, 31); SetStack(SP - 1, 206); SP -= 2; goto B30_ce2d;
+B30_ce20: PLA()
+B30_ce21: CYCLE(6); SetStack(SP, 35); SetStack(SP - 1, 206); SP -= 2; goto B28_8000;
+B30_ce24: PLA()
+B30_ce25: STA_ZP(0x25)
+B30_ce27: PLA()
+B30_ce28: STA_ZP(0x24)
+B30_ce2a: CYCLE(3); PC = 0xce2d; goto B30_ce2d;
+B30_ce2d: LDA_ZP(0x22)
+B30_ce2f: ORA_IMM(0x06)
+B30_ce31: STA_ZP(0x23)
+B30_ce33: STA_ABS(0x8000)
+B30_ce36: LDA_ZP(0x24)
+B30_ce38: STA_ABS(0x8001)
+B30_ce3b: LDA_ZP(0x22)
+B30_ce3d: ORA_IMM(0x07)
+B30_ce3f: STA_ZP(0x23)
+B30_ce41: STA_ABS(0x8000)
+B30_ce44: LDA_ZP(0x25)
+B30_ce46: STA_ABS(0x8001)
+B30_ce49: RTS()
+B30_ce4a: CLC()
+B30_ce4b: ADC_IMM(0x40)
+B30_ce4d: ASL_A()
+B30_ce4e: PHP()
+B30_ce4f: CYCLE(2); if (!SR_N) goto B30_ce53;
+B30_ce51: EOR_IMM(0xFF)
+B30_ce53: AND_IMM(0x7E)
+B30_ce55: TAX()
+B30_ce56: LDA_ABS_X(0xfb4d)
+B30_ce59: TAY()
+B30_ce5a: LDA_ABS_X(0xfb4c)
+B30_ce5d: TAX()
+B30_ce5e: PLP()
+B30_ce5f: CYCLE(2); if (!SR_C) goto B30_ce6d;
+B30_ce61: TXA()
+B30_ce62: EOR_IMM(0xFF)
+B30_ce64: TAX()
+B30_ce65: TYA()
+B30_ce66: EOR_IMM(0xFF)
+B30_ce68: TAY()
+B30_ce69: INX()
+B30_ce6a: CYCLE(2); if (!SR_Z) goto B30_ce6d;
+B30_ce6c: INY()
+B30_ce6d: RTS()
+B30_ce6e: STA_ZP(0x36)
+B30_ce70: ASL_A()
+B30_ce71: ADC_ZP(0x36)
+B30_ce73: STA_ZP(0x36)
+B30_ce75: LDA_IMM(0x80)
+B30_ce77: STA_ZP(0x37)
+B30_ce79: LDA_ZP(0x24)
+B30_ce7b: PHA()
+B30_ce7c: LDA_ZP(0x25)
+B30_ce7e: PHA()
+B30_ce7f: LDA_IMM(0x1C)
+B30_ce81: STA_ZP(0x24)
+B30_ce83: LDA_IMM(0x1D)
+B30_ce85: STA_ZP(0x25)
+B30_ce87: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 206); SP -= 2; goto B30_ce2d;
+B30_ce8a: CYCLE(6); SetStack(SP, 140); SetStack(SP - 1, 206); SP -= 2; goto B30_ce96;
+B30_ce8d: PLA()
+B30_ce8e: STA_ZP(0x25)
+B30_ce90: PLA()
+B30_ce91: STA_ZP(0x24)
+B30_ce93: CYCLE(3); PC = 0xce2d; goto B30_ce2d;
+B30_ce96: CYCLE(5); PC = GetMem(55) << 8 | GetMem(54); CHECK_CYCLE(); goto _RET_MAP;
+B30_ce99: STA_ZP(0x46)
+B30_ce9b: INC_ZP(0x46)
+B30_ce9d: LDA_IMM(0x08)
+B30_ce9f: STA_ZP(0x47)
+B30_cea1: LDA_ZP(0x46)
+B30_cea3: STA_ZP(0x48)
+B30_cea5: LDA_IMM(0x0A)
+B30_cea7: STA_ZP(0x49)
+B30_cea9: LDA_ZP(0x48)
+B30_ceab: CMP_ABS(0x0441)
+B30_ceae: CYCLE(2); if (SR_Z) goto B30_cec3;
+B30_ceb0: CMP_ABS(0x0442)
+B30_ceb3: CYCLE(2); if (SR_Z) goto B30_cec3;
+B30_ceb5: CYCLE(6); SetStack(SP, 183); SetStack(SP - 1, 206); SP -= 2; goto B30_cd7c;
+B30_ceb8: LDY_IMM(0x0A)
+B30_ceba: LDA_IDY(0x34)
+B30_cebc: CYCLE(2); if (!SR_Z) goto B30_cec3;
+B30_cebe: CYCLE(6); SetStack(SP, 192); SetStack(SP - 1, 206); SP -= 2; goto B30_ced6;
+B30_cec1: CYCLE(2); if (SR_C) goto B30_ced3;
+B30_cec3: INC_ZP(0x48)
+B30_cec5: DEC_ZP(0x49)
+B30_cec7: CYCLE(2); if (!SR_Z) goto B30_cea9;
+B30_cec9: LDA_ZP(0x47)
+B30_cecb: CLC()
+B30_cecc: ADC_IMM(0x08)
+B30_cece: STA_ZP(0x47)
+B30_ced0: CYCLE(3); PC = 0xcea1; goto B30_cea1;
+B30_ced3: LDA_ZP(0x48)
+B30_ced5: RTS()
+B30_ced6: LDY_IMM(0x06)
+B30_ced8: LDA_IDY(0x34)
+B30_ceda: SEC()
+B30_cedb: SBC_ABS(0x0635)
+B30_cede: CYCLE(2); if (SR_C) goto B30_cee4;
+B30_cee0: EOR_IMM(0xFF)
+B30_cee2: ADC_IMM(0x01)
+B30_cee4: CMP_ZP(0x47)
+B30_cee6: CYCLE(2); if (SR_C) goto B30_cefc;
+B30_cee8: LDY_IMM(0x08)
+B30_ceea: LDA_IDY(0x34)
+B30_ceec: SEC()
+B30_ceed: SBC_ABS(0x0637)
+B30_cef0: CYCLE(2); if (SR_C) goto B30_cef6;
+B30_cef2: EOR_IMM(0xFF)
+B30_cef4: ADC_IMM(0x01)
+B30_cef6: CMP_ZP(0x47)
+B30_cef8: CYCLE(2); if (SR_C) goto B30_cefc;
+B30_cefa: SEC()
+B30_cefb: RTS()
+B30_cefc: CLC()
+B30_cefd: RTS()
+B30_cefe: PHA()
+B30_ceff: LDA_IMM(0x00)
+B30_cf01: STA_ABS(0x0469)
+B30_cf04: LDA_IMM(0x00)
+B30_cf06: STA_ABS(0x0469)
+B30_cf09: STA_ABS(0xe000)
+B30_cf0c: CYCLE(6); SetStack(SP, 14); SetStack(SP - 1, 207); SP -= 2; goto B30_cb8b;
+B30_cf0f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 207); SP -= 2; goto B30_cb35;
+B30_cf12: LDA_ZP(0x20)
+B30_cf14: AND_IMM(0x7F)
+B30_cf16: STA_ABS(0x2000)
+B30_cf19: STA_ZP(0x20)
+B30_cf1b: PLA()
+B30_cf1c: CYCLE(3); PC = 0xc400; goto B30_c400;
+B30_cf1f: LDA_IMM(0x68)
+B30_cf21: STA_ZP(0x3A)
+B30_cf23: LDA_IMM(0x04)
+B30_cf25: STA_ZP(0x3B)
+B30_cf27: LDA_IMM(0x97)
+B30_cf29: STA_ZP(0x3C)
+B30_cf2b: LDA_IMM(0x02)
+B30_cf2d: STA_ZP(0x3D)
+B30_cf2f: LDA_IMM(0x00)
+B30_cf31: TAY()
+B30_cf32: STA_IDY(0x3A)
+B30_cf34: INY()
+B30_cf35: CYCLE(2); if (!SR_Z) goto B30_cf32;
+B30_cf37: INC_ZP(0x3B)
+B30_cf39: DEC_ZP(0x3D)
+B30_cf3b: CYCLE(2); if (!SR_Z) goto B30_cf32;
+B30_cf3d: STA_IDY(0x3A)
+B30_cf3f: INY()
+B30_cf40: DEC_ZP(0x3C)
+B30_cf42: CYCLE(2); if (!SR_Z) goto B30_cf3d;
+B30_cf44: LDX_IMM(0xA5)
+B30_cf46: LDA_IMM(0x00)
+B30_cf48: STA_ABS_X(0x003a)
+B30_cf4b: DEX()
+B30_cf4c: CYCLE(2); if (!SR_Z) goto B30_cf48;
+B30_cf4e: RTS()
+B30_cf4f: LDA_IMM(0x00)
+B30_cf51: PHA()
+B30_cf52: CYCLE(6); SetStack(SP, 84); SetStack(SP - 1, 207); SP -= 2; goto B30_cd7c;
+B30_cf55: LDY_IMM(0x0A)
+B30_cf57: LDA_IMM(0x00)
+B30_cf59: STA_IDY(0x34)
+B30_cf5b: PLA()
+B30_cf5c: PHA()
+B30_cf5d: CYCLE(2); if (SR_Z) goto B30_cf63;
+B30_cf5f: CMP_IMM(0x0B)
+B30_cf61: CYCLE(2); if (!SR_Z) goto B30_cf69;
+B30_cf63: LDY_IMM(0x07)
+B30_cf65: LDA_IMM(0x00)
+B30_cf67: STA_IDY(0x34)
+B30_cf69: PLA()
+B30_cf6a: CLC()
+B30_cf6b: ADC_IMM(0x01)
+B30_cf6d: CMP_IMM(0x16)
+B30_cf6f: CYCLE(2); if (!SR_Z) goto B30_cf51;
+B30_cf71: RTS()
+B30_cf72: PHA()
+B30_cf73: LDA_ZP(0x22)
+B30_cf75: LDA_IMM(0x1A)
+B30_cf77: STA_ZP(0x24)
+B30_cf79: LDA_IMM(0x1B)
+B30_cf7b: STA_ZP(0x25)
+B30_cf7d: CYCLE(6); SetStack(SP, 127); SetStack(SP - 1, 207); SP -= 2; goto B30_ce2d;
+B30_cf80: PLA()
+B30_cf81: CYCLE(6); SetStack(SP, 131); SetStack(SP - 1, 207); SP -= 2; goto B28_802a;
+B30_cf84: LDA_IMM(0x18)
+B30_cf86: STA_ZP(0x24)
+B30_cf88: LDA_IMM(0x19)
+B30_cf8a: STA_ZP(0x25)
+B30_cf8c: CYCLE(3); PC = 0xce2d; goto B30_ce2d;
+B30_cf8f: STA_ABS(0x0623)
+B30_cf92: TAX()
+B30_cf93: LDA_ABS_X(0xd002)
+B30_cf96: STA_ABS(0x02ff)
+B30_cf99: LDA_ABS_X(0xd01a)
+B30_cf9c: STA_ABS(0x02fd)
+B30_cf9f: LDA_IMM(0x03)
+B30_cfa1: STA_ABS(0x02fe)
+B30_cfa4: LDA_IMM(0x01)
+B30_cfa6: CYCLE(6); SetStack(SP, 168); SetStack(SP - 1, 207); SP -= 2; goto B30_cb0f;
+B30_cfa9: LDA_ABS(0x0622)
+B30_cfac: ASL_A()
+B30_cfad: ASL_A()
+B30_cfae: ASL_A()
+B30_cfaf: ASL_A()
+B30_cfb0: LDX_ABS(0x0623)
+B30_cfb3: CLC()
+B30_cfb4: ADC_ABS_X(0xd00a)
+B30_cfb7: STA_ABS(0x02fc)
+B30_cfba: LDA_IMM(0x0C)
+B30_cfbc: AND_ABS(0x001e)
+B30_cfbf: CYCLE(2); if (SR_Z) goto B30_cfe7;
+B30_cfc1: LDX_IMM(0x01)
+B30_cfc3: AND_IMM(0x08)
+B30_cfc5: CYCLE(2); if (SR_Z) goto B30_cfc9;
+B30_cfc7: LDX_IMM(0xFF)
+B30_cfc9: TXA()
+B30_cfca: CLC()
+B30_cfcb: ADC_ABS(0x0622)
+B30_cfce: CYCLE(2); if (SR_N) goto B30_cfe7;
+B30_cfd0: LDX_ABS(0x0623)
+B30_cfd3: CMP_ABS_X(0xd012)
+B30_cfd6: CYCLE(2); if (SR_Z) goto B30_cfda;
+B30_cfd8: CYCLE(2); if (SR_C) goto B30_cfe7;
+B30_cfda: STA_ABS(0x0622)
+B30_cfdd: LDX_ABS(0x0623)
+B30_cfe0: CPX_IMM(0x05)
+B30_cfe2: CYCLE(2); if (!SR_Z) goto B30_cfe7;
+B30_cfe4: STA_ABS(0x002c)
+B30_cfe7: LDA_IMM(0x80)
+B30_cfe9: AND_ABS(0x001e)
+B30_cfec: CYCLE(2); if (!SR_Z) goto B30_cff8;
+B30_cfee: LDA_IMM(0x40)
+B30_cff0: AND_ABS(0x001e)
+B30_cff3: CYCLE(2); if (SR_Z) goto B30_cfa4;
+B30_cff5: CLC()
+B30_cff6: CYCLE(2); if (!SR_C) goto B30_cffc;
+B30_cff8: SEC()
+B30_cff9: LDA_ABS(0x0622)
+B30_cffc: LDX_IMM(0xF8)
+B30_cffe: STX_ABS(0x02fc)
+B30_d001: RTS()
+B30_d022: LDA_ABS(0x0027)
+B30_d025: CMP_IMM(0x01)
+B30_d027: CYCLE(2); if (SR_Z) goto B30_d030;
+B30_d029: CMP_IMM(0x02)
+B30_d02b: CYCLE(2); if (SR_Z) goto B30_d030;
+B30_d030: LDA_IMM(0x00)
+B30_d032: PHA()
+B30_d033: LDX_IMM(0x00)
+B30_d035: CYCLE(6); SetStack(SP, 55); SetStack(SP - 1, 208); SP -= 2; goto B30_ce08;
+B30_d038: LDA_ZP(0x33)
+B30_d03a: STA_ZP(0x37)
+B30_d03c: LDA_ZP(0x32)
+B30_d03e: STA_ZP(0x36)
+B30_d040: LDY_IMM(0x00)
+B30_d042: LDA_IDY(0x34)
+B30_d044: CMP_IMM(0x20)
+B30_d046: CYCLE(2); if (!SR_Z) goto B30_d054;
+B30_d048: LDX_IMM(0x04)
+B30_d04a: LDA_ABS(0x0027)
+B30_d04d: CMP_IMM(0x01)
+B30_d04f: CYCLE(2); if (SR_Z) goto B30_d05e;
+B30_d051: DEX()
+B30_d052: CYCLE(2); if (!SR_Z) goto B30_d05e;
+B30_d054: LDX_IMM(0x03)
+B30_d056: LDA_ABS(0x0027)
+B30_d059: CMP_IMM(0x01)
+B30_d05b: CYCLE(2); if (SR_Z) goto B30_d05e;
+B30_d05d: DEX()
+B30_d05e: LSR_ZP(0x33)
+B30_d060: ROR_ZP(0x32)
+B30_d062: DEX()
+B30_d063: CYCLE(2); if (!SR_Z) goto B30_d05e;
+B30_d065: LDY_IMM(0x01)
+B30_d067: LDA_IDY(0x34)
+B30_d069: CLC()
+B30_d06a: ADC_ZP(0x32)
+B30_d06c: TAX()
+B30_d06d: INY()
+B30_d06e: LDA_IDY(0x34)
+B30_d070: ADC_ZP(0x33)
+B30_d072: CMP_ZP(0x37)
+B30_d074: PHP()
+B30_d075: CYCLE(2); if (!SR_C) goto B30_d079;
+B30_d077: LDA_ZP(0x37)
+B30_d079: STA_IDY(0x34)
+B30_d07b: TXA()
+B30_d07c: PLP()
+B30_d07d: CYCLE(2); if (!SR_C) goto B30_d087;
+B30_d07f: CYCLE(2); if (!SR_Z) goto B30_d085;
+B30_d081: CMP_ZP(0x36)
+B30_d083: CYCLE(2); if (!SR_C) goto B30_d087;
+B30_d085: LDA_ZP(0x36)
+B30_d087: DEY()
+B30_d088: STA_IDY(0x34)
+B30_d08a: PLA()
+B30_d08b: CLC()
+B30_d08c: ADC_IMM(0x01)
+B30_d08e: CMP_IMM(0x0B)
+B30_d090: CYCLE(2); if (!SR_Z) goto B30_d032;
+B30_d092: RTS()
+B30_d093: LDA_IMM(0x32)
+B30_d095: BIT_ABS(0x063e)
+B30_d098: CYCLE(2); if (SR_N) goto B30_d0a8;
+B30_d09a: LDX_ABS(0x05fb)
+B30_d09d: CYCLE(2); if (SR_Z) goto B30_d0a1;
+B30_d09f: LDX_IMM(0x01)
+B30_d0a1: LDA_ABS_X(0x002a)
+B30_d0a4: TAX()
+B30_d0a5: LDA_ABS_X(0xd0ac)
+B30_d0a8: CYCLE(6); SetStack(SP, 170); SetStack(SP - 1, 208); SP -= 2; goto B30_cbf1;
+B30_d0ab: RTS()
+B30_d0d1: LDA_ABS(0x002a)
+B30_d0d4: CMP_IMM(0x02)
+B30_d0d6: CYCLE(2); if (!SR_Z) goto B30_d10f;
+B30_d0d8: LDA_IMM(0x00)
+B30_d0da: PHA()
+B30_d0db: CMP_IMM(0x0B)
+B30_d0dd: CYCLE(2); if (!SR_C) goto B30_d0e1;
+B30_d0df: ADC_IMM(0x0A)
+B30_d0e1: CYCLE(6); SetStack(SP, 227); SetStack(SP - 1, 208); SP -= 2; goto B30_cd7c;
+B30_d0e4: LDY_IMM(0x00)
+B30_d0e6: LDA_IDY(0x34)
+B30_d0e8: TAX()
+B30_d0e9: PLA()
+B30_d0ea: CPX_IMM(0x20)
+B30_d0ec: CYCLE(2); if (SR_Z) goto B30_d0f6;
+B30_d0ee: CLC()
+B30_d0ef: ADC_IMM(0x01)
+B30_d0f1: CMP_IMM(0x16)
+B30_d0f3: CYCLE(2); if (!SR_Z) goto B30_d0da;
+B30_d0f6: LDX_IMM(0x00)
+B30_d0f8: LDA_ABS(0x044d)
+B30_d0fb: CYCLE(2); if (!SR_Z) goto B30_d10c;
+B30_d0fd: LDY_IMM(0x01)
+B30_d0ff: LDA_IDY(0x34)
+B30_d101: SEC()
+B30_d102: SBC_IMM(0x64)
+B30_d104: INY()
+B30_d105: LDA_IDY(0x34)
+B30_d107: SBC_IMM(0x00)
+B30_d109: CYCLE(2); if (!SR_N) goto B30_d10c;
+B30_d10b: INX()
+B30_d10c: STX_ABS(0x044d)
+B30_d10f: RTS()
+B30_d110: LDA_IMM(0x12)
+B30_d112: STA_ZP(0x24)
+B30_d114: LDA_IMM(0x13)
+B30_d116: STA_ZP(0x25)
+B30_d118: CYCLE(6); SetStack(SP, 26); SetStack(SP - 1, 209); SP -= 2; goto B30_ce2d;
+B30_d11b: PC = 0xb000; /* UNRES JMP $b000 */ goto LABEL_END;
+B30_d11e: LDA_ABS(0x0027)
+B30_d121: CMP_IMM(0x05)
+B30_d123: CYCLE(2); if (!SR_Z) goto B30_d128;
+B30_d125: CYCLE(3); PC = 0xd110; goto B30_d110;
+B30_d128: LDA_IMM(0x00)
+B30_d12a: STA_ABS(0x063e)
+B30_d12d: STA_ABS(0x0640)
+B30_d130: STA_ABS(0x0641)
+B30_d133: STA_ABS(0x0613)
+B30_d136: LDA_ABS(0x0027)
+B30_d139: CMP_IMM(0x04)
+B30_d13b: CYCLE(2); if (!SR_Z) goto B30_d14f;
+B30_d13d: PHA()
+B30_d13e: LDA_ZP(0x22)
+B30_d140: LDA_IMM(0x1A)
+B30_d142: STA_ZP(0x24)
+B30_d144: LDA_IMM(0x1B)
+B30_d146: STA_ZP(0x25)
+B30_d148: CYCLE(6); SetStack(SP, 74); SetStack(SP - 1, 209); SP -= 2; goto B30_ce2d;
+B30_d14b: PLA()
+B30_d14c: CYCLE(6); SetStack(SP, 78); SetStack(SP - 1, 209); SP -= 2; goto B28_8030;
+B30_d14f: STA_ABS(0x0629)
+B30_d152: ASL_A()
+B30_d153: STA_ZP(0x3A)
+B30_d155: LDA_IMM(0x08)
+B30_d157: LDX_ABS(0x002b)
+B30_d15a: CPX_IMM(0x0E)
+B30_d15c: CYCLE(2); if (SR_Z) goto B30_d168;
+B30_d15e: CPX_IMM(0x12)
+B30_d160: CYCLE(2); if (SR_Z) goto B30_d168;
+B30_d162: CPX_IMM(0x1A)
+B30_d164: CYCLE(2); if (SR_C) goto B30_d168;
+B30_d166: LDA_IMM(0x00)
+B30_d168: CLC()
+B30_d169: ADC_ZP(0x3A)
+B30_d16b: TAX()
+B30_d16c: LDA_ABS_X(0xd183)
+B30_d16f: STA_ABS(0x05f7)
+B30_d172: LDA_ABS_X(0xd184)
+B30_d175: STA_ABS(0x05f8)
+B30_d178: LDA_IMM(0x00)
+B30_d17a: STA_ABS(0x05f9)
+B30_d17d: LDX_IMM(0x50)
+B30_d17f: TXS()
+B30_d180: CYCLE(3); PC = 0xdaaa; goto B30_daaa;
+B30_d193: TAX()
+B30_d194: CLC()
+B30_d195: ADC_ABS(0x05ff)
+B30_d198: STA_ABS(0x05ff)
+B30_d19b: TXA()
+B30_d19c: PHA()
+B30_d19d: CYCLE(6); SetStack(SP, 159); SetStack(SP - 1, 209); SP -= 2; goto B30_d235;
+B30_d1a0: PLA()
+B30_d1a1: LDX_ABS(0x05f8)
+B30_d1a4: CYCLE(2); if (!SR_Z) goto B30_d1ae;
+B30_d1a6: CPX_ABS(0x05f7)
+B30_d1a9: CYCLE(2); if (!SR_Z) goto B30_d1ae;
+B30_d1ab: CYCLE(3); PC = 0xd220; goto B30_d220;
+B30_d1ae: EOR_IMM(0xFF)
+B30_d1b0: CLC()
+B30_d1b1: ADC_IMM(0x01)
+B30_d1b3: CYCLE(2); if (!SR_Z) goto B30_d1b8;
+B30_d1b5: CYCLE(3); PC = 0xd21f; goto B30_d21f;
+B30_d1b8: CLC()
+B30_d1b9: ADC_ABS(0x05f7)
+B30_d1bc: TAX()
+B30_d1bd: LDA_ABS(0x05f8)
+B30_d1c0: ADC_IMM(0xFF)
+B30_d1c2: CYCLE(2); if (!SR_N) goto B30_d1c7;
+B30_d1c4: LDA_IMM(0x00)
+B30_d1c6: TAX()
+B30_d1c7: STA_ABS(0x05f8)
+B30_d1ca: STX_ABS(0x05f7)
+B30_d1cd: LDA_IMM(0x00)
+B30_d1cf: CYCLE(6); SetStack(SP, 209); SetStack(SP - 1, 209); SP -= 2; goto B31_ef7f;
+B30_d1d2: BIT_ABS(0x063e)
+B30_d1d5: CYCLE(2); if (SR_N) goto B30_d1eb;
+B30_d1d7: LDA_ABS(0x05f7)
+B30_d1da: CMP_IMM(0x1E)
+B30_d1dc: CYCLE(2); if (SR_C) goto B30_d1eb;
+B30_d1de: LDA_ABS(0x063e)
+B30_d1e1: ORA_IMM(0x80)
+B30_d1e3: STA_ABS(0x063e)
+B30_d1e6: LDA_IMM(0x32)
+B30_d1e8: CYCLE(6); SetStack(SP, 234); SetStack(SP - 1, 209); SP -= 2; goto B30_cbf1;
+B30_d1eb: LDA_ABS(0x05f8)
+B30_d1ee: ORA_ABS(0x05f7)
+B30_d1f1: CYCLE(2); if (!SR_Z) goto B30_d21f;
+B30_d1f3: LDA_IMM(0x00)
+B30_d1f5: BIT_ABS(0x00e2)
+B30_d1f8: CYCLE(2); if (!SR_N) goto B30_d1fc;
+B30_d1fa: LDA_IMM(0x0C)
+B30_d1fc: CLC()
+B30_d1fd: ADC_ABS(0x05f9)
+B30_d200: STA_ABS(0x05f9)
+B30_d203: CYCLE(2); if (SR_Z) goto B30_d21f;
+B30_d205: LDA_IMM(0x00)
+B30_d207: STA_ABS(0x062d)
+B30_d20a: LDA_ABS(0x0615)
+B30_d20d: AND_IMM(0xBF)
+B30_d20f: STA_ABS(0x0615)
+B30_d212: LDA_IMM(0x43)
+B30_d214: CYCLE(6); SetStack(SP, 22); SetStack(SP - 1, 210); SP -= 2; goto B30_cbb0;
+B30_d217: BIT_ABS(0x0615)
+B30_d21a: CYCLE(2); if (!SR_N) goto B30_d21f;
+B30_d21c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 210); SP -= 2; goto B31_e233;
+B30_d21f: RTS()
+B30_d220: EOR_IMM(0xFF)
+B30_d222: CLC()
+B30_d223: ADC_IMM(0x01)
+B30_d225: CLC()
+B30_d226: ADC_ABS(0x05f9)
+B30_d229: CYCLE(2); if (!SR_N) goto B30_d231;
+B30_d22b: LDX_IMM(0x50)
+B30_d22d: TXS()
+B30_d22e: CYCLE(3); PC = 0xda98; goto B30_da98;
+B30_d231: STA_ABS(0x05f9)
+B30_d234: RTS()
+B30_d235: EOR_IMM(0xFF)
+B30_d237: CLC()
+B30_d238: ADC_IMM(0x01)
+B30_d23a: TAX()
+B30_d23b: BIT_ABS(0x0449)
+B30_d23e: CYCLE(2); if (!SR_N) goto B30_d24e;
+B30_d240: CLC()
+B30_d241: ADC_ABS(0x044a)
+B30_d244: STA_ABS(0x044a)
+B30_d247: CYCLE(2); if (!SR_N) goto B30_d24e;
+B30_d249: LDA_IMM(0x00)
+B30_d24b: STA_ABS(0x0449)
+B30_d24e: TXA()
+B30_d24f: PHA()
+B30_d250: LDA_IMM(0x00)
+B30_d252: CYCLE(6); SetStack(SP, 84); SetStack(SP - 1, 210); SP -= 2; goto B30_cd7c;
+B30_d255: PLA()
+B30_d256: PHA()
+B30_d257: CYCLE(6); SetStack(SP, 89); SetStack(SP - 1, 210); SP -= 2; goto B30_d263;
+B30_d25a: LDA_IMM(0x0B)
+B30_d25c: CYCLE(6); SetStack(SP, 94); SetStack(SP - 1, 210); SP -= 2; goto B30_cd7c;
+B30_d25f: PLA()
+B30_d260: CYCLE(3); PC = 0xd263; goto B30_d263;
+B30_d263: TAX()
+B30_d264: LDY_IMM(0x0A)
+B30_d266: LDA_IDY(0x34)
+B30_d268: CYCLE(2); if (SR_Z) goto B30_d275;
+B30_d26a: TXA()
+B30_d26b: CLC()
+B30_d26c: ADC_IDY(0x34)
+B30_d26e: CYCLE(2); if (!SR_N) goto B30_d272;
+B30_d270: LDA_IMM(0x00)
+B30_d272: STA_IDY(0x34)
+B30_d274: RTS()
+B30_d275: LDY_IMM(0x07)
+B30_d277: LDA_IDY(0x34)
+B30_d279: CYCLE(2); if (SR_Z) goto B30_d299;
+B30_d27b: LDY_IMM(0x06)
+B30_d27d: TXA()
+B30_d27e: CLC()
+B30_d27f: ADC_IDY(0x34)
+B30_d281: CYCLE(2); if (!SR_N) goto B30_d297;
+B30_d283: CLC()
+B30_d284: ADC_IMM(0x03)
+B30_d286: PHA()
+B30_d287: LDY_IMM(0x07)
+B30_d289: LDA_IDY(0x34)
+B30_d28b: SEC()
+B30_d28c: SBC_IMM(0x19)
+B30_d28e: CYCLE(2); if (!SR_N) goto B30_d292;
+B30_d290: LDA_IMM(0x00)
+B30_d292: STA_IDY(0x34)
+B30_d294: PLA()
+B30_d295: LDY_IMM(0x06)
+B30_d297: STA_IDY(0x34)
+B30_d299: RTS()
+B30_d29a: LDX_ABS(0x0621)
+B30_d29d: LDA_ABS_X(0xd359)
+B30_d2a0: CYCLE(6); SetStack(SP, 162); SetStack(SP - 1, 210); SP -= 2; goto B31_ef7f;
+B30_d2a3: LDX_ABS(0x0621)
+B30_d2a6: LDA_ABS_X(0xd35c)
+B30_d2a9: CYCLE(6); SetStack(SP, 171); SetStack(SP - 1, 210); SP -= 2; goto B31_ef7f;
+B30_d2ac: LDA_IMM(0x00)
+B30_d2ae: STA_ABS(0x043e)
+B30_d2b1: STA_ABS(0x061e)
+B30_d2b4: LDA_IMM(0x01)
+B30_d2b6: CYCLE(6); SetStack(SP, 184); SetStack(SP - 1, 210); SP -= 2; goto B30_cb0f;
+B30_d2b9: LDA_IMM(0x0F)
+B30_d2bb: AND_ABS(0x001e)
+B30_d2be: CYCLE(2); if (SR_Z) goto B30_d309;
+B30_d2c0: LDX_IMM(0x00)
+B30_d2c2: LSR_A()
+B30_d2c3: CYCLE(2); if (SR_C) goto B30_d2c8;
+B30_d2c5: INX()
+B30_d2c6: CYCLE(2); if (!SR_Z) goto B30_d2c2;
+B30_d2c8: STX_ZP(0x3A)
+B30_d2ca: LDA_ABS(0x0621)
+B30_d2cd: SEC()
+B30_d2ce: SBC_IMM(0x03)
+B30_d2d0: ASL_A()
+B30_d2d1: ASL_A()
+B30_d2d2: ADC_ZP(0x3A)
+B30_d2d4: TAX()
+B30_d2d5: LDA_ABS_X(0xd362)
+B30_d2d8: CMP_IMM(0xFF)
+B30_d2da: CYCLE(2); if (SR_Z) goto B30_d309;
+B30_d2dc: CMP_IMM(0x02)
+B30_d2de: CYCLE(2); if (!SR_Z) goto B30_d2ed;
+B30_d2e0: CYCLE(6); SetStack(SP, 226); SetStack(SP - 1, 210); SP -= 2; goto B30_cd77;
+B30_d2e3: LDY_IMM(0x00)
+B30_d2e5: LDA_IDY(0x34)
+B30_d2e7: CMP_IMM(0x22)
+B30_d2e9: CYCLE(2); if (!SR_Z) goto B30_d309;
+B30_d2eb: LDA_IMM(0x02)
+B30_d2ed: STA_ABS(0x043d)
+B30_d2f0: LDX_ZP(0x3A)
+B30_d2f2: LDA_ABS(0x061e)
+B30_d2f5: STX_ABS(0x061e)
+B30_d2f8: PHA()
+B30_d2f9: AND_IMM(0x03)
+B30_d2fb: CMP_ABS(0x061e)
+B30_d2fe: CYCLE(2); if (SR_Z) goto B30_d303;
+B30_d300: PLA()
+B30_d301: TXA()
+B30_d302: PHA()
+B30_d303: PLA()
+B30_d304: ORA_IMM(0x80)
+B30_d306: STA_ABS(0x061e)
+B30_d309: LDA_IMM(0x80)
+B30_d30b: AND_ABS(0x001e)
+B30_d30e: CYCLE(2); if (SR_Z) goto B30_d318;
+B30_d310: BIT_ABS(0x061e)
+B30_d313: CYCLE(2); if (!SR_N) goto B30_d318;
+B30_d315: CYCLE(3); PC = 0xcc46; goto B30_cc46;
+B30_d318: BIT_ABS(0x061e)
+B30_d31b: CYCLE(2); if (!SR_N) goto B30_d2b4;
+B30_d31d: LDA_IMM(0x20)
+B30_d31f: BIT_ABS(0x061e)
+B30_d322: CYCLE(2); if (!SR_Z) goto B30_d32f;
+B30_d324: ORA_ABS(0x061e)
+B30_d327: STA_ABS(0x061e)
+B30_d32a: LDA_IMM(0x00)
+B30_d32c: STA_ABS(0x061f)
+B30_d32f: LDX_ABS(0x061f)
+B30_d332: CYCLE(2); if (SR_Z) goto B30_d33a;
+B30_d334: DEC_ABS(0x061f)
+B30_d337: CYCLE(3); PC = 0xd2b4; goto B30_d2b4;
+B30_d33a: LDA_IMM(0x0D)
+B30_d33c: STA_ABS(0x061f)
+B30_d33f: LDA_ABS(0x061e)
+B30_d342: EOR_IMM(0x40)
+B30_d344: STA_ABS(0x061e)
+B30_d347: LDY_ABS(0x043d)
+B30_d34a: LDA_ABS_Y(0xd548)
+B30_d34d: BIT_ABS(0x061e)
+B30_d350: CYCLE(2); if (SR_V) goto B30_d354;
+B30_d352: ORA_IMM(0x80)
+B30_d354: LDX_IMM(0x00)
+B30_d356: CYCLE(6); SetStack(SP, 88); SetStack(SP - 1, 211); SP -= 2; goto B31_e93d;
+B30_d359: CYCLE(3); PC = 0xd2b4; goto B30_d2b4;
+B30_d36e: LDA_ABS(0x0621)
+B30_d371: CMP_IMM(0x03)
+B30_d373: CYCLE(2); if (!SR_C) goto B30_d378;
+B30_d375: CYCLE(3); PC = 0xd29a; goto B30_d29a;
+B30_d378: LDA_ABS(0x0600)
+B30_d37b: CYCLE(2); if (!SR_Z) goto B30_d37e;
+B30_d37d: RTS()
+B30_d37e: CYCLE(6); SetStack(SP, 128); SetStack(SP - 1, 211); SP -= 2; goto B30_cc46;
+B30_d381: LDX_IMM(0x03)
+B30_d383: LDA_IMM(0xFF)
+B30_d385: STA_ABS_X(0x060b)
+B30_d388: DEX()
+B30_d389: CYCLE(2); if (!SR_N) goto B30_d385;
+B30_d38b: LDA_IMM(0x00)
+B30_d38d: STA_ABS(0x061e)
+B30_d390: CYCLE(6); SetStack(SP, 146); SetStack(SP - 1, 211); SP -= 2; goto B30_d4ea;
+B30_d393: LDA_IMM(0x0D)
+B30_d395: LDX_ABS(0x061e)
+B30_d398: LDY_ABS_X(0x0601)
+B30_d39b: CYCLE(2); if (SR_Z) goto B30_d3a3;
+B30_d39d: LDX_ABS(0x0621)
+B30_d3a0: LDA_ABS_X(0xd552)
+B30_d3a3: CYCLE(6); SetStack(SP, 165); SetStack(SP - 1, 211); SP -= 2; goto B31_ef7f;
+B30_d3a6: LDA_IMM(0x01)
+B30_d3a8: CYCLE(6); SetStack(SP, 170); SetStack(SP - 1, 211); SP -= 2; goto B30_cb0f;
+B30_d3ab: LDA_IMM(0x80)
+B30_d3ad: AND_ABS(0x001e)
+B30_d3b0: CYCLE(2); if (!SR_Z) goto B30_d3b5;
+B30_d3b2: CYCLE(3); PC = 0xd438; goto B30_d438;
+B30_d3b5: LDX_ABS(0x061e)
+B30_d3b8: CPX_ABS(0x0600)
+B30_d3bb: CYCLE(2); if (!SR_Z) goto B30_d3c0;
+B30_d3bd: CYCLE(3); PC = 0xcc46; goto B30_cc46;
+B30_d3c0: LDA_ABS_X(0x060b)
+B30_d3c3: CMP_IMM(0xFF)
+B30_d3c5: CYCLE(2); if (SR_Z) goto B30_d438;
+B30_d3c7: STA_ABS(0x043d)
+B30_d3ca: TAX()
+B30_d3cb: LDY_ABS(0x061e)
+B30_d3ce: LDA_ABS_Y(0x0601)
+B30_d3d1: STA_ABS(0x0442)
+B30_d3d4: PHA()
+B30_d3d5: LDA_ZP(0x22)
+B30_d3d7: LDA_IMM(0x1C)
+B30_d3d9: STA_ZP(0x24)
+B30_d3db: LDA_IMM(0x1D)
+B30_d3dd: STA_ZP(0x25)
+B30_d3df: CYCLE(6); SetStack(SP, 225); SetStack(SP - 1, 211); SP -= 2; goto B30_ce2d;
+B30_d3e2: PLA()
+B30_d3e3: CYCLE(6); SetStack(SP, 229); SetStack(SP - 1, 211); SP -= 2; goto B28_800c;
+B30_d3e6: LDA_ABS(0x0430)
+B30_d3e9: CYCLE(2); if (SR_Z) goto B30_d424;
+B30_d3eb: CLC()
+B30_d3ec: ADC_IMM(0x0B)
+B30_d3ee: CYCLE(6); SetStack(SP, 240); SetStack(SP - 1, 211); SP -= 2; goto B31_ef7f;
+B30_d3f1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 211); SP -= 2; goto B30_d77a;
+B30_d3f4: ASL_A()
+B30_d3f5: PHP()
+B30_d3f6: CYCLE(2); if (SR_C) goto B30_d40c;
+B30_d3f8: LSR_A()
+B30_d3f9: PHA()
+B30_d3fa: STA_ABS(0x043e)
+B30_d3fd: CYCLE(6); SetStack(SP, 255); SetStack(SP - 1, 211); SP -= 2; goto B30_d746;
+B30_d400: PLA()
+B30_d401: CYCLE(2); if (!SR_C) goto B30_d40c;
+B30_d403: LDX_ABS(0x061e)
+B30_d406: STA_ABS_X(0x0606)
+B30_d409: INC_ABS(0x061e)
+B30_d40c: CYCLE(6); SetStack(SP, 14); SetStack(SP - 1, 212); SP -= 2; goto B30_cc46;
+B30_d40f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 212); SP -= 2; goto B30_d4ea;
+B30_d412: LDA_ABS(0x061e)
+B30_d415: CMP_ABS(0x0600)
+B30_d418: CYCLE(2); if (SR_Z) goto B30_d41f;
+B30_d41a: LDA_IMM(0x16)
+B30_d41c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 212); SP -= 2; goto B31_ef7f;
+B30_d41f: PLP()
+B30_d420: CYCLE(2); if (SR_C) goto B30_d438;
+B30_d422: CYCLE(2); if (!SR_C) goto B30_d430;
+B30_d424: LDX_ABS(0x061e)
+B30_d427: STA_ABS_X(0x0606)
+B30_d42a: CYCLE(6); SetStack(SP, 44); SetStack(SP - 1, 212); SP -= 2; goto B30_d4e4;
+B30_d42d: INC_ABS(0x061e)
+B30_d430: LDA_ABS(0x061e)
+B30_d433: CMP_ABS(0x0600)
+B30_d436: CYCLE(2); if (!SR_Z) goto B30_d44f;
+B30_d438: LDA_IMM(0x40)
+B30_d43a: AND_ABS(0x001e)
+B30_d43d: CYCLE(2); if (SR_Z) goto B30_d45f;
+B30_d43f: LDX_ABS(0x061e)
+B30_d442: CYCLE(2); if (SR_Z) goto B30_d45f;
+B30_d444: CPX_ABS(0x0600)
+B30_d447: CYCLE(2); if (SR_Z) goto B30_d44c;
+B30_d449: CYCLE(6); SetStack(SP, 75); SetStack(SP - 1, 212); SP -= 2; goto B30_d4e4;
+B30_d44c: DEC_ABS(0x061e)
+B30_d44f: LDA_ABS(0x061f)
+B30_d452: ORA_IMM(0x40)
+B30_d454: STA_ABS(0x061f)
+B30_d457: LDA_IMM(0x00)
+B30_d459: STA_ABS(0x0620)
+B30_d45c: CYCLE(3); PC = 0xd393; goto B30_d393;
+B30_d45f: LDA_IMM(0x0F)
+B30_d461: AND_ABS(0x001e)
+B30_d464: CYCLE(2); if (SR_Z) goto B30_d49f;
+B30_d466: LDX_IMM(0x00)
+B30_d468: LSR_A()
+B30_d469: CYCLE(2); if (SR_C) goto B30_d46e;
+B30_d46b: INX()
+B30_d46c: CYCLE(2); if (!SR_Z) goto B30_d468;
+B30_d46e: STX_ZP(0x3A)
+B30_d470: LDA_ABS(0x0621)
+B30_d473: ASL_A()
+B30_d474: ASL_A()
+B30_d475: ADC_ZP(0x3A)
+B30_d477: TAX()
+B30_d478: LDA_ABS_X(0xd555)
+B30_d47b: LDY_ABS(0x061e)
+B30_d47e: LDX_ABS_Y(0x0601)
+B30_d481: CYCLE(2); if (!SR_Z) goto B30_d488;
+B30_d483: LDX_ZP(0x3A)
+B30_d485: LDA_ABS_X(0xd561)
+B30_d488: CMP_IMM(0xFF)
+B30_d48a: CYCLE(2); if (SR_Z) goto B30_d49f;
+B30_d48c: LDX_ABS(0x061e)
+B30_d48f: CMP_ABS_X(0x060b)
+B30_d492: CYCLE(2); if (SR_Z) goto B30_d49f;
+B30_d494: STA_ABS_X(0x060b)
+B30_d497: LDA_IMM(0x00)
+B30_d499: STA_ABS_X(0x0606)
+B30_d49c: STA_ABS(0x061f)
+B30_d49f: LDA_ABS(0x061e)
+B30_d4a2: CMP_ABS(0x0600)
+B30_d4a5: CYCLE(2); if (!SR_Z) goto B30_d4aa;
+B30_d4a7: CYCLE(3); PC = 0xd3a6; goto B30_d3a6;
+B30_d4aa: BIT_ABS(0x061f)
+B30_d4ad: CYCLE(2); if (SR_N) goto B30_d4b9;
+B30_d4af: LDA_IMM(0x80)
+B30_d4b1: STA_ABS(0x061f)
+B30_d4b4: LDA_IMM(0x00)
+B30_d4b6: STA_ABS(0x0620)
+B30_d4b9: LDA_ABS(0x0620)
+B30_d4bc: CYCLE(2); if (SR_Z) goto B30_d4c4;
+B30_d4be: DEC_ABS(0x0620)
+B30_d4c1: CYCLE(3); PC = 0xd3a6; goto B30_d3a6;
+B30_d4c4: LDA_IMM(0x0D)
+B30_d4c6: STA_ABS(0x0620)
+B30_d4c9: LDA_ABS(0x061f)
+B30_d4cc: EOR_IMM(0x40)
+B30_d4ce: STA_ABS(0x061f)
+B30_d4d1: LDX_ABS(0x061e)
+B30_d4d4: CYCLE(6); SetStack(SP, 214); SetStack(SP - 1, 212); SP -= 2; goto B30_d504;
+B30_d4d7: BIT_ABS(0x061f)
+B30_d4da: CYCLE(2); if (SR_V) goto B30_d4de;
+B30_d4dc: ORA_IMM(0x80)
+B30_d4de: CYCLE(6); SetStack(SP, 224); SetStack(SP - 1, 212); SP -= 2; goto B31_e93d;
+B30_d4e1: CYCLE(3); PC = 0xd3a6; goto B30_d3a6;
+B30_d4e4: CYCLE(6); SetStack(SP, 230); SetStack(SP - 1, 212); SP -= 2; goto B30_d504;
+B30_d4e7: CYCLE(3); PC = 0xe93d; goto B31_e93d;
+B30_d4ea: LDA_ABS(0x0600)
+B30_d4ed: CLC()
+B30_d4ee: ADC_IMM(0x11)
+B30_d4f0: CYCLE(6); SetStack(SP, 242); SetStack(SP - 1, 212); SP -= 2; goto B31_ef7f;
+B30_d4f3: LDA_IMM(0x00)
+B30_d4f5: PHA()
+B30_d4f6: TAX()
+B30_d4f7: CYCLE(6); SetStack(SP, 249); SetStack(SP - 1, 212); SP -= 2; goto B30_d4e4;
+B30_d4fa: PLA()
+B30_d4fb: CLC()
+B30_d4fc: ADC_IMM(0x01)
+B30_d4fe: CMP_ABS(0x0600)
+B30_d501: CYCLE(2); if (!SR_Z) goto B30_d4f5;
+B30_d503: RTS()
+B30_d504: LDA_ABS_X(0x060b)
+B30_d507: CMP_IMM(0xFF)
+B30_d509: CYCLE(2); if (!SR_Z) goto B30_d50e;
+B30_d50b: LDA_IMM(0x1D)
+B30_d50d: RTS()
+B30_d50e: LDY_ABS_X(0x0601)
+B30_d511: CYCLE(2); if (!SR_Z) goto B30_d518;
+B30_d513: TAY()
+B30_d514: LDA_ABS_Y(0xd548)
+B30_d517: RTS()
+B30_d518: ASL_A()
+B30_d519: TAY()
+B30_d51a: LDA_ABS_Y(0xd52b)
+B30_d51d: STA_ZP(0x3A)
+B30_d51f: LDA_ABS_Y(0xd52c)
+B30_d522: STA_ZP(0x3B)
+B30_d524: LDA_ABS_X(0x0606)
+B30_d527: TAY()
+B30_d528: LDA_IDY(0x3A)
+B30_d52a: RTS()
+B30_d565: CYCLE(6); SetStack(SP, 103); SetStack(SP - 1, 213); SP -= 2; goto B30_d573;
+B30_d568: LDA_IMM(0x1A)
+B30_d56a: STA_ZP(0x24)
+B30_d56c: LDA_IMM(0x1B)
+B30_d56e: STA_ZP(0x25)
+B30_d570: CYCLE(3); PC = 0xce2d; goto B30_ce2d;
+B30_d573: LDA_IMM(0x00)
+B30_d575: STA_ABS(0x062d)
+B30_d578: STA_ABS(0x0628)
+B30_d57b: CYCLE(6); SetStack(SP, 125); SetStack(SP - 1, 213); SP -= 2; goto B30_cd77;
+B30_d57e: LDY_IMM(0x0A)
+B30_d580: LDA_IDY(0x34)
+B30_d582: CYCLE(2); if (SR_Z) goto B30_d58c;
+B30_d584: LDA_IMM(0x40)
+B30_d586: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 213); SP -= 2; goto B30_cbb0;
+B30_d589: CYCLE(3); PC = 0xd5b2; goto B30_d5b2;
+B30_d58c: LDA_ABS(0x0621)
+B30_d58f: CMP_IMM(0x03)
+B30_d591: CYCLE(2); if (SR_Z) goto B30_d5b2;
+B30_d593: CMP_IMM(0x01)
+B30_d595: CYCLE(2); if (!SR_Z) goto B30_d5a5;
+B30_d597: LDA_ABS(0x0600)
+B30_d59a: CYCLE(2); if (SR_Z) goto B30_d5a5;
+B30_d59c: LDA_ABS(0x0601)
+B30_d59f: CYCLE(2); if (SR_Z) goto B30_d5b2;
+B30_d5a1: CMP_IMM(0x0B)
+B30_d5a3: CYCLE(2); if (SR_Z) goto B30_d5b2;
+B30_d5a5: LDY_IMM(0x07)
+B30_d5a7: LDA_IDY(0x34)
+B30_d5a9: CMP_IMM(0x18)
+B30_d5ab: CYCLE(2); if (!SR_C) goto B30_d5b2;
+B30_d5ad: LDA_IMM(0x41)
+B30_d5af: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 213); SP -= 2; goto B30_cbb0;
+B30_d5b2: CYCLE(6); SetStack(SP, 180); SetStack(SP - 1, 213); SP -= 2; goto B31_efa2;
+B30_d5b5: LDA_IMM(0x00)
+B30_d5b7: STA_ZP(0x11)
+B30_d5b9: STA_ZP(0x12)
+B30_d5bb: LDA_IMM(0x02)
+B30_d5bd: CYCLE(6); SetStack(SP, 191); SetStack(SP - 1, 213); SP -= 2; goto B30_cb0f;
+B30_d5c0: CYCLE(6); SetStack(SP, 194); SetStack(SP - 1, 213); SP -= 2; goto B30_cc46;
+B30_d5c3: CYCLE(6); SetStack(SP, 197); SetStack(SP - 1, 213); SP -= 2; goto B30_cc46;
+B30_d5c6: LDA_ABS(0x05fb)
+B30_d5c9: CYCLE(2); if (SR_Z) goto B30_d5ce;
+B30_d5cb: CYCLE(3); PC = 0xd36e; goto B30_d36e;
+B30_d5ce: LDX_ABS(0x0621)
+B30_d5d1: LDA_ABS_X(0xd706)
+B30_d5d4: CYCLE(6); SetStack(SP, 214); SetStack(SP - 1, 213); SP -= 2; goto B31_ef7f;
+B30_d5d7: LDX_ABS(0x0621)
+B30_d5da: LDA_ABS_X(0xd700)
+B30_d5dd: CYCLE(6); SetStack(SP, 223); SetStack(SP - 1, 213); SP -= 2; goto B31_ef7f;
+B30_d5e0: LDA_IMM(0x00)
+B30_d5e2: STA_ABS(0x061e)
+B30_d5e5: LDA_IMM(0x01)
+B30_d5e7: CYCLE(6); SetStack(SP, 233); SetStack(SP - 1, 213); SP -= 2; goto B30_cb0f;
+B30_d5ea: LDA_IMM(0x0F)
+B30_d5ec: AND_ABS(0x001e)
+B30_d5ef: CYCLE(2); if (SR_Z) goto B30_d626;
+B30_d5f1: LDX_IMM(0x00)
+B30_d5f3: LSR_A()
+B30_d5f4: CYCLE(2); if (SR_C) goto B30_d5f9;
+B30_d5f6: INX()
+B30_d5f7: CYCLE(2); if (!SR_Z) goto B30_d5f3;
+B30_d5f9: STX_ZP(0x3A)
+B30_d5fb: LDA_ABS(0x0621)
+B30_d5fe: ASL_A()
+B30_d5ff: ASL_A()
+B30_d600: ADC_ZP(0x3A)
+B30_d602: TAX()
+B30_d603: LDA_ABS_X(0xd6e8)
+B30_d606: CMP_IMM(0xFF)
+B30_d608: CYCLE(2); if (SR_Z) goto B30_d626;
+B30_d60a: STA_ABS(0x043b)
+B30_d60d: LDX_ZP(0x3A)
+B30_d60f: LDA_ABS(0x061e)
+B30_d612: STX_ABS(0x061e)
+B30_d615: PHA()
+B30_d616: AND_IMM(0x03)
+B30_d618: CMP_ABS(0x061e)
+B30_d61b: CYCLE(2); if (SR_Z) goto B30_d620;
+B30_d61d: PLA()
+B30_d61e: TXA()
+B30_d61f: PHA()
+B30_d620: PLA()
+B30_d621: ORA_IMM(0x80)
+B30_d623: STA_ABS(0x061e)
+B30_d626: LDA_IMM(0x80)
+B30_d628: AND_ABS(0x001e)
+B30_d62b: CYCLE(2); if (SR_Z) goto B30_d638;
+B30_d62d: BIT_ABS(0x061e)
+B30_d630: CYCLE(2); if (!SR_N) goto B30_d638;
+B30_d632: CYCLE(6); SetStack(SP, 52); SetStack(SP - 1, 214); SP -= 2; goto B30_d67c;
+B30_d635: CYCLE(3); PC = 0xd5c3; goto B30_d5c3;
+B30_d638: BIT_ABS(0x061e)
+B30_d63b: CYCLE(2); if (!SR_N) goto B30_d5e5;
+B30_d63d: LDA_IMM(0x20)
+B30_d63f: BIT_ABS(0x061e)
+B30_d642: CYCLE(2); if (!SR_Z) goto B30_d64f;
+B30_d644: ORA_ABS(0x061e)
+B30_d647: STA_ABS(0x061e)
+B30_d64a: LDA_IMM(0x00)
+B30_d64c: STA_ABS(0x061f)
+B30_d64f: LDX_ABS(0x061f)
+B30_d652: CYCLE(2); if (SR_Z) goto B30_d65a;
+B30_d654: DEC_ABS(0x061f)
+B30_d657: CYCLE(3); PC = 0xd5e5; goto B30_d5e5;
+B30_d65a: LDA_IMM(0x0D)
+B30_d65c: STA_ABS(0x061f)
+B30_d65f: LDA_ABS(0x061e)
+B30_d662: EOR_IMM(0x40)
+B30_d664: STA_ABS(0x061e)
+B30_d667: LDY_ABS(0x043b)
+B30_d66a: LDA_ABS_Y(0xd6de)
+B30_d66d: BIT_ABS(0x061e)
+B30_d670: CYCLE(2); if (SR_V) goto B30_d674;
+B30_d672: ORA_IMM(0x80)
+B30_d674: LDX_IMM(0x00)
+B30_d676: CYCLE(6); SetStack(SP, 120); SetStack(SP - 1, 214); SP -= 2; goto B31_e93d;
+B30_d679: CYCLE(3); PC = 0xd5e5; goto B30_d5e5;
+B30_d67c: LDX_ABS(0x043b)
+B30_d67f: LDA_ABS_X(0xd6de)
+B30_d682: LDX_IMM(0x00)
+B30_d684: STX_ABS(0x043c)
+B30_d687: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 214); SP -= 2; goto B31_e93d;
+B30_d68a: LDX_ABS(0x043b)
+B30_d68d: CPX_IMM(0x02)
+B30_d68f: CYCLE(2); if (!SR_Z) goto B30_d696;
+B30_d691: LDA_ABS(0x0600)
+B30_d694: CYCLE(2); if (SR_Z) goto B30_d6c4;
+B30_d696: LDA_ABS(0x0441)
+B30_d699: PHA()
+B30_d69a: LDA_ZP(0x22)
+B30_d69c: LDA_IMM(0x1C)
+B30_d69e: STA_ZP(0x24)
+B30_d6a0: LDA_IMM(0x1D)
+B30_d6a2: STA_ZP(0x25)
+B30_d6a4: CYCLE(6); SetStack(SP, 166); SetStack(SP - 1, 214); SP -= 2; goto B30_ce2d;
+B30_d6a7: PLA()
+B30_d6a8: CYCLE(6); SetStack(SP, 170); SetStack(SP - 1, 214); SP -= 2; goto B28_8009;
+B30_d6ab: LDA_ABS(0x0430)
+B30_d6ae: CYCLE(2); if (SR_Z) goto B30_d6be;
+B30_d6b0: CLC()
+B30_d6b1: ADC_IMM(0x08)
+B30_d6b3: CYCLE(6); SetStack(SP, 181); SetStack(SP - 1, 214); SP -= 2; goto B31_ef7f;
+B30_d6b6: CYCLE(6); SetStack(SP, 184); SetStack(SP - 1, 214); SP -= 2; goto B30_d77a;
+B30_d6b9: ASL_A()
+B30_d6ba: CYCLE(2); if (!SR_C) goto B30_d6bd;
+B30_d6bc: RTS()
+B30_d6bd: LSR_A()
+B30_d6be: STA_ABS(0x043c)
+B30_d6c1: CYCLE(6); SetStack(SP, 195); SetStack(SP - 1, 214); SP -= 2; goto B30_d717;
+B30_d6c4: LDA_ABS(0x043b)
+B30_d6c7: CYCLE(6); SetStack(SP, 201); SetStack(SP - 1, 214); SP -= 2; goto B30_cb99;
+B30_d70c: CYCLE(6); SetStack(SP, 14); SetStack(SP - 1, 215); SP -= 2; goto B30_cc46;
+B30_d70f: LDA_IMM(0x00)
+B30_d711: STA_ABS(0x062d)
+B30_d714: PLA()
+B30_d715: PLA()
+B30_d716: RTS()
+B30_d717: PHA()
+B30_d718: LDA_ZP(0x22)
+B30_d71a: LDA_IMM(0x1C)
+B30_d71c: STA_ZP(0x24)
+B30_d71e: LDA_IMM(0x1D)
+B30_d720: STA_ZP(0x25)
+B30_d722: CYCLE(6); SetStack(SP, 36); SetStack(SP - 1, 215); SP -= 2; goto B30_ce2d;
+B30_d725: PLA()
+B30_d726: CYCLE(6); SetStack(SP, 40); SetStack(SP - 1, 215); SP -= 2; goto B28_8012;
+B30_d729: CYCLE(6); SetStack(SP, 43); SetStack(SP - 1, 215); SP -= 2; goto B30_d76b;
+B30_d72c: CYCLE(2); if (!SR_N) goto B30_d745;
+B30_d72e: LDA_ABS(0x043b)
+B30_d731: CMP_IMM(0x00)
+B30_d733: CYCLE(2); if (SR_Z) goto B30_d73e;
+B30_d735: CMP_IMM(0x03)
+B30_d737: CYCLE(2); if (SR_Z) goto B30_d73e;
+B30_d739: LDA_ABS(0x043c)
+B30_d73c: CYCLE(2); if (SR_Z) goto B30_d745;
+B30_d73e: LDA_IMM(0x3D)
+B30_d740: CYCLE(6); SetStack(SP, 66); SetStack(SP - 1, 215); SP -= 2; goto B30_cbb0;
+B30_d743: PLA()
+B30_d744: PLA()
+B30_d745: RTS()
+B30_d746: PHA()
+B30_d747: LDA_ZP(0x22)
+B30_d749: LDA_IMM(0x1C)
+B30_d74b: STA_ZP(0x24)
+B30_d74d: LDA_IMM(0x1D)
+B30_d74f: STA_ZP(0x25)
+B30_d751: CYCLE(6); SetStack(SP, 83); SetStack(SP - 1, 215); SP -= 2; goto B30_ce2d;
+B30_d754: PLA()
+B30_d755: CYCLE(6); SetStack(SP, 87); SetStack(SP - 1, 215); SP -= 2; goto B28_8015;
+B30_d758: CYCLE(6); SetStack(SP, 90); SetStack(SP - 1, 215); SP -= 2; goto B30_d76b;
+B30_d75b: CYCLE(2); if (!SR_N) goto B30_d769;
+B30_d75d: LDA_ABS(0x043e)
+B30_d760: CYCLE(2); if (SR_Z) goto B30_d769;
+B30_d762: LDA_IMM(0x3D)
+B30_d764: CYCLE(6); SetStack(SP, 102); SetStack(SP - 1, 215); SP -= 2; goto B30_cbb0;
+B30_d767: CLC()
+B30_d768: RTS()
+B30_d769: SEC()
+B30_d76a: RTS()
+B30_d76b: SEC()
+B30_d76c: LDY_IMM(0x01)
+B30_d76e: LDA_IDY(0x34)
+B30_d770: SBC_ABS(0x043f)
+B30_d773: INY()
+B30_d774: LDA_IDY(0x34)
+B30_d776: SBC_ABS(0x0440)
+B30_d779: RTS()
+B30_d77a: LDA_IMM(0x00)
+B30_d77c: STA_ABS(0x0622)
+B30_d77f: LDA_ABS(0x0430)
+B30_d782: CYCLE(6); SetStack(SP, 132); SetStack(SP - 1, 215); SP -= 2; goto B30_cf8f;
+B30_d785: LDX_IMM(0x80)
+B30_d787: CYCLE(2); if (!SR_C) goto B30_d790;
+B30_d789: TAX()
+B30_d78a: CYCLE(2); if (SR_Z) goto B30_d790;
+B30_d78c: LDA_ABS_X(0x0430)
+B30_d78f: TAX()
+B30_d790: TXA()
+B30_d791: RTS()
+B30_d792: LDA_ABS(0x043c)
+B30_d795: CMP_IMM(0x03)
+B30_d797: CYCLE(2); if (SR_C) goto B30_d79f;
+B30_d799: LDX_ABS(0x044e)
+B30_d79c: STX_ABS(0x043c)
+B30_d79f: CMP_IMM(0x12)
+B30_d7a1: CYCLE(2); if (!SR_Z) goto B30_d7d9;
+B30_d7a3: LDX_ABS(0x0448)
+B30_d7a6: CYCLE(2); if (!SR_Z) goto B30_d7d9;
+B30_d7a8: INC_ABS(0x0448)
+B30_d7ab: LDA_IMM(0x00)
+B30_d7ad: STA_ABS(0x062d)
+B30_d7b0: LDA_IMM(0x46)
+B30_d7b2: CYCLE(6); SetStack(SP, 180); SetStack(SP - 1, 215); SP -= 2; goto B30_cbb0;
+B30_d7b5: PHA()
+B30_d7b6: LDA_ZP(0x22)
+B30_d7b8: LDA_IMM(0x1A)
+B30_d7ba: STA_ZP(0x24)
+B30_d7bc: LDA_IMM(0x1B)
+B30_d7be: STA_ZP(0x25)
+B30_d7c0: CYCLE(6); SetStack(SP, 194); SetStack(SP - 1, 215); SP -= 2; goto B30_ce2d;
+B30_d7c3: PLA()
+B30_d7c4: CYCLE(6); SetStack(SP, 198); SetStack(SP - 1, 215); SP -= 2; goto B26_8021;
+B30_d7c7: PHA()
+B30_d7c8: LDA_ZP(0x22)
+B30_d7ca: LDA_IMM(0x1A)
+B30_d7cc: STA_ZP(0x24)
+B30_d7ce: LDA_IMM(0x1B)
+B30_d7d0: STA_ZP(0x25)
+B30_d7d2: CYCLE(6); SetStack(SP, 212); SetStack(SP - 1, 215); SP -= 2; goto B30_ce2d;
+B30_d7d5: PLA()
+B30_d7d6: CYCLE(6); SetStack(SP, 216); SetStack(SP - 1, 215); SP -= 2; goto B26_8036;
+B30_d7d9: CMP_IMM(0x11)
+B30_d7db: CYCLE(2); if (!SR_Z) goto B30_d7e5;
+B30_d7dd: LDA_IMM(0x00)
+B30_d7df: STA_ABS(0x0449)
+B30_d7e2: STA_ABS(0x044a)
+B30_d7e5: CYCLE(3); PC = 0xd70c; goto B30_d70c;
+B30_d7e8: LDA_IMM(0x38)
+B30_d7ea: CYCLE(6); SetStack(SP, 236); SetStack(SP - 1, 215); SP -= 2; goto B30_cbb0;
+B30_d7ed: LDA_IMM(0x0F)
+B30_d7ef: CYCLE(6); SetStack(SP, 241); SetStack(SP - 1, 215); SP -= 2; goto B31_ef7f;
+B30_d7f2: LDA_IMM(0x81)
+B30_d7f4: STA_ABS(0x062d)
+B30_d7f7: LDA_IMM(0x1F)
+B30_d7f9: STA_ABS(0x0494)
+B30_d7fc: CYCLE(6); SetStack(SP, 254); SetStack(SP - 1, 215); SP -= 2; goto B31_e6ec;
+B30_d7ff: LDA_IMM(0x00)
+B30_d801: STA_ABS(0x0625)
+B30_d804: LDA_ABS(0x05fe)
+B30_d807: STA_ABS(0x0624)
+B30_d80a: LDA_IMM(0x01)
+B30_d80c: CYCLE(6); SetStack(SP, 14); SetStack(SP - 1, 216); SP -= 2; goto B30_cb0f;
+B30_d80f: LDA_ABS(0x001c)
+B30_d812: AND_IMM(0x0F)
+B30_d814: CYCLE(2); if (SR_Z) goto B30_d837;
+B30_d816: LDX_IMM(0x00)
+B30_d818: LSR_A()
+B30_d819: CYCLE(2); if (SR_C) goto B30_d81e;
+B30_d81b: INX()
+B30_d81c: CYCLE(2); if (!SR_Z) goto B30_d818;
+B30_d81e: LDA_ABS_X(0xd84e)
+B30_d821: CLC()
+B30_d822: ADC_ABS(0x0624)
+B30_d825: CMP_IMM(0xF0)
+B30_d827: CYCLE(2); if (!SR_C) goto B30_d82c;
+B30_d829: LDA_ABS(0x0624)
+B30_d82c: CMP_ABS(0x0624)
+B30_d82f: STA_ABS(0x0624)
+B30_d832: CYCLE(2); if (SR_Z) goto B30_d837;
+B30_d834: CYCLE(6); SetStack(SP, 54); SetStack(SP - 1, 216); SP -= 2; goto B30_d8f7;
+B30_d837: LDA_IMM(0x40)
+B30_d839: AND_ABS(0x001e)
+B30_d83c: CYCLE(2); if (SR_Z) goto B30_d83f;
+B30_d83e: RTS()
+B30_d83f: LDA_IMM(0x80)
+B30_d841: AND_ABS(0x001e)
+B30_d844: CYCLE(2); if (SR_Z) goto B30_d80a;
+B30_d846: CYCLE(6); SetStack(SP, 72); SetStack(SP - 1, 216); SP -= 2; goto B30_d852;
+B30_d849: CYCLE(2); if (!SR_C) goto B30_d80a;
+B30_d84b: CYCLE(3); PC = 0xd70c; goto B30_d70c;
+B30_d852: LDA_IMM(0xFF)
+B30_d854: LDX_ABS(0x0625)
+B30_d857: CYCLE(2); if (SR_Z) goto B30_d862;
+B30_d859: LDX_ABS(0x0430)
+B30_d85c: DEX()
+B30_d85d: CYCLE(2); if (!SR_Z) goto B30_d868;
+B30_d85f: LDA_ABS(0x0431)
+B30_d862: STA_ABS(0x05fc)
+B30_d865: CYCLE(3); PC = 0xd8d2; goto B30_d8d2;
+B30_d868: LDA_ABS(0x0430)
+B30_d86b: CLC()
+B30_d86c: ADC_IMM(0x22)
+B30_d86e: CYCLE(6); SetStack(SP, 112); SetStack(SP - 1, 216); SP -= 2; goto B31_ef7f;
+B30_d871: LDA_IMM(0x00)
+B30_d873: STA_ABS(0x0625)
+B30_d876: CYCLE(3); PC = 0xd8b5; goto B30_d8b5;
+B30_d879: LDA_IMM(0x01)
+B30_d87b: CYCLE(6); SetStack(SP, 125); SetStack(SP - 1, 216); SP -= 2; goto B30_cb0f;
+B30_d87e: LDA_IMM(0x40)
+B30_d880: AND_ABS(0x001e)
+B30_d883: CYCLE(2); if (SR_Z) goto B30_d88f;
+B30_d885: LDA_IMM(0x0F)
+B30_d887: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 216); SP -= 2; goto B31_ef7f;
+B30_d88a: CYCLE(6); SetStack(SP, 140); SetStack(SP - 1, 216); SP -= 2; goto B30_d8f7;
+B30_d88d: CLC()
+B30_d88e: RTS()
+B30_d88f: LDA_IMM(0x0C)
+B30_d891: AND_ABS(0x001e)
+B30_d894: CYCLE(2); if (SR_Z) goto B30_d8c3;
+B30_d896: LDX_IMM(0x01)
+B30_d898: AND_IMM(0x04)
+B30_d89a: CYCLE(2); if (!SR_Z) goto B30_d89e;
+B30_d89c: LDX_IMM(0xFF)
+B30_d89e: TXA()
+B30_d89f: CLC()
+B30_d8a0: ADC_ABS(0x0625)
+B30_d8a3: CYCLE(2); if (SR_N) goto B30_d8aa;
+B30_d8a5: CMP_ABS(0x0430)
+B30_d8a8: CYCLE(2); if (!SR_C) goto B30_d8ad;
+B30_d8aa: LDA_ABS(0x0625)
+B30_d8ad: CMP_ABS(0x0625)
+B30_d8b0: STA_ABS(0x0625)
+B30_d8b3: CYCLE(2); if (SR_Z) goto B30_d8c3;
+B30_d8b5: LDX_ABS(0x0625)
+B30_d8b8: LDA_ABS_X(0x0431)
+B30_d8bb: STA_ABS(0x05fc)
+B30_d8be: LDA_IMM(0x1D)
+B30_d8c0: CYCLE(6); SetStack(SP, 194); SetStack(SP - 1, 216); SP -= 2; goto B31_ef7f;
+B30_d8c3: CYCLE(6); SetStack(SP, 197); SetStack(SP - 1, 216); SP -= 2; goto B30_d8da;
+B30_d8c6: LDA_IMM(0x80)
+B30_d8c8: AND_ABS(0x001e)
+B30_d8cb: CYCLE(2); if (SR_Z) goto B30_d879;
+B30_d8cd: LDA_IMM(0xF8)
+B30_d8cf: STA_ABS(0x02fc)
+B30_d8d2: LDA_ABS(0x0624)
+B30_d8d5: STA_ABS(0x0638)
+B30_d8d8: SEC()
+B30_d8d9: RTS()
+B30_d8da: LDA_ABS(0x0625)
+B30_d8dd: ASL_A()
+B30_d8de: ASL_A()
+B30_d8df: ASL_A()
+B30_d8e0: ASL_A()
+B30_d8e1: CLC()
+B30_d8e2: ADC_IMM(0x9A)
+B30_d8e4: STA_ABS(0x02fc)
+B30_d8e7: LDA_IMM(0x11)
+B30_d8e9: STA_ABS(0x02fd)
+B30_d8ec: LDA_IMM(0x03)
+B30_d8ee: STA_ABS(0x02fe)
+B30_d8f1: LDA_IMM(0x50)
+B30_d8f3: STA_ABS(0x02ff)
+B30_d8f6: RTS()
+B30_d8f7: LDA_IMM(0x00)
+B30_d8f9: STA_ABS(0x0430)
+B30_d8fc: STA_ABS(0x0625)
+B30_d8ff: PHA()
+B30_d900: CMP_ABS(0x0441)
+B30_d903: CYCLE(2); if (SR_Z) goto B30_d941;
+B30_d905: CMP_IMM(0x00)
+B30_d907: CYCLE(2); if (SR_Z) goto B30_d941;
+B30_d909: CMP_IMM(0x0B)
+B30_d90b: CYCLE(2); if (SR_Z) goto B30_d941;
+B30_d90d: CYCLE(6); SetStack(SP, 15); SetStack(SP - 1, 217); SP -= 2; goto B30_cd7c;
+B30_d910: LDY_IMM(0x06)
+B30_d912: LDA_IDY(0x34)
+B30_d914: TAX()
+B30_d915: LDY_IMM(0x08)
+B30_d917: LDA_IDY(0x34)
+B30_d919: TAY()
+B30_d91a: CYCLE(6); SetStack(SP, 28); SetStack(SP - 1, 217); SP -= 2; goto B30_cde2;
+B30_d91d: CMP_ABS(0x0624)
+B30_d920: CYCLE(2); if (!SR_Z) goto B30_d941;
+B30_d922: LDX_ABS(0x0430)
+B30_d925: CPX_IMM(0x04)
+B30_d927: CYCLE(2); if (SR_C) goto B30_d941;
+B30_d929: PLA()
+B30_d92a: PHA()
+B30_d92b: CMP_IMM(0x0B)
+B30_d92d: CYCLE(2); if (!SR_C) goto B30_d934;
+B30_d92f: LDY_ABS(0x0625)
+B30_d932: CYCLE(2); if (!SR_Z) goto B30_d941;
+B30_d934: STA_ABS_X(0x0431)
+B30_d937: INC_ABS(0x0430)
+B30_d93a: CMP_IMM(0x0B)
+B30_d93c: CYCLE(2); if (SR_C) goto B30_d941;
+B30_d93e: INC_ABS(0x0625)
+B30_d941: PLA()
+B30_d942: CLC()
+B30_d943: ADC_IMM(0x01)
+B30_d945: CMP_IMM(0x16)
+B30_d947: CYCLE(2); if (!SR_Z) goto B30_d8ff;
+B30_d949: LDX_ABS(0x0430)
+B30_d94c: CYCLE(2); if (!SR_Z) goto B30_d954;
+B30_d94e: LDA_IMM(0x1C)
+B30_d950: CYCLE(6); SetStack(SP, 82); SetStack(SP - 1, 217); SP -= 2; goto B31_ef7f;
+B30_d953: RTS()
+B30_d954: LDA_ABS(0x0625)
+B30_d957: CYCLE(2); if (!SR_Z) goto B30_d961;
+B30_d959: TXA()
+B30_d95a: CLC()
+B30_d95b: ADC_IMM(0x1F)
+B30_d95d: CYCLE(6); SetStack(SP, 95); SetStack(SP - 1, 217); SP -= 2; goto B31_ef7f;
+B30_d960: RTS()
+B30_d961: DEX()
+B30_d962: CYCLE(2); if (!SR_Z) goto B30_d970;
+B30_d964: LDA_ABS(0x0431)
+B30_d967: STA_ABS(0x05fc)
+B30_d96a: LDA_IMM(0x1D)
+B30_d96c: CYCLE(6); SetStack(SP, 110); SetStack(SP - 1, 217); SP -= 2; goto B31_ef7f;
+B30_d96f: RTS()
+B30_d970: TXA()
+B30_d971: CLC()
+B30_d972: ADC_IMM(0x18)
+B30_d974: CYCLE(6); SetStack(SP, 118); SetStack(SP - 1, 217); SP -= 2; goto B31_ef7f;
+B30_d977: RTS()
+B30_d979: LDA_IMM(0x38)
+B30_d97b: CYCLE(6); SetStack(SP, 125); SetStack(SP - 1, 217); SP -= 2; goto B30_cbb0;
+B30_d97e: LDA_ABS(0x043c)
+B30_d981: CYCLE(2); if (SR_Z) goto B30_d986;
+B30_d983: CYCLE(3); PC = 0xd70c; goto B30_d70c;
+B30_d986: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 217); SP -= 2; goto B31_e6ec;
+B30_d989: LDA_IMM(0x01)
+B30_d98b: STA_ZP(0x3A)
+B30_d98d: LDA_IMM(0x00)
+B30_d98f: STA_ABS(0x0430)
+B30_d992: LDA_ZP(0x3A)
+B30_d994: CMP_ABS(0x0441)
+B30_d997: CYCLE(2); if (SR_Z) goto B30_d9a9;
+B30_d999: CYCLE(6); SetStack(SP, 155); SetStack(SP - 1, 217); SP -= 2; goto B30_da3a;
+B30_d99c: CYCLE(2); if (!SR_C) goto B30_d9a9;
+B30_d99e: LDX_ABS(0x0430)
+B30_d9a1: LDA_ZP(0x3A)
+B30_d9a3: STA_ABS_X(0x0431)
+B30_d9a6: INC_ABS(0x0430)
+B30_d9a9: INC_ZP(0x3A)
+B30_d9ab: LDA_ZP(0x3A)
+B30_d9ad: CMP_IMM(0x0B)
+B30_d9af: CYCLE(2); if (!SR_Z) goto B30_d992;
+B30_d9b1: LDA_ABS(0x0430)
+B30_d9b4: CYCLE(2); if (!SR_Z) goto B30_d9c8;
+B30_d9b6: LDA_IMM(0x11)
+B30_d9b8: CYCLE(6); SetStack(SP, 186); SetStack(SP - 1, 217); SP -= 2; goto B31_ef7f;
+B30_d9bb: LDA_IMM(0x01)
+B30_d9bd: CYCLE(6); SetStack(SP, 191); SetStack(SP - 1, 217); SP -= 2; goto B30_cb0f;
+B30_d9c0: LDA_IMM(0xC0)
+B30_d9c2: AND_ABS(0x001e)
+B30_d9c5: CYCLE(2); if (SR_Z) goto B30_d9bb;
+B30_d9c7: RTS()
+B30_d9c8: LDA_IMM(0x10)
+B30_d9ca: CYCLE(6); SetStack(SP, 204); SetStack(SP - 1, 217); SP -= 2; goto B31_ef7f;
+B30_d9cd: LDA_IMM(0x82)
+B30_d9cf: STA_ABS(0x062d)
+B30_d9d2: LDA_IMM(0x1F)
+B30_d9d4: STA_ABS(0x0494)
+B30_d9d7: LDA_IMM(0x00)
+B30_d9d9: CYCLE(3); PC = 0xda03; goto B30_da03;
+B30_d9dc: LDA_IMM(0x01)
+B30_d9de: CYCLE(6); SetStack(SP, 224); SetStack(SP - 1, 217); SP -= 2; goto B30_cb0f;
+B30_d9e1: LDA_IMM(0x03)
+B30_d9e3: AND_ABS(0x001e)
+B30_d9e6: CYCLE(2); if (SR_Z) goto B30_da12;
+B30_d9e8: LDX_IMM(0x01)
+B30_d9ea: LSR_A()
+B30_d9eb: CYCLE(2); if (SR_C) goto B30_d9ef;
+B30_d9ed: LDX_IMM(0xFF)
+B30_d9ef: TXA()
+B30_d9f0: CLC()
+B30_d9f1: ADC_ABS(0x0625)
+B30_d9f4: CYCLE(2); if (!SR_N) goto B30_d9fc;
+B30_d9f6: LDA_ABS(0x0430)
+B30_d9f9: SEC()
+B30_d9fa: SBC_IMM(0x01)
+B30_d9fc: CMP_ABS(0x0430)
+B30_d9ff: CYCLE(2); if (!SR_C) goto B30_da03;
+B30_da01: LDA_IMM(0x00)
+B30_da03: STA_ABS(0x0625)
+B30_da06: TAX()
+B30_da07: LDA_ABS_X(0x0431)
+B30_da0a: STA_ABS(0x05fc)
+B30_da0d: LDA_IMM(0x1D)
+B30_da0f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 218); SP -= 2; goto B31_ef7f;
+B30_da12: LDA_IMM(0x40)
+B30_da14: AND_ABS(0x001e)
+B30_da17: CYCLE(2); if (SR_Z) goto B30_da1a;
+B30_da19: RTS()
+B30_da1a: LDA_IMM(0x80)
+B30_da1c: AND_ABS(0x001e)
+B30_da1f: CYCLE(2); if (SR_Z) goto B30_d9dc;
+B30_da21: LDA_ABS(0x05fc)
+B30_da24: CYCLE(6); SetStack(SP, 38); SetStack(SP - 1, 218); SP -= 2; goto B30_cd7c;
+B30_da27: LDY_IMM(0x06)
+B30_da29: LDA_IDY(0x34)
+B30_da2b: TAX()
+B30_da2c: LDY_IMM(0x08)
+B30_da2e: LDA_IDY(0x34)
+B30_da30: TAY()
+B30_da31: CYCLE(6); SetStack(SP, 51); SetStack(SP - 1, 218); SP -= 2; goto B30_cde2;
+B30_da34: STA_ABS(0x0638)
+B30_da37: CYCLE(3); PC = 0xd70c; goto B30_d70c;
+B30_da3a: CYCLE(6); SetStack(SP, 60); SetStack(SP - 1, 218); SP -= 2; goto B30_cd7c;
+B30_da3d: LDY_IMM(0x06)
+B30_da3f: LDA_IDY(0x34)
+B30_da41: SEC()
+B30_da42: SBC_ABS(0x0635)
+B30_da45: CYCLE(2); if (SR_C) goto B30_da4b;
+B30_da47: EOR_IMM(0xFF)
+B30_da49: ADC_IMM(0x01)
+B30_da4b: CMP_IMM(0x14)
+B30_da4d: CYCLE(2); if (SR_C) goto B30_da63;
+B30_da4f: LDY_IMM(0x08)
+B30_da51: LDA_IDY(0x34)
+B30_da53: SEC()
+B30_da54: SBC_ABS(0x0637)
+B30_da57: CYCLE(2); if (SR_C) goto B30_da5d;
+B30_da59: EOR_IMM(0xFF)
+B30_da5b: ADC_IMM(0x01)
+B30_da5d: CMP_IMM(0x14)
+B30_da5f: CYCLE(2); if (SR_C) goto B30_da63;
+B30_da61: SEC()
+B30_da62: RTS()
+B30_da63: CLC()
+B30_da64: RTS()
+B30_da65: LDA_IMM(0x38)
+B30_da67: CYCLE(6); SetStack(SP, 105); SetStack(SP - 1, 218); SP -= 2; goto B30_cbb0;
+B30_da6a: LDA_IMM(0x83)
+B30_da6c: STA_ABS(0x062d)
+B30_da6f: LDA_IMM(0x00)
+B30_da71: STA_ABS(0x0624)
+B30_da74: LDA_IMM(0x01)
+B30_da76: CYCLE(6); SetStack(SP, 120); SetStack(SP - 1, 218); SP -= 2; goto B30_cb0f;
+B30_da79: LDX_ABS(0x0624)
+B30_da7c: INX()
+B30_da7d: CPX_IMM(0x10)
+B30_da7f: CYCLE(2); if (!SR_C) goto B30_da83;
+B30_da81: LDX_IMM(0x00)
+B30_da83: STX_ABS(0x0624)
+B30_da86: LDA_IMM(0x40)
+B30_da88: AND_ABS(0x001e)
+B30_da8b: CYCLE(2); if (SR_Z) goto B30_da8e;
+B30_da8d: RTS()
+B30_da8e: LDA_IMM(0x80)
+B30_da90: AND_ABS(0x001e)
+B30_da93: CYCLE(2); if (SR_Z) goto B30_da74;
+B30_da95: CYCLE(3); PC = 0xd70c; goto B30_d70c;
+B30_da98: LDA_IMM(0x00)
+B30_da9a: STA_ABS(0x062d)
+B30_da9d: STA_ABS(0x0615)
+B30_daa0: LDA_IMM(0x33)
+B30_daa2: CYCLE(6); SetStack(SP, 164); SetStack(SP - 1, 218); SP -= 2; goto B30_cbb0;
+B30_daa5: LDA_IMM(0xFF)
+B30_daa7: CYCLE(3); PC = 0xcefe; goto B30_cefe;
+B30_daaa: LDA_IMM(0x01)
+B30_daac: CYCLE(6); SetStack(SP, 174); SetStack(SP - 1, 218); SP -= 2; goto B30_cbf1;
+B30_daaf: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 218); SP -= 2; goto B30_cf4f;
+B30_dab2: PHA()
+B30_dab3: LDA_ZP(0x22)
+B30_dab5: LDA_IMM(0x1A)
+B30_dab7: STA_ZP(0x24)
+B30_dab9: LDA_IMM(0x1B)
+B30_dabb: STA_ZP(0x25)
+B30_dabd: CYCLE(6); SetStack(SP, 191); SetStack(SP - 1, 218); SP -= 2; goto B30_ce2d;
+B30_dac0: PLA()
+B30_dac1: CYCLE(6); SetStack(SP, 195); SetStack(SP - 1, 218); SP -= 2; goto B28_8039;
+B30_dac4: CYCLE(6); SetStack(SP, 198); SetStack(SP - 1, 218); SP -= 2; goto B30_db24;
+B30_dac7: LDA_IMM(0x00)
+B30_dac9: CYCLE(6); SetStack(SP, 203); SetStack(SP - 1, 218); SP -= 2; goto B31_ef7f;
+B30_dacc: LDA_IMM(0x01)
+B30_dace: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 218); SP -= 2; goto B31_ef7f;
+B30_dad1: LDA_ABS(0x0629)
+B30_dad4: CMP_IMM(0x04)
+B30_dad6: CYCLE(2); if (SR_Z) goto B30_dae9;
+B30_dad8: LDA_IMM(0x35)
+B30_dada: CYCLE(6); SetStack(SP, 220); SetStack(SP - 1, 218); SP -= 2; goto B30_cbb0;
+B30_dadd: LDA_IMM(0x01)
+B30_dadf: CYCLE(6); SetStack(SP, 225); SetStack(SP - 1, 218); SP -= 2; goto B30_cb0f;
+B30_dae2: LDA_ABS(0x001c)
+B30_dae5: AND_IMM(0xC0)
+B30_dae7: CYCLE(2); if (SR_Z) goto B30_dadd;
+B30_dae9: LDA_ABS(0x05fb)
+B30_daec: CLC()
+B30_daed: ADC_IMM(0x08)
+B30_daef: STA_ABS(0x0441)
+B30_daf2: CYCLE(6); SetStack(SP, 244); SetStack(SP - 1, 218); SP -= 2; goto B30_dc07;
+B30_daf5: LDA_ABS(0x00e2)
+B30_daf8: AND_IMM(0x07)
+B30_dafa: CMP_IMM(0x05)
+B30_dafc: CYCLE(2); if (!SR_C) goto B30_db00;
+B30_dafe: SBC_IMM(0x05)
+B30_db00: TAX()
+B30_db01: LDA_ABS_X(0xdc82)
+B30_db04: CLC()
+B30_db05: ADC_ABS(0x05fb)
+B30_db08: STA_ABS(0x05fc)
+B30_db0b: CYCLE(6); SetStack(SP, 13); SetStack(SP - 1, 219); SP -= 2; goto B31_e6ec;
+B30_db0e: LDA_IMM(0x36)
+B30_db10: CYCLE(6); SetStack(SP, 18); SetStack(SP - 1, 219); SP -= 2; goto B30_cbb0;
+B30_db13: LDA_ABS(0x05fc)
+B30_db16: STA_ABS(0x0441)
+B30_db19: LDA_IMM(0x01)
+B30_db1b: STA_ABS(0x05fd)
+B30_db1e: LDX_IMM(0x50)
+B30_db20: TXS()
+B30_db21: CYCLE(3); PC = 0xe0df; goto B31_e0df;
+B30_db24: LDA_ABS(0x0629)
+B30_db27: CYCLE(6); SetStack(SP, 41); SetStack(SP - 1, 219); SP -= 2; goto B30_cb99;
+B30_db34: PHA()
+B30_db35: LDA_ZP(0x22)
+B30_db37: LDA_IMM(0x1C)
+B30_db39: STA_ZP(0x24)
+B30_db3b: LDA_IMM(0x1D)
+B30_db3d: STA_ZP(0x25)
+B30_db3f: CYCLE(6); SetStack(SP, 65); SetStack(SP - 1, 219); SP -= 2; goto B30_ce2d;
+B30_db42: PLA()
+B30_db43: CYCLE(6); SetStack(SP, 69); SetStack(SP - 1, 219); SP -= 2; goto B28_8003;
+B30_db46: LDA_IMM(0x00)
+B30_db48: STA_ABS(0x0447)
+B30_db4b: LDX_IMM(0x00)
+B30_db4d: LDA_ABS(0x002b)
+B30_db50: CMP_IMM(0x03)
+B30_db52: CYCLE(2); if (SR_Z) goto B30_db5b;
+B30_db54: BIT_ABS(0x00e2)
+B30_db57: CYCLE(2); if (!SR_N) goto B30_db5b;
+B30_db59: LDX_IMM(0x0B)
+B30_db5b: STX_ABS(0x044f)
+B30_db5e: STX_ABS(0x05fb)
+B30_db61: RTS()
+B30_db62: LDA_IMM(0x0A)
+B30_db64: LDX_ABS(0x002a)
+B30_db67: CPX_IMM(0x02)
+B30_db69: CYCLE(2); if (!SR_Z) goto B30_db6d;
+B30_db6b: LDA_IMM(0x14)
+B30_db6d: PHA()
+B30_db6e: CMP_IMM(0x0B)
+B30_db70: CYCLE(2); if (!SR_C) goto B30_db74;
+B30_db72: ADC_IMM(0x0A)
+B30_db74: LDX_IMM(0x00)
+B30_db76: CYCLE(6); SetStack(SP, 120); SetStack(SP - 1, 219); SP -= 2; goto B30_ce08;
+B30_db79: LDY_IMM(0x00)
+B30_db7b: LDA_IDY(0x34)
+B30_db7d: CMP_IMM(0x20)
+B30_db7f: CYCLE(2); if (!SR_Z) goto B30_db8c;
+B30_db81: LDA_ABS(0x044d)
+B30_db84: CYCLE(2); if (SR_Z) goto B30_db8c;
+B30_db86: LDA_IMM(0x00)
+B30_db88: STA_ZP(0x32)
+B30_db8a: STA_ZP(0x33)
+B30_db8c: LDY_IMM(0x01)
+B30_db8e: LDA_ZP(0x32)
+B30_db90: STA_IDY(0x34)
+B30_db92: INY()
+B30_db93: LDA_ZP(0x33)
+B30_db95: STA_IDY(0x34)
+B30_db97: PLA()
+B30_db98: SEC()
+B30_db99: SBC_IMM(0x01)
+B30_db9b: CYCLE(2); if (!SR_N) goto B30_db6d;
+B30_db9d: RTS()
+B30_db9e: CYCLE(6); SetStack(SP, 160); SetStack(SP - 1, 219); SP -= 2; goto B30_dbf3;
+B30_dba1: LDX_IMM(0x00)
+B30_dba3: LDA_ABS(0x002b)
+B30_dba6: CMP_ABS_X(0xdbea)
+B30_dba9: CYCLE(2); if (SR_Z) goto B30_dbb4;
+B30_dbab: INX()
+B30_dbac: INX()
+B30_dbad: INX()
+B30_dbae: CPX_IMM(0x09)
+B30_dbb0: CYCLE(2); if (SR_Z) goto B30_dbcb;
+B30_dbb2: CYCLE(2); if (!SR_Z) goto B30_dba6;
+B30_dbb4: LDA_ABS_X(0xdbeb)
+B30_dbb7: CYCLE(6); SetStack(SP, 185); SetStack(SP - 1, 219); SP -= 2; goto B30_cd7c;
+B30_dbba: LDY_IMM(0x00)
+B30_dbbc: LDA_ABS_X(0xdbec)
+B30_dbbf: STA_IDY(0x34)
+B30_dbc1: LDA_ABS(0x002b)
+B30_dbc4: CMP_IMM(0x0C)
+B30_dbc6: CYCLE(2); if (!SR_Z) goto B30_dbcb;
+B30_dbc8: CYCLE(6); SetStack(SP, 202); SetStack(SP - 1, 219); SP -= 2; goto B30_dbcc;
+B30_dbcb: RTS()
+B30_dbcc: LDA_IMM(0x0C)
+B30_dbce: PHA()
+B30_dbcf: CMP_IMM(0x14)
+B30_dbd1: CYCLE(2); if (SR_Z) goto B30_dbe1;
+B30_dbd3: CYCLE(6); SetStack(SP, 213); SetStack(SP - 1, 219); SP -= 2; goto B30_cd7c;
+B30_dbd6: LDY_IMM(0x01)
+B30_dbd8: LDA_IMM(0x80)
+B30_dbda: STA_IDY(0x34)
+B30_dbdc: INY()
+B30_dbdd: LDA_IMM(0xCB)
+B30_dbdf: STA_IDY(0x34)
+B30_dbe1: PLA()
+B30_dbe2: CLC()
+B30_dbe3: ADC_IMM(0x01)
+B30_dbe5: CMP_IMM(0x16)
+B30_dbe7: CYCLE(2); if (!SR_Z) goto B30_dbce;
+B30_dbe9: RTS()
+B30_dbf3: LDA_ABS(0x044f)
+B30_dbf6: EOR_IMM(0x0B)
+B30_dbf8: STA_ABS(0x05fb)
+B30_dbfb: RTS()
+B30_dbfc: LDA_ABS(0x044f)
+B30_dbff: STA_ABS(0x05fb)
+B30_dc02: RTS()
+B30_dc03: CYCLE(6); SetStack(SP, 5); SetStack(SP - 1, 220); SP -= 2; goto B30_cf4f;
+B30_dc06: RTS()
+B30_dc07: LDA_ABS(0x002c)
+B30_dc0a: ASL_A()
+B30_dc0b: PHA()
+B30_dc0c: ADC_ABS(0x002c)
+B30_dc0f: STA_ZP(0x3A)
+B30_dc11: PLA()
+B30_dc12: ASL_A()
+B30_dc13: ASL_A()
+B30_dc14: ADC_ZP(0x3A)
+B30_dc16: STA_ZP(0x3A)
+B30_dc18: LDA_ABS(0x002e)
+B30_dc1b: ASL_A()
+B30_dc1c: PHA()
+B30_dc1d: ADC_ABS(0x002e)
+B30_dc20: STA_ZP(0x3B)
+B30_dc22: PLA()
+B30_dc23: ASL_A()
+B30_dc24: ASL_A()
+B30_dc25: ADC_ZP(0x3B)
+B30_dc27: STA_ZP(0x3B)
+B30_dc29: LDA_IMM(0x00)
+B30_dc2b: PHA()
+B30_dc2c: CYCLE(6); SetStack(SP, 46); SetStack(SP - 1, 220); SP -= 2; goto B30_cd7c;
+B30_dc2f: LDX_ZP(0x3A)
+B30_dc31: INC_ZP(0x3A)
+B30_dc33: PLA()
+B30_dc34: PHA()
+B30_dc35: CMP_IMM(0x0B)
+B30_dc37: LDA_ABS(0x05fb)
+B30_dc3a: CYCLE(2); if (!SR_C) goto B30_dc42;
+B30_dc3c: LDX_ZP(0x3B)
+B30_dc3e: EOR_IMM(0x0B)
+B30_dc40: INC_ZP(0x3B)
+B30_dc42: TAY()
+B30_dc43: LDA_ABS_X(0xdc87)
+B30_dc46: DEY()
+B30_dc47: CYCLE(2); if (SR_N) goto B30_dc4c;
+B30_dc49: LDA_ABS_X(0xdcb3)
+B30_dc4c: CYCLE(6); SetStack(SP, 78); SetStack(SP - 1, 220); SP -= 2; goto B30_cdc9;
+B30_dc4f: LDA_ABS(0x05fb)
+B30_dc52: CYCLE(2); if (SR_Z) goto B30_dc5e;
+B30_dc54: TYA()
+B30_dc55: EOR_IMM(0xFF)
+B30_dc57: TAY()
+B30_dc58: TXA()
+B30_dc59: EOR_IMM(0xFF)
+B30_dc5b: TAX()
+B30_dc5c: INY()
+B30_dc5d: INX()
+B30_dc5e: TYA()
+B30_dc5f: LDY_IMM(0x08)
+B30_dc61: STA_IDY(0x34)
+B30_dc63: TXA()
+B30_dc64: LDY_IMM(0x06)
+B30_dc66: STA_IDY(0x34)
+B30_dc68: PLA()
+B30_dc69: PHA()
+B30_dc6a: CYCLE(2); if (SR_Z) goto B30_dc70;
+B30_dc6c: CMP_IMM(0x0B)
+B30_dc6e: CYCLE(2); if (!SR_Z) goto B30_dc76;
+B30_dc70: LDA_IMM(0x00)
+B30_dc72: LDY_IMM(0x07)
+B30_dc74: STA_IDY(0x34)
+B30_dc76: PLA()
+B30_dc77: CLC()
+B30_dc78: ADC_IMM(0x01)
+B30_dc7a: CMP_IMM(0x16)
+B30_dc7c: CYCLE(2); if (SR_Z) goto B30_dc81;
+B30_dc7e: CYCLE(3); PC = 0xdc2b; goto B30_dc2b;
+B30_dc81: RTS()
+B30_dcdf: LDA_ABS(0x044e)
+B30_dce2: CYCLE(2); if (!SR_Z) goto B30_dcef;
+B30_dce4: LDA_ABS(0x00e2)
+B30_dce7: AND_IMM(0x01)
+B30_dce9: CLC()
+B30_dcea: ADC_IMM(0x01)
+B30_dcec: STA_ABS(0x044e)
+B30_dcef: RTS()
+B30_dcfd: LDA_IMM(0xFF)
+B30_dcff: STA_ABS(0x061a)
+B30_dd02: CYCLE(6); SetStack(SP, 4); SetStack(SP - 1, 221); SP -= 2; goto B30_dd81;
+B30_dd05: CYCLE(6); SetStack(SP, 7); SetStack(SP - 1, 221); SP -= 2; goto B30_dd47;
+B30_dd08: PHP()
+B30_dd09: LDA_IMM(0x00)
+B30_dd0b: STA_ABS(0x061b)
+B30_dd0e: CYCLE(6); SetStack(SP, 16); SetStack(SP - 1, 221); SP -= 2; goto B31_e73e;
+B30_dd11: PLP()
+B30_dd12: CYCLE(2); if (!SR_C) goto B30_dd1c;
+B30_dd14: LDA_IMM(0x2D)
+B30_dd16: CYCLE(6); SetStack(SP, 24); SetStack(SP - 1, 221); SP -= 2; goto B30_cbb0;
+B30_dd19: CYCLE(3); PC = 0x801b; goto B28_801b;
+B30_dd1c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 221); SP -= 2; goto B30_cd77;
+B30_dd1f: LDY_IMM(0x0A)
+B30_dd21: LDA_IDY(0x34)
+B30_dd23: CYCLE(2); if (!SR_Z) goto B30_dd36;
+B30_dd25: LDA_IMM(0x1A)
+B30_dd27: STA_ZP(0x24)
+B30_dd29: LDA_IMM(0x1B)
+B30_dd2b: STA_ZP(0x25)
+B30_dd2d: CYCLE(6); SetStack(SP, 47); SetStack(SP - 1, 221); SP -= 2; goto B30_ce2d;
+B30_dd30: LDX_IMM(0x50)
+B30_dd32: TXS()
+B30_dd33: CYCLE(3); PC = 0x8006; goto B28_8006;
+B30_dd36: LDA_IMM(0x1A)
+B30_dd38: STA_ZP(0x24)
+B30_dd3a: LDA_IMM(0x1B)
+B30_dd3c: STA_ZP(0x25)
+B30_dd3e: CYCLE(6); SetStack(SP, 64); SetStack(SP - 1, 221); SP -= 2; goto B30_ce2d;
+B30_dd41: LDX_IMM(0x50)
+B30_dd43: TXS()
+B30_dd44: CYCLE(3); PC = 0x8018; goto B28_8018;
+B30_dd47: LDA_ABS(0x043c)
+B30_dd4a: CYCLE(2); if (!SR_Z) goto B30_dd6e;
+B30_dd4c: LDA_ABS(0x0635)
+B30_dd4f: LDX_ABS(0x05fb)
+B30_dd52: CYCLE(2); if (SR_Z) goto B30_dd56;
+B30_dd54: EOR_IMM(0xFF)
+B30_dd56: CMP_IMM(0x80)
+B30_dd58: CYCLE(2); if (SR_C) goto B30_dd6e;
+B30_dd5a: ADC_IMM(0x4F)
+B30_dd5c: LDX_ABS(0x05fb)
+B30_dd5f: CYCLE(2); if (SR_Z) goto B30_dd63;
+B30_dd63: TAX()
+B30_dd64: LDY_IMM(0x7C)
+B30_dd66: CYCLE(6); SetStack(SP, 104); SetStack(SP - 1, 221); SP -= 2; goto B30_cde2;
+B30_dd69: STA_ABS(0x0638)
+B30_dd6c: SEC()
+B30_dd6d: RTS()
+B30_dd6e: LDA_IMM(0xE9)
+B30_dd70: LDX_ABS(0x05fb)
+B30_dd73: CYCLE(2); if (SR_Z) goto B30_dd77;
+B30_dd75: LDA_IMM(0x05)
+B30_dd77: LSR_ABS(0x00e2)
+B30_dd7a: ADC_IMM(0x00)
+B30_dd7c: STA_ABS(0x0638)
+B30_dd7f: CLC()
+B30_dd80: RTS()
+B30_dd81: LDA_ABS(0x0635)
+B30_dd84: LDX_ABS(0x05fb)
+B30_dd87: CYCLE(2); if (SR_Z) goto B30_dd8e;
+B30_dd89: EOR_IMM(0xFF)
+B30_dd8b: CLC()
+B30_dd8c: ADC_IMM(0x01)
+B30_dd8e: CMP_IMM(0xA0)
+B30_dd90: CYCLE(2); if (SR_C) goto B30_dd9e;
+B30_dd92: SEC()
+B30_dd93: SBC_IMM(0x30)
+B30_dd95: LSR_A()
+B30_dd96: LSR_A()
+B30_dd97: LSR_A()
+B30_dd98: TAX()
+B30_dd99: LDA_ABS_X(0xddcb)
+B30_dd9c: CYCLE(2); if (!SR_Z) goto B30_ddbe;
+B30_dd9e: SEC()
+B30_dd9f: SBC_IMM(0xA0)
+B30_dda1: LSR_A()
+B30_dda2: LSR_A()
+B30_dda3: LSR_A()
+B30_dda4: STA_ZP(0x3A)
+B30_dda6: LDA_ABS(0x0637)
+B30_dda9: CYCLE(2); if (!SR_N) goto B30_ddad;
+B30_ddab: EOR_IMM(0xFF)
+B30_ddad: SEC()
+B30_ddae: SBC_IMM(0x50)
+B30_ddb0: AND_IMM(0x38)
+B30_ddb2: LSR_A()
+B30_ddb3: STA_ZP(0x3B)
+B30_ddb5: LSR_A()
+B30_ddb6: ADC_ZP(0x3B)
+B30_ddb8: ADC_ZP(0x3A)
+B30_ddba: TAX()
+B30_ddbb: LDA_ABS_X(0xddd9)
+B30_ddbe: STA_ABS(0x062b)
+B30_ddc1: ASL_A()
+B30_ddc2: ASL_A()
+B30_ddc3: ASL_A()
+B30_ddc4: ADC_ABS(0x062b)
+B30_ddc7: STA_ABS(0x062b)
+B30_ddca: RTS()
+B30_ddfd: LDA_ABS(0x00e2)
+B30_de00: AND_IMM(0x07)
+B30_de02: CMP_IMM(0x06)
+B30_de04: CYCLE(2); if (!SR_C) goto B30_de08;
+B30_de06: SBC_IMM(0x06)
+B30_de08: CLC()
+B30_de09: ADC_IMM(0x05)
+B30_de0b: ADC_ABS(0x05fb)
+B30_de0e: STA_ABS(0x05fc)
+B30_de11: LDA_ABS(0x05fb)
+B30_de14: STA_ABS(0x0441)
+B30_de17: CYCLE(6); SetStack(SP, 25); SetStack(SP - 1, 222); SP -= 2; goto B31_e6ec;
+B30_de1a: LDY_IMM(0x0A)
+B30_de1c: LDA_IMM(0x00)
+B30_de1e: STA_IDY(0x34)
+B30_de20: LDA_IMM(0x00)
+B30_de22: STA_ABS(0x0628)
+B30_de25: STA_ABS(0x044e)
+B30_de28: CYCLE(6); SetStack(SP, 42); SetStack(SP - 1, 222); SP -= 2; goto B30_dcdf;
+B30_de2b: LDA_IMM(0x01)
+B30_de2d: STA_ABS(0x043b)
+B30_de30: LDA_IMM(0x00)
+B30_de32: STA_ABS(0x043c)
+B30_de35: CYCLE(6); SetStack(SP, 55); SetStack(SP - 1, 222); SP -= 2; goto B30_d093;
+B30_de38: LDA_IMM(0x3A)
+B30_de3a: CYCLE(6); SetStack(SP, 60); SetStack(SP - 1, 222); SP -= 2; goto B30_cbb0;
+B30_de3d: LDA_IMM(0x1A)
+B30_de3f: STA_ABS(0x061a)
+B30_de42: CYCLE(3); PC = 0xde5e; goto B30_de5e;
+B30_de52: LDA_IMM(0xFF)
+B30_de54: BIT_ABS(0x0628)
+B30_de57: CYCLE(2); if (!SR_N) goto B30_de5b;
+B30_de59: LDA_IMM(0x26)
+B30_de5b: STA_ABS(0x061a)
+B30_de5e: CYCLE(6); SetStack(SP, 96); SetStack(SP - 1, 222); SP -= 2; goto B31_e059;
+B30_de61: CYCLE(6); SetStack(SP, 99); SetStack(SP - 1, 222); SP -= 2; goto B30_df8b;
+B30_de64: LDA_IMM(0x01)
+B30_de66: STA_ABS(0x061b)
+B30_de69: CYCLE(6); SetStack(SP, 107); SetStack(SP - 1, 222); SP -= 2; goto B31_e73e;
+B30_de6c: LDA_ABS(0x05fc)
+B30_de6f: CMP_IMM(0xFF)
+B30_de71: CYCLE(2); if (SR_Z) goto B30_de96;
+B30_de73: STA_ABS(0x0441)
+B30_de76: CYCLE(6); SetStack(SP, 120); SetStack(SP - 1, 222); SP -= 2; goto B31_e6ec;
+B30_de79: PHA()
+B30_de7a: LDA_ZP(0x22)
+B30_de7c: LDA_IMM(0x1A)
+B30_de7e: STA_ZP(0x24)
+B30_de80: LDA_IMM(0x1B)
+B30_de82: STA_ZP(0x25)
+B30_de84: CYCLE(6); SetStack(SP, 134); SetStack(SP - 1, 222); SP -= 2; goto B30_ce2d;
+B30_de87: PLA()
+B30_de88: CYCLE(6); SetStack(SP, 138); SetStack(SP - 1, 222); SP -= 2; goto B28_801e;
+B30_de8b: LDA_IMM(0x1C)
+B30_de8d: CYCLE(6); SetStack(SP, 143); SetStack(SP - 1, 222); SP -= 2; goto B30_cbb0;
+B30_de90: LDX_IMM(0x50)
+B30_de92: TXS()
+B30_de93: CYCLE(3); PC = 0xe0df; goto B31_e0df;
+B30_de96: LDA_ABS(0x062b)
+B30_de99: STA_ABS(0x0430)
+B30_de9c: LDA_IMM(0x01)
+B30_de9e: STA_ABS(0x05ff)
+B30_dea1: LDA_ABS(0x05fb)
+B30_dea4: CYCLE(6); SetStack(SP, 166); SetStack(SP - 1, 222); SP -= 2; goto B30_df4a;
+B30_dea7: STA_ABS(0x0431)
+B30_deaa: LDA_ABS(0x05fb)
+B30_dead: EOR_IMM(0x0B)
+B30_deaf: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 222); SP -= 2; goto B30_df4a;
+B30_deb2: STA_ABS(0x0432)
+B30_deb5: LDA_ABS(0x0431)
+B30_deb8: LDX_IMM(0x23)
+B30_deba: CYCLE(6); SetStack(SP, 188); SetStack(SP - 1, 222); SP -= 2; goto B30_df29;
+B30_debd: LDA_ABS(0x0431)
+B30_dec0: CYCLE(2); if (SR_C) goto B30_dedc;
+B30_dec2: LDA_ABS(0x0432)
+B30_dec5: LDX_IMM(0x24)
+B30_dec7: CYCLE(6); SetStack(SP, 201); SetStack(SP - 1, 222); SP -= 2; goto B30_df29;
+B30_deca: LDA_ABS(0x0432)
+B30_decd: CYCLE(2); if (SR_C) goto B30_dedc;
+B30_decf: DEC_ABS(0x0430)
+B30_ded2: CYCLE(2); if (!SR_Z) goto B30_deb5;
+B30_ded4: LDA_IMM(0x34)
+B30_ded6: CYCLE(6); SetStack(SP, 216); SetStack(SP - 1, 222); SP -= 2; goto B30_cbb0;
+B30_ded9: CYCLE(3); PC = 0x801b; goto B28_801b;
+B30_dedc: LDX_IMM(0x00)
+B30_dede: CMP_IMM(0x0B)
+B30_dee0: CYCLE(2); if (!SR_C) goto B30_dee4;
+B30_dee2: LDX_IMM(0x0B)
+B30_dee4: STA_ABS(0x0441)
+B30_dee7: LDY_IMM(0x1C)
+B30_dee9: TXA()
+B30_deea: EOR_ABS(0x05fb)
+B30_deed: STX_ABS(0x05fb)
+B30_def0: CYCLE(2); if (SR_Z) goto B30_def7;
+B30_def2: CYCLE(6); SetStack(SP, 244); SetStack(SP - 1, 222); SP -= 2; goto B30_d093;
+B30_def5: LDY_IMM(0x3E)
+B30_def7: TYA()
+B30_def8: PHA()
+B30_def9: LDA_ABS(0x0441)
+B30_defc: CYCLE(6); SetStack(SP, 254); SetStack(SP - 1, 222); SP -= 2; goto B30_cd7c;
+B30_deff: LDA_ABS(0x0635)
+B30_df02: LDY_IMM(0x06)
+B30_df04: STA_IDY(0x34)
+B30_df06: LDA_ABS(0x0637)
+B30_df09: LDY_IMM(0x08)
+B30_df0b: STA_IDY(0x34)
+B30_df0d: PHA()
+B30_df0e: LDA_ZP(0x22)
+B30_df10: LDA_IMM(0x1A)
+B30_df12: STA_ZP(0x24)
+B30_df14: LDA_IMM(0x1B)
+B30_df16: STA_ZP(0x25)
+B30_df18: CYCLE(6); SetStack(SP, 26); SetStack(SP - 1, 223); SP -= 2; goto B30_ce2d;
+B30_df1b: PLA()
+B30_df1c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 223); SP -= 2; goto B28_801e;
+B30_df1f: PLA()
+B30_df20: CYCLE(6); SetStack(SP, 34); SetStack(SP - 1, 223); SP -= 2; goto B30_cbb0;
+B30_df23: LDX_IMM(0x50)
+B30_df25: TXS()
+B30_df26: CYCLE(3); PC = 0xe0df; goto B31_e0df;
+B30_df29: CYCLE(6); SetStack(SP, 43); SetStack(SP - 1, 223); SP -= 2; goto B30_ce08;
+B30_df2c: LDA_IMM(0x01)
+B30_df2e: STA_ABS(0x05ff)
+B30_df31: CYCLE(6); SetStack(SP, 51); SetStack(SP - 1, 223); SP -= 2; goto B31_e854;
+B30_df34: LDY_IMM(0x06)
+B30_df36: LDA_IDY(0x34)
+B30_df38: TAX()
+B30_df39: LDY_IMM(0x08)
+B30_df3b: LDA_IDY(0x34)
+B30_df3d: TAY()
+B30_df3e: CYCLE(6); SetStack(SP, 64); SetStack(SP - 1, 223); SP -= 2; goto B30_cde2;
+B30_df41: CMP_ABS(0x05fe)
+B30_df44: CYCLE(2); if (!SR_Z) goto B30_df48;
+B30_df46: SEC()
+B30_df47: RTS()
+B30_df48: CLC()
+B30_df49: RTS()
+B30_df4a: CYCLE(6); SetStack(SP, 76); SetStack(SP - 1, 223); SP -= 2; goto B30_ce99;
+B30_df4d: PHA()
+B30_df4e: CYCLE(6); SetStack(SP, 80); SetStack(SP - 1, 223); SP -= 2; goto B30_cd7c;
+B30_df51: LDA_ABS(0x05fe)
+B30_df54: LDY_IMM(0x09)
+B30_df56: STA_IDY(0x34)
+B30_df58: PLA()
+B30_df59: RTS()
+B30_df8b: LDA_ABS(0x0638)
+B30_df8e: CYCLE(6); SetStack(SP, 144); SetStack(SP - 1, 223); SP -= 2; goto B30_cdc9;
+B30_df91: TXA()
+B30_df92: SEC()
+B30_df93: SBC_ABS(0x0635)
+B30_df96: CYCLE(2); if (SR_C) goto B30_df9c;
+B30_df98: EOR_IMM(0xFF)
+B30_df9a: ADC_IMM(0x01)
+B30_df9c: STA_ZP(0x3A)
+B30_df9e: TYA()
+B30_df9f: SEC()
+B30_dfa0: SBC_ABS(0x0637)
+B30_dfa3: CYCLE(2); if (SR_C) goto B30_dfa9;
+B30_dfa5: EOR_IMM(0xFF)
+B30_dfa7: ADC_IMM(0x01)
+B30_dfa9: TAY()
+B30_dfaa: SEC()
+B30_dfab: SBC_ZP(0x3A)
+B30_dfad: CYCLE(2); if (SR_C) goto B30_dfb1;
+B30_dfaf: LDY_ZP(0x3A)
+B30_dfb1: TYA()
+B30_dfb2: LSR_A()
+B30_dfb3: LSR_A()
+B30_dfb4: LSR_A()
+B30_dfb5: TAX()
+B30_dfb6: LDA_ABS_X(0xdfbd)
+B30_dfb9: STA_ABS(0x062b)
+B30_dfbc: RTS()
+B30_dfd9: CYCLE(6); SetStack(SP, 219); SetStack(SP - 1, 223); SP -= 2; goto B31_e059;
+B30_dfdc: LDA_IMM(0xFF)
+B30_dfde: STA_ABS(0x061a)
+B30_dfe1: LDA_IMM(0x01)
+B30_dfe3: STA_ABS(0x061b)
+B30_dfe6: CYCLE(6); SetStack(SP, 232); SetStack(SP - 1, 223); SP -= 2; goto B31_e73e;
+B30_dfe9: LDA_IMM(0x1A)
+B30_dfeb: CYCLE(6); SetStack(SP, 237); SetStack(SP - 1, 223); SP -= 2; goto B30_cbb0;
+B30_dfee: LDA_ABS(0x0441)
+B30_dff1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 223); SP -= 2; goto B30_cd7c;
+B30_dff4: LDA_ABS(0x0443)
+B30_dff7: ASL_A()
+B30_dff8: ASL_A()
+B30_dff9: ASL_A()
+B30_dffa: LDX_ABS(0x05fb)
+B30_dffd: CYCLE(2); if (SR_Z) goto B30_e004;
+
+
+
+// ===== Bank 31 (prg_bank_31.c) =====
+// Auto-generated from BZK CDL disassembly
+// ; ===== MMC3 Bank 31 =====
+// ; ROM: 0x03E010-0x04000F
+// ; CPU: $E000-$FFFF
+// ; CDL: code=3951 data=3387 unaccessed=854
+B31_e001: CLC()
+B31_e002: ADC_IMM(0x01)
+B31_e004: LDY_IMM(0x06)
+B31_e006: CLC()
+B31_e007: ADC_IDY(0x34)
+B31_e009: CMP_IMM(0xD0)
+B31_e00b: CYCLE(2); if (!SR_C) goto B31_e00f;
+B31_e00d: LDA_IMM(0xCF)
+B31_e00f: CMP_IMM(0x30)
+B31_e011: CYCLE(2); if (SR_C) goto B31_e015;
+B31_e013: LDA_IMM(0x30)
+B31_e015: STA_IDY(0x34)
+B31_e017: LDA_ABS(0x0441)
+B31_e01a: LDX_ABS(0x05fc)
+B31_e01d: STX_ABS(0x0441)
+B31_e020: STA_ABS(0x05fc)
+B31_e023: CYCLE(6); SetStack(SP, 37); SetStack(SP - 1, 224); SP -= 2; goto B31_e059;
+B31_e026: LDA_IMM(0xFF)
+B31_e028: STA_ABS(0x061a)
+B31_e02b: LDA_IMM(0x01)
+B31_e02d: STA_ABS(0x061b)
+B31_e030: CYCLE(6); SetStack(SP, 50); SetStack(SP - 1, 224); SP -= 2; goto B31_e73e;
+B31_e033: LDA_ABS(0x05fc)
+B31_e036: STA_ABS(0x0441)
+B31_e039: CYCLE(6); SetStack(SP, 59); SetStack(SP - 1, 224); SP -= 2; goto B31_e6ec;
+B31_e03c: PHA()
+B31_e03d: LDA_ZP(0x22)
+B31_e03f: LDA_IMM(0x1A)
+B31_e041: STA_ZP(0x24)
+B31_e043: LDA_IMM(0x1B)
+B31_e045: STA_ZP(0x25)
+B31_e047: CYCLE(6); SetStack(SP, 73); SetStack(SP - 1, 224); SP -= 2; goto B30_ce2d;
+B31_e04a: PLA()
+B31_e04b: CYCLE(6); SetStack(SP, 77); SetStack(SP - 1, 224); SP -= 2; goto B28_801e;
+B31_e04e: LDA_IMM(0x1B)
+B31_e050: CYCLE(6); SetStack(SP, 82); SetStack(SP - 1, 224); SP -= 2; goto B30_cbb0;
+B31_e053: LDX_IMM(0x50)
+B31_e055: TXS()
+B31_e056: CYCLE(3); PC = 0xe0df; goto B31_e0df;
+B31_e059: LDA_ABS(0x05fc)
+B31_e05c: CMP_IMM(0xFF)
+B31_e05e: CYCLE(2); if (SR_Z) goto B31_e073;
+B31_e060: CYCLE(6); SetStack(SP, 98); SetStack(SP - 1, 224); SP -= 2; goto B30_cd7c;
+B31_e063: LDY_IMM(0x06)
+B31_e065: LDA_IDY(0x34)
+B31_e067: TAX()
+B31_e068: LDY_IMM(0x08)
+B31_e06a: LDA_IDY(0x34)
+B31_e06c: TAY()
+B31_e06d: CYCLE(6); SetStack(SP, 111); SetStack(SP - 1, 224); SP -= 2; goto B30_cde2;
+B31_e070: STA_ABS(0x0638)
+B31_e073: RTS()
+B31_e074: LDA_ABS(0x05ff)
+B31_e077: CYCLE(2); if (SR_Z) goto B31_e0de;
+B31_e079: LDA_IMM(0x0F)
+B31_e07b: STA_ABS(0x062a)
+B31_e07e: CYCLE(6); SetStack(SP, 128); SetStack(SP - 1, 224); SP -= 2; goto B31_e709;
+B31_e081: LDA_IMM(0x00)
+B31_e083: PHA()
+B31_e084: LDA_IMM(0x01)
+B31_e086: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 224); SP -= 2; goto B30_cb0f;
+B31_e089: PLA()
+B31_e08a: PHA()
+B31_e08b: CYCLE(2); if (SR_Z) goto B31_e0d1;
+B31_e08d: CMP_IMM(0x0B)
+B31_e08f: CYCLE(2); if (SR_Z) goto B31_e0d1;
+B31_e091: CMP_ABS(0x0441)
+B31_e094: CYCLE(2); if (SR_Z) goto B31_e0d1;
+B31_e096: BIT_ABS(0x062a)
+B31_e099: CYCLE(2); if (!SR_N) goto B31_e0af;
+B31_e09b: PHA()
+B31_e09c: PHA()
+B31_e09d: LDA_ZP(0x22)
+B31_e09f: LDA_IMM(0x1A)
+B31_e0a1: STA_ZP(0x24)
+B31_e0a3: LDA_IMM(0x1B)
+B31_e0a5: STA_ZP(0x25)
+B31_e0a7: CYCLE(6); SetStack(SP, 169); SetStack(SP - 1, 224); SP -= 2; goto B30_ce2d;
+B31_e0aa: PLA()
+B31_e0ab: CYCLE(6); SetStack(SP, 173); SetStack(SP - 1, 224); SP -= 2; goto B28_8000;
+B31_e0ae: PLA()
+B31_e0af: STA_ZP(0x41)
+B31_e0b1: CYCLE(6); SetStack(SP, 179); SetStack(SP - 1, 224); SP -= 2; goto B30_cd7c;
+B31_e0b4: LDA_ZP(0x41)
+B31_e0b6: CMP_IMM(0x0B)
+B31_e0b8: LDX_ABS(0x05fb)
+B31_e0bb: CYCLE(2); if (SR_Z) goto B31_e0c3;
+B31_e0bd: PHP()
+B31_e0be: PLA()
+B31_e0bf: EOR_IMM(0x01)
+B31_e0c1: PHA()
+B31_e0c2: PLP()
+B31_e0c3: LDX_IMM(0x21)
+B31_e0c5: CYCLE(2); if (!SR_C) goto B31_e0c9;
+B31_e0c7: LDX_IMM(0x22)
+B31_e0c9: LDA_ZP(0x41)
+B31_e0cb: CYCLE(6); SetStack(SP, 205); SetStack(SP - 1, 224); SP -= 2; goto B30_ce08;
+B31_e0ce: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 224); SP -= 2; goto B31_e854;
+B31_e0d1: PLA()
+B31_e0d2: CLC()
+B31_e0d3: ADC_IMM(0x01)
+B31_e0d5: CMP_IMM(0x16)
+B31_e0d7: CYCLE(2); if (!SR_Z) goto B31_e083;
+B31_e0d9: LDA_IMM(0x00)
+B31_e0db: STA_ABS(0x05ff)
+B31_e0de: RTS()
+B31_e0df: LDA_IMM(0x00)
+B31_e0e1: CYCLE(6); SetStack(SP, 227); SetStack(SP - 1, 224); SP -= 2; goto B31_ef7f;
+B31_e0e4: LDA_IMM(0x01)
+B31_e0e6: CYCLE(6); SetStack(SP, 232); SetStack(SP - 1, 224); SP -= 2; goto B31_ef7f;
+B31_e0e9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 224); SP -= 2; goto B31_e233;
+B31_e0ec: LDA_IMM(0x0A)
+B31_e0ee: STA_ABS(0x0614)
+B31_e0f1: LDA_IMM(0xFF)
+B31_e0f3: STA_ABS(0x062a)
+B31_e0f6: CYCLE(6); SetStack(SP, 248); SetStack(SP - 1, 224); SP -= 2; goto B31_e6ec;
+B31_e0f9: LDY_IMM(0x40)
+B31_e0fb: LDX_IMM(0x00)
+B31_e0fd: STX_ABS(0x044e)
+B31_e100: STX_ABS(0x0600)
+B31_e103: LDA_ABS(0x0441)
+B31_e106: CMP_IMM(0x0B)
+B31_e108: CYCLE(2); if (!SR_C) goto B31_e10e;
+B31_e10a: LDX_IMM(0x0B)
+B31_e10c: LDY_IMM(0x00)
+B31_e10e: STX_ABS(0x05fb)
+B31_e111: STY_ABS(0x0517)
+B31_e114: TXA()
+B31_e115: CYCLE(2); if (!SR_Z) goto B31_e125;
+B31_e117: BIT_ABS(0x044c)
+B31_e11a: CYCLE(2); if (!SR_N) goto B31_e142;
+B31_e11c: STA_ABS(0x044c)
+B31_e11f: STA_ABS(0x03f1)
+B31_e122: CYCLE(3); PC = 0xe142; goto B31_e142;
+B31_e125: LDA_IMM(0x00)
+B31_e127: STA_ABS(0x0442)
+B31_e12a: CYCLE(6); SetStack(SP, 44); SetStack(SP - 1, 225); SP -= 2; goto B30_ce99;
+B31_e12d: STA_ABS(0x05fd)
+B31_e130: LDA_ABS(0x0441)
+B31_e133: CYCLE(6); SetStack(SP, 53); SetStack(SP - 1, 225); SP -= 2; goto B30_cd7c;
+B31_e136: LDA_IMM(0x05)
+B31_e138: LDY_IMM(0x09)
+B31_e13a: STA_IDY(0x34)
+B31_e13c: LDA_ABS(0x05fe)
+B31_e13f: STA_ABS(0x0617)
+B31_e142: CYCLE(6); SetStack(SP, 68); SetStack(SP - 1, 225); SP -= 2; goto B31_e267;
+B31_e145: LDA_IMM(0x01)
+B31_e147: CYCLE(6); SetStack(SP, 73); SetStack(SP - 1, 225); SP -= 2; goto B30_cb0f;
+B31_e14a: CYCLE(6); SetStack(SP, 76); SetStack(SP - 1, 225); SP -= 2; goto B31_e349;
+B31_e14d: LDA_ABS(0x0614)
+B31_e150: CYCLE(2); if (SR_Z) goto B31_e158;
+B31_e152: DEC_ABS(0x0614)
+B31_e155: CYCLE(3); PC = 0xe145; goto B31_e145;
+B31_e158: LDA_IMM(0x0A)
+B31_e15a: STA_ABS(0x0614)
+B31_e15d: LDA_ABS(0x001c)
+B31_e160: AND_IMM(0x0F)
+B31_e162: CYCLE(2); if (SR_Z) goto B31_e186;
+B31_e164: PHA()
+B31_e165: LDX_IMM(0x20)
+B31_e167: LDA_ABS(0x0441)
+B31_e16a: LDY_ABS(0x05fb)
+B31_e16d: CYCLE(2); if (SR_Z) goto B31_e174;
+B31_e16f: LDX_IMM(0x22)
+B31_e171: LDA_ABS(0x05fd)
+B31_e174: CYCLE(6); SetStack(SP, 118); SetStack(SP - 1, 225); SP -= 2; goto B30_ce08;
+B31_e177: PLA()
+B31_e178: PHA()
+B31_e179: LDY_IMM(0x05)
+B31_e17b: CYCLE(6); SetStack(SP, 125); SetStack(SP - 1, 225); SP -= 2; goto B31_e8f5;
+B31_e17e: PLA()
+B31_e17f: LSR_A()
+B31_e180: LSR_A()
+B31_e181: LDY_IMM(0x07)
+B31_e183: CYCLE(6); SetStack(SP, 133); SetStack(SP - 1, 225); SP -= 2; goto B31_e8f5;
+B31_e186: CYCLE(6); SetStack(SP, 136); SetStack(SP - 1, 225); SP -= 2; goto B31_e6ec;
+B31_e189: LDA_ABS(0x0441)
+B31_e18c: CMP_IMM(0x0B)
+B31_e18e: CYCLE(2); if (!SR_C) goto B31_e1e7;
+B31_e190: LDA_ABS(0x05fe)
+B31_e193: CMP_ABS(0x0617)
+B31_e196: CYCLE(2); if (SR_Z) goto B31_e1e7;
+B31_e198: STA_ABS(0x0617)
+B31_e19b: LDA_IMM(0x00)
+B31_e19d: STA_ABS(0x0621)
+B31_e1a0: PHA()
+B31_e1a1: LDA_ZP(0x22)
+B31_e1a3: LDA_IMM(0x1C)
+B31_e1a5: STA_ZP(0x24)
+B31_e1a7: LDA_IMM(0x1D)
+B31_e1a9: STA_ZP(0x25)
+B31_e1ab: CYCLE(6); SetStack(SP, 173); SetStack(SP - 1, 225); SP -= 2; goto B30_ce2d;
+B31_e1ae: PLA()
+B31_e1af: CYCLE(6); SetStack(SP, 177); SetStack(SP - 1, 225); SP -= 2; goto B28_8006;
+B31_e1b2: LDA_ABS(0x043b)
+B31_e1b5: CMP_IMM(0x02)
+B31_e1b7: CYCLE(2); if (SR_Z) goto B31_e1e7;
+B31_e1b9: PHA()
+B31_e1ba: LDA_ZP(0x22)
+B31_e1bc: LDA_IMM(0x1A)
+B31_e1be: STA_ZP(0x24)
+B31_e1c0: LDA_IMM(0x1B)
+B31_e1c2: STA_ZP(0x25)
+B31_e1c4: CYCLE(6); SetStack(SP, 198); SetStack(SP - 1, 225); SP -= 2; goto B30_ce2d;
+B31_e1c7: PLA()
+B31_e1c8: CYCLE(6); SetStack(SP, 202); SetStack(SP - 1, 225); SP -= 2; goto B26_8021;
+B31_e1cb: CYCLE(6); SetStack(SP, 205); SetStack(SP - 1, 225); SP -= 2; goto B30_cc46;
+B31_e1ce: LDA_IMM(0x00)
+B31_e1d0: STA_ABS(0x062d)
+B31_e1d3: STA_ABS(0x0615)
+B31_e1d6: LDA_IMM(0x1A)
+B31_e1d8: STA_ZP(0x24)
+B31_e1da: LDA_IMM(0x1B)
+B31_e1dc: STA_ZP(0x25)
+B31_e1de: CYCLE(6); SetStack(SP, 224); SetStack(SP - 1, 225); SP -= 2; goto B30_ce2d;
+B31_e1e1: LDX_IMM(0x50)
+B31_e1e3: TXS()
+B31_e1e4: CYCLE(3); PC = 0x8027; goto B28_8027;
+B31_e1e7: LDX_IMM(0x00)
+B31_e1e9: STX_ABS(0x05ff)
+B31_e1ec: INX()
+B31_e1ed: TXA()
+B31_e1ee: CYCLE(6); SetStack(SP, 240); SetStack(SP - 1, 225); SP -= 2; goto B30_d193;
+B31_e1f1: CYCLE(6); SetStack(SP, 243); SetStack(SP - 1, 225); SP -= 2; goto B31_e27d;
+B31_e1f4: INC_ABS(0x0613)
+B31_e1f7: CYCLE(6); SetStack(SP, 249); SetStack(SP - 1, 225); SP -= 2; goto B31_e2bc;
+B31_e1fa: CYCLE(6); SetStack(SP, 252); SetStack(SP - 1, 225); SP -= 2; goto B31_e407;
+B31_e1fd: BIT_ABS(0x044b)
+B31_e200: CYCLE(2); if (!SR_N) goto B31_e21e;
+B31_e202: LDA_ABS(0x05fb)
+B31_e205: CYCLE(2); if (!SR_Z) goto B31_e21e;
+B31_e207: BIT_ABS(0x0635)
+B31_e20a: CYCLE(2); if (!SR_N) goto B31_e21e;
+B31_e20c: PHA()
+B31_e20d: LDA_ZP(0x22)
+B31_e20f: LDA_IMM(0x1A)
+B31_e211: STA_ZP(0x24)
+B31_e213: LDA_IMM(0x1B)
+B31_e215: STA_ZP(0x25)
+B31_e217: CYCLE(6); SetStack(SP, 25); SetStack(SP - 1, 226); SP -= 2; goto B30_ce2d;
+B31_e21a: PLA()
+B31_e21b: CYCLE(6); SetStack(SP, 29); SetStack(SP - 1, 226); SP -= 2; goto B28_8039;
+B31_e21e: PHA()
+B31_e21f: LDA_ZP(0x22)
+B31_e221: LDA_IMM(0x1A)
+B31_e223: STA_ZP(0x24)
+B31_e225: LDA_IMM(0x1B)
+B31_e227: STA_ZP(0x25)
+B31_e229: CYCLE(6); SetStack(SP, 43); SetStack(SP - 1, 226); SP -= 2; goto B30_ce2d;
+B31_e22c: PLA()
+B31_e22d: CYCLE(6); SetStack(SP, 47); SetStack(SP - 1, 226); SP -= 2; goto B28_8033;
+B31_e230: CYCLE(3); PC = 0xe145; goto B31_e145;
+B31_e233: LDA_IMM(0x1E)
+B31_e235: CYCLE(6); SetStack(SP, 55); SetStack(SP - 1, 226); SP -= 2; goto B30_cbb0;
+B31_e238: PHA()
+B31_e239: LDA_ZP(0x22)
+B31_e23b: LDA_IMM(0x1C)
+B31_e23d: STA_ZP(0x24)
+B31_e23f: LDA_IMM(0x1D)
+B31_e241: STA_ZP(0x25)
+B31_e243: CYCLE(6); SetStack(SP, 69); SetStack(SP - 1, 226); SP -= 2; goto B30_ce2d;
+B31_e246: PLA()
+B31_e247: CYCLE(6); SetStack(SP, 73); SetStack(SP - 1, 226); SP -= 2; goto B28_8024;
+B31_e24a: CYCLE(6); SetStack(SP, 76); SetStack(SP - 1, 226); SP -= 2; goto B31_e267;
+B31_e24d: LDA_IMM(0x80)
+B31_e24f: STA_ABS(0x0615)
+B31_e252: STA_ABS(0x062d)
+B31_e255: LDA_IMM(0x00)
+B31_e257: STA_ABS(0x0642)
+B31_e25a: STA_ABS(0x0643)
+B31_e25d: LDA_IMM(0x02)
+B31_e25f: STA_ZP(0x8E)
+B31_e261: LDA_IMM(0x01)
+B31_e263: STA_ABS(0x0469)
+B31_e266: RTS()
+B31_e267: LDA_ABS(0x05fb)
+B31_e26a: CYCLE(2); if (SR_Z) goto B31_e277;
+B31_e26c: LDA_IMM(0x31)
+B31_e26e: CYCLE(6); SetStack(SP, 112); SetStack(SP - 1, 226); SP -= 2; goto B31_ef7f;
+B31_e271: LDA_IMM(0x32)
+B31_e273: CYCLE(6); SetStack(SP, 117); SetStack(SP - 1, 226); SP -= 2; goto B31_ef7f;
+B31_e276: RTS()
+B31_e277: LDA_IMM(0x30)
+B31_e279: CYCLE(6); SetStack(SP, 123); SetStack(SP - 1, 226); SP -= 2; goto B31_ef7f;
+B31_e27c: RTS()
+B31_e27d: CYCLE(6); SetStack(SP, 127); SetStack(SP - 1, 226); SP -= 2; goto B30_cd77;
+B31_e280: LDY_IMM(0x0A)
+B31_e282: LDA_IDY(0x34)
+B31_e284: CYCLE(2); if (!SR_Z) goto B31_e2a2;
+B31_e286: LDX_ABS(0x0635)
+B31_e289: LDY_ABS(0x0637)
+B31_e28c: LDA_ABS(0x05fb)
+B31_e28f: CYCLE(2); if (SR_Z) goto B31_e296;
+B31_e291: TXA()
+B31_e292: EOR_IMM(0xFF)
+B31_e294: TAX()
+B31_e295: INX()
+B31_e296: CPX_IMM(0xC4)
+B31_e298: CYCLE(2); if (!SR_C) goto B31_e2a2;
+B31_e29a: CPY_IMM(0x74)
+B31_e29c: CYCLE(2); if (!SR_C) goto B31_e2a2;
+B31_e29e: CPY_IMM(0x8C)
+B31_e2a0: CYCLE(2); if (!SR_C) goto B31_e2a3;
+B31_e2a2: RTS()
+B31_e2a3: LDA_IMM(0x00)
+B31_e2a5: STA_ABS(0x062d)
+B31_e2a8: STA_ABS(0x0615)
+B31_e2ab: LDA_IMM(0x1A)
+B31_e2ad: STA_ZP(0x24)
+B31_e2af: LDA_IMM(0x1B)
+B31_e2b1: STA_ZP(0x25)
+B31_e2b3: CYCLE(6); SetStack(SP, 181); SetStack(SP - 1, 226); SP -= 2; goto B30_ce2d;
+B31_e2b6: LDX_IMM(0x50)
+B31_e2b8: TXS()
+B31_e2b9: CYCLE(3); PC = 0x8009; goto B28_8009;
+B31_e2bc: INC_ABS(0x0618)
+B31_e2bf: LDA_ABS(0x0618)
+B31_e2c2: CMP_IMM(0x01)
+B31_e2c4: CYCLE(2); if (!SR_C) goto B31_e315;
+B31_e2c6: LDA_IMM(0x00)
+B31_e2c8: STA_ABS(0x0618)
+B31_e2cb: PHA()
+B31_e2cc: CMP_ABS(0x0441)
+B31_e2cf: CYCLE(2); if (SR_Z) goto B31_e30d;
+B31_e2d1: LDX_IMM(0x00)
+B31_e2d3: CYCLE(6); SetStack(SP, 213); SetStack(SP - 1, 226); SP -= 2; goto B30_ce08;
+B31_e2d6: LDX_IMM(0x02)
+B31_e2d8: LDY_IMM(0x00)
+B31_e2da: LDA_IDY(0x34)
+B31_e2dc: LDY_IMM(0x01)
+B31_e2de: CMP_IMM(0x20)
+B31_e2e0: CYCLE(2); if (!SR_Z) goto B31_e2ec;
+B31_e2e2: LDX_IMM(0x01)
+B31_e2e4: LDA_IDY(0x34)
+B31_e2e6: INY()
+B31_e2e7: ORA_IDY(0x34)
+B31_e2e9: CYCLE(2); if (SR_Z) goto B31_e30d;
+B31_e2eb: DEY()
+B31_e2ec: TXA()
+B31_e2ed: CLC()
+B31_e2ee: ADC_IDY(0x34)
+B31_e2f0: TAX()
+B31_e2f1: INY()
+B31_e2f2: LDA_IDY(0x34)
+B31_e2f4: ADC_IMM(0x00)
+B31_e2f6: TAY()
+B31_e2f7: SEC()
+B31_e2f8: TXA()
+B31_e2f9: SBC_ZP(0x32)
+B31_e2fb: TYA()
+B31_e2fc: SBC_ZP(0x33)
+B31_e2fe: CYCLE(2); if (!SR_C) goto B31_e304;
+B31_e300: LDX_ZP(0x32)
+B31_e302: LDY_ZP(0x33)
+B31_e304: TYA()
+B31_e305: LDY_IMM(0x02)
+B31_e307: STA_IDY(0x34)
+B31_e309: TXA()
+B31_e30a: DEY()
+B31_e30b: STA_IDY(0x34)
+B31_e30d: PLA()
+B31_e30e: CLC()
+B31_e30f: ADC_IMM(0x01)
+B31_e311: CMP_IMM(0x0B)
+B31_e313: CYCLE(2); if (!SR_Z) goto B31_e2cb;
+B31_e315: LDA_ABS(0x0441)
+B31_e318: CMP_IMM(0x0B)
+B31_e31a: CYCLE(2); if (SR_C) goto B31_e348;
+B31_e31c: CYCLE(6); SetStack(SP, 30); SetStack(SP - 1, 227); SP -= 2; goto B30_cd7c;
+B31_e31f: LDX_IMM(0x03)
+B31_e321: LDY_IMM(0x00)
+B31_e323: LDA_IDY(0x34)
+B31_e325: CMP_IMM(0x20)
+B31_e327: CYCLE(2); if (!SR_Z) goto B31_e32b;
+B31_e329: LDX_IMM(0x05)
+B31_e32b: STX_ZP(0x3A)
+B31_e32d: LDY_IMM(0x01)
+B31_e32f: LDA_IDY(0x34)
+B31_e331: SEC()
+B31_e332: SBC_ZP(0x3A)
+B31_e334: TAX()
+B31_e335: INY()
+B31_e336: LDA_IDY(0x34)
+B31_e338: SBC_IMM(0x00)
+B31_e33a: CYCLE(2); if (SR_C) goto B31_e33f;
+B31_e33c: LDX_IMM(0x00)
+B31_e33e: TXA()
+B31_e33f: STA_IDY(0x34)
+B31_e341: TXA()
+B31_e342: DEY()
+B31_e343: STA_IDY(0x34)
+B31_e345: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 227); SP -= 2; goto B31_e267;
+B31_e348: RTS()
+B31_e349: LDA_IMM(0x00)
+B31_e34b: STA_ABS(0x0532)
+B31_e34e: LDA_ABS(0x05fb)
+B31_e351: CYCLE(2); if (!SR_Z) goto B31_e3a3;
+B31_e353: LDA_ABS(0x0615)
+B31_e356: ORA_IMM(0x40)
+B31_e358: STA_ABS(0x0615)
+B31_e35b: LDA_ABS(0x001c)
+B31_e35e: AND_IMM(0x40)
+B31_e360: CYCLE(2); if (!SR_Z) goto B31_e382;
+B31_e362: LDA_ABS(0x001c)
+B31_e365: AND_IMM(0x0F)
+B31_e367: CYCLE(2); if (SR_Z) goto B31_e3c9;
+B31_e369: INC_ABS(0x0532)
+B31_e36c: LDX_IMM(0x00)
+B31_e36e: AND_IMM(0x02)
+B31_e370: CYCLE(2); if (!SR_Z) goto B31_e374;
+B31_e372: LDX_IMM(0x40)
+B31_e374: STX_ABS(0x0517)
+B31_e377: LDA_ABS(0x0615)
+B31_e37a: AND_IMM(0xBF)
+B31_e37c: STA_ABS(0x0615)
+B31_e37f: CYCLE(3); PC = 0xe3c9; goto B31_e3c9;
+B31_e382: LDA_IMM(0x00)
+B31_e384: STA_ABS(0x0600)
+B31_e387: STA_ABS(0x0615)
+B31_e38a: LDA_IMM(0x44)
+B31_e38c: CYCLE(6); SetStack(SP, 142); SetStack(SP - 1, 227); SP -= 2; goto B30_cbb0;
+B31_e38f: CYCLE(6); SetStack(SP, 145); SetStack(SP - 1, 227); SP -= 2; goto B30_cb8b;
+B31_e392: LDA_IMM(0x1A)
+B31_e394: STA_ZP(0x24)
+B31_e396: LDA_IMM(0x1B)
+B31_e398: STA_ZP(0x25)
+B31_e39a: CYCLE(6); SetStack(SP, 156); SetStack(SP - 1, 227); SP -= 2; goto B30_ce2d;
+B31_e39d: LDX_IMM(0x50)
+B31_e39f: TXS()
+B31_e3a0: CYCLE(3); PC = 0x8003; goto B28_8003;
+B31_e3a3: INC_ABS(0x0532)
+B31_e3a6: LDA_IMM(0xC0)
+B31_e3a8: AND_ABS(0x001e)
+B31_e3ab: CYCLE(2); if (SR_Z) goto B31_e3c9;
+B31_e3ad: LDX_IMM(0x01)
+B31_e3af: TAY()
+B31_e3b0: CYCLE(2); if (SR_N) goto B31_e3b4;
+B31_e3b2: LDX_IMM(0xFF)
+B31_e3b4: TXA()
+B31_e3b5: CLC()
+B31_e3b6: ADC_ABS(0x05fd)
+B31_e3b9: CYCLE(2); if (!SR_Z) goto B31_e3bd;
+B31_e3bb: LDA_IMM(0x0A)
+B31_e3bd: CMP_IMM(0x0B)
+B31_e3bf: CYCLE(2); if (!SR_C) goto B31_e3c3;
+B31_e3c1: LDA_IMM(0x01)
+B31_e3c3: STA_ABS(0x05fd)
+B31_e3c6: CYCLE(6); SetStack(SP, 200); SetStack(SP - 1, 227); SP -= 2; goto B31_e267;
+B31_e3c9: RTS()
+B31_e3ca: LDA_ABS(0x05fb)
+B31_e3cd: CYCLE(2); if (!SR_Z) goto B31_e3d6;
+B31_e3cf: LDA_ABS(0x001c)
+B31_e3d2: AND_IMM(0x0F)
+B31_e3d4: CYCLE(2); if (SR_Z) goto B31_e406;
+B31_e3d6: LDA_ABS(0x0441)
+B31_e3d9: LDX_IMM(0x20)
+B31_e3db: CYCLE(6); SetStack(SP, 221); SetStack(SP - 1, 227); SP -= 2; goto B30_ce08;
+B31_e3de: LSR_ZP(0x33)
+B31_e3e0: ROR_ZP(0x32)
+B31_e3e2: LSR_ZP(0x33)
+B31_e3e4: ROR_ZP(0x32)
+B31_e3e6: LDX_ZP(0x32)
+B31_e3e8: LDY_ZP(0x33)
+B31_e3ea: BIT_ABS(0x0517)
+B31_e3ed: CYCLE(2); if (SR_V) goto B31_e3f7;
+B31_e3ef: TXA()
+B31_e3f0: EOR_IMM(0xFF)
+B31_e3f2: TAX()
+B31_e3f3: TYA()
+B31_e3f4: EOR_IMM(0xFF)
+B31_e3f6: TAY()
+B31_e3f7: TXA()
+B31_e3f8: CLC()
+B31_e3f9: ADC_ABS(0x0642)
+B31_e3fc: STA_ABS(0x0642)
+B31_e3ff: TYA()
+B31_e400: ADC_ABS(0x0643)
+B31_e403: STA_ABS(0x0643)
+B31_e406: RTS()
+B31_e407: CYCLE(6); SetStack(SP, 9); SetStack(SP - 1, 228); SP -= 2; goto B31_e709;
+B31_e40a: LDA_IMM(0x00)
+B31_e40c: PHA()
+B31_e40d: LDA_IMM(0x01)
+B31_e40f: CYCLE(6); SetStack(SP, 17); SetStack(SP - 1, 228); SP -= 2; goto B30_cb0f;
+B31_e412: CYCLE(6); SetStack(SP, 20); SetStack(SP - 1, 228); SP -= 2; goto B31_e349;
+B31_e415: PLA()
+B31_e416: PHA()
+B31_e417: CYCLE(2); if (SR_Z) goto B31_e48f;
+B31_e419: CMP_IMM(0x0B)
+B31_e41b: CYCLE(2); if (SR_Z) goto B31_e48f;
+B31_e41d: LDX_ABS(0x05fb)
+B31_e420: CYCLE(2); if (SR_Z) goto B31_e427;
+B31_e422: CMP_ABS(0x05fd)
+B31_e425: CYCLE(2); if (SR_Z) goto B31_e48f;
+B31_e427: CMP_ABS(0x0441)
+B31_e42a: CYCLE(2); if (!SR_Z) goto B31_e430;
+B31_e42c: CMP_IMM(0x0B)
+B31_e42e: CYCLE(2); if (!SR_C) goto B31_e48f;
+B31_e430: BIT_ABS(0x062a)
+B31_e433: CYCLE(2); if (!SR_N) goto B31_e44e;
+B31_e435: CMP_ABS(0x0441)
+B31_e438: CYCLE(2); if (SR_Z) goto B31_e44e;
+B31_e43a: PHA()
+B31_e43b: PHA()
+B31_e43c: LDA_ZP(0x22)
+B31_e43e: LDA_IMM(0x1A)
+B31_e440: STA_ZP(0x24)
+B31_e442: LDA_IMM(0x1B)
+B31_e444: STA_ZP(0x25)
+B31_e446: CYCLE(6); SetStack(SP, 72); SetStack(SP - 1, 228); SP -= 2; goto B30_ce2d;
+B31_e449: PLA()
+B31_e44a: CYCLE(6); SetStack(SP, 76); SetStack(SP - 1, 228); SP -= 2; goto B28_8000;
+B31_e44d: PLA()
+B31_e44e: STA_ZP(0x41)
+B31_e450: CYCLE(6); SetStack(SP, 82); SetStack(SP - 1, 228); SP -= 2; goto B30_cd7c;
+B31_e453: LDA_ZP(0x41)
+B31_e455: CMP_IMM(0x0B)
+B31_e457: LDX_ABS(0x05fb)
+B31_e45a: CYCLE(2); if (SR_Z) goto B31_e462;
+B31_e45c: PHP()
+B31_e45d: PLA()
+B31_e45e: EOR_IMM(0x01)
+B31_e460: PHA()
+B31_e461: PLP()
+B31_e462: LDX_IMM(0x21)
+B31_e464: CYCLE(2); if (!SR_C) goto B31_e472;
+B31_e466: LDX_IMM(0x22)
+B31_e468: LDY_IMM(0x09)
+B31_e46a: LDA_IDY(0x34)
+B31_e46c: CMP_IMM(0xF0)
+B31_e46e: CYCLE(2); if (!SR_Z) goto B31_e472;
+B31_e470: LDX_IMM(0x1F)
+B31_e472: LDA_ZP(0x41)
+B31_e474: CMP_ABS(0x0441)
+B31_e477: CYCLE(2); if (!SR_Z) goto B31_e47b;
+B31_e479: LDX_IMM(0x20)
+B31_e47b: CYCLE(6); SetStack(SP, 125); SetStack(SP - 1, 228); SP -= 2; goto B30_ce08;
+B31_e47e: LDY_IMM(0x0A)
+B31_e480: LDA_IDY(0x34)
+B31_e482: CYCLE(2); if (SR_Z) goto B31_e48c;
+B31_e484: SEC()
+B31_e485: SBC_IMM(0x01)
+B31_e487: STA_IDY(0x34)
+B31_e489: CYCLE(3); PC = 0xe48f; goto B31_e48f;
+B31_e48c: CYCLE(6); SetStack(SP, 142); SetStack(SP - 1, 228); SP -= 2; goto B31_e854;
+B31_e48f: PLA()
+B31_e490: CLC()
+B31_e491: ADC_IMM(0x01)
+B31_e493: CMP_IMM(0x16)
+B31_e495: CYCLE(2); if (SR_Z) goto B31_e49a;
+B31_e497: CYCLE(3); PC = 0xe40c; goto B31_e40c;
+B31_e49a: LDA_IMM(0x00)
+B31_e49c: STA_ABS(0x0600)
+B31_e49f: LDA_ABS(0x0613)
+B31_e4a2: CMP_IMM(0x05)
+B31_e4a4: CYCLE(2); if (!SR_C) goto B31_e4b0;
+B31_e4a6: LDA_IMM(0x00)
+B31_e4a8: STA_ABS(0x0613)
+B31_e4ab: LDA_IMM(0x07)
+B31_e4ad: CYCLE(6); SetStack(SP, 175); SetStack(SP - 1, 228); SP -= 2; goto B31_e4d7;
+B31_e4b0: LDA_ABS(0x0600)
+B31_e4b3: CYCLE(2); if (!SR_Z) goto B31_e4b6;
+B31_e4b5: RTS()
+B31_e4b6: LDA_IMM(0x00)
+B31_e4b8: STA_ABS(0x062d)
+B31_e4bb: STA_ABS(0x0615)
+B31_e4be: CYCLE(6); SetStack(SP, 192); SetStack(SP - 1, 228); SP -= 2; goto B30_cb8b;
+B31_e4c1: LDA_IMM(0x2E)
+B31_e4c3: CYCLE(6); SetStack(SP, 197); SetStack(SP - 1, 228); SP -= 2; goto B30_cbb0;
+B31_e4c6: LDA_IMM(0x1A)
+B31_e4c8: STA_ZP(0x24)
+B31_e4ca: LDA_IMM(0x1B)
+B31_e4cc: STA_ZP(0x25)
+B31_e4ce: CYCLE(6); SetStack(SP, 208); SetStack(SP - 1, 228); SP -= 2; goto B30_ce2d;
+B31_e4d1: LDX_IMM(0x50)
+B31_e4d3: TXS()
+B31_e4d4: CYCLE(3); PC = 0x8003; goto B28_8003;
+B31_e4d7: STA_ZP(0x43)
+B31_e4d9: LDA_IMM(0x00)
+B31_e4db: STA_ABS(0x0600)
+B31_e4de: LDA_ABS(0x05fb)
+B31_e4e1: EOR_IMM(0x0B)
+B31_e4e3: CLC()
+B31_e4e4: ADC_IMM(0x01)
+B31_e4e6: STA_ZP(0x41)
+B31_e4e8: LDA_IMM(0x0A)
+B31_e4ea: STA_ZP(0x42)
+B31_e4ec: LDA_ZP(0x41)
+B31_e4ee: CYCLE(6); SetStack(SP, 240); SetStack(SP - 1, 228); SP -= 2; goto B30_cd7c;
+B31_e4f1: LDY_IMM(0x0A)
+B31_e4f3: LDA_IDY(0x34)
+B31_e4f5: CYCLE(2); if (!SR_Z) goto B31_e4fa;
+B31_e4f7: CYCLE(6); SetStack(SP, 249); SetStack(SP - 1, 228); SP -= 2; goto B31_e501;
+B31_e4fa: INC_ZP(0x41)
+B31_e4fc: DEC_ZP(0x42)
+B31_e4fe: CYCLE(2); if (!SR_Z) goto B31_e4ec;
+B31_e500: RTS()
+B31_e501: LDA_IMM(0x00)
+B31_e503: STA_ZP(0x44)
+B31_e505: LDY_IMM(0x06)
+B31_e507: LDA_IDY(0x34)
+B31_e509: SEC()
+B31_e50a: SBC_ABS(0x0635)
+B31_e50d: CYCLE(2); if (SR_C) goto B31_e513;
+B31_e50f: EOR_IMM(0xFF)
+B31_e511: ADC_IMM(0x01)
+B31_e513: CMP_ZP(0x43)
+B31_e515: CYCLE(2); if (SR_C) goto B31_e519;
+B31_e517: INC_ZP(0x44)
+B31_e519: LDY_IMM(0x08)
+B31_e51b: LDA_IDY(0x34)
+B31_e51d: SEC()
+B31_e51e: SBC_ABS(0x0637)
+B31_e521: CYCLE(2); if (SR_C) goto B31_e527;
+B31_e523: EOR_IMM(0xFF)
+B31_e525: ADC_IMM(0x01)
+B31_e527: CMP_ZP(0x43)
+B31_e529: CYCLE(2); if (SR_C) goto B31_e52d;
+B31_e52b: INC_ZP(0x44)
+B31_e52d: LDA_ZP(0x44)
+B31_e52f: CMP_IMM(0x02)
+B31_e531: CYCLE(2); if (!SR_Z) goto B31_e54b;
+B31_e533: LDX_ABS(0x0600)
+B31_e536: CPX_IMM(0x05)
+B31_e538: CYCLE(2); if (SR_C) goto B31_e54b;
+B31_e53a: LDA_ABS(0x05fb)
+B31_e53d: CYCLE(2); if (SR_Z) goto B31_e543;
+B31_e53f: CPX_IMM(0x04)
+B31_e541: CYCLE(2); if (SR_C) goto B31_e54b;
+B31_e543: LDA_ZP(0x41)
+B31_e545: STA_ABS_X(0x0601)
+B31_e548: INC_ABS(0x0600)
+B31_e54b: RTS()
+B31_e54c: LDA_IMM(0x00)
+B31_e54e: STA_ABS(0x044e)
+B31_e551: LDA_ABS(0x0600)
+B31_e554: CYCLE(2); if (SR_Z) goto B31_e590;
+B31_e556: LDX_IMM(0x00)
+B31_e558: LDY_IMM(0x00)
+B31_e55a: LDA_ABS_X(0x060b)
+B31_e55d: CMP_IMM(0x05)
+B31_e55f: CYCLE(2); if (!SR_Z) goto B31_e56e;
+B31_e561: LDA_ABS_X(0x0601)
+B31_e564: CYCLE(2); if (SR_Z) goto B31_e56e;
+B31_e566: CMP_IMM(0x0B)
+B31_e568: CYCLE(2); if (SR_Z) goto B31_e56e;
+B31_e56a: STA_ABS_Y(0x0601)
+B31_e56d: INY()
+B31_e56e: INX()
+B31_e56f: CPX_ABS(0x0600)
+B31_e572: CYCLE(2); if (!SR_Z) goto B31_e55a;
+B31_e574: TYA()
+B31_e575: CYCLE(2); if (SR_Z) goto B31_e590;
+B31_e577: STY_ABS(0x0600)
+B31_e57a: LDA_IMM(0x2E)
+B31_e57c: CYCLE(6); SetStack(SP, 126); SetStack(SP - 1, 229); SP -= 2; goto B30_cbb0;
+B31_e57f: LDA_IMM(0x1A)
+B31_e581: STA_ZP(0x24)
+B31_e583: LDA_IMM(0x1B)
+B31_e585: STA_ZP(0x25)
+B31_e587: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 229); SP -= 2; goto B30_ce2d;
+B31_e58a: LDX_IMM(0x50)
+B31_e58c: TXS()
+B31_e58d: CYCLE(3); PC = 0x8003; goto B28_8003;
+B31_e590: LDX_IMM(0x50)
+B31_e592: TXS()
+B31_e593: CYCLE(3); PC = 0xe0df; goto B31_e0df;
+B31_e596: LDA_ABS(0x00e2)
+B31_e599: CMP_IMM(0xE0)
+B31_e59b: CYCLE(2); if (SR_C) goto B31_e5ba;
+B31_e59d: CYCLE(6); SetStack(SP, 159); SetStack(SP - 1, 229); SP -= 2; goto B30_cd77;
+B31_e5a0: LDY_IMM(0x07)
+B31_e5a2: LDA_IDY(0x34)
+B31_e5a4: CLC()
+B31_e5a5: ADC_IMM(0x1A)
+B31_e5a7: CMP_IMM(0x80)
+B31_e5a9: CYCLE(2); if (!SR_C) goto B31_e5ad;
+B31_e5ab: LDA_IMM(0x7F)
+B31_e5ad: STA_IDY(0x34)
+B31_e5af: LDY_IMM(0x06)
+B31_e5b1: LDA_IMM(0x04)
+B31_e5b3: STA_IDY(0x34)
+B31_e5b5: LDA_IMM(0x42)
+B31_e5b7: CYCLE(6); SetStack(SP, 185); SetStack(SP - 1, 229); SP -= 2; goto B30_cbb0;
+B31_e5ba: PHA()
+B31_e5bb: LDA_ZP(0x22)
+B31_e5bd: LDA_IMM(0x14)
+B31_e5bf: STA_ZP(0x24)
+B31_e5c1: LDA_IMM(0x15)
+B31_e5c3: STA_ZP(0x25)
+B31_e5c5: CYCLE(6); SetStack(SP, 199); SetStack(SP - 1, 229); SP -= 2; goto B30_ce2d;
+B31_e5c8: PLA()
+B31_e5c9: CYCLE(6); SetStack(SP, 203); SetStack(SP - 1, 229); SP -= 2; goto B28_800c;
+B31_e5cc: LDA_IMM(0x01)
+B31_e5ce: PHA()
+B31_e5cf: LDA_ZP(0x22)
+B31_e5d1: LDA_IMM(0x1A)
+B31_e5d3: STA_ZP(0x24)
+B31_e5d5: LDA_IMM(0x1B)
+B31_e5d7: STA_ZP(0x25)
+B31_e5d9: CYCLE(6); SetStack(SP, 219); SetStack(SP - 1, 229); SP -= 2; goto B30_ce2d;
+B31_e5dc: PLA()
+B31_e5dd: CYCLE(6); SetStack(SP, 223); SetStack(SP - 1, 229); SP -= 2; goto B28_8024;
+B31_e5e0: LDX_ABS(0x0635)
+B31_e5e3: LDY_ABS(0x0637)
+B31_e5e6: CYCLE(6); SetStack(SP, 232); SetStack(SP - 1, 229); SP -= 2; goto B30_cde2;
+B31_e5e9: STA_ABS(0x05fe)
+B31_e5ec: LDA_ABS(0x0600)
+B31_e5ef: CYCLE(2); if (SR_Z) goto B31_e60e;
+B31_e5f1: LDA_IMM(0x00)
+B31_e5f3: STA_ABS(0x0616)
+B31_e5f6: LDX_ABS(0x0616)
+B31_e5f9: LDA_ABS_X(0x060b)
+B31_e5fc: CMP_IMM(0x05)
+B31_e5fe: CYCLE(2); if (!SR_Z) goto B31_e603;
+B31_e600: CYCLE(6); SetStack(SP, 2); SetStack(SP - 1, 230); SP -= 2; goto B31_e616;
+B31_e603: INC_ABS(0x0616)
+B31_e606: LDA_ABS(0x0616)
+B31_e609: CMP_ABS(0x0600)
+B31_e60c: CYCLE(2); if (!SR_Z) goto B31_e5f6;
+B31_e60e: LDA_IMM(0x04)
+B31_e610: STA_ABS(0x062b)
+B31_e613: CYCLE(3); PC = 0xde96; goto B30_de96;
+B31_e616: LDA_IMM(0x01)
+B31_e618: STA_ABS(0x043b)
+B31_e61b: LDA_IMM(0x00)
+B31_e61d: STA_ABS(0x043c)
+B31_e620: LDA_IMM(0x02)
+B31_e622: STA_ABS(0x043d)
+B31_e625: LDA_IMM(0x00)
+B31_e627: STA_ABS(0x043e)
+B31_e62a: LDA_ABS_X(0x0601)
+B31_e62d: CYCLE(2); if (SR_Z) goto B31_e677;
+B31_e62f: CMP_IMM(0x0B)
+B31_e631: CYCLE(2); if (SR_Z) goto B31_e677;
+B31_e633: STA_ABS(0x0442)
+B31_e636: PHA()
+B31_e637: LDA_ZP(0x22)
+B31_e639: LDA_IMM(0x1C)
+B31_e63b: STA_ZP(0x24)
+B31_e63d: LDA_IMM(0x1D)
+B31_e63f: STA_ZP(0x25)
+B31_e641: CYCLE(6); SetStack(SP, 67); SetStack(SP - 1, 230); SP -= 2; goto B30_ce2d;
+B31_e644: PLA()
+B31_e645: CYCLE(6); SetStack(SP, 71); SetStack(SP - 1, 230); SP -= 2; goto B28_8015;
+B31_e648: LDA_ZP(0x32)
+B31_e64a: CLC()
+B31_e64b: ADC_IMM(0x04)
+B31_e64d: CYCLE(2); if (!SR_C) goto B31_e651;
+B31_e651: STA_ZP(0x32)
+B31_e653: PHA()
+B31_e654: LDA_ZP(0x22)
+B31_e656: LDA_IMM(0x1A)
+B31_e658: STA_ZP(0x24)
+B31_e65a: LDA_IMM(0x1B)
+B31_e65c: STA_ZP(0x25)
+B31_e65e: CYCLE(6); SetStack(SP, 96); SetStack(SP - 1, 230); SP -= 2; goto B30_ce2d;
+B31_e661: PLA()
+B31_e662: CYCLE(6); SetStack(SP, 100); SetStack(SP - 1, 230); SP -= 2; goto B28_8012;
+B31_e665: PHA()
+B31_e666: LDA_ZP(0x22)
+B31_e668: LDA_IMM(0x1A)
+B31_e66a: STA_ZP(0x24)
+B31_e66c: LDA_IMM(0x1B)
+B31_e66e: STA_ZP(0x25)
+B31_e670: CYCLE(6); SetStack(SP, 114); SetStack(SP - 1, 230); SP -= 2; goto B30_ce2d;
+B31_e673: PLA()
+B31_e674: CYCLE(6); SetStack(SP, 118); SetStack(SP - 1, 230); SP -= 2; goto B28_8015;
+B31_e677: RTS()
+B31_e678: LDA_ABS(0x05fb)
+B31_e67b: EOR_IMM(0x0B)
+B31_e67d: STA_ABS(0x05fb)
+B31_e680: CYCLE(6); SetStack(SP, 130); SetStack(SP - 1, 230); SP -= 2; goto B30_d093;
+B31_e683: LDA_IMM(0x02)
+B31_e685: CYCLE(6); SetStack(SP, 135); SetStack(SP - 1, 230); SP -= 2; goto B30_cb0f;
+B31_e688: LDA_IMM(0x00)
+B31_e68a: BIT_ABS(0x0635)
+B31_e68d: CYCLE(2); if (!SR_N) goto B31_e691;
+B31_e68f: ORA_IMM(0x01)
+B31_e691: BIT_ABS(0x0637)
+B31_e694: CYCLE(2); if (!SR_N) goto B31_e698;
+B31_e696: ORA_IMM(0x02)
+B31_e698: STA_ZP(0x3A)
+B31_e69a: LDA_ABS(0x00e2)
+B31_e69d: AND_IMM(0x07)
+B31_e69f: ASL_A()
+B31_e6a0: TAX()
+B31_e6a1: LDY_ABS_X(0xe6d0)
+B31_e6a4: LDA_ABS_X(0xe6cf)
+B31_e6a7: TAX()
+B31_e6a8: LSR_ZP(0x3A)
+B31_e6aa: CYCLE(2); if (!SR_C) goto B31_e6b0;
+B31_e6ac: TXA()
+B31_e6ad: EOR_IMM(0xFF)
+B31_e6af: TAX()
+B31_e6b0: LSR_ZP(0x3A)
+B31_e6b2: CYCLE(2); if (!SR_C) goto B31_e6b8;
+B31_e6b4: TYA()
+B31_e6b5: EOR_IMM(0xFF)
+B31_e6b7: TAY()
+B31_e6b8: STX_ABS(0x0635)
+B31_e6bb: STY_ABS(0x0637)
+B31_e6be: CYCLE(6); SetStack(SP, 192); SetStack(SP - 1, 230); SP -= 2; goto B30_cde2;
+B31_e6c1: STA_ABS(0x0638)
+B31_e6c4: STA_ABS(0x05fe)
+B31_e6c7: LDA_IMM(0x04)
+B31_e6c9: STA_ABS(0x062b)
+B31_e6cc: CYCLE(3); PC = 0xde96; goto B30_de96;
+B31_e6ec: LDA_ABS(0x0441)
+B31_e6ef: CYCLE(6); SetStack(SP, 241); SetStack(SP - 1, 230); SP -= 2; goto B30_cd7c;
+B31_e6f2: LDY_IMM(0x06)
+B31_e6f4: LDA_IDY(0x34)
+B31_e6f6: STA_ABS(0x0635)
+B31_e6f9: TAX()
+B31_e6fa: LDY_IMM(0x08)
+B31_e6fc: LDA_IDY(0x34)
+B31_e6fe: STA_ABS(0x0637)
+B31_e701: TAY()
+B31_e702: CYCLE(6); SetStack(SP, 4); SetStack(SP - 1, 231); SP -= 2; goto B30_cde2;
+B31_e705: STA_ABS(0x05fe)
+B31_e708: RTS()
+B31_e709: LDA_ABS(0x062a)
+B31_e70c: AND_IMM(0x7F)
+B31_e70e: STA_ABS(0x062a)
+B31_e711: LDA_ABS(0x0637)
+B31_e714: SEC()
+B31_e715: SBC_IMM(0x50)
+B31_e717: AND_IMM(0xE0)
+B31_e719: LSR_A()
+B31_e71a: LSR_A()
+B31_e71b: LSR_A()
+B31_e71c: STA_ZP(0x3A)
+B31_e71e: LSR_A()
+B31_e71f: LSR_A()
+B31_e720: ADC_ZP(0x3A)
+B31_e722: STA_ZP(0x3A)
+B31_e724: LDA_ABS(0x0635)
+B31_e727: SEC()
+B31_e728: SBC_IMM(0x30)
+B31_e72a: AND_IMM(0xE0)
+B31_e72c: LSR_A()
+B31_e72d: LSR_A()
+B31_e72e: LSR_A()
+B31_e72f: LSR_A()
+B31_e730: LSR_A()
+B31_e731: ADC_ZP(0x3A)
+B31_e733: CMP_ABS(0x062a)
+B31_e736: CYCLE(2); if (SR_Z) goto B31_e73d;
+B31_e738: ORA_IMM(0x80)
+B31_e73a: STA_ABS(0x062a)
+B31_e73d: RTS()
+B31_e73e: LDA_IMM(0x00)
+B31_e740: STA_ABS(0x0600)
+B31_e743: STA_ABS(0x05ff)
+B31_e746: LDA_ABS(0x05fe)
+B31_e749: CMP_ABS(0x0638)
+B31_e74c: CYCLE(2); if (!SR_Z) goto B31_e751;
+B31_e74e: CYCLE(3); PC = 0xe7cf; goto B31_e7cf;
+B31_e751: LDA_IMM(0x2F)
+B31_e753: STA_ZP(0x34)
+B31_e755: LDA_IMM(0x06)
+B31_e757: STA_ZP(0x35)
+B31_e759: CYCLE(6); SetStack(SP, 91); SetStack(SP - 1, 231); SP -= 2; goto B31_e7d0;
+B31_e75c: STA_ABS(0x062c)
+B31_e75f: PHA()
+B31_e760: CYCLE(6); SetStack(SP, 98); SetStack(SP - 1, 231); SP -= 2; goto B30_ce4a;
+B31_e763: STX_ABS(0x0639)
+B31_e766: STY_ABS(0x063a)
+B31_e769: PLA()
+B31_e76a: CYCLE(6); SetStack(SP, 108); SetStack(SP - 1, 231); SP -= 2; goto B30_ce4d;
+B31_e76d: STX_ABS(0x063b)
+B31_e770: STY_ABS(0x063c)
+B31_e773: LDA_IMM(0x01)
+B31_e775: CYCLE(6); SetStack(SP, 119); SetStack(SP - 1, 231); SP -= 2; goto B30_cb0f;
+B31_e778: LDA_ABS(0x0639)
+B31_e77b: CLC()
+B31_e77c: ADC_ABS(0x0634)
+B31_e77f: STA_ABS(0x0634)
+B31_e782: LDA_ABS(0x063a)
+B31_e785: ADC_ABS(0x0635)
+B31_e788: STA_ABS(0x0635)
+B31_e78b: TAX()
+B31_e78c: LDA_ABS(0x063b)
+B31_e78f: CLC()
+B31_e790: ADC_ABS(0x0636)
+B31_e793: STA_ABS(0x0636)
+B31_e796: LDA_ABS(0x063c)
+B31_e799: ADC_ABS(0x0637)
+B31_e79c: STA_ABS(0x0637)
+B31_e79f: TAY()
+B31_e7a0: CYCLE(6); SetStack(SP, 162); SetStack(SP - 1, 231); SP -= 2; goto B30_cde2;
+B31_e7a3: CMP_IMM(0xFF)
+B31_e7a5: CYCLE(2); if (SR_Z) goto B31_e7ba;
+B31_e7a7: CMP_ABS(0x05fe)
+B31_e7aa: CYCLE(2); if (SR_Z) goto B31_e778;
+B31_e7ac: STA_ABS(0x05fe)
+B31_e7af: CMP_ABS(0x0638)
+B31_e7b2: CYCLE(2); if (SR_Z) goto B31_e7c0;
+B31_e7b4: CYCLE(6); SetStack(SP, 182); SetStack(SP - 1, 231); SP -= 2; goto B26_800f;
+B31_e7b7: CYCLE(3); PC = 0xe773; goto B31_e773;
+B31_e7ba: LDA_ABS(0x0638)
+B31_e7bd: STA_ABS(0x05fe)
+B31_e7c0: LDA_ABS(0x05fe)
+B31_e7c3: CYCLE(6); SetStack(SP, 197); SetStack(SP - 1, 231); SP -= 2; goto B30_cdc9;
+B31_e7c6: STX_ABS(0x0635)
+B31_e7c9: STY_ABS(0x0637)
+B31_e7cc: CYCLE(6); SetStack(SP, 206); SetStack(SP - 1, 231); SP -= 2; goto B28_800c;
+B31_e7cf: RTS()
+B31_e7d0: LDY_IMM(0x06)
+B31_e7d2: LDA_IDY(0x34)
+B31_e7d4: TAX()
+B31_e7d5: LDY_IMM(0x08)
+B31_e7d7: LDA_IDY(0x34)
+B31_e7d9: TAY()
+B31_e7da: CYCLE(6); SetStack(SP, 220); SetStack(SP - 1, 231); SP -= 2; goto B30_cde2;
+B31_e7dd: LDY_IMM(0x09)
+B31_e7df: CMP_IDY(0x34)
+B31_e7e1: CYCLE(2); if (!SR_Z) goto B31_e7e4;
+B31_e7e3: RTS()
+B31_e7e4: LDY_IMM(0x09)
+B31_e7e6: LDA_IDY(0x34)
+B31_e7e8: CMP_IMM(0xF0)
+B31_e7ea: CYCLE(2); if (!SR_Z) goto B31_e7ef;
+B31_e7ec: LDA_ABS(0x05fe)
+B31_e7ef: CYCLE(6); SetStack(SP, 241); SetStack(SP - 1, 231); SP -= 2; goto B30_cdc9;
+B31_e7f2: TXA()
+B31_e7f3: STA_ZP(0x3A)
+B31_e7f5: TYA()
+B31_e7f6: STA_ZP(0x3B)
+B31_e7f8: LDA_IMM(0x00)
+B31_e7fa: STA_ZP(0x3C)
+B31_e7fc: LDY_IMM(0x06)
+B31_e7fe: LDA_IDY(0x34)
+B31_e800: SEC()
+B31_e801: SBC_ZP(0x3A)
+B31_e803: CYCLE(2); if (SR_C) goto B31_e80b;
+B31_e805: EOR_IMM(0xFF)
+B31_e807: ADC_IMM(0x01)
+B31_e809: INC_ZP(0x3C)
+B31_e80b: STA_ZP(0x71)
+B31_e80d: LDY_IMM(0x08)
+B31_e80f: LDA_IDY(0x34)
+B31_e811: SEC()
+B31_e812: SBC_ZP(0x3B)
+B31_e814: CYCLE(2); if (SR_C) goto B31_e81e;
+B31_e816: EOR_IMM(0xFF)
+B31_e818: ADC_IMM(0x01)
+B31_e81a: INC_ZP(0x3C)
+B31_e81c: INC_ZP(0x3C)
+B31_e81e: STA_ZP(0x70)
+B31_e820: LDA_IMM(0x00)
+B31_e822: STA_ZP(0x6F)
+B31_e824: STA_ZP(0x74)
+B31_e826: CYCLE(6); SetStack(SP, 40); SetStack(SP - 1, 232); SP -= 2; goto B30_cd3c;
+B31_e829: LDX_IMM(0x00)
+B31_e82b: LDA_ABS_X(0xfacd)
+B31_e82e: CMP_ZP(0x70)
+B31_e830: CYCLE(2); if (SR_Z) goto B31_e836;
+B31_e832: CYCLE(2); if (SR_C) goto B31_e843;
+B31_e834: CYCLE(2); if (!SR_C) goto B31_e83f;
+B31_e836: LDA_ABS_X(0xfacc)
+B31_e839: SBC_ZP(0x6F)
+B31_e83b: CYCLE(2); if (SR_Z) goto B31_e843;
+B31_e83d: CYCLE(2); if (SR_C) goto B31_e843;
+B31_e83f: INX()
+B31_e840: INX()
+B31_e841: CYCLE(2); if (!SR_Z) goto B31_e82b;
+B31_e843: TXA()
+B31_e844: LSR_A()
+B31_e845: LSR_ZP(0x3C)
+B31_e847: CYCLE(2); if (SR_C) goto B31_e84d;
+B31_e849: EOR_IMM(0xFF)
+B31_e84b: AND_IMM(0x7F)
+B31_e84d: LSR_ZP(0x3C)
+B31_e84f: CYCLE(2); if (SR_C) goto B31_e853;
+B31_e851: EOR_IMM(0xFF)
+B31_e853: RTS()
+B31_e854: LDY_IMM(0x0A)
+B31_e856: LDA_IDY(0x34)
+B31_e858: CYCLE(2); if (!SR_Z) goto B31_e89f;
+B31_e85a: LDA_ABS(0x05ff)
+B31_e85d: STA_ZP(0x43)
+B31_e85f: CYCLE(6); SetStack(SP, 97); SetStack(SP - 1, 232); SP -= 2; goto B31_e7d0;
+B31_e862: STA_ZP(0x44)
+B31_e864: LDY_IMM(0x06)
+B31_e866: LDA_IDY(0x34)
+B31_e868: TAX()
+B31_e869: LDY_IMM(0x08)
+B31_e86b: LDA_IDY(0x34)
+B31_e86d: TAY()
+B31_e86e: CYCLE(6); SetStack(SP, 112); SetStack(SP - 1, 232); SP -= 2; goto B30_cde2;
+B31_e871: LDY_IMM(0x09)
+B31_e873: CMP_IDY(0x34)
+B31_e875: CYCLE(2); if (SR_Z) goto B31_e898;
+B31_e877: TAX()
+B31_e878: LDA_IDY(0x34)
+B31_e87a: CMP_IMM(0xF0)
+B31_e87c: CYCLE(2); if (!SR_Z) goto B31_e883;
+B31_e87e: CPX_ABS(0x05fe)
+B31_e881: CYCLE(2); if (SR_Z) goto B31_e898;
+B31_e883: LDY_IMM(0x07)
+B31_e885: LDA_ZP(0x44)
+B31_e887: CYCLE(6); SetStack(SP, 137); SetStack(SP - 1, 232); SP -= 2; goto B31_e8a0;
+B31_e88a: LDA_ZP(0x44)
+B31_e88c: CLC()
+B31_e88d: ADC_IMM(0x40)
+B31_e88f: LDY_IMM(0x05)
+B31_e891: CYCLE(6); SetStack(SP, 147); SetStack(SP - 1, 232); SP -= 2; goto B31_e8a0;
+B31_e894: DEC_ZP(0x43)
+B31_e896: CYCLE(2); if (!SR_Z) goto B31_e864;
+B31_e898: LDY_IMM(0x0A)
+B31_e89a: LDA_IMM(0x00)
+B31_e89c: STA_IDY(0x34)
+B31_e89e: RTS()
+B31_e89f: RTS()
+B31_e8a0: STY_ZP(0x46)
+B31_e8a2: CLC()
+B31_e8a3: ADC_IMM(0x10)
+B31_e8a5: LSR_A()
+B31_e8a6: LSR_A()
+B31_e8a7: LSR_A()
+B31_e8a8: LSR_A()
+B31_e8a9: LSR_A()
+B31_e8aa: TAX()
+B31_e8ab: LDA_ABS_X(0xe8ed)
+B31_e8ae: STA_ZP(0x47)
+B31_e8b0: LDY_ZP(0x32)
+B31_e8b2: LDX_ZP(0x33)
+B31_e8b4: DEC_ZP(0x47)
+B31_e8b6: CYCLE(2); if (!SR_N) goto B31_e8be;
+B31_e8b8: LDX_IMM(0x00)
+B31_e8ba: LDY_IMM(0x00)
+B31_e8bc: CYCLE(2); if (SR_Z) goto B31_e8ce;
+B31_e8be: DEC_ZP(0x47)
+B31_e8c0: CYCLE(2); if (SR_N) goto B31_e8ce;
+B31_e8c2: TYA()
+B31_e8c3: EOR_IMM(0xFF)
+B31_e8c5: TAY()
+B31_e8c6: TXA()
+B31_e8c7: EOR_IMM(0xFF)
+B31_e8c9: TAX()
+B31_e8ca: INY()
+B31_e8cb: CYCLE(2); if (!SR_Z) goto B31_e8ce;
+B31_e8cd: INX()
+B31_e8ce: STY_ZP(0x48)
+B31_e8d0: STX_ZP(0x49)
+B31_e8d2: LDY_IMM(0x0A)
+B31_e8d4: LDA_IDY(0x34)
+B31_e8d6: SEC()
+B31_e8d7: SBC_ABS(0x05ff)
+B31_e8da: CYCLE(2); if (!SR_N) goto B31_e8ec;
+B31_e8dc: EOR_IMM(0xFF)
+B31_e8de: CLC()
+B31_e8df: ADC_IMM(0x01)
+B31_e8e1: CYCLE(2); if (SR_Z) goto B31_e8ec;
+B31_e8e3: LDA_ZP(0x48)
+B31_e8e5: LDX_ZP(0x49)
+B31_e8e7: LDY_ZP(0x46)
+B31_e8e9: CYCLE(6); SetStack(SP, 235); SetStack(SP - 1, 232); SP -= 2; goto B31_e912;
+B31_e8ec: RTS()
+B31_e8f5: STY_ZP(0x47)
+B31_e8f7: LDY_ZP(0x32)
+B31_e8f9: LDX_ZP(0x33)
+B31_e8fb: AND_IMM(0x03)
+B31_e8fd: CYCLE(2); if (!SR_Z) goto B31_e900;
+B31_e8ff: RTS()
+B31_e900: LSR_A()
+B31_e901: CYCLE(2); if (SR_C) goto B31_e90f;
+B31_e903: TYA()
+B31_e904: EOR_IMM(0xFF)
+B31_e906: TAY()
+B31_e907: TXA()
+B31_e908: EOR_IMM(0xFF)
+B31_e90a: TAX()
+B31_e90b: INY()
+B31_e90c: CYCLE(2); if (!SR_Z) goto B31_e90f;
+B31_e90f: TYA()
+B31_e910: LDY_ZP(0x47)
+B31_e912: CLC()
+B31_e913: ADC_IDY(0x34)
+B31_e915: STA_IDY(0x34)
+B31_e917: INY()
+B31_e918: TXA()
+B31_e919: ADC_IDY(0x34)
+B31_e91b: CPY_IMM(0x06)
+B31_e91d: CYCLE(2); if (SR_Z) goto B31_e92d;
+B31_e91f: LDX_IMM(0x50)
+B31_e921: CMP_IMM(0x50)
+B31_e923: CYCLE(2); if (!SR_C) goto B31_e939;
+B31_e925: LDX_IMM(0xAF)
+B31_e927: CMP_IMM(0xB0)
+B31_e929: CYCLE(2); if (SR_C) goto B31_e939;
+B31_e92b: CYCLE(2); if (!SR_C) goto B31_e93a;
+B31_e92d: LDX_IMM(0x30)
+B31_e92f: CMP_IMM(0x30)
+B31_e931: CYCLE(2); if (!SR_C) goto B31_e939;
+B31_e933: LDX_IMM(0xCF)
+B31_e935: CMP_IMM(0xD0)
+B31_e937: CYCLE(2); if (!SR_C) goto B31_e93a;
+B31_e939: TXA()
+B31_e93a: STA_IDY(0x34)
+B31_e93c: RTS()
+B31_e93d: PHA()
+B31_e93e: TXA()
+B31_e93f: PHA()
+B31_e940: LDA_IMM(0x01)
+B31_e942: CYCLE(6); SetStack(SP, 68); SetStack(SP - 1, 233); SP -= 2; goto B30_cb0f;
+B31_e945: LDA_ABS(0x0515)
+B31_e948: CYCLE(2); if (!SR_Z) goto B31_e940;
+B31_e94a: LDA_IMM(0x01)
+B31_e94c: STA_ABS(0x0515)
+B31_e94f: LDA_IMM(0x00)
+B31_e951: STA_ZP(0x3E)
+B31_e953: PLA()
+B31_e954: LSR_A()
+B31_e955: ROR_ZP(0x3E)
+B31_e957: LSR_A()
+B31_e958: ROR_ZP(0x3E)
+B31_e95a: STA_ZP(0x3F)
+B31_e95c: PLA()
+B31_e95d: ASL_A()
+B31_e95e: ROR_ZP(0x3A)
+B31_e960: TAY()
+B31_e961: CLC()
+B31_e962: LDA_ABS_Y(0xe9da)
+B31_e965: STA_ZP(0x3C)
+B31_e967: LDA_ABS_Y(0xe9db)
+B31_e96a: STA_ZP(0x3D)
+B31_e96c: LDY_IMM(0x00)
+B31_e96e: CLC()
+B31_e96f: LDA_IDY(0x3C)
+B31_e971: ADC_ZP(0x3E)
+B31_e973: STA_ZP(0x3E)
+B31_e975: INY()
+B31_e976: LDA_IDY(0x3C)
+B31_e978: ADC_ZP(0x3F)
+B31_e97a: STA_ZP(0x3F)
+B31_e97c: INY()
+B31_e97d: LDA_IDY(0x3C)
+B31_e97f: AND_IMM(0x03)
+B31_e981: STA_ZP(0x40)
+B31_e983: LDA_IDY(0x3C)
+B31_e985: LSR_A()
+B31_e986: LSR_A()
+B31_e987: STA_ZP(0x41)
+B31_e989: INY()
+B31_e98a: LDX_IMM(0x00)
+B31_e98c: LDA_ZP(0x41)
+B31_e98e: STA_ABS_X(0x04a5)
+B31_e991: CLC()
+B31_e992: LDA_ZP(0x3E)
+B31_e994: STA_ABS_X(0x04a6)
+B31_e997: ADC_IMM(0x20)
+B31_e999: STA_ZP(0x3E)
+B31_e99b: LDA_ZP(0x3F)
+B31_e99d: STA_ABS_X(0x04a7)
+B31_e9a0: ADC_IMM(0x00)
+B31_e9a2: STA_ZP(0x3F)
+B31_e9a4: INX()
+B31_e9a5: INX()
+B31_e9a6: INX()
+B31_e9a7: LDA_ZP(0x41)
+B31_e9a9: STA_ZP(0x43)
+B31_e9ab: BIT_ABS(0x003a)
+B31_e9ae: CYCLE(2); if (SR_N) goto B31_e9c1;
+B31_e9b0: LDA_IDY(0x3C)
+B31_e9b2: INY()
+B31_e9b3: CMP_IMM(0xFE)
+B31_e9b5: CYCLE(2); if (SR_Z) goto B31_e9c1;
+B31_e9b7: STA_ABS_X(0x04a5)
+B31_e9ba: INX()
+B31_e9bb: DEC_ZP(0x43)
+B31_e9bd: CYCLE(2); if (!SR_Z) goto B31_e9b0;
+B31_e9bf: CYCLE(2); if (SR_Z) goto B31_e9cb;
+B31_e9c1: LDA_IMM(0x00)
+B31_e9c3: STA_ABS_X(0x04a5)
+B31_e9c6: INX()
+B31_e9c7: DEC_ZP(0x43)
+B31_e9c9: CYCLE(2); if (!SR_Z) goto B31_e9c3;
+B31_e9cb: LDA_IMM(0x00)
+B31_e9cd: STA_ABS_X(0x04a5)
+B31_e9d0: DEC_ZP(0x40)
+B31_e9d2: CYCLE(2); if (!SR_Z) goto B31_e98c;
+B31_e9d4: LDA_IMM(0x80)
+B31_e9d6: STA_ABS(0x0515)
+B31_e9d9: RTS()
+B31_eb86: LDA_IMM(0x01)
+B31_eb88: CYCLE(6); SetStack(SP, 138); SetStack(SP - 1, 235); SP -= 2; goto B30_cb0f;
+B31_eb8b: LDA_ZP(0x21)
+B31_eb8d: AND_IMM(0x1E)
+B31_eb8f: LDX_ABS(0x0539)
+B31_eb92: CYCLE(2); if (SR_Z) goto B31_eb99;
+B31_eb94: LDA_ZP(0x21)
+B31_eb96: EOR_ABS(0x0539)
+B31_eb99: STA_ZP(0x21)
+B31_eb9b: CYCLE(6); SetStack(SP, 157); SetStack(SP - 1, 235); SP -= 2; goto B31_ec08;
+B31_eb9e: CYCLE(6); SetStack(SP, 160); SetStack(SP - 1, 235); SP -= 2; goto B31_ed85;
+B31_eba1: PHA()
+B31_eba2: LDA_ZP(0x22)
+B31_eba4: LDA_IMM(0x18)
+B31_eba6: STA_ZP(0x24)
+B31_eba8: LDA_IMM(0x19)
+B31_ebaa: STA_ZP(0x25)
+B31_ebac: CYCLE(6); SetStack(SP, 174); SetStack(SP - 1, 235); SP -= 2; goto B30_ce2d;
+B31_ebaf: PLA()
+B31_ebb0: CYCLE(6); SetStack(SP, 178); SetStack(SP - 1, 235); SP -= 2; goto B28_8003;
+B31_ebb3: PHA()
+B31_ebb4: LDA_ZP(0x22)
+B31_ebb6: LDA_IMM(0x18)
+B31_ebb8: STA_ZP(0x24)
+B31_ebba: LDA_IMM(0x19)
+B31_ebbc: STA_ZP(0x25)
+B31_ebbe: CYCLE(6); SetStack(SP, 192); SetStack(SP - 1, 235); SP -= 2; goto B30_ce2d;
+B31_ebc1: PLA()
+B31_ebc2: CYCLE(6); SetStack(SP, 196); SetStack(SP - 1, 235); SP -= 2; goto B28_8006;
+B31_ebc5: PHA()
+B31_ebc6: LDA_ZP(0x22)
+B31_ebc8: LDA_IMM(0x18)
+B31_ebca: STA_ZP(0x24)
+B31_ebcc: LDA_IMM(0x19)
+B31_ebce: STA_ZP(0x25)
+B31_ebd0: CYCLE(6); SetStack(SP, 210); SetStack(SP - 1, 235); SP -= 2; goto B30_ce2d;
+B31_ebd3: PLA()
+B31_ebd4: CYCLE(6); SetStack(SP, 214); SetStack(SP - 1, 235); SP -= 2; goto B28_8009;
+B31_ebd7: LDA_ABS(0x052e)
+B31_ebda: CYCLE(2); if (SR_Z) goto B31_ec05;
+B31_ebdc: DEC_ABS(0x052e)
+B31_ebdf: CYCLE(2); if (!SR_Z) goto B31_ec05;
+B31_ebe1: LDA_ABS(0x052f)
+B31_ebe4: CMP_IMM(0x7E)
+B31_ebe6: CYCLE(2); if (!SR_C) goto B31_ebf9;
+B31_ebe8: CMP_IMM(0x7F)
+B31_ebea: CYCLE(2); if (SR_Z) goto B31_ebf3;
+B31_ebec: LDA_ABS(0x0027)
+B31_ebef: CMP_IMM(0x04)
+B31_ebf1: CYCLE(2); if (SR_Z) goto B31_ec05;
+B31_ebf3: CYCLE(6); SetStack(SP, 245); SetStack(SP - 1, 235); SP -= 2; goto B30_d093;
+B31_ebf6: CYCLE(3); PC = 0xec05; goto B31_ec05;
+B31_ebf9: BIT_ABS(0x063f)
+B31_ebfc: CYCLE(2); if (!SR_N) goto B31_ec02;
+B31_ebfe: CMP_IMM(0x63)
+B31_ec00: CYCLE(2); if (!SR_Z) goto B31_ec05;
+B31_ec02: CYCLE(6); SetStack(SP, 4); SetStack(SP - 1, 236); SP -= 2; goto B30_cbf1;
+B31_ec05: CYCLE(3); PC = 0xeb86; goto B31_eb86;
+B31_ec08: LDA_ABS(0x0516)
+B31_ec0b: AND_IMM(0x81)
+B31_ec0d: CYCLE(2); if (!SR_Z) goto B31_ec10;
+B31_ec0f: RTS()
+B31_ec10: BIT_ABS(0x0516)
+B31_ec13: CYCLE(2); if (!SR_N) goto B31_ec34;
+B31_ec15: LDA_IMM(0x01)
+B31_ec17: STA_ABS(0x0516)
+B31_ec1a: PHA()
+B31_ec1b: LDA_ZP(0x22)
+B31_ec1d: LDA_IMM(0x10)
+B31_ec1f: STA_ZP(0x24)
+B31_ec21: LDA_IMM(0x11)
+B31_ec23: STA_ZP(0x25)
+B31_ec25: CYCLE(6); SetStack(SP, 39); SetStack(SP - 1, 236); SP -= 2; goto B30_ce2d;
+B31_ec28: PLA()
+B31_ec29: CYCLE(6); SetStack(SP, 43); SetStack(SP - 1, 236); SP -= 2; goto B28_8000;
+B31_ec2c: LDA_IMM(0x00)
+B31_ec2e: STA_ABS(0x0522)
+B31_ec31: STA_ABS(0x0539)
+B31_ec34: LDX_ABS(0x0519)
+B31_ec37: CYCLE(2); if (SR_Z) goto B31_ec3c;
+B31_ec39: CYCLE(3); PC = 0xed5b; goto B31_ed5b;
+B31_ec3c: LDA_IMM(0x00)
+B31_ec3e: STA_ABS(0x0532)
+B31_ec41: STA_ABS(0x0534)
+B31_ec44: STA_ABS(0x0536)
+B31_ec47: STA_ABS(0x0538)
+B31_ec4a: STA_ABS(0x0539)
+B31_ec4d: LDA_IMM(0x08)
+B31_ec4f: BIT_ABS(0x0516)
+B31_ec52: CYCLE(2); if (!SR_Z) goto B31_ec75;
+B31_ec54: LDA_ABS(0x0516)
+B31_ec57: AND_IMM(0x50)
+B31_ec59: CMP_IMM(0x50)
+B31_ec5b: CYCLE(2); if (SR_Z) goto B31_ec8c;
+B31_ec5d: BIT_ABS(0x0516)
+B31_ec60: CYCLE(2); if (SR_V) goto B31_ec74;
+B31_ec62: PHA()
+B31_ec63: LDA_ZP(0x22)
+B31_ec65: LDA_IMM(0x10)
+B31_ec67: STA_ZP(0x24)
+B31_ec69: LDA_IMM(0x11)
+B31_ec6b: STA_ZP(0x25)
+B31_ec6d: CYCLE(6); SetStack(SP, 111); SetStack(SP - 1, 236); SP -= 2; goto B30_ce2d;
+B31_ec70: PLA()
+B31_ec71: CYCLE(6); SetStack(SP, 115); SetStack(SP - 1, 236); SP -= 2; goto B28_8003;
+B31_ec74: RTS()
+B31_ec75: EOR_ABS(0x0516)
+B31_ec78: STA_ABS(0x0516)
+B31_ec7b: LDA_IMM(0x00)
+B31_ec7d: STA_ABS(0x05d2)
+B31_ec80: LDA_IMM(0x00)
+B31_ec82: STA_ZP(0x0D)
+B31_ec84: STA_ZP(0x0E)
+B31_ec86: LDA_IMM(0x00)
+B31_ec88: STA_ABS(0x0516)
+B31_ec8b: RTS()
+B31_ec8c: LDA_ABS(0x0516)
+B31_ec8f: AND_IMM(0x8F)
+B31_ec91: STA_ABS(0x0516)
+B31_ec94: LDA_ABS(0x0523)
+B31_ec97: STA_ABS(0x0519)
+B31_ec9a: LDA_ABS(0x0524)
+B31_ec9d: CMP_IMM(0xFF)
+B31_ec9f: CYCLE(2); if (SR_Z) goto B31_ecf7;
+B31_eca1: LDA_IMM(0x04)
+B31_eca3: BIT_ABS(0x0516)
+B31_eca6: CYCLE(2); if (SR_Z) goto B31_ecb7;
+B31_eca8: EOR_ABS(0x0516)
+B31_ecab: STA_ABS(0x0516)
+B31_ecae: LDA_IMM(0x00)
+B31_ecb0: STA_ZP(0x11)
+B31_ecb2: STA_ZP(0x12)
+B31_ecb4: CYCLE(6); SetStack(SP, 182); SetStack(SP - 1, 236); SP -= 2; goto B30_cc46;
+B31_ecb7: LDA_ABS(0x0526)
+B31_ecba: CYCLE(2); if (!SR_N) goto B31_ecca;
+B31_ecbc: AND_IMM(0x7F)
+B31_ecbe: STA_ABS(0x0526)
+B31_ecc1: STA_ABS(0x0490)
+B31_ecc4: LDA_ABS(0x0527)
+B31_ecc7: STA_ABS(0x0491)
+B31_ecca: LDA_ABS(0x0525)
+B31_eccd: LDX_IMM(0x00)
+B31_eccf: CYCLE(6); SetStack(SP, 209); SetStack(SP - 1, 236); SP -= 2; goto B30_cc02;
+B31_ecd2: CYCLE(6); SetStack(SP, 212); SetStack(SP - 1, 236); SP -= 2; goto B30_ccd2;
+B31_ecd8: LDA_ABS(0x05ce)
+B31_ecdb: PHA()
+B31_ecdc: LDA_ZP(0x22)
+B31_ecde: LDA_IMM(0x0B)
+B31_ece0: STA_ZP(0x24)
+B31_ece2: LDA_IMM(0x0C)
+B31_ece4: STA_ZP(0x25)
+B31_ece6: CYCLE(6); SetStack(SP, 232); SetStack(SP - 1, 236); SP -= 2; goto B30_ce2d;
+B31_ece9: PLA()
+B31_ecea: CYCLE(6); SetStack(SP, 236); SetStack(SP - 1, 236); SP -= 2; goto B28_8006;
+B31_eced: LDA_IMM(0x00)
+B31_ecef: STA_ZP(0x4A)
+B31_ecf1: LDA_ABS(0x05d1)
+B31_ecf4: STA_ABS(0x05d2)
+B31_ecf7: LDA_ABS(0x0528)
+B31_ecfa: CMP_IMM(0xFF)
+B31_ecfc: CYCLE(2); if (SR_Z) goto B31_ed06;
+B31_ecfe: STA_ABS(0x053c)
+B31_ed01: LDA_IMM(0x80)
+B31_ed03: STA_ABS(0x053a)
+B31_ed06: LDA_IMM(0x00)
+B31_ed08: STA_ZP(0x0D)
+B31_ed0a: STA_ZP(0x0E)
+B31_ed0c: LDA_ABS(0x052a)
+B31_ed0f: STA_ABS(0x0517)
+B31_ed12: LDA_ABS(0x0529)
+B31_ed15: CMP_IMM(0xFF)
+B31_ed17: CYCLE(2); if (SR_Z) goto B31_ed2d;
+B31_ed19: STA_ABS(0x05ea)
+B31_ed1c: LDX_IMM(0x11)
+B31_ed1e: LDA_IMM(0xC8)
+B31_ed20: STA_ZP_X(0x01)
+B31_ed22: LDA_IMM(0x18)
+B31_ed24: STA_ZP_X(0x02)
+B31_ed26: LDA_IMM(0x7F)
+B31_ed28: LDY_IMM(0xFF)
+B31_ed2a: CYCLE(6); SetStack(SP, 44); SetStack(SP - 1, 237); SP -= 2; goto B30_cae7;
+B31_ed2d: LDA_ABS(0x052b)
+B31_ed30: ORA_IMM(0x80)
+B31_ed32: STA_ABS(0x0532)
+B31_ed35: LDA_ABS(0x052c)
+B31_ed38: ORA_IMM(0x80)
+B31_ed3a: STA_ABS(0x0536)
+B31_ed3d: LDA_ABS(0x052d)
+B31_ed40: ORA_IMM(0x80)
+B31_ed42: STA_ABS(0x0534)
+B31_ed45: LDA_ABS(0x0530)
+B31_ed48: STA_ABS(0x052e)
+B31_ed4b: LDA_ABS(0x0531)
+B31_ed4e: STA_ABS(0x052f)
+B31_ed51: LDA_IMM(0x00)
+B31_ed53: STA_ZP(0x8E)
+B31_ed55: LDA_IMM(0x01)
+B31_ed57: STA_ABS(0x0469)
+B31_ed5a: RTS()
+B31_ed5b: DEX()
+B31_ed5c: STX_ABS(0x0519)
+B31_ed5f: CPX_IMM(0x28)
+B31_ed61: CYCLE(2); if (SR_C) goto B31_ed84;
+B31_ed63: LDA_ABS(0x0516)
+B31_ed66: AND_IMM(0x20)
+B31_ed68: CYCLE(2); if (!SR_Z) goto B31_ed84;
+B31_ed6a: LDA_ABS(0x0516)
+B31_ed6d: ORA_IMM(0x20)
+B31_ed6f: STA_ABS(0x0516)
+B31_ed72: PHA()
+B31_ed73: LDA_ZP(0x22)
+B31_ed75: LDA_IMM(0x10)
+B31_ed77: STA_ZP(0x24)
+B31_ed79: LDA_IMM(0x11)
+B31_ed7b: STA_ZP(0x25)
+B31_ed7d: CYCLE(6); SetStack(SP, 127); SetStack(SP - 1, 237); SP -= 2; goto B30_ce2d;
+B31_ed80: PLA()
+B31_ed81: CYCLE(6); SetStack(SP, 131); SetStack(SP - 1, 237); SP -= 2; goto B28_8003;
+B31_ed84: RTS()
+B31_ed85: LDA_ABS(0x05d2)
+B31_ed88: CYCLE(2); if (!SR_Z) goto B31_ed8b;
+B31_ed8a: RTS()
+B31_ed8b: CYCLE(2); if (!SR_N) goto B31_edf5;
+B31_ed8d: AND_IMM(0x7F)
+B31_ed8f: ORA_IMM(0x01)
+B31_ed91: STA_ABS(0x05d2)
+B31_ed94: LDA_ABS(0x05db)
+B31_ed97: STA_ABS(0x05d3)
+B31_ed9a: LDA_ABS(0x05dc)
+B31_ed9d: STA_ABS(0x05d4)
+B31_eda0: LDA_ABS(0x05dd)
+B31_eda3: STA_ABS(0x05d5)
+B31_eda6: LDX_ABS(0x05de)
+B31_eda9: LDY_ABS(0x05df)
+B31_edac: STX_ABS(0x05d6)
+B31_edaf: STY_ABS(0x05d7)
+B31_edb2: LDA_ABS(0x05e0)
+B31_edb5: STA_ABS(0x05d8)
+B31_edb8: LDA_ABS(0x05e1)
+B31_edbb: STA_ABS(0x05d9)
+B31_edbe: LDA_ABS(0x05e2)
+B31_edc1: STA_ABS(0x05da)
+B31_edc4: LDA_ABS(0x05d2)
+B31_edc7: AND_IMM(0x02)
+B31_edc9: CYCLE(2); if (SR_Z) goto B31_edf5;
+B31_edcb: BIT_ABS(0x05d2)
+B31_edce: CYCLE(2); if (!SR_V) goto B31_ede4;
+B31_edd0: LDX_IMM(0x0D)
+B31_edd2: LDA_IMM(0xA0)
+B31_edd4: STA_ZP_X(0x01)
+B31_edd6: LDA_IMM(0x0B)
+B31_edd8: STA_ZP_X(0x02)
+B31_edda: LDA_IMM(0x7F)
+B31_eddc: LDY_IMM(0xFF)
+B31_edde: CYCLE(6); SetStack(SP, 224); SetStack(SP - 1, 237); SP -= 2; goto B30_cae7;
+B31_ede1: CYCLE(3); PC = 0xedf5; goto B31_edf5;
+B31_ede4: LDX_IMM(0x0D)
+B31_ede6: LDA_IMM(0xA0)
+B31_ede8: STA_ZP_X(0x01)
+B31_edea: LDA_IMM(0x0B)
+B31_edec: STA_ZP_X(0x02)
+B31_edee: LDA_IMM(0x80)
+B31_edf0: LDY_IMM(0x02)
+B31_edf2: CYCLE(6); SetStack(SP, 244); SetStack(SP - 1, 237); SP -= 2; goto B30_cae7;
+B31_edf5: BIT_ABS(0x05d2)
+B31_edf8: CYCLE(2); if (!SR_V) goto B31_ee31;
+B31_edfa: CLC()
+B31_edfb: LDA_ABS(0x05d6)
+B31_edfe: ADC_ABS(0x05d3)
+B31_ee01: STA_ABS(0x05d3)
+B31_ee04: LDX_IMM(0x00)
+B31_ee06: LDA_ABS(0x05d7)
+B31_ee09: ADC_ZP(0x4B)
+B31_ee0b: STA_ZP(0x4B)
+B31_ee0d: CMP_IMM(0xF0)
+B31_ee0f: CYCLE(2); if (!SR_C) goto B31_ee20;
+B31_ee11: INX()
+B31_ee12: LDA_IMM(0x10)
+B31_ee14: BIT_ABS(0x05d7)
+B31_ee17: CYCLE(2); if (!SR_N) goto B31_ee1d;
+B31_ee19: LDA_IMM(0xF0)
+B31_ee1b: DEX()
+B31_ee1c: DEX()
+B31_ee1d: CLC()
+B31_ee1e: ADC_ZP(0x4B)
+B31_ee20: STA_ZP(0x4B)
+B31_ee22: STA_ABS(0x05d4)
+B31_ee25: CLC()
+B31_ee26: TXA()
+B31_ee27: ADC_ABS(0x05d5)
+B31_ee2a: STA_ABS(0x05d5)
+B31_ee2d: CYCLE(6); SetStack(SP, 47); SetStack(SP - 1, 238); SP -= 2; goto B31_ee6d;
+B31_ee30: RTS()
+B31_ee31: LDA_ZP(0x20)
+B31_ee33: AND_IMM(0xFE)
+B31_ee35: STA_ZP(0x20)
+B31_ee37: CLC()
+B31_ee38: LDA_ABS(0x05d6)
+B31_ee3b: ADC_ABS(0x05d3)
+B31_ee3e: STA_ABS(0x05d3)
+B31_ee41: LDA_ABS(0x05d7)
+B31_ee44: ADC_ABS(0x05d4)
+B31_ee47: STA_ABS(0x05d4)
+B31_ee4a: STA_ZP(0x4A)
+B31_ee4c: TAX()
+B31_ee4d: LDA_IMM(0x00)
+B31_ee4f: BIT_ABS(0x05d7)
+B31_ee52: CYCLE(2); if (!SR_N) goto B31_ee56;
+B31_ee54: LDA_IMM(0xFF)
+B31_ee56: PHP()
+B31_ee57: TAX()
+B31_ee58: ADC_ABS(0x05d5)
+B31_ee5b: STA_ABS(0x05d5)
+B31_ee5e: AND_IMM(0x01)
+B31_ee60: ORA_ZP(0x20)
+B31_ee62: STA_ZP(0x20)
+B31_ee64: TXA()
+B31_ee65: PLP()
+B31_ee66: ADC_IMM(0x00)
+B31_ee68: TAX()
+B31_ee69: CYCLE(6); SetStack(SP, 107); SetStack(SP - 1, 238); SP -= 2; goto B31_ee6d;
+B31_ee6c: RTS()
+B31_ee6d: LDA_ABS(0x05d2)
+B31_ee70: AND_IMM(0x02)
+B31_ee72: CYCLE(2); if (SR_Z) goto B31_ee9e;
+B31_ee74: LDX_ABS(0x05d4)
+B31_ee77: LDY_ABS(0x05d5)
+B31_ee7a: CYCLE(2); if (!SR_N) goto B31_ee88;
+B31_ee7c: TXA()
+B31_ee7d: EOR_IMM(0xFF)
+B31_ee7f: TAX()
+B31_ee80: TYA()
+B31_ee81: EOR_IMM(0xFF)
+B31_ee83: TAY()
+B31_ee84: INX()
+B31_ee85: CYCLE(2); if (!SR_Z) goto B31_ee88;
+B31_ee87: INY()
+B31_ee88: TXA()
+B31_ee89: SEC()
+B31_ee8a: SBC_ABS(0x05d9)
+B31_ee8d: TYA()
+B31_ee8e: SBC_ABS(0x05da)
+B31_ee91: CYCLE(2); if (!SR_C) goto B31_ee9e;
+B31_ee93: LDA_IMM(0x00)
+B31_ee95: STA_ABS(0x05d2)
+B31_ee98: LDA_IMM(0x00)
+B31_ee9a: STA_ZP(0x0D)
+B31_ee9c: STA_ZP(0x0E)
+B31_ee9e: RTS()
+B31_ee9f: PHA()
+B31_eea0: LDA_ZP(0x22)
+B31_eea2: LDA_IMM(0x14)
+B31_eea4: STA_ZP(0x24)
+B31_eea6: LDA_IMM(0x15)
+B31_eea8: STA_ZP(0x25)
+B31_eeaa: CYCLE(6); SetStack(SP, 172); SetStack(SP - 1, 238); SP -= 2; goto B30_ce2d;
+B31_eead: PLA()
+B31_eeae: CYCLE(6); SetStack(SP, 176); SetStack(SP - 1, 238); SP -= 2; goto B28_8000;
+B31_eeb1: LDA_IMM(0x00)
+B31_eeb3: STA_ZP(0x3A)
+B31_eeb5: STA_ZP(0x48)
+B31_eeb7: LDX_ABS(0x053d)
+B31_eeba: CYCLE(2); if (SR_Z) goto B31_eeda;
+B31_eeda: STA_ZP(0x3B)
+B31_eedc: LDA_ZP(0x3A)
+B31_eede: LSR_A()
+B31_eedf: TAX()
+B31_eee0: LDA_ABS_X(0x0543)
+B31_eee3: CYCLE(2); if (SR_C) goto B31_eee9;
+B31_eee5: LSR_A()
+B31_eee6: LSR_A()
+B31_eee7: LSR_A()
+B31_eee8: LSR_A()
+B31_eee9: AND_IMM(0x0F)
+B31_eeeb: ASL_A()
+B31_eeec: TAX()
+B31_eeed: LDA_ABS_X(0xef73)
+B31_eef0: STA_ZP(0x3C)
+B31_eef2: LDA_ABS_X(0xef74)
+B31_eef5: STA_ZP(0x3D)
+B31_eef7: LDY_IMM(0x00)
+B31_eef9: LDA_IDY(0x3C)
+B31_eefb: CYCLE(2); if (!SR_N) goto B31_ef38;
+B31_eefd: BIT_ABS(0x0615)
+B31_ef00: CYCLE(2); if (SR_V) goto B31_ef14;
+B31_ef02: PHA()
+B31_ef03: LDA_ZP(0x22)
+B31_ef05: LDA_IMM(0x14)
+B31_ef07: STA_ZP(0x24)
+B31_ef09: LDA_IMM(0x15)
+B31_ef0b: STA_ZP(0x25)
+B31_ef0d: CYCLE(6); SetStack(SP, 15); SetStack(SP - 1, 239); SP -= 2; goto B30_ce2d;
+B31_ef10: PLA()
+B31_ef11: CYCLE(6); SetStack(SP, 19); SetStack(SP - 1, 239); SP -= 2; goto B28_8006;
+B31_ef14: PHA()
+B31_ef15: LDA_ZP(0x22)
+B31_ef17: LDA_IMM(0x14)
+B31_ef19: STA_ZP(0x24)
+B31_ef1b: LDA_IMM(0x15)
+B31_ef1d: STA_ZP(0x25)
+B31_ef1f: CYCLE(6); SetStack(SP, 33); SetStack(SP - 1, 239); SP -= 2; goto B30_ce2d;
+B31_ef22: PLA()
+B31_ef23: CYCLE(6); SetStack(SP, 37); SetStack(SP - 1, 239); SP -= 2; goto B28_8003;
+B31_ef26: PHA()
+B31_ef27: LDA_ZP(0x22)
+B31_ef29: LDA_IMM(0x16)
+B31_ef2b: STA_ZP(0x24)
+B31_ef2d: LDA_IMM(0x17)
+B31_ef2f: STA_ZP(0x25)
+B31_ef31: CYCLE(6); SetStack(SP, 51); SetStack(SP - 1, 239); SP -= 2; goto B30_ce2d;
+B31_ef34: PLA()
+B31_ef35: CYCLE(6); SetStack(SP, 55); SetStack(SP - 1, 239); SP -= 2; goto B28_8000;
+B31_ef38: INC_ZP(0x3A)
+B31_ef3a: LDA_ZP(0x3A)
+B31_ef3c: CMP_IMM(0x06)
+B31_ef3e: CYCLE(2); if (!SR_Z) goto B31_eedc;
+B31_ef40: BIT_ABS(0x062d)
+B31_ef43: CYCLE(2); if (!SR_N) goto B31_ef57;
+B31_ef45: PHA()
+B31_ef46: LDA_ZP(0x22)
+B31_ef48: LDA_IMM(0x14)
+B31_ef4a: STA_ZP(0x24)
+B31_ef4c: LDA_IMM(0x15)
+B31_ef4e: STA_ZP(0x25)
+B31_ef50: CYCLE(6); SetStack(SP, 82); SetStack(SP - 1, 239); SP -= 2; goto B30_ce2d;
+B31_ef53: PLA()
+B31_ef54: CYCLE(6); SetStack(SP, 86); SetStack(SP - 1, 239); SP -= 2; goto B28_8009;
+B31_ef57: LDA_IMM(0x40)
+B31_ef59: SEC()
+B31_ef5a: SBC_ZP(0x48)
+B31_ef5c: STA_ABS(0x053f)
+B31_ef5f: CYCLE(2); if (!SR_C) goto B31_ef72;
+B31_ef61: CYCLE(2); if (SR_Z) goto B31_ef72;
+B31_ef63: TAY()
+B31_ef64: LDX_ZP(0x3B)
+B31_ef66: LDA_IMM(0xF8)
+B31_ef68: STA_ABS_X(0x0200)
+B31_ef6b: INX()
+B31_ef6c: INX()
+B31_ef6d: INX()
+B31_ef6e: INX()
+B31_ef6f: DEY()
+B31_ef70: CYCLE(2); if (!SR_Z) goto B31_ef68;
+B31_ef72: RTS()
+B31_ef7f: TAY()
+B31_ef80: LDA_ZP(0x24)
+B31_ef82: PHA()
+B31_ef83: LDA_ZP(0x25)
+B31_ef85: PHA()
+B31_ef86: TYA()
+B31_ef87: PHA()
+B31_ef88: LDA_ZP(0x22)
+B31_ef8a: LDA_IMM(0x18)
+B31_ef8c: STA_ZP(0x24)
+B31_ef8e: LDA_IMM(0x19)
+B31_ef90: STA_ZP(0x25)
+B31_ef92: CYCLE(6); SetStack(SP, 148); SetStack(SP - 1, 239); SP -= 2; goto B30_ce2d;
+B31_ef95: PLA()
+B31_ef96: CYCLE(6); SetStack(SP, 152); SetStack(SP - 1, 239); SP -= 2; goto B28_800c;
+B31_ef99: PLA()
+B31_ef9a: STA_ZP(0x25)
+B31_ef9c: PLA()
+B31_ef9d: STA_ZP(0x24)
+B31_ef9f: CYCLE(3); PC = 0xce2d; goto B30_ce2d;
+B31_efa2: LDA_ABS(0x0621)
+B31_efa5: CMP_IMM(0x04)
+B31_efa7: CYCLE(2); if (!SR_C) goto B31_efaa;
+B31_efa9: RTS()
+B31_efaa: LDA_ABS(0x0600)
+B31_efad: CYCLE(2); if (!SR_Z) goto B31_efb2;
+B31_efaf: CYCLE(3); PC = 0xeff6; goto B31_eff6;
+B31_efb2: LDA_IMM(0x00)
+B31_efb4: PHA()
+B31_efb5: LDA_IMM(0x01)
+B31_efb7: CYCLE(6); SetStack(SP, 185); SetStack(SP - 1, 239); SP -= 2; goto B30_cb0f;
+B31_efba: LDA_ABS(0x0515)
+B31_efbd: CYCLE(2); if (!SR_Z) goto B31_efb5;
+B31_efbf: LDA_IMM(0x01)
+B31_efc1: STA_ABS(0x0515)
+B31_efc4: PLA()
+B31_efc5: PHA()
+B31_efc6: LDX_ABS(0x0621)
+B31_efc9: CPX_IMM(0x03)
+B31_efcb: CYCLE(2); if (!SR_Z) goto B31_efcf;
+B31_efcd: LDA_IMM(0x05)
+B31_efcf: ASL_A()
+B31_efd0: TAX()
+B31_efd1: LDA_ABS_X(0xf206)
+B31_efd4: STA_ZP(0x3A)
+B31_efd6: LDA_ABS_X(0xf207)
+B31_efd9: STA_ZP(0x3B)
+B31_efdb: LDA_IMM(0x00)
+B31_efdd: STA_ZP(0x3C)
+B31_efdf: LDA_IMM(0x21)
+B31_efe1: STA_ZP(0x3D)
+B31_efe3: LDX_IMM(0x00)
+B31_efe5: CYCLE(6); SetStack(SP, 231); SetStack(SP - 1, 239); SP -= 2; goto B31_f114;
+B31_efe8: LDA_IMM(0x04)
+B31_efea: CYCLE(6); SetStack(SP, 236); SetStack(SP - 1, 239); SP -= 2; goto B30_cb0f;
+B31_efed: PLA()
+B31_efee: CLC()
+B31_efef: ADC_IMM(0x01)
+B31_eff1: CMP_ABS(0x0600)
+B31_eff4: CYCLE(2); if (!SR_Z) goto B31_efb4;
+B31_eff6: LDX_ABS(0x0621)
+B31_eff9: LDA_ABS_X(0xf00f)
+B31_effc: STA_ABS(0x063d)
+B31_efff: TXA()
+B31_f000: CYCLE(2); if (!SR_Z) goto B31_f013;
+B31_f002: LDA_ABS(0x0600)
+B31_f005: CYCLE(2); if (!SR_Z) goto B31_f013;
+B31_f007: LDA_IMM(0x02)
+B31_f009: STA_ABS(0x063d)
+B31_f00c: CYCLE(3); PC = 0xf013; goto B31_f013;
+B31_f013: LDA_IMM(0x00)
+B31_f015: PHA()
+B31_f016: LDA_IMM(0x01)
+B31_f018: CYCLE(6); SetStack(SP, 26); SetStack(SP - 1, 240); SP -= 2; goto B30_cb0f;
+B31_f01b: LDA_ABS(0x0515)
+B31_f01e: CYCLE(2); if (!SR_Z) goto B31_f016;
+B31_f020: LDA_IMM(0x01)
+B31_f022: STA_ABS(0x0515)
+B31_f025: LDA_ABS(0x063d)
+B31_f028: ASL_A()
+B31_f029: ASL_A()
+B31_f02a: TAY()
+B31_f02b: LDA_ABS_Y(0xf15a)
+B31_f02e: STA_ZP(0x3C)
+B31_f030: LDA_ABS_Y(0xf15b)
+B31_f033: STA_ZP(0x3D)
+B31_f035: PLA()
+B31_f036: PHA()
+B31_f037: TAX()
+B31_f038: CLC()
+B31_f039: LDA_ABS_Y(0xf15c)
+B31_f03c: ADC_ABS_X(0xf10e)
+B31_f03f: STA_ABS(0x04a6)
+B31_f042: LDA_ABS(0x063d)
+B31_f045: CMP_IMM(0x03)
+B31_f047: CYCLE(2); if (SR_Z) goto B31_f061;
+B31_f049: LDA_ABS(0x05ce)
+B31_f04c: AND_IMM(0x20)
+B31_f04e: ORA_ABS(0x04a6)
+B31_f051: STA_ABS(0x04a6)
+B31_f054: LDA_ABS(0x05ce)
+B31_f057: LSR_A()
+B31_f058: LSR_A()
+B31_f059: LSR_A()
+B31_f05a: LSR_A()
+B31_f05b: ORA_ABS_Y(0xf15d)
+B31_f05e: CYCLE(3); PC = 0xf064; goto B31_f064;
+B31_f061: LDA_ABS_Y(0xf15d)
+B31_f064: STA_ABS(0x04a7)
+B31_f067: LDA_IMM(0x01)
+B31_f069: STA_ABS(0x04a5)
+B31_f06c: LDA_ABS(0x063d)
+B31_f06f: ASL_A()
+B31_f070: STA_ZP(0x3B)
+B31_f072: ASL_A()
+B31_f073: ADC_ZP(0x3B)
+B31_f075: STA_ZP(0x3B)
+B31_f077: TXA()
+B31_f078: ADC_ZP(0x3B)
+B31_f07a: TAX()
+B31_f07b: LDA_ABS_X(0xf16a)
+B31_f07e: STA_ABS(0x04a8)
+B31_f081: PLA()
+B31_f082: PHA()
+B31_f083: ASL_A()
+B31_f084: TAX()
+B31_f085: LDA_ABS_X(0xf182)
+B31_f088: STA_ZP(0x3A)
+B31_f08a: LDA_ABS_X(0xf183)
+B31_f08d: STA_ZP(0x3B)
+B31_f08f: LDX_IMM(0x04)
+B31_f091: CYCLE(6); SetStack(SP, 147); SetStack(SP - 1, 240); SP -= 2; goto B31_f114;
+B31_f094: PLA()
+B31_f095: CLC()
+B31_f096: ADC_IMM(0x01)
+B31_f098: CMP_IMM(0x06)
+B31_f09a: CYCLE(2); if (SR_Z) goto B31_f09f;
+B31_f09c: CYCLE(3); PC = 0xf015; goto B31_f015;
+B31_f09f: LDA_ABS(0x063d)
+B31_f0a2: CMP_IMM(0x03)
+B31_f0a4: CYCLE(2); if (SR_Z) goto B31_f10d;
+B31_f0a6: LDA_IMM(0x01)
+B31_f0a8: CYCLE(6); SetStack(SP, 170); SetStack(SP - 1, 240); SP -= 2; goto B30_cb0f;
+B31_f0ab: LDA_ABS(0x0515)
+B31_f0ae: CYCLE(2); if (!SR_Z) goto B31_f0a6;
+B31_f0b0: LDA_IMM(0x01)
+B31_f0b2: STA_ABS(0x0515)
+B31_f0b5: LDA_IMM(0x01)
+B31_f0b7: STA_ABS(0x04a5)
+B31_f0ba: LDA_IMM(0xA2)
+B31_f0bc: STA_ABS(0x04a8)
+B31_f0bf: LDA_IMM(0x00)
+B31_f0c1: STA_ZP(0x3B)
+B31_f0c3: STA_ABS(0x04a9)
+B31_f0c6: LDA_ABS(0x063d)
+B31_f0c9: ASL_A()
+B31_f0ca: ASL_A()
+B31_f0cb: TAX()
+B31_f0cc: LDA_ABS(0x0637)
+B31_f0cf: SEC()
+B31_f0d0: SBC_IMM(0x50)
+B31_f0d2: AND_IMM(0xF0)
+B31_f0d4: ASL_A()
+B31_f0d5: STA_ZP(0x3A)
+B31_f0d7: ROL_ZP(0x3B)
+B31_f0d9: LDA_ABS(0x0635)
+B31_f0dc: SEC()
+B31_f0dd: SBC_IMM(0x30)
+B31_f0df: LSR_A()
+B31_f0e0: LSR_A()
+B31_f0e1: LSR_A()
+B31_f0e2: LSR_A()
+B31_f0e3: CLC()
+B31_f0e4: ADC_ZP(0x3A)
+B31_f0e6: STA_ZP(0x3A)
+B31_f0e8: CYCLE(2); if (!SR_C) goto B31_f0ec;
+B31_f0ec: CLC()
+B31_f0ed: ADC_ABS_X(0xf15a)
+B31_f0f0: STA_ABS(0x04a6)
+B31_f0f3: LDA_ABS_X(0xf15b)
+B31_f0f6: ADC_ZP(0x3B)
+B31_f0f8: STA_ABS(0x04a7)
+B31_f0fb: LDA_ABS(0x05ce)
+B31_f0fe: LSR_A()
+B31_f0ff: LSR_A()
+B31_f100: LSR_A()
+B31_f101: LSR_A()
+B31_f102: ORA_ABS(0x04a7)
+B31_f105: STA_ABS(0x04a7)
+B31_f108: LDA_IMM(0x80)
+B31_f10a: STA_ABS(0x0515)
+B31_f10d: RTS()
+B31_f114: LDY_IMM(0x00)
+B31_f116: LDA_IDY(0x3A)
+B31_f118: STA_ABS_X(0x04a5)
+B31_f11b: CYCLE(2); if (SR_Z) goto B31_f154;
+B31_f11d: STA_ZP(0x3E)
+B31_f11f: INY()
+B31_f120: LDA_IDY(0x3A)
+B31_f122: CLC()
+B31_f123: ADC_ZP(0x3C)
+B31_f125: STA_ABS_X(0x04a6)
+B31_f128: PHP()
+B31_f129: INY()
+B31_f12a: LDA_ZP(0x3D)
+B31_f12c: CMP_IMM(0x22)
+B31_f12e: CYCLE(2); if (!SR_C) goto B31_f134;
+B31_f130: LDA_IMM(0x00)
+B31_f132: CYCLE(2); if (SR_Z) goto B31_f13b;
+B31_f134: LDA_ABS(0x05ce)
+B31_f137: LSR_A()
+B31_f138: LSR_A()
+B31_f139: LSR_A()
+B31_f13a: LSR_A()
+B31_f13b: ORA_IDY(0x3A)
+B31_f13d: PLP()
+B31_f13e: ADC_ZP(0x3D)
+B31_f140: STA_ABS_X(0x04a7)
+B31_f143: INY()
+B31_f144: INX()
+B31_f145: INX()
+B31_f146: INX()
+B31_f147: LDA_IDY(0x3A)
+B31_f149: STA_ABS_X(0x04a5)
+B31_f14c: INY()
+B31_f14d: INX()
+B31_f14e: DEC_ZP(0x3E)
+B31_f150: CYCLE(2); if (!SR_Z) goto B31_f147;
+B31_f152: CYCLE(2); if (SR_Z) goto B31_f116;
+B31_f154: LDA_IMM(0x80)
+B31_f156: STA_ABS(0x0515)
+B31_f159: RTS()
+B31_f30f: LDY_IMM(0x29)
+B31_f311: STY_ZP(0x30)
+B31_f313: LDY_IMM(0xF3)
+B31_f315: STY_ZP(0x31)
+B31_f317: ASL_A()
+B31_f318: CYCLE(2); if (!SR_C) goto B31_f31c;
+B31_f31a: INC_ZP(0x31)
+B31_f31c: TAY()
+B31_f31d: LDA_IDY(0x30)
+B31_f31f: PHA()
+B31_f320: INY()
+B31_f321: LDA_IDY(0x30)
+B31_f323: STA_ZP(0x31)
+B31_f325: PLA()
+B31_f326: STA_ZP(0x30)
+B31_f328: RTS()
+B31_fff0: LDA_IMM(0x00)
+B31_fff2: STA_ABS(0x8000)
+B31_fff5: CYCLE(3); PC = 0xc503; goto B30_c503;
+
+
+
+// ===== Stubs for missing branch targets =====
+B0_876e: /* STUB */ goto LABEL_END;
+B0_8a86: /* STUB */ goto LABEL_END;
+B0_9482: /* STUB */ goto LABEL_END;
+B22_8072: /* STUB */ goto LABEL_END;
+B24_811b: /* STUB */ goto LABEL_END;
+B24_8174: /* STUB */ goto LABEL_END;
+B24_84c6: /* STUB */ goto LABEL_END;
+B24_87d2: /* STUB */ goto LABEL_END;
+B24_883d: /* STUB */ goto LABEL_END;
+B28_8203: /* STUB */ goto LABEL_END;
+B30_c4ae: /* STUB */ goto LABEL_END;
+B30_e004: /* STUB */ goto LABEL_END;
+RET_BEGIN
+    case 0x800d: goto B0_800c; /* $800c */
+    case 0x82a9: goto B0_82a8; /* $82a8 */
+    case 0x82b5: goto B0_82b4; /* $82b4 */
+    case 0x82ed: goto B0_82ec; /* $82ec */
+    case 0x8398: goto B0_8397; /* $8397 */
+    case 0x8545: goto B0_8544; /* $8544 */
+    case 0x86c6: goto B0_86c5; /* $86c5 */
+    case 0x88a9: goto B0_88a8; /* $88a8 */
+    case 0x88ed: goto B0_88ec; /* $88ec */
+    case 0x88fb: goto B0_88fa; /* $88fa */
+    case 0x890c: goto B0_890b; /* $890b */
+    case 0x8920: goto B0_891f; /* $891f */
+    case 0x895d: goto B0_895c; /* $895c */
+    case 0x8976: goto B0_8975; /* $8975 */
+    case 0x899a: goto B0_8999; /* $8999 */
+    case 0x89a3: goto B0_89a2; /* $89a2 */
+    case 0x89ce: goto B0_89cd; /* $89cd */
+    case 0x89ff: goto B0_89fe; /* $89fe */
+    case 0x8a91: goto B0_8a90; /* $8a90 */
+    case 0x8ab4: goto B0_8ab3; /* $8ab3 */
+    case 0x8ef0: goto B0_8eef; /* $8eef */
+    case 0x8fd1: goto B0_8fd0; /* $8fd0 */
+    case 0x9049: goto B0_9048; /* $9048 */
+    case 0x9071: goto B0_9070; /* $9070 */
+    case 0x9143: goto B0_9142; /* $9142 */
+    case 0x92e5: goto B0_92e4; /* $92e4 */
+    case 0x9692: goto B0_9691; /* $9691 */
+    case 0x9735: goto B0_9734; /* $9734 */
+    case 0x974a: goto B0_9749; /* $9749 */
+    case 0x975b: goto B0_975a; /* $975a */
+    case 0x978b: goto B0_978a; /* $978a */
+    case 0x9819: goto B0_9818; /* $9818 */
+    case 0x988a: goto B0_9889; /* $9889 */
+    case 0x98dd: goto B0_98dc; /* $98dc */
+    case 0x992c: goto B0_992b; /* $992b */
+    case 0x997a: goto B0_9979; /* $9979 */
+    case 0x99ae: goto B0_99ad; /* $99ad */
+    case 0x99f0: goto B0_99ef; /* $99ef */
+    case 0x9a0d: goto B0_9a0c; /* $9a0c */
+    case 0x9a1f: goto B0_9a1e; /* $9a1e */
+    case 0x9a31: goto B0_9a30; /* $9a30 */
+    case 0x9aa2: goto B0_9aa1; /* $9aa1 */
+    case 0x9ab8: goto B0_9ab7; /* $9ab7 */
+    case 0x9b07: goto B0_9b06; /* $9b06 */
+    case 0x9b11: goto B0_9b10; /* $9b10 */
+    case 0x9b5e: goto B0_9b5d; /* $9b5d */
+    case 0x9b6f: goto B0_9b6e; /* $9b6e */
+    case 0x9b74: goto B0_9b73; /* $9b73 */
+    case 0x9b7f: goto B0_9b7e; /* $9b7e */
+    case 0x9ba0: goto B0_9b9f; /* $9b9f */
+    case 0x9bbc: goto B0_9bbb; /* $9bbb */
+    case 0x9bca: goto B0_9bc9; /* $9bc9 */
+    case 0x9be3: goto B0_9be2; /* $9be2 */
+    case 0x9c0d: goto B0_9c0c; /* $9c0c */
+    case 0x9c28: goto B0_9c27; /* $9c27 */
+    case 0x9c71: goto B0_9c70; /* $9c70 */
+    case 0x9cc9: goto B0_9cc8; /* $9cc8 */
+    case 0x9ce7: goto B0_9ce6; /* $9ce6 */
+    case 0x9d06: goto B0_9d05; /* $9d05 */
+    case 0x9d08: goto B0_9d07; /* $9d07 */
+    case 0x9d50: goto B0_9d4f; /* $9d4f */
+    case 0x9d73: goto B0_9d72; /* $9d72 */
+    case 0x9db5: goto B0_9db4; /* $9db4 */
+    case 0x9dda: goto B0_9dd9; /* $9dd9 */
+    case 0x9dee: goto B0_9ded; /* $9ded */
+    case 0x9e0c: goto B0_9e0b; /* $9e0b */
+    case 0x9e36: goto B0_9e35; /* $9e35 */
+    case 0x9e4f: goto B0_9e4e; /* $9e4e */
+    case 0x9e7c: goto B0_9e7b; /* $9e7b */
+    case 0x9ea2: goto B0_9ea1; /* $9ea1 */
+    case 0x9f52: goto B0_9f51; /* $9f51 */
+    case 0x9f69: goto B0_9f68; /* $9f68 */
+    case 0x9f7e: goto B0_9f7d; /* $9f7d */
+    case 0x9f96: goto B0_9f95; /* $9f95 */
+    case 0x9fa6: goto B0_9fa5; /* $9fa5 */
+    case 0x810d: goto B1_810c; /* $810c */
+    case 0x839b: goto B1_839a; /* $839a */
+    case 0x83b4: goto B1_83b3; /* $83b3 */
+    case 0x83d0: goto B1_83cf; /* $83cf */
+    case 0x83f9: goto B1_83f8; /* $83f8 */
+    case 0x8402: goto B1_8401; /* $8401 */
+    case 0x8438: goto B1_8437; /* $8437 */
+    case 0x844e: goto B1_844d; /* $844d */
+    case 0x845e: goto B1_845d; /* $845d */
+    case 0x846e: goto B1_846d; /* $846d */
+    case 0x8474: goto B1_8473; /* $8473 */
+    case 0x8493: goto B1_8492; /* $8492 */
+    case 0x84ac: goto B1_84ab; /* $84ab */
+    case 0x84c9: goto B1_84c8; /* $84c8 */
+    case 0x84d8: goto B1_84d7; /* $84d7 */
+    case 0x8611: goto B1_8610; /* $8610 */
+    case 0x863c: goto B1_863b; /* $863b */
+    case 0x8719: goto B1_8718; /* $8718 */
+    case 0x8721: goto B1_8720; /* $8720 */
+    case 0x8a77: goto B1_8a76; /* $8a76 */
+    case 0x8a7f: goto B1_8a7e; /* $8a7e */
+    case 0x8abf: goto B1_8abe; /* $8abe */
+    case 0x8adb: goto B1_8ada; /* $8ada */
+    case 0x8add: goto B1_8adc; /* $8adc */
+    case 0x8e01: goto B1_8e00; /* $8e00 */
+    case 0x8e3a: goto B1_8e39; /* $8e39 */
+    case 0x8e72: goto B1_8e71; /* $8e71 */
+    case 0x8e8f: goto B1_8e8e; /* $8e8e */
+    case 0x8eac: goto B1_8eab; /* $8eab */
+    case 0x8f05: goto B1_8f04; /* $8f04 */
+    case 0x8f37: goto B1_8f36; /* $8f36 */
+    case 0x8f67: goto B1_8f66; /* $8f66 */
+    case 0x8f79: goto B1_8f78; /* $8f78 */
+    case 0x8fc2: goto B1_8fc1; /* $8fc1 */
+    case 0x9013: goto B1_9012; /* $9012 */
+    case 0x9023: goto B1_9022; /* $9022 */
+    case 0x902e: goto B1_902d; /* $902d */
+    case 0x9045: goto B1_9044; /* $9044 */
+    case 0x9050: goto B1_904f; /* $904f */
+    case 0x90a1: goto B1_90a0; /* $90a0 */
+    case 0x90c0: goto B1_90bf; /* $90bf */
+    case 0x91bb: goto B1_91ba; /* $91ba */
+    case 0x91d3: goto B1_91d2; /* $91d2 */
+    case 0x91de: goto B1_91dd; /* $91dd */
+    case 0x91e8: goto B1_91e7; /* $91e7 */
+    case 0x8138: goto B2_8137; /* $8137 */
+    case 0x81c0: goto B2_81bf; /* $81bf */
+    case 0x81cb: goto B2_81ca; /* $81ca */
+    case 0x81e4: goto B2_81e3; /* $81e3 */
+    case 0x8491: goto B2_8490; /* $8490 */
+    case 0x855a: goto B2_8559; /* $8559 */
+    case 0x857c: goto B2_857b; /* $857b */
+    case 0x8582: goto B2_8581; /* $8581 */
+    case 0x85b1: goto B2_85b0; /* $85b0 */
+    case 0x85b9: goto B2_85b8; /* $85b8 */
+    case 0x85e9: goto B2_85e8; /* $85e8 */
+    case 0x85fa: goto B2_85f9; /* $85f9 */
+    case 0x8603: goto B2_8602; /* $8602 */
+    case 0x8614: goto B2_8613; /* $8613 */
+    case 0x861d: goto B2_861c; /* $861c */
+    case 0x862a: goto B2_8629; /* $8629 */
+    case 0x8651: goto B2_8650; /* $8650 */
+    case 0x869d: goto B2_869c; /* $869c */
+    case 0x86d4: goto B2_86d3; /* $86d3 */
+    case 0x872c: goto B2_872b; /* $872b */
+    case 0x8767: goto B2_8766; /* $8766 */
+    case 0x8773: goto B2_8772; /* $8772 */
+    case 0x8783: goto B2_8782; /* $8782 */
+    case 0x878e: goto B2_878d; /* $878d */
+    case 0x87cf: goto B2_87ce; /* $87ce */
+    case 0x87d7: goto B2_87d6; /* $87d6 */
+    case 0x87fb: goto B2_87fa; /* $87fa */
+    case 0x8855: goto B2_8854; /* $8854 */
+    case 0x88b7: goto B2_88b6; /* $88b6 */
+    case 0x88ce: goto B2_88cd; /* $88cd */
+    case 0x88fe: goto B2_88fd; /* $88fd */
+    case 0x8a20: goto B2_8a1f; /* $8a1f */
+    case 0x814c: goto B11_814b; /* $814b */
+    case 0x82fe: goto B11_82fd; /* $82fd */
+    case 0x8327: goto B11_8326; /* $8326 */
+    case 0x8358: goto B11_8357; /* $8357 */
+    case 0x847f: goto B11_847e; /* $847e */
+    case 0x84a1: goto B11_84a0; /* $84a0 */
+    case 0x84cf: goto B11_84ce; /* $84ce */
+    case 0x84d9: goto B11_84d8; /* $84d8 */
+    case 0x84f4: goto B11_84f3; /* $84f3 */
+    case 0x8502: goto B11_8501; /* $8501 */
+    case 0x8525: goto B11_8524; /* $8524 */
+    case 0x85c2: goto B11_85c1; /* $85c1 */
+    case 0x86bc: goto B11_86bb; /* $86bb */
+    case 0x86d3: goto B11_86d2; /* $86d2 */
+    case 0x86ee: goto B11_86ed; /* $86ed */
+    case 0x816e: goto B12_816d; /* $816d */
+    case 0x81db: goto B12_81da; /* $81da */
+    case 0x8257: goto B12_8256; /* $8256 */
+    case 0x82b4: goto B12_82b3; /* $82b3 */
+    case 0x832b: goto B12_832a; /* $832a */
+    case 0x836c: goto B12_836b; /* $836b */
+    case 0x8532: goto B12_8531; /* $8531 */
+    case 0x853b: goto B12_853a; /* $853a */
+    case 0x8544: goto B12_8543; /* $8543 */
+    case 0x855f: goto B12_855e; /* $855e */
+    case 0x8578: goto B12_8577; /* $8577 */
+    case 0x8585: goto B12_8584; /* $8584 */
+    case 0x85af: goto B12_85ae; /* $85ae */
+    case 0x85c6: goto B12_85c5; /* $85c5 */
+    case 0x85ef: goto B12_85ee; /* $85ee */
+    case 0x860d: goto B12_860c; /* $860c */
+    case 0x8617: goto B12_8616; /* $8616 */
+    case 0x8641: goto B12_8640; /* $8640 */
+    case 0x8655: goto B12_8654; /* $8654 */
+    case 0x8670: goto B12_866f; /* $866f */
+    case 0x8681: goto B12_8680; /* $8680 */
+    case 0x8690: goto B12_868f; /* $868f */
+    case 0x8699: goto B12_8698; /* $8698 */
+    case 0x86b8: goto B12_86b7; /* $86b7 */
+    case 0x86d7: goto B12_86d6; /* $86d6 */
+    case 0x86f6: goto B12_86f5; /* $86f5 */
+    case 0x8021: goto B16_8020; /* $8020 */
+    case 0x80a9: goto B16_80a8; /* $80a8 */
+    case 0x80f4: goto B16_80f3; /* $80f3 */
+    case 0x8105: goto B16_8104; /* $8104 */
+    case 0x812f: goto B16_812e; /* $812e */
+    case 0x8150: goto B16_814f; /* $814f */
+    case 0x8211: goto B16_8210; /* $8210 */
+    case 0x821c: goto B16_821b; /* $821b */
+    case 0x822c: goto B16_822b; /* $822b */
+    case 0x8251: goto B16_8250; /* $8250 */
+    case 0x8255: goto B16_8254; /* $8254 */
+    case 0x8259: goto B16_8258; /* $8258 */
+    case 0x8260: goto B16_825f; /* $825f */
+    case 0x8264: goto B16_8263; /* $8263 */
+    case 0x8271: goto B16_8270; /* $8270 */
+    case 0x8275: goto B16_8274; /* $8274 */
+    case 0x828a: goto B16_8289; /* $8289 */
+    case 0x8291: goto B16_8290; /* $8290 */
+    case 0x829b: goto B16_829a; /* $829a */
+    case 0x829f: goto B16_829e; /* $829e */
+    case 0x82ba: goto B16_82b9; /* $82b9 */
+    case 0x82fb: goto B16_82fa; /* $82fa */
+    case 0x8336: goto B16_8335; /* $8335 */
+    case 0x8337: goto B16_8336; /* $8336 */
+    case 0x8340: goto B16_833f; /* $833f */
+    case 0x834c: goto B16_834b; /* $834b */
+    case 0x8350: goto B16_834f; /* $834f */
+    case 0x835c: goto B16_835b; /* $835b */
+    case 0x8366: goto B16_8365; /* $8365 */
+    case 0x836a: goto B16_8369; /* $8369 */
+    case 0x836e: goto B16_836d; /* $836d */
+    case 0x837c: goto B16_837b; /* $837b */
+    case 0x8380: goto B16_837f; /* $837f */
+    case 0x8384: goto B16_8383; /* $8383 */
+    case 0x838b: goto B16_838a; /* $838a */
+    case 0x83a4: goto B16_83a3; /* $83a3 */
+    case 0x83a8: goto B16_83a7; /* $83a7 */
+    case 0x83af: goto B16_83ae; /* $83ae */
+    case 0x83bb: goto B16_83ba; /* $83ba */
+    case 0x83c6: goto B16_83c5; /* $83c5 */
+    case 0x83d6: goto B16_83d5; /* $83d5 */
+    case 0x83eb: goto B16_83ea; /* $83ea */
+    case 0x83f5: goto B16_83f4; /* $83f4 */
+    case 0x8401: goto B16_8400; /* $8400 */
+    case 0x840e: goto B16_840d; /* $840d */
+    case 0x842b: goto B16_842a; /* $842a */
+    case 0x8436: goto B16_8435; /* $8435 */
+    case 0x843e: goto B16_843d; /* $843d */
+    case 0x8442: goto B16_8441; /* $8441 */
+    case 0x8457: goto B16_8456; /* $8456 */
+    case 0x847e: goto B16_847d; /* $847d */
+    case 0x8498: goto B16_8497; /* $8497 */
+    case 0x84b2: goto B16_84b1; /* $84b1 */
+    case 0x84c7: goto B16_84c6; /* $84c6 */
+    case 0x84e7: goto B16_84e6; /* $84e6 */
+    case 0x84ef: goto B16_84ee; /* $84ee */
+    case 0x84fc: goto B16_84fb; /* $84fb */
+    case 0x850b: goto B16_850a; /* $850a */
+    case 0x8527: goto B16_8526; /* $8526 */
+    case 0x853a: goto B16_8539; /* $8539 */
+    case 0x8546: goto B16_8545; /* $8545 */
+    case 0x8556: goto B16_8555; /* $8555 */
+    case 0x856c: goto B16_856b; /* $856b */
+    case 0x8570: goto B16_856f; /* $856f */
+    case 0x857a: goto B16_8579; /* $8579 */
+    case 0x8587: goto B16_8586; /* $8586 */
+    case 0x8592: goto B16_8591; /* $8591 */
+    case 0x85a2: goto B16_85a1; /* $85a1 */
+    case 0x85b2: goto B16_85b1; /* $85b1 */
+    case 0x85be: goto B16_85bd; /* $85bd */
+    case 0x85ca: goto B16_85c9; /* $85c9 */
+    case 0x85da: goto B16_85d9; /* $85d9 */
+    case 0x85e6: goto B16_85e5; /* $85e5 */
+    case 0x85fe: goto B16_85fd; /* $85fd */
+    case 0x8602: goto B16_8601; /* $8601 */
+    case 0x8610: goto B16_860f; /* $860f */
+    case 0x8623: goto B16_8622; /* $8622 */
+    case 0x862e: goto B16_862d; /* $862d */
+    case 0x8635: goto B16_8634; /* $8634 */
+    case 0x8645: goto B16_8644; /* $8644 */
+    case 0x8677: goto B16_8676; /* $8676 */
+    case 0x868a: goto B16_8689; /* $8689 */
+    case 0x86a6: goto B16_86a5; /* $86a5 */
+    case 0x86c8: goto B16_86c7; /* $86c7 */
+    case 0x87e6: goto B16_87e5; /* $87e5 */
+    case 0x87ec: goto B16_87eb; /* $87eb */
+    case 0x87f5: goto B16_87f4; /* $87f4 */
+    case 0x87ff: goto B16_87fe; /* $87fe */
+    case 0x8809: goto B16_8808; /* $8808 */
+    case 0x881a: goto B16_8819; /* $8819 */
+    case 0x8853: goto B16_8852; /* $8852 */
+    case 0x885d: goto B16_885c; /* $885c */
+    case 0x886a: goto B16_8869; /* $8869 */
+    case 0x88aa: goto B16_88a9; /* $88a9 */
+    case 0x88b5: goto B16_88b4; /* $88b4 */
+    case 0x88bf: goto B16_88be; /* $88be */
+    case 0x88d9: goto B16_88d8; /* $88d8 */
+    case 0x88e3: goto B16_88e2; /* $88e2 */
+    case 0x899c: goto B16_899b; /* $899b */
+    case 0x89a7: goto B16_89a6; /* $89a6 */
+    case 0x89b4: goto B16_89b3; /* $89b3 */
+    case 0x90af: goto B19_90ae; /* $90ae */
+    case 0x90b8: goto B19_90b7; /* $90b7 */
+    case 0x915a: goto B19_9159; /* $9159 */
+    case 0x91e0: goto B19_91df; /* $91df */
+    case 0x91f3: goto B19_91f2; /* $91f2 */
+    case 0x9218: goto B19_9217; /* $9217 */
+    case 0x9224: goto B19_9223; /* $9223 */
+    case 0x923e: goto B19_923d; /* $923d */
+    case 0x92db: goto B19_92da; /* $92da */
+    case 0x92f7: goto B19_92f6; /* $92f6 */
+    case 0x9310: goto B19_930f; /* $930f */
+    case 0x9339: goto B19_9338; /* $9338 */
+    case 0x9349: goto B19_9348; /* $9348 */
+    case 0x944e: goto B19_944d; /* $944d */
+    case 0x806d: goto B20_806c; /* $806c */
+    case 0x8084: goto B20_8083; /* $8083 */
+    case 0x80aa: goto B20_80a9; /* $80a9 */
+    case 0x812b: goto B20_812a; /* $812a */
+    case 0x817c: goto B20_817b; /* $817b */
+    case 0x8282: goto B20_8281; /* $8281 */
+    case 0x82a3: goto B20_82a2; /* $82a2 */
+    case 0x82ad: goto B20_82ac; /* $82ac */
+    case 0x82bc: goto B20_82bb; /* $82bb */
+    case 0x8335: goto B20_8334; /* $8334 */
+    case 0x8342: goto B20_8341; /* $8341 */
+    case 0x8361: goto B20_8360; /* $8360 */
+    case 0x83a6: goto B20_83a5; /* $83a5 */
+    case 0x83d9: goto B20_83d8; /* $83d8 */
+    case 0x83e9: goto B20_83e8; /* $83e8 */
+    case 0x8459: goto B20_8458; /* $8458 */
+    case 0x8466: goto B20_8465; /* $8465 */
+    case 0x8477: goto B20_8476; /* $8476 */
+    case 0x8496: goto B20_8495; /* $8495 */
+    case 0x84a0: goto B20_849f; /* $849f */
+    case 0x84b3: goto B20_84b2; /* $84b2 */
+    case 0x84dc: goto B20_84db; /* $84db */
+    case 0x85a9: goto B20_85a8; /* $85a8 */
+    case 0x85d5: goto B20_85d4; /* $85d4 */
+    case 0x85e1: goto B20_85e0; /* $85e0 */
+    case 0x85f2: goto B20_85f1; /* $85f1 */
+    case 0x8624: goto B20_8623; /* $8623 */
+    case 0x86db: goto B20_86da; /* $86da */
+    case 0x871d: goto B20_871c; /* $871c */
+    case 0x871f: goto B20_871e; /* $871e */
+    case 0x8739: goto B20_8738; /* $8738 */
+    case 0x873b: goto B20_873a; /* $873a */
+    case 0x8751: goto B20_8750; /* $8750 */
+    case 0x8753: goto B20_8752; /* $8752 */
+    case 0x8768: goto B20_8767; /* $8767 */
+    case 0x87a7: goto B20_87a6; /* $87a6 */
+    case 0x87c7: goto B20_87c6; /* $87c6 */
+    case 0x87e7: goto B20_87e6; /* $87e6 */
+    case 0x881d: goto B20_881c; /* $881c */
+    case 0x885b: goto B20_885a; /* $885a */
+    case 0x88a8: goto B20_88a7; /* $88a7 */
+    case 0x8109: goto B22_8108; /* $8108 */
+    case 0x8161: goto B22_8160; /* $8160 */
+    case 0x8164: goto B22_8163; /* $8163 */
+    case 0x8175: goto B22_8174; /* $8174 */
+    case 0x81d2: goto B22_81d1; /* $81d1 */
+    case 0x8059: goto B24_8058; /* $8058 */
+    case 0x8062: goto B24_8061; /* $8061 */
+    case 0x8087: goto B24_8086; /* $8086 */
+    case 0x80a0: goto B24_809f; /* $809f */
+    case 0x80cb: goto B24_80ca; /* $80ca */
+    case 0x80ea: goto B24_80e9; /* $80e9 */
+    case 0x810e: goto B24_810d; /* $810d */
+    case 0x811b: goto B24_811a; /* $811a */
+    case 0x8122: goto B24_8121; /* $8121 */
+    case 0x8131: goto B24_8130; /* $8130 */
+    case 0x8156: goto B24_8155; /* $8155 */
+    case 0x8174: goto B24_8173; /* $8173 */
+    case 0x818b: goto B24_818a; /* $818a */
+    case 0x8197: goto B24_8196; /* $8196 */
+    case 0x81ac: goto B24_81ab; /* $81ab */
+    case 0x81fd: goto B24_81fc; /* $81fc */
+    case 0x8218: goto B24_8217; /* $8217 */
+    case 0x82f2: goto B24_82f1; /* $82f1 */
+    case 0x8528: goto B24_8527; /* $8527 */
+    case 0x852c: goto B24_852b; /* $852b */
+    case 0x85d0: goto B24_85cf; /* $85cf */
+    case 0x85fd: goto B24_85fc; /* $85fc */
+    case 0x8653: goto B24_8652; /* $8652 */
+    case 0x8723: goto B24_8722; /* $8722 */
+    case 0x8765: goto B24_8764; /* $8764 */
+    case 0x876b: goto B24_876a; /* $876a */
+    case 0x87a4: goto B24_87a3; /* $87a3 */
+    case 0x87d2: goto B24_87d1; /* $87d1 */
+    case 0x8811: goto B24_8810; /* $8810 */
+    case 0x8815: goto B24_8814; /* $8814 */
+    case 0x883d: goto B24_883c; /* $883c */
+    case 0x88b9: goto B24_88b8; /* $88b8 */
+    case 0x8986: goto B24_8985; /* $8985 */
+    case 0x8a86: goto B24_8a85; /* $8a85 */
+    case 0x8ad4: goto B24_8ad3; /* $8ad3 */
+    case 0x8b72: goto B24_8b71; /* $8b71 */
+    case 0x8c47: goto B24_8c46; /* $8c46 */
+    case 0x8c55: goto B24_8c54; /* $8c54 */
+    case 0x8c85: goto B24_8c84; /* $8c84 */
+    case 0x8c9f: goto B24_8c9e; /* $8c9e */
+    case 0x8ca5: goto B24_8ca4; /* $8ca4 */
+    case 0x8d9e: goto B24_8d9d; /* $8d9d */
+    case 0x8176: goto B26_8175; /* $8175 */
+    case 0x819c: goto B26_819b; /* $819b */
+    case 0x8223: goto B26_8222; /* $8222 */
+    case 0x823e: goto B26_823d; /* $823d */
+    case 0x8278: goto B26_8277; /* $8277 */
+    case 0x8485: goto B26_8484; /* $8484 */
+    case 0x848f: goto B26_848e; /* $848e */
+    case 0x85f6: goto B26_85f5; /* $85f5 */
+    case 0x8601: goto B26_8600; /* $8600 */
+    case 0x8605: goto B26_8604; /* $8604 */
+    case 0x8835: goto B26_8834; /* $8834 */
+    case 0x883b: goto B26_883a; /* $883a */
+    case 0x888b: goto B26_888a; /* $888a */
+    case 0x8b46: goto B26_8b45; /* $8b45 */
+    case 0x8b50: goto B26_8b4f; /* $8b4f */
+    case 0x8bb8: goto B26_8bb7; /* $8bb7 */
+    case 0x8bba: goto B26_8bb9; /* $8bb9 */
+    case 0x8bc8: goto B26_8bc7; /* $8bc7 */
+    case 0x8bdf: goto B26_8bde; /* $8bde */
+    case 0x8c61: goto B26_8c60; /* $8c60 */
+    case 0x8c6d: goto B26_8c6c; /* $8c6c */
+    case 0x8c92: goto B26_8c91; /* $8c91 */
+    case 0x8ca4: goto B26_8ca3; /* $8ca3 */
+    case 0x8cbe: goto B26_8cbd; /* $8cbd */
+    case 0x8cf5: goto B26_8cf4; /* $8cf4 */
+    case 0x8d06: goto B26_8d05; /* $8d05 */
+    case 0x8d93: goto B26_8d92; /* $8d92 */
+    case 0x8e6e: goto B26_8e6d; /* $8e6d */
+    case 0x8e86: goto B26_8e85; /* $8e85 */
+    case 0x8ee9: goto B26_8ee8; /* $8ee8 */
+    case 0x8f1f: goto B26_8f1e; /* $8f1e */
+    case 0x8f59: goto B26_8f58; /* $8f58 */
+    case 0x8f72: goto B26_8f71; /* $8f71 */
+    case 0x8ff3: goto B26_8ff2; /* $8ff2 */
+    case 0x8ffb: goto B26_8ffa; /* $8ffa */
+    case 0x904e: goto B26_904d; /* $904d */
+    case 0x9070: goto B26_906f; /* $906f */
+    case 0x9085: goto B26_9084; /* $9084 */
+    case 0x911c: goto B26_911b; /* $911b */
+    case 0x9298: goto B26_9297; /* $9297 */
+    case 0x92ea: goto B26_92e9; /* $92e9 */
+    case 0x9481: goto B26_9480; /* $9480 */
+    case 0x94cf: goto B26_94ce; /* $94ce */
+    case 0x955e: goto B26_955d; /* $955d */
+    case 0x96ae: goto B26_96ad; /* $96ad */
+    case 0x96ca: goto B26_96c9; /* $96c9 */
+    case 0x96cb: goto B26_96ca; /* $96ca */
+    case 0x96cc: goto B26_96cb; /* $96cb */
+    case 0x9828: goto B26_9827; /* $9827 */
+    case 0x986b: goto B26_986a; /* $986a */
+    case 0x987b: goto B26_987a; /* $987a */
+    case 0x98d0: goto B26_98cf; /* $98cf */
+    case 0x991a: goto B26_9919; /* $9919 */
+    case 0x993a: goto B26_9939; /* $9939 */
+    case 0x9950: goto B26_994f; /* $994f */
+    case 0x996c: goto B26_996b; /* $996b */
+    case 0x9992: goto B26_9991; /* $9991 */
+    case 0x9aac: goto B26_9aab; /* $9aab */
+    case 0x9ac2: goto B26_9ac1; /* $9ac1 */
+    case 0x9ac7: goto B26_9ac6; /* $9ac6 */
+    case 0x9b0f: goto B26_9b0e; /* $9b0e */
+    case 0x9b9b: goto B26_9b9a; /* $9b9a */
+    case 0x9bad: goto B26_9bac; /* $9bac */
+    case 0x9c0f: goto B26_9c0e; /* $9c0e */
+    case 0x9c1f: goto B26_9c1e; /* $9c1e */
+    case 0x9c4c: goto B26_9c4b; /* $9c4b */
+    case 0x9c5a: goto B26_9c59; /* $9c59 */
+    case 0x9ca1: goto B26_9ca0; /* $9ca0 */
+    case 0x9d82: goto B26_9d81; /* $9d81 */
+    case 0x9db9: goto B26_9db8; /* $9db8 */
+    case 0x9dd4: goto B26_9dd3; /* $9dd3 */
+    case 0x9e0d: goto B26_9e0c; /* $9e0c */
+    case 0x9e5a: goto B26_9e59; /* $9e59 */
+    case 0x9e6f: goto B26_9e6e; /* $9e6e */
+    case 0x9eb7: goto B26_9eb6; /* $9eb6 */
+    case 0x9f79: goto B26_9f78; /* $9f78 */
+    case 0x81b2: goto B27_81b1; /* $81b1 */
+    case 0x81dc: goto B27_81db; /* $81db */
+    case 0x81f1: goto B27_81f0; /* $81f0 */
+    case 0x8215: goto B27_8214; /* $8214 */
+    case 0x8292: goto B27_8291; /* $8291 */
+    case 0x803a: goto B28_8039; /* $8039 */
+    case 0x8113: goto B28_8112; /* $8112 */
+    case 0x818e: goto B28_818d; /* $818d */
+    case 0x828f: goto B28_828e; /* $828e */
+    case 0x830a: goto B28_8309; /* $8309 */
+    case 0x834a: goto B28_8349; /* $8349 */
+    case 0x8499: goto B28_8498; /* $8498 */
+    case 0x84be: goto B28_84bd; /* $84bd */
+    case 0x84c1: goto B28_84c0; /* $84c0 */
+    case 0x84ff: goto B28_84fe; /* $84fe */
+    case 0x8524: goto B28_8523; /* $8523 */
+    case 0x85b5: goto B28_85b4; /* $85b4 */
+    case 0x8604: goto B28_8603; /* $8603 */
+    case 0x863f: goto B28_863e; /* $863e */
+    case 0x86eb: goto B28_86ea; /* $86ea */
+    case 0x86ff: goto B28_86fe; /* $86fe */
+    case 0x8705: goto B28_8704; /* $8704 */
+    case 0x8727: goto B28_8726; /* $8726 */
+    case 0x8747: goto B28_8746; /* $8746 */
+    case 0x884a: goto B28_8849; /* $8849 */
+    case 0x8860: goto B28_885f; /* $885f */
+    case 0x88da: goto B28_88d9; /* $88d9 */
+    case 0x88f4: goto B28_88f3; /* $88f3 */
+    case 0x88fd: goto B28_88fc; /* $88fc */
+    case 0x8911: goto B28_8910; /* $8910 */
+    case 0x8917: goto B28_8916; /* $8916 */
+    case 0x8933: goto B28_8932; /* $8932 */
+    case 0x897e: goto B28_897d; /* $897d */
+    case 0x89af: goto B28_89ae; /* $89ae */
+    case 0x89ca: goto B28_89c9; /* $89c9 */
+    case 0x89da: goto B28_89d9; /* $89d9 */
+    case 0x89f9: goto B28_89f8; /* $89f8 */
+    case 0x8a09: goto B28_8a08; /* $8a08 */
+    case 0x8a3f: goto B28_8a3e; /* $8a3e */
+    case 0x8a62: goto B28_8a61; /* $8a61 */
+    case 0x8aa8: goto B28_8aa7; /* $8aa7 */
+    case 0x8ade: goto B28_8add; /* $8add */
+    case 0x8b0b: goto B28_8b0a; /* $8b0a */
+    case 0x8b22: goto B28_8b21; /* $8b21 */
+    case 0x8b94: goto B28_8b93; /* $8b93 */
+    case 0x8c2c: goto B28_8c2b; /* $8c2b */
+    case 0x8c7f: goto B28_8c7e; /* $8c7e */
+    case 0x8cd4: goto B28_8cd3; /* $8cd3 */
+    case 0x8cf6: goto B28_8cf5; /* $8cf5 */
+    case 0x8d1d: goto B28_8d1c; /* $8d1c */
+    case 0x8d2a: goto B28_8d29; /* $8d29 */
+    case 0x8d3e: goto B28_8d3d; /* $8d3d */
+    case 0x8d4e: goto B28_8d4d; /* $8d4d */
+    case 0x8d8e: goto B28_8d8d; /* $8d8d */
+    case 0x8dc0: goto B28_8dbf; /* $8dbf */
+    case 0x8dc9: goto B28_8dc8; /* $8dc8 */
+    case 0x8de2: goto B28_8de1; /* $8de1 */
+    case 0x8e09: goto B28_8e08; /* $8e08 */
+    case 0x8e1b: goto B28_8e1a; /* $8e1a */
+    case 0xc4c8: goto B30_c4c7; /* $c4c7 */
+    case 0xc4f4: goto B30_c4f3; /* $c4f3 */
+    case 0xc876: goto B30_c875; /* $c875 */
+    case 0xc8f7: goto B30_c8f6; /* $c8f6 */
+    case 0xc951: goto B30_c950; /* $c950 */
+    case 0xc982: goto B30_c981; /* $c981 */
+    case 0xc98b: goto B30_c98a; /* $c98a */
+    case 0xc9c5: goto B30_c9c4; /* $c9c4 */
+    case 0xc9e9: goto B30_c9e8; /* $c9e8 */
+    case 0xca22: goto B30_ca21; /* $ca21 */
+    case 0xcad4: goto B30_cad3; /* $cad3 */
+    case 0xcae7: goto B30_cae6; /* $cae6 */
+    case 0xcaf7: goto B30_caf6; /* $caf6 */
+    case 0xcb0d: goto B30_cb0c; /* $cb0c */
+    case 0xcb5c: goto B30_cb5b; /* $cb5b */
+    case 0xcb8b: goto B30_cb8a; /* $cb8a */
+    case 0xcb99: goto B30_cb98; /* $cb98 */
+    case 0xcbc2: goto B30_cbc1; /* $cbc1 */
+    case 0xcbf1: goto B30_cbf0; /* $cbf0 */
+    case 0xcc02: goto B30_cc01; /* $cc01 */
+    case 0xcc46: goto B30_cc45; /* $cc45 */
+    case 0xccd2: goto B30_ccd1; /* $ccd1 */
+    case 0xcd0d: goto B30_cd0c; /* $cd0c */
+    case 0xcd3c: goto B30_cd3b; /* $cd3b */
+    case 0xcd77: goto B30_cd76; /* $cd76 */
+    case 0xcd89: goto B30_cd88; /* $cd88 */
+    case 0xcde2: goto B30_cde1; /* $cde1 */
+    case 0xce08: goto B30_ce07; /* $ce07 */
+    case 0xce4a: goto B30_ce49; /* $ce49 */
+    case 0xce6e: goto B30_ce6d; /* $ce6d */
+    case 0xced6: goto B30_ced5; /* $ced5 */
+    case 0xcefc: goto B30_cefb; /* $cefb */
+    case 0xcefe: goto B30_cefd; /* $cefd */
+    case 0xcf4f: goto B30_cf4e; /* $cf4e */
+    case 0xcf72: goto B30_cf71; /* $cf71 */
+    case 0xd002: goto B30_d001; /* $d001 */
+    case 0xd093: goto B30_d092; /* $d092 */
+    case 0xd0ac: goto B30_d0ab; /* $d0ab */
+    case 0xd110: goto B30_d10f; /* $d10f */
+    case 0xd220: goto B30_d21f; /* $d21f */
+    case 0xd235: goto B30_d234; /* $d234 */
+    case 0xd275: goto B30_d274; /* $d274 */
+    case 0xd29a: goto B30_d299; /* $d299 */
+    case 0xd37e: goto B30_d37d; /* $d37d */
+    case 0xd504: goto B30_d503; /* $d503 */
+    case 0xd50e: goto B30_d50d; /* $d50d */
+    case 0xd518: goto B30_d517; /* $d517 */
+    case 0xd52b: goto B30_d52a; /* $d52a */
+    case 0xd6bd: goto B30_d6bc; /* $d6bc */
+    case 0xd717: goto B30_d716; /* $d716 */
+    case 0xd746: goto B30_d745; /* $d745 */
+    case 0xd769: goto B30_d768; /* $d768 */
+    case 0xd76b: goto B30_d76a; /* $d76a */
+    case 0xd77a: goto B30_d779; /* $d779 */
+    case 0xd792: goto B30_d791; /* $d791 */
+    case 0xd83f: goto B30_d83e; /* $d83e */
+    case 0xd88f: goto B30_d88e; /* $d88e */
+    case 0xd8da: goto B30_d8d9; /* $d8d9 */
+    case 0xd8f7: goto B30_d8f6; /* $d8f6 */
+    case 0xd954: goto B30_d953; /* $d953 */
+    case 0xd961: goto B30_d960; /* $d960 */
+    case 0xd970: goto B30_d96f; /* $d96f */
+    case 0xd978: goto B30_d977; /* $d977 */
+    case 0xd9c8: goto B30_d9c7; /* $d9c7 */
+    case 0xda1a: goto B30_da19; /* $da19 */
+    case 0xda63: goto B30_da62; /* $da62 */
+    case 0xda65: goto B30_da64; /* $da64 */
+    case 0xda8e: goto B30_da8d; /* $da8d */
+    case 0xdb62: goto B30_db61; /* $db61 */
+    case 0xdb9e: goto B30_db9d; /* $db9d */
+    case 0xdbcc: goto B30_dbcb; /* $dbcb */
+    case 0xdbea: goto B30_dbe9; /* $dbe9 */
+    case 0xdbfc: goto B30_dbfb; /* $dbfb */
+    case 0xdc03: goto B30_dc02; /* $dc02 */
+    case 0xdc07: goto B30_dc06; /* $dc06 */
+    case 0xdc82: goto B30_dc81; /* $dc81 */
+    case 0xdcf0: goto B30_dcef; /* $dcef */
+    case 0xdd6e: goto B30_dd6d; /* $dd6d */
+    case 0xdd81: goto B30_dd80; /* $dd80 */
+    case 0xddcb: goto B30_ddca; /* $ddca */
+    case 0xdf48: goto B30_df47; /* $df47 */
+    case 0xdf4a: goto B30_df49; /* $df49 */
+    case 0xdf5a: goto B30_df59; /* $df59 */
+    case 0xdfbd: goto B30_dfbc; /* $dfbc */
+    case 0xe074: goto B31_e073; /* $e073 */
+    case 0xe0df: goto B31_e0de; /* $e0de */
+    case 0xe267: goto B31_e266; /* $e266 */
+    case 0xe277: goto B31_e276; /* $e276 */
+    case 0xe27d: goto B31_e27c; /* $e27c */
+    case 0xe2a3: goto B31_e2a2; /* $e2a2 */
+    case 0xe349: goto B31_e348; /* $e348 */
+    case 0xe3ca: goto B31_e3c9; /* $e3c9 */
+    case 0xe407: goto B31_e406; /* $e406 */
+    case 0xe4b6: goto B31_e4b5; /* $e4b5 */
+    case 0xe501: goto B31_e500; /* $e500 */
+    case 0xe54c: goto B31_e54b; /* $e54b */
+    case 0xe678: goto B31_e677; /* $e677 */
+    case 0xe709: goto B31_e708; /* $e708 */
+    case 0xe73e: goto B31_e73d; /* $e73d */
+    case 0xe7d0: goto B31_e7cf; /* $e7cf */
+    case 0xe7e4: goto B31_e7e3; /* $e7e3 */
+    case 0xe854: goto B31_e853; /* $e853 */
+    case 0xe89f: goto B31_e89e; /* $e89e */
+    case 0xe8a0: goto B31_e89f; /* $e89f */
+    case 0xe8ed: goto B31_e8ec; /* $e8ec */
+    case 0xe900: goto B31_e8ff; /* $e8ff */
+    case 0xe93d: goto B31_e93c; /* $e93c */
+    case 0xe9da: goto B31_e9d9; /* $e9d9 */
+    case 0xec10: goto B31_ec0f; /* $ec0f */
+    case 0xec75: goto B31_ec74; /* $ec74 */
+    case 0xec8c: goto B31_ec8b; /* $ec8b */
+    case 0xed5b: goto B31_ed5a; /* $ed5a */
+    case 0xed85: goto B31_ed84; /* $ed84 */
+    case 0xed8b: goto B31_ed8a; /* $ed8a */
+    case 0xee31: goto B31_ee30; /* $ee30 */
+    case 0xee6d: goto B31_ee6c; /* $ee6c */
+    case 0xee9f: goto B31_ee9e; /* $ee9e */
+    case 0xef73: goto B31_ef72; /* $ef72 */
+    case 0xefaa: goto B31_efa9; /* $efa9 */
+    case 0xf10e: goto B31_f10d; /* $f10d */
+    case 0xf15a: goto B31_f159; /* $f159 */
+    case 0xf329: goto B31_f328; /* $f328 */
+RET_END
