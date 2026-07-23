@@ -13,12 +13,8 @@ import NES from './src/nes';
 import { BUTTON } from '../types';
 import { romUint8Array } from '../rom_data';
 
-/** TsubasaCpu — 和父类 CPU 相同，仅 PRG 数据源替换为静态文件 */
-import { createTsubasaCpu } from './tsubasa-code/cpu';
-import { PRG_ROM_BANKS, PRG_ROM_BANKS_TEST } from './tsubasa-code/prg_rom_data';
-// 切换注入数据源：注释/取消下面一行
-const USE_BANKS = PRG_ROM_BANKS;
-// const USE_BANKS = PRG_ROM_BANKS_TEST;  // ← 取消注释 = 全炸，验证注入生效
+/** TsubasaNes — ROM 数据完全内建，外部不可访问 */
+import { TsubasaNes } from './tsubasa-code/tsubasa_nes';
 
 // ============================================================================
 // 类型定义
@@ -223,12 +219,10 @@ export class TsnesKernel {
       sampleRate: SAMPLE_RATE,
     };
 
-    // tsubasa 模式: 注入自定义 CPU 工厂
-    if (mode === 'tsubasa') {
-      nesOpts.cpuFactory = (nes: any) => createTsubasaCpu(nes);
-    }
-
-    this.nes = new NES(nesOpts);
+    // tsubasa 模式: 用完全封闭的 TsubasaNes（ROM 数据内建，外部不可访问）
+    this.nes = mode === 'tsubasa'
+      ? new TsubasaNes(nesOpts)
+      : new NES(nesOpts);
   }
 
   // ---- 音频管线 ----
@@ -308,38 +302,24 @@ export class TsnesKernel {
   /** 直接加载原始 .nes ROM 数据并启动 */
   start(): void {
     try {
-      const romData = romUint8Array();
-      console.log('[tsnes] ROM decoded: %d bytes', romData.length);
-
-      // 打印 iNES 头诊断
-      if (romData.length >= 16 && romData[0] === 0x4E) {
-        const prg16k = romData[4];
-        const chr8k = romData[5];
-        const mapper = ((romData[6] >> 4) | (romData[7] & 0xF0));
-        console.log('[tsnes] iNES: PRG=%d×16KB, CHR=%d×8KB, mapper=%d, flags6=0x%s flags7=0x%s size=%d',
-          prg16k, chr8k, mapper,
-          romData[6].toString(16), romData[7].toString(16), romData.length);
-      }
-
-      this.nes.loadROM(romData);
-
-      // tsubasa 模式：直接用静态 PRG 数据覆盖 cpu.mem
       if (this.mode === 'tsubasa') {
-        const cpu = this.nes.cpu;
-        const banks = USE_BANKS;
-        const last = banks.length - 1;
+        // TsubasaNes 在构造函数中已完成 ROM 加载 + PRG 注入，这里无需操作
+        console.log('[tsnes/tsubasa] ROM data sealed inside TsubasaNes');
+      } else {
+        const romData = romUint8Array();
+        console.log('[tsnes] ROM decoded: %d bytes', romData.length);
 
-        // 写 4 个 8KB 窗口 → cpu.mem 地址 [0x8000..0xFFFF]
-        for (let i = 0; i < 8192; i++) cpu.mem[0x8000 + i] = banks[0][i];           // bank 0
-        for (let i = 0; i < 8192; i++) cpu.mem[0xA000 + i] = banks[0][8192 + i];    // bank 1
-        for (let i = 0; i < 8192; i++) cpu.mem[0xC000 + i] = banks[last][i];        // bank last-1
-        for (let i = 0; i < 8192; i++) cpu.mem[0xE000 + i] = banks[last][8192 + i]; // bank last
+        // 打印 iNES 头诊断
+        if (romData.length >= 16 && romData[0] === 0x4E) {
+          const prg16k = romData[4];
+          const chr8k = romData[5];
+          const mapper = ((romData[6] >> 4) | (romData[7] & 0xF0));
+          console.log('[tsnes] iNES: PRG=%d×16KB, CHR=%d×8KB, mapper=%d, flags6=0x%s flags7=0x%s size=%d',
+            prg16k, chr8k, mapper,
+            romData[6].toString(16), romData[7].toString(16), romData.length);
+        }
 
-        // 替换 rom.rom，供运行时 mapper bank 切换用
-        this.nes.rom.rom = [...banks];
-        this.nes.rom.romCount = banks.length;
-
-        console.log('[tsnes/tsubasa] static PRG → cpu.mem (%d banks)', banks.length);
+        this.nes.loadROM(romData);
       }
 
       this._tracer = new CpuTracer(this.nes);
@@ -362,18 +342,7 @@ export class TsnesKernel {
   reset(): void {
     console.log('[tsnes] Reset');
     this.nes.reset();
-    // tsubasa 模式：reset 重建了 CPU 和 mapper，直接重写 cpu.mem
-    if (this.mode === 'tsubasa') {
-      const cpu = this.nes.cpu;
-      const banks = USE_BANKS;
-      const last = banks.length - 1;
-      for (let i = 0; i < 8192; i++) cpu.mem[0x8000 + i] = banks[0][i];
-      for (let i = 0; i < 8192; i++) cpu.mem[0xA000 + i] = banks[0][8192 + i];
-      for (let i = 0; i < 8192; i++) cpu.mem[0xC000 + i] = banks[last][i];
-      for (let i = 0; i < 8192; i++) cpu.mem[0xE000 + i] = banks[last][8192 + i];
-      this.nes.rom.rom = [...banks];
-      this.nes.rom.romCount = banks.length;
-    }
+    // TsubasaNes.reset() 已自动重写 cpu.mem（封装在子类内部）
     this.frameBuffer = null;
     // reset 后重建 mapper, 重新绑定 tracer
     if (this._tracer) {

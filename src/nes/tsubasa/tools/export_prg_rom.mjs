@@ -64,7 +64,7 @@ const BYTES_PER_LINE = 64;
 function formatBankArray(bytes) {
   const lines = [];
   for (let i = 0; i < bytes.length; i += BYTES_PER_LINE) {
-    lines.push(bytes.slice(i, i + BYTES_PER_LINE).join(','));
+    lines.push(bytes.slice(i, i + BYTES_PER_LINE).map(b => '0x' + b.toString(16).padStart(2, '0').toUpperCase()).join(','));
   }
   return lines;
 }
