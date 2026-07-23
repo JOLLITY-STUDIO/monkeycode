@@ -22,6 +22,8 @@ export interface NESOptions {
   onBatteryRamWrite?: (address: number, value: number) => void;
   emulateSound?: boolean;
   sampleRate?: number;
+  /** 可选：自定义 CPU 工厂 (用于注入 TsubasaCpu 等替代实现) */
+  cpuFactory?: (nes: any) => CPU;
 }
 
 class NES {
@@ -59,7 +61,9 @@ class NES {
       writeFrame: this.opts.onFrame!,
       updateStatus: this.opts.onStatusUpdate!,
     };
-    this.cpu = new CPU(this);
+    this.cpu = (this.opts as NESOptions).cpuFactory
+      ? (this.opts as NESOptions).cpuFactory!(this)
+      : new CPU(this);
     this.ppu = new PPU(this);
     this.papu = new PAPU(this);
     this.gameGenie = new GameGenie();
@@ -81,7 +85,9 @@ class NES {
 
   // Resets the system
   reset(): void {
-    this.cpu = new CPU(this);
+    this.cpu = (this.opts as NESOptions).cpuFactory
+      ? (this.opts as NESOptions).cpuFactory!(this)
+      : new CPU(this);
     this.ppu = new PPU(this);
     this.papu = new PAPU(this);
 

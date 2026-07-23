@@ -13,6 +13,13 @@ import NES from './src/nes';
 import { BUTTON } from '../types';
 import { romUint8Array } from '../rom_data';
 
+/** TsubasaCpu — 和父类 CPU 相同，仅 PRG 数据源替换为静态文件 */
+import { createTsubasaCpu } from './tsubasa-code/cpu';
+import { PRG_ROM_BANKS, PRG_ROM_BANKS_TEST } from './tsubasa-code/prg_rom_data';
+// 切换注入数据源：注释/取消下面一行
+const USE_BANKS = PRG_ROM_BANKS;
+// const USE_BANKS = PRG_ROM_BANKS_TEST;  // ← 取消注释 = 全炸，验证注入生效
+
 // ============================================================================
 // 类型定义
 // ============================================================================
@@ -161,6 +168,9 @@ export class TsnesKernel {
   canvas: any;
   running = false;
 
+  /** CPU 模式: 'native' = 原始 6502, 'tsubasa' = TS 游戏逻辑 */
+  mode: 'native' | 'tsubasa';
+
   /** PPU 帧缓冲快照 (Uint32Array, NES BGR 格式) */
   frameBuffer: Uint32Array | null = null;
 
@@ -184,8 +194,9 @@ export class TsnesKernel {
   private _audioCtx: any = null;
   private _audioNode: any = null;
 
-  constructor(canvas: any) {
+  constructor(canvas: any, mode: 'native' | 'tsubasa' = 'native') {
     this.canvas = canvas;
+    this.mode = mode;
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
     if (!ctx) throw new Error('[tsnes] Cannot get 2d context');
     this.ctx = ctx;
@@ -198,19 +209,26 @@ export class TsnesKernel {
     this._ring = new Float32Array(this._ringCap);
 
     const self = this;
-    this.nes = new NES({
+    const nesOpts: any = {
       onFrame: (buffer: Uint32Array) => {
         self.frameBuffer = buffer;
       },
       onStatusUpdate: (msg: string) => {
-        console.log('[tsnes]', msg);
+        console.log(`[tsnes${mode === 'tsubasa' ? '/tsubasa' : ''}]`, msg);
       },
       onAudioSample: (left: number, right: number) => {
         self._onAudioSample(left, right);
       },
       emulateSound: true,
       sampleRate: SAMPLE_RATE,
-    });
+    };
+
+    // tsubasa 模式: 注入自定义 CPU 工厂
+    if (mode === 'tsubasa') {
+      nesOpts.cpuFactory = (nes: any) => createTsubasaCpu(nes);
+    }
+
+    this.nes = new NES(nesOpts);
   }
 
   // ---- 音频管线 ----
@@ -230,6 +248,7 @@ export class TsnesKernel {
 
   /** 启动 WebAudioContext → ScriptProcessorNode → speaker */
   private _startAudio(): void {
+    if (this.mode === 'native') return; // 原生侧静音，只保留改造版音效
     if (this._audioCtx) return;
     try {
       const ctx = wx.createWebAudioContext();
@@ -303,6 +322,26 @@ export class TsnesKernel {
       }
 
       this.nes.loadROM(romData);
+
+      // tsubasa 模式：直接用静态 PRG 数据覆盖 cpu.mem
+      if (this.mode === 'tsubasa') {
+        const cpu = this.nes.cpu;
+        const banks = USE_BANKS;
+        const last = banks.length - 1;
+
+        // 写 4 个 8KB 窗口 → cpu.mem 地址 [0x8000..0xFFFF]
+        for (let i = 0; i < 8192; i++) cpu.mem[0x8000 + i] = banks[0][i];           // bank 0
+        for (let i = 0; i < 8192; i++) cpu.mem[0xA000 + i] = banks[0][8192 + i];    // bank 1
+        for (let i = 0; i < 8192; i++) cpu.mem[0xC000 + i] = banks[last][i];        // bank last-1
+        for (let i = 0; i < 8192; i++) cpu.mem[0xE000 + i] = banks[last][8192 + i]; // bank last
+
+        // 替换 rom.rom，供运行时 mapper bank 切换用
+        this.nes.rom.rom = [...banks];
+        this.nes.rom.romCount = banks.length;
+
+        console.log('[tsnes/tsubasa] static PRG → cpu.mem (%d banks)', banks.length);
+      }
+
       this._tracer = new CpuTracer(this.nes);
       this._startAudio();
       this.running = true;
@@ -323,6 +362,18 @@ export class TsnesKernel {
   reset(): void {
     console.log('[tsnes] Reset');
     this.nes.reset();
+    // tsubasa 模式：reset 重建了 CPU 和 mapper，直接重写 cpu.mem
+    if (this.mode === 'tsubasa') {
+      const cpu = this.nes.cpu;
+      const banks = USE_BANKS;
+      const last = banks.length - 1;
+      for (let i = 0; i < 8192; i++) cpu.mem[0x8000 + i] = banks[0][i];
+      for (let i = 0; i < 8192; i++) cpu.mem[0xA000 + i] = banks[0][8192 + i];
+      for (let i = 0; i < 8192; i++) cpu.mem[0xC000 + i] = banks[last][i];
+      for (let i = 0; i < 8192; i++) cpu.mem[0xE000 + i] = banks[last][8192 + i];
+      this.nes.rom.rom = [...banks];
+      this.nes.rom.romCount = banks.length;
+    }
     this.frameBuffer = null;
     // reset 后重建 mapper, 重新绑定 tracer
     if (this._tracer) {
