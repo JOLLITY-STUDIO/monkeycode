@@ -30,3 +30,40 @@ export const PRG_ROM_START = 0x8000;
 
 /** PRG-ROM 结束地址 (含) */
 export const PRG_ROM_END = 0xffff;
+
+// ============================================================================
+// CHR Tile 可视化常量
+// ============================================================================
+
+/**
+ * CHR Tile 像素值 → ASCII 字符映射
+ *   0 = '  ' (透明/背景)
+ *   1 = '░░' (颜色 1)
+ *   2 = '▒▒' (颜色 2)
+ *   3 = '██' (颜色 3)
+ *
+ * 用法示例: PIXEL_CHARS[color] 获取对应双字节 ASCII 字符
+ */
+export const PIXEL_CHARS: readonly string[] = [
+  '  ',  // 0 = 背景/透明
+  '░░',  // 1
+  '▒▒',  // 2
+  '██',  // 3
+] as const;
+
+// ============================================================================
+// CHR Tile 类型定义
+// ============================================================================
+
+/**
+ * CHR Bank 中的单个 8×8 tile 定义
+ * 包含 ASCII 可视化（方便肉眼识别）和原始 NES bitplane 字节数据
+ */
+export interface TileDef {
+  /** 8×8 ASCII 可视化，每行 16 个字符（每个像素 = PIXEL_CHARS[color] 双字节） */
+  readonly ascii: readonly string[];
+  /** Bitplane 0: 8 字节，NES PPU 低位平面 */
+  readonly bp0: readonly number[];
+  /** Bitplane 1: 8 字节，NES PPU 高位平面 */
+  readonly bp1: readonly number[];
+}
