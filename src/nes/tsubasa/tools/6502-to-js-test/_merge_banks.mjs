@@ -6,16 +6,10 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const srcDir = path.join(__dirname, '_prg_output') + '/';
 
-const bankFiles = [
-  { f: 'prg_bank_00.c', bn: 0 },  { f: 'prg_bank_01.c', bn: 1 },
-  { f: 'prg_bank_02.c', bn: 2 },  { f: 'prg_bank_11.c', bn: 11 },
-  { f: 'prg_bank_12.c', bn: 12 }, { f: 'prg_bank_16.c', bn: 16 },
-  { f: 'prg_bank_19.c', bn: 19 }, { f: 'prg_bank_20.c', bn: 20 },
-  { f: 'prg_bank_22.c', bn: 22 }, { f: 'prg_bank_24.c', bn: 24 },
-  { f: 'prg_bank_26.c', bn: 26 }, { f: 'prg_bank_27.c', bn: 27 },
-  { f: 'prg_bank_28.c', bn: 28 }, { f: 'prg_bank_30.c', bn: 30 },
-  { f: 'prg_bank_31.c', bn: 31 },
-];
+const bankFiles = [];
+for (let i = 0; i <= 31; i++) {
+  bankFiles.push({ f: `prg_bank_${i.toString().padStart(2, '0')}.c`, bn: i });
+}
 
 // Map CPU address → bank, and also which bank labels exist
 const addrToBank = {};
