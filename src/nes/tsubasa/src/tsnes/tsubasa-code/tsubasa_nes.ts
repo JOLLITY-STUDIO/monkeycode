@@ -54,7 +54,7 @@ export class TsubasaNes extends NES {
     const romBuffer = buildRomBuffer(PRG_ROM_BANKS, CHR_ROM_BANKS);
     console.log('[TsubasaNes] ROM built from static data: %d bytes (PRG=%d CHR=%d mapper=%d)',
       romBuffer.length,
-      PRG_ROM_BANKS.length * 16384,
+      PRG_ROM_BANKS.length * 8192,
       CHR_ROM_BANKS.length * 8192,
       ((RAW_HEADER[6] >> 4) | (RAW_HEADER[7] & 0xF0)));
 
@@ -63,20 +63,9 @@ export class TsubasaNes extends NES {
     this._patchPrgBanks();
   }
 
-  /** 用静态 PRG 数据覆盖 cpu.mem + rom.rom（确保 MMC3 bank 切换正确） */
+  /** 直接注入 32×8KB PRG bank，load8kRomBank 自动兼容 */
   private _patchPrgBanks(): void {
-    const cpu = this.cpu;
-    const banks = PRG_ROM_BANKS;
-    const last = banks.length - 1;
-
-    // 写 4 个 8KB 窗口 → cpu.mem [0x8000..0xFFFF]
-    for (let i = 0; i < 8192; i++) cpu.mem[0x8000 + i] = banks[0][i];           // bank 0
-    for (let i = 0; i < 8192; i++) cpu.mem[0xA000 + i] = banks[0][8192 + i];    // bank 1
-    for (let i = 0; i < 8192; i++) cpu.mem[0xC000 + i] = banks[last][i];        // bank last-1
-    for (let i = 0; i < 8192; i++) cpu.mem[0xE000 + i] = banks[last][8192 + i]; // bank last
-
-    // 替换 rom.rom，供 MMC3 运行时 bank 切换用
-    this.rom.rom = [...banks];
-    this.rom.romCount = banks.length;
+    this.rom.rom = [...PRG_ROM_BANKS];
+    this.rom.romCount = PRG_ROM_BANKS.length; // = 32
   }
 }

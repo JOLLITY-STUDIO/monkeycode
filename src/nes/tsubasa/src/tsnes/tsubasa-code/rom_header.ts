@@ -33,8 +33,8 @@ export const HAS_BATTERY_RAM = false;
 /** 是否为 NES 2.0 格式 */
 export const IS_NES20 = true;
 
-/** PRG-ROM 16KB bank 数量 */
-export const PRG_ROM_COUNT = 16;
+/** PRG-ROM 8KB bank 数量 (已拆分为 32 个 MMC3 bank) */
+export const PRG_ROM_COUNT = 32;
 
 /** PRG-ROM 总大小 (bytes) */
 export const PRG_ROM_SIZE = 262144;
@@ -101,7 +101,7 @@ export function buildRomBuffer(
   chrBanks: readonly Uint8Array[],
 ): Uint8Array {
   const headerSize = 16;
-  const prgSize = prgBanks.length * 16384;
+  const prgSize = prgBanks.reduce((s, b) => s + b.length, 0);
   const chrSize = chrBanks.length * 8192;
   const totalSize = headerSize + prgSize + chrSize;
 
@@ -114,7 +114,7 @@ export function buildRomBuffer(
   let offset = headerSize + (HAS_TRAINER ? 512 : 0);
   for (const bank of prgBanks) {
     buf.set(bank, offset);
-    offset += 16384;
+    offset += bank.length;
   }
 
   // 写入 CHR-ROM

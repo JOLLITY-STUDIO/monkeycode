@@ -39,19 +39,19 @@ console.log(`iNES header: mapper=${mapper}, PRG=${prgCount}x16KB (${prgCount * 1
 // PRG-ROM 起始偏移
 const prgOffset = 16 + (hasTrainer ? 512 : 0);
 
-// 提取每个 16KB bank 的原始 bytes
-const BANKS = [];
-for (let i = 0; i < prgCount; i++) {
-  const start = prgOffset + i * 16384;
-  const bytes = [];
-  for (let j = 0; j < 16384; j++) {
-    bytes.push(raw[start + j]);
-  }
-  BANKS.push(bytes);
-}
+// 提取原始 PRG-ROM bytes
+const PRG_SIZE = prgCount * 16384;
+const prgBytes = raw.slice(prgOffset, prgOffset + PRG_SIZE);
 
 const bank8KCount = prgCount * 2;
 console.log(`MMC3 banks: ${bank8KCount} × 8KB`);
+
+// 按 8KB 切分
+const BANKS = [];
+for (let i = 0; i < bank8KCount; i++) {
+  const start = i * 8192;
+  BANKS.push(Array.from(prgBytes.slice(start, start + 8192)));
+}
 
 // 初始 MMC3 映射状态
 const initBankLo = 0;                          // 0x8000-0x9FFF
@@ -72,14 +72,18 @@ function formatBankArray(bytes) {
 console.log(`Generating raw byte arrays (${BYTES_PER_LINE} bytes/line)...`);
 
 const bankDefs = BANKS.map((bytes, i) => {
+  const padded = String(i).padStart(2, '0');
   const lines = formatBankArray(bytes);
-  return `/** PRG-ROM bank ${i} (16KB) — ${bytes.length} bytes */
-const _PRG_BANK_${i}: readonly number[] = [
+  return `/** PRG-ROM MMC3 bank ${padded} (8KB) — ${bytes.length} bytes */
+const _PRG_BANK_${padded}: readonly number[] = [
 ${lines.map(l => `  ${l}`).join(',\n')}
 ];`;
 });
 
-const bankRefs = Array.from({ length: prgCount }, (_, i) => `  _PRG_BANK_${i}`).join(',\n');
+const bankRefs = Array.from(
+  { length: bank8KCount },
+  (_, i) => `  _PRG_BANK_${String(i).padStart(2, '0')}`
+).join(',\n');
 
 const output = `/**
  * PRG-ROM 数据 — 由 tools/export_prg_rom.mjs 自动生成，请不要手动修改
@@ -88,14 +92,14 @@ const output = `/**
  * Mapper: ${mapper} (MMC3)
  * PRG-ROM: ${prgCount} 个 16KB bank → ${bank8KCount} 个 8KB MMC3 bank
  * 
- * PRG_ROM_BANKS: Uint8Array[] 共 ${prgCount} 个
+ * PRG_ROM_BANKS: Uint8Array[] 共 ${bank8KCount} 个 (每项 8KB)
  */
 
 ${bankDefs.join('\n\n')}
 
 // ---------- 预构建 Uint8Array[] ----------
 
-/** 全部 PRG-ROM 16KB bank（预构建，初次 import 即就绪） */
+/** 全部 PRG-ROM 8KB MMC3 bank（预构建，初次 import 即就绪） */
 export const PRG_ROM_BANKS: readonly Uint8Array[] = [
 ${bankRefs}
 ].map(arr => new Uint8Array(arr));
@@ -116,7 +120,7 @@ export const MMC3_INIT_MAP: Record<number, number> = {
 /**
  * 从 PRG-ROM 读取 1 字节 (MMC3 映射)
  * @param addr CPU 地址 (0x4020 ~ 0xFFFF)
- * @param banks PRG-ROM 16KB bank 数组
+ * @param banks PRG-ROM 8KB bank 数组 (长度 = PRG_8K_BANK_COUNT)
  * @param map8k 当前 8KB bank 映射表 (key=窗口基地址, value=8KB bank 索引)
  */
 export function readPrgRom(
@@ -136,11 +140,7 @@ export function readPrgRom(
   }
 
   const bank8k = map8k[windowBase] ?? 0;
-  const bank16k = bank8k >> 1;
-  const bankOffset = (bank8k & 1) * 0x2000;
-
-  if (bank16k >= banks.length) return 0;
-  return banks[bank16k][bankOffset + offset];
+  return banks[bank8k]?.[offset] ?? 0;
 }
 `;
 

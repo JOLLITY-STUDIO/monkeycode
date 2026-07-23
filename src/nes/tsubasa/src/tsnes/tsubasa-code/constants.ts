@@ -13,9 +13,20 @@
  *   0x4020 - 0x5FFF   卡带扩展 (少数 mapper 用)
  *   0x6000 - 0x7FFF   卡带 SRAM / PRG-RAM (存档、工作 RAM)
  *   0x8000 - 0xFFFF   卡带 PRG-ROM (游戏代码)
+ * 
+ * $6000-$7FFF  [SRAM]               ← 存档，8KB
+$8000-$9FFF  [可换 bank A]        ← 俩相框，随时换片
+$A000-$BFFF  [可换 bank B]        ← 
+$C000-$DFFF  [bank 30 永久挂]     ← 钉子户，永远不动
+$E000-$FFFF  [bank 31 永久挂]     ← 钉子户，永远不动
+深度思考
+每个 bank 固定 8KB = 8192 字节
  * PPU = Picture Processing Unit（图像处理单元）
 APU = Audio Processing Unit（音频处理单元）— NES 实机硬件叫法
-PAPU = Pseudo Audio Processing Unit — 模拟器里的叫法，前面加了个 Pseudo（"伪"）表示是软件仿真的，不是真硬件============================================================================
+PAPU = Pseudo Audio Processing Unit — 模拟器里的叫法，前面加了个 Pseudo（"伪"）表示是软件仿真的，不是真硬件
+PRG-ROM (Program ROM)  = CPU 的程序代码 + 数据表   ← 6502 机器码，bank 切换可扩展
+CHR-ROM (Character ROM) = PPU 的图块/精灵素材       ← 8×8 像素 tile，PPU 直接读取
+============================================================================
  */
 
 /** 内部 RAM 地址掩码 (2KB 镜像填充到 8KB) */

@@ -428,16 +428,20 @@ class Mapper0 {
   }
 
   load8kRomBank(bank8k: number, address: number): void {
-    let bank16k = Math.floor(bank8k / 2) % this.nes.rom.romCount;
-    let offset = (bank8k % 2) * 8192;
+    const rom = this.nes.rom.rom;
+    const count = this.nes.rom.romCount;
 
-    copyArrayElements(
-      this.nes.rom.rom[bank16k],
-      offset,
-      this.nes.cpu.mem,
-      address,
-      8192,
-    );
+    // 自动识别 bank 单位：8KB bank 直接用；16KB bank 拆半取
+    if (rom[0] && rom[0].length === 8192) {
+      // 每个 bank 就是 8KB，直接索引
+      const idx = bank8k % count;
+      copyArrayElements(rom[idx], 0, this.nes.cpu.mem, address, 8192);
+    } else {
+      // 每个 bank 是 16KB，拆半
+      const bank16k = Math.floor(bank8k / 2) % count;
+      const offset = (bank8k % 2) * 8192;
+      copyArrayElements(rom[bank16k], offset, this.nes.cpu.mem, address, 8192);
+    }
   }
 
   canWriteChr(_address: number): boolean {
