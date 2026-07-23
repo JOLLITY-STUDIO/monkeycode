@@ -1,0 +1,8 @@
+{
+  "totalFrames": 240,
+  "totalInstructions": 2281707,
+  "uniquePCs": 1816,
+  "functions": 61,
+  "outputDir": "pages/game_jsnes/opening",
+  "elapsedMs": 1314
+}

@@ -1,0 +1,434 @@
+把 NES 游戏反编译成高层游戏逻辑，用原生 TS 重写
+
+
+
+现在开始重构。我把整个 sceneDataLoad 函数替换为 △1~△5 结构：
+
+bank_00_dispatch.ts
+(修改)
+查看文件
+function sceneDataLoad(ctx: GameContext, rom: RomReader, param: number): void {
+  _log('[bank_00] sceneDataLoad: param=$%s paused=%d delay=%d',
+    param.toString(16), +_bcState.paused, _bcState.delay);
+  // ★ 逐帧续跑: 如果处于暂停且有延迟，递减延迟后返回
+  if (_bcState.paused) {
+    if (_bcState.delay > 0) {
+      _bcState.delay--;
+      _log('[bank_00] sceneDataLoad: waiting... delay=%d', _bcState.delay);
+      return;
+    }
+    // delay==0: 恢复执行
+    _bcState.paused = false;
+    _log('[bank_00] sceneDataLoad: resuming bytecode...');
+  }
+  // ★ 逐帧续跑: 如果 init 已完成，直接跳到字节码循环 (跳过步骤 1/2)
+  if (_bcState.initDone) {
+    // 从快照恢复所有局部变量
+    let dataPtr = _bcState.dataPtr;
+    let dataOffset = _bcState.dataOffset;
+    let cursorLo = _bcState.cursorLo;
+    let cursorHi = _bcState.cursorHi;
+    let colLo = _bcState.colLo;
+    let colHi = _bcState.colHi;
+    const savedBank = _bcState.savedBank;
+    const dataBank = _bcState.dataBank;
+    let _charCount = 0;
+    // 恢复 bank 上下文
+    ctx.ram.setU8(0x25, dataBank);
+    ctx.ram.setU8(MMC3_BANK_SEL, u8(7 | ctx.ram.u8(0x22)));
+    ctx.ram.setU8(MMC3_BANK_DATA, dataBank);
+    _log('[bank_00] sceneDataLoad: resume at dataPtr=$%s offset=%d', dataPtr.toString(16), dataOffset);
+    // 进入字节码循环 (见下方共享循环)
+    // === 主字節碼解釋循環 (续跑) ===
+    let handled = false;
+    let _bcPauseDelay = -1;
+    while (dataOffset < 500) { // safety limit
+      const b = rom.u8(dataPtr + dataOffset);
+      handled = true;
+      _bcPauseDelay = -1; // reset each iteration
+      // ——— 字节码处理 (与下方 init 路径共用) ———
+      _runOneBytecode_step:
+      // (placeholders, actual logic repeated — see inline expansion below)
+      if (dataOffset >= 500) break;
+      if (_bcPauseDelay >= 0) {
+        // 保存当前状态
+        _bcState.dataPtr = dataPtr;
+        _bcState.dataOffset = dataOffset; // advance will be applied by caller when resuming
+        _bcState.cursorLo = cursorLo;
+        _bcState.cursorHi = cursorHi;
+        _bcState.colLo = colLo;
+        _bcState.colHi = colHi;
+        _bcState.savedBank = savedBank;
+        _bcState.dataBank = dataBank;
+        _bcState.paused = true;
+        _bcState.delay = _bcPauseDelay;
+        _log('[bank_00] sceneDataLoad: pausing with delay=%d at offset=%d', _bcPauseDelay, dataOffset);
+        return;
+      }
+      dataOffset++;
+      ctx.ram.setU8(0x53, colLo);
+    }
+    if (!handled) {
+      console.log('[diag] sceneDataLoad: resume no bytes processed');
+    }
+    _log('[bank_00] sceneDataLoad: resume finished, offset=%d', dataOffset);
+    // 恢复 bank
+    ctx.ram.setU8(0x25, savedBank);
+    ctx.ram.setU8(MMC3_BANK_SEL, u8(7 | ctx.ram.u8(0x22)));
+    ctx.ram.setU8(MMC3_BANK_DATA, savedBank);
+    _bcState.initDone = false; // mark as finished
+    return;
+  }
+  // === 初始化路径: 步骤 1 & 2 (仅首次调用) ===
+  _bcState.param = param;
+  // === 步驟 1: 查表找到場景數據指針 ===
+  // ($8464-$847D)
+  let y = 2; // LDY #$00 → INY → INY → 起始 Y=2 (skip entry#0)
+  const MAX_Y = 0x10;
+  while (y < MAX_Y) {
+    const tableEntry = rom.u8(0x8AEE + y);
+    if (param < tableEntry) break;
+    y += 2;
+  }
+  const offset = rom.u8(0x8AEC + y);
+  let loadIdx = param - offset;
+  const dataBank = rom.u8(0x8AED + y);
+  
+  loadIdx = (loadIdx * 2) & 0xFF;
+  const ptrLo = loadIdx;
+  const ptrHi = 0xA0;
+  ctx.ram.setU8(0x4D, ptrLo);
+  ctx.ram.setU8(0x4E, ptrHi);
+  ctx.ram.setU8(0x56, dataBank);
+  
+  const savedBank = ctx.ram.u8(0x25);
+  ctx.ram.setU8(0xED, savedBank);
+  
+  xcall(ctx, rom, '$C4B9', dataBank);
+  
+  const ptrLo2 = rom.u8((ptrHi << 8) | ptrLo);
+  const ptrHi2 = rom.u8((ptrHi << 8) | ptrLo + 1);
+  let dataPtr = (ptrHi2 << 8) | ptrLo2;
+  console.log('[diag] sceneDataLoad deref: param=$%s bank=%d $A000+%s → ($%s%02X)=$%04X',
+    param.toString(16), dataBank, loadIdx.toString(16), ptrHi.toString(16), ptrLo, dataPtr);
+  ctx.ram.setU8(0x4D, ptrLo2);
+  ctx.ram.setU8(0x4E, ptrHi2);
+  
+  ctx.ram.setU8(0x05, 0xC5);
+  ctx.ram.setU8(0x06, 0x84);
+  
+  ctx.ram.setU8(0x0D, 0);
+  ctx.ram.setU8(0x0E, 0);
+  
+  ctx.ram.setU8(0x0652, 0);
+  ctx.ram.setU8(ZP_E4, 0xE0);
+  ctx.ram.setU8(ZP_E5, 0x23);
+  fillDisplayList(ctx, 1, 0x20, 0xE0, 0x23);
+  
+  xcall(ctx, rom, '$C4B9', savedBank);
+  
+  // === 步驟 2: 初始化光標位置 ===
+  ctx.ram.setU8(0x56, dataBank);
+  ctx.ram.setU8(0x55, 8);
+  
+  let cursorLo = 0x49;
+  let cursorHi = 0x22;
+  ctx.ram.setU8(0x4F, cursorLo);
+  ctx.ram.setU8(0x50, cursorHi);
+  
+  let colLo = cursorLo;
+  let colHi = cursorHi;
+  let colPos = cursorLo;
+  let minCol = cursorLo & 0x1F;
+  ctx.ram.setU8(0x54, minCol);
+  
+  // === 步驟 3: 主字節碼解釋循環 ===
+  // FAST PATH: 兼容旧 auto-test 模式
+  if (_cfg.fastSceneLoad) {
+    ctx.ram.setU8(0x4A, 0);
+    ctx.ram.setU8(0x4B, 0);
+    return;
+  }
+  ctx.ram.setU8(0x25, dataBank);
+  ctx.ram.setU8(MMC3_BANK_SEL, u8(7 | ctx.ram.u8(0x22)));
+  ctx.ram.setU8(MMC3_BANK_DATA, dataBank);
+  // ★ DIAG: dump bytecode header before execution
+  const _bcDump: string[] = [];
+  for (let _i = 0; _i < 32; _i++) _bcDump.push(rom.u8(dataPtr + _i).toString(16));
+  console.log('[diag] sceneDataLoad BC START: param=$%s dataPtr=$%s dataBank=%d savedBank=%d $25=%d',
+    param.toString(16), dataPtr.toString(16), dataBank, savedBank, ctx.ram.u8(0x25));
+  console.log('[diag] sceneDataLoad BC FIRST32: %s', _bcDump.join(' '));
+  let dataOffset = 0;
+  let handled = false;
+  let _charCount = 0;
+  let _bcPauseDelay = -1; // 逐帧续跑: >=0 时表示需要暂停 N 帧
+  while (dataOffset < 500) { // safety limit
+    const b = rom.u8(dataPtr + dataOffset);
+    handled = true;
+    _bcPauseDelay = -1; // reset each iteration
+    
+    if (b < 0xD8) {
+      // 直接字符輸出: $00-$D7
+      // $84EF-$8501: JSR $88CA (write char); INC $53
+      _charCount++;
+      charOutput(ctx, rom, b, colHi, colLo);
+      // ★ FIX: INC $53 → colLo++ (not cursorLo+1 — cursorLo never changes)
+      colLo = u8(colLo + 1);
+      ctx.ram.setU8(0x53, colLo);
+      // LDA #$01; JMP $8879 → advance pointer by 1
+      dataOffset += 1;
+      continue;
+    }
+    
+    if (b < 0xE0) {
+      // 控制碼 $D8-$DF: 調色板/亮度
+      // $8504-$8519
+      const cmdIdx = b - 0xD8; // 0..7
+      const cmdVal = rom.u8(0x8AE6 + cmdIdx);
+      _log('[bank_00] sceneDataLoad cmd $%s → val=$%s',
+        b.toString(16), cmdVal.toString(16));
+      // 寫入亮度值或執行效果
+      ctx.ram.setU8(0x4A, cmdVal); // assume brightness
+      ctx.ram.setU8(0x4B, cmdVal);
+      dataOffset += 1;
+      continue;
+    }
+    
+    if (b < 0xE8) {
+      // 列控制 $E0-$E7
+      // $851C-$8534: 計算列偏移
+      const colAdj = 0xE1 - b; // $E1→0, $E2→-1, $E3→-2, etc.
+                              // SBC #$E1; EOR #$FF → (b-0xE1) inverted as 2's comp
+      const colDelta = colAdj & 0xFF; // negative offset
+      colLo = u8(colLo + colDelta);
+      // 更新最小列
+      const newMin = colLo & 0x1F;
+      if (newMin < (ctx.ram.u8(0x54) & 0xFF)) {
+        ctx.ram.setU8(0x54, newMin);
+      }
+      dataOffset += 1;
+      continue;
+    }
+    
+    // $E8-$FF: 跳轉表處理器 (完整翻譯 from bank_00.asm $8545-$887F)
+    const cmdCode = b;
+    let advance: number;
+    
+    switch (cmdCode) {
+      // $E8 (0x8575): INY; LDA ($4D),Y; JSR $8920; LDA #$02; JMP $8879
+      case 0xE8: {
+        const nb = rom.u8(dataPtr + dataOffset + 1);
+        sceneTransitionSetup(ctx, rom);
+        advance = 2; // $8879: advance 2
+        break;
+      }
+      // $E9 (0x8580): LDA #$02; JSR $9FA8; JSR $997E; LDA #$01; JMP $8879
+      case 0xE9: {
+        _bcPauseDelay = 2; // JSR $9FA8 → saveContext(2) → 逐帧暂停
+        brightnessFadeStep(ctx, rom);
+        advance = 1;
+        break;
+      }
+      // $EA (0x858D): JSR $99F0; JSR $9B7F; fill NT0/1; clear; LDA #$01; JMP $8887
+      case 0xEA: {
+        brightnessFrameLoop(ctx, rom);
+        clearOAM(ctx);
+        fillDisplayList(ctx, 0x10, 0x20, 0x00, 0x20);
+        fillDisplayList(ctx, 0x20, 0x20, 0x00, 0x24);
+        ctx.ram.setU8(0x4C, 0);
+        ctx.ram.setU8(0x7B, 0);
+        ctx.ram.setU8(0x0D, 0);
+        ctx.ram.setU8(0x0E, 0);
+        advance = 1;
+        // JMP $8887 → reinit cursor
+        cursorLo = 0x49; cursorHi = 0x22; colLo = 0x49; colHi = 0x22;
+        ctx.ram.setU8(0x54, 0x49 & 0x1F);
+        break;
+      }
+      // $EB (0x85C4): JSR $899A; JSR $89A3; JSR $88B1; LDA #$01; JMP $8887
+      case 0xEB: {
+        clearPPUMode(ctx);
+        sub89A3(ctx, rom); // PPU mode setup
+        sub88B1(ctx, rom); // cursor init
+        advance = 1;
+        cursorLo = 0x49; cursorHi = 0x22; colLo = 0x49; colHi = 0x22;
+        ctx.ram.setU8(0x54, 0x49 & 0x1F);
+        break;
+      }
+      // $EC (0x85D2): LDY #$01; LDA ($4D),Y; CMP #$FF; BEQ clear+adv; JSR $89D2; advance
+      case 0xEC: {
+        const val = rom.u8(dataPtr + dataOffset + 1);
+        if (val === 0xFF) {
+          ctx.ram.setU8(0x0652, 0);
+          advance = 2;
+        } else {
+          sub89D2(ctx, val); // text display helper
+          advance = 2;
+        }
+        break;
+      }
+      // $ED (0x85EC): scan $0700-$0704 for empty slot (0), store next data byte
+      case 0xED: {
+        let slotX = 0;
+        for (; slotX < 5; slotX++) {
+          if (ctx.ram.u8(0x0700 + slotX) === 0) break;
+        }
+        const val = rom.u8(dataPtr + dataOffset + 1);
+        ctx.ram.setU8(0x0700 + slotX, val);
+        advance = 2;
+        break;
+      }
+      // $EE (0x8604): fill display at $2221 ($E6=$21,$E7=$22), 11 rows × 30 cols
+      case 0xEE: {
+        ctx.ram.setU8(0xE6, 0x21);
+        ctx.ram.setU8(0xE7, 0x22);
+        fillDisplayList(ctx, 0x0B, 0x1E, 0x21, 0x22);
+        advance = 1;
+        break;
+      }
+      // $EF (0x8618): saveContext(2); toggle $99 bit7; ORA #$40; advance
+      case 0xEF: {
+        _bcPauseDelay = 2; // JSR $9FA8 → saveContext(2) → 逐帧暂停
+        const v99 = ctx.ram.u8(0x99);
+        ctx.ram.setU8(0x99, (v99 ^ 0x80) | 0x40);
+        advance = 1;
+        break;
+      }
+      // $F0 (0x862C): read 2 bytes → $4F/$51 and $50/$52; $4D/$4E+=3; JMP $84E3
+      case 0xF0: {
+        const lo = rom.u8(dataPtr + dataOffset + 1);
+        const hi = rom.u8(dataPtr + dataOffset + 2);
+        ctx.ram.setU8(0x4F, lo); ctx.ram.setU8(0x51, lo);
+        ctx.ram.setU8(0x50, hi); ctx.ram.setU8(0x52, hi);
+        // advance dataPtr by 3 (skip over $F0 + lo + hi bytes)
+        dataPtr += 3;
+        // JMP $84E3: re-read dataPtr from $4D/$4E → reinit cursor; reset offset to 0
+        dataOffset = 0;
+        advance = 0;
+        // ★ FIX: sync all cursor vars (colLo, colHi, cursorLo, cursorHi, minCol)
+        colLo = lo; colHi = hi; cursorLo = lo; cursorHi = hi;
+        ctx.ram.setU8(0x54, lo & 0x1F);
+        break;
+      }
+      // $F1 (0x864A): fill display at $2221 (11×30); read byte→ASL; bank_06 read $BB40+Y; JSR $97B6; restore
+      case 0xF1: {
+        ctx.ram.setU8(0xE6, 0x21);
+        ctx.ram.setU8(0xE7, 0x22);
+        fillDisplayList(ctx, 0x0B, 0x1E, 0x21, 0x22);
+        const tblIdx = (rom.u8(dataPtr + dataOffset + 1) * 2) & 0xFF;
+        const savedBank = ctx.ram.u8(0x25);
+        xcall(ctx, rom, '$C4B9', 6); // switch to bank_06 for data
+        const ptrLo = rom.u8(0xBB40 + tblIdx);
+        const ptrHi = rom.u8(0xBB40 + tblIdx + 1);
+        sub97B6(ctx, rom, ptrLo, ptrHi); // copy data
+        xcall(ctx, rom, '$C4B9', savedBank);
+        advance = 2;
+        break;
+      }
+      // $F2 (0x8678): INY; LDA ($4D),Y; STA $55
+      case 0xF2: {
+        ctx.ram.setU8(0x55, rom.u8(dataPtr + dataOffset + 1));
+        advance = 2;
+        break;
+      }
+      // $F3 (0x8682): read byte: if 0→$9A35; if $FF→2 more bytes→$9A31; if >=0→$9A4C; if <0→$9A60
+      case 0xF3: {
+        const v = rom.u8(dataPtr + dataOffset + 1);
+        if (v === 0) {
+          scenePreProcess(ctx, rom);
+          advance = 2;
+        } else if (v === 0xFF) {
+          const a = rom.u8(dataPtr + dataOffset + 2);
+          const x = rom.u8(dataPtr + dataOffset + 3);
+          sub9A31(ctx, a, x); // set PPU address
+          advance = 4;
+        } else if (v < 128) {
+          sub9A4C(ctx, v); // palette operation
+          advance = 2;
+        } else {
+          sub9A60(ctx, v & 0x7F); // another palette
+          advance = 2;
+        }
+        break;
+      }
+      // $F4 (0x86B8): sub-jump table at $86C7 for 5 sub-operations
+      case 0xF4: {
+        const sub = rom.u8(dataPtr + dataOffset + 1);
+        switch (sub) {
+          case 1: $99D1(ctx, rom); break;     // $86DD: JSR $99D1
+          case 2: sub9A0D(ctx, rom); break;    // $86E6: JSR $9A0D
+          case 3: sub9A1F(ctx, rom); break;    // $86EE: JSR $9A1F
+          case 4: { // $86F6: brightness animation 4 steps (逐帧续跑)
+            let cnt = _bcState.f4cnt || 4;
+            if (cnt > 0) {
+              const palVal = rom.u8(0x87B3 + cnt);
+              ctx.ram.setU8(0x0631, palVal);
+              ppuAttrTransfer(ctx, rom);
+              cnt--;
+              _bcState.f4cnt = cnt;
+              if (cnt > 0) {
+                _bcPauseDelay = 4; // JSR $9FA8 → saveContext(4) → 逐帧暂停
+              } else {
+                _bcState.f4cnt = 0; // all steps done
+                advance = 1;
+                cursorLo = 0x49; cursorHi = 0x22; colLo = 0x49; colHi = 0x22;
+                ctx.ram.setU8(0x54, 0x49 & 0x1F);
+              }
+            }
+            break;
+          }
+          default: _warn('[bank_00] sceneDataLoad $F4 sub=%d unhandled', sub); break;
+        }
+        if (sub !== 4) advance = 2;
+        break;
+      }
+      // $F5-$FF: 显示/文本特效 + 场景流控处理器
+      // 完整翻译 from bank_00.asm $87B8-$887F (2026-07-22)
+      // $F5 ($87B8): set display control byte $4C
+      case 0xF5: {
+        const val = rom.u8(dataPtr + dataOffset + 1);
+        ctx.ram.setU8(0x4C, val === 0xFF ? 0 : val | 0x80);
+        advance = 2;
+        break;
+      }
+      // $F6 ($87CB): clear PPU mode + delay by next byte
+      case 0xF6: {
+        clearPPUMode(ctx);
+        const delayVal = rom.u8(dataPtr + dataOffset + 1);
+        _bcPauseDelay = delayVal; // JSR $9FA8 → saveContext(delayVal) → 逐帧暂停
+        advance = 2;
+        break;
+      }
+      // $F7 ($87D9): toggle $7B bit0 + clear $7A/$44/$45
+      case 0xF7: {
+        ctx.ram.setU8(0x7B, ctx.ram.u8(0x7B) ^ 1);
+        ctx.ram.setU8(0x7A, 0);
+        ctx.ram.setU8(0x44, 0);
+        ctx.ram.setU8(0x45, 0);
+        advance = 1;
+        break;
+      }
+      // $F8 ($87F8): read 2 bytes → $EC/$ED, cross-bank call $A212
+      case 0xF8: {
+        const ec = rom.u8(dataPtr + dataOffset + 1);
+        const ed = rom.u8(dataPtr + dataOffset + 2);
+        ctx.ram.setU8(0xEC, ec);
+        ctx.ram.setU8(0xED, ed);
+        xcall(ctx, rom, '$C4B9', 2);       // switch bank to 2
+        xcall(ctx, rom, '$A212');           // call subroutine (may stub-warn)
+        xcall(ctx, rom, '$C4B9', ctx.ram.u8(0x56)); // restore data bank
+        advance = 2;
+        break;
+      }
+      // $F9 ($8814): clear bit2 of $5B + sceneFade
+      case 0xF9: {
+        ctx.ram.setU8(0x5B, ctx.ram.u8(0x5B) & ~0x04);
+        const fadeId = rom.u8(dataPtr + dataOffset + 1);
+        sceneFade(ctx, rom, fadeId);
+        xcall(ctx, rom, '$C4B9', ctx.ram.u8(0x56));
+        advance = 2;
+        break;
+      }
+      // $FA ($881B): set bit2 of $5B + sceneFade
+      case 0xFA: {
+        ctx.ram.setU8(0x5B, ctx.ram.u

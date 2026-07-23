@@ -1,7 +1,9 @@
+
 {
   "pages": [
     "pages/launcher/launcher",
     "pages/game/game",
+    "pages/game_compare/game_compare",
     "pages/game_jsnes/game_jsnes"
   ],
   "subPackages": [

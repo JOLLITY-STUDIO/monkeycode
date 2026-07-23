@@ -25,6 +25,10 @@
       {
         "type": "folder",
         "value": "src/docs"
+      },
+      {
+        "type": "folder",
+        "value": "tools"
       }
     ],
     "include": []

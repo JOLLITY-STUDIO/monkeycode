@@ -15,11 +15,32 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/game_jsnes/game_jsnes",
-          "pathName": "pages/game_jsnes/game_jsnes",
+          "name": "pages/game_compare/game_compare",
+          "pathName": "pages/game_compare/game_compare",
           "query": "",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "pages/tsubasaFromCore/tsubasaFromCore",
+          "pathName": "pages/tsubasaFromCore/tsubasaFromCore",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/game_jsnes/opening_page/opening_page",
+          "pathName": "pages/game_jsnes/opening_page/opening_page",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/game_jsnes/game_jsnes",
+          "pathName": "pages/game_jsnes/game_jsnes",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/game/game",

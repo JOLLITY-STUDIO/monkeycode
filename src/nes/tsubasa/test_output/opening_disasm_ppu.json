@@ -1,0 +1,1352 @@
+{
+  "note": "TS disasm PPU trace — opening animation PPU snapshots",
+  "maxFrames": 100,
+  "snapshots": 42,
+  "elapsedSec": "0.0",
+  "frames": [
+    {
+      "frame": 0,
+      "cpu": {
+        "z26": 255,
+        "z27": 255,
+        "z4A": 255,
+        "z4B": 255,
+        "z4C": 255
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 0,
+          "status": 0,
+          "vramAddress": 0,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "00000000000000000000000000000000",
+        "sprPalette": "00000000000000000000000000000000",
+        "imgPalNonZero": 16,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 1,
+      "cpu": {
+        "z26": 255,
+        "z27": 0,
+        "z4A": 255,
+        "z4B": 255,
+        "z4C": 255
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 0,
+          "status": 0,
+          "vramAddress": 0,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "00000000000000000000000000000000",
+        "sprPalette": "00000000000000000000000000000000",
+        "imgPalNonZero": 16,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 2,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 0,
+        "z4B": 0,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 3,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 0,
+        "z4B": 0,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 4,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 0,
+        "z4B": 0,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 5,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 0,
+        "z4B": 0,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 6,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 0,
+        "z4B": 0,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 7,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 0,
+        "z4B": 0,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 8,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 0,
+        "z4B": 0,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 9,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 0,
+        "z4B": 0,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 10,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 1,
+        "z4B": 1,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 11,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 2,
+        "z4B": 2,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 12,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 3,
+        "z4B": 3,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 13,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 4,
+        "z4B": 4,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 14,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 5,
+        "z4B": 5,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 15,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 6,
+        "z4B": 6,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 16,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 7,
+        "z4B": 7,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 17,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 8,
+        "z4B": 8,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 18,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 9,
+        "z4B": 9,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 19,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 10,
+        "z4B": 10,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 20,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 11,
+        "z4B": 11,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 21,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 12,
+        "z4B": 12,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 22,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 13,
+        "z4B": 13,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 23,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 14,
+        "z4B": 14,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 24,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 25,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 26,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 27,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 28,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 29,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 30,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 31,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 32,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 33,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 34,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 35,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 36,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 37,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 38,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 39,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 40,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    },
+    {
+      "frame": 60,
+      "cpu": {
+        "z26": 0,
+        "z27": 0,
+        "z4A": 15,
+        "z4B": 15,
+        "z4C": 0
+      },
+      "ppu": {
+        "reg": {
+          "ctrl": 0,
+          "mask": 24,
+          "status": 0,
+          "vramAddress": 61,
+          "regX": 0
+        },
+        "ntId": null,
+        "vram_nz": 0,
+        "at_nz": 0,
+        "imgPalette": "070707070707070d0d0d0d0d0d0f0f0f",
+        "sprPalette": "3d150429001d15041008293f1d14041d",
+        "imgPalNonZero": 13,
+        "sprPalNonZero": 16,
+        "spritesUsed": 0,
+        "vram_tile_sample": null,
+        "vram_attr_sample": null,
+        "nametable_tiles_nt0": null,
+        "nametable_attrib_nt0": null,
+        "pattern_sample": null
+      }
+    }
+  ]
+}

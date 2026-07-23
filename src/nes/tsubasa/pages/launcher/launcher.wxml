@@ -12,6 +12,15 @@
       <text class="card-arrow">▸</text>
     </view>
 
+    <view class="entry-card" bindtap="onGameCompare">
+      <view class="card-icon">🔬</view>
+      <view class="card-info">
+        <text class="card-name">Compare 对比</text>
+        <text class="card-desc">tsnes ← → jsnes 双画面对比</text>
+      </view>
+      <text class="card-arrow">▸</text>
+    </view>
+
     <view class="entry-card" bindtap="onGameJsnes">
       <view class="card-icon">🔧</view>
       <view class="card-info">
@@ -26,6 +35,15 @@
       <view class="card-info">
         <text class="card-name">NES Emulator</text>
         <text class="card-desc">纯 jsnes 模拟器 (分包)</text>
+      </view>
+      <text class="card-arrow">▸</text>
+    </view>
+
+    <view class="entry-card" bindtap="onTsubasaCore">
+      <view class="card-icon">🧪</view>
+      <view class="card-info">
+        <text class="card-name">Core 验证</text>
+        <text class="card-desc">Emscripten 6502 分层框架</text>
       </view>
       <text class="card-arrow">▸</text>
     </view>

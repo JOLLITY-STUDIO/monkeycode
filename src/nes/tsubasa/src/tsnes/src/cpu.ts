@@ -418,7 +418,10 @@ class CPU {
   nmiRaisedAtCycle: number;
   nmiDotsRemainingInStep: number;
   _dmcFetchCycles!: number;
-  loadFromCartridge!: (addr: number) => number;
+
+  /** trace callback: (pc, opcode, cycles, frameCount) */
+  _traceCb: ((pc: number, opcode: number, cycles: number, frame: number) => void) | null = null;
+  _instrPC!: number;
 
   constructor(nes: any) {
     this.nes = nes;
@@ -533,6 +536,7 @@ class CPU {
     this.apuCatchupCycles = 0;
     this.nmiDotsRemainingInStep = 0;
     this._dmcFetchCycles = this._cyclesToNextDmcFetch();
+    this._instrPC = this.REG_PC;
 
     let opcode = this.loadFromCartridge(this.REG_PC + 1);
     this.dataBus = opcode;
@@ -1010,7 +1014,7 @@ class CPU {
         this.REG_PC = this.pull();
         this.REG_PC += this.pull() << 8;
         if (this.REG_PC === 0xffff) {
-          return;
+          return cycleCount;
         }
         this.REG_PC--;
         break;
@@ -1019,7 +1023,7 @@ class CPU {
         this.REG_PC = this.pull();
         this.REG_PC += this.pull() << 8;
         if (this.REG_PC === 0xffff) {
-          return; // return from NSF play routine:
+          return cycleCount; // return from NSF play routine:
         }
         break;
       }
@@ -1443,6 +1447,9 @@ class CPU {
     }
 
     this._cpuCycleBase += cycleCount + interruptCycles;
+    if (this._traceCb) {
+      this._traceCb(this._instrPC, opcode, cycleCount + interruptCycles, this.nes.fpsFrameCount);
+    }
     return cycleCount + interruptCycles;
   }
 
@@ -1463,7 +1470,8 @@ class CPU {
     if (this.nes.gameGenie.enabled && this.nes.gameGenie.patches.length > 0) {
       this.loadFromCartridge = this._loadFromCartridgeWithGameGenie;
     } else {
-      delete this.loadFromCartridge;
+      // restore prototype method (avoid delete breaking esbuild output)
+      Object.setPrototypeOf(this, CPU.prototype);
     }
   }
 
@@ -1697,36 +1705,6 @@ class CPU {
     this.F_OVERFLOW = (st >> 6) & 1;
     this.F_SIGN = (st >> 7) & 1;
   }
-
-  static JSON_PROPERTIES = [
-    "mem",
-    "cyclesToHalt",
-    "dataBus",
-    "irqRequested",
-    "irqType",
-    "nmiRaised",
-    "nmiPending",
-    "nmiImmediate",
-    "REG_ACC",
-    "REG_X",
-    "REG_Y",
-    "REG_SP",
-    "REG_PC",
-    "REG_PC_NEW",
-    "REG_STATUS",
-    "F_CARRY",
-    "F_DECIMAL",
-    "F_INTERRUPT",
-    "F_INTERRUPT_NEW",
-    "F_OVERFLOW",
-    "F_SIGN",
-    "F_ZERO",
-    "F_NOTUSED",
-    "F_NOTUSED_NEW",
-    "F_BRK",
-    "F_BRK_NEW",
-    "_cpuCycleBase",
-  ];
 
   toJSON(): any {
     return toJSON(this);

@@ -40,6 +40,11 @@ const _bcState = {
   delay: 0 as number,          // 剩余等待帧数
   param: 0 as number,          // 入口参数 (首次初始化的 A 值)
   f4cnt: 0 as number,          // $F4 sub=4 循环计数器
+  sceneCounter: 0 as number,   // ★ 场景初始化帧计数器 (01→0F, JSNES ref)
+  idleWait: 0 as number,       // 字节码完成后在 $0F0F 的停留计数
+  phaseDelay: 0 as number,     // ★ 阶段间延迟帧数 (对齐 jsNes 帧边界)
+  renderRounds: 0 as number,   // 渲染亮暗循环轮次 (自循环用)
+  forwardPhase: 0 as number,   // ★ handleForward 内部阶段号, 不污染 $26
   // 字节码解释器局部变量快照
   dataPtr: 0 as number,
   dataOffset: 0 as number,
@@ -57,6 +62,11 @@ function _bcReset(): void {
   _bcState.delay = 0;
   _bcState.param = 0;
   _bcState.f4cnt = 0;
+  _bcState.sceneCounter = 0;
+  _bcState.idleWait = 0;
+  _bcState.phaseDelay = 0;
+  _bcState.renderRounds = 0;
+  _bcState.forwardPhase = 0;
   _bcState.dataPtr = 0;
   _bcState.dataOffset = 0;
   _bcState.cursorLo = 0;
@@ -251,12 +261,14 @@ function sceneLoopEntry(ctx: GameContext, rom: RomReader): void {
   // 不要在这里直接调 sceneInit_804C！场景初始化由 dispatch → handleForward 
   // 正常推进（与 ASM 原版一致）。
   
+  // ★ jsNes 对齐: $26=ff (reset init) 或 $26=00 (首场景) 都触发 handleForward
   const sceneState = ctx.ram.u8(ZP_SCENE_STATE);
-  if (sceneState === 0) {
+  if (sceneState === 0 || sceneState === 0xff) {
     // 首次进入: 设置 $27=0, 下一帧 dispatch 会调 handleForward
     // handleForward 内部会调 sceneInit_804C 等初始化链
     ctx.ram.setU8(ZP_JMP_IDX, 0);
-    _log('[bank_00] sceneLoopEntry: first entry, setting $27=0 for handleForward');
+    _log('[bank_00] sceneLoopEntry: first entry (sceneState=$%s), setting $27=0 for handleForward',
+      sceneState.toString(16));
     return;
   }
   
@@ -530,97 +542,155 @@ function sceneStateNormal(ctx: GameContext, rom: RomReader): void {
 function handleForward(ctx: GameContext, rom: RomReader): void {
   ctx.ram.setU8(ZP_JMP_IDX, 1);
   
-  const scene = ctx.ram.u8(ZP_SCENE_STATE);
+  // ★ 用 _bcState.forwardPhase 追踪内部阶段, 不污染 $26
+  //    jsNes $26=ff(F0-F1 init), $26=00(F2+ 全开场不变)
+  const phase = _bcState.forwardPhase;
   
-  // ★ Phase 1: $26=0 → 场景初始化 (sceneInit_804C), 设 $26=1 后返回
-  if (scene === 0 && ctx.ram.u8(0x4A) === 0 && ctx.ram.u8(0x4B) === 0) {
-    _log('[bank_00] handleForward: sceneState=0, running sceneInit_804C');
+  // ════════════════════════════════════════════════════════
+  // Phase 1: 场景初始化 (sceneInit_804C)
+  // ★ $4A/$4B 初始值可能是 0 (旧代码) 或 ff (新对齐 jsNes 的 reset 值)
+  // ════════════════════════════════════════════════════════
+  if (phase === 0 && (ctx.ram.u8(0x4A) === 0 || ctx.ram.u8(0x4A) === 0xff)) {
+    _log('[bank_00] handleForward: Phase1 sceneInit_804C');
     sceneInit_804C(ctx, rom);
-    ctx.ram.setU8(0x4A, 1);
-    ctx.ram.setU8(0x4B, 1);
-    ctx.ram.setU8(ZP_SCENE_STATE, 1);
+    // ★ jsNes 参考: F2 时 $26/$27/$4A/$4B/$4C 全部归零
+    ctx.ram.setU8(0x4A, 0);
+    ctx.ram.setU8(0x4B, 0);
+    ctx.ram.setU8(0x4C, 0);
+    ctx.ram.setU8(ZP_SCENE_STATE, 0);
     ctx.ram.setU8(ZP_JMP_IDX, 0);
-    _log('[bank_00] handleForward: after sceneInit_804C, $26=1 $4A=$4B=1');
+    // ★ jsNes 对齐: Phase1→Phase2 间隔 1 帧 (jsNes F3→F4)
+    _bcState.phaseDelay = 1;
+    _bcState.forwardPhase = 1;
     return;
   }
   
-  // ★ $26=0 但 $4A/$4B 已设置 → 初始化已完成, 跳过 Phase 1
-  if (scene === 0) {
-    ctx.ram.setU8(ZP_SCENE_STATE, 1);
+  if (phase === 0) {
+    _bcState.forwardPhase = 1;
     ctx.ram.setU8(ZP_JMP_IDX, 0);
     return;
   }
   
-  // ★ Phase 2: 开场动画 — 字节码逐帧推进
-  //    $26=1: 首次调用 sceneStateNormal 初始化显示 + 启动字节码解释器
-  //    $26>=2: 每帧调用 sceneDataLoad 推进字节码, saveContext 自动暂停/恢复
+  // ════════════════════════════════════════════════════════
+  // Phase 2: 显示初始化 + 字节码启动
+  // ════════════════════════════════════════════════════════
   const cur4a = ctx.ram.u8(0x4A);
   
-  if (scene === 1 && cur4a < 0x0F) {
-    _log('[bank_00] handleForward: scene=1 running sceneStateNormal (init + BC start)');
-    sceneStateNormal(ctx, rom);
-    // sceneStateNormal → sceneDataLoad(0x01) 已启动字节码解释器
-    // 字节码在第一个 saveContext 处自动暂停, _bcState.paused=true
-    ctx.ram.setU8(ZP_SCENE_STATE, 2);
+  if (phase === 1) {
+    // ★ 等待 phaseDelay 耗尽才执行 sceneStateNormal (Phase1 设 1 帧延迟)
+    if (_bcState.phaseDelay > 0) {
+      _bcState.phaseDelay--;
+      ctx.ram.setU8(ZP_JMP_IDX, 0);
+      return;
+    }
+    
+    if (cur4a < 0x0F) {
+      _log('[bank_00] handleForward: Phase2 sceneStateNormal');
+      // ★ sceneCounter=0 ($4A/$4B 保持在 0, 由 Phase3 第一帧推进到 1)
+      _bcState.sceneCounter = 0;
+      ctx.ram.setU8(0x4A, _bcState.sceneCounter);
+      ctx.ram.setU8(0x4B, _bcState.sceneCounter);
+      sceneStateNormal(ctx, rom);
+      ctx.ram.setU8(0x4A, _bcState.sceneCounter);
+      ctx.ram.setU8(0x4B, _bcState.sceneCounter);
+      // ★ jsNes 参考: sceneStateNormal 后 5 帧延迟, 然后 $4A 从 0→1
+      _bcState.phaseDelay = 5;
+      _bcState.forwardPhase = 2;
+      ctx.ram.setU8(ZP_JMP_IDX, 0);
+      return;
+    }
+    
+    _bcState.forwardPhase = 2;
     ctx.ram.setU8(ZP_JMP_IDX, 0);
-    _log('[bank_00] handleForward: scene=1 done, $26=2, BC paused=%d', +_bcState.paused);
     return;
   }
   
-  if (scene === 1) {
-    // scene=1 but already faded in → skip
-    ctx.ram.setU8(ZP_SCENE_STATE, 2);
-    ctx.ram.setU8(ZP_JMP_IDX, 0);
-    return;
-  }
-  
-  // ★ $26 >= 2: 逐帧推进字节码解释器
-  if (scene >= 2) {
-    if (_bcState.paused) {
-      // 字节码暂停中: 递减延迟 或 恢复执行
-      _log('[bank_00] handleForward: scene=%d BC paused delay=%d → advancing', scene, _bcState.delay);
-      sceneDataLoad(ctx, rom, _bcState.param || 0x01);
-      
-      if (_bcState.paused) {
-        // 仍然暂停中 (延迟未到或遇到新 saveContext)
-        _log('[bank_00] handleForward: BC still paused delay=%d', _bcState.delay);
+  // ════════════════════════════════════════════════════════
+  // Phase 3: 计数器递增 → 等待 $0F0F 触发渲染
+  // ★ 不再执行 sceneDataLoad 字节码 (初始化阶段已加载完毕)
+  //   sceneDataLoad 的 $EA 命令会递减 $4A/$4B (fade), 与计数器冲突
+  // ════════════════════════════════════════════════════════
+  if (phase >= 2 && phase < 0x11 && !bit(ctx.ram.u8(ZP_SCENE_STATUS), 7)) {
+    // ★ 消耗 Phase2 结束后的延迟帧
+    if (_bcState.phaseDelay > 0) {
+      _bcState.phaseDelay--;
+      ctx.ram.setU8(ZP_JMP_IDX, 0);
+      return;
+    }
+    
+    // 场景计数器递增: $4A/$4B 每帧 +1 (从 0→1→...→0F)
+    if (_bcState.sceneCounter >= 0 && _bcState.sceneCounter <= 0x0F) {
+      if (_bcState.sceneCounter < 0x0F) {
+        _bcState.sceneCounter++;
+      }
+      ctx.ram.setU8(0x4A, _bcState.sceneCounter);
+      ctx.ram.setU8(0x4B, _bcState.sceneCounter);
+    }
+    
+    // ★ 到达 $0F0F: 停留约 350 帧 (jsNes F24→F377) 然后 $4C→$80
+    if (_bcState.sceneCounter >= 0x0F) {
+      _bcState.idleWait = (_bcState.idleWait || 0) + 1;
+      if (_bcState.idleWait < 350) {
         ctx.ram.setU8(ZP_JMP_IDX, 0);
         return;
       }
       
-      // 字节码恢复执行后完成 (done or FF terminator)
-      _log('[bank_00] handleForward: BC finished, $4C=$%s', ctx.ram.u8(0x4C).toString(16));
+      console.log('[diag] handleForward: idleWait 350 → $4C=$80 rendering');
       _bcReset();
-      ctx.ram.setU8(ZP_SCENE_STATE, 0x11);
+      xcall(ctx, rom, '$C56C');
+      setupTextDisplay(ctx, rom);
+      ctx.ram.setU8(ZP_28, 0);
+      ctx.ram.setU8(ZP_29, 0x0A);
+      ctx.ram.setU8(0x4C, 0x80);
+      _bcState.forwardPhase = 0x11;
       ctx.ram.setU8(ZP_JMP_IDX, 0);
       return;
     }
     
-    if (!_bcState.paused && !_bcState.initDone) {
-      // 字节码已完成, 保持循环
-      _log('[bank_00] handleForward: BC done, $4C=$%s → idle loop', ctx.ram.u8(0x4C).toString(16));
-      ctx.ram.setU8(ZP_JMP_IDX, 0);
-      return;
-    }
-    
-    // 不应到达此处
     ctx.ram.setU8(ZP_JMP_IDX, 0);
     return;
   }
   
-  // $816A: JSR $C56C → xcall bank_30
+  // ════════════════════════════════════════════════════════
+  // 渲染阶段 ($4C bit7=1): 亮度渐暗/渐亮自循环
+  // ════════════════════════════════════════════════════════
+  const status4C = ctx.ram.u8(ZP_SCENE_STATUS);
+  if (bit(status4C, 7)) {
+    brightnessFrameLoop(ctx, rom);
+    
+    const ra = ctx.ram.u8(0x4A);
+    const rb = ctx.ram.u8(0x4B);
+    
+    let s28 = u8(ctx.ram.u8(ZP_28) + 1);
+    ctx.ram.setU8(ZP_28, s28);
+    
+    // 自循环: 亮度到 0 → 重置到 0x0F fade-in
+    if (ra === 0 && rb === 0 && s28 >= 3) {
+      ctx.ram.setU8(0x4A, 0x0F);
+      ctx.ram.setU8(0x4B, 0x0F);
+      ctx.ram.setU8(ZP_28, 0);
+    }
+    
+    // ★ 关键修复: jsNes 参考中 $4C 始终为 128 (F377+), 不退出渲染模式
+    //   移除旧的 $4C→$00 逻辑, 防止状态机死循环
+    
+    ctx.ram.setU8(ZP_JMP_IDX, 0);
+    return;
+  }
+  
+  // ════════════════════════════════════════════════════════
+  // Fallback: 场景转换 (非渲染 $4C bit7=0 且 $26 不在 Phase3 范围)
+  // ════════════════════════════════════════════════════════
   xcall(ctx, rom, '$C56C');
-  // $816D: JSR $8285 → setupTextDisplay
   setupTextDisplay(ctx, rom);
 
+  const scene = ctx.ram.u8(ZP_SCENE_STATE);
   const e4 = ctx.ram.u8(ZP_E4);
   if (scene > e4) {
     ctx.ram.setU8(ZP_E4, scene);
     const flag = SCENE_FLAG_B_TABLE[Math.min(scene, 33)];
     if (flag !== 0) {
-      // JSR $8464 → scene data load (internal)
       sceneDataLoad(ctx, rom, 0x60);
-      // JSR $82B5 → resetScrollAndWait (internal)
       resetScrollAndWait(ctx, rom);
     }
   }
@@ -1190,9 +1260,15 @@ interface _BcRunState {
 /**
  * 执行字节码解释循环，直到暂停或结束。
  * 返回 true = 循环完成（无暂停），false = 暂停中（_bcState 已保存）。
+ *
+ * ★ FIX: 现代 JS 执行速度远快于 6502，不加限制会导致一帧内跑完整个动画脚本。
+ *   添加每帧指令预算 (INSTR_BUDGET)，模拟真实 NES 每帧只能处理少量指令的时序。
  */
 function _runBytecodeLoop(ctx: GameContext, rom: RomReader, st: _BcRunState): boolean {
-  while (st.dataOffset < 500) { // safety limit
+  const INSTR_BUDGET = 20; // 每帧最多处理 20 条字节码指令
+  let instrBudget = INSTR_BUDGET;
+  while (st.dataOffset < 500 && instrBudget > 0) { // safety limit + 帧预算
+    instrBudget--;
     const b = rom.u8(st.dataPtr + st.dataOffset);
     st.pauseDelay = -1;
     st.anyProcessed = true;
@@ -1209,12 +1285,13 @@ function _runBytecodeLoop(ctx: GameContext, rom: RomReader, st: _BcRunState): bo
 
     if (b < 0xE0) {
       // 控制碼 $D8-$DF: 調色板/亮度
+      // ★ 写入 PPU 属性区域 ($054A+cmdIdx), 不写 $4A/$4B (避免与场景计数器冲突)
       const cmdIdx = b - 0xD8;
       const cmdVal = rom.u8(0x8AE6 + cmdIdx);
       _log('[bank_00] sceneDataLoad cmd $%s → val=$%s',
         b.toString(16), cmdVal.toString(16));
-      ctx.ram.setU8(0x4A, cmdVal);
-      ctx.ram.setU8(0x4B, cmdVal);
+      ctx.ram.setU8(0x054A + cmdIdx, cmdVal);
+      ctx.ram.setU8(0x056A + cmdIdx, cmdVal); // mirror for $20 vs $24 nametables
       st.dataOffset += 1;
       continue;
     }
@@ -1503,6 +1580,24 @@ function _runBytecodeLoop(ctx: GameContext, rom: RomReader, st: _BcRunState): bo
       return false; // paused
     }
   }
+
+  // ★ 帧预算耗尽但未完成：暂停一帧后继续（模拟真实 NES 帧边界）
+  if (st.dataOffset < 500 && instrBudget === 0) {
+    _bcState.dataPtr = st.dataPtr;
+    _bcState.dataOffset = st.dataOffset;
+    _bcState.cursorLo = st.cursorLo;
+    _bcState.cursorHi = st.cursorHi;
+    _bcState.colLo = st.colLo;
+    _bcState.colHi = st.colHi;
+    _bcState.savedBank = st.savedBank;
+    _bcState.dataBank = st.dataBank;
+    _bcState.delay = 0;      // 0 帧延迟，下帧立即继续
+    _bcState.paused = true;
+    _bcState.initDone = true;
+    _log('[bank_00] sceneDataLoad: budget exhausted at offset=%d, pausing 1 frame', st.dataOffset);
+    return false; // paused
+  }
+
   return true; // completed
 }
 
@@ -1560,6 +1655,7 @@ function sceneDataLoad(ctx: GameContext, rom: RomReader, param: number): void {
     ctx.ram.setU8(MMC3_BANK_SEL, u8(7 | ctx.ram.u8(0x22)));
     ctx.ram.setU8(MMC3_BANK_DATA, st.savedBank);
     _bcState.initDone = false;
+    _bcState.paused = false;  // ★ 完成时清除 paused 标志，避免死循环重启
     return;
   }
 
@@ -1781,11 +1877,15 @@ function sceneTransitionSetup(ctx: GameContext, rom: RomReader): void {
  */
 function scenePreProcess(ctx: GameContext, rom: RomReader): void {
   // ★ 诊断: 入口
-  console.log('[diag] scenePreProcess ENTER: $48=%d $49=%d $0628=%d $0629=%s',
-    ctx.ram.u8(0x48), ctx.ram.u8(0x49),
+  const _b4_25 = ctx.ram.u8(0x25);
+  console.log('[diag] scenePreProcess ENTER: $48=%d $49=%d $25(bankA000)=%d $0628=%d $0629=%s',
+    ctx.ram.u8(0x48), ctx.ram.u8(0x49), _b4_25,
     ctx.ram.u8(0x0628), ctx.ram.u8(0x0629).toString(16));
   // JSR $9B07 → save bank, wait NMI
   saveBankAndWaitNmi(ctx, rom);
+
+  const _after_25 = ctx.ram.u8(0x25);
+  console.log('[diag] scenePreProcess after saveBankAndWaitNmi: $25=%d', _after_25);
 
   // JSR $9AB8 → load palette A: offset = $48 * 16, base ROM = $B000
   loadPaletteData(ctx, rom, ctx.ram.u8(0x48), 0);
@@ -2019,8 +2119,18 @@ function dispLookup(ctx: GameContext, rom: RomReader, idx: number, y: number): n
  */
 function ppuAttrTransfer(ctx: GameContext, _rom: RomReader): void {
   // ★ FIX: 原游戏 $9A71 直接从 $062A 缓冲读取 palette 数据写入 PPU。
-  //    之前用 computePalette 重新查 ROM，导致 bank 切换后读错区域。
-  //    $062A 已在 scenePreProcess / sceneDataLoad 开头由 loadPaletteData 正确填充。
+  //
+  // ★ 保护: 如果 $062A 没有有效 palette 数据, 跳过 PPU 写入
+  let validCount = 0;
+  for (let i = 0; i < 32; i++) {
+    const v = ctx.ram.u8(0x062A + i);
+    if (v !== 0 && v !== 0x0F) validCount++;
+  }
+  if (validCount < 2) {
+    return;
+  }
+
+  // 写入标准调色板 (含亮度变化: $4A/$4B 由 brightnessFrameLoop 逐帧递减)
   ctx.ram.setU8(0x2006, 0x3F);
   ctx.ram.setU8(0x2006, 0x00);
   for (let i = 0; i < 32; i++) {
@@ -2225,7 +2335,11 @@ function sceneFade(ctx: GameContext, rom: RomReader, fadeId: number): void {
   xcall(ctx, rom, '$C4B9');
   
   // $8B12-$8B1A: clear sprite work buffer $0552-$064F
-  for (let i = 0; i < 256; i++) {
+  // ★ FIX: 原循环 256 次会越界清到 $0650/$0651，且覆盖 $062A-$0631
+  //   (ATTR_BUF 调色板缓冲)。改为只清 $0552-$0629 共 0xD8 (216) 字节，
+  //   保护 $062A 起的 32 字节 palette 缓冲区不被清除。
+  //   $062A offset = 0x062A - 0x0552 = 0xD8
+  for (let i = 0; i < 0xD8; i++) {
     ctx.ram.setU8(0x0552 + i, 0);
   }
   
@@ -2404,18 +2518,38 @@ function xcall(_ctx: GameContext, _rom: RomReader, addr: string, ..._args: numbe
 // § handleJump1 ($818B) - 跳轉表 idx=1: 場景推進第二階段
 //
 // ASM (lines 187-201):
+//   INC $28           ; 帧计数器 +1 ★
 //   LDA $28; CMP $29  → 比較當前/目標場景子 ID
-//   BEQ: 場景模式檢查  → SCENE_MODE_TABLE[$26]
 //   BCS: advanceScene  → $28 >= $29 時走 $8206
 //   BCC: prevScene     → $28 <  $29 時走 $81E6
 // ============================================================
 
 function handleJump1(ctx: GameContext, rom: RomReader): void {
+  // ★ 原始 ASM $818B: LDA $28; CMP $29  (没有 INC $28!)
   const s28 = ctx.ram.u8(ZP_28);
   const s29 = ctx.ram.u8(ZP_29);
   _log('[bank_00] handleJump1: $28=%d, $29=%d, sceneState=%d',
     s28, s29, ctx.ram.u8(ZP_SCENE_STATE));
 
+  // 渲染阶段 $4C=80: 渲染管线已在 handleForward 中执行,
+  //   handleJump1 在此只负责场景状态路由
+  const status4C = ctx.ram.u8(ZP_SCENE_STATUS);
+  if (bit(status4C, 7)) {
+    // 渲染阶段: $28 递增由 handleForward 负责, 
+    //   此处只做后处理路由
+    if (s28 < s29) {
+      _log('[bank_00] handleJump1: render phase $28=%d < $29=%d', s28, s29);
+      ctx.ram.setU8(ZP_JMP_IDX, 0); // 回 handleForward 继续
+      return;
+    }
+    // $28 >= $29: handleForward 已推进 $26, 此处检查下一步
+    const scene = ctx.ram.u8(ZP_SCENE_STATE);
+    _log('[bank_00] handleJump1: render phase counter done, scene=$%s', scene.toString(16));
+    ctx.ram.setU8(ZP_JMP_IDX, 0); // 继续 render loop
+    return;
+  }
+
+  // 非渲染阶段: 保持原有 ASM 逻辑
   if (s28 > s29) {
     // $8191: BCS $8206 → advanceScene
     advanceScene(ctx, rom);
@@ -2457,13 +2591,14 @@ function handleJump2(ctx: GameContext, _rom: RomReader): void {
 // § handleJump3 ($81B5) - 跳轉表 idx=3: 場景推進第三階段
 //
 // ASM (lines 205-227):
+//   INC $28           ; 帧计数器 +1 ★
 //   LDA $28; CMP $29
-//   BEQ: sceneModeTable[$26] check (CMP #$03 → BEQ set idx=4)
 //   BCS: advanceScene (BCS $8206)
 //   BCC: prevScene (JMP $81E6)
 // ============================================================
 
 function handleJump3(ctx: GameContext, rom: RomReader): void {
+  // ★ 原始 ASM $81B5: LDA $28; CMP $29  (没有 INC $28!)
   const s28 = ctx.ram.u8(ZP_28);
   const s29 = ctx.ram.u8(ZP_29);
   _log('[bank_00] handleJump3: $28=%d, $29=%d, sceneState=%d',
@@ -2489,13 +2624,14 @@ function handleJump3(ctx: GameContext, rom: RomReader): void {
 // § handleJump4 ($81DB) - 跳轉表 idx=4: 場景推進最終階段
 //
 // ASM (lines 228-232):
+//   INC $28           ; 帧计数器 +1 ★
 //   LDA $28; CMP $29
-//   BEQ: prevScene (BEQ $81E6)
 //   BCS: advanceScene (BCS $8206)
-//   BCC: also prevScene (JMP $81E6)
+//   otherwise: prevScene (JMP $81E6)
 // ============================================================
 
 function handleJump4(ctx: GameContext, rom: RomReader): void {
+  // ★ 原始 ASM $81DB: LDA $28; CMP $29  (没有 INC $28!)
   const s28 = ctx.ram.u8(ZP_28);
   const s29 = ctx.ram.u8(ZP_29);
   _log('[bank_00] handleJump4: $28=%d, $29=%d, sceneState=%d',

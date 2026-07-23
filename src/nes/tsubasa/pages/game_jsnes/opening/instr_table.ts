@@ -1,0 +1,143 @@
+// opening/instr_table.ts — instruction lookup table
+// Auto-generated from opening demo trace
+// Total unique instructions: 1816
+// Total instructions executed: 2,281,707
+
+import { func7FFF, func805E, func80B7, func810B, func814B, func82EC, func838A, func8464, func8503, func8536, func8574, func8813, func8879, func891F, func8999, func8AF7, func8C59, func8C88, func8CA5, func8E15 } from './funcs_000';
+import { func8E57, func8EE7, func8FCB, func9039, func91F2, func9240, func92A0, func92D7, func9338, func94AE, func9644, func96F1, func9727, func989F, func992B, func99EF, func9A0B, func9A42, func9A71, func9B27 } from './funcs_020';
+import { func9B7E, func9DED, func9EEC, func9FA7, funcA000, funcA160, funcA1A7, funcA1BF, funcA200, funcA214, funcA280, funcA8CD, funcAA06, funcC3FF, funcC500, funcC64E, funcC76D, funcC820, funcCB34, funcCEFD } from './funcs_040';
+import { funcFFF0 } from './funcs_060';
+
+// Each entry is a function that executes one 6502 instruction.
+// Branches/Jumps set S.PC and return; the runner loops.
+export type InstrFn = () => void;
+
+export const instrTable: Record<number, InstrFn> = {};
+export const allFunctions: InstrFn[] = [];
+
+// Init all function references (call once at startup)
+export function initTable(): void {
+  allFunctions.length = 0;
+  instrTable[0x7FFF] = func7FFF;
+  allFunctions.push(func7FFF);
+  instrTable[0x805E] = func805E;
+  allFunctions.push(func805E);
+  instrTable[0x80B7] = func80B7;
+  allFunctions.push(func80B7);
+  instrTable[0x810B] = func810B;
+  allFunctions.push(func810B);
+  instrTable[0x814B] = func814B;
+  allFunctions.push(func814B);
+  instrTable[0x82EC] = func82EC;
+  allFunctions.push(func82EC);
+  instrTable[0x838A] = func838A;
+  allFunctions.push(func838A);
+  instrTable[0x8464] = func8464;
+  allFunctions.push(func8464);
+  instrTable[0x8503] = func8503;
+  allFunctions.push(func8503);
+  instrTable[0x8536] = func8536;
+  allFunctions.push(func8536);
+  instrTable[0x8574] = func8574;
+  allFunctions.push(func8574);
+  instrTable[0x8813] = func8813;
+  allFunctions.push(func8813);
+  instrTable[0x8879] = func8879;
+  allFunctions.push(func8879);
+  instrTable[0x891F] = func891F;
+  allFunctions.push(func891F);
+  instrTable[0x8999] = func8999;
+  allFunctions.push(func8999);
+  instrTable[0x8AF7] = func8AF7;
+  allFunctions.push(func8AF7);
+  instrTable[0x8C59] = func8C59;
+  allFunctions.push(func8C59);
+  instrTable[0x8C88] = func8C88;
+  allFunctions.push(func8C88);
+  instrTable[0x8CA5] = func8CA5;
+  allFunctions.push(func8CA5);
+  instrTable[0x8E15] = func8E15;
+  allFunctions.push(func8E15);
+  instrTable[0x8E57] = func8E57;
+  allFunctions.push(func8E57);
+  instrTable[0x8EE7] = func8EE7;
+  allFunctions.push(func8EE7);
+  instrTable[0x8FCB] = func8FCB;
+  allFunctions.push(func8FCB);
+  instrTable[0x9039] = func9039;
+  allFunctions.push(func9039);
+  instrTable[0x91F2] = func91F2;
+  allFunctions.push(func91F2);
+  instrTable[0x9240] = func9240;
+  allFunctions.push(func9240);
+  instrTable[0x92A0] = func92A0;
+  allFunctions.push(func92A0);
+  instrTable[0x92D7] = func92D7;
+  allFunctions.push(func92D7);
+  instrTable[0x9338] = func9338;
+  allFunctions.push(func9338);
+  instrTable[0x94AE] = func94AE;
+  allFunctions.push(func94AE);
+  instrTable[0x9644] = func9644;
+  allFunctions.push(func9644);
+  instrTable[0x96F1] = func96F1;
+  allFunctions.push(func96F1);
+  instrTable[0x9727] = func9727;
+  allFunctions.push(func9727);
+  instrTable[0x989F] = func989F;
+  allFunctions.push(func989F);
+  instrTable[0x992B] = func992B;
+  allFunctions.push(func992B);
+  instrTable[0x99EF] = func99EF;
+  allFunctions.push(func99EF);
+  instrTable[0x9A0B] = func9A0B;
+  allFunctions.push(func9A0B);
+  instrTable[0x9A42] = func9A42;
+  allFunctions.push(func9A42);
+  instrTable[0x9A71] = func9A71;
+  allFunctions.push(func9A71);
+  instrTable[0x9B27] = func9B27;
+  allFunctions.push(func9B27);
+  instrTable[0x9B7E] = func9B7E;
+  allFunctions.push(func9B7E);
+  instrTable[0x9DED] = func9DED;
+  allFunctions.push(func9DED);
+  instrTable[0x9EEC] = func9EEC;
+  allFunctions.push(func9EEC);
+  instrTable[0x9FA7] = func9FA7;
+  allFunctions.push(func9FA7);
+  instrTable[0xA000] = funcA000;
+  allFunctions.push(funcA000);
+  instrTable[0xA160] = funcA160;
+  allFunctions.push(funcA160);
+  instrTable[0xA1A7] = funcA1A7;
+  allFunctions.push(funcA1A7);
+  instrTable[0xA1BF] = funcA1BF;
+  allFunctions.push(funcA1BF);
+  instrTable[0xA200] = funcA200;
+  allFunctions.push(funcA200);
+  instrTable[0xA214] = funcA214;
+  allFunctions.push(funcA214);
+  instrTable[0xA280] = funcA280;
+  allFunctions.push(funcA280);
+  instrTable[0xA8CD] = funcA8CD;
+  allFunctions.push(funcA8CD);
+  instrTable[0xAA06] = funcAA06;
+  allFunctions.push(funcAA06);
+  instrTable[0xC3FF] = funcC3FF;
+  allFunctions.push(funcC3FF);
+  instrTable[0xC500] = funcC500;
+  allFunctions.push(funcC500);
+  instrTable[0xC64E] = funcC64E;
+  allFunctions.push(funcC64E);
+  instrTable[0xC76D] = funcC76D;
+  allFunctions.push(funcC76D);
+  instrTable[0xC820] = funcC820;
+  allFunctions.push(funcC820);
+  instrTable[0xCB34] = funcCB34;
+  allFunctions.push(funcCB34);
+  instrTable[0xCEFD] = funcCEFD;
+  allFunctions.push(funcCEFD);
+  instrTable[0xFFF0] = funcFFF0;
+  allFunctions.push(funcFFF0);
+}

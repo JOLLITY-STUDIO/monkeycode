@@ -742,6 +742,10 @@ class CPU {
     // nmiRaisedAtCycle to compute remaining PPU dots for the >= 5
     // threshold check (matching the old frame loop behavior).
     this.nmiDotsRemainingInStep = 0;
+
+    /** trace callback: (pc, opcode, cycles) — same signature as tsnes CPU */
+    this._traceCb = null;
+    this._instrPC = 0;
   }
 
   // Emulates a single CPU instruction, returns the number of cycles
@@ -857,6 +861,7 @@ class CPU {
     // next instruction. (opaddr keeps a copy of the pre-advance PC for
     // relative branches and the operand-byte fetches below.)
     let opaddr = this.REG_PC;
+    this._instrPC = opaddr + 1; // actual instruction address (REG_PC = PC-1)
     this.REG_PC += opinfo.size;
 
     // --- Address (decode continued) ---
@@ -2283,6 +2288,9 @@ class CPU {
     }
 
     this._cpuCycleBase += cycleCount + interruptCycles;
+    if (this._traceCb) {
+      this._traceCb(this._instrPC, opcode, cycleCount + interruptCycles);
+    }
     return cycleCount + interruptCycles;
   }
 

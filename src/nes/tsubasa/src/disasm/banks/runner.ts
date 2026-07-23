@@ -391,7 +391,15 @@ function frameLoop(): void {
     bank0?.dispatch(ctx, reader);
   }
 
-  // Copy OAM from CPU RAM ($0200-$02FF) to PPU OAM
+  // ★ OAM pipeline: scene functions write sprites to working buffer $0468-$0567.
+  //   bank_02 NMI handler's dmaSprites() normally copies $0468→$0200 (DMA page),
+  //   then $4014=$02 triggers hardware DMA $0200→PPU OAM.
+  //   Since runner doesn't call bank_02 NMI, we replicate dmaSprites here.
+  // Step 1: copy $0468 working buffer → $0200 DMA page (replicating dmaSprites)
+  for (let i = 0; i < OAM_SIZE; i++) {
+    ctx.ram.setU8(0x0200 + i, ctx.ram.u8(0x0468 + i));
+  }
+  // Step 2: copy $0200 DMA page → PPU OAM
   for (let i = 0; i < OAM_SIZE; i++) {
     ppu.oam[i] = ctx.ram.u8(0x0200 + i);
   }

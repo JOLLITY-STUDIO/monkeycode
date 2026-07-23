@@ -19,6 +19,7 @@ import { allBanks } from './disasm/banks/index';
 import type { RomReader, BankRomSlice } from './disasm/banks/_bank_types';
 import { resolveBank, getBank } from './disasm/banks/_crossbank';
 import { _cfg } from './disasm/banks/bank_00_dispatch';
+import { bank_02 as nmiBank } from './disasm/banks/bank_02_nmi';
 // Suppress verbose logging in production (speeds up frame loop dramatically)
 _cfg.verbose = false;
 _cfg.fastSceneLoad = false;
@@ -157,6 +158,8 @@ let ctx: GameContext;
 let ppu: PpuState;
 let mmc3: Mmc3Regs;
 let chrRam: Uint8Array;
+/** 完整 CHR ROM 数据 (用于 MMC3 CHR bank 切换) */
+let _fullChrRom: Uint8Array | null = null;
 let tileCache: TileCache;
 
 let running = false;
@@ -337,11 +340,59 @@ function installPpuBridge() {
       mmc3.prgBankMode = (val >> 6) & 1;
       mmc3.chrBankMode = (val >> 7) & 1;
     } else if (addr === 0x8001) {
+      const prevBank = mmc3.bankData[mmc3.bankSelect];
       mmc3.bankData[mmc3.bankSelect] = val;
       if (mmc3.bankSelect === 6) bank8000 = val;
       if (mmc3.bankSelect === 7) bankA000 = val;
+      // ★ CHR bank 切换: 将新 bank 数据从 ROM 拷贝到 chrRam
+      if (_fullChrRom && val !== prevBank) {
+        applyChrBank(mmc3.bankSelect, val);
+      }
     }
   };
+}
+
+/** 将 MMC3 CHR bank 数据从完整 CHR ROM 拷贝到 chrRam */
+function applyChrBank(regIdx: number, bankVal: number): void {
+  if (!_fullChrRom) return;
+  const chrBankSize = mmc3.chrBankMode ? 0x0800 : 0x0400; // 2KB or 1KB
+  const bankOffset = bankVal * chrBankSize;
+  const end = Math.min(bankOffset + chrBankSize, _fullChrRom.length);
+  if (bankOffset >= _fullChrRom.length) return;
+
+  let dstBase: number;
+  if (mmc3.chrBankMode) {
+    // 2KB mode: reg 2→$0000, 3→$0800, 4→$1000, 5→$1800
+    const map2k: Record<number, number> = { 2: 0x0000, 3: 0x0800, 4: 0x1000, 5: 0x1800 };
+    dstBase = map2k[regIdx] ?? -1;
+  } else {
+    // 1KB mode: reg 0→$0000, 1→$0400, 2→$0800, 3→$0C00, 4→$1000, 5→$1400
+    dstBase = regIdx * 0x0400;
+    if (regIdx > 5) return; // reg 6/7 are PRG only in 1KB mode
+  }
+  if (dstBase < 0 || dstBase >= CHR_RAM_SIZE) return;
+
+  let copied = 0;
+  for (let i = 0; i < chrBankSize && (dstBase + i) < CHR_RAM_SIZE; i++) {
+    const srcIdx = bankOffset + i;
+    if (srcIdx >= _fullChrRom.length) break;
+    const oldVal = chrRam[dstBase + i];
+    const newVal = _fullChrRom[srcIdx];
+    if (oldVal !== newVal) {
+      chrRam[dstBase + i] = newVal;
+      tileCache.markDirty(dstBase + i);
+      copied++;
+    }
+  }
+  if (frameCount <= 3 || copied > 0) {
+    console.log('[chrBank] reg%d=%d (mode=%dKB) → chrRam[$%s..$%s] from ROM[$%s..$%s], copied=%d changed bytes',
+      regIdx, bankVal, mmc3.chrBankMode ? 2 : 1,
+      dstBase.toString(16).toUpperCase().padStart(4,'0'),
+      (dstBase + chrBankSize - 1).toString(16).toUpperCase().padStart(4,'0'),
+      bankOffset.toString(16).toUpperCase().padStart(4,'0'),
+      (bankOffset + chrBankSize - 1).toString(16).toUpperCase().padStart(4,'0'),
+      copied);
+  }
 }
 
 // ============================================================================
@@ -500,44 +551,133 @@ function frameLoop(): void {
 
   const reader = createRomReader();
 
-  // ★ 先消费上帧的显示列表 (防止 stale palette 覆盖当前帧的正确值)
-  processDisplayListEntries();
+  // ═══════════════════════════════════════════════════════════
+  // ★ NMI 处理器 (bank_02 原版翻译, ASM $8000+)
+  //
+  // NMI 链: $8000(精灵DMA) → $800A(显示列表→PPU,内链$804D→$8073滚动)
+  //                        → $8096(IRQ+CHR bank)
+  // 手柄 ($80D7/$8116) 由平台层单独处理
+  // 子状态分派 ($8160) 暂时跳过 (依赖未翻译的跨bank调用)
+  // ═══════════════════════════════════════════════════════════
 
-  // ★ 执行 NMI 逻辑: bank_00 dispatch 读取 $27 (jump index) → 调用场景处理器
+  // 1. 精灵 OAM DMA ($8000): $0468 → $0200
+  nmiBank.fns['$8000']?.(ctx, reader);
+
+  // 2. 显示列表 → PPU ($800A, 内链到 $804D → $8073 滚动设定)
+  nmiBank.fns['$800A']?.(ctx, reader);
+
+  // 3. IRQ 设置 + CHR bank 切换 ($8096)
+  nmiBank.fns['$8096']?.(ctx, reader);
+
+  // 诊断: NMI 后 $0628 (display list 是否被正确消费)
+  if (_fc <= 3) {
+    const dlEnd = ctx.ram.u8(0x0628);
+    console.log('[NMI] after bank_02 NMI: $0628=%d $0629=%s $26=%d $27=%d $4A=%d $4B=%d',
+      dlEnd,
+      ctx.ram.u8(0x0629).toString(16).toUpperCase(),
+      ctx.ram.u8(0x26), ctx.ram.u8(0x27),
+      ctx.ram.u8(0x4A), ctx.ram.u8(0x4B));
+  }
+
+  // ═══════════════════════════════════════════════════════════
+  // ★ 主游戏逻辑: bank_00 dispatch → 场景状态机 → 写显示列表
+  // ═══════════════════════════════════════════════════════════
   if (bank8000 === 0) {
     const bank0 = allBanks[0];
+    // ★ jsNes 对齐: F0=RESET(ff), F1=PPU预热(不变), F2=首次dispatch
+    //   跳过 F1(即 _fc=1) 的 bank_00 逻辑, 此时 $27=ff, dispatch 会走
+    //   JUMP_TABLE[5]→sceneLoopEntry 自动设置 $27=0
     if (_fc <= 1) {
-      // 第一帧: 通过 sceneLoopEntry 调用 opening 初始化
-      const loopEntry = bank0?.fns?.['$8017'];
-      if (loopEntry) {
-        console.log('[frame] calling sceneLoopEntry for opening init');
-        try { loopEntry(ctx, reader); } catch (e) { console.error('[frame] sceneLoopEntry error:', e); }
-        // 诊断: sceneLoopEntry 后关键状态
-        if (_fc <= 3) {
-          console.log('[frame] after sceneLoopEntry: $26=%d $27=%d $48=%d $49=%d $4A=%d $4B=%d $0628=%d',
-            ctx.ram.u8(0x26), ctx.ram.u8(0x27),
-            ctx.ram.u8(0x48), ctx.ram.u8(0x49), ctx.ram.u8(0x4A), ctx.ram.u8(0x4B),
-            ctx.ram.u8(0x0628));
-        }
-      }
+      // PPU warmup frame: NMI only, no bank_00 dispatch
     } else {
-      // 后续帧: 正常 dispatch
       bank0?.dispatch(ctx, reader);
+    }
+
+    // ★ 诊断: 每帧 dispatch 后 dump $062A / $48-$4B / $26-$27
+    if (_fc <= 10) {
+      const palDump = [];
+      for (let i = 0; i < 16; i++) palDump.push(ctx.ram.u8(0x062A + i).toString(16).padStart(2, '0'));
+      const valid = palDump.map(h => parseInt(h, 16)).filter(v => v !== 0 && v !== 0x0F).length;
+      console.log('[frame %d] POST-dispatch: $26=%d $27=%d $48=%d $49=%d $4A=%d $4B=%d $0628=%d valid=%d $062A[0..15]=[%s]',
+        _fc,
+        ctx.ram.u8(0x26), ctx.ram.u8(0x27),
+        ctx.ram.u8(0x48), ctx.ram.u8(0x49), ctx.ram.u8(0x4A), ctx.ram.u8(0x4B),
+        ctx.ram.u8(0x0628), valid, palDump.join(' '));
     }
   }
 
-  // ★ NMI 硬件模拟: 精灵 DMA — 将 OAM 缓冲区 ($0468) 复制到 DMA 页 ($0200)
-  for (let i = 0; i < OAM_SIZE; i++) {
-    ctx.ram.setU8(0x0200 + i, ctx.ram.u8(0x0468 + i));
-  }
+  // ═══════════════════════════════════════════════════════════
+  // ★ PPU 同步 + 渲染
+  // ═══════════════════════════════════════════════════════════
 
   // 同步 OAM: 从 $0200 复制到 PPU OAM
   for (let i = 0; i < OAM_SIZE; i++) {
     ppu.oam[i] = ctx.ram.u8(0x0200 + i);
   }
 
-  // 启用渲染
-  ppu.mask = 0x1E; // show BG + sprites
+  // ═══════════════════════════════════════════════════════════
+  // ★ 强制同步 $062A (ATTR_BUF) → ppu.palette
+  //
+  // 生产者: 场景初始化 (scenePreProcess) 和 bytecode 解释器
+  //   产出数据到 $062A，通过 ppuAttrTransfer 写入 $2006/$2007
+  //
+  // 消费者: renderPpuFrame → renderBackground → TileCache.getTile
+  //   读取 ppu.palette 渲染 tile 像素
+  //
+  // ★ 智能过滤: scene 状态机每次转换都重新调用 scenePreProcess，
+  //   某些状态下的 ROM palette 数据为空（全 $00/$0F）。
+  //   只有 $062A 包含非零/非$0F 数据时才更新 ppu.palette，
+  //   保留上一个有效的调色板避免画面闪烁。
+  // ═══════════════════════════════════════════════════════════
+  {
+    let _valid = 0;  // 有效 palette entry 计数 (非 $00 且非 $0F)
+    const _newPal = new Uint8Array(32);
+    for (let i = 0; i < 32; i++) {
+      const v = ctx.ram.u8(0x062A + i);
+      _newPal[i] = v;
+      if (v !== 0 && v !== 0x0F) _valid++;
+    }
+    // 只有 $062A 含有效 palette 数据时才更新
+    // (至少 2 个非 0 且非 $0F 的 entry 视为有效的调色板)
+    if (_valid >= 2) {
+      let _changed = false;
+      for (let i = 0; i < 32; i++) {
+        if (ppu.palette[i] !== _newPal[i]) { _changed = true; break; }
+      }
+      if (_changed) {
+        for (let i = 0; i < 32; i++) ppu.palette[i] = _newPal[i];
+        tileCache.markPaletteDirty();
+        _paletteDirty = false;
+      }
+      if (_fc <= 5 || _fc % 60 === 0) {
+        console.log('[frame %d] PAL sync: $062A→ppu.palette valid=%d/32 [0..7]=[%s]',
+          _fc, _valid,
+          Array.from({length:8},(_,i)=>'$'+ppu.palette[i].toString(16).padStart(2,'0')).join(','));
+      }
+    } else {
+      if (_fc <= 5) {
+        console.log('[frame %d] PAL skip: $062A valid=%d/32 (not enough valid entries)',
+          _fc, _valid);
+      }
+    }
+    // ★ 如果 PPU 桥接直接写了调色板 (ppu.palette[x]=val)，但 $062A 未变化，
+    //   PAL sync 不会进入 _changed 分支。此时需单独刷新 TileCache。
+    if (_paletteDirty) {
+      tileCache.markPaletteDirty();
+      _paletteDirty = false;
+      if (_fc <= 5) {
+        console.log('[frame %d] PAL dirty: bridge-written palette, invalidating tile cache', _fc);
+      }
+    }
+  }
+
+  // 启用渲染 (使用 NMI 已写入的 PPUMASK 镜像值, 而不是强制 0x1E)
+  const _ppuMaskMir = ctx.ram.u8(0x21);
+  if (_ppuMaskMir !== 0) {
+    ppu.mask = _ppuMaskMir;
+  } else {
+    ppu.mask = 0x1E; // fallback: show BG + sprites
+  }
 
   // 诊断: 检查 CHR RAM 是否全零
   if (_fc <= 3 || _fc % 60 === 0) {
@@ -552,39 +692,6 @@ function frameLoop(): void {
       chrNonZeroCount, CHR_RAM_SIZE);
   }
 
-  // ★ 兜底: 如果 nametable 空白，用测试图案填充（不覆盖调色板）
-  // ppuAttrTransfer 已在 dispatch 阶段写入正确调色板，此处只补 nametable
-  {
-    const _ntId = ppu.ctrl & 0x03;
-    const _ntBase = (_ntId << 10) & 0x07FF;
-    let _ntZeroCount = 0;
-    for (let i = 0; i < 0x03C0; i++) {
-      if (ppu.vram[(_ntBase + i) & 0x07FF] === 0) _ntZeroCount++;
-    }
-    const _ntIsBlank = _ntZeroCount > 900; // > 93% 的 tile 为 0 → 视为空白
-    if (_ntIsBlank) {
-      // 仅填充 nametable tile 索引，不碰调色板 (调色板已由 ppuAttrTransfer 写入)
-      const _fillBase = _ntBase;
-      for (let i = 0; i < 0x03C0; i++) {
-        ppu.vram[(_fillBase + i) & 0x07FF] = 1; // tile 1 = 纯色条纹
-      }
-      for (let i = 0x03C0; i < 0x0400; i++) {
-        ppu.vram[(_fillBase + i) & 0x07FF] = 0x00; // attribute: 全用 palette 0
-      }
-      if (_fc <= 3 || _fc % 60 === 0) {
-        console.log('[frame %d] nametable blank → filled tiles (nt nz=%d), palette preserved: [%s]',
-          _fc, 0x03C0 - _ntZeroCount,
-          Array.from({length:4},(_,i)=>'0x'+ppu.palette[i].toString(16).toUpperCase()).join(','));
-      }
-    }
-  }
-
-  // 延迟 palette 缓存失效 (避免在 PPU bridge 中每次写都调用)
-  if (_paletteDirty) {
-    tileCache.markPaletteDirty();
-    _paletteDirty = false;
-  }
-
   // 渲染到 Canvas
   renderPpuFrame(ppu, tileCache, platform.canvas);
 
@@ -597,6 +704,41 @@ function frameLoop(): void {
   const newJoy = platform.getInput();
   ctx.ram.setU8(0x1B, newJoy);
   ctx.ram.setU8(0x1C, (newJoy ^ prevJoy) & newJoy);
+
+  // ★ COMPARE: 前 3 帧 dump 关键状态（跟 jsnes 同帧手动对比）
+  if (_fc <= 3) {
+    const ntId = ppu.ctrl & 0x03;
+    const ntBase = (ntId << 10) & 0x07FF;
+    // Display list buffer: $05E8-$0629
+    const dlEnd = ctx.ram.u8(0x0628);
+    let dlHex = '';
+    for (let i = 0; i < Math.min(dlEnd, 64); i++) {
+      dlHex += ctx.ram.u8(0x05E8 + i).toString(16).padStart(2, '0');
+      if ((i + 1) % 16 === 0) dlHex += ' ';
+    }
+    // VRAM nametable first 128 bytes
+    let ntHex = '';
+    for (let i = 0; i < 128; i++) {
+      ntHex += ppu.vram[(ntBase + i) & 0x07FF].toString(16).padStart(2, '0');
+      if ((i + 1) % 32 === 0) ntHex += ' ';
+    }
+    // Palette 32 bytes
+    let palHex = '';
+    for (let i = 0; i < 32; i++) {
+      palHex += ppu.palette[i].toString(16).padStart(2, '0');
+      if ((i + 1) % 8 === 0) palHex += ' ';
+    }
+    // CHR RAM first 64 bytes
+    let chrHex = '';
+    for (let i = 0; i < 64; i++) {
+      chrHex += chrRam[i].toString(16).padStart(2, '0');
+      if ((i + 1) % 16 === 0) chrHex += ' ';
+    }
+    console.log('[cmp %d] DL:$0628=%d $0629=%s\n  DL:[%s]\n  NT[%d]:[%s]\n  PAL:[%s]\n  CHR:[%s]',
+      _fc, dlEnd, ctx.ram.u8(0x0629).toString(16).toUpperCase(),
+      dlHex || '(empty)',
+      ntId, ntHex, palHex, chrHex);
+  }
 
   // 每 60 帧打一次日志
   if (_fc <= 3 || _fc % 60 === 0) {
@@ -623,26 +765,24 @@ async function init(): Promise<void> {
   rom = buildRom();
   console.log('[init] ROM built: PRG banks=%d, CHR RAM=%d bytes', rom.prg.length / PRG_BANK_SIZE, CHR_RAM_SIZE);
 
-  // ★ FIX: ppuInitTransfer($C503) 是桩代码，未从 ROM 加载 CHR 数据。
-  //    从原始 .nes ROM 提取 CHR 区域填充到 chrRam，使背景 tile 有图案。
-  //    iNES: header=16, PRG=16×16KB=262144, CHR=16×8KB=131072
+  // ★ 加载完整 CHR ROM 数据到 _fullChrRom (用于 MMC3 CHR bank 切换)
+  //   iNES: header=16, PRG=16×16KB=262144, CHR=16×8KB=131072
+  //   chrRam 不再预加载 — 由 applyChrBank 在 MMC3 bank 切换时动态拷贝
   try {
     const fullRom = romUint8Array();
-    const chrOffset = 16 + 16 * 16384; // 262160
-    const chrLen = Math.min(CHR_RAM_SIZE, fullRom.length - chrOffset);
+    const chrOffset = 16 + rom.prg.length; // 16 header + PRG data
+    const chrLen = fullRom.length - chrOffset;
     if (chrLen > 0) {
-      for (let i = 0; i < chrLen; i++) {
-        chrRam[i] = fullRom[chrOffset + i];
-      }
+      _fullChrRom = new Uint8Array(chrLen);
+      for (let i = 0; i < chrLen; i++) _fullChrRom[i] = fullRom[chrOffset + i];
       let nz = 0;
-      for (let i = 0; i < chrLen; i++) if (chrRam[i] !== 0) nz++;
-      console.log('[init] CHR data loaded from ROM offset %d: %d bytes (nonZero=%d)',
-        chrOffset, chrLen, nz);
+      for (let i = 0; i < chrLen; i++) if (_fullChrRom[i] !== 0) nz++;
+      console.log('[init] Full CHR ROM loaded: %d bytes (nonZero=%d)', chrLen, nz);
     } else {
-      console.warn('[init] ROM too short, no CHR data loaded');
+      console.warn('[init] No CHR ROM data found');
     }
   } catch (e) {
-    console.warn('[init] Failed to load CHR data from rom_data:', e);
+    console.warn('[init] Failed to load CHR ROM:', e);
   }
 
   // 初始化调色板缓存 ($9EA2 lookup 表)
@@ -666,7 +806,7 @@ async function init(): Promise<void> {
   mmc3 = {
     bankSelect: 0,
     bankData: [0, 0, 0, 0, 0, 0, 0, 0],
-    prgBankMode: 0, chrBankMode: 0,
+    prgBankMode: 0, chrBankMode: 1, // ★ 开场动画使用 2KB CHR bank 模式
     mirroring: 0, prgRamProtect: false,
     irqLatch: 0, irqCounter: 0,
     irqReload: false, irqEnable: false,
@@ -674,6 +814,16 @@ async function init(): Promise<void> {
 
   // TileCache (预渲染 tile 像素缓存, 复用 chrRam)
   tileCache = createTileCache(chrRam);
+
+  // ★ 初始化 CHR bank: 将 bank 0 拷贝到所有 CHR 窗口
+  //   (NMI $8096 会在第一帧用 ZP $9E-$A1 的实际值覆盖)
+  if (_fullChrRom) {
+    applyChrBank(2, 0); // CHR $0000-$07FF
+    applyChrBank(3, 0); // CHR $0800-$0FFF
+    applyChrBank(4, 0); // CHR $1000-$17FF
+    applyChrBank(5, 0); // CHR $1800-$1FFF
+    console.log('[init] Initial CHR banks applied from ROM');
+  }
 
   // GameContext
   ctx = new GameContext();
@@ -757,6 +907,11 @@ async function init(): Promise<void> {
 /** 创建并启动游戏 */
 export async function startGame(p: GamePlatform): Promise<void> {
   console.log('[main] startGame called, platform=%s', typeof p.canvas);
+  // ★ 防止重复注册 frameLoop 回调（如微信小程序热启动）
+  if (animId !== null) {
+    console.warn('[main] startGame: already running (animId=%s), stopping first', animId);
+    stopGame();
+  }
   platform = p;
   await init();
   running = true;
@@ -792,3 +947,5 @@ export function getFrameCount(): number {
 export function isRunning(): boolean {
   return running;
 }
+
+

@@ -51,6 +51,7 @@ import {
   TERMINATOR,
 } from '../_constants';
 import type { BankFn, BankModule, RomReader } from './_bank_types';
+import { crossBankCall } from './_crossbank';
 
 // ============================================================
 // 工具
@@ -773,6 +774,49 @@ function sceneInitNmiSetup(ctx: GameContext, rom: RomReader, _unused: number): v
   ctx.ram.setU8(0x2B, u8(scene + 3));
 }
 
+/**
+ * $8212 dispatchA212: 场景子函数分派器 (JMP $A484)
+ *
+ * ASM 来源: bank_02.asm $8484-$8490 (JMP target of $8212)
+ *
+ * $8212: JMP $A484
+ * $A484 (=$8484 in $8000 window):
+ *   LDA $ED          ; 从 $ED 读取分派索引
+ *   ASL A            ; ×2
+ *   TAX              ; → 查表偏移
+ *   LDA $A492,X      ; 读目标地址高字节 (实际存的是 addr-1)
+ *   PHA
+ *   LDA $A491,X      ; 读目标地址低字节
+ *   PHA
+ *   RTS              ; 跳转到目标 (popped addr + 1)
+ *
+ * 跳转表在 $A491 (=$8491), 24 项 (ED=0~23), 每项 2 字节,
+ * 存储实际目标地址 - 1 (配合 RTS 自动 +1 行为).
+ *
+ * 调用者: bank_00 sceneDataLoad $F8 控制码,
+ *   xcall '$C4B9', 2 已将 $A000 窗口切换到 bank_02.
+ */
+function dispatchA212(ctx: GameContext, rom: RomReader): void {
+  const ed = ctx.ram.u8(0xED); // 分派索引
+
+  // 跳转表位于 $A491 (CPU 地址, $A000 窗口), 当前 $A000 = bank_02
+  // 每项 2 字节: [lo, hi] = target_addr - 1
+  const tableBase = 0xA491; // CPU 地址
+  const offset = ed * 2;
+  const lo = rom.u8(tableBase + offset);
+  const hi = rom.u8(tableBase + offset + 1);
+
+  // RTS 会跳转到 popped_addr + 1
+  const targetAddr = ((hi << 8) | lo) + 1;
+  const targetStr = '$' + targetAddr.toString(16).toUpperCase().padStart(4, '0');
+
+  // 通过 cross-bank dispatch 调用目标函数
+  // bank8 = $8000 窗口的 bank, bankA = $A000 窗口的 bank (=2, 由调用者 $C4B9 设置)
+  const bank8 = ctx.ram.u8(0x24);
+  const bankA = ctx.ram.u8(0x25);
+  crossBankCall(ctx, targetStr, bank8, bankA);
+}
+
 export const bank_02: BankModule = {
   rom: null!,
   dispatch: dmaSprites as any,
@@ -787,6 +831,7 @@ export const bank_02: BankModule = {
     '$8160': nmiSubStateDispatch,
     '$81CB': nmiBankSwitch,
     '$8203': sceneSwitchInit,  // $A203 → $8203 (地址归一化)
+    '$8212': dispatchA212,      // $A212 → $8212 (场景子函数分派器, $F8 控制码触发)
     '$821B': gameInit,
     '$82AF': sceneSwitchInit,
     // $A20C/$A20F → $820C/$820F: 场景初始化 NMI 路径 (bank_00 sceneStateNormal 进入)
