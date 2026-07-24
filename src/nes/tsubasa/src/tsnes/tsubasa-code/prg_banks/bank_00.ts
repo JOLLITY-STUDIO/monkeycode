@@ -9,26 +9,349 @@
  *   最后通过 spread 拼成完整的 8KB 数组
  */
 
+import { asm } from '../_6502asm';
+
 export { _PRG_BANK_00 as default };
 
 console.log('[PRG bank_00] loaded');
 
 // ════════ $8000-$800C: 跳转表分派 (按$27索引跳转到6个子程序) ═══════=
 function builddispatch(): readonly number[] {
-  return [
-    0xA5, 0x27, 0x0A, 0xAA, 0xBD, 0x0E, 0x80, 0x48, 0xBD, 0x0D, 0x80, 0x48, 0x60
-  ];
+  return asm`
+    LDA $27
+    ASL A
+    TAX
+    LDA $800E,X
+    PHA
+    LDA $800D,X
+    PHA
+    RTS
+  `;
 }
 
 // ════════ $800D-$8016: 跳转向量表 (6个子程序地址) ═══════=
 function buildjumpVectors(): readonly number[] {
-  return [
-    0x65, 0x81, 0x8A, 0x81, 0xAD, 0x81, 0xB4, 0x81, 0xDA, 0x81
-  ];
+  return asm`
+    .dw $8165, $818A, $81AD, $81B4, $81DA
+  `;
 }
 
 // ════════ $8017-$82EC: 场景状态机主循环 ═══════=
 function buildsceneLoop(): readonly number[] {
+  // $8017: LDX #$02
+  // $8019: JSR $C4B9
+  // $801C: JMP $A203
+  // $801F: JSR $9BA0
+  // $8022: LDA #$00
+  // $8024: JSR $8464
+  // $8027: LDA #$01
+  // $8029: JSR $9FA8
+  // $802C: LDA $1E
+  // $802E: AND #$10
+  // $8030: BEQ $8027
+  // $8032: LDA #$00
+  // $8034: STA $05
+  // $8036: STA $06
+  // $8038: STA $09
+  // $803A: STA $0A
+  // $803C: STA $11
+  // $803E: STA $12
+  // $8040: STA $0D
+  // $8042: STA $0E
+  // $8044: STA $4C
+  // $8046: STA $5B
+  // $8048: LDA #$01
+  // $804A: STA $0700
+  // $804D: LDA $1B
+  // $804F: AND #$01
+  // $8051: BNE $807A
+  // $8053: JSR $9B11
+  // $8056: LDA #$02
+  // $8058: JSR $9FA8
+  // $805B: JSR $9B7F
+  // $805E: JSR $98A0
+  // $8061: LDA #$0D
+  // $8063: JSR $8297
+  // $8066: LDA #$00
+  // $8068: STA $7B
+  // $806A: LDA #$17
+  // $806C: JSR $8AF7
+  // $806F: LDA #$30
+  // $8071: JSR $890C
+  // $8074: JSR $88FB
+  // $8077: JSR $9A35
+  // $807A: LDA #$00
+  // $807C: JSR $8920
+  // $807F: LDA #$00
+  // $8081: STA $90
+  // $8083: LDA #$02
+  // $8085: STA $91
+  // $8087: LDA $1B
+  // $8089: AND #$FE
+  // $808B: STA $1B
+  // $808D: LDA #$0A
+  // $808F: STA $ED
+  // $8091: LDA $ED
+  // $8093: STA $E6
+  // $8095: LDA #$22
+  // $8097: STA $E7
+  // $8099: LDY #$01
+  // $809B: LDX #$01
+  // $809D: LDA #$7F
+  // $809F: JSR $98EA
+  // $80A2: LDA #$01
+  // $80A4: JSR $9FA8
+  // $80A7: LDA $1E
+  // $80A9: AND #$3C
+  // $80AB: BEQ $80A2
+  // $80AD: ASL A
+  // $80AE: ASL A
+  // $80AF: BMI $80BC
+  // $80B1: ASL A
+  // $80B2: BMI $80D4
+  // $80B4: ASL A
+  // $80B5: AND #$40
+  // $80B7: ORA #$0A
+  // $80B9: JMP $80C0
+  // $80BC: LDA $ED
+  // $80BE: EOR #$40
+  // $80C0: STA $ED
+  // $80C2: LDA #$0A
+  // $80C4: STA $E6
+  // $80C6: LDA #$22
+  // $80C8: STA $E7
+  // $80CA: LDY #$03
+  // $80CC: LDX #$01
+  // $80CE: JSR $98E8
+  // $80D1: JMP $8091
+  // $80D4: LDA $1C
+  // $80D6: AND #$C0
+  // $80D8: CMP #$C0
+  // $80DA: BNE $80DF
+  // $80DC: JMP $A209
+  // $80DF: BIT $ED
+  // $80E1: BVC $80E6
+  // $80E3: JMP $826A
+  // $80E6: JSR $9BA0
+  // $80E9: LDA #$01
+  // $80EB: JSR $8464
+  // $80EE: JSR $82B5
+  // $80F1: LDA #$C0
+  // $80F3: STA $E0
+  // $80F5: LDX #$02
+  // $80F7: JSR $C4B9
+  // $80FA: JSR $A20F
+  // $80FD: LDA #$00
+  // $80FF: STA $28
+  // $8101: STA $29
+  // $8103: STA $27
+  // $8105: LDA #$01
+  // $8107: STA $0700
+  // $810A: LDX #$02
+  // $810C: JSR $C4B9
+  // $810F: JSR $A20C
+  // $8112: LDA #$00
+  // $8114: JSR $8920
+  // $8117: LDX #$01
+  // $8119: JSR $C4B9
+  // $811C: JSR $A006
+  // $811F: JSR $C572
+  // $8122: LDX #$55
+  // $8124: LDA $26
+  // $8126: CMP #$20
+  // $8128: BCC $812C
+  // $812A: LDX #$4C
+  // $812C: STX $0700
+  // $812F: LDA #$00
+  // $8131: STA $0450
+  // $8134: STA $0451
+  // $8137: STA $0452
+  // $813A: STA $0453
+  // $813D: LDX #$01
+  // $813F: JSR $C4B9
+  // $8142: JSR $A009
+  // $8145: BIT $E0
+  // $8147: BMI $814F
+  // $8149: LDA $E4
+  // $814B: CMP $26
+  // $814D: BCS $8163
+  // $814F: LDX $0026
+  // $8152: LDA $83DC,X
+  // $8155: BEQ $8163
+  // $8157: JSR $8464
+  // $815A: JSR $82B5
+  // $815D: LDA $E0
+  // $815F: AND #$7F
+  // $8161: STA $E0
+  // $8163: JMP $8017
+  // $8166: LDA #$01
+  // $8168: STA $27
+  // $816A: JSR $C56C
+  // $816D: JSR $8285
+  // $8170: LDA $26
+  // $8172: CMP $E4
+  // $8174: BEQ $8188
+  // $8176: BCC $8188
+  // $8178: STA $E4
+  // $817A: LDX $0026
+  // $817D: LDA $83FE,X
+  // $8180: BEQ $8188
+  // $8182: JSR $8464
+  // $8185: JSR $82B5
+  // $8188: JMP $8017
+  // $818B: LDA $28
+  // $818D: CMP $29
+  // $818F: BEQ $8196
+  // $8191: BCS $8206
+  // $8193: JMP $81E6
+  // $8196: LDX $26
+  // $8198: LDA $83BA,X
+  // $819B: BEQ $81E6
+  // $819D: CMP #$01
+  // $819F: BEQ $81D4
+  // $81A1: LDA #$02
+  // $81A3: STA $27
+  // $81A5: JSR $C56C
+  // $81A8: JSR $8285
+  // $81AB: JMP $8017
+  // $81AE: LDA #$03
+  // $81B0: STA $27
+  // $81B2: JMP $8017
+  // $81B5: LDA $28
+  // $81B7: CMP $29
+  // $81B9: BEQ $81C0
+  // $81BB: BCS $8206
+  // $81BD: JMP $81E6
+  // $81C0: LDX $26
+  // $81C2: LDA $83BA,X
+  // $81C5: CMP #$03
+  // $81C7: BEQ $81D4
+  // $81C9: LDA $26
+  // $81CB: CMP #$20
+  // $81CD: BNE $81D1
+  // $81CF: INC $26
+  // $81D1: JMP $80FD
+  // $81D4: LDA #$04
+  // $81D6: STA $27
+  // $81D8: JMP $8017
+  // $81DB: LDA $28
+  // $81DD: CMP $29
+  // $81DF: BEQ $81E6
+  // $81E1: BCS $8206
+  // $81E3: JMP $81E6
+  // $81E6: LDX #$01
+  // $81E8: JSR $C4B9
+  // $81EB: JSR $A015
+  // $81EE: LDA #$60
+  // $81F0: JSR $8464
+  // $81F3: JSR $82B5
+  // $81F6: JSR $99F0
+  // $81F9: LDX $26
+  // $81FB: LDA $8398,X
+  // $81FE: STA $26
+  // $8200: JSR $C578
+  // $8203: JMP $80FD
+  // $8206: LDX #$01
+  // $8208: JSR $C4B9
+  // $820B: JSR $A012
+  // $820E: BIT $E0
+  // $8210: BVS $821C
+  // $8212: LDA $26
+  // $8214: CMP $E5
+  // $8216: BEQ $822F
+  // $8218: BCC $822F
+  // $821A: STA $E5
+  // $821C: LDX $26
+  // $821E: LDA $8420,X
+  // $8221: BEQ $822F
+  // $8223: JSR $8464
+  // $8226: JSR $82B5
+  // $8229: LDA $E0
+  // $822B: AND #$BF
+  // $822D: STA $E0
+  // $822F: LDX $0026
+  // $8232: LDA $8442,X
+  // $8235: BEQ $8243
+  // $8237: JSR $8464
+  // $823A: JSR $82A9
+  // $823D: LDA $26
+  // $823F: CMP #$20
+  // $8241: BCS $8263
+  // $8243: LDA #$01
+  // $8245: STA $0700
+  // $8248: JSR $C578
+  // $824B: INC $26
+  // $824D: LDX #$01
+  // $824F: JSR $C4B9
+  // $8252: JSR $A018
+  // $8255: LDA $26
+  // $8257: CMP #$03
+  // $8259: BCC $8260
+  // $825B: LDX #$05
+  // $825D: STX $0446
+  // $8260: JMP $80FD
+  // $8263: LDA #$05
+  // $8265: STA $27
+  // $8267: JMP $C57B
+  // $826A: LDX #$01
+  // $826C: JSR $C4B9
+  // $826F: JSR $A003
+  // $8272: LDX #$02
+  // $8274: JSR $C4B9
+  // $8277: JSR $A20F
+  // $827A: LDX #$01
+  // $827C: JSR $C4B9
+  // $827F: JSR $A01B
+  // $8282: JMP $80FD
+  // $8285: LDA #$01
+  // $8287: STA $0700
+  // $828A: LDA #$01
+  // $828C: JSR $9FA8
+  // $828F: LDX #$01
+  // $8291: JSR $C4B9
+  // $8294: JMP $A00C
+  // $8297: STA $E7
+  // $8299: LDA #$01
+  // $829B: STA $E6
+  // $829D: LDA #$E5
+  // $829F: STA $4D
+  // $82A1: LDA #$00
+  // $82A3: STA $4E
+  // $82A5: JSR $9085
+  // $82A8: RTS
+  // $82A9: LDA #$01
+  // $82AB: JSR $9FA8
+  // $82AE: LDA $4D
+  // $82B0: ORA $4E
+  // $82B2: BNE $82A9
+  // $82B4: RTS
+  // $82B5: LDA #$01
+  // $82B7: JSR $9FA8
+  // $82BA: LDA $4D
+  // $82BC: ORA $4E
+  // $82BE: BEQ $82C6
+  // $82C0: LDA $1E
+  // $82C2: AND #$20
+  // $82C4: BEQ $82B5
+  // $82C6: LDA #$00
+  // $82C8: STA $05
+  // $82CA: STA $06
+  // $82CC: STA $09
+  // $82CE: STA $0A
+  // $82D0: STA $11
+  // $82D2: STA $12
+  // $82D4: STA $0D
+  // $82D6: STA $0E
+  // $82D8: STA $4C
+  // $82DA: LDA #$01
+  // $82DC: STA $0700
+  // $82DF: JSR $9BA0
+  // $82E2: LDA #$00
+  // $82E4: STA $44
+  // $82E6: STA $45
+  // $82E8: STA $7A
+  // $82EA: STA $7B
+  // $82EC: RTS
   return [
     0xA2, 0x02, 0x20, 0xB9, 0xC4, 0x4C, 0x03, 0xA2, 0x20, 0xA0, 0x9B, 0xA9, 0x00, 0x20, 0x64, 0x84,
     0xA9, 0x01, 0x20, 0xA8, 0x9F, 0xA5, 0x1E, 0x29, 0x10, 0xF0, 0xF5, 0xA9, 0x00, 0x85, 0x05, 0x85,
@@ -81,6 +404,88 @@ function buildsceneLoop(): readonly number[] {
 
 // ════════ $82ED-$8397: 字节码脚本引擎 ═══════=
 function buildscriptEngine(): readonly number[] {
+  // $82ED: JSR $838A
+  // $82F0: LDA $4C
+  // $82F2: BPL $82ED
+  // $82F4: ASL A
+  // $82F5: TAX
+  // $82F6: LDA $B800,X
+  // $82F9: STA $EC
+  // $82FB: LDA $B801,X
+  // $82FE: STA $ED
+  // $8300: LDY #$00
+  // $8302: LDA (EC),Y
+  // $8304: BMI $8355
+  // $8306: STA $E9
+  // $8308: LDA #$01
+  // $830A: STA $EB
+  // $830C: LDY $EB
+  // $830E: LDA (EC),Y
+  // $8310: CMP #$FE
+  // $8312: BEQ $8308
+  // $8314: CMP #$FF
+  // $8316: BEQ $8383
+  // $8318: STA $EA
+  // $831A: LDX $E9
+  // $831C: LDA #$03
+  // $831E: STA $EB
+  // $8320: INY
+  // $8321: INX
+  // $8322: LDA (EC),Y
+  // $8324: BEQ $8329
+  // $8326: STA $062A,X
+  // $8329: DEC $EB
+  // $832B: BNE $8320
+  // $832D: INY
+  // $832E: STY $EB
+  // $8330: LDA #$20
+  // $8332: CLC
+  // $8333: ADC $0628
+  // $8336: CMP #$3D
+  // $8338: BCC $8344
+  // $833A: JSR $838A
+  // $833D: LDA $4C
+  // $833F: BMI $8330
+  // $8341: JMP $8383
+  // $8344: JSR $9A43
+  // $8347: JSR $838A
+  // $834A: LDA $4C
+  // $834C: BPL $8383
+  // $834E: DEC $EA
+  // $8350: BNE $8347
+  // $8352: JMP $830C
+  // $8355: AND #$01
+  // $8357: STA $E9
+  // $8359: LDA #$01
+  // $835B: STA $EB
+  // $835D: LDY $EB
+  // $835F: LDA (EC),Y
+  // $8361: CMP #$FE
+  // $8363: BEQ $8359
+  // $8365: CMP #$FF
+  // $8367: BEQ $8383
+  // $8369: LDX $E9
+  // $836B: STA $8E,X
+  // $836D: INY
+  // $836E: LDA (EC),Y
+  // $8370: STA $EA
+  // $8372: INY
+  // $8373: STY $EB
+  // $8375: JSR $838A
+  // $8378: LDA $4C
+  // $837A: BPL $8383
+  // $837C: DEC $EA
+  // $837E: BNE $8375
+  // $8380: JMP $835D
+  // $8383: LDA #$00
+  // $8385: STA $4C
+  // $8387: JMP $82ED
+  // $838A: LDX #$02
+  // $838C: JSR $C4B9
+  // $838F: JSR $A215
+  // $8392: LDX #$06
+  // $8394: JSR $C4B9
+  // $8397: RTS
   return [
     0x20, 0x8A, 0x83, 0xA5, 0x4C, 0x10, 0xF9, 0x0A, 0xAA, 0xBD, 0x00, 0xB8, 0x85, 0xEC, 0xBD, 0x01,
     0xB8, 0x85, 0xED, 0xA0, 0x00, 0xB1, 0xEC, 0x30, 0x4F, 0x85, 0xE9, 0xA9, 0x01, 0x85, 0xEB, 0xA4,
@@ -98,16 +503,614 @@ function buildscriptEngine(): readonly number[] {
 
 // ════════ $8398-$83D3: 偶/奇映射数据表 ═══════=
 function builddataTables(): readonly number[] {
-  return [
-    0x00, 0x00, 0x02, 0x02, 0x04, 0x04, 0x06, 0x06, 0x08, 0x08, 0x0A, 0x0A, 0x0C, 0x0C, 0x0E, 0x0E,
-    0x10, 0x10, 0x12, 0x12, 0x14, 0x14, 0x16, 0x17, 0x17, 0x19, 0x19, 0x1B, 0x1B, 0x1D, 0x1D, 0x1F,
-    0x1F, 0x1F, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x01, 0x01, 0x01, 0x01, 0x01, 0x03, 0x03, 0x03,
-    0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x00, 0x03, 0x03, 0x03
-  ];
+  return asm`
+    .byte $00,$00,$02,$02,$04,$04,$06,$06,$08,$08,$0A,$0A,$0C,$0C,$0E,$0E
+    .byte $10,$10,$12,$12,$14,$14,$16,$17,$17,$19,$19,$1B,$1B,$1D,$1D,$1F
+    .byte $1F,$1F,$03,$03,$03,$03,$03,$03,$01,$01,$01,$01,$01,$03,$03,$03
+    .byte $03,$03,$03,$03,$03,$03,$03,$03,$00,$03,$03,$03
+  `;
 }
 
 // ════════ $83D4-$883F: 场景状态跳转表 + 辅助分派函数 ═══════=
 function buildsceneTables(): readonly number[] {
+  // $83D4: ??? $03
+  // $83D5: ??? $03
+  // $83D6: ??? $03
+  // $83D7: ??? $03
+  // $83D8: ??? $03
+  // $83D9: ??? $03
+  // $83DA: ??? $02
+  // $83DB: ??? $03
+  // $83DC: ??? $02
+  // $83DD: BRK
+  // $83DE: BRK
+  // $83DF: BRK
+  // $83E0: BRK
+  // $83E1: ??? $07
+  // $83E2: BRK
+  // $83E3: BRK
+  // $83E4: BRK
+  // $83E5: BRK
+  // $83E6: ??? $0C
+  // $83E7: ASL $0000
+  // $83EA: BPL $83FE
+  // $83EC: BRK
+  // $83ED: BRK
+  // $83EE: BRK
+  // $83EF: BRK
+  // $83F0: BRK
+  // $83F1: BRK
+  // $83F2: BRK
+  // $83F3: BRK
+  // $83F4: BRK
+  // $83F5: BRK
+  // $83F6: CLC
+  // $83F7: BRK
+  // $83F8: BRK
+  // $83F9: BRK
+  // $83FA: BRK
+  // $83FB: ASL $0020,X
+  // $83FE: BRK
+  // $83FF: BRK
+  // $8400: BRK
+  // $8401: BRK
+  // $8402: BRK
+  // $8403: BRK
+  // $8404: BRK
+  // $8405: BRK
+  // $8406: BRK
+  // $8407: ASL A
+  // $8408: BRK
+  // $8409: BRK
+  // $840A: BRK
+  // $840B: BRK
+  // $840C: BRK
+  // $840D: BRK
+  // $840E: BRK
+  // $840F: BRK
+  // $8410: BRK
+  // $8411: BRK
+  // $8412: BRK
+  // $8413: BRK
+  // $8414: BRK
+  // $8415: BRK
+  // $8416: BRK
+  // $8417: BRK
+  // $8418: BRK
+  // $8419: BRK
+  // $841A: BRK
+  // $841B: BRK
+  // $841C: BRK
+  // $841D: BRK
+  // $841E: AND (00,X)
+  // $8420: ??? $03
+  // $8421: ??? $04
+  // $8422: ORA $00
+  // $8424: ASL $00
+  // $8426: BRK
+  // $8427: BRK
+  // $8428: BRK
+  // $8429: ??? $0B
+  // $842A: ORA $0000
+  // $842D: BRK
+  // $842E: ORA (00),Y
+  // $8430: BRK
+  // $8431: ??? $14
+  // $8432: BRK
+  // $8433: BRK
+  // $8434: BRK
+  // $8435: BRK
+  // $8436: ASL $00,X
+  // $8438: ??? $17
+  // $8439: BRK
+  // $843A: BRK
+  // $843B: ??? $1A
+  // $843C: ??? $1B
+  // $843D: ??? $1C
+  // $843E: ORA $001F,X
+  // $8441: BRK
+  // $8442: BRK
+  // $8443: BRK
+  // $8444: BRK
+  // $8445: BRK
+  // $8446: BRK
+  // $8447: PHP
+  // $8448: BRK
+  // $8449: BRK
+  // $844A: BRK
+  // $844B: BRK
+  // $844C: BRK
+  // $844D: ??? $0F
+  // $844E: BRK
+  // $844F: BRK
+  // $8450: BRK
+  // $8451: ??? $13
+  // $8452: BRK
+  // $8453: BRK
+  // $8454: BRK
+  // $8455: BRK
+  // $8456: BRK
+  // $8457: ORA $00,X
+  // $8459: BRK
+  // $845A: BRK
+  // $845B: BRK
+  // $845C: ORA $0000,Y
+  // $845F: BRK
+  // $8460: BRK
+  // $8461: BRK
+  // $8462: ??? $22
+  // $8463: ??? $22
+  // $8464: LDY #$00
+  // $8466: INY
+  // $8467: INY
+  // $8468: CMP $8AEE,Y
+  // $846B: BCS $8466
+  // $846D: SEC
+  // $846E: SBC $8AEC,Y
+  // $8471: LDX $8AED,Y
+  // $8474: ASL A
+  // $8475: ADC #$00
+  // $8477: STA $4D
+  // $8479: LDA #$00
+  // $847B: ADC #$A0
+  // $847D: STA $4E
+  // $847F: STX $56
+  // $8481: LDA $25
+  // $8483: STA $ED
+  // $8485: JSR $C4B9
+  // $8488: LDY #$00
+  // $848A: LDA (4D),Y
+  // $848C: TAX
+  // $848D: INY
+  // $848E: LDA (4D),Y
+  // $8490: STA $4E
+  // $8492: STX $4D
+  // $8494: LDX #$05
+  // $8496: LDA #$C5
+  // $8498: STA $00,X
+  // $849A: LDA #$84
+  // $849C: STA $01,X
+  // $849E: LDY #$50
+  // $84A0: LDA #$00
+  // $84A2: JSR $9F69
+  // $84A5: LDA #$00
+  // $84A7: STA $0D
+  // $84A9: STA $0E
+  // $84AB: LDA #$00
+  // $84AD: STA $0652
+  // $84B0: LDA #$E0
+  // $84B2: STA $E6
+  // $84B4: LDA #$23
+  // $84B6: STA $E7
+  // $84B8: LDY #$01
+  // $84BA: LDX #$20
+  // $84BC: LDA #$55
+  // $84BE: JSR $98EA
+  // $84C1: LDX $ED
+  // $84C3: JMP $C4B9
+  // $84C6: LDX $56
+  // $84C8: JSR $C4B9
+  // $84CB: LDA #$08
+  // $84CD: STA $55
+  // $84CF: LDA #$49
+  // $84D1: STA $4F
+  // $84D3: LDA #$22
+  // $84D5: STA $50
+  // $84D7: LDA $4F
+  // $84D9: STA $51
+  // $84DB: AND #$1F
+  // $84DD: STA $54
+  // $84DF: LDA $50
+  // $84E1: STA $52
+  // $84E3: LDA $51
+  // $84E5: STA $53
+  // $84E7: LDY #$00
+  // $84E9: LDA (4D),Y
+  // $84EB: CMP #$D8
+  // $84ED: BCS $8504
+  // $84EF: LDX $52
+  // $84F1: LDY $53
+  // $84F3: JSR $88CA
+  // $84F6: INC $53
+  // $84F8: LDA $55
+  // $84FA: BEQ $84FF
+  // $84FC: JSR $895D
+  // $84FF: LDA #$01
+  // $8501: JMP $8879
+  // $8504: CMP #$E0
+  // $8506: BCS $851C
+  // $8508: SEC
+  // $8509: SBC #$D8
+  // $850B: TAX
+  // $850C: LDA $8AE6,X
+  // $850F: PHA
+  // $8510: JSR $899A
+  // $8513: PLA
+  // $8514: JSR $9FA8
+  // $8517: LDA #$01
+  // $8519: JMP $8879
+  // $851C: CMP #$E8
+  // $851E: BCS $8537
+  // $8520: SEC
+  // $8521: SBC #$E1
+  // $8523: EOR #$FF
+  // $8525: CLC
+  // $8526: ADC $53
+  // $8528: STA $53
+  // $852A: AND #$1F
+  // $852C: CMP $54
+  // $852E: BCS $8532
+  // $8530: STA $54
+  // $8532: LDA #$01
+  // $8534: JMP $8879
+  // $8537: SEC
+  // $8538: SBC #$E8
+  // $853A: ASL A
+  // $853B: TAX
+  // $853C: LDA $8546,X
+  // $853F: PHA
+  // $8540: LDA $8545,X
+  // $8543: PHA
+  // $8544: RTS
+  // $8545: ??? $74
+  // $8546: STA $7F
+  // $8548: STA $8C
+  // $854A: STA $C3
+  // $854C: STA $D1
+  // $854E: STA $EB
+  // $8550: STA $03
+  // $8552: STX $17
+  // $8554: STX $2B
+  // $8556: STX $49
+  // $8558: STX $77
+  // $855A: STX $81
+  // $855C: STX $B7
+  // $855E: STX $B7
+  // $8560: ??? $87
+  // $8561: DEX
+  // $8562: ??? $87
+  // $8563: CLD
+  // $8564: ??? $87
+  // $8565: ??? $F7
+  // $8566: ??? $87
+  // $8567: ??? $13
+  // $8568: DEY
+  // $8569: ??? $1A
+  // $856A: DEY
+  // $856B: BMI $84F5
+  // $856D: ROL $88,X
+  // $856F: ??? $54
+  // $8570: DEY
+  // $8571: ADC (88,X)
+  // $8573: ??? $6F
+  // $8574: DEY
+  // $8575: INY
+  // $8576: LDA (4D),Y
+  // $8578: JSR $8920
+  // $857B: LDA #$02
+  // $857D: JMP $8879
+  // $8580: LDA #$02
+  // $8582: JSR $9FA8
+  // $8585: JSR $997E
+  // $8588: LDA #$01
+  // $858A: JMP $8879
+  // $858D: JSR $99F0
+  // $8590: JSR $9B7F
+  // $8593: LDA #$00
+  // $8595: STA $E6
+  // $8597: LDA #$20
+  // $8599: STA $E7
+  // $859B: LDY #$10
+  // $859D: LDX #$20
+  // $859F: JSR $98E8
+  // $85A2: LDA #$00
+  // $85A4: STA $E6
+  // $85A6: LDA #$24
+  // $85A8: STA $E7
+  // $85AA: LDY #$20
+  // $85AC: LDX #$20
+  // $85AE: JSR $98E8
+  // $85B1: LDA #$00
+  // $85B3: STA $4C
+  // $85B5: STA $7B
+  // $85B7: STA $4C
+  // $85B9: LDA #$00
+  // $85BB: STA $0D
+  // $85BD: STA $0E
+  // $85BF: LDA #$01
+  // $85C1: JMP $8879
+  // $85C4: JSR $899A
+  // $85C7: JSR $89A3
+  // $85CA: JSR $88B1
+  // $85CD: LDA #$01
+  // $85CF: JMP $8887
+  // $85D2: LDY #$01
+  // $85D4: LDA (4D),Y
+  // $85D6: CMP #$FF
+  // $85D8: BEQ $85E2
+  // $85DA: JSR $89D2
+  // $85DD: LDA #$02
+  // $85DF: JMP $8879
+  // $85E2: LDA #$00
+  // $85E4: STA $0652
+  // $85E7: LDA #$02
+  // $85E9: JMP $8879
+  // $85EC: LDX #$00
+  // $85EE: LDA $0700,X
+  // $85F1: BEQ $85F8
+  // $85F3: INX
+  // $85F4: CPX #$05
+  // $85F6: BNE $85EE
+  // $85F8: LDY #$01
+  // $85FA: LDA (4D),Y
+  // $85FC: STA $0700,X
+  // $85FF: LDA #$02
+  // $8601: JMP $8879
+  // $8604: LDA #$21
+  // $8606: STA $E6
+  // $8608: LDA #$22
+  // $860A: STA $E7
+  // $860C: LDY #$0B
+  // $860E: LDX #$1E
+  // $8610: JSR $98E8
+  // $8613: LDA #$01
+  // $8615: JMP $8879
+  // $8618: LDA #$02
+  // $861A: JSR $9FA8
+  // $861D: LDA $99
+  // $861F: AND #$80
+  // $8621: EOR #$80
+  // $8623: ORA #$40
+  // $8625: STA $99
+  // $8627: LDA #$01
+  // $8629: JMP $8879
+  // $862C: INY
+  // $862D: LDA (4D),Y
+  // $862F: STA $4F
+  // $8631: STA $51
+  // $8633: INY
+  // $8634: LDA (4D),Y
+  // $8636: STA $50
+  // $8638: STA $52
+  // $863A: LDA $4D
+  // $863C: CLC
+  // $863D: ADC #$03
+  // $863F: STA $4D
+  // $8641: LDA $4E
+  // $8643: ADC #$00
+  // $8645: STA $4E
+  // $8647: JMP $84E3
+  // $864A: LDA #$21
+  // $864C: STA $E6
+  // $864E: LDA #$22
+  // $8650: STA $E7
+  // $8652: LDY #$0B
+  // $8654: LDX #$1E
+  // $8656: JSR $98E8
+  // $8659: LDY #$01
+  // $865B: LDA (4D),Y
+  // $865D: ASL A
+  // $865E: TAY
+  // $865F: LDX #$06
+  // $8661: JSR $C4B9
+  // $8664: LDX $BB41,Y
+  // $8667: LDA $BB40,Y
+  // $866A: TAY
+  // $866B: JSR $97B6
+  // $866E: LDX $56
+  // $8670: JSR $C4B9
+  // $8673: LDA #$02
+  // $8675: JMP $8879
+  // $8678: INY
+  // $8679: LDA (4D),Y
+  // $867B: STA $55
+  // $867D: LDA #$02
+  // $867F: JMP $8879
+  // $8682: INY
+  // $8683: LDA (4D),Y
+  // $8685: BNE $868F
+  // $8687: JSR $9A35
+  // $868A: LDY #$02
+  // $868C: JMP $86B4
+  // $868F: CMP #$FF
+  // $8691: BEQ $86A7
+  // $8693: BMI $869D
+  // $8695: JSR $9A4C
+  // $8698: LDY #$02
+  // $869A: JMP $86B4
+  // $869D: AND #$7F
+  // $869F: JSR $9A60
+  // $86A2: LDY #$02
+  // $86A4: JMP $86B4
+  // $86A7: LDY #$03
+  // $86A9: LDA (4D),Y
+  // $86AB: TAX
+  // $86AC: DEY
+  // $86AD: LDA (4D),Y
+  // $86AF: JSR $9A31
+  // $86B2: LDY #$04
+  // $86B4: TYA
+  // $86B5: JMP $8879
+  // $86B8: INY
+  // $86B9: LDA (4D),Y
+  // $86BB: ASL A
+  // $86BC: TAX
+  // $86BD: LDA $86C7,X
+  // $86C0: PHA
+  // $86C1: LDA $86C6,X
+  // $86C4: PHA
+  // $86C5: RTS
+  // $86C6: CMP $86,X
+  // $86C8: CMP $E586,X
+  // $86CB: STX $ED
+  // $86CD: STX $F5
+  // $86CF: STX $12
+  // $86D1: ??? $87
+  // $86D2: ??? $33
+  // $86D3: ??? $87
+  // $86D4: ??? $9E
+  // $86D5: ??? $87
+  // $86D6: JSR $99B0
+  // $86D9: LDA #$02
+  // $86DB: JMP $8879
+  // $86DE: JSR $99D1
+  // $86E1: LDA #$02
+  // $86E3: JMP $8879
+  // $86E6: JSR $9A0D
+  // $86E9: LDA #$02
+  // $86EB: JMP $8879
+  // $86EE: JSR $9A1F
+  // $86F1: LDA #$02
+  // $86F3: JMP $8879
+  // $86F6: LDA #$04
+  // $86F8: STA $ED
+  // $86FA: LDX $ED
+  // $86FC: LDA $87B3,X
+  // $86FF: STA $0631
+  // $8702: JSR $9A71
+  // $8705: LDA #$04
+  // $8707: JSR $9FA8
+  // $870A: DEC $ED
+  // $870C: BNE $86FA
+  // $870E: LDA #$02
+  // $8710: JMP $8879
+  // $8713: LDA #$00
+  // $8715: STA $ED
+  // $8717: LDX $ED
+  // $8719: LDA $87B4,X
+  // $871C: STA $0631
+  // $871F: JSR $9A71
+  // $8722: LDA #$04
+  // $8724: JSR $9FA8
+  // $8727: INC $ED
+  // $8729: LDA $ED
+  // $872B: CMP #$04
+  // $872D: BCC $8717
+  // $872F: LDA #$02
+  // $8731: JMP $8879
+  // $8734: LDY #$FC
+  // $8736: LDA $88D2,Y
+  // $8739: STA $0468,Y
+  // $873C: INY
+  // $873D: BNE $8736
+  // $873F: LDX #$F8
+  // $8741: LDY #$00
+  // $8743: LDA #$01
+  // $8745: JSR $9FA8
+  // $8748: BIT $1E
+  // $874A: BMI $8763
+  // $874C: LDA $1C
+  // $874E: AND #$44
+  // $8750: CMP #$44
+  // $8752: BEQ $876E
+  // $8754: INY
+  // $8755: CPY #$14
+  // $8757: BEQ $8734
+  // $8759: CPY #$0C
+  // $875B: BNE $8743
+  // $875D: STX $0564
+  // $8760: JMP $8743
+  // $8763: STX $0564
+  // $8766: JSR $88B1
+  // $8769: LDA #$03
+  // $876B: JMP $8887
+  // $876E: STX $0564
+  // $8771: JSR $88B1
+  // $8774: LDA $4D
+  // $8776: CLC
+  // $8777: ADC #$03
+  // $8779: STA $58
+  // $877B: LDA $4E
+  // $877D: ADC #$00
+  // $877F: STA $59
+  // $8781: LDA $56
+  // $8783: STA $5A
+  // $8785: LDY #$02
+  // $8787: LDA (4D),Y
+  // $8789: ASL A
+  // $878A: TAY
+  // $878B: LDX #$06
+  // $878D: STX $56
+  // $878F: JSR $C4B9
+  // $8792: LDA $A000,Y
+  // $8795: STA $4D
+  // $8797: LDA $A001,Y
+  // $879A: STA $4E
+  // $879C: JMP $84D7
+  // $879F: JSR $88B1
+  // $87A2: LDA $58
+  // $87A4: STA $4D
+  // $87A6: LDA $59
+  // $87A8: STA $4E
+  // $87AA: LDX $5A
+  // $87AC: STX $56
+  // $87AE: JSR $C4B9
+  // $87B1: JMP $84D7
+  // $87B4: BMI $87D6
+  // $87B6: BPL $87C7
+  // $87B8: INY
+  // $87B9: LDX #$00
+  // $87BB: LDA (4D),Y
+  // $87BD: CMP #$FF
+  // $87BF: BEQ $87C4
+  // $87C1: ORA #$80
+  // $87C3: TAX
+  // $87C4: STX $4C
+  // $87C6: LDA #$02
+  // $87C8: JMP $8879
+  // $87CB: JSR $899A
+  // $87CE: INY
+  // $87CF: LDA (4D),Y
+  // $87D1: JSR $9FA8
+  // $87D4: LDA #$02
+  // $87D6: JMP $8879
+  // $87D9: LDA $09
+  // $87DB: BEQ $87E5
+  // $87DD: LDA #$01
+  // $87DF: JSR $9FA8
+  // $87E2: JMP $87D9
+  // $87E5: LDA $7B
+  // $87E7: EOR #$01
+  // $87E9: STA $7B
+  // $87EB: LDA #$00
+  // $87ED: STA $7A
+  // $87EF: STA $44
+  // $87F1: STA $45
+  // $87F3: LDA #$01
+  // $87F5: JMP $8879
+  // $87F8: INY
+  // $87F9: LDA (4D),Y
+  // $87FB: STA $ED
+  // $87FD: INY
+  // $87FE: LDA (4D),Y
+  // $8800: STA $EC
+  // $8802: LDX #$02
+  // $8804: JSR $C4B9
+  // $8807: JSR $A212
+  // $880A: TAY
+  // $880B: LDX $56
+  // $880D: JSR $C4B9
+  // $8810: TYA
+  // $8811: JMP $8879
+  // $8814: LDA $5B
+  // $8816: AND #$FB
+  // $8818: JMP $881F
+  // $881B: LDA $5B
+  // $881D: ORA #$04
+  // $881F: STA $5B
+  // $8821: INY
+  // $8822: LDA (4D),Y
+  // $8824: JSR $8AF7
+  // $8827: LDX $56
+  // $8829: JSR $C4B9
+  // $882C: LDA #$02
+  // $882E: JMP $8879
+  // $8831: JSR $9085
+  // $8834: JMP $84E7
+  // $8837: JSR $899A
+  // $883A: LDA #$04
+  // $883C: JSR $9FA8
+  // $883F: LDA $00
   return [
     0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x02, 0x03, 0x02, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00,
     0x00, 0x00, 0x0C, 0x0E, 0x00, 0x00, 0x10, 0x12, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -185,6 +1188,892 @@ function buildsceneTables(): readonly number[] {
 
 // ════════ $8840-$9EEC: 字节码操作码处理器 (文本/图形/UI) ═══════=
 function buildbytecodeHandlers(): readonly number[] {
+  // $8840: EOR (18),Y
+  // $8842: ADC #$40
+  // $8844: STA $51
+  // $8846: LDA $52
+  // $8848: ADC #$00
+  // $884A: STA $52
+  // $884C: INC $4D
+  // $884E: BNE $8852
+  // $8850: INC $4E
+  // $8852: JMP $84E3
+  // $8855: JSR $88B1
+  // $8858: LDA #$04
+  // $885A: JSR $9FA8
+  // $885D: LDA #$01
+  // $885F: JMP $8887
+  // $8862: INY
+  // $8863: LDA (4D),Y
+  // $8865: TAX
+  // $8866: INY
+  // $8867: LDA (4D),Y
+  // $8869: STA $4E
+  // $886B: STX $4D
+  // $886D: JMP $84E7
+  // $8870: LDA #$00
+  // $8872: STA $4D
+  // $8874: STA $4E
+  // $8876: JMP $9F7E
+  // $8879: CLC
+  // $887A: ADC $4D
+  // $887C: STA $4D
+  // $887E: LDA $4E
+  // $8880: ADC #$00
+  // $8882: STA $4E
+  // $8884: JMP $84E7
+  // $8887: CLC
+  // $8888: ADC $4D
+  // $888A: STA $4D
+  // $888C: LDA $4E
+  // $888E: ADC #$00
+  // $8890: STA $4E
+  // $8892: JMP $84D7
+  // $8895: STA $57
+  // $8897: LDX #$0D
+  // $8899: LDA #$A8
+  // $889B: STA $00,X
+  // $889D: LDA #$88
+  // $889F: STA $01,X
+  // $88A1: LDY #$A0
+  // $88A3: LDA #$00
+  // $88A5: JSR $9F69
+  // $88A8: RTS
+  // $88A9: LDX #$02
+  // $88AB: JSR $C4B9
+  // $88AE: JMP $A206
+  // $88B1: LDA $54
+  // $88B3: EOR #$FF
+  // $88B5: CLC
+  // $88B6: ADC #$1F
+  // $88B8: TAX
+  // $88B9: LDY #$08
+  // $88BB: LDA $4F
+  // $88BD: AND #$E0
+  // $88BF: ORA $54
+  // $88C1: STA $E6
+  // $88C3: LDA $50
+  // $88C5: STA $E7
+  // $88C7: JMP $98E8
+  // $88CA: PHA
+  // $88CB: LDA #$82
+  // $88CD: JSR $9B28
+  // $88D0: PLA
+  // $88D1: CMP #$A0
+  // $88D3: BCC $88ED
+  // $88D5: PHA
+  // $88D6: CMP #$C8
+  // $88D8: LDA #$94
+  // $88DA: ADC #$00
+  // $88DC: STA $05E8,X
+  // $88DF: INX
+  // $88E0: PLA
+  // $88E1: TAY
+  // $88E2: LDA $8A14,Y
+  // $88E5: STA $05E8,X
+  // $88E8: INX
+  // $88E9: JSR $9B5E
+  // $88EC: RTS
+  // $88ED: STA $05E9,X
+  // $88F0: LDA #$00
+  // $88F2: STA $05E8,X
+  // $88F5: INX
+  // $88F6: INX
+  // $88F7: JSR $9B5E
+  // $88FA: RTS
+  // $88FB: LDX #$00
+  // $88FD: LDA $046A,X
+  // $8900: EOR #$20
+  // $8902: STA $046A,X
+  // $8905: INX
+  // $8906: INX
+  // $8907: INX
+  // $8908: INX
+  // $8909: BNE $88FD
+  // $890B: RTS
+  // $890C: STA $ED
+  // $890E: LDX #$00
+  // $8910: LDA $0468,X
+  // $8913: CLC
+  // $8914: ADC $ED
+  // $8916: STA $0468,X
+  // $8919: INX
+  // $891A: INX
+  // $891B: INX
+  // $891C: INX
+  // $891D: BNE $8910
+  // $891F: RTS
+  // $8920: LDX #$13
+  // $8922: JSR $9DEE
+  // $8925: LDA $EC
+  // $8927: CLC
+  // $8928: ADC #$00
+  // $892A: STA $EC
+  // $892C: LDA $ED
+  // $892E: ADC #$BF
+  // $8930: STA $ED
+  // $8932: LDA $25
+  // $8934: STA $EA
+  // $8936: LDX #$06
+  // $8938: JSR $C4B9
+  // $893B: LDA $78
+  // $893D: BNE $893B
+  // $893F: LDY #$00
+  // $8941: LDA (EC),Y
+  // $8943: STA $0079
+  // $8946: LDA #$00
+  // $8948: STA $007A
+  // $894B: INY
+  // $894C: LDX #$12
+  // $894E: LDA (EC),Y
+  // $8950: STA $007B,Y
+  // $8953: INY
+  // $8954: DEX
+  // $8955: BNE $894E
+  // $8957: LDX $EA
+  // $8959: JSR $C4B9
+  // $895C: RTS
+  // $895D: TAX
+  // $895E: LDA $99
+  // $8960: BPL $8966
+  // $8962: EOR #$41
+  // $8964: STA $99
+  // $8966: LDA #$01
+  // $8968: JSR $9FA8
+  // $896B: TXA
+  // $896C: PHA
+  // $896D: JSR $89FF
+  // $8970: PLA
+  // $8971: TAX
+  // $8972: DEX
+  // $8973: BNE $8966
+  // $8975: RTS
+  // $8976: LDA $4D
+  // $8978: STA $EA
+  // $897A: LDA $4E
+  // $897C: STA $EB
+  // $897E: LDA #$02
+  // $8980: STA $E6
+  // $8982: STX $E7
+  // $8984: STY $E8
+  // $8986: LDA #$E5
+  // $8988: STA $4D
+  // $898A: LDA #$00
+  // $898C: STA $4E
+  // $898E: JSR $9085
+  // $8991: LDA $EA
+  // $8993: STA $4D
+  // $8995: LDA $EB
+  // $8997: STA $4E
+  // $8999: RTS
+  // $899A: LDA $99
+  // $899C: AND #$80
+  // $899E: ORA #$40
+  // $89A0: STA $99
+  // $89A2: RTS
+  // $89A3: LDY #$FC
+  // $89A5: LDA $88D2,Y
+  // $89A8: STA $0468,Y
+  // $89AB: INY
+  // $89AC: BNE $89A5
+  // $89AE: LDX #$F8
+  // $89B0: LDY #$00
+  // $89B2: LDA #$01
+  // $89B4: JSR $9FA8
+  // $89B7: LDA $1E
+  // $89B9: BMI $89CA
+  // $89BB: INY
+  // $89BC: CPY #$28
+  // $89BE: BEQ $89A3
+  // $89C0: CPY #$18
+  // $89C2: BNE $89B2
+  // $89C4: STX $0564
+  // $89C7: JMP $89B2
+  // $89CA: STX $0564
+  // $89CD: RTS
+  // $89CE: BNE $89CF
+  // $89D0: ??? $03
+  // $89D1: INX
+  // $89D2: TAY
+  // $89D3: LDX #$06
+  // $89D5: JSR $C4B9
+  // $89D8: TYA
+  // $89D9: ASL A
+  // $89DA: TAX
+  // $89DB: LDA $BD00,X
+  // $89DE: STA $0654
+  // $89E1: LDA $BD01,X
+  // $89E4: STA $0655
+  // $89E7: LDA #$80
+  // $89E9: STA $0652
+  // $89EC: LDA #$01
+  // $89EE: STA $0653
+  // $89F1: LDA #$00
+  // $89F3: STA $90
+  // $89F5: LDA #$02
+  // $89F7: STA $91
+  // $89F9: LDX $56
+  // $89FB: JSR $C4B9
+  // $89FE: RTS
+  // $89FF: LDA $0652
+  // $8A02: BMI $8A07
+  // $8A04: JMP $8A90
+  // $8A07: DEC $0653
+  // $8A0A: BEQ $8A0F
+  // $8A0C: JMP $8A90
+  // $8A0F: LDX #$06
+  // $8A11: JSR $C4B9
+  // $8A14: LDA $0654
+  // $8A17: STA $E6
+  // $8A19: LDA $0655
+  // $8A1C: STA $E7
+  // $8A1E: LDA $0652
+  // $8A21: INC $0652
+  // $8A24: AND #$3F
+  // $8A26: CLC
+  // $8A27: ADC $E6
+  // $8A29: STA $E6
+  // $8A2B: LDA $E7
+  // $8A2D: ADC #$00
+  // $8A2F: STA $E7
+  // $8A31: LDY #$00
+  // $8A33: LDA (E6),Y
+  // $8A35: CMP #$FF
+  // $8A37: BEQ $8A86
+  // $8A39: CMP #$FE
+  // $8A3B: BEQ $8A7B
+  // $8A3D: AND #$F8
+  // $8A3F: STA $E8
+  // $8A41: LSR A
+  // $8A42: CLC
+  // $8A43: ADC $E8
+  // $8A45: STA $E8
+  // $8A47: LDA #$00
+  // $8A49: ADC #$00
+  // $8A4B: STA $E9
+  // $8A4D: LDA $E8
+  // $8A4F: CLC
+  // $8A50: ADC #$80
+  // $8A52: STA $E8
+  // $8A54: LDA $E9
+  // $8A56: ADC #$BD
+  // $8A58: STA $E9
+  // $8A5A: LDY #$02
+  // $8A5C: LDX #$23
+  // $8A5E: JSR $8A91
+  // $8A61: LDY #$03
+  // $8A63: LDX #$23
+  // $8A65: JSR $8A91
+  // $8A68: LDY #$04
+  // $8A6A: LDX #$23
+  // $8A6C: JSR $8A91
+  // $8A6F: LDY #$01
+  // $8A71: LDA (E6),Y
+  // $8A73: AND #$07
+  // $8A75: STA $0653
+  // $8A78: JMP $8A8B
+  // $8A7B: LDA $0652
+  // $8A7E: AND #$C0
+  // $8A80: STA $0652
+  // $8A83: JMP $8A14
+  // $8A86: LDA #$00
+  // $8A88: STA $0652
+  // $8A8B: LDX $56
+  // $8A8D: JSR $C4B9
+  // $8A90: RTS
+  // $8A91: LDA #$84
+  // $8A93: JSR $9B28
+  // $8A96: LDY #$00
+  // $8A98: LDA (E8),Y
+  // $8A9A: STA $05E8,X
+  // $8A9D: INX
+  // $8A9E: INY
+  // $8A9F: CPY #$04
+  // $8AA1: BNE $8A98
+  // $8AA3: JSR $9B5E
+  // $8AA6: LDA $E8
+  // $8AA8: CLC
+  // $8AA9: ADC #$04
+  // $8AAB: STA $E8
+  // $8AAD: LDA $E9
+  // $8AAF: ADC #$00
+  // $8AB1: STA $E9
+  // $8AB3: RTS
+  // $8AB4: ASL $07
+  // $8AB6: PHP
+  // $8AB7: ORA #$0A
+  // $8AB9: ??? $0B
+  // $8ABA: ??? $0C
+  // $8ABB: ORA $0F0E
+  // $8ABE: BPL $8AD1
+  // $8AC0: ??? $12
+  // $8AC1: ??? $13
+  // $8AC2: ??? $14
+  // $8AC3: ??? $1A
+  // $8AC4: ??? $1B
+  // $8AC5: ??? $1C
+  // $8AC6: ORA $461E,X
+  // $8AC9: ??? $47
+  // $8ACA: PHA
+  // $8ACB: EOR #$4A
+  // $8ACD: ??? $4B
+  // $8ACE: JMP $4E4D
+  // $8AD1: ??? $4F
+  // $8AD2: BVC $8B25
+  // $8AD4: ??? $52
+  // $8AD5: ??? $53
+  // $8AD6: ??? $54
+  // $8AD7: ??? $5A
+  // $8AD8: ??? $5B
+  // $8AD9: ??? $5C
+  // $8ADA: EOR $1A5E,X
+  // $8ADD: ??? $1B
+  // $8ADE: ??? $1C
+  // $8ADF: ORA $5A1E,X
+  // $8AE2: ??? $5B
+  // $8AE3: ??? $5C
+  // $8AE4: EOR $015E,X
+  // $8AE7: ASL A
+  // $8AE8: ??? $14
+  // $8AE9: PLP
+  // $8AEA: ??? $3C
+  // $8AEB: BVC $8B65
+  // $8AED: BEQ $8AEF
+  // $8AEF: ??? $03
+  // $8AF0: BPL $8AF6
+  // $8AF2: JSR $6005
+  // $8AF5: ASL $FF
+  // $8AF7: STA $ED
+  // $8AF9: LDA #$00
+  // $8AFB: STA $09
+  // $8AFD: STA $0A
+  // $8AFF: STA $0D
+  // $8B01: STA $0E
+  // $8B03: LDA $5B
+  // $8B05: AND #$7F
+  // $8B07: STA $5B
+  // $8B09: LDA $25
+  // $8B0B: STA $77
+  // $8B0D: LDX #$07
+  // $8B0F: JSR $C4B9
+  // $8B12: LDA #$00
+  // $8B14: LDY #$F8
+  // $8B16: STA $0552,Y
+  // $8B19: INY
+  // $8B1A: BNE $8B16
+  // $8B1C: LDA $ED
+  // $8B1E: ASL A
+  // $8B1F: TAX
+  // $8B20: LDA #$00
+  // $8B22: ROL A
+  // $8B23: TAY
+  // $8B24: TXA
+  // $8B25: CLC
+  // $8B26: ADC #$00
+  // $8B28: STA $63
+  // $8B2A: TYA
+  // $8B2B: ADC #$A0
+  // $8B2D: STA $64
+  // $8B2F: LDY #$00
+  // $8B31: LDA (63),Y
+  // $8B33: TAX
+  // $8B34: INY
+  // $8B35: LDA (63),Y
+  // $8B37: STA $64
+  // $8B39: STX $63
+  // $8B3B: LDY #$00
+  // $8B3D: LDA (63),Y
+  // $8B3F: STA $75
+  // $8B41: INY
+  // $8B42: LDA (63),Y
+  // $8B44: STA $76
+  // $8B46: INY
+  // $8B47: LDA (63),Y
+  // $8B49: TAX
+  // $8B4A: AND #$3F
+  // $8B4C: STA $48
+  // $8B4E: TXA
+  // $8B4F: LSR $5B
+  // $8B51: ROL A
+  // $8B52: ROL $5B
+  // $8B54: INY
+  // $8B55: LDA (63),Y
+  // $8B57: STA $5E
+  // $8B59: INY
+  // $8B5A: LDA (63),Y
+  // $8B5C: STA $5F
+  // $8B5E: INY
+  // $8B5F: LDA (63),Y
+  // $8B61: AND #$F8
+  // $8B63: STA $5C
+  // $8B65: LDA #$02
+  // $8B67: STA $5D
+  // $8B69: ASL $5C
+  // $8B6B: ROL $5D
+  // $8B6D: ASL $5C
+  // $8B6F: ROL $5D
+  // $8B71: LDA (63),Y
+  // $8B73: AND #$07
+  // $8B75: ORA $5C
+  // $8B77: STA $5C
+  // $8B79: ASL $5C
+  // $8B7B: ROL $5D
+  // $8B7D: ASL $5C
+  // $8B7F: ROL $5D
+  // $8B81: LDA $5D
+  // $8B83: AND #$0C
+  // $8B85: BNE $8B93
+  // $8B87: LDA $7B
+  // $8B89: ASL A
+  // $8B8A: ASL A
+  // $8B8B: EOR $5B
+  // $8B8D: AND #$04
+  // $8B8F: ORA $5D
+  // $8B91: STA $5D
+  // $8B93: LDA $5E
+  // $8B95: CMP #$09
+  // $8B97: BCC $8B9F
+  // $8B99: JSR $9071
+  // $8B9C: JMP $8BAB
+  // $8B9F: LDA $5D
+  // $8BA1: AND #$04
+  // $8BA3: BNE $8BAB
+  // $8BA5: JSR $9071
+  // $8BA8: JMP $8BAE
+  // $8BAB: JSR $9076
+  // $8BAE: LDA #$01
+  // $8BB0: JSR $9FA8
+  // $8BB3: LDA $63
+  // $8BB5: CLC
+  // $8BB6: ADC #$06
+  // $8BB8: STA $63
+  // $8BBA: LDA $64
+  // $8BBC: ADC #$00
+  // $8BBE: STA $64
+  // $8BC0: LDA $5E
+  // $8BC2: LDX $5F
+  // $8BC4: JSR $9DEE
+  // $8BC7: LDA $63
+  // $8BC9: CLC
+  // $8BCA: ADC $EC
+  // $8BCC: STA $70
+  // $8BCE: LDA $64
+  // $8BD0: ADC $ED
+  // $8BD2: STA $71
+  // $8BD4: LDA #$00
+  // $8BD6: STA $60
+  // $8BD8: LDY #$01
+  // $8BDA: LDA (70),Y
+  // $8BDC: AND #$E0
+  // $8BDE: STA $62
+  // $8BE0: LDA (70),Y
+  // $8BE2: AND #$1F
+  // $8BE4: TAX
+  // $8BE5: LSR A
+  // $8BE6: ROR $60
+  // $8BE8: LSR A
+  // $8BE9: ROR $60
+  // $8BEB: STA $61
+  // $8BED: TXA
+  // $8BEE: BEQ $8BF3
+  // $8BF0: INY
+  // $8BF1: LDA (70),Y
+  // $8BF3: STA $72
+  // $8BF5: LDA $62
+  // $8BF7: AND #$C0
+  // $8BF9: BEQ $8C43
+  // $8BFB: CMP #$40
+  // $8BFD: BEQ $8C15
+  // $8BFF: CMP #$80
+  // $8C01: BEQ $8C0C
+  // $8C03: LDA #$04
+  // $8C05: LDX #$01
+  // $8C07: LDY $5F
+  // $8C09: JMP $8C59
+  // $8C0C: LDA #$04
+  // $8C0E: LDX #$01
+  // $8C10: LDY $5F
+  // $8C12: JMP $8C59
+  // $8C15: LDA $5E
+  // $8C17: LDX $5F
+  // $8C19: JSR $9DEE
+  // $8C1C: LDA $EC
+  // $8C1E: SEC
+  // $8C1F: SBC #$01
+  // $8C21: STA $EC
+  // $8C23: LDA $ED
+  // $8C25: SBC #$00
+  // $8C27: STA $ED
+  // $8C29: LDA $63
+  // $8C2B: CLC
+  // $8C2C: ADC $EC
+  // $8C2E: STA $63
+  // $8C30: LDA $64
+  // $8C32: ADC $ED
+  // $8C34: STA $64
+  // $8C36: LDA #$00
+  // $8C38: SEC
+  // $8C39: SBC $5F
+  // $8C3B: TAY
+  // $8C3C: LDA #$FC
+  // $8C3E: LDX #$FF
+  // $8C40: JMP $8C59
+  // $8C43: LDA $5F
+  // $8C45: SEC
+  // $8C46: SBC #$01
+  // $8C48: CLC
+  // $8C49: ADC $63
+  // $8C4B: STA $63
+  // $8C4D: LDA $64
+  // $8C4F: ADC #$00
+  // $8C51: STA $64
+  // $8C53: LDA #$FC
+  // $8C55: LDX #$FF
+  // $8C57: LDY $5F
+  // $8C59: STA $6D
+  // $8C5B: STX $6E
+  // $8C5D: STY $6F
+  // $8C5F: LDA $5E
+  // $8C61: CMP #$07
+  // $8C63: BCC $8C89
+  // $8C65: SEC
+  // $8C66: SBC #$07
+  // $8C68: STA $5E
+  // $8C6A: LDY #$07
+  // $8C6C: LDX $5F
+  // $8C6E: JSR $8E15
+  // $8C71: LDA #$01
+  // $8C73: STA $7B
+  // $8C75: LDX #$09
+  // $8C77: LDA #$B9
+  // $8C79: STA $00,X
+  // $8C7B: LDA #$8C
+  // $8C7D: STA $01,X
+  // $8C7F: LDY #$78
+  // $8C81: LDA #$00
+  // $8C83: JSR $9F69
+  // $8C86: JMP $8CA5
+  // $8C89: LDY $5E
+  // $8C8B: LDX $5F
+  // $8C8D: JSR $8E15
+  // $8C90: LDA $72
+  // $8C92: BEQ $8CA5
+  // $8C94: LDX #$09
+  // $8C96: LDA #$21
+  // $8C98: STA $00,X
+  // $8C9A: LDA #$8D
+  // $8C9C: STA $01,X
+  // $8C9E: LDY #$78
+  // $8CA0: LDA #$00
+  // $8CA2: JSR $9F69
+  // $8CA5: LDA $75
+  // $8CA7: STA $8E
+  // $8CA9: LDA $76
+  // $8CAB: STA $8F
+  // $8CAD: LDA #$00
+  // $8CAF: STA $44
+  // $8CB1: STA $45
+  // $8CB3: STA $7A
+  // $8CB5: LDX $77
+  // $8CB7: JMP $C4B9
+  // $8CBA: LDX #$07
+  // $8CBC: JSR $C4B9
+  // $8CBF: LDA #$00
+  // $8CC1: STA $69
+  // $8CC3: STA $6A
+  // $8CC5: BIT $62
+  // $8CC7: BMI $8CD6
+  // $8CC9: LDA #$00
+  // $8CCB: SEC
+  // $8CCC: SBC $60
+  // $8CCE: STA $60
+  // $8CD0: LDA #$00
+  // $8CD2: SBC $61
+  // $8CD4: STA $61
+  // $8CD6: LDA #$01
+  // $8CD8: JSR $9FA8
+  // $8CDB: LDA $60
+  // $8CDD: CLC
+  // $8CDE: ADC $69
+  // $8CE0: STA $69
+  // $8CE2: LDA #$00
+  // $8CE4: ADC $61
+  // $8CE6: TAX
+  // $8CE7: JSR $9BA9
+  // $8CEA: TXA
+  // $8CEB: BPL $8CF2
+  // $8CED: EOR #$FF
+  // $8CEF: CLC
+  // $8CF0: ADC #$01
+  // $8CF2: CLC
+  // $8CF3: ADC $6A
+  // $8CF5: STA $6A
+  // $8CF7: SEC
+  // $8CF8: SBC #$20
+  // $8CFA: BCC $8CD6
+  // $8CFC: STA $6A
+  // $8CFE: LDA $5B
+  // $8D00: BPL $8D0A
+  // $8D02: LDA #$01
+  // $8D04: JSR $9FA8
+  // $8D07: JMP $8CFE
+  // $8D0A: LDX #$0D
+  // $8D0C: LDA #$FE
+  // $8D0E: STA $00,X
+  // $8D10: LDA #$8D
+  // $8D12: STA $01,X
+  // $8D14: LDY #$A0
+  // $8D16: LDA #$00
+  // $8D18: JSR $9F69
+  // $8D1B: DEC $5E
+  // $8D1D: BNE $8CD6
+  // $8D1F: JMP $8D59
+  // $8D22: LDX #$07
+  // $8D24: JSR $C4B9
+  // $8D27: LDX #$02
+  // $8D29: LDY #$00
+  // $8D2B: LDA (70),Y
+  // $8D2D: BEQ $8D3A
+  // $8D2F: ASL A
+  // $8D30: BCC $8D3B
+  // $8D32: TAX
+  // $8D33: LDA #$FE
+  // $8D35: JSR $9FA8
+  // $8D38: INX
+  // $8D39: INX
+  // $8D3A: TXA
+  // $8D3B: JSR $9FA8
+  // $8D3E: LDA #$00
+  // $8D40: STA $69
+  // $8D42: STA $6A
+  // $8D44: BIT $62
+  // $8D46: BMI $8D55
+  // $8D48: LDA #$00
+  // $8D4A: SEC
+  // $8D4B: SBC $60
+  // $8D4D: STA $60
+  // $8D4F: LDA #$00
+  // $8D51: SBC $61
+  // $8D53: STA $61
+  // $8D55: BIT $62
+  // $8D57: BVC $8D88
+  // $8D59: LDA #$01
+  // $8D5B: JSR $9FA8
+  // $8D5E: LDA $60
+  // $8D60: CLC
+  // $8D61: ADC $69
+  // $8D63: STA $69
+  // $8D65: LDA #$00
+  // $8D67: ADC $61
+  // $8D69: TAX
+  // $8D6A: JSR $9BA9
+  // $8D6D: TXA
+  // $8D6E: BPL $8D75
+  // $8D70: EOR #$FF
+  // $8D72: CLC
+  // $8D73: ADC #$01
+  // $8D75: CLC
+  // $8D76: ADC $6A
+  // $8D78: STA $6A
+  // $8D7A: SEC
+  // $8D7B: SBC #$20
+  // $8D7D: BCC $8D59
+  // $8D7F: STA $6A
+  // $8D81: DEC $72
+  // $8D83: BNE $8D59
+  // $8D85: JMP $8DC8
+  // $8D88: LDA #$01
+  // $8D8A: JSR $9FA8
+  // $8D8D: LDA $60
+  // $8D8F: CLC
+  // $8D90: ADC $69
+  // $8D92: STA $69
+  // $8D94: LDA #$00
+  // $8D96: ADC $61
+  // $8D98: TAX
+  // $8D99: JSR $9BCA
+  // $8D9C: TXA
+  // $8D9D: BPL $8DA4
+  // $8D9F: EOR #$FF
+  // $8DA1: CLC
+  // $8DA2: ADC #$01
+  // $8DA4: CLC
+  // $8DA5: ADC $6A
+  // $8DA7: STA $6A
+  // $8DA9: SEC
+  // $8DAA: SBC #$20
+  // $8DAC: BCC $8D88
+  // $8DAE: STA $6A
+  // $8DB0: DEC $72
+  // $8DB2: BNE $8D88
+  // $8DB4: LDA $7A
+  // $8DB6: SEC
+  // $8DB7: SBC $6A
+  // $8DB9: STA $7A
+  // $8DBB: LDA $7B
+  // $8DBD: SBC #$00
+  // $8DBF: STA $7B
+  // $8DC1: LDA $47
+  // $8DC3: SEC
+  // $8DC4: SBC $6A
+  // $8DC6: STA $47
+  // $8DC8: LDA $62
+  // $8DCA: AND #$20
+  // $8DCC: BNE $8DFC
+  // $8DCE: LDA $70
+  // $8DD0: CLC
+  // $8DD1: ADC #$03
+  // $8DD3: STA $70
+  // $8DD5: LDA $71
+  // $8DD7: ADC #$00
+  // $8DD9: STA $71
+  // $8DDB: LDA #$00
+  // $8DDD: STA $60
+  // $8DDF: LDY #$01
+  // $8DE1: LDA (70),Y
+  // $8DE3: AND #$E0
+  // $8DE5: STA $62
+  // $8DE7: LDA (70),Y
+  // $8DE9: AND #$1F
+  // $8DEB: TAX
+  // $8DEC: LSR A
+  // $8DED: ROR $60
+  // $8DEF: LSR A
+  // $8DF0: ROR $60
+  // $8DF2: STA $61
+  // $8DF4: INY
+  // $8DF5: LDA (70),Y
+  // $8DF7: STA $72
+  // $8DF9: JMP $8D22
+  // $8DFC: JMP $9F7E
+  // $8DFF: LDA $5B
+  // $8E01: ORA #$80
+  // $8E03: STA $5B
+  // $8E05: LDY #$01
+  // $8E07: LDX $5F
+  // $8E09: JSR $8E15
+  // $8E0C: LDA $5B
+  // $8E0E: AND #$7F
+  // $8E10: STA $5B
+  // $8E12: JMP $9F7E
+  // $8E15: STY $6C
+  // $8E17: STX $6B
+  // $8E19: LDA $63
+  // $8E1B: STA $65
+  // $8E1D: LDA $64
+  // $8E1F: STA $66
+  // $8E21: LDA $6B
+  // $8E23: STA $ED
+  // $8E25: LDA $5C
+  // $8E27: STA $73
+  // $8E29: LDA $5D
+  // $8E2B: STA $74
+  // $8E2D: LDY #$00
+  // $8E2F: LDA (63),Y
+  // $8E31: JSR $8EF0
+  // $8E34: LDA $5C
+  // $8E36: TAX
+  // $8E37: CLC
+  // $8E38: ADC $6D
+  // $8E3A: STA $5C
+  // $8E3C: TXA
+  // $8E3D: EOR $5C
+  // $8E3F: AND #$20
+  // $8E41: BEQ $8E58
+  // $8E43: LDA $6D
+  // $8E45: ASL A
+  // $8E46: ASL A
+  // $8E47: ASL A
+  // $8E48: EOR #$FF
+  // $8E4A: CLC
+  // $8E4B: ADC #$01
+  // $8E4D: CLC
+  // $8E4E: ADC $5C
+  // $8E50: STA $5C
+  // $8E52: LDA $5D
+  // $8E54: EOR #$04
+  // $8E56: STA $5D
+  // $8E58: LDA $6E
+  // $8E5A: PHA
+  // $8E5B: CLC
+  // $8E5C: ADC $63
+  // $8E5E: STA $63
+  // $8E60: PLA
+  // $8E61: BMI $8E6A
+  // $8E63: LDA $64
+  // $8E65: ADC #$00
+  // $8E67: JMP $8E6E
+  // $8E6A: LDA $64
+  // $8E6C: SBC #$00
+  // $8E6E: STA $64
+  // $8E70: DEC $ED
+  // $8E72: BNE $8E2D
+  // $8E74: LDA $6F
+  // $8E76: PHA
+  // $8E77: CLC
+  // $8E78: ADC $65
+  // $8E7A: STA $63
+  // $8E7C: PLA
+  // $8E7D: BMI $8E86
+  // $8E7F: LDA $66
+  // $8E81: ADC #$00
+  // $8E83: JMP $8E8A
+  // $8E86: LDA $66
+  // $8E88: SBC #$00
+  // $8E8A: STA $64
+  // $8E8C: LDA $62
+  // $8E8E: AND #$C0
+  // $8E90: CMP #$40
+  // $8E92: BEQ $8EC2
+  // $8E94: LDA $73
+  // $8E96: CLC
+  // $8E97: ADC #$80
+  // $8E99: STA $5C
+  // $8E9B: TAX
+  // $8E9C: LDA $74
+  // $8E9E: ADC #$00
+  // $8EA0: STA $5D
+  // $8EA2: TXA
+  // $8EA3: SEC
+  // $8EA4: SBC #$40
+  // $8EA6: BPL $8EE8
+  // $8EA8: LDA $5D
+  // $8EAA: SBC #$00
+  // $8EAC: AND #$03
+  // $8EAE: CMP #$03
+  // $8EB0: BNE $8EE8
+  // $8EB2: LDA $5C
+  // $8EB4: SEC
+  // $8EB5: SBC #$C0
+  // $8EB7: STA $5C
+  // $8EB9: LDA $5D
+  // $8EBB: SBC #$03
+  // $8EBD: STA $5D
+  // $8EBF: JMP $8EE8
+  // $8EC2: LDA $73
+  // $8EC4: SEC
+  // $8EC5: SBC #$80
+  // $8EC7: STA $5C
+  // $8EC9: TAX
+  // $8ECA: LDA $74
+  // $8ECC: SBC #$00
+  // $8ECE: STA $5D
+  // $8ED0: TXA
+  // $8ED1: BPL $8EE8
+  // $8ED3: LDA $5D
+  // $8ED5: AND #$03
+  // $8ED7: CMP #$03
+  // $8ED9: BNE $8EE8
+  // $8EDB: LDA $5C
+  // $8EDD: CLC
+  // $8EDE: ADC #$C0
+  // $8EE0: STA $5C
+  // $8EE2: LDA $5D
+  // $8EE4: ADC #$03
+  // $8EE6: STA $5D
+  // $8EE8: DEC $6C
+  // $8EEA: BEQ $8EEF
+  // $8EEC: JMP $0000
   return [
     0x51, 0x18, 0x69, 0x40, 0x85, 0x51, 0xA5, 0x52, 0x69, 0x00, 0x85, 0x52, 0xE6, 0x4D, 0xD0, 0x02,
     0xE6, 0x4E, 0x4C, 0xE3, 0x84, 0x20, 0xB1, 0x88, 0xA9, 0x04, 0x20, 0xA8, 0x9F, 0xA9, 0x01, 0x4C,
@@ -298,6 +2187,105 @@ function buildbytecodeHandlers(): readonly number[] {
 
 // ════════ $9EED-$9FA7: 任务调度器/协程系统 ═══════=
 function buildscheduler(): readonly number[] {
+  // $9EED: ORA $608E,Y
+  // $9EF0: TAX
+  // $9EF1: LDA $5C
+  // $9EF3: STA $67
+  // $9EF5: LDA $5D
+  // $9EF7: STA $68
+  // $9EF9: LDA $5B
+  // $9EFB: AND #$01
+  // $9EFD: TAY
+  // $9EFE: STA $EB
+  // $9F00: TXA
+  // $9F01: STA $EA
+  // $9F03: ASL A
+  // $9F04: ROL $EB
+  // $9F06: ASL A
+  // $9F07: ROL $EB
+  // $9F09: ASL A
+  // $9F0A: ROL $EB
+  // $9F0C: ASL A
+  // $9F0D: ROL $EB
+  // $9F0F: CLC
+  // $9F10: ADC $EA
+  // $9F12: STA $EA
+  // $9F14: TYA
+  // $9F15: ADC $EB
+  // $9F17: STA $EB
+  // $9F19: LDA $EA
+  // $9F1B: CLC
+  // $9F1C: ADC #$00
+  // $9F1E: STA $EA
+  // $9F20: LDA $EB
+  // $9F22: ADC #$A0
+  // $9F24: STA $EB
+  // $9F26: LDX #$08
+  // $9F28: JSR $C4B9
+  // $9F2B: LDY #$00
+  // $9F2D: LDA (EA),Y
+  // $9F2F: STA $E7
+  // $9F31: JSR $8FD1
+  // $9F34: INC $EA
+  // $9F36: BNE $9F3A
+  // $9F38: INC $EB
+  // $9F3A: LDA #$04
+  // $9F3C: STA $E8
+  // $9F3E: LDY $67
+  // $9F40: LDX $68
+  // $9F42: LDA #$04
+  // $9F44: JSR $9B28
+  // $9F47: LDY #$00
+  // $9F49: LDA (EA),Y
+  // $9F4B: STA $05E8,X
+  // $9F4E: INX
+  // $9F4F: INY
+  // $9F50: CPY #$04
+  // $9F52: BNE $9F49
+  // $9F54: JSR $9B5E
+  // $9F57: DEC $E8
+  // $9F59: BEQ $9FCB
+  // $9F5B: LDA $EA
+  // $9F5D: CLC
+  // $9F5E: ADC #$04
+  // $9F60: STA $EA
+  // $9F62: LDA $EB
+  // $9F64: ADC #$00
+  // $9F66: STA $EB
+  // $9F68: LDA $67
+  // $9F6A: CLC
+  // $9F6B: ADC #$20
+  // $9F6D: STA $67
+  // $9F6F: LDA $68
+  // $9F71: ADC #$00
+  // $9F73: STA $68
+  // $9F75: AND #$03
+  // $9F77: CMP #$03
+  // $9F79: BNE $9F3E
+  // $9F7B: LDA $67
+  // $9F7D: CMP #$C0
+  // $9F7F: BCC $9F3E
+  // $9F81: LDA $67
+  // $9F83: SEC
+  // $9F84: SBC #$C0
+  // $9F86: STA $67
+  // $9F88: LDA $68
+  // $9F8A: SBC #$03
+  // $9F8C: STA $68
+  // $9F8E: JSR $9049
+  // $9F91: LDA #$01
+  // $9F93: JSR $9B28
+  // $9F96: LDA $67
+  // $9F98: LSR A
+  // $9F99: LSR A
+  // $9F9A: AND #$07
+  // $9F9C: TAY
+  // $9F9D: LDA $62
+  // $9F9F: AND #$C0
+  // $9FA1: CMP #$40
+  // $9FA3: BEQ $9FB8
+  // $9FA5: LDA $E7
+  // $9FA7: LSR A
   return [
     0x19, 0x8E, 0x60, 0xAA, 0xA5, 0x5C, 0x85, 0x67, 0xA5, 0x5D, 0x85, 0x68, 0xA5, 0x5B, 0x29, 0x01,
     0xA8, 0x85, 0xEB, 0x8A, 0x85, 0xEA, 0x0A, 0x26, 0xEB, 0x0A, 0x26, 0xEB, 0x0A, 0x26, 0xEB, 0x0A,
@@ -316,17 +2304,2264 @@ function buildscheduler(): readonly number[] {
 
 // ════════ $9FA8-$9FF5: 上下文保存/恢复 ═══════=
 function buildcontextSave(): readonly number[] {
-  return [
-    0x4A, 0x4A, 0x4A, 0x9D, 0xE8, 0x05, 0x99, 0x4A, 0x06, 0xE8, 0x20, 0x5E, 0x9B, 0x4C, 0x3E, 0x8F,
-    0xA5, 0xE7, 0x4A, 0x4A, 0x4A, 0x4A, 0x19, 0x4A, 0x06, 0x9D, 0xE8, 0x05, 0xE8, 0x20, 0x5E, 0x9B,
-    0x4C, 0x3E, 0x8F, 0xA2, 0x07, 0x20, 0xB9, 0xC4, 0x60, 0x20, 0x49, 0x90, 0x24, 0x67, 0x50, 0x62,
-    0x84, 0xE8, 0x86, 0xE9, 0xA9, 0x01, 0x20, 0x28, 0x9B, 0xA5, 0x67, 0x4A, 0x4A, 0x29, 0x07, 0xA8,
-    0xA5, 0x62, 0x29, 0xC0, 0xC9, 0x40, 0xF0, 0x1B, 0xA5, 0xE7, 0x0A, 0x0A, 0x0A, 0x0A
-  ];
+  return asm`
+    .org $9FA8
+    LSR A
+    LSR A
+    LSR A
+    STA $05E8,X
+    STA $064A,Y
+    INX
+    JSR $9B5E
+    JMP $8F3E
+
+    LDA $E7
+    LSR A
+    LSR A
+    LSR A
+    LSR A
+    ORA $064A,Y
+    STA $05E8,X
+    INX
+    JSR $9B5E
+    JMP $8F3E
+
+    LDX #$07
+    JSR $C4B9
+    RTS
+
+    JSR $9049
+    BIT $67
+    BVC $A03A
+    STY $E8
+    STX $E9
+    LDA #$01
+    JSR $9B28
+    LDA $67
+    LSR A
+    LSR A
+    AND #$07
+    TAY
+    LDA $62
+    AND #$C0
+    CMP #$40
+    BEQ $A00B
+    LDA $E7
+    ASL A
+    ASL A
+    ASL A
+    ASL A
+  `;
 }
 
 // ════════ $9FF6-$9FFF: 填充 (0xFF) ═══════=
 function buildpadding(): readonly number[] {
+  // $9FF6: ORA $064A,Y
+  // $9FF9: STA $05E8,X
+  // $9FFC: INX
+  // $9FFD: LDA $E7
+  // $9FFF: LSR A
+  // $A000: LSR A
+  // $A001: LSR A
+  // $A002: LSR A
+  // $A003: STA $064A,Y
+  // $A006: STA $E6
+  // $A008: JMP $9025
+  // $A00B: LDA $E7
+  // $A00D: ASL A
+  // $A00E: ASL A
+  // $A00F: ASL A
+  // $A010: ASL A
+  // $A011: PHA
+  // $A012: STA $05E8,X
+  // $A015: INX
+  // $A016: LDA $E7
+  // $A018: LSR A
+  // $A019: LSR A
+  // $A01A: LSR A
+  // $A01B: LSR A
+  // $A01C: ORA $064A,Y
+  // $A01F: STA $E6
+  // $A021: PLA
+  // $A022: STA $064A,Y
+  // $A025: JSR $9B5E
+  // $A028: LDA $E8
+  // $A02A: CLC
+  // $A02B: ADC #$08
+  // $A02D: TAY
+  // $A02E: LDX $E9
+  // $A030: LDA #$01
+  // $A032: JSR $9B28
+  // $A035: LDA $E6
+  // $A037: JMP $9041
+  // $A03A: LDA #$01
+  // $A03C: JSR $9B28
+  // $A03F: LDA $E7
+  // $A041: STA $05E8,X
+  // $A044: INX
+  // $A045: JSR $9B5E
+  // $A048: RTS
+  // $A049: LDA $67
+  // $A04B: AND #$9C
+  // $A04D: LSR A
+  // $A04E: LSR A
+  // $A04F: STA $E6
+  // $A051: AND #$20
+  // $A053: LSR A
+  // $A054: LSR A
+  // $A055: ORA $E6
+  // $A057: AND #$0F
+  // $A059: STA $E6
+  // $A05B: LDA $68
+  // $A05D: ASL A
+  // $A05E: ASL A
+  // $A05F: ASL A
+  // $A060: ASL A
+  // $A061: AND #$30
+  // $A063: CLC
+  // $A064: ADC #$C0
+  // $A066: ORA $E6
+  // $A068: TAY
+  // $A069: LDA $68
+  // $A06B: AND #$FC
+  // $A06D: ADC #$03
+  // $A06F: TAX
+  // $A070: RTS
+  // $A071: LDA #$20
+  // $A073: JMP $9078
+  // $A076: LDA #$24
+  // $A078: STA $E7
+  // $A07A: LDA #$00
+  // $A07C: STA $E6
+  // $A07E: LDY #$10
+  // $A080: LDX #$20
+  // $A082: JMP $98E8
+  // $A085: LDA #$00
+  // $A087: LDY #$01
+  // $A089: STA $0467,Y
+  // $A08C: INY
+  // $A08D: BNE $A089
+  // $A08F: LDA #$00
+  // $A091: STA $97
+  // $A093: LDY #$01
+  // $A095: LDA (4D),Y
+  // $A097: STA $EC
+  // $A099: LDA $4D
+  // $A09B: CLC
+  // $A09C: ADC #$02
+  // $A09E: STA $4D
+  // $A0A0: LDA $4E
+  // $A0A2: ADC #$00
+  // $A0A4: STA $4E
+  // $A0A6: LDA #$68
+  // $A0A8: STA $94
+  // $A0AA: LDA #$05
+  // $A0AC: STA $95
+  // $A0AE: LDX $25
+  // $A0B0: STX $ED
+  // $A0B2: LDY #$00
+  // $A0B4: LDA (4D),Y
+  // $A0B6: TAY
+  // $A0B7: LDX #$09
+  // $A0B9: CMP #$6D
+  // $A0BB: BCC $A0C2
+  // $A0BD: SEC
+  // $A0BE: SBC #$6D
+  // $A0C0: TAY
+  // $A0C1: INX
+  // $A0C2: JSR $C4B9
+  // $A0C5: TYA
+  // $A0C6: ASL A
+  // $A0C7: TAY
+  // $A0C8: LDA #$00
+  // $A0CA: ADC #$00
+  // $A0CC: TAX
+  // $A0CD: TYA
+  // $A0CE: CLC
+  // $A0CF: ADC #$00
+  // $A0D1: STA $92
+  // $A0D3: TXA
+  // $A0D4: ADC #$A0
+  // $A0D6: STA $93
+  // $A0D8: LDY #$00
+  // $A0DA: LDA (92),Y
+  // $A0DC: TAX
+  // $A0DD: INY
+  // $A0DE: LDA (92),Y
+  // $A0E0: STA $93
+  // $A0E2: STX $92
+  // $A0E4: LDY #$00
+  // $A0E6: LDA $978B,Y
+  // $A0E9: STA (94),Y
+  // $A0EB: INY
+  // $A0EC: CPY #$20
+  // $A0EE: BNE $A0E6
+  // $A0F0: LDA $25
+  // $A0F2: SEC
+  // $A0F3: SBC #$09
+  // $A0F5: LDY #$00
+  // $A0F7: ORA (94),Y
+  // $A0F9: STA (94),Y
+  // $A0FB: LDY #$00
+  // $A0FD: LDA (92),Y
+  // $A0FF: STA $49
+  // $A101: INC $92
+  // $A103: BNE $A107
+  // $A105: INC $93
+  // $A107: LDY #$02
+  // $A109: LDA $92
+  // $A10B: STA (94),Y
+  // $A10D: INY
+  // $A10E: LDA $93
+  // $A110: STA (94),Y
+  // $A112: LDX $ED
+  // $A114: JSR $C4B9
+  // $A117: INC $4D
+  // $A119: BNE $A11D
+  // $A11B: INC $4E
+  // $A11D: LDA $94
+  // $A11F: CLC
+  // $A120: ADC #$20
+  // $A122: STA $94
+  // $A124: LDA $95
+  // $A126: ADC #$00
+  // $A128: STA $95
+  // $A12A: DEC $EC
+  // $A12C: BEQ $A131
+  // $A12E: JMP $90AE
+  // $A131: LDX #$11
+  // $A133: LDA #$47
+  // $A135: STA $00,X
+  // $A137: LDA #$91
+  // $A139: STA $01,X
+  // $A13B: LDY #$C8
+  // $A13D: LDA #$00
+  // $A13F: JSR $9F69
+  // $A142: RTS
+  // $A143: LDA #$01
+  // $A145: JSR $9FA8
+  // $A148: LDA #$68
+  // $A14A: STA $94
+  // $A14C: LDA #$05
+  // $A14E: STA $95
+  // $A150: LDA #$04
+  // $A152: STA $96
+  // $A154: LDY #$00
+  // $A156: LDA (94),Y
+  // $A158: BMI $A15D
+  // $A15A: JMP $94C1
+  // $A15D: TAX
+  // $A15E: LDY #$04
+  // $A160: JSR $974A
+  // $A163: LDY #$06
+  // $A165: JSR $974A
+  // $A168: TXA
+  // $A169: AND #$10
+  // $A16B: BNE $A1A6
+  // $A16D: TXA
+  // $A16E: AND #$20
+  // $A170: BNE $A175
+  // $A172: JMP $91F3
+  // $A175: LDX #$04
+  // $A177: LDY #$0A
+  // $A179: JSR $975B
+  // $A17C: LDA $9A
+  // $A17E: STA $E6
+  // $A180: LDY #$04
+  // $A182: JSR $974A
+  // $A185: LDA $9A
+  // $A187: SEC
+  // $A188: SBC $E6
+  // $A18A: STA $E6
+  // $A18C: LDX #$06
+  // $A18E: LDY #$0E
+  // $A190: JSR $975B
+  // $A193: LDA $9C
+  // $A195: STA $E8
+  // $A197: LDY #$06
+  // $A199: JSR $974A
+  // $A19C: LDA $9C
+  // $A19E: SEC
+  // $A19F: SBC $E8
+  // $A1A1: STA $E8
+  // $A1A3: JMP $91B4
+  // $A1A6: LDA #$00
+  // $A1A8: SEC
+  // $A1A9: SBC $46
+  // $A1AB: STA $E6
+  // $A1AD: LDA #$00
+  // $A1AF: SEC
+  // $A1B0: SBC $47
+  // $A1B2: STA $E8
+  // $A1B4: LDY #$10
+  // $A1B6: LDA (94),Y
+  // $A1B8: TAX
+  // $A1B9: INY
+  // $A1BA: LDA (94),Y
+  // $A1BC: LSR A
+  // $A1BD: LSR A
+  // $A1BE: TAY
+  // $A1BF: LDA $E6
+  // $A1C1: CLC
+  // $A1C2: ADC $0468,X
+  // $A1C5: STA $0468,X
+  // $A1C8: ROR A
+  // $A1C9: EOR $E6
+  // $A1CB: BPL $A1D5
+  // $A1CD: LDA $046A,X
+  // $A1D0: EOR #$08
+  // $A1D2: STA $046A,X
+  // $A1D5: LDA $E8
+  // $A1D7: CLC
+  // $A1D8: ADC $046B,X
+  // $A1DB: STA $046B,X
+  // $A1DE: ROR A
+  // $A1DF: EOR $E8
+  // $A1E1: BPL $A1EB
+  // $A1E3: LDA $046A,X
+  // $A1E6: EOR #$04
+  // $A1E8: STA $046A,X
+  // $A1EB: TXA
+  // $A1EC: CLC
+  // $A1ED: ADC #$04
+  // $A1EF: TAX
+  // $A1F0: DEY
+  // $A1F1: BNE $A1BF
+  // $A1F3: LDY #$01
+  // $A1F5: LDA (94),Y
+  // $A1F7: SEC
+  // $A1F8: SBC #$01
+  // $A1FA: STA (94),Y
+  // $A1FC: BEQ $A201
+  // $A1FE: JMP $94C1
+  // $A201: LDY #$00
+  // $A203: LDA (94),Y
+  // $A205: AND #$01
+  // $A207: CLC
+  // $A208: ADC #$09
+  // $A20A: TAX
+  // $A20B: JSR $C4B9
+  // $A20E: LDY #$02
+  // $A210: LDA (94),Y
+  // $A212: STA $92
+  // $A214: INY
+  // $A215: LDA (94),Y
+  // $A217: STA $93
+  // $A219: LDY #$00
+  // $A21B: LDA (94),Y
+  // $A21D: AND #$02
+  // $A21F: BEQ $A224
+  // $A221: JMP $9459
+  // $A224: LDY #$00
+  // $A226: LDA (92),Y
+  // $A228: BMI $A241
+  // $A22A: INY
+  // $A22B: ASL A
+  // $A22C: STA (94),Y
+  // $A22E: LDY #$02
+  // $A230: LDA $92
+  // $A232: CLC
+  // $A233: ADC #$01
+  // $A235: STA (94),Y
+  // $A237: INY
+  // $A238: LDA $93
+  // $A23A: ADC #$00
+  // $A23C: STA (94),Y
+  // $A23E: JMP $94C1
+  // $A241: CMP #$A0
+  // $A243: BCS $A258
+  // $A245: CLC
+  // $A246: ADC #$20
+  // $A248: STA $E7
+  // $A24A: LDY #$01
+  // $A24C: LDA (92),Y
+  // $A24E: STA $E6
+  // $A250: JSR $94D8
+  // $A253: LDA #$02
+  // $A255: JMP $94AE
+  // $A258: CMP #$C0
+  // $A25A: BCS $A268
+  // $A25C: TAX
+  // $A25D: LDY #$01
+  // $A25F: LDA (92),Y
+  // $A261: STA $92
+  // $A263: STX $93
+  // $A265: JMP $9224
+  // $A268: CMP #$E0
+  // $A26A: BCS $A2A0
+  // $A26C: STA $E7
+  // $A26E: LDY #$13
+  // $A270: LDA (94),Y
+  // $A272: CMP #$03
+  // $A274: BCS $A274
+  // $A276: TAX
+  // $A277: CLC
+  // $A278: ADC #$01
+  // $A27A: STA (94),Y
+  // $A27C: TXA
+  // $A27D: ASL A
+  // $A27E: CLC
+  // $A27F: ADC #$18
+  // $A281: TAY
+  // $A282: LDA $92
+  // $A284: CLC
+  // $A285: ADC #$02
+  // $A287: STA (94),Y
+  // $A289: INY
+  // $A28A: LDA $93
+  // $A28C: ADC #$00
+  // $A28E: STA (94),Y
+  // $A290: LDY #$01
+  // $A292: LDA (92),Y
+  // $A294: STA $92
+  // $A296: LDA $E7
+  // $A298: SEC
+  // $A299: SBC #$20
+  // $A29B: STA $93
+  // $A29D: JMP $9224
+  // $A2A0: CMP #$F0
+  // $A2A2: BCS $A2D7
+  // $A2A4: TAX
+  // $A2A5: LDY #$13
+  // $A2A7: LDA (94),Y
+  // $A2A9: CMP #$04
+  // $A2AB: BCS $A2AB
+  // $A2AD: CLC
+  // $A2AE: ADC #$01
+  // $A2B0: STA (94),Y
+  // $A2B2: CLC
+  // $A2B3: ADC #$13
+  // $A2B5: TAY
+  // $A2B6: TXA
+  // $A2B7: SEC
+  // $A2B8: SBC #$E0
+  // $A2BA: STA (94),Y
+  // $A2BC: TYA
+  // $A2BD: ASL A
+  // $A2BE: SEC
+  // $A2BF: SBC #$10
+  // $A2C1: TAY
+  // $A2C2: LDA $92
+  // $A2C4: CLC
+  // $A2C5: ADC #$01
+  // $A2C7: STA $92
+  // $A2C9: STA (94),Y
+  // $A2CB: INY
+  // $A2CC: LDA $93
+  // $A2CE: ADC #$00
+  // $A2D0: STA $93
+  // $A2D2: STA (94),Y
+  // $A2D4: JMP $9224
+  // $A2D7: SEC
+  // $A2D8: SBC #$F0
+  // $A2DA: ASL A
+  // $A2DB: TAX
+  // $A2DC: LDA $92E6,X
+  // $A2DF: PHA
+  // $A2E0: LDA $92E5,X
+  // $A2E3: PHA
+  // $A2E4: RTS
+  // $A2E5: ??? $04
+  // $A2E6: ??? $93
+  // $A2E7: SEC
+  // $A2E8: ??? $93
+  // $A2E9: ??? $4F
+  // $A2EA: ??? $93
+  // $A2EB: EOR $6B93,X
+  // $A2EE: ??? $93
+  // $A2EF: STY $9993
+  // $A2F2: ??? $93
+  // $A2F3: LDX $93
+  // $A2F5: AND #$94
+  // $A2F7: ??? $34
+  // $A2F8: STY $41,X
+  // $A2FA: STY $8E,X
+  // $A2FC: STY $8E,X
+  // $A2FE: STY $8E,X
+  // $A300: STY $91,X
+  // $A302: STY $BB,X
+  // $A304: STY $A0,X
+  // $A306: ??? $13
+  // $A307: LDA (94),Y
+  // $A309: BEQ $A309
+  // $A30B: TAX
+  // $A30C: CLC
+  // $A30D: ADC #$13
+  // $A30F: TAY
+  // $A310: LDA (94),Y
+  // $A312: SEC
+  // $A313: SBC #$01
+  // $A315: STA (94),Y
+  // $A317: BEQ $A32B
+  // $A319: TXA
+  // $A31A: ASL A
+  // $A31B: CLC
+  // $A31C: ADC #$16
+  // $A31E: TAY
+  // $A31F: LDA (94),Y
+  // $A321: STA $92
+  // $A323: INY
+  // $A324: LDA (94),Y
+  // $A326: STA $93
+  // $A328: JMP $9224
+  // $A32B: LDY #$13
+  // $A32D: LDA (94),Y
+  // $A32F: SEC
+  // $A330: SBC #$01
+  // $A332: STA (94),Y
+  // $A334: LDA #$01
+  // $A336: JMP $94AE
+  // $A339: LDY #$01
+  // $A33B: LDA (92),Y
+  // $A33D: LDY #$04
+  // $A33F: JSR $9735
+  // $A342: LDY #$02
+  // $A344: LDA (92),Y
+  // $A346: LDY #$06
+  // $A348: JSR $9735
+  // $A34B: LDA #$03
+  // $A34D: JMP $94AE
+  // $A350: LDY #$01
+  // $A352: LDA (92),Y
+  // $A354: LDY #$04
+  // $A356: JSR $9735
+  // $A359: LDA #$02
+  // $A35B: JMP $94AE
+  // $A35E: LDY #$01
+  // $A360: LDA (92),Y
+  // $A362: LDY #$06
+  // $A364: JSR $9735
+  // $A367: LDA #$02
+  // $A369: JMP $94AE
+  // $A36C: LDY #$01
+  // $A36E: LDA (92),Y
+  // $A370: STA (94),Y
+  // $A372: LDA $92
+  // $A374: CLC
+  // $A375: ADC #$02
+  // $A377: STA $92
+  // $A379: LDA $93
+  // $A37B: ADC #$00
+  // $A37D: STA $93
+  // $A37F: LDY #$02
+  // $A381: LDA $92
+  // $A383: STA (94),Y
+  // $A385: INY
+  // $A386: LDA $93
+  // $A388: STA (94),Y
+  // $A38A: JMP $94C1
+  // $A38D: LDY #$00
+  // $A38F: LDA (94),Y
+  // $A391: ORA #$40
+  // $A393: STA (94),Y
+  // $A395: LDA #$01
+  // $A397: JMP $94AE
+  // $A39A: LDY #$00
+  // $A39C: LDA (94),Y
+  // $A39E: AND #$BF
+  // $A3A0: STA (94),Y
+  // $A3A2: LDA #$01
+  // $A3A4: JMP $94AE
+  // $A3A7: LDY #$01
+  // $A3A9: LDA (92),Y
+  // $A3AB: LSR A
+  // $A3AC: LSR A
+  // $A3AD: LSR A
+  // $A3AE: LSR A
+  // $A3AF: LSR A
+  // $A3B0: LDY #$09
+  // $A3B2: STA (94),Y
+  // $A3B4: AND #$04
+  // $A3B6: BNE $A3C7
+  // $A3B8: ROR A
+  // $A3B9: DEY
+  // $A3BA: STA (94),Y
+  // $A3BC: LDY #$02
+  // $A3BE: LDA (92),Y
+  // $A3C0: LDY #$0A
+  // $A3C2: STA (94),Y
+  // $A3C4: JMP $93DE
+  // $A3C7: LDA (94),Y
+  // $A3C9: ORA #$F8
+  // $A3CB: STA (94),Y
+  // $A3CD: LDA #$00
+  // $A3CF: ROR A
+  // $A3D0: DEY
+  // $A3D1: STA (94),Y
+  // $A3D3: LDY #$02
+  // $A3D5: LDA #$00
+  // $A3D7: SEC
+  // $A3D8: SBC (92),Y
+  // $A3DA: LDY #$0A
+  // $A3DC: STA (94),Y
+  // $A3DE: LDY #$01
+  // $A3E0: LDA (92),Y
+  // $A3E2: AND #$0F
+  // $A3E4: LSR A
+  // $A3E5: LDY #$0D
+  // $A3E7: STA (94),Y
+  // $A3E9: AND #$04
+  // $A3EB: BNE $A3FC
+  // $A3ED: ROR A
+  // $A3EE: DEY
+  // $A3EF: STA (94),Y
+  // $A3F1: LDY #$03
+  // $A3F3: LDA (92),Y
+  // $A3F5: LDY #$0E
+  // $A3F7: STA (94),Y
+  // $A3F9: JMP $9413
+  // $A3FC: LDA (94),Y
+  // $A3FE: ORA #$F8
+  // $A400: STA (94),Y
+  // $A402: LDA #$00
+  // $A404: ROR A
+  // $A405: DEY
+  // $A406: STA (94),Y
+  // $A408: LDY #$03
+  // $A40A: LDA #$00
+  // $A40C: SEC
+  // $A40D: SBC (92),Y
+  // $A40F: LDY #$0E
+  // $A411: STA (94),Y
+  // $A413: LDA #$00
+  // $A415: LDY #$0B
+  // $A417: STA (94),Y
+  // $A419: LDY #$0F
+  // $A41B: STA (94),Y
+  // $A41D: LDY #$00
+  // $A41F: LDA (94),Y
+  // $A421: ORA #$20
+  // $A423: STA (94),Y
+  // $A425: LDA #$04
+  // $A427: JMP $94AE
+  // $A42A: LDY #$01
+  // $A42C: LDA (92),Y
+  // $A42E: STA $49
+  // $A430: LDA #$02
+  // $A432: JSR $94AE
+  // $A435: LDY #$00
+  // $A437: LDA (94),Y
+  // $A439: ORA #$10
+  // $A43B: STA (94),Y
+  // $A43D: LDA #$01
+  // $A43F: JMP $94AE
+  // $A442: LDY #$00
+  // $A444: LDA (94),Y
+  // $A446: ORA #$02
+  // $A448: STA (94),Y
+  // $A44A: LDA #$C0
+  // $A44C: STA $99
+  // $A44E: LDY #$02
+  // $A450: LDA $92
+  // $A452: STA (94),Y
+  // $A454: INY
+  // $A455: LDA $93
+  // $A457: STA (94),Y
+  // $A459: BIT $99
+  // $A45B: BVC $A47A
+  // $A45D: LDA $99
+  // $A45F: AND #$01
+  // $A461: SEC
+  // $A462: ROL A
+  // $A463: TAY
+  // $A464: LDA (92),Y
+  // $A466: STA $E6
+  // $A468: INY
+  // $A469: LDA (92),Y
+  // $A46B: STA $E7
+  // $A46D: JSR $94D8
+  // $A470: LDA $99
+  // $A472: CMP #$FE
+  // $A474: BEQ $A482
+  // $A476: AND #$BF
+  // $A478: STA $99
+  // $A47A: LDA #$01
+  // $A47C: TAY
+  // $A47D: STA (94),Y
+  // $A47F: JMP $94C1
+  // $A482: LDY #$00
+  // $A484: LDA (94),Y
+  // $A486: AND #$FD
+  // $A488: STA (94),Y
+  // $A48A: LDA #$05
+  // $A48C: JMP $94AE
+  // $A48F: JMP $948F
+  // $A492: LDY #$13
+  // $A494: LDA (94),Y
+  // $A496: BEQ $A496
+  // $A498: SEC
+  // $A499: SBC #$01
+  // $A49B: STA (94),Y
+  // $A49D: ASL A
+  // $A49E: CLC
+  // $A49F: ADC #$18
+  // $A4A1: TAY
+  // $A4A2: LDA (94),Y
+  // $A4A4: STA $92
+  // $A4A6: INY
+  // $A4A7: LDA (94),Y
+  // $A4A9: STA $93
+  // $A4AB: JMP $9224
+  // $A4AE: CLC
+  // $A4AF: ADC $92
+  // $A4B1: STA $92
+  // $A4B3: LDA $93
+  // $A4B5: ADC #$00
+  // $A4B7: STA $93
+  // $A4B9: JMP $9224
+  // $A4BC: LDA #$00
+  // $A4BE: TAY
+  // $A4BF: STA (94),Y
+  // $A4C1: LDA $94
+  // $A4C3: CLC
+  // $A4C4: ADC #$20
+  // $A4C6: STA $94
+  // $A4C8: LDA $95
+  // $A4CA: ADC #$00
+  // $A4CC: STA $95
+  // $A4CE: DEC $96
+  // $A4D0: BEQ $A4D5
+  // $A4D2: JMP $9154
+  // $A4D5: JMP $9143
+  // $A4D8: LDY #$00
+  // $A4DA: LDA (E6),Y
+  // $A4DC: ORA #$80
+  // $A4DE: STA $9E
+  // $A4E0: INY
+  // $A4E1: LDA (E6),Y
+  // $A4E3: STA $9F
+  // $A4E5: LDY #$02
+  // $A4E7: LDA (E6),Y
+  // $A4E9: STA $A0
+  // $A4EB: INY
+  // $A4EC: LDA (E6),Y
+  // $A4EE: STA $A1
+  // $A4F0: LDA $E6
+  // $A4F2: CLC
+  // $A4F3: ADC #$04
+  // $A4F5: STA $E6
+  // $A4F7: LDA $E7
+  // $A4F9: ADC #$00
+  // $A4FB: STA $E7
+  // $A4FD: LDY #$00
+  // $A4FF: LDA (94),Y
+  // $A501: LDY #$10
+  // $A503: AND #$08
+  // $A505: BNE $A50B
+  // $A507: LDA $97
+  // $A509: STA (94),Y
+  // $A50B: LDA (94),Y
+  // $A50D: STA $98
+  // $A50F: LDA #$00
+  // $A511: STA $E8
+  // $A513: STA $E9
+  // $A515: LDY #$00
+  // $A517: LDA (E6),Y
+  // $A519: BMI $A589
+  // $A51B: LDX $98
+  // $A51D: AND #$3C
+  // $A51F: ASL A
+  // $A520: ASL A
+  // $A521: BMI $A533
+  // $A523: LSR A
+  // $A524: CLC
+  // $A525: ADC $9A
+  // $A527: STA $0468,X
+  // $A52A: STA $EA
+  // $A52C: LDA #$00
+  // $A52E: ADC $9B
+  // $A530: JMP $9541
+  // $A533: SEC
+  // $A534: ROR A
+  // $A535: CLC
+  // $A536: ADC $9A
+  // $A538: STA $0468,X
+  // $A53B: STA $EA
+  // $A53D: LDA #$00
+  // $A53F: SBC $9B
+  // $A541: AND #$01
+  // $A543: STA $EB
+  // $A545: ASL A
+  // $A546: STA $EC
+  // $A548: LDA $E8
+  // $A54A: STA $046B,X
+  // $A54D: LDA $E9
+  // $A54F: AND #$01
+  // $A551: ORA $EC
+  // $A553: ASL A
+  // $A554: ASL A
+  // $A555: STA $EC
+  // $A557: LDY #$00
+  // $A559: LDA (E6),Y
+  // $A55B: EOR (94),Y
+  // $A55D: AND #$40
+  // $A55F: ORA $EC
+  // $A561: STA $EC
+  // $A563: LDA (E6),Y
+  // $A565: AND #$03
+  // $A567: ORA $EC
+  // $A569: STA $046A,X
+  // $A56C: INY
+  // $A56D: LDA (E6),Y
+  // $A56F: STA $0469,X
+  // $A572: LDA $98
+  // $A574: CLC
+  // $A575: ADC #$04
+  // $A577: STA $98
+  // $A579: LDA $E6
+  // $A57B: CLC
+  // $A57C: ADC #$02
+  // $A57E: STA $E6
+  // $A580: LDA $E7
+  // $A582: ADC #$00
+  // $A584: STA $E7
+  // $A586: JMP $9515
+  // $A589: CMP #$A0
+  // $A58B: BCS $A5AF
+  // $A58D: LDX #$00
+  // $A58F: ASL A
+  // $A590: ASL A
+  // $A591: ASL A
+  // $A592: STA $EA
+  // $A594: BPL $A597
+  // $A596: DEX
+  // $A597: STX $EB
+  // $A599: LDA $9A
+  // $A59B: CLC
+  // $A59C: ADC $EA
+  // $A59E: STA $EA
+  // $A5A0: LDA $9B
+  // $A5A2: ADC $EB
+  // $A5A4: STA $EB
+  // $A5A6: INC $E6
+  // $A5A8: BNE $A5AC
+  // $A5AA: INC $E7
+  // $A5AC: JMP $9515
+  // $A5AF: CMP #$C0
+  // $A5B1: BCS $A5E5
+  // $A5B3: TAX
+  // $A5B4: LDY #$00
+  // $A5B6: LDA (94),Y
+  // $A5B8: ASL A
+  // $A5B9: BPL $A5C2
+  // $A5BB: TXA
+  // $A5BC: EOR #$FF
+  // $A5BE: CLC
+  // $A5BF: ADC #$01
+  // $A5C1: TAX
+  // $A5C2: TXA
+  // $A5C3: LDX #$00
+  // $A5C5: ASL A
+  // $A5C6: ASL A
+  // $A5C7: ASL A
+  // $A5C8: STA $E8
+  // $A5CA: BPL $A5CD
+  // $A5CC: DEX
+  // $A5CD: STX $E9
+  // $A5CF: LDA $9C
+  // $A5D1: CLC
+  // $A5D2: ADC $E8
+  // $A5D4: STA $E8
+  // $A5D6: LDA $9D
+  // $A5D8: ADC $E9
+  // $A5DA: STA $E9
+  // $A5DC: INC $E6
+  // $A5DE: BNE $A5E2
+  // $A5E0: INC $E7
+  // $A5E2: JMP $9515
+  // $A5E5: CMP #$D0
+  // $A5E7: BCC $A5EC
+  // $A5E9: JMP $9684
+  // $A5EC: TAX
+  // $A5ED: LDY #$00
+  // $A5EF: LDA (94),Y
+  // $A5F1: ASL A
+  // $A5F2: BPL $A5FB
+  // $A5F4: TXA
+  // $A5F5: EOR #$FF
+  // $A5F7: CLC
+  // $A5F8: ADC #$01
+  // $A5FA: TAX
+  // $A5FB: TXA
+  // $A5FC: AND #$08
+  // $A5FE: BNE $A608
+  // $A600: TXA
+  // $A601: AND #$07
+  // $A603: LDY #$00
+  // $A605: JMP $960D
+  // $A608: TXA
+  // $A609: ORA #$F0
+  // $A60B: LDY #$FF
+  // $A60D: CLC
+  // $A60E: ADC $E8
+  // $A610: LDX $98
+  // $A612: STA $046B,X
+  // $A615: TYA
+  // $A616: ADC $E9
+  // $A618: AND #$01
+  // $A61A: STA $EC
+  // $A61C: LDY #$01
+  // $A61E: LDA (E6),Y
+  // $A620: AND #$3C
+  // $A622: LSR A
+  // $A623: LSR A
+  // $A624: TAY
+  // $A625: AND #$08
+  // $A627: BNE $A637
+  // $A629: TYA
+  // $A62A: CLC
+  // $A62B: ADC $EA
+  // $A62D: STA $0468,X
+  // $A630: LDA $EB
+  // $A632: ADC #$00
+  // $A634: JMP $9645
+  // $A637: TYA
+  // $A638: CLC
+  // $A639: ADC #$F0
+  // $A63B: CLC
+  // $A63C: ADC $EA
+  // $A63E: STA $0468,X
+  // $A641: LDA $EB
+  // $A643: SBC #$00
+  // $A645: AND #$01
+  // $A647: ASL A
+  // $A648: ORA $EC
+  // $A64A: ASL A
+  // $A64B: ASL A
+  // $A64C: STA $EC
+  // $A64E: LDY #$01
+  // $A650: LDA (E6),Y
+  // $A652: LDY #$00
+  // $A654: EOR (94),Y
+  // $A656: AND #$40
+  // $A658: ORA $EC
+  // $A65A: STA $EC
+  // $A65C: LDY #$01
+  // $A65E: LDA (E6),Y
+  // $A660: AND #$03
+  // $A662: ORA $EC
+  // $A664: STA $046A,X
+  // $A667: INY
+  // $A668: LDA (E6),Y
+  // $A66A: STA $0469,X
+  // $A66D: LDA $98
+  // $A66F: CLC
+  // $A670: ADC #$04
+  // $A672: STA $98
+  // $A674: LDA $E6
+  // $A676: CLC
+  // $A677: ADC #$03
+  // $A679: STA $E6
+  // $A67B: LDA $E7
+  // $A67D: ADC #$00
+  // $A67F: STA $E7
+  // $A681: JMP $9515
+  // $A684: SEC
+  // $A685: SBC #$F8
+  // $A687: ASL A
+  // $A688: TAX
+  // $A689: LDA $9693,X
+  // $A68C: PHA
+  // $A68D: LDA $9692,X
+  // $A690: PHA
+  // $A691: RTS
+  // $A692: LDA (96,X)
+  // $A694: LDA (96,X)
+  // $A696: LDY $96
+  // $A698: DEC $96
+  // $A69A: LDA (96,X)
+  // $A69C: LDA (96,X)
+  // $A69E: CMP $96,X
+  // $A6A0: SBC (96),Y
+  // $A6A2: JMP $96A2
+  // $A6A5: LDY #$13
+  // $A6A7: LDA (94),Y
+  // $A6A9: CMP #$04
+  // $A6AB: BCS $A6AB
+  // $A6AD: TAX
+  // $A6AE: CLC
+  // $A6AF: ADC #$01
+  // $A6B1: STA (94),Y
+  // $A6B3: TXA
+  // $A6B4: ASL A
+  // $A6B5: CLC
+  // $A6B6: ADC #$18
+  // $A6B8: TAY
+  // $A6B9: LDA $E6
+  // $A6BB: CLC
+  // $A6BC: ADC #$03
+  // $A6BE: STA (94),Y
+  // $A6C0: LDA $E7
+  // $A6C2: ADC #$00
+  // $A6C4: INY
+  // $A6C5: STA (94),Y
+  // $A6C7: LDY #$01
+  // $A6C9: LDA (E6),Y
+  // $A6CB: TAX
+  // $A6CC: INY
+  // $A6CD: LDA (E6),Y
+  // $A6CF: STA $E7
+  // $A6D1: STX $E6
+  // $A6D3: JMP $9515
+  // $A6D6: LDY #$13
+  // $A6D8: LDA (94),Y
+  // $A6DA: BEQ $A6DA
+  // $A6DC: SEC
+  // $A6DD: SBC #$01
+  // $A6DF: STA (94),Y
+  // $A6E1: ASL A
+  // $A6E2: CLC
+  // $A6E3: ADC #$18
+  // $A6E5: TAY
+  // $A6E6: LDA (94),Y
+  // $A6E8: STA $E6
+  // $A6EA: INY
+  // $A6EB: LDA (94),Y
+  // $A6ED: STA $E7
+  // $A6EF: JMP $9515
+  // $A6F2: LDY #$00
+  // $A6F4: LDA (94),Y
+  // $A6F6: AND #$08
+  // $A6F8: BNE $A703
+  // $A6FA: LDA (94),Y
+  // $A6FC: ORA #$08
+  // $A6FE: STA (94),Y
+  // $A700: JMP $9727
+  // $A703: LDY #$10
+  // $A705: LDA (94),Y
+  // $A707: INY
+  // $A708: CLC
+  // $A709: ADC (94),Y
+  // $A70B: SEC
+  // $A70C: SBC $98
+  // $A70E: BEQ $A734
+  // $A710: BCC $A727
+  // $A712: LSR A
+  // $A713: LSR A
+  // $A714: TAY
+  // $A715: LDX $98
+  // $A717: LDA #$F8
+  // $A719: STA $0468,X
+  // $A71C: TXA
+  // $A71D: CLC
+  // $A71E: ADC #$04
+  // $A720: TAX
+  // $A721: DEY
+  // $A722: BNE $A717
+  // $A724: JMP $9734
+  // $A727: LDA $98
+  // $A729: TAX
+  // $A72A: LDY #$10
+  // $A72C: SEC
+  // $A72D: SBC (94),Y
+  // $A72F: INY
+  // $A730: STA (94),Y
+  // $A732: STX $97
+  // $A734: RTS
+  // $A735: TAX
+  // $A736: LDA #$00
+  // $A738: STA (94),Y
+  // $A73A: INY
+  // $A73B: TXA
+  // $A73C: STA (94),Y
+  // $A73E: ASL A
+  // $A73F: STA $0095,Y
+  // $A742: LDA #$00
+  // $A744: ADC #$00
+  // $A746: STA $0096,Y
+  // $A749: RTS
+  // $A74A: LDA (94),Y
+  // $A74C: ASL A
+  // $A74D: INY
+  // $A74E: LDA (94),Y
+  // $A750: ROL A
+  // $A751: STA $0095,Y
+  // $A754: LDA #$00
+  // $A756: ROL A
+  // $A757: STA $0096,Y
+  // $A75A: RTS
+  // $A75B: STX $ED
+  // $A75D: LDA (94),Y
+  // $A75F: ROL A
+  // $A760: ROL A
+  // $A761: AND #$01
+  // $A763: EOR #$FF
+  // $A765: CLC
+  // $A766: ADC #$01
+  // $A768: TAX
+  // $A769: LDA (94),Y
+  // $A76B: DEY
+  // $A76C: DEY
+  // $A76D: CLC
+  // $A76E: ADC (94),Y
+  // $A770: STA (94),Y
+  // $A772: STA $EC
+  // $A774: INY
+  // $A775: TXA
+  // $A776: ADC (94),Y
+  // $A778: STA (94),Y
+  // $A77A: TAX
+  // $A77B: LDY $ED
+  // $A77D: LDA $EC
+  // $A77F: CLC
+  // $A780: ADC (94),Y
+  // $A782: STA (94),Y
+  // $A784: TXA
+  // $A785: INY
+  // $A786: ADC (94),Y
+  // $A788: STA (94),Y
+  // $A78A: RTS
+  // $A78B: ??? $80
+  // $A78C: ORA (00,X)
+  // $A78E: BRK
+  // $A78F: BRK
+  // $A790: BMI $A792
+  // $A792: RTI
+  // $A793: BRK
+  // $A794: BRK
+  // $A795: BRK
+  // $A796: BRK
+  // $A797: BRK
+  // $A798: BRK
+  // $A799: BRK
+  // $A79A: BRK
+  // $A79B: BRK
+  // $A79C: BRK
+  // $A79D: BRK
+  // $A79E: BRK
+  // $A79F: BRK
+  // $A7A0: BRK
+  // $A7A1: BRK
+  // $A7A2: BRK
+  // $A7A3: BRK
+  // $A7A4: BRK
+  // $A7A5: BRK
+  // $A7A6: BRK
+  // $A7A7: BRK
+  // $A7A8: BRK
+  // $A7A9: BRK
+  // $A7AA: BRK
+  // $A7AB: LDA #$00
+  // $A7AD: STA $E9
+  // $A7AF: LDA #$01
+  // $A7B1: STA $EB
+  // $A7B3: JMP $97C4
+  // $A7B6: LDA #$00
+  // $A7B8: STA $E9
+  // $A7BA: LDA $4A
+  // $A7BC: ORA $4B
+  // $A7BE: BEQ $A819
+  // $A7C0: LDA #$00
+  // $A7C2: STA $EB
+  // $A7C4: STY $E6
+  // $A7C6: STX $E7
+  // $A7C8: LDY #$01
+  // $A7CA: LDA (E6),Y
+  // $A7CC: CLC
+  // $A7CD: ADC $E9
+  // $A7CF: STA $E8
+  // $A7D1: INY
+  // $A7D2: LDA #$00
+  // $A7D4: BIT $E9
+  // $A7D6: BPL $A7DA
+  // $A7D8: LDA #$FF
+  // $A7DA: ADC (E6),Y
+  // $A7DC: TAX
+  // $A7DD: LDY #$00
+  // $A7DF: LDA (E6),Y
+  // $A7E1: LDY $E8
+  // $A7E3: STA $E8
+  // $A7E5: AND #$BF
+  // $A7E7: JSR $9B28
+  // $A7EA: LDA $E8
+  // $A7EC: AND #$3F
+  // $A7EE: LDY #$03
+  // $A7F0: PHA
+  // $A7F1: LDA (E6),Y
+  // $A7F3: STA $05E8,X
+  // $A7F6: INY
+  // $A7F7: INX
+  // $A7F8: PLA
+  // $A7F9: SEC
+  // $A7FA: SBC #$01
+  // $A7FC: BNE $A7F0
+  // $A7FE: TYA
+  // $A7FF: CLC
+  // $A800: ADC $E6
+  // $A802: STA $E6
+  // $A804: LDA $E7
+  // $A806: ADC #$00
+  // $A808: STA $E7
+  // $A80A: JSR $9B5E
+  // $A80D: LDA $EB
+  // $A80F: BEQ $A814
+  // $A811: JSR $9FA8
+  // $A814: BIT $E8
+  // $A816: BVC $A7C8
+  // $A818: RTS
+  // $A819: LDA $20
+  // $A81B: AND #$7F
+  // $A81D: STA $2000
+  // $A820: STA $20
+  // $A822: LDA $21
+  // $A824: AND #$E7
+  // $A826: STA $2001
+  // $A829: STA $21
+  // $A82B: STY $E6
+  // $A82D: STX $E7
+  // $A82F: LDY #$01
+  // $A831: LDA (E6),Y
+  // $A833: CLC
+  // $A834: ADC $E9
+  // $A836: TAX
+  // $A837: INY
+  // $A838: LDA #$00
+  // $A83A: BIT $E9
+  // $A83C: BPL $A840
+  // $A83E: LDA #$FF
+  // $A840: ADC (E6),Y
+  // $A842: STA $2006
+  // $A845: STX $2006
+  // $A848: LDX #$00
+  // $A84A: LDY #$00
+  // $A84C: LDA (E6),Y
+  // $A84E: BPL $A852
+  // $A850: LDX #$04
+  // $A852: STX $2000
+  // $A855: PHA
+  // $A856: AND #$3F
+  // $A858: TAX
+  // $A859: LDY #$03
+  // $A85B: LDA (E6),Y
+  // $A85D: STA $2007
+  // $A860: INY
+  // $A861: DEX
+  // $A862: BNE $A85B
+  // $A864: PLA
+  // $A865: ASL A
+  // $A866: BMI $A877
+  // $A868: TYA
+  // $A869: CLC
+  // $A86A: ADC $E6
+  // $A86C: STA $E6
+  // $A86E: LDA $E7
+  // $A870: ADC #$00
+  // $A872: STA $E7
+  // $A874: JMP $982F
+  // $A877: LDA $21
+  // $A879: ORA #$18
+  // $A87B: STA $2001
+  // $A87E: STA $21
+  // $A880: LDA $20
+  // $A882: ORA #$80
+  // $A884: STA $20
+  // $A886: STA $2000
+  // $A889: RTS
+  // $A88A: STY $E6
+  // $A88C: STX $E7
+  // $A88E: LDY $E9
+  // $A890: LDX #$01
+  // $A892: JMP $98EA
+  // $A895: STY $E6
+  // $A897: STX $E7
+  // $A899: LDX $E9
+  // $A89B: LDY #$01
+  // $A89D: JMP $98EA
+  // $A8A0: LDA $20
+  // $A8A2: AND #$7F
+  // $A8A4: STA $2000
+  // $A8A7: STA $20
+  // $A8A9: LDA $21
+  // $A8AB: AND #$E7
+  // $A8AD: STA $2001
+  // $A8B0: STA $21
+  // $A8B2: LDA #$20
+  // $A8B4: STA $2006
+  // $A8B7: LDA #$00
+  // $A8B9: STA $2006
+  // $A8BC: LDY #$08
+  // $A8BE: LDA #$00
+  // $A8C0: TAX
+  // $A8C1: STA $2007
+  // $A8C4: INX
+  // $A8C5: BNE $A8C1
+  // $A8C7: DEY
+  // $A8C8: BNE $A8C1
+  // $A8CA: LDA $21
+  // $A8CC: ORA #$18
+  // $A8CE: STA $2001
+  // $A8D1: STA $21
+  // $A8D3: LDA $20
+  // $A8D5: ORA #$80
+  // $A8D7: STA $20
+  // $A8D9: STA $2000
+  // $A8DC: RTS
+  // $A8DD: LDA #$00
+  // $A8DF: STA $EB
+  // $A8E1: TYA
+  // $A8E2: ORA #$80
+  // $A8E4: TAY
+  // $A8E5: JMP $98F2
+  // $A8E8: LDA #$00
+  // $A8EA: STA $EB
+  // $A8EC: LDA $4A
+  // $A8EE: ORA $4B
+  // $A8F0: BEQ $A92C
+  // $A8F2: STY $E8
+  // $A8F4: STX $E9
+  // $A8F6: LDA $E9
+  // $A8F8: LDY $E6
+  // $A8FA: LDX $E7
+  // $A8FC: JSR $9B28
+  // $A8FF: LDY $E9
+  // $A901: LDA $EB
+  // $A903: STA $05E8,X
+  // $A906: INX
+  // $A907: DEY
+  // $A908: BNE $A903
+  // $A90A: JSR $9B5E
+  // $A90D: LDA $E8
+  // $A90F: BPL $A916
+  // $A911: LDA #$01
+  // $A913: JSR $9FA8
+  // $A916: LDA $E6
+  // $A918: CLC
+  // $A919: ADC #$20
+  // $A91B: STA $E6
+  // $A91D: LDA $E7
+  // $A91F: ADC #$00
+  // $A921: STA $E7
+  // $A923: DEC $E8
+  // $A925: LDA $E8
+  // $A927: AND #$7F
+  // $A929: BNE $A8F6
+  // $A92B: RTS
+  // $A92C: LDA $20
+  // $A92E: AND #$7F
+  // $A930: STA $2000
+  // $A933: STA $20
+  // $A935: LDA $21
+  // $A937: AND #$E7
+  // $A939: STA $2001
+  // $A93C: STA $21
+  // $A93E: STX $E9
+  // $A940: STY $E8
+  // $A942: LDY $E9
+  // $A944: LDA $E7
+  // $A946: STA $2006
+  // $A949: LDA $E6
+  // $A94B: STA $2006
+  // $A94E: LDA $EB
+  // $A950: STA $2007
+  // $A953: DEY
+  // $A954: BNE $A950
+  // $A956: LDA $E6
+  // $A958: CLC
+  // $A959: ADC #$20
+  // $A95B: STA $E6
+  // $A95D: LDA $E7
+  // $A95F: ADC #$00
+  // $A961: STA $E7
+  // $A963: DEC $E8
+  // $A965: BNE $A942
+  // $A967: LDA $21
+  // $A969: ORA #$18
+  // $A96B: STA $2001
+  // $A96E: STA $21
+  // $A970: LDA $20
+  // $A972: ORA #$80
+  // $A974: STA $20
+  // $A976: STA $2000
+  // $A979: RTS
+  // $A97A: STA $48
+  // $A97C: STX $49
+  // $A97E: JSR $9B07
+  // $A981: JSR $9AB8
+  // $A984: JSR $9ADA
+  // $A987: LDX $E9
+  // $A989: JSR $C4B9
+  // $A98C: LDA $4A
+  // $A98E: CMP #$0F
+  // $A990: BCS $A994
+  // $A992: INC $4A
+  // $A994: LDA $4B
+  // $A996: CMP #$0F
+  // $A998: BCS $A99C
+  // $A99A: INC $4B
+  // $A99C: JSR $9A71
+  // $A99F: LDA #$01
+  // $A9A1: JSR $9FA8
+  // $A9A4: LDA $4A
+  // $A9A6: CLC
+  // $A9A7: ADC $4B
+  // $A9A9: CMP #$1E
+  // $A9AB: BCC $A98C
+  // $A9AD: RTS
+  // $A9AE: STA $48
+  // $A9B0: JSR $9B07
+  // $A9B3: JSR $9AB8
+  // $A9B6: LDX $E9
+  // $A9B8: JSR $C4B9
+  // $A9BB: LDA $4A
+  // $A9BD: CMP #$0F
+  // $A9BF: BCS $A9CE
+  // $A9C1: INC $4A
+  // $A9C3: JSR $9A71
+  // $A9C6: LDA #$01
+  // $A9C8: JSR $9FA8
+  // $A9CB: JMP $99BB
+  // $A9CE: RTS
+  // $A9CF: STX $49
+  // $A9D1: JSR $9B07
+  // $A9D4: JSR $9ADA
+  // $A9D7: LDX $E9
+  // $A9D9: JSR $C4B9
+  // $A9DC: LDA $4B
+  // $A9DE: CMP #$0F
+  // $A9E0: BCS $A9EF
+  // $A9E2: INC $4B
+  // $A9E4: JSR $9A71
+  // $A9E7: LDA #$01
+  // $A9E9: JSR $9FA8
+  // $A9EC: JMP $99DC
+  // $A9EF: RTS
+  // $A9F0: LDA $4A
+  // $A9F2: ORA $4B
+  // $A9F4: BEQ $AA0C
+  // $A9F6: TAX
+  // $A9F7: BEQ $A9FB
+  // $A9F9: DEC $4A
+  // $A9FB: LDA $4B
+  // $A9FD: BEQ $AA01
+  // $A9FF: DEC $4B
+  // $AA01: JSR $9A71
+  // $AA04: LDA #$01
+  // $AA06: JSR $9FA8
+  // $AA09: JMP $99F0
+  // $AA0C: RTS
+  // $AA0D: LDA $4A
+  // $AA0F: BEQ $AA1E
+  // $AA11: DEC $4A
+  // $AA13: JSR $9A71
+  // $AA16: LDA #$01
+  // $AA18: JSR $9FA8
+  // $AA1B: JMP $9A0D
+  // $AA1E: RTS
+  // $AA1F: LDA $4B
+  // $AA21: BEQ $AA30
+  // $AA23: DEC $4B
+  // $AA25: JSR $9A71
+  // $AA28: LDA #$01
+  // $AA2A: JSR $9FA8
+  // $AA2D: JMP $9A1F
+  // $AA30: RTS
+  // $AA31: STA $48
+  // $AA33: STX $49
+  // $AA35: JSR $9B07
+  // $AA38: JSR $9AB8
+  // $AA3B: JSR $9ADA
+  // $AA3E: LDX $E9
+  // $AA40: JSR $C4B9
+  // $AA43: LDA #$0F
+  // $AA45: STA $4A
+  // $AA47: STA $4B
+  // $AA49: JMP $9A71
+  // $AA4C: STA $48
+  // $AA4E: JSR $9B07
+  // $AA51: JSR $9AB8
+  // $AA54: LDX $E9
+  // $AA56: JSR $C4B9
+  // $AA59: LDA #$0F
+  // $AA5B: STA $4A
+  // $AA5D: JMP $9A71
+  // $AA60: STA $49
+  // $AA62: JSR $9B07
+  // $AA65: JSR $9ADA
+  // $AA68: LDX $E9
+  // $AA6A: JSR $C4B9
+  // $AA6D: LDA #$0F
+  // $AA6F: STA $4B
+  // $AA71: LDA #$20
+  // $AA73: LDY #$00
+  // $AA75: LDX #$3F
+  // $AA77: JSR $9B28
+  // $AA7A: STX $E7
+  // $AA7C: LDY #$00
+  // $AA7E: LDA $062A,Y
+  // $AA81: AND #$30
+  // $AA83: CLC
+  // $AA84: ADC $4A
+  // $AA86: JSR $9AA2
+  // $AA89: CPY #$10
+  // $AA8B: BNE $AA7E
+  // $AA8D: LDA $062A,Y
+  // $AA90: AND #$30
+  // $AA92: CLC
+  // $AA93: ADC $4B
+  // $AA95: JSR $9AA2
+  // $AA98: CPY #$20
+  // $AA9A: BNE $AA8D
+  // $AA9C: LDX $E7
+  // $AA9E: JSR $9B5E
+  // $AAA1: RTS
+  // $AAA2: TAX
+  // $AAA3: LDA $9EA2,X
+  // $AAA6: STA $E6
+  // $AAA8: LDA $062A,Y
+  // $AAAB: AND #$0F
+  // $AAAD: ORA $E6
+  // $AAAF: LDX $E7
+  // $AAB1: STA $05E8,X
+  // $AAB4: INC $E7
+  // $AAB6: INY
+  // $AAB7: RTS
+  // $AAB8: LDA #$00
+  // $AABA: STA $E7
+  // $AABC: LDA $48
+  // $AABE: ASL A
+  // $AABF: ROL $E7
+  // $AAC1: ASL A
+  // $AAC2: ROL $E7
+  // $AAC4: ASL A
+  // $AAC5: ROL $E7
+  // $AAC7: ASL A
+  // $AAC8: ROL $E7
+  // $AACA: CLC
+  // $AACB: ADC #$00
+  // $AACD: STA $E6
+  // $AACF: LDA $E7
+  // $AAD1: ADC #$B0
+  // $AAD3: STA $E7
+  // $AAD5: LDX #$00
+  // $AAD7: JMP $9AF9
+  // $AADA: LDA #$00
+  // $AADC: STA $E7
+  // $AADE: LDA $49
+  // $AAE0: ASL A
+  // $AAE1: ROL $E7
+  // $AAE3: ASL A
+  // $AAE4: ROL $E7
+  // $AAE6: ASL A
+  // $AAE7: ROL $E7
+  // $AAE9: ASL A
+  // $AAEA: ROL $E7
+  // $AAEC: CLC
+  // $AAED: ADC #$00
+  // $AAEF: STA $E6
+  // $AAF1: LDA $E7
+  // $AAF3: ADC #$B3
+  // $AAF5: STA $E7
+  // $AAF7: LDX #$10
+  // $AAF9: LDY #$00
+  // $AAFB: LDA (E6),Y
+  // $AAFD: STA $062A,X
+  // $AB00: INX
+  // $AB01: INY
+  // $AB02: CPY #$10
+  // $AB04: BNE $AAFB
+  // $AB06: RTS
+  // $AB07: LDA $25
+  // $AB09: STA $E9
+  // $AB0B: LDX #$06
+  // $AB0D: JSR $C4B9
+  // $AB10: RTS
+  // $AB11: LDA #$00
+  // $AB13: STA $48
+  // $AB15: STA $49
+  // $AB17: STA $4A
+  // $AB19: STA $4B
+  // $AB1B: LDA #$0F
+  // $AB1D: LDY #$E0
+  // $AB1F: STA $054A,Y
+  // $AB22: INY
+  // $AB23: BNE $AB1F
+  // $AB25: JMP $9A71
+  // $AB28: PHA
+  // $AB29: BIT $0629
+  // $AB2C: BVC $AB37
+  // $AB2E: LDA #$01
+  // $AB30: JSR $9FA8
+  // $AB33: PLA
+  // $AB34: JMP $9B28
+  // $AB37: AND #$3F
+  // $AB39: CLC
+  // $AB3A: ADC $0628
+  // $AB3D: CMP #$3D
+  // $AB3F: BCS $AB2E
+  // $AB41: PLA
+  // $AB42: ORA #$40
+  // $AB44: STA $0629
+  // $AB47: TXA
+  // $AB48: LDX $0628
+  // $AB4B: STA $05EA,X
+  // $AB4E: TYA
+  // $AB4F: STA $05E9,X
+  // $AB52: LDA $0629
+  // $AB55: AND #$BF
+  // $AB57: STA $05E8,X
+  // $AB5A: INX
+  // $AB5B: INX
+  // $AB5C: INX
+  // $AB5D: RTS
+  // $AB5E: LDA #$00
+  // $AB60: STA $05E8,X
+  // $AB63: STX $0628
+  // $AB66: LDA $0629
+  // $AB69: AND #$BF
+  // $AB6B: STA $0629
+  // $AB6E: RTS
+  // $AB6F: STX $9E
+  // $AB71: STY $9F
+  // $AB73: RTS
+  // $AB74: STX $A0
+  // $AB76: STY $A1
+  // $AB78: LDA $9E
+  // $AB7A: ORA #$80
+  // $AB7C: STA $9E
+  // $AB7E: RTS
+  // $AB7F: LDX #$00
+  // $AB81: LDA #$F8
+  // $AB83: STA $0468,X
+  // $AB86: INX
+  // $AB87: BNE $AB83
+  // $AB89: LDA #$F8
+  // $AB8B: STA $0200,X
+  // $AB8E: INX
+  // $AB8F: BNE $AB8B
+  // $AB91: LDA #$00
+  // $AB93: STA $0568
+  // $AB96: STA $0588
+  // $AB99: STA $05A8
+  // $AB9C: STA $05C8
+  // $AB9F: RTS
+  // $ABA0: JSR $99F0
+  // $ABA3: JSR $98A0
+  // $ABA6: JMP $9B7F
+  // $ABA9: STA $46
+  // $ABAB: TAY
+  // $ABAC: BMI $ABBC
+  // $ABAE: CLC
+  // $ABAF: ADC $44
+  // $ABB1: CMP #$F0
+  // $ABB3: BCC $ABB9
+  // $ABB5: ADC #$0F
+  // $ABB7: INC $45
+  // $ABB9: STA $44
+  // $ABBB: RTS
+  // $ABBC: CLC
+  // $ABBD: ADC $44
+  // $ABBF: CMP #$F0
+  // $ABC1: BCC $ABC7
+  // $ABC3: SBC #$10
+  // $ABC5: DEC $45
+  // $ABC7: STA $44
+  // $ABC9: RTS
+  // $ABCA: STA $47
+  // $ABCC: PHA
+  // $ABCD: CLC
+  // $ABCE: ADC $7A
+  // $ABD0: STA $7A
+  // $ABD2: PLA
+  // $ABD3: BMI $ABDC
+  // $ABD5: LDA $7B
+  // $ABD7: ADC #$00
+  // $ABD9: JMP $9BE0
+  // $ABDC: LDA $7B
+  // $ABDE: SBC #$00
+  // $ABE0: STA $7B
+  // $ABE2: RTS
+  // $ABE3: STX $E7
+  // $ABE5: STY $E6
+  // $ABE7: TAY
+  // $ABE8: LDA #$01
+  // $ABEA: JSR $9FA8
+  // $ABED: LDA $1E
+  // $ABEF: JSR $9CE7
+  // $ABF2: LDA $1E
+  // $ABF4: AND #$90
+  // $ABF6: BPL $ABE8
+  // $ABF8: LDA $0468,Y
+  // $ABFB: TAX
+  // $ABFC: SEC
+  // $ABFD: SBC $E7
+  // $ABFF: LSR A
+  // $AC00: LSR A
+  // $AC01: LSR A
+  // $AC02: STA $E7
+  // $AC04: LDA #$F8
+  // $AC06: STA $0468,Y
+  // $AC09: LDA $E7
+  // $AC0B: CLC
+  // $AC0C: RTS
+  // $AC0D: LDA #$01
+  // $AC0F: JSR $9FA8
+  // $AC12: LDA $1E
+  // $AC14: JSR $9CE7
+  // $AC17: LDA $1E
+  // $AC19: AND #$90
+  // $AC1B: BNE $ABF8
+  // $AC1D: BIT $1E
+  // $AC1F: BVC $AC0D
+  // $AC21: LDA #$F8
+  // $AC23: STA $0468,Y
+  // $AC26: SEC
+  // $AC27: RTS
+  // $AC28: STY $E6
+  // $AC2A: STX $E7
+  // $AC2C: TAY
+  // $AC2D: LDA (E6),Y
+  // $AC2F: TAX
+  // $AC30: INY
+  // $AC31: LDA (E6),Y
+  // $AC33: STA $E7
+  // $AC35: STX $E6
+  // $AC37: JMP ($00E6)
+  // $AC3A: LDA #$00
+  // $AC3C: STA $E9
+  // $AC3E: STY $E6
+  // $AC40: STX $E7
+  // $AC42: LDY #$00
+  // $AC44: LDA (E6),Y
+  // $AC46: TAX
+  // $AC47: INY
+  // $AC48: LDA (E6),Y
+  // $AC4A: STA $E8
+  // $AC4C: CMP $E9
+  // $AC4E: BNE $AC53
+  // $AC50: CLC
+  // $AC51: ADC #$10
+  // $AC53: STA $0468,X
+  // $AC56: INX
+  // $AC57: INY
+  // $AC58: LDA (E6),Y
+  // $AC5A: STA $0468,X
+  // $AC5D: INX
+  // $AC5E: INY
+  // $AC5F: CPY #$05
+  // $AC61: BNE $AC58
+  // $AC63: LDA (E6),Y
+  // $AC65: STA $E6
+  // $AC67: TXA
+  // $AC68: SEC
+  // $AC69: SBC #$04
+  // $AC6B: TAY
+  // $AC6C: LDA $E8
+  // $AC6E: STA $E7
+  // $AC70: RTS
+  // $AC71: LDA #$10
+  // $AC73: STA $E8
+  // $AC75: LDA $1C
+  // $AC77: JSR $9CE7
+  // $AC7A: BCC $ACC8
+  // $AC7C: LDX $E9
+  // $AC7E: CPX #$FF
+  // $AC80: BEQ $AC89
+  // $AC82: CMP $E9
+  // $AC84: BEQ $AC75
+  // $AC86: JMP $9CB3
+  // $AC89: CMP $EB
+  // $AC8B: BEQ $AC75
+  // $AC8D: LDA $055C
+  // $AC90: CMP #$B8
+  // $AC92: BCC $AC97
+  // $AC94: SEC
+  // $AC95: SBC #$10
+  // $AC97: TAY
+  // $AC98: LDX $055F
+  // $AC9B: JSR $9D08
+  // $AC9E: LDY #$00
+  // $ACA0: LDA (34),Y
+  // $ACA2: LDY #$F4
+  // $ACA4: CMP $0451
+  // $ACA7: BEQ $AC75
+  // $ACA9: CMP $0452
+  // $ACAC: BEQ $AC75
+  // $ACAE: CMP $0453
+  // $ACB1: BEQ $AC75
+  // $ACB3: LDA #$01
+  // $ACB5: JSR $9FA8
+  // $ACB8: LDX $1C
+  // $ACBA: LDA $9EE2,X
+  // $ACBD: BEQ $ACC8
+  // $ACBF: DEC $E8
+  // $ACC1: BNE $ACB3
+  // $ACC3: LDA #$08
+  // $ACC5: JMP $9C73
+  // $ACC8: RTS
+  // $ACC9: LDA #$00
+  // $ACCB: JSR $9CD3
+  // $ACCE: JSR $9C71
+  // $ACD1: LDA #$02
+  // $ACD3: LDX $046B,Y
+  // $ACD6: BMI $ACE6
+  // $ACD8: PHA
+  // $ACD9: LDA $0468,Y
+  // $ACDC: SEC
+  // $ACDD: SBC $E7
+  // $ACDF: LSR A
+  // $ACE0: LSR A
+  // $ACE1: TAX
+  // $ACE2: PLA
+  // $ACE3: STA $046A,X
+  // $ACE6: RTS
+  // $ACE7: AND #$0F
+  // $ACE9: TAX
+  // $ACEA: LDA $9EE2,X
+  // $ACED: BEQ $AD06
+  // $ACEF: CLC
+  // $ACF0: ADC $0468,Y
+  // $ACF3: CMP $E7
+  // $ACF5: BCS $ACF9
+  // $ACF7: LDA $E6
+  // $ACF9: CMP $E6
+  // $ACFB: BEQ $AD01
+  // $ACFD: BCC $AD01
+  // $ACFF: LDA $E7
+  // $AD01: STA $0468,Y
+  // $AD04: SEC
+  // $AD05: RTS
+  // $AD06: CLC
+  // $AD07: RTS
+  // $AD08: TXA
+  // $AD09: BMI $AD1A
+  // $AD0B: TYA
+  // $AD0C: EOR #$FF
+  // $AD0E: SEC
+  // $AD0F: SBC #$28
+  // $AD11: LSR A
+  // $AD12: LSR A
+  // $AD13: LSR A
+  // $AD14: LSR A
+  // $AD15: STA $ED
+  // $AD17: JMP $C50C
+  // $AD1A: TYA
+  // $AD1B: LSR A
+  // $AD1C: LSR A
+  // $AD1D: LSR A
+  // $AD1E: LSR A
+  // $AD1F: CLC
+  // $AD20: ADC #$14
+  // $AD22: STA $ED
+  // $AD24: JMP $C50C
+  // $AD27: STY $E6
+  // $AD29: STX $E7
+  // $AD2B: LDY #$00
+  // $AD2D: LDA (E6),Y
+  // $AD2F: STA $E8
+  // $AD31: INY
+  // $AD32: LDA (E6),Y
+  // $AD34: STA $E9
+  // $AD36: STY $EB
+  // $AD38: JSR $9D58
+  // $AD3B: TAX
+  // $AD3C: INC $EB
+  // $AD3E: LDA $EB
+  // $AD40: CLC
+  // $AD41: ADC $E6
+  // $AD43: STA $E6
+  // $AD45: LDA $E7
+  // $AD47: ADC #$00
+  // $AD49: STA $E7
+  // $AD4B: CPX #$FF
+  // $AD4D: BNE $AD2B
+  // $AD4F: RTS
+  // $AD50: STY $E6
+  // $AD52: STX $E7
+  // $AD54: LDA #$FF
+  // $AD56: STA $EB
+  // $AD58: INC $EB
+  // $AD5A: LDY $EB
+  // $AD5C: LDA (E6),Y
+  // $AD5E: CMP #$FC
+  // $AD60: BCS $AD72
+  // $AD62: LDY $E8
+  // $AD64: LDX $E9
+  // $AD66: JSR $88CA
+  // $AD69: INC $E8
+  // $AD6B: BNE $AD6F
+  // $AD6D: INC $E9
+  // $AD6F: JMP $9D58
+  // $AD72: RTS
+  // $AD73: STA $E8
+  // $AD75: JSR $9B28
+  // $AD78: LDA $E8
+  // $AD7A: AND #$3F
+  // $AD7C: STA $E8
+  // $AD7E: LDY #$00
+  // $AD80: LDA (E6),Y
+  // $AD82: STA $05E8,X
+  // $AD85: INY
+  // $AD86: INX
+  // $AD87: DEC $E8
+  // $AD89: BNE $AD80
+  // $AD8B: JMP $9B5E
+  // $AD8E: STA $EC
+  // $AD90: LDA #$02
+  // $AD92: JSR $9B28
+  // $AD95: LDA $EC
+  // $AD97: LSR A
+  // $AD98: LSR A
+  // $AD99: LSR A
+  // $AD9A: LSR A
+  // $AD9B: BNE $AD9F
+  // $AD9D: LDA #$CD
+  // $AD9F: CLC
+  // $ADA0: ADC #$33
+  // $ADA2: STA $05E8,X
+  // $ADA5: INX
+  // $ADA6: LDA $EC
+  // $ADA8: AND #$0F
+  // $ADAA: CLC
+  // $ADAB: ADC #$33
+  // $ADAD: STA $05E8,X
+  // $ADB0: INX
+  // $ADB1: JSR $9B5E
+  // $ADB4: RTS
+  // $ADB5: LDA #$04
+  // $ADB7: JSR $9B28
+  // $ADBA: LDA #$00
+  // $ADBC: STA $E7
+  // $ADBE: LDA $ED
+  // $ADC0: JSR $9DDA
+  // $ADC3: LDA $ED
+  // $ADC5: JSR $9DDE
+  // $ADC8: LDA $EC
+  // $ADCA: JSR $9DDA
+  // $ADCD: LDA #$33
+  // $ADCF: STA $E7
+  // $ADD1: LDA $EC
+  // $ADD3: JSR $9DDE
+  // $ADD6: JSR $9B5E
+  // $ADD9: RTS
+  // $ADDA: LSR A
+  // $ADDB: LSR A
+  // $ADDC: LSR A
+  // $ADDD: LSR A
+  // $ADDE: AND #$0F
+  // $ADE0: BEQ $ADE6
+  // $ADE2: LDY #$33
+  // $ADE4: STY $E7
+  // $ADE6: CLC
+  // $ADE7: ADC $E7
+  // $ADE9: STA $05E8,X
+  // $ADEC: INX
+  // $ADED: RTS
+  // $ADEE: STA $ED
+  // $ADF0: LDA #$00
+  // $ADF2: STA $EC
+  // $ADF4: LDY #$08
+  // $ADF6: ASL $EC
+  // $ADF8: ROL $ED
+  // $ADFA: BCC $AE08
+  // $ADFC: TXA
+  // $ADFD: CLC
+  // $ADFE: ADC $EC
+  // $AE00: STA $EC
+  // $AE02: LDA $ED
+  // $AE04: ADC #$00
+  // $AE06: STA $ED
+  // $AE08: DEY
+  // $AE09: BNE $ADF6
+  // $AE0B: RTS
+  // $AE0C: LDA #$00
+  // $AE0E: STA $E8
+  // $AE10: STA $E9
+  // $AE12: LDX #$10
+  // $AE14: ASL $EC
+  // $AE16: ROL $ED
+  // $AE18: ROL $E8
+  // $AE1A: ROL $E9
+  // $AE1C: LDA $E8
+  // $AE1E: SEC
+  // $AE1F: SBC $EA
+  // $AE21: TAY
+  // $AE22: LDA $E9
+  // $AE24: SBC $EB
+  // $AE26: BCC $AE32
+  // $AE28: STA $E9
+  // $AE2A: STY $E8
+  // $AE2C: INC $EC
+  // $AE2E: BNE $AE32
+  // $AE30: INC $ED
+  // $AE32: DEX
+  // $AE33: BNE $AE14
+  // $AE35: RTS
+  // $AE36: LDA #$00
+  // $AE38: STA $EA
+  // $AE3A: LDX #$08
+  // $AE3C: ASL $ED
+  // $AE3E: ROL $EA
+  // $AE40: LDA $EA
+  // $AE42: SEC
+  // $AE43: SBC $EC
+  // $AE45: BCC $AE4B
+  // $AE47: STA $EA
+  // $AE49: INC $ED
+  // $AE4B: DEX
+  // $AE4C: BNE $AE3C
+  // $AE4E: RTS
+  // $AE4F: LDA #$0A
+  // $AE51: STA $EA
+  // $AE53: LDA #$00
+  // $AE55: STA $EB
+  // $AE57: LDA #$03
+  // $AE59: STA $E6
+  // $AE5B: JSR $9E0C
+  // $AE5E: LDA $E8
+  // $AE60: STA $E7
+  // $AE62: JSR $9E0C
+  // $AE65: LDA $E8
+  // $AE67: ASL A
+  // $AE68: ASL A
+  // $AE69: ASL A
+  // $AE6A: ASL A
+  // $AE6B: ORA $E7
+  // $AE6D: PHA
+  // $AE6E: DEC $E6
+  // $AE70: BNE $AE5B
+  // $AE72: PLA
+  // $AE73: STA $EA
+  // $AE75: PLA
+  // $AE76: STA $E9
+  // $AE78: PLA
+  // $AE79: STA $E8
+  // $AE7B: RTS
+  // $AE7C: STA $ED
+  // $AE7E: LDA #$0A
+  // $AE80: STA $EC
+  // $AE82: JSR $9E36
+  // $AE85: LDA $EA
+  // $AE87: STA $EB
+  // $AE89: JSR $9E36
+  // $AE8C: LDA $EA
+  // $AE8E: ASL A
+  // $AE8F: ASL A
+  // $AE90: ASL A
+  // $AE91: ASL A
+  // $AE92: ORA $EB
+  // $AE94: STA $EB
+  // $AE96: JSR $9E36
+  // $AE99: LDA $EA
+  // $AE9B: STA $ED
+  // $AE9D: LDA $EB
+  // $AE9F: STA $EC
+  // $AEA1: RTS
+  // $AEA2: ??? $0F
+  // $AEA3: BRK
+  // $AEA4: BRK
+  // $AEA5: BRK
+  // $AEA6: BRK
+  // $AEA7: BRK
+  // $AEA8: BRK
+  // $AEA9: BRK
+  // $AEAA: BRK
+  // $AEAB: BRK
+  // $AEAC: BRK
+  // $AEAD: BRK
+  // $AEAE: BRK
+  // $AEAF: BRK
+  // $AEB0: BRK
+  // $AEB1: BRK
+  // $AEB2: ??? $0F
+  // $AEB3: BRK
+  // $AEB4: BRK
+  // $AEB5: BRK
+  // $AEB6: BRK
+  // $AEB7: BRK
+  // $AEB8: BPL $AECA
+  // $AEBA: JSR $3020
+  // $AEBD: BMI $AEDF
+  // $AEBF: JSR $1010
+  // $AEC2: ??? $0F
+  // $AEC3: BRK
+  // $AEC4: BRK
+  // $AEC5: BRK
+  // $AEC6: BPL $AED8
+  // $AEC8: BPL $AEEA
+  // $AECA: JSR $3020
+  // $AECD: BMI $AEFF
+  // $AECF: JSR $2020
+  // $AED2: ??? $0F
+  // $AED3: BRK
+  // $AED4: BPL $AEE6
+  // $AED6: BPL $AEF8
+  // $AED8: JSR $3030
+  // $AEDB: BMI $AF0D
+  // $AEDD: BMI $AF0F
+  // $AEDF: BMI $AF11
+  // $AEE1: BMI $AEE3
+  // $AEE3: BRK
+  // $AEE4: BRK
+  // $AEE5: BRK
+  // $AEE6: BPL $AEE8
+  // $AEE8: BRK
+  // $AEE9: BRK
+  // $AEEA: BEQ $AEEC
+  // $AEEC: BRK
+  // $AEED: LDX #$01
+  // $AEEF: LDA $00,X
+  // $AEF1: BEQ $AEFB
+  // $AEF3: CMP #$FF
+  // $AEF5: BEQ $AF52
+  // $AEF7: DEC $00,X
+  // $AEF9: BEQ $AF0F
+  // $AEFB: TXA
+  // $AEFC: CLC
+  // $AEFD: ADC #$04
+  // $AEFF: TAX
+  // $AF00: CPX #$19
+  // $AF02: BNE $AEEF
+  // $AF04: LDA $1B
+  // $AF06: BPL $AF04
+  // $AF08: AND #$7F
+  // $AF0A: STA $1B
+  // $AF0C: JMP $9EED
+  // $AF0F: STX $00
+  // $AF11: LDA #$07
+  // $AF13: ORA $22
+  // $AF15: STA $23
+  // $AF17: STA $8000
+  // $AF1A: LDA $03,X
+  // $AF1C: STA $25
+  // $AF1E: STA $8001
+  // $AF21: LDA #$06
+  // $AF23: ORA $22
+  // $AF25: STA $23
+  // $AF27: STA $8000
+  // $AF2A: LDA $02,X
+  // $AF2C: STA $24
+  // $AF2E: STA $8001
+  // $AF31: LDA $01,X
+  // $AF33: TAX
+  // $AF34: TXS
+  // $AF35: PLA
+  // $AF36: STA $E6
+  // $AF38: PLA
+  // $AF39: STA $E7
+  // $AF3B: PLA
+  // $AF3C: STA $E8
+  // $AF3E: PLA
+  // $AF3F: STA $E9
+  // $AF41: PLA
+  // $AF42: STA $EA
+  // $AF44: PLA
+  // $AF45: STA $EB
+  // $AF47: PLA
+  // $AF48: STA $EC
+  // $AF4A: PLA
+  // $AF4B: STA $ED
+  // $AF4D: PLA
+  // $AF4E: TAY
+  // $AF4F: PLA
+  // $AF50: TAX
+  // $AF51: RTS
+  // $AF52: STX $00
+  // $AF54: LDA #$06
+  // $AF56: ORA $22
+  // $AF58: STA $23
+  // $AF5A: STA $8000
+  // $AF5D: LDA $02,X
+  // $AF5F: STA $24
+  // $AF61: STA $8001
+  // $AF64: LDA $01,X
+  // $AF66: TAX
+  // $AF67: TXS
+  // $AF68: RTS
+  // $AF69: STA $02,X
+  // $AF6B: DEY
+  // $AF6C: DEY
+  // $AF6D: LDA $00,X
+  // $AF6F: STA $0101,Y
+  // $AF72: LDA $01,X
+  // $AF74: STA $0102,Y
+  // $AF77: STY $01,X
+  // $AF79: LDA #$FF
+  // $AF7B: STA $00,X
+  // $AF7D: RTS
+  // $AF7E: LDA #$00
+  // $AF80: LDX $00
+  // $AF82: STA $00,X
+  // $AF84: STA $01,X
+  // $AF86: JMP $9EFB
+  // $AF89: LDA $01,X
+  // $AF8B: BEQ $AF95
+  // $AF8D: LDA $00,X
+  // $AF8F: BNE $AF95
+  // $AF91: LDA #$01
+  // $AF93: STA $00,X
+  // $AF95: RTS
+  // $AF96: LDA $00,X
+  // $AF98: CMP #$FF
+  // $AF9A: BNE $AFA1
+  // $AF9C: LDA #$01
+  // $AF9E: JSR $9FA8
+  // $AFA1: LDA #$00
+  // $AFA3: STA $00,X
+  // $AFA5: RTS
+  // $AFA6: LDA #$00
+  // $AFA8: STA $19
+  // $AFAA: TXA
+  // $AFAB: PHA
+  // $AFAC: TYA
+  // $AFAD: PHA
+  // $AFAE: LDA $ED
+  // $AFB0: PHA
+  // $AFB1: LDA $EC
+  // $AFB3: PHA
+  // $AFB4: LDA $EB
+  // $AFB6: PHA
+  // $AFB7: LDA $EA
+  // $AFB9: PHA
+  // $AFBA: LDA $E9
+  // $AFBC: PHA
+  // $AFBD: LDA $E8
+  // $AFBF: PHA
+  // $AFC0: LDA $E7
+  // $AFC2: PHA
+  // $AFC3: LDA $E6
+  // $AFC5: PHA
+  // $AFC6: TSX
+  // $AFC7: TXA
+  // $AFC8: LDX $00
+  // $AFCA: STA $01,X
+  // $AFCC: LDA $0024
+  // $AFCF: STA $02,X
+  // $AFD1: LDA $0025
+  // $AFD4: STA $03,X
+  // $AFD6: LDA $19
+  // $AFD8: BEQ $AFDE
+  // $AFDA: CMP #$FF
+  // $AFDC: BNE $AFE0
+  // $AFDE: LDA #$FE
+  // $AFE0: STA $00,X
+  // $AFE2: JMP $9EFB
+  // $AFE5: ??? $FF
+  // $AFE6: ??? $FF
+  // $AFE7: ??? $FF
+  // $AFE8: ??? $FF
+  // $AFE9: ??? $FF
+  // $AFEA: ??? $FF
+  // $AFEB: ??? $FF
+  // $AFEC: ??? $FF
+  // $AFED: ??? $FF
+  // $AFEE: ??? $FF
+  // $AFEF: ??? $FF
+  // $AFF0: ??? $FF
+  // $AFF1: ??? $FF
+  // $AFF2: ??? $FF
+  // $AFF3: ??? $FF
+  // $AFF4: ??? $FF
+  // $AFF5: ??? $FF
+  // $AFF6: ??? $FF
+  // $AFF7: ??? $FF
+  // $AFF8: ??? $FF
+  // $AFF9: ??? $FF
+  // $AFFA: ??? $FF
+  // $AFFB: ??? $FF
+  // $AFFC: ??? $FF
+  // $AFFD: ??? $FF
+  // $AFFE: ??? $FF
+  // $AFFF: ??? $FF
   return [
     0x19, 0x4A, 0x06, 0x9D, 0xE8, 0x05, 0xE8, 0xA5, 0xE7, 0x4A, 0x4A, 0x4A, 0x4A, 0x99, 0x4A, 0x06,
     0x85, 0xE6, 0x4C, 0x25, 0x90, 0xA5, 0xE7, 0x0A, 0x0A, 0x0A, 0x0A, 0x48, 0x9D, 0xE8, 0x05, 0xE8,
