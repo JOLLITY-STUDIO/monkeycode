@@ -47,7 +47,7 @@ function buildsceneEntry0(): readonly number[] {
     JSR $8464
     JSR $82B5
   @ret:
-    JMP @main
+    JMP $8017
   `;
 }
 
@@ -71,7 +71,7 @@ function buildsceneEntry1(): readonly number[] {
     STA $27
     JSR $C56C
     JSR $8285
-    JMP @main
+    JMP $8017
   `;
 }
 
@@ -82,7 +82,7 @@ function buildsceneEntry2(): readonly number[] {
     .org $81AE
     LDA #$03
     STA $27
-    JMP @main
+    JMP $8017
   `;
 }
 
@@ -110,7 +110,7 @@ function buildsceneEntry3(): readonly number[] {
   @set4:
     LDA #$04
     STA $27
-    JMP @main
+    JMP $8017
   `;
 }
 
