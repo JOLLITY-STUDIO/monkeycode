@@ -354,8 +354,8 @@ function assemble(ir: IrLine[], baseOffset: number): readonly number[] {
       }
 
       if (mode === 'abs') {
-        // JMP/JSR 标签: value = 当前函数内偏移
-        value = target;
+        // JMP/JSR 标签: value = ROM 绝对地址 (baseOffset + 函数内偏移)
+        value = baseOffset + target;
       } else {
         // 分支: rel = target - (这里的 offset + 2)
         value = target - (offset + 2);
