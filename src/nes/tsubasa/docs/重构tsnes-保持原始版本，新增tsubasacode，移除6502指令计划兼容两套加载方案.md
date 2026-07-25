@@ -1,0 +1,837 @@
+# 天使之翼 II — 完整架构重写计划
+
+> **目标**: 从 6502 hex 模拟彻底升级为 OOP 架构。不再逐条消化 CPU 指令，而是按领域模型重写整个游戏逻辑。没有指令和硬件地址模拟。
+> **版本**: v2.0 — 架构重构版
+> **最后更新**: 2026-07-25
+
+---
+
+## 〇、术语表 / Glossary
+
+### 0.1 通用约定
+
+| 中文 | English | 说明 |
+|------|---------|------|
+| PRG bank | PRG Bank | CPU 地址空间的 8KB bank ($8000-$FFFF)，共 48 个 |
+| CHR bank | CHR Bank | PPU 图案表 8KB bank ($0000-$1FFF)，共 64 个 (256KB CHR-ROM) |
+| 代码 bank | Code Bank | PRG bank 中含可执行 6502 代码的（15 个） |
+| 数据 bank | Data Bank | PRG bank 中仅有数据表/查找表的（33 个） |
+| 零页 / ZP | Zero Page | CPU 地址 $0000-$00FF，256 字节高速 RAM |
+| 工作 RAM | Work RAM | CPU 地址 $0100-$07FF，游戏状态存储 |
+| Nametable | Nametable | PPU VRAM $2000-$2FFF，背景 tile 索引表 |
+| OAM | OAM | PPU 精灵属性内存，256 字节 (64 精灵 × 4) |
+| MMC3 | MMC3 | 任天堂 MMC3 mapper (mapper 4)，负责 bank 切换 |
+
+### 0.2 地址空间速查
+
+```
+CPU Address Space:
+  $0000-$00FF   Zero Page (最常用变量区)
+  $0100-$01FF   Stack (栈)
+  $0200-$02FF   OAM DMA buffer
+  $0300-$07FF   Work RAM (游戏状态、球员数据)
+  $2000-$2007   PPU Registers
+  $4000-$4017   APU Registers
+  $8000-$9FFF   MMC3 R6 → PRG Bank (可变)
+  $A000-$BFFF   MMC3 R7 → PRG Bank (可变)
+  $C000-$DFFF   Fixed → PRG Bank 30 (系统库)
+  $E000-$FFFF   Fixed → PRG Bank 31 (启动 + 向量)
+
+PPU Address Space:
+  $0000-$0FFF   Pattern Table 0 (CHR via MMC3 R0/R1, 2KB × 2)
+  $1000-$1FFF   Pattern Table 1 (CHR via MMC3 R2-R5, 1KB × 4)
+  $2000-$23FF   Nametable 0
+  $2400-$27FF   Nametable 1
+  $2800-$2BFF   Nametable 2
+  $2C00-$2FFF   Nametable 3
+  $3F00-$3F1F   Palette RAM
+```
+
+### 0.3 PRG Bank 完整清单（含用途）
+
+| Bank | 文件名 (现有) | 文件名 (目标) | 类型 | CPU 地址 | 功能 |
+|------|-------------|-------------|------|---------|------|
+| 00 | `bank_00.ts` | `bank_00_dispatch_scene_engine.ts` | Code | $8000-$9FFF | 主分派器、场景状态机、脚本引擎、字节码解释器 |
+| 01 | `bank_01.ts` | `bank_01_match_jump.ts` | Code | $8000-$9FFF | 比赛入口跳转逻辑 |
+| 02 | `bank_02.ts` | `bank_02_nmi_renderer.ts` | Code | $8000-$9FFF | NMI handler、VRAM 更新、阵容数据表(AA47) |
+| 03 | `bank_03.ts` | `bank_03_data.ts` | Data | — | ROM 数据表 |
+| 04 | `bank_04.ts` | `bank_04_data.ts` | Data | — | ROM 数据表 |
+| 05 | `bank_05.ts` | `bank_05_data.ts` | Data | — | ROM 数据表 |
+| 06 | `bank_06.ts` | `bank_06_palette_data.ts` | Data | $A000-$BFFF | TECMO 调色板 ROM 表 (TECMO Palette ROM) |
+| 07 | `bank_07.ts` | `bank_07_sprite_data.ts` | Data | $A000-$BFFF | TECMO 精灵/动画 ROM 表 (TECMO Sprite/Anim ROM) |
+| 08 | `bank_08.ts` | `bank_08_data.ts` | Data | — | ROM 数据表 |
+| 09 | `bank_09.ts` | `bank_09_data.ts` | Data | — | ROM 数据表 |
+| 10 | `bank_10.ts` | `bank_10_data.ts` | Data | — | ROM 数据表 |
+| 11 | `bank_11.ts` | `bank_11_background.ts` | Code | $8000-$9FFF | 背景/Nametable 处理 |
+| 12 | `bank_12.ts` | `bank_12_audio.ts` | Code | $8000-$9FFF | 音频驱动 (Audio Driver) |
+| 13 | `bank_13.ts` | `bank_13_data.ts` | Data | — | ROM 数据表 |
+| 14 | `bank_14.ts` | `bank_14_data.ts` | Data | — | ROM 数据表 |
+| 15 | `bank_15.ts` | `bank_15_data.ts` | Data | — | ROM 数据表 |
+| 16 | `bank_16.ts` | `bank_16_scene_logic.ts` | Code | $8000-$9FFF | 各场景逻辑处理 |
+| 17 | `bank_17.ts` | `bank_17_data.ts` | Data | — | ROM 数据表 |
+| 18 | `bank_18.ts` | `bank_18_data.ts` | Data | — | ROM 数据表 |
+| 19 | `bank_19.ts` | `bank_19_lookup_tables.ts` | Code | $8000-$9FFF | 查找表 |
+| 20 | `bank_20.ts` | `bank_20_team_data.ts` | Code | $8000-$9FFF | 球队数据 (球员属性、阵型) |
+| 21 | `bank_21.ts` | `bank_21_data.ts` | Data | — | ROM 数据表 |
+| 22 | `bank_22.ts` | `bank_22_sprite_engine.ts` | Code | $8000-$9FFF | 精灵引擎 (OAM 管理) |
+| 23 | `bank_23.ts` | `bank_23_data.ts` | Data | — | ROM 数据表 |
+| 24 | `bank_24.ts` | `bank_24_cutscene.ts` | Code | $8000-$9FFF | 过场动画 (Cutscene) |
+| 25 | `bank_25.ts` | `bank_25_data.ts` | Data | — | ROM 数据表 |
+| 26 | `bank_26.ts` | `bank_26_match_core.ts` | Code | $8000-$9FFF | 比赛核心逻辑 (Match Core) |
+| 27 | `bank_27.ts` | `bank_27_player_data.ts` | Code | $8000-$9FFF | 球员数据表 |
+| 28 | `bank_28.ts` | `bank_28_attributes.ts` | Code | $8000-$9FFF | 球员属性计算 |
+| 29 | `bank_29.ts` | `bank_29_data.ts` | Data | — | ROM 数据表 |
+| 30 | `bank_30.ts` | `bank_30_system_lib.ts` | Code | $C000-$DFFF | 系统库: NMI/PPU/RNG/跨bank调用 |
+| 31 | `bank_31.ts` | `bank_31_boot_vectors.ts` | Code | $E000-$FFFF | RESET/NMI/IRQ 向量、启动初始化 |
+| 32-47 | `bank_32-47.ts` | `bank_32-47_data.ts` | Data | — | ROM 数据表 (含 TECMO 字节码脚本) |
+
+### 0.4 CHR Bank 分类
+
+| CHR Bank | 大小 | 内容 |
+|----------|------|------|
+| 0-2 | 3 × 8KB | 通用 8x8 tile 图案（文字、UI） |
+| 3-5 | 3 × 8KB | 背景场景 tile（球场、建筑等） |
+| 6-11 | 6 × 8KB | 球员/角色精灵 tile |
+| 12-14 | 3 × 8KB | 特效/必杀技动画 tile |
+| 15 | 8KB | 开场动画 tileset (TECMO logo, 标题画面) |
+| 16-63 | 48 × 8KB | 各场景专用 tile 图案 |
+
+### 0.5 PPU 渲染管线术语
+
+| 术语 | English | 说明 |
+|------|---------|------|
+| 显示列表 | Display List | RAM $05E8 处的 PPU 写命令缓冲队列 |
+| 矩形填充 | Rect Fill | 函数 $98EA 批量写 PPU nametable |
+| 调色板刷新 | Palette Refresh | $9A71 将 RAM $062A 写入 PPU $3F00 |
+| 帧等待 | Frame Wait | JSR $9FA8 等待一次 NMI/VBlank |
+| 脚本引擎 | Script Engine | $82ED 字节码解释器，逐帧驱动文字/动画 |
+
+### 0.6 游戏领域术语
+
+| 中文 | English | 说明 |
+|------|---------|------|
+| 球员 | Player | 场上角色，含体力、技巧、必杀技 |
+| 队伍 | Team | 11 球员 + 阵型的集合 |
+| 阵型 | Formation | 10 条位置记录 (每球员 4 字节) |
+| 关卡 | Match / Stage | 一次比赛，含双方队伍、经验值 |
+| 场景 | Scene | 游戏状态：logo → 标题 → 对话 → 比赛 |
+| 剧情 | Story / Dialog | 文字对话场景 |
+| 体力 | Stamina / HP | 球员当前体力值 |
+| 等级 | Level / LV | 球员等级 (1-64) |
+| 经验值 | Experience / XP | 累积经验，到达阈值升级 |
+| 必杀技 | Special Move | 球员特殊技能 (射门/过人/铲球等) |
+| 半场 | Half | 比赛半场控制：0=上半场, 1=下半场 |
+| 密码 | Password | 保存/加载游戏进度的编码字符串 |
+| 字节码 | Bytecode | 脚本引擎解释的指令序列 ($E8-$FF 控制码) |
+| 控制器输入 | Joypad Input | $1B/$1C 的手柄按键状态 |
+| 进度计数器 | Progress Counter | $26 值，跟踪游戏进度 (0-33+) |
+
+---
+
+## 一、架构总览 — 从 CPU 驱动到事件驱动
+
+### 1.1 旧架构（当前：CPU 驱动）
+
+```
+┌──────────────────────────────────────────────┐
+│              NES ROM (hex bytes)              │
+│  bank_00.ts → asm`6502` → [0xA5, 0x27, ...]  │
+│  bank_01.ts → asm`6502` → [0x20, 0xB9, ...]  │
+│  ...                                         │
+│                    ↓                          │
+│          6502 CPU emulate() 逐条解码执行        │
+│                    ↓                          │
+│       PPU NMI → 渲染管线 (bank_02)             │
+└──────────────────────────────────────────────┘
+
+问题: 看不懂逻辑、无法查错、耦合严重
+```
+
+### 1.2 新架构（目标：事件驱动 + OOP）
+
+```
+┌─────────────────── Game Loop ────────────────────┐
+│                                                   │
+│  ┌─────────────┐   ┌──────────────┐               │
+│  │  InputBus    │   │  RenderBus   │               │
+│  │ (手柄输入)    │   │ (渲染命令)    │               │
+│  └──────┬──────┘   └──────┬───────┘               │
+│         │                 │                        │
+│  ┌──────▼─────────────────▼──────────┐            │
+│  │        GameManager (单例)          │            │
+│  │  - 场景调度                          │            │
+│  │  - 帧循环驱动                        │            │
+│  │  - 事件泵                            │            │
+│  └──────┬─────────────────────────────┘            │
+│         │                                          │
+│  ┌──────▼─────────────────────────────┐            │
+│  │         Scene (当前场景)             │            │
+│  │  ┌──────────────────────────────┐  │            │
+│  │  │ TitleScene    (标题画面)      │  │            │
+│  │  │ DialogScene   (对话/剧情)     │  │            │
+│  │  │ MatchScene    (比赛)          │  │            │
+│  │  │ MenuScene     (菜单/选关)     │  │            │
+│  │  │ TecmoScene    (TECMO logo)    │  │            │
+│  │  │ EndingScene   (结局动画)      │  │            │
+│  │  └──────────────────────────────┘  │            │
+│  └──────┬─────────────────────────────┘            │
+│         │                                          │
+│  ┌──────▼─────────────────────────────┐            │
+│  │         DataBus (游戏状态)           │            │
+│  │  - Player[] 球员数据                 │            │
+│  │  - Team 当前队伍                     │            │
+│  │  - MatchState 比赛状态               │            │
+│  │  - ProgressState 存档/进度           │            │
+│  └────────────────────────────────────┘            │
+│                                                    │
+│  ┌────────────────────────────────────┐            │
+│  │        RenderBus (渲染管线)          │            │
+│  │  - DisplayList 显示列表              │            │
+│  │  - PPU 写命令入队                    │            │
+│  │  - NMI 消费 → 实际渲染               │            │
+│  └────────────────────────────────────┘            │
+└────────────────────────────────────────────────────┘
+
+关键:
+- CPU 不再"理解"游戏逻辑，只执行纯渲染的 hex（或最终也替换）
+- 游戏逻辑全部由 TS 类的 update() 驱动
+- 每个操作都有日志点，方便验证
+```
+
+---
+
+## 二、领域模型 — OOP 设计
+
+### 2.1 类层次结构
+
+```
+src/tsnes/tsubasa-code/
+├── core/                       # 核心框架
+│   ├── GameManager.ts          # 游戏总控 (单例)
+│   ├── EventBus.ts             # 事件总线 (pub/sub)
+│   ├── DataBus.ts              # 数据总线 (全局状态读写)
+│   ├── RenderBus.ts            # 渲染命令总线
+│   ├── JoypadInput.ts          # 手柄输入抽象
+│   └── Logger.ts               # 日志系统
+│
+├── domain/                     # 领域模型
+│   ├── player/
+│   │   ├── Player.ts           # 球员实体
+│   │   ├── PlayerStats.ts      # 球员属性值对象
+│   │   ├── PlayerPosition.ts   # 球员位置 (FW/MF/DF/GK)
+│   │   ├── SpecialMove.ts      # 必杀技
+│   │   └── PlayerDataLoader.ts # 从 ROM 加载球员数据
+│   │
+│   ├── team/
+│   │   ├── Team.ts             # 队伍聚合根
+│   │   ├── Formation.ts        # 阵型 (10 位置)
+│   │   └── TeamRoster.ts       # 队伍阵容 (11 球员 ID)
+│   │
+│   ├── match/
+│   │   ├── Match.ts            # 比赛实体
+│   │   ├── MatchState.ts       # 比赛状态 (比分/时间/半场)
+│   │   ├── MatchEvent.ts       # 比赛事件 (得分/犯规/换人)
+│   │   └── ExperienceTable.ts  # 经验值表
+│   │
+│   ├── scene/
+│   │   ├── Scene.ts            # 场景抽象基类
+│   │   ├── TecmoScene.ts       # TECMO logo 场景
+│   │   ├── TitleScene.ts       # 标题画面
+│   │   ├── DialogScene.ts      # 对话剧情场景
+│   │   ├── MatchScene.ts       # 比赛场景
+│   │   └── MenuScene.ts        # 菜单场景
+│   │
+│   ├── progress/
+│   │   ├── ProgressState.ts    # 游戏进度
+│   │   ├── PasswordCodec.ts    # 密码编解码
+│   │   └── SaveData.ts         # 存档数据结构
+│   │
+│   └── script/
+│       ├── BytecodeEngine.ts   # 字节码解释器 (替代 $82ED)
+│       ├── BytecodeOp.ts       # 字节码指令定义
+│       └── ScriptData.ts       # 脚本数据加载
+│
+├── render/                     # 渲染系统
+│   ├── ppu/
+│   │   ├── PPUBridge.ts        # PPU 抽象接口
+│   │   ├── NametableWriter.ts  # Nametable 写入器
+│   │   ├── PaletteManager.ts   # 调色板管理
+│   │   └── OamManager.ts       # 精灵管理
+│   │
+│   ├── display/
+│   │   ├── DisplayList.ts      # 显示列表 ($05E8 抽象)
+│   │   ├── RectFill.ts         # 矩形填充 ($98EA)
+│   │   └── TileWriter.ts       # Tile 写入
+│   │
+│   └── ui/
+│       ├── DialogWindow.ts     # 对话窗口 UI
+│       ├── MatchField.ts       # 比赛球场 UI
+│       ├── StatusPanel.ts      # 状态面板 UI
+│       └── PasswordScreen.ts   # 密码界面 UI
+│
+├── data/                       # ROM 数据访问层
+│   ├── RomReader.ts            # ROM 读取器接口
+│   ├── BankManager.ts          # MMC3 Bank 管理
+│   ├── prg_banks/              # PRG bank 数据 (重命名为有意义名字)
+│   │   ├── prg_00_dispatch_scene_engine.ts
+│   │   ├── prg_01_match_jump.ts
+│   │   ├── prg_02_nmi_renderer.ts
+│   │   ├── prg_06_palette_data.ts
+│   │   ├── prg_07_sprite_data.ts
+│   │   ├── ... (共 48 个)
+│   │   └── prg_rom_data.ts     # 纯数据 bank 通用工厂
+│   │
+│   └── chr_data/               # CHR 数据读取
+│       └── ChrReader.ts        # CHR bank 数据读取
+│
+├── nes/                        # NES 硬件层 (最小保留)
+│   ├── Cpu6502.ts              # 精简 6502 CPU (仅执行未被消化的 hex)
+│   ├── Ppu2C02.ts              # PPU 模拟 (渲染后端)
+│   └── Mmc3.ts                 # MMC3 mapper
+│
+└── constants/                  # 常量定义 (按领域拆分)
+    ├── addresses.ts             # 内存地址常量 (全命名)
+    ├── scene_codes.ts           # 场景编号常量
+    ├── player_ids.ts            # 球员 ID 常量
+    ├── team_ids.ts              # 队伍 ID 常量
+    ├── tile_indices.ts          # Tile 索引常量
+    └── opcodes.ts               # 字节码操作码
+```
+
+### 2.2 核心类定义
+
+#### Player (球员)
+
+```typescript
+interface IPlayer {
+  readonly id: number;           // 球员 ID (ROM 索引)
+  readonly name: string;          // 球员名字
+  level: number;                  // 等级 (1-64)
+  experience: number;             // 当前经验值
+  stamina: number;                // 体力 (HP)
+  maxStamina: number;             // 最高体力
+
+  // 平地技巧 (Ground Skills)
+  ground: {
+    dribble: number;              // 过人
+    pass: number;                 // 传球
+    shoot: number;                // 射门
+    tackle: number;               // 铲球
+    block: number;                // 挡球
+    intercept: number;            // 截球
+  };
+
+  // 高空技巧 (Air Skills)
+  air: {
+    trap: number;                 // 停球
+    shoot: number;                // 头球/射门
+    header: number;               // 漏球
+    clear: number;                // 解围
+    challenge: number;            // 争抢
+  };
+
+  // 低空技巧 (Low Air Skills) — 同上结构
+  lowAir: AirSkills;
+
+  // 门将特殊属性 (仅 GK)
+  goalkeeper?: {
+    pass: number;
+    catch: number;
+    punch: number;
+    oneOnOne: number;
+    rush: number;
+  };
+
+  position: PlayerPosition;     // FW/MF/DF/GK
+  specialMoves: SpecialMove[];  // 必杀技列表
+
+  /** 进攻技巧综合评分 */
+  get offenseRating(): number;
+  /** 防守技巧综合评分 */
+  get defenseRating(): number;
+
+  /** 获取升级所需经验 */
+  experienceToNextLevel(): number;
+  /** 获取升级后属性增量 */
+  statGrowthForLevel(level: number): Partial<PlayerStats>;
+}
+```
+
+#### Team (队伍)
+
+```typescript
+interface ITeam {
+  readonly id: number;
+  readonly name: string;
+  roster: RosterSlot[];          // 11 球员槽位
+  formation: Formation;          // 阵型
+  isPlayerTeam: boolean;         // 是否玩家控制
+
+  /** 获取场上某位置的球员 */
+  getPlayerAt(index: number): Player;
+  /** 获取门将 */
+  getGoalkeeper(): Player;
+}
+```
+
+#### Formation (阵型)
+
+```typescript
+interface IFormation {
+  slots: FormationSlot[];              // 10 条位置记录
+
+  /** 每个阵型槽 */
+  // [0] 球员 RAM 索引
+  // [1] PPU 显示 X 坐标
+  // [2] PPU 显示 Y 坐标
+  // [3] 显示属性/方向
+}
+```
+
+#### Match (比赛)
+
+```typescript
+interface IMatch {
+  readonly stageId: number;      // 关卡编号
+  homeTeam: Team;
+  awayTeam: Team;
+  state: MatchState;
+  events: MatchEvent[];          // 事件日志
+
+  /** 玩家得分 */
+  get playerScore(): number;
+  /** 对方得分 */
+  get opponentScore(): number;
+  /** 比赛半场 */
+  get half(): 'first' | 'second';
+  /** 比赛时间 */
+  get time(): number;
+}
+```
+
+#### Scene (场景)
+
+```typescript
+abstract class Scene {
+  abstract readonly id: SceneId;
+
+  /** 每帧调用 */
+  abstract update(): void;
+  /** 场景进入 */
+  abstract onEnter(): void;
+  /** 场景退出 */
+  abstract onExit(): void;
+  /** 是否完成 */
+  get isComplete(): boolean;
+}
+
+class MatchScene extends Scene {
+  readonly id = SceneId.MATCH;
+  private match: Match;
+  private field: MatchField;    // UI: 球场渲染
+  private panel: StatusPanel;   // UI: 状态面板
+
+  update(): void { /* 比赛帧逻辑 */ }
+}
+
+class DialogScene extends Scene {
+  readonly id = SceneId.DIALOG;
+  private scriptEngine: BytecodeEngine;
+  private window: DialogWindow; // UI: 对话框渲染
+
+  update(): void { /* 逐帧驱动脚本引擎 */ }
+}
+```
+
+### 2.3 标准数据流 (以"射门得分"为例)
+
+```
+1. JoypadInput 发出 SHOOT 事件
+2. MatchScene.update() 处理 → 调用 Match.shoot()
+3. Match.shoot() → 
+   a. 检查攻方 shoot vs 守方 GK catch
+   b. 计算概率、暴击
+   c. 结果: 得分 or 扑救
+4. 事件写入 Match.events[] 日志
+5. EventBus.emit('goal_scored', { player, team })
+6. StatusPanel 监听到事件 → 更新比分显示
+7. MatchField 监听到事件 → 播放得分动画
+8. Logger.info('[Match] #%d %s scored! %d - %d', 
+     stage, player.name, score1, score2)
+```
+
+---
+
+## 三、常量定义 (全命名地址)
+
+### 3.1 关键 RAM 地址 — 游戏状态变量
+
+```typescript
+// ============================================================
+// § 游戏核心状态
+// ============================================================
+
+/** $26: 场景编号 / 游戏总进度计数器 */
+export const ZP_SCENE_ID = 0x26;
+
+/** $27: 场景内状态机分派索引 (dispatch index) */
+export const ZP_DISPATCH_INDEX = 0x27;
+
+/** $28: 场景帧计数器 */
+export const ZP_FRAME_COUNTER = 0x28;
+
+/** $29: 场景目标帧数 (frame target，到达则推进) */
+export const ZP_FRAME_TARGET = 0x29;
+
+/** $2A: 比赛半场控制 (0=上半场, 1=下半场) */
+export const ZP_MATCH_HALF = 0x2A;
+
+/** $2B: 当前关卡编号 (= $26 + 3) */
+export const ZP_STAGE_NUMBER = 0x2B;
+
+/** $2C: 阵容类型标记 (主队/客队/特殊) */
+export const ZP_ROSTER_FLAG = 0x2C;
+
+// ============================================================
+// § 场景数据加载
+// ============================================================
+export const ZP_SCENE_BANK   = 0x25;   // 场景数据所在 bank
+export const ZP_SCRIPT_PTR_LO = 0x4D;  // $4D: 脚本/数据指针低字节
+export const ZP_SCRIPT_PTR_HI = 0x4E;  // $4E: 脚本/数据指针高字节
+export const ZP_SCRIPT_ROW    = 0x4F;  // $4F: 行位置
+export const ZP_SCRIPT_COL    = 0x50;  // $50: 列位置
+export const ZP_CURSOR_COL    = 0x53;  // $53: 当前列
+export const ZP_MIN_COL       = 0x54;  // $54: 最小列限制
+export const ZP_LINE_COUNT    = 0x55;  // $55: 文本总行数
+export const ZP_DATA_BANK     = 0x56;  // $56: 当前数据 bank
+export const ZP_SCRIPT_SAVE_LO = 0x58; // $58: 脚本指针保存低
+export const ZP_SCRIPT_SAVE_HI = 0x59; // $59: 脚本指针保存高
+export const ZP_SAVED_BANK    = 0x5A;  // $5A: 保存的 bank 号
+
+// ============================================================
+// § 脚本引擎 ($82ED 字节码解释器)
+// ============================================================
+export const ZP_SCRIPT_STATUS = 0x4C;  // bit7=1 有新指令
+export const ZP_FLAGS_5B      = 0x5B;  // 场景旗标
+export const ZP_GLOBAL_PTR_LO = 0xEC;  // 全局指针低 (= $8E ↔ $EC)
+export const ZP_GLOBAL_PTR_HI = 0xED;  // 全局指针高 (= $8F ↔ $ED)
+export const ZP_ANIM_PHASE    = 0xED;  // 动画相位/闪烁
+export const ZP_E4_SCENE_SEEN = 0xE4;  // 已见过的最大场景号
+export const ZP_E5_BANK_MODE  = 0xE5;  // bank 模式
+
+// ============================================================
+// § PPU / 渲染
+// ============================================================
+export const ZP_PPU_ADDR_LO = 0xE6;   // PPU 写入地址低字节
+export const ZP_PPU_ADDR_HI = 0xE7;   // PPU 写入地址高字节
+export const ZP_FILL_ROWS   = 0xE8;   // 矩形填充行数
+export const ZP_FILL_COLS   = 0xE9;   // 矩形填充列数
+export const ZP_FILL_VALUE  = 0xEB;   // 矩形填充 tile 值
+export const ZP_BG_BRIGHT   = 0x4A;   // BG 调色板亮度 (0-15)
+export const ZP_SPR_BRIGHT  = 0x4B;   // Sprite 调色板亮度 (0-15)
+export const ZP_DIRECTION   = 0x7B;   // 动画方向控制
+export const ZP_PPU_MODE    = 0x79;   // PPU 模式 (bit7=PPUADDR mode)
+export const ZP_SCROLL_X_BUF = 0x7A;  // 滚动 Y / PPUADDR LO
+export const ZP_NMI_TIMER   = 0x78;   // NMI 计时器
+
+// ============================================================
+// § 工作 RAM — PPU 缓冲/渲染
+// ============================================================
+export const WRAM_PPU_BUF     = 0x05E8;  // PPU 命令缓冲队列
+export const WRAM_BUF_WRPTR   = 0x0628;  // 缓冲写指针
+export const WRAM_BUF_FLAGS   = 0x0629;  // 缓冲状态 (bit6=忙)
+export const WRAM_PALETTE     = 0x062A;  // 32 字节调色板 RAM
+export const WRAM_OAM_SHADOW   = 0x0468; // 256 字节 OAM shadow
+export const WRAM_DISPLAY_EXT  = 0x0468; // 额外显示列表
+
+// ============================================================
+// § 工作 RAM — 球员/比赛
+// ============================================================
+export const WRAM_ROSTER       = 0x0300; // 当前阵容 11 球员 ($0300-$0383)
+export const WRAM_ROSTER_SIZE  = 12;     // 每球员占 12 字节
+export const WRAM_FORMATION    = 0x0408; // 阵型数据 ($0408-$042B)
+export const WRAM_FIELD_PLAYERS = 0x0446; // 场上球员坐标/状态
+export const WRAM_TEAM_SLOTS   = 0x0700; // 队伍槽位 ($0700-$07FF)
+```
+
+### 3.2 场景 ID 常量
+
+```typescript
+export const SCENE_TECMO_LOGO    = 0x00;  // TECMO logo 动画
+export const SCENE_TITLE         = 0x02;  // 标题画面
+export const SCENE_LOAD_GAME     = 0x03;  // 读取存档/密码
+export const SCENE_MAIN_MENU     = 0x04;  // 主菜单
+export const SCENE_STORY_INTRO   = 0x05;  // 故事序章
+export const SCENE_BRAZIL_LEAGUE = 0x06;  // 巴西联赛开始
+export const SCENE_HIGH_SCHOOL   = 0x0C;  // 日本高中联赛
+export const SCENE_JAPAN_CUP     = 0x10;  // 日本杯
+export const SCENE_WORLD_YOUTH   = 0x12;  // 世青赛
+export const SCENE_ENDING        = 0x20;  // 结局
+```
+
+### 3.3 字节码操作码
+
+```typescript
+export const BC_CHAR_OUTPUT   = 0x00;  // $00-$D7: 直接字符输出
+export const BC_PALETTE_CTRL  = 0xD8;  // $D8-$DF: 调色板/亮度控制
+export const BC_COLUMN_CTRL   = 0xE0;  // $E0-$E7: 列控制
+export const BC_SCENE_TRANS   = 0xE8;  // 场景过渡
+export const BC_BRIGHT_FADE   = 0xE9;  // 亮度淡入淡出
+export const BC_CLEAR_SCREEN  = 0xEA;  // 清屏
+export const BC_PPU_MODE_SET  = 0xEB;  // PPU 模式设置
+export const BC_TEXT_SETUP    = 0xEC;  // 文本设置
+export const BC_SLOT_STORE    = 0xED;  // 槽位存储
+export const BC_FILL_DISP     = 0xEE;  // 填充显示区
+export const BC_TOGGLE_FLAG   = 0xEF;  // 旗标切换
+export const BC_CURSOR_SET    = 0xF0;  // 光标定位
+export const BC_BANK_LOAD     = 0xF1;  // 跨 bank 加载
+export const BC_LINE_MAX      = 0xF2;  // 最大行数
+export const BC_PALETTE_OP    = 0xF3;  // 调色板操作
+export const BC_SUB_CTRL      = 0xF4;  // 子控制码
+export const BC_DISP_CTRL     = 0xF5;  // 显示控制
+export const BC_CLEAR_DELAY   = 0xF6;  // 清除+延迟
+export const BC_TOGGLE_DIR    = 0xF7;  // 方向切换
+export const BC_CROSS_BANK    = 0xF8;  // 跨 bank 调用
+export const BC_FADE_SCENE    = 0xF9;  // 场景淡出
+export const BC_FADE_SETUP    = 0xFA;  // 淡入设置
+```
+
+---
+
+## 四、DataBus 和 EventBus 设计
+
+### 4.1 DataBus — 全局游戏状态读写
+
+DataBus 是领域模型的状态容器，也是 TS handler 和游戏逻辑之间唯一的共享数据通道：
+
+```typescript
+class DataBus {
+  // === 球员数据 ===
+  playerRoster: Player[];           // $0300 抽象
+  teamSlots: TeamSlot[];            // $0700 抽象
+
+  // === 比赛状态 ===
+  matchState: MatchState;
+  fieldPlayers: FieldPlayer[];      // $0446 抽象
+  formation: Formation;             // $0408 抽象
+
+  // === 场景状态 ===
+  sceneId: number;                  // ZP $26
+  dispatchIndex: number;            // ZP $27
+  frameCounter: number;             // ZP $28
+  frameTarget: number;              // ZP $29
+
+  // === 渲染参数 ===
+  bgBrightness: number;             // ZP $4A
+  sprBrightness: number;            // ZP $4B
+  scriptStatus: number;             // ZP $4C
+  scriptPtrLo: number;              // ZP $4D
+  scriptPtrHi: number;              // ZP $4E
+
+  /** 快照 (用于日志/调试/回放) */
+  snapshot(): GameSnapshot;
+  /** 从快照恢复 */
+  restore(snapshot: GameSnapshot): void;
+}
+```
+
+### 4.2 EventBus — 游戏事件
+
+```typescript
+enum GameEvent {
+  SCENE_ENTER    = 'scene:enter',     // 进入场景
+  SCENE_EXIT     = 'scene:exit',      // 退出场景
+  GOAL_SCORED    = 'goal:scored',     // 得分
+  GOAL_SAVED     = 'goal:saved',      // 扑救
+  PLAYER_MOVE    = 'player:move',     // 球员移动
+  PASS           = 'pass',            // 传球
+  SHOOT          = 'shoot',           // 射门
+  TACKLE         = 'tackle',         // 铲球
+  SPECIAL_MOVE   = 'special:move',    // 必杀技
+  LEVEL_UP       = 'level:up',        // 升级
+  DIALOG_NEXT    = 'dialog:next',     // 对话框翻页
+  FRAME_TICK     = 'frame:tick',      // 帧滴答
+  GAME_OVER      = 'game:over',       // 游戏结束
+  PASSWORD_SHOW  = 'password:show',   // 显示密码
+}
+
+class EventBus {
+  private listeners: Map<GameEvent, Set<Function>>;
+
+  on(event: GameEvent, handler: Function): void;
+  off(event: GameEvent, handler: Function): void;
+  emit(event: GameEvent, data?: any): void;
+}
+```
+
+---
+
+## 五、日志系统
+
+每个操作都应有可验证的日志输出：
+
+```typescript
+class Logger {
+  static scene(phase: string, msg: string, ...args: any[]): void;
+  static match(action: string, msg: string, ...args: any[]): void;
+  static render(component: string, msg: string, ...args: any[]): void;
+  static bytecode(op: string, ...args: any[]): void;
+  static event(event: GameEvent, data?: any): void;
+
+  // 示例输出:
+  // [Scene:TECMO] enter frame=0 state=init
+  // [Scene:TECMO] bytecode $E9 brightness fade delay=2
+  // [Scene:TECMO] PPU enqueue addr=$220A tile=$7F (rect 1x1)
+  // [Scene:TECMO] NMI consume buffer: 3 entries written
+  // [Match:01] goal scored by 翼 (team: 圣保罗), score 1-0
+  // [Player:翼] level up! 1→2 (exp 96/96)
+  // [EventBus] emit scene:enter { id: 0, name: 'TECMO' }
+}
+```
+
+---
+
+## 六、分阶段计划 (带版本号)
+
+每个阶段对应一次 commit，commit message 格式：`phase-N: 描述 [refs #plan]`
+
+### Phase 0 — 常量/术语标准化 ✅ DONE
+**commit**: `phase-0: constants glossary and bank renaming`
+
+| # | 任务 | 状态 |
+|---|------|------|
+| 0.1 | 更新 `constants.ts`，补全所有地址的有意义命名 | ✅ 完成 — 所有 ZP/WRAM 地址均有英文常量 + 向后兼容别名 |
+| 0.2 | 创建 `constants/` 目录，按领域拆分 (addresses/scene_codes/opcodes) | ✅ 完成 — 3 个子模块 + index 统一入口 |
+| 0.3 | 重命名 bank 文件，PRG bank 文件统一前缀 `prg_NN_` | ✅ 完成 — 32 个文件全部重命名为 prg_NN_descriptive_name |
+| 0.4 | 文档中统一术语：PRG bank vs CHR bank，代码 bank vs 数据 bank | ✅ 完成 — 术语表已包含完整定义 |
+
+### Phase 1 — 领域模型基础 ✅ DONE
+**commit**: `phase-1: domain model foundation — Player, Team, Scene base`
+
+| # | 任务 | 状态 |
+|---|------|------|
+| 1.1 | 创建 `domain/player/Player.ts` + `PlayerStats.ts` + `PlayerPosition.ts` + `SpecialMove.ts` | ✅ 完成 — Player 实体含体力/升级/序列化, 六维经验表, 位置枚举, 必杀技定义 |
+| 1.2 | 创建 `domain/team/Team.ts` + `Formation.ts` + `TeamRoster.ts` | ✅ 完成 — Team 聚合根, 阵型 4-4-2/4-3-3 等, 队伍名册 |
+| 1.3 | 创建 `domain/scene/Scene.ts` 抽象基类 | ✅ 完成 — SceneState 枚举 + 生命周期 enter/update/exit + 场景名称映射 |
+| 1.4 | 创建 `domain/progress/ProgressState.ts` + `PasswordCodec.ts` | ✅ 完成 — Stage 枚举 (高中/巴西/日本杯/世青), 密码编解码 stub |
+| 1.5 | 创建 `domain/script/BytecodeEngine.ts` + `BytecodeOp.ts` | ✅ 完成 — 14 操作码 + step/executeAll 双模式解释器 |
+| 1.6 | 单元测试: Player 升级经验查表正确 | ✅ 完成 — 39/39 全部通过 (src/test/domain_player.test.ts) |
+
+### Phase 2 — 事件与数据总线
+**commit**: `phase-2: DataBus, EventBus, Logger infrastructure`
+
+| # | 任务 |
+|---|------|
+| 2.1 | 实现 `core/EventBus.ts` |
+| 2.2 | 实现 `core/DataBus.ts` (从 ZP/WRAM 抽象出来) |
+| 2.3 | 实现 `core/Logger.ts` |
+| 2.4 | 实现 `core/JoypadInput.ts` |
+| 2.5 | 实现 `core/GameManager.ts` (单例，帧循环) |
+
+### Phase 3 — 场景重构 (从 TECMO 开始)
+**commit**: `phase-3: scene system — TecmoScene, SceneManager`
+
+| # | 任务 |
+|---|------|
+| 3.1 | `SceneManager` 实现，接管 `$26` 场景调度 |
+| 3.2 | `TecmoScene` 实现，替代 `buildsceneLoop()` 和 `buildscriptEngine()` |
+| 3.3 | `BytecodeEngine` 完整实现（替代 `$82ED` 脚本引擎） |
+| 3.4 | `TitleScene` 实现 |
+| 3.5 | 验证: TECMO logo → 标题画面流程正确 |
+
+### Phase 4 — 对话框/剧情场景
+**commit**: `phase-4: DialogScene, DialogWindow UI`
+
+| # | 任务 |
+|---|------|
+| 4.1 | `DialogScene` 实现，驱动字节码引擎 |
+| 4.2 | `DialogWindow` UI 组件 |
+| 4.3 | `SceneDataLoader` 从 ROM 加载场景脚本 |
+| 4.4 | 验证: 对话场景逐帧正确渲染 |
+
+### Phase 5 — 比赛核心
+**commit**: `phase-5: Match domain — MatchScene, Match, MatchCore`
+
+| # | 任务 |
+|---|------|
+| 5.1 | `MatchScene` 实现 |
+| 5.2 | `Match` 实体 + `MatchState` |
+| 5.3 | `MatchField` UI 球场渲染 |
+| 5.4 | `StatusPanel` UI 比分/时间面板 |
+| 5.5 | `ExperienceTable` 经验值系统 |
+| 5.6 | 阵型加载 + 球员位置计算 |
+| 5.7 | 验证: 比赛可玩、得分升级正确 |
+
+### Phase 6 — 渲染系统独立
+**commit**: `phase-6: RenderBus — PPU abstraction layer`
+
+| # | 任务 |
+|---|------|
+| 6.1 | `RenderBus` 实现 |
+| 6.2 | `DisplayList` — $05E8 缓冲抽象 |
+| 6.3 | `NametableWriter` — 替代 $9B28/$9B5E |
+| 6.4 | `PaletteManager` — 替代 $9A71 |
+| 6.5 | `RectFill` — 替代 $98EA |
+| 6.6 | `OamManager` — 替代 OAM DMA |
+
+### Phase 7 — 密码/存档
+**commit**: `phase-7: PasswordCodec, SaveData serialization`
+
+| # | 任务 |
+|---|------|
+| 7.1 | `PasswordCodec` 编码/解码实现 |
+| 7.2 | `SaveData` 序列化 |
+| 7.3 | `PasswordScreen` UI |
+| 7.4 | 验证: 密码输入正确跳关 |
+
+### Phase 8 — 音频/精灵/过场
+**commit**: `phase-8: remaining subsystems — Audio, Sprite, Cutscene`
+
+| # | 任务 |
+|---|------|
+| 8.1 | 音频驱动 TS 化 |
+| 8.2 | 精灵引擎 TS 化 |
+| 8.3 | 过场动画 TS 化 |
+
+### Phase 9 — 清理 6502
+**commit**: `phase-9: remove 6502 hex — pure TS game logic`
+
+| # | 任务 |
+|---|------|
+| 9.1 | 移除 `asm` 模板依赖 |
+| 9.2 | 移除 `_6502asm.ts` |
+| 9.3 | 移除 `bank_NN.ts` 中所有 `build*()` hex 产出 |
+| 9.4 | 移除 `TsubasaCpu` 中的 fetch 拦截（不再需要） |
+| 9.5 | 最终集成测试: 完整游戏流程 33 关 |
+
+---
+
+## 七、验证策略
+
+每个阶段结束后：
+
+1. **日志验证**: 每个操作都有 Logger 输出，能追踪完整数据流
+2. **快照对比**: DataBus.snapshot() 与原始 ROM 跑出来的 RAM 状态对比
+3. **画面验证**: 渲染输出与原版一致
+4. **自动化回归**: 每个 Phase 结束后跑完整游戏流程，确保不引入回归
+
+---
+
+## 八、进度日志
+
+### 2026-07-25 — v2.0 架构重构
+
+- **问题**: 之前陷在 6502 hex 覆盖的坑里，token 烧了很多但没有实际进展
+- **根本原因**: 缺少领域模型，直接对着 hex 翻译，无法复用、无法验证
+- **决定**: 重写整个计划，以 OOP 领域模型为中心，从场景重构开始
+- **关键原则**:
+  1. 每个地址都有英文常量名 — 不看 $AC $26 $27，看 SCENE_ID DISPATCH_INDEX FRAME_COUNTER
+  2. 代码 bank vs 数据 bank vs CHR bank — 每次讨论都明确是哪个
+  3. 每个 bank 文件名就告诉你它是干什么的 — prg_00_dispatch_scene_engine
+  4. 每行代码都要能通过日志验证 — 不能把逻辑藏进 CPU 模拟器里
+  5. 领域模型有对象生命周期 — Player、Team、Match 是真实存在的对象不是 RAM 字节
+
+### 2026-07-24 — v1.0 旧计划澄清
+
+- 之前错误地把 disasm 系统当作目标去修复
+- 明确方向: 只改 `prg_banks/bank_NN.ts`，不改 tsnes 架构，不改 disasm

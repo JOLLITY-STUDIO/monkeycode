@@ -665,14 +665,31 @@ function handleForward(ctx: GameContext, rom: RomReader): void {
     ctx.ram.setU8(ZP_28, s28);
     
     // 自循环: 亮度到 0 → 重置到 0x0F fade-in
+    // ★ 同时跟踪渲染轮次 (一轮 = 0x0F→0 完整渐变)
     if (ra === 0 && rb === 0 && s28 >= 3) {
       ctx.ram.setU8(0x4A, 0x0F);
       ctx.ram.setU8(0x4B, 0x0F);
       ctx.ram.setU8(ZP_28, 0);
+      _bcState.renderRounds = (_bcState.renderRounds || 0) + 1;
     }
     
-    // ★ 关键修复: jsNes 参考中 $4C 始终为 128 (F377+), 不退出渲染模式
-    //   移除旧的 $4C→$00 逻辑, 防止状态机死循环
+    // ★ 渲染退出: 完成 N 轮渐变后退出渲染模式并推进场景
+    //   disasm runner 无 NMI handler, 需主动清除 $4C bit7 打破僵直
+    const RENDER_EXIT_ROUNDS = 2;
+    if (_bcState.renderRounds >= RENDER_EXIT_ROUNDS) {
+      _log('[bank_00] handleForward: render exit after %d rounds, advancing scene',
+        _bcState.renderRounds);
+      ctx.ram.setU8(ZP_SCENE_STATUS, status4C & 0x7F);
+      _bcState.renderRounds = 0;
+      _bcState.forwardPhase = 2; // skip Phase 1 re-init
+      advanceScene(ctx, rom);
+      // ★ 防止 Phase 1 重入: $4A 不能为 0 或 0xFF
+      if (ctx.ram.u8(0x4A) === 0 || ctx.ram.u8(0x4A) === 0xFF) {
+        ctx.ram.setU8(0x4A, 1);
+      }
+      ctx.ram.setU8(ZP_JMP_IDX, 0);
+      return;
+    }
     
     ctx.ram.setU8(ZP_JMP_IDX, 0);
     return;

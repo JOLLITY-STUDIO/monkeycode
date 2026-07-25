@@ -1,0 +1,1625 @@
+<!DOCTYPE html><html><head><meta charset="utf-8">
+<title>Segment Visualizer</title>
+<style>
+  body { background:#111; color:#ccc; font:13px monospace; padding:10px; }
+  h3 { color:#f80; margin:20px 0 8px; border-bottom:1px solid #333; padding-bottom:4px; }
+  .legend { margin-bottom:16px; font-size:12px; color:#888; }
+  .legend span { display:inline-block; width:12px; height:12px; margin:0 2px 0 8px; vertical-align:middle; }
+  .seg { display:inline-block; margin:4px; text-align:center; vertical-align:top; border:1px solid #333; padding:3px; background:#1a1a1a; }
+  .seg img { image-rendering:pixelated; border:1px solid #444; }
+  .seg .info { font-size:11px; margin-top:2px; max-width:130px; word-wrap:break-word; }
+  .seg .size { color:#888; }
+</style></head><body>
+<h2>PRG Bank Segments (rainbow: blue=0x00 → green → yellow → red → white=0xFF)</h2>
+<div class="legend">
+  <span style="background:#2244cc"></span>0x00-3F
+  <span style="background:#22aa44"></span>0x40-7F
+  <span style="background:#ccaa22"></span>0x80-BF
+  <span style="background:#cc4422"></span>0xC0-FE
+  <span style="background:#eee"></span>0xFF (padding)
+</div>
+<h3>bank_00</h3><div class="seg">
+  <img src="bank_00__builddispatch.png" width="416" height="32" title="builddispatch">
+  <div class="info">builddispatch<br><span class="size">13B 13×1</span></div>
+</div>
+<div class="seg">
+  <img src="bank_00__buildjumpVectors.png" width="320" height="32" title="buildjumpVectors">
+  <div class="info">buildjumpVectors<br><span class="size">10B 10×1</span></div>
+</div>
+<div class="seg">
+  <img src="bank_00__buildsceneLoop.png" width="64" height="46" title="buildsceneLoop">
+  <div class="info">buildsceneLoop<br><span class="size">726B 32×23</span></div>
+</div>
+<div class="seg">
+  <img src="bank_00__buildscriptEngine.png" width="192" height="36" title="buildscriptEngine">
+  <div class="info">buildscriptEngine<br><span class="size">171B 32×6</span></div>
+</div>
+<div class="seg">
+  <img src="bank_00__builddataTables.png" width="32" height="32" title="builddataTables">
+  <div class="info">builddataTables<br><span class="size">60B 8×8</span></div>
+</div>
+<div class="seg">
+  <img src="bank_00__buildsceneTables.png" width="34" height="34" title="buildsceneTables">
+  <div class="info">buildsceneTables<br><span class="size">1132B 34×34</span></div>
+</div>
+<div class="seg">
+  <img src="bank_00__buildbytecodeHandlers.png" width="42" height="41" title="buildbytecodeHandlers">
+  <div class="info">buildbytecodeHandlers<br><span class="size">1709B 42×41</span></div>
+</div>
+<div class="seg">
+  <img src="bank_00__buildscheduler.png" width="192" height="36" title="buildscheduler">
+  <div class="info">buildscheduler<br><span class="size">187B 32×6</span></div>
+</div>
+<div class="seg">
+  <img src="bank_00__buildcontextSave.png" width="352" height="33" title="buildcontextSave">
+  <div class="info">buildcontextSave<br><span class="size">78B 32×3</span></div>
+</div>
+<div class="seg">
+  <img src="bank_00__buildpadding.png" width="65" height="64" title="buildpadding">
+  <div class="info">buildpadding<br><span class="size">4106B 65×64</span></div>
+</div>
+<h3>bank_01</h3><div class="seg">
+  <img src="bank_01__build_8000_83FF_jumpTableAndInit.png" width="32" height="32" title="build_8000_83FF_jumpTableAndInit">
+  <div class="info">build_8000_83FF_jumpTableAndInit<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_01__build_8400_87FF_playerCalcAndMenu.png" width="32" height="32" title="build_8400_87FF_playerCalcAndMenu">
+  <div class="info">build_8400_87FF_playerCalcAndMenu<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_01__build_8800_8BFF_formationAndTactics.png" width="32" height="32" title="build_8800_8BFF_formationAndTactics">
+  <div class="info">build_8800_8BFF_formationAndTactics<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_01__build_8C00_8FFF_eventScriptAndSprite.png" width="32" height="32" title="build_8C00_8FFF_eventScriptAndSprite">
+  <div class="info">build_8C00_8FFF_eventScriptAndSprite<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_01__build_9000_93FF_playerUtilsAndLayout.png" width="32" height="32" title="build_9000_93FF_playerUtilsAndLayout">
+  <div class="info">build_9000_93FF_playerUtilsAndLayout<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_01__build_9400_97FF_matchLayoutTables.png" width="32" height="32" title="build_9400_97FF_matchLayoutTables">
+  <div class="info">build_9400_97FF_matchLayoutTables<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_01__build_9800_9BFF_textRenderAndStrings.png" width="32" height="32" title="build_9800_9BFF_textRenderAndStrings">
+  <div class="info">build_9800_9BFF_textRenderAndStrings<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_01__build_9C00_9FFF_stringTables.png" width="32" height="32" title="build_9C00_9FFF_stringTables">
+  <div class="info">build_9C00_9FFF_stringTables<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_02</h3><div class="seg">
+  <img src="bank_02__build_8000_83FF_nmiAndPPU.png" width="32" height="32" title="build_8000_83FF_nmiAndPPU">
+  <div class="info">build_8000_83FF_nmiAndPPU<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_02__build_8400_87FF_sceneDispatcher.png" width="32" height="32" title="build_8400_87FF_sceneDispatcher">
+  <div class="info">build_8400_87FF_sceneDispatcher<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_02__build_8800_8BFF_sceneFuncsAndPPUInit.png" width="32" height="32" title="build_8800_8BFF_sceneFuncsAndPPUInit">
+  <div class="info">build_8800_8BFF_sceneFuncsAndPPUInit<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_02__build_8C00_8FFF_ppuFillTools.png" width="32" height="32" title="build_8C00_8FFF_ppuFillTools">
+  <div class="info">build_8C00_8FFF_ppuFillTools<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_02__build_9000_93FF_unused.png" width="32" height="32" title="build_9000_93FF_unused">
+  <div class="info">build_9000_93FF_unused<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_02__build_9400_97FF_unused.png" width="32" height="32" title="build_9400_97FF_unused">
+  <div class="info">build_9400_97FF_unused<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_02__build_9800_9BFF_unused.png" width="32" height="32" title="build_9800_9BFF_unused">
+  <div class="info">build_9800_9BFF_unused<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_02__build_9C00_9FFF_unused.png" width="32" height="32" title="build_9C00_9FFF_unused">
+  <div class="info">build_9C00_9FFF_unused<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_03</h3><div class="seg">
+  <img src="bank_03__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_03__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_04</h3><div class="seg">
+  <img src="bank_04__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_04__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_05</h3><div class="seg">
+  <img src="bank_05__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_05__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_06</h3><div class="seg">
+  <img src="bank_06__build_8000_81FF_scriptEventData.png" width="64" height="32" title="build_8000_81FF_scriptEventData">
+  <div class="info">build_8000_81FF_scriptEventData<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_8200_83FF_scriptEventData2.png" width="64" height="32" title="build_8200_83FF_scriptEventData2">
+  <div class="info">build_8200_83FF_scriptEventData2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_8400_85FF_scriptEventData3.png" width="64" height="32" title="build_8400_85FF_scriptEventData3">
+  <div class="info">build_8400_85FF_scriptEventData3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_8600_87FF_unusedPad.png" width="64" height="32" title="build_8600_87FF_unusedPad">
+  <div class="info">build_8600_87FF_unusedPad<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_8800_89FF_unusedPad.png" width="64" height="32" title="build_8800_89FF_unusedPad">
+  <div class="info">build_8800_89FF_unusedPad<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_8A00_8BFF_unusedPad.png" width="64" height="32" title="build_8A00_8BFF_unusedPad">
+  <div class="info">build_8A00_8BFF_unusedPad<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_8C00_8DFF_unusedPad.png" width="64" height="32" title="build_8C00_8DFF_unusedPad">
+  <div class="info">build_8C00_8DFF_unusedPad<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_8E00_8FFF_unusedPad.png" width="64" height="32" title="build_8E00_8FFF_unusedPad">
+  <div class="info">build_8E00_8FFF_unusedPad<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_9000_91FF_spriteTileData.png" width="64" height="32" title="build_9000_91FF_spriteTileData">
+  <div class="info">build_9000_91FF_spriteTileData<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_9200_93FF_spriteTileData2.png" width="64" height="32" title="build_9200_93FF_spriteTileData2">
+  <div class="info">build_9200_93FF_spriteTileData2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_9400_95FF_spriteTileData3.png" width="64" height="32" title="build_9400_95FF_spriteTileData3">
+  <div class="info">build_9400_95FF_spriteTileData3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_9600_97FF_spriteTileData4.png" width="64" height="32" title="build_9600_97FF_spriteTileData4">
+  <div class="info">build_9600_97FF_spriteTileData4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_9800_99FF_nametableDrawData.png" width="64" height="32" title="build_9800_99FF_nametableDrawData">
+  <div class="info">build_9800_99FF_nametableDrawData<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_9A00_9BFF_nametableDrawData2.png" width="64" height="32" title="build_9A00_9BFF_nametableDrawData2">
+  <div class="info">build_9A00_9BFF_nametableDrawData2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_9C00_9DFF_nametableDrawData3.png" width="64" height="32" title="build_9C00_9DFF_nametableDrawData3">
+  <div class="info">build_9C00_9DFF_nametableDrawData3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_06__build_9E00_9FFF_spritePaletteData.png" width="64" height="32" title="build_9E00_9FFF_spritePaletteData">
+  <div class="info">build_9E00_9FFF_spritePaletteData<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_07</h3><div class="seg">
+  <img src="bank_07__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_07__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_08</h3><div class="seg">
+  <img src="bank_08__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_08__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_09</h3><div class="seg">
+  <img src="bank_09__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_09__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_10</h3><div class="seg">
+  <img src="bank_10__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_10__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_11</h3><div class="seg">
+  <img src="bank_11__build_8000_83FF_seg1.png" width="32" height="32" title="build_8000_83FF_seg1">
+  <div class="info">build_8000_83FF_seg1<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_11__build_8400_87FF_seg2.png" width="32" height="32" title="build_8400_87FF_seg2">
+  <div class="info">build_8400_87FF_seg2<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_11__build_8800_8BFF_seg3.png" width="32" height="32" title="build_8800_8BFF_seg3">
+  <div class="info">build_8800_8BFF_seg3<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_11__build_8C00_8FFF_seg4.png" width="32" height="32" title="build_8C00_8FFF_seg4">
+  <div class="info">build_8C00_8FFF_seg4<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_11__build_9000_93FF_seg5.png" width="32" height="32" title="build_9000_93FF_seg5">
+  <div class="info">build_9000_93FF_seg5<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_11__build_9400_97FF_seg6.png" width="32" height="32" title="build_9400_97FF_seg6">
+  <div class="info">build_9400_97FF_seg6<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_11__build_9800_9BFF_seg7.png" width="32" height="32" title="build_9800_9BFF_seg7">
+  <div class="info">build_9800_9BFF_seg7<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_11__build_9C00_9FFF_seg8.png" width="32" height="32" title="build_9C00_9FFF_seg8">
+  <div class="info">build_9C00_9FFF_seg8<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_12</h3><div class="seg">
+  <img src="bank_12__build_8000_83FF_seg1.png" width="32" height="32" title="build_8000_83FF_seg1">
+  <div class="info">build_8000_83FF_seg1<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_12__build_8400_87FF_seg2.png" width="32" height="32" title="build_8400_87FF_seg2">
+  <div class="info">build_8400_87FF_seg2<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_12__build_8800_8BFF_seg3.png" width="32" height="32" title="build_8800_8BFF_seg3">
+  <div class="info">build_8800_8BFF_seg3<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_12__build_8C00_8FFF_seg4.png" width="32" height="32" title="build_8C00_8FFF_seg4">
+  <div class="info">build_8C00_8FFF_seg4<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_12__build_9000_93FF_seg5.png" width="32" height="32" title="build_9000_93FF_seg5">
+  <div class="info">build_9000_93FF_seg5<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_12__build_9400_97FF_seg6.png" width="32" height="32" title="build_9400_97FF_seg6">
+  <div class="info">build_9400_97FF_seg6<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_12__build_9800_9BFF_seg7.png" width="32" height="32" title="build_9800_9BFF_seg7">
+  <div class="info">build_9800_9BFF_seg7<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_12__build_9C00_9FFF_seg8.png" width="32" height="32" title="build_9C00_9FFF_seg8">
+  <div class="info">build_9C00_9FFF_seg8<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_13</h3><div class="seg">
+  <img src="bank_13__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_13__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_14</h3><div class="seg">
+  <img src="bank_14__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_14__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_15</h3><div class="seg">
+  <img src="bank_15__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_15__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_16</h3><div class="seg">
+  <img src="bank_16__build_8000_83FF_seg1.png" width="32" height="32" title="build_8000_83FF_seg1">
+  <div class="info">build_8000_83FF_seg1<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_16__build_8400_87FF_seg2.png" width="32" height="32" title="build_8400_87FF_seg2">
+  <div class="info">build_8400_87FF_seg2<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_16__build_8800_8BFF_seg3.png" width="32" height="32" title="build_8800_8BFF_seg3">
+  <div class="info">build_8800_8BFF_seg3<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_16__build_8C00_8FFF_seg4.png" width="32" height="32" title="build_8C00_8FFF_seg4">
+  <div class="info">build_8C00_8FFF_seg4<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_16__build_9000_93FF_seg5.png" width="32" height="32" title="build_9000_93FF_seg5">
+  <div class="info">build_9000_93FF_seg5<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_16__build_9400_97FF_seg6.png" width="32" height="32" title="build_9400_97FF_seg6">
+  <div class="info">build_9400_97FF_seg6<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_16__build_9800_9BFF_seg7.png" width="32" height="32" title="build_9800_9BFF_seg7">
+  <div class="info">build_9800_9BFF_seg7<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_16__build_9C00_9FFF_seg8.png" width="32" height="32" title="build_9C00_9FFF_seg8">
+  <div class="info">build_9C00_9FFF_seg8<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_17</h3><div class="seg">
+  <img src="bank_17__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_17__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_18</h3><div class="seg">
+  <img src="bank_18__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_18__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_19</h3><div class="seg">
+  <img src="bank_19__build_8000_83FF_seg1.png" width="32" height="32" title="build_8000_83FF_seg1">
+  <div class="info">build_8000_83FF_seg1<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_19__build_8400_87FF_seg2.png" width="32" height="32" title="build_8400_87FF_seg2">
+  <div class="info">build_8400_87FF_seg2<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_19__build_8800_8BFF_seg3.png" width="32" height="32" title="build_8800_8BFF_seg3">
+  <div class="info">build_8800_8BFF_seg3<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_19__build_8C00_8FFF_seg4.png" width="32" height="32" title="build_8C00_8FFF_seg4">
+  <div class="info">build_8C00_8FFF_seg4<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_19__build_9000_93FF_seg5.png" width="32" height="32" title="build_9000_93FF_seg5">
+  <div class="info">build_9000_93FF_seg5<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_19__build_9400_97FF_seg6.png" width="32" height="32" title="build_9400_97FF_seg6">
+  <div class="info">build_9400_97FF_seg6<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_19__build_9800_9BFF_seg7.png" width="32" height="32" title="build_9800_9BFF_seg7">
+  <div class="info">build_9800_9BFF_seg7<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_19__build_9C00_9FFF_seg8.png" width="32" height="32" title="build_9C00_9FFF_seg8">
+  <div class="info">build_9C00_9FFF_seg8<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_20</h3><div class="seg">
+  <img src="bank_20__build_8000_83FF_seg1.png" width="32" height="32" title="build_8000_83FF_seg1">
+  <div class="info">build_8000_83FF_seg1<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_20__build_8400_87FF_seg2.png" width="32" height="32" title="build_8400_87FF_seg2">
+  <div class="info">build_8400_87FF_seg2<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_20__build_8800_8BFF_seg3.png" width="32" height="32" title="build_8800_8BFF_seg3">
+  <div class="info">build_8800_8BFF_seg3<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_20__build_8C00_8FFF_seg4.png" width="32" height="32" title="build_8C00_8FFF_seg4">
+  <div class="info">build_8C00_8FFF_seg4<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_20__build_9000_93FF_seg5.png" width="32" height="32" title="build_9000_93FF_seg5">
+  <div class="info">build_9000_93FF_seg5<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_20__build_9400_97FF_seg6.png" width="32" height="32" title="build_9400_97FF_seg6">
+  <div class="info">build_9400_97FF_seg6<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_20__build_9800_9BFF_seg7.png" width="32" height="32" title="build_9800_9BFF_seg7">
+  <div class="info">build_9800_9BFF_seg7<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_20__build_9C00_9FFF_seg8.png" width="32" height="32" title="build_9C00_9FFF_seg8">
+  <div class="info">build_9C00_9FFF_seg8<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_21</h3><div class="seg">
+  <img src="bank_21__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_21__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_22</h3><div class="seg">
+  <img src="bank_22__build_8000_83FF_seg1.png" width="32" height="32" title="build_8000_83FF_seg1">
+  <div class="info">build_8000_83FF_seg1<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_22__build_8400_87FF_seg2.png" width="32" height="32" title="build_8400_87FF_seg2">
+  <div class="info">build_8400_87FF_seg2<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_22__build_8800_8BFF_seg3.png" width="32" height="32" title="build_8800_8BFF_seg3">
+  <div class="info">build_8800_8BFF_seg3<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_22__build_8C00_8FFF_seg4.png" width="32" height="32" title="build_8C00_8FFF_seg4">
+  <div class="info">build_8C00_8FFF_seg4<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_22__build_9000_93FF_seg5.png" width="32" height="32" title="build_9000_93FF_seg5">
+  <div class="info">build_9000_93FF_seg5<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_22__build_9400_97FF_seg6.png" width="32" height="32" title="build_9400_97FF_seg6">
+  <div class="info">build_9400_97FF_seg6<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_22__build_9800_9BFF_seg7.png" width="32" height="32" title="build_9800_9BFF_seg7">
+  <div class="info">build_9800_9BFF_seg7<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_22__build_9C00_9FFF_seg8.png" width="32" height="32" title="build_9C00_9FFF_seg8">
+  <div class="info">build_9C00_9FFF_seg8<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_23</h3><div class="seg">
+  <img src="bank_23__build_8000_81FF_data1.png" width="64" height="32" title="build_8000_81FF_data1">
+  <div class="info">build_8000_81FF_data1<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_8200_83FF_data2.png" width="64" height="32" title="build_8200_83FF_data2">
+  <div class="info">build_8200_83FF_data2<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_8400_85FF_data3.png" width="64" height="32" title="build_8400_85FF_data3">
+  <div class="info">build_8400_85FF_data3<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_8600_87FF_data4.png" width="64" height="32" title="build_8600_87FF_data4">
+  <div class="info">build_8600_87FF_data4<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_8800_89FF_data5.png" width="64" height="32" title="build_8800_89FF_data5">
+  <div class="info">build_8800_89FF_data5<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_8A00_8BFF_data6.png" width="64" height="32" title="build_8A00_8BFF_data6">
+  <div class="info">build_8A00_8BFF_data6<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_8C00_8DFF_data7.png" width="64" height="32" title="build_8C00_8DFF_data7">
+  <div class="info">build_8C00_8DFF_data7<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_8E00_8FFF_data8.png" width="64" height="32" title="build_8E00_8FFF_data8">
+  <div class="info">build_8E00_8FFF_data8<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_9000_91FF_data9.png" width="64" height="32" title="build_9000_91FF_data9">
+  <div class="info">build_9000_91FF_data9<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_9200_93FF_data10.png" width="64" height="32" title="build_9200_93FF_data10">
+  <div class="info">build_9200_93FF_data10<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_9400_95FF_data11.png" width="64" height="32" title="build_9400_95FF_data11">
+  <div class="info">build_9400_95FF_data11<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_9600_97FF_data12.png" width="64" height="32" title="build_9600_97FF_data12">
+  <div class="info">build_9600_97FF_data12<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_9800_99FF_data13.png" width="64" height="32" title="build_9800_99FF_data13">
+  <div class="info">build_9800_99FF_data13<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_9A00_9BFF_data14.png" width="64" height="32" title="build_9A00_9BFF_data14">
+  <div class="info">build_9A00_9BFF_data14<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_9C00_9DFF_data15.png" width="64" height="32" title="build_9C00_9DFF_data15">
+  <div class="info">build_9C00_9DFF_data15<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_23__build_9E00_9FFF_data16.png" width="64" height="32" title="build_9E00_9FFF_data16">
+  <div class="info">build_9E00_9FFF_data16<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_24</h3><div class="seg">
+  <img src="bank_24__build_8000_83FF_seg1.png" width="32" height="32" title="build_8000_83FF_seg1">
+  <div class="info">build_8000_83FF_seg1<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_24__build_8400_87FF_seg2.png" width="32" height="32" title="build_8400_87FF_seg2">
+  <div class="info">build_8400_87FF_seg2<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_24__build_8800_8BFF_seg3.png" width="32" height="32" title="build_8800_8BFF_seg3">
+  <div class="info">build_8800_8BFF_seg3<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_24__build_8C00_8FFF_seg4.png" width="32" height="32" title="build_8C00_8FFF_seg4">
+  <div class="info">build_8C00_8FFF_seg4<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_24__build_9000_93FF_seg5.png" width="32" height="32" title="build_9000_93FF_seg5">
+  <div class="info">build_9000_93FF_seg5<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_24__build_9400_97FF_seg6.png" width="32" height="32" title="build_9400_97FF_seg6">
+  <div class="info">build_9400_97FF_seg6<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_24__build_9800_9BFF_seg7.png" width="32" height="32" title="build_9800_9BFF_seg7">
+  <div class="info">build_9800_9BFF_seg7<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_24__build_9C00_9FFF_seg8.png" width="32" height="32" title="build_9C00_9FFF_seg8">
+  <div class="info">build_9C00_9FFF_seg8<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_25</h3><div class="seg">
+  <img src="bank_25__build_8000_81FF_segN.png" width="64" height="32" title="build_8000_81FF_segN">
+  <div class="info">build_8000_81FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_8200_83FF_segN.png" width="64" height="32" title="build_8200_83FF_segN">
+  <div class="info">build_8200_83FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_8400_85FF_segN.png" width="64" height="32" title="build_8400_85FF_segN">
+  <div class="info">build_8400_85FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_8600_87FF_segN.png" width="64" height="32" title="build_8600_87FF_segN">
+  <div class="info">build_8600_87FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_8800_89FF_segN.png" width="64" height="32" title="build_8800_89FF_segN">
+  <div class="info">build_8800_89FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_8A00_8BFF_segN.png" width="64" height="32" title="build_8A00_8BFF_segN">
+  <div class="info">build_8A00_8BFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_8C00_8DFF_segN.png" width="64" height="32" title="build_8C00_8DFF_segN">
+  <div class="info">build_8C00_8DFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_8E00_8FFF_segN.png" width="64" height="32" title="build_8E00_8FFF_segN">
+  <div class="info">build_8E00_8FFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_9000_91FF_segN.png" width="64" height="32" title="build_9000_91FF_segN">
+  <div class="info">build_9000_91FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_9200_93FF_segN.png" width="64" height="32" title="build_9200_93FF_segN">
+  <div class="info">build_9200_93FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_9400_95FF_segN.png" width="64" height="32" title="build_9400_95FF_segN">
+  <div class="info">build_9400_95FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_9600_97FF_segN.png" width="64" height="32" title="build_9600_97FF_segN">
+  <div class="info">build_9600_97FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_9800_99FF_segN.png" width="64" height="32" title="build_9800_99FF_segN">
+  <div class="info">build_9800_99FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_9A00_9BFF_segN.png" width="64" height="32" title="build_9A00_9BFF_segN">
+  <div class="info">build_9A00_9BFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_9C00_9DFF_segN.png" width="64" height="32" title="build_9C00_9DFF_segN">
+  <div class="info">build_9C00_9DFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_25__build_9E00_9FFF_segN.png" width="64" height="32" title="build_9E00_9FFF_segN">
+  <div class="info">build_9E00_9FFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_26</h3><div class="seg">
+  <img src="bank_26__build_8000_83FF_segN.png" width="32" height="32" title="build_8000_83FF_segN">
+  <div class="info">build_8000_83FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_26__build_8400_87FF_segN.png" width="32" height="32" title="build_8400_87FF_segN">
+  <div class="info">build_8400_87FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_26__build_8800_8BFF_segN.png" width="32" height="32" title="build_8800_8BFF_segN">
+  <div class="info">build_8800_8BFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_26__build_8C00_8FFF_segN.png" width="32" height="32" title="build_8C00_8FFF_segN">
+  <div class="info">build_8C00_8FFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_26__build_9000_93FF_segN.png" width="32" height="32" title="build_9000_93FF_segN">
+  <div class="info">build_9000_93FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_26__build_9400_97FF_segN.png" width="32" height="32" title="build_9400_97FF_segN">
+  <div class="info">build_9400_97FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_26__build_9800_9BFF_segN.png" width="32" height="32" title="build_9800_9BFF_segN">
+  <div class="info">build_9800_9BFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_26__build_9C00_9FFF_segN.png" width="32" height="32" title="build_9C00_9FFF_segN">
+  <div class="info">build_9C00_9FFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_27</h3><div class="seg">
+  <img src="bank_27__build_8000_83FF_segN.png" width="32" height="32" title="build_8000_83FF_segN">
+  <div class="info">build_8000_83FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_27__build_8400_87FF_segN.png" width="32" height="32" title="build_8400_87FF_segN">
+  <div class="info">build_8400_87FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_27__build_8800_8BFF_segN.png" width="32" height="32" title="build_8800_8BFF_segN">
+  <div class="info">build_8800_8BFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_27__build_8C00_8FFF_segN.png" width="32" height="32" title="build_8C00_8FFF_segN">
+  <div class="info">build_8C00_8FFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_27__build_9000_93FF_segN.png" width="32" height="32" title="build_9000_93FF_segN">
+  <div class="info">build_9000_93FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_27__build_9400_97FF_segN.png" width="32" height="32" title="build_9400_97FF_segN">
+  <div class="info">build_9400_97FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_27__build_9800_9BFF_segN.png" width="32" height="32" title="build_9800_9BFF_segN">
+  <div class="info">build_9800_9BFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_27__build_9C00_9FFF_segN.png" width="32" height="32" title="build_9C00_9FFF_segN">
+  <div class="info">build_9C00_9FFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_28</h3><div class="seg">
+  <img src="bank_28__build_8000_83FF_segN.png" width="32" height="32" title="build_8000_83FF_segN">
+  <div class="info">build_8000_83FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_28__build_8400_87FF_segN.png" width="32" height="32" title="build_8400_87FF_segN">
+  <div class="info">build_8400_87FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_28__build_8800_8BFF_segN.png" width="32" height="32" title="build_8800_8BFF_segN">
+  <div class="info">build_8800_8BFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_28__build_8C00_8FFF_segN.png" width="32" height="32" title="build_8C00_8FFF_segN">
+  <div class="info">build_8C00_8FFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_28__build_9000_93FF_segN.png" width="32" height="32" title="build_9000_93FF_segN">
+  <div class="info">build_9000_93FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_28__build_9400_97FF_segN.png" width="32" height="32" title="build_9400_97FF_segN">
+  <div class="info">build_9400_97FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_28__build_9800_9BFF_segN.png" width="32" height="32" title="build_9800_9BFF_segN">
+  <div class="info">build_9800_9BFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_28__build_9C00_9FFF_segN.png" width="32" height="32" title="build_9C00_9FFF_segN">
+  <div class="info">build_9C00_9FFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_29</h3><div class="seg">
+  <img src="bank_29__build_8000_81FF_segN.png" width="64" height="32" title="build_8000_81FF_segN">
+  <div class="info">build_8000_81FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_8200_83FF_segN.png" width="64" height="32" title="build_8200_83FF_segN">
+  <div class="info">build_8200_83FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_8400_85FF_segN.png" width="64" height="32" title="build_8400_85FF_segN">
+  <div class="info">build_8400_85FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_8600_87FF_segN.png" width="64" height="32" title="build_8600_87FF_segN">
+  <div class="info">build_8600_87FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_8800_89FF_segN.png" width="64" height="32" title="build_8800_89FF_segN">
+  <div class="info">build_8800_89FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_8A00_8BFF_segN.png" width="64" height="32" title="build_8A00_8BFF_segN">
+  <div class="info">build_8A00_8BFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_8C00_8DFF_segN.png" width="64" height="32" title="build_8C00_8DFF_segN">
+  <div class="info">build_8C00_8DFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_8E00_8FFF_segN.png" width="64" height="32" title="build_8E00_8FFF_segN">
+  <div class="info">build_8E00_8FFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_9000_91FF_segN.png" width="64" height="32" title="build_9000_91FF_segN">
+  <div class="info">build_9000_91FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_9200_93FF_segN.png" width="64" height="32" title="build_9200_93FF_segN">
+  <div class="info">build_9200_93FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_9400_95FF_segN.png" width="64" height="32" title="build_9400_95FF_segN">
+  <div class="info">build_9400_95FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_9600_97FF_segN.png" width="64" height="32" title="build_9600_97FF_segN">
+  <div class="info">build_9600_97FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_9800_99FF_segN.png" width="64" height="32" title="build_9800_99FF_segN">
+  <div class="info">build_9800_99FF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_9A00_9BFF_segN.png" width="64" height="32" title="build_9A00_9BFF_segN">
+  <div class="info">build_9A00_9BFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_9C00_9DFF_segN.png" width="64" height="32" title="build_9C00_9DFF_segN">
+  <div class="info">build_9C00_9DFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<div class="seg">
+  <img src="bank_29__build_9E00_9FFF_segN.png" width="64" height="32" title="build_9E00_9FFF_segN">
+  <div class="info">build_9E00_9FFF_segN<br><span class="size">512B 32×16</span></div>
+</div>
+<h3>bank_30</h3><div class="seg">
+  <img src="bank_30__build_C000_C3FF_segN.png" width="32" height="32" title="build_C000_C3FF_segN">
+  <div class="info">build_C000_C3FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_30__build_C400_C7FF_segN.png" width="32" height="32" title="build_C400_C7FF_segN">
+  <div class="info">build_C400_C7FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_30__build_C800_CBFF_segN.png" width="32" height="32" title="build_C800_CBFF_segN">
+  <div class="info">build_C800_CBFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_30__build_CC00_CFFF_segN.png" width="32" height="32" title="build_CC00_CFFF_segN">
+  <div class="info">build_CC00_CFFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_30__build_D000_D3FF_segN.png" width="32" height="32" title="build_D000_D3FF_segN">
+  <div class="info">build_D000_D3FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_30__build_D400_D7FF_segN.png" width="32" height="32" title="build_D400_D7FF_segN">
+  <div class="info">build_D400_D7FF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_30__build_D800_DBFF_segN.png" width="32" height="32" title="build_D800_DBFF_segN">
+  <div class="info">build_D800_DBFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<div class="seg">
+  <img src="bank_30__build_DC00_DFFF_segN.png" width="32" height="32" title="build_DC00_DFFF_segN">
+  <div class="info">build_DC00_DFFF_segN<br><span class="size">1024B 32×32</span></div>
+</div>
+<h3>bank_31</h3><div class="seg">
+  <img src="bank_31__buildE000_E016_calcPlayerStat.png" width="35" height="35" title="buildE000_E016_calcPlayerStat">
+  <div class="info">buildE000_E016_calcPlayerStat<br><span class="size">23B 5×5</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildE017_E022_swapBallOwner.png" width="384" height="32" title="buildE017_E022_swapBallOwner">
+  <div class="info">buildE017_E022_swapBallOwner<br><span class="size">12B 12×1</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildE023_E058_matchInit.png" width="40" height="35" title="buildE023_E058_matchInit">
+  <div class="info">buildE023_E058_matchInit<br><span class="size">54B 8×7</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildE059_E073_preSwapCheck.png" width="42" height="35" title="buildE059_E073_preSwapCheck">
+  <div class="info">buildE059_E073_preSwapCheck<br><span class="size">27B 6×5</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildE074_E0DE_matchProgressCheck.png" width="256" height="32" title="buildE074_E0DE_matchProgressCheck">
+  <div class="info">buildE074_E0DE_matchProgressCheck<br><span class="size">107B 32×4</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildE0DF_E6FB_mainLoop.png" width="42" height="42" title="buildE0DF_E6FB_mainLoop">
+  <div class="info">buildE0DF_E6FB_mainLoop<br><span class="size">1757B 42×42</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildE6FC_E7C8_spriteDispatch.png" width="160" height="35" title="buildE6FC_E7C8_spriteDispatch">
+  <div class="info">buildE6FC_E7C8_spriteDispatch<br><span class="size">205B 32×7</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildE7C9_E8EC_pathfinding.png" width="128" height="40" title="buildE7C9_E8EC_pathfinding">
+  <div class="info">buildE7C9_E8EC_pathfinding<br><span class="size">292B 32×10</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildE8ED_E9D9_movementMath.png" width="128" height="32" title="buildE8ED_E9D9_movementMath">
+  <div class="info">buildE8ED_E9D9_movementMath<br><span class="size">237B 32×8</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildE9DA_F0B0_dataTables.png" width="166" height="42" title="buildE9DA_F0B0_dataTables">
+  <div class="info">buildE9DA_F0B0_dataTables<br><span class="size">1743B 83×21</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildF0B1_F5FF_oamDisplay.png" width="37" height="37" title="buildF0B1_F5FF_oamDisplay">
+  <div class="info">buildF0B1_F5FF_oamDisplay<br><span class="size">1359B 37×37</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildF600_FAxx_textTables.png" width="88" height="56" title="buildF600_FAxx_textTables">
+  <div class="info">buildF600_FAxx_textTables<br><span class="size">1232B 44×28</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildFAxx_FFEF_padding.png" width="94" height="48" title="buildFAxx_FFEF_padding">
+  <div class="info">buildFAxx_FFEF_padding<br><span class="size">1128B 47×24</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildFFF0_FFF7_resetHandler.png" width="256" height="32" title="buildFFF0_FFF7_resetHandler">
+  <div class="info">buildFFF0_FFF7_resetHandler<br><span class="size">8B 8×1</span></div>
+</div>
+<div class="seg">
+  <img src="bank_31__buildFFF8_FFFF_vectors.png" width="256" height="32" title="buildFFF8_FFFF_vectors">
+  <div class="info">buildFFF8_FFFF_vectors<br><span class="size">8B 8×1</span></div>
+</div>
+</body></html>

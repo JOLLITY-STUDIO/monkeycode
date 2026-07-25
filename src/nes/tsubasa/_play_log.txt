@@ -1,0 +1,25 @@
+frame=30
+$26(scene)=00 $27(dispatch)=00
+$2A(half)=00 $2B(stage)=00 $2C(roster_flag)=00
+$4C(menu_state)=00 $4D=28 $4E=A0 $4F=49
+held buttons: (none)
+frame=1037
+$26(scene)=00 $27(dispatch)=00
+$2A(half)=00 $2B(stage)=00 $2C(roster_flag)=00
+$4C(menu_state)=00 $4D=AF $4E=A2 $4F=49
+held buttons: (none)
+frame=3380
+$26(scene)=00 $27(dispatch)=00
+$2A(half)=00 $2B(stage)=00 $2C(roster_flag)=00
+$4C(menu_state)=00 $4D=E8 $4E=A2 $4F=49
+held buttons: (none)
+frame=4097
+$26(scene)=00 $27(dispatch)=00
+$2A(half)=00 $2B(stage)=00 $2C(roster_flag)=00
+$4C(menu_state)=00 $4D=E8 $4E=A2 $4F=49
+held buttons: (none)
+frame=10456
+$26(scene)=00 $27(dispatch)=00
+$2A(half)=00 $2B(stage)=03 $2C(roster_flag)=00
+$4C(menu_state)=00 $4D=E8 $4E=A2 $4F=49
+held buttons: (none)

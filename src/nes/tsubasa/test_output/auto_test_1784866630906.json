@@ -1,0 +1,2718 @@
+{
+  "totalFrames": 482,
+  "sceneChanges": 0,
+  "finalPhase": "opening",
+  "finalScene": "00",
+  "finalJmpIdx": "00",
+  "finalSStat": "80",
+  "scenesSeen": [
+    "00"
+  ],
+  "blockerCount": 282,
+  "blockers": [
+    {
+      "frame": 200,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 200x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 201,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 201x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 202,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 202x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 203,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 203x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 204,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 204x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 205,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 205x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 206,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 206x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 207,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 207x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 208,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 208x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 209,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 209x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 210,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 210x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 211,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 211x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 212,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 212x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 213,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 213x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 214,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 214x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 215,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 215x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 216,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 216x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 217,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 217x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 218,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 218x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 219,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 219x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 220,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 220x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 221,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 221x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 222,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 222x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 223,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 223x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 224,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 224x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 225,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 225x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 226,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 226x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 227,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 227x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 228,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 228x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 229,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 229x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 230,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 230x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 231,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 231x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 232,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 232x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 233,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 233x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 234,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 234x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 235,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 235x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 236,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 236x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 237,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 237x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 238,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 238x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 239,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 239x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 240,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 240x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 241,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 241x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 242,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 242x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 243,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 243x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 244,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 244x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 245,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 245x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 246,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 246x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 247,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 247x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 248,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 248x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 249,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 249x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 250,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 250x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 251,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 251x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 252,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 252x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 253,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 253x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 254,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 254x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 255,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 255x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 256,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 256x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 257,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 257x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 258,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 258x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 259,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 259x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 260,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 260x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 261,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 261x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 262,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 262x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 263,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 263x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 264,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 264x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 265,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 265x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 266,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 266x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 267,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 267x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 268,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 268x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 269,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 269x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 270,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 270x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 271,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 271x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 272,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 272x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 273,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 273x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 274,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 274x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 275,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 275x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 276,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 276x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 277,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 277x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 278,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 278x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 279,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 279x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 280,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 280x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 281,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 281x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 282,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 282x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 283,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 283x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 284,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 284x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 285,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 285x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 286,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 286x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 287,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 287x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 288,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 288x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 289,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 289x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 290,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 290x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 291,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 291x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 292,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 292x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 293,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 293x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 294,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 294x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 295,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 295x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 296,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 296x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 297,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 297x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 298,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 298x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 299,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 299x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 300,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 300x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 301,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 301x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 302,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 302x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 303,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 303x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 304,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 304x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 305,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 305x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 306,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 306x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 307,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 307x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 308,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 308x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 309,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 309x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 310,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 310x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 311,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 311x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 312,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 312x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 313,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 313x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 314,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 314x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 315,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 315x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 316,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 316x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 317,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 317x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 318,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 318x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 319,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 319x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 320,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 320x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 321,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 321x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 322,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 322x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 323,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 323x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 324,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 324x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 325,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 325x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 326,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 326x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 327,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 327x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 328,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 328x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 329,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 329x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 330,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 330x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 331,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 331x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 332,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 332x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 333,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 333x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 334,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 334x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 335,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 335x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 336,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 336x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 337,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 337x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 338,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 338x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 339,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 339x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 340,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 340x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 341,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 341x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 342,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 342x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 343,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 343x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 344,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 344x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 345,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 345x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 346,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 346x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 347,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 347x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 348,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 348x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 349,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 349x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 350,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 350x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 351,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 351x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 352,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 352x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 353,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 353x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 354,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 354x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 355,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 355x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 356,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 356x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 357,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 357x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 358,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 358x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 359,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 359x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 360,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 360x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 361,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 361x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 362,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 362x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 363,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 363x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 364,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 364x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 365,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 365x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 366,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 366x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 367,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 367x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 368,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 368x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 369,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 369x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 370,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 370x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 371,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 371x (scene=$00, sStat=$00, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 372,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 372x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 373,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 373x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 374,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 374x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 375,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 375x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 376,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 376x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 377,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 377x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 378,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 378x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 379,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 379x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 380,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 380x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 381,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 381x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 382,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 382x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 383,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 383x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 384,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 384x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 385,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 385x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 386,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 386x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 387,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 387x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 388,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 388x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 389,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 389x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 390,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 390x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 391,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 391x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 392,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 392x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 393,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 393x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 394,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 394x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 395,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 395x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 396,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 396x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 397,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 397x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 398,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 398x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 399,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 399x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 400,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 400x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 401,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 401x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 402,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 402x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 403,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 403x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 404,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 404x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 405,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 405x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 406,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 406x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 407,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 407x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 408,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 408x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 409,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 409x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 410,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 410x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 411,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 411x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 412,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 412x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 413,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 413x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 414,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 414x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 415,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 415x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 416,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 416x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 417,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 417x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 418,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 418x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 419,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 419x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 420,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 420x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 421,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 421x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 422,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 422x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 423,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 423x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 424,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 424x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 425,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 425x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 426,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 426x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 427,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 427x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 428,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 428x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 429,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 429x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 430,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 430x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 431,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 431x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 432,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 432x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 433,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 433x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 434,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 434x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 435,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 435x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 436,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 436x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 437,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 437x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 438,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 438x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 439,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 439x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 440,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 440x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 441,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 441x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 442,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 442x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 443,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 443x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 444,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 444x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 445,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 445x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 446,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 446x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 447,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 447x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 448,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 448x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 449,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 449x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 450,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 450x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 451,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 451x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 452,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 452x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 453,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 453x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 454,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 454x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 455,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 455x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 456,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 456x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 457,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 457x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 458,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 458x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 459,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 459x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 460,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 460x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 461,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 461x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 462,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 462x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 463,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 463x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 464,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 464x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 465,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 465x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 466,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 466x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 467,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 467x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 468,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 468x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 469,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 469x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 470,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 470x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 471,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 471x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 472,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 472x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 473,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 473x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 474,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 474x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 475,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 475x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 476,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 476x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 477,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 477x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 478,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 478x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 479,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 479x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 480,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 480x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    },
+    {
+      "frame": 481,
+      "type": "LOOP",
+      "message": "Jump loop: idx=$00 repeated 481x (scene=$00, sStat=$80, b8=$00, bA=$01)",
+      "scene": 0,
+      "jmpIdx": 0,
+      "bank8": 0,
+      "bankA": 1
+    }
+  ],
+  "warningCount": 0,
+  "phaseResult": "OPENING stuck: 481f, scene=$00, sStat=$80",
+  "timeline": [
+    {
+      "frame": 0,
+      "tag": "boot_pre",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "00",
+      "joyHeld": "00",
+      "scriptLo": "00",
+      "scriptHi": "00",
+      "sceneType": "00",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 0,
+      "tag": "boot_post",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "00",
+      "joyHeld": "00",
+      "scriptLo": "00",
+      "scriptHi": "00",
+      "sceneType": "00",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 1,
+      "tag": "opening_start",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "00",
+      "nmiTimer": "00",
+      "ppuMode": "00",
+      "joyHeld": "00",
+      "scriptLo": "E5",
+      "scriptHi": "00",
+      "sceneType": "A0",
+      "sceneNum": "00",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 120,
+      "tag": "phase_OPENING",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "40",
+      "nmiTimer": "00",
+      "ppuMode": "24",
+      "joyHeld": "00",
+      "scriptLo": "A0",
+      "scriptHi": "4C",
+      "sceneType": "00",
+      "sceneNum": "03",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 240,
+      "tag": "phase_OPENING",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "40",
+      "nmiTimer": "00",
+      "ppuMode": "24",
+      "joyHeld": "00",
+      "scriptLo": "A0",
+      "scriptHi": "4C",
+      "sceneType": "00",
+      "sceneNum": "03",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 360,
+      "tag": "phase_OPENING",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "00",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "40",
+      "nmiTimer": "00",
+      "ppuMode": "24",
+      "joyHeld": "00",
+      "scriptLo": "A0",
+      "scriptHi": "4C",
+      "sceneType": "00",
+      "sceneNum": "03",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 480,
+      "tag": "phase_OPENING",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "80",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "40",
+      "nmiTimer": "00",
+      "ppuMode": "24",
+      "joyHeld": "00",
+      "scriptLo": "A0",
+      "scriptHi": "4C",
+      "sceneType": "00",
+      "sceneNum": "03",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 482,
+      "tag": "opening_timeout",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "80",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "40",
+      "nmiTimer": "00",
+      "ppuMode": "24",
+      "joyHeld": "08",
+      "scriptLo": "A0",
+      "scriptHi": "4C",
+      "sceneType": "00",
+      "sceneNum": "03",
+      "teamFlag": "00"
+    },
+    {
+      "frame": 482,
+      "tag": "exit",
+      "scene": "00",
+      "jmpIdx": "00",
+      "sStat": "80",
+      "bank8": "00",
+      "bankA": "01",
+      "nmiTrig": "40",
+      "nmiTimer": "00",
+      "ppuMode": "24",
+      "joyHeld": "08",
+      "scriptLo": "A0",
+      "scriptHi": "4C",
+      "sceneType": "00",
+      "sceneNum": "03",
+      "teamFlag": "00"
+    }
+  ]
+}
