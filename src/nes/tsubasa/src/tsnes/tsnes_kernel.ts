@@ -14,7 +14,7 @@ import { BUTTON } from '../types';
 import { romUint8Array } from '../rom_data';
 
 /** TsubasaNes — ROM 数据完全内建，外部不可访问 */
-import { TsubasaNes } from './tsubasa-code/tsubasa_nes';
+import { TsubasaNes } from './tsubasa-hex2asm/tsubasa_nes';
 
 // ============================================================================
 // 类型定义

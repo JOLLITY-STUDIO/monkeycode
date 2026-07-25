@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * tsubasa-code — ROM 数据完全静态化，不再依赖 .nes ROM 文件
+ * tsubasa-hex2asm — ROM 数据完全静态化，不再依赖 .nes ROM 文件
  *
  * 所有 ROM 数据（header、PRG、CHR）以 TypeScript 常量形式存放:
  *   - rom_header.ts   → iNES 头部元数据 + buildRomBuffer()

@@ -2,7 +2,7 @@
  * 验证 tsubasa 静态 PRG 注入生效 — 手动模拟 RESET 流程，在第一指令位写 $02
  */
 import NES from '../src/tsnes/src/nes';
-import { PRG_ROM_BANKS } from '../src/tsnes/tsubasa-code/prg_rom_data';
+import { PRG_ROM_BANKS } from '../src/tsnes/tsubasa-hex2asm/prg_rom_data';
 import { readFileSync } from 'fs';
 import { resolve, dirname } from 'path';
 import { fileURLToPath } from 'url';

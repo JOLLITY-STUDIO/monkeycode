@@ -2,7 +2,7 @@
  * ============================================================================
  * TsubasaNes — 完全封闭的 NES 模拟器实例
  *
- * PRG-ROM、CHR-ROM、iNES header 全部内建于 tsubasa-code 模块中。
+ * PRG-ROM、CHR-ROM、iNES header 全部内建于 tsubasa-hex2asm 模块中。
  * 外部仅通过构造函数传入回调（onFrame / onAudioSample 等），
  * 无法访问 ROM 数据，也不接受外部 ROM 输入。
  *
