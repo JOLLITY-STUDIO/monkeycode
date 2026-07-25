@@ -76,9 +76,8 @@ export function gameTick(nes, input) {
   processNmi(nes);
 
   // ═══ 3. 场景更新 ═══
-  // 由 SceneManager 驱动 — 参见 scene/ 域
   if (nes.sceneManager) {
-    nes.sceneManager.update();
+    nes.sceneManager.update(input);
   }
 
   // ═══ 4. PPU 帧推进 ═══

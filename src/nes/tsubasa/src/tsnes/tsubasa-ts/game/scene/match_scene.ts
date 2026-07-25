@@ -5,7 +5,8 @@
  * 對接到 Scene 生命週期，由 SceneManager 驅動。
  */
 
-import { Scene, SceneState } from './base';
+import { Scene, SceneState, NO_INPUT } from './base';
+import type { JoypadInput } from './base';
 import { Team } from '../team/team';
 import { Formation } from '../team/formation';
 import { MatchStage } from '../match/stage';
@@ -29,7 +30,7 @@ export class MatchScene extends Scene {
     this.match.kickoff();
   }
 
-  update(): boolean {
+  update(input: JoypadInput = NO_INPUT): boolean {
     this.frameCount++;
     this.match.update();
     if (this.match.isFinished()) {

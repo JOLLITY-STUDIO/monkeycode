@@ -10,8 +10,8 @@
  *   - constants/scene_codes.ts — 場景 ID 常量
  */
 
-import { Scene, SceneState } from './base';
-import type { SceneId } from './base';
+import { Scene, SceneState, NO_INPUT } from './base';
+import type { SceneId, JoypadInput } from './base';
 
 // ============================================================
 // §1 SceneManager
@@ -77,7 +77,7 @@ export class SceneManager {
   // ---- 幀更新 ----
 
   /** 每幀調用 */
-  update(): boolean {
+  update(input: JoypadInput = NO_INPUT): boolean {
     // 處理場景切換
     if (this.pendingTransition !== null) {
       this.doTransition(this.pendingTransition);
@@ -88,7 +88,7 @@ export class SceneManager {
     if (this.current.state !== SceneState.RUNNING) return false;
 
     this.current.frameCount++;
-    return this.current.update();
+    return this.current.update(input);
   }
 
   private doTransition(id: SceneId): void {

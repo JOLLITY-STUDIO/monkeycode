@@ -3,9 +3,7 @@
     "pages/launcher/launcher",
     "pages/game/game",
     "pages/game_compare/game_compare",
-    "pages/game_jsnes/game_jsnes",
-    "src/tsnes/tsubasa-ts/core/nametable.js",
-    "src/tsnes/tsubasa-ts/game/entity/Footballer"
+    "pages/game_jsnes/game_jsnes"
   ],
   "subPackages": [
     {

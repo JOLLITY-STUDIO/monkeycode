@@ -331,10 +331,12 @@ function assemble(ir: IrLine[], baseOffset: number): readonly number[] {
 
     if (line.kind === 'byte') {
       out.push(...line.bytes);
+      offset += line.bytes.length;
       continue;
     }
     if (line.kind === 'dw') {
       for (const w of line.words) { out.push(w & 0xFF, (w >> 8) & 0xFF); }
+      offset += line.words.length * 2;
       continue;
     }
 

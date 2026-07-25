@@ -144,14 +144,6 @@ export function renderFrame(
     }
   }
 
-  // ─── 統調色板像素 (frameBuffer 中的 0-63 index → ARGB) ───
-  if (ppu.frameBuffer) {
-    for (let i = 0; i < ppu.frameBuffer.length; i++) {
-      const idx = ppu.frameBuffer[i] & 63;
-      buf[i] = NES_PAL[idx] ?? 0xFF000000;
-    }
-  }
-
   return buf;
 }
 
@@ -210,9 +202,10 @@ function renderBg(
       const quad = ((localY & 2) << 1) | (localX & 2);
       const palIdx = (attrByte >> quad) & 3;
 
-      // decode tile from CHR
+      // decode tile from CHR (via MMC3 mapping)
       const ppuTileAddr = bgTblBase + tileId * 16;
-      decodeTile(chrData, ppuTileAddr, tb);
+      const chrAddr = mapChrAddrSimple(mmc3, ppuTileAddr);
+      decodeTile(chrData, chrAddr, tb);
 
       // blit 8×8
       const dx = pixelOffX + tx * 8;
@@ -262,8 +255,9 @@ function renderSprites(
       const ppuTileAddr = (sprSize === 16)
         ? (tid & 1) * 4096 + (tid & 0xFE) * 16
         : sprTbl + tid * 16;
+      const chrAddr = mapChrAddrSimple(mmc3, ppuTileAddr);
 
-      decodeTile(chrData, ppuTileAddr, tb);
+      decodeTile(chrData, chrAddr, tb);
       blitTileFlipped(buf, tb, palette, palIdx, spX, spriteY + h * 8, flipH, flipV, behind);
     }
   }

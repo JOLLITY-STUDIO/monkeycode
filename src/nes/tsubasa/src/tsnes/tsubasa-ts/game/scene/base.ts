@@ -1,7 +1,7 @@
 /**
  * Scene 抽象基类 — 所有场景的契约
  *
- * 生命周期: enter() → [update() 每帧循环] → exit()
+ * 生命周期: enter() → [update(input) 每帧循环] → exit()
  */
 
 import {
@@ -31,6 +31,24 @@ import {
 
 /** 场景 ID */
 export type SceneId = number;
+
+/** 手柄输入 */
+export interface JoypadInput {
+  a: boolean;
+  b: boolean;
+  select: boolean;
+  start: boolean;
+  up: boolean;
+  down: boolean;
+  left: boolean;
+  right: boolean;
+}
+
+/** 空输入常量 */
+export const NO_INPUT: JoypadInput = {
+  a: false, b: false, select: false, start: false,
+  up: false, down: false, left: false, right: false,
+};
 
 /** 场景状态 */
 export enum SceneState {
@@ -79,8 +97,8 @@ export abstract class Scene {
 
   /** 场景进入 */
   abstract enter(): void;
-  /** 每帧更新 */
-  abstract update(): boolean;
+  /** 每帧更新，接收手柄输入 */
+  abstract update(input: JoypadInput): boolean;
   /** 场景退出 */
   abstract exit(): void;
 
