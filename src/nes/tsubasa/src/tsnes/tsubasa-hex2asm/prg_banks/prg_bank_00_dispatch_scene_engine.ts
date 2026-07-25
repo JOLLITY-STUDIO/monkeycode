@@ -474,1117 +474,991 @@ function buildsceneTables(): readonly number[] {
 
 // ════════ $8840-$9EEC: 字节码操作码处理器 (文本/图形/UI) ═══════=
 function buildbytecodeHandlers(): readonly number[] {
-  // $8840: EOR (18),Y
-  // $8842: ADC #$40
-  // $8844: STA $51
-  // $8846: LDA $52
-  // $8848: ADC #$00
-  // $884A: STA $52
-  // $884C: INC $4D
-  // $884E: BNE $8852
-  // $8850: INC $4E
-  // $8852: JMP $84E3
-  // $8855: JSR $88B1
-  // $8858: LDA #$04
-  // $885A: JSR $9FA8
-  // $885D: LDA #$01
-  // $885F: JMP $8887
-  // $8862: INY
-  // $8863: LDA (4D),Y
-  // $8865: TAX
-  // $8866: INY
-  // $8867: LDA (4D),Y
-  // $8869: STA $4E
-  // $886B: STX $4D
-  // $886D: JMP $84E7
-  // $8870: LDA #$00
-  // $8872: STA $4D
-  // $8874: STA $4E
-  // $8876: JMP $9F7E
-  // $8879: CLC
-  // $887A: ADC $4D
-  // $887C: STA $4D
-  // $887E: LDA $4E
-  // $8880: ADC #$00
-  // $8882: STA $4E
-  // $8884: JMP $84E7
-  // $8887: CLC
-  // $8888: ADC $4D
-  // $888A: STA $4D
-  // $888C: LDA $4E
-  // $888E: ADC #$00
-  // $8890: STA $4E
-  // $8892: JMP $84D7
-  // $8895: STA $57
-  // $8897: LDX #$0D
-  // $8899: LDA #$A8
-  // $889B: STA $00,X
-  // $889D: LDA #$88
-  // $889F: STA $01,X
-  // $88A1: LDY #$A0
-  // $88A3: LDA #$00
-  // $88A5: JSR $9F69
-  // $88A8: RTS
-  // $88A9: LDX #$02
-  // $88AB: JSR $C4B9
-  // $88AE: JMP $A206
-  // $88B1: LDA $54
-  // $88B3: EOR #$FF
-  // $88B5: CLC
-  // $88B6: ADC #$1F
-  // $88B8: TAX
-  // $88B9: LDY #$08
-  // $88BB: LDA $4F
-  // $88BD: AND #$E0
-  // $88BF: ORA $54
-  // $88C1: STA $E6
-  // $88C3: LDA $50
-  // $88C5: STA $E7
-  // $88C7: JMP $98E8
-  // $88CA: PHA
-  // $88CB: LDA #$82
-  // $88CD: JSR $9B28
-  // $88D0: PLA
-  // $88D1: CMP #$A0
-  // $88D3: BCC $88ED
-  // $88D5: PHA
-  // $88D6: CMP #$C8
-  // $88D8: LDA #$94
-  // $88DA: ADC #$00
-  // $88DC: STA $05E8,X
-  // $88DF: INX
-  // $88E0: PLA
-  // $88E1: TAY
-  // $88E2: LDA $8A14,Y
-  // $88E5: STA $05E8,X
-  // $88E8: INX
-  // $88E9: JSR $9B5E
-  // $88EC: RTS
-  // $88ED: STA $05E9,X
-  // $88F0: LDA #$00
-  // $88F2: STA $05E8,X
-  // $88F5: INX
-  // $88F6: INX
-  // $88F7: JSR $9B5E
-  // $88FA: RTS
-  // $88FB: LDX #$00
-  // $88FD: LDA $046A,X
-  // $8900: EOR #$20
-  // $8902: STA $046A,X
-  // $8905: INX
-  // $8906: INX
-  // $8907: INX
-  // $8908: INX
-  // $8909: BNE $88FD
-  // $890B: RTS
-  // $890C: STA $ED
-  // $890E: LDX #$00
-  // $8910: LDA $0468,X
-  // $8913: CLC
-  // $8914: ADC $ED
-  // $8916: STA $0468,X
-  // $8919: INX
-  // $891A: INX
-  // $891B: INX
-  // $891C: INX
-  // $891D: BNE $8910
-  // $891F: RTS
-  // $8920: LDX #$13
-  // $8922: JSR $9DEE
-  // $8925: LDA $EC
-  // $8927: CLC
-  // $8928: ADC #$00
-  // $892A: STA $EC
-  // $892C: LDA $ED
-  // $892E: ADC #$BF
-  // $8930: STA $ED
-  // $8932: LDA $25
-  // $8934: STA $EA
-  // $8936: LDX #$06
-  // $8938: JSR $C4B9
-  // $893B: LDA $78
-  // $893D: BNE $893B
-  // $893F: LDY #$00
-  // $8941: LDA (EC),Y
-  // $8943: STA $0079
-  // $8946: LDA #$00
-  // $8948: STA $007A
-  // $894B: INY
-  // $894C: LDX #$12
-  // $894E: LDA (EC),Y
-  // $8950: STA $007B,Y
-  // $8953: INY
-  // $8954: DEX
-  // $8955: BNE $894E
-  // $8957: LDX $EA
-  // $8959: JSR $C4B9
-  // $895C: RTS
-  // $895D: TAX
-  // $895E: LDA $99
-  // $8960: BPL $8966
-  // $8962: EOR #$41
-  // $8964: STA $99
-  // $8966: LDA #$01
-  // $8968: JSR $9FA8
-  // $896B: TXA
-  // $896C: PHA
-  // $896D: JSR $89FF
-  // $8970: PLA
-  // $8971: TAX
-  // $8972: DEX
-  // $8973: BNE $8966
-  // $8975: RTS
-  // $8976: LDA $4D
-  // $8978: STA $EA
-  // $897A: LDA $4E
-  // $897C: STA $EB
-  // $897E: LDA #$02
-  // $8980: STA $E6
-  // $8982: STX $E7
-  // $8984: STY $E8
-  // $8986: LDA #$E5
-  // $8988: STA $4D
-  // $898A: LDA #$00
-  // $898C: STA $4E
-  // $898E: JSR $9085
-  // $8991: LDA $EA
-  // $8993: STA $4D
-  // $8995: LDA $EB
-  // $8997: STA $4E
-  // $8999: RTS
-  // $899A: LDA $99
-  // $899C: AND #$80
-  // $899E: ORA #$40
-  // $89A0: STA $99
-  // $89A2: RTS
-  // $89A3: LDY #$FC
-  // $89A5: LDA $88D2,Y
-  // $89A8: STA $0468,Y
-  // $89AB: INY
-  // $89AC: BNE $89A5
-  // $89AE: LDX #$F8
-  // $89B0: LDY #$00
-  // $89B2: LDA #$01
-  // $89B4: JSR $9FA8
-  // $89B7: LDA $1E
-  // $89B9: BMI $89CA
-  // $89BB: INY
-  // $89BC: CPY #$28
-  // $89BE: BEQ $89A3
-  // $89C0: CPY #$18
-  // $89C2: BNE $89B2
-  // $89C4: STX $0564
-  // $89C7: JMP $89B2
-  // $89CA: STX $0564
-  // $89CD: RTS
-  // $89CE: BNE $89CF
-  // $89D0: ??? $03
-  // $89D1: INX
-  // $89D2: TAY
-  // $89D3: LDX #$06
-  // $89D5: JSR $C4B9
-  // $89D8: TYA
-  // $89D9: ASL A
-  // $89DA: TAX
-  // $89DB: LDA $BD00,X
-  // $89DE: STA $0654
-  // $89E1: LDA $BD01,X
-  // $89E4: STA $0655
-  // $89E7: LDA #$80
-  // $89E9: STA $0652
-  // $89EC: LDA #$01
-  // $89EE: STA $0653
-  // $89F1: LDA #$00
-  // $89F3: STA $90
-  // $89F5: LDA #$02
-  // $89F7: STA $91
-  // $89F9: LDX $56
-  // $89FB: JSR $C4B9
-  // $89FE: RTS
-  // $89FF: LDA $0652
-  // $8A02: BMI $8A07
-  // $8A04: JMP $8A90
-  // $8A07: DEC $0653
-  // $8A0A: BEQ $8A0F
-  // $8A0C: JMP $8A90
-  // $8A0F: LDX #$06
-  // $8A11: JSR $C4B9
-  // $8A14: LDA $0654
-  // $8A17: STA $E6
-  // $8A19: LDA $0655
-  // $8A1C: STA $E7
-  // $8A1E: LDA $0652
-  // $8A21: INC $0652
-  // $8A24: AND #$3F
-  // $8A26: CLC
-  // $8A27: ADC $E6
-  // $8A29: STA $E6
-  // $8A2B: LDA $E7
-  // $8A2D: ADC #$00
-  // $8A2F: STA $E7
-  // $8A31: LDY #$00
-  // $8A33: LDA (E6),Y
-  // $8A35: CMP #$FF
-  // $8A37: BEQ $8A86
-  // $8A39: CMP #$FE
-  // $8A3B: BEQ $8A7B
-  // $8A3D: AND #$F8
-  // $8A3F: STA $E8
-  // $8A41: LSR A
-  // $8A42: CLC
-  // $8A43: ADC $E8
-  // $8A45: STA $E8
-  // $8A47: LDA #$00
-  // $8A49: ADC #$00
-  // $8A4B: STA $E9
-  // $8A4D: LDA $E8
-  // $8A4F: CLC
-  // $8A50: ADC #$80
-  // $8A52: STA $E8
-  // $8A54: LDA $E9
-  // $8A56: ADC #$BD
-  // $8A58: STA $E9
-  // $8A5A: LDY #$02
-  // $8A5C: LDX #$23
-  // $8A5E: JSR $8A91
-  // $8A61: LDY #$03
-  // $8A63: LDX #$23
-  // $8A65: JSR $8A91
-  // $8A68: LDY #$04
-  // $8A6A: LDX #$23
-  // $8A6C: JSR $8A91
-  // $8A6F: LDY #$01
-  // $8A71: LDA (E6),Y
-  // $8A73: AND #$07
-  // $8A75: STA $0653
-  // $8A78: JMP $8A8B
-  // $8A7B: LDA $0652
-  // $8A7E: AND #$C0
-  // $8A80: STA $0652
-  // $8A83: JMP $8A14
-  // $8A86: LDA #$00
-  // $8A88: STA $0652
-  // $8A8B: LDX $56
-  // $8A8D: JSR $C4B9
-  // $8A90: RTS
-  // $8A91: LDA #$84
-  // $8A93: JSR $9B28
-  // $8A96: LDY #$00
-  // $8A98: LDA (E8),Y
-  // $8A9A: STA $05E8,X
-  // $8A9D: INX
-  // $8A9E: INY
-  // $8A9F: CPY #$04
-  // $8AA1: BNE $8A98
-  // $8AA3: JSR $9B5E
-  // $8AA6: LDA $E8
-  // $8AA8: CLC
-  // $8AA9: ADC #$04
-  // $8AAB: STA $E8
-  // $8AAD: LDA $E9
-  // $8AAF: ADC #$00
-  // $8AB1: STA $E9
-  // $8AB3: RTS
-  // $8AB4: ASL $07
-  // $8AB6: PHP
-  // $8AB7: ORA #$0A
-  // $8AB9: ??? $0B
-  // $8ABA: ??? $0C
-  // $8ABB: ORA $0F0E
-  // $8ABE: BPL $8AD1
-  // $8AC0: ??? $12
-  // $8AC1: ??? $13
-  // $8AC2: ??? $14
-  // $8AC3: ??? $1A
-  // $8AC4: ??? $1B
-  // $8AC5: ??? $1C
-  // $8AC6: ORA $461E,X
-  // $8AC9: ??? $47
-  // $8ACA: PHA
-  // $8ACB: EOR #$4A
-  // $8ACD: ??? $4B
-  // $8ACE: JMP $4E4D
-  // $8AD1: ??? $4F
-  // $8AD2: BVC $8B25
-  // $8AD4: ??? $52
-  // $8AD5: ??? $53
-  // $8AD6: ??? $54
-  // $8AD7: ??? $5A
-  // $8AD8: ??? $5B
-  // $8AD9: ??? $5C
-  // $8ADA: EOR $1A5E,X
-  // $8ADD: ??? $1B
-  // $8ADE: ??? $1C
-  // $8ADF: ORA $5A1E,X
-  // $8AE2: ??? $5B
-  // $8AE3: ??? $5C
-  // $8AE4: EOR $015E,X
-  // $8AE7: ASL A
-  // $8AE8: ??? $14
-  // $8AE9: PLP
-  // $8AEA: ??? $3C
-  // $8AEB: BVC $8B65
-  // $8AED: BEQ $8AEF
-  // $8AEF: ??? $03
-  // $8AF0: BPL $8AF6
-  // $8AF2: JSR $6005
-  // $8AF5: ASL $FF
-  // $8AF7: STA $ED
-  // $8AF9: LDA #$00
-  // $8AFB: STA $09
-  // $8AFD: STA $0A
-  // $8AFF: STA $0D
-  // $8B01: STA $0E
-  // $8B03: LDA $5B
-  // $8B05: AND #$7F
-  // $8B07: STA $5B
-  // $8B09: LDA $25
-  // $8B0B: STA $77
-  // $8B0D: LDX #$07
-  // $8B0F: JSR $C4B9
-  // $8B12: LDA #$00
-  // $8B14: LDY #$F8
-  // $8B16: STA $0552,Y
-  // $8B19: INY
-  // $8B1A: BNE $8B16
-  // $8B1C: LDA $ED
-  // $8B1E: ASL A
-  // $8B1F: TAX
-  // $8B20: LDA #$00
-  // $8B22: ROL A
-  // $8B23: TAY
-  // $8B24: TXA
-  // $8B25: CLC
-  // $8B26: ADC #$00
-  // $8B28: STA $63
-  // $8B2A: TYA
-  // $8B2B: ADC #$A0
-  // $8B2D: STA $64
-  // $8B2F: LDY #$00
-  // $8B31: LDA (63),Y
-  // $8B33: TAX
-  // $8B34: INY
-  // $8B35: LDA (63),Y
-  // $8B37: STA $64
-  // $8B39: STX $63
-  // $8B3B: LDY #$00
-  // $8B3D: LDA (63),Y
-  // $8B3F: STA $75
-  // $8B41: INY
-  // $8B42: LDA (63),Y
-  // $8B44: STA $76
-  // $8B46: INY
-  // $8B47: LDA (63),Y
-  // $8B49: TAX
-  // $8B4A: AND #$3F
-  // $8B4C: STA $48
-  // $8B4E: TXA
-  // $8B4F: LSR $5B
-  // $8B51: ROL A
-  // $8B52: ROL $5B
-  // $8B54: INY
-  // $8B55: LDA (63),Y
-  // $8B57: STA $5E
-  // $8B59: INY
-  // $8B5A: LDA (63),Y
-  // $8B5C: STA $5F
-  // $8B5E: INY
-  // $8B5F: LDA (63),Y
-  // $8B61: AND #$F8
-  // $8B63: STA $5C
-  // $8B65: LDA #$02
-  // $8B67: STA $5D
-  // $8B69: ASL $5C
-  // $8B6B: ROL $5D
-  // $8B6D: ASL $5C
-  // $8B6F: ROL $5D
-  // $8B71: LDA (63),Y
-  // $8B73: AND #$07
-  // $8B75: ORA $5C
-  // $8B77: STA $5C
-  // $8B79: ASL $5C
-  // $8B7B: ROL $5D
-  // $8B7D: ASL $5C
-  // $8B7F: ROL $5D
-  // $8B81: LDA $5D
-  // $8B83: AND #$0C
-  // $8B85: BNE $8B93
-  // $8B87: LDA $7B
-  // $8B89: ASL A
-  // $8B8A: ASL A
-  // $8B8B: EOR $5B
-  // $8B8D: AND #$04
-  // $8B8F: ORA $5D
-  // $8B91: STA $5D
-  // $8B93: LDA $5E
-  // $8B95: CMP #$09
-  // $8B97: BCC $8B9F
-  // $8B99: JSR $9071
-  // $8B9C: JMP $8BAB
-  // $8B9F: LDA $5D
-  // $8BA1: AND #$04
-  // $8BA3: BNE $8BAB
-  // $8BA5: JSR $9071
-  // $8BA8: JMP $8BAE
-  // $8BAB: JSR $9076
-  // $8BAE: LDA #$01
-  // $8BB0: JSR $9FA8
-  // $8BB3: LDA $63
-  // $8BB5: CLC
-  // $8BB6: ADC #$06
-  // $8BB8: STA $63
-  // $8BBA: LDA $64
-  // $8BBC: ADC #$00
-  // $8BBE: STA $64
-  // $8BC0: LDA $5E
-  // $8BC2: LDX $5F
-  // $8BC4: JSR $9DEE
-  // $8BC7: LDA $63
-  // $8BC9: CLC
-  // $8BCA: ADC $EC
-  // $8BCC: STA $70
-  // $8BCE: LDA $64
-  // $8BD0: ADC $ED
-  // $8BD2: STA $71
-  // $8BD4: LDA #$00
-  // $8BD6: STA $60
-  // $8BD8: LDY #$01
-  // $8BDA: LDA (70),Y
-  // $8BDC: AND #$E0
-  // $8BDE: STA $62
-  // $8BE0: LDA (70),Y
-  // $8BE2: AND #$1F
-  // $8BE4: TAX
-  // $8BE5: LSR A
-  // $8BE6: ROR $60
-  // $8BE8: LSR A
-  // $8BE9: ROR $60
-  // $8BEB: STA $61
-  // $8BED: TXA
-  // $8BEE: BEQ $8BF3
-  // $8BF0: INY
-  // $8BF1: LDA (70),Y
-  // $8BF3: STA $72
-  // $8BF5: LDA $62
-  // $8BF7: AND #$C0
-  // $8BF9: BEQ $8C43
-  // $8BFB: CMP #$40
-  // $8BFD: BEQ $8C15
-  // $8BFF: CMP #$80
-  // $8C01: BEQ $8C0C
-  // $8C03: LDA #$04
-  // $8C05: LDX #$01
-  // $8C07: LDY $5F
-  // $8C09: JMP $8C59
-  // $8C0C: LDA #$04
-  // $8C0E: LDX #$01
-  // $8C10: LDY $5F
-  // $8C12: JMP $8C59
-  // $8C15: LDA $5E
-  // $8C17: LDX $5F
-  // $8C19: JSR $9DEE
-  // $8C1C: LDA $EC
-  // $8C1E: SEC
-  // $8C1F: SBC #$01
-  // $8C21: STA $EC
-  // $8C23: LDA $ED
-  // $8C25: SBC #$00
-  // $8C27: STA $ED
-  // $8C29: LDA $63
-  // $8C2B: CLC
-  // $8C2C: ADC $EC
-  // $8C2E: STA $63
-  // $8C30: LDA $64
-  // $8C32: ADC $ED
-  // $8C34: STA $64
-  // $8C36: LDA #$00
-  // $8C38: SEC
-  // $8C39: SBC $5F
-  // $8C3B: TAY
-  // $8C3C: LDA #$FC
-  // $8C3E: LDX #$FF
-  // $8C40: JMP $8C59
-  // $8C43: LDA $5F
-  // $8C45: SEC
-  // $8C46: SBC #$01
-  // $8C48: CLC
-  // $8C49: ADC $63
-  // $8C4B: STA $63
-  // $8C4D: LDA $64
-  // $8C4F: ADC #$00
-  // $8C51: STA $64
-  // $8C53: LDA #$FC
-  // $8C55: LDX #$FF
-  // $8C57: LDY $5F
-  // $8C59: STA $6D
-  // $8C5B: STX $6E
-  // $8C5D: STY $6F
-  // $8C5F: LDA $5E
-  // $8C61: CMP #$07
-  // $8C63: BCC $8C89
-  // $8C65: SEC
-  // $8C66: SBC #$07
-  // $8C68: STA $5E
-  // $8C6A: LDY #$07
-  // $8C6C: LDX $5F
-  // $8C6E: JSR $8E15
-  // $8C71: LDA #$01
-  // $8C73: STA $7B
-  // $8C75: LDX #$09
-  // $8C77: LDA #$B9
-  // $8C79: STA $00,X
-  // $8C7B: LDA #$8C
-  // $8C7D: STA $01,X
-  // $8C7F: LDY #$78
-  // $8C81: LDA #$00
-  // $8C83: JSR $9F69
-  // $8C86: JMP $8CA5
-  // $8C89: LDY $5E
-  // $8C8B: LDX $5F
-  // $8C8D: JSR $8E15
-  // $8C90: LDA $72
-  // $8C92: BEQ $8CA5
-  // $8C94: LDX #$09
-  // $8C96: LDA #$21
-  // $8C98: STA $00,X
-  // $8C9A: LDA #$8D
-  // $8C9C: STA $01,X
-  // $8C9E: LDY #$78
-  // $8CA0: LDA #$00
-  // $8CA2: JSR $9F69
-  // $8CA5: LDA $75
-  // $8CA7: STA $8E
-  // $8CA9: LDA $76
-  // $8CAB: STA $8F
-  // $8CAD: LDA #$00
-  // $8CAF: STA $44
-  // $8CB1: STA $45
-  // $8CB3: STA $7A
-  // $8CB5: LDX $77
-  // $8CB7: JMP $C4B9
-  // $8CBA: LDX #$07
-  // $8CBC: JSR $C4B9
-  // $8CBF: LDA #$00
-  // $8CC1: STA $69
-  // $8CC3: STA $6A
-  // $8CC5: BIT $62
-  // $8CC7: BMI $8CD6
-  // $8CC9: LDA #$00
-  // $8CCB: SEC
-  // $8CCC: SBC $60
-  // $8CCE: STA $60
-  // $8CD0: LDA #$00
-  // $8CD2: SBC $61
-  // $8CD4: STA $61
-  // $8CD6: LDA #$01
-  // $8CD8: JSR $9FA8
-  // $8CDB: LDA $60
-  // $8CDD: CLC
-  // $8CDE: ADC $69
-  // $8CE0: STA $69
-  // $8CE2: LDA #$00
-  // $8CE4: ADC $61
-  // $8CE6: TAX
-  // $8CE7: JSR $9BA9
-  // $8CEA: TXA
-  // $8CEB: BPL $8CF2
-  // $8CED: EOR #$FF
-  // $8CEF: CLC
-  // $8CF0: ADC #$01
-  // $8CF2: CLC
-  // $8CF3: ADC $6A
-  // $8CF5: STA $6A
-  // $8CF7: SEC
-  // $8CF8: SBC #$20
-  // $8CFA: BCC $8CD6
-  // $8CFC: STA $6A
-  // $8CFE: LDA $5B
-  // $8D00: BPL $8D0A
-  // $8D02: LDA #$01
-  // $8D04: JSR $9FA8
-  // $8D07: JMP $8CFE
-  // $8D0A: LDX #$0D
-  // $8D0C: LDA #$FE
-  // $8D0E: STA $00,X
-  // $8D10: LDA #$8D
-  // $8D12: STA $01,X
-  // $8D14: LDY #$A0
-  // $8D16: LDA #$00
-  // $8D18: JSR $9F69
-  // $8D1B: DEC $5E
-  // $8D1D: BNE $8CD6
-  // $8D1F: JMP $8D59
-  // $8D22: LDX #$07
-  // $8D24: JSR $C4B9
-  // $8D27: LDX #$02
-  // $8D29: LDY #$00
-  // $8D2B: LDA (70),Y
-  // $8D2D: BEQ $8D3A
-  // $8D2F: ASL A
-  // $8D30: BCC $8D3B
-  // $8D32: TAX
-  // $8D33: LDA #$FE
-  // $8D35: JSR $9FA8
-  // $8D38: INX
-  // $8D39: INX
-  // $8D3A: TXA
-  // $8D3B: JSR $9FA8
-  // $8D3E: LDA #$00
-  // $8D40: STA $69
-  // $8D42: STA $6A
-  // $8D44: BIT $62
-  // $8D46: BMI $8D55
-  // $8D48: LDA #$00
-  // $8D4A: SEC
-  // $8D4B: SBC $60
-  // $8D4D: STA $60
-  // $8D4F: LDA #$00
-  // $8D51: SBC $61
-  // $8D53: STA $61
-  // $8D55: BIT $62
-  // $8D57: BVC $8D88
-  // $8D59: LDA #$01
-  // $8D5B: JSR $9FA8
-  // $8D5E: LDA $60
-  // $8D60: CLC
-  // $8D61: ADC $69
-  // $8D63: STA $69
-  // $8D65: LDA #$00
-  // $8D67: ADC $61
-  // $8D69: TAX
-  // $8D6A: JSR $9BA9
-  // $8D6D: TXA
-  // $8D6E: BPL $8D75
-  // $8D70: EOR #$FF
-  // $8D72: CLC
-  // $8D73: ADC #$01
-  // $8D75: CLC
-  // $8D76: ADC $6A
-  // $8D78: STA $6A
-  // $8D7A: SEC
-  // $8D7B: SBC #$20
-  // $8D7D: BCC $8D59
-  // $8D7F: STA $6A
-  // $8D81: DEC $72
-  // $8D83: BNE $8D59
-  // $8D85: JMP $8DC8
-  // $8D88: LDA #$01
-  // $8D8A: JSR $9FA8
-  // $8D8D: LDA $60
-  // $8D8F: CLC
-  // $8D90: ADC $69
-  // $8D92: STA $69
-  // $8D94: LDA #$00
-  // $8D96: ADC $61
-  // $8D98: TAX
-  // $8D99: JSR $9BCA
-  // $8D9C: TXA
-  // $8D9D: BPL $8DA4
-  // $8D9F: EOR #$FF
-  // $8DA1: CLC
-  // $8DA2: ADC #$01
-  // $8DA4: CLC
-  // $8DA5: ADC $6A
-  // $8DA7: STA $6A
-  // $8DA9: SEC
-  // $8DAA: SBC #$20
-  // $8DAC: BCC $8D88
-  // $8DAE: STA $6A
-  // $8DB0: DEC $72
-  // $8DB2: BNE $8D88
-  // $8DB4: LDA $7A
-  // $8DB6: SEC
-  // $8DB7: SBC $6A
-  // $8DB9: STA $7A
-  // $8DBB: LDA $7B
-  // $8DBD: SBC #$00
-  // $8DBF: STA $7B
-  // $8DC1: LDA $47
-  // $8DC3: SEC
-  // $8DC4: SBC $6A
-  // $8DC6: STA $47
-  // $8DC8: LDA $62
-  // $8DCA: AND #$20
-  // $8DCC: BNE $8DFC
-  // $8DCE: LDA $70
-  // $8DD0: CLC
-  // $8DD1: ADC #$03
-  // $8DD3: STA $70
-  // $8DD5: LDA $71
-  // $8DD7: ADC #$00
-  // $8DD9: STA $71
-  // $8DDB: LDA #$00
-  // $8DDD: STA $60
-  // $8DDF: LDY #$01
-  // $8DE1: LDA (70),Y
-  // $8DE3: AND #$E0
-  // $8DE5: STA $62
-  // $8DE7: LDA (70),Y
-  // $8DE9: AND #$1F
-  // $8DEB: TAX
-  // $8DEC: LSR A
-  // $8DED: ROR $60
-  // $8DEF: LSR A
-  // $8DF0: ROR $60
-  // $8DF2: STA $61
-  // $8DF4: INY
-  // $8DF5: LDA (70),Y
-  // $8DF7: STA $72
-  // $8DF9: JMP $8D22
-  // $8DFC: JMP $9F7E
-  // $8DFF: LDA $5B
-  // $8E01: ORA #$80
-  // $8E03: STA $5B
-  // $8E05: LDY #$01
-  // $8E07: LDX $5F
-  // $8E09: JSR $8E15
-  // $8E0C: LDA $5B
-  // $8E0E: AND #$7F
-  // $8E10: STA $5B
-  // $8E12: JMP $9F7E
-  // $8E15: STY $6C
-  // $8E17: STX $6B
-  // $8E19: LDA $63
-  // $8E1B: STA $65
-  // $8E1D: LDA $64
-  // $8E1F: STA $66
-  // $8E21: LDA $6B
-  // $8E23: STA $ED
-  // $8E25: LDA $5C
-  // $8E27: STA $73
-  // $8E29: LDA $5D
-  // $8E2B: STA $74
-  // $8E2D: LDY #$00
-  // $8E2F: LDA (63),Y
-  // $8E31: JSR $8EF0
-  // $8E34: LDA $5C
-  // $8E36: TAX
-  // $8E37: CLC
-  // $8E38: ADC $6D
-  // $8E3A: STA $5C
-  // $8E3C: TXA
-  // $8E3D: EOR $5C
-  // $8E3F: AND #$20
-  // $8E41: BEQ $8E58
-  // $8E43: LDA $6D
-  // $8E45: ASL A
-  // $8E46: ASL A
-  // $8E47: ASL A
-  // $8E48: EOR #$FF
-  // $8E4A: CLC
-  // $8E4B: ADC #$01
-  // $8E4D: CLC
-  // $8E4E: ADC $5C
-  // $8E50: STA $5C
-  // $8E52: LDA $5D
-  // $8E54: EOR #$04
-  // $8E56: STA $5D
-  // $8E58: LDA $6E
-  // $8E5A: PHA
-  // $8E5B: CLC
-  // $8E5C: ADC $63
-  // $8E5E: STA $63
-  // $8E60: PLA
-  // $8E61: BMI $8E6A
-  // $8E63: LDA $64
-  // $8E65: ADC #$00
-  // $8E67: JMP $8E6E
-  // $8E6A: LDA $64
-  // $8E6C: SBC #$00
-  // $8E6E: STA $64
-  // $8E70: DEC $ED
-  // $8E72: BNE $8E2D
-  // $8E74: LDA $6F
-  // $8E76: PHA
-  // $8E77: CLC
-  // $8E78: ADC $65
-  // $8E7A: STA $63
-  // $8E7C: PLA
-  // $8E7D: BMI $8E86
-  // $8E7F: LDA $66
-  // $8E81: ADC #$00
-  // $8E83: JMP $8E8A
-  // $8E86: LDA $66
-  // $8E88: SBC #$00
-  // $8E8A: STA $64
-  // $8E8C: LDA $62
-  // $8E8E: AND #$C0
-  // $8E90: CMP #$40
-  // $8E92: BEQ $8EC2
-  // $8E94: LDA $73
-  // $8E96: CLC
-  // $8E97: ADC #$80
-  // $8E99: STA $5C
-  // $8E9B: TAX
-  // $8E9C: LDA $74
-  // $8E9E: ADC #$00
-  // $8EA0: STA $5D
-  // $8EA2: TXA
-  // $8EA3: SEC
-  // $8EA4: SBC #$40
-  // $8EA6: BPL $8EE8
-  // $8EA8: LDA $5D
-  // $8EAA: SBC #$00
-  // $8EAC: AND #$03
-  // $8EAE: CMP #$03
-  // $8EB0: BNE $8EE8
-  // $8EB2: LDA $5C
-  // $8EB4: SEC
-  // $8EB5: SBC #$C0
-  // $8EB7: STA $5C
-  // $8EB9: LDA $5D
-  // $8EBB: SBC #$03
-  // $8EBD: STA $5D
-  // $8EBF: JMP $8EE8
-  // $8EC2: LDA $73
-  // $8EC4: SEC
-  // $8EC5: SBC #$80
-  // $8EC7: STA $5C
-  // $8EC9: TAX
-  // $8ECA: LDA $74
-  // $8ECC: SBC #$00
-  // $8ECE: STA $5D
-  // $8ED0: TXA
-  // $8ED1: BPL $8EE8
-  // $8ED3: LDA $5D
-  // $8ED5: AND #$03
-  // $8ED7: CMP #$03
-  // $8ED9: BNE $8EE8
-  // $8EDB: LDA $5C
-  // $8EDD: CLC
-  // $8EDE: ADC #$C0
-  // $8EE0: STA $5C
-  // $8EE2: LDA $5D
-  // $8EE4: ADC #$03
-  // $8EE6: STA $5D
-  // $8EE8: DEC $6C
-  // $8EEA: BEQ $8EEF
-  // $8EEC: JMP $0000
   return asm`
-    .byte 0x51, 0x18, 0x69, 0x40, 0x85, 0x51, 0xA5, 0x52, 0x69, 0x00, 0x85, 0x52, 0xE6, 0x4D, 0xD0, 0x02
-    .byte 0xE6, 0x4E, 0x4C, 0xE3, 0x84, 0x20, 0xB1, 0x88, 0xA9, 0x04, 0x20, 0xA8, 0x9F, 0xA9, 0x01, 0x4C
-    .byte 0x87, 0x88, 0xC8, 0xB1, 0x4D, 0xAA, 0xC8, 0xB1, 0x4D, 0x85, 0x4E, 0x86, 0x4D, 0x4C, 0xE7, 0x84
-    .byte 0xA9, 0x00, 0x85, 0x4D, 0x85, 0x4E, 0x4C, 0x7E, 0x9F, 0x18, 0x65, 0x4D, 0x85, 0x4D, 0xA5, 0x4E
-    .byte 0x69, 0x00, 0x85, 0x4E, 0x4C, 0xE7, 0x84, 0x18, 0x65, 0x4D, 0x85, 0x4D, 0xA5, 0x4E, 0x69, 0x00
-    .byte 0x85, 0x4E, 0x4C, 0xD7, 0x84, 0x85, 0x57, 0xA2, 0x0D, 0xA9, 0xA8, 0x95, 0x00, 0xA9, 0x88, 0x95
-    .byte 0x01, 0xA0, 0xA0, 0xA9, 0x00, 0x20, 0x69, 0x9F, 0x60, 0xA2, 0x02, 0x20, 0xB9, 0xC4, 0x4C, 0x06
-    .byte 0xA2, 0xA5, 0x54, 0x49, 0xFF, 0x18, 0x69, 0x1F, 0xAA, 0xA0, 0x08, 0xA5, 0x4F, 0x29, 0xE0, 0x05
-    .byte 0x54, 0x85, 0xE6, 0xA5, 0x50, 0x85, 0xE7, 0x4C, 0xE8, 0x98, 0x48, 0xA9, 0x82, 0x20, 0x28, 0x9B
-    .byte 0x68, 0xC9, 0xA0, 0x90, 0x18, 0x48, 0xC9, 0xC8, 0xA9, 0x94, 0x69, 0x00, 0x9D, 0xE8, 0x05, 0xE8
-    .byte 0x68, 0xA8, 0xB9, 0x14, 0x8A, 0x9D, 0xE8, 0x05, 0xE8, 0x20, 0x5E, 0x9B, 0x60, 0x9D, 0xE9, 0x05
-    .byte 0xA9, 0x00, 0x9D, 0xE8, 0x05, 0xE8, 0xE8, 0x20, 0x5E, 0x9B, 0x60, 0xA2, 0x00, 0xBD, 0x6A, 0x04
-    .byte 0x49, 0x20, 0x9D, 0x6A, 0x04, 0xE8, 0xE8, 0xE8, 0xE8, 0xD0, 0xF2, 0x60, 0x85, 0xED, 0xA2, 0x00
-    .byte 0xBD, 0x68, 0x04, 0x18, 0x65, 0xED, 0x9D, 0x68, 0x04, 0xE8, 0xE8, 0xE8, 0xE8, 0xD0, 0xF1, 0x60
-    .byte 0xA2, 0x13, 0x20, 0xEE, 0x9D, 0xA5, 0xEC, 0x18, 0x69, 0x00, 0x85, 0xEC, 0xA5, 0xED, 0x69, 0xBF
-    .byte 0x85, 0xED, 0xA5, 0x25, 0x85, 0xEA, 0xA2, 0x06, 0x20, 0xB9, 0xC4, 0xA5, 0x78, 0xD0, 0xFC, 0xA0
-    .byte 0x00, 0xB1, 0xEC, 0x8D, 0x79, 0x00, 0xA9, 0x00, 0x8D, 0x7A, 0x00, 0xC8, 0xA2, 0x12, 0xB1, 0xEC
-    .byte 0x99, 0x7B, 0x00, 0xC8, 0xCA, 0xD0, 0xF7, 0xA6, 0xEA, 0x20, 0xB9, 0xC4, 0x60, 0xAA, 0xA5, 0x99
-    .byte 0x10, 0x04, 0x49, 0x41, 0x85, 0x99, 0xA9, 0x01, 0x20, 0xA8, 0x9F, 0x8A, 0x48, 0x20, 0xFF, 0x89
-    .byte 0x68, 0xAA, 0xCA, 0xD0, 0xF1, 0x60, 0xA5, 0x4D, 0x85, 0xEA, 0xA5, 0x4E, 0x85, 0xEB, 0xA9, 0x02
-    .byte 0x85, 0xE6, 0x86, 0xE7, 0x84, 0xE8, 0xA9, 0xE5, 0x85, 0x4D, 0xA9, 0x00, 0x85, 0x4E, 0x20, 0x85
-    .byte 0x90, 0xA5, 0xEA, 0x85, 0x4D, 0xA5, 0xEB, 0x85, 0x4E, 0x60, 0xA5, 0x99, 0x29, 0x80, 0x09, 0x40
-    .byte 0x85, 0x99, 0x60, 0xA0, 0xFC, 0xB9, 0xD2, 0x88, 0x99, 0x68, 0x04, 0xC8, 0xD0, 0xF7, 0xA2, 0xF8
-    .byte 0xA0, 0x00, 0xA9, 0x01, 0x20, 0xA8, 0x9F, 0xA5, 0x1E, 0x30, 0x0F, 0xC8, 0xC0, 0x28, 0xF0, 0xE3
-    .byte 0xC0, 0x18, 0xD0, 0xEE, 0x8E, 0x64, 0x05, 0x4C, 0xB2, 0x89, 0x8E, 0x64, 0x05, 0x60, 0xD0, 0xFF
-    .byte 0x03, 0xE8, 0xA8, 0xA2, 0x06, 0x20, 0xB9, 0xC4, 0x98, 0x0A, 0xAA, 0xBD, 0x00, 0xBD, 0x8D, 0x54
-    .byte 0x06, 0xBD, 0x01, 0xBD, 0x8D, 0x55, 0x06, 0xA9, 0x80, 0x8D, 0x52, 0x06, 0xA9, 0x01, 0x8D, 0x53
-    .byte 0x06, 0xA9, 0x00, 0x85, 0x90, 0xA9, 0x02, 0x85, 0x91, 0xA6, 0x56, 0x20, 0xB9, 0xC4, 0x60, 0xAD
-    .byte 0x52, 0x06, 0x30, 0x03, 0x4C, 0x90, 0x8A, 0xCE, 0x53, 0x06, 0xF0, 0x03, 0x4C, 0x90, 0x8A, 0xA2
-    .byte 0x06, 0x20, 0xB9, 0xC4, 0xAD, 0x54, 0x06, 0x85, 0xE6, 0xAD, 0x55, 0x06, 0x85, 0xE7, 0xAD, 0x52
-    .byte 0x06, 0xEE, 0x52, 0x06, 0x29, 0x3F, 0x18, 0x65, 0xE6, 0x85, 0xE6, 0xA5, 0xE7, 0x69, 0x00, 0x85
-    .byte 0xE7, 0xA0, 0x00, 0xB1, 0xE6, 0xC9, 0xFF, 0xF0, 0x4D, 0xC9, 0xFE, 0xF0, 0x3E, 0x29, 0xF8, 0x85
-    .byte 0xE8, 0x4A, 0x18, 0x65, 0xE8, 0x85, 0xE8, 0xA9, 0x00, 0x69, 0x00, 0x85, 0xE9, 0xA5, 0xE8, 0x18
-    .byte 0x69, 0x80, 0x85, 0xE8, 0xA5, 0xE9, 0x69, 0xBD, 0x85, 0xE9, 0xA0, 0x02, 0xA2, 0x23, 0x20, 0x91
-    .byte 0x8A, 0xA0, 0x03, 0xA2, 0x23, 0x20, 0x91, 0x8A, 0xA0, 0x04, 0xA2, 0x23, 0x20, 0x91, 0x8A, 0xA0
-    .byte 0x01, 0xB1, 0xE6, 0x29, 0x07, 0x8D, 0x53, 0x06, 0x4C, 0x8B, 0x8A, 0xAD, 0x52, 0x06, 0x29, 0xC0
-    .byte 0x8D, 0x52, 0x06, 0x4C, 0x14, 0x8A, 0xA9, 0x00, 0x8D, 0x52, 0x06, 0xA6, 0x56, 0x20, 0xB9, 0xC4
-    .byte 0x60, 0xA9, 0x84, 0x20, 0x28, 0x9B, 0xA0, 0x00, 0xB1, 0xE8, 0x9D, 0xE8, 0x05, 0xE8, 0xC8, 0xC0
-    .byte 0x04, 0xD0, 0xF5, 0x20, 0x5E, 0x9B, 0xA5, 0xE8, 0x18, 0x69, 0x04, 0x85, 0xE8, 0xA5, 0xE9, 0x69
-    .byte 0x00, 0x85, 0xE9, 0x60, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x10, 0x11
-    .byte 0x12, 0x13, 0x14, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x46, 0x47, 0x48, 0x49, 0x4A, 0x4B, 0x4C, 0x4D
-    .byte 0x4E, 0x4F, 0x50, 0x51, 0x52, 0x53, 0x54, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x1A, 0x1B, 0x1C, 0x1D
-    .byte 0x1E, 0x5A, 0x5B, 0x5C, 0x5D, 0x5E, 0x01, 0x0A, 0x14, 0x28, 0x3C, 0x50, 0x78, 0xF0, 0x00, 0x03
-    .byte 0x10, 0x04, 0x20, 0x05, 0x60, 0x06, 0xFF, 0x85, 0xED, 0xA9, 0x00, 0x85, 0x09, 0x85, 0x0A, 0x85
-    .byte 0x0D, 0x85, 0x0E, 0xA5, 0x5B, 0x29, 0x7F, 0x85, 0x5B, 0xA5, 0x25, 0x85, 0x77, 0xA2, 0x07, 0x20
-    .byte 0xB9, 0xC4, 0xA9, 0x00, 0xA0, 0xF8, 0x99, 0x52, 0x05, 0xC8, 0xD0, 0xFA, 0xA5, 0xED, 0x0A, 0xAA
-    .byte 0xA9, 0x00, 0x2A, 0xA8, 0x8A, 0x18, 0x69, 0x00, 0x85, 0x63, 0x98, 0x69, 0xA0, 0x85, 0x64, 0xA0
-    .byte 0x00, 0xB1, 0x63, 0xAA, 0xC8, 0xB1, 0x63, 0x85, 0x64, 0x86, 0x63, 0xA0, 0x00, 0xB1, 0x63, 0x85
-    .byte 0x75, 0xC8, 0xB1, 0x63, 0x85, 0x76, 0xC8, 0xB1, 0x63, 0xAA, 0x29, 0x3F, 0x85, 0x48, 0x8A, 0x46
-    .byte 0x5B, 0x2A, 0x26, 0x5B, 0xC8, 0xB1, 0x63, 0x85, 0x5E, 0xC8, 0xB1, 0x63, 0x85, 0x5F, 0xC8, 0xB1
-    .byte 0x63, 0x29, 0xF8, 0x85, 0x5C, 0xA9, 0x02, 0x85, 0x5D, 0x06, 0x5C, 0x26, 0x5D, 0x06, 0x5C, 0x26
-    .byte 0x5D, 0xB1, 0x63, 0x29, 0x07, 0x05, 0x5C, 0x85, 0x5C, 0x06, 0x5C, 0x26, 0x5D, 0x06, 0x5C, 0x26
-    .byte 0x5D, 0xA5, 0x5D, 0x29, 0x0C, 0xD0, 0x0C, 0xA5, 0x7B, 0x0A, 0x0A, 0x45, 0x5B, 0x29, 0x04, 0x05
-    .byte 0x5D, 0x85, 0x5D, 0xA5, 0x5E, 0xC9, 0x09, 0x90, 0x06, 0x20, 0x71, 0x90, 0x4C, 0xAB, 0x8B, 0xA5
-    .byte 0x5D, 0x29, 0x04, 0xD0, 0x06, 0x20, 0x71, 0x90, 0x4C, 0xAE, 0x8B, 0x20, 0x76, 0x90, 0xA9, 0x01
-    .byte 0x20, 0xA8, 0x9F, 0xA5, 0x63, 0x18, 0x69, 0x06, 0x85, 0x63, 0xA5, 0x64, 0x69, 0x00, 0x85, 0x64
-    .byte 0xA5, 0x5E, 0xA6, 0x5F, 0x20, 0xEE, 0x9D, 0xA5, 0x63, 0x18, 0x65, 0xEC, 0x85, 0x70, 0xA5, 0x64
-    .byte 0x65, 0xED, 0x85, 0x71, 0xA9, 0x00, 0x85, 0x60, 0xA0, 0x01, 0xB1, 0x70, 0x29, 0xE0, 0x85, 0x62
-    .byte 0xB1, 0x70, 0x29, 0x1F, 0xAA, 0x4A, 0x66, 0x60, 0x4A, 0x66, 0x60, 0x85, 0x61, 0x8A, 0xF0, 0x03
-    .byte 0xC8, 0xB1, 0x70, 0x85, 0x72, 0xA5, 0x62, 0x29, 0xC0, 0xF0, 0x48, 0xC9, 0x40, 0xF0, 0x16, 0xC9
-    .byte 0x80, 0xF0, 0x09, 0xA9, 0x04, 0xA2, 0x01, 0xA4, 0x5F, 0x4C, 0x59, 0x8C, 0xA9, 0x04, 0xA2, 0x01
-    .byte 0xA4, 0x5F, 0x4C, 0x59, 0x8C, 0xA5, 0x5E, 0xA6, 0x5F, 0x20, 0xEE, 0x9D, 0xA5, 0xEC, 0x38, 0xE9
-    .byte 0x01, 0x85, 0xEC, 0xA5, 0xED, 0xE9, 0x00, 0x85, 0xED, 0xA5, 0x63, 0x18, 0x65, 0xEC, 0x85, 0x63
-    .byte 0xA5, 0x64, 0x65, 0xED, 0x85, 0x64, 0xA9, 0x00, 0x38, 0xE5, 0x5F, 0xA8, 0xA9, 0xFC, 0xA2, 0xFF
-    .byte 0x4C, 0x59, 0x8C, 0xA5, 0x5F, 0x38, 0xE9, 0x01, 0x18, 0x65, 0x63, 0x85, 0x63, 0xA5, 0x64, 0x69
-    .byte 0x00, 0x85, 0x64, 0xA9, 0xFC, 0xA2, 0xFF, 0xA4, 0x5F, 0x85, 0x6D, 0x86, 0x6E, 0x84, 0x6F, 0xA5
-    .byte 0x5E, 0xC9, 0x07, 0x90, 0x24, 0x38, 0xE9, 0x07, 0x85, 0x5E, 0xA0, 0x07, 0xA6, 0x5F, 0x20, 0x15
-    .byte 0x8E, 0xA9, 0x01, 0x85, 0x7B, 0xA2, 0x09, 0xA9, 0xB9, 0x95, 0x00, 0xA9, 0x8C, 0x95, 0x01, 0xA0
-    .byte 0x78, 0xA9, 0x00, 0x20, 0x69, 0x9F, 0x4C, 0xA5, 0x8C, 0xA4, 0x5E, 0xA6, 0x5F, 0x20, 0x15, 0x8E
-    .byte 0xA5, 0x72, 0xF0, 0x11, 0xA2, 0x09, 0xA9, 0x21, 0x95, 0x00, 0xA9, 0x8D, 0x95, 0x01, 0xA0, 0x78
-    .byte 0xA9, 0x00, 0x20, 0x69, 0x9F, 0xA5, 0x75, 0x85, 0x8E, 0xA5, 0x76, 0x85, 0x8F, 0xA9, 0x00, 0x85
-    .byte 0x44, 0x85, 0x45, 0x85, 0x7A, 0xA6, 0x77, 0x4C, 0xB9, 0xC4, 0xA2, 0x07, 0x20, 0xB9, 0xC4, 0xA9
-    .byte 0x00, 0x85, 0x69, 0x85, 0x6A, 0x24, 0x62, 0x30, 0x0D, 0xA9, 0x00, 0x38, 0xE5, 0x60, 0x85, 0x60
-    .byte 0xA9, 0x00, 0xE5, 0x61, 0x85, 0x61, 0xA9, 0x01, 0x20, 0xA8, 0x9F, 0xA5, 0x60, 0x18, 0x65, 0x69
-    .byte 0x85, 0x69, 0xA9, 0x00, 0x65, 0x61, 0xAA, 0x20, 0xA9, 0x9B, 0x8A, 0x10, 0x05, 0x49, 0xFF, 0x18
-    .byte 0x69, 0x01, 0x18, 0x65, 0x6A, 0x85, 0x6A, 0x38, 0xE9, 0x20, 0x90, 0xDA, 0x85, 0x6A, 0xA5, 0x5B
-    .byte 0x10, 0x08, 0xA9, 0x01, 0x20, 0xA8, 0x9F, 0x4C, 0xFE, 0x8C, 0xA2, 0x0D, 0xA9, 0xFE, 0x95, 0x00
-    .byte 0xA9, 0x8D, 0x95, 0x01, 0xA0, 0xA0, 0xA9, 0x00, 0x20, 0x69, 0x9F, 0xC6, 0x5E, 0xD0, 0xB7, 0x4C
-    .byte 0x59, 0x8D, 0xA2, 0x07, 0x20, 0xB9, 0xC4, 0xA2, 0x02, 0xA0, 0x00, 0xB1, 0x70, 0xF0, 0x0B, 0x0A
-    .byte 0x90, 0x09, 0xAA, 0xA9, 0xFE, 0x20, 0xA8, 0x9F, 0xE8, 0xE8, 0x8A, 0x20, 0xA8, 0x9F, 0xA9, 0x00
-    .byte 0x85, 0x69, 0x85, 0x6A, 0x24, 0x62, 0x30, 0x0D, 0xA9, 0x00, 0x38, 0xE5, 0x60, 0x85, 0x60, 0xA9
-    .byte 0x00, 0xE5, 0x61, 0x85, 0x61, 0x24, 0x62, 0x50, 0x2F, 0xA9, 0x01, 0x20, 0xA8, 0x9F, 0xA5, 0x60
-    .byte 0x18, 0x65, 0x69, 0x85, 0x69, 0xA9, 0x00, 0x65, 0x61, 0xAA, 0x20, 0xA9, 0x9B, 0x8A, 0x10, 0x05
-    .byte 0x49, 0xFF, 0x18, 0x69, 0x01, 0x18, 0x65, 0x6A, 0x85, 0x6A, 0x38, 0xE9, 0x20, 0x90, 0xDA, 0x85
-    .byte 0x6A, 0xC6, 0x72, 0xD0, 0xD4, 0x4C, 0xC8, 0x8D, 0xA9, 0x01, 0x20, 0xA8, 0x9F, 0xA5, 0x60, 0x18
-    .byte 0x65, 0x69, 0x85, 0x69, 0xA9, 0x00, 0x65, 0x61, 0xAA, 0x20, 0xCA, 0x9B, 0x8A, 0x10, 0x05, 0x49
-    .byte 0xFF, 0x18, 0x69, 0x01, 0x18, 0x65, 0x6A, 0x85, 0x6A, 0x38, 0xE9, 0x20, 0x90, 0xDA, 0x85, 0x6A
-    .byte 0xC6, 0x72, 0xD0, 0xD4, 0xA5, 0x7A, 0x38, 0xE5, 0x6A, 0x85, 0x7A, 0xA5, 0x7B, 0xE9, 0x00, 0x85
-    .byte 0x7B, 0xA5, 0x47, 0x38, 0xE5, 0x6A, 0x85, 0x47, 0xA5, 0x62, 0x29, 0x20, 0xD0, 0x2E, 0xA5, 0x70
-    .byte 0x18, 0x69, 0x03, 0x85, 0x70, 0xA5, 0x71, 0x69, 0x00, 0x85, 0x71, 0xA9, 0x00, 0x85, 0x60, 0xA0
-    .byte 0x01, 0xB1, 0x70, 0x29, 0xE0, 0x85, 0x62, 0xB1, 0x70, 0x29, 0x1F, 0xAA, 0x4A, 0x66, 0x60, 0x4A
-    .byte 0x66, 0x60, 0x85, 0x61, 0xC8, 0xB1, 0x70, 0x85, 0x72, 0x4C, 0x22, 0x8D, 0x4C, 0x7E, 0x9F, 0xA5
-    .byte 0x5B, 0x09, 0x80, 0x85, 0x5B, 0xA0, 0x01, 0xA6, 0x5F, 0x20, 0x15, 0x8E, 0xA5, 0x5B, 0x29, 0x7F
-    .byte 0x85, 0x5B, 0x4C, 0x7E, 0x9F, 0x84, 0x6C, 0x86, 0x6B, 0xA5, 0x63, 0x85, 0x65, 0xA5, 0x64, 0x85
-    .byte 0x66, 0xA5, 0x6B, 0x85, 0xED, 0xA5, 0x5C, 0x85, 0x73, 0xA5, 0x5D, 0x85, 0x74, 0xA0, 0x00, 0xB1
-    .byte 0x63, 0x20, 0xF0, 0x8E, 0xA5, 0x5C, 0xAA, 0x18, 0x65, 0x6D, 0x85, 0x5C, 0x8A, 0x45, 0x5C, 0x29
-    .byte 0x20, 0xF0, 0x15, 0xA5, 0x6D, 0x0A, 0x0A, 0x0A, 0x49, 0xFF, 0x18, 0x69, 0x01, 0x18, 0x65, 0x5C
-    .byte 0x85, 0x5C, 0xA5, 0x5D, 0x49, 0x04, 0x85, 0x5D, 0xA5, 0x6E, 0x48, 0x18, 0x65, 0x63, 0x85, 0x63
-    .byte 0x68, 0x30, 0x07, 0xA5, 0x64, 0x69, 0x00, 0x4C, 0x6E, 0x8E, 0xA5, 0x64, 0xE9, 0x00, 0x85, 0x64
-    .byte 0xC6, 0xED, 0xD0, 0xB9, 0xA5, 0x6F, 0x48, 0x18, 0x65, 0x65, 0x85, 0x63, 0x68, 0x30, 0x07, 0xA5
-    .byte 0x66, 0x69, 0x00, 0x4C, 0x8A, 0x8E, 0xA5, 0x66, 0xE9, 0x00, 0x85, 0x64, 0xA5, 0x62, 0x29, 0xC0
-    .byte 0xC9, 0x40, 0xF0, 0x2E, 0xA5, 0x73, 0x18, 0x69, 0x80, 0x85, 0x5C, 0xAA, 0xA5, 0x74, 0x69, 0x00
-    .byte 0x85, 0x5D, 0x8A, 0x38, 0xE9, 0x40, 0x10, 0x40, 0xA5, 0x5D, 0xE9, 0x00, 0x29, 0x03, 0xC9, 0x03
-    .byte 0xD0, 0x36, 0xA5, 0x5C, 0x38, 0xE9, 0xC0, 0x85, 0x5C, 0xA5, 0x5D, 0xE9, 0x03, 0x85, 0x5D, 0x4C
-    .byte 0xE8, 0x8E, 0xA5, 0x73, 0x38, 0xE9, 0x80, 0x85, 0x5C, 0xAA, 0xA5, 0x74, 0xE9, 0x00, 0x85, 0x5D
-    .byte 0x8A, 0x10, 0x15, 0xA5, 0x5D, 0x29, 0x03, 0xC9, 0x03, 0xD0, 0x0D, 0xA5, 0x5C, 0x18, 0x69, 0xC0
-    .byte 0x85, 0x5C, 0xA5, 0x5D, 0x69, 0x03, 0x85, 0x5D, 0xC6, 0x6C, 0xF0, 0x03, 0x4C
+    EOR ($18),Y
+    ADC #$40
+    STA $51
+    LDA $52
+    ADC #$00
+    STA $52
+    INC $4D
+    BNE @E852
+    INC $4E
+    @E852: JMP $84E3
+    JSR $88B1
+    LDA #$04
+    JSR $9FA8
+    LDA #$01
+    JMP $8887
+    INY
+    LDA ($4D),Y
+    TAX
+    INY
+    LDA ($4D),Y
+    STA $4E
+    STX $4D
+    JMP $84E7
+    LDA #$00
+    STA $4D
+    STA $4E
+    JMP $9F7E
+    CLC
+    ADC $4D
+    STA $4D
+    LDA $4E
+    ADC #$00
+    STA $4E
+    JMP $84E7
+    CLC
+    ADC $4D
+    STA $4D
+    LDA $4E
+    ADC #$00
+    STA $4E
+    JMP $84D7
+    STA $57
+    LDX #$0D
+    LDA #$A8
+    STA $00,X
+    LDA #$88
+    STA $01,X
+    LDY #$A0
+    LDA #$00
+    JSR $9F69
+    RTS
+    LDX #$02
+    JSR $C4B9
+    JMP $A206
+    LDA $54
+    EOR #$FF
+    CLC
+    ADC #$1F
+    TAX
+    LDY #$08
+    LDA $4F
+    AND #$E0
+    ORA $54
+    STA $E6
+    LDA $50
+    STA $E7
+    JMP $98E8
+    PHA
+    LDA #$82
+    JSR $9B28
+    PLA
+    CMP #$A0
+    BCC @E8ED
+    PHA
+    CMP #$C8
+    LDA #$94
+    ADC #$00
+    STA $05E8,X
+    INX
+    PLA
+    TAY
+    LDA $8A14,Y
+    STA $05E8,X
+    INX
+    JSR $9B5E
+    RTS
+    @E8ED: STA $05E9,X
+    LDA #$00
+    STA $05E8,X
+    INX
+    INX
+    JSR $9B5E
+    RTS
+    LDX #$00
+    @E8FD: LDA $046A,X
+    EOR #$20
+    STA $046A,X
+    INX
+    INX
+    INX
+    INX
+    BNE @E8FD
+    RTS
+    STA $ED
+    LDX #$00
+    @E910: LDA $0468,X
+    CLC
+    ADC $ED
+    STA $0468,X
+    INX
+    INX
+    INX
+    INX
+    BNE @E910
+    RTS
+    LDX #$13
+    JSR $9DEE
+    LDA $EC
+    CLC
+    ADC #$00
+    STA $EC
+    LDA $ED
+    ADC #$BF
+    STA $ED
+    LDA $25
+    STA $EA
+    LDX #$06
+    JSR $C4B9
+    @E93B: LDA $78
+    BNE @E93B
+    LDY #$00
+    LDA ($EC),Y
+    STA $0079
+    LDA #$00
+    STA $007A
+    INY
+    LDX #$12
+    @E94E: LDA ($EC),Y
+    STA $007B,Y
+    INY
+    DEX
+    BNE @E94E
+    LDX $EA
+    JSR $C4B9
+    RTS
+    TAX
+    LDA $99
+    BPL @E966
+    EOR #$41
+    STA $99
+    @E966: LDA #$01
+    JSR $9FA8
+    TXA
+    PHA
+    JSR $89FF
+    PLA
+    TAX
+    DEX
+    BNE @E966
+    RTS
+    LDA $4D
+    STA $EA
+    LDA $4E
+    STA $EB
+    LDA #$02
+    STA $E6
+    STX $E7
+    STY $E8
+    LDA #$E5
+    STA $4D
+    LDA #$00
+    STA $4E
+    JSR $9085
+    LDA $EA
+    STA $4D
+    LDA $EB
+    STA $4E
+    RTS
+    LDA $99
+    AND #$80
+    ORA #$40
+    STA $99
+    RTS
+    @E9A3: LDY #$FC
+    @E9A5: LDA $88D2,Y
+    STA $0468,Y
+    INY
+    BNE @E9A5
+    LDX #$F8
+    LDY #$00
+    @E9B2: LDA #$01
+    JSR $9FA8
+    LDA $1E
+    BMI @E9CA
+    INY
+    CPY #$28
+    BEQ @E9A3
+    CPY #$18
+    BNE @E9B2
+    STX $0564
+    JMP $89B2
+    @E9CA: STX $0564
+    RTS
+    BNE @E9CF
+    .byte $03
+    INX
+    TAY
+    LDX #$06
+    JSR $C4B9
+    TYA
+    ASL A
+    TAX
+    LDA $BD00,X
+    STA $0654
+    LDA $BD01,X
+    STA $0655
+    LDA #$80
+    STA $0652
+    LDA #$01
+    STA $0653
+    LDA #$00
+    STA $90
+    LDA #$02
+    STA $91
+    LDX $56
+    JSR $C4B9
+    RTS
+    LDA $0652
+    BMI @EA07
+    JMP $8A90
+    @EA07: DEC $0653
+    BEQ @EA0F
+    JMP $8A90
+    @EA0F: LDX #$06
+    JSR $C4B9
+    LDA $0654
+    STA $E6
+    LDA $0655
+    STA $E7
+    LDA $0652
+    INC $0652
+    AND #$3F
+    CLC
+    ADC $E6
+    STA $E6
+    LDA $E7
+    ADC #$00
+    STA $E7
+    LDY #$00
+    LDA ($E6),Y
+    CMP #$FF
+    BEQ @EA86
+    CMP #$FE
+    BEQ @EA7B
+    AND #$F8
+    STA $E8
+    LSR A
+    CLC
+    ADC $E8
+    STA $E8
+    LDA #$00
+    ADC #$00
+    STA $E9
+    LDA $E8
+    CLC
+    ADC #$80
+    STA $E8
+    LDA $E9
+    ADC #$BD
+    STA $E9
+    LDY #$02
+    LDX #$23
+    JSR $8A91
+    LDY #$03
+    LDX #$23
+    JSR $8A91
+    LDY #$04
+    LDX #$23
+    JSR $8A91
+    LDY #$01
+    LDA ($E6),Y
+    AND #$07
+    STA $0653
+    JMP $8A8B
+    @EA7B: LDA $0652
+    AND #$C0
+    STA $0652
+    JMP $8A14
+    @EA86: LDA #$00
+    STA $0652
+    LDX $56
+    JSR $C4B9
+    RTS
+    LDA #$84
+    JSR $9B28
+    LDY #$00
+    @EA98: LDA ($E8),Y
+    STA $05E8,X
+    INX
+    INY
+    CPY #$04
+    BNE @EA98
+    JSR $9B5E
+    LDA $E8
+    CLC
+    ADC #$04
+    STA $E8
+    LDA $E9
+    ADC #$00
+    STA $E9
+    RTS
+    ASL $07
+    PHP
+    ORA #$0A
+    .byte $0B, $0C
+    ORA $0F0E
+    BPL @EAD1
+    .byte $12, $13, $14
+    NOP
+    .byte $1B, $1C
+    ORA $461E,X
+    .byte $47
+    PHA
+    EOR #$4A
+    .byte $4B
+    JMP $4E4D
+  @EAD1:
+    .byte $4F
+    BVC @EB25
+    .byte $52, $53, $54
+    NOP
+    .byte $5B, $5C
+    EOR $1A5E,X
+    .byte $1B, $1C
+    ORA $5A1E,X
+    .byte $5B, $5C
+    EOR $015E,X
+    ASL A
+    .byte $14
+    PLP
+    .byte $3C
+    BVC @EB65
+    BEQ @EAEF
+  @EAEF:
+    .byte $03
+    BPL @EAF6
+    JSR $6005
+    ASL $FF
+    STA $ED
+    LDA #$00
+    STA $09
+    STA $0A
+    STA $0D
+    STA $0E
+    LDA $5B
+    AND #$7F
+    STA $5B
+    LDA $25
+    STA $77
+    LDX #$07
+    JSR $C4B9
+    LDA #$00
+    LDY #$F8
+    @EB16: STA $0552,Y
+    INY
+    BNE @EB16
+    LDA $ED
+    ASL A
+    TAX
+    LDA #$00
+    ROL A
+    TAY
+    TXA
+    @EB25: CLC
+    ADC #$00
+    STA $63
+    TYA
+    ADC #$A0
+    STA $64
+    LDY #$00
+    LDA ($63),Y
+    TAX
+    INY
+    LDA ($63),Y
+    STA $64
+    STX $63
+    LDY #$00
+    LDA ($63),Y
+    STA $75
+    INY
+    LDA ($63),Y
+    STA $76
+    INY
+    LDA ($63),Y
+    TAX
+    AND #$3F
+    STA $48
+    TXA
+    LSR $5B
+    ROL A
+    ROL $5B
+    INY
+    LDA ($63),Y
+    STA $5E
+    INY
+    LDA ($63),Y
+    STA $5F
+    INY
+    LDA ($63),Y
+    AND #$F8
+    STA $5C
+    @EB65: LDA #$02
+    STA $5D
+    ASL $5C
+    ROL $5D
+    ASL $5C
+    ROL $5D
+    LDA ($63),Y
+    AND #$07
+    ORA $5C
+    STA $5C
+    ASL $5C
+    ROL $5D
+    ASL $5C
+    ROL $5D
+    LDA $5D
+    AND #$0C
+    BNE @EB93
+    LDA $7B
+    ASL A
+    ASL A
+    EOR $5B
+    AND #$04
+    ORA $5D
+    STA $5D
+    @EB93: LDA $5E
+    CMP #$09
+    BCC @EB9F
+    JSR $9071
+    JMP $8BAB
+    @EB9F: LDA $5D
+    AND #$04
+    BNE @EBAB
+    JSR $9071
+    JMP $8BAE
+    @EBAB: JSR $9076
+    LDA #$01
+    JSR $9FA8
+    LDA $63
+    CLC
+    ADC #$06
+    STA $63
+    LDA $64
+    ADC #$00
+    STA $64
+    LDA $5E
+    LDX $5F
+    JSR $9DEE
+    LDA $63
+    CLC
+    ADC $EC
+    STA $70
+    LDA $64
+    ADC $ED
+    STA $71
+    LDA #$00
+    STA $60
+    LDY #$01
+    LDA ($70),Y
+    AND #$E0
+    STA $62
+    LDA ($70),Y
+    AND #$1F
+    TAX
+    LSR A
+    ROR $60
+    LSR A
+    ROR $60
+    STA $61
+    TXA
+    BEQ @EBF3
+    INY
+    LDA ($70),Y
+    @EBF3: STA $72
+    LDA $62
+    AND #$C0
+    BEQ @EC43
+    CMP #$40
+    BEQ @EC15
+    CMP #$80
+    BEQ @EC0C
+    LDA #$04
+    LDX #$01
+    LDY $5F
+    JMP $8C59
+    @EC0C: LDA #$04
+    LDX #$01
+    LDY $5F
+    JMP $8C59
+    @EC15: LDA $5E
+    LDX $5F
+    JSR $9DEE
+    LDA $EC
+    SEC
+    SBC #$01
+    STA $EC
+    LDA $ED
+    SBC #$00
+    STA $ED
+    LDA $63
+    CLC
+    ADC $EC
+    STA $63
+    LDA $64
+    ADC $ED
+    STA $64
+    LDA #$00
+    SEC
+    SBC $5F
+    TAY
+    LDA #$FC
+    LDX #$FF
+    JMP $8C59
+    @EC43: LDA $5F
+    SEC
+    SBC #$01
+    CLC
+    ADC $63
+    STA $63
+    LDA $64
+    ADC #$00
+    STA $64
+    LDA #$FC
+    LDX #$FF
+    LDY $5F
+    STA $6D
+    STX $6E
+    STY $6F
+    LDA $5E
+    CMP #$07
+    BCC @EC89
+    SEC
+    SBC #$07
+    STA $5E
+    LDY #$07
+    LDX $5F
+    JSR $8E15
+    LDA #$01
+    STA $7B
+    LDX #$09
+    LDA #$B9
+    STA $00,X
+    LDA #$8C
+    STA $01,X
+    LDY #$78
+    LDA #$00
+    JSR $9F69
+    JMP $8CA5
+    @EC89: LDY $5E
+    LDX $5F
+    JSR $8E15
+    LDA $72
+    BEQ @ECA5
+    LDX #$09
+    LDA #$21
+    STA $00,X
+    LDA #$8D
+    STA $01,X
+    LDY #$78
+    LDA #$00
+    JSR $9F69
+    @ECA5: LDA $75
+    STA $8E
+    LDA $76
+    STA $8F
+    LDA #$00
+    STA $44
+    STA $45
+    STA $7A
+    LDX $77
+    JMP $C4B9
+    LDX #$07
+    JSR $C4B9
+    LDA #$00
+    STA $69
+    STA $6A
+    BIT $62
+    BMI @ECD6
+    LDA #$00
+    SEC
+    SBC $60
+    STA $60
+    LDA #$00
+    SBC $61
+    STA $61
+    @ECD6: LDA #$01
+    JSR $9FA8
+    LDA $60
+    CLC
+    ADC $69
+    STA $69
+    LDA #$00
+    ADC $61
+    TAX
+    JSR $9BA9
+    TXA
+    BPL @ECF2
+    EOR #$FF
+    CLC
+    ADC #$01
+    @ECF2: CLC
+    ADC $6A
+    STA $6A
+    SEC
+    SBC #$20
+    BCC @ECD6
+    STA $6A
+    LDA $5B
+    BPL @ED0A
+    LDA #$01
+    JSR $9FA8
+    JMP $8CFE
+    @ED0A: LDX #$0D
+    LDA #$FE
+    STA $00,X
+    LDA #$8D
+    STA $01,X
+    LDY #$A0
+    LDA #$00
+    JSR $9F69
+    DEC $5E
+    BNE @ECD6
+    JMP $8D59
+    LDX #$07
+    JSR $C4B9
+    LDX #$02
+    LDY #$00
+    LDA ($70),Y
+    BEQ @ED3A
+    ASL A
+    BCC @ED3B
+    TAX
+    LDA #$FE
+    JSR $9FA8
+    INX
+    INX
+    @ED3A: TXA
+    @ED3B: JSR $9FA8
+    LDA #$00
+    STA $69
+    STA $6A
+    BIT $62
+    BMI @ED55
+    LDA #$00
+    SEC
+    SBC $60
+    STA $60
+    LDA #$00
+    SBC $61
+    STA $61
+    @ED55: BIT $62
+    BVC @ED88
+    @ED59: LDA #$01
+    JSR $9FA8
+    LDA $60
+    CLC
+    ADC $69
+    STA $69
+    LDA #$00
+    ADC $61
+    TAX
+    JSR $9BA9
+    TXA
+    BPL @ED75
+    EOR #$FF
+    CLC
+    ADC #$01
+    @ED75: CLC
+    ADC $6A
+    STA $6A
+    SEC
+    SBC #$20
+    BCC @ED59
+    STA $6A
+    DEC $72
+    BNE @ED59
+    JMP $8DC8
+    @ED88: LDA #$01
+    JSR $9FA8
+    LDA $60
+    CLC
+    ADC $69
+    STA $69
+    LDA #$00
+    ADC $61
+    TAX
+    JSR $9BCA
+    TXA
+    BPL @EDA4
+    EOR #$FF
+    CLC
+    ADC #$01
+    @EDA4: CLC
+    ADC $6A
+    STA $6A
+    SEC
+    SBC #$20
+    BCC @ED88
+    STA $6A
+    DEC $72
+    BNE @ED88
+    LDA $7A
+    SEC
+    SBC $6A
+    STA $7A
+    LDA $7B
+    SBC #$00
+    STA $7B
+    LDA $47
+    SEC
+    SBC $6A
+    STA $47
+    LDA $62
+    AND #$20
+    BNE @EDFC
+    LDA $70
+    CLC
+    ADC #$03
+    STA $70
+    LDA $71
+    ADC #$00
+    STA $71
+    LDA #$00
+    STA $60
+    LDY #$01
+    LDA ($70),Y
+    AND #$E0
+    STA $62
+    LDA ($70),Y
+    AND #$1F
+    TAX
+    LSR A
+    ROR $60
+    LSR A
+    ROR $60
+    STA $61
+    INY
+    LDA ($70),Y
+    STA $72
+    JMP $8D22
+    @EDFC: JMP $9F7E
+    LDA $5B
+    ORA #$80
+    STA $5B
+    LDY #$01
+    LDX $5F
+    JSR $8E15
+    LDA $5B
+    AND #$7F
+    STA $5B
+    JMP $9F7E
+    STY $6C
+    STX $6B
+    LDA $63
+    STA $65
+    LDA $64
+    STA $66
+    LDA $6B
+    STA $ED
+    LDA $5C
+    STA $73
+    LDA $5D
+    STA $74
+    @EE2D: LDY #$00
+    LDA ($63),Y
+    JSR $8EF0
+    LDA $5C
+    TAX
+    CLC
+    ADC $6D
+    STA $5C
+    TXA
+    EOR $5C
+    AND #$20
+    BEQ @EE58
+    LDA $6D
+    ASL A
+    ASL A
+    ASL A
+    EOR #$FF
+    CLC
+    ADC #$01
+    CLC
+    ADC $5C
+    STA $5C
+    LDA $5D
+    EOR #$04
+    STA $5D
+    @EE58: LDA $6E
+    PHA
+    CLC
+    ADC $63
+    STA $63
+    PLA
+    BMI @EE6A
+    LDA $64
+    ADC #$00
+    JMP $8E6E
+    @EE6A: LDA $64
+    SBC #$00
+    STA $64
+    DEC $ED
+    BNE @EE2D
+    LDA $6F
+    PHA
+    CLC
+    ADC $65
+    STA $63
+    PLA
+    BMI @EE86
+    LDA $66
+    ADC #$00
+    JMP $8E8A
+    @EE86: LDA $66
+    SBC #$00
+    STA $64
+    LDA $62
+    AND #$C0
+    CMP #$40
+    BEQ @EEC2
+    LDA $73
+    CLC
+    ADC #$80
+    STA $5C
+    TAX
+    LDA $74
+    ADC #$00
+    STA $5D
+    TXA
+    SEC
+    SBC #$40
+    BPL @EEE8
+    LDA $5D
+    SBC #$00
+    AND #$03
+    CMP #$03
+    BNE @EEE8
+    LDA $5C
+    SEC
+    SBC #$C0
+    STA $5C
+    LDA $5D
+    SBC #$03
+    STA $5D
+    JMP $8EE8
+    @EEC2: LDA $73
+    SEC
+    SBC #$80
+    STA $5C
+    TAX
+    LDA $74
+    SBC #$00
+    STA $5D
+    TXA
+    BPL @EEE8
+    LDA $5D
+    AND #$03
+    CMP #$03
+    BNE @EEE8
+    LDA $5C
+    CLC
+    ADC #$C0
+    STA $5C
+    LDA $5D
+    ADC #$03
+    STA $5D
+    @EEE8: DEC $6C
+    .byte $F0, $03  ; BEQ $8EEF
+    .byte $4C
   `;
 }
 
 // ════════ $9EED-$9FA7: 任务调度器/协程系统 ═══════=
 function buildscheduler(): readonly number[] {
-  // $9EED: ORA $608E,Y
-  // $9EF0: TAX
-  // $9EF1: LDA $5C
-  // $9EF3: STA $67
-  // $9EF5: LDA $5D
-  // $9EF7: STA $68
-  // $9EF9: LDA $5B
-  // $9EFB: AND #$01
-  // $9EFD: TAY
-  // $9EFE: STA $EB
-  // $9F00: TXA
-  // $9F01: STA $EA
-  // $9F03: ASL A
-  // $9F04: ROL $EB
-  // $9F06: ASL A
-  // $9F07: ROL $EB
-  // $9F09: ASL A
-  // $9F0A: ROL $EB
-  // $9F0C: ASL A
-  // $9F0D: ROL $EB
-  // $9F0F: CLC
-  // $9F10: ADC $EA
-  // $9F12: STA $EA
-  // $9F14: TYA
-  // $9F15: ADC $EB
-  // $9F17: STA $EB
-  // $9F19: LDA $EA
-  // $9F1B: CLC
-  // $9F1C: ADC #$00
-  // $9F1E: STA $EA
-  // $9F20: LDA $EB
-  // $9F22: ADC #$A0
-  // $9F24: STA $EB
-  // $9F26: LDX #$08
-  // $9F28: JSR $C4B9
-  // $9F2B: LDY #$00
-  // $9F2D: LDA (EA),Y
-  // $9F2F: STA $E7
-  // $9F31: JSR $8FD1
-  // $9F34: INC $EA
-  // $9F36: BNE $9F3A
-  // $9F38: INC $EB
-  // $9F3A: LDA #$04
-  // $9F3C: STA $E8
-  // $9F3E: LDY $67
-  // $9F40: LDX $68
-  // $9F42: LDA #$04
-  // $9F44: JSR $9B28
-  // $9F47: LDY #$00
-  // $9F49: LDA (EA),Y
-  // $9F4B: STA $05E8,X
-  // $9F4E: INX
-  // $9F4F: INY
-  // $9F50: CPY #$04
-  // $9F52: BNE $9F49
-  // $9F54: JSR $9B5E
-  // $9F57: DEC $E8
-  // $9F59: BEQ $9FCB
-  // $9F5B: LDA $EA
-  // $9F5D: CLC
-  // $9F5E: ADC #$04
-  // $9F60: STA $EA
-  // $9F62: LDA $EB
-  // $9F64: ADC #$00
-  // $9F66: STA $EB
-  // $9F68: LDA $67
-  // $9F6A: CLC
-  // $9F6B: ADC #$20
-  // $9F6D: STA $67
-  // $9F6F: LDA $68
-  // $9F71: ADC #$00
-  // $9F73: STA $68
-  // $9F75: AND #$03
-  // $9F77: CMP #$03
-  // $9F79: BNE $9F3E
-  // $9F7B: LDA $67
-  // $9F7D: CMP #$C0
-  // $9F7F: BCC $9F3E
-  // $9F81: LDA $67
-  // $9F83: SEC
-  // $9F84: SBC #$C0
-  // $9F86: STA $67
-  // $9F88: LDA $68
-  // $9F8A: SBC #$03
-  // $9F8C: STA $68
-  // $9F8E: JSR $9049
-  // $9F91: LDA #$01
-  // $9F93: JSR $9B28
-  // $9F96: LDA $67
-  // $9F98: LSR A
-  // $9F99: LSR A
-  // $9F9A: AND #$07
-  // $9F9C: TAY
-  // $9F9D: LDA $62
-  // $9F9F: AND #$C0
-  // $9FA1: CMP #$40
-  // $9FA3: BEQ $9FB8
-  // $9FA5: LDA $E7
-  // $9FA7: LSR A
   return asm`
-    .byte 0x19, 0x8E, 0x60, 0xAA, 0xA5, 0x5C, 0x85, 0x67, 0xA5, 0x5D, 0x85, 0x68, 0xA5, 0x5B, 0x29, 0x01
-    .byte 0xA8, 0x85, 0xEB, 0x8A, 0x85, 0xEA, 0x0A, 0x26, 0xEB, 0x0A, 0x26, 0xEB, 0x0A, 0x26, 0xEB, 0x0A
-    .byte 0x26, 0xEB, 0x18, 0x65, 0xEA, 0x85, 0xEA, 0x98, 0x65, 0xEB, 0x85, 0xEB, 0xA5, 0xEA, 0x18, 0x69
-    .byte 0x00, 0x85, 0xEA, 0xA5, 0xEB, 0x69, 0xA0, 0x85, 0xEB, 0xA2, 0x08, 0x20, 0xB9, 0xC4, 0xA0, 0x00
-    .byte 0xB1, 0xEA, 0x85, 0xE7, 0x20, 0xD1, 0x8F, 0xE6, 0xEA, 0xD0, 0x02, 0xE6, 0xEB, 0xA9, 0x04, 0x85
-    .byte 0xE8, 0xA4, 0x67, 0xA6, 0x68, 0xA9, 0x04, 0x20, 0x28, 0x9B, 0xA0, 0x00, 0xB1, 0xEA, 0x9D, 0xE8
-    .byte 0x05, 0xE8, 0xC8, 0xC0, 0x04, 0xD0, 0xF5, 0x20, 0x5E, 0x9B, 0xC6, 0xE8, 0xF0, 0x70, 0xA5, 0xEA
-    .byte 0x18, 0x69, 0x04, 0x85, 0xEA, 0xA5, 0xEB, 0x69, 0x00, 0x85, 0xEB, 0xA5, 0x67, 0x18, 0x69, 0x20
-    .byte 0x85, 0x67, 0xA5, 0x68, 0x69, 0x00, 0x85, 0x68, 0x29, 0x03, 0xC9, 0x03, 0xD0, 0xC3, 0xA5, 0x67
-    .byte 0xC9, 0xC0, 0x90, 0xBD, 0xA5, 0x67, 0x38, 0xE9, 0xC0, 0x85, 0x67, 0xA5, 0x68, 0xE9, 0x03, 0x85
-    .byte 0x68, 0x20, 0x49, 0x90, 0xA9, 0x01, 0x20, 0x28, 0x9B, 0xA5, 0x67, 0x4A, 0x4A, 0x29, 0x07, 0xA8
-    .byte 0xA5, 0x62, 0x29, 0xC0, 0xC9, 0x40, 0xF0, 0x13, 0xA5, 0xE7, 0x4A
+    ORA $608E,Y
+    TAX
+    LDA $5C
+    STA $67
+    LDA $5D
+    STA $68
+    LDA $5B
+    AND #$01
+    TAY
+    STA $EB
+    TXA
+    STA $EA
+    ASL A
+    ROL $EB
+    ASL A
+    ROL $EB
+    ASL A
+    ROL $EB
+    ASL A
+    ROL $EB
+    CLC
+    ADC $EA
+    STA $EA
+    TYA
+    ADC $EB
+    STA $EB
+    LDA $EA
+    CLC
+    ADC #$00
+    STA $EA
+    LDA $EB
+    ADC #$A0
+    STA $EB
+    LDX #$08
+    JSR $C4B9
+    LDY #$00
+    LDA ($EA),Y
+    STA $E7
+    JSR $8FD1
+    INC $EA
+    BNE @EF3A
+    INC $EB
+    @EF3A: LDA #$04
+    STA $E8
+    @EF3E: LDY $67
+    LDX $68
+    LDA #$04
+    JSR $9B28
+    LDY #$00
+    @EF49: LDA ($EA),Y
+    STA $05E8,X
+    INX
+    INY
+    CPY #$04
+    BNE @EF49
+    JSR $9B5E
+    DEC $E8
+    .byte $F0, $70  ; BEQ $9FCB
+    LDA $EA
+    CLC
+    ADC #$04
+    STA $EA
+    LDA $EB
+    ADC #$00
+    STA $EB
+    LDA $67
+    CLC
+    ADC #$20
+    STA $67
+    LDA $68
+    ADC #$00
+    STA $68
+    AND #$03
+    CMP #$03
+    BNE @EF3E
+    LDA $67
+    CMP #$C0
+    BCC @EF3E
+    LDA $67
+    SEC
+    SBC #$C0
+    STA $67
+    LDA $68
+    SBC #$03
+    STA $68
+    JSR $9049
+    LDA #$01
+    JSR $9B28
+    LDA $67
+    LSR A
+    LSR A
+    AND #$07
+    TAY
+    LDA $62
+    AND #$C0
+    CMP #$40
+    .byte $F0, $13  ; BEQ $9FB8
+    LDA $E7
+    LSR A
   `;
 }
 
