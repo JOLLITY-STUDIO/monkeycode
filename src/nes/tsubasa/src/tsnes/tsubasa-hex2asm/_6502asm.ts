@@ -341,13 +341,19 @@ function assemble(ir: IrLine[], baseOffset: number): readonly number[] {
     if (line.kind === 'byte') { offset += line.bytes.length; continue; }
     if (line.kind === 'dw')   { offset += line.words.length * 2; continue; }
     // inst
-    if (BRANCH_MNEMONICS.has(line.mnemonic) && line.mode === 'rel' && line.value > 0xFF
-      && (line.value - (baseOffset + offset + 2) < -128 || line.value - (baseOffset + offset + 2) > 127)) {
-      // 跨 bank 分支超范围 → 反转条件(2) + JMP abs(3) = 5 字节
-      offset += 5;
-      continue;
+    let expand = false;
+    if (BRANCH_MNEMONICS.has(line.mnemonic) && line.mode === 'rel') {
+      if (line.value > 0xFF) {
+        // 跨 bank 分支超范围
+        const rel = line.value - (baseOffset + offset + 2);
+        if (rel < -128 || rel > 127) expand = true;
+      } else if (line.labelRef && labelOffsets[line.labelRef] !== undefined) {
+        // 本地标签反向引用超范围（因之前展开推挤导致）
+        const rel = labelOffsets[line.labelRef] - (offset + 2);
+        if (rel < -128 || rel > 127) expand = true;
+      }
     }
-    offset += instSize(line.mode);
+    offset += expand ? 5 /* 反转条件(2) + JMP abs(3) */ : instSize(line.mode);
   }
 
   // ── Pass 2: 生成字节 ──
@@ -390,7 +396,17 @@ function assemble(ir: IrLine[], baseOffset: number): readonly number[] {
         // 分支: rel = target - (这里的 offset + 2)
         value = target - (offset + 2);
         if (value < -128 || value > 127) {
-          throw new Error(`[asm] line ${line.line}: branch offset to @${line.labelRef} out of range (${value})`);
+          // 超范围本地标签: 反转条件 + JMP 到标签绝对地址
+          // e.g. BVS @E738 → BVC *+3 ; JMP $base+offset
+          const invOpcode = opcode ^ 0x20;
+          out.push(invOpcode);
+          out.push(3); // 跳过 3 字节 JMP
+          out.push(0x4C); // JMP abs
+          const absAddr = baseOffset + target;
+          out.push(absAddr & 0xFF);
+          out.push((absAddr >> 8) & 0xFF);
+          offset += 5;
+          continue;
         }
         if (value < 0) value += 256;
       }
