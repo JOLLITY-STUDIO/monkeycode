@@ -538,7 +538,11 @@ class CPU {
     this._dmcFetchCycles = this._cyclesToNextDmcFetch();
     this._instrPC = this.REG_PC;
 
-    let opcode = this.loadFromCartridge(this.REG_PC + 1);
+    let fetchAddr = this.REG_PC + 1;
+    if ((fetchAddr & 0xfff8) === 0x01f8) {
+      console.log(`[tsnes] fetch from stack area: $${fetchAddr.toString(16)} (REG_PC=$${(this.REG_PC).toString(16)})`);
+    }
+    let opcode = this.loadFromCartridge(fetchAddr);
     this.dataBus = opcode;
     this.instrBusCycles = 1;
     this.nes.ppu.advanceDots(3);
@@ -549,7 +553,7 @@ class CPU {
     let addrMode = opinfo.mode;
 
     let opaddr = this.REG_PC;
-    this.REG_PC += opinfo.size;
+    this.REG_PC = (this.REG_PC + opinfo.size) & 0xffff;
 
     let addr = 0;
     switch (addrMode) {
@@ -742,7 +746,7 @@ class CPU {
         break;
       }
       case 10: {
-        this.REG_PC += 2;
+        this.REG_PC = (this.REG_PC + 2) & 0xffff;
         this.push((this.REG_PC >> 8) & 255);
         this.push(this.REG_PC & 255);
         this.F_BRK = 1;
@@ -870,14 +874,14 @@ class CPU {
         break;
       }
       case 27: {
-        this.REG_PC = addr - 1;
+        this.REG_PC = (addr - 1) & 0xffff;
         break;
       }
       case 28: {
         this.push((this.REG_PC >> 8) & 255);
         this.push(this.REG_PC & 255);
         this.loadDirect(opaddr + 3);
-        this.REG_PC = addr - 1;
+        this.REG_PC = (addr - 1) & 0xffff;
         break;
       }
       case 29: {
@@ -1011,17 +1015,15 @@ class CPU {
       }
       case 41: {
         this.setStatusFromStack(this.pull());
-        this.REG_PC = this.pull();
-        this.REG_PC += this.pull() << 8;
+        this.REG_PC = (this.pull() | (this.pull() << 8)) & 0xffff;
         if (this.REG_PC === 0xffff) {
           return cycleCount;
         }
-        this.REG_PC--;
+        this.REG_PC = (this.REG_PC - 1) & 0xffff;
         break;
       }
       case 42: {
-        this.REG_PC = this.pull();
-        this.REG_PC += this.pull() << 8;
+        this.REG_PC = (this.pull() | (this.pull() << 8)) & 0xffff;
         if (this.REG_PC === 0xffff) {
           return cycleCount; // return from NSF play routine:
         }
@@ -1405,8 +1407,25 @@ class CPU {
       }
 
       default: {
+        // Dump context for debugging
+        let ctx = `addr=$${opaddr.toString(16)}, opcode=0x${opcode.toString(16)}, ` +
+          `ins=${opinfo.ins}, mode=${opinfo.mode}, size=${opinfo.size}, ` +
+          `REG_PC=$${(this.REG_PC).toString(16)}, SP=$${(this.REG_SP & 0xff).toString(16)}, ` +
+          `A=$${(this.REG_ACC).toString(16)}, X=$${(this.REG_X).toString(16)}, Y=$${(this.REG_Y).toString(16)}`;
+        // Show memory around opaddr
+        let memDump = '';
+        try {
+          for (let i = -4; i <= 8; i++) {
+            let a = (opaddr + i + 1) & 0xffff;
+            let v = this.nes.mmap ? this.nes.mmap.load(a) : this.mem[a & 0xffff];
+            memDump += ` $${a.toString(16)}=0x${v.toString(16)}`;
+          }
+        } catch (e) { memDump = ' (mem read failed)'; }
+        console.error(`[tsnes] CRASH context: ${ctx}`);
+        console.error(`[tsnes] CRASH memory:${memDump}`);
         throw new Error(
-          `Game crashed, invalid opcode at address $${opaddr.toString(16)}`,
+          `Game crashed, invalid opcode at address $${opaddr.toString(16)}, ` +
+          `opcode=0x${opcode.toString(16)}, ins=${opinfo.ins}`,
         );
       }
     } // end of switch
@@ -1449,6 +1468,13 @@ class CPU {
     this._cpuCycleBase += cycleCount + interruptCycles;
     if (this._traceCb) {
       this._traceCb(this._instrPC, opcode, cycleCount + interruptCycles, this.nes.fpsFrameCount);
+    }
+    // DEBUG: Log when PC enters non-ROM area
+    let nextFetch = (this.REG_PC + 1) & 0xffff;
+    if (nextFetch < 0x8000) {
+      console.log(`[tsnes] PC->non-ROM: next=$${nextFetch.toString(16)}, ` +
+        `prev=$${this._instrPC.toString(16)}, opcode=0x${opcode.toString(16)}, ` +
+        `SP=$${(this.REG_SP & 0xff).toString(16)}, frame=${this.nes.fpsFrameCount}`);
     }
     return cycleCount + interruptCycles;
   }
@@ -1606,10 +1632,10 @@ class CPU {
     if ((nextPC & 0xff00) !== (target & 0xff00)) {
       let wrongAddr = (nextPC & 0xff00) | (target & 0x00ff);
       this.load(wrongAddr);
-      this.REG_PC = addr;
+      this.REG_PC = addr & 0xffff;
       return 2;
     }
-    this.REG_PC = addr;
+    this.REG_PC = addr & 0xffff;
     return 1;
   }
 
@@ -1627,7 +1653,7 @@ class CPU {
     this.nes.ppu.advanceDots(3);
     this.instrBusCycles++;
     this.nes.ppu.advanceDots(3);
-    this.REG_PC_NEW++;
+    this.REG_PC_NEW = (this.REG_PC_NEW + 1) & 0xffff;
     this.push((this.REG_PC_NEW >> 8) & 0xff);
     this.push(this.REG_PC_NEW & 0xff);
     this.F_INTERRUPT_NEW = 1;
@@ -1640,7 +1666,7 @@ class CPU {
     this.instrBusCycles++;
     this.nes.ppu.advanceDots(3);
     this.REG_PC_NEW = lo | (this.dataBus << 8);
-    this.REG_PC_NEW--;
+    this.REG_PC_NEW = (this.REG_PC_NEW - 1) & 0xffff;
   }
 
   doResetInterrupt(): void {
@@ -1652,11 +1678,11 @@ class CPU {
     this.instrBusCycles++;
     this.nes.ppu.advanceDots(3);
     this.REG_PC_NEW = lo | (this.dataBus << 8);
-    this.REG_PC_NEW--;
+    this.REG_PC_NEW = (this.REG_PC_NEW - 1) & 0xffff;
   }
 
   doIrq(status: number): void {
-    this.REG_PC_NEW++;
+    this.REG_PC_NEW = (this.REG_PC_NEW + 1) & 0xffff;
     this.push((this.REG_PC_NEW >> 8) & 0xff);
     this.push(this.REG_PC_NEW & 0xff);
     this.push(status);
@@ -1670,7 +1696,7 @@ class CPU {
     this.instrBusCycles++;
     this.nes.ppu.advanceDots(3);
     this.REG_PC_NEW = lo | (this.dataBus << 8);
-    this.REG_PC_NEW--;
+    this.REG_PC_NEW = (this.REG_PC_NEW - 1) & 0xffff;
   }
 
   getStatus(): number {
