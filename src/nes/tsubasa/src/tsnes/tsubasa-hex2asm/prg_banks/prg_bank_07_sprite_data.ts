@@ -8,6 +8,8 @@
  *   每个 build_xxx() 函数返回其覆盖地址范围�?raw 6502 字节�? *   最后通过 spread 拼成完整�?8KB 数组
  */
 
+
+import { asm } from '../_6502asm';
 export { _PRG_BANK_07 as default };
 
 console.log('[prg_07_sprite_data] loaded');

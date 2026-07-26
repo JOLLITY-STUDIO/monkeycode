@@ -7,6 +7,8 @@
  *   最后通过 spread 拼成完整的 8KB 数组
  */
 
+
+import { asm } from '../_6502asm';
 export { _PRG_BANK_31 as default };
 
 console.log('[prg_31_boot_vectors] loaded');
