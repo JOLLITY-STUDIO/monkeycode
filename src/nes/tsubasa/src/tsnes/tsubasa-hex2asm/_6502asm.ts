@@ -341,6 +341,12 @@ function assemble(ir: IrLine[], baseOffset: number): readonly number[] {
     if (line.kind === 'byte') { offset += line.bytes.length; continue; }
     if (line.kind === 'dw')   { offset += line.words.length * 2; continue; }
     // inst
+    if (BRANCH_MNEMONICS.has(line.mnemonic) && line.mode === 'rel' && line.value > 0xFF
+      && (line.value - (baseOffset + offset + 2) < -128 || line.value - (baseOffset + offset + 2) > 127)) {
+      // 跨 bank 分支超范围 → 反转条件(2) + JMP abs(3) = 5 字节
+      offset += 5;
+      continue;
+    }
     offset += instSize(line.mode);
   }
 
@@ -396,7 +402,17 @@ function assemble(ir: IrLine[], baseOffset: number): readonly number[] {
       // rel = 目标绝对地址 - (baseOffset + 当前偏移 + 2)
       const rel = value - (baseOffset + offset + 2);
       if (rel < -128 || rel > 127) {
-        throw new Error(`[asm] line ${line.line}: branch to $${value.toString(16).toUpperCase()} out of range (rel=${rel})`);
+        // 超出 Bxx 范围: 自动生成 反转条件 + JMP 模式
+        // e.g. BNE $E852 → BEQ *+3 ; JMP $E852
+        // 所有分支指令对 opcode 差 0x20
+        const invOpcode = opcode ^ 0x20;
+        out.push(invOpcode);
+        out.push(3); // 跳过 3 字节 JMP
+        out.push(0x4C); // JMP abs
+        out.push(value & 0xFF);
+        out.push((value >> 8) & 0xFF);
+        offset += 5;
+        continue;
       }
       out.push(rel < 0 ? (rel + 256) & 0xFF : rel & 0xFF);
     } else {

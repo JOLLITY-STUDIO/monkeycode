@@ -50,7 +50,7 @@ function build_8000_83FF_segN(): readonly number[] {
   .byte $CF, $AF
   CMP ($FF,X)
   CPX #$CD
-  BNE $E013
+  BNE @E013
   .byte $D2
 @E043:
   STA ($B7),Y
@@ -74,7 +74,7 @@ function build_8000_83FF_segN(): readonly number[] {
   CMP $FFEF,X
   INC $D4E9
   CPX #$EC
-  BCC $E043
+  BCC @E043
   ADC $99D0,X
   .byte $FF
   STA ($9A),Y
@@ -161,7 +161,7 @@ function build_8000_83FF_segN(): readonly number[] {
   PHA
   CMP #$0B
   PHP
-  BCC $E122
+  BCC @E122
   SBC #$0B
   PHA
   LDA $A1DC,Y
@@ -189,14 +189,14 @@ function build_8000_83FF_segN(): readonly number[] {
   PLP
   PHP
   LDA $05FB
-  BEQ $E147
+  BEQ @E147
   PHP
   PLA
   EOR #$01
   PHA
   PLP
 @E147:
-  BCS $E15C
+  BCS @E15C
   LDA #$25
   STA $3F
   LDA $002C,X
@@ -231,9 +231,9 @@ function build_8000_83FF_segN(): readonly number[] {
   LDY $3E
   LDA ($3A),Y
   PLP
-  BCC $E19E
+  BCC @E19E
   CMP #$F0
-  BEQ $E19E
+  BEQ @E19E
   JSR $C536 ; → bank switch?
   TXA
   EOR #$FF
@@ -254,24 +254,24 @@ function build_8000_83FF_segN(): readonly number[] {
   PLA
   LDX $32
   CPX $00E2
-  BCS $E1B2
+  BCS @E1B2
   RTS
 @E1B2:
   LDX $3F
   CPX #$25
-  BEQ $E1BC
+  BEQ @E1BC
   LDA #$F0
-  BNE $E1D7
+  BNE @E1D7
 @E1BC:
   CMP #$0B
-  BCC $E1C2
+  BCC @E1C2
   SBC #$0B
 @E1C2:
   CMP #$05
-  BCS $E1DB
+  BCS @E1DB
   LDX #$C8
   LDA $05FB
-  BEQ $E1CF
+  BEQ @E1CF
   LDX #$38
 @E1CF:
   LDY #$08
@@ -291,10 +291,10 @@ function build_8000_83FF_segN(): readonly number[] {
   .byte $04, $03, $02
   ORA ($00,X)
   LDA $05F4
-  BNE $E1F1
+  BNE @E1F1
   RTS
 @E1F1:
-  BPL $E20C
+  BPL @E20C
   LDA #$01
   STA $05F4
   LDA $05F3
@@ -308,21 +308,21 @@ function build_8000_83FF_segN(): readonly number[] {
   STA $05F5
 @E20C:
   LDA $05F5
-  BEQ $E215
+  BEQ @E215
   DEC $05F5
   RTS
 @E215:
   LDA #$01
   JSR $C515 ; → bank switch?
   LDA $0515
-  BNE $E215
+  BNE @E215
   LDA #$01
   STA $0515
 @E224:
   LDY #$00
   LDA ($63),Y
   CMP #$FF
-  BNE $E242
+  BNE @E242
   INY
   LDA ($63),Y
   TAX
@@ -331,7 +331,7 @@ function build_8000_83FF_segN(): readonly number[] {
   STA $64
   STX $63
   LDA $05E3
-  BNE $E224
+  BNE @E224
   STA $05F4
   JMP $A224
 @E242:
@@ -348,7 +348,7 @@ function build_8000_83FF_segN(): readonly number[] {
   LDX #$00
 @E258:
   LDA ($3A),Y
-  BEQ $E27E
+  BEQ @E27E
   STA $04A5,X
   STA $3C
   INY
@@ -367,8 +367,8 @@ function build_8000_83FF_segN(): readonly number[] {
   INX
   INY
   DEC $3C
-  BNE $E271
-  BEQ $E258
+  BNE @E271
+  BEQ @E258
 @E27E:
   STA $04A5,X
   LDA #$80
@@ -377,7 +377,7 @@ function build_8000_83FF_segN(): readonly number[] {
   CLC
   ADC #$02
   STA $63
-  BCC $E291
+  BCC @E291
   INC $64
 @E291:
   RTS
@@ -624,7 +624,7 @@ function build_8400_87FF_segN(): readonly number[] {
   LDX $EABF,Y
   ORA ($EA,X)
   .byte $23
-  BVC $E48C
+  BVC @E48C
   .byte $F2
 @E48C:
   .byte $23
@@ -662,7 +662,7 @@ function build_8400_87FF_segN(): readonly number[] {
   LDX $EABF,Y
   ORA ($EA,X)
   .byte $23
-  BVC $E4C0
+  BVC @E4C0
   .byte $F2
 @E4C0:
   .byte $23
@@ -689,7 +689,7 @@ function build_8400_87FF_segN(): readonly number[] {
   LDX $EABF,Y
   ORA ($EA,X)
   .byte $23
-  BVC $E4E5
+  BVC @E4E5
   .byte $F2
 @E4E5:
   .byte $23
@@ -721,7 +721,7 @@ function build_8400_87FF_segN(): readonly number[] {
   LDX $EABF,Y
   ORA ($EA,X)
   .byte $23
-  BVC $E514
+  BVC @E514
   .byte $F2
 @E514:
   .byte $23
@@ -732,7 +732,7 @@ function build_8400_87FF_segN(): readonly number[] {
 @E51C:
   ORA ($EA,X)
   .byte $22
-  BEQ $E521
+  BEQ @E521
 @E521:
   .byte $04
   INY
@@ -756,7 +756,7 @@ function build_8400_87FF_segN(): readonly number[] {
   LDX $EABF,Y
   ORA ($EA,X)
   .byte $23
-  BVC $E543
+  BVC @E543
   .byte $F2
 @E543:
   .byte $23
@@ -778,7 +778,7 @@ function build_8400_87FF_segN(): readonly number[] {
   SBC $0804
   .byte $23
   BRK
-  BCS $E51C
+  BCS @E51C
   INX
   .byte $04
   PLP
@@ -787,7 +787,7 @@ function build_8400_87FF_segN(): readonly number[] {
   LDX $EABF
   ORA ($EA,X)
   .byte $23
-  BVC $E56D
+  BVC @E56D
   .byte $F2
 @E56D:
   .byte $23
@@ -829,7 +829,7 @@ function build_8400_87FF_segN(): readonly number[] {
   .byte $BB
   ORA ($EA,X)
   .byte $23
-  BVC $E5A6
+  BVC @E5A6
   .byte $F2
 @E5A6:
   .byte $23
@@ -870,7 +870,7 @@ function build_8400_87FF_segN(): readonly number[] {
   .byte $BB
   ORA ($EA,X)
   .byte $23
-  BVC $E5DA
+  BVC @E5DA
   .byte $F2
 @E5DA:
   .byte $23
@@ -904,7 +904,7 @@ function build_8400_87FF_segN(): readonly number[] {
   LDX $EABF
   ORA ($EA,X)
   .byte $23
-  BVC $E608
+  BVC @E608
   .byte $F2
 @E608:
   .byte $23
@@ -947,7 +947,7 @@ function build_8400_87FF_segN(): readonly number[] {
   LDX $EAD3
   ORA ($EA,X)
   .byte $23
-  BVC $E64B
+  BVC @E64B
   .byte $F2
 @E64B:
   .byte $23
@@ -984,7 +984,7 @@ function build_8400_87FF_segN(): readonly number[] {
   LDX $EABF,Y
   ORA ($EA,X)
   .byte $23
-  BVC $E685
+  BVC @E685
   .byte $F2
 @E685:
   .byte $23
@@ -1012,7 +1012,7 @@ function build_8400_87FF_segN(): readonly number[] {
   LDX $EAD3
   ORA ($EA,X)
   .byte $23
-  BVC $E6AA
+  BVC @E6AA
   .byte $F2
 @E6AA:
   .byte $23
@@ -1052,7 +1052,7 @@ function build_8400_87FF_segN(): readonly number[] {
   CPY $95
   LDX $B4,Y
   CPY #$90
-  BCC $E699
+  BCC @E699
   LDA $94
   STY $7E,X
   ROR $C3C3,X
@@ -1155,7 +1155,7 @@ function build_8400_87FF_segN(): readonly number[] {
   .byte $B3, $B3
   LDX #$A2
   ADC $D07D,X
-  BNE $E7B7
+  BNE @E7B7
   .byte $DF, $D2, $D2
   NOP
   NOP
@@ -1248,7 +1248,7 @@ function build_8800_8BFF_segN(): readonly number[] {
   STA $CC
   STX $7DD7
   ADC $7272,X
-  BNE $E86F
+  BNE @E86F
   .byte $D3, $EF, $C3
   INY
   DEC $D2E2,X
@@ -1306,7 +1306,7 @@ function build_8800_8BFF_segN(): readonly number[] {
   NOP
   CMP $E9DD,X
   SBC #$0C
-  BMI $E924
+  BMI @E924
   .byte $14
   ORA $05
   EOR #$27
@@ -1382,7 +1382,7 @@ function build_8800_8BFF_segN(): readonly number[] {
   ADC ($A1),Y
   DEY
   .byte $9C, $62
-  BCC $EA05
+  BCC @EA05
   .byte $9B
   EOR $B459,Y
   NOP
@@ -1390,7 +1390,7 @@ function build_8800_8BFF_segN(): readonly number[] {
   CPY #$98
   AXS #$81
   .byte $BF
-  BCS $E965
+  BCS @E965
   LDX #$C5
   .byte $AB, $B7
   ADC $8290,Y
@@ -1547,7 +1547,7 @@ function build_8800_8BFF_segN(): readonly number[] {
   TYA
   LDA $C6C6,X
   .byte $AB
-  BNE $EA6A
+  BNE @EA6A
   CPY $D8A8
   .byte $B3, $B3
   ADC $7F7D,X
@@ -1569,7 +1569,7 @@ function build_8800_8BFF_segN(): readonly number[] {
   DEC $EADE,X
   NOP
   SBC #$E9
-  BNE $EAD1
+  BNE @EAD1
   .byte $3C, $1C
   ANC #$2F
   .byte $12, $12
@@ -1578,9 +1578,9 @@ function build_8800_8BFF_segN(): readonly number[] {
   .byte $77, $5F
   LSR $69
   ROR $6182,X
-  BVS $EB55
+  BVS @EB55
   .byte $5B
-  BMI $EAA7
+  BMI @EAA7
   .byte $3B
   ARR #$29
   .byte $3F
@@ -1638,14 +1638,14 @@ function build_8800_8BFF_segN(): readonly number[] {
 @EB81:
   .byte $04, $04
 @EB83:
-  BEQ $EB75
+  BEQ @EB75
   BEQ $EBA3
   AND $116A,Y
   ORA ($71),Y
   NOP
   ASL $F01E,X
   RTS
-  BEQ $EB83
+  BEQ @EB83
   ASL $1F
   .byte $04, $1C, $0F
   BIT $F0
@@ -1671,24 +1671,24 @@ function build_8800_8BFF_segN(): readonly number[] {
   EOR $3257
   PLP
   .byte $64
-  BCC $EB81
+  BCC @EB81
   LDA $AE7E,X
 @EBC7:
   DEC $C6
   STY $B7,X
-  BEQ $EBBD
+  BEQ @EBBD
   STY $6E
   .byte $8B, $74
 @EBD1:
   ROR $4D88,X
   ADC $F0
-  BEQ $EBAE
+  BEQ @EBAE
   DEC $C7,X
   .byte $D4
-  BEQ $EBC7
+  BEQ @EBC7
   .byte $B7, $DC
-  BEQ $EBD1
-  BEQ $EBE7
+  BEQ @EBD1
+  BEQ @EBE7
   BEQ $EBEC
   BEQ $EBD7
 @EBE7:
@@ -1754,11 +1754,11 @@ function build_8C00_8FFF_segN(): readonly number[] {
 @EC4D:
   .byte $12, $12
   BEQ $ECBC
-  BEQ $EC72
+  BEQ @EC72
   EOR $1D72,Y
   ORA $6132,X
   .byte $3C, $1C
-  BEQ $EC4D
+  BEQ @EC4D
   .byte $07, $1F, $14, $2F
   ROL A
 @EC62:
@@ -1776,7 +1776,7 @@ function build_8C00_8FFF_segN(): readonly number[] {
   .byte $37, $12
   JSR $884D ; → bank switch?
   BEQ $EC69
-  BEQ $ECD8
+  BEQ @ECD8
   .byte $8B
   LDA ($4F,X)
 @EC7E:
@@ -1798,18 +1798,18 @@ function build_8C00_8FFF_segN(): readonly number[] {
   STA ($75),Y
   .byte $8F
   ADC $5A8B,X
-  BVC $EC62
-  BNE $EC90
-  BEQ $EC92
+  BVC @EC62
+  BNE @EC90
+  BEQ @EC92
   BEQ $EC94
   SBC #$BC
   .byte $DF
   CMP $F0CD
-  BEQ $ECB3
+  BEQ @ECB3
   .byte $07, $04, $04
 @ECAF:
   BEQ $ECA1
-  BEQ $ECCF
+  BEQ @ECCF
 @ECB3:
   AND ($16,X)
 @ECB5:
@@ -1818,63 +1818,63 @@ function build_8C00_8FFF_segN(): readonly number[] {
   ADC $1E
   ASL $F0F0,X
 @ECBD:
-  BEQ $ECAF
+  BEQ @ECAF
   ASL $1F
 @ECC1:
   .byte $1C
   ORA $F0
   .byte $0F
-  BEQ $ECED
+  BEQ @ECED
   EOR $76
   BEQ $ECF4
-  BEQ $ECBD
+  BEQ @ECBD
   BEQ $ED02
 @ECCF:
-  BEQ $ECC1
+  BEQ @ECC1
 @ECD1:
-  BEQ $ED0F
+  BEQ @ED0F
   ORA $344E,X
   AND $25,X
 @ECD8:
   .byte $1B
   BEQ $ED19
   EOR ($8E),Y
-  BEQ $ED2B
+  BEQ @ED2B
 @ECDF:
-  BEQ $ECD1
+  BEQ @ECD1
   BEQ $ED46
   BEQ $ECD5
   JMP ($726E)
   ROL $57,X
   EOR $283E
 @ECED:
-  BEQ $ECDF
+  BEQ @ECDF
   .byte $80
   LDA $7D70,X
   BEQ $ED6E
-  BEQ $EC7E
+  BEQ @EC7E
   BEQ $ECE9
 @ECF9:
   STY $6E
   ROR $A3
 @ECFD:
   .byte $87
-  BVS $ED57
+  BVS @ED57
   EOR $91F0
 @ED03:
   STA ($D6,X)
 @ED05:
   LDY #$C5
-  BEQ $ECF9
-  BEQ $ECB5
-  BEQ $ECFD
+  BEQ @ECF9
+  BEQ @ECB5
+  BEQ @ECFD
 @ED0D:
-  BEQ $ED13
+  BEQ @ED13
 @ED0F:
   BEQ $ED18
-  BEQ $ED03
+  BEQ @ED03
 @ED13:
-  BEQ $ED05
+  BEQ @ED05
   BEQ $ED34
 @ED17:
   AND $F05E
@@ -1888,15 +1888,15 @@ function build_8C00_8FFF_segN(): readonly number[] {
 @ED23:
   .byte $13
   PHP
-  BEQ $ED17
+  BEQ @ED17
   BEQ $ED2E
-  BEQ $ED53
+  BEQ @ED53
 @ED2B:
-  BEQ $ED8B
-  BEQ $ED4D
+  BEQ @ED8B
+  BEQ @ED4D
   BEQ $ED96
-  BEQ $ED23
-  BEQ $ED8A
+  BEQ @ED23
+  BEQ @ED8A
   .byte $1B
   EOR $2B,X
   LSR $36F0,X
@@ -1914,12 +1914,12 @@ function build_8C00_8FFF_segN(): readonly number[] {
 @ED4D:
   RTI
   EOR $2A36,Y
-  BVS $EDC6
+  BVS @EDC6
 @ED53:
-  BEQ $ECF9
+  BEQ @ECF9
   BEQ $ECE2
 @ED57:
-  BEQ $ED49
+  BEQ @ED49
   BEQ $ECE4
   BEQ $ECFC
 @ED5D:
@@ -1931,21 +1931,21 @@ function build_8C00_8FFF_segN(): readonly number[] {
   .byte $5B
   ROR $87
   .byte $8B
-  BEQ $ED1A
+  BEQ @ED1A
 @ED69:
-  BEQ $ED0D
-  BEQ $ED5D
+  BEQ @ED0D
+  BEQ @ED5D
 @ED6D:
-  BEQ $ED5F
-  BEQ $ED1B
+  BEQ @ED5F
+  BEQ @ED1B
   .byte $04, $04
   BEQ $ED65
   .byte $07, $07
 @ED77:
-  BEQ $ED69
+  BEQ @ED69
   .byte $12, $12
-  BEQ $ED6D
-  BEQ $ED9E
+  BEQ @ED6D
+  BEQ @ED9E
   ROR $43
 @ED81:
   ORA $0D1D,X
@@ -1958,11 +1958,11 @@ function build_8C00_8FFF_segN(): readonly number[] {
   .byte $1F
 @ED8B:
   BEQ $EDA1
-  BEQ $EDB9
-  BEQ $ED81
+  BEQ @EDB9
+  BEQ @ED81
   BEQ $EDCB
-  BEQ $ED85
-  BEQ $EDC2
+  BEQ @ED85
+  BEQ @EDC2
   .byte $3F
   ADC $1E4D
 @ED9B:
@@ -1972,10 +1972,10 @@ function build_8C00_8FFF_segN(): readonly number[] {
   ROL $20,X
   ROL $4FF0
   BEQ $EDEA
-  BEQ $EDEB
+  BEQ @EDEB
   BEQ $ED99
 @EDA9:
-  BEQ $ED9B
+  BEQ @ED9B
   STA $4A
 @EDAD:
   .byte $34
@@ -1984,10 +1984,10 @@ function build_8C00_8FFF_segN(): readonly number[] {
   ROL A
   LSR $7E
   .byte $72
-  BEQ $EDA9
+  BEQ @EDA9
 @EDB9:
-  BEQ $EE25
-  BEQ $EDAD
+  BEQ @EE25
+  BEQ @EDAD
   BEQ $EE33
   .byte $7B
   LDX $65,Y
@@ -2002,14 +2002,14 @@ function build_8C00_8FFF_segN(): readonly number[] {
   BEQ $EDBE
   TXS
   BEQ $EDC1
-  BEQ $ED77
+  BEQ @ED77
   NOP
   CMP $F0F0
   .byte $07, $07
 @EDD9:
   .byte $04, $04
   BEQ $EDCD
-  BEQ $EDFB
+  BEQ @EDFB
   EOR ($77),Y
   ORA ($11),Y
 @EDE3:
@@ -2020,7 +2020,7 @@ function build_8C00_8FFF_segN(): readonly number[] {
   .byte $1F
   ASL $04
   .byte $04, $0F, $1B
-  BEQ $EDE3
+  BEQ @EDE3
   LSR $76
   AND #$36
   .byte $7C
@@ -2036,14 +2036,14 @@ function build_8C00_8FFF_segN(): readonly number[] {
   .byte $9E
   LDX #$4C
   ASL $F0F0,X
-  BMI $EE5C
+  BMI @EE5C
   .byte $37
   EOR ($58),Y
   AND $32,X
   .byte $1C
   JMP ($8E6E)
   LDX $7F4F,Y
-  BEQ $EDD9
+  BEQ @EDD9
   .byte $7C
   EOR $F0F0,Y
 @EE25:
@@ -2059,23 +2059,23 @@ function build_8C00_8FFF_segN(): readonly number[] {
   .byte $DC
   DEY
   LDY #$F0
-  BEQ $EE2A
+  BEQ @EE2A
   .byte $04
 @EE3B:
   BEQ $EE44
-  BEQ $EE2F
-  BEQ $EE31
+  BEQ @EE2F
+  BEQ @EE31
   BEQ $EE60
   LSR $77
   BEQ $EE59
   ADC ($66),Y
-  BEQ $EE3B
+  BEQ @EE3B
   AND $036C,X
-  BPL $EE63
+  BPL @EE63
   PHP
-  BEQ $EE71
-  BEQ $EE5A
-  BEQ $EE7F
+  BEQ @EE71
+  BEQ @EE5A
+  BEQ @EE7F
   ROL $F077
 @EE5A:
   ANC #$6F
@@ -2093,9 +2093,9 @@ function build_8C00_8FFF_segN(): readonly number[] {
   ALR #$39
   .byte $8F
   ANC #$36
-  BEQ $EE61
+  BEQ @EE61
 @EE71:
-  BEQ $EE63
+  BEQ @EE63
   ROL $3184,X
   ADC ($3A,X)
   ROR A
@@ -2118,15 +2118,15 @@ function build_8C00_8FFF_segN(): readonly number[] {
   STA $B088,X
   DEC $8B,X
   LDX $F0
-  BEQ $EE8A
+  BEQ @EE8A
   .byte $89, $9F
   CMP $0404
-  BEQ $EE91
+  BEQ @EE91
   .byte $07, $07
   BEQ $EE95
   .byte $12, $12, $5F, $77
-  BEQ $EECA
-  BVS $EF20
+  BEQ @EECA
+  BVS @EF20
 @EEAD:
   ORA $6C1D,X
   LSR A
@@ -2136,19 +2136,19 @@ function build_8C00_8FFF_segN(): readonly number[] {
 @EEB6:
   .byte $07, $14
   JSR $362A
-  BEQ $EEAD
+  BEQ @EEAD
   BEQ $EEAF
   ADC $F07F,X
 @EEC2:
   .byte $1F
   EOR #$6D
-  BPL $EEF9
+  BPL @EEF9
   .byte $22, $47, $1F
 @EECA:
   .byte $37, $12, $14
   RTI
   AND $F0,X
-  BEQ $EEC2
+  BEQ @EEC2
   EOR $A1
   LDA $1D
   .byte $4F
@@ -2161,7 +2161,7 @@ function build_8C00_8FFF_segN(): readonly number[] {
   .byte $1F
   AND $704C,Y
   BEQ $EED5
-  BVC $EF51
+  BVC @EF51
   BEQ $EEA4
   EOR $8580,Y
   LDA $79,X
@@ -2172,11 +2172,11 @@ function build_8C00_8FFF_segN(): readonly number[] {
   STA $F0F0
 @EEF9:
   .byte $93, $7C
-  BEQ $EEDC
+  BEQ @EEDC
   ROR $9DA3,X
   CMP $F0F0
   .byte $07, $07, $04, $04
-  BEQ $EEF9
+  BEQ @EEF9
   BEQ $EF27
   .byte $13, $13
   ASL $4E1E,X
@@ -2194,12 +2194,12 @@ function build_8C00_8FFF_segN(): readonly number[] {
   AND #$7C
   ADC $26,X
   ADC $F0
-  BEQ $EF68
+  BEQ @EF68
   .byte $3C, $1F
   NOP
   ORA $1934,X
-  BPL $EF22
-  BEQ $EEB6
+  BPL @EF22
+  BEQ @EEB6
   ADC #$36
   NOP
   ROR $4B98,X
@@ -2209,7 +2209,7 @@ function build_8C00_8FFF_segN(): readonly number[] {
   ADC $57,X
   EOR ($32,X)
   PLP
-  BCC $EFB5
+  BCC @EFB5
   .byte $7F
   LDA ($5A),Y
   LDX $CAC7
@@ -2229,28 +2229,28 @@ function build_8C00_8FFF_segN(): readonly number[] {
   LDA ($EA,X)
   NOP
   TAY
-  BNE $EF54
-  BEQ $EF56
+  BNE @EF54
+  BEQ @EF56
   BEQ $EF58
 @EF68:
   BEQ $EF5A
   .byte $12
-  BEQ $EF71
-  BEQ $EF8C
+  BEQ @EF71
+  BEQ @EF8C
   BEQ $EF78
 @EF71:
   BEQ $EF91
   .byte $73
   LSR $F0F0,X
-  BVS $EFC3
+  BVS @EFC3
   .byte $03
   BPL $EF84
   .byte $13
-  BEQ $EF9D
+  BEQ @EF9D
   ORA $05
-  BEQ $EFAB
-  BEQ $EFCA
-  BEQ $EFB2
+  BEQ @EFAB
+  BEQ @EFCA
+  BEQ @EFB2
   .byte $73
   ADC #$F0
   BEQ $EFFB
@@ -2264,7 +2264,7 @@ function build_8C00_8FFF_segN(): readonly number[] {
   JMP ($6863)
   STA ($36,X)
   .byte $4F
-  BEQ $EF8D
+  BEQ @EF8D
 @EF9D:
   BEQ $EFF7
   BEQ $EF91
@@ -2277,7 +2277,7 @@ function build_8C00_8FFF_segN(): readonly number[] {
 @EFAB:
   LDA $BE
   .byte $73, $80
-  BEQ $EFA1
+  BEQ @EFA1
   .byte $7B
 @EFB2:
   ADC ($F0),Y
@@ -2291,7 +2291,7 @@ function build_8C00_8FFF_segN(): readonly number[] {
 @EFC1:
   LDX #$8B
 @EFC3:
-  BEQ $EFB5
+  BEQ @EFB5
   LDX $94,Y
   BEQ $EFB9
   .byte $04
@@ -2299,15 +2299,15 @@ function build_8C00_8FFF_segN(): readonly number[] {
   .byte $04
   BEQ $EFBD
   .byte $07, $07
-  BEQ $EFC1
+  BEQ @EFC1
 @EFD1:
-  BPL $EFE3
+  BPL @EFE3
   BEQ $EFF4
   .byte $12, $12
   ADC $44,X
   ORA $701D,X
   EOR $0606
-  BEQ $EFD1
+  BEQ @EFD1
   .byte $1F, $07
 @EFE3:
   .byte $14, $2F, $1C, $34
@@ -2334,7 +2334,7 @@ function build_9000_93FF_segN(): readonly number[] {
   .byte $93
   ADC $346E,X
   LSR $428F,X
-  BVC $E037
+  BVC @E037
   AND $9E87,Y
   STA ($A7,X)
   .byte $67, $BB
@@ -2351,20 +2351,20 @@ function build_9000_93FF_segN(): readonly number[] {
   BEQ $E019
   LDX $E9A4
   SBC #$F0
-  BEQ $E037
+  BEQ @E037
   .byte $07
 @E031:
   .byte $04, $04
 @E033:
-  BEQ $E025
+  BEQ @E025
   BEQ $E053
 @E037:
   .byte $13, $13
   ASL $371E,X
   PLA
   ORA ($11),Y
-  BEQ $E031
-  BEQ $E033
+  BEQ @E031
+  BEQ @E033
   ORA $05
   .byte $04
 @E046:
@@ -2372,89 +2372,89 @@ function build_9000_93FF_segN(): readonly number[] {
   BEQ $E058
   BEQ $E03B
   AND #$36
-  BEQ $E082
+  BEQ @E082
   ROR $F05C,X
   ROL $F0
-  BEQ $E046
+  BEQ @E046
   .byte $3C
 @E057:
   ORA $344E,X
   AND $25,X
   .byte $1B
 @E05D:
-  BEQ $E09D
-  BEQ $E0AD
+  BEQ @E09D
+  BEQ @E0AD
   BEQ $E0BA
 @E063:
   EOR ($8C),Y
-  BEQ $E057
+  BEQ @E057
   BEQ $E059
   JMP ($366E)
   .byte $72
 @E06D:
   .byte $57
   EOR $283E
-  BEQ $E063
+  BEQ @E063
   BVS $E0F2
 @E075:
   .byte $F0, $87  ; BEQ $8FFE
   .byte $80, $C7
   BEQ $E042
-  BEQ $E06D
+  BEQ @E06D
   STY $6E
 @E07F:
   ROR $A3
 @E081:
   .byte $87
 @E082:
-  BVS $E0DB
+  BVS @E0DB
   EOR $91F0
 @E087:
   STA $AD,X
 @E089:
   BEQ $E042
-  BEQ $E05D
-  BEQ $E07F
-  BEQ $E081
-  BEQ $E097
+  BEQ @E05D
+  BEQ @E07F
+  BEQ @E081
+  BEQ @E097
 @E093:
   BEQ $E09C
-  BEQ $E087
+  BEQ @E087
 @E097:
-  BEQ $E089
+  BEQ @E089
   BEQ $E0B8
 @E09B:
-  BEQ $E0BB
+  BEQ @E0BB
 @E09D:
-  BEQ $E0B1
+  BEQ @E0B1
   PLA
   .byte $44
-  BEQ $E093
+  BEQ @E093
   .byte $3F, $63
   BPL $E0AA
 @E0A7:
   .byte $13
   PHP
-  BEQ $E09B
+  BEQ @E09B
   BEQ $E0B2
 @E0AD:
-  BEQ $E0D7
+  BEQ @E0D7
   BEQ $E0DC
 @E0B1:
-  BEQ $E0D1
+  BEQ @E0D1
   BEQ $E11E
-  BEQ $E0A7
-  BEQ $E11B
+  BEQ @E0A7
+  BEQ @E11B
 @E0B9:
   EOR $1B,X
 @E0BB:
   JSR $F056 ; → bank switch?
   AND $1D,X
   .byte $12
-  BEQ $E126
-  BEQ $E12D
+  BEQ @E126
+  BEQ @E12D
   ROL $4F,X
-  BEQ $E0B9
+  BEQ @E0B9
   BEQ $E124
   BEQ $E0BD
 @E0CD:
@@ -2464,14 +2464,14 @@ function build_9000_93FF_segN(): readonly number[] {
 @E0D1:
   RTI
   EOR $362A,Y
-  BEQ $E075
+  BEQ @E075
 @E0D7:
   BEQ $E07E
-  BEQ $E14E
+  BEQ @E14E
 @E0DB:
-  BEQ $E0CD
+  BEQ @E0CD
   BEQ $E14F
-  BEQ $E0D1
+  BEQ @E0D1
 @E0E1:
   STA ($6E),Y
   .byte $74
@@ -2480,35 +2480,35 @@ function build_9000_93FF_segN(): readonly number[] {
   BVS $E070
   ROR $5B
 @E0E9:
-  BEQ $E0AD
+  BEQ @E0AD
   BEQ $E0B6
 @E0ED:
   BEQ $E092
-  BEQ $E0E1
-  BEQ $E093
-  BEQ $E0E5
+  BEQ @E0E1
+  BEQ @E093
+  BEQ @E0E5
 @E0F5:
   .byte $04, $04
-  BEQ $E0E9
+  BEQ @E0E9
   .byte $07, $07
-  BEQ $E0ED
+  BEQ @E0ED
 @E0FD:
-  BPL $E10F
-  BEQ $E120
+  BPL @E10F
+  BEQ @E120
   .byte $12, $12
-  BEQ $E0F5
+  BEQ @E0F5
   ORA $341D,X
   .byte $63
 @E109:
   ASL $06
-  BEQ $E0FD
+  BEQ @E0FD
   .byte $07, $1F
 @E10F:
   BEQ $E125
   ORA $F01D,X
   BEQ $E106
   SEC
-  BEQ $E109
+  BEQ @E109
   BEQ $E145
 @E11B:
   ALR #$7D
@@ -2521,8 +2521,8 @@ function build_9000_93FF_segN(): readonly number[] {
 @E126:
   .byte $4F
   BEQ $E16E
-  BEQ $E11B
-  BEQ $E11D
+  BEQ @E11B
+  BEQ @E11D
 @E12D:
   BEQ $E18B
   LSR A
@@ -2535,7 +2535,7 @@ function build_9000_93FF_segN(): readonly number[] {
   ROR $F067,X
   BEQ $E12E
   ROR A
-  BEQ $E131
+  BEQ @E131
   BEQ $E0CF
 @E143:
   .byte $7B
@@ -2547,14 +2547,14 @@ function build_9000_93FF_segN(): readonly number[] {
 @E14E:
   LDX $9AF0
 @E151:
-  BEQ $E143
+  BEQ @E143
   BEQ $E145
   BEQ $E113
   BEQ $E12C
-  BEQ $E14B
+  BEQ @E14B
   .byte $07, $07, $04, $04
-  BEQ $E151
-  BEQ $E17F
+  BEQ @E151
+  BEQ @E17F
   .byte $13, $13
   ASL $5B1E,X
   .byte $7F
@@ -2571,17 +2571,17 @@ function build_9000_93FF_segN(): readonly number[] {
   .byte $7F
   ROL $34
 @E17F:
-  BEQ $E171
+  BEQ @E171
   ORA $133C,Y
   AND $1C33,Y
   .byte $0F
   ORA ($F0),Y
-  BEQ $E1CF
+  BEQ @E1CF
   ADC #$1D
   ROL $7E,X
   LDX #$3E
   JMP $9DF0
-  BMI $E1E0
+  BMI @E1E0
   EOR ($37),Y
 @E199:
   .byte $57
@@ -2591,7 +2591,7 @@ function build_9000_93FF_segN(): readonly number[] {
   LDA $59
   ROR $C7B8,X
   BEQ $E217
-  BEQ $E199
+  BEQ @E199
   JMP ($5D55)
 @E1AC:
   .byte $82
@@ -2604,13 +2604,13 @@ function build_9000_93FF_segN(): readonly number[] {
   BEQ $E1A3
   NOP
   TAX
-  BEQ $E1AD
-  BEQ $E1C3
+  BEQ @E1AD
+  BEQ @E1C3
   BEQ $E1B1
-  BEQ $E1D5
+  BEQ @E1D5
 @E1C3:
   BEQ $E1B5
-  BEQ $E1E4
+  BEQ @E1E4
   BEQ $E1D0
   BEQ $E1E9
   .byte $73
@@ -2618,18 +2618,18 @@ function build_9000_93FF_segN(): readonly number[] {
 @E1CF:
   LSR $70,X
   .byte $03
-  BPL $E1E7
+  BPL @E1E7
   PHP
 @E1D5:
   BEQ $E1F5
   ORA $05
-  BEQ $E203
+  BEQ @E203
   BEQ $E221
-  BEQ $E20A
+  BEQ @E20A
   .byte $73
 @E1E0:
   ADC #$F0
-  BEQ $E23A
+  BEQ @E23A
 @E1E4:
   .byte $6F
   EOR $0F,X
@@ -2642,7 +2642,7 @@ function build_9000_93FF_segN(): readonly number[] {
   ANC #$F0
   BEQ $E1E6
   ALR #$F0
-  BEQ $E22B
+  BEQ @E22B
   ADC ($3A,X)
   ROR A
   .byte $3F, $44
@@ -2655,31 +2655,31 @@ function build_9000_93FF_segN(): readonly number[] {
   BEQ $E285
 @E20A:
   .byte $72
-  BEQ $E1AC
+  BEQ @E1AC
 @E20D:
   ADC $8256,Y
   EOR $7067,X
   EOR $9242
   LDA $99,X
   LDX $8BB0,Y
-  BEQ $E20D
+  BEQ @E20D
   DEY
   LDY #$F0
-  BEQ $E226
+  BEQ @E226
   .byte $04
   BEQ $E215
   .byte $07
 @E226:
   .byte $07
   BEQ $E219
-  BPL $E23B
+  BPL @E23B
 @E22B:
-  BEQ $E24C
+  BEQ @E24C
   .byte $12, $12, $5B
   ROR $1D1D,X
   .byte $64, $7C
   ASL $06
-  BEQ $E268
+  BEQ @E268
   .byte $07
 @E23A:
   .byte $07
@@ -2696,7 +2696,7 @@ function build_9000_93FF_segN(): readonly number[] {
 @E24C:
   .byte $47, $1F, $37, $14, $12, $62
   RTI
-  BEQ $E245
+  BEQ @E245
   .byte $4F
   EOR $7D
   LDA ($1E,X)
@@ -2710,8 +2710,8 @@ function build_9000_93FF_segN(): readonly number[] {
   BVS $E2C5
 @E268:
   .byte $8F
-  BEQ $E2DF
-  BEQ $E25D
+  BEQ @E2DF
+  BEQ @E25D
   LSR $BB7D
   CMP $79
   LSR $5E,X
@@ -2725,10 +2725,10 @@ function build_9000_93FF_segN(): readonly number[] {
   BEQ $E271
   ADC $F098,X
   SBC #$F0
-  BEQ $E28F
+  BEQ @E28F
   .byte $07, $04, $04
-  BEQ $E29C
-  BEQ $E27F
+  BEQ @E29C
+  BEQ @E27F
 @E28F:
   ASL $111E,X
   ORA ($75),Y
@@ -2746,7 +2746,7 @@ function build_9000_93FF_segN(): readonly number[] {
   AND #$7A
   ADC $33,X
   ROR $F0
-  BEQ $E2C8
+  BEQ @E2C8
   .byte $3C, $1F
   NOP
   .byte $1C
@@ -2764,13 +2764,13 @@ function build_9000_93FF_segN(): readonly number[] {
   AND #$57
 @E2C8:
   .byte $64
-  BCC $E339
+  BCC @E339
   LDA ($98),Y
   .byte $72
   EOR $C9C7
   .byte $B7
   STA $F0,X
-  BEQ $E25A
+  BEQ @E25A
   .byte $62
   PLA
 @E2D8:
@@ -2787,15 +2787,15 @@ function build_9000_93FF_segN(): readonly number[] {
   NOP
 @E2E5:
   TAY
-  BNE $E2D8
+  BNE @E2D8
   BEQ $E2DA
   .byte $04
   BEQ $E2F4
-  BEQ $E2DF
-  BEQ $E30E
+  BEQ @E2DF
+  BEQ @E30E
   BEQ $E2E3
-  BEQ $E2E5
-  BEQ $E309
+  BEQ @E2E5
+  BEQ @E309
   .byte $4F, $73
   EOR ($41,X)
   .byte $3F
@@ -2805,11 +2805,11 @@ function build_9000_93FF_segN(): readonly number[] {
   .byte $13
   PHP
   BEQ $E308
-  BEQ $E32D
+  BEQ @E32D
   BEQ $E345
   BEQ $E334
 @E309:
-  BEQ $E329
+  BEQ @E329
   .byte $73
   EOR $F0
 @E30E:
@@ -2826,7 +2826,7 @@ function build_9000_93FF_segN(): readonly number[] {
   PLA
   STA ($2B,X)
   .byte $4F
-  BEQ $E311
+  BEQ @E311
   BEQ $E37C
   BEQ $E315
 @E325:
@@ -2840,24 +2840,24 @@ function build_9000_93FF_segN(): readonly number[] {
   LDA $9E,X
   LDX $5AA5,Y
   .byte $73
-  BEQ $E325
+  BEQ @E325
   .byte $89
   TXA
-  BEQ $E2FC
+  BEQ @E2FC
 @E339:
   STA $6862,X
   LDX $59
   .byte $42
-  BVS $E2E0
+  BVS @E2E0
 @E341:
   INC $CD
   SBC $72D6
   .byte $A3
-  BEQ $E339
+  BEQ @E339
   LDA $F0C6,Y
-  BEQ $E352
+  BEQ @E352
   .byte $04
-  BEQ $E341
+  BEQ @E341
   .byte $07
 @E352:
   .byte $07, $12, $12
@@ -2875,14 +2875,14 @@ function build_9000_93FF_segN(): readonly number[] {
   .byte $1C, $33
   BEQ $E35D
   BEQ $E3A7
-  BEQ $E361
+  BEQ @E361
   ADC $4F
   ROR $1C81
   AND ($21),Y
   .byte $47, $12, $1F
   AND $37,X
   ADC $F057,Y
-  BEQ $E3DE
+  BEQ @E3DE
 @E382:
   EOR ($F0),Y
   STA $7E65,Y
@@ -2916,8 +2916,8 @@ function build_9000_93FF_segN(): readonly number[] {
   ORA ($34),Y
   NOP
   .byte $1C, $1C
-  BEQ $E3B5
-  BEQ $E3EB
+  BEQ @E3B5
+  BEQ @E3EB
 @E3C7:
   ORA $05
 @E3C9:
@@ -2928,14 +2928,14 @@ function build_9000_93FF_segN(): readonly number[] {
   .byte $F0, $33  ; BEQ $9406
 @E3D3:
   .byte $5B, $80
-  BEQ $E3C7
-  BEQ $E3C9
+  BEQ @E3C7
+  BEQ @E3C9
   .byte $F0, $3C  ; BEQ $9417
   ORA $1B43,X
 @E3DE:
   .byte $1C
   .byte $F0, $3E  ; BEQ $941F
-  BEQ $E3D3
+  BEQ @E3D3
   .byte $F0, $65  ; BEQ $944A
   .byte $34
   JMP $7EF0
@@ -2947,7 +2947,7 @@ function build_9000_93FF_segN(): readonly number[] {
   PLP
   .byte $F0, $57  ; BEQ $944C
   .byte $F0, $79  ; BEQ $9470
-  BEQ $E382
+  BEQ @E382
   EOR $F070,Y
   LDX $F0F0
   .byte $F0
@@ -2965,34 +2965,34 @@ function build_9400_97FF_segN(): readonly number[] {
   .byte $F0, $F0  ; BEQ $93FB
 @E40B:
   .byte $F0, $A0  ; BEQ $93AD
-  BVS $E48C
+  BVS @E48C
 @E40F:
   .byte $D0, $D0  ; BNE $93E1
 @E411:
   .byte $F0, $91  ; BEQ $93A4
-  BEQ $E405
-  BEQ $E41B
+  BEQ @E405
+  BEQ @E41B
   BEQ $E420
-  BEQ $E40B
+  BEQ @E40B
 @E41B:
   BEQ $E43A
-  BEQ $E40F
-  BEQ $E411
-  BEQ $E435
+  BEQ @E40F
+  BEQ @E411
+  BEQ @E435
   SEC
   .byte $74
 @E425:
-  BEQ $E445
+  BEQ @E445
   .byte $33, $6F, $03
-  BPL $E43F
+  BPL @E43F
   PHP
   BEQ $E434
-  BEQ $E459
-  BEQ $E472
+  BEQ @E459
+  BEQ @E472
   BEQ $E460
 @E435:
-  BEQ $E455
-  BEQ $E47D
+  BEQ @E455
+  BEQ @E47D
   BEQ $E42B
   BEQ $E497
 @E43D:
@@ -3003,9 +3003,9 @@ function build_9400_97FF_segN(): readonly number[] {
   ALR #$35
 @E445:
   BEQ $E4AA
-  BEQ $E4B1
+  BEQ @E4B1
   ROL $4F,X
-  BEQ $E43D
+  BEQ @E43D
   BEQ $E4A8
   BEQ $E441
 @E451:
@@ -3017,34 +3017,34 @@ function build_9400_97FF_segN(): readonly number[] {
 @E459:
   .byte $F0, $9F  ; BEQ $93FA
   BEQ $E401
-  BEQ $E4B9
-  BEQ $E451
+  BEQ @E4B9
+  BEQ @E451
   BEQ $E4D4
-  BEQ $E455
+  BEQ @E455
 @E465:
   STA $6862,X
   LDX $4D
   NOP
   STY $88,X
 @E46D:
-  BEQ $E425
+  BEQ @E425
   BEQ $E42E
   .byte $8B
 @E472:
   TYA
-  BEQ $E465
+  BEQ @E465
   BEQ $E430
   BEQ $E469
 @E479:
   .byte $04, $04
-  BEQ $E46D
+  BEQ @E46D
 @E47D:
   .byte $07, $07, $12, $12
   ORA $F01D,X
 @E484:
   BEQ $E476
   .byte $14
-  BEQ $E479
+  BEQ @E479
   .byte $1F
 @E48A:
   .byte $1F, $57
@@ -3052,25 +3052,25 @@ function build_9400_97FF_segN(): readonly number[] {
   .byte $37
 @E48D:
   ASL $06
-  BEQ $E4C0
+  BEQ @E4C0
   .byte $07, $1F
-  BEQ $E4C0
+  BEQ @E4C0
   ORA $F01D,X
-  BEQ $E48A
+  BEQ @E48A
   JSR $F0F0 ; → bank switch?
 @E49D:
-  BEQ $E4D7
+  BEQ @E4D7
   .byte $63
   JMP $1E40
-  BEQ $E4EC
+  BEQ @E4EC
   .byte $1F
   JSR $4F37
-  BEQ $E504
-  BEQ $E49D
-  BEQ $E4F4
+  BEQ @E504
+  BEQ @E49D
+  BEQ @E4F4
   BEQ $E4A1
 @E4B1:
-  BEQ $E50F
+  BEQ @E50F
   BEQ $E533
 @E4B5:
   ADC ($35),Y
@@ -3083,9 +3083,9 @@ function build_9400_97FF_segN(): readonly number[] {
 @E4C0:
   STA ($F0,X)
   .byte $5B
-  BEQ $E4B5
-  BEQ $E4B7
-  BEQ $E484
+  BEQ @E4B5
+  BEQ @E4B7
+  BEQ @E484
 @E4C9:
   .byte $64
   STY $69,X
@@ -3096,13 +3096,13 @@ function build_9400_97FF_segN(): readonly number[] {
   LDX $F0F0
   BEQ $E457
 @E4D7:
-  BEQ $E4C9
-  BEQ $E48D
+  BEQ @E4C9
+  BEQ @E48D
   BEQ $E4B0
   BEQ $E4CF
   .byte $07, $07, $04, $04
-  BEQ $E4F4
-  BEQ $E4D7
+  BEQ @E4F4
+  BEQ @E4D7
   ASL $111E,X
   ORA ($7E),Y
 @E4EC:
@@ -3125,7 +3125,7 @@ function build_9400_97FF_segN(): readonly number[] {
   .byte $03
   BPL $E527
   .byte $33
-  BEQ $E4FF
+  BEQ @E4FF
 @E50F:
   .byte $43
   ADC #$35
@@ -3141,8 +3141,8 @@ function build_9400_97FF_segN(): readonly number[] {
   LDA $35
   ROR $B8
   .byte $BB
-  BEQ $E59B
-  BEQ $E51D
+  BEQ @E59B
+  BEQ @E51D
   JMP ($5C56)
   .byte $82, $3F
   EOR $6F85
@@ -3154,29 +3154,29 @@ function build_9400_97FF_segN(): readonly number[] {
   NOP
   .byte $93
   LDA $F0F0
-  BEQ $E547
+  BEQ @E547
   BEQ $E54C
-  BEQ $E537
+  BEQ @E537
 @E547:
   BEQ $E539
-  BEQ $E568
-  BEQ $E55F
+  BEQ @E568
+  BEQ @E55F
   BEQ $E53F
   .byte $44, $80
   BEQ $E571
   ALR #$6F
   .byte $03
-  BPL $E56B
+  BPL @E56B
   PHP
   BEQ $E560
   BEQ $E585
-  BEQ $E59E
+  BEQ @E59E
 @E55F:
   BEQ $E58C
   BEQ $E581
   .byte $73
   ADC #$F0
-  BEQ $E5BE
+  BEQ @E5BE
 @E568:
   .byte $6F
 @E569:
@@ -3191,9 +3191,9 @@ function build_9400_97FF_segN(): readonly number[] {
   .byte $62
   AND $1E69,Y
   .byte $4F
-  BEQ $E569
+  BEQ @E569
   BEQ $E5D4
-  BEQ $E56D
+  BEQ @E56D
   ADC ($32,X)
   AND $286A,Y
   ANC #$36
@@ -3202,7 +3202,7 @@ function build_9400_97FF_segN(): readonly number[] {
   RTI
   .byte $4F
   BEQ $E52C
-  BVS $E602
+  BVS @E602
   BEQ $E581
 @E591:
   ADC $5C57,Y
@@ -3215,11 +3215,11 @@ function build_9400_97FF_segN(): readonly number[] {
   STA $66BE,Y
 @E59E:
   .byte $8B
-  BEQ $E591
+  BEQ @E591
   LDA $F0A2,Y
-  BEQ $E5AA
+  BEQ @E5AA
   .byte $04
-  BEQ $E599
+  BEQ @E599
   .byte $07
 @E5AA:
   .byte $07, $12, $12
@@ -3238,17 +3238,17 @@ function build_9400_97FF_segN(): readonly number[] {
 @E5BE:
   .byte $07, $1F
   JSR $2A1C
-  BEQ $E5B5
+  BEQ @E5B5
   BEQ $E600
-  BEQ $E5B9
+  BEQ @E5B9
 @E5C9:
   .byte $34, $37, $7C, $7F, $32
-  BPL $E5F2
+  BPL @E5F2
   .byte $47, $13
   PHP
   ASL $6236,X
   RTI
-  BEQ $E5C9
+  BEQ @E5C9
   JSR $F044 ; → bank switch?
   STA $5159,Y
   .byte $7C
@@ -3260,7 +3260,7 @@ function build_9400_97FF_segN(): readonly number[] {
   ADC $9E
   .byte $6F, $74, $8F, $5B
   EOR $F0
-  BEQ $E5E2
+  BEQ @E5E2
 @E5F2:
   ROR $BBB8,X
   ADC $5D57,Y
@@ -3269,15 +3269,15 @@ function build_9400_97FF_segN(): readonly number[] {
   TXA
   LDX $94,Y
 @E5FF:
-  BEQ $E5B4
+  BEQ @E5B4
   .byte $74
 @E602:
   STX $F0F0
   LDX $E998
   SBC #$F0
-  BEQ $E613
+  BEQ @E613
   .byte $07
-  BEQ $E5FF
+  BEQ @E5FF
 @E60F:
   .byte $04, $04
   ORA ($11),Y
@@ -3287,8 +3287,8 @@ function build_9400_97FF_segN(): readonly number[] {
   ASL $561E,X
   ADC ($1C),Y
   .byte $1C
-  BEQ $E62C
-  BEQ $E60F
+  BEQ @E62C
+  BEQ @E60F
   .byte $07, $1F
 @E621:
   BIT $0F
@@ -3299,7 +3299,7 @@ function build_9400_97FF_segN(): readonly number[] {
 @E62C:
   .byte $7C
   BEQ $E661
-  BEQ $E621
+  BEQ @E621
   .byte $3C
   ROL $3A1F,X
 @E635:
@@ -3310,7 +3310,7 @@ function build_9400_97FF_segN(): readonly number[] {
   .byte $8B, $9E
   LDX #$F0
   .byte $6F
-  BEQ $E635
+  BEQ @E635
   JMP ($446E)
   ADC $3D,X
   .byte $27
@@ -3319,7 +3319,7 @@ function build_9400_97FF_segN(): readonly number[] {
   LDA $AE9A,X
   ROR $C7C3,X
   BEQ $E647
-  BCC $E5E0
+  BCC @E5E0
   STY $6E
 @E65B:
   .byte $74
@@ -3334,30 +3334,30 @@ function build_9400_97FF_segN(): readonly number[] {
 @E667:
   INX
   NOP
-  BEQ $E65B
-  BEQ $E65D
-  BEQ $E673
+  BEQ @E65B
+  BEQ @E65D
+  BEQ @E673
   BEQ $E678
 @E671:
-  BEQ $E663
+  BEQ @E663
 @E673:
-  BEQ $E665
-  BEQ $E667
+  BEQ @E665
+  BEQ @E667
   EOR ($6B),Y
-  BEQ $E68D
+  BEQ @E68D
 @E67B:
   .byte $6F, $74
-  BEQ $E6BE
-  BEQ $E671
+  BEQ @E6BE
+  BEQ @E671
   .byte $03
-  BPL $E697
+  BPL @E697
   PHP
   BEQ $E68C
-  BEQ $E6A7
-  BEQ $E67B
+  BEQ @E6A7
+  BEQ @E67B
   EOR $77
 @E68D:
-  BEQ $E6BA
+  BEQ @E6BA
   .byte $74
   ADC ($F0),Y
   LSR $F0,X
@@ -3366,15 +3366,15 @@ function build_9400_97FF_segN(): readonly number[] {
   EOR $27,X
 @E697:
   BIT $1C5E
-  BPL $E6BA
+  BPL @E6BA
   .byte $13
 @E69D:
   AND $59,X
   .byte $82, $8F, $4F, $74
-  BEQ $E695
-  BEQ $E697
+  BEQ @E695
+  BEQ @E697
 @E6A7:
-  BEQ $E6F4
+  BEQ @E6F4
 @E6A9:
   ADC $514B,Y
   .byte $82
@@ -3383,7 +3383,7 @@ function build_9400_97FF_segN(): readonly number[] {
   ANC #$42
   EOR $A55A,Y
   LDX $8073,Y
-  BEQ $E6A9
+  BEQ @E6A9
   .byte $9E
 @E6BA:
   LDY #$7B
@@ -3397,29 +3397,29 @@ function build_9400_97FF_segN(): readonly number[] {
   LDA $D6ED,Y
 @E6C9:
   ROR $F0B0,X
-  BEQ $E6BE
+  BEQ @E6BE
 @E6CE:
-  BEQ $E69D
+  BEQ @E69D
   .byte $9F, $04, $04
-  BEQ $E6C5
+  BEQ @E6C5
   .byte $07
 @E6D6:
   .byte $07
-  BEQ $E6C9
+  BEQ @E6C9
 @E6D9:
   .byte $12, $12, $52, $77
-  BEQ $E6FE
+  BEQ @E6FE
   .byte $72, $5B
 @E6E1:
   .byte $34, $62
   ORA $1C1D,X
   .byte $04
-  BEQ $E6D9
+  BEQ @E6D9
   ASL $12
   .byte $14, $2F
   ROL A
   .byte $1F
-  BEQ $E6E1
+  BEQ @E6E1
   BEQ $E72B
   .byte $7F
 @E6F4:
@@ -3434,8 +3434,8 @@ function build_9400_97FF_segN(): readonly number[] {
   ORA ($1F),Y
   ASL $36,X
   .byte $4F
-  BEQ $E6F5
-  BEQ $E764
+  BEQ @E6F5
+  BEQ @E764
   LDA ($A5,X)
 @E709:
   ROR $4D91
@@ -3444,22 +3444,22 @@ function build_9400_97FF_segN(): readonly number[] {
   RTI
   AND #$38
   ROL $5B72
-  BEQ $E709
+  BEQ @E709
   STY $C481
   INY
   STA $B6
 @E71F:
-  BVS $E6CE
+  BVS @E6CE
   STA ($6F),Y
   ADC $8F,X
   JMP $5B65
   BVC $E7A8
   LDY $F0F0,X
-  BEQ $E71F
+  BEQ @E71F
   BEQ $E71A
   TAX
   .byte $D3
-  BNE $E6D6
+  BNE @E6D6
   BEQ $E727
   .byte $07, $07
   BEQ $E72B
@@ -3471,7 +3471,7 @@ function build_9400_97FF_segN(): readonly number[] {
   ADC $1C
   .byte $1C, $0F, $0F
 @E749:
-  BEQ $E73B
+  BEQ @E73B
   ASL $1F
 @E74D:
   BEQ $E75E
@@ -3480,11 +3480,11 @@ function build_9400_97FF_segN(): readonly number[] {
   .byte $1B
   EOR $76
   BEQ $E78B
-  BEQ $E749
-  BEQ $E781
-  BEQ $E74D
+  BEQ @E749
+  BEQ @E781
+  BEQ @E74D
 @E75D:
-  BEQ $E79B
+  BEQ @E79B
   .byte $1F, $4F
 @E761:
   AND $1B
@@ -3492,10 +3492,10 @@ function build_9400_97FF_segN(): readonly number[] {
 @E764:
   ORA $33F0,X
   BVC $E6F7
-  BEQ $E7B7
-  BEQ $E75D
-  BEQ $E7C5
-  BEQ $E761
+  BEQ @E7B7
+  BEQ @E75D
+  BEQ @E7C5
+  BEQ @E761
 @E771:
   JMP ($426E)
   .byte $73
@@ -3505,10 +3505,10 @@ function build_9400_97FF_segN(): readonly number[] {
   .byte $80
 @E77C:
   LDA $95F0,X
-  BEQ $E771
+  BEQ @E771
 @E781:
   BEQ $E773
-  BEQ $E7FE
+  BEQ @E7FE
 @E785:
   STY $6E
   .byte $67
@@ -3520,21 +3520,21 @@ function build_9400_97FF_segN(): readonly number[] {
 @E791:
   LDY #$C5
 @E793:
-  BEQ $E785
+  BEQ @E785
   BEQ $E74C
   BEQ $E789
 @E799:
-  BEQ $E79F
+  BEQ @E79F
 @E79B:
   BEQ $E7A4
-  BEQ $E78F
+  BEQ @E78F
 @E79F:
-  BEQ $E791
-  BEQ $E793
+  BEQ @E791
+  BEQ @E793
   AND $F05E
   .byte $12
   ALR #$5B
-  BEQ $E7D3
+  BEQ @E7D3
 @E7AB:
   BEQ $E7CA
   .byte $03
@@ -3542,14 +3542,14 @@ function build_9400_97FF_segN(): readonly number[] {
   .byte $13
 @E7B1:
   BEQ $E7B8
-  BEQ $E7D3
-  BEQ $E7EC
+  BEQ @E7D3
+  BEQ @E7EC
 @E7B7:
   .byte $F0, $51  ; BEQ $980A
-  BEQ $E7AB
+  BEQ @E7AB
   .byte $F0, $66  ; BEQ $9823
-  BEQ $E7FE
-  BEQ $E7B1
+  BEQ @E7FE
+  BEQ @E7B1
 @E7C1:
   EOR $1B,X
   ANC #$5E
@@ -3559,7 +3559,7 @@ function build_9400_97FF_segN(): readonly number[] {
   ASL $3635,X
   .byte $F0, $74  ; BEQ $9841
   .byte $F0, $5B  ; BEQ $982A
-  BEQ $E7C1
+  BEQ @E7C1
   .byte $F0, $6F  ; BEQ $9842
 @E7D3:
   .byte $F0, $58  ; BEQ $982D
@@ -3571,7 +3571,7 @@ function build_9400_97FF_segN(): readonly number[] {
   EOR $F072,Y
   LDY $F0
   .byte $8B
-  BEQ $E7D5
+  BEQ @E7D5
   BEQ $E786
   .byte $F0, $7C  ; BEQ $9865
 @E7E9:
@@ -3582,11 +3582,11 @@ function build_9400_97FF_segN(): readonly number[] {
   TXS
   .byte $70, $59  ; BVS $9848
   ROR $4E
-  BEQ $E77C
+  BEQ @E77C
   BEQ $E7A5
-  BEQ $E799
-  BEQ $E7E9
-  BEQ $E7EB
+  BEQ @E799
+  BEQ @E7E9
+  BEQ @E7EB
   BEQ $E79C
   .byte $04
 @E7FE:
@@ -3598,7 +3598,7 @@ function build_9400_97FF_segN(): readonly number[] {
 // $9800-$9BFF (1024B): $9800-$9BFF 代码/数据段7
 function build_9800_9BFF_segN(): readonly number[] {
   return asm`
-  BEQ $E809
+  BEQ @E809
   .byte $07
   .byte $F0, $F0  ; BEQ $97F5
   .byte $12, $12
@@ -3614,23 +3614,23 @@ function build_9800_9BFF_segN(): readonly number[] {
   BEQ $E81C
   .byte $12
   BEQ $E82D
-  BEQ $E83A
+  BEQ @E83A
   BEQ $E80D
-  BEQ $E857
+  BEQ @E857
   BEQ $E811
 @E821:
   EOR ($64,X)
 @E823:
-  BEQ $E84F
+  BEQ @E84F
 @E825:
   PLP
   .byte $57
-  BEQ $E870
+  BEQ @E870
   ORA $1F2A,X
   AND $4FF0
-  BEQ $E821
-  BEQ $E823
-  BEQ $E825
+  BEQ @E821
+  BEQ @E823
+  BEQ @E825
 @E835:
   BEQ $E8B6
   BEQ $E886
@@ -3641,9 +3641,9 @@ function build_9800_9BFF_segN(): readonly number[] {
   EOR $4C8F,X
   AND $42,X
   AND $67F0,Y
-  BEQ $E835
-  BEQ $E8B1
-  BEQ $E839
+  BEQ @E835
+  BEQ @E8B1
+  BEQ @E839
 @E849:
   .byte $F0, $AF  ; BEQ $97FA
   .byte $F0, $8A  ; BEQ $97D7
@@ -3652,18 +3652,18 @@ function build_9800_9BFF_segN(): readonly number[] {
 @E84F:
   ADC $8F,X
   JMP $5A65
-  BVC $E8D4
+  BVC @E8D4
   .byte $97
 @E857:
-  BEQ $E849
+  BEQ @E849
   .byte $F0, $9A  ; BEQ $97F5
-  BEQ $E84D
+  BEQ @E84D
   TAX
   .byte $D3
-  BEQ $E80F
+  BEQ @E80F
   BEQ $E853
   .byte $07, $07
-  BEQ $E857
+  BEQ @E857
   .byte $04, $04
   ORA ($11),Y
   ADC #$3A
@@ -3671,7 +3671,7 @@ function build_9800_9BFF_segN(): readonly number[] {
 @E870:
   ADC ($1C),Y
   .byte $1C
-  BEQ $E884
+  BEQ @E884
   BEQ $E89B
   .byte $07, $1F
 @E879:
@@ -3683,7 +3683,7 @@ function build_9800_9BFF_segN(): readonly number[] {
   .byte $7C
 @E884:
   ROR $F0F0,X
-  BEQ $E879
+  BEQ @E879
   .byte $3C
   AND $1F
 @E88C:
@@ -3693,7 +3693,7 @@ function build_9800_9BFF_segN(): readonly number[] {
   EOR $369B,X
   .byte $4F, $9E
   LDX #$F0
-  BEQ $E88C
+  BEQ @E88C
   ROL $4930,X
   ANC #$51
 @E8A1:
@@ -3703,8 +3703,8 @@ function build_9800_9BFF_segN(): readonly number[] {
   RTI
   STA $59BE,Y
   .byte $7F, $C3, $C7
-  BEQ $E91D
-  BEQ $E8A1
+  BEQ @E91D
+  BEQ @E8A1
 @E8B1:
   JMP ($5D55)
   .byte $82
@@ -3718,12 +3718,12 @@ function build_9800_9BFF_segN(): readonly number[] {
   BEQ $E8B3
   STA ($7A),Y
   BEQ $E930
-  BEQ $E932
+  BEQ @E932
   BEQ $E8BB
   BEQ $E8BD
-  BEQ $E8BF
+  BEQ @E8BF
   EOR ($6B),Y
-  BEQ $E8E5
+  BEQ @E8E5
 @E8D3:
   .byte $6F
 @E8D4:
@@ -3735,13 +3735,13 @@ function build_9800_9BFF_segN(): readonly number[] {
   .byte $13
 @E8DD:
   BEQ $E8E4
-  BEQ $E8FF
-  BEQ $E8D3
+  BEQ @E8FF
+  BEQ @E8D3
   EOR ($6B),Y
 @E8E5:
-  BEQ $E912
+  BEQ @E912
   .byte $6F, $74
-  BEQ $E92A
+  BEQ @E92A
   BEQ $E915
 @E8ED:
   EOR $0F,X
@@ -3753,10 +3753,10 @@ function build_9800_9BFF_segN(): readonly number[] {
 @E8F7:
   AND $2B69,Y
   .byte $4F
-  BEQ $E8ED
-  BEQ $E8EF
+  BEQ @E8ED
+  BEQ @E8EF
 @E8FF:
-  BEQ $E94C
+  BEQ @E94C
 @E901:
   ADC ($31,X)
   AND $296A,Y
@@ -3767,7 +3767,7 @@ function build_9800_9BFF_segN(): readonly number[] {
   ALR #$50
   LDA $CA
   ROR $80
-  BEQ $E901
+  BEQ @E901
   .byte $9E
 @E912:
   STA $7B,X
@@ -3777,17 +3777,17 @@ function build_9800_9BFF_segN(): readonly number[] {
   .byte $4F
 @E91D:
   ADC ($8B),Y
-  BCS $E8F7
+  BCS @E8F7
 @E921:
   .byte $74
   STA $F0F0,Y
-  BEQ $E8DD
+  BEQ @E8DD
   STA $047C,X
 @E92A:
   .byte $04
-  BEQ $E91D
+  BEQ @E91D
   .byte $07, $07
-  BEQ $E921
+  BEQ @E921
   .byte $12
 @E932:
   .byte $12, $52, $77
@@ -3800,8 +3800,8 @@ function build_9800_9BFF_segN(): readonly number[] {
   ASL $06
   JSR $F014 ; → bank switch?
   ANC #$F0
-  BEQ $E93A
-  BEQ $E9BE
+  BEQ @E93A
+  BEQ @E9BE
 @E94C:
   ROR $6E,X
   CLI
@@ -3811,7 +3811,7 @@ function build_9800_9BFF_segN(): readonly number[] {
   ASL $2013,X
   .byte $37, $5C
   BEQ $E94D
-  BEQ $E9A4
+  BEQ @E9A4
   STA $8B,X
 @E961:
   NOP
@@ -3824,7 +3824,7 @@ function build_9800_9BFF_segN(): readonly number[] {
   .byte $3B
   ORA $2B41,X
   AND $4367,Y
-  BEQ $E961
+  BEQ @E961
   BEQ $E8F4
   .byte $BB, $BB, $9F
   LDA ($59,X)
@@ -3834,9 +3834,9 @@ function build_9800_9BFF_segN(): readonly number[] {
   JMP $5C5A
   EOR $73
   LDY $F0
-  BEQ $E907
+  BEQ @E907
   TXS
-  BEQ $E968
+  BEQ @E968
   CPY $96
   .byte $93
   ADC $FFFF,X

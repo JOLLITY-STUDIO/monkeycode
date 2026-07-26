@@ -27,14 +27,14 @@ function build_8000_83FF_seg1(): readonly number[] {
   JSR $C515 ; → bank switch?
   LDA $05D4
   BIT $05D7
-  BPL $E01E
+  BPL @E01E
   EOR #$FF
   CLC
   ADC #$11
 @E01E:
   AND #$E0
   CMP $05D8
-  BNE $E028
+  BNE @E028
   JMP $800C
 @E028:
   STA $05D8
@@ -44,7 +44,7 @@ function build_8000_83FF_seg1(): readonly number[] {
   JSR $812B ; → bank switch?
   LDA #$E0
   BIT $05D7
-  BPL $E03E
+  BPL @E03E
   LDA #$A0
 @E03E:
   CLC
@@ -61,7 +61,7 @@ function build_8000_83FF_seg1(): readonly number[] {
   LDA #$01
   JSR $C515 ; → bank switch?
   LDA $0515
-  BNE $E04D
+  BNE @E04D
   LDA #$01
   STA $0515
   LDX #$00
@@ -78,26 +78,26 @@ function build_8000_83FF_seg1(): readonly number[] {
   PLA
   SEC
   SBC #$01
-  BNE $E060
+  BNE @E060
   LDA #$80
   STA $0515
   PLA
   SEC
   SBC #$01
-  BNE $E04C
+  BNE @E04C
   JMP $800C
   LDA #$01
   JSR $C515 ; → bank switch?
   LDA $05D4
   BIT $05D7
-  BPL $E095
+  BPL @E095
   EOR #$FF
   CLC
   ADC #$01
 @E095:
   AND #$E0
   CMP $05D8
-  BNE $E09F
+  BNE @E09F
   JMP $8083
 @E09F:
   STA $05D8
@@ -105,7 +105,7 @@ function build_8000_83FF_seg1(): readonly number[] {
   LDA #$E0
   LDY #$FF
   BIT $05D7
-  BPL $E0B0
+  BPL @E0B0
   LDA #$00
 @E0B0:
   CLC
@@ -124,7 +124,7 @@ function build_8000_83FF_seg1(): readonly number[] {
   TYA
   LSR A
   LDA #$00
-  BCC $E0CA
+  BCC @E0CA
   LDA #$40
 @E0CA:
   ORA $5A
@@ -136,7 +136,7 @@ function build_8000_83FF_seg1(): readonly number[] {
   LDA #$01
   JSR $C515 ; → bank switch?
   LDA $0515
-  BNE $E0D1
+  BNE @E0D1
   LDA #$01
   STA $0515
   LDX #$00
@@ -156,17 +156,17 @@ function build_8000_83FF_seg1(): readonly number[] {
   PLA
   SEC
   SBC #$01
-  BNE $E0E4
+  BNE @E0E4
   LDA #$80
   STA $0515
   PLA
   SEC
   SBC #$01
-  BNE $E0D0
+  BNE @E0D0
   JMP $8083
   LDX $05D4
   LDY $05D5
-  BPL $E120
+  BPL @E120
   TXA
   EOR #$FF
   TAX
@@ -174,7 +174,7 @@ function build_8000_83FF_seg1(): readonly number[] {
   EOR #$FF
   TAY
   INX
-  BNE $E120
+  BNE @E120
   INY
 @E120:
   TXA
@@ -210,9 +210,9 @@ function build_8000_83FF_seg1(): readonly number[] {
   STA $53
   LDA $0524
   CMP #$FF
-  BEQ $E19C
+  BEQ @E19C
   ASL A
-  BCC $E160
+  BCC @E160
   INC $53
 @E160:
   TAY
@@ -228,7 +228,7 @@ function build_8000_83FF_seg1(): readonly number[] {
   LDY $3A
   LDA ($52),Y
   CMP #$F0
-  BCC $E188
+  BCC @E188
   JSR $81BC ; → bank switch?
   LDA #$02
   STA $05D0
@@ -240,7 +240,7 @@ function build_8000_83FF_seg1(): readonly number[] {
   CLC
   ADC $52
   STA $52
-  BCC $E195
+  BCC @E195
   INC $53
 @E195:
   LDY #$01
@@ -274,12 +274,12 @@ function build_8000_83FF_seg1(): readonly number[] {
   .byte $12, $12
   ASL $0E1A,X
   ASL $120E
-  BPL $E1F7
+  BPL @E1F7
   .byte $12, $12
   ORA $1A,X
   ASL $0E0E
   .byte $12
-  BPL $E201
+  BPL @E201
   .byte $12, $12, $17, $1B, $0F, $0F
 @E1F7:
   .byte $0F, $13
@@ -335,13 +335,13 @@ function build_8000_83FF_seg1(): readonly number[] {
   SEC
   SBC ($34),Y
   LDY $05FB
-  BEQ $E269
+  BEQ @E269
   EOR #$FF
   CLC
   ADC #$01
 @E269:
   TAX
-  BPL $E270
+  BPL @E270
   TYA
   EOR #$0B
   TAY
@@ -352,18 +352,18 @@ function build_8000_83FF_seg1(): readonly number[] {
   LDA $827F,X
   JMP $832B
   ASL $100E
-  BPL $E294
+  BPL @E294
   .byte $12
-  BPL $E297
+  BPL @E297
   .byte $12, $12, $0C, $0C
-  BPL $E29D
-  BPL $E2A1
-  BPL $E2A1
+  BPL @E29D
+  BPL @E2A1
+  BPL @E2A1
   .byte $12, $12
   NOP
 @E294:
   .byte $0C
-  BPL $E2A7
+  BPL @E2A7
 @E297:
   BPL $E2AB
   BPL $E2AB
@@ -440,7 +440,7 @@ function build_8000_83FF_seg1(): readonly number[] {
   ADC $3A
   TAX
   TYA
-  BEQ $E326
+  BEQ @E326
   TXA
   CLC
   ADC #$3C
@@ -456,7 +456,7 @@ function build_8000_83FF_seg1(): readonly number[] {
   LDA #$01
   STA $05CB
   LDA $05CD
-  BEQ $E342
+  BEQ @E342
   AND #$20
   ORA #$80
 @E342:
@@ -473,13 +473,13 @@ function build_8000_83FF_seg1(): readonly number[] {
   LDA #$80
   STA $05D1
   LDY #$04
-  BNE $E329
+  BNE @E329
   JSR $84D9 ; → bank switch?
   LDA #$80
   STA $05D1
   LDY #$04
   BIT $052A
-  BVC $E374
+  BVC @E374
   INY
 @E374:
   JMP $8329
@@ -576,7 +576,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   STA $05DC
   STX $05DD
   BIT $05DF
-  BPL $E456
+  BPL @E456
   LDA #$20
 @E456:
   STA $05E0
@@ -584,18 +584,18 @@ function build_8400_87FF_seg2(): readonly number[] {
   LDY #$04
   LDA ($52),Y
   BIT $05DF
-  BMI $E471
+  BMI @E471
   SEC
   SBC #$01
   LDX #$74
   LSR A
-  BCC $E478
+  BCC @E478
   LDX #$E4
-  BNE $E478
+  BNE @E478
 @E471:
   LDX #$1C
   LSR A
-  BCC $E478
+  BCC @E478
   LDX #$8C
 @E478:
   STX $05E1
@@ -603,7 +603,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   RTS
   LDY #$05
   BIT $052A
-  BVC $E488
+  BVC @E488
   INY
   INY
 @E488:
@@ -624,16 +624,16 @@ function build_8400_87FF_seg2(): readonly number[] {
   RTS
   LDX #$02
   CMP #$80
-  BCS $E4AD
+  BCS @E4AD
   DEX
   CMP #$40
-  BCS $E4AD
+  BCS @E4AD
   DEX
 @E4AD:
   LDY #$74
   AND #$3F
   CMP #$20
-  BCS $E4BB
+  BCS @E4BB
   LDY #$E4
   TXA
   EOR #$02
@@ -655,7 +655,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   RTS
   JSR $84F4 ; → bank switch?
   BIT $052A
-  BVC $E4ED
+  BVC @E4ED
   TXA
   EOR #$FF
   TAX
@@ -663,7 +663,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   EOR #$FF
   TAY
   INX
-  BNE $E4ED
+  BNE @E4ED
   INY
 @E4ED:
   STX $05DE
@@ -676,7 +676,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   LDA ($52),Y
   TAY
   CMP #$80
-  BEQ $E502
+  BEQ @E502
   RTS
 @E502:
   LDA $061D
@@ -689,7 +689,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   ASL A
   ROL $3A
   CPX #$01
-  BEQ $E51A
+  BEQ @E51A
   ASL A
   ROL $3A
 @E51A:
@@ -710,7 +710,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   STA $55
   TXA
   ASL A
-  BCC $E538
+  BCC @E538
   INC $55
 @E538:
   TAY
@@ -746,7 +746,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   LDA #$01
   JSR $C515 ; → bank switch?
   LDA $0515
-  BNE $E56D
+  BNE @E56D
   LDA #$01
   STA $0515
   LDA #$00
@@ -771,10 +771,10 @@ function build_8400_87FF_seg2(): readonly number[] {
   INC $05C8
   PLA
   DEC $05C9
-  BEQ $E5B6
+  BEQ @E5B6
   SEC
   SBC #$01
-  BNE $E583
+  BNE @E583
   LDA #$80
   STA $0515
   JMP $856D
@@ -879,7 +879,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   PHP
   LDA #$12
   PLP
-  BEQ $E679
+  BEQ @E679
   LDA #$13
 @E679:
   PHA
@@ -904,14 +904,14 @@ function build_8400_87FF_seg2(): readonly number[] {
   PLA
   SEC
   SBC #$01
-  BNE $E691
+  BNE @E691
   INX
   INX
   INX
   PLA
   SEC
   SBC #$01
-  BNE $E68E
+  BNE @E68E
   PLA
   TAX
   LDA #$00
@@ -919,7 +919,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   PLA
   AND #$3F
   CMP #$38
-  BCS $E6BC
+  BCS @E6BC
   TXA
   CLC
   ADC #$20
@@ -940,7 +940,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   PLA
   SEC
   SBC #$01
-  BNE $E6C4
+  BNE @E6C4
   RTS
   PHA
   AND #$03
@@ -952,7 +952,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   TAY
   LDA $8B42,Y
   DEX
-  BMI $E6E7
+  BMI @E6E7
   LSR A
   LSR A
   JMP $86DF
@@ -1068,7 +1068,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   BIT $2C3C
   LSR $00,X
   LSR $00,X
-  BVC $E7CE
+  BVC @E7CE
   .byte $3C, $52, $3C, $52, $3C, $52, $3C, $44, $3C, $44, $3C, $44, $3C, $44, $3C
   BRK
   ROL $3C00,X
@@ -1079,7 +1079,7 @@ function build_8400_87FF_seg2(): readonly number[] {
   LSR A
   JMP $4C00
   BRK
-  BVC $E7EC
+  BVC @E7EC
   .byte $3C
   ROL $4A3C
   .byte $3C
@@ -1283,7 +1283,7 @@ function build_8800_8BFF_seg3(): readonly number[] {
   .byte $8B, $02, $03
   BRK
   ASL $50
-  BEQ $E8E7
+  BEQ @E8E7
   BRK
   .byte $52
 @E8E7:
@@ -1398,7 +1398,7 @@ function build_8800_8BFF_seg3(): readonly number[] {
   .byte $02, $03
   BRK
   .byte $02
-  BVC $E9A2
+  BVC @E9A2
   .byte $03
   BRK
 @E9A2:
@@ -1424,7 +1424,7 @@ function build_8800_8BFF_seg3(): readonly number[] {
   .byte $02
   PHP
 @E9C4:
-  BCS $E9C4
+  BCS @E9C4
   .byte $02
   DEC $89
   INY
@@ -1512,7 +1512,7 @@ function build_8800_8BFF_seg3(): readonly number[] {
   .byte $02
   PHP
 @EA4F:
-  BCS $EA4F
+  BCS @EA4F
   .byte $03
   EOR ($8A),Y
   .byte $54
@@ -1569,7 +1569,7 @@ function build_8800_8BFF_seg3(): readonly number[] {
   .byte $5B, $02, $03
   BRK
   .byte $80
-  BVC $EAA9
+  BVC @EAA9
   .byte $03
   BRK
 @EAA9:
@@ -1635,7 +1635,7 @@ function build_8800_8BFF_seg3(): readonly number[] {
   ROR $02
   PHP
 @EB11:
-  BCS $EB11
+  BCS @EB11
   .byte $02, $13, $8B
   ORA $8B,X
   .byte $1B
@@ -1703,7 +1703,7 @@ function build_8800_8BFF_seg3(): readonly number[] {
   BRK
   ORA $0E
   .byte $0F
-  BPL $EBA1
+  BPL @EBA1
   .byte $0C
   ORA $0D0C
   .byte $12, $12, $12, $12, $12, $12, $12, $12, $13, $13, $13, $13, $13
@@ -2085,8 +2085,8 @@ function build_8C00_8FFF_seg4(): readonly number[] {
   CLC
   ORA $1F,X
   BPL $EF92
-  BPL $EF89
-  BPL $EF8B
+  BPL @EF89
+  BPL @EF8B
   BPL $EF9D
   .byte $12
   ORA ($12),Y
@@ -2104,9 +2104,9 @@ function build_8C00_8FFF_seg4(): readonly number[] {
   CLC
   ORA $09,X
   ASL A
-  BPL $EFA6
-  BPL $EFA8
-  BPL $EFB5
+  BPL @EFA6
+  BPL @EFA8
+  BPL @EFB5
   BPL $EFA7
   ORA ($12),Y
   ORA ($12),Y
@@ -2146,7 +2146,7 @@ function build_8C00_8FFF_seg4(): readonly number[] {
   INC $ED,X
   ROL $CE3E,X
   .byte $CF
-  BNE $EFB5
+  BNE @EFB5
   BRK
   BRK
   BRK
@@ -2372,7 +2372,7 @@ function build_9000_93FF_seg5(): readonly number[] {
   BMI $E1A7
   BMI $E1A9
   BMI $E1AB
-  BMI $E1AE
+  BMI @E1AE
   AND ($31),Y
   AND ($31),Y
   AND ($31),Y
@@ -2441,9 +2441,9 @@ function build_9000_93FF_seg5(): readonly number[] {
   ROL $2D2E
   ROL $302E
   BMI $E247
-  BMI $E249
+  BMI @E249
   BMI $E24B
-  BMI $E24E
+  BMI @E24E
   AND ($31),Y
   AND ($31),Y
   AND ($31),Y
@@ -2455,16 +2455,16 @@ function build_9000_93FF_seg5(): readonly number[] {
   ROL $2E2E
   .byte $EF
   ROL $2E2E
-  BMI $E266
-  BMI $E268
-  BMI $E26A
-  BMI $E26C
+  BMI @E266
+  BMI @E268
+  BMI @E26A
+  BMI @E26C
   AND ($31),Y
   AND ($31),Y
   AND ($31),Y
   AND ($31),Y
-  BPL $E256
-  BCS $E1F9
+  BPL @E256
+  BCS @E1F9
   .byte $B2
 @E249:
   .byte $B3
@@ -2566,8 +2566,8 @@ function build_9000_93FF_seg5(): readonly number[] {
   DEC $CECE
   DEC $D0CF
   .byte $CF
-  BNE $E2E0
-  BNE $E2E2
+  BNE @E2E0
+  BNE @E2E2
   BNE $E314
   CMP ($FF),Y
   .byte $FF, $FF, $FF
@@ -2748,9 +2748,9 @@ function build_9400_97FF_seg6(): readonly number[] {
   EOR $44
   .byte $44, $44
   AND ($22,X)
-  BPL $E4C3
-  BPL $E4BA
-  BPL $E4BC
+  BPL @E4C3
+  BPL @E4BA
+  BPL @E4BC
   ROL A
   .byte $23, $14, $13, $14, $13, $14, $13
   ANC #$24
@@ -2770,7 +2770,7 @@ function build_9400_97FF_seg6(): readonly number[] {
   ORA $15,X
   SEC
   AND $1010,Y
-  BPL $E4E2
+  BPL @E4E2
   AND #$10
   ROL A
   .byte $23, $14, $13, $14, $13, $14, $13
@@ -2779,7 +2779,7 @@ function build_9400_97FF_seg6(): readonly number[] {
 @E4E2:
   .byte $1C, $1C
   BPL $E50F
-  BPL $E4F8
+  BPL @E4F8
   BPL $E4FA
   AND $142E
   .byte $13, $14, $13, $14, $13, $2F
@@ -2796,8 +2796,8 @@ function build_9400_97FF_seg6(): readonly number[] {
   ORA $15,X
   .byte $3C
   AND $1010,X
-  BPL $E520
-  BPL $E522
+  BPL @E520
+  BPL @E522
   .byte $37
   SEC
   .byte $13, $14, $13, $14, $13, $14, $2F
@@ -2809,9 +2809,9 @@ function build_9400_97FF_seg6(): readonly number[] {
   .byte $34
   AND $10,X
   .byte $1B
-  BPL $E538
-  BPL $E553
-  BPL $E53C
+  BPL @E538
+  BPL @E553
+  BPL @E53C
   .byte $14, $13, $14, $13, $14, $13, $14, $13
   CPY $C4
   CPY $C4
@@ -3007,7 +3007,7 @@ function build_9400_97FF_seg6(): readonly number[] {
   .byte $AB
   LDY $AEAD
   .byte $AF
-  BCS $E73A
+  BCS @E73A
   ROL $37,X
   SEC
   AND $3B3A,Y
@@ -3023,7 +3023,7 @@ function build_9400_97FF_seg6(): readonly number[] {
   ALR #$4C
   EOR $4E4D
   .byte $4F
-  BVC $E773
+  BVC @E773
   .byte $4F
   BVC $E739
   .byte $14, $14, $14, $14, $14, $14, $14, $52, $53, $54
@@ -3189,9 +3189,9 @@ function build_9800_9BFF_seg7(): readonly number[] {
   .byte $FC
   INC $EEEE
   BEQ $E8A6
-  BEQ $E8A8
-  BEQ $E8AA
-  BEQ $E8AC
+  BEQ @E8A8
+  BEQ @E8AA
+  BEQ @E8AC
   .byte $13, $13, $13, $13, $13, $13, $13, $13
   EOR ($51),Y
   EOR ($51),Y
@@ -3212,7 +3212,7 @@ function build_9800_9BFF_seg7(): readonly number[] {
   .byte $54
   EOR $56,X
   LSR $4E,X
-  BVC $E904
+  BVC @E904
   ORA $53,X
   .byte $54
   EOR $56,X
@@ -3252,8 +3252,8 @@ function build_9800_9BFF_seg7(): readonly number[] {
   ROL $26
   ROL $26
   ROL $26
-  BEQ $E941
-  BEQ $E946
+  BEQ @E941
+  BEQ @E946
   ROL $26
   ROL $26
   .byte $93, $F3, $F2
@@ -3299,7 +3299,7 @@ function build_9800_9BFF_seg7(): readonly number[] {
   ROL $26
   ROL $26
   JSR $F0F0 ; → bank switch?
-  BEQ $E9CB
+  BEQ @E9CB
   .byte $F4
   ROL $26
   .byte $22, $23, $93
@@ -3426,8 +3426,8 @@ function build_9800_9BFF_seg7(): readonly number[] {
   .byte $13, $13
   SED
   .byte $13, $13, $13, $13, $13
-  BPL $EAE1
-  BPL $EAF1
+  BPL @EAE1
+  BPL @EAF1
   BPL $EADA
   BPL $EADC
   .byte $14, $13, $14, $13, $14
@@ -3495,9 +3495,9 @@ function build_9800_9BFF_seg7(): readonly number[] {
   INC $EFEE
   SBC $F5,X
   SBC $F5,X
-  BEQ $EB46
-  BEQ $EB48
-  BEQ $EB4A
+  BEQ @EB46
+  BEQ @EB48
+  BEQ @EB4A
   BEQ $EB4C
   .byte $13, $13, $13, $13, $13, $13, $13, $13
   BRK
@@ -3691,7 +3691,7 @@ function build_9C00_9FFF_seg8(): readonly number[] {
   BRK
   BRK
   CPY #$F0
-  BEQ $ED18
+  BEQ @ED18
   CPY $77BF
   .byte $FF, $FF, $33
   CPY $FEFB
@@ -3838,11 +3838,11 @@ function build_9C00_9FFF_seg8(): readonly number[] {
   BRK
   TAX
   LDX $30FE
-  BMI $EDB1
+  BMI @EDB1
 @EDB1:
   BRK
   BRK
-  BEQ $EDA5
+  BEQ @EDA5
   TAX
   .byte $AB, $AB, $AB
   CPY #$00
@@ -3865,9 +3865,9 @@ function build_9C00_9FFF_seg8(): readonly number[] {
   .byte $0C, $FF, $FF, $FF, $FF
   TAX
   TAX
-  BEQ $EDC6
+  BEQ @EDC6
   .byte $FF, $FF
-  BMI $EE0D
+  BMI @EE0D
   CMP $CC33,X
   .byte $FF, $FF
   NOP
@@ -4015,7 +4015,7 @@ function build_9C00_9FFF_seg8(): readonly number[] {
   TAX
   TAX
   TAX
-  BVC $EE62
+  BVC @EE62
   TAX
   TAX
   TAX
@@ -4052,7 +4052,7 @@ function build_9C00_9FFF_seg8(): readonly number[] {
   .byte $FF
   TAX
   TAX
-  BCC $EF35
+  BCC @EF35
   EOR $55,X
   EOR $AA60,X
   CPY $FFFF

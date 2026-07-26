@@ -610,7 +610,7 @@ function buildbytecodeHandlers(): readonly number[] {
     ADC #$00
     STA $52
     INC $4D
-    BNE $E852
+    BNE @E852
     INC $4E
     @E852: JMP $84E3
     JSR $88B1
@@ -675,7 +675,7 @@ function buildbytecodeHandlers(): readonly number[] {
     JSR $9B28
     PLA
     CMP #$A0
-    BCC $E8ED
+    BCC @E8ED
     PHA
     CMP #$C8
     LDA #$94
@@ -704,7 +704,7 @@ function buildbytecodeHandlers(): readonly number[] {
     INX
     INX
     INX
-    BNE $E8FD
+    BNE @E8FD
     RTS
     STA $ED
     LDX #$00
@@ -716,7 +716,7 @@ function buildbytecodeHandlers(): readonly number[] {
     INX
     INX
     INX
-    BNE $E910
+    BNE @E910
     RTS
     LDX #$13
     JSR $9DEE
@@ -732,7 +732,7 @@ function buildbytecodeHandlers(): readonly number[] {
     LDX #$06
     JSR $C4B9
     @E93B: LDA $78
-    BNE $E93B
+    BNE @E93B
     LDY #$00
     LDA ($EC),Y
     STA $0079
@@ -744,13 +744,13 @@ function buildbytecodeHandlers(): readonly number[] {
     STA $007B,Y
     INY
     DEX
-    BNE $E94E
+    BNE @E94E
     LDX $EA
     JSR $C4B9
     RTS
     TAX
     LDA $99
-    BPL $E966
+    BPL @E966
     EOR #$41
     STA $99
     @E966: LDA #$01
@@ -761,7 +761,7 @@ function buildbytecodeHandlers(): readonly number[] {
     PLA
     TAX
     DEX
-    BNE $E966
+    BNE @E966
     RTS
     LDA $4D
     STA $EA
@@ -790,23 +790,23 @@ function buildbytecodeHandlers(): readonly number[] {
     @E9A5: LDA $88D2,Y
     STA $0468,Y
     INY
-    BNE $E9A5
+    BNE @E9A5
     LDX #$F8
     LDY #$00
     @E9B2: LDA #$01
     JSR $9FA8
     LDA $1E
-    BMI $E9CA
+    BMI @E9CA
     INY
     CPY #$28
-    BEQ $E9A3
+    BEQ @E9A3
     CPY #$18
-    BNE $E9B2
+    BNE @E9B2
     STX $0564
     JMP $89B2
     @E9CA: STX $0564
     RTS
-    BNE $E9CF
+    BNE @E9CF
     .byte $03
     @E9CF:
     INX
@@ -832,10 +832,10 @@ function buildbytecodeHandlers(): readonly number[] {
     JSR $C4B9
     RTS
     LDA $0652
-    BMI $EA07
+    BMI @EA07
     JMP $8A90
     @EA07: DEC $0653
-    BEQ $EA0F
+    BEQ @EA0F
     JMP $8A90
     @EA0F: LDX #$06
     JSR $C4B9
@@ -855,9 +855,9 @@ function buildbytecodeHandlers(): readonly number[] {
     LDY #$00
     LDA ($E6),Y
     CMP #$FF
-    BEQ $EA86
+    BEQ @EA86
     CMP #$FE
-    BEQ $EA7B
+    BEQ @EA7B
     AND #$F8
     STA $E8
     LSR A
@@ -905,7 +905,7 @@ function buildbytecodeHandlers(): readonly number[] {
     INX
     INY
     CPY #$04
-    BNE $EA98
+    BNE @EA98
     JSR $9B5E
     LDA $E8
     CLC
@@ -920,7 +920,7 @@ function buildbytecodeHandlers(): readonly number[] {
     ORA #$0A
     .byte $0B, $0C
     ORA $0F0E
-    BPL $EAD1
+    BPL @EAD1
     .byte $12, $13, $14
     NOP
     .byte $1B, $1C
@@ -932,7 +932,7 @@ function buildbytecodeHandlers(): readonly number[] {
     JMP $4E4D
   @EAD1:
     .byte $4F
-    BVC $EB25
+    BVC @EB25
     .byte $52, $53, $54
     NOP
     .byte $5B, $5C
@@ -945,11 +945,11 @@ function buildbytecodeHandlers(): readonly number[] {
     .byte $14
     PLP
     .byte $3C
-    BVC $EB65
-    BEQ $EAEF
+    BVC @EB65
+    BEQ @EAEF
   @EAEF:
     .byte $03
-    BPL $EAF6
+    BPL @EAF6
     JSR $6005
     ASL $FF
   @EAF6:
@@ -970,7 +970,7 @@ function buildbytecodeHandlers(): readonly number[] {
     LDY #$F8
     @EB16: STA $0552,Y
     INY
-    BNE $EB16
+    BNE @EB16
     LDA $ED
     ASL A
     TAX
@@ -1032,7 +1032,7 @@ function buildbytecodeHandlers(): readonly number[] {
     ROL $5D
     LDA $5D
     AND #$0C
-    BNE $EB93
+    BNE @EB93
     LDA $7B
     ASL A
     ASL A
@@ -1042,12 +1042,12 @@ function buildbytecodeHandlers(): readonly number[] {
     STA $5D
     @EB93: LDA $5E
     CMP #$09
-    BCC $EB9F
+    BCC @EB9F
     JSR $9071
     JMP $8BAB
     @EB9F: LDA $5D
     AND #$04
-    BNE $EBAB
+    BNE @EBAB
     JSR $9071
     JMP $8BAE
     @EBAB: JSR $9076
@@ -1085,17 +1085,17 @@ function buildbytecodeHandlers(): readonly number[] {
     ROR $60
     STA $61
     TXA
-    BEQ $EBF3
+    BEQ @EBF3
     INY
     LDA ($70),Y
     @EBF3: STA $72
     LDA $62
     AND #$C0
-    BEQ $EC43
+    BEQ @EC43
     CMP #$40
-    BEQ $EC15
+    BEQ @EC15
     CMP #$80
-    BEQ $EC0C
+    BEQ @EC0C
     LDA #$04
     LDX #$01
     LDY $5F
@@ -1145,7 +1145,7 @@ function buildbytecodeHandlers(): readonly number[] {
     STY $6F
     LDA $5E
     CMP #$07
-    BCC $EC89
+    BCC @EC89
     SEC
     SBC #$07
     STA $5E
@@ -1167,7 +1167,7 @@ function buildbytecodeHandlers(): readonly number[] {
     LDX $5F
     JSR $8E15
     LDA $72
-    BEQ $ECA5
+    BEQ @ECA5
     LDX #$09
     LDA #$21
     STA $00,X
@@ -1192,7 +1192,7 @@ function buildbytecodeHandlers(): readonly number[] {
     STA $69
     STA $6A
     BIT $62
-    BMI $ECD6
+    BMI @ECD6
     LDA #$00
     SEC
     SBC $60
@@ -1211,7 +1211,7 @@ function buildbytecodeHandlers(): readonly number[] {
     TAX
     JSR $9BA9
     TXA
-    BPL $ECF2
+    BPL @ECF2
     EOR #$FF
     CLC
     ADC #$01
@@ -1220,10 +1220,10 @@ function buildbytecodeHandlers(): readonly number[] {
     STA $6A
     SEC
     SBC #$20
-    BCC $ECD6
+    BCC @ECD6
     STA $6A
     LDA $5B
-    BPL $ED0A
+    BPL @ED0A
     LDA #$01
     JSR $9FA8
     JMP $8CFE
@@ -1236,16 +1236,16 @@ function buildbytecodeHandlers(): readonly number[] {
     LDA #$00
     JSR $9F69
     DEC $5E
-    BNE $ECD6
+    BNE @ECD6
     JMP $8D59
     LDX #$07
     JSR $C4B9
     LDX #$02
     LDY #$00
     LDA ($70),Y
-    BEQ $ED3A
+    BEQ @ED3A
     ASL A
-    BCC $ED3B
+    BCC @ED3B
     TAX
     LDA #$FE
     JSR $9FA8
@@ -1257,7 +1257,7 @@ function buildbytecodeHandlers(): readonly number[] {
     STA $69
     STA $6A
     BIT $62
-    BMI $ED55
+    BMI @ED55
     LDA #$00
     SEC
     SBC $60
@@ -1266,7 +1266,7 @@ function buildbytecodeHandlers(): readonly number[] {
     SBC $61
     STA $61
     @ED55: BIT $62
-    BVC $ED88
+    BVC @ED88
     @ED59: LDA #$01
     JSR $9FA8
     LDA $60
@@ -1278,7 +1278,7 @@ function buildbytecodeHandlers(): readonly number[] {
     TAX
     JSR $9BA9
     TXA
-    BPL $ED75
+    BPL @ED75
     EOR #$FF
     CLC
     ADC #$01
@@ -1287,10 +1287,10 @@ function buildbytecodeHandlers(): readonly number[] {
     STA $6A
     SEC
     SBC #$20
-    BCC $ED59
+    BCC @ED59
     STA $6A
     DEC $72
-    BNE $ED59
+    BNE @ED59
     JMP $8DC8
     @ED88: LDA #$01
     JSR $9FA8
@@ -1303,7 +1303,7 @@ function buildbytecodeHandlers(): readonly number[] {
     TAX
     JSR $9BCA
     TXA
-    BPL $EDA4
+    BPL @EDA4
     EOR #$FF
     CLC
     ADC #$01
@@ -1312,10 +1312,10 @@ function buildbytecodeHandlers(): readonly number[] {
     STA $6A
     SEC
     SBC #$20
-    BCC $ED88
+    BCC @ED88
     STA $6A
     DEC $72
-    BNE $ED88
+    BNE @ED88
     LDA $7A
     SEC
     SBC $6A
@@ -1329,7 +1329,7 @@ function buildbytecodeHandlers(): readonly number[] {
     STA $47
     LDA $62
     AND #$20
-    BNE $EDFC
+    BNE @EDFC
     LDA $70
     CLC
     ADC #$03
@@ -1389,7 +1389,7 @@ function buildbytecodeHandlers(): readonly number[] {
     TXA
     EOR $5C
     AND #$20
-    BEQ $EE58
+    BEQ @EE58
     LDA $6D
     ASL A
     ASL A
@@ -1409,7 +1409,7 @@ function buildbytecodeHandlers(): readonly number[] {
     ADC $63
     STA $63
     PLA
-    BMI $EE6A
+    BMI @EE6A
     LDA $64
     ADC #$00
     JMP $8E6E
@@ -1417,14 +1417,14 @@ function buildbytecodeHandlers(): readonly number[] {
     SBC #$00
     STA $64
     DEC $ED
-    BNE $EE2D
+    BNE @EE2D
     LDA $6F
     PHA
     CLC
     ADC $65
     STA $63
     PLA
-    BMI $EE86
+    BMI @EE86
     LDA $66
     ADC #$00
     JMP $8E8A
@@ -1434,7 +1434,7 @@ function buildbytecodeHandlers(): readonly number[] {
     LDA $62
     AND #$C0
     CMP #$40
-    BEQ $EEC2
+    BEQ @EEC2
     LDA $73
     CLC
     ADC #$80
@@ -1446,12 +1446,12 @@ function buildbytecodeHandlers(): readonly number[] {
     TXA
     SEC
     SBC #$40
-    BPL $EEE8
+    BPL @EEE8
     LDA $5D
     SBC #$00
     AND #$03
     CMP #$03
-    BNE $EEE8
+    BNE @EEE8
     LDA $5C
     SEC
     SBC #$C0
@@ -1469,11 +1469,11 @@ function buildbytecodeHandlers(): readonly number[] {
     SBC #$00
     STA $5D
     TXA
-    BPL $EEE8
+    BPL @EEE8
     LDA $5D
     AND #$03
     CMP #$03
-    BNE $EEE8
+    BNE @EEE8
     LDA $5C
     CLC
     ADC #$C0
@@ -1530,7 +1530,7 @@ function buildscheduler(): readonly number[] {
     STA $E7
     JSR $8FD1
     INC $EA
-    BNE $EF3A
+    BNE @EF3A
     INC $EB
     @EF3A: LDA #$04
     STA $E8
@@ -1544,7 +1544,7 @@ function buildscheduler(): readonly number[] {
     INX
     INY
     CPY #$04
-    BNE $EF49
+    BNE @EF49
     JSR $9B5E
     DEC $E8
     .byte $F0, $70  ; BEQ $8FCB
@@ -1564,10 +1564,10 @@ function buildscheduler(): readonly number[] {
     STA $68
     AND #$03
     CMP #$03
-    BNE $EF3E
+    BNE @EF3E
     LDA $67
     CMP #$C0
-    BCC $EF3E
+    BCC @EF3E
     LDA $67
     SEC
     SBC #$C0
@@ -1731,7 +1731,7 @@ function buildpadding(): readonly number[] {
     LDY #$01
     @E089: STA $0467,Y
     INY
-    BNE $E089
+    BNE @E089
     LDA #$00
     STA $97
     LDY #$01
@@ -1755,7 +1755,7 @@ function buildpadding(): readonly number[] {
     TAY
     LDX #$09
     CMP #$6D
-    BCC $E0C2
+    BCC @E0C2
     SEC
     SBC #$6D
     TAY
@@ -1786,7 +1786,7 @@ function buildpadding(): readonly number[] {
     STA ($94),Y
     INY
     CPY #$20
-    BNE $E0E6
+    BNE @E0E6
     LDA $25
     SEC
     SBC #$09
@@ -1797,7 +1797,7 @@ function buildpadding(): readonly number[] {
     LDA ($92),Y
     STA $49
     INC $92
-    BNE $E107
+    BNE @E107
     INC $93
     @E107: LDY #$02
     LDA $92
@@ -1808,7 +1808,7 @@ function buildpadding(): readonly number[] {
     LDX $ED
     JSR $C4B9
     INC $4D
-    BNE $E11D
+    BNE @E11D
     INC $4E
     @E11D: LDA $94
     CLC
@@ -1818,7 +1818,7 @@ function buildpadding(): readonly number[] {
     ADC #$00
     STA $95
     DEC $EC
-    BEQ $E131
+    BEQ @E131
     JMP $90AE
     @E131: LDX #$11
     LDA #$47
@@ -1839,7 +1839,7 @@ function buildpadding(): readonly number[] {
     STA $96
     LDY #$00
     LDA ($94),Y
-    BMI $E15D
+    BMI @E15D
     JMP $94C1
     @E15D: TAX
     LDY #$04
@@ -1848,10 +1848,10 @@ function buildpadding(): readonly number[] {
     JSR $974A
     TXA
     AND #$10
-    BNE $E1A6
+    BNE @E1A6
     TXA
     AND #$20
-    BNE $E175
+    BNE @E175
     JMP $91F3
     @E175: LDX #$04
     LDY #$0A
@@ -1898,7 +1898,7 @@ function buildpadding(): readonly number[] {
     STA $0468,X
     ROR A
     EOR $E6
-    BPL $E1D5
+    BPL @E1D5
     LDA $046A,X
     EOR #$08
     STA $046A,X
@@ -1908,7 +1908,7 @@ function buildpadding(): readonly number[] {
     STA $046B,X
     ROR A
     EOR $E8
-    BPL $E1EB
+    BPL @E1EB
     LDA $046A,X
     EOR #$04
     STA $046A,X
@@ -1917,13 +1917,13 @@ function buildpadding(): readonly number[] {
     ADC #$04
     TAX
     DEY
-    BNE $E1BF
+    BNE @E1BF
     LDY #$01
     LDA ($94),Y
     SEC
     SBC #$01
     STA ($94),Y
-    BEQ $E201
+    BEQ @E201
     JMP $94C1
     @E201: LDY #$00
     LDA ($94),Y
@@ -1941,11 +1941,11 @@ function buildpadding(): readonly number[] {
     LDY #$00
     LDA ($94),Y
     AND #$02
-    BEQ $E224
+    BEQ @E224
     JMP $9459
     @E224: LDY #$00
     LDA ($92),Y
-    BMI $E241
+    BMI @E241
     INY
     ASL A
     STA ($94),Y
@@ -1960,7 +1960,7 @@ function buildpadding(): readonly number[] {
     STA ($94),Y
     JMP $94C1
     @E241: CMP #$A0
-    BCS $E258
+    BCS @E258
     CLC
     ADC #$20
     STA $E7
@@ -1971,7 +1971,7 @@ function buildpadding(): readonly number[] {
     LDA #$02
     JMP $94AE
     @E258: CMP #$C0
-    BCS $E268
+    BCS @E268
     TAX
     LDY #$01
     LDA ($92),Y
@@ -1979,7 +1979,7 @@ function buildpadding(): readonly number[] {
     STX $93
     JMP $9224
     @E268: CMP #$E0
-    BCS $E2A0
+    BCS @E2A0
     STA $E7
     LDY #$13
     LDA ($94),Y
@@ -2011,7 +2011,7 @@ function buildpadding(): readonly number[] {
     STA $93
     JMP $9224
     @E2A0: CMP #$F0
-    BCS $E2D7
+    BCS @E2D7
     TAX
     LDY #$13
     LDA ($94),Y
@@ -2080,7 +2080,7 @@ function buildpadding(): readonly number[] {
     SEC
     SBC #$01
     STA ($94),Y
-    BEQ $E32B
+    BEQ @E32B
     TXA
     ASL A
     CLC
@@ -2160,7 +2160,7 @@ function buildpadding(): readonly number[] {
     LDY #$09
     STA ($94),Y
     AND #$04
-    BNE $E3C7
+    BNE @E3C7
     ROR A
     DEY
     STA ($94),Y
@@ -2189,7 +2189,7 @@ function buildpadding(): readonly number[] {
     LDY #$0D
     STA ($94),Y
     AND #$04
-    BNE $E3FC
+    BNE @E3FC
     ROR A
     DEY
     STA ($94),Y
@@ -2246,7 +2246,7 @@ function buildpadding(): readonly number[] {
     LDA $93
     STA ($94),Y
     BIT $99
-    BVC $E47A
+    BVC @E47A
     LDA $99
     AND #$01
     SEC
@@ -2260,7 +2260,7 @@ function buildpadding(): readonly number[] {
     JSR $94D8
     LDA $99
     CMP #$FE
-    BEQ $E482
+    BEQ @E482
     AND #$BF
     STA $99
     @E47A: LDA #$01
@@ -2308,7 +2308,7 @@ function buildpadding(): readonly number[] {
     ADC #$00
     STA $95
     DEC $96
-    BEQ $E4D5
+    BEQ @E4D5
     JMP $9154
     @E4D5: JMP $9143
     LDY #$00
@@ -2335,7 +2335,7 @@ function buildpadding(): readonly number[] {
     LDA ($94),Y
     LDY #$10
     AND #$08
-    BNE $E50B
+    BNE @E50B
     LDA $97
     STA ($94),Y
     @E50B: LDA ($94),Y
@@ -2345,12 +2345,12 @@ function buildpadding(): readonly number[] {
     STA $E9
     LDY #$00
     LDA ($E6),Y
-    BMI $E589
+    BMI @E589
     LDX $98
     AND #$3C
     ASL A
     ASL A
-    BMI $E533
+    BMI @E533
     LSR A
     CLC
     ADC $9A
@@ -2405,13 +2405,13 @@ function buildpadding(): readonly number[] {
     STA $E7
     JMP $9515
     @E589: CMP #$A0
-    BCS $E5AF
+    BCS @E5AF
     LDX #$00
     ASL A
     ASL A
     ASL A
     STA $EA
-    BPL $E597
+    BPL @E597
     DEX
     @E597: STX $EB
     LDA $9A
@@ -2422,16 +2422,16 @@ function buildpadding(): readonly number[] {
     ADC $EB
     STA $EB
     INC $E6
-    BNE $E5AC
+    BNE @E5AC
     INC $E7
     @E5AC: JMP $9515
     @E5AF: CMP #$C0
-    BCS $E5E5
+    BCS @E5E5
     TAX
     LDY #$00
     LDA ($94),Y
     ASL A
-    BPL $E5C2
+    BPL @E5C2
     TXA
     EOR #$FF
     CLC
@@ -2443,7 +2443,7 @@ function buildpadding(): readonly number[] {
     ASL A
     ASL A
     STA $E8
-    BPL $E5CD
+    BPL @E5CD
     DEX
     @E5CD: STX $E9
     LDA $9C
@@ -2454,17 +2454,17 @@ function buildpadding(): readonly number[] {
     ADC $E9
     STA $E9
     INC $E6
-    BNE $E5E2
+    BNE @E5E2
     INC $E7
     @E5E2: JMP $9515
     @E5E5: CMP #$D0
-    BCC $E5EC
+    BCC @E5EC
     JMP $9684
     @E5EC: TAX
     LDY #$00
     LDA ($94),Y
     ASL A
-    BPL $E5FB
+    BPL @E5FB
     TXA
     EOR #$FF
     CLC
@@ -2472,7 +2472,7 @@ function buildpadding(): readonly number[] {
     TAX
     @E5FB: TXA
     AND #$08
-    BNE $E608
+    BNE @E608
     TXA
     AND #$07
     LDY #$00
@@ -2495,7 +2495,7 @@ function buildpadding(): readonly number[] {
     LSR A
     TAY
     AND #$08
-    BNE $E637
+    BNE @E637
     TYA
     CLC
     ADC $EA
@@ -2610,7 +2610,7 @@ function buildpadding(): readonly number[] {
     LDY #$00
     LDA ($94),Y
     AND #$08
-    BNE $E703
+    BNE @E703
     LDA ($94),Y
     ORA #$08
     STA ($94),Y
@@ -2622,8 +2622,8 @@ function buildpadding(): readonly number[] {
     ADC ($94),Y
     SEC
     SBC $98
-    BEQ $E734
-    BCC $E727
+    BEQ @E734
+    BCC @E727
     LSR A
     LSR A
     TAY
@@ -2635,7 +2635,7 @@ function buildpadding(): readonly number[] {
     ADC #$04
     TAX
     DEY
-    BNE $E717
+    BNE @E717
     JMP $9734
     @E727: LDA $98
     TAX
@@ -2703,7 +2703,7 @@ function buildpadding(): readonly number[] {
     ORA ($00,X)
     BRK
     BRK
-    BMI $E792
+    BMI @E792
     @E792: RTI
     BRK
     BRK
@@ -2738,7 +2738,7 @@ function buildpadding(): readonly number[] {
     STA $E9
     LDA $4A
     ORA $4B
-    BEQ $E819
+    BEQ @E819
     LDA #$00
     STA $EB
     STY $E6
@@ -2751,7 +2751,7 @@ function buildpadding(): readonly number[] {
     INY
     LDA #$00
     BIT $E9
-    BPL $E7DA
+    BPL @E7DA
     LDA #$FF
     @E7DA: ADC ($E6),Y
     TAX
@@ -2772,7 +2772,7 @@ function buildpadding(): readonly number[] {
     PLA
     SEC
     SBC #$01
-    BNE $E7F0
+    BNE @E7F0
     TYA
     CLC
     ADC $E6
@@ -2782,10 +2782,10 @@ function buildpadding(): readonly number[] {
     STA $E7
     JSR $9B5E
     LDA $EB
-    BEQ $E814
+    BEQ @E814
     JSR $9FA8
     @E814: BIT $E8
-    BVC $E7C8
+    BVC @E7C8
     RTS
     @E819: LDA $20
     AND #$7F
@@ -2805,7 +2805,7 @@ function buildpadding(): readonly number[] {
     INY
     LDA #$00
     BIT $E9
-    BPL $E840
+    BPL @E840
     LDA #$FF
     @E840: ADC ($E6),Y
     STA $2006
@@ -2813,7 +2813,7 @@ function buildpadding(): readonly number[] {
     LDX #$00
     LDY #$00
     LDA ($E6),Y
-    BPL $E852
+    BPL @E852
     LDX #$04
     @E852: STX $2000
     PHA
@@ -2824,10 +2824,10 @@ function buildpadding(): readonly number[] {
     STA $2007
     INY
     DEX
-    BNE $E85B
+    BNE @E85B
     PLA
     ASL A
-    BMI $E877
+    BMI @E877
     TYA
     CLC
     ADC $E6
@@ -2872,9 +2872,9 @@ function buildpadding(): readonly number[] {
     TAX
     @E8C1: STA $2007
     INX
-    BNE $E8C1
+    BNE @E8C1
     DEY
-    BNE $E8C1
+    BNE @E8C1
     LDA $21
     ORA #$18
     STA $2001
@@ -2894,7 +2894,7 @@ function buildpadding(): readonly number[] {
     STA $EB
     LDA $4A
     ORA $4B
-    BEQ $E92C
+    BEQ @E92C
     STY $E8
     STX $E9
     @E8F6: LDA $E9
@@ -2906,10 +2906,10 @@ function buildpadding(): readonly number[] {
     @E903: STA $05E8,X
     INX
     DEY
-    BNE $E903
+    BNE @E903
     JSR $9B5E
     LDA $E8
-    BPL $E916
+    BPL @E916
     LDA #$01
     JSR $9FA8
     @E916: LDA $E6
@@ -2922,7 +2922,7 @@ function buildpadding(): readonly number[] {
     DEC $E8
     LDA $E8
     AND #$7F
-    BNE $E8F6
+    BNE @E8F6
     RTS
     @E92C: LDA $20
     AND #$7F
@@ -2942,7 +2942,7 @@ function buildpadding(): readonly number[] {
     LDA $EB
     @E950: STA $2007
     DEY
-    BNE $E950
+    BNE @E950
     LDA $E6
     CLC
     ADC #$20
@@ -2951,7 +2951,7 @@ function buildpadding(): readonly number[] {
     ADC #$00
     STA $E7
     DEC $E8
-    BNE $E942
+    BNE @E942
     LDA $21
     ORA #$18
     STA $2001
@@ -2970,11 +2970,11 @@ function buildpadding(): readonly number[] {
     JSR $C4B9
     @E98C: LDA $4A
     CMP #$0F
-    BCS $E994
+    BCS @E994
     INC $4A
     @E994: LDA $4B
     CMP #$0F
-    BCS $E99C
+    BCS @E99C
     INC $4B
     @E99C: JSR $9A71
     LDA #$01
@@ -2983,7 +2983,7 @@ function buildpadding(): readonly number[] {
     CLC
     ADC $4B
     CMP #$1E
-    BCC $E98C
+    BCC @E98C
     RTS
     STA $48
     JSR $9B07
@@ -2992,7 +2992,7 @@ function buildpadding(): readonly number[] {
     JSR $C4B9
     LDA $4A
     CMP #$0F
-    BCS $E9CE
+    BCS @E9CE
     INC $4A
     JSR $9A71
     LDA #$01
@@ -3006,7 +3006,7 @@ function buildpadding(): readonly number[] {
     JSR $C4B9
     LDA $4B
     CMP #$0F
-    BCS $E9EF
+    BCS @E9EF
     INC $4B
     JSR $9A71
     LDA #$01
@@ -3015,12 +3015,12 @@ function buildpadding(): readonly number[] {
     @E9EF: RTS
     LDA $4A
     ORA $4B
-    BEQ $EA0C
+    BEQ @EA0C
     TAX
-    BEQ $E9FB
+    BEQ @E9FB
     DEC $4A
     @E9FB: LDA $4B
-    BEQ $EA01
+    BEQ @EA01
     DEC $4B
     @EA01: JSR $9A71
     LDA #$01
@@ -3028,7 +3028,7 @@ function buildpadding(): readonly number[] {
     JMP $99F0
     @EA0C: RTS
     LDA $4A
-    BEQ $EA1E
+    BEQ @EA1E
     DEC $4A
     JSR $9A71
     LDA #$01
@@ -3036,7 +3036,7 @@ function buildpadding(): readonly number[] {
     JMP $9A0D
     @EA1E: RTS
     LDA $4B
-    BEQ $EA30
+    BEQ @EA30
     DEC $4B
     JSR $9A71
     LDA #$01
@@ -3081,14 +3081,14 @@ function buildpadding(): readonly number[] {
     ADC $4A
     JSR $9AA2
     CPY #$10
-    BNE $EA7E
+    BNE @EA7E
     @EA8D: LDA $062A,Y
     AND #$30
     CLC
     ADC $4B
     JSR $9AA2
     CPY #$20
-    BNE $EA8D
+    BNE @EA8D
     LDX $E7
     JSR $9B5E
     RTS
@@ -3146,7 +3146,7 @@ function buildpadding(): readonly number[] {
     INX
     INY
     CPY #$10
-    BNE $EAFB
+    BNE @EAFB
     RTS
     LDA $25
     STA $E9
@@ -3162,11 +3162,11 @@ function buildpadding(): readonly number[] {
     LDY #$E0
     @EB1F: STA $054A,Y
     INY
-    BNE $EB1F
+    BNE @EB1F
     JMP $9A71
     PHA
     BIT $0629
-    BVC $EB37
+    BVC @EB37
     @EB2E: LDA #$01
     JSR $9FA8
     PLA
@@ -3175,7 +3175,7 @@ function buildpadding(): readonly number[] {
     CLC
     ADC $0628
     CMP #$3D
-    BCS $EB2E
+    BCS @EB2E
     PLA
     ORA #$40
     STA $0629
@@ -3211,11 +3211,11 @@ function buildpadding(): readonly number[] {
     LDA #$F8
     @EB83: STA $0468,X
     INX
-    BNE $EB83
+    BNE @EB83
     LDA #$F8
     @EB8B: STA $0200,X
     INX
-    BNE $EB8B
+    BNE @EB8B
     LDA #$00
     STA $0568
     STA $0588
@@ -3227,11 +3227,11 @@ function buildpadding(): readonly number[] {
     JMP $9B7F
     STA $46
     TAY
-    BMI $EBBC
+    BMI @EBBC
     CLC
     ADC $44
     CMP #$F0
-    BCC $EBB9
+    BCC @EBB9
     ADC #$0F
     INC $45
     @EBB9: STA $44
@@ -3239,7 +3239,7 @@ function buildpadding(): readonly number[] {
     @EBBC: CLC
     ADC $44
     CMP #$F0
-    BCC $EBC7
+    BCC @EBC7
     SBC #$10
     DEC $45
     @EBC7: STA $44
@@ -3250,7 +3250,7 @@ function buildpadding(): readonly number[] {
     ADC $7A
     STA $7A
     PLA
-    BMI $EBDC
+    BMI @EBDC
     LDA $7B
     ADC #$00
     JMP $9BE0
@@ -3267,7 +3267,7 @@ function buildpadding(): readonly number[] {
     JSR $9CE7
     LDA $1E
     AND #$90
-    BPL $EBE8
+    BPL @EBE8
     @EBF8: LDA $0468,Y
     TAX
     SEC
@@ -3287,9 +3287,9 @@ function buildpadding(): readonly number[] {
     JSR $9CE7
     LDA $1E
     AND #$90
-    BNE $EBF8
+    BNE @EBF8
     BIT $1E
-    BVC $EC0D
+    BVC @EC0D
     LDA #$F8
     STA $0468,Y
     SEC
@@ -3315,7 +3315,7 @@ function buildpadding(): readonly number[] {
     LDA ($E6),Y
     STA $E8
     CMP $E9
-    BNE $EC53
+    BNE @EC53
     CLC
     ADC #$10
     @EC53: STA $0468,X
@@ -3326,7 +3326,7 @@ function buildpadding(): readonly number[] {
     INX
     INY
     CPY #$05
-    BNE $EC58
+    BNE @EC58
     LDA ($E6),Y
     STA $E6
     TXA
@@ -3340,18 +3340,18 @@ function buildpadding(): readonly number[] {
     STA $E8
     @EC75: LDA $1C
     JSR $9CE7
-    BCC $ECC8
+    BCC @ECC8
     LDX $E9
     CPX #$FF
-    BEQ $EC89
+    BEQ @EC89
     CMP $E9
-    BEQ $EC75
+    BEQ @EC75
     JMP $9CB3
     @EC89: CMP $EB
-    BEQ $EC75
+    BEQ @EC75
     LDA $055C
     CMP #$B8
-    BCC $EC97
+    BCC @EC97
     SEC
     SBC #$10
     @EC97: TAY
@@ -3361,18 +3361,18 @@ function buildpadding(): readonly number[] {
     LDA ($34),Y
     LDY #$F4
     CMP $0451
-    BEQ $EC75
+    BEQ @EC75
     CMP $0452
-    BEQ $EC75
+    BEQ @EC75
     CMP $0453
-    BEQ $EC75
+    BEQ @EC75
     @ECB3: LDA #$01
     JSR $9FA8
     LDX $1C
     LDA $9EE2,X
-    BEQ $ECC8
+    BEQ @ECC8
     DEC $E8
-    BNE $ECB3
+    BNE @ECB3
     LDA #$08
     JMP $9C73
     @ECC8: RTS
@@ -3381,7 +3381,7 @@ function buildpadding(): readonly number[] {
     JSR $9C71
     LDA #$02
     LDX $046B,Y
-    BMI $ECE6
+    BMI @ECE6
     PHA
     LDA $0468,Y
     SEC
@@ -3395,15 +3395,15 @@ function buildpadding(): readonly number[] {
     AND #$0F
     TAX
     LDA $9EE2,X
-    BEQ $ED06
+    BEQ @ED06
     CLC
     ADC $0468,Y
     CMP $E7
-    BCS $ECF9
+    BCS @ECF9
     LDA $E6
     @ECF9: CMP $E6
-    BEQ $ED01
-    BCC $ED01
+    BEQ @ED01
+    BCC @ED01
     LDA $E7
     @ED01: STA $0468,Y
     SEC
@@ -3411,7 +3411,7 @@ function buildpadding(): readonly number[] {
     @ED06: CLC
     RTS
     TXA
-    BMI $ED1A
+    BMI @ED1A
     TYA
     EOR #$FF
     SEC
@@ -3451,7 +3451,7 @@ function buildpadding(): readonly number[] {
     ADC #$00
     STA $E7
     CPX #$FF
-    BNE $ED2B
+    BNE @ED2B
     RTS
     STY $E6
     STX $E7
@@ -3461,12 +3461,12 @@ function buildpadding(): readonly number[] {
     LDY $EB
     LDA ($E6),Y
     CMP #$FC
-    BCS $ED72
+    BCS @ED72
     LDY $E8
     LDX $E9
     JSR $88CA
     INC $E8
-    BNE $ED6F
+    BNE @ED6F
     INC $E9
     @ED6F: JMP $9D58
     @ED72: RTS
@@ -3481,7 +3481,7 @@ function buildpadding(): readonly number[] {
     INY
     INX
     DEC $E8
-    BNE $ED80
+    BNE @ED80
     JMP $9B5E
     STA $EC
     LDA #$02
@@ -3491,7 +3491,7 @@ function buildpadding(): readonly number[] {
     LSR A
     LSR A
     LSR A
-    BNE $ED9F
+    BNE @ED9F
     LDA #$CD
     @ED9F: CLC
     ADC #$33
@@ -3526,7 +3526,7 @@ function buildpadding(): readonly number[] {
     LSR A
     LSR A
     AND #$0F
-    BEQ $EDE6
+    BEQ @EDE6
     LDY #$33
     STY $E7
     @EDE6: CLC
@@ -3540,7 +3540,7 @@ function buildpadding(): readonly number[] {
     LDY #$08
     @EDF6: ASL $EC
     ROL $ED
-    BCC $EE08
+    BCC @EE08
     TXA
     CLC
     ADC $EC
@@ -3549,7 +3549,7 @@ function buildpadding(): readonly number[] {
     ADC #$00
     STA $ED
     @EE08: DEY
-    BNE $EDF6
+    BNE @EDF6
     RTS
     LDA #$00
     STA $E8
@@ -3565,14 +3565,14 @@ function buildpadding(): readonly number[] {
     TAY
     LDA $E9
     SBC $EB
-    BCC $EE32
+    BCC @EE32
     STA $E9
     STY $E8
     INC $EC
-    BNE $EE32
+    BNE @EE32
     INC $ED
     @EE32: DEX
-    BNE $EE14
+    BNE @EE14
     RTS
     LDA #$00
     STA $EA
@@ -3582,11 +3582,11 @@ function buildpadding(): readonly number[] {
     LDA $EA
     SEC
     SBC $EC
-    BCC $EE4B
+    BCC @EE4B
     STA $EA
     INC $ED
     @EE4B: DEX
-    BNE $EE3C
+    BNE @EE3C
     RTS
     LDA #$0A
     STA $EA
@@ -3606,7 +3606,7 @@ function buildpadding(): readonly number[] {
     ORA $E7
     PHA
     DEC $E6
-    BNE $EE5B
+    BNE @EE5B
     PLA
     STA $EA
     PLA
@@ -3656,28 +3656,28 @@ function buildpadding(): readonly number[] {
     BRK
     BRK
     BRK
-    BPL $EECA
+    BPL @EECA
     JSR $3020
-    BMI $EEDF
+    BMI @EEDF
     JSR $1010
     .byte $0F
     BRK
     BRK
     BRK
-    BPL $EED8
-    BPL $EEEA
+    BPL @EED8
+    BPL @EEEA
     @EECA: JSR $3020
-    BMI $EEFF
+    BMI @EEFF
     JSR $2020
     .byte $0F
     BRK
-    BPL $EEE6
-    BPL $EEF8
+    BPL @EEE6
+    BPL @EEF8
     @EED8: JSR $3030
-    BMI $EF0D
-    BMI $EF0F
+    BMI @EF0D
+    BMI @EF0F
     @EEDF: BMI @EF11
-    BMI $EEE3
+    BMI @EEE3
     @EEE3: BRK
     BRK
     BRK
@@ -3688,20 +3688,20 @@ function buildpadding(): readonly number[] {
     @EEEC: BRK
     LDX #$01
     @EEEF: LDA $00,X
-    BEQ $EEFB
+    BEQ @EEFB
     CMP #$FF
-    BEQ $EF52
+    BEQ @EF52
     .byte $D6
   @EEF8: .byte $00
-    BEQ $EF0F
+    BEQ @EF0F
     @EEFB: TXA
     CLC
     ADC #$04
     @EEFF: TAX
     CPX #$19
-    BNE $EEEF
+    BNE @EEEF
     @EF04: LDA $1B
-    BPL $EF04
+    BPL @EF04
     AND #$7F
     STA $1B
   @EF0D: JMP $9EED
@@ -3773,15 +3773,15 @@ function buildpadding(): readonly number[] {
     STA $01,X
     JMP $9EFB
     LDA $01,X
-    BEQ $EF95
+    BEQ @EF95
     LDA $00,X
-    BNE $EF95
+    BNE @EF95
     LDA #$01
     STA $00,X
     @EF95: RTS
     LDA $00,X
     CMP #$FF
-    BNE $EFA1
+    BNE @EFA1
     LDA #$01
     JSR $9FA8
     @EFA1: LDA #$00
@@ -3818,9 +3818,9 @@ function buildpadding(): readonly number[] {
     LDA $0025
     STA $03,X
     LDA $19
-    BEQ $EFDE
+    BEQ @EFDE
     CMP #$FF
-    BNE $EFE0
+    BNE @EFE0
     @EFDE: LDA #$FE
     @EFE0: STA $00,X
     JMP $9EFB
