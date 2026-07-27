@@ -15,6 +15,22 @@
 // ============================================================================
 
 import type { Ppu } from '../ppu/ppu';
+import { wram } from '../core/memory';
+
+// ═══════════════════════════════════════════════
+// WRAM 地址 — 帧管线暴露的变量
+// ═══════════════════════════════════════════════
+
+/** $1C: joypad held */
+const ZP_JOY_HELD  = 0x1C;
+/** $1E: joypad edge (rising / just-pressed) */
+const ZP_JOY_EDGE  = 0x1E;
+/** $4C: 脚本状态 (bytecode internal, bit7=新指令) */
+const ZP_SCRIPT_STATUS = 0x4C;
+/** $4D: 脚本指针低字节 */
+const ZP_SCRIPT_PTR_LO = 0x4D;
+/** $4E: 脚本指针高字节 */
+const ZP_SCRIPT_PTR_HI = 0x4E;
 
 // ---- Bytecode Opcodes ----
 
@@ -337,7 +353,11 @@ export class BytecodeInterpreter {
 
   private _branchWaitInput(): boolean {
     // 等待用户按键 → 推进文本页
-    // 实际由外部 (engine tick) 检测输入后调用 _advancePage()
+    // 检测 joypad edge (rising): 任何按键刚按下就推进
+    if (wram[ZP_JOY_EDGE] !== 0) {
+      this._advancePage();
+      return true;
+    }
     return false; // 等待
   }
 
@@ -437,7 +457,7 @@ export class BytecodeInterpreter {
       case 0x0C: return this._sys_JUMP_ADDR();
       case 0x0D: return this._sys_WAIT_FRAMES();
       case 0x0E: return true; // F6: 设置参数 — TODO
-      case 0x0F: return true; // F7: 读取输入 — TODO
+      case 0x0F: return this._sys_READ_INPUT(); // F7: 读取输入
       // F8-FF: 扩展系统命令 (数据复写/跳转等)
       case 0x10: // F8: 直接跳转
         return this._sys_JUMP_RELATIVE();
@@ -585,6 +605,17 @@ export class BytecodeInterpreter {
     this._advancePtr(1);
     this.state.waitFrames = frames;
     return false; // 等待
+  }
+
+  // F7: READ_INPUT — 读取手柄输入
+  // ROM ($87F7): 读取 $1C (held) 和 $1E (edge)
+  //   将按键状态存入脚本参数区域，供后续逻辑分派
+  private _sys_READ_INPUT(): boolean {
+    // 将 joypad held + edge 写回 WRAM 供脚本逻辑读取
+    // ROM 会把结果存到 $4C+ 或临时变量中
+    // 此处不做额外操作 — 脚本后续通过 wram[$1C]/[$1E] 读取
+    // 只需要确认本帧的 edge 已经被 frame pipeline 更新
+    return true;
   }
 
   // F8+: 相对跳转

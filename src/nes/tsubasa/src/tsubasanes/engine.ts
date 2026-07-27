@@ -1,11 +1,13 @@
 // ============================================================================
 // engine.ts — 游戏引擎
 //
-// 单帧流程:
-//   1. 输入处理 → Joypad 更新
-//   2. 场景更新 → SceneManager.update(input)
-//   3. PPU 渲染 → frameBuffer
-//   4. 输出 → Canvas / onFrame 回调
+// 单帧流程 (对应 ROM RESET → NMI → 主循环):
+//   1. 帧管线开始 — NMI 入口: joypad 边沿检测 + scroll 同步 + OAM DMA
+//   2. 场景更新   — SceneManager.update(input)
+//   3. 字节码解释器 — BytecodeInterpreter.runFrame()
+//   4. PPU 渲染   — Ppu.render() → frameBuffer
+//   5. 帧管线结束 — RNG 推进 + frame counter + NMI done flag
+//   6. 输出       — Canvas / onFrame 回调
 // ============================================================================
 
 import { Ppu } from './ppu/ppu';
@@ -19,6 +21,7 @@ import type { JoypadInput } from './scene/types';
 import { OpeningScene } from './scene/opening';
 import { TitleScene } from './scene/title';
 import { BytecodeInterpreter } from './scene/bytecode';
+import { FramePipeline } from './frame/pipeline';
 
 export interface EngineConfig {
   canvas?: CanvasRenderingContext2D | null;
@@ -34,6 +37,8 @@ export class Engine {
   scenes: SceneManager = new SceneManager();
   /** 字节码解释器 — 对应 ROM Bank 0 $8464 */
   bytecode: BytecodeInterpreter = new BytecodeInterpreter(this.ppu);
+  /** 帧渲染管线 — 对应 ROM Bank 2 NMI $8000-$8137 */
+  frame: FramePipeline = new FramePipeline(this.ppu);
 
   canvas: CanvasRenderingContext2D | null = null;
   onFrame: ((buffer: Uint32Array) => void) | null = null;
@@ -77,6 +82,10 @@ export class Engine {
     // 4. Joypad
     this.joypad = createJoypad();
 
+    // 4.5 帧管线初始化 — 对应 NMI 状态重置
+    this.frame = new FramePipeline(this.ppu);
+    this.frame.reset();
+
     this.frameCount = 0;
 
     // 5. 场景引擎入口 — $26=0, $27=0 → TECMO_LOGO
@@ -97,8 +106,8 @@ export class Engine {
   tick(input: JoypadInput = NO_INPUT): void {
     if (!this.running) return;
 
-    // 1. 输入
-    this._mapInput(input);
+    // 1. 帧管线开始 — NMI 入口: joypad 边沿检测 + scroll + OAM
+    this.frame.beginFrame(input);
 
     // 2. 场景更新
     this.scenes.update(input);
@@ -110,7 +119,10 @@ export class Engine {
     // 4. PPU 渲染
     this.ppu.render();
 
-    // 5. 输出
+    // 5. 帧管线结束 — RNG 推进 + frame counter + NMI done flag
+    this.frame.endFrame();
+
+    // 6. 输出
     const buf = this.ppu.frameBuffer;
     if (this.canvas) renderToCanvas(this.canvas, buf);
     if (this.onFrame) this.onFrame(buf);
@@ -142,19 +154,6 @@ export class Engine {
   // ============================================================
   // 内部
   // ============================================================
-
-  private _mapInput(input: JoypadInput): void {
-    let mask = 0;
-    if (input.a)      mask |= 128;
-    if (input.b)      mask |= 64;
-    if (input.select) mask |= 32;
-    if (input.start)  mask |= 16;
-    if (input.up)     mask |= 8;
-    if (input.down)   mask |= 4;
-    if (input.left)   mask |= 2;
-    if (input.right)  mask |= 1;
-    this.joypad.mask = mask;
-  }
 
   private _pollTransition(): void {
     const cur = this.scenes.current;
