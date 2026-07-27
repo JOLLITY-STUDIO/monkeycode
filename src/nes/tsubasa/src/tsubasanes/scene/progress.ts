@@ -266,11 +266,17 @@ export function loadSceneScripts(
 ): { loaded: boolean; autoTransition: SceneId | null } {
   const results = queryProgress(sceneId);
 
-  let loaded = false;
-  for (const r of results) {
-    if (bytecode.load(r.scriptNum)) {
-      loaded = true;
-    }
+  if (results.length === 0) {
+    return { loaded: false, autoTransition: null };
+  }
+
+  // ROM 行为: 进度表逐表顺序执行，每个脚本执行完才加载下一个
+  // 此处: 加载第一个脚本，其余加入队列 (bytecode.runFrame 在脚本结束后自动加载下一个)
+  const first = results[0];
+  let loaded = bytecode.load(first.scriptNum);
+
+  for (let i = 1; i < results.length; i++) {
+    bytecode.queueScript(results[i].scriptNum);
   }
 
   // 表 4 自动增量 (仅 scene_id < 0x20 时)

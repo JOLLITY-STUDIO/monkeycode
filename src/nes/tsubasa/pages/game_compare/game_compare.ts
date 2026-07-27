@@ -1,50 +1,47 @@
 /**
- * 天使之翼2 — tsnes 双 Canvas 对比页面
- * 左侧: tsnes 原始 CPU (读 ROM, 执行 6502 指令)
- * 右侧: tsnes TsubasaCpu (ROM 指令翻译出的纯 TS 游戏逻辑)
+ * 天使之翼2 — 双 Canvas 对比调试
+ * 左: tsnes 框架 (6502 原始模拟器)
+ * 右: tsubasanes (纯 TS 语义化重写占位)
  */
-import { BUTTON } from '../../src/types';
-import { TsnesKernel } from '../../src/tsnes/tsnes_kernel';
+import NES from '../../src/tsubasanes/src/nes';
+import Controller from '../../src/tsubasanes/src/controller';
+import { romUint8Array } from '../../src/rom_data';
 
 /** 补零两位 */
 function pad2(n: number) { return n.toString().padStart(2, '0'); }
+
+interface CanvasSlot {
+  canvas: any;
+  ctx: any;
+  imgData: any;
+  frameBuf: Uint32Array | null;
+}
 
 Page({
   data: {
     statusText: '初始化中...',
     isLandscape: false,
-    /** 顶部安全区高度 (状态栏 + 导航栏) */
     shellTop: 0,
-    /** 屏幕宽度 */
     screenWidth: 375,
-    /** 屏幕高度 */
     screenHeight: 667,
-    /** ROM header 标题 */
     romTitle: '',
-    /** turbo 快进模式: 0=正常 2=2x 3=3x */
     turbo: 0,
-    /** 设置面板是否展开 */
     settingsOpen: false,
-    /** 是否显示 FPS */
     showFps: false,
-    /** 当前 FPS 数值 */
     fps: 0,
-    /** 存档槽列表 */
     saveSlots: [] as { name: string; time: string; size: number }[],
-    /** 摇杆当前方向 */
     joystickDir: '',
   },
 
-  nativeKernel: null as TsnesKernel | null,   // 左: 原始 CPU
-  tsubasaKernel: null as TsnesKernel | null,  // 右: TsubasaCpu
-  nativeAnimId: -1 as number,
-  tsubasaAnimId: -1 as number,
-  nativeCanvas: null as any,
-  tsubasaCanvas: null as any,
+  nesLeft: null as NES | null,
+  nesRight: null as NES | null,
+  animId: -1 as number,
+  slotLeft: null as CanvasSlot | null,
+  slotRight: null as CanvasSlot | null,
+  canvasesReady: 0,
   dpadState: { up: false, down: false, left: false, right: false },
   btnState: { a: false, b: false, start: false, select: false },
 
-  /** 键盘 → NES 按键映射 (PC 小程序) */
   KEY_MAP: {
     ArrowUp: 'up', ArrowDown: 'down', ArrowLeft: 'left', ArrowRight: 'right',
     KeyF: 'a', KeyD: 'b',
@@ -52,182 +49,192 @@ Page({
   } as Record<string, string>,
 
   onLoad() {
-    console.log('[compare] Game compare page loading');
-
+    console.log('[tsubasanes] Game page loading');
     this.updateShellLayout();
     this.loadRomTitle();
     this._bindKeys();
-
-    this.setData({ statusText: '正在初始化 Canvas...' });
-
-    // 直接查询 canvas (对齐 game_jsnes)
-    this.initCanvases();
+    this.setData({ statusText: '正在初始化 NES 模拟器...' });
+    this.initCanvas();
   },
 
   loadRomTitle() {
     this.setData({ romTitle: 'Captain Tsubasa II - Super Striker (Japan)' });
   },
 
-  /** 获取设备顶部栏高度 & 屏幕尺寸，用于绘制外壳 */
   updateShellLayout() {
     try {
       const info = wx.getSystemInfoSync();
       const menuRect = wx.getMenuButtonBoundingClientRect();
-      // 导航栏高度 = 胶囊按钮 bottom + 胶囊按钮与顶部间距*2
       const navBarHeight = (menuRect.top - info.statusBarHeight) * 2 + menuRect.height;
       const shellTop = info.statusBarHeight + navBarHeight;
-
       this.setData({
         isLandscape: info.windowWidth > info.windowHeight,
         shellTop,
         screenWidth: info.windowWidth,
         screenHeight: info.windowHeight,
       });
-      console.log('[compare] shellTop=%d (statusBar=%d + navBar=%d), screen=%dx%d',
-        shellTop, info.statusBarHeight, navBarHeight, info.windowWidth, info.windowHeight);
     } catch (_) {
       this.setData({ shellTop: 44 });
     }
   },
 
-  /** 窗口尺寸变化 → 重新检测 */
   onResize() {
     this.updateShellLayout();
     setTimeout(() => this._queryDpadRect(), 100);
   },
 
   onUnload() {
-    console.log('[compare] Game compare page unloading');
+    console.log('[tsubasanes] Game page unloading');
     this._unbindKeys();
-    this.stopBoth();
-    this.nativeKernel = null;
-    this.tsubasaKernel = null;
+    this.stopEngine();
+    this.nesLeft = null;
+    this.nesRight = null;
   },
 
-  /** 停止两个内核 */
-  stopBoth(): void {
-    this.stopNative();
-    this.stopTsubasa();
+  // ================================================================
+  //  Canvas 初始化 — 双 canvas (左 tsnes, 右 tsubasanes)
+  // ================================================================
+
+  initCanvas() {
+    const query = wx.createSelectorQuery();
+    query.select('#tsnes-canvas')
+      .fields({ node: true, size: true });
+    query.select('#tsubasa-canvas')
+      .fields({ node: true, size: true });
+    query.exec((res: any) => {
+      const leftInfo  = res[0];
+      const rightInfo = res[1];
+      if (!leftInfo?.node || !rightInfo?.node) {
+        console.warn('[tsubasanes] canvases not ready, retry in 300ms');
+        setTimeout(() => this.initCanvas(), 300);
+        return;
+      }
+
+      // 左 canvas — tsnes
+      const cnvL = leftInfo.node;
+      cnvL.width = 256;
+      cnvL.height = 240;
+      this.slotLeft = {
+        canvas: cnvL,
+        ctx: cnvL.getContext('2d'),
+        imgData: null,
+        frameBuf: null,
+      };
+      console.log('[tsubasanes] tsnes canvas ready (256x240)');
+
+      // 右 canvas — tsubasanes
+      const cnvR = rightInfo.node;
+      cnvR.width = 256;
+      cnvR.height = 240;
+      this.slotRight = {
+        canvas: cnvR,
+        ctx: cnvR.getContext('2d'),
+        imgData: null,
+        frameBuf: null,
+      };
+      console.log('[tsubasanes] tsubasanes canvas ready (256x240)');
+
+      this._queryDpadRect();
+      this.startNes();
+    });
   },
 
-  /** 获取两个 type=2d Canvas 节点 */
-  initCanvases() {
-    const doQuery = () => {
-      const query = wx.createSelectorQuery();
-      query.select('#tsnes-canvas')
-        .fields({ node: true, size: true })
-        .select('#jsnes-canvas')
-        .fields({ node: true, size: true })
-        .exec((res: any) => {
-          if (!res || !res[0] || !res[0].node) {
-            console.warn('[compare] native canvas not found, retry in 300ms');
-            setTimeout(doQuery, 300);
-            return;
-          }
-          if (!res[1] || !res[1].node) {
-            console.warn('[compare] tsubasa canvas not found, retry in 300ms');
-            setTimeout(doQuery, 300);
-            return;
-          }
+  // ================================================================
+  //  双 NES 实例
+  // ================================================================
 
-          const nativeCanvas = res[0].node;
-          const tsubasaCanvas = res[1].node;
-
-          nativeCanvas.width = 256;  nativeCanvas.height = 240;
-          tsubasaCanvas.width = 256; tsubasaCanvas.height = 240;
-          this.nativeCanvas = nativeCanvas;
-          this.tsubasaCanvas = tsubasaCanvas;
-
-          console.log('[compare] Both canvases ready (256x240)');
-
-          this._queryDpadRect();
-
-          // 左: 原始 CPU  |  右: TsubasaCpu
-          this.startNative(nativeCanvas);
-          this.startTsubasa(tsubasaCanvas);
-        });
-    };
-    doQuery();
-  },
-
-  // ========================================================================
-  //  左: Compiled TS CPU — 6502→TS 分发表, 纯 TS 执行
-  // ========================================================================
-
-  startNative(canvas: any): void {
+  startNes(): void {
     try {
-      this.nativeKernel = new TsnesKernel(canvas, 'compiled');
-      this.nativeKernel.start();
-      this.nativeFrameLoop();
+      const rom = romUint8Array();
+      console.log('[tsubasanes] Loading ROM, size:', rom.length);
+
+      // 左 — tsnes
+      this.nesLeft = new NES({
+        emulateSound: false,
+        onFrame: (buffer: Uint32Array) => {
+          if (this.slotLeft) this.slotLeft.frameBuf = buffer;
+          this.renderSlot(this.slotLeft);
+        },
+        onStatusUpdate: (s: string) => {
+          console.log('[tsnes-left]', s);
+        },
+      });
+      this.nesLeft.loadROM(rom);
+
+      // 右 — tsubasanes
+      this.nesRight = new NES({
+        emulateSound: false,
+        onFrame: (buffer: Uint32Array) => {
+          if (this.slotRight) this.slotRight.frameBuf = buffer;
+          this.renderSlot(this.slotRight);
+        },
+        onStatusUpdate: (s: string) => {
+          console.log('[tsubasa-right]', s);
+        },
+      });
+      this.nesRight.loadROM(rom);
+
+      this.setData({ statusText: '双引擎对比运行中 (L: tsnes | R: TS)' });
+      this.frameLoop();
     } catch (e: any) {
-      console.error('[compare] compiled init error:', e);
+      console.error('[tsubasanes] NES init error:', e);
+      this.setData({ statusText: '启动失败: ' + String(e) });
     }
   },
 
-  stopNative(): void {
-    if (this.nativeAnimId >= 0) {
-      clearTimeout(this.nativeAnimId);
-      this.nativeAnimId = -1;
+  renderSlot(slot: CanvasSlot | null): void {
+    if (!slot || !slot.frameBuf || !slot.ctx) return;
+    const ctx = slot.ctx;
+    if (!slot.imgData) {
+      slot.imgData = ctx.createImageData(256, 240);
     }
-    if (this.nativeKernel) {
-      this.nativeKernel.stop();
-      this.nativeKernel = null;
+    const data = slot.imgData.data;
+    const src = slot.frameBuf;
+    for (let i = 0, j = 0; i < src.length; i++, j += 4) {
+      const p = src[i];
+      data[j]     = p & 0xff;
+      data[j + 1] = (p >> 8) & 0xff;
+      data[j + 2] = (p >> 16) & 0xff;
+      data[j + 3] = 0xff;
     }
-    this.nativeCanvas = null;
+    ctx.putImageData(slot.imgData, 0, 0);
   },
 
-  nativeFrameLoop(): void {
-    if (!this.nativeKernel?.running) return;
+  stopEngine(): void {
+    if (this.animId >= 0) {
+      clearTimeout(this.animId);
+      this.animId = -1;
+    }
+    this.nesLeft = null;
+    this.nesRight = null;
+    this.slotLeft = null;
+    this.slotRight = null;
+    this.canvasesReady = 0;
+  },
+
+  // ================================================================
+  //  帧循环
+  // ================================================================
+
+  frameLoop(): void {
+    if (!this.nesLeft && !this.nesRight) return;
     const turbo = this.data.turbo;
     const frames = turbo ? turbo : 1;
-    for (let f = 0; f < frames; f++) {
-      this.nativeKernel.setInput(this.computeInput());
-      this.nativeKernel.frame();
-    }
-    this.nativeKernel.renderToCanvas();
-    this.nativeAnimId = setTimeout(() => this.nativeFrameLoop(), turbo ? 0 : 16) as any;
-  },
 
-  // ========================================================================
-  //  右: TsubasaNes — ROM 数据 hex2asm 静态注入
-  // ========================================================================
-
-  startTsubasa(canvas: any): void {
     try {
-      this.tsubasaKernel = new TsnesKernel(canvas, 'tsubasa');
-      this.tsubasaKernel.start();
-      this.setData({ statusText: 'Compiled TS CPU ← → TsubasaNes' });
-      this.tsubasaFrameLoop();
+      this.applyInput();
+      for (let f = 0; f < frames; f++) {
+        if (this.nesLeft)  this.nesLeft.frame();
+        if (this.nesRight) this.nesRight.frame();
+      }
     } catch (e: any) {
-      console.error('[compare] tsubasa init error:', e);
-      this.setData({ statusText: 'TsubasaNes 启动失败: ' + String(e) });
+      console.error('[tsubasanes] frame error:', e);
+      this.setData({ statusText: '运行错误: ' + String(e) });
+      return;
     }
-  },
 
-  stopTsubasa(): void {
-    if (this.tsubasaAnimId >= 0) {
-      clearTimeout(this.tsubasaAnimId);
-      this.tsubasaAnimId = -1;
-    }
-    if (this.tsubasaKernel) {
-      this.tsubasaKernel.stop();
-      this.tsubasaKernel = null;
-    }
-    this.tsubasaCanvas = null;
-  },
+    this.animId = setTimeout(() => this.frameLoop(), turbo ? 0 : 16) as any;
 
-  tsubasaFrameLoop(): void {
-    if (!this.tsubasaKernel?.running) return;
-    const turbo = this.data.turbo;
-    const frames = turbo ? turbo : 1;
-    for (let f = 0; f < frames; f++) {
-      this.tsubasaKernel.setInput(this.computeInput());
-      this.tsubasaKernel.frame();
-    }
-    this.tsubasaKernel.renderToCanvas();
-    this.tsubasaAnimId = setTimeout(() => this.tsubasaFrameLoop(), turbo ? 0 : 16) as any;
-
-    // FPS 统计
     if (this.data.showFps) {
       this._fpsFrameCount++;
       const now = Date.now();
@@ -245,49 +252,45 @@ Page({
   _fpsFrameCount: 0 as number,
   _fpsLastTime: 0 as number,
 
-  /** 当前输入 */
-  computeInput(): number {
-    if (!this.dpadState) this.dpadState = { up: false, down: false, left: false, right: false };
-    if (!this.btnState)  this.btnState  = { a: false, b: false, start: false, select: false };
-    let m = 0;
-    if (this.dpadState.up)    m |= BUTTON.UP;
-    if (this.dpadState.down)  m |= BUTTON.DOWN;
-    if (this.dpadState.left)  m |= BUTTON.LEFT;
-    if (this.dpadState.right) m |= BUTTON.RIGHT;
-    if (this.btnState.a)      m |= BUTTON.A;
-    if (this.btnState.b)      m |= BUTTON.B;
-    if (this.btnState.start)  m |= BUTTON.START;
-    if (this.btnState.select) m |= BUTTON.SELECT;
-    return m;
+  // ================================================================
+  //  输入
+  // ================================================================
+
+  applyInput(): void {
+    const st = this.dpadState || (this.dpadState = { up: false, down: false, left: false, right: false });
+    const bt = this.btnState || (this.btnState = { a: false, b: false, start: false, select: false });
+
+    const doInput = (key: number, pressed: boolean) => {
+      if (pressed) {
+        if (this.nesLeft)  this.nesLeft.buttonDown(1, key);
+        if (this.nesRight) this.nesRight.buttonDown(1, key);
+      } else {
+        if (this.nesLeft)  this.nesLeft.buttonUp(1, key);
+        if (this.nesRight) this.nesRight.buttonUp(1, key);
+      }
+    };
+    doInput(Controller.BUTTON_UP, st.up);
+    doInput(Controller.BUTTON_DOWN, st.down);
+    doInput(Controller.BUTTON_LEFT, st.left);
+    doInput(Controller.BUTTON_RIGHT, st.right);
+    doInput(Controller.BUTTON_A, bt.a);
+    doInput(Controller.BUTTON_B, bt.b);
+    doInput(Controller.BUTTON_START, bt.start);
+    doInput(Controller.BUTTON_SELECT, bt.select);
   },
 
-  updateInput() {
-    if (!this.dpadState && !this.btnState) return;
-    const mask = this.computeInput();
-    this.nativeKernel?.setInput(mask);
-    this.tsubasaKernel?.setInput(mask);
-  },
-
-  // ---- 键盘支持 (PC 小程序) ----
+  // ---- 键盘支持 ----
 
   _bindKeys() {
     // @ts-ignore
     if (!wx.onKeyDown || !wx.onKeyUp) {
-      console.log('[compare] wx.onKeyDown/onKeyUp not available — no PC keyboard');
+      console.log('[tsubasanes] wx.onKeyDown/onKeyUp not available');
       return;
     }
-    let fired = false;
-    this._onKeyDown = (e: any) => {
-      if (!fired) {
-        console.log('[compare] keydown event dump', JSON.parse(JSON.stringify(e)));
-        fired = true;
-      }
-      this._handleKey(e, true);
-    };
+    this._onKeyDown = (e: any) => this._handleKey(e, true);
     this._onKeyUp = (e: any) => this._handleKey(e, false);
     wx.onKeyDown(this._onKeyDown);
     wx.onKeyUp(this._onKeyUp);
-    console.log('[compare] PC keyboard listeners registered');
   },
 
   _unbindKeys() {
@@ -311,7 +314,6 @@ Page({
     } else {
       (this.btnState as any)[dir] = pressed;
     }
-    this.updateInput();
   },
 
   // ---- 圆圈摇杆 ----
@@ -329,7 +331,6 @@ Page({
         this._dpadSize = rect.width > 0 ? rect.width : (this.data.isLandscape ? 106 : 124);
         this._dpadX = rect.left;
         this._dpadY = rect.top;
-        console.log(`[compare] dpad rect: ${rect.width}x${rect.height} @ (${rect.left},${rect.top})`);
       }
     }).exec();
   },
@@ -341,32 +342,22 @@ Page({
     const dist = Math.sqrt(dx * dx + dy * dy);
     const deadRad = r * 0.22;
     if (dist < deadRad) return '';
-
-    if (Math.abs(dx) > Math.abs(dy)) {
-      return dx > 0 ? 'right' : 'left';
-    } else {
-      return dy > 0 ? 'down' : 'up';
-    }
+    if (Math.abs(dx) > Math.abs(dy)) return dx > 0 ? 'right' : 'left';
+    return dy > 0 ? 'down' : 'up';
   },
 
   onJoystickStart(e: any) {
     const t = e.touches[0];
     if (!t) return;
     this._joyTouchId = t.identifier;
-    const tx = t.clientX !== undefined ? t.clientX : t.x;
-    const ty = t.clientY !== undefined ? t.clientY : t.y;
-    const dir = this._joyDir(tx, ty);
-    this._applyJoy(dir);
+    this._applyJoy(this._joyDir(t.clientX ?? t.x, t.clientY ?? t.y));
   },
 
   onJoystickMove(e: any) {
     for (let i = 0; i < e.touches.length; i++) {
       if (e.touches[i].identifier === this._joyTouchId) {
         const t = e.touches[i];
-        const tx = t.clientX !== undefined ? t.clientX : t.x;
-        const ty = t.clientY !== undefined ? t.clientY : t.y;
-        const dir = this._joyDir(tx, ty);
-        this._applyJoy(dir);
+        this._applyJoy(this._joyDir(t.clientX ?? t.x, t.clientY ?? t.y));
         return;
       }
     }
@@ -384,15 +375,10 @@ Page({
 
   _applyJoy(dir: string) {
     if (dir === this._joystickActive) return;
-    if (!this.dpadState) {
-      this.dpadState = { up: false, down: false, left: false, right: false };
-    }
-    if (this._joystickActive) {
-      (this.dpadState as any)[this._joystickActive] = false;
-    }
+    if (!this.dpadState) this.dpadState = { up: false, down: false, left: false, right: false };
+    if (this._joystickActive) (this.dpadState as any)[this._joystickActive] = false;
     this._joystickActive = dir || null;
     if (dir) (this.dpadState as any)[dir] = true;
-    this.updateInput();
     this.setData({ joystickDir: dir });
   },
 
@@ -402,14 +388,17 @@ Page({
     const opening = !this.data.settingsOpen;
     this.setData({ settingsOpen: opening });
     if (opening) {
-      this.nativeKernel?.pause();
-      this.tsubasaKernel?.pause();
+      this.stopTimer();
       this._refreshSaveSlots();
     } else {
-      this.nativeKernel?.resume();
-      this.tsubasaKernel?.resume();
-      if (this.nativeKernel?.running) this.nativeFrameLoop();
-      if (this.tsubasaKernel?.running) this.tsubasaFrameLoop();
+      if (this.nesLeft || this.nesRight) this.frameLoop();
+    }
+  },
+
+  stopTimer(): void {
+    if (this.animId >= 0) {
+      clearTimeout(this.animId);
+      this.animId = -1;
     }
   },
 
@@ -438,7 +427,7 @@ Page({
         try {
           const stat = fs.statSync(path);
           const d = new Date(stat.lastModifiedTime);
-          const time = `${d.getMonth()+1}/${d.getDate()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+          const time = `${d.getMonth() + 1}/${d.getDate()} ${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
           slots.push({ name: `存档 ${i + 1}`, time, size: stat.size });
         } catch (_) {
           slots.push({ name: `存档 ${i + 1}`, time: '', size: 0 });
@@ -449,98 +438,27 @@ Page({
   },
 
   onSaveSlot(e: any) {
-    const idx: number = e.currentTarget.dataset.index;
-    if (!this.nativeKernel) return;
-    try {
-      const state = this.nativeKernel.saveState();
-      const json = JSON.stringify(state);
-      const fs = wx.getFileSystemManager();
-      const dir = this.SAVE_DIR;
-      try { fs.accessSync(dir); } catch (_) { fs.mkdirSync(dir, true); }
-      const path = `${dir}/slot_${idx}.json`;
-      fs.writeFileSync(path, json, 'utf8');
-      wx.showToast({ title: `已保存到槽 ${idx + 1}`, icon: 'success', duration: 1200 });
-      this._refreshSaveSlots();
-    } catch (e: any) {
-      wx.showToast({ title: '保存失败: ' + (e.errMsg || e.message), icon: 'none' });
-    }
+    // TODO: Engine save state support
+    wx.showToast({ title: '存档功能待开发', icon: 'none' });
   },
 
   onLoadSlot(e: any) {
-    const idx: number = e.currentTarget.dataset.index;
-    if (!this.nativeKernel || !this.tsubasaKernel) return;
-    try {
-      const fs = wx.getFileSystemManager();
-      const path = `${this.SAVE_DIR}/slot_${idx}.json`;
-      const json = fs.readFileSync(path, 'utf8');
-      const state = JSON.parse(json);
-      this.nativeKernel.loadState(state);
-      this.tsubasaKernel.loadState(state);
-      wx.showToast({ title: `已加载存档 ${idx + 1}`, icon: 'success', duration: 1200 });
-    } catch (e: any) {
-      wx.showToast({ title: '加载失败: 存档不存在', icon: 'none' });
-    }
+    wx.showToast({ title: '读档功能待开发', icon: 'none' });
   },
 
   onDeleteSlot(e: any) {
-    const idx: number = e.currentTarget.dataset.index;
-    try {
-      const fs = wx.getFileSystemManager();
-      const path = `${this.SAVE_DIR}/slot_${idx}.json`;
-      try { fs.unlinkSync(path); } catch (_) { /* ignore */ }
-      wx.showToast({ title: `已删除存档 ${idx + 1}`, icon: 'success', duration: 1200 });
-      this._refreshSaveSlots();
-    } catch (e: any) {
-      wx.showToast({ title: '删除失败', icon: 'none' });
-    }
+    wx.showToast({ title: '删除功能待开发', icon: 'none' });
   },
 
   onExportSave(e: any) {
-    const idx: number = e.currentTarget.dataset.index;
-    try {
-      const fs = wx.getFileSystemManager();
-      const path = `${this.SAVE_DIR}/slot_${idx}.json`;
-      const json = fs.readFileSync(path, 'utf8');
-      wx.setClipboardData({
-        data: json,
-        success: () => wx.showToast({ title: `存档 ${idx + 1} 已复制`, icon: 'success', duration: 1500 }),
-        fail: () => wx.showToast({ title: '复制失败', icon: 'none' }),
-      });
-    } catch (e: any) {
-      wx.showToast({ title: '导出失败: 存档不存在', icon: 'none' });
-    }
+    wx.showToast({ title: '导出功能待开发', icon: 'none' });
   },
 
   onImportSave(e: any) {
-    const idx: number = e.currentTarget.dataset.index;
-    const that = this;
-    wx.getClipboardData({
-      success(res: any) {
-        const text = res.data;
-        if (!text || text.length < 10) {
-          wx.showToast({ title: '剪贴板无有效存档数据', icon: 'none' });
-          return;
-        }
-        try {
-          JSON.parse(text);
-          const fs = wx.getFileSystemManager();
-          const dir = that.SAVE_DIR;
-          try { fs.accessSync(dir); } catch (_) { fs.mkdirSync(dir, true); }
-          const path = `${dir}/slot_${idx}.json`;
-          fs.writeFileSync(path, text, 'utf8');
-          wx.showToast({ title: `已导入到存档 ${idx + 1}`, icon: 'success', duration: 1500 });
-          that._refreshSaveSlots();
-        } catch (e: any) {
-          wx.showToast({ title: '无效的存档数据', icon: 'none' });
-        }
-      },
-      fail() {
-        wx.showToast({ title: '无法读取剪贴板', icon: 'none' });
-      },
-    });
+    wx.showToast({ title: '导入功能待开发', icon: 'none' });
   },
 
-  // ---- turbo 切换 ----
+  // ---- turbo ----
 
   onTurboToggle() {
     const next = this.data.turbo === 0 ? 2 : this.data.turbo === 2 ? 3 : 0;
@@ -551,31 +469,23 @@ Page({
 
   onDpadDown(e: any) {
     if (!this.dpadState) this.dpadState = { up: false, down: false, left: false, right: false };
-    const dir = e.currentTarget.dataset.dir;
-    (this.dpadState as any)[dir] = true;
-    this.updateInput();
+    (this.dpadState as any)[e.currentTarget.dataset.dir] = true;
   },
 
   onDpadUp(e: any) {
     if (!this.dpadState) this.dpadState = { up: false, down: false, left: false, right: false };
-    const dir = e.currentTarget.dataset.dir;
-    (this.dpadState as any)[dir] = false;
-    this.updateInput();
+    (this.dpadState as any)[e.currentTarget.dataset.dir] = false;
   },
 
   // ---- 功能键 ----
 
   onBtnDown(e: any) {
     if (!this.btnState) this.btnState = { a: false, b: false, start: false, select: false };
-    const btn = e.currentTarget.dataset.btn;
-    (this.btnState as any)[btn] = true;
-    this.updateInput();
+    (this.btnState as any)[e.currentTarget.dataset.btn] = true;
   },
 
   onBtnUp(e: any) {
     if (!this.btnState) this.btnState = { a: false, b: false, start: false, select: false };
-    const btn = e.currentTarget.dataset.btn;
-    (this.btnState as any)[btn] = false;
-    this.updateInput();
+    (this.btnState as any)[e.currentTarget.dataset.btn] = false;
   },
 });

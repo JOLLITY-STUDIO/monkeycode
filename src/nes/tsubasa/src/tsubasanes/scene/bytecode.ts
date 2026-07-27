@@ -145,13 +145,22 @@ export class BytecodeInterpreter {
   private scriptTable: ScriptEntry[] = [];
 
   /** 当前执行的脚本 */
-  private currentScript: ScriptEntry | null = null;
+  private _currentScript: ScriptEntry | null = null;
+  get currentScript(): ScriptEntry | null { return this._currentScript; }
 
   /** 子脚本调用栈 */
   private callStack: { ptrLo: number; ptrHi: number; bank: number }[] = [];
 
+  /** 待执行的脚本编号队列 (进度表多表顺序执行) */
+  private _pendingScripts: number[] = [];
+  get pendingScripts(): readonly number[] { return this._pendingScripts; }
+
   /** 帧回调 (设置后每帧调用) */
   onFrame: (() => void) | null = null;
+
+  /** 调试: 开启后每步打印 opcode */
+  debugSteps: boolean = false;
+  private _stepCount = 0;
 
   constructor(ppu: Ppu) {
     this.ppu = ppu;
@@ -183,7 +192,7 @@ export class BytecodeInterpreter {
     const entry = this.scriptTable.find(s => s.num === scriptNum);
     if (!entry) return false;
 
-    this.currentScript = entry;
+    this._currentScript = entry;
 
     // 重置状态 (对应 ROM 清 ZP 变量)
     const s = this.state;
@@ -227,7 +236,7 @@ export class BytecodeInterpreter {
    */
   step(): boolean {
     const s = this.state;
-    if (!this.currentScript) return false;
+    if (!this._currentScript) return false;
 
     // 等待帧中
     if (s.waitFrames > 0) {
@@ -237,9 +246,21 @@ export class BytecodeInterpreter {
 
     // 读取 opcode
     const offset = s.ptrLo + (s.ptrHi << 8);
-    if (offset >= this.currentScript.data.length) return false;
+    if (offset >= this._currentScript.data.length) {
+      // 脚本数据已消费完毕，标记结束（某些参数字节可能恰好是 0xFF，
+      // 导致脚本结束标记被当作数据消费，这里做兜底处理）
+      s.status |= 0x80;
+      return false;
+    }
 
-    const opcode = this.currentScript.data[offset];
+    const opcode = this._currentScript.data[offset];
+
+    if (this.debugSteps && this._stepCount < 200) {
+      this._stepCount++;
+      console.log(`[bytecode] step#${this._stepCount} op=0x${opcode.toString(16)} ptr=${offset}/${this._currentScript.data.length} scriptNum=${this._currentScript.num}`,
+        opcode <= 0xD7 ? `(VRAM tile=${opcode})` :
+        opcode >= 0xE8 ? `(sys cmd=${opcode - 0xE8})` : `(branch/pos)`);
+    }
 
     if (opcode <= OPCODE.TILE_MAX) {
       // === $00-$D7: VRAM 瓦片写入 ===
@@ -261,14 +282,42 @@ export class BytecodeInterpreter {
   /**
    * 连续执行直到等待帧
    * 返回 true 表示需要等待下一帧
+   *
+   * 脚本结束时 (FF opcode) 自动加载队列中的下一个脚本
    */
   runFrame(): boolean {
+    // 当前脚本已结束 → 加载队列中下一个
+    if (this.state.status & 0x80) {
+      if (this._pendingScripts.length > 0) {
+        const nextNum = this._pendingScripts.shift()!;
+        console.log(`[bytecode] Queue → loading script ${nextNum.toString(16)}`);
+        this.load(nextNum);
+      } else {
+        return false; // 全部结束
+      }
+    }
+
     let keepGoing = true;
     while (keepGoing && this.step()) {
       // 持续执行直到 step 返回 false
     }
     if (this.onFrame) this.onFrame();
-    return this.state.waitFrames > 0;
+    return this.state.waitFrames > 0 || this._currentScript !== null;
+  }
+
+  /**
+   * 将脚本加入待执行队列
+   * 用于进度表多表顺序执行场景
+   */
+  queueScript(scriptNum: number): void {
+    if (!this._pendingScripts.includes(scriptNum)) {
+      this._pendingScripts.push(scriptNum);
+    }
+  }
+
+  /** 是否有待执行的脚本 */
+  hasPendingScripts(): boolean {
+    return this._pendingScripts.length > 0;
   }
 
   // ================================================================
@@ -333,19 +382,24 @@ export class BytecodeInterpreter {
    */
   private _dispatchBranch(opcode: number): boolean {
     const idx = opcode - OPCODE.BRANCH_START;
-    this._advancePtr(1);
 
     switch (idx) {
-      case 0: // $D8: 等待输入后推进下一页文本
-        return this._branchWaitInput();
+      case 0: { // $D8: 等待输入后推进下一页文本
+        const ok = this._branchWaitInput();
+        if (ok) this._advancePtr(1);
+        return ok;
+      }
       case 1: // $D9: 无等待推进
+        this._advancePtr(1);
         this._advancePage();
         return true;
       case 2: // $DA: 分支选择
+        this._advancePtr(1);
         this._advancePage();
         return true;
       default:
         // 其他分支类型 (文本清屏/选择等)
+        this._advancePtr(1);
         this._advancePage();
         return true;
     }
@@ -418,8 +472,8 @@ export class BytecodeInterpreter {
    *   PHA
    *   RTS              ; 间接跳转
    *
-   * $8545 跳转表 (E8-FF):
-   *   E8 → $8575  ; 调用子脚本
+   * $8545 跳转表 (E8-FF, 48 bytes = 24 entries, ROM `DATA_$8545_$8574`):
+   *   E8 → $8574  ; 调用子脚本
    *   E9 → $857F  ; 设置 PPU 属性
    *   EA → $858C  ; 清 nametable
    *   EB → $85C3  ; 精灵布局
@@ -432,10 +486,17 @@ export class BytecodeInterpreter {
    *   F2 → $8677  ; 切换 MMC3 bank
    *   F3 → $8681  ; 文本速度
    *   F4 → $86B7  ; 跳转地址
-   *   F5 → $87CA  ; 等待 N 帧
-   *   F6 → $87D8  ; 设置参数
-   *   F7 → $87F7  ; 读取输入
-   *   F8+ ...     ; 更多命令
+   *   F5 → $87B7  ; 等待 N 帧
+   *   F6 → $87CA  ; 设置参数
+   *   F7 → $87D8  ; 读取输入
+   *   F8 → $87F7  ; 数据写回子程序
+   *   F9 → $8813  ; 文本位置
+   *   FA → $881A  ; 文本控制
+   *   FB → $8830  ; 清除状态
+   *   FC → $8836  ; 设置变量
+   *   FD → $8854  ; 子程序调用
+   *   FE → $8861  ; 相对后退跳转
+   *   FF → $886F  ; 脚本结束
    */
   private _dispatchSystem(opcode: number): boolean {
     const cmd = opcode - OPCODE.SYS_START;
@@ -461,20 +522,19 @@ export class BytecodeInterpreter {
       // F8-FF: 扩展系统命令 (数据复写/跳转等)
       case 0x10: // F8: 直接跳转
         return this._sys_JUMP_RELATIVE();
-      case 0x11: // F9
+      case 0x11: // F9: 文本位置
         return true;
-      case 0x12: // FA
+      case 0x12: // FA: 文本控制
         return true;
-      case 0x13: // FB: 结束脚本
-        this.state.status |= 0x80;
-        return false;
-      case 0x14: // FC
-        return true;
-      case 0x15: // FD
-        return true;
+      case 0x13: // FB: 清除状态 ($8830) — 重置一些标志，继续执行
+        return this._sys_CLEAR_STATUS();
+      case 0x14: // FC: 设置变量 ($8836) — 读 2 字节参数
+        return this._sys_SET_VAR();
+      case 0x15: // FD: 子程序调用 ($8854)
+        return this._sys_SUB_CALL();
       case 0x16: // FE: 相对跳转 (后退)
         return this._sys_JUMP_RELATIVE_BACK();
-      case 0x17: // FF: 脚本结束
+      case 0x17: // FF: 脚本结束 ($886F)
         this.state.status |= 0x80;
         return false;
       default:
@@ -618,6 +678,44 @@ export class BytecodeInterpreter {
     return true;
   }
 
+  // FB: CLEAR_STATUS — 清除脚本状态 ($8830)
+  // ROM: 可能清零 $4C 或重置页面相关标志
+  private _sys_CLEAR_STATUS(): boolean {
+    // 清除脚本状态 bit (保留非终止位)
+    this.state.status &= 0x7F;
+    return true;
+  }
+
+  // FC: SET_VAR — 设置变量 ($8836)
+  // ROM: 读 2 字节 (var_id, value) 设置脚本变量
+  private _sys_SET_VAR(): boolean {
+    const varId = this._peekNextByte();
+    this._advancePtr(1);
+    const value = this._peekNextByte();
+    this._advancePtr(1);
+    // 存储到 ZP 变量区 (ROM 用 $4C-$5F 范围)
+    const addr = 0x4C + (varId & 0x0F);
+    wram[addr] = value;
+    return true;
+  }
+
+  // FD: SUB_CALL — 子程序调用 ($8854)
+  // ROM: 调用内部子程序 (读下一个字节作为子脚本编号, 递归进入)
+  private _sys_SUB_CALL(): boolean {
+    const subNum = this._peekNextByte();
+    this._advancePtr(1);
+
+    // 保存当前执行位置
+    this.callStack.push({
+      ptrLo: this.state.ptrLo,
+      ptrHi: this.state.ptrHi,
+      bank: this.state.dataBank,
+    });
+
+    this.state.inSub = true;
+    return this.load(subNum);
+  }
+
   // F8+: 相对跳转
   private _sys_JUMP_RELATIVE(): boolean {
     const offset = this._peekNextByte();
@@ -648,10 +746,10 @@ export class BytecodeInterpreter {
 
   /** 读取下一个字节 (不消耗指针) */
   private _peekNextByte(): number {
-    if (!this.currentScript) return 0;
+    if (!this._currentScript) return 0;
     const offset = this.state.ptrLo + (this.state.ptrHi << 8);
-    if (offset >= this.currentScript.data.length) return 0;
-    return this.currentScript.data[offset];
+    if (offset >= this._currentScript.data.length) return 0;
+    return this._currentScript.data[offset];
   }
 
   /** 字节码指针前进 */
@@ -687,7 +785,7 @@ export class BytecodeInterpreter {
   /** 重置解释器 */
   reset(): void {
     this.state = createBytecodeState();
-    this.currentScript = null;
+    this._currentScript = null;
     this.callStack = [];
   }
 }

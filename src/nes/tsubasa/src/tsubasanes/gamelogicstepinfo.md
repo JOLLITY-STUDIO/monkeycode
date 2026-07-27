@@ -121,11 +121,11 @@ $800D:
   RTS              ; → 间接跳转到目标地址
 ```
 
-跳转表地址映射:
+跳转表地址映射 (ROM 原文 `$800D`: `65 81 8A 81 AD 81 B4 81 DA 81`):
 
 | $27 | ROM 地址 | 功能 | 场景 |
 |-----|---------|------|------|
-| 0 | `$8065` (`$8017`) | 场景初始化 (根据 $26 查表加载) | - |
+| 0 | `$8165` | 场景初始化 + PPU 写 | - |
 | 1 | `$818A` | 场景过场状态机 | title, cutscene |
 | 2 | `$81AD` | 场景脚本推进 | story advance |
 | 3 | `$81B4` | 比赛引擎 | match |
@@ -150,23 +150,36 @@ $8017:
   ...
 ```
 
-**场景编号表 `$83DC`** (对应 `$26`):
+`$83DC` 表示是 **进度触发表 1** (非场景名称表)，索引 = `$26`(scene_id)，值 = 脚本编号:
+(ROM 原文: `DATA_$83DC_$83FE`)
 
-| $26 | 场景 | 描述 |
-|-----|------|------|
+| scene_id | 脚本 | 对应 SceneId |
+|----------|------|-------------|
+| 0 | 02 | TECMO_LOGO |
+| 5 | 07 | BRAZIL_LEAGUE |
+| 10 | 0C | HIGH_SCHOOL_END |
+| 11 | 0E | JAPAN_CUP |
+| 14 | 10 | WORLD_YOUTH_DIALOG |
+| 15 | 12 | WORLD_YOUTH_END |
+| 24 | 18 | (枚举外) |
+| 30 | 1E | (枚举外) |
+| 32 | 20 | (枚举外) |
+
+真正常用的 `SceneId` 枚举定义在 `scene/types.ts`:
+| id | 常量 | 描述 |
+|----|------|------|
 | 0 | TECMO_LOGO | 游戏启动 Logo |
-| 2 | TITLE | 标题画面 |
-| 6 | OPENING | 开场动画 |
-| 7 | - | - |
-| 12 | MATCH | 第1场比赛 |
-| 14 | - | - |
-| 16 | RESULT | 比赛结果 |
-| 18 | - | - |
-| 24 | STORY | 剧情 demo |
-| 30 | - | - |
-| 32 | ENDING | 通关画面 |
+| 1 | TITLE | 标题画面 |
+| 2 | LOAD_GAME | 读档 |
+| 3 | MAIN_MENU | 主菜单 |
+| 4 | STORY_INTRO | 序章剧情 |
+| 5 | BRAZIL_LEAGUE | 巴西联赛 |
+| 6 | BRAZIL_DIALOG | 巴西对话 |
+| … | … | … |
+| 16 | ENDING | 通关画面 |
+| 17 | FINAL_ENDING | 最终结局 |
 
-Mapped to `tsubasanes` → `scene/manager.ts`: `switchImmediate(SceneId.TECMO_LOGO)`
+> 注: ROM 中 scene_id 最大用到 0x22(34)，TS 代码只枚举到 17，超出部分为 ROM 预留位。
 
 ---
 
@@ -207,10 +220,10 @@ $8467:
 | `$E1-$E7` | 设置文本位置/行 |
 | `$E8-$FF` | 系统命令: 跳转、等待帧、调用子程序等 |
 
-**关键系统命令**:
+**关键系统命令** (ROM 原文 `DATA_$8545_$8574`, 24项 × 2字节 = 48B, 覆盖 $E8-$FF):
 | Opcode | 含义 | `$8545` 跳转表目标 |
 |--------|------|---------------------|
-| E8 | 调用子场景脚本 | $8575 |
+| E8 | 调用子场景脚本 | $8574 |
 | E9 | 设置 PPU 属性表 | $857F |
 | EA | 清空 nametable | $858C |
 | EB | 设置精灵布局 | $85C3 |
@@ -223,9 +236,17 @@ $8467:
 | F2 | 切换 MMC3 bank | $8677 |
 | F3 | 设置文本速度 | $8681 |
 | F4 | 跳转到指定地址 | $86B7 |
-| F5 | 等待 N 帧 | $87CA |
-| F6 | 设置 game 参数 | $87D8 |
-| F7 | 读取输入 | $87F7 |
+| F5 | 等待 N 帧 | $87B7 |
+| F6 | 设置 game 参数 | $87CA |
+| F7 | 读取输入 | $87D8 |
+| F8 | 跳转到 $87F7 | $87F7 |
+| F9 | 数据写回 | $8813 |
+| FA | 文本处理 | $881A |
+| FB | 清除/初始化 | $8830 |
+| FC | 设置变量 | $8836 |
+| FD | 子程序 | $8854 |
+| FE | 相对后退跳转 | $8861 |
+| FF | 脚本结束 | $886F |
 
 ### Bytecode 文本渲染 (`$88CA`)
 
@@ -380,23 +401,24 @@ $822B:
 ### 6.4 bytecode 命令分派 `$90F6`
 
 ```asm
-$90F6:
-  ; 类似 Bank 0 的 bytecode，但指令更偏比赛逻辑
-  ; 跳转表:
-  .dw $B0F7  ; 命令 0: JSR to sub
-  .dw $B102  ; 命令 1: set VRAM
-  .dw $B113  ; 命令 2: set palette
-  .dw $B11E  ; 命令 3: scroll
-  .dw $B12F  ; 命令 4: clear screen
-  .dw $B13B  ; 命令 5: text box
-  .dw $B14D  ; 命令 6: sprite layout
-  .dw $B160  ; 命令 7: sound
-  .dw $B173  ; 命令 8: music
-  .dw $B186  ; 命令 9: wait frames
-  .dw $B199  ; 命令 A: branch
-  .dw $B1A4  ; 命令 B: end/cmd
-  .dw $B1AC  ; 命令 C: jump
-  .dw $B1BA  ; 命令 D: return
+; Bank 1 bytecode 跳转表 (嵌入在 CODE_$9012_$90F6 中, PC=$90F6):
+; 表项 (little-endian word, 对应 opcode 0-$0F):
+.dw $B0F7  ; 命令 0: 子程序入口
+.dw $B102  ; 命令 1: VRAM 写入
+.dw $B113  ; 命令 2: 调色板
+.dw $B11E  ; 命令 3: 滚动
+.dw $B12F  ; 命令 4: 清屏
+.dw $B13B  ; 命令 5: 文本框
+.dw $B14D  ; 命令 6: 精灵布局
+.dw $B160  ; 命令 7: 音效
+.dw $B173  ; 命令 8: 音乐
+.dw $B186  ; 命令 9: 等待帧
+.dw $B199  ; 命令 A: 分支
+.dw $B1BA  ; 命令 B: 数据处理
+.dw $B1BA  ; 命令 C: 数据处理 (同 B)
+.dw $B1A4  ; 命令 D: 结束/返回
+.dw $B1AC  ; 命令 E: 绝对跳转
+.dw $B1BA  ; 命令 F: 数据处理
 ```
 
 ---

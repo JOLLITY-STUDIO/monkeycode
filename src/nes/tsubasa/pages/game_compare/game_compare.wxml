@@ -47,18 +47,18 @@
         <view class="dot-decor d3"></view>
       </view>
 
-      <!-- 双 Canvas 屏幕区域 -->
+      <!-- 双 Canvas 屏幕区域：左 tsnes(6502) vs 右 tsubasanes(TS) -->
       <view class="canvas-row">
         <view class="canvas-col">
-          <view class="canvas-label">tsnes (改造版)</view>
+          <text class="canvas-label">tsnes (6502)</text>
           <canvas type="2d" id="tsnes-canvas" class="dual-canvas"></canvas>
         </view>
         <view class="canvas-col">
-          <view class="canvas-label">jsnes 参考</view>
-          <canvas type="2d" id="jsnes-canvas" class="dual-canvas"></canvas>
-          <view class="fps-overlay" wx:if="{{showFps}}">
-            <text class="fps-text">{{fps}} FPS</text>
-          </view>
+          <text class="canvas-label">tsubasanes (TS)</text>
+          <canvas type="2d" id="tsubasa-canvas" class="dual-canvas"></canvas>
+        </view>
+        <view class="fps-overlay" wx:if="{{showFps}}">
+          <text class="fps-text">{{fps}} FPS</text>
         </view>
       </view>
     </view>

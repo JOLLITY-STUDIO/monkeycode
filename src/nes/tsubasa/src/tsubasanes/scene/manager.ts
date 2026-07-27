@@ -114,12 +114,12 @@ export class SceneManager {
   /**
    * 场景进入时自动查进度表加载字节码
    *
-   * ROM 流程:
-   *   $814D: LDX $26 / LDA $83DC,X → 查表 1
-   *   $816C: LDX $26 / LDA $83FE,X → 查表 2
+   * ROM 流程 (Bank 0 CODE_$80DF_$81D3):
+   *   $814F: LDX $26 / LDA $83DC,X → 查表 1
+   *   $816E: LDX $26 / LDA $83FE,X → 查表 2
    *   $81FD: LDX $26 / LDA $8420,X → 查表 3
    *   $820D: LDX $26 / LDA $8442,X → 查表 4
-   *   $81E4: LDX $26 / LDA $8398,X → 场景跳转
+   *   $81E4: LDX $26 / LDA $8398,X → 场景跳转 ($8398 inline 在 CODE_$81D4_$83DB 尾)
    *
    * 每个非零值 → $8464(scriptNum)
    */
