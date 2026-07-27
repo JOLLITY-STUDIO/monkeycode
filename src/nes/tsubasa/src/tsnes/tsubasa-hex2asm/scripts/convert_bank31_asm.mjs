@@ -185,8 +185,8 @@ function parseFunctions(content) {
   return funcs;
 }
 
-// Run from project root: node src/tsnes/tsubasa-hex2asm/convert_bank31_asm.mjs
-const filePath = 'src/tsnes/tsubasa-hex2asm/prg_banks/prg_bank_31_boot_vectors.ts';
+// Run from project root: node src/tsnes/tsubasa-hex2asm/scripts/convert_bank31_asm.mjs
+const filePath = new URL('../prg_banks/prg_bank_31_boot_vectors.ts', import.meta.url).pathname;
 let content = fs.readFileSync(filePath, 'utf8');
 
 const funcs = parseFunctions(content);

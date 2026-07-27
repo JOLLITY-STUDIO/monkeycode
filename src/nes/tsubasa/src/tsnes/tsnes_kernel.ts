@@ -16,6 +16,14 @@ import { romUint8Array } from '../rom_data';
 /** TsubasaNes — ROM 数据完全内建，外部不可访问 */
 import { TsubasaNes } from './tsubasa-hex2asm/tsubasa_nes';
 
+/** CompiledExecutor — 编译后的纯 TS CPU (6502→TS 直接翻译) */
+// @ts-ignore
+import { CompiledExecutor } from './tsubasa-ts/game/rom/compiled_executor';
+
+/** PRG/CHR ROM 数据 — 供 compiled executor 加载 */
+import { PRG_ROM_BANKS } from './tsubasa-hex2asm/prg_rom_data';
+import { CHR_ROM_BANKS } from './tsubasa-hex2asm/chr_rom_data';
+
 // ============================================================================
 // 类型定义
 // ============================================================================
@@ -164,8 +172,11 @@ export class TsnesKernel {
   canvas: any;
   running = false;
 
-  /** CPU 模式: 'native' = 原始 6502, 'tsubasa' = TS 游戏逻辑 */
-  mode: 'native' | 'tsubasa';
+  /** CPU 模式: 'native' = 原始 6502, 'tsubasa' = TS 游戏逻辑, 'compiled' = 纯 TS 编译版 */
+  mode: 'native' | 'tsubasa' | 'compiled';
+
+  /** Compiled executor (仅 compiled 模式) */
+  compiledExecutor: CompiledExecutor | null = null;
 
   /** PPU 帧缓冲快照 (Uint32Array, NES BGR 格式) */
   frameBuffer: Uint32Array | null = null;
@@ -190,7 +201,7 @@ export class TsnesKernel {
   private _audioCtx: any = null;
   private _audioNode: any = null;
 
-  constructor(canvas: any, mode: 'native' | 'tsubasa' = 'native') {
+  constructor(canvas: any, mode: 'native' | 'tsubasa' | 'compiled' = 'native') {
     this.canvas = canvas;
     this.mode = mode;
     const ctx = canvas.getContext('2d') as CanvasRenderingContext2D;
@@ -219,10 +230,16 @@ export class TsnesKernel {
       sampleRate: SAMPLE_RATE,
     };
 
-    // tsubasa 模式: 用完全封闭的 TsubasaNes（ROM 数据内建，外部不可访问）
-    this.nes = mode === 'tsubasa'
-      ? new TsubasaNes(nesOpts)
-      : new NES(nesOpts);
+    if (mode === 'compiled') {
+      // Compiled 模式: 纯 TS CPU
+      this.compiledExecutor = new CompiledExecutor();
+    } else if (mode === 'tsubasa') {
+      // tsubasa 模式: 用完全封闭的 TsubasaNes（ROM 数据内建，外部不可访问）
+      this.nes = new TsubasaNes(nesOpts);
+    } else {
+      // native 模式: 原始 tsnes 6502 解释器
+      this.nes = new NES(nesOpts);
+    }
   }
 
   // ---- 音频管线 ----
@@ -302,7 +319,24 @@ export class TsnesKernel {
   /** 直接加载原始 .nes ROM 数据并启动 */
   start(): void {
     try {
-      if (this.mode === 'tsubasa') {
+      if (this.mode === 'compiled') {
+        // Compiled 模式: 用静态 ROM 数据初始化纯 TS CPU
+        console.log('[tsnes/compiled] Initializing compiled CPU executor');
+
+        // CHR: 合并所有 8KB bank → 一个大数组 (128KB)
+        const chrMerged = new Uint8Array(0x20000); // 16 × 8KB = 128KB
+        for (let i = 0; i < CHR_ROM_BANKS.length; i++) {
+          chrMerged.set(CHR_ROM_BANKS[i], i * 0x2000);
+        }
+
+        this.compiledExecutor!.onFrame = (buf: Uint32Array) => {
+          this.frameBuffer = buf;
+        };
+        this.compiledExecutor!.init(PRG_ROM_BANKS as Uint8Array[], [chrMerged]);
+        this.running = true;
+        console.log('[tsnes/compiled] CPU executor ready');
+
+      } else if (this.mode === 'tsubasa') {
         // TsubasaNes 在构造函数中已完成 ROM 加载 + PRG 注入，这里无需操作
         console.log('[tsnes/tsubasa] ROM data sealed inside TsubasaNes');
       } else {
@@ -322,9 +356,11 @@ export class TsnesKernel {
         this.nes.loadROM(romData);
       }
 
-      this._tracer = new CpuTracer(this.nes);
+      this._tracer = this.nes ? new CpuTracer(this.nes) : null;
       this._startAudio();
-      this.running = true;
+      if (this.mode !== 'compiled') {
+        this.running = true;
+      }
       console.log('[tsnes] ROM loaded, CPU running');
     } catch (e: any) {
       console.error('[tsnes] ROM load failed:', e.message || e);
@@ -335,18 +371,25 @@ export class TsnesKernel {
   /** 停止 */
   stop(): void {
     this.running = false;
+    if (this.mode === 'compiled') {
+      this.compiledExecutor!.running = false;
+    }
     this._stopAudio();
   }
 
   /** 重启 */
   reset(): void {
     console.log('[tsnes] Reset');
-    this.nes.reset();
-    // TsubasaNes.reset() 已自动重写 cpu.mem（封装在子类内部）
+    if (this.mode === 'compiled') {
+      this.compiledExecutor!.reset();
+    } else {
+      this.nes.reset();
+      // TsubasaNes.reset() 已自动重写 cpu.mem（封装在子类内部）
+    }
     this.frameBuffer = null;
     // reset 后重建 mapper, 重新绑定 tracer
-    if (this._tracer) {
-      this._tracer = new CpuTracer(this.nes);
+    if (this._tracer && this.mode !== 'compiled') {
+      this._tracer = this.nes ? new CpuTracer(this.nes) : null;
     }
   }
 
@@ -362,16 +405,20 @@ export class TsnesKernel {
 
   /** 序列化 emulator 完整状态 (存档) */
   saveState(): object {
+    if (this.mode === 'compiled') {
+      return { _notSupported: true };
+    }
     return this.nes.toJSON();
   }
 
   /** 从存档恢复 emulator 完整状态 */
   loadState(state: object): void {
+    if (this.mode === 'compiled') return; // compiled 模式暂不支持存档
     this.nes.fromJSON(state);
     this.frameBuffer = null;
     // fromJSON 内部重置了 CPU/PPU，需重建 tracer
     if (this._tracer) {
-      this._tracer = new CpuTracer(this.nes);
+      this._tracer = this.nes ? new CpuTracer(this.nes) : null;
     }
   }
 
@@ -379,7 +426,11 @@ export class TsnesKernel {
   frame(): void {
     if (!this.running) return;
     try {
-      this.nes.frame();
+      if (this.mode === 'compiled') {
+        this.compiledExecutor!.frame();
+      } else {
+        this.nes.frame();
+      }
     } catch (e) {
       console.error('[tsnes] frame error:', e);
       this.running = false;
@@ -398,7 +449,21 @@ export class TsnesKernel {
 
   /** 渲染当前帧缓冲到 Canvas (同步 putImageData) */
   renderToCanvas(): void {
-    if (!this.frameBuffer || !this.ctx || !this.imageData) return;
+    if (!this.ctx || !this.imageData) return;
+
+    if (this.mode === 'compiled') {
+      // Compiled executor 的 frameBuffer 已经是 RGBA 格式
+      const fb = this.compiledExecutor!.getFrameBuffer();
+      if (!fb) return;
+      const buf32 = new Uint32Array(this.imageData.data.buffer);
+      for (let i = 0; i < SCREEN_W * SCREEN_H; i++) {
+        buf32[i] = fb[i] | 0xFF000000;
+      }
+      this.ctx.putImageData(this.imageData, 0, 0);
+      return;
+    }
+
+    if (!this.frameBuffer) return;
 
     // tsnes PPU 输出 BGR 格式 (Uint32 = 0x00BBGGRR)
     // 转为 RGBA: 只需把 alpha 置为 0xFF
@@ -418,6 +483,12 @@ export class TsnesKernel {
    */
   private prevButtons = 0;
   setInput(mask: number): void {
+    // Compiled 模式: 直接传 mask 给 executor
+    if (this.mode === 'compiled') {
+      this.compiledExecutor!.setJoy1(mask);
+      return;
+    }
+
     // 用 tsnes 的 buttonDown/buttonUp API
     const btnMap: [number, number][] = [
       [BUTTON.A, 0],      // tsnes button 0 = A

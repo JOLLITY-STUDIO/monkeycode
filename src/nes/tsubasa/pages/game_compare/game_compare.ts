@@ -151,16 +151,16 @@ Page({
   },
 
   // ========================================================================
-  //  左: 原始 CPU (native) — 读 ROM, 解析 6502 opcode
+  //  左: Compiled TS CPU — 6502→TS 分发表, 纯 TS 执行
   // ========================================================================
 
   startNative(canvas: any): void {
     try {
-      this.nativeKernel = new TsnesKernel(canvas, 'native');
+      this.nativeKernel = new TsnesKernel(canvas, 'compiled');
       this.nativeKernel.start();
       this.nativeFrameLoop();
     } catch (e: any) {
-      console.error('[compare] native init error:', e);
+      console.error('[compare] compiled init error:', e);
     }
   },
 
@@ -189,18 +189,18 @@ Page({
   },
 
   // ========================================================================
-  //  右: TsubasaCpu — ROM 翻译出的 TS 游戏逻辑
+  //  右: TsubasaNes — ROM 数据 hex2asm 静态注入
   // ========================================================================
 
   startTsubasa(canvas: any): void {
     try {
       this.tsubasaKernel = new TsnesKernel(canvas, 'tsubasa');
       this.tsubasaKernel.start();
-      this.setData({ statusText: '原生 CPU ← → TsubasaCpu (TS)' });
+      this.setData({ statusText: 'Compiled TS CPU ← → TsubasaNes' });
       this.tsubasaFrameLoop();
     } catch (e: any) {
       console.error('[compare] tsubasa init error:', e);
-      this.setData({ statusText: 'TsubasaCpu 启动失败: ' + String(e) });
+      this.setData({ statusText: 'TsubasaNes 启动失败: ' + String(e) });
     }
   },
 

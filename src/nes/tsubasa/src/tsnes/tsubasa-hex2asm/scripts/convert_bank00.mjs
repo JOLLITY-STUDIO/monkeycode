@@ -225,7 +225,7 @@ const ADDR_MAP = {
   buildpadding: 0x9FF6,
 };
 
-const filePath = '../prg_banks/prg_bank_00_dispatch_scene_engine.ts';
+const filePath = new URL('../prg_banks/prg_bank_00_dispatch_scene_engine.ts', import.meta.url).pathname;
 
 // ── 如果传了参数就只转那一个函数 ──
 const targetFunc = process.argv[2];
