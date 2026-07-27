@@ -39,7 +39,15 @@
   font-size: 20rpx;
 }
 
-/* ========== 控制面板 ========== */
+/* ========== 顶部留白面板（对称占位） ========== */
+.panel-spacer {
+  min-height: 240rpx;
+  padding: 12rpx 24rpx;
+  background: rgba(15, 15, 35, 0.95);
+  flex-shrink: 0;
+}
+
+/* ========== 底部控制面板 ========== */
 .control-panel {
   display: flex;
   align-items: center;

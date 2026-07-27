@@ -1,4 +1,7 @@
 <view class="game-container">
+  <!-- 顶部留白面板 -->
+  <view class="panel-spacer"></view>
+
   <!-- 游戏画面 -->
   <canvas type="2d" id="gameCanvas" class="game-canvas" disable-scroll="true"></canvas>
 
@@ -8,7 +11,7 @@
     <text class="fps-text" wx:if="{{fps !== '--'}}">FPS: {{fps}}</text>
   </view>
 
-  <!-- 控制面板 -->
+  <!-- 底部控制面板 -->
   <view class="control-panel">
     <!-- 方向键 -->
     <view class="dpad">
