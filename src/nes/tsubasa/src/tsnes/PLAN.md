@@ -42,12 +42,13 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 - [x] 7/7 测试全部通过
 - [x] Git commit ✓
 
-### Phase 4: 对话/过场系统
-- [ ] 实现 `_runDialogScene()` — 对话引擎
-- [ ] 实现多行文本渲染与分页
-- [ ] 实现选择菜单（はい/いいえ、战术选择）
-- [ ] 编写对话场景测试
-- [ ] Git commit: `phase-4: dialog system`
+### Phase 4: 对话/过场系统 ✓
+- [x] 实现 `_runDialogScene()` — 对话引擎 (TEXT / WAIT_INPUT / CHOICE / DONE 状态机)
+- [x] 实现多行文本渲染与分页 (A 按钮翻页)
+- [x] 实现选择菜单 (↑↓ 导航, A 确认, showChoices API)
+- [x] 编写对话框测试 (6 个子测试: 状态转换、输入驱动、文本渲染、多页、稳定性)
+- [x] 8/8 测试全部通过
+- [x] Git commit ✓
 
 ### Phase 5: 比赛引擎
 - [ ] 实现 `_runMatchScene()` — 比赛主循环
@@ -74,7 +75,7 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 
 ---
 
-## 当前状态: Phase 3 ✓ 已完成 → 进入 Phase 4
+## 当前状态: Phase 4 ✓ 已完成 → 进入 Phase 5
 
 ### Phase 1: 测试基础设施与代码规范 ✓ 已完成
 - [x] 创建统一测试运行入口 `game-engine/test/run-all.ts`
@@ -102,3 +103,11 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 - [x] 创建全面字节码引擎测试 (9 个子测试: 字符输出、清屏、场景切换、TERMINATOR、光标定位、列控制、等待帧、连续字符输出、清屏验证)
 - [x] 7/7 测试全部通过
 - [x] Git commit: `phase-3: bytecode script engine — full opcode support, 7/7 tests passing`
+
+### Phase 4: 对话/过场系统 ✓ 已完成
+- [x] 实现 `_runDialogScene()` — 对话引擎 (TEXT / WAIT_INPUT / CHOICE / DONE 状态机)
+- [x] 实现多行文本渲染与 A 按钮翻页
+- [x] 实现选择菜单 (↑↓ 导航, A 确认, showChoices API)
+- [x] 创建对话框测试 (6 个子测试)
+- [x] 8/8 测试全部通过
+- [x] Git commit: `phase-4: dialog system — state machine, 8/8 tests passing`

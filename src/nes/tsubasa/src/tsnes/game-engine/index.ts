@@ -65,3 +65,4 @@ export { testInputManager } from './test/test-input';
 export { testScriptEngine } from './test/test-script';
 export { testRomReader, testScriptByteRead } from './test/test-rom-reader';
 export { testBytecodeEngine } from './test/test-bytecode-engine';
+export { testDialogSystem } from './test/test-dialog';

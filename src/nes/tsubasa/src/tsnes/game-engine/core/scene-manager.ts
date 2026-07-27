@@ -386,18 +386,94 @@ export class SceneManager {
     }
   }
 
+  // ─── Dialog Scene ─────────────────────────────────────────
+
+  /** Dialog state machine enum */
+  private _dialogPhase: 'TEXT' | 'WAIT_INPUT' | 'CHOICE' | 'DONE' = 'TEXT';
+
+  /** Active choice menu items (strings for display) */
+  private _dialogChoices: string[] = [];
+
+  /** Selected choice index */
+  private _dialogChoiceIndex: number = 0;
+
+  /**
+   * Dialog/cutscene engine.
+   *
+   * Handles:
+   *   - Multi-page text rendering (A button advances)
+   *   - Choice menus (↑↓ to select, A to confirm)
+   *   - Pause on WAIT_FRAMES / WAIT_INPUT bytecodes
+   */
+  private _runDialogScene(): void {
+    const s = this.state;
+
+    switch (this._dialogPhase) {
+      case 'TEXT':
+        // Process bytecode to display text
+        if ((s.scriptStatus & 0x80) !== 0) {
+          this._runBytecodeEngine();
+        }
+
+        // Check if bytecode engine transitioned to wait/choice state
+        if (this._dialogPhase === 'TEXT' && (s.scriptStatus & 0x80) === 0) {
+          // No more bytecode — text complete, wait for input
+          this._dialogPhase = 'WAIT_INPUT';
+        }
+        break;
+
+      case 'WAIT_INPUT':
+        // Wait for player to press A or START to advance
+        if (s.isPressed(0x80) || s.isPressed(0x10)) {
+          // Advance to next text page or finish
+          s.scriptStatus |= 0x80; // Resume bytecode
+          this._dialogPhase = 'TEXT';
+        }
+        break;
+
+      case 'CHOICE':
+        // Handle menu choice navigation
+        if (s.isPressed(0x08)) { // UP
+          this._dialogChoiceIndex =
+            (this._dialogChoiceIndex - 1 + this._dialogChoices.length) %
+            this._dialogChoices.length;
+        }
+        if (s.isPressed(0x04)) { // DOWN
+          this._dialogChoiceIndex =
+            (this._dialogChoiceIndex + 1) % this._dialogChoices.length;
+        }
+        if (s.isPressed(0x80)) { // A button — confirm choice
+          // Store selected choice and continue
+          s.tmp[0] = this._dialogChoiceIndex;
+          this._dialogChoices = [];
+          this._dialogPhase = 'TEXT';
+          s.scriptStatus |= 0x80; // Resume bytecode
+        }
+        break;
+
+      case 'DONE':
+        // Dialog finished, transition back
+        s.dispatchIndex = 0;
+        break;
+    }
+  }
+
+  /**
+   * Display a choice menu to the player.
+   * Sets dialog phase to CHOICE for input handling.
+   */
+  showChoices(choices: string[]): void {
+    this._dialogChoices = choices;
+    this._dialogChoiceIndex = 0;
+    this._dialogPhase = 'CHOICE';
+  }
+
   // ─── Match Scene ──────────────────────────────────────────
 
   private _runMatchScene(): void {
     // Ported from bank 01 (match engine)
     // Handles: player movement, ball physics, goal checks, score updates
     // In the full implementation, this calls into MatchEngine
-  }
-
-  // ─── Dialog Scene ─────────────────────────────────────────
-
-  private _runDialogScene(): void {
-    // Handles dialog/cutscene sequences between matches
   }
 
   // ─── Boot Sequence ────────────────────────────────────────
@@ -464,6 +540,12 @@ export class SceneManager {
     s.chrBank3 = 1;
     s.chrBank4 = 2;
     s.chrBank5 = 3;
+
+    // Reset dialog state
+    this._dialogPhase = 'TEXT';
+    this._dialogChoices = [];
+    this._dialogChoiceIndex = 0;
+    this._waitFrames = 0;
 
     if (this.config.debug) {
       console.log('[SceneManager] Boot complete. Entering main loop.');
