@@ -17,6 +17,7 @@ import { GameState } from './game-state';
 import { BytecodeOp } from './types';
 import { RomReader } from '../data/rom-reader';
 import { MatchEngine } from '../core/match-engine';
+import { initScene } from './scene-registry';
 
 /**
  * Each scene has an update function that returns the new dispatch index
@@ -73,7 +74,11 @@ export class SceneManager {
 
     // Scene types that trigger scene transition
     if (idx === 0) {
-      // Init state — done by boot sequence
+      // Init state — initialize current scene
+      initScene(s, s.progress.sceneId);
+      // Sync ROM reader with state
+      this._rom.setBank6(s.prgBank6);
+      this._rom.setBank7(s.prgBank7);
       s.dispatchIndex = 1;
     } else if (idx === 1) {
       // Running state — process bytecode/script engine

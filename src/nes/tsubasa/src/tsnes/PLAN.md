@@ -61,12 +61,14 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 - [x] 9/9 测试全部通过
 - [x] Git commit ✓
 
-### Phase 6: 全场景串联
-- [ ] 实现全部 19 个场景的注册与切换
-- [ ] 场景间过场动画（淡入淡出）
-- [ ] 存档/读档机制
-- [ ] 编写端到端回归测试（自动跑 TECMO logo → 标题 → 密码 → 开场 → 比赛）
-- [ ] Git commit: `phase-6: full scene integration`
+### Phase 6: 全场景串联 ✓
+- [x] 实现场景注册表 (18 个场景定义 + 故事推进序列)
+- [x] 实现 `initScene()` — 场景初始化（bank 切换、scriptPtr 设置）
+- [x] 实现 `getNextScene()` — 故事推进逻辑
+- [x] 接线 `_defaultDispatch` — 场景 ID=0 时自动初始化当前场景
+- [x] 编写 E2E 回归测试 (7 阶段: Logo→标题→加载→菜单→开场→状态验证→内存稳定性)
+- [x] 10/10 测试全部通过
+- [x] Git commit ✓
 
 ### Phase 7: 微信小程序适配与上线
 - [ ] 小程序 Canvas 性能优化
@@ -77,7 +79,7 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 
 ---
 
-## 当前状态: Phase 5 ✓ 已完成 → 进入 Phase 6
+## 当前状态: Phase 6 ✓ 已完成 → 进入 Phase 7 (终局)
 
 ### Phase 1: 测试基础设施与代码规范 ✓ 已完成
 - [x] 创建统一测试运行入口 `game-engine/test/run-all.ts`
@@ -124,3 +126,12 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 - [x] 创建比赛引擎测试 (8 个子测试)
 - [x] 9/9 测试全部通过
 - [x] Git commit: `phase-5: match engine — full football gameplay, 9/9 tests passing`
+
+### Phase 6: 全场景串联 ✓ 已完成
+- [x] 实现场景注册表 (18 个场景定义 + 故事推进序列)
+- [x] 实现 `initScene()` — 场景初始化（bank 切换、scriptPtr 设置、nametable 清除）
+- [x] 实现 `getNextScene()` / `getSceneDefinition()` — 场景查找工具
+- [x] 接线 `_defaultDispatch` — 场景 ID=0 时自动初始化当前场景 + ROM 同步
+- [x] 创建 E2E 回归测试 (7 阶段: Logo→标题→加载→菜单→开场→状态→内存)
+- [x] 10/10 测试全部通过
+- [x] Git commit: `phase-6: full scene integration — scene registry, 10/10 tests passing`

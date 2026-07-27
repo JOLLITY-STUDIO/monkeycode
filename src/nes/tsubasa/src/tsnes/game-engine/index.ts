@@ -69,3 +69,7 @@ export { testRomReader, testScriptByteRead } from './test/test-rom-reader';
 export { testBytecodeEngine } from './test/test-bytecode-engine';
 export { testDialogSystem } from './test/test-dialog';
 export { testMatchEngine } from './test/test-match';
+export { testE2EFlow } from './test/test-e2e';
+
+export { SCENE_DEFINITIONS, STORY_PROGRESSION, initScene, getSceneDefinition, getNextScene } from './core/scene-registry';
+export type { SceneInit } from './core/scene-registry';
