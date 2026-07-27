@@ -1,3 +1,0 @@
-export { TECMO_NAMETABLE, TECMO_ATTRIBUTES, NAMETABLE_ROWS, NAMETABLE_COLS } from "./nametable";
-export { PAL_BG, PAL_SPR, NES_MASTER_PALETTE, BRIGHTNESS_RAMP } from "./palette";
-export { CHR_BANK_15, TILES_PER_BANK, TILE_BYTES } from "./tiles";

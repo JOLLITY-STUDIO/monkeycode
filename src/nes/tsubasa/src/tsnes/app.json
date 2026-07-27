@@ -1,9 +1,10 @@
 {
   "pages": [
-    "pages/game_compare/game_compare"
+    "pages/game_compare/game_compare",
+    "pages/index/index"
   ],
   "window": {
-    "navigationBarTitleText": "天使之翼2",
+    "navigationBarTitleText": "天使之翼2 (tsubasa-hex2asm)",
     "navigationBarBackgroundColor": "#1a1a2e",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#0f0f23"

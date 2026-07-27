@@ -13,6 +13,8 @@
  */
 
 export { TsubasaCpu, createTsubasaCpu } from './cpu';
+export { DebugCpu, createDebugCpu } from './debug_cpu';
+export type { Mmc3WriteRecord, ChrZPWriteRecord, TraceCallback } from './debug_cpu';
 export { TsubasaNes } from './tsubasa_nes';
 export * from './rom_header';
 export { CHR_ROM_BANKS, CHR_VROM_BANKS, CHR_BANK_COUNT } from './chr_rom_data';

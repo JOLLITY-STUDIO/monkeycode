@@ -1,9 +1,11 @@
 /**
  * 天使之翼2 — tsnes 单引擎
  */
-import NES from '../../src/tsnes/src/nes';
-import Controller from '../../src/tsnes/src/controller';
-import { romUint8Array } from '../../src/rom_data';
+import NES from '../../src/nes';
+import Controller from '../../src/controller';
+import { buildRomBuffer } from '../../tsubasa-hex2asm/rom_header';
+import { PRG_ROM_BANKS } from '../../tsubasa-hex2asm/prg_rom_data';
+import { CHR_ROM_BANKS } from '../../tsubasa-hex2asm/chr_rom_data';
 
 /** 补零两位 */
 function pad2(n: number) { return n.toString().padStart(2, '0'); }
@@ -123,7 +125,7 @@ Page({
 
   startNes(): void {
     try {
-      const rom = romUint8Array();
+      const rom = buildRomBuffer(PRG_ROM_BANKS, CHR_ROM_BANKS);
       console.log('[game_compare] Loading ROM, size:', rom.length);
 
       this.nes = new NES({

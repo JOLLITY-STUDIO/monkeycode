@@ -7,10 +7,8 @@
     <view class="shell-gloss"></view>
     <view class="shell-border"></view>
 
-    <!-- 内部 PCB 主板背景 — Game Boy 风格 -->
-    <view class="pcb-bg">
-      <image class="pcb-img" src="../../src/assets/pcb/pcb_bg.png" mode="scaleToFill" />
-    </view>
+    <!-- 内部 PCB 主板背景 -->
+    <view class="pcb-bg"></view>
 
     <!-- 顶部标题条 -->
     <view class="shell-topbar">
