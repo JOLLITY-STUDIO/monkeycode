@@ -1,0 +1,34 @@
+<view class="game-container">
+  <!-- 游戏画面 -->
+  <canvas type="2d" id="h5canvas" class="game-canvas" disable-scroll="true"></canvas>
+
+  <!-- 状态栏 -->
+  <view class="status-bar">
+    <text class="status-tag">H5引擎</text>
+    <text class="status-text">{{status}}</text>
+    <text class="fps-text">FPS: {{fps}}</text>
+  </view>
+
+  <!-- 底部控制面板 -->
+  <view class="control-panel">
+    <!-- 方向键 -->
+    <view class="dpad">
+      <view class="dpad-btn up"    catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="up">▲</view>
+      <view class="dpad-btn left"  catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="left">◄</view>
+      <view class="dpad-btn right" catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="right">►</view>
+      <view class="dpad-btn down"  catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="down">▼</view>
+    </view>
+
+    <!-- 中间按钮 -->
+    <view class="middle-btns">
+      <view class="ctrl-btn select-btn" catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="select">SELECT</view>
+      <view class="ctrl-btn start-btn"  catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="start">START</view>
+    </view>
+
+    <!-- AB 按钮 -->
+    <view class="action-btns">
+      <view class="ctrl-btn b-btn" catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="b">B</view>
+      <view class="ctrl-btn a-btn" catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="a">A</view>
+    </view>
+  </view>
+</view>
