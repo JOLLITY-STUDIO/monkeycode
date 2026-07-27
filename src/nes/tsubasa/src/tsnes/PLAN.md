@@ -70,7 +70,7 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 
 ---
 
-## 当前状态: Phase 1 ✓ 已完成 → 进入 Phase 2
+## 当前状态: Phase 2 ✓ 已完成 → 进入 Phase 3
 
 ### Phase 1: 测试基础设施与代码规范 ✓ 已完成
 - [x] 创建统一测试运行入口 `game-engine/test/run-all.ts`
@@ -80,3 +80,12 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 - [x] 添加 `test:engine` / `test:engine:verbose` npm 脚本
 - [x] 4/4 测试全部通过
 - [x] Git commit: `phase-1: test infrastructure — all 4 tests passing`
+
+### Phase 2: ROM 数据对接 ✓ 已完成
+- [x] 创建 `RomReader` 类 — 封装 MMC3 bank 映射与 PRG-ROM 字节读取
+- [x] 实现 `SceneManager._readScriptByte()` — 从 ROM 读取实际字节码
+- [x] `SceneManager.boot()` 同步 ROM 读取器 bank 状态
+- [x] 创建 ROM 读取测试 (6 个子测试: bank 读取、bank 切换、word 读取、越界、bank3 数据、工厂函数)
+- [x] 创建场景管理器字节码读取测试 (scriptPtr 递增、字符输出)
+- [x] 6/6 测试全部通过
+- [x] Git commit: `phase-2: rom data integration — RomReader + bytecode reading from ROM`

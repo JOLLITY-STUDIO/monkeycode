@@ -13,6 +13,7 @@ import { testBootSequence } from './test-boot';
 import { testInputManager } from './test-input';
 import { testSceneProgression } from './test-scene';
 import { testScriptEngine } from './test-script';
+import { testRomReader, testScriptByteRead } from './test-rom-reader';
 
 interface TestSuite {
   name: string;
@@ -67,7 +68,9 @@ console.log('╚═════════════════════�
 const suites: TestSuite[] = [
   { name: 'Boot Sequence', fn: wrapBootTest },
   { name: 'Input Manager', fn: wrapInputTest },
+  { name: 'ROM Reader', fn: () => testRomReader() },
   { name: 'Scene Progression', fn: wrapSceneTest },
+  { name: 'Script Byte Read', fn: () => testScriptByteRead() },
   { name: 'Script Engine', fn: wrapScriptTest },
 ];
 
