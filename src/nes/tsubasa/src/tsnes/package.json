@@ -29,6 +29,8 @@
     "typecheck": "tsc --noEmit",
     "test": "npm run typecheck && prettier --check '**/*.{js,jsx,css}' && node --test ./test/*.spec.js",
     "test:watch": "node --test --watch ./test/*.spec.js",
+    "test:engine": "npx tsx game-engine/test/run-all.ts",
+    "test:engine:verbose": "npx tsx game-engine/test/run-all.ts --verbose",
     "prepublishOnly": "npm run build",
     "format": "prettier --write '**/*.{js,jsx,css}'"
   },
