@@ -147,6 +147,11 @@ export enum BytecodeOp {
   CROSS_BANK     = 0xF8,
   FADE_SCENE     = 0xF9,
   FADE_SETUP     = 0xFA,
+  // $FB-$FE: display control / text formatting
+  SCRIPT_FLUSH   = 0xFB,  // Process display + continue (no arg)
+  TEXT_ADVANCE   = 0xFC,  // Process display + advance PPU addr (1 arg)
+  SCRIPT_HOLD    = 0xFD,  // Hold/wait operation (1 arg)
+  LINE_BREAK     = 0xFE,  // Line break / carriage return (no arg)
   TERMINATOR     = 0xFF,
 }
 

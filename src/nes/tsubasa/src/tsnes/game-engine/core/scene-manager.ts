@@ -357,6 +357,47 @@ export class SceneManager {
         return;
       }
 
+      case BytecodeOp.SCRIPT_FLUSH: {
+        // $FB: process display + continue (no arg)
+        // Original 6502: JSR $9085 (display list process) + JMP $84E7 (continue engine)
+        // In H5, this flushes text to nametable and marks vblank-ready for rendering
+        s.timing.vblankReady = true;
+        s.scriptStatus |= 0x80; // Ensure script stays running
+        return;
+      }
+
+      case BytecodeOp.TEXT_ADVANCE: {
+        // $FC + 1-byte arg: process display + advance cursor
+        // Original 6502: JSR $899A + wait 4 frames + PPU address advance
+        const advanceType = this._readScriptByte();
+        // Advance cursor based on arg: advanceType controls row/col advancement
+        if (advanceType > 0) {
+          s.scriptCol = 0;
+          s.scriptRow++;
+          if (s.scriptRow >= 30) s.scriptRow = 0;
+        }
+        s.timing.vblankReady = true;
+        return;
+      }
+
+      case BytecodeOp.SCRIPT_HOLD: {
+        // $FD + 1-byte arg: set frame hold counter
+        const holdFrames = this._readScriptByte();
+        this._waitFrames = holdFrames;
+        return;
+      }
+
+      case BytecodeOp.LINE_BREAK: {
+        // $FE: line break / carriage return (no arg)
+        // Move cursor to start of next line
+        s.scriptCol = 0;
+        s.scriptRow++;
+        if (s.scriptRow >= 30) {
+          s.scriptRow = 0;
+        }
+        return;
+      }
+
       default:
         // Unknown opcode — skip with no side effects
         if (this.config.debug) {
