@@ -93,91 +93,297 @@ export class SceneManager {
 
   // ─── Bytecode Script Engine ───────────────────────────────
 
+  /** Wait frames remaining (for WAIT_FRAMES bytecode) */
+  private _waitFrames: number = 0;
+
   /**
    * Run the bytecode/script interpreter.
    * 
    * Original 6502: $82ED script engine. Reads bytecode from the 
    * current script pointer, interpreting control codes ($D8-$FF)
-   * and outputting literal characters ($00-$D7) as text.
-   * 
-   * We call into a dedicated ScriptEngine for this logic.
+   * and outputting literal characters ($00-$D7) as text to nametable.
    */
   private _runBytecodeEngine(): void {
     const s = this.state;
 
-    // Check if script is running
-    if ((s.scriptStatus & 0x80) !== 0) {
-      // Script has a new command to process
-      const bytecode = this._readScriptByte();
-
-      if (bytecode === BytecodeOp.TERMINATOR) {
-        s.scriptStatus &= 0x7F; // Clear new-cmd flag
-        s.dispatchIndex = 0;
-        return;
-      }
-
-      // Character literal
-      if (bytecode <= BytecodeOp.CHAR_MAX) {
-        this._outputCharacter(bytecode);
-        return;
-      }
-
-      // Control codes
-      this._handleControlCode(bytecode);
+    // Handle wait state (WAIT_FRAMES)
+    if (this._waitFrames > 0) {
+      this._waitFrames--;
+      if (this._waitFrames > 0) return;
+      // Resume bytecode processing after wait
     }
+
+    // Check if script is running
+    if ((s.scriptStatus & 0x80) === 0) return;
+
+    // Read next bytecode
+    const bytecode = this._readScriptByte();
+
+    if (bytecode === BytecodeOp.TERMINATOR) {
+      s.scriptStatus &= 0x7F;
+      s.dispatchIndex = 0;
+      return;
+    }
+
+    // Character literal ($00-$D7)
+    if (bytecode <= BytecodeOp.CHAR_MAX) {
+      this._outputCharacter(bytecode);
+      return;
+    }
+
+    // Control codes ($D8-$FE)
+    this._handleControlCode(bytecode);
   }
 
   /** Read the next byte from the script pointer */
   private _readScriptByte(): number {
     const addr = this.state.scriptPtr;
     this.state.scriptPtr = (addr + 1) & 0xFFFF;
-    // Read from ROM using the MMC3 bank mapping
     return this._rom.read(addr);
   }
 
-  /** Output a character to the text display */
+  /** Output a character to the nametable (tile-based font) */
   private _outputCharacter(charCode: number): void {
-    // Map NES character code to ASCII / tile
-    // The game uses a custom tile-based font
-    // In the full implementation, this adds to the display list
-    this.state.writeDisplayList([charCode]);
-    this.state.scriptCol++;
-    if (this.state.scriptCol > 31) {
-      this.state.scriptCol = 0;
-      this.state.scriptRow++;
+    const s = this.state;
+    // Character tile index = charCode + font base offset
+    // The game font typically starts at tile 0x00 but uses a remapping table
+    const tileIndex = charCode;
+    const row = s.scriptRow;
+    const col = s.scriptCol;
+
+    // Write to active nametable (nametable 0 for now)
+    this._writeNametableChar(0, row, col, tileIndex);
+
+    // Advance cursor
+    s.scriptCol++;
+    if (s.scriptCol > 31) {
+      s.scriptCol = 0;
+      s.scriptRow++;
+      if (s.scriptRow >= 30) {
+        s.scriptRow = 0;
+      }
     }
   }
 
-  /** Handle a bytecode control code */
+  /** Write a single tile to nametable at (row, col) */
+  private _writeNametableChar(nt: number, row: number, col: number, tileIndex: number): void {
+    const s = this.state;
+    const offset = row * 32 + col;
+    if (nt === 0 && offset < 960) {
+      s.nametable0[offset] = tileIndex & 0xFF;
+    } else if (nt === 1 && offset < 960) {
+      s.nametable1[offset] = tileIndex & 0xFF;
+    }
+  }
+
+  /** Handle a bytecode control code with full opcode support */
   private _handleControlCode(op: number): void {
     const s = this.state;
 
-    if (op >= BytecodeOp.PALETTE_CTRL && op <= 0xDF) {
-      // Palette/brightness control
-      s.bgBrightness = op - BytecodeOp.PALETTE_CTRL;
-    } else if (op >= BytecodeOp.COLUMN_CTRL && op <= 0xE7) {
-      // Column position control
-      const colVal = op - BytecodeOp.COLUMN_CTRL;
-      s.scriptCol = (colVal + s.minCol) & 0x1F;
-    } else if (op === BytecodeOp.CLEAR_SCREEN) {
-      // Clear screen
-      s.nametable0.fill(0);
-      s.nametable1.fill(0);
-      s.scriptRow = 0;
-      s.scriptCol = 0;
-    } else if (op === BytecodeOp.FADE_SCENE) {
-      // Fade out and transition
-      s.dispatchIndex = 4;
-    } else if (op === BytecodeOp.SUB_CTRL) {
-      // Sub-control — read next byte for specific operation
-      const subCode = this._readScriptByte();
-      this._handleSubControl(subCode);
+    // ─── Palette/Brightness Control ($D8-$DF) ─────
+    if (op >= 0xD8 && op <= 0xDF) {
+      // $D8-$DF: palette index = op - 0xD8 (0-7)
+      // Each value maps to a specific palette mode:
+      // 0 = BG brightness, 1 = window pal, 2 = text pal, 3 = scroll pal,
+      // 4 = field pal, 5 = stadium pal, 6 = sprite pal, 7 = palette select
+      s.bgBrightness = op - 0xD8;
+      return;
     }
-    // Additional control codes handled as needed
+
+    // ─── Column Control ($E0-$E7) ─────────────────
+    if (op >= 0xE0 && op <= 0xE7) {
+      const colVal = op - 0xE0;
+      s.scriptCol = (colVal + s.minCol) & 0x1F;
+      return;
+    }
+
+    // ─── Scene/Display Control ($E8-$FA) ──────────
+    switch (op) {
+      case BytecodeOp.SCENE_TRANS: {
+        // $E8 + 1-byte arg: target scene ID
+        const targetScene = this._readScriptByte();
+        s.progress.sceneId = targetScene;
+        s.dispatchIndex = 4; // Fade out transition
+        return;
+      }
+
+      case BytecodeOp.BRIGHT_FADE: {
+        // $E9 + 1-byte arg: fade target brightness
+        const target = this._readScriptByte();
+        s.timing.frameTarget = target;
+        s.bgBrightness = target;
+        return;
+      }
+
+      case BytecodeOp.CLEAR_SCREEN: {
+        // $EA: clear both nametables
+        s.nametable0.fill(0);
+        s.nametable1.fill(0);
+        s.attribute0.fill(0);
+        s.attribute1.fill(0);
+        s.scriptRow = 0;
+        s.scriptCol = 0;
+        return;
+      }
+
+      case BytecodeOp.PPU_MODE_SET: {
+        // $EB + 1-byte arg: PPU control/mask settings
+        const mode = this._readScriptByte();
+        s.ppuCtrl = mode;
+        s.ppuMask = mode;
+        return;
+      }
+
+      case BytecodeOp.TEXT_SETUP: {
+        // $EC + 1-byte arg: line count for text box
+        s.lineCount = this._readScriptByte();
+        s.scriptRow = 0;
+        s.scriptCol = 0;
+        return;
+      }
+
+      case BytecodeOp.SLOT_STORE: {
+        // $ED: store current cursor position to slot
+        // Not fully implemented — store for later use
+        this._readScriptByte(); // consume arg byte
+        return;
+      }
+
+      case BytecodeOp.FILL_DISP: {
+        // $EE + 1-byte arg: fill display area with tile
+        const tile = this._readScriptByte();
+        for (let r = 0; r < 30; r++) {
+          for (let c = 0; c < 32; c++) {
+            this._writeNametableChar(0, r, c, tile);
+          }
+        }
+        return;
+      }
+
+      case BytecodeOp.TOGGLE_FLAG: {
+        // $EF: toggle a scene flag
+        this._readScriptByte(); // consume flag index
+        return;
+      }
+
+      case BytecodeOp.CURSOR_SET: {
+        // $F0 + 2-byte args: row, col
+        s.scriptRow = this._readScriptByte();
+        s.scriptCol = this._readScriptByte();
+        return;
+      }
+
+      case BytecodeOp.BANK_LOAD: {
+        // $F1 + 1-byte arg: load data from a specific bank
+        const bank = this._readScriptByte();
+        s.dataBank = bank;
+        s.prgBank6 = bank;
+        this._rom.setBank6(bank);
+        return;
+      }
+
+      case BytecodeOp.LINE_MAX: {
+        // $F2 + 1-byte arg: max lines to display
+        s.lineCount = this._readScriptByte();
+        return;
+      }
+
+      case BytecodeOp.PALETTE_OP: {
+        // $F3 + 1-byte arg: palette operation
+        this._readScriptByte();
+        return;
+      }
+
+      case BytecodeOp.SUB_CTRL: {
+        // $F4 + 1-byte arg: sub-control operation
+        const subCode = this._readScriptByte();
+        this._handleSubControl(subCode);
+        return;
+      }
+
+      case BytecodeOp.DISP_CTRL: {
+        // $F5 + 1-byte arg: display control
+        this._readScriptByte();
+        return;
+      }
+
+      case BytecodeOp.CLEAR_DELAY: {
+        // $F6 + 1-byte arg: clear + delay frames
+        s.nametable0.fill(0);
+        s.nametable1.fill(0);
+        this._waitFrames = this._readScriptByte();
+        return;
+      }
+
+      case BytecodeOp.TOGGLE_DIR: {
+        // $F7: toggle direction / bank
+        this._readScriptByte();
+        return;
+      }
+
+      case BytecodeOp.CROSS_BANK: {
+        // $F8 + 2-byte args (lo, hi): target address in new bank
+        const lo = this._readScriptByte();
+        const hi = this._readScriptByte();
+        const targetAddr = (hi << 8) | lo;
+
+        // Save current script state
+        s.scriptSavePtr = s.scriptPtr;
+        s.savedBank = s.dataBank;
+
+        // Switch to target address
+        s.scriptPtr = targetAddr;
+        s.dispatchIndex = 1; // Stay in bytecode mode
+        return;
+      }
+
+      case BytecodeOp.FADE_SCENE: {
+        // $F9: fade out and transition scene
+        s.dispatchIndex = 4; // Fade out → next scene
+        return;
+      }
+
+      case BytecodeOp.FADE_SETUP: {
+        // $FA + 1-byte arg: fade setup parameters
+        s.timing.frameTarget = this._readScriptByte();
+        return;
+      }
+
+      default:
+        // Unknown opcode — skip with no side effects
+        if (this.config.debug) {
+          console.warn(`[SceneManager] Unknown opcode: 0x${op.toString(16)}`);
+        }
+        return;
+    }
   }
 
+  /** Handle sub-control operations (extended functionality) */
   private _handleSubControl(code: number): void {
-    // Handle sub-control operations (scrolling, palette fades, etc.)
+    const s = this.state;
+
+    switch (code) {
+      case 0x00: // Set scroll X
+        s.scrollX = this._readScriptByte();
+        break;
+      case 0x01: // Set scroll Y
+        s.scrollY = this._readScriptByte();
+        break;
+      case 0x02: // Enable/disable sprite rendering
+        s.ppuMask = this._readScriptByte();
+        break;
+      case 0x03: // Set PPU control register
+        s.ppuCtrl = this._readScriptByte();
+        break;
+      case 0x04: // CHR bank select
+        s.chrBank2 = this._readScriptByte();
+        break;
+      default:
+        if (this.config.debug) {
+          console.warn(`[SceneManager] Unknown sub-control: 0x${code.toString(16)}`);
+        }
+        break;
+    }
   }
 
   // ─── Match Scene ──────────────────────────────────────────

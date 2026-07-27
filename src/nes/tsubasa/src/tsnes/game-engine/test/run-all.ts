@@ -14,6 +14,7 @@ import { testInputManager } from './test-input';
 import { testSceneProgression } from './test-scene';
 import { testScriptEngine } from './test-script';
 import { testRomReader, testScriptByteRead } from './test-rom-reader';
+import { testBytecodeEngine } from './test-bytecode-engine';
 
 interface TestSuite {
   name: string;
@@ -71,6 +72,7 @@ const suites: TestSuite[] = [
   { name: 'ROM Reader', fn: () => testRomReader() },
   { name: 'Scene Progression', fn: wrapSceneTest },
   { name: 'Script Byte Read', fn: () => testScriptByteRead() },
+  { name: 'Bytecode Engine', fn: () => testBytecodeEngine() },
   { name: 'Script Engine', fn: wrapScriptTest },
 ];
 

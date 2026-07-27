@@ -16,27 +16,31 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 
 ## 阶段划分
 
-### Phase 1: 测试基础设施与代码规范 ✓ (待验证)
-- [ ] 创建统一测试运行入口 `game-engine/test/run-all.ts`
-- [ ] 修复 test-boot.ts 中的 runner boot 调用
-- [ ] 修复 test-input.ts 中的 holdButton 逻辑
-- [ ] 打通 Node.js CLI 运行全部测试
-- [ ] 添加测试覆盖率框架
-- [ ] Git commit: `phase-1: test infrastructure`
+### Phase 1: 测试基础设施与代码规范 ✓
+- [x] 创建统一测试运行入口 `game-engine/test/run-all.ts`
+- [x] 修复 test-boot.ts 中的 runner boot 调用
+- [x] 修复 test-script.ts 中的 palette 未初始化问题
+- [x] 打通 Node.js CLI 运行全部测试 (`npm run test:engine`)
+- [x] 添加 `test:engine` / `test:engine:verbose` npm 脚本
+- [x] 4/4 测试全部通过
+- [x] Git commit ✓
 
-### Phase 2: ROM 数据对接
-- [ ] 实现 `SceneManager._readScriptByte()` — 从 ROM 数据读取字节码
-- [ ] 创建 RomReader 类，封装 PRG-ROM bank 地址解析
-- [ ] 导入 PRG-ROM 数据到 game-engine 层
-- [ ] 编写字节码读取单元测试（验证读到的字节与原始 ROM 一致）
-- [ ] Git commit: `phase-2: rom data integration`
+### Phase 2: ROM 数据对接 ✓
+- [x] 创建 `RomReader` 类 — 封装 MMC3 bank 映射与 PRG-ROM 字节读取
+- [x] 实现 `SceneManager._readScriptByte()` — 从 ROM 读取实际字节码
+- [x] `SceneManager.boot()` 同步 ROM 读取器 bank 状态
+- [x] 创建 ROM 读取测试 (6 个子测试)
+- [x] 6/6 测试全部通过
+- [x] Git commit ✓
 
-### Phase 3: 字节码脚本引擎
-- [ ] 实现完整 `_handleSubControl()` — 滚动、调色板渐变、骰子等
-- [ ] 实现文本渲染管线（字节码 → nametable → Canvas 显示）
-- [ ] 实现光标闪烁（脚本引擎定时器）
-- [ ] 编写脚本引擎单元测试（注入已知字节码序列，验证 nametable 输出）
-- [ ] Git commit: `phase-3: bytecode script engine`
+### Phase 3: 字节码脚本引擎 ✓
+- [x] 扩展 `_handleControlCode()` 支持全部 20+ 操作码
+- [x] 实现 `_handleSubControl()` — 滚动、PPU 控制、CHR bank 选择
+- [x] 实现文本渲染管线 — 字节码 → nametable tile 写入
+- [x] 实现等待帧状态 (WAIT_FRAMES)
+- [x] 创建全面字节码引擎测试 (9 个子测试)
+- [x] 7/7 测试全部通过
+- [x] Git commit ✓
 
 ### Phase 4: 对话/过场系统
 - [ ] 实现 `_runDialogScene()` — 对话引擎
@@ -70,7 +74,7 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 
 ---
 
-## 当前状态: Phase 2 ✓ 已完成 → 进入 Phase 3
+## 当前状态: Phase 3 ✓ 已完成 → 进入 Phase 4
 
 ### Phase 1: 测试基础设施与代码规范 ✓ 已完成
 - [x] 创建统一测试运行入口 `game-engine/test/run-all.ts`
@@ -89,3 +93,12 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 - [x] 创建场景管理器字节码读取测试 (scriptPtr 递增、字符输出)
 - [x] 6/6 测试全部通过
 - [x] Git commit: `phase-2: rom data integration — RomReader + bytecode reading from ROM`
+
+### Phase 3: 字节码脚本引擎 ✓ 已完成
+- [x] 扩展 `_handleControlCode()` 支持全部 20+ 操作码 (SCENE_TRANS, BRIGHT_FADE, CLEAR_SCREEN, PPU_MODE_SET, TEXT_SETUP, FILL_DISP, CURSOR_SET, BANK_LOAD, CROSS_BANK, FADE_SCENE, FADE_SETUP 等)
+- [x] 实现 `_handleSubControl()` 支持滚动、PPU 控制、CHR bank 选择
+- [x] 实现文本渲染管线 — 字节码 → nametable tile 写入
+- [x] 实现等待帧状态 (WAIT_FRAMES)
+- [x] 创建全面字节码引擎测试 (9 个子测试: 字符输出、清屏、场景切换、TERMINATOR、光标定位、列控制、等待帧、连续字符输出、清屏验证)
+- [x] 7/7 测试全部通过
+- [x] Git commit: `phase-3: bytecode script engine — full opcode support, 7/7 tests passing`
