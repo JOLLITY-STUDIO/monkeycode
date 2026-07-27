@@ -43,6 +43,8 @@ export class Engine {
   constructor(cfg: EngineConfig = {}) {
     this.canvas = cfg.canvas ?? null;
     this.onFrame = cfg.onFrame ?? null;
+    // 注入 bytecode → scene manager (进度表自动加载需要)
+    this.scenes.bytecode = this.bytecode;
     if (cfg.autoStart !== false) this.reset();
   }
 
@@ -79,6 +81,7 @@ export class Engine {
 
     // 5. 场景引擎入口 — $26=0, $27=0 → TECMO_LOGO
     this.scenes = new SceneManager();
+    this.scenes.bytecode = this.bytecode; // 注入字节码解释器
     this.scenes.registerAll([new OpeningScene(), new TitleScene()]);
     this.scenes.switchImmediate(SceneId.TECMO_LOGO);
     this.running = true;

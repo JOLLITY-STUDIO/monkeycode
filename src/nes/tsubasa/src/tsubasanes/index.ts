@@ -26,6 +26,7 @@ export { SceneManager, getSceneManager, resetSceneManager } from './scene/manage
 export { OpeningScene } from './scene/opening';
 export { TitleScene } from './scene/title';
 export { BytecodeInterpreter, OPCODE, createBytecodeState, type BytecodeState, type ScriptEntry } from './scene/bytecode';
+export { PROGRESS_TABLE_1, PROGRESS_TABLE_2, PROGRESS_TABLE_3, PROGRESS_TABLE_4, SCENE_TRANSITION_TABLE, queryProgress, getSceneTransition, loadSceneScripts, type ProgressResult } from './scene/progress';
 
 // ── 配置 ──
 export * as Config from './config';
