@@ -50,14 +50,16 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 - [x] 8/8 测试全部通过
 - [x] Git commit ✓
 
-### Phase 5: 比赛引擎
-- [ ] 实现 `_runMatchScene()` — 比赛主循环
-- [ ] 实现球员动画与移动逻辑
-- [ ] 实现足球物理（传球、射门）
-- [ ] 实现门将与球门碰撞检测
-- [ ] 实现比赛 UI 渲染（比分、时间、球员状态）
-- [ ] 编写比赛引擎模拟测试
-- [ ] Git commit: `phase-5: match engine`
+### Phase 5: 比赛引擎 ✓
+- [x] 实现 `MatchEngine` 类 — 完整比赛主循环
+- [x] 实现球员阵列与 4-4-2 阵型
+- [x] 实现足球物理（传球 B、射门 A、空中飞行）
+- [x] 实现球门检测与得分 (goal at X=0 and X=88, Y=18-42)
+- [x] 实现比赛计时 (上下半场、暂停)
+- [x] 实现 COM AI 基本行为 (追球、防守)
+- [x] 编写比赛引擎测试 (8 个子测试: 初始化、阵型、移动、射门、进球、全场、COM AI、计分)
+- [x] 9/9 测试全部通过
+- [x] Git commit ✓
 
 ### Phase 6: 全场景串联
 - [ ] 实现全部 19 个场景的注册与切换
@@ -75,7 +77,7 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 
 ---
 
-## 当前状态: Phase 4 ✓ 已完成 → 进入 Phase 5
+## 当前状态: Phase 5 ✓ 已完成 → 进入 Phase 6
 
 ### Phase 1: 测试基础设施与代码规范 ✓ 已完成
 - [x] 创建统一测试运行入口 `game-engine/test/run-all.ts`
@@ -111,3 +113,14 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 - [x] 创建对话框测试 (6 个子测试)
 - [x] 8/8 测试全部通过
 - [x] Git commit: `phase-4: dialog system — state machine, 8/8 tests passing`
+
+### Phase 5: 比赛引擎 ✓ 已完成
+- [x] 实现 `MatchEngine` 类 — 完整比赛主循环
+- [x] 实现球员阵列与 4-4-2 阵型、边界限制
+- [x] 实现足球物理（传球 B、射门 A、空中飞行、球员拦截）
+- [x] 实现球门检测与得分 (goal posts Y=18-42)
+- [x] 实现比赛计时 (上下半场、中场暂停)
+- [x] 实现 COM AI 基本行为 (追球、位置防守)
+- [x] 创建比赛引擎测试 (8 个子测试)
+- [x] 9/9 测试全部通过
+- [x] Git commit: `phase-5: match engine — full football gameplay, 9/9 tests passing`

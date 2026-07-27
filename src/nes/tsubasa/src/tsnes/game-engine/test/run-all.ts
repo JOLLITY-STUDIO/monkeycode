@@ -16,6 +16,7 @@ import { testScriptEngine } from './test-script';
 import { testRomReader, testScriptByteRead } from './test-rom-reader';
 import { testBytecodeEngine } from './test-bytecode-engine';
 import { testDialogSystem } from './test-dialog';
+import { testMatchEngine } from './test-match';
 
 interface TestSuite {
   name: string;
@@ -75,6 +76,7 @@ const suites: TestSuite[] = [
   { name: 'Script Byte Read', fn: () => testScriptByteRead() },
   { name: 'Bytecode Engine', fn: () => testBytecodeEngine() },
   { name: 'Dialog System', fn: () => testDialogSystem() },
+  { name: 'Match Engine', fn: () => testMatchEngine() },
   { name: 'Script Engine', fn: wrapScriptTest },
 ];
 

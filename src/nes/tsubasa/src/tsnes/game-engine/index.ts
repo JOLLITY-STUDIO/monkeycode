@@ -16,6 +16,8 @@ export { GameState } from './core/game-state';
 export { GameLoop } from './core/game-loop';
 export { InputManager } from './core/input-manager';
 export { SceneManager } from './core/scene-manager';
+export { MatchEngine, MatchPhase } from './core/match-engine';
+export type { MatchResult } from './core/match-engine';
 
 // ─── Types ─────────────────────────────────────────────────
 export {
@@ -66,3 +68,4 @@ export { testScriptEngine } from './test/test-script';
 export { testRomReader, testScriptByteRead } from './test/test-rom-reader';
 export { testBytecodeEngine } from './test/test-bytecode-engine';
 export { testDialogSystem } from './test/test-dialog';
+export { testMatchEngine } from './test/test-match';

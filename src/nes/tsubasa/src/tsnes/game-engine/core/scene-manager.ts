@@ -16,6 +16,7 @@
 import { GameState } from './game-state';
 import { BytecodeOp } from './types';
 import { RomReader } from '../data/rom-reader';
+import { MatchEngine } from '../core/match-engine';
 
 /**
  * Each scene has an update function that returns the new dispatch index
@@ -28,10 +29,12 @@ export class SceneManager {
   private _sceneHandlers: Map<number, SceneUpdateFn> = new Map();
   private _stopRequested: boolean = false;
   private _rom: RomReader;
+  private _matchEngine: MatchEngine;
 
   constructor(state: GameState, rom?: RomReader) {
     this.state = state;
     this._rom = rom ?? new RomReader();
+    this._matchEngine = new MatchEngine();
   }
 
   /** Register a handler for a dispatch index */
@@ -470,10 +473,42 @@ export class SceneManager {
 
   // ─── Match Scene ──────────────────────────────────────────
 
+  private _matchInitialized: boolean = false;
+
   private _runMatchScene(): void {
-    // Ported from bank 01 (match engine)
-    // Handles: player movement, ball physics, goal checks, score updates
-    // In the full implementation, this calls into MatchEngine
+    const s = this.state;
+
+    // Initialize match on first entry
+    if (!this._matchInitialized) {
+      this._matchEngine.shortMatch = true; // Short match for dev/testing
+      this._matchEngine.initMatch(11, 11);
+      this._matchInitialized = true;
+    }
+
+    // Run match engine update
+    this._matchEngine.update(s);
+
+    // Check match state
+    if (this._matchEngine.phase === 'done') {
+      const result = this._matchEngine.getResult();
+      s.dispatchIndex = 0;
+      s.progress.sceneId++;
+      this._matchInitialized = false;
+
+      if (this.config.debug) {
+        console.log(`[MatchEngine] Match over! ${result.playerScore}-${result.comScore}`);
+      }
+    }
+  }
+
+  /** Get match engine for direct access (testing) */
+  getMatchEngine(): MatchEngine {
+    return this._matchEngine;
+  }
+
+  /** Reset match state */
+  resetMatch(): void {
+    this._matchInitialized = false;
   }
 
   // ─── Boot Sequence ────────────────────────────────────────
@@ -546,6 +581,9 @@ export class SceneManager {
     this._dialogChoices = [];
     this._dialogChoiceIndex = 0;
     this._waitFrames = 0;
+
+    // Reset match state
+    this._matchInitialized = false;
 
     if (this.config.debug) {
       console.log('[SceneManager] Boot complete. Entering main loop.');
