@@ -551,6 +551,118 @@ $90F6:
 
 ---
 
+---
+
+## ═══════════════════════════════════════════════════
+## 开发进度日志 (Work Log)
+## ═══════════════════════════════════════════════════
+
+### 2024-07-27: 帧渲染管线 + 启动链路完整版
+
+#### 已完成模块
+
+| 模块 | 文件 | ROM 对应 | 状态 |
+|------|------|---------|------|
+| 启动入口 | `boot.ts` | RESET `$FFF0` → `$C64E` → `$C400` | ✅ |
+| 引擎核心 | `engine.ts` | 主循环调度 | ✅ |
+| PPU 渲染 | `ppu/ppu.ts` | Bank 2 NMI 渲染 | ✅ |
+| Canvas 输出 | `ppu/renderer.ts` | 屏幕输出 | ✅ |
+| 帧渲染管线 | `frame/pipeline.ts` | Bank 2 `$8000-$8137` | ✅ 本次新建 |
+| 场景管理器 | `scene/manager.ts` | Bank 0 `$800D` | ✅ |
+| TECMO LOGO | `scene/opening.ts` | Bank 0 场景 0 | ✅ |
+| 标题画面 | `scene/title.ts` | Bank 0 场景 1 | ✅ |
+| 字节码解释器 | `scene/bytecode.ts` | Bank 0 `$8464` | ✅ |
+| 进度控制表 | `scene/progress.ts` | Bank 0 `$81D4-$8463` | ✅ |
+| 场景类型定义 | `scene/types.ts` | — | ✅ |
+| MMC3 Bank 切换 | `core/mmc3.ts` | `$9EED` | ✅ |
+| 输入抽象 | `core/input.ts` | — | ✅ |
+| 内存管理 | `core/memory.ts` | ZP + WRAM + SRAM | ✅ |
+| 常量/RAM 地址 | `constants.ts` | — | ✅ |
+| CHR/PRG ROM 数据 | `rom/` | — | ✅ |
+
+#### 启动链路完整追踪 (boot → 首帧渲染)
+
+```
+boot()
+  ├─ new Engine()                  → PPU + SceneManager + BytecodeInterpreter + FramePipeline
+  ├─ ppuCtrl(0x08), ppuMask(0x1E), ppuScroll(0,0)  → PPU 初始寄存器
+  └─ engine.reset()
+      ├─ ppu.reset()               → 清零 VRAM/OAM/palette/frameBuffer
+      ├─ clearMem()                → 清零全部 WRAM ($0000-$07FF) + SRAM ($6000-$7FFF)
+      ├─ initMmc3()                → R6=bank0, R7=bank1 (Bank 0/1 映射到 $8000-$BFFF)
+      ├─ frame.reset()             → 清零 NMI 变量 ($1B/$1C/$1E/$3A/$E1-E3/$46-$47)
+      ├─ scenes.registerAll()      → 注册 OpeningScene(0) + TitleScene(1)
+      └─ scenes.switchImmediate(TECMO_LOGO)
+          ├─ OpeningScene.enter()  → frameCount=0, phase=FADE_IN
+          └─ _onSceneEnter(0)
+              └─ loadSceneScripts(0)
+                  ├─ bytecode.load(script2)  → 进度表1
+                  ├─ bytecode.load(script3)  → 进度表3 (覆盖)
+                  └─ autoTransition=null
+
+// ═══ 每帧循环 ═══
+
+engine.tick(input)
+  ├─ 1. frame.beginFrame(input)
+  │     ├─ _processOam()        → WRAM[$0200-$02FF] → PPU OAM (OAM DMA)
+  │     ├─ _updateScroll()      → WRAM[$7A/$7B/$44/$45] → PPUCTRL + PPUSCROLL
+  │     └─ _readJoypad(input)   → $1C(held) / $1E(edge) 边沿检测
+  ├─ 2. scenes.update(input)    → OpeningScene._advancePhase() 动画推进
+  ├─ 3. _pollTransition()       → 检查 nextSceneId
+  ├─ 4. bytecode.runFrame()
+  │     └─ step() 循环直到 wait=true
+  │         ├─ $00-$D7 → _writeTile() → PPU VRAM 写
+  │         ├─ $E8-$FF → 系统指令 (palette/scroll/wait/jump)
+  │         └─ $F5     → WAIT_FRAMES → 暂停执行
+  ├─ 5. ppu.render()            → VRAM + CHR → frameBuffer (256×240 RGBA)
+  ├─ 6. frame.endFrame()
+  │     ├─ _advanceRng()        → $E1+=$83, $E2+=$0D, $E3+=$11 (24-bit LCG)
+  │     ├─ $46=0, $47=0
+  │     ├─ _setNmiDone()        → $1B |= 0x80
+  │     └─ $3A++                → 帧计数器
+  └─ 7. renderToCanvas() / onFrame()
+```
+
+#### 讨论: 为什么比赛引擎不急着做
+
+目前游戏启动还有以下问题需要先解决：
+
+1. **TECMO LOGO 和标题画面的 bytecode 脚本数据尚未注册**  
+   `BytecodeInterpreter.registerScript(num, bank, data)` 被调用了吗？`OpeningScene.enter()` 里面有没有注册对应的字节码数据？如果没有注册，`runFrame()` 里的 `step()` 会读不到任何指令，导致整个场景逻辑空转，PPU 渲染出来的只是清零后的空 VRAM（一片黑）。
+
+2. **CHR bank 数据是否正确加载**  
+   `Ppu.render()` 依赖 `chrBanks[0]`（BG pattern）和 `chrBanks[1]`（sprite pattern）有数据。这些 CHR 数据有没有在 boot 或场景初始化时加载？
+
+3. **场景过渡是否正常**  
+   `OpeningScene` 的 fade in → display → fade out → 自动跳转到 `TitleScene` 的链是否跑通？TitleScreen 的 bytecode 脚本有没有注册？
+
+4. **输入检测是否工作**  
+   `frame.beginFrame()` 的 `_readJoypad()` 写入 `$1E`（joy_edge），bytecode 的 `_branchWaitInput()` 读取 `wram[$1E]`。这个链路需要实测验证。
+
+**结论**: 比赛引擎 (Bank 1) 在 ROM 中通过场景分派 `$27=3` 触发，但需要先把场景 0/1 的 render+transition 链路跑通，确保画面可见、输入可用，再进入比赛引擎。
+
+#### 下一步入口
+
+优先级从高到低：
+
+| 优先级 | 任务 | 说明 |
+|--------|------|------|
+| **P0** | 注册 OpeningScene 的 bytecode 脚本数据 | 找到 TECMO LOGO 对应的 ROM bytecode 数据，调用 `registerScript()` |
+| **P0** | 确认 CHR bank 加载 | 检查 PPU 的 `chrBanks` 在 render 前是否已加载 pattern 数据 |
+| **P1** | 验证 OpeningScene 完整动画 | fade in → display(350帧) → fade out → TitleScene transition |
+| **P1** | 注册 TitleScene 的 bytecode 脚本数据 | 标题画面的字节码 |
+| **P1** | 验证 TitleScene 输入交互 | Start 键检测 → 下一场景 |
+| **P2** | 后续场景链 (场景 2, 3, ...) | 标题 → 主菜单/故事模式的选择 |
+| **P3** | Bank 1 比赛引擎 | 场景分派 `$27=3` 对应的比赛引擎 (`$8003`/`$80EC`/`$822B`/`$90F6`) |
+
+#### 当前未解决的关键问题
+
+1. **Bytecode 脚本数据来源**: ROM 中每个场景的 bytecode 数据在哪个 bank？需要从 ROM dump 解析出来，用 `bytecode.registerScript(n, bank, data)` 注册。
+2. **CHR bank 加载时机**: `Ppu.render()` 里用了 `chrBanks[0]` 和 `chrBanks[1]`，MMC3 的 CHR bank 切换 (`$8000-$FFFF` 写到 PPU) 和 `ppu.setChrBank()` 的关系是什么？
+3. **OpeningScene 跟进度表的交互**: `loadSceneScripts(0)` 加载了脚本 02 和 03，但脚本 02 被 03 覆盖了。ROM 中实际执行逻辑是先执行完 02 再自动执行 03 吗？还是 02 和 03 是并行的？需要对照 ROM trace 确认。
+
+---
+
 ## 附录: MMC3 Bank 映射总览
 
 | Bank # | CPU 窗口 | 功能 | 文件 |
