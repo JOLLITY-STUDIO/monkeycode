@@ -22,6 +22,8 @@ export interface NESOptions {
   onBatteryRamWrite?: (address: number, value: number) => void;
   emulateSound?: boolean;
   sampleRate?: number;
+  /** enable per-instruction CPU console trace (default: false) */
+  traceEnabled?: boolean;
   /** 可选：自定义 CPU 工厂 (用于注入 TsubasaCpu 等替代实现) */
   cpuFactory?: (nes: any) => CPU;
 }
@@ -64,6 +66,7 @@ class NES {
     this.cpu = (this.opts as NESOptions).cpuFactory
       ? (this.opts as NESOptions).cpuFactory!(this)
       : new CPU(this);
+    this.cpu.traceEnabled = this.opts.traceEnabled ?? false;
     this.ppu = new PPU(this);
     this.papu = new PAPU(this);
     this.gameGenie = new GameGenie();
@@ -88,6 +91,7 @@ class NES {
     this.cpu = (this.opts as NESOptions).cpuFactory
       ? (this.opts as NESOptions).cpuFactory!(this)
       : new CPU(this);
+    this.cpu.traceEnabled = this.opts.traceEnabled ?? false;
     this.ppu = new PPU(this);
     this.papu = new PAPU(this);
 

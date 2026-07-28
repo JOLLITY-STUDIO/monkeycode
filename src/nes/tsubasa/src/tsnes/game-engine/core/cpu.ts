@@ -438,6 +438,9 @@ class CPU {
   nmiDotsRemainingInStep: number;
   _dmcFetchCycles!: number;
 
+  /** enable per-instruction console trace (default off) */
+  traceEnabled: boolean = false;
+
   /** trace callback: (pc, opcode, cycles, frameCount) */
   _traceCb: ((pc: number, opcode: number, cycles: number, frame: number) => void) | null = null;
   _instrPC!: number;
@@ -574,7 +577,7 @@ class CPU {
     this._instrPC = this.REG_PC;
 
     let fetchAddr = this.REG_PC + 1;
-    if ((fetchAddr & 0xfff8) === 0x01f8) {
+    if (this.traceEnabled && (fetchAddr & 0xfff8) === 0x01f8) {
       console.log(`[tsnes] fetch from stack area: $${fetchAddr.toString(16)} (REG_PC=$${(this.REG_PC).toString(16)})`);
     }
     let opcode = this.loadFromCartridge(fetchAddr);
@@ -591,51 +594,53 @@ class CPU {
     this.REG_PC = (this.REG_PC + opinfo.size) & 0xffff;
 
     // CPU trace: detect N-PC loops (N=2..8), collapse repeats, print everything else
-    const H = this._tracePCHist;
-    const idx = this._traceHistIdx;
-    H[idx] = opaddr;
-    this._traceHistIdx = (idx + 1) & 31;
+    if (this.traceEnabled) {
+      const H = this._tracePCHist;
+      const idx = this._traceHistIdx;
+      H[idx] = opaddr;
+      this._traceHistIdx = (idx + 1) & 31;
 
-    // helper: get hist entry at offset (-1 = last, -2 = second last, etc.)
-    const h = (off: number) => H[(idx + off + 32) & 31];
+      // helper: get hist entry at offset (-1 = last, -2 = second last, etc.)
+      const h = (off: number) => H[(idx + off + 32) & 31];
 
-    let detectedLen = 0;
-    // Scan for cycles length 2..8: last L entries must equal the L entries before that
-    for (let L = 2; L <= 8; L++) {
-      let match = true;
-      for (let i = 0; i < L; i++) {
-        if (h(-1 - i) !== h(-1 - L - i)) { match = false; break; }
+      let detectedLen = 0;
+      // Scan for cycles length 2..8: last L entries must equal the L entries before that
+      for (let L = 2; L <= 8; L++) {
+        let match = true;
+        for (let i = 0; i < L; i++) {
+          if (h(-1 - i) !== h(-1 - L - i)) { match = false; break; }
+        }
+        if (!match) continue;
+        // Verify not all same PC (a real loop must have at least 2 different PCs)
+        let allSame = true;
+        for (let i = 1; i < L; i++) {
+          if (h(-1 - i) !== h(-1)) { allSame = false; break; }
+        }
+        if (!allSame) { detectedLen = L; break; }
       }
-      if (!match) continue;
-      // Verify not all same PC (a real loop must have at least 2 different PCs)
-      let allSame = true;
-      for (let i = 1; i < L; i++) {
-        if (h(-1 - i) !== h(-1)) { allSame = false; break; }
-      }
-      if (!allSame) { detectedLen = L; break; }
-    }
 
-    if (detectedLen > 0) {
-      if (detectedLen === this._traceCycleLen) {
-        // continuing existing cycle
-        this._traceCycleSkipped++;
+      if (detectedLen > 0) {
+        if (detectedLen === this._traceCycleLen) {
+          // continuing existing cycle
+          this._traceCycleSkipped++;
+        } else {
+          // new cycle (or different length) — flush old if any
+          this._flushTraceCycle();
+          this._traceCycleLen = detectedLen;
+          this._traceCycleSkipped = detectedLen; // count the detection iteration as skipped
+        }
       } else {
-        // new cycle (or different length) — flush old if any
+        // no cycle detected — flush pending, then print normally
         this._flushTraceCycle();
-        this._traceCycleLen = detectedLen;
-        this._traceCycleSkipped = detectedLen; // count the detection iteration as skipped
+        this._traceCount++;
+        const insName = INS_NAMES[opinfo.ins] ?? '???';
+        const prg8k = (this.nes.mmap && typeof this.nes.mmap.getPrgBank === 'function')
+          ? this.nes.mmap.getPrgBank(opaddr) : -1;
+        const bankLabel = prg8k >= 0
+          ? `PRG${Math.floor(prg8k / 2)}`
+          : `$${(opaddr >> 13) * 8192}`;
+        console.log(`[TRACE ${String(this._traceCount).padStart(5)}] ${bankLabel} PC=$${opaddr.toString(16).padStart(4, '0')} ${insName} A=$${this.REG_ACC.toString(16).padStart(2, '0')} X=$${this.REG_X.toString(16).padStart(2, '0')} Y=$${this.REG_Y.toString(16).padStart(2, '0')} SP=$${(this.REG_SP & 0xFF).toString(16).padStart(2, '0')} P=$${this.getStatus().toString(16).padStart(2, '0')}`);
       }
-    } else {
-      // no cycle detected — flush pending, then print normally
-      this._flushTraceCycle();
-      this._traceCount++;
-      const insName = INS_NAMES[opinfo.ins] ?? '???';
-      const prg8k = (this.nes.mmap && typeof this.nes.mmap.getPrgBank === 'function')
-        ? this.nes.mmap.getPrgBank(opaddr) : -1;
-      const bankLabel = prg8k >= 0
-        ? `PRG${Math.floor(prg8k / 2)}`
-        : `$${(opaddr >> 13) * 8192}`;
-      console.log(`[TRACE ${String(this._traceCount).padStart(5)}] ${bankLabel} PC=$${opaddr.toString(16).padStart(4, '0')} ${insName} A=$${this.REG_ACC.toString(16).padStart(2, '0')} X=$${this.REG_X.toString(16).padStart(2, '0')} Y=$${this.REG_Y.toString(16).padStart(2, '0')} SP=$${(this.REG_SP & 0xFF).toString(16).padStart(2, '0')} P=$${this.getStatus().toString(16).padStart(2, '0')}`);
     }
 
     let addr = 0;
