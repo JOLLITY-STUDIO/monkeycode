@@ -9,11 +9,10 @@
 
 ## 已知問題清單
 
-### BUG-001: bank-00 仍依賴 tsubasa-hex2asm 舊模組
-- **嚴重度**: 中
-- **檔案**: `game-engine/banks/bank-00.ts` (import 區段)
-- **描述**: bank-00.ts 側邊載入 `tsubasa-hex2asm/prg_banks/*` 模組用於 console.log 初始化訊息，但不影響實際邏輯
-- **修復方向**: 移除或替換為內聯數據加載
+### BUG-001: ~~bank-00 仍依賴 tsubasa-hex2asm 舊模組~~ ✅ 非問題
+- **嚴重度**: 低 → 已關閉
+- **檔案**: `game-engine/data/rom-data.ts`
+- **實際情況**: tsubasa-hex2asm 是 ROM 數據層（32 個 PRG bank 原始數據），由 data/rom-data.ts 統一加載，供 MMC3 bank 映射讀取。這是正確架構，非 bug。
 
 ### BUG-002: scene/ 目錄為舊版 placeholder
 - **嚴重度**: 低
@@ -21,11 +20,10 @@
 - **描述**: scene/dispatch.ts, bytecode.ts, opcode-table.ts 為 bank00 翻譯前的舊版 placeholder，現在 bank00 已完整翻譯
 - **修復方向**: 移除 scene/ 目錄或重新定向到 bank-00 實際函數
 
-### BUG-003: index.ts 中 bank-30 的 re-export 仍經由 mocks
-- **嚴重度**: 中
-- **檔案**: `game-engine/index.ts` (第 109-116 行)
-- **描述**: `bank30_initSystem`, `bank30_getCharData`, `bank30_multiply`, `bank30_divide`, `bank30_spriteDma`, `bank30_memFill`, `bank30_bankSwitch` 仍從 `./banks/mocks` re-export
-- **修復方向**: 改為直接從 `./banks/bank-30` 導入並 re-export
+### BUG-003: ~~index.ts 中 bank-30 的 re-export 仍經由 mocks~~ ✅ 已修復
+- **嚴重度**: 中 → 已關閉
+- **檔案**: `game-engine/index.ts` (第 109-116 行), `game-engine/banks/bank-30.ts`
+- **修復**: index.ts 改為直接從 `./banks/bank-30` 導入並 re-export；bank-30.ts 新增 `bank30_initSystem`, `bank30_initScene`, `bank30_getCharData`, `bank30_multiply`, `bank30_divide`, `bank30_spriteDma`, `bank30_memFill`, `bank30_bankSwitch` 公共 API 函數
 
 ### BUG-004: event-bus.ts 未對齊
 - **嚴重度**: 低

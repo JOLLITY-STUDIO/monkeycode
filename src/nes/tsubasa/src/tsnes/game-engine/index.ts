@@ -113,7 +113,7 @@ export {
   bank30_spriteDma,
   bank30_memFill,
   bank30_bankSwitch,
-} from './banks/mocks';
+} from './banks/bank-30';
 
 export {
   bank00_dispatchScene,

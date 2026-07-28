@@ -4240,3 +4240,77 @@ export function matchEventMain_$DE52(
 // ═════════════════════════════════════════════════
 // — 已翻译（见上文 playerStateMachine_$D36E）
 
+// ═════════════════════════════════════════════════
+// 对外公共 API 包装（供 index.ts 导出，替代 mock）
+// ═════════════════════════════════════════════════
+
+/**
+ * bank30_initSystem — 系统初始化（冷启动）
+ * 对应 6502: $C500 → initScene (coldBoot=true)
+ */
+export function bank30_initSystem(sys: SystemState): void {
+  initScene_$C64E(sys, true);
+}
+
+/**
+ * bank30_initScene — 场景初始化（软重置）
+ * 对应 6502: $C503 → initScene (coldBoot=false)
+ */
+export function bank30_initScene(sys: SystemState): void {
+  initScene_$C64E(sys, true);
+}
+
+/**
+ * bank30_getCharData — 获取角色数据
+ * 对应 6502: $C50C → getCharData_$CD7C
+ */
+export { getCharData_$CD7C as bank30_getCharData };
+
+/**
+ * bank30_multiply — 16-bit 乘法
+ * 对应 6502: $C51E → multiply16_$CD3C
+ * 返回 16-bit 结果
+ */
+export function bank30_multiply(sys: SystemState): number {
+  multiply16_$CD3C(sys);
+  return (sys.mem[0x6C] << 8) | sys.mem[0x6B];
+}
+
+/**
+ * bank30_divide — 16-bit 除法
+ * 对应 6502: $C521 → divide16_$CD0D
+ * 返回 { quot, rem }
+ */
+export function bank30_divide(sys: SystemState): { quot: number; rem: number } {
+  divide16_$CD0D(sys);
+  return {
+    quot: (sys.mem[0x70] << 8) | sys.mem[0x6F],
+    rem:  (sys.mem[0x72] << 8) | sys.mem[0x71],
+  };
+}
+
+/**
+ * bank30_spriteDma — 精灵 DMA
+ * 对应 6502: $C50F → $CAE7（在 NMI handler 内）
+ * 暂时保留 stub，待后续完整接线
+ */
+export function bank30_spriteDma(sys: SystemState, _aReg: number, _xReg: number, _yReg: number): void {
+  // TODO: 完整接线到 $CAE7 sprite DMA 逻辑
+}
+
+/**
+ * bank30_memFill — 内存填充
+ * 对应 6502: $C509 → 循环 STA
+ */
+export function bank30_memFill(sys: SystemState, val: number, start: number, len: number): void {
+  for (let i = 0; i < len; i++) {
+    sys.mem[(start + i) & 0xFFFF] = val;
+  }
+}
+
+/**
+ * bank30_bankSwitch — Bank 切换（公共 API）
+ * 对应 6502: $C53F → bankSwitch_apply_$CE2D
+ */
+export { bankSwitch as bank30_bankSwitch };
+
