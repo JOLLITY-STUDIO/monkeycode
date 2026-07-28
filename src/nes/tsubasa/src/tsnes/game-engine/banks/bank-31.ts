@@ -36,7 +36,10 @@ import {
   registerBankRom,
 } from './system-state';
 
-import { emitBus } from './event-bus';
+// EventBus — 本地最小实现（event-bus.ts 在 WeChat 编译环境中未生成 .js，暂内联）
+function _emitBus(event: string, _sys: SystemState, _payload: unknown): void {
+  // 帧通知 — 待 event-bus.ts 可用后启用
+}
 
 import {
   // bank30 services — 直接调用
@@ -179,7 +182,7 @@ export function tick_BANK31_mainLoop(sys: SystemState): void {
   _mainLoopEventLoop(sys);
 
   // ── EventBus 通知 ──
-  emitBus('frame:tick', sys, { frameCount: sys.frameCount });
+  _emitBus('frame:tick', sys, { frameCount: sys.frameCount });
 
   // 递增帧计数
   sys.frameCount++;
