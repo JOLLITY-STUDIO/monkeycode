@@ -60,9 +60,9 @@
 | 優先級 | BUG | 狀態 |
 |--------|-----|------|
 | P0 | BUG-008 | 場景引擎 E2E 驗證 |
-| P0 | BUG-009 | H5 server: esbuild transform is not a function |
-| P0 | BUG-010 | H5 server: `.js` 请求未做 TS→JS 映射 |
-| P0 | BUG-011 | H5 server: `/` 不跳转导致相对路径错误 |
+| ~~P0~~ | ~~BUG-009~~ | ~~✅ 已修复: esbuild transform API 改正~~ |
+| ~~P0~~ | ~~BUG-010~~ | ~~✅ 已修复: .js→.ts 回退逻辑~~ |
+| ~~P0~~ | ~~BUG-011~~ | ~~✅ 已修复: 302 redirect 到 /h5-compare/~~ |
 | P1 | BUG-007 | 缺失數據 bank 模組 |
 | P2 | BUG-005 | 音訊未對接硬件層 |
 | P2 | BUG-004 | event-bus 重複實現 |
