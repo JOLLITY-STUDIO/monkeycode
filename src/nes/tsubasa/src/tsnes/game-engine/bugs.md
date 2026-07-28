@@ -24,11 +24,10 @@
 - **檔案**: `game-engine/index.ts` (第 109-116 行), `game-engine/banks/bank-30.ts`
 - **修復**: index.ts 改為直接從 `./banks/bank-30` 導入並 re-export；bank-30.ts 新增 `bank30_initSystem`, `bank30_initScene`, `bank30_getCharData`, `bank30_multiply`, `bank30_divide`, `bank30_spriteDma`, `bank30_memFill`, `bank30_bankSwitch` 公共 API 函數
 
-### BUG-004: event-bus.ts 未對齊
-- **嚴重度**: 低
-- **檔案**: `game-engine/banks/event-bus.ts`, `bank-31.ts`
-- **描述**: bank-31.ts 內有內聯的 `_emitBus` 本地實現，而非使用 event-bus.ts 的正式實現
-- **修復方向**: 統一到 event-bus.ts 正式模組
+### BUG-004: ~~event-bus.ts 未對齊~~ ✅ 已修復
+- **嚴重度**: 低 → 已關閉
+- **檔案**: `game-engine/banks/bank-31.ts`
+- **修復**: bank-31.ts 移除內聯 `_emitBus` stub，改用 `emitBus` import from event-bus.ts
 
 ### BUG-005: bank-12 音訊引擎 APU 寫入未經過硬件層
 - **嚴重度**: 中
