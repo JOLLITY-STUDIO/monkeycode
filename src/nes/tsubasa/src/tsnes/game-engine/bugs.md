@@ -60,6 +60,9 @@
 | 優先級 | BUG | 狀態 |
 |--------|-----|------|
 | P0 | BUG-008 | 場景引擎 E2E 驗證 |
+| P0 | BUG-009 | H5 server: esbuild transform is not a function |
+| P0 | BUG-010 | H5 server: `.js` 请求未做 TS→JS 映射 |
+| P0 | BUG-011 | H5 server: `/` 不跳转导致相对路径错误 |
 | P1 | BUG-007 | 缺失數據 bank 模組 |
 | P2 | BUG-005 | 音訊未對接硬件層 |
 | P2 | BUG-004 | event-bus 重複實現 |
@@ -67,3 +70,26 @@
 | ~~P3~~ | ~~BUG-001~~ | ~~✅ 非問題~~ |
 | ~~P2~~ | ~~BUG-002~~ | ~~✅ 已清理~~ |
 | ~~P1~~ | ~~BUG-003~~ | ~~✅ 已修復~~ |
+
+---
+
+## H5 双引擎对比 — 新增問題
+
+### BUG-009: esbuild transform API 调用失败
+- **嚴重度**: P0 (阻断)
+- **檔案**: `h5-compare/server.mjs` (第 28 行)
+- **描述**: `(await import('esbuild')).transform` 返回的不是函数，"transform is not a function"
+- **原因**: esbuild ESM 动态导入在某些版本中 `transform` 可能作为 `.default` 下的方法或需要特定导入方式
+- **修復**: 直接 `const m = await import('esbuild'); return m.transform;`
+
+### BUG-010: `.js` 请求未触发 TS→JS 转换
+- **嚴重度**: P0 (阻断)
+- **檔案**: `h5-compare/server.mjs` (第 49 行)
+- **描述**: `index.html` 引用 `./main.js`，server 只拦截 `.ts` 扩展名，导致 404
+- **修復**: 增加 `.js` 请求但磁盘不存在时回退到对应 `.ts` 文件的逻辑
+
+### BUG-011: `/` 路径不 302 跳转导致相对路径解析错误
+- **嚴重度**: P0 (阻断)
+- **檔案**: `h5-compare/server.mjs` (第 37 行)
+- **描述**: 访问 `/` 时 `urlPath` 改为 `/h5-compare/index.html` 但浏览器地址栏仍是 `/`，导致 `./main.js` 被解析为 `/main.js` 而非 `/h5-compare/main.js`
+- **修復**: 使用 302 redirect 到 `/h5-compare/`

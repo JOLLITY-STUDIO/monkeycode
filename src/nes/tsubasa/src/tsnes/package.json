@@ -32,7 +32,8 @@
     "test:engine": "npx tsx game-engine/test/run-all.ts",
     "test:engine:verbose": "npx tsx game-engine/test/run-all.ts --verbose",
     "prepublishOnly": "npm run build",
-    "format": "prettier --write '**/*.{js,jsx,css}'"
+    "format": "prettier --write '**/*.{js,jsx,css}'",
+    "dev:h5": "node h5-compare/server.mjs"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
@@ -43,6 +44,7 @@
     "prettier": "^3.6.2",
     "terser-webpack-plugin": "^5.3.10",
     "typescript": "^6.0.2",
+    "vite": "^8.1.5",
     "webpack": "^5.100.2",
     "webpack-cli": "^7.0.2"
   },
