@@ -1557,6 +1557,8 @@ export function sceneHelper_$DB62(
 // 功能: 初始化一个定时器槽位，然后等待 NMI 完成。
 //       被 initScene 的软重置路径调用。
 
+console.log('[bank30] ✅ 已加载 — initScene|joypad|timer|multiply|divide|ppuInit|nmiHandler|bankSwitch');
+
 /**
  * $CC02: 帧定时器初始化 + NMI 等待。
  *

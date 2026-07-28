@@ -802,6 +802,8 @@ export function bank00_execBytecode(sys: SystemState, param?: number): number {
 import { registerBankRom } from './system-state';
 import { PRG_ROM_BANKS } from '../data/rom-data';
 
+console.log('[bank00] ✅ 已加载 — dispatchScene|titleBoot|waitStart|menuCursor|timers');
+
 /** 注册 bank 00 到 MMC3 映射表 */
 export function bank00_register(): void {
   registerBankRom(0, PRG_ROM_BANKS[0]);

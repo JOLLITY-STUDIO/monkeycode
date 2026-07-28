@@ -1305,4 +1305,4 @@ const BANK_31_ROM: Uint8Array =
 
 registerBankRom(31, BANK_31_ROM);
 
-// [bank31] ✅ 完整翻译 — RESET|MAIN_LOOP|PLAYER|POS|BANK|SPRITE|DMA|JUMP
+console.log('[bank31] ✅ 已加载 — RESET|MAIN_LOOP|PLAYER|POS|BANK|SPRITE|DMA|JUMP');
