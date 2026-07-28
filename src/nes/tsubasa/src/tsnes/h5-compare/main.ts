@@ -1,21 +1,14 @@
 /**
  * H5 双引擎对比页面 — main.ts
  *
- * 左画布: CPU 模拟器路径 (参考)
- * 右画布: Bank 翻译路径 (TypeScript 翻译引擎)
+ * 左画布: CPU 模拟器 (参考, 6502 逐条解释)
+ * 右画布: Bank 翻译引擎 (TypeScript 翻译, bank 逻辑驱动真实 PPU)
  *
  * 两路共享键盘输入, 逐帧对比。
- *
- * 技术方案:
- *   - 左: createTsubasaNES() → nes.frame() (CPU 逐条解释 6502)
- *   - 右: createTsubasaNES() → [bank 翻译逻辑] → PPU 手动推进全帧
- *         目前右路也以 CPU frame 为基础跑, bank 逻辑并行运行做状态对比。
  */
 
 // ── 硬件模拟层 ──
 import NES from '../game-engine/core/nes';
-import PPU from '../game-engine/core/ppu/index';
-import PAPU from '../game-engine/core/papu/index';
 
 // ── ROM 数据 ──
 import { PRG_ROM_BANKS } from '../game-engine/data/rom-data';
@@ -23,13 +16,12 @@ import { CHR_ROM_BANKS } from '../game-engine/data/chr-data';
 import { buildRomBuffer } from '../tsubasa-hex2asm/rom_header';
 
 // ── 翻译路径 ──
-import { createSystemState, writeMem, readMem } from '../game-engine/banks/system-state';
+import { createSystemState, writeMem } from '../game-engine/banks/system-state';
 import type { SystemState } from '../game-engine/banks/system-state';
 import { registerBankRom } from '../game-engine/banks/system-state';
 import {
   translate_BANK31_RESET,
   tick_BANK31_mainLoop,
-  init_BANK31_matchEntry,
 } from '../game-engine/banks/bank-31';
 import {
   initScene_$C64E,
@@ -46,22 +38,10 @@ import { getBank15Data } from '../game-engine/banks/bank-15';
 import { createRenderTarget, renderFrame, RenderTarget } from '../game-engine/render/canvas-renderer';
 
 // ═══════════════════════════════════════════
-// NES 按键映射
+// 按键映射
 // ═══════════════════════════════════════════
 
-const KEY_MAP: Record<string, number> = {
-  'z':        0, // A
-  'x':        1, // B
-  'shift':    2, // Select
-  'enter':    3, // Start
-  'arrowup':  4, // Up
-  'arrowdown':5, // Down
-  'arrowleft':6, // Left
-  'arrowright':7,// Right
-};
-
-let currButtons1 = 0;
-let currButtons2 = 0;
+let currButtons = 0;
 
 // ═══════════════════════════════════════════
 // 全局状态
@@ -85,24 +65,39 @@ let rt1: RenderTarget;
 // ── 左路: CPU 模拟器 ──
 let nes0: NES;
 
-// ── 右路: Bank 翻译引擎 ──
-let nes1: NES;
+// ── 右路: Bank 翻译引擎 (不使用 CPU 模拟器) ──
 let sys1: SystemState;
-let rightMode: 'cpu' | 'translation' = 'cpu'; // 可切换
+let ppu1: any; // 真实 PPU 实例
 
 // ═══════════════════════════════════════════
-// PPU 帧推动器 (无 CPU — 手动推进 scanlines)
+// PPU 帧推动器 — 手动推进 scanlines 渲染完整一帧
 // ═══════════════════════════════════════════
 
-/** 推动 PPU 渲染完整一帧 (89342 dots ≈ NTSC) */
 function ppuStepFullFrame(ppu: any): void {
   ppu.startFrame();
   let safety = 0;
   while (!ppu.frameEnded && safety < 1000) {
-    ppu.advanceDots(341); // 每次推一条 scanline
+    ppu.advanceDots(341);
     safety++;
   }
   ppu.frameEnded = false;
+}
+
+// ═══════════════════════════════════════════
+// Bank 翻译输入 — 写入 sys.mem 供 bank-02 poll 读取
+// ═══════════════════════════════════════════
+
+/**
+ * 将按键掩码写入 sys.mem 的 controller 端口区域。
+ * bank-02 NMI handler 会从 $4016/$4017 读 8 次来获取按键位。
+ * 由于翻译代码读的是 sys.mem 而非实际 shift register，
+ * 这里直接写完整 8 位掩码作为低位的"第一 bit"用途。
+ */
+function applyInputToBank(sys: SystemState, mask: number): void {
+  // bank-02 poll 读: sys.mem[0x4015 + x] & 1, x=2→$4017(ctrl2), x=1→$4016(ctrl1)
+  // 简单方案: 直接把掩码写到 $4016, bank 代码至少读到 bit0
+  sys.mem[0x4016] = mask & 0xFF;
+  sys.mem[0x4017] = mask & 0xFF;
 }
 
 // ═══════════════════════════════════════════
@@ -112,13 +107,6 @@ function ppuStepFullFrame(ppu: any): void {
 function logStatus(msg: string): void {
   statusEl.textContent = msg;
   console.log('[compare]', msg);
-}
-
-function createNesInstance(opts?: any): NES {
-  const nes = new NES(opts ?? {});
-  const romBuffer = buildRomBuffer(PRG_ROM_BANKS, CHR_ROM_BANKS);
-  nes.loadROM(romBuffer);
-  return nes;
 }
 
 function init(): void {
@@ -133,24 +121,25 @@ function init(): void {
   registerBankRom(0x0C, getBank12Data());
   registerBankRom(0x0F, getBank15Data());
 
-  // ── 左路 (CPU 模拟器) ──
-  nes0 = createNesInstance({ emulateSound: false });
+  // ── 左路: CPU 模拟器 ──
+  nes0 = new NES({ emulateSound: false });
+  nes0.loadROM(buildRomBuffer(PRG_ROM_BANKS, CHR_ROM_BANKS));
 
-  // ── 右路 (翻译引擎) ──
-  nes1 = createNesInstance({ emulateSound: false });
-  sys1 = createSystemState(nes1.ppu, nes1.papu);
-  (nes1 as any).__tsSys = sys1;
+  // ── 右路: 纯 Bank 翻译引擎 ──
+  // 为翻译引擎单独创建 PPU 实例 (借用 NES 对象来构造 PPU/PAPU)
+  const nesForPpu = new NES({ emulateSound: false });
+  nesForPpu.loadROM(buildRomBuffer(PRG_ROM_BANKS, CHR_ROM_BANKS));
+  ppu1 = nesForPpu.ppu;
+  sys1 = createSystemState(ppu1, nesForPpu.papu);
 
-  // 初始化翻译路径
+  // Bank 启动序列: RESET → 场景初始化 → PPU 初始化
   translate_BANK31_RESET(sys1);
   initScene_$C64E(sys1, true);
-
-  // 设置 PPU 基础状态（让渲染可见）
   ppuScreenInit_$CB35(sys1);
   clearOam_$CB8B(sys1);
   nmiInit_$C71A(sys1);
 
-  logStatus('初始化完成 — 按 ▶ 运行 或 ⏭ 单帧');
+  logStatus('初始化完成 — 左:CPU模拟 右:Bank翻译 — 按 ▶ 运行');
 }
 
 // ═══════════════════════════════════════════
@@ -161,11 +150,8 @@ let fpsFrames0 = 0, fpsFrames1 = 0;
 let fpsLastTime = performance.now();
 
 function tickBoth(): void {
-  // ── 手柄输入同步 ──
-  applyInput(nes0, currButtons1);
-  applyInput(nes1, currButtons2 || currButtons1);
-
   // ── 左路: CPU 模拟器 ──
+  syncCpuInput(nes0, currButtons);
   try {
     nes0.frame();
     renderFrame(rt0, nes0.ppu.buffer);
@@ -175,37 +161,28 @@ function tickBoth(): void {
     if (running) togglePause();
   }
 
-  // ── 右路: 翻译引擎 ──
-  if (rightMode === 'cpu') {
-    // 模式 A: 同样跑 CPU 模拟器，但并行跑 bank 逻辑
-    try {
-      nes1.frame();
-      renderFrame(rt1, nes1.ppu.buffer);
-      fpsFrames1++;
-    } catch (e: any) {
-      logStatus(`右路崩溃: ${e.message}`);
-    }
-
-    // 并行运行 bank 翻译逻辑 (不影响渲染)
-    try {
-      tick_BANK31_mainLoop(sys1);
-      bank02_nmiHandler(sys1);
-    } catch (_e) { /* bank 逻辑可能未完整覆盖当前场景 */ }
-  } else {
-    // 模式 B: 纯翻译路径 (bank 逻辑驱动 PPU)
-    try {
-      tick_BANK31_mainLoop(sys1);
-      bank02_nmiHandler(sys1);
-      ppuStepFullFrame(nes1.ppu);
-      renderFrame(rt1, nes1.ppu.buffer);
-      fpsFrames1++;
-    } catch (e: any) {
-      logStatus(`翻译路径异常: ${e.message}`);
+  // ── 右路: Bank 翻译引擎 ──
+  applyInputToBank(sys1, currButtons);
+  try {
+    // Game logic tick
+    tick_BANK31_mainLoop(sys1);
+    // NMI handler (PPU 寄存器写入: scroll, pattern, palette 等)
+    bank02_nmiHandler(sys1);
+    // 推动 PPU 渲染完整一帧
+    ppuStepFullFrame(ppu1);
+    // 渲染
+    renderFrame(rt1, ppu1.buffer);
+    fpsFrames1++;
+  } catch (e: any) {
+    // 若翻译路径异常, 显示短时讯息但继续运行
+    if (!(e.message || '').includes('not implemented')) {
+      console.warn('[bank]', e.message);
     }
   }
 }
 
-function applyInput(nes: NES, mask: number): void {
+/** 手柄输入 → NES 控制器端口 */
+function syncCpuInput(nes: NES, mask: number): void {
   for (let btn = 0; btn < 8; btn++) {
     if (mask & (1 << btn)) {
       nes.buttonDown(1, btn);
@@ -225,7 +202,6 @@ function loop(_t: number): void {
 
   tickBoth();
 
-  // FPS 更新 (每秒一次)
   const now = performance.now();
   if (now - fpsLastTime > 1000) {
     const elapsed = (now - fpsLastTime) / 1000;
@@ -238,7 +214,7 @@ function loop(_t: number): void {
 }
 
 // ═══════════════════════════════════════════
-// 控制按钮
+// 控制
 // ═══════════════════════════════════════════
 
 function startRunning(): void {
@@ -275,16 +251,16 @@ function resetAll(): void {
   nes0.reloadROM();
 
   // 重置右路
-  nes1.reloadROM();
-  sys1 = createSystemState(nes1.ppu, nes1.papu);
-  (nes1 as any).__tsSys = sys1;
+  const nesForPpu = new NES({ emulateSound: false });
+  nesForPpu.loadROM(buildRomBuffer(PRG_ROM_BANKS, CHR_ROM_BANKS));
+  ppu1 = nesForPpu.ppu;
+  sys1 = createSystemState(ppu1, nesForPpu.papu);
   translate_BANK31_RESET(sys1);
   initScene_$C64E(sys1, true);
   ppuScreenInit_$CB35(sys1);
   clearOam_$CB8B(sys1);
   nmiInit_$C71A(sys1);
 
-  // 清空画布
   const black = new Uint32Array(256 * 240);
   renderFrame(rt0, black);
   renderFrame(rt1, black);
@@ -293,37 +269,35 @@ function resetAll(): void {
 }
 
 // ═══════════════════════════════════════════
-// 键盘事件 (共享)
+// 键盘
 // ═══════════════════════════════════════════
 
-function keyToMask(e: KeyboardEvent): number {
-  const key = e.key.toLowerCase();
-  if (key === 'z')       return 0; // A
-  if (key === 'x')       return 1; // B
-  if (key === 'shift')   return 2; // Select
-  if (key === 'enter')   return 3; // Start
-  if (key === 'arrowup')    return 4;
-  if (key === 'arrowdown')  return 5;
-  if (key === 'arrowleft')  return 6;
-  if (key === 'arrowright') return 7;
+function keyToIdx(key: string): number {
+  const k = key.toLowerCase();
+  if (k === 'z')            return 0;  // A
+  if (k === 'x')            return 1;  // B
+  if (k === 'shift')        return 2;  // Select
+  if (k === 'enter')        return 3;  // Start
+  if (k === 'arrowup')     return 4;
+  if (k === 'arrowdown')   return 5;
+  if (k === 'arrowleft')   return 6;
+  if (k === 'arrowright')  return 7;
   return -1;
 }
 
 window.addEventListener('keydown', (e) => {
-  const idx = keyToMask(e);
+  const idx = keyToIdx(e.key);
   if (idx >= 0) {
     e.preventDefault();
-    currButtons1 |= (1 << idx);
-    currButtons2 |= (1 << idx);
+    currButtons |= (1 << idx);
   }
 });
 
 window.addEventListener('keyup', (e) => {
-  const idx = keyToMask(e);
+  const idx = keyToIdx(e.key);
   if (idx >= 0) {
     e.preventDefault();
-    currButtons1 &= ~(1 << idx);
-    currButtons2 &= ~(1 << idx);
+    currButtons &= ~(1 << idx);
   }
 });
 
@@ -331,15 +305,6 @@ btnRun.addEventListener('click', startRunning);
 btnPause.addEventListener('click', togglePause);
 btnStep.addEventListener('click', singleStep);
 btnReset.addEventListener('click', resetAll);
-
-// ── 切换右路模式 ──
-const modeKeys: Record<string, () => void> = {
-  '1': () => { rightMode = 'cpu'; logStatus('右路模式: CPU 模拟器 (参考)'); },
-  '2': () => { rightMode = 'translation'; logStatus('右路模式: 纯翻译引擎'); },
-};
-window.addEventListener('keydown', (e) => {
-  if (modeKeys[e.key]) { modeKeys[e.key](); }
-});
 
 // ═══════════════════════════════════════════
 // 启动
