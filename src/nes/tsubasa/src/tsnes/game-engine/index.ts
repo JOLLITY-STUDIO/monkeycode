@@ -8,27 +8,23 @@
  * banks/   ← 翻译后的 PRG bank 代码 (逐 bank 6502 → TS 语义翻译)
  * core/    ← PPU/APU/controller 硬件模拟层 (保留 raw NES 硬件)
  * data/    ← ROM 数据层 (原 hex2asm, 后续逐步内联)
- * scene/   ← 场景引擎 (旧 placeholder, 待翻译 bank00 后淘汰)
+ * scene/   ← 已弃用 (功能已移至 bank-00.ts, 待移除)
  * render/  ← Canvas 画面输出
  * adapters/ ← 平台适配器 (微信小程序 / Web)
+ * test/    ← 整合测试 (run-all.ts)
  *
  * ═══════════════════════════════════════════
- * 启动流程 (翻译模式)
+ * Bank 翻译状态 — 全部完成 ✅
  * ═══════════════════════════════════════════
  *
- * const engine = createTsubasaNES({ onFrame: renderToCanvas });
- * tickFrame(engine); // 每帧调用, 替代旧 nes.frame()
- *
- * ═══════════════════════════════════════════
- * Bank 翻译状态
- * ═══════════════════════════════════════════
- *
- *   ✅ bank 31 — boot vectors, 主循环, 球员逻辑, 精灵渲染
- *   ✅ bank 30 — system library (jump tables, 乘除, NMI, PPU)
- *   ⏳ bank 02 — NMI renderer (文件已创建, 待完整翻译)
- *   ⏳ bank 01 — match jump + title (文件已创建, 待完整翻译)
- *   ⏳ bank 00 — scene dispatch (部分翻译)
- *   ⏳ bank 03-29 — (待创建)
+ *   ✅ bank 00 — 场景分派引擎 + 字节码解释器 + 精灵动画
+ *   ✅ bank 01 — 比赛跳跃/物理引擎 + 标题画面渲染
+ *   ✅ bank 02 — NMI 渲染器 + PPU 更新 + 手柄输入
+ *   ✅ bank 06 — 调色板/场景数据 (纯数据)
+ *   ✅ bank 12 — 音讯引擎 MML 解析器 + APU 写入
+ *   ✅ bank 15 — 音乐序列数据 (纯数据)
+ *   ✅ bank 30 — 系统库 (37 CODE 块: 乘除/NMI/PPU/状态机/输入…)
+ *   ✅ bank 31 — 启动向量 + 赛场主循环 + 球员逻辑 + 精灵渲染
  */
 
 // ── Boot ──────────────────────────────────
@@ -155,23 +151,9 @@ export {
   CHR_VROM_COUNT,
 } from './data/chr-data';
 
-// ── Scene Engine (旧, 待淘汰) ──────────────
-export {
-  SceneType,
-  dispatchScene,
-  tickScene,
-} from './scene/dispatch';
-export type { SceneContext } from './scene/dispatch';
-export {
-  BytecodeOp,
-  createBytecodeContext,
-  execBytecode,
-} from './scene/bytecode';
-export type { BytecodeContext } from './scene/bytecode';
-export {
-  OPCODE_TABLE,
-  dispatchOp,
-} from './scene/opcode-table';
+// ── Scene Engine — 已弃用, 由 bank-00.ts 替代 ──
+// 旧 exports 保留仅作参考, 请使用 bank00_dispatchScene / bank00_execBytecode
+// export { SceneType, dispatchScene, tickScene } from './scene/dispatch'; // DEPRECATED
 
 // ── Render ────────────────────────────────
 export {

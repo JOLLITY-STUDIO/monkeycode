@@ -14,11 +14,10 @@
 - **檔案**: `game-engine/data/rom-data.ts`
 - **實際情況**: tsubasa-hex2asm 是 ROM 數據層（32 個 PRG bank 原始數據），由 data/rom-data.ts 統一加載，供 MMC3 bank 映射讀取。這是正確架構，非 bug。
 
-### BUG-002: scene/ 目錄為舊版 placeholder
-- **嚴重度**: 低
-- **檔案**: `game-engine/scene/*.ts`
-- **描述**: scene/dispatch.ts, bytecode.ts, opcode-table.ts 為 bank00 翻譯前的舊版 placeholder，現在 bank00 已完整翻譯
-- **修復方向**: 移除 scene/ 目錄或重新定向到 bank-00 實際函數
+### BUG-002: ~~scene/ 目錄為舊版 placeholder~~ ✅ 已清理
+- **嚴重度**: 低 → 已關閉
+- **檔案**: `game-engine/scene/*.ts`, `game-engine/index.ts`
+- **修復**: index.ts 移除 scene/ exports (已由 bank-00.ts 替代); scene/ 文件保留僅作參考; index.ts 文件頭更新為全部 bank 完成狀態
 
 ### BUG-003: ~~index.ts 中 bank-30 的 re-export 仍經由 mocks~~ ✅ 已修復
 - **嚴重度**: 中 → 已關閉
@@ -59,13 +58,13 @@
 
 ## 修復優先級
 
-| 優先級 | BUG | 影響 |
+| 優先級 | BUG | 狀態 |
 |--------|-----|------|
-| P0 | BUG-008 | 場景引擎無法驗證根本功能 |
-| P1 | BUG-007 | 缺失數據 bank 導致 ROM 讀取失敗 |
-| P1 | BUG-003 | 對外 API 仍依賴 mock |
-| P2 | BUG-002 | 舊 placeholder 混亂 |
-| P2 | BUG-005 | 音訊無法實際輸出 |
-| P3 | BUG-001 | 僅 console.log 影響 |
-| P3 | BUG-004 | event-bus 重複實現 |
-| P3 | BUG-006 | 僅測試環境影響 |
+| P0 | BUG-008 | 場景引擎 E2E 驗證 |
+| P1 | BUG-007 | 缺失數據 bank 模組 |
+| P2 | BUG-005 | 音訊未對接硬件層 |
+| P2 | BUG-004 | event-bus 重複實現 |
+| P3 | BUG-006 | PPU mock 需對接真實實例 |
+| ~~P3~~ | ~~BUG-001~~ | ~~✅ 非問題~~ |
+| ~~P2~~ | ~~BUG-002~~ | ~~✅ 已清理~~ |
+| ~~P1~~ | ~~BUG-003~~ | ~~✅ 已修復~~ |
