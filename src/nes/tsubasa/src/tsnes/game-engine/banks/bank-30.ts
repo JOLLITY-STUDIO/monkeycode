@@ -53,13 +53,13 @@ import { SystemState, writeMem, readMem } from './system-state';
 export const JTAB_C500: Record<number, string> = {
   0xC500: 'initSystem_$C76E',
   0xC503: 'initScene_$C64E',
-  0xC506: 'fn_$C821',
+  0xC506: 'fn_$C821_irqHandler',
   0xC509: 'memClear_$CB8B',   // OAM clear + memory fill
   0xC50C: 'getCharData_$CD7C',
   0xC50F: 'spriteDma_$CAE7',
-  0xC512: 'fn_$CAF7',
-  0xC515: 'fn_$CB0F',
-  0xC518: 'fn_$CB0D',
+  0xC512: 'fn_$CAF7_coroutineSave',
+  0xC515: 'fn_$CB0F_coroutineCreate',
+  0xC518: 'fn_$CB0D_coroutineResume',
 };
 
 /** $C51B-$C53F: 13-entry jump table */
@@ -67,44 +67,51 @@ export const JTAB_C51B: Record<number, string> = {
   0xC51B: 'irqHandler_$CB02',
   0xC51E: 'multiply16_$CD3C',
   0xC521: 'divide16_$CD0D',
-  0xC524: 'fn_$CBC2',
-  0xC527: 'fn_$CE08',
-  0xC52A: 'fn_$EF7F',      // → points to bank31 DATA
-  0xC52D: 'fn_$CC46',
-  0xC530: 'fn_$CC02',
-  0xC533: 'fn_$CCD2',
-  0xC536: 'fn_$CDC9',
-  0xC539: 'fn_$CDE2',
-  0xC53C: 'fn_$F30F',      // → points to bank31 jump dispatch
+  0xC524: 'fn_$CBC2_charCodeConv',
+  0xC527: 'fn_$CE08_tileToScreenCoord',
+  0xC52A: 'fn_$EF7F_bank31Data',
+  0xC52D: 'fn_$CC46_paletteDlSetup',
+  0xC530: 'fn_$CC02_frameInitWait',
+  0xC533: 'fn_$CCD2_paletteTransfer',
+  0xC536: 'fn_$CDC9_tileCoordConvert',
+  0xC539: 'fn_$CDE2_reverseCoordQuery',
+  0xC53C: 'fn_$F30F_bank31JumpDispatch',
   0xC53F: 'bankSwitch_$CE2D',
 };
 
 /** $C542-$C57B: 20-entry jump table */
 export const JTAB_C542: Record<number, string> = {
-  0xC542: 'fn_$CE4D',  0xC545: 'fn_$CE4A',  0xC548: 'fn_$CE99',
-  0xC54B: 'fn_$CE6E',  0xC54E: 'fn_$CBB0',  0xC551: 'fn_$CD77',
-  0xC554: 'fn_$CEFE',  0xC557: 'fn_$C6BE',  0xC55A: 'fn_$CF4F',
-  0xC55D: 'fn_$CBF1',  0xC560: 'fn_$CF72',  0xC563: 'fn_$CF8F',
-  0xC566: 'fn_$F013',  0xC569: 'fn_$CB35',  0xC56C: 'fn_$D022',
-  0xC56F: 'fn_$D093',  0xC572: 'fn_$DB62',  0xC575: 'fn_$E233',
-  0xC578: 'fn_$D0D1',  0xC57B: 'fn_$C6BE',
+  0xC542: 'fn_$CE4D_signedOffsetLookup', 0xC545: 'fn_$CE4A_signedOffsetVariant',
+  0xC548: 'fn_$CE99_indirectCallTable',  0xC54B: 'fn_$CE6E_farCallDispatch',
+  0xC54E: 'fn_$CBB0_audioTrigger',      0xC551: 'fn_$CD77_gameModeSelector',
+  0xC554: 'fn_$CEFE_bank00Dispatch',    0xC557: 'fn_$C6BE_jumpTable4Alias',
+  0xC55A: 'fn_$CF4F_playerDataRead',    0xC55D: 'fn_$CBF1_teamSlotScan',
+  0xC560: 'fn_$CF72_teamListTraverse',  0xC563: 'fn_$CF8F_attrScaleDown',
+  0xC566: 'fn_$F013_bank31DmaCopy',     0xC569: 'fn_$CB35_ppuScreenInit',
+  0xC56C: 'fn_$D022_inputRead',         0xC56F: 'fn_$D093_menuDispatch',
+  0xC572: 'fn_$DB62_sceneHelper',       0xC575: 'fn_$E233_bank31Helper',
+  0xC578: 'fn_$D0D1_playerSlotScan',    0xC57B: 'fn_$C6BE_jumpTable4Alias',
 };
 
 /** $C600-$C639: 20-entry jump table */
 export const JTAB_C600: Record<number, string> = {
-  0xC600: 'fn_$D565',  0xC603: 'fn_$D193',  0xC606: 'fn_$E074',
-  0xC609: 'fn_$E4D7',  0xC60C: 'fn_$E73E',  0xC60F: 'fn_$E0DF',
-  0xC612: 'fn_$DE52',  0xC615: 'fn_$DE5E',  0xC618: 'fn_$DCFD',
-  0xC61B: 'fn_$DD02',  0xC61E: 'fn_$E059',  0xC621: 'fn_$DFD9',
-  0xC624: 'fn_$DCDF',  0xC627: 'fn_$E54C',  0xC62A: 'fn_$E596',
-  0xC62D: 'fn_$E688',  0xC630: 'fn_$E678',  0xC633: 'fn_$DDFD',
-  0xC636: 'fn_$DAAA',  0xC639: 'fn_$DE45',
+  0xC600: 'fn_$D565_playerStateCore',   0xC603: 'fn_$D193_gpModify',
+  0xC606: 'fn_$E074_bank31Helper',      0xC609: 'fn_$E4D7_bank31Helper',
+  0xC60C: 'fn_$E73E_bank31PlayerAI',    0xC60F: 'fn_$E0DF_bank31EventLoop',
+  0xC612: 'fn_$DE52_matchEventProcess', 0xC615: 'fn_$DE5E_matchEventSubEntry',
+  0xC618: 'fn_$DCFD_playerMoveCheck',   0xC61B: 'fn_$DD02_moveCheckSubEntry',
+  0xC61E: 'fn_$E059_bank31Helper',      0xC621: 'fn_$DFD9_matchResultCalc',
+  0xC624: 'fn_$DCDF_randomGen',          0xC627: 'fn_$E54C_bank31Helper',
+  0xC62A: 'fn_$E596_bank31Helper',      0xC62D: 'fn_$E688_bank31Helper',
+  0xC630: 'fn_$E678_bank31Helper',      0xC633: 'fn_$DDFD_playerInit',
+  0xC636: 'fn_$DAAA_playerSubstituteUI', 0xC639: 'fn_$DE45_playerSlotFlagSet',
 };
 
 /** $C63C-$C64B: 6-entry jump table */
 export const JTAB_C63C: Record<number, string> = {
-  0xC63C: 'fn_$DE6C',  0xC63F: 'fn_$D8F7',  0xC642: 'fn_$D852',
-  0xC645: 'fn_$E6EC',  0xC648: 'fn_$D7E8',  0xC64B: 'fn_$EFA2',
+  0xC63C: 'fn_$DE6C_matchEventContinue', 0xC63F: 'fn_$D8F7_playerAttrDisplay',
+  0xC642: 'fn_$D852_playerSelectCursor', 0xC645: 'fn_$E6EC_bank31PlayerLogic',
+  0xC648: 'fn_$D7E8_playerDataLoad',     0xC64B: 'fn_$EFA2_bank31Helper',
 };
 
 // ═════════════════════════════════════════════════
