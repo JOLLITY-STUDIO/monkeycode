@@ -1,0 +1,942 @@
+; ============================================
+; Disassembly: PRG Bank 02
+; ============================================
+
+; -- CODE: $8000-$8065 (102 bytes) --
+
+$8000  a9 00    LDA #$00
+$8002  8d 03 20 STA $2003
+$8005  a9 02    LDA #$02
+$8007  8d 14 40 STA $4014
+$800a  ad 28 06 LDA $0628
+$800d  f0 4e    BEQ $+78 ; → $805d
+$800f  2c 29 06 BIT $0629
+$8012  70 49    BVS $+73 ; → $805d
+$8014  a9 00    LDA #$00
+$8016  8d 01 20 STA $2001
+$8019  a2 00    LDX #$00
+$801b  a0 80    LDY #$80
+$801d  bd e8 05 LDA $05e8,X
+$8020  10 04    BPL $+4 ; → $8026
+$8022  29 3f    AND #$3f
+$8024  a0 84    LDY #$84
+$8026  8c 00 20 STY $2000
+$8029  a8       TAY
+$802a  bd ea 05 LDA $05ea,X
+$802d  8d 06 20 STA $2006
+$8030  bd e9 05 LDA $05e9,X
+$8033  8d 06 20 STA $2006
+$8036  bd eb 05 LDA $05eb,X
+$8039  8d 07 20 STA $2007
+$803c  e8       INX
+$803d  88       DEY
+$803e  d0 f6    BNE $-10 ; → $8036
+$8040  e8       INX
+$8041  e8       INX
+$8042  e8       INX
+$8043  bd e8 05 LDA $05e8,X
+$8046  d0 d3    BNE $-45 ; → $801b
+$8048  a9 00    LDA #$00
+$804a  8d 28 06 STA $0628
+$804d  a9 3f    LDA #$3f
+$804f  8d 06 20 STA $2006
+$8052  a9 00    LDA #$00
+$8054  8d 06 20 STA $2006
+$8057  8d 06 20 STA $2006
+$805a  8d 06 20 STA $2006
+$805d  a5 21    LDA $21
+$805f  8d 01 20 STA $2001
+$8062  a5 79    LDA $79
+$8064  10 0d    BPL $+13 ; → $8073
+
+; -- CODE: $8073-$8106 (148 bytes) --
+
+$8073  46 20    LSR $20
+$8075  46 20    LSR $20
+$8077  a5 45    LDA $45
+$8079  4a       LSR A
+$807a  26 20    ROL $20
+$807c  a5 7b    LDA $7b
+$807e  4a       LSR A
+$807f  26 20    ROL $20
+$8081  a5 20    LDA $20
+$8083  8d 00 20 STA $2000
+$8086  a5 7a    LDA $7a
+$8088  8d 05 20 STA $2005
+$808b  a6 44    LDX $44
+$808d  ca       DEX
+$808e  8e 05 20 STX $2005
+$8091  a0 16    LDY #$16
+$8093  20 cb a1 JSR $a1cb
+$8096  a5 79    LDA $79
+$8098  f0 10    BEQ $+16 ; → $80aa
+$809a  0a       ASL A
+$809b  8d 00 c0 STA $c000
+$809e  8d 01 c0 STA $c001
+$80a1  8d 01 e0 STA $e001
+$80a4  a9 04    LDA #$04
+$80a6  85 78    STA $78
+$80a8  10 05    BPL $+5 ; → $80af
+$80aa  8d 00 e0 STA $e000
+$80ad  85 78    STA $78
+$80af  a9 02    LDA #$02
+$80b1  8d 00 80 STA $8000
+$80b4  a5 9e    LDA $9e
+$80b6  8d 01 80 STA $8001
+$80b9  a9 03    LDA #$03
+$80bb  8d 00 80 STA $8000
+$80be  a5 9f    LDA $9f
+$80c0  8d 01 80 STA $8001
+$80c3  a9 04    LDA #$04
+$80c5  8d 00 80 STA $8000
+$80c8  a5 a0    LDA $a0
+$80ca  8d 01 80 STA $8001
+$80cd  a9 05    LDA #$05
+$80cf  8d 00 80 STA $8000
+$80d2  a5 a1    LDA $a1
+$80d4  8d 01 80 STA $8001
+$80d7  a2 02    LDX #$02
+$80d9  a9 04    LDA #$04
+$80db  85 40    STA $40
+$80dd  b5 1b    LDA $1b,X
+$80df  85 41    STA $41
+$80e1  a9 01    LDA #$01
+$80e3  8d 16 40 STA $4016
+$80e6  a9 00    LDA #$00
+$80e8  8d 16 40 STA $4016
+$80eb  a0 08    LDY #$08
+$80ed  bd 15 40 LDA $4015,X
+$80f0  4a       LSR A
+$80f1  26 3f    ROL $3f
+$80f3  29 01    AND #$01
+$80f5  05 3f    ORA $3f
+$80f7  85 3f    STA $3f
+$80f9  88       DEY
+$80fa  d0 f1    BNE $-15 ; → $80ed
+$80fc  c5 41    CMP $41
+$80fe  f0 07    BEQ $+7 ; → $8107
+$8100  c6 40    DEC $40
+$8102  d0 db    BNE $-37 ; → $80df
+$8104  4c 13 a1 JMP $a113
+
+; -- CODE: $8107-$8137 (49 bytes) --
+
+$8107  b5 1b    LDA $1b,X
+$8109  45 3f    EOR $3f
+$810b  25 3f    AND $3f
+$810d  95 1d    STA $1d,X
+$810f  a5 3f    LDA $3f
+$8111  95 1b    STA $1b,X
+$8113  ca       DEX
+$8114  d0 c7    BNE $-57 ; → $80dd
+$8116  18       CLC
+$8117  a5 e1    LDA $e1
+$8119  69 83    ADC #$83
+$811b  85 e1    STA $e1
+$811d  a5 e2    LDA $e2
+$811f  69 0d    ADC #$0d
+$8121  85 e2    STA $e2
+$8123  a5 e3    LDA $e3
+$8125  69 11    ADC #$11
+$8127  85 e3    STA $e3
+$8129  a9 00    LDA #$00
+$812b  85 46    STA $46
+$812d  85 47    STA $47
+$812f  a5 1b    LDA $1b
+$8131  09 80    ORA #$80
+$8133  85 1b    STA $1b
+$8135  e6 3a    INC $3a
+$8137  60       RTS
+
+; -- CODE: $8160-$81e3 (132 bytes) --
+
+$8160  8d 00 e0 STA $e000
+$8163  8d 01 e0 STA $e001
+$8166  a6 78    LDX $78
+$8168  b5 78    LDA $78,X
+$816a  10 21    BPL $+33 ; → $818d
+$816c  a0 06    LDY #$06
+$816e  88       DEY
+$816f  d0 fd    BNE $-3 ; → $816e
+$8171  b5 79    LDA $79,X
+$8173  b4 7a    LDY $7a,X
+$8175  8c 06 20 STY $2006
+$8178  8d 06 20 STA $2006
+$817b  a5 20    LDA $20
+$817d  29 fc    AND #$fc
+$817f  8d 00 20 STA $2000
+$8182  a9 00    LDA #$00
+$8184  8d 05 20 STA $2005
+$8187  8d 05 20 STA $2005
+$818a  4c a8 a1 JMP $a1a8
+$818d  a0 02    LDY #$02
+$818f  88       DEY
+$8190  d0 fd    BNE $-3 ; → $818f
+$8192  46 20    LSR $20
+$8194  b5 7a    LDA $7a,X
+$8196  4a       LSR A
+$8197  26 20    ROL $20
+$8199  a5 20    LDA $20
+$819b  8d 00 20 STA $2000
+$819e  b5 79    LDA $79,X
+$81a0  8d 05 20 STA $2005
+$81a3  a9 00    LDA #$00
+$81a5  8d 05 20 STA $2005
+$81a8  b5 78    LDA $78,X
+$81aa  29 7f    AND #$7f
+$81ac  f0 12    BEQ $+18 ; → $81c0
+$81ae  e0 13    CPX #$13
+$81b0  f0 0e    BEQ $+14 ; → $81c0
+$81b2  e6 78    INC $78
+$81b4  e6 78    INC $78
+$81b6  e6 78    INC $78
+$81b8  0a       ASL A
+$81b9  8d 00 c0 STA $c000
+$81bc  8d 01 c0 STA $c001
+$81bf  60       RTS
+$81c0  8d 00 e0 STA $e000
+$81c3  85 78    STA $78
+$81c5  a0 18    LDY #$18
+$81c7  20 cb a1 JSR $a1cb
+$81ca  60       RTS
+$81cb  b6 78    LDX $78,Y
+$81cd  a9 00    LDA #$00
+$81cf  05 22    ORA $22
+$81d1  8d 00 80 STA $8000
+$81d4  8e 01 80 STX $8001
+$81d7  b6 79    LDX $79,Y
+$81d9  a9 01    LDA #$01
+$81db  05 22    ORA $22
+$81dd  8d 00 80 STA $8000
+$81e0  8e 01 80 STX $8001
+$81e3  60       RTS
+
+; -- CODE: $820c-$821a (15 bytes) --
+
+$820c  4c 55 a8 JMP $a855
+$820f  4c 6e a8 JMP $a86e
+$8212  4c 84 a4 JMP $a484
+$8215  4c ce a8 JMP $a8ce
+$8218  4c fe a8 JMP $a8fe
+
+; -- CODE: $821b-$83d7 (445 bytes) --
+
+$821b  a2 ff    LDX #$ff
+$821d  9a       TXS
+$821e  48       PHA
+$821f  a9 00    LDA #$00
+$8221  8d 00 a0 STA $a000
+$8224  a5 1b    LDA $1b
+$8226  09 40    ORA #$40
+$8228  85 1b    STA $1b
+$822a  a9 00    LDA #$00
+$822c  a0 e8    LDY #$e8
+$822e  99 19 ff STA $ff19,Y
+$8231  c8       INY
+$8232  d0 fa    BNE $-6 ; → $822e
+$8234  a9 00    LDA #$00
+$8236  a0 5a    LDY #$5a
+$8238  99 e0 ff STA $ffe0,Y
+$823b  c8       INY
+$823c  d0 fa    BNE $-6 ; → $8238
+$823e  a9 98    LDA #$98
+$8240  a2 02    LDX #$02
+$8242  a0 68    LDY #$68
+$8244  84 ec    STY $ec
+$8246  a0 04    LDY #$04
+$8248  20 06 aa JSR $aa06
+$824b  a9 0f    LDA #$0f
+$824d  a0 e0    LDY #$e0
+$824f  99 4a 05 STA $054a,Y
+$8252  c8       INY
+$8253  d0 fa    BNE $-6 ; → $824f
+$8255  20 43 9a JSR $9a43
+$8258  a9 00    LDA #$00
+$825a  85 4a    STA $4a
+$825c  85 4b    STA $4b
+$825e  20 a0 98 JSR $98a0
+$8261  20 7f 9b JSR $9b7f
+$8264  a9 02    LDA #$02
+$8266  85 8f    STA $8f
+$8268  85 91    STA $91
+$826a  68       PLA
+$826b  f0 14    BEQ $+20 ; → $8281
+$826d  a2 01    LDX #$01
+$826f  a9 ff    LDA #$ff
+$8271  95 00    STA $00,X
+$8273  a9 7f    LDA #$7f
+$8275  95 01    STA $01,X
+$8277  a0 28    LDY #$28
+$8279  a9 00    LDA #$00
+$827b  20 69 9f JSR $9f69
+$827e  4c 92 a2 JMP $a292
+$8281  a2 01    LDX #$01
+$8283  a9 1e    LDA #$1e
+$8285  95 00    STA $00,X
+$8287  a9 80    LDA #$80
+$8289  95 01    STA $01,X
+$828b  a0 28    LDY #$28
+$828d  a9 00    LDA #$00
+$828f  20 69 9f JSR $9f69
+$8292  a2 15    LDX #$15
+$8294  a9 ec    LDA #$ec
+$8296  95 00    STA $00,X
+$8298  a9 82    LDA #$82
+$829a  95 01    STA $01,X
+$829c  a0 f0    LDY #$f0
+$829e  a9 00    LDA #$00
+$82a0  20 69 9f JSR $9f69
+$82a3  a5 20    LDA $20
+$82a5  09 80    ORA #$80
+$82a7  85 20    STA $20
+$82a9  8d 00 20 STA $2000
+$82ac  4c ed 9e JMP $9eed
+$82af  20 f0 99 JSR $99f0
+$82b2  20 a0 98 JSR $98a0
+$82b5  20 7f 9b JSR $9b7f
+$82b8  a5 20    LDA $20
+$82ba  29 7f    AND #$7f
+$82bc  8d 00 20 STA $2000
+$82bf  85 20    STA $20
+$82c1  8d 00 e0 STA $e000
+$82c4  a9 00    LDA #$00
+$82c6  a0 e8    LDY #$e8
+$82c8  99 19 ff STA $ff19,Y
+$82cb  c8       INY
+$82cc  d0 fa    BNE $-6 ; → $82c8
+$82ce  a9 00    LDA #$00
+$82d0  a0 5a    LDY #$5a
+$82d2  99 e0 ff STA $ffe0,Y
+$82d5  c8       INY
+$82d6  d0 fa    BNE $-6 ; → $82d2
+$82d8  a9 98    LDA #$98
+$82da  a2 02    LDX #$02
+$82dc  a0 68    LDY #$68
+$82de  84 ec    STY $ec
+$82e0  a0 04    LDY #$04
+$82e2  20 06 aa JSR $aa06
+$82e5  4c 57 c5 JMP $c557
+$82e8  a5 57    LDA $57
+$82ea  30 4c    BMI $+76 ; → $8338
+$82ec  85 ed    STA $ed
+$82ee  a9 00    LDA #$00
+$82f0  a0 fa    LDY #$fa
+$82f2  99 ec ff STA $ffec,Y
+$82f5  c8       INY
+$82f6  d0 fa    BNE $-6 ; → $82f2
+$82f8  a9 01    LDA #$01
+$82fa  20 a8 9f JSR $9fa8
+$82fd  a4 ed    LDY $ed
+$82ff  a9 00    LDA #$00
+$8301  85 ec    STA $ec
+$8303  98       TYA
+$8304  29 0f    AND #$0f
+$8306  4a       LSR A
+$8307  aa       TAX
+$8308  b9 df aa LDA $aadf,Y
+$830b  18       CLC
+$830c  75 e6    ADC $e6,X
+$830e  95 e6    STA $e6,X
+$8310  a6 ec    LDX $ec
+$8312  b9 e0 aa LDA $aae0,Y
+$8315  75 7a    ADC $7a,X
+$8317  95 7a    STA $7a,X
+$8319  b9 e0 aa LDA $aae0,Y
+$831c  10 04    BPL $+4 ; → $8322
+$831e  a9 ff    LDA #$ff
+$8320  d0 02    BNE $+2 ; → $8324
+$8322  a9 00    LDA #$00
+$8324  75 7b    ADC $7b,X
+$8326  95 7b    STA $7b,X
+$8328  c8       INY
+$8329  c8       INY
+$832a  a5 ec    LDA $ec
+$832c  18       CLC
+$832d  69 03    ADC #$03
+$832f  85 ec    STA $ec
+$8331  c9 0f    CMP #$0f
+$8333  d0 ce    BNE $-50 ; → $8303
+$8335  4c f8 a2 JMP $a2f8
+$8338  c9 81    CMP #$81
+$833a  f0 67    BEQ $+103 ; → $83a3
+$833c  a2 67    LDX #$67
+$833e  a9 05    LDA #$05
+$8340  20 bd c4 JSR $c4bd
+$8343  a9 00    LDA #$00
+$8345  85 ed    STA $ed
+$8347  a8       TAY
+$8348  a2 78    LDX #$78
+$834a  a5 ec    LDA $ec
+$834c  29 01    AND #$01
+$834e  09 f2    ORA #$f2
+$8350  9d 69 04 STA $0469,X
+$8353  a9 03    LDA #$03
+$8355  9d 6a 04 STA $046a,X
+$8358  98       TYA
+$8359  9d 68 04 STA $0468,X
+$835c  18       CLC
+$835d  69 03    ADC #$03
+$835f  a8       TAY
+$8360  a5 ec    LDA $ec
+$8362  9d 6b 04 STA $046b,X
+$8365  18       CLC
+$8366  69 0d    ADC #$0d
+$8368  85 ec    STA $ec
+$836a  e8       INX
+$836b  e8       INX
+$836c  e8       INX
+$836d  e8       INX
+$836e  e0 fc    CPX #$fc
+$8370  d0 d8    BNE $-40 ; → $834a
+$8372  a9 01    LDA #$01
+$8374  20 a8 9f JSR $9fa8
+$8377  a2 78    LDX #$78
+$8379  8a       TXA
+$837a  29 0c    AND #$0c
+$837c  a8       TAY
+$837d  bd 68 04 LDA $0468,X
+$8380  d9 1f ab CMP $ab1f,Y
+$8383  90 02    BCC $+2 ; → $8387
+$8385  a9 00    LDA #$00
+$8387  18       CLC
+$8388  79 21 ab ADC $ab21,Y
+$838b  9d 68 04 STA $0468,X
+$838e  bd 6b 04 LDA $046b,X
+$8391  18       CLC
+$8392  79 22 ab ADC $ab22,Y
+$8395  9d 6b 04 STA $046b,X
+$8398  e8       INX
+$8399  e8       INX
+$839a  e8       INX
+$839b  e8       INX
+$839c  e0 fc    CPX #$fc
+$839e  d0 d9    BNE $-39 ; → $8379
+$83a0  4c 72 a3 JMP $a372
+$83a3  ad 68 05 LDA $0568
+$83a6  09 10    ORA #$10
+$83a8  8d 68 05 STA $0568
+$83ab  a9 04    LDA #$04
+$83ad  20 a8 9f JSR $9fa8
+$83b0  a9 08    LDA #$08
+$83b2  85 44    STA $44
+$83b4  85 46    STA $46
+$83b6  ad 6d 05 LDA $056d
+$83b9  38       SEC
+$83ba  e9 04    SBC #$04
+$83bc  8d 6d 05 STA $056d
+$83bf  a9 04    LDA #$04
+$83c1  20 a8 9f JSR $9fa8
+$83c4  a9 00    LDA #$00
+$83c6  85 44    STA $44
+$83c8  a9 f8    LDA #$f8
+$83ca  85 46    STA $46
+$83cc  ad 6d 05 LDA $056d
+$83cf  18       CLC
+$83d0  69 04    ADC #$04
+$83d2  8d 6d 05 STA $056d
+$83d5  4c ab a3 JMP $a3ab
+
+; -- CODE: $8484-$84a4 (33 bytes) --
+
+$8484  a5 ed    LDA $ed
+$8486  0a       ASL A
+$8487  aa       TAX
+$8488  bd 92 a4 LDA $a492,X
+$848b  48       PHA
+$848c  bd 91 a4 LDA $a491,X
+$848f  48       PHA
+$8490  60       RTS
+$8491  c0 a4    CPY #$a4
+$8493  59 a5 7b EOR $7ba5,Y
+$8496  a5 81    LDA $81
+$8498  a5 a2    LDA $a2
+$849a  a5 a8    LDA $a8
+$849c  a5 b0    LDA $b0
+$849e  a5 b8    LDA $b8
+$84a0  a5 bf    LDA $bf
+$84a2  a5 cd    LDA $cd
+$84a4  a5       LDA $00
+
+; -- CODE: $84c1-$8581 (193 bytes) --
+
+$84c1  20 0d 9a JSR $9a0d
+$84c4  a9 10    LDA #$10
+$84c6  20 a8 9f JSR $9fa8
+$84c9  a0 30    LDY #$30
+$84cb  a9 01    LDA #$01
+$84cd  20 a8 9f JSR $9fa8
+$84d0  a9 01    LDA #$01
+$84d2  20 0c 89 JSR $890c
+$84d5  88       DEY
+$84d6  d0 f3    BNE $-13 ; → $84cb
+$84d8  a9 00    LDA #$00
+$84da  85 5b    STA $5b
+$84dc  85 7b    STA $7b
+$84de  a9 17    LDA #$17
+$84e0  20 f7 8a JSR $8af7
+$84e3  a9 68    LDA #$68
+$84e5  85 44    STA $44
+$84e7  a9 03    LDA #$03
+$84e9  20 20 89 JSR $8920
+$84ec  a5 8e    LDA $8e
+$84ee  85 90    STA $90
+$84f0  a5 8f    LDA $8f
+$84f2  85 91    STA $91
+$84f4  a9 04    LDA #$04
+$84f6  20 a8 9f JSR $9fa8
+$84f9  20 35 9a JSR $9a35
+$84fc  20 fb 88 JSR $88fb
+$84ff  a9 01    LDA #$01
+$8501  20 a8 9f JSR $9fa8
+$8504  e6 79    INC $79
+$8506  c6 7c    DEC $7c
+$8508  c6 7c    DEC $7c
+$850a  a5 44    LDA $44
+$850c  38       SEC
+$850d  e9 02    SBC #$02
+$850f  85 44    STA $44
+$8511  c9 03    CMP #$03
+$8513  b0 ea    BCS $-22 ; → $84ff
+$8515  a9 00    LDA #$00
+$8517  20 20 89 JSR $8920
+$851a  a5 1b    LDA $1b
+$851c  09 01    ORA #$01
+$851e  85 1b    STA $1b
+$8520  a9 f0    LDA #$f0
+$8522  20 a8 9f JSR $9fa8
+$8525  a9 3c    LDA #$3c
+$8527  20 a8 9f JSR $9fa8
+$852a  a5 1b    LDA $1b
+$852c  29 fe    AND #$fe
+$852e  85 1b    STA $1b
+$8530  a9 00    LDA #$00
+$8532  85 90    STA $90
+$8534  a9 02    LDA #$02
+$8536  85 91    STA $91
+$8538  20 f0 99 JSR $99f0
+$853b  20 7f 9b JSR $9b7f
+$853e  20 a0 98 JSR $98a0
+$8541  a9 c0    LDA #$c0
+$8543  85 e6    STA $e6
+$8545  a9 23    LDA #$23
+$8547  85 e7    STA $e7
+$8549  a0 02    LDY #$02
+$854b  a2 20    LDX #$20
+$854d  a9 55    LDA #$55
+$854f  20 ea 98 JSR $98ea
+$8552  a9 01    LDA #$01
+$8554  20 20 89 JSR $8920
+$8557  a9 02    LDA #$02
+$8559  60       RTS
+$855a  a9 00    LDA #$00
+$855c  85 60    STA $60
+$855e  a5 ec    LDA $ec
+$8560  4a       LSR A
+$8561  66 60    ROR $60
+$8563  4a       LSR A
+$8564  66 60    ROR $60
+$8566  85 61    STA $61
+$8568  24 62    BIT $62
+$856a  30 0d    BMI $+13 ; → $8579
+$856c  a9 00    LDA #$00
+$856e  38       SEC
+$856f  e5 60    SBC $60
+$8571  85 60    STA $60
+$8573  a9 00    LDA #$00
+$8575  e5 61    SBC $61
+$8577  85 61    STA $61
+$8579  a9 03    LDA #$03
+$857b  60       RTS
+$857c  20 91 9b JSR $9b91
+$857f  a9 02    LDA #$02
+$8581  60       RTS
+
+; -- CODE: $85a9-$85b8 (16 bytes) --
+
+$85a9  a2 09    LDX #$09
+$85ab  20 96 9f JSR $9f96
+$85ae  a9 02    LDA #$02
+$85b0  60       RTS
+$85b1  a2 09    LDX #$09
+$85b3  20 89 9f JSR $9f89
+$85b6  a9 02    LDA #$02
+$85b8  60       RTS
+
+; -- CODE: $85dc-$877a (415 bytes) --
+
+$85dc  a9 00    LDA #$00
+$85de  20 95 88 JSR $8895
+$85e1  a9 05    LDA #$05
+$85e3  20 20 89 JSR $8920
+$85e6  a9 02    LDA #$02
+$85e8  60       RTS
+$85e9  a5 0d    LDA $0d
+$85eb  d0 0d    BNE $+13 ; → $85fa
+$85ed  a9 10    LDA #$10
+$85ef  20 95 88 JSR $8895
+$85f2  a9 06    LDA #$06
+$85f4  20 20 89 JSR $8920
+$85f7  a9 02    LDA #$02
+$85f9  60       RTS
+$85fa  a9 00    LDA #$00
+$85fc  85 0d    STA $0d
+$85fe  85 0e    STA $0e
+$8600  a9 02    LDA #$02
+$8602  60       RTS
+$8603  a5 0d    LDA $0d
+$8605  d0 0d    BNE $+13 ; → $8614
+$8607  a9 30    LDA #$30
+$8609  20 95 88 JSR $8895
+$860c  a9 08    LDA #$08
+$860e  20 20 89 JSR $8920
+$8611  a9 02    LDA #$02
+$8613  60       RTS
+$8614  a9 00    LDA #$00
+$8616  85 0d    STA $0d
+$8618  85 0e    STA $0e
+$861a  a9 02    LDA #$02
+$861c  60       RTS
+$861d  a9 20    LDA #$20
+$861f  20 95 88 JSR $8895
+$8622  a9 07    LDA #$07
+$8624  20 20 89 JSR $8920
+$8627  a9 02    LDA #$02
+$8629  60       RTS
+$862a  a2 bd    LDX #$bd
+$862c  a0 23    LDY #$23
+$862e  20 76 89 JSR $8976
+$8631  20 35 9a JSR $9a35
+$8634  a9 01    LDA #$01
+$8636  20 a8 9f JSR $9fa8
+$8639  ad 8f 05 LDA $058f
+$863c  29 7f    AND #$7f
+$863e  8d 8f 05 STA $058f
+$8641  a9 82    LDA #$82
+$8643  85 4c    STA $4c
+$8645  a0 28    LDY #$28
+$8647  a2 20    LDX #$20
+$8649  a9 c8    LDA #$c8
+$864b  20 2f a8 JSR $a82f
+$864e  a9 02    LDA #$02
+$8650  60       RTS
+$8651  a9 00    LDA #$00
+$8653  85 ed    STA $ed
+$8655  a4 ed    LDY $ed
+$8657  b9 97 aa LDA $aa97,Y
+$865a  85 ea    STA $ea
+$865c  29 7f    AND #$7f
+$865e  85 eb    STA $eb
+$8660  a5 7b    LDA $7b
+$8662  29 01    AND #$01
+$8664  0a       ASL A
+$8665  0a       ASL A
+$8666  05 eb    ORA $eb
+$8668  aa       TAX
+$8669  c8       INY
+$866a  b9 97 aa LDA $aa97,Y
+$866d  85 eb    STA $eb
+$866f  c8       INY
+$8670  b9 97 aa LDA $aa97,Y
+$8673  c8       INY
+$8674  84 ed    STY $ed
+$8676  a4 eb    LDY $eb
+$8678  20 28 9b JSR $9b28
+$867b  29 7f    AND #$7f
+$867d  85 eb    STA $eb
+$867f  a9 00    LDA #$00
+$8681  9d e8 05 STA $05e8,X
+$8684  e8       INX
+$8685  c6 eb    DEC $eb
+$8687  d0 f8    BNE $-8 ; → $8681
+$8689  20 5e 9b JSR $9b5e
+$868c  24 ea    BIT $ea
+$868e  30 0a    BMI $+10 ; → $869a
+$8690  50 c3    BVC $-61 ; → $8655
+$8692  a9 02    LDA #$02
+$8694  20 a8 9f JSR $9fa8
+$8697  4c 55 a6 JMP $a655
+$869a  a9 02    LDA #$02
+$869c  60       RTS
+$869d  ad e5 04 LDA $04e5
+$86a0  c9 ff    CMP #$ff
+$86a2  f0 30    BEQ $+48 ; → $86d4
+$86a4  20 67 a7 JSR $a767
+$86a7  a0 80    LDY #$80
+$86a9  a9 00    LDA #$00
+$86ab  85 ea    STA $ea
+$86ad  a2 2f    LDX #$2f
+$86af  a9 ff    LDA #$ff
+$86b1  85 ed    STA $ed
+$86b3  a9 fe    LDA #$fe
+$86b5  85 ec    STA $ec
+$86b7  a9 07    LDA #$07
+$86b9  85 eb    STA $eb
+$86bb  a9 f7    LDA #$f7
+$86bd  20 2c a7 JSR $a72c
+$86c0  a0 d8    LDY #$d8
+$86c2  a2 30    LDX #$30
+$86c4  a9 01    LDA #$01
+$86c6  85 ed    STA $ed
+$86c8  a9 ff    LDA #$ff
+$86ca  85 ec    STA $ec
+$86cc  a9 fc    LDA #$fc
+$86ce  20 2c a7 JSR $a72c
+$86d1  a9 02    LDA #$02
+$86d3  60       RTS
+$86d4  20 67 a7 JSR $a767
+$86d7  a0 80    LDY #$80
+$86d9  a2 2f    LDX #$2f
+$86db  a9 02    LDA #$02
+$86dd  85 ea    STA $ea
+$86df  a9 ff    LDA #$ff
+$86e1  85 ed    STA $ed
+$86e3  a9 fe    LDA #$fe
+$86e5  85 ec    STA $ec
+$86e7  a9 07    LDA #$07
+$86e9  85 eb    STA $eb
+$86eb  a9 f7    LDA #$f7
+$86ed  20 2c a7 JSR $a72c
+$86f0  a2 08    LDX #$08
+$86f2  a9 fe    LDA #$fe
+$86f4  20 2c a7 JSR $a72c
+$86f7  a0 fc    LDY #$fc
+$86f9  b9 7b a6 LDA $a67b,Y
+$86fc  99 60 04 STA $0460,Y
+$86ff  c8       INY
+$8700  d0 f7    BNE $-9 ; → $86f9
+$8702  a0 b8    LDY #$b8
+$8704  a2 1c    LDX #$1c
+$8706  a9 02    LDA #$02
+$8708  85 ed    STA $ed
+$870a  a9 ff    LDA #$ff
+$870c  85 ec    STA $ec
+$870e  a9 03    LDA #$03
+$8710  85 eb    STA $eb
+$8712  a9 f6    LDA #$f6
+$8714  20 2c a7 JSR $a72c
+$8717  a0 d8    LDY #$d8
+$8719  b9 6a 04 LDA $046a,Y
+$871c  09 02    ORA #$02
+$871e  99 6a 04 STA $046a,Y
+$8721  c8       INY
+$8722  c8       INY
+$8723  c8       INY
+$8724  c8       INY
+$8725  c0 f0    CPY #$f0
+$8727  90 f0    BCC $-16 ; → $8719
+$8729  a9 02    LDA #$02
+$872b  60       RTS
+$872c  85 e9    STA $e9
+$872e  ad e4 04 LDA $04e4
+$8731  18       CLC
+$8732  65 ed    ADC $ed
+$8734  8d e4 04 STA $04e4
+$8737  ad e7 04 LDA $04e7
+$873a  18       CLC
+$873b  65 ec    ADC $ec
+$873d  8d e7 04 STA $04e7
+$8740  25 eb    AND $eb
+$8742  d0 1a    BNE $+26 ; → $875e
+$8744  ad e4 04 LDA $04e4
+$8747  99 68 04 STA $0468,Y
+$874a  a5 e9    LDA $e9
+$874c  99 69 04 STA $0469,Y
+$874f  a5 ea    LDA $ea
+$8751  99 6a 04 STA $046a,Y
+$8754  ad e7 04 LDA $04e7
+$8757  99 6b 04 STA $046b,Y
+$875a  c8       INY
+$875b  c8       INY
+$875c  c8       INY
+$875d  c8       INY
+$875e  a9 01    LDA #$01
+$8760  20 a8 9f JSR $9fa8
+$8763  ca       DEX
+$8764  d0 c8    BNE $-56 ; → $872e
+$8766  60       RTS
+$8767  a0 fc    LDY #$fc
+$8769  b9 77 a6 LDA $a677,Y
+$876c  99 e8 03 STA $03e8,Y
+$876f  c8       INY
+$8770  d0 f7    BNE $-9 ; → $8769
+$8772  60       RTS
+$8773  79 ff 03 ADC $03ff,Y
+$8776:  .byte $c2  ; UNKNOWN
+$8777  46 f6    LSR $f6
+$8779:  .byte $02  ; UNKNOWN
+$877a:  .byte $52  ; UNKNOWN
+
+; -- CODE: $877b-$878d (19 bytes) --
+
+$877b  a9 80    LDA #$80
+$877d  20 95 88 JSR $8895
+$8780  a9 02    LDA #$02
+$8782  60       RTS
+$8783  a9 02    LDA #$02
+$8785  20 a8 9f JSR $9fa8
+$8788  20 fb 88 JSR $88fb
+$878b  a9 02    LDA #$02
+$878d  60       RTS
+
+; -- CODE: $87be-$87fa (61 bytes) --
+
+$87be  a9 01    LDA #$01
+$87c0  20 a8 9f JSR $9fa8
+$87c3  a0 28    LDY #$28
+$87c5  a2 64    LDX #$64
+$87c7  a9 b0    LDA #$b0
+$87c9  20 2f a8 JSR $a82f
+$87cc  a9 02    LDA #$02
+$87ce  60       RTS
+$87cf  a9 81    LDA #$81
+$87d1  20 95 88 JSR $8895
+$87d4  a9 02    LDA #$02
+$87d6  60       RTS
+$87d7  a0 80    LDY #$80
+$87d9  a9 01    LDA #$01
+$87db  20 a8 9f JSR $9fa8
+$87de  a2 20    LDX #$20
+$87e0  bd 68 04 LDA $0468,X
+$87e3  10 08    BPL $+8 ; → $87ed
+$87e5  bd 6a 04 LDA $046a,X
+$87e8  09 04    ORA #$04
+$87ea  9d 6a 04 STA $046a,X
+$87ed  e8       INX
+$87ee  e8       INX
+$87ef  e8       INX
+$87f0  e8       INX
+$87f1  e0 c4    CPX #$c4
+$87f3  d0 eb    BNE $-21 ; → $87e0
+$87f5  88       DEY
+$87f6  d0 e1    BNE $-31 ; → $87d9
+$87f8  a9 02    LDA #$02
+$87fa  60       RTS
+
+; -- CODE: $882f-$887b (77 bytes) --
+
+$882f  85 ec    STA $ec
+$8831  86 ed    STX $ed
+$8833  a9 01    LDA #$01
+$8835  20 a8 9f JSR $9fa8
+$8838  a6 ed    LDX $ed
+$883a  bd 68 04 LDA $0468,X
+$883d  c9 82    CMP #$82
+$883f  b0 08    BCS $+8 ; → $8849
+$8841  bd 6a 04 LDA $046a,X
+$8844  29 f3    AND #$f3
+$8846  9d 6a 04 STA $046a,X
+$8849  e8       INX
+$884a  e8       INX
+$884b  e8       INX
+$884c  e8       INX
+$884d  e4 ec    CPX $ec
+$884f  d0 e9    BNE $-23 ; → $883a
+$8851  88       DEY
+$8852  d0 df    BNE $-33 ; → $8833
+$8854  60       RTS
+$8855  a5 e4    LDA $e4
+$8857  c5 26    CMP $26
+$8859  b0 4d    BCS $+77 ; → $88a8
+$885b  a5 26    LDA $26
+$885d  f0 1d    BEQ $+29 ; → $887c
+$885f  c9 06    CMP #$06
+$8861  f0 21    BEQ $+33 ; → $8884
+$8863  c9 0c    CMP #$0c
+$8865  f0 15    BEQ $+21 ; → $887c
+$8867  c9 10    CMP #$10
+$8869  f0 21    BEQ $+33 ; → $888c
+$886b  4c a8 a8 JMP $a8a8
+$886e  a5 26    LDA $26
+$8870  c9 06    CMP #$06
+$8872  90 08    BCC $+8 ; → $887c
+$8874  c9 0c    CMP #$0c
+$8876  90 0c    BCC $+12 ; → $8884
+$8878  c9 10    CMP #$10
+$887a  b0 10    BCS $+16 ; → $888c
+
+; -- CODE: $887c-$88fd (130 bytes) --
+
+$887c  a2 00    LDX #$00
+$887e  20 b7 a8 JSR $a8b7
+$8881  4c a3 a8 JMP $a8a3
+$8884  a2 0c    LDX #$0c
+$8886  20 b7 a8 JSR $a8b7
+$8889  4c a3 a8 JMP $a8a3
+$888c  a2 18    LDX #$18
+$888e  20 b7 a8 JSR $a8b7
+$8891  a0 00    LDY #$00
+$8893  bd 47 aa LDA $aa47,X
+$8896  99 08 04 STA $0408,Y
+$8899  e8       INX
+$889a  98       TYA
+$889b  18       CLC
+$889c  69 04    ADC #$04
+$889e  a8       TAY
+$889f  c9 28    CMP #$28
+$88a1  90 f0    BCC $-16 ; → $8893
+$88a3  bd 47 aa LDA $aa47,X
+$88a6  85 2c    STA $2c
+$88a8  a6 26    LDX $26
+$88aa  bd 75 aa LDA $aa75,X
+$88ad  85 2a    STA $2a
+$88af  a5 26    LDA $26
+$88b1  18       CLC
+$88b2  69 03    ADC #$03
+$88b4  85 2b    STA $2b
+$88b6  60       RTS
+$88b7  a9 0b    LDA #$0b
+$88b9  85 ed    STA $ed
+$88bb  a0 00    LDY #$00
+$88bd  bd 47 aa LDA $aa47,X
+$88c0  99 00 03 STA $0300,Y
+$88c3  e8       INX
+$88c4  98       TYA
+$88c5  18       CLC
+$88c6  69 0c    ADC #$0c
+$88c8  a8       TAY
+$88c9  c9 84    CMP #$84
+$88cb  90 f0    BCC $-16 ; → $88bd
+$88cd  60       RTS
+$88ce  a9 01    LDA #$01
+$88d0  20 a8 9f JSR $9fa8
+$88d3  a0 00    LDY #$00
+$88d5  be 68 04 LDX $0468,Y
+$88d8  b9 6a 04 LDA $046a,Y
+$88db  29 0c    AND #$0c
+$88dd  f0 02    BEQ $+2 ; → $88e1
+$88df  a2 f8    LDX #$f8
+$88e1  8a       TXA
+$88e2  99 00 02 STA $0200,Y
+$88e5  b9 69 04 LDA $0469,Y
+$88e8  99 01 02 STA $0201,Y
+$88eb  b9 6a 04 LDA $046a,Y
+$88ee  99 02 02 STA $0202,Y
+$88f1  b9 6b 04 LDA $046b,Y
+$88f4  99 03 02 STA $0203,Y
+$88f7  c8       INY
+$88f8  c8       INY
+$88f9  c8       INY
+$88fa  c8       INY
+$88fb  d0 d8    BNE $-40 ; → $88d5
+$88fd  60       RTS
+
+; -- CODE: $8a06-$8a1f (26 bytes) --
+
+$8a06  84 ed    STY $ed
+$8a08  e8       INX
+$8a09  a0 00    LDY #$00
+$8a0b  48       PHA
+$8a0c  a9 00    LDA #$00
+$8a0e  91 ec    STA ($ec),Y
+$8a10  e6 ec    INC $ec
+$8a12  d0 02    BNE $+2 ; → $8a16
+$8a14  e6 ed    INC $ed
+$8a16  68       PLA
+$8a17  38       SEC
+$8a18  e9 01    SBC #$01
+$8a1a  d0 ef    BNE $-17 ; → $8a0b
+$8a1c  ca       DEX
+$8a1d  d0 ec    BNE $-20 ; → $8a0b
+$8a1f  60       RTS
+
+; Total: 1861 code bytes disassembled

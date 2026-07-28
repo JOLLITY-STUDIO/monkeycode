@@ -93,6 +93,18 @@ export {
 } from './banks/bank-02';
 
 export {
+  rom06, rom06Ptr16, getBank06Data,
+} from './banks/bank-06';
+
+export {
+  bank12_init, bank12_update, bank12_audioFrame, getBank12Data,
+} from './banks/bank-12';
+
+export {
+  rom15, rom15Ptr16, getBank15Data,
+} from './banks/bank-15';
+
+export {
   bank30_initSystem,
   bank30_initScene,
   bank30_getCharData,

@@ -92,6 +92,19 @@ const INS_LAE = 75;
 const INS_ANE = 76;
 const INS_LXA = 77;
 
+// CPU trace: instruction name lookup
+const INS_NAMES: string[] = [
+  'ADC','AND','ASL','BCC','BCS','BEQ','BIT','BMI','BNE','BPL',
+  'BRK','BVC','BVS','CLC','CLD','CLI','CLV','CMP','CPX','CPY',
+  'DEC','DEX','DEY','EOR','INC','INX','INY','JMP','JSR','LDA',
+  'LDX','LDY','LSR','NOP','ORA','PHA','PHP','PLA','PLP','ROL',
+  'ROR','RTI','RTS','SBC','SEC','SED','SEI','STA','STX','STY',
+  'TAX','TAY','TSX','TXA','TXS','TYA',
+  'ALR','ANC','ARR','AXS','LAX','SAX','DCP','ISC','RLA','RRA',
+  'SLO','SRE','SKB','IGN', '', 'SHA','SHS','SHY','SHX','LAE',
+  'ANE','LXA',
+];
+
 interface OpInfo {
   ins: number;
   mode: number;
@@ -415,6 +428,12 @@ class CPU {
   instrBusCycles: number;
   apuCatchupCycles: number;
   _cpuCycleBase: number;
+  _traceCount: number;
+  // cycle detection: ring buffer of recent PCs + cycle tracking
+  _tracePCHist: Int32Array;
+  _traceHistIdx: number;
+  _traceCycleLen: number;
+  _traceCycleSkipped: number;
   nmiRaisedAtCycle: number;
   nmiDotsRemainingInStep: number;
   _dmcFetchCycles!: number;
@@ -472,8 +491,24 @@ class CPU {
     this.instrBusCycles = 0;
     this.apuCatchupCycles = 0;
     this._cpuCycleBase = 0;
+    this._traceCount = 0;
+    this._tracePCHist = new Int32Array(32);
+    this._traceHistIdx = 0;
+    this._traceCycleLen = 0;
+    this._traceCycleSkipped = 0;
     this.nmiRaisedAtCycle = 0;
     this.nmiDotsRemainingInStep = 0;
+  }
+
+  _flushTraceCycle(): void {
+    if (this._traceCycleLen > 0) {
+      const cycles = Math.floor(this._traceCycleSkipped / this._traceCycleLen);
+      if (cycles > 0) {
+        console.log(`[TRACE ${String(this._traceCount).padStart(5)}]   ... ${this._traceCycleLen}-PC loop ×${cycles}`);
+      }
+    }
+    this._traceCycleLen = 0;
+    this._traceCycleSkipped = 0;
   }
 
   emulate(): number {
@@ -554,6 +589,54 @@ class CPU {
 
     let opaddr = this.REG_PC;
     this.REG_PC = (this.REG_PC + opinfo.size) & 0xffff;
+
+    // CPU trace: detect N-PC loops (N=2..8), collapse repeats, print everything else
+    const H = this._tracePCHist;
+    const idx = this._traceHistIdx;
+    H[idx] = opaddr;
+    this._traceHistIdx = (idx + 1) & 31;
+
+    // helper: get hist entry at offset (-1 = last, -2 = second last, etc.)
+    const h = (off: number) => H[(idx + off + 32) & 31];
+
+    let detectedLen = 0;
+    // Scan for cycles length 2..8: last L entries must equal the L entries before that
+    for (let L = 2; L <= 8; L++) {
+      let match = true;
+      for (let i = 0; i < L; i++) {
+        if (h(-1 - i) !== h(-1 - L - i)) { match = false; break; }
+      }
+      if (!match) continue;
+      // Verify not all same PC (a real loop must have at least 2 different PCs)
+      let allSame = true;
+      for (let i = 1; i < L; i++) {
+        if (h(-1 - i) !== h(-1)) { allSame = false; break; }
+      }
+      if (!allSame) { detectedLen = L; break; }
+    }
+
+    if (detectedLen > 0) {
+      if (detectedLen === this._traceCycleLen) {
+        // continuing existing cycle
+        this._traceCycleSkipped++;
+      } else {
+        // new cycle (or different length) — flush old if any
+        this._flushTraceCycle();
+        this._traceCycleLen = detectedLen;
+        this._traceCycleSkipped = detectedLen; // count the detection iteration as skipped
+      }
+    } else {
+      // no cycle detected — flush pending, then print normally
+      this._flushTraceCycle();
+      this._traceCount++;
+      const insName = INS_NAMES[opinfo.ins] ?? '???';
+      const prg8k = (this.nes.mmap && typeof this.nes.mmap.getPrgBank === 'function')
+        ? this.nes.mmap.getPrgBank(opaddr) : -1;
+      const bankLabel = prg8k >= 0
+        ? `PRG${Math.floor(prg8k / 2)}`
+        : `$${(opaddr >> 13) * 8192}`;
+      console.log(`[TRACE ${String(this._traceCount).padStart(5)}] ${bankLabel} PC=$${opaddr.toString(16).padStart(4, '0')} ${insName} A=$${this.REG_ACC.toString(16).padStart(2, '0')} X=$${this.REG_X.toString(16).padStart(2, '0')} Y=$${this.REG_Y.toString(16).padStart(2, '0')} SP=$${(this.REG_SP & 0xFF).toString(16).padStart(2, '0')} P=$${this.getStatus().toString(16).padStart(2, '0')}`);
+    }
 
     let addr = 0;
     switch (addrMode) {

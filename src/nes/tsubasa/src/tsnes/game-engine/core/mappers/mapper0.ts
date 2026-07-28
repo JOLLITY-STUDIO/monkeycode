@@ -14,6 +14,9 @@ class Mapper0 {
   zapperX: number | null;
   zapperY: number | null;
   bgTileOverride: boolean;
+  /** track which 8KB PRG bank is mapped at each 8KB CPU region:
+   *  [0]=$8000, [1]=$A000, [2]=$C000, [3]=$E000; -1 = unknown */
+  _prgBankMap: number[];
 
   constructor(nes: any) {
     this.nes = nes;
@@ -28,6 +31,7 @@ class Mapper0 {
     this.zapperX = null;
     this.zapperY = null;
     this.bgTileOverride = false;
+    this._prgBankMap = [-1, -1, -1, -1];
   }
 
   write(address: number, value: number): void {
@@ -431,6 +435,10 @@ class Mapper0 {
     const rom = this.nes.rom.rom;
     const count = this.nes.rom.romCount;
 
+    // Track which PRG bank is mapped at this CPU region
+    const regionIdx = (address - 0x8000) >> 13;
+    this._prgBankMap[regionIdx] = bank8k;
+
     // 自动识别 bank 单位：8KB bank 直接用；16KB bank 拆半取
     if (rom[0] && rom[0].length === 8192) {
       // 每个 bank 就是 8KB，直接索引
@@ -442,6 +450,13 @@ class Mapper0 {
       const offset = (bank8k % 2) * 8192;
       copyArrayElements(rom[bank16k], offset, this.nes.cpu.mem, address, 8192);
     }
+  }
+
+  /** Return the 8KB PRG ROM bank index (before halving) mapped at the given CPU address */
+  getPrgBank(cpuAddr: number): number {
+    if (cpuAddr < 0x8000) return -1;
+    const regionIdx = (cpuAddr - 0x8000) >> 13;
+    return this._prgBankMap[regionIdx] ?? -1;
   }
 
   canWriteChr(_address: number): boolean {
