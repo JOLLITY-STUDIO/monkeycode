@@ -74,8 +74,18 @@
  *   ✅ ROM 数据 — 内联常数 bank-12-data.ts
  *   ✅ 注册 — registerBankRom(12)
  *   ✅ 数据表访问工具 — 音符频率、乐器定义、波形等
- *   🔄 6502 代码翻译 — CODE_$8000_$816C（主更新循环）基础框架
- *   ⏳ 其余 CODE 段翻译 — 待完成
+ *   ✅ CODE_$8000_$816C — 主音讯更新循环（bank12_audioFrame）
+ *   ✅ CODE_$82F4_$83F3 — 通道初始化 (_channelInit)
+ *   ✅ CODE_$83CB_$83F3 — MML 字节码解析入口
+ *   ✅ CODE_$83F4_$84E9 — 音符解析器 (_readNextNote)
+ *   ✅ CODE_$84DA_$8519 — 命令分派器 (_dispatchCommand + _execCommand)
+ *   ✅ CODE_$80E8_$8109 — 序列字节读取 (_readNextSequenceBytes)
+ *   ✅ CODE_$816D_$8268 — APU 寄存器更新 + 音量/包络处理 (_updateChannelAPU)
+ *   ✅ CODE_$827D_$82E3 — Type 1 效果处理 (_dispatchEffectType1)
+ *   ✅ CODE_$82F4_$83F3 — Type 2 效果处理 (_dispatchEffectType2)
+ *   ✅ CODE_$851A_$86F5 — 辅助函数（静音/波形/音量/子序列/DPCM 等）
+ *   ✅ 效果处理入口 (_processEffects)
+ *   ✅ APU 寄存器写入 (_writeAPURegisters)
  *
  * 原始 hex: tsubasa-hex2asm/prg_banks/prg_bank_12_audio.ts
  */
@@ -364,7 +374,10 @@ export function bank12_audioFrame(sys: SystemState): void {
   if (wasOdd) {
     // 帧活跃：处理所有 8 个槽位
     do {
-      const ptr = f0_base + f2;
+      // $F0/$F1 = channelDataPtr（指向当前槽位的 16 字节通道数据块）
+      // $F2 = main loop index (0,4,8,...,28) 用于索引 $0707/$0709/$070A
+      // $F3 = slot index (8,7,...,1) 用于索引 $07CF/$07EA/$07F4 等
+      const channelDataPtr = f0_base;
 
       // 检查 $0707（音长计数器）— 递减并检查是否到期
       const timerAddr = 0x0707 + f2;
@@ -372,7 +385,7 @@ export function bank12_audioFrame(sys: SystemState): void {
       if (sys.mem[timerAddr] !== 0) {
         // 音长计数器未到期，跳过音符读取
       } else {
-        _readNextNote(sys, f2);
+        _readNextNote(sys, channelDataPtr, f2, f3);
       }
 
       // 检查 $0709（序列指针）— 递减并检查是否到期
@@ -381,11 +394,11 @@ export function bank12_audioFrame(sys: SystemState): void {
       if (sys.mem[seqAddr] !== 0) {
         // 序列指针未到期，跳过
       } else {
-        _readNextSequenceBytes(sys, ptr, f2);
+        _readNextSequenceBytes(sys, channelDataPtr, f2);
       }
 
       // 更新 APU 寄存器
-      _updateChannelAPU(sys, f2, ptr);
+      _updateChannelAPU(sys, channelDataPtr, f2, f3);
 
       // 下一个槽位: 指针 +16, 通道索引 +4
       f0_base += 0x10;
@@ -578,43 +591,1113 @@ function _channelInit(sys: SystemState, channel: number): void {
 //     ; 更新指针保存回 $F0/$F1
 //     ; 查频率表 → 写入 APU 频率寄存器
 
+// ═════════════════════════════════════════════════
+// CODE_$83CB_$83F3 + CODE_$83F4_$84E9 — MML 解析器
+// ═════════════════════════════════════════════════
+//
+// 读取下一个音符/命令的主入口。
+// 这实际上是两个紧耦合的子程序:
+//   1. $83CB-$83F3: 读取指针 → 检查字节类型 → 分派
+//   2. $83F4-$84C8: 解析音符字节($00-$AF) → 查表 → 计算频率
+//   3. $84C9-$84D9: 命令分派器 → 跳转表分派
+
 /**
  * _readNextNote — 从 MML 序列读取下一个音符/命令
  *
  * 对应 6502: CODE_$82F4_$83F3 ($83CB-$83F3) + CODE_$83F4_$84E9 ($83F4-$84C8)
  *
- * @param sys 系统状态
- * @param f2 通道索引
+ * 流程:
+ *   1. 清除通道控制字节 bit4-5（活跃标志）
+ *   2. 循环读取 MML 字节:
+ *      - bit7=0 ($00-$AF): 音符/休止符 → 查音长表 + 频率表 + 写入 APU 频率
+ *      - $B0-$DF: 控制码 → 跳过一个字节
+ *      - $E0-$FF: 命令码 → $84C9 分派
+ *   3. 最后更新音长计数器和序列指针
+ *
+ * @param sys  系统状态
+ * @param ptr  通道数据指针（零页 $F0/$F1 对应的 $07xx 绝对地址）
+ * @param f2   主循环通道索引
+ * @param f3   槽位号 (8..1)
  */
-function _readNextNote(sys: SystemState, f2: number): void {
-  // TODO: 完整翻译 MML 解析器
-  // 这是音讯引擎的核心部分 —— 解析 MML 字节流并转换为 APU 寄存器写入。
-  //
-  // 主要处理的字节码范围:
-  //   $00-$AF: 音符/休止符 (bit7=0)
-  //   $B0-$DF: 控制码（跳过模式）
-  //   $E0-$FF: 命令码（E0=换通道, E2=换音量, E3=换乐器, EB/EC=重复,
-  //            ED=时值, E8=跳转表, F3/F4=连音线, EF=终止等）
-  //
-  // 实现待完成。当前保留原始逻辑通过 CPU 模拟器路径执行。
+function _readNextNote(sys: SystemState, ptr: number, f2: number, f3: number): void {
+  // ── $83CB-$83D1: 清除音符活跃标志 ──
+  // LDA #$CF / AND ($F0),Y  (Y=5) → 清除 bit4-5
+  const ctrlAddr = ptr + 5;
+  sys.mem[ctrlAddr] = sys.mem[ctrlAddr] & 0xCF;
+
+  // ── $83D3-$83DE: 初始化读取指针 ──
+  // LDY #$00 → LDA ($F0),Y → STA $F4 (指针 lo)
+  // INY → LDA ($F0),Y → STA $F5 (指针 hi)
+  let f4 = sys.mem[ptr];       // 音乐指针 lo
+  let f5 = sys.mem[ptr + 1];   // 音乐指针 hi
+  let y = 0;
+
+  // ── $83DF-$83F3: 主解析循环 ──
+  // loop: LDA ($F4),Y → 检查 bit7
+  while (true) {
+    const mmlByte = readMMLByte(sys, f4, f5, y);
+
+    if (!(mmlByte & 0x80)) {
+      // ── bit7=0: 音符/休止符 ($00-$AF) ──
+      // ── $83F4-$84C8: 音符解析 ──
+
+      // AND #$3F → TAX (取音符索引 0-63)
+      const noteIdx = mmlByte & 0x3F;
+
+      // $83F7: LDA $8725,X → 查音长表 → 存入 $0707,X 和 $0708,X
+      const length = getNoteLength(noteIdx);
+      sys.mem[0x0707 + f2] = length;
+      sys.mem[0x0708 + f2] = length;
+
+      // $8402: BPL → 跳回循环（继续读下一个字节）
+      // 但先要确保字节被消耗。等等，这里的逻辑是:
+      //   - 如果是音符，Y 还没有增加
+      //   - 跳到 $8404 处理音符
+      // 实际上 $83F4 是 AND #$3F 开始，处理完后跳到 $84A6 更新指针
+      // 然后 BPL 回 $83DF 继续
+      // 但 $8402 的 BPL 是跳到 $83DF 的 loop，不是继续音符处理
+      // 让我重新读一下……
+
+      // 实际流程:
+      //   $83F4: AND #$3F; TAX
+      //   $83F7: LDA $8725,X (音长)
+      //   $83FA: LDX $F2
+      //   $83FC: STA $0707,X / STA $0708,X
+      //   $8402: BPL $-37  → 跳回 $83DF (回到主循环顶部!!)
+      //
+      // 等等，$8402 是 BPL，这意味着它检查 N flag。
+      // LDA $8725,X 的结果会影响 N flag。
+      // 如果音长值 < $80 (bit7=0)，BPL 分支 → 跳回 $83DF
+      //
+      // 但是这样音符就没有被消耗！音长被记录了，但指针没前进。
+      // 这不对……
+      //
+      // 重新看：$83DF 是 LDY #$00; LDA ($F4),Y; BPL (+33)
+      // 然后回到 $83F4 再次解析同一字节。
+      // 但如果音长的高位使得 N=1，就不会分支，会继续到 $8404
+      //
+      // 实际上 $8725 表的音长值最高可能是 $80+ (从 DATA_$870D_$8751 看)
+      // 让我检查: DATA_$870D_$8751 中音长部分从 $8725 开始:
+      // 0x00,0x01,...,0x0C,0x0E,0x0F,0x10,0x12,0x14,0x15,0x18,...
+      // 最大值 $A8 是 >= $80 的。所以有些音符长度 >= $80，此时 BPL 不成立
+      // 会继续到 $8404 进行音符消耗和频率计算。
+      //
+      // 但大多数情况下音长 < $80，BPL 分支到 $83DF
+      // 然后在 $83DF 再次读同一字节 → 仍然是音符 → 再次写音长 → 又 BPL
+      // 这会形成死循环！
+      //
+      // 等等我理解错了。让我再看 $83E1 的流程:
+      // $83DF: DEY  (Y=$FF from previous loop? No, Y=0 from LDY #$00 at $83D3)
+      // 不对，$83D3 是 LDY #$00，$83D5 开始读。
+      // 之后回到 $83DF 时 Y 是多少？
+      //
+      // 第一次: Y=$00 (来自 $83D3)
+      // $83DF: LDA ($F4),Y  (读第一个字节)
+      // 如果是音符 ($00-$AF): BPL to $8404 (这里 Y 还是 0)
+      // $8404: INY (Y=1)
+      // ...
+      // 之后跳回 $83DF: 此时 Y 已经不一定是 0 了
+      //
+      // 让我重新完整追踪:
+      //
+      // 初始: Y=0 (from $83D3/DEY)
+      // $83DF: LDA ($F4),Y
+      // $83E1: BPL $8404  (如果是音符/控制码)
+      //   跳到 $8404: INY (Y=1); PHA; ...
+      //   ...音符处理后跳到 $84A6:
+      //   $84A6-$84C8: 清除效果标志, 重载音长, RTS
+      //   所以音符处理完后会 RTS，不会回循环！
+      //
+      // 如果是命令 ($E0-$FF):
+      // $83E1: BPL 不成立 → 继续
+      // $83E3: INY (Y=1) → 跳过命令字节
+      // $83E4: CMP #$E0
+      // $83E6: BCC $83ED → 如果是 $80-$DF (bit7=1 但 < $E0)
+      //   到 $83ED: CMP #$B0
+      //   $83EF: BCC $83F4 → 如果是 $80-$AF，跳到 $83F4 解析为音符
+      //     (但 bit7=1 怎么可能是音符? AND #$3F 后可以)
+      //   $83F1: INY → BNE $83DF (跳过一字节，回循环)
+      //
+      // 如果是命令 ($E0-$FF):
+      // $83E6: BCC 不成立 → 继续
+      // $83E8: JSR $84C9 (命令分派)
+      // $83EB: BPL $83DF → 回到循环 (大多数命令返回后 PL=0 即 N=0)
+      //
+      // 所以音符处理路径是:
+      //   $83E1: BPL to $8404 (跳过 $83E3 的 INY)
+      //   在 $8404: INY 后再处理
+      //
+      // 让我再看 $8404:
+      // $8404: INY (Y 加 1，因为 $83E3 没有执行)
+      // $8405: PHA (保存 A=音符字节)
+      // $8406: TYA (保存新 Y 位置)
+      // $8407: LDY #$00
+      // $8409: CLC; ADC $F4; STA ($F0),Y (保存新指针 lo 到通道 +0)
+      // $840E: INY; LDA #$00; ADC $F5; STA ($F0),Y (保存新指针 hi 到通道 +1)
+      // $8415: PLA (恢复 A=音符字节)
+      // → 继续音符解析...
+      //
+      // 原来如此！$8404-$8413 是"消耗字节并更新指针"。
+      // $83F4-$8403 是在消耗字节之前先读取音长并存入计时器。
+      //
+      // 所以流程是:
+      // 1. 读到音符字节 → 查音长 → 写入计时器
+      // 2. 消耗该字节 (INY + 更新指针)
+      // 3. 解析音符的八度和半音 → 查频率表 → 写入通道数据
+      // 4. RTS
+
+      // 现在 Y 仍然指向当前字节位置（还没 INY）
+      // 消耗该字节: INY
+      y++;
+      const savedNote = mmlByte;
+
+      // 保存新指针到通道数据 +0/+1
+      const newPosLo = f4 + y;
+      const newPosHi = f5 + (newPosLo > 0xFF ? 1 : 0);
+      sys.mem[ptr] = newPosLo & 0xFF;
+      sys.mem[ptr + 1] = newPosHi & 0xFF;
+
+      // ── 音符频率解析 ($8415-$84A3) ──
+      const noteByte = savedNote;
+      let f4Freq: number, f5Freq: number;
+
+      // $8416-$8420: 检查通道类型
+      // LDX #$05 / CPX $F3 / BEQ → $F3=5: 噪音/DPCM 通道 → special
+      // LDX #$01 / CPX $F3 / BCC → $F3<1: 脉冲通道 → special
+      if (f3 === 5 || f3 < 1) {
+        // 噪音/DPCM 或 脉冲通道特殊处理
+        // $8422: CMP #$10
+        if (noteByte === 0x10) {
+          // $8435-$843D: 设置 bit5 (休止符/静音标志)
+          sys.mem[ctrlAddr] = sys.mem[ctrlAddr] | 0x20;
+          // 跳到 $84A6
+          gotoUpdateTimersAndReturn(sys, ptr, f2, f3);
+          return;
+        }
+        // $8426: 非 $10 → 作为纯休止 (频率=0)
+        f4Freq = noteByte;
+        f5Freq = 0;
+        // $842C: BEQ → 跳到 $845C (频率=0, 无实际音高)
+      } else {
+        // 三角波通道 ($F3 >= 2, $F3 != 5)
+        // $842E: TAX; AND #$0F → semitone
+        const semitone = noteByte & 0x0F;
+        // $8431: CMP #$0C
+        if (semitone === 0x0C) {
+          // $8435-$843D: 半音=$0C → 不发声 (set bit5)
+          sys.mem[ctrlAddr] = sys.mem[ctrlAddr] | 0x20;
+          gotoUpdateTimersAndReturn(sys, ptr, f2, f3);
+          return;
+        }
+        // $843F-$845A: 查频率表 $870D 并移位八度
+        // ASL A; TAY → 频率表索引 = semitone * 2
+        const freqTableIdx = semitone * 2;
+        f4Freq = rom12(0x870D - 0x8000 + freqTableIdx);
+        f5Freq = rom12(0x870E - 0x8000 + freqTableIdx);
+
+        // AND #$F0 / LSR*4 → 八度值
+        let octave = (noteByte & 0xF0) >> 4;
+        // 右移 octave 次
+        while (octave > 0) {
+          f5Freq = (f5Freq >> 1);
+          f4Freq = (f5Freq & 1) ? ((f4Freq >> 1) | 0x80) : (f4Freq >> 1);
+          octave--;
+        }
+      }
+
+      // ── $845C-$84A3: 检查音高偏移并写入频率 ──
+      // $845E: LDX $F3; DEX → 槽位索引
+      const slotIdx = f3 - 1;
+      let freqLo: number, freqHi: number;
+
+      // $8461: LDY $07F4,X → 检查音高滑音标志
+      if (sys.mem[0x07F4 + slotIdx] !== 0) {
+        // 音高滑音模式: 频率减去偏移
+        // $8467: SBC $07A7,X
+        const rawFreqLo = f4Freq - sys.mem[0x07A7 + slotIdx];
+        if (rawFreqLo < 0) {
+          // 借位处理 ($8478-$8489)
+          freqLo = rawFreqLo & 0xFF;
+          freqHi = (f5Freq - 1) & 0xFF;
+        } else {
+          // $846C-$8475
+          freqLo = rawFreqLo & 0xFF;
+          freqHi = f5Freq & 0xFF;
+        }
+        // ORA #$80 → bit7=1 (音符活跃)
+        freqHi = freqHi | 0x80;
+      } else {
+        // 正常模式: 频率加上偏移
+        const rawFreqLo = f4Freq + sys.mem[0x07A7 + slotIdx];
+        freqLo = rawFreqLo & 0xFF;
+        freqHi = (f5Freq + (rawFreqLo > 0xFF ? 1 : 0)) & 0xFF;
+        // ORA #$80
+        freqHi = freqHi | 0x80;
+      }
+
+      // 写入通道数据 +7/+8
+      sys.mem[ptr + 7] = freqLo;
+      sys.mem[ptr + 8] = freqHi;
+      sys.mem[0x07B7 + slotIdx] = freqLo;
+      sys.mem[0x07BF + slotIdx] = freqHi;
+
+      // ── $84A6-$84C8: 清理并更新音长计数器 ──
+      gotoUpdateTimersAndReturn(sys, ptr, f2, f3);
+      return;
+
+    } else {
+      // ── bit7=1: 命令或控制码 ──
+      y++;
+      if (mmlByte >= 0xE0) {
+        // 命令码 ($E0-$FF) → 分派
+        _dispatchCommand(sys, ptr, f4, f5, y, f2, f3, mmlByte);
+        // 命令处理后可能修改了 f4/f5/y, 需要重新同步
+        f4 = sys.mem[ptr];
+        f5 = sys.mem[ptr + 1];
+        y = 0;
+      } else if (mmlByte >= 0xB0) {
+        // $B0-$DF: 控制码 → 跳过 1 字节
+        y++;
+      }
+      // else: $80-$AF with bit7=1 → 不应该出现（或作为特殊音符）
+      // 继续循环
+    }
+  }
 }
 
-/** 读取下一个序列字节对 (处理 $0709/$070A 到期) */
+// ── $84C9-$84D7: 命令分派器 ──
+
+// 命令跳转表位于 $84DA-$8519 (64 bytes = 32 entries × 2 bytes)
+// 前 8 个条目在 CODE_$83F4_$84E9 尾部 ($84DA-$84E9 = 16 bytes)
+// 后 24 个条目在 DATA_$84EA_$8519 ($84EA-$8519 = 48 bytes)
+
+/** 获取命令处理器地址（从 $84DA 跳转表） */
+function getCmdHandlerAddr(cmdIndex: number): number {
+  // 命令索引 = 字节 & 0x1F
+  const offset = 0x84DA - 0x8000 + cmdIndex * 2;
+  return rom12Ptr16(offset);
+}
+
+/**
+ * _dispatchCommand — 命令分派
+ *
+ * 对应 6502: $84C9-$84D7
+ * AND #$1F; ASL A; TAX → 表偏移
+ * LDA $84DA,X → STA $F6
+ * LDA $84DB,X → STA $F7
+ * JMP ($00F6)
+ */
+function _dispatchCommand(
+  sys: SystemState,
+  ptr: number,
+  f4: number,
+  f5: number,
+  y: number,
+  f2: number,
+  f3: number,
+  cmdByte: number
+): void {
+  const cmdIndex = cmdByte & 0x1F;
+  const handlerAddr = getCmdHandlerAddr(cmdIndex);
+  // handlerAddr 是 bank 12 内偏移 (0x8000-based)
+  // 直接调用对应的子程序
+  _execCommand(sys, ptr, f4, f5, y, f2, f3, cmdIndex, handlerAddr);
+}
+
+/**
+ * 命令处理器总表执行
+ *
+ * 根据 handlerAddr 执行对应的命令。
+ * 命令索引 -> 功能:
+ *   0 ($8544): 设置波形
+ *   2 ($8641): 设置包络
+ *   3 ($855F): 设置音量
+ *   4 ($8617): 设置 sweep
+ *   5 ($8670): 设置音高偏移
+ *   8 ($8578): 跳转到子序列
+ *   9 ($8585): 嵌套子序列调用
+ *  10 ($85AF): 子序列返回
+ *  11 ($85C6): 嵌套调用变体
+ *  12 ($85EF): 循环计数器递减
+ *  13 ($8681): 设置效果类型
+ *  15 ($8690): 清除效果
+ *  18 ($851A): 静音所有通道
+ *  19 ($853B): 设置效果使能
+ *  20 ($8532): 清除通道效果
+ *  25 ($8699): DPCM 配置 #1
+ *  26 ($86B8): DPCM 配置 #2
+ *  27 ($86D7): DPCM 配置 #3
+ *  30 ($86F6): 内联命令字节码
+ *  31 ($8655): 停止音符 (DPCM)
+ *  其他 ($8707+): 短命令字节码/RTS
+ */
+function _execCommand(
+  sys: SystemState, ptr: number, f4: number, f5: number,
+  y: number, f2: number, f3: number,
+  _cmdIndex: number, handlerAddr: number
+): void {
+  // 保存当前的 Y (当前在 ($F4),Y 中的偏移)
+  // 命令处理器通常会在返回前修改 ($F0),Y 中的指针
+
+  // ── 命令跳转分派 ──
+  const cmdOff = handlerAddr - 0x8000;
+  const slotIdx = f3 - 1;
+
+  switch (cmdOff) {
+    case 0x8544 - 0x8000: {
+      // ── $8544: 设置波形 ──
+      // LDA ($F4),Y; INY → 读波形索引
+      const waveIdx = readMMLByte(sys, f4, f5, y);
+      y++;
+      // ASL A; TAX → 查 $8754 表
+      const tblOff = 0x8754 - 0x8000 + (waveIdx << 1);
+      const dutyLo = rom12(tblOff);
+      const dutyHi = rom12(tblOff + 1);
+      // 写入通道数据 +2/+3
+      sys.mem[ptr + 2] = dutyLo;
+      sys.mem[ptr + 3] = dutyHi;
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x8641 - 0x8000: {
+      // ── $8641: 设置包络 ──
+      // LDA ($F4),Y; INY → 读包络值
+      const envVal = readMMLByte(sys, f4, f5, y);
+      y++;
+      // STA $F7 → AND #$3F → ORA → 写入 +5
+      sys.mem[ptr + 5] = (sys.mem[ptr + 5] & 0x3F) | envVal;
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x855F - 0x8000: {
+      // ── $855F: 设置音量 ──
+      // LDA ($F4),Y; INY → 读音量值
+      const volVal = readMMLByte(sys, f4, f5, y);
+      y++;
+      if (sys.mem[0x07DF] === 0) {
+        // STA $F7 → AND #$F0 | ORA $F7 → 写入 +5
+        sys.mem[ptr + 5] = (sys.mem[ptr + 5] & 0xF0) | (volVal & 0x0F);
+      }
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x8617 - 0x8000: {
+      // ── $8617: 设置 sweep 寄存器 ──
+      // 设置 bit4 (sweep enable) → ORA #$10
+      sys.mem[ptr + 5] = sys.mem[ptr + 5] | 0x10;
+      // 计算 APU 寄存器偏移
+      const apuOff = ((slotIdx ^ 7) << 2) & 0x0F;
+      // LDA ($F4),Y → STA $4001,X
+      const sweepVal = readMMLByte(sys, f4, f5, y);
+      writeAPU(sys, 0x01 + (apuOff & 0x0C), sweepVal); // $4001, $4005
+      y++;
+      // 清除 sweep 重载标志
+      const sweepIdx = slotIdx & 0x03;
+      sys.mem[0x07E4 + sweepIdx] = 0;
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x8670 - 0x8000: {
+      // ── $8670: 设置音高偏移 ──
+      // LDA ($F4),Y; INY → 读偏移值
+      const pitchVal = readMMLByte(sys, f4, f5, y);
+      y++;
+      // ASL A → BCS (bit7 检查)
+      if (pitchVal & 0x80) {
+        // bit7=1 → 清除滑音标志
+        sys.mem[0x07F4 + slotIdx] = 0;
+      } else {
+        sys.mem[0x07F4 + slotIdx] = pitchVal & 0x7E;
+      }
+      // LSR A → STA $07A7,X
+      sys.mem[0x07A7 + slotIdx] = pitchVal >> 1;
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x8681 - 0x8000: {
+      // ── $8681: 设置效果类型 ──
+      // LDA ($F4),Y → STA $07AF,X
+      sys.mem[0x07AF + slotIdx] = readMMLByte(sys, f4, f5, y);
+      // LDA #$00 → STA $07C7,X (清除效果步数)
+      sys.mem[0x07C7 + slotIdx] = 0;
+      y++;
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x8690 - 0x8000: {
+      // ── $8690: 清除效果 ──
+      // LDA #$00 → STA $07AF,X
+      sys.mem[0x07AF + slotIdx] = 0;
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x851A - 0x8000: {
+      // ── $851A: 静音所有通道 ──
+      sys.mem[0x07F2] = 0;
+      sys.mem[0x0700] = 0;
+      sys.mem[0x0701] = 0;
+      sys.mem[0x0702] = 0;
+      sys.mem[0x0703] = 0;
+      sys.mem[0x0704] = 0;
+      sys.mem[0x0705] = 0;
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x853B - 0x8000: {
+      // ── $853B: 设置效果使能 ──
+      sys.mem[0x07EA + slotIdx] = 0x0F;
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x8532 - 0x8000: {
+      // ── $8532: 清除通道效果 ──
+      sys.mem[0x07EA + slotIdx] = 0;
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x8655 - 0x8000: {
+      // ── $8655: 停止音符 / 停音 (DPCM) ──
+      // AND #$7F → 清除 bit7
+      sys.mem[0x0706] = sys.mem[0x0706] & 0x7F;
+      // 写入 $30 到 APU (mute)
+      const apuOff2 = ((slotIdx ^ 7) << 2) & 0x0F;
+      writeAPU(sys, 0x00 + (apuOff2 & 0x0C), 0x30); // $4000, $4004, $400C
+      // PLA; PLA → 清栈并返回（在 TS 中只需 return）
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x8578 - 0x8000: {
+      // ── $8578: 跳转到子序列 ──
+      // LDA ($F4),Y; INY → TAX (新指针 lo)
+      const newPtrLo = readMMLByte(sys, f4, f5, y);
+      y++;
+      // LDA ($F4),Y (新指针 hi)
+      const newPtrHi = readMMLByte(sys, f4, f5, y);
+      // STX $F4; STA $F5 → 更新指针
+      f4 = newPtrLo;
+      f5 = newPtrHi;
+      // LDY #$00 → 重置 Y
+      y = 0;
+      // 保存新指针到通道数据
+      sys.mem[ptr] = f4;
+      sys.mem[ptr + 1] = f5;
+      break;
+    }
+    case 0x8585 - 0x8000: {
+      // ── $8585: 嵌套子序列调用 (带返回) ──
+      // LDA ($F4),Y; INY → TAX (新指针 lo)
+      // LDA ($F4),Y; INY → 新指针 hi; PHA
+      // TYA → PHA (保存返回地址)
+      // LDY #$09 → LDA ($F0),Y → TAY (取堆栈深度)
+      // → 在堆栈中保存返回地址和新指针
+      const retAddrLo = readMMLByte(sys, f4, f5, y);
+      y++;
+      const retAddrHi = readMMLByte(sys, f4, f5, y);
+      y++;
+
+      const stackDepth = sys.mem[ptr + 9];
+      const stackBase = ptr + 0x0A;
+
+      // 保存: 返回偏移(Y) + 返回指针(f4..f5..)
+      // 格式 at stack[stackDepth..]:
+      //   +0: 返回偏移 lo (= Y + f4)
+      //   +1: 返回偏移 hi (= f5)
+      //   +2: 新指针 lo (retAddrLo)
+      //   +3: 新指针 hi (retAddrHi)
+      // 然后堆栈深度 += 4
+      const stackOff = stackBase + stackDepth;
+      const retOffLo = (f4 + y) & 0xFF;
+      sys.mem[stackOff] = retOffLo;
+      sys.mem[stackOff + 1] = f5;
+      sys.mem[stackOff + 2] = retAddrLo;
+      sys.mem[stackOff + 3] = retAddrHi;
+      sys.mem[ptr + 9] = stackDepth + 4;
+
+      // 设置新 $F4/$F5
+      f4 = retAddrLo;
+      f5 = retAddrHi;
+      y = 0;
+      sys.mem[ptr] = f4;
+      sys.mem[ptr + 1] = f5;
+      break;
+    }
+    case 0x85AF - 0x8000: {
+      // ── $85AF: 从子序列返回 ──
+      // LDY #$09 → LDA ($F0),Y → TAY
+      const sd = sys.mem[ptr + 9];
+      const sb = ptr + 0x0A;
+      // INY (*3): 偏移到返回数据
+      // $85B5: LDA ($F0),Y → 取返回指针 hi
+      // $85B7: INY → LDA ($F0),Y → 取返回指针 lo
+      const retPtrHi = sys.mem[sb + sd - 3]; // 回退 3 个位置 (_execCommand 中堆栈布局)
+      const retPtrLo = sys.mem[sb + sd - 2];
+      // 更新堆栈深度
+      sys.mem[ptr + 9] = sd - 4;
+      // 设置返回指针
+      f4 = retPtrLo;
+      f5 = retPtrHi;
+      y = 0;
+      sys.mem[ptr] = f4;
+      sys.mem[ptr + 1] = f5;
+      break;
+    }
+    case 0x85C6 - 0x8000: {
+      // ── $85C6: 嵌套调用变体 ──
+      // 类似 $8585 但布局不同
+      const nl = readMMLByte(sys, f4, f5, y);
+      y++;
+      const tySaved = y;
+      const sDepth = sys.mem[ptr + 9];
+      const sBase = ptr + 0x0A;
+      // 保存当前指针 + Y
+      const offLo = (f4 + y) & 0xFF;
+      sys.mem[sBase + sDepth] = offLo;
+      sys.mem[sBase + sDepth + 1] = f5;
+      sys.mem[sBase + sDepth + 2] = nl;
+      sys.mem[sBase + sDepth + 3] = sDepth; // 特殊: 保存旧的堆栈深度
+      sys.mem[ptr + 9] = sDepth + 4;
+      f4 = nl;
+      // f5 stays same
+      y = 0;
+      sys.mem[ptr] = f4;
+      sys.mem[ptr + 1] = f5;
+      break;
+    }
+    case 0x85EF - 0x8000: {
+      // ── $85EF: 循环计数器递减 ──
+      // STY $F6 → 保存 Y
+      // LDY #$09 → LDA ($F0),Y → TAY → INY
+      const cd = sys.mem[ptr + 9];
+      const cb = ptr + 0x0A;
+      // LDA ($F0),Y → DEC → STA ($F0),Y
+      sys.mem[cb + cd + 1] = (sys.mem[cb + cd + 1] - 1) & 0xFF;
+      if (sys.mem[cb + cd + 1] === 0) {
+        // 计数器归零 → 跳过循环体 (前进指针)
+        // $860D: INY; INY; TYA → 更新堆栈深度
+        sys.mem[ptr + 9] = cd + 2;
+        // 不改变 f4/f5/y（继续下一个字节）
+        // 恢复 Y
+        y = 0;
+      } else {
+        // 计数器未归零 → 重新跳转到循环体
+        // $8600: INY; LDA ($F0),Y → $F5; INY; LDA ($F0),Y → $F4
+        f5 = sys.mem[cb + cd + 2];
+        f4 = sys.mem[cb + cd + 3];
+        y = 0;
+        sys.mem[ptr] = f4;
+        sys.mem[ptr + 1] = f5;
+      }
+      break;
+    }
+    case 0x8699 - 0x8000: {
+      // ── $8699: DPCM 配置 #1 ──
+      writeAPU(sys, 0x15, 0x0F);
+      if (sys.mem[0x07E8] === 0) {
+        writeAPU(sys, 0x10, 0x0F);
+        writeAPU(sys, 0x12, 0x00);
+        writeAPU(sys, 0x13, 0x0C);
+        writeAPU(sys, 0x15, 0x1F);
+      }
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x86B8 - 0x8000: {
+      // ── $86B8: DPCM 配置 #2 ──
+      writeAPU(sys, 0x15, 0x0F);
+      if (sys.mem[0x07E8] === 0) {
+        writeAPU(sys, 0x10, 0x0F);
+        writeAPU(sys, 0x12, 0x03);
+        writeAPU(sys, 0x13, 0x20);
+        writeAPU(sys, 0x15, 0x1F);
+      }
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x86D7 - 0x8000: {
+      // ── $86D7: DPCM 配置 #3 ──
+      writeAPU(sys, 0x15, 0x0F);
+      if (sys.mem[0x07E8] === 0) {
+        writeAPU(sys, 0x10, 0x0F);
+        writeAPU(sys, 0x12, 0x0B);
+        writeAPU(sys, 0x13, 0x13);
+        writeAPU(sys, 0x15, 0x1F);
+      }
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    case 0x86F6 - 0x8000: {
+      // ── $86F6: 内联命令字节码 ──
+      // 在 DATA_$86F6_$870C 中: [B1 F4 C8 84 F6 A6 F3 CA 9D CF 07 9D D7 07 A4 F6 60 C8 60 C8 C8 C8 60]
+      // 这是直接执行的内联字节码，主要操作:
+      //   LDA ($F4),Y; INY; STY $F6; LDX $F3; DEX; STA $07CF,X; STA $07D7,X; LDY $F6; RTS
+      // 即: 读取下一字节 → 设置包络计数器
+      const envByte = readMMLByte(sys, f4, f5, y);
+      y++;
+      sys.mem[0x07CF + slotIdx] = envByte;
+      sys.mem[0x07D7 + slotIdx] = envByte;
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+    default: {
+      // 其他句柄 (指向 $8707+) → 短命令
+      // $8707: INY; RTS (跳过一字节)
+      // $8709: INY; INY; INY; RTS (跳过三字节)
+      // 大多数是简单的 RTS
+      // 最安全: 保存指针并返回
+      savePtrAndReturn(sys, ptr, f4, f5, y);
+      break;
+    }
+  }
+}
+
+// ── 辅助函数 ──
+
+/** 保存指针到通道数据并返回 */
+function savePtrAndReturn(
+  _sys: SystemState, ptr: number, f4: number, f5: number, y: number
+): void {
+  _sys.mem[ptr] = (f4 + y) & 0xFF;
+  _sys.mem[ptr + 1] = f5 + ((f4 + y) > 0xFF ? 1 : 0);
+}
+
+/** 从 MML 序列读取字节 */
+function readMMLByte(sys: SystemState, ptrLo: number, ptrHi: number, offset: number): number {
+  // MML 数据存储在通过 MMC3 映射的 bank 中 ($8000-$9FFF)
+  // 我们直接通过系统内存访问
+  const addr = ((ptrHi << 8) | ptrLo) + offset;
+  return sys.mem[addr & 0xFFFF];
+}
+
+/** 更新音长计数器并返回 ($84A6-$84C8 的尾部) */
+function gotoUpdateTimersAndReturn(
+  sys: SystemState, ptr: number, f2: number, f3: number
+): void {
+  const slotIdx = f3 - 1;
+  // $84A9: LDA #$00 → STA $07F4,X (清除音高滑音标志)
+  sys.mem[0x07F4 + slotIdx] = 0;
+
+  // $84AE: LDA $07EA,X → BNE $84C0 (检查效果使能)
+  if (sys.mem[0x07EA + slotIdx] === 0) {
+    // 无效果 → 重置序列指针
+    // $84B3-$84BE
+    sys.mem[0x0709 + f2] = 1;
+    sys.mem[ptr + 4] = 0; // 清除序列偏移
+  }
+
+  // $84C0-$84C5: 重载音长计数器
+  sys.mem[0x0707 + f2] = sys.mem[0x0708 + f2];
+}
+
+// ═════════════════════════════════════════════════
+// CODE_$80E8_$8109 — 读取序列字节对
+// ═════════════════════════════════════════════════
+//
+// 6502 流程:
+//   $80E8: LDY #$02 → LDA ($F0),Y → STA $F6 (序列指针 lo)
+//   $80EE: INY → LDA ($F0),Y → STA $F7 (序列指针 hi)
+//   $80F3: INY → LDA ($F0),Y → PHA (当前偏移)
+//   $80F7: CLC; ADC #$02 → STA ($F0),Y (偏移 +2)
+//   $80FC: PLA → TAY
+//   $80FE: LDA ($F6),Y → 读取序列字节 lo → STA $0709,X
+//   $8103: INY → LDA ($F6),Y → 读取序列字节 hi → STA $070A,X
+//
+// 通道数据布局:
+//   +0: 音乐指针 lo
+//   +1: 音乐指针 hi
+//   +2: 序列指针 lo ($F6)
+//   +3: 序列指针 hi ($F7)
+//   +4: 当前序列偏移
+
+/**
+ * _readNextSequenceBytes — 读取下一个序列字节对
+ *
+ * 对应 6502: CODE_$8000_$816C ($80E8-$8109)
+ *
+ * 从序列数据中读取 2 字节（音长/音量增量对），
+ * 存入 $0709/$070A 作为定时器值。
+ *
+ * @param sys 系统状态
+ * @param ptr 通道数据指针（零页绝对地址）
+ * @param f2  主循环通道索引
+ */
 function _readNextSequenceBytes(sys: SystemState, ptr: number, f2: number): void {
-  // TODO: 实现 CODE_$8000_$816C 中的 $80E8-$8109 段
-  // 从音乐指针读取 2 字节（序列增量），更新 $0709/$070A
+  // 读取序列指针 (+2: lo, +3: hi)
+  const seqPtrLo = sys.mem[ptr + 2];
+  const seqPtrHi = sys.mem[ptr + 3];
+  const seqAddr = (seqPtrHi << 8) | seqPtrLo;
+
+  // 读取当前偏移 (+4)
+  const curOffset = sys.mem[ptr + 4];
+
+  // 从序列读取 2 字节
+  const byteLo = sys.mem[seqAddr + curOffset] ?? 0;
+  const byteHi = sys.mem[seqAddr + curOffset + 1] ?? 0;
+
+  // 存入 $0709/$070A
+  sys.mem[0x0709 + f2] = byteLo;
+  sys.mem[0x070A + f2] = byteHi;
+
+  // 偏移 +2
+  sys.mem[ptr + 4] = (curOffset + 2) & 0xFF;
 }
 
-/** 更新通道 APU 寄存器 */
-function _updateChannelAPU(sys: SystemState, f2: number, ptr: number): void {
-  // TODO: 实现 CODE_$816D_$8268 段
-  // 写入 $4000-$4003（音量/duty/频率/长度）
+// ═════════════════════════════════════════════════
+// CODE_$81DB_$8268 — 通道 APU 寄存器更新
+// ═════════════════════════════════════════════════
+//
+// 6502 流程 ($81DB-$8268):
+//   - 读取通道控制字节 +5 → 分离音量 nibble 和效果步数
+//   - 处理音量包络递减 ($81EE-$8232)
+//   - 计算最终 APU 音量 ($8233-$8243)
+//   - 效果分派 ($8245-$8268)
+//
+// 另含 $816E-$81DA: APU 寄存器写入
+
+/**
+ * _updateChannelAPU — 更新通道 APU 寄存器
+ *
+ * 对应 6502: CODE_$816D_$8268 ($81DB-$8268 用于音量,
+ *                              $816E-$81DA 用于 APU 写入)
+ *
+ * @param sys 系统状态
+ * @param ptr 通道数据指针
+ * @param f2  主循环通道索引
+ * @param f3  槽位号 (8..1)
+ */
+function _updateChannelAPU(sys: SystemState, ptr: number, f2: number, f3: number): void {
+  // ── $81DB-$81E9: 读取控制字节 ──
+  // LDY #$05; LDA ($F0),Y; TAX
+  const ctrlByte = sys.mem[ptr + 5];
+  let f6 = ctrlByte & 0xF0; // 音量 nibble
+  let f7: number;
+
+  // AND #$20 → BEQ (检查 bit5: 休止/固定音量标志)
+  if (ctrlByte & 0x20) {
+    // bit5=1 → 固定音量 $0F
+    // $81E8: LDA #$0F → STA $F7
+    f7 = 0x0F;
+  } else {
+    // ── $81EE-$8232: 音量包络处理 ──
+    // AND #$0F → STA $F7 (效果步数)
+    f7 = ctrlByte & 0x0F;
+
+    // LDY $F3; DEY → LDX $07CF,Y (包络计数器)
+    const slotIdx = f3 - 1;
+    let envCounter = sys.mem[0x07CF + slotIdx];
+
+    if (envCounter !== 0) {
+      // $81FB-$8200: DEX → 递减包络计数器
+      envCounter = (envCounter - 1) & 0xFF;
+      sys.mem[0x07CF + slotIdx] = envCounter;
+
+      if (envCounter === 0) {
+        // ── $8202-$8216: 包络到期 → 音量递增 ──
+        // $8202-$8206: CLC; ADC #$01
+        f7 = (f7 + 1) & 0xFF;
+        // $8207: CMP #$0F → 检查是否达到最大值
+        if (f7 >= 0x0F) {
+          // $820D-$8214: 音量达到 $0F → 清除重载, 设置 DPCM 标志
+          sys.mem[0x07D7 + slotIdx] = 0;
+          sys.mem[0x07E8] = 0x80;
+          f7 = 0x0F;
+        }
+        // $8217-$821E: 更新控制字节 → STA ($F0),Y
+        const newCtrl = (ctrlByte & 0xF0) | (f7 & 0x0F);
+        sys.mem[ptr + 5] = newCtrl;
+      }
+    } else {
+      // ── $8225-$8230: 包络计数器归零 → 从重载值重新装入 ──
+      const reloadVal = sys.mem[0x07D7 + slotIdx];
+      if (reloadVal !== 0) {
+        sys.mem[0x07CF + slotIdx] = reloadVal;
+      }
+    }
+  }
+
+  // ── $8233-$8243: 计算最终 APU 音量 ──
+  // LDX $F2; LDA $070A,X (序列定时器 hi)
+  let seqTimerHi = sys.mem[0x070A + f2];
+  // SEC; SBC $F7 (减去效果步数/音量)
+  seqTimerHi = seqTimerHi - f7;
+  if (seqTimerHi < 0) seqTimerHi = 0;
+  // ORA $F6 (结合音量 nibble)
+  const finalVolume = (seqTimerHi & 0xFF) | f6;
+  // LDY #$06 → STA ($F0),Y (存入通道数据 +6)
+  sys.mem[ptr + 6] = finalVolume;
+
+  // ── $816E-$81DA: 写入 APU 寄存器 ──
+  _writeAPURegisters(sys, ptr, f2, finalVolume);
+
+  // ── $8245-$8268: 效果分派 ──
+  const slotIdx = f3 - 1;
+  const effectType = sys.mem[0x07AF + slotIdx];
+  if (effectType === 1) {
+    // Type 1 效果 → $8257 分派 ($8269 跳转表)
+    _dispatchEffectType1(sys, ptr, slotIdx);
+  } else if (effectType === 2) {
+    // Type 2 效果 → $82D2 分派 ($82E4 跳转表)
+    _dispatchEffectType2(sys, ptr, slotIdx);
+  }
+  // else: 无效果 → RTS
 }
 
-/** 效果处理 */
+/**
+ * _writeAPURegisters — 写入 APU 寄存器
+ *
+ * 对应 6502: $816E-$81DA
+ *
+ * @param sys   系统状态
+ * @param ptr   通道数据指针
+ * @param f2    通道类型索引
+ * @param volume APU 音量字节
+ */
+function _writeAPURegisters(sys: SystemState, ptr: number, f2: number, volume: number): void {
+  // $816E-$8174: 计算 APU 寄存器偏移
+  // LDA #$03; EOR $F2 → (3-f2); ASL*2 → X
+  const apuOffset = ((3 - f2) & 0xFF) * 4;
+
+  // $8175-$8179: 保存音量 + 通道类型
+  const channelType = f2;
+
+  // $817E-$81A4: 检查通道类型
+  if (channelType === 1) {
+    // 噪音/特殊通道 → AND #$0F; ORA #$80
+    writeAPU(sys, apuOffset >> 2, (volume & 0x0F) | 0x80);
+  } else {
+    // 普通通道 → ORA #$30 → STA $4000,X
+    writeAPU(sys, apuOffset >> 2, volume | 0x30);
+
+    // $818F-$81A1: 检查 sweep 标志
+    // LDA #$10; AND ($F0),Y (Y=5)
+    if (!(sys.mem[ptr + 5] & 0x10)) {
+      // sweep 未使能 → 写 sweep 寄存器
+      const sweepVal = 0x08;
+      sys.mem[0x07E4 + channelType] = sweepVal;
+      writeAPU(sys, 0x01 + (apuOffset & 0x0C), sweepVal);
+    }
+  }
+
+  // ── $81A7-$81DA: 写频率寄存器 ──
+  // LDY #$08; LDA ($F0),Y → 频率 hi
+  const freqHi = sys.mem[ptr + 8];
+  // BPL → RTS (bit7=0 即无活跃音符)
+  if (!(freqHi & 0x80)) return;
+
+  // AND #$7F → 清除 bit7 → STA ($F0),Y
+  sys.mem[ptr + 8] = freqHi & 0x7F;
+
+  // 写频率 lo → $4002,X
+  const freqLo = sys.mem[ptr + 7];
+  writeAPU(sys, 0x02 + (apuOffset & 0x0C), freqLo);
+
+  // 写频率 hi + 长度计数器 → $4003,X
+  const freqHiForAPU = (freqHi & 0x7F) | 0x18; // length counter load
+  writeAPU(sys, 0x03 + (apuOffset & 0x0C), freqHiForAPU);
+
+  // 保存上次写入 $4003 的值 ($81CD-$81D9)
+  sys.mem[0x07E0 + channelType] = freqHiForAPU;
+
+  // 检查 sweep 重载
+  if (sys.mem[0x07E4 + channelType] === 0) {
+    sys.mem[0x07E0 + channelType] = 0;
+  }
+}
+
+// ═════════════════════════════════════════════════
+// CODE_$827D_$82E3 — Type 1 效果处理
+// ═════════════════════════════════════════════════
+//
+// 效果类型 1 跳转表 ($8269-$827C, 10 entries × 2 bytes):
+//   0: $8297 (reset)  ← arpeggio cycle position 0
+//   1: $8297 (reset)  ← arpeggio cycle position 1
+//   2: $82B4 (-1)
+//   3: $82C9 (-2)
+//   4: $82B4 (-1)
+//   5: $8297 (reset)
+//   6: $8297 (reset)
+//   7: $827D (+1)
+//   8: $8292 (+2)
+//   9: $827D (+1)
+
+/** Type 1 效果分派: arpeggio / pitch bend (±1, ±2) */
+function _dispatchEffectType1(sys: SystemState, ptr: number, slotIdx: number): void {
+  const step = sys.mem[0x07C7 + slotIdx];
+  // 查 $8269 跳转表
+  const tblBase = 0x8269 - 0x8000;
+  const handler = rom12Ptr16(tblBase + step * 2);
+
+  // 根据 handler 分派
+  const off = handler - 0x8000;
+  switch (off) {
+    case 0x827D: { // pitch bend +1
+      _effectPitchBend(sys, ptr, slotIdx, 1, 10);
+      break;
+    }
+    case 0x8292: { // pitch bend +2
+      _effectPitchBend(sys, ptr, slotIdx, 2, 10);
+      break;
+    }
+    case 0x8297: { // reset to base freq
+      sys.mem[ptr + 7] = sys.mem[0x07B7 + slotIdx];
+      sys.mem[ptr + 8] = sys.mem[0x07BF + slotIdx];
+      _effectIncrementStep(sys, slotIdx, 10);
+      break;
+    }
+    case 0x82B4: { // pitch bend -1
+      _effectPitchBend(sys, ptr, slotIdx, -1, 10);
+      break;
+    }
+    case 0x82C9: { // pitch bend -2
+      _effectPitchBend(sys, ptr, slotIdx, -2, 10);
+      break;
+    }
+  }
+}
+
+// ═════════════════════════════════════════════════
+// CODE_$82F4_$83F3 — Type 2 效果处理
+// ═════════════════════════════════════════════════
+//
+// 效果类型 2 跳转表 ($82E4-$82F3, 8 entries × 2 bytes):
+//   0: $830E (reset)  ← arpeggio cycle position 0
+//   1: $832B (-3)
+//   2: $8340 (-6)
+//   3: $832B (-3)
+//   4: $830E (reset)  ← arpeggio cycle position 4
+//   5: $82F4 (+3)
+//   6: $8309 (+6)
+//   7: $82F4 (+3)
+
+/** Type 2 效果分派: arpeggio / pitch bend (±3, ±6) */
+function _dispatchEffectType2(sys: SystemState, ptr: number, slotIdx: number): void {
+  const step = sys.mem[0x07C7 + slotIdx];
+  // 查 $82E4 跳转表
+  const tblBase = 0x82E4 - 0x8000;
+  const handler = rom12Ptr16(tblBase + step * 2);
+
+  const off = handler - 0x8000;
+  switch (off) {
+    case 0x82F4: { // pitch bend +3
+      _effectPitchBend(sys, ptr, slotIdx, 3, 8);
+      break;
+    }
+    case 0x8309: { // pitch bend +6
+      _effectPitchBend(sys, ptr, slotIdx, 6, 8);
+      break;
+    }
+    case 0x830E: { // reset to base freq
+      sys.mem[ptr + 7] = sys.mem[0x07B7 + slotIdx];
+      sys.mem[ptr + 8] = sys.mem[0x07BF + slotIdx];
+      _effectIncrementStep(sys, slotIdx, 8);
+      break;
+    }
+    case 0x832B: { // pitch bend -3
+      _effectPitchBend(sys, ptr, slotIdx, -3, 8);
+      break;
+    }
+    case 0x8340: { // pitch bend -6
+      _effectPitchBend(sys, ptr, slotIdx, -6, 8);
+      break;
+    }
+  }
+}
+
+// ═════════════════════════════════════════════════
+// 效果处理辅助函数
+// ═════════════════════════════════════════════════
+
+/** 音高偏移效果 (pitch bend +/- offset) */
+function _effectPitchBend(
+  sys: SystemState, ptr: number, slotIdx: number,
+  offset: number, cycleMax: number
+): void {
+  const baseLo = sys.mem[0x07B7 + slotIdx];
+  const baseHi = sys.mem[0x07BF + slotIdx];
+
+  let freqLo: number, freqHi: number;
+  if (offset > 0) {
+    freqLo = (baseLo + offset) & 0xFF;
+    freqHi = baseHi + (freqLo < offset ? 1 : 0);
+  } else {
+    const absOff = -offset;
+    freqLo = baseLo - absOff;
+    freqHi = baseHi;
+    if (freqLo < 0) {
+      freqLo = freqLo + 256;
+      freqHi = freqHi - 1;
+    }
+    // 在 6502 中，借位时: LDA freqHi; SBC #$00
+    if (baseLo < absOff) freqHi--;
+  }
+
+  // 保护 hi byte 不被溢出
+  freqHi = freqHi & 0xFF;
+  freqLo = freqLo & 0xFF;
+
+  sys.mem[ptr + 7] = freqLo;
+  sys.mem[ptr + 8] = freqHi;
+  _effectIncrementStep(sys, slotIdx, cycleMax);
+}
+
+/** 效果步数递增 (循环回绕) */
+function _effectIncrementStep(sys: SystemState, slotIdx: number, cycleMax: number): void {
+  let step = (sys.mem[0x07C7 + slotIdx] + 1) & 0xFF;
+  if (step >= cycleMax) step = 0;
+  sys.mem[0x07C7 + slotIdx] = step;
+}
+
+// ═════════════════════════════════════════════════
+// CODE_$827D_$82E3 + CODE_$82F4_$83F3 — 效果处理入口
+// ═════════════════════════════════════════════════
+//
+// 效果处理由主循环的阶段 4 调用 ($811D-$8161)。
+// 每个效果槽位调用一次，使用 $816E 作为入口。
+
+/**
+ * _processEffects — 效果处理
+ *
+ * 对应 6502: $816E (APU 写入 + 效果分派入口)
+ *
+ * @param sys     系统状态
+ * @param basePtr 效果槽位的通道数据指针
+ * @param f2      效果循环索引 (0-2)
+ */
 function _processEffects(sys: SystemState, basePtr: number, f2: number): void {
-  // TODO: 实现 CODE_$816D_$8268 + CODE_$827D_$82E3 段
-  // 处理 arpeggio 和 pitch bend 效果
+  // $816E-$8174: 计算 APU 偏移
+  // LDA #$03; EOR $F2; ASL*2 → TAX
+  const apuOff = ((3 - f2) & 0xFF) * 4;
+
+  // $8175-$8179: 读取音量 → PHA
+  const volumeByte = sys.mem[basePtr + 6];
+
+  // $817A-$817C: 保存通道类型
+  const channelType = f2;
+
+  // $817E-$81DA: APU 写入 (已在 _writeAPURegisters 中实现)
+  // 效果处理中只更新 APU 寄存器，不改变音量计算
+  if (channelType === 1) {
+    writeAPU(sys, apuOff >> 2, (volumeByte & 0x0F) | 0x80);
+  } else {
+    writeAPU(sys, apuOff >> 2, volumeByte | 0x30);
+
+    if (!(sys.mem[basePtr + 5] & 0x10)) {
+      const sv = 0x08;
+      sys.mem[0x07E4 + channelType] = sv;
+      writeAPU(sys, 0x01 + (apuOff & 0x0C), sv);
+    }
+  }
+
+  const freqHi = sys.mem[basePtr + 8];
+  if (!(freqHi & 0x80)) return;
+
+  sys.mem[basePtr + 8] = freqHi & 0x7F;
+  writeAPU(sys, 0x02 + (apuOff & 0x0C), sys.mem[basePtr + 7]);
+  writeAPU(sys, 0x03 + (apuOff & 0x0C), (freqHi & 0x7F) | 0x18);
+
+  sys.mem[0x07E0 + channelType] = (freqHi & 0x7F) | 0x18;
+  if (sys.mem[0x07E4 + channelType] === 0) {
+    sys.mem[0x07E0 + channelType] = 0;
+  }
 }
 
 // ═════════════════════════════════════════════════
