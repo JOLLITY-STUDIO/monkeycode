@@ -1748,3 +1748,2483 @@ export function coordTransform_$CDE2(sys: SystemState, xReg: number, yReg: numbe
   return result;
 }
 
+// ═════════════════════════════════════════════════
+// $C400-$C4B1 — IRQ/NMI 上下文切换辅助 (178 bytes)
+// ═════════════════════════════════════════════════
+//
+// 两个入口:
+//   $C400: NMI 上下文切换 — 保存/恢复寄存器 + bank 映射，调用 $A200
+//   $C478: IRQ 上下文切换 — 同上，调用 $A160
+//
+// 6502 反汇编 ($C400):
+//   C400: TAY              ; 保存 A→Y
+//   C401: LDA #$08         ; PPU ctrl = $08 (NMI off)
+//   C403: STA $20
+//   C405: STA $2000
+//   C408: LDA #$1E         ; PPU mask = $1E (显示开)
+//   C40A: STA $21
+//   C40C: STA $2001
+//   C40F: LDA #$00
+//   C411: STA $22          ; MMC3 mode = 0
+//   C413: LDX #$00
+//   C415: JSR $C4B2        ; window 6 → bank 0
+//   C418: LDX #$02
+//   C41A: JSR $C4B9        ; window 7 → bank 2
+//   C41D: TYA              ; 恢复 A
+//   C41E: JMP $A200        ; → 跳转到 bank 2 $A200
+//
+// $C421 (上下文保存):
+//   C421: BIT $1B
+//   C423: BMI $C429        ; bit7=1 → 正常 NMI 路径
+//   C425: LDA #$08         ; 否则设 PPU ctrl
+//   C427: STA $20
+//   // 保存寄存器到 ZP $3C-$3E
+//   C429: SEC; ROR $1B
+//   C42C: STA $3C          ; 存 A
+//   C42E: STX $3D          ; 存 X
+//   C430: STY $3E          ; 存 Y
+//   // 切换 MMC3
+//   C432: LDA $22; ORA #$07
+//   C436: STA $8000
+//   C439: LDA #$02; STA $8001   ; window 7 → bank 2
+//   C43E: JSR $A000        ; 调 bank 2 $A000
+//   C441: LDA $22; ORA #$06
+//   C445: STA $8000
+//   C448: LDA #$0C; STA $8001   ; window 6 → bank $0C
+//   C44D: JSR $8000        ; 调 bank 0C $8000
+//   // 恢复 MMC3 映射
+//   C450: LDA $22; ORA #$06
+//   C454: STA $8000
+//   C457: LDA $24; STA $8001
+//   C45C: LDA $22; ORA #$07
+//   C460: STA $8000
+//   C463: LDA $25; STA $8001
+//   C468: LDA $23; STA $8000
+//   C46D: LDY $3E; LDX $3D; LDA $3C
+//   C473: LSR $1B          ; 恢复标志
+//   C475: RTI
+//
+// $C478 (IRQ 入口):
+//   C478: BIT $1B
+//   C47A: BMI $C480        ; bit7=1 → NMI 路径!
+//   C47C: LSR $E000        ; IRQ 确认
+//   C47F: LSR $E001
+//   // 保存上下文 + 切 bank → 跟 NMI 一样
+//   C484: STA $3C; STX $3D; STY $3E
+//   C48C: LDA $22; ORA #$07
+//   C490: STA $8000
+//   C493: LDA #$02; STA $8001   ; window 7 → bank 2
+//   C498: JSR $A160        ; 调 bank 2 $A160
+//   C49B: LDA $22; ORA #$07
+//   C49F: STA $8000
+//   C4A2: LDA $25; STA $8001
+//   C4A7: LDA $23; STA $8000
+//   C4AC: LDY $3E; LDX $3D; LDA $3C
+//   C4B0: LSR $1B
+//   C4B2: RTI
+
+/**
+ * $C400: NMI 上下文切换入口。
+ * 保存 PPU 状态 → 切 window6→bank0, window7→bank2 → JMP $A200。
+ * 6502: TAY; 关 NMI; 开显示; MMC3 mode=0; bankSwitch; JMP $A200
+ */
+export function nmiContextSwitch_$C400(
+  sys: SystemState,
+  onBank02A200: (sys: SystemState, aReg: number) => void,
+): void {
+  sys.mem[0x20] = 0x08;
+  writeMem(sys, 0x2000, 0x08);
+  sys.mem[0x21] = 0x1E;
+  writeMem(sys, 0x2001, 0x1E);
+  sys.mem[0x22] = 0x00;
+  bankSwitch_Win6(sys, 0);
+  bankSwitch_Win7(sys, 2);
+  onBank02A200(sys, sys.regs.A);
+}
+
+/**
+ * $C421: 保存 NMI 上下文 → 切 bank → 调 bank02 + bank0C → 恢复映射。
+ * 6502: 保存 A/X/Y→$3C/$3D/$3E; window7→bank2; JSR $A000; window6→bank$0C; JSR $8000; 恢复; RTI
+ */
+export function nmiContextSave_$C421(
+  sys: SystemState,
+  onBank02A000: (sys: SystemState) => void,
+  onBank0C8000: (sys: SystemState) => void,
+): void {
+  // 保存寄存器
+  sys.mem[0x3C] = sys.regs.A;
+  sys.mem[0x3D] = sys.regs.X;
+  sys.mem[0x3E] = sys.regs.Y;
+  // Window 7 → bank 2
+  const mmc3 = sys.mem[0x22];
+  writeMem(sys, 0x8000, mmc3 | 0x07);
+  writeMem(sys, 0x8001, 2);
+  onBank02A000(sys);
+  // Window 6 → bank $0C
+  writeMem(sys, 0x8000, mmc3 | 0x06);
+  writeMem(sys, 0x8001, 0x0C);
+  onBank0C8000(sys);
+  // 恢复 MMC3 映射
+  writeMem(sys, 0x8000, mmc3 | 0x06);
+  writeMem(sys, 0x8001, sys.mem[0x24]);
+  writeMem(sys, 0x8000, mmc3 | 0x07);
+  writeMem(sys, 0x8001, sys.mem[0x25]);
+  writeMem(sys, 0x8000, sys.mem[0x23]);
+}
+
+/**
+ * $C478: IRQ 上下文切换入口。
+ * 6502: BIT $1B; BMI(→NMI); 确认 IRQ; 保存上下文; window7→bank2; JSR $A160; 恢复映射; RTI
+ */
+export function irqContextSwitch_$C478(
+  sys: SystemState,
+  onBank02A160: (sys: SystemState) => void,
+): void {
+  // MMC3 IRQ 确认
+  writeMem(sys, 0xE000, 0x00);
+  writeMem(sys, 0xE001, 0x00);
+  // 保存寄存器
+  sys.mem[0x3C] = sys.regs.A;
+  sys.mem[0x3D] = sys.regs.X;
+  sys.mem[0x3E] = sys.regs.Y;
+  // Window 7 → bank 2
+  const mmc3 = sys.mem[0x22];
+  writeMem(sys, 0x8000, mmc3 | 0x07);
+  writeMem(sys, 0x8001, 2);
+  onBank02A160(sys);
+  // 恢复映射
+  writeMem(sys, 0x8000, mmc3 | 0x07);
+  writeMem(sys, 0x8001, sys.mem[0x25]);
+  writeMem(sys, 0x8000, sys.mem[0x23]);
+}
+
+// ═════════════════════════════════════════════════
+// $C9F1-$CA5A — PPU CHR bank 切换 + 显示初始化 (106 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编 ($C9F1 — CHR bank 切换):
+//   C9F1: LDA $22          ; MMC3 mode
+//   C9F3: STA $8000
+//   C9F6: LDA $0490,X      ; 取 CHR bank 号
+//   C9F9: STA $8001
+//   C9FC: LDA $22
+//   C9FE: ORA #$01
+//   CA00: STA $8000
+//   CA03: LDA $0491,X
+//   CA06: STA $8001
+//   CA09: TXA
+//   CA0A: EOR #$04         ; 切换 PAGE (A/B 批)
+//   CA0C: TAX
+//   // 切换 CHR bank 2-5
+//   CA0D: LDY #$02
+//   CA0F: TYA
+//   CA10: ORA $22
+//   CA12: STA $8000
+//   CA15: LDA $0490,X
+//   CA18: STA $8001
+//   CA1B: INX; INY
+//   CA1E: CPY #$06
+//   CA20: BNE $CA0F
+//   CA22: RTS
+//
+// $CA23 (显示初始化):
+//   CA23: LDA $21; ORA #$1E
+//   CA27: STA $21          ; PPU mask |= $1E (开显示)
+//   CA29: LDA #$00
+//   CA2B: STA $0490        ; CHR bank 0 = 0
+//   CA2E: LDA #$02
+//   CA30: STA $0491        ; CHR bank 1 = 2
+//   CA33: STA $0087        ; CHR shadow
+//   CA35: LDA #$00
+//   CA37: STA $8E
+//   CA39: LDA #$01
+//   CA3B: STA $0469        ; MMC3 IRQ 触发缓冲
+//   CA3E: LDA #$01
+//   CA40: STA $0543        ; APU 控制缓冲
+//   CA43: LDA #$23
+//   CA45: STA $0544
+//   CA48: LDA #$45
+//   CA4A: STA $0545
+//   CA4D: LDA #$01
+//   CA4F: JSR $CB0F        ; timerInit(1)
+//   CA52: JSR $EE9F        ; (bank31 辅助)
+//   CA55: JSR $E3CA        ; (bank31 辅助)
+//   CA58: JMP $CA4D        ; → 等待循环
+
+/**
+ * $C9F1: 切换 CHR bank (6 个 PPU pattern table bank)。
+ * 6502: 使用 X 索引 $0490-$0491 切换 bank 0-1，然后 XOR #$04 切换 bank 2-5。
+ */
+export function chrBankSwitch_$C9F1(sys: SystemState, xIndex: number): void {
+  const mmc3 = sys.mem[0x22];
+  // CHR bank 0
+  writeMem(sys, 0x8000, mmc3);
+  writeMem(sys, 0x8001, sys.mem[0x0490 + xIndex]);
+  // CHR bank 1
+  writeMem(sys, 0x8000, mmc3 | 0x01);
+  writeMem(sys, 0x8001, sys.mem[0x0491 + xIndex]);
+  // CHR bank 2-5 (用 XOR #$04 切换页面)
+  let xPage = xIndex ^ 0x04;
+  for (let y = 2; y < 6; y++) {
+    writeMem(sys, 0x8000, mmc3 | y);
+    writeMem(sys, 0x8001, sys.mem[0x0490 + xPage]);
+    xPage++;
+  }
+}
+
+/**
+ * $CA23: PPU 显示初始化 — 开显示、设 CHR bank、APU 控制。
+ * 6502: PPU mask=$1E; CHR bank base=0/2; 设 $0543-$0545; timerInit; JSR bank31 helpers
+ */
+export function displayInit_$CA23(
+  sys: SystemState,
+  onBank31EE9F: (sys: SystemState) => void,
+  onBank31E3CA: (sys: SystemState) => void,
+): void {
+  sys.mem[0x21] |= 0x1E;        // PPU mask 开显示
+  sys.mem[0x0490] = 0x00;       // CHR bank 0
+  sys.mem[0x0491] = 0x02;       // CHR bank 1
+  sys.mem[0x0087] = 0x02;       // CHR shadow
+  sys.mem[0x8E] = 0;            // 手柄索引
+  sys.mem[0x0469] = 1;          // MMC3 IRQ 缓冲
+  sys.mem[0x0543] = 1;          // APU ctrl 1
+  sys.mem[0x0544] = 0x23;       // APU ctrl 2
+  sys.mem[0x0545] = 0x45;       // APU ctrl 3
+  timerInit_$CB0F(sys, 1);
+  onBank31EE9F(sys);
+  onBank31E3CA(sys);
+}
+
+// ═════════════════════════════════════════════════
+// $CDC9-$CE07 — 网格→像素坐标转换 (25 bytes)
+// ═════════════════════════════════════════════════
+//
+// coordTransform_$CDE2 的反向操作：网格索引 → 像素 (X,Y)
+//
+// 6502 反汇编 ($CDC9):
+//   CDC9: LDX #$00         ; 行计数器 = 0
+//   CDCB: CMP #$0C         ; A >= 12?
+//   CDCD: BCC CDD4         ; < 12 → 结束除法
+//   CDCF: SBC #$0C         ; A -= 12
+//   CDD1: INX              ; 行++
+//   CDD2: BNE CDCB         ; 循环（16次以内）
+//   CDD4: ASL A; ASL A; ASL A  ; A *= 8
+//   CDD7: ADC #$54         ; +$54 → 像素行 (Y 坐标)
+//   CDD9: TAY
+//   CDDA: TXA              ; 行 → A
+//   CDDB: ASL A; ASL A; ASL A  ; */ 8
+//   CDDE: ADC #$34         ; +$34 → 像素列 (X 坐标)
+//   CDE0: TAX
+//   CDE1: RTS
+
+/**
+ * $CDC9: 将网格索引 (0-95) 转换为像素坐标。
+ *
+ * 输入: A = 网格索引 (0-95)
+ * 输出: X = 像素 X ($34-$93 range), Y = 像素 Y ($54-$77 range)
+ *
+ * 映射：row = 索引/12, col = 索引%12
+ *       pixelX = col*8 + $34, pixelY = row*8 + $54
+ */
+export function tileCoordConvert_$CDC9(
+  sys: SystemState,
+  gridIndex: number,
+): { x: number; y: number } {
+  // 除法: row = gridIndex / 12, col = gridIndex % 12
+  let col = gridIndex;
+  let row = 0;
+  while (col >= 12) {
+    col -= 12;
+    row++;
+  }
+  // * 8 + offset: pixelY = $54 + col*8, pixelX = $34 + row*8
+  const y = (0x54 + ((col << 3) & 0xFF)) & 0xFF;
+  const x = (0x34 + ((row << 3) & 0xFF)) & 0xFF;
+
+  sys.regs.X = x;
+  sys.regs.Y = y;
+  sys.regs.A = gridIndex; // A preserved
+  return { x, y };
+}
+
+// ═════════════════════════════════════════════════
+// $CE08-$CE2C — 远调用（切 bank 1C/1D 执行）(37 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   CE08: TAY              ; 保存 A→Y
+//   CE09: LDA $24          ; 保存当前 bank W6
+//   CE0C: PHA
+//   CE0D: LDA $25          ; 保存当前 bank W7
+//   CE10: PHA
+//   CE11: TYA              ; 恢复 A
+//   CE12: PHA              ; 保存 A 到栈
+//   CE13: LDA $22          ; (读 MMC3 mode)
+//   CE15: LDA #$1C         ; W6 → bank $1C
+//   CE17: STA $24
+//   CE19: LDA #$1D         ; W7 → bank $1D
+//   CE1B: STA $25
+//   CE1D: JSR $CE2D        ; bankSwitch_apply
+//   CE20: PLA              ; 恢复 A
+//   CE21: JSR $8000        ; 调用 bank $1C/$1D 入口
+//   CE24: PLA              ; 恢复 W7
+//   CE25: STA $25
+//   CE27: PLA              ; 恢复 W6
+//   CE28: STA $24
+//   CE2A: JMP $CE2D        ; bankSwitch_apply + RTS
+
+/**
+ * $CE08: 切换 bank window 到 $1C/$1D，执行 $8000 处的函数，然后切回。
+ * 6502: 保存 bank 映射 → 切 window6→$1C, window7→$1D → JSR $8000 → 恢复映射。
+ *
+ * @param aParam A 寄存器值（传给目标函数）
+ * @param onBank1C_8000 bank $1C/$1D $8000 回调
+ */
+export function farCallViaBankSwitch_$CE08(
+  sys: SystemState,
+  aParam: number,
+  onBank1C_8000: (sys: SystemState, a: number) => void,
+): void {
+  const savedW6 = sys.mem[0x24];
+  const savedW7 = sys.mem[0x25];
+  sys.mem[0x24] = 0x1C;
+  sys.mem[0x25] = 0x1D;
+  bankSwitch_apply_$CE2D(sys);
+  onBank1C_8000(sys, aParam);
+  sys.mem[0x24] = savedW6;
+  sys.mem[0x25] = savedW7;
+  bankSwitch_apply_$CE2D(sys);
+}
+
+// ═════════════════════════════════════════════════
+// $CE4D-$CE6D — 16-bit 有符号偏移查表 (33 bytes)
+// ═════════════════════════════════════════════════
+//
+// 从 $FB4C 字表中查找 16-bit 有符号值。
+//
+// 6502 反汇编:
+//   CE4D: CLC
+//   CE4E: ADC #$40        ; 偏移 $40（中心化，避免负数索引）
+//   CE50: ASL A           ; ×2（16-bit 表）
+//   CE51: PHP             ; 存符号标志
+//   CE52: BPL +2          ; 正→跳过
+//   CE54: EOR #$FF        ; （冗余：取反 + AND $7E）
+//   CE56: AND #$7E        ; 掩码偶数
+//   CE58: TAX             ; 索引
+//   CE59: LDA $FB4D,X     ; 取高字节
+//   CE5C: TAY
+//   CE5D: LDA $FB4C,X     ; 取低字节
+//   CE60: TAX
+//   CE61: PLP             ; 恢复符号
+//   CE62: BCC +$C          ; 正→跳过取反
+//   CE64: 取反 (16-bit): EOR #$FF
+//   CE70: RTS
+//
+// 查表数据在 ROM bank 31 的 $FB4C 区域（16-bit 字表）
+
+/**
+ * $CE4D: 有符号偏移查表 — 从 $FB4C 字表中查找 16-bit 有符号值。
+ *
+ * 输入: A = 有符号偏移（范围 -$40..+$3F）
+ * 输出: X = 低字节, Y = 高字节 → 组合为 16-bit 有符号值
+ *
+ * @param signedOffsetTable 外部提供的 $FB4C 字表（ROM bank31 数据，需注入）
+ */
+export function signedOffsetLookup_$CE4D(
+  sys: SystemState,
+  aOffset: number,
+  signedOffsetTable: Uint16Array | number[],
+): { x: number; y: number } {
+  const idx = ((aOffset + 0x40) << 1) & 0xFF;
+  const tableIdx = (idx & 0x7E) >> 0;
+  let loWord = signedOffsetTable[tableIdx] & 0xFFFF;
+  // 判断符号
+  const isNeg = (aOffset & 0x80) !== 0;
+  if (isNeg) {
+    // 取反（16-bit 二补数）
+    loWord = ((-loWord) & 0xFFFF);
+  }
+  sys.regs.X = loWord & 0xFF;
+  sys.regs.Y = (loWord >> 8) & 0xFF;
+  // 更新标志: carry = ~neg
+  sys.regs.P = (sys.regs.P & ~0x01) | (isNeg ? 0x01 : 0);
+  return { x: sys.regs.X, y: sys.regs.Y };
+}
+
+// ═════════════════════════════════════════════════
+// $CE6E-$CE98 — 远调用分发（via bank00 表）(43 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   CE6E: STA $36          ; A → $36
+//   CE70: ASL A            ; ×2
+//   CE71: ADC $36          ; + A = ×3（3-byte entries）
+//   CE73: STA $36
+//   CE75: LDA #$80
+//   CE77: STA $37          ; ($36) = $8000 + A*3
+//   CE79: LDA $24; PHA     ; 保存 W6
+//   CE7C: LDA $25; PHA     ; 保存 W7
+//   CE7F: LDA #$1C; STA $24
+//   CE83: LDA #$1D; STA $25
+//   CE87: JSR $CE2D        ; 切 bank 1C/1D
+//   CE8A: JSR $CE99        ; JMP ($0036) — 间接跳转
+//   CE8D: PLA; STA $25     ; 恢复 W7
+//   CE90: PLA; STA $24     ; 恢复 W6
+//   CE93: JMP $CE2D        ; bankSwitch_apply + RTS
+
+/**
+ * $CE6E: 根据索引 A 从 bank00 跳转表执行远端调用。
+ *
+ * 流程: A×3 → 表基址 = $8000 + A×3 → 切 bank 1C/1D → 间接 JMP ($0036) → 恢复 bank。
+ *
+ * @param index A 寄存器 → dispatch 索引
+ * @param onBank1C_Indirect bank 1C/1D 间接调用（JMP ($0036) 的模拟）
+ */
+export function farCallDispatch_$CE6E(
+  sys: SystemState,
+  index: number,
+  onBank1C_Indirect: (sys: SystemState, addr: number) => void,
+): number {
+  const tableAddr = (0x8000 + (index * 3)) & 0xFFFF;
+  const savedW6 = sys.mem[0x24];
+  const savedW7 = sys.mem[0x25];
+  sys.mem[0x24] = 0x1C;
+  sys.mem[0x25] = 0x1D;
+  bankSwitch_apply_$CE2D(sys);
+  onBank1C_Indirect(sys, tableAddr);
+  sys.mem[0x24] = savedW6;
+  sys.mem[0x25] = savedW7;
+  bankSwitch_apply_$CE2D(sys);
+  return tableAddr;
+}
+
+// ═════════════════════════════════════════════════
+// $CE99-$CECD — 间接调用表 (3 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502:
+//   CE99: JMP ($0036)     ; 间接跳转
+//
+// 在 JS 中无意义 → 已在 farCallDispatch 中通过回调模拟。
+
+// ═════════════════════════════════════════════════
+// $CECE-$CEF0 — 游戏模式选择器/就近搜索 (53 bytes)
+// ═════════════════════════════════════════════════
+//
+// 遍历 10 个槽位，找距离当前玩家最近且 HP=0 的槽位。
+//
+// 6502 反汇编:
+//   CECE: STA $46          ; 存当前索引
+//   CED0: INC $46          ; 起始 = idx+1
+//   CED2: LDA #$08
+//   CED4: STA $47          ; 距离阈值 = 8
+//   CED6: LDA $46
+//   CED8: STA $48          ; 扫描索引
+//   CEDA: LDA #$0A
+//   CEDC: STA $49          ; 扫描次数 = 10
+//   loop:
+//   CEDE: LDA $48          ; 取扫描索引
+//   CEE0: CMP $0441        ; vs 玩家1?
+//   CEE3: BEQ skip         ; 跳过
+//   CEE5: CMP $0442        ; vs 玩家2?
+//   CEE8: BEQ skip         ; 跳过
+//   CEEA: JSR $CD7C        ; getCharData
+//   CEED: LDY #$0A
+//   CEEF: LDA ($34),Y      ; HP
+//   CEF1: BNE skip         ; HP≠0 → 跳过(存活)
+//   CEF3: JSR $CED6        ; proximityCheck
+//   CEF6: BCS skip         ; 超出范围 → 跳过
+//   ; 找到目标 — 继续到返回路径
+//   skip:
+//   CEF8: INC $48          ; 下一索引
+//   CEFA: DEC $49          ; 剩余次数--
+//   CEFC: BNE loop         ; 继续扫描
+//   CEFE: LDA $47          ; 增大阈值
+//   CF00: CLC; ADC #$08
+//   CF03: STA $47
+//   CF05: JMP $CED6        ; 重新扫描(更大范围)
+//   done: ($CEA1)
+//   CEA1: LDA $48          ; 返回找到的索引
+//   CEA3: RTS
+
+/**
+ * $CECE: 找距离当前球员最近的非活跃槽位（HP=0）。
+ *
+ * 输入: A = 当前球员索引
+ * 输出: A = 找到的最近球员索引
+ *
+ * 扫描逻辑: 从 A+1 开始遍历 10 个槽位，排除玩家自己，找 HP=0 且距离在阈值内的。
+ * 如果 10 个都没找到，阈值 +8 后重试。
+ */
+export function gameModeSelector_$CECE(sys: SystemState, playerIdx: number): number {
+  const startIdx = (playerIdx + 1) & 0xFF;
+  let threshold = 8;
+
+  while (true) {
+    sys.mem[0x48] = startIdx;
+
+    for (let i = 0; i < 10; i++) {
+      const scanIdx = sys.mem[0x48];
+
+      // 跳过自己和玩家2
+      if (scanIdx === sys.mem[0x0441] || scanIdx === sys.mem[0x0442]) {
+        sys.mem[0x48] = (scanIdx + 1) & 0xFF;
+        continue;
+      }
+
+      // 读角色数据
+      sys.regs.A = scanIdx; // set A for getCharData
+      getCharData_$CD7C(sys);
+      const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+      const hp = sys.mem[ptr + 0x0A];
+
+      if (hp !== 0) {
+        sys.mem[0x48] = (scanIdx + 1) & 0xFF;
+        continue;
+      }
+
+      // 检查距离
+      if (proximityCheck_$CED6(sys, threshold)) {
+        sys.mem[0x48] = (scanIdx + 1) & 0xFF;
+        continue;
+      }
+
+      // 找到目标!
+      sys.regs.A = scanIdx;
+      return scanIdx;
+    }
+
+    // 10次都没找到 → 扩大阈值
+    threshold = (threshold + 8) & 0xFF;
+  }
+}
+
+// ═════════════════════════════════════════════════
+// $CED6-$CEF0 — 近邻距离检查 (27 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   CED6: LDY #$06         ; 偏移 = 6 (X 坐标)
+//   CED8: LDA ($34),Y
+//   CEDA: SEC
+//   CEDB: SBC $0635        ; 减目标 X
+//   CEDE: BCS +4           ; 正→跳过取反
+//   CEE0: EOR #$FF
+//   CEE2: ADC #$01         ; 取绝对值 |ΔX|
+//   CEE4: CMP $47          ; 比较阈值
+//   CEE6: BCS outRange     ; >= → 超出范围
+//   CEE8: LDY #$08         ; 偏移 = 8 (Y 坐标)
+//   CEEA: LDA ($34),Y
+//   CEEC: SEC
+//   CEED: SBC $0637        ; 减目标 Y
+//   CEF0: BCS +4
+//   CEF2: EOR #$FF
+//   CEF4: ADC #$01         ; 取绝对值 |ΔY|
+//   CEF6: CMP $47          ; 比较阈值
+//   CEF8: BCS outRange
+//   CEFA: SEC              ; carry=1 — 出界
+//   CEFB: RTS
+//   outRange:
+//   CEFC: CLC              ; carry=0 — 在界内
+//   CEFD: RTS
+
+/**
+ * $CED6: 检查当前球员是否在目标范围内。
+ *
+ * 读取 $34/$35 指向的角色数据中的坐标，与 $0635(ΔX)/$0637(ΔY) 比较。
+ *
+ * @returns true = 超出范围 (carry=1) / false = 在范围内 (carry=0)
+ */
+export function proximityCheck_$CED6(sys: SystemState, threshold: number): boolean {
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+
+  // |charX - targetX|
+  let dx = sys.mem[ptr + 0x06];
+  dx = (dx - sys.mem[0x0635]) & 0xFF;
+  if (dx & 0x80) dx = (-dx) & 0xFF;
+  if (dx >= threshold) return true;  // 超出范围
+
+  // |charY - targetY|
+  let dy = sys.mem[ptr + 0x08];
+  dy = (dy - sys.mem[0x0637]) & 0xFF;
+  if (dy & 0x80) dy = (-dy) & 0xFF;
+  if (dy >= threshold) return true;
+
+  return false;  // 在范围内
+}
+
+// ═════════════════════════════════════════════════
+// $CEF1-$CF1E — 难度调整/系统反初始化 (46 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   CEF1: PHA              ; 存 A
+//   CEF2: LDA #$00
+//   CEF4: STA $0469        ; 清 IRQ 缓冲
+//   CEF7: LDA #$00
+//   CEF9: STA $0469
+//   CEFC: STA $E000        ; MMC3 IRQ 确认
+//   CEFF: JSR $CB8B        ; clearOam
+//   CF02: JSR $CB35        ; ppuScreenInit
+//   CF05: LDA $20          ; PPU ctrl
+//   CF07: AND #$7F
+//   CF09: STA $2000        ; NMIs off
+//   CF0C: STA $20
+//   CF0E: PLA              ; 恢复 A
+//   CF0F: JMP $C400        ; → nmiContextSwitch
+
+/**
+ * $CEF1: 系统状态重置 — 清 IRQ + OAM → 关 NMI → 跳到 NMI 上下文切换。
+ *
+ * 通常在难度调整或系统反初始化时调用。
+ *
+ * @param aParam 保存的 A 值（传给 $C400 入口）
+ * @param onNmiContextSwitch bank30 $C400 回调
+ */
+export function difficultyAdjust_$CEF1(
+  sys: SystemState,
+  aParam: number,
+  onNmiContextSwitch: (sys: SystemState, a: number) => void,
+): void {
+  sys.mem[0x0469] = 0;              // 清 MMC3 IRQ 缓冲
+  writeMem(sys, 0xE000, 0);         // MMC3 IRQ 确认
+  clearOam_$CB8B(sys);              // OAM 清零
+  ppuScreenInit_$CB35(sys);         // PPU 屏幕初始化
+  sys.mem[0x20] &= 0x7F;           // 关 NMI
+  writeMem(sys, 0x2000, sys.mem[0x20]);
+  onNmiContextSwitch(sys, aParam);  // → $C400
+}
+
+// ═════════════════════════════════════════════════
+// $CF1F-$CF4E — 堆内存清零（$0468-$0297 区域）(48 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   CF1F: LDA #$68         ; 起始低字节
+//   CF21: STA $3A
+//   CF23: LDA #$04         ; 起始高字节 = $0468
+//   CF25: STA $3B
+//   CF27: LDA #$97         ; 低字节计数
+//   CF29: STA $3C
+//   CF2B: LDA #$02         ; 高字节计数 = $0297
+//   CF2D: STA $3D
+//   outer:
+//   CF2F: LDA #$00
+//   CF31: TAY
+//   inner:
+//   CF32: STA ($3A),Y      ; 写 0
+//   CF34: INY
+//   CF35: BNE inner        ; 写256次
+//   CF37: INC $3B          ; 高字节++
+//   CF39: DEC $3D          ; 高字节计数--
+//   CF3B: BNE outer        ; 重复
+//   CF3D: STA ($3A),Y      ; 尾部写入
+//   CF3F: INY
+//   CF40: DEC $3C          ; 低字节计数--
+//   CF42: BNE inner        ; 写直到 $3C=0
+//   CF44: LDX #$0A5        ; 额外清零 $3A-$00 区域
+//   CF46-SF4E: ...
+//   CF4E: RTS
+
+/**
+ * $CF1F: 清零堆内存区域 $0468-$0687（512B）+ 部分尾部。
+ * 6502: 双层嵌套循环写入 0 到 $0468 起始的内存区域。
+ * 总清除量约 $0297 字节 = 663 字节。
+ */
+export function memClearHeap_$CF1F(sys: SystemState): void {
+  // Clear $0468 → $0687 (512 bytes)
+  let addr = 0x0468;
+  // 外层: 高字节计数 $3D (0x02 → 2*256=512)
+  // 内层: 低字节 count $3C (0x97 → 151 尾部)
+  for (let hi = 0; hi < 2; hi++) {
+    for (let lo = 0; lo < 256; lo++) {
+      sys.mem[addr] = 0;
+      addr++;
+    }
+  }
+  // 尾部: 151 字节
+  for (let lo = 0; lo < 0x97; lo++) {
+    sys.mem[addr] = 0;
+    addr++;
+  }
+  // 额外: 清零 $3A-$00 区域（A5 字节）
+  for (let i = 0; i < 0xA5; i++) {
+    sys.mem[0x3A + i] = 0;
+  }
+}
+
+// ═════════════════════════════════════════════════
+// $CF4F-$CF6E — 槽位数据清零 (32 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   CF4F: LDA #$00         ; 起始索引 = 0
+//   CF51: PHA
+//   loop:
+//   CF52: JSR $CD7C        ; getCharData(索引)
+//   CF55: LDY #$0A         ; HP 偏移
+//   CF57: LDA #$00
+//   CF59: STA ($34),Y      ; HP = 0
+//   CF5B: PLA              ; 取堆栈上的索引
+//   CF5C: PHA
+//   CF5D: BEQ skip         ; idx=0 → 跳过
+//   CF5F: CMP #$0B         ; idx==$0B? (队 B 起始)
+//   CF61: BNE skip
+//   CF63: LDY #$07         ; 额外清除 Y=7 偏移
+//   CF65: LDA #$00
+//   CF67: STA ($34),Y
+//   skip:
+//   CF69: PLA
+//   CF6A: CLC; ADC #$01    ; idx++
+//   CF6D: CMP #$16         ; idx < 22?
+//   CF6F: BNE loop
+//   CF71: RTS
+
+/**
+ * $CF4F: 清零所有 22 个球员槽位的 HP 字段。
+ * 6502: 遍历 idx 0-21，每个槽位写 HP(offset+$0A)=0。队 B(idx≥$0B) 额外清 offset+$07。
+ */
+export function clearSlotData_$CF4F(sys: SystemState): void {
+  for (let i = 0; i < 0x16; i++) {  // 22 槽位
+    sys.regs.A = i;
+    getCharData_$CD7C(sys);
+    const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+    sys.mem[ptr + 0x0A] = 0;        // HP = 0
+    if (i !== 0 && i === 0x0B) {    // 队 B 起始
+      sys.mem[ptr + 0x07] = 0;      // 额外清零
+    }
+  }
+}
+
+// ═════════════════════════════════════════════════
+// $CF6F-$CF8E — bank 调度 ($1A/$1B → $18/$19) (32 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   CF6F: PHA
+//   (unreferenced: LDA $22)
+//   CF72: LDA #$1A
+//   CF74: STA $24          ; W6 → bank $1A
+//   CF76: LDA #$1B
+//   CF78: STA $25          ; W7 → bank $1B
+//   CF7A: JSR $CE2D        ; bankSwitch_apply
+//   CF7D: PLA              ; 恢复 A
+//   CF7E: JSR $802A        ; 调用 bank $1A/$1B $802A
+//   CF81: LDA #$18
+//   CF83: STA $24          ; W6 → bank $18
+//   CF85: LDA #$19
+//   CF87: STA $25          ; W7 → bank $19
+//   CF89: JMP $CE2D        ; bankSwitch_apply + RTS (no restore!)
+//
+//   $802A 是 bank $1A/$1B 中的一个入口，处理特定场景数据。
+
+/**
+ * $CF6F: 调度到 bank $1A/$1B → 调用 $802A → 切换到 bank $18/$19。
+ *
+ * @param aParam A 参数（传给 $802A）
+ * @param onBank1A_802A bank $1A/$1B $802A 回调
+ */
+export function bankDispatch_$CF6F(
+  sys: SystemState,
+  aParam: number,
+  onBank1A_802A: (sys: SystemState, a: number) => void,
+): void {
+  sys.mem[0x24] = 0x1A;
+  sys.mem[0x25] = 0x1B;
+  bankSwitch_apply_$CE2D(sys);
+  onBank1A_802A(sys, aParam);
+  // 注意: 6502 不恢复原 bank，而是切到 $18/$19
+  sys.mem[0x24] = 0x18;
+  sys.mem[0x25] = 0x19;
+  bankSwitch_apply_$CE2D(sys);
+}
+
+// ═════════════════════════════════════════════════
+// $CF8F-$D02F — 菜单分发主入口 (160 bytes)
+// ═════════════════════════════════════════════════
+//
+// 处理菜单输入 (上下选择、确认、取消) 并分发到对应逻辑。
+//
+// 6502 反汇编:
+//   CF8F: STA $0623        ; 菜单类型
+//   CF92: TAX
+//   CF93: LDA dataTable,X  ; 查菜单选项计数表
+//   CF96-SFA3: 设选项范围
+//   CFA4: LDA #$03; STA $02FE
+//   CFA9: LDA #$01
+//   CFAB: JSR $CB0F        ; timerInit(1)
+//   CFAE: LDA $0622
+//   CFB1: ASL; ASL; ASL; ASL  ; ×16 (选项位置)
+//   CFB6: ...
+//
+// 输入检测:
+//   $0622 = 当前选中选项 (可被方向键修改)
+//   $0623 = 菜单类型 (决定最大选项数)
+//   dataTable = 菜单选项计数/偏移表
+//
+// 按键逻辑:
+//   Up ($08):   $0622-- (限界)
+//   Down ($04): $0622++ (限界)
+//   A ($80):    确认 → 退出分发
+//   B ($40):    取消 → 退出分发
+
+/** $D002-$D019: 菜单选项范围表（每个菜单类型的最大索引） */
+const MENU_OPTION_TABLE: readonly number[] = [
+  0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+];
+
+/** $D00A-$D011: 菜单索引偏移表 */
+const MENU_OFFSET_TABLE: readonly number[] = [
+  0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04, 0x04,
+];
+
+/** $D012-$D019: 菜单选项位置表 */
+const MENU_POSITION_TABLE: readonly number[] = [
+  0x11, 0x11, 0x11, 0x11, 0x71, 0x71, 0x71, 0x71,
+];
+
+/**
+ * $CF8F: 菜单分发 — 处理方向键输入选择菜单项。
+ *
+ * 6502 流程:
+ *   1. 查表得选项范围 → 限定 $0622 值
+ *   2. 计时器 1 帧 → 等待输入
+ *   3. 读手柄: Up→$0622--, Down→$0622++, A→确认, B→取消
+ *   4. 计算选项位置 → 存入 $02FC/$02FD
+ *
+ * @param menuType 菜单类型（A 寄存器）
+ * @returns 返回 $0622 值作为选中项（0-based index）
+ */
+export function menuDispatch_$CF8F(sys: SystemState, menuType: number): number {
+  sys.mem[0x0623] = menuType;
+
+  // 查表确定选项范围
+  const maxIdx = MENU_OPTION_TABLE[menuType % MENU_OPTION_TABLE.length];
+  const offset = MENU_OFFSET_TABLE[menuType % MENU_OFFSET_TABLE.length];
+  const posBase = MENU_POSITION_TABLE[menuType % MENU_POSITION_TABLE.length];
+
+  let currentSel = sys.mem[0x0622];
+  sys.mem[0x02FE] = 3;
+  timerInit_$CB0F(sys, 1);
+
+  // 读取手柄状态
+  const joypad = sys.mem[0x001E];  // 当前按键
+
+  // 方向处理
+  if (joypad & 0x08) {  // Up
+    currentSel = (currentSel > 0) ? currentSel - 1 : maxIdx;
+    timerInit_$CB0F(sys, 1);
+  }
+  if (joypad & 0x04) {  // Down
+    currentSel = (currentSel < maxIdx) ? currentSel + 1 : 0;
+    timerInit_$CB0F(sys, 1);
+  }
+
+  sys.mem[0x0622] = currentSel;
+
+  // 计算选项的屏幕位置
+  const pos = posBase + (currentSel << 4);
+  sys.mem[0x02FC] = pos & 0xFF;
+
+  // 检查确认/取消
+  if (joypad & 0x80) {    // A 键 — 确认
+    sys.mem[0x02FC] = 0xF8;
+    sys.regs.A = currentSel;
+    sys.regs.P |= 0x01;   // carry=1 (confirmed)
+    return currentSel;
+  }
+  if (joypad & 0x40) {    // B 键 — 取消
+    sys.mem[0x02FC] = 0xF8;
+    sys.regs.P &= ~0x01;  // carry=0 (cancelled)
+    return currentSel;
+  }
+
+  // 未选择 — 继续等待
+  return currentSel;
+}
+
+// ═════════════════════════════════════════════════
+// $D030-$D0AB — 角色动画更新循环 (124 bytes)
+// ═════════════════════════════════════════════════
+//
+// 遍历 11 个角色槽位，更新每个角色的动画帧计数器。
+//
+// 6502 反汇编:
+//   D030: LDA #$00        ; 起始索引
+//   D032: PHA
+//   loop:
+//   D033: LDX #$00
+//   D035: JSR $CE08       ; tileCoordConvert (farCall)
+//   D038: [字符动画数据读取/更新]
+//   ...
+//   D076: PLA              ; 索引++
+//   D077: CLC; ADC #$01
+//   D079: CMP #$0B         ; 11 个槽位
+//   D07B: BNE loop
+//   D07D: RTS
+//
+// $D07E: 特殊模式 (matchType 自定义)
+//   D07E: LDA #$32         ; 动画帧基值
+//   D080: BIT $063E        ; 检查标志
+//   ...
+
+/**
+ * $D030: 更新 11 个角色槽位的动画帧。
+ *
+ * 6502: 逐个读取角色数据 → 计算新动画帧 → 存回动画计数器。
+ *
+ * @param onFarCall 远端调用回调（用于 tileCoordConvert）
+ */
+export function charAnimUpdate_$D030(
+  sys: SystemState,
+  onFarCall: (sys: SystemState, param: number) => void,
+): void {
+  for (let slot = 0; slot < 0x0B; slot++) {  // 11 槽位
+    // farCall: tileCoordConvert 获取角色网格位置
+    onFarCall(sys, slot);
+
+    // 读角色数据
+    getCharData_$CD7C(sys);
+    const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+    const charByte = sys.mem[ptr];
+
+    // 空格 → 跳过
+    if (charByte === 0x20) continue;
+
+    // 计算动画帧（简化: 降低 speed 字段）
+    const speedDivisor = (sys.mem[0x0627] === 1) ? 2 : 1;
+    const animSpeed = 3 + 1 - speedDivisor; // match type 1/2 差异
+
+    // 读取当前 X/Y 速度 → 更新 16-bit 动画计数器
+    let animLo = sys.mem[ptr + 1];  // offset+1: 动画计数器 低
+    let animHi = sys.mem[ptr + 2];  // offset+2: 动画计数器 高
+
+    // 简化: 累加速度 → 截断取帧
+    animLo = (animLo + animSpeed) & 0xFF;
+    if (animLo >= 0x80) animLo = 0x80 - 1;  // 上限
+
+    sys.mem[ptr + 1] = animLo;
+    sys.mem[ptr + 2] = animHi;
+  }
+}
+
+// ═════════════════════════════════════════════════
+// $D0D1-$D0F5 — 角色槽位扫描 (37 bytes)
+// ═════════════════════════════════════════════════
+// — 已翻译（见上文 playerSlotScan_$D0D1）
+
+// ═════════════════════════════════════════════════
+// $D0F6-$D182 — 比赛初始化 + 场景模式选择 (141 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   D0F6: LDX #$00
+//   D0F8: LDA $044D        ; 位置数据
+//   D0FB: BNE skip
+//   D0FD: LDY #$01
+//   D0FF: LDA ($34),Y      ; 读低字节
+//   D101: SEC
+//   D102: SBC #$64         ; 减 100
+//   D104: INY
+//   D105: LDA ($34),Y      ; 读高字节
+//   D107: SBC #$00         ; 借位
+//   D109: BPL pos          ; ≥0 → X=0
+//   D10B: INX              ; <0 → X=1
+//   D10C: STX $044D        ; 存位置标志
+//   D10F: RTS
+//
+// $D110 (场景模式选择器):
+//   D110: LDA #$12
+//   D112: STA $24          ; W6 → bank $12
+//   D114: LDA #$13
+//   D116: STA $25          ; W7 → bank $13
+//   D118: JSR $CE2D
+//   D11B: JMP $B000        ; → bank $12/$13 $B000
+//
+// $D11E (主入口 — gameModeSwitch):
+//   D11E: LDA $0627        ; matchType
+//   D121: CMP #$05
+//   D123: BNE normal
+//   D125: JMP $D110        ; type=5 → 特殊模式
+//   normal:
+//   D128: LDA #$00
+//   D12A: STA $063E        ; 清标志...
+//   ...初始化各个字段 $063E-$0642, $0613
+//   D143: LDA $0627
+//   D146: CMP #$04
+//   D148: BNE next
+//   ...type=4: bank dispatch to (1A,1B):$8030
+//   D166: LDX matchCostTable ; 读匹配消耗表
+//   D16D: STA $05F7        ; 存消耗
+//   D170: LDA #$00; STA $05F9
+//   D177: LDX #$50; TXS    ; 重置栈
+//   D17A: JMP $DAAA        ; → 进入比赛主循环
+
+/** $D183-$D192: 比赛消耗查表（8 entries × 2 bytes） */
+const MATCH_COST_TABLE: readonly number[] = [
+  0xB4, 0x00, 0xB4, 0x00, 0x5A, 0x00, 0x5A, 0x00,
+  0xD2, 0x00, 0xD2, 0x00, 0x5A, 0x00, 0x5A, 0x00,
+];
+
+/**
+ * $D0F6: 检查角色位置（在 $64 之内？）并设标志。
+ */
+export function positionCheck_$D0F6(sys: SystemState): void {
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+  const lo = sys.mem[ptr + 1];   // 16-bit 值 低
+  const hi = sys.mem[ptr + 2];   // 16-bit 值 高
+  const value = (hi << 8) | lo;
+  const flag = (value >= 100) ? 0 : 1;
+  sys.mem[0x044D] = flag;
+}
+
+/**
+ * $D110: 切换到 bank $12/$13 → 执行 $B000（另一场景模式入口）。
+ *
+ * @param onBank12_B000 bank $12/$13 $B000 回调
+ */
+export function sceneSwitchBank12_$D110(
+  sys: SystemState,
+  onBank12_B000: (sys: SystemState) => void,
+): void {
+  sys.mem[0x24] = 0x12;
+  sys.mem[0x25] = 0x13;
+  bankSwitch_apply_$CE2D(sys);
+  onBank12_B000(sys);
+}
+
+/**
+ * $D11E: 场景模式选择器 — 根据 matchType 进入不同模式。
+ *
+ * matchType=5 → 特殊模式（跳到 bank $12/$13）
+ * matchType=4 → 通过 bank dispatch 到 (1A,1B):$8030
+ * 其他 → 正常初始化比赛状态
+ *
+ * @param onBank12_B000 matchType=5 的回调
+ * @param onBank1A_8030 matchType=4 的回调
+ */
+export function gameModeSwitch_$D11E(
+  sys: SystemState,
+  onBank12_B000: (sys: SystemState) => void,
+  onBank1A_8030: (sys: SystemState, a: number) => void,
+): void {
+  const matchType = sys.mem[0x0627];  // $27 → 0x27? No: $0027
+
+  // matchType=5 → 特殊
+  if (matchType === 5) {
+    sceneSwitchBank12_$D110(sys, onBank12_B000);
+    return;
+  }
+
+  // 通用初始化
+  sys.mem[0x063E] = 0;
+  sys.mem[0x0640] = 0;
+  sys.mem[0x0641] = 0;
+  sys.mem[0x0613] = 0;
+
+  // matchType=4 → bank dispatch
+  if (matchType === 4) {
+    const savedW6 = sys.mem[0x24];
+    const savedW7 = sys.mem[0x25];
+    sys.mem[0x24] = 0x1A;
+    sys.mem[0x25] = 0x1B;
+    bankSwitch_apply_$CE2D(sys);
+    onBank1A_8030(sys, sys.mem[0x0627]);
+    sys.mem[0x24] = savedW6;
+    sys.mem[0x25] = savedW7;
+    bankSwitch_apply_$CE2D(sys);
+  }
+
+  // 存比赛消耗
+  const costIdx = (sys.mem[0x002B] & 0xFE) >> 0;  // match sub-type
+  let costMultiplier = 8;
+  if (costIdx === 0x0E || costIdx === 0x12 || costIdx >= 0x1A) {
+    costMultiplier = 0;
+  }
+  const baseCost = (sys.mem[0x0627] & 0xFF) << 1;
+  const totalCost = (baseCost + costMultiplier) & 0xFF;
+  sys.mem[0x05F7] = MATCH_COST_TABLE[totalCost % MATCH_COST_TABLE.length];
+  sys.mem[0x05F8] = MATCH_COST_TABLE[(totalCost + 1) % MATCH_COST_TABLE.length];
+  sys.mem[0x05F9] = 0;
+
+  // 准备进入比赛主循环
+  // LDX #$50; TXS → 重置堆栈到 $0150
+}
+
+// ═════════════════════════════════════════════════
+// $D193-$D36D — GP 修改 + 输入处理主循环 (475 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   D193: TAX              ; GP 修改量 → X
+//   D194: CLC
+//   D195: ADC $05FF        ; 加当前 GP
+//   D198: STA $05FF
+//   D19B: TXA              ; 恢复原始值
+//   D19C: PHA              ; 保存到栈
+//   D19D: JSR $D235        ; 子处理1 (GP 应用)
+//   D1A0: PLA              ; 恢复
+//   D1A1: LDX $05F8        ; GP 上限
+//   D1A4: BNE checkLimit
+//   D1A6: CPX $05F7        ; 比较下限
+//   ...复杂的 GP 限界逻辑...
+//   loop:
+//   D1D1-D241: GP sign/decrement → 限界检查
+//   D242: bank31 helper → $EF7F
+//   D245-D282: 输入扫描 → 闪光标志 → 音效
+//   D283-D2D0: 主输入处理循环 (A键确认 → 分发)
+//   D2D1-D36D: 方向输入处理 → 多级输入检查
+
+/**
+ * $D193: GP 修改 — 加减 GP 值并在限界内。
+ *
+ * 6502: A = GP 变化量（有符号）。应用到 $05FF 并限界在 [$05F7, $05F8]。
+ *
+ * @param delta 有符号 GP 变化量
+ * @param onBank31_EF7F bank31 $EF7F 回调
+ */
+export function gpModify_$D193(
+  sys: SystemState,
+  delta: number,
+  onBank31_EF7F: (sys: SystemState, a: number) => void,
+): void {
+  let gp = sys.mem[0x05FF];
+  const isNegative = (delta & 0x80) !== 0;
+
+  if (isNegative) {
+    // 减少 GP
+    delta = ((-delta) & 0xFF);
+    gp = gp < delta ? 0 : gp - delta;
+  } else {
+    // 增加 GP
+    const hiLimit = sys.mem[0x05F8];
+    gp += delta;
+    // 检查上限
+    const loLimit = sys.mem[0x05F7];
+    const maxGp = (hiLimit << 8) | loLimit;
+    if (gp > maxGp) gp = maxGp;
+  }
+
+  sys.mem[0x05FF] = gp & 0xFF;
+
+  // 闪烁/音效逻辑
+  if ((sys.mem[0x063E] & 0x80) === 0 && sys.mem[0x05F7] <= 0x1E) {
+    sys.mem[0x063E] |= 0x80;             // 低 GP 警告标志
+    audiotrigger_$CBB0(sys, 0x32);       // 警告音
+  }
+
+  // GP 归零时的处理
+  if (sys.mem[0x05F8] === 0 && sys.mem[0x05F7] === 0) {
+    // 随机方向微调
+    const rand = (sys.mem[0x00E2] & 0x80) ? 0x0C : 0;
+    sys.mem[0x05F9] = (sys.mem[0x05F9] + rand) & 0xFF;
+    if (sys.mem[0x05F9] === 0) {
+      sys.mem[0x062D] = 0;
+      sys.mem[0x0615] &= 0xBF;
+      audiotrigger_$CBB0(sys, 0x43);
+    }
+  }
+
+  onBank31_EF7F(sys, 0);
+}
+
+/**
+ * $D213: GP 内部应用 — 对单个球员的 GP 修改（二分路: HP>0 vs HP=0）。
+package * 6502: 从角色数据读 HP → 有HP则直接修改；无HP则对耐力值操作。
+ */
+export function gpApply_$D213(sys: SystemState, delta: number): void {
+  getCharData_$CD7C(sys);
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+  const hp = sys.mem[ptr + 0x0A];
+
+  if (hp !== 0) {
+    // 有 HP → 直接修改 GP（offset+?）
+    let gp = sys.mem[ptr + 0x07];
+    gp = (gp + delta) & 0xFF;
+    if (gp & 0x80) gp = 0;
+    sys.mem[ptr + 0x07] = gp;
+  } else {
+    // 无 HP → 对耐力操作
+    let stamina = sys.mem[ptr + 0x06];
+    if (delta & 0x80) {
+      // 负修改：保底检查
+      stamina = (stamina + delta) & 0xFF;
+      if (stamina >= 0x80) stamina = (stamina + 3) & 0xFF;
+      sys.mem[ptr + 0x06] = stamina;
+    } else {
+      stamina = (stamina + delta) & 0xFF;
+      sys.mem[ptr + 0x06] = stamina;
+    }
+  }
+}
+
+// ═════════════════════════════════════════════════
+// $D36E-$D52A — 玩家状态机核心 (445 bytes)
+// ═════════════════════════════════════════════════
+//
+// 处理玩家回合、选择操作、确认等核心状态机。
+//
+// 6502 反汇编概要:
+//   D36E: LDA $0621        ; 玩家状态
+//   D371: CMP #$03
+//   D373: BCC skip         ; < 3 → 跳过
+//   D375: JMP $D29A        ; ≥ 3 → 高级处理
+//   skip:
+//   D378: LDA $0600        ; 玩家数量
+//   D37B: BNE step1
+//   D37D: RTS              ; 0 人 → 退出
+//   step1: 为3位玩家分配操作槽位
+//   D382-D3DA: 遍历 $0600 个玩家
+//   ...对每个玩家显示选项（传球、射门等）
+//   ...读手柄输入 → 方向键选选项 → A键确认
+//   D3DB-D4E8: 输入扫描循环 + 选项闪烁动画
+//   D4E9-D52A: 确认分发 + bank 调用
+
+/**
+ * $D36E: 玩家状态机 — 处理回合制输入选择。
+ *
+ * 6502: 遍历活跃玩家 → 每人按方向键选择操作 → A 键确认 → 分发。
+ *
+ * @param onBank1C_800C bank dispatch 回调（$800C in bank $1C/$1D）
+ * @param onBank31_EF7F bank31 helper 回调
+ */
+export function playerStateMachine_$D36E(
+  sys: SystemState,
+  onBank1C_800C: (sys: SystemState, a: number) => void,
+  onBank31_EF7F: (sys: SystemState, a: number) => void,
+): void {
+  const state = sys.mem[0x0621];  // 玩家状态
+
+  if (state >= 3) return;  // 高级状态 → 外部处理
+
+  const playerCount = sys.mem[0x0600];
+  if (playerCount === 0) return;
+
+  // 初始化 3 个操作槽位
+  for (let i = 0; i < 3; i++) {
+    sys.mem[0x060B + i] = 0xFF;  // 填充 $FF 表示空
+  }
+
+  sys.mem[0x061E] = 0;
+
+  // 显示选项列表（偏移值表）
+  const displayBase = state === 0
+    ? (sys.mem[0x0601] ? 2 : 1)  // 有替补→类型2, 否则类型1
+    : (sys.mem[0x0621] < 2 ? 0x0D : 0x0F);
+
+  onBank31_EF7F(sys, displayBase);
+  timerInit_$CB0F(sys, 1);
+
+  // 输入循环（简化版: 一个帧周期）
+  const joypad = sys.mem[0x001E];
+
+  // 确认/取消逻辑
+  if (joypad & 0x80) {  // A — 确认
+    // 检查选项合法性
+    const selIdx = sys.mem[0x061E] >> 1;  // 除2（闪烁帧）
+    if ((selIdx & 0x03) !== 0) {
+      // 分发到 bank $1C/$1D
+      const savedW6 = sys.mem[0x24];
+      const savedW7 = sys.mem[0x25];
+      sys.mem[0x24] = 0x1C;
+      sys.mem[0x25] = 0x1D;
+      bankSwitch_apply_$CE2D(sys);
+      onBank1C_800C(sys, sys.mem[0x0621]);
+      sys.mem[0x24] = savedW6;
+      sys.mem[0x25] = savedW7;
+      bankSwitch_apply_$CE2D(sys);
+    }
+    return;
+  }
+
+  if (joypad & 0x40) {  // B — 取消/回退
+    sys.mem[0x061F] |= 0x40;
+    return;
+  }
+
+  // 方向: Up/Down 切换选项
+  if (joypad & 0x08) sys.mem[0x061E] = (sys.mem[0x061E] - 1) & 0xFF;
+  if (joypad & 0x04) sys.mem[0x061E] = (sys.mem[0x061E] + 1) & 0xFF;
+}
+
+// ═════════════════════════════════════════════════
+// $DCDF-$DCEF — 随机数生成 (17 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   DCDF: LDA $044E        ; 已生成?
+//   DCE2: BNE done         ; !=0 → 跳过
+//   DCE4: LDA $00E2        ; 读帧计数器 LSB
+//   DCE7: AND #$01         ; 取 bit0
+//   DCE9: CLC
+//   DCEA: ADC #$01         ; +1
+//   DCEC: STA $044E        ; 存结果 (1 或 2)
+//   done: RTS
+
+/**
+ * $DCDF: 生成「随机」值 1 或 2（基于 $E2 bit0）。
+ * 6502: 如果 $044E 已非零则保留，否则读 $E2 bit0 → 1 或 2 → 存入 $044E。
+ * 常用于决定初始球权 (1=左队, 2=右队)。
+ */
+export function randomGen_$DCDF(sys: SystemState): number {
+  if (sys.mem[0x044E] !== 0) return sys.mem[0x044E];
+  const val = ((sys.mem[0x00E2] & 1) + 1) & 0xFF;
+  sys.mem[0x044E] = val;
+  return val;
+}
+
+// ═════════════════════════════════════════════════
+// $D0D1-$D0F5 — 角色槽位扫描 (37 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   D0D1: LDA $2A          ; match type
+//   D0D4: CMP #$02
+//   D0D6: BNE exit         ; !=2 → 退出 (A=任意)
+//   D0D8: LDA #$00
+//   D0DA: PHA              ; push counter=0
+//   loop: CMP #$0B         ; counter >= $0B?
+//   D0DD: BCC idx          ; < → 直接用
+//   D0DF: ADC #$0A         ; >= → +$0A 包装
+//   idx:  JSR $CD7C        ; getCharData
+//   D0E4: LDY #$00
+//   D0E6: LDA ($34),Y      ; char byte
+//   D0E8: TAX
+//   D0E9: PLA              ; pop counter
+//   D0EA: CPX #$20         ; 空格字符?
+//   D0EC: BEQ found        ; 是 → 找到
+//   D0EE: CLC; ADC #$01    ; counter++
+//   D0F1: CMP #$16         ; 到顶?
+//   D0F3: BNE loop         ; 继续
+//   RTS                    ; 没找到
+
+/**
+ * $D0D1: 扫描球员槽位，找第一个空格（未占用）位置。
+ * 6502: 只在 match type=2 时执行。遍历 0-$15 共 22 个槽位。
+ * @returns 槽位索引 (0-$15)，没找到返回调用前的 A 值
+ */
+export function playerSlotScan_$D0D1(sys: SystemState): number {
+  if (sys.mem[0x2A] !== 2) return sys.regs.A;  // 只在 match type=2 扫描
+
+  for (let counter = 0; counter < 0x16; counter++) {
+    let idx = counter;
+    if (idx >= 0x0B) idx += 0x0A;               // >= $0B → 加 $0A 跳过队伍 B 间隙
+    getCharData_$CD7C(sys);
+    const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+    const charByte = sys.mem[ptr];
+    if (charByte === 0x20) {                    // 空格 = 空位
+      return counter;
+    }
+  }
+  return sys.regs.A;
+}
+
+// ═════════════════════════════════════════════════
+// $DD63-$DDCA — 移动距离计算 (104 bytes)
+// ═════════════════════════════════════════════════
+// 多个子函数:
+//   $DD63: getDistance → 计算移动距离并存入 $0638
+//   $DD73: getDistanceWithSign → 带方向的距离计算
+//   $DD80: distanceToPixels → 距离值转像素移动量
+//
+// 6502 反汇编 ($DD63):
+//   DD63: TAX              ; A → X (行坐标)
+//   DD64: LDY #$7C         ; Y = 列偏移常量
+//   DD66: JSR $CDE2        ; coordTransform
+//   DD69: STA $0638        ; 存网格索引
+//   DD6C: SEC              ; carry=1 表示有效
+//   DD6D: RTS
+//
+// $DD73 (带符号):
+//   DD73: LDA #$E9         ; 正常偏移
+//   DD75: LDX $00FB
+//   DD78: BEQ d7c          ; 主队 → 跳过
+//   DD7A: LDA #$05         ; 客队偏移
+//   d7c: LSR $00E2         ; 随机化
+//   DD7F: ADC #$00         ; +0 或 +1
+//   DD81: STA $0638
+//   DD84: CLC
+//   DD85: RTS
+//
+// $DD86 (距离→像素):
+//   DD86: LDA $0635        ; X 偏移绝对值
+//   DD89: LDX $05FB
+//   DD8C: BEQ $DD90
+//   DD8E: EOR #$FF; CLC; ADC #$01  ; 取反
+//   DD92: CMP #$A0
+//   DD94: BCS large
+//   DD96: SEC; SBC #$30; LSR; LSR; LSR
+//   DD9D: TAX; LDA $DDCB,X; BNE store  ; 查表
+//   large: SEC; SBC #$A0; LSR; LSR; LSR
+//   DDA9: STA $3A
+//   DDAB: LDA $0637        ; Y 偏移
+//   DDAE: BPL ddb2
+//   DDB0: EOR #$FF         ; 取绝对值
+//   ddb2: SEC; SBC #$50
+//   DDB6: AND #$38; LSR
+//   DDBA: STA $3B
+//   DDBC: LSR; ADC $3B; ADC $3A
+//   DDC1: TAX; LDA $DDDE,X ; 查表
+//   DDC5: STA $062B
+//   DDC8: ASL; ASL; ASL; ADC $062B
+//   store: STA $062B
+//   RTS
+
+/** $DDCB-$DDDD: 近距离速度查表（19 entries） */
+const MOVE_SPEED_NEAR: readonly number[] = [
+  0x13, 0x12, 0x11, 0x10, 0x0F, 0x0E, 0x0D, 0x0C,
+  0x0B, 0x0A, 0x09, 0x08, 0x07, 0x06, 0x05, 0x05, 0x05, 0x05, 0x05,
+];
+
+/** $DDDE-$DDFC: 远距离速度查表（31 entries） */
+const MOVE_SPEED_FAR: readonly number[] = [
+  0x05, 0x05, 0x04, 0x04, 0x04, 0x04, 0x04, 0x05,
+  0x04, 0x03, 0x03, 0x03, 0x03, 0x05, 0x04, 0x03,
+  0x02, 0x02, 0x02, 0x05, 0x04, 0x03, 0x02, 0x01,
+  0x01, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00,
+];
+
+/**
+ * $DD63: 计算坐标距离并存入 $0638。
+ * 6502: TAX; LDY #$7C; JSR coordTransform; STA $0638; SEC; RTS
+ */
+export function getDistance_$DD63(sys: SystemState, xReg: number, yReg: number): void {
+  coordTransform_$CDE2(sys, xReg, yReg);
+  sys.mem[0x0638] = sys.regs.A;
+}
+
+/**
+ * $DD73: 带方向标记的距离计算。
+ * 6502: 根据 $05FB (主队/客队) 选择偏移基值，随机 +0 或 +1。
+ */
+export function getDistanceSigned_$DD73(sys: SystemState): void {
+  let base = (sys.mem[0x05FB] === 0) ? 0xE9 : 0x05;
+  // LSR $E2; ADC #$00 → 随机 +0 或 +1
+  base = (base + ((sys.mem[0x00E2] & 1) ? 1 : 0)) & 0xFF;
+  sys.mem[0x0638] = base;
+}
+
+/**
+ * $DD86: 距离值转像素移动量（存 $062B）。
+ * 6502: 读取 $0635(ΔX)、$0637(ΔY) → 查表得速度值 → 存 $062B
+ */
+export function distanceToPixels_$DD86(sys: SystemState): void {
+  let dx = sys.mem[0x0635];
+  // 根据队伍方向取反
+  if (sys.mem[0x05FB] !== 0) {
+    dx = ((-dx) & 0xFF);
+  }
+  // 计算速度
+  if (dx >= 0xA0) {
+    // 远距离路径
+    const colIdx = ((dx - 0xA0) & 0xFF) >> 3;
+    let dy = sys.mem[0x0637];
+    if (dy & 0x80) dy = (-dy) & 0xFF;               // 取绝对值
+    dy = (((dy - 0x50) & 0x38) >> 1) & 0xFF;
+    const rowPart = ((dy >> 1) + dy) & 0xFF;
+    const totalDist = (rowPart + colIdx) & 0xFF;
+    const speed = MOVE_SPEED_FAR[totalDist % MOVE_SPEED_FAR.length];
+    const pixels = (speed * 9) & 0xFF;              // ×9 (= speed<<3 + speed)
+    sys.mem[0x062B] = pixels;
+  } else {
+    // 近距离路径
+    const colIdx = ((dx - 0x30) & 0xFF) >> 3;
+    const speed = MOVE_SPEED_NEAR[colIdx % MOVE_SPEED_NEAR.length];
+    sys.mem[0x062B] = speed;
+  }
+}
+
+// ═════════════════════════════════════════════════
+// $DCFD-$DD62 — 球员移动检查 (102 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编 ($DCFD):
+//   DCFD: LDA #$FF
+//   DCFF: STA $061A        ; 目标距离 = $FF
+//   DD02: JSR $DD81        ; calcDistance
+//   DD05: JSR $DD47        ; 距离→像素
+//   DD08: PHP              ; 存标志
+//   DD09: LDA #$00
+//   DD0B: STA $061B        ; 结果标志 = 0
+//   DD0E: JSR $E73E        ; bank31 player logic
+//   DD11: PLP
+//   DD12: BCC $DD1C        ; carry=0 → 可以移动
+//   DD14: LDA #$2D
+//   DD16: JSR $CBB0        ; 音效 $2D (碰撞/失败)
+//   DD19: JMP $801B        ; → bank00 dispatch
+//   DD1C: JSR $CD77        ; gameModeSelector
+//   DD1F: LDY #$0A
+//   DD21: LDA ($34),Y
+//   DD23: BNE $DD36
+//   DD25: LDA #$1A
+//   DD27: STA $24
+//   DD29: LDA #$1B
+//   DD2B: STA $25
+//   DD2D: JSR $CE2D        ; bank switch
+//   DD30: LDX #$50
+//   DD32: TXS
+//   DD33: JMP $8006        ; → bank00 get state
+//   DD36: LDA #$1A
+//   DD38: STA $24
+//   DD3A: LDA #$1B
+//   DD3C: STA $25
+//   DD3E: JSR $CE2D
+//   DD41: LDX #$50
+//   DD43: TXS
+//   DD44: JMP $8018        ; → bank00 action
+//
+// $DD47: 距离校验
+//   DD47: LDA $3C04
+//   DD4A: BNE $DD6E
+//   DD4C: LDA $0635        ; ΔX
+//   DD4F: LDX $05FB
+//   DD52: BEQ dd56
+//   DD54: EOR #$FF; sec; ADC #$01
+//   dd56: CMP #$80
+//   DD58: BCS adjust
+//   DD5A: ADC #$4F
+//   DD5C: LDX $05FB
+//   DD5F: BEQ ret
+
+/**
+ * $DCFD: 球员移动检查 — 计算到达性 + 执行移动/碰撞逻辑。
+ * 6502: 计算距离 → 调用 bank31 player logic → 判断结果。
+ *
+ * @param onBank00_801B bank00 $801B 回调（碰撞路径）
+ * @param onBank00_8006 bank00 $8006 回调（get state 路径）
+ * @param onBank00_8018 bank00 $8018 回调（continue 路径）
+ * @param onBank31_E73E bank31 $E73E 回调（player logic）
+ * @param onGameModeSelect bank30 $CD77 回调（游戏模式选择）
+ */
+export function playerMoveCheck_$DCFD(
+  sys: SystemState,
+  onBank00_801B: (sys: SystemState) => void,
+  onBank00_8006: (sys: SystemState) => void,
+  onBank00_8018: (sys: SystemState) => void,
+  onBank31_E73E: (sys: SystemState) => void,
+  onGameModeSelect: (sys: SystemState) => void,
+): void {
+  sys.mem[0x061A] = 0xFF;          // 目标标志
+
+  // 计算距离 (JSR $DD81 + $DD47)
+  getDistanceSigned_$DD73(sys);
+  distanceToPixels_$DD86(sys);
+
+  sys.mem[0x061B] = 0;             // 结果标志清零
+
+  // JSR $E73E — player logic
+  onBank31_E73E(sys);
+
+  // 判断 carry: BCC → 可移动; BCS → 碰撞
+  const canMove = !(sys.regs.P & 0x01);
+  if (!canMove) {
+    // 碰撞路径
+    audiotrigger_$CBB0(sys, 0x2D);
+    sys.mem[0x24] = 0x1A; sys.mem[0x25] = 0x1B;
+    bankSwitch_apply_$CE2D(sys);
+    onBank00_801B(sys);
+    return;
+  }
+
+  // 可移动: 检查角色数据
+  onGameModeSelect(sys);
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+  const charFlag = sys.mem[ptr + 0x0A];
+
+  sys.mem[0x24] = 0x1A; sys.mem[0x25] = 0x1B;
+  bankSwitch_apply_$CE2D(sys);
+
+  if (charFlag === 0) {
+    // 玩家消失 → get state
+    onBank00_8006(sys);
+  } else {
+    // 继续移动
+    onBank00_8018(sys);
+  }
+}
+
+/**
+ * $DD47: 距离有效性校验（辅助函数）。
+ * 6502: 检查 $3C04 + $0635 偏移是否在可到达范围内。
+ * @returns carry set = 不可到达, carry clear = 可到达
+ */
+export function distanceCheck_$DD47(sys: SystemState): boolean {
+  if (sys.mem[0x3C04] !== 0) return false;  // 特殊模式跳过
+  let dist = sys.mem[0x0635];
+  if (sys.mem[0x05FB] !== 0) dist = (-dist) & 0xFF;
+  // 简化: 距离 <= $80 为有效
+  return dist <= 0x80;
+}
+
+// ═════════════════════════════════════════════════
+// $DDFD-$DE44 — 球员初始化 (72 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   DDFD: LDA $00E2
+//   DE00: AND #$07
+//   DE02: CMP #$06
+//   DE04: BCC de06
+//   DE06: SBC #$06         ; >=6 → -6 (wrap)
+//   DE08: CLC
+//   DE09: ADC #$05         ; +5
+//   DE0B: ADC $05FB        ; 加队伍偏移
+//   DE0E: STA $05FC        ; 存球员 ID
+//   DE11: LDA $05FB        ; 队伍标志
+//   DE14: STA $0441        ; 场景 ID
+//   DE17: JSR $E6EC        ; bank31 player logic
+//   DE1A: LDY #$0A
+//   DE1C: LDA #$00
+//   DE1E: STA ($34),Y      ; 清零 HP
+//   DE20: LDA #$00
+//   DE22: STA $0628        ; 清零动画计数器
+//   DE25: STA $044E        ; 清零 RN seed
+//   DE28: JSR $DCDF        ; 生成随机数
+//   DE2B: LDA #$01
+//   DE2D: STA $043B        ; 初始化事件标志
+//   DE30: LDA #$00
+//   DE32: STA $043C        ; 事件步进
+//   DE35: JSR $D093        ; 菜单分发
+//   DE38: LDA #$3A
+//   DE3A: JSR $CBB0        ; 音效 $3A
+//   DE3D: LDA #$1A
+//   DE3F: STA $061A        ; 距离目标
+//   DE42: JMP $DE5E        ; → matchEventSubEntry
+
+/**
+ * $DDFD: 初始化球员（随机选择球员 + 队伍分配）。
+ * 6502: ($E2 & 7) 模 6 → +5 → +team → 存 $05FC; 清零 HP/动画; play sound $3A
+ *
+ * @param onBank31_E6EC bank31 $E6EC player logic 回调
+ * @param onMenuDispatch bank30 $D093 菜单分发回调
+ * @param onMatchSubEntry bank30 $DE5E 回调
+ */
+export function playerInit_$DDFD(
+  sys: SystemState,
+  onBank31_E6EC: (sys: SystemState) => void,
+  onMenuDispatch: (sys: SystemState) => void,
+  onMatchSubEntry: (sys: SystemState) => void,
+): void {
+  // 随机器生成球员 ID
+  let rand = sys.mem[0x00E2] & 0x07;
+  if (rand >= 6) rand -= 6;
+  const playerId = (rand + 5 + sys.mem[0x05FB]) & 0xFF;
+  sys.mem[0x05FC] = playerId;
+  sys.mem[0x0441] = sys.mem[0x05FB];
+
+  // 清零
+  onBank31_E6EC(sys);
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+  sys.mem[ptr + 0x0A] = 0;        // HP = 0
+  sys.mem[0x0628] = 0;           // 动画计数
+  sys.mem[0x044E] = 0;           // RN
+  randomGen_$DCDF(sys);          // 再生随机数
+
+  sys.mem[0x043B] = 1;           // 事件标志
+  sys.mem[0x043C] = 0;           // 事件步进
+  onMenuDispatch(sys);
+  audiotrigger_$CBB0(sys, 0x3A);
+  sys.mem[0x061A] = 0x1A;
+  onMatchSubEntry(sys);
+}
+
+// ═════════════════════════════════════════════════
+// $DF8B-$DFBC — 比赛结果计算辅助 (50 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   DF8B: LDA $0638        ; 网格位置
+//   DF8E: JSR $CDC9        ; tileCoordConvert
+//   DF91: TXA              ; 列坐标
+//   DF92: SEC
+//   DF93: SBC $0635        ; 减目标 X
+//   DF96: BCS $DF9C
+//   DF98: EOR #$FF
+//   DF9A: ADC #$01         ; 取绝对值
+//   DF9E: STA $3A          ; |ΔX|
+//   DFA0: TYA              ; 行坐标
+//   DFA1: SEC
+//   DFA2: SBC $0637        ; 减目标 Y
+//   DFA5: BCS $DFAB
+//   DFA7: EOR #$FF
+//   DFA9: ADC #$01         ; 取绝对值
+//   DFAE: TAY              ; |ΔY|
+//   DFAF: SEC
+//   DFB0: SBC $3A          ; |ΔY| - |ΔX|
+//   DFB2: BCS $DFB6
+//   DFB4: LDY $3A          ; 取较大的值
+//   DFB6: TYA
+//   DFB7: LSR; LSR; LSR    ; /8
+//   DFBA: TAX; LDA $DFBD,X ; 查表 → $062B
+//   DFBF: STA $062B
+//   DFC1: RTS
+
+/** $DFBD-$DFD8: 结果系数查表 (28 bytes) */
+const RESULT_COEFF: readonly number[] = [
+  0x02, 0x03, 0x03, 0x03, 0x03, 0x04, 0x04, 0x04,
+  0x04, 0x04, 0x04, 0x05, 0x05, 0x05, 0x05, 0x05,
+  0x05, 0x05, 0x05, 0x05,
+  // 内联初始化代码: JSR $DCDF; LDA #$19; JSR $CBB0
+];
+
+/**
+ * $DF8B: 根据网格距离计算比赛结果系数。
+ * 6502: gridPos→tileCoords; |ΔX| 和 |ΔY| → maxDist/8 → 查 RESULT_COEFF 表
+ */
+export function resultCalcDistance_$DF8B(sys: SystemState): void {
+  const gridPos = sys.mem[0x0638];
+
+  // 转换坐标 (JSR $CDC9)
+  const targetX = sys.mem[0x0635];
+  const targetY = sys.mem[0x0637];
+
+  // 计算 |ΔX|
+  let dx = gridPos; // 简化: gridPos 包含了行列信息
+  dx = ((dx - targetX) & 0xFF);
+  if (dx & 0x80) dx = (-dx) & 0xFF;
+  sys.mem[0x3A] = dx;
+
+  // 计算 |ΔY|
+  let dy = ((sys.mem[0x0637] - targetY) & 0xFF);
+  if (dy & 0x80) dy = (-dy) & 0xFF;
+
+  // 取 max(|ΔX|, |ΔY|)
+  if (dy < dx) dy = dx;
+
+  // /8 → 查表
+  const idx = (dy >> 3);
+  sys.mem[0x062B] = RESULT_COEFF[idx % RESULT_COEFF.length];
+}
+
+// ═════════════════════════════════════════════════
+// $DFD9-$DFFF — 比赛结果最终计算 (39 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编:
+//   DFD9: JSR $E059        ; bank31 helper
+//   DFDC: LDA #$FF
+//   DFDE: STA $061A        ; 目标 = $FF
+//   DFE1: LDA #$01
+//   DFE3: STA $061B        ; 结果标志 = 1
+//   DFE6: JSR $E73E        ; bank31 player logic
+//   DFE9: LDA #$1A
+//   DFEB: JSR $CBB0        ; 音效 $1A
+//   DFEE: LDA $0441        ; 当前球员 ID
+//   DFF1: JSR $CD7C        ; getCharData
+//   DFF4: LDA $0443        ; 结果值
+//   DFF7: ASL; ASL; ASL    ; ×8
+//   DFFA: LDX $05FB
+//   DFFD: BEQ $E002
+
+/**
+ * $DFD9: 比赛结果最终计算 — 获取结果值并放大。
+ * 6502: bank31 helper → 设标志 → playerLogic → 音效 → 读取 $0443×8
+ *
+ * @param onBank31_E059 bank31 $E059 回调
+ * @param onBank31_E73E bank31 $E73E 回调
+ * @returns 结果值 (0-$FF)
+ */
+export function matchResultCalc_$DFD9(
+  sys: SystemState,
+  onBank31_E059: (sys: SystemState) => void,
+  onBank31_E73E: (sys: SystemState) => void,
+): number {
+  onBank31_E059(sys);
+  sys.mem[0x061A] = 0xFF;
+  sys.mem[0x061B] = 1;
+  onBank31_E73E(sys);
+  audiotrigger_$CBB0(sys, 0x1A);
+
+  // 读取角色数据
+  sys.mem[0x0441] = sys.mem[0x05FC]; // fallback to player ID
+  getCharData_$CD7C(sys);
+
+  let result = sys.mem[0x0443];
+  result = (result << 3) & 0xFF;  // ×8
+  if (sys.mem[0x05FB] !== 0) {
+    result = (-result) & 0xFF;     // 客队取反
+  }
+  return result;
+}
+
+// ═════════════════════════════════════════════════
+// $D565-$D6C9 — 玩家状态处理 (357 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编概要:
+//   $D565: 子入口1 — 输入确认/Menu流程分发
+//   $D57E: 主入口 — GP 消耗后的状态流转
+//       检查角色 HP → 若为 0 则音效 + 退出
+//       根据 $0621(state) 决定前进方向
+//       通过 $D6CA 跳转表分发到不同逻辑分支
+//   $D5C3: 输入循环 — 等帧 + 读手柄 + 闪烁动画
+//   $D60C: 确认分发 — 扫描位标记 + 查表跳转
+//   $D64E: 各分支处理逻辑（调用 bank31 $EF7F + bank1C dispatch）
+
+/** $D6CA-$D6F2: 玩家状态分发跳转表（24 entries） */
+const PLAYER_STATE_JMP_TABLE_LO: readonly number[] = [
+  0x92, 0xE8, 0x0C, 0x79, 0x0C, 0x65, 0x0C, 0x0C,
+  0x0C, 0x0C, 0x02, 0x01, 0x00, 0x03, 0x04, 0x05,
+  0x06, 0x1E, 0x1F, 0x20, 0x00, 0x01, 0x03, 0x02,
+];
+
+/** $D6F3-$D70B: 选项数据配置表 */
+const PLAYER_OPTION_CONFIG: readonly number[] = [
+  0x04, 0x00, 0x01, 0xFF, 0x02, 0x00, 0x01, 0xFF,
+  0xFF, 0x09, 0x07, 0xFF, 0x08, 0x03, 0x04, 0x05,
+  0x03, 0x03, 0x03, 0x02, 0x02, 0x02, 0x02, 0x02,
+  0x2C,
+];
+
+/**
+ * $D565: 玩家状态主入口 — 根据 $0621 分发到对应状态处理。
+ *
+ * 6502 流程:
+ *   1. $D573 → 查跳转表得目标地址
+ *   2. 切换到 bank $1A/$1B → 执行对应逻辑
+ *   3. $D57E: 较完整的状态处理入口 — 检查 HP + 跳转表
+ *
+ * @param onBank31_EF7F bank31 help display 回调
+ * @param onBank1A_1B bank dispatch 回调 (bank $1A/$1B)
+ */
+export function playerStateHandler_$D565(
+  sys: SystemState,
+  onBank31_EF7F: (sys: SystemState, a: number) => void,
+  onBank1A_1B: (sys: SystemState, subAddr: string) => void,
+): void {
+  const state = sys.mem[0x0621];
+
+  // 读手柄输入
+  const joypad = sys.mem[0x001E];
+
+  // 检查角色 HP
+  getCharData_$CD7C(sys);
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+  const hp = sys.mem[ptr + 0x0A];
+
+  if (hp === 0) {
+    audiotrigger_$CBB0(sys, 0x40);
+    onBank31_EF7F(sys, state);
+    return;
+  }
+
+  // $D5B2: check state
+  if (state >= 3) {
+    // 检查 $0600 是否有玩家
+    if (sys.mem[0x0600] !== 0) {
+      if (sys.mem[0x0601] !== 0 && sys.mem[0x0601] !== 0x0B) {
+        audiotrigger_$CBB0(sys, 0x41);
+      }
+    }
+    onBank31_EF7F(sys, 0);
+  }
+
+  // $D5C3: 输入循环
+  sys.mem[0x0011] = 0;
+  sys.mem[0x0012] = 0;
+  timerInit_$CB0F(sys, 2);
+
+  // 闪烁刷新
+  // 在 6502 中这里调用 waitFrame 后再次显示
+  // 简化: 闪烁标志翻转
+  if (sys.mem[0x0615] & 0x40) {
+    sys.mem[0x0615] &= ~0x40;
+  } else {
+    sys.mem[0x0615] |= 0x40;
+  }
+
+  // 队伍标志
+  const teamFlag = sys.mem[0x05FB];
+  if (teamFlag === 0) {
+    // 调用 bank31 player logic
+    // JSR $E73E — bank31
+  }
+
+  // 通过跳转表分发
+  const jmpIdx = state * 2;
+  const lo = PLAYER_STATE_JMP_TABLE_LO[jmpIdx % PLAYER_STATE_JMP_TABLE_LO.length];
+  const hi = (lo >= 0x0C) ? 0xD7 : 0xD9;
+  const subAddr = `${lo.toString(16).toUpperCase()}_D${hi.toString(16).toUpperCase()}`;
+
+  // 方向键处理
+  if (joypad & 0x0F) {
+    let dirIdx = 0;
+    let mask = joypad & 0x0F;
+    if (mask & 0x01) dirIdx = 0;
+    else if (mask & 0x02) dirIdx = 1;
+    else if (mask & 0x04) dirIdx = 2;
+    else dirIdx = 3;
+
+    const configIdx = state * 4 + dirIdx;
+    const option = PLAYER_OPTION_CONFIG[configIdx % PLAYER_OPTION_CONFIG.length];
+    if (option !== 0xFF) {
+      sys.mem[0x043B] = option;
+    }
+  }
+
+  // A 键确认
+  if (joypad & 0x80) {
+    if (sys.mem[0x061E] & 0x80) {
+      // 已确认 — 分发到 bank $1A/$1B
+      onBank1A_1B(sys, subAddr);
+    }
+  }
+
+  // B 键取消
+  if (joypad & 0x40) {
+    if (sys.mem[0x061E] & 0x80) {
+      sys.mem[0x061E] = 0;
+      onBank31_EF7F(sys, 0);
+    }
+    return;
+  }
+
+  // 时序闪烁
+  if (sys.mem[0x061F] & 0x40) {
+    const blink = sys.mem[0x061E] ^ 0x40;
+    sys.mem[0x061E] = blink;
+  }
+}
+
+// ═════════════════════════════════════════════════
+// $D70C-$D851 — 比赛事件处理 (326 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编概要:
+//   $D70C: 主入口 — 帧等待 + 清标志
+//   $D717: 事件分支 1 — bank dispatch 到 $1C/$1D:$8012
+//   $D737: 事件分支 2 — bank dispatch 到 $1C/$1D:$8015
+//   $D74F: 距离比较 — 角色坐标与目标坐标比大小
+//   $D757: bank 调度 — 从 bank $1C 读数据 → 校验
+//   $D7A0: 分支状态检查 — 多条件跳转
+//   $D7CC: 输入处理循环 — 读手柄 + 选项滚动
+//   $D80C: 选择确认 — 查表 + 写结果
+
+/**
+ * $D70C: 比赛事件处理入口 — 处理一帧事件逻辑。
+ *
+ * 6502 流程:
+ *   1. 帧等待 → 清 $062D 标志
+ *   2. 根据 $043B(eventStep) 和 $043C(eventType) 分发
+ *   3. 两种 bank dispatch 分支: $8012($1C/$1D) 和 $8015($1C/$1D)
+ *   4. 返回值校验 → 可能需要重试或退出
+ *
+ * @param onBank1C_8012 bank dispatch 回调 (event branch 1)
+ * @param onBank1C_8015 bank dispatch 回调 (event branch 2)
+ * @param onBank31_EF7F bank31 help 回调
+ */
+export function matchEventHandler_$D70C(
+  sys: SystemState,
+  onBank1C_8012: (sys: SystemState, a: number) => void,
+  onBank1C_8015: (sys: SystemState, a: number) => void,
+  onBank31_EF7F: (sys: SystemState, a: number) => void,
+): void {
+  // 帧等待 + 额外等待
+  for (let i = 0; i < 3; i++) {
+    // 简单帧等待模拟
+  }
+  sys.mem[0x062D] = 0;
+
+  const eventType = sys.mem[0x043C];
+
+  // 分支 1: bank dispatch $8012
+  {
+    const savedW6 = sys.mem[0x24];
+    const savedW7 = sys.mem[0x25];
+    sys.mem[0x24] = 0x1C;
+    sys.mem[0x25] = 0x1D;
+    bankSwitch_apply_$CE2D(sys);
+    onBank1C_8012(sys, eventType);
+    sys.mem[0x24] = savedW6;
+    sys.mem[0x25] = savedW7;
+    bankSwitch_apply_$CE2D(sys);
+  }
+
+  // 距离比较
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+  let lo = sys.mem[ptr + 1];
+  const tgtLo = sys.mem[0x043F];
+  let hi = sys.mem[ptr + 2];
+  const tgtHi = sys.mem[0x0440];
+  const cmp = (hi - tgtHi) & 0xFF;
+
+  if ((cmp & 0x80) === 0 && (sys.mem[0x043C] & 0x80) === 0) {
+    // 在范围内 → 减少阈值
+    lo = ((lo - 1) & 0xFF);
+    sys.mem[0x043C] = lo;
+    return;
+  }
+
+  // 分支 2: bank dispatch $8015
+  if ((sys.mem[0x043E] & 0x80) === 0) {
+    const savedW6 = sys.mem[0x24];
+    const savedW7 = sys.mem[0x25];
+    sys.mem[0x24] = 0x1C;
+    sys.mem[0x25] = 0x1D;
+    bankSwitch_apply_$CE2D(sys);
+    onBank1C_8015(sys, sys.mem[0x043E]);
+    sys.mem[0x24] = savedW6;
+    sys.mem[0x25] = savedW7;
+    bankSwitch_apply_$CE2D(sys);
+
+    // 如果结果 carry=0 => 触发失败路径
+    if (!(sys.regs.P & 0x01)) {
+      audiotrigger_$CBB0(sys, 0x3D);
+      return;
+    }
+  }
+
+  // $D7A0: 状态检查路径
+  const subState = sys.mem[0x043C];
+  if (subState >= 3) {
+    sys.mem[0x043C] = sys.mem[0x044E];  // 重映射
+  }
+
+  if (subState === 0x12) {
+    // 特殊分支: 初始化逻辑
+    if (sys.mem[0x0448] === 0) {
+      sys.mem[0x0448] = 1;
+      audiotrigger_$CBB0(sys, 0x46);
+      // bank dispatch $1A/$1B:$8021
+    }
+  }
+
+  // 最后分支: 向 bank dispatch 到 $1A/$1B
+  if (subState === 0x11) {
+    sys.mem[0x0449] = 0;
+    sys.mem[0x044A] = 0;
+  }
+
+  // 输入循环序
+  onBank31_EF7F(sys, 0x0F);
+  sys.mem[0x062D] = 0x81;
+  sys.mem[0x0494] = 0x1F;
+}
+
+// ═════════════════════════════════════════════════
+// $D852-$D978 — 球员选择光标 + 属性显示 (295 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编概要:
+//   $D852: 读取光标项 — 根据 $0625 或 $0430 读取角色数据
+//   $D878: 属性显示 — 显示球员名和 GP（bank31 $EF7F 调用）
+//   $D89A: 输入处理循环 — 方向键移动光标 + A 键确认 + B 键取消
+//   $D8D2: 光标绘制 — 计算屏幕坐标 → 写入 PPU 数据
+//   $D8F7: 位置匹配 — 校验光标位置与网格位置是否一致
+
+/**
+ * $D852: 球员选择光标主入口 — 在球员列表中用方向键移动光标。
+ *
+ * 6502 流程:
+ *   1. 读 $0625（选择光标索引）
+ *   2. 通过 $CDE2 转换网格坐标
+ *   3. 检查是否与目标位置一致（$0430 的有效数据）
+ *   4. 方向键上下移动光标（限界在 0 - $0430）
+ *   5. A 键确认 → 写 $05FC 当前选择 → 退出
+ *   6. B 键取消 → 写特殊标志 → 退出
+ *
+ * @param onBank31_EF7F bank31 help 回调（显示球员名等）
+ */
+export function playerSelectCursor_$D852(
+  sys: SystemState,
+  onBank31_EF7F: (sys: SystemState, a: number) => void,
+): void {
+  const maxIdx = sys.mem[0x0430];
+  let cursorIdx = sys.mem[0x0625];
+
+  if (cursorIdx !== 0) {
+    // 读取当前选中角色的数据
+    const srcIdx = cursorIdx < 0x0B ? cursorIdx + 0x22 : cursorIdx + 0x22;
+    // 调用 bank31 显示
+    onBank31_EF7F(sys, cursorIdx < 0x0B ? cursorIdx + 0x22 : cursorIdx);
+  }
+
+  timerInit_$CB0F(sys, 1);
+
+  // 输入循环
+  while (true) {
+    const joypad = sys.mem[0x001E];
+
+    // 方向: Up/Down
+    if (joypad & 0x08) {
+      cursorIdx = (cursorIdx - 1) & 0xFF;
+      if ((cursorIdx & 0x80) !== 0) cursorIdx = maxIdx;
+      sys.mem[0x0625] = cursorIdx;
+      onBank31_EF7F(sys, cursorIdx < 0x0B ? cursorIdx + 0x1F : cursorIdx);
+    }
+    if (joypad & 0x04) {
+      cursorIdx = (cursorIdx + 1) & 0xFF;
+      if (cursorIdx > maxIdx) cursorIdx = 0;
+      sys.mem[0x0625] = cursorIdx;
+      onBank31_EF7F(sys, cursorIdx < 0x0B ? cursorIdx + 0x1F : cursorIdx);
+    }
+
+    // A 确认
+    if (joypad & 0x80) {
+      let selected = sys.mem[0x0431 + cursorIdx];
+      sys.mem[0x05FC] = selected;
+      return;
+    }
+
+    // B 取消
+    if (joypad & 0x40) {
+      // 取消标志
+      sys.mem[0x02FC] = 0xF8;
+      return;
+    }
+
+    // 帧等待
+    timerInit_$CB0F(sys, 1);
+
+    // 计算光标屏幕位置
+    const cursorPos = (cursorIdx << 4) + 0x9A;
+    sys.mem[0x02FC] = cursorPos & 0xFF;
+    sys.mem[0x02FD] = 0x11;
+    sys.mem[0x02FE] = 0x03;
+    sys.mem[0x02FF] = 0x50;
+  }
+}
+
+// ═════════════════════════════════════════════════
+// $D979-$DB33 — 球员替换 UI + 场景过渡 + 匹配结果 (443 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编概要:
+//   $D979: 替换 UI 主入口 — 搜索可替换球员
+//   $D9AF: 球员扫描 — 找角色数据 + 比较距离
+//   $DA03: 输入循环 — 确认替换目标
+//   $DA24: 选人光标移动 — 左右切换
+//   $DA48: 位置匹配检查 — 校验选择有效性
+//   $DAAA: 场景过渡 — 切 bank 控制流
+//   $DAE5: 中场处理 — 调用 bank31 $EF7F 显示
+//   $DB07: 比赛结果显示 — 音效 + 文本
+
+/**
+ * $D979: 球员替换 UI — 在比赛中断时替换场上球员。
+ *
+ * 6502 流程:
+ *   1. 播放音效 $38
+ *   2. 检查 $043C — 如果有球员被选中则跳过
+ *   3. 遍历 0-10 索引 → 找 HP=0 且距离在阈值内 → 加入候选列表
+ *   4. 调用 bank31 $EF7F 显示替换 UI
+ *   5. 等待 A/B 键输入 → 确认或取消替换
+ *   6. 如果确认 → bank dispatch 到 $1A/$1B:$8021 执行替换
+ *   7. 替换后 → 切换场景模式
+ *
+ * @param onBank1A_8021 bank dispatch 回调（替换确认）
+ * @param onBank31_EF7F bank31 help 回调
+ */
+export function playerSubstitutionUI_$D979(
+  sys: SystemState,
+  onBank1A_8021: (sys: SystemState, a: number) => void,
+  onBank31_EF7F: (sys: SystemState, a: number) => void,
+): void {
+  audiotrigger_$CBB0(sys, 0x38);
+
+  if (sys.mem[0x043C] !== 0) return;  // 已经选中
+
+  // 初始化候选列表
+  sys.mem[0x3A] = 1;  // 扫描计数器
+  sys.mem[0x0430] = 0;  // 候选数量
+
+  // 扫描可用球员
+  for (let i = 1; i < 0x0B; i++) {
+    if (i === sys.mem[0x0441]) continue;  // 跳过自己
+
+    // 距离检查（简化：阈值 = 0x14）
+    getCharData_$CD7C(sys);
+    const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+    const dx = Math.abs(sys.mem[ptr + 0x06] - sys.mem[0x0635]);
+    const dy = Math.abs(sys.mem[ptr + 0x08] - sys.mem[0x0637]);
+
+    if (dx < 0x14 && dy < 0x14) {
+      // 记录候选
+      const slotIdx = sys.mem[0x0430];
+      if (slotIdx < 4) {
+        sys.mem[0x0431 + slotIdx] = i;
+        sys.mem[0x0430] = (slotIdx + 1) & 0xFF;
+      }
+    }
+    sys.mem[0x3A] = (i + 1) & 0xFF;
+  }
+
+  // 调用 bank31 显示
+  const candidateCount = sys.mem[0x0430];
+  if (candidateCount === 0) {
+    // 无候选 → 提示
+    onBank31_EF7F(sys, 0x11);
+    timerInit_$CB0F(sys, 1);
+    // 等待 A/B 回退
+    const joypad = sys.mem[0x001E];
+    if ((joypad & 0xC0) !== 0) return;
+  } else {
+    // 有候选 → 显示选择 UI
+    onBank31_EF7F(sys, 0x10);
+    sys.mem[0x062D] = 0x82;
+    sys.mem[0x0494] = 0x1F;
+  }
+
+  // 比赛结果处理阶段
+  sys.mem[0x062D] = 0;
+  sys.mem[0x0615] = 0;
+  audiotrigger_$CBB0(sys, 0x33);
+
+  // 场景过渡 → bank dispatch
+  const savedW6 = sys.mem[0x24];
+  const savedW7 = sys.mem[0x25];
+  sys.mem[0x24] = 0x1A;
+  sys.mem[0x25] = 0x1B;
+  bankSwitch_apply_$CE2D(sys);
+  onBank1A_8021(sys, 0);
+  sys.mem[0x24] = savedW6;
+  sys.mem[0x25] = savedW7;
+  bankSwitch_apply_$CE2D(sys);
+
+  // 中场暂停显示
+  onBank31_EF7F(sys, 0x33);
+  onBank31_EF7F(sys, 0x35);
+  onBank31_EF7F(sys, 0x01);
+}
+
+// ═════════════════════════════════════════════════
+// $DBF3-$DC81 — 队伍槽位标志 + 坐标/属性缩放 (143 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编概要:
+//   $DBF3: 队伍翻转 — XOR #$0B → 存 $05FB
+//   $DBFF: 坐标缩放 — 根据 $2C/$2E 缩放球员坐标
+//   $DC07: 属性缩放 — 查表缩放球员属性值
+//   $DC29: 循环入口 — 遍历 22 个球员槽位
+//
+// 核心功能: 根据场上球员位置重新计算坐标和属性值。
+// 使用多个查表 ($DC82-$DCDE) 进行属性映射和坐标修正。
+
+/** $DC82-$DCDE: 属性映射表（4组，每组 11 字节） */
+const ATTR_MAP_TABLE: readonly number[] = [
+  // Group A (team A x4 types)
+  0x05, 0x3D, 0x46, 0x41, 0x2A, 0x57, 0x77, 0x5C, 0x71, 0x72, 0x6C,
+  0x05, 0x3D, 0x46, 0x41, 0x2A, 0x63, 0x68, 0x5A, 0x72, 0x59, 0x71,
+  0x05, 0x3D, 0x46, 0x35, 0x4C, 0x63, 0x68, 0x4F, 0x72, 0x5A, 0x71,
+  0x05, 0x3D, 0x46, 0x35, 0x37, 0x59, 0x77, 0x68, 0x72, 0x71, 0x63,
+  // Group B (unused trailing data)
+  0xEA, 0xBE, 0xB5, 0xAE, 0xC5, 0xA4, 0x79, 0x9F, 0x97, 0x94, 0x82,
+  0xEA, 0xBE, 0xB5, 0xAE, 0xC5, 0x99, 0x92, 0x95, 0x7B, 0x96, 0x80,
+  0xEA, 0xB2, 0xA9, 0xBA, 0x96, 0x99, 0x92, 0x94, 0x7B, 0x95, 0x80,
+  0xEA, 0xB2, 0xA9, 0xBB, 0xB9, 0xA2, 0x79, 0x9F, 0x95, 0x97, 0xA4,
+];
+
+/** $DC87-$DCB2: 坐标缩放查表 */
+const COORD_SCALE_TABLE: readonly number[] = [
+  0x05, 0x06, 0x07, 0x09, 0x0A, 0x05, // ← 前6项($DC82-$DC87)也是此表开头
+];
+
+/**
+ * $DBF3: 队伍槽位翻转 — 切换队伍标志并重置坐标。
+ *
+ * 6502: XOR $044F 与 #$0B → 存 $05FB
+ */
+export function teamFlagFlip_$DBF3(sys: SystemState): void {
+  sys.mem[0x05FB] = sys.mem[0x044F] ^ 0x0B;
+}
+
+/**
+ * $DBFF: 坐标缩放主入口 — 根据 $2C/$2E 缩放所有球员坐标。
+ *
+ * 6502 流程:
+ *   1. 读 $2C → 计算横向缩放因子
+ *   2. 读 $2E → 计算纵向缩放因子
+ *   3. 遍历 22 个槽位 → 每个球员的坐标 * 缩放因子
+ *   4. 查 $DC82 属性表 → 映射属性值
+ */
+export function coordAttrScale_$DBFF(sys: SystemState): void {
+  // 横向缩放因子 (基于 $2C)
+  const hScale = sys.mem[0x002C];
+  const hScaleX3 = (hScale * 3) & 0xFF;
+  const hScaleX8 = ((hScaleX3 << 3) + hScaleX3) & 0xFF;
+
+  // 纵向缩放因子 (基于 $2E)
+  const vScale = sys.mem[0x002E];
+  const vScaleX3 = (vScale * 3) & 0xFF;
+  const vScaleX8 = ((vScaleX3 << 3) + vScaleX3) & 0xFF;
+
+  sys.mem[0x3A] = hScaleX8;
+  sys.mem[0x3B] = vScaleX8;
+
+  // 遍历 22 个槽位
+  let idx = 0;
+  for (let slot = 0; slot < 0x16; slot++) {
+    getCharData_$CD7C(sys);
+
+    // 坐标缩放
+    const teamFlag = sys.mem[0x05FB];
+    const scaleX = (teamFlag === 0 || slot < 0x0B) ? hScaleX8 : vScaleX8;
+
+    // 读当前坐标
+    const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+    const attrX = sys.mem[ptr + 0x06];
+    const attrY = sys.mem[ptr + 0x08];
+
+    // 查属性表 → 缩放后的值
+    const attrIdx = (slot + scaleX) & 0xFF;
+    const scaledX = COORD_SCALE_TABLE[attrIdx % COORD_SCALE_TABLE.length];
+
+    // 应用坐标
+    if (teamFlag !== 0 && slot >= 0x0B) {
+      scaledX !== 0 && (sys.mem[ptr + 0x06] = ((-scaledX) & 0xFF));
+      sys.mem[ptr + 0x08] = ((-attrY) & 0xFF);
+    } else {
+      sys.mem[ptr + 0x06] = scaledX;
+      sys.mem[ptr + 0x08] = attrY;
+    }
+
+    // 额外属性清零检查
+    if (slot === 0 || slot === 0x0B) {
+      sys.mem[ptr + 0x07] = 0;
+    }
+
+    idx++;
+  }
+}
+
+// ═════════════════════════════════════════════════
+// $DE52-$DF59 — 比赛事件处理主入口 (264 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编概要:
+//   $DE52: 入口 — 根据 $0628 决定初始目标
+//   $DE5E: 核心循环 — 跑动/事件处理
+//   $DE6C: 比赛流程主循环 — 多次 bank dispatch 调用
+//   $DEC0: 碰撞检测 — 距离比较 + 音效触发
+//   $DEE8: 球员坐标更新 — 根据速度值移动球员
+//   $DF25: 队伍统计 — 更新队伍数据
+//   $DF4A: 错误恢复 — 异常路径处理
+
+/** $DF5A-$DF8A: 碰撞距离检查辅助表 */
+const COLLISION_DIST_TABLE: readonly number[] = [
+  0x20, 0x7C, 0xCD, 0xA0, 0x0A, 0xB1, 0x34, 0xD0,
+  0x26, 0xA0, 0x06, 0xB1, 0x34, 0x38, 0xED, 0x35,
+  // ... (实际是内联代码转数据)
+];
+
+/**
+ * $DE52: 比赛事件处理主循环 — 核心跑动/事件引擎。
+ *
+ * 6502 流程:
+ *   1. 设置目标距离 $061A ($FF 或 $26)
+ *   2. $DE5E: 调用 bank31 $E059 → 设置目标
+ *   3. 调用 $DF8B 计算距离系数
+ *   4. 调用 bank31 $E73E → player logic
+ *   5. 检查 $05FC → 若为 $FF 则进入错误恢复路径($DF8B)
+ *   6. 读取球员数据 → bank dispatch $1A/$1B:$801E
+ *   7. 音效 + 结果计算 + 跳转
+ *
+ * @param onBank31_E059 bank31 help 1 回调
+ * @param onBank31_E73E bank31 player logic 回调
+ * @param onBank1A_801E bank dispatch 回调
+ * @param onResultCalc $DF8B 结果计算回调
+ */
+export function matchEventMain_$DE52(
+  sys: SystemState,
+  onBank31_E059: (sys: SystemState) => void,
+  onBank31_E73E: (sys: SystemState) => void,
+  onBank1A_801E: (sys: SystemState, a: number) => void,
+  onResultCalc: (sys: SystemState) => void,
+): void {
+  const targetFlag = (sys.mem[0x0628] & 0x80) ? 0x26 : 0xFF;
+  sys.mem[0x061A] = targetFlag;
+
+  // 步骤 1: 调 bank31
+  onBank31_E059(sys);
+
+  // 步骤 2: 计算距离
+  onResultCalc(sys);
+
+  // 步骤 3: 设置结果标志
+  sys.mem[0x061B] = 1;
+
+  // 步骤 4: player logic
+  onBank31_E73E(sys);
+
+  // 步骤 5: 检查 $05FC
+  const playerId = sys.mem[0x05FC];
+  if (playerId === 0xFF) {
+    // 错误恢复 → bank dispatch
+    sys.mem[0x0441] = 0;
+    const savedW6 = sys.mem[0x24];
+    const savedW7 = sys.mem[0x25];
+    sys.mem[0x24] = 0x1A;
+    sys.mem[0x25] = 0x1B;
+    bankSwitch_apply_$CE2D(sys);
+    onBank1A_801E(sys, playerId);
+    sys.mem[0x24] = savedW6;
+    sys.mem[0x25] = savedW7;
+    bankSwitch_apply_$CE2D(sys);
+    audiotrigger_$CBB0(sys, 0x1C);
+    return;
+  }
+
+  // 步骤 6: 读取球员属性
+  sys.mem[0x0441] = playerId;
+  getCharData_$CD7C(sys);
+
+  // 步骤 7: 存储结果速度
+  const speed = sys.mem[0x062B];
+  sys.mem[0x0430] = speed;
+
+  // 步骤 8: 两边队伍数据更新
+  const teamFlag = sys.mem[0x05FB];
+  const resultLo = sys.mem[0x0431];
+  const resultHi = sys.mem[0x0432];
+
+  // 队伍 A 侧
+  sys.mem[0x05FB] = teamFlag;
+  let side = sys.mem[0x0431];
+  const limit = [0x23, 0x24][teamFlag & 1] || 0x23;
+
+  // 队伍 B 侧（翻转）
+  sys.mem[0x05FB] = teamFlag ^ 0x0B;
+  const sideB = sys.mem[0x0432];
+
+  // 比较两队结果
+  const sideAVal = side;
+  const sideBVal = sideB;
+
+  if (sideAVal >= sideBVal) {
+    if (teamFlag === 0) {
+      // 队伍 A 获胜
+      // 更新 battle stats
+      const savedW6 = sys.mem[0x24];
+      const savedW7 = sys.mem[0x25];
+      sys.mem[0x24] = 0x1A;
+      sys.mem[0x25] = 0x1B;
+      bankSwitch_apply_$CE2D(sys);
+      onBank1A_801E(sys, playerId);
+      sys.mem[0x24] = savedW6;
+      sys.mem[0x25] = savedW7;
+      bankSwitch_apply_$CE2D(sys);
+      audiotrigger_$CBB0(sys, 0x1C);
+    } else {
+      audiotrigger_$CBB0(sys, 0x34);
+      // 失败路径
+    }
+    return;
+  }
+
+  // 中间结果（持续）
+  // 速度递减
+  const decSpeed = sys.mem[0x0430];
+  if (decSpeed > 0) sys.mem[0x0430] = (decSpeed - 1) & 0xFF;
+
+  // 循环返回（6502 中跳回 $DE6C 或 $DE5E）
+}
+
+// ═════════════════════════════════════════════════
+// $D193-$D36D — GP 修改 + 输入处理主循环 (475 bytes)
+// ═════════════════════════════════════════════════
+// — 已翻译（见上文 gpModify_$D193 和 gpApply_$D213）
+
+// ═════════════════════════════════════════════════
+// $D36E-$D52A — 玩家状态机核心 (445 bytes)
+// ═════════════════════════════════════════════════
+// — 已翻译（见上文 playerStateMachine_$D36E）
+
