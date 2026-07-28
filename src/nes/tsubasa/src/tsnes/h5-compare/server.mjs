@@ -22,12 +22,12 @@ const MIME = {
 };
 
 // 懒加载 esbuild
-let esbuildTransform = null;
+let esbuildMod = null;
 async function getEsbuild() {
-  if (!esbuildTransform) {
-    esbuildTransform = (await import('esbuild')).transform;
+  if (!esbuildMod) {
+    esbuildMod = await import('esbuild');
   }
-  return esbuildTransform;
+  return esbuildMod;
 }
 
 const PORT = 3000;
