@@ -643,6 +643,18 @@ export function bankSwitch_apply_$CE2D(sys: SystemState): void {
   writeMem(sys, 0x8001, sys.mem[0x25]);
 }
 
+/**
+ * bankSwitch — 便利函数：切换 bank 到 $8000-$9FFF 窗口
+ *
+ * 设置 $24=bankId, $25=bankId+1, 然后调用 bankSwitch_apply_$CE2D
+ * 供 bank-00 等外部 bank 直接调用，替代原来的 mock 包装。
+ */
+export function bankSwitch(sys: SystemState, bankId: number): void {
+  sys.mem[0x24] = bankId & 0x3F;
+  sys.mem[0x25] = (bankId & 0x3F) + 1;
+  bankSwitch_apply_$CE2D(sys);
+}
+
 // ═════════════════════════════════════════════════
 // $CEFE — bank00 dispatch 入口
 // ═════════════════════════════════════════════════

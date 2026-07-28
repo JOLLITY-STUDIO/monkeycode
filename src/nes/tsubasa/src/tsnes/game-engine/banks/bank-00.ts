@@ -54,10 +54,10 @@ import {
   bank02_sceneSwitchHelper,
 } from './bank-02';
 import {
-  bank30_bankSwitch,
-  bank30_softReset,
-  bank30_helperC572,
-} from './mocks';
+  bankSwitch,
+  initScene_$C64E,
+  sceneHelper_$DB62,
+} from './bank-30';
 
 // ═════════════════════════════════════════════════
 // 零页地址常量
@@ -486,7 +486,7 @@ function bank00_state0FullInit(sys: SystemState): void {
   sys.mem[0xE0] = 0xC0;
 
   // LDX #$02; JSR $C4B9 → bankSwitch(bank=2)
-  bank30_bankSwitch(sys, 2);
+  bankSwitch(sys, 2);
   // JSR $A20F → bank02_loadSceneData (bank 02 mapped)
   bank02_loadSceneData(sys);
 
@@ -507,17 +507,17 @@ function bank00_altInit(sys: SystemState): void {
   console.log('[bank00] altInit ($ED bit 6 set)');
 
   // LDX #$01; JSR $C4B9 → bankSwitch(bank=1)
-  bank30_bankSwitch(sys, 1);
+  bankSwitch(sys, 1);
   // JSR $A003 → bank01_auxEntry1
   bank01_auxEntry1(sys);
 
   // LDX #$02; JSR $C4B9 → bankSwitch(bank=2)
-  bank30_bankSwitch(sys, 2);
+  bankSwitch(sys, 2);
   // JSR $A20F → bank02_loadSceneData
   bank02_loadSceneData(sys);
 
   // LDX #$01; JSR $C4B9 → bankSwitch(bank=1)
-  bank30_bankSwitch(sys, 1);
+  bankSwitch(sys, 1);
   // JSR $A01B → bank01_auxEntry8
   bank01_auxEntry8(sys);
 
@@ -563,7 +563,7 @@ function bank00_stateCommonContinue(sys: SystemState): void {
 
   // ── $810A-$8111: bank02 sceneSwitch ──
   // LDX #$02; JSR $C4B9; JSR $A20C
-  bank30_bankSwitch(sys, 2);
+  bankSwitch(sys, 2);
   bank02_sceneSwitchHelper(sys);
 
   // ── $8112-$8116: bytecode restore ──
@@ -572,12 +572,12 @@ function bank00_stateCommonContinue(sys: SystemState): void {
 
   // ── $8117-$811E: bank01 auxEntry2 ──
   // LDX #$01; JSR $C4B9; JSR $A006
-  bank30_bankSwitch(sys, 1);
+  bankSwitch(sys, 1);
   bank01_auxEntry2(sys);
 
   // ── $811F-$8121: bank30 helper ──
-  // JSR $C572
-  bank30_helperC572(sys);
+  // JSR $C572 → sceneHelper_$DB62(sys, callback to bank00 dispatch)
+  sceneHelper_$DB62(sys, (s, _a) => { bank00_dispatchScene(s); });
 
   // ── $8122-$8144: scene >= $20 特殊处理 ──
   const sceneId = sys.mem[0x26];
@@ -590,7 +590,7 @@ function bank00_stateCommonContinue(sys: SystemState): void {
     writeMem(sys, 0x0452, 0);
     writeMem(sys, 0x0453, 0);
     // $813D-$8144: LDX #$01; JSR $C4B9; JSR $A009
-    bank30_bankSwitch(sys, 1);
+    bankSwitch(sys, 1);
     bank01_auxEntry3(sys);
   }
   // else (scene < $20): BCC → skip cleanup (no-op)
@@ -686,7 +686,7 @@ function dispatch_state5(sys: SystemState): void {
   console.log('[bank00] dispatch_state5');
   // $8263 → 场景状态 5
   // JMP $C57B → bank30 软重置 (终局 → 回标题)
-  bank30_softReset(sys);
+  initScene_$C64E(sys, false);
 }
 
 // ═════════════════════════════════════════════════
