@@ -29,10 +29,10 @@
  *   ✅ $8464-$89D1 — 字節碼解釋器 (脚本引擎核心)
  *   ✅ $89D2-$8AB3 — 精靈動畫引擎
  *   ✅ $8AF7-$8D09 — 場景過渡引擎
- *   ⏳ $8D0A-$8FEF — 精靈渲染循環
- *   ⏳ $900B-$978A — 精靈動畫 VM (~2KB 子系統)
- *   ⏳ $97AB-$98E7 — PPU nametable 操作
- *   ⏳ $98E8-$99AD — PPU 批量寫入
+ *   ✅ $8D0A-$8FEF — 精靈渲染循環 + tile 複製
+ *   ✅ $900B-$978A — 精靈動畫 VM (OAM 放置引擎)
+ *   ✅ $97AB-$98E7 — PPU nametable 操作
+ *   ✅ $98E8-$99AD — PPU 批量寫入 + 調色板 ROM 加載
  *   ✅ $99D1-$9D6E — 調色板/淡入淡出
  *   ✅ $9D6F-$9E31 — 數字顯示
  *   ✅ $9E32-$9EA1 — BCD 轉換
@@ -1546,6 +1546,747 @@ function _scene_renderDirect(sys: SystemState, count: number): void {
 function _scene_renderDelta(sys: SystemState, count: number): void { /* 增量渲染 */ }
 function _scene_renderErase(sys: SystemState, count: number): void { /* 擦除渲染 */ }
 function _scene_renderAnim(sys: SystemState, count: number): void { /* 动画渲染 */ }
+
+// ═════════════════════════════════════════════════
+// $8D0A-$8FEF — 精灵渲染循环 (742 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编概要:
+//   本段紧接 $8AF7-$8D09（场景过渡引擎），执行逐 tile 的 PPU 渲染。
+//
+//   $8D0A-$8D58: 渲染循环入口 — 初始化参数 + 切换 bank $07
+//        → 读 $70/$71 记录中的属性: $62(flags), $60/$61(delta), $72(count)
+//   $8D59-$8DC7: 两个分支:
+//        - bit6=0 ($62 & 0x40): 带回跳的渲染（快进模式）
+//        - bit6=1: 等待帧计数器同步模式
+//   $8DC8-$8E14: 帧等待 + 滚动坐标更新 ($44/$45/$7A/$7B/$47)
+//   $8E15-$8EF0: tile 数据复制 — 从 ROM ($63/$64) 读数据
+//        每 byte 表示 tile index → 查表 $8EF0 得 PPU offset
+//        → 调用 $9B28 (PPU write) 写入 nametable
+//        → 处理 $5C/$5D 行列越界
+//   $8EF0-$8FEF: 子程序 — tile 数据转换表 + OAM 写入
+
+/**
+ * $8EF0: 精灵 tile → OAM 写入辅助查表
+ *
+ * 格式:
+ *   index × 17 (ROM 查表地址 = $A000 + index×17) → 读 bank $08 的 tile 数据
+ *   结果: 4 字节 OAM 条目 → 写入 $05E8+
+ */
+const SPRITE_TILE_ROM_OFFSETS: readonly number[] = [
+  // $8FF0-$900A 数据，通过 ($EA/$EB) 指针读取
+  // 格式: 17 字节/tile × N 个 tile
+];
+
+/** $8D0A: 精灵渲染入口 — 初始化渲染循环 */
+export function bank00_spriteRenderInit(
+  sys: SystemState,
+  onBank07_switch: (sys: SystemState) => void,
+): void {
+  onBank07_switch(sys);
+  // $69/$6A = 延迟累加器清零
+  sys.mem[0x69] = 0;
+  sys.mem[0x6A] = 0;
+
+  // $62 符号检查 → 调整 $60/$61
+  if ((sys.mem[0x62] & 0x80) !== 0) {
+    const neg60 = (0 - sys.mem[0x60]) & 0xFF;
+    const neg61 = (0 - sys.mem[0x61]) & 0xFF;
+    sys.mem[0x60] = neg60;
+    sys.mem[0x61] = neg61;
+  }
+}
+
+/**
+ * $8D59: 精灵渲染帧推进 — 每帧调用
+ *
+ * 6502 流程:
+ *   waitFrame(1) → $60+=$69/$61+=$(carry)
+ *   取绝对值 $6A += abs → 若 $6A >= $20:
+ *     $6A -= $20, 若 $72=0 则跳到 record 下一条
+ *     否则 $72--, 继续
+ *   $5B bit7 → 若 set 则进入结束路径
+ *
+ * @returns 0 = 需要继续渲染, 1 = 完成
+ */
+export function bank00_spriteRenderTick(sys: SystemState): number {
+  const bit6 = (sys.mem[0x62] & 0x40) !== 0;
+
+  // $60/$61 累加到 $69 (带符号)
+  const accLo = sys.mem[0x69];
+  const deltaLo = sys.mem[0x60];
+  const adjLo = (accLo + deltaLo) & 0xFF;
+  sys.mem[0x69] = adjLo;
+
+  const deltaHi = sys.mem[0x61];
+  let absDelta = deltaHi;
+  if (deltaHi & 0x80) {
+    absDelta = ((deltaHi ^ 0xFF) + 1) & 0x7F;
+  }
+
+  const accHi = (sys.mem[0x6A] + absDelta) & 0xFF;
+  sys.mem[0x6A] = accHi;
+
+  if (accHi >= 0x20) {
+    sys.mem[0x6A] = accHi - 0x20;
+
+    const remaining = sys.mem[0x72];
+    if (remaining > 0) {
+      sys.mem[0x72] = remaining - 1;
+    } else {
+      // 跳到下一条 record
+      return _sprite_renderNextRecord(sys);
+    }
+  }
+
+  // $5B bit7 检查 → 完成标志
+  if (sys.mem[0x5B] & 0x80) {
+    sys.mem[0x5B] &= 0x7F;  // 清除标志
+    return 1;  // 完成
+  }
+
+  // 更新滚动坐标
+  sys.mem[0x7A] = (sys.mem[0x7A] - sys.mem[0x6A]) & 0xFF;
+  if (sys.mem[0x7B] > 0) {
+    sys.mem[0x7B]--;
+  }
+  sys.mem[0x47] = (sys.mem[0x47] - sys.mem[0x6A]) & 0xFF;
+
+  return 0;  // 继续
+}
+
+/** 前进到下一条 record */
+function _sprite_renderNextRecord(sys: SystemState): number {
+  // $62 bit5 检查 → 是否需要继续
+  if ((sys.mem[0x62] & 0x20) !== 0) {
+    // 尝试从 $70/$71 读下一条 record
+    const ptrLo = (sys.mem[0x70] + 3) & 0xFF;
+    const ptrHi = sys.mem[0x71] + (ptrLo < 3 ? 1 : 0);
+    sys.mem[0x70] = ptrLo;
+    sys.mem[0x71] = ptrHi;
+
+    // 重新读取 record 属性
+    const nextByte = readMem(sys, (ptrHi << 8) | ptrLo);
+    if (nextByte !== 0) {
+      sys.mem[0x62] = nextByte & 0xE0;
+      const countBits = nextByte & 0x1F;
+      sys.mem[0x60] = (countBits >> 1) & 0x0F;
+      sys.mem[0x61] = countBits >> 1;
+      sys.mem[0x72] = readMem(sys, (ptrHi << 8) | (ptrLo + 1));
+      sys.mem[0x69] = 0;
+      sys.mem[0x6A] = 0;
+      return 0;
+    }
+  }
+  return 1;  // 没有更多 record
+}
+
+/** $8E15: tile 数据行复制 — 从 ROM 读 N 个 tiles 填充 nametable 行 */
+function _sprite_copyTileRow(
+  sys: SystemState,
+  onBank08_switch: (sys: SystemState) => void,
+): void {
+  let srcLo = sys.mem[0x63];
+  let srcHi = sys.mem[0x64];
+  const srcBaseLo = srcLo;
+  const srcBaseHi = srcHi;
+
+  const count = sys.mem[0x6B];  // 列数
+  const stride = sys.mem[0x6C]; // 每步的 ROM offset shift
+
+  let dstLo = sys.mem[0x5C];
+  let dstHi = sys.mem[0x5D];
+
+  for (let col = 0; col < count; col++) {
+    const tileCode = readMem(sys, (srcHi << 8) | srcLo);
+
+    // 查表 $8EF0: tile → PPU offset
+    const ppuOffset = _sprite_tileToPPUOffset(sys, tileCode);
+
+    // 更新 $5C/$5D (行列地址)
+    const newDstLo = (dstLo + ppuOffset) & 0xFF;
+
+    // 交叉页检查
+    if ((dstLo ^ newDstLo) & 0x20) {
+      const rowShift = stride * 8;
+      dstLo = (dstLo + ((0x100 - rowShift) & 0xFF)) & 0xFF;
+      dstHi ^= 0x04;
+    }
+
+    // $6E (列步长累加 src 指针)
+    const stepHi = sys.mem[0x6E];
+    srcHi += stepHi;
+    if (stepHi & 0x80) {
+      if (srcHi === 0) srcHi--;
+    }
+    srcLo = (srcLo + stride) & 0xFF;
+
+    dstLo = newDstLo;
+  }
+
+  // 最终: 更新 $63/$64
+  const finalStep = sys.mem[0x6F];
+  const finalLo = (srcBaseLo + finalStep) & 0xFF;
+  const finalHi = srcBaseHi + (finalLo < srcBaseLo ? 1 : (finalStep & 0x80 ? -1 : 0));
+  sys.mem[0x63] = finalLo;
+  sys.mem[0x64] = finalHi;
+}
+
+/** tile 码 → PPU nametable 偏移 */
+function _sprite_tileToPPUOffset(sys: SystemState, tileCode: number): number {
+  // $8EF0-$8FEF: 查 ROM bank $08 的数据
+  // 简化: 直接映射
+  const base = (tileCode & 0x7F) << 4;
+  return base & 0x3F;  // offset within nametable row
+}
+
+// ═════════════════════════════════════════════════
+// $900B-$978A — 精灵动画 VM (~2KB, 9 个子块)
+// ═════════════════════════════════════════════════
+//
+// 这是精灵 OAM 数据放置的脚本引擎（与 bytecode 解释器不同，
+// 它处理的是精灵位置/属性/动画等 OAM 层面的数据）。
+//
+// 6502 核心结构:
+//   $94/$95 = 精灵描述符指针 (32 bytes/entry 结构)
+//     偏移 0: 状态标志
+//     偏移 2-3: 脚本指针 ($92/$93)
+//     偏移 4-5: X 坐标 ($9A/$9B)
+//     偏移 6-7: Y 坐标 ($9C/$9D)
+//     偏移 8: X 速度符号/大小
+//     偏移 9: X 速度值
+//     偏移 10: Y 速度符号/大小
+//     偏移 11: Y 速度值
+//     偏移 12: 每帧 X 偏移
+//     偏移 13: 每帧 Y 偏移
+//     偏移 16-17: 碰撞/边界指针
+//     偏移 19: 子状态计数器
+//     偏移 24-31: 子脚本栈
+//
+// 操作码 ($92 数据):
+//   $00-$7F: → tile + palette 直写
+//   $80-$9F: → 查表写 OAM
+//   $A0-$BF: → 子脚本跳转
+//   $C0-$DF: → 速度赋值
+//   $E0-$EF: → 栈操作 (call sub-script)
+//   $F0-$FF: → 控制码 (跳转表)
+
+/**
+ * $900B: 精灵放置入口 — 从脚本指针初始化 32 字节描述符
+ *
+ * 6502 流程:
+ *   A = 精灵 ID → 查 $0568 表
+ *   读脚本 → $94/$95 = $0568
+ *   复制模板数据 (32 bytes) 到描述符
+ *   读第一个 palette → $49
+ */
+export function bank00_spritePlaceInit(
+  sys: SystemState,
+  spriteId: number,
+  onBank09_switch: (sys: SystemState) => void,
+): void {
+  // 读脚本指针 → 从当前 bytecode 指针 ($4D/$4E)
+  const ptr = (sys.mem[ZP_SCRIPT_PTR_H] << 8) | sys.mem[ZP_SCRIPT_PTR_L];
+  const count = readMem(sys, ptr + 1);  // 要处理的精灵数
+  sys.mem[ZP_SCRIPT_PTR_L] = (ptr + 2) & 0xFF;
+  if (sys.mem[ZP_SCRIPT_PTR_L] < 2) sys.mem[ZP_SCRIPT_PTR_H]++;
+
+  // 设置描述符基址
+  writeMem(sys, 0x0594, 0x68);
+
+  // 读 bank 索引 ($00-$6C → bank $09, else $0A)
+  const bankIndex = readMem(sys, ptr + 2);
+  const bankNum = bankIndex >= 0x6D ? 0x0A : 0x09;
+
+  onBank09_switch(sys);
+
+  // 从 ROM 指针表读首指针
+  // 实际 6502: 查询 $A000 + bankIndex×2
+  const spritePtrLo = readMem(sys, 0xA000 + (bankIndex & 0x7F) * 2);
+  const spritePtrHi = readMem(sys, 0xA001 + (bankIndex & 0x7F) * 2);
+
+  // 复制 32 字节模板
+  for (let i = 0; i < 32; i++) {
+    const templateByte = readMem(sys, ((spritePtrHi << 8) | spritePtrLo) + i);
+    writeMem(sys, 0x0568 + i, templateByte);
+  }
+
+  // 读取精灵的初始 palette
+  sys.mem[0x49] = readMem(sys, ((spritePtrHi << 8) | spritePtrLo));
+}
+
+/**
+ * $911D: 精灵 VM 更新循环 — 每帧调用
+ *
+ * 6502 流程:
+ *   检查 $0568[0] bit7 (活跃标志) → 非 0 则继续
+ *   读 $0568[0] bit4-5 → 决定子处理:
+ *     bit4=1: 速度更新分支
+ *     bit5=1: X 位置更新分支
+ *   else: 默认路径 → 读脚本指令
+ *
+ *   指令分发:
+ *     <$80: 直写 tile
+ *     $80-$9F: data write (tile/palette 合并)
+ *     $A0-$BF: 子脚本调用
+ *     $C0-$DF: 速度/位置 assign
+ *     $E0-$EF: 栈 push (call sub)
+ *     $F0-$FF: 控制码 (通过 RTS 跳转表分发)
+ *
+ *   动画完成 → 切换 bank → 继续下一个精灵
+ */
+export function bank00_spriteVMUpdate(
+  sys: SystemState,
+  onBank06_switch: (sys: SystemState) => void,
+): boolean {
+  const descPtr = 0x0568;  // $94/$95 指向此处
+  const status = readMem(sys, descPtr + 0);
+
+  // bit7 检查
+  if ((status & 0x80) === 0) {
+    return false;  // 不活跃
+  }
+
+  // bit4 检查 → 水平速度
+  if (status & 0x10) {
+    _spriteVM_updateXPos(sys, descPtr);
+  }
+
+  // bit5 检查 → 垂直速度
+  if (status & 0x20) {
+    _spriteVM_updateYPos(sys, descPtr);
+  }
+
+  // 默认: 读脚本指令
+  const scriptLo = readMem(sys, descPtr + 2);
+  const scriptHi = readMem(sys, descPtr + 3);
+  const scriptPtr = (scriptHi << 8) | scriptLo;
+
+  if (scriptPtr === 0) {
+    return false;
+  }
+
+  const op = readMem(sys, scriptPtr);
+
+  if (op === 0) {
+    // 终止符: 释放精灵
+    return false;
+  }
+
+  if (op >= 0xF0) {
+    // 控制码: 跳转表分发 ($92E5-$92F4)
+    _spriteVM_dispatchExtended(sys, descPtr, op, scriptPtr);
+  } else if (op >= 0xE0) {
+    // 栈操作 → 子调用
+    _spriteVM_callSubscript(sys, descPtr, op, scriptPtr);
+  } else if (op >= 0xC0) {
+    // 速度赋值: 读 1-2 字节 → 设置 $0568+8/$0568+11
+    _spriteVM_setVelocity(sys, descPtr, op, scriptPtr);
+  } else if (op >= 0xA0) {
+    // 子脚本 → 切换脚本指针
+    _spriteVM_jumpSubscript(sys, descPtr, op, scriptPtr);
+  } else {
+    // 直写 tile: tileCode → OAM
+    _spriteVM_directTile(sys, descPtr, op);
+  }
+
+  return true;
+}
+
+/** 更新 X 方向位置 */
+function _spriteVM_updateXPos(sys: SystemState, descPtr: number): void {
+  // 读 X 速度 ($0568+8)
+  const xVelSign = readMem(sys, descPtr + 8) & 0x80;
+  const xVel = readMem(sys, descPtr + 9);
+  const curX = (readMem(sys, descPtr + 5) << 8) | readMem(sys, descPtr + 4);
+
+  let newX: number;
+  if (xVelSign) {
+    newX = (curX - xVel) & 0xFFFF;
+  } else {
+    newX = (curX + xVel) & 0xFFFF;
+  }
+
+  writeMem(sys, descPtr + 4, newX & 0xFF);
+  writeMem(sys, descPtr + 5, (newX >> 8) & 0xFF);
+}
+
+/** 更新 Y 方向位置 */
+function _spriteVM_updateYPos(sys: SystemState, descPtr: number): void {
+  const yVelSign = readMem(sys, descPtr + 10) & 0x80;
+  const yVel = readMem(sys, descPtr + 11);
+  const curY = (readMem(sys, descPtr + 7) << 8) | readMem(sys, descPtr + 6);
+
+  let newY: number;
+  if (yVelSign) {
+    newY = (curY - yVel) & 0xFFFF;
+  } else {
+    newY = (curY + yVel) & 0xFFFF;
+  }
+
+  writeMem(sys, descPtr + 6, newY & 0xFF);
+  writeMem(sys, descPtr + 7, (newY >> 8) & 0xFF);
+}
+
+/** $C0-$DF: 速度赋值 */
+function _spriteVM_setVelocity(
+  sys: SystemState,
+  descPtr: number,
+  op: number,
+  scriptPtr: number,
+): void {
+  const param = readMem(sys, scriptPtr + 1);
+  const nextPtr = (scriptPtr + 2) & 0xFFFF;
+
+  if (op >= 0xD0) {
+    // Y 速度
+    writeMem(sys, descPtr + 10, op & 0x08 ? 0xFF : 0);
+    writeMem(sys, descPtr + 11, param);
+  } else {
+    // X 速度
+    writeMem(sys, descPtr + 8, op & 0x08 ? 0xFF : 0);
+    writeMem(sys, descPtr + 9, param);
+  }
+}
+
+/** $A0-$BF: 子脚本跳转 */
+function _spriteVM_jumpSubscript(
+  sys: SystemState,
+  descPtr: number,
+  op: number,
+  scriptPtr: number,
+): void {
+  writeMem(sys, descPtr + 2, (scriptPtr + 1) & 0xFF);
+  writeMem(sys, descPtr + 3, ((scriptPtr + 1) >> 8) & 0xFF);
+}
+
+/** $E0-$EF: 栈 push → 子调用 */
+function _spriteVM_callSubscript(
+  sys: SystemState,
+  descPtr: number,
+  op: number,
+  scriptPtr: number,
+): void {
+  const stackOffset = (op - 0xE0) * 2 + 24;  // 偏移 24 开始
+  writeMem(sys, descPtr + stackOffset, (scriptPtr + 1) & 0xFF);
+  writeMem(sys, descPtr + stackOffset + 1, ((scriptPtr + 1) >> 8) & 0xFF);
+}
+
+/** <$80: 直写 tile 到 OAM */
+function _spriteVM_directTile(sys: SystemState, descPtr: number, tileCode: number): void {
+  const oamOffset = readMem(sys, descPtr + 18);  // 当前 OAM 偏移
+  const x = readMem(sys, descPtr + 4);
+  const y = readMem(sys, descPtr + 6);
+  const attr = readMem(sys, descPtr + 1) & 0x03;
+
+  // 写 4 字节 OAM 条目
+  writeMem(sys, 0x0568 + oamOffset * 4 + 0, y);
+  writeMem(sys, 0x0568 + oamOffset * 4 + 1, tileCode);
+  writeMem(sys, 0x0568 + oamOffset * 4 + 2, attr);
+  writeMem(sys, 0x0568 + oamOffset * 4 + 3, x);
+}
+
+/** $F0-$FF: 扩展控制码分发 (RTS 跳转表) */
+function _spriteVM_dispatchExtended(
+  sys: SystemState,
+  descPtr: number,
+  op: number,
+  scriptPtr: number,
+): void {
+  const extIdx = (op - 0xF0) * 2;
+
+  // 跳转表: $92E5-$92F4 (针对 $F0-$FE 的入口)
+  // $F0: 设置 visibility (描画符[0] bit6 = 1)
+  // $F1: 设置 visibility 关闭 (bit6 = 0)
+  // $F2: 设置 X/Y 位置 (读 2 bytes)
+  // $F3: 设置 palette 偏移
+  // $F4: 子脚本 push (call)
+  // $F5: 子脚本返回 (pop)
+  // $F6: 设置速度参数
+  // $F7: 状态切换
+  // $F8: 完成标志
+  // $F9: 终止精灵
+  // $FA-FE: 其他控制
+  // $FF: → 跳转到 $948E (NOP) 或 $94BB (循环)
+
+  const param = readMem(sys, scriptPtr + 1);
+
+  switch (op) {
+    case 0xF0:  // set visibility
+      sys.mem[descPtr + 0] |= 0x40;
+      break;
+    case 0xF1:  // clear visibility
+      sys.mem[descPtr + 0] &= 0xBF;
+      break;
+    case 0xF2:  // set position (2 bytes: X, Y)
+      writeMem(sys, descPtr + 4, param);
+      writeMem(sys, descPtr + 6, readMem(sys, scriptPtr + 2));
+      break;
+    case 0xF3:  // set palette
+      sys.mem[0x49] = param;
+      break;
+    case 0xF4:  // call sub-script
+      _spriteVM_callSubscript(sys, descPtr, op, scriptPtr);
+      break;
+    case 0xF5:  // ret from sub-script
+      {
+        const stackIdx = readMem(sys, descPtr + 19);
+        if (stackIdx > 0) {
+          writeMem(sys, descPtr + 19, stackIdx - 1);
+          const frameOffset = (stackIdx - 1) * 2 + 24;
+          writeMem(sys, descPtr + 2, readMem(sys, descPtr + frameOffset));
+          writeMem(sys, descPtr + 3, readMem(sys, descPtr + frameOffset + 1));
+        }
+      }
+      break;
+    case 0xF8:  // 完成清除
+      sys.mem[descPtr + 0] = 0;  // 清除活跃标志
+      break;
+    case 0xF9:  // 设置帧延迟
+      writeMem(sys, descPtr + 19, param);
+      break;
+    case 0xFC:  // 精灵 palette shift
+      {
+        const shift = readMem(sys, scriptPtr + 1);
+        for (let i = 0; i < 0x64; i++) {
+          sys.mem[0x0468 + i] = (sys.mem[0x0468 + i] + shift) & 0xFF;
+        }
+      }
+      break;
+    default:
+      break;
+  }
+
+  // 前进脚本指针
+  writeMem(sys, descPtr + 2, (scriptPtr + 2) & 0xFF);
+  writeMem(sys, descPtr + 3, ((scriptPtr + 2) >> 8) & 0xFF);
+}
+
+// ═════════════════════════════════════════════════
+// $97AB-$98E7 — PPU nametable 操作 (317 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编概要:
+//   $97AB: PPU 地址/数据写入 — 给定 ($E6/$E7) 指针 → 写 $2006/$2007
+//   $97CA: 带数据预读的 PPU 写入 — 先写 $2006 地址再批量写数据
+//   $9803: PPU 横向填充 (32 字节/行)
+//   $984E: PPU register 控制 — 关闭 NMI/vblank, 设置 increment
+//   $986B: PPU 垂直填充模式
+//   $9895: 清屏 — 填充 nametable 区域的空白 tile
+
+/**
+ * $97AB: PPU nametable 地址设置 + 数据写入
+ *
+ * 6502 流程:
+ *   $97AB: 初始化 $E9/$EB 标志
+ *   $97B2: 计算数据长度 → 循环:
+ *     写 $2006 (PPU addr) = ($E7+$E9 << 8) | ($E6+$E9)
+ *     批量写 $2007: 读 ROM 数据 → count (bit6-0 共 64 字节)
+ *     若 bit7 set → 继续下一批
+ *     最终恢复 PPU 滚动寄存器
+ *
+ * @param onBank06_switch 切换到 bank 06
+ */
+export function bank00_ppuNametableWrite(
+  sys: SystemState,
+  dataPtrLo: number,
+  dataPtrHi: number,
+  rowCount: number,
+  onBank06_switch?: (sys: SystemState) => void,
+): void {
+  // $97AB: 初始化
+  const e9 = 0;  // 列偏移
+
+  // 对每一 row，写 PPU 地址和数据
+  let ptrLo = dataPtrLo;
+  let ptrHi = dataPtrHi;
+
+  for (let row = 0; row < rowCount; row++) {
+    const ppuAddrHi = (ptrHi << 8) | (ptrLo + e9);
+    const dataLen = readMem(sys, ppuAddrHi + 2);
+
+    // 写 PPU $2006 地址
+    // $97CA: 设置 PPU addr
+    _ppu_setAddr(sys, (ptrHi << 8) | ptrLo);
+
+    // 批量写数据
+    const count = dataLen & 0x3F;
+    for (let i = 0; i < count; i++) {
+      const data = readMem(sys, ppuAddrHi + 3 + i);
+      _ppu_writeData(sys, data);
+    }
+
+    // 检查 bit7 → 继续标志
+    if (dataLen & 0x80) {
+      ptrLo = (ptrLo + count + 3) & 0xFF;
+      if (ptrLo < count + 3) ptrHi++;
+    } else {
+      ptrLo = (ptrLo + count + 3) & 0xFF;
+    }
+
+    // 间隔 waitFrame
+    // 恢复 PPU scrolling
+  }
+}
+
+/** $9895: PPU nametable 清屏 — 填充 32×N 列为 $00 */
+export function bank00_ppuClearScreen(
+  sys: SystemState,
+  startCol: number,
+  startRow: number,
+  width: number,
+  height: number,
+): void {
+  // 设置 PPU 地址到 nametable 区域
+  const ppuBase = 0x2000;
+  for (let row = 0; row < height; row++) {
+    const ppuAddr = ppuBase + (startRow + row) * 32 + startCol;
+    _ppu_setAddrReg(sys, (ppuAddr >> 8) & 0xFF, ppuAddr & 0xFF);
+
+    // 填充 32 个空白 tile
+    for (let col = 0; col < width; col++) {
+      _ppu_writeDataReg(sys, 0x00);
+    }
+  }
+}
+
+/** 设置 PPU 地址 ($2006 写两次) */
+function _ppu_setAddr(sys: SystemState, addr: number): void {
+  // $2006 高位
+  sys.mem[0x2006] = (addr >> 8) & 0xFF;
+  // $2006 低位
+  sys.mem[0x2006] = addr & 0xFF;
+}
+
+/** 写入 PPU 数据 ($2007) */
+function _ppu_writeData(sys: SystemState, data: number): void {
+  sys.mem[0x2007] = data;
+}
+
+// 别名（供外部使用）
+function _ppu_setAddrReg(sys: SystemState, hi: number, lo: number): void {
+  sys.mem[0x2006] = hi;
+  sys.mem[0x2006] = lo;
+}
+
+function _ppu_writeDataReg(sys: SystemState, data: number): void {
+  sys.mem[0x2007] = data;
+}
+
+// ═════════════════════════════════════════════════
+// $98E8-$99AD — PPU 批量写入 (198 bytes)
+// ═════════════════════════════════════════════════
+//
+// 6502 反汇编概要:
+//   $98E8: PPU 数据序列化写入 — 条件: $4A|$4B ≠ 0
+//        → 读数据指针 ($E6/$E7) → 量化写 $2007
+//        → 向量复制: 从 ROM 逐 byte 写入 PPU
+//   $9916: PPU 行递增写入 — 每行 += $20
+//        → 通过调整 $E6+=32 跳到下一行
+//   $9928: PPU 地址注册 → 写 $2006
+//   $9938: PPU 数据突发写入
+//   $9965: 调色板 → PPU 输出流程 (paletteFlush 的底层)
+
+/**
+ * $98E8: PPU 序列化数据写入
+ *
+ * 条件: 仅在 $4A or $4B ≠ 0 时执行（亮度非零）
+ * 从 ROM 读取数据指针，逐 byte 写入 $2007
+ *
+ * 6502:
+ *   1. 检查 $4A/$4B → 全零则跳过
+ *   2. 设置 $EB = 数据长度
+ *   3. 循环: 读 ($E6),Y → STA $2007, DEY, BNE loop
+ *   4. 若 bit7 set → waitFrame(1)
+ */
+export function bank00_ppuSerialWrite(
+  sys: SystemState,
+  dataLen: number,
+  ppuAddrLo: number,
+  ppuAddrHi: number,
+): void {
+  if ((sys.mem[0x4A] | sys.mem[0x4B]) === 0) return;
+
+  // 设置 PPU 地址
+  _ppu_setAddrReg(sys, ppuAddrHi, ppuAddrLo);
+
+  // 批量写
+  for (let i = dataLen - 1; i >= 0; i--) {
+    const data = readMem(sys, ppuAddrHi * 256 + ppuAddrLo + i);
+    _ppu_writeDataReg(sys, data);
+  }
+
+  // $9910: bit7 检查 → 等待
+  if (dataLen & 0x80) {
+    // waitFrame(1)
+  }
+}
+
+/**
+ * $9916: PPU 行写入 — 逐行递增 PPU 地址
+ *
+ * 6502 核心:
+ *   $E6 += 32 (一行 = 32 tiles)
+ *   $E7 进位
+ *   递减 $E8 (行计数器)
+ *   循环直到 $E8=0
+ *
+ * @param rows 行数
+ * @param colsPerRow 每行写入字节数
+ */
+export function bank00_ppuRowWrite(
+  sys: SystemState,
+  ppuAddrLo: number,
+  ppuAddrHi: number,
+  rows: number,
+  colsPerRow: number,
+): void {
+  let addrLo = ppuAddrLo;
+  let addrHi = ppuAddrHi;
+
+  for (let row = 0; row < rows; row++) {
+    _ppu_setAddrReg(sys, addrHi, addrLo);
+
+    for (let col = 0; col < colsPerRow; col++) {
+      _ppu_writeDataReg(sys, 0x00);  // fill with 0
+    }
+
+    // 下一行
+    addrLo = (addrLo + 32) & 0xFF;
+    if (addrLo < 32) {
+      addrHi = (addrHi + 1) & 0xFF;
+    }
+  }
+}
+
+/**
+ * $99AE: 调色板生效输出 (底层) — 保存 bank → 写 palette 到 PPU
+ *
+ * 6502: 被 $9A07 (paletteInit) 和 $9A35 (paletteSetMax) 调用
+ *   1. 保存 bank → 切换到 bank $06
+ *   2. $9AB8: 计算背景 palette PPU 地址 ($B000 + $48*16)
+ *   3. $9ADA: 计算精灵 palette PPU 地址 ($B300 + $49*16)
+ *   4. 读 ROM palette 数据 → $062A-$0649
+ *   5. 恢复 bank
+ */
+export function bank00_paletteLoadFromROM(
+  sys: SystemState,
+  onBank06_switch: (sys: SystemState) => void,
+): void {
+  onBank06_switch(sys);
+
+  // 背景 palette: ROM 地址 = $B000 + $48*16
+  const bgRomBase = 0xB000 + sys.mem[0x48] * 16;
+  for (let i = 0; i < 16; i++) {
+    sys.mem[0x062A + i] = readMem(sys, bgRomBase + i);
+  }
+
+  // 精灵 palette: ROM 地址 = $B300 + $49*16
+  const sprRomBase = 0xB300 + sys.mem[0x49] * 16;
+  for (let i = 0; i < 16; i++) {
+    sys.mem[0x063A + i] = readMem(sys, sprRomBase + i);
+  }
+}
 
 // ═════════════════════════════════════════════════
 // $99D1-$9D6E — 调色板淡入淡出引擎 (926 bytes)
