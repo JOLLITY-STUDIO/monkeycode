@@ -1,75 +1,89 @@
 /**
- * ============================================================================
- * Tsubasa H5 Game Engine — Barrel Export
- * 
- * The complete API surface for the H5 port of Captain Tsubasa II.
- * 
- * Usage:
- *   import { WebGameAdapter } from './game-engine';
- *   import { TestRunner } from './game-engine';
- *   import { GameState, Button } from './game-engine';
- * ============================================================================
+ * game-engine — Tsubasa NES Emulation Engine 总入口
+ *
+ * ═══════════════════════════════════════════
+ * 目录映射（新结构 → 原始代码）
+ * ═══════════════════════════════════════════
+ *
+ * core/    ← src/                     CPU/PPU/APU/mapper 核心模拟器
+ * data/    ← tsubasa-hex2asm/         ROM 数据层（PRG + CHR bank）
+ * scene/   ← prg_bank_00_dispatch_   场景引擎语义翻译
+ * render/  ← 渲染层                    Canvas/ImageData 画面输出
+ * adapters/ ← 平台适配器              微信小程序 / Web 浏览器
+ *
+ * ═══════════════════════════════════════════
+ * 启动流程
+ * ═══════════════════════════════════════════
+ *
+ * const nes = createTsubasaNES({ onFrame: renderToCanvas });
+ * const adapter = new WebAdapter(canvas);
+ * setInterval(() => {
+ *   nes.frame();
+ *   adapter.renderFrame(nes.ppu);
+ * }, 1000 / 60);
+ *
+ * ═══════════════════════════════════════════
  */
 
-// ─── Core ──────────────────────────────────────────────────
-export { GameState } from './core/game-state';
-export { GameLoop } from './core/game-loop';
-export { InputManager } from './core/input-manager';
-export { SceneManager } from './core/scene-manager';
-export { MatchEngine, MatchPhase } from './core/match-engine';
-export type { MatchResult } from './core/match-engine';
-
-// ─── Types ─────────────────────────────────────────────────
+// ── Boot ──────────────────────────────────
 export {
-  // Player / Team
-  PlayerStats, Player, PlayerPosition, Team, Formation,
-  // Game Progress
-  GameProgress,
-  // Input
-  Button, InputState,
-  // Scene
-  SceneType, SceneState,
-  // Script
+  createTsubasaNES,
+  NES,
+  type NESOptions,
+  type ControllerId,
+  type ButtonKey,
+} from './core/boot';
+
+// ── Core Emulator ─────────────────────────
+export { default as CPU } from './core/cpu';
+export { default as PPU } from './core/ppu/index';
+export { default as PAPU } from './core/papu/index';
+export { default as Controller } from './core/controller';
+export { default as GameGenie } from './core/gamegenie';
+export { default as ROM } from './core/rom-loader';
+export { default as Tile } from './core/tile';
+
+// ── Data ─────────────────────────────────
+export {
+  PRG_ROM_BANKS,
+  PRG_8K_BANK_COUNT,
+  MMC3_INIT_MAP,
+  readPrgRom,
+} from './data/rom-data';
+export {
+  CHR_ROM_BANKS,
+  CHR_VROM_BANKS,
+  CHR_ROM_SIZE,
+  CHR_BANK_COUNT,
+  CHR_VROM_COUNT,
+} from './data/chr-data';
+
+// ── Scene Engine ──────────────────────────
+export {
+  SceneType,
+  dispatchScene,
+  tickScene,
+  type SceneContext,
+} from './scene/dispatch';
+export {
   BytecodeOp,
-  // Display
-  DisplayListEntry, TileData,
-  // Audio
-  AudioCommand,
-  // Frame Timing
-  FrameTiming,
-  // Config
-  EngineConfig,
-} from './core/types';
+  createBytecodeContext,
+  execBytecode,
+  type BytecodeContext,
+} from './scene/bytecode';
+export {
+  OPCODE_TABLE,
+  dispatchOp,
+} from './scene/opcode-table';
 
-// ─── Render ────────────────────────────────────────────────
-export { CanvasRenderer } from './render/canvas-renderer';
+// ── Render ────────────────────────────────
+export {
+  createRenderTarget,
+  renderFrame,
+  resizeCanvas,
+  type RenderTarget,
+} from './render/canvas-renderer';
 
-// ─── Data ──────────────────────────────────────────────────
-export { ChrTileStore, getDefaultTileStore } from './data/chr-tiles';
-export type { DecodedTile } from './data/chr-tiles';
-
-export { RomReader, getDefaultRomReader, createRomReader } from './data/rom-reader';
-
-// ─── Adapters ──────────────────────────────────────────────
-export { WebGameAdapter, startWebGame } from './adapters/web-adapter';
-export type { WebGameOptions } from './adapters/web-adapter';
-
-export { MpGameAdapter, renderGamepadOverlay } from './adapters/mp-adapter';
-export type { MpCanvas, MpCanvasContext, MpTouchEvent, MpGameOptions } from './adapters/mp-adapter';
-
-// ─── Test ──────────────────────────────────────────────────
-export { TestRunner } from './test/test-framework';
-export type { TestFrame, TestResult } from './test/test-framework';
-
-export { testBootSequence } from './test/test-boot';
-export { testSceneProgression } from './test/test-scene';
-export { testInputManager } from './test/test-input';
-export { testScriptEngine } from './test/test-script';
-export { testRomReader, testScriptByteRead } from './test/test-rom-reader';
-export { testBytecodeEngine } from './test/test-bytecode-engine';
-export { testDialogSystem } from './test/test-dialog';
-export { testMatchEngine } from './test/test-match';
-export { testE2EFlow } from './test/test-e2e';
-
-export { SCENE_DEFINITIONS, STORY_PROGRESSION, initScene, getSceneDefinition, getNextScene } from './core/scene-registry';
-export type { SceneInit } from './core/scene-registry';
+// ── Platform Adapters ─────────────────────
+export { MpAdapter } from './adapters/mp-adapter';
+export { WebAdapter } from './adapters/web-adapter';

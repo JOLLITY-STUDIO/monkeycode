@@ -8,7 +8,6 @@
   position: relative;
 }
 
-/* ========== 游戏画面 ========== */
 .game-canvas {
   flex: 1;
   width: 100%;
@@ -16,7 +15,6 @@
   image-rendering: pixelated;
 }
 
-/* ========== 状态栏 ========== */
 .status-bar {
   position: absolute;
   top: 0;
@@ -50,7 +48,6 @@
   font-size: 18rpx;
 }
 
-/* ========== 底部控制面板 ========== */
 .control-panel {
   display: flex;
   align-items: center;
@@ -63,7 +60,6 @@
   flex-shrink: 0;
 }
 
-/* ========== 十字键 ========== */
 .dpad {
   position: relative;
   width: 240rpx;
@@ -98,7 +94,6 @@
 .dpad-btn.left  { left: 0;   top: 50%; transform: translateY(-50%); }
 .dpad-btn.right { right: 0;  top: 50%; transform: translateY(-50%); }
 
-/* ========== 中间按钮 ========== */
 .middle-btns {
   display: flex;
   flex-direction: column;
@@ -114,7 +109,6 @@
   border-radius: 40rpx;
 }
 
-/* ========== AB 按钮 ========== */
 .action-btns {
   display: flex;
   align-items: center;
@@ -131,7 +125,6 @@
   font-weight: bold;
 }
 
-/* ========== 通用按钮样式 ========== */
 .ctrl-btn {
   display: flex;
   align-items: center;
@@ -148,7 +141,6 @@
   transform: scale(0.92);
 }
 
-/* A 按钮 (红色) */
 .a-btn {
   background: rgba(220, 50, 50, 0.25);
   border-color: rgba(220, 50, 50, 0.5);
@@ -159,7 +151,6 @@
   color: #ff6060;
 }
 
-/* B 按钮 (黄色) */
 .b-btn {
   background: rgba(220, 180, 30, 0.25);
   border-color: rgba(220, 180, 30, 0.5);
@@ -170,7 +161,6 @@
   color: #ffd030;
 }
 
-/* SELECT/START */
 .select-btn:active, .start-btn:active {
   background: rgba(255, 255, 255, 0.25);
   color: #fff;

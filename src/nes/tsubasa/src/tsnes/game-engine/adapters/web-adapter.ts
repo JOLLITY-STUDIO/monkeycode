@@ -1,111 +1,129 @@
 /**
- * ============================================================================
- * Web Browser Adapter — wires GameLoop + CanvasRenderer + InputManager
- * 
- * Entry point for the standalone HTML5 game.
- * 
- * Usage:
- *   import { startWebGame } from './game-engine/adapters/web-adapter';
- *   <canvas id="game-canvas" width="512" height="480"></canvas>
- *   startWebGame(document.getElementById('game-canvas'));
- * ============================================================================
+ * Web 平台适配器
+ *
+ * 为浏览器环境提供:
+ * - HTML Canvas 渲染
+ * - Web Audio API 音频
+ * - 键盘输入
+ *
+ * 对应原始 tsnes_kernel.ts 中的 Web/浏览器相关逻辑。
  */
 
-import { GameState } from '../core/game-state';
-import { GameLoop } from '../core/game-loop';
-import { SceneManager } from '../core/scene-manager';
-import { InputManager } from '../core/input-manager';
-import { CanvasRenderer } from '../render/canvas-renderer';
-import { EngineConfig } from '../core/types';
-import { getDefaultTileStore } from '../data/chr-tiles';
-
-export interface WebGameOptions {
-  /** Canvas element */
+/**
+ * Web 适配器配置
+ */
+export interface WebAdapterConfig {
+  /** HTML Canvas 元素 */
   canvas: HTMLCanvasElement;
-  /** Engine config (optional, defaults provided) */
-  config?: Partial<EngineConfig>;
-  /** Auto-start after creation (default: true) */
-  autoStart?: boolean;
 }
 
-const DEFAULT_CONFIG: EngineConfig = {
-  canvasWidth: 512,
-  canvasHeight: 480,
-  fps: 60,
-  debug: false,
-  platform: 'web',
-};
+/**
+ * Web 适配器
+ *
+ * 封装浏览器特有的 API 调用。
+ */
+export class WebAdapter {
+  private canvas: HTMLCanvasElement;
+  private ctx: CanvasRenderingContext2D;
+  private imageData: ImageData;
+  private audioCtx: AudioContext | null = null;
+  private audioNode: ScriptProcessorNode | null = null;
 
-export class WebGameAdapter {
-  state: GameState;
-  loop: GameLoop;
-  sceneManager: SceneManager;
-  inputManager: InputManager;
-  renderer: CanvasRenderer;
-  config: EngineConfig;
+  /** 帧缓冲 (256×240 Uint32Array) */
+  frameBuffer: Uint32Array | null = null;
 
-  constructor(options: WebGameOptions) {
-    const { canvas, autoStart } = options;
-    this.config = { ...DEFAULT_CONFIG, ...options.config };
+  /** 按钮状态 */
+  private buttons = 0;
 
-    // Init tile store (must happen before renderer creation)
-    getDefaultTileStore();
+  constructor(config: WebAdapterConfig) {
+    this.canvas = config.canvas;
+    const ctx = this.canvas.getContext('2d');
+    if (!ctx) throw new Error('[web-adapter] Cannot get 2d context');
+    this.ctx = ctx;
+    this.ctx.imageSmoothingEnabled = false;
+    this.imageData = this.ctx.createImageData(256, 240);
 
-    // Create game state
-    this.state = new GameState();
-
-    // Create subsystems
-    this.inputManager = new InputManager();
-    this.loop = new GameLoop(this.state, this.config);
-    this.sceneManager = new SceneManager(this.state);
-    this.renderer = new CanvasRenderer(canvas, this.config);
-
-    // Wire up callbacks
-    this.loop.onUpdate = () => this.sceneManager.update();
-    this.loop.onRender = () => this.renderer.render(this.state);
-
-    // Bind keyboard input
+    // 键盘事件绑定
     this._bindKeyboard();
+  }
 
-    // Boot the game
-    this.sceneManager.boot();
+  /** 接收 PPU 帧缓冲 */
+  writeFrame(buffer: Uint32Array): void {
+    this.frameBuffer = buffer;
+  }
 
-    // Start game loop
-    if (autoStart !== false) {
-      this.loop.start();
+  /** 渲染到 Canvas */
+  renderToCanvas(): void {
+    if (!this.frameBuffer) return;
+    const buf32 = new Uint32Array(this.imageData.data.buffer);
+    const fb = this.frameBuffer;
+    for (let i = 0; i < 256 * 240; i++) {
+      buf32[i] = fb[i] | 0xFF000000;
+    }
+    this.ctx.putImageData(this.imageData, 0, 0);
+  }
+
+  /** 启动音频 */
+  startAudio(): void {
+    try {
+      this.audioCtx = new AudioContext({ sampleRate: 48000 });
+    } catch (e: any) {
+      console.warn('[web-adapter] AudioContext unavailable:', e.message);
     }
   }
 
-  /** Bind keyboard events */
+  /** 停止音频 */
+  stopAudio(): void {
+    if (this.audioNode) {
+      this.audioNode.disconnect();
+      this.audioNode = null;
+    }
+    if (this.audioCtx) {
+      this.audioCtx.close();
+      this.audioCtx = null;
+    }
+  }
+
+  /** 获取当前按钮状态 (位掩码) */
+  getButtons(): number {
+    return this.buttons;
+  }
+
+  /** 键盘绑定 */
   private _bindKeyboard(): void {
-    const onKeyDown = (e: KeyboardEvent) => {
-      this.inputManager.handleKeyDown(e, this.state.input);
-    };
-    const onKeyUp = (e: KeyboardEvent) => {
-      this.inputManager.handleKeyUp(e, this.state.input);
-    };
+    const self = this;
 
-    document.addEventListener('keydown', onKeyDown);
-    document.addEventListener('keyup', onKeyUp);
+    // NES 手柄位定义: A,B,Select,Start,Up,Down,Left,Right
+    document.addEventListener('keydown', (e) => {
+      switch (e.code) {
+        case 'KeyZ': self.buttons |= 0x01; break;    // A
+        case 'KeyX': self.buttons |= 0x02; break;    // B
+        case 'ShiftRight': self.buttons |= 0x04; break; // Select
+        case 'Enter': self.buttons |= 0x08; break;   // Start
+        case 'ArrowUp': self.buttons |= 0x10; break; // Up
+        case 'ArrowDown': self.buttons |= 0x20; break; // Down
+        case 'ArrowLeft': self.buttons |= 0x40; break; // Left
+        case 'ArrowRight': self.buttons |= 0x80; break; // Right
+      }
+    });
+
+    document.addEventListener('keyup', (e) => {
+      switch (e.code) {
+        case 'KeyZ': self.buttons &= ~0x01; break;
+        case 'KeyX': self.buttons &= ~0x02; break;
+        case 'ShiftRight': self.buttons &= ~0x04; break;
+        case 'Enter': self.buttons &= ~0x08; break;
+        case 'ArrowUp': self.buttons &= ~0x10; break;
+        case 'ArrowDown': self.buttons &= ~0x20; break;
+        case 'ArrowLeft': self.buttons &= ~0x40; break;
+        case 'ArrowRight': self.buttons &= ~0x80; break;
+      }
+    });
   }
 
-  /** Stop the game loop */
-  stop(): void { this.loop.stop(); }
-
-  /** Resume the game loop */
-  start(): void { this.loop.start(); }
-
-  /** Get current FPS */
-  get fps(): number { return this.config.fps; }
-
-  /** Toggle debug mode */
-  setDebug(enabled: boolean): void {
-    this.config.debug = enabled;
-    this.sceneManager.setDebug(enabled);
+  /** 销毁 */
+  destroy(): void {
+    this.stopAudio();
+    this.frameBuffer = null;
   }
-}
-
-/** Shortcut: create and start a web game */
-export function startWebGame(options: WebGameOptions): WebGameAdapter {
-  return new WebGameAdapter(options);
 }

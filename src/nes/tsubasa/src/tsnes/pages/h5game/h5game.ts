@@ -1,48 +1,53 @@
 /**
  * ============================================================================
- * H5 游戏页面 — 纯 TS + Canvas 引擎（无模拟器）
+ * H5 游戏页面 — 使用 game-engine 的 createTsubasaNES 驱动游戏
  *
- * 使用 game-engine/ 的 MpGameAdapter 驱动游戏。
- * 不依赖 NES 模拟器、不加载 ROM 文件。
+ * PRG-ROM + CHR-ROM 全部内建于 game-engine/data/ 中，无需外部 ROM 文件。
  * ============================================================================
  */
 
-import { MpGameAdapter } from '../../game-engine/adapters/mp-adapter';
-import { Button } from '../../game-engine/core/types';
+import { createTsubasaNES } from '../../game-engine/index';
+import Controller from '../../game-engine/core/controller';
+import type NES from '../../game-engine/core/nes';
 
 const SCREEN_W = 256;
 const SCREEN_H = 240;
+const SAMPLE_RATE = 48000;
+const SCRIPT_BUF = 2048;
 
-// ============================================================================
-// 按钮映射：dataset.btn → NES Button bitmask
-// ============================================================================
-const BTN_MAP: Record<string, number> = {
-  up:     Button.UP,
-  down:   Button.DOWN,
-  left:   Button.LEFT,
-  right:  Button.RIGHT,
-  a:      Button.A,
-  b:      Button.B,
-  start:  Button.START,
-  select: Button.SELECT,
-};
+// ── Canvas Slot ──────────────────────────────────────────
+interface CanvasSlot {
+  canvas: any;
+  ctx: any;
+  imgData: any;
+  frameBuf: Uint32Array | null;
+}
 
-// ============================================================================
-// 页面
-// ============================================================================
-
+// ── 页面 ─────────────────────────────────────────────────
 Page({
   data: {
     status: 'initializing...',
     fps: '--',
   },
 
-  // ---- 引擎 ----
-  _adapter: null as MpGameAdapter | null,
+  _nes: null as NES | null,
+  _slot: null as CanvasSlot | null,
   _animId: -1 as number,
   _started: false,
 
-  // ---- FPS ----
+  // ── Audio ──────────────────────────────────────────────
+  _ring: null as Float32Array | null,
+  _ringCap: SAMPLE_RATE * 4,
+  _ringW: 0,
+  _ringR: 0,
+  _audioCtx: null as any,
+  _audioNode: null as any,
+
+  // ── 输入 ──────────────────────────────────────────────
+  _dpadState: { up: false, down: false, left: false, right: false },
+  _btnState: { a: false, b: false, start: false, select: false },
+
+  // ── FPS ────────────────────────────────────────────────
   _fpsFrameCount: 0,
   _fpsLastTime: 0,
 
@@ -52,6 +57,7 @@ Page({
 
   onLoad() {
     console.log('[h5game] onLoad');
+    this._ring = new Float32Array(this._ringCap);
   },
 
   onReady() {
@@ -62,10 +68,9 @@ Page({
   onUnload() {
     console.log('[h5game] onUnload');
     this._stopLoop();
-    if (this._adapter) {
-      this._adapter.stop();
-      this._adapter = null;
-    }
+    this._stopAudio();
+    this._nes = null;
+    this._slot = null;
   },
 
   // ================================================================
@@ -87,10 +92,16 @@ Page({
         cnv.width = SCREEN_W;
         cnv.height = SCREEN_H;
 
+        this._slot = {
+          canvas: cnv,
+          ctx: cnv.getContext('2d'),
+          imgData: null,
+          frameBuf: null,
+        };
+
         console.log('[h5game] Canvas ready:', SCREEN_W, 'x', SCREEN_H,
           '| display:', res[0].width, 'x', res[0].height);
-
-        this._startEngine(cnv);
+        this._startEngine();
       });
   },
 
@@ -98,32 +109,33 @@ Page({
   // 启动引擎
   // ================================================================
 
-  _startEngine(canvas: any) {
+  _startEngine() {
     try {
-      this.setData({ status: 'starting engine...' });
+      this.setData({ status: 'loading ROM...' });
 
-      this._adapter = new MpGameAdapter({
-        canvas,
-        config: {
-          canvasWidth: SCREEN_W,
-          canvasHeight: SCREEN_H,
-          fps: 60,
-          debug: true,
-          platform: 'miniprogram',
+      const self = this;
+      this._nes = createTsubasaNES({
+        onFrame: (buffer: Uint32Array) => {
+          if (self._slot) self._slot.frameBuf = buffer;
+          self._renderSlot();
         },
+        onAudioSample: (left: number, right: number) => {
+          self._onAudioSample(left, right);
+        },
+        onStatusUpdate: (msg: string) => {
+          console.log('[h5game/nes]', msg);
+          self.setData({ status: msg });
+        },
+        emulateSound: true,
+        sampleRate: SAMPLE_RATE,
       });
 
-      // 啟用調試
-      this._adapter.setDebug(true);
-
-      this._adapter.start();
+      console.log('[h5game] NES created: cpu=', !!this._nes.cpu, 'ppu=', !!this._nes.ppu, 'rom=', !!this._nes.rom);
+      this.setData({ status: 'running' });
       this._started = true;
 
-      this.setData({ status: 'running (H5 engine)' });
-      console.log('[h5game] MpGameAdapter started');
-
-      // 啟動 FPS 計數 + 狀態日誌循環
-      this._monitorLoop();
+      this._startAudio();
+      this._frameLoop();
 
     } catch (e: any) {
       const msg = e.message || String(e);
@@ -133,37 +145,24 @@ Page({
   },
 
   // ================================================================
-  // 狀態監控（每秒打印引擎狀態）
+  // 帧循环 (递归 setTimeout)
   // ================================================================
 
-  _monitorLoop() {
-    if (!this._adapter) return;
+  _frameLoop() {
+    if (!this._nes || !this._started) return;
 
-    const info = this._adapter.sceneManager.getDebugInfo();
-    const fps = this.data.fps;
-
-    // 每秒輸出一次調試信息
-    if (!this._debugTimer) {
-      this._debugTimer = setInterval(() => {
-        if (!this._adapter) return;
-        const s = this._adapter.state;
-        console.log(
-          `[h5game] frame=${s.timing.frameCount} ` +
-          `scene=${s.progress.sceneId} ` +
-          `dispatch=${s.dispatchIndex} ` +
-          `fps=${this.data.fps}`
-        );
-      }, 2000);
+    try {
+      this._applyInput();
+      this._nes.frame();
+    } catch (e: any) {
+      console.error('[h5game] frame error:', e);
+      this.setData({ status: 'crash: ' + (e.message || '').substring(0, 20) });
+      return;
     }
-  },
 
-  _debugTimer: null as any,
+    this._animId = setTimeout(() => this._frameLoop(), 16) as any;
 
-  // ================================================================
-  // 幀循環（只負責 FPS 顯示，遊戲幀由 MpGameAdapter.setInterval 驅動）
-  // ================================================================
-
-  _fpsUpdate() {
+    // FPS 统计
     this._fpsFrameCount++;
     const now = Date.now();
     if (!this._fpsLastTime) this._fpsLastTime = now;
@@ -174,43 +173,144 @@ Page({
       this._fpsFrameCount = 0;
       this._fpsLastTime = now;
     }
-
-    // 遞歸調用
-    this._animId = setTimeout(() => {
-      if (this._started) this._fpsUpdate();
-    }, 1000) as any;
   },
 
   _stopLoop() {
+    this._started = false;
     if (this._animId >= 0) {
       clearTimeout(this._animId);
       this._animId = -1;
     }
-    if (this._debugTimer) {
-      clearInterval(this._debugTimer);
-      this._debugTimer = null;
+  },
+
+  // ================================================================
+  // 渲染
+  // ================================================================
+
+  _renderSlot() {
+    const slot = this._slot;
+    if (!slot || !slot.frameBuf || !slot.ctx) return;
+
+    const ctx = slot.ctx;
+    if (!slot.imgData) {
+      slot.imgData = ctx.createImageData(SCREEN_W, SCREEN_H);
+    }
+
+    const data = slot.imgData.data;
+    const src = slot.frameBuf;
+    for (let i = 0, j = 0; i < src.length; i++, j += 4) {
+      const p = src[i];
+      data[j]     = p & 0xff;
+      data[j + 1] = (p >> 8) & 0xff;
+      data[j + 2] = (p >> 16) & 0xff;
+      data[j + 3] = 0xff;
+    }
+    ctx.putImageData(slot.imgData, 0, 0);
+  },
+
+  // ================================================================
+  // 输入
+  // ================================================================
+
+  _applyInput() {
+    if (!this._nes) return;
+    const d = this._dpadState;
+    const b = this._btnState;
+    const nes = this._nes;
+
+    const doBtn = (key: number, pressed: boolean) => {
+      if (pressed) nes.buttonDown(1, key as any);
+      else nes.buttonUp(1, key as any);
+    };
+
+    doBtn(Controller.BUTTON_UP, d.up);
+    doBtn(Controller.BUTTON_DOWN, d.down);
+    doBtn(Controller.BUTTON_LEFT, d.left);
+    doBtn(Controller.BUTTON_RIGHT, d.right);
+    doBtn(Controller.BUTTON_A, b.a);
+    doBtn(Controller.BUTTON_B, b.b);
+    doBtn(Controller.BUTTON_START, b.start);
+    doBtn(Controller.BUTTON_SELECT, b.select);
+  },
+
+  onBtnDown(e: any) {
+    const btn = e.currentTarget.dataset.btn as string;
+    if (btn === 'up' || btn === 'down' || btn === 'left' || btn === 'right') {
+      (this._dpadState as any)[btn] = true;
+    } else {
+      (this._btnState as any)[btn] = true;
+    }
+  },
+
+  onBtnUp(e: any) {
+    const btn = e.currentTarget.dataset.btn as string;
+    if (btn === 'up' || btn === 'down' || btn === 'left' || btn === 'right') {
+      (this._dpadState as any)[btn] = false;
+    } else {
+      (this._btnState as any)[btn] = false;
     }
   },
 
   // ================================================================
-  // 觸摸按鈕輸入
+  // 音频
   // ================================================================
 
-  onBtnDown(e: any) {
-    if (!this._adapter) return;
-    const btn = e.currentTarget.dataset.btn as string;
-    const mask = BTN_MAP[btn];
-    if (mask === undefined) return;
-
-    this._adapter.state.input.current |= mask;
+  _onAudioSample(left: number, right: number) {
+    const ring = this._ring;
+    if (!ring) return;
+    const cap = this._ringCap;
+    const next = (this._ringW + 2) % cap;
+    if (next === this._ringR) this._ringR = (this._ringR + 2) % cap;
+    ring[this._ringW] = left;
+    ring[this._ringW + 1] = right;
+    this._ringW = next;
   },
 
-  onBtnUp(e: any) {
-    if (!this._adapter) return;
-    const btn = e.currentTarget.dataset.btn as string;
-    const mask = BTN_MAP[btn];
-    if (mask === undefined) return;
+  _startAudio() {
+    if (this._audioCtx) return;
+    try {
+      const ctx = wx.createWebAudioContext();
+      const node = ctx.createScriptProcessor(SCRIPT_BUF, 0, 2);
+      const self = this;
+      node.onaudioprocess = (e: any) => {
+        const ring = self._ring;
+        if (!ring) return;
+        const outL = e.outputBuffer.getChannelData(0);
+        const outR = e.outputBuffer.getChannelData(1);
+        const len = outL.length;
+        const cap = self._ringCap;
+        let r = self._ringR;
+        const w = self._ringW;
+        for (let i = 0; i < len; i++) {
+          if (r === w) {
+            outL[i] = 0; outR[i] = 0;
+          } else {
+            outL[i] = ring[r];
+            outR[i] = ring[r + 1];
+            r = (r + 2) % cap;
+          }
+        }
+        self._ringR = r;
+      };
+      node.connect(ctx.destination);
+      this._audioCtx = ctx;
+      this._audioNode = node;
+      console.log('[h5game] Audio started');
+    } catch (e: any) {
+      console.warn('[h5game] Audio unavailable:', e.message);
+    }
+  },
 
-    this._adapter.state.input.current &= ~mask;
+  _stopAudio() {
+    if (this._audioNode) {
+      try { this._audioNode.disconnect(); this._audioNode.onaudioprocess = null; } catch (_) {}
+      this._audioNode = null;
+    }
+    if (this._audioCtx) {
+      try { this._audioCtx.close(); } catch (_) {}
+      this._audioCtx = null;
+    }
+    this._ringW = 0;
+    this._ringR = 0;
   },
 });
