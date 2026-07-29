@@ -26,6 +26,7 @@ import {
   writeMem,
   readMem,
 } from './system-state';
+import { track, exit } from './debug-log';
 import { PRG_BANK_02 } from './bank-02-data';
 
 // ═════════════════════════════════════════════════
@@ -70,6 +71,7 @@ function rom02(offset: number): number {
  *   $8062: 检查 $79 bit7 → 声音/CHR bank 处理
  */
 export function bank02_nmiHandler(sys: SystemState): void {
+  track('bank02_nmiHandler', { '0628': sys.mem[0x628], '0629': sys.mem[0x629] });
   // ── $8000: OAM addr = 0 ──
   writeMem(sys, 0x2003, 0x00);
 
@@ -79,6 +81,7 @@ export function bank02_nmiHandler(sys: SystemState): void {
   // ── $800A: 检查 $0628（渲染标志） ──
   if (sys.mem[0x0628] === 0) {
     // 无更新 → 跳到恢复 PPU 显示
+    exit('bank02_nmiHandler', { skip: '0628=0' });
     _restorePPU(sys);
     return;
   }
@@ -86,6 +89,7 @@ export function bank02_nmiHandler(sys: SystemState): void {
   // ── $800F: BIT $0629; BVS $805D ──
   // 检查 bit6 ($0629)，为 1 则跳过渲染
   if (sys.mem[0x0629] & 0x40) {
+    exit('bank02_nmiHandler', { skip: '0629.b6=1', '0629': sys.mem[0x629] });
     _restorePPU(sys);
     return;
   }
@@ -103,6 +107,7 @@ export function bank02_nmiHandler(sys: SystemState): void {
     const entry = sys.mem[0x05E8 + qIdx];
     if (entry === 0) {
       // $8048: queue end → clear $0628, setup palette addr
+      exit('bank02_nmiHandler', { done: 'processed', qIdx });
       sys.mem[0x0628] = 0;
       _paletteAddrReset(sys);
       _restorePPU(sys);
@@ -180,6 +185,7 @@ function _restorePPU(sys: SystemState): void {
  *   - 帧计数器 ($E1/$E2/$E3) 递增 + $3A 帧号递增
  */
 export function bank02_ppuScrollUpdate(sys: SystemState): void {
+  track('bank02_ppuScrollUpdate', { '0079': sys.mem[0x79], '003A': sys.mem[0x3A], '0628': sys.mem[0x628] });
   // ── $8073-$8089: PPU scroll 设置 ──
   // $8073: LSR $20; LSR $20
   // This shifts $20 so bit0 and bit1 are in carry for nametable selection
@@ -425,6 +431,7 @@ function _mmc3CHRRegisterWrite(sys: SystemState, y: number): void {
  *   根据栈上参数选择初始化路径
  */
 export function bank02_auxEntry1(sys: SystemState): void {
+  track('bank02_auxEntry1');
   // $821B: LDX #$FF; TXS → reset stack
   sys.regs.S = 0xFF;
 
@@ -503,6 +510,7 @@ export function bank02_auxEntry1(sys: SystemState): void {
  * $82AF-$82E7: 关闭 NMI，清屏，恢复状态
  */
 export function bank02_auxEntry2(sys: SystemState): void {
+  track('bank02_auxEntry2');
   // $82AF: JSR $99F0 → palette fade
   // $82B2: JSR $98A0 → PPU reset
   // $82B5: JSR $9B7F → PPU config
@@ -567,6 +575,7 @@ export function bank02_auxEntry8(sys: SystemState): void {
  * $855A-$857B: 从 $EC/$62 计算 16-bit signed displacement → $60/$61/$62
  */
 export function bank02_sceneSwitchHelper(sys: SystemState): void {
+  track('bank02_sceneSwitchHelper');
   // $855A: LDA #$00; STA $60
   sys.mem[0x60] = 0;
 
@@ -596,6 +605,7 @@ export function bank02_sceneSwitchHelper(sys: SystemState): void {
  * $8484-$84A4: 根据 $ED 参数通过跳转表分发到不同场景加载子程序
  */
 export function bank02_loadSceneData(sys: SystemState): void {
+  track('bank02_loadSceneData', { '00ED': sys.mem[0xED] });
   // $8484: LDA $ED; ASL A → index * 2
   const idx = (sys.mem[0xED] & 0xFF) << 1;
   // Jump table at $A491:

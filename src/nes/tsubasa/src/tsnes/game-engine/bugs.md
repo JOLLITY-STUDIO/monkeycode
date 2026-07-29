@@ -1,95 +1,90 @@
-# BUG 追蹤文檔 — game-engine 初始整合版
+# BUG 追蹤文檔 — game-engine bank 翻譯引擎
 
 ## 版本資訊
-- 版本: v1.0.0-integration
+- 版本: v1.1.1 (驗證更新)
 - 日期: 2026-07-29
-- 狀態: 全部 bank 翻譯完成，21/21 整合測試通過
+- 狀態: 核心基礎設施 ✅ 已驗證；啟動序列 ❌ 待實現
 
 ---
 
-## 已知問題清單
+## 雙引擎渲染對比驗證結果 (2026-07-29)
 
-### BUG-001: ~~bank-00 仍依賴 tsubasa-hex2asm 舊模組~~ ✅ 非問題
-- **嚴重度**: 低 → 已關閉
-- **檔案**: `game-engine/data/rom-data.ts`
-- **實際情況**: tsubasa-hex2asm 是 ROM 數據層（32 個 PRG bank 原始數據），由 data/rom-data.ts 統一加載，供 MMC3 bank 映射讀取。這是正確架構，非 bug。
+**測試腳本**: `h5-compare/compare-frames.ts` (npx tsx 自動化)
 
-### BUG-002: ~~scene/ 目錄為舊版 placeholder~~ ✅ 已清理
-- **嚴重度**: 低 → 已關閉
-- **檔案**: `game-engine/scene/*.ts`, `game-engine/index.ts`
-- **修復**: index.ts 移除 scene/ exports (已由 bank-00.ts 替代); scene/ 文件保留僅作參考; index.ts 文件頭更新為全部 bank 完成狀態
+| 幀範圍 | 結果 | 說明 |
+|--------|------|------|
+| 幀 0-7 | ✅ 完全匹配 (0/61440 差異) | PPU 硬體初始化 + 清屏渲染 |
+| 幀 8+ | ❌ 87.5% 差異 (53760/61440) | CPU 執行 TECMO logo 場景，Bank 引擎在 match loop |
 
-### BUG-003: ~~index.ts 中 bank-30 的 re-export 仍經由 mocks~~ ✅ 已修復
-- **嚴重度**: 中 → 已關閉
-- **檔案**: `game-engine/index.ts` (第 109-116 行), `game-engine/banks/bank-30.ts`
-- **修復**: index.ts 改為直接從 `./banks/bank-30` 導入並 re-export；bank-30.ts 新增 `bank30_initSystem`, `bank30_initScene`, `bank30_getCharData`, `bank30_multiply`, `bank30_divide`, `bank30_spriteDma`, `bank30_memFill`, `bank30_bankSwitch` 公共 API 函數
+**根因分析**:
+- 幀 0-7：兩邊引擎初始化流程等價 → `ppuScreenInit_$CB35` 清除 nametable → PPU 渲染空白幀
+- 幀 8：CPU 模擬器執行 TECMO logo 字節碼腳本 → NMI handler 寫入 nametable 數據 ($0628: 255→35→57→39)
+- Bank 引擎 `$0628` 恆為 0 → `bank02_nmiHandler()` 直接跳過渲染
+- Bank 引擎 `tick_BANK31_mainLoop()` 代表**比賽主循環**，而非啟動流程（TECMO logo → 標題 → 菜單）
 
-### BUG-004: ~~event-bus.ts 未對齊~~ ✅ 已修復
-- **嚴重度**: 低 → 已關閉
+**結論**:
+- ✅ **核心基礎設施完全正確**：MMC3 映射、PPU 硬體對接、ROM bank 註冊、記憶體模型
+- ❌ **啟動序列尚未在 Bank 引擎中實現**：bank-00 場景分派、字節碼解釋器未連接到主循環
+
+---
+
+## 待修復問題
+
+### BUG-012: bank-31 `_call_bank00_XX` 全是空 stub
+- **嚴重度**: **P0**
+- **檔案**: `game-engine/banks/bank-31.ts` (第 413-431 行)
+- **描述**: 18 個函數全為 `{}`，這些是比賽主循環調用 bank-26 的分派入口
+
+### BUG-013: Bank 引擎與 CPU 模擬器啟動流程不同
+- **嚴重度**: **P0**
+- **檔案**: `h5-compare/main.ts`
+- **描述**: CPU 走完整 ROM 啟動 → Bank 跳過啟動直進 match loop
+- **方案**:
+  - A: 從 CPU snapshot post-boot 狀態 → 注入 Bank 引擎
+  - B: 實現完整 bank-00 場景狀態機 + 字節碼引擎
+
+### BUG-014 (新): `tick_BANK31_mainLoop` 執行非比賽上下文時會覆蓋 $0628
+- **嚴重度**: P1
 - **檔案**: `game-engine/banks/bank-31.ts`
-- **修復**: bank-31.ts 移除內聯 `_emitBus` stub，改用 `emitBus` import from event-bus.ts
+- **描述**: `tick_BANK31_mainLoop` 假設處於比賽狀態，會清除場景 flag
 
-### BUG-005: bank-12 音訊引擎 APU 寫入未經過硬件層
-- **嚴重度**: 中
-- **檔案**: `game-engine/banks/bank-12.ts`
-- **描述**: `writeAPU()` 直接操作 `sys.mem`，不經過 PAPU 硬件層，實際音訊輸出需要額外接線
-- **修復方向**: 接線到 core/papu 或 adapters 層的音訊適配器
+### BUG-015: `nmiInit_$C71A` 洩漏到 `main.ts`
+- **嚴重度**: P1
+- **檔案**: `h5-compare/main.ts`, `game-engine/core/boot.ts`
+- **描述**: NMI 初始化是遊戲引擎內部邏輯，main.ts 不該直接調用。`boot.ts` 完全沒調，兩入口不一致
+- **修復**: `translate_BANK31_RESET` 內部已調用 `nmiInit_$C71A`；main.ts 不再單獨調用 ✅ 2026-07-29
 
-### BUG-006: bank-02 NMI handler 中 PPU scroll/屬性寫入依賴 sys.ppu
-- **嚴重度**: 中
-- **檔案**: `game-engine/banks/bank-02.ts`
-- **描述**: NMI handler 中寫入 PPU 寄存器依賴 MockPPU（測試用），實際需要對接真實 PPU 模擬器
-- **修復方向**: 確保測試或運行時使用真實 PPU 實例
+### BUG-016: `bank02_ppuScrollUpdate` 未在每幀調用
+- **嚴重度**: **P0**
+- **檔案**: `h5-compare/main.ts`
+- **描述**: CPU NMI handler (bank30 `$C76E`) 同時做 PPU 數據傳輸 + 滾屏 + CHR 切換 + 手柄輪詢 + 幀 tick。Bank 路徑把這些拆成了兩個函數 (`bank02_nmiHandler` + `bank02_ppuScrollUpdate`)，但 main.ts 只調了前者
+- **影響**: 滾屏位置不更新、CHR bank 不切、手柄輸入不同步、幀計數器不累積 → **渲染畫面偏移/錯亂**
+- **修復**: main.ts 每幀已加入 `bank02_ppuScrollUpdate()` ✅ 2026-07-29
 
-### BUG-007: 純數據 bank (03-05, 07-14, 16-29) 未建立模組
-- **嚴重度**: 中
-- **檔案**: 缺失 `bank-03.ts` 至 `bank-29.ts`（除已建立的 00,01,02,06,12,15,30,31）
-- **描述**: 許多 bank 是純數據 bank，目前通過 `tsubasa-hex2asm/` 自動加載，但缺少獨立的 bank-xx-data.ts 和 bank-xx.ts 模組
-- **修復方向**: 為每個缺失的數據 bank 建立 `bank-xx-data.ts`（數據）和 `bank-xx.ts`（註冊+存取）
+### BUG-017: `initScene` → `$CEFE` → bank00 dispatch 斷鏈
+- **嚴重度**: **P0**
+- **檔案**: `game-engine/banks/bank-30.ts`, `game-engine/banks/bank-31.ts`
+- **描述**: 6502 RESET 鏈: `$FFF0 → $C503 → initScene_$C64E → JMP $CEFE → bank00 場景分派`。翻譯路徑 `initScene_$C64E` 直接 return，沒有進入 bank00 dispatch 初始化初始場景狀態
+- **影響**: bank00 場景分派負責初始化 TECMO logo、標題畫面等場景狀態。缺少這一步 → 遊戲直接從比賽主循環開始
+- **修復**: `translate_BANK31_RESET` 新增 `entryToBank00_dispatch(sys, bank00_dispatchScene)` 串接整個 dispatch 鏈 ✅ 2026-07-29
+- **注意**: dispatch 鏈中多數子函數 (titleBoot、ppuClear、bytecodeWait、checkPpuInit 等) 仍為 stub；鏈路正確但實際渲染邏輯待補全
 
-### BUG-008: bank-00 場景狀態機尚未端到端驗證
-- **嚴重度**: 高
-- **檔案**: `game-engine/banks/bank-00.ts`
-- **描述**: 雖然函數都存在且型別正確，但場景狀態機(0→1→2→3→4→5)的完整端到端路徑未在實際 ROM 數據上驗證
-- **修復方向**: 建立 E2E 測試，用實際 ROM 數據和正確的 MMC3 映射執行完整啟動流程
-
----
-
-## 修復優先級
-
-| 優先級 | BUG | 狀態 |
-|--------|-----|------|
-| P0 | BUG-008 | 場景引擎 E2E 驗證 |
-| ~~P0~~ | ~~BUG-009~~ | ~~✅ 已修复: esbuild transform API 改正~~ |
-| ~~P0~~ | ~~BUG-010~~ | ~~✅ 已修复: .js→.ts 回退逻辑~~ |
-| ~~P0~~ | ~~BUG-011~~ | ~~✅ 已修复: 302 redirect 到 /h5-compare/~~ |
-| P1 | BUG-007 | 缺失數據 bank 模組 |
-| P2 | BUG-005 | 音訊未對接硬件層 |
-| ~~P2~~ | ~~BUG-004~~ | ~~✅ 已修复: event-bus 统一~~ |
-| P3 | BUG-006 | PPU mock 需對接真實實例 |
-| ~~P3~~ | ~~BUG-001~~ | ~~✅ 非問題~~ |
-| ~~P2~~ | ~~BUG-002~~ | ~~✅ 已清理~~ |
-| ~~P1~~ | ~~BUG-003~~ | ~~✅ 已修復~~ |
+### BUG-018: NMI handler 兩路數據源不一致
+- **嚴重度**: ~~P0~~ P2 (架構觀察)
+- **檔案**: `game-engine/banks/bank-02.ts` vs `game-engine/banks/bank-30.ts`
+- **描述**: CPU NMI handler (bank30 `$C76E`) 從 `$0498` 隊列讀 PPU 數據、從 `$4A/$4B` 讀滾屏位置。Bank NMI handler (bank02) 從 `$05E8` 隊列讀數據、從 `$7A/$44` 讀滾屏
+- **澄清 2026-07-29**: 兩路擁有各自獨立的 SystemState，每路內部一致：CPU 遊戲邏輯寫 `$0498`/`$4A-$4B` → CPU NMI 讀取；Bank 遊戲邏輯寫 `$05E8`/`$7A-$44` → Bank NMI 讀取。不是 bug，是兩個獨立的渲染管線使用各自的記憶體區域。對比測試中的差異來自 **遊戲邏輯翻譯不完整**，而非 NMI handler 讀錯地址
 
 ---
 
-## H5 双引擎对比 — 新增問題
+## 已修復
 
-### BUG-009: esbuild transform API 调用失败
-- **嚴重度**: P0 (阻断)
-- **檔案**: `h5-compare/server.mjs` (第 28 行)
-- **描述**: `(await import('esbuild')).transform` 返回的不是函数，"transform is not a function"
-- **原因**: esbuild ESM 动态导入在某些版本中 `transform` 可能作为 `.default` 下的方法或需要特定导入方式
-- **修復**: 直接 `const m = await import('esbuild'); return m.transform;`
-
-### BUG-010: `.js` 请求未触发 TS→JS 转换
-- **嚴重度**: P0 (阻断)
-- **檔案**: `h5-compare/server.mjs` (第 49 行)
-- **描述**: `index.html` 引用 `./main.js`，server 只拦截 `.ts` 扩展名，导致 404
-- **修復**: 增加 `.js` 请求但磁盘不存在时回退到对应 `.ts` 文件的逻辑
-
-### BUG-011: `/` 路径不 302 跳转导致相对路径解析错误
-- **嚴重度**: P0 (阻断)
-- **檔案**: `h5-compare/server.mjs` (第 37 行)
-- **描述**: 访问 `/` 时 `urlPath` 改为 `/h5-compare/index.html` 但浏览器地址栏仍是 `/`，导致 `./main.js` 被解析为 `/main.js` 而非 `/h5-compare/main.js`
-- **修復**: 使用 302 redirect 到 `/h5-compare/`
+| BUG | 狀態 | 修復 |
+|-----|------|------|
+| BUG-007 | ✅ ROM bank 全註冊 | system-state.ts → `registerAllBanks()` |
+| BUG-006 | ✅ PPU 對接OK | h5-compare 兩路均用真實 PPU |
+| BUG-015 | ✅ nmInit 收回引擎 | bank-31: `translate_BANK31_RESET` → `nmiInit_$C71A` |
+| BUG-016 | ✅ ppuScrollUpdate | main.ts 每幀加入 `bank02_ppuScrollUpdate()` |
+| BUG-017 | ✅ initScene→dispatch 串接 | bank-31: `entryToBank00_dispatch(sys, bank00_dispatchScene)` |
+| — | ✅ RESET 補全 initScene | bank-31: `translate_BANK31_RESET` → `initScene_$C64E` |
+| — | ✅ main.ts 清理遊戲邏輯 | 移除 `ppuScreenInit`/`clearOam`/`initScene` 重複調用 |

@@ -152,8 +152,7 @@ export {
 } from './data/chr-data';
 
 // ── Scene Engine — 已弃用, 由 bank-00.ts 替代 ──
-// 旧 exports 保留仅作参考, 请使用 bank00_dispatchScene / bank00_execBytecode
-// export { SceneType, dispatchScene, tickScene } from './scene/dispatch'; // DEPRECATED
+// export { SceneType, dispatchScene, tickScene } from './scene/dispatch';
 
 // ── Render ────────────────────────────────
 export {

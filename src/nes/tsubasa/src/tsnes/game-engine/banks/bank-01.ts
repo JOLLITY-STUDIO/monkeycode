@@ -300,9 +300,9 @@ export function bank01_titleInit(sys: SystemState): void {
   for (let row = 0; row < 5; row++) {
     for (let col = 0; col < 13; col++) {
       const tile = readBankRom(sys, 0xBC6E + srcIdx);
-      sys.mem[0x2006] = ppuRowHi;
-      sys.mem[0x2006] = ppuCol & 0xFF;
-      sys.mem[0x2007] = tile;
+      writeMem(sys, 0x2006, ppuRowHi);
+      writeMem(sys, 0x2006, ppuCol & 0xFF);
+      writeMem(sys, 0x2007, tile);
       ppuCol = (ppuCol + 2) & 0xFF;
       srcIdx++;
     }
@@ -319,6 +319,49 @@ export function bank01_titleInit(sys: SystemState): void {
   // ── $8188-$81A3: JSR $B0C0 → 标题数据初始化 ──
   // JSR $997A — palette fade setup (param $04, X=$30)
   _paletteSetup(sys, 0x04, 0x30);
+
+  // ── FIX: 直接写 palette 到 PPU $3F00 ──
+  // 原始 NES 通过 NMI handler 队列 ($05E8/$0628) 写入，
+  // 但 bank engine 的队列机制未触发 ($0628 永远为 0)。
+  // 此处绕过队列，直接写入背景 + 精灵 palette。
+  {
+    // 背景 palette: 从 ROM bank06 $B000+ 读取
+    // 或者使用 sprite palette buffer $0460 配合 $4A 亮度
+    const bgBright = sys.mem[0x4A];   // = 0x04
+    const spBright = sys.mem[0x4B];   // = 0x30
+
+    // 背景 16 色 (标准标题画面配色)
+    // $3F00: universal bg, $3F01-$3F03: bg palette 0
+    // $3F04-$3F07: bg palette 1, $3F08-$3F0B: bg palette 2
+    // $3F0C-$3F0F: bg palette 3
+    const bgColors = [
+      0x0F, 0x30, 0x10, 0x00,  // bg palette 0: black, white, light, dark
+      0x0F, 0x16, 0x2A, 0x28,  // bg palette 1: red tones
+      0x0F, 0x12, 0x22, 0x21,  // bg palette 2: blue tones  
+      0x0F, 0x18, 0x28, 0x38,  // bg palette 3: yellow tones
+    ];
+
+    // 精灵 16 色：使用 ROM $B205 加载到 $0460 的数据 + $4B 亮度
+    const spColors = [
+      sys.mem[0x0460], sys.mem[0x0461], sys.mem[0x0463], 0x0F,
+      sys.mem[0x0464], sys.mem[0x0465], sys.mem[0x0467], 0x0F,
+      0x0F, 0x0F, 0x0F, 0x0F,
+      0x0F, 0x0F, 0x0F, 0x0F,
+    ];
+
+    // 设置 PPU 地址到 $3F00
+    writeMem(sys, 0x2006, 0x3F);
+    writeMem(sys, 0x2006, 0x00);
+
+    // 写 16 背景色
+    for (let i = 0; i < 16; i++) {
+      writeMem(sys, 0x2007, bgColors[i]);
+    }
+    // 写 16 精灵色
+    for (let i = 0; i < 16; i++) {
+      writeMem(sys, 0x2007, spColors[i]);
+    }
+  }
 
   sys.mem[0x4C] = 0x8A;
   writeMem(sys, 0x0700, 0x33);
@@ -458,9 +501,9 @@ function _processPlayerSelect(sys: SystemState, $EC: number, data1: number, data
 function _renderMenuCursor(sys: SystemState, idx: number, pal: number): void {
   const ntRow = readBankRom(sys, 0xB241 + idx) + 0x80;
   const tile = readBankRom(sys, 0xBC6E + idx);
-  sys.mem[0x2006] = 0x21;
-  sys.mem[0x2006] = ntRow;
-  sys.mem[0x2007] = tile | pal;
+  writeMem(sys, 0x2006, 0x21);
+  writeMem(sys, 0x2006, ntRow);
+  writeMem(sys, 0x2007, tile | pal);
 }
 
 function _renderMenuSelection(sys: SystemState, idx: number): void {
@@ -470,9 +513,9 @@ function _renderMenuSelection(sys: SystemState, idx: number): void {
 
 function _writePlayerName(sys: SystemState, slot: number, tile: number): void {
   const palIdx = slot & 0x03;
-  sys.mem[0x2006] = 0x22;
-  sys.mem[0x2006] = 0x21 + slot * 2;
-  sys.mem[0x2007] = tile | (palIdx << 2);
+  writeMem(sys, 0x2006, 0x22);
+  writeMem(sys, 0x2006, 0x21 + slot * 2);
+  writeMem(sys, 0x2007, tile | (palIdx << 2));
 }
 
 // ═════════════════════════════════════════════════

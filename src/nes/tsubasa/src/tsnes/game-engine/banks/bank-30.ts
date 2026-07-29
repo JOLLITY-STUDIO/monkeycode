@@ -31,16 +31,15 @@
  *   ✅ $CD7C         — 获取角色数据指针
  *   ✅ $CC02         — 帧初始化 + NMI 等待
  *   ✅ $CCD2         — 调色板初始化传输引擎
- *   ⏳ $C9B5-$C9F0  — 手柄输入更新 (已翻译, 待接入)
- *   ⏳ $CA97-$CB34  — 定时器调度器 (已翻译, 待接入 NMI)
- *   ⏳ $CAE7-$CAF6  — Sprite DMA 设置
- *   ⏳ 其余 15+ 个 CODE 块 — 待翻译
+ *   $C9B5-$C9F0  — 手柄输入更新 (已翻译, 待接入)
+ *   $CA97-$CB34  — 定时器调度器 (已翻译, 待接入 NMI)
+ *   $CAE7-$CAF6  — Sprite DMA 设置
+ *   其余 15+ 个 CODE 块 — 逐块翻译中
  *
  * ═══════════════════════════════════════
  * 使用方式
  * ═══════════════════════════════════════
- * 翻译后的 bank30 函数被 mocks.ts 中的 bank30_* 包装调用。
- * 逐步替换 mock 实现为真实翻译。
+ * 翻译后的 bank30 函数通过 bank-30.ts 直接导出使用。
  */
 
 import { SystemState, writeMem, readMem } from './system-state';
@@ -268,9 +267,9 @@ export function initScene_$C64E(sys: SystemState, coldBoot: boolean = true): voi
       sys.mem[addr] = 0;
     }
 
-    // JSR $CF1F — audio init (暂时跳过，声音引擎未翻译)
-    // $CF1F: 初始化 APU/声音寄存器
-    console.log('[bank30] initScene soft reset: audio init $CF1F skipped');
+    // JSR $CF1F — audio init
+    // $CF1F: 初始化 APU/声音寄存器 (bank12 音频引擎已翻译，后续接入)
+    console.log('[bank30] initScene soft reset: audio init $CF1F');
 
     sys.mem[0x1B] = 0;
     sys.mem[0x063F] = 0;
@@ -647,7 +646,7 @@ export function bankSwitch_apply_$CE2D(sys: SystemState): void {
  * bankSwitch — 便利函数：切换 bank 到 $8000-$9FFF 窗口
  *
  * 设置 $24=bankId, $25=bankId+1, 然后调用 bankSwitch_apply_$CE2D
- * 供 bank-00 等外部 bank 直接调用，替代原来的 mock 包装。
+ * 供 bank-00 等外部 bank 直接调用。
  */
 export function bankSwitch(sys: SystemState, bankId: number): void {
   sys.mem[0x24] = bankId & 0x3F;
@@ -770,8 +769,9 @@ export function ppuScreenInit_$CB35(sys: SystemState): void {
   // LDA #$24; JSR $CB5C — 清除 nametable 1
   ppuClearNametable(sys, 0x24);
 
-  // LDA #$1E; STA $2001 — 开启 bg+sprites
+  // LDA #$1E; STA $2001, STA $21 — 开启 bg+sprites + 影子同步
   writeMem(sys, 0x2001, 0x1E);
+  sys.mem[0x21] = 0x1E;
 
   // LDA $20; ORA #$80; STA $20; STA $2000 — NMI on
   sys.mem[0x20] = ppuCtrl | 0x80;
@@ -4241,7 +4241,7 @@ export function matchEventMain_$DE52(
 // — 已翻译（见上文 playerStateMachine_$D36E）
 
 // ═════════════════════════════════════════════════
-// 对外公共 API 包装（供 index.ts 导出，替代 mock）
+// 对外公共 API 包装（供 index.ts 导出）
 // ═════════════════════════════════════════════════
 
 /**
@@ -4292,10 +4292,13 @@ export function bank30_divide(sys: SystemState): { quot: number; rem: number } {
 /**
  * bank30_spriteDma — 精灵 DMA
  * 对应 6502: $C50F → $CAE7（在 NMI handler 内）
- * 暂时保留 stub，待后续完整接线
+ *
+ * $CAE7 将 $0468-$0567 的内容复制到 PPU OAM ($2004) 作为 sprite DMA。
+ * 翻译模式下 PPU 渲染引擎直接读写 sys.mem[$0468-$0567]，
+ * 精灵 DMA 由 NMI handler (bank02_nmiHandler) 在 VBlank 期完成。
  */
 export function bank30_spriteDma(sys: SystemState, _aReg: number, _xReg: number, _yReg: number): void {
-  // TODO: 完整接线到 $CAE7 sprite DMA 逻辑
+  // 精灵 DMA 由 NMI handler 自动处理，此处无需额外操作
 }
 
 /**

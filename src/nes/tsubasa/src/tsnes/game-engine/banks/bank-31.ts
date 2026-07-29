@@ -33,13 +33,19 @@
 import {
   SystemState,
   writeMem,
+  readMem,
   registerBankRom,
 } from './system-state';
+
+import { track, exit } from './debug-log';
 
 import { emitBus } from './event-bus';
 
 import {
   // bank30 services — 直接调用
+  initScene_$C64E,
+  nmiInit_$C71A,
+  entryToBank00_dispatch,
   getCharData_$CD7C,
   bankSwitch_apply_$CE2D,
   timerInit_$CB0F,
@@ -48,6 +54,8 @@ import {
   audiotrigger_$CBB0,
   coordTransform_$CDE2,
 } from './bank-30';
+
+import { bank00_dispatchScene, bank00_titleTick } from './bank-00';
 
 // ═════════════════════════════════════════════════
 // 标志位辅助
@@ -129,6 +137,17 @@ enum MainLoopPhase {
  *   - 过场/事件触发
  */
 export function tick_BANK31_mainLoop(sys: SystemState): void {
+  track('tick_BANK31_mainLoop', { '0700': sys.mem[0x700], '0628': sys.mem[0x628] });
+  // ── 标题画面模式检测 ──
+  // $0700 == 0x33 由 bank01_titleInit 设置，表示标题/菜单活跃
+  // $0700 != 0x33 表示比赛模式（match）
+  if (readMem(sys, 0x0700) === 0x33) {
+    bank00_titleTick(sys);
+    sys.frameCount++;
+    exit('tick_BANK31_mainLoop', { mode: 'title' });
+    return;
+  }
+
   // ── $E000: INC $0618 (帧计数器) ──
   sys.mem[0x0618] = (sys.mem[0x0618] + 1) & 0xFF;
   updateNZ(sys, sys.mem[0x0618]);
@@ -252,6 +271,7 @@ function _mainLoopEventLoop(sys: SystemState): void {
 
   // ── $E11A: JSR $E7FD → 球区域检测 ──
   _ballZoneDetect(sys);
+  exit('tick_BANK31_mainLoop', { mode: 'match', '0628': sys.mem[0x628] });
 }
 
 /** $E6EC: 球员位置更新 */
@@ -406,7 +426,7 @@ function _ballZoneDetect(sys: SystemState): void {
 
 
 // ═════════════════════════════════════════════════
-// bank00 entry stubs (场景分派表 $8000-$803F)
+// bank00 entry points (场景分派表 $8000-$803F)
 // 这些在实际游戏中被 JSR 到 bank00 的不同入口
 // ═════════════════════════════════════════════════
 
@@ -440,11 +460,24 @@ function _call_bank00_3C(sys: SystemState): void {} // $803C: music/audio
 //   IRQ:   $C506
 
 export function translate_BANK31_RESET(sys: SystemState): void {
+  track('translate_BANK31_RESET');
+  // ── $FFF0: LDA #$00; STA $8000 ──
   sys.regs.A = 0x00;
   updateNZ(sys, 0x00);
   writeMem(sys, 0x8000, 0x00);
-  // JMP $C503 → bank30 initScene (通过 mocks 桥接)
-  // 实际调用在 boot.ts 中完成
+
+  // ── JMP $C503 → bank30 initScene_$C64E ──
+  // 6502 RESET handler 通过 $C503 跳转表进入 initScene，完成:
+  //   PPU 初始化、RAM 清零、MMC3 设置、ppuScreenInit、clearOam
+  initScene_$C64E(sys, true);
+
+  // ── NMI 初始化 — 設置 sprite DMA 槽位/定時器狀態 ──
+  nmiInit_$C71A(sys);
+
+  // ── JMP $CEFE → bank00 dispatch ($8000) ──
+  // 6502: initScene 末尾通过 $CEFE 跳转进入 bank00 场景分派器。
+  // 翻译路径在此串联: 执行 TECMO logo / 标题画面 / 菜单 等引导流程。
+  entryToBank00_dispatch(sys, bank00_dispatchScene);
 }
 
 // ═════════════════════════════════════════════════

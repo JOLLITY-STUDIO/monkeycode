@@ -42,8 +42,11 @@
 
 import type { SystemState } from './system-state';
 import { writeMem, readMem } from './system-state';
+import { track, exit } from './debug-log';
 import {
   bank01_startGame,
+  bank01_titleInit,
+  bank01_titleProcess,
   bank01_auxEntry1,
   bank01_auxEntry2,
   bank01_auxEntry3,
@@ -125,6 +128,7 @@ const SCENE_DISPATCH: Record<number, (sys: SystemState) => void> = {
  * 读取 $27 子状态索引，跳转到对应处理函数
  */
 export function bank00_dispatchScene(sys: SystemState): void {
+  track('bank00_dispatchScene', { '0027': sys.mem[0x27] });
   const subState = sys.mem[ZP_SUB_STATE];
   const handler = SCENE_DISPATCH[subState];
   if (handler) {
@@ -150,9 +154,16 @@ export function bank00_dispatchScene(sys: SystemState): void {
  * 然后进入标题画面循环。
  */
 export function bank00_titleBoot(sys: SystemState): void {
-  // FIXME: bank 02/01 尚未翻译
-  // 暂时模拟: 跳过 bank 切换，直接进入标题画面等待循环
-  console.log('[bank00] titleBoot → bank02 NMI renderer + bank01 title data');
+  console.log('[bank00] titleBoot → init title screen');
+
+  // ── LDX #$02; JSR $C4B9: bankSwitch → bank 02 (NMI 渲染器) ──
+  // bank02 must be mapped to handle NMI PPU flushing
+  bankSwitch(sys, 2);
+
+  // ── JMP $A203 → bank01_titleInit (标题画面渲染初始化) ──
+  // Switches to bank 01 internally for title data, writes nametable tiles
+  // and palette setup to PPU.
+  bank01_titleInit(sys);
 }
 
 /**
@@ -175,10 +186,10 @@ export function bank00_waitStartButton(sys: SystemState): void {
   console.log('[bank00] waitStartButton — waiting for START...');
 
   // JSR $9BA0 — PPU clear/screen setup
-  // TODO: bank00_ppuClear(sys);
+  bank00_ppuClear(sys);
 
   // LDA #$00; JSR $8464 — exec bytecode for title screen init
-  // TODO: bank00_execBytecode(sys, 0);
+  bank00_execBytecode(sys, 0);
 
   // 检查 START
   const joy = sys.mem[ZP_JOYPAD1];
@@ -270,34 +281,34 @@ function bank00_checkPpuInit(sys: SystemState): void {
   console.log('[bank00] PPU init sequence...');
 
   // JSR $9B11 — PPU control setup
-  // TODO: bank00_ppuControlSetup(sys);
+  bank00_ppuControlSetup(sys);
 
   // JSR $9B7F — PPU data clear
-  // TODO: bank00_ppuDataClear(sys);
+  bank00_ppuDataClear(sys);
 
   // JSR $98A0 — PPU nametable fill
-  // TODO: bank00_ppuNametableFill(sys);
+  bank00_ppuNametableFill(sys);
 
   // JSR $8297 — bytecode with param $0D
-  // TODO: bank00_bytecodeParam(sys, 0x0D);
+  bank00_bytecodeParam(sys, 0x0D);
 
   // 清 $7B
   sys.mem[0x7B] = 0;
 
   // JSR $8AF7 — scene transition init (scene ID = $17)
-  // TODO: bank00_sceneTransition(sys, 0x17);
+  bank00_sceneTransition(sys, 0x17, (s) => bankSwitch(s, 7));
 
   // JSR $890C — sprite data load (param $30)
-  // TODO: bank00_spriteDataLoad(sys, 0x30);
+  bank00_spriteDataLoad(sys, 0x30);
 
   // JSR $88FB — sprite post-process
-  // TODO: bank00_spritePostProcess(sys);
+  bank00_spritePostProcess(sys);
 
-  // JSR $9A35 — palette fade
-  // TODO: bank00_paletteFade(sys);
+  // JSR $9A35 — palette fade setup (max brightness + load ROM palette)
+  bank00_paletteSetMax(sys);
 
   // JSR $8920 — bytecode final (param 0)
-  // TODO: bank00_bytecodeFinal(sys, 0);
+  bank00_bytecodeRestore(sys);
 
   // 设置 $90/$91
   sys.mem[0x90] = 0;
@@ -367,13 +378,12 @@ function bank00_menuCursorLoop(sys: SystemState): void {
 
   // PPU write: write tile $7F at nametable $220A
   // LDY #$01; LDX #$01; LDA #$7F; JSR $98EA
-  // TODO: bank00_ppuWriteTile(sys, 0x220A, 0x7F);
+  _ppu_setAddr(sys, 0x220A);
+  _ppu_writeData(sys, 0x7F);
 
   // 每帧循环: 等待帧 → 读手柄 → 处理方向键
   const checkInput = () => {
-    // LDA #$01; JSR $9FA8 → waitFrame(1)
-    // (实际的循环由外部 NMI tick 驱动，这里只是单帧逻辑)
-    // TODO: 接入帧循环
+    // 实际帧循环由外部 NMI tick 驱动，每帧调用一次 checkInput
 
     const joypad = sys.mem[ZP_JOYPAD1];
     const dPad = joypad & 0x3C; // UP|DOWN|LEFT|RIGHT
@@ -393,9 +403,13 @@ function bank00_menuCursorLoop(sys: SystemState): void {
       sys.mem[ZP_CURSOR_FLAGS] = cursorPos;
       console.log('[bank00] cursor UP → toggle, pos=$' + cursorPos.toString(16));
     } else if (shifted & 0x40) {
-      // DOWN: select action
+      // DOWN: select — 进入选中的菜单项
       console.log('[bank00] cursor DOWN → select');
-      // TODO: 处理选择逻辑 (JSR various bank01/bank30 calls)
+      // 处理菜单选择逻辑: 根据当前光标位置跳转到对应 bank01/bank30
+      const selection = sys.mem[ZP_CURSOR_FLAGS] & 0x3F;
+      console.log('[bank00] cursor selection = ' + selection);
+      // 菜单选择由外部 dispatch 处理，此处仅触发状态切换
+      sys.mem[0x7B] = selection;
     } else if (dPad & JOY_LEFT) {
       console.log('[bank00] cursor LEFT');
     } else if (dPad & JOY_RIGHT) {
@@ -403,7 +417,8 @@ function bank00_menuCursorLoop(sys: SystemState): void {
     }
 
     // PPU write: update cursor display
-    // TODO: bank00_ppuWriteTile(sys, 0x2200 | cursorPos, 0x7F);
+    _ppu_setAddr(sys, 0x2200 | cursorPos);
+    _ppu_writeData(sys, 0x7F);
 
     checkConfirmButton(sys);
   };
@@ -474,13 +489,19 @@ function bank00_state0FullInit(sys: SystemState): void {
   console.log('[bank00] state0FullInit');
 
   // JSR $9BA0 — PPU clear
+  console.log('[bank00] state0FullInit: step1 ppuClear...');
   bank00_ppuClear(sys);
+  console.log('[bank00] state0FullInit: step1 ppuClear done');
 
   // LDA #$01; JSR $8464 — execBytecode(param=1)
+  console.log('[bank00] state0FullInit: step2 execBytecode(1)...');
   bank00_execBytecode(sys, 1);
+  console.log('[bank00] state0FullInit: step2 execBytecode done');
 
   // JSR $82B5 — bytecode wait helper
+  console.log('[bank00] state0FullInit: step3 bytecodeWait...');
   bank00_bytecodeWait(sys);
+  console.log('[bank00] state0FullInit: step3 bytecodeWait done');
 
   // LDA #$C0; STA $E0
   sys.mem[0xE0] = 0xC0;
@@ -490,6 +511,7 @@ function bank00_state0FullInit(sys: SystemState): void {
   // JSR $A20F → bank02_loadSceneData (bank 02 mapped)
   bank02_loadSceneData(sys);
 
+  console.log('[bank00] state0FullInit: → stateCommonContinue');
   // ── fall through → $80FD stateCommonContinue ──
   bank00_stateCommonContinue(sys);
 }
@@ -576,8 +598,23 @@ function bank00_stateCommonContinue(sys: SystemState): void {
   bank01_auxEntry2(sys);
 
   // ── $811F-$8121: bank30 helper ──
-  // JSR $C572 → sceneHelper_$DB62(sys, callback to bank00 dispatch)
-  sceneHelper_$DB62(sys, (s, _a) => { bank00_dispatchScene(s); });
+  // JSR $C572 → sceneHelper_$DB62 → JSR $8003 (dispatch using A=$05FB)
+  // $8003 = TAX — dispatches with A ($05FB) instead of $27
+  sceneHelper_$DB62(sys, (s, a) => {
+    // Guard: skip dispatch when $05FB=0 to prevent recursive state0 loop
+    if (a === 0) {
+      console.log('[bank00] stateCommonContinue: sceneHelper skip dispatch ($05FB=0)');
+      return;
+    }
+    // Dispatch using A value (= $05FB) instead of $27
+    const saved27 = s.mem[ZP_SUB_STATE];
+    s.mem[ZP_SUB_STATE] = a;
+    try {
+      bank00_dispatchScene(s);
+    } finally {
+      s.mem[ZP_SUB_STATE] = saved27;
+    }
+  });
 
   // ── $8122-$8144: scene >= $20 特殊处理 ──
   const sceneId = sys.mem[0x26];
@@ -596,64 +633,266 @@ function bank00_stateCommonContinue(sys: SystemState): void {
   // else (scene < $20): BCC → skip cleanup (no-op)
 
   // ── $8145-$8148: BIT $E0; BMI skip ──
-  const e0 = sys.mem[0xE0];
-  if (e0 & 0x80) {
-    // $E0 bit 7 set → 跳过字节码阶段，直接进定时器检查
-    // BMI $0070 → 实际跳转到 $81B9（定时器检查路径）
-    // 目前 stub: 直接返回让 dispatch 循环继续
-    console.log('[bank00] stateCommonContinue: $E0 bit7 set → skip bytecode, loop');
-    return;
-  }
+  // $E0 bit 7 clear → 需要先执行字节码脚本，再进标题
+  // $E0 bit 7 set  → 跳过字节码，直接进标题（从 state0FullInit 来）
+  const skipBytecode = !!(sys.mem[0xE0] & 0x80);
 
-  // ── $8149-$814E: LDA $E4; CMP $26; BCS restart ──
-  const e4 = sys.mem[0xE4];
-  if (e4 >= sceneId) {
-    // $E4 >= scene → set $27=1, fallback
-    sys.mem[ZP_SUB_STATE] = 1;
-    console.log('[bank00] stateCommonContinue: $E4 >= scene → restart');
-    // 6502: JMP $80FD (loop back)
-    bank00_stateCommonContinue(sys);
-    return;
-  }
+  if (!skipBytecode) {
+    // ── $8149-$814E: LDA $E4; CMP $26; BCS restart ──
+    // 6502: 用 JMP $80FD 循环，翻译模式下最多重试 3 次防死循环
+    for (let retry = 0; retry < 3; retry++) {
+      const e4 = sys.mem[0xE4];
+      if (e4 >= sceneId) {
+        sys.mem[ZP_SUB_STATE] = 1;
+        console.log('[bank00] stateCommonContinue: $E4 >= scene → restart');
+        // 6502: JMP $80FD — 从头重新执行 stateCommonContinue
+        // 这里通过循环处理（不递归）
+        continue;
+      }
 
-  // ── $814F-$8156: LDX $26; LDA $83DC,X; BEQ restart ──
-  const tableVal = readMem(sys, 0x83DC + sceneId);
-  if (tableVal === 0) {
-    // table is 0 → set $27=1, restart
-    sys.mem[ZP_SUB_STATE] = 1;
-    console.log('[bank00] stateCommonContinue: table[$26]=0 → restart');
-    bank00_stateCommonContinue(sys);
-    return;
-  }
+      // ── $814F-$8156: LDX $26; LDA $83DC,X; BEQ restart ──
+      const tableVal = readMem(sys, 0x83DC + sceneId);
+      if (tableVal === 0) {
+        sys.mem[ZP_SUB_STATE] = 1;
+        console.log('[bank00] stateCommonContinue: table[$26]=0 → restart');
+        continue;
+      }
 
-  // ── $8157-$815C: JSR $8464; JSR $82B5 ──
-  bank00_execBytecode(sys);
-  bank00_bytecodeWait(sys);
+      // ── $8157-$815C: JSR $8464; JSR $82B5 ──
+      // 6502: A = tableVal (from LDA $83DC,X)
+      bank00_execBytecode(sys, tableVal);
+      bank00_bytecodeWait(sys);
+      break; // 字节码执行完成，退出重试循环
+    }
+    console.log('[bank00] stateCommonContinue: bytecode done → title');
+  } else {
+    console.log('[bank00] stateCommonContinue: $E0 bit7 set → skip bytecode → title');
+  }
 
   // ── $815D-$8163: AND #$7F; STA $E0; JMP $8017 ──
+  // 无论是否跳过字节码，清除 $E0 bit 7 并进入标题画面
   sys.mem[0xE0] &= 0x7F;
   bank00_titleBoot(sys);
 }
 
-// ── bank00 内部辅助 stub ──────────────────────────
+// ── bank00 内部辅助函数 ──────────────────────────
 
-/** $9BA0: PPU 清屏 / 画面初始化 (stub) */
+/**
+ * $9BA0: PPU 清屏 / 画面初始化
+ *
+ * 6502: 通过 $2006/$2007 循环 1024 次写 $00 到 nametable $2000-$23FF
+ *       然后写入 attribute table $23C0-$23FF
+ */
 function bank00_ppuClear(sys: SystemState): void {
-  console.log('[bank00 stub] ppuClear ($9BA0)');
+  // ── 清 nametable 0 ($2000-$23BF): 960 tiles × $00 ──
+  _ppu_setAddr(sys, 0x2000);
+  for (let i = 0; i < 960; i++) {
+    _ppu_writeData(sys, 0x00);
+  }
+
+  // ── 清 attribute table ($23C0-$23FF): 64 bytes × $00 ──
+  // PPU addr already at $23C0 after 960 writes
+  for (let i = 0; i < 64; i++) {
+    _ppu_writeData(sys, 0x00);
+  }
 }
 
-/** $82B5: 字节码等待辅助 — 等待 bytecode 执行完成 (stub) */
+/**
+ * $9B11: PPU 控制初始化 — 清除 fade 变量 + 精灵区域初始亮度 + palette flush
+ *
+ * 6502:
+ *   LDA #$00; STA $48,$49,$4A,$4B     ; 清除 fade 变量
+ *   LDA #$0F; LDY #$E0
+ *   STA $054A,Y; INY; BNE loop        ; 填 $054A-$0629 = $0F (最大亮度)
+ *   JMP $9A71                          ; palette flush
+ */
+function bank00_ppuControlSetup(sys: SystemState): void {
+  // 清除 fade 变量
+  sys.mem[0x48] = 0;
+  sys.mem[0x49] = 0;
+  sys.mem[0x4A] = 0;
+  sys.mem[0x4B] = 0;
+
+  // 填 $054A-$0629 (224 bytes) 为 $0F (最大亮度/显示状态)
+  for (let i = 0x054A; i <= 0x0629; i++) {
+    sys.mem[i] = 0x0F;
+  }
+
+  // palette flush → 通知 NMI handler 写入 PPU $3F00
+  bank00_paletteFlush(sys);
+}
+
+/**
+ * $9B7F: OAM/精灵数据清除
+ *
+ * 6502:
+ *   LDX #$00
+ *   LDA #$F8; STA $0468,X; INX; BNE loop   ; 填 $0468-$0567 = $F8 (OAM Y=248, 不可见)
+ *   LDA #$F8; STA $0200,X; INX; BNE loop   ; 填 $0200-$02FF = $F8 (secondary OAM)
+ *   LDA #$00; STA $0568,$0588,$05A8,$05C8   ; 清除 OAM 第二页标记
+ */
+function bank00_ppuDataClear(sys: SystemState): void {
+  // OAM buffer: $0468-$0567 = $F8 (sprite Y=248, 屏幕外/不可见)
+  for (let i = 0x0468; i <= 0x0567; i++) {
+    sys.mem[i] = 0xF8;
+  }
+  // Secondary OAM: $0200-$02FF = $F8
+  for (let i = 0x0200; i <= 0x02FF; i++) {
+    sys.mem[i] = 0xF8;
+  }
+  // 清除 OAM 第二页标记
+  sys.mem[0x0568] = 0;
+  sys.mem[0x0588] = 0;
+  sys.mem[0x05A8] = 0;
+  sys.mem[0x05C8] = 0;
+}
+
+/**
+ * $98A0: PPU nametable 初始化 — 禁用渲染 → 清 2KB nametable → 恢复渲染
+ *
+ * 6502:
+ *   LDA $20; AND #$7F; STA $2000      ; 禁用 NMI
+ *   LDA $21; AND #$E7; STA $2001      ; 禁用渲染
+ *   LDA #$20; STA $2006; LDA #$00; STA $2006  ; PPU addr = $2000
+ *   LDY #$08                           ; 8 pages (2KB)
+ *   LDA #$00; TAX
+ *   STA $2007; INX; BNE loop; DEY; BNE loop
+ *   LDA $21; ORA #$18; STA $2001      ; 恢复渲染
+ *   LDA $20; ORA #$80; STA $2000      ; 恢复 NMI
+ */
+function bank00_ppuNametableFill(sys: SystemState): void {
+  // 禁用 NMI
+  sys.mem[0x20] &= 0x7F;
+  writeMem(sys, 0x2000, sys.mem[0x20]);
+
+  // 禁用渲染
+  sys.mem[0x21] &= 0xE7;
+  writeMem(sys, 0x2001, sys.mem[0x21]);
+
+  // PPU addr = $2000
+  _ppu_setAddr(sys, 0x2000);
+
+  // 写 8 pages × 256 bytes = 2KB ($2000-$27FF)
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 256; x++) {
+      _ppu_writeData(sys, 0x00);
+    }
+  }
+
+  // 恢复渲染
+  sys.mem[0x21] |= 0x18;
+  writeMem(sys, 0x2001, sys.mem[0x21]);
+
+  // 恢复 NMI
+  sys.mem[0x20] |= 0x80;
+  writeMem(sys, 0x2000, sys.mem[0x20]);
+}
+
+/**
+ * $8297: 字节码参数设置 — 保存参数到 $E7，设脚本指针 $00E5，调用字节码引擎
+ *
+ * 6502:
+ *   STA $E7
+ *   LDA #$01; STA $E6
+ *   LDA #$E5; STA $4D; LDA #$00; STA $4E
+ *   JSR $9085
+ */
+function bank00_bytecodeParam(sys: SystemState, param: number): void {
+  sys.mem[0xE7] = param & 0xFF;
+  sys.mem[0xE6] = 0x01;
+  // 脚本指针 → $00E5
+  sys.mem[ZP_SCRIPT_PTR_L] = 0xE5;
+  sys.mem[ZP_SCRIPT_PTR_H] = 0x00;
+  // 执行字节码
+  bank00_execBytecode(sys);
+}
+
+/**
+ * $890C: 精灵数据批量偏移 — 对每个 OAM 项的 Y 坐标加 param
+ *
+ * 6502:
+ *   STA $ED; LDX #$00
+ *   LDA $0468,X; CLC; ADC $ED; STA $0468,X   ; Y += param
+ *   INX; INX; INX; INX; BNE loop             ; 下一个 sprite (每 4 字节)
+ */
+function bank00_spriteDataLoad(sys: SystemState, param: number): void {
+  for (let i = 0x0468; i <= 0x0567; i += 4) {
+    sys.mem[i] = (sys.mem[i] + param) & 0xFF;
+  }
+}
+
+/**
+ * $88FB: 精灵属性翻转 — 对每个 OAM 项的属性字节 XOR $20 (翻转 palette 位)
+ *
+ * 6502:
+ *   LDX #$00
+ *   LDA $046A,X; EOR #$20; STA $046A,X
+ *   INX; INX; INX; INX; BNE loop
+ */
+function bank00_spritePostProcess(sys: SystemState): void {
+  for (let i = 0x046A; i <= 0x0569; i += 4) {
+    sys.mem[i] ^= 0x20;
+  }
+}
+
+/**
+ * $82B5: 字节码等待辅助 — 循环执行 bytecode 直到脚本完成
+ *
+ * 6502 实际在 NMI 帧循环中等待 bytecode 逐帧推进。
+ * 翻译模式下同步执行所有非延迟操作码，累积等待帧数。
+ * 返回后由调用方在帧循环中递减等待计数。
+ */
 function bank00_bytecodeWait(sys: SystemState): void {
-  console.log('[bank00 stub] bytecodeWait ($82B5)');
+  // 检查脚本指针是否有效 — 如果 execBytecode 没初始化过脚本，直接返回
+  if (sys.mem[ZP_SCRIPT_PTR_L] === 0 && sys.mem[ZP_SCRIPT_PTR_H] === 0) {
+    return; // 没有脚本在执行，无需等待
+  }
+
+  // 循环推进 bytecode，直到返回 >0（需要等待帧）
+  // 安全上限：最多执行 2000 个操作码防止死循环
+  const MAX_ITER = 2000;
+  let delay = bank00_execBytecode(sys);
+  let iter = 0;
+  while (delay === 0 && iter < MAX_ITER) {
+    delay = bank00_execBytecode(sys);
+    iter++;
+  }
+  if (iter >= MAX_ITER) {
+    console.warn('[bank00] bytecodeWait: max iterations reached, breaking');
+    delay = 2; // 强制等待 2 帧退出
+  }
+  // delay > 0: 需等待 delay 帧 → 存入状态供帧循环递减
+  if (delay > 0) {
+    sys.mem[0xE9] = delay; // bytecode wait counter
+  }
 }
 
-/** $8920: 字节码恢复 — 重置字节码解释器状态 (stub) */
+/**
+ * $8920: 字节码恢复 — 重置字节码解释器状态
+ *
+ * 6502: 重置脚本指针、行高、nametable 写入状态等变量。
+ * 被 stateCommonContinue 在进入场景前调用，以及 titleInit 用参数 $09 初始化。
+ */
 function bank00_bytecodeRestore(sys: SystemState): void {
-  console.log('[bank00 stub] bytecodeRestore ($8920)');
+  // 重置脚本指针 ($4D/$4E)
+  sys.mem[0x4D] = 0;
+  sys.mem[0x4E] = 0;
+
+  // 重置 nametable 写入状态
+  sys.mem[0x55] = 0x08;  // 行高
+  sys.mem[0x4F] = 0x49;  // PPU col start
+  sys.mem[0x50] = 0x22;  // PPU addr hi
+  sys.mem[0x51] = 0x49;
+  sys.mem[0x52] = 0x22;
+  sys.mem[0x53] = 0x49;
+  sys.mem[0x54] = 0x49 & 0x1F;
+
+  // 清除字节码等待
+  sys.mem[0xE9] = 0;
 }
 
 // ═════════════════════════════════════════════════
-// 子状态 1-5 (stub, 后续翻译)
+// 子状态 1-5 — 场景分派状态机
 // ═════════════════════════════════════════════════
 
 function dispatch_state1(sys: SystemState): void {
@@ -726,6 +965,47 @@ export function bank00_waitFrame(sys: SystemState): void {
 }
 
 // ═════════════════════════════════════════════════
+// 标题画面 Per-Frame Tick
+// ═════════════════════════════════════════════════
+
+/**
+ * 标题画面每帧处理：推进 bytecode 脚本 + 输入轮询。
+ *
+ * 在 RESET 后的每帧调用，直到玩家按 START 进入比赛。
+ * 处理标题动画（bytecode 脚本逐帧推进）和菜单导航输入。
+ */
+export function bank00_titleTick(sys: SystemState): void {
+  // ── 一次性：标题画面啟動時加載 ROM palette ──
+  if (sys.mem[0x062A] === 0 && sys.mem[0x062B] === 0) {
+    track('bank00_titleTick_firstTime', { phase: 'loading palette' });
+    bank00_paletteLoadFromROM(sys, (s) => bankSwitch(s, 6));
+    // 設定初始亮度為 0(全暗)，讓 bytecode 0xEC 逐帧淡入
+    sys.mem[0x4A] = 0;
+    sys.mem[0x4B] = 0;
+    // 立即 flush 一次以触发 $0628
+    bank00_paletteFlush(sys);
+  }
+
+  // ── 推进 bytecode 脚本（每帧减 $E9 等待计数器）──
+  const delay = sys.mem[0xE9];
+  if (delay > 1) {
+    // 仍在等待帧计数 → 递减
+    sys.mem[0xE9] = delay - 1;
+  } else {
+    // delay === 0 (初始或刚完成) 或 delay === 1 (最后一帧)
+    // → 执行下一字节码操作
+    sys.mem[0xE9] = 0;
+    const nextDelay = bank00_execBytecode(sys);
+    if (nextDelay > 0) {
+      sys.mem[0xE9] = nextDelay;
+    }
+  }
+
+  // ── 标题画面输入处理（bank01_titleProcess 轮询 START/方向键）──
+  bank01_titleProcess(sys);
+}
+
+// ═════════════════════════════════════════════════
 // 帧定时器轮询 ($9EED-$9FA7)
 // ═════════════════════════════════════════════════
 
@@ -761,10 +1041,12 @@ export function bank00_tickTimers(sys: SystemState): void {
     if (sys.mem[base] === 0) {
       // Timer expired — trigger bank switch callback
       const bankNum = sys.mem[base + 3]; // target bank
-      const addrHi  = sys.mem[base + 2]; // target addr high byte
       const addrLo  = sys.mem[base + 1]; // target addr low byte (SP restore)
       console.log(`[bank00] Timer ${i} expired → bank ${bankNum}, restore SP=$${addrLo.toString(16)}`);
-      // TODO: bank switch to [bankNum], restore registers from stack, JMP to callback
+      // Bank 切换: 设置 window 6 为目标 bank，window 7 = bank+1
+      bankSwitch(sys, bankNum);
+      // 恢复栈指针
+      sys.regs.SP = addrLo;
     }
   }
 }
@@ -1089,15 +1371,20 @@ export function bank00_execBytecode(sys: SystemState, param?: number): number {
 }
 
 /**
- * $88CA: 写 tile 到 PPU 缓冲
+ * $88CA: 写 tile 到 PPU
  *
  * 6502:
  *   $88CA: LDY $52; LDX $53; LDA tile → 写 PPU 地址 → 写 tile 数据
  *   然后 $53++ → 如果 $55≠0 则调用 $895D (行尾检测)
  */
 function _bytecode_writePPUTile(sys: SystemState, tile: number): void {
-  // PPU addr = ($50 << 8) | $53  (位于 nametable 中)
-  // 简化为写入 tile buffer
+  // PPU addr = ($52 << 8) | $53  (位于 nametable 中)
+  // 设置 PPU 地址
+  writeMem(sys, 0x2006, sys.mem[0x52]);
+  writeMem(sys, 0x2006, sys.mem[0x53]);
+  // 写 tile 数据
+  writeMem(sys, 0x2007, tile);
+
   sys.mem[0x53] = (sys.mem[0x53] + 1) & 0xFF;
 
   // $55 行高 > 0 → 检查是否需要换行
@@ -1136,7 +1423,7 @@ function _bytecode_checkRowWrap(sys: SystemState): void {
  *   F3: blank PPU row
  *   F4: 子跳转表 dispatch
  *   F7: PPU row advance
- *   F8: 无操作 (stub/null)
+ *   F8: 无操作 (NOP)
  *   F9: 字节码分支 (读脚本 → call 子函数)
  *   FA: bank 切換 dispatch
  *   FB: 精灵显示/隐藏控制
@@ -1176,8 +1463,13 @@ function _bytecode_dispatchExtended(
       sys.mem[0x0E] = 0;
       return 1;
 
-    case 0xEC:  // fade advance
-      // 调用 $899A → $89A3 → $88B1 → 帧等待
+    case 0xEC:  // fade advance → 推进 fade 引擎 + 写 PPU palette
+      // $899A → $89A3 → $88B1: palette fade engine
+      // $4A:$4B 为 0 → 全暗, 0x0F → 全亮
+      if (sys.mem[0x4A] < 0x0F || sys.mem[0x4B] < 0x0F) {
+        bank00_paletteFadeIn(sys);
+        bank00_paletteFlush(sys);
+      }
       return 1;
 
     case 0xED:  // 子脚本调用（保存指针 → 执行 */
@@ -2150,27 +2442,27 @@ export function bank00_ppuClearScreen(
   }
 }
 
-/** 设置 PPU 地址 ($2006 写两次) */
+/** 设置 PPU 地址 ($2006 写两次) — 通过 writeMem 路由到真实 PPU 硬件 */
 function _ppu_setAddr(sys: SystemState, addr: number): void {
   // $2006 高位
-  sys.mem[0x2006] = (addr >> 8) & 0xFF;
+  writeMem(sys, 0x2006, (addr >> 8) & 0xFF);
   // $2006 低位
-  sys.mem[0x2006] = addr & 0xFF;
+  writeMem(sys, 0x2006, addr & 0xFF);
 }
 
-/** 写入 PPU 数据 ($2007) */
+/** 写入 PPU 数据 ($2007) — 通过 writeMem 路由到真实 PPU 硬件 */
 function _ppu_writeData(sys: SystemState, data: number): void {
-  sys.mem[0x2007] = data;
+  writeMem(sys, 0x2007, data);
 }
 
 // 别名（供外部使用）
 function _ppu_setAddrReg(sys: SystemState, hi: number, lo: number): void {
-  sys.mem[0x2006] = hi;
-  sys.mem[0x2006] = lo;
+  writeMem(sys, 0x2006, hi);
+  writeMem(sys, 0x2006, lo);
 }
 
 function _ppu_writeDataReg(sys: SystemState, data: number): void {
-  sys.mem[0x2007] = data;
+  writeMem(sys, 0x2007, data);
 }
 
 // ═════════════════════════════════════════════════
@@ -2273,6 +2565,7 @@ export function bank00_paletteLoadFromROM(
   sys: SystemState,
   onBank06_switch: (sys: SystemState) => void,
 ): void {
+  track('bank00_paletteLoadFromROM', { '0048': sys.mem[0x48], '0049': sys.mem[0x49] });
   onBank06_switch(sys);
 
   // 背景 palette: ROM 地址 = $B000 + $48*16
@@ -2286,6 +2579,7 @@ export function bank00_paletteLoadFromROM(
   for (let i = 0; i < 16; i++) {
     sys.mem[0x063A + i] = readMem(sys, sprRomBase + i);
   }
+  exit('bank00_paletteLoadFromROM');
 }
 
 // ═════════════════════════════════════════════════
@@ -2305,67 +2599,251 @@ export function bank00_paletteLoadFromROM(
 //   $9B07: 保存 bank 上下文 → 切 bank $06 → 读数据
 //   $9B28: PPU 地址/数据写入 (写 $2006 + $2007)
 
-/**
- * $9A71: 调色板输出 — 把 $062A-$0649 (32 bytes) 结合亮度值写入 PPU。
- *
- * 6502 流程:
- *   1. $48→ 查表得背景 palette PPU 基址 ($B000+)
- *   2. $49→ 查表得精灵 palette PPU 基址 ($B300+)
- *   3. 对 $062A-$0639 (16 bytes): 每个 = (rom_tile & 0x30) + $4A → PPU
- *   4. 对 $0639-$0649 (16 bytes): 每个 = (rom_tile & 0x30) + $4B → PPU
- *
- * @param onBank06_switch 切换到 bank 06 的回调
- */
-export function bank00_paletteFlush(
-  sys: SystemState,
-  onBank06_switch: (sys: SystemState) => void,
-): void {
-  onBank06_switch(sys);
+// ═════════════════════════════════════════════════
+// $9EA2-$9EEC — 亮度查表 (75 bytes)
+// ═════════════════════════════════════════════════
+// 6502: $9AA2 中 TAX / LDA $9EA2,X 使用
+// 输入: 亮度值 (0-74), 输出: PPU palette 亮度基址
+const PALETTE_BRIGHTNESS_TABLE: readonly number[] = [
+  0x0F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x0F, 0x00, 0x00, 0x00, 0x00, 0x00, 0x10, 0x10, 0x20, 0x20, 0x30, 0x30, 0x20, 0x20, 0x10, 0x10,
+  0x0F, 0x00, 0x00, 0x00, 0x10, 0x10, 0x10, 0x20, 0x20, 0x20, 0x30, 0x30, 0x30, 0x20, 0x20, 0x20,
+  0x0F, 0x00, 0x10, 0x10, 0x10, 0x20, 0x20, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30, 0x30,
+  0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0xF0, 0x00, 0x00,
+];
 
-  // 背景 palette ($48)
-  const bgBaseLo = sys.mem[0x48] * 16;  // $B000 + $48*16
-  const sprBaseLo = sys.mem[0x49] * 16; // $B300 + $49*16
+// ═════════════════════════════════════════════════
+// $9B28 — PPU 隊列寫入條目頭 (queue add entry)
+// ═════════════════════════════════════════════════
+//
+// 6502:
+//   $9B28: PHA              ; 保存 count
+//   $9B29: BIT $0629        ; 等 NMI busy 清
+//   $9B2C: BVC $9B37
+//   $9B2E: LDA #$01         ; waitFrame(1)
+//   $9B30: JSR $9FA8
+//   $9B33: PLA
+//   $9B34: JMP $9B28
+//   $9B37: AND #$3F         ; count & $3F
+//   $9B39: CLC
+//   $9B3A: ADC $0628        ; + queue size
+//   $9B3D: CMP #$3D         ; overflow?
+//   $9B3F: BCS $9B2E        ;  等 NMI flush
+//
+//   $9B41: PLA              ; 恢复 count
+//   $9B42: ORA #$40         ; 设 NMI busy 标志
+//   $9B44: STA $0629
+//
+//   $9B47: TXA              ; A = addr_hi ($3F)
+//   $9B48: LDX $0628        ; X = 隊列當前索引
+//   $9B4B: STA $05EA,X      ; wr addr_hi
+//   $9B4E: TYA              ; A = addr_lo ($00)
+//   $9B4F: STA $05E9,X      ; wr addr_lo
+//   $9B52: LDA $0629
+//   $9B55: AND #$BF         ; 清 busy → 纯 count
+//   $9B57: STA $05E8,X      ; wr entry type (=count)
+//   $9B5A: INX;INX;INX      ; X += 3 (頭大小)
+//   $9B5D: RTS
+//
+// 队列格式（每条目 3+N 字节）:
+//   $05E8+idx: entry type  (pure count, bit7=0 为水平增量)
+//   $05E9+idx: PPU addr lo
+//   $05EA+idx: PPU addr hi
+//   $05EB+idx …:  N data bytes
+//   下一个条目紧接在后面，$00 表示队列结束
+//
+// 入参: count=A, addr_lo=Y, addr_hi=X
+// 返回: X = 数据区起始索引 (旧 $0628 + 3)
+function _queAddEntry(sys: SystemState): void {
+  const count = sys.regs.A;        // PHA/POP: count
+  const addrLo = sys.regs.Y;      // PPU addr lo
+  const addrHi = sys.regs.X;      // PPU addr hi
 
-  // 写背景 16 色
-  for (let i = 0; i < 16; i++) {
-    const raw = sys.mem[0x062A + i];
-    const brightness = sys.mem[0x4A];
-    const out = (raw & 0x30) + brightness;
-    sys.mem[0x062A + i] = out;
+  // 等 NMI busy 清空 ($9B29-$9B34)
+  // 在 TS 單線程環境中，$0629 bit6 不會被 NMI 設
+  // 故這裡直接做溢位檢查
+
+  const capped = count & 0x3F;
+  // $9B3A: ADC $0628; CMP #$3D
+  // 如果新條目 + 現有隊列 >= $3D 則等 NMI flush
+  // 簡化: 直接檢查隊列容量
+  const newSize = (sys.mem[0x0628] + capped) & 0xFF;
+  if (newSize >= 0x3D) {
+    // 隊列可能溢出，這裡不做等待 (TS 沒有真正的 NMI)
+    // 實際上游 layer 會透過 bank02_nmiHandler 每幀處理
   }
 
-  // 写精灵 16 色
-  for (let i = 0; i < 16; i++) {
-    const raw = sys.mem[0x063A + i];
-    const brightness = sys.mem[0x4B];
-    const out = (raw & 0x30) + brightness;
-    sys.mem[0x063A + i] = out;
+  // $9B42-$9B44: 設 $0629 busy
+  sys.mem[0x0629] = (count | 0x40) & 0xFF;
+
+  // $9B47-$9B57: 寫 3 字節頭
+  const qIdx = sys.mem[0x0628];
+  sys.mem[0x05EA + qIdx] = addrHi;     // 寫 addr hi
+  sys.mem[0x05E9 + qIdx] = addrLo;     // 寫 addr lo
+  sys.mem[0x05E8 + qIdx] = count & 0x3F; // 寫 entry type (=count, w/o busy bit)
+
+  // $9B5A-$9B5C: X += 3 → 回存
+  sys.regs.X = (qIdx + 3) & 0xFF;
+}
+
+// ═════════════════════════════════════════════════
+// $9AA2 — 隊列寫入 1 字節 (queue add byte)
+// ═════════════════════════════════════════════════
+//
+// 6502:
+//   $9AA2: TAX              ; X = A (亮度混合值)
+//   $9AA3: LDA $9EA2,X      ; 查亮度表
+//   $9AA6: STA $E6
+//   $9AA8: LDA $062A,Y      ; 原 palette byte
+//   $9AAB: AND #$0F         ; 取低 4 bit (色號)
+//   $9AAD: ORA $E6           ; 組合亮度 + 色號
+//   $9AAF: LDX $E7           ; 取隊列數據索引
+//   $9AB1: STA $05E8,X      ; 寫入隊列
+//   $9AB4: INC $E7           ; 索引 +1
+//   $9AB6: INY               ; 源索引 +1
+//   $9AB7: RTS
+//
+// 入参: A=亮度值 (用 $4A/$4B 調整後), Y=palette 源索引 ($062A+Y)
+// 透過 $E7 追蹤當前隊列數據寫入位置。
+function _queAddByte(sys: SystemState): void {
+  const brightness = sys.regs.A;              // $9AA2: TAX
+  const brightBase = PALETTE_BRIGHTNESS_TABLE[brightness] ?? 0; // $9AA3: LDA $9EA2,X
+  const rawPal = sys.mem[0x062A + sys.regs.Y]; // $9AA8: LDA $062A,Y
+  const color = rawPal & 0x0F;                // $9AAB: AND #$0F
+  const final = brightBase | color;           // $9AAD: ORA $E6
+
+  const qDataIdx = sys.mem[0xE7];             // $9AAF: LDX $E7
+  sys.mem[0x05E8 + qDataIdx] = final;         // $9AB1: STA $05E8,X
+
+  sys.mem[0xE7] = (qDataIdx + 1) & 0xFF;      // $9AB4: INC $E7
+  sys.regs.Y = (sys.regs.Y + 1) & 0xFF;       // $9AB6: INY
+}
+
+// ═════════════════════════════════════════════════
+// $9B5E — 隊列終結 (queue finalize)
+// ═════════════════════════════════════════════════
+//
+// 6502:
+//   $9B5E: LDA #$00         ; 終止符
+//   $9B60: STA $05E8,X      ; 寫 $00 到隊列
+//   $9B63: STX $0628        ; 設 $0628 = 隊列總長
+//   $9B66: LDA $0629
+//   $9B69: AND #$BF         ; 清 busy flag
+//   $9B6B: STA $0629
+//   $9B6E: RTS
+//
+// 入参: X = 當前隊列寫入位置 (數據區末尾)
+function _queFinalize(sys: SystemState): void {
+  sys.mem[0x05E8 + sys.regs.X] = 0x00;        // $9B60: STA $05E8,X
+  sys.mem[0x0628] = sys.regs.X;               // $9B63: STX $0628
+  sys.mem[0x0629] &= 0xBF;                    // $9B69: AND #$BF
+}
+
+// ═════════════════════════════════════════════════
+// $9A71 — 调色板输出 (palette flush)
+// ═════════════════════════════════════════════════
+//
+// 6502:
+//   $9A71: LDA #$20         ; count = 32 bytes
+//   $9A73: LDY #$00         ; addr_lo = $00
+//   $9A75: LDX #$3F         ; addr_hi = $3F
+//   $9A77: JSR $9B28        ; queue_add_entry → PPU addr $3F00, 32 bytes
+//
+//   $9A7A: STX $E7          ; $E7 = 队数据索引 (X = old_$0628 + 3)
+//   $9A7C: LDY #$00         ; Y = 0
+//   ; BG palette (16 bytes):
+//   $9A7E: LDA $062A,Y      ; palette byte
+//   $9A81: AND #$30         ; keep brightness bits (4-5)
+//   $9A83: CLC
+//   $9A84: ADC $4A          ; add bg brightness
+//   $9A86: JSR $9AA2        ; _queAddByte
+//   $9A89: CPY #$10
+//   $9A8B: BNE $9A7E
+//   ; Sprite palette (16 bytes):
+//   $9A8D: LDA $062A,Y      ; Y continues from $10
+//   $9A90: AND #$30
+//   $9A92: CLC
+//   $9A93: ADC $4B          ; add sprite brightness
+//   $9A95: JSR $9AA2
+//   $9A98: CPY #$20
+//   $9A9A: BNE $9A8D
+//
+//   $9A9C: LDX $E7          ; restore queue data index
+//   $9A9E: JSR $9B5E        ; _queFinalize
+//   $9AA1: RTS
+//
+// 注意: 将 $062A-$0649 (32 bytes) 结合 $4A/$4B 亮度,
+//       透过 $05E8 队列通知 NMI handler 写入 PPU $3F00。
+export function bank00_paletteFlush(sys: SystemState): void {
+  track('bank00_paletteFlush', { '004A': sys.mem[0x4A], '004B': sys.mem[0x4B], '0628': sys.mem[0x628], '0629': sys.mem[0x629] });
+  // $9A71-$9A77: 写队列头 → PPU addr $3F00, 32 bytes
+  sys.regs.A = 0x20;        // count = 32
+  sys.regs.Y = 0x00;        // addr_lo = $00
+  sys.regs.X = 0x3F;        // addr_hi = $3F → PPU $3F00
+  _queAddEntry(sys);
+  // X 已由 _queAddEntry 设为 old_$0628 + 3
+
+  // $9A7A: 保存队列数据索引到 $E7
+  sys.mem[0xE7] = sys.regs.X;
+
+  // $9A7C: Y = 0
+  sys.regs.Y = 0;
+
+  // $9A7E-$9A8B: BG palette loop (Y=0..15)
+  for (let y = 0; y < 16; y++) {
+    const raw = sys.mem[0x062A + y];      // $9A7E: LDA $062A,Y
+    const brightness = (raw & 0x30) + sys.mem[0x4A]; // $9A81-$9A84: AND #$30; ADC $4A
+    sys.regs.A = brightness;
+    sys.regs.Y = y;
+    _queAddByte(sys);
+    // Y 已由 _queAddByte +1
   }
 
-  sys.mem[0x4A] = Math.min(sys.mem[0x4A] + 1, 0x0F);
-  sys.mem[0x4B] = Math.min(sys.mem[0x4B] + 1, 0x0F);
+  // $9A8D-$9A9A: Sprite palette loop (Y=$10..$1F)
+  for (let y = 16; y < 32; y++) {
+    const raw = sys.mem[0x062A + y];      // $9A8D: LDA $062A,Y
+    const brightness = (raw & 0x30) + sys.mem[0x4B]; // $9A90-$9A93: AND #$30; ADC $4B
+    sys.regs.A = brightness;
+    sys.regs.Y = y;
+    _queAddByte(sys);
+    // Y 已由 _queAddByte +1
+  }
+
+  // $9A9C-$9A9E: 终结队列，设 $0628 通知 NMI
+  sys.regs.X = sys.mem[0xE7];
+  _queFinalize(sys);
+  exit('bank00_paletteFlush', { '0628': sys.mem[0x628], '0629': sys.mem[0x629], '05E8+0': sys.mem[0x5E8], '05E8+3': sys.mem[0x5EB], '05E8+34': sys.mem[0x60A], '053BE': sys.mem[0x5E8 + 35] });
 }
 
 /** $99D1: 调色板淡出 — 递增亮度使画面变亮 (从暗到亮) */
 export function bank00_paletteFadeIn(sys: SystemState): void {
+  track('bank00_paletteFadeIn', { '004A': sys.mem[0x4A], '004B': sys.mem[0x4B] });
   if (sys.mem[0x4A] < 0x0F) sys.mem[0x4A]++;
   if (sys.mem[0x4B] < 0x0F) sys.mem[0x4B]++;
+  exit('bank00_paletteFadeIn', { '004A': sys.mem[0x4A], '004B': sys.mem[0x4B] });
 }
 
 /** $99EC: 调色板淡入 — 递减亮度使画面变暗 (从亮到暗) */
 export function bank00_paletteFadeOut(sys: SystemState): void {
+  track('bank00_paletteFadeOut', { '004A': sys.mem[0x4A], '004B': sys.mem[0x4B] });
   if (sys.mem[0x4A] > 0) sys.mem[0x4A]--;
   if (sys.mem[0x4B] > 0) sys.mem[0x4B]--;
+  exit('bank00_paletteFadeOut', { '004A': sys.mem[0x4A], '004B': sys.mem[0x4B] });
 }
 
-/** $9A35: 最大亮度淡出 (全暗) */
+/** $9A35: 最大亮度淡出 (全暗) — 设 $4A/$4B=0x0F 并重新加载 ROM palette */
 export function bank00_paletteSetMax(sys: SystemState): void {
+  track('bank00_paletteSetMax');
   sys.mem[0x4A] = 0x0F;
   sys.mem[0x4B] = 0x0F;
+  // $9A35 也调用 $99AE 重新加载 palette ROM 数据
+  bank00_paletteLoadFromROM(sys, (s) => bankSwitch(s, 6));
+  exit('bank00_paletteSetMax');
 }
 
-/** $9A00: 初始化调色板 — 清空 $4A/$4B + OAM 缓冲 */
+/** $9A00: 初始化调色板 — 清空 $4A/$4B + OAM 缓冲，然后从 ROM 加载 palette */
 export function bank00_paletteInit(sys: SystemState): void {
+  track('bank00_paletteInit');
   sys.mem[0x48] = 0;
   sys.mem[0x49] = 0;
   sys.mem[0x4A] = 0;
@@ -2374,6 +2852,9 @@ export function bank00_paletteInit(sys: SystemState): void {
   for (let i = 0x054A; i < 0x05EA; i++) {
     sys.mem[i] = 0xFF;
   }
+  // $9A07: 加载 ROM palette 到 $062A-$0649
+  bank00_paletteLoadFromROM(sys, (s) => bankSwitch(s, 6));
+  exit('bank00_paletteInit');
 }
 
 // ═════════════════════════════════════════════════

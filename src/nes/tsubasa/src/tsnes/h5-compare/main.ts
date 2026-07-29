@@ -18,21 +18,12 @@ import { buildRomBuffer } from '../tsubasa-hex2asm/rom_header';
 // ── 翻译路径 ──
 import { createSystemState, writeMem } from '../game-engine/banks/system-state';
 import type { SystemState } from '../game-engine/banks/system-state';
-import { registerBankRom } from '../game-engine/banks/system-state';
+import { registerAllBanks } from '../game-engine/banks/system-state';
 import {
   translate_BANK31_RESET,
   tick_BANK31_mainLoop,
 } from '../game-engine/banks/bank-31';
-import {
-  initScene_$C64E,
-  ppuScreenInit_$CB35,
-  clearOam_$CB8B,
-  nmiInit_$C71A,
-} from '../game-engine/banks/bank-30';
-import { bank02_nmiHandler } from '../game-engine/banks/bank-02';
-import { getBank06Data } from '../game-engine/banks/bank-06';
-import { getBank12Data } from '../game-engine/banks/bank-12';
-import { getBank15Data } from '../game-engine/banks/bank-15';
+import { bank02_nmiHandler, bank02_ppuScrollUpdate } from '../game-engine/banks/bank-02';
 
 // ── 渲染 ──
 import { createRenderTarget, renderFrame, RenderTarget } from '../game-engine/render/canvas-renderer';
@@ -116,10 +107,9 @@ function init(): void {
   rt0 = createRenderTarget(canvas0);
   rt1 = createRenderTarget(canvas1);
 
-  // ── 注册翻译 bank ROM 数据 ──
-  registerBankRom(0x06, getBank06Data());
-  registerBankRom(0x0C, getBank12Data());
-  registerBankRom(0x0F, getBank15Data());
+  // ── 注册所有 32 个 PRG-ROM bank （MMC3 bank 切换必需） ──
+  registerAllBanks(PRG_ROM_BANKS);
+  console.log('[compare] 已注册全部 32 个 PRG-ROM bank');
 
   // ── 左路: CPU 模拟器 ──
   nes0 = new NES({ emulateSound: false });
@@ -132,12 +122,8 @@ function init(): void {
   ppu1 = nesForPpu.ppu;
   sys1 = createSystemState(ppu1, nesForPpu.papu);
 
-  // Bank 启动序列: RESET → 场景初始化 → PPU 初始化
+  // Bank 启动: RESET (内含 initScene + nmiInit)
   translate_BANK31_RESET(sys1);
-  initScene_$C64E(sys1, true);
-  ppuScreenInit_$CB35(sys1);
-  clearOam_$CB8B(sys1);
-  nmiInit_$C71A(sys1);
 
   logStatus('初始化完成 — 左:CPU模拟 右:Bank翻译 — 按 ▶ 运行');
 }
@@ -166,8 +152,9 @@ function tickBoth(): void {
   try {
     // Game logic tick
     tick_BANK31_mainLoop(sys1);
-    // NMI handler (PPU 寄存器写入: scroll, pattern, palette 等)
+    // NMI handler: PPU 数据写入 + 滚屏/CHR/手柄/帧 tick
     bank02_nmiHandler(sys1);
+    bank02_ppuScrollUpdate(sys1);
     // 推动 PPU 渲染完整一帧
     ppuStepFullFrame(ppu1);
     // 渲染
@@ -256,10 +243,6 @@ function resetAll(): void {
   ppu1 = nesForPpu.ppu;
   sys1 = createSystemState(ppu1, nesForPpu.papu);
   translate_BANK31_RESET(sys1);
-  initScene_$C64E(sys1, true);
-  ppuScreenInit_$CB35(sys1);
-  clearOam_$CB8B(sys1);
-  nmiInit_$C71A(sys1);
 
   const black = new Uint32Array(256 * 240);
   renderFrame(rt0, black);

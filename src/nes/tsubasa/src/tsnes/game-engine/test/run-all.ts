@@ -12,7 +12,7 @@
  *   8. 跨 bank 調用完整性
  */
 
-import { createSystemState, writeMem, readMem } from '../banks/system-state';
+import { createSystemState, writeMem, readMem, registerAllBanks } from '../banks/system-state';
 import type { SystemState } from '../banks/system-state';
 import { getBank06Data } from '../banks/bank-06';
 import { getBank15Data } from '../banks/bank-15';
@@ -21,6 +21,7 @@ import { bankSwitch, bankSwitch_Win6, bankSwitch_Win7, multiply16_$CD3C, divide1
 import { bank00_dispatchScene, bank00_execBytecode } from '../banks/bank-00';
 import { bank01_startGame } from '../banks/bank-01';
 import { bank02_nmiHandler, bank02_loadSceneData } from '../banks/bank-02';
+import { PRG_ROM_BANKS } from '../data/rom-data';
 
 // ═════════════════════════════════════════
 // 模擬 PPU/APU
@@ -88,6 +89,9 @@ function assert(cond: boolean, msg: string): void {
 console.log('══════════════════════════════════════');
 console.log('game-engine 全部 bank 整合測試');
 console.log('══════════════════════════════════════');
+
+// ── 注册所有 32 个 PRG-ROM bank ──
+registerAllBanks(PRG_ROM_BANKS);
 
 // ── 1. ROM 數據 ──
 cat('1. ROM 數據');

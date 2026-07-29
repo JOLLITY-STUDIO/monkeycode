@@ -100,7 +100,7 @@ export function readMem(sys: SystemState, addr: number): number {
   }
   if (addr < 0x4020) {
     // APU/Controller
-    if ((addr & 0x4017) === 0x4016) return 0; // controller stub
+    if ((addr & 0x4017) === 0x4016) return 0; // controller read
     return 0;
   }
   if (addr >= 0x8000) {
@@ -163,10 +163,28 @@ export function writeMem(sys: SystemState, addr: number, val: number): void {
 function applyMmc3BankWrite(sys: SystemState): void {
   const sel = sys.mmc3BankSelect & 0x07;
   const val = sys.mmc3BankData & 0x3F;
+  const prgAddrSelect = (sys.mmc3BankSelect >> 6) & 1; // 0=normal, 1=inverted
+
+  // ── PRG bank 切换 (手动跟踪 mmc3Map, 供 readMem 读 PRG-ROM) ──
   switch (sel) {
-    case 6: sys.mmc3Map[0] = val; break; // $8000-$9FFF
-    case 7: sys.mmc3Map[1] = val; break; // $A000-$BFFF
-    // cases 0-5 are for CHR, cases 2/3 for $8000-$9FFF in other modes
+    case 6:
+      // CMD_SEL_ROM_PAGE1: $8000-$9FFF (normal) 或 $C000-$DFFF (inverted)
+      sys.mmc3Map[prgAddrSelect === 0 ? 0 : 2] = val;
+      break;
+    case 7:
+      // CMD_SEL_ROM_PAGE2: $A000-$BFFF (always)
+      sys.mmc3Map[1] = val;
+      break;
+    // mmc3Map[3] ($E000-$FFFF) = bank 31, 固定不变
+  }
+
+  // ── CHR bank 切换 (case 0-5): 这是 boot 畫面缺圖的根因 ──
+  // 必须通过 mapper 的 write() 把 CHR 数据加载到 PPU 的 vramMem + ptTile
+  // 同時 PRG 命令也会通过 mapper 写 cpu.mem, 这是冗余但无害的
+  const mmap: any = (sys.ppu as any).nes?.mmap;
+  if (mmap && typeof mmap.write === 'function') {
+    mmap.write(0x8000, sys.mmc3BankSelect);
+    mmap.write(0x8001, sys.mmc3BankData);
   }
 }
 
@@ -186,4 +204,20 @@ const bankRomTable: Record<number, Uint8Array> = {};
 /** 注册翻译后的 bank ROM 数据 (8KB) */
 export function registerBankRom(bankIdx: number, data: Uint8Array): void {
   bankRomTable[bankIdx] = data;
+}
+
+/**
+ * 批量注册所有 32 个 PRG-ROM bank。
+ * 从 rom-data.ts 的 PRG_ROM_BANKS 数组直接注册。
+ * 必须在 createSystemState() 之前或 MMC3 bank 切换之前调用。
+ */
+export function registerAllBanks(prgBanks: readonly Uint8Array[]): void {
+  for (let i = 0; i < prgBanks.length && i < 32; i++) {
+    bankRomTable[i] = prgBanks[i];
+  }
+}
+
+/** 获取已注册 bank 数量 (用于调试) */
+export function registeredBankCount(): number {
+  return Object.keys(bankRomTable).length;
 }

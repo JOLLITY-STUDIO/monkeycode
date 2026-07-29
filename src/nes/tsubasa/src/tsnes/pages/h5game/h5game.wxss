@@ -8,9 +8,49 @@
   position: relative;
 }
 
-.game-canvas {
+/* ── 双画布 ── */
+.dual-canvas {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rpx;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.canvas-pair {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 0;
+  background: #000;
+}
+
+.canvas-label {
+  font-size: 16rpx;
+  color: #aaa;
+  padding: 4rpx 0 2rpx;
+  letter-spacing: 2rpx;
+  flex-shrink: 0;
   width: 100%;
+  text-align: center;
+}
+
+.label-cpu {
+  color: #f0a500;
+  background: rgba(240, 165, 0, 0.08);
+}
+
+.label-bank {
+  color: #0ff;
+  background: rgba(0, 255, 255, 0.08);
+}
+
+.game-canvas {
+  width: 100%;
+  flex: 1;
+  min-height: 0;
   background: #000;
   image-rendering: pixelated;
 }
@@ -52,25 +92,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12rpx 24rpx;
-  padding-bottom: calc(24rpx + env(safe-area-inset-bottom));
+  padding: 8rpx 24rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
   background: rgba(15, 15, 35, 0.95);
-  gap: 16rpx;
-  min-height: 240rpx;
+  gap: 12rpx;
+  min-height: 200rpx;
   flex-shrink: 0;
 }
 
 .dpad {
   position: relative;
-  width: 240rpx;
-  height: 240rpx;
+  width: 200rpx;
+  height: 200rpx;
   flex-shrink: 0;
 }
 
 .dpad-btn {
   position: absolute;
-  width: 80rpx;
-  height: 80rpx;
+  width: 66rpx;
+  height: 66rpx;
   background: rgba(255, 255, 255, 0.1);
   border: 2rpx solid rgba(255, 255, 255, 0.2);
   border-radius: 12rpx;

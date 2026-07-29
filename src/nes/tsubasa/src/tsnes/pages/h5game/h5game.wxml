@@ -1,10 +1,19 @@
 <view class="game-container">
-  <!-- 游戏画面 -->
-  <canvas type="2d" id="h5canvas" class="game-canvas" disable-scroll="true"></canvas>
+  <!-- 双画布对比 -->
+  <view class="dual-canvas">
+    <view class="canvas-pair">
+      <text class="canvas-label label-cpu">CPU 模拟器</text>
+      <canvas type="2d" id="h5canvas" class="game-canvas" disable-scroll="true"></canvas>
+    </view>
+    <view class="canvas-pair">
+      <text class="canvas-label label-bank">Bank 翻译</text>
+      <canvas type="2d" id="h5canvas2" class="game-canvas" disable-scroll="true"></canvas>
+    </view>
+  </view>
 
   <!-- 状态栏 -->
   <view class="status-bar">
-    <text class="status-tag">H5引擎</text>
+    <text class="status-tag">双引擎</text>
     <text class="status-text">{{status}}</text>
     <text class="fps-text">FPS: {{fps}}</text>
   </view>

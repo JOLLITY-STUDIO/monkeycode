@@ -80,4 +80,4 @@ export interface TSEngine {
 export type { NESOptions, ControllerId, ButtonKey };
 export { NES };
 export type { SystemState };
-export type { TSEngine };
+// TSEngine already exported above (line 74)
