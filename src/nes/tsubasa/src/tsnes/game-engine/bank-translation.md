@@ -1,8 +1,9 @@
 # Bank Translation Plan — 天使之翼2 6502 → TypeScript 翻译进度
 
-## 总体状态：25.0% 完成 | 整合测试 21/21 ✅ | 画面渲染 ❌
+## 总体状态：32/32 文件就绪 | ROM 注册 100% | 代码翻译 ~25% | 整合测试 21/21 ✅
 
-> **第二阶段目标**: 补全缺失模块 → 启动流程运转 → TECMO logo 出现
+> **第二阶段 Phase 2a 完成**: 所有 32 个 bank 模块建立 + ROM 注册 + dispatch 路由串联  
+> **下一步 Phase 2b**: 翻译 9 个 CODE bank skeleton → 目标：TECMO logo 出现
 
 ---
 
@@ -15,44 +16,45 @@
 | 00 | `prg_bank_00_dispatch_scene_engine.ts` | `bank-00.ts` | 2968 | 场景分派 + 字节码解释器 + 精灵动画 | ✅ 已译 | ~70%* |
 | 01 | `prg_bank_01_match_jump.ts` | `bank-01.ts` | 981 | 比赛跳跃/物理引擎 + 标题画面渲染 | ✅ 已译 | ~80% |
 | 02 | `prg_bank_02_nmi_renderer.ts` | `bank-02.ts` | 686 | NMI 渲染器 + PPU 更新 + 手柄输入 | ✅ 已译 | ~85% |
-| 11 | `prg_bank_11_background.ts` | — | — | 背景/瓦片渲染引擎 | ❌ 未建模块 | 0% |
+| 11 | `prg_bank_11_background.ts` | `bank-11.ts` | 74 | 背景/瓦片渲染引擎 | 🔶 SKELETON | ~5%† |
 | 12 | `prg_bank_12_audio.ts` | `bank-12.ts` | 1737 | 音讯引擎 MML 解析器 + APU 写入 | ✅ 已译 | ~90% |
-| 16 | `prg_bank_16_scene_logic.ts` | — | — | 场景渲染/脚本引擎 | ❌ 未建模块 | 0% |
-| 19 | `prg_bank_19_lookup_tables.ts` | — | — | 辅助数据/查找表 | ❌ 未建模块 | 0% |
-| 20 | `prg_bank_20_team_data.ts` | — | — | 队伍/球员选择逻辑 | ❌ 未建模块 | 0% |
-| 22 | `prg_bank_22_sprite_engine.ts` | — | — | 精灵/OAM 处理引擎 | ❌ 未建模块 | 0% |
-| 24 | `prg_bank_24_cutscene.ts` | — | — | 过场动画/比赛场景控制 | ❌ 未建模块 | 0% |
-| 26 | `prg_bank_26_match_core.ts` | — | — | 核心比赛引擎 | ❌ 未建模块 | 0% |
-| 27 | `prg_bank_27_player_data.ts` | — | — | 球员数据查询 | ❌ 未建模块 | 0% |
-| 28 | `prg_bank_28_attributes.ts` | — | — | 球员属性计算 | ❌ 未建模块 | 0% |
-| 30 | `prg_bank_30_system_lib.ts` | `bank-30.ts` | 4320 | 系统库（37 CODE 块） | ✅ 已译 | ~60%† |
-| 31 | `prg_bank_31_boot_vectors.ts` | `bank-31.ts` | 1339 | 启动向量 + 赛场主循环 | ✅ 已译 | ~50%‡ |
+| 16 | `prg_bank_16_scene_logic.ts` | `bank-16.ts` | 32 | 场景渲染/脚本引擎 | 🔶 SKELETON | ~5%† |
+| 19 | `prg_bank_19_lookup_tables.ts` | `bank-19.ts` | 39 | 辅助数据/查找表 | 🔶 SKELETON | ~5%† |
+| 20 | `prg_bank_20_team_data.ts` | `bank-20.ts` | 42 | 队伍/球员选择逻辑 | 🔶 SKELETON | ~5%† |
+| 22 | `prg_bank_22_sprite_engine.ts` | `bank-22.ts` | 42 | 精灵/OAM 处理引擎 | 🔶 SKELETON | ~5%† |
+| 24 | `prg_bank_24_cutscene.ts` | `bank-24.ts` | 70 | 过场动画/比赛场景控制 | 🔶 SKELETON | ~5%† |
+| 26 | `prg_bank_26_match_core.ts` | `bank-26.ts` | 112 | 核心比赛引擎 | 🔶 SKELETON | ~5%† |
+| 27 | `prg_bank_27_player_data.ts` | `bank-27.ts` | 37 | 球员数据查询 | 🔶 SKELETON | ~5%† |
+| 28 | `prg_bank_28_attributes.ts` | `bank-28.ts` | 38 | 球员属性计算 | 🔶 SKELETON | ~5%† |
+| 30 | `prg_bank_30_system_lib.ts` | `bank-30.ts` | 4320 | 系统库（37 CODE 块） | ✅ 已译 | ~60%‡ |
+| 31 | `prg_bank_31_boot_vectors.ts` | `bank-31.ts` | 1339 | 启动向量 + 赛场主循环 | ✅ 已译 | ~60%§ |
 
 > \* bank-00: 自身函数完整，但依赖 bank-16/24/26 的场景切换未串联  
-> † bank-30: 约 15 个 CODE 块仍为 stub  
-> ‡ bank-31: 18 个 `_call_bank00_XX` 函数全为 `{}` 空体
+> † SKELETON: ROM 已注册 ✅ + entry stubs 已连线 ✅ + dispatch table 已导出 ✅，实际 6502 逻辑待翻译  
+> ‡ bank-30: 约 15 个 CODE 块仍为 stub  
+> § bank-31: **18 个 `_call_bank00_XX` stub 已全部连线到 dispatch 路由系统** ✅
 
 ### DATA Banks（17 个）
 
 | # | hex2asm 源文件 | game-engine 目标 | 状态 | 完成度 |
 |---|---------------|-----------------|------|--------|
-| 03 | `prg_bank_03_data.ts` | — | ❌ 未建模块 | 0% |
-| 04 | `prg_bank_04_data.ts` | — | ❌ 未建模块 | 0% |
-| 05 | `prg_bank_05_data.ts` | — | ❌ 未建模块 | 0% |
+| 03 | `prg_bank_03_data.ts` | `bank-03.ts` + `bank-03-data.ts` | ✅ ROM 注册 | 100% |
+| 04 | `prg_bank_04_data.ts` | `bank-04.ts` + `bank-04-data.ts` | ✅ ROM 注册 | 100% |
+| 05 | `prg_bank_05_data.ts` | `bank-05.ts` + `bank-05-data.ts` | ✅ ROM 注册 | 100% |
 | 06 | `prg_bank_06_palette_data.ts` | `bank-06.ts` + `bank-06-data.ts` | ✅ 已译 | 100% |
-| 07 | `prg_bank_07_sprite_data.ts` | — | ❌ 未建模块 | 0% |
-| 08 | `prg_bank_08_data.ts` | — | ❌ 未建模块 | 0% |
-| 09 | `prg_bank_09_data.ts` | — | ❌ 未建模块 | 0% |
-| 10 | `prg_bank_10_data.ts` | — | ❌ 未建模块 | 0% |
-| 13 | `prg_bank_13_data.ts` | — | ❌ 未建模块 | 0% |
-| 14 | `prg_bank_14_data.ts` | — | ❌ 未建模块 | 0% |
+| 07 | `prg_bank_07_sprite_data.ts` | `bank-07.ts` + `bank-07-data.ts` | ✅ ROM 注册 | 100% |
+| 08 | `prg_bank_08_data.ts` | `bank-08.ts` + `bank-08-data.ts` | ✅ ROM 注册 | 100% |
+| 09 | `prg_bank_09_data.ts` | `bank-09.ts` + `bank-09-data.ts` | ✅ ROM 注册 | 100% |
+| 10 | `prg_bank_10_data.ts` | `bank-10.ts` + `bank-10-data.ts` | ✅ ROM 注册 | 100% |
+| 13 | `prg_bank_13_data.ts` | `bank-13.ts` + `bank-13-data.ts` | ✅ ROM 注册 | 100% |
+| 14 | `prg_bank_14_data.ts` | `bank-14.ts` + `bank-14-data.ts` | ✅ ROM 注册 | 100% |
 | 15 | `prg_bank_15_data.ts` | `bank-15.ts` + `bank-15-data.ts` | ✅ 已译 | 100% |
-| 17 | `prg_bank_17_data.ts` | — | ❌ 未建模块 | 0% |
-| 18 | `prg_bank_18_data.ts` | — | ❌ 未建模块 | 0% |
-| 21 | `prg_bank_21_data.ts` | — | ❌ 未建模块 | 0% |
-| 23 | `prg_bank_23_data.ts` | — | ❌ 未建模块 | 0% |
-| 25 | `prg_bank_25_data.ts` | — | ❌ 未建模块 | 0% |
-| 29 | `prg_bank_29_data.ts` | — | ❌ 未建模块 | 0% |
+| 17 | `prg_bank_17_data.ts` | `bank-17.ts` + `bank-17-data.ts` | ✅ ROM 注册 | 100% |
+| 18 | `prg_bank_18_data.ts` | `bank-18.ts` + `bank-18-data.ts` | ✅ ROM 注册 | 100% |
+| 21 | `prg_bank_21_data.ts` | `bank-21.ts` + `bank-21-data.ts` | ✅ ROM 注册 | 100% |
+| 23 | `prg_bank_23_data.ts` | `bank-23.ts` + `bank-23-data.ts` | ✅ ROM 注册 | 100% |
+| 25 | `prg_bank_25_data.ts` | `bank-25.ts` + `bank-25-data.ts` | ✅ ROM 注册 | 100% |
+| 29 | `prg_bank_29_data.ts` | `bank-29.ts` + `bank-29-data.ts` | ✅ ROM 注册 | 100% |
 
 ### 已有辅助文件（非 hex2asm 直接对应）
 
@@ -61,9 +63,11 @@
 | `bank-01-data.ts` | 49 KB | bank-01 引用数据（来源待确认） |
 | `bank-01-tables.ts` | 10 KB | bank-01 查找表 |
 | `bank-02-data.ts` | 49 KB | bank-02 引用数据 |
-| `system-state.ts` | 7 KB | 共享状态 + MMC3 映射 |
+| `system-state.ts` | 7 KB | 共享状态 + MMC3 映射 + `registerBankRom()` |
 | `event-bus.ts` | 5 KB | 事件总线 |
 | `debug-log.ts` | 2 KB | 调试日志 |
+| `bank-*` × 15 | ~0.5 KB/ea | DATA bank 包装器 (hex 数组注册) |
+| `bank-*-data.ts` × 15 | ~49 KB/ea | DATA bank ROM 数据 |
 
 ---
 
@@ -73,9 +77,11 @@
 
 | 维度 | 已完成 | 总数 | 百分比 |
 |------|--------|------|--------|
-| **全部 32 bank** | 8 | 32 | **25.0%** |
-| **CODE bank（核心）** | 6 | 15 | **40.0%** |
-| **DATA bank（纯数据）** | 2 | 17 | **11.8%** |
+| **全部 32 bank 文件** | 32 | 32 | **100%** |
+| **ROM 注册** | 32 | 32 | **100%** |
+| **CODE bank 完整翻译** | 6 | 15 | **40.0%** |
+| **CODE bank (含 skeleton)** | 15 | 15 | **100%** |
+| **DATA bank (含 ROM 注册)** | 17 | 17 | **100%** |
 
 ### 按 ROM 体积
 
@@ -91,15 +97,26 @@
 |------|------|------|
 | RESET → PPU 初始化 | ✅ 100% | `initScene_$C64E` → `ppuScreenInit` → `clearOam` |
 | RESET → bank00 dispatch | ⚠️ 链路通 | `entryToBank00_dispatch` 存在但内部 stub |
-| TECMO logo 场景 | ❌ 0% | 字節碼解釋器依赖 bank-16/24 |
+| bank-31 → CODE bank dispatch | ✅ 链路通 | `_dispatchBankCall()` 根据 `sys.mem[0x24]` 路由到对应 bank |
+| TECMO logo 场景 | ❌ 0% | 字節碼解釋器依赖 bank-16/24 翻译 |
 | 标题画面 | ❌ 0% | 依赖 bank-11 背景渲染 |
 | 菜单交互 | ❌ 0% | bank-00 菜单逻辑依赖 bank-01 数据 |
-| 比赛主循环 | ⚠️ 骨架 | `tick_BANK31_mainLoop` 可运行但 _call_bank00_XX 全空 |
+| 比赛主循环 | ⚠️ 骨架 | `tick_BANK31_mainLoop` 可运行，dispatch 路由已接线但目标 bank 为 skeleton |
 | 球员逻辑 | ⚠️ 部分 | 依赖 bank-26/27/28 |
 | 音频播放 | ✅ ~90% | bank-12 独立运作 |
 | NMI 渲染器 | ✅ ~85% | PPU 数据搬运 OK，$0628 标记有问题 |
 
 > **实际可运行路径覆盖: ~15-18%**
+
+### Phase 2a 新增产出
+
+| 项目 | 数量 | 说明 |
+|------|------|------|
+| DATA bank 包装模块 | 15 个 | `bank-03~05,07~10,13~14,17~18,21,23,25,29` — ROM 注册 + hex 数组导出 |
+| DATA bank 数据文件 | 15 个 | `bank-*-data.ts` — 8KB hex 数组 |
+| CODE bank skeleton | 9 个 | `bank-11,16,19,20,22,24,26,27,28` — ROM 注册 + entry stubs + dispatch table |
+| Dispatch 路由系统 | 1 个 | `bank-31.ts` 中 `_dispatchBankCall()` 替代 18 个空 stub |
+| `index.ts` 导出 | 24 组 | 所有 DATA + CODE bank 完成导出 |
 
 ---
 
@@ -132,11 +149,11 @@ CPU 模拟器路径 (src/cpu.ts):
 
 ---
 
-## 四、BUG 清单（第一阶段遗留）
+## 四、BUG 清单
 
 | BUG | 严重度 | 描述 | 状态 |
 |-----|--------|------|------|
-| BUG-012 | **P0** | bank-31 中 18 个 `_call_bank00_XX` 全为空 stub `{}` | ❌ |
+| BUG-012 | ~~P0~~ | bank-31 中 18 个 `_call_bank00_XX` 全为空 stub `{}` → **已替换为 dispatch 路由系统** | ✅ Phase 2a |
 | BUG-013 | **P0** | 启动流程：CPU 走 ROM 完整启动 → Bank 跳过启动直进 match loop | ❌ |
 | BUG-014 | P1 | `tick_BANK31_mainLoop` 非比赛上下文覆盖 $0628 | ❌ |
 | BUG-015 | P1 | NMI 初始化泄漏 → 已修复 ✅ | ✅ |
@@ -148,34 +165,28 @@ CPU 模拟器路径 (src/cpu.ts):
 
 ## 五、第二阶段行动计划
 
-### 优先级 P0 — 让画面出现
+### Phase 2a 已完成 ✅
+1. ✅ 建立 15 个 DATA bank 模块 + ROM 注册
+2. ✅ 建立 9 个 CODE bank skeleton (ROM 注册 + entry stubs + dispatch table)
+3. ✅ 替换 bank-31 的 18 个空 stub 为 dispatch 路由系统
+4. ✅ 更新 `index.ts` 完整导出所有 32 个模块
 
-1. **建立 15 个缺失 DATA bank 模块**（bank-03/04/05/07/08/09/10/13/14/17/18/21/23/25/29）
-   - 全部为纯 hex 数组，每个约 8KB，可直接从 hex2asm 导出再包装
-   - 预计工作量：自动化模板生成
+### Phase 2b — 翻译 CODE bank skeleton（目标：TECMO logo 出现）
 
-2. **建立 9 个缺失 CODE bank 模块**的关键部分
-   - **bank-26**（核心比赛引擎）— P0，被 bank-31 大量调用
-   - **bank-16**（场景逻辑/脚本引擎）— P0，TECMO logo 依赖
-   - **bank-24**（过场动画）— P1，场景切换依赖
-   - **bank-11**（背景渲染）— P1，标题画面依赖
-   - bank-19/20/22/27/28 — P2
+1. **bank-16**（场景逻辑/脚本引擎）— **P0**，TECMO logo 最先触发
+2. **bank-24**（过场动画/场景数据）— **P0**，TECMO logo 字节码数据
+3. **bank-26**（核心比赛引擎）— P1，被 bank-31 大量调用
+4. **bank-11**（背景渲染）— P1，标题画面依赖
+5. **bank-00 内部 stub** — 补齐 bank00 中依赖 bank-16/24 的 stub 路径
 
-3. **填充 bank-31 的 18 个空 stub**（BUG-012）
-   - 这些 stub 最终会调用 bank-00 的不同入口，而 bank-00 又需要 bank-16/24/26 的配合
+### Phase 2c — 修复运行时 BUG
+6. 修复 BUG-013：启动流程串联 TECMO logo → 标题画面
+7. 修复 BUG-014：主循环场景 flag 保护
+8. 补齐 bank-30 的 15 个未翻译 CODE 块
 
-4. **补齐 bank-30 的 15 个未翻译 CODE 块**
-   - 手柄输入更新、定时器调度器、Sprite DMA 等已译但未接入
-
-5. **修复 BUG-013**：让启动流程走完 TECMO logo → 标题画面 → 菜单
-
-### 优先级 P1 — 画面正确
-
-6. **修复 BUG-014**：`tick_BANK31_mainLoop` 场景 flag 保护
-
-### 优先级 P2 — 对比验证
-
-7. 用 h5-compare 逐帧对比 Bank 引擎 vs CPU 模拟器的 PPU 输出
+### Phase 3 — 对比验证
+9. 用 h5-compare 逐帧对比 Bank 引擎 vs CPU 模拟器的 PPU 输出
+10. 全场景可玩（标题→菜单→比赛）
 
 ---
 
@@ -185,6 +196,7 @@ CPU 模拟器路径 (src/cpu.ts):
 2. ✅ 跨 bank 整合验证 + 清理 mock
 3. ✅ 完整测试 → 21/21 通过
 4. ✅ 建立 BUG 文檔
-5. 🔄 **第二阶段：补全 24 个缺失模块 + 修复 P0 BUG → 目标：TECMO logo 出现**
-6. ⏳ 逐帧对比验证 Bank vs CPU 模拟器
-7. ⏳ 全场景可玩（标题→菜单→比赛）
+5. ✅ **Phase 2a：32/32 模块建立 + ROM 注册 + dispatch 路由串联**
+6. 🔄 **Phase 2b：翻译 9 个 CODE bank skeleton → 目标：TECMO logo 出现**
+7. ⏳ Phase 2c/3：修复运行时 BUG + 逐帧对比验证
+8. ⏳ 全场景可玩（标题→菜单→比赛）

@@ -57,6 +57,14 @@ import {
 
 import { bank00_dispatchScene, bank00_titleTick } from './bank-00';
 
+// ── CODE bank dispatch tables (for MMC3-switched bank calls) ──
+import { bank11_dispatch } from './bank-11';
+import { bank16_dispatch } from './bank-16';
+import { bank20_dispatch } from './bank-20';
+import { bank22_dispatch } from './bank-22';
+import { bank24_dispatch } from './bank-24';
+import { bank26_dispatch } from './bank-26';
+
 // ═════════════════════════════════════════════════
 // 标志位辅助
 // ═════════════════════════════════════════════════
@@ -186,7 +194,7 @@ export function tick_BANK31_mainLoop(sys: SystemState): void {
   // ── $E049-$E057: bankSwitch → $1A/$1B → JSR $801E ──
   // LDA $22; LDA #$1A; STA $24; LDA #$1B; STA $25; JSR $CE2D
   // 在 bank $1A/$1B 上下文中调用 bank00 $801E
-  _bankSwitchCall8000(sys, 0x1A, _call_bank00_1E);
+  _bankSwitchCall8000(sys, 0x1A, _bank00_funcs[0x1E]);
   // 注意: tail recursion 回到 $E04F 下一个入口
 
   // ── $E05A: JSR $CBB0 (bank30: pal/ppu 辅助) → 忽略，bank30 处理 ──
@@ -248,7 +256,7 @@ function _mainLoopEventLoop(sys: SystemState): void {
       // $E0BA: 检查 $062A bit 7
       if ((sys.mem[0x062A] & 0x80) === 0) {
         // $E0BF: bankSwitch → $1A/$1B → JSR $8000
-        _bankSwitchCall8000(sys, 0x1A, _call_bank00_00);
+        _bankSwitchCall8000(sys, 0x1A, _bank00_funcs[0x00]);
       }
       sys.regs.A = iter;
       sys.mem[0x0441] = sys.regs.A;
@@ -261,7 +269,7 @@ function _mainLoopEventLoop(sys: SystemState): void {
     _playerDistCheck(sys, iter);
 
     // ── $E10E: bankSwitch → $1A/$1B → JSR $8009 ──
-    _bankSwitchCall8000(sys, 0x1A, _call_bank00_09);
+    _bankSwitchCall8000(sys, 0x1A, _bank00_funcs[0x09]);
 
     iter++;
   }
@@ -316,7 +324,7 @@ export function translate_BANK31_PLAYER_LOGIC(sys: SystemState): void {
 
     if (zoneCheck === sys.mem[0x0638]) {
       // $E760: 球区域匹配 → JSR $800F (切 bank00)
-      _bankSwitchCall8000(sys, 0x1A, _call_bank00_0F);
+      _bankSwitchCall8000(sys, 0x1A, _bank00_funcs[0x0F]);
     }
   }
 }
@@ -360,34 +368,66 @@ function _getDirTable(sys: SystemState, idx: number): number {
 }
 
 // ═════════════════════════════════════════════════
-// 辅助: bank 切换 + bank00 调用 (内联常用模式)
+// 辅助: bank 切换 + 跨 bank 调用 (MMC3 dispatch)
 // ═════════════════════════════════════════════════
 
 /**
- * 通用: 保存上下文 → 切到指定 bank pair → 调用 bank00 → 恢复。
+ * 通用: 保存上下文 → 切到指定 bank pair → 调用目标 bank 函数 → 恢复。
  * 6502 模式: LDA $22; LDA #$1A; STA $24; LDA #1B; STA $25; JSR $CE2D; JSR $80XX
  */
 type Bank00Call = (sys: SystemState) => void;
 
+// ── Bank dispatch 路由表 ──
+// key: bank number (from sys.mem[0x24] after MMC3 switch)
+// value: dispatch table mapping offset → handler
+const _bankDispatchTables: Record<number, Record<number, (sys: SystemState) => void>> = {
+  0x0B: bank11_dispatch,   // bank 11: background/tile
+  0x10: bank16_dispatch,   // bank 16: scene logic
+  0x14: bank20_dispatch,   // bank 20: team/player
+  0x16: bank22_dispatch,   // bank 22: sprite/OAM
+  0x18: bank24_dispatch,   // bank 24: cutscene
+  0x1A: bank26_dispatch,   // bank 26: match core
+};
+
+/**
+ * 跨 bank 调用分发器:
+ *   读取当前 MMC3 映射的 bank 号 (sys.mem[0x24])，
+ *   从对应 bank 的 dispatch 表中查找 offset 对应的处理函数。
+ */
+function _dispatchBankCall(sys: SystemState, offset: number): void {
+  const bank = sys.mem[0x24];
+  const handlers = _bankDispatchTables[bank];
+  if (handlers) {
+    const fn = handlers[offset];
+    if (fn) {
+      fn(sys);
+      return;
+    }
+  }
+  console.warn(
+    `[bank31] No handler: bank=$${bank.toString(16)} offset=$${offset.toString(16)} — SKELETON`,
+  );
+}
+
 const _bank00_funcs: Record<number, Bank00Call> = {
-  0x00: _call_bank00_00,
-  0x03: _call_bank00_03,
-  0x06: _call_bank00_06,
-  0x09: _call_bank00_09,
-  0x0C: _call_bank00_0C,
-  0x0F: _call_bank00_0F,
-  0x12: _call_bank00_12,
-  0x15: _call_bank00_15,
-  0x18: _call_bank00_18,
-  0x1B: _call_bank00_1B,
-  0x1E: _call_bank00_1E,
-  0x21: _call_bank00_21,
-  0x24: _call_bank00_24,
-  0x27: _call_bank00_27,
-  0x30: _call_bank00_30,
-  0x33: _call_bank00_33,
-  0x39: _call_bank00_39,
-  0x3C: _call_bank00_3C,
+  0x00: (s) => _dispatchBankCall(s, 0x00),  // $8000: dispatch entry
+  0x03: (s) => _dispatchBankCall(s, 0x03),  // $8003: scene tick
+  0x06: (s) => _dispatchBankCall(s, 0x06),  // $8006: get state
+  0x09: (s) => _dispatchBankCall(s, 0x09),  // $8009: set state
+  0x0C: (s) => _dispatchBankCall(s, 0x0C),  // $800C: bytecode dispatch
+  0x0F: (s) => _dispatchBankCall(s, 0x0F),  // $800F: player render
+  0x12: (s) => _dispatchBankCall(s, 0x12),  // $8012: sprite render
+  0x15: (s) => _dispatchBankCall(s, 0x15),  // $8015: nametable
+  0x18: (s) => _dispatchBankCall(s, 0x18),  // $8018: PPU data
+  0x1B: (s) => _dispatchBankCall(s, 0x1B),  // $801B: PPU attr
+  0x1E: (s) => _dispatchBankCall(s, 0x1E),  // $801E: scene PPU
+  0x21: (s) => _dispatchBankCall(s, 0x21),  // $8021: scene init
+  0x24: (s) => _dispatchBankCall(s, 0x24),  // $8024: bytecode exec
+  0x27: (s) => _dispatchBankCall(s, 0x27),  // $8027: timer set
+  0x30: (s) => _dispatchBankCall(s, 0x30),  // $8030: input get
+  0x33: (s) => _dispatchBankCall(s, 0x33),  // $8033: data load
+  0x39: (s) => _dispatchBankCall(s, 0x39),  // $8039: scroll set
+  0x3C: (s) => _dispatchBankCall(s, 0x3C),  // $803C: music/audio
 };
 
 function _bankSwitchCall8000(
@@ -405,7 +445,7 @@ function _bankSwitchCall8000(
   sys.mem[0x25] = (bankLo + 1) & 0x3F;
   bankSwitch_apply_$CE2D(sys);
 
-  // 调用 bank00
+  // 调用目标 bank 的 dispatch
   fn(sys);
 
   // 恢复
@@ -422,32 +462,6 @@ function _ballZoneDetect(sys: SystemState): void {
     sys.mem[0x062A] |= 0x80;
   }
 }
-
-
-
-// ═════════════════════════════════════════════════
-// bank00 entry points (场景分派表 $8000-$803F)
-// 这些在实际游戏中被 JSR 到 bank00 的不同入口
-// ═════════════════════════════════════════════════
-
-function _call_bank00_00(sys: SystemState): void {} // $8000: dispatch entry
-function _call_bank00_03(sys: SystemState): void {} // $8003: scene tick
-function _call_bank00_06(sys: SystemState): void {} // $8006: get state
-function _call_bank00_09(sys: SystemState): void {} // $8009: set state
-function _call_bank00_0C(sys: SystemState): void {} // $800C: bytecode dispatch
-function _call_bank00_0F(sys: SystemState): void {} // $800F: player render
-function _call_bank00_12(sys: SystemState): void {} // $8012: sprite render
-function _call_bank00_15(sys: SystemState): void {} // $8015: nametable
-function _call_bank00_18(sys: SystemState): void {} // $8018: PPU data
-function _call_bank00_1B(sys: SystemState): void {} // $801B: PPU attr
-function _call_bank00_1E(sys: SystemState): void {} // $801E: scene PPU
-function _call_bank00_21(sys: SystemState): void {} // $8021: scene init
-function _call_bank00_24(sys: SystemState): void {} // $8024: bytecode exec
-function _call_bank00_27(sys: SystemState): void {} // $8027: timer set
-function _call_bank00_30(sys: SystemState): void {} // $8030: input get
-function _call_bank00_33(sys: SystemState): void {} // $8033: data load
-function _call_bank00_39(sys: SystemState): void {} // $8039: scroll set
-function _call_bank00_3C(sys: SystemState): void {} // $803C: music/audio
 
 // ═════════════════════════════════════════════════
 // CODE_RESET — $FFF0-$FFF7 (8 bytes)
@@ -814,13 +828,13 @@ export function translate_BANK31_BANK_HELPER(sys: SystemState): void {
   }
 
   // $EB9B: bankSwitch → $18/$19 → JSR $8003（场景状态）
-  _bankSwitchCall8000(sys, 0x18, _call_bank00_03);
+  _bankSwitchCall8000(sys, 0x18, _bank00_funcs[0x03]);
 
   // $EBAC: 再次 bankSwitch → $18/$19 → JSR $8006
-  _bankSwitchCall8000(sys, 0x18, _call_bank00_06);
+  _bankSwitchCall8000(sys, 0x18, _bank00_funcs[0x06]);
 
   // $EBBD: 第三次 → JSR $8009
-  _bankSwitchCall8000(sys, 0x18, _call_bank00_09);
+  _bankSwitchCall8000(sys, 0x18, _bank00_funcs[0x09]);
 
   // $EBC7: 检查 $052E (难度 tick)
   if (sys.mem[0x052E] !== 0) {
@@ -852,7 +866,7 @@ export function translate_BANK31_BANK_HELPER(sys: SystemState): void {
     sys.mem[0x0516] |= 0x01;
 
     // bankSwitch → $10/$11 → JSR $8000
-    _bankSwitchCall8000(sys, 0x10, _call_bank00_00);
+    _bankSwitchCall8000(sys, 0x10, _bank00_funcs[0x00]);
   }
 
   // $EC2F: 设置 $0519
@@ -860,7 +874,7 @@ export function translate_BANK31_BANK_HELPER(sys: SystemState): void {
   if ($0519 !== 0) {
     if ($0519 > 0x28) {
       // $EC5B: 大场景切换
-      _bankSwitchCall8000(sys, 0x10, _call_bank00_03);
+      _bankSwitchCall8000(sys, 0x10, _bank00_funcs[0x03]);
     }
     return;
   }
@@ -877,7 +891,7 @@ export function translate_BANK31_BANK_HELPER(sys: SystemState): void {
     if ((sys.mem[0x0516] & 0x50) === 0x50) {
       // $EC97: audio 处理
       // bankSwitch → $10/$11 → JSR $8003
-      _bankSwitchCall8000(sys, 0x10, _call_bank00_03);
+      _bankSwitchCall8000(sys, 0x10, _bank00_funcs[0x03]);
     } else {
       // $ECA3: 场景音效
       sys.mem[0x0516] ^= 0x50;
@@ -900,7 +914,7 @@ export function translate_BANK31_SPRITE_DMA_INIT(sys: SystemState): void {
   const savedCE = sys.mem[0x05CE];
 
   // bankSwitch → $0B/$0C → JSR $8006 (sprite data)
-  _bankSwitchCall8000(sys, 0x0B, _call_bank00_06);
+  _bankSwitchCall8000(sys, 0x0B, _bank00_funcs[0x06]);
 
   // $ECE5: 重置 $4A (OAM index)
   sys.regs.X = 0;
@@ -964,7 +978,7 @@ export function translate_BANK31_SPRITE_BANK_PHASE2(sys: SystemState): void {
       sys.mem[0x0516] |= 0x20;
 
       // bankSwitch → $10/$11 → JSR $8003
-      _bankSwitchCall8000(sys, 0x10, _call_bank00_03);
+      _bankSwitchCall8000(sys, 0x10, _bank00_funcs[0x03]);
     }
     return;
   }
@@ -1061,12 +1075,12 @@ export function translate_BANK31_SPRITE_SETUP(
       // $EF10: 带 bank 切换的 sprite 渲染
       if ((sys.mem[0x0615] & 0x40) === 0) {
         // bankSwitch → $14/$15 → JSR $8006
-        _bankSwitchCall8000(sys, 0x14, _call_bank00_06);
+        _bankSwitchCall8000(sys, 0x14, _bank00_funcs[0x06]);
       }
       // bankSwitch → $14/$15 → JSR $8003
-      _bankSwitchCall8000(sys, 0x14, _call_bank00_03);
+      _bankSwitchCall8000(sys, 0x14, _bank00_funcs[0x03]);
       // bankSwitch → $16/$17 → JSR $8000
-      _bankSwitchCall8000(sys, 0x16, _call_bank00_00);
+      _bankSwitchCall8000(sys, 0x16, _bank00_funcs[0x00]);
     }
     slot++;
   }
@@ -1074,7 +1088,7 @@ export function translate_BANK31_SPRITE_SETUP(
   // $EF62: 检查 $062D (PPU 完成标志)
   if ((sys.mem[0x062D] & 0x80) === 0) {
     // bankSwitch → $14/$15 → JSR $8009
-    _bankSwitchCall8000(sys, 0x14, _call_bank00_09);
+    _bankSwitchCall8000(sys, 0x14, _bank00_funcs[0x09]);
   }
 
   // $EF6D: OAM 填充 → $053F
@@ -1304,7 +1318,7 @@ export function init_BANK31_matchEntry(sys: SystemState): void {
   translate_BANK31_PLAYER_LOGIC(sys);
 
   // ── $E049: bankSwitch → $1A/$1B → JSR $801E ──
-  _bankSwitchCall8000(sys, 0x1A, _call_bank00_1E);
+  _bankSwitchCall8000(sys, 0x1A, _bank00_funcs[0x1E]);
 
   // ── $E055: LDA #$1B; JSR $CBB0 — 触发音效 ID $1B ──
   audiotrigger_$CBB0(sys, 0x1B);

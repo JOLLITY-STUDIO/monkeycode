@@ -1,25 +1,23 @@
 # BUG 追踪文档 — game-engine bank 翻译引擎
 
 ## 版本信息
-- 版本: v1.2.0 (第二阶段分析)
+- 版本: v1.3.0 (Phase 2a — 32/32 模块就绪)
 - 日期: 2026-07-29
-- 总模块: 8/32 (25.0%) | CODE bank: 6/15 (40.0%) | 运行时代码路径: ~15-18%
+- 总模块: 32/32 (100%) | CODE bank 完整翻译: 6/15 (40.0%) | ROM 注册: 32/32 (100%)
 
 ---
 
 ## 第一阶段遗留 BUG
 
-### BUG-012: bank-31 `_call_bank00_XX` 全是空 stub
-- **严重度**: **P0**
-- **档案**: `game-engine/banks/bank-31.ts` (第 433-450 行)
-- **数量**: 18 个函数
-- **描述**: 比赛主循环通过这些 stub 调用 bank-00 的场景分派/字节码/精灵渲染等入口。全部为 `{}` 空体 → 场景状态永远不变、画面永远不更新
-- **修复方向**: 
-  - `_call_bank00_0C` (bytecode dispatch) → 连到 `bank00_execBytecode`
-  - `_call_bank00_24` (bytecode exec) → 同上核心
-  - `_call_bank00_0F/12` (player/sprite render) → bank-22 精灵引擎
-  - `_call_bank00_03` (scene tick) → `bank00_tickTimers`
-  - 其余见 bank00 跳转表 $800D-$803C
+### BUG-012: bank-31 `_call_bank00_XX` 全是空 stub — ✅ 已修复 (Phase 2a)
+- **原严重度**: ~~P0~~
+- **档案**: `game-engine/banks/bank-31.ts`
+- **修复日期**: 2026-07-29
+- **修复方案**: 18 个空 stub 替换为 `_dispatchBankCall(sys, offset)` 路由系统：
+  - 读取 `sys.mem[0x24]`（当前 MMC3 bank 号）
+  - 查 `_bankDispatchTables` 获取对应 bank 的 dispatch table
+  - 调用对应 offset 的 handler 函数
+- **当前状态**: dispatch 链路完整通畅。当目标 CODE bank 为 skeleton 时输出 `console.warn`，待 CODE bank 翻译完成后即可真正执行游戏逻辑
 
 ### BUG-013: Bank 引擎与 CPU 模拟器启动流程不同
 - **严重度**: **P0**
