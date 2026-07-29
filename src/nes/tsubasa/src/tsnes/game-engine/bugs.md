@@ -1,90 +1,75 @@
-# BUG 追蹤文檔 — game-engine bank 翻譯引擎
+# BUG 追踪文档 — game-engine bank 翻译引擎
 
-## 版本資訊
-- 版本: v1.1.1 (驗證更新)
+## 版本信息
+- 版本: v1.2.0 (第二阶段分析)
 - 日期: 2026-07-29
-- 狀態: 核心基礎設施 ✅ 已驗證；啟動序列 ❌ 待實現
+- 总模块: 8/32 (25.0%) | CODE bank: 6/15 (40.0%) | 运行时代码路径: ~15-18%
 
 ---
 
-## 雙引擎渲染對比驗證結果 (2026-07-29)
-
-**測試腳本**: `h5-compare/compare-frames.ts` (npx tsx 自動化)
-
-| 幀範圍 | 結果 | 說明 |
-|--------|------|------|
-| 幀 0-7 | ✅ 完全匹配 (0/61440 差異) | PPU 硬體初始化 + 清屏渲染 |
-| 幀 8+ | ❌ 87.5% 差異 (53760/61440) | CPU 執行 TECMO logo 場景，Bank 引擎在 match loop |
-
-**根因分析**:
-- 幀 0-7：兩邊引擎初始化流程等價 → `ppuScreenInit_$CB35` 清除 nametable → PPU 渲染空白幀
-- 幀 8：CPU 模擬器執行 TECMO logo 字節碼腳本 → NMI handler 寫入 nametable 數據 ($0628: 255→35→57→39)
-- Bank 引擎 `$0628` 恆為 0 → `bank02_nmiHandler()` 直接跳過渲染
-- Bank 引擎 `tick_BANK31_mainLoop()` 代表**比賽主循環**，而非啟動流程（TECMO logo → 標題 → 菜單）
-
-**結論**:
-- ✅ **核心基礎設施完全正確**：MMC3 映射、PPU 硬體對接、ROM bank 註冊、記憶體模型
-- ❌ **啟動序列尚未在 Bank 引擎中實現**：bank-00 場景分派、字節碼解釋器未連接到主循環
-
----
-
-## 待修復問題
+## 第一阶段遗留 BUG
 
 ### BUG-012: bank-31 `_call_bank00_XX` 全是空 stub
-- **嚴重度**: **P0**
-- **檔案**: `game-engine/banks/bank-31.ts` (第 413-431 行)
-- **描述**: 18 個函數全為 `{}`，這些是比賽主循環調用 bank-26 的分派入口
+- **严重度**: **P0**
+- **档案**: `game-engine/banks/bank-31.ts` (第 433-450 行)
+- **数量**: 18 个函数
+- **描述**: 比赛主循环通过这些 stub 调用 bank-00 的场景分派/字节码/精灵渲染等入口。全部为 `{}` 空体 → 场景状态永远不变、画面永远不更新
+- **修复方向**: 
+  - `_call_bank00_0C` (bytecode dispatch) → 连到 `bank00_execBytecode`
+  - `_call_bank00_24` (bytecode exec) → 同上核心
+  - `_call_bank00_0F/12` (player/sprite render) → bank-22 精灵引擎
+  - `_call_bank00_03` (scene tick) → `bank00_tickTimers`
+  - 其余见 bank00 跳转表 $800D-$803C
 
-### BUG-013: Bank 引擎與 CPU 模擬器啟動流程不同
-- **嚴重度**: **P0**
-- **檔案**: `h5-compare/main.ts`
-- **描述**: CPU 走完整 ROM 啟動 → Bank 跳過啟動直進 match loop
-- **方案**:
-  - A: 從 CPU snapshot post-boot 狀態 → 注入 Bank 引擎
-  - B: 實現完整 bank-00 場景狀態機 + 字節碼引擎
+### BUG-013: Bank 引擎与 CPU 模拟器启动流程不同
+- **严重度**: **P0**
+- **描述**: CPU 路径走：RESET → initScene → TECMO logo 场景 → 标题画面 → 菜单 → 比赛。Bank 路径在 initScene 后直接跳到 bank-31 主循环，跳过了整个启动序列
+- **根因**: 
+  - `entryToBank00_dispatch` 调了 `bank00_dispatchScene`，但：
+    1. 场景状态变量（$0027 等）未初始化
+    2. bank-16（场景逻辑）缺失
+    3. 字节码数据 bank-24 缺失
+- **方案**: 详见 `bank-translation.md` 第二阶段计划
 
-### BUG-014 (新): `tick_BANK31_mainLoop` 執行非比賽上下文時會覆蓋 $0628
-- **嚴重度**: P1
-- **檔案**: `game-engine/banks/bank-31.ts`
-- **描述**: `tick_BANK31_mainLoop` 假設處於比賽狀態，會清除場景 flag
+### BUG-014: `tick_BANK31_mainLoop` 在非比赛上下文覆写 $0628
+- **严重度**: P1
+- **档案**: `game-engine/banks/bank-31.ts`
+- **描述**: 主循环假设处于比赛状态，清除场景 flag $0628。当场景状态机位于标题画面时，$0628=0 导致 `bank02_nmiHandler` 跳过渲染
 
-### BUG-015: `nmiInit_$C71A` 洩漏到 `main.ts`
-- **嚴重度**: P1
-- **檔案**: `h5-compare/main.ts`, `game-engine/core/boot.ts`
-- **描述**: NMI 初始化是遊戲引擎內部邏輯，main.ts 不該直接調用。`boot.ts` 完全沒調，兩入口不一致
-- **修復**: `translate_BANK31_RESET` 內部已調用 `nmiInit_$C71A`；main.ts 不再單獨調用 ✅ 2026-07-29
-
-### BUG-016: `bank02_ppuScrollUpdate` 未在每幀調用
-- **嚴重度**: **P0**
-- **檔案**: `h5-compare/main.ts`
-- **描述**: CPU NMI handler (bank30 `$C76E`) 同時做 PPU 數據傳輸 + 滾屏 + CHR 切換 + 手柄輪詢 + 幀 tick。Bank 路徑把這些拆成了兩個函數 (`bank02_nmiHandler` + `bank02_ppuScrollUpdate`)，但 main.ts 只調了前者
-- **影響**: 滾屏位置不更新、CHR bank 不切、手柄輸入不同步、幀計數器不累積 → **渲染畫面偏移/錯亂**
-- **修復**: main.ts 每幀已加入 `bank02_ppuScrollUpdate()` ✅ 2026-07-29
-
-### BUG-017: `initScene` → `$CEFE` → bank00 dispatch 斷鏈
-- **嚴重度**: **P0**
-- **檔案**: `game-engine/banks/bank-30.ts`, `game-engine/banks/bank-31.ts`
-- **描述**: 6502 RESET 鏈: `$FFF0 → $C503 → initScene_$C64E → JMP $CEFE → bank00 場景分派`。翻譯路徑 `initScene_$C64E` 直接 return，沒有進入 bank00 dispatch 初始化初始場景狀態
-- **影響**: bank00 場景分派負責初始化 TECMO logo、標題畫面等場景狀態。缺少這一步 → 遊戲直接從比賽主循環開始
-- **修復**: `translate_BANK31_RESET` 新增 `entryToBank00_dispatch(sys, bank00_dispatchScene)` 串接整個 dispatch 鏈 ✅ 2026-07-29
-- **注意**: dispatch 鏈中多數子函數 (titleBoot、ppuClear、bytecodeWait、checkPpuInit 等) 仍為 stub；鏈路正確但實際渲染邏輯待補全
-
-### BUG-018: NMI handler 兩路數據源不一致
-- **嚴重度**: ~~P0~~ P2 (架構觀察)
-- **檔案**: `game-engine/banks/bank-02.ts` vs `game-engine/banks/bank-30.ts`
-- **描述**: CPU NMI handler (bank30 `$C76E`) 從 `$0498` 隊列讀 PPU 數據、從 `$4A/$4B` 讀滾屏位置。Bank NMI handler (bank02) 從 `$05E8` 隊列讀數據、從 `$7A/$44` 讀滾屏
-- **澄清 2026-07-29**: 兩路擁有各自獨立的 SystemState，每路內部一致：CPU 遊戲邏輯寫 `$0498`/`$4A-$4B` → CPU NMI 讀取；Bank 遊戲邏輯寫 `$05E8`/`$7A-$44` → Bank NMI 讀取。不是 bug，是兩個獨立的渲染管線使用各自的記憶體區域。對比測試中的差異來自 **遊戲邏輯翻譯不完整**，而非 NMI handler 讀錯地址
+### BUG-017: `initScene` → `$CEFE` → bank00 dispatch 链路 stub
+- **严重度**: **P0**
+- **档案**: `game-engine/banks/bank-30.ts`
+- **状态**: 调用链已串联 ✅，但 `bank00_dispatchScene` 内部：
+  - 读取 $0027 子状态 → 部分状态处理为 stub
+  - 字节码解释器中「讀取 scene 數據」步骤依赖 bank-16/24 → stub
+- **影响**: dispatch 链路正确但实际渲染逻辑待补全
 
 ---
 
-## 已修復
+## 已修复
 
-| BUG | 狀態 | 修復 |
-|-----|------|------|
-| BUG-007 | ✅ ROM bank 全註冊 | system-state.ts → `registerAllBanks()` |
-| BUG-006 | ✅ PPU 對接OK | h5-compare 兩路均用真實 PPU |
-| BUG-015 | ✅ nmInit 收回引擎 | bank-31: `translate_BANK31_RESET` → `nmiInit_$C71A` |
-| BUG-016 | ✅ ppuScrollUpdate | main.ts 每幀加入 `bank02_ppuScrollUpdate()` |
-| BUG-017 | ✅ initScene→dispatch 串接 | bank-31: `entryToBank00_dispatch(sys, bank00_dispatchScene)` |
-| — | ✅ RESET 補全 initScene | bank-31: `translate_BANK31_RESET` → `initScene_$C64E` |
-| — | ✅ main.ts 清理遊戲邏輯 | 移除 `ppuScreenInit`/`clearOam`/`initScene` 重複調用 |
+| BUG | 修复 |
+|-----|------|
+| BUG-006 | PPU 对接 OK，h5-compare 两路均用真实 PPU |
+| BUG-007 | ROM bank 全注册：`registerAllBanks()` |
+| BUG-015 | NMI 初始化收回引擎：`translate_BANK31_RESET` → `nmiInit_$C71A` |
+| BUG-016 | ppuScrollUpdate 调用：main.ts 每帧加入 `bank02_ppuScrollUpdate()` |
+| — | RESET 补全：`translate_BANK31_RESET` → `initScene_$C64E` |
+| — | main.ts 清理重复调用：移除 `ppuScreenInit`/`clearOam`/`initScene` |
+| — | tsconfig: 加 `DOM` lib；`TSEngine` 重复导出修复；`miniprogram.d.ts` |
+
+---
+
+## 架构澄清
+
+### BUG-018: NMI 两路数据源不同 — 非 BUG
+- **澄清**: CPU 路径和 Bank 路径各拥有独立的 SystemState，各自内部一致：
+  - CPU 路径：写 `$0498`/`$4A-$4B` → CPU NMI 读
+  - Bank 路径：写 `$05E8`/`$7A-$44` → Bank NMI 读
+- **结论**: 两个独立渲染管线，非数据源不一致。对比测试的差异来自游戏逻辑翻译不完整
+
+### 内存架构：cpu.mem vs sys.mem
+- 两路径均为 `new Uint8Array(0x10000)`，64KB 一致 ✅
+- CPU 路径: ROM 数据通过 `copyArrayElements` 复制到 `cpu.mem[$8000-$FFFF]`
+- Bank 路径: ROM 数据在 `bankRomTable` 中独立存储，`readMem()` 按需读取
+- sys.mem[$8000-$FFFF] 在 Bank 路径中未使用（设计如此，非浪费）
