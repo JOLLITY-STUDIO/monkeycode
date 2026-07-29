@@ -97,12 +97,10 @@ export function getSpriteData(nes: NES): SpriteViewerData {
     const bgPri = ppu.bgPriority[i] === 1;
 
     if (is8x16) {
-      // 8×16 精灵 (参照 FCEUX): PPU 用 bit 0 选 pattern table, bits 7-1 是表内 tile 编号
-      // 与 renderSpritesPartially 中 topTileNum / top 计算一致
-      const tileInTable = sprTile >> 1;           // bits 7-1: 表内 tile 编号 (0~127)
-      const tableOffset = (sprTile & 1) << 8;     // bit 0: 0=$0000, 1=$1000
-      const upperTile = tileInTable + tableOffset;        // 上半
-      const lowerTile = (tileInTable + 1) + tableOffset;  // 下半
+      // 8×16 精灵: bit 0 选 pattern table ($0000/$1000), bits 7-1 是 pair 编号
+      // 实际上半 tile = pair×2, 下半 tile = pair×2+1（与 PPU renderSpritesPartially 一致）
+      const upperTile = (sprTile & 0xfe) + ((sprTile & 1) << 8);  // 上半: pair*2 + table
+      const lowerTile = upperTile + 1;                              // 下半: pair*2+1
 
       const img = new Uint32Array(8 * 16);
 

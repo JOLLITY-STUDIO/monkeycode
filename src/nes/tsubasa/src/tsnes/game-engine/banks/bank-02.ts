@@ -28,6 +28,12 @@ import {
 } from './system-state';
 import { track, exit } from './debug-log';
 import { PRG_BANK_02 } from './bank-02-data';
+import {
+  bank00_waitFrame,
+  bank00_sceneTransition,
+  bank00_paletteSetMax,
+  bank00_paletteFadeOut,
+} from './bank-00';
 
 // ═════════════════════════════════════════════════
 // 标志位辅助
@@ -603,32 +609,235 @@ export function bank02_sceneSwitchHelper(sys: SystemState): void {
  * $A20F (bank02): 场景数据加载
  *
  * $8484-$84A4: 根据 $ED 参数通过跳转表分发到不同场景加载子程序
+ *
+ * 跳转表 ($A491): 10 个场景加载器
+ *   [0] $A4C1 — 开场过渡动画
+ *   [1] $A559 — 场景切换辅助(位移向量) — 已实现为 bank02_sceneSwitchHelper
+ *   [2] $A57B — PPU 滚动更新 → 返回 2
+ *   [3-9] — NOP (RTS 或 LDA #$02/RTS)
  */
 export function bank02_loadSceneData(sys: SystemState): void {
   track('bank02_loadSceneData', { '00ED': sys.mem[0xED] });
-  // $8484: LDA $ED; ASL A → index * 2
-  const idx = (sys.mem[0xED] & 0xFF) << 1;
-  // Jump table at $A491:
-  // $A4C1, $A559, $A57B, $A581, $A5A2, $A5A8, $A5B0, $A5B8, $A5BF, $A5CD
-  const jumpTableOffsets = [
-    0xA4C1, 0xA559, 0xA57B, 0xA581,
-    0xA5A2, 0xA5A8, 0xA5B0, 0xA5B8,
-    0xA5BF, 0xA5CD,
-  ];
+  // $8484: LDA $ED; ASL A → index * 2 (但 jumpTable 用 byte offset)
+  const idx = sys.mem[0xED] & 0xFF;
 
-  const slot = idx >= jumpTableOffsets.length ? jumpTableOffsets.length - 1 : idx;
-  const destAddr = jumpTableOffsets[slot];
-
-  // Dispatch to the appropriate scene loader
-  _dispatchSceneLoader(sys, destAddr);
+  switch (idx) {
+    case 0:
+      _sceneLoader0_openingTransition(sys);
+      break;
+    case 1:
+      // $A559: 场景切换辅助 — 已实现
+      bank02_sceneSwitchHelper(sys);
+      break;
+    case 2:
+      // $A57B: JSR $9B91 (PPU 滚动更新); LDA #$02; RTS
+      _sceneLoader2_ppuScrollUpdate(sys);
+      break;
+    default:
+      // idx 3-9: 全部是 NOP (RTS 或 LDA #$02; RTS)
+      sys.regs.A = 0x02;
+      break;
+  }
 }
 
-function _dispatchSceneLoader(sys: SystemState, destAddr: number): void {
-  // In 6502, this is a JMP through the jump table (RTS trick).
-  // Each scene loader sets up PPU data and returns with LDA #$02 / RTS.
-  // For now, store the destination and let the caller handle it.
-  sys.mem[0x4D] = destAddr & 0xFF;
-  sys.mem[0x4E] = (destAddr >> 8) & 0xFF;
+// ═════════════════════════════════════════════════
+// Scene Loader 0: 开场过渡动画 ($A4C1-$A559)
+// ═════════════════════════════════════════════════
+
+/**
+ * $A4C1: 开场过渡动画 — 精灵动画 + 滚动效果 + 淡入淡出
+ *
+ * 6502 流程:
+ *   1. 调色板初始化 (JSR $9A0D)
+ *   2. 48 帧精灵动画 (每帧 Y+1)
+ *   3. MMC3 bank 设置 + 场景过渡 (JSR $8AF7, sceneId=$17)
+ *   4. 滚动动画 ($44 从 104 递减到 <3)
+ *   5. 启用精灵 → 等待 ~5 秒 → 淡出 → PPU 重置
+ *   6. 属性表填充 ($23C0 ← $02 × 32)
+ *   返回 A = 2
+ */
+function _sceneLoader0_openingTransition(sys: SystemState): void {
+  track('bank02_sceneLoader0');
+
+  // ── $A4C1: JSR $9A0D — 调色板初始化（清除 $4A/$4B，加载 ROM 调色板）──
+  sys.mem[0x4A] = 0;
+  sys.mem[0x4B] = 0;
+  // JSR $9A0D 还会加载 bank-06 ROM 调色板到 $062A-$0649
+  // palette 初始化在 bank00 ppuInit 路径中已处理，此处在调用 bank00_sceneTransition 时也会触发
+
+  // ── $A4C4: JSR $9FA8 (A=$10) — 延迟 16 帧 ──
+  for (let f = 0; f < 16; f++) {
+    bank00_waitFrame(sys);
+  }
+
+  // ── $A4C9: 48 帧 sprite Y+1 动画循环 ──
+  // LDY #$30 (48)
+  for (let y = 0; y < 48; y++) {
+    // $A4CB: JSR $9FA8 (A=$01) — delay 1 frame
+    bank00_waitFrame(sys);
+
+    // $A4D2: JSR $890C (A=$01) — sprite Y += 1
+    // 遍历 $0468-$0567 (每 4 字节一个 sprite, Y 坐标 + 1)
+    for (let i = 0x0468; i <= 0x0567; i += 4) {
+      sys.mem[i] = (sys.mem[i] + 1) & 0xFF;
+    }
+  }
+
+  // ── $A4D8: 清除 $5B, $7B ──
+  sys.mem[0x5B] = 0;
+  sys.mem[0x7B] = 0;
+
+  // ── $A4DE: JSR $8AF7 (sceneId=$17) — MMC3 场景过渡 ──
+  bank00_sceneTransition(sys, 0x17, (_sys: SystemState) => {
+    // bank-07 切换回调 — MMC3 在翻译引擎中由 system-state 管理
+    // 此处标记 sceneTransition 已处理 bank switch
+  });
+
+  // ── $A4E3: 设置 scroll Y = 104 ──
+  sys.mem[0x44] = 0x68; // 104
+
+  // ── $A4E7: JSR $8920 (A=$03) — nametable 更新 ──
+  _bytecodeRestore(sys);
+
+  // ── $A4EC: 保存 $8E/$8F → $90/$91 ──
+  sys.mem[0x90] = sys.mem[0x8E];
+  sys.mem[0x91] = sys.mem[0x8F];
+
+  // ── $A4F4: delay 4 frames ──
+  for (let f = 0; f < 4; f++) {
+    bank00_waitFrame(sys);
+  }
+
+  // ── $A4F9: JSR $9A35 — 最大亮度 + 加载 ROM palette ──
+  bank00_paletteSetMax(sys);
+
+  // ── $A4FC: JSR $88FB — 精灵属性翻转 (XOR $20) ──
+  for (let i = 0x046A; i <= 0x0569; i += 4) {
+    sys.mem[i] ^= 0x20;
+  }
+
+  // ── $A4FF: 滚动动画循环 ──
+  // delay 1 frame, INC $79, DEC $7C twice, $44 -= 2, loop while $44 >= 3
+  while (sys.mem[0x44] >= 3) {
+    bank00_waitFrame(sys);
+    sys.mem[0x79] = (sys.mem[0x79] + 1) & 0xFF;
+    sys.mem[0x7C] = (sys.mem[0x7C] - 1) & 0xFF;
+    sys.mem[0x7C] = (sys.mem[0x7C] - 1) & 0xFF;
+    sys.mem[0x44] = (sys.mem[0x44] - 2) & 0xFF;
+  }
+
+  // ── $A515: JSR $8920 (A=$00) — nametable 更新 ──
+  _bytecodeRestore(sys);
+
+  // ── $A51A: 启用精灵 ($1B |= $01) ──
+  sys.mem[0x1B] |= 0x01;
+
+  // ── $A520: delay 240 + 60 = 300 frames (~5 sec) ──
+  for (let f = 0; f < 0xF0; f++) {
+    bank00_waitFrame(sys);
+  }
+  for (let f = 0; f < 0x3C; f++) {
+    bank00_waitFrame(sys);
+  }
+
+  // ── $A52A: 禁用精灵 ($1B &= $FE) ──
+  sys.mem[0x1B] &= 0xFE;
+
+  // ── $A530: 清除 scroll ──
+  sys.mem[0x90] = 0;
+  sys.mem[0x91] = 2;
+
+  // ── $A538: JSR $99F0 — 淡出 ──
+  bank00_paletteFadeOut(sys);
+
+  // ── $A53B: JSR $9B7F — OAM 数据清除 ──
+  for (let i = 0x0468; i <= 0x0567; i++) {
+    sys.mem[i] = 0xF8;
+  }
+  for (let i = 0x0200; i <= 0x02FF; i++) {
+    sys.mem[i] = 0xF8;
+  }
+  sys.mem[0x0568] = 0;
+  sys.mem[0x0588] = 0;
+  sys.mem[0x05A8] = 0;
+  sys.mem[0x05C8] = 0;
+
+  // ── $A53E: JSR $98A0 — PPU nametable 填充 ──
+  // 禁用 NMI + 渲染，清 2KB nametable，恢复
+  sys.mem[0x20] &= 0x7F;
+  writeMem(sys, 0x2000, sys.mem[0x20]);
+  sys.mem[0x21] &= 0xE7;
+  writeMem(sys, 0x2001, sys.mem[0x21]);
+  writeMem(sys, 0x2006, 0x20);
+  writeMem(sys, 0x2006, 0x00);
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 256; x++) {
+      writeMem(sys, 0x2007, 0x00);
+    }
+  }
+  sys.mem[0x21] |= 0x18;
+  writeMem(sys, 0x2001, sys.mem[0x21]);
+  sys.mem[0x20] |= 0x80;
+  writeMem(sys, 0x2000, sys.mem[0x20]);
+
+  // ── $A541-$A54F: 属性表填充 (PPU addr $23C0, 填 32 字节) ──
+  // $E6/$E7 = $23C0
+  writeMem(sys, 0x2006, 0x23);
+  writeMem(sys, 0x2006, 0xC0);
+  // $854B-$854F: LDY #$02; LDX #$20; LDA #$55; JSR $98EA
+  // $98EA: 将 Y 值写入 $2007 X 次 = 写 $02 32 次到属性表
+  for (let i = 0; i < 0x20; i++) {
+    writeMem(sys, 0x2007, 0x02);
+  }
+
+  // ── $A552: JSR $8920 (A=$01) ──
+  _bytecodeRestore(sys);
+
+  // ── $A557: LDA #$02 — 返回值 = 2 ──
+  sys.regs.A = 0x02;
+}
+
+// ═════════════════════════════════════════════════
+// Scene Loader 2: PPU 滚动更新 ($A57B-$A581)
+// ═════════════════════════════════════════════════
+
+/**
+ * $A57B: JSR $9B91 — PPU 滚动/属性更新
+ *
+ * $9B91 在 bank-00 中属于调色板引擎辅助路径，处理 PPU 滚动坐标写入。
+ * 此处简化为调用 ppuScrollUpdate 然后返回 2。
+ */
+function _sceneLoader2_ppuScrollUpdate(sys: SystemState): void {
+  track('bank02_sceneLoader2');
+  // JSR $9B91 — PPU scroll/属性更新
+  // 在翻译引擎中，NMI handler 已通过 $7A/$44 处理滚动
+  bank02_ppuScrollUpdate(sys);
+  sys.regs.A = 0x02;
+}
+
+// ═════════════════════════════════════════════════
+// 内部辅助 (复用 bank-00 private helpers 逻辑)
+// ═════════════════════════════════════════════════
+
+/**
+ * $8920: 字节码恢复 — 重置字节码解释器状态
+ *
+ * 6502 原始逻辑 (bank-00 private):
+ *   - 重置脚本指针 ($4D/$4E) = 0
+ *   - 重置 nametable 写入状态 ($55, $4F-$54)
+ *   - 清除字节码等待 ($E9)
+ */
+function _bytecodeRestore(sys: SystemState): void {
+  sys.mem[0x4D] = 0;
+  sys.mem[0x4E] = 0;
+  sys.mem[0x55] = 0x08;
+  sys.mem[0x4F] = 0x49;
+  sys.mem[0x50] = 0x22;
+  sys.mem[0x51] = 0x49;
+  sys.mem[0x52] = 0x22;
+  sys.mem[0x53] = 0x49;
+  sys.mem[0x54] = 0x49 & 0x1F;
+  sys.mem[0xE9] = 0;
 }
 
 // ═════════════════════════════════════════════════

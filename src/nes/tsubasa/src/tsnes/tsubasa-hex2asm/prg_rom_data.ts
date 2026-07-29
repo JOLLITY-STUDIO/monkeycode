@@ -94,3 +94,39 @@ export function readPrgRom(
   const bank8k = map8k[windowBase] ?? 0;
   return banks[bank8k]?.[offset] ?? 0;
 }
+
+/** MMC3 PRG bank index → 源文件名 (用于调试交叉引用) */
+export const PRG_BANK_FILE_NAMES: Record<number, string> = {
+  0:  "prg_bank_00_dispatch_scene_engine.ts",
+  1:  "prg_bank_01_match_jump.ts",
+  2:  "prg_bank_02_nmi_renderer.ts",
+  3:  "prg_bank_03_data.ts",
+  4:  "prg_bank_04_data.ts",
+  5:  "prg_bank_05_data.ts",
+  6:  "prg_bank_06_palette_data.ts",
+  7:  "prg_bank_07_sprite_data.ts",
+  8:  "prg_bank_08_data.ts",
+  9:  "prg_bank_09_data.ts",
+  10: "prg_bank_10_data.ts",
+  11: "prg_bank_11_background.ts",
+  12: "prg_bank_12_audio.ts",
+  13: "prg_bank_13_data.ts",
+  14: "prg_bank_14_data.ts",
+  15: "prg_bank_15_data.ts",
+  16: "prg_bank_16_scene_logic.ts",
+  17: "prg_bank_17_data.ts",
+  18: "prg_bank_18_data.ts",
+  19: "prg_bank_19_lookup_tables.ts",
+  20: "prg_bank_20_team_data.ts",
+  21: "prg_bank_21_data.ts",
+  22: "prg_bank_22_sprite_engine.ts",
+  23: "prg_bank_23_data.ts",
+  24: "prg_bank_24_cutscene.ts",
+  25: "prg_bank_25_data.ts",
+  26: "prg_bank_26_match_core.ts",
+  27: "prg_bank_27_player_data.ts",
+  28: "prg_bank_28_attributes.ts",
+  29: "prg_bank_29_data.ts",
+  30: "prg_bank_30_system_lib.ts",
+  31: "prg_bank_31_boot_vectors.ts",
+};

@@ -95,6 +95,7 @@ class PPU {
     this.attrib = new Uint8Array(32);
     this.buffer = new Uint32Array(256 * 240);
     this.bgbuffer = new Uint32Array(256 * 240);
+    this.chrScanlineBanks = new Array(240);
     this.pixrendered = new Uint32Array(256 * 240);
 
     this.validTileData = null;
@@ -171,8 +172,8 @@ class PPU {
     }
 
     this.palTable = new PaletteTable();
-    this.palTable.loadNTSCPalette();
-    //this.palTable.loadDefaultPalette();
+    //this.palTable.loadNTSCPalette();
+    this.palTable.loadDefaultPalette();
 
     this.updateControlReg1(0);
     this.updateControlReg2(0);
@@ -1366,6 +1367,14 @@ class PPU {
       // Let the mapper swap CHR banks for background rendering.
       // MMC5 uses separate CHR bank sets for sprites vs backgrounds.
       this.nes.mmap.onBgRender();
+
+      // 記錄當前 scanline 的 CHR bank 配置，供 NameTable Viewer 使用
+      if (bgbuffer && scan >= 0 && scan < 240) {
+        let chrMap = this.nes.mmap.getChrBankMap();
+        if (chrMap) {
+          this.chrScanlineBanks[scan] = new Uint8Array(chrMap);
+        }
+      }
 
       // Simulate unused sprite slot dummy fetches from the previous scanline.
       // On real hardware, the PPU fetches patterns for 8 sprites per scanline

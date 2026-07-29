@@ -25,6 +25,32 @@ export interface PatternTableResult {
 }
 
 /**
+ * CHR bank 边界线颜色 (每个 1KB slot 的 64-tile 边界)
+ * slot 0-7 → 6 种颜色循环
+ */
+const BANK_BORDER_COLORS = [
+  0xff_ff4040, // slot0/4: 红
+  0xff_40ff40, // slot1/5: 绿
+  0xff_4040ff, // slot2/6: 蓝
+  0xff_ffcc00, // slot3/7: 金
+];
+
+/** 在 128×128 的 pattern table 图上画 1KB bank 分隔线 (每 8 tiles = 64px 画一条) */
+function drawBankBorders(buf: Uint32Array, tableIdx: number): void {
+  // 每个 table 有 4 个 1KB slot (16×16 tiles / 4 = 每 4 行 tiles = 32px)
+  // slot 边界在 tile row 4, 8, 12 → pixel Y 32, 64, 96
+  for (let slot = 1; slot < 4; slot++) {
+    const y = slot * 32;
+    const color = BANK_BORDER_COLORS[((tableIdx * 4 + slot) - 1) % BANK_BORDER_COLORS.length];
+    // 画一条 1px 高的水平线
+    for (let x = 0; x < 128; x++) {
+      buf[y * 128 + x] = color;
+    }
+  }
+  // 垂直方向: 每个 table 就是一个 block，不画竖线在中间
+}
+
+/**
  * 渲染单个图案表
  * 参照 FCEUX ppuPatternView_t::paintEvent():
  * - 16×16 tiles 排列
@@ -76,6 +102,9 @@ export function renderPatternTable(
     }
   }
 
+  // ── 画 CHR 1KB bank 边界线 ──
+  drawBankBorders(buf, tableIdx);
+
   return { data: buf, width: 128, height: 128 };
 }
 
@@ -96,4 +125,97 @@ export function renderBothPatternTables(
     bgTable: (nes.ppu.f_bgPatternTable ? 1 : 0) as (0 | 1),
     spTable: (nes.ppu.f_spPatternTable ? 1 : 0) as (0 | 1),
   };
+}
+
+/**
+ * 生成 PT 数据文本：
+ * - 两个 Pattern Table (16×16 tiles) 的 CHR 内容状态 + CHR bank 映射
+ * - 格式参照 generateSPTDataText，额外加上每 1KB slot 对应的 CHR bank index
+ */
+export function generatePTDataText(nes: NES): string {
+  const ppu = (nes as any).ppu;
+  if (!ppu) return '';
+
+  // 从 mapper 获取当前 CHR bank 映射
+  const mapper = (nes as any).mapper;
+  const chrBanks: number[] | null = mapper && mapper.chrBanks
+    ? Array.from(mapper.chrBanks)
+    : null;
+
+  const lines: string[] = [];
+  const COL_HEADER = 'Row ';
+
+  const spTable = ppu.f_spPatternTable ? 1 : 0;
+  const spAddr = spTable === 0 ? '$0000' : '$1000';
+  const bgAddr = ppu.regS === 0 ? '$0000' : '$1000';
+
+  lines.push(`══════════════════════════════════════════════════════════════`);
+  lines.push(`Pattern Tables  (BG PT=${bgAddr}  SP PT=${spAddr})`);
+  if (chrBanks) {
+    lines.push(`CHR 1KB bank mapping:`);
+    lines.push(`  Table0 ($0000): B0=#${String(chrBanks[0]).padStart(2)}  B1=#${String(chrBanks[1]).padStart(2)}  B2=#${String(chrBanks[2]).padStart(2)}  B3=#${String(chrBanks[3]).padStart(2)}`);
+    lines.push(`  Table1 ($1000): B4=#${String(chrBanks[4]).padStart(2)}  B5=#${String(chrBanks[5]).padStart(2)}  B6=#${String(chrBanks[6]).padStart(2)}  B7=#${String(chrBanks[7]).padStart(2)}`);
+  } else {
+    lines.push(`CHR banks: (no mapper info available)`);
+  }
+  lines.push(`图例: █=有内容  ░=稀疏  ·=全透明  !=无CHR  边界色: 红/绿/蓝/金=4个1KB slot分界`);
+  lines.push(`══════════════════════════════════════════════════════════════`);
+  lines.push('');
+
+  const BANK_BORDER_LABELS_DESK = ['▲ B0', '▲ B1', '▲ B2'];   // table 0 slot boundaries
+  const BANK_BORDER_LABELS_TBL1 = ['▲ B4', '▲ B5', '▲ B6'];   // table 1 slot boundaries
+
+  for (let tableIdx = 0; tableIdx < 2; tableIdx++) {
+    const addr = tableIdx === 0 ? '$0000' : '$1000';
+    const role = tableIdx === spTable ? 'SP' : 'BG';
+    const borderLabels = tableIdx === 0 ? BANK_BORDER_LABELS_DESK : BANK_BORDER_LABELS_TBL1;
+    // slot label hints
+    const labels: string[] = [];
+    for (let ty = 0; ty <= 16; ty++) {
+      if (ty === 4) labels.push(borderLabels[0]);
+      else if (ty === 8) labels.push(borderLabels[1]);
+      else if (ty === 12) labels.push(borderLabels[2]);
+      else if (ty === 0 || ty === 16) labels.push('─'.repeat(51));
+      else labels.push('');
+    }
+
+    lines.push(`── Table ${tableIdx} (${addr}, ${role})  slots=${tableIdx*4}~${tableIdx*4+3} ──`);
+    let header = COL_HEADER;
+    for (let tx = 0; tx < 16; tx++) {
+      header += tx.toString(16).toUpperCase().padStart(3, ' ');
+    }
+    lines.push(header);
+
+    for (let ty = 0; ty < 16; ty++) {
+      // Draw bank boundary label if applicable
+      if (labels[ty]) lines.push(`     ${labels[ty]}`);
+
+      const row: string[] = [];
+      for (let tx = 0; tx < 16; tx++) {
+        const tileIdx = tableIdx * 256 + ty * 16 + tx;
+        const ptTile = ppu.ptTile[tileIdx];
+        const localIdx = ty * 16 + tx;
+        const hex = localIdx.toString(16).toUpperCase().padStart(2, '0');
+
+        let chrStatus: string;
+        if (!ptTile || !ptTile.pix) {
+          chrStatus = '!';
+        } else {
+          let nonZero = 0;
+          for (let i = 0; i < 64; i++) {
+            if (ptTile.pix[i] !== 0) nonZero++;
+          }
+          if (nonZero === 0) chrStatus = '·';
+          else if (nonZero < 32) chrStatus = '\u2591';
+          else chrStatus = '\u2588';
+        }
+        row.push(hex + chrStatus);
+      }
+      lines.push(ty.toString().padStart(3, ' ') + ' ' + row.join(''));
+    }
+    lines.push('');
+    lines.push('');
+  }
+
+  return lines.join('\n');
 }

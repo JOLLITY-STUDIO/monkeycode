@@ -30,60 +30,128 @@ export interface NameTableAllFrames {
 /** 滚动指示线颜色 (FCEUX 风格: 青绿色虚线) */
 const SCROLL_LINE_COLOR = 0xff_00ff_ff;
 
+/** 缺失 CHR tile 标记色 (品红棋盘) */
+const MISSING_TILE_COLOR1 = 0xff_ff00ff; // 品红
+const MISSING_TILE_COLOR2 = 0xff_000000; // 黑
+
 /**
  * 渲染单个 NameTable
- * 参照 FCEUX NameTableViewer::calcPixelLocations() + 绘制逻辑
  *
- * FCEUX 思路:
- * - 遍历 32×30 tiles
- * - 对每个 tile: 读取 tile index → 从 pattern table 获取像素 → 用 attribute table 上色
- * - 像素 0 = 透明 (用背景色)
+ * 策略:
+ * 1. 优先从 PPU 已渲染好的背景帧 (bgbuffer) 取该 tile 在当前帧实际被画出的像素。
+ *    这能正确处理 MMC3/动态 CHR bank 切换：同一帧不同 scanline 可能用不同 bank。
+ * 2. 若该 tile 当前帧不在可视区域内，用 PPU 逐 scanline 录制的 CHR bank 快照，
+ *    从 ROM vromTile 查找对应 scanline 的正确 tile 数据。
+ * 3. 两者都不通 → 品红棋盘标记。
  */
 export function renderNameTable(
   nes: NES,
   ntIndex: number,
+  scrollX: number,
+  scrollY: number,
 ): NameTableFrame {
   const ppu = nes.ppu;
   const nt = ppu.nameTable[ntIndex];
   const w = 32, h = 30;
   const buf = new Uint32Array(256 * 240);
 
-  // 图案表选择 (参照 FCEUX — 检查 regi2000 的 BG 图案表位)
-  const bgTableBase = ppu.f_bgPatternTable ? 256 : 0;
+  // 与 PPU renderBgScanline 保持一致: regS 决定 BG pattern table 基址
+  const bgTableBase = ppu.regS === 0 ? 0 : 256;
   const backdropColor = ppu.imgPalette[0];
   const pal = ppu.imgPalette;
 
+  // 当前帧背景像素。若 bgbuffer 还没生成，则整屏 fallback。
+  const bgBuf = ppu.bgbuffer;
+  // 逐 scanline 录制的 CHR bank 快照 (MMC3 等动态 mapper)
+  const scanBanks = ppu.chrScanlineBanks;
+  // ROM 预解码的 tile 数据: vromTile[bank4k][tileIndex]
+  const vromTile: any = nes.rom && nes.rom.vromTile;
+
+  /**
+   * 根據 PPU slot 和 local tile index，從 ROM vromTile 取 tile 數據
+   * @param slot 0-7: PPU 1KB slot ($0000-$1C00)
+   * @param localIdx tile index within 1KB slot (0-63)
+   * @param scanlineY NT 內部的 scanline 位移 (0-239)，用於取 CHR bank 快照
+   */
+  const fetchFromBank = (slot: number, localIdx: number, scanlineY: number): any => {
+    if (!vromTile || !scanBanks) return null;
+    const bankMap = scanBanks[scanlineY];
+    if (!bankMap) return null;
+    const bank1k = bankMap[slot];
+    if (bank1k == null) return null;
+    const bank4k = (bank1k / 4) | 0;
+    const offset = (bank1k % 4) * 64 + localIdx;
+    return vromTile[bank4k] ? vromTile[bank4k][offset] : null;
+  };
+
   for (let ty = 0; ty < h; ty++) {
     for (let tx = 0; tx < w; tx++) {
-      const tileIdx = nt.tile[ty * w + tx];
-      const attrVal = nt.attrib[ty * w + tx]; // 0/4/8/12: 调色板象限偏移
-
-      // 图案表 tile (考虑 BG pattern table 选择)
-      const ptTile = ppu.ptTile[bgTableBase + tileIdx] ?? ppu.ptTile[tileIdx];
-
-      // 基准像素坐标
       const baseX = tx * 8;
       const baseY = ty * 8;
+      const tileIdx = nt.tile[ty * w + tx];
+      const attrVal = nt.attrib[ty * w + tx]; // 0/4/8/12
 
-      if (ptTile && ptTile.pix) {
-        const pix = ptTile.pix;
+      // ── 尝试从 bgbuffer 取当前帧实际渲染的像素 ──
+      if (bgBuf) {
+        // 该 tile 在 4-screen 全空间中的像素坐标
+        const worldX = (ntIndex % 2) * 256 + baseX;
+        const worldY = Math.floor(ntIndex / 2) * 240 + baseY;
+
+        // 滚动画面的可视区域 (screen-space)
+        const screenX = worldX - scrollX;
+        const screenY = worldY - scrollY;
+
+        // 若整 8x8 tile 都在当前帧可视范围内，优先从 bgbuffer 复制
+        if (
+          screenX >= 0 && screenX + 8 <= 256 &&
+          screenY >= 0 && screenY + 8 <= 240
+        ) {
+          // bgbuffer 不會每幀清空：透明像素會保留上一幀殘影。
+          // 所以複製後再用 ptTile 把透明像素強制設為背景色。
+          const ptSlot = bgTableBase + tileIdx;
+          const ptData = ppu.ptTile[ptSlot];
+          const pix = ptData && ptData.pix ? ptData.pix : null;
+
+          for (let py = 0; py < 8; py++) {
+            const srcRow = (screenY + py) * 256;
+            const dstRow = (baseY + py) * 256;
+            for (let px = 0; px < 8; px++) {
+              if (pix && pix[py * 8 + px] === 0) {
+                buf[dstRow + baseX + px] = backdropColor;
+              } else {
+                buf[dstRow + baseX + px] = bgBuf[srcRow + screenX + px];
+              }
+            }
+          }
+          continue;
+        }
+      }
+
+      // ── Fallback: 用逐 scanline 录制的 CHR bank 快照重建 ──
+      const slot = bgTableBase === 0 ? (tileIdx >> 6) : (4 + (tileIdx >> 6));
+      const localIdx = tileIdx & 63;
+      const ptData = fetchFromBank(slot, localIdx, baseY)
+        // 若沒有 bank 快照，fallback 到當前 ptTile
+        || ppu.ptTile[bgTableBase + tileIdx];
+
+      if (ptData && ptData.pix) {
+        const pix = ptData.pix;
         for (let py = 0; py < 8; py++) {
           for (let px = 0; px < 8; px++) {
             const colIdx = pix[py * 8 + px];
             if (colIdx === 0) {
-              // 透明像素 — 背景色 (FCEUX 也是用 backdrop)
               buf[(baseY + py) * 256 + (baseX + px)] = backdropColor;
             } else {
-              // attrVal 本身就是调色板位置偏移 (0/4/8/12)
               buf[(baseY + py) * 256 + (baseX + px)] = pal[colIdx + attrVal] ?? backdropColor;
             }
           }
         }
       } else {
-        // 没有 tile 数据 — 填充背景色
+        // ptTile 无数据 — 品红棋盘标记
         for (let py = 0; py < 8; py++) {
           for (let px = 0; px < 8; px++) {
-            buf[(baseY + py) * 256 + (baseX + px)] = backdropColor;
+            const isMagenta = ((py >> 1) + (px >> 1)) & 1;
+            buf[(baseY + py) * 256 + (baseX + px)] = isMagenta ? MISSING_TILE_COLOR1 : MISSING_TILE_COLOR2;
           }
         }
       }
@@ -99,9 +167,9 @@ export function renderNameTable(
 export function renderAllNameTables(nes: NES): NameTableAllFrames {
   const ppu = nes.ppu;
 
-  // 滚动位置 (参照 FCEUX: 从 cntV/cntH 计算)
-  const scrollX = ((ppu.cntH & 0x1f) << 3) | (ppu.regFH & 7);
-  const scrollY = ((ppu.cntV & 0x1f) << 3) | (ppu.regFV & 7);
+  // 滚动位置: 用 regHT/regVT + fine X/Y，再补上起始 nametable 偏移 (regH/regV)
+  const scrollX = (ppu.regH ? 256 : 0) + (((ppu.regHT & 0x1f) << 3) | (ppu.regFH & 7));
+  const scrollY = (ppu.regV ? 240 : 0) + (((ppu.regVT & 0x1f) << 3) | (ppu.regFV & 7));
 
   // 画滚动线 (FCEUX 用虚线标记)
   const drawScrollLine = (frame: NameTableFrame, sx: number, sy: number) => {
@@ -120,10 +188,10 @@ export function renderAllNameTables(nes: NES): NameTableAllFrames {
   };
 
   const ntFrames: [NameTableFrame, NameTableFrame, NameTableFrame, NameTableFrame] = [
-    renderNameTable(nes, 0),
-    renderNameTable(nes, 1),
-    renderNameTable(nes, 2),
-    renderNameTable(nes, 3),
+    renderNameTable(nes, 0, scrollX, scrollY),
+    renderNameTable(nes, 1, scrollX, scrollY),
+    renderNameTable(nes, 2, scrollX, scrollY),
+    renderNameTable(nes, 3, scrollX, scrollY),
   ];
 
   // 在正确的 nametable 上画滚动指示线

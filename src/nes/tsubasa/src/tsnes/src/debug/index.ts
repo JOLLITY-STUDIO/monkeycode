@@ -28,7 +28,7 @@ export type { AsmEntry } from './disasm';
 export { renderNameTable, renderAllNameTables } from './nametable-viewer';
 export type { NameTableFrame, NameTableAllFrames } from './nametable-viewer';
 
-export { renderPatternTable, renderBothPatternTables } from './pattern-table-viewer';
+export { renderPatternTable, renderBothPatternTables, generatePTDataText } from './pattern-table-viewer';
 export type { PatternTableFrame, PatternTableResult } from './pattern-table-viewer';
 
 export { getSpriteData } from './sprite-viewer';

@@ -21,6 +21,15 @@ class Mapper4 extends Mapper0 {
   irqEnable: number;
   prgAddressChanged: boolean;
 
+  /** 8 PPU 1KB slot → CHR 1KB bank ID */
+  chrBanks: Uint8Array;
+  /** bank 的索引對應 PPU 地址:
+   *  [0]=$0000 [1]=$0400 [2]=$0800 [3]=$0C00
+   *  [4]=$1000 [5]=$1400 [6]=$1800 [7]=$1C00 */
+  static PPU_ADDR_TO_SLOT: number[] = [0,1,2,3,4,5,6,7];
+  /** 当前 PRG bank 映射: key=窗口基地址($8000/$A000/$C000/$E000), value=8KB bank index */
+  prgBankMap: Record<number, number>;
+
   constructor(nes: any) {
     super(nes);
     this.command = 0;
@@ -31,6 +40,8 @@ class Mapper4 extends Mapper0 {
     this.irqLatchValue = 0;
     this.irqEnable = 0;
     this.prgAddressChanged = false;
+    this.chrBanks = new Uint8Array(8);
+    this.prgBankMap = { 0x8000: 0, 0xA000: 1, 0xC000: 30, 0xE000: 31 };
   }
 
   write(address: number, value: number): void {
@@ -89,9 +100,13 @@ class Mapper4 extends Mapper0 {
     switch (cmd) {
       case Mapper4.CMD_SEL_2_1K_VROM_0000:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[0] = arg;
+          this.chrBanks[1] = arg + 1;
           this.load1kVromBank(arg, 0x0000);
           this.load1kVromBank(arg + 1, 0x0400);
         } else {
+          this.chrBanks[4] = arg;
+          this.chrBanks[5] = arg + 1;
           this.load1kVromBank(arg, 0x1000);
           this.load1kVromBank(arg + 1, 0x1400);
         }
@@ -99,9 +114,13 @@ class Mapper4 extends Mapper0 {
 
       case Mapper4.CMD_SEL_2_1K_VROM_0800:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[2] = arg;
+          this.chrBanks[3] = arg + 1;
           this.load1kVromBank(arg, 0x0800);
           this.load1kVromBank(arg + 1, 0x0c00);
         } else {
+          this.chrBanks[6] = arg;
+          this.chrBanks[7] = arg + 1;
           this.load1kVromBank(arg, 0x1800);
           this.load1kVromBank(arg + 1, 0x1c00);
         }
@@ -109,61 +128,78 @@ class Mapper4 extends Mapper0 {
 
       case Mapper4.CMD_SEL_1K_VROM_1000:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[4] = arg;
           this.load1kVromBank(arg, 0x1000);
         } else {
+          this.chrBanks[0] = arg;
           this.load1kVromBank(arg, 0x0000);
         }
         break;
 
       case Mapper4.CMD_SEL_1K_VROM_1400:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[5] = arg;
           this.load1kVromBank(arg, 0x1400);
         } else {
+          this.chrBanks[1] = arg;
           this.load1kVromBank(arg, 0x0400);
         }
         break;
 
       case Mapper4.CMD_SEL_1K_VROM_1800:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[6] = arg;
           this.load1kVromBank(arg, 0x1800);
         } else {
+          this.chrBanks[2] = arg;
           this.load1kVromBank(arg, 0x0800);
         }
         break;
 
       case Mapper4.CMD_SEL_1K_VROM_1C00:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[7] = arg;
           this.load1kVromBank(arg, 0x1c00);
         } else {
+          this.chrBanks[3] = arg;
           this.load1kVromBank(arg, 0x0c00);
         }
         break;
 
       case Mapper4.CMD_SEL_ROM_PAGE1:
         if (this.prgAddressChanged) {
+          const fixedBank = (this.nes.rom.romCount - 1) * 2;
           if (this.prgAddressSelect === 0) {
-            this.load8kRomBank((this.nes.rom.romCount - 1) * 2, 0xc000);
+            this.load8kRomBank(fixedBank, 0xc000);
+            this.prgBankMap[0xC000] = fixedBank;
           } else {
-            this.load8kRomBank((this.nes.rom.romCount - 1) * 2, 0x8000);
+            this.load8kRomBank(fixedBank, 0x8000);
+            this.prgBankMap[0x8000] = fixedBank;
           }
           this.prgAddressChanged = false;
         }
 
         if (this.prgAddressSelect === 0) {
           this.load8kRomBank(arg, 0x8000);
+          this.prgBankMap[0x8000] = arg;
         } else {
           this.load8kRomBank(arg, 0xc000);
+          this.prgBankMap[0xC000] = arg;
         }
         break;
 
       case Mapper4.CMD_SEL_ROM_PAGE2:
         this.load8kRomBank(arg, 0xa000);
+        this.prgBankMap[0xA000] = arg;
 
         if (this.prgAddressChanged) {
+          const fixedBank = (this.nes.rom.romCount - 1) * 2;
           if (this.prgAddressSelect === 0) {
-            this.load8kRomBank((this.nes.rom.romCount - 1) * 2, 0xc000);
+            this.load8kRomBank(fixedBank, 0xc000);
+            this.prgBankMap[0xC000] = fixedBank;
           } else {
-            this.load8kRomBank((this.nes.rom.romCount - 1) * 2, 0x8000);
+            this.load8kRomBank(fixedBank, 0x8000);
+            this.prgBankMap[0x8000] = fixedBank;
           }
           this.prgAddressChanged = false;
         }
@@ -175,10 +211,15 @@ class Mapper4 extends Mapper0 {
       throw new Error("MMC3: Invalid ROM! Unable to load.");
     }
 
-    this.load8kRomBank((this.nes.rom.romCount - 1) * 2, 0xc000);
-    this.load8kRomBank((this.nes.rom.romCount - 1) * 2 + 1, 0xe000);
+    const lastBank = (this.nes.rom.romCount - 1) * 2;
+    this.load8kRomBank(lastBank, 0xc000);
+    this.prgBankMap[0xC000] = lastBank;
+    this.load8kRomBank(lastBank + 1, 0xe000);
+    this.prgBankMap[0xE000] = lastBank + 1;
     this.load8kRomBank(0, 0x8000);
+    this.prgBankMap[0x8000] = 0;
     this.load8kRomBank(1, 0xa000);
+    this.prgBankMap[0xA000] = 1;
     this.loadCHRROM();
     this.loadBatteryRam();
     this.nes.cpu.requestIrq(this.nes.cpu.IRQ_RESET);
@@ -204,6 +245,8 @@ class Mapper4 extends Mapper0 {
     s.irqLatchValue = this.irqLatchValue;
     s.irqEnable = this.irqEnable;
     s.prgAddressChanged = this.prgAddressChanged;
+    s.chrBanks = Array.from(this.chrBanks);
+    s.prgBankMap = { ...this.prgBankMap };
     return s;
   }
 
@@ -217,6 +260,17 @@ class Mapper4 extends Mapper0 {
     this.irqLatchValue = s.irqLatchValue;
     this.irqEnable = s.irqEnable;
     this.prgAddressChanged = s.prgAddressChanged;
+    if (s.chrBanks) this.chrBanks.set(s.chrBanks);
+    if (s.prgBankMap) this.prgBankMap = { ...s.prgBankMap };
+  }
+
+  getChrBankMap(): Uint8Array | null {
+    return this.chrBanks;
+  }
+
+  /** 返回当前 PRG 8KB bank 映射 (window base → bank index) */
+  getPrgBankMap(): Record<number, number> {
+    return this.prgBankMap;
   }
 }
 

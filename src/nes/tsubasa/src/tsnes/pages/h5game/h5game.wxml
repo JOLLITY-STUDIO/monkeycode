@@ -1,4 +1,6 @@
 <view class="game-container">
+  <!-- 隐藏的导出 canvas（off-screen） -->
+  <canvas type="2d" id="exportCanvas" class="export-canvas"></canvas>
   <!-- 状态栏（置顶） -->
   <view class="status-bar">
     <text class="status-tag">{{debugTab ? 'Debug: ' + debugTabs[debugTab] : '双引擎'}}</text>
@@ -34,18 +36,53 @@
 
       <!-- Debug 面板（有 tab 时展开） -->
       <view class="debug-panel {{debugTab ? 'visible' : ''}}">
-        <!-- 画布类查看器（NT 除外，NT 单独处理） -->
-        <view class="debug-canvas-wrap" wx:if="{{debugTab !== 'disasm' && debugTab !== 'nametable' && debugTab !== ''}}">
+        <!-- 画布类查看器（PAL/其他 不含文字的） -->
+        <view class="debug-canvas-wrap" wx:if="{{debugTab !== 'disasm' && debugTab !== 'nametable' && debugTab !== 'patterntable' && debugTab !== 'sprite' && debugTab !== ''}}">
           <canvas type="2d" id="debugCanvas" class="debug-canvas"></canvas>
         </view>
-        <!-- NT 特殊：canvas 渲染 + 可复制文字数据 -->
+        <!-- NT 特殊：canvas + 可复制文字数据 -->
         <block wx:if="{{debugTab === 'nametable'}}">
           <view class="nt-canvas-wrap">
             <canvas type="2d" id="debugCanvas" class="debug-canvas"></canvas>
           </view>
           <view class="nt-data-wrap">
+            <view class="data-toolbar">
+              <text class="data-toolbar-label">NT Data</text>
+              <view class="data-copy-btn" bindtap="onCopyNTData">[ 复制 ]</view>
+            </view>
             <scroll-view class="nt-data-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
-              <text class="nt-data-text" selectable="true">{{ntDataText}}</text>
+              <text class="nt-data-text">{{ntDataText}}</text>
+            </scroll-view>
+          </view>
+        </block>
+        <!-- PT 特殊：canvas + CHR bank 可复制文字数据 -->
+        <block wx:if="{{debugTab === 'patterntable'}}">
+          <view class="pt-canvas-wrap">
+            <canvas type="2d" id="debugCanvas" class="debug-canvas"></canvas>
+          </view>
+          <view class="pt-data-wrap">
+            <view class="data-toolbar">
+              <text class="data-toolbar-label">PT Data</text>
+              <view class="data-copy-btn" bindtap="onCopyPTData">[ 复制 ]</view>
+            </view>
+            <scroll-view class="pt-data-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
+              <text class="pt-data-text">{{ptDataText}}</text>
+            </scroll-view>
+          </view>
+        </block>
+        <!-- SPR 特殊：canvas + 可复制 SPT 文字数据 -->
+        <block wx:if="{{debugTab === 'sprite'}}">
+          <view class="spr-toolbar">
+            <text class="spr-toolbar-label">SPR Viewer</text>
+            <view class="data-copy-btn" bindtap="onCopySPRData">[ 复制 ]</view>
+            <view class="spr-export-btn" bindtap="onExportSprite">[ 导出 ]</view>
+          </view>
+          <view class="spt-canvas-wrap">
+            <canvas type="2d" id="debugCanvas" class="debug-canvas"></canvas>
+          </view>
+          <view class="spt-data-wrap">
+            <scroll-view class="spt-data-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
+              <text class="spt-data-text">{{sptDataText}}</text>
             </scroll-view>
           </view>
         </block>

@@ -125,7 +125,11 @@ function CODE_$93C2_$9405(): readonly number[] {
   ];
 }
 
-/** $9406-$944D, 72 bytes [code] */
+/**
+ * $9406-$944D, 72 bytes [code]
+ * 场景初始化函数：设置 PPU nametable 写地址偏移，循环读取 DATA_$944E_$988E 的上传包写入 PPU。
+ * 见 DATA_$944E_$988E 的注释了解数据格式。
+ */
 function CODE_$9406_$944D(): readonly number[] {
   return [
     0x48, 0xA2, 0x00, 0x86, 0x8B, 0x86, 0x8A, 0xA9, 0x01, 0x20, 0x15, 0xC5, 0xAD, 0x15, 0x05, 0xD0,
@@ -458,7 +462,39 @@ const DATA_$9310_$9332: readonly number[] = [
     0x15, 0xC5, 0x60
 ];
 
-/** $944E-$988E, 1089 bytes [data] */
+/**
+ * $944E-$988E, 1089 bytes [data] — PPU nametable 上传包 + 文本控制码脚本
+ *
+ * ── 数据格式说明 ──
+ * 这不是裸 nametable，而是一套"脚本"系统，由两部分组成：
+ *
+ * 【第一部分：PPU 上传包】（$944E 开头，以 0x00 结束）
+ *   每条上传包格式： [长度, PPU地址低, PPU地址高, ...tile_id列表]
+ *   示例：0x09, 0x6E, 0x21,  0x28,0x29,...9个tile
+ *         ↑长度=9  ↑地址=$216E  ↑9个CHR tile ID
+ *
+ *   游戏标题画面显示 "TECMO" 时，代码读取这些包，逐条写入 PPU nametable。
+ *   0x00 是上传包结束符（终止符）。紧接着的数据就是第二部分。
+ *
+ * 【第二部分：文本控制码】（0x00 之后，解析器监听 0xE0-0xFF 范围）
+ *   控制码表：
+ *   0xE0 XX       — 设置某种状态/索引
+ *   0xE1 XX       — 跳转/偏移
+ *   0xE2 XX YY       — 设置二维参数
+ *   0xE4 XX YY...    — 输出字符串指令
+ *   0xE5 XX          — 控制/routine 调用
+ *   0xE3/0xE6/...   — 其他控制
+ *   0xFC          — 字符串结束符/换行
+ *   0x00          — 包终止符
+ *
+ *   其他字节（0x01~0xDF）是 tile ID，直接写入 PPU。
+ *
+ * ── 引用方式 ──
+ * 游戏代码通过硬编码地址 $944E 引用此表。
+ * 紧邻前面的 CODE_$9406_$944D（72 bytes 场景初始化函数）负责设置 PPU 写地址
+ * （STA $04A5 / STA $04A6），然后循环读取此表的上传包写入 PPU。
+ * 这不是"搜索"得到的位置——程序员写 ROM 时就约定好了数据起始地址。
+ */
 const DATA_$944E_$988E: readonly number[] = [
     0x09, 0x6E, 0x21, 0x28, 0x29, 0x2C, 0x2D, 0x38, 0x37, 0x39, 0x3C, 0x3D, 0x09, 0x8E, 0x21, 0x2A,
     0x2B, 0x2E, 0x2F, 0x3A, 0x2A, 0x3B, 0x3E, 0x3F, 0x00, 0xE0, 0x5C, 0xE5, 0x00, 0xE4, 0x5A, 0x46,

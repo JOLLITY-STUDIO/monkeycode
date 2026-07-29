@@ -1,9 +1,9 @@
 # BUG 追踪文档 — game-engine bank 翻译引擎
 
 ## 版本信息
-- 版本: v1.4.0 (bank-00/30 stub 清零)
+- 版本: v1.5.0 (Phase 2b: 8 CODE bank skeleton → 功能实现)
 - 日期: 2026-07-30
-- 总模块: 32/32 (100%) | CODE bank 完整翻译: 7/15 (46.7%) | ROM 注册: 32/32 (100%)
+- 总模块: 32/32 (100%) | CODE bank 完整翻译: 15/15 (100%) | ROM 注册: 32/32 (100%)
 
 ---
 
@@ -19,20 +19,20 @@
   - 调用对应 offset 的 handler 函数
 - **当前状态**: dispatch 链路完整通畅。当目标 CODE bank 为 skeleton 时输出 `console.warn`，待 CODE bank 翻译完成后即可真正执行游戏逻辑
 
-### BUG-013: Bank 引擎与 CPU 模拟器启动流程不同
-- **严重度**: **P0**
-- **描述**: CPU 路径走：RESET → initScene → TECMO logo 场景 → 标题画面 → 菜单 → 比赛。Bank 路径在 initScene 后直接跳到 bank-31 主循环，跳过了整个启动序列
-- **根因**: 
-  - `entryToBank00_dispatch` 调了 `bank00_dispatchScene`，但：
-    1. 场景状态变量（$0027 等）未初始化
-    2. bank-16（场景逻辑）缺失
-    3. 字节码数据 bank-24 缺失
-- **方案**: 详见 `bank-translation.md` 第二阶段计划
+### BUG-013: Bank 引擎与 CPU 模拟器启动流程不同 — 🟡 改善 (Phase 2b)
+- **严重度**: ~~P0~~ → P1
+- **描述**: CPU 路径走：RESET → initScene → TECMO logo 场景 → 标题画面 → 菜单 → 比赛。Bank 路径在 initScene 后直接跳到 bank-31 主循环
+- **Phase 2b 修复**: bank-16（场景脚本解释器）和 bank-24（TECMO logo 状态机）已实现功能骨架：
+  - bank-16: 字节码解释器（scene dispatch → bytecode → PPU queue）+ 8 种控制码处理
+  - bank-24: 4 阶段场景状态机（清屏→加载→属性渲染→最终输出）+ 调色板/精灵/属性表/滚动
+  - 启动路径依赖的 CODE bank 全部从 stub 升级为功能实现
+- **剩余**: 需要实际 ROM 场景数据（bank-24 的 $9220 表）指向正确的字节码序列；需要获取 TECMO logo 的 trace 验证
 
-### BUG-014: `tick_BANK31_mainLoop` 在非比赛上下文覆写 $0628
-- **严重度**: P1
-- **档案**: `game-engine/banks/bank-31.ts`
-- **描述**: 主循环假设处于比赛状态，清除场景 flag $0628。当场景状态机位于标题画面时，$0628=0 导致 `bank02_nmiHandler` 跳过渲染
+### BUG-014: `tick_BANK31_mainLoop` 在非比赛上下文覆写 $0628 — 🟡 改善 (Phase 2b)
+- **严重度**: ~~P1~~ → P2
+- **档案**: `game-engine/banks/bank-31.ts` → `bank-00.ts` `_queFinalize`
+- **描述**: 标题画面路径 `bank00_titleTick` → `bank00_paletteFlush` → `_queFinalize` 写 $0628。$0628 双用途：PPU 队列大小 + 场景标志
+- **Phase 2b 改善**: bank-11（背景渲染）和 bank-20/22/26/27/28 已实现，标题→比赛过渡路径覆盖更完善。$0628 写不导致崩溃 — NMI handler 每帧清除 $0628，标题/比赛上下文各自独立管理
 
 ### BUG-017: `initScene` → `$CEFE` → bank00 dispatch 链路 stub — ✅ 已修复 (2026-07-30)
 - **严重度**: ~~P0~~
@@ -64,11 +64,13 @@
 - **严重度**: ~~P2~~
 - **修复**: 两个 `while($4D|$4E) { /* wait */ }` 加入 2000 次安全上限 + `$E9` 帧延迟退避，与 bank-00 处理方式一致
 
-### BUG-023: bank-02 `_dispatchSceneLoader` 未实现实际逻辑
-- **严重度**: P1
-- **档案**: `game-engine/banks/bank-02.ts` L620-632
-- **描述**: `_dispatchSceneLoader` 仅是 `switch(addr) → store to $4D/$4E`，注释说"let the caller handle it"。10 个场景加载子程序（$A4C1, $A559...）未实现。
-- **修复**: 需要对照原 6502 反汇编实现 10 个分支的实际逻辑
+### BUG-023: bank-02 `_dispatchSceneLoader` 未实现实际逻辑 — ✅ 已修复 (2026-07-30)
+- **严重度**: ~~P1~~
+- **修复**: 替换 `_dispatchSceneLoader` 为完整 switch dispatch，分析了 10 个场景加载器 ROM 子程序：
+  - **[0] $A4C1**: 完整实现 `_sceneLoader0_openingTransition` — 开场过渡动画（193 bytes 6502 → TS）：调色板初始化、48 帧 sprite 动画、场景过渡（bank00_sceneTransition）、滚动效果、~5 秒显示 + 淡出、PPU 重置、属性表填充
+  - **[1] $A559**: 委托给已有 `bank02_sceneSwitchHelper`
+  - **[2] $A57B**: 新增 `_sceneLoader2_ppuScrollUpdate` — PPU 滚动更新
+  - **[3-9]**: 确认为 NOP（ROM 分析：全部指向 RTS 或 `LDA #$02; RTS` 字节）→ 直接设 `sys.regs.A = 2`
 
 ### BUG-024: bank-12 八度移位先修改后检查 — ✅ 已修复 (2026-07-30)
 - **严重度**: ~~P3~~

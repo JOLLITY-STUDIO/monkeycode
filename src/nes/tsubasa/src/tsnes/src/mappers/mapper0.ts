@@ -468,6 +468,11 @@ class Mapper0 {
     return this.nes.ppu.ptTile[index];
   }
 
+  /** 返回 8 個 PPU 1KB 槽位到 CHR 1KB bank 的映射，null 表示無動態 CHR */
+  getChrBankMap(): Uint8Array | null {
+    return null;
+  }
+
   toJSON(): any {
     return {
       joy1StrobeState: this.joy1StrobeState,
