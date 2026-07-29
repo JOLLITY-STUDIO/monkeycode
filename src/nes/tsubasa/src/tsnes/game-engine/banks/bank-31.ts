@@ -405,7 +405,8 @@ function _dispatchBankCall(sys: SystemState, offset: number): void {
     }
   }
   console.warn(
-    `[bank31] No handler: bank=$${bank.toString(16)} offset=$${offset.toString(16)} — SKELETON`,
+    `[bank31] No handler in dispatch table: bank=$${bank.toString(16)} offset=$${offset.toString(16)} — ` +
+    `(expected once CODE bank completes translation)`,
   );
 }
 
@@ -946,8 +947,8 @@ export function translate_BANK31_SPRITE_DMA_INIT(sys: SystemState): void {
     sys.mem[0x0112] = 0x18;
     sys.mem[0x0113] = 0x7F;
 
-    // JSR $CAE7 (bank30: sprite DMA)
-    // bank30 的 spriteDma 处理
+    // JSR $CAE7 (bank30: sprite DMA) — 在 TS 版中由 NMI handler (bank02) 处理 OAM DMA，
+    // $CAE7 的设置（$2003/$4014 写入）已在 bank02_nmiHandler 的 ppuXferEngine 中覆盖
   }
 
   // $ED29+: 设置 sprite 标志 ($0532, $0536, $0534)
@@ -1009,12 +1010,12 @@ export function translate_BANK31_SPRITE_BANK_PHASE2(sys: SystemState): void {
       sys.mem[0x011D] = 0xA0;
       sys.mem[0x011E] = 0x0B;
       sys.mem[0x011F] = 0x7F;
-      // JSR $CAE7
+      // JSR $CAE7 — 同前，由 NMI handler 转发 OAM DMA
     } else {
       sys.mem[0x011D] = 0xA0;
       sys.mem[0x011E] = 0x0B;
       sys.mem[0x011F] = 0x80;
-      // JSR $CAE7
+      // JSR $CAE7 — 同前，由 NMI handler 转发 OAM DMA
     }
   } else {
     // 垂直模式 — 2D scroll

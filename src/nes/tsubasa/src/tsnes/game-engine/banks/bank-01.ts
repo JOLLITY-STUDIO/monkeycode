@@ -757,9 +757,10 @@ export function bank01_auxEntry6(sys: SystemState): void {
   const param = readBankRom(sys, 0xB3D7 + sceneId);
   _execBytecodeEntry(sys, param);
 
-  // 等待 bytecode 完成
+  // 等待 bytecode 完成（安全上限轮询 + $E9 帧延迟）
+  let _wait1 = 0;
   while ((sys.mem[0x4D] | sys.mem[0x4E]) !== 0) {
-    // wait
+    if (++_wait1 > 2000) { sys.mem[0xE9] = Math.max(sys.mem[0xE9], 1); return; }
   }
 
   // JSR $A01E → 加载下一帧数据
@@ -795,9 +796,10 @@ export function bank01_auxEntry8(sys: SystemState): void {
   const param = readBankRom(sys, 0xB3B5 + sceneId);
   _execBytecodeEntry(sys, param);
 
-  // 等待 bytecode
+  // 等待 bytecode（安全上限轮询 + $E9 帧延迟）
+  let _wait2 = 0;
   while ((sys.mem[0x4D] | sys.mem[0x4E]) !== 0) {
-    // wait
+    if (++_wait2 > 2000) { sys.mem[0xE9] = Math.max(sys.mem[0xE9], 1); return; }
   }
 
   // JSR $9C3A → 加载数据

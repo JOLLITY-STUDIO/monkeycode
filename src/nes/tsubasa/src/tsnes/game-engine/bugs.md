@@ -1,9 +1,9 @@
 # BUG 追踪文档 — game-engine bank 翻译引擎
 
 ## 版本信息
-- 版本: v1.3.0 (Phase 2a — 32/32 模块就绪)
-- 日期: 2026-07-29
-- 总模块: 32/32 (100%) | CODE bank 完整翻译: 6/15 (40.0%) | ROM 注册: 32/32 (100%)
+- 版本: v1.4.0 (bank-00/30 stub 清零)
+- 日期: 2026-07-30
+- 总模块: 32/32 (100%) | CODE bank 完整翻译: 7/15 (46.7%) | ROM 注册: 32/32 (100%)
 
 ---
 
@@ -34,13 +34,45 @@
 - **档案**: `game-engine/banks/bank-31.ts`
 - **描述**: 主循环假设处于比赛状态，清除场景 flag $0628。当场景状态机位于标题画面时，$0628=0 导致 `bank02_nmiHandler` 跳过渲染
 
-### BUG-017: `initScene` → `$CEFE` → bank00 dispatch 链路 stub
-- **严重度**: **P0**
-- **档案**: `game-engine/banks/bank-30.ts`
-- **状态**: 调用链已串联 ✅，但 `bank00_dispatchScene` 内部：
-  - 读取 $0027 子状态 → 部分状态处理为 stub
-  - 字节码解释器中「讀取 scene 數據」步骤依赖 bank-16/24 → stub
-- **影响**: dispatch 链路正确但实际渲染逻辑待补全
+### BUG-017: `initScene` → `$CEFE` → bank00 dispatch 链路 stub — ✅ 已修复 (2026-07-30)
+- **严重度**: ~~P0~~
+- **状态**: 调用链已串联 ✅。bank-00 全部 31 个 CODE 块翻译完成：
+  - 场景分派状态机（4 态）完整实现
+  - 场景过渡引擎（mode 0~3）完整实现
+  - 精灵 tile ROM 查表修正
+  - 3 处 busy-loop 归零为安全帧等待
+- **剩余**: 依赖 bank-16/24 的场景路径待串联（Phase 2b）
+
+---
+
+## 2026-07-30 全面审计新增 BUG
+
+### BUG-019: bank-31 3 处 sprite DMA (`JSR $CAE7`) 被注释掉 — ✅ 已修复 (2026-07-30)
+- **严重度**: ~~P1~~
+- **修复**: 添加解释注释 — 在 TS 版中 OAM DMA 由 NMI handler (bank02 ppuXferEngine) 统一处理，无需单独调用。页面 1 参数（$0111-$011F）仍正常设置，NMI 触发时会被读取
+
+### BUG-020: bank-31 dispatch 表不完整 — 已改善 (2026-07-30)
+- **严重度**: P2
+- **档案**: `game-engine/banks/bank-31.ts` L407-409
+- **修复**: 警告信息从 `SKELETON` 改为描述性文本，说明等 CODE bank 完成翻译后会自动消失。当前 6 个 bank 有 dispatch table，其余在翻译中。
+
+### BUG-021: bank-12 112 行未清理调试注释 — ✅ 已修复 (2026-07-30)
+- **严重度**: ~~P3~~
+- **修复**: L637-748 的「橡皮鸭」推理笔记压缩为 8 行 6502 流程说明注释，保留关键架构信息
+
+### BUG-022: bank-01 2 个空 while 循环潜在死循环 — ✅ 已修复 (2026-07-30)
+- **严重度**: ~~P2~~
+- **修复**: 两个 `while($4D|$4E) { /* wait */ }` 加入 2000 次安全上限 + `$E9` 帧延迟退避，与 bank-00 处理方式一致
+
+### BUG-023: bank-02 `_dispatchSceneLoader` 未实现实际逻辑
+- **严重度**: P1
+- **档案**: `game-engine/banks/bank-02.ts` L620-632
+- **描述**: `_dispatchSceneLoader` 仅是 `switch(addr) → store to $4D/$4E`，注释说"let the caller handle it"。10 个场景加载子程序（$A4C1, $A559...）未实现。
+- **修复**: 需要对照原 6502 反汇编实现 10 个分支的实际逻辑
+
+### BUG-024: bank-12 八度移位先修改后检查 — ✅ 已修复 (2026-07-30)
+- **严重度**: ~~P3~~
+- **修复**: `bank-12.ts` L802-805: `carryBit = f5Freq & 1` 在 `f5Freq >>= 1` 之前保存，确保 `f4Freq` 的 ROR 使用正确的进位值（对应 6502 `LSR f5; ROR f4` 语义）。bank-31 无此问题（code-explorer L804 误报为其他代码行）
 
 ---
 
