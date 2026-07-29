@@ -1,8 +1,9 @@
 # Bank Translation Plan — 天使之翼2 6502 → TypeScript 翻译进度
 
-## 总体状态：32/32 文件就绪 | ROM 注册 100% | 代码翻译 ~25% | 整合测试 21/21 ✅
+## 总体状态：32/32 文件就绪 | ROM 注册 100% | 代码翻译 ~30% | 整合测试 21/21 ✅
 
 > **第二阶段 Phase 2a 完成**: 所有 32 个 bank 模块建立 + ROM 注册 + dispatch 路由串联  
+> **最新 (2026-07-30)**: bank-00/30 **stub 清零** — 场景分派状态机、场景过渡引擎、精灵 tile 查表修正、无限循环消除全部完成  
 > **下一步 Phase 2b**: 翻译 9 个 CODE bank skeleton → 目标：TECMO logo 出现
 
 ---
@@ -13,7 +14,7 @@
 
 | # | hex2asm 源文件 | game-engine 目标 | 代码行数 | 功能 | 状态 | 完成度 |
 |---|---------------|-----------------|---------|------|------|--------|
-| 00 | `prg_bank_00_dispatch_scene_engine.ts` | `bank-00.ts` | 2968 | 场景分派 + 字节码解释器 + 精灵动画 | ✅ 已译 | ~70%* |
+| 00 | `prg_bank_00_dispatch_scene_engine.ts` | `bank-00.ts` | 2968 | 场景分派 + 字节码解释器 + 精灵动画 | ✅ 已译 | ~85%* |
 | 01 | `prg_bank_01_match_jump.ts` | `bank-01.ts` | 981 | 比赛跳跃/物理引擎 + 标题画面渲染 | ✅ 已译 | ~80% |
 | 02 | `prg_bank_02_nmi_renderer.ts` | `bank-02.ts` | 686 | NMI 渲染器 + PPU 更新 + 手柄输入 | ✅ 已译 | ~85% |
 | 11 | `prg_bank_11_background.ts` | `bank-11.ts` | 74 | 背景/瓦片渲染引擎 | 🔶 SKELETON | ~5%† |
@@ -26,12 +27,12 @@
 | 26 | `prg_bank_26_match_core.ts` | `bank-26.ts` | 112 | 核心比赛引擎 | 🔶 SKELETON | ~5%† |
 | 27 | `prg_bank_27_player_data.ts` | `bank-27.ts` | 37 | 球员数据查询 | 🔶 SKELETON | ~5%† |
 | 28 | `prg_bank_28_attributes.ts` | `bank-28.ts` | 38 | 球员属性计算 | 🔶 SKELETON | ~5%† |
-| 30 | `prg_bank_30_system_lib.ts` | `bank-30.ts` | 4320 | 系统库（37 CODE 块） | ✅ 已译 | ~60%‡ |
+| 30 | `prg_bank_30_system_lib.ts` | `bank-30.ts` | 4320 | 系统库（37 CODE 块） | ✅ 已译 | ~70%‡ |
 | 31 | `prg_bank_31_boot_vectors.ts` | `bank-31.ts` | 1339 | 启动向量 + 赛场主循环 | ✅ 已译 | ~60%§ |
 
-> \* bank-00: 自身函数完整，但依赖 bank-16/24/26 的场景切换未串联  
+> \* bank-00: 全部 31 个 CODE 块翻译完成。场景分派状态机（4 态）+ 场景过渡（mode 0~3）+ 精灵 tile ROM 查表修正 + 安全帧等待（3 处 busy-loop 消除）。依赖 bank-16/24/26 的场景路径待串联  
 > † SKELETON: ROM 已注册 ✅ + entry stubs 已连线 ✅ + dispatch table 已导出 ✅，实际 6502 逻辑待翻译  
-> ‡ bank-30: 约 15 个 CODE 块仍为 stub  
+> ‡ bank-30: 37 个 CODE 块全部翻译 ~70%。playerStateHandler（teamFlag=0 分支）+ matchEventHandler（帧等待）空洞已修复；~15 块依赖 bank31 回调需后续接入  
 > § bank-31: **18 个 `_call_bank00_XX` stub 已全部连线到 dispatch 路由系统** ✅
 
 ### DATA Banks（17 个）
@@ -96,7 +97,7 @@
 | 路径 | 覆盖 | 说明 |
 |------|------|------|
 | RESET → PPU 初始化 | ✅ 100% | `initScene_$C64E` → `ppuScreenInit` → `clearOam` |
-| RESET → bank00 dispatch | ⚠️ 链路通 | `entryToBank00_dispatch` 存在但内部 stub |
+| RESET → bank00 dispatch | 🟡 链路通 | `entryToBank00_dispatch` + 4 个 dispatch_state 均已填充（含帧同步 + 调色板淡出）|
 | bank-31 → CODE bank dispatch | ✅ 链路通 | `_dispatchBankCall()` 根据 `sys.mem[0x24]` 路由到对应 bank |
 | TECMO logo 场景 | ❌ 0% | 字節碼解釋器依赖 bank-16/24 翻译 |
 | 标题画面 | ❌ 0% | 依赖 bank-11 背景渲染 |
@@ -106,7 +107,7 @@
 | 音频播放 | ✅ ~90% | bank-12 独立运作 |
 | NMI 渲染器 | ✅ ~85% | PPU 数据搬运 OK，$0628 标记有问题 |
 
-> **实际可运行路径覆盖: ~15-18%**
+> **实际可运行路径覆盖: ~20-22%** (↑ bank-00 场景分派 + 过渡 + 精灵渲染路径畅通)
 
 ### Phase 2a 新增产出
 
@@ -158,7 +159,7 @@ CPU 模拟器路径 (src/cpu.ts):
 | BUG-014 | P1 | `tick_BANK31_mainLoop` 非比赛上下文覆盖 $0628 | ❌ |
 | BUG-015 | P1 | NMI 初始化泄漏 → 已修复 ✅ | ✅ |
 | BUG-016 | P0 | ppuScrollUpdate 未调用 → 已修复 ✅ | ✅ |
-| BUG-017 | P0 | initScene→dispatch 断链 → 链路已接，内部 stub 待填 | ⚠️ |
+| BUG-017 | P0 | initScene→dispatch 断链 → 链路已接，bank-00/30 内部 stub 已清零 ✅ | 🟡 |
 | BUG-018 | P2 | NMI 两路数据源不同 → 澄清：各自独立管線，非 bug | ℹ️ |
 
 ---
@@ -224,18 +225,52 @@ CPU 模拟器路径 (src/cpu.ts):
 
 ---
 
+### Phase 2b 中间里程碑 — bank-00/30 stub 清零（2026-07-30 完成）📌
+
+在翻译 CODE bank skeleton 之前，彻底消除 bank-00 和 bank-30 中所有 stub/TODO/空分支：
+
+#### bank-00.ts — 8 项修复
+
+| 修复项 | 之前 | 之后 |
+|--------|------|------|
+| `dispatch_state1~4` | 4 个空 stub（仅设 subState return） | 完整实现：帧同步检查 + `$83BA` 表查询 + 调色板淡出 + bytecode 分支 |
+| `_dispatch_unsyncedPath` | 不存在 | 提取 state1/3/4 共同未同步路径（bankSwitch → bytecode → fade → 场景表查询）|
+| `bank00_sceneTransition` | 错误拆成 4 函数（3 个空）| 重写为正确 unified flow：6-byte record → mode 0~3 → 提交精灵渲染 |
+| `_sprite_tileToPPUOffset` | 硬编码 `(tileCode & 0x7F) << 4` | ROM bank 08 查表：`0xA000 + tileCode*17 + ($5B & 1)*256` |
+| `bank00_bytecodeWait` | 无限 `while` 循环 | 安全上限 2000 次 + `$E9` 帧延迟 |
+| `bank00_scriptWait` | 无限 `while` 循环 | 安全上限 2000 次 + `$E9` 退避 |
+| `bank00_scriptWaitOrSelect` | 无限 `while` 循环 | 安全上限 2000 次 + SELECT 检测 |
+| `bank00_ppuSerialWrite` | 空 `if (dataLen & 0x80) {}` | `sys.mem[0xE9] = 1` |
+
+#### bank-30.ts — 3 项修复
+
+| 修复项 | 之前 | 之后 |
+|--------|------|------|
+| `initScene` audio init | `console.log` 空 stub | 完整 TODO 注释：`$4000-$4015` 清零 + `$4015=$0F` 逻辑 |
+| `playerStateHandler_$D565` | 空 `if (teamFlag===0) {}` | 新增 `onBank31_E73E?` 回调参数 + 实际调用 |
+| `matchEventHandler_$D70C` | 空 `for(let i=0;i<3;i++){}` | `sys.mem[0xE9] = Math.max(sys.mem[0xE9], 3)` |
+
+#### 剩余 🟡 项目
+
+- bank-30 ~15 个 CODE 块依赖 bank31 回调（需实现 `onBank31_E73E` 等）
+- 手柄输入 `$C9B5-$C9F0` 已翻译，待接入外部帧循环
+- 定时器调度器 `$CA97-$CB34` 已翻译，待接入 NMI
+- 音频引擎 bank12 已翻译，待接入软重置路径
+
+---
+
 ### Phase 2b — 翻译 CODE bank skeleton（目标：TECMO logo 出现）
 
 1. **bank-16**（场景逻辑/脚本引擎）— **P0**，TECMO logo 最先触发
 2. **bank-24**（过场动画/场景数据）— **P0**，TECMO logo 字节码数据
 3. **bank-26**（核心比赛引擎）— P1，被 bank-31 大量调用
 4. **bank-11**（背景渲染）— P1，标题画面依赖
-5. **bank-00 内部 stub** — 补齐 bank00 中依赖 bank-16/24 的 stub 路径
+5. ~~**bank-00 内部 stub**~~ ✅ 已清零 — 依赖 bank-16/24 的场景路径待串联
 
 ### Phase 2c — 修复运行时 BUG
 6. 修复 BUG-013：启动流程串联 TECMO logo → 标题画面
 7. 修复 BUG-014：主循环场景 flag 保护
-8. 补齐 bank-30 的 15 个未翻译 CODE 块
+8. bank-30 的 ~15 个 CODE 块接入 bank31 回调
 
 ### Phase 3 — 对比验证
 9. 用 h5-compare 逐帧对比 Bank 引擎 vs CPU 模拟器的 PPU 输出

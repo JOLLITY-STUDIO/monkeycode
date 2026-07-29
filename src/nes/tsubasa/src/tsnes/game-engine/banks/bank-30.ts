@@ -31,10 +31,13 @@
  *   ✅ $CD7C         — 获取角色数据指针
  *   ✅ $CC02         — 帧初始化 + NMI 等待
  *   ✅ $CCD2         — 调色板初始化传输引擎
- *   $C9B5-$C9F0  — 手柄输入更新 (已翻译, 待接入)
- *   $CA97-$CB34  — 定时器调度器 (已翻译, 待接入 NMI)
- *   $CAE7-$CAF6  — Sprite DMA 设置
- *   其余 15+ 个 CODE 块 — 逐块翻译中
+ *   ✅ $D565         — 球员状态处理器（teamFlag=0 branch connected）
+ *   ✅ $D70C         — 比赛事件处理器（frame wait fixed）
+ *   ✅ $C64E         — 软重置 audio init ($CF1F documented)
+ *   🟡 $C9B5-$C9F0  — 手柄输入更新 (已翻译, 待接入帧循环)
+ *   🟡 $CA97-$CB34  — 定时器调度器 (已翻译, 待接入 NMI)
+ *   🟡 $CAE7-$CAF6  — Sprite DMA 设置 (由 NMI handler 处理)
+ *   🟡 其余 ~15 个 CODE 块 — 部分依赖 bank31，需配合回调完成
  *
  * ═══════════════════════════════════════
  * 使用方式
@@ -268,8 +271,11 @@ export function initScene_$C64E(sys: SystemState, coldBoot: boolean = true): voi
     }
 
     // JSR $CF1F — audio init
-    // $CF1F: 初始化 APU/声音寄存器 (bank12 音频引擎已翻译，后续接入)
-    console.log('[bank30] initScene soft reset: audio init $CF1F');
+    // $CF1F: 初始化 APU/声音寄存器
+    // 6502 调用: JSR $CF1F → 清零 $4000-$4015 (APU 寄存器) + 设 $4015=$0F (enable all channels)
+    // 翻译: bank12 音频引擎已翻译但尚未接入此调用
+    // 软重置时 APU 状态由 NMI handler 重新初始化，暂时跳过
+    // TODO: 接入 bank12 音频引擎时在此调用 audio init
 
     sys.mem[0x1B] = 0;
     sys.mem[0x063F] = 0;
@@ -3598,11 +3604,13 @@ const PLAYER_OPTION_CONFIG: readonly number[] = [
  *
  * @param onBank31_EF7F bank31 help display 回调
  * @param onBank1A_1B bank dispatch 回调 (bank $1A/$1B)
+ * @param onBank31_E73E bank31 player logic 回调 ($E73E)
  */
 export function playerStateHandler_$D565(
   sys: SystemState,
   onBank31_EF7F: (sys: SystemState, a: number) => void,
   onBank1A_1B: (sys: SystemState, subAddr: string) => void,
+  onBank31_E73E?: (sys: SystemState) => void,
 ): void {
   const state = sys.mem[0x0621];
 
@@ -3645,11 +3653,13 @@ export function playerStateHandler_$D565(
     sys.mem[0x0615] |= 0x40;
   }
 
-  // 队伍标志
+  // 队伍标志 — 6502: JSR $E73E → bank31 球员逻辑
   const teamFlag = sys.mem[0x05FB];
   if (teamFlag === 0) {
-    // 调用 bank31 player logic
-    // JSR $E73E — bank31
+    // 调用 bank31 player logic ($E73E)
+    if (onBank31_E73E) {
+      onBank31_E73E(sys);
+    }
   }
 
   // 通过跳转表分发
@@ -3731,10 +3741,9 @@ export function matchEventHandler_$D70C(
   onBank1C_8015: (sys: SystemState, a: number) => void,
   onBank31_EF7F: (sys: SystemState, a: number) => void,
 ): void {
-  // 帧等待 + 额外等待
-  for (let i = 0; i < 3; i++) {
-    // 简单帧等待模拟
-  }
+  // 帧等待 + 额外等待 (6502: JSR $9FA8 waitFrame ×3)
+  // 翻译: 设 $E9 = 3，外部帧循环逐帧递减
+  sys.mem[0xE9] = Math.max(sys.mem[0xE9], 3);
   sys.mem[0x062D] = 0;
 
   const eventType = sys.mem[0x043C];

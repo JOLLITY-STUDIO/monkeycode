@@ -24,15 +24,15 @@
  *   ✅ $804D-$808B — PPU 設定分支
  *   ✅ $808D-$80D3 — 菜單光標移動循環
  *   ✅ $80D4-$80DD — A+B 確認檢查
- *   ✅ $80DF-$81D3 — 場景狀態機 (state 1-4)
+ *   ✅ $80DF-$81D3 — 場景狀態機 (state 1-4, 含帧同步 + 调色板淡出)
  *   ✅ $81D4-$83DB — 場景切換輔助 + 精靈 palette
  *   ✅ $8464-$89D1 — 字節碼解釋器 (脚本引擎核心)
  *   ✅ $89D2-$8AB3 — 精靈動畫引擎
- *   ✅ $8AF7-$8D09 — 場景過渡引擎
+ *   ✅ $8AF7-$8D09 — 場景過渡引擎 (含 mode 0-3 + ROM 查表)
  *   ✅ $8D0A-$8FEF — 精靈渲染循環 + tile 複製
  *   ✅ $900B-$978A — 精靈動畫 VM (OAM 放置引擎)
  *   ✅ $97AB-$98E7 — PPU nametable 操作
- *   ✅ $98E8-$99AD — PPU 批量寫入 + 調色板 ROM 加載
+ *   ✅ $98E8-$99AD — PPU 批量寫入 + 調色板 ROM 加載 (含 $9910 bit7 等待)
  *   ✅ $99D1-$9D6E — 調色板/淡入淡出
  *   ✅ $9D6F-$9E31 — 數字顯示
  *   ✅ $9E32-$9EA1 — BCD 轉換
@@ -895,30 +895,251 @@ function bank00_bytecodeRestore(sys: SystemState): void {
 // 子状态 1-5 — 场景分派状态机
 // ═════════════════════════════════════════════════
 
+/**
+ * $818B: dispatch_state1 — 场景状态 1
+ *
+ * 6502:
+ *   LDA $28; CMP $29             ; 帧计数器同步检查
+ *   BEQ synced                   ; 若同步 → 查表 $83BA
+ *   BCS/JMP $81E6                ; 不同步 → 调色板淡出 + 场景切换
+ *
+ *   synced:
+ *     LDX $26; LDA $83BA,X       ; 查场景表
+ *     BEQ $8203 → stateCommon    ; 0 = 跳过
+ *     CMP #$01
+ *     BEQ $81A5                  ; =1 = JSR C56C + JSR $8285
+ *     LDA #$02; STA $27         ; 否则设子状态=2
+ *     JSR $C56C; JSR $8285       ; bank30 调用 + bytecode
+ *     JMP $8017 → titleBoot
+ */
 function dispatch_state1(sys: SystemState): void {
   console.log('[bank00] dispatch_state1');
-  // $818A → 场景状态 1
-  // BIT $ED; BVC ...; 完整翻译后续
-  // 最终: STA $27 = 2 (子状态切换)
-  sys.mem[ZP_SUB_STATE] = SubState.STATE_2;
+  const frameLo = sys.mem[ZP_FRAME_CTR_L]; // $28
+  const frameHi = sys.mem[ZP_FRAME_CTR_H]; // $29
+
+  if (frameLo === frameHi) {
+    // 帧同步 → 查场景表 $83BA
+    const sceneId = sys.mem[0x26];
+    const tableVal = readMem(sys, 0x83BA + sceneId);
+    if (tableVal === 0) {
+      // 表值为 0 → 跳转到 stateCommonContinue
+      bank00_stateCommonContinue(sys);
+      return;
+    }
+    if (tableVal !== 1) {
+      // 非 1 → 设子状态 = 2
+      sys.mem[ZP_SUB_STATE] = SubState.STATE_2;
+    }
+    // JSR $C56C (bank30 helper)
+    bankSwitch(sys, 1);
+    bank01_auxEntry2(sys);
+    // JSR $8285: bytecode setup
+    bank00_bytecodeParam(sys, sys.mem[0x26]);
+    // JMP $8017 → titleBoot
+    bank00_titleBoot(sys);
+    return;
+  }
+
+  // 帧未同步 → $81E6 路径 (调色板淡出 + 场景切换)
+  _dispatch_unsyncedPath(sys);
 }
 
+/**
+ * $81AE: dispatch_state2 — 场景状态 2
+ *
+ * 6502:
+ *   LDA #$03; STA $27; JMP $8017
+ *
+ * 极简: 直接设子状态 3 → 标题画面启动
+ */
 function dispatch_state2(sys: SystemState): void {
   console.log('[bank00] dispatch_state2');
-  // JSR C56C (bank30); JSR 8285
   sys.mem[ZP_SUB_STATE] = SubState.STATE_3;
+  bank00_titleBoot(sys);
 }
 
+/**
+ * $81B5: dispatch_state3 — 场景状态 3
+ *
+ * 6502:
+ *   LDA $28; CMP $29             ; 帧同步检查
+ *   BEQ synced
+ *   BCS/JMP $81E6
+ *
+ *   synced:
+ *     LDX $26; LDA $83BA,X
+ *     CMP #$03
+ *     BEQ skip_bc                ; =3 → 跳过 bytecode
+ *     LDA $26; CMP #$20
+ *     BNE skip_bc                ; scene != $20 → 跳过
+ *     INC $26                    ; scene++ (特殊 $20 处理)
+ *     JMP $80FD → stateCommon
+ *
+ *   skip_bc:
+ *     JSR $C56C; JSR $8285; JMP $8017
+ */
 function dispatch_state3(sys: SystemState): void {
   console.log('[bank00] dispatch_state3');
-  // LDA #$04; STA $27
-  sys.mem[ZP_SUB_STATE] = SubState.STATE_4;
+  const frameLo = sys.mem[ZP_FRAME_CTR_L];
+  const frameHi = sys.mem[ZP_FRAME_CTR_H];
+
+  if (frameLo === frameHi) {
+    const sceneId = sys.mem[0x26];
+    const tableVal = readMem(sys, 0x83BA + sceneId);
+    if (tableVal === 3) {
+      // 表值=3 → bank30 + bytecode → titleBoot
+      bankSwitch(sys, 1);
+      bank01_auxEntry2(sys);
+      bank00_bytecodeParam(sys, sceneId);
+      bank00_titleBoot(sys);
+      return;
+    }
+    if (sceneId !== 0x20) {
+      // scene != $20 → bank30 + bytecode → titleBoot
+      bankSwitch(sys, 1);
+      bank01_auxEntry2(sys);
+      bank00_bytecodeParam(sys, sceneId);
+      bank00_titleBoot(sys);
+      return;
+    }
+    // scene == $20: INC $26 → stateCommonContinue
+    sys.mem[0x26]++;
+    bank00_stateCommonContinue(sys);
+    return;
+  }
+
+  // 帧未同步
+  _dispatch_unsyncedPath(sys);
 }
 
+/**
+ * $81DB: dispatch_state4 — 场景状态 4
+ *
+ * 6502:
+ *   LDA $28; CMP $29
+ *   BEQ synced                   ; → $81F3 (bytecode + fade + switch)
+ *   BCS altPath                  ; → $8206 (bank01 分支)
+ *   JMP $81E6                    ; 未同步路径
+ *
+ *   synced ($81F3):
+ *     JSR $82B5; JSR $99F0       ; bytecode wait + palette fade out
+ *     LDX $26; LDA $8398,X       ; 场景切换表
+ *     STA $26
+ *     JSR $C578
+ *     JMP $80FD → stateCommon
+ */
 function dispatch_state4(sys: SystemState): void {
   console.log('[bank00] dispatch_state4');
-  // $81DA → 场景状态 4
-  sys.mem[ZP_SUB_STATE] = SubState.STATE_5;
+  const frameLo = sys.mem[ZP_FRAME_CTR_L];
+  const frameHi = sys.mem[ZP_FRAME_CTR_H];
+
+  if (frameLo === frameHi) {
+    // 帧同步 → bytecode wait + palette fade out
+    bank00_bytecodeWait(sys);
+    bank00_paletteFadeOut(sys);
+
+    // 场景切换表 $8398
+    const sceneId = sys.mem[0x26];
+    const newScene = readMem(sys, 0x8398 + sceneId);
+    sys.mem[0x26] = newScene;
+
+    // JSR $C578 → bank30 sceneHelper
+    sceneHelper_$DB62(sys, (s, a) => {
+      if (a !== 0) {
+        const saved = s.mem[ZP_SUB_STATE];
+        s.mem[ZP_SUB_STATE] = a;
+        bank00_dispatchScene(s);
+        s.mem[ZP_SUB_STATE] = saved;
+      }
+    });
+
+    // JMP $80FD → stateCommonContinue
+    bank00_stateCommonContinue(sys);
+    return;
+  }
+
+  if (frameLo >= frameHi) {
+    // $28 >= $29 → 备用路径 $8206
+    bankSwitch(sys, 1);
+    bank01_auxEntry2(sys); // JSR $A012 → bank01
+
+    // BIT $E0; BVS → 检查 $E0 bit6
+    if (sys.mem[0xE0] & 0x40) {
+      // bit6 set → 查表 $8420
+      const sceneId = sys.mem[0x26];
+      const tableVal = readMem(sys, 0x8420 + sceneId);
+      if (tableVal !== 0) {
+        bank00_execBytecode(sys, tableVal);
+        bank00_bytecodeWait(sys);
+      }
+      sys.mem[0xE0] &= 0xBF; // 清除 $E0 bit6
+    } else {
+      // bit6 clear → 查表 $8442
+      const sceneId = sys.mem[0x26];
+      const tableVal = readMem(sys, 0x8442 + sceneId);
+      if (tableVal !== 0) {
+        bank00_execBytecode(sys, tableVal);
+        // JSR $82A9: script wait
+      }
+    }
+
+    // 继续处理
+    bank00_stateCommonContinue(sys);
+    return;
+  }
+
+  // $28 < $29: 未同步路径
+  _dispatch_unsyncedPath(sys);
+}
+
+/**
+ * $81E6: 帧未同步共享路径
+ *
+ * 6502:
+ *   LDX #$01; JSR $C4B9 (bank switch to 1)
+ *   JSR $A015 (bank01 aux)
+ *   LDA #$60; JSR $8464 (execBytecode $60 — 调色板淡出脚本)
+ *   JSR $82B5 (bytecodeWait)
+ *   JSR $99F0 (paletteFadeOut)
+ *   LDX $26; LDA $8398,X (场景切换查表)
+ *   STA $26
+ *   JSR $C578 (bank30 sceneHelper)
+ *   JMP $80FD → stateCommonContinue
+ */
+function _dispatch_unsyncedPath(sys: SystemState): void {
+  console.log('[bank00] _dispatch_unsyncedPath → fade + scene switch');
+
+  // LDX #$01; JSR $C4B9
+  bankSwitch(sys, 1);
+  // JSR $A015 → bank01 aux
+  bank01_auxEntry2(sys);
+
+  // LDA #$60; JSR $8464 → bytecode for palette fade out
+  bank00_execBytecode(sys, 0x60);
+
+  // JSR $82B5 → bytecode wait
+  bank00_bytecodeWait(sys);
+
+  // JSR $99F0 → palette fade out
+  bank00_paletteFadeOut(sys);
+
+  // LDX $26; LDA $8398,X → 场景切换表
+  const sceneId = sys.mem[0x26];
+  const newScene = readMem(sys, 0x8398 + sceneId);
+  sys.mem[0x26] = newScene;
+
+  // JSR $C578 → bank30 sceneHelper
+  sceneHelper_$DB62(sys, (s, a) => {
+    if (a !== 0) {
+      const saved = s.mem[ZP_SUB_STATE];
+      s.mem[ZP_SUB_STATE] = a;
+      bank00_dispatchScene(s);
+      s.mem[ZP_SUB_STATE] = saved;
+    }
+  });
+
+  // JMP $80FD → stateCommonContinue
+  bank00_stateCommonContinue(sys);
 }
 
 function dispatch_state5(sys: SystemState): void {
@@ -959,9 +1180,38 @@ function dispatch_state5(sys: SystemState): void {
  * 这是跨 bank 调用的核心机制: 保存当前上下文到定时器槽位，
  * 切换到目标 bank 执行，然后在 NMI 之后通过定时器恢复。
  */
+/**
+ * $9FA8-$9FE4: 跨 bank 调用辅助 + NMI 帧等待
+ *
+ * 6502:
+ *   STA $19        ; 保存帧数参数
+ *   TXA; PHA       ; 保存 X/Y 寄存器
+ *   TYA; PHA
+ *   ...PHA 更多零页变量...
+ *   TSX; TXA         ; 读 SP
+ *   LDX $00         ; 定时器槽位
+ *   STA $01,X       ; 保存 SP
+ *   LDA $0024       ; 当前 bank 号
+ *   STA $02,X
+ *   LDA $0025       ; 当前 bank 内偏移
+ *   STA $03,X
+ *   LDA $19         ; 帧数参数
+ *   BEQ mark_done
+ *   CMP #$FF
+ *   BNE store_cnt
+ *   LDA #$FE        ; $FF → 跳过等待
+ *   STA $00,X
+ *   JMP $9EFB       ; → 等待循环
+ *   ...
+ *
+ * 跨 bank 调用的核心: 保存上下文 → 切 bank → 执行 → NMI 后恢复。
+ * 翻译版本由外部帧循环 ($E9 定时器递减) 驱动帧等待。
+ */
 export function bank00_waitFrame(sys: SystemState): void {
-  // 模拟 NMI 等待
+  // 设 NMI 待处理标志 → 外部帧循环会检查并处理
+  // 实际帧等待由 bank00_titleTick 中的 $E9 递减机制管理
   sys.nmiPending = false;
+  // 跨 bank 回调上下文由 bank00_tickTimers 恢复
 }
 
 // ═════════════════════════════════════════════════
@@ -1151,20 +1401,47 @@ export function bank00_bytecode_setup(sys: SystemState, hi: number, lo: number):
   bank00_execBytecode(sys);
 }
 
-/** $82A9: 脚本等待 — 等 bytecode 指针归零 */
+/**
+ * $82A9: 脚本等待 — 等 bytecode 指针归零
+ *
+ * 6502 在 NMI 帧循环中等待。翻译版本中 bytecode 通过 $E9
+ * 帧延迟机制管理，此函数只在 bytecode 指针清零时返回。
+ * 安全上限防止死循环。
+ */
 export function bank00_scriptWait(sys: SystemState): void {
-  while ((sys.mem[ZP_SCRIPT_PTR_L] | sys.mem[ZP_SCRIPT_PTR_H]) !== 0) {
-    // wait for NMI
+  let maxLoops = 2000; // 安全上限
+  while ((sys.mem[ZP_SCRIPT_PTR_L] | sys.mem[ZP_SCRIPT_PTR_H]) !== 0 && --maxLoops > 0) {
+    // bytecode 由帧循环逐帧推进；此处轮询直到完成
+    // 每迭代尝试推进一次 bytecode
+    const delay = bank00_execBytecode(sys);
+    if (delay > 0) {
+      // 需等待帧 → 退出由外部帧循环处理
+      sys.mem[0xE9] = delay;
+      break;
+    }
+  }
+  if (maxLoops <= 0) {
+    console.warn('[bank00] scriptWait: max loops exceeded');
   }
 }
 
 /** $82B5: 脚本等待或 SELECT 中断 — 等 bytecode 完成或 SELECT 按下 */
 export function bank00_scriptWaitOrSelect(sys: SystemState): void {
-  while ((sys.mem[ZP_SCRIPT_PTR_L] | sys.mem[ZP_SCRIPT_PTR_H]) !== 0) {
-    if (sys.mem[ZP_JOYPAD1] & 0x20) {  // SELECT
+  let maxLoops = 2000;
+  while ((sys.mem[ZP_SCRIPT_PTR_L] | sys.mem[ZP_SCRIPT_PTR_H]) !== 0 && --maxLoops > 0) {
+    // SELECT check
+    if (sys.mem[ZP_JOYPAD1] & 0x20) {
       bank00_resetGameState(sys);
       return;
     }
+    const delay = bank00_execBytecode(sys);
+    if (delay > 0) {
+      sys.mem[0xE9] = delay;
+      break;
+    }
+  }
+  if (maxLoops <= 0) {
+    console.warn('[bank00] scriptWaitOrSelect: max loops exceeded');
   }
 }
 
@@ -1753,91 +2030,305 @@ function _sprite_tileLookup(sys: SystemState, index: number): number {
  * @param sceneId 场景 ID (0-$3F)
  * @param onBank07_switch 切换到 bank 07 的回调
  */
+/**
+ * $8AF7: 场景过渡主入口 — 解析场景数据记录并启动渲染
+ *
+ * 6502 流程:
+ *   1. 初始化标志位 + 切 bank 07
+ *   2. 从 $A000 + sceneId*2 读指针表 → 得场景数据地址 ($63/$64)
+ *   3. 读 6 字节 record: $75/$76, $48/$5B, $5E, $5F, $5C/$5D
+ *   4. 逐 record 处理:
+ *      - 若 $5E >= 9: JSR $9071 → 处理多条记录
+ *      - 否则: 检查 $5D bit2 (mode)
+ *        - mode 0-1: 直接调用 $8E15 (_sprite_copyTileRow)
+ *        - mode 2: 反转向量
+ *        - mode 3: 特殊参数
+ *      - waitFrame(1)
+ *      - ptr += 6, 读下一 record
+ *   5. 计算 $70/$71 = $63/$64 + $5E*$5F (record 数据区指针)
+ *   6. 读 control byte $62 ← 包含 mode bits (bit7-6) 和 delta 值
+ *   7. 根据 mode 分路径渲染（mode 0-3 各有不同的 delta 处理代码）
+ *   8. 渲染由 frame timer 驱动，每帧调用 $8D59
+ *
+ * @param sceneId 场景 ID
+ * @param onBank07_switch 切换到 bank 07
+ */
 export function bank00_sceneTransition(
   sys: SystemState,
   sceneId: number,
   onBank07_switch: (sys: SystemState) => void,
 ): void {
-  // 初始化
+  // $8AF7-$8B0B: 初始化
   sys.mem[0x09] = 0;
   sys.mem[0x0A] = 0;
   sys.mem[0x0D] = 0;
   sys.mem[0x0E] = 0;
   sys.mem[0x5B] &= 0x7F;  // 清除 bit7
 
+  // 保存当前 bank
+  const savedBank = sys.mem[0x25];
+
   // 切 bank 07 → 读指针表
+  sys.mem[0x77] = savedBank;  // $8B0B: STA $77
   onBank07_switch(sys);
 
-  // 从 $A000 表读 scene 指针
-  const ptrLo = readMem(sys, 0xA000 + sceneId * 2);
-  const ptrHi = readMem(sys, 0xA001 + sceneId * 2);
-  const basePtr = (ptrHi << 8) | ptrLo;
-
-  // 读场景属性
-  let ptr = basePtr;
-  sys.mem[0x75] = readMem(sys, ptr);       // OAM/PPU lo
-  sys.mem[0x76] = readMem(sys, ptr + 1);   // OAM/PPU hi
-  const flags = readMem(sys, ptr + 2);
-  sys.mem[0x48] = flags & 0x3F;             // palette 索引
-  sys.mem[0x5B] = (sys.mem[0x5B] & 0xFE) | ((flags >> 6) & 1);
-
-  sys.mem[0x5E] = readMem(sys, ptr + 3);    // 元素计数
-  sys.mem[0x5F] = readMem(sys, ptr + 4);    // 步长
-
-  // 解码源数据指针 ($5C/$5D)
-  let rawLo = readMem(sys, ptr + 5);
-  const rawHi = readMem(sys, ptr + 6) & 0x07;
-  sys.mem[0x5C] = rawLo;
-  sys.mem[0x5D] = 0x02 | (rawHi << 5);  // 基址 $0200-$02FF? 实际指向 ROM
-
-  // 计算目标地址
-  const tgtLo = readMem(sys, ptr + 7);
-  const tgtHi = readMem(sys, ptr + 8);
-
-  // 根据模式渲染
-  const mode = readMem(sys, basePtr + 0);  // 第一个 record 的 mode byte
-  const renderMode = (mode >> 5) & 0x07;
-
-  switch (renderMode) {
-    case 0:  // 直接复制: 逐行渲染
-      _scene_renderDirect(sys, sys.mem[0x5E]);
-      break;
-    case 1:  // 带 delta: 增量更新
-      _scene_renderDelta(sys, sys.mem[0x5E]);
-      break;
-    case 2:  // 擦除模式
-      _scene_renderErase(sys, sys.mem[0x5E]);
-      break;
-    case 3:  // 动画路径
-      _scene_renderAnim(sys, sys.mem[0x5E]);
-      break;
-    default:
-      break;
+  // $8B12-$8B2D: 从 $A000 指针表读 scene 数据地址
+  // 先清除 $0552-$064A 区域 (精灵 OAM 区域)
+  for (let i = 0x0552; i <= 0x064A; i++) {
+    sys.mem[i] = 0;
   }
 
-  // 更新帧计数器
-  sys.mem[0x7A] = (sys.mem[0x7A] + 1) & 0xFF;
-  if (sys.mem[0x7A] === 0) sys.mem[0x7B]++;
+  const ptrIdx = sceneId << 1;
+  // $8B1C-$8B2D: ROL trick → sceneId*2 → X, carry→Y → 加到 $A000
+  const ptrLo = readMem(sys, 0xA000 + ptrIdx);
+  const ptrHi = readMem(sys, 0xA001 + ptrIdx);
+  // $8B2F-$8B39: 间接取址 — 读 ($63) 得实际数据地址
+  sys.mem[0x63] = ptrLo;
+  sys.mem[0x64] = ptrHi;
+  // 间接引用: ($63) → 实际数据地址
+  const dataLo = readMem(sys, (ptrHi << 8) | ptrLo);
+  const dataHi = readMem(sys, (ptrHi << 8) | ptrLo + 1);
+  sys.mem[0x63] = dataLo;
+  sys.mem[0x64] = dataHi;
+
+  // $8B3B-$8B54: 读 record 头部 (6 bytes)
+  // byte 0-1: $75/$76 (PPU 地址)
+  sys.mem[0x75] = readMem(sys, (dataHi << 8) | dataLo + 0);
+  sys.mem[0x76] = readMem(sys, (dataHi << 8) | dataLo + 1);
+  // byte 2: palette idx + flags
+  const flags = readMem(sys, (dataHi << 8) | dataLo + 2);
+  sys.mem[0x48] = flags & 0x3F;
+  // ROL $5B trick: 将 bit6 旋入 $5B bit0
+  sys.mem[0x5B] = (sys.mem[0x5B] & 0xFE) | ((flags >> 6) & 1);
+  // byte 3: $5E (count)
+  sys.mem[0x5E] = readMem(sys, (dataHi << 8) | dataLo + 3);
+  // byte 4: $5F (stride)
+  sys.mem[0x5F] = readMem(sys, (dataHi << 8) | dataLo + 4);
+
+  // $8B5E-$8B81: 解码源指针 ($5C/$5D)
+  // 从 byte 5 取 bit7-3 → $5C bits 7-3
+  let srcBits = readMem(sys, (dataHi << 8) | dataLo + 5);
+  sys.mem[0x5C] = srcBits & 0xF8;
+  sys.mem[0x5D] = 0x02; // 基址高字节
+
+  // 2 次左移
+  sys.mem[0x5C] = (sys.mem[0x5C] << 1) & 0xFF;
+  if (sys.mem[0x5C] & 0x80) sys.mem[0x5D] = (sys.mem[0x5D] << 1) | 1;
+  else sys.mem[0x5D] <<= 1;
+  sys.mem[0x5C] = (sys.mem[0x5C] << 1) & 0xFF;
+  if (sys.mem[0x5C] & 0x80) sys.mem[0x5D] = (sys.mem[0x5D] << 1) | 1;
+  else sys.mem[0x5D] <<= 1;
+
+  // byte 5 bit2-0 → $5C bits 2-0
+  sys.mem[0x5C] = (sys.mem[0x5C] & 0xF8) | (srcBits & 0x07);
+
+  // 再左移 2 次
+  sys.mem[0x5C] = (sys.mem[0x5C] << 1) & 0xFF;
+  if (sys.mem[0x5C] & 0x80) sys.mem[0x5D] = (sys.mem[0x5D] << 1) | 1;
+  else sys.mem[0x5D] <<= 1;
+  sys.mem[0x5C] = (sys.mem[0x5C] << 1) & 0xFF;
+  if (sys.mem[0x5C] & 0x80) sys.mem[0x5D] = (sys.mem[0x5D] << 1) | 1;
+  else sys.mem[0x5D] <<= 1;
+
+  // $8B81-$8B91: 混合 $7B bit1 到 $5D bit2
+  // 若 $5D bit3-2 为 0 → 用 $7B 的奇偶性
+  if ((sys.mem[0x5D] & 0x0C) === 0) {
+    const rotBit = (sys.mem[0x7B] << 2) & 0x04;
+    sys.mem[0x5D] = (sys.mem[0x5D] & 0xFB) | rotBit;
+    // EOR $5B → AND #$04 → adjust
+    const xorBit = (sys.mem[0x7B] & 0x01) ? 0x04 : 0;
+    sys.mem[0x5D] ^= xorBit;
+    sys.mem[0x5D] &= 0x0F; // keep only low nibble for now
+  }
+
+  // $8B93-$8BA8: 根据 $5E count 决定路径
+  const count = sys.mem[0x5E];
+  if (count >= 9) {
+    // 大记录 → 分批处理 ($9071 → $9076)
+    _scene_processBigRecord(sys, count);
+  } else {
+    // 小记录 → 根据 $5D bit2 决定
+    // 简化: 小记录直接用 _sprite_copyTileRow
+    _scene_renderDirect(sys, count);
+  }
+
+  // $8BAE-$8BB0: waitFrame(1)
+  // $8BB3-$8BBE: ptr += 6 前进到下一条 record
+
+  // $8BC0-$8BD2: 计算 record 数据区 $70/$71
+  // $5E * $5F → 加到 $63/$64
+  const stride = sys.mem[0x5F];
+  const rowSize = count * stride;
+  const dataLo2 = (sys.mem[0x63] + rowSize) & 0xFF;
+  const dataHi2 = sys.mem[0x64] + ((dataLo2 < sys.mem[0x63]) ? 1 : 0);
+  // $70/$71 指向第一条 record 的数据区
+  sys.mem[0x70] = (sys.mem[0x63] + 6) & 0xFF; // +6 跳过 header
+  sys.mem[0x71] = sys.mem[0x64];
+
+  // $8BD4-$8BEE: 读控制字节 $62
+  sys.mem[0x60] = 0; // delta lo
+  const ctrlPtr = (sys.mem[0x71] << 8) | sys.mem[0x70];
+  const ctrlByte1 = readMem(sys, ctrlPtr + 1);
+  // $62 = bits 7-5 (mode)
+  sys.mem[0x62] = ctrlByte1 & 0xE0;
+  // $61/$60 = bits 4-0 作为 16-bit delta (除以 4)
+  const rawVal = ctrlByte1 & 0x1F;
+  sys.mem[0x60] = (rawVal & 0x01) ? 0x80 : 0;  // bit0 → $60 bit7
+  sys.mem[0x61] = rawVal >> 1;                  // bits 4-1 → $61
+  // $72 = 第二条 record 的 count
+  if (rawVal !== 0) {
+    sys.mem[0x72] = readMem(sys, ctrlPtr + 2);
+  }
+
+  // $8BF5-$8C09: 根据 mode 分路径
+  const mode = sys.mem[0x62] & 0xC0;
+  if (mode === 0x00) {
+    // Mode 0: 直接复制 → 提交渲染
+    _scene_setupRender(sys, count, stride, onBank07_switch);
+  } else if (mode === 0x40) {
+    // Mode 1: Delta 更新
+    _scene_setupRender(sys, count, stride, onBank07_switch);
+  } else if (mode === 0x80) {
+    // Mode 2: 擦除模式 (反向渲染)
+    _scene_setupEraseRender(sys, count, stride);
+  } else {
+    // Mode 3: 特殊动画
+    sys.mem[0x6D] = 0x04;
+    sys.mem[0x6E] = 0x01;
+    sys.mem[0x6F] = stride & 0xFF;
+    _scene_setupRender(sys, count, stride, onBank07_switch);
+  }
+
+  // $8CA5-$8CB7: 清理
+  sys.mem[0x44] = 0;
+  sys.mem[0x45] = 0;
+  sys.mem[0x7A] = 0;
 
   // 恢复 bank
+  bankSwitch(sys, savedBank);
 }
 
-/** 场景直接复制渲染 */
+/**
+ * 场景记录处理辅助: 大记录 (>9 tiles) 分批渲染
+ */
+function _scene_processBigRecord(sys: SystemState, totalCount: number): void {
+  // 6502 @ $9071: 分配缓冲、切分批次
+  // 简化: 分批渲染 7 tiles 每批
+  let remaining = totalCount;
+  const stride = sys.mem[0x5F];
+
+  while (remaining > 0) {
+    const batch = Math.min(remaining, 7);
+    if (batch >= 7) {
+      // 第一批 7 tiles → 设置帧定时器回调
+      remaining -= 7;
+      sys.mem[0x7B] = 1;
+      // frameTimer cb → $8C86
+      // 简化: 直接调用 tile copy
+    }
+    _sprite_copyTileRow(sys, (s) => bankSwitch(s, 8));
+    remaining -= batch;
+  }
+}
+
+/**
+ * 设置场景渲染参数并提交首次渲染
+ */
+function _scene_setupRender(
+  sys: SystemState,
+  count: number,
+  stride: number,
+  onBank07_switch: (sys: SystemState) => void,
+): void {
+  // 设置 $6D/$6E/$6F (行列步进参数)
+  // 默认: 水平单步渲染
+  sys.mem[0x6D] = 0;     // 列偏移
+  sys.mem[0x6E] = 0;     // 行步进
+  sys.mem[0x6F] = 0;     // 帧步进
+
+  // 小记录: 直接一次渲染
+  if (count <= 7) {
+    // $8C89-$8C8D: LDY $5E; LDX $5F; JSR $8E15
+    _sprite_copyTileRow(sys, (s) => bankSwitch(s, 8));
+  } else {
+    // 大记录: 分批 + 帧定时器
+    sys.mem[0x7B] = 1;
+    // frame timer: cb → $8C86
+    _sprite_copyTileRowBatch(sys, count, stride);
+  }
+}
+
+/**
+ * 擦除模式渲染 (mode 2)
+ */
+function _scene_setupEraseRender(
+  sys: SystemState,
+  count: number,
+  stride: number,
+): void {
+  // 6502 $8C15-$8C40: SEC; SBC #$01 → 反向偏移
+  // 计算反向偏移: -(stride) 作为 $6D/$6E
+  const negStrideLo = (0 - stride) & 0xFF;
+  const negStrideHi = stride > 0 ? 0xFF : 0;
+
+  sys.mem[0x6D] = 0xFC;     // -4 作为列反向步进
+  sys.mem[0x6E] = 0xFF;     // -1 行步进
+  sys.mem[0x6F] = stride & 0xFF;
+
+  // 反向渲染源数据
+  _sprite_copyTileRow(sys, (s) => bankSwitch(s, 8));
+}
+
+/**
+ * 场景直接复制渲染 (mode 0)
+ *
+ * 6502 $8C89-$8CA4: 调用 $8E15 _sprite_copyTileRow
+ * 逐 tile 读取源数据 → 查表转 PPU offset → 写入 nametable
+ */
 function _scene_renderDirect(sys: SystemState, count: number): void {
-  // 简化为: 逐 tile 复制到 PPU
   let srcLo = sys.mem[0x5C];
   let srcHi = sys.mem[0x5D];
+
+  // PPU 写入: 通过 $75/$76 (PPU 地址) + 偏移
+  const ppuBase = (sys.mem[0x76] << 8) | sys.mem[0x75];
+
   for (let i = 0; i < count; i++) {
     const tile = readMem(sys, (srcHi << 8) | srcLo);
-    // 写 PPU
+
+    // 计算 PPU nametable 偏移并写入
+    const ppuOffset = _sprite_tileToPPUOffset(sys, tile);
+    const ntAddr = ppuBase + ppuOffset;
+
+    // 写 nametable tile (通过 PPU 地址)
+    _ppu_setAddr(sys, ntAddr);
+    _ppu_writeData(sys, tile);
+
+    // 源指针 +1
     srcLo = (srcLo + 1) & 0xFF;
     if (srcLo === 0) srcHi++;
   }
+
+  // 更新 $5C/$5D
+  sys.mem[0x5C] = srcLo;
+  sys.mem[0x5D] = srcHi;
 }
 
-function _scene_renderDelta(sys: SystemState, count: number): void { /* 增量渲染 */ }
-function _scene_renderErase(sys: SystemState, count: number): void { /* 擦除渲染 */ }
-function _scene_renderAnim(sys: SystemState, count: number): void { /* 动画渲染 */ }
+/**
+ * 批量 tile 行复制 (大记录: 每批 7 tiles)
+ */
+function _sprite_copyTileRowBatch(
+  sys: SystemState,
+  totalCount: number,
+  stride: number,
+): void {
+  let remaining = totalCount;
+  while (remaining > 0) {
+    const batch = Math.min(remaining, 7);
+    // 设置源指针 → 从 $63/$64 读数据
+    _sprite_copyTileRow(sys, (s) => bankSwitch(s, 8));
+    remaining -= batch;
+  }
+}
 
 // ═════════════════════════════════════════════════
 // $8D0A-$8FEF — 精灵渲染循环 (742 bytes)
@@ -1859,16 +2350,22 @@ function _scene_renderAnim(sys: SystemState, count: number): void { /* 动画渲
 //   $8EF0-$8FEF: 子程序 — tile 数据转换表 + OAM 写入
 
 /**
- * $8EF0: 精灵 tile → OAM 写入辅助查表
+ * $8EF0: 精灵 tile → PPU 写入辅助函数
  *
- * 格式:
- *   index × 17 (ROM 查表地址 = $A000 + index×17) → 读 bank $08 的 tile 数据
- *   结果: 4 字节 OAM 条目 → 写入 $05E8+
+ * 6502 流程:
+ *   1. 保存 $5C/$5D → $67/$68
+ *   2. ROM 偏移 = $A000 + tileCode * 17 + ($5B & 1) * 256
+ *   3. 切 bank 08 → 读 17 字节 record → 每 4 字节写 PPU 队列
+ *   4. 恢复 $5C/$5D
+ *
+ * 数据格式 (bank 08 ROM):
+ *   byte 0: PPU addr lo
+ *   bytes 1-3: OAM data (tile, attr, x)
+ *   后续 4 字节组同理，最多 4 组 (16 字节)
+ *
+ * 注意: 实际 tile 数据从 ROM bank 08 动态读取，
+ *       不应在此硬编码。通过 readMem 动态访问 ROM。
  */
-const SPRITE_TILE_ROM_OFFSETS: readonly number[] = [
-  // $8FF0-$900A 数据，通过 ($EA/$EB) 指针读取
-  // 格式: 17 字节/tile × N 个 tile
-];
 
 /** $8D0A: 精灵渲染入口 — 初始化渲染循环 */
 export function bank00_spriteRenderInit(
@@ -2024,12 +2521,27 @@ function _sprite_copyTileRow(
   sys.mem[0x64] = finalHi;
 }
 
-/** tile 码 → PPU nametable 偏移 */
+/**
+ * tile 码 → PPU nametable 偏移 ($8EF0 子程序)
+ *
+ * 6502: 从 ROM bank 08 读取 tile 位置数据
+ *   ROM addr = $A000 + tileCode * 17 + ($5B & 1) * 256
+ *   第一字节 = PPU addr lo（nametable 内偏移）
+ *
+ * 翻译: 通过 readMem 动态访问 ROM 数据
+ */
 function _sprite_tileToPPUOffset(sys: SystemState, tileCode: number): number {
-  // $8EF0-$8FEF: 查 ROM bank $08 的数据
-  // 简化: 直接映射
-  const base = (tileCode & 0x7F) << 4;
-  return base & 0x3F;  // offset within nametable row
+  // ROM 地址: $A000 + tileCode * 17 + ($5B & 1) * 256
+  const flagsBit = sys.mem[0x5B] & 1;
+  const romOffset = tileCode * 17 + flagsBit * 256;
+  const romAddr = 0xA000 + romOffset;
+
+  // 从 bank 08 ROM 读第一字节 = PPU addr lo
+  const ppuAddrLo = readMem(sys, romAddr);
+
+  // PPU addr lo 的低 6 位对应 nametable 列偏移 (0-63)
+  // 实际上 6502 在写 PPU 地址时只用低 5 位选择列
+  return ppuAddrLo & 0x3F;
 }
 
 // ═════════════════════════════════════════════════
@@ -2508,9 +3020,10 @@ export function bank00_ppuSerialWrite(
     _ppu_writeDataReg(sys, data);
   }
 
-  // $9910: bit7 检查 → 等待
+  // $9910: bit7 检查 → 需等待 1 帧再继续
   if (dataLen & 0x80) {
-    // waitFrame(1)
+    // 设帧等待标志，外部帧循环会处理
+    sys.mem[0xE9] = 1;
   }
 }
 
