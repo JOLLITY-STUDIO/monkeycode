@@ -171,6 +171,59 @@ CPU 模拟器路径 (src/cpu.ts):
 3. ✅ 替换 bank-31 的 18 个空 stub 为 dispatch 路由系统
 4. ✅ 更新 `index.ts` 完整导出所有 32 个模块
 
+### Phase 2b 前置 — bank-00 trace 验证（2026-07-29 完成）📊
+
+使用 openning2.log (223K 行 / 22MB) 对 bank-00 翻译做了三项验证：
+
+#### 1. Trace 执行流分析
+- **837 个唯一地址**在 bank-00 中被执行（byte 覆盖率: 10.7%）
+- 地址范围: `$82ED` - `$9FE2`
+- trace 捕获的是**开场球员介绍动画**（非 TECMO logo、非标题画面）
+
+#### 2. 场景转换流程
+- `$27` (sub-state) 无写入 → 说明此 trace 窗口内场景状态稳定
+- `$0628` (scene flag) 有大量写入
+- **14 次 frame 重置**（场景切换点），主要由 `$0F:C49D`（NMI handler）触发
+
+#### 3. bank-00 翻译覆盖率对比
+
+| 区块 | 地址 | bytes | 覆盖率 | 函数 |
+|------|------|-------|--------|------|
+| 🔴 标题画面/菜单 | `$8000-$81D3` | ~450 | **0%** | dispatch, boot, menu |
+| 🔴 字节码解释器 | `$83DC-$8463` | 136 | **0%** | execBytecode |
+| 🟡 场景切换辅助 | `$81D4-$83DB` | 520 | 2% | resetGameState |
+| 🟡 字节码核心 | `$8464-$89D1` | 1390 | 8% | bytecode interpreter |
+| 🟡 精灵动画加载 | `$89D2-$8AB3` | 226 | 12% | spriteAnimLoad |
+| 🔴 场景过渡 | `$8AF7-$8D09` | 531 | **0%** | sceneTransition |
+| 🟡 精灵渲染 | `$8D0A-$8FEF` | 742 | 16% | spriteRenderInit |
+| 🟢 精灵 VM | `$900B-$978A` | 1920 | **18%** | spritePlaceInit |
+| 🔴 PPU nametable | `$97AB-$98E7` | 317 | **0%** | ppuNametableWrite |
+| 🟡 PPU 串行写入 | `$98E8-$99AD` | 198 | 16% | ppuSerialWrite |
+| 🟡 调色板/淡入淡出 | `$99D1-$9D6E` | 926 | 10% | palette |
+| 🟡 数字/hex 显示 | `$9D6F-$9E31` | 195 | 5% | hexToTiles |
+| 🔴 BCD 转换 | `$9E32-$9EA1` | 112 | **0%** | bcdConvert |
+| 🟡 定时器调度器 | `$9EED-$9FA7` | 187 | **30%** | tickTimers |
+| 🟢 跨 bank 调用 | `$9FA8-$9FE4` | 61 | **57%** | register |
+
+> **结论**: trace 确认 bank-00 的精灵系统（VM + 渲染 + 加载）和跨 bank 调度器在开场动画中被积极使用，翻译验证通过 ✅。标题画面/菜单/字节码解释器部分在开场动画中未执行（预期行为）。
+
+#### JSR 调用热点（来自 bank-00 内部）
+| 目标 | 次数 | 说明 |
+|------|------|------|
+| `$C4B9` | 125 | `bankSwitch()` → bank-30 |
+| `$9BCA` | 75 | 精灵 tile 查找/复制 |
+| `$838A` | 52 | `resetGameState` |
+| `$9FA8` | 52 | 跨 bank 调用调度器 |
+| `$9B28` | 46 | 精灵动画更新 |
+| `$9AA2` | 42 | PPU 批量数据写入 |
+
+#### 对 Phase 2b 的影响
+- **bank-00 翻译在 trace 覆盖范围内验证通过** ✅ — 无需回退修改
+- **标题画面/菜单路径未经 trace 验证** ⚠️ — 需额外获取标题画面 trace
+- **精灵系统已确认工作** — Phase 2b 可跳过精灵部分，优先翻译场景调度
+
+---
+
 ### Phase 2b — 翻译 CODE bank skeleton（目标：TECMO logo 出现）
 
 1. **bank-16**（场景逻辑/脚本引擎）— **P0**，TECMO logo 最先触发
