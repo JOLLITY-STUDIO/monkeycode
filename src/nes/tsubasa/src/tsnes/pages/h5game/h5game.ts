@@ -2,10 +2,11 @@
  * ============================================================================
  * H5 游戏页面 — 双引擎对比：CPU 模拟器 vs Bank 翻译引擎
  *
- * 左画布: CPU 模拟器 (参考)
- * 右画布: Bank 翻译引擎 (TypeScript 直译, 不经 opcode)
+ * canvas0: CPU 模拟器 (参考)
+ * canvas1: Bank 翻译引擎 (TypeScript 直译)
  *
- * PRG-ROM + CHR-ROM 全部内建于 game-engine/data/ 中，无需外部 ROM 文件。
+ * Debug viewer: NT / PT / SPR / PAL / Disasm
+ * 所有图形 viewer 使用 CPU 模拟器 PPU（数据准确），ASM 使用 Bank 引擎内存
  * ============================================================================
  */
 
@@ -19,13 +20,26 @@ import { CHR_ROM_BANKS } from '../../game-engine/data/chr-data';
 import { buildRomBuffer } from '../../tsubasa-hex2asm/rom_header';
 import { translate_BANK31_RESET, tick_BANK31_mainLoop } from '../../game-engine/banks/bank-31';
 import { bank02_nmiHandler, bank02_ppuScrollUpdate } from '../../game-engine/banks/bank-02';
+import {
+  renderAllNameTables,
+  renderBothPatternTables,
+  renderPatternTable,
+  getSpriteData,
+  renderPaletteImage,
+  disassembleRange,
+} from '../../src/debug/index';
 
 const SCREEN_W = 256;
 const SCREEN_H = 240;
 const SAMPLE_RATE = 48000;
 const SCRIPT_BUF = 2048;
 
-// ── Canvas Slot ──────────────────────────────────────────
+// ── 精灵网格常量 ──
+const SPR_CELL_W = 32;            // 每个精灵单元格宽 (像素)
+const SPR_CELL_H = 32;            // 每个精灵单元格高 (像素)
+const SPR_COLS = 8;
+const SPR_ROWS = 8;
+
 interface CanvasSlot {
   canvas: any;
   ctx: any;
@@ -33,20 +47,35 @@ interface CanvasSlot {
   frameBuf: Uint32Array | null;
 }
 
-// ── 页面 ─────────────────────────────────────────────────
 Page({
   data: {
     status: 'initializing...',
     fps: '--',
+    debugTab: '',        // '' | 'nametable' | 'patterntable' | 'sprite' | 'palette' | 'disasm'
+    debugTabs: {
+      '': '游戏',
+      nametable: 'NT',
+      patterntable: 'PT',
+      sprite: '精灵',
+      palette: '调色板',
+      disasm: '汇编',
+    } as Record<string, string>,
+    debugLines: '',       // disasm 文本
   },
 
   _nes: null as NES | null,
-  _nes2: null as NES | null,  // 第二 NES（仅为 bank 引擎提供独立 PPU）
-  _sys: null as SystemState | null,  // bank 翻译引擎 SystemState
+  _nes2: null as NES | null,
+  _sys: null as SystemState | null,
   _slot: null as CanvasSlot | null,
-  _slot2: null as CanvasSlot | null, // 右画布 (bank 翻译)
+  _slot2: null as CanvasSlot | null,
   _animId: -1 as number,
   _started: false,
+
+  // ── Debug viewer ───────────────────────────────────────
+  _debugCanvas: null as any,
+  _debugCtx: null as any,
+  _debugImgData: null as any,
+  _debugQuerying: false,
 
   // ── Audio ──────────────────────────────────────────────
   _ring: null as Float32Array | null,
@@ -65,9 +94,6 @@ Page({
   _fpsLastTime: 0,
 
   // ================================================================
-  // 生命周期
-  // ================================================================
-
   onLoad() {
     console.log('[h5game] onLoad');
     this._ring = new Float32Array(this._ringCap);
@@ -79,7 +105,6 @@ Page({
   },
 
   onUnload() {
-    console.log('[h5game] onUnload');
     this._stopLoop();
     this._stopAudio();
     this._nes = null;
@@ -103,7 +128,6 @@ Page({
         const c0 = res && res[0];
         const c1 = res && res[1];
         if (!c0 || !c0.node || !c1 || !c1.node) {
-          console.warn('[h5game] canvas not found, retry in 300ms');
           setTimeout(() => this._initCanvas(), 300);
           return;
         }
@@ -134,14 +158,9 @@ Page({
   },
 
   // ================================================================
-  // 启动引擎
-  // ================================================================
-
   _startEngine() {
     try {
       this.setData({ status: 'loading ROM...' });
-
-      // ── 注册所有 32 个 PRG-ROM bank (MMC3 bank 切换必需) ──
       registerAllBanks(PRG_ROM_BANKS);
 
       // ── 左路: CPU 模拟器 ──
@@ -162,114 +181,64 @@ Page({
       });
 
       // ── 右路: Bank 翻译引擎 (独立 PPU) ──
-      // 关键: 必须给 onFrame/onStatusUpdate 否则 endFrame() 里
-      //   this.nes.ui.writeFrame(buffer) 调用 undefined 直接抛错
       this._nes2 = new NES({
         emulateSound: false,
-        onFrame: () => { /* no-op — bank 引擎自己取 buffer 渲染 */ },
-        onStatusUpdate: () => { /* no-op */ },
+        onFrame: () => {},
+        onStatusUpdate: () => {},
       });
       this._nes2.loadROM(buildRomBuffer(PRG_ROM_BANKS, CHR_ROM_BANKS));
       this._sys = createSystemState(this._nes2.ppu, this._nes2.papu);
-      // 统一内存: 让 PPU 内部的 this.nes.cpu.mem 指向 sys.mem,
-      // 这样 PPU 的 $2002 status register、OAM DMA ($4014) 等
-      // 全部和 bank code 共用同一个 Uint8Array, 不再各写各的。
       this._nes2.cpu.mem = this._sys.mem;
       translate_BANK31_RESET(this._sys);
 
-      console.log('[h5game] Dual engine ready: cpu=', !!this._nes?.cpu, 'bank=', !!this._sys);
-      console.log('[h5game] Bank PPU ctrl=', this._nes2.ppu.f_nmiOnVblank,
-        'bgVis=', this._nes2.ppu.f_bgVisibility, 'spVis=', this._nes2.ppu.f_spVisibility);
       this.setData({ status: 'running' });
       this._started = true;
 
       this._startAudio();
       this._frameLoop();
-
     } catch (e: any) {
-      const msg = e.message || String(e);
-      console.error('[h5game] Engine start failed:', msg, e.stack);
-      this.setData({ status: 'error: ' + msg.substring(0, 30) });
+      this.setData({ status: 'error: ' + (e.message || '').substring(0, 30) });
     }
   },
 
   // ================================================================
-  // 帧循环 (递归 setTimeout)
-  // ================================================================
-
   _frameLoop() {
     if ((!this._nes && !this._sys) || !this._started) return;
 
     try {
       this._applyInput();
 
-      // ── 左路: CPU 模拟器 ──
       if (this._nes) {
         this._nes.frame();
       }
 
-      // ── 右路: Bank 翻译引擎 ──
       if (this._sys && this._nes2) {
-        // 注入手柄输入
         this._applyInputToBank();
-        // 游戏逻辑 tick
         tick_BANK31_mainLoop(this._sys);
-        // NMI handler + 滚屏更新
         bank02_nmiHandler(this._sys);
         bank02_ppuScrollUpdate(this._sys);
-        // 推动 PPU 渲染完整一帧
         const buf = this._ppuStepFullFrame(this._nes2.ppu);
-        // 渲染
         if (this._slot2) {
           this._slot2.frameBuf = buf;
           this._renderSlot2();
         }
-        // 前 5 帧打印 PPU 内部状态诊断
-        if (this._fpsFrameCount < 5) {
-          const ppu = this._nes2.ppu;
-
-          // 1) ptTile 取样: 检查 tile 0/64/128/192/256 的第一行像素
-          const tileInfo: string[] = [];
-          [0, 64, 128, 192, 256].forEach(idx => {
-            const t = ppu.ptTile[idx];
-            const nonZero = t ? t.pix.filter((v: number) => v !== 0).length : 0;
-            tileInfo.push(`t${idx}=${nonZero}/64`);
-          });
-
-          // 2) nametable 0 前 8 tile indices (看有沒有數據)
-          const nt0 = (ppu as any).nameTable[0];
-          const nt0Head = nt0 ? Array.from(nt0.tile.slice(0, 8)).join(',') : 'NULL';
-
-          // 3) palette RAM ($3F00-$3F0F)
-          const palHead = Array.from(ppu.vramMem.slice(0x3F00, 0x3F00 + 8) as any as number[]).map((v: number) => v.toString(16).padStart(2, '0')).join(' ');
-
-          // 4) imgPalette[0-3] — 最终 RGB 颜色
-          const imgP = Array.from(ppu.imgPalette.slice(0, 4) as any as number[]).map((v: number) => v.toString(16)).join(' ');
-
-          // 5) MMC3 状态
-          const mmap = (this._nes2 as any).mmap;
-          const cmd = mmap?.command;
-          const prgMode = mmap?.prgAddressSelect;
-          const chrMode = mmap?.chrAddressSelect;
-
-          console.log('[h5game/bank] frame', this._fpsFrameCount,
-            'NMI=', ppu.f_nmiOnVblank, 'bgVis=', ppu.f_bgVisibility,
-            'bgPt=', ppu.f_bgPatternTable, 'scan=', ppu.scanline);
-          console.log('  ptTile nonZero:', tileInfo.join(' '));
-          console.log('  nt0[0-7]:', nt0Head);
-          console.log('  pal $3F00:', palHead, 'imgPal:', imgP);
-          console.log('  MMC3 cmd=', cmd, 'prgMode=', prgMode, 'chrMode=', chrMode);
+        // Debug 查看器
+        const tab = (this.data as any).debugTab as string;
+        if (tab) {
+          if (tab === 'disasm') {
+            if (this._fpsFrameCount % 30 === 0) this._renderDisasmDebug();
+          } else {
+            this._renderDebugView();
+          }
         }
       }
     } catch (e: any) {
-      console.error('[h5game] frame error:', e);
       this.setData({ status: 'crash: ' + (e.message || '').substring(0, 20) });
       return;
     }
 
     this._animId = setTimeout(() => this._frameLoop(), 16) as any;
 
-    // FPS 统计
     this._fpsFrameCount++;
     const now = Date.now();
     if (!this._fpsLastTime) this._fpsLastTime = now;
@@ -282,31 +251,24 @@ Page({
     }
   },
 
-  /** 推动独立 PPU 完整一帧, 返回 pixel buffer */
   _ppuStepFullFrame(ppu: any): Uint32Array {
     ppu.startFrame();
     try {
-      // 固定跑 262 个 scanline，不能用 frameEnded 判断。
-      // frameEnded 在 scanline 0 dot 1 就被 VBlank set 置位，
-      // 是给 NES CPU 循环用的退出信号——bank 引擎不跑 CPU，
-      // 必须靠我们手动推完所有 scanline。
       for (let scan = 0; scan < 262; scan++) {
         ppu.advanceDots(341);
         ppu.frameEnded = false;
       }
     } catch (e: any) {
-      console.warn('[h5game/bank] PPU step error at scanline', ppu.scanline, ':', e.message);
+      // ignore partial frame errors
     }
     ppu.frameEnded = false;
     return ppu.buffer;
   },
 
-  /** 将触屏输入写入 bank 引擎的 sys.mem */
   _applyInputToBank() {
     if (!this._sys) return;
     const d = this._dpadState;
     const b = this._btnState;
-    // 构建位掩码: bit7=Right, bit6=Left, bit5=Down, bit4=Up, bit3=Start, bit2=Select, bit1=B, bit0=A
     let mask = 0;
     if (d.up)    mask |= 0x10;
     if (d.down)  mask |= 0x20;
@@ -318,7 +280,6 @@ Page({
     if (b.a)     mask |= 0x01;
     this._sys.mem[0x4016] = mask & 0xFF;
     this._sys.mem[0x4017] = mask & 0xFF;
-    // 同步零页手柄变量 (bank-02 读的)
     this._sys.mem[0x1E] = mask & 0xFF;
   },
 
@@ -331,18 +292,16 @@ Page({
   },
 
   // ================================================================
-  // 渲染
+  // 渲染游戏画面
   // ================================================================
 
   _renderSlot() {
     const slot = this._slot;
     if (!slot || !slot.frameBuf || !slot.ctx) return;
-
     const ctx = slot.ctx;
     if (!slot.imgData) {
       slot.imgData = ctx.createImageData(SCREEN_W, SCREEN_H);
     }
-
     const data = slot.imgData.data;
     const src = slot.frameBuf;
     for (let i = 0, j = 0; i < src.length; i++, j += 4) {
@@ -358,12 +317,10 @@ Page({
   _renderSlot2() {
     const slot = this._slot2;
     if (!slot || !slot.frameBuf || !slot.ctx) return;
-
     const ctx = slot.ctx;
     if (!slot.imgData) {
       slot.imgData = ctx.createImageData(SCREEN_W, SCREEN_H);
     }
-
     const data = slot.imgData.data;
     const src = slot.frameBuf;
     for (let i = 0, j = 0; i < src.length; i++, j += 4) {
@@ -377,6 +334,271 @@ Page({
   },
 
   // ================================================================
+  // Debug 查看器
+  // ================================================================
+
+  onDebugTab(e: any) {
+    const tab = e.currentTarget.dataset.tab || '';
+    this.setData({ debugTab: tab, debugLines: '' });
+    if (tab === '' || tab !== 'disasm') {
+      this._debugCtx = null;
+      this._debugCanvas = null;
+      this._debugImgData = null;
+      this._debugQuerying = false;
+    }
+  },
+
+  _initDebugCanvas() {
+    if (this._debugCtx) return;
+    if (this._debugQuerying) return;
+    this._debugQuerying = true;
+    const query = wx.createSelectorQuery();
+    query.select('#debugCanvas')
+      .fields({ node: true, size: true })
+      .exec((res: any) => {
+        this._debugQuerying = false;
+        const c = res && res[0];
+        if (c && c.node) {
+          this._debugCanvas = c.node;
+          this._debugCtx = c.node.getContext('2d');
+          this._debugImgData = null;
+        }
+      });
+  },
+
+  /**
+   * 将源缓冲区 (w×h) 1:1 绘制到 canvas（像素尺寸 = w×h）
+   * CSS 通过 image-rendering: pixelated + max-width/max-height 自动放大撑满面板
+   */
+  _blitToDebugCanvas(buf: Uint32Array, w: number, h: number) {
+    const ctx = this._debugCtx;
+    const canvas = this._debugCanvas;
+    if (!ctx || !canvas) return;
+
+    canvas.width = w;
+    canvas.height = h;
+
+    const imgData = ctx.createImageData(w, h);
+    const pix = imgData.data;
+    for (let i = 0, j = 0; i < buf.length; i++, j += 4) {
+      const color = buf[i];
+      pix[j]     = color & 0xff;
+      pix[j + 1] = (color >> 8) & 0xff;
+      pix[j + 2] = (color >> 16) & 0xff;
+      pix[j + 3] = 0xff;
+    }
+    ctx.putImageData(imgData, 0, 0);
+  },
+
+  /** 主 debug 渲染入口 */
+  _renderDebugView() {
+    const tab = (this.data as any).debugTab as string;
+    if (!tab || tab === 'disasm' || tab === '') return;
+
+    if (!this._debugCtx) {
+      this._initDebugCanvas();
+      return;
+    }
+
+    // 图形 viewer 全部使用 CPU 模拟器 PPU（数据准确、调色板正确）
+    const nes = this._nes as any;
+    if (!nes) return;
+
+    try {
+      switch (tab) {
+        case 'nametable':    this._renderNTDebug(nes); break;
+        case 'patterntable': this._renderPTDebug(nes); break;
+        case 'sprite':       this._renderSpriteDebug(nes); break;
+        case 'palette':      this._renderPalDebug(nes); break;
+      }
+    } catch (e: any) {
+      console.warn('[debug] render error:', e.message);
+    }
+  },
+
+  // ── NT: 4 个 nametable 2×2 网格 ──
+  _renderNTDebug(nes: any) {
+    const { nt } = renderAllNameTables(nes);
+    const CW = 512, CH = 480;
+    const bg = 0xff_0d0d22;
+    const buf = new Uint32Array(CW * CH);
+    buf.fill(bg);
+
+    for (let ni = 0; ni < 4; ni++) {
+      if (!nt[ni]) continue;
+      const src = nt[ni].data;
+      const ox = (ni % 2) * 256;
+      const oy = Math.floor(ni / 2) * 240;
+      for (let y = 0; y < 240; y++) {
+        let di = (oy + y) * CW + ox;
+        let si = y * 256;
+        for (let x = 0; x < 256; x++) {
+          buf[di++] = src[si++];
+        }
+      }
+    }
+    this._blitToDebugCanvas(buf, CW, CH);
+  },
+
+  // ── PT: 两个 pattern table 上下排列 (各 128×128, 中间 8px 分隔) ──
+  // table0 用 imgPalette (BG), table1 用 sprPalette (精灵), 方便识别各自用途
+  _renderPTDebug(nes: any) {
+    const ppu = nes.ppu;
+    const { bgTable, spTable } = renderBothPatternTables(nes);
+    
+    // FCEUX 风格: 两个表都渲染，但可以传自定义 palette
+    // table0 ($0000) 是 BG table 时用 imgPalette，是 SP table 时用 sprPalette
+    // table1 ($1000) 同理反向
+    const pal0 = bgTable === 0 ? ppu.imgPalette : ppu.sprPalette;
+    const pal1 = spTable === 1 ? ppu.sprPalette : ppu.imgPalette;
+    
+    const result = renderBothPatternTables(nes, 0, pal0, pal1);
+    const table0 = result.table0;
+    const table1 = result.table1;
+    
+    const CELL = 128;
+    const GAP = 8;
+    const CW = CELL;               // 128
+    const CH = CELL * 2 + GAP;     // 264
+    const buf = new Uint32Array(CW * CH);
+    const bg = 0xff_0d0d22;
+    buf.fill(bg);
+
+    const copyTable = (src: Uint32Array, oy: number) => {
+      for (let y = 0; y < CELL; y++) {
+        let di = (oy + y) * CW;
+        let si = y * CELL;
+        for (let x = 0; x < CELL; x++) {
+          buf[di++] = src[si++];
+        }
+      }
+    };
+
+    if (table0 && table0.data) copyTable(table0.data, 0);
+    if (table1 && table1.data) copyTable(table1.data, CELL + GAP);
+
+    this._blitToDebugCanvas(buf, CW, CH);
+  },
+
+  // ── SPR: FCEUX 风格 — 左: 64 精灵 tile 集合 / 右: 按真实位置拼合的 Preview ──
+  _renderSpriteDebug(nes: any) {
+    const ppu = nes.ppu;
+    const { sprites } = getSpriteData(nes);
+
+    // 左栏：64 精灵 tile 网格 (8×8, 256×256)
+    const gridCols = SPR_COLS, gridRows = SPR_ROWS;
+    const cellW = SPR_CELL_W, cellH = SPR_CELL_H;
+    const gridW = gridCols * cellW;    // 256
+    const gridH = gridRows * cellH;    // 256
+
+    // 右栏：Preview (真实屏幕尺寸 256×240)
+    const previewW = SCREEN_W;   // 256
+    const previewH = SCREEN_H;   // 240
+
+    const GAP = 16;
+    const totalW = gridW + GAP + previewW;       // 528
+    const totalH = Math.max(gridH, previewH);    // 256
+    const buf = new Uint32Array(totalW * totalH);
+    buf.fill(0xff_0d0d22);
+
+    // ── 左侧：OAM 精灵 tile 集合 (按 OAM 索引 0~63 排列) ──
+    for (let i = 0; i < Math.min(sprites.length, gridCols * gridRows); i++) {
+      const spr = sprites[i];
+      const col = i % gridCols;
+      const row = Math.floor(i / gridCols);
+      const bx = col * cellW;
+      const by = row * cellH;
+      const iw2 = spr.imgWidth;
+      const ih2 = spr.imgHeight;
+
+      // 居中缩放
+      const scale = Math.min(Math.floor(cellW / iw2), Math.floor(cellH / ih2));
+      const offsetX = Math.floor((cellW - iw2 * scale) / 2);
+      const offsetY = Math.floor((cellH - ih2 * scale) / 2);
+
+      for (let py = 0; py < ih2; py++) {
+        for (let px = 0; px < iw2; px++) {
+          const c = spr.image[py * iw2 + px];
+          for (let sy = 0; sy < scale; sy++) {
+            const dy = by + offsetY + py * scale + sy;
+            if (dy >= totalH) continue;
+            for (let sx = 0; sx < scale; sx++) {
+              const dx = bx + offsetX + px * scale + sx;
+              if (dx >= gridW) continue;
+              buf[dy * totalW + dx] = c;
+            }
+          }
+        }
+      }
+    }
+
+    // ── 右侧：Preview — 按真实 X/Y 位置拼合所有精灵 ──
+    const previewX = gridW + GAP;
+    const previewY = 0;
+
+    // Preview 背景（黑色）
+    for (let y = 0; y < previewH; y++) {
+      let di = (previewY + y) * totalW + previewX;
+      for (let x = 0; x < previewW; x++) {
+        buf[di++] = 0xff_000000;
+      }
+    }
+
+    // NES PPU 从 OAM 63 画到 0，索引小的精灵后画、在上层
+    for (let i = sprites.length - 1; i >= 0; i--) {
+      const spr = sprites[i];
+      const sx = spr.x;
+      const sy = spr.y + 1;   // OAM Y 是屏幕 Y-1
+      const iw = spr.imgWidth;
+      const ih = spr.imgHeight;
+
+      for (let py = 0; py < ih; py++) {
+        const screenY = sy + py;
+        if (screenY < 0 || screenY >= previewH) continue;
+        for (let px = 0; px < iw; px++) {
+          const screenX = sx + px;
+          if (screenX < 0 || screenX >= previewW) continue;
+          const c = spr.image[py * iw + px];
+          // JSnes palette 颜色 alpha = 0x00，所以用 backdrop (0x00000000) 来判断透明
+          if (c !== 0x00000000) {
+            buf[(previewY + screenY) * totalW + previewX + screenX] = c;
+          }
+        }
+      }
+    }
+
+    this._blitToDebugCanvas(buf, totalW, totalH);
+  },
+
+  // ── PAL: 调色板 ──
+  _renderPalDebug(nes: any) {
+    const img = renderPaletteImage(nes);
+    this._blitToDebugCanvas(img.data, img.width, img.height);
+  },
+
+  // ── ASM: 反汇编 ──
+  _renderDisasmDebug() {
+    if (!this._sys) return;
+    const sys = this._sys;
+    const memRead = (addr: number) => sys.mem[addr & 0xffff] ?? 0;
+    const pc = ((sys.mem[0xFFFC] ?? 0) | ((sys.mem[0xFFFD] ?? 0) << 8)) & 0xFFFF;
+    try {
+      const lines = disassembleRange(0x8000, 128, memRead);
+      let text = '; ======== Disasm ($8000) ========\n';
+      text += `; Reset vector: $${pc.toString(16).padStart(4, '0')}\n`;
+      text += `; Frame: #${this._fpsFrameCount}   A=$${((sys.mem[0x1A] ?? 0) & 0xFF).toString(16).padStart(2, '0')}  X=$${((sys.mem[0x1B] ?? 0) & 0xFF).toString(16).padStart(2, '0')}  Y=$${((sys.mem[0x1C] ?? 0) & 0xFF).toString(16).padStart(2, '0')}\n`;
+      text += `; SP=$${((sys.mem[0x19] ?? 0) & 0xFF).toString(16).padStart(2, '0')}   P=$${((sys.mem[0x1D] ?? 0) & 0xFF).toString(16).padStart(2, '0')}\n\n`;
+      for (const line of lines) {
+        const hex = line.bytes.map(b => b.toString(16).padStart(2, '0')).join(' ');
+        text += `$${line.addr.toString(16).padStart(4, '0')}:  ${hex.padEnd(9)} ${line.text}\n`;
+      }
+      this.setData({ debugLines: text });
+    } catch (e: any) {
+      this.setData({ debugLines: '; disasm error: ' + (e.message || '') });
+    }
+  },
+
+  // ================================================================
   // 输入
   // ================================================================
 
@@ -385,12 +607,10 @@ Page({
     const d = this._dpadState;
     const b = this._btnState;
     const nes = this._nes;
-
     const doBtn = (key: number, pressed: boolean) => {
       if (pressed) nes.buttonDown(1, key as any);
       else nes.buttonUp(1, key as any);
     };
-
     doBtn(Controller.BUTTON_UP, d.up);
     doBtn(Controller.BUTTON_DOWN, d.down);
     doBtn(Controller.BUTTON_LEFT, d.left);
@@ -463,7 +683,6 @@ Page({
       node.connect(ctx.destination);
       this._audioCtx = ctx;
       this._audioNode = node;
-      console.log('[h5game] Audio started');
     } catch (e: any) {
       console.warn('[h5game] Audio unavailable:', e.message);
     }

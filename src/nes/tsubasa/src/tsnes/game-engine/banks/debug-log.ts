@@ -9,7 +9,7 @@
  *   exit('bank00_paletteFlush', { '0628': sys.mem[0x628] });
  */
 
-const ENABLED = true;
+const ENABLED = false;
 const INDENT: string[] = [];
 
 function pad(indent: number): string {
