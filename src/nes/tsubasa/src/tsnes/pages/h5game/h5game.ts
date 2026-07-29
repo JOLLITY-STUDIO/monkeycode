@@ -40,6 +40,60 @@ const SPR_CELL_H = 32;            // 每个精灵单元格高 (像素)
 const SPR_COLS = 8;
 const SPR_ROWS = 8;
 
+/**
+ * 输出 4 个 nametable 的原始 tile index 和 palette 数据（可复制 hex 格式）
+ */
+function generateNTDataText(nes: any): string {
+  const ppu = nes.ppu;
+  const lines: string[] = [];
+  const COL_HEADER = 'Row ';
+
+  for (let ni = 0; ni < 4; ni++) {
+    const nt = ppu.nameTable[ni];
+    const addr = 0x2000 + ni * 0x400;
+    const hexAddr = addr.toString(16).toUpperCase().padStart(4, '0');
+
+    lines.push(`════ NT ${ni} (PPU 0x${hexAddr}) — Tile Indices ════`);
+    // 列头
+    let header = COL_HEADER;
+    for (let tx = 0; tx < 32; tx++) {
+      header += tx.toString(16).toUpperCase().padStart(3, ' ');
+    }
+    lines.push(header);
+
+    for (let ty = 0; ty < 30; ty++) {
+      const row: string[] = [];
+      for (let tx = 0; tx < 32; tx++) {
+        const tileIdx = nt.tile[ty * 32 + tx];
+        row.push(tileIdx.toString(16).toUpperCase().padStart(2, '0'));
+      }
+      lines.push(ty.toString().padStart(3, ' ') + ' ' + row.join(' '));
+    }
+
+    lines.push('');
+    lines.push(`── Palette groups (0-3) ──`);
+    let pHdr = COL_HEADER;
+    for (let tx = 0; tx < 32; tx++) {
+      pHdr += ' ' + (tx % 10).toString();
+    }
+    lines.push(pHdr);
+
+    for (let ty = 0; ty < 30; ty++) {
+      const row: string[] = [];
+      for (let tx = 0; tx < 32; tx++) {
+        const attr = nt.attrib[ty * 32 + tx];
+        row.push((attr >> 2).toString()); // 0-3
+      }
+      lines.push(ty.toString().padStart(3, ' ') + ' ' + row.join(''));
+    }
+
+    lines.push('');
+    lines.push('');
+  }
+
+  return lines.join('\n');
+}
+
 interface CanvasSlot {
   canvas: any;
   ctx: any;
@@ -61,6 +115,10 @@ Page({
       disasm: '汇编',
     } as Record<string, string>,
     debugLines: '',       // disasm 文本
+    ntDataText: '',       // NT tile index + palette 文本
+    paused: false,        // 暂停状态
+    turboLevel: 0,        // 加速档位 0=1x, 1=2x, 2=4x
+    showFpsBtn: false,    // FPS 按钮显示值
   },
 
   _nes: null as NES | null,
@@ -205,6 +263,17 @@ Page({
   _frameLoop() {
     if ((!this._nes && !this._sys) || !this._started) return;
 
+    // 暂停时不跑模拟，但保持 loop 继续以便 debug viewer 仍然能渲染当前帧
+    if ((this.data as any).paused) {
+      // 暂停时仍跑 debug viewer（用当前冻结的 PPU 数据）
+      const tab = (this.data as any).debugTab as string;
+      if (tab && tab !== 'disasm') {
+        try { this._renderDebugView(); } catch (_) {}
+      }
+      this._animId = setTimeout(() => this._frameLoop(), 200) as any;  // 暂停时低频轮询
+      return;
+    }
+
     try {
       this._applyInput();
 
@@ -237,7 +306,7 @@ Page({
       return;
     }
 
-    this._animId = setTimeout(() => this._frameLoop(), 16) as any;
+    this._animId = setTimeout(() => this._frameLoop(), [16, 8, 4][(this.data as any).turboLevel]) as any;
 
     this._fpsFrameCount++;
     const now = Date.now();
@@ -339,7 +408,7 @@ Page({
 
   onDebugTab(e: any) {
     const tab = e.currentTarget.dataset.tab || '';
-    this.setData({ debugTab: tab, debugLines: '' });
+    this.setData({ debugTab: tab, debugLines: '', ntDataText: '' });
     if (tab === '' || tab !== 'disasm') {
       this._debugCtx = null;
       this._debugCanvas = null;
@@ -416,7 +485,7 @@ Page({
     }
   },
 
-  // ── NT: 4 个 nametable 2×2 网格 ──
+  // ── NT: 4 个 nametable 2×2 网格 + 原始 tile index / palette 数据文字 ──
   _renderNTDebug(nes: any) {
     const { nt } = renderAllNameTables(nes);
     const CW = 512, CH = 480;
@@ -438,6 +507,12 @@ Page({
       }
     }
     this._blitToDebugCanvas(buf, CW, CH);
+
+    // 每 1 秒更新一次文字数据（避免每帧 setData）
+    if (this._fpsFrameCount % 60 === 0) {
+      const text = generateNTDataText(nes);
+      this.setData({ ntDataText: text });
+    }
   },
 
   // ── PT: 两个 pattern table 上下排列 (各 128×128, 中间 8px 分隔) ──
@@ -619,6 +694,29 @@ Page({
     doBtn(Controller.BUTTON_B, b.b);
     doBtn(Controller.BUTTON_START, b.start);
     doBtn(Controller.BUTTON_SELECT, b.select);
+  },
+
+  onPause() {
+    const paused = !(this.data as any).paused;
+    this.setData({ paused });
+  },
+
+  onTurboToggle() {
+    const level = (this.data as any).turboLevel as number;
+    const next = (level + 1) % 3;
+    this.setData({ turboLevel: next });
+  },
+
+  onFpsTap() {
+    // already showing realtime fps in status bar, toggle button display
+    this.setData({ showFpsBtn: !(this.data as any).showFpsBtn });
+  },
+
+  onReset() {
+    this._stopLoop();
+    this._started = false;
+    this.setData({ status: 'restarting...', paused: false, turboLevel: 0 });
+    setTimeout(() => this._startEngine(), 100);
   },
 
   onBtnDown(e: any) {

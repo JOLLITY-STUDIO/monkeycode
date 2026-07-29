@@ -31,6 +31,8 @@
     "test:watch": "node --test --watch ./test/*.spec.js",
     "test:engine": "npx tsx game-engine/test/run-all.ts",
     "test:engine:verbose": "npx tsx game-engine/test/run-all.ts --verbose",
+    "test:mock-frame": "npx tsx game-engine/test/test-mock-frame.ts",
+    "dev:mock": "node mock-frame/server.mjs",
     "prepublishOnly": "npm run build",
     "format": "prettier --write '**/*.{js,jsx,css}'",
     "dev:h5": "node h5-compare/server.mjs"

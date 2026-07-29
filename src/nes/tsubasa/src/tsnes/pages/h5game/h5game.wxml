@@ -34,10 +34,21 @@
 
       <!-- Debug 面板（有 tab 时展开） -->
       <view class="debug-panel {{debugTab ? 'visible' : ''}}">
-        <!-- 画布类查看器 -->
-        <view class="debug-canvas-wrap" wx:if="{{debugTab !== 'disasm' && debugTab !== ''}}">
+        <!-- 画布类查看器（NT 除外，NT 单独处理） -->
+        <view class="debug-canvas-wrap" wx:if="{{debugTab !== 'disasm' && debugTab !== 'nametable' && debugTab !== ''}}">
           <canvas type="2d" id="debugCanvas" class="debug-canvas"></canvas>
         </view>
+        <!-- NT 特殊：canvas 渲染 + 可复制文字数据 -->
+        <block wx:if="{{debugTab === 'nametable'}}">
+          <view class="nt-canvas-wrap">
+            <canvas type="2d" id="debugCanvas" class="debug-canvas"></canvas>
+          </view>
+          <view class="nt-data-wrap">
+            <scroll-view class="nt-data-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
+              <text class="nt-data-text" selectable="true">{{ntDataText}}</text>
+            </scroll-view>
+          </view>
+        </block>
         <!-- 汇编文本 -->
         <view class="disasm-wrap" wx:if="{{debugTab === 'disasm'}}">
           <scroll-view class="disasm-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
@@ -57,8 +68,16 @@
       <view class="dpad-btn down"  catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="down">▼</view>
     </view>
     <view class="middle-btns">
-      <view class="ctrl-btn select-btn" catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="select">SELECT</view>
-      <view class="ctrl-btn start-btn"  catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="start">START</view>
+      <view class="middle-row">
+        <view class="ctrl-btn select-btn" catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="select">SELECT</view>
+        <view class="ctrl-btn start-btn"  catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="start">START</view>
+      </view>
+      <view class="middle-row">
+        <view class="ctrl-btn pause-btn2 {{paused ? 'paused' : ''}}" bindtap="onPause">{{paused ? '▶' : '⏸'}}</view>
+        <view class="ctrl-btn turbo-btn lv{{turboLevel}}" bindtap="onTurboToggle">{{turboLevel === 0 ? '1×' : turboLevel === 1 ? '2×' : '4×'}}</view>
+        <view class="ctrl-btn fps-btn" bindtap="onFpsTap">{{showFpsBtn ? fps : 'FPS'}}</view>
+        <view class="ctrl-btn reset-btn" bindtap="onReset">RST</view>
+      </view>
     </view>
     <view class="action-btns">
       <view class="ctrl-btn b-btn" catchtouchstart="onBtnDown" catchtouchend="onBtnUp" data-btn="b">B</view>
