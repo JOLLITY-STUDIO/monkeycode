@@ -23,7 +23,7 @@ import {
   bank19_sceneInit,
   bank19_tick,
   bank19_writeUploadPacket,
-} from '../native-game/tsubasa/banks/prg/bank-19-code';
+} from '../native-game/tsubasa/banks/prg/bank-19-script-engine-code';
 
 // ── 数据表 (用于验证) ──
 import {
@@ -32,7 +32,7 @@ import {
   DATA_$83E0_$8B8F,
   DATA_$944E_$988E,
   DATA_$988F_$9FFF,
-} from '../native-game/tsubasa/banks/prg/bank-19-data';
+} from '../native-game/tsubasa/banks/prg/bank-19-script-engine-data';
 
 // ═══════════════════════════════════════════
 // 轻量 Mock SystemState (不需要 PPU/APU 实例)
@@ -697,7 +697,7 @@ function test_sceneEntry(): void {
 
   // 直接调用 bank19_entry (已在顶部 import)
   // eslint-disable-next-line @typescript-eslint/no-var-requires
-  const mod = require('../native-game/tsubasa/banks/prg/bank-19-code');
+  const mod = require('../native-game/tsubasa/banks/prg/bank-19-script-engine-code');
 
   const restore = muteBank19Logs();
   mod.bank19_entry(sys);

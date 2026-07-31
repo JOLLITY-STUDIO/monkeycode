@@ -1,5 +1,7 @@
 /**
  * Boot entry point — Bank-by-bank 6502 → TypeScript 翻译引擎
+ * 
+ * 测试写到了 sys.mem 但代码读的是 DATA_$8F6B_$927B 导入文件。这是 native game 模型的关键点
  *
  * ═══════════════════════════════════════
  * 启动流程 (纯翻译模式，不走 CPU 模拟器)
@@ -8,8 +10,9 @@
  * 1. 创建 PPU/APU 硬件模拟层 (保留，供渲染/音频)
  * 2. 创建 SystemState (替代 CPU 模拟器)
  * 3. SystemState 内部自动管理 bank ROM 注册与 MMC3 内存映射
- *    - CODE banks (bank-XX.ts) import 时自动调用 registerBankRom() 注册 8KB 数据
- *    - 翻译代码直接通过 SystemState 内存接口读写，无需 6502 opcode 解释
+ *    - 翻译代码直接通过import 调用接口拿数据，
+ * 无需 6502 opcode 解释
+ * 类似httpapi，code就是controller 提供接口和业务处理调用即可输出。但是数据基本由内部消费，不对外开放。
  * 4. 调用 translate_BANK31_RESET → 进入主循环
  *
  * ═══════════════════════════════════════

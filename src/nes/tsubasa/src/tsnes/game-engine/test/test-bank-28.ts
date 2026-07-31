@@ -5,14 +5,14 @@
 import type { SystemState } from '../native-game/tsubasa/banks/system-state';
 
 // ── 加载 code 模块 ──
-const bank28 = require('../native-game/tsubasa/banks/prg/bank-28-code');
+const bank28 = require('../native-game/tsubasa/banks/prg/bank-28-player-attrs-code');
 console.log('=== Bank 28 Code Exports ===');
 const codeKeys = Object.keys(bank28).filter(k => !k.startsWith('_'));
 console.log(`  Functions: ${codeKeys.join(', ')}`);
 console.log(`  Total: ${codeKeys.length}`);
 
 // ── 加载 data 模块 ──
-const data28 = require('../native-game/tsubasa/banks/prg/bank-28-data');
+const data28 = require('../native-game/tsubasa/banks/prg/bank-28-player-attrs-data');
 console.log('\n=== Bank 28 Data Segments ===');
 const dataKeys = Object.keys(data28).filter(k => k.startsWith('DATA_'));
 console.log(`  Segments: ${dataKeys.length}`);

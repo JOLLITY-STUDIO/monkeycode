@@ -45,11 +45,11 @@ import { bank00_dispatchScene, bank00_titleTick } from './bank-00-code';
 // ── CODE bank dispatch tables (直接调用, 不走 MMC3 bank switch) ──
 import { bank11_dispatch } from './bank-11-code';
 import { bank16_dispatch } from './bank-16-code';
-import { bank19_dispatch } from './bank-19-code';
-import { bank20_dispatch } from './bank-20-code';
-import { bank22_dispatch } from './bank-22-code';
-import { bank24_dispatch } from './bank-24-code';
-import { bank26_dispatch } from './bank-26-code';
+import { bank19_dispatch } from './bank-19-script-engine-code';
+import { bank20_dispatch } from './bank-20-team-select-code';
+import { bank22_dispatch } from './bank-22-sprite-engine-code';
+import { bank24_dispatch } from './bank-24-cutscene-engine-code';
+import { bank26_dispatch } from './bank-26-match-engine-code';
 
 // ── Bank-31 自身数据表 ──
 import {

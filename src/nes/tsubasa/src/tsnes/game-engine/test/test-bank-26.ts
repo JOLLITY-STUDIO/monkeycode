@@ -39,7 +39,7 @@ function createMockSys(): SystemState {
   };
 }
 
-const bank26 = require('../native-game/tsubasa/banks/prg/bank-26-code');
+const bank26 = require('../native-game/tsubasa/banks/prg/bank-26-match-engine-code');
 
 // ── 工具 ──
 let passed = 0, failed = 0;

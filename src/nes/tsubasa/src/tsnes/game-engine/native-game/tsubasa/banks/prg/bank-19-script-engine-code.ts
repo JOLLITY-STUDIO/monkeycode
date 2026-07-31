@@ -37,7 +37,7 @@ import {
   DATA_$8BA0_$8F4F,
   DATA_$944E_$988E,
   DATA_$988F_$9FFF,
-} from './bank-19-data';
+} from './bank-19-script-engine-data';
 
 // ═════════════════════════════════════════════════
 // 零页 / 内存常量
