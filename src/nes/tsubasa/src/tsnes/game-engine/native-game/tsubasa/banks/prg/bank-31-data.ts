@@ -3,6 +3,20 @@
 // DATA SEGMENTS
 // ═══════════════════════════════════════════════
 
+/** CPU $FB4C-$FBCB, 128 bytes (64 × 16-bit signed velocity magnitudes, indexed by byte offset 0-$7E) */
+export const DATA_FB4C_VELOCITY: readonly number[] = (() => {
+  // 64 16-bit entries, placed at even byte offsets 0,2,4,...,126
+  const raw16: number[] = [
+    0,0,6,12,18,25,31,37,43,49,56,62,68,74,80,86,92,97,103,109,115,120,126,131,
+    136,142,147,152,157,162,167,171,176,181,185,189,193,197,201,205,209,212,216,
+    219,222,225,228,231,234,236,238,241,243,244,246,248,249,251,252,253,254,254,
+    255,256,
+  ];
+  const arr: number[] = new Array(128).fill(0);
+  for (let i = 0; i < 64; i++) { arr[i * 2] = raw16[i]; }
+  return arr;
+})();
+
 /** CPU $E6CF-$E6DE, 16 bytes (DATA_DIR_TABLE) */
 export const DATA_DIR_TABLE: readonly number[] = [
       0x4C, 0x54, 0x5C, 0x54, 0x6C, 0x5C, 0x5C, 0x64, 0x74, 0x6C, 0x64, 0x74, 0x7C, 0x7C, 0x74, 0x8C

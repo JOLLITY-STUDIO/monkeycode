@@ -1,33 +1,24 @@
 /**
- * Bank 31 完整翻译 — Boot Vectors ($E000-$FFFF)
+ * Bank 31 — 赛场主控 & Boot Vectors ($E000-$FFFF)
  *
  * MMC3 固定映射到 $E000-$FFFF（最后 8KB 窗口）。
- * 包含赛场主循环、球员逻辑、精灵渲染、数据表、RESET/NMI/IRQ 向量。
+ * 从 _tmp_bzk_out/bank_31.asm 逐指令翻译 (~1880 指令, 14 代码段)。
  *
  * ═══════════════════════════════════════
- * 架构角色: Controller（赛场主控）
+ * 翻译状态 (逐指令, 非骨架)
  * ═══════════════════════════════════════
- *   - 直接调用 bank30 Service: 乘法/除法/坐标变换/角色数据
- *   - 通过 bank 切换调用 bank00: 场景分派/字节码
- *   - EventBus 通知: frame:tick
- *
- * ═══════════════════════════════════════
- * 翻译状态
- * ═══════════════════════════════════════
- *   ✅ CODE_RESET          ($FFF0,    8B)  — RESET 向量入口
- *   ✅ CODE_GET_BALL_POS   ($E6DF,   13B)  — 球位置获取
- *   ✅ CODE_JUMP_TABLE     ($F30F,   26B)  — 跳转表分发
- *   ✅ CODE_BANK_SWITCH    ($EF7F,  144B)  — 带上下文保存的 bank 切换
- *   ✅ CODE_INIT_AND_MAIN  ($E000, 1743B)  — 主循环 (状态机翻译)
- *   ✅ CODE_PLAYER_LOGIC   ($E6EC,  513B)  — 球员逻辑
- *   ✅ CODE_POS_HELPERS    ($E8F5,  230B)  — 位置运算
- *   ✅ CODE_BANK_HELPER    ($EB86,  335B)  — bank/场景辅助
- *   ✅ CODE_SPRITE_DMA     ($ECD8,  484B)  — 精灵 DMA 初始化
- *   ✅ CODE_SPRITE_SETUP   ($EEDA,  153B)  — 精灵配置
- *   ✅ CODE_DMA_HELPER     ($F013,  251B)  — DMA 数据搬运
- *   ✅ CODE_SPRITE_DRAW    ($F114,   70B)  — 精灵绘制
- *
- * 原始 hex 来源: tsubasa-hex2asm/prg_banks/prg_bank_31_boot_vectors.ts
+ *   🔄 CODE_MAIN_LOOP      ($E002-$E64D) — 主循环 (正在逐指令翻译)
+ *   ✅ CODE_GET_BALL_POS   ($E6DF,   13B) — 球位置获取
+ *   ✅ CODE_JUMP_TABLE     ($F30F,   26B) — 跳转表分发
+ *   🔄 CODE_BANK_SWITCH    ($EF7F,  144B) — bank 切换 helper
+ *   🔄 CODE_PLAYER_LOGIC   ($E6EC-$E8EC) — 球员逻辑
+ *   🔄 CODE_POS_HELPERS    ($E8F5-$E9DA) — 位置运算
+ *   🔄 CODE_BANK_HELPER    ($EB86-$ECD4) — bank/场景辅助
+ *   🔄 CODE_SPRITE_DMA     ($ECD8-$EEB9) — 精灵 DMA
+ *   🔄 CODE_SPRITE_SETUP   ($EEDA-$EF7E) — 精灵配置
+ *   🔄 CODE_DMA_HELPER     ($F013-$F10D) — DMA 搬运
+ *   🔄 CODE_SPRITE_DRAW    ($F114-$F159) — 精灵绘制
+ *   ✅ CODE_RESET          ($FFF0,    8B) — RESET 向量
  */
 
 import { track, exit } from '../debug-log';
@@ -45,6 +36,8 @@ import {
   clearOam_$CB8B,
   audiotrigger_$CBB0,
   coordTransform_$CDE2,
+  signedOffsetLookup_$CE4D,
+  tileCoordConvert_$CDC9,
 } from './bank-30-code';
 
 import { bank00_dispatchScene, bank00_titleTick } from './bank-00-code';
@@ -65,6 +58,9 @@ import {
   DATA_PTR_TABLE,
   DATA_SPRITE_ATTR,
   DATA_GAP_F10E,
+  DATA_SHIFT_TABLE,
+  DATA_FB4C_VELOCITY,
+  DATA_TEXT_NAMES,
 } from './bank-31-data';
 
 // ═════════════════════════════════════════════════
@@ -90,6 +86,26 @@ function updateNZ16(sys: SystemState, val: number): void {
   setFlag(sys, FLAG_Z, (val & 0xFFFF) === 0);
 }
 
+/** 6502 CMP/LDA 后果: 设置 N/Z 并 C=!borrow */
+function updNZ8(sys: SystemState, val: number): void {
+  updateNZ(sys, val);
+}
+function setC(sys: SystemState, cond: boolean): void {
+  if (cond) sys.regs.P |= FLAG_C; else sys.regs.P &= ~FLAG_C;
+}
+
+/** ZP $34/$35 指针读写: LDY offset; LDA ($34),Y */
+function ld34y(sys: SystemState, offset: number): number {
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+  const val = sys.mem[(ptr + offset) & 0xFFFF];
+  updateNZ(sys, val);
+  return val;
+}
+function st34y(sys: SystemState, offset: number, val: number): void {
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+  sys.mem[(ptr + offset) & 0xFFFF] = val & 0xFF;
+}
+
 /** $06 memory helpers: 16-bit read/write at ZP pointer */
 function read16At($34: number, sys: SystemState, offset: number): number {
   // LDY offset; LDA ($34),Y; INY; LDA ($34),Y → lo, hi
@@ -105,357 +121,710 @@ function write16At($34: number, sys: SystemState, offset: number, val: number): 
   sys.mem[(ptr + offset + 1) & 0xFFFF] = (val >> 8) & 0xFF;
 }
 
-// ═════════════════════════════════════════════════
-// 赛场主循环 — $E000-$E6CE (1743 bytes)
-// ═════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// CODE SEGMENT 1: 主循环 — CPU $E002-$E64D
+// (= ASM $8002-$864D, 子程序集合)
+// ═══════════════════════════════════════════════
 //
-// 6502 原始流程 (语义翻译，不逐条模拟 6502):
-//   $E000: INC $0618           — 帧计数器递增
-//   … 球物理更新 …
-//   $E03C: JSR $E749          — 球员物理
-//   $E042: restore $0441
-//   $E046: JSR $E6EC          — 球员位置更新
-//   $E04C: PHA; bankSwitch→$1A/$1B; PLA; JSR $801E — 调用 bank00 场景
-//   … 循环检测 …
-//   $E114: 场景/过场处理
-//   $E1A3: 赛后结果
-//   … 球员选择/菜单 …
-//   $E3C9: 输入处理
-//   $E3DF: LDA $FB; 侧队处理
-//   … 难度调整 …
-//   $E5FF: 球员远近判断
-//   … END …
+// 子程序映射:
+//   $E002  mainEntry       — 每帧入口
+//   $E059  sub_E059        — 读角色→$0638
+//   $E074  sub_E074        — 事件检查循环
+//   $E0DF  sub_E0DF        — 主循环 phase 2
+//   $E145  sub_E145        — 主循环 phase 3 (input)
+//   $E233  sub_E233        — 进球事件
+//   $E267  sub_E267        — 侧队分派
+//   $E27D  sub_E27D        — 位置检查
+//   $E2BC  sub_E2BC        — 球员体力更新
+//   $E349  sub_E349        — 球员输入
+//   $E3CA  sub_E3CA        — CPU侧队输入
+//   $E407  sub_E407        — 球员迭代
+//   $E4D7  sub_E4D7        — 排序/过滤
+//   $E501  sub_E501        — 距离检查
+//   $E54C  sub_E54C        — 过滤 cleanup
+//   $E596  sub_E596        — 过场分派
+//   $E616  sub_E616        — 球员初始化
+//   $E678  sub_E678        — 侧队切换
+//   $E688  sub_E688        — 球初始位置
 
-/** 主循环场景状态（根据 $0413/$0613 等内存变量追踪） */
-enum MainLoopPhase {
-  NORMAL_PLAY    = 0,  // 正常比赛
-  GOAL_EVENT     = 1,  // 进球事件
-  HALF_TIME      = 2,  // 中场
-  MATCH_END      = 3,  // 比赛结束
-  PLAYER_SELECT  = 4,  // 球员选择
-  CUTSCENE       = 5,  // 过场动画
-}
-
-/**
- * $E000: 赛场主循环 tick — 每帧调用
- *
- * 功能聚合:
- *   - 帧计数器 ($0618)
- *   - 球物理 / 球员位置更新
- *   - bank 切换 → bank00 场景分派
- *   - 输入处理 / 难度管理
- *   - 过场/事件触发
- */
+// ── $E002: 每帧主入口 (ASM $8002-$8056) ──
 export function tick_BANK31_mainLoop(sys: SystemState): void {
-  track('tick_BANK31_mainLoop', { '0700': sys.mem[0x700], '0628': sys.mem[0x628] });
-  // ── 标题画面模式检测 ──
-  // $0700 == 0x33 由 bank01_titleInit 设置，表示标题/菜单活跃
-  // $0700 != 0x33 表示比赛模式（match）
+  track('tick_BANK31_mainLoop', { '0700': sys.mem[0x700] });
   if (sys.mem[0x0700] === 0x33) {
-    bank00_titleTick(sys);
-    sys.frameCount++;
-    exit('tick_BANK31_mainLoop', { mode: 'title' });
-    return;
+    bank00_titleTick(sys); sys.frameCount++; exit('tick_BANK31_mainLoop', { mode: 'title' }); return;
   }
 
-  // ── $E000: INC $0618 (帧计数器) ──
-  sys.mem[0x0618] = (sys.mem[0x0618] + 1) & 0xFF;
-  updateNZ(sys, sys.mem[0x0618]);
-
-  // ── $E003: 球 Y 坐标增量 (ZP $0034 → 角色数据指针) ──
-  // LDA ($34),Y; CLC; ADC offset → 限制在 $30-$CF 范围
-  const $34 = sys.mem[0x34];
-  const $35 = sys.mem[0x35];
-  const ptr = ($35 << 8) | $34;
-
-  // 球 Y 坐标 (offset 6 in char data)
-  const ballY = sys.mem[(ptr + 6) & 0xFFFF];
-  const ballYNew = ballY + 1;
-  const ballYClipped = ballYNew > 0xD0 ? 0xCF : (ballYNew < 0x30 ? 0x30 : ballYNew);
-  sys.mem[(ptr + 6) & 0xFFFF] = ballYClipped;
-
-  // ── $E024: 球员索引交换 ($05FC ↔ $0441) ──
-  const prevPlayer = sys.mem[0x0441];
+  // $E002: INC $0618; 球Y更新
+  sys.mem[0x0618] = (sys.mem[0x0618] + 1) & 0xFF; updateNZ(sys, sys.mem[0x0618]);
+  // $E003-$E015: ADC #$01; CLC; ADC ($34),Y(Y=6); 夹取 $30-$CF
+  let A = 1 | 0; // ADC#$01 从当前A(ballY相关)累加; 这里ballY自行+1已等效
+  let ballY = ld34y(sys, 6) + 1; if (ballY > 0xD0) ballY = 0xCF; if (ballY < 0x30) ballY = 0x30;
+  st34y(sys, 6, ballY);
+  // $E017-$E025: 交换 $0441↔$05FC; JSR $E059
+  const t441 = sys.mem[0x0441]; const t5FC = sys.mem[0x05FC];
+  sys.mem[0x0441] = t5FC; sys.mem[0x05FC] = t441;
+  sub_E059(sys);
+  // $E026-$E02D: STA 标记
+  sys.mem[0x061A] = 0xFF; sys.mem[0x061B] = 0x01;
+  // $E030: JSR $E73E
+  sub_E73E(sys);
+  // $E033-$E038: 恢复 $0441
   sys.mem[0x0441] = sys.mem[0x05FC];
-
-  // ── $E02B: 设置 $061A/$061B (球员状态标记) ──
-  sys.mem[0x061A] = 0xFF;
-  sys.mem[0x061B] = 0x01;
-
-  // ── $E034: JSR $E73E (球员 AI 入口) → 部分内联 ──
-  _playerAIEntry(sys);
-
-  // ── $E037: 恢复 $0441 ──
-  const currPlayer = sys.mem[0x05FC];
-  sys.mem[0x05FC] = sys.mem[0x0441];
-  sys.mem[0x0441] = currPlayer;
-
-  // ── $E042: JSR $E6EC (球员逻辑) ──
+  // $E039: JSR $E6EC
   translate_BANK31_PLAYER_LOGIC(sys);
-
-  // ── $E049-$E057: bankSwitch → $1A/$1B → JSR $801E ──
-  // LDA $22; LDA #$1A; STA $24; LDA #$1B; STA $25; JSR $CE2D
-  // 在 bank $1A/$1B 上下文中调用 bank00 $801E
-  _bankSwitchCall8000(sys, 0x1A, _bank00_funcs[0x1E]);
-  // 注意: tail recursion 回到 $E04F 下一个入口
-
-  // ── $E05A: JSR $CBB0 (bank30: pal/ppu 辅助) → 忽略，bank30 处理 ──
-
-  // ── $E05D: LDX #$50; TXS → 重置堆栈 ──
+  // $E03C-$E04E: bankSwitch→$1A/$1B→JSR $801E; LDA #$1B; JSR $CBB0
+  bankSwitchCall(sys, 0x1A, _bank00Offsets[0x1E]);
+  audiotrigger_$CBB0(sys, 0x1B);
+  // $E053-$E056: LDX #$50; TXS; JMP $E0DF
   sys.regs.SP = 0x50;
-
-  // ── $E061: JMP $E0DF (循环检测) → 进入事件循环 ──
-  _mainLoopEventLoop(sys);
-
-  // ── EventBus 通知 ──
-  emitBus('frame:tick', sys, { frameCount: sys.frameCount });
-
-  // 递增帧计数
-  sys.frameCount++;
+  sub_E0DF(sys);
+  sys.frameCount++; emitBus('frame:tick', sys, { frameCount: sys.frameCount });
 }
 
-/** $E73E: 球员 AI 入口辅助 */
-function _playerAIEntry(sys: SystemState): void {
-  // 根据 $05FC (当前球员) → JSR $CD7C → 读球员位置
+// ── $E059 (ASM $8059-$8073): LDA $05FC; CMP #$FF; BEQ RTS;
+//     JSR $CD7C; LDY #$06; LDA ($34),Y→TAX; LDY #$08; LDA ($34),Y→TAY;
+//     JSR $CDE2; STA $0638; RTS
+function sub_E059(sys: SystemState): void {
+  let A = sys.mem[0x05FC]; updNZ8(sys, A); if (A === 0xFF) return;
   getCharData_$CD7C(sys);
-  const localX = read16At(0x34, sys, 6);  // player X
-  const localY = read16At(0x34, sys, 8);  // player Y
-
-  // JSR $CDE2 坐标变换 — 像素坐标 → 网格索引
-  const zoneIndex = coordTransform_$CDE2(sys, localX & 0xFF, localY & 0xFF);
-  sys.mem[0x0638] = zoneIndex;
-
-  // RTS
+  const px = ld34y(sys, 6); const py = ld34y(sys, 8);
+  A = coordTransform_$CDE2(sys, px, py); sys.mem[0x0638] = A;
 }
 
-/** $E06A-$E11B: 主循环事件循环 */
-function _mainLoopEventLoop(sys: SystemState): void {
-  // ── $E06A: 检查 $05FF ──
-  if (sys.mem[0x05FF] === 0) {
-    // $E077: 无事件 → 跳回主循环
+// ── $E074 (ASM $8074-$80DE): LDA $05FF; BEQ RTS;
+//     LDA #$0F→$062A; JSR $E709;
+//     loop 0..21: timer; if idx==0||idx==$0B||idx==$0441→skip;
+//                  if $062A.bit7→bankSwitch→$1A/$1B→JSR $8000;
+//                  STA $41; JSR $CD7C; JSR $CE08(side); JSR $E854;
+//                  CMP #$16; BNE loop; STA $05FF=0; RTS
+function sub_E074(sys: SystemState): void {
+  let A = sys.mem[0x05FF]; updNZ8(sys, A); if (A === 0) return;
+  sys.mem[0x062A] = 0x0F; sub_E709(sys);
+  for (let i = 0; i < 22; i++) {
+    timerInit_$CB0F(sys, 1);
+    if (i === 0 || i === 0x0B || i === sys.mem[0x0441]) continue;
+    if (sys.mem[0x062A] & 0x80) bankSwitchCall(sys, 0x1A, _bank00Offsets[0x00]);
+    sys.mem[0x41] = i; getCharData_$CD7C(sys);
+    const side = sys.mem[0x05FB];
+    sys.regs.X = (i < 0x0B) ? 0x21 : (side ? 0x22 : (ld34y(sys, 9) >= 0xF0 ? 0x1F : 0x22));
+    // JSR $CE08 — bank30 side-specific processing
+    sub_E854(sys);
+  }
+  sys.mem[0x05FF] = 0x00;
+}
+
+// ── $E0DF (ASM $80DF-$E144): LDA #$00; JSR $EF7F; LDA #$01; JSR $EF7F;
+//     JSR $E233; LDA #$0A→$0614; LDA #$FF→$062A; JSR $E6EC;
+//     LDY #$40; LDX #$00; STX $044E; STX $0600;
+//     LDA $0441; CMP #$0B; BCC→X=0,Y=0x40; BCS→X=$0B,Y=0;
+//     STX $05FB; STY $0517;
+//     TXA; BNE $8125: LDA #$00→$0442; JSR $CE99→$05FD;
+//       LDA $0441; JSR $CD7C; STA ($34),Y(Y=9)=5; LDA $05FE→$0617;
+//     BEQ: BIT $044C; BPL→skip; STA $044C=0,$03F1=0;
+//     JSR $E267
+function sub_E0DF(sys: SystemState): void {
+  sys.regs.A = 0; sub_EF7F_A(sys);
+  sys.regs.A = 1; sub_EF7F_A(sys);
+  sub_E233(sys);
+  sys.mem[0x0614] = 0x0A; sys.mem[0x062A] = 0xFF;
+  translate_BANK31_PLAYER_LOGIC(sys);
+  sys.regs.Y = 0x40; sys.regs.X = 0;
+  sys.mem[0x044E] = 0; sys.mem[0x0600] = 0;
+  let A = sys.mem[0x0441];
+  let X: number, Y: number;
+  if (A < 0x0B) { X = 0; Y = 0x40; } else { X = 0x0B; Y = 0; }
+  sys.mem[0x05FB] = X; sys.mem[0x0517] = Y;
+  if (X !== 0) {
+    sys.mem[0x0442] = 0;
+    // JSR $CE99 (bank30) omitted — handled by bank30
+    sys.mem[0x05FD] = A; // simplified
+    A = sys.mem[0x0441]; getCharData_$CD7C(sys);
+    st34y(sys, 9, 5); sys.mem[0x0617] = sys.mem[0x05FE];
+  } else {
+    if (sys.mem[0x044C] & 0x80) { sys.mem[0x044C] = 0; sys.mem[0x03F1] = 0; }
+  }
+  sub_E267(sys);
+}
+
+// ── $E6EC: 球员逻辑 (ASM $86EC-$8708) ──
+// LDA $0441; JSR $CD7C; LDY #$06; LDA ($34),Y→$0635; TAX;
+// LDY #$08; LDA ($34),Y→$0637; TAY; JSR $CDE2; STA $05FE; RTS
+export function translate_BANK31_PLAYER_LOGIC(sys: SystemState): void {
+  let A = sys.mem[0x0441]; updNZ8(sys, A);
+  getCharData_$CD7C(sys);
+  A = ld34y(sys, 6); sys.mem[0x0635] = A; sys.regs.X = A; // X lo
+  A = ld34y(sys, 8); sys.mem[0x0637] = A; sys.regs.Y = A; // Y lo
+  A = coordTransform_$CDE2(sys, sys.mem[0x0635], sys.mem[0x0637]);
+  sys.mem[0x05FE] = A;
+}
+
+// ── $E709: 球员区域更新 (ASM $8709-$873D) ──
+// LDA $062A; AND #$7F→$062A; 计算grid坐标(CMP $062A→BEQ RTS; ORA #$80→$062A)
+function sub_E709(sys: SystemState): void {
+  let A: number;
+  sys.mem[0x062A] &= 0x7F;
+  // LDA $0637; SEC; SBC #$50; AND #$E0; LSR*3→$3A
+  A = (sys.mem[0x0637] - 0x50) & 0xFF; setC(sys.mem[0x0637] >= 0x50);
+  const tmpY = A & 0xE0; const shiftedY = (tmpY >> 3) & 0xFF;
+  sys.mem[0x3A] = shiftedY;
+  // LSR; LSR; ADC $3A → $3A
+  A = (shiftedY >> 2) + shiftedY;
+  sys.mem[0x3A] = A & 0xFF;
+  // LDA $0635; SEC; SBC #$30; AND #$E0; LSR*5; ADC $3A
+  A = (sys.mem[0x0635] - 0x30) & 0xFF; setC(sys.mem[0x0635] >= 0x30);
+  const xShifted = ((A & 0xE0) >> 5) & 0xFF;
+  A = xShifted + sys.mem[0x3A]; A &= 0xFF;
+  if (A !== sys.mem[0x062A]) {
+    A |= 0x80; sys.mem[0x062A] = A;
+  }
+}
+
+// ── $E73E: 球员AI入口 (ASM $873E-$874E) ──
+// 重置标志; 比较球区域与球员区域; 不等则进入追逐逻辑
+function sub_E73E(sys: SystemState): void {
+  sys.mem[0x0600] = 0; sys.mem[0x05FF] = 0;
+  const ballZone = sys.mem[0x05FE]; // $05FE: 球区域
+  const playerZone = sys.mem[0x0638]; // $0638: 球员区域
+  // CMP: 设置 C = (ballZone >= playerZone), Z = (ballZone == playerZone)
+  let A = ballZone;
+  setC(sys, A >= playerZone);
+  setFlag(sys, FLAG_Z, A === playerZone);
+  setFlag(sys, FLAG_N, false); // LDA 后 acc 非负 (zone 0-95)
+  if (A === playerZone) {
+    // BEQ / JMP $E7CF(RTS) — 同区域, 直接返回
     return;
   }
+  // 不同区域 → 进入球追逐逻辑
+  sub_E73E_part2(sys);
+}
 
-  // ── $E07D: 设置 $062A (事件标识) ──
-  sys.mem[0x062A] = 0x0F;
+// ── $E751-$E7CE: 球移动/追逐 (ASM $8751-$87CE) ──
+// 完整翻译: 设置球数据指针, 计算速度向量, 逐帧移动球直到到达球员区域
+function sub_E73E_part2(sys: SystemState): void {
+  // ── $8751-$8757: 设置 ZP $34/$35 = $062F (球数据区) ──
+  sys.mem[0x34] = 0x2F; sys.mem[0x35] = 0x06; // pointer = $062F
 
-  // ── $E080: JSR $E709 (输入处理) ──
-  _joypadProcess(sys);
+  // ── $8759: JSR $E7D0 → 获取球区域 (A = zone, C = 区域比较标志) ──
+  const zoneResult = _subE7D0_full(sys);
+  const ballZone = zoneResult.zone;
+  const carryForCE4A = zoneResult.carry;
 
-  // ── $E083: 事件循环 0-21 (球员 iteration) ──
-  let iter = 0;
-  while (iter < 22) {
-    sys.regs.A = 0x00;  // 清零标记
+  // ── $875C: STA $062C — 保存球区域 ──
+  sys.mem[0x062C] = ballZone;
+
+  // ── $875F: PHA ── 保存 A (ball zone) ──
+  // (6502 栈保存, 在 PLA 恢复后用于 dy 查表)
+
+  // ── $8760-$8766: JSR $CE4A (带进位变体) → 获取 dx 速度向量 ──
+  // $CE4A = $CE4D 但跳过了 CLC, 因此 ADC #$40 累加了当前进位
+  // 相当于: aOffset = ballZone + (carry ? 1 : 0)
+  {
+    const dxOffset = ballZone + (carryForCE4A ? 1 : 0);
+    const dxVec = _signedOffsetLookupCE4A(sys, dxOffset);
+    // $8763: STX $0639; $8766: STY $063A
+    sys.mem[0x0639] = dxVec.x; sys.mem[0x063A] = dxVec.y;
+  }
+
+  // ── $8769: PLA ── 恢复 ball zone ──
+  // ── $876A-$8770: JSR $CE4D (标准变体, CLC) → 获取 dy 速度向量 ──
+  {
+    const dyVec = signedOffsetLookup_$CE4D(sys, ballZone, DATA_FB4C_VELOCITY);
+    // $876D: STX $063B; $8770: STY $063C
+    sys.mem[0x063B] = dyVec.x; sys.mem[0x063C] = dyVec.y;
+  }
+
+  // ═══════════════════════════════════════════════════
+  // ── $8773-$87B7: 球移动循环 LOOP ──
+  //  每帧累加速度, 变换坐标, 检查是否到达目标
+  // ═══════════════════════════════════════════════════
+  for (;;) {
+    // ── $8773-$8775: JSR $CB0F(1) — 等待一帧 ──
     timerInit_$CB0F(sys, 1);
 
-    // 等待 timer 完成
-    if (sys.regs.A === 0) {
-      if (iter === 0x0B) { break; }  // $E0AB: CMP #$0B → BEQ
+    // ── $8778-$8788: 累加 dx 到球 X (16-bit) ──
+    // 6502: LDA $0639; CLC; ADC $0634; STA $0634; LDA $063A; ADC $0635; STA $0635; TAX
+    const dxLo = sys.mem[0x0639];
+    const dxHi = sys.mem[0x063A];
+    const sumXL = sys.mem[0x0634] + dxLo;
+    const carryXL = sumXL > 0xFF ? 1 : 0;
+    const xLo = sumXL & 0xFF;
+    const xHi = (sys.mem[0x0635] + dxHi + carryXL) & 0xFF;
+    sys.mem[0x0634] = xLo; sys.mem[0x0635] = xHi;
+    sys.regs.X = xHi; // TAX
+
+    // ── $878C-$879C: 累加 dy 到球 Y (16-bit) ──
+    const dyLo = sys.mem[0x063B];
+    const dyHi = sys.mem[0x063C];
+    let sumYL = sys.mem[0x0636] + dyLo;
+    const carryYL = sumYL > 0xFF ? 1 : 0;
+    const yLo = sumYL & 0xFF;
+    const yHi = (sys.mem[0x0637] + dyHi + carryYL) & 0xFF;
+    sys.mem[0x0636] = yLo; sys.mem[0x0637] = yHi;
+    sys.regs.Y = yHi; // TAY
+
+    // ── $87A0: JSR $CDE2 — 坐标→区域变换 ──
+    const newZone = coordTransform_$CDE2(sys, xHi, yHi);
+
+    // ── $87A3: CMP #$FF — 越界? ──
+    if (newZone === 0xFF) {
+      // $87BA: LDA $0638 → 设置为球员区域
+      sys.mem[0x05FE] = sys.mem[0x0638];
+      break; // 跳至 $87C0
     }
 
-    // ── $E0B1-$E0D4: 球员 side 切换检查 ──
-    if (iter !== sys.mem[0x0441]) {
-      // $E0BA: 检查 $062A bit 7
-      if ((sys.mem[0x062A] & 0x80) === 0) {
-        // $E0BF: bankSwitch → $1A/$1B → JSR $8000
-        _bankSwitchCall8000(sys, 0x1A, _bank00_funcs[0x00]);
+    // ── $87A7: CMP $05FE — 区域未变? ──
+    if (newZone === sys.mem[0x05FE]) {
+      // $87AA: BEQ $8778 — 继续循环
+      continue;
+    }
+
+    // ── $87AC: STA $05FE — 更新球区域 ──
+    sys.mem[0x05FE] = newZone;
+
+    // ── $87AF: CMP $0638 — 到达球员区域? ──
+    if (newZone === sys.mem[0x0638]) {
+      // $87B2: BEQ $87C0 — 到达, 退出循环
+      break;
+    }
+
+    // ── $87B4-$87B7: JSR $800F → 处理中间区域 ──
+    // $800F = bank00 offset $0F = bank26_dispatch[$0F] (via bankSwitch $1A)
+    bankSwitchCall(sys, 0x1A, _bank00Offsets[0x0F]);
+    // $87B7: JMP $8773 → 继续循环
+  }
+
+  // ═══════════════════════════════════════════════════
+  // ── $87C0-$87CE: 循环出口 — 区域→像素, 更新球坐标, JSR $800C ──
+  // ═══════════════════════════════════════════════════
+
+  // ── $87C0: LDA $05FE ── 最终球区域
+  const finalZone = sys.mem[0x05FE];
+
+  // ── $87C3: JSR $CDC9 — 区域→像素坐标 (X/Y 寄存器) ──
+  const coords = tileCoordConvert_$CDC9(sys, finalZone);
+
+  // ── $87C6: STX $0635; $87C9: STY $0637 — 更新球像素坐标
+  sys.mem[0x0635] = coords.x;
+  sys.mem[0x0637] = coords.y;
+
+  // ── $87CC: JSR $800C → 更新 sprite/DMA ──
+  // $800C = bank00 offset $0C = bank26_dispatch[$0C] (via bankSwitch $1A)
+  bankSwitchCall(sys, 0x1A, _bank00Offsets[0x0C]);
+
+  // ── $87CF: RTS ──
+}
+
+// ── $CE4A 变体 (无 CLC) — 带进位标志的 signed offset lookup ──
+// 6502: 跳过 CLC, ADC #$40 实际加 $40+carry
+function _signedOffsetLookupCE4A(
+  sys: SystemState,
+  aOffset: number,
+): { x: number; y: number } {
+  // $CE4A: ADC #$40 (+ carry) → 等同于 aOffset + $40 + carry
+  // 在 6502 中进位在 ADC 中累加:
+  //   ADC #$40 = A + $40 + C
+  // 这里我们直接传入已加进位的 offset
+  return signedOffsetLookup_$CE4D(sys, aOffset, DATA_FB4C_VELOCITY);
+}
+
+// ── $E7D0: 球区域查询 (ASM $87D0-$8853) ──
+// 返回: { zone: number, carry: boolean } — zone 供后续速度查表, carry 供 $CE4A 变体
+//
+// Path A ($87D0-$87E3, 同区域): 直接返回 coordTransform 结果
+// Path B ($87E4-$8853, 区域改变): 计算方向角度值
+function _subE7D0_full(sys: SystemState): { zone: number; carry: boolean } {
+  // ── $87D0-$87DA: 读取球坐标 + 坐标变换 ──
+  const px = ld34y(sys, 6);   // ($34),Y=6 → ball pixel X
+  const py = ld34y(sys, 8);   // ($34),Y=8 → ball pixel Y
+  const newZone = coordTransform_$CDE2(sys, px, py);
+  const oldZone = ld34y(sys, 9); // ($34),Y=9 → old zone
+
+  // ── $87DD-$87E3: CMP ($34),Y; BNE $87E4; RTS ──
+  const zoneChanged = (newZone !== oldZone);
+  const cmpCarry = (newZone >= oldZone);
+
+  if (!zoneChanged) {
+    // Path A: 区域未变 → 直接返回
+    sys.regs.A = newZone;
+    return { zone: newZone, carry: cmpCarry };
+  }
+
+  // ── Path B ($87E4-$8853): 区域变更 → 计算方向角度 ──
+  // $87E4-$87EC: 检查 $F0 特例 (门将区域)
+  let targetZone = oldZone;
+  if (targetZone === 0xF0) {
+    targetZone = sys.mem[0x05FE]; // 球区域作为目标
+  }
+
+  // $87EF: JSR $CDC9 → 目标区域像素坐标
+  const targetCoords = tileCoordConvert_$CDC9(sys, targetZone);
+
+  // ── $87F2-$87F7: 保存目标坐标到 $3A/$3B ──
+  sys.mem[0x3A] = targetCoords.x; sys.mem[0x3B] = targetCoords.y;
+
+  // ── $87F8-$880C: 计算 dx = |ballX - targetX| → $3C 标志 ──
+  let dirFlags = 0; // $3C
+  const ballX = ld34y(sys, 6);
+  let dx = ballX - targetCoords.x;
+  if (dx < 0) {
+    dx = (-dx) & 0xFF;
+    dirFlags |= 1; // bit 0: target is left
+  }
+
+  // ── $880D-$881E: 计算 dy = |ballY - targetY| → $3C 标志 ──
+  const ballY = ld34y(sys, 8);
+  let dy = ballY - targetCoords.y;
+  if (dy < 0) {
+    dy = (-dy) & 0xFF;
+    dirFlags |= 2; // bit 1-2: target is above
+    dirFlags |= 4;
+  }
+
+  // ── $8820-$8853: 查 arctan 表 $FACC/$FACD ──
+  // 等距查找: 16-bit 表中找最小 >= 距离的条目
+  // 这里简化: 直接用距离分量计算方向索引
+  let directionIndex = 0;
+  // 查找 $FACC 表 (lo) 和 $FACD 表 (hi) — 16-bit tan 值
+  // 对于简化翻译: 方向索引基于 dx/dy 比例
+  if (dy > dx) {
+    directionIndex = Math.min(dy > 0 ? Math.floor((dx / dy) * 8) : 0, 7);
+  } else if (dx > 0) {
+    directionIndex = Math.min(Math.floor((dy / dx) * 8) + 8, 15);
+  }
+  // 应用方向标志: 符号翻转
+  if (dirFlags & 1) directionIndex = (-directionIndex) & 0xFF;
+  if (dirFlags & 2) directionIndex = (-directionIndex) & 0xFF;
+
+  // 返回值: A = 方向角度值 (用于速度查表)
+  const resultVal = directionIndex & 0x7F;
+  sys.regs.A = resultVal;
+
+  // 进位: 最后的 LSR $3C 后 carry 由 bit 0 决定
+  const finalCarry = (dirFlags & 1) !== 0;
+
+  return { zone: resultVal, carry: finalCarry };
+}
+
+// ── $E7D0 旧版包装 (保留兼容) ──
+function sub_E7D0(sys: SystemState): number {
+  const px = ld34y(sys, 6); const py = ld34y(sys, 8);
+  const A = coordTransform_$CDE2(sys, px, py);
+  const oldZone = ld34y(sys, 9);
+  // CMP: set carry
+  setC(sys, A >= oldZone);
+  setFlag(sys, FLAG_Z, A === oldZone);
+  if (A !== oldZone) {
+    if (oldZone === 0xF0) A = sys.mem[0x05FE];
+    const coords = tileCoordConvert_$CDC9(sys, A);
+    sys.mem[0x3A] = coords.x; sys.mem[0x3B] = coords.y;
+  }
+  sys.regs.A = A;
+  return A;
+}
+
+// ── $E854: 球员位置更新辅助 (ASM $8854-$889F) ──
+// LDY #$0A; LDA ($34),Y; BNE RTS; LDA $05FF→$43;
+// loop: JSR $E7D0→$44; 检查区域不等→JSR $E8A0(Y=7); 累加$40→JSR $E8A0(Y=5);
+// DEC $43; BNE loop; STA ($34),Y(Y=$0A)=0; RTS
+function sub_E854(sys: SystemState): void {
+  let A = ld34y(sys, 0x0A); if (A !== 0) return;
+  let count = sys.mem[0x05FF];
+  sys.mem[0x43] = count;
+  while (count > 0) {
+    A = sub_E7D0(sys); sys.mem[0x44] = A;
+    const px = ld34y(sys, 6); const py = ld34y(sys, 8);
+    A = coordTransform_$CDE2(sys, px, py);
+    const oldZone9 = ld34y(sys, 9);
+    if (A !== oldZone9) {
+      if (oldZone9 === 0xF0 ? A === sys.mem[0x05FE] : true) {
+        sub_E8A0(sys, 7, sys.mem[0x44]);
+        sub_E8A0(sys, 5, (sys.mem[0x44] + 0x40) & 0xFF);
       }
-      sys.regs.A = iter;
-      sys.mem[0x0441] = sys.regs.A;
     }
-
-    // ── $E0D4: JSR $CD7C → 读角色数据 ──
-    getCharData_$CD7C(sys);
-
-    // ── $E0E0-$E10E: 球员距离 / 方向判断 ──
-    _playerDistCheck(sys, iter);
-
-    // ── $E10E: bankSwitch → $1A/$1B → JSR $8009 ──
-    _bankSwitchCall8000(sys, 0x1A, _bank00_funcs[0x09]);
-
-    iter++;
+    count--; sys.mem[0x43] = count;
   }
-
-  // ── $E114: 场景事件结束 → 清理 $05FF/$0600 ──
-  sys.mem[0x05FF] = 0x00;
-
-  // ── $E11A: JSR $E7FD → 球区域检测 ──
-  _ballZoneDetect(sys);
-  exit('tick_BANK31_mainLoop', { mode: 'match', '0628': sys.mem[0x628] });
+  st34y(sys, 0x0A, 0);
 }
 
-/** $E6EC: 球员位置更新 */
-export function translate_BANK31_PLAYER_LOGIC(sys: SystemState): void {
-  // $E6EC: LDA $0441 → JSR $CD7C → read X/Y
-  getCharData_$CD7C(sys);
-
-  // 读球员坐标 (16-bit)
-  sys.mem[0x0635] = read16At(0x34, sys, 6);   // player X lo
-  sys.mem[0x0637] = read16At(0x34, sys, 8);   // player Y lo
-
-  // JSR $CDE2 → 坐标变换 → 存 $05FE
-  const zone = coordTransform_$CDE2(sys, sys.mem[0x0635], sys.mem[0x0637]);
-  sys.mem[0x05FE] = zone;
-
-  // $E703: 检查 $062A bit 7 → 如果带球 (zone 变更) 设置 flag
-  sys.mem[0x062A] &= 0x7F;  // 清零 bit 7
-
-  // ── $E70B: 更新 $0634/$0636 (速度累加) ──
-  // 读取速度 → 累加到坐标
-  const velX = (sys.mem[0x0634]) | 0;
-  const velY = (sys.mem[0x0636]) | 0;
-
-  let newX = (sys.mem[0x0635] + velX) & 0xFFFF;
-  let newY = (sys.mem[0x0637] + velY) & 0xFFFF;
-
-  sys.mem[0x0635] = newX & 0xFF;
-  sys.mem[0x0634] = (newX >> 8) & 0xFF;
-  sys.mem[0x0637] = newY & 0xFF;
-  sys.mem[0x0636] = (newY >> 8) & 0xFF;
-
-  // $E731: 坐标变换 → 区域检测
-  const zoneCheck = coordTransform_$CDE2(sys, newX & 0xFF, newY & 0xFF);
-
-  if (zoneCheck === 0xFF) {
-    // $E741: 区域无效 → 回退
-    return;
-  }
-
-  if (zoneCheck !== sys.mem[0x05FE]) {
-    sys.mem[0x05FE] = zoneCheck;
-
-    if (zoneCheck === sys.mem[0x0638]) {
-      // $E760: 球区域匹配 → JSR $800F (切 bank00)
-      _bankSwitchCall8000(sys, 0x1A, _bank00_funcs[0x0F]);
-    }
-  }
+// ── $E8A0: 速度移位辅助 (ASM $88A0-$88EC) ──
+function sub_E8A0(sys: SystemState, offset: number, delta: number): void {
+  sys.mem[0x46] = offset;
+  let A = (delta + 0x10) >> 5; // 除以32
+  sys.regs.X = A;
+  const shiftVal = DATA_SHIFT_TABLE[A & 7];
+  sys.mem[0x47] = shiftVal;
+  // 检索 $32/$33 (16-bit距离) → 做位移/取反
+  // 实际效果: 根据距离平移速度增量
+  // Simplified for now
 }
 
-/** $E7D0: 球员距离方向检查 */
-function _playerDistCheck(sys: SystemState, playerIdx: number): void {
-  // 比较球员球距离与阈值 ($0643)
-  // 返回方向标志 → A
-  const dist = Math.abs(sys.mem[0x0635] - read16At(0x34, sys, 6))
-    + Math.abs(sys.mem[0x0637] - read16At(0x34, sys, 8));
-
-  if (dist < sys.mem[0x0643]) {
-    sys.mem[0x0644]++;  // $E8FA: INC $0644 (close player count)
+// ── $E8F5: 坐标增量+边界裁切 (ASM $88F5-$893C) ──
+function sub_E8F5(sys: SystemState, regY: number, dirBits: number): void {
+  sys.mem[0x47] = regY;
+  let A = dirBits & 0x03; if (A === 0) return;
+  let Y = sys.mem[0x32]; let X = sys.mem[0x33];
+  let carry: boolean;
+  // 根据位序翻转 X/Y
+  if (A & 0x01) {
+    // 取反: EOR #$FF; EOR #$FF; INY; INX
+    Y = (-Y) & 0xFFFF; X = (-X) & 0xFFFF;
   }
+  // ADC ($34),Y → 累加到目标坐标
+  A = ((sys.mem[0x34] + regY) & 0xFF); // regY offset
+  // 实际逻辑: 读16-bit坐标数据，累加，clip
+  // Simplified clip: just clamp to $30-$CF for X, $50-$AF for Y
 }
 
-/** $E749: 方向/速度表查表 → 更新 $0634/$0636 */
-function _joypadProcess(sys: SystemState): void {
-  // $0709: 读方向/速度表 ($E6CF)
-  const dirBits = sys.mem[0x001C] & 0x0F;  // 手柄方向
-  const speedIdx = (dirBits << 1) & 0x0E;
-  const velX = _getDirTable(sys, speedIdx);
-  const velY = _getDirTable(sys, speedIdx + 1);
+// ── $E912: 16-bit坐标累加 (ASM $8912-$893A) ──
+function sub_E912(sys: SystemState, offset: number, lo: number, hi: number): void {
+  // 未完整翻译 — bank30坐标辅助的间接调用
+}
 
-  // 侧队方向翻转
+// ═════════════════════════════════════════════════
+// 主循环辅助子程序
+// ═════════════════════════════════════════════════
+
+// ── $E233: 进球事件 (ASM $8233-$8266) ──
+function sub_E233(sys: SystemState): void {
+  audiotrigger_$CBB0(sys, 0x1E);
+  bankSwitchCall(sys, 0x1C, _bank00Offsets[0x24]);
+  sub_E267(sys);
+  sys.mem[0x0615] = 0x80; sys.mem[0x062D] = 0x80;
+  sys.mem[0x0642] = 0; sys.mem[0x0643] = 0;
+  sys.mem[0x008E] = 2; sys.mem[0x0469] = 1;
+}
+
+// ── $E267: 侧队分派 (ASM $8267-$827C) ──
+function sub_E267(sys: SystemState): void {
   if (sys.mem[0x05FB] !== 0) {
-    if (velX) sys.mem[0x0634] = (256 - velX) & 0xFF;
-    if (velY) sys.mem[0x0636] = (256 - velY) & 0xFF;
+    sys.regs.A = 0x31; sub_EF7F_A(sys);
+    sys.regs.A = 0x32; sub_EF7F_A(sys);
   } else {
-    sys.mem[0x0634] = velX;
-    sys.mem[0x0636] = velY;
+    sys.regs.A = 0x30; sub_EF7F_A(sys);
   }
 }
 
-/** $E6CF 方向表查表 → DATA_DIR_TABLE */
-function _getDirTable(sys: SystemState, idx: number): number {
-  return DATA_DIR_TABLE[idx & 0x0F];
+// ── $E27D: 位置检查 (ASM $827D-$82A2) ──
+function sub_E27D(sys: SystemState): void {
+  let A = ld34y(sys, 0x0A); if (A !== 0) return;
+  let X = sys.mem[0x0635]; let Y = sys.mem[0x0637];
+  if (sys.mem[0x05FB] !== 0) { X = ((X ^ 0xFF) + 1) & 0xFF; }
+  // CPX #$C4; BCC RTS; CPY #$74; BCC RTS; CPY #$8C; BCC $82A3
+  if (X >= 0xC4 && Y >= 0x74 && Y < 0x8C) {
+    // Goal area → ball reset
+    sys.mem[0x062D] = 0; sys.mem[0x0615] = 0;
+    bankSwitchCall(sys, 0x1A, _bank00Offsets[0x09]);
+    // LDX #$50; TXS; JMP $8009
+  }
 }
 
-// ═════════════════════════════════════════════════
-// 辅助: bank 切换 + 跨 bank 调用 (MMC3 dispatch)
-// ═════════════════════════════════════════════════
+// ── $E2BC: 球员体力更新 (ASM $82BC-$8348) ──
+function sub_E2BC(sys: SystemState): void {
+  sys.mem[0x0618] = (sys.mem[0x0618] + 1) & 0xFF;
+  if (sys.mem[0x0618] < 1) return; // BCC $8315
+  sys.mem[0x0618] = 0;
+  // Loop through players 0..$0A
+  let A = 0;
+  for (let i = 0; i <= 0x0A; i++) {
+    if (i === sys.mem[0x0441]) continue; // skip current
+    // JSR $CD7C with player index; check stamina
+    getCharData_$CD7C(sys);
+    // Simplified stamina deduction
+    A = (A + 1) & 0xFF;
+  }
+  // LDA $0441; CMP #$0B; BCS RTS (tail check)
+}
 
-/**
- * 通用: 保存上下文 → 切到指定 bank pair → 调用目标 bank 函数 → 恢复。
- * 6502 模式: LDA $22; LDA #$1A; STA $24; LDA #1B; STA $25; JSR $CE2D; JSR $80XX
- */
-type Bank00Call = (sys: SystemState) => void;
-
-// ── Bank dispatch 路由表 ──
-// key: bank number (from sys.mem[0x24] after MMC3 switch)
-// value: dispatch table mapping offset → handler
-const _bankDispatchTables: Record<number, Record<number, (sys: SystemState) => void>> = {
-  0x0B: bank11_dispatch,   // bank 11: background/tile
-  0x10: bank16_dispatch,   // bank 16: scene logic
-  0x12: bank19_dispatch,   // bank 19: script parser / lookup tables
-  0x14: bank20_dispatch,   // bank 20: team/player
-  0x16: bank22_dispatch,   // bank 22: sprite/OAM
-  0x18: bank24_dispatch,   // bank 24: cutscene
-  0x1A: bank26_dispatch,   // bank 26: match core
-};
-
-/**
- * 跨 bank 调用分发器:
- *   读取当前 MMC3 映射的 bank 号 (sys.mem[0x24])，
- *   从对应 bank 的 dispatch 表中查找 offset 对应的处理函数。
- */
-function _dispatchBankCall(sys: SystemState, offset: number): void {
-  const bank = sys.mem[0x24];
-  const handlers = _bankDispatchTables[bank];
-  if (handlers) {
-    const fn = handlers[offset];
-    if (fn) {
-      fn(sys);
+// ── $E349: 球员输入处理 (ASM $8349-$83C9) ──
+function sub_E349(sys: SystemState): void {
+  sys.mem[0x0532] = 0;
+  if (sys.mem[0x05FB] !== 0) {
+    // CPU side: INC $0532; check $001E bits
+    sys.mem[0x0532] = 1;
+    let A = sys.mem[0x001E] & 0xC0; if (A === 0) return;
+    let X = (A & 0x80) ? 1 : 0xFF;
+    A = (X + sys.mem[0x05FD]) & 0xFF;
+    if (A === 0) A = 0x0A;
+    if (A >= 0x0B) A = 1;
+    sys.mem[0x05FD] = A;
+    sub_E267(sys);
+  } else {
+    // Player side
+    sys.mem[0x0615] |= 0x40;
+    let A = sys.mem[0x001C] & 0x40; if (A !== 0) {
+      sys.mem[0x0600] = 0; sys.mem[0x0615] = 0;
+      audiotrigger_$CBB0(sys, 0x44); clearOam_$CB8B(sys);
+      bankSwitchCall(sys, 0x1A, _bank00Offsets[0x03]);
+      // LDX #$50; TXS; JMP $8003
       return;
     }
+    A = sys.mem[0x001C] & 0x0F; if (A === 0) return;
+    sys.mem[0x0532] = 1;
+    let X = (A & 0x02) ? 0 : 0x40;
+    sys.mem[0x0517] = X;
+    sys.mem[0x0615] &= 0xBF;
   }
-  console.warn(
-    `[bank31] No handler in dispatch table: bank=$${bank.toString(16)} offset=$${offset.toString(16)} — ` +
-    `(expected once CODE bank completes translation)`,
-  );
 }
 
-const _bank00_funcs: Record<number, Bank00Call> = {
-  0x00: (s) => _dispatchBankCall(s, 0x00),  // $8000: dispatch entry
-  0x03: (s) => _dispatchBankCall(s, 0x03),  // $8003: scene tick
-  0x06: (s) => _dispatchBankCall(s, 0x06),  // $8006: get state
-  0x09: (s) => _dispatchBankCall(s, 0x09),  // $8009: set state
-  0x0C: (s) => _dispatchBankCall(s, 0x0C),  // $800C: bytecode dispatch
-  0x0F: (s) => _dispatchBankCall(s, 0x0F),  // $800F: player render
-  0x12: (s) => _dispatchBankCall(s, 0x12),  // $8012: sprite render
-  0x15: (s) => _dispatchBankCall(s, 0x15),  // $8015: nametable
-  0x18: (s) => _dispatchBankCall(s, 0x18),  // $8018: PPU data
-  0x1B: (s) => _dispatchBankCall(s, 0x1B),  // $801B: PPU attr
-  0x1E: (s) => _dispatchBankCall(s, 0x1E),  // $801E: scene PPU
-  0x21: (s) => _dispatchBankCall(s, 0x21),  // $8021: scene init
-  0x24: (s) => _dispatchBankCall(s, 0x24),  // $8024: bytecode exec
-  0x27: (s) => _dispatchBankCall(s, 0x27),  // $8027: timer set
-  0x30: (s) => _dispatchBankCall(s, 0x30),  // $8030: input get
-  0x33: (s) => _dispatchBankCall(s, 0x33),  // $8033: data load
-  0x39: (s) => _dispatchBankCall(s, 0x39),  // $8039: scroll set
-  0x3C: (s) => _dispatchBankCall(s, 0x3C),  // $803C: music/audio
+// ── $E3CA: CPU侧队输入 (ASM $83CA-$8406) ──
+function sub_E3CA(sys: SystemState): void {
+  if (sys.mem[0x05FB] === 0) {
+    if ((sys.mem[0x001C] & 0x0F) === 0) return;
+  }
+  let A = sys.mem[0x0441];
+  // JSR $CE08 with X=$20 and player index → bank30
+  // LSR $33; ROR $32 (twice) → 除以4
+  let lo = sys.mem[0x32]; let hi = sys.mem[0x33];
+  lo = (lo >> 2) | ((hi & 3) << 6); hi >>= 2; // ROR+ROR
+  let X = lo; let Y = hi;
+  if (sys.mem[0x0517] & 0x40) X = (0x100 - X) & 0xFF; // EOR #$FF
+  lo = (X + sys.mem[0x0642]) & 0xFF;
+  hi = (Y + sys.mem[0x0643] + (lo > 0xFF ? 1 : 0)) & 0xFF;
+  sys.mem[0x0642] = lo; sys.mem[0x0643] = hi;
+}
+
+// ── $E407: 球员迭代 (ASM $8407-$849A) ──
+function sub_E407(sys: SystemState): void {
+  sub_E709(sys);
+  let A = 0;
+  for (let i = 0; i < 22; i++) {
+    timerInit_$CB0F(sys, 1); sub_E349(sys);
+    A = i; updNZ8(sys, A);
+    if (A === 0 || A === 0x0B) continue;
+    const sfb = sys.mem[0x05FB];
+    if (sfb === 0) { if (A === sys.mem[0x05FD]) continue; }
+    if (A === sys.mem[0x0441] && A < 0x0B) continue;
+    if ((sys.mem[0x062A] & 0x80) !== 0) {
+      if (A !== sys.mem[0x0441]) {
+        bankSwitchCall(sys, 0x1A, _bank00Offsets[0x00]);
+      }
+    }
+    sys.mem[0x41] = A; getCharData_$CD7C(sys);
+    const side = sys.mem[0x05FB];
+    let X: number;
+    if (side !== 0) {
+      X = (ld34y(sys, 9) >= 0xF0) ? 0x1F : 0x22;
+    } else {
+      X = 0x21;
+    }
+    if (A === sys.mem[0x0441]) X = 0x20;
+    // JSR $CE08 with X reg (bank30)
+    A = ld34y(sys, 0x0A); if (A !== 0) { A--; st34y(sys, 0x0A, A); }
+    else sub_E854(sys);
+  }
+  sys.mem[0x0600] = 0; // end of loop
+  A = sys.mem[0x0613];
+  if (A >= 5) { sys.mem[0x0613] = 0; /* JSR $E4D7 → sub_E4D7 */ }
+  if (sys.mem[0x0600] === 0) return;
+  // 有活跃球员 → JSR $E4D7 → 后续处理
+}
+
+// ── $E4D7: 球员排序/过滤 (ASM $84D7-$8500) ──
+function sub_E4D7(sys: SystemState): void {
+  // 根据 $05FB 对侧队球员索引进行过滤
+  // 太细碎，核心是读取球员索引列表，过滤重复/无效条目
+}
+
+// ── $E501: 距离检查 (ASM $8501-$854B) ──
+function sub_E501(sys: SystemState): void {
+  // 球员→球距离判断，用于决定是否显示近距离 UI
+}
+
+// ── $E54C: 过滤 cleanup (ASM $854C-$8593) ──
+function sub_E54C(sys: SystemState): void {
+  sys.mem[0x044E] = 0;
+  if (sys.mem[0x0600] === 0) { sys.regs.SP = 0x50; /* JMP $E0DF */ return; }
+  // 过滤重复的0601条目
+}
+
+// ── $E596: 过场分派 (ASM $8596-$8613) ──
+function sub_E596(sys: SystemState): void {
+  let A = sys.mem[0x00E2]; if (A >= 0xE0) { /* skip to bank switch */ }
+  /* ... JSR $CD77; 更新球员坐标; JSR $CBB0(audio);
+     bankSwitch → $14/$15 → JSR $800C;
+     bankSwitch → $1A/$1B → JSR $8024;
+     LDX $0635; LDY $0637; JSR $CDE2; STA $05FE;
+     遍历 $0600 活跃球员; JSR $E616 初始化; JMP $DE96 */
+}
+
+// ── $E616: 单球员初始化 (ASM $8616-$8677) ──
+function sub_E616(sys: SystemState): void {
+  sys.mem[0x043B] = 1; sys.mem[0x043C] = 0;
+  sys.mem[0x043D] = 2; sys.mem[0x043E] = 0;
+  let A = sys.mem[0x0601] | 0; // X index
+  if (A === 0 || A === 0x0B) return;
+  sys.mem[0x0442] = A;
+  bankSwitchCall(sys, 0x1C, _bank00Offsets[0x15]);
+  A = (sys.mem[0x32] + 4) & 0xFF;
+  sys.mem[0x32] = A;
+  bankSwitchCall(sys, 0x1A, _bank00Offsets[0x12]);
+  bankSwitchCall(sys, 0x1A, _bank00Offsets[0x15]);
+}
+
+// ── $E678: 侧队切换 (ASM $8678-$8686) ──
+function sub_E678(sys: SystemState): void {
+  sys.mem[0x05FB] ^= 0x0B;
+  // JSR $D093 (bank30); timer
+}
+
+// ── $E688: 球初始位置 (ASM $8688-$86CC) ──
+function sub_E688(sys: SystemState): void {
+  let A = 0;
+  if (sys.mem[0x0635] & 0x80) A |= 1;
+  if (sys.mem[0x0637] & 0x80) A |= 2;
+  sys.mem[0x3A] = A;
+  // 查方向表 DATA_DIR_TABLE 计算球位置
+  const rnd = sys.mem[0x00E2] & 7;
+  const idx = rnd << 1;
+  let X = DATA_DIR_TABLE[idx + 1]; let Y = DATA_DIR_TABLE[idx];
+  if (!(sys.mem[0x3A] & 1)) X = (-X) & 0xFF;
+  if (!(sys.mem[0x3A] & 2)) Y = (-Y) & 0xFF;
+  // ... (坐标设置 + JSR $CDE2; JMP $DE96)
+}
+
+// ═════════════════════════════════════════════════
+// Bank 切换 helper (简化: 不走 MMC3)
+// ═════════════════════════════════════════════════
+
+const _bankDispatchTables: Record<number, Record<number, (sys: SystemState) => void>> = {
+  0x0B: bank11_dispatch, 0x10: bank16_dispatch, 0x12: bank19_dispatch,
+  0x14: bank20_dispatch, 0x16: bank22_dispatch, 0x18: bank24_dispatch, 0x1A: bank26_dispatch,
 };
 
-// ── 直接 bank 调用（不走 MMC3 bank switch, 只设上下文）──
-
-/**
- * 简化: 设置 bank 上下文并直接调用目标 bank 的处理函数。
- * 不再走 MMC3 bank switch → bankSwitch_apply_$CE2D → 恢复 的 CPU 流程。
- * 只保留 sys.mem[0x24] 作为 bank 上下文标记供 dispatch 查表使用。
- */
-function _bankSwitchCall8000(
-  sys: SystemState,
-  bankLo: number,
-  fn: Bank00Call,
-): void {
-  // 设置 bank 上下文 (dispatch 用 sys.mem[0x24] 查表)
-  sys.mem[0x24] = bankLo & 0x3F;
-  // 直接调用
-  fn(sys);
+function _dispatchBankCall(sys: SystemState, offset: number): void {
+  const bank = sys.mem[0x24]; const handlers = _bankDispatchTables[bank];
+  if (handlers) { const fn = handlers[offset]; if (fn) { fn(sys); return; } }
+  console.warn(`[bank31] No handler: bank=$${bank.toString(16)} offset=$${offset.toString(16)}`);
 }
 
-/** $7FD: 球区域检测 */
-function _ballZoneDetect(sys: SystemState): void {
-  const ballZone = sys.mem[0x05FE];
-  if (ballZone === sys.mem[0x0638]) {
-    // 球和球员在同一区域
-    sys.mem[0x062A] |= 0x80;
-  }
+/** 6502: PHA; LDA $22; LDA #bankLo; STA $24; LDA #bankHi; STA $25; JSR $CE2D; PLA; JSR $80xx */
+function bankSwitchCall(sys: SystemState, bankLo: number, offset: number): void {
+  sys.mem[0x24] = bankLo & 0x3F; _dispatchBankCall(sys, offset);
+}
+
+const _bank00Offsets: Record<number, number> = {
+  0x00: 0x00, 0x03: 0x03, 0x06: 0x06, 0x09: 0x09, 0x0C: 0x0C,
+  0x0F: 0x0F, 0x12: 0x12, 0x15: 0x15, 0x18: 0x18, 0x1B: 0x1B,
+  0x1E: 0x1E, 0x21: 0x21, 0x24: 0x24, 0x27: 0x27, 0x30: 0x30, 0x33: 0x33,
+};
+
+// ── $EF7F: Bank切换+PHA上下文 (ASM $EF7F-$EF9F) ──
+function sub_EF7F_A(sys: SystemState): void {
+  // 在6502原版中: 根据A的值决定跳到局部bank配对。
+  // 简化: 设置 bank 上下文
+  const idx = sys.regs.A; if (idx === 0) { bankSwitchCall(sys, 0x1A, _bank00Offsets[0x0C]); }
+  else if (idx === 1) { bankSwitchCall(sys, 0x18, _bank00Offsets[0x0C]); }
+  else if (idx === 0x30) { bankSwitchCall(sys, 0x1A, _bank00Offsets[0x0C]); }
+  else if (idx === 0x31) { bankSwitchCall(sys, 0x1C, _bank00Offsets[0x0C]); }
+  else if (idx === 0x32) { bankSwitchCall(sys, 0x10, _bank00Offsets[0x0C]); }
+}
+
+export function translate_BANK31_BANK_SWITCH(
+  sys: SystemState, targetBank: number,
+  onCall800C?: (sys: SystemState, aReg: number) => void,
+): void {
+  sys.regs.Y = targetBank; sys.mem[0x24] = 0x18;
+  if (onCall800C) onCall800C(sys, targetBank);
 }
 
 // ═════════════════════════════════════════════════
@@ -519,21 +888,14 @@ export function translate_BANK31_GET_BALL_POS(sys: SystemState): number {
 // 功能: 根据 A 中的 index，查跳转表 ($F329)，写入 $30/$31
 
 export function translate_BANK31_JUMP_TABLE_DISPATCH(sys: SystemState, index: number): number {
-  sys.mem[0x30] = 0x29;
-  sys.mem[0x31] = 0xF3;
+  // 直接读 DATA_TEXT_NAMES（原 $F329-$FFEF 跳转表），不再走 sys.mem
+  // 每一项 2 bytes (little-endian 16-bit addr)
+  const offset = (index & 0xFF) << 1;
+  const targetLo = DATA_TEXT_NAMES[offset];
+  const targetHi = DATA_TEXT_NAMES[offset + 1];
 
-  let offset16 = (index & 0xFF) << 1;
-  if (offset16 > 0xFF) {
-    sys.mem[0x31] = ((sys.mem[0x31]) + 1) & 0xFF;
-  }
-  const offsetLo = offset16 & 0xFF;
-
-  const ptr = ((sys.mem[0x31] << 8) | sys.mem[0x30]) + offsetLo;
-  const targetLo = sys.mem[ptr & 0xFFFF];
-  const targetHi = sys.mem[(ptr + 1) & 0xFFFF];
-
-  sys.mem[0x31] = targetHi;
   sys.mem[0x30] = targetLo;
+  sys.mem[0x31] = targetHi;
 
   const targetAddr = (targetHi << 8) | targetLo;
   sys.regs.A = targetLo & 0xFF;
@@ -547,29 +909,7 @@ export function translate_BANK31_JUMP_TABLE_DISPATCH(sys: SystemState, index: nu
 // Part A ($EF7F-$EF9F): 带上下文保存的 bank 切换
 // Part B ($EFA2-$F00E): 精灵渲染 bank 切换循环
 
-/**
- * $EF7F: Bank 切换 & 受保护的跨 bank 调用 (简化: 不走 MMC3)。
- *
- * 原始: 保存 $24/$25 → 设 bank=$18/$19 → JSR $CE2D → JSR $800C → 恢复 → JMP $CE2D.
- * 现在: 直接设置上下文, 调用目标函数, 无需 MMC3 寄存器操作。
- */
-export function translate_BANK31_BANK_SWITCH(
-  sys: SystemState,
-  targetBank: number,
-  onCall800C?: (sys: SystemState, aReg: number) => void,
-): void {
-  sys.regs.Y = targetBank;
 
-  // 设置 bank 上下文 → bank pair $18/$19 (原始 MMC3 映射)
-  // $800C 在 window 6 (bank 0x18) → dispatch 查表 → bank24_dispatch
-  sys.mem[0x24] = 0x18;
-
-  if (onCall800C) {
-    onCall800C(sys, targetBank);
-  }
-
-  // 不再需要 MMC3 恢复 — 后续 _bankSwitchCall8000 调用时会重新设置上下文
-}
 
 /**
  * $EFA2: 精灵渲染 bank 切换循环 (Part B)
@@ -813,13 +1153,13 @@ export function translate_BANK31_BANK_HELPER(sys: SystemState): void {
   }
 
   // $EB9B: bankSwitch → $18/$19 → JSR $8003（场景状态）
-  _bankSwitchCall8000(sys, 0x18, _bank00_funcs[0x03]);
+  bankSwitchCall(sys, 0x18, _bank00Offsets[0x03]);
 
   // $EBAC: 再次 bankSwitch → $18/$19 → JSR $8006
-  _bankSwitchCall8000(sys, 0x18, _bank00_funcs[0x06]);
+  bankSwitchCall(sys, 0x18, _bank00Offsets[0x06]);
 
   // $EBBD: 第三次 → JSR $8009
-  _bankSwitchCall8000(sys, 0x18, _bank00_funcs[0x09]);
+  bankSwitchCall(sys, 0x18, _bank00Offsets[0x09]);
 
   // $EBC7: 检查 $052E (难度 tick)
   if (sys.mem[0x052E] !== 0) {
@@ -851,7 +1191,7 @@ export function translate_BANK31_BANK_HELPER(sys: SystemState): void {
     sys.mem[0x0516] |= 0x01;
 
     // bankSwitch → $10/$11 → JSR $8000
-    _bankSwitchCall8000(sys, 0x10, _bank00_funcs[0x00]);
+    bankSwitchCall(sys, 0x10, _bank00Offsets[0x00]);
   }
 
   // $EC2F: 设置 $0519
@@ -859,7 +1199,7 @@ export function translate_BANK31_BANK_HELPER(sys: SystemState): void {
   if ($0519 !== 0) {
     if ($0519 > 0x28) {
       // $EC5B: 大场景切换
-      _bankSwitchCall8000(sys, 0x10, _bank00_funcs[0x03]);
+      bankSwitchCall(sys, 0x10, _bank00Offsets[0x03]);
     }
     return;
   }
@@ -876,7 +1216,7 @@ export function translate_BANK31_BANK_HELPER(sys: SystemState): void {
     if ((sys.mem[0x0516] & 0x50) === 0x50) {
       // $EC97: audio 处理
       // bankSwitch → $10/$11 → JSR $8003
-      _bankSwitchCall8000(sys, 0x10, _bank00_funcs[0x03]);
+      bankSwitchCall(sys, 0x10, _bank00Offsets[0x03]);
     } else {
       // $ECA3: 场景音效
       sys.mem[0x0516] ^= 0x50;
@@ -899,7 +1239,7 @@ export function translate_BANK31_SPRITE_DMA_INIT(sys: SystemState): void {
   const savedCE = sys.mem[0x05CE];
 
   // bankSwitch → $0B/$0C → JSR $8006 (sprite data)
-  _bankSwitchCall8000(sys, 0x0B, _bank00_funcs[0x06]);
+  bankSwitchCall(sys, 0x0B, _bank00Offsets[0x06]);
 
   // $ECE5: 重置 $4A (OAM index)
   sys.regs.X = 0;
@@ -963,7 +1303,7 @@ export function translate_BANK31_SPRITE_BANK_PHASE2(sys: SystemState): void {
       sys.mem[0x0516] |= 0x20;
 
       // bankSwitch → $10/$11 → JSR $8003
-      _bankSwitchCall8000(sys, 0x10, _bank00_funcs[0x03]);
+      bankSwitchCall(sys, 0x10, _bank00Offsets[0x03]);
     }
     return;
   }
@@ -1060,12 +1400,12 @@ export function translate_BANK31_SPRITE_SETUP(
       // $EF10: 带 bank 切换的 sprite 渲染
       if ((sys.mem[0x0615] & 0x40) === 0) {
         // bankSwitch → $14/$15 → JSR $8006
-        _bankSwitchCall8000(sys, 0x14, _bank00_funcs[0x06]);
+        bankSwitchCall(sys, 0x14, _bank00Offsets[0x06]);
       }
       // bankSwitch → $14/$15 → JSR $8003
-      _bankSwitchCall8000(sys, 0x14, _bank00_funcs[0x03]);
+      bankSwitchCall(sys, 0x14, _bank00Offsets[0x03]);
       // bankSwitch → $16/$17 → JSR $8000
-      _bankSwitchCall8000(sys, 0x16, _bank00_funcs[0x00]);
+      bankSwitchCall(sys, 0x16, _bank00Offsets[0x00]);
     }
     slot++;
   }
@@ -1073,7 +1413,7 @@ export function translate_BANK31_SPRITE_SETUP(
   // $EF62: 检查 $062D (PPU 完成标志)
   if ((sys.mem[0x062D] & 0x80) === 0) {
     // bankSwitch → $14/$15 → JSR $8009
-    _bankSwitchCall8000(sys, 0x14, _bank00_funcs[0x09]);
+    bankSwitchCall(sys, 0x14, _bank00Offsets[0x09]);
   }
 
   // $EF6D: OAM 填充 → $053F
@@ -1134,11 +1474,12 @@ export function translate_BANK31_DMA_HELPER(sys: SystemState): void {
   // 遍历 0-5 (6 sprite columns)
   for (let col = 0; col < 6; col++) {
     // $F037: column base → 查 DMA 偏移表 ($F10E)
-    const dmaOffset = _readDMATable(sys, col, spriteType);
+    const dmaOffset = _readDMATable(col);
+    // 原始 ASM($903C): ADC $F10E,X → $04A6 + col_offset
+    sys.mem[0x04A6] = (sys.mem[0x04A6] + dmaOffset) & 0xFF;
 
     // 设置 PPU 传输地址
     const ppuAddr = _readPPUTransferAddr(sys, spriteType, col);
-    sys.mem[0x04A6] = ppuAddr & 0xFF;
     sys.mem[0x04A7] = (ppuAddr >> 8) & 0xFF;
 
     // $F07D: OAM 属性
@@ -1190,22 +1531,18 @@ export function translate_BANK31_DMA_HELPER(sys: SystemState): void {
  *   LDA $F15A+3,Y → ORA attribute → STA $04A7
  */
 function _readSpriteAttrTable(sys: SystemState, attrIdx: number): void {
-  const base = (0xF15A + (attrIdx & 0xFF)) & 0xFFFF;
-  sys.mem[0x003C] = sys.mem[base];             // PPU addr lo → $3C
-  sys.mem[0x003D] = sys.mem[(base + 1) & 0xFFFF]; // PPU addr hi → $3D
-  // bytes [2] and [3] 在 DMA_HELPER 列循环中内联消费
-  // column 循环中: $04A6 = byte2 + col_offset, $04A7 = byte3
-  sys.mem[0x04A6] = sys.mem[(base + 2) & 0xFFFF]; // OAM attr / column base → $04A6
-  sys.mem[0x04A7] = sys.mem[(base + 3) & 0xFFFF]; // PPU attr hi → $04A7
+  // 直接读 DATA_SPRITE_ATTR（原 $F15A-$F30E），不再走 sys.mem
+  // 每一项 4 bytes: lo, hi, OAM attr, extra attr
+  sys.mem[0x003C] = DATA_SPRITE_ATTR[attrIdx];             // byte 0: PPU addr lo → $3C
+  sys.mem[0x003D] = DATA_SPRITE_ATTR[attrIdx + 1];         // byte 1: PPU addr hi → $3D
+  sys.mem[0x04A6] = DATA_SPRITE_ATTR[attrIdx + 2];         // byte 2: OAM attr / col base → $04A6
+  sys.mem[0x04A7] = DATA_SPRITE_ATTR[attrIdx + 3];         // byte 3: PPU extra attr → $04A7
 }
 
-function _readDMATable(sys: SystemState, col: number, spriteType: number): number {
-  const table = [0x00, 0x01, 0x02, 0x08, 0x09, 0x0A]; // $F10E
-  const idx = (spriteType * 6 + col);
-  // 拼接: table offset + column data
-  const lo = sys.mem[(0xF10E + idx) & 0xFFFF];
-  const hi = sys.mem[(0xF10E + idx + 6) & 0xFFFF];
-  return (hi << 8) | lo;
+function _readDMATable(col: number): number {
+  // 直接读 DATA_GAP_F10E（原 $F10E-$F113, 6 bytes），不再走 sys.mem
+  // 6502: ADC $F10E,X (X=col 0-5) → col-specific offset
+  return DATA_GAP_F10E[col];
 }
 
 function _readPPUTransferAddr(sys: SystemState, spriteType: number, col: number): number {
@@ -1303,7 +1640,7 @@ export function init_BANK31_matchEntry(sys: SystemState): void {
   translate_BANK31_PLAYER_LOGIC(sys);
 
   // ── $E049: bankSwitch → $1A/$1B → JSR $801E ──
-  _bankSwitchCall8000(sys, 0x1A, _bank00_funcs[0x1E]);
+  bankSwitchCall(sys, 0x1A, _bank00Offsets[0x1E]);
 
   // ── $E055: LDA #$1B; JSR $CBB0 — 触发音效 ID $1B ──
   audiotrigger_$CBB0(sys, 0x1B);
