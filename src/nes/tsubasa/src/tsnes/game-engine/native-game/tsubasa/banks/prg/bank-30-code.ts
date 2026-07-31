@@ -4313,3 +4313,136 @@ export function bank30_memFill(sys: SystemState, val: number, start: number, len
  */
 export { bankSwitch as bank30_bankSwitch };
 
+// ═════════════════════════════════════════════════
+// $CA5B-$CA96 — 协程系统初始化 (原 DATA_$CA5B_$CA96，已翻译)
+// ═════════════════════════════════════════════════
+//
+// 6502 原码:
+//   CA5B: LDA #$00; STA $05/09/0D/15/11  ; ZP 协程槽位清零
+//   CA6F: LDA #$01; JSR $CB0F             ; coroutineCreate(1)
+//   CA74: LDA #$10; AND $001E; BEQ $CA6F  ; 等待帧标记 bit4
+//   CA7B: LDX #$05/$09/$0D/$15/$11        ; 初始化 5 个槽位
+//         JSR $CB02 (×5)
+//   CA94: JMP $CA4D                        ; 进入主循环
+//
+// 功能: 初始化 5 个协程执行槽位 (05/09/0D/15/11),
+//       等待帧同步后创建协程 #1, 然后跳转主循环.
+//       native-game 中主循环由引擎管理, JMP $CA4D 转为返回.
+//       $CB02 槽位初始化器尚未被单独翻译, 此处直接设置内存标记.
+
+/**
+ * $CA5B-$CA96: 协程系统初始化 — 清零协程槽位、创建主协程、初始化 5 个执行槽
+ */
+export function translate_BANK30_COROUTINE_INIT(sys: SystemState): void {
+  // CA5B-CA6D: 清零 ZP 协程槽位 ($05, $09, $0D, $15, $11)
+  sys.mem[0x05] = 0;
+  sys.mem[0x09] = 0;
+  sys.mem[0x0D] = 0;
+  sys.mem[0x15] = 0;
+  sys.mem[0x11] = 0;
+
+  // CA6F-CA79: 创建协程 #1 (A=1 → JSR $CB0F)
+  // 原生 $CB0F 在 native-game 中对应 timerInit_$CB0F (定时器初始化),
+  // 但此处 A=1 调用的是协程创建模式, 行为与定时器初始化不同.
+  // TODO: 完整翻译 $CB0F 协程创建路径后替换此调用.
+  timerInit_$CB0F(sys, 0x01);
+
+  // CA7B-CA93: JSR $CB02 ×5 — 初始化 5 个执行槽位
+  // 原生 $CB02 为定时器/协程槽位初始化器 ($CA97-$CB34 定时器调度器的一部分).
+  // native-game 中该函数尚未独立导出, 此处直接设置槽位标记.
+  // TODO: 独立导出 timerSlotInit_$CB02 后替换.
+  for (const slot of [0x05, 0x09, 0x0D, 0x15, 0x11]) {
+    sys.mem[slot] = 0x01; // 标记槽位已初始化
+  }
+
+  // CA94-CA96: JMP $CA4D → native-game 中主循环由引擎管理, 此处直接返回
+}
+
+// ═════════════════════════════════════════════════
+// $DCF0-$DCFC — 初始化子程序 A (原 DATA_$DCF0_$DCFC，已翻译)
+// ═════════════════════════════════════════════════
+//
+// 6502 原码:
+//   DCF0: LDA #$00; STA $043B  ; 标记 043B = 0
+//   DCF5: JSR $DCDF            ; 调用 randomGen
+//   DCF8: LDA #$1D; JSR $CBB0  ; audioTrigger(#$1D)
+
+/**
+ * $DCF0-$DCFC: 初始化 — $043B=0, 随机数, 音效 #$1D
+ */
+export function translate_BANK30_INIT_AUDIO_1D(sys: SystemState): void {
+  sys.mem[0x043B] = 0;                      // DCF0-DCF4
+  randomGen_$DCDF(sys);                     // DCF5-DCF7
+  audiotrigger_$CBB0(sys, 0x1D);            // DCF8-DCFC
+}
+
+// ═════════════════════════════════════════════════
+// $DE45-$DE51 — playerSlotFlagSet (原 DATA_$DE45_$DE51，已翻译)
+// ═════════════════════════════════════════════════
+//
+// 6502 原码:
+//   DE45: LDA #$01; STA $043B  ; 标记 043B = 1
+//   DE4A: JSR $DCDF            ; 调用 randomGen
+//   DE4D: LDA #$18; JSR $CBB0  ; audioTrigger(#$18)
+//
+// 跳转表引用: $C639 → fn_$DE45_playerSlotFlagSet
+
+/**
+ * $DE45-$DE51: playerSlotFlagSet — $043B=1, 随机数, 音效 #$18
+ * 跳转表入口: $C639
+ */
+export function fn_$DE45_playerSlotFlagSet(sys: SystemState): void {
+  sys.mem[0x043B] = 1;                      // DE45-DE49
+  randomGen_$DCDF(sys);                     // DE4A-DE4C
+  audiotrigger_$CBB0(sys, 0x18);            // DE4D-DE51
+}
+
+// ═════════════════════════════════════════════════
+// $DF5A-$DF8A — 碰撞/距离检测 (原 DATA_$DF5A_$DF8A，已翻译)
+// ═════════════════════════════════════════════════
+//
+// 6502 原码 (摘要):
+//   DF5A: JSR $CD7C         ; getCharData() → 指针存 ($34)
+//   DF5D: LDY #$0A; LDA ($34),Y; BNE $DF8A  ; flag ≠ 0 → return false
+//   DF63: LDY #$06; LDA ($34),Y   ; charData[$06] (X)
+//   DF67: SEC; SBC $0635; BCS $DF6F; EOR #$FF; ADC #$01  ; |X - $0635|
+//   DF71: CMP $003B; BCS $DF8A    ; |diff| >= $003B → return false
+//   DF75: LDY #$08; LDA ($34),Y   ; charData[$08] (Y)
+//   DF79: SEC; SBC $0637; BCS $DF81; EOR #$FF; ADC #$01  ; |Y - $0637|
+//   DF83: CMP $003B; BCS $DF8A    ; |diff| >= $003B → return false
+//   DF87: SEC; RTS                ; return true (在范围内)
+//   DF8A: CLC; RTS                ; return false
+//
+// 功能: 检查当前角色的 X/Y 坐标与参考点 ($0635,$0637) 的距离是否小于 $003B.
+
+/**
+ * $DF5A-$DF8A: 角色距离检测 — |charData[X,Y] - ($0635,$0637)| < $003B
+ * @returns true = 在范围内 (原 6502 C=1)
+ */
+export function fn_$DF5A_distanceCheck(sys: SystemState): boolean {
+  // DF5A-DF5C: 获取角色数据指针 → ($34)
+  getCharData_$CD7C(sys);
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+
+  // DF5D-DF61: charData[$0A] ≠ 0 → 跳过检测
+  if (sys.mem[(ptr + 0x0A) & 0xFFFF] !== 0) return false;
+
+  // DF63-DF73: |charData[$06] - $0635| >= $003B → return false
+  {
+    const diff = sys.mem[(ptr + 0x06) & 0xFFFF] - sys.mem[0x0635];
+    const absDiff = (diff < 0) ? ((-diff) & 0xFF) : (diff & 0xFF);
+    if (absDiff >= sys.mem[0x003B]) return false;
+  }
+
+  // DF75-DF85: |charData[$08] - $0637| >= $003B → return false
+  {
+    const diff = sys.mem[(ptr + 0x08) & 0xFFFF] - sys.mem[0x0637];
+    const absDiff = (diff < 0) ? ((-diff) & 0xFF) : (diff & 0xFF);
+    if (absDiff >= sys.mem[0x003B]) return false;
+  }
+
+  // DF87-DF88: SEC; RTS → true
+  return true;
+}
+
+
