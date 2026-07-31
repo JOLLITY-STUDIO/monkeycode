@@ -783,7 +783,7 @@ function sub_E688(sys: SystemState): void {
 }
 
 // ═════════════════════════════════════════════════
-// Bank 切换 helper (简化: 不走 MMC3)
+// Bank 切换 helper (不走 MMC3 — 直接 import 调用)
 // ═════════════════════════════════════════════════
 
 const _bankDispatchTables: Record<number, Record<number, (sys: SystemState) => void>> = {
@@ -791,15 +791,16 @@ const _bankDispatchTables: Record<number, Record<number, (sys: SystemState) => v
   0x14: bank20_dispatch, 0x16: bank22_dispatch, 0x18: bank24_dispatch, 0x1A: bank26_dispatch,
 };
 
-function _dispatchBankCall(sys: SystemState, offset: number): void {
-  const bank = sys.mem[0x24]; const handlers = _bankDispatchTables[bank];
+function _dispatchBankCall(sys: SystemState, bank: number, offset: number): void {
+  const handlers = _bankDispatchTables[bank];
   if (handlers) { const fn = handlers[offset]; if (fn) { fn(sys); return; } }
   console.warn(`[bank31] No handler: bank=$${bank.toString(16)} offset=$${offset.toString(16)}`);
 }
 
-/** 6502: PHA; LDA $22; LDA #bankLo; STA $24; LDA #bankHi; STA $25; JSR $CE2D; PLA; JSR $80xx */
-function bankSwitchCall(sys: SystemState, bankLo: number, offset: number): void {
-  sys.mem[0x24] = bankLo & 0x3F; _dispatchBankCall(sys, offset);
+/** 6502: 设 $24=bankLo, JSR $CE2D 写 MMC3, JSR $80xx
+ *  TS: 直接查 dispatch 表调用, bank 作为参数传入 */
+function bankSwitchCall(sys: SystemState, bank: number, offset: number): void {
+  _dispatchBankCall(sys, bank & 0x3F, offset);
 }
 
 const _bank00Offsets: Record<number, number> = {
@@ -823,7 +824,9 @@ export function translate_BANK31_BANK_SWITCH(
   sys: SystemState, targetBank: number,
   onCall800C?: (sys: SystemState, aReg: number) => void,
 ): void {
-  sys.regs.Y = targetBank; sys.mem[0x24] = 0x18;
+  sys.regs.Y = targetBank;
+  // 6502: STA $24 = 0x18 → JSR $CE2D → $800x
+  // TS: bank 通过 dispatch 表直接调用, 不写 $24/MMC3
   if (onCall800C) onCall800C(sys, targetBank);
 }
 

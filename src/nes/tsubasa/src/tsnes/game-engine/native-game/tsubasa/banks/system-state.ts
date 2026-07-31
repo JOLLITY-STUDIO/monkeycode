@@ -163,28 +163,20 @@ export function writeMem(sys: SystemState, addr: number, val: number): void {
 function applyMmc3BankWrite(sys: SystemState): void {
   const sel = sys.mmc3BankSelect & 0x07;
   const val = sys.mmc3BankData & 0x3F;
-  const prgAddrSelect = (sys.mmc3BankSelect >> 6) & 1; // 0=normal, 1=inverted
 
-  // ── PRG bank 切换 (手动跟踪 mmc3Map, 供 readMem 读 PRG-ROM) ──
-  switch (sel) {
-    case 6:
-      // CMD_SEL_ROM_PAGE1: $8000-$9FFF (normal) 或 $C000-$DFFF (inverted)
-      sys.mmc3Map[prgAddrSelect === 0 ? 0 : 2] = val;
-      break;
-    case 7:
-      // CMD_SEL_ROM_PAGE2: $A000-$BFFF (always)
-      sys.mmc3Map[1] = val;
-      break;
-    // mmc3Map[3] ($E000-$FFFF) = bank 31, 固定不变
-  }
+  // ── PRG bank 切换 (cases 6-7) ──
+  //   TS 架构下 PRG bank 是独立 import 模块, 不依赖 MMC3 地址映射。
+  //   bank 切换通过回调闭包直接调用目标模块函数, mmc3Map 仅用于 PPU 渲染侧跟踪。
+  //   因此不再通过 MMC3 寄存器写更新 mmc3Map。
 
-  // ── CHR bank 切换 (case 0-5): 这是 boot 畫面缺圖的根因 ──
-  // 必须通过 mapper 的 write() 把 CHR 数据加载到 PPU 的 vramMem + ptTile
-  // 同時 PRG 命令也会通过 mapper 写 cpu.mem, 这是冗余但无害的
-  const mmap: any = (sys.ppu as any).nes?.mmap;
-  if (mmap && typeof mmap.write === 'function') {
-    mmap.write(0x8000, sys.mmc3BankSelect);
-    mmap.write(0x8001, sys.mmc3BankData);
+  // ── CHR bank 切换 (cases 0-5): 必须转发到 PPU mapper ──
+  //   PPU 渲染需要知道当前图形数据映射, 通过 mapper.write() 加载到 PPU vramMem/ptTile。
+  if (sel <= 5) {
+    const mmap: any = (sys.ppu as any).nes?.mmap;
+    if (mmap && typeof mmap.write === 'function') {
+      mmap.write(0x8000, sys.mmc3BankSelect);
+      mmap.write(0x8001, sys.mmc3BankData);
+    }
   }
 }
 

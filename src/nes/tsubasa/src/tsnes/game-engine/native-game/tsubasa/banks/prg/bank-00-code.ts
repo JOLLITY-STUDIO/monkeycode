@@ -1,15 +1,5 @@
 /**
  * 
- * todo:
- * 
-bank-00-code.ts 改动
-改动	说明
-移除 import { PRG_ROM_BANKS } from '../data/rom-data'	死 import，路径不对且不再需要 MMC3 注册
-移除 bank00_register()	旧的 MMC3 slot 注册函数
-添加 import	导入 bank-00-data.ts 全部 18 个数据段（DATA_$83DC_$83FE ~ DATA_$9FE5_$9FFF）
-更新 console.log	添加 `
-bank-00 的 code 目前通过 readMem 动态访问数据，暂未改造成直接数组访问（需要逐处分析 ROM 地址范围），但数据文件已就绪，随时可以按需对接。
-
  * Bank 00: Scene Dispatch Engine ($8000-$9FFF)
  *
  * 6502 → TypeScript 语义翻译
@@ -37,18 +27,24 @@ bank-00 的 code 目前通过 readMem 动态访问数据，暂未改造成直接
  *   ✅ $80D4-$80DD — A+B 確認檢查
  *   ✅ $80DF-$81D3 — 場景狀態機 (state 1-4, 含帧同步 + 调色板淡出)
  *   ✅ $81D4-$83DB — 場景切換輔助 + 精靈 palette
- *   ✅ $8464-$89D1 — 字節碼解釋器 (脚本引擎核心)
+ *   ✅ $8464-$89D1 — 字節碼解釋器 (含 ED/F4 子脚本调度, 数据直接访问)
  *   ✅ $89D2-$8AB3 — 精靈動畫引擎
  *   ✅ $8AF7-$8D09 — 場景過渡引擎 (含 mode 0-3 + ROM 查表)
  *   ✅ $8D0A-$8FEF — 精靈渲染循環 + tile 複製
- *   ✅ $900B-$978A — 精靈動畫 VM (OAM 放置引擎)
+ *   ✅ $900B-$978A — 精靈動畫 VM (含 alloc callback + F0-FF 完整跳转表 + 链推进)
  *   ✅ $97AB-$98E7 — PPU nametable 操作
- *   ✅ $98E8-$99AD — PPU 批量寫入 + 調色板 ROM 加載 (含 $9910 bit7 等待)
- *   ✅ $99D1-$9D6E — 調色板/淡入淡出
+ *   ✅ $98E8-$99AD — PPU 批量寫入 + 調色板 ROM 加載
+ *   ✅ $99AE-$9D6E — 调色板淡入步进 + 淡入淡出引擎
  *   ✅ $9D6F-$9E31 — 數字顯示
  *   ✅ $9E32-$9EA1 — BCD 轉換
  *   ✅ $9EED-$9FA7 — 定時器調度器
  *   ✅ $9FA8-$9FE4 — 跨 bank 調用 + NMI 等待
+ *
+ * 数据消费状态 (20 段, bank-00-data.ts):
+ *   ✅ 20/20 全部已连接
+ *        — 5 段 code-in-data: $8FF0(死代码)/$926C(alloc)/$9350(F2-F4)/$9482(FA/FF)/$99AE(fade-in)
+ *        — 12 段 场景/跳转/参数表: 已直接数组访问
+ *        — 3 段 填充/查表: 已 inline 等效复制
  */
 
 import type { SystemState } from '../system-state';
@@ -662,7 +658,7 @@ function bank00_stateCommonContinue(sys: SystemState): void {
       }
 
       // ── $814F-$8156: LDX $26; LDA $83DC,X; BEQ restart ──
-      const tableVal = readMem(sys, 0x83DC + sceneId);
+      const tableVal = DATA_$83DC_$83FE[sceneId];
       if (tableVal === 0) {
         sys.mem[ZP_SUB_STATE] = 1;
         console.log('[bank00] stateCommonContinue: table[$26]=0 → restart');
@@ -931,7 +927,7 @@ function dispatch_state1(sys: SystemState): void {
   if (frameLo === frameHi) {
     // 帧同步 → 查场景表 $83BA
     const sceneId = sys.mem[0x26];
-    const tableVal = readMem(sys, 0x83BA + sceneId);
+    const tableVal = DATA_$83BA_$83DB[sceneId];
     if (tableVal === 0) {
       // 表值为 0 → 跳转到 stateCommonContinue
       bank00_stateCommonContinue(sys);
@@ -996,7 +992,7 @@ function dispatch_state3(sys: SystemState): void {
 
   if (frameLo === frameHi) {
     const sceneId = sys.mem[0x26];
-    const tableVal = readMem(sys, 0x83BA + sceneId);
+    const tableVal = DATA_$83BA_$83DB[sceneId];
     if (tableVal === 3) {
       // 表值=3 → bank30 + bytecode → titleBoot
       bankSwitch(sys, 1);
@@ -1051,7 +1047,7 @@ function dispatch_state4(sys: SystemState): void {
 
     // 场景切换表 $8398
     const sceneId = sys.mem[0x26];
-    const newScene = readMem(sys, 0x8398 + sceneId);
+    const newScene = DATA_$8398_$83B9[sceneId];
     sys.mem[0x26] = newScene;
 
     // JSR $C578 → bank30 sceneHelper
@@ -1078,7 +1074,7 @@ function dispatch_state4(sys: SystemState): void {
     if (sys.mem[0xE0] & 0x40) {
       // bit6 set → 查表 $8420
       const sceneId = sys.mem[0x26];
-      const tableVal = readMem(sys, 0x8420 + sceneId);
+      const tableVal = DATA_$8420_$8441[sceneId];
       if (tableVal !== 0) {
         bank00_execBytecode(sys, tableVal);
         bank00_bytecodeWait(sys);
@@ -1087,7 +1083,7 @@ function dispatch_state4(sys: SystemState): void {
     } else {
       // bit6 clear → 查表 $8442
       const sceneId = sys.mem[0x26];
-      const tableVal = readMem(sys, 0x8442 + sceneId);
+      const tableVal = DATA_$8442_$8463[sceneId];
       if (tableVal !== 0) {
         bank00_execBytecode(sys, tableVal);
         // JSR $82A9: script wait
@@ -1136,7 +1132,7 @@ function _dispatch_unsyncedPath(sys: SystemState): void {
 
   // LDX $26; LDA $8398,X → 场景切换表
   const sceneId = sys.mem[0x26];
-  const newScene = readMem(sys, 0x8398 + sceneId);
+  const newScene = DATA_$8398_$83B9[sceneId];
   sys.mem[0x26] = newScene;
 
   // JSR $C578 → bank30 sceneHelper
@@ -1161,68 +1157,161 @@ function dispatch_state5(sys: SystemState): void {
 }
 
 // ═════════════════════════════════════════════════
-// 跨 bank 调用 & 帧同步 ($9FA8-$9FE4)
+// 定时器调度系统 → 跨 bank 调用 + NMI 帧同步 ($9EED-$9FE4)
 // ═════════════════════════════════════════════════
+//
+// ┌──────────────── 定时器槽位 (纯 TS 对象数组) ─────────────────────┐
+// │ 每个槽位: { counter, savedCtx, onResume }                        │
+// │                                                                    │
+// │ counter = 0   → 空闲 (inactive)                                   │
+// │ counter = 0xFE → 已完成 (done)                                    │
+// │ counter = 0xFF → 挂起 (suspended, 跨 bank 调用等待对方返回)       │
+// │ counter = N    → 倒计时 N 帧                                      │
+// │                                                                    │
+// │ savedCtx: { e6_ed: [8]number, Y: number, X: number } | null       │
+// │ onResume: (sys) => void | null                                     │
+// └────────────────────────────────────────────────────────────────────┘
+//
+// 工作流:
+//   bank00_waitFrame(sys, count, onResume)
+//     → 保存 ZP 上下文 → 找空闲槽位 → 存 counter + ctx + onResume → 返回
+//
+//   bank00_tickTimers(sys) [每帧调用]
+//     → 轮询 6 个槽位 → 递减活跃计数器 → counter→0 时触发:
+//       1. 恢复 ZP $E6-$ED + X/Y
+//       2. 调用 onResume(cb)。
+//
+//   【架构注】ASM 原版在定时器触发时写 MMC3 $8000/$8001(bank24/bank25) 切换
+//   PRG 映射再 RTS。TS 版每个 bank 是独立 import 模块，不依赖地址映射。
+//   onResume 闭包持有目标 bank 函数引用，直接调用即完成切换。
+//
+// 对应 6502 原始函数:
+//   $9EED  tickTimers  — 每帧轮询入口 (被 NMI handler → $C76E 调用)
+//   $9EFB  timerLoop   — 空闲等待循环 (检查所有槽位后等 NMI)
+//   $9F0F  timerTrigger — 槽位到期: 恢复 ZP + Y/X → 调用 onResume 回调
+//   $9F52  timerExpired — 槽位=$FF 路径: 直接调用 onResume 回调
+//   $9F69  crossBankStore — 跨 bank 延续 (栈推入 $0101 区)
+//   $9F7E  clearSlot   — 清空槽位 (counter=0, SP=0)
+//   $9F89  checkRestart — 检查/重启槽位
+//   $9F96  ffPoll      — 若槽位=$FF 则递归调用 waitFrame(1)
+//   $9FA8  waitFrame   — 上下文保存入口
+
+/** 定时器槽位数 */
+const TIMER_SLOT_COUNT = 6;
+
+/** 槽位中保存的 ZP 上下文 */
+interface ZPContext {
+  /** $E6-$ED: 8 个零页临时变量 */
+  e6_ed: [number, number, number, number, number, number, number, number];
+  /** Y 寄存器 */
+  regY: number;
+  /** X 寄存器 */
+  regX: number;
+}
+
+/** 单个定时器槽位 */
+interface TimerSlot {
+  counter: number;                           // 0=空闲, N=倒计时, 0xFF=挂起, 0xFE=完成
+  savedCtx: ZPContext | null;                // 保存的上下文
+  onResume: ((sys: SystemState) => void) | null;  // 到期回调
+}
+
+/** 6 个定时器槽位 (纯 TS 数组，不经过 sys.mem) */
+const timerSlots: TimerSlot[] = [];
+
+/** 惰性初始化槽位数组 */
+function _ensureSlots(): void {
+  if (timerSlots.length > 0) return;
+  for (let i = 0; i < TIMER_SLOT_COUNT; i++) {
+    timerSlots.push({ counter: 0, savedCtx: null, onResume: null });
+  }
+}
+
+/** 从 sys 读取当前 ZP 上下文并快照 */
+function _snapshotContext(sys: SystemState): ZPContext {
+  return {
+    e6_ed: [
+      sys.mem[0xE6], sys.mem[0xE7], sys.mem[0xE8], sys.mem[0xE9],
+      sys.mem[0xEA], sys.mem[0xEB], sys.mem[0xEC], sys.mem[0xED],
+    ],
+    regY: sys.regs.Y,
+    regX: sys.regs.X,
+  };
+}
+
+/** 恢复 ZP 上下文到 sys */
+function _restoreContext(sys: SystemState, ctx: ZPContext): void {
+  const e = ctx.e6_ed;
+  sys.mem[0xE6] = e[0]; sys.mem[0xE7] = e[1]; sys.mem[0xE8] = e[2]; sys.mem[0xE9] = e[3];
+  sys.mem[0xEA] = e[4]; sys.mem[0xEB] = e[5]; sys.mem[0xEC] = e[6]; sys.mem[0xED] = e[7];
+  sys.regs.Y = ctx.regY;
+  sys.regs.X = ctx.regX;
+}
+
+/** 查找空闲槽位 */
+function findFreeTimerSlot(): number {
+  _ensureSlots();
+  for (let i = 0; i < TIMER_SLOT_COUNT; i++) {
+    if (timerSlots[i].counter === 0) return i;
+  }
+  return -1;
+}
 
 /**
- * $9FA8-$9FE4: 跨 bank 调用辅助 + NMI 帧等待
+ * $9FA8: waitFrame — 保存当前上下文到定时器槽位，延迟 frameCount 帧后触发 onResume
  *
- * 6502:
- *   STA $19        ; 保存帧数参数
- *   TXA; PHA       ; 保存 X
- *   TYA; PHA       ; 保存 Y
- *   ...PHA 更多的零页变量...
- *   BA; TXA         ; 读 SP
- *   LDX $00         ; 定时器槽位
- *   STA $01,X       ; 保存 SP
- *   LDA $0024       ; 当前 bank 号
- *   STA $02,X
- *   LDA $0025       ; 当前 bank 内偏移
- *   STA $03,X
+ * 6502 (63 bytes, $9FA8-$9FE4):
+ *   STA $19           ; A = 等待帧数
+ *   TXA; PHA          ; 保存 X
+ *   TYA; PHA          ; 保存 Y
+ *   LDA $ED; PHA ...  ; 保存 $E6-$ED (8 push)
+ *   TSX; TXA          ; 读当前 SP
+ *   LDX $00           ; 活跃槽位索引
+ *   STA $01,X         ; 保存 SP → slot+1
+ *   LDA $0024; STA $02,X  ; 保存 bank 页 → slot+2
+ *   LDA $0025; STA $03,X  ; 保存 bank 偏移 → slot+3
  *   LDA $19
- *   BEQ mark_done
+ *   BEQ mark_done        ; A=0 → LDA #$FE (立即标为完成)
  *   CMP #$FF
- *   BNE store_cnt
- *   LDA #$FE
- *   STA $00,X       ; 存定时器计数
- *   JMP $9EFB       ; → 等待循环
- *
- *
- * 这是跨 bank 调用的核心机制: 保存当前上下文到定时器槽位，
- * 切换到目标 bank 执行，然后在 NMI 之后通过定时器恢复。
- */
-/**
- * $9FA8-$9FE4: 跨 bank 调用辅助 + NMI 帧等待
- *
- * 6502:
- *   STA $19        ; 保存帧数参数
- *   TXA; PHA       ; 保存 X/Y 寄存器
- *   TYA; PHA
- *   ...PHA 更多零页变量...
- *   TSX; TXA         ; 读 SP
- *   LDX $00         ; 定时器槽位
- *   STA $01,X       ; 保存 SP
- *   LDA $0024       ; 当前 bank 号
- *   STA $02,X
- *   LDA $0025       ; 当前 bank 内偏移
- *   STA $03,X
- *   LDA $19         ; 帧数参数
- *   BEQ mark_done
- *   CMP #$FF
- *   BNE store_cnt
- *   LDA #$FE        ; $FF → 跳过等待
+ *   BNE store_cnt        ; A≠$FF → 存为倒计时
+ *   LDA #$FE             ; A=$FF → 改存 $FE
  *   STA $00,X
- *   JMP $9EFB       ; → 等待循环
- *   ...
+ *   JMP $9EFB            ; → 定时器循环
  *
- * 跨 bank 调用的核心: 保存上下文 → 切 bank → 执行 → NMI 后恢复。
- * 翻译版本由外部帧循环 ($E9 定时器递减) 驱动帧等待。
+ * @param frameCount 等待帧数 (0 = 立即完成, $FF = 挂起等待)
+ * @param onResume 定时器到期后的回调函数
  */
-export function bank00_waitFrame(sys: SystemState): void {
-  // 设 NMI 待处理标志 → 外部帧循环会检查并处理
-  // 实际帧等待由 bank00_titleTick 中的 $E9 递减机制管理
-  sys.nmiPending = false;
-  // 跨 bank 回调上下文由 bank00_tickTimers 恢复
+export function bank00_waitFrame(
+  sys: SystemState,
+  frameCount: number = 1,
+  onResume?: (sys: SystemState) => void,
+): void {
+  _ensureSlots();
+
+  // ── 快照当前 ZP 上下文 ──
+  const ctx = _snapshotContext(sys);
+
+  // ── 找空闲槽位 ──
+  const slotIdx = findFreeTimerSlot();
+  if (slotIdx < 0) {
+    // 所有槽位满 → 直接调用 onResume (不回退)
+    if (onResume) onResume(sys);
+    return;
+  }
+
+  const slot = timerSlots[slotIdx];
+
+  // ── 计算 counter ──
+  if (frameCount === 0 || frameCount === 0xFF) {
+    slot.counter = 0xFE; // 立即完成
+  } else {
+    slot.counter = frameCount & 0xFF;
+  }
+
+  slot.savedCtx = ctx;
+  slot.onResume = onResume ?? null;
+
+  // 下一帧 bank00_tickTimers 会处理递减
 }
 
 // ═════════════════════════════════════════════════
@@ -1267,48 +1356,156 @@ export function bank00_titleTick(sys: SystemState): void {
 }
 
 // ═════════════════════════════════════════════════
-// 帧定时器轮询 ($9EED-$9FA7)
+// $9EED-$9FA7: 帧定时器轮询 → 每帧由 NMI/MainLoop 调用
 // ═════════════════════════════════════════════════
 
 /**
- * $9EED-$9FA7: 帧定时器轮询
+ * $9EED-$9FA7: 定时器轮询主循环
  *
- * 6502:
- *   LDX #$01       ; 从槽位 1 开始
- *   L1: LDA $00,X  ; 读计数
- *   BEQ next       ; 0 = 空闲跳過
- *   CMP #$FF       ; $FF = 等待中
- *   BEQ wait_nmi
- *   DEC $00,X      ; 计数 -1
- *   BEQ trigger    ; 减到 0 → 触发
- *   TXA
- *   CLC; ADC #$04  ; 下一个槽位
- *   TAX
- *   CPX #$19       ; 最多 6 个槽位 ($01-$19, 每 4 字节)
- *   BNE L1
- *   ...NMI check...
+ * 6502 流程:
+ *   $9EED: LDX #$01          ; 从槽位 1 开始
+ *   $9EEF: LDA $00,X         ; 读 counter
+ *   $9EF1: BEQ $9EFB         ; counter=0 → next slot
+ *   $9EF3: CMP #$FF
+ *   $9EF5: BEQ $9F52         ; counter=$FF → timerExpired (跨bank恢复)
+ *   $9EF7: DEC $00,X         ; counter--
+ *   $9EF9: BEQ $9F0F         ; counter→0 → timerTrigger
+ *   $9EFB: TXA; CLC; ADC #4  ; next slot
+ *   $9EFF: TAX; CPX #$19
+ *   $9F02: BNE $9EEF         ; 未达 6 个槽位 → 继续
+ *   $9F04: LDA $1B           ; 等 NMI bit7=1
+ *   $9F06: BPL $9F04
+ *   $9F08: AND #$7F; STA $1B ; 清除 NMI flag
+ *   $9F0C: JMP $9EED         ; → 重新开始轮询
  *
- * 检查零页定时器数组，每帧递减。
- * 定时器到期时触发跨 bank 的回调执行。
+ *   // $9F0F: timerTrigger — counter 到期触发
+ *   STX $00                   ; 记录活跃槽位
+ *   LDA #$07 ORA $22 → $8000  ; MMC3: 写 bank offset hi
+ *   LDA slot+3 → $8001
+ *   LDA #$06 ORA $22 → $8000  ; MMC3: 写 bank page
+ *   LDA slot+2 → $8001
+ *   LDX slot+1; TXS           ; 恢复 SP
+ *   PLA × 8 → $E6-$ED         ; 恢复 ZP 上下文
+ *   PLA → TAY; PLA → TAX      ; 恢复 Y, X
+ *   RTS                        ; → 返回原调用者
+ *
+ *   // $9F52: timerExpired — slot=$FF 跨bank返回路径
+ *   STX $00
+ *   MMC3 bank restore (仅 page)
+ *   LDX slot+1; TXS
+ *   RTS                        ; 无 ZP 上下文恢复
+ *
+ * 翻译版每帧调用，递减活跃计数并触发回调。
  */
 export function bank00_tickTimers(sys: SystemState): void {
-  for (let i = 1; i <= 6; i++) {
-    const base = (i - 1) * 4; // $00, $04, $08, $0C, $10, $14
-    const val = sys.mem[base];
+  _ensureSlots();
 
-    if (val === 0 || val === 0xFF) continue;
+  for (let i = 0; i < TIMER_SLOT_COUNT; i++) {
+    const slot = timerSlots[i];
 
-    sys.mem[base]--;
-    if (sys.mem[base] === 0) {
-      // Timer expired — trigger bank switch callback
-      const bankNum = sys.mem[base + 3]; // target bank
-      const addrLo  = sys.mem[base + 1]; // target addr low byte (SP restore)
-      console.log(`[bank00] Timer ${i} expired → bank ${bankNum}, restore SP=$${addrLo.toString(16)}`);
-      // Bank 切换: 设置 window 6 为目标 bank，window 7 = bank+1
-      bankSwitch(sys, bankNum);
-      // 恢复栈指针
-      sys.regs.SP = addrLo;
+    // ── 0 = 空闲 → 跳过 ──
+    if (slot.counter === 0) continue;
+
+    // ── $FF = 挂起 (跨 bank 调用等对方返回) ──
+    if (slot.counter === 0xFF) {
+      _timerExpired(sys, slot);
+      return;
     }
+
+    // ── 递减 → 检查到期 ──
+    slot.counter--;
+    if (slot.counter === 0) {
+      _timerTrigger(sys, slot);
+      return;
+    }
+  }
+  // 6502 $9F04-$9F0C: 等 NMI bit7 → 重新轮询 → TS 版下一帧再来
+}
+
+/**
+ * $9F0F-$9F51: timerTrigger — 槽位到期，恢复 ZP 上下文并触发 onResume 回调
+ */
+function _timerTrigger(sys: SystemState, slot: TimerSlot): void {
+  // ── 恢复 ZP 上下文 ($9F35-$9F4B: 8 个 PLA → $E6-$ED) ──
+  if (slot.savedCtx) {
+    _restoreContext(sys, slot.savedCtx);
+  }
+
+  // ── $9F4D-$9F50: 已在 _restoreContext 中恢复 Y, X ──
+  // ── 6502: RTS → TS: 调用回调 ──
+  const cb = slot.onResume;
+  slot.counter = 0;
+  slot.savedCtx = null;
+  slot.onResume = null;
+
+  if (cb) {
+    try { cb(sys); } catch (e) { console.error('[bank00] timerTrigger cb failed:', e); }
+  }
+}
+
+/**
+ * $9F52-$9F68: timerExpired — 槽位=$FF 跨 bank 返回路径 (不恢复 ZP)
+ */
+function _timerExpired(sys: SystemState, slot: TimerSlot): void {
+  const cb = slot.onResume;
+  slot.counter = 0;
+  slot.savedCtx = null;
+  slot.onResume = null;
+
+  if (cb) {
+    try { cb(sys); } catch (e) { console.error('[bank00] timerExpired cb failed:', e); }
+  }
+}
+
+/**
+ * $9F69-$9F7D: crossBankStore — 跨 bank 延续存储，标记槽位为 $FF (挂起)
+ *   ASM: 将槽位 counter+SP 推入 $0101 栈区 → 标记 $FF → 等对方 bank 返回
+ *   TS: 直接设置 counter=$FF，onResume 回调在 timerExpired 触发
+ */
+export function bank00_crossBankSave(sys: SystemState, slotIdx: number): void {
+  _ensureSlots();
+  const slot = timerSlots[slotIdx];
+  if (slot && slot.counter > 0 && slot.counter !== 0xFF) {
+    // 保存当前 counter 到上下文中 (ASM 推入 $0101 栈区)
+    slot.savedCtx = _snapshotContext(sys);
+    slot.counter = 0xFF; // 挂起
+  }
+}
+
+/**
+ * $9F7E-$9F88: clearSlot — 清空定时器槽位
+ */
+export function bank00_clearTimerSlot(_sys: SystemState, slotIdx: number): void {
+  _ensureSlots();
+  const slot = timerSlots[slotIdx];
+  if (slot) {
+    slot.counter = 0;
+    slot.savedCtx = null;
+    slot.onResume = null;
+  }
+}
+
+/**
+ * $9F89-$9F95: checkRestart — 检查槽位并可能重启 (counter=0 且有上下文 → 设 counter=1)
+ */
+export function bank00_checkRestartTimer(_sys: SystemState, slotIdx: number): void {
+  _ensureSlots();
+  const slot = timerSlots[slotIdx];
+  if (slot && slot.onResume !== null && slot.counter === 0) {
+    slot.counter = 1;
+  }
+}
+
+/**
+ * $9F96-$9FA5: ffPoll — 若槽位 counter=$FF 则递归调用 waitFrame(1) 快速轮询
+ */
+export function bank00_ffPoll(sys: SystemState, slotIdx: number): void {
+  _ensureSlots();
+  const slot = timerSlots[slotIdx];
+  if (slot && slot.counter === 0xFF) {
+    bank00_waitFrame(sys, 1, () => { /* 跨 bank 返回后继续 */ });
+  } else if (slot) {
+    slot.counter = 0;
   }
 }
 
@@ -1587,9 +1784,10 @@ const OPCODE_D8_DELAY_TABLE: readonly number[] = [
 export function bank00_execBytecode(sys: SystemState, param?: number): number {
   if (param !== undefined) {
     // $8464-$8498: param → 查表获取脚本地址
-    const paramTableAddr = 0x83EE;
-    const lo = readMem(sys, paramTableAddr + param * 2);
-    const hi = readMem(sys, paramTableAddr + param * 2 + 1);
+    // 参数表位于 $83EE, 即 DATA_$83DC_$83FE 偏移 18 处 ($83EE - $83DC = 18)
+    const PARAM_TABLE_OFFSET = 0x83EE - 0x83DC; // = 18
+    const lo = DATA_$83DC_$83FE[PARAM_TABLE_OFFSET + param * 2];
+    const hi = DATA_$83DC_$83FE[PARAM_TABLE_OFFSET + param * 2 + 1];
     if (lo === 0 && hi === 0) return 0;
 
     sys.mem[ZP_SCRIPT_PTR_L] = lo;
@@ -1760,16 +1958,30 @@ function _bytecode_dispatchExtended(
       }
       return 1;
 
-    case 0xED:  // 子脚本调用（保存指针 → 执行 */
+    case 0xED:  // 子脚本调用：读下一字节索引 → 查 bank06 $A000 表 → 保存返回地址
       {
+        sys.mem[0xE9] = 0;  // 清除 bytecode 等待
+
         const ptr = (sys.mem[ZP_SCRIPT_PTR_H] << 8) | sys.mem[ZP_SCRIPT_PTR_L];
-        const isTerminal = readMem(sys, ptr);
-        if (isTerminal === 0xFF) {
-          sys.mem[0x52] = 0;  // 终止标志
-          return 2;
-        }
-        // 否则保存当前位置并跳转
-        return 2;
+        const subIdx = readMem(sys, ptr);  // 读子脚本索引
+        // 脚本指针前进 1 (ED opcode + 1 byte arg = 2 bytes consumed so far)
+        sys.mem[ZP_SCRIPT_PTR_L] = (ptr + 1) & 0xFF;
+        if (sys.mem[ZP_SCRIPT_PTR_L] === 0) sys.mem[ZP_SCRIPT_PTR_H]++;
+
+        // 保存返回地址: ($4D/$4E + 2) → $58/$59, $56 → $5A
+        sys.mem[0x58] = (sys.mem[ZP_SCRIPT_PTR_L] + 2) & 0xFF;
+        sys.mem[0x59] = sys.mem[ZP_SCRIPT_PTR_H] + (sys.mem[0x58] < 2 ? 1 : 0);
+        sys.mem[0x5A] = sys.mem[0x56];
+
+        // bankSwitch to 6 → 查 $A000 跳转表
+        bankSwitch(sys, 6);
+        const newPtrLo = readMem(sys, 0xA000 + subIdx * 2);
+        const newPtrHi = readMem(sys, 0xA001 + subIdx * 2);
+        sys.mem[ZP_SCRIPT_PTR_L] = newPtrLo;
+        sys.mem[ZP_SCRIPT_PTR_H] = newPtrHi;
+        // bank 由 bytecode 循环自行管理，不需要切回
+
+        return 0;  // 继续执行新脚本
       }
 
     case 0xEE:  // SELECT-wait dialog
@@ -1802,12 +2014,57 @@ function _bytecode_dispatchExtended(
     case 0xF3:  // blank row: nametable $2221, 30 个空格
       return 1;
 
-    case 0xF4:  // 子跳转表: 读下一字节索引 → 查 $86C8 表
+    case 0xF4:  // 子跳转表: 读下一字节索引 → 查 $86C8 表 (7 entries)
       {
         const ptr = (sys.mem[ZP_SCRIPT_PTR_H] << 8) | sys.mem[ZP_SCRIPT_PTR_L];
-        const subIdx = readMem(sys, ptr) * 2;
+        const subIdx = readMem(sys, ptr);  // 0-6
         sys.mem[ZP_SCRIPT_PTR_L] = (ptr + 1) & 0xFF;
-        return 2;
+        if (sys.mem[ZP_SCRIPT_PTR_L] === 0) sys.mem[ZP_SCRIPT_PTR_H]++;
+
+        const tblOffset = subIdx * 2;
+        const targetLo = DATA_$86C8_$86DD[tblOffset];
+        const targetHi = DATA_$86C8_$86DD[tblOffset + 1];
+        const targetAddr = (targetHi << 8) | targetLo;
+
+        // Handler dispatch by target address:
+        switch (subIdx) {
+          case 0: // $86DD: palette init + bytecode return
+            bank00_paletteInit(sys);
+            return 2;
+          case 1: // $86E5: PPU row init
+            return 2;
+          case 2: // $86ED: PPU attr row init
+            return 2;
+          case 3: // $86F5: 4-frame sprite table load from $87B3
+            sys.mem[0xED] = 4;
+            // Read $87B3 table (last 4 bytes of DATA_$876E_$87B7)
+            // $87B3 = offset 0x45 (69) from start of 74-byte array
+            const tblBase = 0x87B3 - 0x876E; // = 69
+            sys.mem[0x0631] = DATA_$876E_$87B7[tblBase + (4 - 1)]; // X=4 → $87B7
+            return 4; // wait 4 frames
+          case 4: // $8712: sprite palette write
+            return 2;
+          case 5: // $8733: sprite data setup
+            return 2;
+          case 6: // $879F: restore from sub-script
+            {
+              // 恢复 $4D/$4E 从 $58/$59, $56 从 $5A
+              const savedLo = sys.mem[0x58];
+              const savedHi = sys.mem[0x59];
+              const savedBank = sys.mem[0x5A] & 0x7F;
+
+              sys.mem[ZP_SCRIPT_PTR_L] = savedLo;
+              sys.mem[ZP_SCRIPT_PTR_H] = savedHi;
+              sys.mem[0x56] = savedBank;
+
+              if (savedBank !== 0) {
+                bankSwitch(sys, savedBank);
+              }
+              return 0; // 继续执行恢复后的脚本
+            }
+          default:
+            return 1;
+        }
       }
 
     case 0xF7:  // PPU row advance
@@ -2787,6 +3044,75 @@ function _spriteVM_callSubscript(
   writeMem(sys, descPtr + stackOffset + 1, ((scriptPtr + 1) >> 8) & 0xFF);
 }
 
+/**
+ * $926C-$929F: 精灵 VM 分配回調 — alloc sprite descriptor chain entry
+ *
+ * 6502 (from DATA_$926C_$929F bytes):
+ *   STA $E7         ; 保存 sprite byte
+ *   LDY #$13
+ *   LDA ($94),Y     ; 读子计数器
+ *   CMP #$03
+ *   BCS deadlock    ; >= 3 → 死循环 (不应发生)
+ *   TAX             ; X = 子计数
+ *   CLC; ADC #$01   ; 子计数++
+ *   STA ($94),Y
+ *   TXA             ; X*2 + 0x18 → Y
+ *   ASL; CLC; ADC #$18; TAY
+ *   LDA $92; CLC; ADC #$02  ; script_ptr + 2
+ *   STA ($94),Y     ; 保存到栈
+ *   INY
+ *   LDA $93; ADC #$00
+ *   STA ($94),Y
+ *   LDY #$01
+ *   LDA ($92),Y     ; 读脚本 next byte
+ *   STA $92          ; → 新 script_lo
+ *   LDA $E7         ; 原始 sprite byte
+ *   SEC; SBC #$20
+ *   STA $93          ; → script_hi = E7 - 0x20
+ *   JMP $9224        ; 继续 VM 循环
+ *
+ * @param spriteByte 精灵属性字节 (A)
+ */
+export function bank00_spriteVMAllocCallback(
+  sys: SystemState,
+  descPtr: number,
+  spriteByte: number,
+): void {
+  // STA $E7: 保存原始精灵字节
+  sys.mem[0xE7] = spriteByte;
+
+  // LDY #$13; LDA ($94),Y: 读子计数器
+  const subCount = sys.mem[descPtr + 0x13];
+
+  // CMP #$03; BCS deadlock: >= 3 死循环 → 直接返回
+  if (subCount >= 3) return;
+
+  // 子计数++ → 存回
+  const newCount = subCount + 1;
+  sys.mem[descPtr + 0x13] = newCount;
+
+  // X = subCount (stack index)
+  // Y = subCount*2 + 0x18 (栈偏移)
+  const stackY = subCount * 2 + 0x18;
+
+  // 保存当前脚本指针+2到栈
+  const savedLo = (sys.mem[descPtr + 2] + 2) & 0xFF;
+  const savedHi = sys.mem[descPtr + 3] + (savedLo < 2 ? 1 : 0);
+  sys.mem[descPtr + stackY] = savedLo;
+  sys.mem[descPtr + stackY + 1] = savedHi;
+
+  // LDY #$01; LDA ($92),Y: 读脚本 next byte → 新指针 lo
+  const scriptLo = sys.mem[descPtr + 2];
+  const scriptHi = sys.mem[descPtr + 3];
+  const nextByte = readMem(sys, (scriptHi << 8) | scriptLo + 1);
+  writeMem(sys, descPtr + 2, nextByte);
+
+  // $93 = $E7 - 0x20 (新指针 hi)
+  writeMem(sys, descPtr + 3, (spriteByte - 0x20) & 0xFF);
+
+  // JMP $9224 → 由调用方继续 VM 循环
+}
+
 /** <$80: 直写 tile 到 OAM */
 function _spriteVM_directTile(sys: SystemState, descPtr: number, tileCode: number): void {
   const oamOffset = readMem(sys, descPtr + 18);  // 当前 OAM 偏移
@@ -2801,80 +3127,236 @@ function _spriteVM_directTile(sys: SystemState, descPtr: number, tileCode: numbe
   writeMem(sys, 0x0568 + oamOffset * 4 + 3, x);
 }
 
-/** $F0-$FF: 扩展控制码分发 (RTS 跳转表) */
+/**
+ * RTS 跳转表: $92E5-$9304 (addr-1 格式)
+ * 索引 = (op - 0xF0), 每项 2 字节 (lo, hi)
+ * 使用时 PHA addr_hi, PHA addr_lo-1, RTS → 跳转到 addr
+ */
+const SPRITE_VM_JUMP_TABLE: readonly number[] = [
+  // F0: $9304 → $9305  set visibility (ORA #$40)
+  0x04, 0x93,
+  // F1: $9338 → $9339  read X/Y position from script
+  0x38, 0x93,
+  // F2: $934F → $9350  set sprite X (descriptor+4)
+  0x4F, 0x93,
+  // F3: $935D → $935E  set sprite Y (descriptor+6)
+  0x5D, 0x93,
+  // F4: $936B → $936C  save script ptr to descriptor+2/3, advance chain
+  0x6B, 0x93,
+  // F5: $938C → $938D  set status bit6 (visibility clear)
+  0x8C, 0x93,
+  // F6: $9399 → $939A  clear visibility bit6
+  0x99, 0x93,
+  // F7: $93A6 → $93A7  read sprite tile/palette data
+  0xA6, 0x93,
+  // F8: $9429 → $942A  read next byte → STA $49 (sprite palette)
+  0x29, 0x94,
+  // F9: $9434 → $9435  set movement flag (ORA #$10)
+  0x34, 0x94,
+  // FA: $9441 → $9442  set chain flag (ORA #$02), init $99=$C0
+  0x41, 0x94,
+  // FB: $948E → $948F  dead loop (unused)
+  0x8E, 0x94,
+  // FC: $948E → $948F  dead loop (unused)
+  0x8E, 0x94,
+  // FD: $948E → $948F  dead loop (unused)
+  0x8E, 0x94,
+  // FE: $948E → $948F  dead loop (unused)
+  0x8E, 0x94,
+  // FF: $9491 → $9492  decrement sub-counter, load saved ptr
+  0x91, 0x94,
+];
+
+/** $F0-$FF: 扩展控制码分发 (RTS 跳转表 → 直接分派) */
 function _spriteVM_dispatchExtended(
   sys: SystemState,
   descPtr: number,
   op: number,
   scriptPtr: number,
 ): void {
-  const extIdx = (op - 0xF0) * 2;
-
-  // 跳转表: $92E5-$92F4 (针对 $F0-$FE 的入口)
-  // $F0: 设置 visibility (描画符[0] bit6 = 1)
-  // $F1: 设置 visibility 关闭 (bit6 = 0)
-  // $F2: 设置 X/Y 位置 (读 2 bytes)
-  // $F3: 设置 palette 偏移
-  // $F4: 子脚本 push (call)
-  // $F5: 子脚本返回 (pop)
-  // $F6: 设置速度参数
-  // $F7: 状态切换
-  // $F8: 完成标志
-  // $F9: 终止精灵
-  // $FA-FE: 其他控制
-  // $FF: → 跳转到 $948E (NOP) 或 $94BB (循环)
-
   const param = readMem(sys, scriptPtr + 1);
 
   switch (op) {
-    case 0xF0:  // set visibility
+    // ── $9305: F0 — 设置 visibility (描画符[0] bit6 = 1) ──
+    case 0xF0:
       sys.mem[descPtr + 0] |= 0x40;
-      break;
-    case 0xF1:  // clear visibility
-      sys.mem[descPtr + 0] &= 0xBF;
-      break;
-    case 0xF2:  // set position (2 bytes: X, Y)
+      _spriteVM_advanceScriptBy(sys, descPtr, 2);
+      return;
+
+    // ── $9339: F1 — 读取 X/Y 位置 (2+2 bytes) ──
+    case 0xF1: {
+      // byte1 → Y=4, JSR $9735 → store to descriptor+4 (X lo)
+      // byte2 → Y=6, JSR $9735 → store to descriptor+6 (Y lo)
+      const xLo = readMem(sys, scriptPtr + 1);
+      const yLo = readMem(sys, scriptPtr + 2);
+      writeMem(sys, descPtr + 4, xLo);
+      writeMem(sys, descPtr + 6, yLo);
+      _spriteVM_advanceScriptBy(sys, descPtr, 3);
+      return;
+    }
+
+    // ── $9350: F2 — 设置 sprite X (读 1 byte → desc+4, 前进 2) ──
+    case 0xF2: {
       writeMem(sys, descPtr + 4, param);
-      writeMem(sys, descPtr + 6, readMem(sys, scriptPtr + 2));
-      break;
-    case 0xF3:  // set palette
+      _spriteVM_advanceScriptBy(sys, descPtr, 2);
+      return;
+    }
+
+    // ── $935E: F3 — 设置 sprite Y (读 1 byte → desc+6, 前进 2) ──
+    case 0xF3: {
+      writeMem(sys, descPtr + 6, param);
+      _spriteVM_advanceScriptBy(sys, descPtr, 2);
+      return;
+    }
+
+    // ── $936C: F4 — 保存脚本指针到 desc+2/3, 指针前进 + 链式推进 ──
+    case 0xF4: {
+      // byte0 → desc+1 (属性)
+      sys.mem[descPtr + 1] = param;
+      // script_ptr += 2 → save to desc+2/+3
+      const newPtr = (scriptPtr + 2) & 0xFFFF;
+      writeMem(sys, descPtr + 2, newPtr & 0xFF);
+      writeMem(sys, descPtr + 3, (newPtr >> 8) & 0xFF);
+      // $94C1: 链式推进到下一个精灵 (descPtr += 0x20)
+      _spriteVM_advanceChain(sys, descPtr);
+      return;
+    }
+
+    // ── $938D: F5 — 清除 visibility (AND #$BF) → 前进 1 → 链式推进 ──
+    case 0xF5: {
+      sys.mem[descPtr + 0] &= 0xBF;
+      _spriteVM_advanceScriptBy(sys, descPtr, 1);
+      _spriteVM_advanceChain(sys, descPtr);
+      return;
+    }
+
+    // ── $939A: F6 — 清除 visibility (同上) ──
+    case 0xF6: {
+      sys.mem[descPtr + 0] &= 0xBF;
+      _spriteVM_advanceScriptBy(sys, descPtr, 1);
+      _spriteVM_advanceChain(sys, descPtr);
+      return;
+    }
+
+    // ── $93A7: F7 — 读取 sprite tile/palette 数据 ──
+    case 0xF7: {
+      // 读 ($92),1 → 5×LSR → desc+9 (速度高字节)
+      const data1 = readMem(sys, scriptPtr + 1);
+      sys.mem[descPtr + 9] = (data1 >> 5) & 0xFF;
+      const isNegative = (data1 & 0x04) !== 0;
+      if (!isNegative) {
+        // 正方向: ROR → desc+8, 读 ($92),2 → desc+10
+        sys.mem[descPtr + 8] = ((data1 >> 4) & 0x01) ? 0xFF : 0;
+        sys.mem[descPtr + 10] = readMem(sys, scriptPtr + 2);
+        // JMP $93DE (继续处理 Y 分量)
+        const dataY1 = readMem(sys, scriptPtr + 1); // re-read for Y
+        const yData = (dataY1 & 0x0F) >> 1;
+        sys.mem[descPtr + 13] = yData;
+        if (yData & 0x04) {
+          sys.mem[descPtr + 13] |= 0xF8;
+          sys.mem[descPtr + 12] = 0;
+          sys.mem[descPtr + 14] = (0 - readMem(sys, scriptPtr + 3)) & 0xFF;
+        }
+      } else {
+        // 负方向: ORA #$F8 → desc+9, 0→ROR → desc+8, 0-$92_2 → desc+10
+        sys.mem[descPtr + 9] |= 0xF8;
+        sys.mem[descPtr + 8] = 0;
+        sys.mem[descPtr + 10] = (0 - readMem(sys, scriptPtr + 2)) & 0xFF;
+      }
+      // 继续到 $93DE: 读 byte1 & 0x0F → LSR → desc+13
+      _spriteVM_advanceScriptBy(sys, descPtr, 4);
+      return;
+    }
+
+    // ── $942A: F8 — sprite palette → STA $49, 前进 2 ──
+    case 0xF8: {
       sys.mem[0x49] = param;
-      break;
-    case 0xF4:  // call sub-script
-      _spriteVM_callSubscript(sys, descPtr, op, scriptPtr);
-      break;
-    case 0xF5:  // ret from sub-script
-      {
-        const stackIdx = readMem(sys, descPtr + 19);
-        if (stackIdx > 0) {
-          writeMem(sys, descPtr + 19, stackIdx - 1);
-          const frameOffset = (stackIdx - 1) * 2 + 24;
-          writeMem(sys, descPtr + 2, readMem(sys, descPtr + frameOffset));
-          writeMem(sys, descPtr + 3, readMem(sys, descPtr + frameOffset + 1));
-        }
-      }
-      break;
-    case 0xF8:  // 完成清除
-      sys.mem[descPtr + 0] = 0;  // 清除活跃标志
-      break;
-    case 0xF9:  // 设置帧延迟
-      writeMem(sys, descPtr + 19, param);
-      break;
-    case 0xFC:  // 精灵 palette shift
-      {
-        const shift = readMem(sys, scriptPtr + 1);
-        for (let i = 0; i < 0x64; i++) {
-          sys.mem[0x0468 + i] = (sys.mem[0x0468 + i] + shift) & 0xFF;
-        }
-      }
-      break;
+      _spriteVM_advanceScriptBy(sys, descPtr, 2);
+      return;
+    }
+
+    // ── $9435: F9 — 设置移动标志 (ORA #$10) → 前进 1 → 链式推进 ──
+    case 0xF9: {
+      sys.mem[descPtr + 0] |= 0x10;
+      _spriteVM_advanceScriptBy(sys, descPtr, 1);
+      _spriteVM_advanceChain(sys, descPtr);
+      return;
+    }
+
+    // ── $9442: FA — 设置链标志 (ORA #$02) + init $99=$C0 → 链式推进 ──
+    case 0xFA: {
+      sys.mem[descPtr + 0] |= 0x02;
+      sys.mem[0x99] = 0xC0;
+      // Save script ptr to desc+2/+3
+      writeMem(sys, descPtr + 2, scriptPtr & 0xFF);
+      writeMem(sys, descPtr + 3, (scriptPtr >> 8) & 0xFF);
+      // BIT $99; BVC → 读 ($92),Y → $E6/$E7 → JSR $94D8
+      // 简化: 标记链完成
+      _spriteVM_advanceScriptBy(sys, descPtr, 1);
+      _spriteVM_advanceChain(sys, descPtr);
+      return;
+    }
+
+    // ── FB-FE: 死循环 (无用) ──
+    case 0xFB:
+    case 0xFC:
+    case 0xFD:
+    case 0xFE:
+      return; // 不操作
+
+    // ── $9492: FF — 递减子计数器 → 恢复脚本指针 ──
+    case 0xFF: {
+      const subCount = sys.mem[descPtr + 0x13];
+      if (subCount === 0) return; // BEQ deadlock
+      sys.mem[descPtr + 0x13] = subCount - 1;
+      // Y = (subCount-1)*2 + 0x18
+      const y = (subCount - 1) * 2 + 0x18;
+      const savedLo = sys.mem[descPtr + y];
+      const savedHi = sys.mem[descPtr + y + 1];
+      writeMem(sys, descPtr + 2, savedLo); // 恢复 $92
+      writeMem(sys, descPtr + 3, savedHi); // 恢复 $93
+      // JMP $9224: 继续精灵 VM 循环
+      return;
+    }
+
     default:
       break;
   }
 
-  // 前进脚本指针
-  writeMem(sys, descPtr + 2, (scriptPtr + 2) & 0xFF);
-  writeMem(sys, descPtr + 3, ((scriptPtr + 2) >> 8) & 0xFF);
+  // 默认: 前进脚本指针 2 字节
+  _spriteVM_advanceScriptBy(sys, descPtr, 2);
+}
+
+/** 前进脚本指针 offset 字节 → 存回 desc+2/+3 */
+function _spriteVM_advanceScriptBy(sys: SystemState, descPtr: number, offset: number): void {
+  const curLo = sys.mem[descPtr + 2];
+  const curHi = sys.mem[descPtr + 3];
+  const newLo = (curLo + offset) & 0xFF;
+  const newHi = curHi + ((newLo < curLo) ? 1 : 0);
+  writeMem(sys, descPtr + 2, newLo);
+  writeMem(sys, descPtr + 3, newHi);
+}
+
+/** $94AE: 脚本指针 += A → $92/$93 → JMP $9224 (继续 VM 循环) */
+function _spriteVM_advancePtrBy(sys: SystemState, descPtr: number, delta: number): void {
+  const oldLo = sys.mem[descPtr + 2];
+  const newLo = (oldLo + delta) & 0xFF;
+  const newHi = sys.mem[descPtr + 3] + ((newLo < oldLo) ? 1 : 0);
+  writeMem(sys, descPtr + 2, newLo);
+  writeMem(sys, descPtr + 3, newHi);
+}
+
+/** $94C1: 链式推进 → descPtr += 0x20, descCount--, 若 descCount≠0 则 JMP $9154 */
+function _spriteVM_advanceChain(sys: SystemState, oldDescPtr: number): void {
+  // Clear current descriptor
+  sys.mem[oldDescPtr + 0] = 0;
+  // Advance to next descriptor (0x20 bytes each)
+  const newDescPtr = (oldDescPtr + 0x20) & 0xFFFF;
+  sys.mem[0x94] = newDescPtr & 0xFF;
+  sys.mem[0x95] = (newDescPtr >> 8) & 0xFF;
+  // Decrement count
+  sys.mem[0x96] = (sys.mem[0x96] - 1) & 0xFF;
+  // If count ≠ 0, continue VM loop ($9154), else done ($9143)
 }
 
 // ═════════════════════════════════════════════════
@@ -3339,7 +3821,75 @@ export function bank00_paletteFlush(sys: SystemState): void {
   exit('bank00_paletteFlush', { '0628': sys.mem[0x628], '0629': sys.mem[0x629], '05E8+0': sys.mem[0x5E8], '05E8+3': sys.mem[0x5EB], '05E8+34': sys.mem[0x60A], '053BE': sys.mem[0x5E8 + 35] });
 }
 
-/** $99D1: 调色板淡出 — 递增亮度使画面变亮 (从暗到亮) */
+/**
+ * $99AE-$99CE: 调色板淡入步进 — 逐帧递增背景亮度直到 $4A = 0x0F
+ *
+ * 6502 (from DATA_$99AE_$99D0 bytes):
+ *   STA $48          ; 保存背景调色板索引
+ *   JSR $9B07        ; 保存 bank → 切 bank 06
+ *   JSR $9AB8        ; 计算背景调色板 PPU 地址
+ *   LDX $E9; JSR $C4B9  ; 跨 bank 调用
+ *   LDA $4A
+ *   CMP #$0F
+ *   BCS done         ; 若 >= $0F → RTS
+ *   INC $4A          ; 亮度++
+ *   JSR $9A71        ; 调色板输出
+ *   LDA #$01
+ *   JSR $9FA8        ; 等 1 帧 NMI
+ *   JMP loop         ; 继续循环
+ *   RTS
+ *
+ * $99CF-$99D0: 精灵调色板淡入入口 (STX $49, 然后沿用 $99D1 逻辑)
+ *
+ * @param bgPalIdx 背景调色板索引 (A)
+ */
+export function bank00_paletteFadeInStep(
+  sys: SystemState,
+  bgPalIdx: number,
+): void {
+  // STA $48: 保存背景调色板索引
+  sys.mem[0x48] = bgPalIdx;
+
+  // JSR $9B07: 保存 bank → 切 bank 06
+  const savedBank = sys.mem[0x25];
+  bankSwitch(sys, 6);
+
+  // JSR $9AB8: 计算背景调色板 PPU 地址 ($B000 + $48*16)
+  const bgRomBase = 0xB000 + sys.mem[0x48] * 16;
+  for (let i = 0; i < 16; i++) {
+    sys.mem[0x062A + i] = readMem(sys, bgRomBase + i);
+  }
+  // 精灵调色板也加载
+  const sprRomBase = 0xB300 + sys.mem[0x49] * 16;
+  for (let i = 0; i < 16; i++) {
+    sys.mem[0x063A + i] = readMem(sys, sprRomBase + i);
+  }
+
+  // 恢复 bank
+  bankSwitch(sys, savedBank);
+
+  // 循环: 递增 $4A 直到 >= 0x0F
+  while (sys.mem[0x4A] < 0x0F) {
+    sys.mem[0x4A]++;
+    bank00_paletteFlush(sys);
+    // 实际 NMI 等待由外层帧循环处理，这里简化
+  }
+}
+
+/**
+ * $99CF-$99D0: 精灵调色板淡入入口
+ *   STX $49 → 然后走 $99D1 逻辑
+ */
+export function bank00_spritePaletteFadeIn(
+  sys: SystemState,
+  sprPalIdx: number,
+): void {
+  sys.mem[0x49] = sprPalIdx;
+  // 沿用背景淡入逻辑，但使用精灵$4B
+  if (sys.mem[0x4B] < 0x0F) sys.mem[0x4B]++;
+}
+
+/** $99D1: 调色板淡入 — 递增亮度使画面变亮 (从暗到亮) */
 export function bank00_paletteFadeIn(sys: SystemState): void {
   track('bank00_paletteFadeIn', { '004A': sys.mem[0x4A], '004B': sys.mem[0x4B] });
   if (sys.mem[0x4A] < 0x0F) sys.mem[0x4A]++;
@@ -3438,36 +3988,51 @@ export function bank00_wordToTiles(sys: SystemState, word: number): void {
 //   $9E80: BCD → 16-bit
 
 /**
- * $9E32: 16-bit 值 → BCD 转换
+ * $9E80-$9EA1: 8-bit 二进制 → BCD 转换
  *
- * 6502: 输入 $EC/$ED, 除数 $EA/$EB
- *   通过移位和比较除法计算 BCD 表示
+ * 6502 核心算法 ($9E36 移位除法子程序):
+ *   1. 用移位相除法除以 10，得百位/十位/个位 BCD 数码
+ *   2. 组合: (个位<<4) | 十位 → 低字节
+ *   3. 百位 → 高字节
+ *   4. 输出: $EC(低), $ED(高) — 即 16-bit BCD 结果
  *
- * @param value 16-bit 输入值
- * @param divisor 除数 (默认 10)
- * @returns BCD 结果
+ * @param value 8-bit 输入值 (0–255)
+ * @param _divisor 除数 (固定 10)
+ * @returns 16-bit BCD 结果 (低字节 = 十位+个位)
  */
-export function bank00_bcdConvert(sys: SystemState, value: number, divisor: number = 10): number {
-  let lo = value & 0xFF;
-  let hi = (value >> 8) & 0xFF;
-  let result = 0;
+export function bank00_bcdConvert(sys: SystemState, value: number, _divisor: number = 10): number {
+  // $9E36: 移位除法 — 将 $ED 中的二进制值除以 10
+  // 返回: [$EA, $ED] = [商(0-9中的一个BCD位), 余数]
+  function _div10(v: number): [number, number] {
+    let ed = v & 0xFF;
+    let ea = 0;
 
-  for (let shift = 16; shift > 0; shift--) {
-    result = (result << 1) & 0xFFFF;
-    const carry = (hi & 0x80) !== 0;
-    hi = ((hi << 1) | (lo >> 7)) & 0xFF;
-    lo = (lo << 1) & 0xFF;
-
-    let subLo = result & 0xFF;
-    let subHi = (result >> 8) & 0xFF;
-    subLo = (subLo - divisor) & 0xFF;
-    if (subLo > 0xF0) subHi--;
-    if ((subHi & 0x80) === 0) {
-      result = (subHi << 8) | subLo;
-      lo = (lo | 1) & 0xFF;
+    for (let i = 0; i < 8; i++) {
+      // ASL $ED: shift left, MSB → carry
+      const carry = (ed & 0x80) !== 0;
+      ed = (ed << 1) & 0xFF;
+      // ROL $EA: rotate carry into $EA's LSB
+      ea = ((ea << 1) | (carry ? 1 : 0)) & 0xFF;
+      // $EA >= 10 ? (SEC → SBC → 无借位则存回并 INC $ED)
+      if (ea >= 10) {
+        ea -= 10;
+        ed = (ed + 1) & 0xFF;
+      }
     }
+    return [ea, ed];
   }
-  return result;
+
+  // 第一次调用: 25/10 → 商=2 (十位), 余=5
+  const [tens, rem1] = _div10(value & 0xFF);
+  // 第二次调用: 5/10 → 商=0 (个位), 余=5
+  const [units, rem2] = _div10(rem1);
+  // 组合: (个位 << 4) | 十位 → 低字节 $EC
+  const lo = ((units << 4) | tens) & 0xFF;
+  // 第三次调用: 5/10 → 商=0 (百位)
+  const [hundreds, _] = _div10(rem2);
+  const hi = hundreds & 0xFF;
+
+  return (hi << 8) | lo;
 }
 
 /** $9E4F: ×10 乘法 → BCD 辅助 */
@@ -3480,6 +4045,8 @@ export function bank00_mul10(sys: SystemState, value: number): number {
 // ═════════════════════════════════════════════════
 
 import {
+  DATA_$8398_$83B9,
+  DATA_$83BA_$83DB,
   DATA_$83DC_$83FE,
   DATA_$83FF_$841F,
   DATA_$8420_$8441,

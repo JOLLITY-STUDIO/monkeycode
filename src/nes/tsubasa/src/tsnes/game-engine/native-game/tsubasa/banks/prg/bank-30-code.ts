@@ -541,27 +541,21 @@ export function divide16_$CD0D(sys: SystemState): void {
 //
 
 /**
- * $C4B2: 切换 MMC3 window 6 ($8000-$9FFF)
- * 6502: STX $24; LDA #$06; JMP $C4BD
+ * $C4B2: 设置当前 window 6 ($8000-$9FFF) 对应的 bank 号
+ * 6502: STX $24; LDA #$06; JMP $C4BD → 通过 MMC3 寄存器切换
+ * TS: 仅记录跟踪值；PRG bank 切换通过 import 模块直接调用实现
  */
 export function bankSwitch_Win6(sys: SystemState, bankNum: number): void {
   sys.mem[0x24] = bankNum;
-  const mmc3Cmd = sys.mem[0x22] | 0x06;
-  sys.mem[0x23] = mmc3Cmd;
-  writeMem(sys, 0x8000, mmc3Cmd);
-  writeMem(sys, 0x8001, bankNum);
 }
 
 /**
- * $C4B9: 切换 MMC3 window 7 ($A000-$BFFF)
+ * $C4B9: 设置当前 window 7 ($A000-$BFFF) 对应的 bank 号
  * 6502: STX $25; LDA #$07; ORA $22; STA $23; STA $8000; STX $8001; RTS
+ * TS: 仅记录跟踪值
  */
 export function bankSwitch_Win7(sys: SystemState, bankNum: number): void {
   sys.mem[0x25] = bankNum;
-  const mmc3Cmd = sys.mem[0x22] | 0x07;
-  sys.mem[0x23] = mmc3Cmd;
-  writeMem(sys, 0x8000, mmc3Cmd);
-  writeMem(sys, 0x8001, bankNum);
 }
 
 /**
@@ -591,19 +585,19 @@ export function callBank01_A00F(
   // CMP #$23; BCS skip → 只接受 < $23 且 != 0
   if (aReg >= 0x23 || aReg === 0) return;
 
-  // 保存上下文
+  // 保存上下文 (仅记录, 不模拟 MMC3 寄存器)
   sys.mem[0xED] = xReg;
   sys.mem[0xEE] = sys.mem[0x24];
   sys.mem[0xEF] = sys.mem[0x25];
 
-  // 切到 bank0/bank1 上下文
+  // 设置当前 bank 跟踪值
   bankSwitch_Win6(sys, 0);
   bankSwitch_Win7(sys, 1);
 
-  // 调用 bank01 $A00F
+  // 调用 bank01 $A00F (回调已 import 对应 bank 模块)
   callA00F(sys, aReg, xReg);
 
-  // 恢复 bank 映射
+  // 恢复 bank 跟踪值
   bankSwitch_Win7(sys, sys.mem[0xEF]);
   bankSwitch_Win6(sys, sys.mem[0xEE]);
 }
@@ -632,39 +626,28 @@ export function callBank01_A00F(
 //
 
 /**
- * $CE2D: 应用已保存在 $24/$25 的 bank 映射到 MMC3。
+ * $CE2D: 应用已保存在 $24/$25 的 bank 映射。
  *
- * 6502: LDA $22; ORA #$06; STA $23; STA $8000;
- *       LDA $24; STA $8001;
- *       LDA $22; ORA #$07; STA $23; STA $8000;
- *       LDA $25; STA $8001; RTS
+ * 6502: LDA $22; ORA #$06; STA $8000; LDA $24; STA $8001;
+ *       LDA $22; ORA #$07; STA $8000; LDA $25; STA $8001; RTS
+ *
+ * TS: PRG bank 切换通过 import 模块直接调用, 不写 MMC3 寄存器。
+ *     此函数仅做数据记录 (保留接口兼容)。
  */
-export function bankSwitch_apply_$CE2D(sys: SystemState): void {
-  const mmc3Mode = sys.mem[0x22];
-
-  // Window 6 ($8000-$9FFF)
-  let cmd = mmc3Mode | 0x06;
-  sys.mem[0x23] = cmd;
-  writeMem(sys, 0x8000, cmd);
-  writeMem(sys, 0x8001, sys.mem[0x24]);
-
-  // Window 7 ($A000-$BFFF)
-  cmd = mmc3Mode | 0x07;
-  sys.mem[0x23] = cmd;
-  writeMem(sys, 0x8000, cmd);
-  writeMem(sys, 0x8001, sys.mem[0x25]);
+export function bankSwitch_apply_$CE2D(_sys: SystemState): void {
+  // MMC3 寄存器写已移除: TS 版 bank 是独立模块, 不需要地址映射。
+  // $24/$25 的值由调用方设置, 供 PPU/CHR 侧读取出当前 bank 号。
 }
 
 /**
- * bankSwitch — 便利函数：切换 bank 到 $8000-$9FFF 窗口
+ * bankSwitch — 便利函数：记录当前 window 6/7 对应的 bank 号
  *
- * 设置 $24=bankId, $25=bankId+1, 然后调用 bankSwitch_apply_$CE2D
- * 供 bank-00 等外部 bank 直接调用。
+ * 6502: 设置 $24=bankId, $25=bankId+1, 然后 JSR $CE2D 写 MMC3 寄存器
+ * TS: 仅跟踪 $24/$25, PRG bank 切换通过 import 模块回调实现
  */
 export function bankSwitch(sys: SystemState, bankId: number): void {
   sys.mem[0x24] = bankId & 0x3F;
   sys.mem[0x25] = (bankId & 0x3F) + 1;
-  bankSwitch_apply_$CE2D(sys);
 }
 
 // ═════════════════════════════════════════════════
@@ -1076,10 +1059,9 @@ export function nmiHandler_$C76E(
   // LDA #$02; STA $4014    (Sprite DMA from $0200)
   writeMem(sys, 0x4014, 0x02);
 
-  // ── $C793-$C798: 根据 $046B 切换 MMC3 bank 到 $8000-$9FFF ──
-  // LDA $046B; STA $A000
-  const bankA000 = sys.mem[0x046B];
-  writeMem(sys, 0xA000, bankA000);
+  // ── $C793-$C798: 根据 $046B 获知当前 CHR bank → TS 版通过模块数据直接访问 ──
+  // 6502: LDA $046B; STA $A000 → MMC3 bank switch for PPU data reading
+  // TS: PPU 数据传输在 onPpuTransfer 回调中从模块导入, 不依赖 MMC3 地址映射
 
   // ── $C799: JSR $C8FB — PPU 数据传输引擎 ──
   onPpuTransfer(sys);
@@ -1139,22 +1121,11 @@ export function nmiHandler_$C76E(
   // LDA $1B; ORA #$80; STA $1B
   sys.mem[0x1B] |= 0x80;
 
-  // ── $C7F0-$C80F: 恢复 MMC3 bank 映射 ──
-  // Window 7 restore
-  const mmc3Mode = sys.mem[0x22];
-  writeMem(sys, 0x8000, mmc3Mode | 0x07);
-  writeMem(sys, 0x8001, sys.mem[0x25]);
-
-  // Window 6 restore
-  writeMem(sys, 0x8000, mmc3Mode | 0x06);
-  writeMem(sys, 0x8001, sys.mem[0x24]);
-
-  // 恢复 SP
-  // (6502: PLA; TAX; TXS)
-  // 在 TS 中 SP 由 regs 管理
-
-  // MMC3 最终恢复
-  writeMem(sys, 0x8000, sys.mem[0x23]);
+  // ── $C7F0-$C80F (ASM): 恢复 MMC3 PRG bank 映射 ──
+  //   6502: write $8000 = mmc3Mode|7 → $8001 = $25 (window 7)
+  //         write $8000 = mmc3Mode|6 → $8001 = $24 (window 6)
+  //         write $8000 = $23 (final restore)
+  //   TS: $24/$25 仅做跟踪记录, PRG bank 切换通过 import 模块回调, 不需要写 MMC3
 
   // ── $C810-$C81F: 恢复 NMI 并 RTI ──
   // LDA $20; ORA #$80; STA $20; STA $19; STA $2000
@@ -1870,21 +1841,13 @@ export function nmiContextSave_$C421(
   sys.mem[0x3C] = sys.regs.A;
   sys.mem[0x3D] = sys.regs.X;
   sys.mem[0x3E] = sys.regs.Y;
-  // Window 7 → bank 2
-  const mmc3 = sys.mem[0x22];
-  writeMem(sys, 0x8000, mmc3 | 0x07);
-  writeMem(sys, 0x8001, 2);
+  // 6502: Window 7→bank 2 (write $8000|7=$22→$8001=2); JSR $A000
+  // TS: 回调直接调用 bank02 模块, 不写 MMC3
   onBank02A000(sys);
-  // Window 6 → bank $0C
-  writeMem(sys, 0x8000, mmc3 | 0x06);
-  writeMem(sys, 0x8001, 0x0C);
+  // 6502: Window 6→bank $0C (write $8000|6=$22→$8001=0x0C); JSR $8000
+  // TS: 回调直接调用 bank0C 模块
   onBank0C8000(sys);
-  // 恢复 MMC3 映射
-  writeMem(sys, 0x8000, mmc3 | 0x06);
-  writeMem(sys, 0x8001, sys.mem[0x24]);
-  writeMem(sys, 0x8000, mmc3 | 0x07);
-  writeMem(sys, 0x8001, sys.mem[0x25]);
-  writeMem(sys, 0x8000, sys.mem[0x23]);
+  // 6502: 恢复 MMC3 $24/$25 → 不需要, 回调返回后上下文不变
 }
 
 /**
@@ -1895,22 +1858,14 @@ export function irqContextSwitch_$C478(
   sys: SystemState,
   onBank02A160: (sys: SystemState) => void,
 ): void {
-  // MMC3 IRQ 确认
-  writeMem(sys, 0xE000, 0x00);
-  writeMem(sys, 0xE001, 0x00);
   // 保存寄存器
   sys.mem[0x3C] = sys.regs.A;
   sys.mem[0x3D] = sys.regs.X;
   sys.mem[0x3E] = sys.regs.Y;
-  // Window 7 → bank 2
-  const mmc3 = sys.mem[0x22];
-  writeMem(sys, 0x8000, mmc3 | 0x07);
-  writeMem(sys, 0x8001, 2);
+  // 6502: Window 7→bank 2 (write $8000|7=$22→$8001=2); JSR $A160; 恢复 $8000=$23
+  // TS: 回调直接调用 bank02 模块, 不写 MMC3
   onBank02A160(sys);
-  // 恢复映射
-  writeMem(sys, 0x8000, mmc3 | 0x07);
-  writeMem(sys, 0x8001, sys.mem[0x25]);
-  writeMem(sys, 0x8000, sys.mem[0x23]);
+  // 6502: 恢复 MMC3 映射 → 不需要, 回调返回后上下文不变
 }
 
 // ═════════════════════════════════════════════════

@@ -4,7 +4,6 @@
  * 功能: 纯数据
  * 来源: tsubasa-hex2asm/prg_banks/prg_bank_08_data.ts
  */
-export const PRG_BANK_08_DATA:
 // eslint-disable-next-line
 // @ts-ignore: renamed
 export const PRG_BANK_08_DATA: readonly number[] = [

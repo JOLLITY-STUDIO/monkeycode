@@ -30,7 +30,42 @@ import {
   writeMem,
   readMem,
 } from '../system-state';
-import { PRG_BANK_01_DATA } from './bank-01-data';
+import {
+  DATA_$8000_$8002,
+  DATA_$89D4_$89E1,
+  DATA_$8D8A_$8D9D,
+  DATA_$8D9E_$8DE8,
+  DATA_$9113_$912E,
+  DATA_$914D_$9198,
+  DATA_$91E8_$9240,
+  DATA_$9241_$9254,
+  DATA_$9255_$92FC,
+  DATA_$92FD_$9392,
+  DATA_$9393_$93B4,
+  DATA_$93B5_$93D6,
+  DATA_$93D7_$93E7,
+  DATA_$93E8_$93F8,
+  DATA_$93F9_$9409,
+  DATA_$940A_$941A,
+  DATA_$941B_$943C,
+  DATA_$943D_$96DA,
+  DATA_$96DB_$99E1,
+  DATA_$99E2_$99FA,
+  DATA_$99FB_$9A07,
+  DATA_$9A08_$9A4B,
+  DATA_$9A4C_$9A8F,
+  DATA_$9A90_$9B3C,
+  DATA_$9B3D_$9B7C,
+  DATA_$9B7D_$9BA3,
+  DATA_$9BA4_$9BC7,
+  DATA_$9BC8_$9C57,
+  DATA_$9C58_$9CF2,
+  DATA_$9CF3_$9D73,
+  DATA_$9D74_$9DA7,
+  DATA_$9DA8_$9DF1,
+  DATA_$9DF2_$9F14,
+  DATA_$9F15_$9FFF,
+} from './bank-01-data';
 
 // ═════════════════════════════════════════════════
 // 标志位辅助
@@ -57,9 +92,55 @@ function read16At($34: number, sys: SystemState, offset: number): number {
     | (sys.mem[(ptr + offset + 1) & 0xFFFF] << 8);
 }
 
-/** ROM 数据访问（从内联 bank 数据读取） */
+// ═════════════════════════════════════════════════
+// ROM data chunk lookup (each chunk mapped by bank offset)
+// ═════════════════════════════════════════════════
+const _DATA_CHUNKS: Array<{ offset: number; data: readonly number[] }> = [
+  { offset: 0x0000, data: DATA_$8000_$8002 },
+  { offset: 0x09D4, data: DATA_$89D4_$89E1 },
+  { offset: 0x0D8A, data: DATA_$8D8A_$8D9D },
+  { offset: 0x0D9E, data: DATA_$8D9E_$8DE8 },
+  { offset: 0x1113, data: DATA_$9113_$912E },
+  { offset: 0x114D, data: DATA_$914D_$9198 },
+  { offset: 0x11E8, data: DATA_$91E8_$9240 },
+  { offset: 0x1241, data: DATA_$9241_$9254 },
+  { offset: 0x1255, data: DATA_$9255_$92FC },
+  { offset: 0x12FD, data: DATA_$92FD_$9392 },
+  { offset: 0x1393, data: DATA_$9393_$93B4 },
+  { offset: 0x13B5, data: DATA_$93B5_$93D6 },
+  { offset: 0x13D7, data: DATA_$93D7_$93E7 },
+  { offset: 0x13E8, data: DATA_$93E8_$93F8 },
+  { offset: 0x13F9, data: DATA_$93F9_$9409 },
+  { offset: 0x140A, data: DATA_$940A_$941A },
+  { offset: 0x141B, data: DATA_$941B_$943C },
+  { offset: 0x143D, data: DATA_$943D_$96DA },
+  { offset: 0x16DB, data: DATA_$96DB_$99E1 },
+  { offset: 0x19E2, data: DATA_$99E2_$99FA },
+  { offset: 0x19FB, data: DATA_$99FB_$9A07 },
+  { offset: 0x1A08, data: DATA_$9A08_$9A4B },
+  { offset: 0x1A4C, data: DATA_$9A4C_$9A8F },
+  { offset: 0x1A90, data: DATA_$9A90_$9B3C },
+  { offset: 0x1B3D, data: DATA_$9B3D_$9B7C },
+  { offset: 0x1B7D, data: DATA_$9B7D_$9BA3 },
+  { offset: 0x1BA4, data: DATA_$9BA4_$9BC7 },
+  { offset: 0x1BC8, data: DATA_$9BC8_$9C57 },
+  { offset: 0x1C58, data: DATA_$9C58_$9CF2 },
+  { offset: 0x1CF3, data: DATA_$9CF3_$9D73 },
+  { offset: 0x1D74, data: DATA_$9D74_$9DA7 },
+  { offset: 0x1DA8, data: DATA_$9DA8_$9DF1 },
+  { offset: 0x1DF2, data: DATA_$9DF2_$9F14 },
+  { offset: 0x1F15, data: DATA_$9F15_$9FFF },
+];
+
+/** ROM 数据访问 — 按 bank offset 查找对应数据块 */
 function readBankRom(_sys: SystemState, offset: number): number {
-  return PRG_BANK_01_DATA[offset & 0x1FFF] ?? 0;
+  const bankOff = offset & 0x1FFF;
+  for (const chunk of _DATA_CHUNKS) {
+    if (bankOff >= chunk.offset && bankOff < chunk.offset + chunk.data.length) {
+      return chunk.data[bankOff - chunk.offset];
+    }
+  }
+  return 0;
 }
 
 // ═════════════════════════════════════════════════

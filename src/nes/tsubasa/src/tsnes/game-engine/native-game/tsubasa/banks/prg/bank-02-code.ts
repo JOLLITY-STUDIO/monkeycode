@@ -27,7 +27,22 @@ import {
   readMem,
 } from '../system-state';
 import { track, exit } from '../debug-log';
-import { PRG_BANK_02_DATA } from './bank-02-data';
+import {
+  DATA_$8066_$8072,
+  DATA_$8138_$815F,
+  DATA_$81E4_$820B,
+  DATA_$83D8_$8483,
+  DATA_$84A5_$84C0,
+  DATA_$8582_$85A8,
+  DATA_$85B9_$85DB,
+  DATA_$878E_$87BD,
+  DATA_$87FB_$882E,
+  DATA_$88FE_$8A05,
+  DATA_$8A20_$8A46,
+  DATA_$8A47_$8A96,
+  DATA_$8A97_$8B2E,
+  DATA_$8B2F_$9FFF,
+} from './bank-02-data';
 import {
   bank00_waitFrame,
   bank00_sceneTransition,
@@ -53,9 +68,35 @@ function updateNZ(sys: SystemState, val: number): void {
   setFlag(sys, FLAG_Z, (val & 0xFF) === 0);
 }
 
-/** ROM 数据访问 */
+// ═════════════════════════════════════════════════
+// ROM data chunk lookup (each chunk mapped by bank offset range)
+// ═════════════════════════════════════════════════
+const _DATA_CHUNKS: Array<{ offset: number; data: readonly number[] }> = [
+  { offset: 0x0066, data: DATA_$8066_$8072 },
+  { offset: 0x0138, data: DATA_$8138_$815F },
+  { offset: 0x01E4, data: DATA_$81E4_$820B },
+  { offset: 0x03D8, data: DATA_$83D8_$8483 },
+  { offset: 0x04A5, data: DATA_$84A5_$84C0 },
+  { offset: 0x0582, data: DATA_$8582_$85A8 },
+  { offset: 0x05B9, data: DATA_$85B9_$85DB },
+  { offset: 0x078E, data: DATA_$878E_$87BD },
+  { offset: 0x07FB, data: DATA_$87FB_$882E },
+  { offset: 0x08FE, data: DATA_$88FE_$8A05 },
+  { offset: 0x0A20, data: DATA_$8A20_$8A46 },
+  { offset: 0x0A47, data: DATA_$8A47_$8A96 },
+  { offset: 0x0A97, data: DATA_$8A97_$8B2E },
+  { offset: 0x0B2F, data: DATA_$8B2F_$9FFF },
+];
+
+/** ROM 数据访问 — 按 bank offset 查找对应数据块 */
 function rom02(offset: number): number {
-  return PRG_BANK_02_DATA[offset & 0x1FFF] ?? 0;
+  const bankOff = offset & 0x1FFF;
+  for (const chunk of _DATA_CHUNKS) {
+    if (bankOff >= chunk.offset && bankOff < chunk.offset + chunk.data.length) {
+      return chunk.data[bankOff - chunk.offset];
+    }
+  }
+  return 0;
 }
 
 // ═════════════════════════════════════════════════

@@ -4,7 +4,6 @@
  * 功能: 调色板数据（场景/角色颜色定义）
  * 访问：PRG_BANK_06[addr & 0x1FFF]
  */
-export const PRG_BANK_06_DATA:
 // eslint-disable-next-line
 // @ts-ignore: renamed
 export const PRG_BANK_06_DATA: readonly number[] = [

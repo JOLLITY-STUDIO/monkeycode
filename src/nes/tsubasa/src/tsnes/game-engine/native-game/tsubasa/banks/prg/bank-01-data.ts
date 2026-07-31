@@ -398,3 +398,10 @@ export const DATA_$9F15_$9FFF: readonly number[] = [
   0xB0, 0xAA, 0x0D, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 ];
 
+// ═══════════════════════════════════════════════
+// NOTE: Data segments are exported individually above.
+// Code files access them directly by name (e.g. DATA_$8D8A_$8D9D).
+// No combined Uint8Array — each chunk is independent.
+// ═══════════════════════════════════════════════
+
+
