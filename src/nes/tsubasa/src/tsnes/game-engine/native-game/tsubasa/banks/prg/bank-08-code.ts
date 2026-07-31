@@ -16,7 +16,7 @@
  * 原始 hex: tsubasa-hex2asm/prg_banks/prg_bank_08_data.ts
  */
 
-import { PRG_BANK_08_DATA } from './bank-08-data';
+import { PRG_BANK_08_DATA } from './bank-08-data-only';
 
 // 注册 ROM 数据
 /** ROM 数据直接访问 */

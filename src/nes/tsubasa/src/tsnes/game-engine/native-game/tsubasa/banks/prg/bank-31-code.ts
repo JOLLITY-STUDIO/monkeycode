@@ -44,7 +44,7 @@ import { bank00_dispatchScene, bank00_titleTick } from './bank-00-code';
 
 // ── CODE bank dispatch tables (直接调用, 不走 MMC3 bank switch) ──
 import { bank11_dispatch } from './bank-11-code';
-import { bank16_dispatch } from './bank-16-code';
+import { bank16_dispatch } from './bank-16-scene-script-engine-code';
 import { bank19_dispatch } from './bank-19-script-engine-code';
 import { bank20_dispatch } from './bank-20-team-select-code';
 import { bank22_dispatch } from './bank-22-sprite-engine-code';

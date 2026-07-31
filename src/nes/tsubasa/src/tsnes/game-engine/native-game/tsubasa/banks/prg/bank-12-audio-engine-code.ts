@@ -93,7 +93,6 @@ import {
   SystemState,
   writeMem,
 } from '../system-state';
-import { PRG_BANK_12_DATA } from './bank-12-data';
 
 // 注册 ROM 数据
 // ═════════════════════════════════════════════════

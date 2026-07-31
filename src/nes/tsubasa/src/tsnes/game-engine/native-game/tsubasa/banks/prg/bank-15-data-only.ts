@@ -4,7 +4,6 @@
  * 功能: 音乐序列数据（曲谱/音符数据，供 bank 12 音频引擎使用）
  * 访问：PRG_BANK_15[addr & 0x1FFF]
  */
-export const PRG_BANK_15_DATA:
 // eslint-disable-next-line
 // @ts-ignore: renamed
 export const PRG_BANK_15_DATA: readonly number[] = [
