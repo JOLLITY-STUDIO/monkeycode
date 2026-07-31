@@ -1,6 +1,6 @@
 /**
  * 
- * 是的继续，全部翻译完，然后把数据data文件也结合进去，game-engine\native-game\tsubasa\banks\prg\bank-26-data.ts
+ * 是的继续，全部翻译完，然后把数据data文件也结合进去，game-engine\native-game\tsubasa\banks\prg\bank-26-data.ts， （已处理，不需要data文件，code文件有完整的翻译）
  * 编写多个场景用例验证bank26的单元测试。game-engine\test\test-bank-26.ts
  * Bank 26 — 赛场核心引擎 ($8000-$BFFF)
  *
@@ -3543,7 +3543,7 @@ export function bank26_ballHandlerDispatch(sys: SystemState): void {
   // TXS; JMP $85AC → reset SP, goto select player action
   sys.regs.X = 0x50;
   sys.regs.SP = 0x50;
-  bank26_selectPlayerAction(sys);
+  bank26_selectPlayerActionEntry(sys);
 }
 
 /**
