@@ -31,16 +31,23 @@
 
 import type { SystemState } from '../system-state';
 import { writeMem, readMem } from '../system-state';
-import { bankSwitch } from './bank-30-code';
+import {
+  DATA_$8000_$833F,
+  DATA_$83E0_$8B8F,
+  DATA_$8BA0_$8F4F,
+  DATA_$944E_$988E,
+  DATA_$988F_$9FFF,
+} from './bank-19-data';
 
-// ── ROM data registration ──
 // ═════════════════════════════════════════════════
 // 零页 / 内存常量
 // ═════════════════════════════════════════════════
 
-/** 脚本数据指针 (cpu addr 低/高) — 主循环用 */
-const PTR_LO = 0x88;
+/** 脚本数据指针高字节 — 跟踪当前在 SCRIPT_DATA 中的位置 */
 const PTR_HI = 0x89;
+
+/** 脚本数据指针低字节 — 仅 bank19_advancePointer 使用 */
+const PTR_LO = 0x88;
 
 /** 当前读取偏移 — 数据流中的字节索引 */
 const OFFSET = 0x8A;
@@ -50,58 +57,41 @@ const NT_SELECT = 0x8B;
 
 /** PPU 更新队列区域 — $04A5-$04ED (73 bytes) */
 const QUEUE_BASE = 0x04A5;
-const QUEUE_ENTRY_TYPE  = QUEUE_BASE + 0; // relative: +0 = entry type
-const QUEUE_ADDR_LO     = QUEUE_BASE + 1; // relative: +1 = PPU addr lo
-const QUEUE_ADDR_HI     = QUEUE_BASE + 2; // relative: +2 = PPU addr hi
-const QUEUE_DATA_START  = QUEUE_BASE + 3; // relative: +3 = data byte 0
+const QUEUE_ENTRY_TYPE  = QUEUE_BASE + 0;
+const QUEUE_ADDR_LO     = QUEUE_BASE + 1;
+const QUEUE_ADDR_HI     = QUEUE_BASE + 2;
+const QUEUE_DATA_START  = QUEUE_BASE + 3;
 
 /** NMI 同步标志 — $0515 */
 const NMI_FLAG = 0x0515;
 
-/** 上传包数据起始地址 (cpu 地址) — 对应 ROM 中 $944E */
-const DATA_START_CPU_ADDR = 0xB467; // bank 19 mapped → $B000-$BFFF window
-
 /** 上传包格式常量 */
-const PKT_TERMINATOR = 0x00; // 包终止符
-const CTRL_THRESHOLD = 0xE0; // >= $E0 = 控制码
-const NT_ROW_SIZE    = 0x20; // 一行 32 tile
-const NT_ROWS_PER_BLOCK = 4; // 一次处理 4 行
+const PKT_TERMINATOR = 0x00;
+const CTRL_THRESHOLD = 0xE0;
+const NT_ROW_SIZE    = 0x20;
+const NT_ROWS_PER_BLOCK = 4;
 
 // ═════════════════════════════════════════════════
-// 控制码跳转表 ($9166-$9173)
+// 脚本数据 — bank-19 内嵌的 PPU 上传包 + 文本控制码
 // ═════════════════════════════════════════════════
-//
-// 每个控制码对应 bank-19 内的子处理函数地址。
-// 原始 6502 用 RTS 跳转技巧：地址 - 1 入栈 → RTS 弹出 PC+1。
-// 这里直接用 switch 分发。
+// 原始 ROM: $944E-$9FFF，CPU 入口指针 $B467
+// 由 DATA_$944E_$988E (1089B) + DATA_$988F_$9FFF (1905B) 拼接
 
-const CTRL_CODE_TABLE: Record<number, number> = {
-  0xE0: 0xB1A6, // 设置状态/索引
-  0xE1: 0xB1E0, // 跳转/偏移
-  0xE2: 0xB1F3, // 二维参数设置
-  0xE3: 0xB218, // 终止/重置
-  0xE4: 0xB21B, // 输出字符串
-  0xE5: 0xB224, // 控制/routine 调用
-  0xE6: 0xB235, // 其他控制
-};
+const SCRIPT_DATA: readonly number[] = [...DATA_$944E_$988E, ...DATA_$988F_$9FFF];
+
+/** PTR_HI 初始值 — 对应脚本数据首字节 */
+const PTR_HI_INIT = 0xB4;
+
+/** 辅助: 将 (PTR_HI, OFFSET) 转换为 SCRIPT_DATA 中的索引 */
+function scriptIdx(sys: SystemState, extra: number = 0): number {
+  return (sys.mem[PTR_HI] - PTR_HI_INIT) * 256 + sys.mem[OFFSET] + extra;
+}
 
 // ═════════════════════════════════════════════════
-// 上传包数据 — DATA_$944E_$988E (1089 bytes)
+// 控制码跳转表 ($9166-$9173) — 已内联到 switch，此处仅文档
 // ═════════════════════════════════════════════════
-//
-// 这是 bank-19 内嵌的脚本数据。格式:
-//   Part 1: PPU 上传包 (以 $00 结束)
-//     [length][ppu_addr_lo][ppu_addr_hi][tile × N]...
-//   Part 2: 文本控制码 ($00 之后)
-//     $E0 XX — 设置状态
-//     $E1 XX — 跳转偏移
-//     $E4 XX YY... — 输出字符串 (直到 $FC 结束)
-//     $FC — 字符串结束符
-//     ...
-//
-// 此数据通过 ROM `readMem` 在 bank-19 映射时直接读取。
-// 脚本指针初始化指向此区域的 CPU 地址 $B467。
-// 无需额外导出 — ROM 里已有。
+// E0→setState  E1→jump  E2→setXY  E3→terminate
+// E4→string    E5→call  E6→other
 
 // ═════════════════════════════════════════════════
 // 主要入口
@@ -153,58 +143,47 @@ export function bank19_mainParser(sys: SystemState): void {
   console.log('[bank19] mainParser — starting parse loop');
 
   // ── $9000-$9029: 初始化 ──
-  // LDA #$00; STA $0490; STA $0491 — 清除滚动变量
   sys.mem[0x0490] = 0;
   sys.mem[0x0491] = 0;
-
-  // STA $0087
   sys.mem[0x0087] = 0;
 
-  // LDA #$67; STA $88; LDA #$B4; STA $89 → 指针 = $B467
-  sys.mem[PTR_LO] = 0x67;
-  sys.mem[PTR_HI] = 0xB4;
-
-  // LDA #$00; STA $05FB
-  writeMem(sys, 0x05FB, 0x00);
-
-  // LDA #$09; STA $0441 — CHR bank 9
-  writeMem(sys, 0x0441, 0x09);
-
-  // LDA #$14; STA $0442 — CHR bank $14
-  writeMem(sys, 0x0442, 0x14);
-
-  // LDA #$80; STA $063F — 标志位
-  writeMem(sys, 0x063F, 0x80);
-
-  // LDA #$00; STA $8A — offset = 0
+  // 指针 → PTR_HI=$B4, OFFSET=0 (对应 SCRIPT_DATA[0])
+  sys.mem[PTR_HI] = PTR_HI_INIT;
   sys.mem[OFFSET] = 0;
 
+  writeMem(sys, 0x05FB, 0x00);
+  writeMem(sys, 0x0441, 0x09);
+  writeMem(sys, 0x0442, 0x14);
+  writeMem(sys, 0x063F, 0x80);
+
   // ── 主解析循环 ──
-  // 安全上限防止死循环
   const MAX_ITER = 5000;
   let iter = 0;
 
   while (iter < MAX_ITER) {
     iter++;
     const offset = sys.mem[OFFSET];
-    const ptr = (sys.mem[PTR_HI] << 8) | sys.mem[PTR_LO];
-    const byte = readMem(sys, ptr + offset);
+    const idx = scriptIdx(sys);
+    if (idx >= SCRIPT_DATA.length) {
+      console.warn('[bank19] mainParser — script data exhausted');
+      break;
+    }
+    const byte = SCRIPT_DATA[idx];
 
     if (byte >= CTRL_THRESHOLD) {
-      // ── $9035-$903A: 控制码分支 ──
-      sys.mem[OFFSET] = (offset + 1) & 0xFF; // INC $8A
+      sys.mem[OFFSET] = (offset + 1) & 0xFF;
+      if (sys.mem[OFFSET] < 1) {
+        sys.mem[PTR_HI] = (sys.mem[PTR_HI] + 1) & 0xFF;
+      }
       const shouldContinue = bank19_handleControl(sys, byte);
       if (!shouldContinue) {
         console.log('[bank19] mainParser — control handler signaled stop');
         break;
       }
     } else {
-      // ── $903D-$9040: 上传包分支 ──
       const shouldContinue = bank19_handleUploadPacket(sys, byte);
       if (!shouldContinue) {
         console.log('[bank19] mainParser — upload packet terminator (0x00)');
-        // 包终止后进入控制码区域，继续解析
-        // 注意: 0x00 已被消耗，offset 未前进，下次读取的是 $00 之后的字节
       }
     }
   }
@@ -317,26 +296,22 @@ export function bank19_writeUploadPacket(sys: SystemState, tile: number): void {
 
 /** @returns true = 继续解析, false = 包终止 (length=0) */
 function bank19_handleUploadPacket(sys: SystemState, firstByte: number): boolean {
-  // firstByte 是 length (已经被主循环读取)
   if (firstByte === PKT_TERMINATOR) {
-    // ── length = 0 → 终止符 ──
-    sys.mem[OFFSET] = (sys.mem[OFFSET] + 1) & 0xFF; // 跳过 $00
+    sys.mem[OFFSET] = (sys.mem[OFFSET] + 1) & 0xFF;
+    if (sys.mem[OFFSET] < 1) {
+      sys.mem[PTR_HI] = (sys.mem[PTR_HI] + 1) & 0xFF;
+    }
     return false;
   }
 
   const count = firstByte;
   const offset = sys.mem[OFFSET];
-  const ptr = (sys.mem[PTR_HI] << 8) | sys.mem[PTR_LO];
 
-  // 读 PPU 地址 (lo, hi)
-  const ppuAddrLo = readMem(sys, ptr + offset + 1);
-  const ppuAddrHi = readMem(sys, ptr + offset + 2);
+  // 读 PPU 地址 (lo, hi) — 从脚本数据直接读取
+  const ppuAddrLo = SCRIPT_DATA[scriptIdx(sys, 1)];
+  const ppuAddrHi = SCRIPT_DATA[scriptIdx(sys, 2)];
 
   console.log(`[bank19] uploadPacket: count=${count}, addr=$${ppuAddrHi.toString(16)}${ppuAddrLo.toString(16)}`);
-
-  // ── 构建队列条目 ──
-  // 格式: [entry_type(1)][addr_lo(1)][addr_hi(1)][data × count]
-  // entry_type = count (bit7=0 → 水平增量)
 
   // 等待 NMI
   let waitFrames = 0;
@@ -345,31 +320,24 @@ function bank19_handleUploadPacket(sys: SystemState, firstByte: number): boolean
   }
   writeMem(sys, NMI_FLAG, 0x01);
 
-  // 计算队列写入位置 (使用偏移 $04A5)
-  // 复用 bank-00 的队列格式: $05E8 区域
-  const qIdx = readMem(sys, 0x0628); // 当前队列索引
+  const qIdx = readMem(sys, 0x0628);
   const QUEUE_AREA = 0x05E8;
 
-  writeMem(sys, QUEUE_AREA + qIdx, count);           // entry type = count
-  writeMem(sys, QUEUE_AREA + qIdx + 1, ppuAddrLo);   // PPU addr lo
-  writeMem(sys, QUEUE_AREA + qIdx + 2, ppuAddrHi);   // PPU addr hi
+  writeMem(sys, QUEUE_AREA + qIdx, count);
+  writeMem(sys, QUEUE_AREA + qIdx + 1, ppuAddrLo);
+  writeMem(sys, QUEUE_AREA + qIdx + 2, ppuAddrHi);
 
   // 写 tile 数据
   for (let i = 0; i < count; i++) {
-    const tileId = readMem(sys, ptr + offset + 3 + i);
+    const tileId = SCRIPT_DATA[scriptIdx(sys, 3 + i)];
     writeMem(sys, QUEUE_AREA + qIdx + 3 + i, tileId);
   }
 
-  // 更新队列索引
   writeMem(sys, 0x0628, qIdx + 3 + count);
-
-  // 终止符: 写 $00 标记队列结束
   writeMem(sys, QUEUE_AREA + qIdx + 3 + count, 0x00);
-
-  // 设 NMI 标志
   writeMem(sys, NMI_FLAG, 0x80);
 
-  // 前进 offset: 跳过 length(1) + addr_lo(1) + addr_hi(1) + data(count)
+  // 前进 offset
   sys.mem[OFFSET] = (offset + 3 + count) & 0xFF;
   if (sys.mem[OFFSET] < 3 + count) {
     sys.mem[PTR_HI] = (sys.mem[PTR_HI] + 1) & 0xFF;
@@ -399,23 +367,21 @@ function bank19_handleUploadPacket(sys: SystemState, firstByte: number): boolean
 /** @returns true = 继续解析, false = 脚本终止 */
 function bank19_handleControl(sys: SystemState, ctrlCode: number): boolean {
   const offset = sys.mem[OFFSET];
-  const ptr = (sys.mem[PTR_HI] << 8) | sys.mem[PTR_LO];
 
   console.log(`[bank19] control code: $${ctrlCode.toString(16)} at offset=$${offset.toString(16)}`);
 
   switch (ctrlCode) {
     case 0xE0: {
-      // 设置状态/索引: 读下一字节作为参数
-      const param = readMem(sys, ptr + offset);
-      sys.mem[0x8B] = param; // 存到状态变量
+      const param = SCRIPT_DATA[scriptIdx(sys)];
+      sys.mem[0x8B] = param;
       sys.mem[OFFSET] = (offset + 1) & 0xFF;
+      if (sys.mem[OFFSET] < 1) sys.mem[PTR_HI] = (sys.mem[PTR_HI] + 1) & 0xFF;
       console.log(`[bank19] E0: set state = $${param.toString(16)}`);
       return true;
     }
 
     case 0xE1: {
-      // 跳转/偏移: 读下一字节加到 offset
-      const delta = readMem(sys, ptr + offset);
+      const delta = SCRIPT_DATA[scriptIdx(sys)];
       sys.mem[OFFSET] = (offset + delta) & 0xFF;
       if (sys.mem[OFFSET] < delta) {
         sys.mem[PTR_HI] = (sys.mem[PTR_HI] + 1) & 0xFF;
@@ -425,58 +391,56 @@ function bank19_handleControl(sys: SystemState, ctrlCode: number): boolean {
     }
 
     case 0xE2: {
-      // 二维参数: 读 2 字节 → X, Y 坐标/位置
-      const x = readMem(sys, ptr + offset);
-      const y = readMem(sys, ptr + offset + 1);
+      const x = SCRIPT_DATA[scriptIdx(sys)];
+      const y = SCRIPT_DATA[scriptIdx(sys, 1)];
       sys.mem[0x8B] = x;
       sys.mem[0x8C] = y;
-      sys.mem[OFFSET] = (offset + 2) & 0xFF; // FIXED: was 1
+      sys.mem[OFFSET] = (offset + 2) & 0xFF;
+      if (sys.mem[OFFSET] < 2) sys.mem[PTR_HI] = (sys.mem[PTR_HI] + 1) & 0xFF;
       console.log(`[bank19] E2: set XY = ($${x.toString(16)}, $${y.toString(16)})`);
       return true;
     }
 
     case 0xE3: {
-      // 终止/重置脚本
       console.log('[bank19] E3: script terminate/reset');
       return false;
     }
 
     case 0xE4: {
-      // 输出字符串: 读后续字节直到 $FC，逐个写入 PPU
       console.log('[bank19] E4: output string...');
       let strOffset = offset;
       while (true) {
-        const ch = readMem(sys, ptr + strOffset);
+        const ch = SCRIPT_DATA[scriptIdx(sys, strOffset - offset)];
         if (ch === 0xFC || ch === 0x00) {
-          strOffset++; // 跳过终止符
+          strOffset++;
           break;
         }
         if (ch >= 0xE0) {
-          // 遇到控制码 → 停止字符串输出，让主循环处理
           break;
         }
-        // 直接写入 PPU nametable (通过队列)
         bank19_writeStringChar(sys, ch);
         strOffset++;
         if (strOffset >= 0x100) break;
       }
       sys.mem[OFFSET] = strOffset & 0xFF;
+      if (sys.mem[OFFSET] < offset) {
+        sys.mem[PTR_HI] = (sys.mem[PTR_HI] + 1) & 0xFF;
+      }
       return true;
     }
 
     case 0xE5: {
-      // 控制/routine 调用: 读参数 → 执行延迟等待
-      const param = readMem(sys, ptr + offset);
+      const param = SCRIPT_DATA[scriptIdx(sys)];
       sys.mem[OFFSET] = (offset + 1) & 0xFF;
+      if (sys.mem[OFFSET] < 1) sys.mem[PTR_HI] = (sys.mem[PTR_HI] + 1) & 0xFF;
       console.log(`[bank19] E5: routine call param=$${param.toString(16)}`);
-      // 大部分 E5 后面跟着 E1 (跳转) 构成轮询循环
       return true;
     }
 
     case 0xE6: {
-      // 其他控制 (如 bank 切换等)
-      const param = readMem(sys, ptr + offset);
+      const param = SCRIPT_DATA[scriptIdx(sys)];
       sys.mem[OFFSET] = (offset + 1) & 0xFF;
+      if (sys.mem[OFFSET] < 1) sys.mem[PTR_HI] = (sys.mem[PTR_HI] + 1) & 0xFF;
       console.log(`[bank19] E6: other control param=$${param.toString(16)}`);
       return true;
     }
@@ -681,10 +645,12 @@ function bank19_auxInit(sys: SystemState, param: number): void {
  *   LDA #$31; STA $0559
  */
 export function bank19_sceneSpecificInit(sys: SystemState): void {
-  // 从 ROM 加载 4 字节到 $0494-$0497
-  // $B402 是 bank-19 内的数据表 (CPU 地址)
+  // 从 DATA_$83E0_$8B8F 加载 4 字节到 $0494-$0497
+  // CPU $B402 → ROM $8402 → DATA_$83E0_$8B8F[$8402 - $83E0] = index 0x22
+  const table = DATA_$83E0_$8B8F;
+  const baseIdx = 0x8402 - 0x83E0; // 0x22 = 34
   for (let i = 0; i < 4; i++) {
-    sys.mem[0x0494 + i] = readMem(sys, 0xB402 + i);
+    sys.mem[0x0494 + i] = table[baseIdx + i];
   }
 
   sys.mem[0x0490] = 0x7C;
@@ -786,15 +752,18 @@ export function bank19_tick(sys: SystemState): boolean {
 
   // 推进主解析器一步
   const offset = sys.mem[OFFSET];
-  const ptr = (sys.mem[PTR_HI] << 8) | sys.mem[PTR_LO];
-  const byte = readMem(sys, ptr + offset);
+  const idx = scriptIdx(sys);
+  if (idx >= SCRIPT_DATA.length) return false;
+  const byte = SCRIPT_DATA[idx];
 
   if (byte >= CTRL_THRESHOLD) {
     sys.mem[OFFSET] = (offset + 1) & 0xFF;
+    if (sys.mem[OFFSET] < 1) sys.mem[PTR_HI] = (sys.mem[PTR_HI] + 1) & 0xFF;
     return bank19_handleControl(sys, byte);
   } else if (byte === PKT_TERMINATOR) {
     sys.mem[OFFSET] = (offset + 1) & 0xFF;
-    return false; // 包终止
+    if (sys.mem[OFFSET] < 1) sys.mem[PTR_HI] = (sys.mem[PTR_HI] + 1) & 0xFF;
+    return false;
   } else {
     return bank19_handleUploadPacket(sys, byte);
   }
@@ -813,14 +782,11 @@ export function bank19_tick(sys: SystemState): boolean {
  * @param index 映射表索引 (0-207, 每个条目 4 bytes)
  * @returns 4 个 tile ID 组成的数组
  */
-export function bank19_readTileMap(sys: SystemState, index: number): number[] {
-  const base = 0xB000 + index * 4; // bank 19 CPU addr
-  return [
-    readMem(sys, base),
-    readMem(sys, base + 1),
-    readMem(sys, base + 2),
-    readMem(sys, base + 3),
-  ];
+export function bank19_readTileMap(_sys: SystemState, index: number): number[] {
+  // $8000-$833F: metatile → PPU tile 映射表, 每 4 字节一条
+  const table = DATA_$8000_$833F;
+  const base = index * 4;
+  return [table[base], table[base + 1], table[base + 2], table[base + 3]];
 }
 
 /**
@@ -829,14 +795,11 @@ export function bank19_readTileMap(sys: SystemState, index: number): number[] {
  * $8BA0-$8F4F: 944 bytes — 游戏对象碰撞属性
  * 每个条目 4 bytes: [flags, attr1, attr2, attr3]
  */
-export function bank19_readCollisionData(sys: SystemState, index: number): number[] {
-  const base = 0xBBA0 + index * 4; // CPU addr: $8BA0 → $BBA0
-  return [
-    readMem(sys, base),
-    readMem(sys, base + 1),
-    readMem(sys, base + 2),
-    readMem(sys, base + 3),
-  ];
+export function bank19_readCollisionData(_sys: SystemState, index: number): number[] {
+  // $8BA0-$8F4F: 碰撞属性表, 每 4 字节一条
+  const table = DATA_$8BA0_$8F4F;
+  const base = index * 4;
+  return [table[base], table[base + 1], table[base + 2], table[base + 3]];
 }
 
 // ═════════════════════════════════════════════════

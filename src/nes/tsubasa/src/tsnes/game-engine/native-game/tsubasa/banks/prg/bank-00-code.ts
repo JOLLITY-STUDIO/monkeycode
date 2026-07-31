@@ -1,4 +1,15 @@
 /**
+ * 
+ * todo:
+ * 
+bank-00-code.ts 改动
+改动	说明
+移除 import { PRG_ROM_BANKS } from '../data/rom-data'	死 import，路径不对且不再需要 MMC3 注册
+移除 bank00_register()	旧的 MMC3 slot 注册函数
+添加 import	导入 bank-00-data.ts 全部 18 个数据段（DATA_$83DC_$83FE ~ DATA_$9FE5_$9FFF）
+更新 console.log	添加 `
+bank-00 的 code 目前通过 readMem 动态访问数据，暂未改造成直接数组访问（需要逐处分析 ROM 地址范围），但数据文件已就绪，随时可以按需对接。
+
  * Bank 00: Scene Dispatch Engine ($8000-$9FFF)
  *
  * 6502 → TypeScript 语义翻译
@@ -42,7 +53,7 @@
 
 import type { SystemState } from '../system-state';
 import { writeMem, readMem } from '../system-state';
-import { track, exit } from './debug-log';
+import { track, exit } from '../debug-log';
 import {
   bank01_startGame,
   bank01_titleInit,
@@ -3465,13 +3476,28 @@ export function bank00_mul10(sys: SystemState, value: number): number {
 }
 
 // ═════════════════════════════════════════════════
-// DATA: 注册 bank 00 ROM 数据
+// DATA: Bank-00 ROM 数据 (从 bank-00-data.ts 导入)
 // ═════════════════════════════════════════════════
 
-import { PRG_ROM_BANKS } from '../data/rom-data';
+import {
+  DATA_$83DC_$83FE,
+  DATA_$83FF_$841F,
+  DATA_$8420_$8441,
+  DATA_$8442_$8463,
+  DATA_$8545_$8574,
+  DATA_$86C8_$86DD,
+  DATA_$876E_$87B7,
+  DATA_$8AB4_$8AD4,
+  DATA_$8AD5_$8AE6,
+  DATA_$8AE7_$8AF6,
+  DATA_$8FF0_$900A,
+  DATA_$926C_$929F,
+  DATA_$9350_$938C,
+  DATA_$9482_$94AD,
+  DATA_$978B_$97AA,
+  DATA_$99AE_$99D0,
+  DATA_$9EA2_$9EEC,
+  DATA_$9FE5_$9FFF,
+} from './bank-00-data';
 
-console.log('[bank00] ✅ 已加载 — dispatchScene|titleBoot|waitStart|menuCursor|timers|bytecode|spriteAnim|palette|sceneTrans|bcd');
-
-/** 注册 bank 00 到 MMC3 映射表 */
-export function bank00_register(): void {  console.log('[bank00] ROM registered to MMC3 slot 0 (8KB)');
-}
+console.log('[bank00] ✅ 已加载 — dispatchScene|titleBoot|waitStart|menuCursor|timers|bytecode|spriteAnim|palette|sceneTrans|bcd|data');

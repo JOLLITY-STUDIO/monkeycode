@@ -14,11 +14,8 @@
  */
 
 import type { SystemState } from '../system-state';
-import { writeMem, readMem } from '../system-state';
-import { PRG_ROM_BANKS } from '../data/rom-data';
-import { track } from './debug-log';
-
-// ── ROM data registration ──// ═════════════════════════════════════════════════
+import { track } from '../debug-log';
+import { DATA_$8448_$94F0 } from './bank-27-data';// ═════════════════════════════════════════════════
 // $8000: 球员数据查询入口
 // ═════════════════════════════════════════════════
 //
@@ -44,12 +41,12 @@ export function bank27_entry(sys: SystemState): void {
 
   const playerIdx = sys.mem[0x043D] || 0;
 
-  // 从 ROM 读取球员数据 ($B000 offset = player * 16)
-  const romBase = 0xB000 + playerIdx * 0x10;
+  // 从 DATA_$8448_$94F0 直接读球员数据 (每球员 16 字节偏移)
+  const dataBase = playerIdx * 0x10;
 
   // 复制到 $0430-$043F
   for (let i = 0; i < 16; i++) {
-    const val = readMem(sys, romBase + i);
+    const val = DATA_$8448_$94F0[dataBase + i] || 0;
     sys.mem[0x0430 + i] = val;
   }
 
@@ -57,10 +54,10 @@ export function bank27_entry(sys: SystemState): void {
     `pos=${sys.mem[0x0435]}, shot=${sys.mem[0x0436]}, speed=${sys.mem[0x0437]}`);
 }
 
-/** 获取球员总数 — 从 ROM 头部读取 */
-export function bank27_getPlayerCount(sys: SystemState): number {
-  // 球员总数存储在 $B000 (第一个字节)
-  return readMem(sys, 0xB000) || 128;
+/** 获取球员总数 — 从 DATA_$8448_$94F0 头部读取 */
+export function bank27_getPlayerCount(_sys: SystemState): number {
+  // 球员总数从 data 数组第一个字节获取
+  return DATA_$8448_$94F0[0] || 128;
 }
 
 /** 查找特定球队的球员列表 */
@@ -82,4 +79,9 @@ export const bank27_dispatch: Record<number, (sys: SystemState) => void> = {
   0x00: bank27_entry,
 };
 
-console.log('[bank27] ✅ Phase 2b — 球员数据查询 (player data ROM access)');
+// ═════════════════════════════════════════════════
+// DATA: 仅 DATA_$8448_$94F0 被 bank27_entry/bank27_getPlayerCount 使用
+// 其余 data 段由其他模块在运行时按需访问
+// ═════════════════════════════════════════════════
+
+console.log('[bank27] ✅ Phase 2b — 球员数据查询 (direct array access) | data');

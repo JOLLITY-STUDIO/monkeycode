@@ -19,7 +19,7 @@
 import type { SystemState } from '../system-state';
 import { writeMem, readMem } from '../system-state';
 import { PRG_ROM_BANKS } from '../data/rom-data';
-import { track } from './debug-log';
+import { track } from '../debug-log';
 
 // ── ROM data registration ──// ═════════════════════════════════════════════════
 // $8000/$8003: 精灵坐标变换入口

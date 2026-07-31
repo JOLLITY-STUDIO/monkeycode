@@ -47,6 +47,13 @@
 
 import { SystemState, writeMem, readMem } from '../system-state';
 
+// ── Bank-30 ROM 数据表 ──
+import {
+  DATA_$CD89_$CDC8,
+  DATA_$D183_$D192,
+  DATA_$D6F3_$D70B,
+} from './bank-30-data';
+
 // ═════════════════════════════════════════════════
 // 跳转表 — 定义 bank30 的公开 API 入口
 // ═════════════════════════════════════════════════
@@ -1328,17 +1335,7 @@ export function ppuDataTransfer_$C8FB(sys: SystemState): void {
 // 使用: 根据 $05FB 标志查表，结果存到 $34-$35 (ZP 指针)。
 // 调用后继续用 ($34),Y 读取场景/角色数据。
 
-/** $CD89-$CDC8: 角色/场景数据指针表（32 entries, $0300-$042F） */
-const CHAR_DATA_PTRS: readonly number[][] = [
-  [0x00,0x03], [0x0C,0x03], [0x18,0x03], [0x24,0x03],
-  [0x30,0x03], [0x3C,0x03], [0x48,0x03], [0x54,0x03],
-  [0x60,0x03], [0x6C,0x03], [0x78,0x03], [0x84,0x03],
-  [0x90,0x03], [0x9C,0x03], [0xA8,0x03], [0xB4,0x03],
-  [0xC0,0x03], [0xCC,0x03], [0xD8,0x03], [0xE4,0x03],
-  [0xF0,0x03], [0xFC,0x03], [0x08,0x04], [0x0C,0x04],
-  [0x10,0x04], [0x14,0x04], [0x18,0x04], [0x1C,0x04],
-  [0x20,0x04], [0x24,0x04], [0x28,0x04], [0x2C,0x04],
-];
+// $CD89-$CDC8: 角色/场景数据指针表 → 从 bank-30-data 导入 DATA_$CD89_$CDC8 (64 bytes flat)
 
 /**
  * $CD7C: 获取角色/场景数据指针
@@ -1351,9 +1348,9 @@ const CHAR_DATA_PTRS: readonly number[][] = [
 export function getCharData_$CD7C(sys: SystemState): void {
   const flag = sys.mem[0x05FB];
   const index = (flag ^ 0x0B) & 0x1F;  // 32 entries max
-  const ptr = CHAR_DATA_PTRS[index % CHAR_DATA_PTRS.length];
-  sys.mem[0x34] = ptr[0];
-  sys.mem[0x35] = ptr[1];
+  const ptrIdx = (index * 2) % DATA_$CD89_$CDC8.length;
+  sys.mem[0x34] = DATA_$CD89_$CDC8[ptrIdx];
+  sys.mem[0x35] = DATA_$CD89_$CDC8[ptrIdx + 1];
 }
 
 // ═════════════════════════════════════════════════
@@ -2778,11 +2775,7 @@ export function charAnimUpdate_$D030(
 //   D177: LDX #$50; TXS    ; 重置栈
 //   D17A: JMP $DAAA        ; → 进入比赛主循环
 
-/** $D183-$D192: 比赛消耗查表（8 entries × 2 bytes） */
-const MATCH_COST_TABLE: readonly number[] = [
-  0xB4, 0x00, 0xB4, 0x00, 0x5A, 0x00, 0x5A, 0x00,
-  0xD2, 0x00, 0xD2, 0x00, 0x5A, 0x00, 0x5A, 0x00,
-];
+/** $D183-$D192: 比赛消耗查表 → 从 bank-30-data 导入 DATA_$D183_$D192 (16 bytes) */
 
 /**
  * $D0F6: 检查角色位置（在 $64 之内？）并设标志。
@@ -2861,8 +2854,8 @@ export function gameModeSwitch_$D11E(
   }
   const baseCost = (sys.mem[0x0627] & 0xFF) << 1;
   const totalCost = (baseCost + costMultiplier) & 0xFF;
-  sys.mem[0x05F7] = MATCH_COST_TABLE[totalCost % MATCH_COST_TABLE.length];
-  sys.mem[0x05F8] = MATCH_COST_TABLE[(totalCost + 1) % MATCH_COST_TABLE.length];
+  sys.mem[0x05F7] = DATA_$D183_$D192[totalCost % DATA_$D183_$D192.length];
+  sys.mem[0x05F8] = DATA_$D183_$D192[(totalCost + 1) % DATA_$D183_$D192.length];
   sys.mem[0x05F9] = 0;
 
   // 准备进入比赛主循环
@@ -3586,13 +3579,7 @@ const PLAYER_STATE_JMP_TABLE_LO: readonly number[] = [
   0x06, 0x1E, 0x1F, 0x20, 0x00, 0x01, 0x03, 0x02,
 ];
 
-/** $D6F3-$D70B: 选项数据配置表 */
-const PLAYER_OPTION_CONFIG: readonly number[] = [
-  0x04, 0x00, 0x01, 0xFF, 0x02, 0x00, 0x01, 0xFF,
-  0xFF, 0x09, 0x07, 0xFF, 0x08, 0x03, 0x04, 0x05,
-  0x03, 0x03, 0x03, 0x02, 0x02, 0x02, 0x02, 0x02,
-  0x2C,
-];
+/** $D6F3-$D70B: 选项数据配置表 → 从 bank-30-data 导入 DATA_$D6F3_$D70B (25 bytes) */
 
 /**
  * $D565: 玩家状态主入口 — 根据 $0621 分发到对应状态处理。
@@ -3678,7 +3665,7 @@ export function playerStateHandler_$D565(
     else dirIdx = 3;
 
     const configIdx = state * 4 + dirIdx;
-    const option = PLAYER_OPTION_CONFIG[configIdx % PLAYER_OPTION_CONFIG.length];
+    const option = DATA_$D6F3_$D70B[configIdx % DATA_$D6F3_$D70B.length];
     if (option !== 0xFF) {
       sys.mem[0x043B] = option;
     }

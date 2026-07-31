@@ -28,10 +28,7 @@
 
 import type { SystemState } from '../system-state';
 import { writeMem, readMem } from '../system-state';
-import { PRG_ROM_BANKS } from '../data/rom-data';
-import { track, exit } from './debug-log';
-
-// ── ROM data registration ──// ═════════════════════════════════════════════════
+import { track, exit } from '../debug-log';// ═════════════════════════════════════════════════
 // Key memory locations
 // ═════════════════════════════════════════════════
 
@@ -348,4 +345,9 @@ export const bank26_dispatch: Record<number, (sys: SystemState) => void> = {
   0x1E: bank26_sceneTransition,
 };
 
-console.log('[bank26] ✅ Phase 2b — 核心比赛引擎 (11 entry points)');
+// ═════════════════════════════════════════════════
+// DATA: Bank-26 全部 readMem 都是 RAM 地址 ($0200-$0629)
+// 无需 ROM data 访问。kernel 函数仅操作 CPU 内存。
+// ═════════════════════════════════════════════════
+
+console.log('[bank26] ✅ Phase 2b — 核心比赛引擎 (11 entry points) | pure ram');

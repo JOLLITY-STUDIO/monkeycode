@@ -26,7 +26,7 @@ import {
   writeMem,
   readMem,
 } from '../system-state';
-import { track, exit } from './debug-log';
+import { track, exit } from '../debug-log';
 import { PRG_BANK_02_DATA } from './bank-02-data';
 import {
   bank00_waitFrame,

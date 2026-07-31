@@ -16,3 +16,14 @@ bank-00 全部 31 個 CODE 塊翻譯完成！
 ㉙	$9E32-$9EA1	BCD 轉換	✅
 ㉚㉛	$9EED-$9FE4	定時器 + 跨 bank 調用	✅
 +745 行新代碼，涵蓋精靈渲染循環、精靈動畫 VM（含 16 個操作碼處理器）、PPU nametable/清屏/批量寫入和 palette ROM 加載。bank-00 現在 ~100% 全部翻譯完成
+
+
+
+
+bank-00-code.ts 改动
+改动	说明
+移除 import { PRG_ROM_BANKS } from '../data/rom-data'	死 import，路径不对且不再需要 MMC3 注册
+移除 bank00_register()	旧的 MMC3 slot 注册函数
+添加 import	导入 bank-00-data.ts 全部 18 个数据段（DATA_$83DC_$83FE ~ DATA_$9FE5_$9FFF）
+更新 console.log	添加 `
+bank-00 的 code 目前通过 readMem 动态访问数据，暂未改造成直接数组访问（需要逐处分析 ROM 地址范围），但数据文件已就绪，随时可以按需对接。

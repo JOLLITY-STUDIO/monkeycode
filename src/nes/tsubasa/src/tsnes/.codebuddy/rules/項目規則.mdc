@@ -1,0 +1,14 @@
+---
+description: 
+alwaysApply: true
+enabled: true
+updatedAt: 2026-07-31T05:52:12.287Z
+provider: 
+---
+
+game-engine\native-game 是内置的ts游戲，完全脫離cpu，從asm翻譯。不要用powershell我們是在windows開發環境，使用nodejs脚本測試和驗證。game-engine\native-game目前出現很多嚴重問題，需要重構。沒有真正能復原原始游戲邏輯。將原rom的prg翻譯成mvc結構，bank就是service，code就是業務邏輯，data就是model，只有當前bank可以使用。外部只能通過service接口訪問對應數據。我要的是完整翻譯，不是骨架，沒有翻譯完善的必須持續迭代覆蓋。
+實現目標：
+1.bank不寫入内存，因爲不需要cpu解析和模擬，直接處理游戲邏輯和消費數據。
+2. 所有原始的prg bank已經徹底翻譯成ts寫法。
+3. 游戲入口就是boot直接就可以運行，即插即用。
+4.就是處理prg游戲邏輯部分已經直接翻譯，其他處理邏輯比如mmc3，nt，spr，pt，ppu沿用模擬器方法，翻譯的bank代碼適配寫入相應數據給他們處理。也就是最終版沒有指令沒有匯編語言和編碼和解碼的部分。

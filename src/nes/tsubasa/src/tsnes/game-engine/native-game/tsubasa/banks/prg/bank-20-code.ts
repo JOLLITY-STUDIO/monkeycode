@@ -23,7 +23,7 @@
 import type { SystemState } from '../system-state';
 import { writeMem, readMem } from '../system-state';
 import { PRG_ROM_BANKS } from '../data/rom-data';
-import { track } from './debug-log';
+import { track } from '../debug-log';
 
 // ── ROM data registration ──// ═════════════════════════════════════════════════
 // $8000/$800F: 队伍选择初始化

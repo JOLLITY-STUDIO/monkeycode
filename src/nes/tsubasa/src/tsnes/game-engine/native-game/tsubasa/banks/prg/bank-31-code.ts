@@ -30,9 +30,9 @@
  * 原始 hex 来源: tsubasa-hex2asm/prg_banks/prg_bank_31_boot_vectors.ts
  */
 
-import { track, exit } from './debug-log';
+import { track, exit } from '../debug-log';
 
-import { emitBus } from './event-bus';
+import { emitBus } from '../event-bus';
 
 import {
   // bank30 services — 直接调用
@@ -40,7 +40,6 @@ import {
   nmiInit_$C71A,
   entryToBank00_dispatch,
   getCharData_$CD7C,
-  bankSwitch_apply_$CE2D,
   timerInit_$CB0F,
   ppuScreenInit_$CB35,
   clearOam_$CB8B,
@@ -50,13 +49,23 @@ import {
 
 import { bank00_dispatchScene, bank00_titleTick } from './bank-00-code';
 
-// ── CODE bank dispatch tables (for MMC3-switched bank calls) ──
+// ── CODE bank dispatch tables (直接调用, 不走 MMC3 bank switch) ──
 import { bank11_dispatch } from './bank-11-code';
 import { bank16_dispatch } from './bank-16-code';
+import { bank19_dispatch } from './bank-19-code';
 import { bank20_dispatch } from './bank-20-code';
 import { bank22_dispatch } from './bank-22-code';
 import { bank24_dispatch } from './bank-24-code';
 import { bank26_dispatch } from './bank-26-code';
+
+// ── Bank-31 自身数据表 ──
+import {
+  DATA_DIR_TABLE,
+  DATA_GAP_F00F,
+  DATA_PTR_TABLE,
+  DATA_SPRITE_ATTR,
+  DATA_GAP_F10E,
+} from './bank-31-data';
 
 // ═════════════════════════════════════════════════
 // 标志位辅助
@@ -142,7 +151,7 @@ export function tick_BANK31_mainLoop(sys: SystemState): void {
   // ── 标题画面模式检测 ──
   // $0700 == 0x33 由 bank01_titleInit 设置，表示标题/菜单活跃
   // $0700 != 0x33 表示比赛模式（match）
-  if (readMem(sys, 0x0700) === 0x33) {
+  if (sys.mem[0x0700] === 0x33) {
     bank00_titleTick(sys);
     sys.frameCount++;
     exit('tick_BANK31_mainLoop', { mode: 'title' });
@@ -352,12 +361,9 @@ function _joypadProcess(sys: SystemState): void {
   }
 }
 
-/** $E6CF 方向表查表 */
+/** $E6CF 方向表查表 → DATA_DIR_TABLE */
 function _getDirTable(sys: SystemState, idx: number): number {
-  // DATA_DIR_TABLE at $E6CF-$E6DE (16 bytes)
-  const table = [0x4C, 0x54, 0x5C, 0x54, 0x6C, 0x5C, 0x5C, 0x64,
-                 0x74, 0x6C, 0x64, 0x74, 0x7C, 0x7C, 0x74, 0x8C];
-  return table[idx & 0x0F];
+  return DATA_DIR_TABLE[idx & 0x0F];
 }
 
 // ═════════════════════════════════════════════════
@@ -376,6 +382,7 @@ type Bank00Call = (sys: SystemState) => void;
 const _bankDispatchTables: Record<number, Record<number, (sys: SystemState) => void>> = {
   0x0B: bank11_dispatch,   // bank 11: background/tile
   0x10: bank16_dispatch,   // bank 16: scene logic
+  0x12: bank19_dispatch,   // bank 19: script parser / lookup tables
   0x14: bank20_dispatch,   // bank 20: team/player
   0x16: bank22_dispatch,   // bank 22: sprite/OAM
   0x18: bank24_dispatch,   // bank 24: cutscene
@@ -424,28 +431,22 @@ const _bank00_funcs: Record<number, Bank00Call> = {
   0x3C: (s) => _dispatchBankCall(s, 0x3C),  // $803C: music/audio
 };
 
+// ── 直接 bank 调用（不走 MMC3 bank switch, 只设上下文）──
+
+/**
+ * 简化: 设置 bank 上下文并直接调用目标 bank 的处理函数。
+ * 不再走 MMC3 bank switch → bankSwitch_apply_$CE2D → 恢复 的 CPU 流程。
+ * 只保留 sys.mem[0x24] 作为 bank 上下文标记供 dispatch 查表使用。
+ */
 function _bankSwitchCall8000(
   sys: SystemState,
   bankLo: number,
   fn: Bank00Call,
 ): void {
-  // 保存 current bank map
-  const savedW6 = sys.mem[0x24];
-  const savedW7 = sys.mem[0x25];
-  const mmc3Mode = sys.mem[0x22];
-
-  // 切换到 bank bankLo / (bankLo+1)
+  // 设置 bank 上下文 (dispatch 用 sys.mem[0x24] 查表)
   sys.mem[0x24] = bankLo & 0x3F;
-  sys.mem[0x25] = (bankLo + 1) & 0x3F;
-  bankSwitch_apply_$CE2D(sys);
-
-  // 调用目标 bank 的 dispatch
+  // 直接调用
   fn(sys);
-
-  // 恢复
-  sys.mem[0x24] = savedW6;
-  sys.mem[0x25] = savedW7;
-  bankSwitch_apply_$CE2D(sys);
 }
 
 /** $7FD: 球区域检测 */
@@ -469,10 +470,10 @@ function _ballZoneDetect(sys: SystemState): void {
 
 export function translate_BANK31_RESET(sys: SystemState): void {
   track('translate_BANK31_RESET');
-  // ── $FFF0: LDA #$00; STA $8000 ──
+  // ── $FFF0: LDA #$00; STA $8000 → MMC3 bank select = 0 (跳过, 不走 CPU) ──
   sys.regs.A = 0x00;
   updateNZ(sys, 0x00);
-  writeMem(sys, 0x8000, 0x00);
+  // 不再写 MMC3 寄存器, 直接进入 initScene
 
   // ── JMP $C503 → bank30 initScene_$C64E ──
   // 6502 RESET handler 通过 $C503 跳转表进入 initScene，完成:
@@ -547,9 +548,10 @@ export function translate_BANK31_JUMP_TABLE_DISPATCH(sys: SystemState, index: nu
 // Part B ($EFA2-$F00E): 精灵渲染 bank 切换循环
 
 /**
- * $EF7F: Bank 切换 & 受保护的跨 bank 调用。
+ * $EF7F: Bank 切换 & 受保护的跨 bank 调用 (简化: 不走 MMC3)。
  *
- * 6502: 保存 $24/$25 → 设 bank=$18/$19 → JSR $CE2D → JSR $800C → 恢复 → JMP $CE2D.
+ * 原始: 保存 $24/$25 → 设 bank=$18/$19 → JSR $CE2D → JSR $800C → 恢复 → JMP $CE2D.
+ * 现在: 直接设置上下文, 调用目标函数, 无需 MMC3 寄存器操作。
  */
 export function translate_BANK31_BANK_SWITCH(
   sys: SystemState,
@@ -558,25 +560,15 @@ export function translate_BANK31_BANK_SWITCH(
 ): void {
   sys.regs.Y = targetBank;
 
-  const savedW6 = sys.mem[0x24];
-  const savedW7 = sys.mem[0x25];
-  const _mmc3Mode = sys.mem[0x22]; // 读取但原文不依赖
-
-  // 切换到 bank $18/$19
+  // 设置 bank 上下文 → bank pair $18/$19 (原始 MMC3 映射)
+  // $800C 在 window 6 (bank 0x18) → dispatch 查表 → bank24_dispatch
   sys.mem[0x24] = 0x18;
-  sys.mem[0x25] = 0x19;
-  bankSwitch_apply_$CE2D(sys);
 
-  // 在新 bank 上下文中调用 bank00 $800C
   if (onCall800C) {
     onCall800C(sys, targetBank);
   }
 
-  // 恢复原 bank 映射
-  sys.mem[0x25] = savedW7;
-  sys.mem[0x24] = savedW6;
-  // JMP $CE2D (tail call)
-  bankSwitch_apply_$CE2D(sys);
+  // 不再需要 MMC3 恢复 — 后续 _bankSwitchCall8000 调用时会重新设置上下文
 }
 
 /**
@@ -622,8 +614,8 @@ export function translate_BANK31_SPRITE_BANK_LOOP(sys: SystemState): void {
 }
 
 function _getSpriteStateTable(sys: SystemState, idx: number): number {
-  const table = [0x00, 0x00, 0x01, 0x00]; // $F00F 表格
-  return table[idx & 3];
+  // DATA_GAP_F00F at $F00F-$F012 (4 bytes)
+  return DATA_GAP_F00F[idx & 3];
 }
 
 /**
@@ -640,11 +632,10 @@ function _getSpriteStateTable(sys: SystemState, idx: number): number {
  * $3C = 0 (PPU X pixel offset), $3D = 0x21 (PPU addr hi).
  */
 function _setupSpriteDMA(sys: SystemState, spriteType: number, col: number): void {
-  // 查 $F200 sprite 数据指针表: 每项 2 bytes (lo, hi)
-  // 实际指针表从 $F206 开始 (在 DATA_SPRITE_ATTR 区域之后)
-  // $0543/$055C/$0571/$0586/$059B/$05B0 是 OAM 数据工作区
-  const ptrTable = [0x0547, 0x055C, 0x0571, 0x0586, 0x059B, 0x05B0];
-  const dataPtr = ptrTable[spriteType % 6];
+  // 查 DATA_PTR_TABLE: 每 2 bytes (lo, hi) → 6 entries
+  // 实际 OAM 工作区: $0547/$055C/$0571/$0586/$059B/$05B0
+  const ptrIdx = (spriteType % 6) * 2;
+  const dataPtr = DATA_PTR_TABLE[ptrIdx] | (DATA_PTR_TABLE[ptrIdx + 1] << 8);
   sys.mem[0x003A] = dataPtr & 0xFF;
   sys.mem[0x003B] = (dataPtr >> 8) & 0xFF;
   // PPU 参数: X offset = 0, PPU addr base = $21 (nametable 0, attribute area)
@@ -1099,11 +1090,11 @@ export function translate_BANK31_SPRITE_SETUP(
 }
 
 function _readPtrTable(sys: SystemState, slot: number, parity: number): number {
-  // $EF73 DATA_PTR_TABLE: 6 entries × 2 bytes
-  const table = [0x0547, 0x055C, 0x0571, 0x0586, 0x059B, 0x05B0];
-  const base = table[slot % 6];
-  const loByte = sys.mem[base & 0xFFFF];
-  const hiByte = sys.mem[(base + 1) & 0xFFFF];
+  // DATA_PTR_TABLE: 6 entries × 2 bytes (lo, hi)
+  const ptrIdx = (slot % 6) * 2;
+  const baseAddr = DATA_PTR_TABLE[ptrIdx] | (DATA_PTR_TABLE[ptrIdx + 1] << 8);
+  const loByte = sys.mem[baseAddr & 0xFFFF];
+  const hiByte = sys.mem[(baseAddr + 1) & 0xFFFF];
 
   if (parity) {
     return ((hiByte >> 4) & 0x0F) << 8 | loByte;
@@ -1334,9 +1325,5 @@ export const BANK31_JUMP_TABLE_BASE = 0xF329;
 // ROM 数据注册
 // ═════════════════════════════════════════════════
 
-import _PRG_BANK_31_RAW from '../../tsubasa-hex2asm/prg_banks/prg_bank_31_boot_vectors';
-
-const BANK_31_ROM: Uint8Array =
-  _PRG_BANK_31_RAW instanceof Uint8Array
-    ? _PRG_BANK_31_RAW
-    : new Uint8Array(_PRG_BANK_31_RAW as unknown as number[]);console.log('[bank31] ✅ 已加载 — RESET|MAIN_LOOP|PLAYER|POS|BANK|SPRITE|DMA|JUMP');
+// ROM 数据已在 bank-31-data.ts 中, 不再需要直接 import 原始 hex
+console.log('[bank31] ✅ 已加载 — RESET|MAIN_LOOP|PLAYER|POS|BANK|SPRITE|DMA|JUMP|bank19');
