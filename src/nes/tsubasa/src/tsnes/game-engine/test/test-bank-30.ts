@@ -8,10 +8,10 @@
 
 // ── 代码导入 ──
 import {
-  // 跳转表
-  JTAB_C500,
-  JTAB_C51B,
-  JTAB_C542,
+  // // 跳转表 — 已弃用，TS 直接 import 函数调用
+  // JTAB_C500,
+  // JTAB_C51B,
+  // JTAB_C542,
   // 内存/OAM
   clearOam_$CB8B,
   // 数学
@@ -124,29 +124,29 @@ function muteLogs(): () => void {
 }
 
 // ═══════════════════════════════════════════
-// Test Suite 1: 跳转表完整性
+// Test Suite 1: 跳转表完整性 (已弃用 — TS 直接 import 函数无需 jump table)
 // ═══════════════════════════════════════════
 
-function test_jumpTables(): void {
-  console.log('\n【Test 1】跳转表完整性');
-
-  assert(Object.keys(JTAB_C500).length === 9,
-    `JTAB_C500 should have 9 entries, got ${Object.keys(JTAB_C500).length}`);
-  assert(JTAB_C500[0xC500] === 'initSystem_$C76E', 'C500 → initSystem');
-  assert(JTAB_C500[0xC503] === 'initScene_$C64E', 'C503 → initScene');
-  assert(JTAB_C500[0xC50C] === 'getCharData_$CD7C', 'C50C → getCharData');
-  assert(JTAB_C500[0xC509] === 'memClear_$CB8B', 'C509 → memClear');
-
-  assert(Object.keys(JTAB_C51B).length === 13,
-    `JTAB_C51B should have 13 entries, got ${Object.keys(JTAB_C51B).length}`);
-  assert(JTAB_C51B[0xC51E] === 'multiply16_$CD3C', 'C51E → multiply16');
-  assert(JTAB_C51B[0xC521] === 'divide16_$CD0D', 'C521 → divide16');
-
-  assert(Object.keys(JTAB_C542).length >= 20,
-    `JTAB_C542 should have >= 20 entries, got ${Object.keys(JTAB_C542).length}`);
-
-  done('jumpTables');
-}
+// function test_jumpTables(): void {
+//   console.log('\n【Test 1】跳转表完整性');
+//
+//   assert(Object.keys(JTAB_C500).length === 9,
+//     `JTAB_C500 should have 9 entries, got ${Object.keys(JTAB_C500).length}`);
+//   assert(JTAB_C500[0xC500] === 'initSystem_$C76E', 'C500 → initSystem');
+//   assert(JTAB_C500[0xC503] === 'initScene_$C64E', 'C503 → initScene');
+//   assert(JTAB_C500[0xC50C] === 'getCharData_$CD7C', 'C50C → getCharData');
+//   assert(JTAB_C500[0xC509] === 'memClear_$CB8B', 'C509 → memClear');
+//
+//   assert(Object.keys(JTAB_C51B).length === 13,
+//     `JTAB_C51B should have 13 entries, got ${Object.keys(JTAB_C51B).length}`);
+//   assert(JTAB_C51B[0xC51E] === 'multiply16_$CD3C', 'C51E → multiply16');
+//   assert(JTAB_C51B[0xC521] === 'divide16_$CD0D', 'C521 → divide16');
+//
+//   assert(Object.keys(JTAB_C542).length >= 20,
+//     `JTAB_C542 should have >= 20 entries, got ${Object.keys(JTAB_C542).length}`);
+//
+//   done('jumpTables');
+// }
 
 // ═══════════════════════════════════════════
 // Test Suite 2: 数据表完整性
@@ -804,7 +804,7 @@ function main(): void {
   console.log('  Bank 30 单元测试');
   console.log('═══════════════════════════════════');
 
-  test_jumpTables();
+  // test_jumpTables();  // 已弃用
   test_dataIntegrity();
   test_clearOam();
   test_multiply16();
