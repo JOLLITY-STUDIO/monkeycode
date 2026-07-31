@@ -12,15 +12,15 @@
  *   8. 跨 bank 調用完整性
  */
 
-import { createSystemState, writeMem, readMem, registerAllBanks } from '../banks/system-state';
-import type { SystemState } from '../banks/system-state';
-import { getBank06Data } from '../banks/bank-06';
-import { getBank15Data } from '../banks/bank-15';
-import { getBank12Data, bank12_init, bank12_audioFrame } from '../banks/bank-12';
-import { bankSwitch, bankSwitch_Win6, bankSwitch_Win7, multiply16_$CD3C, divide16_$CD0D, randomGen_$DCDF } from '../banks/bank-30';
-import { bank00_dispatchScene, bank00_execBytecode } from '../banks/bank-00';
-import { bank01_startGame } from '../banks/bank-01';
-import { bank02_nmiHandler, bank02_loadSceneData } from '../banks/bank-02';
+import { createSystemState, writeMem, readMem, registerAllBanks } from '../native-game/tsubasa/banks/system-state';
+import type { SystemState } from '../native-game/tsubasa/banks/system-state';
+import { getBank06Data } from '../native-game/tsubasa/banks/bank-06';
+import { getBank15Data } from '../native-game/tsubasa/banks/bank-15';
+import { getBank12Data, bank12_init, bank12_audioFrame } from '../native-game/tsubasa/banks/bank-12';
+import { bankSwitch, bankSwitch_Win6, bankSwitch_Win7, multiply16_$CD3C, divide16_$CD0D, randomGen_$DCDF } from '../native-game/tsubasa/banks/bank-30';
+import { bank00_dispatchScene, bank00_execBytecode } from '../native-game/tsubasa/banks/bank-00';
+import { bank01_startGame } from '../native-game/tsubasa/banks/bank-01';
+import { bank02_nmiHandler, bank02_loadSceneData } from '../native-game/tsubasa/banks/bank-02';
 import { PRG_ROM_BANKS } from '../data/rom-data';
 
 // ═════════════════════════════════════════

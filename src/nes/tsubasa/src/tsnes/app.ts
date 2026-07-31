@@ -1,11 +1,11 @@
 App({
   onLaunch() {
-    console.log('[tsubasa-hex2asm] App launched');
+    console.log('[tsubasa] App launched');
   },
   onShow() {
-    console.log('[tsubasa-hex2asm] App shown');
+    console.log('[tsubasa] App shown');
   },
   onHide() {
-    console.log('[tsubasa-hex2asm] App hidden');
+    console.log('[tsubasa] App hidden');
   },
 });

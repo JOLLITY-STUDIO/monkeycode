@@ -20,16 +20,16 @@ const ROOT = resolve(__dirname, '..', '..');
 
 // ── 動態導入遊戲引擎 (tsx 環境下可用) ──
 import NES from '../core/nes';
-import { createSystemState } from '../banks/system-state';
-import type { SystemState } from '../banks/system-state';
-import { registerAllBanks } from '../banks/system-state';
+import { createSystemState } from '../native-game/tsubasa/banks/system-state';
+import type { SystemState } from '../native-game/tsubasa/banks/system-state';
+import { registerAllBanks } from '../native-game/tsubasa/banks/system-state';
 import { PRG_ROM_BANKS } from '../data/rom-data';
 import { CHR_ROM_BANKS } from '../data/chr-data';
 import { buildRomBuffer } from '../../tsubasa-hex2asm/rom_header';
 
 // ── 翻譯 bank ──
-import { translate_BANK31_RESET, tick_BANK31_mainLoop } from '../banks/bank-31';
-import { bank02_nmiHandler, bank02_ppuScrollUpdate } from '../banks/bank-02';
+import { translate_BANK31_RESET, tick_BANK31_mainLoop } from '../native-game/tsubasa/banks/bank-31';
+import { bank02_nmiHandler, bank02_ppuScrollUpdate } from '../native-game/tsubasa/banks/bank-02';
 
 // ═══════════════════════════════════════════
 // BMP 檔案格式 (最簡單的 Windows BMP)

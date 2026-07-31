@@ -1,0 +1,108 @@
+/**
+ * Debug Canvas 工具 — 从 h5game.ts 抽离
+ *
+ * 处理 debug canvas 的初始化、blit 等纯 canvas 操作。
+ */
+
+export interface CanvasSlot {
+  canvas: any;
+  ctx: any;
+  imgData: any;
+  frameBuf: Uint32Array | null;
+}
+
+export class DebugCanvasManager {
+  canvas: any = null;
+  ctx: any = null;
+  imgData: any = null;
+  querying = false;
+
+  /** 初始化 debug canvas（通过微信 selector API） */
+  init(selector: string = '#debugCanvas'): void {
+    if (this.ctx) return;
+    if (this.querying) return;
+    this.querying = true;
+    const query = wx.createSelectorQuery();
+    query.select(selector)
+      .fields({ node: true, size: true })
+      .exec((res: any) => {
+        this.querying = false;
+        const c = res && res[0];
+        if (c && c.node) {
+          this.canvas = c.node;
+          this.ctx = c.node.getContext('2d');
+          this.imgData = null;
+        }
+      });
+  }
+
+  /** 绑定已有的 canvas/ctx（Page onReady 时传入已获取的 canvas） */
+  attach(canvas: any, ctx: any): void {
+    this.canvas = canvas;
+    this.ctx = ctx;
+    this.imgData = null;
+    this.querying = false;
+  }
+
+  reset(): void {
+    this.ctx = null;
+    this.canvas = null;
+    this.imgData = null;
+    this.querying = false;
+  }
+
+  /**
+   * 将源缓冲区 (w×h) 1:1 绘制到 canvas（像素尺寸 = w×h）
+   * CSS 通过 image-rendering: pixelated + max-width/max-height 自动放大撑满面板
+   */
+  blit(buf: Uint32Array, w: number, h: number): void {
+    const ctx = this.ctx;
+    const canvas = this.canvas;
+    if (!ctx || !canvas) return;
+
+    canvas.width = w;
+    canvas.height = h;
+
+    const imgData = ctx.createImageData(w, h);
+    const pix = imgData.data;
+    for (let i = 0, j = 0; i < buf.length; i++, j += 4) {
+      const color = buf[i];
+      pix[j]     = color & 0xff;
+      pix[j + 1] = (color >> 8) & 0xff;
+      pix[j + 2] = (color >> 16) & 0xff;
+      pix[j + 3] = 0xff;
+    }
+    ctx.putImageData(imgData, 0, 0);
+  }
+}
+
+/** 从 Page 传入的 game canvas slot 创建 CanvasSlot */
+export function makeGameSlot(cnv: any, w: number, h: number): CanvasSlot {
+  cnv.width = w;
+  cnv.height = h;
+  return {
+    canvas: cnv,
+    ctx: cnv.getContext('2d'),
+    imgData: null,
+    frameBuf: null,
+  };
+}
+
+/** 渲染一个 game canvas slot 的画面 */
+export function renderGameSlot(slot: CanvasSlot | null, screenW: number, screenH: number): void {
+  if (!slot || !slot.frameBuf || !slot.ctx) return;
+  const ctx = slot.ctx;
+  if (!slot.imgData) {
+    slot.imgData = ctx.createImageData(screenW, screenH);
+  }
+  const data = slot.imgData.data;
+  const src = slot.frameBuf;
+  for (let i = 0, j = 0; i < src.length; i++, j += 4) {
+    const p = src[i];
+    data[j]     = p & 0xff;
+    data[j + 1] = (p >> 8) & 0xff;
+    data[j + 2] = (p >> 16) & 0xff;
+    data[j + 3] = 0xff;
+  }
+  ctx.putImageData(slot.imgData, 0, 0);
+}

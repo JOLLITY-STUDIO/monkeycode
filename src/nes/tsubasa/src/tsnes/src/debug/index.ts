@@ -7,6 +7,9 @@
  * - Pattern Table Viewer (图案表查看器)
  * - Sprite Viewer (精灵查看器)
  * - Palette Viewer (调色板查看器)
+ * - Text Generators (文本数据生成器)
+ * - Debug Canvas (canvas 工具)
+ * - Debug Panel (综合调试面板编排器)
  *
  * 用法:
  *   import { debugHooks, disassemble, renderAllNameTables, ... } from './debug';
@@ -36,3 +39,14 @@ export type { SpriteEntry, SpriteViewerData } from './sprite-viewer';
 
 export { getPaletteData, renderPaletteImage } from './palette-viewer';
 export type { PaletteViewerData } from './palette-viewer';
+
+// ── Text Generators ──
+export { generateNTDataText, generateSPOAMDataText, generateSPTDataText } from './text-generator';
+
+// ── Debug Canvas ──
+export { DebugCanvasManager, makeGameSlot, renderGameSlot } from './debug-canvas';
+export type { CanvasSlot } from './debug-canvas';
+
+// ── Debug Panel ──
+export { DebugPanel } from './debug-panel';
+export type { DebugTab, DebugDataUpdater } from './debug-panel';

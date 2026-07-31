@@ -20,20 +20,6 @@
           "query": "",
           "scene": null,
           "launchMode": "default"
-        },
-        {
-          "name": "pages/index/index",
-          "pathName": "pages/index/index",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/game_compare/game_compare",
-          "pathName": "pages/game_compare/game_compare",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
         }
       ]
     }
