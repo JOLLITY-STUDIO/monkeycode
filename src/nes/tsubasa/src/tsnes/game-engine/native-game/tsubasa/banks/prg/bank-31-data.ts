@@ -58,16 +58,19 @@ export   const DATA_SPRITE_META: readonly number[] = [
     0xAA, 0x22, 0x16, 0x00, 0x94, 0xFE, 0x20, 0x07, 0x4D, 0x60, 0x00
 ];
 
-/** CPU $ECD5-$ECD7, 3 bytes (DATA_GAP_01) */
-export const DATA_GAP_01: readonly number[] = [
-      0x00, 0x6C, 0x04
-];
+// CPU $ECD5-$ECD7: 间接寻址指针 00 6C 04 → RAM $046C, 两段代码间的填充字节.
+// native-game 中未被引用, 无需作为数据导出.
+// export const DATA_GAP_01: readonly number[] = [ 0x00, 0x6C, 0x04 ];
 
-/** CPU $EEBC-$EED9, 30 bytes (DATA_TABLE_EEBC) */
-export const DATA_TABLE_EEBC: readonly number[] = [
-      0xA9, 0x40, 0x38, 0xED, 0x3F, 0x05, 0xCD, 0x3E, 0x05, 0xAD, 0x3E, 0x05, 0xB0, 0x02, 0xA9, 0x00,
-    0xAA, 0x18, 0x69, 0x08, 0x8D, 0x3E, 0x05, 0x8A, 0x18, 0x6D, 0x3F, 0x05, 0x0A, 0x0A
-];
+// ═══════════════════════════════════════════════
+// [$EEBC-$EED9] 原 DATA_TABLE_EEBC — 已翻译为代码
+//
+// 这 30 字节并非数据, 而是条件执行的 6502 代码:
+//   LDX $053D; BEQ skip → 当 $053D ≠ 0 时执行精灵X位置限制
+// 已翻译为 bank-31-code.ts 中的 translate_BANK31_SPRITE_X_LIMIT()
+// 原始 hex: A9 40 38 ED 3F 05 CD 3E 05 AD 3E 05 B0 02 A9 00
+//           AA 18 69 08 8D 3E 05 8A 18 6D 3F 05 0A 0A
+// ═══════════════════════════════════════════════
 
 /** CPU $EF73-$EF7E, 12 bytes (DATA_PTR_TABLE) */
 export const DATA_PTR_TABLE: readonly number[] = [
@@ -325,8 +328,11 @@ export const DATA_TEXT_NAMES: readonly number[] = [
     0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF
 ];
 
-/** CPU $FFF8-$FFFF, 8 bytes (DATA_VECTORS) */
-export const DATA_VECTORS: readonly number[] = [
-      0x00, 0x00, 0x00, 0xC5, 0xF0, 0xFF, 0x06, 0xC5
-];
+// CPU $FFF8-$FFFF: NES 中断向量表
+//   $FFF8-$FFF9: 0x00 0x00 → 第三方 mapper 预留
+//   $FFFA-$FFFB: 0x00 0xC5 → NMI   = $C500 (bank30)
+//   $FFFC-$FFFD: 0xF0 0xFF → RESET = $FFF0 (bank31: translate_BANK31_RESET)
+//   $FFFE-$FFFF: 0x06 0xC5 → IRQ   = $C506 (bank30)
+// native-game 中向量已被对应 code 函数取代, 未被引用, 无需作为数据导出.
+// export const DATA_VECTORS: readonly number[] = [ 0x00, 0x00, 0x00, 0xC5, 0xF0, 0xFF, 0x06, 0xC5 ];
  

@@ -1291,6 +1291,59 @@ export function translate_BANK31_SPRITE_DMA_INIT(sys: SystemState): void {
   // RTS — 注意: 这不是一个 RTS，原文是内联在更大的流程中
 }
 
+/**
+ * $EEBA-$EED9: 条件精灵X位置限制器 (原 DATA_TABLE_EEBC → 已翻译为代码)
+ *
+ * 6502 原码:
+ *   LDX $053D         ; $EEBA: 读 sprite 状态
+ *   BEQ $EEDA         ; $EEBC: 为0则跳过本段, 直接进入 SPRITE_SETUP
+ *   LDA #$40          ; $EEBC: 当 $053D ≠ 0 时执行
+ *   SEC               ; $EEBE
+ *   SBC $053F         ; $EEBF
+ *   CMP $053E         ; $EEC2
+ *   LDA $053E         ; $EEC5
+ *   BCS $EECC         ; $EEC8: 若 0x40-$053F >= $053E, 保留 $053E
+ *   LDA #$00          ; $EECA: 否则清零
+ *   TAX               ; $EECC: X = kept_value
+ *   CLC; ADC #$08     ; $EECD-$EECF: $053E = kept + 8
+ *   STA $053E         ; $EED0
+ *   TXA               ; $EED3
+ *   CLC; ADC $053F    ; $EED4-$EED6
+ *   ASL A; ASL A      ; $EED8-$EED9: 结果 × 4
+ *
+ * 功能: 当 sprite 状态标记 ($053D) 非零时, 限制精灵X坐标偏移,
+ *       防止 X+偏移超过有效范围, 返回缩放后的偏移值供 SPRITE_SETUP 使用.
+ *
+ * @param sys 系统状态
+ * @returns { resultA: A 寄存器值((kept + $053F) * 4), executed: 是否执行了限制逻辑 }
+ */
+export function translate_BANK31_SPRITE_X_LIMIT(sys: SystemState): { resultA: number; executed: boolean } {
+  // $EEBA: LDX $053D; BEQ $EEDA → 条件检查
+  const $053D = sys.mem[0x053D];
+  if ($053D === 0) {
+    return { resultA: 0, executed: false };
+  }
+
+  // $EEBC-$EEBF: LDA #$40; SEC; SBC $053F
+  const $053F = sys.mem[0x053F];
+  const diff = (0x40 - $053F) & 0xFF;
+
+  // $EEC2-$EEC8: CMP $053E; LDA $053E; BCS $EECC
+  const $053E = sys.mem[0x053E];
+  const kept = (diff >= ($053E & 0xFF)) ? ($053E & 0xFF) : 0;
+  // BCS branches if C=1 → A >= operand → diff >= $053E
+
+  // $EECC: TAX — kept 值保存到 X
+  // $EECD-$EED2: CLC; ADC #$08; STA $053E
+  const new053E = (kept + 8) & 0xFF;
+  sys.mem[0x053E] = new053E;
+
+  // $EED3-$EED9: TXA; CLC; ADC $053F; ASL A; ASL A
+  const resultA = ((kept + $053F) * 4) & 0xFF;
+
+  return { resultA, executed: true };
+}
+
 /** $ED5E: sprite bank 切换后半 */
 export function translate_BANK31_SPRITE_BANK_PHASE2(sys: SystemState): void {
   // DEX; STX $0519 → 递减场景 index
