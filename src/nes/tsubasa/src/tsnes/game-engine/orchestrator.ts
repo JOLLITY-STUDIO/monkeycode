@@ -118,6 +118,7 @@ export class GameOrchestrator {
       this.audio.start();
       this._frameLoop();
     } catch (e: any) {
+      console.error('[start] CRASH:', e?.message ?? e, e?.stack ?? '');
       this.callbacks.setData({ status: 'error: ' + (e.message || '').substring(0, 30) });
     }
   }
@@ -126,7 +127,11 @@ export class GameOrchestrator {
   // 帧循环
   // ════════════════════════════════════════════════════════
 
+  private _loopCnt = 0;
   private _frameLoop(): void {
+    this._loopCnt++;
+    if (this._loopCnt <= 3) console.warn(`[_frameLoop] #${this._loopCnt} _nes=${!!this._nes} _sys=${!!this._sys} _started=${this._started}`);
+
     if ((!this._nes && !this._sys) || !this._started) return;
 
     const data = this.callbacks.getData();

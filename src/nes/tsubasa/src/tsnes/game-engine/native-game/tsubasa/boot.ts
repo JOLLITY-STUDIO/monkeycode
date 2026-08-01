@@ -38,8 +38,42 @@
 import NES from '../../core/nes';
 import type { NESOptions, ControllerId } from '../../core/nes';
 import type { ButtonKey } from '../../core/controller';
+import Tile from '../../core/tile';
 import { createSystemState, SystemState } from './banks/system-state';
 import { translate_BANK31_RESET } from './banks/prg/bank-31-code';
+import { NES_CHR_ROM } from '../../../rom-data/index';
+
+/**
+ * 从 raw CHR-ROM 二进制数据填充 PPU 的 ptTile 缓存。
+ * CHR-ROM 格式: 每 tile 16 bytes (8 low plane + 8 high plane)，共 512 tiles/8KB。
+ */
+function loadChrTiles(ptTile: Tile[], chrRom: readonly number[], bankStart: number): void {
+  for (let ti = 0; ti < 512; ti++) {
+    const off = bankStart + ti * 16;
+    const scanline = new Uint8Array(16);
+    for (let b = 0; b < 16; b++) scanline[b] = chrRom[off + b] ?? 0;
+    ptTile[ti].setBuffer(scanline);
+  }
+}
+
+/**
+ * 为 Bank 翻译引擎创建一个最小 mmap stub。
+ * Bank 引擎不走 ROM 加载路径，PPU 需要 mmap 来拿 tile 数据和 mapper 回调。
+ */
+function createBankMmap(nes: any): any {
+  return {
+    nes,
+    clockIrqCounter: () => {},
+    latchAccess: (_addr: number) => {},
+    canWriteChr: (_addr: number) => false,
+    onBgRender: () => {},
+    onSpriteRender: () => {},
+    getSpritePatternTile: (index: number) => nes.ppu.ptTile[index],
+    getBgTileData: () => null,
+    toJSON: () => ({}),
+    fromJSON: (_s: any) => {},
+  };
+}
 
 /**
  * 创建 NES 实例（纯翻译路径，不走 CPU 模拟器）。
@@ -53,6 +87,23 @@ import { translate_BANK31_RESET } from './banks/prg/bank-31-code';
  */
 export function createTsubasaNES(opts?: NESOptions): NES {
   const nes = new NES(opts ?? {});
+
+  // ── 注入最小 mmap stub（Bank 引擎不走 loadROM，需手动注入）──
+  nes.mmap = createBankMmap(nes);
+
+  // ── 从 raw CHR-ROM 加载初始 8KB tile 数据到 ptTile ──
+  loadChrTiles(nes.ppu.ptTile, NES_CHR_ROM as readonly number[], 0);
+
+  // ── 注入 fake ROM 对象 + 初始化 PPU 镜像模式 ──
+  // Bank 引擎不走 loadROM，PPU.setMirroring 需要 this.nes.rom 提供 mirroring 常量
+  (nes as any).rom = {
+    VERTICAL_MIRRORING: 0,
+    HORIZONTAL_MIRRORING: 1,
+    FOURSCREEN_MIRRORING: 2,
+    SINGLESCREEN_MIRRORING: 3,
+    SINGLESCREEN_MIRRORING2: 4,
+  };
+  nes.ppu.setMirroring(1); // HORIZONTAL_MIRRORING
 
   // ── 翻译路径: 初始化 SystemState ──────────────
   const sys = createSystemState(nes.ppu, nes.papu);

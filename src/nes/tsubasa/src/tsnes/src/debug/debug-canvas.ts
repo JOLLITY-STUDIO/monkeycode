@@ -67,9 +67,9 @@ export class DebugCanvasManager {
     const pix = imgData.data;
     for (let i = 0, j = 0; i < buf.length; i++, j += 4) {
       const color = buf[i];
-      pix[j]     = color & 0xff;
+      pix[j]     = (color >> 16) & 0xff;
       pix[j + 1] = (color >> 8) & 0xff;
-      pix[j + 2] = (color >> 16) & 0xff;
+      pix[j + 2] = color & 0xff;
       pix[j + 3] = 0xff;
     }
     ctx.putImageData(imgData, 0, 0);
@@ -99,9 +99,9 @@ export function renderGameSlot(slot: CanvasSlot | null, screenW: number, screenH
   const src = slot.frameBuf;
   for (let i = 0, j = 0; i < src.length; i++, j += 4) {
     const p = src[i];
-    data[j]     = p & 0xff;
+    data[j]     = (p >> 16) & 0xff;
     data[j + 1] = (p >> 8) & 0xff;
-    data[j + 2] = (p >> 16) & 0xff;
+    data[j + 2] = p & 0xff;
     data[j + 3] = 0xff;
   }
   ctx.putImageData(slot.imgData, 0, 0);

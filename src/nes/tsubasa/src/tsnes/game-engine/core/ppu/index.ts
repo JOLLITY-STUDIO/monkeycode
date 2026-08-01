@@ -1010,7 +1010,7 @@ class PPU {
 
     // Invoke mapper latch:
     this.cntsToAddress();
-    if (this.vramAddress < 0x2000) {
+    if (this.vramAddress < 0x2000 && this.nes.mmap) {
       this.nes.mmap.latchAccess(this.vramAddress);
     }
   }
