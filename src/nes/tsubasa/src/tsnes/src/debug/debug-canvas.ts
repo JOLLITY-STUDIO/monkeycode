@@ -74,6 +74,52 @@ export class DebugCanvasManager {
     }
     ctx.putImageData(imgData, 0, 0);
   }
+
+  /**
+   * 带 alpha 通道的 blit（专供导出透明 PNG）
+   * 背景填充色通常用 0x00000000（全透明），精灵像素用 0xFFrrggbb（不透明）
+   */
+  blitAlpha(buf: Uint32Array, w: number, h: number): void {
+    const ctx = this.ctx;
+    const canvas = this.canvas;
+    if (!ctx || !canvas) return;
+
+    canvas.width = w;
+    canvas.height = h;
+
+    const imgData = ctx.createImageData(w, h);
+    const pix = imgData.data;
+    for (let i = 0, j = 0; i < buf.length; i++, j += 4) {
+      const color = buf[i];
+      pix[j]     = (color >> 16) & 0xff;
+      pix[j + 1] = (color >> 8) & 0xff;
+      pix[j + 2] = color & 0xff;
+      pix[j + 3] = (color >>> 24) & 0xff;
+    }
+    ctx.putImageData(imgData, 0, 0);
+  }
+
+  /**
+   * 在 canvas 上叠加文字 HUD（frame count 等）
+   * 必须在 blit 之后调用
+   */
+  drawTextOverlay(text: string, x: number, y: number, fontSize: number = 14, color: string = '#fff'): void {
+    const ctx = this.ctx;
+    if (!ctx) return;
+
+    // 半透明背景
+    ctx.fillStyle = 'rgba(0,0,0,0.65)';
+    const mid = ctx.measureText ? 0 : 0; // safe
+    // 先测量文字宽度
+    ctx.font = `${fontSize}px monospace`;
+    const textW = ctx.measureText(text).width + 8;
+    const textH = fontSize + 6;
+    ctx.fillRect(x - 4, y - fontSize - 1, textW, textH);
+
+    // 文字
+    ctx.fillStyle = color;
+    ctx.fillText(text, x, y);
+  }
 }
 
 /** 从 Page 传入的 game canvas slot 创建 CanvasSlot */

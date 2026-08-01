@@ -20,6 +20,8 @@ class Mapper4 extends Mapper0 {
   irqLatchValue: number;
   irqEnable: number;
   prgAddressChanged: boolean;
+  /** 8 个 PPU 1KB slot → CHR 1KB bank index */
+  chrBanks: Uint8Array;
 
   constructor(nes: any) {
     super(nes);
@@ -31,6 +33,7 @@ class Mapper4 extends Mapper0 {
     this.irqLatchValue = 0;
     this.irqEnable = 0;
     this.prgAddressChanged = false;
+    this.chrBanks = new Uint8Array(8);
   }
 
   write(address: number, value: number): void {
@@ -89,9 +92,11 @@ class Mapper4 extends Mapper0 {
     switch (cmd) {
       case Mapper4.CMD_SEL_2_1K_VROM_0000:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[0] = arg; this.chrBanks[1] = arg + 1;
           this.load1kVromBank(arg, 0x0000);
           this.load1kVromBank(arg + 1, 0x0400);
         } else {
+          this.chrBanks[4] = arg; this.chrBanks[5] = arg + 1;
           this.load1kVromBank(arg, 0x1000);
           this.load1kVromBank(arg + 1, 0x1400);
         }
@@ -99,9 +104,11 @@ class Mapper4 extends Mapper0 {
 
       case Mapper4.CMD_SEL_2_1K_VROM_0800:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[2] = arg; this.chrBanks[3] = arg + 1;
           this.load1kVromBank(arg, 0x0800);
           this.load1kVromBank(arg + 1, 0x0c00);
         } else {
+          this.chrBanks[6] = arg; this.chrBanks[7] = arg + 1;
           this.load1kVromBank(arg, 0x1800);
           this.load1kVromBank(arg + 1, 0x1c00);
         }
@@ -109,32 +116,40 @@ class Mapper4 extends Mapper0 {
 
       case Mapper4.CMD_SEL_1K_VROM_1000:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[4] = arg;
           this.load1kVromBank(arg, 0x1000);
         } else {
+          this.chrBanks[0] = arg;
           this.load1kVromBank(arg, 0x0000);
         }
         break;
 
       case Mapper4.CMD_SEL_1K_VROM_1400:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[5] = arg;
           this.load1kVromBank(arg, 0x1400);
         } else {
+          this.chrBanks[1] = arg;
           this.load1kVromBank(arg, 0x0400);
         }
         break;
 
       case Mapper4.CMD_SEL_1K_VROM_1800:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[6] = arg;
           this.load1kVromBank(arg, 0x1800);
         } else {
+          this.chrBanks[2] = arg;
           this.load1kVromBank(arg, 0x0800);
         }
         break;
 
       case Mapper4.CMD_SEL_1K_VROM_1C00:
         if (this.chrAddressSelect === 0) {
+          this.chrBanks[7] = arg;
           this.load1kVromBank(arg, 0x1c00);
         } else {
+          this.chrBanks[3] = arg;
           this.load1kVromBank(arg, 0x0c00);
         }
         break;
@@ -204,6 +219,7 @@ class Mapper4 extends Mapper0 {
     s.irqLatchValue = this.irqLatchValue;
     s.irqEnable = this.irqEnable;
     s.prgAddressChanged = this.prgAddressChanged;
+    s.chrBanks = Array.from(this.chrBanks);
     return s;
   }
 
@@ -217,6 +233,11 @@ class Mapper4 extends Mapper0 {
     this.irqLatchValue = s.irqLatchValue;
     this.irqEnable = s.irqEnable;
     this.prgAddressChanged = s.prgAddressChanged;
+    if (s.chrBanks) this.chrBanks = new Uint8Array(s.chrBanks);
+  }
+
+  getChrBankMap(): Uint8Array | null {
+    return this.chrBanks;
   }
 }
 

@@ -23,6 +23,7 @@ import {
 } from './text-generator';
 
 import { DebugCanvasManager } from './debug-canvas';
+import { encodeGif, type GifFrame } from './gif-encoder';
 
 // ── 常量 ──
 const SCREEN_W = 256;
@@ -53,6 +54,14 @@ export class DebugPanel {
 
   private sprExportData: any = {};
   private exporting = false;
+
+  // ── GIF 录制 ──
+  recording = false;
+  private recordedFrames: Uint32Array[] = [];
+  private recordTargetFrames = 0;       // 目标帧数 (= 秒数 × 60)，0 = 手动停止
+  private recordFrameCount = 0;
+  readonly RECORD_MAX_FRAMES = 600;     // 最多 10 秒
+  readonly RECORD_GIF_DELAY = 4;        // GIF 帧延迟 (~25fps)
 
   // 反汇编帧计数
   private fpsFrameCount = 0;
@@ -130,7 +139,8 @@ export class DebugPanel {
       }
     }
     this.debugCanvas.blit(buf, CW, CH);
-    this.page.setData({ ntDataText: generateNTDataText(nes) });
+    this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, CW, CH);
+    this.page.setData({ ntDataText: generateNTDataText(nes, this.fpsFrameCount) });
   }
 
   private _renderPT(nes: any): void {
@@ -163,7 +173,8 @@ export class DebugPanel {
     if (table1 && table1.data) copyTable(table1.data, CELL + GAP);
 
     this.debugCanvas.blit(buf, CW, CH);
-    this.page.setData({ ptDataText: generatePTDataText(nes) });
+    this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, CW, CH);
+    this.page.setData({ ptDataText: generatePTDataText(nes, this.fpsFrameCount) });
   }
 
   private _renderSprite(nes: any): void {
@@ -240,15 +251,22 @@ export class DebugPanel {
     }
 
     this.debugCanvas.blit(buf, totalW, totalH);
+    this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, totalW, totalH);
     this.sprExportData = { sprites };
 
     const text = generateSPOAMDataText(nes) + '\n\n' + generateSPTDataText(nes);
     this.page.setData({ sptDataText: text });
+
+    // ── 录制捕获 ──
+    if (this.recording && sprites.length > 0) {
+      this._capturePreviewFrame(sprites);
+    }
   }
 
   private _renderPalette(nes: any): void {
     const img = renderPaletteImage(nes);
     this.debugCanvas.blit(img.data, img.width, img.height);
+    this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, img.width, img.height);
   }
 
   private _renderDisasm(sys: any | null): void {
@@ -271,6 +289,13 @@ export class DebugPanel {
     }
   }
 
+  // ── 帧计数 HUD 叠层 ────────
+  private _drawFrameHUD(text: string, cw: number, ch: number): void {
+    // 预留给文字的最小空间，避免在小画布上遮挡数据
+    if (ch < 32) return;
+    this.debugCanvas.drawTextOverlay(text, 4, 14, 12, '#ff0');
+  }
+
   // ════════════════════════════════════════════════════════
   // 复制
   // ════════════════════════════════════════════════════════
@@ -282,13 +307,159 @@ export class DebugPanel {
   }
 
   // ════════════════════════════════════════════════════════
+  // 保存文本到文件 (PC devtools 可访问 USER_DATA_PATH)
+  // ════════════════════════════════════════════════════════
+
+  saveDataToFile(field: string, filename: string, label: string): void {
+    const text = this.page.getData()[field];
+    if (!text) { wx.showToast({ title: '无数据', icon: 'none' }); return; }
+    try {
+      const fs = wx.getFileSystemManager();
+      const filePath = `${wx.env.USER_DATA_PATH}/${filename}`;
+      fs.writeFileSync(filePath, text, 'utf-8');
+      wx.setClipboardData({
+        data: filePath,
+        success: () => wx.showToast({ title: `${label} 已保存！\n路径已复制到剪贴板`, icon: 'success', duration: 3000 }),
+        fail: () => wx.showToast({ title: `${label} 已保存！`, icon: 'success' }),
+      });
+    } catch (e: any) {
+      wx.showToast({ title: '保存失败: ' + (e.message || String(e)), icon: 'none' });
+    }
+  }
+
+  // ════════════════════════════════════════════════════════
+  // SPR Preview Buffer (共享：导出 / 录制)
+  // ════════════════════════════════════════════════════════
+
+  private _buildPreviewBuf(sprites: any[]): Uint32Array {
+    const buf = new Uint32Array(SCREEN_W * SCREEN_H);
+    buf.fill(0x00000000);
+
+    for (let i = sprites.length - 1; i >= 0; i--) {
+      const spr = sprites[i];
+      const sx = spr.x;
+      const sy = spr.y + 1;
+      const iw = spr.imgWidth;
+      const ih = spr.imgHeight;
+      for (let py = 0; py < ih; py++) {
+        const screenY = sy + py;
+        if (screenY < 0 || screenY >= SCREEN_H) continue;
+        for (let px = 0; px < iw; px++) {
+          const screenX = sx + px;
+          if (screenX < 0 || screenX >= SCREEN_W) continue;
+          const c = spr.image[py * iw + px];
+          if (c !== 0x00000000) {
+            buf[screenY * SCREEN_W + screenX] = c;
+          }
+        }
+      }
+    }
+    return buf;
+  }
+
+  // ════════════════════════════════════════════════════════
+  // GIF 录制
+  // ════════════════════════════════════════════════════════
+
+  /** 开始录制。durationSec = 0 手动停止，>0 自动停止 */
+  startRecording(durationSec: number = 0): void {
+    if (this.recording) return;
+    this.recording = true;
+    this.recordedFrames = [];
+    this.recordFrameCount = 0;
+    this.recordTargetFrames = durationSec > 0
+      ? Math.min(Math.ceil(durationSec * 60), this.RECORD_MAX_FRAMES)
+      : this.RECORD_MAX_FRAMES;
+    this.page.setData({ recording: true, sprRecordCount: 0 });
+    console.log(`[record] 开始录制, 目标: ${this.recordTargetFrames} 帧`);
+  }
+
+  /** 停止录制并生成 GIF */
+  async stopRecording(pageSetData: (data: any) => void): Promise<void> {
+    if (!this.recording) return;
+    this.recording = false;
+    this.page.setData({ recording: false });
+
+    const frames = this.recordedFrames;
+    this.recordedFrames = [];
+    this.recordFrameCount = 0;
+
+    if (frames.length === 0) {
+      wx.showToast({ title: '没有录制到任何帧', icon: 'none' });
+      return;
+    }
+
+    pageSetData({ status: `正在生成 GIF (${frames.length} 帧)...` });
+
+    try {
+      const gifFrames: GifFrame[] = frames.map(pixels => ({
+        pixels,
+        width: SCREEN_W,
+        height: SCREEN_H,
+        delay: this.RECORD_GIF_DELAY,
+      }));
+
+      const gifData = encodeGif(gifFrames, { loop: true });
+      console.log(`[record] GIF 编码完成: ${gifData.length} bytes, ${frames.length} 帧, 头部: [${Array.from(gifData.subarray(0, 6)).map(b => String.fromCharCode(b)).join('')}]`);
+
+      // 保存到文件（手动 base64，避免 wx.arrayBufferToBase64 对大 buffer 截断）
+      const userDir = wx.env.USER_DATA_PATH;
+      const gifPath = `${userDir}/sprite-record.gif`;
+      const fs = wx.getFileSystemManager();
+      fs.writeFileSync(gifPath, _uint8ArrayToBase64(gifData), 'base64');
+
+      pageSetData({ status: `GIF 已保存 (${frames.length} 帧)` });
+
+      // 尝试保存到相册（大部分系统相册支持 GIF）
+      try {
+        await this._saveToAlbum(gifData, 'gif');
+      } catch (_) { /* 降级 */ }
+
+      wx.setClipboardData({
+        data: gifPath,
+        success: () => wx.showToast({
+          title: `GIF (${frames.length}帧) 已保存！路径已复制`,
+          icon: 'success',
+          duration: 3000,
+        }),
+      });
+
+      console.log(`[record] GIF 生成完成: ${frames.length} 帧, ${gifData.length} bytes`);
+    } catch (e: any) {
+      console.error('[record] error:', e);
+      wx.showToast({ title: 'GIF 生成失败: ' + (e.message || String(e)), icon: 'none' });
+    }
+  }
+
+  /** 录制中每帧调用，由 _renderSprite 触发 */
+  private _capturePreviewFrame(sprites: any[]): void {
+    const buf = this._buildPreviewBuf(sprites);
+    this.recordedFrames.push(buf);
+    this.recordFrameCount++;
+
+    // 限频更新 UI (每 5 帧)
+    if (this.recordFrameCount % 5 === 0) {
+      this.page.setData({ sprRecordCount: this.recordFrameCount });
+    }
+
+    // 自动停止检查
+    if (this.recordTargetFrames > 0 && this.recordFrameCount >= this.recordTargetFrames) {
+      this.recording = false;
+      this.page.setData({ recording: false, sprRecordCount: this.recordFrameCount });
+      console.log('[record] 达到目标帧数，自动停止');
+      // 延迟一帧执行避免递归
+      setTimeout(() => this.stopRecording(this.page.setData.bind(this.page)), 100);
+    }
+  }
+
+  // ════════════════════════════════════════════════════════
   // SPR Export
   // ════════════════════════════════════════════════════════
 
   async exportSprite(pageSetData: (data: any) => void): Promise<void> {
     if (this.exporting) return;
     this.exporting = true;
-    pageSetData({ status: '导出 preview...' });
+    pageSetData({ status: '正在保存 SPR preview...' });
 
     try {
       const { sprites } = this.sprExportData;
@@ -306,56 +477,44 @@ export class DebugPanel {
         return;
       }
 
-      const previewW = SCREEN_W;
-      const previewH = SCREEN_H;
-      const previewBuf = new Uint32Array(previewW * previewH);
-      previewBuf.fill(0x00000000);
+      const previewBuf = this._buildPreviewBuf(sprites);
 
-      for (let i = sprites.length - 1; i >= 0; i--) {
-        const spr = sprites[i];
-        const sx = spr.x;
-        const sy = spr.y + 1;
-        const iw = spr.imgWidth;
-        const ih = spr.imgHeight;
-        for (let py = 0; py < ih; py++) {
-          const screenY = sy + py;
-          if (screenY < 0 || screenY >= previewH) continue;
-          for (let px = 0; px < iw; px++) {
-            const screenX = sx + px;
-            if (screenX < 0 || screenX >= previewW) continue;
-            const c = spr.image[py * iw + px];
-            if (c !== 0x00000000) {
-              previewBuf[screenY * previewW + screenX] = c;
-            }
-          }
-        }
+      // 手动写 canvas ImageData：alpha 直接取自 spr.image（不透明 = 0xFF, 透明 = 0x00）
+      this.exportCanvas.canvas.width = SCREEN_W;
+      this.exportCanvas.canvas.height = SCREEN_H;
+      const imgData = this.exportCanvas.ctx.createImageData(SCREEN_W, SCREEN_H);
+      const pix = imgData.data;
+      for (let i = 0, j = 0; i < previewBuf.length; i++, j += 4) {
+        const color = previewBuf[i];
+        pix[j]     = (color >> 16) & 0xff;
+        pix[j + 1] = (color >> 8) & 0xff;
+        pix[j + 2] = color & 0xff;
+        pix[j + 3] = (color >>> 24) & 0xff;
       }
-
-      this.exportCanvas.blit(previewBuf, previewW, previewH);
+      this.exportCanvas.ctx.putImageData(imgData, 0, 0);
       const previewPng = await this._canvasToPng();
 
+      // 保存到项目目录
       const userDir = wx.env.USER_DATA_PATH;
       const pngPath = `${userDir}/sprite-preview.png`;
-      wx.getFileSystemManager().writeFileSync(
-        pngPath,
-        wx.arrayBufferToBase64(previewPng.buffer.slice(previewPng.byteOffset, previewPng.byteOffset + previewPng.byteLength)),
-        'base64',
-      );
+      const fs2 = wx.getFileSystemManager();
+      fs2.writeFileSync(pngPath, _uint8ArrayToBase64(previewPng), 'base64');
 
-      pageSetData({ status: 'SPR preview 导出完成' });
+      pageSetData({ status: '已保存 sprite-preview.png' });
 
-      wx.showModal({
-        title: '导出成功',
-        content: `sprite-preview.png (透明背景)\n\n${pngPath}\n\n复制路径后，到 Windows 文件管理器地址栏粘贴打开。`,
-        confirmText: '复制路径',
-        cancelText: '关闭',
-        success: (r: any) => {
-          if (r.confirm) {
-            wx.setClipboardData({
-              data: pngPath,
-              success: () => wx.showToast({ title: '路径已复制', icon: 'none', duration: 3000 }),
-            });
-          }
+      // 同时尝试保存到相册
+      try {
+        await this._saveToAlbum(previewPng);
+      } catch (_) { /* 相册不可用时静默降级 */ }
+
+      // 自动复制路径到剪贴板，方便在文件管理器粘贴
+      wx.setClipboardData({
+        data: pngPath,
+        success: () => {
+          wx.showToast({ title: '已保存！路径已复制，在文件管理器地址栏粘贴打开', icon: 'success', duration: 3000 });
+        },
+        fail: () => {
+          wx.showToast({ title: '已保存！\n' + pngPath, icon: 'success', duration: 3000 });
         },
       });
     } catch (e: any) {
@@ -383,4 +542,40 @@ export class DebugPanel {
       });
     });
   }
+
+  /** 保存图片到系统相册 (仅真机有效，devtools 不支持) */
+  private _saveToAlbum(data: Uint8Array, ext: string = 'png'): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const fs = wx.getFileSystemManager();
+      const tmpPath = `${wx.env.USER_DATA_PATH}/_album_spr.${ext}`;
+      try {
+        fs.writeFileSync(tmpPath, _uint8ArrayToBase64(data), 'base64');
+        wx.saveImageToPhotosAlbum({
+          filePath: tmpPath,
+          success: () => { console.log('[export] 已保存到相册'); resolve(); },
+          fail: (err: any) => reject(new Error(err.errMsg || 'saveImageToPhotosAlbum failed')),
+        });
+      } catch (e: any) {
+        reject(e);
+      }
+    });
+  }
+}
+
+/** 手动 Uint8Array → Base64（避免 wx.arrayBufferToBase64 对大缓冲区截断） */
+function _uint8ArrayToBase64(data: Uint8Array): string {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+  let result = '';
+  const len = data.length;
+  for (let i = 0; i < len; i += 3) {
+    const b0 = data[i];
+    const b1 = i + 1 < len ? data[i + 1] : 0;
+    const b2 = i + 2 < len ? data[i + 2] : 0;
+    const tri = (b0 << 16) | (b1 << 8) | b2;
+    result += chars[(tri >> 18) & 0x3F];
+    result += chars[(tri >> 12) & 0x3F];
+    result += i + 1 < len ? chars[(tri >> 6) & 0x3F] : '=';
+    result += i + 2 < len ? chars[tri & 0x3F] : '=';
+  }
+  return result;
 }

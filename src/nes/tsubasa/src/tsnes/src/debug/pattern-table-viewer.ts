@@ -132,7 +132,7 @@ export function renderBothPatternTables(
  * - 两个 Pattern Table (16×16 tiles) 的 CHR 内容状态 + CHR bank 映射
  * - 格式参照 generateSPTDataText，额外加上每 1KB slot 对应的 CHR bank index
  */
-export function generatePTDataText(nes: NES): string {
+export function generatePTDataText(nes: NES, frameCount?: number): string {
   const ppu = (nes as any).ppu;
   if (!ppu) return '';
 
@@ -150,7 +150,7 @@ export function generatePTDataText(nes: NES): string {
   const bgAddr = ppu.regS === 0 ? '$0000' : '$1000';
 
   lines.push(`══════════════════════════════════════════════════════════════`);
-  lines.push(`Pattern Tables  (BG PT=${bgAddr}  SP PT=${spAddr})`);
+  lines.push(`Frame: #${frameCount ?? '?'}  |  Pattern Tables  (BG PT=${bgAddr}  SP PT=${spAddr})`);
   if (chrBanks) {
     lines.push(`CHR 1KB bank mapping:`);
     lines.push(`  Table0 ($0000): B0=#${String(chrBanks[0]).padStart(2)}  B1=#${String(chrBanks[1]).padStart(2)}  B2=#${String(chrBanks[2]).padStart(2)}  B3=#${String(chrBanks[3]).padStart(2)}`);

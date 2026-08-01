@@ -54,11 +54,12 @@ function renderSpriteTile(
 ): Uint32Array {
   const buf = new Uint32Array(width * height);
   const pal = ppu.sprPalette;
-  const backdrop = 0x00000000; // 透明
+  const BACKDROP = 0x00000000;        // alpha=0 透明背景
+  const NO_TILE = 0xFF333333;         // alpha=0xFF 无 tile 占位色
   const ptTile = ppu.ptTile[tileIdx];
 
   if (!ptTile || !ptTile.pix) {
-    buf.fill(0xff_333333);
+    buf.fill(NO_TILE);
     return buf;
   }
 
@@ -68,10 +69,10 @@ function renderSpriteTile(
     for (let px = 0; px < width; px++) {
       const srcPx = flipH ? (width - 1 - px) : px;
       const colIdx = pix[srcPy * 8 + srcPx];
-      // 精灵透明像素留空 (不显示)
+      // 精灵透明像素留空 (alpha=0)，实际颜色 OR 0xFF000000 标记不透明
       buf[py * width + px] = colIdx === 0
-        ? backdrop
-        : (pal[colIdx + paletteOffset] ?? backdrop);
+        ? BACKDROP
+        : ((pal[colIdx + paletteOffset] ?? BACKDROP) | 0xFF000000);
     }
   }
 

@@ -15,7 +15,7 @@ import CPUNES from '../src/nes';
 import { NES_PRG_ROM, NES_CHR_ROM } from '../rom-data/index';
 import { createTsubasaNES } from './index';
 import { tick_BANK31_mainLoop } from './native-game/tsubasa/banks/prg/bank-31-code';
-import { bank02_nmiHandler, bank02_ppuScrollUpdate } from './native-game/tsubasa/banks/prg/bank-02-code';
+import { bank02_nmiHandler, bank02_ppuScrollUpdate } from './native-game/tsubasa/banks/prg/bank-02-nmi-code';
 import { AudioManager } from './audio-manager';
 import { InputBridge } from './input-bridge';
 import { CanvasSlot, makeGameSlot, renderGameSlot } from '../src/debug/debug-canvas';
@@ -48,7 +48,8 @@ export class GameOrchestrator {
   // ── 状态 ──
   private _started = false;
   private _animId: any = -1;
-  private _fpsFrameCount = 0;
+  private _totalFrameCount = 0;   // 总帧数，从游戏开始累计，不归零
+  private _fpsFrameCount = 0;     // FPS 临时计数，每秒归零
   private _fpsLastTime = 0;
 
   // PPU 诊断
@@ -141,7 +142,7 @@ export class GameOrchestrator {
     if (paused) {
       const tab = data.debugTab as DebugTab;
       if (tab && tab !== 'disasm' && this.debugPanel) {
-        try { this.debugPanel.renderFrame(this._nes, this._sys, this._fpsFrameCount); } catch (_) {}
+        try { this.debugPanel.renderFrame(this._nes, this._sys, this._totalFrameCount); } catch (_) {}
       }
       this._animId = setTimeout(() => this._frameLoop(), 200);
       return;
@@ -161,7 +162,7 @@ export class GameOrchestrator {
       // Debug viewer
       const tab = data.debugTab as DebugTab;
       if (tab && this.debugPanel) {
-        this.debugPanel.renderFrame(this._nes, this._sys, this._fpsFrameCount);
+        this.debugPanel.renderFrame(this._nes, this._sys, this._totalFrameCount);
       }
     } catch (e: any) {
       this.callbacks.setData({ status: 'crash: ' + (e.message || '').substring(0, 20) });
@@ -172,6 +173,7 @@ export class GameOrchestrator {
     this._animId = setTimeout(() => this._frameLoop(), [16, 8, 4][turboLevel]);
 
     // FPS 统计
+    this._totalFrameCount++;
     this._fpsFrameCount++;
     const now = Date.now();
     if (!this._fpsLastTime) this._fpsLastTime = now;

@@ -33,6 +33,10 @@ Page({
     paused: false,
     turboLevel: 0,
     showFpsBtn: false,
+    // 录制
+    sprRecording: false,
+    sprRecordCount: 0,
+    sprRecordDur: '',
   },
 
   // ── 协调器 ──
@@ -106,10 +110,48 @@ Page({
   onCopyPTData()  { this._debugPanel?.copyData('ptDataText', 'PT 数据'); },
   onCopySPRData() { this._debugPanel?.copyData('sptDataText', 'SPR 数据'); },
 
+  // ── 保存到文件 ──
+
+  onSaveNTData()  { this._debugPanel?.saveDataToFile('ntDataText', 'nt-debug.txt', 'NT 数据'); },
+  onSavePTData()  { this._debugPanel?.saveDataToFile('ptDataText', 'pt-debug.txt', 'PT 数据'); },
+  onSaveSPRData() { this._debugPanel?.saveDataToFile('sptDataText', 'spr-debug.txt', 'SPR 数据'); },
+
   // ── SPR 导出 ──
 
   async onExportSprite() {
     await this._debugPanel?.exportSprite((d: any) => this.setData(d));
+  },
+
+  // ── GIF 录制 ──
+
+  onStartRecord() {
+    if (!this._debugPanel) return;
+    const durStr = this.data.sprRecordDur as string;
+    const dur = parseFloat(durStr) || 0;
+    this._debugPanel.startRecording(dur);
+    this.setData({ sprRecording: true, sprRecordCount: 0 });
+  },
+
+  async onStopRecord() {
+    if (!this._debugPanel) return;
+    await this._debugPanel.stopRecording((d: any) => this.setData(d));
+    this.setData({ sprRecording: false, sprRecordCount: 0 });
+  },
+
+  onRecordDurInput(e: any) {
+    this.setData({ sprRecordDur: e.detail.value });
+  },
+
+  // 由帧循环调用，更新录制计数（限频）
+  _lastRecordCountUpdate: 0,
+  _refreshRecordUI() {
+    if (!this._debugPanel?.recording) return;
+    const count = this._debugPanel.recordFrameCount;
+    // 每 5 帧更新一次 UI
+    if (count - this._lastRecordCountUpdate >= 5) {
+      this._lastRecordCountUpdate = count;
+      this.setData({ sprRecordCount: count });
+    }
   },
 
   // ================================================================

@@ -42,7 +42,7 @@ import {
   DATA_$8A47_$8A96,
   DATA_$8A97_$8B2E,
   DATA_$8B2F_$9FFF,
-} from './bank-02-data';
+} from './bank-02-nmi-data';
 import {
   bank00_waitFrame,
   bank00_sceneTransition,

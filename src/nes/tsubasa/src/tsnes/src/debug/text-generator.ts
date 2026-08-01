@@ -16,7 +16,7 @@
  *        · = CHR tile 全透明
  *        ! = ptTile 不存在（无 CHR 数据）
  */
-export function generateNTDataText(nes: any): string {
+export function generateNTDataText(nes: any, frameCount?: number): string {
   const ppu = nes.ppu;
   const lines: string[] = [];
   const COL_HEADER = 'Row ';
@@ -26,7 +26,7 @@ export function generateNTDataText(nes: any): string {
   const spAddr = ppu.f_spPatternTable ? '$1000' : '$0000';
 
   lines.push(`══════════════════════════════════════════════════════`);
-  lines.push(`PPU $2000: regS=${ppu.regS} BG PT=${bgAddr}  SP PT=${spAddr}`);
+  lines.push(`Frame: #${frameCount ?? '?'}  |  PPU $2000: regS=${ppu.regS} BG PT=${bgAddr}  SP PT=${spAddr}`);
   lines.push(`图例: █=有内容  ░=稀疏  ·=全透明  !=无CHR  格式: [tileIdx][CHR内容]`);
   lines.push(`══════════════════════════════════════════════════════`);
   lines.push('');
@@ -101,6 +101,7 @@ export function generateSPOAMDataText(nes: any): string {
   const is8x16 = ppu.f_spriteSize === 1;
   const lines: string[] = [];
   lines.push(`── OAM 可见精灵 (${is8x16 ? '8×16' : '8×8'}) ──`);
+  const visibleTiles: number[] = [];
   let visible = 0;
   for (let i = 0; i < 64; i++) {
     const y = ppu.sprY[i];
@@ -114,9 +115,21 @@ export function generateSPOAMDataText(nes: any): string {
     const ys = y.toString(16).toUpperCase().padStart(3, '0');
     const ts = tile.toString(16).toUpperCase().padStart(2, '0');
     lines.push(`  #${String(i).padStart(2)} ($${xs},$${ys}) Tile=$${ts} Pal=$${pal.toString(16)} ${flipH}${flipV}`);
+    visibleTiles.push(tile);
     visible++;
   }
-  if (visible === 0) lines.push('  (无可见精灵)');
+  if (visible === 0) {
+    lines.push('  (无可见精灵)');
+  } else {
+    // 添加可直接搜索复制的连续 tile 序列
+    lines.push('');
+    lines.push('── 搜索用 tile 连续序列（复制下面这行去 bank-22-data 搜索）──');
+    lines.push(visibleTiles.map(t => '0x' + t.toString(16).toUpperCase().padStart(2, '0')).join(', '));
+    lines.push('');
+    lines.push('── 去重 tile 列表 ──');
+    const unique = [...new Set(visibleTiles)].sort((a, b) => a - b);
+    lines.push(unique.map(t => '0x' + t.toString(16).toUpperCase().padStart(2, '0')).join(', '));
+  }
   return lines.join('\n');
 }
 

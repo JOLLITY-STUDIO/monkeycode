@@ -75,7 +75,17 @@
           <view class="spr-toolbar">
             <text class="spr-toolbar-label">SPR Viewer</text>
             <view class="data-copy-btn" bindtap="onCopySPRData">[ 复制 ]</view>
-            <view class="spr-export-btn" bindtap="onExportSprite">[ 导出 ]</view>
+            <view class="spr-export-btn" bindtap="onExportSprite">[ 导出图片 ]</view>
+            <block wx:if="{{!sprRecording}}">
+              <view class="spr-record-btn" bindtap="onStartRecord">[ 录制 ]</view>
+            </block>
+            <block wx:else>
+              <view class="spr-stop-btn" bindtap="onStopRecord">[ 停止 {{sprRecordCount}}帧 ]</view>
+            </block>
+          </view>
+          <view class="spr-dur-wrap" wx:if="{{!sprRecording}}">
+            <text class="spr-dur-label">时长(秒):</text>
+            <input class="spr-dur-input" type="number" value="{{sprRecordDur}}" bindinput="onRecordDurInput" placeholder="手动"/>
           </view>
           <view class="spt-canvas-wrap">
             <canvas type="2d" id="debugCanvas" class="debug-canvas"></canvas>

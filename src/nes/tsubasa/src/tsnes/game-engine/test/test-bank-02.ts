@@ -13,7 +13,7 @@ import {
 	bank02_auxEntry8,
 	bank02_sceneSwitchHelper,
 	bank02_loadSceneData,
-} from '../native-game/tsubasa/banks/prg/bank-02-code';
+} from '../native-game/tsubasa/banks/prg/bank-02-nmi-code';
 
 // ── 数据导入 ──
 import {
@@ -31,7 +31,7 @@ import {
 	DATA_$8A47_$8A96,
 	DATA_$8A97_$8B2E,
 	DATA_$8B2F_$9FFF,
-} from '../native-game/tsubasa/banks/prg/bank-02-data';
+} from '../native-game/tsubasa/banks/prg/bank-02-nmi-data';
 
 import type { SystemState } from '../native-game/tsubasa/banks/system-state';
 

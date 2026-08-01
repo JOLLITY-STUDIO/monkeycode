@@ -62,7 +62,7 @@ import {
 import {
   bank02_loadSceneData,
   bank02_sceneSwitchHelper,
-} from './bank-02-code';
+} from './bank-02-nmi-code';
 import {
   bankSwitch,
   initScene_$C64E,
