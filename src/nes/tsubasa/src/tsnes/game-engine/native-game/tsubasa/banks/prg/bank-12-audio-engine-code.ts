@@ -8,7 +8,9 @@
  * 架构角色: Controller（音讯主控）/ Service（APU 寄存器操作）
  * ═══════════════════════════════════════
  *   - NMI 期间由 bank02 → bank30 调用：音讯帧更新
- *   - 消费 bank 15（音乐序列数据），输出到 APU 寄存器 ($4000-$4015)
+ *   - 原始通过 MMC3 映射 bank 7/13/14/15 读取音频数据
+ *     → 引擎数据表: 内联在 bank-12-audio-engine-data.ts
+ *     → 音乐序列/曲谱: bank-13-code, bank-14-code, bank-15-code
  *   - 管理 6 个音讯通道（2 脉冲 + 1 三角 + 1 噪音 + 1 DPCM + 1 效果）
  *
  * ═══════════════════════════════════════
@@ -94,19 +96,121 @@ import {
   writeMem,
 } from '../system-state';
 
-// 注册 ROM 数据
+// ── 音乐序列/曲谱数据 bank（原始 MMC3 映射 bank 13/14/15） ──
+import { getBank13Data } from './bank-13-code';
+import { getBank14Data } from './bank-14-code';
+import { getBank15Data } from './bank-15-code';
+
+// ── 引擎数据表（bank-12 内部） ──
+import {
+  DATA_$8269_$827C,
+  DATA_$82E4_$82F3,
+  DATA_$84EA_$8519,
+  DATA_$86F6_$870C,
+  DATA_$870D_$8751,
+  DATA_$8752_$8769,
+  DATA_$876A_$87CD,
+  DATA_$87CE_$8863,
+  DATA_$8864_$886F,
+  DATA_$8870_$89BF,
+  DATA_$89C0_$89D9,
+  DATA_$89DA_$89E5,
+  DATA_$89E6_$8A69,
+  DATA_$8A6A_$8A8B,
+  DATA_$8A8C_$8B0B,
+  DATA_$8B0C_$8B4B,
+  DATA_$8B4C_$8B75,
+  DATA_$8B76_$8B89,
+  DATA_$8B8A_$8BB5,
+  DATA_$8BB6_$8C11,
+  DATA_$8C12_$8C3B,
+  DATA_$8C3C_$8C6D,
+  DATA_$8C6E_$8C91,
+  DATA_$8C92_$8CBF,
+  DATA_$8CC0_$9677,
+  DATA_$9678_$96A1,
+  DATA_$96A2_$96CB,
+  DATA_$96CC_$97D5,
+  DATA_$97D6_$9802,
+  DATA_$9803_$981A,
+  DATA_$981B_$9873,
+  DATA_$9874_$9CB4,
+  DATA_$9CB5_$9ED2,
+  DATA_$9ED3_$9EF6,
+  DATA_$9EF7_$9F45,
+  DATA_$9F46_$9FFF,
+} from './bank-12-audio-engine-data';
+
 // ═════════════════════════════════════════════════
-// ROM 数据访问工具
+// ROM data chunk lookup (each chunk mapped by bank offset range)
 // ═════════════════════════════════════════════════
 
-/** ROM 数据直接访问 */
+/** 命令跳转表前 8 条目 ($84DA-$84E9, 16 bytes)
+ *  在原始 ROM 中位于 CODE 段末尾，DATA 段从 $84EA 开始
+ *  cmd 0=$8544(set waveform), 1=$8707(RTS), 2=$8641(set envelope),
+ *  3=$855F(set volume), 4=$8617(set sweep), 5=$8670(set pitch offset),
+ *  6=$8707, 7=$8707 */
+const DATA_$84DA_$84E9: readonly number[] = [
+  0x44, 0x85, 0x07, 0x87, 0x41, 0x86, 0x5F, 0x85,
+  0x17, 0x86, 0x70, 0x86, 0x07, 0x87, 0x07, 0x87,
+];
+
+const _DATA_CHUNKS: Array<{ offset: number; data: readonly number[] }> = [
+  { offset: 0x0269, data: DATA_$8269_$827C },
+  { offset: 0x02E4, data: DATA_$82E4_$82F3 },
+  { offset: 0x04DA, data: DATA_$84DA_$84E9 },
+  { offset: 0x04EA, data: DATA_$84EA_$8519 },
+  { offset: 0x06F6, data: DATA_$86F6_$870C },
+  { offset: 0x070D, data: DATA_$870D_$8751 },
+  { offset: 0x0752, data: DATA_$8752_$8769 },
+  { offset: 0x076A, data: DATA_$876A_$87CD },
+  { offset: 0x07CE, data: DATA_$87CE_$8863 },
+  { offset: 0x0864, data: DATA_$8864_$886F },
+  { offset: 0x0870, data: DATA_$8870_$89BF },
+  { offset: 0x09C0, data: DATA_$89C0_$89D9 },
+  { offset: 0x09DA, data: DATA_$89DA_$89E5 },
+  { offset: 0x09E6, data: DATA_$89E6_$8A69 },
+  { offset: 0x0A6A, data: DATA_$8A6A_$8A8B },
+  { offset: 0x0A8C, data: DATA_$8A8C_$8B0B },
+  { offset: 0x0B0C, data: DATA_$8B0C_$8B4B },
+  { offset: 0x0B4C, data: DATA_$8B4C_$8B75 },
+  { offset: 0x0B76, data: DATA_$8B76_$8B89 },
+  { offset: 0x0B8A, data: DATA_$8B8A_$8BB5 },
+  { offset: 0x0BB6, data: DATA_$8BB6_$8C11 },
+  { offset: 0x0C12, data: DATA_$8C12_$8C3B },
+  { offset: 0x0C3C, data: DATA_$8C3C_$8C6D },
+  { offset: 0x0C6E, data: DATA_$8C6E_$8C91 },
+  { offset: 0x0C92, data: DATA_$8C92_$8CBF },
+  { offset: 0x0CC0, data: DATA_$8CC0_$9677 },
+  { offset: 0x1678, data: DATA_$9678_$96A1 },
+  { offset: 0x16A2, data: DATA_$96A2_$96CB },
+  { offset: 0x16CC, data: DATA_$96CC_$97D5 },
+  { offset: 0x17D6, data: DATA_$97D6_$9802 },
+  { offset: 0x1803, data: DATA_$9803_$981A },
+  { offset: 0x181B, data: DATA_$981B_$9873 },
+  { offset: 0x1874, data: DATA_$9874_$9CB4 },
+  { offset: 0x1CB5, data: DATA_$9CB5_$9ED2 },
+  { offset: 0x1ED3, data: DATA_$9ED3_$9EF6 },
+  { offset: 0x1EF7, data: DATA_$9EF7_$9F45 },
+  { offset: 0x1F46, data: DATA_$9F46_$9FFF },
+];
+
+/** ROM 数据访问 — 按 bank offset 查找对应数据块 */
 function rom12(offset: number): number {
-  return PRG_BANK_12_DATA[offset & 0x1FFF] ?? 0;
+  const bankOff = offset & 0x1FFF;
+  for (const chunk of _DATA_CHUNKS) {
+    if (bankOff >= chunk.offset && bankOff < chunk.offset + chunk.data.length) {
+      return chunk.data[bankOff - chunk.offset];
+    }
+  }
+  return 0;
 }
 
-/** 读取 16-bit little-endian 指针 */
+/** ROM 数据访问 — 读取 16-bit 指针 (little-endian) */
 function rom12Ptr16(offset: number): number {
-  return rom12(offset) | (rom12(offset + 1) << 8);
+  const lo = rom12(offset);
+  const hi = rom12(offset + 1);
+  return lo | (hi << 8);
 }
 
 // ═════════════════════════════════════════════════
@@ -1169,12 +1273,12 @@ function savePtrAndReturn(
   _sys.mem[ptr + 1] = f5 + ((f4 + y) > 0xFF ? 1 : 0);
 }
 
-/** 从 MML 序列读取字节 */
-function readMMLByte(sys: SystemState, ptrLo: number, ptrHi: number, offset: number): number {
-  // MML 数据存储在通过 MMC3 映射的 bank 中 ($8000-$9FFF)
-  // 我们直接通过系统内存访问
+/** 从 MML 序列读取字节（bank 12 内数据，或通过 MMC3 映射的其他 bank 数据） */
+function readMMLByte(_sys: SystemState, ptrLo: number, ptrHi: number, offset: number): number {
+  // MML 数据存储在通过 MMC3 映射的 bank 中 ($8000-$BFFF)
+  // bank 12 自身的数据通过 rom12() 访问
   const addr = ((ptrHi << 8) | ptrLo) + offset;
-  return sys.mem[addr & 0xFFFF];
+  return rom12(addr & 0x1FFF);
 }
 
 /** 更新音长计数器并返回 ($84A6-$84C8 的尾部) */
@@ -1238,9 +1342,9 @@ function _readNextSequenceBytes(sys: SystemState, ptr: number, f2: number): void
   // 读取当前偏移 (+4)
   const curOffset = sys.mem[ptr + 4];
 
-  // 从序列读取 2 字节
-  const byteLo = sys.mem[seqAddr + curOffset] ?? 0;
-  const byteHi = sys.mem[seqAddr + curOffset + 1] ?? 0;
+  // 从序列读取 2 字节 (bank 12 内 ROM 数据)
+  const byteLo = rom12((seqAddr + curOffset) & 0x1FFF);
+  const byteHi = rom12((seqAddr + curOffset + 1) & 0x1FFF);
 
   // 存入 $0709/$070A
   sys.mem[0x0709 + f2] = byteLo;
@@ -1637,9 +1741,15 @@ export function bank12_update(sys: SystemState): void {
   bank12_audioFrame(sys);
 }
 
-/**
- * 获取 ROM 数据的原始引用（供外部 bank 通过 MMC3 映射访问）
- */
-export function getBank12Data(): readonly number[] {
-  return PRG_BANK_12_DATA;
-}
+// ═════════════════════════════════════════════════
+// 音乐序列/曲谱数据存取（bank 13/14/15）
+// ═════════════════════════════════════════════════
+
+/** 获取 bank-13 音乐序列数据（曲谱/MML-like 字节码） */
+export { getBank13Data as bank12_getMusicSeq13 } from './bank-13-code';
+
+/** 获取 bank-14 音乐序列数据（曲谱/MML-like 字节码） */
+export { getBank14Data as bank12_getMusicSeq14 } from './bank-14-code';
+
+/** 获取 bank-15 音乐序列数据（曲谱/MML-like 字节码） */
+export { getBank15Data as bank12_getMusicSeq15 } from './bank-15-code';

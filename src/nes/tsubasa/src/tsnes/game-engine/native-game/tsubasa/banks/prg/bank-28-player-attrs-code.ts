@@ -18,6 +18,41 @@ import type { SystemState } from '../system-state';
 import { writeMem, readMem } from '../system-state';
 import { track } from '../debug-log';
 import { DATA_$9616_$9E4D, DATA_$9E4E_$9ECE } from './bank-28-player-attrs-data';
+
+// ── 球员数值/属性表 bank-29 ──
+import { getBank29Data } from './bank-29-player-value-code';
+
+
+// ═════════════════════════════════════════════════
+// $800C: 球员数据分派 (ASM JMP $8D58)
+// 调用来源: bank31 sub_EF7F_A (idx=0x31) → 每帧比赛期都会调用
+// 功能: 根据 $043D (球员ID) 分派到不同球员逻辑
+//       - 获取球员属性、坐标, 更新 $0x32/$0x33 指针
+//       - 涉及球员数据重排和球场坐标计算
+// ═════════════════════════════════════════════════
+export function bank28_offset0C(sys: SystemState): void {
+  // stub: 球员数据分派 — 更新数据指针
+  // 原始代码会在每帧根据球员ID重新计算属性表偏移
+  const playerId = sys.mem[0x043D] || 0;
+  // 简单存储球员ID到工作区, 让后续代码能读取
+  sys.mem[0x32] = playerId;
+  sys.mem[0x33] = 0;
+}
+
+// ═════════════════════════════════════════════════
+// $8015: 球员属性初始化 (ASM JMP $8224)
+// 调用来源: bank31 sub_E616 (单球员初始化)
+// 功能: 从 ROM 数据表加载球员初始属性到 RAM 工作区
+//       设置球员基本参数 ($0400-$043F 区域)
+// ═════════════════════════════════════════════════
+export function bank28_offset15(sys: SystemState): void {
+  // stub: 球员属性初始化
+  // 设置默认工作区值, 确保 $32/$33 指针有效
+  const playerId = sys.mem[0x0442] || sys.mem[0x043D] || 0;
+  sys.mem[0x32] = playerId;
+  sys.mem[0x33] = 0;
+}
+
 // ═════════════════════════════════════════════════
 // $8000: 属性计算入口
 // ═════════════════════════════════════════════════
@@ -79,11 +114,24 @@ export function bank28_getOverallRating(_sys: SystemState, playerIdx: number): n
 }
 
 // ═════════════════════════════════════════════════
+// $8024: 进球逻辑入口 (ASM JMP $82CA)
+// 调用来源: bank31 sub_E233 (进球事件) → 每帧调用
+// 功能: 进球时执行球员特写、庆祝动画、比分更新
+// ═════════════════════════════════════════════════
+export function bank28_offset24(sys: SystemState): void {
+  // stub: 进球事件逻辑
+  // bank31 sub_E233 本身已设置 $0615/$062D 等标志位
+}
+
+// ═════════════════════════════════════════════════
 // Dispatch table
 // ═════════════════════════════════════════════════
 
 export const bank28_dispatch: Record<number, (sys: SystemState) => void> = {
   0x00: bank28_entry,
+  0x0C: bank28_offset0C,
+  0x15: bank28_offset15,
+  0x24: bank28_offset24,
 };
 
 // ═════════════════════════════════════════════════
@@ -93,3 +141,6 @@ export const bank28_dispatch: Record<number, (sys: SystemState) => void> = {
 // ═════════════════════════════════════════════════
 
 console.log('[bank28] ✅ Phase 2b — 球员属性计算 (direct array access) | data');
+
+// ── 球员数值表 bank-29 存取 ──
+export { getBank29Data as bank28_getPlayerValueTable } from './bank-29-player-value-code';

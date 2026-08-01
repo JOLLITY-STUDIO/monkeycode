@@ -22,8 +22,128 @@
 import type { SystemState } from '../system-state';
 import { writeMem, readMem } from '../system-state';
 import { track } from '../debug-log';
+import {
+  DATA_$81E1_$824C,
+  DATA_$827F_$82BB,
+  DATA_$82BC_$82F6,
+  DATA_$8465_$8470,
+  DATA_$86EE_$8721,
+  DATA_$8722_$8789,
+  DATA_$878A_$87B5,
+  DATA_$87B6_$87E1,
+  DATA_$87E2_$882B,
+  DATA_$882C_$8839,
+  DATA_$883A_$8871,
+  DATA_$8872_$8897,
+  DATA_$8898_$88C3,
+  DATA_$88C4_$88D5,
+  DATA_$88D6_$8955,
+  DATA_$8956_$897A,
+  DATA_$897B_$8A03,
+  DATA_$8A04_$8A27,
+  DATA_$8A28_$8A45,
+  DATA_$8A46_$8A73,
+  DATA_$8A74_$8AAF,
+  DATA_$8AB0_$8AC0,
+  DATA_$8AC1_$8AF7,
+  DATA_$8AF8_$8B2A,
+  DATA_$8B2B_$8B37,
+  DATA_$8B38_$8B63,
+  DATA_$8B64_$8E63,
+  DATA_$8E64_$8EA3,
+  DATA_$8EA4_$94C3,
+  DATA_$94C4_$94E3,
+  DATA_$94E4_$9503,
+  DATA_$9504_$9523,
+  DATA_$9524_$9783,
+  DATA_$9784_$97E3,
+  DATA_$97E4_$9A63,
+  DATA_$9A64_$9AA3,
+  DATA_$9AA4_$9BEF,
+  DATA_$9BF0_$9C26,
+  DATA_$9C27_$9C42,
+  DATA_$9C43_$9C71,
+  DATA_$9C72_$9C8B,
+  DATA_$9C8C_$9CA6,
+  DATA_$9CA7_$9CD0,
+  DATA_$9CD1_$9CE2,
+  DATA_$9CE3_$9D0B,
+  DATA_$9D0C_$9D97,
+  DATA_$9D98_$9DA5,
+  DATA_$9DA6_$9DCA,
+  DATA_$9DCB_$9E21,
+  DATA_$9E22_$9E9D,
+  DATA_$9E9E_$9EE2,
+  DATA_$9EE3_$9FFF,
+} from './bank-11-data';
 
-// ── ROM data registration ──
+// ── ROM data chunk lookup (each chunk mapped by bank offset range) ──
+const _DATA_CHUNKS: Array<{ offset: number; data: readonly number[] }> = [
+  { offset: 0x01E1, data: DATA_$81E1_$824C },
+  { offset: 0x027F, data: DATA_$827F_$82BB },
+  { offset: 0x02BC, data: DATA_$82BC_$82F6 },
+  { offset: 0x0465, data: DATA_$8465_$8470 },
+  { offset: 0x06EE, data: DATA_$86EE_$8721 },
+  { offset: 0x0722, data: DATA_$8722_$8789 },
+  { offset: 0x078A, data: DATA_$878A_$87B5 },
+  { offset: 0x07B6, data: DATA_$87B6_$87E1 },
+  { offset: 0x07E2, data: DATA_$87E2_$882B },
+  { offset: 0x082C, data: DATA_$882C_$8839 },
+  { offset: 0x083A, data: DATA_$883A_$8871 },
+  { offset: 0x0872, data: DATA_$8872_$8897 },
+  { offset: 0x0898, data: DATA_$8898_$88C3 },
+  { offset: 0x08C4, data: DATA_$88C4_$88D5 },
+  { offset: 0x08D6, data: DATA_$88D6_$8955 },
+  { offset: 0x0956, data: DATA_$8956_$897A },
+  { offset: 0x097B, data: DATA_$897B_$8A03 },
+  { offset: 0x0A04, data: DATA_$8A04_$8A27 },
+  { offset: 0x0A28, data: DATA_$8A28_$8A45 },
+  { offset: 0x0A46, data: DATA_$8A46_$8A73 },
+  { offset: 0x0A74, data: DATA_$8A74_$8AAF },
+  { offset: 0x0AB0, data: DATA_$8AB0_$8AC0 },
+  { offset: 0x0AC1, data: DATA_$8AC1_$8AF7 },
+  { offset: 0x0AF8, data: DATA_$8AF8_$8B2A },
+  { offset: 0x0B2B, data: DATA_$8B2B_$8B37 },
+  { offset: 0x0B38, data: DATA_$8B38_$8B63 },
+  { offset: 0x0B64, data: DATA_$8B64_$8E63 },
+  { offset: 0x0E64, data: DATA_$8E64_$8EA3 },
+  { offset: 0x0EA4, data: DATA_$8EA4_$94C3 },
+  { offset: 0x14C4, data: DATA_$94C4_$94E3 },
+  { offset: 0x14E4, data: DATA_$94E4_$9503 },
+  { offset: 0x1504, data: DATA_$9504_$9523 },
+  { offset: 0x1524, data: DATA_$9524_$9783 },
+  { offset: 0x1784, data: DATA_$9784_$97E3 },
+  { offset: 0x17E4, data: DATA_$97E4_$9A63 },
+  { offset: 0x1A64, data: DATA_$9A64_$9AA3 },
+  { offset: 0x1AA4, data: DATA_$9AA4_$9BEF },
+  { offset: 0x1BF0, data: DATA_$9BF0_$9C26 },
+  { offset: 0x1C27, data: DATA_$9C27_$9C42 },
+  { offset: 0x1C43, data: DATA_$9C43_$9C71 },
+  { offset: 0x1C72, data: DATA_$9C72_$9C8B },
+  { offset: 0x1C8C, data: DATA_$9C8C_$9CA6 },
+  { offset: 0x1CA7, data: DATA_$9CA7_$9CD0 },
+  { offset: 0x1CD1, data: DATA_$9CD1_$9CE2 },
+  { offset: 0x1CE3, data: DATA_$9CE3_$9D0B },
+  { offset: 0x1D0C, data: DATA_$9D0C_$9D97 },
+  { offset: 0x1D98, data: DATA_$9D98_$9DA5 },
+  { offset: 0x1DA6, data: DATA_$9DA6_$9DCA },
+  { offset: 0x1DCB, data: DATA_$9DCB_$9E21 },
+  { offset: 0x1E22, data: DATA_$9E22_$9E9D },
+  { offset: 0x1E9E, data: DATA_$9E9E_$9EE2 },
+  { offset: 0x1EE3, data: DATA_$9EE3_$9FFF },
+];
+
+/** ROM 数据访问 — 按 bank offset 查找对应数据块 */
+function rom11(offset: number): number {
+  const bankOff = offset & 0x1FFF;
+  for (const chunk of _DATA_CHUNKS) {
+    if (bankOff >= chunk.offset && bankOff < chunk.offset + chunk.data.length) {
+      return chunk.data[bankOff - chunk.offset];
+    }
+  }
+  return 0;
+}
+
 // ═════════════════════════════════════════════════
 // $8000/$800C: 背景初始化/渲染
 // ═════════════════════════════════════════════════
@@ -56,10 +176,10 @@ export function bank11_init(sys: SystemState): void {
   writeMem(sys, 0x05E9 + qIdx, ppuAddr & 0xFF);
   writeMem(sys, 0x05EA + qIdx, (ppuAddr >> 8) & 0xFF);
 
-  // 从 ROM metatile 表读取 tile (bank 11 ROM data at $8700+)
+  // 从 ROM metatile 表读取 tile (bank 11 ROM data at offset $1700+)
   for (let i = 0; i < 0x20; i++) {
     const metaIdx = ((row + (i >> 3)) & 0x1F) * 16 + ((col + (i & 7)) & 0x0F);
-    const tile = readMem(sys, 0xB700 + metaIdx) || 0;
+    const tile = rom11(0x1700 + metaIdx) || 0;
     writeMem(sys, 0x05EB + qIdx + i, tile);
   }
 
@@ -123,14 +243,14 @@ export function bank11_tileWrite(sys: SystemState): void {
 
   // 从 ROM 读 metatile 引用，展开为 4 个 PPU tile
   const metaIdx = readMem(sys, 0x05D1) || 0;
-  const tileBase = 0xB700 + metaIdx * 4;
+  const romOff = 0x1700 + metaIdx * 4;
 
   writeMem(sys, 0x05E8 + qIdx, 4); // 4 tiles = 2x2 metatile
   writeMem(sys, 0x05E9 + qIdx, ppuLo);
   writeMem(sys, 0x05EA + qIdx, ppuHi);
 
   for (let i = 0; i < 4; i++) {
-    writeMem(sys, 0x05EB + qIdx + i, readMem(sys, tileBase + i));
+    writeMem(sys, 0x05EB + qIdx + i, rom11(romOff + i));
   }
 
   writeMem(sys, 0x05EB + qIdx + 4, 0);
@@ -152,7 +272,7 @@ export function bank11_attrSetup(sys: SystemState): void {
   writeMem(sys, 0x05EA + qIdx, (attrAddr >> 8) & 0xFF);
 
   // 从 ROM 属性表读取
-  const attrVal = readMem(sys, 0xB800 + (ntRow >> 2));
+  const attrVal = rom11(0x1800 + (ntRow >> 2));
   writeMem(sys, 0x05EB + qIdx, attrVal);
 
   writeMem(sys, 0x05EB + qIdx + 1, 0);

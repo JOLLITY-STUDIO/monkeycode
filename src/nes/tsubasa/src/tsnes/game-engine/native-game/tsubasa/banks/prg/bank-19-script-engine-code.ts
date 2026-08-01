@@ -31,6 +31,13 @@
 
 import type { SystemState } from '../system-state';
 import { writeMem, readMem } from '../system-state';
+
+// ── 场景脚本/对白数据 bank（原始 MMC3 映射 bank 03/04/05/25） ──
+import { getBank03Data } from './bank-03-code';
+import { getBank04Data } from './bank-04-code';
+import { getBank05Data } from './bank-05-code';
+import { getBank25Data } from './bank-25-code';
+
 import {
   DATA_$8000_$833F,
   DATA_$83E0_$8B8F,
@@ -801,6 +808,19 @@ export function bank19_readCollisionData(_sys: SystemState, index: number): numb
   const base = index * 4;
   return [table[base], table[base + 1], table[base + 2], table[base + 3]];
 }
+
+// ═════════════════════════════════════════════════
+// 场景脚本数据存取（bank 03/04/05/25）
+// ═════════════════════════════════════════════════
+
+/** 场景脚本/对白数据 bank-03 */
+export { getBank03Data as bank19_getSceneData03 } from './bank-03-code';
+/** 场景脚本/对白数据 bank-04 */
+export { getBank04Data as bank19_getSceneData04 } from './bank-04-code';
+/** 场景脚本/对白数据 bank-05 */
+export { getBank05Data as bank19_getSceneData05 } from './bank-05-code';
+/** 场景脚本/事件数据 bank-25 */
+export { getBank25Data as bank19_getSceneData25 } from './bank-25-code';
 
 // ═════════════════════════════════════════════════
 // Dispatch table

@@ -42,7 +42,7 @@ import { writeMem, readMem } from '../system-state';
 import { track } from '../debug-log';
 
 // ── Bank-30 跨 bank 调用 ──
-import { getCharData_$CD7C, frameInit_$CC02 } from './bank-30-code';
+import { getCharData_$CD7C } from './bank-30-code';
 
 // ── Bank-24 内部数据表 ──
 import {

@@ -34,6 +34,11 @@ import type { SystemState } from '../system-state';
 import { readMem } from '../system-state';
 import { track } from '../debug-log';
 
+// ── UI/背景/精灵数据 bank（原始 MMC3 映射 bank 08/18/21） ──
+import { getBank08Data } from './bank-08-code';
+import { getBank18Data } from './bank-18-code';
+import { getBank21Data } from './bank-21-code';
+
 // ── Bank 数据表 (native game: 直接消费数据, 不经 MMC3) ──
 import {
   // 坐标 delta 表: signed Y/X offsets
@@ -799,6 +804,17 @@ export function bank22_clearOAM(sys: SystemState): void {
     sys.mem[0x0200 + i] = 0xF8;
   }
 }
+
+// ═════════════════════════════════════════════════
+// UI/Sprite 数据存取（bank 08/18/21）
+// ═════════════════════════════════════════════════
+
+/** Nametable/tilemap 属性数据 bank-08 */
+export { getBank08Data as bank22_getTilemapData08 } from './bank-08-code';
+/** UI 背景/Nametable 数据 bank-18 */
+export { getBank18Data as bank22_getUIData18 } from './bank-18-code';
+/** 精灵/OAM 元数据表 bank-21 */
+export { getBank21Data as bank22_getOAMData21 } from './bank-21-code';
 
 // ═════════════════════════════════════════════════
 // Dispatch table

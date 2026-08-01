@@ -68,6 +68,14 @@ import {
   initScene_$C64E,
   sceneHelper_$DB62,
 } from './bank-30-code';
+// 跨 bank ROM 数据直接访问 (替代 MMC3 模拟)
+import { rom06, rom06Ptr16 } from './bank-06-code';
+
+// 关卡/场景元数据 bank-23
+import { getBank23Data } from './bank-23-code';
+import { rom07, rom07Ptr16 } from './bank-07-code';
+import { rom09, rom09Ptr16 } from './bank-09-code';
+import { rom10, rom10Ptr16 } from './bank-10-code';
 
 // ═════════════════════════════════════════════════
 // 零页地址常量
@@ -1353,6 +1361,26 @@ export function bank00_titleTick(sys: SystemState): void {
 
   // ── 标题画面输入处理（bank01_titleProcess 轮询 START/方向键）──
   bank01_titleProcess(sys);
+
+  // ── FIX: 检查 A+B 组合键 → 启动游戏 ──
+  // 原始 NES 通过 $81A6-$81CB 的轮询循环检查 A+B 组合键，
+  // 但 bank00_titleTick 之前缺少此检查，导致永远无法退出标题模式。
+  // bank01_startGame 会将 $0700 设为 0x01，触发场景切换。
+  const prevJoy = sys.mem[0x1C];
+  if ((prevJoy & 0xC0) === 0xC0) {
+    console.log('[bank00] titleTick: A+B pressed → start game!');
+    bank01_startGame(sys);
+    // ── 比赛状态初始化（最小集） ──
+    // bank01_startGame 只设置球员槽位数据和 $0700=0x01
+    // 还需设置比赛引擎需要的核心状态，使主循环能正常运转
+    sys.mem[0x05FB] = 0;    // 玩家方队 = Team A (0)
+    sys.mem[0x0600] = 1;    // 活跃球员数 = 1
+    sys.mem[0x0601] = 0x0B; // 对方球员 ID = 0x0B
+    sys.mem[0x0442] = 0x0B; // 球员指针 = 0x0B
+    sys.mem[0x0635] = 0x80; // 球 X = 128 (中场)
+    sys.mem[0x0637] = 0x70; // 球 Y = 112 (中圈)
+    sys.mem[0x0027] = 1;    // 子状态 = 1 (进入比赛)
+  }
 }
 
 // ═════════════════════════════════════════════════
@@ -1571,10 +1599,10 @@ export function bank00_spritePaletteLoader(
   const frameFlag = sys.mem[0x4C];
   if ((frameFlag & 0x80) === 0) return;
 
-  // 读 palette 指针 (bank $B8 或 $06)
+  // 读 palette 指针 (bank 06: $B800-$A000=$1800)
   const idx = frameFlag << 1;
-  const ptrLo = readMem(sys, 0xB800 + idx);
-  const ptrHi = readMem(sys, 0xB801 + idx);
+  const ptrLo = rom06(0x1800 + idx);
+  const ptrHi = rom06(0x1800 + idx + 1);
   const ptr = (ptrHi << 8) | ptrLo;
 
   let offset = 0;
@@ -1973,10 +2001,10 @@ function _bytecode_dispatchExtended(
         sys.mem[0x59] = sys.mem[ZP_SCRIPT_PTR_H] + (sys.mem[0x58] < 2 ? 1 : 0);
         sys.mem[0x5A] = sys.mem[0x56];
 
-        // bankSwitch to 6 → 查 $A000 跳转表
+        // bankSwitch to 6 → 查 $A000 跳转表 (ASM: $8485 JSR $C4B9 via ED table → banks {03,04,05,06})
         bankSwitch(sys, 6);
-        const newPtrLo = readMem(sys, 0xA000 + subIdx * 2);
-        const newPtrHi = readMem(sys, 0xA001 + subIdx * 2);
+        const newPtrLo = rom06(subIdx * 2);
+        const newPtrHi = rom06(subIdx * 2 + 1);
         sys.mem[ZP_SCRIPT_PTR_L] = newPtrLo;
         sys.mem[ZP_SCRIPT_PTR_H] = newPtrHi;
         // bank 由 bytecode 循环自行管理，不需要切回
@@ -2162,12 +2190,11 @@ function _bytecode_dispatchExtended(
 //   $8AB4-$8AD4: 精灵 tile 映射表 (33 bytes)
 //   $8AD5-$8AE6: 精灵扩展 tile 映射表 (18 bytes)
 
-/** $89D2: 精灵动画加载 — 根据 ID 加载精灵数据指针 */
+/** $89D2: 精灵动画加载 — 根据 ID 加载精灵数据指针 (ASM: $89D5 LDX #$06; JSR $C4B9 → bank 06) */
 export function bank00_spriteAnimLoad(sys: SystemState, spriteId: number): void {
-  // 切 bank $06 → 读 $BD00 指针表
-  // spriteId × 2 → 读 ($BD00 + spriteId*2)
-  const ptrLo = readMem(sys, 0xBD00 + spriteId * 2);
-  const ptrHi = readMem(sys, 0xBD01 + spriteId * 2);
+  // 切 bank $06 → 读 $BD00 指针表 ($BD00-$A000=$1D00 in bank 06)
+  const ptrLo = rom06(0x1D00 + spriteId * 2);
+  const ptrHi = rom06(0x1D00 + spriteId * 2 + 1);
   writeMem(sys, 0x0654, ptrLo);
   writeMem(sys, 0x0655, ptrHi);
   // 标志位: $80 = 活跃, 等待帧推进
@@ -2205,12 +2232,12 @@ export function bank00_spriteAnimUpdate(sys: SystemState): boolean {
   }
 
   // 帧到期 → 读下一步
-  // 切 bank $06 → 从 $0654/$0655 指针读数据
+  // 切 bank $06 → 从 $0654/$0655 指针读数据 (ASM: $8A11 LDX #$06; JSR $C4B9)
   let ptrLo = readMem(sys, 0x0654);
   let ptrHi = readMem(sys, 0x0655);
   const ptr = (ptrHi << 8) | ptrLo;
 
-  const cmd = readMem(sys, ptr);
+  const cmd = rom06(ptr & 0x1FFF);
   if (cmd === 0xFF) {
     // 终止
     writeMem(sys, 0x0652, 0);
@@ -2347,35 +2374,35 @@ export function bank00_sceneTransition(
   }
 
   const ptrIdx = sceneId << 1;
-  // $8B1C-$8B2D: ROL trick → sceneId*2 → X, carry→Y → 加到 $A000
-  const ptrLo = readMem(sys, 0xA000 + ptrIdx);
-  const ptrHi = readMem(sys, 0xA001 + ptrIdx);
+  // $8B1C-$8B2D: ROL trick → sceneId*2 → X, carry→Y → 加到 $A000 (ASM: $8B0F LDX #$07; JSR $C4B9 → bank 07)
+  const ptrLo = rom07(ptrIdx);
+  const ptrHi = rom07(ptrIdx + 1);
   // $8B2F-$8B39: 间接取址 — 读 ($63) 得实际数据地址
   sys.mem[0x63] = ptrLo;
   sys.mem[0x64] = ptrHi;
-  // 间接引用: ($63) → 实际数据地址
-  const dataLo = readMem(sys, (ptrHi << 8) | ptrLo);
-  const dataHi = readMem(sys, (ptrHi << 8) | ptrLo + 1);
+  // 间接引用: ($63) → 实际数据地址 (仍在 bank 07 $Axxx 范围)
+  const dataLo = rom07(((ptrHi << 8) | ptrLo) & 0x1FFF);
+  const dataHi = rom07((((ptrHi << 8) | ptrLo) + 1) & 0x1FFF);
   sys.mem[0x63] = dataLo;
   sys.mem[0x64] = dataHi;
 
   // $8B3B-$8B54: 读 record 头部 (6 bytes)
   // byte 0-1: $75/$76 (PPU 地址)
-  sys.mem[0x75] = readMem(sys, (dataHi << 8) | dataLo + 0);
-  sys.mem[0x76] = readMem(sys, (dataHi << 8) | dataLo + 1);
+  sys.mem[0x75] = rom07(((dataHi << 8) | dataLo + 0) & 0x1FFF);
+  sys.mem[0x76] = rom07(((dataHi << 8) | dataLo + 1) & 0x1FFF);
   // byte 2: palette idx + flags
-  const flags = readMem(sys, (dataHi << 8) | dataLo + 2);
+  const flags = rom07(((dataHi << 8) | dataLo + 2) & 0x1FFF);
   sys.mem[0x48] = flags & 0x3F;
   // ROL $5B trick: 将 bit6 旋入 $5B bit0
   sys.mem[0x5B] = (sys.mem[0x5B] & 0xFE) | ((flags >> 6) & 1);
   // byte 3: $5E (count)
-  sys.mem[0x5E] = readMem(sys, (dataHi << 8) | dataLo + 3);
+  sys.mem[0x5E] = rom07(((dataHi << 8) | dataLo + 3) & 0x1FFF);
   // byte 4: $5F (stride)
-  sys.mem[0x5F] = readMem(sys, (dataHi << 8) | dataLo + 4);
+  sys.mem[0x5F] = rom07(((dataHi << 8) | dataLo + 4) & 0x1FFF);
 
   // $8B5E-$8B81: 解码源指针 ($5C/$5D)
   // 从 byte 5 取 bit7-3 → $5C bits 7-3
-  let srcBits = readMem(sys, (dataHi << 8) | dataLo + 5);
+  let srcBits = rom07(((dataHi << 8) | dataLo + 5) & 0x1FFF);
   sys.mem[0x5C] = srcBits & 0xF8;
   sys.mem[0x5D] = 0x02; // 基址高字节
 
@@ -2722,14 +2749,14 @@ function _sprite_renderNextRecord(sys: SystemState): number {
     sys.mem[0x70] = ptrLo;
     sys.mem[0x71] = ptrHi;
 
-    // 重新读取 record 属性
-    const nextByte = readMem(sys, (ptrHi << 8) | ptrLo);
+    // 重新读取 record 属性 (ASM: bank 07 record chain)
+    const nextByte = rom07(((ptrHi << 8) | ptrLo) & 0x1FFF);
     if (nextByte !== 0) {
       sys.mem[0x62] = nextByte & 0xE0;
       const countBits = nextByte & 0x1F;
       sys.mem[0x60] = (countBits >> 1) & 0x0F;
       sys.mem[0x61] = countBits >> 1;
-      sys.mem[0x72] = readMem(sys, (ptrHi << 8) | (ptrLo + 1));
+      sys.mem[0x72] = rom07(((ptrHi << 8) | (ptrLo + 1)) & 0x1FFF);
       sys.mem[0x69] = 0;
       sys.mem[0x6A] = 0;
       return 0;
@@ -2866,25 +2893,26 @@ export function bank00_spritePlaceInit(
   // 设置描述符基址
   writeMem(sys, 0x0594, 0x68);
 
-  // 读 bank 索引 ($00-$6C → bank $09, else $0A)
+  // 读 bank 索引 ($00-$6C → bank $09, else $0A; ASM: $90B7 LDX #$09, CMP #$6D → 分支 $0A)
   const bankIndex = readMem(sys, ptr + 2);
   const bankNum = bankIndex >= 0x6D ? 0x0A : 0x09;
 
   onBank09_switch(sys);
 
-  // 从 ROM 指针表读首指针
-  // 实际 6502: 查询 $A000 + bankIndex×2
-  const spritePtrLo = readMem(sys, 0xA000 + (bankIndex & 0x7F) * 2);
-  const spritePtrHi = readMem(sys, 0xA001 + (bankIndex & 0x7F) * 2);
+  // 从 ROM 指针表读首指针 (ASM: bankIndex<0x6D → rom09; else → rom10, index -= 0x6D)
+  const adjustedIdx = bankIndex >= 0x6D ? (bankIndex - 0x6D) : bankIndex;
+  const romFn = bankIndex >= 0x6D ? rom10 : rom09;
+  const spritePtrLo = romFn(adjustedIdx * 2);
+  const spritePtrHi = romFn(adjustedIdx * 2 + 1);
 
-  // 复制 32 字节模板
+  // 复制 32 字节模板 (sprite 数据仍在同一 bank)
   for (let i = 0; i < 32; i++) {
-    const templateByte = readMem(sys, ((spritePtrHi << 8) | spritePtrLo) + i);
+    const templateByte = romFn((((spritePtrHi << 8) | spritePtrLo) + i) & 0x1FFF);
     writeMem(sys, 0x0568 + i, templateByte);
   }
 
   // 读取精灵的初始 palette
-  sys.mem[0x49] = readMem(sys, ((spritePtrHi << 8) | spritePtrLo));
+  sys.mem[0x49] = romFn(((spritePtrHi << 8) | spritePtrLo) & 0x1FFF);
 }
 
 /**
@@ -3104,7 +3132,7 @@ export function bank00_spriteVMAllocCallback(
   // LDY #$01; LDA ($92),Y: 读脚本 next byte → 新指针 lo
   const scriptLo = sys.mem[descPtr + 2];
   const scriptHi = sys.mem[descPtr + 3];
-  const nextByte = readMem(sys, (scriptHi << 8) | scriptLo + 1);
+  const nextByte = rom00(((scriptHi << 8) | scriptLo + 1) & 0x1FFF);
   writeMem(sys, descPtr + 2, nextByte);
 
   // $93 = $E7 - 0x20 (新指针 hi)
@@ -4067,4 +4095,41 @@ import {
   DATA_$9FE5_$9FFF,
 } from './bank-00-data';
 
+// Bank 00 自身 DATA_ chunks（用于 rom00() 访问器）
+const _DATA_CHUNKS_00: { offset: number; data: readonly number[] }[] = [
+  { offset: 0x0398, data: DATA_$8398_$83B9 },
+  { offset: 0x03BA, data: DATA_$83BA_$83DB },
+  { offset: 0x03DC, data: DATA_$83DC_$83FE },
+  { offset: 0x03FF, data: DATA_$83FF_$841F },
+  { offset: 0x0420, data: DATA_$8420_$8441 },
+  { offset: 0x0442, data: DATA_$8442_$8463 },
+  { offset: 0x0545, data: DATA_$8545_$8574 },
+  { offset: 0x06C8, data: DATA_$86C8_$86DD },
+  { offset: 0x076E, data: DATA_$876E_$87B7 },
+  { offset: 0x0AB4, data: DATA_$8AB4_$8AD4 },
+  { offset: 0x0AD5, data: DATA_$8AD5_$8AE6 },
+  { offset: 0x0AE7, data: DATA_$8AE7_$8AF6 },
+  { offset: 0x0FF0, data: DATA_$8FF0_$900A },
+  { offset: 0x126C, data: DATA_$926C_$929F },
+  { offset: 0x1350, data: DATA_$9350_$938C },
+  { offset: 0x1482, data: DATA_$9482_$94AD },
+  { offset: 0x178B, data: DATA_$978B_$97AA },
+  { offset: 0x19AE, data: DATA_$99AE_$99D0 },
+  { offset: 0x1EA2, data: DATA_$9EA2_$9EEC },
+  { offset: 0x1FE5, data: DATA_$9FE5_$9FFF },
+];
+
+function rom00(offset: number): number {
+  const bankOff = offset & 0x1FFF;
+  for (const chunk of _DATA_CHUNKS_00) {
+    if (bankOff >= chunk.offset && bankOff < chunk.offset + chunk.data.length) {
+      return chunk.data[bankOff - chunk.offset];
+    }
+  }
+  return 0;
+}
+
 console.log('[bank00] ✅ 已加载 — dispatchScene|titleBoot|waitStart|menuCursor|timers|bytecode|spriteAnim|palette|sceneTrans|bcd|data');
+
+// ── 关卡/场景元数据 bank-23 存取 ──
+export { getBank23Data as bank00_getLevelData23 } from './bank-23-code';

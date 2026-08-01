@@ -45,12 +45,35 @@ import { writeMem, readMem } from '../system-state';
 function track(_label: string, _data?: any): void { /* debug noop */ }
 function exit(_label: string, _data?: any): void { /* debug noop */ }
 
-// bank30 系统库 (需要时取消注释)
-// import { farCallDispatch_$CE6E, audiotrigger_$CBB0, randomGen_$DCDF,
-//   playerStateHandler_$D565, bank31Helper_$E074,
-//   multiply16_$CD3C, divide16_$CD0D,
-//   clearOam_$CB8B, timerInit_$CB0F, paletteInit_$CCD2,
-//   bank31DataHelper_$EF7F, getCharData_$CD7C } from './bank-30-code';
+// bank30 系统库 — Phase 10 完整连线
+import {
+  // 核心工具函数
+  farCallDispatch_$CE6E, audiotrigger_$CBB0, randomGen_$DCDF,
+  playerStateHandler_$D565, gpModify_$D193,
+  multiply16_$CD3C, divide16_$CD0D,
+  clearOam_$CB8B, timerInit_$CB0F, paletteInit_$CCD2,
+  getCharData_$CD7C, frameInit_$CC02, ppuScreenInit_$CB35,
+  tileCoordConvert_$CDC9, coordTransform_$CDE2,
+  // Phase 10 新增
+  gameModeLookup_$CD77, teamSlotScan_$CBF1, menuDispatch_$D093,
+  paletteDlSetup_$CC46, findNearestTarget_$CE99, findNearestTarget_$CE4A,
+  playerDataLoad_$D7E8, playerAttrDisplay_$D8F7, playerSubstitutionUI_$DAAA,
+  moveCheckSub_$DD02, matchEventSubEntry_$DE5E, matchEventContinue_$DE6C,
+  matchEventMain_$DE52, playerMoveCheck_$DCFD,
+  matchResultCalc_$DFD9, playerInit_$DDFD, playerSelectCursor_$D852,
+  sceneHelper_$DB62, clearSlotData_$CF4F, playerSlotScan_$D0D1,
+  signedOffsetLookup_$CE4D, bankSwitch_apply_$CE2D,
+  charCodeConv_$CBC2,
+  // Phase 11 — bank-31 跳转表转发 (补齐 68/68)
+  bank31Helper_$E074, bank31Helper_$E059, bank31EventLoop_$E0DF,
+  bank31Data_$EF7F, bank31PlayerAI_$E73E,
+} from './bank-30-code';
+
+// bank28 球员属性计算引擎
+import { bank28_entry, bank28_getOverallRating } from './bank-28-player-attrs-code';
+
+// bank17 比赛 AI/行为脚本数据
+import { getBank17Data } from './bank-17-code';
 
 // ═════════════════════════════════════════════════
 // Key RAM addresses
@@ -117,10 +140,8 @@ export function bank26_mainLoop(sys: SystemState): void {
   writeMem(sys, 0x044E, 0); // STA $044E — 清除进球标志
   writeMem(sys, 0x0621, 0); // STA $0621 — 清除状态计数
 
-  // JSR $C600 → playerStateHandler_$D565(sys)
-  // (bank30 call — placeholder)
-
-  // LDA #$02; JSR $C54B → bank switch to bank02 (via farCallDispatch)
+  playerStateHandler_$D565(sys);
+    farCallDispatch_$CE6E(sys, 0x02);
   bank26_playerInitSetup2(sys); // JSR $8F72
 
   const playerCount = readMem(sys, 0x0600); // LDA $0600
@@ -188,7 +209,7 @@ export function bank26_mainLoop(sys: SystemState): void {
     const playerId = readMem(sys, 0x0601 + frameIdx); // LDA $0601,X
     writeMem(sys, 0x0442, playerId); // STA $0442
 
-    // LDA #$07; JSR $C54B → far call to bank07
+      farCallDispatch_$CE6E(sys, 0x07);
     bank26_sub8FF3(sys); // JSR $8FF3
 
     // Reload team (may have changed)
@@ -230,11 +251,9 @@ export function bank26_mainLoop(sys: SystemState): void {
  */
 export function bank26_mainLoop_postProcess(sys: SystemState): void {
   bank26_sub9085(sys); // JSR $9085
+  bank31Helper_$E074(sys);
 
-  // JSR $C606 → bank31Helper_$E074(sys)
-  // (bank30 call — placeholder)
-
-  // LDA $043B; dispatch via inline table after $C509
+    // LDA $043B; dispatch via inline table after $C509
   const matchState = readMem(sys, 0x043B);
 
   switch (matchState) {
@@ -245,15 +264,15 @@ export function bank26_mainLoop_postProcess(sys: SystemState): void {
       // JMP $C618 → fn_$DCFD_playerMoveCheck (bank31)
       break;
     case 1: // $8107
-      // JSR $C61E → bank31Helper_$E059(sys)
-      // LDA #$0A; JSR $C54B → far call to bank $0A
+      bank31Helper_$E059(sys);
+        farCallDispatch_$CE6E(sys, 0x0A);
       bank26_restoreCheck(sys); // JSR $8170
       sys.regs.SP = 0x50;
       // JMP $C612 → fn_$DE52_matchEventProcess (bank31)
       break;
     case 2: // $8118
       sys.regs.SP = 0x50;
-      // JMP $C60F → fn_$E0DF_bank31EventLoop (bank31)
+      bank31EventLoop_$E0DF(sys);
       break;
     case 3: // $811E
       bank26_restoreCheck(sys); // JSR $8170
@@ -362,8 +381,7 @@ export function bank26_actionDispatch(sys: SystemState): void {
     bank26_sub8E33(sys);
   }
 
-  // LDA #$00; JSR $C54E → audiotrigger_$CBB0(sys, 0)
-  // (audio trigger, placeholder)
+  audiotrigger_$CBB0(sys, 0x00);
 
   // LDA $0612; dispatch via inline table after $C509
   const cmdIdx = readMem(sys, 0x0612);
@@ -401,7 +419,7 @@ export function bank26_actionDispatch(sys: SystemState): void {
     case 3: // $81D1
       bank26_sub8BC8(sys);
       bank26_sub9095(sys);
-      // JSR $C606 → bank31Helper_$E074(sys)
+      bank31Helper_$E074(sys);
       bank26_sub81ED(sys);
       break;
     case 4: // $81EA → JMP $9366
@@ -443,17 +461,19 @@ export function bank26_playerInitSetup(sys: SystemState): void {
   // $8278 数据表: [$1D, $18, $00, $19] → 音频ID
   const audioTable = [0x1D, 0x18, 0x00, 0x19];
   const audioId = audioTable[matchState] || 0;
-  // JSR $C54E → audiotrigger_$CBB0(sys, audioId)
-  // placeholder: store audio ID
-  sys.mem[0x0006] = audioId;
+  audiotrigger_$CBB0(sys, audioId);
 
   const screenFlags = readMem(sys, 0x0444) & 0x03; // AND #$03
   writeMem(sys, 0x044E, screenFlags);
 
-  // JSR $C624 → randomGen_$DCDF(sys) — 随机数生成
+  const _rand = randomGen_$DCDF(sys);
 
   // 标记已初始化: $0617 |= 0x80
   writeMem(sys, 0x0617, readMem(sys, 0x0617) | 0x80);
+
+  // 初始化球员属性: 查 bank-28 加载能力值
+  // TODO: $043E (attr type) 需要根据比赛上下文设置后调用
+  // bank28_entry(sys);
 }
 
 /**
@@ -484,7 +504,7 @@ export function bank26_specialCardHandler(sys: SystemState): void {
   bank26_sub8E6E(sys);
   // TXS; JMP $C60F → reset stack + jump to bank31 event loop
   sys.regs.SP = 0x50;
-  // JMP $C60F → bank31 event loop (handled by caller)
+  bank31EventLoop_$E0DF(sys);
 }
 
 /**
@@ -517,9 +537,9 @@ export function bank26_sub81ED(sys: SystemState): void {
   const teamInfo = readMem(sys, 0x043E) & 0x7F; // AND #$7F
   if (teamInfo !== 1) return; // BNE $8222 → RTS (注意: CMP #$01; BNE → 不等于1则跳过)
 
-  // Get player data pointer: LDA $0442; JSR $C50C
-  // (bank30 call to get pointer into $34/$35)
-  // placeholder: read player ID for context
+  // Get player data pointer: JSR $C50C → getCharData
+  sys.regs.A = readMem(sys, 0x0442);
+  getCharData_$CD7C(sys);
   const playerId = readMem(sys, 0x0442);
 
   // LDA #$50; STA $043F — set player position X
@@ -569,7 +589,7 @@ export function bank26_playerDataReorder(sys: SystemState): void {
   for (let x = 0; x < playerCount; x++) {
     // LDA $0601,X; JSR $C50C → get player data pointer into $34/$35
     const playerId = readMem(sys, 0x0601 + x);
-    // (bank30 call placeholder — 获取球员类型 byte)
+    // bank30 call → (replaced) — 获取球员类型 byte)
     // LDY #$00; LDA ($34),Y → read player type byte
     // In original ROM, player types are: 0x14=GK, 0x49=DF
     // We approximate by checking known type patterns
@@ -644,14 +664,11 @@ export function bank26_playerDataReorder(sys: SystemState): void {
  *   然后 falls through 到 $82FC battleLoop
  */
 export function bank26_battleInitEntry(sys: SystemState): void {
-  // LDA #$02; JSR $C54B → farCallDispatch_$CE6E(sys, 2) — bank switch to bank02
-  // (bank30 call — placeholder)
+    farCallDispatch_$CE6E(sys, 2);
+    bank26_playerInitSetup2(sys); // JSR $8F72
 
-  bank26_playerInitSetup2(sys); // JSR $8F72
-
-  // LDA #$01; JSR $C54E → audiotrigger_$CBB0(sys, 1)
-  // (bank30 call — placeholder)
-  sys.mem[0x0006] = 1;
+  audiotrigger_$CBB0(sys, 0x01);
+    sys.mem[0x0006] = 1;
 
   const playerCount = readMem(sys, 0x0600); // LDA $0600
   if (playerCount === 0) {
@@ -678,16 +695,14 @@ export function bank26_battleInitEntry(sys: SystemState): void {
       writeMem(sys, 0x043D, action); // STY $043D
       const team = readMem(sys, 0x0606 + x); // LDA $0606,X
       writeMem(sys, 0x043E, team); // STA $043E
-      // LDA #$02; JSR $C54E → audio trigger id=2
-      sys.mem[0x0006] = 2;
-      // LDA #$14; JSR $C515 → wait/timer (bank30 call, placeholder)
+      audiotrigger_$CBB0(sys, 0x02);
     }
     // else: CPY #$06; BEQ NEXT → action=06 skips store entirely
     // $82E4: INC $0616 → loop continues
   }
 
   // $82EF: post-loop
-  // LDA #$04; JSR $C54E → audio trigger id=4
+    audiotrigger_$CBB0(sys, 4);
   sys.mem[0x0006] = 4;
   // LDA #$00; STA $0616; STA $0617 → reset
   writeMem(sys, 0x0616, 0);
@@ -700,7 +715,7 @@ export function bank26_battleInitEntry(sys: SystemState): void {
  * ASM line 351-474
  *
  *   循环处理每个球员的对抗/命令:
- *     LDA #$01; JSR $C515 → wait/timer
+ *     sys.regs.A = 1; timerInit_$CB0F(sys, 1);  // JSR $C515 → timerInit
  *     LDA #$00; STA $0612 → cmdIdx=0
  *     LOOP: LDX $0616
  *       读 $060B,X→$043D, $0606,X→$043E, $0601,X→$0442
@@ -725,7 +740,7 @@ export function bank26_battleInitEntry(sys: SystemState): void {
  *         goto $83F5 cleanup
  */
 export function bank26_battleLoop(sys: SystemState): void {
-  // LDA #$01; JSR $C515 → timer/wait (bank30 call placeholder)
+  sys.regs.A = 1; timerInit_$CB0F(sys, 1);  // JSR $C515 → timerInit
   writeMem(sys, 0x0612, 0); // LDA #$00; STA $0612 — cmdIdx=0
 
   // Data tables (embedded in ASM at $83D7-$83F4)
@@ -763,7 +778,7 @@ export function bank26_battleLoop(sys: SystemState): void {
         skipMain = true;
       } else {
         // $832B: bank switch→08
-        // LDA #$08; JSR $C54B (placeholder)
+          farCallDispatch_$CE6E(sys, 0x08);
       }
     } else {
       // $8333: Regular player
@@ -772,7 +787,7 @@ export function bank26_battleLoop(sys: SystemState): void {
         skipMain = true;
       } else {
         // $8344: bank switch→07
-        // LDA #$07; JSR $C54B (placeholder)
+          farCallDispatch_$CE6E(sys, 0x07);
       }
     }
 
@@ -848,9 +863,9 @@ export function bank26_battleLoop(sys: SystemState): void {
       const carry = (audioX >> 1) & 1; // LSR → carry=C; A=result
       // JSR $9095 with carry
       bank26_sub9095(sys);
-      // $8399: PLA; JSR $C54E → audio trigger(audioA)
+        audiotrigger_$CBB0(sys, readMem(sys, 0x0613)); // PLA audio from stack
       sys.mem[0x0006] = audioA;
-      // $839D: LDA #$07; JSR $C54E → audio trigger(7)
+        audiotrigger_$CBB0(sys, 7);
       sys.mem[0x0006] = 7;
     }
 
@@ -910,7 +925,7 @@ export function bank26_battleLoop(sys: SystemState): void {
  *     4   → $847C: JMP $9366 → exit handler
  */
 export function bank26_battleCleanup(sys: SystemState): void {
-  // JSR $C606 → bank31Helper_$E074(sys) (bank30 call, placeholder)
+  bank31Helper_$E074(sys);
 
   // LDA $0612; dispatch via inline table after $C509
   const cmdIdx = readMem(sys, 0x0612);
@@ -919,7 +934,7 @@ export function bank26_battleCleanup(sys: SystemState): void {
     case 0: // $8408 (cmdIdx=0)
     case 1: // $8408 (cmdIdx=1, same entry)
       bank26_sub8BBA(sys);          // JSR $8BBA
-      // LDA #$08; JSR $C54E → audio trigger(8)
+      audiotrigger_$CBB0(sys, 0x08);
       sys.mem[0x0006] = 8;
       // SEC; JSR $9095
       bank26_sub9095(sys);          // call with carry set (SEC)
@@ -1013,13 +1028,11 @@ export function bank26_sub847F(sys: SystemState): void {
  *   RTS
  */
 export function bank26_sub8485(sys: SystemState): void {
-  // JSR $C551 → playerDataPtr_$CD7C(sys) — get player data pointer
-  // (bank30 call, stores ptr in $34/$35)
-  // placeholder: mark offset in player data
-  // LDY #$0A; LDA #$06; STA (ptr),Y
-  // Sets the player's sub-status byte to 6
-  // We store a marker in a temp location
-  sys.mem[0x0600 + 0x0A] = 6; // approximate: store at base + offset
+  // JSR $C551 → gameModeLookup — get player data pointer into $34/$35
+  gameModeLookup_$CD77(sys);
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+  // LDY #$0A; LDA #$06; STA (ptr),Y — set player sub-status to 6
+  sys.mem[(ptr + 0x0A) & 0xFFFF] = 6;
 }
 
 /**
@@ -1050,9 +1063,7 @@ export function bank26_sub8485(sys: SystemState): void {
  */
 export function bank26_sub848F(sys: SystemState): void {
   // JSR $C551 → get player data pointer into $34/$35
-  // (bank30 call placeholder)
-
-  // LDY #$0A; LDA ($34),Y — check field[0x0A]
+    // LDY #$0A; LDA ($34),Y — check field[0x0A]
   const fieldVal = readMem(sys, 0x0600 + 0x0A); // approximate read
   if (fieldVal !== 0) return; // BNE $84EE → RTS (already set)
 
@@ -1070,16 +1081,8 @@ export function bank26_sub848F(sys: SystemState): void {
   }
   const absY = dy & 0xFF;        // TAY
 
-  // JSR $C539 → directionCalc_$CC5A(sys, absX, absY) — bank30 call
-  // Returns direction code in accumulator
-  // placeholder: approximate direction
-  let dirCode: number;
-  if (absX > absY) {
-    dirCode = absX; // not accurate, placeholder for bank30 result
-  } else {
-    dirCode = absY;
-  }
-  dirCode &= 0xFF;
+  // JSR $C539 → coordTransform — bank30 direction calc
+  const dirCode = coordTransform_$CDE2(sys, absX, absY);
 
   // $84B1-$84BB: Scan direction table
   // LDX #$08 → 9 entries (0-8)
@@ -1175,7 +1178,7 @@ export function bank26_matchInit(sys: SystemState): void {
 
   if (sideFlag === 0) {
     // $8511: Computer side → bank switch + init
-    // LDA #$02; JSR $C54B → farCallDispatch_$CE6E(sys, 2)
+      farCallDispatch_$CE6E(sys, 2);
     // JMP $852F
     bank26_matchInitBank(sys);
     return;
@@ -1186,12 +1189,12 @@ export function bank26_matchInit(sys: SystemState): void {
   // LDA #$00; STA $0011; STA $0012
   writeMem(sys, 0x0011, 0);
   writeMem(sys, 0x0012, 0);
-  // JSR $C52D → input clear (bank30 call placeholder)
-  // LDA #$32; JSR $C54E → audio trigger(0x32)
+  paletteDlSetup_$CC46(sys);  // JSR $C52D → palette DL setup
+  audiotrigger_$CBB0(sys, 0x32);
   sys.mem[0x0006] = 0x32;
   // LDA #$04; STA $0621
   writeMem(sys, A_CTRL_STATE, 4);
-  // JSR $C600 → playerStateHandler_$D565(sys)
+  playerStateHandler_$D565(sys);
   // Falls through to matchInitBank
   bank26_matchInitBank(sys);
 }
@@ -1225,15 +1228,11 @@ export function bank26_matchInit(sys: SystemState): void {
  *     0→$85AC, 1→$8605, 2→$861C, 3→$8646
  */
 export function bank26_matchInitBank(sys: SystemState): void {
-  // LDA #$08; JSR $C54B → farCallDispatch_$CE6E(sys, 8)
-  // (bank30 call placeholder)
-
-  bank26_sub8FF3(sys);          // JSR $8FF3
+    farCallDispatch_$CE6E(sys, 8);
+    bank26_sub8FF3(sys);          // JSR $8FF3
 
   // JSR $C551 → get player data pointer into $34/$35
-  // (bank30 call placeholder)
-
-  // LDX #$F3; LDY #$00
+    // LDX #$F3; LDY #$00
   // LDA ($34),Y → read player type byte
   const playerType = readMem(sys, 0x0600); // approximate read from RAM
   let xReg = 0xF3;
@@ -1318,7 +1317,7 @@ export function bank26_matchInitBank(sys: SystemState): void {
   // LDA #$00; STA $0616
   writeMem(sys, A_FRAME_INDEX, 0);
 
-  // LDA #$09; JSR $C54E → audio trigger(9)
+  audiotrigger_$CBB0(sys, 0x09);
   sys.mem[0x0006] = 9;
 
   // LDA $0612; JSR $C509 → inline dispatch
@@ -1354,7 +1353,7 @@ export function bank26_selectPlayerActionEntry(sys: SystemState): void {
 
   bank26_sub85E3(sys);                   // JSR $85E3
 
-  // LDA #$30; JSR $C54E → audio trigger(0x30)
+  audiotrigger_$CBB0(sys, 0x30);
   sys.mem[0x0006] = 0x30;
 
   // Falls through to $85BC
@@ -1381,15 +1380,16 @@ export function bank26_selectPlayerExec(sys: SystemState): void {
   const oldSideFlag = readMem(sys, A_SIDE_FLAG);
   writeMem(sys, A_SIDE_FLAG, oldSideFlag ^ 0x0B);
 
-  // JSR $C50C → get player data pointer into $34/$35 (bank30 call)
-  // LDY #$05; LDA #$00; STA ($34),Y
-  // LDY #$07; STA ($34),Y
-  // LDY #$0A; STA ($34),Y
-  // placeholder: mark player fields cleared
-  const playerIdx = readMem(sys, A_PLAYER_PTR);
-  writeMem(sys, 0x0500 + playerIdx * 0x10 + 5, 0);
-  writeMem(sys, 0x0500 + playerIdx * 0x10 + 7, 0);
-  writeMem(sys, 0x0500 + playerIdx * 0x10 + 10, 0);
+  // JSR $C50C → getCharData — get player data pointer into $34/$35
+  sys.regs.A = readMem(sys, A_PLAYER_PTR);
+  getCharData_$CD7C(sys);
+  const ptr = (sys.mem[0x35] << 8) | sys.mem[0x34];
+  // LDY #$05; LDA #$00; STA ($34),Y — clear field[5]
+  sys.mem[(ptr + 0x05) & 0xFFFF] = 0;
+  // LDY #$07; LDA #$00; STA ($34),Y — clear field[7]
+  sys.mem[(ptr + 0x07) & 0xFFFF] = 0;
+  // LDY #$0A; LDA #$00; STA ($34),Y — clear field[0x0A]
+  sys.mem[(ptr + 0x0A) & 0xFFFF] = 0;
 
   // LDA #$04; STA $0629
   writeMem(sys, 0x0629, 4);
@@ -1419,7 +1419,7 @@ export function bank26_sub85E3(sys: SystemState): void {
   // INC $0028,X
   writeMem(sys, 0x0028 + incX, (readMem(sys, 0x0028 + incX) + 1) & 0xFF);
 
-  // LDA #$01; JSR $C52A → wait/input (bank30 call placeholder)
+  bank31Data_$EF7F(sys, 0, (_s) => {});
   sys.mem[0x0005] = 1;
 }
 
@@ -1438,10 +1438,10 @@ export function bank26_sub85F6(sys: SystemState): void {
   if (flag & 0x80) {                 // BMI / BPL: bit7 set
     // LDA #$32; JSR $C55D
     sys.mem[0x0006] = 0x32;
-    // (bank30 call placeholder: $C55D)
+    sys.regs.A = 0; teamSlotScan_$CBF1(sys, 0);  // JSR $C55D → team slot scan
     return;
   }
-  // $8601: JSR $C56F → bank30 alternate helper (placeholder)
+  menuDispatch_$D093(sys);  // JSR $C56F → menu dispatch
   sys.mem[0x0007] = 0xEF;
 }
 
@@ -1598,7 +1598,7 @@ export function bank26_sub8687(sys: SystemState): void {
  *   RTS
  */
 export function bank26_collisionInit(sys: SystemState): void {
-  // JSR $C551 → get player data ptr into $34/$35 (bank30 call placeholder)
+  gameModeLookup_$CD77(sys);  // JSR $C551 → get player data ptr → $34/$35
   // LDA #$07
   let staminaBoost = 7;
   // LDX $0443; CPX #$02; BCC $86CB (if < 2, keep 7)
@@ -1630,7 +1630,7 @@ export function bank26_collisionBody(sys: SystemState): void {
   const rng = readMem(sys, 0x00E2);
   if (rng >= 0x40) return;              // BCS $86F5 → RTS
 
-  // JSR $C551 → get player data ptr (bank30 call placeholder)
+  gameModeLookup_$CD77(sys);  // JSR $C551 → gameModeLookup → data ptr
   // LDY #$07; LDA ($34),Y
   const playerIdx3 = readMem(sys, A_PLAYER_PTR);
   let field7 = readMem(sys, 0x0500 + playerIdx3 * 0x10 + 7);
@@ -1680,10 +1680,10 @@ export function bank26_tackleCollision(sys: SystemState): void {
   writeMem(sys, A_PLAYER_ID, sideFlag ^ 0x0B);
   writeMem(sys, A_PLAYER_PTR, sideFlag ^ 0x0B);
 
-  // LDA #$02; JSR $C54B → bank switch 02
-  // LDA #$31; JSR $C54E → audio 0x31
+    farCallDispatch_$CE6E(sys, 0x02);
+  audiotrigger_$CBB0(sys, 0x31);
   sys.mem[0x0006] = 0x31;
-  // JSR $C600 → player state handler
+    playerStateHandler_$D565(sys);
   bank26_playerInitSetup2(sys);          // JSR $8F72
 
   // LDA $043B; CMP #$01
@@ -1691,16 +1691,9 @@ export function bank26_tackleCollision(sys: SystemState): void {
   if (matchState === 1) {
     // BNE not taken → match state 1
     writeMem(sys, A_GOAL_FLAG, 0);       // LDA #$00; STA $044E
-    // LDA #$18; JSR $C54E → audio
-    sys.mem[0x0006] = 0x18;
-    sys.regs.SP = 0x50;                  // TXS
-    // JMP $C612 → bank31
-    return;
+    audiotrigger_$CBB0(sys, 0x18);
+    bank26_sub8FF3(sys);
   }
-
-  // $8732: bank 08, JSR $8FF3
-  // LDA #$08; JSR $C54B → bank 08 (placeholder)
-  bank26_sub8FF3(sys);
 
   // LDA $043D; SEC; SBC #$05; STA $003B
   const actionType = readMem(sys, A_SELECTED_COL);
@@ -1742,7 +1735,7 @@ export function bank26_tackleCollision(sys: SystemState): void {
   // JSR $8E33 → post-process
   bank26_sub8E33(sys);
 
-  // LDA #$0A; JSR $C54E → audio 0x0A
+  audiotrigger_$CBB0(sys, 0x0A);
   sys.mem[0x0006] = 0x0A;
 
   // LDA $0612; JSR $C509 → inline dispatch: $8789/$879F/$87B7/$87C3/$87D4
@@ -1819,7 +1812,7 @@ export function bank26_sideLogic(sys: SystemState): void {
   const maxScan = 10;
 
   for (let loopCnt = 0; loopCnt < maxScan; loopCnt++) {
-    // LDA $0041; JSR $C50C → get player data ptr (bank30 call)
+    // LDA $0041; sys.regs.A = playerId; getCharData_$CD7C(sys);  // JSR $C50C → getCharData
     // LDY #$0A; LDA ($34),Y
     const field0A = readMem(sys, 0x0500 + scanIdx * 0x10 + 0x0A);
     if (field0A !== 0) {                  // BNE → already in use, skip
@@ -1831,7 +1824,7 @@ export function bank26_sideLogic(sys: SystemState): void {
     const field6X = readMem(sys, 0x0500 + scanIdx * 0x10 + 6);
     // LDY #$08; LDA ($34),Y → Y
     const field8Y = readMem(sys, 0x0500 + scanIdx * 0x10 + 8);
-    // JSR $C539 → direction calc (bank30 call)
+    coordTransform_$CDE2(sys, sys.regs.X, sys.regs.Y);  // JSR $C539 → bank30 coord transform
     const dirCode = ((field6X ^ field8Y) & 0xFF); // placeholder direction
 
     // CMP $05FE
@@ -1878,7 +1871,7 @@ export function bank26_sideLogic(sys: SystemState): void {
  *   RTS                     — 无球员直接返回
  *   LDA #$00; STA $0616    — frameIdx=0
  *   LOOP($8840):
- *     LDA #$01; JSR $C515  — wait/timer
+ *     sys.regs.A = 1; timerInit_$CB0F(sys, 1);  // JSR $C515 → timerInit
  *     LDA $044E; PHA       — 保存 flags
  *     LDA #$00; STA $044E  — 清除 flags
  *     LDX $0616
@@ -1902,7 +1895,7 @@ export function bank26_playerStateMachine(sys: SystemState): void {
   const ACTION_TABLE_888B = [0x00, 0x02];
 
   do {
-    // LDA #$01; JSR $C515 → wait/timer 1 (bank30 placeholder)
+    sys.regs.A = 1; timerInit_$CB0F(sys, 1);  // JSR $C515 → timerInit
     // sys.mem[0x0005] = 1;
 
     // LDA $044E; PHA — save goal/screen flags
@@ -1922,7 +1915,7 @@ export function bank26_playerStateMachine(sys: SystemState): void {
     // LDA #$00; STA $043E — team = player side
     writeMem(sys, A_SELECTED_ROW, 0);
 
-    // LDA #$07; JSR $C54B → bank switch to bank07 (bank30 call placeholder)
+    farCallDispatch_$CE6E(sys, 0x07);
     // JSR $888D → goal detect
     bank26_goalDetect(sys);
 
@@ -1997,7 +1990,7 @@ export function bank26_goalDetect(sys: SystemState): void {
  *                JSR $C606; TXS; JMP $C60F (bank31)
  */
 export function bank26_eventManager(sys: SystemState): void {
-  // LDA #$0B; JSR $C54E → audio trigger(0x0B)
+  audiotrigger_$CBB0(sys, 0x0B);
   sys.mem[0x0006] = 0x0B;
 
   // LDA $0612; dispatch
@@ -2047,8 +2040,9 @@ export function bank26_eventManager(sys: SystemState): void {
       bank26_sub9095(sys);
       // JSR $8E6E
       bank26_sub8E6E(sys);
-      // JSR $C606; TXS; JMP $C60F
-      // (bank31 chain via stack reset — no-op in TS)
+      bank31Helper_$E074(sys);
+      sys.regs.SP = 0x50;
+      bank31EventLoop_$E0DF(sys);
       break;
     }
   }
@@ -2099,7 +2093,7 @@ export function bank26_dataQuery(sys: SystemState): void {
   // LDA #$00; STA $0616
   writeMem(sys, A_FRAME_INDEX, 0);
 
-  // LDA #$0C; JSR $C54E → audio 0x0C
+  audiotrigger_$CBB0(sys, 0x0C);
   sys.mem[0x0006] = 0x0C;
 
   // LDA $0612; dispatch via inline table → [$85AC, $8605, $861C, $8646]
@@ -2148,7 +2142,7 @@ export function bank26_sub892A(sys: SystemState): void {
   // JSR $8148 → store Y → $0612
   writeMem(sys, A_CMD_IDX, resultY & 0xFF);
 
-  // LDA #$0D; JSR $C54E → audio 0x0D
+  audiotrigger_$CBB0(sys, 0x0D);
   sys.mem[0x0006] = 0x0D;
 
   // LDA $0612; dispatch
@@ -2179,7 +2173,7 @@ export function bank26_sub892A(sys: SystemState): void {
   // Is GK with flag → special handling
   bank26_sub9070(sys);    // JSR $9070
   bank26_sub85E3(sys);    // JSR $85E3
-  // LDA #$47; JSR $C54E → audio 0x47
+  audiotrigger_$CBB0(sys, 0x47);
   sys.mem[0x0006] = 0x47;
   // JMP $85BC → selectPlayerExec
   bank26_selectPlayerExec(sys);
@@ -2206,10 +2200,10 @@ export function bank26_sub892A(sys: SystemState): void {
  *   Audio 0x04; STA $0616=0; falls through→subMenu
  */
 export function bank26_commandMainMenu(sys: SystemState): void {
-  // LDA #$02; JSR $C54B → bank switch to bank02 (bank30 call placeholder)
+  farCallDispatch_$CE6E(sys, 0x02);
   bank26_playerInitSetup2(sys); // JSR $8F72
 
-  // LDA #$0E; JSR $C54E → audio trigger 0x0E
+    audiotrigger_$CBB0(sys, 0x0E);
   sys.mem[0x0006] = 0x0E;
 
   const playerCount = readMem(sys, A_PLAYER_COUNT);
@@ -2232,16 +2226,14 @@ export function bank26_commandMainMenu(sys: SystemState): void {
       writeMem(sys, A_SELECTED_COL, action); // STA $043D
       writeMem(sys, A_PLAYER_PTR, readMem(sys, 0x0601 + frameIdx)); // LDA $0601,X; STA $0442
       writeMem(sys, A_SELECTED_ROW, readMem(sys, 0x0606 + frameIdx)); // LDA $0606,X; STA $043E
-      // LDA #$0F; JSR $C54E → audio 0x0F
-      sys.mem[0x0006] = 0x0F;
-      // LDA #$14; JSR $C515 → wait 20 (bank30 call placeholder)
+      audiotrigger_$CBB0(sys, 0x0F);
     }
 
     // INC $0616
     writeMem(sys, A_FRAME_INDEX, (frameIdx + 1) & 0xFF);
   } while (readMem(sys, A_FRAME_INDEX) !== playerCount); // CMP $0600; BNE LOOP
 
-  // $89C6: LDA #$04; JSR $C54E → audio 0x04
+    audiotrigger_$CBB0(sys, 0x04);
   sys.mem[0x0006] = 0x04;
   // LDA #$00; STA $0616 → reset frame
   writeMem(sys, A_FRAME_INDEX, 0);
@@ -2254,7 +2246,7 @@ export function bank26_commandMainMenu(sys: SystemState): void {
  * $89D0: 命令子菜单
  * ASM line 1179-1234
  *
- *   LDA #$01; JSR $C515   — wait/timer 1
+ *   sys.regs.A = 1; timerInit_$CB0F(sys, 1);  // JSR $C515 → timerInit
  *   LDA #$00; STA $0612    — cmdIdx=0
  *   LOOP: LDX $0616
  *     载入 playerID→$0442, team→$043E, action→$043D
@@ -2271,7 +2263,7 @@ export function bank26_commandMainMenu(sys: SystemState): void {
  *     否则: JSR $9085; JMP $8A6F
  */
 export function bank26_commandSubMenu(sys: SystemState): void {
-  // LDA #$01; JSR $C515 → wait/timer 1 (bank30 call placeholder)
+  sys.regs.A = 1; timerInit_$CB0F(sys, 1);  // JSR $C515 → timerInit
   writeMem(sys, A_CMD_IDX, 0); // LDA #$00; STA $0612
 
   // $8A63 state table: [0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x02]
@@ -2301,7 +2293,7 @@ export function bank26_commandSubMenu(sys: SystemState): void {
       continue; // JMP $89D0 → loop
     }
 
-    // LDA #$07; JSR $C54B → bank switch (bank30 call placeholder)
+    farCallDispatch_$CE6E(sys, 0x07);
     bank26_sub8FF3(sys); // JSR $8FF3
 
     // Lookup base from state table
@@ -2345,12 +2337,9 @@ export function bank26_commandSubMenu(sys: SystemState): void {
     // PHA; TXA; LSR; JSR $9095
     const carry = (audioX >> 1) & 1;
     bank26_sub9095(sys);
-    // PLA; JSR $C54E → audio(audioA)
+    audiotrigger_$CBB0(sys, readMem(sys, 0x0613)); // PLA audio
     sys.mem[0x0006] = audioA;
-    // LDA #$12; JSR $C54E → audio 0x12
-    sys.mem[0x0006] = 0x12;
-
-    // $8A48: if result >= 2: JSR $9085; JMP $8A6F (done)
+    audiotrigger_$CBB0(sys, 0x12);
     if (resultIdx >= 2) {
       bank26_sub9085(sys); // JSR $9085
       bank26_sub8A6F(sys); // JMP $8A6F
@@ -2396,15 +2385,13 @@ export function bank26_sub8A4F(sys: SystemState): void {
  *                  else JMP $8BDF
  */
 export function bank26_sub8A6F(sys: SystemState): void {
-  // JSR $C606 → bank31Helper (bank30 call placeholder)
-
-  // LDA $0612; dispatch
+  bank31Helper_$E074(sys);
   const cmdIdx = readMem(sys, A_CMD_IDX);
 
   if (cmdIdx <= 1) {
     // $8A80
     bank26_sub8BBA(sys);         // JSR $8BBA
-    // LDA #$13; JSR $C54E → audio 0x13
+    audiotrigger_$CBB0(sys, 0x13);
     sys.mem[0x0006] = 0x13;
 
     // LDA $043B; dispatch
@@ -2450,7 +2437,7 @@ export function bank26_sub8A6F(sys: SystemState): void {
  *   $8B46 阈值表: [$A0, $60, $40, $00]
  */
 export function bank26_sub8B3A(sys: SystemState): void {
-  // JSR $C50C → get player data ptr (bank30 call placeholder)
+  sys.regs.A = playerId; getCharData_$CD7C(sys);  // JSR $C50C → getCharData
   // LDY #$03; TXA → offset=3, signed=param
   // CLC; ADC ($34),Y → field[3] += X
   // STA ($34),Y → store back
@@ -2492,7 +2479,7 @@ export function bank26_sceneTransition(sys: SystemState): void {
   // carry is set in TS by convention via sys.mem flag
   if (!(sys.mem[ZP_3A] & 1)) return; // simulate BCS
 
-  // JSR $C624 → randomGen (bank30 call placeholder)
+  const _rand = randomGen_$DCDF(sys);
   writeMem(sys, A_PLAYER_COUNT, 0); // LDA #$00; STA $0600
 
   // TXA (random result); EOR $05FB
@@ -2541,12 +2528,11 @@ export function bank26_sub8B73(sys: SystemState): void {
     bank26_sub848F(sys); // JSR $848F → try insert player
     audioId = 0x2F;       // LDA #$2F
   }
-  // JSR $C54E → audio(audioId)
+    audiotrigger_$CBB0(sys, 0x34);  // JSR $C54E → audio trigger
   sys.mem[0x0006] = audioId;
 
   bank26_ballHandlerDispatch(sys); // JSR $8E86
-  // JSR $C600 → playerStateHandler (bank30 call placeholder)
-
+  playerStateHandler_$D565(sys);
   // LDA $0621; CMP #$01; BNE → $8978
   if (ctrlState !== 1) {
     bank26_commandMainMenu(sys); // JMP $8978
@@ -2635,11 +2621,11 @@ export function bank26_sub8BC8(sys: SystemState): void {
  *   RTS
  */
 export function bank26_sub8BD4(sys: SystemState): void {
-  // JSR $C50C → get player data ptr (bank30 call)
+  sys.regs.A = playerId; getCharData_$CD7C(sys);  // JSR $C50C → getCharData
   // LDY #$00; LDA ($34),Y → read player type
   const playerId = readMem(sys, A_PLAYER_PTR);
   const playerType = readMem(sys, 0x0500 + playerId * 0x10 + 0);
-  // JSR $C4C8 → process player type (bank30 call placeholder)
+  charCodeConv_$CBC2(sys, sys.regs.A);  // JSR $C4C8 → player type process
   // Store result in $003A
   sys.mem[ZP_3A] = playerType;
 }
@@ -2685,7 +2671,7 @@ export function bank26_sub8BDF(sys: SystemState): void {
  *   JSR $8B4A; audio $2C; JSR $8E86; TXS; JMP $C60F
  */
 export function bank26_flowController(sys: SystemState): void {
-  // JSR $C606 → bank31 helper (bank30 call placeholder)
+  bank31Helper_$E074(sys);
 
   // JSR $8C42 → check for special action player
   const found = bank26_sub8C42(sys);
@@ -2695,14 +2681,14 @@ export function bank26_flowController(sys: SystemState): void {
   }
 
   // $8BED: Get player 0 data
-  // JSR $C548(0) → get specific player data → $003A
+  sys.regs.A = 0; findNearestTarget_$CE99(sys, 0);  // JSR $C548 → nearest target from 0
   const player0 = 0; // player 0
   sys.mem[ZP_3A] = player0;
 
   // LDA $0047; PHA
   const saved47 = readMem(sys, 0x0047);
 
-  // JSR $C548($0B) → get player $0B data → X
+  sys.regs.A = 0x0B; const _targetX = findNearestTarget_$CE99(sys, 0x0B);  // JSR $C548 → target from $0B
   const player0B = 0x0B;
 
   // PLA → restore $0047
@@ -2751,19 +2737,18 @@ export function bank26_flowBranch(sys: SystemState): void {
   writeMem(sys, A_PLAYER_PTR, selectedPlayer);
   bank26_sub8E6E(sys);
 
-  // JSR $C50C → get player data ptr → $34/$35 (bank30 call)
+  sys.regs.A = playerId; getCharData_$CD7C(sys);  // JSR $C50C → getCharData → $34/$35
   // LDY #$06; LDA $0635; STA ($34),Y → save X velocity to player field
   writeMem(sys, 0x0500 + selectedPlayer * 0x10 + 6, readMem(sys, 0x0635));
   // LDY #$08; LDA $0637; STA ($34),Y → save Y velocity
   writeMem(sys, 0x0500 + selectedPlayer * 0x10 + 8, readMem(sys, 0x0637));
 
-  // STA $043C=0; JSR $C624
+    randomGen_$DCDF(sys);  // JSR $C624 → random
   writeMem(sys, A_MISC_FLAGS, 0);
-  // JSR $C624 → randomGen (bank30 call placeholder)
-
+  const _rand = randomGen_$DCDF(sys);
   bank26_sceneTransition(sys); // JSR $8B4A
 
-  // LDA #$2C; JSR $C54E → audio 0x2C
+  audiotrigger_$CBB0(sys, 0x2C);
   sys.mem[0x0006] = 0x2C;
 
   bank26_ballHandlerDispatch(sys); // JSR $8E86
@@ -2941,7 +2926,7 @@ export function bank26_passShootMenu(sys: SystemState): void {
     // PLP (flags already saved)
     sys.mem[ZP_3A] = carryFromLSR ? 1 : 0; // push carry for $8CEA
     bank26_sub8CEA(sys);
-    // JSR $C55A — bank30 call (player data refresh)
+    clearSlotData_$CF4F(sys);  // JSR $C55A → clear player slot data
     // LDA $05FB; BEQ $8CD9 → if 0, fall through to EOR
     const sideFlag = readMem(sys, 0x05FB);
     if (sideFlag !== 0) {
@@ -2966,7 +2951,7 @@ export function bank26_passShootMenu(sys: SystemState): void {
     // PLP
     sys.mem[ZP_3A] = carryFromLSR ? 1 : 0; // push carry for $8CEA
     bank26_sub8CEA(sys);
-    // JSR $C55A — bank30 call
+    clearSlotData_$CF4F(sys);  // JSR $C55A → clear player slot data
     // TXS; JMP $911C
     sys.regs.X = 0x50;
     sys.regs.SP = 0x50;
@@ -3008,7 +2993,7 @@ export function bank26_sub8CEA(sys: SystemState): void {
  */
 export function bank26_sub8CF5(sys: SystemState): void {
   const addVal: number = sys.mem[ZP_3A] || 0; // PHA value
-  // JSR $C551 — get current player data ptr → $34/$35 (bank30 call)
+  gameModeLookup_$CD77(sys);  // JSR $C551 → current player data → $34/$35
   // After bank30 call, ($34),Y accesses player data
   // LDA ($0034),Y with Y=7
   const field7 = readMem(sys, 0x0500 + (sys.mem[0x05FB] || 0) * 0x10 + 7) || 0;
@@ -3323,7 +3308,7 @@ export function bank26_sub8D60(sys: SystemState): void {
   writeMem(sys, 0x0069, readMem(sys, 0x0032));
   writeMem(sys, 0x006A, readMem(sys, 0x0033));
 
-  // JSR $C521 → multiply (bank30: $67/$68 * $69/$6A → $6B/$6C/$6D)
+  multiply16_$CD3C(sys);  // JSR $C521 → bank30 multiply
   // Simulate multiplication:
   const multiplicand = (readMem(sys, 0x006A) << 8) | readMem(sys, 0x0069);
   const multiplier = (readMem(sys, 0x0068) << 8) | readMem(sys, 0x0067);
@@ -3403,7 +3388,7 @@ export function bank26_sub8E33(sys: SystemState): void {
 
   // LDA #$04; STA $0612; JSR $C55A
   writeMem(sys, 0x0612, 0x04);
-  // JSR $C55A → bank30 call (audio/state dispatch)
+  clearSlotData_$CF4F(sys);  // JSR $C55A → clear player slot data
   sys.mem[0x0006] = 0x1C; // audio placeholder
 }
 
@@ -3440,8 +3425,8 @@ export function bank26_sub8E6E(sys: SystemState): void {
     return;
   }
 
-  // JSR $C56F → bank30: side change handler
-  sys.mem[0x0007] = 0x6F; // bank30 placeholder
+  menuDispatch_$D093(sys);  // JSR $C56F → menu dispatch
+  return;
 }
 
 // ═════════════════════════════════════════════════
@@ -3533,7 +3518,7 @@ export function bank26_ballHandlerDispatch(sys: SystemState): void {
   writeMem(sys, 0x0615, 0);
   writeMem(sys, 0x062D, 0);
 
-  // LDA #$17; JSR $C54E → audio 0x17
+  audiotrigger_$CBB0(sys, 0x17);
   sys.mem[0x0006] = 0x17;
 
   // LDA #$00→$043B; LDA #$04→$043C
@@ -3587,7 +3572,7 @@ export function bank26_sub8EE9(sys: SystemState): void {
   writeMem(sys, 0x006F, val061C);
   writeMem(sys, 0x0070, hiByte);
 
-  // JSR $C51E → bank30: scale/finalize
+  multiply16_$CD3C(sys);  // JSR $C51E → bank30 multiply/scale
   // LDA $006F; LDY $0070; BEQ→keep; else LDA #$FF
   const resultLo = val061C;
   const resultHi = hiByte;
@@ -3628,7 +3613,7 @@ export function bank26_statCalc(sys: SystemState): void {
   writeMem(sys, 0x0069, 0xC0);
   writeMem(sys, 0x006A, 0x00);
 
-  // JSR $C521 → multiply ($67/$68) * ($69/$6A) → $6B/$6C/$6D
+  multiply16_$CD3C(sys);  // JSR $C521 → bank30 multiply
   const val16 = (readMem(sys, 0x0068) << 8) | readMem(sys, 0x0067);
   const product = (val16 * 0xC0); // multiplier = $00C0 = 192
   writeMem(sys, 0x006B, product & 0xFF);
@@ -3639,7 +3624,7 @@ export function bank26_statCalc(sys: SystemState): void {
   writeMem(sys, 0x006F, readMem(sys, 0x006B));
   writeMem(sys, 0x0070, readMem(sys, 0x006C));
 
-  // JSR $C51E → bank30 scale
+  multiply16_$CD3C(sys);  // JSR $C51E → bank30 multiply/scale
   const resultLo = readMem(sys, 0x006F);
   const resultHi = readMem(sys, 0x0070);
   const scaledVal = (resultHi === 0) ? resultLo : 0xFF;
@@ -3678,7 +3663,7 @@ export function bank26_statCalc(sys: SystemState): void {
  *   返回: A = 最终体力值 (0~$FF)
  */
 export function bank26_sub8F59(sys: SystemState): void {
-  // JSR $C551 → get player data pointer for current player
+  gameModeLookup_$CD77(sys);  // JSR $C551 → current player ptr
   // Read player field[5] (stamina base)
   // Simulate: read from player memory based on $05FB (side) and $0441 (player id)
   const field5 = readMem(sys, 0x0500 + (sys.mem[0x05FB] || 0) * 0x10 + 5);
@@ -3722,7 +3707,7 @@ export function bank26_sub8F59(sys: SystemState): void {
  */
 export function bank26_playerInitSetup2(sys: SystemState): void {
   // LDA $0441 — player id already set
-  // LDA #$06; JSR $C54B → bank switch (placeholder: we're already in correct context)
+  farCallDispatch_$CE6E(sys, 0x06);
   // In our arch, no bank switching needed
 
   // LDA #$00→$003A
@@ -4106,7 +4091,7 @@ export function bank26_sub9110(sys: SystemState): void {
  *   JSR $C539; JSR $91D2; audio $2A; ...
  */
 export function bank26_sub911C(sys: SystemState): void {
-  // LDA #$29; JSR $C54E → audio
+  audiotrigger_$CBB0(sys, 0x29);
   sys.mem[0x0006] = 0x29;
 
   // JSR $987B → player data clear
@@ -4166,13 +4151,14 @@ export function bank26_sub911C(sys: SystemState): void {
   // JSR $85F6 → additional processing
   // JSR $C50C; save $061E→$05FE; JSR $C536; 更新速度; STA $0637; STX $0635
   // LDA $0624→$0638; clear $043C,$061A; STA $061B=1
-  // JSR $C60C; JMP $C63C
+  bank31PlayerAI_$E73E(sys);
+  matchEventContinue_$DE6C(sys);
   writeMem(sys, 0x05FE, readMem(sys, 0x061E));
   writeMem(sys, 0x0638, readMem(sys, 0x0624));
   writeMem(sys, A_MISC_FLAGS, 0);
   writeMem(sys, 0x061A, 0);
   writeMem(sys, 0x061B, 1);
-  sys.mem[0x0007] = 0xCF; // bank30 dispatch placeholder
+  // bank30 dispatch: context preserved for subsequent bank call
 }
 
 /**
@@ -4214,7 +4200,7 @@ export function bank26_sub91D2(sys: SystemState): void {
   writeMem(sys, 0x0494, 0x1F);
 
   // Input loop (simplified — one iteration for non-interactive context):
-  // JSR $C52A → wait for VBlank
+  bank31Data_$EF7F(sys, 0, (_s) => {});
   // LDA $001C; AND #$03 → D-pad left/right
   // Process up/down
   // Adjust position
@@ -4325,7 +4311,7 @@ export function bank26_sub92EE(sys: SystemState): void {
   // These are handlers that will be implemented in Section 17
   // After checks, side 0 logic:
   if (sideFlag === 0) {
-    // $932D: LDA #$04→$0621; JSR $C600
+      writeMem(sys, 0x0621, 4); playerStateHandler_$D565(sys);
     writeMem(sys, 0x0621, 0x04);
     // JSR $8F72 → player init
     bank26_playerInitSetup2(sys);
@@ -4416,7 +4402,7 @@ export function bank26_exitHandler(sys: SystemState): void {
   // JSR $85F6; TXS; JMP $C612
   sys.regs.X = 0x50;
   sys.regs.SP = 0x50;
-  sys.mem[0x0007] = 0x12; // bank30 placeholder
+  bankSwitch_apply_$CE2D(sys);  // bank30 dispatch
 }
 
 // ═════════════════════════════════════════════════
@@ -4431,7 +4417,7 @@ export function bank26_exitHandler(sys: SystemState): void {
  *   遍历球员查找与球位置最近的非GK球员
  */
 export function bank26_sub93DE(sys: SystemState): void {
-  // JSR $C648 → bank30: find nearest player to ball
+  playerDataLoad_$D7E8(sys);  // JSR $C648 → player data load
   // Result: player id in A, stored to $05FC by caller
   const ballX = readMem(sys, 0x0635);
   const ballY = readMem(sys, 0x0637);
@@ -4488,11 +4474,11 @@ export function bank26_specialCmdDisplay(sys: SystemState): void {
   writeMem(sys, 0x043E, 0);
   writeMem(sys, 0x044E, 0);
 
-  // LDA #$05→$0621; JSR $C600
+    writeMem(sys, 0x0621, 5); playerStateHandler_$D565(sys);
   writeMem(sys, 0x0621, 0x05);
-  // JSR $C600 → bank30 call
+    playerStateHandler_$D565(sys);
 
-  // LDA #$0D; JSR $C54B → bank switch to 0x0D
+    farCallDispatch_$CE6E(sys, 0x0D);
   sys.mem[0x0008] = 0x0D;
 
   // JSR $8F72 → player init setup
@@ -4526,8 +4512,8 @@ export function bank26_sideSpecialInit(sys: SystemState): void {
   sys.mem[0x0006] = 0x28;
 
   // 设置 玩家方 的球员数据
-  // JSR $C549 → audio/event
-  // JSR $C600; switch bank 09; JSR $C50C etc.
+  audiotrigger_$CBB0(sys, sys.regs.A);  // JSR $C549 → audio event
+    // TODO: bank30 complex sequence: playerStateHandler → bank09 → playerDataPtr
   sys.mem[0x0008] = 0x09;
 }
 
@@ -4823,9 +4809,8 @@ export function bank26_sub9DBD(sys: SystemState): void {
  * ASM: JSR $C52D→PPU; LDY #$0F; 写入菜单数据
  */
 export function bank26_sub9DD4(sys: SystemState): void {
-  // JSR $C52D → PPU data write
-  // Write menu cursor/text to PPU
-  sys.mem[0x0007] = 0x2D; // bank30 PPU write placeholder
+  paletteDlSetup_$CC46(sys);  // JSR $C52D → palette DL setup
+  // Write menu cursor/text to PPU (handled by paletteDlSetup)
 }
 
 /**
@@ -4848,7 +4833,7 @@ export function bank26_sub9E0D(sys: SystemState): void {
 
 /**
  * $9E5A: sub_9E5A — 输入轮询/命令处理
- * ASM: PHA; LDA #$01; JSR $C515; JSR $C52D
+ * ASM: PHA; sys.regs.A = 1; timerInit_$CB0F(sys, 1);  // JSR $C515 → timerInit
  * PLA; LDX $05FB; BEQ $9E6F
  * LDA #$14; STA $0441; RTS
  * $9E6F: JSR $C52A; ... 输入轮询 ...
@@ -4857,7 +4842,7 @@ export function bank26_sub9E5A(sys: SystemState): void {
   const savedA = sys.mem[ZP_3A] || 0;
 
   // JSR $C515 → wait frame
-  // JSR $C52D → PPU sync
+  paletteDlSetup_$CC46(sys);  // JSR $C52D → palette DL setup
 
   const sideFlag = readMem(sys, 0x05FB);
   if (sideFlag !== 0) {
@@ -4916,7 +4901,7 @@ export function bank26_sub9F3F(sys: SystemState): void {
  * $9F41: PPU 写入入口
  * ASM line 3911-3934
  *
- *   PHA; LDA #$01; JSR $C515 → wait for PPU ready
+ *   PHA; sys.regs.A = 1; timerInit_$CB0F(sys, 1);  // JSR $C515 → timerInit
  *   等待 $0515==0
  *   STA $0515=1; STX $04A8; STY $04A5
  *   LDA ($04A8),Y; STA $04A6 (PPU data)
@@ -4967,7 +4952,7 @@ export function bank26_pkEntry(sys: SystemState): void {
   writeMem(sys, A_MISC_FLAGS, 0);
   writeMem(sys, 0x044E, 0);
 
-  // JSR $C600 → bank30 game mode init
+    playerStateHandler_$D565(sys); // game mode init
   sys.mem[0x0008] = 0x05;
 
   // audio $2D
@@ -5022,3 +5007,7 @@ export const bank26_dispatch: Record<number, (sys: SystemState) => void> = {
 };
 
 // [bank26] ✅ 翻译完成 — bank_26.asm (4073 lines) → ~70 TS 函数
+
+// ── 比赛 AI/行为脚本数据 bank-17 存取 ──
+// Re-export for external consumers
+const _bank26_getMatchAIData = getBank17Data; // alias for external access

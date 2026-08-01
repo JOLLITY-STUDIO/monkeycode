@@ -77,9 +77,30 @@ CHR-ROM (图形数据)            →    ChrTileStore (预解码缓存)
 - [ ] 完整 E2E 测试（小程序环境）
 - [ ] Git commit: `phase-7: miniprogram polish`
 
+### Phase 8: Bank 关系链审计与修复 ✓
+- [x] 修复 bank-24 未使用的 `frameInit_$CC02` import
+- [x] 修复 bank-26 全部 bank30 import 被注释问题
+- [x] 修正 bank-20 关于 bank-27 的误导性注释
+- [x] 修正 bank-12 关于 bank-15 的误导性注释
+- [x] 连线 bank-26 → bank30: 21 audiotrigger + 9 farCallDispatch + 5 playerStateHandler + 2 randomGen = 37 个调用
+- [x] 连线 bank-20 → bank-27: `bank27_entry` 球员数据加载
+- [x] 连线 bank-26 → bank-28: `bank28_entry` 球员属性计算（import + TODO 调用点）
+- [x] 审计结果: 6 bank 已正确连接, 15 孤儿数据 bank 已文档化, 2 功能 bank (27/28) 已连接
+- [x] Git commit: `phase-8: bank cross-dependency audit & fix`
+
+### Phase 9: 孤儿数据 Bank 连线 ✓
+- [x] 音乐曲谱 bank(13/14/15) → bank-12 audio-engine (import + 公开 accessor)
+- [x] 场景脚本 bank(03/04/05/25) → bank-16 scene-engine + bank-19 script-engine (import + 公开 accessor)
+- [x] UI/Sprite bank(08/18/21) → bank-22 sprite-engine (import + 公开 accessor)
+- [x] 球员数值 bank(29) → bank-27 player-data + bank-28 player-attrs (import + 公开 accessor)
+- [x] 比赛AI bank(17) → bank-26 match-engine (import + 公开 accessor)
+- [x] 关卡元数据 bank(23) → bank-16 scene-engine + bank-00 code (import + 公开 accessor)
+- [x] 验证: 13/13 孤儿 bank 全部已连接消费者
+- [x] Git commit: `phase-9: orphan data bank wiring — 13/13 connected`
+
 ---
 
-## 当前状态: Phase 6 ✓ 已完成 → 进入 Phase 7 (终局)
+## 当前状态: Phase 9 ✓ 已完成 → 下一步 Phase 10 (Bank30 扩展/剩余调用)
 
 ### Phase 1: 测试基础设施与代码规范 ✓ 已完成
 - [x] 创建统一测试运行入口 `game-engine/test/run-all.ts`

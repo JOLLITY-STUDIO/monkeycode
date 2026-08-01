@@ -1,6 +1,6 @@
 /**
  * Bank 07: Data Bank ($8000-$9FFF 或 $A000-$BFFF)
- *
+ *场景初始化，bank 07 $A000+ptrIdx
  * MMC3 可切换 bank。
  * 功能: 纯数据 bank，供其他 bank 透过 MMC3 切换读取
  *

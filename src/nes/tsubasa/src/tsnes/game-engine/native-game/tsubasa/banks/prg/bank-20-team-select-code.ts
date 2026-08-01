@@ -24,6 +24,9 @@ import type { SystemState } from '../system-state';
 import { writeMem, readMem } from '../system-state';
 import { track } from '../debug-log';
 
+// ── Cross-bank 依赖 ──
+import { bank27_entry, bank27_getTeamPlayers } from './bank-27-player-data-code';
+
 // ── Bank-20 内部数据表 ──
 import {
   DATA_$8092_$80A1,
@@ -151,8 +154,10 @@ export function bank20_teamSelectInit(sys: SystemState): void {
 }
 
 // ═════════════════════════════════════════════════
-// $8003/$84DC: 球员数据加载 — 从 bank-27 读取球员属性
-// 原始通过 bank-28 间接寻址 → 调用 bank-30 服务加载球员数据
+// $8003/$84DC: 球员数据加载
+// 原始: 通过 MMC3 切换到 bank-27 读取球员属性 → bank-28 间接寻址
+// 当前: 直接调用 bank27_entry + bank-20 内部 sprite 映射
+// TODO: bank-28 连线 (bank28_entry) 计算球员能力值
 // ═════════════════════════════════════════════════
 export function bank20_playerDataLoad(sys: SystemState): void {
   _buildB20View();
@@ -160,16 +165,25 @@ export function bank20_playerDataLoad(sys: SystemState): void {
 
   const teamIdx = readMem(sys, 0x05FC) || 0;
 
-  // 队伍数据查询: 从 bank-27 获取队伍球员索引表
-  // 使用 bank-20 内的 $88A8 表映射球员 → 精灵数据
+  // Step 1: 通过 bank-27 加载球员属性数据
   for (let i = 0; i < 11; i++) {
     const playerSlot = readMem(sys, 0x0532 + i) || 0;
+    // 设置 $043D 供 bank27_entry 查表
+    writeMem(sys, 0x043D, playerSlot);
+    bank27_entry(sys); // 写入 $0430-$043F 球员属性
 
-    // 从 $88A8 表读取球员映射数据 (每球员 4 字节)
-    // 格式: [sprite_tile_lo, sprite_tile_hi, attr_lo, attr_hi]
+    // 从 bank-27 返回的 $0430-$043F 复制基础属性到 $0601+ 工作区
+    for (let j = 0; j < 16; j++) {
+      writeMem(sys, 0x0601 + i * 0x10 + j, readMem(sys, 0x0430 + j));
+    }
+  }
+
+  // Step 2: 使用 bank-20 内部 $88A8 表覆盖精灵映射数据
+  // 格式: [sprite_tile_lo, sprite_tile_hi, attr_lo, attr_hi]
+  for (let i = 0; i < 11; i++) {
+    const playerSlot = readMem(sys, 0x0532 + i) || 0;
     const mapBase = 0x08A8 + teamIdx * 0xB0 + playerSlot * 0x10;
     // 注意: DATA_$88A8_$8967 共 192 字节，12 球员 × 16 字节
-    // 但我们只需要写入基本属性和精灵数据映射
 
     for (let j = 0; j < 16; j++) {
       const val = _v20(mapBase + j);
@@ -177,7 +191,7 @@ export function bank20_playerDataLoad(sys: SystemState): void {
     }
   }
 
-  console.log(`[bank20] loaded team ${teamIdx} player data from view`);
+  console.log(`[bank20] loaded team ${teamIdx} player data (bank27 + internal mapping)`);
 }
 
 // ═════════════════════════════════════════════════

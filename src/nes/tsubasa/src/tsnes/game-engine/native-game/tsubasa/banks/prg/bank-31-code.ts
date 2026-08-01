@@ -50,6 +50,7 @@ import { bank20_dispatch } from './bank-20-team-select-code';
 import { bank22_dispatch } from './bank-22-sprite-engine-code';
 import { bank24_dispatch } from './bank-24-cutscene-engine-code';
 import { bank26_dispatch } from './bank-26-match-engine-code';
+import { bank28_dispatch } from './bank-28-player-attrs-code';
 
 // ── Bank-31 自身数据表 ──
 import {
@@ -191,6 +192,11 @@ function sub_E059(sys: SystemState): void {
   A = coordTransform_$CDE2(sys, px, py); sys.mem[0x0638] = A;
 }
 
+/** $C61E → $E059: 读角色像素坐标→区域, 存到 $0638 */
+export function bank31_readCharToZone_$E059(sys: SystemState): void {
+  sub_E059(sys);
+}
+
 // ── $E074 (ASM $8074-$80DE): LDA $05FF; BEQ RTS;
 //     LDA #$0F→$062A; JSR $E709;
 //     loop 0..21: timer; if idx==0||idx==$0B||idx==$0441→skip;
@@ -211,6 +217,11 @@ function sub_E074(sys: SystemState): void {
     sub_E854(sys);
   }
   sys.mem[0x05FF] = 0x00;
+}
+
+/** $C606 → $E074: 事件检查循环, 遍历22球员执行位置更新 */
+export function bank31_eventCheckLoop_$E074(sys: SystemState): void {
+  sub_E074(sys);
 }
 
 // ── $E0DF (ASM $80DF-$E144): LDA #$00; JSR $EF7F; LDA #$01; JSR $EF7F;
@@ -244,6 +255,11 @@ function sub_E0DF(sys: SystemState): void {
     if (sys.mem[0x044C] & 0x80) { sys.mem[0x044C] = 0; sys.mem[0x03F1] = 0; }
   }
   sub_E267(sys);
+}
+
+/** $C60F → $E0DF: 主循环 Phase 2 — bank 切换, 侧队设置, 球员初始化 */
+export function bank31_mainLoopPhase2_$E0DF(sys: SystemState): void {
+  sub_E0DF(sys);
 }
 
 // ── $E6EC: 球员逻辑 (ASM $86EC-$8708) ──
@@ -296,6 +312,11 @@ function sub_E73E(sys: SystemState): void {
   }
   // 不同区域 → 进入球追逐逻辑
   sub_E73E_part2(sys);
+}
+
+/** $C60C → $E73E: 球员AI入口 — 球区域比较, 球追逐逻辑 */
+export function bank31_playerAI_$E73E(sys: SystemState): void {
+  sub_E73E(sys);
 }
 
 // ── $E751-$E7CE: 球移动/追逐 (ASM $8751-$87CE) ──
@@ -594,6 +615,11 @@ function sub_E233(sys: SystemState): void {
   sys.mem[0x008E] = 2; sys.mem[0x0469] = 1;
 }
 
+/** $C575 → $E233: 进球事件 — 音频, bank切换, 标志设置 */
+export function bank31_goalEvent_$E233(sys: SystemState): void {
+  sub_E233(sys);
+}
+
 // ── $E267: 侧队分派 (ASM $8267-$827C) ──
 function sub_E267(sys: SystemState): void {
   if (sys.mem[0x05FB] !== 0) {
@@ -725,6 +751,11 @@ function sub_E4D7(sys: SystemState): void {
   // 太细碎，核心是读取球员索引列表，过滤重复/无效条目
 }
 
+/** $C609 → $E4D7: 球员排序/过滤 — 按 $05FB 清理重复/无效条目 */
+export function bank31_playerSort_$E4D7(sys: SystemState): void {
+  sub_E4D7(sys);
+}
+
 // ── $E501: 距离检查 (ASM $8501-$854B) ──
 function sub_E501(sys: SystemState): void {
   // 球员→球距离判断，用于决定是否显示近距离 UI
@@ -737,6 +768,11 @@ function sub_E54C(sys: SystemState): void {
   // 过滤重复的0601条目
 }
 
+/** $C627 → $E54C: 过滤 cleanup — 清除并重导向 $E0DF */
+export function bank31_filterCleanup_$E54C(sys: SystemState): void {
+  sub_E54C(sys);
+}
+
 // ── $E596: 过场分派 (ASM $8596-$8613) ──
 function sub_E596(sys: SystemState): void {
   let A = sys.mem[0x00E2]; if (A >= 0xE0) { /* skip to bank switch */ }
@@ -745,6 +781,11 @@ function sub_E596(sys: SystemState): void {
      bankSwitch → $1A/$1B → JSR $8024;
      LDX $0635; LDY $0637; JSR $CDE2; STA $05FE;
      遍历 $0600 活跃球员; JSR $E616 初始化; JMP $DE96 */
+}
+
+/** $C62A → $E596: 过场/转场分派 — 坐标更新, bank 切换, 球员遍历 */
+export function bank31_cutsceneDispatch_$E596(sys: SystemState): void {
+  sub_E596(sys);
 }
 
 // ── $E616: 单球员初始化 (ASM $8616-$8677) ──
@@ -767,6 +808,11 @@ function sub_E678(sys: SystemState): void {
   // JSR $D093 (bank30); timer
 }
 
+/** $C630 → $E678: 侧队切换 — XOR $05FB 翻转控球方 */
+export function bank31_sideSwitch_$E678(sys: SystemState): void {
+  sub_E678(sys);
+}
+
 // ── $E688: 球初始位置 (ASM $8688-$86CC) ──
 function sub_E688(sys: SystemState): void {
   let A = 0;
@@ -782,6 +828,11 @@ function sub_E688(sys: SystemState): void {
   // ... (坐标设置 + JSR $CDE2; JMP $DE96)
 }
 
+/** $C62D → $E688: 球初始位置计算 — 方向表查表, 随机偏移 */
+export function bank31_ballInitPos_$E688(sys: SystemState): void {
+  sub_E688(sys);
+}
+
 // ═════════════════════════════════════════════════
 // Bank 切换 helper (不走 MMC3 — 直接 import 调用)
 // ═════════════════════════════════════════════════
@@ -789,6 +840,7 @@ function sub_E688(sys: SystemState): void {
 const _bankDispatchTables: Record<number, Record<number, (sys: SystemState) => void>> = {
   0x0B: bank11_dispatch, 0x10: bank16_dispatch, 0x12: bank19_dispatch,
   0x14: bank20_dispatch, 0x16: bank22_dispatch, 0x18: bank24_dispatch, 0x1A: bank26_dispatch,
+  0x1C: bank28_dispatch,
 };
 
 function _dispatchBankCall(sys: SystemState, bank: number, offset: number): void {

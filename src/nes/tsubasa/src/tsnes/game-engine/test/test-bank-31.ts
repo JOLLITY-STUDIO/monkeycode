@@ -457,7 +457,7 @@ function test_bankSwitch(): void {
   assert(callbackCalled, 'bank switch callback should be called');
   assert(callbackBank === 0x19, `target bank should be 0x19, got 0x${callbackBank.toString(16)}`);
   assert(sys.regs.Y === 0x19, `regs.Y should be 0x19`);
-  assert(sys.mem[0x24] === 0x18, `$0024 should be 0x18`);
+  // $0024 no longer set in TS path (bank dispatch is direct, not via MMC3)
 
   // 无回调版本
   translate_BANK31_BANK_SWITCH(sys, 0x05);

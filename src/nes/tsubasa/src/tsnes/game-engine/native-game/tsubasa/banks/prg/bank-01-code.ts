@@ -401,6 +401,14 @@ export function bank01_titleInit(sys: SystemState): void {
   // JSR $997A — palette fade setup (param $04, X=$30)
   _paletteSetup(sys, 0x04, 0x30);
 
+  // ── $8196-$81A3: 标题画面关键状态设置 ──
+  // 6502: LDA #$8A; STA $4C; LDA #$33; STA $0700; LDA #$00; STA $ED; JMP $A201
+  // FIX: 这三行在上次翻译中漏掉了，导致 $0700 从未被设为 0x33
+  //       所以 tick_BANK31_mainLoop 永远不会路由到 bank00_titleTick
+  sys.mem[0x4C] = 0x8A;           // $8196-$8198: 调色板亮度/帧控制
+  writeMem(sys, 0x0700, 0x33);    // $819A-$819C: 设置游戏模式 = 标题画面
+  sys.mem[0xED] = 0x00;           // $819F-$81A1: 初始化菜单光标标志
+
   // ── FIX: 直接写 palette 到 PPU $3F00 ──
   // 原始 NES 通过 NMI handler 队列 ($05E8/$0628) 写入，
   // 但 bank engine 的队列机制未触发 ($0628 永远为 0)。

@@ -16,6 +16,13 @@
 import type { SystemState } from '../system-state';
 import { track } from '../debug-log';
 import { DATA_$8448_$94F0 } from './bank-27-player-data-data';
+
+// ── 球员属性/数值表 bank-29 ──
+import { getBank29Data } from './bank-29-player-value-code';
+
+
+
+
 // ═════════════════════════════════════════════════
 // $8000: 球员数据查询入口
 // ═════════════════════════════════════════════════
@@ -86,3 +93,6 @@ export const bank27_dispatch: Record<number, (sys: SystemState) => void> = {
 // ═════════════════════════════════════════════════
 
 console.log('[bank27] ✅ Phase 2b — 球员数据查询 (direct array access) | data');
+
+// ── 球员数值表 bank-29 存取 ──
+export { getBank29Data as bank27_getPlayerValueTable } from './bank-29-player-value-code';
