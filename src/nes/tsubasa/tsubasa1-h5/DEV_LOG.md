@@ -4,6 +4,79 @@
 
 ---
 
+## 2026-08-04: v0.2.8 - 🔧 渲染简化：去掉离屏 Canvas
+
+### 问题
+小程序中主 canvas 的 `drawImage(offscreen→main)` 兼容性存疑，且双缓冲在当前阶段无必要。
+
+### 改动
+- ✅ **Renderer.ts**：删除 offscreen/offCtx 离屏 canvas
+- ✅ `render()` 直接画到主 `this.ctx`，所有 tile/sprite 坐标 × scale
+- ✅ `createOffscreenCanvas` 仍保留在 IPlatform 中（MpPlatform.loadImage 内部用主 canvas.createImage fallback）
+- ✅ 编译通过，零 lint 错误
+
+---
+
+## 2026-08-04: v0.2.7 - 🔥 清理：删除无意义的 ROM 数据 dump
+
+### 问题诊断
+v0.2.6 产生的 `Bank7Data.ts` (50KB) 虽然从 hex 字符串变成了 "结构化数组"，但本质仍然是 ROM 数据的机械搬运：
+- `JUMP_TABLE` = 344 个十进制数字 (`49196, 58104, ...`)——和 hex dump 没区别
+- `INTERNAL_JUMP_ENTRIES` = 同样的数字加 index——仍然毫无语义
+- `_SCRIPT_HEX` = 15KB hex 字符串——和二进制文件没区别
+- 没有任何人能看懂 `49196` 代表哪个游戏事件
+
+**根因**：开发节奏超前。WBS 中 M2 (Bank 0 核心/标题画面) 尚未完成，M5 (Bank 7 脚本引擎) 根本还没开始。在理解 Bank 7 的实际用途之前就 dump 数据，只能得到无意义的结果。
+
+### 清理操作
+- ❌ 删除 `src/data/Bank7Data.ts` (50KB)
+- ❌ 删除 `src/data/bank7_data.bin`、`pointers.json`
+- ❌ 删除 9 个机械 dump 脚本 (build_structured_bank7.py, deep_analyze_bank7.py, verify_bank7.py, extract_*.py, convert_bin_to_ts.py, analyze_bank1.py 等)
+- ✅ 简化 `RomData.ts` 为 placeholder (数据按需提取)
+- ✅ 保留 `src/utils/NametableDecoder.ts` (包含 RLE/精灵/PPU 解码**算法逻辑**，是 ASM 分析成果)
+- ✅ 保留 `scripts/extract_chr.py` (CHR→PNG 转换工具)
+
+### 新的数据原则
+> **只在理解数据语义后才提取，不机械 dump ROM 原始字节。每个字段必须有明确的用途说明和来源注释。数据按需添加，不预先 dump 整个 bank。**
+
+### 后续聚焦
+回归 M2 核心任务：完成 Bank 0/1/2 的标题画面 + 菜单逻辑
+
+---
+
+## 2026-08-04: v0.2.5 - 数据解码器深度分析 + ROM数据提取
+
+### 分析成果
+- 🔍 **关键解码器识别** (Bank 1):
+  1. `$C2C2`: **Nametable RLE 解码器** - 解压标题/菜单的名称表数据
+     - 格式: byte < $80 → 直接 tile; byte >= $80 → RLE(count=byte&0x1F, 下一byte重复)
+     - 起始 VRAM $20A8, 每批 16 字节, 共 14 行
+  2. `$C259`: **Sprite/OAM 解码器** - 解析精灵数据格式
+     - 第1字节低4位=精灵数, 每个精灵4字节(Y/tile/attr/X)
+  3. `$C36C`/`$C383`: **调色板动画处理器**
+  4. `$C3BA`: **数据指针查找** (从 $D0F3 表)
+  5. `$C3CE`: **PPU 数据传输解码器**
+  6. `$C629`/`$C68D`: **菜单文本渲染**
+
+- 🔍 **Bank 跨域数据流确认**:
+  - Bank 1 解码器代码实际位于 Bank 2 ROM 区域
+  - 数据表 ($D0F3, $D05E, $D518) 也在 Bank 2
+  - Bank 7 固定区包含 344 个脚本入口指针
+  - Bank 7 数据区 15632 字节
+
+### 产出
+- ✅ `src/utils/NametableDecoder.ts` - RLE/OAM/PPU 解码器
+- ✅ `scripts/extract_rom_data_v2.py` - ROM 数据提取器
+- ✅ `src/data/RomData.ts` - TypeScript 结构化 ROM 数据
+- ✅ `src/data/bank7_data.bin` - Bank 7 原始数据 (15KB)
+- ✅ `src/data/pointers.json` - 指针表 JSON
+
+### 计划
+- 集成真实 ROM 数据到 Bank1Dispatcher 标题画面
+- 替换所有硬编码测试数据
+
+---
+
 ## 2026-08-04: v0.2.4 - ASM 反汇编更新 (BZK + 最新 CDL)
 
 ### 操作

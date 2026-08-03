@@ -1,8 +1,8 @@
 /**
  * 渲染器 - 平台无关的 Canvas 2D 渲染
  *
+ * 直接渲染到主 Canvas，无离屏中间层。
  * 通过 IPlatform 接口适配 web / 微信小程序。
- * 负责将 PPU 状态渲染到 Canvas。
  *
  * CHR 渲染说明:
  *   - 每个 CHR Bank PNG 为 128×128 像素, 包含 256 个 tile (16×16 网格)
@@ -14,10 +14,9 @@ import { NES_PALETTE, TILE_SIZE } from '../core/types';
 import type { DataCache } from '../cache/DataCache';
 import type { OamCache } from '../cache/OamCache';
 import type { BankManager } from '../cache/BankManager';
-import type { IPlatform, ICanvas, ICanvasContext, ICanvasImageSource } from '../platform/IPlatform';
+import type { IPlatform, ICanvasContext, ICanvasImageSource } from '../platform/IPlatform';
 
 /** CHR 精灵表尺寸 */
-const CHR_SHEET_WIDTH = 128;
 const CHR_SHEET_TILES_PER_ROW = 16;
 
 /** VRAM 模拟 */
@@ -28,14 +27,11 @@ interface VramState {
 }
 
 export class Renderer {
+  /** 平台适配器（用于加载图片等平台调用） */
   private platform: IPlatform;
 
-  /** 主 canvas 上下文（平台提供） */
+  /** 主 canvas 上下文（平台提供，直接渲染目标） */
   private ctx: ICanvasContext;
-
-  /** 离屏渲染 canvas */
-  private offscreen: ICanvas;
-  private offCtx: ICanvasContext;
 
   /** VRAM 状态 */
   private vram: VramState;
@@ -46,7 +42,7 @@ export class Renderer {
   /** Bank 管理器引用 */
   private bankManager: BankManager | null = null;
 
-  /** 缩放 */
+  /** 缩放倍数 (tile 8px → 屏幕 8*scale px) */
   private scale: number = 2;
 
   /** 是否正在使用 CHR 图片渲染 (false = 色块占位模式) */
@@ -55,13 +51,6 @@ export class Renderer {
   constructor(platform: IPlatform, ctx: ICanvasContext) {
     this.platform = platform;
     this.ctx = ctx;
-
-    // 创建离屏 canvas
-    this.offscreen = platform.createOffscreenCanvas(SCREEN_W, SCREEN_H);
-    const offCtx = this.offscreen.getContext('2d');
-    if (!offCtx) throw new Error('Cannot get 2d context for offscreen canvas');
-    this.offCtx = offCtx;
-
     this.chrImages = new Map();
 
     this.vram = {
@@ -72,7 +61,7 @@ export class Renderer {
 
     this.initDefaultPalette();
 
-    // 设置主 canvas 尺寸（仅当 canvas 尺寸未预设时）
+    // 尝试设置主 canvas 尺寸（web 环境有效；小程序可能在外部设置好）
     try {
       if (!ctx.canvas.width || ctx.canvas.width < SCREEN_W) {
         ctx.canvas.width = SCREEN_W * this.scale;
@@ -81,7 +70,7 @@ export class Renderer {
         ctx.canvas.height = SCREEN_H * this.scale;
       }
     } catch (_e) {
-      // 某些平台（如微信小程序）的 ctx.canvas 可能只读，忽略
+      // 小程序 Canvas 尺寸可能只读，忽略
     }
     ctx.imageSmoothingEnabled = false;
   }
@@ -114,7 +103,6 @@ export class Renderer {
         await this.loadChrBank(bank, path);
         loaded++;
       } catch (err: any) {
-        // 记录第一个错误用于调试
         if (!firstError) {
           firstError = `Bank ${bank.toString(16).padStart(2, '0')}: ${err?.message || err}`;
         }
@@ -136,8 +124,8 @@ export class Renderer {
    */
   private getChrSource(bankReg: number): { imageIndex: number; tileBase: number } {
     return {
-      imageIndex: bankReg >> 1,           // floor(bankReg / 2)
-      tileBase: (bankReg & 1) * 128,       // 0 或 128
+      imageIndex: bankReg >> 1,
+      tileBase: (bankReg & 1) * 128,
     };
   }
 
@@ -150,7 +138,7 @@ export class Renderer {
     };
   }
 
-  /** 获取当前有效的 CHR 图片 (最差情况回退到bank 0) */
+  /** 获取当前有效的 CHR 图片 (回退到bank 0) */
   private getChrImage(bankReg: number): ICanvasImageSource | null {
     const { imageIndex } = this.getChrSource(bankReg);
     return this.chrImages.get(imageIndex) ?? this.chrImages.get(0) ?? null;
@@ -174,41 +162,30 @@ export class Renderer {
     }
   }
 
-  /** 渲染一帧 */
+  /** 渲染一帧 — 直接画到主 canvas，一次完成 */
   render(dataCache: DataCache, oamCache: OamCache): void {
-    const offCtx = this.offCtx;
+    const ctx = this.ctx;
 
     // 清空
     const bgColorIdx = this.vram.palette[0] & 0x3F;
     const bgColor = NES_PALETTE[bgColorIdx];
-    offCtx.fillStyle = `#${bgColor.toString(16).padStart(6, '0')}`;
-    offCtx.fillRect(0, 0, SCREEN_W, SCREEN_H);
+    ctx.fillStyle = `#${bgColor.toString(16).padStart(6, '0')}`;
+    ctx.fillRect(0, 0, SCREEN_W * this.scale, SCREEN_H * this.scale);
 
     // 渲染背景
     const ppuCtrl = dataCache.ppuCtrl;
-    const scrollX = dataCache.scrollX;
-    const scrollY = dataCache.scrollY;
-    this.renderBackground(offCtx, ppuCtrl, scrollX, scrollY);
+    this.renderBackground(ctx, ppuCtrl, dataCache.scrollX, dataCache.scrollY);
 
     // 渲染精灵
-    const ppuMask = dataCache.ppuMask;
-    if (ppuMask & 0x10) {
-      this.renderSprites(offCtx, oamCache, ppuCtrl);
+    if (dataCache.ppuMask & 0x10) {
+      this.renderSprites(ctx, oamCache, ppuCtrl);
     }
-
-    // 缩放到主 canvas
-    this.ctx.imageSmoothingEnabled = false;
-    const offRaw = (this.offscreen as any).raw || this.offscreen;
-    (this.ctx as any).drawImage(offRaw,
-      0, 0, SCREEN_W, SCREEN_H,
-      0, 0, SCREEN_W * this.scale, SCREEN_H * this.scale);
   }
 
   private renderBackground(ctx: ICanvasContext, ppuCtrl: number, scrollX: number, scrollY: number): void {
     const baseNT = ppuCtrl & 0x03;
     const bgPatternBase = (ppuCtrl & 0x10) ? 0x1000 : 0x0000;
 
-    // 选择 CHR bank: $0000 → chrBank0, $1000 → chrBank1
     const bgChrBank = (bgPatternBase === 0x0000)
       ? (this.bankManager?.chrBank0 ?? 0)
       : (this.bankManager?.chrBank1 ?? 0);
@@ -244,7 +221,6 @@ export class Renderer {
   }
 
   private renderSprites(ctx: ICanvasContext, oamCache: OamCache, ppuCtrl: number): void {
-    // 精灵使用 PPU_CTRL bit 3: 0=$0000, 1=$1000
     const sprPatternBase = (ppuCtrl & 0x08) ? 0x1000 : 0x0000;
     const sprChrBank = (sprPatternBase === 0x0000)
       ? (this.bankManager?.chrBank0 ?? 0)
@@ -269,32 +245,41 @@ export class Renderer {
   }
 
   private drawTile(
-    ctx: ICanvasContext, tileIndex: number, paletteIdx: number,
+    ctx: ICanvasContext, tileIndex: number, _paletteIdx: number,
     x: number, y: number, chrImg: ICanvasImageSource | null, tileBase: number
   ): void {
-    // 超出屏幕范围裁剪优化
-    if (x < -TILE_SIZE || x > SCREEN_W || y < -TILE_SIZE || y > SCREEN_H) return;
+    const s = this.scale;
+    const ts = TILE_SIZE * s;
+    const maxX = SCREEN_W * s;
+    const maxY = SCREEN_H * s;
+
+    if (x * s < -ts || x * s > maxX || y * s < -ts || y * s > maxY) return;
 
     if (chrImg && this.useChrImages) {
       const src = this.getTileSrcRect(tileBase + tileIndex);
-      // 使用 any 传递原始图片对象（兼容 web Image 和 小程序 Image）
-      (ctx as any).drawImage((chrImg as any).raw || chrImg,
-        src.sx, src.sy, TILE_SIZE, TILE_SIZE, x, y, TILE_SIZE, TILE_SIZE);
+      const rawImg = (chrImg as any).raw || chrImg;
+      (ctx as any).drawImage(rawImg,
+        src.sx, src.sy, TILE_SIZE, TILE_SIZE,
+        x * s, y * s, ts, ts);
     } else {
-      // 回退: 色块占位显示
-      const colorIdx = this.vram.palette[paletteIdx * 4 + 1] & 0x3F;
+      const colorIdx = this.vram.palette[(_paletteIdx) * 4 + 1] & 0x3F;
       const color = NES_PALETTE[colorIdx] || 0x7C7C7C;
       ctx.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
-      ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+      ctx.fillRect(x * s, y * s, ts, ts);
     }
   }
 
   private drawSprite(
-    ctx: ICanvasContext, tileIndex: number, paletteIdx: number,
+    ctx: ICanvasContext, tileIndex: number, _paletteIdx: number,
     x: number, y: number, flipH: boolean, flipV: boolean,
     chrImg: ICanvasImageSource | null, tileBase: number
   ): void {
-    if (x < -TILE_SIZE || x > SCREEN_W || y < -TILE_SIZE || y > SCREEN_H) return;
+    const s = this.scale;
+    const ts = TILE_SIZE * s;
+    const maxX = SCREEN_W * s;
+    const maxY = SCREEN_H * s;
+
+    if (x * s < -ts || x * s > maxX || y * s < -ts || y * s > maxY) return;
 
     if (chrImg && this.useChrImages) {
       const src = this.getTileSrcRect(tileBase + tileIndex);
@@ -302,22 +287,24 @@ export class Renderer {
 
       if (flipH || flipV) {
         ctx.save();
-        const cx = x + TILE_SIZE / 2;
-        const cy = y + TILE_SIZE / 2;
+        const cx = x * s + ts / 2;
+        const cy = y * s + ts / 2;
         ctx.translate(cx, cy);
         ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
-        (ctx as any).drawImage(rawImg, src.sx, src.sy, TILE_SIZE, TILE_SIZE,
-          -TILE_SIZE / 2, -TILE_SIZE / 2, TILE_SIZE, TILE_SIZE);
+        (ctx as any).drawImage(rawImg,
+          src.sx, src.sy, TILE_SIZE, TILE_SIZE,
+          -ts / 2, -ts / 2, ts, ts);
         ctx.restore();
       } else {
-        (ctx as any).drawImage(rawImg, src.sx, src.sy, TILE_SIZE, TILE_SIZE,
-          x, y, TILE_SIZE, TILE_SIZE);
+        (ctx as any).drawImage(rawImg,
+          src.sx, src.sy, TILE_SIZE, TILE_SIZE,
+          x * s, y * s, ts, ts);
       }
     } else {
-      const colorIdx = this.vram.palette[paletteIdx * 4 + 1] & 0x3F;
+      const colorIdx = this.vram.palette[(_paletteIdx) * 4 + 1] & 0x3F;
       const color = NES_PALETTE[colorIdx] || 0x7C7C7C;
       ctx.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
-      ctx.fillRect(x, y, TILE_SIZE, TILE_SIZE);
+      ctx.fillRect(x * s, y * s, ts, ts);
     }
   }
 }
