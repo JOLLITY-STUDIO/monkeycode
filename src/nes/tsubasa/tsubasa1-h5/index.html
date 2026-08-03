@@ -3,47 +3,76 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>天使之翼 (Captain Tsubasa) - H5</title>
+  <title>天使之翼 - Captain Tsubasa H5</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      background: #1a1a2e;
+      background: #000;
       display: flex;
       justify-content: center;
       align-items: center;
       min-height: 100vh;
-      font-family: 'Arial', sans-serif;
+      overflow: hidden;
     }
     #game-container {
       position: relative;
-      background: #000;
-      border: 3px solid #333;
-      border-radius: 4px;
-      box-shadow: 0 0 30px rgba(0,0,0,0.5);
     }
-    #game-canvas {
+    canvas {
       display: block;
       image-rendering: pixelated;
       image-rendering: crisp-edges;
     }
-    #info-panel {
+    #controls {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      background: rgba(0,0,0,0.7);
-      color: #0f0;
-      font-size: 10px;
-      padding: 2px 6px;
-      font-family: monospace;
-      pointer-events: none;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
     }
+    .btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 2px solid rgba(255,255,255,0.4);
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    .btn:active { background: rgba(255,255,255,0.5); }
+    .dpad {
+      display: grid;
+      grid-template-columns: 50px 50px 50px;
+      grid-template-rows: 50px 50px 50px;
+      gap: 2px;
+    }
+    .dpad .btn:nth-child(1) { grid-column: 2; grid-row: 1; } /* UP */
+    .dpad .btn:nth-child(2) { grid-column: 1; grid-row: 2; } /* LEFT */
+    .dpad .btn:nth-child(3) { grid-column: 3; grid-row: 2; } /* RIGHT */
+    .dpad .btn:nth-child(4) { grid-column: 2; grid-row: 3; } /* DOWN */
   </style>
 </head>
 <body>
   <div id="game-container">
-    <canvas id="game-canvas" width="256" height="240"></canvas>
-    <div id="info-panel">Loading ROM...</div>
+    <canvas id="game-canvas"></canvas>
+    <div id="controls">
+      <div class="dpad">
+        <button class="btn" id="btn-up">▲</button>
+        <button class="btn" id="btn-left">◀</button>
+        <button class="btn" id="btn-right">▶</button>
+        <button class="btn" id="btn-down">▼</button>
+      </div>
+      <button class="btn" id="btn-a" style="background:rgba(255,0,0,0.3);border-color:rgba(255,0,0,0.6);">A</button>
+      <button class="btn" id="btn-b" style="background:rgba(255,255,0,0.3);border-color:rgba(255,255,0,0.6);">B</button>
+      <button class="btn" id="btn-start">▶</button>
+      <button class="btn" id="btn-select">●</button>
+    </div>
   </div>
   <script type="module" src="/src/main.ts"></script>
 </body>

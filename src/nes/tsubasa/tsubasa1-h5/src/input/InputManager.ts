@@ -1,141 +1,135 @@
 /**
- * 输入管理器
- * 映射键盘 → NES 手柄按键
- * 模拟 $4016/$4017 读取协议
+ * 输入管理器 - 手柄输入处理
+ * 替代 $4016/$4017 硬件读取
+ *
+ * 按键映射 (与 NES 手柄一致):
+ *   bit 7: A
+ *   bit 6: B
+ *   bit 5: SELECT
+ *   bit 4: START
+ *   bit 3: UP
+ *   bit 2: DOWN
+ *   bit 1: LEFT
+ *   bit 0: RIGHT
  */
 
-/** NES 手柄按键 */
-export enum Button {
-  A      = 0,
-  B      = 1,
-  SELECT = 2,
-  START  = 3,
-  UP     = 4,
-  DOWN   = 5,
-  LEFT   = 6,
-  RIGHT  = 7,
-}
+import { Button, GameInput } from '../core/types';
 
-/** 按键位掩码 */
-const BUTTON_MASK: Record<Button, number> = {
-  [Button.A]:      0x01,
-  [Button.B]:      0x02,
-  [Button.SELECT]: 0x04,
-  [Button.START]:  0x08,
-  [Button.UP]:     0x10,
-  [Button.DOWN]:   0x20,
-  [Button.LEFT]:   0x40,
-  [Button.RIGHT]:  0x80,
-};
-
-/** 默认键盘映射 */
-const DEFAULT_KEY_MAP: Record<string, Button> = {
-  // 玩家1
-  'ArrowUp':    Button.UP,
-  'ArrowDown':  Button.DOWN,
-  'ArrowLeft':  Button.LEFT,
-  'ArrowRight': Button.RIGHT,
-  'KeyZ':       Button.A,
-  'KeyX':       Button.B,
-  'Enter':      Button.START,
-  'ShiftRight': Button.SELECT,
+/** 键盘→NES按键映射 */
+const KEY_MAP: Record<string, Button> = {
+  'KeyZ':        Button.A,
+  'KeyX':        Button.B,
+  'Enter':       Button.START,
+  'ShiftRight':  Button.SELECT,
+  'ShiftLeft':   Button.SELECT,
+  'ArrowUp':     Button.UP,
+  'ArrowDown':   Button.DOWN,
+  'ArrowLeft':   Button.LEFT,
+  'ArrowRight':  Button.RIGHT,
+  'KeyW':        Button.UP,
+  'KeyS':        Button.DOWN,
+  'KeyA':        Button.LEFT,
+  'KeyD':        Button.RIGHT,
 };
 
 export class InputManager {
-  /** 当前帧按键状态 (每个 bit 对应一个按键) */
-  currentState: number = 0;
+  /** 当前帧按键状态 */
+  private currentButtons: number = 0;
 
-  /** 前一帧按键状态 */
-  previousState: number = 0;
+  /** 上一帧按键状态 */
+  private prevButtons: number = 0;
 
-  /** 键盘按键状态 */
-  private keysDown: Set<string> = new Set();
+  /** 刚刚按下的按键 (上升沿) */
+  private pressedButtons: number = 0;
 
-  /** 键盘映射 */
-  private keyMap: Record<string, Button>;
+  /** 外部注入的按键值 (用于虚拟手柄) */
+  private externalButtons: number = 0;
 
-  /** 已绑定的事件处理器 (用于解绑) */
-  private onKeyDown: (e: KeyboardEvent) => void;
-  private onKeyUp: (e: KeyboardEvent) => void;
+  /** 是否处理键盘事件 */
+  private keyboardEnabled: boolean = true;
 
-  constructor(keyMap?: Record<string, Button>) {
-    this.keyMap = keyMap ?? { ...DEFAULT_KEY_MAP };
-
-    this.onKeyDown = (e: KeyboardEvent) => {
-      this.keysDown.add(e.code);
-      e.preventDefault();
-    };
-
-    this.onKeyUp = (e: KeyboardEvent) => {
-      this.keysDown.delete(e.code);
-      e.preventDefault();
-    };
+  constructor() {
+    this.setupKeyboardListeners();
   }
 
-  /** 绑定键盘事件 */
-  attach(): void {
-    window.addEventListener('keydown', this.onKeyDown);
-    window.addEventListener('keyup', this.onKeyUp);
-  }
+  /** 设置键盘监听 */
+  private setupKeyboardListeners(): void {
+    if (typeof window === 'undefined') return;
 
-  /** 解绑键盘事件 */
-  detach(): void {
-    window.removeEventListener('keydown', this.onKeyDown);
-    window.removeEventListener('keyup', this.onKeyUp);
-  }
-
-  /**
-   * 更新一帧输入
-   * 对应 NES 中 $81B9 的手柄读取逻辑
-   */
-  update(): void {
-    // 保存上一帧状态
-    this.previousState = this.currentState;
-
-    // 读取当前键盘状态
-    this.currentState = 0;
-    for (const [code, button] of Object.entries(this.keyMap)) {
-      if (this.keysDown.has(code)) {
-        this.currentState |= BUTTON_MASK[button];
+    window.addEventListener('keydown', (e: KeyboardEvent) => {
+      if (!this.keyboardEnabled) return;
+      const btn = KEY_MAP[e.code];
+      if (btn !== undefined) {
+        e.preventDefault();
+        this.currentButtons |= btn;
       }
-    }
+    });
+
+    window.addEventListener('keyup', (e: KeyboardEvent) => {
+      if (!this.keyboardEnabled) return;
+      const btn = KEY_MAP[e.code];
+      if (btn !== undefined) {
+        e.preventDefault();
+        this.currentButtons &= ~btn;
+      }
+    });
   }
 
-  /** 检测按键是否在本帧刚按下 (上升沿) */
+  /** 每帧开始时调用 - 锁存当前状态 */
+  latch(): void {
+    this.pressedButtons = (this.currentButtons | this.externalButtons) & ~this.prevButtons;
+    this.prevButtons = this.currentButtons | this.externalButtons;
+  }
+
+  /** 获取快照输入 (对应读取 $4016/$4017) */
+  getInput(): GameInput {
+    const held = this.currentButtons | this.externalButtons;
+    return {
+      pressed: this.pressedButtons,
+      held,
+    };
+  }
+
+  /** 模拟硬件串行读取 ($4016 方式) */
+  readJoypad1(): number {
+    // 重新锁存，然后逐位读取
+    const held = this.currentButtons | this.externalButtons;
+    this.prevButtons = held;
+    return held;
+  }
+
+  /** 检查指定按键是否被按下 */
   isPressed(button: Button): boolean {
-    const mask = BUTTON_MASK[button];
-    return (this.currentState & mask) !== 0 &&
-           (this.previousState & mask) === 0;
+    return (this.pressedButtons & button) !== 0;
   }
 
-  /** 检测按键是否按住 */
+  /** 检查指定按键是否被按住 */
   isHeld(button: Button): boolean {
-    const mask = BUTTON_MASK[button];
-    return (this.currentState & mask) !== 0;
+    return ((this.currentButtons | this.externalButtons) & button) !== 0;
   }
 
-  /** 检测按键是否在本帧刚释放 (下降沿) */
-  isReleased(button: Button): boolean {
-    const mask = BUTTON_MASK[button];
-    return (this.currentState & mask) === 0 &&
-           (this.previousState & mask) !== 0;
+  /** 设置外部按键 (触摸屏) */
+  setExternalButtons(buttons: number): void {
+    this.externalButtons = buttons;
   }
 
-  /** 检测任意方向键是否按下 */
-  isAnyDirection(): boolean {
-    return this.isHeld(Button.UP) ||
-           this.isHeld(Button.DOWN) ||
-           this.isHeld(Button.LEFT) ||
-           this.isHeld(Button.RIGHT);
+  /** 设置单个外部按键 */
+  pressButton(button: Button): void {
+    this.externalButtons |= button;
   }
 
-  /** 获取当前帧手柄状态值 (用于写入 $0301) */
-  getStateByte(): number {
-    return this.currentState;
+  /** 释放单个外部按键 */
+  releaseButton(button: Button): void {
+    this.externalButtons &= ~button;
   }
 
-  /** 获取上一帧手柄状态值 (用于写入 $0302) */
-  getPreviousStateByte(): number {
-    return this.previousState;
+  /** 释放所有外部按键 */
+  clearExternalButtons(): void {
+    this.externalButtons = 0;
+  }
+
+  /** 启用/禁用键盘 */
+  setKeyboardEnabled(enabled: boolean): void {
+    this.keyboardEnabled = enabled;
   }
 }
