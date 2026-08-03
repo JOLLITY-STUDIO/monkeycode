@@ -1,6 +1,6 @@
 # Bug 跟踪记录
 
-> 项目: 天使之翼 H5 | 创建: 2026-08-04
+> 项目: 天使之翼 微信小程序 | 创建: 2026-08-04
 
 ---
 
@@ -15,20 +15,53 @@
 
 ## 已知问题
 
-### BUG-001: 反汇编质量 - 数据误解释为代码
-- **状态**: 打开
-- **严重度**: 中
-- **来源**: `_tmp_disasm_out/tsubasa_disasm.asm`
+### BUG-011: GameLoop 帧时钟问题 — 三重修复 [已修复 v0.4.3]
+- **状态**: ✅ 已修复 (v0.4.3)
+- **严重度**: 🔴 严重 (阻塞性)
+- **来源**: GameLoop.ts vs MpPlatform.ts
+- **描述**:
+  - **v0.4.1 问题**: `start()` 调用 `this.loop(Date.now())`，首帧 lastFrameTime=Date.now()
+    (~1785795598610)，后续 canvas RAF timestamp (~3750) 不在同一时钟域 → elapsed 巨大负数
+  - **v0.4.2 残留问题**: 修复了时钟域，但 `FRAME_TIME_MS(16.667)` 阈值在整数毫秒 RAF
+    timestamp 下导致 16ms 间隔被跳过（16 < 16.667），实际帧率 ~30fps；漂移修正还引发连帧抖动
+  - **v0.4.3 最终方案**: 去掉阈值判断，每个 RAF 回调执行一帧（1:1 映射），RAF 在 60Hz 显示器
+    上天然 ~60fps 与 NES 匹配。FPS 改用滑动窗口统计。
+- **修复文件**: `src/core/GameLoop.ts`, `src/platform/miniprogram/MpPlatform.ts`
+
+### BUG-012: CHR PNG 使用诊断调色板导致颜色错误 [新建]
+- **状态**: 🔴 打开
+- **严重度**: 高
+- **来源**: `scripts/extract_chr.py` + `Renderer.ts`
 - **描述**: 
-  使用线性扫描反汇编（非递归下降），不区分 code/data。
-  所有字节按 6502 操作码解析，数据区域会产生无意义的指令。
-  例如 Bank 7 的 $C000-$C2AF 区域实际上是跳转表数据，但被解释为代码。
+  CHR 提取脚本使用 4 色"诊断调色板"将 2bpp tile 数据渲染为彩色 PNG：
+  ```python
+  (0x7C,0x7C,0x7C), (0x00,0x00,0xFC), (0x94,0x00,0x84), (0xF8,0xF8,0xF8)
+  ```
+  这与 NES 实际调色板完全不同。当前 Renderer 直接将 PNG 作为最终画面绘制，
+  无法在运行时应用 NES 调色板（8 个 sub-palette × 4 色 ÷ attribute table 索引）。
 - **影响**: 
-  需要在转写时参考 CDL (Code/Data Logger) 文件来区分代码和数据区域。
+  - 所有 tile 渲染颜色错误（灰度替代黑色、蓝色替代原色等）
+  - 无法实现调色板动画（如标题闪烁）
+  - 无法根据 attribute table 切换子调色板
+- **修复计划**:
+  1. 重新提取 CHR 为灰度 PNG（编码 2bpp 索引到 RGB 通道）或保留原始 binary
+  2. Renderer 改为逐像素渲染，根据 tile pattern + attribute + palette 查表着色
+  3. 或使用 Canvas ImageData 逐帧重着色（性能需评估）
+
+### BUG-001: 反汇编质量 - 数据误解释为代码
+- **状态**: 🔄 改善中 (CDL 已更新, v0.5.1)
+- **严重度**: 中
+- **来源**: `_tmp_disasm_out/banks/` ASM 文件
+- **描述**: 
+  使用 BZK 反汇编器 + CDL 文件标记 code/data。
+  CDL 更新后 Bank 4/5/6 缩小 5%，更多数据区域被正确标记。
+  但 Bank 7 的脚本引擎区域 ($C2C2/$C36C/$C383) 仍被标记为 data（字节码非 6502 指令）。
+- **影响**: 
+  需要在转写时区分真正的 6502 代码和脚本字节码。
 - **计划**: 
-  - 使用 `cdl_banks/` 中的 CDL 注释版本作为主要参考
-  - 对标记为 `[?]` 的区域视为数据
-  - 对标记为 `[CODE]` 的区域进行逻辑转写
+  - ✅ CDL 已更新，反汇编已重新生成
+  - 手动标记 Bank 7 脚本引擎区域的字节码格式
+  - M5 阶段专门处理脚本引擎
 
 ### BUG-002: CHR 图形资源已提取，需验证
 - **状态**: 已修复 (v0.2.2)

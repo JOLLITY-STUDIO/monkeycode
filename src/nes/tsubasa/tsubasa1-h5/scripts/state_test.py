@@ -213,6 +213,11 @@ class MockStateMachine:
         elif state_id == 2:  # MenuSelect
             self._selected_item = 0
             self._cursor_sprite_y = 80
+        elif state_id == 3:  # TeamSelect
+            self._selected_team = 0
+        elif state_id == 4:  # MatchMain
+            self._match_time = 0
+            self._score = [0, 0]
 
     def _on_update(self, state_id: int, input_pressed: int):
         if state_id == 0:
@@ -221,6 +226,10 @@ class MockStateMachine:
             self._update_state01(input_pressed)
         elif state_id == 2:
             self._update_state02(input_pressed)
+        elif state_id == 3:
+            self._update_state03(input_pressed)
+        elif state_id == 4:
+            self._update_state04(input_pressed)
 
     def _on_exit(self, state_id: int):
         pass
@@ -272,6 +281,79 @@ class MockStateMachine:
         elif self._selected_item == 2:
             self.data.set('isContinue', True)
         self.transition_to(3)
+
+    # ---- State 03: 队伍选择 ----
+    def _update_state03(self, input_pressed: int):
+        if input_pressed & Button.A:
+            # 确认队伍 → 进入比赛
+            self.data.set('playerTeam', self._selected_team)
+            self.data.set('opponentTeam', 1 if self._selected_team == 0 else 0)
+            # 创建 Mock MatchEngine
+            self._init_match()
+            self.transition_to(4)
+        elif input_pressed & Button.B:
+            self.transition_to(2)
+        elif input_pressed & Button.LEFT:
+            self._selected_team = (self._selected_team - 1) % 7
+        elif input_pressed & Button.RIGHT:
+            self._selected_team = (self._selected_team + 1) % 7
+
+    def _init_match(self):
+        """创建简化的比赛引擎 (用于测试)"""
+        engine = MockMatchEngine()
+        engine.init()
+        self.data.set('matchEngine', engine)
+
+    # ---- State 04: 比赛主循环 ----
+    def _update_state04(self, input_pressed: int):
+        if input_pressed & Button.START:
+            self.transition_to(2)
+            return
+
+        engine = self.data.get('matchEngine')
+        if engine is None:
+            return
+
+        engine.update()
+
+        # 模拟进球事件触发 state 05
+        if engine.phase == 99:  # GOAL_EVENT
+            self.data.set('eventType', 'goal')
+            self.data.set('eventData', {'playerId': 10, 'scoringTeam': 0})
+            self.transition_to(5)
+
+
+# ============================================================
+# Mock MatchEngine (简化版, 仅用于测试)
+# ============================================================
+
+class MockMatchEngine:
+    """简化版比赛引擎"""
+    def __init__(self):
+        self.phase = 0      # KICKOFF
+        self.matchTime = 0
+        self.frameCount = 0
+        self.score = [0, 0]
+        self.team0Players = [type('P', (), {'playerId': i})() for i in range(11)]
+        self.team1Players = [type('P', (), {'playerId': i+11})() for i in range(11)]
+        self.ball = type('B', (), {'x': 128, 'y': 100, 'vx': 0, 'vy': 0, 'possessedBy': 6})()
+
+    def init(self):
+        self.phase = 0
+        self.matchTime = 0
+        self.frameCount = 0
+
+    def update(self):
+        self.frameCount += 1
+        if self.phase == 0:  # KICKOFF
+            if self.frameCount > 30:
+                self.phase = 1  # PLAYING
+        elif self.phase == 1:  # PLAYING
+            if self.frameCount % 60 == 0:
+                self.matchTime += 1
+            # 模拟: 1500帧后进球
+            if self.frameCount >= 1500:
+                self.phase = 99  # GOAL_EVENT
 
 
 # ============================================================
@@ -488,6 +570,86 @@ def test08_bank_lock_protection():
     print("\n  📋 bankLock 机制验证通过!")
 
 
+def test09_team_select_confirm_to_match():
+    """测试 State 03 → State 04 (队伍选择 → 比赛)"""
+    data = MockDataCache()
+    sm = MockStateMachine(data)
+    sm.transition_to(0)
+
+    # 快进到 State 03
+    for _ in range(10):
+        sm.update()
+    sm.update(input_pressed=Button.START)     # State 01→02
+    sm.update(input_pressed=Button.A)          # State 02→03 (确认菜单)
+    assert_eq(sm.current_state_id, 3, "应在 State 03")
+
+    # 按 A 确认队伍 → 进入比赛
+    sm.update(input_pressed=Button.A)
+    assert_eq(sm.current_state_id, 4, "按 A 后 → State 04 (MatchMain)")
+
+    # 验证确认后的数据
+    assert_eq(data.get('playerTeam'), 0, "选择玩家队伍 0")
+    assert_eq(data.get('opponentTeam'), 1, "对手队伍 1")
+
+    # 验证 matchEngine 已创建
+    engine = data.get('matchEngine')
+    assert_true(engine is not None, "matchEngine 已创建")
+    assert_eq(len(engine.team0Players), 11, "玩家队 11 人")
+    assert_eq(len(engine.team1Players), 11, "对手队 11 人")
+    assert_eq(engine.phase, 0, "比赛阶段=KICKOFF(0)")
+
+    print("\n  📋 State 03→04 流转成功! 比赛引擎已初始化")
+
+
+def test10_match_kickoff_to_playing():
+    """测试比赛中开球→进行中"""
+    data = MockDataCache()
+    sm = MockStateMachine(data)
+    sm.transition_to(0)
+
+    # 快进到 State 04
+    for _ in range(10):
+        sm.update()
+    sm.update(input_pressed=Button.START)
+    sm.update(input_pressed=Button.A)
+    sm.update(input_pressed=Button.A)
+    assert_eq(sm.current_state_id, 4, "应在 State 04")
+
+    engine = data.get('matchEngine')
+    assert_true(engine is not None, "matchEngine 存在")
+
+    # 推进 31 帧 (KICKOFF → PLAYING)
+    for _ in range(31):
+        sm.update()
+    assert_eq(engine.phase, 1, "31帧后应进入 PLAYING(1)")
+
+    # 继续推进应该保持 PLAYING
+    for _ in range(60):
+        sm.update()
+    assert_eq(engine.phase, 1, "仍应保持 PLAYING")
+    assert_true(engine.matchTime > 0, "比赛时间已开始")
+
+    print("\n  📋 开球→进行中 正常!")
+
+
+def test11_team_select_b_back():
+    """测试队伍选择 B 键返回菜单"""
+    data = MockDataCache()
+    sm = MockStateMachine(data)
+    sm.transition_to(0)
+
+    for _ in range(10):
+        sm.update()
+    sm.update(input_pressed=Button.START)
+    sm.update(input_pressed=Button.A)
+    assert_eq(sm.current_state_id, 3, "应在 State 03")
+
+    sm.update(input_pressed=Button.B)
+    assert_eq(sm.current_state_id, 2, "按 B 后 → State 02 (MenuSelect)")
+
+    print("\n  📋 队伍选择 B 键返回正常!")
+
+
 # ============================================================
 # 主入口
 # ============================================================
@@ -509,6 +671,9 @@ def main():
         ("State 02 B键返回标题", test06_cancel_back_to_title),
         ("完整流程 State 00→01→02→03", test07_full_flow),
         ("bankLock 保护机制", test08_bank_lock_protection),
+        ("State 03→04 队伍选择确认→比赛", test09_team_select_confirm_to_match),
+        ("State 04 开球→进行中", test10_match_kickoff_to_playing),
+        ("State 03 B键返回菜单", test11_team_select_b_back),
     ]
 
     for name, fn in tests:

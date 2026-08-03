@@ -2,80 +2,93 @@
  * State 05: 比赛事件处理
  * 对应 ROM 中 $8270 的处理
  *
- * 处理: 射门、传球、铲球、剧情对话等事件
+ * 处理: 进球动画、半场/终场显示、结果画面
  */
-
 import { StateBase } from './StateBase';
+import { MatchEngine, MatchPhase } from '../MatchEngine';
 
 export class State05_MatchEvent extends StateBase {
   readonly id = 5;
 
-  /** 事件类型 */
   private eventType: string = '';
-  /** 事件步骤 */
   private eventStep: number = 0;
-  /** 事件完成 */
-  private eventComplete: boolean = false;
+  private matchEngine: MatchEngine | null = null;
 
   onEnter(): void {
-    console.log('[State 05] Match Event');
-
-    // 从 DataCache 读取事件类型
     this.eventType = this.data.get<string>('eventType') || 'default';
     this.eventStep = 0;
-    this.eventComplete = false;
+    this.matchEngine = this.data.get('matchEngine') as MatchEngine || null;
+
+    console.log(`[State 05] Event: ${this.eventType}`);
+
+    // 持续事件时，清理画面
+    for (let i = 0; i < 960; i++) {
+      this.renderer.writeVram(0x2000 + i, 0x00);
+    }
   }
 
   onUpdate(): void {
-    if (this.eventComplete) {
-      this.sm.transitionTo(4); // 返回比赛主循环
+    switch (this.eventType) {
+      case 'goal':
+        this.processGoalEvent();
+        break;
+      case 'halftime':
+      case 'fulltime':
+        this.processResultEvent();
+        break;
+      default:
+        this.sm.transitionTo(4);
+        break;
+    }
+  }
+
+  private processGoalEvent(): void {
+    this.eventStep++;
+
+    const eventData = this.data.get('eventData') as any;
+    const scorer = eventData?.playerId ?? 0;
+
+    // 显示 GOAL 文字
+    if (this.eventStep === 1) {
+      const goalText = 'GOAL!!';
+      const startCol = 12;
+      for (let i = 0; i < goalText.length; i++) {
+        this.renderer.writeVram(0x2000 + 14 * 32 + startCol + i, goalText.charCodeAt(i));
+      }
+      console.log(`[State 05] GOAL!! by player ${scorer}`);
+    }
+
+    // 进球动画持续 120 帧 (2秒)
+    if (this.eventStep > 120) {
+      this.data.set('eventType', '');
+      this.sm.transitionTo(4);
+    }
+  }
+
+  private processResultEvent(): void {
+    this.eventStep++;
+
+    const matchEngine = this.matchEngine;
+    if (!matchEngine) {
+      this.sm.transitionTo(2); // 回菜单
       return;
     }
 
-    this.processEvent();
-  }
+    const score = matchEngine.score;
+    const resultText = `FINAL  ${score[0]} - ${score[1]}`;
 
-  private processEvent(): void {
-    // 根据事件类型分步处理
-    switch (this.eventType) {
-      case 'shoot':
-        this.processShoot();
-        break;
-      case 'pass':
-        this.processPass();
-        break;
-      case 'tackle':
-        this.processTackle();
-        break;
-      case 'dialogue':
-        this.processDialogue();
-        break;
-      default:
-        this.eventComplete = true;
-        break;
+    if (this.eventStep === 1) {
+      const startCol = 10;
+      for (let i = 0; i < resultText.length; i++) {
+        this.renderer.writeVram(0x2000 + 12 * 32 + startCol + i, resultText.charCodeAt(i));
+      }
+      console.log(`[State 05] Final score: ${score[0]} - ${score[1]}`);
     }
-  }
 
-  private processShoot(): void {
-    // TODO: 射门动画
-    this.eventStep++;
-    if (this.eventStep > 60) {
-      this.eventComplete = true;
+    // 结果显示 300 帧 (5秒) 后回菜单
+    if (this.eventStep > 300) {
+      this.data.set('eventType', '');
+      this.sm.transitionTo(2);
     }
-  }
-
-  private processPass(): void {
-    // TODO: 传球动画
-    this.eventComplete = true;
-  }
-
-  private processTackle(): void {
-    // TODO: 铲球动画
-    this.eventComplete = true;
-  }
-
-  private processDialogue(): void {
-    // TODO: 对话/剧情脚本
-    this.eventComplete = true;
   }
 }

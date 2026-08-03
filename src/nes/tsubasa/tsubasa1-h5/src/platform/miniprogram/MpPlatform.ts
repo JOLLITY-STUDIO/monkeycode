@@ -66,6 +66,10 @@ export class MpPlatform implements IPlatform {
   private _timerHandles: Map<number, number> = new Map();
   private _timerIdSeq: number = 1;
 
+  /** RAF 诊断计数器 */
+  private _rafCallCount: number = 0;
+  private _rafFallbackActive: boolean = false;
+
   /** 设置主 canvas（在 game.ts 中调用，用于 RAF） */
   setMainCanvas(canvas: any): void {
     this._mainCanvas = canvas;
@@ -121,13 +125,25 @@ export class MpPlatform implements IPlatform {
   requestAnimationFrame(callback: (timestamp: number) => void): number {
     // 使用主 canvas 的 requestAnimationFrame
     if (this._mainCanvas && typeof this._mainCanvas.requestAnimationFrame === 'function') {
-      return this._mainCanvas.requestAnimationFrame(callback);
+      this._rafFallbackActive = false;
+      const wrappedCallback = (timestamp: number) => {
+        this._rafCallCount++;
+        if (this._rafCallCount <= 3) {
+          console.log(`[MpPlatform] RAF fired #${this._rafCallCount} via canvas, ts=${timestamp}`);
+        }
+        callback(timestamp);
+      };
+      return this._mainCanvas.requestAnimationFrame(wrappedCallback);
     }
-    // 回退到 setInterval 模拟 (约60fps)
+    // 回退到 setInterval 模拟 (~60fps, 1000/60≈16.667 → 取17ms)
+    if (!this._rafFallbackActive) {
+      console.warn('[MpPlatform] canvas.requestAnimationFrame not available, falling back to setInterval(17ms)');
+      this._rafFallbackActive = true;
+    }
     const id = this._timerIdSeq++;
     const handle = setInterval(() => {
       callback(Date.now());
-    }, 16) as unknown as number;
+    }, 17) as unknown as number;
     this._timerHandles.set(id, handle);
     return id;
   }

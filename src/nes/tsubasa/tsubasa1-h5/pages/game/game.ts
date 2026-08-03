@@ -33,14 +33,14 @@ Page({
   /** FPS 定时器 */
   _fpsTimer: 0,
 
-  /** 是否为测试模式 (默认开启，方便验证渲染管线) */
-  _testMode: true,
+  /** 是否为测试模式 (默认关闭，正常游戏模式；?test=1 切换到测试模式) */
+  _testMode: false,
 
   onLoad(options: any) {
     console.log('[MiniProgram] Game page loaded');
-    // 通过页面参数 ?normal=1 切换到正常游戏模式
-    if (options?.normal === '1') {
-      this._testMode = false;
+    // 默认正常模式；通过页面参数 ?test=1 切换到测试模式
+    if (options?.test === '1') {
+      this._testMode = true;
     }
     console.log('[MiniProgram] Test mode:', this._testMode);
   },
@@ -84,6 +84,25 @@ Page({
       if (!ctx) {
         throw new Error('Cannot get Canvas 2D context');
       }
+
+      // === 直接 Canvas 测试: 验证 canvas 上下文本身可用 ===
+      try {
+        console.log('[MiniProgram] Canvas direct test: filling RED rect...');
+        console.log('[MiniProgram] Canvas buffer size:', canvasNode.width, 'x', canvasNode.height);
+        console.log('[MiniProgram] ctx type:', typeof ctx, 'fillRect:', typeof ctx.fillRect);
+        ctx.fillStyle = '#ff0000';
+        ctx.fillRect(0, 0, canvasNode.width, canvasNode.height);
+        ctx.fillStyle = '#00ff00';
+        ctx.fillRect(50, 50, 100, 100);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = '24px sans-serif';
+        ctx.fillText('DIRECT CANVAS TEST', 60, 120);
+        console.log('[MiniProgram] Canvas direct test DONE - should see RED bg + GREEN square + WHITE text');
+      } catch (e: any) {
+        console.error('[MiniProgram] Canvas direct test FAILED:', e.message, e.stack);
+      }
+
+      // ==================================================
 
       // 4. 创建平台适配器
       const platform = new MpPlatform();

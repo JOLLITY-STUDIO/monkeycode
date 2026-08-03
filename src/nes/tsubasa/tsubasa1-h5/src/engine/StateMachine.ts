@@ -45,12 +45,12 @@ export interface IGameState {
 
 /** 状态ID → $84D2 参数的映射 */
 const STATE_DISPATCH_MAP: Record<number, { bankId: number; subStateId: number }> = {
-  0: { bankId: 1, subStateId: 0 },   // $10 → Bank 1, sub-state 0
-  1: { bankId: 5, subStateId: 0xD }, // $5D → Bank 5, sub-state D
-  2: { bankId: 6, subStateId: 0 },   // $60 → Bank 6, sub-state 0
-  3: { bankId: 1, subStateId: 0 },   // (暂用 Bank 1)
-  4: { bankId: 4, subStateId: 0 },   // (暂用 Bank 4)
-  5: { bankId: 4, subStateId: 0 },   // (暂用 Bank 4)
+  0: { bankId: 1, subStateId: 0 },   // $10 → Bank 1, sub-state 0 (标题初始化)
+  1: { bankId: 1, subStateId: 2 },   // $12 → Bank 1, sub-state 2 (标题动画)
+  2: { bankId: 1, subStateId: 5 },   // $15 → Bank 1, sub-state 5 (菜单初始化)
+  3: { bankId: 1, subStateId: 6 },   // $16 → Bank 1, sub-state 6 (菜单循环/队伍选择共用)
+  4: { bankId: 4, subStateId: 0 },   // $40 → Bank 4, sub-state 0 (比赛主循环)
+  5: { bankId: 4, subStateId: 1 },   // $41 → Bank 4, sub-state 1 (比赛事件)
 };
 
 export class StateMachine {

@@ -1,6 +1,6 @@
-# 架构设计文档 - 天使之翼 H5
+# 架构设计文档 - 天使之翼 微信小程序
 
-> 版本: 1.0 | 日期: 2026-08-04
+> 版本: 1.1 | 日期: 2026-08-04
 
 ---
 
@@ -9,8 +9,8 @@
 | 原则 | 说明 |
 |------|------|
 | **非模拟器** | 直接重写游戏逻辑，不模拟6502 CPU |
-| **纯TS+Canvas** | 不依赖DOM，兼容微信小程序和浏览器 |
-| **即插即用** | `new Tsubasa(ctx).start()` 即可运行 |
+| **纯TS+Canvas** | 不依赖DOM，微信小程序原生Canvas API |
+| **即插即用** | `new Tsubasa(platform, ctx).start()` 即可运行 |
 | **结构化数据** | 所有数据以声明式结构化形式呈现 |
 | **OOP设计** | 面向对象+接口访问 |
 
@@ -27,35 +27,29 @@ tsubasa1-h5/
 ├── WBS_TASKS.md                 # 项目任务跟踪
 ├── package.json
 ├── tsconfig.json
-├── vite.config.ts
-├── index.html                   # 浏览器入口 (加载 src/platform/web/main.ts)
-├── miniprogram/                 # 微信小程序项目 (阶段2已搭建)
-│   ├── app.ts                   # 小程序入口
-│   ├── app.json                 # 小程序配置
-│   ├── app.wxss                 # 全局样式
-│   ├── sitemap.json
-│   ├── project.config.json      # 开发者工具配置
-│   └── pages/
-│       └── game/
-│           ├── game.ts          # 游戏页面逻辑
-│           ├── game.json        # 页面配置
-│           ├── game.wxml        # 页面模板 (Canvas + 虚拟手柄)
-│           └── game.wxss        # 页面样式
+├── app.ts                       # 微信小程序入口
+├── app.json                     # 小程序配置
+├── app.wxss                     # 全局样式
+├── sitemap.json
+├── project.config.json          # 开发者工具配置
 ├── public/
 │   └── sprites/                 # CHR转换的PNG精灵表
-│       ├── chr_bank_00.png ~ chr_bank_0C.png
+│       ├── chr_bank_00.png ~ chr_bank_0F.png
 │       └── chr_mega.png
+├── pages/
+│   └── game/
+│       ├── game.ts              # 游戏页面逻辑
+│       ├── game.json            # 页面配置
+│       ├── game.wxml            # 页面模板 (Canvas + 虚拟手柄)
+│       └── game.wxss            # 页面样式
 └── src/
     ├── core/
     │   ├── Tsubasa.ts           # 主游戏类 (对外接口, 依赖IPlatform)
     │   ├── GameLoop.ts           # 游戏主循环 (平台无关)
     │   ├── Constants.ts          # 全局常量/枚举
     │   └── types.ts              # 类型定义
-    ├── platform/                 # [新增] 平台抽象层
+    ├── platform/                 # 平台抽象层
     │   ├── IPlatform.ts          # 平台接口定义 (Canvas/Image/RAF)
-    │   ├── web/
-    │   │   ├── WebPlatform.ts    # Web 平台实现
-    │   │   └── main.ts           # Web 入口
     │   └── miniprogram/
     │       └── MpPlatform.ts     # 微信小程序平台实现
     ├── cache/
@@ -69,7 +63,9 @@ tsubasa1-h5/
     │   └── Renderer.ts           # 渲染器 (平台无关, 依赖IPlatform)
     ├── engine/
     │   ├── StateMachine.ts       # 状态机/状态分发器
-    │   ├── NmiHandler.ts         # NMI处理逻辑
+    │   ├── NmiHandler.ts          # NMI处理逻辑
+    │   ├── Bank1Dispatcher.ts     # Bank 1 子状态调度
+    │   ├── MatchEngine.ts         # 比赛引擎 (球员/球/AI)
     │   └── states/               # 各游戏状态 (State00-05)
     │       ├── StateBase.ts
     │       └── State00~05_*.ts
@@ -162,20 +158,42 @@ class InputManager {
 
 ---
 
-## 5. 帧循环设计
+## 5. 帧循环设计 (三段式架构 v0.5.0)
+
+NES 硬件的帧时序：
 
 ```
-每帧:
-  1. 等待帧同步 (requestAnimationFrame / wx timer)
-  2. 读取输入
-  3. NMI等效处理:
-     a. OAM DMA → 精灵缓冲
-     b. PPU队列 → VRAM写入
-     c. 滚动寄存器更新
-     d. $93 == 0 时更新游戏逻辑
-  4. 渲染到Canvas
-  5. 帧计数++
+NMI触发(VBlank开始)
+  → CPU在VBlank期间填充PPU数据 (OAM DMA, VRAM写入, 调色板)
+  → NMI返回
+  → CPU执行游戏逻辑 (输入处理、状态机、AI)
+  → PPU同时用VBlank填入的数据逐行渲染画面
+  → 等下一个NMI
 ```
+
+TS 改写后的三段式帧 (GameLoop.loop)：
+
+```
+每帧 (每个RAF回调):
+  ═══ 阶段1: PPU数据填充 (NMI) ═══
+    a. OAM DMA — CPU RAM → OAM缓存
+    b. PPU队列处理 — VRAM批量写入
+    c. 读取输入 — 手柄锁存
+    d. 帧计数++
+
+  ═══ 阶段2: 游戏逻辑 ═══
+    e. bankLock == 0 ? 状态机更新 : skip
+       (输入处理、AI、脚本、状态转换)
+
+  ═══ 阶段3: Canvas渲染 ═══
+    f. 用阶段1填充的PPU数据绘制到Canvas
+       (背景tile + 精灵，全部来自OAM/VRAM)
+```
+
+关键设计要点：
+- **PPU渲染的是"填充后的数据"**：阶段1先把数据填入OAM/VRAM缓冲区，阶段3用这些数据渲染。这与NES硬件行为一致。
+- **游戏逻辑在PPU数据填充之后**：游戏逻辑修改OAM/VRAM是为**下一帧**准备数据。
+- **渲染是只读的**：Renderer只读取PPU数据，不修改。
 
 ---
 
@@ -186,9 +204,11 @@ class InputManager {
 | A/X/Y 寄存器 | 局部变量 |
 | 零页 RAM | `DataCache.zp` Map |
 | 栈 ($0100-$01FF) | JS调用栈 (不需要显式模拟) |
-| OAM ($0200-$02FF) | `OamCache.spriteData[]` |
+| OAM ($0200-$02FF) | `OamCache` |
 | RAM ($0300-$07FF) | `DataCache.ram` Uint8Array |
-| PPU 寄存器 ($2000-$2007) | `PpuRegisters` 类 |
+| PPU 寄存器 ($2000-$2007) | `DataCache.ppuCtrl/ppuMask/scrollX/scrollY` |
+| NMI 中断 (PPU数据填充) | `PpuDataFiller.fillPpuData()` |
+| NMI 中的游戏逻辑调度 | `GameLoop` 阶段2: `stateMachine.update()` |
 | 手柄寄存器 ($4016/$4017) | `InputManager` |
 | MMC1 寄存器 ($8000-$FFFF) | `BankManager` |
 | ROM Bank | 独立的 TypeScript 模块 |

@@ -2,14 +2,15 @@
  * 主游戏类 - 外部唯一接口
  *
  * 即插即用:
- *   // Web
- *   new Tsubasa(platform, ctx).start()
- *
  *   // 微信小程序
  *   new Tsubasa(mpPlatform, canvasCtx).start()
  *
  * 外部只负责提供 Canvas 上下文和操作输入，
  * 无需了解游戏内核逻辑。
+ *
+ * ## 帧三段式架构 (v0.5.0)
+ * 每帧: PPU数据填充 → 游戏逻辑 → Canvas渲染
+ * 参见 GameLoop.ts 注释
  */
 import { GameLoop } from './GameLoop';
 import { DataCache } from '../cache/DataCache';
@@ -18,7 +19,7 @@ import { PpuQueue } from '../cache/PpuQueue';
 import { BankManager } from '../cache/BankManager';
 import { InputManager } from '../input/InputManager';
 import { Renderer } from '../renderer/Renderer';
-import { NmiHandler } from '../engine/NmiHandler';
+import { PpuDataFiller } from '../engine/NmiHandler';
 import { StateMachine } from '../engine/StateMachine';
 import {
   State00_InitTitle,
@@ -52,7 +53,7 @@ export class Tsubasa {
   private inputManager!: InputManager;
   private renderer!: Renderer;
   private gameLoop!: GameLoop;
-  private nmiHandler!: NmiHandler;
+  private ppuFiller!: PpuDataFiller;
   private stateMachine!: StateMachine;
 
   // 状态
@@ -101,14 +102,17 @@ export class Tsubasa {
       new StateTest(this.stateMachine),
     ]);
 
-    this.nmiHandler = new NmiHandler(
+    // PPU数据填充器 — 对应NMI中的硬件操作
+    this.ppuFiller = new PpuDataFiller(
       this.dataCache, this.oamCache, this.ppuQueue,
-      this.bankManager, this.inputManager,
-      this.renderer, this.stateMachine,
+      this.inputManager, this.renderer,
     );
 
-    // 游戏循环：传入平台适配器
-    this.gameLoop = new GameLoop(this.platform, this.nmiHandler, this.renderer);
+    // 游戏循环 — 编排三段式帧: PPU填充 → 游戏逻辑 → 渲染
+    this.gameLoop = new GameLoop(
+      this.platform, this.ppuFiller, this.renderer,
+      this.stateMachine, this.dataCache,
+    );
 
     if (this.options.debug) {
       console.log('[Tsubasa] All subsystems initialized (platform: ' + this.platform.name + ')');
@@ -120,9 +124,15 @@ export class Tsubasa {
   async start(): Promise<void> {
     if (this.state === 'running') return;
 
+    console.log('[Tsubasa] Starting NORMAL mode...');
+    console.log('[Tsubasa] spriteBasePath:', this.options.spriteBasePath);
+    console.log('[Tsubasa] autoLoadSprites:', this.options.autoLoadSprites);
+
     if (this.options.autoLoadSprites) {
       try {
+        console.log('[Tsubasa] Loading CHR banks...');
         await this.renderer.loadAllChrBanks(this.options.spriteBasePath);
+        console.log('[Tsubasa] CHR banks load complete');
       } catch (err) {
         console.warn('[Tsubasa] Failed to load CHR banks:', err);
       }
@@ -130,6 +140,7 @@ export class Tsubasa {
 
     // 模拟 RESET 初始化流程
     this.bankManager.setInitialConfig();
+    console.log('[Tsubasa] Bank config initialized:', this.bankManager.getConfig());
 
     // 对应 $80C9-$80CF: 初始化 PPU 控制寄存器镜像
     this.dataCache.ppuCtrl = 0x10;  // $80C9: LDA #$10, STA $19
@@ -142,9 +153,9 @@ export class Tsubasa {
     this.dataCache.write(0x03CB, 0);
     this.dataCache.write(0x03CC, 0);
 
+    console.log('[Tsubasa] Transitioning to State 0 (Title Init)');
+
     // 跳转到 State 0 (标题初始化)
-    // StateMachine.transitionTo 会触发 dispatchBankState(0)
-    // → PRG Bank 1, 子状态 0 → Bank1Dispatcher 初始化标题画面
     this.stateMachine.transitionTo(0);
 
     if (!this.options.manualStep) {
@@ -199,11 +210,25 @@ export class Tsubasa {
   /**
    * 手动步进一帧 (用于对比验证场景)
    * 仅在 manualStep 模式下使用，由外部帧循环驱动。
-   * 调用 nmiHandler.execute() → 输入/逻辑/渲染
+   *
+   * 帧三段式:
+   *   1. PPU数据填充 (OAM DMA → VRAM写入 → 输入读取 → 帧计数)
+   *   2. 游戏逻辑 (状态机更新)
+   *   3. Canvas渲染
    */
   step(): void {
     if (this.state !== 'running') return;
-    this.nmiHandler.execute();
+
+    // 阶段1: PPU数据填充
+    this.ppuFiller.fillPpuData();
+
+    // 阶段2: 游戏逻辑
+    if (this.dataCache.bankLock === 0) {
+      this.stateMachine.update();
+    }
+
+    // 阶段3: Canvas渲染
+    this.renderer.render(this.dataCache, this.oamCache);
   }
 
   pause(): void {

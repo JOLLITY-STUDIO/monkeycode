@@ -4,6 +4,7 @@
     type="2d"
     id="game-canvas"
     class="game-canvas"
+    style="width:512px;height:480px;"
     bindtouchstart="onTouchStart"
     bindtouchend="onTouchEnd"
     bindtouchmove="onTouchMove"

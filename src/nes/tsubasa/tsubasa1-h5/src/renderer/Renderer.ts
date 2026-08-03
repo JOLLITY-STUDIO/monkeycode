@@ -2,7 +2,7 @@
  * 渲染器 - 平台无关的 Canvas 2D 渲染
  *
  * 直接渲染到主 Canvas，无离屏中间层。
- * 通过 IPlatform 接口适配 web / 微信小程序。
+ * 通过 IPlatform 接口适配微信小程序。
  *
  * CHR 渲染说明:
  *   - 每个 CHR Bank PNG 为 128×128 像素, 包含 256 个 tile (16×16 网格)
@@ -47,6 +47,9 @@ export class Renderer {
 
   /** 是否正在使用 CHR 图片渲染 (false = 色块占位模式) */
   private useChrImages: boolean = false;
+
+  /** 渲染帧计数 (诊断用) */
+  private renderFrameCount: number = 0;
 
   /** Debug 文字叠加 (非null时在画面顶层绘制) */
   debugText: string | null = null;
@@ -170,12 +173,31 @@ export class Renderer {
 
   /** 渲染一帧 — 直接画到主 canvas，一次完成 */
   render(dataCache: DataCache, oamCache: OamCache): void {
+    this.renderFrameCount++;
     const ctx = this.ctx;
+
+    // 前3帧输出诊断日志
+    if (this.renderFrameCount <= 3) {
+      console.log(`[Renderer] render() frame #${this.renderFrameCount} called`, {
+        canvasPixels: `${SCREEN_W * this.scale}x${SCREEN_H * this.scale}`,
+        hasCtx: !!ctx,
+        hasFillRect: typeof ctx.fillRect === 'function',
+        palette0: this.vram.palette[0].toString(16),
+        hasDebugText: !!this.debugText,
+        useChrImages: this.useChrImages,
+      });
+    }
 
     // 清空
     const bgColorIdx = this.vram.palette[0] & 0x3F;
     const bgColor = NES_PALETTE[bgColorIdx];
-    ctx.fillStyle = `#${bgColor.toString(16).padStart(6, '0')}`;
+    const fillColor = `#${bgColor.toString(16).padStart(6, '0')}`;
+
+    if (this.renderFrameCount <= 3) {
+      console.log(`[Renderer] bgColorIdx=0x${bgColorIdx.toString(16)} bgColor=0x${bgColor.toString(16)} fillColor=${fillColor}`);
+    }
+
+    ctx.fillStyle = fillColor;
     ctx.fillRect(0, 0, SCREEN_W * this.scale, SCREEN_H * this.scale);
 
     // 渲染背景
@@ -202,6 +224,15 @@ export class Renderer {
       ctx.font = `${fontSize}px sans-serif`;
       ctx.fillStyle = this.debugTextColor;
       ctx.fillText(this.debugText, x + 4 * this.scale, y + fontSize);
+
+      if (this.renderFrameCount <= 3) {
+        console.log(`[Renderer] debugText drawn: "${this.debugText}" at (${x},${y}) color=${this.debugTextColor} size=${fontSize}`);
+      }
+    }
+
+    // 每60帧输出一次心跳
+    if (this.renderFrameCount % 60 === 0) {
+      console.log(`[Renderer] Frame ${this.renderFrameCount} rendered successfully`);
     }
   }
 

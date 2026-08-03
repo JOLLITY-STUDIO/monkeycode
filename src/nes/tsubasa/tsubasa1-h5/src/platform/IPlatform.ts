@@ -1,8 +1,8 @@
 /**
- * 平台抽象接口 - 隔离 web / 微信小程序差异
+ * 平台抽象接口 - 隔离微信小程序差异
  *
  * 游戏核心只依赖此接口，不直接使用任何平台 API。
- * web 和小程序各自实现此接口注入到 Tsubasa 中。
+ * 小程序实现此接口注入到 Tsubasa 中。
  */
 
 /** 平台支持的 Canvas 渲染上下文（web CanvasRenderingContext2D 和小程序 CanvasRenderingContext2D 的公共子集）

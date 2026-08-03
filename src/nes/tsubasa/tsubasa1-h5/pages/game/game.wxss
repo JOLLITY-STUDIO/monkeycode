@@ -5,15 +5,22 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: #000;
+  justify-content: flex-start;
+  background: #111;
   position: relative;
+  overflow: hidden;
 }
 
 .game-canvas {
-  width: 512rpx;
-  height: 480rpx;
+  /* 使用固定像素宽度确保 canvas 缓冲区不被 CSS 二次缩放
+   * NES 256×240 × 2倍缩放 = 512×480
+   * 在小屏幕设备上会被截断但不会变糊 */
+  width: 512px;
+  height: 480px;
   margin-top: 20rpx;
-  border: 2rpx solid #333;
+  border: 4rpx solid #555;
+  /* 关键: 在小屏幕上允许 canvas 溢出而非缩小 */
+  flex-shrink: 0;
 }
 
 .controls {
