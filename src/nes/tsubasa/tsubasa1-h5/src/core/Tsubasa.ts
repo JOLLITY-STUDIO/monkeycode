@@ -134,6 +134,13 @@ export class Tsubasa {
     this.dataCache.scrollY = 0;     // $80C5: STA $17
     this.dataCache.bankLock = 0;    // 初始不锁定
 
+    // 初始化 Bank 1 子状态变量 ($03CB, $03CC)
+    this.dataCache.write(0x03CB, 0);
+    this.dataCache.write(0x03CC, 0);
+
+    // 跳转到 State 0 (标题初始化)
+    // StateMachine.transitionTo 会触发 dispatchBankState(0)
+    // → PRG Bank 1, 子状态 0 → Bank1Dispatcher 初始化标题画面
     this.stateMachine.transitionTo(0);
     this.gameLoop.start();
     this.state = 'running';

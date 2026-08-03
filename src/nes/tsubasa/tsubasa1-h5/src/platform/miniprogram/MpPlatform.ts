@@ -71,11 +71,12 @@ export class MpPlatform implements IPlatform {
     this._mainCanvas = canvas;
   }
 
-  /** 小程序离屏 canvas (使用 wx.createOffscreenCanvas 或普通 canvas) */
+  /** 小程序离屏 canvas (使用 wx.createOffscreenCanvas) */
   createOffscreenCanvas(width: number, height: number): ICanvas {
     let c: any;
     if (typeof wx !== 'undefined' && typeof wx.createOffscreenCanvas === 'function') {
       c = wx.createOffscreenCanvas({ type: '2d', width, height });
+      console.log('[MpPlatform] OffscreenCanvas created:', width, 'x', height);
     } else {
       throw new Error(
         'MpPlatform.createOffscreenCanvas requires wx.createOffscreenCanvas. ' +
@@ -96,17 +97,21 @@ export class MpPlatform implements IPlatform {
 
       if (canvas && typeof canvas.createImage === 'function') {
         img = canvas.createImage();
+        console.log(`[MpPlatform] Loading image: ${url} (via ${this._offscreenCanvas ? 'offscreen' : 'main'} canvas)`);
       } else {
         // 最终回退：纯 JS 模拟（无法真正加载图片，但避免崩溃）
         console.warn('[MpPlatform] No canvas available for createImage, image loading disabled');
+        console.warn('[MpPlatform] _offscreenCanvas:', !!this._offscreenCanvas, '_mainCanvas:', !!this._mainCanvas);
         reject(new Error('No canvas reference for image loading'));
         return;
       }
 
       img.onload = () => {
+        console.log(`[MpPlatform] Image loaded: ${url} (${img.width}x${img.height})`);
         resolve(new MpImage(img));
       };
       img.onerror = (err: any) => {
+        console.error(`[MpPlatform] Image load FAILED: ${url}`, err);
         reject(new Error(`Failed to load image: ${url} - ${JSON.stringify(err || 'unknown error')}`));
       };
       img.src = url;

@@ -199,8 +199,9 @@ export class Renderer {
     // 缩放到主 canvas
     this.ctx.imageSmoothingEnabled = false;
     const offRaw = (this.offscreen as any).raw || this.offscreen;
-    (this.ctx as any).drawImage(offRaw, 0, 0,
-      SCREEN_W * this.scale, SCREEN_H * this.scale);
+    (this.ctx as any).drawImage(offRaw,
+      0, 0, SCREEN_W, SCREEN_H,
+      0, 0, SCREEN_W * this.scale, SCREEN_H * this.scale);
   }
 
   private renderBackground(ctx: ICanvasContext, ppuCtrl: number, scrollX: number, scrollY: number): void {

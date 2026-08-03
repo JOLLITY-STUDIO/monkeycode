@@ -4,25 +4,64 @@
 
 ---
 
+## 2026-08-04: v0.2.4 - ASM 反汇编更新 (BZK + 最新 CDL)
+
+### 操作
+- 🔄 **BZK 反汇编器重新生成**: 使用最新 CDL 文件更新所有 8 个 Bank ASM
+- 📁 **文件更新**:
+  - `input/tsubasa1.cdl` ← 最新 CDL (256KB)
+  - `input/tsubasa1.nes` ← 最新 NES ROM
+  - `config.lua` ← `config_tsubasa1.lua`
+- 📊 **新 ASM 文件大小** (相比旧版):
+  - bank_00: 215KB → **506KB** (+135%)
+  - bank_01: 225KB → **814KB** (+262%)
+  - bank_02: 235KB → **827KB** (+252%)
+  - bank_03: 229KB → **870KB** (+280%)
+  - bank_04: 244KB → **902KB** (+270%)
+  - bank_05: 226KB → **847KB** (+275%)
+  - bank_06: 213KB → **753KB** (+253%)
+  - bank_07: 237KB → **902KB** (+281%)
+  - **总计: 2023KB → 6421KB (+217%)**
+
+### 验证
+- ✅ BZK 反汇编完成，0 错误
+- ✅ Reset 向量: $FFC0 → `SEI` (正确)
+- ✅ NMI 向量: $8002 → `JMP $80E0` (正确)
+- ✅ Bank 调度: $BFD7 → `JMP ($8000)` (Bank 切换机制正确)
+- 📝 新增 `bank_ram.inc` (95KB RAM 使用统计)
+
+---
+
+## 2026-08-04: v0.2.3 - 状态分发器重构 + Bank 1 分析
+
+### 分析
+- 🔍 **Bank 1 子状态调度器分析**:
+  - Bank 1 的跳转表位于 $804B（不是 $C000）
+  - 子状态 0: $C05B → 标题初始化第1部分（设置 CHR bank 1E/1F）
+  - 子状态 1: $C070 → 标题初始化第2部分（加载图形数据）
+  - 子状态 2: $C0A7 → 标题动画循环
+  - $84D2 状态分发器: 高4位=PRG Bank, 低4位=子状态索引
+- 🔍 **Bank 1 数据格式分析**: Bank 1 87.3% 为数据，包含复杂的脚本/音乐引擎数据
+- 🔍 **标题画面数据生成**: 标题画面由 Bank 1 代码动态生成，非静态 nametable
+
+### 计划
+- 重构 StateMachine 支持 Bank 切换 + 子状态索引 ($84D2 逻辑)
+- 实现 Bank 1 子状态跳转表
+- 提取标题画面实际 nametable 数据（从模拟器运行状态或ROM数据分析）
+
+---
+
 ## 2026-08-04: v0.2.2 - 小程序渲染修复 + CHR 资源验证
 
 ### 修复
 - 🐛 **MpPlatform.loadImage 重写**: 使用 `canvas.createImage()` 替代裸 JS 对象
-  - 保存离屏 canvas 引用用于 `createImage()`
-  - 图片加载失败时输出明确错误信息
-- 🐛 **MpPlatform.requestAnimationFrame 修复**: 
-  - 新增 `setMainCanvas()` 方法保存主 canvas 引用
-  - 回退方案从 `window.setTimeout` 改为 `setInterval`（小程序兼容）
-  - 正确管理定时器句柄用于 `cancelAnimationFrame`
+- 🐛 **MpPlatform.requestAnimationFrame 修复**: setInterval 回退
 - 🐛 **素材路径修复**: `spriteBasePath` 从 `/sprites/` → `/public/sprites/`
-- 🐛 **Renderer 兼容性修复**:
-  - `ctx.canvas.width` 设置增加 try-catch（小程序可能只读）
-  - `drawImage` 调用统一使用 `(img as any).raw || img` 提取原始对象
-  - `ICanvasContext` 接口增加 `save/restore/translate/scale` 方法
-- 🐛 **错误日志增强**: `loadAllChrBanks` 失败时输出首个错误详情
+- 🐛 **Renderer 兼容性修复**: drawImage 统一使用 raw 提取、ICanvasContext 扩展
+- 🐛 **错误日志增强**: loadAllChrBanks 失败时输出首个错误详情
 
 ### 验证
-- ✅ TypeScript 编译通过 (tsconfig.json + tsconfig.mp.json)
+- ✅ TypeScript 编译通过
 - ✅ 16 个 CHR Bank PNG 已从 ROM 提取完成
 - ⏳ 微信开发者工具渲染测试 (待刷新)
 
@@ -31,56 +70,18 @@
 ## 2026-08-04: v0.2.1 - 微信小程序模块解析修复
 
 ### 修复
-- 🐛 **BUG-004**: 修复微信小程序无法解析 `'../engine/states'` 目录索引问题
-  - 微信小程序模块系统不支持目录→index.js 自动解析
-  - `Tsubasa.ts:30` 将 `'../engine/states'` → `'../engine/states/index'`
-  - 错误: `module 'src/engine/states.js' is not defined`
+- 🐛 **BUG-004**: `'../engine/states'` → `'../engine/states/index'`
 
 ---
 
 ## 2026-08-04: v0.2.0 - 双平台环境搭建
 
-### 核心改动
-1. ✅ **平台抽象层** - 新增 `src/platform/`
-   - `IPlatform.ts` — 统一接口 (Canvas/Image/RAF/时间)
-   - `web/WebPlatform.ts` — 浏览器实现
-   - `web/main.ts` — 浏览器入口
-   - `miniprogram/MpPlatform.ts` — 微信小程序实现
-
-2. ✅ **微信小程序项目** - 新建 `miniprogram/` 目录
-   - `app.ts/json/wxss` — 小程序主体
-   - `pages/game/game.ts/json/wxml/wxss` — 游戏页面
-   - Canvas 2D API + 虚拟手柄 + 触摸事件
-   - `project.config.json` — 开发者工具配置
-
-3. ✅ **核心重构** - 去 web 硬依赖
-   - `Tsubasa.ts` → 构造函数改为 `(platform, ctx, options)`
-   - `Renderer.ts` → 使用 `IPlatform.createOffscreenCanvas` / `loadImage`
-   - `GameLoop.ts` → 使用 `IPlatform.requestAnimationFrame` / `now()`
-   - 旧 `main.ts` 废弃，入口改为 `src/platform/web/main.ts`
-
-### 架构决策
-- 游戏核心 (.ts 逻辑) 与平台渲染 (.wxml/.html) 完全分离
-- `IPlatform` 接口仅包含 Canvas 2D 公共子集，web 和小程序都兼容
-- 虚拟手柄在各自平台层实现，核心只接收 `pressButton/releaseButton`
-
-### 验证状态
-- [x] TypeScript 编译通过 (无 lint 错误)
-- [ ] 浏览器 `vite dev` 启动测试
-- [ ] 微信开发者工具预览测试
+- ✅ 平台抽象层 (IPlatform)
+- ✅ 微信小程序项目 (miniprogram/)
+- ✅ 核心重构去 web 硬依赖
 
 ---
 
 ## 2026-08-04: 项目初始化 (v0.1.0)
 
-### 完成工作
-1. ✅ ROM 结构分析 - 完成 `ROM_STRUCTURE_REPORT.md`
-2. ✅ 架构设计 - 完成 `ARCHITECTURE.md`
-3. ✅ 项目框架搭建 (核心/缓存/输入/渲染/引擎/状态/工具 模块)
-
-### 待解决问题
-- [ ] CHR Bank PNG提取和验证
-- [ ] Bank 1/4/6 的实际游戏逻辑转写
-- [ ] Bank 3/5 的数据定义提取
-- [ ] Bank 7 的事件脚本引擎
-- [ ] 完整的渲染管道（CHR tile绘制）
+- ✅ ROM 结构分析、架构设计、项目框架搭建

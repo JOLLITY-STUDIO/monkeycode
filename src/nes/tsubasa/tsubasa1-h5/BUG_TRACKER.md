@@ -21,19 +21,12 @@
   - 对标记为 `[?]` 的区域视为数据
   - 对标记为 `[CODE]` 的区域进行逻辑转写
 
-### BUG-002: CHR 图形资源缺失
-- **状态**: 打开
+### BUG-002: CHR 图形资源已提取，需验证
+- **状态**: 已修复 (v0.2.2)
 - **严重度**: 高
-- **来源**: `public/sprites/` 目录已有部分PNG文件
-- **描述**: 
-  需要将所有16个CHR bank转换为PNG图片资源。
-  当前已存在部分文件但需要验证完整性。
-- **影响**: 
-  渲染器暂时使用色块占位，需要完整CHR数据才能正确渲染。
-- **计划**: 
-  - 使用Python脚本从NES ROM提取CHR数据
-  - 转换为PNG格式
-  - 验证已有文件
+- **来源**: `public/sprites/` 目录
+- **描述**: 16个CHR bank已提取为PNG，待验证渲染效果。
+- **验证**: 需要在微信开发者工具或浏览器中实际查看CHR tile渲染效果。
 
 ### BUG-003: Bank 切换时序
 - **状态**: 打开
@@ -49,57 +42,41 @@
   - 跟踪所有读取 $1A/$1B/$1C 的代码
   - 确保 BankManager 的值与原始NES一致
 
----
-
-### BUG-005: State01_TitleLoop bankLock=1 阻止状态机更新
-- **状态**: 已修复
+### BUG-007: 标题画面使用测试数据而非真实ROM数据
+- **状态**: 🔄 进行中
 - **严重度**: 高
-- **来源**: Ts 实现 vs 原始 ROM 差异
+- **来源**: State00_InitTitle.ts
 - **描述**: 
-  State01_TitleLoop.onEnter() 设置 `bankLock = 1`，导致 NmiHandler 跳过
-  `stateMachine.update()`，状态永远卡在 State 1 无法响应按键。
-  原始 ROM 中 bankLock=1 时标题动画由 bank 5 的代码直接驱动（不走
-  state dispatch），但 TS 实现统一走状态机，不宜锁住。
-- **修复**: 
-  将 `bankLock = 1` 改为 `bankLock = 0`，添加注释说明原因。
+  State 00 的 `loadTitleNametable()` 使用 `tileIdx = (row * 32 + col) % 256` 
+  填充测试图案，而非从ROM中提取真实的标题画面数据。
+  标题画面数据由 Bank 1 的脚本引擎动态生成，需要实现 Bank 1 子状态调度器。
+- **修复计划**:
+  1. 实现 $84D2 状态分发器的 Bank 切换逻辑
+  2. 实现 Bank 1 子状态跳转表 ($804B)
+  3. 从 ROM 提取标题画面调色板和初始数据
+  4. 实现 Bank 1 标题初始化核心代码
 
-### BUG-006: MpPlatform 图片加载/RAF 在小程序中不可用
-- **状态**: 已修复
+### BUG-008: 状态分发器未实现 Bank 切换
+- **状态**: 🔄 进行中
 - **严重度**: 高
-- **来源**: 微信开发者工具运行
-- **描述**:
-  1. `loadImage` 创建裸 JS 对象而非使用 `canvas.createImage()`
-  2. `requestAnimationFrame` 回退使用 `window.setTimeout`（小程序无 window）
-  3. 素材路径 `/sprites/` 不正确（实际在 `/public/sprites/`）
-- **修复**:
-  - MpPlatform 新增 `setMainCanvas()` 方法
-  - loadImage 使用 `canvas.createImage()`
-  - requestAnimationFrame 回退改为 `setInterval`
-  - game.ts 中 spriteBasePath → `/public/sprites/`
-
----
-- **状态**: 已修复
-- **严重度**: 高
-- **来源**: 微信开发者工具运行时报错
+- **来源**: StateMachine.ts vs ROM $84D2
 - **描述**: 
-  微信小程序模块系统不支持 `from '../engine/states'` 自动解析到 `states/index.js`。
-  而 Node.js / Web bundler 支持目录→index.js 的自动解析。
-  `src/core/Tsubasa.ts:30` 导入了 `'../engine/states'`，编译后变成 `require('../engine/states')`，
-  微信模块系统找不到 `src/engine/states.js`（实际文件是 `src/engine/states/index.js`）。
-- **影响**: 
-  小程序启动失败，白屏。
-- **修复**: 
-  将 `'../engine/states'` 改为 `'../engine/states/index'`。
-  提交: `src/core/Tsubasa.ts`
+  原始 ROM 中状态分发器 `$84D2` 将状态ID分为高4位(PRG Bank)和低4位(子状态索引)。
+  当前 TS 实现直接使用 0-5 的简单状态ID，未实现 Bank 切换机制。
+- **影响**: 标题画面、菜单等所有画面都无法正确初始化。
+- **计划**: 重构 StateMachine 支持 Bank 切换 + 子状态索引。
 
 ---
 
 ## 已修复
 
 - BUG-004: 微信小程序模块解析 - 目录index自动解析失败 (2026-08-04)
+- BUG-005: State01_TitleLoop bankLock=1 阻止状态机更新 (2026-08-04)
+- BUG-006: MpPlatform 图片加载/RAF 在小程序中不可用 (2026-08-04)
 
 ---
 
 ## 待验证
 
-_暂无_
+- CHR Bank PNG 文件在小程序中是否正确加载和渲染
+- 标题画面是否显示正确的 tile 图案

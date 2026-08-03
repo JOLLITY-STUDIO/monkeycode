@@ -83,6 +83,7 @@ Page({
       platform.setMainCanvas(canvasNode);
 
       // 5. 创建游戏实例
+      // 小程序中 public/sprites/ 在项目根目录下，路径为 /public/sprites/
       this.game = new Tsubasa(platform, ctx as any, {
         spriteBasePath: '/public/sprites/',
         scale: 2,

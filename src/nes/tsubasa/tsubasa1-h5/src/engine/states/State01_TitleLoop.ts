@@ -1,8 +1,14 @@
 /**
  * State 01: 标题画面循环
- * 对应 ROM 中 $82A7 的处理
+ * 对应 ROM 中 $82A7: LDA #$5D, JSR $84D2
  *
- * 职责: 等待 START 按键，进行标题画面的动画
+ * State ID $5D = PRG Bank 5, 子状态 D
+ * 标题动画和输入检测由 Bank 1 子状态 2 处理
+ *
+ * 职责:
+ *   1. 维护标题画面显示
+ *   2. 检测 START 按键 → 进入菜单
+ *   3. 标题画面闪烁动画
  */
 
 import { StateBase } from './StateBase';
@@ -19,12 +25,11 @@ export class State01_TitleLoop extends StateBase {
 
   onEnter(): void {
     console.log('[State 01] Title Loop');
+
     this.blinkCounter = 0;
     this.animFrame = 0;
 
-    // 注意: 原始 ROM 中此状态设置 bankLock = 1 来禁止状态机更新，
-    // 但在 TS 实现中状态机不依赖 bank 切换，不需要这个锁。
-    // 保持 bankLock = 0 让状态机正常更新。
+    // 保持 bankLock = 0 让状态机正常更新
     this.data.bankLock = 0;
 
     // 设置 PPU 配置
@@ -53,19 +58,26 @@ export class State01_TitleLoop extends StateBase {
 
   /** 更新闪烁效果 */
   private updateBlinkEffect(): void {
-    // 通过 PPU MASK 控制 "PRESS START" 文字的显示/隐藏
+    // 通过 PPU MASK 控制特定元素的显示
+    // 原始 ROM 中由 Bank 1 的子状态 2 处理闪烁
     if (this.animFrame === 0) {
       this.data.ppuMask = 0x0E; // 显示背景
     } else {
-      this.data.ppuMask = 0x0E; // 暂时保持不变 (实际应控制特定sprite)
+      this.data.ppuMask = 0x0E; // 闪烁时也显示背景（精灵由Bank1管理）
     }
   }
 
   /** START 按键处理 */
   private onStartPressed(): void {
     console.log('[State 01] START pressed → Menu');
+
     // 切换 bank 以加载菜单数据
     this.banks.prgBank0 = 1;
+    this.data.mmcBankReg2 = 1;
+
+    // 初始化 Bank 1 菜单子状态
+    this.data.write(0x03CB, 5); // 菜单初始化子状态
+    this.data.write(0x03CC, 0);
 
     // 过渡到菜单选择状态
     this.sm.transitionTo(2);
@@ -74,5 +86,6 @@ export class State01_TitleLoop extends StateBase {
   onExit(): void {
     // 清除闪烁效果
     this.data.ppuMask = 0x0E;
+    console.log('[State 01] Exit title loop');
   }
 }

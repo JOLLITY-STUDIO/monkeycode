@@ -2,18 +2,25 @@
  * 状态机 - 游戏状态分发器
  * 替代 $81F7-$8263 的状态跳转表机制
  *
+ * 原始 ROM 中 $84D2 是核心状态分发器:
+ *   - 高4位 (bits 7-4): 选择 PRG Bank (写入 $1C)
+ *   - 低4位 (bits 3-0): 子状态索引 (通过跳转表分发)
+ *
+ * 状态 ID 编码:
+ *   $10 → Bank 1, 子状态 0 (标题初始化)
+ *   $5D → Bank 5, 子状态 D (标题动画?)
+ *   $60 → Bank 6, 子状态 0 (菜单)
+ *
  * 状态存储: $03CA (dataCache.gameState)
  * 跳转表地址: $81FD
  *
- * 状态列表:
- *   0: Init/Title     ($82A1)
- *   1: Title Loop     ($82A7)
- *   2: Menu Select    ($8276)
- *   3: Team Select    ($8264)
- *   4: Match Main     ($826A)
- *   5: Match Event    ($8270)
- *   6: Transition     (TBD)
- *   7: Result         (TBD)
+ * 主状态列表 (顶层):
+ *   0: Init/Title     → 调用 $84D2 with $10
+ *   1: Title Loop     → 调用 $84D2 with $5D
+ *   2: Menu Select    → 调用 $84D2 with $60
+ *   3: Team Select    → 调用 $84D2 with custom
+ *   4: Match Main     → 调用 $84D2 with custom
+ *   5: Match Event    → 调用 $84D2 with custom
  */
 
 import type { DataCache } from '../cache/DataCache';
@@ -22,6 +29,7 @@ import type { Renderer } from '../renderer/Renderer';
 import type { OamCache } from '../cache/OamCache';
 import type { BankManager } from '../cache/BankManager';
 import type { PpuQueue } from '../cache/PpuQueue';
+import { Bank1Dispatcher } from './Bank1Dispatcher';
 
 /** 游戏状态接口 */
 export interface IGameState {
@@ -35,6 +43,16 @@ export interface IGameState {
   onExit(): void;
 }
 
+/** 状态ID → $84D2 参数的映射 */
+const STATE_DISPATCH_MAP: Record<number, { bankId: number; subStateId: number }> = {
+  0: { bankId: 1, subStateId: 0 },   // $10 → Bank 1, sub-state 0
+  1: { bankId: 5, subStateId: 0xD }, // $5D → Bank 5, sub-state D
+  2: { bankId: 6, subStateId: 0 },   // $60 → Bank 6, sub-state 0
+  3: { bankId: 1, subStateId: 0 },   // (暂用 Bank 1)
+  4: { bankId: 4, subStateId: 0 },   // (暂用 Bank 4)
+  5: { bankId: 4, subStateId: 0 },   // (暂用 Bank 4)
+};
+
 export class StateMachine {
   private states: Map<number, IGameState> = new Map();
   private currentState: IGameState | null = null;
@@ -46,6 +64,12 @@ export class StateMachine {
   private oamCache: OamCache;
   private bankManager: BankManager;
   private ppuQueue: PpuQueue;
+
+  /** Bank 1 子状态调度器 */
+  private bank1Dispatcher: Bank1Dispatcher;
+
+  /** 当前激活的 PRG Bank (用于 Bank 子状态调度) */
+  private activePrgBank: number = 0;
 
   constructor(
     dataCache: DataCache,
@@ -61,6 +85,10 @@ export class StateMachine {
     this.oamCache = oamCache;
     this.bankManager = bankManager;
     this.ppuQueue = ppuQueue;
+
+    this.bank1Dispatcher = new Bank1Dispatcher(
+      dataCache, bankManager, renderer, oamCache, ppuQueue, inputManager,
+    );
   }
 
   /** 注册状态 */
@@ -75,7 +103,15 @@ export class StateMachine {
     }
   }
 
-  /** 跳转到指定状态 */
+  /**
+   * 跳转到指定状态
+   *
+   * 对应 ROM 中 $81F7:
+   *   LDA $03CA        ; 读取状态ID
+   *   JSR $834D        ; 通过跳转表获取处理地址
+   *   (跳转表数据)      ; 每个状态的处理入口
+   *   → 处理入口调用 $84D2(stateId) 进行 Bank 切换 + 子状态调度
+   */
   transitionTo(stateId: number): void {
     if (this.currentState && this.currentState.id === stateId) return;
 
@@ -94,11 +130,69 @@ export class StateMachine {
     this.currentState = newState;
     this.currentStateId = stateId;
     this.dataCache.gameState = stateId;
+
+    // 执行 $84D2 风格的 Bank 切换 + 子状态调度
+    this.dispatchBankState(stateId);
+
     newState.onEnter();
+  }
+
+  /**
+   * 执行 $84D2 风格的 Bank 切换 + 子状态调度
+   *
+   * 对应 ROM $84D2:
+   *   PHA           ; 保存状态ID
+   *   LSR x4         ; 提取高4位
+   *   JSR $83C5      ; 写入 PRG Bank 寄存器 ($1C)
+   *   PLA            ; 恢复状态ID
+   *   AND #$0F       ; 提取低4位
+   *   STA $05FC      ; 存储子状态索引
+   *   ASL / ADC      ; ×3 (跳转表条目为3字节?)
+   *   JMP ($05FB)    ; 跳转到对应处理函数
+   *
+   * @param stateId 原始状态ID (如 $10, $5D, $60)
+   */
+  private dispatchBankState(stateId: number): void {
+    const dispatch = STATE_DISPATCH_MAP[stateId];
+    if (!dispatch) {
+      console.warn(`[StateMachine] No dispatch mapping for state ${stateId}`);
+      return;
+    }
+
+    const { bankId, subStateId } = dispatch;
+
+    // 切换 PRG Bank
+    this.bankManager.prgBank0 = bankId;
+    this.dataCache.mmcBankReg2 = bankId;
+    this.activePrgBank = bankId;
+
+    console.log(`[StateMachine] Dispatch: state=$${stateId.toString(16)} → PRG Bank ${bankId}, sub-state ${subStateId}`);
+
+    // 根据 Bank 初始化子状态调度器
+    switch (bankId) {
+      case 1:
+        this.bank1Dispatcher.init(subStateId);
+        break;
+      case 4:
+      case 5:
+      case 6:
+        // TODO: 实现其他 Bank 的子状态调度器
+        console.log(`[StateMachine] Bank ${bankId} dispatcher not yet implemented`);
+        break;
+      default:
+        console.warn(`[StateMachine] Unknown PRG Bank ${bankId}`);
+        break;
+    }
   }
 
   /** 每帧更新 */
   update(): void {
+    // 首先处理 Bank 子状态调度器
+    if (this.activePrgBank === 1) {
+      this.bank1Dispatcher.update();
+    }
+
+    // 然后更新当前顶层状态
     if (this.currentState) {
       this.currentState.onUpdate();
     }
@@ -126,4 +220,6 @@ export class StateMachine {
   getBankManager(): BankManager { return this.bankManager; }
   /** 获取 PpuQueue */
   getPpuQueue(): PpuQueue { return this.ppuQueue; }
+  /** 获取 Bank 1 调度器 */
+  getBank1Dispatcher(): Bank1Dispatcher { return this.bank1Dispatcher; }
 }
