@@ -33,8 +33,16 @@ Page({
   /** FPS 定时器 */
   _fpsTimer: 0,
 
-  onLoad() {
+  /** 是否为测试模式 (默认开启，方便验证渲染管线) */
+  _testMode: true,
+
+  onLoad(options: any) {
     console.log('[MiniProgram] Game page loaded');
+    // 通过页面参数 ?normal=1 切换到正常游戏模式
+    if (options?.normal === '1') {
+      this._testMode = false;
+    }
+    console.log('[MiniProgram] Test mode:', this._testMode);
   },
 
   onReady() {
@@ -87,13 +95,18 @@ Page({
       this.game = new Tsubasa(platform, ctx as any, {
         spriteBasePath: '/public/sprites/',
         scale: 2,
-        autoLoadSprites: true,
+        autoLoadSprites: !this._testMode, // 测试模式不加载 CHR
         debug: true,
       });
 
       // 6. 启动
-      await this.game.start();
-      console.log('[MiniProgram] Game started');
+      if (this._testMode) {
+        await this.game.startTestMode();
+        console.log('[MiniProgram] Game started in TEST MODE');
+      } else {
+        await this.game.start();
+        console.log('[MiniProgram] Game started');
+      }
 
       // 7. FPS 监控
       this._fpsTimer = setInterval(() => {

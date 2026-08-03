@@ -27,6 +27,7 @@ import {
   State03_TeamSelect,
   State04_MatchMain,
   State05_MatchEvent,
+  StateTest,
 } from '../engine/states/index';
 import { Button, GameInput } from './types';
 import type { IPlatform, ICanvasContext } from '../platform/IPlatform';
@@ -35,6 +36,8 @@ export interface TsubasaOptions {
   spriteBasePath?: string;
   scale?: number;
   autoLoadSprites?: boolean;
+  /** 手动步进模式：不启动内置 GameLoop，由外部驱动 step() */
+  manualStep?: boolean;
   debug?: boolean;
 }
 
@@ -95,6 +98,7 @@ export class Tsubasa {
       new State03_TeamSelect(this.stateMachine),
       new State04_MatchMain(this.stateMachine),
       new State05_MatchEvent(this.stateMachine),
+      new StateTest(this.stateMachine),
     ]);
 
     this.nmiHandler = new NmiHandler(
@@ -142,14 +146,64 @@ export class Tsubasa {
     // StateMachine.transitionTo 会触发 dispatchBankState(0)
     // → PRG Bank 1, 子状态 0 → Bank1Dispatcher 初始化标题画面
     this.stateMachine.transitionTo(0);
-    this.gameLoop.start();
+
+    if (!this.options.manualStep) {
+      this.gameLoop.start();
+    }
     this.state = 'running';
 
     if (this.options.debug) {
       console.log('[Tsubasa] Game started, PPU: ctrl=$' +
         this.dataCache.ppuCtrl.toString(16) +
-        ' mask=$' + this.dataCache.ppuMask.toString(16));
+        ' mask=$' + this.dataCache.ppuMask.toString(16) +
+        (this.options.manualStep ? ' [manual step mode]' : ''));
     }
+  }
+
+  /**
+   * 启动测试模式 — 渲染 "TEST" 文字来验证 Canvas 管线
+   * 不加载 CHR 图片，使用色块回退 + debug 文字叠加
+   */
+  async startTestMode(): Promise<void> {
+    if (this.state === 'running') return;
+
+    // 测试模式不需要 CHR 图片
+
+    // 基本 Bank 配置
+    this.bankManager.setInitialConfig();
+
+    // 基本 PPU 配置
+    this.dataCache.ppuCtrl = 0x10;
+    this.dataCache.ppuMask = 0x06;
+    this.dataCache.scrollX = 0;
+    this.dataCache.scrollY = 0;
+    this.dataCache.bankLock = 0;
+
+    this.dataCache.write(0x03CB, 0);
+    this.dataCache.write(0x03CC, 0);
+
+    // 跳转到 State 99 (测试状态)
+    this.stateMachine.transitionTo(99);
+
+    if (!this.options.manualStep) {
+      this.gameLoop.start();
+    }
+    this.state = 'running';
+
+    if (this.options.debug) {
+      console.log('[Tsubasa] Test mode started' +
+        (this.options.manualStep ? ' [manual step mode]' : ''));
+    }
+  }
+
+  /**
+   * 手动步进一帧 (用于对比验证场景)
+   * 仅在 manualStep 模式下使用，由外部帧循环驱动。
+   * 调用 nmiHandler.execute() → 输入/逻辑/渲染
+   */
+  step(): void {
+    if (this.state !== 'running') return;
+    this.nmiHandler.execute();
   }
 
   pause(): void {

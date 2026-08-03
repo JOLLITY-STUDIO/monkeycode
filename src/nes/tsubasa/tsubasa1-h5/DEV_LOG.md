@@ -4,6 +4,53 @@
 
 ---
 
+## 2026-08-04: v0.3.1 - 🔧 StateTest 小程序渲染修复
+
+### 问题
+用户无法在小程序中看到 StateTest 的输出。两个关键问题：
+1. **test 模式需要 `?test=1` 参数**：小程序首发页面不带查询参数，导致 test 模式永远不会触发
+2. **ICanvasContext 接口不兼容小程序**：要求 `readonly canvas: ICanvas`，但小程序 CanvasRenderingContext2D 没有此属性
+
+### 修复
+- ✅ `IPlatform.ts`: `canvas` 改为可选 (`canvas?: ICanvas`)
+- ✅ `Renderer.ts`: 移除 try-catch，使用可选链检查 `ctx.canvas`
+- ✅ `Renderer.ts`: debugText 字体改为 `sans-serif`（小程序兼容）+ 半透明背景块确保可见
+- ✅ `game.ts`: **test 模式改为默认开启**（`_testMode: true`），用 `?normal=1` 切换回正常模式
+- ✅ `StateTest.ts`: 增强日志输出 + 帧计数器动态文字 + 详细注释
+
+### 验证方式
+- 直接编译运行小程序即可看到棋盘格 + "TEST OK | Frame: X" 文字
+- 如需正常游戏：页面参数 `?normal=1`
+
+---
+
+## 2026-08-04: v0.3.0 - ✅ State 流转测试通过 + M2 完成
+
+### 测试结果
+- ✅ **state_test.py**: 30/30 全部通过
+- ✅ State 00→01 自动流转 (~6帧, Bank1Dispatcher 子状态 0→1→2)
+- ✅ State 01→02 (START键进入菜单)
+- ✅ State 02 菜单导航 (↑↓移动 / A确认 / B返回)
+- ✅ State 02→03 (确认进入队伍选择)
+- ✅ 完整流程 State 00→01→02→03
+- ✅ bankLock 保护机制
+
+### 产出
+- ✅ `tests/setup/MockPlatform.ts` - 测试用 Mock 平台适配器
+- ✅ `tests/state-test.ts` - TypeScript 版本测试 (待 npm install 后可用)
+- ✅ `scripts/state_test.py` - Python 版本测试 (即时可用, 无需编译)
+- ✅ `tsconfig.json` - TypeScript 编译配置
+- ✅ `jest.config.js` - Jest 测试配置
+
+### 里程碑
+- 🎯 **M2 阶段完成**: 状态分发器 + State 00/01/02 + 状态流转测试
+
+### 后续
+- M2.10: 在小程序页面中验证实际渲染效果 (CHR tile + 调色板)
+- 修复 npm install 网络问题，启用 TypeScript 版本测试
+
+---
+
 ## 2026-08-04: v0.2.8 - 🔧 渲染简化：去掉离屏 Canvas
 
 ### 问题

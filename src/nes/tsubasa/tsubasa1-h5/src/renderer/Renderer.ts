@@ -48,6 +48,13 @@ export class Renderer {
   /** 是否正在使用 CHR 图片渲染 (false = 色块占位模式) */
   private useChrImages: boolean = false;
 
+  /** Debug 文字叠加 (非null时在画面顶层绘制) */
+  debugText: string | null = null;
+  /** Debug 文字颜色 */
+  debugTextColor: string = '#ffffff';
+  /** Debug 文字大小 (px, 未缩放) */
+  debugTextSize: number = 16;
+
   constructor(platform: IPlatform, ctx: ICanvasContext) {
     this.platform = platform;
     this.ctx = ctx;
@@ -61,16 +68,15 @@ export class Renderer {
 
     this.initDefaultPalette();
 
-    // 尝试设置主 canvas 尺寸（web 环境有效；小程序可能在外部设置好）
-    try {
-      if (!ctx.canvas.width || ctx.canvas.width < SCREEN_W) {
-        ctx.canvas.width = SCREEN_W * this.scale;
+    // 设置主 canvas 尺寸（web 环境通过 ctx.canvas；小程序由外部预先设置好）
+    const canvas = ctx.canvas;
+    if (canvas) {
+      if (!canvas.width || canvas.width < SCREEN_W) {
+        canvas.width = SCREEN_W * this.scale;
       }
-      if (!ctx.canvas.height || ctx.canvas.height < SCREEN_H) {
-        ctx.canvas.height = SCREEN_H * this.scale;
+      if (!canvas.height || canvas.height < SCREEN_H) {
+        canvas.height = SCREEN_H * this.scale;
       }
-    } catch (_e) {
-      // 小程序 Canvas 尺寸可能只读，忽略
     }
     ctx.imageSmoothingEnabled = false;
   }
@@ -179,6 +185,23 @@ export class Renderer {
     // 渲染精灵
     if (dataCache.ppuMask & 0x10) {
       this.renderSprites(ctx, oamCache, ppuCtrl);
+    }
+
+    // Debug 文字叠加 (顶层)
+    if (this.debugText) {
+      const fontSize = this.debugTextSize * this.scale;
+      const x = 8 * this.scale;
+      const y = 8 * this.scale;
+
+      // 半透明背景块，确保文字在任何背景下都可见
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      const textWidth = this.debugText.length * (fontSize * 0.65);
+      ctx.fillRect(x, y, textWidth + 16 * this.scale, fontSize + 10 * this.scale);
+
+      // 文字 (使用 sans-serif 确保小程序兼容)
+      ctx.font = `${fontSize}px sans-serif`;
+      ctx.fillStyle = this.debugTextColor;
+      ctx.fillText(this.debugText, x + 4 * this.scale, y + fontSize);
     }
   }
 
