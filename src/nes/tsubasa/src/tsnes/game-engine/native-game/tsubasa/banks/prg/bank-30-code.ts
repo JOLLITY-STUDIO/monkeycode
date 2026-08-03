@@ -661,14 +661,18 @@ export function bankSwitch_apply_$CE2D(_sys: SystemState): void {
 }
 
 /**
- * bankSwitch — 便利函数：记录当前 window 6/7 对应的 bank 号
+ * bankSwitch — 设置 PRG bank 地址查表。
  *
- * 6502: 设置 $24=bankId, $25=bankId+1, 然后 JSR $CE2D 写 MMC3 寄存器
- * TS: 仅跟踪 $24/$25, PRG bank 切换通过 import 模块回调实现
+ * 6502: 设置 $24=bankId, $25=bankId+1, 然后写 MMC3 寄存器。
+ * TS:   直接更新 bankMap → $8000-$9FFF=id, $A000-$BFFF=id+1。
+ *       readMem 通过 bankMap 查 prgBanks 数组取数据。
  */
 export function bankSwitch(sys: SystemState, bankId: number): void {
-  sys.mem[0x24] = bankId & 0x3F;
-  sys.mem[0x25] = (bankId & 0x3F) + 1;
+  const id = bankId & 0x3F;
+  sys.mem[0x24] = id;
+  sys.mem[0x25] = id + 1;
+  sys.bankMap[0] = id;       // $8000-$9FFF
+  sys.bankMap[1] = id + 1;   // $A000-$BFFF
 }
 
 // ═════════════════════════════════════════════════

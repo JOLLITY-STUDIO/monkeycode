@@ -30,6 +30,7 @@ Page({
     ntDataText: '',
     ptDataText: '',
     sptDataText: '',
+    palDataText: '',
     paused: false,
     turboLevel: 0,
     showFpsBtn: false,
@@ -109,6 +110,7 @@ Page({
   onCopyNTData()  { this._debugPanel?.copyData('ntDataText', 'NT 数据'); },
   onCopyPTData()  { this._debugPanel?.copyData('ptDataText', 'PT 数据'); },
   onCopySPRData() { this._debugPanel?.copyData('sptDataText', 'SPR 数据'); },
+  onCopyPALData() { this._debugPanel?.copyData('palDataText', 'PAL 数据'); },
 
   // ── 保存到文件 ──
 

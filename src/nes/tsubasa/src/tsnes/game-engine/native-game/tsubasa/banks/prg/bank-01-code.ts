@@ -48,8 +48,9 @@ import {
   DATA_$93F9_$9409,
   DATA_$940A_$941A,
   DATA_$941B_$943C,
-  DATA_$943D_$96DA,
-  DATA_$96DB_$99E1,
+  // ▼ 以下 4 表已转为结构化对象 (见下方 import)
+  // DATA_$943D_$96DA, → SCENE_DATA_1
+  // DATA_$96DB_$99E1, → SCENE_DATA_2
   DATA_$99E2_$99FA,
   DATA_$99FB_$9A07,
   DATA_$9A08_$9A4B,
@@ -63,9 +64,15 @@ import {
   DATA_$9CF3_$9D73,
   DATA_$9D74_$9DA7,
   DATA_$9DA8_$9DF1,
-  DATA_$9DF2_$9F14,
-  DATA_$9F15_$9FFF,
+  // DATA_$9DF2_$9F14, → TEXT_STRING_DATA
+  // DATA_$9F15_$9FFF, → PPU_UPLOAD_DATA
 } from './bank-01-data';
+
+// ── 结构化数据 (替代原始 bytecode 流) ──
+import type { ProtocolBCommand } from './bank-01-protocol-b-data';
+import { SCENE_DATA_1, SCENE_DATA_2 } from './bank-01-protocol-b-data';
+import type { TextString, PpuUploadRecord } from './bank-01-structured-data';
+import { TEXT_STRING_DATA, PPU_UPLOAD_DATA } from './bank-01-structured-data';
 
 // ═════════════════════════════════════════════════
 // 标志位辅助
@@ -113,8 +120,8 @@ const _DATA_CHUNKS: Array<{ offset: number; data: readonly number[] }> = [
   { offset: 0x13F9, data: DATA_$93F9_$9409 },
   { offset: 0x140A, data: DATA_$940A_$941A },
   { offset: 0x141B, data: DATA_$941B_$943C },
-  { offset: 0x143D, data: DATA_$943D_$96DA },
-  { offset: 0x16DB, data: DATA_$96DB_$99E1 },
+  // $943D-$96DA → SCENE_DATA_1 (Protocol B, 已结构化)
+  // $96DB-$99E1 → SCENE_DATA_2 (Protocol B, 已结构化)
   { offset: 0x19E2, data: DATA_$99E2_$99FA },
   { offset: 0x19FB, data: DATA_$99FB_$9A07 },
   { offset: 0x1A08, data: DATA_$9A08_$9A4B },
@@ -128,8 +135,8 @@ const _DATA_CHUNKS: Array<{ offset: number; data: readonly number[] }> = [
   { offset: 0x1CF3, data: DATA_$9CF3_$9D73 },
   { offset: 0x1D74, data: DATA_$9D74_$9DA7 },
   { offset: 0x1DA8, data: DATA_$9DA8_$9DF1 },
-  { offset: 0x1DF2, data: DATA_$9DF2_$9F14 },
-  { offset: 0x1F15, data: DATA_$9F15_$9FFF },
+  // $9DF2-$9F14 → TEXT_STRING_DATA (37 strings, 已结构化)
+  // $9F15-$9FFF → PPU_UPLOAD_DATA (32 records, 已结构化)
 ];
 
 /** ROM 数据访问 — 按 bank offset 查找对应数据块 */
@@ -367,6 +374,15 @@ export function bank01_titleInit(sys: SystemState): void {
   sys.mem[0x8F] = 0x2E;
   sys.mem[0x91] = 0x2E;
 
+  // ── FIX: 标题画面滚动值 ──
+  // 原始游戏通过脚本逐帧设置 scroll，但翻译模式下脚本可能未覆盖。
+  // bank02_ppuScrollUpdate 用 ($44-1, $7A) 作为 (Y, X) 滚动值。
+  // 标题 tiles 在 $21C4 → nametable 0 行 14, 列 4
+  // $44=1 → Y 滚动=0, $7A=0 → X 滚动=0，标题显示在屏幕偏中位置
+  sys.mem[0x44] = 1;
+  sys.mem[0x7A] = 0;
+  sys.mem[0x45] = 0; // nametable 垂直选择 bit（已在 $20 ROL 链中用）
+
   // ── $8136-$8141: bytecode restore (param=$09) ──
   // JSR $8920 — resets bytecode interpreter
   _execBytecodeEntry(sys, 0x09);
@@ -381,6 +397,8 @@ export function bank01_titleInit(sys: SystemState): void {
   for (let row = 0; row < 5; row++) {
     for (let col = 0; col < 13; col++) {
       const tile = readBankRom(sys, 0xBC6E + srcIdx);
+      // ── 确保 PPU addr latch 在第 1 个 $2006 前是 hi-byte 状态 ──
+      readMem(sys, 0x2002); // $2002 read → 重置 firstWrite latch
       writeMem(sys, 0x2006, ppuRowHi);
       writeMem(sys, 0x2006, ppuCol & 0xFF);
       writeMem(sys, 0x2007, tile);
@@ -392,9 +410,12 @@ export function bank01_titleInit(sys: SystemState): void {
     if (ppuCol > 0xFF) ppuRowHi++;
   }
 
-  // ── $817D-$8186: 从 ROM $B205 复制 8 bytes sprite palette → $0460 ──
+  // ── $817D-$8186: 从 ROM $B2FD 加载 2 个精灵 OAM 数据到 $0558-$055F ──
+  // ASM: LDY #$F8; LDA $B205,Y; STA ram_0460,Y; INY; BNE (Y=$F8..$FF)
+  // 6502 索引寻址: $B205+$F8 = $B2FD (ROM 源), $0460+$F8 = $0558 (RAM 目的)
+  // 写 8 字节到 $0558-$055F: 精灵 0 X/Y/tile/attr, 精灵 1 X/Y/tile/attr
   for (let i = 0; i < 8; i++) {
-    sys.mem[0x0460 + i] = readBankRom(sys, 0xB205 + i);
+    sys.mem[0x0558 + i] = readBankRom(sys, 0xB205 + 0xF8 + i);
   }
 
   // ── $8188-$81A3: JSR $B0C0 → 标题数据初始化 ──
@@ -412,12 +433,9 @@ export function bank01_titleInit(sys: SystemState): void {
   // ── FIX: 直接写 palette 到 PPU $3F00 ──
   // 原始 NES 通过 NMI handler 队列 ($05E8/$0628) 写入，
   // 但 bank engine 的队列机制未触发 ($0628 永远为 0)。
-  // 此处绕过队列，直接写入背景 + 精灵 palette。
+  // 此处绕过队列，直接写入背景 + 精灵 palette（临时硬编码）。
+  // TODO: 实现完整 NMI 队列机制后可移除此块
   {
-    // 背景 palette: 从 ROM bank06 $B000+ 读取
-    // 或者使用 sprite palette buffer $0460 配合 $4A 亮度
-    const bgBright = sys.mem[0x4A];   // = 0x04
-    const spBright = sys.mem[0x4B];   // = 0x30
 
     // 背景 16 色 (标准标题画面配色)
     // $3F00: universal bg, $3F01-$3F03: bg palette 0
@@ -430,15 +448,18 @@ export function bank01_titleInit(sys: SystemState): void {
       0x0F, 0x18, 0x28, 0x38,  // bg palette 3: yellow tones
     ];
 
-    // 精灵 16 色：使用 ROM $B205 加载到 $0460 的数据 + $4B 亮度
+    // 精灵 16 色（标题画面临时硬编码 — NMI 队列未通）
+    // TODO: 实现 JSR $B0C0 后从 ROM 正确加载精灵调色板数据
     const spColors = [
-      sys.mem[0x0460], sys.mem[0x0461], sys.mem[0x0463], 0x0F,
-      sys.mem[0x0464], sys.mem[0x0465], sys.mem[0x0467], 0x0F,
-      0x0F, 0x0F, 0x0F, 0x0F,
-      0x0F, 0x0F, 0x0F, 0x0F,
+      0x0F, 0x30, 0x16, 0x0F,  // sprite pal 0: 透明/白/红/透明
+      0x0F, 0x30, 0x27, 0x0F,  // sprite pal 1: 透明/白/橙/透明
+      0x0F, 0x0F, 0x0F, 0x0F,  // sprite pal 2
+      0x0F, 0x0F, 0x0F, 0x0F,  // sprite pal 3
     ];
 
     // 设置 PPU 地址到 $3F00
+    // ── 确保 PPU addr latch 在第 1 个 $2006 前是 hi-byte 状态 ──
+    readMem(sys, 0x2002); // $2002 read → 重置 firstWrite latch = true
     writeMem(sys, 0x2006, 0x3F);
     writeMem(sys, 0x2006, 0x00);
 
@@ -1069,3 +1090,16 @@ export function bank01_sceneSwitchHelper1(sys: SystemState): void {
 }
 
 console.log('[bank01] ✅ 已翻译 — matchJump|titleInit|titleProcess|startGame|sceneSwitch|loadData|bytecode(2)|aux(8)');
+
+// ═════════════════════════════════════════════════
+// 结构化数据 — service 导出
+//
+// 这些表已从原始 bytecode 流解析为强类型对象，
+// 外部通过 bank-01 的 service 接口访问，
+// 不再需要 byte-level readBankRom 访问。
+// ═════════════════════════════════════════════════
+
+export { SCENE_DATA_1, SCENE_DATA_2 } from './bank-01-protocol-b-data';
+export type { ProtocolBCommand, ProtocolBPpuPacket, ProtocolBControl, ProtocolBEnd } from './bank-01-protocol-b-data';
+export { TEXT_STRING_DATA, PPU_UPLOAD_DATA } from './bank-01-structured-data';
+export type { TextString, PpuUploadRecord } from './bank-01-structured-data';

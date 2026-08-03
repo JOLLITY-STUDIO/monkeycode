@@ -19,13 +19,21 @@
  * Bank 翻译状态
  * ═══════════════════════════════════════
  *
- *   ✅ bank 00 — 场景分派引擎
+ *   ✅ bank 00 — 场景分派引擎 + boot 状态机 (逐帧)
  *   ✅ bank 01 — 比赛跳跃/标题渲染
  *   ✅ bank 02 — NMI 渲染器
- *   ✅ bank 30 — 系统库 (37 个函数)
- *   ✅ bank 31 — 启动向量 + 主循环
- *   ✅ bank 01-29 data — ROM 已注册
- *   🔶 bank 11/16/19/20/22/24/26/27/28 — SKELETON
+ *   ✅ bank 11 — 背景/瓦片渲染器
+ *   ✅ bank 12 — 音频引擎
+ *   ✅ bank 16 — 场景脚本引擎 (per-frame tick + F3 sub-dispatch)
+ *   ✅ bank 19 — 脚本解析器
+ *   ✅ bank 20 — 队伍选择 (per-frame tick + ROM 阵型)
+ *   ✅ bank 22 — 精灵/OAM 引擎
+ *   ✅ bank 24 — 过场引擎
+ *   ✅ bank 26 — 比赛引擎
+ *   ✅ bank 27 — 球员数据 (ROM 指针表 + 名称解码)
+ *   ✅ bank 28 — 球员属性/阵型引擎 (6 entry points)
+ *   ✅ bank 30 — 系统库 (37 函数)
+ *   ✅ bank 31 — 启动向量 + 主循环 (boot 状态机)
  *
  * ═══════════════════════════════════════
  * 旧版本留底
@@ -56,13 +64,57 @@ function loadChrTiles(ptTile: Tile[], chrRom: readonly number[], bankStart: numb
   }
 }
 
+/** MMC3 CHR 窗口定义: [ptTile 起始索引, tile 数, CHR 页大小(1=1KB,2=2KB)] */
+const CHR_WINDOWS: [number, number, number][] = [
+  [0,   128, 2],   // Reg 0: $0000-$07FF, 2KB, tiles 0-63  → but load 128 tiles for 2KB
+  [64,  128, 2],   // Reg 1: $0800-$0FFF, 2KB, tiles 64-127
+  [128,  64, 1],   // Reg 2: $1000-$13FF, 1KB, tiles 128-159
+  [160,  64, 1],   // Reg 3: $1400-$17FF, 1KB, tiles 160-191
+  [192,  64, 1],   // Reg 4: $1800-$1BFF, 1KB, tiles 192-223
+  [224,  64, 1],   // Reg 5: $1C00-$1FFF, 1KB, tiles 224-255
+];
+
+/** 将 MMC3 CHR 页加载到 ptTile 指定偏移 */
+export function _loadChrPage(
+  ptTile: Tile[],
+  chrRom: ReadonlyArray<number>,
+  sel: number,
+  pageNum: number,
+): void {
+  const win = CHR_WINDOWS[sel];
+  if (!win) return;
+  const [tileStart, tileLoadCount, pageSizeKB] = win;
+  // 1KB page = 1024 bytes, 2KB page = 2048 bytes
+  const byteOffset = pageNum * pageSizeKB * 1024;
+  const tileCount = tileLoadCount; // number of tiles to load
+
+  for (let ti = 0; ti < tileCount; ti++) {
+    const chrOff = byteOffset + ti * 16;
+    const scanline = new Uint8Array(16);
+    for (let b = 0; b < 16; b++) {
+      const idx = chrOff + b;
+      scanline[b] = (idx < chrRom.length) ? (chrRom[idx] ?? 0) : 0;
+    }
+    ptTile[tileStart + ti].setBuffer(scanline);
+  }
+}
+
 /**
- * 为 Bank 翻译引擎创建一个最小 mmap stub。
+ * 为 Bank 翻译引擎创建 mmap 对象（带 MMC3 CHR 切换支持）。
  * Bank 引擎不走 ROM 加载路径，PPU 需要 mmap 来拿 tile 数据和 mapper 回调。
  */
-function createBankMmap(nes: any): any {
+function createBankMmap(nes: any, chrRom: ReadonlyArray<number>): any {
+  // 当前 MMC3 CHR 窗口值 (sel 0-5)，初始全 0
+  const chrRegs = new Uint8Array(6);
+
+  // 初始化: 加载所有窗口的默认数据 (页 0)
+  for (let sel = 0; sel < 6; sel++) {
+    _loadChrPage(nes.ppu.ptTile, chrRom, sel, 0);
+  }
+
   return {
     nes,
+    _chrRegs: chrRegs,
     clockIrqCounter: () => {},
     latchAccess: (_addr: number) => {},
     canWriteChr: (_addr: number) => false,
@@ -70,6 +122,23 @@ function createBankMmap(nes: any): any {
     onSpriteRender: () => {},
     getSpritePatternTile: (index: number) => nes.ppu.ptTile[index],
     getBgTileData: () => null,
+    /** MMC3 寄存器写入 (sel 0-5 = CHR 窗口) */
+    write(addr: number, val: number): void {
+      if ((addr & 1) === 0) {
+        // $8000: MMC3 bank select — 记录 sel (低3位)
+        nes.__mmc3Sel = val & 7;
+      } else {
+        // $8001: MMC3 bank data — 只有 CHR 窗口 (sel 0-5) 需要处理
+        const sel = nes.__mmc3Sel;
+        if (sel <= 5) {
+          const oldVal = chrRegs[sel];
+          chrRegs[sel] = val;
+          if (oldVal !== val) {
+            _loadChrPage(nes.ppu.ptTile, chrRom, sel, val);
+          }
+        }
+      }
+    },
     toJSON: () => ({}),
     fromJSON: (_s: any) => {},
   };
@@ -88,11 +157,9 @@ function createBankMmap(nes: any): any {
 export function createTsubasaNES(opts?: NESOptions): NES {
   const nes = new NES(opts ?? {});
 
-  // ── 注入最小 mmap stub（Bank 引擎不走 loadROM，需手动注入）──
-  nes.mmap = createBankMmap(nes);
-
-  // ── 从 raw CHR-ROM 加载初始 8KB tile 数据到 ptTile ──
-  loadChrTiles(nes.ppu.ptTile, NES_CHR_ROM as readonly number[], 0);
+  // ── 注入 mmap（带 MMC3 CHR 切换支持）──
+  const chrRom = NES_CHR_ROM as readonly number[];
+  nes.mmap = createBankMmap(nes, chrRom);
 
   // ── 注入 fake ROM 对象 + 初始化 PPU 镜像模式 ──
   // Bank 引擎不走 loadROM，PPU.setMirroring 需要 this.nes.rom 提供 mirroring 常量
@@ -108,6 +175,8 @@ export function createTsubasaNES(opts?: NESOptions): NES {
   // ── 翻译路径: 初始化 SystemState ──────────────
   const sys = createSystemState(nes.ppu, nes.papu);
   (nes as any).__tsSys = sys;
+  // 注入 DMA 内存源 — bank 模式没有 CPU，sramDMA 直接从 SystemState.mem 读
+  (nes.ppu as any)._dmaMem = sys.mem;
   translate_BANK31_RESET(sys);
 
   return nes;

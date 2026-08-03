@@ -1,6 +1,7 @@
 /**
- * Bank 29: Data Bank ($8000-$9FFF 或 $A000-$BFFF)
- *？？？被那个bank使用？？
+ * Bank 29: Player Value / Attribute Data Bank ($8000-$9FFF 或 $A000-$BFFF)
+ *
+ * 消费者: 通过 MMC3 映射层 (readPrgRom/bankRomTable) 被球员属性/阵型引擎读取。
  * MMC3 可切换 bank。
  * 功能: 纯数据 bank，供其他 bank 透过 MMC3 切换读取
  *

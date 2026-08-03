@@ -1,7 +1,7 @@
 /**
  * Debug 文本数据生成器 — 从 h5game.ts 抽离
  *
- * 生成 NT / SPT / SPR OAM 等调试文本，与 canvas 渲染解耦。
+ * 生成 NT / SPT / SPR OAM / PAL 等调试文本，与 canvas 渲染解耦。
  * PT 文本生成器已在 pattern-table-viewer.ts 中 (generatePTDataText)。
  */
 
@@ -89,6 +89,85 @@ export function generateNTDataText(nes: any, frameCount?: number): string {
     lines.push('');
     lines.push('');
   }
+
+  return lines.join('\n');
+}
+
+/**
+ * 输出 PPU 调色板数据 (FCEUX 风格)
+ *
+ * 格式:
+ *   BG  Palette: 4 组 × 4 色 = 16 色
+ *   SPR Palette: 4 组 × 4 色 = 16 色
+ *   每色同时输出 raw index (VRAM $3Fxx) + 解析后的 RGB hex
+ */
+export function generatePaletteDataText(nes: any, frameCount?: number): string {
+  const ppu = nes.ppu;
+  const lines: string[] = [];
+
+  lines.push(`══════════════════════════════════════════════`);
+  lines.push(`Frame: #${frameCount ?? '?'}  |  Palette Data`);
+  lines.push(`══════════════════════════════════════════════`);
+  lines.push('');
+
+  // emphasis 位
+  const emp = ppu.f_color & 0x07;
+  const empDesc = [
+    'None', 'R', 'G', 'RG', 'B', 'RB', 'GB', 'RGB',
+  ][emp] ?? '?';
+  lines.push(`Color Emphasis: ${emp} (0b${emp.toString(2).padStart(3, '0')} = ${empDesc})`);
+  lines.push('');
+
+  // 辅助: RGB → hex 字符串
+  function rgbToHex(c: number): string {
+    const r = (c >>> 16) & 0xFF;
+    const g = (c >>> 8) & 0xFF;
+    const b = c & 0xFF;
+    return `#${r.toString(16).toUpperCase().padStart(2, '0')}${g.toString(16).toUpperCase().padStart(2, '0')}${b.toString(16).toUpperCase().padStart(2, '0')}`;
+  }
+
+  // ── BG Palette ──
+  lines.push('── BG Palette (VRAM $3F00-$3F0F) ──');
+  for (let grp = 0; grp < 4; grp++) {
+    const row: string[] = [];
+    for (let i = 0; i < 4; i++) {
+      const idx = grp * 4 + i;
+      const addr = (0x3F00 + idx).toString(16).toUpperCase().padStart(4, '0');
+      const rawIdx = ppu.vramMem[0x3F00 + idx] & 0x3F;
+      const hex = '0x' + rawIdx.toString(16).toUpperCase().padStart(2, '0');
+      const rgb = rgbToHex(ppu.imgPalette[idx]);
+      row.push(`[$${addr}]${hex}${rgb}`);
+    }
+    lines.push(`  Group ${grp}:  ${row.join('  ')}`);
+  }
+  lines.push('');
+
+  // ── SPR Palette ──
+  lines.push('── SPR Palette (VRAM $3F10-$3F1F) ──');
+  for (let grp = 0; grp < 4; grp++) {
+    const row: string[] = [];
+    for (let i = 0; i < 4; i++) {
+      const idx = grp * 4 + i;
+      const addr = (0x3F10 + idx).toString(16).toUpperCase().padStart(4, '0');
+      const rawIdx = ppu.vramMem[0x3F10 + idx] & 0x3F;
+      const hex = '0x' + rawIdx.toString(16).toUpperCase().padStart(2, '0');
+      const rgb = rgbToHex(ppu.sprPalette[idx]);
+      row.push(`[$${addr}]${hex}${rgb}`);
+    }
+    lines.push(`  Group ${grp}:  ${row.join('  ')}`);
+  }
+  lines.push('');
+
+  // ── 纯索引表 (方便直接搜索/对比 bank 数据) ──
+  lines.push('── Raw Indices (copy-friendly) ──');
+  const rawBG: string[] = [];
+  const rawSP: string[] = [];
+  for (let i = 0; i < 16; i++) {
+    rawBG.push('0x' + (ppu.vramMem[0x3F00 + i] & 0x3F).toString(16).toUpperCase().padStart(2, '0'));
+    rawSP.push('0x' + (ppu.vramMem[0x3F10 + i] & 0x3F).toString(16).toUpperCase().padStart(2, '0'));
+  }
+  lines.push('  BG:  ' + rawBG.join(', '));
+  lines.push('  SPR: ' + rawSP.join(', '));
 
   return lines.join('\n');
 }

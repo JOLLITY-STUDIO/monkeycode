@@ -50,6 +50,12 @@ class PPU {
     this.vblankPending = false;
     // Set by step() when VBlank fires, signals frame loop to break.
     this.frameEnded = false;
+    // PPU's own status register — not stored in cpu.mem[0x2002].
+    // Decouples PPU from CPU: bank mode has no CPU, PPU manages its own state.
+    this.statusReg = 0;
+    // Optional DMA memory source — set via setDmaMem() for bank mode.
+    // When null, sramDMA falls back to reading from cpu.mem (emu mode).
+    this._dmaMem = null;
     this.dummyCycleToggle = false;
     this.validTileData = false;
     this.scanlineAlreadyRendered = null;
@@ -302,7 +308,7 @@ class PPU {
     if (!this.nmiSuppressed) {
       this.setStatusFlag(this.STATUS_VBLANK, true);
       this._updateNmiOutput();
-      if (cpu.nmiRaised) {
+      if (cpu && cpu.nmiRaised) {
         cpu.nmiDotsRemainingInStep = dotsRemaining;
       }
     }
@@ -318,7 +324,7 @@ class PPU {
   // when φ2 has had time to sample the rising edge — i.e., on the last dot.
   // See https://www.nesdev.org/wiki/NMI
   _fireVblankClear(cpu, isLastDot) {
-    if (cpu.nmiRaised && isLastDot) {
+    if (cpu && cpu.nmiRaised && isLastDot) {
       cpu.nmiPending = true;
       cpu.nmiRaised = false;
     }
@@ -362,7 +368,7 @@ class PPU {
     }
 
     // Slow path: advance dot-by-dot checking for events.
-    let cpu = this.nes.cpu;
+    let cpu = this.nes?.cpu ?? null;
     for (let i = 0; i < dots; i++) {
       // VBlank set at dot 1 of scanline 0 (NES scanline 241).
       if (this.scanline === 0 && this.curX === 1 && this.vblankPending) {
@@ -773,28 +779,26 @@ class PPU {
   // nmiPending (promoted from a previous instruction) is never cleared.
   // See https://www.nesdev.org/wiki/NMI
   _updateNmiOutput() {
-    let vblank = (this.nes.cpu.mem[0x2002] & 0x80) !== 0;
+    let vblank = (this.statusReg & 0x80) !== 0;
     let newOutput = this.f_nmiOnVblank !== 0 && vblank;
+    const cpu = this.nes?.cpu ?? null;
     if (newOutput && !this.nmiOutput) {
-      // Rising edge: set nmiRaised. At the end of the current instruction,
-      // the CPU checks how many bus cycles remained after this edge to
-      // determine 0-delay (immediate) vs 1-delay NMI.
-      this.nes.cpu.nmiRaised = true;
-      this.nes.cpu.nmiRaisedAtCycle = this.nes.cpu.instrBusCycles;
+      // Rising edge: set nmiRaised on CPU if available.
+      if (cpu) {
+        cpu.nmiRaised = true;
+        cpu.nmiRaisedAtCycle = cpu.instrBusCycles;
+      }
     } else if (!newOutput && this.nmiOutput) {
-      // Falling edge: cancel nmiRaised only if it hasn't been latched yet.
-      if (this.nes.cpu.nmiRaised) {
+      // Falling edge: cancel nmiRaised (only if not yet latched).
+      if (cpu && cpu.nmiRaised) {
         let busCycleDiff =
-          this.nes.cpu.instrBusCycles - this.nes.cpu.nmiRaisedAtCycle;
+          cpu.instrBusCycles - cpu.nmiRaisedAtCycle;
         if (
           busCycleDiff === 0 ||
-          (busCycleDiff === 1 && this.nes.cpu.nmiDotsRemainingInStep === 0)
+          (busCycleDiff === 1 && cpu.nmiDotsRemainingInStep === 0)
         ) {
-          // Case 1: same bus cycle, or Case 2: post-loop edge on the
-          // immediately previous bus cycle. Edge not latched — cancel.
-          this.nes.cpu.nmiRaised = false;
+          cpu.nmiRaised = false;
         }
-        // else: edge was latched at a previous φ2, don't cancel.
       }
     }
     this.nmiOutput = newOutput;
@@ -838,14 +842,13 @@ class PPU {
 
   setStatusFlag(flag, value) {
     let n = 1 << flag;
-    this.nes.cpu.mem[0x2002] =
-      (this.nes.cpu.mem[0x2002] & (255 - n)) | (value ? n : 0);
+    this.statusReg = (this.statusReg & (255 - n)) | (value ? n : 0);
   }
 
   // CPU Register $2002:
   // Read the Status Register.
   readStatusRegister() {
-    let tmp = this.nes.cpu.mem[0x2002];
+    let tmp = this.statusReg;
 
     // Reset scroll & VRAM Address toggle:
     this.firstWrite = true;
@@ -1107,23 +1110,26 @@ class PPU {
   sramDMA(value) {
     let baseAddress = value * 0x100;
     let data;
+    // Use injected DMA source if available (bank mode reads from SystemState.mem),
+    // otherwise fall back to CPU memory (emu mode).
+    const dmaMem = this._dmaMem;
+    const cpu = this.nes?.cpu ?? null;
     for (let i = 0; i < 256; i++) {
-      data = this.nes.cpu.mem[baseAddress + i];
+      data = dmaMem
+        ? dmaMem[baseAddress + i]
+        : (cpu ? cpu.mem[baseAddress + i] : 0);
       let oamAddr = (this.sramAddress + i) & 0xff;
       this.spriteMem[oamAddr] = data;
       this.spriteRamWriteUpdate(oamAddr, data);
     }
 
-    // OAM DMA takes 513 CPU cycles (1 wait + 256 read/write pairs), plus
-    // an extra alignment cycle if the CPU is on an odd cycle (a "put" cycle).
-    // This ensures the DMA always begins on an even cycle, synchronizing the
-    // CPU to a known cycle parity. The AccuracyCoin controller strobe test
-    // relies on this alignment to verify APU-clock-gated OUT0 behavior.
+    // OAM DMA takes 513 CPU cycles. Only halt CPU if it exists (emu mode).
     // See https://www.nesdev.org/wiki/DMA#OAM_DMA
-    let cpu = this.nes.cpu;
-    let currentCycle = cpu._cpuCycleBase + cpu.instrBusCycles;
-    let cycles = currentCycle % 2 === 0 ? 514 : 513;
-    cpu.haltCycles(cycles);
+    if (cpu) {
+      let currentCycle = cpu._cpuCycleBase + cpu.instrBusCycles;
+      let cycles = currentCycle % 2 === 0 ? 514 : 513;
+      cpu.haltCycles(cycles);
+    }
   }
 
   // Updates the scroll registers from a new VRAM address.
@@ -1187,7 +1193,7 @@ class PPU {
   // Updates the scroll registers from a new VRAM address.
   cntsFromAddress() {
     let address = (this.vramAddress >> 8) & 0xff;
-    this.cntFV = (address >> 4) & 3;
+    this.cntFV = (address >> 4) & 7;  // FIX: fine Y is 3 bits (0-7), not 2 bits
     this.cntV = (address >> 3) & 1;
     this.cntH = (address >> 2) & 1;
     this.cntVT = (this.cntVT & 7) | ((address & 3) << 3);
@@ -2234,6 +2240,8 @@ class PPU {
     "bgbuffer",
     "pixrendered",
     // Misc
+    "statusReg",
+    "_dmaMem",
     "nmiOutput",
     "nmiSuppressed",
     "vblankPending",

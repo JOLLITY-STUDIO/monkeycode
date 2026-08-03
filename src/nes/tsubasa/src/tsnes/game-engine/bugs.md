@@ -1,8 +1,8 @@
 # BUG 追踪文档 — game-engine bank 翻译引擎
 
 ## 版本信息
-- 版本: v1.5.0 (Phase 2b: 8 CODE bank skeleton → 功能实现)
-- 日期: 2026-07-30
+- 版本: v1.6.0 (Phase 8 完成, Phase 9 准备中)
+- 日期: 2026-08-02
 - 总模块: 32/32 (100%) | CODE bank 完整翻译: 15/15 (100%) | ROM 注册: 32/32 (100%)
 
 ---
@@ -105,3 +105,142 @@
 - CPU 路径: ROM 数据通过 `copyArrayElements` 复制到 `cpu.mem[$8000-$FFFF]`
 - Bank 路径: ROM 数据在 `bankRomTable` 中独立存储，`readMem()` 按需读取
 - sys.mem[$8000-$FFFF] 在 Bank 路径中未使用（设计如此，非浪费）
+
+---
+
+## 2026-08-02 无画面 BUG 深度诊断
+
+### BUG-034: Bank 引擎始终黑屏无画面 [P0] 🔴
+
+**严重度**: P0（游戏完全不可玩）
+
+**现象**: Bank 翻译引擎启动后，canvas 始终显示全黑画面（buf nonZero=0），CPU 模拟器侧正常显示。
+
+**渲染管线架构**:
+
+```
+帧循环 (orchestrator._frameLoop)
+  │
+  ├── tick_BANK31_mainLoop(sys)     ← 游戏逻辑 + boot/title 路由
+  │     ├── $0700=0x30 → bank00_tickBoot (12 阶段状态机)
+  │     └── $0700=0x33 → bank00_titleTick
+  │
+  ├── bank02_nmiHandler(sys)        ← NMI: PPU 队列→vram + $2001恢复
+  │     ├── $0628===0 → 跳过渲染 (常见于boot阶段)
+  │     └── $0628!==0 → 读取$05E8队列→写入$2007
+  │
+  ├── bank02_ppuScrollUpdate(sys)   ← 滚动/CHR/手柄
+  │
+  └── _ppuStepFullFrame(ppu)        ← PPU 逐行渲染 → frameBuf
+```
+
+**Boot 阶段 PPU 数据流**:
+
+| Phase | 操作 | 写入 PPU | $0021 | 期望画面 |
+|-------|------|----------|-------|---------|
+| RESET | `initScene_$C64E` + `ppuScreenInit_$CB35` | nametable 全 $00 | 0x1E | 全黑(正常) |
+| 0 | `bank00_ppuClear` → $2007×1024 | nametable 0 $00 | 0x1E | 全黑(正常) |
+| 0 | `bank00_execBytecode(1)` 初始化指针 | 无 | 0x1E | 全黑(正常) |
+| 1 | `bank00_bytecodeWaitTick` 逐帧 bytecode | 取决于脚本 | 0x1E | **可能全黑** |
+| 2-9 | 场景加载/setup | 可能 PPU 写入 | 0x1E | 取决于实现 |
+| 10 | `bank01_titleInit` → 写 tiles+palette | $21C4 tiles, $3F00 palette | 0x1E | **应该显示标题** |
+| 11 | DONE → $0700=0x33 → titleTick | bytecode 淡入 | 0x1E | 标题画面 |
+
+**已排除的根因**:
+
+1. ✅ **`$0021` (PPUMASK) 正确**: `ppuScreenInit_$CB35` 将其设为 `0x1E`（bg+sp ON, 彩色模式），之后未被修改。
+2. ✅ **`_restorePPU` 调用正确**: `bank02_nmiHandler` 在跳过 `$0628` 路径仍会调用 `_restorePPU`，将 `$0021` 写回 `$2001`。
+3. ✅ **`writeMem` PPU 转发正确**: `$2006→writeVRAMAddress`, `$2007→vramWrite`, `$2001→updateControlReg2` 全部转发到 PPU 实例。
+4. ✅ **Boot 结构合理**: 12 阶段每帧一阶段，不会跳过帧。
+
+**可能根因（按概率排序）**:
+
+**① [最可能] bytecode 在 phase 1 卡死 — 永远不会进入 titleInit**
+- `bank00_bytecodeWaitTick` 依赖 `bank00_execBytecode` 返回延迟值
+- 若 bytecode 脚本指针 (`ZP_SCRIPT_PTR_L/H`) 未正确初始化或在 ROM 中未找到有效脚本，可能无限在 phase 1 循环
+- **验证方法**: 检查 `sys.bootPhase` 是否卡在 1，以及 `sys.bootSubStep` 是否持续增长
+- **文件**: `bank-00-code.ts` `bank00_bytecodeWaitTick` / `bank00_execBytecode`
+
+**② [高概率] PPU `updateControlReg2` 未正确设置内部可见性标志**
+- `writeMem(sys, 0x2001, 0x1E)` 调用 `ppu.updateControlReg2(0x1E)`
+- PPU 内部需要正确设置 `f_bgVisibility`=`true`, `f_spVisibility`=`true`
+- 若 `updateControlReg2` 实现有误，PPU 渲染时不会读取 nametable/palette
+- **文件**: `game-engine/core/ppu/index.ts` 的 `updateControlReg2`
+
+**③ [中概率] CHR tile pattern 未加载到 PPU ptTile**
+- `boot.ts` `createTsubasaNES` 调用 `loadChrTiles(nes.ppu.ptTile, NES_CHR_ROM, 0)` 加载前 8KB CHR
+- 但 MMC3 支持 CHR bank 切换（多个 8KB CHR bank）
+- 若 title 画面使用非 bank 0 的 CHR tile，则 ptTile 中无对应 pattern
+- `writeMem` 中 `$8000/$8001` 仅转发 CHR 选择给 PPU mmap，但 mmap 的 `write` 方法来自 `createBankMmap` stub，可能未正确处理
+- **文件**: `boot.ts` `createBankMmap`, `system-state.ts` `writeMem` L156-173
+
+**④ [中概率] PPU 帧渲染调用方式错误**
+- `_ppuStepFullFrame` 调用 `ppu.advanceDots(341)` 循环渲染
+- PPU 需要正确设置: 已写入的 vramMem、palette、ptTile、$2000/$2001 影子寄存器
+- 若 PPU 内部状态机在 `advanceDots` 期间未正确从 vramMem 读取，输出全 0
+- **文件**: `orchestrator.ts` `_ppuStepFullFrame`
+
+**⑤ [低概率] `bank01_titleInit` palette 写入不完整**
+- 使用硬编码 `bgColors` 数组（带 FIX 注释）而非从 ROM 加载
+- 若 PPU 期望的色值索引与实际 `imgPalette` 转换表不匹配，可能显示为全黑
+- **文件**: `bank-01-code.ts` `bank01_titleInit` palette 写入部分
+
+**⑥ [低概率] `writeMem` 中 PPU 寄存器地址计算偏移量错误**
+- PPU 寄存器 `$2000-$2007` 使用 `addr & 0x7` 索引
+- 需确认 mirror 地址 `$2008-$3FFF` 也正确路由
+
+**诊断步骤**:
+
+1. **Phase 追踪**: 在 `bank00_tickBoot` 添加 console.warn 每帧打印 phase/subStep — 代码中已有 console.log
+2. **PPU 状态快照**: 在 `_stepBankEngine` 每帧打印 `ppu.f_bgVisibility`, `ppu.f_spVisibility`, `ppu.scanline` — orchestrator.ts 已有 `_logPPUDiag`
+3. **vramMem 检查**: 在 phase 10 之后检查 `ppu.vramMem[$3F00..$3F1F]` 是否有非零 palette 值
+4. **ptTile 检查**: 检查 `ppu.ptTile[0]` 是否包含有效 pattern 数据
+5. **CHR bank 检查**: 确认 title nametable 引用的 tile 索引与实际 ptTile 中的 pattern 匹配
+
+---
+
+## 2026-08-02 首次修复 (BUG-034 根因分析 + 修复)
+
+### 根因 A: MMC3 CHR bank 切换是空操作 ✅ 已修复
+
+**严重度**: P0（核心根因）
+
+**描述**: `boot.ts` `createBankMmap` 返回的 mmap stub 对象**没有 `write` 方法**。当 `system-state.ts` 的 `writeMem` 处理 MMC3 CHR 寄存器写入（$8000/$8001, sel 0-5）时，代码检查 `typeof mmap.write === 'function'` 为 `false`，CHR bank 切换被静默跳过。
+
+**影响**: PPU 始终只有 CHR bank 0 的 tile pattern（前 512 tiles），永远不会加载其他 15 个 CHR bank 的数据。如果标题画面/bytecode 使用了非 bank 0 的 tile，则渲染全 0 色板索引（背景色→黑屏）。
+
+**修复**: 重写 `createBankMmap`，新增：
+- `mmap.write(addr, val)` 方法：处理 MMC3 $8000 (bank select) 和 $8001 (bank data)
+- `_loadChrPage(ptTile, chrRom, sel, pageNum)` 公共函数：将指定 MMC3 CHR 页（1KB 或 2KB）加载到 ptTile 对应窗口
+- MMC3 CHR 窗口映射表：Reg 0→tiles 0-127, Reg 1→tiles 64-191, Reg 2-5→tiles 128-255
+- 初始化时加载所有 6 个窗口的页 0（默认值）
+
+**文件**: `boot.ts` L58-122
+
+### 根因 B: PPU `cntsFromAddress` fine Y scroll 掩码错误 ✅ 已修复
+
+**严重度**: P1（导致 fine Y scroll 值 4-7 丢失）
+
+**描述**: `cntsFromAddress()` 中 `this.cntFV = (address >> 4) & 3;` 使用 `& 3`（2-bit 掩码），但 fine Y scroll 是 3-bit（0-7）。同样错误在 `regsFromAddress` 使用 `& 7`（正确）。
+
+**影响**: 当 VRAM 地址的 fine Y 部分为 4-7 时，`cntFV` 被错误解码为 0-3，导致背景扫描线像素偏移错误（tile 内部行位置错位）。
+
+**修复**: `cntsFromAddress` 的 `& 3` 改为 `& 7`，与 `regsFromAddress` 保持一致。
+
+**文件**: `game-engine/core/ppu/index.ts` L1190
+
+### 根因 C: 队列机制 ($0628/$05E8) 在 boot 阶段被完全绕过 ⚠️ 架构已知
+
+**严重度**: P3（设计如此，bank01_titleInit 直接写 PPU 补偿）
+
+**描述**: boot 阶段（phase 0-10）永远不会设置 `$0628`，NMI handler 始终走 `$0628===0 → _restorePPU → return` 跳过路径。`bank01_titleInit` 的 FIX 注释确认了这点，并直接通过 `writeMem($2006/$2007)` 写入 PPU。但 bytecode 脚本在 phase 1 期间写入 nametable 的路径尚未确认是否绕过队列。
+
+**状态**: `bank01_titleInit` 已绕过队列直接写 PPU ✅。bytecode 脚本（opcode $00-D7 raw tile）也通过 `_bytecode_writePPUTile` → `writeMem($2007)` 直接写 PPU ✅。队列机制在 title tick 阶段（bytecode fade op $EC）正常激活。
+
+### 修复总结
+
+| 修复 | 文件 | 影响 |
+|------|------|------|
+| CHR bank 切换 → mmap.write 方法 | `boot.ts` | P0, 核心根因 |
+| cntsFromAddress & 3 → & 7 | `core/ppu/index.ts` | P1, fine Y 精度修复 |
+| 队列绕过已确认为设计行为 | N/A | P3, 已验证安全 |

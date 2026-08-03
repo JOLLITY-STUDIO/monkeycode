@@ -20,6 +20,7 @@ import {
   generateNTDataText,
   generateSPOAMDataText,
   generateSPTDataText,
+  generatePaletteDataText,
 } from './text-generator';
 
 import { DebugCanvasManager } from './debug-canvas';
@@ -79,7 +80,8 @@ export class DebugPanel {
     const ntClear = (prevTab === 'nametable' && tab !== 'nametable') ? { ntDataText: '' } : {};
     const ptClear = (prevTab === 'patterntable' && tab !== 'patterntable') ? { ptDataText: '' } : {};
     const sptClear = (prevTab === 'sprite' && tab !== 'sprite') ? { sptDataText: '' } : {};
-    this.page.setData({ debugTab: tab, debugLines: '', ...ntClear, ...ptClear, ...sptClear });
+    const palClear = (prevTab === 'palette' && tab !== 'palette') ? { palDataText: '' } : {};
+    this.page.setData({ debugTab: tab, debugLines: '', ...ntClear, ...ptClear, ...sptClear, ...palClear });
     if (tab === '' || tab !== 'disasm') {
       this.debugCanvas.reset();
     }
@@ -267,6 +269,8 @@ export class DebugPanel {
     const img = renderPaletteImage(nes);
     this.debugCanvas.blit(img.data, img.width, img.height);
     this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, img.width, img.height);
+    const text = generatePaletteDataText(nes, this.fpsFrameCount);
+    this.page.setData({ palDataText: text });
   }
 
   private _renderDisasm(sys: any | null): void {

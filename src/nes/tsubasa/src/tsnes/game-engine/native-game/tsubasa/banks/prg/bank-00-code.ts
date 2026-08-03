@@ -48,7 +48,7 @@
  */
 
 import type { SystemState } from '../system-state';
-import { writeMem, readMem } from '../system-state';
+import { writeMem, readMem, prgBanks } from '../system-state';
 import { track, exit } from '../debug-log';
 import {
   bank01_startGame,
@@ -883,6 +883,43 @@ function bank00_bytecodeWait(sys: SystemState): void {
 }
 
 /**
+ * BUG-025 修复: 单帧字节码执行 — 每帧只执行 1 条操作码。
+ *
+ * 6502 原始 NES 中，NMI handler 每帧执行 1 条 bytecode 指令。
+ * 此函数模拟该行为：如果 $E9（延迟计数器）> 0，递减并等待；
+ * 否则执行 1 条操作码并返回新的延迟。
+ *
+ * @returns true = 字节码仍在执行中（需继续调用），false = 字节码完成
+ */
+function bank00_bytecodeWaitTick(sys: SystemState): boolean {
+  // 检查是否有脚本在执行
+  if ((sys.mem[ZP_SCRIPT_PTR_L] ?? 0) === 0 && (sys.mem[ZP_SCRIPT_PTR_H] ?? 0) === 0) {
+    return false; // 没有脚本
+  }
+
+  // 检查延迟计数器（$E9）：如果 > 0，还需等待帧
+  if ((sys.mem[0xE9] ?? 0) > 0) {
+    sys.mem[0xE9] = (sys.mem[0xE9] ?? 0) - 1;
+    return true; // 仍在等待，还未执行下一条
+  }
+
+  // 执行 1 条字节码
+  const delay = bank00_execBytecode(sys);
+
+  // 检查脚本是否完成（$4D/$4E = 0）
+  if ((sys.mem[ZP_SCRIPT_PTR_L] ?? 0) === 0 && (sys.mem[ZP_SCRIPT_PTR_H] ?? 0) === 0) {
+    return false; // 脚本完成
+  }
+
+  // 保存延迟
+  if (delay > 0) {
+    sys.mem[0xE9] = delay;
+  }
+
+  return true; // 还有更多操作码
+}
+
+/**
  * $8920: 字节码恢复 — 重置字节码解释器状态
  *
  * 6502: 重置脚本指针、行高、nametable 写入状态等变量。
@@ -1323,6 +1360,198 @@ export function bank00_waitFrame(
 }
 
 // ═════════════════════════════════════════════════
+// BUG-025: Boot 状态机 — 逐帧推进启动流程
+// ═════════════════════════════════════════════════
+//
+// 原始 NES 启动流程每帧通过 NMI handler 执行 boot 逻辑：
+//   RESET → initScene → dispatchScene → state0FullInit →
+//   bytecode(1 op/frame) → stateCommonContinue → titleBoot → titleInit
+//
+// 本状态机将同步 boot 链拆分为逐帧步骤，确保 PPU 在每帧间渲染，
+// 使 TECMO logo 和开机动画能正确显示。
+//
+// Boot Phase 枚举：
+//   0  = START: 调用 bank00_dispatchScene → dispatch_state0_boot
+//   1  = PPU_CLEAR: ppuClear 完成
+//   2  = BYTECODE_INIT: execBytecode(param=1) 初始化脚本
+//   3  = BYTECODE_TICK: 逐条执行字节码（每帧 1 op）
+//   4  = STATE0_AFTER_BC: $E0=0xC0, bankSwitch(2), loadSceneData
+//   5  = COMMON_CLEAR: 清 $28/$29/$27, $0700=0x01
+//   6  = COMMON_BANK02: bankSwitch(2), sceneSwitchHelper
+//   7  = COMMON_RESTORE: bytecodeRestore
+//   8  = COMMON_BANK01: bankSwitch(1), auxEntry2
+//   9  = COMMON_HELPER: sceneHelper_$DB62
+//   10 = COMMON_SCENE_CHECK: scene>=20 + $E0 bit7 检查
+//   11 = TITLE_BOOT: titleBoot → bank01_titleInit
+//   12 = DONE: $0700 已设为 0x33
+
+export function bank00_tickBoot(sys: SystemState): void {
+  const phase = sys.bootPhase;
+
+  switch (phase) {
+    case 0: // START → ppuClear + execBytecode(1) 初始化脚本指针
+      // 不再调用 bank00_dispatchScene — 它会同步执行 state0FullInit →
+      // stateCommonContinue → titleBoot, 直接跳到标题, 跳过 TECMO logo 动画。
+      // 改为手动执行第一帧的初始化, 下帧 phase 1 逐帧推进 bytecode。
+      console.log('[boot] phase 0: ppuClear + execBytecodeInit(1)');
+      bank00_ppuClear(sys);
+      bank00_execBytecodeInit(sys, 1);  // 仅 setup 脚本指针, 不执行操作码
+      sys.bootPhase = 1; // → 下一帧: bytecode 逐帧 tick
+      sys.bootSubStep = 0;
+      break;
+
+    case 1: // BYTECODE_TICK: 逐条执行 bytecode (param=1 的脚本)
+      {
+        sys.bootSubStep++;
+        if (sys.bootSubStep === 1) {
+          console.log('[boot] phase 1: bytecode tick started');
+        }
+        // 安全上限: 最多 10000 ticks (约 167 秒 @60fps)，防止死循环
+        if (sys.bootSubStep > 10000) {
+          console.warn('[boot] phase 1: safety limit reached (10000 ticks), forcing advance');
+          sys.mem[ZP_SCRIPT_PTR_L] = 0;
+          sys.mem[ZP_SCRIPT_PTR_H] = 0;
+        }
+        const stillRunning = bank00_bytecodeWaitTick(sys);
+        if (!stillRunning) {
+          console.log(`[boot] phase 1: bytecode done after ${sys.bootSubStep} ticks`);
+          sys.bootPhase = 2;
+          sys.bootSubStep = 0;
+        }
+      }
+      break;
+
+    case 2: // STATE0_AFTER_BC: $E0=0xC0, bankSwitch(2), loadSceneData
+      console.log('[boot] phase 2: $E0=0xC0, loadSceneData');
+      sys.mem[0xE0] = 0xC0;
+      bankSwitch(sys, 2);
+      bank02_loadSceneData(sys);
+      sys.bootPhase = 3;
+      break;
+
+    case 3: // COMMON_CLEAR: 清零 $28/$29/$27, $0700=0x01
+      console.log('[boot] phase 3: common clear vars');
+      sys.mem[ZP_FRAME_CTR_L] = 0;
+      sys.mem[ZP_FRAME_CTR_H] = 0;
+      sys.mem[ZP_SUB_STATE] = 0;
+      writeMem(sys, 0x0700, 0x01);
+      sys.bootPhase = 4;
+      break;
+
+    case 4: // COMMON_BANK02: bankSwitch(2), sceneSwitchHelper
+      console.log('[boot] phase 4: bank02 sceneSwitch');
+      bankSwitch(sys, 2);
+      bank02_sceneSwitchHelper(sys);
+      sys.bootPhase = 5;
+      break;
+
+    case 5: // COMMON_RESTORE: bytecodeRestore
+      console.log('[boot] phase 5: bytecodeRestore');
+      bank00_bytecodeRestore(sys);
+      sys.bootPhase = 6;
+      break;
+
+    case 6: // COMMON_BANK01: bankSwitch(1), auxEntry2
+      console.log('[boot] phase 6: bank01 auxEntry2');
+      bankSwitch(sys, 1);
+      bank01_auxEntry2(sys);
+      sys.bootPhase = 7;
+      break;
+
+    case 7: // COMMON_HELPER: sceneHelper_$DB62
+      console.log('[boot] phase 7: sceneHelper');
+      sceneHelper_$DB62(sys, (s, a) => {
+        if (a === 0) {
+          console.log('[boot] sceneHelper callback skip (a=0)');
+          return;
+        }
+        const saved27 = sys.mem[ZP_SUB_STATE];
+        sys.mem[ZP_SUB_STATE] = a;
+        try {
+          bank00_dispatchScene(sys);
+        } finally {
+          sys.mem[ZP_SUB_STATE] = saved27;
+        }
+      });
+      sys.bootPhase = 8;
+      break;
+
+    case 8: // COMMON_SCENE_CHECK: scene>=20 special + $E0 bit7 → skip bytecode
+      {
+        console.log('[boot] phase 8: scene check');
+        const sceneId = sys.mem[0x26];
+        if (sceneId >= 0x20) {
+          writeMem(sys, 0x0700, 0x4C);
+          writeMem(sys, 0x0450, 0);
+          writeMem(sys, 0x0451, 0);
+          writeMem(sys, 0x0452, 0);
+          writeMem(sys, 0x0453, 0);
+          bankSwitch(sys, 1);
+          bank01_auxEntry3(sys);
+        }
+        // $E0 bit7 检查: 在 state0FullInit 中 $E0 设为 0xC0 (bit7=1)
+        // 所以 skipBytecode = true → 跳过表格字节码，直接进 titleBoot
+        const skipBytecode = !!(sys.mem[0xE0] & 0x80);
+        if (!skipBytecode) {
+          // 需要执行表格字节码（boot 阶段通常跳过此路径）
+          const sceneIdx = sys.mem[0x26];
+          const tableVal = DATA_$83DC_$83FE[sceneIdx];
+          if (tableVal !== 0) {
+            bank00_execBytecode(sys, tableVal);
+            sys.bootPhase = 9; // bytecode tick
+            break;
+          }
+        }
+        // skipBytecode → 直接进 title
+        console.log('[boot] phase 8: skipBytecode → clear $E0 bit7 → title');
+        sys.mem[0xE0] &= 0x7F;
+        sys.bootPhase = 10;
+      }
+      break;
+
+    case 9: // COMMON_BYTECODE_TICK: 表格字节码逐帧执行
+      {
+        sys.bootSubStep++;
+        if (sys.bootSubStep === 1) {
+          console.log('[boot] phase 9: table bytecode tick started');
+        }
+        // 安全上限
+        if (sys.bootSubStep > 10000) {
+          console.warn('[boot] phase 9: safety limit reached, forcing advance');
+          sys.mem[ZP_SCRIPT_PTR_L] = 0;
+          sys.mem[ZP_SCRIPT_PTR_H] = 0;
+        }
+        const stillRunning = bank00_bytecodeWaitTick(sys);
+        if (!stillRunning) {
+          console.log(`[boot] phase 9: table bytecode done after ${sys.bootSubStep} ticks`);
+          sys.mem[0xE0] &= 0x7F;
+          sys.bootPhase = 10;
+          sys.bootSubStep = 0;
+        }
+      }
+      break;
+
+    case 10: // TITLE_BOOT: bankSwitch(2), bank01_titleInit
+      console.log('[boot] phase 10: titleBoot → titleInit');
+      bankSwitch(sys, 2);
+      bank01_titleInit(sys); // 内部设置 $0700 = 0x33
+      sys.bootPhase = 11;
+      break;
+
+    case 11: // DONE
+      console.log('[boot] phase 11: DONE — $0700 = 0x33 (title mode)');
+      // titleInit 已经设置了 $0700=0x33，mainLoop 会路由到 bank00_titleTick
+      sys.bootPhase = 12; // 退出 boot 循环
+      break;
+
+    default:
+      console.warn(`[boot] unknown phase: ${phase}`);
+      sys.bootPhase = 11; // 强制完成
+      break;
+  }
+}
+
+// ═════════════════════════════════════════════════
 // 标题画面 Per-Frame Tick
 // ═════════════════════════════════════════════════
 
@@ -1337,10 +1566,14 @@ export function bank00_titleTick(sys: SystemState): void {
   if (sys.mem[0x062A] === 0 && sys.mem[0x062B] === 0) {
     track('bank00_titleTick_firstTime', { phase: 'loading palette' });
     bank00_paletteLoadFromROM(sys, (s) => bankSwitch(s, 6));
-    // 設定初始亮度為 0(全暗)，讓 bytecode 0xEC 逐帧淡入
-    sys.mem[0x4A] = 0;
-    sys.mem[0x4B] = 0;
-    // 立即 flush 一次以触发 $0628
+    // 保留 _paletteSetup 設定的亮度值 ($4A/$4B)，讓 bytecode 0xEC 控制淡入
+    // NOTE: 原始遊戲在 titleInit 後由 bytecode 腳本控制亮度過渡。
+    //       若 bytecode 未正確執行，此處不強制歸零可確保基本可見性。
+    if (sys.mem[0x4A] === 0 && sys.mem[0x4B] === 0) {
+      sys.mem[0x4A] = 0x0F;  // fallback: 最大亮度確保可見
+      sys.mem[0x4B] = 0x0F;
+    }
+    // 立即 flush 一次以写 palette 到 PPU
     bank00_paletteFlush(sys);
   }
 
@@ -1797,91 +2030,155 @@ const OPCODE_D8_DELAY_TABLE: readonly number[] = [
 ];
 
 /**
+ * _bytecode_setupParam: param → 三联表查找脚本地址 + 初始化 nametable 写入状态。
+ *
+ * 6502 $8464-$84D9 的 param lookup 部分。
+ * 提取为独立 helper，供 bank00_execBytecode 和 op 0xE8 共用。
+ *
+ * @returns true = 脚本指针有效，false = 指针为空（param 映射到空脚本）
+ */
+function _bytecode_setupParam(sys: SystemState, param: number): boolean {
+  // ── $8464-$8498: param → 三联表查找脚本地址 ──
+  // DATA_$8AE7_$8AF6 16 bytes 解码:
+  //   $8AEC=[7]=0x00(base0)  $8AED=[8]=0x03(bank0)
+  //   range 0: boundary=$8AEE+2=[9]=0x10, base=[7]=0x00, bank=[8]=0x03
+  //   range 1: boundary=$8AEE+4=[11]=0x20, base=$8AEC+4=[9]=0x10, bank=$8AED+4=[10]=0x04
+  //   range 2: boundary=$8AEE+6=[13]=0x60, base=$8AEC+6=[11]=0x20, bank=$8AED+6=[12]=0x05
+  //   range 3: boundary=$8AEE+8=[15]=0xFF, base=$8AEC+8=[13]=0x60, bank=$8AED+8=[14]=0x06
+  const tbl = DATA_$8AE7_$8AF6;
+  const BOUNDARIES = [tbl[9], tbl[11], tbl[13], tbl[15]];  // 0x10, 0x20, 0x60, 0xFF
+  const BASES      = [tbl[7], tbl[9], tbl[11], tbl[13]];   // 0x00, 0x10, 0x20, 0x60
+  const BANKS      = [tbl[8], tbl[10], tbl[12], tbl[14]];  // 0x03, 0x04, 0x05, 0x06
+
+  let range = 0;
+  for (let r = 0; r < BOUNDARIES.length; r++) {
+    if (param < BOUNDARIES[r]) { range = r; break; }
+  }
+  const base = BASES[range];
+  const bank = BANKS[range];
+
+  const offset = ((param - base) * 2) & 0xFF;
+  const scriptAddr = 0xA000 | offset;
+  const ptrBank = bank + 1;
+  const ptrOff = scriptAddr - 0xA000;
+
+  const realLo = prgBanks[ptrBank]?.[ptrOff] ?? 0;
+  const realHi = prgBanks[ptrBank]?.[(ptrOff + 1) & 0x1FFF] ?? 0;
+
+  sys.mem[ZP_SCRIPT_PTR_L] = realLo;
+  sys.mem[ZP_SCRIPT_PTR_H] = realHi;
+  sys.bankMap[0] = bank;
+  // FIX: bankMap[1] 必须是 data bank（脚本数据所在 bank），不能是 ptrBank（指针表所在 bank）。
+  // 脚本地址 0xA000+offset 落在 $A000-$BFFF 窗口 (bankMap[1])。
+  // 原来的 `sys.bankMap[1] = ptrBank` 会导致 readMem 从 pointer table bank 读 bytecode → 垃圾数据，永不结束。
+  sys.bankMap[1] = bank;
+
+  console.log(`[bytecode] param=${param} range=${range} base=0x${base.toString(16)} bank=0x${bank.toString(16)} → scriptPtr=0x${realHi.toString(16)}${realLo.toString(16).padStart(2,'0')}`);
+
+  // ── $84B0-$84D9: 初始化 nametable 写入状态 ──
+  writeMem(sys, 0x2006, 0x23);
+  writeMem(sys, 0x2006, 0xE0);
+  for (let i = 0; i < 0x20; i++) {
+    writeMem(sys, 0x2007, 0x55);
+  }
+  sys.mem[0xE6] = 0xE0;
+  sys.mem[0xE7] = 0x23;
+  sys.mem[0x55] = 0x08;
+  sys.mem[0x4F] = 0x49;
+  sys.mem[0x50] = 0x22;
+  sys.mem[0x51] = 0x49;
+  sys.mem[0x52] = 0x22;
+  sys.mem[0x53] = 0x49;
+  sys.mem[0x54] = 0x49 & 0x1F;
+  sys.mem[0xED] = sys.mem[0x25];
+
+  return realLo !== 0 || realHi !== 0;
+}
+
+/**
+ * 字节码解释器初始化（仅 param 查询 + 状态设置，不执行操作码）。
+ *
+ * 将 $8464-$84D9 的 setup 部分提取为独立入口，供 boot phase 0 使用。
+ * phase 0 只需要初始化脚本指针，phase 1 再逐帧执行。
+ *
+ * @param param 脚本参数索引
+ * @returns true = 有效脚本指针，false = 空脚本
+ */
+export function bank00_execBytecodeInit(sys: SystemState, param: number): boolean {
+  return _bytecode_setupParam(sys, param);
+}
+
+
+
+/**
  * $8464: 字节码解释器主入口
  *
  * 负责执行场景脚本。脚本指针在 ($4D/$4E)。
- * 每个操作码完成后返回需要等待的帧数（0 表示同帧继续，>0 表示等待 N 帧后继续）。
  *
- * 6502 原始入口:
- *   $8464: 查询跳转表根据 param → 设置脚本指针 → 初始化 nametable 写入状态
- *   $84DA: 主循环 — 读操作码 → 分类处理
+ * 6502 原始语义:
+ *   $8464: param → 脚本指针查询 + nametable 初始化 → 进入 $84DA 主循环
+ *   $84DA: while(1) 循环读操作码 → 分类处理，遇到等待操作码才返回
+ *
+ * 匹配 6502: 同一帧内连续处理所有非等待操作码，遇到 delay>0 返回等待。
+ * op 0xE8 是 GOTO 语义（tail call），替换脚本指针继续循环，不递归。
  *
  * @param param 可选参数索引（0-5），通过 $83EE 表查找目标脚本地址
- * @returns 0 = 脚本完成，>0 = 继续等待的帧数
+ * @returns 0 = 脚本完成，>0 = 等待的帧数
  */
 export function bank00_execBytecode(sys: SystemState, param?: number): number {
+  // ── 首次调用: param 查询 + 初始化 ──
   if (param !== undefined) {
-    // $8464-$8498: param → 查表获取脚本地址
-    // 参数表位于 $83EE, 即 DATA_$83DC_$83FE 偏移 18 处 ($83EE - $83DC = 18)
-    const PARAM_TABLE_OFFSET = 0x83EE - 0x83DC; // = 18
-    const lo = DATA_$83DC_$83FE[PARAM_TABLE_OFFSET + param * 2];
-    const hi = DATA_$83DC_$83FE[PARAM_TABLE_OFFSET + param * 2 + 1];
-    if (lo === 0 && hi === 0) return 0;
-
-    sys.mem[ZP_SCRIPT_PTR_L] = lo;
-    sys.mem[ZP_SCRIPT_PTR_H] = hi;
-
-    // 初始化 nametable 写入状态
-    // $84B0-$84C8: 设 $55=08 (行高), $4F=行起始 low, $50=$22 (PPU high)
-    sys.mem[0x55] = 0x08;       // 行高计数器
-    sys.mem[0x4F] = 0x49;       // nametable 起始 col
-    sys.mem[0x50] = 0x22;       // PPU addr high byte
-
-    // $84CC-$84D9: 复制 $4F→$51, $50→$52, $51→$53
-    sys.mem[0x51] = sys.mem[0x4F];
-    sys.mem[0x52] = sys.mem[0x50];
-    sys.mem[0x53] = sys.mem[0x51];
-
-    // $54 = $51 & 0x1F (列边界检测)
-    sys.mem[0x54] = sys.mem[0x51] & 0x1F;
+    if (!_bytecode_setupParam(sys, param)) return 0;
   }
 
-  const ptr = (sys.mem[ZP_SCRIPT_PTR_H] << 8) | sys.mem[ZP_SCRIPT_PTR_L];
-  if (ptr === 0) return 0;
+  // ── $84DA 主循环: 连续执行直到命中等待操作码 ──
+  let safety = 0;
+  while (safety < 50000) {
+    safety++;
 
-  // ── 主循环: 读操作码 ──
-  const op = readMem(sys, ptr);
-  sys.mem[ZP_SCRIPT_PTR_L] = (ptr + 1) & 0xFF;
-  if (sys.mem[ZP_SCRIPT_PTR_L] === 0) sys.mem[ZP_SCRIPT_PTR_H]++;
+    const ptr = (sys.mem[ZP_SCRIPT_PTR_H] << 8) | sys.mem[ZP_SCRIPT_PTR_L];
+    if (ptr === 0) return 0;  // 脚本结束
 
-  // ── 分类处理 ──
-  if (op < 0xD8) {
-    // === $00-$D7: raw char tile ===
-    // 通过 $88CA 写入 PPU nametable
-    _bytecode_writePPUTile(sys, op);
-    return 0;  // 同帧继续
+    // 读操作码 + 前进指针
+    const op = readMem(sys, ptr);
+    sys.mem[ZP_SCRIPT_PTR_L] = (ptr + 1) & 0xFF;
+    if (sys.mem[ZP_SCRIPT_PTR_L] === 0) sys.mem[ZP_SCRIPT_PTR_H]++;
 
-  } else if (op < 0xE0) {
-    // === $D8-$DF: 1 字节控制码 ===
-    const idx = op - 0xD8;
-    const delay = OPCODE_D8_DELAY_TABLE[idx % OPCODE_D8_DELAY_TABLE.length];
-    if (delay > 0) {
-      // $D8-$DE: 等待帧 → 调用 waitFrame(delay)
-      return delay;
+    let delay: number;
+
+    if (op < 0xD8) {
+      // === $00-$D7: raw tile → 写入 PPU nametable ===
+      _bytecode_writePPUTile(sys, op);
+      delay = 0;
+
+    } else if (op < 0xE0) {
+      // === $D8-$DF: 1 字节控制码 (wait) ===
+      const idx = op - 0xD8;
+      delay = OPCODE_D8_DELAY_TABLE[idx % OPCODE_D8_DELAY_TABLE.length];
+
+    } else if (op < 0xE8) {
+      // === $E0-$E7: 0 字节相对分支 ===
+      const relOffset = ((op - 0xE1) ^ 0xFF) + 1;
+      const newCol = ((sys.mem[0x53] + relOffset) & 0xFF);
+      if ((newCol & 0x1F) > sys.mem[0x54]) {
+        sys.mem[0x54] = newCol & 0x1F;
+      }
+      sys.mem[0x53] = newCol;
+      delay = 0;
+
+    } else {
+      // === $E8-$FF: 扩展控制码 ===
+      delay = _bytecode_dispatchExtended(sys, op);
     }
-    // $DF: 立即继续
-    return 0;
 
-  } else if (op < 0xE8) {
-    // === $E0-$E7: 0 字节相对分支 ===
-    // 在当前 nametable row 内回跳。偏移量 = 0xE1 - op（取反+1）
-    const offset = ((op - 0xE1) ^ 0xFF) + 1;  // 等价于 6502 SBC/SEC trick
-    const newCol = ((sys.mem[0x53] + offset) & 0xFF);
-    // 限界：确保不超过 $54（列最大值）
-    if ((newCol & 0x1F) > sys.mem[0x54]) {
-      sys.mem[0x54] = newCol & 0x1F;  // 更新列边界
-    }
-    sys.mem[0x53] = newCol;
-    return 0;
-
-  } else {
-    // === $E8-$FF: 扩展控制码 ===
-    const extIdx = (op - 0xE8) * 2;
-    // 跳转表 dispatch (实际 6502 使用 RTS 跳转技巧)
-    const targetLo = EXT_OPCODE_JMP_TABLE[extIdx % EXT_OPCODE_JMP_TABLE.length];
-    const targetHi = EXT_OPCODE_JMP_TABLE[(extIdx + 1) % EXT_OPCODE_JMP_TABLE.length];
-    return _bytecode_dispatchExtended(sys, op, targetLo, targetHi);
+    if (delay > 0) return delay;  // 等待 N 帧后继续
+    // delay === 0: 继续循环
   }
+
+  console.warn('[bytecode] 安全上限 (50000 ops)，强制中断');
+  sys.mem[ZP_SCRIPT_PTR_L] = 0;
+  sys.mem[ZP_SCRIPT_PTR_H] = 0;
+  return 0;
 }
 
 /**
@@ -1949,19 +2246,17 @@ function _bytecode_checkRowWrap(sys: SystemState): void {
 function _bytecode_dispatchExtended(
   sys: SystemState,
   op: number,
-  targetLo: number,
-  targetHi: number,
 ): number {
-  // 简化: 大部分操作码最终返回 1（等待 1 帧）或 2（等待 2 帧）
   switch (op) {
-    case 0xE8:  // param bytecode → 读下一个字节作为参数
+    case 0xE8:  // GOTO sub-script: 读下个字节为 param → 替换脚本指针 → 同帧继续
       {
         const ptr = (sys.mem[ZP_SCRIPT_PTR_H] << 8) | sys.mem[ZP_SCRIPT_PTR_L];
         const subParam = readMem(sys, ptr);
         sys.mem[ZP_SCRIPT_PTR_L] = (ptr + 1) & 0xFF;
         if (sys.mem[ZP_SCRIPT_PTR_L] === 0) sys.mem[ZP_SCRIPT_PTR_H]++;
-        bank00_execBytecode(sys, subParam);
-        return 2;
+        // GOTO 语义: 直接替换脚本指针, 不保存返回地址
+        _bytecode_setupParam(sys, subParam);
+        return 0;  // 继续主循环 (从新脚本指针继续)
       }
 
     case 0xE9:  // waitFrame(2) + PPU scroll
@@ -3602,14 +3897,19 @@ export function bank00_paletteLoadFromROM(
   track('bank00_paletteLoadFromROM', { '0048': sys.mem[0x48], '0049': sys.mem[0x49] });
   onBank06_switch(sys);
 
-  // 背景 palette: ROM 地址 = $B000 + $48*16
-  const bgRomBase = 0xB000 + sys.mem[0x48] * 16;
+  // FIX: bankSwitch(sys, 6) 映射 bank 6→$8000-$9FFF (bankMap[0]=6),
+  // bank 7→$A000-$BFFF (bankMap[1]=7)。readMem(0xB000) 走 bankMap[1]=7，
+  // 返回 bank 7 的 0xFF 垃圾。调色板数据在 bank 6 offset 0x1000。
+  // 窗口 1 offset 0x1000 = 窗口 0 offset 0x1000 → 地址 0x9000
+
+  // 背景 palette: ROM 窗口1 地址 $B000+$48*16 → 窗口0 地址 $9000+$48*16
+  const bgRomBase = 0x9000 + sys.mem[0x48] * 16;
   for (let i = 0; i < 16; i++) {
     sys.mem[0x062A + i] = readMem(sys, bgRomBase + i);
   }
 
-  // 精灵 palette: ROM 地址 = $B300 + $49*16
-  const sprRomBase = 0xB300 + sys.mem[0x49] * 16;
+  // 精灵 palette: ROM 窗口1 地址 $B300+$49*16 → 窗口0 地址 $9300+$49*16
+  const sprRomBase = 0x9300 + sys.mem[0x49] * 16;
   for (let i = 0; i < 16; i++) {
     sys.mem[0x063A + i] = readMem(sys, sprRomBase + i);
   }

@@ -7,8 +7,6 @@
  *
  * banks/   ← 翻译后的 PRG bank 代码 (逐 bank 6502 → TS 语义翻译)
  * core/    ← PPU/APU/controller 硬件模拟层 (保留 raw NES 硬件)
- * data/    ← ROM 数据层 (原 hex2asm, 后续逐步内联)
- * scene/   ← 已弃用 (功能已移至 bank-00.ts, 待移除)
  * render/  ← Canvas 画面输出
  * adapters/ ← 平台适配器 (微信小程序 / Web)
  * test/    ← 整合测试 (run-all.ts)
@@ -78,9 +76,6 @@ export { default as Tile } from './core/tile';
 // ── Data ─────────────────────────────────
 // ROM 数据已内联到各 bank 的 -data.ts 文件中 (banks/prg/, banks/chr/)。
 // 不再通过 data/ 目录集中导出, 各 bank import 时自动 registerBankRom() 注册。
-
-// ── Scene Engine — 已弃用, 由 bank-00.ts 替代 ──
-// export { SceneType, dispatchScene, tickScene } from './scene/dispatch';
 
 // ── Render ────────────────────────────────
 export {

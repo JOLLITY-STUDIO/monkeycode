@@ -179,19 +179,20 @@ export function bank02_nmiHandler(sys: SystemState): void {
     writeMem(sys, 0x2006, sys.mem[0x05E9 + qIdx]);
 
     // $8036-$803D: data copy loop (Y = count)
+    // 保存起始索引：qIdx 在循环内不应改变（6502 用 INX 推进，但 LDA $05EB,X 用的是 X 当前值）
+    const startQIdx = qIdx;
     for (let i = 0; i < count; i++) {
       // $8036: LDA $05EB,X → data byte
-      const data = sys.mem[0x05EB + qIdx + i];
+      // 6502: X 寄存器每次 INX 后自动推进，LDA $05EB,X 读当前 X 指向的字节
+      const data = sys.mem[0x05EB + startQIdx + i];
       // $8039: STA $2007
       writeMem(sys, 0x2007, data);
-      // $803C: INX → advance qIdx
-      qIdx++;
     }
 
-    // $8040-$8042: skip 3 bytes past count (header was 3 bytes: type, addrLo, addrHi)
-    // But INX was already executed per byte above.
-    // After the loop, X points to the last data byte. Need to add 3 more:
-    qIdx += 3;
+    // $8040-$8042: INX × 3 → 跳过 3 字节头 (entry type, addrLo, addrHi)
+    // 此时 6502 的 X 已经指向数据末尾 (startQIdx + count)，再 INX×3
+    // 下一条目开始于 startQIdx + count + 3
+    qIdx = startQIdx + count + 3;
     // $8043: LDA $05E8,X; BNE $801B → loop back if next entry exists
   }
 }
@@ -235,19 +236,22 @@ export function bank02_ppuScrollUpdate(sys: SystemState): void {
   track('bank02_ppuScrollUpdate', { '0079': sys.mem[0x79], '003A': sys.mem[0x3A], '0628': sys.mem[0x628] });
   // ── $8073-$8089: PPU scroll 设置 ──
   // $8073: LSR $20; LSR $20
-  // This shifts $20 so bit0 and bit1 are in carry for nametable selection
+  // Shifts $20 right twice: bits 2-7 move to 0-5, bits 0-1 discarded.
   let $20 = sys.mem[0x20] >> 2;
 
   // $8077: LDA $45; LSR A; ROL $20
-  // $45 bit0 → $20 bit2 (vertical nametable select)
-  if (sys.mem[0x45] & 1) $20 |= 0x04;
+  // ROL shifts $20 left by 1, and places carry (=$45 bit0) into bit0.
+  // Effect: $20 = ($20 << 1) | ($45 & 1)
+  $20 = ($20 << 1) | (sys.mem[0x45] & 1);
 
   // $807C: LDA $7B; LSR A; ROL $20
-  // $7B bit0 → $20 bit1
-  if (sys.mem[0x7B] & 1) $20 |= 0x02;
+  // ROL shifts $20 left by 1, and places carry (=$7B bit0) into bit0.
+  // Effect: $20 = ($20 << 1) | ($7B & 1)
+  $20 = ($20 << 1) | (sys.mem[0x7B] & 1);
+  $20 &= 0xFF;
 
   // $8081: LDA $20; STA $2000
-  writeMem(sys, 0x2000, $20 & 0xFF);
+  writeMem(sys, 0x2000, $20);
 
   // $8086: LDA $7A; STA $2005 — X scroll
   writeMem(sys, 0x2005, sys.mem[0x7A]);

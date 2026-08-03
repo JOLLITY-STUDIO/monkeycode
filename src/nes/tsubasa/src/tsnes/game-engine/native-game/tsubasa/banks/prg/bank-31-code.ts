@@ -40,7 +40,7 @@ import {
   tileCoordConvert_$CDC9,
 } from './bank-30-code';
 
-import { bank00_dispatchScene, bank00_titleTick } from './bank-00-code';
+import { bank00_dispatchScene, bank00_titleTick, bank00_tickBoot } from './bank-00-code';
 
 // ── CODE bank dispatch tables (直接调用, 不走 MMC3 bank switch) ──
 import { bank11_dispatch } from './bank-11-code';
@@ -150,7 +150,18 @@ function write16At($34: number, sys: SystemState, offset: number, val: number): 
 
 // ── $E002: 每帧主入口 (ASM $8002-$8056) ──
 export function tick_BANK31_mainLoop(sys: SystemState): void {
-  track('tick_BANK31_mainLoop', { '0700': sys.mem[0x700] });
+  track('tick_BANK31_mainLoop', { '0700': sys.mem[0x700], bootPhase: sys.bootPhase });
+  
+  // ── Boot 状态: sys.bootPhase ≤ 11 → 逐帧推进启动流程 ──
+  // $0700 在 phase 3 后变为中间值 (如 0x01), 不能再依赖 $0700===0x30 判断.
+  // bootPhase 从 RESET 被设为 0 (bank-30 initScene), phase 11 后 $0700 固定为 0x33.
+  if ((sys.bootPhase as number) <= 11) {
+    bank00_tickBoot(sys);
+    sys.frameCount++;
+    exit('tick_BANK31_mainLoop', { mode: 'boot', bootPhase: sys.bootPhase });
+    return;
+  }
+  
   if (sys.mem[0x0700] === 0x33) {
     bank00_titleTick(sys); sys.frameCount++; exit('tick_BANK31_mainLoop', { mode: 'title' }); return;
   }
@@ -907,10 +918,16 @@ export function translate_BANK31_RESET(sys: SystemState): void {
   // ── NMI 初始化 — 設置 sprite DMA 槽位/定時器狀態 ──
   nmiInit_$C71A(sys);
 
-  // ── JMP $CEFE → bank00 dispatch ($8000) ──
-  // 6502: initScene 末尾通过 $CEFE 跳转进入 bank00 场景分派器。
-  // 翻译路径在此串联: 执行 TECMO logo / 标题画面 / 菜单 等引导流程。
-  entryToBank00_dispatch(sys, bank00_dispatchScene);
+  // ── BUG-025 修复: 不再同步执行整个 boot 链 ──
+  // 原代码: entryToBank00_dispatch(sys, bank00_dispatchScene);
+  // 问题: 在构造函数中一次性执行完 RESET→initScene→dispatchScene→
+  //        state0FullInit→bytecode(while-loop)→titleBoot→titleInit,
+  //        中间帧全被跳过, TECMO logo 无法显示。
+  // 修复: 设置 boot 状态, 交由 tick_BANK31_mainLoop 逐帧推进。
+  sys.mem[0x0700] = 0x30;   // BOOTING 状态
+  sys.bootPhase = 0;        // boot 阶段起始
+  sys.bootSubStep = 0;      // 子步骤计数器
+  console.log('[bank31] RESET done → boot mode ($0700=0x30), waiting for frame loop');
 }
 
 // ═════════════════════════════════════════════════

@@ -198,6 +198,19 @@ export class GameOrchestrator {
 
     this.input.applyToBank(this._sys);
     tick_BANK31_mainLoop(this._sys);
+
+    // ── 诊断: 检查 tick 后 palette vramMem ──
+    if (this._totalFrameCount < 5) {
+      const ppu2 = this._nes2.ppu;
+      const palRaw: number[] = [];
+      for (let i = 0; i < 32; i++) palRaw.push(ppu2.vramMem[0x3F00 + i] ?? -1);
+      console.warn(`[ppu-diag] vramMem[$3F00..$3F1F] after tick#${this._totalFrameCount}: [${palRaw.map(v=>'0x'+v.toString(16)).join(', ')}]`);
+      const palImg: number[] = [];
+      for (let i = 0; i < 16; i++) palImg.push(ppu2.imgPalette[i]);
+      console.warn(`[ppu-diag] imgPalette after tick#${this._totalFrameCount}: [${palImg.map(v=>'0x'+v.toString(16)).join(', ')}]`);
+      console.warn(`[ppu-diag] $21=0x${this._sys.mem[0x0021]?.toString(16)}, $2001 shadows: f_bgVis=${ppu2.f_bgVisibility}, f_spVis=${ppu2.f_spVisibility}`);
+    }
+
     bank02_nmiHandler(this._sys);
     bank02_ppuScrollUpdate(this._sys);
 

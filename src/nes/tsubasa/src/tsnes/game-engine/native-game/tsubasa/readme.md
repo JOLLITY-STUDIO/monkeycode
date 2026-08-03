@@ -1,0 +1,1 @@
+内置的H5翻譯原始rom的游戲，我们已经在 TypeScript 里直接 import 了所有 PRG bank 的原始数据，根本不需要模拟 MMC3 的 bank 切换。那套 bankSwitch + mmc3Map + readMem 机制是模拟硬件内存窗口的，在 H5 环境里纯粹是多此一举
