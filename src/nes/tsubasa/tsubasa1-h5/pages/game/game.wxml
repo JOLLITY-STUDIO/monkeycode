@@ -1,0 +1,30 @@
+<!-- 游戏页面 - 全屏 Canvas -->
+<view class="game-container">
+  <canvas
+    type="2d"
+    id="game-canvas"
+    class="game-canvas"
+    bindtouchstart="onTouchStart"
+    bindtouchend="onTouchEnd"
+    bindtouchmove="onTouchMove"
+  ></canvas>
+
+  <!-- 虚拟手柄 -->
+  <view class="controls">
+    <!-- 方向键 -->
+    <view class="dpad">
+      <view class="btn dpad-up"    bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="UP">▲</view>
+      <view class="btn dpad-left"  bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="LEFT">◀</view>
+      <view class="btn dpad-right" bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="RIGHT">▶</view>
+      <view class="btn dpad-down"  bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="DOWN">▼</view>
+    </view>
+
+    <!-- 功能键 -->
+    <view class="action-btns">
+      <view class="btn btn-a"     bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="A">A</view>
+      <view class="btn btn-b"     bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="B">B</view>
+      <view class="btn btn-start" bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="START">▶</view>
+      <view class="btn btn-select" bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="SELECT">●</view>
+    </view>
+  </view>
+</view>

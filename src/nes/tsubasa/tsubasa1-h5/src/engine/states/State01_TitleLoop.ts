@@ -22,8 +22,10 @@ export class State01_TitleLoop extends StateBase {
     this.blinkCounter = 0;
     this.animFrame = 0;
 
-    // 设置 bank 锁定 (禁用游戏逻辑调用，仅NMI处理)
-    this.data.bankLock = 1;
+    // 注意: 原始 ROM 中此状态设置 bankLock = 1 来禁止状态机更新，
+    // 但在 TS 实现中状态机不依赖 bank 切换，不需要这个锁。
+    // 保持 bankLock = 0 让状态机正常更新。
+    this.data.bankLock = 0;
 
     // 设置 PPU 配置
     this.data.ppuCtrl = 0x90; // NMI on, BG=$1000, Spr=$0000, NT=0, VRAM+1

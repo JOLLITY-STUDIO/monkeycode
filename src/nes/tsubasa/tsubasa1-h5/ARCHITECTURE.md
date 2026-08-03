@@ -24,31 +24,40 @@ tsubasa1-h5/
 ├── ARCHITECTURE.md              # 本文件 (阶段2)
 ├── BUG_TRACKER.md               # Bug跟踪记录
 ├── DEV_LOG.md                   # 开发日志
+├── WBS_TASKS.md                 # 项目任务跟踪
 ├── package.json
 ├── tsconfig.json
-├── index.html                   # 浏览器入口
-├── miniprogram/                 # 微信小程序
-│   ├── app.ts
-│   ├── app.json
-│   ├── pages/
-│   │   └── game/
-│   │       ├── game.ts
-│   │       ├── game.json
-│   │       └── game.wxml
-│   └── project.config.json
+├── vite.config.ts
+├── index.html                   # 浏览器入口 (加载 src/platform/web/main.ts)
+├── miniprogram/                 # 微信小程序项目 (阶段2已搭建)
+│   ├── app.ts                   # 小程序入口
+│   ├── app.json                 # 小程序配置
+│   ├── app.wxss                 # 全局样式
+│   ├── sitemap.json
+│   ├── project.config.json      # 开发者工具配置
+│   └── pages/
+│       └── game/
+│           ├── game.ts          # 游戏页面逻辑
+│           ├── game.json        # 页面配置
+│           ├── game.wxml        # 页面模板 (Canvas + 虚拟手柄)
+│           └── game.wxss        # 页面样式
 ├── public/
 │   └── sprites/                 # CHR转换的PNG精灵表
-│       ├── chr_bank_00.png
-│       ├── chr_bank_01.png
-│       ├── ...
-│       └── chr_bank_0C.png
+│       ├── chr_bank_00.png ~ chr_bank_0C.png
+│       └── chr_mega.png
 └── src/
-    ├── main.ts                  # 浏览器入口
     ├── core/
-    │   ├── Tsubasa.ts           # 主游戏类 (对外接口)
-    │   ├── GameLoop.ts           # 游戏主循环
+    │   ├── Tsubasa.ts           # 主游戏类 (对外接口, 依赖IPlatform)
+    │   ├── GameLoop.ts           # 游戏主循环 (平台无关)
     │   ├── Constants.ts          # 全局常量/枚举
     │   └── types.ts              # 类型定义
+    ├── platform/                 # [新增] 平台抽象层
+    │   ├── IPlatform.ts          # 平台接口定义 (Canvas/Image/RAF)
+    │   ├── web/
+    │   │   ├── WebPlatform.ts    # Web 平台实现
+    │   │   └── main.ts           # Web 入口
+    │   └── miniprogram/
+    │       └── MpPlatform.ts     # 微信小程序平台实现
     ├── cache/
     │   ├── DataCache.ts          # 数据缓存中心 (RAM模拟)
     │   ├── OamCache.ts           # OAM精灵缓存
@@ -57,33 +66,16 @@ tsubasa1-h5/
     ├── input/
     │   └── InputManager.ts       # 输入管理
     ├── renderer/
-    │   ├── Renderer.ts           # 渲染器
-    │   ├── SpriteManager.ts      # 精灵管理
-    │   ├── BackgroundRenderer.ts # 背景渲染
-    │   └── TextRenderer.ts       # 文字渲染
+    │   └── Renderer.ts           # 渲染器 (平台无关, 依赖IPlatform)
     ├── engine/
     │   ├── StateMachine.ts       # 状态机/状态分发器
-    │   ├── states/               # 各游戏状态
-    │   │   ├── StateBase.ts
-    │   │   ├── State00_InitTitle.ts
-    │   │   ├── State01_TitleLoop.ts
-    │   │   ├── State02_MenuSelect.ts
-    │   │   ├── State03_TeamSelect.ts
-    │   │   ├── State04_MatchMain.ts
-    │   │   ├── State05_MatchEvent.ts
-    │   │   ├── State06_Transition.ts
-    │   │   └── State07_Result.ts
-    │   └── NmiHandler.ts         # NMI处理逻辑
-    ├── game/
-    │   ├── GameData.ts           # 游戏数据定义 (Bank3/5)
-    │   ├── MatchEngine.ts        # 比赛引擎 (Bank1/4/6)
-    │   ├── PlayerAI.ts           # AI逻辑
-    │   ├── PhysicsEngine.ts      # 物理/碰撞
-    │   └── ScriptEngine.ts       # 事件脚本引擎 (Bank7)
+    │   ├── NmiHandler.ts         # NMI处理逻辑
+    │   └── states/               # 各游戏状态 (State00-05)
+    │       ├── StateBase.ts
+    │       └── State00~05_*.ts
     └── utils/
         ├── BitUtils.ts           # 位操作工具
-        ├── RngGenerator.ts       # 随机数生成器
-        └── SpriteDecoder.ts      # 精灵解码
+        └── RngGenerator.ts       # 随机数生成器
 ```
 
 ---

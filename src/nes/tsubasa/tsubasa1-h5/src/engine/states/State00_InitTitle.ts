@@ -18,16 +18,26 @@ export class State00_InitTitle extends StateBase {
 
   onEnter(): void {
     console.log('[State 00] Init Title Screen');
+
+    // 设置标题画面 PPU 配置
+    // PPU_CTRL = $90: NMI on, BG=$1000, Spr=$0000, NT=0, VRAM+1
+    this.data.ppuCtrl = 0x90;
+    // PPU_MASK = $0E: 显示背景(不含最左8px), 隐藏精灵
+    this.data.ppuMask = 0x0E;
+    this.data.scrollX = 0;
+    this.data.scrollY = 0;
+
     this.initStep = 0;
     this.initDone = false;
 
     // 初始化 PPU 缓冲区 ($82CC)
     this.initPpuBuffers();
 
-    // 切换到标题所需的 bank
-    this.banks.prgBank0 = 0;
+    // 切换到标题所需的 CHR bank: bank 0 (title graphics), bank 1 (characters)
     this.banks.chrBank0 = 0;
     this.banks.chrBank1 = 1;
+    // PRG bank 0 = 0 (core engine stays resident)
+    this.banks.prgBank0 = 0;
   }
 
   onUpdate(): void {
@@ -96,13 +106,27 @@ export class State00_InitTitle extends StateBase {
 
   /** 加载标题名称表 */
   private loadTitleNametable(): void {
-    // 清空名称表
+    // 清空名称表 tile 区域 ($2000-$23BF)
     for (let i = 0; i < 960; i++) {
       this.renderer.writeVram(0x2000 + i, 0x00);
     }
 
-    // 写入标题文字tile (示例: "CAPTAIN TSUBASA")
-    // 实际ROM数据需要从Bank 7读取
+    // 测试: 在屏幕上绘制已知的 tile 编号，用于验证 CHR 渲染
+    // tile 0 = 通常是空格/空白
+    // tile 1-15 = 可能包含标题用字体
+    // 从 chr_bank_00.png 的底部区域 (tile 128+) 绘制看看有什么
+    for (let row = 0; row < 30; row++) {
+      for (let col = 0; col < 32; col++) {
+        const tileIdx = (row * 32 + col) % 256;
+        this.renderer.writeVram(0x2000 + row * 32 + col, tileIdx);
+      }
+    }
+
+    // 设置属性表: 全部使用调色板0 (默认)
+    for (let i = 0; i < 64; i++) {
+      this.renderer.writeVram(0x23C0 + i, 0x00);
+    }
+
     // TODO: 从ROM数据加载实际标题屏幕数据
   }
 

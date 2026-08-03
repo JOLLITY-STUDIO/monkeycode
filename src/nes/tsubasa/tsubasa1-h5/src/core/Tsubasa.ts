@@ -1,13 +1,16 @@
 /**
  * 主游戏类 - 外部唯一接口
- * 即插即用: new Tsubasa(ctx).start()
  *
- * 负责:
- *   1. 创建和连接所有子系统
- *   2. 提供简化的外部接口
- *   3. 管理游戏生命周期
+ * 即插即用:
+ *   // Web
+ *   new Tsubasa(platform, ctx).start()
+ *
+ *   // 微信小程序
+ *   new Tsubasa(mpPlatform, canvasCtx).start()
+ *
+ * 外部只负责提供 Canvas 上下文和操作输入，
+ * 无需了解游戏内核逻辑。
  */
-
 import { GameLoop } from './GameLoop';
 import { DataCache } from '../cache/DataCache';
 import { OamCache } from '../cache/OamCache';
@@ -24,22 +27,17 @@ import {
   State03_TeamSelect,
   State04_MatchMain,
   State05_MatchEvent,
-} from '../engine/states';
+} from '../engine/states/index';
 import { Button, GameInput } from './types';
+import type { IPlatform, ICanvasContext } from '../platform/IPlatform';
 
-/** 游戏配置选项 */
 export interface TsubasaOptions {
-  /** 精灵表基础路径 */
   spriteBasePath?: string;
-  /** 缩放倍数 (默认2x) */
   scale?: number;
-  /** 自动加载精灵表 (默认true) */
   autoLoadSprites?: boolean;
-  /** 调试模式 */
   debug?: boolean;
 }
 
-/** 游戏状态 (对外) */
 export type TsubasaState = 'loading' | 'ready' | 'running' | 'paused' | 'stopped';
 
 export class Tsubasa {
@@ -57,10 +55,10 @@ export class Tsubasa {
   // 状态
   private state: TsubasaState = 'stopped';
   private options: TsubasaOptions;
-  private ctx: CanvasRenderingContext2D;
+  private platform: IPlatform;
 
-  constructor(ctx: CanvasRenderingContext2D, options: TsubasaOptions = {}) {
-    this.ctx = ctx;
+  constructor(platform: IPlatform, ctx: ICanvasContext, options: TsubasaOptions = {}) {
+    this.platform = platform;
     this.options = {
       spriteBasePath: '/sprites/',
       scale: 2,
@@ -69,43 +67,27 @@ export class Tsubasa {
       ...options,
     };
 
-    this.initialize();
+    this.initialize(ctx);
   }
 
-  /** 初始化所有子系统 */
-  private initialize(): void {
+  private initialize(ctx: ICanvasContext): void {
     this.state = 'loading';
 
-    // 1. 数据缓存中心
     this.dataCache = new DataCache();
-
-    // 2. OAM 缓存
     this.oamCache = new OamCache();
-
-    // 3. PPU 队列
     this.ppuQueue = new PpuQueue();
-
-    // 4. Bank 管理器
     this.bankManager = new BankManager();
-
-    // 5. 输入管理器
     this.inputManager = new InputManager();
 
-    // 6. 渲染器
-    this.renderer = new Renderer(this.ctx);
+    // 渲染器：传入平台适配器 + canvas 上下文
+    this.renderer = new Renderer(this.platform, ctx);
     this.renderer.setBankManager(this.bankManager);
 
-    // 7. 状态机
     this.stateMachine = new StateMachine(
-      this.dataCache,
-      this.inputManager,
-      this.renderer,
-      this.oamCache,
-      this.bankManager,
-      this.ppuQueue,
+      this.dataCache, this.inputManager, this.renderer,
+      this.oamCache, this.bankManager, this.ppuQueue,
     );
 
-    // 注册所有状态
     this.stateMachine.registerStates([
       new State00_InitTitle(this.stateMachine),
       new State01_TitleLoop(this.stateMachine),
@@ -115,121 +97,93 @@ export class Tsubasa {
       new State05_MatchEvent(this.stateMachine),
     ]);
 
-    // 8. NMI 处理器
     this.nmiHandler = new NmiHandler(
-      this.dataCache,
-      this.oamCache,
-      this.ppuQueue,
-      this.bankManager,
-      this.inputManager,
-      this.renderer,
-      this.stateMachine,
+      this.dataCache, this.oamCache, this.ppuQueue,
+      this.bankManager, this.inputManager,
+      this.renderer, this.stateMachine,
     );
 
-    // 9. 游戏循环
-    this.gameLoop = new GameLoop(this.nmiHandler, this.renderer);
+    // 游戏循环：传入平台适配器
+    this.gameLoop = new GameLoop(this.platform, this.nmiHandler, this.renderer);
 
     if (this.options.debug) {
-      console.log('[Tsubasa] All subsystems initialized');
+      console.log('[Tsubasa] All subsystems initialized (platform: ' + this.platform.name + ')');
     }
 
     this.state = 'ready';
   }
 
-  /**
-   * 启动游戏
-   * 异步加载精灵表后进入标题画面
-   */
   async start(): Promise<void> {
     if (this.state === 'running') return;
 
-    // 加载精灵表
     if (this.options.autoLoadSprites) {
       try {
         await this.renderer.loadAllChrBanks(this.options.spriteBasePath);
-        if (this.options.debug) {
-          console.log('[Tsubasa] All CHR banks loaded');
-        }
       } catch (err) {
-        console.warn('[Tsubasa] Failed to load CHR banks, using placeholder graphics:', err);
+        console.warn('[Tsubasa] Failed to load CHR banks:', err);
       }
     }
 
-    // 初始化 MMC1 (模拟 RESET 配置)
+    // 模拟 RESET 初始化流程
     this.bankManager.setInitialConfig();
 
-    // 进入初始状态
-    this.stateMachine.transitionTo(0);
+    // 对应 $80C9-$80CF: 初始化 PPU 控制寄存器镜像
+    this.dataCache.ppuCtrl = 0x10;  // $80C9: LDA #$10, STA $19
+    this.dataCache.ppuMask = 0x06;  // $80CD: LDA #$06, STA $18
+    this.dataCache.scrollX = 0;     // $80C3: STA $16
+    this.dataCache.scrollY = 0;     // $80C5: STA $17
+    this.dataCache.bankLock = 0;    // 初始不锁定
 
-    // 启动游戏循环
+    this.stateMachine.transitionTo(0);
     this.gameLoop.start();
     this.state = 'running';
 
     if (this.options.debug) {
-      console.log('[Tsubasa] Game started');
+      console.log('[Tsubasa] Game started, PPU: ctrl=$' +
+        this.dataCache.ppuCtrl.toString(16) +
+        ' mask=$' + this.dataCache.ppuMask.toString(16));
     }
   }
 
-  /** 暂停游戏 */
   pause(): void {
     if (this.state !== 'running') return;
     this.gameLoop.pause();
     this.state = 'paused';
   }
 
-  /** 恢复游戏 */
   resume(): void {
     if (this.state !== 'paused') return;
     this.gameLoop.resume();
     this.state = 'running';
   }
 
-  /** 停止游戏 */
   stop(): void {
     this.gameLoop.stop();
     this.state = 'stopped';
   }
 
-  /** 处理输入 (触摸屏/虚拟手柄) */
   handleInput(input: GameInput): void {
     if (this.state !== 'running') return;
     this.inputManager.setExternalButtons(input.pressed | input.held);
   }
 
-  /** 按下单个按键 */
   pressButton(button: Button): void {
     this.inputManager.pressButton(button);
   }
 
-  /** 释放单个按键 */
   releaseButton(button: Button): void {
     this.inputManager.releaseButton(button);
   }
 
-  /** 获取当前游戏状态 */
-  getState(): TsubasaState {
-    return this.state;
-  }
+  getState(): TsubasaState { return this.state; }
+  getFps(): number { return this.gameLoop.getFps(); }
+  getFrameCount(): number { return this.gameLoop.getFrameCount(); }
+  getCurrentGameState(): number { return this.stateMachine.getCurrentStateId(); }
 
-  /** 获取FPS */
-  getFps(): number {
-    return this.gameLoop.getFps();
-  }
-
-  /** 获取帧计数 */
-  getFrameCount(): number {
-    return this.gameLoop.getFrameCount();
-  }
-
-  /** 获取当前状态机状态ID */
-  getCurrentGameState(): number {
-    return this.stateMachine.getCurrentStateId();
-  }
-
-  /** 获取调试信息 */
   getDebugInfo(): Record<string, any> {
     return {
       state: this.state,
+      platform: this.platform.name,
       fps: this.gameLoop.getFps(),
       frame: this.gameLoop.getFrameCount(),
       gameState: this.stateMachine.getCurrentStateId(),
@@ -238,7 +192,6 @@ export class Tsubasa {
     };
   }
 
-  /** 销毁游戏实例 */
   destroy(): void {
     this.stop();
     this.dataCache.clear();
