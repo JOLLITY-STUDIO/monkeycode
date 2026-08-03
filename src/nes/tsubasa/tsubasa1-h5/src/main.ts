@@ -11,8 +11,9 @@ import { CpuMemory } from './memory/CpuMemory';
 import { PpuBus } from './ppu/PpuBus';
 import { InputManager } from './input/InputManager';
 import { NmiHandler } from './game/NmiHandler';
-import { GameLoop, StateHandler } from './game/GameLoop';
+import { GameLoop } from './game/GameLoop';
 import { GameState, GAME_STATE_NAMES } from './game/GameStateTable';
+import { ALL_STATE_HANDLERS } from './game/states/index';
 import { ZP, RAM, PPU_REG, MEMORY_MAP } from './rom/types';
 
 // ===== 全局实例 =====
@@ -59,10 +60,11 @@ async function init(): Promise<void> {
   nmi = new NmiHandler(mem, mmc1, ppuBus, input);
 
   // 7. 初始化游戏循环
-  gameLoop = new GameLoop(mem, nmi, ppuBus, input);
+  gameLoop = new GameLoop(mem, nmi, ppuBus, input, mmc1);
   gameLoop.setRenderCallback(render);
 
-  // 8. 注册游戏状态处理器 (后续逐步实现)
+  // 8. 注册所有游戏状态处理器
+  //    每个状态一个文件，各自包含 enter/update/exit 逻辑
   registerStateHandlers();
 
   // 9. 执行 RESET 初始化
@@ -84,19 +86,13 @@ function reset(): void {
   console.log('[Reset] Initializing system...');
 
   // --- 阶段1: MMC1 初始化 (Bank $07: $FFC0-$FFD7) ---
-  // SEI, CLD (H5 不需要)
-  // LDA #$10 → STA $2000: PPUCTRL = NMI off, Pattern Table 0
   mem.write(PPU_REG.PPUCTRL, 0x10);
 
-  // MMC1 复位: LDA #$80 → STA $8000
+  // MMC1 复位
   mmc1.write(0x8000, 0x80);
 
-  // MMC1 配置: LDA #$1A → 5次串行写入
-  // 0x1A = 0b00011010
-  //   bit1-0 = 10 = 水平镜像 (Mirroring=2? 实际 header 是 0=水平)
-  //   实际 0x1A → bit1-0=10, 但 game 用的是水平镜像
-  //   更准确: 0x1E = 水平镜像 + 16KB PRG + 4KB CHR
-  const mmc1Config = 0x1E;  // 水平镜像, 16KB PRG, 4KB CHR
+  // MMC1 配置: 水平镜像, 16KB PRG, 4KB CHR
+  const mmc1Config = 0x1E;
   for (let i = 0; i < 5; i++) {
     mmc1.write(0x8000, mmc1Config >> i);
   }
@@ -109,38 +105,34 @@ function reset(): void {
   });
 
   // --- 阶段2: 系统初始化 (Bank $00: $809B-$80DD) ---
-  // $809B: SEI, CLD
-  // $809D: 等待 VBlank (两次 $2002 轮询)
-  // 在 H5 中，我们直接设置 VBlank 标志
-  mem.ppuStatus = 0x80; // 模拟 VBlank
+  mem.ppuStatus = 0x80;
 
-  // $80A7: LDX #$FF, TXS → 初始化堆栈指针
-  // (H5 中不需要)
-
-  // $80AA: LDA #$06 → STA $2001 (PPUMASK)
   mem.write(PPU_REG.PPUMASK, 0x06);
   mem.data[ZP.PPU_MASK_CACHE] = 0x06;
 
-  // $80AF-$80C1: 清零 $0000-$07FF
+  // 清零 $0000-$07FF
   mem.clearRange(0x0000, 0x0800);
 
-  // $80C3-$80CF: 初始化关键变量
+  // 初始化关键变量
   mem.data[ZP.SCROLL_X] = 0;
   mem.data[ZP.SCROLL_Y] = 0;
-  mem.data[ZP.PPU_CTRL_CACHE] = 0x10;  // NMI off initially
+  mem.data[ZP.PPU_CTRL_CACHE] = 0x10;
   mem.data[ZP.PPU_MASK_CACHE] = 0x06;
 
-  // $80D1: JSR $82CC → 初始化 PPU 写入缓冲区指针
+  // 初始化 PPU 写入缓冲区指针
   initPpuBuffer();
 
-  // $80D4: JSR $8371 → 初始化 OAM
+  // 初始化 OAM
   initOam();
 
-  // $80D7: JSR $838F → 清除 Name Table 和 Attribute Table
+  // 清除 Name Table
   clearNameTables();
 
-  // $80DA: JSR $82F5 → 启用 NMI
-  mem.data[ZP.PPU_CTRL_CACHE] |= 0x80; // 设置 $19 bit7
+  // 启用 NMI
+  mem.data[ZP.PPU_CTRL_CACHE] |= 0x80;
+
+  // 设置初始游戏状态
+  mem.gameState = GameState.INIT_TITLE;
 
   console.log('[Reset] System initialized.');
   console.log('[Reset] Memory state:', {
@@ -149,12 +141,12 @@ function reset(): void {
     ppuCtrlCache: mem.ppuCtrlCache,
     ppuMaskCache: mem.ppuMaskCache,
     frameCounter: mem.frameCounter,
+    gameState: mem.gameState,
   });
 }
 
 /** 初始化 PPU 写入缓冲区指针 ($82CC) */
 function initPpuBuffer(): void {
-  // 设置 PPU 写入队列指针 (通常指向 $0306)
   mem.data[ZP.PPU_PTR_LO] = 0x06;
   mem.data[ZP.PPU_PTR_HI] = 0x03;
   mem.data[RAM.PPU_QUEUE_LEN] = 0;
@@ -162,7 +154,6 @@ function initPpuBuffer(): void {
 
 /** 初始化 OAM ($8371) */
 function initOam(): void {
-  // 将所有精灵 Y 坐标设为 $F0 (屏幕外)
   for (let i = 0; i < 256; i += 4) {
     mem.data[MEMORY_MAP.OAM_BUFFER_START + i] = 0xF0;
     mem.data[MEMORY_MAP.OAM_BUFFER_START + i + 1] = 0;
@@ -176,31 +167,25 @@ function clearNameTables(): void {
   ppuBus.clearAllNameTables();
 }
 
-/** 注册游戏状态处理器 */
+/**
+ * 注册所有游戏状态处理器
+ *
+ * 从 game/states/index.ts 的 ALL_STATE_HANDLERS 导入，
+ * 每个状态一个独立的类文件，包含 enter/update/exit 生命周期。
+ */
 function registerStateHandlers(): void {
-  // 注册所有 8 个状态的占位处理器
-  // 后续会逐步实现每个状态的具体逻辑
-  for (let s = 0; s <= 7; s++) {
-    const state = s as GameState;
-    gameLoop.registerStateHandler(state, (m) => {
-      // 临时: 占位处理器，输出状态名称
-      if (m.frameCounter % 60 === 0) {
-        console.log(
-          `[State ${state}] ${GAME_STATE_NAMES[state]} (frame: ${m.frameCounter})`
-        );
-      }
-    });
+  for (const handler of ALL_STATE_HANDLERS) {
+    gameLoop.registerStateHandler(handler);
   }
+  console.log(`[Init] 已注册 ${ALL_STATE_HANDLERS.length} 个状态处理器`);
 }
 
 /** 渲染帧 */
 function render(): void {
-  // 清屏
   ctx.fillStyle = '#000000';
   ctx.fillRect(0, 0, 256, 240);
 
   // TODO: 实际渲染 PPU 输出
-  // 目前先显示调试信息
   ctx.fillStyle = '#FFFFFF';
   ctx.font = '12px monospace';
   ctx.fillText(`Frame: ${mem.frameCounter}`, 8, 16);
