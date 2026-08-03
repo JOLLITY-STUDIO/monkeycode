@@ -1,0 +1,19 @@
+{
+  "name": "tsubasa1-h5",
+  "version": "0.1.0",
+  "description": "Captain Tsubasa (天使之翼) NES → H5 TypeScript 转写",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "convert:chr": "tsx tools/chr2png/convert.ts"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vite": "^5.2.0",
+    "tsx": "^4.7.0"
+  }
+}
