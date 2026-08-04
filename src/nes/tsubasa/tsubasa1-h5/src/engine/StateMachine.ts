@@ -52,6 +52,8 @@ const STATE_DISPATCH_MAP: Record<number, { bankId: number; subStateId: number }>
   3: { bankId: 1, subStateId: 6 },   // $16 → Bank 1, sub-state 6 (菜单循环/队员选择共用)
   4: { bankId: 4, subStateId: 0 },   // $40 → Bank 4, sub-state 0 (比赛主循环)
   5: { bankId: 4, subStateId: 1 },   // $41 → Bank 4, sub-state 1 (比赛事件)
+  6: { bankId: 4, subStateId: 2 },   // $42 → Bank 4, sub-state 2 (半场/终场过渡)
+  7: { bankId: 4, subStateId: 3 },   // $43 → Bank 4, sub-state 3 (比赛结果)
 };
 
 export class StateMachine {

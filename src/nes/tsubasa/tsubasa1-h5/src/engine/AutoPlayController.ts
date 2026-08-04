@@ -169,9 +169,11 @@ export class AutoPlayController {
       case 0: return this.decideState00();  // 标题初始化
       case 1: return this.decideState01();  // 标题循环
       case 2: return this.decideState02();  // 菜单选择
-      case 3: return this.decideState03();  // 队伍选择
+      case 3: return this.decideState03();  // 队员选择
       case 4: return this.decideState04();  // 比赛主循环
       case 5: return this.decideState05();  // 比赛事件
+      case 6: return this.decideState06();  // 半场/终场过渡
+      case 7: return this.decideState07();  // 比赛结果
       default: return this.emptyDecision();
     }
   }
@@ -276,6 +278,38 @@ export class AutoPlayController {
   // 等待事件处理完成 (进球动画/终场画面)，自动回到比赛
   private decideState05(): AutoDecision {
     return { pressed: 0, held: 0, desc: '事件处理中...' };
+  }
+
+  // ─── State 06: 半场/终场过渡 ───
+  // 等待过渡动画完成，自动流转
+  private decideState06(): AutoDecision {
+    const eventType = this.dataCache.get<string>('eventType') || '';
+    if (eventType === 'halftime') {
+      return { pressed: 0, held: 0, desc: '半场休息...' };
+    }
+    return { pressed: 0, held: 0, desc: '终场过渡...' };
+  }
+
+  // ─── State 07: 比赛结果 ───
+  // 显示结果后自动返回菜单
+  private decideState07(): AutoDecision {
+    // 等待约180帧后按 START 跳过结果画面
+    if (this.stateFrameCount > 180) {
+      const engine = this.dataCache.get('matchEngine') as MatchEngine | undefined;
+      if (engine) {
+        this.totalScore[0] += engine.score[0];
+        this.totalScore[1] += engine.score[1];
+        const result = engine.score[0] > engine.score[1] ? 'WIN' :
+                       engine.score[0] < engine.score[1] ? 'LOSE' : 'DRAW';
+        this.log(`[Auto] Match#${this.matchCount} RESULT: ${engine.score[0]}-${engine.score[1]} (${result}) | Total: ${this.totalScore[0]}-${this.totalScore[1]}`);
+
+        if (this.onMatchEnd) {
+          this.onMatchEnd(engine.score as [number, number], engine.matchTime);
+        }
+      }
+      return { pressed: Button.START, held: 0, desc: '按 START 返回菜单' };
+    }
+    return { pressed: 0, held: 0, desc: '显示结果...' };
   }
 
   // ─── 比赛自动AI ───

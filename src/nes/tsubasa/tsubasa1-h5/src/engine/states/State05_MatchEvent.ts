@@ -1,9 +1,10 @@
 /**
- * State 05: 比赛事件处理 (纯逻辑 — 只更新 EventModel)
+ * State 05: 比赛事件处理 (进球动画)
  *
- * 处理: 进球动画、半场/终场显示、结果画面。
+ * 处理进球后的短暂动画显示。
+ * halftime/fulltime 事件已移至 State 06 处理。
  *
- * v0.6.0: 已移除所有 renderer 直接调用，通过 GameModel 通信。
+ * v0.7.0: 简化 — 只处理 goal 事件，halftime/fulltime 委托 State 06
  */
 import { StateBase } from './StateBase';
 import type { MatchEngine } from '../MatchEngine';
@@ -15,7 +16,7 @@ export class State05_MatchEvent extends StateBase {
   private matchEngine: MatchEngine | null = null;
 
   onEnter(): void {
-    this.eventType = this.data.get<string>('eventType') || 'default';
+    this.eventType = this.data.get<string>('eventType') || 'goal';
     this.matchEngine = this.data.get('matchEngine') as MatchEngine || null;
 
     console.log(`[State 05] Event: ${this.eventType}`);
@@ -36,40 +37,12 @@ export class State05_MatchEvent extends StateBase {
   onUpdate(): void {
     this.model.advanceEvent();
 
-    switch (this.eventType) {
-      case 'goal':
-        this.processGoalEvent();
-        break;
-      case 'halftime':
-      case 'fulltime':
-        this.processResultEvent();
-        break;
-      default:
-        this.sm.transitionTo(4);
-        break;
-    }
-  }
-
-  private processGoalEvent(): void {
     // 进球动画持续 120 帧 (2秒) 后回到比赛
     if (this.model.event.step > 120) {
       this.data.set('eventType', '');
+      this.data.set('eventData', null);
       this.model.event.type = '';
       this.sm.transitionTo(4);
-    }
-  }
-
-  private processResultEvent(): void {
-    if (!this.matchEngine) {
-      this.sm.transitionTo(2);
-      return;
-    }
-
-    // 结果显示 300 帧 (5秒) 后回菜单
-    if (this.model.event.step > 300) {
-      this.data.set('eventType', '');
-      this.model.event.type = '';
-      this.sm.transitionTo(2);
     }
   }
 }

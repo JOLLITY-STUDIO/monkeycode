@@ -1,23 +1,14 @@
 /**
- * ChrData - CHR 图形数据中心
- * 
- * 从 MMC1 4KB 粒度的 32 个 sub-bank 文件聚合
- * 替换原来 base64 编码方案，改为直接引用 hex 数组
- * 
- * CHR_BANK_RAW: number[][] - 32个bank, 每个4096字节原始2BPP数据
- * CHR_BANK_SIZE: 4096 (每个bank字节数)
- * CHR_BANK_COUNT: 32
+ * ChrData - CHR 图形数据常量
+ *
+ * v1.1.0: CHR 二进制数据改为从平台加载（public/chr_data.bin），
+ * 不再在 TS 源码中嵌入所有 32 个 chr-bank 数组。
+ * 此文件仅保留常量定义，供需要时引用。
+ * 主要的常量现在由 TileStore 导出。
+ *
+ * 原 chr-bank 文件（src/data/chr/chr-bank-*.ts）保留作为数据参考，
+ * 但不再被运行时代码导入。
  */
-import {
-  CHR_BANK_00, CHR_BANK_01, CHR_BANK_02, CHR_BANK_03,
-  CHR_BANK_04, CHR_BANK_05, CHR_BANK_06, CHR_BANK_07,
-  CHR_BANK_08, CHR_BANK_09, CHR_BANK_10, CHR_BANK_11,
-  CHR_BANK_12, CHR_BANK_13, CHR_BANK_14, CHR_BANK_15,
-  CHR_BANK_16, CHR_BANK_17, CHR_BANK_18, CHR_BANK_19,
-  CHR_BANK_20, CHR_BANK_21, CHR_BANK_22, CHR_BANK_23,
-  CHR_BANK_24, CHR_BANK_25, CHR_BANK_26, CHR_BANK_27,
-  CHR_BANK_28, CHR_BANK_29, CHR_BANK_30, CHR_BANK_31,
-} from './chr/index';
 
 /** 每个 MMC1 CHR sub-bank 的字节数 (4KB) */
 export const CHR_BANK_SIZE = 0x1000; // 4096
@@ -25,14 +16,5 @@ export const CHR_BANK_SIZE = 0x1000; // 4096
 /** MMC1 CHR sub-bank 总数 */
 export const CHR_BANK_COUNT = 32;
 
-/** 原始 2BPP CHR 数据: bank索引 → 4096字节 number[] */
-export const CHR_BANK_RAW: number[][] = [
-  CHR_BANK_00, CHR_BANK_01, CHR_BANK_02, CHR_BANK_03,
-  CHR_BANK_04, CHR_BANK_05, CHR_BANK_06, CHR_BANK_07,
-  CHR_BANK_08, CHR_BANK_09, CHR_BANK_10, CHR_BANK_11,
-  CHR_BANK_12, CHR_BANK_13, CHR_BANK_14, CHR_BANK_15,
-  CHR_BANK_16, CHR_BANK_17, CHR_BANK_18, CHR_BANK_19,
-  CHR_BANK_20, CHR_BANK_21, CHR_BANK_22, CHR_BANK_23,
-  CHR_BANK_24, CHR_BANK_25, CHR_BANK_26, CHR_BANK_27,
-  CHR_BANK_28, CHR_BANK_29, CHR_BANK_30, CHR_BANK_31,
-];
+/** CHR ROM 二进制文件总大小 */
+export const CHR_ROM_SIZE = CHR_BANK_COUNT * CHR_BANK_SIZE; // 131072

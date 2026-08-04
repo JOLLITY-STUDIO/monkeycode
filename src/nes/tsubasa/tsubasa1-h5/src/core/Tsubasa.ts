@@ -32,6 +32,8 @@ import {
   State03_MemberSelect,
   State04_MatchMain,
   State05_MatchEvent,
+  State06_Halftime,
+  State07_MatchResult,
   StateTest,
 } from '../engine/states/index';
 import { Button, GameInput } from './types';
@@ -95,7 +97,7 @@ export class Tsubasa {
     this.bankManager = new BankManager();
     this.inputManager = new InputManager();
 
-    // TileStore: 直接从 ROM 2BPP 数据解码，无需 PNG 图片
+    // TileStore: 从 base64 嵌入字符串解码 CHR ROM → 2BPP 解码
     this.tileStore = new TileStore();
 
     // 渲染器：传入平台 + canvas + TileStore
@@ -119,6 +121,8 @@ export class Tsubasa {
       new State03_MemberSelect(this.stateMachine),
       new State04_MatchMain(this.stateMachine),
       new State05_MatchEvent(this.stateMachine),
+      new State06_Halftime(this.stateMachine),
+      new State07_MatchResult(this.stateMachine),
       new StateTest(this.stateMachine),
     ]);
 

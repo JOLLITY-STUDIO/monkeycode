@@ -358,19 +358,19 @@ failed = 0
 def assert_eq(actual, expected, msg: str):
     global passed, failed
     if actual == expected:
-        print(f"  ✅ {msg}: {actual}")
+        print(f"  [OK] {msg}: {actual}")
         passed += 1
     else:
-        print(f"  ❌ FAIL: {msg} (expected={expected}, actual={actual})")
+        print(f"  [FAIL] {msg} (expected={expected}, actual={actual})")
         failed += 1
 
 def assert_true(condition: bool, msg: str):
     global passed, failed
     if condition:
-        print(f"  ✅ {msg}")
+        print(f"  [OK] {msg}")
         passed += 1
     else:
-        print(f"  ❌ FAIL: {msg}")
+        print(f"  [FAIL] {msg}")
         failed += 1
 
 def section(title: str):
@@ -428,7 +428,7 @@ def test02_auto_transition_to_title_loop():
     sm.update()
     assert_eq(sm.current_state_id, 1, "帧6后 State 01 (TitleLoop)")
 
-    print("\n  📋 State 00→01 流转成功! 共需 ~6 帧")
+    print("\n  [OK] State 00->01 流转成功! 共需 ~6 帧")
 
 
 def test03_start_to_menu():
@@ -585,7 +585,7 @@ def test09_member_select_confirm_to_match():
     assert_eq(len(engine.team1Players), 11, "对手队 11 人")
     assert_eq(engine.phase, 0, "比赛阶段=KICKOFF(0)")
 
-    print("\n  📋 State 03→04 流转成功! 比赛引擎已初始化")
+    print("\n  [OK] State 03->04 流转成功! 比赛引擎已初始化")
 
 
 def test10_match_kickoff_to_playing():
@@ -617,7 +617,7 @@ def test10_match_kickoff_to_playing():
     assert_eq(engine.phase, 1, "仍应保持 PLAYING")
     assert_true(engine.matchTime > 0, "比赛时间已开始")
 
-    print("\n  📋 开球→进行中 正常!")
+    print("\n  [OK] 开球->进行中 正常!")
 
 
 def test11_member_select_b_back():
@@ -635,7 +635,7 @@ def test11_member_select_b_back():
     sm.update(input_pressed=Button.B)
     assert_eq(sm.current_state_id, 2, "按 B 后 → State 02 (MenuSelect)")
 
-    print("\n  📋 队员选择 B 键返回正常!")
+    print("\n  [OK] 队员选择 B 键返回正常!")
 
 
 # ============================================================
@@ -669,14 +669,14 @@ def main():
         try:
             fn()
         except Exception as e:
-            print(f"\n  💥 测试 '{name}' 异常: {e}")
+            print(f"\n  [ERROR] 测试 '{name}' 异常: {e}")
             import traceback
             traceback.print_exc()
             global failed
             failed += 1
 
     print(f"\n{'='*60}")
-    print(f"  测试完成: ✅ {passed} 通过, ❌ {failed} 失败")
+    print(f"  测试完成: {passed} 通过, {failed} 失败")
     print(f"{'='*60}\n")
 
     return 0 if failed == 0 else 1

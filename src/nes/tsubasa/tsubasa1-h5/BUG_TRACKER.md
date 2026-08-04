@@ -4,6 +4,50 @@
 
 ---
 
+## v1.2.0 修复 - JSON require 在小程序中不可用
+
+### BUG-016: require() 加载 JSON 在小程序中报错 [✅ 已修复 v1.2.0]
+- **状态**: ✅ 已修复 (v1.2.0)
+- **严重度**: 🔴 严重 (阻塞性)
+- **错误信息**: `Error: module 'src/data/chr-data.json.js' is not defined, require args is '../data/chr-data.json'`
+- **根因**: v1.1.0 使用 `require('../data/chr-data.json')` 加载 CHR 数据，但微信小程序不支持 `require()` 加载 JSON 文件。
+  小程序的模块系统只支持 `.js`/`.ts` 模块，JSON 文件不参与编译。
+- **修复方案**: 将 128KB CHR 二进制数据 base64 编码后嵌入 `.ts` 文件：
+  1. 新增脚本 `scripts/generate_chr_base64.cjs`：读取 `chr-data.json` → 打包为 128KB Buffer → base64 编码 (~171KB 字符串) → 写入 `src/data/chrBinary.ts`
+  2. `TileStore.init()` 改为 `import { CHR_BASE64 }` + `atob()` 解码 → `Uint8Array`
+  3. 生成的 `chrBinary.ts` 仅 184KB（vs 原 816KB chr-bank TS），可通过小程序编译
+- **修复文件**:
+  - `src/data/chrBinary.ts` (184KB, base64 嵌入字符串, 自动生成)
+  - `src/renderer/TileStore.ts` (改用 base64 解码)
+  - `src/core/Tsubasa.ts` (注释更新)
+  - `scripts/generate_chr_base64.cjs` (新增)
+  - `scripts/verify_base64.cjs` (新增验证脚本)
+- **验证**: `scripts/verify_base64.cjs` 确认全部 131,072 字节与原 JSON 数据一致 ✅
+
+---
+
+## v1.1.0 修复 - 模块加载失败
+
+### BUG-015: CHR 数据模块过大导致小程序编译加载失败 [✅ 已修复 v1.1.0]
+- **状态**: ✅ 已修复 (v1.1.0)
+- **严重度**: 🔴 严重 (阻塞性)
+- **错误信息**: `Error: module 'src/data/ChrData.js' is not defined`
+- **根因**: `ChrData.ts` 通过 `./chr/index` 导入 32 个 chr-bank TS 文件（每个 ~25KB，总计 ~816KB 源码）。
+  微信小程序的 TypeScript 编译器处理这种超大规模模块依赖链时编译失败，
+  导致运行时找不到编译后的 `ChrData.js`。
+- **修复方案**: 将 32 个 TS 文件合并为单个 JSON 文件，通过 `require()` 加载：
+  1. 使用已有脚本 `scripts/generate_chr_json.cjs` 生成 `src/data/chr-data.json` (394KB)
+  2. `TileStore.init()` 通过 `require('../data/chr-data.json')` 加载数据
+  3. `ChrData.ts` 简化为纯常量文件，`chr/index.ts` 清空所有 re-export
+- **修复文件**:
+  - `src/data/chr-data.json` (394KB, 从 chr-bank-*.ts 生成)
+  - `src/renderer/TileStore.ts` (重写为从 JSON require 加载)
+  - `src/data/ChrData.ts` (简化，移除 chr-bank 依赖)
+  - `src/data/chr/index.ts` (清空，移除所有 re-export)
+- **注意**: 此方案后续发现微信小程序不支持 JSON require，在 v1.2.0 中进一步修复 (BUG-016)。
+
+---
+
 ## v0.2.7 重构说明
 
 ### 架构决策: 数据提取原则
@@ -76,20 +120,22 @@
   - 消除每帧数十次 drawImage(8×8) 调用
   - 调色板变化零开销（自然在下次渲染使用新色）
 
-### BUG-001: 反汇编质量 - 数据误解释为代码
-- **状态**: 🔄 改善中 (CDL 已更新, v0.5.1)
-- **严重度**: 中
+### BUG-001: Bank 7 自定义脚本引擎字节码 — 非反汇编错误，需单独分析 [已澄清 v1.2.1]
+- **状态**: 🔄 M5 阶段任务 (非Bug，转为架构分析任务)
+- **严重度**: 低 (核心6502代码反汇编正确)
 - **来源**: `_tmp_disasm_out/banks/` ASM 文件
-- **描述**: 
-  使用 BZK 反汇编器 + CDL 文件标记 code/data。
-  CDL 更新后 Bank 4/5/6 缩小 5%，更多数据区域被正确标记。
-  但 Bank 7 的脚本引擎区域 ($C2C2/$C36C/$C383) 仍被标记为 data（字节码非 6502 指令）。
+- **澄清 (v1.2.1)**: 
+  - **核心6502代码（Bank 0 Reset/NMI/主循环/状态分发器/跳转表）反汇编完全正确**。CDL 标记 `C` 表示已被执行过的代码，与游戏实际行为一致。
+  - Bank 0 跳转表 ($8000-$809A) 中有少量未使用条目被 CDL 标记为 `D`（如 $800E/$805C/$806B/$8071），这是正常现象——死代码/未引用入口。
+  - Bank 7 ($C000-$FFFF) 大面积标记为 `D`（data），这**不是反汇编错误**。这些区域是游戏自制的**脚本引擎字节码和指针表**，不是 6502 指令，CDL 正确区分了它们。
+  - Bank 7 中少量 `C` 标记区域（如脚本解释器主循环 $C010+, RLE 解码器 $C2C2, 调色板处理器 $C36C 等）是真正的 6502 代码，反汇编也正确。
+  - CDL 更新后 Bank 4/5/6 缩小 5%，是因为更多数据区域被正确识别，改善了反汇编。
 - **影响**: 
-  需要在转写时区分真正的 6502 代码和脚本字节码。
+  无需"修复"反汇编。M5 阶段需要单独逆向 Bank 7 的自定义脚本字节码格式（非 6502 指令集）。
 - **计划**: 
   - ✅ CDL 已更新，反汇编已重新生成
-  - 手动标记 Bank 7 脚本引擎区域的字节码格式
-  - M5 阶段专门处理脚本引擎
+  - ✅ Bank 0 核心代码已验证正确
+  - 🔄 M5 阶段：逆向 Bank 7 脚本引擎字节码格式，实现 TypeScript 版解释器
 
 ### BUG-002: CHR 图形资源已提取，需验证
 - **状态**: 已修复 (v0.2.2)

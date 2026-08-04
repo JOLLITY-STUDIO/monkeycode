@@ -9,4 +9,6 @@ export { State02_MenuSelect } from './State02_MenuSelect';
 export { State03_MemberSelect } from './State03_MemberSelect';
 export { State04_MatchMain } from './State04_MatchMain';
 export { State05_MatchEvent } from './State05_MatchEvent';
+export { State06_Halftime } from './State06_Halftime';
+export { State07_MatchResult } from './State07_MatchResult';
 export { StateTest } from './StateTest';

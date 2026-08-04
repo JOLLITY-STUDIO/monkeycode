@@ -4,6 +4,125 @@
 
 ---
 
+## 2026-08-04: v0.7.0 - 🎯 M4 完成: 完整比赛流程 + Auto-Play 全自动测试
+
+### Bank 4/6 分析
+- 🔍 **Bank 4** (bank_04_code.asm, 839KB): 
+  - 882行代码, 41个函数(RTS), 108个JSR调用, 31个JMP
+  - 5个调度表 (JSR $8017 indirect dispatch)
+  - 核心RAM: $0600-$06FF 区域 (比赛状态变量)
+  - 跨Bank调用: Bank 0工具函数 ($8005, $8017, $8020, $8059等)
+- 🔍 **Bank 6** (bank_06_code.asm, 696KB):
+  - 2974行代码, 94个函数, 353个JSR调用
+  - 负责比赛事件动画和过场处理
+  - 密集的函数调用网络
+
+### 新增 State 06: 半场/终场过渡
+- `src/engine/states/State06_Halftime.ts` (~60行)
+- 半场: 显示3秒后自动回到下半场比赛
+- 终场: 显示2秒后进入结果画面 (State 07)
+
+### 新增 State 07: 比赛结果
+- `src/engine/states/State07_MatchResult.ts` (~70行)
+- 显示最终比分和胜负结果
+- 6秒后或按START返回菜单
+- 记录比赛结果日志: WIN/LOSE/DRAW + 累计比分
+
+### State 05 简化
+- 现在只处理 goal 事件 (halftime/fulltime 委托给 State 06)
+- 进球动画120帧后自动回到比赛
+
+### 状态流转修复
+- State 04: halftime→State 06, fulltime→State 06 (不再直接到State 05)
+- State 06→State 04 (半场) 或 State 06→State 07 (终场)
+- State 07→State 02 (回菜单)
+- StateMachine dispatch map 更新: 添加 states 6/7
+
+### Auto-Play 全自动测试
+- `scripts/auto_play_test.py` (~350行)
+  - 完整模拟: 标题→菜单→队员选择→比赛(含进球/半场/终场)→结果
+  - 支持多场比赛循环 (`--matches N`)
+  - Mock比赛引擎: 半场30秒加速, 自动模拟进球
+  - 日志输出: 每场比赛得分、输赢记录
+  - 验证结果: `[OK] 全部 N 场比赛完成!`
+- ✅ 3场比赛通过 (~7200帧/场, 总分63-3)
+- ✅ 状态流转: `0→1→2→3→4→5→...→6(halftime)→4→5→...→6(fulltime)→7→2`
+
+### 修复
+- 状态测试脚本编码修复 (emoji→ASCII)
+- Auto-Play 匹配引擎时间加速 (30秒半场)
+- 比赛引擎下半场上下文保持 (goal后保持half跟踪)
+
+### 文件变更
+| 文件 | 变更 |
+|------|------|
+| `src/engine/states/State06_Halftime.ts` | 🆕 新增 |
+| `src/engine/states/State07_MatchResult.ts` | 🆕 新增 |
+| `src/engine/states/index.ts` | 🔄 导出新状态 |
+| `src/engine/states/State05_MatchEvent.ts` | ♻️ 简化 (仅goal) |
+| `src/engine/states/State04_MatchMain.ts` | 🔄 路由halftime/fulltime→State 06 |
+| `src/engine/StateMachine.ts` | 🔄 添加states 6/7 dispatch映射 |
+| `src/engine/AutoPlayController.ts` | 🔄 处理states 6/7 |
+| `src/core/Tsubasa.ts` | 🔄 注册new states |
+| `scripts/auto_play_test.py` | 🆕 Auto-Play全自动测试 |
+| `scripts/state_test.py` | 🔧 编码修复 |
+| `WBS_TASKS.md` | 🔄 M4标记完成 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+### 里程碑
+- 🎯 **M4 阶段完成**: 完整比赛流程 (上下半场+进球+结果), Auto-Play测试通过
+
+---
+
+## 2026-08-04: v1.2.0 - 🔧 修复 JSON require 在小程序中不可用 (BUG-016)
+
+### 问题
+微信小程序运行时错误：`Error: module 'src/data/chr-data.json.js' is not defined, require args is '../data/chr-data.json'`
+
+### 根因
+v1.1.0 使用 `require('../data/chr-data.json')` 加载 CHR 数据，但微信小程序不支持 JSON 模块导入。
+小程序只编译 `.ts`/`.js` 文件，`require()` 无法定位 `.json` 文件。
+
+### 修复
+1. 新增脚本 `scripts/generate_chr_base64.cjs`：将 chr-data.json → 128KB Buffer → base64 字符串 → `src/data/chrBinary.ts`
+2. `TileStore` 改为 `import { CHR_BASE64 }` + `atob()` 运行时解码
+3. 生成文件仅 184KB TS 源码（vs 原 816KB），可通过小程序编译器
+
+### 验证
+`scripts/verify_base64.cjs` 逐字节对比，全部 131,072 字节一致 ✅
+
+### 影响文件
+- `src/data/chrBinary.ts` (184KB base64, 新增)
+- `src/renderer/TileStore.ts` (改用 base64 解码)
+- `src/core/Tsubasa.ts` (注释更新)
+- `scripts/generate_chr_base64.cjs` (新增)
+- `scripts/verify_base64.cjs` (新增验证)
+- `BUG_TRACKER.md` (BUG-016 记录)
+
+---
+
+## 2026-08-04: v1.1.0 - 🔧 修复 CHR 模块加载失败 (BUG-015)
+
+### 问题
+微信小程序运行时错误：`Error: module 'src/data/ChrData.js' is not defined`
+
+### 根因
+`ChrData.ts` 导入 32 个 chr-bank TS 文件 (每个 ~25KB, 总计 ~816KB 源码)。
+小程序 TypeScript 编译器无法处理如此大的模块依赖链，编译失败导致运行时找不到 JS 文件。
+
+### 修复
+1. 使用已有脚本 `scripts/generate_chr_json.cjs` 将 32 个 chr-bank 合并为 `src/data/chr-data.json` (394KB)
+2. `TileStore` 通过 `require('../data/chr-data.json')` 加载单一 JSON 文件
+3. `ChrData.ts` 简化为纯常量，`chr/index.ts` 清空
+
+### 影响文件
+- `src/data/chr-data.json` (394KB JSON)
+- `src/renderer/TileStore.ts` (重写)
+- `src/data/ChrData.ts` (简化)
+- `src/data/chr/index.ts` (清空)
+
+---
+
 ## 2026-08-04: v1.0.0 - ♻️ CHR 渲染管线彻底重构
 
 ### 问题

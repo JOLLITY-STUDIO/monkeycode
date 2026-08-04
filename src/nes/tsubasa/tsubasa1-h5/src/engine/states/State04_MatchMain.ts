@@ -116,12 +116,14 @@ export class State04_MatchMain extends StateBase {
       case 'halftime':
         this.matchEngine.phase = MatchPhase.SECOND_HALF;
         this.matchEngine.matchTime = this.matchEngine.halfLength;
+        this.data.set('eventType', 'halftime');
+        this.sm.transitionTo(6); // ← State 06: 半场过渡
         break;
       case 'fulltime':
         this.model.setEvent('fulltime', 0, 0, this.matchEngine.score as [number, number]);
         this.data.set('eventType', 'fulltime');
         this.data.set('finalScore', this.matchEngine.score);
-        this.sm.transitionTo(5);
+        this.sm.transitionTo(6); // ← State 06: 终场过渡 → State 07
         break;
     }
   }
