@@ -19,12 +19,58 @@ const BTN_MAP: Record<string, Button> = {
   SELECT: Button.SELECT,
 };
 
+/** NES 画面宽高比 */
+const NES_RATIO = 256 / 240;  // ≈ 1.0667
+
+/** 计算 Canvas 的 CSS 显示尺寸 (保持 256:240 比例撑满可用空间) */
+function calcCanvasSize(): { width: number; height: number } {
+  const sysInfo = wx.getSystemInfoSync();
+  const screenW = sysInfo.windowWidth;
+  const screenH = sysInfo.windowHeight;
+
+  // 估算不可用的垂直空间:
+  //   - canvas border 8rpx + margin-top 12rpx ≈ 10px
+  //   - 底部控件固定定位约 170px (80rpx×2行 + 60rpx定位 + 30rpx padding)
+  //   - 预留内边距 16px
+  const reservedVert = 10 + 170 + 16;  // ≈ 196px
+  const maxCanvasH = screenH - reservedVert;
+  const maxCanvasW = screenW - 16;  // 左右各 8px 边距
+
+  // 按 256:240 比例计算
+  let w: number, h: number;
+  const ratioH = maxCanvasW / NES_RATIO;  // 以宽度为限制时的高度
+  if (ratioH <= maxCanvasH) {
+    // 宽度受限
+    w = maxCanvasW;
+    h = ratioH;
+  } else {
+    // 高度受限
+    h = maxCanvasH;
+    w = maxCanvasH * NES_RATIO;
+  }
+
+  // 取整数
+  w = Math.floor(w);
+  h = Math.floor(h);
+
+  console.log(`[MiniProgram] Canvas CSS: ${w}×${h} (screen ${screenW}×${screenH}, max ${maxCanvasW}×${maxCanvasH})`);
+  return { width: w, height: h };
+}
+
 Page({
   data: {
     /** FPS 显示文本 */
     fpsText: '',
     /** 调试信息 */
     debugText: '',
+    /** 自动播放状态 */
+    autoPlay: false,
+    /** 自动播放日志 (最新一条) */
+    autoPlayLog: '',
+    /** Canvas CSS 显示宽度 (px) — 动态计算保持 256:240 比例 */
+    canvasWidth: 512,
+    /** Canvas CSS 显示高度 (px) */
+    canvasHeight: 480,
   },
 
   /** 游戏实例 */
@@ -36,11 +82,19 @@ Page({
   /** 是否为测试模式 (默认关闭，正常游戏模式；?test=1 切换到测试模式) */
   _testMode: false,
 
+  /** 日志消失定时器 */
+  _logTimer: 0,
+
   onLoad(options: any) {
     console.log('[MiniProgram] Game page loaded');
     // 默认正常模式；通过页面参数 ?test=1 切换到测试模式
     if (options?.test === '1') {
       this._testMode = true;
+    }
+    // 支持 ?auto=1 启动即开启自动模式
+    if (options?.auto === '1') {
+      // 将在 initGame 中启用
+      this.data.autoPlay = true;
     }
     console.log('[MiniProgram] Test mode:', this._testMode);
   },
@@ -51,6 +105,7 @@ Page({
 
   onUnload() {
     if (this._fpsTimer) clearInterval(this._fpsTimer);
+    if (this._logTimer) clearTimeout(this._logTimer);
     if (this.game) {
       this.game.destroy();
       this.game = null;
@@ -60,6 +115,13 @@ Page({
   /** 初始化游戏 */
   async initGame() {
     try {
+      // 0. 计算 Canvas 响应式尺寸 (必须在 binding data 之前)
+      const cssSize = calcCanvasSize();
+      this.setData({
+        canvasWidth: cssSize.width,
+        canvasHeight: cssSize.height,
+      });
+
       // 1. 获取 Canvas 节点 (必须在 onReady 中)
       const query = wx.createSelectorQuery();
       const canvasNode: any = await new Promise((resolve, reject) => {
@@ -74,10 +136,13 @@ Page({
           });
       });
 
-      // 2. 设置 Canvas 尺寸 (NES: 256×240, 2x 缩放 = 512×480)
-      const dpr = wx.getSystemInfoSync().pixelRatio;
-      canvasNode.width = 256 * 2;
-      canvasNode.height = 240 * 2;
+      // 2. 设置 Canvas 缓冲区 (内部渲染分辨率, 2x = 512×480 保证像素清晰)
+      //    CSS 显示尺寸由 data canvasWidth/canvasHeight 控制，独立于缓冲区
+      const scale = 2;
+      canvasNode.width = 256 * scale;
+      canvasNode.height = 240 * scale;
+
+      console.log(`[MiniProgram] Canvas buffer: ${canvasNode.width}×${canvasNode.height}, CSS display: ${cssSize.width}×${cssSize.height}`);
 
       // 3. 获取 2D 上下文
       const ctx = canvasNode.getContext('2d');
@@ -118,6 +183,25 @@ Page({
         debug: true,
       });
 
+      // 设置自动播放日志回调
+      this.game.setAutoPlayLogCallback((msg: string) => {
+        this.setData({ autoPlayLog: msg });
+        if (this._logTimer) clearTimeout(this._logTimer);
+        this._logTimer = setTimeout(() => {
+          this.setData({ autoPlayLog: '' });
+        }, 3000) as any;
+      });
+
+      // 设置比赛结束回调
+      this.game.setAutoPlayMatchEndCallback((score: [number, number], _time: number) => {
+        console.log(`[MiniProgram] ⚽ 比赛结束! ${score[0]} - ${score[1]}`);
+        wx.showToast({
+          title: `比赛结束 ${score[0]}-${score[1]}`,
+          icon: 'none',
+          duration: 2000,
+        });
+      });
+
       // 6. 启动
       if (this._testMode) {
         await this.game.startTestMode();
@@ -125,6 +209,11 @@ Page({
       } else {
         await this.game.start();
         console.log('[MiniProgram] Game started');
+
+        // 如果 URL 参数指定 auto=1，自动开启
+        if (this.data.autoPlay) {
+          this.game.enableAutoPlay();
+        }
       }
 
       // 7. FPS 监控
@@ -159,6 +248,18 @@ Page({
     const btn = e.currentTarget?.dataset?.btn;
     if (!btn || !this.game) return;
     this.game.releaseButton(BTN_MAP[btn]);
+  },
+
+  /** 切换自动播放 */
+  onAutoToggle() {
+    if (!this.game || this.game.getState() !== 'running') return;
+    const isNowAuto = this.game.toggleAutoPlay();
+    this.setData({ autoPlay: isNowAuto });
+    wx.showToast({
+      title: isNowAuto ? '🤖 自动模式开启' : '👤 手动模式',
+      icon: 'none',
+      duration: 1500,
+    });
   },
 
   /** Canvas 触摸开始 - 可用于直接触摸屏操作（预留） */

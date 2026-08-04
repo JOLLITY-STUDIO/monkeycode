@@ -12,15 +12,71 @@
 }
 
 .game-canvas {
-  /* 使用固定像素宽度确保 canvas 缓冲区不被 CSS 二次缩放
-   * NES 256×240 × 2倍缩放 = 512×480
-   * 在小屏幕设备上会被截断但不会变糊 */
-  width: 512px;
-  height: 480px;
-  margin-top: 20rpx;
+  /* 宽度由 JS 动态计算 (data: canvasWidth/Height)
+   * NES 256×240 → 缓冲区 512×480 → CSS 按屏幕等比缩放
+   * canvas 元素不设置 CSS 固定宽高，由 data 绑定驱动 */
+  margin-top: 12rpx;
   border: 4rpx solid #555;
-  /* 关键: 在小屏幕上允许 canvas 溢出而非缩小 */
   flex-shrink: 0;
+}
+
+/* ── 状态信息栏 ── */
+.info-bar {
+  position: fixed;
+  top: 20rpx;
+  right: 20rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8rpx;
+  z-index: 100;
+}
+
+.fps-text {
+  color: #0f0;
+  font-size: 20rpx;
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.auto-btn {
+  width: 100rpx;
+  height: 50rpx;
+  border-radius: 25rpx;
+  background: rgba(100, 100, 100, 0.5);
+  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  color: #ccc;
+  font-size: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s;
+}
+
+.auto-btn.auto-active {
+  background: rgba(0, 200, 100, 0.6);
+  border-color: rgba(0, 255, 100, 0.7);
+  color: #fff;
+  font-weight: bold;
+}
+
+/* ── 自动播放日志 ── */
+.auto-log {
+  position: fixed;
+  bottom: 200rpx;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.75);
+  color: #0f0;
+  font-size: 22rpx;
+  font-family: monospace;
+  padding: 8rpx 24rpx;
+  border-radius: 16rpx;
+  z-index: 99;
+  max-width: 80vw;
+  text-align: center;
 }
 
 .controls {
