@@ -35,30 +35,6 @@ export enum PpuCtrlBits {
   NMI_ENABLE       = 0x80,  // NMI on VBlank
 }
 
-/** PPU 掩码寄存器 ($2001) 位定义 */
-export enum PpuMaskBits {
-  GRAYSCALE        = 0x01,
-  SHOW_BG_LEFT     = 0x02,
-  SHOW_SPR_LEFT    = 0x04,
-  SHOW_BG          = 0x08,
-  SHOW_SPR         = 0x10,
-  EMPHASIZE_RED    = 0x20,
-  EMPHASIZE_GREEN  = 0x40,
-  EMPHASIZE_BLUE   = 0x80,
-}
-
-/** 游戏状态枚举 */
-export enum GameState {
-  INIT_TITLE    = 0,
-  TITLE_LOOP    = 1,
-  MENU_SELECT   = 2,
-  TEAM_SELECT   = 3,
-  MATCH_MAIN    = 4,
-  MATCH_EVENT   = 5,
-  TRANSITION    = 6,
-  RESULT        = 7,
-}
-
 /** 精灵/精灵属性 */
 export interface SpriteEntry {
   y: number;        // Y坐标 + 1 (0 = hide)
@@ -107,20 +83,3 @@ export const NES_PALETTE: number[] = [
   0xFFFFFF, 0xAAE7FF, 0xC7D7FF, 0xD7CBFF, 0xFFC7FF, 0xFFC7DB, 0xFFBEB2, 0xFFDBAA,
   0xFFE7A2, 0xE3FFA2, 0xAAF3BE, 0xB2FFCF, 0x9EFFF3, 0xC7C7C7, 0x000000, 0x000000,
 ];
-
-/** CHR Bank 文件名映射 */
-export const CHR_BANK_FILES: Record<number, string> = {
-  0: 'chr_bank_00.png',
-  1: 'chr_bank_01.png',
-  2: 'chr_bank_02.png',
-  3: 'chr_bank_03.png',
-  4: 'chr_bank_04.png',
-  5: 'chr_bank_05.png',
-  6: 'chr_bank_06.png',
-  7: 'chr_bank_07.png',
-  8: 'chr_bank_08.png',
-  9: 'chr_bank_09.png',
-  10: 'chr_bank_0A.png',
-  11: 'chr_bank_0B.png',
-  12: 'chr_bank_0C.png',
-};

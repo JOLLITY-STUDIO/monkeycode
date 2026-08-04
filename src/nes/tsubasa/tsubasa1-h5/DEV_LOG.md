@@ -70,6 +70,12 @@ CHR ROM → base64嵌入代码(32banks×4KB)
 ### 待解决
 - 🔄 BUG-007: 标题画面 tile 索引仍为占位值（需 ROM RLE 数据提取）
 
+### 方案确认
+- ✅ **CHR hex数组方案列入WBS计划**: 32个bank文件×267行, 总体积~128KB，完全可控。不再使用PNG中间格式。
+  - `src/data/chr/chr-bank-00.ts` ~ `chr-bank-31.ts` (32文件)
+  - `src/data/chr/index.ts` — 统一导出
+  - `src/data/ChrData.ts` — 聚合为 `CHR_BANK_RAW: number[][]`
+
 ### 文件变更
 | 文件 | 变更 |
 |------|------|

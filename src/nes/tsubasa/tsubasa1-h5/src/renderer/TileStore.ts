@@ -1,14 +1,15 @@
 /**
  * TileStore - CHR tile 数据存储与像素查询
  *
- * 不再使用 PNG 图片，直接从 ROM 2BPP 二进制数据解码。
+ * 直接从 hex 数组 (CHR_BANK_RAW) 解码 2BPP 数据，不再使用 base64。
+ * 每个 MMC1 sub-bank = 4KB (256 tiles × 16 bytes/tile)。
  * 每个 tile = 16 字节 (plane0 8字节 + plane1 8字节) → 8×8 像素，每个像素值 0/1/2/3。
  *
  * 预解码策略：初始化时将所有 tile 解码为扁平像素数组。
- * 每 bank 64KB (256 tiles × 64 bytes)，32 banks = 2MB。
- * 现代设备上完全可接受，且渲染时 O(1) 像素查询。
+ * 每 bank 16KB (256 tiles × 64 bytes)，32 banks = 512KB。
+ * 现代设备上完全可接受，渲染时 O(1) 像素查询。
  */
-import { CHR_BANK_BASE64, CHR_BANK_SIZE, CHR_BANK_COUNT } from '../data/ChrData';
+import { CHR_BANK_RAW, CHR_BANK_SIZE, CHR_BANK_COUNT } from '../data/ChrData';
 
 /** 每个 bank 的 tile 数 */
 const TILES_PER_BANK = 256;
@@ -38,7 +39,7 @@ export class TileStore {
   }
 
   /**
-   * 初始化：解码所有 CHR bank 的 base64 数据
+   * 初始化：解码所有 CHR bank 的 hex 数据
    * 同步操作，因为数据已内嵌在代码中
    */
   init(): void {
@@ -48,8 +49,8 @@ export class TileStore {
     let decoded = 0;
 
     for (let bi = 0; bi < CHR_BANK_COUNT; bi++) {
-      // base64 解码 → Uint8Array
-      const raw = this.decodeBase64(CHR_BANK_BASE64[bi]);
+      // 直接使用 hex 数组 → Uint8Array (4096 bytes)
+      const raw = new Uint8Array(CHR_BANK_RAW[bi]);
       // 2BPP 解码 → 扁平像素数组
       this.banks[bi] = this.decodeBank(raw);
       decoded++;
@@ -102,18 +103,6 @@ export class TileStore {
   // 私有方法
   // ============================================================
 
-  /** base64 → Uint8Array (4096 bytes) */
-  private decodeBase64(b64: string): Uint8Array {
-    // 使用平台兼容的方式解码 base64
-    // 微信小程序不支持 atob，这里使用纯 JS 实现
-    const binary = this.atobPolyfill(b64);
-    const bytes = new Uint8Array(binary.length);
-    for (let i = 0; i < binary.length; i++) {
-      bytes[i] = binary.charCodeAt(i);
-    }
-    return bytes;
-  }
-
   /**
    * 2BPP 解码：将 4096 字节原始数据 → 16384 字节扁平像素数组
    * 每个 tile 16 字节 (plane0 8字节 + plane1 8字节) → 64 像素
@@ -141,32 +130,5 @@ export class TileStore {
     }
 
     return decoded;
-  }
-
-  /**
-   * atob polyfill for environments without window.atob
-   * (微信小程序环境)
-   */
-  private atobPolyfill(b64: string): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=';
-    let str = '';
-    let i = 0;
-
-    while (i < b64.length) {
-      const enc1 = chars.indexOf(b64.charAt(i++));
-      const enc2 = chars.indexOf(b64.charAt(i++));
-      const enc3 = chars.indexOf(b64.charAt(i++));
-      const enc4 = chars.indexOf(b64.charAt(i++));
-
-      const chr1 = (enc1 << 2) | (enc2 >> 4);
-      const chr2 = ((enc2 & 15) << 4) | (enc3 >> 2);
-      const chr3 = ((enc3 & 3) << 6) | enc4;
-
-      str += String.fromCharCode(chr1);
-      if (enc3 !== 64) str += String.fromCharCode(chr2);
-      if (enc4 !== 64) str += String.fromCharCode(chr3);
-    }
-
-    return str;
   }
 }

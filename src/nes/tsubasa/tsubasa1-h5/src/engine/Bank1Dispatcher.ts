@@ -206,13 +206,13 @@ export class Bank1Dispatcher {
   }
 
   // ==========================================
-  // 子状态 0: 标题初始化 ($C05B)
+  // 子状态 0: 标题初始化 ($C05B)第一个精灵图在chrbank15
   // ==========================================
   private subState00_TitleInit1(): void {
     this.data.zpWrite(0x7A, 0);  // 重置页面索引
     this.titlePage = 0;
 
-    // CHR Bank: chrBank0=$1F (sprite), chrBank1=$1E (background)
+    // CHR Bank: chrBank0=$1F (sprite)就是第三十一个, chrBank1=$1E (background)
     this.banks.chrBank0 = 0x1F;
     this.banks.chrBank1 = 0x1E;
     this.data.mmcBankReg0 = 0x1F;
