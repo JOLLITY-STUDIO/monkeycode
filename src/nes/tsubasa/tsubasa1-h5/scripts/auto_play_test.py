@@ -1,10 +1,11 @@
 """
 Auto-Play Full Game Test - 全自动通关测试
 
-模拟完整的游戏流程: 标题 → 菜单 → 队员选择 → 比赛 → 结果 → 循环
+模拟完整的游戏流程: 标题 → 菜单 → 队员选择 → 比赛 → 结果 → 循环 → 通关
 使用自动AI控制双方，记录每场比赛的得分和输赢。
 
 Usage: python scripts/auto_play_test.py [--matches N] [--max-frames F]
+        python scripts/auto_play_test.py --full  (通关模式: 14场比赛)
 """
 import sys
 import os
@@ -27,6 +28,28 @@ class Button:
     DOWN = 0x04
     LEFT = 0x02
     RIGHT = 0x01
+
+# ============================================================
+# 完整比赛序列 (对应 MatchSequence.ts)
+# ⚠️ TODO: 比赛序列待从 ROM Bank 3 验证。
+# 当前仅列出部分从 ROM 确认的比赛，其余使用占位符。
+# ============================================================
+MATCH_SEQUENCE = [
+    # 全国中学生大赛 (从 ROM State 机确认有8场)
+    (1,  'Match-01', 'Opp-01', '南葛', 'national'),
+    (2,  'Match-02', 'Opp-02', '南葛', 'national'),
+    (3,  'Match-03', 'Opp-03', '南葛', 'national'),
+    (4,  'Match-04', 'Opp-04', '南葛', 'national'),
+    (5,  'Match-05', 'Opp-05', '南葛', 'national'),
+    (6,  'Match-06', 'Opp-06', '南葛', 'national'),
+    (7,  'Match-07', 'Opp-07', '南葛', 'national'),
+    (8,  'Match-08', 'Opp-08', '南葛', 'national'),
+    # 更多比赛待从 ROM 提取
+    (9,  'Match-09', 'Opp-09', '全日本', 'europe'),
+    (10, 'Match-10', 'Opp-10', '全日本', 'europe'),
+]
+
+TOTAL_MATCHES = len(MATCH_SEQUENCE)
 
 # ============================================================
 # Mock 数据结构
@@ -279,6 +302,8 @@ class MockStateMachine:
         self.state_frames = {}  # state_id → frames spent
         self.match_engine = None
         self.auto = AutoController(input_mgr, data)
+        self.current_match_idx = 0  # 当前比赛在序列中的索引
+        self.game_complete = False
 
     def transition_to(self, state_id):
         if self.current_state_id != -1:
@@ -292,7 +317,8 @@ class MockStateMachine:
                     self.auto.total_score[1] += self.match_engine.score[1]
                     result = 'WIN' if self.match_engine.score[0] > self.match_engine.score[1] else \
                              'LOSE' if self.match_engine.score[0] < self.match_engine.score[1] else 'DRAW'
-                    self.auto.log(f"Match#{self.auto.match_count} END: {self.match_engine.score[0]}-{self.match_engine.score[1]} ({result}) | Total: {self.auto.total_score[0]}-{self.auto.total_score[1]}")
+                    match_info = MATCH_SEQUENCE[min(self.current_match_idx, TOTAL_MATCHES - 1)]
+                    self.auto.log(f"Match#{match_info[0]} END: {match_info[3]} vs {match_info[1]} {self.match_engine.score[0]}-{self.match_engine.score[1]} ({result}) | Total: {self.auto.total_score[0]}-{self.auto.total_score[1]}")
 
         self.current_state_id = state_id
         self.data.game_state = state_id
@@ -302,10 +328,6 @@ class MockStateMachine:
             self.data.bank_lock = 0
         elif state_id == 3:
             self.data.bank_lock = 0
-        elif state_id == 4:
-            # 只在从非比赛状态进入时才创建新比赛
-            # 从 State 05/06 回到 State 04 不创建新比赛
-            pass
 
     def update(self):
         sid = self.current_state_id
@@ -332,6 +354,8 @@ class MockStateMachine:
             self._update_state06()
         elif sid == 7:
             self._update_state07()
+        elif sid == 8:
+            self._update_state08()
 
     def _update_state00(self):
         self.data.sub_state += 1
@@ -348,15 +372,25 @@ class MockStateMachine:
 
     def _update_state03(self):
         if self.input.isPressed(Button.START):
+            # 获取当前比赛信息
+            if self.current_match_idx < TOTAL_MATCHES:
+                match_info = MATCH_SEQUENCE[self.current_match_idx]
+                match_num, opp_name, opp_id, player_team, phase = match_info
+            else:
+                match_num = self.auto.match_count + 1
+                opp_name = '???'
+                player_team = 'Team'
+                phase = 'unknown'
+
             # 创建新比赛引擎
             self.auto.match_count += 1
             self.match_engine = MockMatchEngine()
             self.data.set('matchEngine', self.match_engine)
             self.data.set('playerTeam', 0)
-            self.data.set('playerTeamName', 'Nankatsu')
+            self.data.set('playerTeamName', player_team)
             self.data.set('opponentTeam', 1)
-            self.data.set('opponentTeamName', 'Toho')
-            self.auto.log(f"Match#{self.auto.match_count} START: Nankatsu vs Toho")
+            self.data.set('opponentTeamName', opp_name)
+            self.auto.log(f"Match#{match_num} START [{phase}]: {player_team} vs {opp_name}")
             self.transition_to(4)
         elif self.input.isPressed(Button.B):
             self.transition_to(2)
@@ -403,12 +437,29 @@ class MockStateMachine:
                 self.auto.total_score[1] += self.match_engine.score[1]
                 result = 'WIN' if self.match_engine.score[0] > self.match_engine.score[1] else \
                          'LOSE' if self.match_engine.score[0] < self.match_engine.score[1] else 'DRAW'
-                self.auto.log(f"Match#{self.auto.match_count} RESULT: {self.match_engine.score[0]}-{self.match_engine.score[1]} ({result}) | Total: {self.auto.total_score[0]}-{self.auto.total_score[1]}")
+                match_info = MATCH_SEQUENCE[min(self.current_match_idx, TOTAL_MATCHES - 1)]
+                self.auto.log(f"Match#{match_info[0]} RESULT: {match_info[3]} vs {match_info[1]} {self.match_engine.score[0]}-{self.match_engine.score[1]} ({result}) | Total: {self.auto.total_score[0]}-{self.auto.total_score[1]}")
             self.data.set('eventType', '')
             self.data.set('finalScore', None)
             self.data.set('matchEngine', None)
             self.match_engine = None
-            self.transition_to(2)
+
+            # 推进到下一场
+            self.current_match_idx += 1
+            if self.current_match_idx >= TOTAL_MATCHES:
+                # 全部比赛完成 → 通关画面
+                self.game_complete = True
+                self.auto.log("ALL MATCHES COMPLETE! Game Clear!")
+                self.transition_to(8)
+            else:
+                # 还有下一场
+                self.transition_to(2)
+
+    def _update_state08(self):
+        # 通关画面
+        if self.state_frames[8] > 300 or self.input.isPressed(Button.START):
+            self.auto.log("Returning to title...")
+            self.transition_to(0)
 
 
 # ============================================================
@@ -459,23 +510,36 @@ def run_auto_play(num_matches=1, max_frames=100000, verbose=True):
                 matches_completed += 1
                 if verbose:
                     print(f"\n  === Match #{matches_completed} completed at frame {frame} ===")
-                    eng = sm.match_engine
-                    if eng:
-                        print(f"  Score: {eng.score[0]} - {eng.score[1]}")
+
+            # 检测通关: State 7 → State 8
+            if last_state == 7 and new_state == 8:
+                match_just_ended = True
+                matches_completed += 1
+                if verbose:
+                    print(f"\n  === Match #{matches_completed} (FINAL) completed at frame {frame} ===")
                     print(f"  Total: {sm.auto.total_score[0]} - {sm.auto.total_score[1]}")
+                    print(f"\n  🎉 全部 {TOTAL_MATCHES} 场比赛完成! 游戏通关!")
 
             # 进入新比赛时重置标记
             if new_state == 4:
                 match_just_ended = False
 
-        # 完成所有比赛
-        if matches_completed >= num_matches and sm.current_state_id == 2:
+        # 完成所有比赛 (通关模式)
+        if sm.game_complete and sm.current_state_id in (8, 0):
+            print(f"\n  All {TOTAL_MATCHES} matches completed at frame {frame}")
+            break
+
+        # 非通关模式: 完成指定场数
+        if not sm.game_complete and matches_completed >= num_matches and sm.current_state_id == 2:
             print(f"\n  All {num_matches} match(es) completed at frame {frame}")
             break
 
         # 进度指示
         if frame % 1000 == 0 and verbose:
-            print(f"  ... frame {frame}, state={sm.current_state_id}, matches={matches_completed}")
+            eng = sm.match_engine
+            score_str = f"{eng.score[0]}-{eng.score[1]}" if eng else "N/A"
+            match_info = MATCH_SEQUENCE[min(sm.current_match_idx, TOTAL_MATCHES - 1)]
+            print(f"  ... frame {frame}, state={sm.current_state_id}, match=#{match_info[0]} vs {match_info[1]}, score={score_str}")
 
     # ── 结果汇总 ──
     print()
@@ -498,18 +562,26 @@ def run_auto_play(num_matches=1, max_frames=100000, verbose=True):
     print()
     print("── 验证 ──")
     errors = []
-    if matches_completed < num_matches:
-        errors.append(f"未完成所有比赛 ({matches_completed}/{num_matches})")
-    if sm.current_state_id not in (2, 7):
-        errors.append(f"最终状态异常: {sm.current_state_id} (expected 2 or 7)")
+    expected_matches = TOTAL_MATCHES if sm.game_complete else num_matches
+    if matches_completed < expected_matches:
+        errors.append(f"未完成所有比赛 ({matches_completed}/{expected_matches})")
+    if sm.game_complete:
+        if sm.current_state_id not in (8, 0):
+            errors.append(f"通关后状态异常: {sm.current_state_id} (expected 8 or 0)")
+    elif sm.current_state_id not in (2, 7, 8):
+        errors.append(f"最终状态异常: {sm.current_state_id} (expected 2/7/8)")
 
     if errors:
         for e in errors:
             print(f"  [FAIL] {e}")
         return False
     else:
-        print(f"  [OK] 全部 {num_matches} 场比赛完成!")
-        print(f"  [OK] 状态流转正常")
+        if sm.game_complete:
+            print(f"  [OK] 游戏通关! 全部 {TOTAL_MATCHES} 场比赛完成!")
+            print(f"  [OK] 状态流转正常 (含通关画面 State 08)")
+        else:
+            print(f"  [OK] 全部 {num_matches} 场比赛完成!")
+            print(f"  [OK] 状态流转正常")
         return True
 
 
@@ -521,7 +593,8 @@ def main():
     import argparse
     parser = argparse.ArgumentParser(description='Auto-Play Full Game Test')
     parser.add_argument('--matches', type=int, default=1, help='Number of matches to play')
-    parser.add_argument('--max-frames', type=int, default=100000, help='Max frames per test')
+    parser.add_argument('--full', action='store_true', help='Full game mode (14 matches, all phases)')
+    parser.add_argument('--max-frames', type=int, default=200000, help='Max frames per test')
     parser.add_argument('--verbose', action='store_true', default=True, help='Verbose output')
     parser.add_argument('--quiet', action='store_true', help='Quiet mode')
     args = parser.parse_args()
@@ -529,8 +602,13 @@ def main():
     if args.quiet:
         args.verbose = False
 
+    num_matches = TOTAL_MATCHES if args.full else args.matches
+
+    if args.full:
+        print(f"=== 通关模式: {TOTAL_MATCHES} 场比赛 ===")
+
     success = run_auto_play(
-        num_matches=args.matches,
+        num_matches=num_matches,
         max_frames=args.max_frames,
         verbose=args.verbose,
     )

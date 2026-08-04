@@ -4,6 +4,105 @@
 
 ---
 
+## 2026-08-05: v0.8.1 - 🧹 BUG-018 清理编造数据
+
+### 问题
+用户指出代码中存在大量编造内容:
+- PlayerData.ts 球员名字是编造的罗马音，球队分配错误
+- MatchSequence.ts 对手列表错误（"希臘""英格蘭""蘇聯"是2代的不是1代的）
+- StoryData.ts 全部对话文本是编造的
+- GAP_ANALYSIS.md 分析基于未验证的网络攻略
+
+### 清理
+- ✅ **PlayerData.ts**: 清空编造数据，保留类型接口，标记 TODO 从 ROM 提取
+- ✅ **MatchSequence.ts**: 清空编造对手列表，标记 TODO 从 ROM Bank 3 提取
+- ✅ **StoryData.ts**: 清空编造对话，标记 TODO 从 ROM Bank 7 提取
+- ✅ **GAP_ANALYSIS.md**: 基于 ROM 实际分析重写
+- ✅ **ProgressManager.ts**: 移除对 PHASE_NAMES 等编造常量的依赖
+- ✅ **WBS_TASKS.md**: M4A 阶段从"比赛核心系统补齐"改为"ROM数据提取与验证"
+- ✅ **BUG_TRACKER.md**: 新增 BUG-018 记录此问题
+
+### 教训
+> **禁止编造数据。所有数据必须从 ROM 中实际提取和验证。**
+> 网络攻略仅作参考，以 ROM 实际内容为准。
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `src/data/PlayerData.ts` | 🧹 清空编造数据 → 占位结构 |
+| `src/data/MatchSequence.ts` | 🧹 清空编造数据 → 占位结构 |
+| `src/data/StoryData.ts` | 🧹 清空编造数据 → 占位结构 |
+| `src/model/ProgressManager.ts` | 🔄 移除编造常量依赖 |
+| `GAP_ANALYSIS.md` | ♻️ 基于ROM重写 |
+| `WBS_TASKS.md` | 🔄 M4A 重新定义 |
+| `BUG_TRACKER.md` | 🆕 BUG-018 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+---
+
+## 2026-08-05: v0.8.0 - ⚽ M4.4 碰撞检测 + MatchEngine增强
+
+### MatchEngine v1.4.0 增强
+- ✅ **M4.4 碰撞检测**: 
+  - 球员-球碰撞: 自由球5帧后最近球员自动拾取 (BALL_PICKUP_DIST=12px)
+  - 传球接球: 传球到达目标附近自动接球 (BALL_CATCH_DIST=8px)
+  - 铲球范围: TACKLE_RANGE=16px
+- ✅ **AI系统增强**:
+  - 持球AI: 射门决策(距离+角度+概率)、传球决策(找前场队友)、盘带(向球门推进)
+  - 防守AI: 对方持球时最近球员自动铲球
+  - AI冷却: 防止连续决策
+  - 内置AI每15帧决策一次，AutoPlay只做补充防守压迫
+- ✅ **球物理改进**:
+  - 自由球减速系数 0.93 (更真实的摩擦)
+  - 球门区: 球飞出边界时检测进球
+  - 球门反弹: 球飞越球门线时检测进球事件
+- ✅ **比赛时间**: 半场默认45秒 (DEFAULT_HALF_SECONDS=45, 可调)
+- ✅ **State04**: 完整处理所有事件类型 (goal/shoot/pass/tackle/halftime/fulltime)
+
+### Bank 7 初步分析 (M5.1)
+- 🔍 指针表 $C000: 22个脚本入口
+- 🔍 角色头像表 $C02C: 33个CHR tile引用 ($41xx-$42xx)
+- 🔍 文本数据 $E306-$F968: 74段文本(自定义tile编码,非ASCII)
+- 🔍 脚本字节码: 高频操作码 $FF(终止符) $01 $08 $00 $02 $E0 $04
+- 📝 Bank 7使用自定义脚本语言,非6502指令,需要专门的字节码解释器
+- 📝 文本使用tile索引编码,解码需要CHR字体映射
+
+### 测试
+- ✅ 46/46 状态流转测试全部通过
+- ✅ Auto-Play 1场比赛正常
+- ✅ 零Lint错误
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `src/engine/MatchEngine.ts` | ♻️ v1.4.0重写: +碰撞检测 +AI增强 +球物理 |
+| `src/engine/AutoPlayController.ts` | ♻️ 简化AI: 只做防守压迫 |
+| `src/engine/states/State04_MatchMain.ts` | 🔄 处理全部事件类型 |
+| `scripts/m5_deep_analyze_bank7.py` | 🆕 Bank 7深度分析脚本 |
+| `WBS_TASKS.md` | 🔄 M4.4标记完成 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+---
+
+## 2026-08-04: v0.7.1 - 🐛 BUG-007修复: 标题画面集成真实ROM数据
+
+### 修复内容
+- ✅ **BUG-007 修复**: `Bank1Dispatcher.ts` 不再使用 `buildTitlePage()` 占位函数
+  - 改为直接使用 `TitleRleData.ts` 中的 `TITLE_PAGES[0..4]` 真实数据
+  - 5页名称表(960B×5) + 属性表(64B×5) 全部来自ROM Bank 1的RLE解码器 ($C2C2)
+  - 标题画面现在显示ROM原始布局: 标题大字、角色展示区、PRESS START、版权信息
+- ✅ **46/46 状态流转测试全部通过**
+- ✅ **Auto-Play测试正常**: 1场比赛完整流程通过
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `src/engine/Bank1Dispatcher.ts` | ♻️ 替换占位数据为TITLE_PAGES真实数据 |
+| `BUG_TRACKER.md` | 🔄 BUG-007标记已修复 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+---
+
 ## 2026-08-04: v0.7.0 - 🎯 M4 完成: 完整比赛流程 + Auto-Play 全自动测试
 
 ### Bank 4/6 分析
