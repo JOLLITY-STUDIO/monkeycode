@@ -19,44 +19,6 @@ const BTN_MAP: Record<string, Button> = {
   SELECT: Button.SELECT,
 };
 
-/** NES 画面宽高比 */
-const NES_RATIO = 256 / 240;  // ≈ 1.0667
-
-/** 计算 Canvas 的 CSS 显示尺寸 (保持 256:240 比例撑满可用空间) */
-function calcCanvasSize(): { width: number; height: number } {
-  const sysInfo = wx.getSystemInfoSync();
-  const screenW = sysInfo.windowWidth;
-  const screenH = sysInfo.windowHeight;
-
-  // 估算不可用的垂直空间:
-  //   - canvas border 8rpx + margin-top 12rpx ≈ 10px
-  //   - 底部控件固定定位约 170px (80rpx×2行 + 60rpx定位 + 30rpx padding)
-  //   - 预留内边距 16px
-  const reservedVert = 10 + 170 + 16;  // ≈ 196px
-  const maxCanvasH = screenH - reservedVert;
-  const maxCanvasW = screenW - 16;  // 左右各 8px 边距
-
-  // 按 256:240 比例计算
-  let w: number, h: number;
-  const ratioH = maxCanvasW / NES_RATIO;  // 以宽度为限制时的高度
-  if (ratioH <= maxCanvasH) {
-    // 宽度受限
-    w = maxCanvasW;
-    h = ratioH;
-  } else {
-    // 高度受限
-    h = maxCanvasH;
-    w = maxCanvasH * NES_RATIO;
-  }
-
-  // 取整数
-  w = Math.floor(w);
-  h = Math.floor(h);
-
-  console.log(`[MiniProgram] Canvas CSS: ${w}×${h} (screen ${screenW}×${screenH}, max ${maxCanvasW}×${maxCanvasH})`);
-  return { width: w, height: h };
-}
-
 Page({
   data: {
     /** FPS 显示文本 */
@@ -67,10 +29,6 @@ Page({
     autoPlay: false,
     /** 自动播放日志 (最新一条) */
     autoPlayLog: '',
-    /** Canvas CSS 显示宽度 (px) */
-    canvasWidth: 512,
-    /** Canvas CSS 显示高度 (px) */
-    canvasHeight: 480,
   },
 
   /** 游戏实例 */
@@ -115,13 +73,6 @@ Page({
   /** 初始化游戏 */
   async initGame() {
     try {
-      // 0. 计算 Canvas 响应式尺寸 (必须在获取 canvas 节点之前)
-      const cssSize = calcCanvasSize();
-      this.setData({
-        canvasWidth: cssSize.width,
-        canvasHeight: cssSize.height,
-      });
-
       // 1. 获取 Canvas 节点 (必须在 onReady 中)
       const query = wx.createSelectorQuery();
       const canvasNode: any = await new Promise((resolve, reject) => {
@@ -136,61 +87,16 @@ Page({
           });
       });
 
-      // 2. 设置 Canvas 缓冲区 (内部渲染分辨率, 2x = 512×480 保证像素清晰)
-      //    CSS 显示尺寸由 WXML style 绑定控制，独立于缓冲区
-      const scale = 2;
-      canvasNode.width = 256 * scale;
-      canvasNode.height = 240 * scale;
-
-      // 直接设置 canvas 节点的 style 作为 WXML 绑定的 fallback
-      if (canvasNode.style) {
-        canvasNode.style.width = cssSize.width + 'px';
-        canvasNode.style.height = cssSize.height + 'px';
-      }
-
-      console.log(`[MiniProgram] Canvas buffer: ${canvasNode.width}×${canvasNode.height}, CSS display: ${cssSize.width}×${cssSize.height}`);
-
-      // 验证实际渲染尺寸 (延迟一帧确保 setData 生效)
-      setTimeout(() => {
-        wx.createSelectorQuery()
-          .select('#game-canvas')
-          .boundingClientRect((rect: any) => {
-            if (rect) {
-              const actualRatio = (rect.width / rect.height).toFixed(3);
-              const expectedRatio = (256 / 240).toFixed(3);
-              console.log(`[MiniProgram] Canvas actual render: ${rect.width}×${rect.height} ratio=${actualRatio} (expected=${expectedRatio})`);
-              if (Math.abs(rect.width / rect.height - 256 / 240) > 0.05) {
-                console.warn('[MiniProgram] ⚠️ Canvas aspect ratio mismatch!');
-              }
-            }
-          })
-          .exec();
-      }, 100);
+      // 2. 设置 Canvas 缓冲区 NES 256×240
+      canvasNode.width = 256;
+      canvasNode.height = 240;
+      console.log(`[MiniProgram] Canvas buffer: 256×240`);
 
       // 3. 获取 2D 上下文
       const ctx = canvasNode.getContext('2d');
       if (!ctx) {
         throw new Error('Cannot get Canvas 2D context');
       }
-
-      // === 直接 Canvas 测试: 验证 canvas 上下文本身可用 ===
-      try {
-        console.log('[MiniProgram] Canvas direct test: filling RED rect...');
-        console.log('[MiniProgram] Canvas buffer size:', canvasNode.width, 'x', canvasNode.height);
-        console.log('[MiniProgram] ctx type:', typeof ctx, 'fillRect:', typeof ctx.fillRect);
-        ctx.fillStyle = '#ff0000';
-        ctx.fillRect(0, 0, canvasNode.width, canvasNode.height);
-        ctx.fillStyle = '#00ff00';
-        ctx.fillRect(50, 50, 100, 100);
-        ctx.fillStyle = '#ffffff';
-        ctx.font = '24px sans-serif';
-        ctx.fillText('DIRECT CANVAS TEST', 60, 120);
-        console.log('[MiniProgram] Canvas direct test DONE - should see RED bg + GREEN square + WHITE text');
-      } catch (e: any) {
-        console.error('[MiniProgram] Canvas direct test FAILED:', e.message, e.stack);
-      }
-
-      // ==================================================
 
       // 4. 创建平台适配器
       const platform = new MpPlatform();
@@ -201,7 +107,7 @@ Page({
       // 小程序中 public/sprites/ 在项目根目录下，路径为 /public/sprites/
       this.game = new Tsubasa(platform, ctx as any, {
         spriteBasePath: '/public/sprites/',
-        scale: 2,
+        scale: 1,
         autoLoadSprites: !this._testMode, // 测试模式不加载 CHR
         debug: true,
       });

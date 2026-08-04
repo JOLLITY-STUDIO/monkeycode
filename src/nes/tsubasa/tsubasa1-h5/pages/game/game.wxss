@@ -12,9 +12,9 @@
 }
 
 .game-canvas {
-  /* 宽度由 JS 动态计算 (data: canvasWidth/Height)
-   * NES 256×240 → 缓冲区 512×480 → CSS 按屏幕等比缩放
-   * canvas 元素不设置 CSS 固定宽高，由 data 绑定驱动 */
+  /* NES 原始分辨率 256×240 */
+  width: 256px;
+  height: 240px;
   margin-top: 12rpx;
   border: 4rpx solid #555;
   flex-shrink: 0;
