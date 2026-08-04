@@ -67,10 +67,8 @@ Page({
     autoPlay: false,
     /** 自动播放日志 (最新一条) */
     autoPlayLog: '',
-    /** Canvas CSS 显示宽度 (px) — 动态计算保持 256:240 比例 */
-    canvasWidth: 512,
-    /** Canvas CSS 显示高度 (px) */
-    canvasHeight: 480,
+    /** Canvas CSS style 字符串 (动态计算保持 256:240 比例) */
+    canvasStyle: 'width:512px;height:480px;',
   },
 
   /** 游戏实例 */
@@ -117,10 +115,8 @@ Page({
     try {
       // 0. 计算 Canvas 响应式尺寸 (必须在 binding data 之前)
       const cssSize = calcCanvasSize();
-      this.setData({
-        canvasWidth: cssSize.width,
-        canvasHeight: cssSize.height,
-      });
+      const canvasStyle = `width:${cssSize.width}px;height:${cssSize.height}px;`;
+      this.setData({ canvasStyle });
 
       // 1. 获取 Canvas 节点 (必须在 onReady 中)
       const query = wx.createSelectorQuery();
@@ -137,12 +133,35 @@ Page({
       });
 
       // 2. 设置 Canvas 缓冲区 (内部渲染分辨率, 2x = 512×480 保证像素清晰)
-      //    CSS 显示尺寸由 data canvasWidth/canvasHeight 控制，独立于缓冲区
+      //    CSS 显示尺寸由 WXML style 绑定控制，独立于缓冲区
       const scale = 2;
       canvasNode.width = 256 * scale;
       canvasNode.height = 240 * scale;
 
+      // 直接设置 canvas 节点的 style 作为 WXML 绑定的 fallback
+      if (canvasNode.style) {
+        canvasNode.style.width = cssSize.width + 'px';
+        canvasNode.style.height = cssSize.height + 'px';
+      }
+
       console.log(`[MiniProgram] Canvas buffer: ${canvasNode.width}×${canvasNode.height}, CSS display: ${cssSize.width}×${cssSize.height}`);
+
+      // 验证实际渲染尺寸 (延迟一帧确保 setData 生效)
+      setTimeout(() => {
+        wx.createSelectorQuery()
+          .select('#game-canvas')
+          .boundingClientRect((rect: any) => {
+            if (rect) {
+              const actualRatio = (rect.width / rect.height).toFixed(3);
+              const expectedRatio = (256 / 240).toFixed(3);
+              console.log(`[MiniProgram] Canvas actual render: ${rect.width}×${rect.height} ratio=${actualRatio} (expected=${expectedRatio})`);
+              if (Math.abs(rect.width / rect.height - 256 / 240) > 0.05) {
+                console.warn('[MiniProgram] ⚠️ Canvas aspect ratio mismatch!');
+              }
+            }
+          })
+          .exec();
+      }, 100);
 
       // 3. 获取 2D 上下文
       const ctx = canvasNode.getContext('2d');
