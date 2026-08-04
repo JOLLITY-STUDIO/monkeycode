@@ -1,9 +1,9 @@
-$0000: 352   $zero page <278>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <73>   
-$0001: 92   $zero page <92>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0002: 113   $zero page <103>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <10>   
-$0003: 58   $zero page <53>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <5>   
-$0004: 38   $zero page <36>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0005: 33   $zero page <29>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <1>   
+$0000: 364   $zero page <290>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <73>   
+$0001: 96   $zero page <96>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0002: 118   $zero page <108>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <10>   
+$0003: 61   $zero page <56>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <5>   
+$0004: 46   $zero page <42>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <2>   
+$0005: 34   $zero page <30>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <1>   
 $0006: 20   $zero page <20>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0007: 16   $zero page <16>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0008: 19   $zero page <18>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -24,9 +24,9 @@ $0016: 22   $zero page <21>   $zero page,X <1>   $zero page,Y <0>   $absolute <0
 $0017: 7   $zero page <7>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0018: 13   $zero page <13>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0019: 37   $zero page <37>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$001A: 15   $zero page <15>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$001B: 13   $zero page <13>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$001C: 5   $zero page <5>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$001A: 17   $zero page <17>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$001B: 14   $zero page <14>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$001C: 6   $zero page <6>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $001D: 5   $zero page <4>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $001E: 2   $zero page <2>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $001F: 8   $zero page <3>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <5>   
@@ -86,12 +86,12 @@ $0054: 14   $zero page <14>   $zero page,X <0>   $zero page,Y <0>   $absolute <0
 $0055: 11   $zero page <11>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0056: 4   $zero page <4>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0057: 18   $zero page <18>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0058: 13   $zero page <13>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0058: 14   $zero page <14>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0059: 9   $zero page <9>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $005A: 12   $zero page <12>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $005B: 5   $zero page <5>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $005C: 9   $zero page <9>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$005D: 160   $zero page <1>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <159>   
+$005D: 164   $zero page <1>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <163>   
 $005E: 1   $zero page <1>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $005F: 15   $zero page <15>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0060: 6   $zero page <6>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -108,8 +108,8 @@ $006A: 2   $zero page <2>   $zero page,X <0>   $zero page,Y <0>   $absolute <0> 
 $006B: 3   $zero page <3>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $006C: N/A
 $006D: N/A
-$006E: 44   $zero page <42>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <2>   
-$006F: 26   $zero page <26>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$006E: 48   $zero page <46>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <2>   
+$006F: 30   $zero page <30>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0070: 5   $zero page <4>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0071: 6   $zero page <6>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0072: 2   $zero page <2>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -137,8 +137,8 @@ $0087: 1   $zero page <1>   $zero page,X <0>   $zero page,Y <0>   $absolute <0> 
 $0088: 3   $zero page <1>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0089: 2   $zero page <2>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $008A: 3   $zero page <2>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$008B: 7   $zero page <7>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$008C: 6   $zero page <1>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <5>   
+$008B: 9   $zero page <9>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$008C: 7   $zero page <1>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <6>   
 $008D: 1   $zero page <1>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $008E: 6   $zero page <2>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <4>   
 $008F: 2   $zero page <2>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -162,7 +162,7 @@ $00A0: 12   $zero page <9>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>
 $00A1: 11   $zero page <11>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00A2: N/A
 $00A3: N/A
-$00A4: 21   $zero page <21>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$00A4: 22   $zero page <22>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00A5: 12   $zero page <12>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00A6: 16   $zero page <7>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <9>   
 $00A7: 5   $zero page <5>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -186,13 +186,13 @@ $00B8: 2   $zero page <2>   $zero page,X <0>   $zero page,Y <0>   $absolute <0> 
 $00B9: N/A
 $00BA: 3   $zero page <3>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00BB: 3   $zero page <3>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$00BC: 9   $zero page <8>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$00BC: 10   $zero page <9>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00BD: 8   $zero page <7>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$00BE: 7   $zero page <7>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$00BF: 9   $zero page <7>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$00C0: 9   $zero page <8>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$00BE: 8   $zero page <8>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$00BF: 11   $zero page <7>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$00C0: 10   $zero page <9>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00C1: 7   $zero page <5>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$00C2: 5   $zero page <5>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$00C2: 8   $zero page <8>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00C3: 5   $zero page <4>   $zero page,X <1>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00C4: 6   $zero page <6>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00C5: 1   $zero page <1>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -224,7 +224,7 @@ $00DE: 17   $zero page <17>   $zero page,X <0>   $zero page,Y <0>   $absolute <0
 $00DF: 15   $zero page <15>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00E0: 13   $zero page <13>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00E1: 33   $zero page <32>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$00E2: 16   $zero page <16>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$00E2: 17   $zero page <17>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00E3: 18   $zero page <18>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00E4: 8   $zero page <6>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $00E5: 5   $zero page <4>   $zero page,X <1>   $zero page,Y <0>   $absolute <0>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -510,11 +510,11 @@ $01FC: N/A
 $01FD: N/A
 $01FE: N/A
 $01FF: N/A
-$0200: 15   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <8>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0201: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <5>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0202: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <7>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0203: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <5>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0204: 10   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <4>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0200: 17   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <9>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0201: 10   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <6>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0202: 12   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <8>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0203: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <6>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0204: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <4>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0205: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <4>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0206: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <3>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0207: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <3>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -767,7 +767,7 @@ $02FD: N/A
 $02FE: N/A
 $02FF: N/A
 $0300: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <2>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0301: 27   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <24>   $absolute,X <3>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0301: 28   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <25>   $absolute,X <3>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0302: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0303: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <3>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0304: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -780,7 +780,7 @@ $030A: N/A
 $030B: N/A
 $030C: N/A
 $030D: N/A
-$030E: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$030E: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <9>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $030F: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <2>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0310: N/A
 $0311: N/A
@@ -790,7 +790,7 @@ $0314: N/A
 $0315: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0316: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0317: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0318: 14   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <7>   $absolute,Y <7>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0318: 18   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <8>   $absolute,Y <10>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0319: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $031A: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $031B: N/A
@@ -1437,7 +1437,7 @@ $059B: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4> 
 $059C: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $059D: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $059E: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$059F: 50   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <50>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$059F: 54   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <54>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $05A0: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $05A1: 10   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <10>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $05A2: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -1500,8 +1500,8 @@ $05DA: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2> 
 $05DB: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $05DC: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $05DD: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <8>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$05DE: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <8>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$05DF: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <11>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$05DE: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <11>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$05DF: 17   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <17>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $05E0: 10   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <3>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $05E1: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $05E2: 12   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <12>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -1534,37 +1534,37 @@ $05FC: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3> 
 $05FD: N/A
 $05FE: N/A
 $05FF: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0600: 52   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <41>   $absolute,X <8>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0601: 23   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <8>   $absolute,X <12>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0602: 13   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <3>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0603: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <2>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0604: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0605: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0600: 60   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <49>   $absolute,X <8>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0601: 26   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <11>   $absolute,X <12>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0602: 16   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <10>   $absolute,X <3>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0603: 10   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <2>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0604: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0605: 10   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <10>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0606: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0607: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0608: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <11>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0609: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$060A: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <2>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0609: 10   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <10>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$060A: 10   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <6>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $060B: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <9>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $060C: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <2>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $060D: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $060E: N/A
 $060F: 12   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <1>   $absolute,Y <5>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0610: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0611: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0612: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0611: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0612: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <8>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0613: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0614: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0615: 14   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <14>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0615: 15   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <15>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0616: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0617: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <2>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0618: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <1>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0617: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <3>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0618: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <2>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0619: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $061A: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $061B: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $061C: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$061D: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$061E: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$061D: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <11>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$061E: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <3>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $061F: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0620: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <4>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0621: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <3>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -1585,7 +1585,7 @@ $062F: 16   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <16
 $0630: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0631: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0632: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0633: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0633: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0634: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0635: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0636: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <9>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -1614,22 +1614,22 @@ $064C: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4> 
 $064D: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $064E: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $064F: 29   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <29>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0650: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <8>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0650: 12   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <12>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0651: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <1>   $absolute,Y <4>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0652: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0653: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0654: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0655: N/A
-$0656: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0656: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0657: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0658: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0659: 15   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <15>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$065A: 15   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <15>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$065B: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0659: 16   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <16>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$065A: 16   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <16>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$065B: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $065C: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$065D: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <9>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$065E: N/A
-$065F: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$065D: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <11>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$065E: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$065F: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <9>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0660: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <8>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0661: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0662: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -1715,7 +1715,7 @@ $06B1: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2> 
 $06B2: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06B3: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06B4: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$06B5: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$06B5: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06B6: 13   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <13>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06B7: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06B8: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <5>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -1754,9 +1754,9 @@ $06D8: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1> 
 $06D9: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06DA: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06DB: N/A
-$06DC: 13   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <13>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$06DC: 14   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <14>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06DD: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$06DE: 29   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <28>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$06DE: 31   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <30>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06DF: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <4>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06E0: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <2>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06E1: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -1784,18 +1784,18 @@ $06F6: N/A
 $06F7: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06F8: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06F9: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <5>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$06FA: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <8>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$06FA: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <8>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06FB: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <7>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06FC: 12   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <7>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06FD: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <5>   $absolute,Y <2>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $06FE: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <4>   $absolute,Y <1>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$06FF: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <5>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$06FF: 10   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <5>   $absolute,Y <3>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0700: N/A
 $0701: N/A
 $0702: N/A
 $0703: N/A
 $0704: N/A
-$0705: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <2>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0705: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <2>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0706: N/A
 $0707: N/A
 $0708: N/A
@@ -1813,8 +1813,8 @@ $0713: N/A
 $0714: N/A
 $0715: N/A
 $0716: N/A
-$0717: N/A
-$0718: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0717: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0718: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <8>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0719: N/A
 $071A: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $071B: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -1843,8 +1843,8 @@ $0731: N/A
 $0732: N/A
 $0733: N/A
 $0734: N/A
-$0735: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0736: N/A
+$0735: 10   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <10>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0736: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0737: N/A
 $0738: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0739: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <4>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -32771,10 +32771,10 @@ $8001: N/A
 $8002: N/A
 $8003: N/A
 $8004: N/A
-$8005: 19   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <19>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8005: 23   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <23>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8006: N/A
 $8007: N/A
-$8008: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8008: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8009: N/A
 $800A: N/A
 $800B: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -32783,25 +32783,25 @@ $800D: N/A
 $800E: N/A
 $800F: N/A
 $8010: N/A
-$8011: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <11>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8011: 12   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <12>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8012: N/A
 $8013: N/A
-$8014: 19   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <19>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8014: 21   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <21>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8015: N/A
 $8016: N/A
-$8017: 55   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <55>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8017: 56   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <56>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8018: N/A
 $8019: N/A
 $801A: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $801B: N/A
 $801C: N/A
-$801D: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <8>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$801D: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <9>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $801E: N/A
 $801F: N/A
-$8020: 10   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <10>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8020: 12   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <12>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8021: N/A
 $8022: N/A
-$8023: 16   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <16>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8023: 17   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <17>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8024: N/A
 $8025: N/A
 $8026: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -32816,10 +32816,10 @@ $802E: N/A
 $802F: 27   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <27>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8030: N/A
 $8031: N/A
-$8032: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <11>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8032: 13   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <13>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8033: N/A
 $8034: N/A
-$8035: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8035: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8036: N/A
 $8037: N/A
 $8038: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -32828,7 +32828,7 @@ $803A: N/A
 $803B: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $803C: N/A
 $803D: N/A
-$803E: 12   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <12>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$803E: 13   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <13>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $803F: N/A
 $8040: N/A
 $8041: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -32837,7 +32837,7 @@ $8043: N/A
 $8044: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8045: N/A
 $8046: N/A
-$8047: 13   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <13>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8047: 14   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <14>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8048: N/A
 $8049: N/A
 $804A: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -32855,10 +32855,10 @@ $8055: N/A
 $8056: 8   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <8>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8057: N/A
 $8058: N/A
-$8059: 18   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <18>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8059: 19   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <19>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $805A: N/A
 $805B: N/A
-$805C: N/A
+$805C: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $805D: N/A
 $805E: N/A
 $805F: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -32879,7 +32879,7 @@ $806D: N/A
 $806E: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $806F: N/A
 $8070: N/A
-$8071: N/A
+$8071: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8072: N/A
 $8073: N/A
 $8074: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
@@ -33417,7 +33417,7 @@ $8287: N/A
 $8288: N/A
 $8289: N/A
 $828A: N/A
-$828B: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$828B: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $828C: N/A
 $828D: N/A
 $828E: N/A
@@ -33731,7 +33731,7 @@ $83C1: N/A
 $83C2: N/A
 $83C3: N/A
 $83C4: N/A
-$83C5: 17   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <17>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$83C5: 19   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <19>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $83C6: N/A
 $83C7: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $83C8: N/A
@@ -36540,7 +36540,7 @@ $8EBA: N/A
 $8EBB: N/A
 $8EBC: N/A
 $8EBD: N/A
-$8EBE: N/A
+$8EBE: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8EBF: N/A
 $8EC0: N/A
 $8EC1: N/A
@@ -36717,7 +36717,7 @@ $8F6B: N/A
 $8F6C: N/A
 $8F6D: N/A
 $8F6E: N/A
-$8F6F: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$8F6F: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $8F70: N/A
 $8F71: N/A
 $8F72: N/A
@@ -41808,7 +41808,7 @@ $A34E: N/A
 $A34F: N/A
 $A350: N/A
 $A351: N/A
-$A352: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$A352: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $A353: N/A
 $A354: N/A
 $A355: N/A
@@ -43922,7 +43922,7 @@ $AB90: N/A
 $AB91: N/A
 $AB92: N/A
 $AB93: N/A
-$AB94: N/A
+$AB94: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $AB95: N/A
 $AB96: N/A
 $AB97: N/A
@@ -43965,7 +43965,7 @@ $ABBB: N/A
 $ABBC: N/A
 $ABBD: N/A
 $ABBE: N/A
-$ABBF: N/A
+$ABBF: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $ABC0: N/A
 $ABC1: N/A
 $ABC2: N/A
@@ -44006,7 +44006,7 @@ $ABE4: N/A
 $ABE5: N/A
 $ABE6: N/A
 $ABE7: N/A
-$ABE8: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$ABE8: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $ABE9: N/A
 $ABEA: N/A
 $ABEB: N/A
@@ -44188,7 +44188,7 @@ $AC9A: N/A
 $AC9B: N/A
 $AC9C: N/A
 $AC9D: N/A
-$AC9E: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$AC9E: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $AC9F: N/A
 $ACA0: N/A
 $ACA1: N/A
@@ -49949,7 +49949,7 @@ $C31B: N/A
 $C31C: N/A
 $C31D: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C31E: N/A
-$C31F: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$C31F: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C320: N/A
 $C321: N/A
 $C322: N/A
@@ -50303,7 +50303,7 @@ $C47D: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2> 
 $C47E: N/A
 $C47F: N/A
 $C480: N/A
-$C481: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$C481: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C482: N/A
 $C483: N/A
 $C484: N/A
@@ -50313,7 +50313,7 @@ $C487: N/A
 $C488: N/A
 $C489: N/A
 $C48A: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$C48B: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$C48B: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C48C: N/A
 $C48D: N/A
 $C48E: N/A
@@ -50424,7 +50424,7 @@ $C4F6: N/A
 $C4F7: N/A
 $C4F8: N/A
 $C4F9: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$C4FA: N/A
+$C4FA: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C4FB: N/A
 $C4FC: N/A
 $C4FD: N/A
@@ -50902,7 +50902,7 @@ $C6D4: N/A
 $C6D5: N/A
 $C6D6: N/A
 $C6D7: N/A
-$C6D8: N/A
+$C6D8: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C6D9: N/A
 $C6DA: N/A
 $C6DB: N/A
@@ -50929,7 +50929,7 @@ $C6EF: N/A
 $C6F0: N/A
 $C6F1: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C6F2: N/A
-$C6F3: N/A
+$C6F3: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C6F4: N/A
 $C6F5: N/A
 $C6F6: N/A
@@ -50938,7 +50938,7 @@ $C6F8: N/A
 $C6F9: N/A
 $C6FA: N/A
 $C6FB: N/A
-$C6FC: N/A
+$C6FC: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C6FD: N/A
 $C6FE: N/A
 $C6FF: N/A
@@ -51098,7 +51098,7 @@ $C798: N/A
 $C799: N/A
 $C79A: N/A
 $C79B: N/A
-$C79C: N/A
+$C79C: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C79D: N/A
 $C79E: N/A
 $C79F: N/A
@@ -51114,8 +51114,8 @@ $C7A8: N/A
 $C7A9: N/A
 $C7AA: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C7AB: N/A
-$C7AC: N/A
-$C7AD: N/A
+$C7AC: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$C7AD: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C7AE: N/A
 $C7AF: N/A
 $C7B0: N/A
@@ -51218,14 +51218,14 @@ $C810: N/A
 $C811: N/A
 $C812: N/A
 $C813: N/A
-$C814: N/A
+$C814: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C815: N/A
 $C816: N/A
 $C817: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C818: N/A
 $C819: N/A
 $C81A: N/A
-$C81B: N/A
+$C81B: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C81C: N/A
 $C81D: N/A
 $C81E: N/A
@@ -51312,7 +51312,7 @@ $C86E: N/A
 $C86F: N/A
 $C870: N/A
 $C871: N/A
-$C872: N/A
+$C872: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C873: N/A
 $C874: N/A
 $C875: N/A
@@ -51436,7 +51436,7 @@ $C8EA: N/A
 $C8EB: N/A
 $C8EC: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C8ED: N/A
-$C8EE: N/A
+$C8EE: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C8EF: 7   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <7>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C8F0: N/A
 $C8F1: N/A
@@ -51484,7 +51484,7 @@ $C91A: N/A
 $C91B: N/A
 $C91C: N/A
 $C91D: N/A
-$C91E: N/A
+$C91E: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C91F: N/A
 $C920: N/A
 $C921: N/A
@@ -51500,7 +51500,7 @@ $C92A: N/A
 $C92B: N/A
 $C92C: N/A
 $C92D: N/A
-$C92E: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$C92E: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C92F: N/A
 $C930: N/A
 $C931: N/A
@@ -51521,7 +51521,7 @@ $C93F: N/A
 $C940: N/A
 $C941: N/A
 $C942: N/A
-$C943: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$C943: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C944: N/A
 $C945: N/A
 $C946: N/A
@@ -51599,7 +51599,7 @@ $C98D: N/A
 $C98E: N/A
 $C98F: N/A
 $C990: N/A
-$C991: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$C991: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C992: N/A
 $C993: N/A
 $C994: N/A
@@ -51639,7 +51639,7 @@ $C9B5: N/A
 $C9B6: N/A
 $C9B7: N/A
 $C9B8: N/A
-$C9B9: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$C9B9: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $C9BA: N/A
 $C9BB: N/A
 $C9BC: N/A
@@ -51840,7 +51840,7 @@ $CA7E: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1> 
 $CA7F: N/A
 $CA80: N/A
 $CA81: N/A
-$CA82: N/A
+$CA82: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $CA83: N/A
 $CA84: N/A
 $CA85: N/A
@@ -52205,7 +52205,7 @@ $CBEB: N/A
 $CBEC: N/A
 $CBED: N/A
 $CBEE: N/A
-$CBEF: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$CBEF: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $CBF0: N/A
 $CBF1: N/A
 $CBF2: N/A
@@ -52256,7 +52256,7 @@ $CC1E: N/A
 $CC1F: N/A
 $CC20: N/A
 $CC21: N/A
-$CC22: N/A
+$CC22: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $CC23: N/A
 $CC24: N/A
 $CC25: N/A
@@ -52426,7 +52426,7 @@ $CCC8: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0> 
 $CCC9: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $CCCA: N/A
 $CCCB: N/A
-$CCCC: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$CCCC: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $CCCD: N/A
 $CCCE: N/A
 $CCCF: N/A
@@ -52530,7 +52530,7 @@ $CD30: N/A
 $CD31: N/A
 $CD32: N/A
 $CD33: N/A
-$CD34: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$CD34: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $CD35: N/A
 $CD36: N/A
 $CD37: N/A
@@ -52766,7 +52766,7 @@ $CE1C: N/A
 $CE1D: N/A
 $CE1E: N/A
 $CE1F: N/A
-$CE20: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$CE20: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $CE21: N/A
 $CE22: N/A
 $CE23: N/A
@@ -53061,7 +53061,7 @@ $CF43: N/A
 $CF44: N/A
 $CF45: N/A
 $CF46: N/A
-$CF47: N/A
+$CF47: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $CF48: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $CF49: N/A
 $CF4A: N/A
@@ -54526,7 +54526,7 @@ $D4FC: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0> 
 $D4FD: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0>   $absolute,X <1>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $D4FE: N/A
 $D4FF: N/A
-$D500: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <11>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$D500: 12   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <12>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $D501: N/A
 $D502: N/A
 $D503: N/A
@@ -55314,7 +55314,7 @@ $D810: N/A
 $D811: N/A
 $D812: N/A
 $D813: N/A
-$D814: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$D814: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $D815: N/A
 $D816: N/A
 $D817: N/A
@@ -55650,7 +55650,7 @@ $D960: N/A
 $D961: N/A
 $D962: N/A
 $D963: N/A
-$D964: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$D964: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $D965: N/A
 $D966: N/A
 $D967: N/A
@@ -55671,14 +55671,14 @@ $D975: N/A
 $D976: N/A
 $D977: N/A
 $D978: N/A
-$D979: N/A
+$D979: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $D97A: N/A
 $D97B: N/A
 $D97C: N/A
 $D97D: N/A
 $D97E: N/A
 $D97F: N/A
-$D980: N/A
+$D980: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $D981: N/A
 $D982: N/A
 $D983: N/A
@@ -56412,9 +56412,9 @@ $DC5A: N/A
 $DC5B: N/A
 $DC5C: N/A
 $DC5D: N/A
-$DC5E: N/A
+$DC5E: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $DC5F: N/A
-$DC60: N/A
+$DC60: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $DC61: N/A
 $DC62: N/A
 $DC63: N/A
@@ -56430,7 +56430,7 @@ $DC6C: N/A
 $DC6D: N/A
 $DC6E: N/A
 $DC6F: N/A
-$DC70: N/A
+$DC70: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $DC71: N/A
 $DC72: N/A
 $DC73: N/A
@@ -56482,7 +56482,7 @@ $DCA0: N/A
 $DCA1: N/A
 $DCA2: N/A
 $DCA3: N/A
-$DCA4: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$DCA4: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $DCA5: N/A
 $DCA6: N/A
 $DCA7: N/A
@@ -56491,7 +56491,7 @@ $DCA9: N/A
 $DCAA: N/A
 $DCAB: N/A
 $DCAC: N/A
-$DCAD: N/A
+$DCAD: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $DCAE: N/A
 $DCAF: N/A
 $DCB0: N/A
@@ -56553,7 +56553,7 @@ $DCE7: N/A
 $DCE8: N/A
 $DCE9: N/A
 $DCEA: N/A
-$DCEB: N/A
+$DCEB: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $DCEC: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $DCED: N/A
 $DCEE: N/A
@@ -56585,7 +56585,7 @@ $DD07: N/A
 $DD08: N/A
 $DD09: N/A
 $DD0A: N/A
-$DD0B: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$DD0B: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $DD0C: N/A
 $DD0D: N/A
 $DD0E: N/A
@@ -57886,7 +57886,7 @@ $E21C: N/A
 $E21D: N/A
 $E21E: N/A
 $E21F: N/A
-$E220: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$E220: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $E221: N/A
 $E222: N/A
 $E223: N/A
@@ -57948,13 +57948,13 @@ $E25A: N/A
 $E25B: N/A
 $E25C: N/A
 $E25D: N/A
-$E25E: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$E25E: 5   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <5>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $E25F: N/A
 $E260: N/A
 $E261: N/A
 $E262: N/A
 $E263: N/A
-$E264: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$E264: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $E265: N/A
 $E266: N/A
 $E267: N/A
@@ -58173,7 +58173,7 @@ $E33B: N/A
 $E33C: N/A
 $E33D: N/A
 $E33E: N/A
-$E33F: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$E33F: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $E340: N/A
 $E341: N/A
 $E342: N/A
@@ -58597,7 +58597,7 @@ $E4E3: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <0> 
 $E4E4: N/A
 $E4E5: N/A
 $E4E6: N/A
-$E4E7: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$E4E7: 3   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <3>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $E4E8: N/A
 $E4E9: N/A
 $E4EA: N/A
@@ -59400,7 +59400,7 @@ $E806: N/A
 $E807: N/A
 $E808: N/A
 $E809: N/A
-$E80A: N/A
+$E80A: 2   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <2>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $E80B: N/A
 $E80C: N/A
 $E80D: N/A
@@ -59450,7 +59450,7 @@ $E838: N/A
 $E839: N/A
 $E83A: N/A
 $E83B: N/A
-$E83C: N/A
+$E83C: 1   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <1>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $E83D: N/A
 $E83E: N/A
 $E83F: N/A

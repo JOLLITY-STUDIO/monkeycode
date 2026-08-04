@@ -107,6 +107,10 @@ tsubasa1-h5/
     │   └── BankManager.ts        # Bank切换管理
     ├── input/
     │   └── InputManager.ts       # 输入管理
+    ├── audio/                     # 🆕 音频模块
+    │   ├── ApuSimulator.ts        # APU模拟器 (Web Audio API)
+    │   ├── AudioEngine.ts         # 音乐/音效引擎 (Bank 1 移植)
+    │   └── MusicData.ts           # 音乐序列数据 (ROM提取)
     ├── renderer/
     │   └── Renderer.ts           # 渲染器 (VRAM+OAM→Canvas)
     ├── engine/                   # 游戏引擎 (纯逻辑)
@@ -201,49 +205,57 @@ class InputManager {
                             Game Logic (比赛/AI/脚本)
                                 ↓
                             DataCache (状态读写)
-                                ↓
-                            Renderer (绘制命令)
-                                ↓
-外部Canvas ←── ctx.drawImage / fillRect / etc.
+                       ┌────────┤
+                       ↓        ↓
+                   Renderer   AudioEngine 🆕
+                   (绘制)     (Web Audio API)
+                       ↓        ↓
+外部Canvas ←── ctx.drawImage   扬声器 🔊
 ```
 
 ---
 
-## 5. 帧循环设计 (三段式架构 v0.5.0)
+## 5. 帧循环设计 (四段式架构 v0.6.0)
 
 NES 硬件的帧时序：
 
 ```
 NMI触发(VBlank开始)
-  → CPU在VBlank期间填充PPU数据 (OAM DMA, VRAM写入, 调色板)
+  → CPU在VBlank期间填充PPU数据 (OAM DMA, VRAM写入, 调色板, 音频更新)
   → NMI返回
   → CPU执行游戏逻辑 (输入处理、状态机、AI)
   → PPU同时用VBlank填入的数据逐行渲染画面
+  → APU独立播放音频
   → 等下一个NMI
 ```
 
-TS 改写后的三段式帧 (GameLoop.loop)：
+TS 改写后的四段式帧 (GameLoop.loop)：
 
 ```
 每帧 (每个RAF回调):
-  ═══ 阶段1: PPU数据填充 (NMI) ═══
+  ═══ 阶段1: PPU数据填充 + 音频更新 (NMI) ═══
     a. OAM DMA — CPU RAM → OAM缓存
     b. PPU队列处理 — VRAM批量写入
     c. 读取输入 — 手柄锁存
     d. 帧计数++
+    e. 🆕 AudioEngine.update() — 音乐/音效帧更新
 
   ═══ 阶段2: 游戏逻辑 ═══
-    e. bankLock == 0 ? 状态机更新 : skip
+    f. bankLock == 0 ? 状态机更新 : skip
        (输入处理、AI、脚本、状态转换)
 
-  ═══ 阶段3: Canvas渲染 ═══
-    f. 用阶段1填充的PPU数据绘制到Canvas
+  ═══ 阶段3: 场景构建 ═══
+    g. SceneComposer: Model → VRAM + OAM
+
+  ═══ 阶段4: Canvas渲染 ═══
+    h. 用阶段1填充的PPU数据绘制到Canvas
        (背景tile + 精灵，全部来自OAM/VRAM)
 ```
 
 关键设计要点：
-- **PPU渲染的是"填充后的数据"**：阶段1先把数据填入OAM/VRAM缓冲区，阶段3用这些数据渲染。这与NES硬件行为一致。
+- **PPU渲染的是"填充后的数据"**：阶段1先把数据填入OAM/VRAM缓冲区，阶段4用这些数据渲染。
 - **游戏逻辑在PPU数据填充之后**：游戏逻辑修改OAM/VRAM是为**下一帧**准备数据。
+- **音频与PPU填充同阶段**：NES中音频寄存器也在VBlank期间更新，放在阶段1最合适。
 - **渲染是只读的**：Renderer只读取PPU数据，不修改。
 
 ---
@@ -260,6 +272,8 @@ TS 改写后的三段式帧 (GameLoop.loop)：
 | PPU 寄存器 ($2000-$2007) | `DataCache.ppuCtrl/ppuMask/scrollX/scrollY` |
 | NMI 中断 (PPU数据填充) | `PpuDataFiller.fillPpuData()` |
 | NMI 中的游戏逻辑调度 | `GameLoop` 阶段2: `stateMachine.update()` |
+| NMI 中的音频更新 | `GameLoop` 阶段1: `AudioEngine.update()` 🆕 |
+| APU 寄存器 ($4000-$4017) | `ApuSimulator` → Web Audio API OscillatorNode |
 | 手柄寄存器 ($4016/$4017) | `InputManager` |
 | MMC1 寄存器 ($8000-$FFFF) | `BankManager` |
 | ROM Bank | 独立的 TypeScript 模块 |
@@ -276,6 +290,7 @@ TS 改写后的三段式帧 (GameLoop.loop)：
 | **M4** | State 05-07 (事件→结果) | v0.4.0 |
 | **M5** | 脚本引擎+全部数据 | v0.5.0 |
 | **M6** | 渲染完善+CHR资源 | v0.6.0 |
-| **M7** | 测试+修复 | v0.7.0 |
-| **M8** | 小程序适配 | v0.8.0 |
+| **M_AUDIO** | 🆕 音频引擎 (APU→Web Audio) | v0.7.0 |
+| **M7** | 测试+修复 | v0.8.0 |
+| **M8** | 小程序适配 | v0.9.0 |
 | **M9** | 最终优化 | v1.0.0 |

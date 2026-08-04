@@ -313,78 +313,35 @@ export class AutoPlayController {
   }
 
   // ─── 比赛自动AI ───
+  // v1.4.0: 增强的 MatchEngine 已内置AI。AutoPlay 只做补充决策：
+  //   - 在对方持球时，安排最近的防守球员铲球
+  //   - 在关键时刻施加额外压力
   private runMatchAutoAI(engine: MatchEngine): void {
-    // 每15帧做一次决策
-    if (this.matchAutoFrame % 15 !== 0) return;
+    // 每20帧做一次补充决策
+    if (this.matchAutoFrame % 20 !== 0) return;
 
-    const allPlayers = engine.getAllPlayers();
     const ballHolder = engine.getBallHolder();
-    const ball = engine.ball;
+    if (ballHolder === null) return;
 
-    if (ballHolder === null) {
-      // 球无人控制: 两队最近的球员都去追球
-      // MatchEngine 现有 movePlayers() 已处理基本追球逻辑
-      return;
+    const holderTeam = engine.getPlayerTeam(ballHolder);
+
+    // 对方持球时：防守压迫
+    if (holderTeam === 1) {
+      this.applyDefensivePressure(engine, ballHolder);
     }
+  }
 
-    // 确定持球方
-    const holderIsTeam0 = engine.getPlayerTeam(ballHolder) === 0;
-    const holderPlayer = engine.getPlayerById(ballHolder);
+  /**
+   * 防守压迫: 最近的我方球员尝试铲球
+   */
+  private applyDefensivePressure(engine: MatchEngine, opponentHolderId: number): void {
+    const holderPlayer = engine.getPlayerById(opponentHolderId);
     if (!holderPlayer) return;
 
-    // ── 玩家队伍 (team0) AI 决策 ──
-    if (holderIsTeam0) {
-      this.decidePlayerTeamAction(engine, holderPlayer, ballHolder);
-    }
-    // ── 对手队伍 (team1) AI 决策 ──
-    else {
-      this.decideOpponentTeamAction(engine, holderPlayer, ballHolder);
-    }
-  }
-
-  /**
-   * 玩家队伍 (team0) 持球时: 决定射门/传球/盘带
-   */
-  private decidePlayerTeamAction(engine: MatchEngine, holderPlayer: any, holderId: number): void {
-    const ball = engine.ball;
-    const fieldCenter = 128;
-
-    // 距离对方球门的距离 (team0 向右进攻)
-    const distToGoal = 252 - ball.x;
-
-    if (distToGoal < 60) {
-      // 进入射门范围: 80% 概率射门
-      if (this.matchAutoFrame % 5 < 4) {
-        const event = engine.shoot(holderId);
-        this.log(`[Auto] ⚽ 玩家队射门! dist=${distToGoal.toFixed(0)}`);
-        return;
-      }
-    }
-
-    // 向前推进: 传给更靠前的队友
-    const team0Players = engine.team0Players.filter(p => p.isActive && p.playerId !== holderId);
-    const forwardPlayers = team0Players.filter(p => p.position.x > holderPlayer.position.x + 20);
-
-    if (forwardPlayers.length > 0 && distToGoal > 30) {
-      // 选择最靠前的队友
-      forwardPlayers.sort((a, b) => b.position.x - a.position.x);
-      const target = forwardPlayers[0];
-      engine.pass(holderId, target.playerId);
-      this.log(`[Auto] ↗ 玩家队传球 → #${target.playerId}`);
-      return;
-    }
-
-    // 如果没有好的传球目标，保持盘带 (movePlayers 已处理)
-  }
-
-  /**
-   * 对手队伍 (team1) 持球时: 最近玩家队员铲球
-   */
-  private decideOpponentTeamAction(engine: MatchEngine, holderPlayer: any, holderId: number): void {
-    // 找最近的玩家队球员去铲球
-    const team0Players = engine.team0Players.filter(p => p.isActive);
+    const team0Players = engine.team0Players.filter(p => p.isActive && p.playerId !== opponentHolderId);
     if (team0Players.length === 0) return;
 
+    // 找最近的防守球员
     let nearest: any = null;
     let minDist = Infinity;
     for (const p of team0Players) {
@@ -397,10 +354,9 @@ export class AutoPlayController {
       }
     }
 
-    if (nearest && minDist < 40) {
+    if (nearest && minDist < 22) {
       // 距离足够近，尝试铲球
-      engine.tackle(nearest.playerId, holderId);
-      this.log(`[Auto] 🦶 玩家队铲球! #${nearest.playerId} → #${holderId}`);
+      engine.tackle(nearest.playerId, opponentHolderId);
     }
   }
 

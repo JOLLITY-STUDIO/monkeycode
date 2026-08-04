@@ -9,6 +9,22 @@
     bindtouchmove="onTouchMove"
   ></canvas>
 
+  <!-- 调试菜单按钮 (左上角) -->
+  <view class="debug-menu-btn" bindtap="onDebugMenuToggle">
+    <text>⚙</text>
+  </view>
+
+  <!-- 调试导航菜单 -->
+  <view class="debug-menu {{showDebugMenu?'show':''}}">
+    <text class="debug-menu-title">调试页面</text>
+    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="chr-all">🎨 CHR All</view>
+    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="pattern-table-all">📊 Pattern Table</view>
+    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="nametable-all">🗺 Nametable</view>
+    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="sprite-all">👾 Sprite All</view>
+    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="palette-all">🎨 Palette All</view>
+    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="audiopage">🔊 Audio All</view>
+  </view>
+
   <!-- 状态信息栏 -->
   <view class="info-bar">
     <text class="fps-text">{{fpsText}}</text>

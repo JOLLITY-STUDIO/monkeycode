@@ -66,6 +66,59 @@ export interface IPlatform {
   /** 获取当前高精度时间戳 (ms) */
   now(): number;
 
+  /** 🆕 创建音频上下文 (Web Audio API 或小程序 WebAudioContext) */
+  createAudioContext?(): IPlatformAudioContext | null;
+
   /** 平台名称 (调试用) */
   readonly name: string;
 }
+
+/** 🆕 平台音频上下文 (IAudioContext 的跨平台适配器) */
+export interface IPlatformAudioContext {
+  readonly sampleRate: number;
+  readonly currentTime: number;
+  createOscillator(): IPlatformOscillatorNode;
+  createGain(): IPlatformGainNode;
+  createBufferSource(): IPlatformBufferSourceNode;
+  createBuffer(numChannels: number, length: number, sampleRate: number): IPlatformAudioBuffer;
+  readonly destination: IPlatformAudioDestination;
+}
+
+export interface IPlatformOscillatorNode {
+  type: OscillatorType;
+  frequency: IPlatformAudioParam;
+  connect(dest: IPlatformAudioNode): void;
+  disconnect(): void;
+  start(time?: number): void;
+  stop(time?: number): void;
+}
+
+export interface IPlatformGainNode {
+  gain: IPlatformAudioParam;
+  connect(dest: IPlatformAudioNode): void;
+  disconnect(): void;
+}
+
+export interface IPlatformBufferSourceNode {
+  buffer: IPlatformAudioBuffer | null;
+  loop: boolean;
+  connect(dest: IPlatformAudioNode): void;
+  disconnect(): void;
+  start(time?: number): void;
+  stop(time?: number): void;
+}
+
+export interface IPlatformAudioBuffer {
+  getChannelData(channel: number): Float32Array;
+}
+
+export interface IPlatformAudioParam {
+  value: number;
+  setValueAtTime(v: number, t: number): void;
+  linearRampToValueAtTime(v: number, t: number): void;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+export interface IPlatformAudioNode { }
+
+export interface IPlatformAudioDestination extends IPlatformAudioNode { }

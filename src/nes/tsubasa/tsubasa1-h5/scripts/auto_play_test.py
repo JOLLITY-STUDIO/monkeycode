@@ -354,8 +354,6 @@ class MockStateMachine:
             self._update_state06()
         elif sid == 7:
             self._update_state07()
-        elif sid == 8:
-            self._update_state08()
 
     def _update_state00(self):
         self.data.sub_state += 1
@@ -447,19 +445,17 @@ class MockStateMachine:
             # 推进到下一场
             self.current_match_idx += 1
             if self.current_match_idx >= TOTAL_MATCHES:
-                # 全部比赛完成 → 通关画面
+                # 全部比赛完成 → 状态转换管理器 (State 5)
                 self.game_complete = True
                 self.auto.log("ALL MATCHES COMPLETE! Game Clear!")
-                self.transition_to(8)
+                self.transition_to(5)
             else:
-                # 还有下一场
-                self.transition_to(2)
+                # 还有下一场 → 状态转换管理器 (State 5)
+                self.transition_to(5)
 
     def _update_state08(self):
-        # 通关画面
-        if self.state_frames[8] > 300 or self.input.isPressed(Button.START):
-            self.auto.log("Returning to title...")
-            self.transition_to(0)
+        # 通关画面 (已移除 - ASM 跳转表只有 State 0-7)
+        pass
 
 
 # ============================================================

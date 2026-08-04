@@ -1,0 +1,71 @@
+<!-- 音频测试页面 -->
+<view class="container">
+  <!-- 标题 -->
+  <view class="header">
+    <text class="title">🎵 天使之翼 - 音频测试</text>
+    <text class="subtitle">NES APU 模拟 | Web Audio API</text>
+  </view>
+
+  <!-- 主音量 -->
+  <view class="section">
+    <text class="section-title">主音量</text>
+    <slider min="0" max="100" value="{{masterVolume}}" bindchange="onVolumeChange"
+      activeColor="#4CAF50" backgroundColor="#333" block-size="20"/>
+    <text class="value-text">{{masterVolume}}%</text>
+  </view>
+
+  <!-- 曲目选择 -->
+  <view class="section">
+    <text class="section-title">音乐曲目</text>
+    <scroll-view class="track-list" scroll-y>
+      <view class="track-item {{currentTrack===index?'active':''}}"
+            wx:for="{{tracks}}" wx:key="index"
+            bindtap="onTrackSelect" data-index="{{index}}">
+        <text class="track-name">{{item.name}}</text>
+        <text class="track-desc">{{item.desc}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- 控制按钮 -->
+  <view class="controls">
+    <button class="btn btn-play"  bindtap="onPlay"  disabled="{{!audioReady}}">▶ 播放</button>
+    <button class="btn btn-pause" bindtap="onPause" disabled="{{!playing}}">⏸ 暂停</button>
+    <button class="btn btn-stop"  bindtap="onStop"  disabled="{{!playing}}">⏹ 停止</button>
+  </view>
+
+  <!-- 通道状态 -->
+  <view class="section">
+    <text class="section-title">通道状态</text>
+    <view class="channels">
+      <view class="channel" wx:for="{{channels}}" wx:key="index">
+        <view class="ch-label">{{item.name}}</view>
+        <view class="ch-bar-bg">
+          <view class="ch-bar {{item.active?'bar-active':''}}"
+                style="width: {{item.volume * 100}}%"></view>
+        </view>
+        <text class="ch-freq">{{item.freq}}Hz</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 音效测试 -->
+  <view class="section">
+    <text class="section-title">音效测试</text>
+    <view class="sfx-grid">
+      <button class="btn btn-sfx" wx:for="{{sfxList}}" wx:key="index"
+              bindtap="onSfxPlay" data-index="{{index}}">
+        {{item.name}}
+      </button>
+    </view>
+  </view>
+
+  <!-- 调试信息 -->
+  <view class="section">
+    <text class="section-title">调试日志</text>
+    <scroll-view class="log-box" scroll-y>
+      <text class="log-line" wx:for="{{logs}}" wx:key="index">{{item}}</text>
+      <text class="log-line" wx:if="{{logs.length===0}}">等待操作...</text>
+    </scroll-view>
+  </view>
+</view>

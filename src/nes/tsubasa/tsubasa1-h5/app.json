@@ -1,6 +1,12 @@
 {
   "pages": [
-    "pages/game/game"
+    "pages/game/game",
+    "pages/audiopage/audiopage",
+    "pages/chr-all/chr-all",
+    "pages/pattern-table-all/pattern-table-all",
+    "pages/nametable-all/nametable-all",
+    "pages/sprite-all/sprite-all",
+    "pages/palette-all/palette-all"
   ],
   "window": {
     "navigationBarTitleText": "天使之翼",

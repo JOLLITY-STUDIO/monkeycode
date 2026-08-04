@@ -1,0 +1,132 @@
+/* Nametable 页面样式 */
+page { background: #1a1a2e; color: #eee; }
+
+.nt-container { padding: 16px; }
+
+.header {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.title { display: block; font-size: 28px; font-weight: bold; }
+.subtitle { font-size: 20px; color: #888; margin: 4px 0 12px; }
+
+.params { display: flex; flex-direction: column; gap: 8px; }
+
+.param-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.param-label { font-size: 20px; color: #aaa; min-width: 100px; }
+
+.param-input {
+  width: 80px;
+  height: 36px;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 6px;
+  color: #fff;
+  font-size: 20px;
+  text-align: center;
+  padding: 0 6px;
+}
+
+.param-hint { font-size: 16px; color: #666; }
+
+.nt-tabs { display: flex; gap: 6px; }
+
+.nt-tab {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.15);
+  font-size: 18px;
+  font-family: monospace;
+  background: rgba(0,0,0,0.2);
+}
+
+.nt-tab.active { border-color: #4af; background: rgba(68,170,255,0.15); }
+
+.section-label {
+  display: block;
+  font-size: 22px;
+  font-weight: bold;
+  margin: 16px 0 8px;
+}
+
+.nt-display, .attr-display {
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 16px;
+}
+
+.nt-canvas, .attr-canvas {
+  display: block;
+  image-rendering: pixelated;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.hint-text { display: block; font-size: 16px; color: #666; margin-top: 4px; }
+
+.attr-canvas { margin-top: 8px; }
+
+.palette-section {
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  padding: 16px;
+  border: 1px solid rgba(255,255,255,0.08);
+  margin-bottom: 16px;
+}
+
+.palette-grid { display: flex; flex-wrap: wrap; gap: 12px; }
+
+.pal-group { min-width: 140px; }
+
+.pal-group-label {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 4px;
+  font-family: monospace;
+}
+
+.pal-colors { display: flex; gap: 4px; }
+
+.pal-color {
+  width: 40px;
+  height: 40px;
+  border-radius: 4px;
+  border: 1px solid rgba(255,255,255,0.2);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.pal-idx { font-size: 12px; color: rgba(255,255,255,0.7); background: rgba(0,0,0,0.4); padding: 1px 3px; border-radius: 2px; }
+
+.table-scroll { margin-top: 8px; }
+
+.data-grid { display: inline-flex; flex-direction: column; gap: 1px; }
+
+.data-row { display: flex; gap: 1px; }
+
+.data-cell {
+  width: 36px;
+  height: 28px;
+  font-size: 14px;
+  font-family: monospace;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ccc;
+}
+
+.data-cell.empty { color: #444; background: rgba(0,0,0,0.3); }

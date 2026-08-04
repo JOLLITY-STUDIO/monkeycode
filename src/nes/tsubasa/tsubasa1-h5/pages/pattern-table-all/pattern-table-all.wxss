@@ -1,0 +1,130 @@
+/* Pattern Table 页面样式 */
+page { background: #1a1a2e; color: #eee; }
+
+.pt-container { padding: 16px; }
+
+.header {
+  background: rgba(255,255,255,0.05);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.title { display: block; font-size: 28px; font-weight: bold; }
+.subtitle { font-size: 20px; color: #888; margin: 4px 0 12px; }
+
+.controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+
+.bank-nav {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bank-label {
+  font-size: 26px;
+  font-weight: bold;
+  font-family: monospace;
+  min-width: 60px;
+  text-align: center;
+}
+
+.nav-btn {
+  width: 48px;
+  height: 48px;
+  line-height: 48px;
+  font-size: 24px;
+  background: rgba(255,255,255,0.1);
+  border: 2px solid rgba(255,255,255,0.2);
+  border-radius: 8px;
+  color: #fff;
+  padding: 0;
+  text-align: center;
+}
+
+.palette-control .label { font-size: 20px; color: #aaa; margin-right: 8px; }
+
+.palette-preset {
+  display: inline-flex;
+  gap: 2px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  border: 2px solid rgba(255,255,255,0.15);
+  background: rgba(0,0,0,0.3);
+  margin-right: 6px;
+}
+
+.palette-preset.active { border-color: #0f0; }
+
+.color-swatch { width: 20px; height: 20px; border-radius: 3px; border: 1px solid rgba(255,255,255,0.2); }
+
+.pt-grid {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 24px;
+}
+
+.pt-panel {
+  background: rgba(255,255,255,0.03);
+  border-radius: 8px;
+  padding: 12px;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.pt-label {
+  display: block;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+  text-align: center;
+  font-family: monospace;
+}
+
+.pt-canvas {
+  display: block;
+  image-rendering: pixelated;
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.section-title {
+  display: block;
+  font-size: 24px;
+  font-weight: bold;
+  margin: 16px 0 8px;
+}
+
+.bank-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.bank-item {
+  width: 52px;
+  padding: 8px 4px;
+  border-radius: 6px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.03);
+  text-align: center;
+}
+
+.bank-item.active {
+  border-color: #4af;
+  background: rgba(68,170,255,0.15);
+}
+
+.bank-idx {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: monospace;
+}
+
+.bank-tiles {
+  display: block;
+  font-size: 14px;
+  color: #888;
+}

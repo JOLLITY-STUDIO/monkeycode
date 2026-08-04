@@ -339,12 +339,14 @@ export class Renderer {
     const baseNT = ppuCtrl & 0x03;
     const bgPatternBase = (ppuCtrl & 0x10) ? 0x1000 : 0x0000;
 
+    // MMC1 4KB 模式: PPU $0000-$0FFF → CHR bank 0, PPU $1000-$1FFF → CHR bank 1
+    // BG 使用 pattern table base 决定的 CHR bank
     const bgChrBank = (bgPatternBase === 0x0000)
       ? (this.bankManager?.chrBank0 ?? 0)
       : (this.bankManager?.chrBank1 ?? 0);
 
-    // MMC1 4KB 模式: bank 寄存器 → tile 基址
-    const tileBase = (bgChrBank & 1) * 128;
+    // tile 索引 0-255 直接使用，不偏移（4KB bank 本身就有完整的 256 tiles）
+    const tileTableBase = 0;
 
     const startTileX = Math.floor(scrollX / TILE_PX);
     const startTileY = Math.floor(scrollY / TILE_PX);
@@ -378,7 +380,7 @@ export class Renderer {
         const screenX = tx * TILE_PX - fineX;
         const screenY = ty * TILE_PX - fineY;
 
-        this.drawBgTileToBuf(tileIdx, palGroup, screenX, screenY, bgChrBank, tileBase);
+        this.drawBgTileToBuf(tileIdx, palGroup, screenX, screenY, bgChrBank, tileTableBase);
       }
     }
   }
@@ -434,11 +436,13 @@ export class Renderer {
 
   private renderSpritesToBuf(oamCache: OamCache, ppuCtrl: number): void {
     const sprPatternBase = (ppuCtrl & 0x08) ? 0x1000 : 0x0000;
+    // MMC1 4KB 模式: 精灵使用 pattern table base 决定的 CHR bank
     const sprChrBank = (sprPatternBase === 0x0000)
       ? (this.bankManager?.chrBank0 ?? 0)
       : (this.bankManager?.chrBank1 ?? 0);
 
-    const tileBase = (sprChrBank & 1) * 128;
+    // tile 索引 0-255 直接使用，不偏移
+    const tileTableBase = 0;
 
     const sprites = oamCache.getVisibleSprites();
     // 从后往前渲染 (低索引精灵优先覆盖)
@@ -455,7 +459,7 @@ export class Renderer {
         spr.tileIndex, palGroup,
         spr.x, spr.y - 1,
         flipH, flipV,
-        sprChrBank, tileBase
+        sprChrBank, tileTableBase
       );
     }
   }

@@ -1,0 +1,43 @@
+<!-- Sprite All - 精灵/OAM 数据结构展示 -->
+<view class="spr-container">
+  <view class="header">
+    <text class="title">Sprite 精灵数据 (OAM)</text>
+    <text class="subtitle">64 个精灵槽位 × 4 字节 = 256 字节 ($0200-$02FF)</text>
+    
+    <view class="info-box">
+      <text class="info-title">OAM 字节布局:</text>
+      <text class="info-line">Byte 0: Y 坐标 (+1, 0xFF=隐藏)</text>
+      <text class="info-line">Byte 1: Tile 索引 (0-255, 对应 CHR bank 中的 tile)</text>
+      <text class="info-line">Byte 2: 属性 (bit7=V翻转, bit6=H翻转, bit5=优先级, bit1-0=调色板组)</text>
+      <text class="info-line">Byte 3: X 坐标</text>
+    </view>
+
+    <view class="controls">
+      <view class="param-row">
+        <text class="param-label">CHR Bank:</text>
+        <input class="param-input" type="number" value="{{chrBank}}" bindinput="onChrBankInput" />
+      </view>
+      <view class="param-row">
+        <text class="param-label">Tile Scale:</text>
+        <slider min="1" max="4" value="{{tileScale}}" bindchange="onScaleChange" show-value style="width:200px;" />
+      </view>
+    </view>
+  </view>
+
+  <!-- 精灵可视化 - 每个 sprite 的 tile 渲染 -->
+  <view class="sprite-grid">
+    <view wx:for="{{sprites}}" wx:key="index" class="sprite-card {{item.y === 255 ? 'hidden-sprite' : ''}}">
+      <view class="sprite-visual">
+        <canvas type="2d" id="spr-canvas-{{index}}" class="spr-canvas"
+          style="width:{{tilePixelSize}}px;height:{{tilePixelSize}}px;"></canvas>
+      </view>
+      <view class="sprite-info">
+        <text class="spr-id">#{{index}}</text>
+        <text class="spr-detail">Y:{{item.yHex}} X:{{item.xHex}}</text>
+        <text class="spr-detail">Tile:{{item.tileHex}}</text>
+        <text class="spr-detail">Attr:{{item.attrHex}}</text>
+        <text class="spr-flags">{{item.flags}}</text>
+      </view>
+    </view>
+  </view>
+</view>

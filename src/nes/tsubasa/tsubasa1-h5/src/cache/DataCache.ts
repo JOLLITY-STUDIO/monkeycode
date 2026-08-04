@@ -203,6 +203,94 @@ export class DataCache {
   get gameState(): number { return this.read(0x03CA); }
   set gameState(v: number) { this.write(0x03CA, v); }
 
+  // ===========================
+  // State 3 比赛初始化
+  // ===========================
+
+  /**
+   * 初始化比赛 RAM 区域
+   *
+   * 对应 ASM $85CD-$861D (State 3 入口):
+   *   $85CD: LDX #$00, 清零 $0600-$0637 (56 bytes)
+   *   $85D8: LDX #$00, 清零 $0691-$06AE (30 bytes)
+   *   $85E3: 清零各比赛变量
+   *   $861E: 更广泛的变量初始化
+   */
+  initMatchRam(): void {
+    // 清零比赛核心区域 $0600-$0637 (56 bytes)
+    for (let i = 0x0600; i <= 0x0637; i++) {
+      this.write(i, 0);
+    }
+    // 清零子状态区域 $0691-$06AE (30 bytes)
+    for (let i = 0x0691; i <= 0x06AE; i++) {
+      this.write(i, 0);
+    }
+    // 清零关键比赛变量 (对应 $85E3-$85FF)
+    // ram_05E0, ram_05E1: 比分或其他
+    this.write(0x05E0, 0);
+    this.write(0x05E1, 0);
+    // ram_059B, ram_059C
+    this.write(0x059B, 0);
+    this.write(0x059C, 0);
+    // ram_03E5: State 5 子计数器
+    this.write(0x03E5, 0);
+    // ram_003B
+    this.zpWrite(0x3B, 0);
+    // ram_0735
+    this.write(0x0735, 0);
+    // ram_03DE
+    this.write(0x03DE, 0);
+    // ram_030E
+    this.write(0x030E, 0);
+
+    // 对应 $861E 更广泛的初始化
+    // ram_05EF
+    this.write(0x05EF, 0);
+    // ram_03BE
+    this.write(0x03BE, 0);
+    // ram_0029
+    this.zpWrite(0x29, 0);
+    // ram_0043
+    this.zpWrite(0x43, 0);
+    // ram_03DF
+    this.write(0x03DF, 0);
+    // ram_0041
+    this.zpWrite(0x41, 0);
+    // ram_0600 (already done above)
+    // ram_061B
+    this.write(0x061B, 0);
+    // ram_061F
+    this.write(0x061F, 0);
+    // ram_007C
+    this.zpWrite(0x7C, 0);
+    // ram_03CC
+    this.write(0x03CC, 0);
+    // ram_05D5
+    this.write(0x05D5, 0);
+    // ram_03E6
+    this.write(0x03E6, 0);
+    // ram_05BC
+    this.write(0x05BC, 0);
+    // ram_0596
+    this.write(0x0596, 0);
+    // ram_05E8
+    this.write(0x05E8, 0);
+    // ram_03F3
+    this.write(0x03F3, 0);
+    // ram_059E
+    this.write(0x059E, 0);
+    // ram_05A1
+    this.write(0x05A1, 0);
+    // ram_05D8
+    this.write(0x05D8, 0);
+    // ram_0697
+    this.write(0x0697, 0);
+    // ram_059D
+    this.write(0x059D, 0);
+
+    console.log('[DataCache] Match RAM initialized (State 3 init)');
+  }
+
   /** 获取调试快照 */
   debugSnapshot(): Record<string, number> {
     return {

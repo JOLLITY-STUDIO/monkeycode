@@ -7,7 +7,12 @@
 
 declare const wx: any;
 
-import type { IPlatform, ICanvas, ICanvasContext, ICanvasImageSource, IImageData } from '../IPlatform';
+import type {
+  IPlatform, ICanvas, ICanvasContext, ICanvasImageSource, IImageData,
+  IPlatformAudioContext, IPlatformOscillatorNode, IPlatformGainNode,
+  IPlatformBufferSourceNode, IPlatformAudioBuffer, IPlatformAudioParam,
+  IPlatformAudioNode, IPlatformAudioDestination,
+} from '../IPlatform';
 
 /** 包装小程序 Canvas 对象 */
 class MpCanvas implements ICanvas {
@@ -163,5 +168,162 @@ export class MpPlatform implements IPlatform {
 
   now(): number {
     return Date.now();
+  }
+
+  /** 🆕 创建音频上下文 */
+  createAudioContext(): IPlatformAudioContext | null {
+    // 优先使用微信小程序 WebAudio API (基础库 2.19.0+)
+    if (typeof wx !== 'undefined' && typeof wx.createWebAudioContext === 'function') {
+      try {
+        const rawCtx = wx.createWebAudioContext();
+        console.log('[MpPlatform] WebAudioContext created via wx.createWebAudioContext');
+        return new MpAudioContext(rawCtx);
+      } catch (e) {
+        console.warn('[MpPlatform] wx.createWebAudioContext failed, audio disabled:', e);
+      }
+    }
+    // 尝试标准 Web Audio API (有些小程序基础库支持)
+    if (typeof wx !== 'undefined' && typeof wx.createInnerAudioContext === 'function') {
+      console.warn('[MpPlatform] WebAudioContext not available, InnerAudioContext exists but not suitable for APU simulation');
+    }
+    return null;
+  }
+}
+
+// ═══════════════════════════════════════════════
+// 🆕 微信小程序音频上下文适配器
+// 将 wx.createWebAudioContext 包装为 IPlatformAudioContext
+// ═══════════════════════════════════════════════
+
+class MpAudioParam implements IPlatformAudioParam {
+  private _param: any; // 实际的 AudioParam 对象
+
+  constructor(target: any, prop: string) {
+    // 提取 AudioParam 对象本身（如 gainNode.gain、oscNode.frequency）
+    // 而不是在父节点上通过属性名间接操作
+    this._param = target[prop];
+  }
+
+  get value(): number {
+    // AudioParam.value 可能也有 getter，尝试直接读取
+    return this._param?.value ?? 0;
+  }
+
+  set value(v: number) {
+    if (this._param) {
+      // 在微信小程序中，GainNode.gain 是只读属性（getter-only），
+      // 不能直接替换父节点上的属性。必须通过 AudioParam 对象的 .value 来设置。
+      try {
+        this._param.value = v;
+      } catch (e) {
+        // 如果 .value 也是只读，回退到 setValueAtTime
+        this._param.setValueAtTime?.(v, 0);
+      }
+    }
+  }
+
+  setValueAtTime(v: number, t: number): void {
+    this._param?.setValueAtTime?.(v, t);
+  }
+
+  linearRampToValueAtTime(v: number, t: number): void {
+    this._param?.linearRampToValueAtTime?.(v, t);
+  }
+}
+
+class MpOscillatorNode implements IPlatformOscillatorNode {
+  private _node: any;
+  frequency: IPlatformAudioParam;
+  private _type: OscillatorType = 'sine';
+
+  constructor(node: any) {
+    this._node = node;
+    this.frequency = new MpAudioParam(node, 'frequency');
+  }
+
+  get type(): OscillatorType { return this._type; }
+  set type(v: OscillatorType) { this._type = v; this._node.type = v; }
+
+  connect(dest: IPlatformAudioNode): void { this._node.connect((dest as any).__raw); }
+  disconnect(): void { this._node.disconnect?.(); }
+  start(time?: number): void { this._node.start?.(time ?? 0); }
+  stop(time?: number): void { this._node.stop?.(time ?? 0); }
+}
+
+class MpGainNode implements IPlatformGainNode {
+  private _node: any;
+  gain: IPlatformAudioParam;
+
+  constructor(node: any) {
+    this._node = node;
+    this.gain = new MpAudioParam(node, 'gain');
+  }
+
+  get __raw(): any { return this._node; }
+  connect(dest: IPlatformAudioNode): void { this._node.connect((dest as any).__raw); }
+  disconnect(): void { this._node.disconnect?.(); }
+}
+
+class MpBufferSourceNode implements IPlatformBufferSourceNode {
+  private _node: any;
+  buffer: IPlatformAudioBuffer | null = null;
+  loop: boolean = false;
+
+  constructor(node: any) {
+    this._node = node;
+  }
+
+  set buffer(v: IPlatformAudioBuffer | null) { this._node.buffer = (v as any)?.__raw ?? null; }
+  get buffer(): IPlatformAudioBuffer | null { return (this._node.buffer ? new MpAudioBuffer(this._node.buffer) : null); }
+
+  connect(dest: IPlatformAudioNode): void { this._node.connect((dest as any).__raw); }
+  disconnect(): void { this._node.disconnect?.(); }
+  start(time?: number): void { this._node.start?.(time ?? 0); }
+  stop(time?: number): void { this._node.stop?.(time ?? 0); }
+}
+
+class MpAudioBuffer implements IPlatformAudioBuffer {
+  private _buffer: any;
+
+  constructor(buffer: any) {
+    this._buffer = buffer;
+  }
+
+  get __raw(): any { return this._buffer; }
+  getChannelData(channel: number): Float32Array { return this._buffer.getChannelData(channel); }
+}
+
+class MpAudioDestination implements IPlatformAudioDestination {
+  constructor(private _node: any) {}
+  get __raw(): any { return this._node; }
+}
+
+class MpAudioContext implements IPlatformAudioContext {
+  private _ctx: any;
+  sampleRate: number;
+  destination: IPlatformAudioDestination;
+
+  constructor(rawCtx: any) {
+    this._ctx = rawCtx;
+    this.sampleRate = rawCtx.sampleRate;
+    this.destination = new MpAudioDestination(rawCtx.destination);
+  }
+
+  get currentTime(): number { return this._ctx.currentTime; }
+
+  createOscillator(): IPlatformOscillatorNode {
+    return new MpOscillatorNode(this._ctx.createOscillator());
+  }
+
+  createGain(): IPlatformGainNode {
+    return new MpGainNode(this._ctx.createGain());
+  }
+
+  createBufferSource(): IPlatformBufferSourceNode {
+    return new MpBufferSourceNode(this._ctx.createBufferSource());
+  }
+
+  createBuffer(numChannels: number, length: number, sampleRate: number): IPlatformAudioBuffer {
+    return new MpAudioBuffer(this._ctx.createBuffer(numChannels, length, sampleRate));
   }
 }

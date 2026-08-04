@@ -4,13 +4,179 @@
 
 ---
 
+## 🔴 BUG-025: OpeningScenePlayer.applyScene 从未被调用 [已修复]
+
+### BUG-025: isFirstFrame 逻辑错误 → 开场动画CHR Bank 从未切换 [🟢 已修复]
+- **状态**: 🟢 已修复 (2026-08-05)
+- **严重度**: 🔴 高 (开场动画无画面)
+- **来源**: 代码审查 (M_INFRA.5 重构)
+- **描述**: `OpeningScenePlayer.processScene()` 中:
+  ```typescript
+  // ❌ 永远为 false
+  const isFirstFrame = (this.subState !== this.data.read(0x03CB));
+  ```
+  因为在 `update()` 开头: `this.subState = this.data.read(0x03CB)`，导致 `isFirstFrame` 始终为 `false`，`applyScene()` 从未被调用，6 个分镜的 CHR Bank 配置从未生效。
+- **修复**: 新增 `lastSubState` 字段，在 `update()` 中保存上一帧状态:
+  ```typescript
+  this.lastSubState = this.subState;
+  this.subState = this.data.read(0x03CB);
+  // 子状态变化检测
+  if (this.subState !== this.lastSubState) { this.frameCounter = 0; }
+  ```
+  然后 `processScene` 中: `const isFirstFrame = (this.subState !== this.lastSubState)`.
+- **修复文件**: `src/engine/OpeningScenePlayer.ts`
+- **影响范围**: 开场动画 6 个分镜 (现在正确切换 CHR Bank)
+
+---
+
+## 🔴 BUG-024: Renderer tileBase 计算错误导致 tile 索引偏移 [已修复]
+
+### BUG-024: `(chrBank & 1) * 128` 只取 CHR bank 最低位，完全错误 [🟢 已修复]
+- **状态**: 🟢 已修复 (2026-08-05)
+- **严重度**: 🔴 高 (渲染管线 bug)
+- **来源**: 代码审查 (M_INFRA.1 重构)
+- **描述**: `Renderer.renderBackgroundToBuf()` 和 `renderSpritesToBuf()` 中:
+  ```typescript
+  // ❌ 错误
+  const tileBase = (bgChrBank & 1) * 128;
+  // 如果 chrBank = 0x1E (30), tileBase = (30 & 1) * 128 = 0
+  // 如果 chrBank = 0x1F (31), tileBase = (31 & 1) * 128 = 128
+  // 这导致 bank 31 的 tile 0 被当作 tile 128 来查！
+  ```
+  MMC1 4KB 模式下，每个 CHR bank 有完整的 256 tiles (0-255)。tile 索引从 nametable 读出的值直接使用，不需要偏移。
+- **修复**: `tileBase` → `0` (tile 索引不偏移)，CHR bank 编号正确传递给 TileStore.getTileRow()
+- **修复文件**: `src/renderer/Renderer.ts` (renderBackgroundToBuf + renderSpritesToBuf)
+- **影响范围**: 所有使用 CHR bank ≥ 1 的场景（标题、菜单、比赛均受影响）
+
+---
+
+## 🔴 BUG-023: 微信小程序 MpAudioParam 无法设置 GainNode.gain [已修复]
+
+### BUG-023: MpAudioParam.value setter 尝试覆盖 GainNode.gain 属性 [🔴 已修复]
+- **状态**: 🔴 已修复 (2026-08-05)
+- **严重度**: 🔴 高 (游戏启动即崩溃)
+- **来源**: 微信开发者工具运行时错误
+- **错误信息**: `TypeError: Cannot set property gain of [object GainNode] which has only a getter`
+- **调用栈**: `MpAudioParam.set (MpPlatform.ts:208)` → `ApuSimulator.constructor (ApuSimulator.ts:159)` → `Tsubasa.initialize (Tsubasa.ts:148)` → `Tsubasa.constructor (Tsubasa.ts:99)`
+- **根因**: `MpAudioParam` 的 setter 设计有误：
+  ```typescript
+  // 错误：尝试在 GainNode 上直接覆盖 gain 属性
+  this._target[this._prop] = v;  // → gainNode['gain'] = 0.5
+  ```
+  在微信小程序的 WebAudio 实现中，`GainNode.gain` 是只读属性（getter-only，返回 AudioParam 对象），不能被直接替换。标准 Web Audio API 也是如此——应该通过 `AudioParam.value` 来设置值。
+- **修复**: 改为存储 AudioParam 对象本身（`node.gain`），然后通过 `_param.value = v` 设置：
+  ```typescript
+  constructor(target: any, prop: string) {
+    this._param = target[prop]; // 提取 AudioParam 对象
+  }
+  set value(v: number) {
+    this._param.value = v; // 设置 AudioParam.value，而非替换父节点属性
+  }
+  ```
+  并添加 `try/catch` 回退到 `setValueAtTime(v, 0)` 以应对极端情况。
+- **修复文件**: `src/platform/miniprogram/MpPlatform.ts` — `MpAudioParam` 类重写
+- **影响范围**: `MpGainNode` (GainNode.gain) 和 `MpOscillatorNode` (OscillatorNode.frequency) 均使用 `MpAudioParam`，一并修复。
+
+---
+
+## 🟡 BUG-021: 音频系统完全缺失
+
+### BUG-021: 项目无任何音频模块 [🟡 中严重度]
+- **状态**: 🟡 部分修复 (2026-08-05)
+- **严重度**: 🟡 中 (游戏可玩但静音，功能不完整)
+- **来源**: 用户反馈 (2026-08-05)
+- **描述**: 项目从未规划音频模块。ARCHITECTURE.md、WBS_TASKS.md、ROM_STRUCTURE_REPORT.md 均无 audio/sound/music/APU 相关内容。
+- **影响**: 游戏完全无声——无BGM、无音效、无菜单提示音。NES 原版有完整的音乐和音效系统。
+- **ASM 依据**: Bank 1 `$9B00-$9FFF` 包含完整的 NES APU 音频引擎：
+  - 4通道处理 (Pulse 1/2, Triangle, Noise)
+  - 音乐播放器 (序列数据 → $4000-$4003 寄存器写入)
+  - 音效触发 (`$07F9` 标志位, `$9CEC` SoundInit)
+  - 操作码分发跳转表 (`$DC64`, 8条目)
+  - 音乐指针表 (`$E1A8`, 每个曲目2字节指针)
+- **计划修复**: 新增 M_AUDIO 里程碑 (8个任务, ~29h)，纳入 WBS_TASKS.md
+  - ✅ M_AUDIO.6: NMI 集成 (2026-08-05 完成 — 音频已接入 GameLoop 阶段1)
+  - ⬜ M_AUDIO.1: Bank 1 音频引擎 ASM 完整分析
+  - ⬜ M_AUDIO.2: ApuSimulator (Web Audio API) — 已有基础实现
+  - ⬜ M_AUDIO.3: AudioEngine (音乐播放逻辑) — 已有基础实现
+  - ⬜ M_AUDIO.4: 音乐数据提取
+  - ⬜ M_AUDIO.5: 音效系统
+  - ⬜ M_AUDIO.7: 小程序兼容
+  - ⬜ M_AUDIO.8: 音频测试
+- **参考文件**: ROM_STRUCTURE_REPORT.md (新增 §8.5 音频引擎), ARCHITECTURE.md (新增 audio/ 目录)
+
+---
+
+## 🟢 BUG-022: 音频引擎未接入 GameLoop 帧循环 [已修复]
+
+### BUG-022: 音频同步机制缺失 [🟢 已修复]
+- **状态**: 🟢 已修复 (2026-08-05)
+- **严重度**: 🔴 高 (音频代码存在但从未执行)
+- **来源**: 用户反馈 (2026-08-05): "音频播放和画面渲染、游戏逻辑要同步处理"
+- **描述**: `AudioEngine` 和 `ApuSimulator` 代码已经实现（~565行 + ~675行），但完全未接入 GameLoop：
+  - `GameLoop.ts` 阶段1 没有音频更新调用
+  - `Tsubasa.ts` 从未创建 `AudioEngine`/`ApuSimulator`
+  - `IPlatform` 没有音频上下文抽象
+  - `step()` 手动步进也没有音频更新
+- **根因**: M_AUDIO 里程碑规划了音频模块，但只实现了核心类（ApuSimulator, AudioEngine），从未将它们接入帧循环。
+- **ASM 依据**: NES 中音频引擎 `$9B00 SoundFrameUpdate` 在 NMI 期间被调用，与 PPU 数据填充（OAM DMA、VRAM 写入）在同一阶段。
+- **修复内容**:
+  1. ✅ `IPlatform.ts`: 添加 `createAudioContext()` 方法和 `IPlatformAudioContext` 等音频接口
+  2. ✅ `MpPlatform.ts`: 实现 `createAudioContext()` (使用 `wx.createWebAudioContext`)
+  3. ✅ `ApuSimulator.ts`: 重构为使用平台层 `IPlatformAudioContext` 类型（消除重复定义）
+  4. ✅ `GameLoop.ts`: 构造函数接受 `AudioEngine | null`，阶段1 调用 `audioEngine.update()`
+  5. ✅ `Tsubasa.ts`: 创建完整音频管线（Platform AudioContext → ApuSimulator → AudioEngine → GameLoop）
+  6. ✅ `Tsubasa.step()`: 手动帧步进也包含音频更新
+- **帧同步时序**:
+  ```
+  每帧 RAF 回调:
+    阶段1: PPU数据填充 + 🆕 AudioEngine.update()  (音画同步)
+    阶段2: 游戏逻辑更新
+    阶段3: 场景构建 (Model → VRAM+OAM)
+    阶段4: Canvas渲染
+  ```
+- **变更文件**:
+  - `src/platform/IPlatform.ts` — 新增音频接口
+  - `src/platform/miniprogram/MpPlatform.ts` — 实现音频上下文创建
+  - `src/audio/ApuSimulator.ts` — 使用平台类型
+  - `src/core/GameLoop.ts` — 阶段1 音频更新
+  - `src/core/Tsubasa.ts` — 音频管线创建+注入
+- **已知限制**: 音乐数据 (`MusicData.ts`) 仍为占位空序列，待 M_AUDIO.4 从 ROM 提取
+
+---
+
 ## 🔴🔴🔴 BUG-020: STATE_DISPATCH_MAP 8个状态7个映射错误 (架构级Bug)
 
 ### BUG-020: StateMachine 的 STATE_DISPATCH_MAP 与 ASM 实际跳转表严重不符 [🔴🔴🔴 最高严重度]
-- **状态**: 🔴 打开 (WBS 已回退 — 2026-08-05)
-- **严重度**: 🔴🔴🔴 最高 (架构崩溃)
+- **状态**: 🟢 已修复 (2026-08-05, M2-R.1/M2-R.2 完成)
+- **严重度**: 🔴🔴🔴 最高 (架构崩溃 → 已重建)
 - **来源**: 用户反馈 + ASM验证 (2026-08-05)
-- **WBS回退**: M2/M3/M4/M4A 四个里程碑已回退，新建 M2-R 重做计划。详见 WBS_TASKS.md。
+- **WBS回退**: M2/M3/M4/M4A 四个里程碑已回退，M2-R.1/M2-R.2 已完成。
+
+- **修复内容 (2026-08-05)**:
+  1. ✅ **M2-R.1**: 从 ASM 源码完整分析 $81F7 状态调度器
+     - 跳转表 $81FD-$820C: 8 条目完全解码
+     - $84D2 函数 ($84D2-$84EC): 高4位=PRG Bank, 低4位=Sub-state
+     - State 3 ($85CD): 比赛初始化, 自动→State 4
+     - State 4 ($87B9): 比赛主循环 (直接代码)
+     - State 5 ($820D): 状态转换管理器 (交通指挥)
+     - State 6 ($8264): Bank 6 sub 3 (事件处理)
+     - State 7 ($8270): Bank 6 sub 1 (比赛结果)
+  2. ✅ **M2-R.2**: StateMachine 完全重写
+     - STATE_TABLE 与 ASM 完全一致
+     - 区分 'dispatch' 和 'direct' 两种状态类型
+     - 无 State 8 (ASM 中不存在)
+  3. ✅ 移除所有 State 8 引用 (Tsubasa.ts, AutoPlayController.ts, auto_play_test.py)
+  4. ✅ DataCache.initMatchRam() 实现 State 3 的 RAM 初始化逻辑
+
+- **影响文件**:
+  - `src/engine/StateMachine.ts` — 完全重写
+  - `src/cache/DataCache.ts` — 添加 initMatchRam()
+  - `src/core/Tsubasa.ts` — 移除 State 8 注册
+  - `src/engine/AutoPlayController.ts` — 移除 State 8 处理
+  - `src/engine/states/index.ts` — 移除 State 8 导出
+  - `scripts/auto_play_test.py` — 修复状态流转
+
+- **分析文档**: `temp/STATE_DISPATCHER_ANALYSIS.md`
 - **描述**: `StateMachine.ts` 中的 `STATE_DISPATCH_MAP` 与 ASM `$81FD` 跳转表几乎全部不匹配。
 
   实际 ASM 跳转表（从 `bank_00_code.asm` $81FD-$820C 读取）:

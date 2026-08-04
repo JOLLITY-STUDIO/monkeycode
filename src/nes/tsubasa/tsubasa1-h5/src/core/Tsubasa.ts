@@ -24,6 +24,7 @@ import { PpuDataFiller } from '../engine/NmiHandler';
 import { StateMachine } from '../engine/StateMachine';
 import { AutoPlayController } from '../engine/AutoPlayController';
 import { GameModel } from '../model/GameModel';
+import { ProgressManager } from '../model/ProgressManager';
 import { SceneComposer } from '../view/SceneComposer';
 import {
   State00_InitTitle,
@@ -38,6 +39,10 @@ import {
 } from '../engine/states/index';
 import { Button, GameInput } from './types';
 import type { IPlatform, ICanvasContext } from '../platform/IPlatform';
+// 🆕 音频模块
+import { ApuSimulator } from '../audio/ApuSimulator';
+import { AudioEngine } from '../audio/AudioEngine';
+import { MUSIC_TRACKS, MUSIC_SEQUENCES } from '../audio/MusicData';
 
 export interface TsubasaOptions {
   spriteBasePath?: string;
@@ -68,7 +73,12 @@ export class Tsubasa {
 
   // 模型与视图层 (v0.6.0 架构分离)
   private gameModel!: GameModel;
+  private progressManager!: ProgressManager;
   private sceneComposer!: SceneComposer;
+
+  // 🆕 音频系统
+  private audioEngine: AudioEngine | null = null;
+  private apuSimulator: ApuSimulator | null = null;
 
   // 状态
   private state: TsubasaState = 'stopped';
@@ -106,14 +116,17 @@ export class Tsubasa {
 
     // === v0.6.0 架构分离: Model + View ===
     this.gameModel = new GameModel();
+    this.progressManager = new ProgressManager();
     this.sceneComposer = new SceneComposer(this.renderer, this.oamCache);
 
     this.stateMachine = new StateMachine(
       this.dataCache, this.inputManager, this.renderer,
       this.oamCache, this.bankManager, this.ppuQueue,
       this.gameModel,  // ← 注入 model
+      this.audioEngine,  // 🆕 注入音频引擎 (开场 BGM)
     );
 
+    // ASM 跳转表 $81FD 只有 8 条目 (State 0-7), 无 State 8
     this.stateMachine.registerStates([
       new State00_InitTitle(this.stateMachine),
       new State01_TitleLoop(this.stateMachine),
@@ -126,17 +139,43 @@ export class Tsubasa {
       new StateTest(this.stateMachine),
     ]);
 
+    // ═══════════════════════════════════════════════
+    // 🆕 音频管线: Platform AudioContext → ApuSimulator → AudioEngine
+    // 在 NES 中 APU 寄存器 ($4000-$4013) 由音频引擎在 NMI 期间写入
+    // ═══════════════════════════════════════════════
+    const audioCtx = this.platform.createAudioContext?.() ?? null;
+    if (audioCtx) {
+      this.apuSimulator = new ApuSimulator(audioCtx);
+      this.audioEngine = new AudioEngine(this.apuSimulator);
+
+      // 注册音乐曲目 (占位数据，待 ROM 提取)
+      for (let i = 0; i < MUSIC_TRACKS.length; i++) {
+        const seq = MUSIC_SEQUENCES[i];
+        if (seq && seq.data.length > 0) {
+          this.audioEngine!.registerTrack(MUSIC_TRACKS[i], seq.data);
+        }
+      }
+
+      if (this.options.debug) {
+        console.log('[Tsubasa] Audio engine initialized (' +
+          this.audioEngine.getTrackList().length + ' tracks registered)');
+      }
+    } else {
+      console.log('[Tsubasa] Audio DISABLED (platform does not support Web Audio API)');
+    }
+
     // PPU数据填充器 — 对应NMI中的硬件操作
     this.ppuFiller = new PpuDataFiller(
       this.dataCache, this.oamCache, this.ppuQueue,
       this.inputManager, this.renderer,
     );
 
-    // 游戏循环 — 编排三段式帧: PPU填充 → 游戏逻辑 → 场景构建 → 渲染
+    // 游戏循环 — 编排四段式帧: PPU填充+音频 → 游戏逻辑 → 场景构建 → 渲染
     this.gameLoop = new GameLoop(
       this.platform, this.ppuFiller, this.renderer,
       this.stateMachine, this.dataCache,
       this.sceneComposer, this.gameModel,  // ← 注入 composer + model
+      this.audioEngine,  // 🆕 注入音频引擎
     );
 
     // 自动播放控制器
@@ -175,6 +214,15 @@ export class Tsubasa {
     // 初始化 Bank 1 子状态变量 ($03CB, $03CC)
     this.dataCache.write(0x03CB, 0);
     this.dataCache.write(0x03CC, 0);
+
+    // 初始化进度管理器
+    this.progressManager.reset();
+    this.dataCache.set('progressManager', this.progressManager);
+
+    // 设置初始队伍名称（比赛序列数据待从ROM提取，当前使用默认值）
+    const firstMatch = this.progressManager.getCurrentMatch();
+    this.dataCache.set('playerTeamName', firstMatch?.playerTeamName ?? 'Nankatsu');
+    this.dataCache.set('opponentTeamName', firstMatch?.opponentName ?? 'Opponent');
 
     console.log('[Tsubasa] Transitioning to State 0 (Title Init)');
 
@@ -233,8 +281,8 @@ export class Tsubasa {
   /**
    * 手动步进一帧 (用于对比验证场景)
    *
-   * 帧四段式 (v0.6.0):
-   *   1. PPU数据填充 (OAM DMA → VRAM写入 → 输入读取 → 帧计数)
+   * 帧四段式 + 音频同步 (v0.x.0):
+   *   1. PPU数据填充 + 音频更新 (OAM DMA → VRAM写入 → 输入读取 → 帧计数 → AudioEngine.update)
    *   2. 游戏逻辑 (状态机更新 → 写 GameModel)
    *   3. 场景构建 (SceneComposer: Model → VRAM+OAM)
    *   4. Canvas渲染 (Renderer: VRAM+OAM → Canvas)
@@ -242,8 +290,11 @@ export class Tsubasa {
   step(): void {
     if (this.state !== 'running') return;
 
-    // 阶段1: PPU数据填充
+    // 阶段1: PPU数据填充 + 音频更新
     this.ppuFiller.fillPpuData();
+    if (this.audioEngine) {
+      this.audioEngine.update();
+    }
 
     // 阶段2: 游戏逻辑
     if (this.dataCache.bankLock === 0) {

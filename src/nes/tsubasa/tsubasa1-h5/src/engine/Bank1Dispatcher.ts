@@ -27,6 +27,7 @@ import type { Renderer } from '../renderer/Renderer';
 import type { OamCache } from '../cache/OamCache';
 import type { PpuQueue } from '../cache/PpuQueue';
 import type { InputManager } from '../input/InputManager';
+import { TITLE_PAGES } from '../data/TitleRleData';
 
 /**
  * 标题画面调色板 - 从 ROM Bank 2 偏移 $B24F 区域提取
@@ -48,99 +49,10 @@ const TITLE_SPR_PALETTE: number[] = [
 ];
 
 // ============================================================
-// 名称表构建 — 5 页分页布局 (模拟 ROM 的 RLE 分页加载)
-// 真实 ROM 通过 Bank 7 的 RLE 引擎 ($C2C2) 解压数据
-// 这里暂时使用结构化近似布局
+// 名称表数据 — 来自 ROM Bank 1 的 RLE 解码器 ($C2C2)
+// 数据已从 ROM 提取并解码到 TitleRleData.ts
+// TITLE_PAGES[0..4]: 5 页标题画面，每页含 nametable(960B) + attrs(64B)
 // ============================================================
-
-/** 构建全页背景 (page 0-4 的 baseline, 每页只填充特定区域) */
-function buildTitlePage(page: number): { nametable: number[]; attrs: number[] } {
-  const nt = new Array<number>(960).fill(0x00);
-  const attrs = new Array<number>(64).fill(0x00);
-
-  switch (page) {
-    case 0: {
-      // Page 0: 标题大字 "CAPTAIN TSUBASA" (上半部分) + 背景
-      // 用 tile 0x01 做彩色条带上边框验证渲染管线
-      for (let x = 0; x < 32; x++) { nt[0 * 32 + x] = 0x01; nt[29 * 32 + x] = 0x01; }
-      for (let y = 1; y < 29; y++) { nt[y * 32 + 0] = 0x01; nt[y * 32 + 31] = 0x01; }
-
-      // 标题条纹 (行 3-8, 交替使用 tile 0x02 和 0x03)
-      for (let y = 3; y <= 8; y++) {
-        const tile = (y % 2 === 0) ? 0x02 : 0x03;
-        for (let x = 6; x < 26; x++) {
-          nt[y * 32 + x] = tile;
-        }
-      }
-
-      // CAPTAIN TSUBASA 文字占位 (行 5, tile 0x10-0x1F)
-      const title = "CAPTAIN TSUBASA";
-      for (let i = 0; i < title.length; i++) {
-        nt[5 * 32 + 8 + i] = 0x10 + i;
-      }
-
-      // 上半部分使用调色板 1
-      for (let i = 0; i < 32; i++) attrs[i] = 0x55;
-      break;
-    }
-
-    case 1: {
-      // Page 1: 标题大字下半部分 + 副标题
-      for (let y = 9; y <= 11; y++) {
-        for (let x = 6; x < 26; x++) {
-          nt[y * 32 + x] = (y % 2 === 0) ? 0x02 : 0x03;
-        }
-      }
-      // 副标题 (行 9)
-      const subtitle = "FOOTBALL KING";
-      for (let i = 0; i < subtitle.length; i++) {
-        nt[9 * 32 + 8 + i] = 0x20 + i;
-      }
-
-      for (let i = 0; i < 32; i++) attrs[i] = 0x55;
-      break;
-    }
-
-    case 2: {
-      // Page 2: 角色展示区 (行 12-18)
-      for (let y = 12; y < 18; y++) {
-        for (let x = 5; x < 27; x++) {
-          nt[y * 32 + x] = 0x30 + ((y - 12) * 22 + (x - 5)) % 0x80;
-        }
-      }
-      for (let i = 16; i < 40; i++) attrs[i] = 0xAA; // palette 2
-      break;
-    }
-
-    case 3: {
-      // Page 3: PRESS START 提示 (行 22-24)
-      const press = ">>> PRESS START <<<";
-      for (let i = 0; i < press.length; i++) {
-        nt[22 * 32 + 7 + i] = 0x40 + (press.charCodeAt(i) & 0x3F);
-      }
-      const button = "[BUTTON]";
-      for (let i = 0; i < button.length; i++) {
-        nt[23 * 32 + 10 + i] = 0x40 + (button.charCodeAt(i) & 0x3F);
-      }
-
-      // PRESS START 区域使用调色板 3 (attr bytes 40-55 → tile rows 20-27)
-      for (let i = 40; i < 56; i++) attrs[i] = 0xFF;
-      break;
-    }
-
-    case 4: {
-      // Page 4: 版权信息 (行 27) + 装饰
-      const copyright = "(C) 1988 TECMO";
-      for (let i = 0; i < copyright.length; i++) {
-        nt[27 * 32 + 8 + i] = 0x50 + (copyright.charCodeAt(i) & 0x3F);
-      }
-      for (let i = 56; i < 64; i++) attrs[i] = 0xFF;
-      break;
-    }
-  }
-
-  return { nametable: nt, attrs };
-}
 
 /**
  * 菜单画面调色板 - 从 ROM Bank 2 提取 ($B261 area)
@@ -234,6 +146,7 @@ export class Bank1Dispatcher {
   // 子状态 1: 加载当前页数据 ($C070)
   //   对应 ROM: JSR $C2C2 (load NT) + JSR $C383 (load palette)
   //   按 page index ($7A) 分页加载
+  //   使用从 ROM Bank 1 提取并解码的真实 TITLE_PAGES 数据
   //   RLE 解码器只写入非零 tile, 故页面级数据逐页累积
   // ==========================================
   private subState01_LoadPage(): void {
@@ -249,14 +162,15 @@ export class Bank1Dispatcher {
       console.log('[Bank1] Page 0: Palette loaded');
     }
 
-    // 模拟 RLE 行为: 只写入非零 tile, 保留已有数据
-    const diff = buildTitlePage(this.titlePage);
+    // 从 ROM 解码数据获取当前页 (对应 ROM 中 $C2C2 RLE 解码后的结果)
+    const pageData = TITLE_PAGES[this.titlePage];
 
     // 写入名称表 (跳过 tile===0 的字节, 保留上页数据)
+    // 模拟 RLE 行为: 数据从 ROM Bank 1（脚本引擎 RLE 解码器 $C2C2）提取
     let ntWritten = 0;
     for (let i = 0; i < 960; i++) {
-      if (diff.nametable[i] !== 0) {
-        this.renderer.writeVram(0x2000 + i, diff.nametable[i]);
+      if (pageData.nametable[i] !== 0) {
+        this.renderer.writeVram(0x2000 + i, pageData.nametable[i]);
         ntWritten++;
       }
     }
@@ -264,8 +178,8 @@ export class Bank1Dispatcher {
     // 写入属性表 (跳过值为0的字节, 合并已有属性)
     let atWritten = 0;
     for (let i = 0; i < 64; i++) {
-      if (diff.attrs[i] !== 0) {
-        this.renderer.writeVram(0x23C0 + i, diff.attrs[i]);
+      if (pageData.attrs[i] !== 0) {
+        this.renderer.writeVram(0x23C0 + i, pageData.attrs[i]);
         atWritten++;
       }
     }

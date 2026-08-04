@@ -106,24 +106,46 @@ export class State04_MatchMain extends StateBase {
     console.log(`[State 04] Event: ${event.type}`, event.data);
 
     switch (event.type) {
-      case 'goal':
-        this.matchEngine.handleGoal(event.data?.scoringTeam ?? 0);
+      case 'goal': {
+        const scoringTeam = event.data?.scoringTeam ?? 0;
+        this.matchEngine.handleGoal(scoringTeam);
         this.model.setEvent('goal', 0, event.data?.playerId ?? 0, this.matchEngine.score as [number, number]);
         this.data.set('eventType', 'goal');
         this.data.set('eventData', event.data);
         this.sm.transitionTo(5);
         break;
+      }
+      case 'shoot': {
+        // 射门事件: 球已飞出，检查是否会进球
+        // 给几帧让球飞行，然后检查进球
+        // 如果事件数据中已经有 scoringTeam，是AI决定的结果
+        // 实际进球检测在 MatchEngine.updateBallPhysics 中通过 checkGoal 完成
+        console.log(`[State 04] Shoot by #${event.data?.playerId}, vx=${event.data?.velocity?.vx}`);
+        break;
+      }
+      case 'pass': {
+        console.log(`[State 04] Pass: #${event.data?.playerId} → #${event.data?.targetId}`);
+        break;
+      }
+      case 'tackle_success': {
+        console.log(`[State 04] Tackle SUCCESS: #${event.data?.tacklerId} ← #${event.data?.targetId}`);
+        break;
+      }
+      case 'tackle_fail': {
+        console.log(`[State 04] Tackle FAIL: #${event.data?.tacklerId} vs #${event.data?.targetId}`);
+        break;
+      }
       case 'halftime':
         this.matchEngine.phase = MatchPhase.SECOND_HALF;
         this.matchEngine.matchTime = this.matchEngine.halfLength;
         this.data.set('eventType', 'halftime');
-        this.sm.transitionTo(6); // ← State 06: 半场过渡
+        this.sm.transitionTo(6);
         break;
       case 'fulltime':
         this.model.setEvent('fulltime', 0, 0, this.matchEngine.score as [number, number]);
         this.data.set('eventType', 'fulltime');
         this.data.set('finalScore', this.matchEngine.score);
-        this.sm.transitionTo(6); // ← State 06: 终场过渡 → State 07
+        this.sm.transitionTo(6);
         break;
     }
   }

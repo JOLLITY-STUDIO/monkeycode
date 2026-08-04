@@ -29,6 +29,8 @@ Page({
     autoPlay: false,
     /** 自动播放日志 (最新一条) */
     autoPlayLog: '',
+    /** 调试菜单是否显示 */
+    showDebugMenu: false,
   },
 
   /** 游戏实例 */
@@ -207,5 +209,19 @@ Page({
   /** Canvas 触摸移动 */
   onTouchMove(_e: any) {
     // 预留
+  },
+
+  /** 调试菜单切换 */
+  onDebugMenuToggle() {
+    this.setData({ showDebugMenu: !this.data.showDebugMenu });
+  },
+
+  /** 导航到调试页面 */
+  onNavToDebug(e: any) {
+    const page = e.currentTarget.dataset.page;
+    this.setData({ showDebugMenu: false });
+    wx.navigateTo({
+      url: `/pages/${page}/${page}`,
+    });
   },
 });

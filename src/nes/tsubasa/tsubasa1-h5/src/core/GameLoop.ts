@@ -31,6 +31,7 @@ import type { AutoPlayController } from '../engine/AutoPlayController';
 import type { DataCache } from '../cache/DataCache';
 import type { SceneComposer } from '../view/SceneComposer';
 import type { GameModel } from '../model/GameModel';
+import type { AudioEngine } from '../audio/AudioEngine';
 import type { IPlatform } from '../platform/IPlatform';
 
 /** FPS 滑动窗口大小 (秒) */
@@ -50,6 +51,9 @@ export class GameLoop {
   private platform: IPlatform;
   private autoPlayController: AutoPlayController | null = null;
 
+  /** 🆕 v0.x.0: 音频引擎 (NMI 阶段同步更新) */
+  private audioEngine: AudioEngine | null = null;
+
   /** v0.6.0: 场景构建器 (Model → VRAM+OAM) */
   private sceneComposer: SceneComposer;
   /** v0.6.0: 游戏数据模型 (logic ↔ view 之间的共享数据) */
@@ -68,6 +72,7 @@ export class GameLoop {
     dataCache: DataCache,
     sceneComposer: SceneComposer,
     gameModel: GameModel,
+    audioEngine: AudioEngine | null = null,
   ) {
     this.platform = platform;
     this.ppuFiller = ppuFiller;
@@ -76,6 +81,7 @@ export class GameLoop {
     this.dataCache = dataCache;
     this.sceneComposer = sceneComposer;
     this.gameModel = gameModel;
+    this.audioEngine = audioEngine;
   }
 
   /** 设置自动播放控制器 */
@@ -110,10 +116,11 @@ export class GameLoop {
   }
 
   /**
-   * 帧循环 — 四段式架构 (v0.6.0)
+   * 帧循环 — 四段式架构 (v0.6.0) + 音频同步 (v0.x.0)
    *
-   *   阶段1: PPU数据填充 (NMI)
-   *     OAM DMA → VRAM写入 → 输入读取 → 帧计数
+   *   阶段1: PPU数据填充 + 音频更新 (NMI)
+   *     OAM DMA → VRAM写入 → 输入读取 → 帧计数 → 🆕 AudioEngine.update()
+   *     NES: CPU在VBlank期间填PPU寄存器 + 写APU寄存器
    *
    *   阶段2: 游戏逻辑
    *     状态机更新 → AI/脚本 → 修改 GameModel
@@ -153,9 +160,17 @@ export class GameLoop {
     this.lastFrameTime = timestamp;
 
     // ═══════════════════════════════════════════
-    // 阶段1: PPU数据填充 (NMI)
+    // 阶段1: PPU数据填充 + 音频更新 (NMI)
+    //   NES: CPU在VBlank期间:
+    //     - 填PPU寄存器 (OAM DMA, VRAM, 调色板)
+    //     - 写APU寄存器 ($4000-$4013) → 音乐/音效
     // ═══════════════════════════════════════════
     this.ppuFiller.fillPpuData();
+
+    // 🆕 音频引擎更新 — 与 PPU 填充同阶段，确保音画同步
+    if (this.audioEngine) {
+      this.audioEngine.update();
+    }
 
     // ═══════════════════════════════════════════
     // 阶段2: 游戏逻辑

@@ -138,3 +138,157 @@ $84EC: JMP ($05FB)   ; 跳转到目标Bank的$C000+跳转表
 - **M4A** (ROM 数据提取) — 需在纠正状态机后进行
 
 **不受影响的基础组件**: M1 (项目框架), RESET流程, NMI处理, PPU队列, 输入读取, RNG, CHR渲染管线
+
+---
+
+## FAQ-005: 音频为什么现在才加入？ (2026-08-05)
+
+### 用户原话
+"我说了还有音频呢"
+
+### 回答
+用户正确指出音频模块被遗漏。项目从一开始就没有规划音频，所有文档中搜索不到 audio/sound/music/APU 相关内容。
+
+### ASM 音频引擎分析
+Bank 1 `$9B00-$9FFF` 包含完整的 NES APU 5通道音频引擎：
+- **入口**: `$9B00` SoundFrameUpdate (每帧调用)
+- **4条音乐通道**: Pulse 1 (`$4000-$4003`), Pulse 2 (`$4004-$4007`), Triangle (`$4008-$400B`), Noise (`$400C-$400F`)
+- **通道状态**: `$0759-$0798` (4通道 × 16字节)
+- **操作码跳转表**: `$DC64` (8条目)
+- **音乐指针表**: `$E1A8` (每个曲目 2字节)
+- **音效触发**: `$07F9` 标志位 + `$9CEC` SoundInit
+
+### 技术方案
+- **APU 模拟**: `ApuSimulator` → Web Audio API (OscillatorNode + Noise buffer)
+- **音乐引擎**: `AudioEngine` → 移植 ASM $9B00 播放逻辑
+- **数据提取**: Python 脚本从 ROM 提取音乐序列数据 → 结构化 TS 数据
+- **小程序兼容**: `wx.createWebAudioContext()` 或 `WebAudioContext`
+
+### 新增文件
+- `src/audio/ApuSimulator.ts` — APU 模拟器核心
+- `src/audio/AudioEngine.ts` — 音乐/音效引擎
+- `src/audio/MusicData.ts` — 音乐数据占位 (待ROM提取)
+- `src/audio/index.ts` — 模块导出
+- `scripts/extract_music_data.py` — ROM音乐数据提取工具
+
+### 状态
+已创建模块骨架，已加入 WBS (M_AUDIO 里程碑, 8任务, ~29h)。
+音乐数据为占位，需要 ROM 提取后替换。
+
+---
+
+## FAQ-007: 隐藏彩蛋 — 日向"新虎射"（Neo Tiger Shoot）(2026-08-05)
+
+### 用户发现
+"日向真的获得黑球学到新虎射" —— 这是游戏中真实存在的隐藏事件。
+
+### 触发条件 (基于攻略和ROM分析)
+在**预选赛阶段（对比利时/葡萄牙）**，当日向用「猛虎射门」射门被对方守门员连续挡出 **2次** 后：
+- 比赛结束后会触发剧情：吉良监督出现，将"黑球"交给日向
+- 日向学习「新・老虎射门」（Neo Tiger Shoot）
+- 这是一个威力远超普通猛虎射门的隐藏必杀技
+- 在对阿根廷和后续强队时至关重要
+
+### 实现要点
+- 需要在 MatchEngine 中追踪日向射门被阻挡的次数
+- 比赛结束后检查是否满足触发条件
+- 触发时显示剧情对话框 + 音效
+- 后续比赛中日向的射门指令增加「新虎射」选项
+
+---
+
+## FAQ-008: 隐藏彩蛋 — 寻找岬太郎 (Find Misaki) 巴黎AVG (2026-08-05)
+
+### 用户发现
+"寻找岬太郎也真的找到了" —— 这是游戏内置的巴黎AVG探索玩法。
+
+### 流程 (基于攻略)
+在到达欧洲后（东邦高中战后），翼一行人在巴黎需要找到岬太郎：
+1. 出发点：宿舍 `09:40`
+2. 调查→与岬和皮埃尔对话
+3. 凯旋门→调查下方
+4. 蒙马特→调查蓝衣人
+5. 公园→调查右侧第二棵树→片桐出现
+6. 调查片桐的嘴和口袋
+7. 竞技场→调查中间门→皮耶出现→调查嘴
+8. 罗浮美术馆→调查右下方第三窗→岬父出现
+9. 艾菲尔铁塔→调查下方→选第二项→与岬和皮耶对话
+10. 回宿舍→岬太郎加入！
+
+### 结论影响
+- **找到岬**：岬加入球队，可触发「黄金搭档」合体技，通关画面有翼和岬
+- **未找到岬**：岬不加入，通关画面只有翼一人，有寂寞感
+
+### 实现要点
+- 这是 Bank 7 脚本引擎 + Bank 1 AVG 系统的组合
+- 需要实现 AVG 场景（地点选择、调查指令、文本对话）
+- 需要对 Bank 7 的脚本字节码进行解码
+- 需要实现地点移动系统（地图→场所切换）
+
+---
+
+## FAQ-009: 为什么 State 00-01 必须有动画和BGM？(2026-08-05)
+
+### 用户质疑
+"问题是你进入state00-01就已经开始播放动画了背景音乐了呀，你不得一起做吗"
+
+### 分析
+用户完全正确。NES 原版游戏中，按下 POWER 键后：
+1. **RESET → State 0 ($84D2($10) → Bank 1, Sub 0)**
+2. Bank 1 的开场动画引擎立即启动：
+   - **BGM 播放**：开场音乐由 Bank 1 音频引擎 ($9B00) 驱动，在 NMI 中每帧调用
+   - **6 个分镜动画**：Bank 1 的 ram_03CB 从 0→1→2→...→7 逐步推进
+     - Sub 0: CHR Bank 初始化
+     - Sub 1: 分镜1——标题 Logo 淡入 (CHR Bank 00+09, tile逐帧打印)
+     - Sub 2: 分镜2——角色展示
+     - Sub 3: 分镜3——转场过渡
+     - Sub 4: 分镜4——角色特写 (CHR Bank 0D+0E)
+     - Sub 5: 分镜5——大空翼立绘展示
+     - Sub 6: 分镜6——动画收尾 (CHR Bank 0D+0F)
+     - Sub 7: 过渡 → 标题画面 (切换 State 01)
+   - **CHR Bank 切换**：每个分镜使用不同的 CHR Bank 组合（背景+精灵各一个）
+   - **文字 Tile 逐字打印**：Bank 1 的 PPU 队列系统逐帧将文字 tile 写入 nametable
+3. **State 1: 标题画面循环** — 5 页标题加载 + PRESS START 闪烁
+
+### 当前代码的不足
+- `State00_InitTitle.ts` 在第 2 帧就 transitionTo(1)
+- `Bank1Dispatcher` 跳过了 6 个分镜，直接到 5 页标题
+- 没有 BGM 触发
+- 没有 CHR Bank 切换（从 1E/1F 到 00/09 到 0D/0E 到...）
+- 没有文字 Tile 逐帧打印
+
+### 修正计划
+必须将 State 0 实现为完整的开场动画阶段：
+1. 音频引擎在 State 0 入口触发开场 BGM
+2. Bank1Dispatcher 增加 sub-states 0-7 的完整实现
+3. CHR Bank Manager 支持双 Bank 同时渲染
+4. 文字 Tile Printer 实现逐帧打字效果
+5. 转场效果（淡入淡出）
+
+---
+
+## FAQ-006: 微信小程序 WebAudio `GainNode.gain` 只读？ (2026-08-05)
+
+### 用户错误日志
+```
+TypeError: Cannot set property gain of [object GainNode] which has only a getter
+    at MpAudioParam.set (MpPlatform.ts:208)
+```
+
+### 回答
+这是微信小程序 WebAudio API 的一个兼容性陷阱。
+
+**标准 Web Audio API** 中，`GainNode.gain` 确实是只读属性（只返回 `AudioParam` 对象，不能被替换）。正确的做法是通过 `AudioParam.value` 来设置增益值：
+```javascript
+// ✅ 正确
+gainNode.gain.value = 0.5;
+
+// ❌ 错误 - 尝试覆盖 AudioParam 属性
+gainNode.gain = 0.5;
+```
+
+**根因**: 我们的 `MpAudioParam` 包装器错误地尝试设置父节点的属性（`gainNode['gain'] = 0.5`），而不是操作 AudioParam 对象。
+
+**修复**: 在构造函数中提取 `node.gain`（AudioParam 对象），然后对其 `.value` 进行设置。微信小程序和标准浏览器的 AudioParam 都支持 `.value` getter/setter。
+
+**影响范围**: `MpGainNode` 和 `MpOscillatorNode` 都使用 `MpAudioParam`，一并修复。

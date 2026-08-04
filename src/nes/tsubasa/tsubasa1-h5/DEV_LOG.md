@@ -4,6 +4,351 @@
 
 ---
 
+## 2026-08-05: 🔧 M_INFRA.5 音频引擎 ROM 数据提取 + BUG-025 修复
+
+### M_INFRA.5: 音频引擎 ROM 数据提取 ✅
+- ✅ **频率周期表**: 从 ROM Bank 1 $DFB0 提取 12 条 NES APU 11-bit period 值
+  - $06AE, $064E, $05F3, $059E, $054D, $0501, $04B9, $0475, $0435, $03F8, $03BF, $0389
+  - 对应 C, C#, D, D#, E, F, F#, G, G#, A, A#, B (低八度)
+  - 转换公式: `f = 1789773 / (16 * (period + 1))`
+- ✅ **音符时长表**: 从 ROM Bank 1 $DFC8 提取 64 条时长值
+- ✅ **音乐数据指针表**: 从 ROM Bank 1 $DFF0 提取 (序列0→$A01A, 1→$A03A, 2→$A07C, 3→$A0A4)
+- ✅ **MusicData.ts v3.0**: 新增 `noteToFrequency()`, `periodToFrequency()`, `FREQ_PERIOD_TABLE`, `NOTE_DURATION_TABLE`
+- ✅ **AudioEngine.playNote()** 重写: 使用真实 ROM 频率表解码音符字节
+  - 音符格式: `byte = oooo pppp` (octave + pitch)
+  - pitch ≥ 12 → 非音符 (rest/control)
+  - octave → period 右移位数
+
+### BUG-025 修复: OpeningScenePlayer.isFirstFrame 逻辑错误 [已修复]
+- **BUG-025**: `processScene()` 中 `isFirstFrame = (this.subState !== this.data.read(0x03CB))` 永远为 false
+  - 因为 `this.subState` 在 `update()` 开头已被 `this.data.read(0x03CB)` 更新
+  - 导致 `applyScene()` 从未被调用，CHR Bank 从不切换
+- **修复**: 新增 `lastSubState` 字段追踪上一帧状态，用于检测场景切换
+
+### 其他优化
+- ✅ 开场动画加速: 6 个分镜 duration 从 60-120 帧减少到 3 帧 (nametable数据待从ROM提取)
+- ✅ `sceneChangeDetected` 逻辑: 子状态变化时重置 `frameCounter`
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `src/audio/MusicData.ts` | ♻️ v3.0重写: 真实ROM频率/时长/指针表 |
+| `src/audio/AudioEngine.ts` | ♻️ playNote: noteToFrequency真实解码 + 移除硬编码NOTE_LENGTH_TABLE |
+| `src/engine/OpeningScenePlayer.ts` | 🐛 BUG-025: lastSubState + 场景切换修复 + 加速动画 |
+
+### ⏭ 下一步: 验证标题画面渲染 + 提取音乐序列数据
+
+---
+
+## 2026-08-05: 🏗️ 架构重计划 v1.0.0 — 基础设施先行的完整迭代
+
+### 用户核心反馈
+> "你进入state00-01就已经开始播放动画了背景音乐了呀，你不得一起做吗，按阶段迭代啊，但是基础设施都得有啊。还有我发现有隐藏彩蛋，日向真的获得黑球学到新虎射，还有寻找岬太郎也真的找到了。"
+
+### 认知转变
+**旧方法**: 先做状态逻辑骨架 → 渲染/音频后补 → 导致每个状态只有空壳
+**新方法**: 基础设施先行 → 每个状态完整交付（画面+声音+逻辑）
+
+### 三个隐藏彩蛋确认 (攻略验证)
+1. ✅ **日向"新虎射"** (Neo Tiger Shoot): 预选赛日向猛虎射门被 GK 连续挡出 2 次→吉良监督给黑球→习得
+2. ✅ **寻找岬太郎** (Paris AVG): 宿舍→凯旋门→蒙马特→公园→竞技场→罗浮→铁塔→回宿舍→岬加入
+3. ✅ **半场对话系统**: 选人补满体力 + 特定台词触发隐藏合体技 (翼+日向双射)
+
+### 架构重计划
+- ♻️ **WBS_TASKS.md**: 完全重写 —— 13 里程碑，基础设施先行
+- 🆕 **FAQ-007**: 日向新虎射彩蛋文档
+- 🆕 **FAQ-008**: 寻找岬太郎巴黎AVG文档
+- 🆕 **FAQ-009**: 为什么 State 00-01 必须有动画和BGM
+
+### M_INFRA.1: CHR Bank Manager 重构 ✅
+- ✅ **BUG-024**: 修复 Renderer `tileBase = (chrBank & 1) * 128` 错误 → 改为 `tileTableBase = 0`
+- ✅ **OpeningScenePlayer**: 创建 6 分镜开场动画播放器
+  - 每个分镜支持独立的 CHR Bank 配置 (bg + spr)
+  - 分镜 1: CHR 00 (标题) + 09 (字体)
+  - 分镜 2: CHR 00 + 09 (文字展示)
+  - 分镜 3: CHR 0D (头像) + 00 (转场)
+  - 分镜 4: CHR 0D + 0E (翼立绘特写)
+  - 分镜 5: CHR 0E + 0F (继续特写)
+  - 分镜 6: CHR 00 + 0D (收尾)
+- ✅ **StateMachine 集成**: 注入 AudioEngine + OpeningScenePlayer
+- ✅ **State00 重写**: 不再立即跳 State01，而是让 OpeningScenePlayer 驱动分镜
+- ✅ **State01 重写**: 保留 Bank1Dispatcher 驱动 5 页标题加载
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `src/renderer/Renderer.ts` | 🐛 BUG-024: tileBase 修复 |
+| `src/engine/OpeningScenePlayer.ts` | 🆕 6 分镜播放器 |
+| `src/engine/StateMachine.ts` | 🆕 OpeningScenePlayer + AudioEngine 集成 |
+| `src/engine/states/State00_InitTitle.ts` | ♻️ 不再立即跳 State01 |
+| `src/engine/states/State01_TitleLoop.ts` | ♻️ Bank1Dispatcher 驱动闪烁 |
+| `src/core/Tsubasa.ts` | 🔄 AudioEngine → StateMachine |
+| `FAQ.md` | 🆕 FAQ-007/008/009 |
+| `WBS_TASKS.md` | ♻️ 完全重写 (13 milestones) |
+| `BUG_TRACKER.md` | 🆕 BUG-024 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+### ⏭ 下一步: M_INFRA.2 文字 Tile Printer + M_INFRA.5 音频引擎 ROM 数据提取
+
+---
+
+---
+
+## 2026-08-05: 🔧 BUG-020 修复 (M2-R.1+M2-R.2) — ASM 源码级状态调度器分析 + StateMachine 重写
+
+### 用户指令
+"不要用模拟器，我要源码解析"
+
+### M2-R.1: $81F7 状态调度器 ASM 源码完整分析
+
+从 `bank_00_code.asm` 直接读取并解码状态调度器完整逻辑：
+
+**跳转表 ($81FD-$820C)** — 8 条目 × 2 字节:
+```
+$81FD: .byte $A1, $82  → State 0 → $82A1 → LDA #$10, JSR $84D2 → Bank 1, Sub 0
+$81FF: .byte $A7, $82  → State 1 → $82A7 → LDA #$5D, JSR $84D2 → Bank 5, Sub D
+$8201: .byte $76, $82  → State 2 → $8276 → LDA #$60, JSR $84D2 → Bank 6, Sub 0
+$8203: .byte $CD, $85  → State 3 → $85CD → 直接代码 (比赛初始化)
+$8205: .byte $B9, $87  → State 4 → $87B9 → 直接代码 (比赛主循环)
+$8207: .byte $0D, $82  → State 5 → $820D → 直接代码 (状态转换管理器)
+$8209: .byte $64, $82  → State 6 → $8264 → LDA #$63, JSR $84D2 → Bank 6, Sub 3
+$820B: .byte $70, $82  → State 7 → $8270 → LDA #$61, JSR $84D2 → Bank 6, Sub 1
+```
+
+**$84D2 函数 ($84D2-$84EC)**:
+```
+$84D2: PHA          ; 保存参数
+       LSR ×4        ; 高4位 → PRG Bank
+       JSR $83C5     ; Bank 切换
+       PLA           ; 恢复
+       AND #$0F      ; 低4位 → Sub-state
+       STA $05FC     ; 存储
+       ASL / ADC     ; ×3 (跳转表条目)
+       JMP ($05FB)   ; → $C000 + sub*3
+```
+参数格式: `param = (prgBank << 4) | subStateId`
+
+**State 3 ($85CD-$861D) 特殊行为**:
+- 清零 $0600-$0637 (56 bytes), $0691-$06AE (30 bytes)
+- 清零各种比赛变量 (ram_05E0, ram_05E1, ram_003B 等)
+- JSR $84D2($5A) → Bank 5 sub A (加载比赛数据)
+- `INC ram_03CA` → **自动前进到 State 4**
+
+**State 5 ($820D-$8263) 转换管理器**:
+- 基于 ram_03E5 计数器做决策:
+  - 首次调用: INC ram_03CA (前进)
+  - 二次调用: 比较 ram_05E0/ram_05E1, 检查 ram_064F
+    - ram_064F < 7 → DEC ram_03CA (回比赛)
+    - ram_064F >= 7 → INC ram_03CA (比赛结束)
+
+**State 4 ($87B9-$883B) 比赛主循环**:
+- 内部子状态机 ($883C → 基于 ram_03E3)
+- 内部跳转表 ($884E-$8871): ~20+ 条目
+
+### M2-R.2: StateMachine 完全重写
+
+基于 ASM 分析重建 `src/engine/StateMachine.ts`:
+- ✅ STATE_TABLE 与 ASM 完全一致 (dispatch/direct 两种类型)
+- ✅ $84D2 调度逻辑 (executeDispatch)
+- ✅ State 3 自动前进 (executeState3Init)
+- ✅ 移除不存在的 State 8
+
+### 其他修复
+- ✅ `DataCache.initMatchRam()` — 实现 State 3 的 RAM 清零逻辑
+- ✅ 移除所有 State 8 引用 (Tsubasa.ts, AutoPlayController.ts, states/index.ts, auto_play_test.py)
+
+### 下一步
+- **M2-R.3**: 接下来需要深入分析 Bank 5 和 Bank 6 的子状态跳转表，理解 State 1/2/6/7 的实际行为
+- Bank 5 sub D (State 1) 和 Bank 6 sub 0 (State 2) 需要从对应的 ASM 文件分析
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `src/engine/StateMachine.ts` | ♻️ 完全重写 (基于 ASM 源码) |
+| `src/cache/DataCache.ts` | 🆕 initMatchRam() |
+| `src/core/Tsubasa.ts` | 🔄 移除 State 8 |
+| `src/engine/AutoPlayController.ts` | 🔄 移除 State 8 |
+| `src/engine/states/index.ts` | 🔄 移除 State 8 导出 |
+| `scripts/auto_play_test.py` | 🔄 修复状态流转 |
+| `BUG_TRACKER.md` | 🔄 BUG-020 标记已修复 |
+| `DEV_LOG.md` | 🆕 本条目 |
+| `temp/STATE_DISPATCHER_ANALYSIS.md` | 🆕 ASM 分析文档 |
+
+---
+
+## 2026-08-05: 🔧 BUG-023 修复 — MpAudioParam 微信小程序兼容性
+
+### 问题
+游戏启动时崩溃：`TypeError: Cannot set property gain of [object GainNode] which has only a getter`
+
+### 根因
+`MpAudioParam` 的 `set value()` 尝试通过 `this._target[this._prop] = v` 直接在 GainNode 上覆盖 `gain` 属性。微信小程序的 WebAudio 中 `GainNode.gain` 是只读属性（返回 AudioParam 对象），不能被替换。
+
+### 修复
+重构 `MpAudioParam`：构造函数中提取 AudioParam 对象本身（`node.gain`），setter 改为设置 `_param.value`，并添加 try/catch 回退到 `setValueAtTime()`。
+
+### 文件
+- `src/platform/miniprogram/MpPlatform.ts` — `MpAudioParam` 类重写
+
+---
+
+## 2026-08-05: 🎵 创建独立音频测试页 (audiopage)
+
+### 内容
+创建 `pages/audiopage/` 独立音频测试页面，用于验证微信小程序中的 Web Audio API 音频管线。
+
+### 新增文件
+- `pages/audiopage/audiopage.json` — 页面配置
+- `pages/audiopage/audiopage.wxml` — 界面模板 (曲目选择、播放控制、通道状态、音效测试)
+- `pages/audiopage/audiopage.wxss` — 暗色主题样式
+- `pages/audiopage/audiopage.ts` — 独立音频引擎逻辑
+
+### 功能
+1. **WebAudioContext 初始化**: 使用 `wx.createWebAudioContext()` (需基础库 ≥2.19.0)
+2. **4通道 NES 风格音频**: Pulse 1 (square), Pulse 2 (square), Triangle, Noise
+3. **3首测试曲目**: 标题画面、菜单选择、比赛BGM（MIDI序列驱动）
+4. **5种音效**: 进球、哨声、胜利、确认、移动光标
+5. **实时通道状态**: 4通道活跃/音量/频率可视化
+6. **音量控制**: 主音量滑块
+7. **调试日志**: 操作记录
+
+### 技术说明
+- audiopage 完全独立于游戏引擎，不依赖 Tsubasa/AudioEngine
+- 直接使用 Web Audio API OscillatorNode 生成方波/三角波
+- Noise 通道使用白噪声 BufferSourceNode
+- ~60fps setTimeout 驱动 MIDI 序列播放
+
+### 已知限制
+- 音乐数据为手工编写的测试序列，非 ROM 提取
+- ROM 音乐指针表 ($E1A8) 数据尚未成功提取（MC1 Bank 映射需深入研究）
+
+### 依赖
+- 微信基础库 ≥ 2.19.0 (当前项目配置 2.32.3 ✅)
+- `app.json` 中 audiopage 已注册为首个页面
+
+---
+
+## 2026-08-05: 🔊 BUG-022 修复 — 音频引擎同步接入帧循环
+
+### 用户反馈
+"音频播放和画面渲染，游戏逻辑要同步处理。"
+
+### 问题
+`AudioEngine` 和 `ApuSimulator` 代码（~1240 行）已经实现但**完全没有接入 GameLoop**：
+- `GameLoop.ts` 阶段1 没有 `AudioEngine.update()` 调用 → 音频代码从未执行
+- `Tsubasa.ts` 从未创建音频管线 → 音频模块完全静默
+- `IPlatform` 没有音频上下文创建接口 → 无法跨平台
+- `step()` 也没有音频更新 → 手动步进时也不同步
+
+### 修复内容
+
+**1. 平台层音频接口 (`IPlatform.ts` + `MpPlatform.ts`)**
+- ✅ `IPlatform.createAudioContext()`: 可选方法，返回 `IPlatformAudioContext | null`
+- ✅ 定义 `IPlatformAudioContext`, `IPlatformOscillatorNode`, `IPlatformGainNode` 等完整音频接口
+- ✅ `MpPlatform.createAudioContext()`: 使用 `wx.createWebAudioContext()` (基础库 2.19.0+)
+- ✅ 完整适配器包装: `MpAudioContext`, `MpOscillatorNode`, `MpGainNode`, `MpBufferSourceNode`, `MpAudioBuffer`
+
+**2. ApuSimulator 类型重构 (`ApuSimulator.ts`)**
+- ✅ 删除重复的 `IAudioContext`/`IOscillatorNode`/`IGainNode` 等接口定义
+- ✅ 改为从 `../platform/IPlatform` 导入平台统一类型（消除类型重复）
+
+**3. GameLoop 音频同步 (`GameLoop.ts`)**
+- ✅ 构造函数新增 `audioEngine: AudioEngine | null = null` 参数
+- ✅ 阶段1 (NMI) 中 `this.audioEngine.update()`，与 PPU 填充同阶段执行
+- ✅ NES 时序对应: NMI 中 CPU 同时写 PPU 寄存器 + APU 寄存器
+
+**4. Tsubasa 音频管线 (`Tsubasa.ts`)**
+- ✅ 新增 `audioEngine` 和 `apuSimulator` 字段
+- ✅ `initialize()` 中创建完整管线:
+  ```
+  platform.createAudioContext() → ApuSimulator → AudioEngine → GameLoop
+  ```
+- ✅ 自动检测平台音频支持（不支持时优雅降级，输出日志）
+- ✅ `step()` 方法同样调用 `audioEngine.update()`
+- ✅ 音乐曲目注册（占位数据，待 ROM 提取）
+
+### 帧同步时序 (最终)
+```
+每帧 RAF 回调:
+  ═══ 阶段1: PPU数据填充 + 🆕 音频更新 (NMI) ═══
+    → OAM DMA → VRAM队列 → 输入读取 → 帧计数
+    → 🆕 AudioEngine.update() (4通道音符处理 → ApuSimulator → Web Audio)
+    NES 对应: CPU 写 PPU 寄存器 + APU 寄存器
+
+  ═══ 阶段2: 游戏逻辑 ═══
+    → 状态机更新 → AI → 修改 GameModel
+
+  ═══ 阶段3: 场景构建 ═══
+    → SceneComposer: GameModel → VRAM + OAM
+
+  ═══ 阶段4: Canvas渲染 ═══
+    → Renderer: VRAM + OAM → Canvas 2D
+```
+
+### 设计要点
+- **音频与游戏逻辑独立**: AudioEngine.update() 在阶段1执行，不影响阶段2的游戏逻辑
+- **音画同步**: 音频在 PPU 填充后、Canvas 渲染前更新，确保同一帧的音画一致
+- **平台无关**: 通过 IPlatform 接口抽象，Web Audio API / 小程序 WebAudioContext / 其他平台均可适配
+- **优雅降级**: 平台不支持音频时 `createAudioContext()` 返回 null，游戏正常运行（静音）
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `src/platform/IPlatform.ts` | 🆕 新增音频接口 (IPlatformAudioContext 等) |
+| `src/platform/miniprogram/MpPlatform.ts` | 🆕 实现 createAudioContext() + 适配器类 |
+| `src/audio/ApuSimulator.ts` | ♻️ 使用平台统一类型 (消除接口重复) |
+| `src/core/GameLoop.ts` | 🆕 AudioEngine 参数 + 阶段1 音频更新 |
+| `src/core/Tsubasa.ts` | 🆕 音频管线创建 + GameLoop 注入 |
+| `BUG_TRACKER.md` | 🆕 BUG-022 记录 + BUG-021 更新 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+### 已知限制
+- ⚠️ 音乐序列数据仍为占位空数组 (`MusicData.ts`)，需 M_AUDIO.4 从 ROM 提取
+- ⚠️ 小程序 WebAudio 兼容性需真机测试（基础库 ≥ 2.19.0）
+
+---
+
+### 用户指出
+用户问："我说了还有音频呢" — 音频（NES APU: 音乐BGM + 音效SFX）从未被纳入项目计划。
+
+### 发现
+在 WBS、架构、ROM分析报告中搜索 `audio|sound|music|APU` — **完全为空**。
+整个项目没有任何音频模块的规划或实现。
+
+### ASM 音频引擎分析
+Bank 1 `$9B00-$9FFF` 包含完整的 NES APU 音频引擎：
+- **入口**: `$9B00` SoundFrameUpdate (每帧NMI调用)
+- **4通道**: Pulse 1 (`$4000-$4003`), Pulse 2 (`$4004-$4007`), Triangle (`$4008-$400B`), Noise (`$400C-$400F`)
+- **通道状态**: `$0759-$0798` (4通道×16字节)
+- **操作码跳转表**: `$DC64` (8条目)
+- **音乐指针表**: `$E1A8` (每个曲目2字节指针)
+- **音效触发**: `$07F9` 标志位 + `$9CEC` SoundInit
+
+### 补救措施
+- ✅ 新增 **M_AUDIO** 里程碑 (8个任务, ~29h) 加入 WBS_TASKS.md
+- ✅ 新增 **BUG-021** 记录此遗漏
+- ✅ 更新 **ROM_STRUCTURE_REPORT.md** §8.5 音频引擎分析
+- ✅ 更新 **ARCHITECTURE.md** 帧循环→四段式(含音频)、数据流、目录结构、映射表
+- 📋 **M_AUDIO.1**: 优先完成 Bank 1 音频引擎 ASM 完整分析
+
+### 技术方案
+使用 Web Audio API 实现 NES APU 模拟：
+- Pulse/Triangle 通道 → OscillatorNode (不同波形)
+- Noise 通道 → AudioBufferSourceNode (白噪声)
+- 音乐序列数据 → 从 ROM 提取为结构化 TS 数据
+- 微信小程序兼容: `wx.createWebAudioContext()`
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `ROM_STRUCTURE_REPORT.md` | 🆕 §8.5 音频引擎章节 |
+| `WBS_TASKS.md` | 🆕 M_AUDIO 里程碑 (8任务) |
+| `ARCHITECTURE.md` | 🔄 帧→四段、目录+audio/、数据流+AudioEngine |
+| `BUG_TRACKER.md` | 🆕 BUG-021 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+---
+
 ## 2026-08-05: 🔴 BUG-020 导致 WBS 回退 — STATE_DISPATCH_MAP 架构崩溃
 
 ### 用户指出的核心问题
