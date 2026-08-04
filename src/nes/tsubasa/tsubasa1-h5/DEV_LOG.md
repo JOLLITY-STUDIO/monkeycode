@@ -4,6 +4,88 @@
 
 ---
 
+## 2026-08-04: v1.0.0 - ♻️ CHR 渲染管线彻底重构
+
+### 问题
+用户指出：CHR tile 本质就是 2-bit 索引 (0/1/2/3) → 查调色板 → RGB，
+为什么要经过 Canvas 的 getImageData/putImageData/离屏Canvas/128张纹理缓存？
+这是把 Canvas 当调色板查找表用，完全绕路了。
+
+### 旧架构 (v0.9.x) 的臃肿
+```
+CHR ROM → 灰度 PNG(16个) 
+  → drawImage到离屏Canvas 
+  → getImageData读像素 
+  → 灰度→NES索引→调色板RGB 
+  → putImageData写回 
+  → 缓存128张着色纹理(16banks×8palGroups)
+  → 每tile用drawImage从着色纹理拷贝8×8像素
+```
+- 16 个 PNG 文件 (~64KB)
+- 128 个离屏 Canvas (~64MB+ 内存，每张 128×128×4)
+- 调色板变化时重新生成全部 128 张纹理
+- 每帧数十次 drawImage(tintedSheet, 8×8 区域) 调用
+
+### 新架构 (v1.0.0)
+```
+CHR ROM → base64嵌入代码(32banks×4KB)
+  → TileStore 预解码(2BPP→扁平像素数组, 2MB)
+  → Renderer: 查像素索引 → 查调色板 → 写入屏幕ImageData
+  → 一帧一次 putImageData
+```
+
+### 消除的开销
+- ❌ 16 个 PNG 文件 (运行时不再需要，数据直接嵌入代码)
+- ❌ 128 个离屏 Canvas (节省 ~64MB+ 内存)
+- ❌ 调色板变化时的 getImageData/putImageData 批处理
+- ❌ 每帧数十次 drawImage(8×8) 调用
+- ❌ paletteDirty 追踪和 tintedCache 管理
+- ❌ IPlatform.loadImage() 调用（启动更快）
+- ❌ 灰度值/GRAY_TO_NES_DIV 转换逻辑
+
+### 新增文件
+- **`src/data/ChrData.ts`** (175KB) — 32 bank × 4096 字节 base64 编码 CHR tile 数据
+- **`src/renderer/TileStore.ts`** — 解码 base64，预解码 2BPP 为扁平像素数组，O(1) 像素查询
+- **`scripts/extract_chr_bin.py`** — 从 ROM 提取 CHR → TypeScript base64 模块
+
+### 修改文件
+- **`src/renderer/Renderer.ts`** — 彻底重写 (~560→~350 行)
+  - 删除: loadChrBank/loadAllChrBanks/chrImages/tintedCache/tintChrSheet/updateTintedTextures/getTintedSheet
+  - 新增: TileStore 注入、screenBuf ImageData 直接填充、fillBackground/renderBackgroundToBuf/renderSpritesToBuf
+  - 保留: writeVram()/getNametable()/getPalette()/debugText 等公共 API
+- **`src/core/Tsubasa.ts`** — 替换 loadAllChrBanks → tileStore.init()
+- **`tests/diagnose-frames.ts`** — 适配新 Renderer(TileStore) 构造
+- **`tests/state-test.ts`** — 同上
+- **`tests/setup/MockPlatform.ts`** — 补充 font/fillText 接口实现
+
+### 性能对比
+| 指标 | 旧 (v0.9.x) | 新 (v1.0.0) |
+|------|-------------|-------------|
+| 初始化时间 | ~数百ms (加载16个PNG) | ~10-50ms (base64解码) |
+| 运行时内存 | ~64MB+ (128张离屏Canvas) | ~2MB (预解码tile数据) |
+| 每帧GPU调用 | 数十次drawImage | 一次putImageData |
+| 调色板变化 | 重生成128张纹理 | 零开销 |
+| 代码行数 | ~560行 | ~350行 (-37%) |
+
+### 待解决
+- 🔄 BUG-007: 标题画面 tile 索引仍为占位值（需 ROM RLE 数据提取）
+
+### 文件变更
+| 文件 | 变更 |
+|------|------|
+| `scripts/extract_chr_bin.py` | 🆕 新增 |
+| `src/data/ChrData.ts` | 🆕 新增 (自动生成, 175KB) |
+| `src/renderer/TileStore.ts` | 🆕 新增 |
+| `src/renderer/Renderer.ts` | ♻️ 重写 (560→350行) |
+| `src/core/Tsubasa.ts` | 🔄 CHR加载→TileStore初始化 |
+| `tests/diagnose-frames.ts` | 🔄 适配新架构 |
+| `tests/state-test.ts` | 🔄 适配新架构 |
+| `tests/setup/MockPlatform.ts` | 🔄 补充font/fillText |
+| `BUG_TRACKER.md` | 🔄 BUG-012→重构, BUG-014新增 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+---
+
 ## 2026-08-04: v0.9.2 - 🔍 CHR Bank 0E 角色头像确认
 
 ### 发现

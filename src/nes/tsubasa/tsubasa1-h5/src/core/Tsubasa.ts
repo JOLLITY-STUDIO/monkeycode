@@ -19,6 +19,7 @@ import { PpuQueue } from '../cache/PpuQueue';
 import { BankManager } from '../cache/BankManager';
 import { InputManager } from '../input/InputManager';
 import { Renderer } from '../renderer/Renderer';
+import { TileStore } from '../renderer/TileStore';
 import { PpuDataFiller } from '../engine/NmiHandler';
 import { StateMachine } from '../engine/StateMachine';
 import { AutoPlayController } from '../engine/AutoPlayController';
@@ -56,6 +57,7 @@ export class Tsubasa {
   private ppuQueue!: PpuQueue;
   private bankManager!: BankManager;
   private inputManager!: InputManager;
+  private tileStore!: TileStore;
   private renderer!: Renderer;
   private gameLoop!: GameLoop;
   private ppuFiller!: PpuDataFiller;
@@ -93,8 +95,11 @@ export class Tsubasa {
     this.bankManager = new BankManager();
     this.inputManager = new InputManager();
 
-    // 渲染器：传入平台适配器 + canvas 上下文
-    this.renderer = new Renderer(this.platform, ctx);
+    // TileStore: 直接从 ROM 2BPP 数据解码，无需 PNG 图片
+    this.tileStore = new TileStore();
+
+    // 渲染器：传入平台 + canvas + TileStore
+    this.renderer = new Renderer(this.platform, ctx, this.tileStore);
     this.renderer.setBankManager(this.bankManager);
 
     // === v0.6.0 架构分离: Model + View ===
@@ -148,18 +153,9 @@ export class Tsubasa {
     if (this.state === 'running') return;
 
     console.log('[Tsubasa] Starting NORMAL mode...');
-    console.log('[Tsubasa] spriteBasePath:', this.options.spriteBasePath);
-    console.log('[Tsubasa] autoLoadSprites:', this.options.autoLoadSprites);
 
-    if (this.options.autoLoadSprites) {
-      try {
-        console.log('[Tsubasa] Loading CHR banks...');
-        await this.renderer.loadAllChrBanks(this.options.spriteBasePath);
-        console.log('[Tsubasa] CHR banks load complete');
-      } catch (err) {
-        console.warn('[Tsubasa] Failed to load CHR banks:', err);
-      }
-    }
+    // TileStore 初始化 (同步，数据已内嵌)
+    this.tileStore.init();
 
     // 模拟 RESET 初始化流程
     this.bankManager.setInitialConfig();

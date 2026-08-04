@@ -30,8 +30,10 @@ class MockCanvasContext implements ICanvasContext {
   imageSmoothingEnabled: boolean = false;
 
   fillStyle: string = '#000000';
+  font: string = '16px sans-serif';
 
   fillRect(_x: number, _y: number, _w: number, _h: number): void { /* noop */ }
+  fillText(_text: string, _x: number, _y: number, _maxWidth?: number): void { /* noop */ }
   drawImage(..._args: any[]): void { /* noop */ }
   getImageData(_sx: number, _sy: number, _sw: number, _sh: number): IImageData {
     return { width: _sw, height: _sh, data: new Uint8ClampedArray(_sw * _sh * 4) };

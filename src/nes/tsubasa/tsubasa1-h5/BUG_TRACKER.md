@@ -43,16 +43,38 @@
     上天然 ~60fps 与 NES 匹配。FPS 改用滑动窗口统计。
 - **修复文件**: `src/core/GameLoop.ts`, `src/platform/miniprogram/MpPlatform.ts`
 
-### BUG-012: CHR PNG 使用诊断调色板导致颜色错误 [✅ 已修复 v0.9.1]
-- **状态**: ✅ 已修复 (v0.9.1)
+### BUG-012: CHR PNG 使用诊断调色板导致颜色错误 [✅ 已修复 v0.9.1] → [♻️ 架构重构 v1.0.0]
+- **状态**: ♻️ 已重构 (v1.0.0, 彻底消除 CHR PNG 管线)
 - **严重度**: 高
 - **来源**: `scripts/extract_chr.py` + `Renderer.ts`
-- **修复**:
+- **v0.9.1 修复**:
   1. CHR PNG 重新提取为灰度格式（像素值 0/85/170/255 → NES 索引 0/1/2/3）
   2. Renderer 新增 `tintedCache` 纹理缓存，在调色板变化时生成着色纹理
   3. `tintChrSheet()` 使用 `getImageData` → 灰度→NES索引→`NES_PALETTE` 映射 → `putImageData`
   4. `drawTile()`/`drawSprite()` 使用着色纹理渲染
-- **修复文件**: `src/renderer/Renderer.ts`, `public/sprites/chr_bank_*.png`
+- **v1.0.0 重构**: 上述方案被彻底替换
+  1. CHR 数据直接从 ROM 提取为 2BPP 原始二进制（base64嵌入代码）
+  2. TileStore 预解码所有 tile（32 banks × 256 tiles × 64 字节 = 2MB）
+  3. Renderer 直接查 TileStore 获取像素索引 → 查调色板 → 写入屏幕 ImageData
+  4. 消除 128 个离屏 Canvas、getImageData/putImageData 中间步骤、PNG 图片依赖
+- **修复文件**: `src/renderer/TileStore.ts`, `src/renderer/Renderer.ts`, `src/data/ChrData.ts`, `scripts/extract_chr_bin.py`
+
+### BUG-014: CHR 渲染过度复杂 - 用 Canvas 着色 tile 索引 [✅ 已修复 v1.0.0]
+- **状态**: ✅ 已修复 (v1.0.0)
+- **严重度**: 高 (架构问题)
+- **来源**: 用户反馈 - CHR tile 就是 0/1/2/3 索引→RGB 映射，不需要 Canvas 中间处理
+- **描述**:
+  旧 Renderer 将 CHR 数据→灰度 PNG→drawImage→getImageData→调色板映射→putImageData→
+  128 张着色离屏 Canvas 缓存→每 tile drawImage 拷贝。这相当于用 Canvas 做调色板查找表，
+  纯属绕路。
+- **v1.0.0 修复**:
+  直接: CHR 2BPP 二进制→TileStore 像素索引(0/1/2/3)→查 NES_PALETTE[调色板[基址+索引]]→
+  写入屏幕 ImageData→一帧一次 putImageData
+  - 消除 16 个 PNG (运行时不再需要)
+  - 消除 128 个离屏 Canvas (~64MB+ 内存)
+  - 消除 getImageData/putImageData 的着色纹理重生成
+  - 消除每帧数十次 drawImage(8×8) 调用
+  - 调色板变化零开销（自然在下次渲染使用新色）
 
 ### BUG-001: 反汇编质量 - 数据误解释为代码
 - **状态**: 🔄 改善中 (CDL 已更新, v0.5.1)

@@ -13,6 +13,7 @@ import { PpuQueue } from '../src/cache/PpuQueue';
 import { BankManager } from '../src/cache/BankManager';
 import { InputManager } from '../src/input/InputManager';
 import { Renderer } from '../src/renderer/Renderer';
+import { TileStore } from '../src/renderer/TileStore';
 import { PpuDataFiller } from '../src/engine/NmiHandler';
 import { StateMachine } from '../src/engine/StateMachine';
 import { GameModel } from '../src/model/GameModel';
@@ -146,11 +147,15 @@ function buildEnv() {
   const ppuQueue = new PpuQueue();
   const bankManager = new BankManager();
   const inputManager = new InputManager();
-  const renderer = new Renderer(platform, ctx);
+
+  // TileStore: 真实 CHR 数据 (从内嵌 base64 解码)
+  const tileStore = new TileStore();
+
+  const renderer = new Renderer(platform, ctx, tileStore);
   renderer.setBankManager(bankManager);
 
   // 诊断模式: 禁止 Canvas 绘制
-  renderer.skipCanvasDraw = true;
+  renderer.setSkipCanvasDraw(true);
 
   const gameModel = new GameModel();
   const sceneComposer = new SceneComposer(renderer, oamCache);
@@ -177,16 +182,19 @@ function buildEnv() {
 
   return {
     platform, dataCache, oamCache, ppuQueue,
-    bankManager, inputManager, renderer,
+    bankManager, inputManager, renderer, tileStore,
     stateMachine, ppuFiller, gameModel, sceneComposer,
   };
 }
 
 function initGame(env: ReturnType<typeof buildEnv>): void {
-  const { dataCache, bankManager, stateMachine, renderer } = env;
+  const { dataCache, bankManager, stateMachine, renderer, tileStore } = env;
 
-  // 模拟 ROM 加载: 标记 CHR 可用（即使没有真实图片，也标记为可用以便验证逻辑）
-  renderer.skipCanvasDraw = true;
+  // 初始化 TileStore (同步，数据内嵌)
+  tileStore.init();
+
+  // 诊断模式: 禁止 Canvas 绘制
+  renderer.setSkipCanvasDraw(true);
 
   bankManager.setInitialConfig();
   dataCache.ppuCtrl = 0x10;
@@ -240,8 +248,7 @@ function dumpFrame(env: ReturnType<typeof buildEnv>, frameIdx: number, verbose: 
   const chrInfo = renderer.getChrBankInfo();
   console.log(
     `   Banks: PRG(${bk.prgBank0}/${bk.prgBank1}) CHR(${bk.chrBank0}=$${hex2(bk.chrBank0)}, ${bk.chrBank1}=$${hex2(bk.chrBank1)}) ` +
-    `mmc=($${hex2(dataCache.mmcBankReg0)},$${hex2(dataCache.mmcBankReg1)},$${hex2(dataCache.mmcBankReg2)}) ` +
-    `usingChrImg=${chrInfo.useChrImages}`
+    `mmc=($${hex2(dataCache.mmcBankReg0)},$${hex2(dataCache.mmcBankReg1)},$${hex2(dataCache.mmcBankReg2)})`
   );
 
   // 调色板

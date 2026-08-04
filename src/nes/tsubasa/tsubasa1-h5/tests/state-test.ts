@@ -13,6 +13,7 @@ import { PpuQueue } from '../src/cache/PpuQueue';
 import { BankManager } from '../src/cache/BankManager';
 import { InputManager } from '../src/input/InputManager';
 import { Renderer } from '../src/renderer/Renderer';
+import { TileStore } from '../src/renderer/TileStore';
 import { PpuDataFiller } from '../src/engine/NmiHandler';
 import { StateMachine } from '../src/engine/StateMachine';
 import { GameModel } from '../src/model/GameModel';
@@ -75,7 +76,11 @@ function buildTestEnv() {
   const ppuQueue = new PpuQueue();
   const bankManager = new BankManager();
   const inputManager = new InputManager();
-  const renderer = new Renderer(platform, ctx);
+
+  const tileStore = new TileStore();
+  tileStore.init();
+
+  const renderer = new Renderer(platform, ctx, tileStore);
   renderer.setBankManager(bankManager);
 
   // v0.9.0: 创建 Model + SceneComposer
