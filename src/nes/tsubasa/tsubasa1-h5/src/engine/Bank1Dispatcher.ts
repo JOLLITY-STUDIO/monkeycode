@@ -1,22 +1,24 @@
 /**
  * Bank 1 子状态调度器
- * 对应 ROM 中 Bank 1 的状态分发逻辑
+ * 对应 ROM 中 Bank 1 的状态分发逻辑 ($804B jump table)
  *
- * Bank 1 负责标题画面、菜单画面、队伍选择等画面逻辑。
- * 当 PRG Bank 切换到 1 时，通过子状态索引（低4位）
- * 从跳转表 ($804B) 中查找对应的处理函数。
+ * 标题画面使用 5 页 (page 0-4) 分步加载，通过 sub-states 1→2→3→4 循环：
+ *   page 0 → sub1(load) → sub2(anim/timer) → sub3(trans) → sub4(next page)
+ *   → page 1 → sub1(load) → ... → page 4 → sub5(menu)
  *
  * 跳转表布局 ($804B):
  *   [0] $C05B - 标题初始化第1步 (设置CHR bank)
- *   [1] $C070 - 标题初始化第2步 (加载图形数据)
- *   [2] $C0A7 - 标题动画循环
- *   [3] $C0BE - 标题过渡效果
- *   [4] $C0ED - 标题过渡效果2
+ *   [1] $C070 - 标题初始化第2步 (加载图形数据 → $C2C2, $C383)
+ *   [2] $C0A7 - 标题动画循环 (递减 $79 计数器)
+ *   [3] $C0BE - 标题过渡效果 (翻页动画 → $C3CE)
+ *   [4] $C0ED - 如果 $7A<5: $7A++, 回 sub1; 否则 → sub5
  *   [5] $C106 - 菜单初始化
  *   [6] $C181 - 菜单循环
- *   [7] $C213 - 更多...
  *
  * $03CB: Bank 1 内部的子状态计数器
+ * $03CC: 步骤计数器
+ * $79:   帧计数器 (sub2中递减)
+ * $7A:   页面索引 (0-4)
  */
 
 import type { DataCache } from '../cache/DataCache';
@@ -28,132 +30,126 @@ import type { InputManager } from '../input/InputManager';
 
 /**
  * 标题画面调色板 - 从 ROM Bank 2 偏移 $B24F 区域提取
- *
- * ROM 原始数据 ($B24F-$B25E, Bank 2 CPU $B24F):
+ * ROM 原始数据 ($B24F-$B25E):
  *   0F 33 0F 1A | 30 36 0F 30 | 0F 25 0F 0F | 0F 36 30 21
- *
- * 解码:
- *   BG[0]: 0F(黑) 33(浅灰) 0F(黑) 1A(绿)     → 标题背景
- *   BG[1]: 30(白) 36(粉红) 0F(黑) 30(白)     → 标题文字亮色
- *   BG[2]: 0F(黑) 25(暗紫) 0F(黑) 0F(黑)     → 阴影
- *   BG[3]: 0F(黑) 36(粉红) 30(白) 21(浅蓝)   → 高亮/轮廓
  */
 const TITLE_BG_PALETTE: number[] = [
-  0x0F, 0x33, 0x0F, 0x1A,  // BG 0
-  0x30, 0x36, 0x0F, 0x30,  // BG 1
-  0x0F, 0x25, 0x0F, 0x0F,  // BG 2
-  0x0F, 0x36, 0x30, 0x21,  // BG 3
+  0x0F, 0x33, 0x0F, 0x1A,  // BG 0: 黑, 浅灰紫, 黑, 绿
+  0x30, 0x36, 0x0F, 0x30,  // BG 1: 纯白, 肉色, 黑, 纯白
+  0x0F, 0x25, 0x0F, 0x0F,  // BG 2: 黑, 粉紫, 黑, 黑
+  0x0F, 0x36, 0x30, 0x21,  // BG 3: 黑, 肉色, 纯白, 蓝
 ];
 
 const TITLE_SPR_PALETTE: number[] = [
-  0x0F, 0x0F, 0x16, 0x26,  // Spr 0 (红)
-  0x0F, 0x12, 0x22, 0x32,  // Spr 1 (蓝)
-  0x0F, 0x19, 0x29, 0x39,  // Spr 2 (绿)
-  0x0F, 0x0F, 0x0F, 0x0F,  // Spr 3 (未使用)
+  0x0F, 0x0F, 0x16, 0x26,  // Spr 0: 红
+  0x0F, 0x12, 0x22, 0x32,  // Spr 1: 蓝
+  0x0F, 0x19, 0x29, 0x39,  // Spr 2: 绿
+  0x0F, 0x0F, 0x0F, 0x0F,  // Spr 3: 未使用
 ];
 
-/**
- * 标题画面 tile 索引映射
- *
- * CHR bank 0x1E (tileBase=0, 来自 chr_bank_0F.png tiles 0-127)
- * 包含标题画面背景图形 (大文字、角色图案)
- *
- * 以下是根据天使之翼标题画面实际 tile 布局手工构造的名称表数据。
- * 每行 32 tiles, 共 30 行。
- * 由于完整数据需要 Bank 7 脚本引擎动态生成，这里使用结构化的近似布局。
- */
-function buildTitleNametable(): number[] {
+// ============================================================
+// 名称表构建 — 5 页分页布局 (模拟 ROM 的 RLE 分页加载)
+// 真实 ROM 通过 Bank 7 的 RLE 引擎 ($C2C2) 解压数据
+// 这里暂时使用结构化近似布局
+// ============================================================
+
+/** 构建全页背景 (page 0-4 的 baseline, 每页只填充特定区域) */
+function buildTitlePage(page: number): { nametable: number[]; attrs: number[] } {
   const nt = new Array<number>(960).fill(0x00);
-  const EMPTY = 0x00; // 空白 tile
+  const attrs = new Array<number>(64).fill(0x00);
 
-  // 标题文字 "キャプテン翼" 区域 (行 2-11)
-  // 使用 tile 0x10-0x4F 范围内的标题大文字 tile
-  // 这些 tile 在 CHR bank 0x1E 中组成日文大字
-  const titleRows: { y: number; tiles: number[] }[] = [
-    { y: 2, tiles: [0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0x18, 0x19] },
-    { y: 3, tiles: [0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28, 0x29] },
-    { y: 4, tiles: [0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0x38, 0x39] },
-    { y: 5, tiles: [0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x46, 0x47, 0x48, 0x49] },
-    { y: 6, tiles: [0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57, 0x58, 0x59] },
-    { y: 7, tiles: [0x60, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x67, 0x68, 0x69] },
-    { y: 8, tiles: [0x70, 0x71, 0x72, 0x73, 0x74, 0x75, 0x76, 0x77, 0x78, 0x79] },
-  ];
+  switch (page) {
+    case 0: {
+      // Page 0: 标题大字 "CAPTAIN TSUBASA" (上半部分) + 背景
+      // 用 tile 0x01 做彩色条带上边框验证渲染管线
+      for (let x = 0; x < 32; x++) { nt[0 * 32 + x] = 0x01; nt[29 * 32 + x] = 0x01; }
+      for (let y = 1; y < 29; y++) { nt[y * 32 + 0] = 0x01; nt[y * 32 + 31] = 0x01; }
 
-  for (const row of titleRows) {
-    // 标题居中: 从列 4 开始绘制
-    const startCol = 4;
-    for (let i = 0; i < row.tiles.length; i++) {
-      const col = startCol + i;
-      if (col < 32) {
-        nt[row.y * 32 + col] = row.tiles[i];
+      // 标题条纹 (行 3-8, 交替使用 tile 0x02 和 0x03)
+      for (let y = 3; y <= 8; y++) {
+        const tile = (y % 2 === 0) ? 0x02 : 0x03;
+        for (let x = 6; x < 26; x++) {
+          nt[y * 32 + x] = tile;
+        }
       }
-    }
-  }
 
-  // 角色展示区域 (行 12-17) - 使用 tile 0x50-0x7F
-  for (let y = 12; y < 18; y++) {
-    for (let x = 0; x < 32; x++) {
-      const tileIdx = 0x50 + ((y - 12) * 32 + x) % 128;
-      // 只在非边缘区域绘制角色 tile
-      if (x >= 4 && x < 28) {
-        nt[y * 32 + x] = tileIdx;
+      // CAPTAIN TSUBASA 文字占位 (行 5, tile 0x10-0x1F)
+      const title = "CAPTAIN TSUBASA";
+      for (let i = 0; i < title.length; i++) {
+        nt[5 * 32 + 8 + i] = 0x10 + i;
       }
+
+      // 上半部分使用调色板 1
+      for (let i = 0; i < 32; i++) attrs[i] = 0x55;
+      break;
+    }
+
+    case 1: {
+      // Page 1: 标题大字下半部分 + 副标题
+      for (let y = 9; y <= 11; y++) {
+        for (let x = 6; x < 26; x++) {
+          nt[y * 32 + x] = (y % 2 === 0) ? 0x02 : 0x03;
+        }
+      }
+      // 副标题 (行 9)
+      const subtitle = "FOOTBALL KING";
+      for (let i = 0; i < subtitle.length; i++) {
+        nt[9 * 32 + 8 + i] = 0x20 + i;
+      }
+
+      for (let i = 0; i < 32; i++) attrs[i] = 0x55;
+      break;
+    }
+
+    case 2: {
+      // Page 2: 角色展示区 (行 12-18)
+      for (let y = 12; y < 18; y++) {
+        for (let x = 5; x < 27; x++) {
+          nt[y * 32 + x] = 0x30 + ((y - 12) * 22 + (x - 5)) % 0x80;
+        }
+      }
+      for (let i = 16; i < 40; i++) attrs[i] = 0xAA; // palette 2
+      break;
+    }
+
+    case 3: {
+      // Page 3: PRESS START 提示 (行 22-24)
+      const press = ">>> PRESS START <<<";
+      for (let i = 0; i < press.length; i++) {
+        nt[22 * 32 + 7 + i] = 0x40 + (press.charCodeAt(i) & 0x3F);
+      }
+      const button = "[BUTTON]";
+      for (let i = 0; i < button.length; i++) {
+        nt[23 * 32 + 10 + i] = 0x40 + (button.charCodeAt(i) & 0x3F);
+      }
+
+      // PRESS START 区域使用调色板 3 (attr bytes 40-55 → tile rows 20-27)
+      for (let i = 40; i < 56; i++) attrs[i] = 0xFF;
+      break;
+    }
+
+    case 4: {
+      // Page 4: 版权信息 (行 27) + 装饰
+      const copyright = "(C) 1988 TECMO";
+      for (let i = 0; i < copyright.length; i++) {
+        nt[27 * 32 + 8 + i] = 0x50 + (copyright.charCodeAt(i) & 0x3F);
+      }
+      for (let i = 56; i < 64; i++) attrs[i] = 0xFF;
+      break;
     }
   }
 
-  // "PRESS START BUTTON" 提示文字 (行 22-23)
-  // 使用 tile 0x80-0x9F (字母/数字 tile)
-  const pressStartText = [
-    0x50, 0x52, 0x45, 0x53, 0x53, 0x00, // P R E S S
-    0x53, 0x54, 0x41, 0x52, 0x54, 0x00, // S T A R T
-    0x42, 0x55, 0x54, 0x54, 0x4F, 0x4E, // B U T T O N
-  ];
-
-  const startCol = 7;
-  for (let i = 0; i < pressStartText.length; i++) {
-    if (i < 6) {
-      nt[22 * 32 + startCol + i] = pressStartText[i];
-    } else if (i < 12) {
-      nt[23 * 32 + startCol + i - 6] = pressStartText[i];
-    } else {
-      nt[24 * 32 + startCol + i - 12] = pressStartText[i];
-    }
-  }
-
-  // 版权信息 (行 27)
-  const copyright = [0x43, 0x29, 0x00, 0x54, 0x45, 0x43, 0x4D, 0x4F, 0x00, 0x31, 0x39, 0x38, 0x38];
-  for (let i = 0; i < copyright.length; i++) {
-    nt[27 * 32 + 8 + i] = copyright[i];
-  }
-
-  return nt;
-}
-
-/**
- * 属性表 - 标题画面
- * 上半部分(文字/角色)使用调色板 1，下半部分(提示文字)使用调色板 3
- */
-function buildTitleAttributes(): number[] {
-  const attr = new Array<number>(64).fill(0x00);
-  // 上半部分 (行 0-15): 每个 4x4 tile 块使用调色板 1 (attr=0x55 → 每个2x2=01)
-  for (let i = 0; i < 32; i++) {
-    attr[i] = 0x55; // 全部使用 palette 1
-  }
-  // 下半部分 (行 16-29): 使用调色板 3
-  for (let i = 32; i < 64; i++) {
-    attr[i] = 0xFF; // 全部使用 palette 3
-  }
-  return attr;
+  return { nametable: nt, attrs };
 }
 
 /**
  * 菜单画面调色板 - 从 ROM Bank 2 提取 ($B261 area)
  */
 const MENU_BG_PALETTE: number[] = [
-  0x0F, 0x36, 0x30, 0x21,  // BG 0: 黑/粉/白/蓝
-  0x36, 0x11, 0x0F, 0x36,  // BG 1: 粉/蓝/黑/粉
-  0x30, 0x21, 0x36, 0x30,  // BG 2: 白/蓝/粉/白
-  0x0F, 0x0F, 0x0F, 0x21,  // BG 3: 黑/黑/黑/蓝
+  0x0F, 0x36, 0x30, 0x21,
+  0x36, 0x11, 0x0F, 0x36,
+  0x30, 0x21, 0x36, 0x30,
+  0x0F, 0x0F, 0x0F, 0x21,
 ];
 
 export class Bank1Dispatcher {
@@ -166,21 +162,13 @@ export class Bank1Dispatcher {
 
   private subState: number = 0;
   private stepCounter: number = 0;
-  private initPhase: number = 0;
 
-  /** 预计算的标题画面名称表 */
-  private titleNametable: number[] | null = null;
-
-  /** 预计算的标题画面属性表 */
-  private titleAttributes: number[] | null = null;
+  /** 标题页面索引: 对应 ROM 中的 $7A (0-4) */
+  private titlePage: number = 0;
 
   constructor(
-    data: DataCache,
-    banks: BankManager,
-    renderer: Renderer,
-    oam: OamCache,
-    ppuQueue: PpuQueue,
-    input: InputManager,
+    data: DataCache, banks: BankManager, renderer: Renderer,
+    oam: OamCache, ppuQueue: PpuQueue, input: InputManager,
   ) {
     this.data = data;
     this.banks = banks;
@@ -192,13 +180,14 @@ export class Bank1Dispatcher {
 
   update(): void {
     this.subState = this.data.read(0x03CB);
+    this.stepCounter = this.data.read(0x03CC);
 
     switch (this.subState) {
       case 0: this.subState00_TitleInit1(); break;
-      case 1: this.subState01_TitleInit2(); break;
+      case 1: this.subState01_LoadPage(); break;
       case 2: this.subState02_TitleAnim(); break;
-      case 3: this.subState03_TitleTransition(); break;
-      case 4: this.subState04_TitleTransition2(); break;
+      case 3: this.subState03_Transition(); break;
+      case 4: this.subState04_NextPage(); break;
       case 5: this.subState05_MenuInit(); break;
       case 6: this.subState06_MenuLoop(); break;
       default: break;
@@ -208,27 +197,29 @@ export class Bank1Dispatcher {
   init(subStateIndex: number): void {
     this.subState = subStateIndex;
     this.stepCounter = 0;
-    this.initPhase = 0;
+    this.titlePage = 0;
     this.data.write(0x03CB, subStateIndex);
     this.data.write(0x03CC, 0);
+    this.data.zpWrite(0x7A, 0);  // page counter
     this.banks.prgBank0 = 1;
     this.data.mmcBankReg2 = 1;
   }
 
   // ==========================================
-  // 子状态 0: 标题初始化第1步 ($C05B)
+  // 子状态 0: 标题初始化 ($C05B)
   // ==========================================
   private subState00_TitleInit1(): void {
-    this.data.zpWrite(0x7A, 0);
+    this.data.zpWrite(0x7A, 0);  // 重置页面索引
+    this.titlePage = 0;
 
-    // CHR Bank 设置: chrBank0=$1F, chrBank1=$1E
+    // CHR Bank: chrBank0=$1F (sprite), chrBank1=$1E (background)
     this.banks.chrBank0 = 0x1F;
     this.banks.chrBank1 = 0x1E;
     this.data.mmcBankReg0 = 0x1F;
     this.data.mmcBankReg1 = 0x1E;
 
-    this.data.ppuCtrl = 0x90;   // NMI on, BG=$1000, Spr=$0000, NT=0, VRAM+1
-    this.data.ppuMask = 0x0E;   // 显示BG, 隐藏精灵
+    this.data.ppuCtrl = 0x90;
+    this.data.ppuMask = 0x0E;
     this.data.scrollX = 0;
     this.data.scrollY = 0;
 
@@ -236,100 +227,145 @@ export class Bank1Dispatcher {
 
     this.data.write(0x03CB, 1);
     this.data.write(0x03CC, 0);
-    console.log('[Bank1] Sub-state 0: Title Init 1 - CHR=$1E/$1F');
+    console.log('[Bank1] Sub-state 0: Title Init - CHR=$1E/$1F page=0');
   }
 
   // ==========================================
-  // 子状态 1: 标题初始化第2步 ($C070)
+  // 子状态 1: 加载当前页数据 ($C070)
+  //   对应 ROM: JSR $C2C2 (load NT) + JSR $C383 (load palette)
+  //   按 page index ($7A) 分页加载
+  //   RLE 解码器只写入非零 tile, 故页面级数据逐页累积
   // ==========================================
-  private subState01_TitleInit2(): void {
-    this.stepCounter = this.data.read(0x03CC);
+  private subState01_LoadPage(): void {
+    this.titlePage = this.data.zpRead(0x7A);
+    console.log(`[Bank1] Sub-state 1: Loading page ${this.titlePage}/4`);
 
-    switch (this.stepCounter) {
-      case 0: this.loadTitlePalette(); break;
-      case 1: this.loadTitleNametable(); break;
-      case 2: this.setupTitleSprites(); break;
-      case 3:
-        this.data.write(0x03CB, 2);
-        this.data.write(0x03CC, 0);
-        console.log('[Bank1] Sub-state 1: Complete → Title Anim');
-        return;
+    // Step 0: 加载调色板 (只在 page 0 时加载)
+    if (this.titlePage === 0) {
+      for (let i = 0; i < 16; i++) {
+        this.renderer.writeVram(0x3F00 + i, TITLE_BG_PALETTE[i]);
+        this.renderer.writeVram(0x3F10 + i, TITLE_SPR_PALETTE[i]);
+      }
+      console.log('[Bank1] Page 0: Palette loaded');
     }
-    this.data.write(0x03CC, this.stepCounter + 1);
-  }
 
-  /** 加载标题画面调色板 (ROM提取) */
-  private loadTitlePalette(): void {
-    for (let i = 0; i < 16; i++) {
-      this.renderer.writeVram(0x3F00 + i, TITLE_BG_PALETTE[i]);
-      this.renderer.writeVram(0x3F10 + i, TITLE_SPR_PALETTE[i]);
-    }
-    console.log('[Bank1] Title palette loaded (ROM data)');
-  }
+    // 模拟 RLE 行为: 只写入非零 tile, 保留已有数据
+    const diff = buildTitlePage(this.titlePage);
 
-  /** 加载标题画面名称表 */
-  private loadTitleNametable(): void {
-    // 清空名称表
+    // 写入名称表 (跳过 tile===0 的字节, 保留上页数据)
+    let ntWritten = 0;
     for (let i = 0; i < 960; i++) {
-      this.renderer.writeVram(0x2000 + i, 0x00);
-    }
-
-    // 使用预构建的标题画面布局
-    if (!this.titleNametable) {
-      this.titleNametable = buildTitleNametable();
-      this.titleAttributes = buildTitleAttributes();
-    }
-
-    for (let i = 0; i < 960; i++) {
-      this.renderer.writeVram(0x2000 + i, this.titleNametable[i]);
-    }
-
-    for (let i = 0; i < 64; i++) {
-      this.renderer.writeVram(0x23C0 + i, this.titleAttributes![i]);
-    }
-
-    console.log('[Bank1] Title nametable loaded (structured layout)');
-  }
-
-  /** 设置标题画面精灵 */
-  private setupTitleSprites(): void {
-    this.oam.clear();
-    // PRESS START 闪烁精灵由动画循环处理
-  }
-
-  // ==========================================
-  // 子状态 2: 标题动画循环 ($C0A7)
-  // ==========================================
-  private subState02_TitleAnim(): void {
-    const fc = this.data.frameCount;
-
-    // 闪烁效果: 每 60 帧 (约1秒) 切换一次
-    if (fc % 60 === 0) {
-      const blinkPhase = (fc / 60) & 1;
-      // 通过修改 VRAM 中提示文字的调色板属性来模拟闪烁
-      if (blinkPhase === 0) {
-        // 显示 PRESS START
-        for (let i = 56; i < 64; i++) {
-          this.renderer.writeVram(0x23C0 + i, 0xFF);
-        }
-      } else {
-        // 隐藏 PRESS START (使用黑色调色板)
-        for (let i = 56; i < 64; i++) {
-          this.renderer.writeVram(0x23C0 + i, 0x00);
-        }
+      if (diff.nametable[i] !== 0) {
+        this.renderer.writeVram(0x2000 + i, diff.nametable[i]);
+        ntWritten++;
       }
     }
-  }
 
-  // ==========================================
-  // 子状态 3-4: 过渡效果
-  // ==========================================
-  private subState03_TitleTransition(): void {
-    this.data.write(0x03CB, 4);
-  }
+    // 写入属性表 (跳过值为0的字节, 合并已有属性)
+    let atWritten = 0;
+    for (let i = 0; i < 64; i++) {
+      if (diff.attrs[i] !== 0) {
+        this.renderer.writeVram(0x23C0 + i, diff.attrs[i]);
+        atWritten++;
+      }
+    }
 
-  private subState04_TitleTransition2(): void {
+    // 帧间隔计数器 ($79): 控制每页显示的时间
+    // 最后一页持久显示，不自动翻页
+    const animFrames = this.titlePage < 4 ? 0x40 : 0xFF;
+    this.data.zpWrite(0x79, animFrames);
+
+    // $1D: transition flag
+    this.data.zpWrite(0x1D, this.titlePage < 4 ? 0x80 : 0x00);
+
+    console.log(`[Bank1] Page ${this.titlePage} NT loaded (${ntWritten} tiles + ${atWritten} attrs), ` +
+      `anim timer=$${animFrames.toString(16)}`);
     this.data.write(0x03CB, 2);
+    this.data.write(0x03CC, 0);
+  }
+
+  // ==========================================
+  // 子状态 2: 标题动画/页面显示 ($C0A7)
+  //   递减 $79 计数器, 闪烁 PRESS START
+  //   page 0-3: 短暂显示后翻页;  page 4: 持久显示
+  // ==========================================
+  private subState02_TitleAnim(): void {
+    // 最后一页 (page 4): 持久显示，不翻页
+    if (this.titlePage >= 4) {
+      this.doPressStartBlink();
+      return;
+    }
+
+    // 动画计数器 ($79)
+    const timer = this.data.zpRead(0x79);
+    if (timer > 0) {
+      this.data.zpWrite(0x79, (timer - 1) & 0xFF);
+      // 只在有 PRESS START 文字的页闪烁 (page 3)
+      if (this.titlePage >= 3) {
+        this.doPressStartBlink();
+      }
+      return;
+    }
+
+    // 计数器归零: 设置过渡定时器并前进
+    // ROM: $80B6: LDA #$80, STA $79 → 翻页过渡持续 $80 帧
+    this.data.zpWrite(0x79, 0x80);
+    this.data.write(0x03CB, 3);
+    this.data.write(0x03CC, 0);
+    console.log(`[Bank1] Page ${this.titlePage} display done → transition`);
+  }
+
+  /** PRESS START 闪烁 — 每 30 帧切换可见性
+   *  修正: 使用正确的 attribute 区域 40-55 (tile rows 20-27) */
+  private doPressStartBlink(): void {
+    const timer = this.data.zpRead(0x79);
+    const blinkPhase = Math.floor(timer / 30) & 1;
+
+    // PRESS START 文字在 tile rows 22-24
+    // attribute bytes 40-47 对应 tile rows 20-23
+    // attribute bytes 48-55 对应 tile rows 24-27
+    for (let i = 40; i < 56; i++) {
+      this.renderer.writeVram(0x23C0 + i, blinkPhase === 0 ? 0xFF : 0x00);
+    }
+  }
+
+  // ==========================================
+  // 子状态 3: 翻页过渡效果 ($C0BE)
+  //   对应 ROM: JSR $C3CE (transition routine)
+  //   递减 $79 计数器 (由 sub-state 2 设为 $80)
+  // ==========================================
+  private subState03_Transition(): void {
+    const timer = this.data.zpRead(0x79);
+    if (timer > 0) {
+      this.data.zpWrite(0x79, (timer - 1) & 0xFF);
+      return;
+    }
+
+    // 过渡计数器归零: 前进到下一页判断
+    console.log(`[Bank1] Page ${this.titlePage} transition done → next`);
+    this.data.write(0x03CB, 4);
+    this.data.write(0x03CC, 0);
+  }
+
+  // ==========================================
+  // 子状态 4: 翻到下一页 或 进入菜单 ($C0ED)
+  //   $7A++: 如果 < 5, 回到 sub1 (加载); 否则 → sub5 (菜单)
+  // ==========================================
+  private subState04_NextPage(): void {
+    this.titlePage = (this.data.zpRead(0x7A) + 1) & 0xFF;
+    this.data.zpWrite(0x7A, this.titlePage);
+
+    if (this.titlePage < 5) {
+      // 回到子状态 1: 加载下一页
+      console.log(`[Bank1] Sub-state 4: Next page → ${this.titlePage}/4`);
+      this.data.write(0x03CB, 1);
+      this.data.write(0x03CC, 0);
+    } else {
+      // 5 页全部加载完成: 进入菜单初始化
+      console.log('[Bank1] Sub-state 4: All pages loaded → Menu Init');
+      this.data.write(0x03CB, 5);
+      this.data.write(0x03CC, 0);
+    }
   }
 
   // ==========================================
@@ -341,12 +377,10 @@ export class Bank1Dispatcher {
     this.data.mmcBankReg0 = 0;
     this.data.mmcBankReg1 = 1;
 
-    // 清屏
     for (let i = 0; i < 960; i++) {
       this.renderer.writeVram(0x2000 + i, 0x00);
     }
 
-    // 菜单调色板
     for (let i = 0; i < 16; i++) {
       this.renderer.writeVram(0x3F00 + i, MENU_BG_PALETTE[i]);
       this.renderer.writeVram(0x3F10 + i, MENU_BG_PALETTE[i]);

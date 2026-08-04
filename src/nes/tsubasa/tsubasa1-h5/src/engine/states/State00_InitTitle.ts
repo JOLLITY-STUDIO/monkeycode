@@ -50,20 +50,14 @@ export class State00_InitTitle extends StateBase {
 
   onUpdate(): void {
     if (this.initDone) {
-      // 初始化完成后切换到标题循环
-      this.sm.transitionTo(1);
-      return;
+      return; // 已跳转到 State 01
     }
 
-    // 等待 Bank 1 子状态调度器完成初始化
-    // 检查 $03CB (Bank 1 子状态) 是否 >= 2 (进入动画循环)
-    const bank1SubState = this.data.read(0x03CB);
-    if (bank1SubState >= 2) {
-      this.initDone = true;
-      console.log('[State 00] Bank 1 init complete, transitioning to State 01');
-    }
-
-    this.initStep++;
+    // State 00 在 Bank 1 初始化启动后立即过渡到 State 01
+    // 5 页标题加载在 State 01 (标题循环) 期间由 Bank1Dispatcher 继续完成
+    this.initDone = true;
+    console.log('[State 00] Bank 1 dispatched → transitioning to State 01');
+    this.sm.transitionTo(1);
   }
 
   /** 初始化PPU缓冲区地址 (对应 $82CC-$82EA) */

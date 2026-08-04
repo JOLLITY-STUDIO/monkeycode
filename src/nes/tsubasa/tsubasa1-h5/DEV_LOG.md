@@ -4,6 +4,143 @@
 
 ---
 
+## 2026-08-04: v0.9.1 - 🎨 调色板着色 + 标题画面 5 页循环修复
+
+### CHR 渲染管线重大修复
+
+**问题**: CHR PNG 使用固定诊断色（灰/蓝/紫/白），未应用 NES 调色板。所有 tile 渲染为错误颜色。标题画面帧不更新到画布。
+
+**根因分析**:
+1. CHR PNG 由 `extract_chr.py` 用 `NES_PALETTE` 诊断色生成，直接 `drawImage` 导致颜色错误
+2. `Bank1Dispatcher.buildTitlePage()` 使用占位 tile 索引（0x10-0x1F 等）不匹配 CHR 图形
+3. 子状态 4 跳转逻辑错误（回 sub2 而非 sub1），导致 5 页循环只执行 1 页
+
+### 修复内容
+
+**1. 调色板着色系统 (Renderer.ts 重写)**
+- 🔄 CHR PNG 重新提取为 **灰度格式**（像素值 0/85/170/255 → NES 颜色索引 0/1/2/3）
+- 🆕 `tintedCache: Map<string, ICanvas>` — 按 `${bankIndex}_${palGroup}` 缓存着色纹理
+- 🆕 `updateTintedTextures()` — 调色板脏标记触发时，为所有 CHR bank × 8 个调色板组重新生成着色纹理
+- 🆕 `tintChrSheet()` — 使用 `getImageData` → 灰度→NES索引→`NES_PALETTE` 颜色映射 → `putImageData`
+- 🆕 `getTintedSheet()` — 获取着色纹理，回退到原始灰度图像
+- 🔄 `drawTile()` / `drawSprite()` — 使用着色纹理渲染，不再直接用原始 PNG
+- 🔄 `writeVram()` — 写入调色板地址时自动标记 `paletteDirty = true`
+- ✅ 零 Lint 错误，TypeScript 编译通过
+
+**2. 标题画面 5 页循环修复 (Bank1Dispatcher.ts)**
+- 🐛 `subState01_LoadPage()` — 改为只写入非零 tile（模拟 RLE 行为），保留已有页面数据
+- 🐛 `subState04_NextPage()` — 正确按 `sub1 → sub2 → sub3 → sub4 → sub1` 循环
+- 🐛 `subState02_TitleAnim()` — 最后一页（page 4）持久显示不翻页，timer 修改为 `$79 ← $FF`
+- 🐛 `doPressStartBlink()` — 修正 attribute 字节范围（40-55 对应 tile rows 20-27）
+- ✅ 诊断验证：1200 帧完整 5 页循环，最终停在 page 4 闪烁
+
+**3. State 流程修正**
+- 🔄 `State00_InitTitle.ts` — 立即过渡到 State 01，5 页加载在 State 01 期间完成
+- 🔄 `StateMachine.ts` — `dispatchBankState()` 在 Bank 未变化时跳过 re-init（保护 5 页循环）
+
+**4. 诊断脚本增强 (tests/diagnose-frames.ts)**
+- 🔄 帧上限 300→1200 帧
+- 🆕 `NES_PALETTE_NAMES` — 中方颜色命名
+- 🆕 `ntPreview()` — ASCII-art 名称表概览
+- 🆕 `ntNonZeroStats()` — 非零 tile 统计
+
+### 产出
+- ✅ Renderer.ts — 完整调色板着色管线
+- ✅ Bank1Dispatcher.ts — 5 页标题循环修复
+- ✅ 灰度 CHR PNG × 16（`public/sprites/chr_bank_*.png`）
+- ✅ `tests/diagnose-frames.ts` — 无画布帧诊断
+
+### 待解决
+- 🔄 BUG-007: 标题画面 tile 索引仍为占位值（需 ROM RLE 数据提取，M5 阶段任务）
+- 🔄 BUG-012: 后续状态（Menu/Match）的 tile 索引需匹配实际 CHR 字体布局
+- ⬜ M5: Bank 7 脚本引擎逆向（标题/菜单/过场等数据需从 RLE 字节码解码）
+
+### 文件变更
+| 文件 | 变更 |
+|------|------|
+| `src/renderer/Renderer.ts` | 🔄 重写：+调色板着色管线和纹理缓存 |
+| `src/engine/Bank1Dispatcher.ts` | 🔄 重写：5页循环 + RLE行为模拟 |
+| `src/engine/states/State00_InitTitle.ts` | 🔄 立即过渡 |
+| `src/engine/StateMachine.ts` | 🔄 Bank 未变跳过 re-init |
+| `public/sprites/chr_bank_*.png` | 🔄 灰度格式重新提取 |
+| `tests/diagnose-frames.ts` | 🔄 增强诊断 |
+
+---
+
+## 2026-08-04: v0.9.0 - 🏗️ 架构分离: logic/model | data/view → Canvas
+
+### 核心重构
+
+将「游戏逻辑」和「画面渲染」彻底分离，形成"前后端分离"架构：
+
+```
+┌──────────────────────────────────────────────────┐
+│  LOGIC & MODEL (纯 TypeScript，零 Canvas 代码)    │
+│                                                    │
+│   State.onUpdate() → 修改 GameModel (纯数据)       │
+│   类似: 后端 Controller → 更新数据库               │
+└──────────────────┬───────────────────────────────┘
+                   │ 读取
+                   ↓
+┌──────────────────────────────────────────────────┐
+│  DATA & VIEW (纯渲染，零游戏逻辑)                  │
+│                                                    │
+│   SceneComposer: Model → VRAM + OAM               │
+│   Renderer: VRAM + OAM → Canvas 绘制              │
+│   类似: 前端 Template 引擎 → DOM 渲染              │
+└──────────────────────────────────────────────────┘
+```
+
+### 新增文件
+
+- **`src/model/GameModel.ts`** — 游戏状态数据模型
+  - `MenuModel`, `MemberSelectModel`, `MatchModel`, `EventModel` 子模型
+  - 便捷方法: `setMenu()`, `setMemberSelect()`, `setMatch()`, `updateMatch()`, `setEvent()`, `advanceEvent()`
+  - 完全无渲染代码，纯数据类
+
+- **`src/view/SceneComposer.ts`** — 场景构建器 (data→view)
+  - 读取 `GameModel` → 写入 `Renderer.writeVram()` + `OamCache.setSprite()`
+  - 封装所有 NES 底层细节（tile 布局、坐标映射、HUD 渲染）
+  - 各状态对应方法: `composeMenu()`, `composeMemberSelect()`, `composeMatch()`, `composeEvent()`
+
+### 修改文件
+
+- **`StateBase.ts`** — 新增 `model` getter（通过 `StateMachine.getModel()`），保留 `renderer/oam` 标记为 `@deprecated`
+- **`StateMachine.ts`** — 新增 `model: GameModel` 字段 + `getModel()` getter，构造函数注入
+- **`State02_MenuSelect.ts`** — 移除所有 `renderer.writeVram()` / `oam.setSprite()` 调用，改为 `model.setMenu()`
+- **`State03_MemberSelect.ts`** — 移除所有 VRAM 写入，改为 `model.setMemberSelect()` + `syncModel()`
+- **`State04_MatchMain.ts`** — 移除 `renderField/Players/Ball/Hud` 渲染方法，改为 `syncMatchModel()` 更新 `model.match`
+- **`State05_MatchEvent.ts`** — 移除 VRAM 文本写入，改为 `model.setEvent()` + `model.advanceEvent()`
+- **`GameLoop.ts`** — 帧循环从三阶段扩展为四阶段: PPU填充 → 逻辑更新 → 场景构建(NEW) → Canvas渲染
+- **`Tsubasa.ts`** — 新增 `GameModel` + `SceneComposer` 创建和依赖注入
+
+### 架构优势
+
+- **状态类 = 纯逻辑**: State `onUpdate()` 只处理输入/状态转换，更新模型数据，零渲染依赖
+- **单元测试友好**: 可完全 Mock 掉 Canvas，直接断言 Model 数据正确性
+- **前后端分离**: 未来可替换 Canvas 渲染为 WebGL/其他图形后端，逻辑层无需改动
+- **代码可读性**: Model 的 setter 方法语义清晰（`setMenu('CAPTAIN TSUBASA', items, 0)` vs 原始 VRAM tile 写入）
+
+### 兼容
+
+- `Bank1Dispatcher` 保留直接 `renderer.writeVram()` 调用（处理标题初始化，属于"硬件初始化"层）
+- `StateTest` 保留直接 `renderer` 使用（测试状态，非生产代码）
+- `StateBase` 保留 `renderer/oam` 引用（`@deprecated` 标记，渐进迁移）
+
+---
+
+## 2026-08-04: v0.8.1 - 🔧 设计修正: 固定玩家球队 + 移除P2
+  - 玩家球队固定为南葛(Nankatsu)，不可选择
+  - 可查看/切换上场队员（最少7人，最多11人）
+  - 显示球员完整属性: No/Name/Pos/Speed/Power/Tech/Stamina
+  - 对手由剧情序列决定（第一战: 東邦）
+- 🔧 **State 02 菜单**: 移除"2P GAME"选项
+  - 单人游戏，仅 START / CONTINUE 两个选项
+- 🧹 **P2 清理**: 移除 DataCache.joypad2Raw、Constants.JOYPAD2、NmiHandler 中 P2 赋值
+- 📄 文件变更: 新增 State03_MemberSelect.ts, 删除 State03_TeamSelect.ts
+
+---
+
 ## 2026-08-04: v0.7.0 - ⚽ 比赛引擎 + M3 完成
 
 ### 球员数据重构
@@ -25,7 +162,7 @@
 - ✅ 集成到 State05_MatchEvent
 
 ### 状态增强
-- 🔄 **State03_TeamSelect**: 显示真实 7 队列表 + 球员数
+- 🔄 ~~State03_TeamSelect: 显示真实 7 队列表 + 球员数~~ (v0.8.1 修正为队员选择)
 - 🔄 **State04_MatchMain**: 场地渲染、球员精灵、球精灵、比分HUD
 - 🔄 **State05_MatchEvent**: GOAL动画、终场结果画面
 

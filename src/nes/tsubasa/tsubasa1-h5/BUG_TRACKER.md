@@ -15,6 +15,21 @@
 
 ## 已知问题
 
+### BUG-013: 设计偏离 - 队伍选择与2P模式 [已修复 v0.5.2]
+- **状态**: ✅ 已修复 (v0.5.2)
+- **严重度**: 🔴 严重 (设计偏差)
+- **描述**:
+  1. State 03 被错误设计为"队伍选择"（让玩家选择球队），原游戏玩家球队固定为南葛(Nankatsu)，仅有队员选择/阵型调整功能
+  2. 菜单中出现了"2P GAME"选项，但原作为单人游戏（仅有 START 和 CONTINUE）
+  3. DataCache 中存在 joypad2Raw (P2 手柄)字段，与单人游戏不符
+- **修复文件**:
+  - `src/engine/states/State03_MemberSelect.ts` (替换原 State03_TeamSelect.ts)
+  - `src/engine/states/State02_MenuSelect.ts` (移除 2P GAME)
+  - `src/cache/DataCache.ts` (移除 joypad2Raw)
+  - `src/core/Constants.ts` (移除 JOYPAD2)
+  - `src/engine/NmiHandler.ts` (移除 joypad2 赋值)
+  - `ROM_STRUCTURE_REPORT.md`, `ARCHITECTURE.md` (文档更新)
+
 ### BUG-011: GameLoop 帧时钟问题 — 三重修复 [已修复 v0.4.3]
 - **状态**: ✅ 已修复 (v0.4.3)
 - **严重度**: 🔴 严重 (阻塞性)
@@ -28,25 +43,16 @@
     上天然 ~60fps 与 NES 匹配。FPS 改用滑动窗口统计。
 - **修复文件**: `src/core/GameLoop.ts`, `src/platform/miniprogram/MpPlatform.ts`
 
-### BUG-012: CHR PNG 使用诊断调色板导致颜色错误 [新建]
-- **状态**: 🔴 打开
+### BUG-012: CHR PNG 使用诊断调色板导致颜色错误 [✅ 已修复 v0.9.1]
+- **状态**: ✅ 已修复 (v0.9.1)
 - **严重度**: 高
 - **来源**: `scripts/extract_chr.py` + `Renderer.ts`
-- **描述**: 
-  CHR 提取脚本使用 4 色"诊断调色板"将 2bpp tile 数据渲染为彩色 PNG：
-  ```python
-  (0x7C,0x7C,0x7C), (0x00,0x00,0xFC), (0x94,0x00,0x84), (0xF8,0xF8,0xF8)
-  ```
-  这与 NES 实际调色板完全不同。当前 Renderer 直接将 PNG 作为最终画面绘制，
-  无法在运行时应用 NES 调色板（8 个 sub-palette × 4 色 ÷ attribute table 索引）。
-- **影响**: 
-  - 所有 tile 渲染颜色错误（灰度替代黑色、蓝色替代原色等）
-  - 无法实现调色板动画（如标题闪烁）
-  - 无法根据 attribute table 切换子调色板
-- **修复计划**:
-  1. 重新提取 CHR 为灰度 PNG（编码 2bpp 索引到 RGB 通道）或保留原始 binary
-  2. Renderer 改为逐像素渲染，根据 tile pattern + attribute + palette 查表着色
-  3. 或使用 Canvas ImageData 逐帧重着色（性能需评估）
+- **修复**:
+  1. CHR PNG 重新提取为灰度格式（像素值 0/85/170/255 → NES 索引 0/1/2/3）
+  2. Renderer 新增 `tintedCache` 纹理缓存，在调色板变化时生成着色纹理
+  3. `tintChrSheet()` 使用 `getImageData` → 灰度→NES索引→`NES_PALETTE` 映射 → `putImageData`
+  4. `drawTile()`/`drawSprite()` 使用着色纹理渲染
+- **修复文件**: `src/renderer/Renderer.ts`, `public/sprites/chr_bank_*.png`
 
 ### BUG-001: 反汇编质量 - 数据误解释为代码
 - **状态**: 🔄 改善中 (CDL 已更新, v0.5.1)
@@ -85,28 +91,25 @@
   - 确保 BankManager 的值与原始NES一致
 
 ### BUG-007: 标题画面使用测试数据而非真实ROM数据
-- **状态**: 🔄 进行中
+- **状态**: 🔄 部分修复 (v0.9.1)
 - **严重度**: 高
-- **来源**: State00_InitTitle.ts
-- **描述**: 
-  State 00 的 `loadTitleNametable()` 使用 `tileIdx = (row * 32 + col) % 256` 
-  填充测试图案，而非从ROM中提取真实的标题画面数据。
-  标题画面数据由 Bank 1 的脚本引擎动态生成，需要实现 Bank 1 子状态调度器。
-- **修复计划**:
-  1. 实现 $84D2 状态分发器的 Bank 切换逻辑
-  2. 实现 Bank 1 子状态跳转表 ($804B)
-  3. 从 ROM 提取标题画面调色板和初始数据
-  4. 实现 Bank 1 标题初始化核心代码
+- **来源**: Bank1Dispatcher.ts
+- **进展**: 
+  - ✅ 5 页标题加载循环已实现（sub1→sub2→sub3→sub4→sub1 正确循环）
+  - ✅ 标题调色板已从 ROM Bank 2 ($B24F-$B25E) 提取并使用
+  - ✅ 标题画面闪烁动画已实现（30帧周期，PRSES START 闪烁）
+  - ✅ 调色板着色管线已实现（灰度 CHR + 调色板映射）
+  - 🔄 **仍使用占位 tile 索引**（非 ROM 真实 RLE 数据）
+- **影响**: 标题画面显示形状和使用颜色大致正确，但文字/图案位置和内容不精确
+- **根因**: ROM 的标题数据由 Bank 7 脚本引擎 RLE 解码生成，需逆向脚本引擎字节码（M5 任务）
+- **计划**: M5 阶段从 ROM 提取 RLE 压缩的名称表数据，替换当前占位符
 
 ### BUG-008: 状态分发器未实现 Bank 切换
-- **状态**: 🔄 进行中
+- **状态**: ✅ 已修复 (v0.3.0+)
 - **严重度**: 高
 - **来源**: StateMachine.ts vs ROM $84D2
-- **描述**: 
-  原始 ROM 中状态分发器 `$84D2` 将状态ID分为高4位(PRG Bank)和低4位(子状态索引)。
-  当前 TS 实现直接使用 0-5 的简单状态ID，未实现 Bank 切换机制。
-- **影响**: 标题画面、菜单等所有画面都无法正确初始化。
-- **计划**: 重构 StateMachine 支持 Bank 切换 + 子状态索引。
+- **描述**: StateMachine 已实现完整的 Bank 切换 + Bank1Dispatcher 子状态调度
+- **修复**: StateMachine.dispatchBankState() 调度 PRG bank，Bank1Dispatcher 处理子状态跳转表 ($804B)
 
 ---
 

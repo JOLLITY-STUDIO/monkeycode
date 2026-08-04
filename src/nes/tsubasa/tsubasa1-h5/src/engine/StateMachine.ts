@@ -18,7 +18,7 @@
  *   0: Init/Title     → 调用 $84D2 with $10
  *   1: Title Loop     → 调用 $84D2 with $5D
  *   2: Menu Select    → 调用 $84D2 with $60
- *   3: Team Select    → 调用 $84D2 with custom
+ *   3: Member Select  → 调用 $84D2 with custom (固定南葛队，仅选队员)
  *   4: Match Main     → 调用 $84D2 with custom
  *   5: Match Event    → 调用 $84D2 with custom
  */
@@ -29,6 +29,7 @@ import type { Renderer } from '../renderer/Renderer';
 import type { OamCache } from '../cache/OamCache';
 import type { BankManager } from '../cache/BankManager';
 import type { PpuQueue } from '../cache/PpuQueue';
+import type { GameModel } from '../model/GameModel';
 import { Bank1Dispatcher } from './Bank1Dispatcher';
 
 /** 游戏状态接口 */
@@ -48,7 +49,7 @@ const STATE_DISPATCH_MAP: Record<number, { bankId: number; subStateId: number }>
   0: { bankId: 1, subStateId: 0 },   // $10 → Bank 1, sub-state 0 (标题初始化)
   1: { bankId: 1, subStateId: 2 },   // $12 → Bank 1, sub-state 2 (标题动画)
   2: { bankId: 1, subStateId: 5 },   // $15 → Bank 1, sub-state 5 (菜单初始化)
-  3: { bankId: 1, subStateId: 6 },   // $16 → Bank 1, sub-state 6 (菜单循环/队伍选择共用)
+  3: { bankId: 1, subStateId: 6 },   // $16 → Bank 1, sub-state 6 (菜单循环/队员选择共用)
   4: { bankId: 4, subStateId: 0 },   // $40 → Bank 4, sub-state 0 (比赛主循环)
   5: { bankId: 4, subStateId: 1 },   // $41 → Bank 4, sub-state 1 (比赛事件)
 };
@@ -64,6 +65,7 @@ export class StateMachine {
   private oamCache: OamCache;
   private bankManager: BankManager;
   private ppuQueue: PpuQueue;
+  private model: GameModel;
 
   /** Bank 1 子状态调度器 */
   private bank1Dispatcher: Bank1Dispatcher;
@@ -78,6 +80,7 @@ export class StateMachine {
     oamCache: OamCache,
     bankManager: BankManager,
     ppuQueue: PpuQueue,
+    model: GameModel,
   ) {
     this.dataCache = dataCache;
     this.inputManager = inputManager;
@@ -85,6 +88,7 @@ export class StateMachine {
     this.oamCache = oamCache;
     this.bankManager = bankManager;
     this.ppuQueue = ppuQueue;
+    this.model = model;
 
     this.bank1Dispatcher = new Bank1Dispatcher(
       dataCache, bankManager, renderer, oamCache, ppuQueue, inputManager,
@@ -130,6 +134,7 @@ export class StateMachine {
     this.currentState = newState;
     this.currentStateId = stateId;
     this.dataCache.gameState = stateId;
+    this.model.stateId = stateId;  // v0.9.0: 同步 model 状态
 
     // 执行 $84D2 风格的 Bank 切换 + 子状态调度
     this.dispatchBankState(stateId);
@@ -160,6 +165,13 @@ export class StateMachine {
     }
 
     const { bankId, subStateId } = dispatch;
+
+    // 如果 Bank 没变化，不重新初始化 dispatcher（保持子状态机运行）
+    const bankChanged = (this.activePrgBank !== bankId);
+    if (!bankChanged) {
+      console.log(`[StateMachine] Dispatch: state=$${stateId.toString(16)} → Bank ${bankId} unchanged, skipping re-init`);
+      return;
+    }
 
     // 切换 PRG Bank
     this.bankManager.prgBank0 = bankId;
@@ -220,6 +232,8 @@ export class StateMachine {
   getBankManager(): BankManager { return this.bankManager; }
   /** 获取 PpuQueue */
   getPpuQueue(): PpuQueue { return this.ppuQueue; }
+  /** 获取 GameModel */
+  getModel(): GameModel { return this.model; }
   /** 获取 Bank 1 调度器 */
   getBank1Dispatcher(): Bank1Dispatcher { return this.bank1Dispatcher; }
 }

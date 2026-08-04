@@ -8,6 +8,8 @@
  *   - 每个 CHR Bank PNG 为 128×128 像素, 包含 256 个 tile (16×16 网格)
  *   - MMC1 4KB 模式: chrBank0 选 $0000-$0FFF, chrBank1 选 $1000-$1FFF
  *   - bank 寄存器值 n → 图片索引 = floor(n/2), tile偏移 = (n%2)*128
+ *   - CHR PNG 使用灰度格式: 像素值 0/85/170/255 → NES 颜色索引 0/1/2/3
+ *   - 渲染时先通过 getImageData 将灰度像素映射为 NES 调色板颜色
  */
 import { SCREEN_W, SCREEN_H } from '../core/Constants';
 import { NES_PALETTE, TILE_SIZE } from '../core/types';
@@ -18,6 +20,10 @@ import type { IPlatform, ICanvasContext, ICanvasImageSource } from '../platform/
 
 /** CHR 精灵表尺寸 */
 const CHR_SHEET_TILES_PER_ROW = 16;
+/** CHR sheet 总尺寸 (128×128 像素) */
+const CHR_SHEET_SIZE = 128;
+/** 灰度 → NES 索引映射除数 */
+const GRAY_TO_NES_DIV = 85;
 
 /** VRAM 模拟 */
 interface VramState {
@@ -39,6 +45,17 @@ export class Renderer {
   /** CHR 图案表缓存 (bankIndex → Image 对象) */
   private chrImages: Map<number, ICanvasImageSource>;
 
+  /**
+   * 调色板着色纹理缓存
+   * key: `${bankIndex}_${palGroup}` → 调色板着色后的离屏 Canvas
+   * bankIndex: 图片索引 (0-15)
+   * palGroup: 0-3 (BG调色板), 4-7 (Sprite调色板)
+   */
+  private tintedCache: Map<string, ICanvas>;
+
+  /** 调色板是否已脏，需要重新生成着色纹理 */
+  private paletteDirty: boolean = true;
+
   /** Bank 管理器引用 */
   private bankManager: BankManager | null = null;
 
@@ -58,10 +75,14 @@ export class Renderer {
   /** Debug 文字大小 (px, 未缩放) */
   debugTextSize: number = 16;
 
+  /** 从外部控制是否跳过 Canvas 绘制 (诊断模式) */
+  skipCanvasDraw: boolean = false;
+
   constructor(platform: IPlatform, ctx: ICanvasContext) {
     this.platform = platform;
     this.ctx = ctx;
     this.chrImages = new Map();
+    this.tintedCache = new Map();
 
     this.vram = {
       nametables: [new Uint8Array(960), new Uint8Array(960), new Uint8Array(960), new Uint8Array(960)],
@@ -121,6 +142,7 @@ export class Renderer {
     this.useChrImages = loaded > 0;
     if (loaded > 0) {
       console.log(`[Renderer] Loaded ${loaded}/16 CHR bank images from ${basePath}`);
+      this.paletteDirty = true;
     } else {
       console.warn(`[Renderer] Failed to load any CHR bank images. First error: ${firstError}`);
       console.warn(`[Renderer] Using fallback color block rendering`);
@@ -160,6 +182,7 @@ export class Renderer {
       const realIndex = (palIndex === 0x10 || palIndex === 0x14 || palIndex === 0x18 || palIndex === 0x1C)
         ? palIndex - 0x10 : palIndex;
       this.vram.palette[realIndex] = value & 0x3F;
+      this.paletteDirty = true;  // 调色板修改 → 标记脏
     } else if (addr >= 0x2000) {
       const ntIndex = (addr >> 10) & 0x03;
       const offset = addr & 0x03FF;
@@ -171,10 +194,161 @@ export class Renderer {
     }
   }
 
+  // ================================================================
+  // 调色板着色纹理生成
+  // ================================================================
+
+  /**
+   * 处理脏调色板: 为所有已加载 CHR bank × 所有调色板组重新生成着色纹理
+   * 着色流程: 将灰度 CHR PNG (像素值 0/85/170/255 → NES索引 0/1/2/3)
+   *           映射到 NES_PALETTE[palette[palGroup*4+nesIdx]]
+   */
+  private updateTintedTextures(): void {
+    if (!this.paletteDirty) return;
+    this.paletteDirty = false;
+
+    if (!this.useChrImages || this.chrImages.size === 0) return;
+
+    const tintStart = performance.now();
+    let tinted = 0;
+
+    for (const [bankIdx, chrImg] of this.chrImages) {
+      // 为每个 bank，生成 8 个着色纹理 (4 BG + 4 SPR)
+      for (let palGroup = 0; palGroup < 8; palGroup++) {
+        const key = `${bankIdx}_${palGroup}`;
+        const tintedCanvas = this.tintChrSheet(chrImg, palGroup);
+        if (tintedCanvas) {
+          this.tintedCache.set(key, tintedCanvas);
+          tinted++;
+        }
+      }
+    }
+
+    const elapsed = (performance.now() - tintStart).toFixed(1);
+    if (tinted > 0 && this.renderFrameCount <= 3) {
+      console.log(`[Renderer] Tinted ${tinted} textures (${this.chrImages.size} banks × 8 palGroups) in ${elapsed}ms`);
+    }
+  }
+
+  /**
+   * 对整张 CHR 精灵表进行调色板着色
+   * 返回离屏 Canvas（已着色），失败返回 null
+   */
+  private tintChrSheet(
+    chrImg: ICanvasImageSource, palGroup: number
+  ): ICanvas | null {
+    try {
+      // 创建离屏 canvas
+      const offCanvas = this.platform.createOffscreenCanvas(CHR_SHEET_SIZE, CHR_SHEET_SIZE);
+      const offCtx = offCanvas.getContext('2d');
+      if (!offCtx) return null;
+      offCtx.imageSmoothingEnabled = false;
+
+      // 将灰度 CHR 图像绘制到离屏 canvas
+      const rawImg = (chrImg as any).raw || chrImg;
+      (offCtx as any).drawImage(rawImg, 0, 0);
+
+      // 获取像素数据
+      const imgData = offCtx.getImageData(0, 0, CHR_SHEET_SIZE, CHR_SHEET_SIZE);
+      const pixels = imgData.data;
+
+      // 调色板基础索引
+      const palBase = palGroup * 4;
+
+      // 预取 4 个调色板颜色 (RGBA)
+      const colors: number[] = [];
+      for (let ci = 0; ci < 4; ci++) {
+        const nesIdx = this.vram.palette[palBase + ci] & 0x3F;
+        const rgb = NES_PALETTE[nesIdx] || 0;
+        // NES_PALETTE 存储为 0xRRGGBB
+        colors[ci * 4 + 0] = (rgb >> 16) & 0xFF; // R
+        colors[ci * 4 + 1] = (rgb >> 8) & 0xFF;  // G
+        colors[ci * 4 + 2] = rgb & 0xFF;         // B
+        colors[ci * 4 + 3] = 255;                 // A
+      }
+
+      // NES 颜色索引 0: 背景色/透明 → Alpha = 0 表示透明
+      colors[3] = 0; // palBase+0 → transparent
+
+      // 逐像素重映射: 灰度值 → NES索引 → 调色板颜色
+      for (let i = 0; i < pixels.length; i += 4) {
+        // R == G == B 因为灰度图
+        const gray = pixels[i];
+        const nesIdx = Math.min(3, Math.round(gray / GRAY_TO_NES_DIV));
+        const offset = nesIdx * 4;
+        pixels[i + 0] = colors[offset + 0];
+        pixels[i + 1] = colors[offset + 1];
+        pixels[i + 2] = colors[offset + 2];
+        pixels[i + 3] = colors[offset + 3];
+      }
+
+      // 写回着色像素
+      offCtx.putImageData(imgData, 0, 0);
+
+      return offCanvas;
+    } catch (e: any) {
+      if (this.renderFrameCount <= 1) {
+        console.warn(`[Renderer] tintChrSheet failed for palGroup ${palGroup}: ${e?.message || e}`);
+      }
+      return null;
+    }
+  }
+
+  /**
+   * 获取着色后的 CHR 精灵表 (离屏 Canvas)
+   * 如果当前没有着色纹理或调色板已脏，回退到原始灰度图像
+   */
+  private getTintedSheet(bankReg: number, palGroup: number): ICanvasImageSource | null {
+    const { imageIndex } = this.getChrSource(bankReg);
+    const key = `${imageIndex}_${palGroup}`;
+    const tinted = this.tintedCache.get(key);
+    if (tinted) return tinted as any as ICanvasImageSource;
+    // 回退到原始灰度图像
+    return this.chrImages.get(imageIndex) ?? this.chrImages.get(0) ?? null;
+  }
+
+  // ================================================================
+  // 诊断接口
+  // ================================================================
+
+  /** 获取原始 VRAM 名称表 (960 bytes) */
+  getNametable(ntIndex: number): Uint8Array {
+    return this.vram.nametables[ntIndex & 0x03];
+  }
+
+  /** 获取原始 VRAM 属性表 (64 bytes) */
+  getAttributes(ntIndex: number): Uint8Array {
+    return this.vram.attributes[ntIndex & 0x03];
+  }
+
+  /** 获取完整 32 字节调色板 */
+  getPalette(): number[] {
+    return [...this.vram.palette];
+  }
+
+  /** 获取当前渲染的 CHR bank 配置信息 */
+  getChrBankInfo(): { chrBank0: number; chrBank1: number; useChrImages: boolean } {
+    return {
+      chrBank0: this.bankManager?.chrBank0 ?? 0,
+      chrBank1: this.bankManager?.chrBank1 ?? 0,
+      useChrImages: this.useChrImages,
+    };
+  }
+
+  // ================================================================
+  // 帧渲染
+  // ================================================================
+
   /** 渲染一帧 — 直接画到主 canvas，一次完成 */
   render(dataCache: DataCache, oamCache: OamCache): void {
     this.renderFrameCount++;
     const ctx = this.ctx;
+
+    // 诊断模式: 跳过 canvas 绘制
+    if (this.skipCanvasDraw) return;
+
+    // 调色板着色纹理更新（仅在调色板变化时执行）
+    this.updateTintedTextures();
 
     // 前3帧输出诊断日志
     if (this.renderFrameCount <= 3) {
@@ -185,6 +359,7 @@ export class Renderer {
         palette0: this.vram.palette[0].toString(16),
         hasDebugText: !!this.debugText,
         useChrImages: this.useChrImages,
+        tintedCached: this.tintedCache.size,
       });
     }
 
@@ -192,10 +367,6 @@ export class Renderer {
     const bgColorIdx = this.vram.palette[0] & 0x3F;
     const bgColor = NES_PALETTE[bgColorIdx];
     const fillColor = `#${bgColor.toString(16).padStart(6, '0')}`;
-
-    if (this.renderFrameCount <= 3) {
-      console.log(`[Renderer] bgColorIdx=0x${bgColorIdx.toString(16)} bgColor=0x${bgColor.toString(16)} fillColor=${fillColor}`);
-    }
 
     ctx.fillStyle = fillColor;
     ctx.fillRect(0, 0, SCREEN_W * this.scale, SCREEN_H * this.scale);
@@ -224,17 +395,17 @@ export class Renderer {
       ctx.font = `${fontSize}px sans-serif`;
       ctx.fillStyle = this.debugTextColor;
       ctx.fillText(this.debugText, x + 4 * this.scale, y + fontSize);
-
-      if (this.renderFrameCount <= 3) {
-        console.log(`[Renderer] debugText drawn: "${this.debugText}" at (${x},${y}) color=${this.debugTextColor} size=${fontSize}`);
-      }
     }
 
     // 每60帧输出一次心跳
     if (this.renderFrameCount % 60 === 0) {
-      console.log(`[Renderer] Frame ${this.renderFrameCount} rendered successfully`);
+      console.log(`[Renderer] Frame ${this.renderFrameCount} rendered successfully (paletteDirty=${this.paletteDirty})`);
     }
   }
+
+  // ================================================================
+  // 背景 / 精灵渲染
+  // ================================================================
 
   private renderBackground(ctx: ICanvasContext, ppuCtrl: number, scrollX: number, scrollY: number): void {
     const baseNT = ppuCtrl & 0x03;
@@ -244,7 +415,6 @@ export class Renderer {
       ? (this.bankManager?.chrBank0 ?? 0)
       : (this.bankManager?.chrBank1 ?? 0);
 
-    const chrImg = this.getChrImage(bgChrBank);
     const { tileBase } = this.getChrSource(bgChrBank);
 
     const startTileX = Math.floor(scrollX / TILE_SIZE);
@@ -269,7 +439,7 @@ export class Renderer {
 
         this.drawTile(ctx, tileIdx, paletteIdx,
           tx * TILE_SIZE - fineX, ty * TILE_SIZE - fineY,
-          chrImg, tileBase);
+          bgChrBank, tileBase);
       }
     }
   }
@@ -280,7 +450,6 @@ export class Renderer {
       ? (this.bankManager?.chrBank0 ?? 0)
       : (this.bankManager?.chrBank1 ?? 0);
 
-    const chrImg = this.getChrImage(sprChrBank);
     const { tileBase } = this.getChrSource(sprChrBank);
 
     const sprites = oamCache.getVisibleSprites();
@@ -293,14 +462,22 @@ export class Renderer {
 
       if (!behindBg) {
         this.drawSprite(ctx, spr.tileIndex, paletteIdx,
-          spr.x, spr.y - 1, flipH, flipV, chrImg, tileBase);
+          spr.x, spr.y - 1, flipH, flipV, sprChrBank, tileBase);
       }
     }
   }
 
+  // ================================================================
+  // Tile / Sprite 绘制
+  // ================================================================
+
+  /**
+   * 绘制单个 tile
+   * 使用着色后的 CHR 纹理（灰度像素 → 调色板颜色映射）
+   */
   private drawTile(
-    ctx: ICanvasContext, tileIndex: number, _paletteIdx: number,
-    x: number, y: number, chrImg: ICanvasImageSource | null, tileBase: number
+    ctx: ICanvasContext, tileIndex: number, palGroup: number,
+    x: number, y: number, chrBank: number, tileBase: number
   ): void {
     const s = this.scale;
     const ts = TILE_SIZE * s;
@@ -309,24 +486,33 @@ export class Renderer {
 
     if (x * s < -ts || x * s > maxX || y * s < -ts || y * s > maxY) return;
 
-    if (chrImg && this.useChrImages) {
+    if (this.useChrImages) {
+      // 使用着色纹理
+      const tinted = this.getTintedSheet(chrBank, palGroup);
       const src = this.getTileSrcRect(tileBase + tileIndex);
-      const rawImg = (chrImg as any).raw || chrImg;
-      (ctx as any).drawImage(rawImg,
-        src.sx, src.sy, TILE_SIZE, TILE_SIZE,
-        x * s, y * s, ts, ts);
+      if (tinted) {
+        const rawImg = (tinted as any).raw || tinted;
+        (ctx as any).drawImage(rawImg,
+          src.sx, src.sy, TILE_SIZE, TILE_SIZE,
+          x * s, y * s, ts, ts);
+      }
     } else {
-      const colorIdx = this.vram.palette[(_paletteIdx) * 4 + 1] & 0x3F;
+      // 回退: 纯色块
+      const colorIdx = this.vram.palette[palGroup * 4 + 1] & 0x3F;
       const color = NES_PALETTE[colorIdx] || 0x7C7C7C;
       ctx.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
       ctx.fillRect(x * s, y * s, ts, ts);
     }
   }
 
+  /**
+   * 绘制单个精灵 tile
+   * 使用着色后的 CHR 纹理，支持水平/垂直翻转
+   */
   private drawSprite(
-    ctx: ICanvasContext, tileIndex: number, _paletteIdx: number,
+    ctx: ICanvasContext, tileIndex: number, palGroup: number,
     x: number, y: number, flipH: boolean, flipV: boolean,
-    chrImg: ICanvasImageSource | null, tileBase: number
+    chrBank: number, tileBase: number
   ): void {
     const s = this.scale;
     const ts = TILE_SIZE * s;
@@ -335,27 +521,29 @@ export class Renderer {
 
     if (x * s < -ts || x * s > maxX || y * s < -ts || y * s > maxY) return;
 
-    if (chrImg && this.useChrImages) {
+    if (this.useChrImages) {
+      const tinted = this.getTintedSheet(chrBank, palGroup);
       const src = this.getTileSrcRect(tileBase + tileIndex);
-      const rawImg = (chrImg as any).raw || chrImg;
-
-      if (flipH || flipV) {
-        ctx.save();
-        const cx = x * s + ts / 2;
-        const cy = y * s + ts / 2;
-        ctx.translate(cx, cy);
-        ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
-        (ctx as any).drawImage(rawImg,
-          src.sx, src.sy, TILE_SIZE, TILE_SIZE,
-          -ts / 2, -ts / 2, ts, ts);
-        ctx.restore();
-      } else {
-        (ctx as any).drawImage(rawImg,
-          src.sx, src.sy, TILE_SIZE, TILE_SIZE,
-          x * s, y * s, ts, ts);
+      if (tinted) {
+        const rawImg = (tinted as any).raw || tinted;
+        if (flipH || flipV) {
+          ctx.save();
+          const cx = x * s + ts / 2;
+          const cy = y * s + ts / 2;
+          ctx.translate(cx, cy);
+          ctx.scale(flipH ? -1 : 1, flipV ? -1 : 1);
+          (ctx as any).drawImage(rawImg,
+            src.sx, src.sy, TILE_SIZE, TILE_SIZE,
+            -ts / 2, -ts / 2, ts, ts);
+          ctx.restore();
+        } else {
+          (ctx as any).drawImage(rawImg,
+            src.sx, src.sy, TILE_SIZE, TILE_SIZE,
+            x * s, y * s, ts, ts);
+        }
       }
     } else {
-      const colorIdx = this.vram.palette[(_paletteIdx) * 4 + 1] & 0x3F;
+      const colorIdx = this.vram.palette[palGroup * 4 + 1] & 0x3F;
       const color = NES_PALETTE[colorIdx] || 0x7C7C7C;
       ctx.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
       ctx.fillRect(x * s, y * s, ts, ts);
