@@ -4,6 +4,85 @@
 
 ---
 
+## 2026-08-05: 🔴 BUG-020 导致 WBS 回退 — STATE_DISPATCH_MAP 架构崩溃
+
+### 用户指出的核心问题
+用户质疑"不是吧，那你这样，怎么跟asm对照呢，先出结构在对照的吗？我的初衷是你能直接分析asm来出代码，而不是我来告诉你实际长啥样"。
+
+### 验证结果：TS 代码与 ASM 严重不符
+
+直接从 `bank_00_code.asm` 的 $81FD 跳转表验证：
+
+| State | ASM $84D2参数 | TS实现 | 正确? |
+|-------|-------------|--------|-------|
+| 0 | $10 → Bank1/sub0 | Bank1/sub0 | ✅ |
+| 1 | $5D → Bank5/subD | Bank1/sub2 | ❌ |
+| 2 | $60 → Bank6/sub0 | Bank1/sub5 | ❌ |
+| 3 | $5A → Bank5/subA | Bank1/sub6 | ❌ |
+| 4 | 比赛主循环(无$84D2) | Bank4/sub0 | ❌ |
+| 5 | 状态转换管理器 | Bank4/sub1 | ❌ |
+| 6 | $63 → Bank6/sub3 | Bank4/sub2 | ❌ |
+| 7 | $61 → Bank6/sub1 | Bank4/sub3 | ❌ |
+
+**原有8个映射7个错误，额外多一个不存在的State 8。**
+
+### WBS 回退决定
+**回退的里程碑**: M2, M3, M4, M4A — 全部标记为"已回退 (BUG-020)"
+**新建补救计划**: M2-R (Bank 0 核心逻辑重做) — 10 个任务从 ASM 出发逐步重做
+**不受影响的**: M1 (项目框架) + 基础组件 (RESET/NMI/PPU/输入/RNG/CHR 渲染管线)
+
+### 根因
+之前的工作方式是"看Bank 1有跳转表→假设所有状态在Bank 1"，而不是从ASM的$81F7状态调度器开始分析。这导致整个架构建立在错误假设上。
+
+### 教训
+> **必须从ASM出发。先分析ASM得到正确的结构和逻辑，再写TS代码。不能反过来。**
+
+### 下一步
+M2-R.1: 从 `bank_00_code.asm` 的 $81F7 状态调度器开始，逐行分析每个状态的实际行为，然后重建 StateMachine。
+
+---
+
+## 2026-08-05: 📊 开场动画 CHR Bank 切换深度分析
+
+### 用户反馈
+用户指出开场动画有 **6个分镜场景**，每个分镜对应 CHR Bank 切换，一帧内可能同时切换多个 Bank。
+
+### ROM 分析结果
+- ✅ **确认 6 分镜**: Bank 1 中 `CMP #$06` 判断 (ROM `$8024`) 证实 State 0-5 共 6 个分镜
+- ✅ **状态机**: `ram_03CB` 驱动 8 个子状态 (0-7)，其中 6 个对应分镜动画
+- ✅ **Bank 切换**: `$84D2` 函数同时切换 PRG Bank + CHR 配置
+  - State 0: `$5D` → PRG=5, CHR=D (动画初始化)
+  - State 1: Bank 1 驱动 (标题 logo 淡入)
+  - State 2: Bank 1 驱动 (等待/显示)
+  - State 3-5: 角色特写等过渡动画
+  - State 6-7: 动画结束 → 标题菜单
+- ✅ **CHR Bank 映射**: 场景使用 Bank 00(标题), 09(字体), 0D/0E/0F(角色立绘)
+- ✅ **双 Bank 机制**: MMC1 支持 CHR Bank 0 (背景) + CHR Bank 1 (精灵) 同时使用
+
+### 当前代码差距
+- ⚠️ `Bank1Dispatcher.ts` 是简化版：5页静态标题数据，无真正 CHR 切换
+- ⚠️ `STATE_DISPATCH_MAP` 中 State 1/2 使用 Bank 1，但 ROM 实际使用 Bank 5/6
+- 📋 详见 `OPENING_ANIMATION_ANALYSIS.md`
+
+### 下一步
+- 需要实现真正的 CHR Bank Manager（动态加载/切换 PNG resources）
+- 需要通过 FCEUX PPU Viewer 验证每个分镜的确切 CHR Bank 配置
+
+---
+
+## 2026-08-05: v1.3.0 - 🔧 BUG-019 修复 start() 空比赛序列崩溃
+
+### 问题
+小程序启动报错 `TypeError: Cannot read property 'playerTeamName' of null` (Tsubasa.ts:190)。
+因 v0.8.1 清空了 MatchSequence 的编造数据（改为空数组 `[]`），而 Tsubasa.start() 中直接访问 `getCurrentMatch()` 返回值无空值保护。
+
+### 修复
+- ✅ **Tsubasa.ts:190-191**: `firstMatch.playerTeamName` → `firstMatch?.playerTeamName ?? 'Nankatsu'`
+- ✅ State07_MatchResult.ts 已有 null guard（`if (nextMatch)`），无需修改
+- ✅ AutoPlayController.ts 已有 fallback（`|| 'Player'` / `|| 'CPU'`），无需修改
+
+---
+
 ## 2026-08-05: v0.8.1 - 🧹 BUG-018 清理编造数据
 
 ### 问题

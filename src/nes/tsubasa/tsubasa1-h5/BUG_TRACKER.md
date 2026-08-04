@@ -4,6 +4,62 @@
 
 ---
 
+## 🔴🔴🔴 BUG-020: STATE_DISPATCH_MAP 8个状态7个映射错误 (架构级Bug)
+
+### BUG-020: StateMachine 的 STATE_DISPATCH_MAP 与 ASM 实际跳转表严重不符 [🔴🔴🔴 最高严重度]
+- **状态**: 🔴 打开 (WBS 已回退 — 2026-08-05)
+- **严重度**: 🔴🔴🔴 最高 (架构崩溃)
+- **来源**: 用户反馈 + ASM验证 (2026-08-05)
+- **WBS回退**: M2/M3/M4/M4A 四个里程碑已回退，新建 M2-R 重做计划。详见 WBS_TASKS.md。
+- **描述**: `StateMachine.ts` 中的 `STATE_DISPATCH_MAP` 与 ASM `$81FD` 跳转表几乎全部不匹配。
+
+  实际 ASM 跳转表（从 `bank_00_code.asm` $81FD-$820C 读取）:
+  | State | ASM入口 | 跳转代码 | 实际Bank/Sub |
+  |-------|---------|---------|-------------|
+  | 0 | $82A1 | LDA #$10 | Bank 1, sub 0 |
+  | 1 | $82A7 | LDA #$5D | Bank 5, sub D |
+  | 2 | $8276 | LDA #$60 | Bank 6, sub 0 |
+  | 3 | $85CD | ...LDA #$5A | Bank 5, sub A |
+  | 4 | $87B9 | 比赛主循环(无$84D2) | n/a |
+  | 5 | $820D | 状态转换器(无$84D2) | n/a |
+  | 6 | $8264 | LDA #$63 | Bank 6, sub 3 |
+  | 7 | $8270 | LDA #$61 | Bank 6, sub 1 |
+
+  TS 当前映射:
+  | State | TS bankId | TS subId | 实际 bankId | 实际 subId | 匹配? |
+  |-------|----------|---------|------------|-----------|--------|
+  | 0 | 1 | 0 | 1 | 0 | ✅ |
+  | 1 | 1 | 2 | 5 | D (13) | ❌ |
+  | 2 | 1 | 5 | 6 | 0 | ❌ |
+  | 3 | 1 | 6 | 5 | A (10) | ❌ |
+  | 4 | 4 | 0 | n/a | n/a | ❌ |
+  | 5 | 4 | 1 | n/a | n/a | ❌ |
+  | 6 | 4 | 2 | 6 | 3 | ❌ |
+  | 7 | 4 | 3 | 6 | 1 | ❌ |
+  | 8 | 1 | 7 | 不存在 | 不存在 | ❌(多余) |
+
+  **8个映射7个错误 + 1个多余 = 全部错误。**
+
+- **根因**: 没有先分析ASM再写代码。看到Bank 1有跳转表就假设所有状态都在Bank 1。
+- **影响**: 整个状态机架构是建立在错误假设之上的。所有状态流转逻辑都需要从ASM重新验证。
+- **修复计划**: 从ASM出发重新分析每个状态的实际行为，然后重写 StateMachine + 各State。
+
+---
+
+## v1.3.0 修复 - start() 空比赛序列导致崩溃
+
+### BUG-019: getCurrentMatch() 返回 null 时未做空值检查导致启动崩溃 [✅ 已修复 v1.3.0]
+- **状态**: ✅ 已修复 (v1.3.0)
+- **严重度**: 🔴 严重 (阻塞性)
+- **来源**: 用户反馈 (2026-08-05)
+- **错误信息**: `TypeError: Cannot read property 'playerTeamName' of null at Tsubasa._callee$ (Tsubasa.ts:190)`
+- **根因**: `MatchSequence.ts` 中 `FULL_MATCH_SEQUENCE = []` (空数组，待ROM提取)，导致 `ProgressManager.getCurrentMatch()` 返回 `null`。`Tsubasa.ts:190` 直接访问 `firstMatch.playerTeamName` 没有空值保护。
+- **修复**: `Tsubasa.ts:190-191` 添加可选链和空值合并: `firstMatch?.playerTeamName ?? 'Nankatsu'` / `firstMatch?.opponentName ?? 'Opponent'`
+- **修复文件**: `src/core/Tsubasa.ts` (line 190-191)
+- **影响**: 这是 BUG-018 (编造数据) 的直接后果 — 比赛序列数据尚未从 ROM 提取，但 `start()` 方法在缺少数据时应该能优雅降级而不是崩溃。
+
+---
+
 ## 🔴🔴🔴 v0.8.0 严重问题 — 大量数据是编造的 (BUG-018)
 
 ### BUG-018: 多个数据文件包含伪造内容，不是来自ROM [🔴🔴🔴 最高严重度]
