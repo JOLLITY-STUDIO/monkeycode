@@ -67,8 +67,10 @@ Page({
     autoPlay: false,
     /** 自动播放日志 (最新一条) */
     autoPlayLog: '',
-    /** Canvas CSS style 字符串 (动态计算保持 256:240 比例) */
-    canvasStyle: 'width:512px;height:480px;',
+    /** Canvas CSS 显示宽度 (px) */
+    canvasWidth: 512,
+    /** Canvas CSS 显示高度 (px) */
+    canvasHeight: 480,
   },
 
   /** 游戏实例 */
@@ -113,10 +115,12 @@ Page({
   /** 初始化游戏 */
   async initGame() {
     try {
-      // 0. 计算 Canvas 响应式尺寸 (必须在 binding data 之前)
+      // 0. 计算 Canvas 响应式尺寸 (必须在获取 canvas 节点之前)
       const cssSize = calcCanvasSize();
-      const canvasStyle = `width:${cssSize.width}px;height:${cssSize.height}px;`;
-      this.setData({ canvasStyle });
+      this.setData({
+        canvasWidth: cssSize.width,
+        canvasHeight: cssSize.height,
+      });
 
       // 1. 获取 Canvas 节点 (必须在 onReady 中)
       const query = wx.createSelectorQuery();

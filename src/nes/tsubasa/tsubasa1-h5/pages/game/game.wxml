@@ -4,7 +4,7 @@
     type="2d"
     id="game-canvas"
     class="game-canvas"
-    style="{{canvasStyle}}"
+    style="width:{{canvasWidth}}px;height:{{canvasHeight}}px;"
     bindtouchstart="onTouchStart"
     bindtouchend="onTouchEnd"
     bindtouchmove="onTouchMove"
