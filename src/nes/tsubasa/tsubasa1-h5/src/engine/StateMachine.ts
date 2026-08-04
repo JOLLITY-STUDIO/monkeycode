@@ -124,6 +124,9 @@ export class StateMachine {
   /** 当前激活的 PRG Bank */
   private activePrgBank: number = -1;
 
+  /** 开场动画后的标题页加载阶段标志 */
+  private titleLoadingPhase: boolean = false;
+
   constructor(
     dataCache: DataCache,
     inputManager: InputManager,
@@ -283,19 +286,43 @@ export class StateMachine {
 
   /** 每帧更新 */
   update(): void {
-    // State 0 特殊处理: 开场动画播放器
+    // State 0 特殊处理: 分为两阶段
+    //   阶段1: 开场动画 (OpeningScenePlayer)
+    //   阶段2: 标题页加载 (Bank1Dispatcher 循环 page 0→4)
     if (this.currentStateId === 0) {
-      const openingDone = this.openingPlayer.update();
-      if (openingDone) {
-        // 开场动画完成 → 过渡到标题画面 (State 1)
-        console.log('[StateMachine] Opening animation complete → State 1');
-        // 重置 Bank 1 子状态为标题初始化
-        this.dataCache.write(0x03CB, 0);
-        this.dataCache.write(0x03CC, 0);
-        this.activePrgBank = 1;
-        this.bank1Dispatcher.init(0);
-        this.transitionTo(1);
+      // 阶段1: 开场动画
+      if (this.openingPlayer.isActive) {
+        const openingDone = this.openingPlayer.update();
+        if (openingDone) {
+          // 开场动画完成 → 启动 Bank1Dispatcher 标题页加载
+          console.log('[StateMachine] Opening animation complete → Title page loading');
+          this.dataCache.write(0x03CB, 0);
+          this.dataCache.write(0x03CC, 0);
+          this.dataCache.zpWrite(0x7A, 0);
+          this.activePrgBank = 1;
+          this.bankManager.prgBank0 = 1;
+          this.dataCache.mmcBankReg2 = 1;
+          this.bank1Dispatcher.init(0);
+          this.titleLoadingPhase = true;
+        }
+        return;
       }
+
+      // 阶段2: 标题页加载 (Bank1Dispatcher)
+      if (this.titleLoadingPhase) {
+        this.bank1Dispatcher.update();
+        // 当 Bank1Dispatcher 到达 page 4 的 sub 2 (标题循环+闪烁) 时,
+        // 所有5页标题数据已完全加载到 VRAM, 可以进入 State 1
+        const sub = this.dataCache.read(0x03CB);
+        const page = this.dataCache.zpRead(0x7A);
+        if (sub === 2 && page >= 4) {
+          console.log('[StateMachine] Title pages fully loaded (page 4 sub 2) → State 1');
+          this.titleLoadingPhase = false;
+          this.transitionTo(1);
+        }
+        return;
+      }
+
       return;
     }
 

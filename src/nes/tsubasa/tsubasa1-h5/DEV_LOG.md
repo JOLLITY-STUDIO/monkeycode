@@ -4,6 +4,76 @@
 
 ---
 
+## 2026-08-05: 🐛 BUG-027 修复 — 画布空白：标题画面 nametable 数据从未加载
+
+### 问题
+用户反馈画布什么内容都没有。日志显示渲染器正常工作（60fps, 256×240），但画面全黑。
+
+### 根因分析
+追溯数据流发现3层问题：
+
+1. **OpeningScenePlayer** 在 State 0 运行 6 个分镜后，只切换了 CHR Bank，**从未写入任何 nametable tile 数据**到 VRAM。nametable 全为 0x00，所有 tile 渲染为索引0 → 使用调色板颜色0（$0F=黑色）。
+
+2. **标题数据跳过了加载**：OpeningScenePlayer 结束后，代码调用 `transitionTo(1)`。但 State 1 的 `executeDispatch` 将 `activePrgBank` 设为 **5**（STATE_TABLE: `{bankId: 0x5, subStateId: 0xD}`）。而 `Bank1Dispatcher`（持有真实的 `TITLE_PAGES` 5页标题RLE数据）只在 `activePrgBank === 1` 时运行——条件永远为 false。
+
+3. **Bank 5 子状态调度器未实现**：STATE_TABLE 将 State 1 映射到 Bank 5 Sub D (13)，但该调度器只有 `console.log` 占位符，无实际逻辑。
+
+### 修复
+| 文件 | 变更 |
+|------|------|
+| `src/engine/OpeningScenePlayer.ts` | 🐛 新增 `completed` 标志，`isActive` 改为 `started && !completed`，确保动画完成后 `isActive` 返回 false |
+| `src/engine/StateMachine.ts` | ♻️ State 0 update 改为两阶段：阶段1=OpeningScenePlayer，阶段2=Bank1Dispatcher 标题页加载。加载完成（page≥4, sub=2）后才 transitionTo(1) |
+
+### State 0 新流程
+```
+OpeningScenePlayer (6 scenes, ~600fps)
+  → completed=true & isActive=false
+  → Bank1Dispatcher.init(0) 启动标题页加载
+  → sub 0: CHR Bank 设置
+  → sub 1+2: page 0 加载+显示 (194f)
+  → sub 3+4: 过渡+翻页 → page 1
+  → ... (page 1-3, 每页194f)
+  → sub 1+2: page 4 加载+循环（永久停留 sub 2，闪烁 PRESS START）
+  → 检测到 sub=2 & page≥4 → transitionTo(1)
+```
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `src/engine/OpeningScenePlayer.ts` | 🐛 completed标志 + isActive逻辑修复 |
+| `src/engine/StateMachine.ts` | ♻️ State 0 两阶段: 动画→标题加载 |
+| `BUG_TRACKER.md` | 🆕 BUG-027 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+---
+
+## 2026-08-05: 🐛 BUG-026 修复 — 开场动画 duration 恢复 ROM 原始值
+
+### 问题
+用户发现开场动画 6 个分镜的 `duration` 被错误设置为 `3` 帧（共 18 帧 = 0.3 秒），相当于完全跳过开场。
+原因：之前在 nametable 数据未提取阶段为快速调试而加速，但忘了恢复。
+
+### ROM 实际帧计数
+从 `bank_01_code.asm` 提取的真实帧计数器值：
+- Sub 2 ($80A7): `ram_0079 = $20` → 32 帧
+- Sub 3 ($80BE): `ram_0079 = $80` → 128 帧
+- Sub 4 ($80ED): `ram_0079 = $40` → 64 帧
+- ROM 还有 4 页页面循环 (ram_007A: 0→4)，每页 Sub1→2→3→4 约 225 帧
+
+### 修复
+- ✅ **OpeningScenePlayer.ts**: OPENING_SCENES duration 恢复为：120/90/128/90/90/60 帧
+- ✅ 添加 ROM 帧计数器注释引用
+- ✅ **BUG-026** 记录到 BUG_TRACKER
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `src/engine/OpeningScenePlayer.ts` | 🐛 duration: 3→ROM 真实值 |
+| `BUG_TRACKER.md` | 🆕 BUG-026 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+---
+
 ## 2026-08-05: 🔧 M_INFRA.5 音频引擎 ROM 数据提取 + BUG-025 修复
 
 ### M_INFRA.5: 音频引擎 ROM 数据提取 ✅
@@ -26,7 +96,7 @@
 - **修复**: 新增 `lastSubState` 字段追踪上一帧状态，用于检测场景切换
 
 ### 其他优化
-- ✅ 开场动画加速: 6 个分镜 duration 从 60-120 帧减少到 3 帧 (nametable数据待从ROM提取)
+- ⚠️ 开场动画 duration 临时设为 3 帧（已由 BUG-026 修复，恢复为 ROM 原始 32-128 帧）
 - ✅ `sceneChangeDetected` 逻辑: 子状态变化时重置 `frameCounter`
 
 ### 影响文件
@@ -34,7 +104,7 @@
 |------|------|
 | `src/audio/MusicData.ts` | ♻️ v3.0重写: 真实ROM频率/时长/指针表 |
 | `src/audio/AudioEngine.ts` | ♻️ playNote: noteToFrequency真实解码 + 移除硬编码NOTE_LENGTH_TABLE |
-| `src/engine/OpeningScenePlayer.ts` | 🐛 BUG-025: lastSubState + 场景切换修复 + 加速动画 |
+| `src/engine/OpeningScenePlayer.ts` | 🐛 BUG-025: lastSubState + 场景切换修复 |
 
 ### ⏭ 下一步: 验证标题画面渲染 + 提取音乐序列数据
 

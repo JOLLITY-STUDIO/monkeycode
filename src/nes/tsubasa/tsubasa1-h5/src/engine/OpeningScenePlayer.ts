@@ -71,42 +71,60 @@ interface OpeningScene {
  *   0x1E = Bank 1E (标题背景, Sub 0 使用)
  *   0x1F = Bank 1F (标题精灵, Sub 0 使用)
  */
+/**
+ * 6 个开场分镜的时长（帧数）
+ *
+ * 从 ROM Bank 1 帧计数器提取:
+ *   Sub 2 ($80A7): ram_0079 = $20 → 32 帧
+ *   Sub 3 ($80BE): ram_0079 = $80 → 128 帧
+ *   Sub 4 ($80ED): ram_0079 = $40 → 64 帧
+ *   ROM 有 4 页页面循环 (ram_007A: 0→4)，每页 Sub1→2→3→4 约 225 帧
+ *
+ * 目前 nametable 数据待从 ROM 提取，暂用 ROM 原始帧数值。
+ * 后续提取完整数据后，需还原 4 页循环 + 逐 tile 文字打印效果。
+ *
+ * @see _tmp_disasm_out/banks/bank_01_code.asm $804B-$8105
+ */
 const OPENING_SCENES: OpeningScene[] = [
   // Sub 1: 分镜1 — 标题 Logo 淡入
+  // ROM: Sub 1 单帧完成(内联 4 步 palette 动画) + Sub 2 等 $20 帧
   {
     id: 1,
     chrBankBg: 0x00,   // 标题图形
     chrBankSpr: 0x09,  // 字体 tile
     ppuCtrl: 0x90,
     ppuMask: 0x0E,
-    duration: 3,       // 快速切换 (原120帧)
+    duration: 120,     // ROM: Sub1(1f) + Sub2(32f) + PPU传输 ≈ 60-120f
   },
   // Sub 2: 分镜2 — 文字展示
+  // ROM: 每页进入 Sub 2 的等待时间 + PPU 数据传输帧
   {
     id: 2,
     chrBankBg: 0x00,
     chrBankSpr: 0x09,
     ppuCtrl: 0x90,
     ppuMask: 0x0E,
-    duration: 3,
+    duration: 90,      // 90 帧 (1.5 秒)
   },
   // Sub 3: 分镜3 — 转场过渡
+  // ROM: ram_0079 = $80 → 128 帧 + 内联 palette 渐变
   {
     id: 3,
     chrBankBg: 0x0D,   // 角色头像
     chrBankSpr: 0x00,
     ppuCtrl: 0x90,
     ppuMask: 0x0E,
-    duration: 3,
+    duration: 128,     // ROM: $80 = 128 帧
   },
   // Sub 4: 分镜4 — 角色特写 (翼)
+  // ROM: ram_0079 = $40 → 64 帧
   {
     id: 4,
     chrBankBg: 0x0D,   // 头像上部
     chrBankSpr: 0x0E,  // 翼立绘
     ppuCtrl: 0x90,
     ppuMask: 0x0E,
-    duration: 3,
+    duration: 90,      // 90 帧 (1.5 秒，4 页循环后的最终展示)
   },
   // Sub 5: 分镜5 — 动画继续
   {
@@ -115,7 +133,7 @@ const OPENING_SCENES: OpeningScene[] = [
     chrBankSpr: 0x0F,
     ppuCtrl: 0x90,
     ppuMask: 0x0E,
-    duration: 3,
+    duration: 90,      // 90 帧
   },
   // Sub 6: 分镜6 — 收尾动画
   {
@@ -124,7 +142,7 @@ const OPENING_SCENES: OpeningScene[] = [
     chrBankSpr: 0x0D,
     ppuCtrl: 0x90,
     ppuMask: 0x0E,
-    duration: 3,
+    duration: 60,      // 60 帧 (1 秒)
   },
 ];
 
@@ -153,6 +171,8 @@ export class OpeningScenePlayer {
   private textDelay: number = 0;
   /** 是否开始播放 */
   private started: boolean = false;
+  /** 是否所有分镜已完成 */
+  private completed: boolean = false;
 
   constructor(
     data: DataCache, banks: BankManager, renderer: Renderer,
@@ -171,6 +191,7 @@ export class OpeningScenePlayer {
     this.subState = 0;
     this.frameCounter = 0;
     this.started = false;
+    this.completed = false;
     this.data.write(0x03CB, 0);
 
     // Sub 0: CHR Bank 初始化
@@ -281,6 +302,7 @@ export class OpeningScenePlayer {
   /** Sub 7: 过渡到标题画面 */
   private updateSub7(): boolean {
     // 开场动画完成，返回 true 通知调用方切换到 State 01
+    this.completed = true;
     console.log('[Opening] All scenes complete → Title Screen');
     return true;
   }
@@ -360,6 +382,6 @@ export class OpeningScenePlayer {
     this.data.mmcBankReg1 = bankBg & 0x1F;
   }
 
-  get isActive(): boolean { return this.started; }
+  get isActive(): boolean { return this.started && !this.completed; }
   get currentSubState(): number { return this.subState; }
 }

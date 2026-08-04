@@ -4,6 +4,34 @@
 
 ---
 
+## 🔴 BUG-027: 画布完全空白 — 标题画面 nametable 从未加载 [已修复]
+
+### BUG-027: 画布无内容（全黑）— 数据流断裂 [🟢 已修复]
+- **状态**: 🟢 已修复 (2026-08-05)
+- **严重度**: 🔴 严重 (画布完全空白，无任何画面输出)
+- **来源**: 用户反馈 (2026-08-05) "画布什么内容都没有"
+- **描述**: 
+  游戏循环正常运行（60fps），渲染器工作（256×240 缓冲区），但画面始终全黑。
+  
+  **三层根因**:
+  1. **OpeningScenePlayer** 只切换 CHR Bank，从未写入 nametable 数据 → 全 0x00 tile → 背景色 $0F (黑)
+  2. **标题 RLE 数据 (TITLE_PAGES) 跳过了加载**: 动画结束后 `transitionTo(1)` 将 `activePrgBank` 设为 5（STATE_TABLE 映射），但 `Bank1Dispatcher`（持有标题数据）只在 `activePrgBank === 1` 时运行
+  3. **Bank 5 调度器未实现**: STATE_TABLE 映射 State 1 → Bank 5 Sub D (13)，只有占位符 `console.log`
+
+- **修复**:
+  1. `OpeningScenePlayer.ts`: 新增 `completed` 标志，`isActive` 改为 `started && !completed`
+  2. `StateMachine.ts`: State 0 update 拆为两阶段：
+     - 阶段1: OpeningScenePlayer 运行 6 个分镜
+     - 阶段2: Bank1Dispatcher 循环加载 5 页标题数据（page 0→4）
+     - page 4 加载完成后（sub=2, page≥4）→ `transitionTo(1)`
+- **修复文件**: 
+  - `src/engine/OpeningScenePlayer.ts` — `completed` 标志 + `isActive` 修复
+  - `src/engine/StateMachine.ts` — State 0 两阶段流程
+- **影响范围**: 开场动画+标题画面渲染管线
+- **Bug类型**: 逻辑缺陷 (数据流断裂)
+
+---
+
 ## 🔴 BUG-025: OpeningScenePlayer.applyScene 从未被调用 [已修复]
 
 ### BUG-025: isFirstFrame 逻辑错误 → 开场动画CHR Bank 从未切换 [🟢 已修复]
@@ -26,6 +54,24 @@
   然后 `processScene` 中: `const isFirstFrame = (this.subState !== this.lastSubState)`.
 - **修复文件**: `src/engine/OpeningScenePlayer.ts`
 - **影响范围**: 开场动画 6 个分镜 (现在正确切换 CHR Bank)
+
+---
+
+## 🔴 BUG-026: 开场动画 6 分镜被错误加速到 3 帧 [🟢 已修复]
+
+- **状态**: 🟢 已修复 (2026-08-05)
+- **严重度**: 🟡 中 (体验问题，但丢失整个开场动画)
+- **来源**: 用户反馈
+- **描述**: 2026-08-05 的"优化"把 6 个分镜的 `duration` 从 ROM 原始值（32-128 帧）改为统一的 `3` 帧。原版开场动画约 1125+ 帧（~19 秒），被压缩到 18 帧（0.3 秒），等于跳过全部开场。
+- **根因**: 在 nametable 数据未从 ROM 提取时，为快速调试而缩短时长，但忘记恢复。
+- **ROM 帧计数器参考**:
+  - Sub 2 ($80A7): `ram_0079 = $20` → 32 帧
+  - Sub 3 ($80BE): `ram_0079 = $80` → 128 帧
+  - Sub 4 ($80ED): `ram_0079 = $40` → 64 帧
+  - 有 4 页页面循环 (ram_007A: 0→4)
+- **修复**: 恢复为 ROM 原始帧数值：120/90/128/90/90/60 帧。
+- **修复文件**: `src/engine/OpeningScenePlayer.ts`
+- **影响范围**: 开场动画现在正常播放 ~10 秒
 
 ---
 
