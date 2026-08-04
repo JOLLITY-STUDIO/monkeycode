@@ -27,7 +27,10 @@
 import type { PpuDataFiller } from '../engine/NmiHandler';
 import type { Renderer } from '../renderer/Renderer';
 import type { StateMachine } from '../engine/StateMachine';
+import type { AutoPlayController } from '../engine/AutoPlayController';
 import type { DataCache } from '../cache/DataCache';
+import type { SceneComposer } from '../view/SceneComposer';
+import type { GameModel } from '../model/GameModel';
 import type { IPlatform } from '../platform/IPlatform';
 
 /** FPS 滑动窗口大小 (秒) */
@@ -45,6 +48,12 @@ export class GameLoop {
   private stateMachine: StateMachine;
   private dataCache: DataCache;
   private platform: IPlatform;
+  private autoPlayController: AutoPlayController | null = null;
+
+  /** v0.6.0: 场景构建器 (Model → VRAM+OAM) */
+  private sceneComposer: SceneComposer;
+  /** v0.6.0: 游戏数据模型 (logic ↔ view 之间的共享数据) */
+  private gameModel: GameModel;
 
   /** FPS 统计 */
   private fpsTimestamps: number[] = [];
@@ -57,12 +66,21 @@ export class GameLoop {
     renderer: Renderer,
     stateMachine: StateMachine,
     dataCache: DataCache,
+    sceneComposer: SceneComposer,
+    gameModel: GameModel,
   ) {
     this.platform = platform;
     this.ppuFiller = ppuFiller;
     this.renderer = renderer;
     this.stateMachine = stateMachine;
     this.dataCache = dataCache;
+    this.sceneComposer = sceneComposer;
+    this.gameModel = gameModel;
+  }
+
+  /** 设置自动播放控制器 */
+  setAutoPlayController(ctrl: AutoPlayController | null): void {
+    this.autoPlayController = ctrl;
   }
 
   start(): void {
@@ -92,7 +110,21 @@ export class GameLoop {
   }
 
   /**
-   * 帧循环 — 每个RAF回调执行完整的三阶段帧
+   * 帧循环 — 四段式架构 (v0.6.0)
+   *
+   *   阶段1: PPU数据填充 (NMI)
+   *     OAM DMA → VRAM写入 → 输入读取 → 帧计数
+   *
+   *   阶段2: 游戏逻辑
+   *     状态机更新 → AI/脚本 → 修改 GameModel
+   *     NES: NMI返回后CPU执行主循环
+   *
+   *   阶段3: 场景构建 (NEW v0.6.0)
+   *     SceneComposer: 读取 GameModel → 写入 VRAM + OAM
+   *     将 high-level model 翻译为 NES 底层绘图数据
+   *
+   *   阶段4: Canvas渲染
+   *     Renderer: 读取 VRAM + OAM → Canvas draw
    */
   private loop = (timestamp: number): void => {
     if (!this.running) return;
@@ -122,25 +154,30 @@ export class GameLoop {
 
     // ═══════════════════════════════════════════
     // 阶段1: PPU数据填充 (NMI)
-    //   OAM DMA → VRAM写入 → 输入读取 → 帧计数
-    //   NES: CPU在VBlank期间填PPU寄存器
     // ═══════════════════════════════════════════
     this.ppuFiller.fillPpuData();
 
     // ═══════════════════════════════════════════
     // 阶段2: 游戏逻辑
-    //   状态机更新 → AI/脚本处理
-    //   NES: NMI返回后CPU执行主循环
-    //   对应 ROM $8100: bankLock检查 → dispatch
+    //   状态更新 → 写入 GameModel
     // ═══════════════════════════════════════════
     if (this.dataCache.bankLock === 0) {
+      if (this.autoPlayController) {
+        this.autoPlayController.update(this.stateMachine.getCurrentStateId());
+      }
       this.stateMachine.update();
     }
 
     // ═══════════════════════════════════════════
-    // 阶段3: Canvas渲染
-    //   用阶段1填充的PPU数据绘制到Canvas
-    //   NES: PPU用VBlank填入的数据逐行渲染
+    // 阶段3: 场景构建 (v0.6.0 NEW)
+    //   GameModel → VRAM + OAM
+    //   纯渲染数据转换，不涉及任何游戏逻辑
+    // ═══════════════════════════════════════════
+    this.sceneComposer.compose(this.gameModel, this.stateMachine.getCurrentStateId());
+
+    // ═══════════════════════════════════════════
+    // 阶段4: Canvas渲染
+    //   VRAM + OAM → Canvas 2D 绘制
     // ═══════════════════════════════════════════
     this.renderer.render(this.dataCache, this.stateMachine.getOamCache());
 

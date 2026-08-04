@@ -338,18 +338,20 @@ export class MatchEngine {
   }
 
   /** 获取持球球员 */
-  private getBallHolder(): number | null {
+  getBallHolder(): number | null {
     return this.ball.possessedBy;
   }
 
   /** 查找球员 */
-  private getPlayerById(id: number): PlayerState | undefined {
+  getPlayerById(id: number): PlayerState | undefined {
     return [...this.team0Players, ...this.team1Players].find(p => p.playerId === id);
   }
 
-  /** 获取球员所属队伍 */
-  private getPlayerTeam(id: number): number {
-    return this.team0Players.some(p => p.playerId === id) ? 0 : 1;
+  /** 获取球员所属队伍 (0=team0, 1=team1, -1=未找到) */
+  getPlayerTeam(id: number): number {
+    if (this.team0Players.some(p => p.playerId === id)) return 0;
+    if (this.team1Players.some(p => p.playerId === id)) return 1;
+    return -1;
   }
 
   /** 处理事件队列 */

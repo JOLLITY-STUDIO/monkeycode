@@ -12,43 +12,43 @@
 }
 
 .game-canvas {
-  /* NES 原始分辨率 256×240 */
+  /* Canvas 缓冲区恒�?256×240，CSS 控制视觉显示尺寸 */
   width: 256px;
   height: 240px;
-  margin-top: 12rpx;
-  border: 4rpx solid #555;
+  margin-top: 12px;
+  border: 4px solid #555;
   flex-shrink: 0;
 }
 
 /* ── 状态信息栏 ── */
 .info-bar {
   position: fixed;
-  top: 20rpx;
-  right: 20rpx;
+  top: 20px;
+  right: 20px;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 8rpx;
+  gap: 8px;
   z-index: 100;
 }
 
 .fps-text {
   color: #0f0;
-  font-size: 20rpx;
+  font-size: 20px;
   font-family: monospace;
   background: rgba(0, 0, 0, 0.6);
-  padding: 4rpx 12rpx;
-  border-radius: 8rpx;
+  padding: 4px 12px;
+  border-radius: 8px;
 }
 
 .auto-btn {
-  width: 100rpx;
-  height: 50rpx;
-  border-radius: 25rpx;
+  width: 100px;
+  height: 50px;
+  border-radius: 25px;
   background: rgba(100, 100, 100, 0.5);
-  border: 2rpx solid rgba(255, 255, 255, 0.3);
+  border: 2px solid rgba(255, 255, 255, 0.3);
   color: #ccc;
-  font-size: 22rpx;
+  font-size: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -65,15 +65,15 @@
 /* ── 自动播放日志 ── */
 .auto-log {
   position: fixed;
-  bottom: 200rpx;
+  bottom: 200px;
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.75);
   color: #0f0;
-  font-size: 22rpx;
+  font-size: 22px;
   font-family: monospace;
-  padding: 8rpx 24rpx;
-  border-radius: 16rpx;
+  padding: 8px 24px;
+  border-radius: 16px;
   z-index: 99;
   max-width: 80vw;
   text-align: center;
@@ -81,19 +81,19 @@
 
 .controls {
   position: fixed;
-  bottom: 60rpx;
+  bottom: 60px;
   left: 0;
   right: 0;
   display: flex;
   justify-content: space-between;
-  padding: 0 40rpx;
+  padding: 0 40px;
 }
 
 .dpad {
   display: grid;
-  grid-template-columns: 80rpx 80rpx 80rpx;
-  grid-template-rows: 80rpx 80rpx 80rpx;
-  gap: 4rpx;
+  grid-template-columns: 80px 80px 80px;
+  grid-template-rows: 80px 80px 80px;
+  gap: 4px;
 }
 
 .dpad-up    { grid-column: 2; grid-row: 1; }
@@ -103,19 +103,19 @@
 
 .action-btns {
   display: flex;
-  gap: 12rpx;
+  gap: 12px;
   align-items: center;
   flex-wrap: wrap;
 }
 
 .btn {
-  width: 80rpx;
-  height: 80rpx;
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
-  border: 3rpx solid rgba(255, 255, 255, 0.3);
+  border: 3px solid rgba(255, 255, 255, 0.3);
   color: #fff;
-  font-size: 28rpx;
+  font-size: 28px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -127,4 +127,4 @@
 
 .btn-a     { background: rgba(255, 0, 0, 0.25); border-color: rgba(255, 0, 0, 0.5); }
 .btn-b     { background: rgba(255, 255, 0, 0.25); border-color: rgba(255, 255, 0, 0.5); }
-.btn-start { font-size: 22rpx; }
+.btn-start { font-size: 22px; }

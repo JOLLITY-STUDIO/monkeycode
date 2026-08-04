@@ -1,66 +1,67 @@
 /**
- * State 04: 比赛主循环
- * 对应 ROM 中 $826A 的处理
+ * State 04: 比赛主循环 (纯逻辑 — 只更新 MatchModel)
  *
- * 比赛核心: 场地渲染、球员移动、球的物理、比赛计时
+ * 对应 ROM 中 $826A 的处理。
+ * 比赛核心: 场地、球员移动、球物理、计时、事件。
+ * 玩家球队固定为南葛(Nankatsu)，单人游戏，无P2。
+ *
+ * v0.6.0: 已移除所有 renderer/oam 直接调用，通过 GameModel 通信。
+ * State 只负责: 逻辑更新 → 将比赛状态写入 model.match
+ * SceneComposer 负责: 读取 model.match → 渲染场地/球员/球/HUD
  */
 import { StateBase } from './StateBase';
 import { Button } from '../../core/types';
 import { MatchEngine, MatchPhase, MatchEvent } from '../MatchEngine';
 import { getTeamPlayers, TEAM_LIST } from '../../data/PlayerData';
+import type { PlayerStats } from '../../data/PlayerData';
+import type { MatchPlayerInfo } from '../../model/GameModel';
 import { RngGenerator } from '../../utils/RngGenerator';
 
-const GRASS_TILE = 0x00;
-const LINE_TILE  = 0x10;
+const PLAYER_TEAM_ID = 0; // 南葛 Nankatsu
 
 export class State04_MatchMain extends StateBase {
   readonly id = 4;
 
   private matchEngine!: MatchEngine;
   private rng!: RngGenerator;
-  private eventActive: boolean = false;
-  private fieldRendered: boolean = false;
 
   onEnter(): void {
-    console.log('[State 04] Match Main - Initializing...');
+    console.log('[State 04] Match Main - Initializing (Nankatsu vs opponent)...');
 
-    // 创建随机数生成器
     this.rng = new RngGenerator();
     this.rng.seed(Date.now() & 0xFF);
 
-    // 创建比赛引擎
     this.matchEngine = new MatchEngine(this.rng);
 
-    // 加载球队数据
-    const playerTeamId = this.data.get('playerTeam') as number ?? 0;
-    const opponentId = this.data.get('opponentTeam') as number ?? 1;
+    const allNankatsuPlayers = getTeamPlayers(PLAYER_TEAM_ID);
+    const activeNumbers: number[] = this.data.get('activeNumbers') as number[] ?? [];
+    const playerTeamPlayers: PlayerStats[] = activeNumbers.length > 0
+      ? allNankatsuPlayers.filter(p => activeNumbers.includes(p.number))
+      : allNankatsuPlayers.slice(0, 11);
 
-    const team0Players = getTeamPlayers(playerTeamId);
-    const team1Players = getTeamPlayers(opponentId);
+    const opponentId = (this.data.get('opponentTeam') as number) ?? 1;
+    const opponentPlayers = getTeamPlayers(opponentId);
 
     this.matchEngine.initMatch(
-      { id: playerTeamId, name: TEAM_LIST[playerTeamId].name, nameJp: TEAM_LIST[playerTeamId].nameJp, formation: '4-4-2', players: team0Players, captain: team0Players.find(p => p.number === 10)?.id ?? 0 },
-      { id: opponentId, name: TEAM_LIST[opponentId].name, nameJp: TEAM_LIST[opponentId].nameJp, formation: '4-4-2', players: team1Players, captain: team1Players.find(p => p.number === 10)?.id ?? 0 },
+      { id: PLAYER_TEAM_ID, name: TEAM_LIST[PLAYER_TEAM_ID].name, nameJp: TEAM_LIST[PLAYER_TEAM_ID].nameJp, formation: '4-4-2', players: playerTeamPlayers, captain: playerTeamPlayers.find(p => p.number === 11)?.id ?? 0 },
+      { id: opponentId, name: TEAM_LIST[opponentId].name, nameJp: TEAM_LIST[opponentId].nameJp, formation: '4-4-2', players: opponentPlayers, captain: opponentPlayers.find(p => p.number === 9)?.id ?? 0 },
     );
 
-    // 存储 MatchEngine 引用
     this.data.set('matchEngine', this.matchEngine);
-
-    console.log(`[State 04] Match: ${TEAM_LIST[playerTeamId].name} vs ${TEAM_LIST[opponentId].name}`);
-
-    // 设置渲染
     this.banks.chrBank0 = 2;
     this.banks.chrBank1 = 3;
     this.data.mmcBankReg0 = 2;
     this.data.mmcBankReg1 = 3;
-
     this.data.bankLock = 0;
     this.data.ppuCtrl = 0x90;
     this.data.ppuMask = 0x1E;
     this.data.scrollX = 0;
     this.data.scrollY = 0;
 
-    this.loadMatchScene();
+    // v0.6.0: 初始化比赛 model
+    this.model.setMatch(TEAM_LIST[PLAYER_TEAM_ID].name, TEAM_LIST[opponentId].name);
+
+    console.log(`[State 04] Match: ${TEAM_LIST[PLAYER_TEAM_ID].name} (${playerTeamPlayers.length}P) vs ${TEAM_LIST[opponentId].name}`);
   }
 
   onUpdate(): void {
@@ -76,91 +77,29 @@ export class State04_MatchMain extends StateBase {
       this.handleMatchEvent(event);
     }
 
-    // 渲染更新
-    this.renderField();
-    this.renderPlayers();
-    this.renderBall();
-    this.renderHud();
+    // v0.6.0: 将比赛引擎状态 → 同步到 GameModel (不调渲染)
+    this.syncMatchModel();
   }
 
-  private loadMatchScene(): void {
-    for (let i = 0; i < 960; i++) {
-      this.renderer.writeVram(0x2000 + i, 0x00);
-    }
-    this.fieldRendered = true;
-  }
+  /** 将 MatchEngine 的底层状态映射到 GameModel.match */
+  private syncMatchModel(): void {
+    const allPlayers = this.matchEngine.getAllPlayers();
+    const players: MatchPlayerInfo[] = allPlayers.map(p => ({
+      id: p.playerId,
+      x: p.position.x,
+      y: p.position.y,
+      hasBall: p.hasBall,
+      isTeamLeft: this.matchEngine.team0Players.some(tp => tp.playerId === p.playerId),
+      isActive: p.isActive,
+    }));
 
-  private renderField(): void {
-    // 球场草地 + 边线
-    for (let row = 0; row < 30; row++) {
-      for (let col = 0; col < 32; col++) {
-        let tile = GRASS_TILE;
-        if (col === 0 || col === 31 || row === 0 || row === 28) {
-          tile = LINE_TILE;
-        }
-        this.renderer.writeVram(0x2000 + row * 32 + col, tile);
-      }
-    }
-    // 中线
-    for (let row = 1; row < 28; row++) {
-      this.renderer.writeVram(0x2000 + row * 32 + 16, 0x12);
-    }
-  }
-
-  private renderPlayers(): void {
-    this.oam.clear();
-    const players = this.matchEngine.getAllPlayers();
-
-    for (let i = 0; i < Math.min(players.length, 64); i++) {
-      const p = players[i];
-      if (!p.isActive) continue;
-
-      // 将场地坐标映射到屏幕坐标
-      const sx = Math.floor(p.position.x / 256 * 256);
-      const sy = Math.floor(p.position.y / 200 * 240);
-
-      const tileIndex = p.hasBall ? 0x30 : 0x20; // 不同 tile 区分持球
-      const attr = this.getPlayerTeamAttr(p.playerId);
-
-      this.oam.setSprite(i, {
-        y: sy,
-        tileIndex,
-        attributes: attr,
-        x: sx,
-      });
-    }
-  }
-
-  private renderBall(): void {
-    const bal = this.matchEngine.ball;
-    const sx = Math.floor(bal.x / 256 * 256);
-    const sy = Math.floor(bal.y / 200 * 240);
-
-    this.oam.setSprite(63, {
-      y: sy,
-      tileIndex: 0x38,
-      attributes: 0x02,
-      x: sx,
-    });
-  }
-
-  private renderHud(): void {
-    const scoreText = `${this.matchEngine.score[0]} - ${this.matchEngine.score[1]}`;
-    const period = this.matchEngine.phase === MatchPhase.SECOND_HALF ? '2H' : '1H';
-    const timeMin = Math.floor(this.matchEngine.matchTime / 60);
-    const timeText = `${period} ${String(timeMin).padStart(2, '0')}'`;
-
-    for (let i = 0; i < scoreText.length; i++) {
-      this.renderer.writeVram(0x2000 + 0 * 32 + 13 + i, scoreText.charCodeAt(i));
-    }
-    for (let i = 0; i < timeText.length; i++) {
-      this.renderer.writeVram(0x2000 + 0 * 32 + 22 + i, timeText.charCodeAt(i));
-    }
-  }
-
-  private getPlayerTeamAttr(playerId: number): number {
-    const isTeam0 = this.matchEngine.team0Players.some(p => p.playerId === playerId);
-    return isTeam0 ? 0x01 : 0x02;
+    this.model.updateMatch(
+      players,
+      this.matchEngine.ball.x, this.matchEngine.ball.y,
+      this.matchEngine.score as [number, number],
+      this.matchEngine.phase,
+      Math.floor(this.matchEngine.matchTime / 60),
+    );
   }
 
   private handleMatchEvent(event: MatchEvent): void {
@@ -169,6 +108,7 @@ export class State04_MatchMain extends StateBase {
     switch (event.type) {
       case 'goal':
         this.matchEngine.handleGoal(event.data?.scoringTeam ?? 0);
+        this.model.setEvent('goal', 0, event.data?.playerId ?? 0, this.matchEngine.score as [number, number]);
         this.data.set('eventType', 'goal');
         this.data.set('eventData', event.data);
         this.sm.transitionTo(5);
@@ -178,10 +118,10 @@ export class State04_MatchMain extends StateBase {
         this.matchEngine.matchTime = this.matchEngine.halfLength;
         break;
       case 'fulltime':
+        this.model.setEvent('fulltime', 0, 0, this.matchEngine.score as [number, number]);
+        this.data.set('eventType', 'fulltime');
         this.data.set('finalScore', this.matchEngine.score);
         this.sm.transitionTo(5);
-        break;
-      default:
         break;
     }
   }

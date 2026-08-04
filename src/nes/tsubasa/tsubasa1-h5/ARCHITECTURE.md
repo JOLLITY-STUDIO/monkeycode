@@ -1,6 +1,6 @@
 # 架构设计文档 - 天使之翼 微信小程序
 
-> 版本: 1.1 | 日期: 2026-08-04
+> 版本: 1.2 | 日期: 2026-08-04
 
 ---
 
@@ -13,6 +13,50 @@
 | **即插即用** | `new Tsubasa(platform, ctx).start()` 即可运行 |
 | **结构化数据** | 所有数据以声明式结构化形式呈现 |
 | **OOP设计** | 面向对象+接口访问 |
+| **前后端分离 (v0.9.0)** | logic/model 层与 data/view 层完全解耦 |
+
+### 1.1 前后端分离架构 (v0.9.0)
+
+```
+┌──────────────────────────────────────────────────┐
+│  LOGIC & MODEL (后端)                             │
+│                                                    │
+│  GameLoop (驱动) → State.onUpdate() (控制器)      │
+│                          ↓                         │
+│                    GameModel (数据模型=数据库)      │
+│                                                    │
+│  ❌ 零 Canvas 代码                                 │
+│  ❌ 零 VRAM 操作                                   │
+│  ✅ 纯 TypeScript 逻辑                             │
+│  ✅ 可无头(headless)测试                          │
+└──────────────────┬───────────────────────────────┘
+                   │ 读取 GameModel
+                   ↓
+┌──────────────────────────────────────────────────┐
+│  DATA & VIEW (前端)                               │
+│                                                    │
+│  SceneComposer (模板引擎)                          │
+│    GameModel → VRAM writeVram() + OAM setSprite() │
+│                                                    │
+│  Renderer (GPU渲染器)                              │
+│    VRAM + OAM → Canvas 2D API 绘制                │
+│                                                    │
+│  ❌ 零游戏逻辑代码                                 │
+│  ❌ 不修改 Model                                   │
+│  ✅ 可替换为 WebGL/WebGPU 等后端实现               │
+└──────────────────────────────────────────────────┘
+```
+
+### 1.2 帧循环四阶段 (v0.9.0)
+
+每帧按以下顺序执行：
+
+| 阶段 | 组件 | 职责 | NES 对应 |
+|------|------|------|----------|
+| 1. PPU填充 | `PpuDataFiller` | OAM DMA → VRAM队列 → 输入 → 帧计数 | NMI/VBlank |
+| 2. 游戏逻辑 | `StateMachine` | 状态更新 → AI → **写入 GameModel** | CPU主循环 |
+| 3. 场景构建 | `SceneComposer` | **GameModel → VRAM + OAM** | (新增) |
+| 4. Canvas渲染 | `Renderer` | VRAM + OAM → Canvas 绘制 | PPU渲染 |
 
 ---
 
@@ -45,9 +89,13 @@ tsubasa1-h5/
 └── src/
     ├── core/
     │   ├── Tsubasa.ts           # 主游戏类 (对外接口, 依赖IPlatform)
-    │   ├── GameLoop.ts           # 游戏主循环 (平台无关)
+    │   ├── GameLoop.ts           # 游戏主循环 (四阶段帧)
     │   ├── Constants.ts          # 全局常量/枚举
     │   └── types.ts              # 类型定义
+    ├── model/                    # (v0.9.0) 数据模型层 (纯数据)
+    │   └── GameModel.ts          # 游戏状态模型 (Menu/Match/Event等)
+    ├── view/                     # (v0.9.0) 视图层 (Model→Canvas)
+    │   └── SceneComposer.ts      # 场景构建器 (Model→VRAM+OAM)
     ├── platform/                 # 平台抽象层
     │   ├── IPlatform.ts          # 平台接口定义 (Canvas/Image/RAF)
     │   └── miniprogram/
@@ -60,15 +108,18 @@ tsubasa1-h5/
     ├── input/
     │   └── InputManager.ts       # 输入管理
     ├── renderer/
-    │   └── Renderer.ts           # 渲染器 (平台无关, 依赖IPlatform)
-    ├── engine/
+    │   └── Renderer.ts           # 渲染器 (VRAM+OAM→Canvas)
+    ├── engine/                   # 游戏引擎 (纯逻辑)
     │   ├── StateMachine.ts       # 状态机/状态分发器
-    │   ├── NmiHandler.ts          # NMI处理逻辑
+    │   ├── NmiHandler.ts          # NMI处理逻辑 (PpuDataFiller)
     │   ├── Bank1Dispatcher.ts     # Bank 1 子状态调度
     │   ├── MatchEngine.ts         # 比赛引擎 (球员/球/AI)
-    │   └── states/               # 各游戏状态 (State00-05)
+    │   └── states/               # 各游戏状态 (State00-05, 纯逻辑)
     │       ├── StateBase.ts
     │       └── State00~05_*.ts
+    ├── data/
+    │   ├── PlayerData.ts         # 球员/球队数据
+    │   └── RomData.ts            # ROM 结构化数据占位
     └── utils/
         ├── BitUtils.ts           # 位操作工具
         └── RngGenerator.ts       # 随机数生成器
@@ -221,7 +272,7 @@ TS 改写后的三段式帧 (GameLoop.loop)：
 |------|------|--------|
 | **M1** | 项目框架 + 基础类 | v0.1.0 |
 | **M2** | State 00-02 (标题→菜单) | v0.2.0 |
-| **M3** | State 03-04 (选队→比赛) | v0.3.0 |
+| **M3** | State 03-04 (队员选择→比赛) | v0.3.0 |
 | **M4** | State 05-07 (事件→结果) | v0.4.0 |
 | **M5** | 脚本引擎+全部数据 | v0.5.0 |
 | **M6** | 渲染完善+CHR资源 | v0.6.0 |

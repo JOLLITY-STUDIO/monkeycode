@@ -59,8 +59,8 @@ export class Renderer {
   /** Bank 管理器引用 */
   private bankManager: BankManager | null = null;
 
-  /** 缩放倍数 (tile 8px → 屏幕 8*scale px) */
-  private scale: number = 2;
+  /** 缩放倍数 — 始终为 1，前端 CSS 负责视觉缩放 */
+  private scale: number = 1;
 
   /** 是否正在使用 CHR 图片渲染 (false = 色块占位模式) */
   private useChrImages: boolean = false;
@@ -499,7 +499,7 @@ export class Renderer {
     } else {
       // 回退: 纯色块
       const colorIdx = this.vram.palette[palGroup * 4 + 1] & 0x3F;
-      const color = NES_PALETTE[colorIdx] || 0x7C7C7C;
+      const color = NES_PALETTE[colorIdx] || 0x757575;
       ctx.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
       ctx.fillRect(x * s, y * s, ts, ts);
     }
@@ -544,7 +544,7 @@ export class Renderer {
       }
     } else {
       const colorIdx = this.vram.palette[palGroup * 4 + 1] & 0x3F;
-      const color = NES_PALETTE[colorIdx] || 0x7C7C7C;
+      const color = NES_PALETTE[colorIdx] || 0x757575;
       ctx.fillStyle = `#${color.toString(16).padStart(6, '0')}`;
       ctx.fillRect(x * s, y * s, ts, ts);
     }

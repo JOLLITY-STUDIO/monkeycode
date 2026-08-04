@@ -21,11 +21,14 @@ import { InputManager } from '../input/InputManager';
 import { Renderer } from '../renderer/Renderer';
 import { PpuDataFiller } from '../engine/NmiHandler';
 import { StateMachine } from '../engine/StateMachine';
+import { AutoPlayController } from '../engine/AutoPlayController';
+import { GameModel } from '../model/GameModel';
+import { SceneComposer } from '../view/SceneComposer';
 import {
   State00_InitTitle,
   State01_TitleLoop,
   State02_MenuSelect,
-  State03_TeamSelect,
+  State03_MemberSelect,
   State04_MatchMain,
   State05_MatchEvent,
   StateTest,
@@ -39,6 +42,8 @@ export interface TsubasaOptions {
   autoLoadSprites?: boolean;
   /** 手动步进模式：不启动内置 GameLoop，由外部驱动 step() */
   manualStep?: boolean;
+  /** 自动播放模式：双方均由AI控制，无需人工操作 */
+  autoPlay?: boolean;
   debug?: boolean;
 }
 
@@ -55,6 +60,11 @@ export class Tsubasa {
   private gameLoop!: GameLoop;
   private ppuFiller!: PpuDataFiller;
   private stateMachine!: StateMachine;
+  private autoPlayController!: AutoPlayController;
+
+  // 模型与视图层 (v0.6.0 架构分离)
+  private gameModel!: GameModel;
+  private sceneComposer!: SceneComposer;
 
   // 状态
   private state: TsubasaState = 'stopped';
@@ -87,16 +97,21 @@ export class Tsubasa {
     this.renderer = new Renderer(this.platform, ctx);
     this.renderer.setBankManager(this.bankManager);
 
+    // === v0.6.0 架构分离: Model + View ===
+    this.gameModel = new GameModel();
+    this.sceneComposer = new SceneComposer(this.renderer, this.oamCache);
+
     this.stateMachine = new StateMachine(
       this.dataCache, this.inputManager, this.renderer,
       this.oamCache, this.bankManager, this.ppuQueue,
+      this.gameModel,  // ← 注入 model
     );
 
     this.stateMachine.registerStates([
       new State00_InitTitle(this.stateMachine),
       new State01_TitleLoop(this.stateMachine),
       new State02_MenuSelect(this.stateMachine),
-      new State03_TeamSelect(this.stateMachine),
+      new State03_MemberSelect(this.stateMachine),
       new State04_MatchMain(this.stateMachine),
       new State05_MatchEvent(this.stateMachine),
       new StateTest(this.stateMachine),
@@ -108,11 +123,19 @@ export class Tsubasa {
       this.inputManager, this.renderer,
     );
 
-    // 游戏循环 — 编排三段式帧: PPU填充 → 游戏逻辑 → 渲染
+    // 游戏循环 — 编排三段式帧: PPU填充 → 游戏逻辑 → 场景构建 → 渲染
     this.gameLoop = new GameLoop(
       this.platform, this.ppuFiller, this.renderer,
       this.stateMachine, this.dataCache,
+      this.sceneComposer, this.gameModel,  // ← 注入 composer + model
     );
+
+    // 自动播放控制器
+    this.autoPlayController = new AutoPlayController(this.inputManager, this.dataCache);
+    if (this.options.autoPlay) {
+      this.autoPlayController.enabled = true;
+      this.gameLoop.setAutoPlayController(this.autoPlayController);
+    }
 
     if (this.options.debug) {
       console.log('[Tsubasa] All subsystems initialized (platform: ' + this.platform.name + ')');
@@ -209,12 +232,12 @@ export class Tsubasa {
 
   /**
    * 手动步进一帧 (用于对比验证场景)
-   * 仅在 manualStep 模式下使用，由外部帧循环驱动。
    *
-   * 帧三段式:
+   * 帧四段式 (v0.6.0):
    *   1. PPU数据填充 (OAM DMA → VRAM写入 → 输入读取 → 帧计数)
-   *   2. 游戏逻辑 (状态机更新)
-   *   3. Canvas渲染
+   *   2. 游戏逻辑 (状态机更新 → 写 GameModel)
+   *   3. 场景构建 (SceneComposer: Model → VRAM+OAM)
+   *   4. Canvas渲染 (Renderer: VRAM+OAM → Canvas)
    */
   step(): void {
     if (this.state !== 'running') return;
@@ -227,7 +250,10 @@ export class Tsubasa {
       this.stateMachine.update();
     }
 
-    // 阶段3: Canvas渲染
+    // 阶段3: 场景构建 (Model → VRAM+OAM)
+    this.sceneComposer.compose(this.gameModel, this.stateMachine.getCurrentStateId());
+
+    // 阶段4: Canvas渲染
     this.renderer.render(this.dataCache, this.oamCache);
   }
 
@@ -276,6 +302,48 @@ export class Tsubasa {
       ram: this.dataCache.debugSnapshot(),
       banks: this.bankManager.getConfig(),
     };
+  }
+
+  /** 启用自动播放模式 */
+  enableAutoPlay(): void {
+    this.autoPlayController.enabled = true;
+    this.autoPlayController.reset();
+    this.gameLoop.setAutoPlayController(this.autoPlayController);
+    console.log('[Tsubasa] Auto-play ENABLED');
+  }
+
+  /** 禁用自动播放模式 */
+  disableAutoPlay(): void {
+    this.autoPlayController.enabled = false;
+    this.autoPlayController.reset();
+    this.gameLoop.setAutoPlayController(null);
+    console.log('[Tsubasa] Auto-play DISABLED');
+  }
+
+  /** 切换自动播放 */
+  toggleAutoPlay(): boolean {
+    if (this.autoPlayController.enabled) {
+      this.disableAutoPlay();
+      return false;
+    } else {
+      this.enableAutoPlay();
+      return true;
+    }
+  }
+
+  /** 是否处于自动播放模式 */
+  isAutoPlay(): boolean {
+    return this.autoPlayController.enabled;
+  }
+
+  /** 设置自动播放日志回调 */
+  setAutoPlayLogCallback(cb: (msg: string) => void): void {
+    this.autoPlayController.setLogCallback(cb);
+  }
+
+  /** 设置比赛结束回调 */
+  setAutoPlayMatchEndCallback(cb: (score: [number, number], time: number) => void): void {
+    this.autoPlayController.setMatchEndCallback(cb);
   }
 
   destroy(): void {

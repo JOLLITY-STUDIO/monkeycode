@@ -43,9 +43,8 @@ export const MMC1_CHR0    = 0xA000; // $A000-$BFFF
 export const MMC1_CHR1    = 0xC000; // $C000-$DFFF
 export const MMC1_PRG     = 0xE000; // $E000-$FFFF
 
-/** 手柄寄存器 */
+/** 手柄寄存器 (单人游戏，仅 P1) */
 export const JOYPAD1 = 0x4016;
-export const JOYPAD2 = 0x4017;
 
 /** OAM DMA 寄存器 */
 export const OAM_DMA = 0x4014;

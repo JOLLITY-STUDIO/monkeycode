@@ -1,0 +1,67 @@
+既然你需要更详尽的资料，以下为你整理了《[天使之翼1](https://www.google.com/search?q=%E5%A4%A9%E4%BD%BF%E4%B9%8B%E7%BF%BC1&kgmid=/m/02hmp1v#sv=CBwSxgQKjwQSjAQKzANBSmlUNHRKSV8tRl9RR0tlVXJTTXBBMHpzZ0ItVFhabC1rZVRvbUwzMWY0ZDQyMEFuOG9BdmxXRVMtZ2R1MlRoWmdtMmxkSmlnUVkyWVJhTC14bFpjVUVHNWZ4WXR4V0pNWW9hUEVPaGUtQkliMEU5OW9MRncwd1ZaM0FtNlRuTEhiNkZWWldSZWVodHowOG9BMktnbElKcG1UMnFycjdXdXpTSjBVdkVGX28waGJMdU5XSFlZOC1hbVVtRm5lSjBxS1lnMVQ3Qmg5SEFrbHBORnl3LWZma04yb015WjhZbVZNVWZMOWlJWml0OXdnTEp0bjFsMzduUWZFc2NabW44UTFLWjhDX21zMVFmRjBPNUtRYXBZUm5iUTg4VWctLTZyUUVNcDdjY3pkRU1ELVFkN1o2R0prdkJ5ZFgyblZVMWtiTTFWLW5fMW1EdVdTRnhpZVZZQndldEtiTzA4NGNObDNGdXFZT3lkX29lWENjNnNXU2U1cks0czZWYUdQYXZUNnBZTFpFSjlmalRsdEMtYnZpNGlDd25KMDNvVVpVVk1HLTRZdGw3eE9RMXc0U05QQWQ0bUlHa3VQdmVUWVo0MFI3V0dDdjU2NnVPEhc0QzF4YXRyWkE0YWZ2cjBQMWRhemlRTRoiQURzcjlmVDc2NW9kajUtcklhdkQwTmc3WU5YMjIxdlQ2dxIENzg1NBoBMyISCgFxEg3lpKnkvb_kuYvnv7wxIhMKBWtnbWlkEgovbS8wMmhtcDF2KAAYRSDt-sf8Dg)》（红白机 FC 初代）最核心、最实用的系统隐藏指令、全 13 场关卡战术攻防、特殊剧情触发点以及通关必备的金手指/全关卡密码。
+------------------------------
+## 一、 核心操作指令（隐藏指令表）
+在比赛中按下 B 键 会弹出指令菜单。根据我方状态（控球、无球、遇敌）不同，菜单选项会有所变化：
+## 1. 我方控球时（持球状态）
+
+* 
+* ドリブル (Dribble)：带球往前推进。
+* パス (Pass)：传球。按下后需要用十字键选择地图上的队员或空地。
+* シュート (Shoot)：射门。如果在空中接球，会衍生出倒钩（オーバーヘッドキック）或头球（ヘディング）。
+* ワンツー (One-Two)：二过一配合（需要特定默契队友，如翼与岬）。
+* 
+
+## 2. 与敌方遭遇时（1对1或1对多）
+
+* 
+* 我方控球：可选择 过人（Regate）、传球、射门 或 护球。
+* 敌方控球：可选择 铲球（Tackle）、断传球（Pass Cut）、封堵（Block） 或 静观其变。
+* 
+
+------------------------------
+## 二、 全 13 场关卡流程与攻防指南
+游戏共计 13 场比赛，分为全国初中大赛（前6场）与世界少年锦标赛（后7场）。
+## 👑 第一阶段：全国中学生足球大赛（南葛中篇）
+
+| 关卡 | 对手球队 | 核心敌将 / 威胁 | 必胜攻防战术 |
+|---|---|---|---|
+| 第1关 | 锦丘中 | 无名杂鱼队 | 教学关卡。直接用大空翼（Tsubasa）带球长驱直入，普通射门即可轻松破门。 |
+| 第2关 | 南宇和中 | 石田、武井 | 对方开始有配合，注意防守。依然以大空翼为核心输出，多传球拉开空间。 |
+| 第3关 | 花轮中 | 立花兄弟（政夫、和夫） | 对方会发动空中特技“空中飓风”。防守核心：让高杉（Takasugi）拦截高空球。大空翼可用倒钩对攻。 |
+| 第4关 | 东一中 | 早田诚 | 早田的“剃刀传球”和“剃刀射门”弧度极大。战术：避免大空翼与早田正面对撞，多利用岬太郎分球。 |
+| 第5关 | 比良户中 | 次藤洋、佐野满 | 次藤体型巨大、铲球极狠，佐野速度快。战术：不要和次藤硬碰硬，通过传球绕过他，突入禁区后射门。 |
+| 第6关 | 东邦学园 | 日向小次郎、若岛津健 | 全国决赛。日向的“猛虎射门”威力极大，若岛津是铜墙铁壁。战术：全力消耗若岛津的体力（Guts），大空翼和岬太郎合体使用“双人射门（Twin Shoot）”破门。 |
+
+## 🌍 第二阶段：世界少年锦标赛（全日本青年队篇）
+
+| 关卡 | 对手国家队 | 核心敌将 / 威胁 | 必胜攻防战术 |
+|---|---|---|---|
+| 第7关 | Poland national football team logo[](https://ssl.gstatic.com/onebox/media/sports/logos/yTS_Piy3M1wUBnqU0n5aAw_32x32.png)波兰[](https://www.google.com/search?q=Poland+national+football+team&kgmid=/m/03b6j8#sv=CBwS6wQKpQQSogQK4gNBSmlUNHRJVWFfSGc5b3dTNTQtUk5CeXFwVkNyVDl3bVlMWTNqRWNyZWdHT015b1U2X2gyM2NObHpsSEZwSVp6bW5KMzhQbDEzTHRBbVdSYTVzMzRoRFVUX0JQOWljaE9UZ1p2TmVMN1hNR2FpWE1xTENVVk40TUhIT0dQSWZoT2dtdS1iS0pWNDQ5aUVkYjBxZm1jcnMwa3FEUEhBOHFCX2ZqVlpFNlM4M3lVS1BjY0ZJYmFhLWlQcnNFZGlDZVRoYXhaMU5RWG1fMGpUNjZqWF9NVEwyWWdwWHNXUjJDMHVsUy14R0otcHVMalZQd3g4Q3hCaDQwY0xLMlYxY1NVV0xWMG5vSldpNEpPeFZ1dF9zcmxnY3k5Sk4xOV9mSnh3b3FoTXJZTS04bGxLSWh2WGNIQ1RFYmNvbFdoS3dWUGMwLU90dlJBaXVDcGR2eWNubkhWVXhnUlJwYmtGXzN2UXRhNi1rcG5Ea2dtNWZ4anFFeUZIM1pyS3VGVkNCOGRyZzRaeUFyNWZUYmNlMlVjdk1LTVFRZ0xXU3h5RzBQNkxvMk9nZkx1c2thcXR6cGJ0dVBlREN2THBQdFZsNUhLeW81R3V4SW9pSEJDXzJFc01BWjN0MFVVQzlGTnp0TmpCZxIXNEMxeGF0clpBNGFmdnIwUDFkYXppUU0aIkFEc3I5ZlJVTzZ0eG5PN0pUckF5TXY1ZGJhVnhaeUM3Z1ESBDc4NTQaATMiIgoBcRIdUG9sYW5kIG5hdGlvbmFsIGZvb3RiYWxsIHRlYW0iEgoFa2dtaWQSCS9tLzAzYjZqOCgAGEUgrc3TxQI) | 马赫（Mach） | 欧洲预选赛第一场，对方速度极快。全日本队加入新战力，多尝试日向的猛虎射门拉开比分。 |
+| 第8关 | England national football team logo[](https://ssl.gstatic.com/onebox/media/sports/logos/DTqIL8Ba3KIuxGkpXw5ayA_32x32.png)英格兰[](https://www.google.com/search?q=England+national+football+team&kgmid=/m/02pp1#sv=CBwS6wQKpQQSogQK4gNBSmlUNHRJZTBsSVM5NXNWdHBvQmpnMDdFX0toNnhSQ2lIdk9QUmVXQWFac1YtZXZwenFmSDVwM3lPM2hhbGJBZkJ2dDVQZDNUUVNab3lYMUkxVmxqVkRDV29vOVRVcUdtdDBYOWpqUWZyM0xQRUFReGVXZlQwZ3U4c0lSVXdUTDRDNjBNazlIMjZKc0dqYnRkUV9GMzlsLUhsaS1icjh3a2dianFwLUNuQkx6SkI0eWZqLUtkWWRVZ1FwalVyZEIyQ3hWV25SdWRWLS04d0dMZWYyYjVvcEVQQVRHdEQ1TmFNWVRTSUNXakFUR0hfbjFESUQ2ZEFzRkZnMDZxa0tULThrcGdKMnRBdXJUYWZyXzVLOUViTXNDSy1DdWFwa3FyMGNseDF3TE8yMkxXc0ZWV2IwcHljZ3VqQjh2Qk9pZHIwdlhHZE9DaVNfcm1yNFVVSVliMDhQVnRLRHR3eHpGMTZBbVJZQXY2STNaZGpyenN1OEN5bkFkZ3g2TllmbnBEQnpEZHp0SURrdUVRLXozOUdFLVhmYmRnR1dwejFXZWdrYW9KVkU5NG8wZWx3cUJySWEwcjVnVWNUcGQzUW1qNllERUlKWDVTZ3ZYODR2MU1heTloZzlMdkhXRWZLTlQyURIXNEMxeGF0clpBNGFmdnIwUDFkYXppUU0aIkFEc3I5ZlJGeVQ0WjdCSU1xSXdrNXlvMUdpQTE1bmhSUWcSBDc4NTQaATMiIwoBcRIeRW5nbGFuZCBuYXRpb25hbCBmb290YmFsbCB0ZWFtIhEKBWtnbWlkEggvbS8wMnBwMSgAGEUgsL2AywQ) | 罗宾（Robson） | 队长罗宾后防极稳。战术：利用新田瞬（Nitta）的“隼射门”和双人配合扯开英格兰防线。 |
+| 第9关 | 苏联 | 别拉耶夫（Belyaev） | 对方防守极其极其粘人。需要利用大空翼在半场开阔地带用“冲力射门（Drive Shoot）”远射。 |
+| 第10关 | France national football team logo[](https://ssl.gstatic.com/onebox/media/sports/logos/z3JEQB3coEAGLCJBEUzQ2A_32x32.png)法国[](https://www.google.com/search?q=France+national+football+team&kgmid=/m/01l3vx#sv=CBwS6wQKpQQSogQK4gNBSmlUNHRMVDNwTEpfTlFPNzMwMEVFOGdpejVjMDVqM1F4VTM4bnI2WnZ6WENPZm9YNnRyODJrOEtYb29WdWVJdDdfQUlWcldWeWJIQzVnanNyeTQtLVRyX1VJamxtYTRNa2Npa0x0MTZ5dW9jWjU3NzZ4MnNybDFjWHB0dHI5Zzd1TmUwNVFmTE9MRUlCdWgwekRES096ZV80RjZ6R2FGMENRelhlZDVGVnJ4bzlMS1VMSWZ6ZDIzQjBnWFBHZUNPWnVMM2kxVHFXWG5nSEx5N0JEcVRwaXBqNjlCcEhKTnRlTzVZRUtHZ2psZzlkNUxnSEJFTW94NXByUzJPaWs2TVduM1B2T0p0VmFrLUtnYjZod3pCOHpJaDlLX3ZYT3hwbHJ1ZG9IUnFVT0otTTZsZ0pZSnZLUWFreGRJQkl6NzFxYlBwOUdVLV9KS3RfOHB1UHVNdEctUVFrSExjU3kwcW9FSUctekg3Z3ozdEtZX2RJeVZtWFoxWHNpaW9rbDdfV0NCOWJPa3hZUDlEcHNQTzkwWjVkY1BMQjVRXzNydHdoN0NkODRrYW1FZUlvM0p6NWFMbHFSX0RNUjUyZkVGdmQ5dlhUZWJ6U0pZSTlMcUZ6aDRTUDVLQTVLT2dqOEUwURIXNEMxeGF0clpBNGFmdnIwUDFkYXppUU0aIkFEc3I5ZlNLNk4yalRpYVNlVWd5eXhhNllIeW9TajgyMHcSBDc4NTQaATMiIgoBcRIdRnJhbmNlIG5hdGlvbmFsIGZvb3RiYWxsIHRlYW0iEgoFa2dtaWQSCS9tLzAxbDN2eCgAGEUguIbtuA4) | 皮埃尔、拿破仑 | 皮埃尔的“美丽华尔兹”过人和拿破仑的“加农炮射门”。战术：让岬太郎上前盯防皮埃尔，封死他们的传球路线。 |
+| 第11关 | Argentina men's national basketball team logo[](https://ssl.gstatic.com/onebox/media/sports/logos/1xBWyjjkA6vEWopPK3lIPA_32x32.png)阿根廷[](https://www.google.com/search?q=Argentina+national+football+team&kgmid=/m/08dx0g#sv=CBwSgwUKugQStwQK9wNBSmlUNHRLUnlwM2pNeXIzS1U5aFR0TFNzUTlfa1dTVnhOV2ZoVEc0d0Z0OWpFeDRNZ3k2SU4yRVhoc2czRmxaYlhGX2FnUmxnRGJVa21EZVRYblBsQ0R6QU1xeEFyY29kaDM2VmRRdjVtSG5xZjV3dmpuMHFwTFhnQ0NSQzVVeVhNdndKWFlrNVJaaVBlNHJrWmNmeWtlTklmOFNkd0pKTi02YXZRdG50cTEwYTR1TWF5OTBWbEJkSm1Rb0JEZ3J0YWtaYUhOc3Z3Sm1FLU1xT3cwSER4Y1NObUxlMDdhV0dodVppUWxucmVfZUh4dUExdnJjdmJ3TDhWQTRDXzR4X3ZKN08wWWpIWlJfSXJ0QVpwcng5SURhNUU3UXBiWDEtQ3VkaDlZU1BHNnJCVzdCU0xHQlcycFBZR1JWcWVvTXg0Q3lzX1BzWmUtYjE5Ump5UURseDkzcXZZZ0p0dE9IZG5qcHdTZGRabVRzV2V4d1VHbXZHTHBfZ0lCLXFhUmp5QUk4a0dOUEhoc3dVRlM5SjA5aTdJMlFkWXdIYmp2ZzE0dk11ZFdwT0tuNEpsZlZDWVVZdFRZSkg4V3h5eWlpTEVrWFJMR3NBcXNrcWFiYVUxcmk3MW9MbC1ac2dlNzdfX3h3QmpTQjEwTzU3bllFMnkyTklDSRIXNEMxeGF0clpBNGFmdnIwUDFkYXppUU0aIkFEc3I5ZlJSU0djLXZaaXlJQmV3SUpJLXdESHhqRVZMS2cSBDc4NTQaATMiJQoBcRIgQXJnZW50aW5hIG5hdGlvbmFsIGZvb3RiYWxsIHRlYW0iEgoFa2dtaWQSCS9tLzA4ZHgwZygAGEUg_arZ0wU) | 迪亚斯（Diaz）、帕斯 | 迪亚斯是天才中场，拥有和翼一样的冲力射门。战术：必须派遣多人围堵迪亚斯，抢下球后立刻长传反击。 |
+| 第12关 | Italy national football team logo[](https://ssl.gstatic.com/onebox/media/sports/logos/joYpsiaYi4GDCqhSRAq5Zg_32x32.png)意大利[](https://www.google.com/search?q=Italy+national+football+team&kgmid=/m/01_lhg#sv=CBwS6gQKpQQSogQK4gNBSmlUNHRLckVfWGNwcEI0YjdPNWZyeGFIWXdzM3pIM0hrTHh6N3VGbkVmeVR1emlDRF9idWVNdjk4NzlKbHlTc0c1UUVUbXcyMVRnVEoyZ1JIZExnelJxNHBXeHFqZTdyUnF6R0ZUOWtJR0gtaTBwdFFVR1MzZWQ2OFpjM1ZUU2ZnU0xnSzZsMmF0bXllbVdIXzJ2bnBTWFFsU0kyQXpQYzdfMTdWY2lrS0lobDhJZEloNE02ZHBKajNOX1F2Q240Um15ZVBpZVZicko4SHJHQ092ZTQxWFBxN0RLMEpuV0xJQWlwSHVjN3dKMi1MdWtiWW1JNER2cmpEaGJ3SHBibnN5Y2ZwUjRCNnFpZHRJWmRZZGZWaWQ5dFZ5T01PUDJ4Sng5NnNqVkZ2R2ZEUG1WRlhHWHd2NGY0S1g5V1FydHc2V3ZMdlBmUGkya0pyVnJ4cUxQN0dzX3dMMDUtN1RJdEhLMnpNSTZkQmVoemlkWEw2Z3k1VEtGc3hwb0JFUFFqQnFBdGE0SlVBX2hIdTFqVW1NajNUWHlOX1pJeC1aeFRDcHJKQWxERUpVWXk1c3hDTEZscmpiT291RVVvcEFUMzNxUlA4cXo3NWZ1Wldjc0tmbDlfZmVKb2V1SkdYWm96dxIXNEMxeGF0clpBNGFmdnIwUDFkYXppUU0aIkFEc3I5ZlFhNC1ibnNOVnZqS0NXX3hYcXJMUE83ZGVIVHcSBDc4NTQaATMiIQoBcRIcSXRhbHkgbmF0aW9uYWwgZm9vdGJhbGwgdGVhbSISCgVrZ21pZBIJL20vMDFfbGhnKAAYRSDToaybCw) | 赫尔南德斯（GK） | 拥有“黄金右手”的完美守门员，普通必杀几乎百分百被接。战术：消耗流。轮番用猛虎射门、隼射门轰炸，等他体力耗尽（Guts归零）再一击必杀。 |
+| 第13关 | West Germany at the Olympics logo[]| 施耐德、缪勒（GK） | 最终决战。施耐德的“火焰射门”必进，缪勒防守无解。战术：石崎了必须用“脸部挡球”去拼施耐德的射门！大空翼必须突入禁区深处使用最强必杀。 |
+
+------------------------------
+## 三、 游戏特殊剧情（Event）触发条件
+在一代中，某些特定角色碰面会触发隐藏的原著剧情，这往往能改变战局：
+
+   1. 南葛 vs 东一中：大空翼带球遭遇早田诚时，选择“过人（Dribble）”，会触发早田使出剃刀铲球的特殊剧情。
+   2. 全日本 vs 法国：岬太郎控球遭遇皮埃尔时，两人的对决会触发原著中“宿敌重逢”的文字剧情，会极大地消耗对方精力。
+
+------------------------------
+## 四、 实用全关卡密码（Password）
+FC初代由于没有存档电池，通关全靠输入日文密码。以下是整理好的高等级/全关卡直达密码，可在主界面选择第二项（つづきから）输入：
+
+* 
+* 直达第 6 关（决战东邦学园）：
+そぽぴず　うごぜぬご　あばばば　ばば
+* 直达第 10 关（大战法国队）：
+ぺぽぴず　うぞぜをご　ぞたたた　たた
+* 直达第 13 关（最终决战西德，全员满级）：
+ぽぽぴず　うぞぜぞご　ぞたたた　たた
+(注：在一代中，最后一关输入此密码，全日本队会处于满级状态，极大降低面对缪勒和施耐德的压力)
+* 
+ 

@@ -87,10 +87,11 @@ Page({
           });
       });
 
-      // 2. 设置 Canvas 缓冲区 NES 256×240
+      // 2. Canvas 缓冲区 = NES 原生 256×240（永远不变）
+      //    视觉放大由 CSS 控制，不修改缓冲区
       canvasNode.width = 256;
       canvasNode.height = 240;
-      console.log(`[MiniProgram] Canvas buffer: 256×240`);
+      console.log('[MiniProgram] Canvas buffer: 256×240 (NES native)');
 
       // 3. 获取 2D 上下文
       const ctx = canvasNode.getContext('2d');

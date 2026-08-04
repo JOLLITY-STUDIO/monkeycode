@@ -71,15 +71,12 @@ export class State01_TitleLoop extends StateBase {
   private onStartPressed(): void {
     console.log('[State 01] START pressed → Menu');
 
-    // 切换 bank 以加载菜单数据
-    this.banks.prgBank0 = 1;
-    this.data.mmcBankReg2 = 1;
-
-    // 初始化 Bank 1 菜单子状态
-    this.data.write(0x03CB, 5); // 菜单初始化子状态
+    // 强制 Bank1Dispatcher 进入菜单子状态 (跳过剩余标题页)
+    this.data.write(0x03CB, 5); // 子状态 5 = 菜单初始化
     this.data.write(0x03CC, 0);
 
-    // 过渡到菜单选择状态
+    // 过渡到菜单选择状态 (State 2)
+    // 注意: Bank 1 已是活动 bank，dispatchBankState 会跳过 re-init
     this.sm.transitionTo(2);
   }
 

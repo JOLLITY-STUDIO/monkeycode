@@ -101,8 +101,7 @@ export class PpuDataFiller {
    */
   private readInput(): void {
     this.inputManager.latch();
-    this.dataCache.joypad1Raw = this.inputManager.readJoypad1();
-    this.dataCache.joypad2Raw = 0;
+    this.dataCache.joypadRaw = this.inputManager.readJoypad1();
   }
 }
 

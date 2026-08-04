@@ -191,13 +191,13 @@ export class DataCache {
   get frameCount(): number { return this.read(0x0300); }
   set frameCount(v: number) { this.write(0x0300, v); }
 
-  /** $0301-$0302: 手柄输入原始值 [0] */
-  get joypad1Raw(): number { return this.read(0x0301); }
-  set joypad1Raw(v: number) { this.write(0x0301, v); }
+  /** $0301-$0302: 手柄输入原始值 (仅 P1，单人游戏) */
+  get joypadRaw(): number { return this.read(0x0301); }
+  set joypadRaw(v: number) { this.write(0x0301, v); }
 
-  /** $0303-$0304: 手柄输入原始值 [1] */
-  get joypad2Raw(): number { return this.read(0x0303); }
-  set joypad2Raw(v: number) { this.write(0x0303, v); }
+  /** @deprecated 使用 joypadRaw (单人游戏) */
+  get joypad1Raw(): number { return this.joypadRaw; }
+  set joypad1Raw(v: number) { this.write(0x0301, v); }
 
   /** $03CA: 游戏状态索引 */
   get gameState(): number { return this.read(0x03CA); }

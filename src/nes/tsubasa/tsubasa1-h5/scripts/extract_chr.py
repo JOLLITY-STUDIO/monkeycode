@@ -24,12 +24,13 @@ GRAY_PALETTE = [
     (0xFF, 0xFF, 0xFF, 0xFF),  # 3: 白色
 ]
 
-# 或者使用NES风格颜色（便于识别）
+# NES风格颜色（与 public/nes_palette.json 一致的 FCEUX 实机调色板）
+# 用于 --nes-colors 模式的 CHR PNG 预览
 NES_PALETTE = [
-    (0x7C, 0x7C, 0x7C, 0xFF),  # 0: 灰
-    (0x00, 0x00, 0xFC, 0xFF),  # 1: 蓝
-    (0x94, 0x00, 0x84, 0xFF),  # 2: 紫
-    (0xF8, 0xF8, 0xF8, 0xFF),  # 3: 白
+    (0x75, 0x75, 0x75, 0xFF),  # 0: 灰 (索引 0x00)
+    (0x24, 0x18, 0x8E, 0xFF),  # 1: 深蓝 (索引 0x01)
+    (0x8E, 0x00, 0x75, 0xFF),  # 2: 紫 (索引 0x04)
+    (0xFF, 0xFF, 0xFF, 0xFF),  # 3: 白 (索引 0x20)
 ]
 
 TILE_SIZE = 8
@@ -242,18 +243,19 @@ def main():
     parser.add_argument(
         '--nes-colors',
         action='store_true',
-        default=True,
-        help='Use NES-style diagnostic colors (default: True)'
+        default=False,
+        help='Use NES-style diagnostic colors (default: False, use grayscale)'
     )
     parser.add_argument(
         '--gray',
         action='store_true',
-        help='Use grayscale colors instead'
+        default=True,
+        help='Use grayscale colors (default: True)'
     )
-    
+
     args = parser.parse_args()
-    
-    use_nes = not args.gray
+
+    use_nes = args.nes_colors and not args.gray
     
     if not os.path.exists(args.rom):
         # 尝试其他路径

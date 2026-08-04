@@ -25,12 +25,12 @@ class Button:
     RIGHT  = 0x01
 
 class GameState:
-    INIT_TITLE  = 0
-    TITLE_LOOP  = 1
-    MENU_SELECT = 2
-    TEAM_SELECT = 3
-    MATCH_MAIN  = 4
-    MATCH_EVENT = 5
+    INIT_TITLE   = 0
+    TITLE_LOOP   = 1
+    MENU_SELECT  = 2
+    MEMBER_SELECT = 3  # v0.9.0: 队员选择 (原队伍选择)
+    MATCH_MAIN   = 4
+    MATCH_EVENT  = 5
 
 # ============================================================
 # 模拟 DataCache
@@ -210,11 +210,10 @@ class MockStateMachine:
         elif state_id == 1:  # TitleLoop
             self._blink_counter = 0
             self._anim_frame = 0
-        elif state_id == 2:  # MenuSelect
+        elif state_id == 2:  # MenuSelect (v0.9.0: 2 items: START/CONTINUE)
             self._selected_item = 0
-            self._cursor_sprite_y = 80
-        elif state_id == 3:  # TeamSelect
-            self._selected_team = 0
+        elif state_id == 3:  # MemberSelect (v0.9.0: 队员选择)
+            pass
         elif state_id == 4:  # MatchMain
             self._match_time = 0
             self._score = [0, 0]
@@ -254,49 +253,42 @@ class MockStateMachine:
             self.data.write(0x03CC, 0)
             self.transition_to(2)
 
-    # ---- State 02: 菜单选择 ----
+    # ---- State 02: 菜单选择 (v0.9.0: 2项) ----
     def _update_state02(self, input_pressed: int):
         if input_pressed & Button.UP:
-            self._selected_item = (self._selected_item - 1) % 3
-            self._update_cursor()
+            self._selected_item = (self._selected_item - 1) % 2
         elif input_pressed & Button.DOWN:
-            self._selected_item = (self._selected_item + 1) % 3
-            self._update_cursor()
+            self._selected_item = (self._selected_item + 1) % 2
         elif input_pressed & Button.A:
             self._confirm_selection()
         elif input_pressed & Button.B:
             self.transition_to(1)  # 返回标题
         elif input_pressed & Button.START:
-            self._confirm_selection()  # START 也相当于确认
-
-    def _update_cursor(self):
-        offsets = [80, 104, 128]
-        self._cursor_sprite_y = offsets[self._selected_item]
+            self.data.write(0x03CB, 5)
+            self.data.write(0x03CC, 0)
+            self.transition_to(3)  # 直接到队员选择
 
     def _confirm_selection(self):
         if self._selected_item == 0:
-            self.data.set('playerCount', 1)
+            self.data.set('isContinue', False)   # START
         elif self._selected_item == 1:
-            self.data.set('playerCount', 2)
-        elif self._selected_item == 2:
-            self.data.set('isContinue', True)
+            self.data.set('isContinue', True)    # CONTINUE
         self.transition_to(3)
 
-    # ---- State 03: 队伍选择 ----
+    # ---- State 03: 队员选择 (v0.9.0) ----
     def _update_state03(self, input_pressed: int):
-        if input_pressed & Button.A:
-            # 确认队伍 → 进入比赛
-            self.data.set('playerTeam', self._selected_team)
-            self.data.set('opponentTeam', 1 if self._selected_team == 0 else 0)
-            # 创建 Mock MatchEngine
+        if input_pressed & Button.START:
+            # 确认队员 → 进入比赛
+            self.data.set('playerTeam', 0)        # 南葛固定
+            self.data.set('opponentTeam', 1)       # 東邦
             self._init_match()
             self.transition_to(4)
         elif input_pressed & Button.B:
             self.transition_to(2)
-        elif input_pressed & Button.LEFT:
-            self._selected_team = (self._selected_team - 1) % 7
-        elif input_pressed & Button.RIGHT:
-            self._selected_team = (self._selected_team + 1) % 7
+        elif input_pressed & Button.UP:
+            pass  # 光标上下移动
+        elif input_pressed & Button.DOWN:
+            pass
 
     def _init_match(self):
         """创建简化的比赛引擎 (用于测试)"""
@@ -463,7 +455,7 @@ def test03_start_to_menu():
 
 
 def test04_menu_navigation():
-    """测试菜单上下移动"""
+    """测试菜单上下移动 (v0.9.0: 2项)"""
     data = MockDataCache()
     sm = MockStateMachine(data)
     sm.transition_to(0)
@@ -473,27 +465,21 @@ def test04_menu_navigation():
         sm.update()
     sm.update(input_pressed=Button.START)
     assert_eq(sm.current_state_id, 2, "应在 State 02")
+    assert_eq(sm._selected_item, 0, "默认选中第0项 (START)")
 
-    # 默认选第0项, 光标Y=80
-    assert_eq(sm._cursor_sprite_y, 80, "默认光标 Y=80 (1P GAME)")
-
-    # 按 ↓
+    # 按 ↓: 选 CONTINUE
     sm.update(input_pressed=Button.DOWN)
-    assert_eq(sm._cursor_sprite_y, 104, "↓后光标 Y=104 (2P GAME)")
+    assert_eq(sm._selected_item, 1, "↓后选中 CONTINUE")
 
-    # 再按 ↓
-    sm.update(input_pressed=Button.DOWN)
-    assert_eq(sm._cursor_sprite_y, 128, "↓↓后光标 Y=128 (CONTINUE)")
-
-    # 按 ↑
+    # 按 ↑: 回到 START
     sm.update(input_pressed=Button.UP)
-    assert_eq(sm._cursor_sprite_y, 104, "↑后光标 Y=104")
+    assert_eq(sm._selected_item, 0, "↑后回到 START")
 
-    print("\n  📋 菜单导航正常!")
+    print("\n  📋 菜单导航正常! (2项)")
 
 
-def test05_confirm_to_team_select():
-    """测试菜单确认 → State 03"""
+def test05_confirm_to_member_select():
+    """测试菜单确认 → State 03 (v0.9.0: MemberSelect)"""
     data = MockDataCache()
     sm = MockStateMachine(data)
     sm.transition_to(0)
@@ -503,11 +489,12 @@ def test05_confirm_to_team_select():
         sm.update()
     sm.update(input_pressed=Button.START)
     assert_eq(sm.current_state_id, 2, "应在 State 02")
+    assert_eq(sm._selected_item, 0, "选 START")
 
-    # 按 A 确认
+    # 按 A 确认 (START → isContinue=false)
     sm.update(input_pressed=Button.A)
-    assert_eq(sm.current_state_id, 3, "按 A 后 → State 03 (TeamSelect)")
-    assert_eq(data.get('playerCount'), 1, "playerCount=1 (1P GAME)")
+    assert_eq(sm.current_state_id, 3, "按 A 后 → State 03 (MemberSelect)")
+    assert_eq(data.get('isContinue'), False, "isContinue=False (START)")
 
     print("\n  📋 State 02→03 流转成功!")
 
@@ -531,7 +518,7 @@ def test06_cancel_back_to_title():
 
 
 def test07_full_flow():
-    """完整流程 State 00→01→02→03"""
+    """完整流程 State 00→01→02→03 (v0.9.0)"""
     data = MockDataCache()
     sm = MockStateMachine(data)
     sm.transition_to(0)
@@ -542,17 +529,17 @@ def test07_full_flow():
         sm.update()
     assert_eq(sm.current_state_id, 1, "[Phase1] State 01")
 
-    # Phase 2: 按 START
+    # Phase 2: 按 START → 菜单
     print("  ⏳ Phase 2: 标题画面 → 按 START...")
     sm.update(input_pressed=Button.START)
     assert_eq(sm.current_state_id, 2, "[Phase2] State 02")
 
-    # Phase 3: 菜单操作
-    print("  ⏳ Phase 3: 菜单操作 → ↓↓ → A...")
+    # Phase 3: 选 CONTINUE → A 确认
+    print("  ⏳ Phase 3: 菜单 ↓ → A (CONTINUE)...")
     sm.update(input_pressed=Button.DOWN)
-    sm.update(input_pressed=Button.DOWN)
+    assert_eq(sm._selected_item, 1, "选中 CONTINUE")
     sm.update(input_pressed=Button.A)
-    assert_eq(sm.current_state_id, 3, "[Phase3] State 03 (TeamSelect)")
+    assert_eq(sm.current_state_id, 3, "[Phase3] State 03 (MemberSelect)")
     assert_true(data.get('isContinue'), "[Phase3] isContinue=True")
 
     print("\n  📋 完整流程 State 00→01→02→03 全部通过! 🎉")
@@ -570,8 +557,8 @@ def test08_bank_lock_protection():
     print("\n  📋 bankLock 机制验证通过!")
 
 
-def test09_team_select_confirm_to_match():
-    """测试 State 03 → State 04 (队伍选择 → 比赛)"""
+def test09_member_select_confirm_to_match():
+    """测试 State 03 → State 04 (队员选择确认 → 比赛)"""
     data = MockDataCache()
     sm = MockStateMachine(data)
     sm.transition_to(0)
@@ -580,16 +567,16 @@ def test09_team_select_confirm_to_match():
     for _ in range(10):
         sm.update()
     sm.update(input_pressed=Button.START)     # State 01→02
-    sm.update(input_pressed=Button.A)          # State 02→03 (确认菜单)
-    assert_eq(sm.current_state_id, 3, "应在 State 03")
+    sm.update(input_pressed=Button.A)          # State 02→03
+    assert_eq(sm.current_state_id, 3, "应在 State 03 (MemberSelect)")
 
-    # 按 A 确认队伍 → 进入比赛
-    sm.update(input_pressed=Button.A)
-    assert_eq(sm.current_state_id, 4, "按 A 后 → State 04 (MatchMain)")
+    # 按 START 确认队员 → 进入比赛
+    sm.update(input_pressed=Button.START)
+    assert_eq(sm.current_state_id, 4, "按 START → State 04 (MatchMain)")
 
     # 验证确认后的数据
-    assert_eq(data.get('playerTeam'), 0, "选择玩家队伍 0")
-    assert_eq(data.get('opponentTeam'), 1, "对手队伍 1")
+    assert_eq(data.get('playerTeam'), 0, "玩家固定南葛(0)")
+    assert_eq(data.get('opponentTeam'), 1, "对手東邦(1)")
 
     # 验证 matchEngine 已创建
     engine = data.get('matchEngine')
@@ -610,9 +597,10 @@ def test10_match_kickoff_to_playing():
     # 快进到 State 04
     for _ in range(10):
         sm.update()
-    sm.update(input_pressed=Button.START)
-    sm.update(input_pressed=Button.A)
-    sm.update(input_pressed=Button.A)
+    sm.update(input_pressed=Button.START)     # State 01→02 (菜单)
+    sm.update(input_pressed=Button.A)          # State 02→03 (队员选择)
+    # State 03: 按 START 确认队员
+    sm.update(input_pressed=Button.START)      # State 03→04 (比赛)
     assert_eq(sm.current_state_id, 4, "应在 State 04")
 
     engine = data.get('matchEngine')
@@ -632,8 +620,8 @@ def test10_match_kickoff_to_playing():
     print("\n  📋 开球→进行中 正常!")
 
 
-def test11_team_select_b_back():
-    """测试队伍选择 B 键返回菜单"""
+def test11_member_select_b_back():
+    """测试队员选择 B 键返回菜单"""
     data = MockDataCache()
     sm = MockStateMachine(data)
     sm.transition_to(0)
@@ -642,12 +630,12 @@ def test11_team_select_b_back():
         sm.update()
     sm.update(input_pressed=Button.START)
     sm.update(input_pressed=Button.A)
-    assert_eq(sm.current_state_id, 3, "应在 State 03")
+    assert_eq(sm.current_state_id, 3, "应在 State 03 (MemberSelect)")
 
     sm.update(input_pressed=Button.B)
     assert_eq(sm.current_state_id, 2, "按 B 后 → State 02 (MenuSelect)")
 
-    print("\n  📋 队伍选择 B 键返回正常!")
+    print("\n  📋 队员选择 B 键返回正常!")
 
 
 # ============================================================
@@ -666,14 +654,14 @@ def main():
         ("初始状态验证", test01_initial_state),
         ("State 00→01 自动流转", test02_auto_transition_to_title_loop),
         ("State 01→02 按START进入菜单", test03_start_to_menu),
-        ("State 02 菜单导航", test04_menu_navigation),
-        ("State 02→03 确认选择", test05_confirm_to_team_select),
+        ("State 02 菜单导航 (2项)", test04_menu_navigation),
+        ("State 02→03 确认 (MemberSelect)", test05_confirm_to_member_select),
         ("State 02 B键返回标题", test06_cancel_back_to_title),
-        ("完整流程 State 00→01→02→03", test07_full_flow),
+        ("完整流程 00→01→02→03", test07_full_flow),
         ("bankLock 保护机制", test08_bank_lock_protection),
-        ("State 03→04 队伍选择确认→比赛", test09_team_select_confirm_to_match),
+        ("State 03→04 队员选择→比赛", test09_member_select_confirm_to_match),
         ("State 04 开球→进行中", test10_match_kickoff_to_playing),
-        ("State 03 B键返回菜单", test11_team_select_b_back),
+        ("State 03 B键返回菜单", test11_member_select_b_back),
     ]
 
     for name, fn in tests:

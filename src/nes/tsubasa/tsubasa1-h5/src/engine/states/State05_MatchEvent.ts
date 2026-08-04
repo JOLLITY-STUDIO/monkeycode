@@ -1,33 +1,41 @@
 /**
- * State 05: 比赛事件处理
- * 对应 ROM 中 $8270 的处理
+ * State 05: 比赛事件处理 (纯逻辑 — 只更新 EventModel)
  *
- * 处理: 进球动画、半场/终场显示、结果画面
+ * 处理: 进球动画、半场/终场显示、结果画面。
+ *
+ * v0.6.0: 已移除所有 renderer 直接调用，通过 GameModel 通信。
  */
 import { StateBase } from './StateBase';
-import { MatchEngine, MatchPhase } from '../MatchEngine';
+import type { MatchEngine } from '../MatchEngine';
 
 export class State05_MatchEvent extends StateBase {
   readonly id = 5;
 
   private eventType: string = '';
-  private eventStep: number = 0;
   private matchEngine: MatchEngine | null = null;
 
   onEnter(): void {
     this.eventType = this.data.get<string>('eventType') || 'default';
-    this.eventStep = 0;
     this.matchEngine = this.data.get('matchEngine') as MatchEngine || null;
 
     console.log(`[State 05] Event: ${this.eventType}`);
 
-    // 持续事件时，清理画面
-    for (let i = 0; i < 960; i++) {
-      this.renderer.writeVram(0x2000 + i, 0x00);
+    // 初始化 event model
+    if (this.matchEngine) {
+      this.model.setEvent(
+        this.eventType as any,
+        0,
+        this.data.get('eventData')?.playerId ?? 0,
+        this.matchEngine.score as [number, number],
+      );
+    } else {
+      this.model.setEvent(this.eventType as any, 0);
     }
   }
 
   onUpdate(): void {
+    this.model.advanceEvent();
+
     switch (this.eventType) {
       case 'goal':
         this.processGoalEvent();
@@ -43,51 +51,24 @@ export class State05_MatchEvent extends StateBase {
   }
 
   private processGoalEvent(): void {
-    this.eventStep++;
-
-    const eventData = this.data.get('eventData') as any;
-    const scorer = eventData?.playerId ?? 0;
-
-    // 显示 GOAL 文字
-    if (this.eventStep === 1) {
-      const goalText = 'GOAL!!';
-      const startCol = 12;
-      for (let i = 0; i < goalText.length; i++) {
-        this.renderer.writeVram(0x2000 + 14 * 32 + startCol + i, goalText.charCodeAt(i));
-      }
-      console.log(`[State 05] GOAL!! by player ${scorer}`);
-    }
-
-    // 进球动画持续 120 帧 (2秒)
-    if (this.eventStep > 120) {
+    // 进球动画持续 120 帧 (2秒) 后回到比赛
+    if (this.model.event.step > 120) {
       this.data.set('eventType', '');
+      this.model.event.type = '';
       this.sm.transitionTo(4);
     }
   }
 
   private processResultEvent(): void {
-    this.eventStep++;
-
-    const matchEngine = this.matchEngine;
-    if (!matchEngine) {
-      this.sm.transitionTo(2); // 回菜单
+    if (!this.matchEngine) {
+      this.sm.transitionTo(2);
       return;
     }
 
-    const score = matchEngine.score;
-    const resultText = `FINAL  ${score[0]} - ${score[1]}`;
-
-    if (this.eventStep === 1) {
-      const startCol = 10;
-      for (let i = 0; i < resultText.length; i++) {
-        this.renderer.writeVram(0x2000 + 12 * 32 + startCol + i, resultText.charCodeAt(i));
-      }
-      console.log(`[State 05] Final score: ${score[0]} - ${score[1]}`);
-    }
-
     // 结果显示 300 帧 (5秒) 后回菜单
-    if (this.eventStep > 300) {
+    if (this.model.event.step > 300) {
       this.data.set('eventType', '');
+      this.model.event.type = '';
       this.sm.transitionTo(2);
     }
   }
