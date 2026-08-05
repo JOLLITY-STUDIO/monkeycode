@@ -1031,6 +1031,16 @@ class PPU {
       this.cntVT = this.regVT;
       this.cntHT = this.regHT;
 
+      // 记录从 $2006 得到的滚动位置（coarse 级别，fine scroll 未变）
+      // 用于 NT viewer split-screen 调试。$2006 写入不更新 fine X，
+      // 但 coarse scroll 已经足够诊断分屏切换。
+      const x = (this.cntH ? 256 : 0) + this.cntHT * 8;
+      const y = (this.cntV ? 240 : 0) + this.cntVT * 8;
+      this.lastScrollWriteX = x;
+      this.lastScrollWriteY = y;
+      const scanline = this.scanline >= 21 ? this.scanline - 21 : -1;
+      this.scrollWrites.push({ scanline, x, y });
+
       this.checkSprite0(this.scanline + 1 - 21);
     }
 
