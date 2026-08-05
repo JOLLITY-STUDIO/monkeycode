@@ -187,25 +187,75 @@ export class DebugPanel {
       }
     }
 
-    // ── 扫描线指示：模拟 PPU 光束扫描效果 ──
-    // ppu.scanline 在 renderFrame 调用时通常处于 VBlank (=0)，
-    // 因此用帧计数器模拟光束从顶到底连续扫描。
-    const nesLine = (this.fpsFrameCount * 2) % 240; // 每 2 秒扫完 240 行
-    const worldY = (scrollY + nesLine) % 480;
+    // ── 视口矩形：当前屏幕在 4-NT 空间显示的区域 ──
+    const vpX = scrollX % 512;
+    const vpY = scrollY % 480;
+    const vpW = 256, vpH = 240;
 
-    // 单行细线 + 上下各 1px 半透明，模拟光束拖影
-    const FULL = 0xff_00ff00;
-    const FADE = 0x44_00ff00;
+    // 视口边框色（亮黄，实线）
+    const VP_COLOR = 0xff_ffff00;
+
+    // 视口可能跨 NT 边界，处理水平/垂直 wrap
+    const hWrap = vpX + vpW > CW ? CW - vpX : vpW;
+    const hRest = vpW - hWrap; // 超出右边界的宽度
+    const vWrap = vpY + vpH > CH ? CH - vpY : vpH;
+    const vRest = vpH - vWrap;
+
+    // 画视口矩形四条边（主区域）
+    const drawRectEdges = (ox: number, oy: number, ow: number, oh: number) => {
+      for (let y = 0; y < oh; y++) {
+        const row = (oy + y) * CW;
+        // 左边线
+        if (ox >= 0 && ox < CW) buf[row + ox] = VP_COLOR;
+        // 右边线
+        if (ox + ow - 1 >= 0 && ox + ow - 1 < CW) buf[row + ox + ow - 1] = VP_COLOR;
+      }
+      const topRow = oy * CW;
+      const botRow = (oy + oh - 1) * CW;
+      for (let x = 0; x < ow; x++) {
+        if (ox + x >= 0 && ox + x < CW) {
+          buf[topRow + ox + x] = VP_COLOR;
+          buf[botRow + ox + x] = VP_COLOR;
+        }
+      }
+    };
+
+    drawRectEdges(vpX, vpY, hWrap, vWrap);
+    // 水平 wrap
+    if (hRest > 0) drawRectEdges(0, vpY, hRest, vWrap);
+    // 垂直 wrap
+    if (vRest > 0) {
+      drawRectEdges(vpX, 0, hWrap, vRest);
+      if (hRest > 0) drawRectEdges(0, 0, hRest, vRest);
+    }
+
+    // ── 扫描线：视口内从顶到底移动 ──
+    const nesLine = (this.fpsFrameCount * 2) % 240;
+    const worldY = (vpY + nesLine) % 480;
+    let scanX0 = vpX;
+    let scanX1 = vpX + vpW - 1;
+    if (scanX1 >= CW) scanX1 -= CW;
+
+    const SCAN_FULL = 0xff_00ff00;
+    const SCAN_FADE = 0x44_00ff00;
     for (let dy = -2; dy <= 2; dy++) {
       const ry = worldY + dy;
       if (ry < 0 || ry >= CH) continue;
-      const color = dy === 0 ? FULL : FADE;
+      const color = dy === 0 ? SCAN_FULL : SCAN_FADE;
       const rowOff = ry * CW;
-      for (let x = 0; x < CW; x++) buf[rowOff + x] = color;
+      // 扫描线只画在视口范围内
+      if (scanX1 > scanX0) {
+        // 无 wrap：连续一段
+        for (let x = scanX0; x <= scanX1; x++) buf[rowOff + x] = color;
+      } else {
+        // 水平 wrap：两段
+        for (let x = scanX0; x < CW; x++) buf[rowOff + x] = color;
+        for (let x = 0; x <= scanX1; x++) buf[rowOff + x] = color;
+      }
     }
 
     this.debugCanvas.blit(buf, CW, CH);
-    this.debugCanvas.drawTextOverlay(`SCAN ${nesLine}`, 8, worldY + 5, 7, '#00ff00');
+    this.debugCanvas.drawTextOverlay(`↙视口 scan ${nesLine}`, vpX + 2, worldY + 5, 7, '#ffff00');
 
     this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, CW, CH);
     this._updatePaletteStrips(nes, ['bg']);
