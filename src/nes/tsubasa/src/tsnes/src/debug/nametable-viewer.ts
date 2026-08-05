@@ -22,6 +22,8 @@ export interface ScrollState {
   y: number;
   /** 写入发生时的 NES 可见 scanline，-1 表示在 VBlank 期间写入 */
   scanline: number;
+  /** 来源：'$2005' 或 '$2006' */
+  source: string;
 }
 
 export interface NameTableAllFrames {
@@ -235,7 +237,7 @@ export function renderAllNameTables(nes: NES): NameTableAllFrames {
   const map0 = ppu.ntable1[0]; // 逻辑 NT 0 → 物理 NT
   const map1 = ppu.ntable1[1]; // 逻辑 NT 1 (scrollX>=256 时可见)
 
-  const draws = scrolls.length > 0 ? scrolls : [{ x: scrollX, y: scrollY, scanline: -1 }];
+  const draws = scrolls.length > 0 ? scrolls : [{ x: scrollX, y: scrollY, scanline: -1, source: fromScrollWrite ? '$2005' : 'reg' }];
   for (const s of draws) {
     drawScrollLine(ntFrames[map0], s.x & 255, s.y & 239);
     if ((s.x & 256) !== 0) {

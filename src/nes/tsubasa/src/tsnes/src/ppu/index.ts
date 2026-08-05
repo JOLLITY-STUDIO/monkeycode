@@ -1003,7 +1003,7 @@ class PPU {
         // scanline is the NES visible scanline being rendered; in VBlank
         // (scanline 0..19 in this PPU's internal numbering) we store -1.
         const scanline = this.scanline >= 21 ? this.scanline - 21 : -1;
-        this.scrollWrites.push({ scanline, x, y });
+        this.scrollWrites.push({ scanline, x, y, source: '$2005' });
         this.scrollWritePending = null;
       }
     }
@@ -1039,7 +1039,7 @@ class PPU {
       this.lastScrollWriteX = x;
       this.lastScrollWriteY = y;
       const scanline = this.scanline >= 21 ? this.scanline - 21 : -1;
-      this.scrollWrites.push({ scanline, x, y });
+      this.scrollWrites.push({ scanline, x, y, source: '$2006' });
 
       this.checkSprite0(this.scanline + 1 - 21);
     }

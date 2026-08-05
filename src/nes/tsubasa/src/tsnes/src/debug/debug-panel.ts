@@ -189,7 +189,7 @@ export class DebugPanel {
 
     // ── 视口矩形：当前屏幕在 4-NT 空间显示的区域 ──
     // 支持 split-screen：一帧内可能有多组 $2005 写入，每组一个视口框。
-    const viewports = scrolls.length > 0 ? scrolls : [{ x: scrollX, y: scrollY, scanline: -1 }];
+    const viewports = scrolls.length > 0 ? scrolls : [{ x: scrollX, y: scrollY, scanline: -1, source: fromScrollWrite ? '$2005' : 'reg' }];
     const VP_COLORS = [0xff_ffff00, 0xff_00ffff, 0xff_00ff00, 0xff_ff00ff, 0xff_ff8800];
     const VP_HEX = ['#ffff00', '#00ffff', '#00ff00', '#ff00ff', '#ff8800'];
 
@@ -234,9 +234,8 @@ export class DebugPanel {
 
     this.debugCanvas.blit(buf, CW, CH);
 
-    const src = fromScrollWrite ? '2005' : 'reg';
-    const scrollInfo = viewports.map((s, i) => `#${i} ${s.x},${s.y}${s.scanline >= 0 ? ' SL' + s.scanline : ''}`).join(' | ');
-    this._drawFrameHUD(`Frame #${this.fpsFrameCount} ${scrollInfo} (${src})`, CW, CH);
+    const scrollInfo = viewports.map((s, i) => `#${i} ${s.source} ${s.x},${s.y}${s.scanline >= 0 ? ' SL' + s.scanline : ''}`).join(' | ');
+    this._drawFrameHUD(`Frame #${this.fpsFrameCount} ${scrollInfo}`, CW, CH);
     this._updatePaletteStrips(nes, ['bg']);
     this.page.setData({ ntDataText: generateNTDataText(nes, this.fpsFrameCount) });
   }
