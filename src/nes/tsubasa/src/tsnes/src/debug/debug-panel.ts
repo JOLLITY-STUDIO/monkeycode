@@ -167,7 +167,7 @@ export class DebugPanel {
   }
 
   private _renderNT(nes: any): void {
-    const { nt, scrollX, scrollY } = renderAllNameTables(nes);
+    const { nt, scrollX, scrollY, rawScrollX, rawScrollY, fromScrollWrite, scrolls } = renderAllNameTables(nes);
     const CW = 512, CH = 480;
     const bg = 0xff_0d0d22;
     const buf = new Uint32Array(CW * CH);
@@ -188,51 +188,55 @@ export class DebugPanel {
     }
 
     // ── 视口矩形：当前屏幕在 4-NT 空间显示的区域 ──
-    const vpX = scrollX % 512;
-    const vpY = scrollY % 480;
-    const vpW = 256, vpH = 240;
+    // 支持 split-screen：一帧内可能有多组 $2005 写入，每组一个视口框。
+    const viewports = scrolls.length > 0 ? scrolls : [{ x: scrollX, y: scrollY, scanline: -1 }];
+    const VP_COLORS = [0xff_ffff00, 0xff_00ffff, 0xff_00ff00, 0xff_ff00ff, 0xff_ff8800];
+    const VP_HEX = ['#ffff00', '#00ffff', '#00ff00', '#ff00ff', '#ff8800'];
 
-    // 视口边框色（亮黄，实线）
-    const VP_COLOR = 0xff_ffff00;
-
-    // 视口可能跨 NT 边界，处理水平/垂直 wrap
-    const hWrap = vpX + vpW > CW ? CW - vpX : vpW;
-    const hRest = vpW - hWrap; // 超出右边界的宽度
-    const vWrap = vpY + vpH > CH ? CH - vpY : vpH;
-    const vRest = vpH - vWrap;
-
-    // 画视口矩形四条边（主区域）
-    const drawRectEdges = (ox: number, oy: number, ow: number, oh: number) => {
+    const drawRectEdges = (ox: number, oy: number, ow: number, oh: number, color: number) => {
       for (let y = 0; y < oh; y++) {
         const row = (oy + y) * CW;
-        // 左边线
-        if (ox >= 0 && ox < CW) buf[row + ox] = VP_COLOR;
-        // 右边线
-        if (ox + ow - 1 >= 0 && ox + ow - 1 < CW) buf[row + ox + ow - 1] = VP_COLOR;
+        if (ox >= 0 && ox < CW) buf[row + ox] = color;
+        if (ox + ow - 1 >= 0 && ox + ow - 1 < CW) buf[row + ox + ow - 1] = color;
       }
       const topRow = oy * CW;
       const botRow = (oy + oh - 1) * CW;
       for (let x = 0; x < ow; x++) {
         if (ox + x >= 0 && ox + x < CW) {
-          buf[topRow + ox + x] = VP_COLOR;
-          buf[botRow + ox + x] = VP_COLOR;
+          buf[topRow + ox + x] = color;
+          buf[botRow + ox + x] = color;
         }
       }
     };
 
-    drawRectEdges(vpX, vpY, hWrap, vWrap);
-    // 水平 wrap
-    if (hRest > 0) drawRectEdges(0, vpY, hRest, vWrap);
-    // 垂直 wrap
-    if (vRest > 0) {
-      drawRectEdges(vpX, 0, hWrap, vRest);
-      if (hRest > 0) drawRectEdges(0, 0, hRest, vRest);
+    for (let vi = 0; vi < viewports.length; vi++) {
+      const vp = viewports[vi];
+      const vpX = vp.x % 512;
+      const vpY = vp.y % 480;
+      const vpW = 256, vpH = 240;
+      const color = VP_COLORS[vi % VP_COLORS.length];
+
+      const hWrap = vpX + vpW > CW ? CW - vpX : vpW;
+      const hRest = vpW - hWrap;
+      const vWrap = vpY + vpH > CH ? CH - vpY : vpH;
+      const vRest = vpH - vWrap;
+
+      drawRectEdges(vpX, vpY, hWrap, vWrap, color);
+      if (hRest > 0) drawRectEdges(0, vpY, hRest, vWrap, color);
+      if (vRest > 0) {
+        drawRectEdges(vpX, 0, hWrap, vRest, color);
+        if (hRest > 0) drawRectEdges(0, 0, hRest, vRest, color);
+      }
+
+      const label = vp.scanline >= 0 ? `SL${vp.scanline}` : 'VBL';
+      this.debugCanvas.drawTextOverlay(`${label}`, vpX + 2, vpY + 14 + vi * 10, 7, VP_HEX[vi % VP_HEX.length]);
     }
 
     this.debugCanvas.blit(buf, CW, CH);
-    this.debugCanvas.drawTextOverlay(`视口 ↗`, vpX + 2, vpY + 14, 7, '#ffff00');
 
-    this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, CW, CH);
+    const src = fromScrollWrite ? '2005' : 'reg';
+    const scrollInfo = viewports.map((s, i) => `#${i} ${s.x},${s.y}${s.scanline >= 0 ? ' SL' + s.scanline : ''}`).join(' | ');
+    this._drawFrameHUD(`Frame #${this.fpsFrameCount} ${scrollInfo} (${src})`, CW, CH);
     this._updatePaletteStrips(nes, ['bg']);
     this.page.setData({ ntDataText: generateNTDataText(nes, this.fpsFrameCount) });
   }

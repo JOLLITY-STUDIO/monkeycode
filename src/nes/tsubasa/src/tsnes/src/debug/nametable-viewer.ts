@@ -17,14 +17,28 @@ export interface NameTableFrame {
   height: number;  // 240
 }
 
+export interface ScrollState {
+  x: number;
+  y: number;
+  /** 写入发生时的 NES 可见 scanline，-1 表示在 VBlank 期间写入 */
+  scanline: number;
+}
+
 export interface NameTableAllFrames {
   /** 4 个 nametable (0=0x2000, 1=0x2400, 2=0x2800, 3=0x2C00) */
   nt: [NameTableFrame, NameTableFrame, NameTableFrame, NameTableFrame];
   /** 逻辑地址到物理 nametable 的映射 (ntable1) */
   mapping: [number, number, number, number];
-  /** 当前滚动位置 */
+  /** 当前滚动位置（主视口用） */
   scrollX: number;
   scrollY: number;
+  /** 最后 $2005 写入的原始滚动值（调试用） */
+  rawScrollX: number;
+  rawScrollY: number;
+  /** 是否从 lastScrollWrite 取值 */
+  fromScrollWrite: boolean;
+  /** 本帧所有完整的 $2005 滚动写入对，用于 split-screen 调试 */
+  scrolls: ScrollState[];
 }
 
 /** 滚动指示线颜色 (FCEUX 风格: 青绿色虚线) */
@@ -167,9 +181,32 @@ export function renderNameTable(
 export function renderAllNameTables(nes: NES): NameTableAllFrames {
   const ppu = nes.ppu;
 
-  // 滚动位置: 用 regHT/regVT + fine X/Y，再补上起始 nametable 偏移 (regH/regV)
-  const scrollX = (ppu.regH ? 256 : 0) + (((ppu.regHT & 0x1f) << 3) | (ppu.regFH & 7));
-  const scrollY = (ppu.regV ? 240 : 0) + (((ppu.regVT & 0x1f) << 3) | (ppu.regFV & 7));
+  // 收集本帧所有完整的 $2005 写入对；部分 PPU 实现会在渲染/IO 后把
+  // regHT/VT 等寄存器破坏，导致读到的 scroll 恒为 0，因此优先用写入记录。
+  const scrolls: ScrollState[] = Array.isArray(ppu.scrollWrites)
+    ? ppu.scrollWrites.slice()
+    : [];
+
+  let fromScrollWrite = false;
+  let scrollX: number;
+  let scrollY: number;
+  if (scrolls.length > 0) {
+    // 主视口使用最后一次写入
+    const last = scrolls[scrolls.length - 1];
+    scrollX = last.x;
+    scrollY = last.y;
+    fromScrollWrite = true;
+  } else if (typeof ppu.lastScrollWriteX === 'number' && typeof ppu.lastScrollWriteY === 'number') {
+    scrollX = ppu.lastScrollWriteX;
+    scrollY = ppu.lastScrollWriteY;
+    fromScrollWrite = true;
+  } else {
+    // fallback: 用 regHT/regVT + fine X/Y，再补上起始 nametable 偏移 (regH/regV)
+    scrollX = (ppu.regH ? 256 : 0) + (((ppu.regHT & 0x1f) << 3) | (ppu.regFH & 7));
+    scrollY = (ppu.regV ? 240 : 0) + (((ppu.regVT & 0x1f) << 3) | (ppu.regFV & 7));
+  }
+  const rawScrollX = scrollX;
+  const rawScrollY = scrollY;
 
   // 画滚动线 (FCEUX 用虚线标记)
   const drawScrollLine = (frame: NameTableFrame, sx: number, sy: number) => {
@@ -194,15 +231,17 @@ export function renderAllNameTables(nes: NES): NameTableAllFrames {
     renderNameTable(nes, 3, scrollX, scrollY),
   ];
 
-  // 在正确的 nametable 上画滚动指示线
-  // 参照 FCEUX: 滚动 X/Y 决定当前可见的 nametable
+  // 在正确的 nametable 上画滚动指示线（对每一组 $2005 写入都画）
   const map0 = ppu.ntable1[0]; // 逻辑 NT 0 → 物理 NT
   const map1 = ppu.ntable1[1]; // 逻辑 NT 1 (scrollX>=256 时可见)
 
-  drawScrollLine(ntFrames[map0], scrollX & 255, scrollY & 239);
-  if ((scrollX & 256) !== 0) {
-    // 水平滚动跨过了第一屏
-    drawScrollLine(ntFrames[map1], (scrollX + 256) & 255, scrollY & 239);
+  const draws = scrolls.length > 0 ? scrolls : [{ x: scrollX, y: scrollY, scanline: -1 }];
+  for (const s of draws) {
+    drawScrollLine(ntFrames[map0], s.x & 255, s.y & 239);
+    if ((s.x & 256) !== 0) {
+      // 水平滚动跨过了第一屏
+      drawScrollLine(ntFrames[map1], (s.x + 256) & 255, s.y & 239);
+    }
   }
 
   return {
@@ -210,5 +249,9 @@ export function renderAllNameTables(nes: NES): NameTableAllFrames {
     mapping: [ppu.ntable1[0], ppu.ntable1[1], ppu.ntable1[2], ppu.ntable1[3]],
     scrollX,
     scrollY,
+    rawScrollX,
+    rawScrollY,
+    fromScrollWrite,
+    scrolls,
   };
 }

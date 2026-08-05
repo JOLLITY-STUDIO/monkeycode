@@ -107,6 +107,16 @@ class PPU {
     this.lastRenderedScanline = -1;
     this.curX = 0;
 
+    // Debug: track every complete $2005 scroll write pair during a frame.
+    // Each entry is { scanline, x, y } after the second write. Cleared at
+    // VBlank so NT viewer can visualize split-screen/mid-frame scroll.
+    this.scrollWrites = [];
+    this.scrollWritePending = null;
+
+    // Kept for compatibility with older NT viewer callers.
+    this.lastScrollWriteX = 0;
+    this.lastScrollWriteY = 0;
+
     // Sprite data (unpacked from primary OAM for quick access):
     this.sprX = new Uint8Array(64); // X coordinate
     this.sprY = new Uint8Array(64); // Y coordinate
@@ -300,6 +310,8 @@ class PPU {
   // 0 means VBlank fires at the boundary between steps.
   _fireVblankSet(cpu, dotsRemaining) {
     this.vblankPending = false;
+    // New frame: clear per-frame $2005 write history for NT viewer.
+    this.scrollWrites = [];
     if (!this.nmiSuppressed) {
       this.setStatusFlag(this.STATUS_VBLANK, true);
       this._updateNmiOutput();
@@ -975,10 +987,25 @@ class PPU {
       // First write, horizontal scroll:
       this.regHT = (value >> 3) & 31;
       this.regFH = value & 7;
+      this.scrollWritePending = value; // stash X write, wait for Y write
     } else {
       // Second write, vertical scroll:
       this.regFV = value & 7;
       this.regVT = (value >> 3) & 31;
+      if (this.scrollWritePending !== null) {
+        const baseX = this.f_nTblAddress & 1;
+        const baseY = (this.f_nTblAddress >> 1) & 1;
+        const x = (baseX * 256) + this.scrollWritePending;
+        const y = (baseY * 240) + value;
+        this.lastScrollWriteX = x;
+        this.lastScrollWriteY = y;
+        // Record the full scroll pair for split-screen debugging.
+        // scanline is the NES visible scanline being rendered; in VBlank
+        // (scanline 0..19 in this PPU's internal numbering) we store -1.
+        const scanline = this.scanline >= 21 ? this.scanline - 21 : -1;
+        this.scrollWrites.push({ scanline, x, y });
+        this.scrollWritePending = null;
+      }
     }
     this.firstWrite = !this.firstWrite;
   }
