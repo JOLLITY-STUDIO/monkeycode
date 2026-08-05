@@ -187,36 +187,25 @@ export class DebugPanel {
       }
     }
 
-    // ── 扫描线指示 ──
-    const ppu = nes.ppu;
-    const rawS = ppu.scanline; // PPU 内部: 21-260 = visible
-    const nesLine = rawS - 21;
-    const inVisible = rawS >= 21 && rawS <= 260;
+    // ── 扫描线指示：模拟 PPU 光束扫描效果 ──
+    // ppu.scanline 在 renderFrame 调用时通常处于 VBlank (=0)，
+    // 因此用帧计数器模拟光束从顶到底连续扫描。
+    const nesLine = (this.fpsFrameCount * 2) % 240; // 每 2 秒扫完 240 行
+    const worldY = (scrollY + nesLine) % 480;
 
-    const SCAN_COLOR = 0xff_00ff00; // 荧光绿
-    let drawY: number;
-    let label: string;
-
-    if (inVisible && nesLine >= 0 && nesLine < 240) {
-      drawY = (scrollY + nesLine) % 480;
-      label = `SCAN ${nesLine}`;
-    } else {
-      drawY = 2;
-      label = rawS < 21 ? `VBL ${rawS}` : `POST ${rawS}`;
-    }
-
-    // 3px 粗荧光绿横线
-    for (let dy = -1; dy <= 1; dy++) {
-      const ry = drawY + dy;
+    // 单行细线 + 上下各 1px 半透明，模拟光束拖影
+    const FULL = 0xff_00ff00;
+    const FADE = 0x44_00ff00;
+    for (let dy = -2; dy <= 2; dy++) {
+      const ry = worldY + dy;
       if (ry < 0 || ry >= CH) continue;
+      const color = dy === 0 ? FULL : FADE;
       const rowOff = ry * CW;
-      for (let x = 0; x < CW; x++) buf[rowOff + x] = SCAN_COLOR;
+      for (let x = 0; x < CW; x++) buf[rowOff + x] = color;
     }
 
     this.debugCanvas.blit(buf, CW, CH);
-
-    // 文字标注（2D canvas overlay）
-    this.debugCanvas.drawTextOverlay(label, 8, drawY + 5, 7, '#00ff00');
+    this.debugCanvas.drawTextOverlay(`SCAN ${nesLine}`, 8, worldY + 5, 7, '#00ff00');
 
     this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, CW, CH);
     this._updatePaletteStrips(nes, ['bg']);
