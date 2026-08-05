@@ -12,7 +12,7 @@
  */
 
 import CPUNES from '../src/nes';
-import { NES_PRG_ROM, NES_CHR_ROM } from '../rom-data-tsubasa1/index';
+import { NES_PRG_ROM, NES_CHR_ROM } from '../rom-data/index';
 import { createTsubasaNES } from './index';
 import { tick_BANK31_mainLoop } from './native-game/tsubasa/banks/prg/bank-31-code';
 import { bank02_nmiHandler, bank02_ppuScrollUpdate } from './native-game/tsubasa/banks/prg/bank-02-nmi-code';
@@ -78,7 +78,7 @@ export class GameOrchestrator {
     try {
       this.callbacks.setData({ status: 'loading ROM...' });
 
-      const header = new Uint8Array([0x4E, 0x45, 0x53, 0x1A, 0x08, 0x10, 0x10, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]);
+      const header = new Uint8Array([0x4E, 0x45, 0x53, 0x1A, 0x10, 0x10, 0x40, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01]);
       const prg = new Uint8Array(NES_PRG_ROM);
       const chr = new Uint8Array(NES_CHR_ROM);
       const rom = new Uint8Array(header.length + prg.length + chr.length);

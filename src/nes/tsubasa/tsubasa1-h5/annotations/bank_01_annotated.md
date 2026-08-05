@@ -281,3 +281,58 @@ $DC20 内调链:
 
 *分析日期: 2026-08-05*
 *依据: Trace log + DE_LOG + OPENING_ANIMATION_ANALYSIS + BUG_TRACKER + ASM*
+开场56个精灵在 ASM 中的位置
+1. 精灵构建函数
+bank_01_code.asm ROM 偏移 0x4269 → CPU $8259-$82BE
+
+code
+01:8259: CLC
+01:825A: JSR $C3BA      ← 加载精灵数据指针到 (ram_0000)
+01:825D: LDA #$00
+01:825F: TAY             ← Y=0 (数据索引)
+01:8260: STA ram_0007    ← 精灵槽号=0
+01:8264: LDA #$40
+01:8266: STA ram_0005    ← 基准 X=$40 (64)
+01:826A: LDA #$30
+01:826C: STA ram_0004    ← 基准 Y=$30 (48)
+
+; --- 主循环 ---
+01:826C: LDA (ram_0000),Y ; 读数据字节
+01:826E: AND #$0F         ; 低4位 = 该行精灵个数
+01:8270: BNE $827F         ; 有精灵 → 构建
+01:8272: INY              ; 跳过该行(下一行)
+01:8273-01:827C: Y+=8     ; 下一行坐标
+01:827C: BCC $8268         ; 继续
+
+; --- 构建精灵 ---
+01:8281: LDA (ram_0000),Y ; 同字节高4位 = X偏移
+01:8285: LSR
+01:8287: ADC ram_0004     ; 更新基准X
+01:828E: ASL;ASL           ; 槽号*4→X寄存器
+01:8290: TAX
+01:8296: STA $0204,X      ; 写 OAM Y
+01:829B: STA $0207,X      ; 写 OAM X
+01:829E: LDA (ram_0000),Y ; 读 tile 编号
+01:82A0: STA $0205,X      ; 写 OAM Tile
+01:82A4: LDA (ram_0000),Y ; 读属性
+01:82A6: AND #$C3         ; 保留 flip + palette
+01:82A8: STA $0206,X      ; 写 OAM Attr
+01:82B7: INC ram_0007     ; 下一槽号
+01:82BA: DEC ram_0008     ; 计数器-1
+01:82BC: BNE $828C         ; 该行还有精灵
+2. 精灵数据表
+数据在 bank_07 (fixed bank) — CPU $C3A2-$C420+（ROM 偏移 0x1C3B2），格式为 nibble 压缩编码：
+
+code
+格式: [count|Xoff] [tile] [attr] ...
+       byte[0]     byte[1] byte[2]
+       bit3-0=数量  bit7-4=X偏移
+没有直接的 4 字节 OAM 静态表 —— 所有精灵坐标由基准值 (Y=0x30, X=0x40) + 数据表中的偏移量动态计算得出。
+
+3. DMA 触发
+bank_00_code.asm ROM 偏移 0x00F2 → CPU $80F2:
+
+asm
+LDA #$00 → STA $2003   ; OAMADDR=0
+LDA #$02 → STA $4014   ; DMA $0200→OAM（256字节）
+这与标准 NES 做法完全一致。

@@ -15,6 +15,11 @@ class Mapper1 extends Mapper0 {
   romSelectionReg1: number;
   romBankSelect: number;
 
+  /** 當前映射到 PPU $0000-$0FFF 的 4KB CHR bank 編號 */
+  chrBank4k_0000: number = 0;
+  /** 當前映射到 PPU $1000-$1FFF 的 4KB CHR bank 編號 */
+  chrBank4k_1000: number = 1;
+
   constructor(nes: any) {
     super(nes);
 
@@ -85,24 +90,19 @@ class Mapper1 extends Mapper0 {
         this.romSelectionReg0 = (value >> 4) & 1;
 
         if (this.nes.rom.vromCount > 0) {
+          const vromCount = this.nes.rom.vromCount;
+          const baseBank = this.romSelectionReg0 === 0 ? 0 : Math.floor(vromCount / 2);
+          const bank = baseBank + (value & 0xf);
+
           if (this.vromSwitchingSize === 0) {
-            if (this.romSelectionReg0 === 0) {
-              this.load8kVromBank(value & 0xf, 0x0000);
-            } else {
-              this.load8kVromBank(
-                Math.floor(this.nes.rom.vromCount / 2) + (value & 0xf),
-                0x0000,
-              );
-            }
+            // 8KB 模式: Reg1 同時控制 $0000 和 $1000 (連續兩個 4KB bank)
+            this.load8kVromBank(bank, 0x0000);
+            this.chrBank4k_0000 = bank % vromCount;
+            this.chrBank4k_1000 = (bank + 1) % vromCount;
           } else {
-            if (this.romSelectionReg0 === 0) {
-              this.loadVromBank(value & 0xf, 0x0000);
-            } else {
-              this.loadVromBank(
-                Math.floor(this.nes.rom.vromCount / 2) + (value & 0xf),
-                0x0000,
-              );
-            }
+            // 4KB 模式: Reg1 只控制 $0000
+            this.loadVromBank(bank, 0x0000);
+            this.chrBank4k_0000 = bank % vromCount;
           }
         }
 
@@ -113,14 +113,13 @@ class Mapper1 extends Mapper0 {
 
         if (this.nes.rom.vromCount > 0) {
           if (this.vromSwitchingSize === 1) {
-            if (this.romSelectionReg1 === 0) {
-              this.loadVromBank(value & 0xf, 0x1000);
-            } else {
-              this.loadVromBank(
-                Math.floor(this.nes.rom.vromCount / 2) + (value & 0xf),
-                0x1000,
-              );
-            }
+            const vromCount = this.nes.rom.vromCount;
+            const baseBank = this.romSelectionReg1 === 0 ? 0 : Math.floor(vromCount / 2);
+            const bank = baseBank + (value & 0xf);
+
+            // 4KB 模式: Reg2 控制 $1000
+            this.loadVromBank(bank, 0x1000);
+            this.chrBank4k_1000 = bank % vromCount;
           }
         }
         break;
@@ -207,6 +206,8 @@ class Mapper1 extends Mapper0 {
     s.romBankSelect = this.romBankSelect;
     s.regBuffer = this.regBuffer;
     s.regBufferCounter = this.regBufferCounter;
+    s.chrBank4k_0000 = this.chrBank4k_0000;
+    s.chrBank4k_1000 = this.chrBank4k_1000;
     return s;
   }
 
@@ -222,6 +223,8 @@ class Mapper1 extends Mapper0 {
     this.romBankSelect = s.romBankSelect;
     this.regBuffer = s.regBuffer;
     this.regBufferCounter = s.regBufferCounter;
+    this.chrBank4k_0000 = s.chrBank4k_0000 ?? 0;
+    this.chrBank4k_1000 = s.chrBank4k_1000 ?? 1;
   }
 }
 

@@ -1,59 +1,50 @@
-<!-- 游戏页面 - 全屏 Canvas -->
-<view class="game-container">
-  <canvas
-    type="2d"
-    id="game-canvas"
-    class="game-canvas"
-    bindtouchstart="onTouchStart"
-    bindtouchend="onTouchEnd"
-    bindtouchmove="onTouchMove"
-  ></canvas>
-
-  <!-- 调试菜单按钮 (左上角) -->
-  <view class="debug-menu-btn" bindtap="onDebugMenuToggle">
-    <text>⚙</text>
+<!-- 天使之翼1 — 游戏主页面 -->
+<view class="game-page">
+  <!-- NES游戏画布 256x240 原始分辨率 -->
+  <view class="canvas-wrapper">
+    <canvas 
+      type="2d" 
+      id="game-canvas" 
+      class="game-canvas"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+    ></canvas>
   </view>
-
-  <!-- 调试导航菜单 -->
-  <view class="debug-menu {{showDebugMenu?'show':''}}">
-    <text class="debug-menu-title">调试页面</text>
-    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="chr-all">🎨 CHR All</view>
-    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="pattern-table-all">📊 Pattern Table</view>
-    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="nametable-all">🗺 Nametable</view>
-    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="sprite-all">👾 Sprite All</view>
-    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="palette-all">🎨 Palette All</view>
-    <view class="debug-menu-item" bindtap="onNavToDebug" data-page="audiopage">🔊 Audio All</view>
-  </view>
-
-  <!-- 状态信息栏 -->
-  <view class="info-bar">
-    <text class="fps-text">{{fpsText}}</text>
-    <view class="auto-btn {{autoPlay?'auto-active':''}}" bindtap="onAutoToggle">
-      {{autoPlay?'🤖 AUTO ON':'AUTO'}}
-    </view>
-  </view>
-
-  <!-- 自动播放日志 -->
-  <view class="auto-log" wx:if="{{autoPlayLog}}">
-    <text>{{autoPlayLog}}</text>
-  </view>
-
-  <!-- 虚拟手柄 -->
-  <view class="controls">
-    <!-- 方向键 -->
-    <view class="dpad">
-      <view class="btn dpad-up"    bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="UP">▲</view>
-      <view class="btn dpad-left"  bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="LEFT">◀</view>
-      <view class="btn dpad-right" bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="RIGHT">▶</view>
-      <view class="btn dpad-down"  bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="DOWN">▼</view>
+  
+  <!-- 控制面板 (画布下方) -->
+  <view class="control-panel">
+    <!-- 实时数据面板 -->
+    <view class="debug-panel" wx:if="{{showDebug}}">
+      <view class="debug-text">
+        <text>帧: {{debugInfo.frame}}</text>
+        <text>状态: {{debugInfo.gameStateName}}</text>
+        <text>比分: {{debugInfo.scoreA}} - {{debugInfo.scoreB}}</text>
+        <text>阶段: {{debugInfo.matchPhase}}</text>
+        <text>FPS: {{fps}}</text>
+      </view>
     </view>
 
-    <!-- 功能键 -->
-    <view class="action-btns">
-      <view class="btn btn-a"     bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="A">A</view>
-      <view class="btn btn-b"     bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="B">B</view>
-      <view class="btn btn-start" bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="START">▶</view>
-      <view class="btn btn-select" bindtouchstart="onBtnDown" bindtouchend="onBtnUp" data-btn="SELECT">●</view>
+    <!-- AI模式指示器 -->
+    <view class="ai-indicator" wx:if="{{aiMode}}">
+      <text>🤖 AI自动模式</text>
+    </view>
+
+    <!-- 按钮区 -->
+    <view class="btn-row">
+      <button class="ctrl-btn" size="mini" bind:tap="toggleDebug">📊 数据</button>
+      <button class="ctrl-btn" size="mini" bind:tap="toggleAi">AI</button>
+    </view>
+    
+    <!-- 数据查看器链接 -->
+    <view class="debug-links" wx:if="{{showDebug}}">
+      <navigator url="/pages/database/render-viewer/render-viewer" class="debug-link">🎬 渲染管线</navigator>
+      <navigator url="/pages/database/nametable-all/nametable-all" class="debug-link">🗺️ NT表</navigator>
+      <navigator url="/pages/database/sprite-all/sprite-all" class="debug-link">👻 精灵</navigator>
+      <navigator url="/pages/database/palette-all/palette-all" class="debug-link">🎨 调色板</navigator>
+      <navigator url="/pages/database/chr-all/chr-all" class="debug-link">🖼️ CHR</navigator>
+      <navigator url="/pages/database/pattern-table-all/pattern-table-all" class="debug-link">📊 图案表</navigator>
+      <navigator url="/pages/database/data-api/data-api" class="debug-link">📋 数据API</navigator>
     </view>
   </view>
 </view>

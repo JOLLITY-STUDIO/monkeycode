@@ -1,0 +1,29 @@
+<!-- 精灵定义数据库查看器 — ROM静态数据 -->
+<view class="container">
+  <view class="toolbar">
+    <view class="title">🎯 精灵定义数据库 (ROM静态元精灵)</view>
+    <view class="subtitle">{{dbStatus}}</view>
+  </view>
+
+  <view class="stats-bar">
+    <text>共 {{totalCount}} 个定义 | 已提取: {{loadedCount}} | 来源: Bank 3/4 球员精灵数据</text>
+  </view>
+
+  <scroll-view class="content" scroll-y>
+    <view class="sprite-grid">
+      <view 
+        class="sprite-card {{item.loaded ? 'loaded' : 'pending'}}"
+        wx:for="{{definitions}}" wx:key="id"
+        data-index="{{index}}"
+        bindtap="onSpriteTap"
+      >
+        <canvas type="2d" id="spr-def-{{index}}" class="spr-canvas"></canvas>
+        <view class="spr-info">
+          <text class="spr-name">{{item.name}}</text>
+          <text class="spr-meta">Bank {{item.bankId}} | {{item.tileCount}} tiles</text>
+          <text class="spr-status {{item.loaded ? 'loaded' : 'pending'}}">{{item.loaded ? '✅ 已提取' : '🔲 待提取'}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

@@ -90,6 +90,9 @@ export function generateNTDataText(nes: any, frameCount?: number): string {
     lines.push('');
   }
 
+  // ── BG Palette ──
+  lines.push(_formatPaletteBlock(ppu, 'bg'));
+
   return lines.join('\n');
 }
 
@@ -220,6 +223,11 @@ export function generateSPOAMDataText(nes: any): string {
     lines.push('── JSON 结构化输出（可直接复制使用）──');
     lines.push(JSON.stringify(visibleSprites, null, 1));
   }
+
+  // ── SPR Palette ──
+  lines.push('');
+  lines.push(_formatPaletteBlock(ppu, 'spr'));
+
   return lines.join('\n');
 }
 
@@ -288,5 +296,29 @@ export function generateSPTDataText(nes: any): string {
     lines.push('');
   }
 
+  return lines.join('\n');
+}
+
+/** 格式化调色板数据块（紧凑版，供 NT/SPR 文本内嵌使用） */
+function _formatPaletteBlock(ppu: any, type: 'bg' | 'spr'): string {
+  const vramBase = type === 'bg' ? 0x3F00 : 0x3F10;
+  const palSrc: Uint32Array = type === 'bg' ? ppu.imgPalette : ppu.sprPalette;
+  const lines: string[] = [];
+
+  lines.push(`── ${type.toUpperCase()} Palette (VRAM $${vramBase.toString(16).toUpperCase().padStart(4, '0')}-$${(vramBase + 15).toString(16).toUpperCase().padStart(4, '0')}) ──`);
+  for (let grp = 0; grp < 4; grp++) {
+    const row: string[] = [];
+    for (let i = 0; i < 4; i++) {
+      const slot = grp * 4 + i;
+      const addr = (vramBase + slot).toString(16).toUpperCase().padStart(4, '0');
+      const rawIdx = ppu.vramMem[vramBase + slot] & 0x3F;
+      const color = palSrc[slot];
+      const r = (color >>> 16) & 0xFF;
+      const g = (color >>> 8) & 0xFF;
+      const b = color & 0xFF;
+      row.push(`[$${addr}]0x${rawIdx.toString(16).toUpperCase().padStart(2, '0')} #${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`);
+    }
+    lines.push(`  Group ${grp}:  ${row.join('  ')}`);
+  }
   return lines.join('\n');
 }

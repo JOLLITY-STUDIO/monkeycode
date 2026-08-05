@@ -1,296 +1,528 @@
-# 架构设计文档 - 天使之翼 微信小程序
+# 天使之翼1 H5 — 架构设计文档
 
-> 版本: 1.2 | 日期: 2026-08-04
+> **版本**: v1.1.0 | **日期**: 2026-08-06  
+> **目标**: 将NES版天使之翼1完整转写为纯TypeScript+Canvas游戏  
+> **主平台**: 微信小程序 (WeChat Mini Program)  
+> **副平台**: HTML5浏览器 (开发调试 & 独立部署)
 
 ---
 
-## 1. 总体设计原则
+## 1. 设计原则
 
 | 原则 | 说明 |
 |------|------|
-| **非模拟器** | 直接重写游戏逻辑，不模拟6502 CPU |
-| **纯TS+Canvas** | 不依赖DOM，微信小程序原生Canvas API |
-| **即插即用** | `new Tsubasa(platform, ctx).start()` 即可运行 |
-| **结构化数据** | 所有数据以声明式结构化形式呈现 |
-| **OOP设计** | 面向对象+接口访问 |
-| **前后端分离 (v0.9.0)** | logic/model 层与 data/view 层完全解耦 |
+| **非模拟器** | 不使用CPU模拟，直接用TS重写所有游戏逻辑 |
+| **前后端分离** | 游戏逻辑(Model/Controller) 与 渲染(View/Canvas) 完全解耦 |
+| **数据驱动** | 所有ROM数据提取为结构化TS数据，零二进制硬编码 |
+| **即插即用** | 对外仅暴露 `new Tsubasa(ctx).start()` 接口 |
+| **可调试** | 内置调试面板查看所有内部数据状态 |
+| **双平台** | 微信小程序为主，HTML5浏览器为开发调试/独立部署 |
 
-### 1.1 前后端分离架构 (v0.9.0)
+## 1.1 双平台策略
 
 ```
-┌──────────────────────────────────────────────────┐
-│  LOGIC & MODEL (后端)                             │
-│                                                    │
-│  GameLoop (驱动) → State.onUpdate() (控制器)      │
-│                          ↓                         │
-│                    GameModel (数据模型=数据库)      │
-│                                                    │
-│  ❌ 零 Canvas 代码                                 │
-│  ❌ 零 VRAM 操作                                   │
-│  ✅ 纯 TypeScript 逻辑                             │
-│  ✅ 可无头(headless)测试                          │
-└──────────────────┬───────────────────────────────┘
-                   │ 读取 GameModel
-                   ↓
-┌──────────────────────────────────────────────────┐
-│  DATA & VIEW (前端)                               │
-│                                                    │
-│  SceneComposer (模板引擎)                          │
-│    GameModel → VRAM writeVram() + OAM setSprite() │
-│                                                    │
-│  Renderer (GPU渲染器)                              │
-│    VRAM + OAM → Canvas 2D API 绘制                │
-│                                                    │
-│  ❌ 零游戏逻辑代码                                 │
-│  ❌ 不修改 Model                                   │
-│  ✅ 可替换为 WebGL/WebGPU 等后端实现               │
-└──────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│                   game/ 目录 (共享)                    │
+│  core/ engine/ data/ render/ game/ assets/           │
+│  纯 TS 逻辑，不依赖任何平台 API                         │
+└──────────────┬──────────────────┬───────────────────┘
+               │                  │
+     ┌─────────▼────────┐  ┌─────▼──────────────┐
+     │  微信小程序 (主)    │  │  HTML5 浏览器 (副)   │
+     │  pages/game/      │  │  src/index.html    │
+     │  pages/debug/     │  │  独立 HTTP 服务      │
+     │  app.ts/json/wxss │  │  Node.js serve      │
+     │  微信 Canvas API   │  │  浏览器 Canvas API   │
+     └──────────────────┘  └────────────────────┘
 ```
 
-### 1.2 帧循环四阶段 (v0.9.0)
-
-每帧按以下顺序执行：
-
-| 阶段 | 组件 | 职责 | NES 对应 |
-|------|------|------|----------|
-| 1. PPU填充 | `PpuDataFiller` | OAM DMA → VRAM队列 → 输入 → 帧计数 | NMI/VBlank |
-| 2. 游戏逻辑 | `StateMachine` | 状态更新 → AI → **写入 GameModel** | CPU主循环 |
-| 3. 场景构建 | `SceneComposer` | **GameModel → VRAM + OAM** | (新增) |
-| 4. Canvas渲染 | `Renderer` | VRAM + OAM → Canvas 绘制 | PPU渲染 |
+- **微信小程序** (主): 最终产物，发布到微信生态
+- **HTML5 浏览器** (副): 开发阶段快速迭代调试；也可独立部署为 Web 版本
 
 ---
 
-## 2. 项目目录结构
+## 2. 项目文件结构
 
 ```
 tsubasa1-h5/
-├── ROM_STRUCTURE_REPORT.md      # ROM结构分析 (阶段1)
-├── ARCHITECTURE.md              # 本文件 (阶段2)
-├── BUG_TRACKER.md               # Bug跟踪记录
-├── DEV_LOG.md                   # 开发日志
-├── WBS_TASKS.md                 # 项目任务跟踪
-├── package.json
-├── tsconfig.json
-├── app.ts                       # 微信小程序入口
-├── app.json                     # 小程序配置
-├── app.wxss                     # 全局样式
-├── sitemap.json
-├── project.config.json          # 开发者工具配置
-├── public/
-│   └── sprites/                 # CHR转换的PNG精灵表
-│       ├── chr_bank_00.png ~ chr_bank_0F.png
-│       └── chr_mega.png
+├── app.ts                          # 微信小程序入口
+├── app.json                        # 小程序配置
+├── app.wxss                        # 全局样式
+├── project.config.json             # 项目配置
+│
 ├── pages/
-│   └── game/
-│       ├── game.ts              # 游戏页面逻辑
-│       ├── game.json            # 页面配置
-│       ├── game.wxml            # 页面模板 (Canvas + 虚拟手柄)
-│       └── game.wxss            # 页面样式
-└── src/
-    ├── core/
-    │   ├── Tsubasa.ts           # 主游戏类 (对外接口, 依赖IPlatform)
-    │   ├── GameLoop.ts           # 游戏主循环 (四阶段帧)
-    │   ├── Constants.ts          # 全局常量/枚举
-    │   └── types.ts              # 类型定义
-    ├── model/                    # (v0.9.0) 数据模型层 (纯数据)
-    │   └── GameModel.ts          # 游戏状态模型 (Menu/Match/Event等)
-    ├── view/                     # (v0.9.0) 视图层 (Model→Canvas)
-    │   └── SceneComposer.ts      # 场景构建器 (Model→VRAM+OAM)
-    ├── platform/                 # 平台抽象层
-    │   ├── IPlatform.ts          # 平台接口定义 (Canvas/Image/RAF)
-    │   └── miniprogram/
-    │       └── MpPlatform.ts     # 微信小程序平台实现
-    ├── cache/
-    │   ├── DataCache.ts          # 数据缓存中心 (RAM模拟)
-    │   ├── OamCache.ts           # OAM精灵缓存
-    │   ├── PpuQueue.ts           # PPU写入队列
-    │   └── BankManager.ts        # Bank切换管理
-    ├── input/
-    │   └── InputManager.ts       # 输入管理
-    ├── audio/                     # 🆕 音频模块
-    │   ├── ApuSimulator.ts        # APU模拟器 (Web Audio API)
-    │   ├── AudioEngine.ts         # 音乐/音效引擎 (Bank 1 移植)
-    │   └── MusicData.ts           # 音乐序列数据 (ROM提取)
-    ├── renderer/
-    │   └── Renderer.ts           # 渲染器 (VRAM+OAM→Canvas)
-    ├── engine/                   # 游戏引擎 (纯逻辑)
-    │   ├── StateMachine.ts       # 状态机/状态分发器
-    │   ├── NmiHandler.ts          # NMI处理逻辑 (PpuDataFiller)
-    │   ├── Bank1Dispatcher.ts     # Bank 1 子状态调度
-    │   ├── MatchEngine.ts         # 比赛引擎 (球员/球/AI)
-    │   └── states/               # 各游戏状态 (State00-05, 纯逻辑)
-    │       ├── StateBase.ts
-    │       └── State00~05_*.ts
-    ├── data/
-    │   ├── PlayerData.ts         # 球员/球队数据
-    │   └── RomData.ts            # ROM 结构化数据占位
-    └── utils/
-        ├── BitUtils.ts           # 位操作工具
-        └── RngGenerator.ts       # 随机数生成器
+│   ├── game/                       # 主游戏页面
+│   │   ├── game.ts                 # 页面逻辑
+│   │   ├── game.wxml               # 页面模板
+│   │   └── game.wxss               # 页面样式
+│   │
+│   └── debug/                      # 调试页面集
+│       ├── chr-all/                # CHR图库浏览
+│       ├── pattern-table-all/      # Pattern Table
+│       ├── nametable-all/          # Nametable查看
+│       ├── sprite-all/             # 精灵浏览
+│       ├── palette-all/            # 调色板浏览
+│       ├── audio-all/              # 音频资源
+│       └── data-api/               # 数据API调试(Swagger风格)
+│
+├── src/
+│   ├── core/                       # 游戏内核
+│   │   ├── Tsubasa.ts              # 主入口类 (对外暴露)
+│   │   ├── GameLoop.ts             # 主循环 (原$81EE)
+│   │   ├── StateMachine.ts         # 状态机 (原$81F7)
+│   │   ├── NmiHandler.ts           # NMI处理 (原$80E0)
+│   │   └── BankDispatcher.ts       # Bank调度器 (原$84D2)
+│   │
+│   ├── engine/                     # 引擎子系统
+│   │   ├── PpuEngine.ts            # PPU渲染引擎
+│   │   ├── PpuQueue.ts             # PPU更新队列 (原$812F)
+│   │   ├── InputManager.ts         # 手柄输入 (原$81B9)
+│   │   ├── AudioEngine.ts          # 音频引擎
+│   │   └── MathUtils.ts            # 数学工具 (乘除法)
+│   │
+│   ├── game/                       # 游戏逻辑层
+│   │   ├── opening/                # 开场动画 (原Bank 1)
+│   │   │   ├── OpeningScene.ts     # 开场调度器
+│   │   │   ├── StoryboardEngine.ts # 故事板引擎 (原$DC20)
+│   │   │   └── RleDecoder.ts       # RLE解码器
+│   │   │
+│   │   ├── menu/                   # 菜单系统 (原Bank 6)
+│   │   │   ├── MenuScene.ts        # 菜单选择
+│   │   │   ├── ResultScene.ts      # 结果画面
+│   │   │   └── EventScene.ts       # 进球/半场事件
+│   │   │
+│   │   ├── match/                  # 比赛系统 (原Bank 4)
+│   │   │   ├── MatchEngine.ts      # 比赛主引擎
+│   │   │   ├── MatchInit.ts        # 比赛初始化
+│   │   │   ├── AiController.ts     # AI控制器
+│   │   │   ├── PhysicsEngine.ts    # 物理引擎
+│   │   │   └── SpecialMove.ts      # 必杀技系统
+│   │   │
+│   │   └── title/                  # 标题画面 (原Bank 5)
+│   │       └── TitleScene.ts
+│   │
+│   ├── data/                       # 数据层
+│   │   ├── DataStore.ts            # Key-Value数据中心 (替代内存)
+│   │   ├── tables/                 # 结构化数据表
+│   │   │   ├── PlayerTable.ts      # 球员数据
+│   │   │   ├── TeamTable.ts        # 球队数据
+│   │   │   ├── EventScriptTable.ts # 事件脚本
+│   │   │   ├── TextTable.ts        # 文本数据
+│   │   │   └── MatchDataTable.ts   # 比赛配置
+│   │   └── raw/                    # 原始ROM数据(声明式)
+│   │       ├── bank_00_data.ts
+│   │       ├── bank_01_data.ts
+│   │       └── ...
+│   │
+│   ├── render/                     # 渲染层
+│   │   ├── Renderer.ts             # Canvas渲染器
+│   │   ├── TileRenderer.ts         # Tile渲染
+│   │   ├── SpriteRenderer.ts       # 精灵渲染
+│   │   ├── NametableRenderer.ts    # Nametable渲染
+│   │   └── PaletteManager.ts       # 调色板管理
+│   │
+│   └── assets/                     # 静态资源
+│       ├── chr/                    # CHR导出的PNG图集
+│       │   ├── chr_bank_00.png
+│       │   ├── chr_bank_01.png
+│       │   └── ...
+│       └── fonts/                  # 字体tile
+│
+├── scripts/                        # 工具脚本
+│   ├── extract_chr.ts              # CHR→PNG导出
+│   ├── generate_data.ts            # ROM数据→TS生成
+│   └── auto_test.ts                # 自动化测试脚本
+│
+├── test/                           # 测试
+│   ├── unit/                       # 单元测试
+│   └── integration/                # 集成测试
+│
+└── temp/                           # 临时产物
 ```
 
 ---
 
-## 3. 核心类设计
+## 3. 核心架构 — MVC分层
 
-### 3.1 Tsubasa (主游戏类)
+```
+┌─────────────────────────────────────────────────────────┐
+│                     VIEW (Canvas渲染)                     │
+│  pages/game/game.ts  ←→  Renderer.ts, SpriteRenderer.ts  │
+│  用户只看到Canvas画面，通过触摸/键盘操作                   │
+└──────────────────────┬──────────────────────────────────┘
+                       │ 操作事件
+                       ▼
+┌─────────────────────────────────────────────────────────┐
+│                 CONTROLLER (业务调度)                     │
+│  Tsubasa.ts → GameLoop.ts → StateMachine.ts              │
+│  BankDispatcher.ts (原$84D2) 协调各Bank逻辑              │
+└──────────────────────┬──────────────────────────────────┘
+                       │ 读/写
+                       ▼
+┌─────────────────────────────────────────────────────────┐
+│                    MODEL (数据+逻辑)                       │
+│  ┌──────────────┐  ┌──────────────────────────────────┐ │
+│  │  DataStore   │  │  游戏逻辑模块                      │ │
+│  │  (KV缓存)    │  │  opening/ menu/ match/ title/     │ │
+│  │  内存映射    │  │  (原各Bank的code逻辑)              │ │
+│  └──────────────┘  └──────────────────────────────────┘ │
+│  ┌──────────────────────────────────────────────────┐   │
+│  │  结构化数据表 (PlayerTable, TeamTable, ...)       │   │
+│  │  → 从 raw/ 原始ROM数据构建                        │   │
+│  └──────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 4. 数据中心 (DataStore) 设计
+
+替代原来6502的RAM/OAM/VRAM，使用类似Redis的Key-Value结构:
 
 ```typescript
+class DataStore {
+  // ====== 系统区 (原 $0000-$03FF) ======
+  // 零页指针
+  ptr00: number = 0;     // ram_0000
+  ptr01: number = 0;     // ram_0001
+  
+  // PPU寄存器镜像
+  scrollX: number = 0;   // $0016
+  scrollY: number = 0;   // $0017
+  ppuMask: number = 0;   // $0018
+  ppuCtrl: number = 0;   // $0019
+  
+  // 系统变量
+  bankLock: number = 0;  // $0093
+  frameCounter: number = 0;  // $0300
+  joy1Cur: number = 0;   // $0301
+  joy2Cur: number = 0;   // $0302
+  joy1Prev: number = 0;  // $0303
+  joy2Prev: number = 0;  // $0304
+  ppuQueueCount: number = 0; // $0305
+  
+  // OAM (256B)
+  oam: Uint8Array = new Uint8Array(256);
+  
+  // PPU队列 (原 $0306-$0338)
+  ppuQueue: number[] = [];
+  
+  // VRAM缓冲区 (原 $0339-$03FF)
+  vramBuffer: number[] = [];
+  
+  // ====== 游戏状态区 ======
+  gameState: number = 0;    // $03CA (0-7)
+  subState: number = 0;     // $03CB
+  
+  // ====== 比赛区 (原 $0400-$05FF) ======
+  scoreA: number = 0;       // $05E0
+  scoreB: number = 0;       // $05E1
+  matchFlags: number = 0;   // $05EF
+  matchPhase: number = 0;   // $064F
+  
+  // ====== Bank 6 工作区 (原 $0680-$07FF) ======
+  rankData: number[] = [];  // $06FF-$0716 (4×6)
+  
+  // ====== VRAM (Nametables) ======
+  nametable0: Uint8Array = new Uint8Array(960);  // 32×30 tiles
+  nametable1: Uint8Array = new Uint8Array(960);
+  nametable2: Uint8Array = new Uint8Array(960);
+  nametable3: Uint8Array = new Uint8Array(960);
+  
+  // ====== 通用KV存储 (原$04-$FF零页变量) ======
+  private _zp: Map<string, number> = new Map();
+  
+  getZP(key: string): number { return this._zp.get(key) ?? 0; }
+  setZP(key: string, val: number): void { this._zp.set(key, val); }
+}
+```
+
+---
+
+## 5. Tsubasa 主入口API
+
+```typescript
+/**
+ * 天使之翼1 游戏主入口
+ * 用法: const game = new Tsubasa(canvasContext); game.start();
+ */
 class Tsubasa {
-  constructor(ctx: CanvasRenderingContext2D);
-  start(): void;           // 开始游戏
-  pause(): void;           // 暂停
-  resume(): void;          // 恢复
-  handleInput(input: GameInput): void;  // 输入处理
-  getFrameCount(): number; // 获取帧数
+  private ctx: CanvasRenderingContext2D;
+  private dataStore: DataStore;
+  private gameLoop: GameLoop;
+  private renderer: Renderer;
+  private inputManager: InputManager;
+  private audioEngine: AudioEngine;
+  
+  // AI挂机模式
+  private aiMode: boolean = false;
+  private aiController: AiAutoPlay;
+  
+  constructor(ctx: CanvasRenderingContext2D, options?: TsubasaOptions) {
+    this.ctx = ctx;
+    this.dataStore = new DataStore();
+    this.renderer = new Renderer(ctx, this.dataStore);
+    this.inputManager = new InputManager(this.dataStore);
+    this.audioEngine = new AudioEngine(this.dataStore);
+    this.gameLoop = new GameLoop(this.dataStore, this.renderer, this.inputManager, this.audioEngine);
+    
+    if (options?.aiMode) {
+      this.aiController = new AiAutoPlay(this.dataStore, this.inputManager);
+    }
+  }
+  
+  /** 启动游戏 */
+  start(): void {
+    this.gameLoop.reset();    // 等价于 RESET 流程
+    this.gameLoop.start();    // 等价于 JMP $81EE
+  }
+  
+  /** 暂停/恢复 */
+  pause(): void { this.gameLoop.pause(); }
+  resume(): void { this.gameLoop.resume(); }
+  
+  /** 设置按键 (外部输入) */
+  setButton(player: 1 | 2, buttons: number): void {
+    this.inputManager.setButton(player, buttons);
+  }
+  
+  /** 获取调试信息 */
+  getDebugInfo(): DebugInfo { return this.dataStore.getDebugSnapshot(); }
 }
 ```
 
-### 3.2 DataCache (数据缓存中心)
+---
 
-替代6502 RAM，采用key-value存储：
+## 6. GameLoop 主循环设计
 
 ```typescript
-class DataCache {
-  // 零页变量 (0x00-0xFF)
-  getZP(addr: number): number;
-  setZP(addr: number, value: number): void;
+class GameLoop {
+  private running: boolean = false;
+  private animFrameId: number = 0;
   
-  // 通用RAM (0x0200-0x07FF)
-  read(addr: number): number;
-  write(addr: number, value: number): void;
+  /** 帧循环 (对应原 $81EE-$81F6) */
+  private frame(): void {
+    if (!this.running) return;
+    
+    // ====== 等价于 NMI ======
+    this.nmiHandler.process();   // $80E0: OAM DMA, PPU队列, 输入, 随机数
+    
+    // ====== 等价于 JSR $81F7 ======
+    this.stateMachine.dispatch(); // 根据 gameState 分发
+    
+    // ====== 渲染 ======
+    this.renderer.render();       // Canvas绘制
+    
+    // ====== 音频 ======
+    this.audioEngine.tick();
+    
+    // ====== 下一帧 ======
+    this.animFrameId = requestAnimationFrame(() => this.frame());
+  }
   
-  // 高级结构化访问
-  get<T>(key: string): T;
-  set<T>(key: string, value: T): void;
+  start(): void {
+    this.running = true;
+    this.animFrameId = requestAnimationFrame(() => this.frame());
+  }
 }
 ```
 
-### 3.3 StateMachine (状态机)
+---
+
+## 7. StateMachine 状态机
 
 ```typescript
+/** 游戏状态枚举 */
+enum GameState {
+  OPENING = 0,   // 开场动画
+  TITLE = 1,     // 标题画面
+  MENU = 2,      // 菜单选择
+  MATCH_INIT = 3,// 比赛初始化
+  MATCH_LOOP = 4,// 比赛主循环
+  TRANSITION = 5,// 状态转换
+  EVENT = 6,     // 进球/半场事件
+  RESULT = 7,    // 比赛结果
+}
+
+/** 状态分发 (原 $81F7-$8263) */
 class StateMachine {
-  currentState: GameState;
-  registerState(id: number, state: IGameState): void;
-  transitionTo(stateId: number): void;
-  update(): void;
-}
-
-interface IGameState {
-  onEnter(): void;
-  onUpdate(): void;
-  onExit(): void;
+  private handlers: Map<GameState, () => void>;
+  
+  constructor() {
+    this.handlers = new Map([
+      [GameState.OPENING,    () => this.bankDispatcher.call(0x10)], // Bank 1, Sub 0
+      [GameState.TITLE,      () => this.bankDispatcher.call(0x5D)], // Bank 5, Sub D
+      [GameState.MENU,       () => this.bankDispatcher.call(0x60)], // Bank 6, Sub 0
+      [GameState.MATCH_INIT, () => this.matchInit.execute()],
+      [GameState.MATCH_LOOP, () => this.matchEngine.execute()],
+      [GameState.TRANSITION, () => this.transitionManager.execute()],
+      [GameState.EVENT,      () => this.bankDispatcher.call(0x63)], // Bank 6, Sub 3
+      [GameState.RESULT,     () => this.bankDispatcher.call(0x61)], // Bank 6, Sub 1
+    ]);
+  }
+  
+  dispatch(): void {
+    const state = this.dataStore.gameState;
+    const handler = this.handlers.get(state);
+    handler?.();
+  }
 }
 ```
 
-### 3.4 InputManager (输入管理)
+---
+
+## 8. MMC1 Bank调度模拟
 
 ```typescript
-class InputManager {
-  // 模拟 $4016/$4017 读取
-  readController(port: number): number;
-  // 高层按钮状态
-  isPressed(button: Button): boolean;
-  isHeld(button: Button): boolean;
+/**
+ * Bank调度器 (原 $84D2)
+ * 参数A编码: bit7-4=Bank编号, bit3-0=Sub编号
+ */
+class BankDispatcher {
+  private banks: Map<number, BankModule> = new Map();
+  private currentBank: number = 0;
+  
+  /** 调度到指定Bank的Sub (原 JSR $84D2) */
+  call(param: number): void {
+    const bankId = (param >> 4) & 0x0F;   // Bank编号 (bit7-4)
+    const subId = param & 0x0F;            // Sub编号 (bit3-0)
+    
+    // 如果Bank变了，先切换
+    if (bankId !== this.currentBank) {
+      this.switchBank(bankId);
+    }
+    
+    // 调用对应Sub
+    const bank = this.banks.get(bankId);
+    bank?.callSub(subId);
+  }
+  
+  private switchBank(bankId: number): void {
+    // 模拟MMC1 Bank切换
+    this.currentBank = bankId;
+    // 实际上在TS中，这只是改变函数调用目标
+  }
 }
 ```
 
 ---
 
-## 4. 数据流设计
+## 9. PPU渲染管线
 
 ```
-外部输入 → InputManager ──→ StateMachine (状态更新)
-                                ↓
-                            Game Logic (比赛/AI/脚本)
-                                ↓
-                            DataCache (状态读写)
-                       ┌────────┤
-                       ↓        ↓
-                   Renderer   AudioEngine 🆕
-                   (绘制)     (Web Audio API)
-                       ↓        ↓
-外部Canvas ←── ctx.drawImage   扬声器 🔊
+原始NES PPU管线                    →    TypeScript Canvas管线
+═══════════════                        ═══════════════════
+Pattern Table (CHR ROM 8KB)     →    PNG图集 (chr_bank_XX.png)
+Nametable (VRAM 2KB)            →    NametableRenderer
+OAM (256B精灵属性)               →    SpriteRenderer
+Palette RAM (32B)               →    PaletteManager (RGBA数组)
+$2006/$2007 写入                 →    TileRenderer.drawTile()
+
+渲染流程 (每帧):
+1. 读取 Nametable + Attribute Table
+2. 解码每个Tile: Pattern Table索引 + 调色板 → RGBA像素
+3. 读取 OAM → 精灵像素叠加
+4. 输出到 Canvas (256×240 → 缩放到Canvas尺寸)
 ```
 
 ---
 
-## 5. 帧循环设计 (四段式架构 v0.6.0)
+## 10. 音频引擎
 
-NES 硬件的帧时序：
+由于微信小程序不支持Web Audio API的部分特性，音频方案:
+- **方案A**: 使用微信 `InnerAudioContext` 播放预录的OGG/MP3音效
+- **方案B**: 使用 `wx.createWebAudioContext()` (若支持)
+- **方案C**: 提取Bank 5的APU数据，转换为Web Audio合成
 
-```
-NMI触发(VBlank开始)
-  → CPU在VBlank期间填充PPU数据 (OAM DMA, VRAM写入, 调色板, 音频更新)
-  → NMI返回
-  → CPU执行游戏逻辑 (输入处理、状态机、AI)
-  → PPU同时用VBlank填入的数据逐行渲染画面
-  → APU独立播放音频
-  → 等下一个NMI
-```
-
-TS 改写后的四段式帧 (GameLoop.loop)：
-
-```
-每帧 (每个RAF回调):
-  ═══ 阶段1: PPU数据填充 + 音频更新 (NMI) ═══
-    a. OAM DMA — CPU RAM → OAM缓存
-    b. PPU队列处理 — VRAM批量写入
-    c. 读取输入 — 手柄锁存
-    d. 帧计数++
-    e. 🆕 AudioEngine.update() — 音乐/音效帧更新
-
-  ═══ 阶段2: 游戏逻辑 ═══
-    f. bankLock == 0 ? 状态机更新 : skip
-       (输入处理、AI、脚本、状态转换)
-
-  ═══ 阶段3: 场景构建 ═══
-    g. SceneComposer: Model → VRAM + OAM
-
-  ═══ 阶段4: Canvas渲染 ═══
-    h. 用阶段1填充的PPU数据绘制到Canvas
-       (背景tile + 精灵，全部来自OAM/VRAM)
-```
-
-关键设计要点：
-- **PPU渲染的是"填充后的数据"**：阶段1先把数据填入OAM/VRAM缓冲区，阶段4用这些数据渲染。
-- **游戏逻辑在PPU数据填充之后**：游戏逻辑修改OAM/VRAM是为**下一帧**准备数据。
-- **音频与PPU填充同阶段**：NES中音频寄存器也在VBlank期间更新，放在阶段1最合适。
-- **渲染是只读的**：Renderer只读取PPU数据，不修改。
+推荐方案A+B混合:
+- 背景音乐: 预录OGG循环播放
+- 短音效: Web Audio合成或预录
 
 ---
 
-## 6. 映射关系表 (6502 → TypeScript)
+## 11. AI自动挂机设计
 
-| 6502 概念 | TypeScript 实现 |
-|-----------|----------------|
-| A/X/Y 寄存器 | 局部变量 |
-| 零页 RAM | `DataCache.zp` Map |
-| 栈 ($0100-$01FF) | JS调用栈 (不需要显式模拟) |
-| OAM ($0200-$02FF) | `OamCache` |
-| RAM ($0300-$07FF) | `DataCache.ram` Uint8Array |
-| PPU 寄存器 ($2000-$2007) | `DataCache.ppuCtrl/ppuMask/scrollX/scrollY` |
-| NMI 中断 (PPU数据填充) | `PpuDataFiller.fillPpuData()` |
-| NMI 中的游戏逻辑调度 | `GameLoop` 阶段2: `stateMachine.update()` |
-| NMI 中的音频更新 | `GameLoop` 阶段1: `AudioEngine.update()` 🆕 |
-| APU 寄存器 ($4000-$4017) | `ApuSimulator` → Web Audio API OscillatorNode |
-| 手柄寄存器 ($4016/$4017) | `InputManager` |
-| MMC1 寄存器 ($8000-$FFFF) | `BankManager` |
-| ROM Bank | 独立的 TypeScript 模块 |
+```typescript
+class AiAutoPlay {
+  /**
+   * 自动决策每帧的操作
+   * 返回: 模拟的手柄按键
+   */
+  decide(): number {
+    const state = this.dataStore.gameState;
+    
+    switch (state) {
+      case GameState.OPENING:
+        return this.decideOpening();  // 按START跳过
+      case GameState.TITLE:
+        return this.decideTitle();     // 按START进入
+      case GameState.MENU:
+        return this.decideMenu();      // 选择新游戏
+      case GameState.MATCH_LOOP:
+        return this.decideMatch();     // AI比赛操作
+      case GameState.EVENT:
+        return this.decideEvent();     // 按A继续
+      case GameState.RESULT:
+        return this.decideResult();    // 按A继续
+      default:
+        return 0;
+    }
+  }
+  
+  /** 比赛AI (核心) */
+  private decideMatch(): number {
+    // 基于比赛状态做决策
+    // - 持球时: 寻找最佳传球/射门/盘带
+    // - 防守时: 拦截/抢断
+    // 实现原Bank 4中的AI逻辑
+  }
+}
+```
 
 ---
 
-## 7. 开发阶段划分
+## 12. 调试页面设计
 
-| 阶段 | 内容 | 里程碑 |
-|------|------|--------|
-| **M1** | 项目框架 + 基础类 | v0.1.0 |
-| **M2** | State 00-02 (标题→菜单) | v0.2.0 |
-| **M3** | State 03-04 (队员选择→比赛) | v0.3.0 |
-| **M4** | State 05-07 (事件→结果) | v0.4.0 |
-| **M5** | 脚本引擎+全部数据 | v0.5.0 |
-| **M6** | 渲染完善+CHR资源 | v0.6.0 |
-| **M_AUDIO** | 🆕 音频引擎 (APU→Web Audio) | v0.7.0 |
-| **M7** | 测试+修复 | v0.8.0 |
-| **M8** | 小程序适配 | v0.9.0 |
-| **M9** | 最终优化 | v1.0.0 |
+| 页面路径 | 功能 | 数据来源 |
+|----------|------|---------|
+| `pages/debug/chr-all/` | CHR图库浏览 (16Bank×256 tiles) | PNG图集 |
+| `pages/debug/pattern-table-all/` | Pattern Table 实时状态 | DataStore.nametable |
+| `pages/debug/nametable-all/` | Nametable 可视化 | DataStore.nametable |
+| `pages/debug/sprite-all/` | 精灵OAM数据 | DataStore.oam |
+| `pages/debug/palette-all/` | 所有调色板 | 原始调色板数据 |
+| `pages/debug/audio-all/` | 音频资源列表 | 音频文件 |
+| `pages/debug/data-api/` | 数据API (Swagger风格) | 所有DataTable |
+
+---
+
+## 13. 技术栈
+
+| 层级 | 技术 |
+|------|------|
+| 平台 | 微信小程序 |
+| 语言 | TypeScript (严格模式) |
+| 渲染 | Canvas 2D API |
+| 构建 | 小程序原生 (无npm) |
+| 测试 | Node.js MJS脚本 |
+| 资源 | PNG图集 (CHR导出) + OGG音频 |
+
+---
+
+## 14. 开发阶段规划
+
+| 阶段 | 内容 | 估时 | 里程碑 |
+|------|------|------|--------|
+| Phase 1 | ROM分析 + 数据提取 | ✅ 完成 | M1: ROM_STRUCTURE_REPORT |
+| Phase 2 | 架构设计 + 代码框架 (小程序+HTML) | ✅ 完成 | M2: 可运行的Hello World |
+| Phase 3 | Bank 0 核心引擎 | 🚧 进行中 | M3: 主循环+状态机可运转 |
+| Phase 4 | Bank 1 开场动画 | — | M4: 开场动画可播放 |
+| Phase 5 | Bank 5+6 菜单系统 | — | M5: 菜单可交互 |
+| Phase 6 | Bank 3+4 比赛引擎 | — | M6: 比赛可玩 |
+| Phase 7 | 完整流程 | — | M7: 可通关 |
+| Phase 8 | AI挂机 + 测试 | — | M8: 自动通关验证 |
+| Phase 9 | 优化 + 压缩 | — | M9: 生产版本 |
+
+---
+
+*文档完成日期: 2026-08-06*
+*下一步: Phase 3 — Bank 0 核心引擎完善 → Bank 1 开场动画*

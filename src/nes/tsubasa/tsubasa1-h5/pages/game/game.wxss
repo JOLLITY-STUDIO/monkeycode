@@ -1,194 +1,99 @@
-/* ��Ϸҳ����ʽ */
-page {
-  overflow: hidden;
-  height: 100%;
-}
+/* 天使之翼1 — 游戏主页面样式 */
 
-.game-container {
+.game-page {
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  background: #111;
-  position: relative;
-  overflow: hidden;
+  background-color: #1a1a2e;
+  padding-top: 20rpx;
+  box-sizing: border-box;
 }
 
-/* ���Բ˵���ť */
-.debug-menu-btn {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 200;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.2);
+/* NES画布区域: 原始256x240 */
+.canvas-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
-}
-
-/* ���Բ˵� */
-.debug-menu {
-  position: fixed;
-  top: 70px;
-  left: 20px;
-  z-index: 200;
-  background: rgba(0, 0, 0, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 10px;
-  padding: 10px;
-  display: none;
-  flex-direction: column;
-  gap: 4px;
-  min-width: 180px;
-}
-
-.debug-menu.show {
-  display: flex;
-}
-
-.debug-menu-title {
-  font-size: 18px;
-  font-weight: bold;
-  color: #4af;
-  padding: 4px 8px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  margin-bottom: 4px;
-}
-
-.debug-menu-item {
-  padding: 8px 12px;
-  font-size: 18px;
-  color: #ccc;
-  border-radius: 6px;
-  background: rgba(255, 255, 255, 0.05);
-}
-
-.debug-menu-item:active {
-  background: rgba(68, 170, 255, 0.3);
-  color: #fff;
+  background-color: #000;
+  border: 2px solid #333;
+  border-radius: 4px;
+  overflow: hidden;
 }
 
 .game-canvas {
-  /* Canvas 缓冲区恒�?256×240，CSS 控制视觉显示尺寸 */
+  display: block;
   width: 256px;
   height: 240px;
-  margin-top: 12px;
-  border: 4px solid #555;
-  flex-shrink: 0;
+  image-rendering: pixelated;
 }
 
-/* ── 状态信息栏 ── */
-.info-bar {
-  position: fixed;
-  top: 20px;
-  right: 20px;
+/* 控制面板 (画布下方) */
+.control-panel {
+  width: 256px;
+  margin-top: 16rpx;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 8px;
-  z-index: 100;
+  gap: 12rpx;
 }
 
-.fps-text {
-  color: #0f0;
-  font-size: 20px;
-  font-family: monospace;
-  background: rgba(0, 0, 0, 0.6);
-  padding: 4px 12px;
-  border-radius: 8px;
+/* 实时数据面板 */
+.debug-panel {
+  background: rgba(0, 0, 0, 0.8);
+  padding: 12rpx 16rpx;
+  border-radius: 4px;
+  border: 1px solid #333;
 }
 
-.auto-btn {
-  width: 100px;
-  height: 50px;
-  border-radius: 25px;
-  background: rgba(100, 100, 100, 0.5);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: #ccc;
-  font-size: 22px;
+.debug-text {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s;
+  flex-direction: column;
+  color: #0f0;
+  font-size: 22rpx;
+  font-family: monospace;
+  line-height: 1.8;
 }
 
-.auto-btn.auto-active {
-  background: rgba(0, 200, 100, 0.6);
-  border-color: rgba(0, 255, 100, 0.7);
+/* AI模式指示器 */
+.ai-indicator {
+  background: rgba(255, 165, 0, 0.85);
+  padding: 8rpx 16rpx;
+  border-radius: 4px;
+}
+
+.ai-indicator text {
   color: #fff;
-  font-weight: bold;
+  font-size: 22rpx;
 }
 
-/* ── 自动播放日志 ── */
-.auto-log {
-  position: fixed;
-  bottom: 200px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.75);
-  color: #0f0;
-  font-size: 22px;
-  font-family: monospace;
-  padding: 8px 24px;
-  border-radius: 16px;
-  z-index: 99;
-  max-width: 80vw;
-  text-align: center;
-}
-
-.controls {
-  position: fixed;
-  bottom: 60px;
-  left: 0;
-  right: 0;
+/* 按钮行 */
+.btn-row {
   display: flex;
-  justify-content: space-between;
-  padding: 0 40px;
+  gap: 16rpx;
 }
 
-.dpad {
-  display: grid;
-  grid-template-columns: 80px 80px 80px;
-  grid-template-rows: 80px 80px 80px;
-  gap: 4px;
+.ctrl-btn {
+  color: #fff;
+  background-color: #444;
+  border: none;
+  font-size: 22rpx;
 }
 
-.dpad-up    { grid-column: 2; grid-row: 1; }
-.dpad-left  { grid-column: 1; grid-row: 2; }
-.dpad-right { grid-column: 3; grid-row: 2; }
-.dpad-down  { grid-column: 2; grid-row: 3; }
-
-.action-btns {
+/* 数据查看器链接 */
+.debug-links {
   display: flex;
-  gap: 12px;
-  align-items: center;
   flex-wrap: wrap;
+  gap: 8rpx;
+  padding: 8rpx 0;
 }
 
-.btn {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  border: 3px solid rgba(255, 255, 255, 0.3);
-  color: #fff;
-  font-size: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.debug-link {
+  color: #8af;
+  font-size: 20rpx;
+  padding: 6rpx 12rpx;
+  background: rgba(255,255,255,0.06);
+  border-radius: 4rpx;
+  border: 1rpx solid rgba(255,255,255,0.08);
+  text-decoration: none;
 }
-
-.btn:active {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-.btn-a     { background: rgba(255, 0, 0, 0.25); border-color: rgba(255, 0, 0, 0.5); }
-.btn-b     { background: rgba(255, 255, 0, 0.25); border-color: rgba(255, 255, 0, 0.5); }
-.btn-start { font-size: 22px; }

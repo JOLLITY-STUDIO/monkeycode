@@ -1,0 +1,1542 @@
+{
+  "bankId": 3,
+  "size": 16384,
+  "first256": [
+    {
+      "offset": "0000",
+      "hex": "4C",
+      "dec": 76,
+      "ascii": "L"
+    },
+    {
+      "offset": "0001",
+      "hex": "18",
+      "dec": 24,
+      "ascii": "."
+    },
+    {
+      "offset": "0002",
+      "hex": "C0",
+      "dec": 192,
+      "ascii": "."
+    },
+    {
+      "offset": "0003",
+      "hex": "4C",
+      "dec": 76,
+      "ascii": "L"
+    },
+    {
+      "offset": "0004",
+      "hex": "2D",
+      "dec": 45,
+      "ascii": "-"
+    },
+    {
+      "offset": "0005",
+      "hex": "C1",
+      "dec": 193,
+      "ascii": "."
+    },
+    {
+      "offset": "0006",
+      "hex": "4C",
+      "dec": 76,
+      "ascii": "L"
+    },
+    {
+      "offset": "0007",
+      "hex": "8F",
+      "dec": 143,
+      "ascii": "."
+    },
+    {
+      "offset": "0008",
+      "hex": "C3",
+      "dec": 195,
+      "ascii": "."
+    },
+    {
+      "offset": "0009",
+      "hex": "4C",
+      "dec": 76,
+      "ascii": "L"
+    },
+    {
+      "offset": "000A",
+      "hex": "03",
+      "dec": 3,
+      "ascii": "."
+    },
+    {
+      "offset": "000B",
+      "hex": "C4",
+      "dec": 196,
+      "ascii": "."
+    },
+    {
+      "offset": "000C",
+      "hex": "4C",
+      "dec": 76,
+      "ascii": "L"
+    },
+    {
+      "offset": "000D",
+      "hex": "C0",
+      "dec": 192,
+      "ascii": "."
+    },
+    {
+      "offset": "000E",
+      "hex": "FE",
+      "dec": 254,
+      "ascii": "."
+    },
+    {
+      "offset": "000F",
+      "hex": "4C",
+      "dec": 76,
+      "ascii": "L"
+    },
+    {
+      "offset": "0010",
+      "hex": "C3",
+      "dec": 195,
+      "ascii": "."
+    },
+    {
+      "offset": "0011",
+      "hex": "FE",
+      "dec": 254,
+      "ascii": "."
+    },
+    {
+      "offset": "0012",
+      "hex": "4C",
+      "dec": 76,
+      "ascii": "L"
+    },
+    {
+      "offset": "0013",
+      "hex": "C6",
+      "dec": 198,
+      "ascii": "."
+    },
+    {
+      "offset": "0014",
+      "hex": "FE",
+      "dec": 254,
+      "ascii": "."
+    },
+    {
+      "offset": "0015",
+      "hex": "4C",
+      "dec": 76,
+      "ascii": "L"
+    },
+    {
+      "offset": "0016",
+      "hex": "91",
+      "dec": 145,
+      "ascii": "."
+    },
+    {
+      "offset": "0017",
+      "hex": "C1",
+      "dec": 193,
+      "ascii": "."
+    },
+    {
+      "offset": "0018",
+      "hex": "A2",
+      "dec": 162,
+      "ascii": "."
+    },
+    {
+      "offset": "0019",
+      "hex": "ED",
+      "dec": 237,
+      "ascii": "."
+    },
+    {
+      "offset": "001A",
+      "hex": "86",
+      "dec": 134,
+      "ascii": "."
+    },
+    {
+      "offset": "001B",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "001C",
+      "hex": "A2",
+      "dec": 162,
+      "ascii": "."
+    },
+    {
+      "offset": "001D",
+      "hex": "C4",
+      "dec": 196,
+      "ascii": "."
+    },
+    {
+      "offset": "001E",
+      "hex": "86",
+      "dec": 134,
+      "ascii": "."
+    },
+    {
+      "offset": "001F",
+      "hex": "32",
+      "dec": 50,
+      "ascii": "2"
+    },
+    {
+      "offset": "0020",
+      "hex": "0A",
+      "dec": 10,
+      "ascii": "."
+    },
+    {
+      "offset": "0021",
+      "hex": "90",
+      "dec": 144,
+      "ascii": "."
+    },
+    {
+      "offset": "0022",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "0023",
+      "hex": "E6",
+      "dec": 230,
+      "ascii": "."
+    },
+    {
+      "offset": "0024",
+      "hex": "32",
+      "dec": 50,
+      "ascii": "2"
+    },
+    {
+      "offset": "0025",
+      "hex": "A8",
+      "dec": 168,
+      "ascii": "."
+    },
+    {
+      "offset": "0026",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "0027",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "0028",
+      "hex": "AA",
+      "dec": 170,
+      "ascii": "."
+    },
+    {
+      "offset": "0029",
+      "hex": "C8",
+      "dec": 200,
+      "ascii": "."
+    },
+    {
+      "offset": "002A",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "002B",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "002C",
+      "hex": "86",
+      "dec": 134,
+      "ascii": "."
+    },
+    {
+      "offset": "002D",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "002E",
+      "hex": "85",
+      "dec": 133,
+      "ascii": "."
+    },
+    {
+      "offset": "002F",
+      "hex": "32",
+      "dec": 50,
+      "ascii": "2"
+    },
+    {
+      "offset": "0030",
+      "hex": "24",
+      "dec": 36,
+      "ascii": "$"
+    },
+    {
+      "offset": "0031",
+      "hex": "74",
+      "dec": 116,
+      "ascii": "t"
+    },
+    {
+      "offset": "0032",
+      "hex": "50",
+      "dec": 80,
+      "ascii": "P"
+    },
+    {
+      "offset": "0033",
+      "hex": "09",
+      "dec": 9,
+      "ascii": "."
+    },
+    {
+      "offset": "0034",
+      "hex": "A5",
+      "dec": 165,
+      "ascii": "."
+    },
+    {
+      "offset": "0035",
+      "hex": "38",
+      "dec": 56,
+      "ascii": "8"
+    },
+    {
+      "offset": "0036",
+      "hex": "49",
+      "dec": 73,
+      "ascii": "I"
+    },
+    {
+      "offset": "0037",
+      "hex": "FF",
+      "dec": 255,
+      "ascii": "."
+    },
+    {
+      "offset": "0038",
+      "hex": "18",
+      "dec": 24,
+      "ascii": "."
+    },
+    {
+      "offset": "0039",
+      "hex": "69",
+      "dec": 105,
+      "ascii": "i"
+    },
+    {
+      "offset": "003A",
+      "hex": "01",
+      "dec": 1,
+      "ascii": "."
+    },
+    {
+      "offset": "003B",
+      "hex": "85",
+      "dec": 133,
+      "ascii": "."
+    },
+    {
+      "offset": "003C",
+      "hex": "38",
+      "dec": 56,
+      "ascii": "8"
+    },
+    {
+      "offset": "003D",
+      "hex": "A0",
+      "dec": 160,
+      "ascii": "."
+    },
+    {
+      "offset": "003E",
+      "hex": "00",
+      "dec": 0,
+      "ascii": "."
+    },
+    {
+      "offset": "003F",
+      "hex": "84",
+      "dec": 132,
+      "ascii": "."
+    },
+    {
+      "offset": "0040",
+      "hex": "33",
+      "dec": 51,
+      "ascii": "3"
+    },
+    {
+      "offset": "0041",
+      "hex": "84",
+      "dec": 132,
+      "ascii": "."
+    },
+    {
+      "offset": "0042",
+      "hex": "36",
+      "dec": 54,
+      "ascii": "6"
+    },
+    {
+      "offset": "0043",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "0044",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "0045",
+      "hex": "08",
+      "dec": 8,
+      "ascii": "."
+    },
+    {
+      "offset": "0046",
+      "hex": "29",
+      "dec": 41,
+      "ascii": ")"
+    },
+    {
+      "offset": "0047",
+      "hex": "7F",
+      "dec": 127,
+      "ascii": "."
+    },
+    {
+      "offset": "0048",
+      "hex": "85",
+      "dec": 133,
+      "ascii": "."
+    },
+    {
+      "offset": "0049",
+      "hex": "1B",
+      "dec": 27,
+      "ascii": "."
+    },
+    {
+      "offset": "004A",
+      "hex": "28",
+      "dec": 40,
+      "ascii": "("
+    },
+    {
+      "offset": "004B",
+      "hex": "30",
+      "dec": 48,
+      "ascii": "0"
+    },
+    {
+      "offset": "004C",
+      "hex": "12",
+      "dec": 18,
+      "ascii": "."
+    },
+    {
+      "offset": "004D",
+      "hex": "AD",
+      "dec": 173,
+      "ascii": "."
+    },
+    {
+      "offset": "004E",
+      "hex": "D6",
+      "dec": 214,
+      "ascii": "."
+    },
+    {
+      "offset": "004F",
+      "hex": "03",
+      "dec": 3,
+      "ascii": "."
+    },
+    {
+      "offset": "0050",
+      "hex": "0A",
+      "dec": 10,
+      "ascii": "."
+    },
+    {
+      "offset": "0051",
+      "hex": "A8",
+      "dec": 168,
+      "ascii": "."
+    },
+    {
+      "offset": "0052",
+      "hex": "C8",
+      "dec": 200,
+      "ascii": "."
+    },
+    {
+      "offset": "0053",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "0054",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "0055",
+      "hex": "AA",
+      "dec": 170,
+      "ascii": "."
+    },
+    {
+      "offset": "0056",
+      "hex": "C8",
+      "dec": 200,
+      "ascii": "."
+    },
+    {
+      "offset": "0057",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "0058",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "0059",
+      "hex": "86",
+      "dec": 134,
+      "ascii": "."
+    },
+    {
+      "offset": "005A",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "005B",
+      "hex": "85",
+      "dec": 133,
+      "ascii": "."
+    },
+    {
+      "offset": "005C",
+      "hex": "32",
+      "dec": 50,
+      "ascii": "2"
+    },
+    {
+      "offset": "005D",
+      "hex": "D0",
+      "dec": 208,
+      "ascii": "."
+    },
+    {
+      "offset": "005E",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "005F",
+      "hex": "E6",
+      "dec": 230,
+      "ascii": "."
+    },
+    {
+      "offset": "0060",
+      "hex": "33",
+      "dec": 51,
+      "ascii": "3"
+    },
+    {
+      "offset": "0061",
+      "hex": "AC",
+      "dec": 172,
+      "ascii": "."
+    },
+    {
+      "offset": "0062",
+      "hex": "33",
+      "dec": 51,
+      "ascii": "3"
+    },
+    {
+      "offset": "0063",
+      "hex": "00",
+      "dec": 0,
+      "ascii": "."
+    },
+    {
+      "offset": "0064",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "0065",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "0066",
+      "hex": "29",
+      "dec": 41,
+      "ascii": ")"
+    },
+    {
+      "offset": "0067",
+      "hex": "E0",
+      "dec": 224,
+      "ascii": "."
+    },
+    {
+      "offset": "0068",
+      "hex": "4A",
+      "dec": 74,
+      "ascii": "J"
+    },
+    {
+      "offset": "0069",
+      "hex": "4A",
+      "dec": 74,
+      "ascii": "J"
+    },
+    {
+      "offset": "006A",
+      "hex": "4A",
+      "dec": 74,
+      "ascii": "J"
+    },
+    {
+      "offset": "006B",
+      "hex": "4A",
+      "dec": 74,
+      "ascii": "J"
+    },
+    {
+      "offset": "006C",
+      "hex": "4A",
+      "dec": 74,
+      "ascii": "J"
+    },
+    {
+      "offset": "006D",
+      "hex": "20",
+      "dec": 32,
+      "ascii": " "
+    },
+    {
+      "offset": "006E",
+      "hex": "17",
+      "dec": 23,
+      "ascii": "."
+    },
+    {
+      "offset": "006F",
+      "hex": "80",
+      "dec": 128,
+      "ascii": "."
+    },
+    {
+      "offset": "0070",
+      "hex": "80",
+      "dec": 128,
+      "ascii": "."
+    },
+    {
+      "offset": "0071",
+      "hex": "C0",
+      "dec": 192,
+      "ascii": "."
+    },
+    {
+      "offset": "0072",
+      "hex": "0E",
+      "dec": 14,
+      "ascii": "."
+    },
+    {
+      "offset": "0073",
+      "hex": "C1",
+      "dec": 193,
+      "ascii": "."
+    },
+    {
+      "offset": "0074",
+      "hex": "23",
+      "dec": 35,
+      "ascii": "#"
+    },
+    {
+      "offset": "0075",
+      "hex": "C1",
+      "dec": 193,
+      "ascii": "."
+    },
+    {
+      "offset": "0076",
+      "hex": "80",
+      "dec": 128,
+      "ascii": "."
+    },
+    {
+      "offset": "0077",
+      "hex": "C0",
+      "dec": 192,
+      "ascii": "."
+    },
+    {
+      "offset": "0078",
+      "hex": "80",
+      "dec": 128,
+      "ascii": "."
+    },
+    {
+      "offset": "0079",
+      "hex": "C0",
+      "dec": 192,
+      "ascii": "."
+    },
+    {
+      "offset": "007A",
+      "hex": "80",
+      "dec": 128,
+      "ascii": "."
+    },
+    {
+      "offset": "007B",
+      "hex": "C0",
+      "dec": 192,
+      "ascii": "."
+    },
+    {
+      "offset": "007C",
+      "hex": "80",
+      "dec": 128,
+      "ascii": "."
+    },
+    {
+      "offset": "007D",
+      "hex": "C0",
+      "dec": 192,
+      "ascii": "."
+    },
+    {
+      "offset": "007E",
+      "hex": "2C",
+      "dec": 44,
+      "ascii": ","
+    },
+    {
+      "offset": "007F",
+      "hex": "C1",
+      "dec": 193,
+      "ascii": "."
+    },
+    {
+      "offset": "0080",
+      "hex": "AC",
+      "dec": 172,
+      "ascii": "."
+    },
+    {
+      "offset": "0081",
+      "hex": "33",
+      "dec": 51,
+      "ascii": "3"
+    },
+    {
+      "offset": "0082",
+      "hex": "00",
+      "dec": 0,
+      "ascii": "."
+    },
+    {
+      "offset": "0083",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "0084",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "0085",
+      "hex": "C8",
+      "dec": 200,
+      "ascii": "."
+    },
+    {
+      "offset": "0086",
+      "hex": "29",
+      "dec": 41,
+      "ascii": ")"
+    },
+    {
+      "offset": "0087",
+      "hex": "1F",
+      "dec": 31,
+      "ascii": "."
+    },
+    {
+      "offset": "0088",
+      "hex": "AA",
+      "dec": 170,
+      "ascii": "."
+    },
+    {
+      "offset": "0089",
+      "hex": "BD",
+      "dec": 189,
+      "ascii": "."
+    },
+    {
+      "offset": "008A",
+      "hex": "28",
+      "dec": 40,
+      "ascii": "("
+    },
+    {
+      "offset": "008B",
+      "hex": "FD",
+      "dec": 253,
+      "ascii": "."
+    },
+    {
+      "offset": "008C",
+      "hex": "AA",
+      "dec": 170,
+      "ascii": "."
+    },
+    {
+      "offset": "008D",
+      "hex": "A5",
+      "dec": 165,
+      "ascii": "."
+    },
+    {
+      "offset": "008E",
+      "hex": "92",
+      "dec": 146,
+      "ascii": "."
+    },
+    {
+      "offset": "008F",
+      "hex": "24",
+      "dec": 36,
+      "ascii": "$"
+    },
+    {
+      "offset": "0090",
+      "hex": "36",
+      "dec": 54,
+      "ascii": "6"
+    },
+    {
+      "offset": "0091",
+      "hex": "50",
+      "dec": 80,
+      "ascii": "P"
+    },
+    {
+      "offset": "0092",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "0093",
+      "hex": "49",
+      "dec": 73,
+      "ascii": "I"
+    },
+    {
+      "offset": "0094",
+      "hex": "40",
+      "dec": 64,
+      "ascii": "@"
+    },
+    {
+      "offset": "0095",
+      "hex": "29",
+      "dec": 41,
+      "ascii": ")"
+    },
+    {
+      "offset": "0096",
+      "hex": "40",
+      "dec": 64,
+      "ascii": "@"
+    },
+    {
+      "offset": "0097",
+      "hex": "F0",
+      "dec": 240,
+      "ascii": "."
+    },
+    {
+      "offset": "0098",
+      "hex": "07",
+      "dec": 7,
+      "ascii": "."
+    },
+    {
+      "offset": "0099",
+      "hex": "8A",
+      "dec": 138,
+      "ascii": "."
+    },
+    {
+      "offset": "009A",
+      "hex": "49",
+      "dec": 73,
+      "ascii": "I"
+    },
+    {
+      "offset": "009B",
+      "hex": "FF",
+      "dec": 255,
+      "ascii": "."
+    },
+    {
+      "offset": "009C",
+      "hex": "38",
+      "dec": 56,
+      "ascii": "8"
+    },
+    {
+      "offset": "009D",
+      "hex": "E9",
+      "dec": 233,
+      "ascii": "."
+    },
+    {
+      "offset": "009E",
+      "hex": "07",
+      "dec": 7,
+      "ascii": "."
+    },
+    {
+      "offset": "009F",
+      "hex": "AA",
+      "dec": 170,
+      "ascii": "."
+    },
+    {
+      "offset": "00A0",
+      "hex": "8A",
+      "dec": 138,
+      "ascii": "."
+    },
+    {
+      "offset": "00A1",
+      "hex": "18",
+      "dec": 24,
+      "ascii": "."
+    },
+    {
+      "offset": "00A2",
+      "hex": "65",
+      "dec": 101,
+      "ascii": "e"
+    },
+    {
+      "offset": "00A3",
+      "hex": "38",
+      "dec": 56,
+      "ascii": "8"
+    },
+    {
+      "offset": "00A4",
+      "hex": "85",
+      "dec": 133,
+      "ascii": "."
+    },
+    {
+      "offset": "00A5",
+      "hex": "34",
+      "dec": 52,
+      "ascii": "4"
+    },
+    {
+      "offset": "00A6",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "00A7",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "00A8",
+      "hex": "C8",
+      "dec": 200,
+      "ascii": "."
+    },
+    {
+      "offset": "00A9",
+      "hex": "29",
+      "dec": 41,
+      "ascii": ")"
+    },
+    {
+      "offset": "00AA",
+      "hex": "3F",
+      "dec": 63,
+      "ascii": "?"
+    },
+    {
+      "offset": "00AB",
+      "hex": "85",
+      "dec": 133,
+      "ascii": "."
+    },
+    {
+      "offset": "00AC",
+      "hex": "35",
+      "dec": 53,
+      "ascii": "5"
+    },
+    {
+      "offset": "00AD",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "00AE",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "00AF",
+      "hex": "29",
+      "dec": 41,
+      "ascii": ")"
+    },
+    {
+      "offset": "00B0",
+      "hex": "1F",
+      "dec": 31,
+      "ascii": "."
+    },
+    {
+      "offset": "00B1",
+      "hex": "AA",
+      "dec": 170,
+      "ascii": "."
+    },
+    {
+      "offset": "00B2",
+      "hex": "BD",
+      "dec": 189,
+      "ascii": "."
+    },
+    {
+      "offset": "00B3",
+      "hex": "48",
+      "dec": 72,
+      "ascii": "H"
+    },
+    {
+      "offset": "00B4",
+      "hex": "FD",
+      "dec": 253,
+      "ascii": "."
+    },
+    {
+      "offset": "00B5",
+      "hex": "24",
+      "dec": 36,
+      "ascii": "$"
+    },
+    {
+      "offset": "00B6",
+      "hex": "92",
+      "dec": 146,
+      "ascii": "."
+    },
+    {
+      "offset": "00B7",
+      "hex": "10",
+      "dec": 16,
+      "ascii": "."
+    },
+    {
+      "offset": "00B8",
+      "hex": "05",
+      "dec": 5,
+      "ascii": "."
+    },
+    {
+      "offset": "00B9",
+      "hex": "49",
+      "dec": 73,
+      "ascii": "I"
+    },
+    {
+      "offset": "00BA",
+      "hex": "FF",
+      "dec": 255,
+      "ascii": "."
+    },
+    {
+      "offset": "00BB",
+      "hex": "38",
+      "dec": 56,
+      "ascii": "8"
+    },
+    {
+      "offset": "00BC",
+      "hex": "E9",
+      "dec": 233,
+      "ascii": "."
+    },
+    {
+      "offset": "00BD",
+      "hex": "07",
+      "dec": 7,
+      "ascii": "."
+    },
+    {
+      "offset": "00BE",
+      "hex": "18",
+      "dec": 24,
+      "ascii": "."
+    },
+    {
+      "offset": "00BF",
+      "hex": "65",
+      "dec": 101,
+      "ascii": "e"
+    },
+    {
+      "offset": "00C0",
+      "hex": "39",
+      "dec": 57,
+      "ascii": "9"
+    },
+    {
+      "offset": "00C1",
+      "hex": "48",
+      "dec": 72,
+      "ascii": "H"
+    },
+    {
+      "offset": "00C2",
+      "hex": "A5",
+      "dec": 165,
+      "ascii": "."
+    },
+    {
+      "offset": "00C3",
+      "hex": "37",
+      "dec": 55,
+      "ascii": "7"
+    },
+    {
+      "offset": "00C4",
+      "hex": "0A",
+      "dec": 10,
+      "ascii": "."
+    },
+    {
+      "offset": "00C5",
+      "hex": "0A",
+      "dec": 10,
+      "ascii": "."
+    },
+    {
+      "offset": "00C6",
+      "hex": "AA",
+      "dec": 170,
+      "ascii": "."
+    },
+    {
+      "offset": "00C7",
+      "hex": "68",
+      "dec": 104,
+      "ascii": "h"
+    },
+    {
+      "offset": "00C8",
+      "hex": "9D",
+      "dec": 157,
+      "ascii": "."
+    },
+    {
+      "offset": "00C9",
+      "hex": "00",
+      "dec": 0,
+      "ascii": "."
+    },
+    {
+      "offset": "00CA",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "00CB",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "00CC",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "00CD",
+      "hex": "4A",
+      "dec": 74,
+      "ascii": "J"
+    },
+    {
+      "offset": "00CE",
+      "hex": "45",
+      "dec": 69,
+      "ascii": "E"
+    },
+    {
+      "offset": "00CF",
+      "hex": "92",
+      "dec": 146,
+      "ascii": "."
+    },
+    {
+      "offset": "00D0",
+      "hex": "45",
+      "dec": 69,
+      "ascii": "E"
+    },
+    {
+      "offset": "00D1",
+      "hex": "36",
+      "dec": 54,
+      "ascii": "6"
+    },
+    {
+      "offset": "00D2",
+      "hex": "29",
+      "dec": 41,
+      "ascii": ")"
+    },
+    {
+      "offset": "00D3",
+      "hex": "C0",
+      "dec": 192,
+      "ascii": "."
+    },
+    {
+      "offset": "00D4",
+      "hex": "9D",
+      "dec": 157,
+      "ascii": "."
+    },
+    {
+      "offset": "00D5",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "00D6",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "00D7",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "00D8",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "00D9",
+      "hex": "29",
+      "dec": 41,
+      "ascii": ")"
+    },
+    {
+      "offset": "00DA",
+      "hex": "60",
+      "dec": 96,
+      "ascii": "`"
+    },
+    {
+      "offset": "00DB",
+      "hex": "4A",
+      "dec": 74,
+      "ascii": "J"
+    },
+    {
+      "offset": "00DC",
+      "hex": "4A",
+      "dec": 74,
+      "ascii": "J"
+    },
+    {
+      "offset": "00DD",
+      "hex": "4A",
+      "dec": 74,
+      "ascii": "J"
+    },
+    {
+      "offset": "00DE",
+      "hex": "4A",
+      "dec": 74,
+      "ascii": "J"
+    },
+    {
+      "offset": "00DF",
+      "hex": "4A",
+      "dec": 74,
+      "ascii": "J"
+    },
+    {
+      "offset": "00E0",
+      "hex": "1D",
+      "dec": 29,
+      "ascii": "."
+    },
+    {
+      "offset": "00E1",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "00E2",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "00E3",
+      "hex": "9D",
+      "dec": 157,
+      "ascii": "."
+    },
+    {
+      "offset": "00E4",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "00E5",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "00E6",
+      "hex": "A5",
+      "dec": 165,
+      "ascii": "."
+    },
+    {
+      "offset": "00E7",
+      "hex": "34",
+      "dec": 52,
+      "ascii": "4"
+    },
+    {
+      "offset": "00E8",
+      "hex": "9D",
+      "dec": 157,
+      "ascii": "."
+    },
+    {
+      "offset": "00E9",
+      "hex": "03",
+      "dec": 3,
+      "ascii": "."
+    },
+    {
+      "offset": "00EA",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "00EB",
+      "hex": "C8",
+      "dec": 200,
+      "ascii": "."
+    },
+    {
+      "offset": "00EC",
+      "hex": "B1",
+      "dec": 177,
+      "ascii": "."
+    },
+    {
+      "offset": "00ED",
+      "hex": "31",
+      "dec": 49,
+      "ascii": "1"
+    },
+    {
+      "offset": "00EE",
+      "hex": "9D",
+      "dec": 157,
+      "ascii": "."
+    },
+    {
+      "offset": "00EF",
+      "hex": "01",
+      "dec": 1,
+      "ascii": "."
+    },
+    {
+      "offset": "00F0",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "00F1",
+      "hex": "C8",
+      "dec": 200,
+      "ascii": "."
+    },
+    {
+      "offset": "00F2",
+      "hex": "E6",
+      "dec": 230,
+      "ascii": "."
+    },
+    {
+      "offset": "00F3",
+      "hex": "37",
+      "dec": 55,
+      "ascii": "7"
+    },
+    {
+      "offset": "00F4",
+      "hex": "24",
+      "dec": 36,
+      "ascii": "$"
+    },
+    {
+      "offset": "00F5",
+      "hex": "37",
+      "dec": 55,
+      "ascii": "7"
+    },
+    {
+      "offset": "00F6",
+      "hex": "50",
+      "dec": 80,
+      "ascii": "P"
+    },
+    {
+      "offset": "00F7",
+      "hex": "04",
+      "dec": 4,
+      "ascii": "."
+    },
+    {
+      "offset": "00F8",
+      "hex": "A9",
+      "dec": 169,
+      "ascii": "."
+    },
+    {
+      "offset": "00F9",
+      "hex": "02",
+      "dec": 2,
+      "ascii": "."
+    },
+    {
+      "offset": "00FA",
+      "hex": "85",
+      "dec": 133,
+      "ascii": "."
+    },
+    {
+      "offset": "00FB",
+      "hex": "37",
+      "dec": 55,
+      "ascii": "7"
+    },
+    {
+      "offset": "00FC",
+      "hex": "C6",
+      "dec": 198,
+      "ascii": "."
+    },
+    {
+      "offset": "00FD",
+      "hex": "35",
+      "dec": 53,
+      "ascii": "5"
+    },
+    {
+      "offset": "00FE",
+      "hex": "D0",
+      "dec": 208,
+      "ascii": "."
+    },
+    {
+      "offset": "00FF",
+      "hex": "AD",
+      "dec": 173,
+      "ascii": "."
+    }
+  ]
+}

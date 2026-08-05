@@ -1,243 +1,196 @@
 /**
- * 游戏页面 - 微信小程序
- *
- * 使用 Canvas 2D API (type="2d") 运行天使之翼 H5
+ * 天使之翼1 — 游戏主页面
+ * 微信小程序页面，负责:
+ *   1. 初始化Canvas
+ *   2. 创建 Tsubasa 实例
+ *   3. 处理触摸/键盘输入
+ *   4. 显示实时数据面板
  */
-import { Tsubasa } from '../../src/core/Tsubasa';
-import { MpPlatform } from '../../src/platform/miniprogram/MpPlatform';
-import { Button } from '../../src/core/types';
 
-/** 按键名 → Button 枚举映射 */
-const BTN_MAP: Record<string, Button> = {
-  UP: Button.UP,
-  DOWN: Button.DOWN,
-  LEFT: Button.LEFT,
-  RIGHT: Button.RIGHT,
-  A: Button.A,
-  B: Button.B,
-  START: Button.START,
-  SELECT: Button.SELECT,
-};
+import { Tsubasa } from '../../src/core/Tsubasa';
+import { BUTTON } from '../../src/core/types';
+import { initChrBanks, CHR_BANKS } from '../../src/assets/chr/chr_data';
+
+/** 页面数据接口 */
+interface PageData {
+  showDebug: boolean;
+  aiMode: boolean;
+  debugInfo: {
+    frame: number;
+    gameStateName: string;
+    scoreA: number;
+    scoreB: number;
+    matchPhase: number;
+  };
+  fps: number;
+}
 
 Page({
   data: {
-    /** FPS 显示文本 */
-    fpsText: '',
-    /** 调试信息 */
-    debugText: '',
-    /** 自动播放状态 */
-    autoPlay: false,
-    /** 自动播放日志 (最新一条) */
-    autoPlayLog: '',
-    /** 调试菜单是否显示 */
-    showDebugMenu: false,
-  },
+    showDebug: false,
+    aiMode: false,
+    debugInfo: {
+      frame: 0,
+      gameStateName: 'INIT',
+      scoreA: 0,
+      scoreB: 0,
+      matchPhase: 0,
+    },
+    fps: 0,
+  } as PageData,
 
-  /** 游戏实例 */
-  game: null as Tsubasa | null,
+  /** Tsubasa 游戏实例 */
+  _game: null as Tsubasa | null,
 
-  /** FPS 定时器 */
+  /** Canvas 节点 */
+  _canvas: null as any,
+
+  /** Canvas 上下文 */
+  _ctx: null as CanvasRenderingContext2D,
+
+  /** 调试FPS累计 */
+  _fpsFrames: 0,
   _fpsTimer: 0,
 
-  /** 是否为测试模式 (默认关闭，正常游戏模式；?test=1 切换到测试模式) */
-  _testMode: false,
-
-  /** 日志消失定时器 */
-  _logTimer: 0,
-
-  onLoad(options: any) {
-    console.log('[MiniProgram] Game page loaded');
-    // 默认正常模式；通过页面参数 ?test=1 切换到测试模式
-    if (options?.test === '1') {
-      this._testMode = true;
-    }
-    // 支持 ?auto=1 启动即开启自动模式
-    if (options?.auto === '1') {
-      // 将在 initGame 中启用
-      this.data.autoPlay = true;
-    }
-    console.log('[MiniProgram] Test mode:', this._testMode);
+  onLoad() {
+    console.log('[GamePage] 页面加载');
   },
 
   onReady() {
-    this.initGame();
-  },
-
-  onHide() {
-    // 页面被隐藏（navigateTo 到其他页面、切后台等）→ 暂停游戏
-    if (this.game && this.game.getState() === 'running') {
-      console.log('[MiniProgram] Game paused (page hidden)');
-      this.game.pause();
-    }
-  },
-
-  onShow() {
-    // 页面重新显示 → 恢复游戏
-    if (this.game && this.game.getState() === 'paused') {
-      console.log('[MiniProgram] Game resumed (page shown)');
-      this.game.resume();
-    }
+    this._initCanvas();
   },
 
   onUnload() {
-    if (this._fpsTimer) clearInterval(this._fpsTimer);
-    if (this._logTimer) clearTimeout(this._logTimer);
-    if (this.game) {
-      this.game.destroy();
-      this.game = null;
+    console.log('[GamePage] 页面卸载');
+    if (this._game) {
+      this._game.pause();
     }
   },
 
-  /** 初始化游戏 */
-  async initGame() {
+  /** 初始化Canvas并创建游戏实例 */
+  async _initCanvas() {
     try {
-      // 1. 获取 Canvas 节点 (必须在 onReady 中)
-      const query = wx.createSelectorQuery();
-      const canvasNode: any = await new Promise((resolve, reject) => {
-        query.select('#game-canvas')
-          .fields({ node: true, size: true })
-          .exec((res: any) => {
-            if (!res || !res[0] || !res[0].node) {
-              reject(new Error('Canvas node not found'));
-              return;
+      // 获取Canvas节点和上下文 (微信小程序2D Canvas)
+      const query = wx.createSelectorQuery().in(this);
+      query.select('#game-canvas')
+        .fields({ node: true, size: true })
+        .exec((res: any) => {
+          if (!res || !res[0]) {
+            console.error('[GamePage] Canvas节点未找到');
+            return;
+          }
+
+          const canvas = res[0].node;
+          const ctx = canvas.getContext('2d');
+
+          // 设置Canvas尺寸: NES原始分辨率 256×240
+          canvas.width = 256;
+          canvas.height = 240;
+
+          this._canvas = canvas;
+          this._ctx = ctx;
+
+          // 创建游戏实例 (传入 canvas 节点用于离屏 Canvas)
+          this._game = new Tsubasa(ctx, {
+            scale: 1,
+            debug: true,
+            aiMode: this.data.aiMode,
+          }, canvas);
+
+          // 注册到全局供调试页面访问
+          const app = getApp();
+          app.globalData.game = this._game;
+
+          // 加载 CHR Bank 数据 (图形资源)
+          try {
+            initChrBanks();
+            const bankCount = Math.min(CHR_BANKS.length, 32);
+            for (let bankId = 0; bankId < bankCount; bankId++) {
+              const bankData = CHR_BANKS[bankId];
+              if (bankData && bankData.length > 0) {
+                this._game.loadChrBank(bankId, bankData);
+              }
             }
-            resolve(res[0].node);
-          });
-      });
+            console.log(`[GamePage] 已加载 ${bankCount} 个 CHR Bank`);
+          } catch (err) {
+            console.error('[GamePage] 加载 CHR Bank 失败:', err);
+          }
 
-      // 2. Canvas 缓冲区 = NES 原生 256×240（永远不变）
-      //    视觉放大由 CSS 控制，不修改缓冲区
-      canvasNode.width = 256;
-      canvasNode.height = 240;
-      console.log('[MiniProgram] Canvas buffer: 256×240 (NES native)');
+          // 设置调试信息更新
+          this._setupDebugUpdate();
 
-      // 3. 获取 2D 上下文
-      const ctx = canvasNode.getContext('2d');
-      if (!ctx) {
-        throw new Error('Cannot get Canvas 2D context');
-      }
-
-      // 4. 创建平台适配器
-      const platform = new MpPlatform();
-      // 设置主 canvas 引用（用于 requestAnimationFrame 和 createImage）
-      platform.setMainCanvas(canvasNode);
-
-      // 5. 创建游戏实例
-      // 小程序中 public/sprites/ 在项目根目录下，路径为 /public/sprites/
-      this.game = new Tsubasa(platform, ctx as any, {
-        spriteBasePath: '/public/sprites/',
-        scale: 1,
-        autoLoadSprites: !this._testMode, // 测试模式不加载 CHR
-        debug: true,
-      });
-
-      // 设置自动播放日志回调
-      this.game.setAutoPlayLogCallback((msg: string) => {
-        this.setData({ autoPlayLog: msg });
-        if (this._logTimer) clearTimeout(this._logTimer);
-        this._logTimer = setTimeout(() => {
-          this.setData({ autoPlayLog: '' });
-        }, 3000) as any;
-      });
-
-      // 设置比赛结束回调
-      this.game.setAutoPlayMatchEndCallback((score: [number, number], _time: number) => {
-        console.log(`[MiniProgram] ⚽ 比赛结束! ${score[0]} - ${score[1]}`);
-        wx.showToast({
-          title: `比赛结束 ${score[0]}-${score[1]}`,
-          icon: 'none',
-          duration: 2000,
+          // 启动游戏
+          this._game.start();
+          
+          console.log('[GamePage] 游戏已启动');
         });
-      });
-
-      // 6. 启动
-      if (this._testMode) {
-        await this.game.startTestMode();
-        console.log('[MiniProgram] Game started in TEST MODE');
-      } else {
-        await this.game.start();
-        console.log('[MiniProgram] Game started');
-
-        // 如果 URL 参数指定 auto=1，自动开启
-        if (this.data.autoPlay) {
-          this.game.enableAutoPlay();
-        }
-      }
-
-      // 7. FPS 监控
-      this._fpsTimer = setInterval(() => {
-        if (!this.game || this.game.getState() !== 'running') return;
-        this.setData({
-          fpsText: `FPS: ${this.game.getFps()} | State: ${this.game.getCurrentGameState()}`,
-        });
-      }, 500) as any;
-
     } catch (err) {
-      console.error('[MiniProgram] Failed to init game:', err);
-      wx.showToast({
-        title: '游戏初始化失败',
-        icon: 'error',
-        duration: 3000,
-      });
+      console.error('[GamePage] 初始化Canvas失败:', err);
     }
   },
 
-  /** 虚拟按钮按下 */
-  onBtnDown(e: any) {
-    const btn = e.currentTarget?.dataset?.btn;
-    if (!btn || !this.game) return;
-    this.game.pressButton(BTN_MAP[btn]);
-    // 防止事件冒泡导致 canvas 上的 touch 事件重复触发
-    // (canvas touch 不做按键映射，仅由虚拟按钮处理)
+  /** 设置调试信息定时更新 */
+  _setupDebugUpdate() {
+    // 每秒更新一次调试信息
+    // 注意: 微信小程序不使用setInterval，使用帧回调
+    // 简化处理: 通过游戏循环回调
   },
 
-  /** 虚拟按钮释放 */
-  onBtnUp(e: any) {
-    const btn = e.currentTarget?.dataset?.btn;
-    if (!btn || !this.game) return;
-    this.game.releaseButton(BTN_MAP[btn]);
-  },
+  // ==================== 触摸事件处理 ====================
 
-  /** 切换自动播放 */
-  onAutoToggle() {
-    if (!this.game || this.game.getState() !== 'running') return;
-    const isNowAuto = this.game.toggleAutoPlay();
-    this.setData({ autoPlay: isNowAuto });
-    wx.showToast({
-      title: isNowAuto ? '🤖 自动模式开启' : '👤 手动模式',
-      icon: 'none',
-      duration: 1500,
-    });
-  },
-
-  /** Canvas 触摸开始 - 可用于直接触摸屏操作（预留） */
   onTouchStart(e: any) {
-    // 预留：可根据触摸坐标映射方向键
-    // const touch = e.touches[0];
-    // const x = touch.x, y = touch.y;
+    if (!this._game) return;
+    // 双指触摸 → START 按钮
+    if (e.touches.length >= 2) {
+      this._game.pressButton('START');
+    }
   },
 
-  /** Canvas 触摸结束 */
-  onTouchEnd(_e: any) {
-    // 预留
+  onTouchMove(e: any) {
+    // 暂不处理滑动
   },
 
-  /** Canvas 触摸移动 */
-  onTouchMove(_e: any) {
-    // 预留
+  onTouchEnd(e: any) {
+    if (!this._game) return;
+    // 释放所有按键
+    this._game.setButton1(0);
   },
 
-  /** 调试菜单切换 */
-  onDebugMenuToggle() {
-    this.setData({ showDebugMenu: !this.data.showDebugMenu });
+  // ==================== 页面方法 ====================
+
+  /** 切换调试面板 */
+  toggleDebug() {
+    this.setData({ showDebug: !this.data.showDebug });
   },
 
-  /** 导航到调试页面 */
-  onNavToDebug(e: any) {
-    const page = e.currentTarget.dataset.page;
-    this.setData({ showDebugMenu: false });
-    wx.navigateTo({
-      url: `/pages/${page}/${page}`,
+  /** 切换AI模式 */
+  toggleAi() {
+    const aiMode = !this.data.aiMode;
+    this.setData({ aiMode });
+    
+    if (this._game) {
+      if (aiMode) {
+        this._game.enableAi();
+      } else {
+        this._game.disableAi();
+      }
+    }
+  },
+
+  /** 更新调试信息 */
+  updateDebugInfo() {
+    if (!this._game) return;
+    
+    const info = this._game.getDebugInfo();
+    this.setData({
+      debugInfo: {
+        frame: info.frame,
+        gameStateName: info.gameStateName,
+        scoreA: info.scoreA,
+        scoreB: info.scoreB,
+        matchPhase: info.matchPhase,
+      },
+      fps: this._game.getFps(),
     });
   },
 });

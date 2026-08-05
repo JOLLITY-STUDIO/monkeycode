@@ -1,234 +1,313 @@
 /**
- * 游戏主循环 - 平台无关
- *
- * 通过 IPlatform 接口适配，支持微信小程序的 canvas.requestAnimationFrame。
- *
- * ## 帧三段式架构 (v0.5.0)
- *
- * 每帧严格分为三个阶段，对应NES的硬件时序：
- *
- *   阶段1 — PPU数据填充 (NMI)
- *     OAM DMA → PPU队列(VRAM写入) → 输入读取 → 帧计数
- *     NES: CPU在VBlank期间把数据填入PPU寄存器
- *
- *   阶段2 — 游戏逻辑
- *     状态机更新 → AI/脚本 → 准备下一帧的PPU数据
- *     NES: NMI返回后CPU执行主循环逻辑
- *
- *   阶段3 — Canvas渲染
- *     用阶段1填充的PPU数据绘制画面
- *     NES: PPU用VBlank期间填入的数据逐行渲染
- *
- * ## 帧时钟策略
- *
- * 每个 RAF 回调执行一帧（1:1 映射），RAF 在 60Hz 显示器上天然 ~60fps，
- * 与 NES 原生帧率一致。
+ * 天使之翼1 — 游戏主循环
+ * 对应原 Bank 0: $81EE-$81F6 (Main Loop)
+ * 
+ * 主循环 (无限):
+ *   while(true) {
+ *     WaitNmi();          // 等待下一帧 (ram_0300 != 0)
+ *     StateDispatch();    // 根据 ram_03CA 分派
+ *   }
+ * 
+ * 同时管理 NMI 和 渲染 的协调
  */
-import type { PpuDataFiller } from '../engine/NmiHandler';
-import type { Renderer } from '../renderer/Renderer';
-import type { StateMachine } from '../engine/StateMachine';
-import type { AutoPlayController } from '../engine/AutoPlayController';
-import type { DataCache } from '../cache/DataCache';
-import type { SceneComposer } from '../view/SceneComposer';
-import type { GameModel } from '../model/GameModel';
-import type { AudioEngine } from '../audio/AudioEngine';
-import type { IPlatform } from '../platform/IPlatform';
 
-/** FPS 滑动窗口大小 (秒) */
-const FPS_WINDOW_S = 2;
+import { DataStore } from '../data/DataStore';
+import { StateMachine } from './StateMachine';
+import { NmiHandler } from './NmiHandler';
+import { Renderer } from '../render/Renderer';
+
+/** 帧回调函数类型 */
+export type FrameCallback = (frame: number) => void;
 
 export class GameLoop {
-  private running: boolean = false;
-  private paused: boolean = false;
-  private animationFrameId: number = 0;
-  private lastFrameTime: number = 0;
-  private frameCount: number = 0;
-
-  private ppuFiller: PpuDataFiller;
-  private renderer: Renderer;
+  private ds: DataStore;
   private stateMachine: StateMachine;
-  private dataCache: DataCache;
-  private platform: IPlatform;
-  private autoPlayController: AutoPlayController | null = null;
-
-  /** 🆕 v0.x.0: 音频引擎 (NMI 阶段同步更新) */
-  private audioEngine: AudioEngine | null = null;
-
-  /** v0.6.0: 场景构建器 (Model → VRAM+OAM) */
-  private sceneComposer: SceneComposer;
-  /** v0.6.0: 游戏数据模型 (logic ↔ view 之间的共享数据) */
-  private gameModel: GameModel;
-
-  /** FPS 统计 */
-  private fpsTimestamps: number[] = [];
-  private currentFps: number = 0;
-  private heartbeatInterval: number = 180;
-
-  constructor(
-    platform: IPlatform,
-    ppuFiller: PpuDataFiller,
-    renderer: Renderer,
-    stateMachine: StateMachine,
-    dataCache: DataCache,
-    sceneComposer: SceneComposer,
-    gameModel: GameModel,
-    audioEngine: AudioEngine | null = null,
-  ) {
-    this.platform = platform;
-    this.ppuFiller = ppuFiller;
-    this.renderer = renderer;
+  private nmiHandler: NmiHandler;
+  private renderer: Renderer | null = null;
+  
+  /** 运行状态 */
+  private _running: boolean = false;
+  private _paused: boolean = false;
+  private _animFrameId: number = 0;
+  
+  /** 性能统计 */
+  private _fps: number = 0;
+  private _frameTime: number = 0;
+  private _lastTime: number = 0;
+  private _fpsCounter: number = 0;
+  private _fpsAccum: number = 0;
+  
+  /** 帧回调 (用于调试/自动化) */
+  private _frameCallbacks: FrameCallback[] = [];
+  
+  /** Canvas 节点 (微信小程序需要用于 requestAnimationFrame) */
+  private _canvasNode: any = null;
+  
+  /** 目标FPS (NES原生≈60fps) */
+  private readonly _targetFps: number = 60;
+  private readonly _frameInterval: number = 1000 / 60;
+  
+  constructor(ds: DataStore, stateMachine: StateMachine, nmiHandler: NmiHandler) {
+    this.ds = ds;
     this.stateMachine = stateMachine;
-    this.dataCache = dataCache;
-    this.sceneComposer = sceneComposer;
-    this.gameModel = gameModel;
-    this.audioEngine = audioEngine;
+    this.nmiHandler = nmiHandler;
   }
-
-  /** 设置自动播放控制器 */
-  setAutoPlayController(ctrl: AutoPlayController | null): void {
-    this.autoPlayController = ctrl;
+  
+  /** 设置渲染器 */
+  setRenderer(renderer: Renderer): void {
+    this.renderer = renderer;
   }
-
-  start(): void {
-    if (this.running) return;
-    this.running = true;
-    this.paused = false;
-    this.lastFrameTime = 0;
-    this.fpsTimestamps = [];
-    console.log('[GameLoop] Starting 3-phase frame loop (PPU fill → Game Logic → Render)');
-    this.animationFrameId = this.platform.requestAnimationFrame(this.loop);
+  
+  /** 设置 Canvas 节点 (微信小程序中需要) */
+  setCanvasNode(node: any): void {
+    this._canvasNode = node;
   }
-
-  stop(): void {
-    this.running = false;
-    this.paused = false;
-    if (this.animationFrameId) {
-      this.platform.cancelAnimationFrame(this.animationFrameId);
-      this.animationFrameId = 0;
-    }
+  
+  /** 添加帧回调 */
+  onFrame(cb: FrameCallback): void {
+    this._frameCallbacks.push(cb);
   }
-
-  pause(): void { this.paused = true; }
-
-  resume(): void {
-    if (!this.paused) return;
-    this.paused = false;
-    this.lastFrameTime = 0;
-    this.fpsTimestamps = [];
-    // 重新发起 RAF 链
-    this.animationFrameId = this.platform.requestAnimationFrame(this.loop);
-  }
-
+  
   /**
-   * 帧循环 — 四段式架构 (v0.6.0) + 音频同步 (v0.x.0)
-   *
-   *   阶段1: PPU数据填充 + 音频更新 (NMI)
-   *     OAM DMA → VRAM写入 → 输入读取 → 帧计数 → 🆕 AudioEngine.update()
-   *     NES: CPU在VBlank期间填PPU寄存器 + 写APU寄存器
-   *
-   *   阶段2: 游戏逻辑
-   *     状态机更新 → AI/脚本 → 修改 GameModel
-   *     NES: NMI返回后CPU执行主循环
-   *
-   *   阶段3: 场景构建 (NEW v0.6.0)
-   *     SceneComposer: 读取 GameModel → 写入 VRAM + OAM
-   *     将 high-level model 翻译为 NES 底层绘图数据
-   *
-   *   阶段4: Canvas渲染
-   *     Renderer: 读取 VRAM + OAM → Canvas draw
+   * 安全时间戳 — 兼容微信小程序和浏览器
    */
-  private loop = (timestamp: number): void => {
-    if (!this.running) return;
-
-    if (this.paused) {
-      // 暂停时不请求下一帧，等 resume() 重启发起
-      return;
+  private _now(): number {
+    if (typeof performance !== 'undefined' && performance.now) {
+      return performance.now();
     }
-
-    this.animationFrameId = this.platform.requestAnimationFrame(this.loop);
-
-    // 首次RAF：同步时钟基准
-    if (this.lastFrameTime === 0) {
-      this.lastFrameTime = timestamp;
-      console.log(`[GameLoop] Clock synced (first RAF skip): base=${timestamp.toFixed(1)}`);
-      return;
+    return Date.now();
+  }
+  
+  // ==================== 生命周期 ====================
+  
+  /**
+   * 启动游戏 (对应 RESET → 主循环)
+   */
+  start(): void {
+    if (this._running) return;
+    
+    console.log('[GameLoop] 游戏启动');
+    
+    // RESET 初始化
+    this.reset();
+    
+    // 开始帧循环
+    this._running = true;
+    this._paused = false;
+    this._lastTime = this._now();
+    this._scheduleFrame();
+  }
+  
+  /**
+   * 暂停游戏
+   */
+  pause(): void {
+    this._paused = true;
+    console.log('[GameLoop] 游戏暂停');
+  }
+  
+  /**
+   * 恢复游戏
+   */
+  resume(): void {
+    if (!this._paused) return;
+    this._paused = false;
+    this._lastTime = this._now();
+    this._scheduleFrame();
+    console.log('[GameLoop] 游戏恢复');
+  }
+  
+  /**
+   * 停止游戏
+   */
+  stop(): void {
+    this._running = false;
+    if (this._animFrameId) {
+      this._cancelFrame(this._animFrameId);
+      this._animFrameId = 0;
     }
-
-    this.frameCount++;
-
-    // FPS 统计
-    this.fpsTimestamps.push(timestamp);
-    this.pruneFpsWindow(timestamp);
-
-    if (this.frameCount <= 3) {
-      const interval = timestamp - this.lastFrameTime;
-      console.log(`[GameLoop] Frame #${this.frameCount} | interval=${interval.toFixed(1)}ms | fps≈${this.currentFps}`);
+    console.log('[GameLoop] 游戏停止');
+  }
+  
+  // ==================== RESET 流程 ====================
+  
+  /**
+   * 完整RESET流程
+   * 对应原始:
+   *   Bank 7 $FFC0: MMC1初始化
+   *   Bank 7 $FFD7: JMP ($8000) → Bank 0 $809B
+   *   Bank 0 $809B: 等待VBlank → RAM清零 → PPU初始化 → JMP $81EE
+   */
+  reset(): void {
+    console.log('[GameLoop] RESET...');
+    
+    // 1. MMC1初始化 (对应 Bank 7 $FFC0-$FFD5)
+    this._mmc1Init();
+    
+    // 2. 数据中心重置
+    this.ds.reset();
+    
+    // 3. PPU初始化
+    this.ds.ppuMask = 0x06;    // 仅背景
+    this.ds.ppuCtrl = 0x10;    // NMI关闭, BG pattern=$1000, NT=$2000
+    this.ds.scrollX = 0;
+    this.ds.scrollY = 0;
+    
+    // 4. 清除OAM
+    this.nmiHandler.clearOam();
+    
+    // 5. 清除所有Nametable
+    this._clearNametables();
+    
+    // 6. 开启NMI
+    this.nmiHandler.enableNmi();
+    
+    // 7. 进入主循环
+    console.log('[GameLoop] RESET完成, 进入主循环');
+  }
+  
+  // ==================== 帧循环 ====================
+  
+  /**
+   * 调度下一帧
+   * 优先使用 Canvas.requestAnimationFrame (微信小程序)
+   * 其次使用 window.requestAnimationFrame (浏览器)
+   * 最后降级为 setTimeout
+   */
+  private _scheduleFrame(): void {
+    if (!this._running) return;
+    this._animFrameId = this._requestFrame((timestamp: number) => this._onFrame(timestamp));
+  }
+  
+  /**
+   * 请求动画帧 — 微信小程序兼容版
+   */
+  private _requestFrame(callback: (timestamp: number) => void): number {
+    // 1. 微信小程序 Canvas.requestAnimationFrame
+    if (this._canvasNode && typeof this._canvasNode.requestAnimationFrame === 'function') {
+      return this._canvasNode.requestAnimationFrame(callback);
     }
-
-    this.lastFrameTime = timestamp;
-
-    // ═══════════════════════════════════════════
-    // 阶段1: PPU数据填充 + 音频更新 (NMI)
-    //   NES: CPU在VBlank期间:
-    //     - 填PPU寄存器 (OAM DMA, VRAM, 调色板)
-    //     - 写APU寄存器 ($4000-$4013) → 音乐/音效
-    // ═══════════════════════════════════════════
-    this.ppuFiller.fillPpuData();
-
-    // 🆕 音频引擎更新 — 与 PPU 填充同阶段，确保音画同步
-    if (this.audioEngine) {
-      this.audioEngine.update();
+    // 2. 浏览器 window.requestAnimationFrame
+    if (typeof requestAnimationFrame === 'function') {
+      return requestAnimationFrame(callback);
     }
-
-    // ═══════════════════════════════════════════
-    // 阶段2: 游戏逻辑
-    //   状态更新 → 写入 GameModel
-    // ═══════════════════════════════════════════
-    if (this.dataCache.bankLock === 0) {
-      if (this.autoPlayController) {
-        this.autoPlayController.update(this.stateMachine.getCurrentStateId());
-      }
-      this.stateMachine.update();
-    }
-
-    // ═══════════════════════════════════════════
-    // 阶段3: 场景构建 (v0.6.0 NEW)
-    //   GameModel → VRAM + OAM
-    //   纯渲染数据转换，不涉及任何游戏逻辑
-    // ═══════════════════════════════════════════
-    this.sceneComposer.compose(this.gameModel, this.stateMachine.getCurrentStateId());
-
-    // ═══════════════════════════════════════════
-    // 阶段4: Canvas渲染
-    //   VRAM + OAM → Canvas 2D 绘制
-    // ═══════════════════════════════════════════
-    this.renderer.render(this.dataCache, this.stateMachine.getOamCache());
-
-    // 心跳日志
-    if (this.frameCount % this.heartbeatInterval === 0) {
-      console.log(`[GameLoop] Heartbeat: frame=${this.frameCount} fps=${this.currentFps}`);
-    }
-  };
-
-  private pruneFpsWindow(now: number): void {
-    const cutoff = now - FPS_WINDOW_S * 1000;
-    let removeCount = 0;
-    while (removeCount < this.fpsTimestamps.length && this.fpsTimestamps[removeCount] < cutoff) {
-      removeCount++;
-    }
-    if (removeCount > 0) {
-      this.fpsTimestamps.splice(0, removeCount);
-    }
-    if (this.fpsTimestamps.length >= 2) {
-      const duration = this.fpsTimestamps[this.fpsTimestamps.length - 1] - this.fpsTimestamps[0];
-      this.currentFps = duration > 0
-        ? Math.round((this.fpsTimestamps.length - 1) / (duration / 1000))
-        : 0;
+    // 3. 降级: setTimeout (约60fps)
+    return setTimeout(() => callback(Date.now()), 16) as unknown as number;
+  }
+  
+  /**
+   * 取消动画帧 — 微信小程序兼容版
+   */
+  private _cancelFrame(id: number): void {
+    if (this._canvasNode && typeof this._canvasNode.cancelAnimationFrame === 'function') {
+      this._canvasNode.cancelAnimationFrame(id);
+    } else if (typeof cancelAnimationFrame === 'function') {
+      cancelAnimationFrame(id);
+    } else {
+      clearTimeout(id);
     }
   }
-
-  getFps(): number { return this.currentFps; }
-  getFrameCount(): number { return this.frameCount; }
-  isRunning(): boolean { return this.running; }
-  isPaused(): boolean { return this.paused; }
+  
+  /**
+   * 每帧处理
+   * 对应原始:
+   *   $81EE: JSR $8314  (WaitNmi)
+   *   $81F1: JSR $81F7  (StateDispatch)
+   *   $81F4: JMP $81EE  (无限循环)
+   */
+  private _onFrame(timestamp: number): void {
+    if (!this._running || this._paused) return;
+    
+    // FPS计算
+    const elapsed = timestamp - this._lastTime;
+    this._lastTime = timestamp;
+    this._fpsAccum += elapsed;
+    this._fpsCounter++;
+    if (this._fpsAccum >= 1000) {
+      this._fps = this._fpsCounter;
+      this._fpsCounter = 0;
+      this._fpsAccum = 0;
+    }
+    
+    // ====== 1. NMI处理 (模拟VBlank) ======
+    // 对应 WaitNmi: 等待 ram_0300 变为非零
+    this.nmiHandler.process();
+    
+    // ====== 2. 游戏状态分派 ======
+    // 对应 JSR $81F7
+    try {
+      this.stateMachine.dispatch();
+    } catch (err) {
+      console.error('[GameLoop] 状态分派错误:', err);
+    }
+    
+    // ====== 3. 渲染 ======
+    if (this.renderer) {
+      try {
+        this.renderer.render();
+      } catch (err) {
+        console.error('[GameLoop] 渲染错误:', err);
+      }
+    }
+    
+    // ====== 4. 帧回调 ======
+    for (const cb of this._frameCallbacks) {
+      try {
+        cb(this.ds.frameCounter);
+      } catch (err) {
+        console.error('[GameLoop] 帧回调错误:', err);
+      }
+    }
+    
+    // ====== 5. 调度下一帧 ======
+    this._scheduleFrame();
+  }
+  
+  // ==================== 辅助方法 ====================
+  
+  /**
+   * MMC1 初始化
+   * 对应 Bank 7: $FFC0-$FFD5
+   * 
+   * 序列:
+   *   $FFC0: SEI
+   *   $FFC1: CLD
+   *   $FFC2: LDA #$10 → STA $2000  (PPU NMI关闭)
+   *   $FFC7: LDA #$80 → STA $8000  (MMC1 重置)
+   *   $FFCC: LDA #$1A
+   *   $FFCE: LDX #$05
+   *   $FFD0: STA $8000 → LSR → DEX → BNE  (5次串行写入)
+   *   
+   *   最终 MMC1 控制寄存器 = $1A:
+   *     bit1-0 = 10: 水平镜像
+   *     bit3-2 = 10: PRG Mode 2
+   *     bit4   = 1:  CHR Mode 1
+   */
+  private _mmc1Init(): void {
+    // MMC1控制寄存器初始值: $1A
+    // 水平镜像 + PRG Mode 2 + CHR Mode 1
+    this.ds.mmcCtrl = 0x1A;
+    this.ds.mmcShiftReg = 0x10;
+    this.ds.currentPrgBank = 0;
+    this.ds.currentChrBank0 = 0;
+    this.ds.currentChrBank1 = 0;
+  }
+  
+  /**
+   * 清除所有Nametable和属性表
+   * 对应原始: $838F ClearNametable
+   */
+  private _clearNametables(): void {
+    this.ds.nametable0.fill(0);
+    this.ds.nametable1.fill(0);
+    this.ds.nametable2.fill(0);
+    this.ds.nametable3.fill(0);
+  }
+  
+  // ==================== 查询 ====================
+  
+  get isRunning(): boolean { return this._running; }
+  get isPaused(): boolean { return this._paused; }
+  get fps(): number { return this._fps; }
+  get frameCount(): number { return this.ds.frameCounter; }
 }

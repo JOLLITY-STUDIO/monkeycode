@@ -1,0 +1,7 @@
+<view class="container">
+  <view class="header">CHR图库数据浏览</view>
+  <picker mode="selector" range="{{banks}}" bindchange="onBankSelect">
+    <view>Bank: {{selectedBank}}</view>
+  </picker>
+  <canvas type="2d" id="chr-canvas"></canvas>
+</view>

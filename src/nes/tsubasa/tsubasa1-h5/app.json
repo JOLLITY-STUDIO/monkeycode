@@ -1,19 +1,21 @@
 {
   "pages": [
     "pages/game/game",
-    "pages/audiopage/audiopage",
-    "pages/chr-all/chr-all",
-    "pages/pattern-table-all/pattern-table-all",
-    "pages/nametable-all/nametable-all",
-    "pages/sprite-all/sprite-all",
-    "pages/palette-all/palette-all",
-    "pages/nt-debug/nt-debug"
+    "pages/database/render-viewer/render-viewer",
+    "pages/database/chr-all/chr-all",
+    "pages/database/pattern-table-all/pattern-table-all",
+    "pages/database/nametable-all/nametable-all",
+    "pages/database/sprite-all/sprite-all",
+    "pages/database/palette-all/palette-all",
+    "pages/database/audio-all/audio-all",
+    "pages/database/data-api/data-api"
   ],
   "window": {
-    "navigationBarTitleText": "天使之翼",
-    "navigationBarBackgroundColor": "#000000",
+    "navigationBarTitleText": "天使之翼1",
+    "navigationBarBackgroundColor": "#1a1a2e",
     "navigationBarTextStyle": "white",
     "backgroundColor": "#000000"
   },
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "debug": false
 }

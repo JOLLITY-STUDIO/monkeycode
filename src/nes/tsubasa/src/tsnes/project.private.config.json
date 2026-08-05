@@ -15,11 +15,18 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/h5game/h5game",
-          "pathName": "pages/h5game/h5game",
+          "name": "pages/tools/data-viewer/data-viewer",
+          "pathName": "pages/tools/data-viewer/data-viewer",
           "query": "",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "pages/h5game/h5game",
+          "pathName": "pages/h5game/h5game",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         }
       ]
     }
