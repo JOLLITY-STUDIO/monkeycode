@@ -229,33 +229,8 @@ export class DebugPanel {
       if (hRest > 0) drawRectEdges(0, 0, hRest, vRest);
     }
 
-    // ── 扫描线：视口内从顶到底移动 ──
-    const nesLine = (this.fpsFrameCount * 2) % 240;
-    const worldY = (vpY + nesLine) % 480;
-    let scanX0 = vpX;
-    let scanX1 = vpX + vpW - 1;
-    if (scanX1 >= CW) scanX1 -= CW;
-
-    const SCAN_FULL = 0xff_00ff00;
-    const SCAN_FADE = 0x44_00ff00;
-    for (let dy = -2; dy <= 2; dy++) {
-      const ry = worldY + dy;
-      if (ry < 0 || ry >= CH) continue;
-      const color = dy === 0 ? SCAN_FULL : SCAN_FADE;
-      const rowOff = ry * CW;
-      // 扫描线只画在视口范围内
-      if (scanX1 > scanX0) {
-        // 无 wrap：连续一段
-        for (let x = scanX0; x <= scanX1; x++) buf[rowOff + x] = color;
-      } else {
-        // 水平 wrap：两段
-        for (let x = scanX0; x < CW; x++) buf[rowOff + x] = color;
-        for (let x = 0; x <= scanX1; x++) buf[rowOff + x] = color;
-      }
-    }
-
     this.debugCanvas.blit(buf, CW, CH);
-    this.debugCanvas.drawTextOverlay(`↙视口 scan ${nesLine}`, vpX + 2, worldY + 5, 7, '#ffff00');
+    this.debugCanvas.drawTextOverlay(`视口 ↗`, vpX + 2, vpY + 14, 7, '#ffff00');
 
     this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, CW, CH);
     this._updatePaletteStrips(nes, ['bg']);
