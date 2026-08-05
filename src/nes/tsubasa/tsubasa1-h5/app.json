@@ -6,7 +6,8 @@
     "pages/pattern-table-all/pattern-table-all",
     "pages/nametable-all/nametable-all",
     "pages/sprite-all/sprite-all",
-    "pages/palette-all/palette-all"
+    "pages/palette-all/palette-all",
+    "pages/nt-debug/nt-debug"
   ],
   "window": {
     "navigationBarTitleText": "天使之翼",

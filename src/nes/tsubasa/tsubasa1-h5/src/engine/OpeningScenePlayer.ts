@@ -588,13 +588,17 @@ export class OpeningScenePlayer {
       const tiles = pageData.tiles;
       let nonZero = 0;
 
-      // 写入名称表 (32×30 = 960 tiles)
+      // ROM RLE 解码器写入 VRAM 起始地址 = $20A8 (offset 0xA8)
+      // Python 解码的 tiles[] 从第一个 RLE 字节开始, tiles[0] → VRAM $20A8
+      // 写入时需映射: tiles[i] → VRAM $2000 + (i + 0xA8) % 960
+      const NT_OFFSET = 0xA8;
       for (let i = 0; i < tiles.length && i < 960; i++) {
-        this.renderer.writeVram(0x2000 + i, tiles[i]);
+        const vramOffset = (i + NT_OFFSET) % 960;
+        this.renderer.writeVram(0x2000 + vramOffset, tiles[i]);
         if (tiles[i] !== 0) nonZero++;
       }
 
-      console.log(`[Opening] Page ${page}: ${nonZero}/${tiles.length} tiles from ROM RLE data`);
+      console.log(`[Opening] Page ${page}: ${nonZero}/${tiles.length} tiles from ROM RLE data (VRAM offset=$20A8)`);
     } else {
       // 回退: 没有数据时填充中央区域
       console.warn(`[Opening] Page ${page}: No ROM data, using fallback`);
