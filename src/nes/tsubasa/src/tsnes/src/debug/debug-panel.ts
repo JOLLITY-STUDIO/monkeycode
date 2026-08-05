@@ -167,7 +167,7 @@ export class DebugPanel {
   }
 
   private _renderNT(nes: any): void {
-    const { nt } = renderAllNameTables(nes);
+    const { nt, scrollX, scrollY } = renderAllNameTables(nes);
     const CW = 512, CH = 480;
     const bg = 0xff_0d0d22;
     const buf = new Uint32Array(CW * CH);
@@ -186,7 +186,38 @@ export class DebugPanel {
         }
       }
     }
+
+    // ── 扫描线指示 ──
+    const ppu = nes.ppu;
+    const rawS = ppu.scanline; // PPU 内部: 21-260 = visible
+    const nesLine = rawS - 21;
+    const inVisible = rawS >= 21 && rawS <= 260;
+
+    const SCAN_COLOR = 0xff_00ff00; // 荧光绿
+    let drawY: number;
+    let label: string;
+
+    if (inVisible && nesLine >= 0 && nesLine < 240) {
+      drawY = (scrollY + nesLine) % 480;
+      label = `SCAN ${nesLine}`;
+    } else {
+      drawY = 2;
+      label = rawS < 21 ? `VBL ${rawS}` : `POST ${rawS}`;
+    }
+
+    // 3px 粗荧光绿横线
+    for (let dy = -1; dy <= 1; dy++) {
+      const ry = drawY + dy;
+      if (ry < 0 || ry >= CH) continue;
+      const rowOff = ry * CW;
+      for (let x = 0; x < CW; x++) buf[rowOff + x] = SCAN_COLOR;
+    }
+
     this.debugCanvas.blit(buf, CW, CH);
+
+    // 文字标注（2D canvas overlay）
+    this.debugCanvas.drawTextOverlay(label, 8, drawY + 5, 7, '#00ff00');
+
     this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, CW, CH);
     this._updatePaletteStrips(nes, ['bg']);
     this.page.setData({ ntDataText: generateNTDataText(nes, this.fpsFrameCount) });
@@ -195,9 +226,9 @@ export class DebugPanel {
   private _renderPT(nes: any): void {
     const ppu = nes.ppu;
     const { bgTable, spTable } = renderBothPatternTables(nes);
-    const pal0 = bgTable === 0 ? ppu.imgPalette : ppu.sprPalette;
-    const pal1 = spTable === 1 ? ppu.sprPalette : ppu.imgPalette;
-    const result = renderBothPatternTables(nes, 0, pal0, pal1);
+    const palT0 = bgTable === 0 ? ppu.imgPalette : ppu.sprPalette;
+    const palT1 = spTable === 1 ? ppu.sprPalette : ppu.imgPalette;
+    const result = renderBothPatternTables(nes, 0, palT0, palT1);
     const table0 = result.table0;
     const table1 = result.table1;
 
@@ -310,6 +341,22 @@ export class DebugPanel {
     }
 
     this.debugCanvas.blit(buf, totalW, totalH);
+
+    // ── 左侧网格每个 cell 标注精灵索引 + 调色板组 ──
+    for (let i = 0; i < Math.min(sprites.length, SPR_COLS * SPR_ROWS); i++) {
+      const spr = sprites[i];
+      const col = i % SPR_COLS;
+      const row = Math.floor(i / SPR_COLS);
+      const bx = col * SPR_CELL_W;
+      const by = row * SPR_CELL_H;
+      const isVisible = spr.y < 0xF0;
+      const grp = spr.palette >> 2; // 0/4/8/12 → 0/1/2/3
+      // 只标注可见精灵，但在网格左上角标注所有（不可见用暗色）
+      const label = `G${grp}`;
+      const labelColor = isVisible ? `hsl(${60 + grp * 90}, 100%, 60%)` : '#333';
+      this.debugCanvas.drawTextOverlay(label, bx + 1, by + 2, 7, labelColor);
+    }
+
     this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, totalW, totalH);
     this._updatePaletteStrips(nes, ['spr']);
 
