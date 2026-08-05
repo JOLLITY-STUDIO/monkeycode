@@ -3,7 +3,7 @@
  *
  * 职责：
  * - 管理 debug canvas 的初始化与绘制
- * - 协调所有 debug viewer (NT/PT/SPR/PAL/ASM) 的渲染
+ * - 协调所有 debug viewer (NT/PT/SPR/ASM) 的渲染
  * - 管理导出 canvas 与 SPR 导出
  * - 管理文本数据的生成和复制
  *
@@ -12,7 +12,6 @@
 
 import { renderAllNameTables } from './nametable-viewer';
 import { renderBothPatternTables, generatePTDataText } from './pattern-table-viewer';
-import { renderPaletteImage } from './palette-viewer';
 import { getSpriteData } from './sprite-viewer';
 import { disassembleRange } from './disasm';
 
@@ -20,7 +19,6 @@ import {
   generateNTDataText,
   generateSPOAMDataText,
   generateSPTDataText,
-  generatePaletteDataText,
 } from './text-generator';
 
 import { DebugCanvasManager } from './debug-canvas';
@@ -34,7 +32,7 @@ const SPR_CELL_H = 32;
 const SPR_COLS = 8;
 const SPR_ROWS = 8;
 
-export type DebugTab = '' | 'nametable' | 'patterntable' | 'sprite' | 'palette' | 'disasm';
+export type DebugTab = '' | 'nametable' | 'patterntable' | 'sprite' | 'disasm';
 
 export interface DebugDataUpdater {
   setData(data: Record<string, any>): void;
@@ -80,11 +78,58 @@ export class DebugPanel {
     const ntClear = (prevTab === 'nametable' && tab !== 'nametable') ? { ntDataText: '' } : {};
     const ptClear = (prevTab === 'patterntable' && tab !== 'patterntable') ? { ptDataText: '' } : {};
     const sptClear = (prevTab === 'sprite' && tab !== 'sprite') ? { sptDataText: '' } : {};
-    const palClear = (prevTab === 'palette' && tab !== 'palette') ? { palDataText: '' } : {};
-    this.page.setData({ debugTab: tab, debugLines: '', ...ntClear, ...ptClear, ...sptClear, ...palClear });
-    if (tab === '' || tab !== 'disasm') {
+
+    // 每个 tab 的 canvas 原始像素尺寸
+    const canvasSizeMap: Record<DebugTab, { w: number; h: number } | null> = {
+      '': null,
+      'nametable': { w: 512, h: 480 },
+      'patterntable': { w: 264, h: 128 },
+      'sprite': { w: 528, h: 256 },
+      'disasm': null,
+    };
+
+    this.page.setData({
+      debugTab: tab,
+      debugLines: '',
+      debugCanvasStyle: '',
+      ...ntClear,
+      ...ptClear,
+      ...sptClear,
+    });
+
+    if (tab === '' || tab === 'disasm') {
       this.debugCanvas.reset();
+      return;
     }
+
+    this.debugCanvas.reset();
+
+    // 等下一帧 DOM 布局完成后再测量容器，按原始比例等比例撑满
+    const size = canvasSizeMap[tab];
+    if (size) {
+      wx.nextTick(() => this._fitCanvasStyle(size.w, size.h));
+    }
+  }
+
+  /** 查询 debug canvas 容器尺寸，按原始比例计算最大可显示尺寸 */
+  private _fitCanvasStyle(origW: number, origH: number): void {
+    const query = wx.createSelectorQuery();
+    query.select('.debug-canvas-wrap, .nt-canvas-wrap, .pt-canvas-wrap, .spt-canvas-wrap')
+      .boundingClientRect()
+      .exec((res: any) => {
+        const rect = res && res[0];
+        if (!rect || !rect.width || !rect.height) return;
+        const ratio = origW / origH;
+        let w = rect.width;
+        let h = w / ratio;
+        if (h > rect.height) {
+          h = rect.height;
+          w = h * ratio;
+        }
+        this.page.setData({
+          debugCanvasStyle: `width:${Math.floor(w)}px;height:${Math.floor(h)}px;`,
+        });
+      });
   }
 
   // ════════════════════════════════════════════════════════
@@ -106,6 +151,8 @@ export class DebugPanel {
   // ── 图形类 viewer ──
   private _renderGraphical(tab: DebugTab, nes: any): void {
     this.debugCanvas.init();
+    // init() 是异步的，ctx 可能还没 ready
+    if (!this.debugCanvas.ctx) return;
 
     if (!nes) return;
     try {
@@ -113,7 +160,6 @@ export class DebugPanel {
         case 'nametable':    this._renderNT(nes); break;
         case 'patterntable': this._renderPT(nes); break;
         case 'sprite':       this._renderSprite(nes); break;
-        case 'palette':      this._renderPalette(nes); break;
       }
     } catch (e: any) {
       console.warn('[debug] render error:', e.message);
@@ -142,6 +188,7 @@ export class DebugPanel {
     }
     this.debugCanvas.blit(buf, CW, CH);
     this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, CW, CH);
+    this._updatePaletteStrips(nes, ['bg']);
     this.page.setData({ ntDataText: generateNTDataText(nes, this.fpsFrameCount) });
   }
 
@@ -156,14 +203,14 @@ export class DebugPanel {
 
     const CELL = 128;
     const GAP = 8;
-    const CW = CELL;
-    const CH = CELL * 2 + GAP;
+    const CW = CELL * 2 + GAP;
+    const CH = CELL;
     const buf = new Uint32Array(CW * CH);
     buf.fill(0xff_0d0d22);
 
-    const copyTable = (src: Uint32Array, oy: number) => {
+    const copyTable = (src: Uint32Array, ox: number) => {
       for (let y = 0; y < CELL; y++) {
-        let di = (oy + y) * CW;
+        let di = y * CW + ox;
         let si = y * CELL;
         for (let x = 0; x < CELL; x++) {
           buf[di++] = src[si++];
@@ -176,6 +223,13 @@ export class DebugPanel {
 
     this.debugCanvas.blit(buf, CW, CH);
     this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, CW, CH);
+    // 按 Table 左右顺序生成色条：T0 在左，T1 在右
+    const ptTypes: ('bg' | 'spr')[] = [
+      bgTable === 0 ? 'bg' : 'spr',
+      bgTable === 1 ? 'bg' : 'spr',
+    ];
+    const ptAddrs: string[] = ['$0000', '$1000'];
+    this._updatePaletteStrips(nes, ptTypes, ptAddrs);
     this.page.setData({ ptDataText: generatePTDataText(nes, this.fpsFrameCount) });
   }
 
@@ -185,11 +239,13 @@ export class DebugPanel {
 
     const gridW = SPR_COLS * SPR_CELL_W;   // 256
     const gridH = SPR_ROWS * SPR_CELL_H;   // 256
-    const previewW = SCREEN_W;
-    const previewH = SCREEN_H;
+    const previewW = SCREEN_W;             // 256
+    const previewH = SCREEN_H;             // 240
+    const previewBoxH = gridH;             // 256，与左侧 grid 等高
+    const previewYOffset = Math.floor((previewBoxH - previewH) / 2); // 8
     const GAP = 16;
     const totalW = gridW + GAP + previewW;   // 528
-    const totalH = Math.max(gridH, previewH); // 256
+    const totalH = Math.max(gridH, previewBoxH); // 256
     const buf = new Uint32Array(totalW * totalH);
     buf.fill(0xff_0d0d22);
 
@@ -222,9 +278,9 @@ export class DebugPanel {
       }
     }
 
-    // 右侧：Preview 按真实位置拼合
+    // 右侧：Preview 按真实位置拼合，垂直居中在 256×256 区域内
     const previewX = gridW + GAP;
-    for (let y = 0; y < previewH; y++) {
+    for (let y = 0; y < previewBoxH; y++) {
       let di = y * totalW + previewX;
       for (let x = 0; x < previewW; x++) {
         buf[di++] = 0xff_000000;
@@ -241,12 +297,13 @@ export class DebugPanel {
       for (let py = 0; py < ih; py++) {
         const screenY = sy + py;
         if (screenY < 0 || screenY >= previewH) continue;
+        const destY = previewYOffset + screenY;
         for (let px = 0; px < iw; px++) {
           const screenX = sx + px;
           if (screenX < 0 || screenX >= previewW) continue;
           const c = spr.image[py * iw + px];
           if (c !== 0x00000000) {
-            buf[(py === 0 ? 0 : screenY) * totalW + previewX + screenX] = c;
+            buf[destY * totalW + previewX + screenX] = c;
           }
         }
       }
@@ -254,7 +311,7 @@ export class DebugPanel {
 
     this.debugCanvas.blit(buf, totalW, totalH);
     this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, totalW, totalH);
-    this.sprExportData = { sprites };
+    this._updatePaletteStrips(nes, ['spr']);
 
     const text = generateSPOAMDataText(nes) + '\n\n' + generateSPTDataText(nes);
     this.page.setData({ sptDataText: text });
@@ -265,12 +322,49 @@ export class DebugPanel {
     }
   }
 
-  private _renderPalette(nes: any): void {
-    const img = renderPaletteImage(nes);
-    this.debugCanvas.blit(img.data, img.width, img.height);
-    this._drawFrameHUD(`Frame #${this.fpsFrameCount}`, img.width, img.height);
-    const text = generatePaletteDataText(nes, this.fpsFrameCount);
-    this.page.setData({ palDataText: text });
+  // ── 调色板色条（嵌入 NT/PT/SPR 视图顶部，支持多条并存）──
+  private _updatePaletteStrips(
+    nes: any,
+    types: ('bg' | 'spr')[],
+    tableAddrs?: string[],
+  ): void {
+    const ppu = nes.ppu;
+    const vramMem: Uint8Array | undefined = ppu?.vramMem;
+    if (!vramMem) return;
+
+    interface PaletteItem { addr: string; colorIdx: string; color: string; }
+    const strips: { type: string; tableAddr?: string; groups: PaletteItem[][] }[] = [];
+
+    for (let i = 0; i < types.length; i++) {
+      const type = types[i];
+      const palSrc = type === 'bg' ? ppu.imgPalette : ppu.sprPalette;
+      if (!palSrc) continue;
+
+      const groups: PaletteItem[][] = [];
+      const vramBase = type === 'bg' ? 0x3F00 : 0x3F10;
+      for (let g = 0; g < 4; g++) {
+        const group: PaletteItem[] = [];
+        for (let c = 0; c < 4; c++) {
+          const slot = g * 4 + c;
+          const color = palSrc[slot];
+          const r = (color >> 16) & 0xff;
+          const gv = (color >> 8) & 0xff;
+          const b = color & 0xff;
+          const rawIdx = vramMem[vramBase + slot] & 0x3F;
+          const addr = (vramBase + slot).toString(16).toUpperCase();
+          const colorIdx = rawIdx.toString(16).padStart(2, '0').toUpperCase();
+          group.push({ addr, colorIdx, color: `rgb(${r},${gv},${b})` });
+        }
+        groups.push(group);
+      }
+      strips.push({
+        type: type.toUpperCase(),
+        tableAddr: tableAddrs?.[i],
+        groups,
+      });
+    }
+
+    this.page.setData({ paletteStrips: strips });
   }
 
   private _renderDisasm(sys: any | null): void {

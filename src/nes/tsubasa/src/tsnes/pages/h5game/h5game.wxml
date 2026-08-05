@@ -1,3 +1,24 @@
+<template name="paletteStrips">
+  <view class="palette-strips">
+    <block wx:for="{{strips}}" wx:for-item="strip" wx:key="type">
+      <view class="palette-strip">
+        <text class="palette-label">{{strip.tableAddr ? strip.type + ' ' + strip.tableAddr : strip.type}}</text>
+        <block wx:for="{{strip.groups}}" wx:for-item="group" wx:key="*this">
+          <view class="palette-group">
+            <block wx:for="{{group}}" wx:for-item="item" wx:key="addr">
+              <view class="palette-swatch-box">
+                <text class="palette-addr">{{item.addr}}</text>
+                <view class="palette-swatch" style="background:{{item.color}}"></view>
+                <text class="palette-color-idx">#{{item.colorIdx}}</text>
+              </view>
+            </block>
+          </view>
+        </block>
+      </view>
+    </block>
+  </view>
+</template>
+
 <view class="game-container">
   <!-- 隐藏的导出 canvas（off-screen） -->
   <canvas type="2d" id="exportCanvas" class="export-canvas"></canvas>
@@ -6,6 +27,7 @@
     <text class="status-tag">{{debugTab ? 'Debug: ' + debugTabs[debugTab] : '双引擎'}}</text>
     <text class="status-text">{{status}}</text>
     <text class="fps-text">FPS: {{fps}}</text>
+    <navigator url="/pages/tools/data-viewer/data-viewer" class="data-btn">数据</navigator>
   </view>
 
   <!-- 游戏 + Debug 左右双栏布局 (PC 宽屏) -->
@@ -30,32 +52,17 @@
         <view class="debug-tab {{debugTab === 'nametable' ? 'active' : ''}}" bindtap="onDebugTab" data-tab="nametable">NT</view>
         <view class="debug-tab {{debugTab === 'patterntable' ? 'active' : ''}}" bindtap="onDebugTab" data-tab="patterntable">PT</view>
         <view class="debug-tab {{debugTab === 'sprite' ? 'active' : ''}}" bindtap="onDebugTab" data-tab="sprite">SPR</view>
-        <view class="debug-tab {{debugTab === 'palette' ? 'active' : ''}}" bindtap="onDebugTab" data-tab="palette">PAL</view>
         <view class="debug-tab {{debugTab === 'disasm' ? 'active' : ''}}" bindtap="onDebugTab" data-tab="disasm">ASM</view>
       </view>
 
       <!-- Debug 面板（有 tab 时展开） -->
       <view class="debug-panel {{debugTab ? 'visible' : ''}}">
-        <!-- PAL 特殊：canvas + 可复制 palette 文字数据 -->
-        <block wx:if="{{debugTab === 'palette'}}">
-          <view class="pt-canvas-wrap">
-            <canvas type="2d" id="debugCanvas" class="debug-canvas"></canvas>
-          </view>
-          <view class="pt-data-wrap">
-            <view class="data-toolbar">
-              <text class="data-toolbar-label">PAL Data</text>
-              <view class="data-copy-btn" bindtap="onCopyPALData">[ 复制 ]</view>
-            </view>
-            <scroll-view class="pt-data-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
-              <text class="pt-data-text">{{palDataText}}</text>
-            </scroll-view>
-          </view>
-        </block>
         <!-- 画布类查看器（其他不含文字的） -->
         <!-- NT 特殊：canvas + 可复制文字数据 -->
         <block wx:if="{{debugTab === 'nametable'}}">
+          <template is="paletteStrips" data="{{strips: paletteStrips}}"/>
           <view class="nt-canvas-wrap">
-            <canvas type="2d" id="debugCanvas" class="debug-canvas"></canvas>
+            <canvas type="2d" id="debugCanvas" class="debug-canvas" style="{{debugCanvasStyle}}"></canvas>
           </view>
           <view class="nt-data-wrap">
             <view class="data-toolbar">
@@ -69,8 +76,9 @@
         </block>
         <!-- PT 特殊：canvas + CHR bank 可复制文字数据 -->
         <block wx:if="{{debugTab === 'patterntable'}}">
+          <template is="paletteStrips" data="{{strips: paletteStrips}}"/>
           <view class="pt-canvas-wrap">
-            <canvas type="2d" id="debugCanvas" class="debug-canvas"></canvas>
+            <canvas type="2d" id="debugCanvas" class="debug-canvas" style="{{debugCanvasStyle}}"></canvas>
           </view>
           <view class="pt-data-wrap">
             <view class="data-toolbar">
@@ -84,6 +92,7 @@
         </block>
         <!-- SPR 特殊：canvas + 可复制 SPT 文字数据 -->
         <block wx:if="{{debugTab === 'sprite'}}">
+          <template is="paletteStrips" data="{{strips: paletteStrips}}"/>
           <view class="spr-toolbar">
             <text class="spr-toolbar-label">SPR Viewer</text>
             <view class="data-copy-btn" bindtap="onCopySPRData">[ 复制 ]</view>
@@ -100,7 +109,7 @@
             <input class="spr-dur-input" type="number" value="{{sprRecordDur}}" bindinput="onRecordDurInput" placeholder="手动"/>
           </view>
           <view class="spt-canvas-wrap">
-            <canvas type="2d" id="debugCanvas" class="debug-canvas"></canvas>
+            <canvas type="2d" id="debugCanvas" class="debug-canvas" style="{{debugCanvasStyle}}"></canvas>
           </view>
           <view class="spt-data-wrap">
             <scroll-view class="spt-data-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">

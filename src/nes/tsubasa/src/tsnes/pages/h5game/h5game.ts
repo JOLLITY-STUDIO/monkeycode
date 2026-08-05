@@ -23,14 +23,14 @@ Page({
       nametable: 'NT',
       patterntable: 'PT',
       sprite: '精灵',
-      palette: '调色板',
       disasm: '汇编',
     } as Record<string, string>,
     debugLines: '',
     ntDataText: '',
     ptDataText: '',
     sptDataText: '',
-    palDataText: '',
+    paletteStrips: [] as { type: string; tableAddr?: string; groups: { addr: string; colorIdx: string; color: string }[][] }[],
+    debugCanvasStyle: '',
     paused: false,
     turboLevel: 0,
     showFpsBtn: false,
@@ -110,7 +110,6 @@ Page({
   onCopyNTData()  { this._debugPanel?.copyData('ntDataText', 'NT 数据'); },
   onCopyPTData()  { this._debugPanel?.copyData('ptDataText', 'PT 数据'); },
   onCopySPRData() { this._debugPanel?.copyData('sptDataText', 'SPR 数据'); },
-  onCopyPALData() { this._debugPanel?.copyData('palDataText', 'PAL 数据'); },
 
   // ── 保存到文件 ──
 
