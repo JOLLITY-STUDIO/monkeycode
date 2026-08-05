@@ -181,20 +181,28 @@ export function generateSPOAMDataText(nes: any): string {
   const lines: string[] = [];
   lines.push(`── OAM 可见精灵 (${is8x16 ? '8×16' : '8×8'}) ──`);
   const visibleTiles: number[] = [];
+  const visibleSprites: Array<{x: number, y: number, tile: number, attr: number, grp: number, hflip: boolean, vflip: boolean, pri: boolean}> = [];
   let visible = 0;
   for (let i = 0; i < 64; i++) {
     const y = ppu.sprY[i];
     if (y >= 0xF0) continue;
     const x = ppu.sprX[i];
     const tile = ppu.sprTile[i];
-    const pal = ppu.sprCol[i];
-    const flipH = ppu.horiFlip[i] === 1 ? 'H' : '.';
-    const flipV = ppu.vertFlip[i] === 1 ? 'V' : '.';
+    const attr = ppu.sprCol[i]; // 完整属性字节 (bit7=VFlip, bit6=HFlip, bit5=Pri, bit1-0=调色板组)
+    const palGroup = attr & 0x03;
+    const isPri = !!(attr & 0x20);
+    const isFlipH = !!(attr & 0x40);
+    const isFlipV = !!(attr & 0x80);
+    const pri = isPri ? 'P' : '.';
+    const flipH = isFlipH ? 'H' : '.';
+    const flipV = isFlipV ? 'V' : '.';
     const xs = x.toString(16).toUpperCase().padStart(3, '0');
     const ys = y.toString(16).toUpperCase().padStart(3, '0');
     const ts = tile.toString(16).toUpperCase().padStart(2, '0');
-    lines.push(`  #${String(i).padStart(2)} ($${xs},$${ys}) Tile=$${ts} Pal=$${pal.toString(16)} ${flipH}${flipV}`);
+    const as = attr.toString(16).toUpperCase().padStart(2, '0');
+    lines.push(`  #${String(i).padStart(2)} ($${xs},$${ys}) Tile=$${ts} Attr=$${as} Grp=${palGroup} ${pri}${flipH}${flipV}`);
     visibleTiles.push(tile);
+    visibleSprites.push({ x, y, tile, attr, grp: palGroup, hflip: isFlipH, vflip: isFlipV, pri: isPri });
     visible++;
   }
   if (visible === 0) {
@@ -208,6 +216,9 @@ export function generateSPOAMDataText(nes: any): string {
     lines.push('── 去重 tile 列表 ──');
     const unique = [...new Set(visibleTiles)].sort((a, b) => a - b);
     lines.push(unique.map(t => '0x' + t.toString(16).toUpperCase().padStart(2, '0')).join(', '));
+    lines.push('');
+    lines.push('── JSON 结构化输出（可直接复制使用）──');
+    lines.push(JSON.stringify(visibleSprites, null, 1));
   }
   return lines.join('\n');
 }
