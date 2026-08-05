@@ -101,6 +101,7 @@ export class GameLoop {
 
   stop(): void {
     this.running = false;
+    this.paused = false;
     if (this.animationFrameId) {
       this.platform.cancelAnimationFrame(this.animationFrameId);
       this.animationFrameId = 0;
@@ -110,9 +111,12 @@ export class GameLoop {
   pause(): void { this.paused = true; }
 
   resume(): void {
+    if (!this.paused) return;
     this.paused = false;
     this.lastFrameTime = 0;
     this.fpsTimestamps = [];
+    // 重新发起 RAF 链
+    this.animationFrameId = this.platform.requestAnimationFrame(this.loop);
   }
 
   /**
@@ -135,9 +139,13 @@ export class GameLoop {
    */
   private loop = (timestamp: number): void => {
     if (!this.running) return;
-    this.animationFrameId = this.platform.requestAnimationFrame(this.loop);
 
-    if (this.paused) return;
+    if (this.paused) {
+      // 暂停时不请求下一帧，等 resume() 重启发起
+      return;
+    }
+
+    this.animationFrameId = this.platform.requestAnimationFrame(this.loop);
 
     // 首次RAF：同步时钟基准
     if (this.lastFrameTime === 0) {

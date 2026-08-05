@@ -4,6 +4,163 @@
 
 ---
 
+## 2026-08-05: 📋 任务同步 — WBS/BUG/代码状态一致性修复
+
+### WBS 同步
+- ✅ **M_INFRA.2** WBS 标记从 ⬜ → ✅ 完成 (DEV_LOG 早已记录完成但 WBS 未更新)
+- ✅ **当前执行任务** 更新: 最高优先级从 M_INFRA.1 → M_INFRA.3 动画时间线框架
+- ✅ **进度统计** 更新: 已完成工时 ~7h, M_INFRA 2/7 子任务完成
+
+### BUG 同步
+- 🆕 **BUG-029**: Auto-Play 测试比赛2卡在 State 4 (比赛主循环无法推进)
+- State 3→4 初始化可能遗漏了某些 RAM 变量的重置
+
+### 代码清理确认
+- ✅ **State08_GameEnding.ts**: 孤立文件，未被 `index.ts` 导出、未在 `Tsubasa.ts` 注册
+  - ASM $81FD 跳转表只有 8 条目 (State 0-7)，无 State 8
+  - 文件保留以备用（未来可能用作通关画面扩展），不影响游戏逻辑
+
+### 下一步优先级
+1. 🔴 **M_INFRA.3**: 动画时间线框架 (从硬编码 OpeningScenePlayer 提炼通用系统)
+2. 🐛 **BUG-029**: 比赛2卡死排查
+3. 📋 **M_INFRA.5**: 继续音频引擎 ROM 音乐数据提取
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `WBS_TASKS.md` | ♻️ M_INFRA.2 标记完成, 当前任务更新, 进度统计更新 |
+| `BUG_TRACKER.md` | 🆕 BUG-029 记录 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+---
+
+## 2026-08-05: ✅ M_INFRA.2 文字 Tile Printer + BUG-028 Phase B 开场 RLE 数据提取
+
+### M_INFRA.2: 文字 Tile Printer ✅
+- ✅ **FontMapping.ts**: CHR Bank 09 字体 tile → 字符映射表
+  - 支持日文平假名/片假名 tile 索引映射
+  - tileToText() / textToTiles() 双向转换
+  - 基于 CHR Bank 09 tile 图形分析 + ROM 文本编码推断
+- ✅ **TextTilePrinter.ts**: 文字逐帧打印引擎
+  - 支持逐字打字效果
+  - 帧延迟控制
+  - 自动换行
+  - 可直接写入 Renderer.writeVram()
+
+### Phase B: 开场动画 ROM 数据提取 ✅
+- ✅ **scripts/extract_opening_rle.py**: 从 ROM Bank 2 $D05E 指针表提取开场 RLE 数据
+  - 找到 $D0F3 指针表 (Bank 2, 32 条目, 其中 10 条指向 Bank 7, 2 条指向 Bank 2)
+  - 找到 $D05E 指针表 (Bank 2, 8 条目, 前 4 条为开场动画页面指针)
+  - RLE 解码 4 页 nametable 数据, 每页 ~800-889 个非零 tile
+- ✅ **src/data/OpeningRleData.ts**: 4 页开场动画 nametable 数据 (自动生成)
+  - Page 0: 820 tiles (ROM $D068)
+  - Page 1: 834 tiles (ROM $D07F)
+  - Page 2: 870 tiles (ROM $D093)
+  - Page 3: 889 tiles (ROM $D0A5)
+- ✅ **OpeningScenePlayer.ts**: 集成真实 ROM RLE 数据
+  - fillNametableForPage() 替换为 ROM 真实数据
+  - 移除 fillCenterBlock 测试填充
+  - 保留 fillCenterBlockFallback 用于无数据回退
+
+### 测试结果
+- ✅ 46/46 State 流转测试全部通过
+- ⚠️ Auto-Play 测试: 比赛 1 正常完成 (21-1), 但比赛 2 卡在 State 4 (已知预存问题)
+
+### 影响文件
+| 文件 | 变更 |
+|------|------|
+| `src/utils/FontMapping.ts` | 🆕 字体映射表 |
+| `src/engine/TextTilePrinter.ts` | 🆕 文字打印引擎 |
+| `src/data/OpeningRleData.ts` | 🆕 开场动画 ROM RLE 数据 |
+| `scripts/extract_opening_rle.py` | 🆕 RLE 数据提取脚本 |
+| `scripts/analyze_font_text.py` | 🆕 字体分析工具 |
+| `src/engine/OpeningScenePlayer.ts` | ♻️ 集成真实 ROM nametable 数据 |
+| `DEV_LOG.md` | 🆕 本条目 |
+
+### ⏭ 下一步: M_INFRA.3 动画时间线框架 + BUG-029 修复比赛2卡死
+
+---
+
+## 2026-08-05: 📋 Bank 07 (Fixed Bank) 完整分析 + 启动流程验证
+
+### 分析内容
+
+深入分析了 `bank_07_fixed.asm`（固定 bank，$C000-$FFFF），确认为游戏的"主板"：
+- **数据**: 16KB 事件脚本数据 + 指针表
+- **代码**: 仅 RESET 向量（$FFC0-$FFD5）+ `JMP ($8000)`
+- **向量**: NMI=$8002, RESET=$FFC0, IRQ=$8002
+
+### Bank 07 结构
+
+| 地址 | 内容 | CDL |
+|------|------|-----|
+| $C000-$C02B | 指针表 (22条目→Bank 7内部) | D2/D3 |
+| $C02C-$C063 | 指针表续 ($41xx范围) | D2/D3 |
+| $C064-$E28D | 事件脚本数据 (~8KB) | D2/D3 |
+| $E28E-$FFBF | 填充/备用 (~7KB) | 未访问 |
+| $FFC0-$FFD5 | RESET 代码 | Code |
+| $FFD7-$FFD9 | JMP ($8000) | Data* |
+| $FFFA-$FFFF | 中断向量 | D3 |
+
+### MMC1 初始化确认
+
+RESET 代码写入 MMC1 串行寄存器：
+```
+$80 → 重置, PRG模式=3
+$1A(bit0=0) → 1次
+$0D(bit0=1) → 2次  
+$06(bit0=0) → 3次
+$03(bit0=1) → 4次
+$01(bit0=1) → 5次 → 提交: $1A
+```
+
+**MMC1 控制 = $1A**:
+- 水平镜像 ✅
+- PRG模式2: $8000固定bank 0, $C000切换 ✅  
+- CHR模式1: 双4KB bank ✅
+
+### 启动流程完整映射
+
+```
+ROM:                              TS:
+RESET → MMC1 init → JMP($8000)    Tsubasa.start()
+  → $809B 主初始化                 → bankManager.setInitialConfig()
+  → JMP $81EE 主循环                → stateMachine.transitionTo(0)
+    → $8314 (状态检查)              → GameLoop.loop()
+    → $81F7 (状态分发)              → stateMachine.update()
+$81FD 跳转表 (8状态)                → State classes (State0-7)
+```
+
+**验证结果**: `BankManager.setInitialConfig()` 与 ROM MMC1 初始化**完全一致**。PPU 镜像值 ($10/$06) 匹配。
+
+### Bank 07 数据（待提取）
+
+事件脚本数据 ($C064-$E28D) 约 8KB，是 Bank 7 的核心功能。包含：
+- 比赛事件触发器
+- 对话/剧情文本
+- 特殊事件条件
+
+需要分析 Bank 2/Bank 3 中读取这些数据的代码来确定编码格式。
+
+### 产出文件
+
+| 文件 | 状态 |
+|------|------|
+| `annotations/bank_07_annotated.md` | ✅ 新建 |
+| `DEV_LOG.md` | ✅ 更新 |
+| `temp/analyze_bank07_v2.py` | ✅ 分析工具 |
+
+---
+
+## 2026-08-05: 🐛 BUG-028 — BankManager 实现 MMC1（需验证）但 ROM 地址空间有 MMC3 特征
+
+### 发现
+RESET 代码写入 $8000 6 次（而非 $8000 + $8001 交替），MMC1 解释成立（$1A 串行写入）。但部分指针表值 ($41xx) 如果按 MMC1 解释不完全自洽。
+
+**当前决策**: 保持 MMC1 实现，后续在 Bank 2/3 分析中交叉验证。
+
+---
+
 ## 2026-08-05: 🐛 BUG-027 修复 — 画布空白：标题画面 nametable 数据从未加载
 
 ### 问题

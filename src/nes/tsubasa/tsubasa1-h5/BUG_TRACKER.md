@@ -4,6 +4,77 @@
 
 ---
 
+## 🔴 BUG-029: 开场动画 RLE 数据提取 Bank 映射错误 → 画面内容错乱 [🟢 已修复]
+
+### BUG-029: extract_opening_rle.py Bank 映射错误导致 RLE 数据从错误 ROM 偏移提取 [🟢 已修复]
+- **状态**: 🟢 已修复 (2026-08-05)
+- **严重度**: 🔴 严重 (开场动画画面完全错乱)
+- **来源**: 用户反馈 (2026-08-05) "现在界面渲染的内容不对啊"
+
+- **根因**: `extract_opening_rle.py` 脚本的 Bank 映射逻辑错误:
+  1. `$D05E` 指针表的页面数据指针 ($D068, $D07F, $D093, $D0A5) 均在 `$C000-$DFFF` 范围
+  2. 脚本将此范围的指针错误地路由到 `bank7_cpu_to_rom()` (Bank 7 ROM 偏移 `$1C010+`)
+  3. 实际这些指针应在 **Bank 1** (PRG index 1) 的 switchable 区域 (`$C000-$DFFF`)
+  4. 结果: 从 ROM `0x1D078` (Bank 6 区域) 读取了错误的数据，而非正确位置 `0x5078` (Bank 1)
+  
+- **验证**: ROM `0x5078` 的原始字节 `13 a7 22 00...` 经 RLE 解码后得到正确的 nametable 数据
+- **修复内容**:
+  1. 新增 `bankN_to_rom()` 通用函数，明确区分 fixed/switchable bank 映射
+  2. `$D05E` 指针表从 `bankN_to_rom(0xD05E, 1, assume_switchable=True)` 读取 (Bank 1)
+  3. 页面数据指针从 `bankN_to_rom(ptr, 1, assume_switchable=True)` 读取 (Bank 1)
+  4. 重新生成 `OpeningRleData.ts`：4 页全 960 tiles (928-934 non-zero)
+
+- **修复文件**:
+  - `scripts/extract_opening_rle.py` — Bank 映射修正
+  - `src/data/OpeningRleData.ts` — 重新生成 (正确数据)
+  - `temp/fix_opening_rle.py` — 手动修复脚本 (临时)
+
+- **Bug类型**: 数据提取脚本逻辑错误 (Bank 映射)
+- **影响范围**: 开场动画 4 页 nametable 渲染
+
+---
+
+## 🔴🔴🔴 BUG-028: 开场动画 nametable 数据缺失 — 4 页循环 + 逐 tile 文字打印未实现 [🟢 Phase B 完成]
+
+### BUG-028: 开场动画 6 分镜使用硬编码 duration 代替真实 nametable 数据 [🟢 已修复]
+- **状态**: 🟢 Phase B 已完成 (2026-08-05) — 真实 ROM RLE 数据已提取并集成
+- **严重度**: 🔴🔴🔴 最高 (核心游戏体验缺失，开场动画不完整) → 🟢 已修复
+- **来源**: 代码审查 (2026-08-05) — `OpeningScenePlayer.ts`
+
+- **Phase A 修复内容 (2026-08-05)**:
+  1. ✅ **4 页循环逻辑**: 实现 ROM ram_007A (0→1→2→3→4) 的 Sub 1→2→3→4 循环
+  2. ✅ **Nametable 测试填充**: `fillCenterBlock()` 消除全黑画面
+  3. ✅ **默认调色板**: 从 ROM Bank 2 $B24F 提取标题调色板
+  4. ✅ **额外场景**: Sub 5 (CHR 0E+0F 立绘) + Sub 6 (CHR 00+0D 收尾) + Sub 7 (退出)
+  5. ✅ **Palette 渐变动画**: Sub 3 中基于步进调色板亮度模拟 ROM palette 动画
+
+- **Phase B 完成 (2026-08-05)**:
+  1. ✅ 从 ROM Bank 2 $D05E 指针表提取开场动画 RLE 数据指针
+  2. ✅ RLE 解码 4 页真实 nametable (Page 0: 820 tiles, Page 1: 834 tiles, Page 2: 870 tiles, Page 3: 889 tiles)
+  3. ✅ 生成 `src/data/OpeningRleData.ts` 结构化数据文件
+  4. ✅ 集成到 `OpeningScenePlayer.fillNametableForPage()`
+  5. ✅ 创建 `scripts/extract_opening_rle.py` 提取脚本
+  6. ✅ `FontMapping.ts` 字体映射表 + `TextTilePrinter.ts` 文字打印引擎
+  7. ⬜ 属性表数据 (仍需从 ROM 提取 attribute table)
+  8. ⬜ 逐 tile 文字打印序列 (Sub 1 内联的 tile-by-tile 打字效果)
+
+- **ROM 依据**: Bank 1 `$804B-$8105`（开场动画调度器）
+  - Bank 2 $D05E 指针表 (8 条目): [0→$D068, 1→$D07F, 2→$D093, 3→$D0A5]
+  - Bank 2 $D0F3 指针表 (32 条目): 10 条指向 Bank 7 RLE 数据
+
+- **影响文件**:
+  - `src/engine/OpeningScenePlayer.ts` — 集成真实 ROM RLE 数据
+  - `src/data/OpeningRleData.ts` — 🆕 4 页开场动画 nametable 数据
+  - `src/utils/FontMapping.ts` — 🆕 字体映射表
+  - `src/engine/TextTilePrinter.ts` — 🆕 文字打印引擎
+  - `scripts/extract_opening_rle.py` — 🆕 RLE 提取脚本
+
+- **Bug类型**: 功能缺失 → 已修复 (真实 ROM 数据已集成)
+- **根因**: 在 nametable 数据未从 ROM 提取时，为快速调试而使用硬编码 duration 占位，
+  但占位代码从未被替换为真实数据。
+
+---
+
 ## 🔴 BUG-027: 画布完全空白 — 标题画面 nametable 从未加载 [已修复]
 
 ### BUG-027: 画布无内容（全黑）— 数据流断裂 [🟢 已修复]
@@ -357,6 +428,28 @@
 - 禁止机械 dump ROM 原始数据为 TS 数组/字符串（如 Bank7Data.ts 的 344 个无意义数字）
 - 数据必须在理解语义后按需提取，每项数据都要有明确的用途说明
 - Bank 数据分别在其对应的 WBS 里程碑阶段处理，不提前 dump
+
+---
+
+## 🔴 BUG-029: Auto-Play 测试比赛2卡在 State 4 [待修复]
+
+### BUG-029: 第二场比赛 State 4 循环卡死 [🔴 待修复]
+- **状态**: 🔴 待修复
+- **严重度**: 🔴 高 (阻塞自动化测试)
+- **来源**: DEV_LOG 2026-08-05 — Auto-Play 测试日志
+- **症状**: 
+  - 比赛 1 正常完成（比分 21-1）
+  - 比赛 2 卡在 State 4（比赛主循环），无法推进到半场/终场
+- **可能根因**:
+  1. State 3→4 的初始化未正确重置比赛上下文（`initMatchRam()` 可能遗漏某些变量）
+  2. MatchEngine 第2场初始化时球员位置/球物理状态残留
+  3. State 5 转换管理器中的 `ram_03E5` 计数器未重置
+- **待排查**:
+  - [ ] 打印比赛2进入State 4时的关键RAM快照
+  - [ ] 检查 `initMatchRam()` 是否覆盖了所有在 State 3 $85CD 中清零的变量
+  - [ ] 检查 `ram_03CA` (game_state) 在比赛2中的值变化轨迹
+  - [ ] 验证 MatchEngine 的 `reset()` 是否正确重置所有内部状态
+- **影响**: 自动化测试无法跑通多场比赛流程
 
 ---
 

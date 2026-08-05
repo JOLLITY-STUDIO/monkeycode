@@ -1,10 +1,8 @@
 /**
  * CHR Binary Data - Base64 encoded
  *
- * 自动生成，请勿手动编辑。
- * 来源: chr-data.json (32 banks × 4096 bytes = 131072 bytes)
- * 生成脚本: scripts/generate_chr_base64.cjs
- *
+ * 自动生成，勿手动编辑。
+ * 来源: ROM CHR (32 banks × 4096 bytes = 131072 bytes)
  * 运行时解码: TileStore.init() 使用 atob → Uint8Array
  */
 export const CHR_BASE64 = [

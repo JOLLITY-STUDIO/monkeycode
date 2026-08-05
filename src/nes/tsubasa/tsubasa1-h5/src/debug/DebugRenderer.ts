@@ -93,6 +93,7 @@ export function drawTile(
  * @param bankIdx CHR bank 索引 (0-31)
  * @param palette 调色板数组 (4色)
  * @param scale 放大倍数 (默认 1)
+ * @param canvas 微信小程序 canvas 节点 (用于 createImageData，兼容性更好)
  * @returns ImageData 对象
  */
 export function renderBankToImageData(
@@ -100,12 +101,20 @@ export function renderBankToImageData(
   bankIdx: number,
   palette: number[] = [0x0F, 0x00, 0x10, 0x20],
   scale: number = 1,
+  canvas?: any,
 ): ImageData {
   const TILES_PER_ROW = 16;
   const TILE_PX = 8;
   const bankW = TILES_PER_ROW * TILE_PX * scale;
   const bankH = TILES_PER_ROW * TILE_PX * scale;
-  const imgData = new ImageData(bankW, bankH);
+
+  // 微信小程序 Canvas 2D 不支持 new ImageData()，使用 canvas.createImageData()
+  let imgData: ImageData;
+  if (canvas && typeof canvas.createImageData === 'function') {
+    imgData = canvas.createImageData(bankW, bankH);
+  } else {
+    imgData = new ImageData(bankW, bankH);
+  }
 
   for (let tileY = 0; tileY < TILES_PER_ROW; tileY++) {
     for (let tileX = 0; tileX < TILES_PER_ROW; tileX++) {

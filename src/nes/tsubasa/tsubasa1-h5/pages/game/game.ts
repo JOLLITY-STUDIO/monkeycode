@@ -63,6 +63,22 @@ Page({
     this.initGame();
   },
 
+  onHide() {
+    // 页面被隐藏（navigateTo 到其他页面、切后台等）→ 暂停游戏
+    if (this.game && this.game.getState() === 'running') {
+      console.log('[MiniProgram] Game paused (page hidden)');
+      this.game.pause();
+    }
+  },
+
+  onShow() {
+    // 页面重新显示 → 恢复游戏
+    if (this.game && this.game.getState() === 'paused') {
+      console.log('[MiniProgram] Game resumed (page shown)');
+      this.game.resume();
+    }
+  },
+
   onUnload() {
     if (this._fpsTimer) clearInterval(this._fpsTimer);
     if (this._logTimer) clearTimeout(this._logTimer);
