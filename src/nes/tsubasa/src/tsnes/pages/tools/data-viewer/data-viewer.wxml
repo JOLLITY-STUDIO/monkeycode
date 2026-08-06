@@ -10,6 +10,11 @@
       直接读取 PRG Bank 中的静态游戏数据（球员属性、球队、场景配置、曲线、矩阵、动画序列），
       无需运行游戏引擎。点击下方 Tab 切换查看各类数据，支持搜索过滤。
     </view>
+    <view class="quick-links">
+      <navigator url="/pages/tools/script-viewer/script-viewer" class="quick-link-btn">
+        📜 Bank 03 对话脚本 →
+      </navigator>
+    </view>
   </view>
 
   <!-- Tab 导航 -->

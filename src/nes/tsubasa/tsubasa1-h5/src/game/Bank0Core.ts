@@ -11,7 +11,7 @@ import { StateMachine, StateHandler } from '../core/StateMachine';
 import { BankDispatcher } from '../core/BankDispatcher';
 import { GameState } from '../core/types';
 import { MatchEngine, MatchPhase, MatchEvent, MatchSubState } from './match/MatchEngine';
-import { PlayerRepo, TeamRepo } from '../data/tables';
+import { PlayerRepo, TeamRepo } from '../data/tables/index';
 
 export class Bank0Core {
   private ds: DataStore;

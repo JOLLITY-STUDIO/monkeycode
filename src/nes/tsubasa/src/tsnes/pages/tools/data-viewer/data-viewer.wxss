@@ -35,6 +35,17 @@ page {
   color: #8b949e;
   line-height: 1.5;
 }
+.quick-links {
+  margin-top: 8px;
+}
+.quick-link-btn {
+  display: inline-block;
+  font-size: 12px;
+  color: #79c0ff;
+  border: 1px solid #1f6feb;
+  border-radius: 4px;
+  padding: 4px 10px;
+}
 
 /* ── Tab 导航 ── */
 .tab-bar {

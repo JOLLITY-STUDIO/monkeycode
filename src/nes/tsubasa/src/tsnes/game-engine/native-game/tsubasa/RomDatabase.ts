@@ -74,6 +74,14 @@ import {
 } from './banks/prg/special-skills-database';
 
 import {
+  segmentTable,
+  getSegmentById,
+  getSegmentByOffset,
+  type SegmentEntry,
+  type TextChar,
+} from './banks/prg/bank-03-segment-table';
+
+import {
   buildGameDataIndex,
   parseAttrRecords,
   parsePlayerNamesByTeam,
@@ -153,6 +161,7 @@ export interface RomDatabaseSummary {
   valueRows: number;
   superSkills: number;
   normalCommands: number;
+  segments: { total: number; text: number; control: number };
 }
 
 // ═══════════════════════════════════════════════
@@ -186,6 +195,12 @@ export class RomDatabase {
 
   /** 游戏数据索引 (集中持有所有结构化数据的 Map) */
   gameData: GameDataIndex | null = null;
+
+  /** Bank 03 对话分段表 (2092 条: 768 text + 1324 control) */
+  segmentTable: SegmentEntry[] = segmentTable;
+
+  /** offset → segmentId 快速映射 (用于 ROM offset 查段索引) */
+  private _offsetToId: Map<number, number> | null = null;
 
   // ═══════════════════════════════════════════
   // 单例 + 初始化
@@ -665,6 +680,57 @@ export class RomDatabase {
   }
 
   // ═══════════════════════════════════════════
+  // Bank 03 对话分段表查询
+  // ═══════════════════════════════════════════
+
+  /** 获取全部段表 */
+  getSegments(): SegmentEntry[] {
+    return this.segmentTable;
+  }
+
+  /** 按 id 获取段 (O(1)) */
+  getSegment(id: number): SegmentEntry | undefined {
+    return this.segmentTable[id];
+  }
+
+  /** 按原始 ROM offset 获取段索引 (建立映射后 O(1)，首次 O(n)) */
+  getSegmentIdByOffset(offset: number): number | undefined {
+    if (!this._offsetToId) {
+      this._offsetToId = new Map();
+      for (const seg of this.segmentTable) {
+        this._offsetToId.set(seg.offset, seg.id);
+      }
+    }
+    return this._offsetToId.get(offset);
+  }
+
+  /** 获取从指定 offset 开始的所有 text 段 tiles (用于连续读对话) */
+  getTextFromOffset(offset: number): Array<{ tile: number; mark?: number }> {
+    const startId = this.getSegmentIdByOffset(offset);
+    if (startId === undefined) return [];
+    const result: Array<{ tile: number; mark?: number }> = [];
+    for (let i = startId; i < this.segmentTable.length; i++) {
+      const seg = this.segmentTable[i];
+      if (seg.type === 'text' && seg.chars) {
+        for (const c of seg.chars) {
+          result.push({ tile: c.tile, ...(c.mark !== null ? { mark: c.mark } : {}) });
+        }
+      } else {
+        // control 段 — 按需判断是否终止
+        break;
+      }
+    }
+    return result;
+  }
+
+  /** 获取段表统计 */
+  getSegmentStats(): { total: number; text: number; control: number } {
+    const text = this.segmentTable.filter(s => s.type === 'text').length;
+    const control = this.segmentTable.filter(s => s.type === 'control').length;
+    return { total: this.segmentTable.length, text, control };
+  }
+
+  // ═══════════════════════════════════════════
   // ROM 规格信息
   // ═══════════════════════════════════════════
 
@@ -715,6 +781,7 @@ export class RomDatabase {
           return getAllNormalCommands().length;
         } catch { return 0; }
       })(),
+      segments: this.getSegmentStats(),
     };
   }
 
@@ -738,6 +805,8 @@ export class RomDatabase {
     console.log(`  ─ 必殺技データ ─`);
     console.log(`  Super Skills: ${s.superSkills}`);
     console.log(`  Normal Commands: ${s.normalCommands}`);
+    console.log(`  ─ 对话分段 ─`);
+    console.log(`  Bank 03 Segments: ${s.segments.total} (text: ${s.segments.text}, control: ${s.segments.control})`);
     console.log('[RomDB 二代] ====================');
   }
 }
@@ -763,4 +832,6 @@ export type {
   NormalCommandRecord,
   SkillsSummary,
   CombiSkillRule,
+  SegmentEntry,
+  TextChar,
 };

@@ -41,7 +41,7 @@ import { writeMem, readMem } from '../system-state';
 import { track } from '../debug-log';
 
 // ── 场景脚本/对白数据 bank (原始 MMC3 映射 bank 03/04/05/25) ──
-import { getBank03Data as bank03Data } from './bank-03-code';
+import { getBank03Data as bank03Data } from './bank-03-segment-table';
 import { getBank04Data as bank04Data } from './bank-04-code';
 import { getBank05Data as bank05Data } from './bank-05-code';
 import { getBank25Data as bank25Data } from './bank-25-code';

@@ -4,8 +4,7 @@
  * 用法: npx tsx game-engine/test/test-bank-03.ts
  */
 
-import { rom03, rom03Ptr16, getBank03Data } from '../native-game/tsubasa/banks/prg/bank-03-code';
-import { PRG_BANK_03_DATA } from '../native-game/tsubasa/banks/prg/bank-03-data-only';
+import { rom03, rom03Ptr16, getBank03Data, PRG_BANK_03_DATA } from '../native-game/tsubasa/banks/prg/bank-03-segment-table';
 
 // ═══════════════════════════════════════════
 // 测试框架

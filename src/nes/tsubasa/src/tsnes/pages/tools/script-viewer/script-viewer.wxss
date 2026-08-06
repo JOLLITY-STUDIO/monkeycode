@@ -1,0 +1,205 @@
+/* Bank 03 对话脚本查看器 */
+
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #0d1117;
+  color: #c9d1d9;
+  font-family: Menlo, Monaco, Consolas, monospace;
+}
+
+/* ── 顶部栏 ── */
+.toolbar {
+  padding: 6px 10px;
+  background: #161b22;
+  border-bottom: 1px solid #21262d;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.toolbar-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #58a6ff;
+  margin-right: 4px;
+}
+.toolbar-stats {
+  font-size: 11px;
+  color: #8b949e;
+}
+.toolbar-stats .sep {
+  margin: 0 3px;
+  color: #30363d;
+}
+.toolbar-mode-left {
+  display: flex;
+  gap: 2px;
+  margin-left: auto;
+}
+.mode-btn {
+  font-size: 11px;
+  padding: 3px 8px;
+  border-radius: 3px;
+  border: 1px solid #30363d;
+  color: #8b949e;
+}
+.mode-btn.active {
+  background: #1f6feb;
+  color: #fff;
+  border-color: #1f6feb;
+}
+.toolbar-search {
+  width: 100%;
+  margin-top: 2px;
+}
+.toolbar-search input {
+  width: 100%;
+  height: 24px;
+  background: #0d1117;
+  border: 1px solid #30363d;
+  border-radius: 3px;
+  padding: 0 8px;
+  font-size: 11px;
+  color: #c9d1d9;
+}
+
+/* ── 脚本主体 ── */
+.script-body {
+  flex: 1;
+  padding: 8px 10px;
+  overflow-y: auto;
+  line-height: 1.6;
+}
+
+/* 文本行 */
+.line-text {
+  display: flex;
+  align-items: flex-start;
+  padding: 2px 4px;
+  word-break: break-all;
+  border-radius: 3px;
+  cursor: pointer;
+}
+.line-text:active {
+  background: rgba(31, 111, 235, 0.15);
+}
+.line-text.line-playing {
+  background: rgba(31, 111, 235, 0.1);
+  border-left: 2px solid #1f6feb;
+  padding-left: 2px;
+}
+.line-play-btn {
+  font-size: 10px;
+  color: #1f6feb;
+  margin-left: 6px;
+  opacity: 0;
+  flex-shrink: 0;
+  padding-top: 1px;
+}
+.line-text:active .line-play-btn,
+.line-text:hover .line-play-btn {
+  opacity: 1;
+}
+.line-offset {
+  font-size: 9px;
+  color: #484f58;
+  margin-right: 5px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  min-width: 50px;
+}
+.line-content {
+  font-size: 12px;
+  color: #c9d1d9;
+  letter-spacing: 1px;
+  flex: 1;
+}
+
+/* 换行分隔 */
+.line-break {
+  height: 6px;
+}
+
+/* 对话气泡分隔 */
+.line-bubble-break {
+  margin: 10px 0 4px 0;
+  padding: 4px 8px;
+  background: #1a2332;
+  border-left: 3px solid #1f6feb;
+  border-radius: 0 3px 3px 0;
+}
+.line-bubble-break .ctrl-label {
+  font-size: 10px;
+  color: #58a6ff;
+}
+
+/* 其他控制行 */
+.line-control {
+  display: flex;
+  align-items: center;
+  padding: 1px 0;
+  gap: 4px;
+}
+.ctrl-offset {
+  font-size: 9px;
+  color: #484f58;
+  min-width: 50px;
+  flex-shrink: 0;
+}
+.ctrl-hex {
+  font-size: 10px;
+  color: #d2a8ff;
+  font-family: Menlo, Monaco, monospace;
+}
+.ctrl-label {
+  font-size: 10px;
+  color: #8b949e;
+}
+
+/* ── 对话框面板 ── */
+.dialog-panel {
+  flex-shrink: 0;
+  background: #0a1628;
+  border-top: 2px solid #1f6feb;
+  display: flex;
+  flex-direction: column;
+}
+.dialog-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 3px 10px;
+  background: #0d1520;
+  border-bottom: 1px solid #1a2840;
+}
+.dialog-status {
+  font-size: 10px;
+  color: #8b949e;
+}
+.dialog-page {
+  font-size: 10px;
+  color: #58a6ff;
+  font-family: monospace;
+}
+.dialog-canvas {
+  width: 100%;
+  height: 64px;
+  display: block;
+}
+
+/* 浮动回到顶部 */
+.float-top {
+  position: fixed;
+  bottom: 90px;
+  right: 15px;
+  background: #21262d;
+  color: #8b949e;
+  font-size: 11px;
+  padding: 6px 10px;
+  border-radius: 15px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+  z-index: 10;
+}

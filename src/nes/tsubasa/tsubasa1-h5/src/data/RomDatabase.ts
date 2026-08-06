@@ -21,6 +21,7 @@
 import { initChrBanks, CHR_BANKS } from '../assets/chr/chr_data';
 import { getPrgBank } from './raw/PrgLoader';
 import { NES_PALETTE } from '../core/types';
+import rleDecoded from './opening/rle_decoded.json';
 
 // ==================== 数据表类型定义 ====================
 

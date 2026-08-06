@@ -33,7 +33,7 @@ import type { SystemState } from '../system-state';
 import { writeMem, readMem } from '../system-state';
 
 // ── 场景脚本/对白数据 bank（原始 MMC3 映射 bank 03/04/05/25） ──
-import { getBank03Data } from './bank-03-code';
+import { getBank03Data } from './bank-03-segment-table';
 import { getBank04Data } from './bank-04-code';
 import { getBank05Data } from './bank-05-code';
 import { getBank25Data } from './bank-25-code';
@@ -644,7 +644,7 @@ export function bank19_readCollisionData(_sys: SystemState, index: number): numb
 // ═════════════════════════════════════════════════
 
 /** 场景脚本/对白数据 bank-03 */
-export { getBank03Data as bank19_getSceneData03 } from './bank-03-code';
+export { getBank03Data as bank19_getSceneData03 } from './bank-03-segment-table';
 /** 场景脚本/对白数据 bank-04 */
 export { getBank04Data as bank19_getSceneData04 } from './bank-04-code';
 /** 场景脚本/对白数据 bank-05 */

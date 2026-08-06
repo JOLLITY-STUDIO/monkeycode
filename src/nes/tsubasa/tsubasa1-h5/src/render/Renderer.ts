@@ -19,8 +19,9 @@ import { DataStore } from '../data/DataStore';
 import {
   SCREEN_WIDTH, SCREEN_HEIGHT,
   NT_WIDTH, NT_HEIGHT, TILE_SIZE,
-  SPRITE_COUNT, NES_PALETTE,
+  SPRITE_COUNT, NES_PALETTE, GameState,
 } from '../core/types';
+import { MatchFieldRenderer } from '../game/match/MatchFieldRenderer';
 
 /** CHR图案数据 (每个bank 4096字节 = 256 tiles × 16 B/tile) */
 export type ChrBank = Uint8Array;
@@ -76,6 +77,9 @@ export class Renderer {
   /** 预计算的NES调色板 RGBA Uint32 查找表 */
   private _paletteLUT: Uint32Array;
   
+  /** 比赛场地渲染器 (State 3/4/5 时使用) */
+  private _matchRenderer: MatchFieldRenderer;
+  
   constructor(ctx: CanvasRenderingContext2D, ds: DataStore, scale: number = 2, canvasNode?: any) {
     this.ctx = ctx;
     this.ds = ds;
@@ -86,6 +90,9 @@ export class Renderer {
     for (let i = 0; i < 64; i++) {
       this._paletteLUT[i] = NES_PALETTE[i];  // 已经是 ABGR 格式
     }
+    
+    // 比赛场地渲染器
+    this._matchRenderer = new MatchFieldRenderer(ds);
     
     // 创建离屏Canvas
     this._initOffscreen(canvasNode);
@@ -187,6 +194,13 @@ export class Renderer {
    *   6. Flush 像素缓冲 → Canvas
    */
   render(): void {
+    // 比赛状态: 使用比赛场地渲染器
+    const gs = this.ds.gameState;
+    if (gs === GameState.MATCH_INIT || gs === GameState.MATCH_LOOP || gs === GameState.TRANSITION) {
+      this._renderMatch();
+      return;
+    }
+    
     // 更新活动CHR Bank
     if (this.ds.currentChrBank0 !== this._activeChr0 ||
         this.ds.currentChrBank1 !== this._activeChr1) {
