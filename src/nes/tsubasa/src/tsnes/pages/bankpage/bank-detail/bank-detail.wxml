@@ -8,6 +8,12 @@
     </view>
     <text class="bank-desc">{{description}}</text>
 
+    <!-- 数据类型标签 -->
+    <view class="data-class-tag {{dataClass === 'render' ? 'class-render' : dataClass === 'game' ? 'class-game' : dataClass === 'text' ? 'class-text' : ''}}">
+      <text>{{dataClassLabel}}</text>
+    </view>
+    <text class="data-class-hint" wx:if="{{dataClassHint}}">{{dataClassHint}}</text>
+
     <!-- 统计条 -->
     <view class="stats-bar">
       <view class="stat-item code-stat" wx:if="{{codeBytes > 0}}">
@@ -29,9 +35,8 @@
   <view class="view-tabs">
     <view class="view-tab {{viewMode === 'hex' ? 'active' : ''}}" bindtap="onViewHex">HEX</view>
     <view class="view-tab {{viewMode === 'histogram' ? 'active' : ''}}" bindtap="onViewHistogram">柱状图</view>
-    <view class="view-tab {{viewMode === 'tiles' ? 'active' : ''}}" wx:if="{{isCHR}}" bindtap="onViewCHRTiles">
-      🎨 图块
-    </view>
+    <view class="view-tab {{viewMode === 'records' ? 'active' : ''}}" bindtap="onViewRecords">📋 记录</view>
+    <view class="view-tab {{viewMode === 'tiles' ? 'active' : ''}}" bindtap="onViewCHRTiles">🎨 图块</view>
   </view>
 
   <!-- ── HEX 视图 ── -->
@@ -52,13 +57,92 @@
     <text class="histo-hint">字节值 (00–FF) 出现频率分布</text>
   </view>
 
+  <!-- ── 记录视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'records'}}">
+    <!-- 解析方式切换 -->
+    <view class="record-modes">
+      <view class="rmode-tab {{recordMode === 'auto' ? 'active' : ''}}" data-mode="auto" bindtap="onRecordModeSwitch">自动</view>
+      <view class="rmode-tab {{recordMode === '4byte' ? 'active' : ''}}" data-mode="4byte" bindtap="onRecordModeSwitch">4字节</view>
+      <view class="rmode-tab {{recordMode === 'fc' ? 'active' : ''}}" data-mode="fc" bindtap="onRecordModeSwitch">$FC分隔</view>
+      <view class="rmode-tab {{recordMode === '8byte' ? 'active' : ''}}" data-mode="8byte" bindtap="onRecordModeSwitch">8字节</view>
+      <view class="rmode-tab {{recordMode === '16byte' ? 'active' : ''}}" data-mode="16byte" bindtap="onRecordModeSwitch">16字节</view>
+      <text class="rmode-auto-label">→ {{recordAutoMethod}}</text>
+    </view>
+
+    <!-- 统计摘要 -->
+    <view class="record-stats">
+      <text class="rstat">$00: {{recordStats.$00count}} | </text>
+      <text class="rstat">$FC: {{recordStats.$FCcount}} | </text>
+      <text class="rstat">$FD: {{recordStats.$FDcount}} | </text>
+      <text class="rstat">$FF: {{recordStats.$FFcount}} | </text>
+      <text class="rstat">块均: {{recordStats.avgBlockSize}}B | </text>
+      <text class="rstat">总块: {{recordStats.totalBlocks}}</text>
+    </view>
+
+    <!-- 渲染数据提示 -->
+    <view class="render-hint" wx:if="{{dataClass === 'render'}}">
+      <text>🎬 此数据为渲染数据，需要结合 VRAM/PAL 环境才能可视化。建议在 BankPage 添加 PPU 模拟后查看。</text>
+    </view>
+    <view class="render-hint" wx:if="{{dataClass === 'text'}}">
+      <text>📝 此数据可能包含 NT 文本引用，可搭配 CHR tile 映射表解析。</text>
+    </view>
+
+    <!-- 记录列表 -->
+    <scroll-view class="record-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
+      <view class="record-item" wx:for="{{records}}" wx:key="offset">
+        <view class="rec-offset">
+          <text class="rec-addr">${{item.offset}}</text>
+          <text class="rec-len">({{item.len}}B)</text>
+        </view>
+        <view class="rec-hex"><text selectable="true">{{item.hex}}</text></view>
+        <view class="rec-vals" wx:if="{{item.vals16.length > 0}}">
+          <text class="rec-val-label">16bit: </text>
+          <text selectable="true" class="rec-val-num">{{item.vals16}}</text>
+        </view>
+        <view class="rec-ascii" wx:if="{{item.ascii.trim()}}">
+          <text class="rec-ascii-label">ASCII: </text>
+          <text class="rec-ascii-text">"{{item.ascii}}"</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
   <!-- ── CHR 图块视图 ── -->
-  <view class="view-content" wx:if="{{viewMode === 'tiles' && isCHR}}">
-    <view class="chr-wrap">
-      <scroll-view class="chr-scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
-        <canvas type="2d" id="chrCanvas" class="chr-canvas"></canvas>
+  <view class="view-content" wx:if="{{viewMode === 'tiles'}}">
+    <!-- 模式切换：查看图块 / 数据映射 -->
+    <view class="tile-toolbar">
+      <view class="tile-mode-btn {{tileViewMode === 'direct' ? 'active' : ''}}" data-mode="direct" bindtap="onTileViewModeSwitch">🎨 查看图块</view>
+      <view class="tile-mode-btn {{tileViewMode === 'mapped' ? 'active' : ''}}" data-mode="mapped" bindtap="onTileViewModeSwitch">📊 数据映射</view>
+    </view>
+
+    <!-- 图块数据源选择：CHR Bank 0–15 -->
+    <view class="tile-toolbar">
+      <text class="tile-toolbar-label">CHR Bank</text>
+      <scroll-view class="chr-bank-bar" scroll-x="true" enhanced="true" show-scrollbar="false">
+        <view
+          class="chr-bank-btn {{chrBankIdx === item ? 'active' : ''}}"
+          wx:for="{{[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]}}"
+          wx:key="*this"
+          wx:for-item="item"
+          data-idx="{{item}}"
+          bindtap="onCHRBankSelect"
+        >{{item}}</view>
       </scroll-view>
     </view>
-    <text class="chr-hint">512 tiles (8×8px each, 3× scale) · {{TILE_COLS}} tiles/row · {{TILE_ROWS}} rows</text>
+
+    <!-- PT 模式切换 -->
+    <view class="pt-mode-bar">
+      <text class="tile-toolbar-label">表</text>
+      <view class="pt-mode-btn {{ptMode === 'pt0' ? 'active' : ''}}" data-mode="pt0" bindtap="onPTModeSwitch">PT0 (0–255)</view>
+      <view class="pt-mode-btn {{ptMode === 'pt1' ? 'active' : ''}}" data-mode="pt1" bindtap="onPTModeSwitch">PT1 (256–511)</view>
+      <view class="pt-mode-btn {{ptMode === 'all' ? 'active' : ''}}" wx:if="{{tileViewMode === 'direct'}}" data-mode="all" bindtap="onPTModeSwitch">全部 (0–511)</view>
+    </view>
+
+    <view class="chr-wrap">
+      <scroll-view class="chr-scroll" scroll-x="true" scroll-y="true" enhanced="true" show-scrollbar="true">
+        <canvas type="2d" id="chrCanvas" class="chr-canvas" style="width:{{tileCanvasWidth}}px;height:{{tileCanvasHeight}}px"></canvas>
+      </scroll-view>
+    </view>
+    <text class="chr-hint">{{tileCanvasHint}}</text>
   </view>
 </view>

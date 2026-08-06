@@ -15,32 +15,11 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/bank-trans/bank-trans",
-          "pathName": "pages/bank-trans/bank-trans",
+          "name": "pages/bankpage/bankpage",
+          "pathName": "pages/bankpage/bankpage",
           "query": "",
           "scene": null,
           "launchMode": "default"
-        },
-        {
-          "name": "pages/tools/bank-trans/bank-trans",
-          "pathName": "pages/tools/bank-trans/bank-trans",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/manual-demo/manual-demo",
-          "pathName": "pages/manual-demo/manual-demo",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        },
-        {
-          "name": "pages/tools/data-viewer/data-viewer",
-          "pathName": "pages/tools/data-viewer/data-viewer",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
         },
         {
           "name": "pages/h5game/h5game",
