@@ -36,6 +36,18 @@
         <view class="bank-flags">
           <view class="flag" wx:for="{{item.flags}}" wx:for-item="f" wx:key="*this">{{f}}</view>
         </view>
+
+        <!-- 依赖关系 -->
+        <view class="bank-rel" wx:if="{{item.depsStr || item.usedByStr}}">
+          <view class="rel-row" wx:if="{{item.depsStr}}">
+            <text class="rel-label">使用→</text>
+            <text class="rel-value">{{item.depsStr}}</text>
+          </view>
+          <view class="rel-row" wx:if="{{item.usedByStr}}">
+            <text class="rel-label">被←</text>
+            <text class="rel-value used-by">{{item.usedByStr}}</text>
+          </view>
+        </view>
       </view>
 
       <view class="bank-right">

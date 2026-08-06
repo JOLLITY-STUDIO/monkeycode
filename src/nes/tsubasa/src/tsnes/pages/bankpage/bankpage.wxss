@@ -71,6 +71,7 @@
 /* ── Bank 列表 ── */
 .bank-list {
   flex: 1;
+  height: 0;          /* 配合 flex:1 让 scroll-view 正确计算滚动高度 */
   padding: 0 12px 8px;
 }
 
@@ -156,6 +157,34 @@
   background: #21262d;
   padding: 1px 6px;
   border-radius: 3px;
+}
+
+/* ── 依赖关系 ── */
+.bank-rel {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.rel-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.rel-label {
+  font-size: 10px;
+  color: #6e7681;
+  font-family: monospace;
+  flex-shrink: 0;
+}
+.rel-value {
+  font-size: 10px;
+  color: #3fb950;
+  font-family: monospace;
+}
+.rel-value.used-by {
+  color: #d29922;
 }
 
 /* ── 右侧统计 ── */

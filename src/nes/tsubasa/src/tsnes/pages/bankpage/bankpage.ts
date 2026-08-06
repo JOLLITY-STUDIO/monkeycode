@@ -17,6 +17,10 @@ interface BankItem {
   codePct: string;
   dataPct: string;
   flags: string[];       // 特征标签
+  deps: string[];        // 本 bank 依赖哪些 bank（预格式化文本）
+  usedBy: string[];      // 哪些 bank 使用了本 bank（预格式化文本）
+  depsStr: string;       // "Bank 02, Bank 30"
+  usedByStr: string;     // "Bank 01"
 }
 
 /** 来自 _stats.txt 的精确 CDL 分析数据 */
@@ -56,14 +60,14 @@ const PRG_STATS: Record<number, { code: number; data: number; unacc: number; cpu
 };
 
 const PRG_DESCRIPTIONS: Record<number, string> = {
-  0:  '系统初始化 & 标题/菜单主循环',
-  1:  '数据查询服务（球员/队伍数据检索）',
-  2:  '二级场景/密码/选择界面',
-  3:  '球员属性数据 (Part 1)',
-  4:  '球员属性数据 (Part 2)',
+  0:  '系统初始化 & 标题/菜单主循环 — 通过 $9FA8 切换 PRG bank',
+  1:  '数据查询服务（球员/队伍/赛事数据检索）→ 调用 Bank 02 的 $A72C',
+  2:  '场景/密码/选择界面 & 数据加载引擎（$A72C 关卡数据解包器）',
+  3:  '关卡地图数据 (Part 1) — 被 Bank 02 ($A72C) 解包到 RAM $0460',
+  4:  '关卡地图数据 (Part 2) — 同 Bank 03 格式，同为 Bank 02 所加载',
   5:  '队伍阵型/策略数据',
   6:  '剧情/脚本数据块 (Part 1)',
-  7:  '剧情/脚本数据块 (Part 2)',
+  7:  '剧情/脚本数据块 (Part 2) — 被 Bank 02 ($A72C, EB=$07) 加载',
   8:  '文本/对话数据 (Part 1)',
   9:  '文本/对话数据 (Part 2)',
   10: '场景描述/地图定位数据',
@@ -87,7 +91,7 @@ const PRG_DESCRIPTIONS: Record<number, string> = {
   28: '辅助逻辑 & 数据',
   29: '扩展数据存储',
   30: '核心系统库（PPU/APU/控制器/数学）FIXED',
-  31: '通用工具 + 中断向量 FIXED',
+  31: '中断向量 & 通用工具 FIXED',
 };
 
 /** bank 特征标签 */
@@ -102,6 +106,47 @@ function getFlags(index: number, s: { code: number; data: number; unacc: number 
   else if (s.code > 0) flags.push('⚡');
   return flags;
 }
+
+/** PRG bank 依赖关系 */
+interface BankRel { deps: number[]; usedBy: number[]; }
+
+const PRG_RELATIONS: Record<number, BankRel> = {
+  // Bank 00: 初始化→调用 Bank 02 子程序，通过 $9FA8 切换任意 bank（通用切换器）
+  0:  { deps: [2, 30, 31], usedBy: [] },
+  // Bank 01: 数据查询→调用 Bank 02 的 $A72C 关卡加载
+  1:  { deps: [2, 3, 4, 7], usedBy: [] },
+  // Bank 02: 关卡数据解包器 $A72C → 用到 Bank 03, 04, 07 的地图/脚本数据
+  2:  { deps: [3, 4, 7], usedBy: [0, 1] },
+  3:  { deps: [], usedBy: [2] },
+  4:  { deps: [], usedBy: [2] },
+  5:  { deps: [], usedBy: [1] },
+  6:  { deps: [], usedBy: [] },
+  7:  { deps: [], usedBy: [2] },
+  8:  { deps: [], usedBy: [] },
+  9:  { deps: [], usedBy: [] },
+  10: { deps: [], usedBy: [] },
+  11: { deps: [], usedBy: [] },
+  12: { deps: [], usedBy: [] },
+  13: { deps: [], usedBy: [] },
+  14: { deps: [], usedBy: [] },
+  15: { deps: [], usedBy: [] },
+  16: { deps: [], usedBy: [] },
+  17: { deps: [], usedBy: [] },
+  18: { deps: [], usedBy: [] },
+  19: { deps: [], usedBy: [] },
+  20: { deps: [], usedBy: [] },
+  21: { deps: [], usedBy: [] },
+  22: { deps: [], usedBy: [] },
+  23: { deps: [], usedBy: [] },
+  24: { deps: [], usedBy: [] },
+  25: { deps: [], usedBy: [] },
+  26: { deps: [], usedBy: [] },
+  27: { deps: [], usedBy: [] },
+  28: { deps: [], usedBy: [] },
+  29: { deps: [], usedBy: [] },
+  30: { deps: [], usedBy: [0, 31] },
+  31: { deps: [30], usedBy: [0] },
+};
 
 Page({
   data: {
@@ -121,6 +166,9 @@ Page({
     const prgBanks: BankItem[] = [];
     for (let i = 0; i < 32; i++) {
       const s = PRG_STATS[i] || { code: 0, data: 0, unacc: 8192, cpu: '$8000' };
+      const rel = PRG_RELATIONS[i] || { deps: [], usedBy: [] };
+      const fmtDeps = rel.deps.map(d => 'Bank ' + String(d).padStart(2, '0'));
+      const fmtUsed = rel.usedBy.map(u => 'Bank ' + String(u).padStart(2, '0'));
       prgBanks.push({
         id: i,
         type: 'PRG',
@@ -133,6 +181,10 @@ Page({
         codePct: ((s.code / 8192) * 100).toFixed(0),
         dataPct: ((s.data / 8192) * 100).toFixed(0),
         flags: getFlags(i, s),
+        deps: fmtDeps,
+        usedBy: fmtUsed,
+        depsStr: fmtDeps.join(', '),
+        usedByStr: fmtUsed.join(', '),
       });
     }
 
@@ -151,6 +203,10 @@ Page({
         codePct: '0',
         dataPct: '100',
         flags: ['🎨', '纯数据'],
+        deps: [],
+        usedBy: [],
+        depsStr: '',
+        usedByStr: '',
       });
     }
 
