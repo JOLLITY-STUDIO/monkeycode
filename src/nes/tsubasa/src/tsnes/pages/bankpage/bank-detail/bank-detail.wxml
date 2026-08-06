@@ -1,0 +1,64 @@
+<!-- Bank 详情页 -->
+<view class="container">
+  <!-- 页头信息 -->
+  <view class="detail-header">
+    <view class="header-row">
+      <text class="bank-title">{{bankLabel}}</text>
+      <text class="bank-cpu">{{cpuMap}}</text>
+    </view>
+    <text class="bank-desc">{{description}}</text>
+
+    <!-- 统计条 -->
+    <view class="stats-bar">
+      <view class="stat-item code-stat" wx:if="{{codeBytes > 0}}">
+        <view class="stat-bar" style="width:{{codeBytes / 81.92}}%"></view>
+        <text class="stat-text">代码 {{codeBytes}}B</text>
+      </view>
+      <view class="stat-item data-stat">
+        <view class="stat-bar" style="width:{{dataBytes / 81.92}}%"></view>
+        <text class="stat-text">数据 {{dataBytes}}B</text>
+      </view>
+      <view class="stat-item unacc-stat" wx:if="{{unaccessed > 0}}">
+        <view class="stat-bar" style="width:{{unaccessed / 81.92}}%"></view>
+        <text class="stat-text">未访问 {{unaccessed}}B</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 视图切换按钮 -->
+  <view class="view-tabs">
+    <view class="view-tab {{viewMode === 'hex' ? 'active' : ''}}" bindtap="onViewHex">HEX</view>
+    <view class="view-tab {{viewMode === 'histogram' ? 'active' : ''}}" bindtap="onViewHistogram">柱状图</view>
+    <view class="view-tab {{viewMode === 'tiles' ? 'active' : ''}}" wx:if="{{isCHR}}" bindtap="onViewCHRTiles">
+      🎨 图块
+    </view>
+  </view>
+
+  <!-- ── HEX 视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'hex'}}">
+    <scroll-view class="hex-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
+      <view class="hex-line" wx:for="{{hexLines}}" wx:key="*this" wx:for-index="idx">
+        <text class="hex-addr">{{hexAddr[idx]}}:</text>
+        <text class="hex-data">{{item}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── 柱状图视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'histogram'}}">
+    <view class="histo-wrap">
+      <canvas type="2d" id="histoCvs" class="histo-canvas"></canvas>
+    </view>
+    <text class="histo-hint">字节值 (00–FF) 出现频率分布</text>
+  </view>
+
+  <!-- ── CHR 图块视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'tiles' && isCHR}}">
+    <view class="chr-wrap">
+      <scroll-view class="chr-scroll" scroll-y="true" enhanced="true" show-scrollbar="false">
+        <canvas type="2d" id="chrCanvas" class="chr-canvas"></canvas>
+      </scroll-view>
+    </view>
+    <text class="chr-hint">512 tiles (8×8px each, 3× scale) · {{TILE_COLS}} tiles/row · {{TILE_ROWS}} rows</text>
+  </view>
+</view>

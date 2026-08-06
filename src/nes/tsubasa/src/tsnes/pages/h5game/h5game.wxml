@@ -28,7 +28,7 @@
     <text class="status-tag">{{debugTab ? 'Debug: ' + debugTabs[debugTab] : 'CPU 模拟器'}}</text>
     <text class="status-text">{{status}}</text>
     <text class="fps-text">FPS: {{fps}}</text>
-    <navigator url="/pages/tools/data-viewer/data-viewer" class="data-btn">数据</navigator>
+    <navigator url="/pages/bankpage/bankpage" class="data-btn">ROM</navigator>
   </view>
 
   <!-- 游戏 + Debug 左右双栏 -->
