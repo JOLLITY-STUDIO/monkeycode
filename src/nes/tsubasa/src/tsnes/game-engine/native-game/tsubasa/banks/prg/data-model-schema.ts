@@ -356,14 +356,29 @@ export interface GameDataIndex {
   fieldData: FieldPositionData | null;
 }
 
-/** 全局单例 */
+/** 全局单例 (兼容旧代码，实际数据由 RomDatabase 掌管) */
 export let gameDataIndex: GameDataIndex;
 
 /**
- * 初始化全局数据索引
- * 必须在 boot 阶段调用，读取所有 ROM 数据并构建结构化内存
+ * 初始化全局数据索引 (兼容旧代码)
+ * 优先通过 RomDatabase 获取，否则创建空结构。
+ * 推荐使用 `RomDatabase.getInstance().init()` 统一初始化。
  */
 export function initGameDataIndex(): GameDataIndex {
+  // 尝试从 RomDatabase 获取已构建的数据
+  // 延迟导入避免循环依赖
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { RomDatabase } = require('../../RomDatabase');
+    const db = RomDatabase.getInstance();
+    if (db.isInitialized && db.gameData) {
+      gameDataIndex = db.gameData;
+      return gameDataIndex;
+    }
+  } catch {
+    // RomDatabase 未加载，回退到空结构
+  }
+
   gameDataIndex = {
     players: new Map(),
     playerAttrs: new Map(),
@@ -405,7 +420,7 @@ export function getTeamPlayers(teamId: number): PlayerBaseRecord[] {
 }
 
 /**
- * 获取球员属性扩展
+ * 获取球员属性扩展 (返回第一条匹配记录)
  */
 export function getPlayerAttr(playerId: number): PlayerAttributeRecord | undefined {
   return gameDataIndex?.playerAttrs.get(playerId);

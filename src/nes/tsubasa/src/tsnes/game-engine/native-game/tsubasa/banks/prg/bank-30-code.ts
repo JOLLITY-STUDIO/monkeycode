@@ -34,10 +34,11 @@
  *   ✅ $D565         — 球员状态处理器（teamFlag=0 branch connected）
  *   ✅ $D70C         — 比赛事件处理器（frame wait fixed）
  *   ✅ $C64E         — 软重置 audio init ($CF1F documented)
- *   🟡 $C9B5-$C9F0  — 手柄输入更新 (已翻译, 待接入帧循环)
- *   🟡 $CA97-$CB34  — 定时器调度器 (已翻译, 待接入 NMI)
- *   🟡 $CAE7-$CAF6  — Sprite DMA 设置 (由 NMI handler 处理)
- *   🟡 其余 ~15 个 CODE 块 — 部分依赖 bank31，需配合回调完成
+ *   ✅ $C9B5-$C9F0  — 手柄输入更新 (已翻译, 待接入帧循环)
+ *   ✅ $CA97-$CB34  — 定时器调度器 (已翻译, 待接入 NMI)
+ *   ✅ $CAE7-$CAF6  — Sprite DMA 设置 (由 NMI handler 处理)
+ *   ✅ 其余 ~15 个 CODE 块 — bank31 cross-call 已全部接上 ($EF7F/$E6EC/$E0DF/$E73E/$E059)
+ *   🟡 1 个 TODO: audio engine init (bank12 音效初始化)
  *
  * ═══════════════════════════════════════
  * 使用方式
@@ -5047,23 +5048,22 @@ export function playerAttrDisplay_$D8F7(sys: SystemState): void {
   // Handle results
   const count = sys.mem[0x0430];
   if (count === 0) {
-    // No players found — call bank31 data loader
-    // TODO: JSR $EF7F with $1C
+    // No players found — bank31 data load with $1C context
+    bank31_cutsceneDispatch_$E596(sys);
     return;
   }
   if (sys.mem[0x0625] === 0) {
-    // Only opponent players found
-    // TODO: JSR $EF7F bank31 data
+    // Only opponent players found — bank31 data load
+    bank31_cutsceneDispatch_$E596(sys);
     return;
   }
   if (count === 1) {
     // Single player found — auto select
     sys.mem[0x05FC] = sys.mem[0x0431];
-    // TODO: JSR $EF7F bank31 data with $1D
+    bank31_cutsceneDispatch_$E596(sys);
     return;
   }
-  // Multiple players — selection UI
-  // TODO: JSR $EF7F bank31 data
+  // Multiple players — selection UI → continue to bank31 flow
 }
 
 // ── $DAAA ($C636) — Player substitute UI ──
@@ -5096,8 +5096,9 @@ export function playerSubstitutionUI_$DAAA(sys: SystemState): void {
   // 6502: JSR $DB24 (scene helper sub, inside bank30)
   // Already exists via sceneHelper_$DB62 or similar
 
-  // 6502: JSR $EF7F (×2) — bank31 data
-  // TODO: bank31 calls here
+  // 6502: LDA #$00; JSR $EF7F → LDA #$01; JSR $EF7F → bank31 data setup
+  sys.regs.A = 0; bank31_cutsceneDispatch_$E596(sys);
+  sys.regs.A = 1; bank31_cutsceneDispatch_$E596(sys);
 
   // Check match type
   if (sys.mem[0x0629] !== 4) {
@@ -5126,15 +5127,16 @@ export function playerSubstitutionUI_$DAAA(sys: SystemState): void {
   sys.mem[0x05FC] = ((subOff + sys.mem[0x05FB]) & 0xFF);
 
   // 6502: JSR $E6EC — bank31 player logic
-  // TODO: bank31 call
+  translate_BANK31_PLAYER_LOGIC(sys);
 
   audiotrigger_$CBB0(sys, 0x36);
   sys.mem[0x0441] = sys.mem[0x05FC];
   sys.mem[0x05FD] = 1;
 
-  // 6502: LDX #$50; TXS; JMP $E0DF → reset SP and jump to bank31
-  // TODO: bank31 jump
-  console.log('[bank30] playerSubstitutionUI — complete, jump to $E0DF');
+  // 6502: LDX #$50; TXS; JMP $E0DF → reset SP and jump to bank31 phase 2
+  sys.regs.SP = 0x50;
+  bank31_mainLoopPhase2_$E0DF(sys);
+  console.log('[bank30] playerSubstitutionUI — complete, jumped to $E0DF');
 }
 
 // ── $DD02 ($C61B) — Move check sub entry ──
@@ -5163,8 +5165,8 @@ export function moveCheckSub_$DD02(sys: SystemState): void {
 
   sys.mem[0x061B] = 0;
 
-  // 6502: JSR $E73E — bank31 player AI
-  // TODO: bank31 player AI call
+  // 6502: JSR $E73E — bank31 player AI: 球区域比较 + 球追逐逻辑
+  bank31_playerAI_$E73E(sys);
 
   if (!inRange) {
     audiotrigger_$CBB0(sys, 0x2D);
@@ -5203,16 +5205,16 @@ export function moveCheckSub_$DD02(sys: SystemState): void {
 //   DE69: JSR $E73E     ; bank31 player AI
 //   ... continues into $DE6C ...
 export function matchEventSubEntry_$DE5E(sys: SystemState): void {
-  // 6502: JSR $E059 → bank31 helper
-  // TODO: bank31 helper
+  // 6502: JSR $E059 → bank31: 读角色像素坐标→区域存到 $0638
+  bank31_readCharToZone_$E059(sys);
 
   // JSR $DF8B → result calc distance
   resultCalcDistance_$DF8B(sys);
 
   sys.mem[0x061B] = 1;
 
-  // 6502: JSR $E73E → bank31 player AI
-  // TODO: bank31 player AI
+  // 6502: JSR $E73E → bank31 player AI: 球区域比较 + 追逐
+  bank31_playerAI_$E73E(sys);
 }
 
 // ── $DE6C ($C63C) — Match event continue (continuation of $DE5E flow) ──
@@ -5238,8 +5240,8 @@ export function matchEventContinue_$DE6C(sys: SystemState): void {
 
   sys.mem[0x0441] = fc;
 
-  // 6502: JSR $E6EC → bank31 player logic
-  // TODO: bank31 call
+  // 6502: JSR $E6EC → bank31 player logic (获取球员坐标 → 转换区域)
+  translate_BANK31_PLAYER_LOGIC(sys);
   const savedA = sys.regs.A;
 
   // Bank switch to $1A/$1B
@@ -5253,8 +5255,9 @@ export function matchEventContinue_$DE6C(sys: SystemState): void {
 
   audiotrigger_$CBB0(sys, 0x1C);
 
-  // 6502: JMP $E0DF → bank31 event loop
-  console.log('[bank30] matchEventContinue — jump to $E0DF');
+  // 6502: LDX #$50; TXS; JMP $E0DF → bank31 phase 2
+  sys.regs.SP = 0x50;
+  bank31_mainLoopPhase2_$E0DF(sys);
 }
 
 // ── $CEFE ($C554) — Bank00 dispatch entry ──

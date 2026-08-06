@@ -36,6 +36,8 @@
   background: rgba(31, 111, 235, 0.15);
 }
 
+
+
 .status-tag {
   color: #0ff;
   font-size: 11px;

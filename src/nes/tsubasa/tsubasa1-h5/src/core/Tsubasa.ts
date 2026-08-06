@@ -22,7 +22,9 @@ import { InputManager } from '../engine/InputManager';
 import { Renderer } from '../render/Renderer';
 import { RomReader, getRomReader } from '../data/RomReader';
 import { Bank0Core } from '../game/Bank0Core';
-import { SkeletonBank1, SkeletonBank5, SkeletonBank6 } from '../game/SkeletonBanks';
+import { OpeningScene } from '../game/opening/OpeningScene';
+import { TitleScene } from '../game/title/TitleScene';
+import { MenuScene } from '../game/menu/MenuScene';
 import { TsubasaOptions, DebugSnapshot, BUTTON, GameState } from './types';
 
 /** 默认选项 */
@@ -95,13 +97,13 @@ export class Tsubasa {
     this._bank0Core = new Bank0Core(this._ds, this._stateMachine, this._bankDispatcher);
     this._bank0Core.register();
     
-    // 注册骨架Bank模块 (Bank 1/5/6) — 后续会被完整实现替换
-    const skBank1 = new SkeletonBank1(this._ds, this._stateMachine);
-    const skBank5 = new SkeletonBank5(this._ds, this._stateMachine);
-    const skBank6 = new SkeletonBank6(this._ds, this._stateMachine);
-    this._bankDispatcher.registerBank(skBank1);
-    this._bankDispatcher.registerBank(skBank5);
-    this._bankDispatcher.registerBank(skBank6);
+    // 注册Bank模块
+    const openingScene = new OpeningScene(this._ds, this._stateMachine);
+    const titleScene = new TitleScene(this._ds, this._stateMachine);
+    const menuScene = new MenuScene(this._ds, this._stateMachine);
+    this._bankDispatcher.registerBank(openingScene);
+    this._bankDispatcher.registerBank(titleScene);
+    this._bankDispatcher.registerBank(menuScene);
     
     // 设置ROM读取器
     this._setupRomReader();

@@ -31,6 +31,7 @@ export interface PlayerEntry {
   stamina: number;
   specialMoves: number[];
   portraitTile: number;
+  teamId: number;        // 所属球队ID
 }
 
 /**
@@ -103,12 +104,14 @@ export class PlayerTable {
         if (m !== 0 && m !== 0xFF) specialMoves.push(m);
       }
       const portraitTile = bank3[offset + 16] || 0;
+      const teamId = bank3[offset + 2] || 0;
 
       table.register({
         id, name: `Player_${id}`,
         nameId, position,
         shoot, pass, dribble, tackle, speed, stamina,
         specialMoves, portraitTile,
+        teamId,
       });
     }
 
@@ -171,17 +174,17 @@ export class PlayerRepository {
   /** 用测试数据填充 (开发阶段) */
   loadTestData(): void {
     const testPlayers: PlayerEntry[] = [
-      { id: 1, name: '大空翼', nameId: 0, position: PlayerPosition.MF, shoot: 90, pass: 85, dribble: 88, tackle: 70, speed: 80, stamina: 95, specialMoves: [1, 2], portraitTile: 0 },
-      { id: 2, name: '日向小次郎', nameId: 0, position: PlayerPosition.FW, shoot: 95, pass: 65, dribble: 72, tackle: 60, speed: 78, stamina: 90, specialMoves: [3], portraitTile: 0 },
-      { id: 3, name: '若林源三', nameId: 0, position: PlayerPosition.GK, shoot: 30, pass: 60, dribble: 40, tackle: 50, speed: 55, stamina: 85, specialMoves: [4], portraitTile: 0 },
-      { id: 4, name: '岬太郎', nameId: 0, position: PlayerPosition.MF, shoot: 75, pass: 92, dribble: 82, tackle: 65, speed: 78, stamina: 82, specialMoves: [5], portraitTile: 0 },
-      { id: 5, name: '松山光', nameId: 0, position: PlayerPosition.DF, shoot: 80, pass: 75, dribble: 68, tackle: 88, speed: 75, stamina: 88, specialMoves: [6], portraitTile: 0 },
-      { id: 6, name: '石崎了', nameId: 0, position: PlayerPosition.DF, shoot: 45, pass: 55, dribble: 50, tackle: 72, speed: 65, stamina: 70, specialMoves: [], portraitTile: 0 },
-      { id: 7, name: '井泽守', nameId: 0, position: PlayerPosition.DF, shoot: 55, pass: 60, dribble: 55, tackle: 75, speed: 68, stamina: 73, specialMoves: [], portraitTile: 0 },
-      { id: 8, name: '来生哲兵', nameId: 0, position: PlayerPosition.FW, shoot: 72, pass: 58, dribble: 65, tackle: 40, speed: 82, stamina: 75, specialMoves: [], portraitTile: 0 },
-      { id: 9, name: '龍一', nameId: 0, position: PlayerPosition.FW, shoot: 78, pass: 60, dribble: 70, tackle: 45, speed: 85, stamina: 78, specialMoves: [7], portraitTile: 0 },
-      { id: 10, name: '森崎有三', nameId: 0, position: PlayerPosition.GK, shoot: 25, pass: 50, dribble: 35, tackle: 45, speed: 50, stamina: 70, specialMoves: [], portraitTile: 0 },
-      { id: 11, name: '早田誠', nameId: 0, position: PlayerPosition.DF, shoot: 65, pass: 62, dribble: 58, tackle: 80, speed: 70, stamina: 76, specialMoves: [], portraitTile: 0 },
+      { id: 1, name: '大空翼', nameId: 0, position: PlayerPosition.MF, shoot: 90, pass: 85, dribble: 88, tackle: 70, speed: 80, stamina: 95, specialMoves: [1, 2], portraitTile: 0, teamId: 1 },
+      { id: 2, name: '日向小次郎', nameId: 0, position: PlayerPosition.FW, shoot: 95, pass: 65, dribble: 72, tackle: 60, speed: 78, stamina: 90, specialMoves: [3], portraitTile: 0, teamId: 9 },
+      { id: 3, name: '若林源三', nameId: 0, position: PlayerPosition.GK, shoot: 30, pass: 60, dribble: 40, tackle: 50, speed: 55, stamina: 85, specialMoves: [4], portraitTile: 0, teamId: 1 },
+      { id: 4, name: '岬太郎', nameId: 0, position: PlayerPosition.MF, shoot: 75, pass: 92, dribble: 82, tackle: 65, speed: 78, stamina: 82, specialMoves: [5], portraitTile: 0, teamId: 1 },
+      { id: 5, name: '松山光', nameId: 0, position: PlayerPosition.DF, shoot: 80, pass: 75, dribble: 68, tackle: 88, speed: 75, stamina: 88, specialMoves: [6], portraitTile: 0, teamId: 1 },
+      { id: 6, name: '石崎了', nameId: 0, position: PlayerPosition.DF, shoot: 45, pass: 55, dribble: 50, tackle: 72, speed: 65, stamina: 70, specialMoves: [], portraitTile: 0, teamId: 1 },
+      { id: 7, name: '井泽守', nameId: 0, position: PlayerPosition.DF, shoot: 55, pass: 60, dribble: 55, tackle: 75, speed: 68, stamina: 73, specialMoves: [], portraitTile: 0, teamId: 1 },
+      { id: 8, name: '来生哲兵', nameId: 0, position: PlayerPosition.FW, shoot: 72, pass: 58, dribble: 65, tackle: 40, speed: 82, stamina: 75, specialMoves: [], portraitTile: 0, teamId: 1 },
+      { id: 9, name: '龍一', nameId: 0, position: PlayerPosition.FW, shoot: 78, pass: 60, dribble: 70, tackle: 45, speed: 85, stamina: 78, specialMoves: [7], portraitTile: 0, teamId: 1 },
+      { id: 10, name: '森崎有三', nameId: 0, position: PlayerPosition.GK, shoot: 25, pass: 50, dribble: 35, tackle: 45, speed: 50, stamina: 70, specialMoves: [], portraitTile: 0, teamId: 1 },
+      { id: 11, name: '早田誠', nameId: 0, position: PlayerPosition.DF, shoot: 65, pass: 62, dribble: 58, tackle: 80, speed: 70, stamina: 76, specialMoves: [], portraitTile: 0, teamId: 1 },
     ];
 
     for (const p of testPlayers) {

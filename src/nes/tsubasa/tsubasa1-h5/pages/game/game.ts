@@ -10,6 +10,7 @@
 import { Tsubasa } from '../../src/core/Tsubasa';
 import { BUTTON } from '../../src/core/types';
 import { initChrBanks, CHR_BANKS } from '../../src/assets/chr/chr_data';
+import { loadAllPrgBanks } from '../../src/data/raw/prg_bank_data';
 
 /** 页面数据接口 */
 interface PageData {
@@ -100,6 +101,16 @@ Page({
           // 注册到全局供调试页面访问
           const app = getApp();
           app.globalData.game = this._game;
+
+          // 加载 PRG Bank 数据 (游戏逻辑)
+          try {
+            loadAllPrgBanks((bankId: number, data: Uint8Array) => {
+              this._game!.loadPrgBank(bankId, data);
+            });
+            console.log('[GamePage] 已加载所有 PRG Bank');
+          } catch (err) {
+            console.error('[GamePage] 加载 PRG Bank 失败:', err);
+          }
 
           // 加载 CHR Bank 数据 (图形资源)
           try {

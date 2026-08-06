@@ -6,6 +6,216 @@
 
 ---
 
+## 2026-08-06 (Day 2) — 深夜续: Bank 7 数据提取 + 比赛引擎
+
+### 完成工作
+
+| 任务 | 说明 |
+|------|------|
+| ✅ T3.1 | Bank 7 球员数据提取 — 23名球员 × 18字节，提取自 Bank 7 RAM镜像 |
+| ✅ T3.2 | Bank 7 文本数据提取 — 107段文本，含 Bank 2 $D0F3 指针表 |
+| ✅ T3.3 | 关键发现: 球员数据API ($AB6F/$AB7C/$AB94) 实际在 Bank 0 内 |
+| ✅ T3.4 | MatchEngine — 完整比赛引擎 (Bank 4 转写) |
+| ✅ T3.5 | Bank0Core v2 — 使用 MatchEngine 替代占位逻辑 |
+| ✅ T3.6 | PlayerTable 修复 — 添加 teamId 字段 |
+
+### 架构发现
+
+**Bank 0 $AD38 指针表**: 23 条目 (每个 2字节)，指向 RAM $03F7-$0583 的球员数据。
+每个球员 18 字节，从 Bank 7 ROM 加载到 RAM 后由 Bank 0 代码访问。
+代码 $AB6F (GetPlayerPointer) → 查表 $AD38 → 存指针到 ($5D,$5E)
+代码 $AB7C (PlayerDataOps) → 切换到 Bank 7 → 使用指针访问数据
+
+### 球员数据结构 (18 字节)
+
+```
+[0-1]  名称指针 (Bank 7 CPU地址 $E0xx 或 RAM地址 $02xx)
+[2]    球队/阵营ID
+[3]    位置角色
+[4-5]  能力值组1
+[6-7]  能力值组2
+[8-9]  能力值组3
+[10-13] 能力值组4
+[14-15] 能力值组5
+[16-17] 能力值组6
+```
+
+### 比赛引擎 (MatchEngine)
+
+- State 3: 5步骤初始化 (清RAM → 加载球队 → 设置场地 → 参数 → 完成)
+- State 4: 比赛主循环 (开球 → 上半场 → 中场 → 下半场 → 加时 → 结束)
+- State 5: 状态转换 (进球/中场/终场 → 事件/结果画面)
+- AI: 随机事件驱动 (进球概率8%, 每5秒)
+- 时间: 简化版 45分钟 = 2700帧 @60fps
+
+| 文件 | 修改内容 |
+|------|---------|
+| `src/game/match/MatchEngine.ts` | [新] 完整比赛引擎 |
+| `src/game/match/index.ts` | [新] Barrel 导出 |
+| `src/game/Bank0Core.ts` | [重写] 使用 MatchEngine |
+| `src/data/tables/PlayerTable.ts` | [修正] 添加 teamId 字段 |
+| `scripts/extract_bank7_data.mjs` | [新] Bank 7 数据提取脚本 |
+| `src/data/tables/bank7_players.json` | [新] 23 名球员原始数据 |
+| `src/data/tables/bank7_texts.json` | [新] 107 段文本数据 |
+| `src/data/tables/bank7_player_data.ts` | [新] TS 格式球员数据 |
+
+### 游戏流程 (当前)
+
+```
+State 0: OpeningScene → 6个分镜展示 → auto exit
+State 1: TitleScene → 显示标题 + 等待START → auto/manual exit  
+State 2: MenuScene → 菜单选择 → auto exit
+State 3: Bank0Core.matchInit → MatchEngine 5步初始化
+State 4: Bank0Core.matchLoop → MatchEngine.update() 比赛循环
+State 5: Bank0Core.transitionManager → 状态转换
+State 6: MenuScene (Sub 3) → 事件画面
+State 7: MenuScene (Sub 1) → 结果画面
+```
+
+### 下一步
+
+1. **Bank 4 比赛AI完善** — 基于原 Bank 4 代码实现真实AI决策
+2. **Bank 7 文本字体** — 从 CHR Bank 提取日文字体映射
+3. **比赛画面渲染** — 场地背景 + 球员精灵 + 比分UI
+4. **完整通关测试** — AI 自动挂机跑通整场
+
+---
+
+### 完成工作
+
+| 任务 | 说明 |
+|------|------|
+| ✅ T2.1 | TitleScene — 替换 SkeletonBank5，从Bank 2 $B24F提取标题调色板 |
+| ✅ T2.2 | MenuScene — 替换 SkeletonBank6，实现菜单/结果/事件三个Sub |
+| ✅ T2.3 | 标题调色板提取脚本 — `extract_title_data.mjs` |
+| ✅ T2.4 | Bank 3 数据分析继续 — 确认Bank 3为代码+数据混合Bank |
+| ✅ T2.5 | Tsubasa.ts注册更新 — OpeningScene + TitleScene + MenuScene |
+
+### 标题调色板 (Bank 2 $B24F)
+
+```
+BG0: 0F 33 0F 1A  (黑/浅蓝/黑/绿)
+BG1: 30 36 0F 30  (白/深灰/黑/白)
+BG2: 0F 25 0F 0F  (黑/粉/黑/黑)
+BG3: 0F 36 30 21  (黑/深灰/白/蓝)
+SPR0-3: [36 11 0F 36] [30 21 36 30] [0F 0F 0F 21] [31 30 1A 30]
+```
+
+### Bank 5 分析
+
+Bank 5 开头跳转表:
+- $C4FC (Sub 0), $CB0D (Sub 1), $CB9B (Sub 2), $CE3B (Sub 3)
+- $CEAA (Sub 4), $CEDE (Sub 5), $D0F5 (Sub 6), $D149 (Sub 7)
+- State 1 调度 `LDA #$5D` → Bank 5 Sub D (13) — 超出8个Sub范围，可能二级分发
+
+### Bank 3 数据分析 (发现)
+
+- Bank 3 使用间接寻址模式 (LDA (indirect),Y) 访问数据，静态追踪困难
+- $3D60-$3DBF: 48字节指针表 (24个16-bit指针 → $FDxx)
+- $3DC0-$3DEF: 变长记录数据 (被指针表引用)
+- $3DF0-$3E1F: 16-bit数据数组 (可能是XP阈值或球员参数)
+- $3F50-$3FBF: 等级相关数据表
+- Bank 3 API ($AB6F/$AB7C/$AB94): 包含精灵/阵型数据，非纯球员数据
+- **结论**: 球员数据在Bank 3中以间接指针+变长记录格式存储，需更深入的ASM代码分析才能精确提取。当前使用测试数据作为占位。
+
+| 文件 | 修改内容 |
+|------|---------|
+| `src/core/Tsubasa.ts` | TitleScene/MenuScene 替换 SkeletonBank5/6 |
+| `src/game/title/TitleScene.ts` | [新] 标题画面 (调色板+nametable) |
+| `src/game/menu/MenuScene.ts` | [新] 菜单/结果/事件画面 |
+| `scripts/extract_title_data.mjs` | [新] Bank 2 标题数据提取 |
+
+### 游戏流程 (当前)
+
+```
+State 0: OpeningScene → 6个分镜展示 → auto exit
+State 1: TitleScene → 显示标题 + 等待START → auto/manual exit  
+State 2: MenuScene → 菜单选择 → auto exit
+State 3: Bank0Core.matchInit → 比赛初始化 (placeholder)
+State 4: Bank0Core.matchLoop → 比赛主循环 (placeholder)
+State 5: Bank0Core.transitionManager → 状态转换
+State 6: MenuScene (Sub 3) → 事件画面
+State 7: MenuScene (Sub 1) → 结果画面
+```
+
+### 下一步
+
+1. **Bank 3 球员数据精确提取** — 从代码段分析数据访问模式
+2. **Bank 7 文本数据** — 构建TextTable
+3. **比赛引擎实现** — Bank 4 替换 placeholder
+
+---
+
+## 2026-08-06 (Day 2) — 晚间: 接线 OpeningScene + PRG数据加载
+
+### 完成工作
+
+| 任务 | 说明 |
+|------|------|
+| ✅ T1.1 | OpeningScene 替换 SkeletonBank1 — Tsubasa.ts 中使用 OpeningScene |
+| ✅ T1.2 | PRG Bank 数据加载 — 从 prg_bulk.json 生成 prg_bank_data.ts，游戏页加载8个PRG Bank |
+| ✅ T1.3 | RLE 偏移修复 — 确认RLE数据在 Bank 1 offset 0x1068 (跳过16字节指针表) |
+| ✅ T1.4 | CHR Bank 切换修复 — 设置 `currentChrBank0/1` (非 `chrBank0/1`) |
+| ✅ T1.5 | 开场调色板 — 加载 NES 默认 4 组 BG + 4 组 SPR 调色板 |
+| ✅ T1.6 | RLE解码验证 — 成功解码960 tiles, 17种不同tile |
+
+### RLE数据结构确认
+
+```
+Bank 1 offset 0x1058: 8-entry pointer table (16 bytes)
+  [0] 0x614D [1] 0x3B00 [2] 0x0053 [3] 0xD068
+  [4] 0xD07F [5] 0xD093 [6] 0xD0A5 [7] 0xD0CE
+
+Bank 1 offset 0x1068: Main RLE nametable data
+  First tile: 0xA7 (背景色块)
+  960 tiles decoded (full nametable)
+  17 unique tiles
+```
+
+### Bank 3 数据分析 (发现)
+
+- Bank 3 使用间接寻址模式 (LDA (indirect),Y) 访问数据，静态追踪困难
+- $3D60-$3DBF: 48字节指针表 (24个16-bit指针 → $FDxx)
+- $3DC0-$3DEF: 变长记录数据 (被指针表引用)
+- $3DF0-$3E1F: 16-bit数据数组 (可能是XP阈值或球员参数)
+- $3F50-$3FBF: 等级相关数据表
+- Bank 3 API ($AB6F/$AB7C/$AB94): 包含精灵/阵型数据，非纯球员数据
+- **结论**: 球员数据在Bank 3中以间接指针+变长记录格式存储，需更深入的ASM代码分析才能精确提取。当前使用测试数据作为占位。
+
+| 文件 | 修改内容 |
+|------|---------|
+| `src/core/Tsubasa.ts` | OpeningScene 替换 SkeletonBank1 |
+| `src/game/opening/OpeningScene.ts` | RLE偏移修正 + 调色板 + CHR Bank修复 |
+| `pages/game/game.ts` | 加载所有8个PRG Bank |
+| `src/data/raw/prg_bank_data.ts` | [新] PRG Bank base64数据 (TS模块) |
+| `scripts/generate_prg_data.mjs` | [新] prg_bulk.json→prg_bank_data.ts 转换脚本 |
+
+### 架构确认
+
+```
+数据流:
+  prg_bulk.json (171KB)
+    → generate_prg_data.mjs
+    → prg_bank_data.ts (0.17MB)
+    → game.ts: loadAllPrgBanks()
+    → Tsubasa.loadPrgBank(bankId, data)
+    → RomReader.loadBank(bankId, data)
+    → OpeningScene.getRomReader().getBankData(1)
+    → RleDecoder.decode(bank1, 0x1068, 960)
+    → DataStore.nametable0 (960 tiles)
+    → Renderer.render() → Canvas
+
+CHR流:
+  chr_data.ts (769KB)
+    → game.ts: initChrBanks() + loadChrBank()
+    → Renderer._chrBanks Map
+    → OpeningScene._setChrBanks(4, 6)
+    → Renderer._activeChr0/1
+    → 渲染时按 tile 索引查 CHR 图案
+```
+
+---
+
 ## 2026-08-06 (Day 2) — 晚间: RomDatabase 架构重构 + 数据库页面修复
 
 ### 核心修正
@@ -25,7 +235,15 @@
 |------|------|
 | `src/data/RomDatabase.ts` | ROM静态资源数据库 (单例、只读、类SQL查询) |
 
-### 修改文件
+### Bank 3 数据分析 (发现)
+
+- Bank 3 使用间接寻址模式 (LDA (indirect),Y) 访问数据，静态追踪困难
+- $3D60-$3DBF: 48字节指针表 (24个16-bit指针 → $FDxx)
+- $3DC0-$3DEF: 变长记录数据 (被指针表引用)
+- $3DF0-$3E1F: 16-bit数据数组 (可能是XP阈值或球员参数)
+- $3F50-$3FBF: 等级相关数据表
+- Bank 3 API ($AB6F/$AB7C/$AB94): 包含精灵/阵型数据，非纯球员数据
+- **结论**: 球员数据在Bank 3中以间接指针+变长记录格式存储，需更深入的ASM代码分析才能精确提取。当前使用测试数据作为占位。
 
 | 文件 | 修改内容 |
 |------|---------|
@@ -104,7 +322,15 @@ RomDatabase
 | `render-debug.wxml` | 视图切换 + 叠加层 |
 | `render-debug.wxss` | 暗色主题样式 |
 
-### 修改文件
+### Bank 3 数据分析 (发现)
+
+- Bank 3 使用间接寻址模式 (LDA (indirect),Y) 访问数据，静态追踪困难
+- $3D60-$3DBF: 48字节指针表 (24个16-bit指针 → $FDxx)
+- $3DC0-$3DEF: 变长记录数据 (被指针表引用)
+- $3DF0-$3E1F: 16-bit数据数组 (可能是XP阈值或球员参数)
+- $3F50-$3FBF: 等级相关数据表
+- Bank 3 API ($AB6F/$AB7C/$AB94): 包含精灵/阵型数据，非纯球员数据
+- **结论**: 球员数据在Bank 3中以间接指针+变长记录格式存储，需更深入的ASM代码分析才能精确提取。当前使用测试数据作为占位。
 
 | 文件 | 修改内容 |
 |------|---------|

@@ -1,6 +1,6 @@
 /**
  * Bank 03: Data Bank ($8000-$9FFF 或 $A000-$BFFF)
- *
+ *故事章节/对话脚本
  * MMC3 可切换 bank。
  * 功能: 纯数据 bank，供其他 bank 透过 MMC3 切换读取
  *
@@ -14,6 +14,7 @@
  *   ✅ ROM 数据 — 内联常数 bank-03-data.ts
  *
  * 原始 hex: tsubasa-hex2asm/prg_banks/prg_bank_03_data.ts
+ * 0x94=濁点゛、0x95=半濁点゜
  */
 
 import { PRG_BANK_03_DATA } from './bank-03-data-only';

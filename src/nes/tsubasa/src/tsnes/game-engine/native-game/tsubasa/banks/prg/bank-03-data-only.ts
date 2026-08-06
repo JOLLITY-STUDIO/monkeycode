@@ -1,8 +1,10 @@
 /**
  * Bank 03 完整 ROM 数据 — 内联常数
+ * 故事章节/对话脚本，特殊字符：0x94=濁点゛、0x95=半濁点゜
+ * 然后chr bank 使用16类的bank00进行映射。
  * 8KB MMC3 PRG bank，$8000-$9FFF
  * 功能: 纯数据
- * 来源: tsubasa-hex2asm/prg_banks/prg_bank_03_data.ts
+ * 来源: tsubasa-hex2asm/prg_banks/prg_bank_03_data.ts 
  */
 // eslint-disable-next-line
 // @ts-ignore: renamed

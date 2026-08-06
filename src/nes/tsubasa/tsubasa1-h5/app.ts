@@ -11,7 +11,7 @@ import { RomDatabase } from './src/data/RomDatabase';
 
 App({
   onLaunch() {
-    console.log('[Tsubasa1] 游戏启动 v0.3.1');
+    console.log('[Tsubasa1] 游戏启动 v0.4.0');
     
     // 预初始化 ROM 数据库 (所有 database 页面都依赖它)
     try {
@@ -24,7 +24,7 @@ App({
   },
   
   globalData: {
-    version: '0.3.1',
+    version: '0.4.0',
     debugMode: false,
     /** 当前游戏实例 (由 game.ts 页面设置，仅运行时态) */
     game: null as Tsubasa | null,

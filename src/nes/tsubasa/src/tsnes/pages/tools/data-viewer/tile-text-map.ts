@@ -1,66 +1,65 @@
 /**
- * CHR Bank 0 字体映射表
+ * ═══════════════════════════════════════════════
+ * CHR 字体 Tile → 字符映射表
+ * ═══════════════════════════════════════════════
  *
- * 说明：
- * - 0x00 / 0xFF 为名称终止符/填充，不显示
- * - 无法识别的 tile 以 〈0xNN〉 形式保留原始 hex，便于校对
+ * ⚠️ 已知问题 (2026-08-06):
+ *   Bank 27 存储的球员/队伍名称是 raw tile 索引，这些索引会被直接写入 NES
+ *   Name Table。真正承载字体的 CHR Bank 并非 Bank 0，而是随 MMC3 场景切换
+ *   的 UI 字体 bank（Bank 6 或更细粒度的 VROM bank）。
  *
- * 布局（Pattern Table 0，32 tile/行）：
- *   0x50-0x7E：片假名
- *   0x81-0xAE：平假名
- *   0xB0-0xC9：大写 A-Z
- *   0xCA-0xE3：小写 a-z
+ *   当前状态:
+ *   - 任何通用 NES 字体布局假设都会产成乱码，因为不同 bank 的 tile 排布不同。
+ *   - 已确认 Bank 27 → Name Table 无中间转码。
+ *   - 未确认具体哪个 1KB/4KB CHR page 在显示名字时被激活，因此无法可靠
+ *     建立 tile → 字符映射。
+ *
+ *   安全策略:
+ *   - 0x00 / 0xFF 视为终止符/填充。
+ *   - 其余 tile 全部以 〈0xNN〉 原始 hex 形式输出，避免误导性乱码。
+ *   - 当后续通过模拟器截图/CHR tile viewer 确定字体布局后，可在此补充
+ *     TILE_TO_CHAR 映射，decodeTileName() 会自动使用。
+ *
+ * TODO:
+ *   - 用模拟器/MMC3 trace 捕获名字显示场景的 CHR page 选择。
+ *   - 对照 PNG `tsubasa-2asm/tsubasa-hex2asm/chr_banks/png/bank_6_8k.png`
+ *     等逐 tile 校对 0x50-0xE3 区域的真实字符。
  */
 
+/**
+ * 已确认映射表（当前为空，等待 CHR 字体校对完成）。
+ * 仅在 tile 存在可靠字符对应时才应加入。
+ */
 const TILE_TO_CHAR: Record<number, string> = {
-  // 平假名（50音图，从 0x81 开始横排）
-  0x81: 'あ', 0x82: 'い', 0x83: 'う', 0x84: 'え', 0x85: 'お',
-  0x86: 'か', 0x87: 'き', 0x88: 'く', 0x89: 'け', 0x8A: 'こ',
-  0x8B: 'さ', 0x8C: 'し', 0x8D: 'す', 0x8E: 'せ', 0x8F: 'そ',
-  0x90: 'た', 0x91: 'ち', 0x92: 'つ', 0x93: 'て', 0x94: 'と',
-  0x95: 'な', 0x96: 'に', 0x97: 'ぬ', 0x98: 'ね', 0x99: 'の',
-  0x9A: 'は', 0x9B: 'ひ', 0x9C: 'ふ', 0x9D: 'へ', 0x9E: 'ほ',
-  0x9F: 'ま', 0xA0: 'み', 0xA1: 'む', 0xA2: 'め', 0xA3: 'も',
-  0xA4: 'や', 0xA5: 'ゆ', 0xA6: 'よ',
-  0xA7: 'ら', 0xA8: 'り', 0xA9: 'る', 0xAA: 'れ', 0xAB: 'ろ',
-  0xAC: 'わ', 0xAD: 'を', 0xAE: 'ん',
-
-  // 片假名（50音图，从 0x51 开始横排）
-  0x50: 'ワ', 0x51: 'ア', 0x52: 'イ', 0x53: 'ウ', 0x54: 'エ', 0x55: 'オ',
-  0x56: 'カ', 0x57: 'キ', 0x58: 'ク', 0x59: 'ケ', 0x5A: 'コ',
-  0x5B: 'サ', 0x5C: 'シ', 0x5D: 'ス', 0x5E: 'セ', 0x5F: 'ソ',
-  0x60: 'タ', 0x61: 'チ', 0x62: 'ツ', 0x63: 'テ', 0x64: 'ト',
-  0x65: 'ナ', 0x66: 'ニ', 0x67: 'ヌ', 0x68: 'ネ', 0x69: 'ノ',
-  0x6A: 'ハ', 0x6B: 'ヒ', 0x6C: 'フ', 0x6D: 'ヘ', 0x6E: 'ホ',
-  0x6F: 'マ', 0x70: 'ミ', 0x71: 'ム', 0x72: 'メ', 0x73: 'モ',
-  0x74: 'ヤ', 0x75: 'ユ', 0x76: 'ヨ',
-  0x77: 'ラ', 0x78: 'リ', 0x79: 'ル', 0x7A: 'レ', 0x7B: 'ロ',
-  0x7C: 'ワ', 0x7D: 'ヲ', 0x7E: 'ン',
-
-  // 大写 A-Z
-  0xB0: 'A', 0xB1: 'B', 0xB2: 'C', 0xB3: 'D', 0xB4: 'E',
-  0xB5: 'F', 0xB6: 'G', 0xB7: 'H', 0xB8: 'I', 0xB9: 'J',
-  0xBA: 'K', 0xBB: 'L', 0xBC: 'M', 0xBD: 'N', 0xBE: 'O',
-  0xBF: 'P', 0xC0: 'Q', 0xC1: 'R', 0xC2: 'S', 0xC3: 'T',
-  0xC4: 'U', 0xC5: 'V', 0xC6: 'W', 0xC7: 'X', 0xC8: 'Y', 0xC9: 'Z',
-
-  // 小写 a-z
-  0xCA: 'a', 0xCB: 'b', 0xCC: 'c', 0xCD: 'd', 0xCE: 'e',
-  0xCF: 'f', 0xD0: 'g', 0xD1: 'h', 0xD2: 'i', 0xD3: 'j',
-  0xD4: 'k', 0xD5: 'l', 0xD6: 'm', 0xD7: 'n', 0xD8: 'o',
-  0xD9: 'p', 0xDA: 'q', 0xDB: 'r', 0xDC: 's', 0xDD: 't',
-  0xDE: 'u', 0xDF: 'v', 0xE0: 'w', 0xE1: 'x', 0xE2: 'y', 0xE3: 'z',
+  // 示例（占位，不可臆测）:
+  // 0x7E: '゛',   // 需通过 Bank 6 tile 形状验证
 };
 
-/** 把一段 tile 序列解码为可读字符串，未知 tile 保留 〈0xNN〉 */
+/**
+ * 名称 tile 通常出现的范围。
+ * 此范围内任何 tile 都优先显示为 raw hex，直到建立可信映射。
+ */
+const FONT_TILE_RANGE = { min: 0x50, max: 0xE3 };
+
+/** 把一段 tile 序列解码为可读字符串；未知/未校对 tile 保留 〈0xNN〉 */
 export function decodeTileName(tiles: number[]): string {
   return tiles.map(t => {
     if (t === 0x00 || t === 0xFF) return '';
-    return TILE_TO_CHAR[t] ?? `〈0x${t.toString(16).toUpperCase().padStart(2, '0')}〉`;
+    const mapped = TILE_TO_CHAR[t];
+    if (mapped) return mapped;
+    if (t >= FONT_TILE_RANGE.min && t <= FONT_TILE_RANGE.max) {
+      return `〈0x${t.toString(16).toUpperCase().padStart(2, '0')}〉`;
+    }
+    return `〈0x${t.toString(16).toUpperCase().padStart(2, '0')}〉`;
   }).join('');
 }
 
 /** 返回原始 hex（空格分隔） */
 export function tilesToHex(tiles: number[]): string {
   return tiles.map(t => t.toString(16).toUpperCase().padStart(2, '0')).join(' ');
+}
+
+/** 返回原始 hex 数组，便于进一步处理 */
+export function tilesToHexArray(tiles: number[]): string[] {
+  return tiles.map(t => `0x${t.toString(16).toUpperCase().padStart(2, '0')}`);
 }
