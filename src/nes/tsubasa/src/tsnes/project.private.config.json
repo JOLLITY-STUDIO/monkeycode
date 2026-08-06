@@ -15,11 +15,25 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/manual-demo/manual-demo",
-          "pathName": "pages/manual-demo/manual-demo",
+          "name": "pages/bank-trans/bank-trans",
+          "pathName": "pages/bank-trans/bank-trans",
           "query": "",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "pages/tools/bank-trans/bank-trans",
+          "pathName": "pages/tools/bank-trans/bank-trans",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
+        },
+        {
+          "name": "pages/manual-demo/manual-demo",
+          "pathName": "pages/manual-demo/manual-demo",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/tools/data-viewer/data-viewer",

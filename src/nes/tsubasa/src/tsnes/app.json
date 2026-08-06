@@ -1,8 +1,6 @@
 {
   "pages": [
-    "pages/h5game/h5game",
-    "pages/tools/data-viewer/data-viewer",
-    "pages/tools/script-viewer/script-viewer"
+    "pages/h5game/h5game"
   ],
   "window": {
     "navigationBarTitleText": "天使之翼2 (H5引擎)",

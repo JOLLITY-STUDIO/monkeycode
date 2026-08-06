@@ -20,45 +20,34 @@
 </template>
 
 <view class="game-container">
-  <!-- 隐藏的导出 canvas（off-screen） -->
+  <!-- 隐藏的导出 canvas -->
   <canvas type="2d" id="exportCanvas" class="export-canvas"></canvas>
-  <!-- 状态栏（置顶） -->
+
+  <!-- 状态栏 -->
   <view class="status-bar">
-    <text class="status-tag">{{debugTab ? 'Debug: ' + debugTabs[debugTab] : '双引擎'}}</text>
+    <text class="status-tag">{{debugTab ? 'Debug: ' + debugTabs[debugTab] : 'CPU 模拟器'}}</text>
     <text class="status-text">{{status}}</text>
     <text class="fps-text">FPS: {{fps}}</text>
     <navigator url="/pages/tools/data-viewer/data-viewer" class="data-btn">数据</navigator>
   </view>
 
-  <!-- 游戏 + Debug 左右双栏布局 (PC 宽屏) -->
+  <!-- 游戏 + Debug 左右双栏 -->
   <view class="main-row">
-    <!-- 左栏：游戏画布区 -->
+    <!-- 左栏：游戏画布（单 canvas） -->
     <view class="game-area">
-      <view class="canvas-pair">
-        <text class="canvas-label label-cpu">CPU 模拟器</text>
-        <canvas type="2d" id="h5canvas" class="game-canvas" disable-scroll="true"></canvas>
-      </view>
-      <view class="canvas-pair">
-        <text class="canvas-label label-bank">Bank 翻译</text>
-        <canvas type="2d" id="h5canvas2" class="game-canvas" disable-scroll="true"></canvas>
-      </view>
+      <canvas type="2d" id="h5canvas" class="game-canvas" disable-scroll="true"></canvas>
     </view>
 
-    <!-- 右栏：Debug 区（始终可见） -->
+    <!-- 右栏：Debug 区 -->
     <view class="debug-column {{debugTab ? 'expanded' : ''}}">
-      <!-- Debug 工具栏（始终可见） -->
       <view class="debug-toolbar">
         <view class="debug-tab {{!debugTab ? 'active' : ''}}" bindtap="onDebugTab" data-tab="">GAME</view>
         <view class="debug-tab {{debugTab === 'nametable' ? 'active' : ''}}" bindtap="onDebugTab" data-tab="nametable">NT</view>
         <view class="debug-tab {{debugTab === 'patterntable' ? 'active' : ''}}" bindtap="onDebugTab" data-tab="patterntable">PT</view>
         <view class="debug-tab {{debugTab === 'sprite' ? 'active' : ''}}" bindtap="onDebugTab" data-tab="sprite">SPR</view>
-        <view class="debug-tab {{debugTab === 'disasm' ? 'active' : ''}}" bindtap="onDebugTab" data-tab="disasm">ASM</view>
       </view>
 
-      <!-- Debug 面板（有 tab 时展开） -->
       <view class="debug-panel {{debugTab ? 'visible' : ''}}">
-        <!-- 画布类查看器（其他不含文字的） -->
-        <!-- NT 特殊：canvas + 可复制文字数据 -->
         <block wx:if="{{debugTab === 'nametable'}}">
           <template is="paletteStrips" data="{{strips: paletteStrips}}"/>
           <view class="nt-canvas-wrap">
@@ -74,7 +63,6 @@
             </scroll-view>
           </view>
         </block>
-        <!-- PT 特殊：canvas + CHR bank 可复制文字数据 -->
         <block wx:if="{{debugTab === 'patterntable'}}">
           <template is="paletteStrips" data="{{strips: paletteStrips}}"/>
           <view class="pt-canvas-wrap">
@@ -90,19 +78,14 @@
             </scroll-view>
           </view>
         </block>
-        <!-- SPR 特殊：canvas + 可复制 SPT 文字数据 -->
         <block wx:if="{{debugTab === 'sprite'}}">
           <template is="paletteStrips" data="{{strips: paletteStrips}}"/>
           <view class="spr-toolbar">
             <text class="spr-toolbar-label">SPR Viewer</text>
             <view class="data-copy-btn" bindtap="onCopySPRData">[ 复制 ]</view>
             <view class="spr-export-btn" bindtap="onExportSprite">[ 导出图片 ]</view>
-            <block wx:if="{{!sprRecording}}">
-              <view class="spr-record-btn" bindtap="onStartRecord">[ 录制 ]</view>
-            </block>
-            <block wx:else>
-              <view class="spr-stop-btn" bindtap="onStopRecord">[ 停止 {{sprRecordCount}}帧 ]</view>
-            </block>
+            <block wx:if="{{!sprRecording}}"><view class="spr-record-btn" bindtap="onStartRecord">[ 录制 ]</view></block>
+            <block wx:else><view class="spr-stop-btn" bindtap="onStopRecord">[ 停止 {{sprRecordCount}}帧 ]</view></block>
           </view>
           <view class="spr-dur-wrap" wx:if="{{!sprRecording}}">
             <text class="spr-dur-label">时长(秒):</text>
@@ -117,12 +100,6 @@
             </scroll-view>
           </view>
         </block>
-        <!-- 汇编文本 -->
-        <view class="disasm-wrap" wx:if="{{debugTab === 'disasm'}}">
-          <scroll-view class="disasm-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
-            <text class="disasm-text">{{debugLines}}</text>
-          </scroll-view>
-        </view>
       </view>
     </view>
   </view>
