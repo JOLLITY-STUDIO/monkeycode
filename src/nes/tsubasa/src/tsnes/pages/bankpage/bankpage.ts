@@ -61,13 +61,13 @@ const PRG_STATS: Record<number, { code: number; data: number; unacc: number; cpu
 
 const PRG_DESCRIPTIONS: Record<number, string> = {
   0:  '系统初始化 & 标题/菜单主循环 — 通过 $9FA8 切换 PRG bank',
-  1:  '数据查询服务（球员/队伍/赛事数据检索）→ 调用 Bank 02 的 $A72C',
-  2:  '场景/密码/选择界面 & 数据加载引擎（$A72C 关卡数据解包器）',
-  3:  '关卡地图数据 (Part 1) — 被 Bank 02 ($A72C) 解包到 RAM $0460',
-  4:  '关卡地图数据 (Part 2) — 同 Bank 03 格式，同为 Bank 02 所加载',
+  1:  '数据查询服务（球员/队伍/赛事数据检索）→ 调用 Bank 02 $A72C',
+  2:  '场景/密码/选择界面 & 多 bank 交织数据迭代器（$A72C 4字节记录生成器）',
+  3:  '游戏数据表 (Part 1) — 被 $A72C 交织读取（mask=$03, 每4次选1记录）',
+  4:  '游戏数据表 (Part 2) — 同上格式，同为 Bank 02 所加载',
   5:  '队伍阵型/策略数据',
   6:  '剧情/脚本数据块 (Part 1)',
-  7:  '剧情/脚本数据块 (Part 2) — 被 Bank 02 ($A72C, EB=$07) 加载',
+  7:  '游戏数据表 (Part 3) — 被 $A72C 以 mask=$07 读取',
   8:  '文本/对话数据 (Part 1)',
   9:  '文本/对话数据 (Part 2)',
   10: '场景描述/地图定位数据',
@@ -115,7 +115,7 @@ const PRG_RELATIONS: Record<number, BankRel> = {
   0:  { deps: [2, 30, 31], usedBy: [] },
   // Bank 01: 数据查询→调用 Bank 02 的 $A72C 关卡加载
   1:  { deps: [2, 3, 4, 7], usedBy: [] },
-  // Bank 02: 关卡数据解包器 $A72C → 用到 Bank 03, 04, 07 的地图/脚本数据
+  // Bank 02: 多 bank 交织数据迭代器 $A72C → 读取 Bank 03, 04, 07 的记录表
   2:  { deps: [3, 4, 7], usedBy: [0, 1] },
   3:  { deps: [], usedBy: [2] },
   4:  { deps: [], usedBy: [2] },
