@@ -3,27 +3,24 @@
  * CHR 字体 Tile → 字符映射表
  * ═══════════════════════════════════════════════
  *
- * ⚠️ 已知问题 (2026-08-06):
- *   Bank 27 存储的球员/队伍名称是 raw tile 索引，这些索引会被直接写入 NES
- *   Name Table。真正承载字体的 CHR Bank 并非 Bank 0，而是随 MMC3 场景切换
- *   的 UI 字体 bank（Bank 6 或更细粒度的 VROM bank）。
+ * ✅ 字体位置已确认 (2026-08-06):
+ *   CHR Bank 0 是真正的字体字库（日文假名/英文字母/符号），已通过
+ *   BMP 渲染验证（chr_bank_00_16col.bmp 顶部清晰可见假名和英文字母）。
+ *   之前的「Bank 6 是字体」判断是错误的 — Bank 6 实际上是精灵/动画 tile。
+ *
+ * ✅ 项目内已全部 import 各 CHR Bank 数据，不依赖 MMC3 bank switch。
+ *   当 Bank 27(PRG) 中存储的球员/队伍名称 tile 索引被直接写入 Name Table 时，
+ *   PPU 指向的图案表页对应 Bank 0 的字体 tile。
+ *
+ *   Bank 27 → Name Table 无中间转码（tile 索引直接使用）。
  *
  *   当前状态:
- *   - 任何通用 NES 字体布局假设都会产成乱码，因为不同 bank 的 tile 排布不同。
- *   - 已确认 Bank 27 → Name Table 无中间转码。
- *   - 未确认具体哪个 1KB/4KB CHR page 在显示名字时被激活，因此无法可靠
- *     建立 tile → 字符映射。
- *
- *   安全策略:
- *   - 0x00 / 0xFF 视为终止符/填充。
- *   - 其余 tile 全部以 〈0xNN〉 原始 hex 形式输出，避免误导性乱码。
- *   - 当后续通过模拟器截图/CHR tile viewer 确定字体布局后，可在此补充
- *     TILE_TO_CHAR 映射，decodeTileName() 会自动使用。
+ *   - 字体位置已确认：CHR Bank 0（512 tiles，包含假名/英文/符号）
+ *   - 可直接对照 chr_bank_00_16col.bmp 逐 tile 建立 TILE_TO_CHAR 映射
  *
  * TODO:
- *   - 用模拟器/MMC3 trace 捕获名字显示场景的 CHR page 选择。
- *   - 对照 PNG `tsubasa-2asm/tsubasa-hex2asm/chr_banks/png/bank_6_8k.png`
- *     等逐 tile 校对 0x50-0xE3 区域的真实字符。
+ *   - 对照 chr_bank_00_16col.bmp 逐 tile 校对 0x50-0xE3 区域的真实字符
+ *   - 补充 TILE_TO_CHAR 映射表
  */
 
 /**
@@ -32,7 +29,7 @@
  */
 const TILE_TO_CHAR: Record<number, string> = {
   // 示例（占位，不可臆测）:
-  // 0x7E: '゛',   // 需通过 Bank 6 tile 形状验证
+  // 0x7E: '゛',   // 需通过 CHR Bank 0 BMP 形状验证
 };
 
 /**
