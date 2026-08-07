@@ -15,11 +15,18 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/bankpage/bankpage",
-          "pathName": "pages/bankpage/bankpage",
+          "name": "pages/tsubasa2/tsubasa2",
+          "pathName": "pages/tsubasa2/tsubasa2",
           "query": "",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "pages/bankpage/bankpage",
+          "pathName": "pages/bankpage/bankpage",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/h5game/h5game",

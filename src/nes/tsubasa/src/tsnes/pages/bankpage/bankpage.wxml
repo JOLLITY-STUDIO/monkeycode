@@ -28,6 +28,7 @@
         <view class="bank-id">
           <text class="bank-type-icon">{{item.flags[2] || '⚡'}}</text>
           <text class="bank-label">{{item.label}}</text>
+          <text class="bank-name">{{item.name}}</text>
           <text class="bank-cpu">{{item.cpuMap}}</text>
         </view>
         <text class="bank-desc">{{item.description}}</text>
@@ -80,6 +81,7 @@
         <view class="bank-id">
           <text class="bank-type-icon">🎨</text>
           <text class="bank-label">{{item.label}}</text>
+          <text class="bank-name">{{item.name}}</text>
           <text class="bank-cpu">{{item.cpuMap}}</text>
         </view>
         <text class="bank-desc">{{item.description}}</text>

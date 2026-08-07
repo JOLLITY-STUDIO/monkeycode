@@ -2668,7 +2668,7 @@ C - - - - - 0x0209C3 08:89B3: 60        RTS
 - D 0 - I - 0x020E34 08:8E24: 11        .byte $11   ; 
 - D 0 - I - 0x020E35 08:8E25: 04        .byte $04   ; 
 - D 0 - I - 0x020E36 08:8E26: 10        .byte $10   ; 
-- - - - - - 0x020E37 08:8E27: 1B        .byte $1B   ; 
+- D 0 - I - 0x020E37 08:8E27: 1B        .byte $1B   ; 
 - - - - - - 0x020E38 08:8E28: 0D        .byte $0D   ; 
 - D 0 - I - 0x020E39 08:8E29: FA        .byte $FA   ; 
 - D 0 - I - 0x020E3A 08:8E2A: DC        .byte $DC   ; 
@@ -2695,12 +2695,12 @@ C - - - - - 0x0209C3 08:89B3: 60        RTS
 - D 0 - I - 0x020E4F 08:8E3F: F2        .byte $F2   ; 
 - D 0 - I - 0x020E50 08:8E40: 71        .byte $71   ; <q>
 - D 0 - I - 0x020E51 08:8E41: A3        .byte $A3   ; 
-- - - - - - 0x020E52 08:8E42: FA        .byte $FA   ; 
-- - - - - - 0x020E53 08:8E43: DC        .byte $DC   ; 
-- - - - - - 0x020E54 08:8E44: B2        .byte $B2   ; 
-- - - - - - 0x020E55 08:8E45: F2        .byte $F2   ; 
-- - - - - - 0x020E56 08:8E46: 85        .byte $85   ; 
-- - - - - - 0x020E57 08:8E47: A1        .byte $A1   ; 
+- D 0 - I - 0x020E52 08:8E42: FA        .byte $FA   ; 
+- D 0 - I - 0x020E53 08:8E43: DC        .byte $DC   ; 
+- D 0 - I - 0x020E54 08:8E44: B2        .byte $B2   ; 
+- D 0 - I - 0x020E55 08:8E45: F2        .byte $F2   ; 
+- D 0 - I - 0x020E56 08:8E46: 85        .byte $85   ; 
+- D 0 - I - 0x020E57 08:8E47: A1        .byte $A1   ; 
 - D 0 - I - 0x020E58 08:8E48: F3        .byte $F3   ; 
 - D 0 - I - 0x020E59 08:8E49: 83        .byte $83   ; 
 - D 0 - I - 0x020E5A 08:8E4A: 11        .byte $11   ; 
@@ -6869,8 +6869,8 @@ C - - - - - 0x0209C3 08:89B3: 60        RTS
 - - - - - - 0x021E9D 08:9E8D: B9        .byte $B9   ; 
 - D 0 - I - 0x021E9E 08:9E8E: 99        .byte $99   ; 
 - D 0 - I - 0x021E9F 08:9E8F: B9        .byte $B9   ; 
-- - - - - - 0x021EA0 08:9E90: A0        .byte $A0   ; 
-- - - - - - 0x021EA1 08:9E91: B9        .byte $B9   ; 
+- D 0 - I - 0x021EA0 08:9E90: A0        .byte $A0   ; 
+- D 0 - I - 0x021EA1 08:9E91: B9        .byte $B9   ; 
 - D 0 - I - 0x021EA2 08:9E92: A7        .byte $A7   ; 
 - D 0 - I - 0x021EA3 08:9E93: B9        .byte $B9   ; 
 - D 0 - I - 0x021EA4 08:9E94: AE        .byte $AE   ; 

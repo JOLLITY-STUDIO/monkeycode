@@ -4,6 +4,7 @@
   <view class="detail-header">
     <view class="header-row">
       <text class="bank-title">{{bankLabel}}</text>
+      <text class="bank-name">{{bankName}}</text>
       <text class="bank-cpu">{{cpuMap}}</text>
     </view>
     <text class="bank-desc">{{description}}</text>
@@ -37,6 +38,11 @@
     <view class="view-tab {{viewMode === 'histogram' ? 'active' : ''}}" bindtap="onViewHistogram">柱状图</view>
     <view class="view-tab {{viewMode === 'records' ? 'active' : ''}}" bindtap="onViewRecords">📋 记录</view>
     <view class="view-tab {{viewMode === 'tiles' ? 'active' : ''}}" bindtap="onViewCHRTiles">🎨 图块</view>
+    <view class="view-tab {{viewMode === 'field' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 7}}" bindtap="onViewField">🏟️ 场地</view>
+    <view class="view-tab {{viewMode === 'structure' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 30 || bankId === 31}}" bindtap="onViewStructure">🏗️ 结构</view>
+    <view class="view-tab {{viewMode === 'functions' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 30 || bankId === 31}}" bindtap="onViewFunctions">🔧 函数</view>
+    <view class="view-tab {{viewMode === 'debug' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 30 || bankId === 31}}" bindtap="onViewDebug">🐛 调试</view>
+    <view class="view-tab {{viewMode === 'data' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 30 || bankId === 31}}" bindtap="onViewData">🧬 数据</view>
   </view>
 
   <!-- ── HEX 视图 ── -->
@@ -64,9 +70,16 @@
       <view class="rmode-tab {{recordMode === 'auto' ? 'active' : ''}}" data-mode="auto" bindtap="onRecordModeSwitch">自动</view>
       <view class="rmode-tab {{recordMode === '4byte' ? 'active' : ''}}" data-mode="4byte" bindtap="onRecordModeSwitch">4字节</view>
       <view class="rmode-tab {{recordMode === 'fc' ? 'active' : ''}}" data-mode="fc" bindtap="onRecordModeSwitch">$FC分隔</view>
+      <view class="rmode-tab {{recordMode === 'bank07' ? 'active' : ''}}" wx:if="{{bankId === 7}}" data-mode="bank07" bindtap="onRecordModeSwitch">🏟️ $00A0分隔</view>
       <view class="rmode-tab {{recordMode === '8byte' ? 'active' : ''}}" data-mode="8byte" bindtap="onRecordModeSwitch">8字节</view>
       <view class="rmode-tab {{recordMode === '16byte' ? 'active' : ''}}" data-mode="16byte" bindtap="onRecordModeSwitch">16字节</view>
       <text class="rmode-auto-label">→ {{recordAutoMethod}}</text>
+    </view>
+
+    <!-- Bank 07 信息 -->
+    <view class="record-stats" wx:if="{{bankId === 7 && recordStats.$00A0count > 0}}">
+      <text class="rstat rstat-hl">🏟️ $00 $A0 分隔: {{recordStats.$00A0count}}处</text>
+      <text class="rstat"> | 记录头类型: $3C $3E(标准) $5C $5E(扩展) $3A $00(小尺寸) $64 $66(屏幕) $7C $7E(宽) $60 $62(填充)</text>
     </view>
 
     <!-- 统计摘要 -->
@@ -75,6 +88,7 @@
       <text class="rstat">$FC: {{recordStats.$FCcount}} | </text>
       <text class="rstat">$FD: {{recordStats.$FDcount}} | </text>
       <text class="rstat">$FF: {{recordStats.$FFcount}} | </text>
+      <text class="rstat" wx:if="{{bankId === 7}}">$00A0: {{recordStats.$00A0count}} | </text>
       <text class="rstat">块均: {{recordStats.avgBlockSize}}B | </text>
       <text class="rstat">总块: {{recordStats.totalBlocks}}</text>
     </view>
@@ -93,6 +107,11 @@
         <view class="rec-offset">
           <text class="rec-addr">${{item.offset}}</text>
           <text class="rec-len">({{item.len}}B)</text>
+          <text class="rec-ptr" wx:if="{{item._recIdx != null}}">#{{item._recIdx}}</text>
+        </view>
+        <view class="rec-header-info" wx:if="{{item._header}}">
+          <text class="rec-header-type">{{item._header}}</text>
+          <text class="rec-header-tiles" wx:if="{{item._topTiles}}">⏹ {{item._topTiles}}</text>
         </view>
         <view class="rec-hex"><text selectable="true">{{item.hex}}</text></view>
         <view class="rec-vals" wx:if="{{item.vals16.length > 0}}">
@@ -105,6 +124,20 @@
         </view>
       </view>
     </scroll-view>
+  </view>
+
+  <!-- ── 场地视图 (Bank 02 组装 / Bank 07 原始) ── -->
+  <view class="view-content" wx:if="{{viewMode === 'field'}}">
+    <view class="field-toolbar">
+      <text wx:if="{{bankId === 2}}" class="field-hint">🏟️ Bank 02 场地组装 · A72C坐标 {{fieldRecordCount}} 条 · Bank07 块 {{fieldBlockCount}} 个 · 已贴 {{fieldPlacedCount}} 个 · 伪彩色 hue=metatile</text>
+      <text wx:else class="field-hint">🏟️ Bank 07 原始 metatile · {{fieldRecordCount}}条布局 · 每条按byte[4]=width解析 · 伪彩色: hue=metatile值</text>
+    </view>
+    <scroll-view class="field-scroll" scroll-y="true" enhanced="true" show-scrollbar="true">
+      <image wx:if="{{fieldImageSrc}}" class="field-image" src="{{fieldImageSrc}}" mode="widthFix" style="width:{{fieldCanvasW}}px"></image>
+      <view wx:else class="field-loading">⏳ 生成中...</view>
+    </scroll-view>
+    <!-- 隐藏 canvas 用于绘制 -->
+    <canvas type="2d" id="fieldCanvas" class="field-canvas-hidden"></canvas>
   </view>
 
   <!-- ── CHR 图块视图 ── -->
@@ -144,5 +177,671 @@
       </scroll-view>
     </view>
     <text class="chr-hint">{{tileCanvasHint}}</text>
+  </view>
+
+  <!-- ── Bank 02 结构视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'structure' && bankId === 2}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 02 代码/数据分布（基于当前反汇编 CDL 标记）</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="b02-section">
+        <text class="b02-section-title">Bank 02 代码/数据分布</text>
+        <image wx:if="{{b02StructureSrc}}" class="struct-image" src="{{b02StructureSrc}}" mode="widthFix" style="width:360px"></image>
+        <view wx:else class="field-loading">⏳ 生成中...</view>
+        <canvas type="2d" id="structCanvas" class="field-canvas-hidden"></canvas>
+        <text class="b02-note" style="margin-top:6px;display:block;">上层条: CDL统计代码{{codeBytes}}B + 数据{{dataBytes}}B + 未访问{{unaccessed}}B · 下层条: 实际 asm block 分布</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">统计</text>
+        <view class="b02-stats">
+          <text class="b02-stat code">代码: {{codeBytes}}B</text>
+          <text class="b02-stat data">数据: {{dataBytes}}B</text>
+          <text class="b02-stat unacc">未访问: {{unaccessed}}B</text>
+        </view>
+        <text class="b02-note">dataBytes 只统计 CDL 标记为 'D' 的字节，其余未解码区（$8B33-$9FFF, 5329B）包含疑似数据表和 $FF 填充。</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 30 结构视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'structure' && bankId === 30}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 30 核心系统库 · CPU $C000-$DFFF · 代码/数据分布</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="b02-section">
+        <text class="b02-section-title">Bank 30 代码/数据分布</text>
+        <image wx:if="{{b30StructureSrc}}" class="struct-image" src="{{b30StructureSrc}}" mode="widthFix" style="width:360px"></image>
+        <view wx:else class="field-loading">⏳ 生成中...</view>
+        <canvas type="2d" id="structCanvas" class="field-canvas-hidden"></canvas>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">Bank 30 (核心系统库) 统计 · CPU $C000-$DFFF</text>
+        <view class="b02-stats">
+          <text class="b02-stat code">代码: {{codeBytes}}B</text>
+          <text class="b02-stat data">数据: {{dataBytes}}B</text>
+          <text class="b02-stat unacc">未访问: {{unaccessed}}B</text>
+        </view>
+        <text class="b02-note">35 个子程序 + 12 个数据表 · HW初始化($C64E) + Bank31唯一对外接口 · JMP跳转表API · NMI/IRQ处理 · Bank切换/PPU/APU/数学</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">中断向量跳转表</text>
+        <text class="b02-note" wx:if="{{b30InterruptVectors}}">
+          NMI: $C500 → JMP {{b30InterruptVectors.NMI.target}} ({{b30InterruptVectors.NMI.desc}})
+        </text>
+        <text class="b02-note" wx:if="{{b30InterruptVectors}}">
+          RESET: $C503 → JMP {{b30InterruptVectors.RESET.target}} ({{b30InterruptVectors.RESET.desc}})
+        </text>
+        <text class="b02-note" wx:if="{{b30InterruptVectors}}">
+          IRQ: $C506 → JMP {{b30InterruptVectors.IRQ.target}} ({{b30InterruptVectors.IRQ.desc}})
+        </text>
+      </view>
+      <view class="b02-section" wx:if="{{b30Architecture}}">
+        <text class="b02-section-title">架构角色</text>
+        <text class="b02-note" style="display:block;">{{b30Architecture.role}}</text>
+        <text class="b02-note" style="display:block;">{{b30Architecture.pattern}}</text>
+      </view>
+      <view class="b02-section" wx:if="{{b30ResetFlow.length > 0}}">
+        <text class="b02-section-title">RESET 启动流程 (Bank 31→30)</text>
+        <text class="b02-note" wx:for="{{b30ResetFlow}}" wx:key="step" wx:for-item="s" style="display:block;margin:2px 0;">
+          {{s.step}}. {{s.addr}}: {{s.desc}}
+        </text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 31 结构视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'structure' && bankId === 31}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 31 代码/数据分布（基于反汇编 CDL 标记）· FIXED Bank $E000-$FFFF</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="b02-section">
+        <text class="b02-section-title">Bank 31 代码/数据分布</text>
+        <image wx:if="{{b31StructureSrc}}" class="struct-image" src="{{b31StructureSrc}}" mode="widthFix" style="width:360px"></image>
+        <view wx:else class="field-loading">⏳ 生成中...</view>
+        <canvas type="2d" id="structCanvas" class="field-canvas-hidden"></canvas>
+        <text class="b02-note" style="margin-top:6px;display:block;">上层条: CDL统计 代码{{codeBytes}}B + 数据{{dataBytes}}B + 未访问{{unaccessed}}B · 下层: 功能区域分布</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">Bank 31 统计 (FIXED Bank $E000-$FFFF)</text>
+        <view class="b02-stats">
+          <text class="b02-stat code">代码: {{codeBytes}}B</text>
+          <text class="b02-stat data">数据: {{dataBytes}}B</text>
+          <text class="b02-stat unacc">未访问: {{unaccessed}}B</text>
+        </view>
+        <text class="b02-note">28 个子程序 + 8 个数据表 · 仅依赖 Bank 30 (JMP跳转表) · 不直接调 $8000-$BFFF · RESET/NMI/IRQ 向量 → 全部跳 Bank 30</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">核心功能</text>
+        <text class="b02-note">🔄 比赛帧循环 ($E145): 每帧处理球员行动/输入/倒计时（运行时被切到 $8000/$A000 窗口，通过 Bank30 跳转表调 Bank00 主循环 $9EED 驱动）</text>
+        <text class="b02-note">🎯 AI决策 ($E54C): 近距球员筛选 + 距离比较 + 类型过滤</text>
+        <text class="b02-note">⚽ 进球检测 ($E596): 速度检查 + 随机数 + 动画编排</text>
+        <text class="b02-note">🏗️ 精灵动画排版 ($E893D): 动画指针查表 → OAM 缓冲写入</text>
+        <text class="b02-note">🕹️ 输入处理 ($E349): P1/P2 控制权切换</text>
+        <text class="b02-note">⏸️ 暂停处理 ($EC08): 控制器 + 暂停逻辑</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 02 函数视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'functions' && bankId === 2}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">检测到 {{b02Subroutines.length}} 个代码段 · 选择查看入口</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="func-list">
+        <view class="func-item" wx:for="{{b02Subroutines}}" wx:key="startAddr" data-idx="{{index}}" bindtap="onSelectFunction">
+          <text class="func-name">{{item.displayName}}</text>
+          <text class="func-meta">$${{item.startBankAddr}}–$${{item.endBankAddr}} · {{item.length}}B · 行 {{item.startLine}}-{{item.endLine}}</text>
+        </view>
+      </view>
+      <view class="b02-section" wx:if="{{b02SelectedFunc}}">
+        <text class="b02-section-title">选中函数</text>
+        <text class="func-detail">{{b02SelectedFunc.displayName}}</text>
+        <text class="func-detail">PRG 偏移: 0x{{b02SelectedFunc.startAddrHex}}</text>
+        <text class="func-detail">Bank 窗口: $${{b02SelectedFunc.startBankAddr}}–$${{b02SelectedFunc.endBankAddr}}</text>
+        <text class="func-detail">长度: {{b02SelectedFunc.length}} 字节</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">推断数据表 ({{b02DataTables.length}})</text>
+        <view class="data-table-item" wx:for="{{b02DataTables}}" wx:key="startAddr">
+          <text class="data-table-name">{{item.displayName}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 30 函数视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'functions' && bankId === 30}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 30 核心系统库: {{b30Subroutines.length}} 个子程序 · 跳转表公共 API · 点击查看详情</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="func-list">
+        <view class="func-item" wx:for="{{b30Subroutines}}" wx:key="startBankAddr" data-idx="{{index}}" bindtap="onB30SelectFunction">
+          <text class="func-name">{{item.name}}</text>
+          <text class="func-meta">{{item.startBankAddr}} · {{item.length}} · {{item.desc}}</text>
+        </view>
+      </view>
+      <view class="b02-section" wx:if="{{b30SelectedFunc}}">
+        <text class="b02-section-title">选中函数详情</text>
+        <text class="func-detail" style="font-weight:bold;">{{b30SelectedFunc.name}}</text>
+        <text class="func-detail">Bank 地址: {{b30SelectedFunc.startBankAddr}}</text>
+        <text class="func-detail">长度: {{b30SelectedFunc.length}}</text>
+        <text class="func-detail">说明: {{b30SelectedFunc.desc}}</text>
+        <text class="func-detail" wx:if="{{b30SelectedFunc.note}}" style="color:#58a6ff;">备注: {{b30SelectedFunc.note}}</text>
+      </view>
+      <view class="b02-section" wx:if="{{b30JumpTable.length > 0}}">
+        <text class="b02-section-title">跳转表 (公共 API) · {{b30JumpTable.length}} 条</text>
+        <text class="b02-note" style="display:block;margin-bottom:4px;color:#ffa657;">Bank 31 通过此跳转表间接调用 Bank 30 服务</text>
+        <view class="data-table-item" wx:for="{{b30JumpTable}}" wx:key="bankAddr" wx:for-item="jt">
+          <text class="data-table-name">{{jt.bankAddr}}: JMP {{jt.target}} → {{jt.desc}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 31 函数视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'functions' && bankId === 31}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 31 子程序: {{b31Subroutines.length}} 个代码段 · $E002-$EE00 + RESET $FFF0 · 点击查看详情</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="func-list">
+        <view class="func-item" wx:for="{{b31Subroutines}}" wx:key="startBankAddr" data-idx="{{index}}" bindtap="onB31SelectFunction">
+          <text class="func-name">🔹 {{item.name}}</text>
+          <text class="func-meta">{{item.startBankAddr}} · {{item.length}} · {{item.desc}}</text>
+        </view>
+      </view>
+      <view class="b02-section" wx:if="{{b31SelectedFunc}}">
+        <text class="b02-section-title">选中函数详情</text>
+        <text class="func-detail" style="font-weight:bold;font-size:14px;">{{b31SelectedFunc.name}}</text>
+        <text class="func-detail">Bank 地址: {{b31SelectedFunc.startBankAddr}}</text>
+        <text class="func-detail">长度: {{b31SelectedFunc.length}}</text>
+        <text class="func-detail">说明: {{b31SelectedFunc.desc}}</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">依赖关系</text>
+        <text class="b02-note" style="display:block;margin-bottom:4px;">↓ 调用的 Bank 30 函数:</text>
+        <view class="data-table-item" wx:for="{{b31Deps.crossRefs}}" wx:key="addr" wx:for-item="ref">
+          <text class="data-table-name">{{ref.addr}}: {{ref.desc}}</text>
+          <text class="b02-note" style="font-size:9px;">  → 调用位置: {{ref.locations}}</text>
+        </view>
+        <view wx:if="{{b31Deps.dependsOn}}" style="margin-top:8px;">
+          <text class="b02-note" style="display:block;" wx:for="{{b31Deps.dependsOn}}" wx:key="bank" wx:for-item="dep">
+            ← Bank {{dep.bank}}: {{dep.what}}
+          </text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 02 调试视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'debug' && bankId === 2}}">
+    <view class="b02-toolbar">
+      <view class="debug-mode-bar">
+        <view class="debug-mode {{debugMode === 'metatile' ? 'active' : ''}}" data-mode="metatile" bindtap="onDebugModeSwitch">AA47 展开</view>
+        <view class="debug-mode {{debugMode === 'a72c' ? 'active' : ''}}" data-mode="a72c" bindtap="onDebugModeSwitch">A72C 坐标</view>
+        <view class="debug-mode {{debugMode === 'ntxy' ? 'active' : ''}}" data-mode="ntxy" bindtap="onDebugModeSwitch">NT→XY</view>
+        <view class="debug-mode {{debugMode === 'dtable' ? 'active' : ''}}" data-mode="dtable" bindtap="onDebugModeSwitch">📊 数据表</view>
+        <view class="debug-mode {{debugMode === 'ppubuf' ? 'active' : ''}}" data-mode="ppubuf" bindtap="onDebugModeSwitch">📦 PPU缓冲</view>
+        <view class="debug-mode {{debugMode === 'ppufns' ? 'active' : ''}}" data-mode="ppufns" bindtap="onDebugModeSwitch">🔍 函数追踪</view>
+      </view>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <!-- metatile -->
+      <view class="debug-panel" wx:if="{{debugMode === 'metatile'}}">
+        <view class="debug-row">
+          <view class="debug-field" style="flex:1">
+            <text class="debug-label">metatile 参数 (hex)</text>
+            <input class="debug-input" type="text" maxlength="2" value="{{debugInput.param}}" data-field="param" bindinput="onDebugInput" />
+            <text class="debug-hint">例如 F7(草地), FC(白线), FE(边缘), F6(球门)</text>
+          </view>
+          <view class="debug-field" style="flex:1">
+            <text class="debug-label">场地区域 (0-2)</text>
+            <input class="debug-input" type="text" maxlength="1" value="{{debugInput.flags}}" data-field="flags" bindinput="onDebugInput" />
+            <text class="debug-hint">0=上半 1=中场 2=下半</text>
+          </view>
+        </view>
+      </view>
+      <!-- a72c -->
+      <view class="debug-panel" wx:if="{{debugMode === 'a72c'}}">
+        <view class="debug-doc-section">
+          <text class="debug-doc-title">$A72C 是什么</text>
+          <text class="debug-doc-text">$A72C 是 Bank 02 的「排版引擎」：从某个 PPU NameTable 地址出发，按固定步长 delta 向前推进，当 (hi & mask) === 0 时记录下当前坐标。每条记录 [NT_lo, bankId, flags, NT_hi] 告知「在这个 NT 位置，去切到 bankId 对应的 Bank 取 tile 数据」。bankId=$F7→03/04 脚本文字, $FC/$FE/$F6→Bank 07 场地块。</text>
+        </view>
+        <!-- 预设 -->
+        <view class="debug-preset-bar">
+          <text class="debug-preset-label">预设场景:</text>
+          <view class="debug-preset {{a72cPreset === 'branchA' ? 'active' : ''}}" data-preset="branchA" bindtap="onA72cPreset">草地 (Branch A)</view>
+          <view class="debug-preset {{a72cPreset === 'branchB' ? 'active' : ''}}" data-preset="branchB" bindtap="onA72cPreset">下半场 (Branch B)</view>
+          <view class="debug-preset {{a72cPreset === 'manual' ? 'active' : ''}}" data-preset="manual" bindtap="onA72cPreset">手动</view>
+        </view>
+        <view class="debug-row">
+          <view class="debug-field" style="flex:1">
+            <text class="debug-label">起始 NT lo/hi (16-bit PPU 地址)</text>
+            <view class="debug-input-row">
+              <input class="debug-input debug-input-half" type="text" maxlength="2" value="{{debugInput.ntLo}}" data-field="ntLo" bindinput="onDebugInput" />
+              <input class="debug-input debug-input-half" type="text" maxlength="2" value="{{debugInput.ntHi}}" data-field="ntHi" bindinput="onDebugInput" />
+            </view>
+            <text class="debug-hint">排版开始的 NT 位置。lo=列偏移 hi=NT页号，$C2xx≈NT0区</text>
+          </view>
+        </view>
+        <view class="debug-row">
+          <view class="debug-field">
+            <text class="debug-label">迭代次数 (X)</text>
+            <input class="debug-input" type="text" maxlength="2" value="{{debugInput.iterations}}" data-field="iterations" bindinput="onDebugInput" />
+            <text class="debug-hint">循环次数，决定覆盖范围</text>
+          </view>
+          <view class="debug-field">
+            <text class="debug-label">delta lo/hi (16-bit 步长)</text>
+            <view class="debug-input-row">
+              <input class="debug-input debug-input-half" type="text" maxlength="2" value="{{debugInput.deltaLo}}" data-field="deltaLo" bindinput="onDebugInput" />
+              <input class="debug-input debug-input-half" type="text" maxlength="2" value="{{debugInput.deltaHi}}" data-field="deltaHi" bindinput="onDebugInput" />
+            </view>
+            <text class="debug-hint">每迭代一次 NT 地址 += delta。$FE $FF=-258=行列换行</text>
+          </view>
+        </view>
+        <view class="debug-row">
+          <view class="debug-field">
+            <text class="debug-label">mask (稀疏写入)</text>
+            <input class="debug-input" type="text" maxlength="2" value="{{debugInput.mask}}" data-field="mask" bindinput="onDebugInput" />
+            <text class="debug-hint">仅当 (hi & mask)=0 时生成记录。$07=每8步写1条→32px列间距</text>
+          </view>
+          <view class="debug-field">
+            <text class="debug-label">bankId/param (数据来源)</text>
+            <input class="debug-input" type="text" maxlength="2" value="{{debugInput.bankId}}" data-field="bankId" bindinput="onDebugInput" />
+            <text class="debug-hint">$F7→03/04 脚本, $FC→白线, $FE→边缘, $F6→球门</text>
+          </view>
+          <view class="debug-field">
+            <text class="debug-label">flags (分支标记)</text>
+            <input class="debug-input" type="text" maxlength="2" value="{{debugInput.flags}}" data-field="flags" bindinput="onDebugInput" />
+            <text class="debug-hint">$00=默认 $02=BranchB。下游用来区分处理路径</text>
+          </view>
+        </view>
+        <!-- NT 版面可视化 -->
+        <view class="debug-canvas-section" wx:if="{{a72cNTLayoutSrc}}">
+          <text class="debug-section-title">NT 版面可视化</text>
+          <text class="debug-hint" style="margin-bottom:6px">32×60 tile 网格，颜色=bankId：🟢$F7 脚本文字 ⚪$FC 白线 🟫$FE 边缘 🟡$F6 球门</text>
+          <image class="a72c-nt-image" src="{{a72cNTLayoutSrc}}" mode="widthFix" style="width:{{a72cNTCanvasW}}px;height:{{a72cNTCanvasH}}px"></image>
+        </view>
+      </view>
+      <!-- ntxy -->
+      <view class="debug-panel" wx:if="{{debugMode === 'ntxy'}}">
+        <view class="debug-row">
+          <view class="debug-field">
+            <text class="debug-label">NT lo</text>
+            <input class="debug-input" type="text" maxlength="2" value="{{debugInput.ntLo}}" data-field="ntLo" bindinput="onDebugInput" />
+          </view>
+          <view class="debug-field">
+            <text class="debug-label">NT hi</text>
+            <input class="debug-input" type="text" maxlength="2" value="{{debugInput.ntHi}}" data-field="ntHi" bindinput="onDebugInput" />
+          </view>
+        </view>
+      </view>
+      <!-- 数据表 hex 浏览器 -->
+      <view class="debug-panel" wx:if="{{debugMode === 'dtable'}}">
+        <text class="debug-label">选择数据表 (共 {{b02DataTables.length}} 个)</text>
+        <scroll-view class="dtable-selector" scroll-y="true">
+          <view class="dtable-item {{debugTableIdx === index ? 'active' : ''}}" 
+                wx:for="{{b02DataTables}}" wx:key="startAddr" 
+                data-idx="{{index}}" bindtap="onDebugTableSelect">
+            <text class="dtable-idx">#{{index}}</text>
+            <text class="dtable-name">{{item.displayName}}</text>
+          </view>
+        </scroll-view>
+        <view class="debug-result" wx:if="{{debugTableHex}}">
+          <text class="debug-result-title">HEX ({{b02DataTables[debugTableIdx].length}}B)</text>
+          <text class="debug-result-text dtable-hex" selectable="true">{{debugTableHex}}</text>
+        </view>
+      </view>
+      <!-- PPU Buffer 调试 -->
+      <view class="debug-panel" wx:if="{{debugMode === 'ppubuf'}}">
+        <view class="debug-doc-section">
+          <text class="debug-doc-title">PPU Buffer 是什么</text>
+          <text class="debug-doc-text">CPU 不能随时写 VRAM，只能通过 VBlank 期间写 $2006/$2007。Bank 00 把数据打包进 RAM $05E8–$0628 缓冲区（每条: 控制字节 + PPU地址lo + PPU地址hi + 数据...），Bank 02 在每帧 NMI 时把这些包推送到 PPU 寄存器。这就是整个渲染管道的数据通道。</text>
+        </view>
+        <view class="debug-doc-section" style="margin-top:6px;background:rgba(63,185,80,0.06);border-color:rgba(63,185,80,0.2);">
+          <text class="debug-doc-title" style="color:#7ee787;">缓冲区格式 (每条目)</text>
+          <text class="debug-doc-text">byte[0] = 控制字节 (bit7=换Bank, bit6=标志, bit5-0=数据个数)\nbyte[1] = PPU 地址低字节\nbyte[2] = PPU 地址高字节\nbyte[3+] = 数据字节 × N\n以 0x00 结束</text>
+        </view>
+        <view class="debug-row">
+          <view class="debug-field" style="flex:1">
+            <text class="debug-label">输入 hex 字节 (空格分隔)</text>
+            <input class="debug-input" type="text" value="{{ppuBufHex}}" bindinput="onPpuBufInput" style="font-size:10px;" />
+            <text class="debug-hint">模拟 Bank 00 写入 $05E8 的数据。例: 21 3F 00 0F 30 21 12 00 = 写调色板到 $3F00</text>
+          </view>
+        </view>
+        <view class="debug-preset-bar" style="margin-top:4px;">
+          <text class="debug-preset-label">快速预设:</text>
+          <view class="debug-preset {{ppuBufFuncPreset === 'palette_init' ? 'active' : ''}}" data-preset="palette_init" bindtap="onPpuBufPreset">🎨 调色板</view>
+          <view class="debug-preset {{ppuBufFuncPreset === 'nt_clear' ? 'active' : ''}}" data-preset="nt_clear" bindtap="onPpuBufPreset">🗑️ NT清零</view>
+          <view class="debug-preset {{ppuBufFuncPreset === 'scene_layout' ? 'active' : ''}}" data-preset="scene_layout" bindtap="onPpuBufPreset">🏟️ 场景</view>
+          <view class="debug-preset {{ppuBufFuncPreset === 'vram_addr' ? 'active' : ''}}" data-preset="vram_addr" bindtap="onPpuBufPreset">📍 VRAM地址</view>
+        </view>
+        <view class="debug-run-btn" bindtap="onPpuBufRun">▶ 解析 Buffer</view>
+        <!-- 结构化展示 -->
+        <view wx:if="{{ppuBufParsed.length > 0}}" style="margin-top:10px;">
+          <text class="debug-section-title">解析结果 ({{ppuBufParsed.length}} 条)</text>
+          <view class="ppu-buf-diagram" wx:if="{{ppuBufDiagramSrc}}">
+            <text class="debug-hint" style="margin-bottom:4px;">可视化结构图 (颜色 = PPU 目标类型)</text>
+            <image class="a72c-nt-image" src="{{ppuBufDiagramSrc}}" mode="widthFix" style="width:360px;height:auto;"></image>
+          </view>
+          <view class="b02-section" wx:for="{{ppuBufParsed}}" wx:key="idx" style="margin-top:6px;padding:8px;">
+            <view style="display:flex;align-items:center;gap:6px;">
+              <text style="font-size:10px;color:#484f58;">#{{item.idx}}</text>
+              <text style="font-size:10px;color:#f0883e;font-family:monospace;">CTRL=${{item.ctrlHex}}</text>
+              <text style="font-size:9px;color:#6e7681;">{{item.ctrlBits}}</text>
+            </view>
+            <view style="display:flex;align-items:center;gap:6px;margin-top:2px;">
+              <text style="font-size:11px;color:#58a6ff;font-family:monospace;">→ {{item.ppuAddr}}</text>
+              <text style="font-size:10px;color:{{item.ppuTarget.color}};">{{item.ppuTarget.name}}</text>
+              <text style="font-size:9px;color:#6e7681;">{{item.ppuTarget.desc}}</text>
+            </view>
+            <text wx:if="{{item.dataHex}}" style="display:block;font-size:9px;color:#7ee787;font-family:monospace;margin-top:2px;word-break:break-all;" selectable="true">data[{{item.dataLen}}B]: {{item.dataHex}}</text>
+          </view>
+        </view>
+      </view>
+      <!-- PPU Buffer 函数追踪 -->
+      <view class="debug-panel" wx:if="{{debugMode === 'ppufns'}}">
+        <view class="debug-doc-section">
+          <text class="debug-doc-title">Bank 00 → PPU Buffer → Bank 02 NMI 函数追踪</text>
+          <text class="debug-doc-text">选择 Bank 00 中写入 PPU Buffer 的具体函数，查看完整的调用链和数据流转路径。</text>
+        </view>
+        <view class="debug-preset-bar">
+          <text class="debug-preset-label">选择函数:</text>
+          <view class="debug-preset {{ppuBufFuncPreset === 'palette_init' ? 'active' : ''}}" data-preset="palette_init" bindtap="onPpuBufPreset">🎨 调色板初始化 $8297</view>
+          <view class="debug-preset {{ppuBufFuncPreset === 'nt_clear' ? 'active' : ''}}" data-preset="nt_clear" bindtap="onPpuBufPreset">🗑️ NT清零 $9B7F</view>
+          <view class="debug-preset {{ppuBufFuncPreset === 'scene_layout' ? 'active' : ''}}" data-preset="scene_layout" bindtap="onPpuBufPreset">🏟️ 场景加载 $98A0</view>
+          <view class="debug-preset {{ppuBufFuncPreset === 'vram_addr' ? 'active' : ''}}" data-preset="vram_addr" bindtap="onPpuBufPreset">📍 VRAM地址 $890C</view>
+        </view>
+        <view class="debug-run-btn" bindtap="onPpuBufFnRun">▶ 执行追踪</view>
+        <view class="debug-result" wx:if="{{ppuBufFnTrace}}" style="margin-top:10px;">
+          <text class="debug-result-title">追踪结果</text>
+          <text class="debug-result-text" selectable="true">{{ppuBufFnTrace}}</text>
+        </view>
+      </view>
+      <!-- 隐藏 canvas for PPU Buffer diagram -->
+      <canvas type="2d" id="ppuBufCanvas" style="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none"></canvas>
+      <view class="debug-run-btn" wx:if="{{debugMode !== 'dtable' && debugMode !== 'ppubuf' && debugMode !== 'ppufns'}}" bindtap="onDebugRun">▶ 执行</view>
+      <view class="debug-result" wx:if="{{debugResult}}">
+        <text class="debug-result-title">结果</text>
+        <text class="debug-result-text" selectable="true">{{debugResult}}</text>
+      </view>
+      <!-- 隐藏 canvas 用于 A72C NT 版面渲染 -->
+      <canvas type="2d" id="a72cNTCanvas" style="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none"></canvas>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 31 调试视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'debug' && bankId === 31}}">
+    <view class="b02-toolbar">
+      <view class="debug-mode-bar">
+        <view class="debug-mode {{b31DebugMode === 'vector' ? 'active' : ''}}" data-mode="vector" bindtap="onB31DebugModeSwitch">🎯 中断向量</view>
+        <view class="debug-mode {{b31DebugMode === 'direction' ? 'active' : ''}}" data-mode="direction" bindtap="onB31DebugModeSwitch">🧭 方向速度</view>
+        <view class="debug-mode {{b31DebugMode === 'sprite_ptr' ? 'active' : ''}}" data-mode="sprite_ptr" bindtap="onB31DebugModeSwitch">🎬 动画指针</view>
+        <view class="debug-mode {{b31DebugMode === 'zone' ? 'active' : ''}}" data-mode="zone" bindtap="onB31DebugModeSwitch">🗺️ Zone计算</view>
+        <view class="debug-mode {{b31DebugMode === 'near_player' ? 'active' : ''}}" data-mode="near_player" bindtap="onB31DebugModeSwitch">👥 近距筛选</view>
+        <view class="debug-mode {{b31DebugMode === 'bpm_update' ? 'active' : ''}}" data-mode="bpm_update" bindtap="onB31DebugModeSwitch">⏱️ BPM更新</view>
+      </view>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <!-- 中断向量 -->
+      <view class="debug-panel" wx:if="{{b31DebugMode === 'vector'}}">
+        <text class="debug-doc-title">中断向量表 ($9FF0-$9FFF)</text>
+        <text class="debug-doc-text">Bank 31 FIXED 中断向量。NMI/RESET/IRQ 实际跳到 Bank 30 的处理函数。RESET → $FFF0(复位MMC3)→Bank30 $C64E(HW初始化)→$C400(映射Bank00/02)→Bank02 $A200(场景初始化)→Bank00 $9EED(主循环，最终目的地)。</text>
+      </view>
+      <!-- 方向速度 -->
+      <view class="debug-panel" wx:if="{{b31DebugMode === 'direction'}}">
+        <view class="debug-row">
+          <view class="debug-field">
+            <text class="debug-label">方向索引 (0-7, hex)</text>
+            <input class="debug-input" type="text" maxlength="1" value="{{b31DebugInput.angle}}" data-field="angle" bindinput="onB31DebugInput" />
+            <text class="debug-hint">$E688 中通过 ($00E2 & 7) 索引。0-7 对应不同方位</text>
+          </view>
+        </view>
+      </view>
+      <!-- 精灵动画指针 -->
+      <view class="debug-panel" wx:if="{{b31DebugMode === 'sprite_ptr'}}">
+        <view class="debug-row">
+          <view class="debug-field">
+            <text class="debug-label">动画编号 (0-21, hex)</text>
+            <input class="debug-input" type="text" maxlength="2" value="{{b31DebugInput.animId}}" data-field="animId" bindinput="onB31DebugInput" />
+            <text class="debug-hint">$E9DA 指针表共 22 条，指向 $EA1C-$EB85 帧数据</text>
+          </view>
+        </view>
+      </view>
+      <!-- Zone 计算 -->
+      <view class="debug-panel" wx:if="{{b31DebugMode === 'zone'}}">
+        <view class="debug-row">
+          <view class="debug-field">
+            <text class="debug-label">X 坐标 (hex)</text>
+            <input class="debug-input" type="text" maxlength="4" value="{{b31DebugInput.x}}" data-field="x" bindinput="onB31DebugInput" />
+          </view>
+          <view class="debug-field">
+            <text class="debug-label">Y 坐标 (hex)</text>
+            <input class="debug-input" type="text" maxlength="4" value="{{b31DebugInput.y}}" data-field="y" bindinput="onB31DebugInput" />
+          </view>
+        </view>
+        <text class="debug-hint">模拟 $E709: Zone = ((Y-$50)&$E0)>>3 + ((X-$30)&$E0)>>5</text>
+      </view>
+      <!-- 近距筛选 -->
+      <view class="debug-panel" wx:if="{{b31DebugMode === 'near_player'}}">
+        <view class="debug-row">
+          <view class="debug-field">
+            <text class="debug-label">球员 X (hex)</text>
+            <input class="debug-input" type="text" maxlength="4" value="{{b31DebugInput.px}}" data-field="px" bindinput="onB31DebugInput" />
+          </view>
+          <view class="debug-field">
+            <text class="debug-label">球员 Y (hex)</text>
+            <input class="debug-input" type="text" maxlength="4" value="{{b31DebugInput.py}}" data-field="py" bindinput="onB31DebugInput" />
+          </view>
+        </view>
+        <view class="debug-row">
+          <view class="debug-field">
+            <text class="debug-label">目标 X/球 X (hex)</text>
+            <input class="debug-input" type="text" maxlength="4" value="{{b31DebugInput.tx}}" data-field="tx" bindinput="onB31DebugInput" />
+          </view>
+          <view class="debug-field">
+            <text class="debug-label">目标 Y/球 Y (hex)</text>
+            <input class="debug-input" type="text" maxlength="4" value="{{b31DebugInput.ty}}" data-field="ty" bindinput="onB31DebugInput" />
+          </view>
+        </view>
+        <view class="debug-row">
+          <view class="debug-field">
+            <text class="debug-label">阈值 ($0043, hex)</text>
+            <input class="debug-input" type="text" maxlength="2" value="{{b31DebugInput.threshold}}" data-field="threshold" bindinput="onB31DebugInput" />
+          </view>
+        </view>
+        <text class="debug-hint">模拟 $E501: |dx|+|dy| ≤ 阈值 → 加入 $0601 缓冲</text>
+      </view>
+      <!-- BPM 更新 -->
+      <view class="debug-panel" wx:if="{{b31DebugMode === 'bpm_update'}}">
+        <view class="debug-row">
+          <view class="debug-field">
+            <text class="debug-label">当前 BPM 值 (hex)</text>
+            <input class="debug-input" type="text" maxlength="2" value="{{b31DebugInput.bpm}}" data-field="bpm" bindinput="onB31DebugInput" />
+          </view>
+        </view>
+        <view class="debug-row">
+          <view class="debug-field">
+            <text class="debug-label">数据值 Lo (hex)</text>
+            <input class="debug-input" type="text" maxlength="4" value="{{b31DebugInput.valLo}}" data-field="valLo" bindinput="onB31DebugInput" />
+          </view>
+          <view class="debug-field">
+            <text class="debug-label">数据值 Hi (hex)</text>
+            <input class="debug-input" type="text" maxlength="4" value="{{b31DebugInput.valHi}}" data-field="valHi" bindinput="onB31DebugInput" />
+          </view>
+        </view>
+        <text class="debug-hint">模拟 $E2BC: BPM 每帧+1，满11循环，药品数据按 $0A 递减，下限 $0005</text>
+      </view>
+      <view class="debug-run-btn" bindtap="onB31DebugRun">▶ 执行</view>
+      <view class="debug-result" wx:if="{{b31DebugResult}}">
+        <text class="debug-result-title">结果</text>
+        <text class="debug-result-text" selectable="true">{{b31DebugResult}}</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 02 结构化数据视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'data' && bankId === 2}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">{{dataViewNote}}</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="b02-section" wx:if="{{!dataViewReady}}">
+        <text class="field-loading">⏳ 解析中...</text>
+      </view>
+      <view wx:if="{{dataViewReady}}">
+        <view class="data-schema-table" wx:for="{{dataViewTables}}" wx:key="name">
+          <!-- 表头 -->
+          <view class="schema-header">
+            <text class="schema-name">📋 {{item.name}}</text>
+            <text class="schema-meta">${{item.addrHex}} · {{item.totalLen}}B · {{item.note}}</text>
+          </view>
+          <!-- 字段定义 -->
+          <view class="schema-fields">
+            <view class="schema-field" wx:for="{{item.fieldValues}}" wx:key="name" wx:for-item="fld">
+              <text class="sf-name">{{fld.name}}</text>
+              <text class="sf-desc">{{fld.desc}}</text>
+              <text class="sf-value">{{fld.decoded}}</text>
+            </view>
+          </view>
+          <!-- 记录表格（有记录结构时） -->
+          <view class="schema-records" wx:if="{{item.records.length > 0}}">
+            <text class="schema-subtitle">记录列表 ({{item.records.length}} 条, 每条 {{item.recordSize}}B)</text>
+            <scroll-view class="records-scroll" scroll-x="true" enhanced="true">
+              <view class="rec-row rec-header">
+                <text class="rec-cell rec-idx">#</text>
+                <text class="rec-cell" wx:for="{{item.fieldValues}}" wx:key="name" wx:for-item="fh">{{fh.name}}</text>
+              </view>
+              <view class="rec-row" wx:for="{{item.records}}" wx:key="idx" wx:for-item="rec">
+                <text class="rec-cell rec-idx">{{rec.idx}}</text>
+                <text class="rec-cell" wx:for="{{rec.fields}}" wx:key="*this" wx:for-item="fv">{{fv}}</text>
+              </view>
+            </scroll-view>
+          </view>
+          <!-- 原始 hex -->
+          <view class="schema-raw">
+            <text class="schema-raw-text" selectable="true">{{item.rawHex}}</text>
+          </view>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 30 调试视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'debug' && bankId === 30}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 30 调试: 查看中断向量、RESET 流程、跳转表、交叉引用</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <!-- RESET 启动流程 -->
+      <view class="b02-section">
+        <text class="b02-section-title">RESET 启动完整流程</text>
+        <view class="debug-doc-section">
+          <text class="debug-doc-text">CPU 上电 → 从 $FFFC/$FFFD 读取 RESET=$FFF0 →</text>
+          <text class="debug-doc-text" wx:for="{{b30ResetFlow}}" wx:key="step" wx:for-item="s" style="display:block;margin:2px 0;padding-left:10px;">
+            {{s.step}}. {{s.addr}}: {{s.desc}}
+          </text>
+        </view>
+      </view>
+      <!-- 中断向量 -->
+      <view class="b02-section" wx:if="{{b30InterruptVectors}}">
+        <text class="b02-section-title">中断向量跳转</text>
+        <text class="b02-note" style="display:block;">NMI: Bank 31 $FFFA/B → $C500 → JMP {{b30InterruptVectors.NMI.target}}</text>
+        <text class="b02-note" style="display:block;">RESET: Bank 31 $FFFC/D → $FFF0 → STA $8000 → JMP $C503 → JMP {{b30InterruptVectors.RESET.target}}</text>
+        <text class="b02-note" style="display:block;">IRQ: Bank 31 $FFFE/F → $C506 → JMP {{b30InterruptVectors.IRQ.target}}</text>
+      </view>
+      <!-- 跳转表 -->
+      <view class="b02-section">
+        <text class="b02-section-title">跳转表 (Public API) · {{b30JumpTable.length}} 条</text>
+        <text class="b02-note" style="display:block;color:#ffa657;">Bank 31 所有调用都经过此跳转表，实现稳定 API 层</text>
+        <view class="data-table-item" wx:for="{{b30JumpTable}}" wx:key="bankAddr" wx:for-item="jt">
+          <text class="data-table-name">{{jt.bankAddr}}: JMP {{jt.target}}</text>
+          <text class="b02-note" style="font-size:9px;">  → {{jt.desc}}</text>
+        </view>
+      </view>
+      <!-- Bank 31 交叉引用 -->
+      <view class="b02-section" wx:if="{{b30Deps.crossRefs}}">
+        <text class="b02-section-title">Bank 31 → Bank 30 交叉引用</text>
+        <view class="data-table-item" wx:for="{{b30Deps.crossRefs}}" wx:key="addr" wx:for-item="ref">
+          <text class="data-table-name">{{ref.addr}}: {{ref.name || ref.desc}}</text>
+          <text class="b02-note" style="font-size:9px;">  调用位置: {{ref.locations}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 30 结构化数据视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'data' && bankId === 30}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 30 数据表: {{b30DataTables.length}} 个 · 核心服务层数据</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="b02-section">
+        <text class="b02-section-title">数据表清单 ({{b30DataTables.length}})</text>
+        <view class="data-table-item" wx:for="{{b30DataTables}}" wx:key="bankAddr">
+          <text class="data-table-name">{{item.displayName}}</text>
+          <text class="b02-note">{{item.bankAddr}} · {{item.length}} · {{item.desc}}</text>
+          <text class="b02-note" wx:if="{{item.note}}" style="color:#58a6ff;">  #{#{{item.note}}#}#</text>
+        </view>
+      </view>
+      <view class="b02-section" wx:if="{{b30Architecture}}">
+        <text class="b02-section-title">架构详情</text>
+        <text class="b02-note" style="display:block;">角色: {{b30Architecture.role}}</text>
+        <text class="b02-note" style="display:block;margin-top:6px;">模式: {{b30Architecture.pattern}}</text>
+        <text class="b02-note" style="display:block;margin-top:6px;">启动: {{b30Architecture.bootFlow}}</text>
+        <text class="b02-note" style="display:block;margin-top:6px;">NMI: {{b30Architecture.nmiFlow}}</text>
+        <text class="b02-note" style="display:block;margin-top:6px;">IRQ: {{b30Architecture.irqFlow}}</text>
+      </view>
+      <view class="b02-section" wx:if="{{b30Deps.ramMap && b30Deps.ramMap.length}}">
+        <text class="b02-section-title">RAM 变量 ({{b30Deps.ramMap.length}})</text>
+        <view class="data-table-item" wx:for="{{b30Deps.ramMap}}" wx:key="addr" wx:for-item="r">
+          <text class="data-table-name">{{r.addr}}: {{r.name || r.desc}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 31 结构化数据视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'data' && bankId === 31}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 31 数据表: {{b31DataTables.length}} 个 · 分析自反汇编</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <!-- 数据表列表 -->
+      <view class="b02-section">
+        <text class="b02-section-title">📊 数据表 ({{b31DataTables.length}})</text>
+        <view class="data-table-item" wx:for="{{b31DataTables}}" wx:key="bankAddr">
+          <text class="data-table-name">📋 {{item.displayName}}</text>
+          <text class="b02-note" style="font-size:10px;display:block;">{{item.bankAddr}} · {{item.length}} · {{item.desc}}</text>
+          <text class="b02-note" wx:if="{{item.note}}" style="font-size:9px;color:#6e7681;">💡 {{item.note}}</text>
+        </view>
+      </view>
+
+      <!-- RAM 变量映射 -->
+      <view class="b02-section">
+        <text class="b02-section-title">🧠 核心 RAM 变量</text>
+        <view class="data-table-item" wx:for="{{b31Deps.ramMap}}" wx:key="addr" wx:for-item="ram">
+          <text class="data-table-name" style="color:#ffa657;">{{ram.addr}}</text>
+          <text class="data-table-name">{{ram.name}}</text>
+          <text class="b02-note" style="font-size:10px;display:block;">{{ram.desc}}</text>
+        </view>
+      </view>
+
+      <!-- 交叉引用 -->
+      <view class="b02-section">
+        <text class="b02-section-title">🔗 Bank 30 交叉引用</text>
+        <text class="b02-note" style="display:block;margin-bottom:6px;">Bank 31 频繁调用 Bank 30 的底层设施 —— 比赛引擎运行的核心依赖</text>
+        <view class="data-table-item" wx:for="{{b31Deps.crossRefs}}" wx:key="addr" wx:for-item="ref">
+          <text class="data-table-name" style="color:#58a6ff;">{{ref.addr}}</text>
+          <text class="data-table-name">{{ref.desc}}</text>
+          <text class="b02-note" style="font-size:9px;display:block;">→ 调用位置: {{ref.locations}}</text>
+        </view>
+      </view>
+    </scroll-view>
   </view>
 </view>

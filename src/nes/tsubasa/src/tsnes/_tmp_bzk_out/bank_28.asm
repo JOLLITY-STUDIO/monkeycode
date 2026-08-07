@@ -828,7 +828,7 @@ C - - - - - 0x0384CD 0E:84BD: 60        RTS
 C - - - - - 0x0384CE 0E:84BE: 68        PLA
 C - - - - - 0x0384CF 0E:84BF: 68        PLA
 C - - - - - 0x0384D0 0E:84C0: 60        RTS
-C - - - - - 0x0384D1 0E:84C1: AD FB 05  LDA ram_05FB
+C D 0 - - - 0x0384D1 0E:84C1: AD FB 05  LDA ram_05FB
 C - - - - - 0x0384D4 0E:84C4: F0 2D     BEQ $84F3
 C - - - - - 0x0384D6 0E:84C6: A9 00     LDA #$00
 C - - - - - 0x0384D8 0E:84C8: 8D 3C 04  STA ram_043C
@@ -1130,7 +1130,7 @@ C - - - - - 0x0386FE 0E:86EE: 20 09 C5  JSR $C509
 C D 0 - - - 0x038709 0E:86F9: A9 05     LDA #$05
 C - - - - - 0x03870B 0E:86FB: 8D 3D 04  STA ram_043D
 C - - - - - 0x03870E 0E:86FE: 60        RTS
-C - - J - - 0x03870F 0E:86FF: A9 04     LDA #$04
+C D 0 J - - 0x03870F 0E:86FF: A9 04     LDA #$04
 C - - - - - 0x038711 0E:8701: 8D 3D 04  STA ram_043D
 C - - - - - 0x038714 0E:8704: 60        RTS
 C - - J - - 0x038715 0E:8705: 4C D0 86  JMP $86D0
@@ -1148,7 +1148,7 @@ C - - - - - 0x038723 0E:8713: 20 09 C5  JSR $C509
 - D 0 - I - 0x03872C 0E:871C: 2A        .byte $2A   ; 
 - D 0 - I - 0x03872D 0E:871D: 87        .byte $87   ; 
 C - - J - - 0x03872E 0E:871E: 4C F9 86  JMP $86F9
-C - - J - - 0x038731 0E:8721: A9 03     LDA #$03
+C D 0 J - - 0x038731 0E:8721: A9 03     LDA #$03
 C - - - - - 0x038733 0E:8723: 8D 3D 04  STA ram_043D
 C - - - - - 0x038736 0E:8726: 60        RTS
 C - - J - - 0x038737 0E:8727: 4C D0 86  JMP $86D0
@@ -1406,7 +1406,7 @@ C - - - - - 0x038910 0E:8900: 20 09 C5  JSR $C509
 C - - J - - 0x03891B 0E:890B: A9 04     LDA #$04
 C - - - - - 0x03891D 0E:890D: 8D 3B 04  STA ram_043B
 C - - - - - 0x038920 0E:8910: 60        RTS
-C - - J - - 0x038921 0E:8911: A9 06     LDA #$06
+C D 0 J - - 0x038921 0E:8911: A9 06     LDA #$06
 C - - - - - 0x038923 0E:8913: 8D 3B 04  STA ram_043B
 C - - - - - 0x038926 0E:8916: 60        RTS
 C - - J - - 0x038927 0E:8917: 4C 33 89  JMP $8933
@@ -1994,7 +1994,7 @@ C - - - - - 0x038C94 0E:8C84: 20 09 C5  JSR $C509
 - D 0 - I - 0x038CD4 0E:8CC4: 8C        .byte $8C   ; 
 - D 0 - I - 0x038CD5 0E:8CC5: C7        .byte $C7   ; 
 - D 0 - I - 0x038CD6 0E:8CC6: 8C        .byte $8C   ; 
-C - - J - - 0x038CD7 0E:8CC7: A5 47     LDA ram_0047
+C D 0 J - - 0x038CD7 0E:8CC7: A5 47     LDA ram_0047
 C - - - - - 0x038CD9 0E:8CC9: 4C 11 8E  JMP $8E11
 C - - J - - 0x038CDC 0E:8CCC: AD 46 04  LDA ram_0446
 C - - - - - 0x038CDF 0E:8CCF: C9 05     CMP #$05
@@ -2809,8 +2809,8 @@ C - - - - - 0x038E2A 0E:8E1A: 60        RTS
 - D 0 - I - 0x0390AA 0E:909A: 00        .byte $00   ; 
 - D 0 - I - 0x0390AB 0E:909B: 00        .byte $00   ; 
 - D 0 - I - 0x0390AC 0E:909C: 00        .byte $00   ; 
-- - - - - - 0x0390AD 0E:909D: 00        .byte $00   ; 
-- - - - - - 0x0390AE 0E:909E: 00        .byte $00   ; 
+- D 0 - I - 0x0390AD 0E:909D: 00        .byte $00   ; 
+- D 0 - I - 0x0390AE 0E:909E: 00        .byte $00   ; 
 - D 0 - I - 0x0390AF 0E:909F: A8        .byte $A8   ; 
 - D 0 - I - 0x0390B0 0E:90A0: 93        .byte $93   ; 
 - D 0 - I - 0x0390B1 0E:90A1: 00        .byte $00   ; 
@@ -4352,7 +4352,7 @@ C - - - - - 0x038E2A 0E:8E1A: 60        RTS
 - D 0 - I - 0x0396B1 0E:96A1: 28        .byte $28   ; 
 - D 0 - I - 0x0396B2 0E:96A2: 06        .byte $06   ; 
 - D 0 - I - 0x0396B3 0E:96A3: 00        .byte $00   ; 
-- - - - - - 0x0396B4 0E:96A4: 03        .byte $03   ; 
+- D 0 - I - 0x0396B4 0E:96A4: 03        .byte $03   ; 
 - D 0 - I - 0x0396B5 0E:96A5: 01        .byte $01   ; 
 - D 0 - I - 0x0396B6 0E:96A6: 01        .byte $01   ; 
 - - - - - - 0x0396B7 0E:96A7: 01        .byte $01   ; 
@@ -4474,7 +4474,7 @@ C - - - - - 0x038E2A 0E:8E1A: 60        RTS
 - D 0 - I - 0x03972B 0E:971B: 02        .byte $02   ; 
 - D 0 - I - 0x03972C 0E:971C: 02        .byte $02   ; 
 - D 0 - I - 0x03972D 0E:971D: 03        .byte $03   ; 
-- - - - - - 0x03972E 0E:971E: 01        .byte $01   ; 
+- D 0 - I - 0x03972E 0E:971E: 01        .byte $01   ; 
 - D 0 - I - 0x03972F 0E:971F: 01        .byte $01   ; 
 - D 0 - I - 0x039730 0E:9720: 03        .byte $03   ; 
 - - - - - - 0x039731 0E:9721: 00        .byte $00   ; 
@@ -5350,7 +5350,7 @@ C - - - - - 0x038E2A 0E:8E1A: 60        RTS
 - D 0 - I - 0x039A97 0E:9A87: 01        .byte $01   ; 
 - D 0 - I - 0x039A98 0E:9A88: 00        .byte $00   ; 
 - D 0 - I - 0x039A99 0E:9A89: 00        .byte $00   ; 
-- - - - - - 0x039A9A 0E:9A8A: 00        .byte $00   ; 
+- D 0 - I - 0x039A9A 0E:9A8A: 00        .byte $00   ; 
 - D 0 - I - 0x039A9B 0E:9A8B: 00        .byte $00   ; 
 - D 0 - I - 0x039A9C 0E:9A8C: 1E        .byte $1E   ; 
 - - - - - - 0x039A9D 0E:9A8D: 00        .byte $00   ; 

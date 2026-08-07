@@ -127,6 +127,16 @@
   font-size: 14px;
   font-weight: 600;
   color: #e6edf3;
+  flex-shrink: 0;
+}
+.bank-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: #d29922;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 160px;
 }
 .bank-cpu {
   font-size: 11px;
@@ -135,6 +145,7 @@
   padding: 1px 6px;
   border-radius: 4px;
   font-family: monospace;
+  flex-shrink: 0;
 }
 .bank-desc {
   font-size: 12px;

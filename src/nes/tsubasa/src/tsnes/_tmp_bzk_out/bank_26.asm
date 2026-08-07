@@ -212,7 +212,7 @@ C - - - - - 0x0341E4 0D:81D4: 18        CLC
 C - - - - - 0x0341E5 0D:81D5: 20 95 90  JSR $9095
 C - - - - - 0x0341E8 0D:81D8: 20 06 C6  JSR $C606
 C - - - - - 0x0341EB 0D:81DB: 20 ED 81  JSR $81ED
-C - - - - - 0x0341EE 0D:81DE: AD 42 04  LDA ram_0442
+C D 0 - - - 0x0341EE 0D:81DE: AD 42 04  LDA ram_0442
 C - - - - - 0x0341F1 0D:81E1: 20 6E 8E  JSR $8E6E
 C - - - - - 0x0341F4 0D:81E4: A2 50     LDX #$50
 C - - - - - 0x0341F6 0D:81E6: 9A        TXS
@@ -1028,7 +1028,7 @@ C - - - - - 0x034897 0D:8887: 8D FF 05  STA ram_05FF
 C - - - - - 0x03489A 0D:888A: 60        RTS
 - D 0 - - - 0x03489B 0D:888B: 00        .byte $00   ; 
 - D 0 - - - 0x03489C 0D:888C: 02        .byte $02   ; 
-C - - - - - 0x03489D 0D:888D: A9 00     LDA #$00
+C D 0 - - - 0x03489D 0D:888D: A9 00     LDA #$00
 C - - - - - 0x03489F 0D:888F: 85 3A     STA ram_003A
 C - - - - - 0x0348A1 0D:8891: AD 3B 04  LDA ram_043B
 C - - - - - 0x0348A4 0D:8894: 0A        ASL
@@ -1041,7 +1041,7 @@ C - - - - - 0x0348AD 0D:889D: A9 05     LDA #$05
 C - - - - - 0x0348AF 0D:889F: BC EB 88  LDY $88EB,X
 C - - - - - 0x0348B2 0D:88A2: 20 E9 8E  JSR $8EE9
 C - - - - - 0x0348B5 0D:88A5: 4C 32 81  JMP $8132
-C - - - - - 0x0348B8 0D:88A8: A9 0B     LDA #$0B
+C D 0 - - - 0x0348B8 0D:88A8: A9 0B     LDA #$0B
 C - - - - - 0x0348BA 0D:88AA: 20 4E C5  JSR $C54E
 C - - - - - 0x0348BD 0D:88AD: AD 12 06  LDA ram_0612
 C - - - - - 0x0348C0 0D:88B0: 20 09 C5  JSR $C509
@@ -1176,7 +1176,7 @@ C - - - - - 0x0349D6 0D:89C6: A9 04     LDA #$04
 C - - - - - 0x0349D8 0D:89C8: 20 4E C5  JSR $C54E
 C - - - - - 0x0349DB 0D:89CB: A9 00     LDA #$00
 C - - - - - 0x0349DD 0D:89CD: 8D 16 06  STA ram_0616
-C - - - - - 0x0349E0 0D:89D0: A9 01     LDA #$01
+C D 0 - - - 0x0349E0 0D:89D0: A9 01     LDA #$01
 C - - - - - 0x0349E2 0D:89D2: 20 15 C5  JSR $C515
 C - - - - - 0x0349E5 0D:89D5: A9 00     LDA #$00
 C - - - - - 0x0349E7 0D:89D7: 8D 12 06  STA ram_0612
@@ -1232,7 +1232,7 @@ C - - - - - 0x034A55 0D:8A45: 20 4E C5  JSR $C54E
 C - - - - - 0x034A58 0D:8A48: AC 12 06  LDY ram_0612
 C - - - - - 0x034A5B 0D:8A4B: C0 02     CPY #$02
 C - - - - - 0x034A5D 0D:8A4D: B0 11     BCS $8A60
-C - - - - - 0x034A5F 0D:8A4F: EE 16 06  INC ram_0616
+C D 0 - - - 0x034A5F 0D:8A4F: EE 16 06  INC ram_0616
 C - - - - - 0x034A62 0D:8A52: AD 16 06  LDA ram_0616
 C - - - - - 0x034A65 0D:8A55: CD 00 06  CMP ram_0600
 C - - - - - 0x034A68 0D:8A58: F0 03     BEQ $8A5D
@@ -1291,7 +1291,7 @@ C - - - - - 0x034AB9 0D:8AA9: 4C DF 8B  JMP $8BDF
 - D 0 - - - 0x034ABD 0D:8AAD: 60        .byte $60   ; 
 - D 0 - - - 0x034ABE 0D:8AAE: 40        .byte $40   ; 
 - D 0 - - - 0x034ABF 0D:8AAF: 00        .byte $00   ; 
-C - - - - - 0x034AC0 0D:8AB0: AD 41 04  LDA ram_0441
+C D 0 - - - 0x034AC0 0D:8AB0: AD 41 04  LDA ram_0441
 C - - - - - 0x034AC3 0D:8AB3: A2 02     LDX #$02
 C - - - - - 0x034AC5 0D:8AB5: 20 3A 8B  JSR $8B3A
 C - - - - - 0x034AC8 0D:8AB8: AD E2 00  LDA a: ram_00E2
@@ -2179,7 +2179,7 @@ C - - - - - 0x035124 0D:9114: 8D F9 05  STA ram_05F9
 C - - - - - 0x035127 0D:9117: 8A        TXA
 C - - - - - 0x035128 0D:9118: 20 03 C6  JSR $C603
 C - - - - - 0x03512B 0D:911B: 60        RTS
-C - - - - - 0x03512C 0D:911C: A9 29     LDA #$29
+C D 0 - - - 0x03512C 0D:911C: A9 29     LDA #$29
 C - - - - - 0x03512E 0D:911E: 20 4E C5  JSR $C54E
 C - - - - - 0x035131 0D:9121: 20 7B 98  JSR $987B
 C - - - - - 0x035134 0D:9124: AD 35 06  LDA ram_0635
@@ -2273,7 +2273,7 @@ C - - - - - 0x035201 0D:91F1: 20 2A C5  JSR $C52A
 C - - - - - 0x035204 0D:91F4: A9 00     LDA #$00
 C - - - - - 0x035206 0D:91F6: 8D 26 06  STA ram_0626
 C - - - - - 0x035209 0D:91F9: 8D 27 06  STA ram_0627
-C - - - - - 0x03520C 0D:91FC: A9 01     LDA #$01
+C D 0 - - - 0x03520C 0D:91FC: A9 01     LDA #$01
 C - - - - - 0x03520E 0D:91FE: 20 15 C5  JSR $C515
 C - - - - - 0x035211 0D:9201: AD 1C 00  LDA a: ram_001C
 C - - - - - 0x035214 0D:9204: 29 03     AND #$03
@@ -2297,9 +2297,7 @@ C - - - - - 0x035233 0D:9223: 18        CLC
 C - - - - - 0x035234 0D:9224: 6D 1E 06  ADC ram_061E
 C - - - - - 0x035237 0D:9227: C9 F0     CMP #$F0
 C - - - - - 0x035239 0D:9229: 90 03     BCC $922E
-- - - - - - 0x03523B 0D:922B: AE        .byte $AE   ; 
-- - - - - - 0x03523C 0D:922C: 26        .byte $26   ; 
-- - - - - - 0x03523D 0D:922D: 06        .byte $06   ; 
+C - - - - - 0x03523B 0D:922B: AE 26 06  LDX ram_0626
 C - - - - - 0x03523E 0D:922E: 8E 26 06  STX ram_0626
 C - - - - - 0x035241 0D:9231: 4C 5F 92  JMP $925F
 C - - - - - 0x035244 0D:9234: AD 1C 00  LDA a: ram_001C
@@ -2324,7 +2322,7 @@ C - - - - - 0x035266 0D:9256: C9 05     CMP #$05
 C - - - - - 0x035268 0D:9258: 90 02     BCC $925C
 C - - - - - 0x03526A 0D:925A: A9 04     LDA #$04
 C - - - - - 0x03526C 0D:925C: 8D 27 06  STA ram_0627
-C - - - - - 0x03526F 0D:925F: AD 1E 06  LDA ram_061E
+C D 0 - - - 0x03526F 0D:925F: AD 1E 06  LDA ram_061E
 C - - - - - 0x035272 0D:9262: 18        CLC
 C - - - - - 0x035273 0D:9263: 6D 26 06  ADC ram_0626
 C - - - - - 0x035276 0D:9266: 8D 24 06  STA ram_0624
@@ -2348,7 +2346,7 @@ C - - - - - 0x03529F 0D:928F: 4C FC 91  JMP $91FC
 C - - - - - 0x0352A2 0D:9292: A9 00     LDA #$00
 C - - - - - 0x0352A4 0D:9294: 8D 2D 06  STA ram_062D
 C - - - - - 0x0352A7 0D:9297: 60        RTS
-C - - - - - 0x0352A8 0D:9298: A9 0C     LDA #$0C
+C D 0 - - - 0x0352A8 0D:9298: A9 0C     LDA #$0C
 C - - - - - 0x0352AA 0D:929A: 85 3A     STA ram_003A
 C - - - - - 0x0352AC 0D:929C: A5 3A     LDA ram_003A
 C - - - - - 0x0352AE 0D:929E: 20 0C C5  JSR $C50C
@@ -2473,7 +2471,7 @@ C - - - - - 0x03539C 0D:938C: 69 01     ADC #$01
 C - - - - - 0x03539E 0D:938E: C9 A0     CMP #$A0
 C - - - - - 0x0353A0 0D:9390: 90 03     BCC $9395
 C - - - - - 0x0353A2 0D:9392: 4C E4 93  JMP $93E4
-C - - - - - 0x0353A5 0D:9395: AD FB 05  LDA ram_05FB
+C D 0 - - - 0x0353A5 0D:9395: AD FB 05  LDA ram_05FB
 C - - - - - 0x0353A8 0D:9398: F0 22     BEQ $93BC
 C - - - - - 0x0353AA 0D:939A: AD E2 00  LDA a: ram_00E2
 C - - - - - 0x0353AD 0D:939D: 29 0F     AND #$0F
@@ -2508,7 +2506,7 @@ C - - - - - 0x0353EA 0D:93DA: 9A        TXS
 C - - - - - 0x0353EB 0D:93DB: 4C 12 C6  JMP $C612
 C - - - - - 0x0353EE 0D:93DE: 20 48 C6  JSR $C648
 C - - - - - 0x0353F1 0D:93E1: 4C DE 93  JMP $93DE
-C - - - - - 0x0353F4 0D:93E4: AA        TAX
+C D 0 - - - 0x0353F4 0D:93E4: AA        TAX
 C - - - - - 0x0353F5 0D:93E5: AD 37 06  LDA ram_0637
 C - - - - - 0x0353F8 0D:93E8: AC FB 05  LDY ram_05FB
 C - - - - - 0x0353FB 0D:93EB: F0 02     BEQ $93EF
@@ -3098,7 +3096,7 @@ C - - - - - 0x035911 0D:9901: 20 09 C5  JSR $C509
 - D 0 - I - 0x035919 0D:9909: 99        .byte $99   ; 
 - D 0 - I - 0x03591A 0D:990A: AD        .byte $AD   ; 
 - D 0 - I - 0x03591B 0D:990B: 9B        .byte $9B   ; 
-C - - - - - 0x03591C 0D:990C: 20 2D C5  JSR $C52D
+C D 0 - - - 0x03591C 0D:990C: 20 2D C5  JSR $C52D
 C - - - - - 0x03591F 0D:990F: A9 00     LDA #$00
 C - - - - - 0x035921 0D:9911: 20 2A C5  JSR $C52A
 C - - - - - 0x035924 0D:9914: A9 01     LDA #$01
@@ -3307,7 +3305,7 @@ C - - - - - 0x035AE1 0D:9AD1: A9 01     LDA #$01
 C - - - - - 0x035AE3 0D:9AD3: 8D 25 06  STA ram_0625
 C - - - - - 0x035AE6 0D:9AD6: A0 16     LDY #$16
 C - - - - - 0x035AE8 0D:9AD8: 20 37 9F  JSR $9F37
-C - - - - - 0x035AEB 0D:9ADB: A9 01     LDA #$01
+C D 0 - - - 0x035AEB 0D:9ADB: A9 01     LDA #$01
 C - - - - - 0x035AED 0D:9ADD: 20 15 C5  JSR $C515
 C - - - - - 0x035AF0 0D:9AE0: AD 25 06  LDA ram_0625
 C - - - - - 0x035AF3 0D:9AE3: 20 90 9B  JSR $9B90

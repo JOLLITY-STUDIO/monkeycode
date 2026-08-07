@@ -1572,7 +1572,7 @@ $0622: 9   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <9> 
 $0623: 4   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <4>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0624: 49   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <49>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0625: 34   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <34>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
-$0626: 18   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <18>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
+$0626: 19   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <19>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0627: 6   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <6>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0628: 14   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <14>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   
 $0629: 11   $zero page <0>   $zero page,X <0>   $zero page,Y <0>   $absolute <11>   $absolute,X <0>   $absolute,Y <0>   ($indirect) <0>   ($indirect,X) <0>   ($indirect),Y <0>   

@@ -1,5 +1,6 @@
 {
   "pages": [
+    "pages/tsubasa2/tsubasa2",
     "pages/h5game/h5game",
     "pages/bankpage/bankpage",
     "pages/bankpage/bank-detail/bank-detail"

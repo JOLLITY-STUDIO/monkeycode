@@ -1,0 +1,13 @@
+{
+  "name": "tsubasa2-h5",
+  "version": "0.1.0",
+  "description": "天使之翼2 — H5游戏引擎（纯TypeScript，无CPU模拟）",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "echo 'Use WeChat Mini Program DevTools'",
+    "build": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.3"
+  }
+}

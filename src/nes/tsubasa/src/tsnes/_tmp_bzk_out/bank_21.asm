@@ -2,7 +2,7 @@
 .include "bank_ram.inc"
 ; 0x02A010-0x02C00F
 
-- D 1 - I - 0x02A010 0A:8000: 23        .byte $23   ; 
+- - - - - - 0x02A010 0A:8000: 23        .byte $23   ; 
 - D 1 - I - 0x02A011 0A:8001: 45        .byte $45   ; <E>
 - D 1 - I - 0x02A012 0A:8002: 01        .byte $01   ; 
 - D 1 - I - 0x02A013 0A:8003: FB        .byte $FB   ; 
