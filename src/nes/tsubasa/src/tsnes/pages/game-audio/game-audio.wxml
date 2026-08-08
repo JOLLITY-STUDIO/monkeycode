@@ -1,0 +1,29 @@
+<view class="container">
+  <!-- 头部信息 -->
+  <view class="header">
+    <text class="title">天使之翼II — 开场动画 BGM</text>
+    <text class="subtitle">mini-audio 精简模拟器 ({{bankCount}} PRG banks)</text>
+  </view>
+
+  <!-- 状态 -->
+  <view class="status-card">
+    <text class="status-text">{{status}}</text>
+    <text class="info-text">帧: {{frameCount}} / {{totalFrames}} | 采样: {{sampleCount}}</text>
+  </view>
+
+  <!-- 控制按钮 -->
+  <view class="controls">
+    <button class="btn {{playing ? 'btn-stop' : 'btn-play'}}" bindtap="togglePlay">
+      {{playing ? '⏸ 暂停' : '▶ 播放'}}
+    </button>
+    <button class="btn btn-restart" bindtap="restart">
+      🔄 重头播放
+    </button>
+  </view>
+
+  <!-- 提示 -->
+  <view class="tip">
+    <text>4500帧 ≈ 一个完整开场动画循环 ≈ 75秒</text>
+    <text>音频通过 WebAudio ScriptProcessor 实时合成</text>
+  </view>
+</view>
