@@ -1,0 +1,27 @@
+<view class="audio-page">
+  <view class="audio-card">
+    <view class="audio-icon">🎵</view>
+    <text class="audio-title">Tsubasa II 音效</text>
+
+    <view class="audio-status-bar">
+      <view class="status-dot {{status.indexOf('失败') >= 0 ? 'dot-error' : 'dot-active'}}"></view>
+      <text class="audio-status">{{status}}</text>
+    </view>
+
+    <view class="audio-info-row">
+      <view class="audio-info">
+        <text class="info-label">当前 SE</text>
+        <text class="info-value">{{currentSe}}</text>
+      </view>
+      <view class="audio-info">
+        <text class="info-label">采样数</text>
+        <text class="info-value">{{sampleCount}}</text>
+      </view>
+    </view>
+
+    <view class="audio-hint">
+      <text>每 5 秒自动随机切换</text>
+      <text class="hint-sub">Tsubasa II - Bank12 Audio Engine</text>
+    </view>
+  </view>
+</view>

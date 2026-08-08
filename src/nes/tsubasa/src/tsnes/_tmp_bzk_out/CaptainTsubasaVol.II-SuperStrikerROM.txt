@@ -354,124 +354,118 @@ Level,3FF
 
 Character Digits,
 -----------------
+01,Tsubasa（大空 翼 / 大空翼）02,Lennart {GK}（レナート / 雷納托）
+03,Lima（リマ / 利馬）
+04,Marini（マリーニ / 馬里尼）
+05,Amaral（アマラウ / 阿馬拉爾）06,Dottil（ドゥトール / 杜托爾）
+07,Battista（バチスタ / 巴蒂斯塔）
+08,Tahamata（タハマタ / 塔哈馬塔）
+09,Babinton（バビントン / 巴賓頓）
+0A,Gil（ジル / 吉爾）
+0B,Platton（プラトン / 普拉頓）
 
-01,Tsubasa
-02,Lennart {GK}
-03,Lima
-04,Marini
-05,Amaral
-06,Dottil
-07,Battista
-08,Tahamata
-09,Babinton
-0A,Gil
-0B,Platton
-0C,Urabe
-0D,Kishida
-0E,Nakayama
-0F,Morisaki {GK}
-10,Takasugu
-11,Misaki
-12,Izawa
-13,Taki
-14,Ishizaki
-15,Nitta
-16,Kisugi
-17,Masao
-18,Kazuo
-19,Sano
-1A,Hyuga
-1B,Souta
-1C,Jitou
-1D,Matsuyama
-1E,Sorimachi
-1F,Sawada
-20,Misugi
-21,Wakabayashi {GK}
-22,Wakashimazu {GK}
-23,Satilst
-24,Riverio
-25,Da Silva
-26,Meon {GK}
-27,Toninho
-28,Nei
-29,Zagalo
-2A,Dircil
-2B,Carlos
-2C,Santamaria
-2D,Jethrio
-2E,Jitou
-2F,Sano
-30,Masao
-31,Kazuo
-32,Souta
-33,Nakanishi {GK}
-34,Misugi
-35,Matsuyama
-36,Hyuga
-37,Sorimachi
-38,Sawada
-39,Wakashimazu {GK}
-3A,Rampion
-3B,Victor
-3C,Da Silva
-3D,Kapilman
-3E,Kaltz
-3F,Metzer
-40,WakaBayashi {GK}
-41,Hyuga
-42,Nitta
-43,Sano
-44,Misaki
-45,Misugi
-46,Masao
-47,Kazuo
-48,Jitou
-49,Ishzaki
-4A,Souta
-4B,Matsuyama
-4C,Wakashimazu {GK}
-4D,LiHan
-4E,Li Ba
-4F,Sya
-50,Kim
-51,Mach
-52,Jaich {GK}
-53,Lorima
-54,Robson
-55,Belaef
-56,Lashin {GK}
-57,Napoleon
-58,Pierr
-59,Espera
-5A,Rampion
-5B,Hernandez {GK}
-5C,Islas
-5D,Ribla
-5E,Pascal
-5F,Satilst
-60,Dias
-61,Babinton
-62,Galvin
-63,Schneider
-64,Margis
-65,Kaltz
-66,Metzer
-67,Schister
-68,Kapilman
-69,Muller {GK}
-6A,Carlos
-6B,Zagalo
-6C,Riverio
-6D,Nei
-6E,Santamaria
-6F,Toninho
-70,Dottil
-71,Amaral
-72,Dircil
-73,Jethrio
-74,Gertise {GK}
-75,Coimbra
+
+0C,Urabe（浦辺 反次 / 浦邊反次）
+0D,Kishida（岸田 猛 / 岸田猛）
+0E,Nakayama（中山 政人 / 中山政人）
+0F,Morisaki {GK}（森崎 有三 / 森崎有三）
+10,Takasugu（高杉 真吾 / 高杉真吾）
+11,Misaki（岬 太郎 / 岬太郎）12,Izawa（井沢 守 / 井澤守）
+13,Taki（滝 一 / 瀧一）
+14,Ishizaki（石崎 了 / 石崎了）15,Nitta（新田 瞬 / 新田瞬）
+16,Kisugi（来生 哲兵 / 來生哲兵）17,Masao（立花 政夫 / 立花政夫）
+18,Kazuo（立花 和夫 / 立花和夫）
+19,Sano（佐野 満 / 佐野滿）
+1A,Hyuga（日向 小次郎 / 日向小次郎）
+1B,Souta（早田 誠 / 早田誠）
+1C,Jitou（次藤 洋 / 次藤洋）
+1D,Matsuyama（松山 光 / 松山光）
+1E,Sorimachi（反町 一樹 / 反町一樹）
+1F,Sawada（沢田 タケシ / 澤田武志）
+20,Misugi（三杉 淳 / 三杉淳）
+21,Wakabayashi {GK}（若林 源三 / 若林源三）
+22,Wakashimazu {GK}（若島津 健 / 若島津健）
+23,Satilst（サトルステギ / 薩托斯泰吉）
+24,Riverio（リベリオ / 里維里奧）
+25,Da Silva（ダ・シルバ / 達席爾瓦）
+26,Meon {GK}（メオン / 梅昂）
+27,Toninho（トニーニョ / 托尼紐）
+28,Nei（ネイ / 內伊）
+29,Zagalo（ザガロ / 扎加洛）
+2A,Dircil（ディルセウ / 迪爾修）
+2B,Carlos（カルロス・サンターナ / 卡洛斯・山塔拿）
+2C,Santamaria（サンタマリア / 聖馬利亞）
+2D,Jethrio（ジェットリオ / 傑特里奧）
+2E,Jitou（次藤 洋 / 次藤洋）
+2F,Sano（佐野 満 / 佐野滿）
+30,Masao（立花 政夫 / 立花政夫）
+31,Kazuo（立花 和夫 / 立花和夫）
+32,Souta（早田 誠 / 早田誠）
+33,Nakanishi {GK}（中西 太一 / 中西太一）
+34,Misugi（三杉 淳 / 三杉淳）
+35,Matsuyama（松山 光 / 松山光）
+36,Hyuga（日向 小次郎 / 日向小次郎）
+37,Sorimachi（反町 一樹 / 反町一樹）
+38,Sawada（沢田 タケシ / 澤田武志）
+39,Wakashimazu {GK}（若島津 健 / 若島津健）
+3A,Rampion（ランピオン / 蘭皮翁）
+3B,Victor（ビクトリーノ / 維克多利諾）
+3C,Da Silva（ダ・シルバ / 達席爾瓦）
+3D,Kapilman（カペロマン / 卡培爾曼）
+3E,Kaltz（ヘルマン・カルツ / 赫爾曼・卡爾茲）
+3F,Metzer（メッツァ / 梅查）
+40,WakaBayashi {GK}（若林 源三 / 若林源三）
+41,Hyuga（日向 小次郎 / 日向小次郎）
+42,Nitta（新田 瞬 / 新田瞬）
+43,Sano（佐野 滿 / 佐野滿）
+44,Misaki（岬 太郎 / 岬太郎）
+45,Misugi（三杉 淳 / 三杉淳）
+46,Masao（立花 政夫 / 立花政夫）
+47,Kazuo（立花 和夫 / 立花和夫）
+48,Jitou（次藤 洋 / 次藤洋）
+49,Ishzaki（石崎 了 / 石崎了）
+4A,Souta（早田 誠 / 早田誠）
+4B,Matsuyama（松山 光 / 松山光）
+4C,Wakashimazu {GK}（若島津 健 / 若島津健）
+4D,LiHan（李 邦漢 / 李邦漢）
+4E,Li Ba（李 邦竜 / 李邦龍）
+4F,Sya（車 仁天 / 車仁天）
+50,Kim（金 現代 / 金現代）
+51,Mach（マッハ / 馬赫）
+52,Jaich {GK}（ジャイチ / 賈伊奇）
+53,Lorima（ロリマー / 羅利馬）
+54,Robson（ロボソン / 羅賓遜）
+55,Belaef（ベラエフ / 貝拉耶夫）
+56,Lashin {GK}（ラシン / 拉辛）
+57,Napoleon（ルイ・ナポレオン / 路易・拿破崙）
+58,Pierr（エル・シド・ピエール / 艾爾・西多・皮埃爾）
+59,Espera（エスパダ / 埃斯帕達）
+5A,Rampion（ランピオン / 蘭皮翁）
+5B,Hernandez {GK}（ジノ・ヘルナンデス / 狄諾・赫南德茲）
+5C,Islas（イスラス / 伊斯拉斯）
+5D,Ribla（リベラ / 里貝拉）
+5E,Pascal（アラン・パスカル / 阿蘭・帕斯卡）
+5F,Satilst（サトルステギ / 薩托斯泰吉）
+60,Dias（ファン・ディアス / 胡安・迪亞斯）
+61,Babinton（バビントン / 巴賓頓）
+62,Galvin（ガルバン / 加爾萬）
+63,Schneider（カール・ハインツ・シュナイダー / 卡爾・海因茨・施奈德）
+64,Margis（マーガス / 馬加斯）
+65,Kaltz（ヘルマン・カルツ / 赫爾曼・卡爾茲）
+66,Metzer（メッツァ / 梅查）
+67,Schister（フランツ・シェスター / 弗朗茨・席斯特）
+68,Kapilman（カペロマン / 卡培爾曼）
+69,Muller {GK}（デューター・ミューラー / 迪特・穆勒）
+6A,Carlos（カルロス・サンターナ / 卡洛斯・山塔拿）
+6B,Zagalo（ザガロ / 扎加洛）
+6C,Riverio（リベリオ / 里維里奧）
+6D,Nei（ネイ / 內伊）
+6E,Santamaria（サンタマリア / 聖馬利亞）
+6F,Toninho（トニーニョ / 托尼紐）
+70,Dottil（ドゥトール / 杜托爾）
+71,Amaral（アマラウ / 阿馬拉爾）72,Dircil（ディルセウ / 迪爾修）73,Jethrio（ジェットリオ / 傑特里奧）
+74,Gertise {GK}（ゲルティス / 傑爾蒂斯）
+75,Coimbra（コインブラ / 辛巴拉）
 
 *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 
@@ -555,7 +549,7 @@ $8E63 90 => 50
 
 Team Edit,
 ----------
-
+rom addresses
 Sao Paulo Matches:
 ------------------
 
@@ -563,7 +557,7 @@ GK,
 ---
 
 $AA47
-004A57
+004A57 
 
 Player 2,
 ---------

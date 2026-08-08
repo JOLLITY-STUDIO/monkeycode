@@ -5,8 +5,10 @@
 import { NES_PRG_ROM, NES_CHR_ROM } from '../../../rom-data/index';
 import PRG_BANK_07 from '../../../rom-data/prg-bank-07';
 import BANK02_ANALYSIS from './bank02_analysis';
+import BANK12_ANALYSIS from './bank12_analysis';
 import BANK30_ANALYSIS from './bank30_analysis';
 import BANK31_ANALYSIS from './bank31_analysis';
+import { Bank12AudioPlayer, ApuChannelState } from './bank12-audio-player';
 import { DATA_TABLES, S8, U16LE, S16LE } from './bank02_data_schema';
 
 const BANK_SIZE = 8192;
@@ -75,7 +77,7 @@ Page({
     unaccessed: 0,
 
     // 视图控制
-    viewMode: 'hex' as 'hex' | 'histogram' | 'records' | 'field' | 'structure' | 'functions' | 'debug' | 'data',
+    viewMode: 'hex' as 'hex' | 'histogram' | 'records' | 'field' | 'structure' | 'functions' | 'music' | 'debug' | 'data',
     isCHR: false,
 
     // 数据类型
@@ -164,6 +166,21 @@ Page({
     b30ResetFlow: [] as any[],
     b30Architecture: null as any,
     b30Deps: {} as any,
+
+    // ── Bank 12 音频引擎 ──
+    b12Subroutines: [] as any[],
+    b12DataTables: [] as any[],
+    b12AudioCommands: [] as any[],
+    b12SoundEffectMap: [] as any[],
+    b12RamLayout: [] as any[],
+    b12CallFlow: [] as any[],
+    b12SelectedFunc: null as any,
+    b12MusicTrackIdx: 0,           // 当前选的音效/音乐编号
+    b12TrackHex: '' as string,     // 选中的音轨hex数据
+    b12PlayerSpeed: 1,            // 播放速度(帧步进)
+    b12PlayerFrame: 0,            // 当前帧
+    b12PlayerRunning: false,      // 播放状态
+    b12ApuChannels: [] as ApuChannelState[],  // 5 APU 通道实时状态
 
     // ── 结构化数据视图 ──
     dataViewTables: [] as any[],   // 结构化解析后的数据表
@@ -296,6 +313,8 @@ Page({
     this.setData({ viewMode: 'structure' });
     if (this.data.bankId === 2 && !this.data.b02StructureReady) {
       setTimeout(() => this._renderStructureMap(), 300);
+    } else if (this.data.bankId === 12) {
+      this._loadBank12Analysis();
     } else if (this.data.bankId === 30 && !this.data.b30StructureReady) {
       setTimeout(() => this._renderBank30StructureMap(), 300);
     } else if (this.data.bankId === 31 && !this.data.b31StructureReady) {
@@ -305,12 +324,18 @@ Page({
   onViewFunctions() {
     this.setData({ viewMode: 'functions' });
     if (this.data.bankId === 2) this._loadBank02Analysis();
+    if (this.data.bankId === 12) this._loadBank12Analysis();
     if (this.data.bankId === 30) this._loadBank30Analysis();
     if (this.data.bankId === 31) this._loadBank31Analysis();
+  },
+  onViewMusic() {
+    this.setData({ viewMode: 'music' });
+    this._loadBank12Analysis();
   },
   onViewDebug() {
     this.setData({ viewMode: 'debug' });
     if (this.data.bankId === 2) this._loadBank02Analysis();
+    if (this.data.bankId === 12) this._loadBank12Analysis();
     if (this.data.bankId === 30) this._loadBank30Analysis();
     if (this.data.bankId === 31) this._loadBank31Analysis();
   },
@@ -319,6 +344,8 @@ Page({
     if (this.data.bankId === 2) {
       this._loadBank02Analysis();
       setTimeout(() => this._parseDataTables(), 100);
+    } else if (this.data.bankId === 12) {
+      this._loadBank12Analysis();
     } else if (this.data.bankId === 30) {
       this._loadBank30Analysis();
     } else if (this.data.bankId === 31) {
@@ -346,6 +373,37 @@ Page({
       b31Subroutines: subs,
       b31DataTables: tables,
       b31Deps: deps,
+    });
+  },
+  _loadBank12Analysis() {
+    const analysis = BANK12_ANALYSIS as any;
+    const subs = analysis.subroutines || [];
+    const tables = analysis.dataTables || [];
+    const cmds = analysis.audioCommands?.list || [];
+    const seMap = analysis.soundEffectMap?.entries || [];
+    const ramSects = analysis.ramLayout?.sections || [];
+    const flowSteps = analysis.callFlow?.steps || [];
+    // 交叉引用: 谁调用了 Bank 12 / Bank 12 依赖谁
+    const xrefs: any[] = [];
+    for (const s of subs) {
+      if (s.crossRefs) {
+        for (const r of s.crossRefs) {
+          xrefs.push({ func: s.bankAddr + ' ' + s.name, from: r.from, desc: r.desc });
+        }
+      }
+    }
+    const extApi = (analysis.externalInterface?.methods || []).map((m: any) => ({
+      name: m.name, desc: m.mechanism, example: m.example || '',
+    }));
+    this.setData({
+      b12Subroutines: subs,
+      b12DataTables: tables,
+      b12AudioCommands: cmds,
+      b12SoundEffectMap: seMap,
+      b12RamLayout: ramSects,
+      b12CallFlow: flowSteps,
+      b12CrossRefs: xrefs,
+      b12ExternalApi: extApi,
     });
   },
   _loadBank30Analysis() {
@@ -2222,6 +2280,276 @@ Page({
     });
   },
 
+  // ── Bank 12 音频引擎 ──
+  onB12SelectFunction(e: any) {
+    const idx = parseInt(e.currentTarget.dataset.idx, 10);
+    const func = this.data.b12Subroutines[idx];
+    this.setData({ b12SelectedFunc: func });
+  },
+  /** 选择一条音效/音乐, 读取对应的音轨 hex 数据 */
+  onB12SelectMusic(e: any) {
+    const idx = parseInt(e.currentTarget.dataset.idx, 10);
+    if (isNaN(idx)) return;
+    this.setData({ b12MusicTrackIdx: idx });
+    this._loadB12TrackHex(idx);
+  },
+
+  /** 上一首 */
+  onB12PrevTrack() {
+    const total = this.data.b12SoundEffectMap.length;
+    if (total === 0) return;
+    const newIdx = (this.data.b12MusicTrackIdx - 1 + total) % total;
+    this.setData({ b12MusicTrackIdx: newIdx });
+    this._loadB12TrackHex(newIdx);
+    // 如果正在播放，自动切到新曲目
+    if (this.data.b12PlayerRunning) {
+      this._switchToTrack(newIdx);
+    }
+  },
+
+  /** 下一首 */
+  onB12NextTrack() {
+    const total = this.data.b12SoundEffectMap.length;
+    if (total === 0) return;
+    const newIdx = (this.data.b12MusicTrackIdx + 1) % total;
+    this.setData({ b12MusicTrackIdx: newIdx });
+    this._loadB12TrackHex(newIdx);
+    // 如果正在播放，自动切到新曲目
+    if (this.data.b12PlayerRunning) {
+      this._switchToTrack(newIdx);
+    }
+  },
+
+  /** 切换到指定 track 播放（复用播放流程） */
+  _switchToTrack(idx: number) {
+    const seEntries = this.data.b12SoundEffectMap;
+    if (idx < 0 || idx >= seEntries.length) return;
+    const entry = seEntries[idx];
+    if (this._audioPlayer) {
+      this._audioPlayer.stop();
+      this._audioPlayer.play(entry.seId || (idx + 1));
+    }
+    wx.showToast({ title: `切换: SE $0${(entry.seId || (idx + 1)).toString(16).toUpperCase()}`, icon: 'none', duration: 1000 });
+  },
+  _loadB12TrackHex(idx: number) {
+    const seEntries = this.data.b12SoundEffectMap;
+    if (idx < 0 || idx >= seEntries.length) { this.setData({ b12TrackHex: '' }); return; }
+    const entry = seEntries[idx];
+
+    // 解析描述中的地址: "SQ1:$8E42, SQ2:$8E5B, TRI:$8E68"
+    const desc: string = entry.desc || '';
+    const ptrMatch = desc.matchAll(/\$([0-9A-Fa-f]{4})/g);
+    const ptrs: { channel: string; addr: number }[] = [];
+    for (const m of ptrMatch) {
+      const addr = parseInt(m[1], 16);
+      if (!isNaN(addr) && addr >= 0x8000 && addr < 0xA000) {
+        const chName = desc.slice(Math.max(0, (m.index || 0) - 3), m.index).trim().replace(':', '').trim();
+        ptrs.push({ channel: chName || `$${addr.toString(16)}`, addr });
+      }
+    }
+
+    let result = '';
+    result += `═══ 音效 #${idx} (seId=0x${entry.seId?.toString(16).toUpperCase() || '?'}) ═══\n`;
+    result += `Bank: ${entry.bank || '?'}  ·  描述: ${entry.desc || '?'}\n`;
+    result += `\n`;
+
+    // 从 PRG ROM 读取对应 bank 的数据
+    for (const p of ptrs) {
+      result += `── ${p.channel} ──\n`;
+      const bankId = entry.bank ? parseInt(entry.bank, 16) : 0x0D;
+      const prgOffset = (bankId * BANK_SIZE) + (p.addr - 0x8000);
+      const maxRead = 200;
+      const bytes: number[] = [];
+      for (let i = 0; i < maxRead && prgOffset + i < NES_PRG_ROM.length; i++) {
+        bytes.push(NES_PRG_ROM[prgOffset + i]);
+      }
+
+      // 格式化为彩色 hex dump
+      const lines: string[] = [];
+      for (let i = 0; i < bytes.length; i += 16) {
+        const addrHex = (p.addr + i).toString(16).toUpperCase().padStart(4, '0');
+        let hexPart = '';
+        for (let j = 0; j < 16 && i + j < bytes.length; j++) {
+          const b = bytes[i + j];
+          const h = byteHex(b);
+          if (b >= 0xE0 && b < 0xFF) {
+            hexPart += `[${h}]`;
+          } else if (b >= 0xA0 && b < 0xE0) {
+            hexPart += `(${h})`;
+          } else if (b === 0x00) {
+            hexPart += `<${h}>`;
+          } else if (b === 0xFF) {
+            hexPart += `!${h}!`;
+          } else {
+            hexPart += ` ${h} `;
+          }
+        }
+        lines.push(`$${addrHex}: ${hexPart}`);
+      }
+      result += lines.join('\n') + '\n\n';
+    }
+
+    result += `── 图例 ──\n`;
+    result += ` [XX] = 命令  (XX) = 音符  <XX> = 休止/结束  !XX! = 序列尾\n`;
+    this.setData({ b12TrackHex: result });
+  },
+
+  // ── PAPU + 音序器 合成 & 播放 ──
+  _audioPlayer: null as Bank12AudioPlayer | null,
+  _audioCtx: null as any,
+  _audioNode: null as any,
+  _animId: -1 as any,
+  _sampleRate: 48000,
+  // 环形缓冲区 (~200ms)
+  _ring: new Float32Array(48000 * 4),
+  _ringW: 0,
+  _ringR: 0,
+
+  /** 创建 Bank12AudioPlayer 并启动音频上下文 */
+  _initAudioPlayer() {
+    if (this._audioPlayer) return;
+    
+    this._audioPlayer = new Bank12AudioPlayer();
+    this._audioPlayer.onSample = (left: number, right: number) => {
+      this._writeRing(left, right);
+    };
+  },
+
+  /** 启动 WebAudioContext 和 ScriptProcessorNode */
+  _startAudio() {
+    try {
+      this._audioCtx = wx.createWebAudioContext();
+      // ScriptProcessorNode buffer
+      const SCRIPT_BUF = 2048;
+      const node = this._audioCtx.createScriptProcessor(SCRIPT_BUF, 0, 2);
+      node.onaudioprocess = (e: any) => {
+        const L = e.outputBuffer.getChannelData(0);
+        const R = e.outputBuffer.getChannelData(1);
+        for (let i = 0; i < SCRIPT_BUF; i++) {
+          const s = this._readRing();
+          L[i] = s.l;
+          R[i] = s.r;
+        }
+      };
+      node.connect(this._audioCtx.destination);
+      this._audioNode = node;
+    } catch (e: any) {
+      console.error('[audio] 启动音频失败:', e?.message);
+    }
+  },
+
+  /** 停止音频 */
+  _stopAudio() {
+    if (this._audioNode) {
+      try { this._audioNode.disconnect(); } catch (_) {}
+      this._audioNode = null;
+    }
+    if (this._audioCtx) {
+      try { this._audioCtx.close(); } catch (_) {}
+      this._audioCtx = null;
+    }
+    this._ringW = 0;
+    this._ringR = 0;
+  },
+
+  /** 写入环形缓冲区 */
+  _writeRing(l: number, r: number) {
+    const cap = this._ring.length;
+    const next = (this._ringW + 2) % cap;
+    if (next === this._ringR) return; // 缓冲区满, 丢帧
+    this._ring[this._ringW] = Math.max(-1, Math.min(1, l));
+    this._ring[this._ringW + 1] = Math.max(-1, Math.min(1, r));
+    this._ringW = next;
+  },
+
+  /** 从环形缓冲区读取 */
+  _readRing(): { l: number; r: number } {
+    const cap = this._ring.length;
+    if (this._ringR === this._ringW) return { l: 0, r: 0 };
+    const l = this._ring[this._ringR];
+    const r = this._ring[this._ringR + 1];
+    this._ringR = (this._ringR + 2) % cap;
+    return { l, r };
+  },
+
+  /** 播放选中的音轨 — 使用 PAPU + 音序器 (Bank12AudioPlayer) */
+  onB12PlayTrack() {
+    const idx = this.data.b12MusicTrackIdx;
+    const seEntries = this.data.b12SoundEffectMap;
+    if (idx < 0 || idx >= seEntries.length) { wx.showToast({ title: '请先选择一首', icon: 'none' }); return; }
+    const entry = seEntries[idx];
+
+    this._initAudioPlayer();
+    
+    if (this._audioPlayer) {
+      this._audioPlayer.stop();
+      this._audioPlayer.play(entry.seId || (idx + 1));
+    }
+    
+    // ★ 修复: 预填充环形缓冲区, 避免 ScriptProcessor 启动后读空缓冲
+    if (this._audioPlayer) {
+      for (let i = 0; i < 30; i++) {
+        this._audioPlayer.tickFrame();
+      }
+    }
+    
+    this._startAudio();
+    
+    // 初始采集一次通道状态
+    if (this._audioPlayer) {
+      this.setData({
+        b12ApuChannels: this._audioPlayer.getApuChannelStates(),
+        b12Progress: this._audioPlayer.getProgress(),
+      });
+    }
+    
+    this.setData({ b12PlayerRunning: true });
+    wx.showToast({ title: `播放中: SE $0${(entry.seId || (idx + 1)).toString(16).toUpperCase()}`, icon: 'none', duration: 1500 });
+    
+    // 启动帧循环 (~60fps)
+    this._startFrameLoop();
+  },
+
+  /** 停止播放 */
+  onB12StopTrack() {
+    this._stopFrameLoop();
+    if (this._audioPlayer) {
+      this._audioPlayer.stop();
+    }
+    this._stopAudio();
+    this.setData({ b12ApuChannels: [], b12PlayerRunning: false, b12Progress: null });
+    wx.showToast({ title: '已停止', icon: 'none', duration: 800 });
+  },
+
+  /** 帧循环: 每 1/60s tick 音序器 + PAPU */
+  _startFrameLoop() {
+    if (this._animId >= 0) return;
+    const FRAME_MS = 17; // ~60fps
+    let tickCount = 0;
+    const tick = () => {
+      if (!this._audioPlayer) return;
+      // tick 1 帧 (~16.67ms)
+      this._audioPlayer.tickFrame();
+      tickCount++;
+      // 每 4 帧更新一次通道状态+进度 (避免 setData 过于频繁，同时让进度更实时)
+      if (tickCount % 4 === 0) {
+        this.setData({
+          b12ApuChannels: this._audioPlayer.getApuChannelStates(),
+          b12Progress: this._audioPlayer.getProgress(),
+        });
+      }
+      this._animId = setTimeout(tick, FRAME_MS);
+    };
+    this._animId = setTimeout(tick, FRAME_MS);
+  },
+
+  _stopFrameLoop() {
+    if (this._animId >= 0) {
+      clearTimeout(this._animId);
+      this._animId = -1;
+    }
+  },
+
   // ── Bank 30 选择函数 ──
   onB30SelectFunction(e: any) {
     const idx = parseInt(e.currentTarget.dataset.idx, 10);
@@ -2493,7 +2821,7 @@ Page({
       9:  'Dialog Text II',
       10: 'Scene Map & Location',
       11: 'Match Turn Logic I',
-      12: 'Match Turn Logic II',
+      12: 'Audio Engine',
       13: 'Animation Frames I',
       14: 'Animation Data II',
       15: 'Animation Data III',
@@ -2533,7 +2861,7 @@ Page({
       9:'Dialog Text (PT2) — 对话文本数据',
       10:'Scene Map & Location — 场景描述/地图定位',
       11:'Match Turn Logic (PT1) — 比赛回合逻辑 & 行动数据',
-      12:'Match Turn Logic (PT2) — 比赛回合逻辑 & 行动数据',
+      12:'Audio Engine ($8000-$9FFF) — NES APU 音频驱动核心 — 音乐/音效播放引擎 · 代码 1672B · 数据 6100B · $0700-$07FF 工作区',
       13:'Animation Frames (PT1) — 动画/过场帧数据',
       14:'Animation Data (PT2) — 动画/演出数据',
       15:'Animation Data (PT3) — 动画/演出数据',

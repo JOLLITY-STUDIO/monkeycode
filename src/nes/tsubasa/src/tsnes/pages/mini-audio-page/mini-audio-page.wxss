@@ -1,0 +1,125 @@
+.audio-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  padding: 20px;
+}
+
+.audio-card {
+  width: 100%;
+  max-width: 360px;
+  background: rgba(255,255,255,0.06);
+  backdrop-filter: blur(20px);
+  border-radius: 24px;
+  padding: 36px 28px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.audio-icon {
+  font-size: 56px;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 0.8; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+.audio-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: #e0e0e0;
+  letter-spacing: 2px;
+}
+
+/* ── 状态条 ── */
+
+.audio-status-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 20px;
+  background: rgba(255,255,255,0.05);
+  border-radius: 30px;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-active {
+  background: #4ade80;
+  box-shadow: 0 0 8px #4ade80;
+  animation: blink 1s step-start infinite;
+}
+
+.dot-error {
+  background: #f87171;
+  box-shadow: 0 0 8px #f87171;
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+.audio-status {
+  font-size: 15px;
+  color: #a0aec0;
+}
+
+/* ── 双列信息 ── */
+
+.audio-info-row {
+  display: flex;
+  gap: 40px;
+}
+
+.audio-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.info-label {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.info-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: #818cf8;
+  font-family: monospace;
+}
+
+/* ── 提示 ── */
+
+.audio-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.audio-hint text {
+  font-size: 12px;
+  color: #475569;
+}
+
+.hint-sub {
+  font-size: 10px !important;
+  opacity: 0.5;
+}

@@ -25,6 +25,7 @@ import { Bank0Core } from '../game/Bank0Core';
 import { OpeningScene } from '../game/opening/OpeningScene';
 import { TitleScene } from '../game/title/TitleScene';
 import { MenuScene } from '../game/menu/MenuScene';
+import { AiAutoPlay } from '../game/AiAutoPlay';
 import { TsubasaOptions, DebugSnapshot, BUTTON, GameState } from './types';
 
 /** 默认选项 */
@@ -47,6 +48,7 @@ export class Tsubasa {
   private _renderer: Renderer;
   private _romReader: RomReader;
   private _bank0Core: Bank0Core;
+  private _aiAutoPlay: AiAutoPlay | null = null;
   
   // ====== 选项 ======
   private _options: Required<TsubasaOptions>;
@@ -110,7 +112,10 @@ export class Tsubasa {
     
     // AI模式
     if (this._options.aiMode) {
-      this._inputManager.enableAi();
+      this._aiAutoPlay = new AiAutoPlay(this._ds, this._inputManager);
+      this._aiAutoPlay.enabled = true;
+      // 每帧调用AI决策
+      this._gameLoop.onFrame(() => this._aiAutoPlay?.tick());
     }
     
     // 调试模式
@@ -208,13 +213,19 @@ export class Tsubasa {
   
   /** 开启AI自动挂机 */
   enableAi(): void {
-    this._inputManager.enableAi();
+    if (!this._aiAutoPlay) {
+      this._aiAutoPlay = new AiAutoPlay(this._ds, this._inputManager);
+      this._gameLoop.onFrame(() => this._aiAutoPlay?.tick());
+    }
+    this._aiAutoPlay.enabled = true;
     console.log('[Tsubasa] AI模式已开启');
   }
   
   /** 关闭AI自动挂机 */
   disableAi(): void {
-    this._inputManager.disableAi();
+    if (this._aiAutoPlay) {
+      this._aiAutoPlay.enabled = false;
+    }
     console.log('[Tsubasa] AI模式已关闭');
   }
   

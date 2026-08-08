@@ -55,6 +55,44 @@
   line-height: 1.8;
 }
 
+/* 比赛实时信息 */
+.match-info {
+  margin-top: 12rpx;
+  padding: 12rpx;
+  background: rgba(255, 255, 0, 0.05);
+  border: 1px dashed #555;
+  border-radius: 4rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
+
+.match-score {
+  color: #ff0;
+  font-size: 36rpx;
+  font-weight: bold;
+  font-family: monospace;
+  text-align: center;
+}
+
+.match-timer {
+  color: #0af;
+  font-size: 22rpx;
+  font-family: monospace;
+}
+
+.match-phase {
+  color: #f80;
+  font-size: 20rpx;
+  font-family: monospace;
+}
+
+.match-events {
+  color: #aaa;
+  font-size: 18rpx;
+  font-family: monospace;
+}
+
 /* AI模式指示器 */
 .ai-indicator {
   background: rgba(255, 165, 0, 0.85);

@@ -24,6 +24,9 @@
   "terser-webpack-plugin": "^5.3.10",
    
      
+  "tsx": "^4.23.11",
+   
+     
   "typescript": "^5.9.3",
    
      

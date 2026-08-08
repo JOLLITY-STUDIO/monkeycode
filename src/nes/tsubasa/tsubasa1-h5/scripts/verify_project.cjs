@@ -52,14 +52,15 @@ checkDir('src/assets');
 checkDir('src/assets/chr');
 checkDir('pages');
 checkDir('pages/game');
-checkDir('pages/debug');
-checkDir('pages/debug/chr-all');
-checkDir('pages/debug/nametable-all');
-checkDir('pages/debug/sprite-all');
-checkDir('pages/debug/palette-all');
-checkDir('pages/debug/pattern-table-all');
-checkDir('pages/debug/audio-all');
-checkDir('pages/debug/data-api');
+checkDir('pages/database');
+checkDir('pages/database/chr-all');
+checkDir('pages/database/nametable-all');
+checkDir('pages/database/sprite-all');
+checkDir('pages/database/palette-all');
+checkDir('pages/database/pattern-table-all');
+checkDir('pages/database/audio-all');
+checkDir('pages/database/data-api');
+checkDir('pages/database/render-viewer');
 checkDir('scripts');
 
 // ====== 2. 核心源文件 ======
@@ -82,14 +83,21 @@ const coreFiles = [
   'src/data/tables/TeamTable.ts',
   'src/render/Renderer.ts',
   'src/game/Bank0Core.ts',
-  'src/game/SkeletonBanks.ts',
+  'src/game/AiAutoPlay.ts',
+  'src/game/opening/OpeningScene.ts',
+  'src/game/title/TitleScene.ts',
+  'src/game/menu/MenuScene.ts',
+  'src/game/match/MatchEngine.ts',
+  'src/game/match/AiController.ts',
+  'src/game/match/MatchFieldRenderer.ts',
+  'src/game/match/index.ts',
 ];
 for (const f of coreFiles) checkFile(f, 100);
 
 // ====== 3. 页面文件 ======
 console.log('\n📄 [3] 页面文件');
 const pageTypes = ['game'];
-const debugPages = ['chr-all', 'nametable-all', 'sprite-all', 'palette-all', 'pattern-table-all', 'audio-all', 'data-api'];
+const debugPages = ['chr-all', 'nametable-all', 'sprite-all', 'palette-all', 'pattern-table-all', 'audio-all', 'data-api', 'render-viewer'];
 
 for (const p of pageTypes) {
   checkFile(`pages/${p}/${p}.ts`, 50);
@@ -98,10 +106,10 @@ for (const p of pageTypes) {
   checkFile(`pages/${p}/${p}.json`, 10);
 }
 for (const p of debugPages) {
-  checkFile(`pages/debug/${p}/${p}.ts`, 50);
-  checkFile(`pages/debug/${p}/${p}.wxml`, 10);
-  checkFile(`pages/debug/${p}/${p}.wxss`, 10);
-  checkFile(`pages/debug/${p}/${p}.json`, 10);
+  checkFile(`pages/database/${p}/${p}.ts`, 50);
+  checkFile(`pages/database/${p}/${p}.wxml`, 10);
+  checkFile(`pages/database/${p}/${p}.wxss`, 10);
+  checkFile(`pages/database/${p}/${p}.json`, 10);
 }
 
 // ====== 4. 配置文件 ======

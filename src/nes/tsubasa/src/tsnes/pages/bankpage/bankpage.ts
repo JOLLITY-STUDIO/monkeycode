@@ -62,8 +62,8 @@ const PRG_STATS: Record<number, { code: number; data: number; unacc: number; cpu
 };
 
 const PRG_DESCRIPTIONS: Record<number, string> = {
-  0:  'System Service & Main Loop ($9EED) — 系统服务+主循环引擎 — 被Bank30映射、Bank02调用',
-  1:  'Data Query Service — 球员/队伍数据查询 → 调用 Bank 02 $A72C',
+  0:  'System Service & Main Loop ($9EED) — 系统服务+主循环引擎 / Tecmo Theater导演 — 被Bank30映射、Bank02调用',
+  1:  'NMI Render + Data Query Service — NMI PPU渲染(Tecmo Theater) + 球员/队伍数据查询 → 调用 Bank 02 $A72C',
   2:  'Scene Controller ($A200) — 场景控制器 → JMP $9EED 进入主循环 — 读 Bank 03/04/07',
   3:  'Narration Text (PT1) — 解说/过场打字机文本（CHR tile 序列）',
   4:  'Narration Text (PT2) — 解说/过场打字机文本（续）',
@@ -74,7 +74,7 @@ const PRG_DESCRIPTIONS: Record<number, string> = {
   9:  'Dialog Text (PT2) — 对话文本数据',
   10: 'Scene Map & Location — 场景描述/地图定位',
   11: 'Match Turn Logic (PT1) — 比赛回合逻辑 & 行动',
-  12: 'Match Turn Logic (PT2) — 比赛回合逻辑 & 行动',
+  12: 'Audio Engine ($8000-$9FFF) — NES APU 音频驱动引擎 · 音乐/音效播放 · Bank 0D/0E/0F 辅助数据',
   13: 'Animation Frames (PT1) — 动画/过场帧数据',
   14: 'Animation Data (PT2) — 动画/演出数据',
   15: 'Animation Data (PT3) — 动画/演出数据',
@@ -99,7 +99,7 @@ const PRG_DESCRIPTIONS: Record<number, string> = {
 /** 英文标题名（独立于 description，展示在卡片/详情标题处） */
 const PRG_NAMES: Record<number, string> = {
   0:  'System Service & Main Loop',
-  1:  'Data Query Service',
+  1:  'NMI Render + Data Query Service',
   2:  'Scene Controller',
   3:  'Narration Text I',
   4:  'Narration Text II',
@@ -110,7 +110,7 @@ const PRG_NAMES: Record<number, string> = {
   9:  'Dialog Text II',
   10: 'Scene Map & Location',
   11: 'Match Turn Logic I',
-  12: 'Match Turn Logic II',
+  12: 'Audio Engine',
   13: 'Animation Frames I',
   14: 'Animation Data II',
   15: 'Animation Data III',
@@ -170,8 +170,8 @@ interface BankRel { deps: number[]; usedBy: number[]; }
 const PRG_RELATIONS: Record<number, BankRel> = {
   // Bank 00: 初始化→调用 Bank 02 子程序，通过 $9FA8 切换任意 bank；被 Bank 30 映射到 $8000 作为常驻工具层
   0:  { deps: [2, 30, 31], usedBy: [30] },
-  // Bank 01: 数据查询→调用 Bank 02 的 $A72C 关卡加载
-  1:  { deps: [2, 3, 4, 7], usedBy: [] },
+  // Bank 01: 数据查询+NMI PPU渲染→Tecmo Theater 期间被 Bank 00 切换为 NMI handler($805D)；调用 Bank 02 的 $A72C 关卡加载
+  1:  { deps: [2, 3, 4, 7], usedBy: [0] },
   // Bank 02: 场景控制器 $A200 启动入口 → 场景初始化密集调用 Bank 00 服务($9A43/$98A0/$9B7F/$9F69)，读取 Bank 03/04/07 数据；被 Bank 30 在启动时映射到 $A000
   2:  { deps: [0, 3, 4, 7], usedBy: [0, 1, 30] },
   3:  { deps: [], usedBy: [2] },
@@ -280,8 +280,13 @@ Page({
 
   onTapBank(e: any) {
     const { type, id } = e.currentTarget.dataset as { type: string; id: number };
+    // 特殊 bank 跳转独立详情页
+    const SPECIAL_BANKS: Record<number, string> = {
+      2: 'bank-detail-02', 12: 'bank-detail-12', 30: 'bank-detail-30', 31: 'bank-detail-31',
+    };
+    const subDir = SPECIAL_BANKS[id] || 'bank-detail';
     wx.navigateTo({
-      url: `/pages/bankpage/bank-detail/bank-detail?type=${type}&id=${id}`,
+      url: `/pages/bankpage/${subDir}/bank-detail?type=${type}&id=${id}`,
     });
   },
 });

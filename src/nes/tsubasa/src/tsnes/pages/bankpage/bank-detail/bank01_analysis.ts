@@ -1,7 +1,8 @@
-// Bank 1 — 数据查询服务 / 选项屏幕系统 (Data Query Service / Option Screen System, CPU $A000-$BFFF)
-// 基于 bank_01.asm 反汇编 + ROM 二进制追踪
-// ⚠ Bank 1 不是 RESET 后第一个执行的 Bank; RESET 后由 Bank 30 切换到 Bank 2 进入主场景。
-// Bank 1 提供 18 项数据驱动的选项屏幕, 用于球员/队伍数据查询与选择, 通过 Bank 30 跳转表被调用。
+// Bank 1 — 数据查询服务 / NMI PPU 渲染 / 选项屏幕系统 (Data Query + NMI Render + Option Screen, CPU $A000-$BFFF)
+// 基于 bank_01.asm 反汇编 + ROM 二进制追踪 + trace 日志验证
+// ✅ Bank 1 的 NMI handler ($805D) 在 Tecmo Theater 开场画面期间持续运行 (trace frame 11-295)
+// ✅ Bank 1 提供 18 项数据驱动的选项屏幕, 用于球员/队伍数据查询与选择, 通过 Bank 30 跳转表被调用。
+// ✅ NMI/PPU 渲染函数 ($9BA0/$9B7F/$98A0 等) 在 $9800-$9FFF 区域，对所有 bank 共用。
 const data = {
   bankId: 1,
   baseAddr: 0x2000,    // PRG offset (Bank 0x01 * 0x2000), 文件偏移 0x2010
@@ -14,7 +15,7 @@ const data = {
     unaccessedBytes: 638,
     subroutineCount: 22,
     dataTableCount: 14,
-    note: "Bank 1 是 数据查询/选项屏幕服务 (Data Query Service)。提供 18 项数据驱动的屏幕选择、球员能力解码、队伍数据初始化, 并通过跳转表暴露给 Bank 30/31 调用。不负责游戏启动首屏; 启动首屏在 Bank 2。",
+    note: "Bank 1 是 数据查询/选项屏幕服务 + NMI PPU 渲染 (Data Query & NMI Render Engine)。Boot 期间 NMI handler($805D) 持续写 PPU $2007 渲染 Tecmo Theater 画面(trace frame 10→295, ~5s)。选项屏幕侧: 提供 18 项数据驱动菜单、球员能力解码、队伍数据初始化, 通过 Bank 30 跳转表暴露调用。$9800-$9FFF 区域的 PPU 工具函数($9BA0 VBlank等待、$9B7F PPU初始化、$98A0 NT清零、$88CA tile写入) 是跨 bank 共用的渲染基础设施。",
   },
 
   // ── 跳转表 (公共 API, $A000-$A01B) ──
@@ -376,7 +377,7 @@ const data = {
   architecture: {
     role: "数据查询服务 / 选项屏幕系统 (Data Query Service / Option Screen Manager)",
     pattern: "Bank 1 采用 数据驱动 的选项屏幕架构。通过 Bank 30 $C53C 跳转表被上层调用, 提供 64 个屏幕块(18 个选项项)的查询/选择功能。每项有可配置的光标位置($B22D)、Y 偏移($B241)、tile 数据($BC6E)、功能标志($B255)。主循环 $A201→$A1A6 持续检测输入 ($1C/$1E), 根据输入改变 $ED(光标) 或 $EC(当前块), 触发 $A231(确认)、$A26C(切换) 或 $A2DF(最终确认)。",
-    bootFlow: "⚠ Bank 1 不在启动链路中。RESET 后: Bank30 $C400 → R7=Bank2 → JMP $A200 (Bank2) → $A21B 场景初始化。Bank 1 仅在后续流程中由 Bank 30 跳转表($C53C/$C527)按需调入 $A000 窗口。",
+    bootFlow: "✅ Bank 1 在启动链路中。RESET 后 Bank 31 $FFF0→Bank 30 $C503→Bank 00 主循环。Bank 00 通过 JSR $9FA8(A=1) 切换 Bank 01 到 $A000 窗口作为 NMI handler(trace 验证: frame 10-295 期间 $01:A05D 持续运行)。NMI handler $805D 每帧写 PPU $2007 将 Buffer 数据渲染到 Nametable，完成 Tecmo Theater 画面显示(~5秒)。此外 Bank 01 的 PPU 工具函数是跨 bank 共用的渲染基础设施。",
     menuFlow: "$A201(主循环)→读$EC→$B1E8→$B229→$A4D8(渲染)→$9FA8(等待)→$A3D0(输入)→$1C检查→分支: $A1A6(循环)/$A231(确认)/$A252(↓)/$A260(↑)/$A26C(切换)",
     dataFlow: "ROM 数据表驱动: $B1E8(块属性)→$B229(type→Y)→$A4D8(PPU地址)→$BC6E(tile)→$B241(屏幕Y)→$88CA(PPU写)。$B255(标志) 控制确认行为。$0656(球员数据) 被 $A2DF 解码为 $0454(坐标)",
     dependees: ["Bank 30 (核心库: 球员数据指针 $C50C, Bank 切换 $C527/$C53C, 数学函数 $C54B, 初始化 $C66A)", "Bank 31 (中断处理 NMI)", "Bank 2 (启动首屏/场景引擎, RESET后首个业务Bank)"],

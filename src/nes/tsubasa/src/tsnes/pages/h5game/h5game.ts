@@ -325,10 +325,6 @@ Page({
     }
   },
 
-  // ================================================================
-  // 音频管线（微信 WebAudioContext + ring buffer）
-  // ================================================================
-
   /** APU 采样 → 环形缓冲 */
   _onAudioSample(left: number, right: number): void {
     const cap = this._ringCap;

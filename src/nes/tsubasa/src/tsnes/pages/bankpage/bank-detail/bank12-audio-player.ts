@@ -44,13 +44,16 @@ const SE_MAP = 0x8BDA; // 2 级间接表: 音效ID → 2 字节指针 → 通道
 // ── Bank 偏移工具 ──
 function b12Ofs(addr: number): number { return B12_OFF + (addr - 0x8000); }
 
-/** 从 PRG-ROM 读取字节, 区分的固定 bank 12 窗口 ($8000-$9FFF) 和可切换数据窗口 ($A000-$BFFF) */
+/** 从 PRG-ROM 读取字节, 区分的固定 bank 12 窗口 ($8000-$9FFF) 和 MMC3 可切换数据窗口 ($A000-$BFFF) */
 function romRead(dataBank: number, addr: number): number {
   if (addr >= 0x8000 && addr < 0xA000) {
+    // 固定窗口: 始终映射到 Bank 12
     return NES_PRG_ROM[B12_OFF + (addr - 0x8000)];
   }
   if (addr >= 0xA000 && addr < 0xC000) {
-    return NES_PRG_ROM[dataBank * BANK_SIZE + (addr - 0x8000)];
+    // MMC3 可切换窗口: dataBank 就是映射到 $A000 的真实 bank 号
+    // 数据 bank 在自身 0x2000 范围内, $A000→offset 0, $BFFF→offset 0x1FFF
+    return NES_PRG_ROM[dataBank * BANK_SIZE + (addr - 0xA000)];
   }
   return 0;
 }
@@ -101,17 +104,16 @@ function sidToBank(sid: number): number {
 const STRIDE = 16; // 通道参数块步长
 const RAM_BASE = 0x0700;
 
-function chIdx(slot: number): number { return 8 - slot; } // NES 内 slot→ch 映射
-function chSlot(ch: number): number { return 8 - ch; }
+function chSlot(ch: number): number { return 7 - ch; } // ASM $8247: DEX → X=ram_00F3-1=7-ch
 
 // ── RAM 封装 (key-value 风格, 对应 NES ZP+RAM 布局) ──
 class NesRam {
   data: Uint8Array;
   constructor(size = 0x100) { this.data = new Uint8Array(size); }
-  // 通道参数 (stride 16, base 0x0707)
-  getCh(ch: number, off: number): number { return this.data[0x07 + ch * STRIDE + off] || 0; }
-  setCh(ch: number, off: number, v: number) { this.data[0x07 + ch * STRIDE + off] = v; }
-  // Per-channel vars (index = 8-ch)
+  // 通道参数块 (stride 16, base 0x0727) — 与 ASM ram_00F0 一致
+  getCh(ch: number, off: number): number { return this.data[0x27 + ch * STRIDE + off] || 0; }
+  setCh(ch: number, off: number, v: number) { this.data[0x27 + ch * STRIDE + off] = v; }
+  // Per-channel vars (index = 7-ch, ASM $8247: DEX → X=ram_00F3-1)
   getPc(ch: number, off: number): number { return this.data[off + chSlot(ch)] || 0; }
   setPc(ch: number, off: number, v: number) { this.data[off + chSlot(ch)] = v; }
   // Global
@@ -132,6 +134,8 @@ export class Bank12AudioPlayer {
   lastBankCache = 0xFF;
   frameCount = 0;
   playing = false;
+  currentSoundId = 0;     // 当前播放的音效 ID
+  activeChMask = 0;       // 本帧活跃通道位掩码 (用于进度计算)
 
   onSample: ((l: number, r: number) => void) | null = null;
 
@@ -178,6 +182,8 @@ export class Bank12AudioPlayer {
   // ════════════════════════════════════════════════
 
   play(soundId: number) {
+    this.currentSoundId = soundId;
+    this.frameCount = 0;
     // 写入请求队列 $0700 (port of ASM: STA ram_0700,X)
     for (let i = 0; i < REQUEST_SLOTS; i++) {
       if (this.ram.get(0x0700 + i) === 0) {
@@ -190,6 +196,9 @@ export class Bank12AudioPlayer {
 
   stop() {
     this.playing = false;
+    this.currentSoundId = 0;
+    this.frameCount = 0;
+    this.activeChMask = 0;
     this.papu.writeReg(0x4015, 0x0F);
     this.ram.set(0x0706, 0);
     for (let i = 0; i < REQUEST_SLOTS; i++) this.ram.set(0x0700 + i, 0);
@@ -206,6 +215,7 @@ export class Bank12AudioPlayer {
       this._processRequests();
       this._updateChannels();
       this._writeApuRegisters();
+      this.activeChMask = this.ram.get(0x0706); // 记录活跃通道
     }
 
     this.papu.clockFrameCounter(CYCLES_PER_FRAME);
@@ -214,6 +224,19 @@ export class Bank12AudioPlayer {
       for (const s of samples) this.onSample(s.l, s.r);
     }
     this.frameCount++;
+  }
+
+  /** 获取播放进度 */
+  getProgress(): { frameCount: number; seconds: number; activeChannels: number; soundId: number } {
+    const mask = this.activeChMask;
+    let activeCount = 0;
+    for (let i = 0; i < 8; i++) if (mask & (1 << i)) activeCount++;
+    return {
+      frameCount: this.frameCount,
+      seconds: Math.round(this.frameCount / 60 * 10) / 10,
+      activeChannels: activeCount,
+      soundId: this.currentSoundId,
+    };
   }
 
   // ════════════════════════════════════════════════
@@ -393,60 +416,105 @@ export class Bank12AudioPlayer {
     let tHi = this.ram.getCh(ch, 1);
     let tPtr = tLo | (tHi << 8);
 
-    // $83D3-$83DE: read track data pointer from init data (after AND $CF fixup)
-    // Then read from track stream
     const dataBank = this.currentDataBank;
+
+    // ASM $83CB: LDA #$CF; LDY #$05; AND (ram_00F0),Y; STA (ram_00F0),Y
+    // Clear bit4+bit5 of param+5 before reading next note
+    this.ram.setCh(ch, 5, this.ram.getCh(ch, 5) & 0xCF);
 
     while (true) {
       const b = romRead(dataBank, tPtr);
       tPtr++;
 
-      if (b >= 0x80) {
-        // ASM $83E1: BPL → b<0x80→duration;  b>=0x80→check further
-        if (b >= 0xE0) {
-          // ASM $83E3: CMP #$E0 / BCC $83ED → b∈[$E0,$FF] dispatch
-          const cmdResult = this._dispatchCommand(b, ch, dataBank, { tPtr });
-          if (cmdResult.ret < 0) break;
-          tPtr = cmdResult.tPtr;
-          this.ram.setCh(ch, 0, tPtr & 0xFF);
-          this.ram.setCh(ch, 1, (tPtr >> 8) & 0xFF);
-          continue;
-        }
-        // ASM $83ED: CMP #$B0 / BCC $83F4 → b∈[$80,$DF] is a note
-        // (Note: CDL trace confirms $B0+ code at $83F1 is UNACCESSED —
-        //  the 3 bytes at $83F1-$83F3 are data, not code.
-        //  ALL $80-$DF bytes fall through to the same $83F4 handler.)
-
-        // ASM $83F4: AND #$3F; TAX; LDA $8725,X → duration lookup
-        const durIdx = b & 0x3F;
-        const dur = this.durTable[durIdx] || 1;
-        this.ram.set(0x0707 + ch * 4, dur);
-        this.ram.set(0x0709 + ch * 4, dur);
-
-        // Frequency: ASM $8404-$845C branches based on note value.
-        // Key path: $842E TAX / $842F AND #$0F / 0-11→FREQ_TBL, 12-15→octave shift
-        const noteIdx = b & 0x0F;
-        const period = this.freqTable[noteIdx % this.freqTable.length] || 0x07FF;
-        const fLo = period & 0xFF;
-        const fHi = (period >> 8) & 7;
-        this.ram.setPc(ch, 0x07B7, fLo);
-        this.ram.setPc(ch, 0x07BF, fHi);
-        this.ram.setCh(ch, 7, fLo);
-        this.ram.setCh(ch, 8, fHi | 0x08);
-
+      // ASM $83E1: BPL $8404 → b<0x80: note body (frequency only, no duration lookup)
+      //   Duration comes from previous $80-$AF prefix byte or residual
+      if (b < 0x80) {
+        this._parseNoteFreq(ch, b);
         this.ram.setCh(ch, 0, tPtr & 0xFF);
         this.ram.setCh(ch, 1, (tPtr >> 8) & 0xFF);
+        // ASM $84A6-$84C8: post-note cleanup
+        this.ram.setPc(ch, 0x07F4, 0); // clear pitch bend flag
+        if (this.ram.getPc(ch, 0x07EA) === 0) {
+          this.ram.set(0x0709 + ch * 4, 1); // trigger _nextNoteTiming next frame
+          this.ram.setCh(ch, 4, 0);         // clear param+4
+        }
+        // Copy dur_hi → dur_lo for note repeat (ASM $84C2-$84C5)
+        this.ram.set(0x0707 + ch * 4, this.ram.get(0x0708 + ch * 4));
         break;
       }
 
-      // ASM $83E1 BPL → b < 0x80: pure duration byte
-      const dur = this.durTable[b & 0x3F] || 1;
-      this.ram.set(0x0707 + ch * 4, dur);
-      this.ram.set(0x0709 + ch * 4, dur);
+      // b >= 0x80:
+      if (b >= 0xE0) {
+        // ASM $83E4: CMP #$E0 / $83E6: BCC $83ED → b >= $E0: command dispatch
+        const cmdResult = this._dispatchCommand(b, ch, dataBank, { tPtr });
+        if (cmdResult.ret < 0) break;
+        tPtr = cmdResult.tPtr;
+        this.ram.setCh(ch, 0, tPtr & 0xFF);
+        this.ram.setCh(ch, 1, (tPtr >> 8) & 0xFF);
+        continue;
+      }
+
+      // ASM $83ED: CMP #$B0 / BCC $83F4 → b∈[$80,$DF]
+      // $83F4: AND #$3F; TAX; LDA $8725,X → set duration only, then loop back for note body
+      this._setNoteDur(ch, b);
       this.ram.setCh(ch, 0, tPtr & 0xFF);
       this.ram.setCh(ch, 1, (tPtr >> 8) & 0xFF);
-      break;
+      // Continue loop: next byte ($00-$7F) will be the note body with frequency
+      continue;
     }
+  }
+
+  /** ASM $83F4-$8403: 从 durTable 设置时长 (仅用于 $80-$AF duration 前缀字节) */
+  private _setNoteDur(ch: number, b: number) {
+    const durIdx = b & 0x3F;
+    const dur = this.durTable[durIdx] || 1;
+    const off = 0x0707 + ch * 4;
+    this.ram.set(off, dur);      // $0707+X: dur_lo (ASM $83FC)
+    this.ram.set(off + 1, dur);  // $0708+X: dur_hi (ASM $83FF)
+  }
+
+  /** ASM $842E-$845C: 从字节解析音符频率并写入 RAM (note body byte, $00-$7F) */
+  private _parseNoteFreq(ch: number, b: number) {
+    // ASM $8416-$8420: ram_00F3 check → ch=3 or ch=7 → noise direct freq path
+    if (ch === 3 || ch === 7) {
+      // Noise channels: note byte is used directly as 11-bit period (no freq table)
+      if (b === 0x10) {
+        // Rest
+        this.ram.setCh(ch, 5, this.ram.getCh(ch, 5) | 0x20);
+        return;
+      }
+      const noiseFreq = b & 0x0F; // low nibble = noise period
+      this.ram.setPc(ch, 0x07B7, noiseFreq);
+      this.ram.setPc(ch, 0x07BF, 0);
+      this.ram.setCh(ch, 7, noiseFreq);
+      this.ram.setCh(ch, 8, 0);
+      return;
+    }
+
+    // SQ/SQ/TRI channels: standard freq table lookup
+    // $842F: AND #$0F → note within octave (0-11);  >=12 → rest/special
+    const noteIdx = b & 0x0F;
+    if (noteIdx >= 12) {
+      // ASM $8435-$843D: set bit5 of param+5 (rest flag)
+      this.ram.setCh(ch, 5, this.ram.getCh(ch, 5) | 0x20);
+      return;
+    }
+
+    // ASM $843F: ASL; TAY → lookup $870D/$870E → period base
+    let period = this.freqTable[noteIdx] || 0x07FF;
+
+    // ASM $844C: AND #$F0; LSR×4 → octave in upper nibble
+    const octave = (b & 0xF0) >> 4;
+    // ASM $8455-$845A: LSR period by octave (period/2^octave → higher pitch)
+    for (let o = 0; o < octave; o++) period = (period >> 1);
+    if (period < 2) period = 2; // minimum valid period
+
+    const fLo = period & 0xFF;
+    const fHi = (period >> 8) & 7;
+    this.ram.setPc(ch, 0x07B7, fLo);
+    this.ram.setPc(ch, 0x07BF, fHi);
+    this.ram.setCh(ch, 7, fLo);
+    this.ram.setCh(ch, 8, fHi);  // bit7=0 → triggers freq write in _writeChannelApu
   }
 
   // ════════════════════════════════════════════════
@@ -457,9 +525,16 @@ export class Bank12AudioPlayer {
     let tPtr = state.tPtr;
 
     switch (cmdIdx) {
-      case 0x00: // $E0: SET_NOTE_LENGTH
+      case 0x00: // $E0: SET_TIMING_TABLE_PTR
         if (tPtr < 0xC000) {
-          tPtr++; // skip length byte (simplified)
+          const idx = romRead(dataBank, tPtr);
+          tPtr++;
+          // $8544: read byte → ASL → lookup $8754/$8755 → store at param+2/+3
+          const tblLo = romRead(12, 0x8754 + idx * 2);
+          const tblHi = romRead(12, 0x8754 + idx * 2 + 1);
+          this.ram.setCh(ch, 2, tblLo);
+          this.ram.setCh(ch, 3, tblHi);
+          this.ram.setCh(ch, 4, 0); // reset offset into timing table
         }
         return { ret: 1, tPtr };
 
@@ -470,16 +545,19 @@ export class Bank12AudioPlayer {
         if (tPtr < 0xC000) {
           const v = romRead(dataBank, tPtr);
           tPtr++;
-          this.ram.setCh(ch, 6, v); // vol_out
+          // ASM $855F-$8577: if ram_07DF==0 → param+5 = (param+5 & $F0) | v
+          const global = this.ram.get(0x07DF);
+          if (global === 0) {
+            this.ram.setCh(ch, 5, (this.ram.getCh(ch, 5) & 0xF0) | v);
+          }
         }
         return { ret: 1, tPtr };
 
-      case 0x03: // $E3: SET_VOLUME
+      case 0x03: // $E3: OR_VOLUME_CTRL (param+5 |= next byte)
         if (tPtr < 0xC000) {
           const v = romRead(dataBank, tPtr);
           tPtr++;
-          this.ram.setCh(ch, 6, v);
-          this.ram.setPc(ch, 0x07CF, v);
+          this.ram.setCh(ch, 5, this.ram.getCh(ch, 5) | v);
         }
         return { ret: 1, tPtr };
 
@@ -579,57 +657,64 @@ export class Bank12AudioPlayer {
   // $81DB-$8256: 音量/包络/序列处理
   // ════════════════════════════════════════════════
   private _processVolume(ch: number) {
-    // $81DB-$81E1: read volume byte at $0727 + ch*16 + 5 (vol/ctrl)
-    const volByte = this.ram.getCh(ch, 5); // $072C
+    // $81DB-$81DF: LDY #$05; LDA (ram_00F0),Y → param+5 (ctrl byte)
+    const volByte = this.ram.getCh(ch, 5);
     const hiNib = volByte & 0xF0;
-    const loNib = volByte & 0x0F;
+    let vol = volByte & 0x0F; // ASM ram_00F7
 
-    // Check type
-    const chType = this.ram.getPc(ch, 0x07AF);
-    if (chType === 0) return;
-
+    // ASM $81E4-$81EC: check bit5 (immediate volume $20)
     if (hiNib & 0x20) {
-      // Immediate volume
       this.ram.setCh(ch, 6, 0x0F);
       return;
     }
 
-    // $81EE-$8256: volume decay logic
-    let vol = loNib;
-
-    // $81F6-$8200: check and decrement volCounter
+    // $81EE-$8200: volume decay counter
     let volCounter = this.ram.getPc(ch, 0x07CF);
-    if (volCounter > 0) {
+
+    if (volCounter !== 0) {
+      // $81FB: DEX → decrement
       volCounter--;
+      // $81FD: STA ram_07CF,Y → store
       this.ram.setPc(ch, 0x07CF, volCounter);
-      if (volCounter !== 0) {
-        // Still counting down
-      } else {
-        // Counter hit 0: increase volume
+
+      if (volCounter === 0) {
+        // Counter went 1→0: increase volume (ASM $8202-$8216)
         vol++;
-        if (vol > 0x0F) vol = 0x0F;
+        if (vol > 0x0F) {
+          vol = 0x0F;
+          this.ram.setPc(ch, 0x07D7, 0);   // volTimer=0
+          this.ram.set(0x07E8, 0x80);       // global flag
+        }
+        // $821E: STA (ram_00F0),Y → update param+5
+        this.ram.setCh(ch, 5, hiNib | vol);
       }
-    } else {
-      // Counter already 0
-      const volTimer = this.ram.getPc(ch, 0x07D7);
-      if (volTimer === 0) {
-        vol++;
-        if (vol > 0x0F) vol = 0x0F;
-      } else {
-        this.ram.setPc(ch, 0x07CF, volTimer);
+      // If volCounter > 0 after decrement: ASM $8200 BNE→$8233 → skip vol change, skip param+5 update
+
+      // $822D-$8230: reload volCounter from volTimer if expired (=0)
+      volCounter = this.ram.getPc(ch, 0x07CF); // re-read after possible update above
+      if (volCounter === 0) {
+        const vt = this.ram.getPc(ch, 0x07D7);
+        if (vt !== 0) {
+          this.ram.setPc(ch, 0x07CF, vt);
+        }
       }
     }
+    // else: $81F9 BEQ $8233 → volCounter==0 initially: no decay tick, no vol change, no reload
 
-    // $8217-$821E: combine hi nibble + new volume, store back
-    this.ram.setCh(ch, 5, hiNib | vol);
+    // $8233-$8243: output = dur_hi - vol (capped at 0), OR with hiNib → param+6
+    const durHi = this.ram.get(0x070A + ch * 4);
+    let outVol = durHi - vol;
+    if (outVol < 0) outVol = 0;
+    outVol |= hiNib;
+    this.ram.setCh(ch, 6, outVol);
 
-    // $8233-$8256: apply to output (subtract from dur timings)
-    this.ram.setCh(ch, 6, vol | hiNib);
-
-    // $8248-$8256: handle channel type 1 (sequence) or type 2 (special)
+    // $8245-$8256: channel type routing
+    const chType = this.ram.getPc(ch, 0x07AF);
+    if (chType === 0) return;
     if (chType === 1) {
       this._processSequence(ch);
     }
+    // chType === 2 → $82D2 (special-type sequence)
   }
 
   /** $8257-$82D1 / $82D2-$833D: 音序处理 (portamento/vibrato) */
@@ -674,84 +759,72 @@ export class Bank12AudioPlayer {
   // $811D-$816D: APU 寄存器写入
   // ════════════════════════════════════════════════
   private _writeApuRegisters() {
-    // 4 组: SQ1 (ch0,1) → $4000-4003
-    //       SQ2 (ch2,3) → $4004-4007
-    //       TRI   (ch4) → $4008-400B
-    //       NOISE (ch5) → $400C-400F
-    // Port of $8129-$816D
+    // ASM $811D-$812F: init — ram_00F0=ram_00FC=$0727, ram_00F2=3, ram_00F3=$11
+    // 4 groups: mask running $11→$22→$44→$88, groupIdx=3→2→1→0
+    // Each iteration: if primary active (AND #$0F≠0) → write primary; else → +$40 → write secondary
+    //   ASM $8138: AND #$0F; BNE $8149 → primary active → write
+    //   ASM $813C-$8147: ram_00F0 += $40 → secondary → write
+    //   ASM $814C-$815F: ram_00FC += $10 → next group base; ASL ram_00F3 → next mask; DEC ram_00F2
 
-    const groups = [
-      { mask: 0x03, apuBase: 0x4000 }, // bits 0+1 → SQ1 ($4000)
-      { mask: 0x0C, apuBase: 0x4004 }, // bits 2+3 → SQ2 ($4004)
-      { mask: 0x10, apuBase: 0x4008 }, // bit 4 → TRI ($4008)
-      { mask: 0x20, apuBase: 0x400C }, // bit 5 → NOISE ($400C)
+    const activeMask = this.ram.get(0x0706);
+    const groupDefs = [
+      { mask: 0x11, primaryCh: 0, secondaryCh: 4, apuBase: 0x00 }, // SQ1  → $4000
+      { mask: 0x22, primaryCh: 1, secondaryCh: 5, apuBase: 0x04 }, // SQ2  → $4004
+      { mask: 0x44, primaryCh: 2, secondaryCh: 6, apuBase: 0x08 }, // TRI  → $4008
+      { mask: 0x88, primaryCh: 3, secondaryCh: 7, apuBase: 0x0C }, // NOISE→ $400C
     ];
 
-    for (let grpIdx = 0; grpIdx < groups.length; grpIdx++) {
-      const grp = groups[grpIdx];
-      const activeMask = this.ram.get(0x0706);
+    for (let grpIdx = 0; grpIdx < groupDefs.length; grpIdx++) {
+      const grp = groupDefs[grpIdx];
+      const groupActive = activeMask & grp.mask;
+      if (groupActive === 0) continue;
 
-      if ((activeMask & grp.mask) === 0) continue;
+      // ASM $8138: AND #$0F → check primary channel (lower nibble)
+      // If primary active → write primary; else → write secondary
+      const writeCh = (groupActive & 0x0F) ? grp.primaryCh : grp.secondaryCh;
 
-      // Find first active channel in this group
-      let firstCh = -1;
-      for (let b = 0; b < 8; b++) {
-        if (grp.mask & (1 << b)) {
-          if (activeMask & (1 << b)) {
-            firstCh = b;
-            break;
-          }
-        }
-      }
-      if (firstCh < 0) continue;
-
-      const ch = firstCh;
-      const chType = this.ram.getPc(ch, 0x07AF);
-      if (chType === 0) continue;
-
-      // Check mute flag
+      // Check mute flag ($07E4-$07E7)
       const mute = this.ram.get(0x07E4 + grpIdx);
       if (mute !== 0 && mute !== 0x08) {
-        // Channel muted — skip OR write silence
-        this.papu.writeReg(grp.apuBase, 0x30); // silence with constant vol=0
-        if (grp.apuBase <= 0x4004) {
-          this.papu.writeReg(grp.apuBase + 1, 0x08); // sweep off (square only)
+        this.papu.writeReg(0x4000 + grp.apuBase, 0x30);
+        if (grp.apuBase < 0x08) {
+          this.papu.writeReg(0x4001 + grp.apuBase, 0x08);
         }
         continue;
       }
 
-      // $816E-$81DA: write channel APU registers
-      this._writeChannelApu(ch, grp, grpIdx);
+      this._writeChannelApu(writeCh, grp.apuBase, grpIdx);
     }
   }
 
   /** $816E-$81DA: 写单个通道到 APU */
-  private _writeChannelApu(ch: number, grp: { mask: number; apuBase: number }, grpIdx: number) {
-    const apuBase = grp.apuBase;
-    const isTri = apuBase === 0x4008;
-    const isNoise = apuBase === 0x400C;
+  private _writeChannelApu(ch: number, apuBase: number, grpIdx: number) {
+    const isTri = apuBase === 0x08;     // $4008
+    const isNoise = apuBase === 0x0C;   // $400C
+    const baseAddr = 0x4000 + apuBase;
 
-    // $8177: read volume byte from param+6
+    // $8177: read volume byte from param+6 (offset 6 within ch param block)
     const volByte = this.ram.getCh(ch, 6);
 
     if (isTri) {
-      // Triangle: volume & 0x0F | 0x80 (bit7=halt)
-      this.papu.writeReg(apuBase, (volByte & 0x0F) | 0x80);
+      // Triangle: linear counter = vol low nibble, bit7=halt
+      this.papu.writeReg(baseAddr, (volByte & 0x0F) | 0x80);
     } else if (isNoise) {
-      // Noise: $400C = volume/control (constant vol + duty/vol bits)
-      this.papu.writeReg(apuBase, (volByte & 0x0F) | 0x30);
+      // Noise: $400C = volume/control
+      this.papu.writeReg(baseAddr, (volByte & 0x0F) | 0x30);
     } else {
-      // Square: volume | 0x30 (duty 50% + constant vol mode)
-      this.papu.writeReg(apuBase, (volByte & 0x0F) | 0x30);
+      // Square: duty 50% (bits 6-7 = $30) + constant volume (bit4=1)
+      this.papu.writeReg(baseAddr, (volByte & 0x0F) | 0x30);
     }
 
     // $8191-$81A0: check vol control bit $10 (at param+5)
+    // ASM $8195: BNE → skip mute/disable when bit4 SET
+    //           → only set unmute+disable sweep when bit4 NOT set
     const ctrlByte = this.ram.getCh(ch, 5);
-    if (ctrlByte & 0x10) {
-      // Sweep: write $08 (square only; noise $400D / tri $4009 are unused)
-      this.ram.set(0x07E4 + grpIdx, 0x08);
+    if (!(ctrlByte & 0x10)) {
+      this.ram.set(0x07E4 + grpIdx, 0x08); // $08 = not muted
       if (!isNoise && !isTri) {
-        this.papu.writeReg(apuBase + 1, 0x08);
+        this.papu.writeReg(baseAddr + 1, 0x08); // disable sweep
       }
     }
 
@@ -759,14 +832,17 @@ export class Bank12AudioPlayer {
     const freqLo = this.ram.getCh(ch, 7);
     const freqHi = this.ram.getCh(ch, 8);
 
-    // Check if freq was already written (byte at param+8, bit7)
+    // Check if freq was already written (param+8 bit7)
     if (!(freqHi & 0x80)) {
       // $81B3-$81B4: write freq lo
-      this.papu.writeReg(apuBase + 2, freqLo);
+      this.papu.writeReg(baseAddr + 2, freqLo);
 
       // $81B8-$81CA: write freq hi | 0x18 (length counter)
       const fhLen = (freqHi & 7) | 0x18;
-      this.papu.writeReg(apuBase + 3, fhLen);
+      this.papu.writeReg(baseAddr + 3, fhLen);
+
+      // Mark freq as written by setting bit7 in param+8
+      this.ram.setCh(ch, 8, freqHi | 0x80);
 
       // Cache last written value
       this.ram.set(0x07E0 + grpIdx, fhLen);

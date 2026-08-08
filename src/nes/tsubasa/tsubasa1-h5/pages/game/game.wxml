@@ -17,11 +17,16 @@
     <!-- 实时数据面板 -->
     <view class="debug-panel" wx:if="{{showDebug}}">
       <view class="debug-text">
-        <text>帧: {{debugInfo.frame}}</text>
-        <text>状态: {{debugInfo.gameStateName}}</text>
+        <text>帧: {{debugInfo.frame}} | 状态: {{debugInfo.gameStateName}}</text>
         <text>比分: {{debugInfo.scoreA}} - {{debugInfo.scoreB}}</text>
-        <text>阶段: {{debugInfo.matchPhase}}</text>
-        <text>FPS: {{fps}}</text>
+        <text>阶段: {{debugInfo.matchPhase}} | FPS: {{fps}}</text>
+      </view>
+      <!-- 比赛专用信息 -->
+      <view class="match-info" wx:if="{{debugInfo.gameStateName === 'MATCH_LOOP' || debugInfo.gameStateName === 'MATCH_INIT'}}">
+        <text class="match-score">⚽ {{debugInfo.scoreA}} - {{debugInfo.scoreB}}</text>
+        <text class="match-timer">⏱ {{matchDebug.time}}</text>
+        <text class="match-phase">{{matchDebug.phaseText}}</text>
+        <text class="match-events" wx:for="{{matchDebug.events}}" wx:key="index">{{item}}</text>
       </view>
     </view>
 

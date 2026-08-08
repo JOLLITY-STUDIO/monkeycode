@@ -23,6 +23,11 @@ interface PageData {
     scoreB: number;
     matchPhase: number;
   };
+  matchDebug: {
+    time: string;
+    phaseText: string;
+    events: string[];
+  };
   fps: number;
 }
 
@@ -36,6 +41,11 @@ Page({
       scoreA: 0,
       scoreB: 0,
       matchPhase: 0,
+    },
+    matchDebug: {
+      time: '00:00',
+      phaseText: '',
+      events: [],
     },
     fps: 0,
   } as PageData,
@@ -142,9 +152,41 @@ Page({
 
   /** 设置调试信息定时更新 */
   _setupDebugUpdate() {
-    // 每秒更新一次调试信息
-    // 注意: 微信小程序不使用setInterval，使用帧回调
-    // 简化处理: 通过游戏循环回调
+    // 每30帧更新一次调试信息
+    if (this._game) {
+      const app = getApp();
+      if (app && app.globalData && app.globalData.game) {
+        const game = app.globalData.game as Tsubasa;
+        // 使用游戏循环回调
+        let frameCount = 0;
+        setInterval(() => {
+          this.updateDebugInfo();
+          this._updateMatchDebug();
+        }, 500); // 每0.5秒
+      }
+    }
+  },
+  
+  /** 更新比赛调试信息 */
+  _updateMatchDebug() {
+    if (!this._game) return;
+    
+    try {
+      const bank0Core = (this._game as any)._bank0Core;
+      if (bank0Core) {
+        const engine = bank0Core.getMatchEngine();
+        if (engine) {
+          const events = bank0Core.getMatchEvents ? bank0Core.getMatchEvents() : [];
+          this.setData({
+            matchDebug: {
+              time: engine.getTimeText ? engine.getTimeText() : '--:--',
+              phaseText: engine.getPhaseText ? engine.getPhaseText() : '',
+              events: events.slice(-5).map((e: any) => `[${String(e)}]`),
+            },
+          });
+        }
+      }
+    } catch (e) { /* ignore */ }
   },
 
   // ==================== 触摸事件处理 ====================

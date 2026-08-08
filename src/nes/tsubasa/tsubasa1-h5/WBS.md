@@ -105,7 +105,10 @@
 3. **TitleScene** ✅ — 标题画面 (Bank 2 $B24F 调色板)
 4. **MenuScene** ✅ — 菜单/结果/事件画面
 5. **Bank 7 球员数据提取** ✅ — 23名球员 × 18字节 (Bank 0 $AD38 指针表)
-6. **MatchEngine 比赛引擎** ✅ — State 3/4/5 完整实现
-7. **Bank 4 比赛AI完善** 🚧 — 基于原 Bank 4 ASM 实现真实AI (下一步)
-8. **比赛画面渲染** 🔲 — 场地背景 + 球员精灵 + 比分UI
-9. **AI 自动挂机** 🔲 — 自动跑通全部流程
+6. **MatchEngine 比赛引擎 v2** ✅ — State 3/4/5 完整实现
+7. **AiController v1** ✅ — 基于球员能力的AI决策 (射门/传球/盘带/抢断)
+8. **MatchFieldRenderer** ✅ — 场地渲染 (草地+标线+球员+球+HUD)
+9. **MatchEngine v3** ✅ — 集成 AiController + MatchFieldRenderer + 比赛生命周期
+10. **Renderer 比赛模式** ✅ — 比赛状态自动切换MatchFieldRenderer
+11. **Bank 4 比赛AI完善** 🚧 — 基于原 Bank 4 ASM 实现真实AI (下一步)
+12. **AI 自动挂机** 🔲 — 自动跑通全部流程

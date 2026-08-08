@@ -39,9 +39,10 @@
     <view class="view-tab {{viewMode === 'records' ? 'active' : ''}}" bindtap="onViewRecords">📋 记录</view>
     <view class="view-tab {{viewMode === 'tiles' ? 'active' : ''}}" bindtap="onViewCHRTiles">🎨 图块</view>
     <view class="view-tab {{viewMode === 'field' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 7}}" bindtap="onViewField">🏟️ 场地</view>
-    <view class="view-tab {{viewMode === 'structure' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 30 || bankId === 31}}" bindtap="onViewStructure">🏗️ 结构</view>
-    <view class="view-tab {{viewMode === 'functions' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 30 || bankId === 31}}" bindtap="onViewFunctions">🔧 函数</view>
-    <view class="view-tab {{viewMode === 'debug' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 30 || bankId === 31}}" bindtap="onViewDebug">🐛 调试</view>
+    <view class="view-tab {{viewMode === 'structure' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 12 || bankId === 30 || bankId === 31}}" bindtap="onViewStructure">🏗️ 结构</view>
+    <view class="view-tab {{viewMode === 'functions' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 12 || bankId === 30 || bankId === 31}}" bindtap="onViewFunctions">🔧 函数</view>
+    <view class="view-tab {{viewMode === 'music' ? 'active' : ''}}" wx:if="{{bankId === 12}}" bindtap="onViewMusic">🎵 播放器</view>
+    <view class="view-tab {{viewMode === 'debug' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 12 || bankId === 30 || bankId === 31}}" bindtap="onViewDebug">🐛 调试</view>
     <view class="view-tab {{viewMode === 'data' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 30 || bankId === 31}}" bindtap="onViewData">🧬 数据</view>
   </view>
 
@@ -122,6 +123,7 @@
           <text class="rec-ascii-label">ASCII: </text>
           <text class="rec-ascii-text">"{{item.ascii}}"</text>
         </view>
+        
       </view>
     </scroll-view>
   </view>
@@ -292,6 +294,9 @@
     </view>
     <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
       <view class="func-list">
+        <view wx:if="{{!b02Subroutines.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">暂无代码段</text>
+        </view>
         <view class="func-item" wx:for="{{b02Subroutines}}" wx:key="startAddr" data-idx="{{index}}" bindtap="onSelectFunction">
           <text class="func-name">{{item.displayName}}</text>
           <text class="func-meta">$${{item.startBankAddr}}–$${{item.endBankAddr}} · {{item.length}}B · 行 {{item.startLine}}-{{item.endLine}}</text>
@@ -306,6 +311,9 @@
       </view>
       <view class="b02-section">
         <text class="b02-section-title">推断数据表 ({{b02DataTables.length}})</text>
+        <view wx:if="{{!b02DataTables.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">暂无数据表</text>
+        </view>
         <view class="data-table-item" wx:for="{{b02DataTables}}" wx:key="startAddr">
           <text class="data-table-name">{{item.displayName}}</text>
         </view>
@@ -320,6 +328,9 @@
     </view>
     <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
       <view class="func-list">
+        <view wx:if="{{!b30Subroutines.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">暂无子程序</text>
+        </view>
         <view class="func-item" wx:for="{{b30Subroutines}}" wx:key="startBankAddr" data-idx="{{index}}" bindtap="onB30SelectFunction">
           <text class="func-name">{{item.name}}</text>
           <text class="func-meta">{{item.startBankAddr}} · {{item.length}} · {{item.desc}}</text>
@@ -336,6 +347,9 @@
       <view class="b02-section" wx:if="{{b30JumpTable.length > 0}}">
         <text class="b02-section-title">跳转表 (公共 API) · {{b30JumpTable.length}} 条</text>
         <text class="b02-note" style="display:block;margin-bottom:4px;color:#ffa657;">Bank 31 通过此跳转表间接调用 Bank 30 服务</text>
+        <view wx:if="{{!b30JumpTable.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">暂无跳转表</text>
+        </view>
         <view class="data-table-item" wx:for="{{b30JumpTable}}" wx:key="bankAddr" wx:for-item="jt">
           <text class="data-table-name">{{jt.bankAddr}}: JMP {{jt.target}} → {{jt.desc}}</text>
         </view>
@@ -350,6 +364,9 @@
     </view>
     <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
       <view class="func-list">
+        <view wx:if="{{!b31Subroutines.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">暂无子程序</text>
+        </view>
         <view class="func-item" wx:for="{{b31Subroutines}}" wx:key="startBankAddr" data-idx="{{index}}" bindtap="onB31SelectFunction">
           <text class="func-name">🔹 {{item.name}}</text>
           <text class="func-meta">{{item.startBankAddr}} · {{item.length}} · {{item.desc}}</text>
@@ -374,6 +391,7 @@
             ← Bank {{dep.bank}}: {{dep.what}}
           </text>
         </view>
+        
       </view>
     </scroll-view>
   </view>
@@ -467,6 +485,7 @@
           <text class="debug-hint" style="margin-bottom:6px">32×60 tile 网格，颜色=bankId：🟢$F7 脚本文字 ⚪$FC 白线 🟫$FE 边缘 🟡$F6 球门</text>
           <image class="a72c-nt-image" src="{{a72cNTLayoutSrc}}" mode="widthFix" style="width:{{a72cNTCanvasW}}px;height:{{a72cNTCanvasH}}px"></image>
         </view>
+        
       </view>
       <!-- ntxy -->
       <view class="debug-panel" wx:if="{{debugMode === 'ntxy'}}">
@@ -480,6 +499,7 @@
             <input class="debug-input" type="text" maxlength="2" value="{{debugInput.ntHi}}" data-field="ntHi" bindinput="onDebugInput" />
           </view>
         </view>
+        
       </view>
       <!-- 数据表 hex 浏览器 -->
       <view class="debug-panel" wx:if="{{debugMode === 'dtable'}}">
@@ -496,6 +516,7 @@
           <text class="debug-result-title">HEX ({{b02DataTables[debugTableIdx].length}}B)</text>
           <text class="debug-result-text dtable-hex" selectable="true">{{debugTableHex}}</text>
         </view>
+        
       </view>
       <!-- PPU Buffer 调试 -->
       <view class="debug-panel" wx:if="{{debugMode === 'ppubuf'}}">
@@ -543,6 +564,7 @@
             <text wx:if="{{item.dataHex}}" style="display:block;font-size:9px;color:#7ee787;font-family:monospace;margin-top:2px;word-break:break-all;" selectable="true">data[{{item.dataLen}}B]: {{item.dataHex}}</text>
           </view>
         </view>
+        
       </view>
       <!-- PPU Buffer 函数追踪 -->
       <view class="debug-panel" wx:if="{{debugMode === 'ppufns'}}">
@@ -562,6 +584,7 @@
           <text class="debug-result-title">追踪结果</text>
           <text class="debug-result-text" selectable="true">{{ppuBufFnTrace}}</text>
         </view>
+        
       </view>
       <!-- 隐藏 canvas for PPU Buffer diagram -->
       <canvas type="2d" id="ppuBufCanvas" style="position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;pointer-events:none"></canvas>
@@ -602,6 +625,7 @@
             <text class="debug-hint">$E688 中通过 ($00E2 & 7) 索引。0-7 对应不同方位</text>
           </view>
         </view>
+        
       </view>
       <!-- 精灵动画指针 -->
       <view class="debug-panel" wx:if="{{b31DebugMode === 'sprite_ptr'}}">
@@ -612,6 +636,7 @@
             <text class="debug-hint">$E9DA 指针表共 22 条，指向 $EA1C-$EB85 帧数据</text>
           </view>
         </view>
+        
       </view>
       <!-- Zone 计算 -->
       <view class="debug-panel" wx:if="{{b31DebugMode === 'zone'}}">
@@ -728,6 +753,7 @@
             <text class="schema-raw-text" selectable="true">{{item.rawHex}}</text>
           </view>
         </view>
+        
       </view>
     </scroll-view>
   </view>
@@ -747,6 +773,7 @@
             {{s.step}}. {{s.addr}}: {{s.desc}}
           </text>
         </view>
+        
       </view>
       <!-- 中断向量 -->
       <view class="b02-section" wx:if="{{b30InterruptVectors}}">
@@ -759,6 +786,9 @@
       <view class="b02-section">
         <text class="b02-section-title">跳转表 (Public API) · {{b30JumpTable.length}} 条</text>
         <text class="b02-note" style="display:block;color:#ffa657;">Bank 31 所有调用都经过此跳转表，实现稳定 API 层</text>
+        <view wx:if="{{!b30JumpTable.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">暂无跳转表数据</text>
+        </view>
         <view class="data-table-item" wx:for="{{b30JumpTable}}" wx:key="bankAddr" wx:for-item="jt">
           <text class="data-table-name">{{jt.bankAddr}}: JMP {{jt.target}}</text>
           <text class="b02-note" style="font-size:9px;">  → {{jt.desc}}</text>
@@ -767,6 +797,9 @@
       <!-- Bank 31 交叉引用 -->
       <view class="b02-section" wx:if="{{b30Deps.crossRefs}}">
         <text class="b02-section-title">Bank 31 → Bank 30 交叉引用</text>
+        <view wx:if="{{!b30Deps.crossRefs.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">暂无交叉引用数据</text>
+        </view>
         <view class="data-table-item" wx:for="{{b30Deps.crossRefs}}" wx:key="addr" wx:for-item="ref">
           <text class="data-table-name">{{ref.addr}}: {{ref.name || ref.desc}}</text>
           <text class="b02-note" style="font-size:9px;">  调用位置: {{ref.locations}}</text>
@@ -783,6 +816,9 @@
     <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
       <view class="b02-section">
         <text class="b02-section-title">数据表清单 ({{b30DataTables.length}})</text>
+        <view wx:if="{{!b30DataTables.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">暂无数据表</text>
+        </view>
         <view class="data-table-item" wx:for="{{b30DataTables}}" wx:key="bankAddr">
           <text class="data-table-name">{{item.displayName}}</text>
           <text class="b02-note">{{item.bankAddr}} · {{item.length}} · {{item.desc}}</text>
@@ -799,6 +835,9 @@
       </view>
       <view class="b02-section" wx:if="{{b30Deps.ramMap && b30Deps.ramMap.length}}">
         <text class="b02-section-title">RAM 变量 ({{b30Deps.ramMap.length}})</text>
+        <view wx:if="{{!b30Deps.ramMap.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">暂无RAM数据</text>
+        </view>
         <view class="data-table-item" wx:for="{{b30Deps.ramMap}}" wx:key="addr" wx:for-item="r">
           <text class="data-table-name">{{r.addr}}: {{r.name || r.desc}}</text>
         </view>
@@ -806,41 +845,301 @@
     </scroll-view>
   </view>
 
-  <!-- ── Bank 31 结构化数据视图 ── -->
-  <view class="view-content" wx:if="{{viewMode === 'data' && bankId === 31}}">
+  <!-- ── Bank 12 音频引擎 结构视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'structure' && bankId === 12}}">
     <view class="b02-toolbar">
-      <text class="b02-hint">Bank 31 数据表: {{b31DataTables.length}} 个 · 分析自反汇编</text>
+      <text class="b02-hint">Bank 12 — NES APU 音频驱动引擎架构 · 代码 11.4% · 音乐/音效数据 88.6%</text>
     </view>
     <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
-      <!-- 数据表列表 -->
       <view class="b02-section">
-        <text class="b02-section-title">📊 数据表 ({{b31DataTables.length}})</text>
-        <view class="data-table-item" wx:for="{{b31DataTables}}" wx:key="bankAddr">
-          <text class="data-table-name">📋 {{item.displayName}}</text>
-          <text class="b02-note" style="font-size:10px;display:block;">{{item.bankAddr}} · {{item.length}} · {{item.desc}}</text>
-          <text class="b02-note" wx:if="{{item.note}}" style="font-size:9px;color:#6e7681;">💡 {{item.note}}</text>
+        <text class="b02-section-title">🎼 音频引擎架构</text>
+        <text class="b02-note" style="display:block;margin-bottom:4px;">Bank 12 ($8000-$9FFF) — NES APU 音频驱动核心</text>
+        <text class="b02-note" style="display:block;">代码 839B (11.4%) · 音乐/音效数据 6088B · 未访问 440B</text>
+        <text class="b02-note" style="display:block;margin-top:6px;">架构: 外部写 ram_0700,X → 下帧NMI触发 → Bank12 $8002入口 → 处理请求队列 → 更新活跃通道 → 写APU $4000-$4013</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">音频数据流</text>
+        <text class="b02-note" style="display:block;">① 外部代码: LDA #id → STA ram_0700,X (请求队列)</text>
+        <text class="b02-note" style="display:block;">② NMI 映射 Bank12 → $8002 入口 → 遍历 ram_0700(6槽)</text>
+        <text class="b02-note" style="display:block;">③ $32-$43 → MMC3 R7=Bank $0D; $44-$50 → Bank $0E; $51-$5B → Bank $0F</text>
+        <text class="b02-note" style="display:block;">④ $8349 初始化通道参数 → $83CB 每帧读音序 → $84C9 分发命令</text>
+        <text class="b02-note" style="display:block;">⑤ $81DB 音量衰减处理 → $816E 写APU寄存器 ($4000-$4013)</text>
+        <text class="b02-note" style="display:block;">⑥ 8通道×16B参数块 ($0707-$07F4) → 组织为 3组(方波/三角/噪声+DPCM)</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">RAM 工作区 ($0700-$07FF)</text>
+        <text class="b02-note" style="display:block;">$0700-$0705: 音频请求队列 (6槽, 非零=播放请求)</text>
+        <text class="b02-note" style="display:block;">$0706: 通道活动标志 bitmask</text>
+        <text class="b02-note" style="display:block;">$0707-$07F4: 8通道 × 16B 参数块</text>
+        <text class="b02-note" style="display:block;">$07AF-$07B6: 通道类型 (0=关 1=方波/三角 2=特殊)</text>
+        <text class="b02-note" style="display:block;">$07B7-$07BE: 基础频率LO ($4002) · $07BF-$07CE: 基础频率HI ($4003)</text>
+        <text class="b02-note" style="display:block;">$07C7-$07D6: 音序位置索引(0-9循环) · $07CF-$07DE: 音量模式衰减</text>
+        <text class="b02-note" style="display:block;">$07E0-$07E3: $4003写入缓存(去重) · $07E4-$07E7: 静音标志</text>
+        <text class="b02-note" style="display:block;">$07E8: DMC播放标志 · $07FC: Bank缓存(MMC3 R7去重)</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">音频命令字 ($E0-$EF)</text>
+        <view wx:if="{{!b12AudioCommands.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">无命令字数据</text>
+        </view>
+        <view wx:for="{{b12AudioCommands}}" wx:key="code" style="display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid #21262d;">
+          <text style="font-size:11px;color:#f0883e;font-family:monospace;min-width:30px;">${{item.code}}</text>
+          <text style="font-size:10px;color:#58a6ff;min-width:100px;">{{item.name}}</text>
+          <text style="font-size:10px;color:#8b949e;">{{item.desc}} (×{{item.usageCount}})</text>
+        </view>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">APU 寄存器映射</text>
+        <text class="b02-note" style="display:block;">$4000/$4004/$4008/$400C: 音量/包络 + Duty cycle</text>
+        <text class="b02-note" style="display:block;">$4001/$4005: 方波 Sweep 控制</text>
+        <text class="b02-note" style="display:block;">$4002/$4006/$400A: 频率低字节</text>
+        <text class="b02-note" style="display:block;">$4003/$4007/$400B: 频率高字节 + 长度计数器</text>
+        <text class="b02-note" style="display:block;">$4008: 三角波 Linear Counter</text>
+        <text class="b02-note" style="display:block;">$400E: 噪声通道周期/模式</text>
+        <text class="b02-note" style="display:block;">$400F/$4013: DMC 长度 · $4010: DMC 频率 · $4012: DMC 采样地址</text>
+        <text class="b02-note" style="display:block;color:#d29922;margin-top:4px;">写入通过 $816E 的 X 偏移寻址实现: (3-group)×4 → $4000,X</text>
+      </view>
+      <!-- ── 谁调用了 Bank 12 ── -->
+      <view class="b02-section">
+        <text class="b02-section-title">🔗 交叉引用 — 谁调用了 Bank 12</text>
+        <view wx:if="{{!b12CrossRefs.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">无交叉引用数据</text>
+        </view>
+        <view wx:for="{{b12CrossRefs}}" wx:key="*this" style="padding:3px 0;border-bottom:1px solid #161b22;">
+          <text style="font-size:10px;color:#f0883e;font-family:monospace;">{{item.func}}</text>
+          <text style="font-size:9px;color:#7ee787;"> ← {{item.from}}</text>
+          <text style="font-size:9px;color:#8b949e;display:block;">  {{item.desc}}</text>
+        </view>
+      </view>
+      <!-- ── 对外接口 ── -->
+      <view class="b02-section">
+        <text class="b02-section-title">📡 对外接口 — 外部如何调用</text>
+        <view wx:if="{{!b12ExternalApi.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">无接口数据</text>
+        </view>
+        <view wx:for="{{b12ExternalApi}}" wx:key="name" style="padding:3px 0;border-bottom:1px solid #161b22;">
+          <text style="font-size:10px;color:#58a6ff;font-weight:bold;">{{item.name}}</text>
+          <text style="font-size:9px;color:#8b949e;display:block;">{{item.desc}}</text>
+          <text wx:if="{{item.example}}" style="font-size:9px;color:#3fb950;font-family:monospace;display:block;">  eg: {{item.example}}</text>
+        </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 12 音频引擎 函数视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'functions' && bankId === 12}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 12 音频子系统: {{b12Subroutines.length}} 个子程序 · 点击查看详情</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="func-list">
+        <view wx:if="{{!b12Subroutines.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">暂无子程序</text>
+        </view>
+        <view class="func-item" wx:for="{{b12Subroutines}}" wx:key="bankAddr" data-idx="{{index}}" bindtap="onB12SelectFunction">
+          <text class="func-name">{{item.name}}</text>
+          <text class="func-meta">{{item.bankAddr}} · {{item.length}} · asm L{{item.asmLine}}</text>
+          <text style="display:block;font-size:10px;color:#8b949e;margin-top:2px;">{{item.desc}}</text>
+        </view>
+      </view>
+      <view class="b02-section" wx:if="{{b12SelectedFunc}}">
+        <text class="b02-section-title">选中函数详情</text>
+        <text class="func-detail" style="font-weight:bold;color:#d29922;">{{b12SelectedFunc.name}}</text>
+        <text class="func-detail">Bank 地址: {{b12SelectedFunc.bankAddr}}</text>
+        <text class="func-detail">长度: {{b12SelectedFunc.length}}</text>
+        <text class="func-detail">说明: {{b12SelectedFunc.desc}}</text>
+        <text class="func-detail" wx:if="{{b12SelectedFunc.note}}" style="color:#58a6ff;">备注: {{b12SelectedFunc.note}}</text>
+        <view wx:if="{{b12SelectedFunc.commands}}" style="margin-top:6px;">
+          <text style="font-size:10px;color:#f0883e;">音频命令分发:</text>
+          <view wx:for="{{b12SelectedFunc.commands}}" wx:key="code" style="padding:2px 8px;">
+            <text style="font-size:10px;font-family:monospace;color:#58a6ff;">${{item.code}}:</text>
+            <text style="font-size:10px;color:#8b949e;"> {{item.desc}}</text>
+          </view>
+        </view>
+        <view wx:if="{{b12SelectedFunc.crossRefs}}" style="margin-top:6px;">
+          <text style="font-size:10px;color:#7ee787;">调用者:</text>
+          <view wx:for="{{b12SelectedFunc.crossRefs}}" wx:key="from" style="padding:2px 8px;">
+            <text style="font-size:10px;color:#8b949e;">← {{item.from}}: {{item.desc}}</text>
+          </view>
+        </view>
+        
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">每帧调用流程</text>
+        <view wx:if="{{!b12CallFlow.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">无调用流程数据</text>
+        </view>
+        <view wx:for="{{b12CallFlow}}" wx:key="step" style="padding:2px 0;border-bottom:1px solid #161b22;">
+          <text style="font-size:10px;color:#d29922;font-family:monospace;">{{item.step}}. {{item.addr}}</text>
+          <text style="font-size:10px;color:#8b949e;"> → {{item.action}}</text>
+        </view>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">音符频率表 ($8725)</text>
+        <text class="b02-note">64音符时长查找表。通过 AND #$3F 索引 → 返回每音符的持续帧数(通常 1-30帧)</text>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 12 音频播放器视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'music' && bankId === 12}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">🎵 音频引擎播放器 — 浏览音效/音乐数据</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <!-- 播放控制栏 -->
+      <view class="audio-player-bar">
+        <view class="audio-player-controls">
+          <view class="audio-btn audio-prev-btn" bindtap="onB12PrevTrack">
+            <text>⏮ 上一首</text>
+          </view>
+          <view class="audio-btn audio-play-btn" bindtap="onB12PlayTrack">
+            <text>▶ 播放</text>
+          </view>
+          <view class="audio-btn" bindtap="onB12StopTrack">
+            <text>⏹ 停止</text>
+          </view>
+          <view class="audio-btn audio-next-btn" bindtap="onB12NextTrack">
+            <text>⏭ 下一首</text>
+          </view>
+        </view>
+        <text class="audio-note" style="display:block;font-size:9px;color:#6e7681;margin-top:4px;">实时管道 — NES APU (PAPU) + Bank 12 音序器 → WebAudio 实时输出</text>
+      </view>
+
+      <!-- APU 5 通道实时状态面板 (常驻，播放时始终可见) -->
+      <view class="apu-panel">
+        <view class="apu-panel-title">
+          <text>NES APU 通道</text>
+          <text wx:if="{{b12Progress}}" style="font-size:10px;color:#6e7681;margin-left:12px;">
+            {{b12Progress.seconds}}s · {{b12Progress.frameCount}}帧 · {{b12Progress.activeChannels}}ch活跃
+          </text>
+        </view>
+        <!-- 进度条 -->
+        <view wx:if="{{b12Progress}}" style="height:3px;background:#161b22;border-radius:2px;margin:4px 0 8px 0;overflow:hidden;">
+          <view style="height:100%;background:#3fb950;width:{{b12Progress.seconds > 0 ? (b12Progress.seconds % 60) / 60 * 100 : 2}}%;transition:width 0.2s;"></view>
+        </view>
+        <view class="apu-grid" wx:if="{{b12ApuChannels.length > 0}}">
+          <view class="apu-col" wx:for="{{b12ApuChannels}}" wx:key="name">
+            <view class="apu-col-header {{item.enabled ? 'ch-on' : 'ch-off'}}">
+              <text class="apu-ch-name">{{item.name}}</text>
+              <text class="apu-ch-reg">{{item.regBase}}</text>
+            </view>
+            <view class="apu-rows">
+              <view class="apu-row apu-regs">
+                <text class="apu-val apu-regs-val" style="color:{{item.enabled ? '#c9d1d9' : '#484f58'}};">{{item.regs}}</text>
+              </view>
+              <view class="apu-row">
+                <text class="apu-label">状态</text>
+                <text class="apu-val" style="color:{{item.enabled ? '#3fb950' : '#484f58'}};">{{item.enabled ? 'ON' : 'OFF'}}</text>
+              </view>
+              <view class="apu-row">
+                <text class="apu-label">音量</text>
+                <text class="apu-val" style="color:{{item.enabled ? '#7ee787' : '#484f58'}};">{{item.volumeHex}}</text>
+              </view>
+              <view class="apu-row">
+                <text class="apu-label">周期</text>
+                <text class="apu-val" style="color:{{item.enabled ? '#58a6ff' : '#484f58'}};">{{item.freqHex}}</text>
+              </view>
+              <view class="apu-row" wx:if="{{item.freqHz > 0}}">
+                <text class="apu-label">频率</text>
+                <text class="apu-val" style="color:{{item.enabled ? '#d29922' : '#484f58'}};">{{item.freqHz}}Hz</text>
+              </view>
+              <view class="apu-row" wx:if="{{item.freqHz === 0}}">
+                <text class="apu-label">频率</text>
+                <text class="apu-val" style="color:#484f58;">—</text>
+              </view>
+              <view class="apu-row" wx:if="{{item.duty >= 0}}">
+                <text class="apu-label">Duty</text>
+                <text class="apu-val" style="color:{{item.enabled ? '#a5d6ff' : '#484f58'}};">{{item.duty}}</text>
+              </view>
+              <view class="apu-row">
+                <text class="apu-label">Len</text>
+                <text class="apu-val" style="color:{{item.enabled ? '#d2a8ff' : '#484f58'}};">{{item.lengthCounter}}</text>
+              </view>
+              <view class="apu-row" wx:if="{{item.extra}}">
+                <text class="apu-label">附加</text>
+                <text class="apu-val" style="color:#f0883e;">{{item.extra}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+        
+      </view>
+
+      <!-- 音效/音乐列表 -->
+      <view class="b02-section">
+        <text class="b02-section-title">🎶 音效/音乐列表</text>
+        <text class="b02-note" style="display:block;margin-bottom:6px;">从 $8BD9 音效映射表读取。切换 Bank 0D/0E/0F 加载不同音乐数据。点击查看音轨hex。</text>
+        <view wx:if="{{!b12SoundEffectMap.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">无音效数据</text>
+        </view>
+        <view class="data-table-item {{b12MusicTrackIdx === index ? 'track-selected' : ''}}" wx:for="{{b12SoundEffectMap}}" wx:key="seId" data-idx="{{index}}" bindtap="onB12SelectMusic" style="padding:6px 8px;border-bottom:1px solid #161b22;">
+          <view style="display:flex;align-items:center;gap:8px;">
+            <text style="font-size:11px;color:#d29922;font-family:monospace;min-width:30px;">#{{index}}</text>
+            <text style="font-size:10px;color:#58a6ff;font-family:monospace;min-width:30px;">$0{{item.seId}}</text>
+            <text style="font-size:10px;color:#8b949e;flex:1;">{{item.desc}}</text>
+            <text style="font-size:9px;color:#6e7681;font-family:monospace;">Bank {{item.bank}}</text>
+          </view>
         </view>
       </view>
 
-      <!-- RAM 变量映射 -->
-      <view class="b02-section">
-        <text class="b02-section-title">🧠 核心 RAM 变量</text>
-        <view class="data-table-item" wx:for="{{b31Deps.ramMap}}" wx:key="addr" wx:for-item="ram">
-          <text class="data-table-name" style="color:#ffa657;">{{ram.addr}}</text>
-          <text class="data-table-name">{{ram.name}}</text>
-          <text class="b02-note" style="font-size:10px;display:block;">{{ram.desc}}</text>
+      <!-- 选中的音轨 hex -->
+      <view class="b02-section" wx:if="{{b12TrackHex}}">
+        <text class="b02-section-title">音轨数据 (hex)</text>
+        <view style="background:#0d1117;border:1px solid #21262d;border-radius:6px;padding:10px;">
+          <text style="font-size:10px;color:#c9d1d9;font-family:monospace;line-height:1.6;white-space:pre-wrap;" selectable="true">{{b12TrackHex}}</text>
+        </view>
+        <view style="margin-top:4px;display:flex;gap:10px;flex-wrap:wrap;">
+          <text style="font-size:9px;color:#f0883e;">[XX] = 命令($E0-$EF)</text>
+          <text style="font-size:9px;color:#58a6ff;">(XX) = 音符($A0-$DF)</text>
+          <text style="font-size:9px;color:#6e7681;">&lt;XX&gt; = 休止/结束</text>
+          <text style="font-size:9px;color:#da3633;">!XX! = $FF 序列尾</text>
         </view>
       </view>
-
-      <!-- 交叉引用 -->
-      <view class="b02-section">
-        <text class="b02-section-title">🔗 Bank 30 交叉引用</text>
-        <text class="b02-note" style="display:block;margin-bottom:6px;">Bank 31 频繁调用 Bank 30 的底层设施 —— 比赛引擎运行的核心依赖</text>
-        <view class="data-table-item" wx:for="{{b31Deps.crossRefs}}" wx:key="addr" wx:for-item="ref">
-          <text class="data-table-name" style="color:#58a6ff;">{{ref.addr}}</text>
-          <text class="data-table-name">{{ref.desc}}</text>
-          <text class="b02-note" style="font-size:9px;display:block;">→ 调用位置: {{ref.locations}}</text>
+      <view class="b02-section" wx:else>
+        <view style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">点击上方列表查看音轨 hex 数据</text>
         </view>
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 12 音频引擎 调试视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'debug' && bankId === 12}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 12 调试 — MMC3 Bank 映射 · 音效ID路由 · 音符频率表</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="b02-section">
+        <text class="b02-section-title">MMC3 Bank 映射 (R7)</text>
+        <text class="b02-note" style="display:block;">音频引擎通过 MMC3 寄存器 7 切换 $A000-$BFFF 窗口</text>
+        <text class="b02-note" style="display:block;">写 $8000=$07(选R7) → 写 $8001=bank号 → $A000 窗口立即切换</text>
+        <text class="b02-note" style="display:block;">Bank $0D: 音效/音乐数据 (seId $32-$43)</text>
+        <text class="b02-note" style="display:block;">Bank $0E: 音效/音乐数据 (seId $44-$50)</text>
+        <text class="b02-note" style="display:block;">Bank $0F: 音效/音乐数据 (seId $51-$5B)</text>
+        <text class="b02-note" style="display:block;color:#6e7681;">ram_07FC: 上次写入的 bank 号缓存(去重优化)</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">DMC 采样 (3种模式)</text>
+        <text class="b02-note" style="display:block;">$8699: $4012=$00 → 基址 $C000×$00 + $0300 = $C000 (12×16+1=193B)</text>
+        <text class="b02-note" style="display:block;">$86B8: $4012=$03 → 基址 $C000 + $0300×$20? (32×16+1=513B)</text>
+        <text class="b02-note" style="display:block;">$86D7: $4012=$0B → 基址 $C000 + $0B00×$13? (19×16+1=305B)</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">RAM 变量详情</text>
+        <view wx:if="{{!b12RamLayout.length}}" style="padding:10px 0;text-align:center;">
+          <text style="font-size:10px;color:#484f58;">无RAM数据</text>
+        </view>
+        <view wx:for="{{b12RamLayout}}" wx:key="range" style="padding:2px 0;border-bottom:1px solid #161b22;">
+          <text style="font-size:10px;color:#58a6ff;font-family:monospace;">{{item.range}}</text>
+          <text style="font-size:9px;color:#d29922;"> {{item.name}}</text>
+          <text style="font-size:9px;color:#8b949e;display:block;">  {{item.desc}}</text>
+          <text style="font-size:8px;color:#6e7681;">  asm: {{item.asmRef}}</text>
+        </view>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">音序跳转表 ($82E4)</text>
+        <text class="b02-note" style="display:block;">8 项指针表: $830E(不变) $832B(+1) $8340(+2) → 循环索引 0-7 → 修改 $07B7/$07BF 频率实现 pitch bend 效果</text>
       </view>
     </scroll-view>
   </view>

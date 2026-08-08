@@ -721,6 +721,28 @@ export class Renderer {
     this._scale = Math.max(1, Math.min(4, scale));
   }
   
+  // ==================== 比赛渲染 ====================
+  
+  /**
+   * 比赛渲染模式：使用 MatchFieldRenderer 绘制场地+球员+球+HUD
+   */
+  private _renderMatch(): void {
+    this._matchRenderer.update();
+    
+    const canvasW = SCREEN_WIDTH * this._scale;
+    const canvasH = SCREEN_HEIGHT * this._scale;
+    
+    // 清除画布
+    this.ctx.fillStyle = '#1a3a1a';
+    this.ctx.fillRect(0, 0, canvasW, canvasH);
+    
+    // 比赛渲染
+    this._matchRenderer.render(this.ctx, canvasW, canvasH);
+  }
+  
+  /** 获取比赛场地渲染器 (供外部调试) */
+  getMatchRenderer(): MatchFieldRenderer { return this._matchRenderer; }
+  
   /** 清除tile缓存 */
   clearTileCache(): void {
     this._tileCache.clear();

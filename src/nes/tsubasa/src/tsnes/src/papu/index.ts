@@ -63,6 +63,7 @@ class PAPU {
   triangle: ChannelTriangle;
   noise: ChannelNoise;
   dmc: ChannelDM;
+  regValues: Uint8Array;
   startedPlaying: boolean;
   recordOutput: boolean;
   triValue: number;
@@ -118,6 +119,9 @@ class PAPU {
     this.triangle = new ChannelTriangle(this);
     this.noise = new ChannelNoise(this);
     this.dmc = new ChannelDM(this);
+
+    // 记录最后写入的 APU 寄存器字节 ($4000-$4017)
+    this.regValues = new Uint8Array(0x18);
 
     this.startedPlaying = false;
     this.recordOutput = false;
@@ -203,6 +207,11 @@ class PAPU {
   }
 
   writeReg(address: number, value: number): void {
+    // 记录最后写入的原始字节（供调试 UI 显示）
+    if (address >= 0x4000 && address <= 0x4017) {
+      this.regValues[address - 0x4000] = value & 0xff;
+    }
+
     if (address >= 0x4000 && address < 0x4004) {
       this.square1.writeReg(address, value);
     } else if (address >= 0x4004 && address < 0x4008) {

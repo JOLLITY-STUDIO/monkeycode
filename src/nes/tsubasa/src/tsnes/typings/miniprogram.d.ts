@@ -47,7 +47,12 @@ interface WxNodeInfo {
 
 /* ── Web Audio ── */
 
+interface WxAudioDestinationNode {
+  /* AudioDestinationNode has no own methods used here */
+}
+
 interface WxWebAudioContext {
+  readonly destination: WxAudioDestinationNode;
   createScriptProcessor(
     bufferSize: number,
     numInputChannels: number,
@@ -57,7 +62,7 @@ interface WxWebAudioContext {
 }
 
 interface WxScriptProcessorNode {
-  connect(dest: WxWebAudioContext): void;
+  connect(dest: WxAudioDestinationNode): void;
   onaudioprocess: ((e: WxAudioProcessEvent) => void) | null;
 }
 

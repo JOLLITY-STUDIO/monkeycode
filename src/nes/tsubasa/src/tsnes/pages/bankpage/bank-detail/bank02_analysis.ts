@@ -92,7 +92,8 @@ const data = {
       "endBankAddr": "83D5",
       "length": 214,
       "name": "sub_821B",
-      "displayName": "场景入口 A: 初始化 ($821B)"
+      "displayName": "场景入口 A: 初始化 ($821B) [RSET后首个业务入口]",
+      "note": "RESET后 Bank30 $C400(R7=Bank02)→JMP $A200→$8200: JMP $A21B(→本函数)。密集调用Bank00服务: $9A43(L321)→$98A0(L327 NT清零)→$9B7F(L331)→$9F69(L332)→$8297(L345 调色板)→$8AF7(scene=0x17)→$890C→$88FB→$9A35→JMP $9EED(L511 进Bank00主循环)"
     },
     {
       "startLine": 684,

@@ -6,6 +6,62 @@
 
 ---
 
+## 2026-08-06 (Day 2) — 深夜续2: 比赛渲染 + AI v1
+
+### 完成工作
+
+| 任务 | 说明 |
+|------|------|
+| ✅ T4.1 | MatchFieldRenderer — 比赛场地渲染器 (草地+标线+球员+球+HUD) |
+| ✅ T4.2 | AiController — 基于球员能力的AI决策系统 |
+| ✅ T4.3 | MatchEngine v3 — 集成 AiController + MatchFieldRenderer |
+| ✅ T4.4 | Renderer 比赛模式 — 自动检测GameState切换到比赛渲染 |
+| ✅ T4.5 | Bank0Core v3 — 适配新的MatchEngine + 进球/半场/终场流程 |
+
+### MatchFieldRenderer 设计
+
+```
+渲染层:
+  _drawField()     → 绿色草地 + 白线 + 禁区 + 球门
+  _drawPlayers()   → 红/蓝色圆形 (主队/客队) + GK菱形标记
+  _drawBall()      → 白色圆形 + 弹跳动画
+  _drawHud()       → 队名 + 比分 + 计时器 + 阶段文本
+```
+
+### AiController 设计
+
+```
+AI决策树 (每30帧):
+  持球方:
+    ├→ 距离球门<50 → 射门 (shoot能力 × 位置权重)
+    ├→ 有空位队友 → 传球 (pass能力 × 距离权重)
+    └→ 盘带前进 (dribble能力, 被紧逼降低)
+  
+  无球方:
+    └→ 最近球员追球 → 接触后抢断 (tackle能力)
+  
+  球员回位: 慢速向阵型默认位置移动
+```
+
+### 文件变更
+
+| 文件 | 变更 |
+|------|------|
+| `src/game/match/MatchFieldRenderer.ts` | [新] 比赛场地渲染器 |
+| `src/game/match/AiController.ts` | [新] AI决策控制器 |
+| `src/game/match/MatchEngine.ts` | [重写] v3 集成AI+渲染 |
+| `src/game/match/index.ts` | [更新] 导出新模块 |
+| `src/game/Bank0Core.ts` | [重写] v3 适配新引擎 |
+| `src/render/Renderer.ts` | [更新] 比赛模式渲染 |
+
+### 下一步
+
+1. **AI 自动挂机** — 自动跑通整场比赛 (最优先)
+2. **Bank 4 ASM AI** — 基于反汇编完善AI决策树
+3. **完整通关测试** — 从开场到比赛结束的端到端测试
+
+---
+
 ## 2026-08-06 (Day 2) — 深夜续: Bank 7 数据提取 + 比赛引擎
 
 ### 完成工作
