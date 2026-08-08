@@ -1,9 +1,9 @@
-// Bank 12 — Audio Engine & Music Data ($8000-$9FFF)
-// 基于 bank_12.asm 反汇编 + ROM 二进制完整追踪分析
-// CPU 映射: $8000-$9FFF (MMC3 R6 select)
+// Bank 12 — Audio Engine & BGM/SFX Data ($8000-$9FFF)
+// 基于 bank_12.asm 反汇编 + ROM 二进制完整追踪分析 + APU trace 验证
+// CPU 映射: $8000-$9FFF (MMC3 R6 select，F6 首次映射)
 // PRG offset: 0x018010-0x01A00F
 // CDL stats: code=839 data=6088 unacc=440 (2026-08-08)
-// 最后更新: 2026-08-08 — 修正音效指针表/通道初始化列表/音序器格式
+// 最后更新: 2026-08-08 — 添加 4 个音频引擎关键入口点 (trace 验证)
 
 const data = {
   bankId: 12,
@@ -17,9 +17,22 @@ const data = {
     dataBytes: 6088,
     unaccessedBytes: 440,
     codeDensityPct: "11.4%",
-    note: "Bank 12 是游戏音频引擎。代码只有 11.4%，其余全是音乐/音效数据。",
+    note: "Bank 12 是游戏音频引擎入口。代码只有 11.4%，其余全是音乐/音效数据。",
     note2: "音频工作区: $0700-$07FF (256B)。$0700-05: 请求队列(6slot)。$0706: chMask。$0707-$07E6: 8ch×16B 参数块。$07E8: DMC标志。$07FC: bank缓存。",
     note3: "⚠ 调用方式: 外部代码将音频ID写入 ram_0700,X → 下一次NMI Bank12映射→$8002入口处理请求。",
+    note4: "🔗 BGM数据: Bank 15 ($17AD-$1FF1, 2117B) 被引擎读取播放开场动画BGM。Bank 13-14 可砍。",
+  },
+
+  // ── 音频引擎入口点 (trace 验证) ──
+  engineEntryPoints: {
+    desc: "APU trace 4500帧中 PC 地址出现的频率，确认这些是音频引擎的核心子例程",
+    entries: [
+      { pc: "0x818E", name: "音轨状态更新", desc: "读取 Bank 15 音序数据，更新通道状态和音符参数", accessed: "F280+" },
+      { pc: "0x81A0", name: "音色/效果处理", desc: "处理 E2(音色)、E5(效果)、F3(滑音) 等指令", accessed: "F280+" },
+      { pc: "0x81B7", name: "频率写入APU", desc: "将解析后的频率值写入 $4002/$4003($4006/$4007/$400A/$400B)", accessed: "F281+" },
+      { pc: "0x81CC", name: "音长/帧计数更新", desc: "处理 E3(音长) 指令，更新通道持续时间计数器", accessed: "F281+" },
+      { pc: "0x8002", name: "音频请求处理入口", desc: "NMI 触发后的入口，处理 ram_0700 队列中的音频请求", accessed: "F6+" },
+    ],
   },
 
   // ── RAM 工作区 ($0700-$07FF) ──
