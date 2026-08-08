@@ -163,7 +163,7 @@ function extractTimingTable(sid, addr, maxBytes = 256) {
 }
 
 // ── 解析所有 SID ──
-const SE_MAP_COUNT = 31; // Sound IDs 0x30 - 0x4E
+const SE_MAP_COUNT = 44; // Sound IDs 0x30 - 0x5B (12:0x30-31, 13:0x32-43, 14:0x44-50, 15:0x51-5B)
 const allSids = [];
 
 console.log('\nParsing SE_MAP at $8BDA...');
@@ -173,22 +173,23 @@ for (let i = 0; i < SE_MAP_COUNT; i++) {
   const ptrHi = bank12[SE_MAP_OFF + i * 2 + 1];
   const initPtr = (ptrHi << 8) | ptrLo;
 
-  if (initPtr < 0x8000 || initPtr >= 0xA000) {
+  // 允许 initPtr 在 $8000-$BFFF 范围（$A000-$BFFF 在 switchable bank 中）
+  if (initPtr < 0x8000 || initPtr >= 0xC000) {
     console.log(`  SID 0x${sidId.toString(16)}: invalid pointer $${initPtr.toString(16)}, skipping`);
     continue;
   }
 
   console.log(`  SID 0x${sidId.toString(16)}: init list at $${initPtr.toString(16)}`);
 
-  // 解析通道初始化列表
+  // 解析通道初始化列表 — 使用 readByte 处理跨 bank 读取
   const channels = [];
   let y = 0;
   while (y < 256) {
-    const ch = bank12[initPtr - 0x8000 + y];
+    const ch = readByte(sidId, initPtr + y);
     if (ch >= 0x80) break;
     
-    const tLo = bank12[initPtr - 0x8000 + y + 1];
-    const tHi = bank12[initPtr - 0x8000 + y + 2];
+    const tLo = readByte(sidId, initPtr + y + 1);
+    const tHi = readByte(sidId, initPtr + y + 2);
     const trackPtr = (tHi << 8) | tLo;
     y += 3;
 
@@ -206,7 +207,7 @@ for (let i = 0; i < SE_MAP_COUNT; i++) {
   allSids.push({
     id: sidId,
     initPtr,
-    terminatorByte: bank12[initPtr - 0x8000 + y] || 0x80,
+    terminatorByte: readByte(sidId, initPtr + y) || 0x80,
     channels,
   });
 }
