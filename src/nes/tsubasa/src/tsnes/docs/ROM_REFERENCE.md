@@ -717,17 +717,22 @@ Bank 02 包含 **16 张已识别的数据表**，覆盖场景跳转、场地渲�
 **大小:** 8192 bytes (0B 代码 + 2119B 被读取数据 + 6073B 未使用)  
 **确认:** 2026-08-08 trace 验证 — 4500 帧中 2119 个唯一字节被音频引擎读取
 
-#### BGM 数据段划分
+#### BGM 数据段划分（0xFF 分隔）
 
 ```
 $0000-$16FF  (5888 bytes)  未使用
 $1700-$1701  (2 bytes)     标志/计数器
 $1702-$17AC  (171 bytes)   未使用
-$17AD-$1FF1  (2117 bytes)  ⭐ 4轨BGM音序器数据
-  $17AD-$17B8 (12 bytes)   音轨指针表 (4 tracks × 2B 指针)
-  $17B9-$1FF1 (~2105 bytes) 音轨序列 (E0=音符 E2=音色 E3=音长 E9=跳转 FF=结束)
+$17AD-$1FF1  (2117 bytes)  ⭐ BGM00 主数据段
+  $17AD-$17B8 (12 bytes)   HEADER 歌曲头
+  $17BA-$19A0 (487 bytes)  TRACK_SQ1 主旋律
+  $19A2-$1C41 (672 bytes)  TRACK_SQ2 副旋律
+  $1C43-$1E67 (549 bytes)  TRACK_TRI 低音线
+  $1E69-$1FD5 (365 bytes)  TRACK_NOISE 鼓点
 $1FF2-$1FFF  (14 bytes)    未使用
 ```
+
+> 📦 **独立模块**: `mini-audio/bgm-data/BGM00.ts` — 完整 BGM00 数据 + 5 分段导出 + `fillBGM00Bank()` 工具函数。Bank 15 不再依赖 `rom-data/prg-bank-15.ts`。
 
 #### 内容特点
 
