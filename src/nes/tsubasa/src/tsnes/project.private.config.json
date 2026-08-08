@@ -15,11 +15,18 @@
     "miniprogram": {
       "list": [
         {
-          "name": "pages/mini-audio-page/mini-audio-page",
-          "pathName": "pages/mini-audio-page/mini-audio-page",
+          "name": "pages/game-audio/game-audio",
+          "pathName": "pages/game-audio/game-audio",
           "query": "",
           "scene": null,
           "launchMode": "default"
+        },
+        {
+          "name": "pages/mini-audio-page/mini-audio-page",
+          "pathName": "pages/mini-audio-page/mini-audio-page",
+          "query": "",
+          "launchMode": "default",
+          "scene": null
         },
         {
           "name": "pages/tsubasa2/tsubasa2",

@@ -1,0 +1,13 @@
+START SID=0x3A maxFrames=300
+Step1: new SidPlayer...
+Step1: OK
+Step2: load(58)...
+Step2: loaded=true activeMask=0x8
+Step3: start()...
+Step3: started=true
+Step4: run 300 frames...
+  frame 0 done, isPlaying=true
+Step4: done, 300/300 frames, 106ms, 240000 samples
+  expected ~240000 samples
+  nonZero=218608/240000 maxAbs=0.7335
+DONE

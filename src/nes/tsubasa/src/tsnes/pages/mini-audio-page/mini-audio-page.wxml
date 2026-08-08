@@ -1,17 +1,41 @@
 <view class="audio-page">
   <view class="audio-card">
     <view class="audio-icon">🎵</view>
-    <text class="audio-title">Tsubasa II 音效</text>
+    <text class="audio-title">{{bgmInfo.name}}</text>
 
+    <!-- BGM info -->
+    <view class="bgm-info-box">
+      <view class="info-row">
+        <text class="info-label">ID</text>
+        <text class="info-value">{{bgmInfo.id}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">来源</text>
+        <text class="info-value">{{bgmInfo.source}}</text>
+      </view>
+      <view class="info-row">
+        <text class="info-label">数据</text>
+        <text class="info-value">{{bgmInfo.totalSize}} bytes / {{bgmInfo.numTracks}} 通道</text>
+      </view>
+      <view class="track-list">
+        <view wx:for="{{bgmInfo.tracks}}" wx:key="name" class="track-item">
+          <text class="track-name">{{item.name}}</text>
+          <text class="track-desc">{{item.desc}}</text>
+          <text class="track-size">{{item.size}}B</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- status bar -->
     <view class="audio-status-bar">
-      <view class="status-dot {{status.indexOf('失败') >= 0 ? 'dot-error' : 'dot-active'}}"></view>
+      <view class="status-dot {{status.indexOf('播放') >= 0 ? 'dot-active' : status.indexOf('失败') >= 0 ? 'dot-error' : 'dot-idle'}}"></view>
       <text class="audio-status">{{status}}</text>
     </view>
 
     <view class="audio-info-row">
       <view class="audio-info">
-        <text class="info-label">当前 SE</text>
-        <text class="info-value">{{currentSe}}</text>
+        <text class="info-label">当前 BGM</text>
+        <text class="info-value">{{currentBgm}}</text>
       </view>
       <view class="audio-info">
         <text class="info-label">采样数</text>
@@ -19,9 +43,14 @@
       </view>
     </view>
 
+    <!-- Play button -->
+    <view class="play-section">
+      <button class="play-btn" bindtap="playBGM">▶ 播放 BGM00</button>
+    </view>
+
     <view class="audio-hint">
-      <text>每 5 秒自动随机切换</text>
-      <text class="hint-sub">Tsubasa II - Bank12 Audio Engine</text>
+      <text>纯 TypeScript 音序器 + PAPU 无 CPU 模拟</text>
+      <text class="hint-sub">BGM00 — Captain Tsubasa II Opening Animation</text>
     </view>
   </view>
 </view>

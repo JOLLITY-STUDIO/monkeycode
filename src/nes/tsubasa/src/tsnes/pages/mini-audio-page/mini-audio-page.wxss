@@ -1,7 +1,7 @@
 .audio-page {
   display: flex;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   min-height: 100vh;
   background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
   padding: 20px;
@@ -9,37 +9,112 @@
 
 .audio-card {
   width: 100%;
-  max-width: 360px;
+  max-width: 380px;
   background: rgba(255,255,255,0.06);
   backdrop-filter: blur(20px);
   border-radius: 24px;
-  padding: 36px 28px;
+  padding: 28px 20px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.3);
   border: 1px solid rgba(255,255,255,0.1);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
+  gap: 16px;
 }
 
 .audio-icon {
-  font-size: 56px;
+  font-size: 48px;
   animation: pulse 2s ease-in-out infinite;
 }
 
 @keyframes pulse {
   0%, 100% { transform: scale(1); opacity: 0.8; }
-  50% { transform: scale(1.15); opacity: 1; }
+  50% { transform: scale(1.12); opacity: 1; }
 }
 
 .audio-title {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 700;
   color: #e0e0e0;
   letter-spacing: 2px;
 }
 
-/* ── 状态条 ── */
+/* ── BGM info box ── */
+
+.bgm-info-box {
+  width: 100%;
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.track-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+}
+
+.track-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.track-name {
+  font-size: 12px;
+  font-weight: 600;
+  color: #818cf8;
+  min-width: 40px;
+}
+
+.track-desc {
+  font-size: 11px;
+  color: #94a3b8;
+  flex: 1;
+}
+
+.track-size {
+  font-size: 10px;
+  color: #64748b;
+  font-family: monospace;
+}
+
+/* ── Play button ── */
+
+.play-section {
+  width: 100%;
+}
+
+.play-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #6366f1, #818cf8);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+.play-btn:active {
+  opacity: 0.85;
+  transform: scale(0.98);
+}
+
+/* ── status bar ── */
 
 .audio-status-bar {
   display: flex;
@@ -62,6 +137,10 @@
   animation: blink 1s step-start infinite;
 }
 
+.dot-idle {
+  background: #64748b;
+}
+
 .dot-error {
   background: #f87171;
   box-shadow: 0 0 8px #f87171;
@@ -73,11 +152,11 @@
 }
 
 .audio-status {
-  font-size: 15px;
+  font-size: 14px;
   color: #a0aec0;
 }
 
-/* ── 双列信息 ── */
+/* ── info row ── */
 
 .audio-info-row {
   display: flex;
@@ -92,20 +171,20 @@
 }
 
 .info-label {
-  font-size: 12px;
+  font-size: 11px;
   color: #64748b;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
 .info-value {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   color: #818cf8;
   font-family: monospace;
 }
 
-/* ── 提示 ── */
+/* ── hint ── */
 
 .audio-hint {
   display: flex;
@@ -115,7 +194,7 @@
 }
 
 .audio-hint text {
-  font-size: 12px;
+  font-size: 11px;
   color: #475569;
 }
 

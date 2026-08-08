@@ -2,28 +2,54 @@
   <!-- 头部信息 -->
   <view class="header">
     <text class="title">天使之翼II — 开场动画 BGM</text>
-    <text class="subtitle">mini-audio 精简模拟器 ({{bankCount}} PRG banks)</text>
+    <text class="subtitle">A/B 对比：精简模拟器 vs 纯 TS 音序器</text>
   </view>
 
-  <!-- 状态 -->
-  <view class="status-card">
-    <text class="status-text">{{status}}</text>
-    <text class="info-text">帧: {{frameCount}} / {{totalFrames}} | 采样: {{sampleCount}}</text>
+  <!-- 精简模拟器卡片 -->
+  <view class="engine-card">
+    <view class="card-header">
+      <view class="card-dot emu-dot"></view>
+      <text class="card-title">A. 精简模拟器（参考）</text>
+    </view>
+    <text class="card-desc">CPU + PPUStub + PAPU + MMC3，加载 {{bankCount}} 个 PRG bank</text>
+
+    <view class="status-card">
+      <text class="status-text">{{emuStatus}}</text>
+      <text class="info-text">帧: {{emuFrameCount}} / {{emuTotalFrames}} | 采样: {{emuSampleCount}}</text>
+    </view>
+
+    <view class="controls">
+      <button class="btn {{emuPlaying ? 'btn-stop' : 'btn-play'}}" bindtap="toggleEmu">
+        {{emuPlaying ? '⏸ 暂停' : '▶ 播放'}}
+      </button>
+      <button class="btn btn-restart" bindtap="restartEmu">🔄 重头播放</button>
+    </view>
   </view>
 
-  <!-- 控制按钮 -->
-  <view class="controls">
-    <button class="btn {{playing ? 'btn-stop' : 'btn-play'}}" bindtap="togglePlay">
-      {{playing ? '⏸ 暂停' : '▶ 播放'}}
-    </button>
-    <button class="btn btn-restart" bindtap="restart">
-      🔄 重头播放
-    </button>
+  <!-- 纯 TS 音序器卡片 -->
+  <view class="engine-card">
+    <view class="card-header">
+      <view class="card-dot seq-dot"></view>
+      <text class="card-title">B. 纯 TS 音序器（新实现）</text>
+    </view>
+    <text class="card-desc">BGM00Player：直接读取 BGM00 轨道，无 CPU / MMC3 模拟</text>
+
+    <view class="status-card">
+      <text class="status-text">{{seqStatus}}</text>
+      <text class="info-text">帧: {{seqFrameCount}} / {{seqTotalFrames}} | 采样: {{seqSampleCount}}</text>
+    </view>
+
+    <view class="controls">
+      <button class="btn {{seqPlaying ? 'btn-stop' : 'btn-play'}}" bindtap="toggleSeq">
+        {{seqPlaying ? '⏸ 暂停' : '▶ 播放'}}
+      </button>
+      <button class="btn btn-restart" bindtap="restartSeq">🔄 重头播放</button>
+    </view>
   </view>
 
   <!-- 提示 -->
   <view class="tip">
-    <text>4500帧 ≈ 一个完整开场动画循环 ≈ 75秒</text>
-    <text>音频通过 WebAudio ScriptProcessor 实时合成</text>
+    <text>建议：先听 A 再听 B，对比旋律、节奏、音色是否一致。</text>
+    <text>两者均为 48kHz 单声道 PCM。</text>
   </view>
 </view>

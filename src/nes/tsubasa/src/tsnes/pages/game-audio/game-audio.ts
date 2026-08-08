@@ -1,14 +1,27 @@
 /**
- * game-audio — 使用 mini-audio NesAudio 模拟器直接运行游戏，播放开场 BGM。
- * 干净页面：加载 ROM → 渲染 PCM → WebAudio 播放。
+ * game-audio — A/B 对比页面：精简模拟器 vs 纯 TS 音序器 (BGM00Player)。
+ *
+ * 上半部分：mini-audio NesAudio 模拟器（原始参考）
+ * 下半部分：BGM00Player 直接音序器（新实现）
+ * 两者完全独立：独立渲染、独立 WebAudio、独立日志。
  */
 import { NesAudio } from '../../mini-audio/emu/nes-audio';
 import { NES_PRG_ROM, NES_CHR_ROM, AUDIO_BANK_IDS } from '../../mini-audio/rom-data/index';
+import {
+  BGM00Player,
+  BGM00_TRACK_SQ1,
+  BGM00_TRACK_SQ2,
+  BGM00_TRACK_TRI,
+  BGM00_TRACK_NOISE,
+} from '../../mini-audio/bgm-data/index';
 
-const TOTAL_FRAMES = 4500; // 完整开场动画循环
+const SAMPLE_RATE = 48000;
 const SCRIPT_BUF = 2048;
 
-interface AudioState {
+const EMU_TOTAL_FRAMES = 4500; // ~75s
+const SEQ_TOTAL_FRAMES = 1800; // ~30s，覆盖完整 BGM00 轨道
+
+interface AudioEngineState {
   ctx: WxWebAudioContext | null;
   scriptNode: WxScriptProcessorNode | null;
   buffer: Float32Array;
@@ -16,47 +29,106 @@ interface AudioState {
   playing: boolean;
 }
 
-const state: AudioState = {
-  ctx: null,
-  scriptNode: null,
-  buffer: new Float32Array(0),
-  readPos: 0,
-  playing: false,
-};
+function createEngineState(): AudioEngineState {
+  return {
+    ctx: null,
+    scriptNode: null,
+    buffer: new Float32Array(0),
+    readPos: 0,
+    playing: false,
+  };
+}
+
+const emuState: AudioEngineState = createEngineState();
+const seqState: AudioEngineState = createEngineState();
+
+/** 分块渲染 BGM00Player，避免阻塞主线程 */
+function renderBGM00Async(
+  maxFrames: number,
+  onProgress: (frame: number) => void,
+  onDone: (samples: Float32Array, frameCount: number) => void,
+): void {
+  const player = new BGM00Player(SAMPLE_RATE);
+  player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE);
+  if (!player.start()) {
+    onDone(new Float32Array(0), 0);
+    return;
+  }
+
+  const pcm: number[] = [];
+  const chunk = 60;
+  let frame = 0;
+
+  function step() {
+    const target = Math.min(frame + chunk, maxFrames);
+    let playing = true;
+    player.setSampleCallback((l: number, r: number) => { pcm.push((l + r) * 0.5); });
+    while (frame < target && playing) {
+      player.tick();
+      frame++;
+      playing = player.progress.playing;
+    }
+    player.setSampleCallback(null);
+
+    onProgress(frame);
+
+    if (frame < maxFrames && playing) {
+      setTimeout(step, 0);
+    } else {
+      onDone(new Float32Array(pcm), frame);
+    }
+  }
+
+  setTimeout(step, 0);
+}
 
 Page({
   data: {
-    status: '加载 ROM...',
-    frameCount: 0,
-    totalFrames: TOTAL_FRAMES,
-    sampleCount: 0,
-    playing: false,
     bankCount: AUDIO_BANK_IDS.length,
+
+    // 精简模拟器
+    emuStatus: '等待渲染...',
+    emuFrameCount: 0,
+    emuTotalFrames: EMU_TOTAL_FRAMES,
+    emuSampleCount: 0,
+    emuPlaying: false,
+
+    // 纯 TS 音序器
+    seqStatus: '等待渲染...',
+    seqFrameCount: 0,
+    seqTotalFrames: SEQ_TOTAL_FRAMES,
+    seqSampleCount: 0,
+    seqPlaying: false,
   },
 
   onLoad() {
     this.setData({
-      status: `加载 ROM (${AUDIO_BANK_IDS.length} banks)...`,
+      emuStatus: `加载 ROM (${AUDIO_BANK_IDS.length} banks)...`,
+      seqStatus: '准备音序器...',
       bankCount: AUDIO_BANK_IDS.length,
     });
   },
 
   onReady() {
-    // 延迟一点让 UI 先渲染
+    // 延迟让 UI 先渲染
     setTimeout(() => {
-      this.renderAndPlay();
+      this.renderEmu();
+      this.renderSeq();
     }, 200);
   },
 
   onUnload() {
-    this.destroyAudio();
+    this.destroyEmu();
+    this.destroySeq();
   },
 
-  /** 渲染 PCM 并开始播放 */
-  renderAndPlay() {
-    this.setData({ status: '渲染 PCM 中... (0 帧)' });
+  // ════════════════════════════════════════════════
+  // 精简模拟器 (NesAudio)
+  // ════════════════════════════════════════════════
 
-    // 分批渲染，每 500 帧更新 UI
+  renderEmu() {
+    this.setData({ emuStatus: '渲染 PCM 中... (0 帧)' });
+
     const CHUNK = 500;
     let chunkIndex = 0;
 
@@ -72,101 +144,200 @@ Page({
 
     const runChunk = () => {
       const start = chunkIndex * CHUNK;
-      const end = Math.min(start + CHUNK, TOTAL_FRAMES);
+      const end = Math.min(start + CHUNK, EMU_TOTAL_FRAMES);
       for (let f = start; f < end; f++) {
         nes.frame();
       }
       chunkIndex++;
 
       this.setData({
-        frameCount: end,
-        sampleCount: samples.length,
-        status: `渲染 PCM 中... (${end}/${TOTAL_FRAMES} 帧)`,
+        emuFrameCount: end,
+        emuSampleCount: samples.length,
+        emuStatus: `渲染 PCM 中... (${end}/${EMU_TOTAL_FRAMES} 帧)`,
       });
 
-      if (end < TOTAL_FRAMES) {
+      if (end < EMU_TOTAL_FRAMES) {
         setTimeout(runChunk, 10);
       } else {
-        this.setData({ status: '渲染完成，开始播放...' });
-        state.buffer = new Float32Array(samples);
-        this.startPlayback();
+        emuState.buffer = new Float32Array(samples);
+        this.setData({
+          emuStatus: '渲染完成，等待播放',
+          emuPlaying: false,
+        });
       }
     };
 
     runChunk();
   },
 
-  /** WebAudio 播放 */
-  startPlayback() {
+  startEmuPlayback() {
     try {
       const ctx = wx.createWebAudioContext();
-      state.ctx = ctx;
+      emuState.ctx = ctx;
 
       const node = ctx.createScriptProcessor(SCRIPT_BUF, 0, 1);
-      node.onaudioprocess = (_e: any) => {
-        const output = (_e as any).outputBuffer?.getChannelData(0);
-        if (!output) return;
-        const buf = state.buffer;
+      node.onaudioprocess = (e: WxAudioProcessEvent) => {
+        const buf = emuState.buffer;
+        const output = e.outputBuffer.getChannelData(0);
         const len = output.length;
         if (buf.length === 0) {
           for (let i = 0; i < len; i++) output[i] = 0;
         } else {
           for (let i = 0; i < len; i++) {
-            output[i] = buf[state.readPos] || 0;
-            state.readPos++;
-            if (state.readPos >= buf.length) state.readPos = 0; // 循环
+            output[i] = buf[emuState.readPos] || 0;
+            emuState.readPos++;
+            if (emuState.readPos >= buf.length) emuState.readPos = 0;
           }
         }
       };
       node.connect(ctx.destination);
-      state.scriptNode = node;
-      state.playing = true;
+      emuState.scriptNode = node;
+      ctx.resume();
+      emuState.playing = true;
 
       this.setData({
-        status: '播放中 ♪',
-        playing: true,
-        frameCount: TOTAL_FRAMES,
+        emuStatus: '播放中 ♪ 精简模拟器',
+        emuPlaying: true,
       });
     } catch (e: any) {
-      this.setData({ status: 'WebAudio 初始化失败: ' + (e.message || '') });
+      this.setData({ emuStatus: 'WebAudio 初始化失败: ' + (e.message || '') });
     }
   },
 
-  /** 切换播放/暂停 */
-  togglePlay() {
-    if (!state.ctx) {
-      // 还没渲染完
+  toggleEmu() {
+    if (!emuState.ctx) {
+      this.startEmuPlayback();
       return;
     }
-    if (state.playing) {
-      try { state.ctx.suspend(); } catch (_e) {}
-      state.playing = false;
-      this.setData({ playing: false, status: '已暂停' });
+    if (emuState.playing) {
+      try { emuState.ctx.suspend(); } catch (_e) {}
+      emuState.playing = false;
+      this.setData({ emuPlaying: false, emuStatus: '已暂停 — 精简模拟器' });
     } else {
-      try { state.ctx.resume(); } catch (_e) {}
-      state.playing = true;
-      this.setData({ playing: true, status: '播放中 ♪' });
+      try { emuState.ctx.resume(); } catch (_e) {}
+      emuState.playing = true;
+      this.setData({ emuPlaying: true, emuStatus: '播放中 ♪ 精简模拟器' });
     }
   },
 
-  /** 重头播放 */
-  restart() {
-    state.readPos = 0;
-    if (!state.playing) {
-      if (state.ctx) {
-        try { state.ctx.resume(); } catch (_e) {}
-        state.playing = true;
+  restartEmu() {
+    emuState.readPos = 0;
+    if (!emuState.playing) {
+      if (emuState.ctx) {
+        try { emuState.ctx.resume(); } catch (_e) {}
+        emuState.playing = true;
+      } else {
+        this.startEmuPlayback();
       }
     }
-    this.setData({ playing: true, status: '播放中 ♪' });
+    this.setData({ emuPlaying: true, emuStatus: '播放中 ♪ 精简模拟器' });
   },
 
-  destroyAudio() {
-    if (state.scriptNode) {
-      try { (state.scriptNode as any).onaudioprocess = null; } catch (_e) {}
-      state.scriptNode = null;
+  destroyEmu() {
+    if (emuState.scriptNode) {
+      try { (emuState.scriptNode as any).onaudioprocess = null; } catch (_e) {}
+      emuState.scriptNode = null;
     }
-    state.ctx = null;
-    state.playing = false;
+    emuState.ctx = null;
+    emuState.playing = false;
+  },
+
+  // ════════════════════════════════════════════════
+  // 纯 TS 音序器 (BGM00Player)
+  // ════════════════════════════════════════════════
+
+  renderSeq() {
+    this.setData({ seqStatus: '渲染 PCM 中... (0 帧)' });
+
+    renderBGM00Async(
+      SEQ_TOTAL_FRAMES,
+      (frame) => {
+        this.setData({
+          seqFrameCount: frame,
+          seqStatus: `渲染 PCM 中... (${frame}/${SEQ_TOTAL_FRAMES} 帧)`,
+        });
+      },
+      (samples, frameCount) => {
+        seqState.buffer = samples;
+        this.setData({
+          seqFrameCount: frameCount,
+          seqSampleCount: samples.length,
+          seqStatus: '渲染完成，等待播放',
+          seqPlaying: false,
+        });
+      },
+    );
+  },
+
+  startSeqPlayback() {
+    try {
+      const ctx = wx.createWebAudioContext();
+      seqState.ctx = ctx;
+
+      const node = ctx.createScriptProcessor(SCRIPT_BUF, 0, 1);
+      node.onaudioprocess = (e: WxAudioProcessEvent) => {
+        const buf = seqState.buffer;
+        const output = e.outputBuffer.getChannelData(0);
+        const len = output.length;
+        if (buf.length === 0) {
+          for (let i = 0; i < len; i++) output[i] = 0;
+        } else {
+          for (let i = 0; i < len; i++) {
+            output[i] = buf[seqState.readPos] || 0;
+            seqState.readPos++;
+            if (seqState.readPos >= buf.length) seqState.readPos = 0;
+          }
+        }
+      };
+      node.connect(ctx.destination);
+      seqState.scriptNode = node;
+      ctx.resume();
+      seqState.playing = true;
+
+      this.setData({
+        seqStatus: '播放中 ♪ 纯 TS 音序器',
+        seqPlaying: true,
+      });
+    } catch (e: any) {
+      this.setData({ seqStatus: 'WebAudio 初始化失败: ' + (e.message || '') });
+    }
+  },
+
+  toggleSeq() {
+    if (!seqState.ctx) {
+      this.startSeqPlayback();
+      return;
+    }
+    if (seqState.playing) {
+      try { seqState.ctx.suspend(); } catch (_e) {}
+      seqState.playing = false;
+      this.setData({ seqPlaying: false, seqStatus: '已暂停 — 纯 TS 音序器' });
+    } else {
+      try { seqState.ctx.resume(); } catch (_e) {}
+      seqState.playing = true;
+      this.setData({ seqPlaying: true, seqStatus: '播放中 ♪ 纯 TS 音序器' });
+    }
+  },
+
+  restartSeq() {
+    seqState.readPos = 0;
+    if (!seqState.playing) {
+      if (seqState.ctx) {
+        try { seqState.ctx.resume(); } catch (_e) {}
+        seqState.playing = true;
+      } else {
+        this.startSeqPlayback();
+      }
+    }
+    this.setData({ seqPlaying: true, seqStatus: '播放中 ♪ 纯 TS 音序器' });
+  },
+
+  destroySeq() {
+    if (seqState.scriptNode) {
+      try { (seqState.scriptNode as any).onaudioprocess = null; } catch (_e) {}
+      seqState.scriptNode = null;
+    }
+    seqState.ctx = null;
+    seqState.playing = false;
   },
 });

@@ -8,6 +8,9 @@
 export { BGM00_RAW, BGM00_META, fillBGM00Bank } from './BGM00';
 export { BGM00_HEADER, BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE } from './BGM00';
 
+// BGM00 播放器
+export { BGM00Player } from './BGM00Player';
+
 /** All available BGM datasets */
 export const BGM_LIST = [
   {

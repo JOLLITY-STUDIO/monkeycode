@@ -1,21 +1,17 @@
 /**
- * mini-audio-page — 使用真实 NES 模拟器播放开场 BGM
- * 
- * 不再使用 mini-audio CPU clone（已验证有 bug），
- * 直接使用 src/nes.ts 真实模拟器渲染音频。
+ * mini-audio-page — 使用 BGM00Player 播放开场动画 BGM。
+ * 纯 TS 音序器 + PAPU，无需 CPU 模拟、MMC3、ROM 读取。
  */
-import NES from '../../src/nes';
-import { NES_PRG_ROM, NES_CHR_ROM } from '../../rom-data/index';
-
-const NES_HEADER = new Uint8Array([
-  0x4E, 0x45, 0x53, 0x1A,   // NES␚
-  0x10, 0x10, 0x40, 0x08,
-  0x00, 0x00, 0x00, 0x00,
-  0x00, 0x00, 0x00, 0x01,   // NTSC
-]);
+import {
+  BGM00Player,
+  BGM00_META,
+  BGM00_TRACK_SQ1,
+  BGM00_TRACK_SQ2,
+  BGM00_TRACK_TRI,
+  BGM00_TRACK_NOISE,
+} from '../../mini-audio/bgm-data/index';
 
 const SAMPLE_RATE = 48000;
-const OPENER_FRAMES = 4500;   // 开场 BGM 完整帧数 (~75秒, F281 开始有声音)
 const SCRIPT_BUF = 2048;
 
 interface AudioState {
@@ -34,101 +30,121 @@ const state: AudioState = {
   playing: false,
 };
 
-/** 使用真实 NES 模拟器生成开场 BGM 音频 */
-function renderOpenerBGM(): { samples: Float32Array; frameCount: number; sampleCount: number } {
-  const prg = new Uint8Array(NES_PRG_ROM);
-  const chr = new Uint8Array(NES_CHR_ROM);
-  const rom = new Uint8Array(NES_HEADER.length + prg.length + chr.length);
-  rom.set(NES_HEADER, 0);
-  rom.set(prg, NES_HEADER.length);
-  rom.set(chr, NES_HEADER.length + prg.length);
-
-  const samples: number[] = [];
-  const nes = new NES({ emulateSound: true, sampleRate: SAMPLE_RATE });
-  nes.loadROM(rom);
-
-  // ── 挂钩 onAudioSample 取 PCM ──
-  const origOpts = (nes as any).opts;
-  origOpts.onAudioSample = (left: number, right: number) => {
-    samples.push((left + right) * 0.5);
-  };
-
-  // ── 运行 OPENER_FRAMES 帧（无输入，自动走开场动画 → BGM）──
-  const startFrame = Date.now();
-  for (let f = 0; f < OPENER_FRAMES; f++) {
-    try { nes.frame(); } catch (_e) { break; }
+/** 分块渲染 BGM00，避免阻塞主线程 */
+function renderBGM00Async(
+  maxFrames: number,
+  onProgress: (frame: number) => void,
+  onDone: (samples: Float32Array, frameCount: number) => void,
+): void {
+  const player = new BGM00Player(SAMPLE_RATE);
+  player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE);
+  if (!player.start()) {
+    onDone(new Float32Array(0), 0);
+    return;
   }
-  console.log(`[mini-audio] 渲染 ${OPENER_FRAMES} 帧, ${samples.length} samples, 耗时 ${Date.now() - startFrame}ms`);
 
-  return {
-    samples: new Float32Array(samples),
-    frameCount: OPENER_FRAMES,
-    sampleCount: samples.length,
-  };
+  const pcm: number[] = [];
+  const chunk = 60; // 每批 60 帧 ≈ 1 秒
+  let frame = 0;
+
+  function step() {
+    const target = Math.min(frame + chunk, maxFrames);
+    let playing = true;
+    player.setSampleCallback((l: number, r: number) => { pcm.push((l + r) * 0.5); });
+    while (frame < target && playing) {
+      player.tick();
+      frame++;
+      playing = player.progress.playing;
+    }
+    player.setSampleCallback(null);
+
+    onProgress(frame);
+
+    if (frame < maxFrames && playing) {
+      setTimeout(step, 0);
+    } else {
+      onDone(new Float32Array(pcm), frame);
+    }
+  }
+
+  setTimeout(step, 0);
 }
 
 Page({
   data: {
     status: '初始化中...',
     sampleCount: 0,
-    currentSe: '开场BGM',
+    currentBgm: BGM00_META.name,
+    bgmInfo: BGM00_META,
   },
 
-  onLoad() {},
+  onLoad() {
+    this.setData({ status: '准备就绪', bgmInfo: BGM00_META });
+  },
   onReady() { this.startAudio(); },
   onShow() { this.tryResume(); },
-  onHide() { /* 不暂停 */ },
+  onHide() {},
   onUnload() { this.destroyAudio(); },
+
+  /** 播放 BGM00 */
+  playBGM() {
+    this.destroyAudio();
+    this.startAudio();
+  },
 
   startAudio() {
     try {
-      this.setData({ status: '正在渲染开场BGM (NES 模拟器)...' });
+      this.setData({ status: '渲染中... BGM00', sampleCount: 0 });
 
-      // 在下一个 tick 渲染，避免阻塞 UI
-      setTimeout(() => {
-        const result = renderOpenerBGM();
-        if (result.sampleCount < 100) {
-          this.setData({ status: '渲染失败: 无音频数据' });
-          return;
-        }
+      renderBGM00Async(
+        1800,
+        (frame) => {
+          if (frame % 120 === 0) {
+            this.setData({ status: `渲染中... ${Math.round(frame / 60)}s` });
+          }
+        },
+        (samples, frameCount) => {
+          if (samples.length < 100) {
+            this.setData({ status: '无音频数据' });
+            return;
+          }
 
-        state.buffer = result.samples;
-        state.readPos = 0;
+          state.buffer = samples;
+          state.readPos = 0;
 
-        try {
-          const ctx = wx.createWebAudioContext();
-          state.ctx = ctx;
+          try {
+            const ctx = wx.createWebAudioContext();
+            state.ctx = ctx;
 
-          const node = ctx.createScriptProcessor(SCRIPT_BUF, 0, 1);
-          node.onaudioprocess = (e: WxAudioProcessEvent) => {
-            const buf = state.buffer;
-            const output = e.outputBuffer.getChannelData(0);
-            const len = output.length;
-            if (buf.length === 0) {
-              for (let i = 0; i < len; i++) output[i] = 0;
-            } else {
-              for (let i = 0; i < len; i++) {
-                output[i] = buf[state.readPos] || 0;
-                state.readPos++;
-                if (state.readPos >= buf.length) state.readPos = 0;
+            const node = ctx.createScriptProcessor(SCRIPT_BUF, 0, 1);
+            node.onaudioprocess = (e: WxAudioProcessEvent) => {
+              const buf = state.buffer;
+              const output = e.outputBuffer.getChannelData(0);
+              const len = output.length;
+              if (buf.length === 0) {
+                for (let i = 0; i < len; i++) output[i] = 0;
+              } else {
+                for (let i = 0; i < len; i++) {
+                  output[i] = buf[state.readPos] || 0;
+                  state.readPos++;
+                  if (state.readPos >= buf.length) state.readPos = 0;
+                }
               }
-            }
-          };
-          node.connect(ctx.destination);
-          state.scriptNode = node;
-          ctx.resume();
-          state.playing = true;
+            };
+            node.connect(ctx.destination);
+            state.scriptNode = node;
+            ctx.resume();
+            state.playing = true;
 
-          this.setData({
-            status: '播放中 ♪ 开场BGM',
-            sampleCount: result.sampleCount,
-            currentSe: '开场BGM (~75秒)',
-          });
-        } catch (e: any) {
-          this.setData({ status: 'WebAudio 初始化失败: ' + (e.message || '') });
-        }
-      }, 100);
-
+            this.setData({
+              status: '播放中 ♪ ' + BGM00_META.name,
+              sampleCount: samples.length,
+            });
+          } catch (e: any) {
+            this.setData({ status: 'WebAudio 初始化失败: ' + (e.message || '') });
+          }
+        },
+      );
     } catch (e: any) {
       this.setData({ status: '初始化失败: ' + (e.message || '') });
     }
@@ -140,7 +156,7 @@ Page({
         state.ctx.resume();
         state.playing = true;
         this.setData({ status: '播放中 ♪ 已恢复' });
-      } catch (_e) { /* ignore */ }
+      } catch (_e) {}
     }
   },
 
