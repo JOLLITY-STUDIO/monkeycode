@@ -1,10 +1,10 @@
 import CPU from "./cpu";
 import Controller from "./controller";
+import type { ButtonKey } from "./controller";
 import PPU from "./ppu/index";
 import PAPU from "./papu/index";
 import GameGenie from "./gamegenie";
 import ROM from "./rom";
-import type { ButtonKey } from "./controller";
 
 export type ControllerId = 1 | 2;
 
