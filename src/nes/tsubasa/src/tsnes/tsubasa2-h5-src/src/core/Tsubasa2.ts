@@ -193,16 +193,150 @@ export class Tsubasa2 {
   private _onRender(_dt: number): void {
     if (!this._ctx) return;
     const ctx = this._ctx;
-    ctx.fillStyle = '#0a0a18';
-    ctx.fillRect(0, 0, 256, 240);
+    const W = 256; const H = 240;
 
-    const sceneId = this._bank00.getSceneId();
+    // 背景
+    ctx.fillStyle = '#0a0a18';
+    ctx.fillRect(0, 0, W, H);
+
+    const displayState = this._bank00.displayState;
     const frameCount = this._bank00.frameCount;
 
-    // 调试渲染: 显示当前状态
-    ctx.fillStyle = '#00ff00';
-    ctx.font = '10px monospace';
-    ctx.fillText(`frame:${frameCount} scene:0x${sceneId.toString(16)}`, 8, 16);
-    ctx.fillText('Reset OK — Bank30→Bank02→Bank00', 8, 32);
+    if (displayState) {
+      this._renderOpening(ctx, displayState, frameCount, W, H);
+    } else {
+      // 调试渲染: 显示当前状态
+      ctx.fillStyle = '#00ff00';
+      ctx.font = '10px monospace';
+      ctx.fillText(`frame:${frameCount} scene:0x${(this._bank00.getSceneId()).toString(16)}`, 8, 16);
+      ctx.fillText('Reset OK — Bank30→Bank02→Bank00', 8, 32);
+    }
+  }
+
+  // ── 开场动画渲染 ──
+
+  private _renderOpening(
+    ctx: CanvasRenderingContext2D,
+    ds: import('../game/scene_opening.controller').OpeningDisplayState,
+    _frameCount: number, W: number, H: number,
+  ): void {
+    const alpha = ds.transitionAlpha;
+    ctx.globalAlpha = alpha;
+
+    if (ds.isTitle) {
+      this._renderTitleScreen(ctx, ds, W, H);
+    } else {
+      this._renderShot(ctx, ds, W, H);
+    }
+
+    ctx.globalAlpha = 1;
+
+    // 帧数调试
+    ctx.fillStyle = '#333';
+    ctx.font = '9px monospace';
+    ctx.fillText(`f:${ds.shotFrame}/${ds.shotTotalFrames} shot:${ds.shot}`, 4, H - 4);
+  }
+
+  /** 渲染单镜画面 */
+  private _renderShot(
+    ctx: CanvasRenderingContext2D,
+    ds: import('../game/scene_opening.controller').OpeningDisplayState,
+    W: number, H: number,
+  ): void {
+    const cx = W / 2;
+
+    if (ds.showLogo) {
+      // TECMO logo
+      ctx.fillStyle = '#ffcc00';
+      ctx.font = 'bold 32px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(ds.text, cx, 110);
+
+      ctx.fillStyle = '#aaa';
+      ctx.font = '10px monospace';
+      ctx.fillText('CAPTAIN TSUBASA II', cx, 135);
+    } else if (ds.showPortrait) {
+      // 人物肖像区域 (占位)
+      ctx.fillStyle = '#1a1a3a';
+      ctx.fillRect(cx - 48, 60, 96, 96);
+
+      // 边框
+      ctx.strokeStyle = '#888';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(cx - 48, 60, 96, 96);
+
+      // 名字
+      ctx.fillStyle = '#ffe0a0';
+      ctx.font = 'bold 18px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(ds.text, cx, 190);
+
+      // 英文名
+      ctx.fillStyle = '#888';
+      ctx.font = '11px monospace';
+      ctx.fillText(ds.subText, cx, 210);
+    } else if (ds.shot === 5) {
+      // WORLD CUP
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 28px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(ds.text, cx, 115);
+    }
+
+    // START 提示
+    if (ds.textBlink && ds.shotFrame > 30) {
+      ctx.fillStyle = '#664400';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('- PRESS START -', cx, H - 30);
+    }
+
+    ctx.textAlign = 'left';
+  }
+
+  /** 渲染标题画面 */
+  private _renderTitleScreen(
+    ctx: CanvasRenderingContext2D,
+    ds: import('../game/scene_opening.controller').OpeningDisplayState,
+    W: number, H: number,
+  ): void {
+    const cx = W / 2;
+
+    // 标题
+    ctx.fillStyle = '#ff6600';
+    ctx.font = 'bold 22px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('CAPTAIN TSUBASA II', cx, 80);
+
+    // 副标题
+    ctx.fillStyle = '#888';
+    ctx.font = '12px monospace';
+    ctx.fillText('SUPER STRIKER', cx, 100);
+
+    // 菜单项
+    const yBase = 145;
+    const items = ds.titleItems;
+    for (let i = 0; i < items.length; i++) {
+      const y = yBase + i * 28;
+
+      if (i === ds.titleCursor) {
+        // 选中项
+        ctx.fillStyle = ds.textBlink ? '#ffff00' : '#aa8800';
+        ctx.fillRect(cx - 80, y - 14, 160, 22);
+        ctx.fillStyle = '#000';
+      } else {
+        ctx.fillStyle = '#888';
+      }
+
+      ctx.font = '14px monospace';
+      ctx.fillText(items[i].label, cx, y);
+    }
+
+    // 版权
+    ctx.fillStyle = '#444';
+    ctx.font = '9px monospace';
+    ctx.fillText('(c) 1990 TECMO', cx, H - 20);
+
+    ctx.textAlign = 'left';
   }
 }

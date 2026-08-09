@@ -18,6 +18,11 @@
 export { Bank00Service } from './bank00.service';
 export { Bank02Service } from './bank02.service';
 export { Bank30Service } from './bank30.service';
+export { Bank12AudioService } from './bank12_audio.service';
+export type { IAudioOutput, ApuWriteEvent, ChannelType } from './bank12_audio.service';
+export { Bank15DataProvider, SE_POINTER_TABLE, BgmId, BGM_DATA_MAP } from './bank15_data.service';
+export { OpeningSceneController } from './scene_opening.controller';
+export type { OpeningDisplayState } from './scene_opening.controller';
 export { DataQueryService } from './data-query';
 
 // 旧版兼容 (待移除)

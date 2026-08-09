@@ -342,7 +342,7 @@ const data = {
     role: "中断向量 & 比赛主循环 (FIXED Bank, $E000-$FFFF) — 永不切换",
     pattern: "Bank 31 是最高层的固定 bank，代码中没有任何直接调用 $8000-$9FFF(A000-$BFFF 可切换窗口的指令。所有跨 bank 调用全部走 Bank 30 的跳转表（$C50F/$C515/$C54E/$C55A 等）。Bank 30 固定在 $C000-$DFFF，永远可见。\n\nBank 31 不直接调 $8000 窗口的原因：该窗口由 MMC3 R6 寄存器动态映射，可能指向 Bank 0/24/26/28 等任意 bank。Bank 31 无法假设当前映射，故所有外部调用统一委托给 Bank 30（由 Bank 30 负责切 bank 再转发）。这是 NES MMC3 架构的经典设计模式——固定 bank 通过跳转表调用可切换 bank。",
     dependees: ["Bank 30 (唯一直接依赖: 所有外部调用均走 Bank 30 的 JMP 跳转表, 包括球员处理 $CB0F、Bank切换 $CBB0/$CE2D、数学 $CD3C、坐标 $CDC9/$CDE2、控制器 $CF4F 等)"],
-    bootFlow: "已知启动链(trace frame 0-295):\n① Bank31 $FFF0: 复位MMC3→JMP Bank30 $C503\n② Bank30: 硬件初始化→R6=Bank00,R7=Bank02→JMP $A200\n③ Bank02 $A21B→Bank00 $9EED: 场景初始化→主循环\n④ Bank00 主循环: 【分镜1: Tecmo Theater 开场动画】frame10→295\n⚠ Bank31 职责: ①中断向量表($FFFA-$FFFF) ②$FFF0 RESET跳板(仅6条指令)。frame 295 之后的分镜序列待 trace。",
+    bootFlow: "✅ 已知完整 Reset 链:\n① Bank31 $FFF0: LDA #$00; STA $8000; JMP $C503 (仅6条指令,复位MMC3)\n② Bank30 $C503→$C64E: 硬件初始化(SEI/CLD/清RAM/NT/OAM/PPU)\n③ Bank30 $C6BB: LDA #$00; JMP $CEFE (切换状态)\n④ Bank30 $CEFE: 保存参数→JMP $C400\n⑤ Bank30 $C400: PPU配置→R6=Bank00→JMP $A200 (Bank02窗口 $A000-$BFFF)\n⑥ Bank02 $A200: JMP $A21B (仅3字节跳板,asm L285)\n⑦ Bank02 $A21B: 场景初始化→密集调用Bank00服务($9A43 L321→$98A0 L327→$9B7F L331→$9F69 L332→$8297 L345→$8AF7 scene=0x17→$890C→$88FB→$9A35)→JMP $9EED L511\n⑧ Bank00 $9EED: 主循环入口→【分镜1: Tecmo Theater 开场动画】frame 10→295\n⚠ Bank31 职责: ①中断向量表($FFFA-$FFFF) ②$FFF0 RESET跳板(仅6条指令)。frame 295 之后的分镜序列待 trace。",
     nmiFlow: "NMI($FFFA)→Bank30 $C500→$C76E(OAM DMA/PPU/控制器/音频/RTI)。Bank 31 不参与 NMI 处理。",
     irqFlow: "IRQ($FFFE)→Bank30 $C506→$C821(刷新MMC3计数器/RTI)。Bank 31 不参与 IRQ 处理（但 IRQ 向量在 Bank 31 的 $FFFE 地址）。",
   },

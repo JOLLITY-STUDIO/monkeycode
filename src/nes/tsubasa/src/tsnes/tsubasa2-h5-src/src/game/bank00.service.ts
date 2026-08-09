@@ -33,6 +33,7 @@
 import { DataStore, RAM_KEYS } from '../data/DataStore';
 import { palWriteAll } from '../data/pallete/paletteManager';
 import { SceneRoot } from '../data/scene/index';
+import { OpeningSceneController, OpeningDisplayState } from './scene_opening.controller';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -89,6 +90,12 @@ export class Bank00Service {
 
   /** 主循环是否运行中 */
   private _running = false;
+
+  /** 开场场景控制器 */
+  private _openingScene?: OpeningSceneController;
+
+  /** 当前显示状态 (供渲染器读取) */
+  private _displayState: OpeningDisplayState | null = null;
 
   constructor(private _store: DataStore) {}
 
@@ -169,8 +176,12 @@ export class Bank00Service {
    */
   sceneLoad(sceneId: number): void {
     this._store.write(SCENE_ID, sceneId & 0xFF);
-    // 场景指针表位于 Bank 02 数据区 ($A0xx)
-    // 场景数据解析在后续 Bank02 翻译中完善
+
+    // 场景 0x17 (TECMO Theater) → 创建开场控制器
+    if (sceneId === 0x17) {
+      this._openingScene = new OpeningSceneController(this._store);
+      this._openingScene.init();
+    }
   }
 
   // ──────────────────────────────────────────────
@@ -278,11 +289,12 @@ export class Bank00Service {
   /**
    * 对应原始 $9EED: LDX #$02 → JSR $C4B9 → JMP $A203。
    * 永不退出的帧循环入口。Bank 02 $A21B 最后 JMP 此处。
-   * H5: 启动帧循环 → 每帧调用 update()。
+   * H5: 启动帧循环 → 标记首帧 VBlank 已就绪。
    */
   mainLoop(): void {
     this._running = true;
-    // 帧循环启动后由外部 GameLoop 驱动每帧调用 update()
+    // 首帧即允许 update() 进入 $801F 场景初始化
+    this.setVBlankFlag();
   }
 
   /** 主循环是否运行中 */
@@ -296,6 +308,11 @@ export class Bank00Service {
    * 对应原始 Bank 00 帧循环: $8017 → $801F → ... 状态机。
    * 每帧调用。
    *
+   * $801F 入口逻辑:
+   *   1. 等待 VBlank (bit4)
+   *   2. 若 ram_1B bit0 == 0，执行完整场景初始化 (调色板/场景/VRAM/PPU)
+   *   3. 置 ram_1B bit0 = 1，后续帧跳过
+   *
    * @param buttons 当前帧按键 bitmask
    * @returns 场景是否变更
    */
@@ -304,7 +321,6 @@ export class Bank00Service {
 
     this._frameCount++;
 
-    const sceneId = this._store.read(SCENE_ID);
     const frameFlag = this._store.read(FRAME_FLAG);
 
     // 等待 VBlank 标志
@@ -312,11 +328,29 @@ export class Bank00Service {
       return false;
     }
 
-    // 根据 sceneId 分发到对应场景处理
-    // 当前 scene=0x17 (Tecmo Theater) 由 Bank 01 NMI handler 渲染
-    // 后续场景切换在 Bank02/其他 Bank 翻译后完善
+    // ── $801F: 场景初始化链入口 ──
+    this.sceneInitEntry();
+
+    const sceneId = this._store.read(SCENE_ID);
+
+    // 场景 0x17 (TECMO Theater) → 开场动画控制器
+    if (sceneId === 0x17 && this._openingScene && !this._openingScene.complete) {
+      this._displayState = this._openingScene.update(buttons);
+
+      // 检测开场完成 → 场景切换
+      if (this._openingScene.complete) {
+        // → 进入赛前会议流程 (场景切换)
+        this._store.write(SCENE_ID, SceneRoot.MEETING);
+      }
+      return true;
+    }
 
     return false;
+  }
+
+  /** 获取当前显示状态 (供渲染器消费) */
+  get displayState(): OpeningDisplayState | null {
+    return this._displayState;
   }
 
   // ──────────────────────────────────────────────
@@ -381,15 +415,55 @@ export class Bank00Service {
   // ──────────────────────────────────────────────
 
   /**
-   * 对应原始 $801F: 等待 VBlank → 清 PPU Buffer → 等待 $001E bit4 → 清零状态变量 → 场景初始化。
+   * 对应原始 $801F: 等待 VBlank → 清 PPU Buffer → 检查 ram_1B bit0 → 场景初始化。
+   *
+   * 这是 Bank00 主循环每帧都会进入的入口。首帧 ram_1B bit0 == 0，会触发完整初始化：
+   *   - NT + Attribute 清零 ($9B11)
+   *   - 调色板初始化 ($8297, A=0x0D)
+   *   - 场景描述加载 ($8AF7, A=0x17 = Tecmo Theater)
+   *   - VRAM 地址/滚动设置 ($890C, A=0x30)
+   *   - PPU 寄存器设置 ($88FB)
+   * 然后置 ram_1B bit0 = 1，后续帧跳过。
    */
   sceneInitEntry(): void {
     this.waitVBlank();
+
     // 清零 PPU Buffer
     for (let i = 0; i < PPU_BUF_SIZE; i++) {
       this._store.write(PPU_BUF_BASE + i, 0);
     }
     this._store.write(PPU_BUF_PTR, 0);
+
+    // $801F 核心分支: ram_1B bit0 == 0 时执行完整场景初始化
+    const ram1b = this._store.read(RAM_1B);
+    if ((ram1b & 0x01) === 0) {
+      this._doFullSceneInit();
+      this._store.write(RAM_1B, ram1b | 0x01);
+    }
+  }
+
+  /**
+   * 完整场景初始化 ($801F → 新场景):
+   *   NT+Attr 清零 → 调色板 → 场景加载 → VRAM → PPU 寄存器
+   */
+  private _doFullSceneInit(): void {
+    // JSR $9B11: NT + Attribute 清零
+    this.ntAttrClear();
+
+    // JSR $8297: 调色板初始化 (A=0x0D, Tecmo Theater 用)
+    this.paletteInit(0x0D);
+
+    // STA $7B = 0: 滚动/显示状态变量清零
+    this._store.write('ram_007B', 0);
+
+    // JSR $8AF7: 场景描述加载 (A=0x17, Tecmo Theater)
+    this.sceneLoad(0x17);
+
+    // JSR $890C: VRAM 地址/滚动设置 (A=0x30)
+    this.vramAddrSetup(0x30);
+
+    // JSR $88FB: PPU 寄存器设置
+    this.ppuRegSetup();
   }
 
   // ──────────────────────────────────────────────
