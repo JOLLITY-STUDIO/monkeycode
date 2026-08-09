@@ -114,17 +114,22 @@ export enum BgmId {
  * 每个偏移指向该BGM在Bank15中的音序首字节。
  * 跨Bank音序段(Bank 0D/0E/0F)由Bank12音频引擎的Bank切换逻辑处理。
  */
+/**
+ * BGM 数据表: BgmId → Bank15 数组偏移 (0-based)
+ * 每个偏移直接索引 `_bank15` 数组，无需 CPU 地址换算。
+ * 跨Bank音序段(Bank 0D/0E/0F)由Bank12音频引擎的Bank切换逻辑处理。
+ */
 export const BGM_DATA_MAP: Record<number, number> = {
-  // TECMO Theater开场 BGM → Bank15 $800D
-  [BgmId.TECMO_THEATER]: 0x800D,
-  // 标题画面 BGM → Bank15 $8400 (TODO: 精确偏移待ROM分析确认)
-  [BgmId.TITLE]: 0x8400,
-  // 赛前会议 BGM → Bank15 $8800
-  [BgmId.MEETING]: 0x8800,
-  // 比赛 BGM → Bank15 $8C00
-  [BgmId.MATCH_BGM]: 0x8C00,
-  // 赛后/结果 → Bank15 $9000
-  [BgmId.RESULT]: 0x9000,
+  // TECMO Theater开场 BGM → Bank15 offset 0 (通道初始化列表在Bank15开头)
+  [BgmId.TECMO_THEATER]: 0,
+  // 标题画面 BGM → offset 0x0400 (TODO: 精确偏移待ROM分析确认)
+  [BgmId.TITLE]: 0x0400,
+  // 赛前会议 BGM → offset 0x0800
+  [BgmId.MEETING]: 0x0800,
+  // 比赛 BGM → offset 0x0C00
+  [BgmId.MATCH_BGM]: 0x0C00,
+  // 赛后/结果 → offset 0x1000
+  [BgmId.RESULT]: 0x1000,
 };
 
 // ═══════════════════════════════════════════════════════════════

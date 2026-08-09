@@ -363,18 +363,17 @@ export class Bank12AudioService {
 
   /**
    * BGM 初始化: 从 Bank15 读取通道初始化列表。
-   * BGM ID (0x31-0x35) 不使用 SE 指针表，而是直接查找 Bank15 数据。
+   * BGM ID (0x31-0x35) 不使用 SE 指针表，而是直接按数组偏移查找 Bank15 数据。
    *
-   * Bank15 的 BGM 通道初始化列表格式与 SE 相同:
-   *   [ch, ptrLo, ptrHi] × N, ≥$80 终止
+   * 通道初始化列表格式:
+   *   [ch(0-7), ptrLo, ptrHi] × N, ≥$80 终止
+   * ptrLo|ptrHi 为 Bank15 内 CPU 地址 ($Axxx)，存入时转成数组偏移。
    */
   private _audioInitBgm(bgmId: number): void {
-    // 从 BGM_DATA_MAP 获取 Bank15 偏移
     const { BGM_DATA_MAP } = require('./bank15_data.service');
     const offset = BGM_DATA_MAP[bgmId];
-    if (!offset || this._bank15.length === 0) {
+    if (offset === undefined || this._bank15.length === 0) {
       console.warn(`[Bank12] BGM 0x${bgmId.toString(16)}: Bank15 数据未加载`);
-      // 降级: 生成测试频率验证音频管道
       this._audioInitBgmFallback();
       return;
     }
@@ -384,13 +383,15 @@ export class Bank12AudioService {
     let chCount = 0;
 
     while (pos < offset + 64) { // 安全上限: 64 bytes
-      const ch = bank[pos - 0x8000];
+      const ch = bank[pos];
       if (ch === undefined || ch >= 0x80) break;
       pos++;
-      const tLo = bank[pos - 0x8000] ?? 0; pos++;
-      const tHi = bank[pos - 0x8000] ?? 0; pos++;
+      const tLo = bank[pos] ?? 0; pos++;
+      const tHi = bank[pos] ?? 0; pos++;
 
-      const trackPtr = (tLo | (tHi << 8)) & 0xFFFF;
+      // 原始数据中的指针是 Bank15 CPU 地址 ($A000-$BFFF)，转成数组偏移
+      const cpuPtr = (tLo | (tHi << 8)) & 0xFFFF;
+      const trackPtr = cpuPtr - 0xA000; // $A000 → 0, $B000 → 0x1000
       const slot = 7 - (ch & 0x07);
 
       this._chParams[slot] = this._makeChannelParams();
@@ -412,7 +413,7 @@ export class Bank12AudioService {
       chCount++;
     }
 
-    console.log(`[Bank12] BGM 0x${bgmId.toString(16)}: ${chCount} channels initialized`);
+    console.log(`[Bank12] BGM 0x${bgmId.toString(16)}: ${chCount} channels initialized (offset=0x${offset.toString(16)})`);
   }
 
   /**
@@ -526,8 +527,7 @@ export class Bank12AudioService {
   private _readNextSeqByte(chIdx: number): void {
     const trackPtr = this._trackPtrs[chIdx];
     const bankData = this._getBankForTrack(chIdx);
-    const offset = trackPtr - 0x8000;
-    const b = bankData[offset] ?? 0xFF;
+    const b = bankData[trackPtr] ?? 0xFF;
 
     // 推进指针
     this._trackPtrs[chIdx] = trackPtr + 1;
@@ -578,8 +578,7 @@ export class Bank12AudioService {
   private _readNextNote(chIdx: number): void {
     const trackPtr = this._trackPtrs[chIdx];
     const bankData = this._getBankForTrack(chIdx);
-    const offset = trackPtr - 0x8000;
-    let b = bankData[offset] ?? 0xFF;
+    let b = bankData[trackPtr] ?? 0xFF;
     this._trackPtrs[chIdx] = trackPtr + 1;
 
     const cp = this._chParams[chIdx];
@@ -626,31 +625,27 @@ export class Bank12AudioService {
 
     switch (cmd) {
     case 0xE0: { // 音符时长设置
-      const val = bankData[(tp - 0x8000)] ?? 0x27;
+      const val = bankData[tp] ?? 0x27;
       this._trackPtrs[chIdx] = tp + 1;
-      // 储存到下一音符时长位置
       this._chParams[chIdx].nextDurLo = val;
       break;
     }
     case 0xE2: { // 音量/包络设置
-      const val = bankData[(tp - 0x8000)] ?? 0;
+      const val = bankData[tp] ?? 0;
       this._trackPtrs[chIdx] = tp + 1;
-      // 存到 volRaw
       this._chParams[chIdx].volRaw = val;
       break;
     }
     case 0xE3: { // 直接设置音量
-      const val = bankData[(tp - 0x8000)] ?? 0x0A;
+      const val = bankData[tp] ?? 0x0A;
       this._trackPtrs[chIdx] = tp + 1;
       this._chParams[chIdx].volRaw = val;
       this._volModes[chIdx] = val;
       break;
     }
     case 0xE4: { // 子调用
-      // 暂存返回地址 (push to stack)
-      // 简化: 存到返回栈
-      const subLo = bankData[(tp - 0x8000)] ?? 0;
-      const subHi = bankData[(tp - 0x8000 + 1)] ?? 0x80;
+      const subLo = bankData[tp] ?? 0;
+      const subHi = bankData[tp + 1] ?? 0x80;
       this._trackPtrs[chIdx] = subLo | (subHi << 8);
       break;
     }
@@ -659,30 +654,32 @@ export class Bank12AudioService {
 
     case 0xE8: // 子序列跳转 (不保存返回)
       {
-        const jLo = bankData[(tp - 0x8000)] ?? 0;
-        const jHi = bankData[(tp - 0x8000 + 1)] ?? 0x80;
-        this._trackPtrs[chIdx] = jLo | (jHi << 8);
+        const jLo = bankData[tp] ?? 0;
+        const jHi = bankData[tp + 1] ?? 0x80;
+        // CPU 地址 → 数组偏移
+        const cpuPtr = jLo | (jHi << 8);
+        this._trackPtrs[chIdx] = cpuPtr - 0xA000;
       }
       break;
 
     case 0xE9: // 相对跳转
       {
-        const offset = bankData[(tp - 0x8000)] ?? 0;
+        const offset = bankData[tp] ?? 0;
         const signed8 = offset < 0x80 ? offset : offset - 256;
-        this._trackPtrs[chIdx] = (tp - 0x8000 + signed8) + 0x8000;
+        this._trackPtrs[chIdx] = tp + signed8;
       }
       break;
 
     case 0xEA: // 包络/滑动 — 待完善
       break;
     case 0xEB: { // 音量衰减
-      const val = bankData[(tp - 0x8000)] ?? 0;
+      const val = bankData[tp] ?? 0;
       this._trackPtrs[chIdx] = tp + 1;
       this._chParams[chIdx].volMode = val;
       break;
     }
     case 0xEC: { // 效果控制 — 设置通道类型
-      const val = bankData[(tp - 0x8000)] ?? 0;
+      const val = bankData[tp] ?? 0;
       this._trackPtrs[chIdx] = tp + 1;
       this._chTypes[chIdx] = val;
       this._baseFreqLo[chIdx] = this._chParams[chIdx].freqLo;
@@ -694,7 +691,7 @@ export class Bank12AudioService {
     case 0xEE: // Fade 方向 — 待完善
       break;
     case 0xEF: { // CMD_EF
-      const val = bankData[(tp - 0x8000)] ?? 0;
+      const val = bankData[tp] ?? 0;
       this._trackPtrs[chIdx] = tp + 1;
       break;
     }
