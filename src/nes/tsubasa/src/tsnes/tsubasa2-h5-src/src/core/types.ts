@@ -22,7 +22,7 @@ export const CHR_BANK_SIZE = 0x2000;
 export const PRG_BANK_SIZE = 0x2000;
 
 /** 按键位掩码 */
-export const enum BUTTON {
+export enum BUTTON {
   A      = 1 << 0,
   B      = 1 << 1,
   SELECT = 1 << 2,

@@ -1,1 +1,2 @@
-//各种音效数据一个音效一个文件
+// SFX 音效数据 [SFX_ID → { notes: [freq, dur][] }]
+export const sfxData = new Map<number, { notes: [number, number][] }>();

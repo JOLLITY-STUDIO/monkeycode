@@ -1,2 +1,2 @@
-//对应音频地址，缓存音频数据，由音频引擎（可能是bank12由进行什么特殊处理，因为apu是不变的）处理并交给apu生成-由webaudio连接管道
-export const audioCache = new Map<string, ArrayBuffer>();
+// APU 寄存器缓存 $4000-$401F（32字节）
+export const apuBuffer = new Uint8Array(32);

@@ -9,7 +9,7 @@
 // 根场景路由
 // ═══════════════════════════════════════════════════════════════
 
-export const enum SceneRoot {
+export enum SceneRoot {
   BOOT = 0,
   TITLE = 1,
   PASSWORD = 2,
@@ -24,7 +24,7 @@ export const enum SceneRoot {
 // Boot → 开场动画镜头（按顺序播放）
 // ═══════════════════════════════════════════════════════════════
 
-export const enum OpeningShot {
+export enum OpeningShot {
   LOGO = 0,
   /** 大空翼 */
   TSUBASA = 1,
@@ -41,7 +41,7 @@ export const enum OpeningShot {
 }
 // ═══════════════════════════════════════════════════════════════
 
-export const enum TitleMenu {
+export enum TitleMenu {
   KICKOFF = 0,
   CONTINUE = 1,
 }
@@ -50,14 +50,14 @@ export const enum TitleMenu {
 // Meeting → 赛前会议
 // ═══════════════════════════════════════════════════════════════
 
-export const enum MeetingMenu {
+export enum MeetingMenu {
   TEAM_INFO = 0,
   SCORE_MEMO = 1,
   TEAM_DATA = 2,
   KICKOFF = 3,
 }
 
-export const enum TeamDataMenu {
+export enum TeamDataMenu {
   FORMATION = 0,
   DEFENSE_TYPE = 1,
   CHANGE = 2,
@@ -65,7 +65,7 @@ export const enum TeamDataMenu {
   BACK = 4,
 }
 
-export const enum FormationType {
+export enum FormationType {
   /** 4-3-3 */
   FORM_433 = 0,
   /** 4-4-2 */
@@ -76,19 +76,19 @@ export const enum FormationType {
   BRAZIL = 3,
 }
 
-export const enum DefenseType {
+export enum DefenseType {
   NORMAL = 0,
   PRESS = 1,
   COUNTER = 2,
 }
 
-export const enum ChangeMenu {
+export enum ChangeMenu {
   POSITION = 0,
   MEMBER = 1,
   BACK = 2,
 }
 
-export const enum LevelMenu {
+export enum LevelMenu {
   SELECT_PLAYER = 0,
   DETAIL = 1,
   SPECIAL_DETAIL = 2,
@@ -99,7 +99,7 @@ export const enum LevelMenu {
 // Story → 剧情
 // ═══════════════════════════════════════════════════════════════
 
-export const enum StoryId {
+export enum StoryId {
   RIO_OPENING = 0,
   PRE_MATCH_INTRO = 1,
   POST_MATCH = 2,
@@ -115,7 +115,7 @@ export const enum StoryId {
 // Match → 比赛
 // ═══════════════════════════════════════════════════════════════
 
-export const enum MatchPhase {
+export enum MatchPhase {
   PRE_SHOW = 0,
   KICKOFF = 1,
   FIELD_POSITIONING = 2,
@@ -130,13 +130,13 @@ export const enum MatchPhase {
 }
 
 // 雷达画面
-export const enum RadarRole {
+export enum RadarRole {
   DRIBBLING = 0,
   DEFENDING = 1,
 }
 
 // 命令
-export const enum OffenseCommand {
+export enum OffenseCommand {
   PASS = 0,
   DRIBBLE = 1,
   SHOOT = 2,
@@ -144,7 +144,7 @@ export const enum OffenseCommand {
   SPECIAL = 4,
 }
 
-export const enum DefenseCommand {
+export enum DefenseCommand {
   TACKLE = 0,
   BLOCK = 1,
   PASS_CUT = 2,
@@ -152,37 +152,37 @@ export const enum DefenseCommand {
   SPECIAL = 4,
 }
 
-export const enum FloatBallEnemyCommand {
+export enum FloatBallEnemyCommand {
   TRAP = 0,
   SHOOT = 1,
   THROUGH = 2,
 }
 
-export const enum FloatBallOwnCommand {
+export enum FloatBallOwnCommand {
   FOLLOW = 0,
   CLEAR = 1,
   PASS_CUT = 2,
   STAND = 3,
 }
 
-export const enum KeeperFloatCommand {
+export enum KeeperFloatCommand {
   JUMP_OUT = 0,
   PREPARE = 1,
 }
 
-export const enum KeeperOneOnOneCommand {
+export enum KeeperOneOnOneCommand {
   PREPARE_DRIBBLE = 0,
   PREPARE_SHOOT = 1,
 }
 
-export const enum KeeperSaveCommand {
+export enum KeeperSaveCommand {
   PUNCH = 0,
   CATCH = 1,
   TRIANGLE_JUMP = 2,
 }
 
 // 定位球
-export const enum SetPieceType {
+export enum SetPieceType {
   GOAL_KICK = 0,
   CORNER_KICK = 1,
   THROW_IN = 2,
@@ -190,13 +190,13 @@ export const enum SetPieceType {
   PENALTY_KICK = 4,
 }
 
-export const enum SetPieceRole {
+export enum SetPieceRole {
   OFFENSE = 0,
   DEFENSE = 1,
 }
 
 // PK
-export const enum PkShootoutPhase {
+export enum PkShootoutPhase {
   SELECT_KICKERS = 0,
   KICKING = 1,
   RESULT = 2,
@@ -204,7 +204,7 @@ export const enum PkShootoutPhase {
 }
 
 // 比赛中暂停
-export const enum MatchPauseMenu {
+export enum MatchPauseMenu {
   FORMATION = 0,
   DEFENSE_TYPE = 1,
   POSITION_CHANGE = 2,
@@ -216,7 +216,7 @@ export const enum MatchPauseMenu {
 // Result → 赛后
 // ═══════════════════════════════════════════════════════════════
 
-export const enum ResultPhase {
+export enum ResultPhase {
   SCORE_DISPLAY = 0,
   LEVEL_UP = 1,
   PASSWORD_DISPLAY = 2,

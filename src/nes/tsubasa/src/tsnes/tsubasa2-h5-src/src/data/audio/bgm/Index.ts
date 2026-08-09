@@ -1,1 +1,2 @@
-//各种背景音乐数据一个音效一个文件
+// BGM 数据 [BGM_ID → { notes: [freq, dur][], loop: boolean }]
+export const bgmData = new Map<number, { notes: [number, number][]; loop: boolean }>();
