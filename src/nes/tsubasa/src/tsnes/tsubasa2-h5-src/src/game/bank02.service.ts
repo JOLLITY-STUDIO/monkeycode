@@ -259,51 +259,282 @@ export class Bank02Service {
   }
 
   // ──────────────────────────────────────────────
-  // $A203/$A206/$A209/$A20C/$A20F/$A212/$A215/$A218: Bank02 入口点
+  // $A203/$A206/$A209/$A20C/$A20F/$A212/$A215: Bank02 入口点
+  //
+  // 这些是 Bank00 $84C1 调用分发到 Bank02 的入口，
+  // 对应原始 Bank02 $8200+ JMP 跳板表。
+  // CPU 地址: $A203(entryB), $A206(entryC), $A209(unused),
+  //           $A20C(entryD), $A20F(entryE), $A212(entryF), $A215(entryG)
+  //
+  // 原始 asm line 285-294:
+  //   $8200: JMP $A21B  (entryA — resetEntry)
+  //   $8203: JMP $A2AF  (entryB — 密码/选择初始化)
+  //   $8206: JMP $A2E8  (entryC — 场景滚动/密码逻辑)
+  //   $820C: JMP $A855  (entryD — 场地生成)
+  //   $820F: JMP $A86E  (entryE — 场地块填充)
+  //   $8212: JMP $A484  (entryF — 跳转表分发器)
+  //   $8215: JMP $A8CE  (entryG — OAM精灵数据复制)
+  //   $8218: (unaccessed dead code,原为 JMP $A8FE)
   // ──────────────────────────────────────────────
 
   /**
-   * Bank 02 的多个入口点，对应 $A200+ 的 JMP 跳板。
-   * Bank 00 $84C1 通过这些入口分发到不同的 Bank02 子程序。
+   * 入场 B: $8203 → $A2AF (asm L368-392, ~25 bytes)
+   * 密码/选择画面初始化。
+   *
+   * 流程:
+   *   1. Bank00 初始化三连 ($99F0 + $98A0 + $9B7F)
+   *   2. 关 NMI (AND #$7F on ram_0020 → $2000/$E000)
+   *   3. 清零临时区 + 设参数
+   *   4. JSR $AA06 (内部初始化)
+   *   5. JMP $C557 → Bank30 场景控制器
    */
-
-  /** 入场 A: $A203 → 对应原始 JMP $XXX */
-  entryA(): void {
-    // 场景入场 A — 待翻译
-  }
-
-  /** 入场 B: $A206 */
   entryB(): void {
-    // 待翻译
+    const s = this._store;
+    // 82AF: JSR $99F0
+    this._bank00.unknownInit();
+    // 82B2: JSR $98A0 — NT 清零
+    this._bank00.ntClear();
+    // 82B5: JSR $9B7F — PPU 初始化
+    this._bank00.ppuInit();
+
+    // 82B8-82C3: 关 NMI
+    let ppuctrl = s.read('ram_0020') & 0x7F;
+    s.write('ram_0020', ppuctrl);
+    s.write('ppuctrl_hw', ppuctrl);
+
+    // 82C4-82D6: 清零临时区域
+    this._zeroTempAreas();
+
+    // 82D8-82E2: 设 A=$98,X=2,Y=$68→$EC=$68,Y=4 → JSR $AA06
+    s.write('ram_00EC', 0x68);
+    this._internalAA06();
+
+    // 82E5: JMP $C557 → Bank30 场景控制器
+    this._jumpToBank30SceneCtrl();
   }
 
-  /** 入场 C: $A209 */
-  entryC(): void {
-    // 待翻译
+  /**
+   * 入场 C: $8206 → $A2E8 (asm L393-511, ~119 bytes)
+   * 场景选择 / 镜头滚动 / 密码逻辑。
+   *
+   * 读取 ram_0057 作为选择器，处理摄像机滚动动画。
+   * 特殊值 ram_0057=$81 触发密码逻辑。
+   *
+   * @param sceneParam ram_0057 的值
+   */
+  entryC(sceneParam?: number): void {
+    const s = this._store;
+    const param = sceneParam ?? s.read('ram_0057');
+
+    // 82EA: BMI $8338 — bit7 检查
+    if (param & 0x80) {
+      if (param === 0x81) {
+        // 833A: BEQ $83A3 — 密码特殊路径
+        this._entryC_passwordPath();
+      }
+      return;
+    }
+
+    // 82EC: STA ram_00ED
+    s.write('ram_00ED', param);
+
+    // 82EE-82F6: 清零 $FFEC+$FA (6 bytes)
+    for (let y = 0xFA; y <= 0xFF; y++) {
+      s.write(`temp_EC_${y.toString(16)}`, 0);
+    }
+
+    // 82F8: JSR $9FA8 → Bank switch to Bank 01 (H5: 数据已在内存)
+    this._bank00.bankSwitch(0x01);
+
+    // 82FD-8335: 摄像机滚动处理 — 最多5组 delta
+    s.write('ram_00EC', 0); // 组计数器
+    this._entryC_scrollLoop();
+
+    // 8335: JMP $A2F8 → 循环回 $9FA8
+    // 在原始代码中这会重新切换 Bank01 并继续处理
+    // H5: 直接再跑一次循环
+    this._bank00.bankSwitch(0x01);
+    this._entryC_scrollLoop();
   }
 
-  /** 入场 D: $A20C ($820C → $A20C 跳板) */
+  /**
+   * 入场 D: $820C → $A855
+   * 场地生成主流程 (sub_85DC, ~196 bytes)
+   * 负责绘制足球场背景 tile。
+   */
   entryD(): void {
-    // 对应 Bank 02 分析: 场景入口D
+    // 对应 sub_85DC — 场地生成主流程
+    this._fieldGenerationMain();
   }
 
-  /** 入场 E: $A20F ($820F → $A20F 跳板) */
+  /**
+   * 入场 E: $820F → $A86E
+   * 场地块填充 (场地生成辅助, sub_877B 附近)
+   */
   entryE(): void {
-    // 待翻译
+    this._fieldTileFill();
   }
 
-  /** 入场 F: $A212 ($8212 → $A212 跳板) */
-  entryF(): void {
-    // 待翻译
+  /**
+   * 入场 F: $8212 → $A484 ($8484)
+   * 跳转表分发器 (asm L684-691, 8 bytes)
+   *
+   * 原始代码:
+   *   LDA ram_00ED; ASL; TAX
+   *   LDA $A492,X; PHA  (push hi)
+   *   LDA $A491,X; PHA  (push lo)
+   *   RTS               (= JMP to target)
+   *
+   * 跳转表 (18 entries, D1=CDL标记已访问):
+   *   [0] $A4C0, [1] $A559, [2] $A57B, [3] $A581(unused),
+   *   [4] $A5A2(unused), [5] $A5A8, [6] $A5B0,
+   *   [7] $A5B8(unused), [8] $A5BF(unused), [9] $A5CD(unused),
+   *   [10] $A5DB, [11] $A5E8, [12] $A602, [13] $A61C,
+   *   [14] $A629, [15] $A650, [16] $A69C, [17] $A77A, [18] $A782
+   *
+   * @param ed ram_00ED 跳转索引
+   */
+  entryF(ed?: number): void {
+    const index = ed ?? this._store.read('ram_00ED');
+    switch (index) {
+      case 0:  this._jumpHandler_00_A4C0(); break;
+      case 1:  this._jumpHandler_01_A559(); break;
+      case 2:  this._jumpHandler_02_A57B(); break;
+      case 3:  this._jumpHandler_03_A581(); break;
+      case 4:  this._jumpHandler_04_A5A2(); break;
+      case 5:  this._jumpHandler_05_A5A8(); break;
+      case 6:  this._jumpHandler_06_A5B0(); break;
+      case 7:  this._jumpHandler_07_A5B8(); break;
+      case 8:  this._jumpHandler_08_A5BF(); break;
+      case 9:  this._jumpHandler_09_A5CD(); break;
+      case 10: this._jumpHandler_10_A5DB(); break;
+      case 11: this._jumpHandler_11_A5E8(); break;
+      case 12: this._jumpHandler_12_A602(); break;
+      case 13: this._jumpHandler_13_A61C(); break;
+      case 14: this._jumpHandler_14_A629(); break;
+      case 15: this._jumpHandler_15_A650(); break;
+      case 16: this._jumpHandler_16_A69C(); break;
+      case 17: this._jumpHandler_17_A77A(); break;
+      default: this._jumpHandler_18_A782(); break; // 18
+    }
   }
 
-  /** 入场 G: $A215 ($8215 → $A215 跳板) */
+  /**
+   * 入场 G: $8215 → $A8CE
+   * OAM 精灵数据复制到 $0200 (sub_882F 相关，~102 bytes)
+   */
   entryG(): void {
-    // 待翻译
+    this._oamDataCopy();
   }
 
-  /** 入场 H: $A218 */
+  /**
+   * 入场 H: $8218 → $A8FE (未使用，死代码)
+   */
   entryH(): void {
-    // 待翻译
+    // CDL 标记为 unaccessed，死代码
+  }
+
+  // ════════════════════════════════════════════
+  // 内部: 共享工具
+  // ════════════════════════════════════════════
+
+  /** 清零临时变量区 ($FF19+$E8 和 $FFE0+$5A) — 被 entryB 和 resetEntry 调用 */
+  private _zeroTempAreas(): void {
+    const s = this._store;
+    for (let y = 0xE8; y <= 0xFF; y++) s.write(`temp_A0_${y.toString(16)}`, 0);
+    for (let y = 0x5A; y <= 0xF9; y++) s.write(`temp_E0_${y.toString(16)}`, 0);
+  }
+
+  /** Bank30 $C557: 场景控制器入口 (H5: 转发到 Bank30) */
+  private _jumpToBank30SceneCtrl(): void {
+    // TODO: Bank30 scene controller — 对应的 Bank30 $C557 实现
+  }
+
+  // ════════════════════════════════════════════
+  // Entry C 辅助
+  // ════════════════════════════════════════════
+
+  /** 摄像机滚动循环 ($8303-$8333): 5组delta应用到ram_00E6/ram_007A */
+  private _entryC_scrollLoop(): void {
+    const s = this._store;
+    let ec = s.read('ram_00EC');
+    let y = s.read('ram_00ED');
+    while (ec < 0x0F) {
+      const xIdx = (y & 0x0F) >> 1;
+      const dx = this._readTable_AADF(y);
+      const dy = this._readTable_AAE0(y);
+      // scroll X
+      s.write(`ram_${(0xE6 + xIdx).toString(16)}`,
+        (s.read(`ram_${(0xE6 + xIdx).toString(16)}`) + dx) & 0xFF);
+      // scroll Y 16-bit signed add
+      const key7a = `ram_${(0x7A + ec).toString(16)}`;
+      const key7b = `ram_${(0x7B + ec).toString(16)}`;
+      const lo = s.read(key7a) + dy;
+      const signExt = dy < 0 ? 0xFF : 0x00;
+      const carry = (lo > 0xFF || lo < 0) ? 1 : 0;
+      s.write(key7a, lo & 0xFF);
+      s.write(key7b, (s.read(key7b) + signExt + carry) & 0xFF);
+      y += 2; ec += 3;
+      s.write('ram_00EC', ec);
+    }
+  }
+
+  /** $AADF 表: 滚动X delta (Bank02 PRG offset $4ADF, 具体数据待ROM提取) */
+  private _readTable_AADF(_offset: number): number { return 0; }
+
+  /** $AAE0 表: 滚动Y delta */
+  private _readTable_AAE0(_offset: number): number { return 0; }
+
+  /** 密码逻辑 ($8338+): ram_0057=$81特殊处理 */
+  private _entryC_passwordPath(): void {
+    // TODO: 翻译密码/特殊场景逻辑 asm L434-L511
+  }
+
+  // ════════════════════════════════════════════
+  // Entry D/E — 场地生成
+  // ════════════════════════════════════════════
+
+  /** sub_85DC: 场地生成主流程 (~196 bytes) */
+  private _fieldGenerationMain(): void {
+    // TODO: 翻译 sub_85DC — 足球场tile布局
+  }
+
+  /** sub_877B + $A86E: 场地块填充 */
+  private _fieldTileFill(): void {
+    // TODO: 翻译 sub_877B
+  }
+
+  // ════════════════════════════════════════════
+  // Entry F — 跳转表处理器 (18 handlers)
+  // 对应 $8484 dispatch table, CDL D1=accessed
+  // ════════════════════════════════════════════
+
+  /**[0]$A4C0 D1*/ private _jumpHandler_00_A4C0(): void { /* TODO */ }
+  /**[1]$A559 D1*/ private _jumpHandler_01_A559(): void { /* TODO */ }
+  /**[2]$A57B D1*/ private _jumpHandler_02_A57B(): void { /* TODO */ }
+  /**[3]$A581 --*/ private _jumpHandler_03_A581(): void { /* unaccessed */ }
+  /**[4]$A5A2 --*/ private _jumpHandler_04_A5A2(): void { /* unaccessed */ }
+  /**[5]$A5A8 D1*/ private _jumpHandler_05_A5A8(): void { /* TODO */ }
+  /**[6]$A5B0 D1*/ private _jumpHandler_06_A5B0(): void { /* TODO */ }
+  /**[7]$A5B8 --*/ private _jumpHandler_07_A5B8(): void { /* unaccessed */ }
+  /**[8]$A5BF --*/ private _jumpHandler_08_A5BF(): void { /* unaccessed */ }
+  /**[9]$A5CD --*/ private _jumpHandler_09_A5CD(): void { /* unaccessed */ }
+  /**[10]$A5DB D1*/ private _jumpHandler_10_A5DB(): void { /* TODO */ }
+  /**[11]$A5E8 D1*/ private _jumpHandler_11_A5E8(): void { /* TODO */ }
+  /**[12]$A602 D1*/ private _jumpHandler_12_A602(): void { /* TODO */ }
+  /**[13]$A61C D1*/ private _jumpHandler_13_A61C(): void { /* TODO */ }
+  /**[14]$A629 D1*/ private _jumpHandler_14_A629(): void { /* TODO */ }
+  /**[15]$A650 D1*/ private _jumpHandler_15_A650(): void { /* TODO */ }
+  /**[16]$A69C D1*/ private _jumpHandler_16_A69C(): void { /* TODO */ }
+  /**[17]$A77A D1*/ private _jumpHandler_17_A77A(): void { /* TODO */ }
+  /**[18]$A782 D1*/ private _jumpHandler_18_A782(): void { /* TODO */ }
+
+  // ════════════════════════════════════════════
+  // Entry G — OAM 精灵复制
+  // ════════════════════════════════════════════
+
+  /** $A8CE + sub_882F: AA47读取与OAM缓冲写入 (~102 bytes) */
+  private _oamDataCopy(): void {
+    // TODO: 翻译 OAM 精灵数据复制
   }
 }
