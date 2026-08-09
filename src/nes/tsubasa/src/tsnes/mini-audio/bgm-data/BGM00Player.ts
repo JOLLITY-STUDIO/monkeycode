@@ -17,6 +17,7 @@
  *   setInterval(() => player.tick(), 1000/60);
  */
 import PAPU from '../../src/papu/index';
+import { TIMING_SUB_TABLES } from './_timing_data';
 
 // ════════════════════════════════════════════════
 // 常量 (Bank 12 ROM)
@@ -112,10 +113,12 @@ function createChBlock(): ChBlock {
 interface WorkArea {
   /** $0706: 通道活跃 bitmask (8 bits) */
   chMask: number;
-  /** $0707-$0716: 通道 dur_lo (每通道 2B 间隔，即 stride=4，但实际我们只用 1B) */
+  /** $0707+X: 通道 dur_lo (DEC 后触发音序器) */
   durLo: Uint8Array;
-  /** $0708-$0717: 通道 dur_hi */
+  /** $0709+X: 通道 next_dur_lo (DEC 后触发 timing table 读取) */
   durHi: Uint8Array;
+  /** $070A+X: 通道 next_dur_hi (静态值，来自 timing table，用于音量计算) */
+  nextDurHi: Uint8Array;
   /** $07AF-$07B6: 通道类型 (0/1/2) */
   chType: Uint8Array;
   /** $07B7-$07BE: 基础频率 lo */
@@ -147,6 +150,7 @@ function createWorkArea(): WorkArea {
     chMask: 0,
     durLo: new Uint8Array(NUM_CHANNELS),
     durHi: new Uint8Array(NUM_CHANNELS),
+    nextDurHi: new Uint8Array(NUM_CHANNELS),
     chType: new Uint8Array(NUM_CHANNELS),
     baseFreqLo: new Uint8Array(NUM_CHANNELS),
     baseFreqHi: new Uint8Array(NUM_CHANNELS),
@@ -176,6 +180,10 @@ export class BGM00Player {
   private isPlaying = false;
   private frameCount = 0;
   private totalChannels = 4; // SQ1=ch4, SQ2=ch5, TRI=ch6, NOISE=ch7
+
+  /** Shared BGM raw data for CALL/JUMP NES address resolution */
+  private sharedData: Uint8Array | null = null;
+  private bgmNesBase = 0; // NES base address of sharedData
 
   // $8623 EOR #$07 mapping: APU register X = (7-ch) * 4 & 0x0F
   // ch4(SQ1)→X=$0C, ch5(SQ2)→X=$08, ch6(TRI)→X=$04, ch7(NOISE)→X=$00
@@ -219,32 +227,55 @@ export class BGM00Player {
   /**
    * $8349 — 音乐播放初始化
    * 通道映射: SQ1→ch4, SQ2→ch5, TRI→ch6, NOISE→ch7
+   * 
+   * @param sharedRaw 可选: 完整BGM数据，用于CALL/JUMP NES地址转换
+   * @param nesBase   共享数据的NES起始地址 (e.g. 0xB7AD for BGM00)
    */
   load(
     trackSQ1: readonly number[],
     trackSQ2: readonly number[],
     trackTRI: readonly number[],
     trackNOISE: readonly number[],
+    sharedRaw?: readonly number[],
+    nesBase?: number,
   ): boolean {
     this.stop();
 
+    if (sharedRaw) {
+      this.sharedData = new Uint8Array(sharedRaw);
+      this.bgmNesBase = nesBase || 0;
+    } else {
+      this.sharedData = null;
+      this.bgmNesBase = 0;
+    }
+
     this.w.chMask = 0;
-    this._initChannel(4, trackSQ1);
-    this._initChannel(5, trackSQ2);
-    this._initChannel(6, trackTRI);
-    this._initChannel(7, trackNOISE);
+
+    // BGM00_RAW structure: [HEADER 12B] [FF] [SQ1] [FF] [SQ2] [FF] [TRI] [FF] [NOISE]
+    // Each track array excludes the 0xFF terminators.
+    // In shared data mode: start offsets account for header + terminators
+    let sharedOff = this.sharedData ? 13 : 0; // skip 12B header + 1B 0xFF
+    this._initChannel(4, trackSQ1, sharedOff);
+    sharedOff += trackSQ1.length + (this.sharedData ? 1 : 0);
+    this._initChannel(5, trackSQ2, sharedOff);
+    sharedOff += trackSQ2.length + (this.sharedData ? 1 : 0);
+    this._initChannel(6, trackTRI, sharedOff);
+    sharedOff += trackTRI.length + (this.sharedData ? 1 : 0);
+    this._initChannel(7, trackNOISE, sharedOff);
 
     this.totalChannels = 4;
     return true;
   }
 
   /** $8349 init for one channel */
-  private _initChannel(ch: number, data: readonly number[]): void {
+  private _initChannel(ch: number, data: readonly number[], sharedStart = 0): void {
     if (data.length === 0) return;
 
+    const useShared = this.sharedData !== null;
+
     const blk = this.blocks[ch];
-    blk.trackLo = 0;
-    blk.trackHi = 0;
+    blk.trackLo = useShared ? (sharedStart & 0xFF) : 0;
+    blk.trackHi = useShared ? ((sharedStart >> 8) & 0xFF) : 0;
     blk.timingLo = 1; // next_dur_lo = 1
     blk.timingHi = 0;
     blk.timingOff = 0;
@@ -256,6 +287,7 @@ export class BGM00Player {
 
     this.w.durLo[ch] = 1;
     this.w.durHi[ch] = 1;
+    this.w.nextDurHi[ch] = 1;   // $070A+X: next_dur_hi (static, from timing table)
     this.w.chType[ch] = 0;
     this.w.volDecay[ch] = 0;
     this.w.volDecayReload[ch] = 0;
@@ -337,8 +369,31 @@ export class BGM00Player {
       let nd = (this.w.durHi[ch] - 1) & 0xFF;
       this.w.durHi[ch] = nd;
       if (nd === 0) {
-        nd = this.w.durLo[ch] || 1;
-        this.w.durHi[ch] = nd;
+        // $80E8-$8108: Read next entry from timing table if enabled
+        // blk.timingHi = 0xFF means $E0 has been called (enabled)
+        if (blk.timingHi === 0xFF) {
+          const subTable = TIMING_SUB_TABLES[blk.timingLo];
+          if (subTable && subTable.length > 0) {
+            // timingOff / 2 = entry index (each entry is 2 bytes)
+            let entryIdx = blk.timingOff >> 1;
+            if (entryIdx >= subTable.length) entryIdx = 0;
+            const [newDurLo, newNextDurHi] = subTable[entryIdx];
+            nd = newDurLo;
+            this.w.durHi[ch] = newDurLo;
+            // $070A+X: next_dur_hi for volume calculation
+            this.w.nextDurHi[ch] = newNextDurHi || 0;
+            // Advance timing table offset by 2 bytes
+            blk.timingOff = (blk.timingOff + 2) & 0xFF;
+          } else {
+            // SubTable not found/empty: reload from durLo (preserves last prefix duration)
+            nd = this.w.durLo[ch] || 1;
+            this.w.durHi[ch] = nd;
+          }
+        } else {
+          // No timing table: reload durHi from durLo (simple repeat mode)
+          nd = this.w.durLo[ch] || 1;
+          this.w.durHi[ch] = nd;
+        }
       }
 
       // $8109: JSR $81DB — 音量处理
@@ -346,17 +401,21 @@ export class BGM00Player {
     }
 
     // ── Phase 2 ($8129-$8161): 4 组 APU 寄存器写入 ──
-    const groupMasks = [0x11, 0x22, 0x44, 0x88]; // ch0+ch4, ch1+ch5, ch2+ch6, ch3+ch7
-    for (let g = 0; g < 4; g++) {
-      if (!(this.w.chMask & groupMasks[g])) continue;
-
-      // Determine primary channel in group (lower channel number takes priority)
-      const ch0 = g;       // lower channel
-      const ch1 = g + 4;   // upper channel
-      const ch = (this.w.chMask & (1 << ch0)) ? ch0 : ch1;
-
+    // 严格对照 bank_12.asm $8129-$8161:
+    //   循环方向: g=3→2→1→0, mask=$11→$22→$44→$88
+    //   X = (3^g)*4: g=3→$00(SQ1) g=2→$04(SQ2) g=1→$08(TRI) g=0→$0C(NOISE)
+    //   每组的通道对: (ch_g, ch_g+4), 优先低通道
+    const groupSlots = [
+      { g: 3, mask: 0x11, chLow: 0, chHigh: 4 },  // → SQ1 ($4000)
+      { g: 2, mask: 0x22, chLow: 1, chHigh: 5 },  // → SQ2 ($4004)
+      { g: 1, mask: 0x44, chLow: 2, chHigh: 6 },  // → TRI ($4008)
+      { g: 0, mask: 0x88, chLow: 3, chHigh: 7 },  // → NOISE ($400C)
+    ];
+    for (const slot of groupSlots) {
+      if (!(this.w.chMask & slot.mask)) continue;
+      const ch = (this.w.chMask & (1 << slot.chLow)) ? slot.chLow : slot.chHigh;
       // $816E: 写入 APU 寄存器
-      this._writeApuReg(ch, g);
+      this._writeApuReg(ch, slot.g);
     }
 
     // ── Audio rendering ──
@@ -403,15 +462,19 @@ export class BGM00Player {
     // $83CB-$83D1: AND #$CF on vol_ctrl (clear bits 4+5)
     blk.volCtrl &= 0xCF;
 
+    // Use shared data if available (for CALL/JUMP NES address resolution)
+    const data = this.sharedData || track;
+    const maxLen = data.length;
+
     while (true) {
       const pos = blk.trackLo | (blk.trackHi << 8);
-      if (pos >= track.length) {
+      if (pos >= maxLen) {
         // End of track data
         this.w.chMask &= ~(1 << ch);
         return;
       }
 
-      const b = track[pos];
+      const b = data[pos];
       this._advanceTrack(blk, 1);
 
       // $83E1: BPL → b < $80 = 音符字节 (频率数据)
@@ -428,7 +491,7 @@ export class BGM00Player {
 
       // $83E4: CMP #$E0 → b >= $E0 = 命令分发
       if (b >= 0xE0) {
-        const ok = this._dispatchCmd(ch, blk, track, b);
+        const ok = this._dispatchCmd(ch, blk, data, b);
         if (!ok) return; // command ended the sequence (e.g. $FF)
         continue;
       }
@@ -462,12 +525,13 @@ export class BGM00Player {
         return;
       }
 
-      let fLo = noteByte;
+      // Noise/Direct: lower nibble = period value, upper nibble may encode other info
+      let fLo = noteByte & 0x0F;
       let fHi = 0;
 
       // Apply portamento offset ($07A7)
       if (this.w.portamentoVal[ch] !== 0) {
-        fLo = (fLo + this.w.portamentoVal[ch]) & 0xFF;
+        fLo = (fLo + this.w.portamentoVal[ch]) & 0x0F;
       }
 
       this.w.baseFreqLo[ch] = fLo;
@@ -491,11 +555,12 @@ export class BGM00Player {
     let fLo = period & 0xFF;
     let fHi = (period >> 8) & 7;
 
-    // $844C-$845A: 八度右移
+    // $844C-$845A: 八度右移 (LSR fHi → ROR fLo, NES 16-bit period)
     const octave = (noteByte & 0xF0) >> 4;
     for (let o = 0; o < octave; o++) {
+      const carry = fHi & 1;  // Save fHi bit0 BEFORE shift (6502 LSR puts bit0→C)
       fHi >>= 1;
-      fLo = (fLo >> 1) | ((fHi & 1) << 7);
+      fLo = (fLo >> 1) | (carry << 7);  // 6502 ROR fLo: C→bit7
       fHi &= 7;
     }
     if (fLo < 2 && fHi === 0) fLo = 2;
@@ -541,12 +606,12 @@ export class BGM00Player {
   // cmdByte has already been consumed from track (pointer advanced past it)
   // ════════════════════════════════════════════════
 
-  private _dispatchCmd(ch: number, blk: ChBlock, track: Uint8Array, cmdByte: number): boolean {
+  private _dispatchCmd(ch: number, blk: ChBlock, data: Uint8Array, cmdByte: number): boolean {
     const read = (): number => {
       const pos = blk.trackLo | (blk.trackHi << 8);
-      if (pos < track.length) {
+      if (pos < data.length) {
         this._advanceTrack(blk, 1);
-        return track[pos];
+        return data[pos];
       }
       return 0;
     };
@@ -554,9 +619,20 @@ export class BGM00Player {
     const cmdIdx = cmdByte & 0x1F;
 
     switch (cmdIdx) {
-      // $E0 → $8544: SET_TIMING_TABLE
+      // $E0 → $8544: SET_TIMING_TABLE_PTR
+      // Reads next byte as index → lookup TIMING_SUB_TABLES
+      // Stores index at blk.timingLo, marks enabled via timingHi=0xFF
+      // Pre-seed nextDurHi from first timing entry for immediate volume calc
       case 0x00: {
-        read(); // consume param
+        const tblIdx = read();
+        blk.timingLo = tblIdx;      // Store index into SUB_TABLES
+        blk.timingHi = 0xFF;        // Enable flag
+        blk.timingOff = 0;          // Reset offset (NOT consumed yet, durHi=0 will consume)
+        // Pre-seed nextDurHi for correct volume in frames before first durHi expiry
+        const subTable = TIMING_SUB_TABLES[tblIdx];
+        if (subTable && subTable.length > 0) {
+          this.w.nextDurHi[ch] = subTable[0][1] || 0;
+        }
         return true;
       }
 
@@ -565,18 +641,18 @@ export class BGM00Player {
         return true;
       }
 
-      // $E2 → $8641: SET_DUTY (bits 6-7 of vol_ctrl)
+      // $E2 → $8641: SET_VOLUME_ENV (bits 0-3 of vol_ctrl)
       case 0x02: {
         const param = read();
-        blk.volCtrl = (blk.volCtrl & 0x3F) | (param & 0xC0);
+        blk.volCtrl = (blk.volCtrl & 0xF0) | (param & 0x0F);
         return true;
       }
 
-      // $E3 → $855F: SET_VOLUME_CTRL (bits 0-5 of vol_ctrl)
+      // $E3 → $855F: OR_VOLUME_CTRL (vol_ctrl |= next byte)
       case 0x03: {
         const param = read();
         if (this.w.dmcActive === 0) {
-          blk.volCtrl = (blk.volCtrl & 0xF0) | (param & 0x3F);
+          blk.volCtrl |= param;
         }
         return true;
       }
@@ -611,12 +687,13 @@ export class BGM00Player {
         return true;
       }
 
-      // $E8 → $8578: JUMP (absolute, 2 bytes)
+      // $E8 → $8578: JUMP (absolute, 2 bytes — NES addr → shared data offset)
       case 0x08: {
         const lo = read();
         const hi = read();
-        blk.trackLo = lo;
-        blk.trackHi = hi;
+        const target = this._nesAddrToOffset(lo | (hi << 8));
+        blk.trackLo = target & 0xFF;
+        blk.trackHi = (target >> 8) & 0xFF;
         return true;
       }
 
@@ -624,7 +701,7 @@ export class BGM00Player {
       case 0x09: {
         const lo = read();
         const hi = read();
-        const target = lo | (hi << 8);
+        const target = this._nesAddrToOffset(lo | (hi << 8));
         // Push current position as return address
         this._pushReturn(blk);
         blk.trackLo = target & 0xFF;
@@ -752,44 +829,62 @@ export class BGM00Player {
   // $81DB: 音量/包络处理
   // ════════════════════════════════════════════════
 
+  /**
+   * $81DB-$8256: 音量/包络处理
+   *
+   * $81E0-$81E2: hiNib = volCtrl & 0xF0 (存入 ram_00F6)
+   * $81E4-$81EC: rest (bit5) → vol = 0x0F (存入 ram_00F7)
+   * $81EE-$81F1: 非 rest → vol = volCtrl & 0x0F (存入 ram_00F7)
+   * $81F3-$8230: 音量衰减计数器 volDecay → 递增 vol → 写回 volCtrl
+   *                衰减结束 (vol 到 0x0F) → dmcActive=0x80
+   * $8233-$8243: apuVol = (durHi - vol) | hiNib, clamp ≥ 0
+   */
   private _processVolume(ch: number): void {
     const blk = this.blocks[ch];
     const volByte = blk.volCtrl;
-    const hiNib = volByte & 0xF0;
-    let vol = volByte & 0x0F;
+    const hiNib = volByte & 0xF0;   // $81E0-$81E2: ram_00F6
+    let vol: number;
 
-    // Bit5 = rest flag
+    // $81E4-$81F1: 处理 rest
     if (hiNib & 0x20) {
-      blk.volCtrl = 0x0F;
-      blk.apuVol = 0x30;
-      return;
+      vol = 0x0F;                    // $81E8-$81EA: 设置 vol=0x0F
+    } else {
+      vol = volByte & 0x0F;         // $81EE-$81F1: vol = volCtrl & 0x0F
     }
 
-    // $81F3-$8230: Volume decay counter
+    // $81F3-$8230: 音量衰减计数器
     let vc = this.w.volDecay[ch];
     if (vc !== 0) {
       vc--;
       this.w.volDecay[ch] = vc;
 
       if (vc === 0) {
-        vol++;
-        if (vol > 0x0F) {
+        vol++;                       // $8205: ADC #$01
+        if (vol > 0x0F) {           // $8207-$8214: vol == 0x10 → clamp
           vol = 0x0F;
           this.w.volDecayReload[ch] = 0;
           this.w.dmcActive = 0x80;
         }
+        // $8217-$821E: 写回 volCtrl = hiNib | vol
         blk.volCtrl = hiNib | vol;
       }
 
+      // $8225-$8230: 重载衰减计数器
       vc = this.w.volDecay[ch];
       if (vc === 0 && this.w.volDecayReload[ch] !== 0) {
         this.w.volDecay[ch] = this.w.volDecayReload[ch];
       }
     }
 
-    // $8233-$8243: Compute and store final APU volume
-    const finalVol = (hiNib & 0xF0) | vol;
-    blk.apuVol = finalVol;
+    // ═══ $8233-$8243: 最终 APU 音量 ═══
+    // apuVol = (next_dur_hi - volume) | hiNib, clamp ≥ 0
+    // next_dur_hi ($070A+X) 是静态值（从 timing table 读取），不随时间变化
+    // 当前 BGM00Player 未实现完整 timing table，next_dur_hi 固定为 1
+    const nxtDurHi = this.w.nextDurHi[ch];
+    let finalVol = nxtDurHi - vol;
+    if (finalVol < 0) finalVol = 0;  // $823B-$823D: BPL / LDA #$00
+    finalVol |= hiNib;               // $823F: ORA ram_00F6
+    blk.apuVol = finalVol;           // $8243: STA (ram_00F0),Y
 
     // $8245-$8256: Channel type processing
     const cht = this.w.chType[ch];
@@ -895,14 +990,16 @@ export class BGM00Player {
     // $818F-$81A1: sweep 检查
     if (!(blk.volCtrl & 0x10)) {
       this.w.muteFlags[group] = 0x08;
-      // 只有 SQ 通道（$4001/$4005）需要写 sweep 禁用
-      if (apuBase < 0x08) {
+      // SQ 通道 ($4001/$4005) 和 NOISE ($400D, NES ignores it but Bank12 writes it)
+      if (apuBase < 0x08 || group === 0) {
         this.papu.writeReg(apuAddr + 1, 0x08);
       }
     }
 
     // $81A7-$81DA: 写入频率
     if (this.w.freqDirty[ch]) {
+      // Bank 12 ASM: freqHi bit7 = dirty flag, written to $4003 as (freqHi|bit7)|0x18
+      const dirtyFlag = 0x80; // we're inside the if-block, so it was dirty
       this.w.freqDirty[ch] = 0;
 
       // $81B3-$81B5: freq_lo → $4002+X
@@ -910,7 +1007,7 @@ export class BGM00Player {
 
       // $81B8-$81CA: freq_hi | 0x18 → $4003+X
       const fh = blk.freqHi & 7;
-      const fhLen = fh | 0x18;
+      const fhLen = dirtyFlag | fh | 0x18;
 
       // $81C5-$81C8: SQ 通道做 $4003 去重；NOISE/TRI 不做
       if (group >= 2 && fhLen === this.w.last4003[group]) {
@@ -920,8 +1017,9 @@ export class BGM00Player {
       this.papu.writeReg(apuAddr + 3, fhLen);
       this.w.last4003[group] = fhLen;
 
-      // $81D0-$81D7: 若 muteFlags 非零，清零 last4003 强制下帧重新触发
-      if (this.w.muteFlags[group] !== 0) {
+      // $81D0-$81D7: muteFlags==0 时清零 last4003 强制下帧重新触发 $4003；
+      // muteFlags!=0 时保留绕过 dedup 限制（sweep 未启用时 dedup）
+      if (this.w.muteFlags[group] === 0) {
         this.w.last4003[group] = 0;
       }
     }
@@ -1003,5 +1101,15 @@ export class BGM00Player {
     addr += n;
     blk.trackLo = addr & 0xFF;
     blk.trackHi = (addr >> 8) & 0xFF;
+  }
+
+  /** Convert NES absolute address → offset within shared data */
+  private _nesAddrToOffset(nesAddr: number): number {
+    if (this.sharedData) {
+      const offset = (nesAddr - this.bgmNesBase) & 0xFFFF;
+      if (offset < this.sharedData.length) return offset;
+    }
+    // Fallback: treat address as-is (old behavior for non-shared mode)
+    return nesAddr;
   }
 }

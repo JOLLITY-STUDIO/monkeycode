@@ -250,7 +250,6 @@ export class MapperAudio {
   // ═══════════════ 手柄 ═══════════════
 
   private _joy1Read(): number {
-    // 总是返回 0（无按键）。开头的 BGM 不需要手柄。
     return 0;
   }
 

@@ -1,0 +1,1 @@
+//对应4个nametable的缓存 实际上只需要两个，nt2-3只是映射，当前的nametable会与实际的chr tiles和pallete对应，所以其实建立对象关系逐渐外键关联最好了。

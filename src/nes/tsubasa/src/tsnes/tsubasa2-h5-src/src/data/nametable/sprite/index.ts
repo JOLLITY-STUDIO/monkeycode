@@ -1,0 +1,1 @@
+//各精灵图的tilesid。同样需要对应的chr tiles和pallete(由palleteCache.ts提供)

@@ -20,6 +20,7 @@ export class NesAudio {
     onAudioSample: ((l: number, r: number) => void) | null;
     onBatteryRamWrite: (addr: number, val: number) => void;
   };
+  frameCount = 0;
 
   constructor() {
     this.opts = {
@@ -93,6 +94,7 @@ export class NesAudio {
       console.error("[NesAudio] frame crash:", e);
       throw e;
     }
+    this.frameCount++;
   }
 
   /** 运行指定帧数 */
