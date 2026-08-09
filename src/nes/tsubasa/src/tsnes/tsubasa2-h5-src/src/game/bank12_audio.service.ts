@@ -77,9 +77,6 @@ const DURATION_TABLE: number[] = [
   // Index 48-63: overlapping/noise, don't use
 ];
 
-/** APU base address per channel group ($4000,$4004,$4008,$400C) */
-const APU_BASE_ADDR: number[] = [0x4000, 0x4004, 0x4008, 0x400C];
-
 // ═══════════════════════════════════════════════════════════════
 // 通道参数块 (8 channels × 16 bytes, stride 0x10, base $0707)
 // ═══════════════════════════════════════════════════════════════
@@ -122,9 +119,6 @@ export class Bank12AudioService {
 
   /** 末次 $4003 写入缓存 ($07E0-$07E3): 去重优化 */
   private _last4003 = new Uint8Array(4);
-
-  /** 通道静音标志 ($07E4-$07E7): 非零=静音 */
-  private _chMuted = new Uint8Array(4);
 
   /** DMC 播放标志 ($07E8) */
   private _dmcFlag = 0;
@@ -426,25 +420,24 @@ export class Bank12AudioService {
     // timer = CPU_CLK / (16 * freq) - 1
     // C4=262Hz → timer = 1789773/(16*262)-1 ≈ 425
     // G4=392Hz → timer = 1789773/(16*392)-1 ≈ 284
-    const t1 = 425; // C4
-    const t2 = 284; // G4
-    const s0 = 0; // slot 0 → group 0 → $4000-$4003
+    const t1 = 425; // C4 timer
+    const t2 = 284; // G4 timer
+    const s0 = 0;
     this._chParams[s0] = this._makeChannelParams();
-    this._chTypes[s0] = 1; // type=1: 频率计算
+    this._chTypes[s0] = 1;
     this._baseFreqLo[s0] = t1 & 0xFF;
     this._baseFreqHi[s0] = (t1 >> 8) & 0x07;
     this._volModes[s0] = 0x0F;
     this._seqIndexes[s0] = 0;
     const cp0 = this._chParams[s0];
-    cp0.volRaw = 0x0A;  // volume ~66%
-    cp0.freqLo = t1 & 0xFF;
-    cp0.freqHi = (t1 >> 8) & 0x07;
+    cp0.volRaw = 0x0A;
+    cp0.freqRawLo = t1 & 0xFF;
+    cp0.freqRawHi = ((t1 >> 8) & 0x07) | 0x80; // key-on
     cp0.durLo = 120;
     cp0.durHi = 0;
     this._chActive |= 1;
 
-    // slot 1 (SQ2): G4 音符 (~392Hz)
-    const s1 = 1; // slot 1 → group 1 → $4004-$4007
+    const s1 = 1;
     this._chParams[s1] = this._makeChannelParams();
     this._chTypes[s1] = 1;
     this._baseFreqLo[s1] = t2 & 0xFF;
@@ -453,8 +446,8 @@ export class Bank12AudioService {
     this._seqIndexes[s1] = 0;
     const cp1 = this._chParams[s1];
     cp1.volRaw = 0x08;
-    cp1.freqLo = t2 & 0xFF;
-    cp1.freqHi = (t2 >> 8) & 0x07;
+    cp1.freqRawLo = t2 & 0xFF;
+    cp1.freqRawHi = ((t2 >> 8) & 0x07) | 0x80; // key-on
     cp1.durLo = 120;
     cp1.durHi = 0;
     this._chActive |= 2;
@@ -544,23 +537,22 @@ export class Bank12AudioService {
         cp.durLo = durVal;
         cp.durHi = 0;
 
-        // 频率计算: 低 nibble 索引频率表
+        // 频率计算: 低 nibble 索引频率表 → offset+7/+8 (freqRawLo/Hi)
+        // ROM 在 $83F4-$846C 解析音符字节的高低 nibble
         const noteIdx = b & 0x0F;
+        const octave = (b & 0x30) >> 4; // bits 4-5 = octave shift
         if (noteIdx < 12) {
-          cp.freqLo = FREQ_TABLE_LO[noteIdx];
-          cp.freqHi = FREQ_TABLE_HI[noteIdx];
+          let fLo = FREQ_TABLE_LO[noteIdx];
+          let fHi = FREQ_TABLE_HI[noteIdx];
+          // 八度偏移: ROR fHi, ROR fLo
+          for (let o = 0; o < octave; o++) {
+            const carry = (fLo & 1) << 7;
+            fLo = (fLo >> 1) | carry;
+            fHi = fHi >> 1;
+          }
+          cp.freqRawLo = fLo;
+          cp.freqRawHi = fHi | 0x80; // bit7=1 → key-on (ROM ORA #$80 at $8484/$849F)
         }
-        // 八度偏移 (≥12): 频率表索引=noteIdx%12 → ROR hi 偏移
-
-        if (noteIdx >= 12) {
-          const fi = noteIdx % 12;
-          cp.freqLo = FREQ_TABLE_LO[fi];
-          cp.freqHi = FREQ_TABLE_HI[fi];
-          // 八度偏移: ROR freqHi... 简化处理
-        }
-
-        cp.freqRawLo = cp.freqLo;
-        cp.freqRawHi = cp.freqHi;
       } else {
         // 纯时长字节 (<$80)
         cp.durLo = b;
@@ -594,18 +586,24 @@ export class Bank12AudioService {
 
     // CMP #$E0 → b<$E0 是音符
     if (b < 0xE0) {
-      // 音符 → 时长 + 频率
+      // 音符 → 时长 + 频率 → offset+7/+8
       const durIdx = b & 0x3F;
       cp.durLo = DURATION_TABLE[durIdx] ?? 1;
       cp.durHi = 0;
 
       const noteIdx = b & 0x0F;
+      const octave = (b & 0x30) >> 4;
       if (noteIdx < 12) {
-        cp.freqLo = FREQ_TABLE_LO[noteIdx];
-        cp.freqHi = FREQ_TABLE_HI[noteIdx];
+        let fLo = FREQ_TABLE_LO[noteIdx];
+        let fHi = FREQ_TABLE_HI[noteIdx];
+        for (let o = 0; o < octave; o++) {
+          const carry = (fLo & 1) << 7;
+          fLo = (fLo >> 1) | carry;
+          fHi = fHi >> 1;
+        }
+        cp.freqRawLo = fLo;
+        cp.freqRawHi = fHi | 0x80; // key-on
       }
-      cp.freqRawLo = cp.freqLo;
-      cp.freqRawHi = cp.freqHi;
 
       // 音量处理
       this._processVolume(chIdx);
@@ -682,8 +680,9 @@ export class Bank12AudioService {
       const val = bankData[tp] ?? 0;
       this._trackPtrs[chIdx] = tp + 1;
       this._chTypes[chIdx] = val;
-      this._baseFreqLo[chIdx] = this._chParams[chIdx].freqLo;
-      this._baseFreqHi[chIdx] = this._chParams[chIdx].freqHi;
+      // ROM: 从 channel 块 offset+7/+8 (freqRawLo/Hi) 复制到 $07B7/$07BF (baseFreq)
+      this._baseFreqLo[chIdx] = this._chParams[chIdx].freqRawLo;
+      this._baseFreqHi[chIdx] = this._chParams[chIdx].freqRawHi & 0x7F; // strip key-on
       break;
     }
     case 0xED: // DMC 采样ID — 待完善
@@ -723,7 +722,8 @@ export class Bank12AudioService {
 
   /**
    * 对应 $8257: 根据 $07C7 音序索引(0-9) 查 $82E4 跳转表。
-   * 对频率 ±1, ±2, ±3, ±6。
+   * 对 base 频率 ±1, ±2, ±3, ±6，结果写入 offset+7/+8 (freqRawLo/Hi)。
+   * ROM 的 channel block: offset+7=freqLo→$4002, offset+8=freqHi→$4003。
    */
   private _calcFreqType1(chIdx: number): void {
     const cp = this._chParams[chIdx];
@@ -737,8 +737,9 @@ export class Bank12AudioService {
 
     let freq = baseLo | (baseHi << 8);
     freq += mod;
-    cp.freqLo = freq & 0xFF;
-    cp.freqHi = (freq >> 8) & 0x07;
+    // 写入 offset+7 (freqRawLo) 和 offset+8 (freqRawHi) — ROM 从这两个偏移写 $4002/$4003
+    cp.freqRawLo = freq & 0xFF;
+    cp.freqRawHi = ((freq >> 8) & 0x07) | 0x80; // bit7=1 → key-on
 
     // 递增音序索引 (0-9 循环)
     idx++;
@@ -751,63 +752,79 @@ export class Bank12AudioService {
   // ──────────────────────────────────────────────
 
   /**
-   * 对应 $811D: 3 组通道 × 各通道 = SQ1/SQ2/NOISE+DMC → 写 APU 寄存器。
+   * 对应 ROM $811D-$816D 通道组处理 + $816E-$81DA APU 寄存器写入。
+   *
+   * ROM 将 $0706 活跃位掩码分为 3 组，每组对应一个 APU 物理通道：
+   *   - 掩码 $11 (ch0/ch4) → $4004 (SQ2)
+   *   - 掩码 $22 (ch1/ch5) → $4008 (TRI)
+   *   - 掩码 $44 (ch2/ch6) → $400C (NOISE)
+   *
+   * $816E 逻辑:
+   *   - $4000/$4004/$400C: $30 | (vol_control_byte & 0x0F)  [常数音量+Duty=00]
+   *   - $4008 (TRI):           $80 | (vol_control_byte & 0x0F)  [线性计数器加载]
+   *   - $4001/$4005 (Sweep):   $08 [关闭 sweep]，由 offset+5 bit 4 控制
+   *   - $4002/$4006/$400A:     freqRawLo (offset+7)
+   *   - $4003/$4007/$400B:     (freqRawHi & 0x7F) | $18, 仅 freqRawHi bit7 置位时写入
+   *   - $4003 去重:            SQ2 组与上次 $4003 比较，相同则跳过
    */
   private _writeApuGrouped(events: ApuWriteEvent[]): void {
-    // 每帧写 $4015 启用活跃通道 (bit0=SQ1, bit1=SQ2, bit2=TRI)
-    if (this._chActive !== 0) {
-      const status = (
-        (this._chActive & 0x01) ? 0x01 : 0
-      ) | (
-        (this._chActive & 0x02) ? 0x02 : 0
-      ) | (
-        (this._chActive & 0x04) ? 0x04 : 0
-      );
-      events.push({ addr: 0x4015, value: status });
-    }
+    // ROM 3 组通道定义
+    const groups = [
+      { mask: 0x11, base: 0x4004, chLo: 0, chHi: 4, isTri: false, dedupIdx: 0 },
+      { mask: 0x22, base: 0x4008, chLo: 1, chHi: 5, isTri: true,  dedupIdx: -1 },
+      { mask: 0x44, base: 0x400C, chLo: 2, chHi: 6, isTri: false, dedupIdx: -1 },
+    ];
 
-    // 仅处理前 4 个物理通道组 (SQ1=$4000, SQ2=$4004, TRI=$4008, NOISE=$400C)
-    for (let group = 0; group < 3; group++) {
-      const chIdx = group; // 组 0=ch0, 组1=ch1, 组2=ch2
+    for (const g of groups) {
+      const active = this._chActive & g.mask;
+      if (active === 0) continue;
+
+      // 选活跃的那个子通道 (chLo / chHi)
+      const useHi = (active & 0xF0) !== 0;
+      const chIdx = useHi ? g.chHi : g.chLo;
       if (!(this._chActive & (1 << chIdx))) continue;
-      if (this._chTypes[chIdx] === 0) continue; // 通道未激活
+      if (this._chTypes[chIdx] === 0) continue;
 
       const cp = this._chParams[chIdx];
-      const base = APU_BASE_ADDR[group];
 
-      // 管通道类型决定频率计算
+      // 频率计算 (type 1 → $8257, type 2 → $82D2)
       if (this._chTypes[chIdx] === 1) {
         this._calcFreqType1(chIdx);
       }
-      // type=2: $82D2 特殊处理 — 类似但用不同跳转表
 
-      // $4000: vol/env (duty cycle for SQ)
-      const vol = cp.volRaw & 0x0F;
-      let reg0 = group < 2 ? 0x30 | vol : 0x00 | vol; // SQ1+SQ2: duty=11(25%)+constant vol; TRI: linear ctrl
+      // $4000/$4004/$4008/$400C: vol/env
+      // ROM: $816E 读 channel 块 offset+6 = vol_control_byte
+      // TRI: $80|vol,  SQ/NOISE: $30|vol
+      const volCtrl = cp.volRaw & 0x0F;
+      const reg0 = g.isTri ? (0x80 | volCtrl) : (0x30 | volCtrl);
+      events.push({ addr: g.base, value: reg0 });
 
-      events.push({ addr: base, value: reg0 });
-
-      // $4001: sweep (仅 SQ 通道)
-      if (group < 2) {
-        events.push({ addr: base + 1, value: 0x08 }); // 默认关闭 sweep
-      } else if (group === 2) {
-        // TRI linear counter
-        events.push({ addr: base + 1, value: 0x00 });
+      // $4001/$4005: sweep — ROM 检查 offset+5 bit 4
+      // (offset+5 = vol/status 组合字节，bit4 为 sweep 控制)
+      // 简化: 仅 SQ2 组写 sweep off
+      if (g.chHi === 4 && !g.isTri) {
+        events.push({ addr: g.base + 1, value: 0x08 });
       }
 
-      // $4002: freq_lo
-      events.push({ addr: base + 2, value: cp.freqLo });
+      // $4002/$4006/$400A: freqLo from offset+7 (freqRawLo)
+      events.push({ addr: g.base + 2, value: cp.freqRawLo });
 
-      // $4003: freq_hi + length
-      const fhi = cp.freqHi & 0x07;
-      if (this._chMuted[chIdx] === 0) {
-        // 去重优化
-        const last4003 = this._last4003[chIdx];
-        const new4003 = fhi | 0xF8;
-        if (new4003 !== last4003) {
-          events.push({ addr: base + 3, value: new4003 });
-          this._last4003[chIdx] = new4003;
+      // $4003/$4007/$400B: freqHi from offset+8 (freqRawHi)
+      // ROM: ORA #$18 设置 bits 3-4 (Length Counter 索引)
+      //      仅 bit7=1 (key-on) 时才写入
+      if (cp.freqRawHi & 0x80) {
+        const reg3 = (cp.freqRawHi & 0x7F) | 0x18;
+
+        // ROM: 仅 SQ2 ($F2=2) 做 $4003 去重 (CMP $07E0,Y)
+        if (g.dedupIdx >= 0) {
+          const lastV = this._last4003[g.dedupIdx];
+          if (reg3 === lastV) continue; // 无变化，跳过整组
+          this._last4003[g.dedupIdx] = reg3;
         }
+
+        events.push({ addr: g.base + 3, value: reg3 });
+        // 清除 key-on 标识 (ROM: AND #$7F 后写回)
+        cp.freqRawHi &= 0x7F;
       }
     }
   }
