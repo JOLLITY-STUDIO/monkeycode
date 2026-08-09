@@ -29,9 +29,8 @@ export type {
   PaletteColor, PaletteEntry, PaletteTable,
 } from './model/types';
 
-// 服务
-export { BootService } from './game/boot';
-export { DataQueryService } from './game/data-query';
+// 服务 (Bank 翻译)
+export { Bank00Service, Bank02Service, Bank30Service, BootService, DataQueryService } from './game/index';
 
 // 引擎
 export { Renderer } from './render/Renderer';

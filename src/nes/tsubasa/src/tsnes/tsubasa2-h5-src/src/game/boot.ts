@@ -16,6 +16,7 @@
 import { DataStore } from '../data/DataStore';
 import { SceneRoot, OpeningShot, TitleMenu } from '../data/scene/index';
 import { BUTTON } from '../core/types';
+import { palReset } from '../data/pallete/paletteManager';
 
 /** 游戏根状态（存 DataStore.ram 中） */
 export const BOOT_KEYS = {
@@ -49,7 +50,10 @@ export class BootService {
     // 2. 对应 Bank 30 硬件初始化 — 设定 RAM 默认值
     this._initRamDefaults();
 
-    // 3. 进入 BOOT 场景，开始开场动画第一帧
+    // 3. 对应 Bank 30 PPU 初始化 — paletteRAM 加载默认调色板
+    palReset();
+
+    // 4. 进入 BOOT 场景，开始开场动画第一帧
     this._writeRoot(SceneRoot.BOOT);
     this._writeShot(OpeningShot.LOGO);
     this._shotFrame = 0;

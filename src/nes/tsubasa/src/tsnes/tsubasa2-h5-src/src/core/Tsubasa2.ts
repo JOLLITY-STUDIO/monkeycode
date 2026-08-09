@@ -2,18 +2,26 @@
  * 天使之翼2 — 游戏主类
  *
  * 对外暴露的唯一入口。
- * 创建实例 → 传入 CanvasContext → 加载资源 → start() → 即插即用。
+ * 创建实例 → 传入 CanvasContext → start() → 即插即用。
  *
  * 架构分层 (MVC):
  *   Model   — DataStore (内存/KV 数据中心)
  *   View    — Renderer  (Canvas 渲染)
- *   Control — GameLoop + InputManager + Bank 服务
+ *   Control — GameLoop + Bank 服务
+ *
+ * Reset 链 (不模拟 MMC3，直接对象调用):
+ *   Bank31 $FFF0 → H5: no-op (无需 MMC3 复位)
+ *   Bank30 $C64E → Bank30Service.init()    硬件初始化
+ *   Bank30 $C400 → Bank02Service.resetEntry(0)  场景初始化
+ *   Bank02 $A21B → Bank00Service (内部调用)      NT清零/调色板/场景
+ *   Bank02 $A26D → Bank00Service.mainLoop()      主循环
  */
 
 import { GameLoop } from './GameLoop';
 import { DataStore } from '../data/DataStore';
-import { BootService } from '../game/boot';
-import { SceneRoot } from '../data/scene/index';
+import { Bank00Service } from '../game/bank00.service';
+import { Bank02Service } from '../game/bank02.service';
+import { Bank30Service } from '../game/bank30.service';
 import { BUTTON } from './types';
 import type { Tsubasa2Config, DebugInfo, GameState } from './types';
 import { GameState as GS } from './types';
@@ -34,13 +42,19 @@ export class Tsubasa2 {
   /** 按键状态 bitmask */
   private _buttons = 0;
 
-  // ── 子模块 ──
+  // ── Bank 服务层 (MVC: Control) ──
 
   /** 数据中心 (Model) */
   private _store: DataStore;
 
-  /** 启动服务 (对应 Bank 31 RESET + Bank 00/30 初始化) */
-  private _boot!: BootService;
+  /** Bank 00: 核心系统服务 (PPU Buffer, NT, 调色板, 场景) */
+  private _bank00!: Bank00Service;
+
+  /** Bank 02: 场景控制器 (RESET 入口, 场景流转) */
+  private _bank02!: Bank02Service;
+
+  /** Bank 30: 硬件初始化 */
+  private _bank30!: Bank30Service;
 
   /** 渲染器 (View) */
   // private _renderer: Renderer;
@@ -57,6 +71,11 @@ export class Tsubasa2 {
     this._loop = new GameLoop();
     this._store = new DataStore();
 
+    // 构造 Bank 服务链 — 依赖注入，不模拟 MMC3
+    this._bank00 = new Bank00Service(this._store);
+    this._bank02 = new Bank02Service(this._store, this._bank00);
+    this._bank30 = new Bank30Service(this._store, this._bank00, this._bank02);
+
     this._loop.onFrame = this._onFrame.bind(this);
     this._loop.onRender = this._onRender.bind(this);
   }
@@ -68,9 +87,15 @@ export class Tsubasa2 {
       return;
     }
 
-    // 对应 Bank 31 $FFF0 RESET → Bank 30 硬件初始化
-    this._boot = new BootService(this._store);
-    this._boot.init();
+    // 对应原始 Reset 链:
+    //   Bank31 $FFF0 → Bank30 $C503 → $C64E → $C400
+    //   → Bank02 $A200 → $A21B → JMP $9EED
+    // H5: 无 MMC3，直接调用:
+    this._bank30.init();
+    // bank30.init() 内部调用:
+    //   1. 硬件初始化 (store.reset, NT clear, OAM clear, palette)
+    //   2. bank02.resetEntry(0)
+    //   3. bank00.mainLoop()
 
     this._setState(GS.OPENING);
     this._loop.start(canvas);
@@ -158,38 +183,9 @@ export class Tsubasa2 {
 
   /** 每帧逻辑更新 */
   private _onFrame(_dt: number): void {
-    const root = this._boot.getRoot();
-
-    switch (root) {
-    case SceneRoot.BOOT:
-    case SceneRoot.TITLE:
-      // BootService 统一处理 BOOT + TITLE
-      this._boot.update(this._buttons, 0);
-      this._syncState();
-      return;
-
-    default:
-      // TODO: 其他场景由对应 Service 处理
-      return;
-    }
-  }
-
-  /** 同步 boot 内部状态到 GameState */
-  private _syncState(): void {
-    const root = this._boot.getRoot();
-    switch (root) {
-    case SceneRoot.BOOT:
-      if (this._state !== GS.OPENING) this._setState(GS.OPENING);
-      break;
-    case SceneRoot.TITLE:
-      if (this._state !== GS.TITLE) this._setState(GS.TITLE);
-      break;
-    case SceneRoot.MEETING:
-      if (this._state !== GS.MENU) this._setState(GS.MENU);
-      break;
-    case SceneRoot.MATCH:
-      if (this._state !== GS.MATCH) this._setState(GS.MATCH);
-      break;
+    // Bank00 主循环 (帧循环核心)
+    if (this._bank00.isRunning) {
+      this._bank00.update(this._buttons);
     }
   }
 
@@ -200,56 +196,13 @@ export class Tsubasa2 {
     ctx.fillStyle = '#0a0a18';
     ctx.fillRect(0, 0, 256, 240);
 
-    const root = this._boot?.getRoot();
+    const sceneId = this._bank00.getSceneId();
+    const frameCount = this._bank00.frameCount;
 
-    if (root === undefined || root === SceneRoot.BOOT) {
-      this._renderBoot(ctx);
-    } else if (root === SceneRoot.TITLE) {
-      this._renderTitle(ctx);
-    } else {
-      ctx.fillStyle = '#ffffff';
-      ctx.font = '12px monospace';
-      ctx.fillText(`Scene: ${root}`, 10, 20);
-    }
-  }
-
-  /** 绘制开场动画占位 */
-  private _renderBoot(ctx: CanvasRenderingContext2D): void {
-    const shot = this._boot.getShot();
-    const names = ['TECMO', '大空 翼', '日向 小次郎', '岬 太郎', '若林 源三', 'WORLD CUP', '—'] as const;
-
-    ctx.fillStyle = '#ffdd44';
-    ctx.font = 'bold 18px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText(names[shot] ?? '', 128, 110);
-
-    ctx.fillStyle = '#888';
+    // 调试渲染: 显示当前状态
+    ctx.fillStyle = '#00ff00';
     ctx.font = '10px monospace';
-    ctx.fillText('Press START to skip', 128, 150);
-    ctx.textAlign = 'left';
-  }
-
-  /** 绘制标题画面占位 */
-  private _renderTitle(ctx: CanvasRenderingContext2D): void {
-    const cursor = this._boot.getTitleCursor();
-    const yBase = 140;
-    const items = ['KICK OFF', 'CONTINUE'];
-
-    ctx.fillStyle = '#ff6600';
-    ctx.font = 'bold 20px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('CAPTAIN TSUBASA II', 128, 90);
-    ctx.textAlign = 'left';
-
-    for (let i = 0; i < items.length; i++) {
-      const y = yBase + i * 24;
-      if (i === cursor) {
-        ctx.fillStyle = '#ffffff';
-        ctx.fillText('▶', 60, y);
-      }
-      ctx.fillStyle = cursor === i ? '#ffff00' : '#aaaaaa';
-      ctx.font = '14px monospace';
-      ctx.fillText(items[i], 80, y);
-    }
+    ctx.fillText(`frame:${frameCount} scene:0x${sceneId.toString(16)}`, 8, 16);
+    ctx.fillText('Reset OK — Bank30→Bank02→Bank00', 8, 32);
   }
 }
