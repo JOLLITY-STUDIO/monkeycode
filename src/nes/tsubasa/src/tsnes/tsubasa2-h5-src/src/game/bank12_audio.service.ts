@@ -280,9 +280,13 @@ export class Bank12AudioService {
         continue;
       }
 
-      // $31 特殊: 初始化音量值 (对应 $8070-$80A4)
-      if (req === 0x31) {
-        this._initVolFor0x31();
+      // BGM ID (0x31-0x35): 从 Bank15 直接初始化，不使用 SE 指针表
+      if (req >= 0x31 && req <= 0x35) {
+        // $31 特殊: 初始化音量值 (对应 $8070-$80A4)
+        if (req === 0x31) this._initVolFor0x31();
+        this._audioInitBgm(req);
+        this._reqQueue[x] = 0;
+        continue;
       }
 
       // 查找 bank: $32-$43→Bank 0D, $44-$50→Bank 0E, $51-$5B→Bank 0F
@@ -355,6 +359,106 @@ export class Bank12AudioService {
       // 设 $0706 bitmask
       this._chActive |= (1 << slot);
     }
+  }
+
+  /**
+   * BGM 初始化: 从 Bank15 读取通道初始化列表。
+   * BGM ID (0x31-0x35) 不使用 SE 指针表，而是直接查找 Bank15 数据。
+   *
+   * Bank15 的 BGM 通道初始化列表格式与 SE 相同:
+   *   [ch, ptrLo, ptrHi] × N, ≥$80 终止
+   */
+  private _audioInitBgm(bgmId: number): void {
+    // 从 BGM_DATA_MAP 获取 Bank15 偏移
+    const { BGM_DATA_MAP } = require('./bank15_data.service');
+    const offset = BGM_DATA_MAP[bgmId];
+    if (!offset || this._bank15.length === 0) {
+      console.warn(`[Bank12] BGM 0x${bgmId.toString(16)}: Bank15 数据未加载`);
+      // 降级: 生成测试频率验证音频管道
+      this._audioInitBgmFallback();
+      return;
+    }
+
+    const bank = this._bank15;
+    let pos = offset;
+    let chCount = 0;
+
+    while (pos < offset + 64) { // 安全上限: 64 bytes
+      const ch = bank[pos - 0x8000];
+      if (ch === undefined || ch >= 0x80) break;
+      pos++;
+      const tLo = bank[pos - 0x8000] ?? 0; pos++;
+      const tHi = bank[pos - 0x8000] ?? 0; pos++;
+
+      const trackPtr = (tLo | (tHi << 8)) & 0xFFFF;
+      const slot = 7 - (ch & 0x07);
+
+      this._chParams[slot] = this._makeChannelParams();
+      this._chTypes[slot] = 0;
+      this._baseFreqLo[slot] = 0;
+      this._baseFreqHi[slot] = 0;
+      this._seqIndexes[slot] = 0;
+      this._volModes[slot] = 0x0F;
+
+      this._trackPtrs[slot] = trackPtr;
+      this._trackBanks[slot] = bgmId;
+
+      const cp = this._chParams[slot];
+      cp.volRaw = 0x0F;
+      cp.durLo = 1;
+      cp.durHi = 0;
+
+      this._chActive |= (1 << slot);
+      chCount++;
+    }
+
+    console.log(`[Bank12] BGM 0x${bgmId.toString(16)}: ${chCount} channels initialized`);
+  }
+
+  /**
+   * BGM 初始化降级方案: 当 Bank15 数据缺失时，用测试频率模拟。
+   * 仅用于验证音频管道连通性，不是真实游戏行为。
+   * 槽位映射: slot 0=SQ1, slot 1=SQ2, slot 2=TRI (与 _writeApuGrouped 一致)
+   */
+  private _audioInitBgmFallback(): void {
+    // freq = CPU_CLK / (16 * (timer + 1))
+    // timer = CPU_CLK / (16 * freq) - 1
+    // C4=262Hz → timer = 1789773/(16*262)-1 ≈ 425
+    // G4=392Hz → timer = 1789773/(16*392)-1 ≈ 284
+    const t1 = 425; // C4
+    const t2 = 284; // G4
+    const s0 = 0; // slot 0 → group 0 → $4000-$4003
+    this._chParams[s0] = this._makeChannelParams();
+    this._chTypes[s0] = 1; // type=1: 频率计算
+    this._baseFreqLo[s0] = t1 & 0xFF;
+    this._baseFreqHi[s0] = (t1 >> 8) & 0x07;
+    this._volModes[s0] = 0x0F;
+    this._seqIndexes[s0] = 0;
+    const cp0 = this._chParams[s0];
+    cp0.volRaw = 0x0A;  // volume ~66%
+    cp0.freqLo = t1 & 0xFF;
+    cp0.freqHi = (t1 >> 8) & 0x07;
+    cp0.durLo = 120;
+    cp0.durHi = 0;
+    this._chActive |= 1;
+
+    // slot 1 (SQ2): G4 音符 (~392Hz)
+    const s1 = 1; // slot 1 → group 1 → $4004-$4007
+    this._chParams[s1] = this._makeChannelParams();
+    this._chTypes[s1] = 1;
+    this._baseFreqLo[s1] = t2 & 0xFF;
+    this._baseFreqHi[s1] = (t2 >> 8) & 0x07;
+    this._volModes[s1] = 0x0F;
+    this._seqIndexes[s1] = 0;
+    const cp1 = this._chParams[s1];
+    cp1.volRaw = 0x08;
+    cp1.freqLo = t2 & 0xFF;
+    cp1.freqHi = (t2 >> 8) & 0x07;
+    cp1.durLo = 120;
+    cp1.durHi = 0;
+    this._chActive |= 2;
+
+    console.log('[Bank12] BGM fallback: test tones (SQ1:C4 + SQ2:G4) for audio pipeline verification');
   }
 
   // ──────────────────────────────────────────────
@@ -653,6 +757,18 @@ export class Bank12AudioService {
    * 对应 $811D: 3 组通道 × 各通道 = SQ1/SQ2/NOISE+DMC → 写 APU 寄存器。
    */
   private _writeApuGrouped(events: ApuWriteEvent[]): void {
+    // 每帧写 $4015 启用活跃通道 (bit0=SQ1, bit1=SQ2, bit2=TRI)
+    if (this._chActive !== 0) {
+      const status = (
+        (this._chActive & 0x01) ? 0x01 : 0
+      ) | (
+        (this._chActive & 0x02) ? 0x02 : 0
+      ) | (
+        (this._chActive & 0x04) ? 0x04 : 0
+      );
+      events.push({ addr: 0x4015, value: status });
+    }
+
     // 仅处理前 4 个物理通道组 (SQ1=$4000, SQ2=$4004, TRI=$4008, NOISE=$400C)
     for (let group = 0; group < 3; group++) {
       const chIdx = group; // 组 0=ch0, 组1=ch1, 组2=ch2
@@ -670,8 +786,7 @@ export class Bank12AudioService {
 
       // $4000: vol/env (duty cycle for SQ)
       const vol = cp.volRaw & 0x0F;
-      let reg0 = group === 0 ? 0x30 | vol : 0x00 | vol;
-      if (group === 2) reg0 = 0x00 | vol; // Triangle: only bit0 can control
+      let reg0 = group < 2 ? 0x30 | vol : 0x00 | vol; // SQ1+SQ2: duty=11(25%)+constant vol; TRI: linear ctrl
 
       events.push({ addr: base, value: reg0 });
 

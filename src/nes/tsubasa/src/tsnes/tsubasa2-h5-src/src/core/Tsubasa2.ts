@@ -23,6 +23,9 @@ import { Renderer } from '../render/Renderer';
 import { Bank00Service } from '../game/bank00.service';
 import { Bank02Service } from '../game/bank02.service';
 import { Bank30Service } from '../game/bank30.service';
+import { Bank12AudioService } from '../game/bank12_audio.service';
+import { Bank15DataProvider, BgmId } from '../game/bank15_data.service';
+import { WebAudioOutput } from '../audio/WebAudioOutput';
 import { BUTTON, NES_WIDTH, NES_HEIGHT } from './types';
 import type { Tsubasa2Config, DebugInfo, GameState } from './types';
 import { GameState as GS } from './types';
@@ -44,6 +47,9 @@ import _chr12 from '../../../rom-data/chr-bank-12';
 import _chr13 from '../../../rom-data/chr-bank-13';
 import _chr14 from '../../../rom-data/chr-bank-14';
 import _chr15 from '../../../rom-data/chr-bank-15';
+
+// PRG Bank 15 (音频数据)
+import _prg15 from '../../../rom-data/prg-bank-15';
 
 export class Tsubasa2 {
   /** Canvas 2d 上下文 */
@@ -78,6 +84,18 @@ export class Tsubasa2 {
   /** 渲染器 (View) — 消费 NT+OAM 真实绘制 CHR tile */
   private _renderer!: Renderer;
 
+  /** 音频输出 (Web Audio API 桥接) */
+  private _audioOut!: WebAudioOutput;
+
+  /** Bank 12: 音频引擎 */
+  private _audioService!: Bank12AudioService;
+
+  /** Bank 15: BGM/SFX 数据提供者 */
+  private _bgmProvider!: Bank15DataProvider;
+
+  /** 上一次按键值 (用于上升沿检测) */
+  private _lastButtons = 0;
+
   /** 输入管理 */
   // private _input: InputManager;
 
@@ -94,6 +112,11 @@ export class Tsubasa2 {
     this._bank00 = new Bank00Service(this._store);
     this._bank02 = new Bank02Service(this._store, this._bank00);
     this._bank30 = new Bank30Service(this._store, this._bank00, this._bank02);
+
+    // 音频链路: WebAudioOutput → Bank12AudioService → Bank15DataProvider
+    this._audioOut = new WebAudioOutput();
+    this._audioService = new Bank12AudioService(this._store, this._audioOut);
+    this._bgmProvider = new Bank15DataProvider(this._store, this._audioService);
 
     // 渲染器 — 消费 DataStore NT/OAM + CHR 数据
     this._renderer = new Renderer(this._store);
@@ -117,8 +140,15 @@ export class Tsubasa2 {
       this._renderer.setupCanvas(this._ctx);
     }
 
+    // 注入 Bank15 音频数据 + 音效表
+    this._bgmProvider.initWithRomData(_prg15 as readonly number[]);
+
     // 对应原始 Reset 链
     this._bank30.init();
+
+    // 触发开场 BGM (TECMO Theater, id=0x31)
+    const queued = this._bgmProvider.playBgm(BgmId.TECMO_THEATER);
+    console.log(`[Tsubasa2] BGM 0x31 request queued: ${queued}`);
 
     this._setState(GS.OPENING);
     this._loop.start(canvas);
@@ -222,6 +252,15 @@ export class Tsubasa2 {
     if (this._bank00.isRunning) {
       this._bank00.update(this._buttons);
     }
+
+    // 音频引擎更新 (每帧处理请求队列 + 通道状态机 + APU 输出)
+    try {
+      this._audioService.update();
+    } catch (_) {
+      // 音频更新失败不中断游戏逻辑
+    }
+
+    this._lastButtons = this._buttons;
   }
 
   /** 每帧渲染 */
