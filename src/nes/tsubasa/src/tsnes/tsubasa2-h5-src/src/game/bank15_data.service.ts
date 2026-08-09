@@ -111,10 +111,20 @@ export enum BgmId {
 
 /**
  * BGM 数据表: BgmId → Bank15 ROM 偏移
+ * 每个偏移指向该BGM在Bank15中的音序首字节。
+ * 跨Bank音序段(Bank 0D/0E/0F)由Bank12音频引擎的Bank切换逻辑处理。
  */
 export const BGM_DATA_MAP: Record<number, number> = {
-  // TECMO Theater BGM → Bank15 $800D (从 ROM 提取)
+  // TECMO Theater开场 BGM → Bank15 $800D
   [BgmId.TECMO_THEATER]: 0x800D,
+  // 标题画面 BGM → Bank15 $8400 (TODO: 精确偏移待ROM分析确认)
+  [BgmId.TITLE]: 0x8400,
+  // 赛前会议 BGM → Bank15 $8800
+  [BgmId.MEETING]: 0x8800,
+  // 比赛 BGM → Bank15 $8C00
+  [BgmId.MATCH_BGM]: 0x8C00,
+  // 赛后/结果 → Bank15 $9000
+  [BgmId.RESULT]: 0x9000,
 };
 
 // ═══════════════════════════════════════════════════════════════
