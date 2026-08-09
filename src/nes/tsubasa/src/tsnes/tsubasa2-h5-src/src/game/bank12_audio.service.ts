@@ -515,21 +515,30 @@ export class Bank12AudioService {
    * 对应 $83CB: 从当前通道的 track_ptr 读取下一个音序字节。
    * <$80: 纯时长字节 → 写 $0707
    * $80-$DF: 音符 → AND #$3F 查时长表 + 频率计算
-   * $E0-$EF: 命令 → $84C9 分发
+   * $E0-$EF: 命令 → $84C9 分发 → 循环读下一个字节 (ROM $83EB: BPL $83DF)
+   *
+   * ROM 关键: 命令处理后不回退到帧循环，而是立即读后续字节，
+   * 直到遇到音符/时长才结束。$EC+note 在同一帧完成，避免卡死。
    */
   private _readNextSeqByte(chIdx: number): void {
-    const trackPtr = this._trackPtrs[chIdx];
-    const bankData = this._getBankForTrack(chIdx);
-    const b = bankData[trackPtr] ?? 0xFF;
+    // ROM: $83DF-$83EB 循环 — 读字节直到遇到音符或纯时长
+    for (let safety = 0; safety < 64; safety++) {
+      const trackPtr = this._trackPtrs[chIdx];
+      const bankData = this._getBankForTrack(chIdx);
+      const b = bankData[trackPtr] ?? 0xFF;
 
-    // 推进指针
-    this._trackPtrs[chIdx] = trackPtr + 1;
+      // 推进指针
+      this._trackPtrs[chIdx] = trackPtr + 1;
 
-    const cp = this._chParams[chIdx];
+      const cp = this._chParams[chIdx];
 
-    if (b < 0xE0) {
-      // 音符范围 [$80-$DF]: BPL→纯时长; CMP #$E0→命令
-      // 实际上所有 $00-$DF 走时长+音符路径
+      if (b >= 0xE0) {
+        // $E0-$EF: 命令分发 → ROM $83EB: BPL $83DF 循环回读
+        this._dispatchCommand(b, chIdx);
+        continue;
+      }
+
+      // $80-$DF: 音符 → BPL 判定
       if (b >= 0x80) {
         // 音符: AND #$3F → 索引时长表
         const durIdx = b & 0x3F;
@@ -553,14 +562,13 @@ export class Bank12AudioService {
           cp.freqRawLo = fLo;
           cp.freqRawHi = fHi | 0x80; // bit7=1 → key-on (ROM ORA #$80 at $8484/$849F)
         }
-      } else {
-        // 纯时长字节 (<$80)
-        cp.durLo = b;
-        cp.durHi = 0;
+        return;
       }
-    } else {
-      // $E0-$EF: 命令分发 → $84C9
-      this._dispatchCommand(b, chIdx);
+
+      // 纯时长字节 (<$80)
+      cp.durLo = b;
+      cp.durHi = 0;
+      return;
     }
   }
 
@@ -768,11 +776,22 @@ export class Bank12AudioService {
    *   - $4003 去重:            SQ2 组与上次 $4003 比较，相同则跳过
    */
   private _writeApuGrouped(events: ApuWriteEvent[]): void {
-    // ROM 3 组通道定义
+    // ROM $8366: LDX #$0F / STX $4015 — 启用所有 4 个物理通道
+    // $4015 bits: 0=SQ1, 1=SQ2, 2=TRI, 3=NOISE
+    if (this._chActive !== 0) {
+      events.push({ addr: 0x4015, value: 0x0F });
+    }
+
+    // ROM 3 组通道定义 ($8131-$815F loop + $816E EOR #$03 logic):
+    //   迭代0 (mask 0x11, F2=0, EOR→X=$0C): $400C (NOISE)  ← ch0/ch4
+    //   迭代1 (mask 0x22, F2=1, EOR→X=$08): $4008 (TRI)    ← ch1/ch5
+    //   迭代2 (mask 0x44, F2=2, EOR→X=$04): $4004 (SQ2)    ← ch2/ch6
+    // $4000 (SQ1) 未使用。
+    // 去重仅对 SQ2 组 ($81C5: CMP $07E0,Y, Y=2)
     const groups = [
-      { mask: 0x11, base: 0x4004, chLo: 0, chHi: 4, isTri: false, dedupIdx: 0 },
+      { mask: 0x11, base: 0x400C, chLo: 0, chHi: 4, isTri: false, dedupIdx: -1 },
       { mask: 0x22, base: 0x4008, chLo: 1, chHi: 5, isTri: true,  dedupIdx: -1 },
-      { mask: 0x44, base: 0x400C, chLo: 2, chHi: 6, isTri: false, dedupIdx: -1 },
+      { mask: 0x44, base: 0x4004, chLo: 2, chHi: 6, isTri: false, dedupIdx: 2 },
     ];
 
     for (const g of groups) {
@@ -799,10 +818,9 @@ export class Bank12AudioService {
       const reg0 = g.isTri ? (0x80 | volCtrl) : (0x30 | volCtrl);
       events.push({ addr: g.base, value: reg0 });
 
-      // $4001/$4005: sweep — ROM 检查 offset+5 bit 4
-      // (offset+5 = vol/status 组合字节，bit4 为 sweep 控制)
-      // 简化: 仅 SQ2 组写 sweep off
-      if (g.chHi === 4 && !g.isTri) {
+      // $4001/$4005: sweep off ($08) — ROM $8191-$819E, 仅 SQ 通道
+      // SQ2 组 (base=$4004): 写 sweep disable
+      if (g.base === 0x4004) {
         events.push({ addr: g.base + 1, value: 0x08 });
       }
 
