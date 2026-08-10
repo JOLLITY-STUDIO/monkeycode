@@ -615,19 +615,24 @@ export class BGM00Player {
 
     if (isDirect) {
       // $8422-$842C: 直接频率编码
+      // ASM: CMP #$10 / BEQ $8435 / STA ram_00F4 ($8426) — NO masking!
+      // Full byte → freq_lo. PAPU masks internally: bits 0-3=period, bit7=randomMode.
       if (noteByte === 0x10) {
         // $8435-$843D: rest
         blk.volCtrl |= 0x20;
         return;
       }
 
-      // Noise/Direct: lower nibble = period value, upper nibble may encode other info
-      let fLo = noteByte & 0x0F;
+      // NOTE: Full byte preserved (ASM $8426 STA ram_00F4, no AND #$0F).
+      // For noise ($400E): bit7=randomMode (0=long,1=short/metallic/drum).
+      let fLo = noteByte;
       let fHi = 0;
 
-      // Apply portamento offset ($07A7)
+      // Apply portamento offset ($07A7) — adjust lower nibble only for noise
       if (this.w.portamentoVal[ch] !== 0) {
-        fLo = (fLo + this.w.portamentoVal[ch]) & 0x0F;
+        const upper = fLo & 0xF0;
+        const lower = (fLo + this.w.portamentoVal[ch]) & 0x0F;
+        fLo = upper | lower;
       }
 
       this.w.baseFreqLo[ch] = fLo;

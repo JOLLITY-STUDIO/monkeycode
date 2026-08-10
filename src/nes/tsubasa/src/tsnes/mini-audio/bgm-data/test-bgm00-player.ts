@@ -7,6 +7,7 @@
  */
 import { BGM00Player } from './BGM00Player';
 import {
+  BGM00_RAW,
   BGM00_TRACK_SQ1,
   BGM00_TRACK_SQ2,
   BGM00_TRACK_TRI,
@@ -30,11 +31,15 @@ console.log(`通道: ${BGM00_META.tracks.map(t => t.name).join(', ')}`);
 
 const player = new BGM00Player(48000, onSample);
 
+// BGM00 data is at Bank15 NES addr $B7AD → BGM00_RAW offset 0
+// With shared raw data, CALL/JUMP commands resolve to correct subroutines
 const loaded = player.load(
   BGM00_TRACK_SQ1,
   BGM00_TRACK_SQ2,
   BGM00_TRACK_TRI,
   BGM00_TRACK_NOISE,
+  BGM00_RAW,       // shared raw data for CALL/JUMP address resolution
+  0xB7AD,          // NES base address (Bank 15 start of BGM00 data)
 );
 console.log(`\n加载结果: ${loaded ? 'OK' : 'FAIL'}`);
 
