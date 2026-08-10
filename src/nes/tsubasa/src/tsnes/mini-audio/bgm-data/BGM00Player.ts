@@ -143,6 +143,8 @@ interface WorkArea {
   portamentoVal: Int8Array;
   /** Dedup cache: 标记 freq_hi 是否需要重新写入 (替代 bit7 滥用) */
   freqDirty: Uint8Array;
+  /** 保存最近一次时长前缀的值，供后续音符复用（不受 durHi timing table 重载影响） */
+  noteDur: Uint8Array;
 }
 
 function createWorkArea(): WorkArea {
@@ -163,6 +165,7 @@ function createWorkArea(): WorkArea {
     portamentoEn: new Uint8Array(NUM_CHANNELS),
     portamentoVal: new Int8Array(NUM_CHANNELS),
     freqDirty: new Uint8Array(NUM_CHANNELS),
+    noteDur: new Uint8Array(NUM_CHANNELS),
   };
 }
 
@@ -180,6 +183,9 @@ export class BGM00Player {
   private isPlaying = false;
   private frameCount = 0;
   private totalChannels = 4; // SQ1=ch4, SQ2=ch5, TRI=ch6, NOISE=ch7
+
+  /** Track start positions in sharedData (for restart on end-of-data) */
+  private startOffsets: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
 
   /** Shared BGM raw data for CALL/JUMP NES address resolution */
   private sharedData: Uint8Array | null = null;
@@ -251,17 +257,33 @@ export class BGM00Player {
 
     this.w.chMask = 0;
 
-    // BGM00_RAW structure: [HEADER 12B] [FF] [SQ1] [FF] [SQ2] [FF] [TRI] [FF] [NOISE]
-    // Each track array excludes the 0xFF terminators.
-    // In shared data mode: start offsets account for header + terminators
-    let sharedOff = this.sharedData ? 13 : 0; // skip 12B header + 1B 0xFF
-    this._initChannel(4, trackSQ1, sharedOff);
-    sharedOff += trackSQ1.length + (this.sharedData ? 1 : 0);
-    this._initChannel(5, trackSQ2, sharedOff);
-    sharedOff += trackSQ2.length + (this.sharedData ? 1 : 0);
-    this._initChannel(6, trackTRI, sharedOff);
-    sharedOff += trackTRI.length + (this.sharedData ? 1 : 0);
-    this._initChannel(7, trackNOISE, sharedOff);
+    // Parse 12B header from shared data to get NES address entry points.
+    // Header: [ch4] [NES_lo hi] [ch5] [NES_lo hi] [ch6] [NES_lo hi] [ch7] [NES_lo hi] [FF]
+    // The header NES addresses are the Bank 12 engine's channel start positions.
+    if (this.sharedData) {
+      const headerChannels: number[] = [];
+      for (let i = 0; i < 4; i++) {
+        const chNum = this.sharedData[i * 3];
+        const lo = this.sharedData[i * 3 + 1];
+        const hi = this.sharedData[i * 3 + 2];
+        const nesAddr = lo | (hi << 8);
+        headerChannels.push(chNum);
+        const off = this._nesAddrToOffset(nesAddr);
+        // Map header channel to our internal ch (4-7)
+        if (chNum >= 4 && chNum <= 7) {
+          if (chNum === 4) this._initChannel(4, trackSQ1, off);
+          else if (chNum === 5) this._initChannel(5, trackSQ2, off);
+          else if (chNum === 6) this._initChannel(6, trackTRI, off);
+          else if (chNum === 7) this._initChannel(7, trackNOISE, off);
+        }
+      }
+    } else {
+      // No shared data: each channel uses its own track array, starting at 0
+      this._initChannel(4, trackSQ1, 0);
+      this._initChannel(5, trackSQ2, 0);
+      this._initChannel(6, trackTRI, 0);
+      this._initChannel(7, trackNOISE, 0);
+    }
 
     this.totalChannels = 4;
     return true;
@@ -273,13 +295,19 @@ export class BGM00Player {
 
     const useShared = this.sharedData !== null;
 
+    this.startOffsets[ch] = useShared ? sharedStart : 0;
+
     const blk = this.blocks[ch];
     blk.trackLo = useShared ? (sharedStart & 0xFF) : 0;
     blk.trackHi = useShared ? ((sharedStart >> 8) & 0xFF) : 0;
     blk.timingLo = 1; // next_dur_lo = 1
     blk.timingHi = 0;
     blk.timingOff = 0;
-    blk.volCtrl = 0x00; // $8349 init 清零 vol_ctrl
+    // $8349 in ASM is STX ram_00F5 + LDA #$00;STA ram_0700,X (zeros durHi, NOT volCtrl)
+    // volCtrl defaults come from Bank 31 NMI init per channel:
+    //   ch=4(SQ1): duty=00 → 0x00; ch=5(SQ2): duty=10(50%) → 0x80
+    //   ch=6(TRI): linear counter=0x0F; ch=7(NOISE): 0x00
+    blk.volCtrl = (ch === 5) ? 0x80 : (ch === 6) ? 0x0F : 0x00;
     blk.apuVol = 0x30;
     blk.freqLo = 0;
     blk.freqHi = 0x80;
@@ -287,6 +315,7 @@ export class BGM00Player {
 
     this.w.durLo[ch] = 1;
     this.w.durHi[ch] = 1;
+    this.w.noteDur[ch] = 1;
     this.w.nextDurHi[ch] = 1;   // $070A+X: next_dur_hi (static, from timing table)
     this.w.chType[ch] = 0;
     this.w.volDecay[ch] = 0;
@@ -329,6 +358,51 @@ export class BGM00Player {
     this.frameCount = 0;
   }
 
+  /** Song loop restart: reinits all channels to their start offsets */
+  private _restartSong(): void {
+    // Rebuild chMask and reset all active channels to start positions
+    this.w.chMask = 0;
+    for (let ch = 0; ch < NUM_CHANNELS; ch++) {
+      if (!this.tracks[ch]) continue;
+      const blk = this.blocks[ch];
+      const startOff = this.startOffsets[ch] || 0;
+      blk.trackLo = startOff & 0xFF;
+      blk.trackHi = (startOff >> 8) & 0xFF;
+      blk.timingLo = 1;
+      blk.timingHi = 0;
+      blk.timingOff = 0;
+      // Per-channel volCtrl default (duty from Bank 31 NMI init)
+      blk.volCtrl = (ch === 5) ? 0x80 : (ch === 6) ? 0x0F : 0x00;
+      blk.apuVol = 0x30;
+      blk.freqLo = 0;
+      blk.freqHi = 0x80;
+      blk.stkPtr = 0x0F;
+      this.w.durLo[ch] = 1;
+      this.w.durHi[ch] = 1;
+      this.w.noteDur[ch] = 1;
+      this.w.nextDurHi[ch] = 1;
+      this.w.chType[ch] = 0;
+      this.w.seqIdx[ch] = 0;
+      this.w.volDecay[ch] = 0;
+      this.w.volDecayReload[ch] = 0;
+      this.w.portamentoEn[ch] = 0;
+      this.w.portamentoVal[ch] = 0;
+      this.w.freqDirty[ch] = 0;
+      this._callStacks[ch] = [];
+      this._loopStacks[ch] = [];
+      // Set bit in chMask
+      let bit = 1;
+      for (let i = 0; i < ch; i++) bit <<= 1;
+      this.w.chMask |= bit;
+    }
+    // Reset global state
+    this.w.dmcActive = 0;
+    for (let g = 0; g < 4; g++) {
+      this.w.muteFlags[g] = 0;
+      this.w.last4003[g] = 0;
+    }
+  }
+
   get progress(): { frame: number; seconds: number; playing: boolean } {
     return {
       frame: this.frameCount,
@@ -344,7 +418,8 @@ export class BGM00Player {
   tick(): void {
     if (!this.isPlaying) return;
     if (this.w.chMask === 0) {
-      this.isPlaying = false;
+      // All channels stopped — restart song loop from header
+      this._restartSong();
       return;
     }
 
@@ -469,8 +544,26 @@ export class BGM00Player {
     while (true) {
       const pos = blk.trackLo | (blk.trackHi << 8);
       if (pos >= maxLen) {
-        // End of track data
-        this.w.chMask &= ~(1 << ch);
+        // End of track data — restart from start offset (song loop)
+        const restartOff = this.startOffsets[ch] || 0;
+        blk.trackLo = restartOff & 0xFF;
+        blk.trackHi = (restartOff >> 8) & 0xFF;
+        // Reset channel state for fresh loop
+        blk.volCtrl &= 0xCF;
+        blk.timingOff = 0;
+        blk.timingLo = 1;
+        blk.timingHi = 0;
+        this.w.chType[ch] = 0;
+        this.w.seqIdx[ch] = 0;
+        this.w.portamentoEn[ch] = 0;
+        this.w.portamentoVal[ch] = 0;
+        // Clear call/loop stacks
+        this._callStacks[ch] = [];
+        this._loopStacks[ch] = [];
+        // Set durLo=1 to immediately process first byte
+        this.w.durLo[ch] = 1;
+        this.w.durHi[ch] = 1;
+        this.w.noteDur[ch] = 1;
         return;
       }
 
@@ -484,8 +577,10 @@ export class BGM00Player {
         if (this.w.portamentoEn[ch] === 0) {
           blk.timingOff = 0;
         }
-        // $84C2-$84C5: dur_lo = dur_hi
-        this.w.durLo[ch] = this.w.durHi[ch] || 1;
+        // $84C2-$84C5: dur_lo = saved duration (noteDur unaffected by timing table)
+        // noteDur stores the last duration prefix value; durHi is managed by timing table
+        // for volume envelope and gets reloaded independently
+        this.w.durLo[ch] = this.w.noteDur[ch] || 1;
         return;
       }
 
@@ -501,6 +596,7 @@ export class BGM00Player {
       const dur = DUR_TABLE[durIdx] || 1;
       this.w.durLo[ch] = dur;
       this.w.durHi[ch] = dur;
+      this.w.noteDur[ch] = dur;  // save for note reuse (unaffected by timing table reload)
       // loop to read next byte (which should be a note byte)
     }
   }
@@ -537,8 +633,8 @@ export class BGM00Player {
       this.w.baseFreqLo[ch] = fLo;
       this.w.baseFreqHi[ch] = fHi;
       blk.freqLo = fLo;
-      blk.freqHi = fHi;
-      this.w.freqDirty[ch] = 0xFF; // mark dirty
+      blk.freqHi = fHi | 0x80;  // set bit7 (dirty) — ASM _parseNote does ORA #$80
+      this.w.freqDirty[ch] = 0xFF;
       return;
     }
 
@@ -597,7 +693,7 @@ export class BGM00Player {
     this.w.baseFreqLo[ch] = fLo;
     this.w.baseFreqHi[ch] = fHi;
     blk.freqLo = fLo;
-    blk.freqHi = fHi;
+    blk.freqHi = fHi | 0x80;  // set bit7 (dirty) — ASM _parseNote does ORA #$80
     this.w.freqDirty[ch] = 0xFF;
   }
 
@@ -815,10 +911,34 @@ export class BGM00Player {
       }
 
       // $FF → $8655: STOP CHANNEL
+      // In Bank 12 engine, channels auto-restart from header entry when stopped
       case 0x1F: {
-        this.w.chMask &= ~(1 << ch);
-        const apuX = ((7 - ch) * 4) & 0x0F;
-        this.papu.writeReg(0x4000 + apuX, 0x30);
+        // Restart this channel from its header offset
+        const restartOff = this.startOffsets[ch] || 0;
+        blk.trackLo = restartOff & 0xFF;
+        blk.trackHi = (restartOff >> 8) & 0xFF;
+        blk.timingLo = 1;
+        blk.timingHi = 0;
+        blk.timingOff = 0;
+        // Restore per-channel volCtrl default (duty from Bank 31 NMI init)
+        blk.volCtrl = (ch === 5) ? 0x80 : (ch === 6) ? 0x0F : 0x00;
+        blk.apuVol = 0x30;
+        blk.freqLo = 0;
+        blk.freqHi = 0x80;
+        blk.stkPtr = 0x0F;
+        this.w.durLo[ch] = 1;
+        this.w.durHi[ch] = 1;
+        this.w.noteDur[ch] = 1;
+        this.w.nextDurHi[ch] = 1;
+        this.w.chType[ch] = 0;
+        this.w.seqIdx[ch] = 0;
+        this.w.volDecay[ch] = 0;
+        this.w.volDecayReload[ch] = 0;
+        this.w.portamentoEn[ch] = 0;
+        this.w.portamentoVal[ch] = 0;
+        this.w.freqDirty[ch] = 0;
+        this._callStacks[ch] = [];
+        this._loopStacks[ch] = [];
         return false;
       }
     }
@@ -888,13 +1008,22 @@ export class BGM00Player {
 
     // $8245-$8256: Channel type processing
     const cht = this.w.chType[ch];
-    if (cht === 0) return;
 
     // Apply frequency modification based on channel type
     if (cht === 1) {
       this._applyFreqModType1(ch);
     } else if (cht === 2) {
       this._applyFreqModType2(ch);
+    }
+
+    // $8255-$825B: Common tail — ORA #$80 on freqHi for non-TRI channels
+    // Bank 12 uses APU base X=(7-ch)*4&0xF: TRI ch2/6→X=0x04, skip ORA.
+    // SQ1/SQ2/NOISE channels get freq written every frame (via this ORA + _processVolume).
+    // TRI only writes freq on _parseNote (no per-frame re-trigger).
+    const apuX = ((7 - ch) * 4) & 0x0F;
+    if (apuX !== 0x04) {
+      blk.freqHi |= 0x80;
+      this.w.freqDirty[ch] = 0xFF;
     }
   }
 
@@ -911,7 +1040,8 @@ export class BGM00Player {
     if (fLo > 0xFF) { fHi++; fLo &= 0xFF; }
 
     blk.freqLo = fLo;
-    blk.freqHi = fHi;
+    blk.freqHi = fHi | 0x80;  // ORA #$80 sets dirty flag
+    // Bank 12 ASM ORA #$80 sets dirty flag, triggering APU write every frame
     this.w.freqDirty[ch] = 0xFF;
 
     si = (si + 1) % SEQ_MOD_TABLE_TYPE1.length;
@@ -943,7 +1073,8 @@ export class BGM00Player {
     }
 
     blk.freqLo = fLo;
-    blk.freqHi = fHi;
+    blk.freqHi = fHi | 0x80;  // ORA #$80 sets dirty flag
+    // Bank 12 ASM ORA #$80 sets dirty flag
     this.w.freqDirty[ch] = 0xFF;
 
     si = (si + 1) % SEQ_MOD_TABLE_TYPE2.length;
@@ -977,7 +1108,10 @@ export class BGM00Player {
     const apuAddr = 0x4000 + apuBase;
 
     // $8175-$81A4: 写入 $4000+X（音量/控制）
-    const volByte = blk.apuVol;
+    // Bank 12 ASM: $8175 LDA (ram_00F0),Y — reads vol_ctrl directly from RAM
+    // For TRI: vol_ctrl gives linear counter value (used directly, not through apuVol)
+    // For SQ/NOISE: apuVol already contains (durHi-vol)|hiNib which includes duty & volume
+    const volByte = isTri ? blk.volCtrl : blk.apuVol;
     if (isTri) {
       // $8182-$8187: AND #$0F, ORA #$80（TRI linear counter enable）
       this.papu.writeReg(apuAddr, (volByte & 0x0F) | 0x80);
@@ -997,17 +1131,23 @@ export class BGM00Player {
     }
 
     // $81A7-$81DA: 写入频率
-    if (this.w.freqDirty[ch]) {
-      // Bank 12 ASM: freqHi bit7 = dirty flag, written to $4003 as (freqHi|bit7)|0x18
-      const dirtyFlag = 0x80; // we're inside the if-block, so it was dirty
+    // Bank 12 ASM: $81A7: LDA $51,x; $81A9: BPL skip — check freqHi bit7 directly
+    if (blk.freqHi & 0x80) {
+      // $81B1: LDA (ram_00F0),Y → read freqHi
+      // $81B3: AND #$7F → clear bit7 (dirty flag)
+      // $81B5: STA (ram_00F0),Y → write back cleared freqHi
+      // $81B8: AND #$07 → keep only bits 0-2
+      // $81BA: ORA #$18 → set length counter
+      // $81BC: STA $4003,X
+      blk.freqHi &= 0x7F;  // clear bit7 dirty flag
       this.w.freqDirty[ch] = 0;
 
       // $81B3-$81B5: freq_lo → $4002+X
       this.papu.writeReg(apuAddr + 2, blk.freqLo);
 
-      // $81B8-$81CA: freq_hi | 0x18 → $4003+X
+      // $81B8-$81CA: (freqHi & 7) | 0x18 → $4003+X
       const fh = blk.freqHi & 7;
-      const fhLen = dirtyFlag | fh | 0x18;
+      const fhLen = fh | 0x18;
 
       // $81C5-$81C8: SQ 通道做 $4003 去重；NOISE/TRI 不做
       if (group >= 2 && fhLen === this.w.last4003[group]) {
