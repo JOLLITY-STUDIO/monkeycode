@@ -197,9 +197,15 @@ export class BGM00Player {
   // X = (3^group)*4 → group0:0x0C, group1:0x08, group2:0x04, group3:0x00
   private static readonly APU_GROUP_BASE = [0x0C, 0x08, 0x04, 0x00];
 
+  /** Optional: full PRG ROM for DMC sample fetching (32 × 8KB flat array) */
+  private _prgRom: Uint8Array | null = null;
+
   constructor(sampleRate: number = 48000, onSample?: (l: number, r: number) => void) {
     this.sampleRate = sampleRate;
     this.onSample = onSample || null;
+
+    // self-bound to capture 'this' for mmap.load
+    const self = this;
     this.papu = new PAPU({
       opts: { sampleRate, onAudioSample: null as any },
       cpu: {
@@ -207,7 +213,27 @@ export class BGM00Player {
         dataBus: 0,
         haltCycles(_n: number) {},
       },
-      mmap: { load(_addr: number): number { return 0; } },
+      mmap: {
+        load(addr: number): number {
+          // $C000-$DFFF → PRG bank 30 (DMC samples)
+          if (addr >= 0xC000 && addr < 0xE000) {
+            if (self._prgRom) {
+              const offset = 30 * 8192 + (addr - 0xC000);
+              if (offset < self._prgRom.length) return self._prgRom[offset];
+            }
+            return 0;
+          }
+          // $E000-$FFFF → PRG bank 31
+          if (addr >= 0xE000 && addr <= 0xFFFF) {
+            if (self._prgRom) {
+              const offset = 31 * 8192 + (addr - 0xE000);
+              if (offset < self._prgRom.length) return self._prgRom[offset];
+            }
+            return 0;
+          }
+          return 0;
+        },
+      },
     });
     // PAPU 内部已按 1024*CPU_FREQ/sampleRate 计算 sampleTimerMax，
     // 与 clockFrameCounter 内的 nCycles<<10 固定点移位匹配。
@@ -224,6 +250,14 @@ export class BGM00Player {
 
   setSampleCallback(cb: ((l: number, r: number) => void) | null): void {
     this.onSample = cb;
+  }
+
+  /**
+   * 设置完整的 PRG ROM 数据（用于 DMC 采样读取）
+   * @param prgRom 32 × 8KB = 262144 字节的扁平数组
+   */
+  setPrgRom(prgRom: readonly number[]): void {
+    this._prgRom = new Uint8Array(prgRom);
   }
 
   // ════════════════════════════════════════════════

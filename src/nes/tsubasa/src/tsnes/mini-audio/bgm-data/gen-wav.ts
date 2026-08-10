@@ -9,12 +9,14 @@ import {
   BGM00_TRACK_SQ1, BGM00_TRACK_SQ2,
   BGM00_TRACK_TRI, BGM00_TRACK_NOISE,
 } from './BGM00';
+import { NES_PRG_ROM } from '../rom-data/index-full';
 
 const SAMPLE_RATE = 48000;
 const MAX_FRAMES = 1800; // 30 秒
 
 console.log('Rendering BGM00...');
 const player = new BGM00Player(SAMPLE_RATE);
+player.setPrgRom(NES_PRG_ROM);
 player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE, BGM00_RAW, 0xB7AD);
 player.start();
 
