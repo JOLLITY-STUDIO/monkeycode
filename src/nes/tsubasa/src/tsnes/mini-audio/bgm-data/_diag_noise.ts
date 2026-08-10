@@ -1,13 +1,13 @@
 /**
  * Deep diagnostic: trace NOISE channel freqDirty & chType state
  */
-import { BGM00Player } from './BGM00Player';
+import { Tsubasa2AudioPlayer } from './Tsubasa2AudioPlayer';
 import { BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE, BGM00_RAW } from './BGM00';
 
 const SAMPLE_RATE = 48000;
 const TOTAL_FRAMES = 200;
 
-const player = new BGM00Player(SAMPLE_RATE);
+const player = new Tsubasa2AudioPlayer(SAMPLE_RATE);
 player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE, BGM00_RAW, 0xB7AD);
 player.start();
 

@@ -1,147 +1,254 @@
-.container {
-  display: flex;
-  flex-direction: column;
-  padding: 16px;
-  min-height: 100vh;
-  box-sizing: border-box;
-  background: linear-gradient(135deg, #0f0f23 0%, #1a1a3e 50%, #0d0d1f 100%);
+/* game-audio — A/B 音频对比 */
+page {
+  background: #0a0a1a;
+  color: #e0e0f0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
+/** ─── 容器 ─── */
+.container {
+  padding: 12px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/** ─── 标题 ─── */
 .header {
   text-align: center;
-  margin: 20px 0 16px;
+  margin-bottom: 10px;
 }
-
 .title {
   display: block;
   font-size: 18px;
-  font-weight: 700;
-  color: #e0e0ff;
-  margin-bottom: 6px;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 2px;
 }
-
 .subtitle {
-  display: block;
-  font-size: 12px;
-  color: #8888aa;
-}
-
-.engine-card {
-  width: 100%;
-  background: rgba(255,255,255,0.06);
-  border-radius: 10px;
-  padding: 14px;
-  margin: 8px 0;
-  border: 1px solid rgba(255,255,255,0.08);
-  box-sizing: border-box;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  margin-bottom: 6px;
-}
-
-.card-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  margin-right: 7px;
-}
-
-.emu-dot {
-  background: #ffcc44;
-  box-shadow: 0 0 4px #ffcc44;
-}
-
-.seq-dot {
-  background: #44ccff;
-  box-shadow: 0 0 4px #44ccff;
-}
-
-.card-title {
-  font-size: 15px;
-  font-weight: 700;
-  color: #e0e0ff;
-}
-
-.card-desc {
   display: block;
   font-size: 11px;
   color: #8888aa;
+}
+
+/** ─── A/B 切换条 ─── */
+.mode-bar {
+  display: flex;
+  gap: 6px;
   margin-bottom: 10px;
-  line-height: 1.5;
 }
-
-.status-card {
-  width: 100%;
-  background: rgba(0,0,0,0.15);
+.mode-btn {
+  flex: 1;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  font-weight: bold;
   border-radius: 6px;
-  padding: 12px;
-  margin: 4px 0 10px;
-  box-sizing: border-box;
+  background: #151528;
+  color: #666688;
+  border: 1px solid #252540;
+}
+.mode-active {
+  background: #1a3040;
+  color: #ffd700;
+  border-color: #4466aa;
 }
 
+/** ─── 侧边卡片 ─── */
+.side-card {
+  background: #0f0f22;
+  border-radius: 8px;
+  border: 1px solid #252540;
+  margin-bottom: 4px;
+  padding: 8px 10px;
+}
+.side-a { border-left: 3px solid #ff6b6b; }
+.side-b { border-left: 3px solid #6bb5ff; }
+
+/** ─── 侧标题 ─── */
+.side-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 6px;
+}
+.side-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.side-dot-a { background: #ff6b6b; }
+.side-dot-b { background: #6bb5ff; }
+.side-label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #ccccdd;
+  flex: 1;
+}
+.side-badge {
+  font-size: 9px;
+  color: #555577;
+  background: #1a1a2e;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.side-badge.editable {
+  color: #88cc88;
+}
+
+/** ─── 波形 ─── */
+.wave-box {
+  background: #1a1a2e;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.wave-canvas {
+  display: block;
+  width: 100%;
+}
+
+/** ─── 通道行 ─── */
+.ch-row {
+  display: flex;
+  gap: 4px;
+}
+.ch-item {
+  flex: 1;
+  text-align: center;
+  padding: 5px 2px;
+  border-radius: 4px;
+  border: 1px solid #2a2a40;
+  background: #0d0d1f;
+}
+.ch-item.ch-on {
+  border-color: #335566;
+  background: #141a28;
+}
+.ch-item.ch-off {
+  opacity: 0.5;
+  border-color: #1a1a2a;
+}
+.ch-toggle-btn { /* make it look clickable */ }
+.ch-dot-c {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin: 0 auto 2px auto;
+}
+.ch-dot-sq1 { background: #ff6b6b; }
+.ch-dot-sq2 { background: #6bb5ff; }
+.ch-dot-tri { background: #6bff6b; }
+.ch-dot-noise { background: #ffcc6b; }
+.ch-txt {
+  display: block;
+  font-size: 9px;
+  font-weight: bold;
+  color: #aaaacc;
+}
+.ch-state {
+  display: block;
+  font-size: 8px;
+  color: #555577;
+  margin-top: 1px;
+}
+.ch-on .ch-state { color: #88aacc; }
+
+/** ─── 分割线 ─── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0;
+}
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: #252540;
+}
+.divider-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ff6600;
+}
+
+/** ─── 状态卡片 ─── */
+.status-card {
+  background: #151528;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  border: 1px solid #252540;
+}
 .status-text {
   display: block;
-  font-size: 15px;
-  font-weight: 600;
-  color: #ffcc44;
-  margin-bottom: 5px;
+  font-size: 13px;
+  color: #aaccff;
+  margin-bottom: 4px;
 }
-
-.engine-card:nth-child(4) .status-text {
-  color: #44ccff;
-}
-
 .info-text {
   display: block;
-  font-size: 12px;
-  color: #9999bb;
-  line-height: 1.6;
+  font-size: 11px;
+  color: #666688;
 }
 
-.controls {
+/** ─── 进度条 ─── */
+.progress-bar {
+  height: 4px;
+  background: #252540;
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b6b, #6bb5ff);
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+
+/** ─── 播放控制 ─── */
+.play-controls {
   display: flex;
-  gap: 10px;
-  margin: 4px 0 0;
+  gap: 8px;
+  margin-bottom: 10px;
 }
-
 .btn {
   flex: 1;
   height: 40px;
   line-height: 40px;
-  text-align: center;
-  border-radius: 20px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 15px;
+  border-radius: 8px;
   border: none;
+  text-align: center;
   padding: 0;
 }
-
+.btn::after { border: none; }
+.btn:disabled {
+  opacity: 0.3;
+}
 .btn-play {
-  background: linear-gradient(135deg, #44bb66, #33aa55);
+  background: #1a6b3a;
   color: #fff;
 }
-
+.btn-pause {
+  background: #c59020;
+  color: #fff;
+}
 .btn-stop {
-  background: linear-gradient(135deg, #ff6644, #dd5533);
+  background: #6b1a1a;
   color: #fff;
 }
 
-.btn-restart {
-  background: linear-gradient(135deg, #4488cc, #3377bb);
-  color: #fff;
-}
-
+/** ─── 提示 ─── */
 .tip {
-  margin: 16px 0 32px;
-  text-align: center;
+  background: #151528;
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid #252540;
 }
-
 .tip text {
   display: block;
-  font-size: 11px;
-  color: #666688;
-  line-height: 1.8;
+  font-size: 10px;
+  color: #555577;
+  line-height: 1.7;
 }

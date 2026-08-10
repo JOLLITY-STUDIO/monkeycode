@@ -1,11 +1,11 @@
 /**
- * 无头测试 — 验证 BGM00Player 音序器逻辑和帧渲染
+ * 无头测试 — 验证 Tsubasa2AudioPlayer 音序器逻辑和帧渲染
  * 使用 Node.js + ts-node 或 tsc 编译后运行
  * 
  * Usage: npx ts-node test-bgm00-player.ts
  *   或编译后: tsc && node test-bgm00-player.js
  */
-import { BGM00Player } from './BGM00Player';
+import { Tsubasa2AudioPlayer } from './Tsubasa2AudioPlayer';
 import {
   BGM00_RAW,
   BGM00_TRACK_SQ1,
@@ -24,12 +24,12 @@ function onSample(_l: number, _r: number): void {
 }
 
 // ── 测试 1: 加载 & 启动 ──
-console.log('=== BGM00Player 无头测试 ===\n');
+console.log('=== Tsubasa2AudioPlayer 无头测试 ===\n');
 console.log(`BGM: ${BGM00_META.name}`);
 console.log(`来源: ${BGM00_META.source}`);
 console.log(`通道: ${BGM00_META.tracks.map(t => t.name).join(', ')}`);
 
-const player = new BGM00Player(48000, onSample);
+const player = new Tsubasa2AudioPlayer(48000, onSample);
 
 // BGM00 data is at Bank15 NES addr $B7AD → BGM00_RAW offset 0
 // With shared raw data, CALL/JUMP commands resolve to correct subroutines
@@ -84,7 +84,7 @@ if (totalSamples < 1000) {
 
 // ── 测试 4: 检查无异常 ──
 console.log('\n--- 验证通过 ---');
-console.log(`✅ BGM00Player 音序器正常工作`);
+console.log(`✅ Tsubasa2AudioPlayer 音序器正常工作`);
 console.log(`✅ ${frameCount} 帧渲染成功`);
 console.log(`✅ ${totalSamples} 音频采样生成`);
 process.exit(0);

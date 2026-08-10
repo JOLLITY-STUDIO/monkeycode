@@ -1,7 +1,7 @@
 /**
- * 精准跟踪 BGM00Player SQ1 帧级执行
+ * 精准跟踪 Tsubasa2AudioPlayer SQ1 帧级执行
  */
-import { BGM00Player } from './BGM00Player';
+import { Tsubasa2AudioPlayer } from './Tsubasa2AudioPlayer';
 import { BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE } from './BGM00';
 import * as fs from 'fs';
 
@@ -13,7 +13,7 @@ const out: string[] = [];
 function log(s: string) { out.push(s); }
 
 // Create player with hook
-const player = new BGM00Player(SAMPLE_RATE);
+const player = new Tsubasa2AudioPlayer(SAMPLE_RATE);
 
 // Track APU writes
 const writes: Array<{ f: number; addr: number; val: string; ch: string }> = [];

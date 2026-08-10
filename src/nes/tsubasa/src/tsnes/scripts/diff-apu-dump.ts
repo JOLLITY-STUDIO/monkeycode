@@ -1,12 +1,12 @@
 /**
- * 精简模拟器 vs BGM00Player — APU 寄存器逐帧 dump 对比
+ * 精简模拟器 vs Tsubasa2AudioPlayer — APU 寄存器逐帧 dump 对比
  * 两者跑相同帧数，记录每帧写入 $4000-$4015 的 (addr, value)，
  * 找出第一处差异。
  */
 import { NesAudio } from '../mini-audio/emu/nes-audio';
 import { NES_PRG_ROM, NES_CHR_ROM } from '../mini-audio/rom-data/index';
 import {
-  BGM00Player,
+  Tsubasa2AudioPlayer,
   BGM00_TRACK_SQ1,
   BGM00_TRACK_SQ2,
   BGM00_TRACK_TRI,
@@ -61,7 +61,7 @@ function runEmu(frames: number): { writes: ApuWrite[]; sampleCount: number } {
 // ════════════════════════════════════
 
 function runSeq(frames: number): { writes: ApuWrite[]; sampleCount: number } {
-  const player = new BGM00Player(SAMPLE_RATE);
+  const player = new Tsubasa2AudioPlayer(SAMPLE_RATE);
   player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE);
   if (!player.start()) return { writes: [], sampleCount: 0 };
 

@@ -1,9 +1,9 @@
 /**
- * mini-audio-page — 使用 BGM00Player 播放开场动画 BGM。
+ * mini-audio-page — 使用 Tsubasa2AudioPlayer 播放开场动画 BGM。
  * 纯 TS 音序器 + PAPU，无需 CPU 模拟、MMC3、ROM 读取。
  */
 import {
-  BGM00Player,
+  Tsubasa2AudioPlayer,
   BGM00_RAW,
   BGM00_META,
   BGM00_TRACK_SQ1,
@@ -38,7 +38,7 @@ function renderBGM00Async(
   onProgress: (frame: number) => void,
   onDone: (samples: Float32Array, frameCount: number) => void,
 ): void {
-  const player = new BGM00Player(SAMPLE_RATE);
+  const player = new Tsubasa2AudioPlayer(SAMPLE_RATE);
   player.setPrgRom(NES_PRG_ROM);
   player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE, BGM00_RAW, 0xB7AD);
   if (!player.start()) {

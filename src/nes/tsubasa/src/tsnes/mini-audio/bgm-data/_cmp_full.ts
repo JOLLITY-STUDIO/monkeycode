@@ -1,10 +1,10 @@
 /**
- * APU 写入对比：emu 路径 vs BGM00Player 路径
+ * APU 写入对比：emu 路径 vs Tsubasa2AudioPlayer 路径
  * 用法: npx tsx mini-audio/bgm-data/cmp-apu-writes.ts [对比起始帧=281]
  */
 import { NesAudio } from '../emu/nes-audio';
 import { NES_PRG_ROM, NES_CHR_ROM } from '../rom-data/index';
-import { BGM00Player } from './BGM00Player';
+import { Tsubasa2AudioPlayer } from './Tsubasa2AudioPlayer';
 import { BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE } from './BGM00';
 
 const SAMPLE_RATE = 48000;
@@ -54,10 +54,10 @@ function emuApuWrites(maxFrames: number): ApuWrite[] {
   return writes;
 }
 
-// ═══ 从 BGM00Player 提取 APU 写入 ═══
+// ═══ 从 Tsubasa2AudioPlayer 提取 APU 写入 ═══
 function playerApuWrites(maxFrames: number): ApuWrite[] {
   const writes: ApuWrite[] = [];
-  const player = new BGM00Player(SAMPLE_RATE);
+  const player = new Tsubasa2AudioPlayer(SAMPLE_RATE);
   const papu = player.papu as any;
   const origWr = papu.writeReg.bind(papu);
   papu.writeReg = function (addr: number, val: number) {
@@ -73,7 +73,7 @@ function playerApuWrites(maxFrames: number): ApuWrite[] {
   player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE);
   player.start();
 
-  console.log(`Running BGM00Player for ${maxFrames} frames...`);
+  console.log(`Running Tsubasa2AudioPlayer for ${maxFrames} frames...`);
   const t0 = Date.now();
   for (let f = 0; f < maxFrames && player.progress.playing; f++) {
     player.tick();
@@ -111,7 +111,7 @@ function compare(emuWrites: ApuWrite[], playerWrites: ApuWrite[], emuOffset: num
     }
   }
   chStats(emuNormalized, 'Emu (rebase)');
-  chStats(playerWrites, 'BGM00Player');
+  chStats(playerWrites, 'Tsubasa2AudioPlayer');
 
   // Frame-by-frame diff
   const maxF = Math.max(
@@ -167,7 +167,7 @@ function compare(emuWrites: ApuWrite[], playerWrites: ApuWrite[], emuOffset: num
 
   // Show first 20 player writes
   console.log(`\n${'='.repeat(70)}`);
-  console.log(`First 20 BGM00Player writes:`);
+  console.log(`First 20 Tsubasa2AudioPlayer writes:`);
   for (const w of playerWrites.slice(0, 20)) {
     console.log(`  F${String(w.f).padStart(4)} $${w.addr.toString(16).padStart(4,'0')}=0x${w.val.toString(16).padStart(2,'0')} ${w.ch}`);
   }

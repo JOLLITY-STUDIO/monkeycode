@@ -4,7 +4,7 @@
  */
 import { NesAudio } from '../emu/nes-audio';
 import { NES_PRG_ROM, NES_CHR_ROM } from '../rom-data/index';
-import { BGM00Player } from './BGM00Player';
+import { Tsubasa2AudioPlayer } from './Tsubasa2AudioPlayer';
 import { BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE, BGM00_RAW } from './BGM00';
 
 const FRAMES = 10;
@@ -61,7 +61,7 @@ function collectPlayerWrites(chName: string): [number, (addr: number, val: numbe
 
 // Player for each channel
 for (const chName of ['SQ1', 'SQ2', 'TRI', 'NOISE']) {
-  const player = new BGM00Player();
+  const player = new Tsubasa2AudioPlayer();
   const papu = (player as any).papu;
   const writes: Record<string, number[]> = {};
   
@@ -98,7 +98,7 @@ for (let f = 0; f < FRAMES; f++) {
 }
 
 // Simpler approach: just compare F0 data
-const player2 = new BGM00Player();
+const player2 = new Tsubasa2AudioPlayer();
 const pWrites: Record<string, number[]> = {};
 const opw = (player2 as any).papu.writeReg;
 (player2 as any).papu.writeReg = function(addr: number, val: number) {

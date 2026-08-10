@@ -1,55 +1,113 @@
 <view class="container">
-  <!-- 头部信息 -->
+  <!-- 标题 -->
   <view class="header">
-    <text class="title">天使之翼II — 开场动画 BGM</text>
-    <text class="subtitle">A/B 对比：精简模拟器 vs 纯 TS 音序器</text>
+    <text class="title">天使之翼II — A/B 音频对比</text>
+    <text class="subtitle">NES 模拟器 vs TS 纯引擎 · 预渲染对比</text>
   </view>
 
-  <!-- 精简模拟器卡片 -->
-  <view class="engine-card">
-    <view class="card-header">
-      <view class="card-dot emu-dot"></view>
-      <text class="card-title">A. 精简模拟器（参考）</text>
+  <!-- A/B 切换 -->
+  <view class="mode-bar">
+    <view class="mode-btn {{compareMode === 'ab' ? 'mode-active' : ''}}" bindtap="setCompareMode" data-mode="ab">
+      混合 AB
     </view>
-    <text class="card-desc">CPU + PPUStub + PAPU + MMC3，加载 {{bankCount}} 个 PRG bank</text>
-
-    <view class="status-card">
-      <text class="status-text">{{emuStatus}}</text>
-      <text class="info-text">帧: {{emuFrameCount}} / {{emuTotalFrames}} | 采样: {{emuSampleCount}}</text>
+    <view class="mode-btn {{compareMode === 'a' ? 'mode-active' : ''}}" bindtap="setCompareMode" data-mode="a">
+      仅 A
     </view>
-
-    <view class="controls">
-      <button class="btn {{emuPlaying ? 'btn-stop' : 'btn-play'}}" bindtap="toggleEmu">
-        {{emuPlaying ? '⏸ 暂停' : '▶ 播放'}}
-      </button>
-      <button class="btn btn-restart" bindtap="restartEmu">🔄 重头播放</button>
+    <view class="mode-btn {{compareMode === 'b' ? 'mode-active' : ''}}" bindtap="setCompareMode" data-mode="b">
+      仅 B
     </view>
   </view>
 
-  <!-- 纯 TS 音序器卡片 -->
-  <view class="engine-card">
-    <view class="card-header">
-      <view class="card-dot seq-dot"></view>
-      <text class="card-title">B. 纯 TS 音序器（新实现）</text>
-    </view>
-    <text class="card-desc">BGM00Player：直接读取 BGM00 轨道，无 CPU / MMC3 模拟</text>
-
-    <view class="status-card">
-      <text class="status-text">{{seqStatus}}</text>
-      <text class="info-text">帧: {{seqFrameCount}} / {{seqTotalFrames}} | 采样: {{seqSampleCount}}</text>
+  <!-- A 侧: NES 模拟器 -->
+  <view class="side-card side-a">
+    <view class="side-header">
+      <view class="side-dot side-dot-a"></view>
+      <text class="side-label">A: NES 模拟器 (CPU全仿真)</text>
+      <text class="side-badge">固定通道</text>
     </view>
 
-    <view class="controls">
-      <button class="btn {{seqPlaying ? 'btn-stop' : 'btn-play'}}" bindtap="toggleSeq">
-        {{seqPlaying ? '⏸ 暂停' : '▶ 播放'}}
-      </button>
-      <button class="btn btn-restart" bindtap="restartSeq">🔄 重头播放</button>
+    <view class="wave-box">
+      <canvas type="2d" id="waveA" class="wave-canvas" style="width:{{canvasWidth}}px; height:{{canvasHeight}}px;"></canvas>
     </view>
+
+    <!-- A 侧通道 (仅展示) -->
+    <view class="ch-row">
+      <view class="ch-item ch-on">
+        <view class="ch-dot-c ch-dot-sq1"></view><text class="ch-txt">SQ1</text>
+      </view>
+      <view class="ch-item ch-on">
+        <view class="ch-dot-c ch-dot-sq2"></view><text class="ch-txt">SQ2</text>
+      </view>
+      <view class="ch-item ch-on">
+        <view class="ch-dot-c ch-dot-tri"></view><text class="ch-txt">TRI</text>
+      </view>
+      <view class="ch-item ch-on">
+        <view class="ch-dot-c ch-dot-noise"></view><text class="ch-txt">NOISE</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 分割线 -->
+  <view class="divider">
+    <view class="divider-line"></view>
+    <text class="divider-text">VS</text>
+    <view class="divider-line"></view>
+  </view>
+
+  <!-- B 侧: TS 引擎 -->
+  <view class="side-card side-b">
+    <view class="side-header">
+      <view class="side-dot side-dot-b"></view>
+      <text class="side-label">B: TS 引擎 (无CPU依赖)</text>
+      <text class="side-badge editable">可开关通道</text>
+    </view>
+
+    <view class="wave-box">
+      <canvas type="2d" id="waveB" class="wave-canvas" style="width:{{canvasWidth}}px; height:{{canvasHeight}}px;"></canvas>
+    </view>
+
+    <!-- B 侧通道 (可操作) -->
+    <view class="ch-row">
+      <view class="ch-item ch-toggle-btn {{chB_SQ1 ? 'ch-on' : 'ch-off'}}" bindtap="toggleChannelB" data-ch="SQ1">
+        <view class="ch-dot-c ch-dot-sq1"></view><text class="ch-txt">SQ1</text>
+        <text class="ch-state">{{chB_SQ1 ? 'ON' : 'OFF'}}</text>
+      </view>
+      <view class="ch-item ch-toggle-btn {{chB_SQ2 ? 'ch-on' : 'ch-off'}}" bindtap="toggleChannelB" data-ch="SQ2">
+        <view class="ch-dot-c ch-dot-sq2"></view><text class="ch-txt">SQ2</text>
+        <text class="ch-state">{{chB_SQ2 ? 'ON' : 'OFF'}}</text>
+      </view>
+      <view class="ch-item ch-toggle-btn {{chB_TRI ? 'ch-on' : 'ch-off'}}" bindtap="toggleChannelB" data-ch="TRI">
+        <view class="ch-dot-c ch-dot-tri"></view><text class="ch-txt">TRI</text>
+        <text class="ch-state">{{chB_TRI ? 'ON' : 'OFF'}}</text>
+      </view>
+      <view class="ch-item ch-toggle-btn {{chB_NOISE ? 'ch-on' : 'ch-off'}}" bindtap="toggleChannelB" data-ch="NOISE">
+        <view class="ch-dot-c ch-dot-noise"></view><text class="ch-txt">NOISE</text>
+        <text class="ch-state">{{chB_NOISE ? 'ON' : 'OFF'}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 状态 & 进度 -->
+  <view class="status-card">
+    <text class="status-text">{{status}}</text>
+    <view class="progress-bar" wx:if="{{!ready}}">
+      <view class="progress-fill" style="width:{{progress / totalFrames * 100}}%;"></view>
+    </view>
+    <text class="info-text" wx:if="{{ready}}">帧: {{elapsedFrames}} | 时间: {{elapsedTime}}</text>
+  </view>
+
+  <!-- 播放控件 -->
+  <view class="play-controls">
+    <button class="btn {{playing ? 'btn-pause' : 'btn-play'}}" bindtap="togglePlay" disabled="{{!ready}}">
+      {{playing ? '⏸ 暂停' : '▶ 播放对比'}}
+    </button>
+    <button class="btn btn-stop" bindtap="_stop" disabled="{{!ready}}">⏹ 停止</button>
   </view>
 
   <!-- 提示 -->
   <view class="tip">
-    <text>建议：先听 A 再听 B，对比旋律、节奏、音色是否一致。</text>
-    <text>两者均为 48kHz 单声道 PCM。</text>
+    <text>A 侧通过完整 NES CPU 模拟器 + PAPU 产生音频。</text>
+    <text>B 侧通过 TypeScript 音序器直接驱动 PAPU（无 CPU 依赖）。</text>
+    <text>切换 B 侧通道可独立监听各 APU 通道输出。</text>
   </view>
 </view>

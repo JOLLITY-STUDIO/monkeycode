@@ -423,6 +423,9 @@ class CPU {
   _traceCb: ((pc: number, opcode: number, cycles: number, frame: number) => void) | null = null;
   _instrPC!: number;
 
+  /** Enable debug logging for PC entering non-ROM areas */
+  debugNonROM: boolean = true;
+
   constructor(nes: any) {
     this.nes = nes;
 
@@ -1470,11 +1473,13 @@ class CPU {
       this._traceCb(this._instrPC, opcode, cycleCount + interruptCycles, this.nes.fpsFrameCount);
     }
     // DEBUG: Log when PC enters non-ROM area
-    let nextFetch = (this.REG_PC + 1) & 0xffff;
-    if (nextFetch < 0x8000) {
-      console.log(`[tsnes] PC->non-ROM: next=$${nextFetch.toString(16)}, ` +
-        `prev=$${this._instrPC.toString(16)}, opcode=0x${opcode.toString(16)}, ` +
-        `SP=$${(this.REG_SP & 0xff).toString(16)}, frame=${this.nes.fpsFrameCount}`);
+    if (this.debugNonROM) {
+      let nextFetch = (this.REG_PC + 1) & 0xffff;
+      if (nextFetch < 0x8000) {
+        console.log(`[tsnes] PC->non-ROM: next=$${nextFetch.toString(16)}, ` +
+          `prev=$${this._instrPC.toString(16)}, opcode=0x${opcode.toString(16)}, ` +
+          `SP=$${(this.REG_SP & 0xff).toString(16)}, frame=${this.nes.fpsFrameCount}`);
+      }
     }
     return cycleCount + interruptCycles;
   }

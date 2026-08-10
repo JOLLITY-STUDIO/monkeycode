@@ -1,8 +1,8 @@
 /**
  * Headless APU Trace — 在 Node.js 中跑 NES 模拟器，抓取 APU 寄存器写入
- * 输出到 scripts/_apu_trace_result.txt
+ * 输出到 scripts/_apu_trace_result.txt (或指定文件名)
  * 
- * 用法: npx tsx scripts/trace_apu_headless.ts [帧数,默认600]
+ * 用法: npx tsx scripts/trace_apu_headless.ts [帧数,默认600] [输出文件名,可选]
  */
 import * as fs from 'fs';
 import * as path from 'path';
@@ -10,7 +10,8 @@ import NES from '../src/nes';
 import { NES_PRG_ROM, NES_CHR_ROM } from '../rom-data/index';
 
 const FRAMES = parseInt(process.argv[2]) || 600;
-const OUT = path.join(__dirname, '_apu_trace_result.txt');
+const OUT = path.join(__dirname, process.argv[3] || '_apu_trace_result.txt');
+const DISABLE_BGM = process.argv[4] === 'nobgm';  // pass 'nobgm' to disable BGM
 
 function chName(addr: number) {
   if (addr < 0x4004) return 'SQ1';
@@ -28,6 +29,7 @@ function chDesc(addr: number) {
   if (b === 0x4000 || b === 0x4004) return ['Duty/Vol', 'Sweep', 'FreqLo', 'FreqHi'][r];
   if (b === 0x4008) return ['Timer',  '',      'FreqLo', 'FreqHi'][r];
   if (b === 0x400C) return ['Vol',     '',      'Period', 'Len'][r];
+  if (b === 0x4010) return ['DMC_Freq', 'DMC_DAC', 'DMC_Addr', 'DMC_Len'][r];
   return '';
 }
 
@@ -64,7 +66,7 @@ async function main() {
       if (ch) { chWrites[ch] = (chWrites[ch] || 0) + 1; if (!chFirst[ch]) chFirst[ch] = frame; }
       if (addr === 0x4015) stats.push({ f: frame, v: val });
       const desc = chDesc(addr);
-      if (['FreqLo', 'FreqHi', 'Duty/Vol', 'Vol', 'Sweep', 'Timer', 'Period'].includes(desc)) {
+      if (['FreqLo', 'FreqHi', 'Duty/Vol', 'Vol', 'Sweep', 'Timer', 'Period', 'DMC_Freq', 'DMC_DAC', 'DMC_Addr', 'DMC_Len'].includes(desc)) {
         const a = addr.toString(16).toUpperCase().padStart(4, '0');
         all.push(`F${String(frame).padStart(5)} $${a}=0x${val.toString(16).padStart(2,'0')} ${ch.padEnd(5)} ${desc}`);
       }
@@ -94,8 +96,8 @@ async function main() {
     log(`  F${String(s.f).padStart(5)} 0x${s.v.toString(16).padStart(2,'0')} → ${a.join('+')||'全关'}`);
   }
 
-  log(`\n关键事件时间线 (${Math.min(all.length,150)}/${all.length}):`);
-  for (let i = 0; i < Math.min(all.length, 150); i++) log(`  ${all[i]}`);
+  log(`\nAPU 寄存器写入事件 (全部 ${all.length} 条):`);
+  for (const l of all) log(`  ${l}`);
 
   // BGM 判断
   const sq1f = all.filter(l => l.includes(' SQ1 ') && l.includes('Freq'));

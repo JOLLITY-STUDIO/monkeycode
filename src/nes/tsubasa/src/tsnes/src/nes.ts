@@ -24,6 +24,8 @@ export interface NESOptions {
   sampleRate?: number;
   /** 可选：自定义 CPU 工厂 (用于注入 TsubasaCpu 等替代实现) */
   cpuFactory?: (nes: any) => CPU;
+  /** PC 进入非 ROM 区域时是否输出调试日志 (默认关闭，仅调试时需要) */
+  debugNonROM?: boolean;
 }
 
 class NES {
@@ -64,6 +66,7 @@ class NES {
     this.cpu = (this.opts as NESOptions).cpuFactory
       ? (this.opts as NESOptions).cpuFactory!(this)
       : new CPU(this);
+    this.cpu.debugNonROM = this.opts.debugNonROM ?? false;
     this.ppu = new PPU(this);
     this.papu = new PAPU(this);
     this.gameGenie = new GameGenie();
@@ -88,6 +91,7 @@ class NES {
     this.cpu = (this.opts as NESOptions).cpuFactory
       ? (this.opts as NESOptions).cpuFactory!(this)
       : new CPU(this);
+    this.cpu.debugNonROM = this.opts.debugNonROM ?? false;
     this.ppu = new PPU(this);
     this.papu = new PAPU(this);
 
