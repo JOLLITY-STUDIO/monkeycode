@@ -1,8 +1,23 @@
 <view class="container">
   <!-- 标题 -->
   <view class="header">
-    <text class="title">天使之翼II — A/B 音频对比</text>
-    <text class="subtitle">NES 模拟器 vs TS 纯引擎 · 预渲染对比</text>
+    <text class="title">天使之翼II — A/B APU 写入对比</text>
+    <text class="subtitle">NES 模拟器 4500帧 vs TS 引擎 · 自动同步偏移 F{{syncOffset}}</text>
+  </view>
+
+  <!-- 对比结果 -->
+  <view class="cmp-card" wx:if="{{cmpReady}}">
+    <view class="cmp-header">
+      <text class="cmp-title">APU 写入对比结果</text>
+      <text class="cmp-score">匹配 {{matchFrames}} / {{matchFrames + diffFrames}} 帧</text>
+    </view>
+    <view class="cmp-stats">
+      <view class="cmp-stat good">✓ 匹配: {{matchFrames}}</view>
+      <view class="cmp-stat bad">✗ 差异: {{diffFrames}}</view>
+    </view>
+    <scroll-view scroll-y class="cmp-detail" wx:if="{{cmpResult}}">
+      <text class="cmp-text">{{cmpResult}}</text>
+    </scroll-view>
   </view>
 
   <!-- A/B 切换 -->
@@ -23,27 +38,10 @@
     <view class="side-header">
       <view class="side-dot side-dot-a"></view>
       <text class="side-label">A: NES 模拟器 (CPU全仿真)</text>
-      <text class="side-badge">固定通道</text>
+      <text class="side-badge">{{emuTotalWrites}} APU写入</text>
     </view>
-
     <view class="wave-box">
       <canvas type="2d" id="waveA" class="wave-canvas" style="width:{{canvasWidth}}px; height:{{canvasHeight}}px;"></canvas>
-    </view>
-
-    <!-- A 侧通道 (仅展示) -->
-    <view class="ch-row">
-      <view class="ch-item ch-on">
-        <view class="ch-dot-c ch-dot-sq1"></view><text class="ch-txt">SQ1</text>
-      </view>
-      <view class="ch-item ch-on">
-        <view class="ch-dot-c ch-dot-sq2"></view><text class="ch-txt">SQ2</text>
-      </view>
-      <view class="ch-item ch-on">
-        <view class="ch-dot-c ch-dot-tri"></view><text class="ch-txt">TRI</text>
-      </view>
-      <view class="ch-item ch-on">
-        <view class="ch-dot-c ch-dot-noise"></view><text class="ch-txt">NOISE</text>
-      </view>
     </view>
   </view>
 
@@ -59,30 +57,23 @@
     <view class="side-header">
       <view class="side-dot side-dot-b"></view>
       <text class="side-label">B: TS 引擎 (无CPU依赖)</text>
-      <text class="side-badge editable">可开关通道</text>
+      <text class="side-badge editable">{{playerTotalWrites}} APU写入</text>
     </view>
-
     <view class="wave-box">
       <canvas type="2d" id="waveB" class="wave-canvas" style="width:{{canvasWidth}}px; height:{{canvasHeight}}px;"></canvas>
     </view>
-
-    <!-- B 侧通道 (可操作) -->
     <view class="ch-row">
       <view class="ch-item ch-toggle-btn {{chB_SQ1 ? 'ch-on' : 'ch-off'}}" bindtap="toggleChannelB" data-ch="SQ1">
         <view class="ch-dot-c ch-dot-sq1"></view><text class="ch-txt">SQ1</text>
-        <text class="ch-state">{{chB_SQ1 ? 'ON' : 'OFF'}}</text>
       </view>
       <view class="ch-item ch-toggle-btn {{chB_SQ2 ? 'ch-on' : 'ch-off'}}" bindtap="toggleChannelB" data-ch="SQ2">
         <view class="ch-dot-c ch-dot-sq2"></view><text class="ch-txt">SQ2</text>
-        <text class="ch-state">{{chB_SQ2 ? 'ON' : 'OFF'}}</text>
       </view>
       <view class="ch-item ch-toggle-btn {{chB_TRI ? 'ch-on' : 'ch-off'}}" bindtap="toggleChannelB" data-ch="TRI">
         <view class="ch-dot-c ch-dot-tri"></view><text class="ch-txt">TRI</text>
-        <text class="ch-state">{{chB_TRI ? 'ON' : 'OFF'}}</text>
       </view>
       <view class="ch-item ch-toggle-btn {{chB_NOISE ? 'ch-on' : 'ch-off'}}" bindtap="toggleChannelB" data-ch="NOISE">
         <view class="ch-dot-c ch-dot-noise"></view><text class="ch-txt">NOISE</text>
-        <text class="ch-state">{{chB_NOISE ? 'ON' : 'OFF'}}</text>
       </view>
     </view>
   </view>
@@ -102,12 +93,5 @@
       {{playing ? '⏸ 暂停' : '▶ 播放对比'}}
     </button>
     <button class="btn btn-stop" bindtap="_stop" disabled="{{!ready}}">⏹ 停止</button>
-  </view>
-
-  <!-- 提示 -->
-  <view class="tip">
-    <text>A 侧通过完整 NES CPU 模拟器 + PAPU 产生音频。</text>
-    <text>B 侧通过 TypeScript 音序器直接驱动 PAPU（无 CPU 依赖）。</text>
-    <text>切换 B 侧通道可独立监听各 APU 通道输出。</text>
   </view>
 </view>
