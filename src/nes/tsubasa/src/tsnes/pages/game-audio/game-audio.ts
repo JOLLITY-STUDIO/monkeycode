@@ -6,9 +6,13 @@
  * 两者完全独立：独立渲染、独立 WebAudio、独立日志。
  */
 import { NesAudio } from '../../mini-audio/emu/nes-audio';
-import { NES_PRG_ROM, NES_CHR_ROM, AUDIO_BANK_IDS } from '../../mini-audio/rom-data/index';
+// 切换版本:
+//   './index'       — 精简版 (9 bank)
+//   './index-full'  — 完整版 (32 bank, DMC+音效)
+import { NES_PRG_ROM, NES_CHR_ROM, AUDIO_BANK_IDS } from '../../mini-audio/rom-data/index-full';
 import {
   BGM00Player,
+  BGM00_RAW,
   BGM00_TRACK_SQ1,
   BGM00_TRACK_SQ2,
   BGM00_TRACK_TRI,
@@ -49,7 +53,7 @@ function renderBGM00Async(
   onDone: (samples: Float32Array, frameCount: number) => void,
 ): void {
   const player = new BGM00Player(SAMPLE_RATE);
-  player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE);
+  player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE, BGM00_RAW, 0xB7AD);
   if (!player.start()) {
     onDone(new Float32Array(0), 0);
     return;
