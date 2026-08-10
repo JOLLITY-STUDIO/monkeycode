@@ -4,6 +4,7 @@
  */
 import {
   BGM00Player,
+  BGM00_RAW,
   BGM00_META,
   BGM00_TRACK_SQ1,
   BGM00_TRACK_SQ2,
@@ -37,7 +38,7 @@ function renderBGM00Async(
   onDone: (samples: Float32Array, frameCount: number) => void,
 ): void {
   const player = new BGM00Player(SAMPLE_RATE);
-  player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE);
+  player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE, BGM00_RAW, 0xB7AD);
   if (!player.start()) {
     onDone(new Float32Array(0), 0);
     return;
