@@ -97,7 +97,8 @@ interface ChBlock {
 function createChBlock(): ChBlock {
   return {
     trackLo: 0, trackHi: 0,
-    timingLo: 1, timingHi: 0,
+    // $8349 zeroes offsets 2-3 (timing ptr) → timingLo=0, timingHi=0
+    timingLo: 0, timingHi: 0,
     timingOff: 0,
     // $8349 init 清零 vol_ctrl（offset 5），offset 9 ($0730) = $0F
     volCtrl: 0x00,
@@ -145,6 +146,8 @@ interface WorkArea {
   freqDirty: Uint8Array;
   /** 保存最近一次时长前缀的值，供后续音符复用（不受 durHi timing table 重载影响） */
   noteDur: Uint8Array;
+  /** 标记该通道是否已播放过至少一个音符 (baseFreq set) */
+  notePlayed: Uint8Array;
 }
 
 function createWorkArea(): WorkArea {
@@ -166,6 +169,7 @@ function createWorkArea(): WorkArea {
     portamentoVal: new Int8Array(NUM_CHANNELS),
     freqDirty: new Uint8Array(NUM_CHANNELS),
     noteDur: new Uint8Array(NUM_CHANNELS),
+    notePlayed: new Uint8Array(NUM_CHANNELS),
   };
 }
 
@@ -335,13 +339,13 @@ export class Tsubasa2AudioPlayer {
     if (data.length === 0) return;
 
     const useShared = this.sharedData !== null;
-
     this.startOffsets[ch] = useShared ? sharedStart : 0;
 
     const blk = this.blocks[ch];
+    // $8349 ASM zeroes $0700,X through $0709,X → all dur/timing values = 0
     blk.trackLo = useShared ? (sharedStart & 0xFF) : 0;
     blk.trackHi = useShared ? ((sharedStart >> 8) & 0xFF) : 0;
-    blk.timingLo = 1; // next_dur_lo = 1
+    blk.timingLo = 0;
     blk.timingHi = 0;
     blk.timingOff = 0;
     // $8349 in ASM is STX ram_00F5 + LDA #$00;STA ram_0700,X (zeros durHi, NOT volCtrl)
@@ -357,7 +361,7 @@ export class Tsubasa2AudioPlayer {
     this.w.durLo[ch] = 1;
     this.w.durHi[ch] = 1;
     this.w.noteDur[ch] = 1;
-    this.w.nextDurHi[ch] = 1;   // $070A+X: next_dur_hi (static, from timing table)
+    this.w.nextDurHi[ch] = 0;  // $070A+X: zeroed at $8349 init
     this.w.chType[ch] = 0;
     this.w.volDecay[ch] = 0;
     this.w.volDecayReload[ch] = 0;
@@ -397,7 +401,7 @@ export class Tsubasa2AudioPlayer {
 
   stop(): void {
     this.isPlaying = false;
-    this.papu.writeReg(0x4015, 0x0F);
+    // 不写 $4015 避免 dual-write: load()→stop()→start() 两次写
     this.w = createWorkArea();
     for (let i = 0; i < NUM_CHANNELS; i++) {
       this.blocks[i] = createChBlock();
@@ -416,7 +420,7 @@ export class Tsubasa2AudioPlayer {
       const startOff = this.startOffsets[ch] || 0;
       blk.trackLo = startOff & 0xFF;
       blk.trackHi = (startOff >> 8) & 0xFF;
-      blk.timingLo = 1;
+      blk.timingLo = 0;
       blk.timingHi = 0;
       blk.timingOff = 0;
       // Per-channel volCtrl default (duty from Bank 31 NMI init)
@@ -428,7 +432,7 @@ export class Tsubasa2AudioPlayer {
       this.w.durLo[ch] = 1;
       this.w.durHi[ch] = 1;
       this.w.noteDur[ch] = 1;
-      this.w.nextDurHi[ch] = 1;
+      this.w.nextDurHi[ch] = 0;
       this.w.chType[ch] = 0;
       this.w.seqIdx[ch] = 0;
       this.w.volDecay[ch] = 0;
@@ -436,6 +440,7 @@ export class Tsubasa2AudioPlayer {
       this.w.portamentoEn[ch] = 0;
       this.w.portamentoVal[ch] = 0;
       this.w.freqDirty[ch] = 0;
+      this.w.notePlayed[ch] = 0;
       this._callStacks[ch] = [];
       this._loopStacks[ch] = [];
       // Set bit in chMask
@@ -599,12 +604,13 @@ export class Tsubasa2AudioPlayer {
         // Reset channel state for fresh loop
         blk.volCtrl &= 0xCF;
         blk.timingOff = 0;
-        blk.timingLo = 1;
+        blk.timingLo = 0;
         blk.timingHi = 0;
         this.w.chType[ch] = 0;
         this.w.seqIdx[ch] = 0;
         this.w.portamentoEn[ch] = 0;
         this.w.portamentoVal[ch] = 0;
+        this.w.notePlayed[ch] = 0;
         // Clear call/loop stacks
         this._callStacks[ch] = [];
         this._loopStacks[ch] = [];
@@ -683,15 +689,16 @@ export class Tsubasa2AudioPlayer {
         fLo = upper | lower;
       }
 
-      this.w.baseFreqLo[ch] = fLo;
-      this.w.baseFreqHi[ch] = fHi;
-      blk.freqLo = fLo;
-      blk.freqHi = fHi | 0x80;  // set bit7 (dirty) — ASM _parseNote does ORA #$80
-      this.w.freqDirty[ch] = 0xFF;
-      return;
-    }
+    this.w.baseFreqLo[ch] = fLo;
+    this.w.baseFreqHi[ch] = fHi;
+    blk.freqLo = fLo;
+    blk.freqHi = fHi | 0x80;  // set bit7 (dirty) — ASM _parseNote does ORA #$80
+    this.w.freqDirty[ch] = 0xFF;
+    this.w.notePlayed[ch] = 1;
+    return;
+  }
 
-    // $842E-$845B: 半音 + 八度编码
+  // $842E-$845B: 半音 + 八度编码
     const semitone = noteByte & 0x0F;
     if (semitone >= 0x0C) {
       // $8435: rest (invalid note)
@@ -748,6 +755,7 @@ export class Tsubasa2AudioPlayer {
     blk.freqLo = fLo;
     blk.freqHi = fHi | 0x80;  // set bit7 (dirty) — ASM _parseNote does ORA #$80
     this.w.freqDirty[ch] = 0xFF;
+    this.w.notePlayed[ch] = 1;
   }
 
   // ════════════════════════════════════════════════
@@ -970,7 +978,7 @@ export class Tsubasa2AudioPlayer {
         const restartOff = this.startOffsets[ch] || 0;
         blk.trackLo = restartOff & 0xFF;
         blk.trackHi = (restartOff >> 8) & 0xFF;
-        blk.timingLo = 1;
+        blk.timingLo = 0;
         blk.timingHi = 0;
         blk.timingOff = 0;
         // Restore per-channel volCtrl default (duty from Bank 31 NMI init)
@@ -982,7 +990,7 @@ export class Tsubasa2AudioPlayer {
         this.w.durLo[ch] = 1;
         this.w.durHi[ch] = 1;
         this.w.noteDur[ch] = 1;
-        this.w.nextDurHi[ch] = 1;
+        this.w.nextDurHi[ch] = 0;
         this.w.chType[ch] = 0;
         this.w.seqIdx[ch] = 0;
         this.w.volDecay[ch] = 0;
@@ -990,6 +998,7 @@ export class Tsubasa2AudioPlayer {
         this.w.portamentoEn[ch] = 0;
         this.w.portamentoVal[ch] = 0;
         this.w.freqDirty[ch] = 0;
+        this.w.notePlayed[ch] = 0;
         this._callStacks[ch] = [];
         this._loopStacks[ch] = [];
         return false;
@@ -1074,7 +1083,8 @@ export class Tsubasa2AudioPlayer {
     // SQ1/SQ2/NOISE channels get freq written every frame (via this ORA + _processVolume).
     // TRI only writes freq on _parseNote (no per-frame re-trigger).
     const apuX = ((7 - ch) * 4) & 0x0F;
-    if (apuX !== 0x04) {
+    // Only re-dirty freq if a note has been played (no garbage before first note)
+    if (apuX !== 0x04 && this.w.notePlayed[ch]) {
       blk.freqHi |= 0x80;
       this.w.freqDirty[ch] = 0xFF;
     }
@@ -1086,16 +1096,18 @@ export class Tsubasa2AudioPlayer {
     let si = this.w.seqIdx[ch];
     if (si >= SEQ_MOD_TABLE_TYPE1.length) si = 0;
 
-    const [dLo, dHi] = SEQ_MOD_TABLE_TYPE1[si];
-    let fLo = (this.w.baseFreqLo[ch] + dLo) & 0xFF;
-    let fHi = (this.w.baseFreqHi[ch] + dHi) & 7;
+    // Only apply freq modification if a note has been played (baseFreq is valid)
+    if (this.w.notePlayed[ch]) {
+      const [dLo, dHi] = SEQ_MOD_TABLE_TYPE1[si];
+      let fLo = (this.w.baseFreqLo[ch] + dLo) & 0xFF;
+      let fHi = (this.w.baseFreqHi[ch] + dHi) & 7;
 
-    if (fLo > 0xFF) { fHi++; fLo &= 0xFF; }
+      if (fLo > 0xFF) { fHi++; fLo &= 0xFF; }
 
-    blk.freqLo = fLo;
-    blk.freqHi = fHi | 0x80;  // ORA #$80 sets dirty flag
-    // Bank 12 ASM ORA #$80 sets dirty flag, triggering APU write every frame
-    this.w.freqDirty[ch] = 0xFF;
+      blk.freqLo = fLo;
+      blk.freqHi = fHi | 0x80;  // ORA #$80 sets dirty flag
+      this.w.freqDirty[ch] = 0xFF;
+    }
 
     si = (si + 1) % SEQ_MOD_TABLE_TYPE1.length;
     this.w.seqIdx[ch] = si;
@@ -1107,28 +1119,30 @@ export class Tsubasa2AudioPlayer {
     let si = this.w.seqIdx[ch];
     if (si >= SEQ_MOD_TABLE_TYPE2.length) si = 0;
 
-    const [dLo, dHi] = SEQ_MOD_TABLE_TYPE2[si];
-    let fLo = this.w.baseFreqLo[ch];
-    let fHi = this.w.baseFreqHi[ch] & 7;
+    // Only apply freq modification if a note has been played (baseFreq is valid)
+    if (this.w.notePlayed[ch]) {
+      const [dLo, dHi] = SEQ_MOD_TABLE_TYPE2[si];
+      let fLo = this.w.baseFreqLo[ch];
+      let fHi = this.w.baseFreqHi[ch] & 7;
 
-    if (dHi < 0 || dLo < 0) {
-      // Subtract
-      const val = ((-dLo) & 0xFF) | ((dHi < 0 ? -dHi : 0) << 8);
-      let period = fLo | (fHi << 8);
-      period -= val;
-      if (period < 2) period = 2;
-      fLo = period & 0xFF;
-      fHi = (period >> 8) & 7;
-    } else {
-      fLo = (fLo + dLo) & 0xFF;
-      fHi = (fHi + dHi) & 7;
-      if (fLo > 0xFF) { fHi++; fLo &= 0xFF; }
+      if (dHi < 0 || dLo < 0) {
+        // Subtract
+        const val = ((-dLo) & 0xFF) | ((dHi < 0 ? -dHi : 0) << 8);
+        let period = fLo | (fHi << 8);
+        period -= val;
+        if (period < 2) period = 2;
+        fLo = period & 0xFF;
+        fHi = (period >> 8) & 7;
+      } else {
+        fLo = (fLo + dLo) & 0xFF;
+        fHi = (fHi + dHi) & 7;
+        if (fLo > 0xFF) { fHi++; fLo &= 0xFF; }
+      }
+
+      blk.freqLo = fLo;
+      blk.freqHi = fHi | 0x80;  // ORA #$80 sets dirty flag
+      this.w.freqDirty[ch] = 0xFF;
     }
-
-    blk.freqLo = fLo;
-    blk.freqHi = fHi | 0x80;  // ORA #$80 sets dirty flag
-    // Bank 12 ASM ORA #$80 sets dirty flag
-    this.w.freqDirty[ch] = 0xFF;
 
     si = (si + 1) % SEQ_MOD_TABLE_TYPE2.length;
     this.w.seqIdx[ch] = si;
