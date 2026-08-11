@@ -311,3 +311,129 @@ page {
   color: #555577;
   line-height: 1.7;
 }
+
+/** ─── Tab 切换条 ─── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  background: #0d0d1f;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #252540;
+}
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #555577;
+  background: #0d0d1f;
+  transition: all 0.15s ease;
+}
+.tab-active {
+  background: #1a2a3a;
+  color: #ffd700;
+  border-bottom: 2px solid #ffd700;
+}
+
+/** ─── SE 列表头 ─── */
+.se-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.se-header-title {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ff9900;
+  margin-bottom: 3px;
+}
+.se-header-sub {
+  display: block;
+  font-size: 10px;
+  color: #555577;
+}
+
+/** ─── SE 滚动列表 ─── */
+.se-scroll {
+  max-height: 520px;
+  background: #0f0f22;
+  border-radius: 8px;
+  border: 1px solid #252540;
+  padding: 4px 0;
+}
+
+/** ─── SE 列表项 ─── */
+.se-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  margin: 2px 6px;
+  border-radius: 6px;
+  background: #141428;
+  border: 1px solid transparent;
+  transition: all 0.12s ease;
+}
+.se-item:active {
+  transform: scale(0.97);
+  border-color: #446688;
+  background: #1a2a3a;
+}
+
+/** 静音 SE */
+.se-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/** 正在播放的 SE */
+.se-playing {
+  border-color: #ff9900;
+  background: #1a2010;
+  box-shadow: 0 0 12px rgba(255, 153, 0, 0.15);
+}
+
+/** SE 左侧信息 */
+.se-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.se-idx {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ccccdd;
+}
+.se-addr {
+  font-size: 10px;
+  color: #556688;
+}
+.se-empty {
+  color: #443344;
+}
+.se-chtag {
+  font-size: 10px;
+  color: #44aa77;
+  margin-top: 1px;
+  font-weight: bold;
+}
+
+/** SE 右侧 */
+.se-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.se-desc {
+  font-size: 11px;
+  color: #8899aa;
+}
+.se-play-icon {
+  font-size: 18px;
+  color: #ff9900;
+  width: 24px;
+  text-align: center;
+}

@@ -194,13 +194,16 @@ export class Tsubasa2AudioPlayer {
   private isPlaying = false;
   private frameCount = 0;
   private totalChannels = 4; // SQ1=ch4, SQ2=ch5, TRI=ch6, NOISE=ch7
+  /** one-shot mode: $FF stops channel instead of looping; chMask→0 stops player */
+  private _oneShot = false;
 
   /** Track start positions in sharedData (for restart on end-of-data) */
   private startOffsets: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
 
   /** Shared BGM raw data for CALL/JUMP NES address resolution */
   private sharedData: Uint8Array | null = null;
-  private bgmNesBase = 0; // NES base address of sharedData
+  private bgmNesBase = 0; // NES base address of sharedData (raw[0] 对应的 NES 地址 = RAW_START)
+  private bgmHeaderOffset = 0; // header 在 sharedData 内的偏移 (initPtr - RAW_START)
 
   // $8623 EOR #$07 mapping: APU register X = (7-ch) * 4 & 0x0F
   // ch4(SQ1)→X=$0C, ch5(SQ2)→X=$08, ch6(TRI)→X=$04, ch7(NOISE)→X=$00
@@ -264,6 +267,15 @@ export class Tsubasa2AudioPlayer {
   }
 
   /**
+   * 设置 one-shot 模式。
+   * true:  $FF 停止通道（清除 chMask），所有通道停止后 isPlaying=false
+   * false: $FF 循环重启通道（BGM 循环模式）
+   */
+  setOneShot(enabled: boolean): void {
+    this._oneShot = enabled;
+  }
+
+  /**
    * 设置完整的 PRG ROM 数据（用于 DMC 采样读取）
    * @param prgRom 32 × 8KB = 262144 字节的扁平数组
    */
@@ -279,8 +291,10 @@ export class Tsubasa2AudioPlayer {
    * $8349 — 音乐播放初始化
    * 通道映射: SQ1→ch4, SQ2→ch5, TRI→ch6, NOISE→ch7
    * 
-   * @param sharedRaw 可选: 完整BGM数据，用于CALL/JUMP NES地址转换
-   * @param nesBase   共享数据的NES起始地址 (e.g. 0xB7AD for BGM00)
+   * @param sharedRaw    可选: 完整BGM数据，用于CALL/JUMP NES地址转换
+   * @param nesBase      sharedRaw[0] 对应的 NES 地址 (RAW_START, e.g. 0xB7AD for BGM00)
+   * @param headerOffset header 在 sharedRaw 内的偏移 (initPtr - RAW_START)，
+   *                     默认 0。含共享乐句区的 SID 轨道 > 0（E8/E9 目标低于 initPtr）。
    */
   load(
     trackSQ1: readonly number[],
@@ -289,38 +303,52 @@ export class Tsubasa2AudioPlayer {
     trackNOISE: readonly number[],
     sharedRaw?: readonly number[],
     nesBase?: number,
+    headerOffset?: number,
   ): boolean {
     this.stop();
 
     if (sharedRaw) {
       this.sharedData = new Uint8Array(sharedRaw);
       this.bgmNesBase = nesBase || 0;
+      this.bgmHeaderOffset = headerOffset || 0;
     } else {
       this.sharedData = null;
       this.bgmNesBase = 0;
+      this.bgmHeaderOffset = 0;
     }
 
     this.w.chMask = 0;
 
-    // Parse 12B header from shared data to get NES address entry points.
-    // Header: [ch4] [NES_lo hi] [ch5] [NES_lo hi] [ch6] [NES_lo hi] [ch7] [NES_lo hi] [FF]
+    // Parse header from shared data to get NES address entry points.
+    // Two formats:
+    //   BGM00: [ch4 lo hi] [ch5 lo hi] [ch6 lo hi] [ch7 lo hi] [FF] …data (chNum=4-7)
+    //   SID:   [FF] [ch0 lo hi] [ch1 lo hi] [ch2 lo hi] [ch3 lo hi] [FF] …data (chNum=0-3)
     // The header NES addresses are the Bank 12 engine's channel start positions.
+    // headerOffset: 含共享乐句区的 SID 轨道 raw 起始低于 header，从 headerOffset 起读。
     if (this.sharedData) {
-      const headerChannels: number[] = [];
-      for (let i = 0; i < 4; i++) {
-        const chNum = this.sharedData[i * 3];
-        const lo = this.sharedData[i * 3 + 1];
-        const hi = this.sharedData[i * 3 + 2];
+      let pos = this.bgmHeaderOffset || 0;
+      // Detect and skip SID leading 0xFF marker byte (at header start)
+      if (this.sharedData[pos] === 0xFF) pos += 1;
+
+      // Read up to 8 channel entries (3 bytes each: chNum, lo, hi), stop at sentinel 0xFF.
+      // Engine $8349 supports 8 channels; e.g. SE#0x44 header has 6 entries (ch0/1 + ch4-7).
+      for (let i = 0; i < 8 && pos + 2 < this.sharedData.length; i++) {
+        const byte0 = this.sharedData[pos];
+        if (byte0 === 0xFF) break; // sentinel
+        const lo = this.sharedData[pos + 1];
+        const hi = this.sharedData[pos + 2];
+        pos += 3;
+
+        const chNum = byte0; // 4-7 for BGM00, 0-3 for SID
         const nesAddr = lo | (hi << 8);
-        headerChannels.push(chNum);
         const off = this._nesAddrToOffset(nesAddr);
-        // Map header channel to our internal ch (4-7)
-        if (chNum >= 4 && chNum <= 7) {
-          if (chNum === 4) this._initChannel(4, trackSQ1, off);
-          else if (chNum === 5) this._initChannel(5, trackSQ2, off);
-          else if (chNum === 6) this._initChannel(6, trackTRI, off);
-          else if (chNum === 7) this._initChannel(7, trackNOISE, off);
-        }
+
+        // Map to internal channels 4-7
+        const internalCh = (chNum >= 4) ? chNum : chNum + 4;
+        if (internalCh === 4) this._initChannel(4, trackSQ1, off);
+        else if (internalCh === 5) this._initChannel(5, trackSQ2, off);
+        else if (internalCh === 6) this._initChannel(6, trackTRI, off);
+        else if (internalCh === 7) this._initChannel(7, trackNOISE, off);
       }
     } else {
       // No shared data: each channel uses its own track array, starting at 0
@@ -471,8 +499,12 @@ export class Tsubasa2AudioPlayer {
   tick(): void {
     if (!this.isPlaying) return;
     if (this.w.chMask === 0) {
-      // All channels stopped — restart song loop from header
-      this._restartSong();
+      if (this._oneShot) {
+        this.isPlaying = false;
+      } else {
+        // All channels stopped — restart song loop from header (BGM mode)
+        this._restartSong();
+      }
       return;
     }
 
@@ -598,7 +630,11 @@ export class Tsubasa2AudioPlayer {
       const pos = blk.trackLo | (blk.trackHi << 8);
       if (pos >= maxLen) {
         // End of track data — restart from start offset (song loop)
-        const restartOff = this.startOffsets[ch] || 0;
+        let restartOff = this.startOffsets[ch] || 0;
+        // Skip leading 0xFF sentinel byte(s) — header entry points AT the sentinel
+        if (this.sharedData && restartOff < this.sharedData.length && this.sharedData[restartOff] === 0xFF) {
+          restartOff++;
+        }
         blk.trackLo = restartOff & 0xFF;
         blk.trackHi = (restartOff >> 8) & 0xFF;
         // Reset channel state for fresh loop
@@ -972,10 +1008,21 @@ export class Tsubasa2AudioPlayer {
       }
 
       // $FF → $8655: STOP CHANNEL
-      // In Bank 12 engine, channels auto-restart from header entry when stopped
+      // In Bank 12 engine, channels auto-restart from header entry when stopped.
+      // NOTE: Header entry point often points at the trailing 0xFF sentinel byte
+      // (off-by-one vs actual data). After restart, advance past any leading 0xFF.
       case 0x1F: {
+        if (this._oneShot) {
+          // One-shot mode: clear channel from mask → stops this channel permanently
+          this.w.chMask &= ~(1 << ch);
+          return false;
+        }
         // Restart this channel from its header offset
-        const restartOff = this.startOffsets[ch] || 0;
+        let restartOff = this.startOffsets[ch] || 0;
+        // Skip leading 0xFF sentinel byte(s) — header entry points AT the sentinel
+        if (this.sharedData && restartOff < this.sharedData.length && this.sharedData[restartOff] === 0xFF) {
+          restartOff++;
+        }
         blk.trackLo = restartOff & 0xFF;
         blk.trackHi = (restartOff >> 8) & 0xFF;
         blk.timingLo = 0;

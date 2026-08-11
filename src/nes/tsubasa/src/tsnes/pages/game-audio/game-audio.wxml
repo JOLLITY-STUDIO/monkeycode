@@ -5,6 +5,21 @@
     <text class="subtitle">NES 模拟器 4500帧 vs TS 引擎 · 自动同步偏移 F{{syncOffset}}</text>
   </view>
 
+  <!-- Tab 切换 -->
+  <view class="tab-bar">
+    <view class="tab-item {{tab === 'bgm' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="bgm">
+      <text>BGM 对比</text>
+    </view>
+    <view class="tab-item {{tab === 'bgmlist' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="bgmlist">
+      <text>BGM 列表</text>
+    </view>
+    <view class="tab-item {{tab === 'se' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="se">
+      <text>SE 音效</text>
+    </view>
+  </view>
+
+  <!-- ═══ BGM 对比 Tab ═══ -->
+  <block wx:if="{{tab === 'bgm'}}">
   <!-- 对比结果 -->
   <view class="cmp-card" wx:if="{{cmpReady}}">
     <view class="cmp-header">
@@ -94,4 +109,79 @@
     </button>
     <button class="btn btn-stop" bindtap="_stop" disabled="{{!ready}}">⏹ 停止</button>
   </view>
+  </block>
+
+  <!-- ═══ BGM 列表 Tab ═══ -->
+  <block wx:if="{{tab === 'bgmlist'}}">
+  <view class="se-header">
+    <text class="se-header-title">游戏 BGM 列表 ({{bgmList.length}} 首)</text>
+    <text class="se-header-sub">Banks 12/13/14/15 · 全部音频轨道 · BGM00 仅用于对比</text>
+  </view>
+
+  <!-- BGM 状态 -->
+  <view class="status-card" wx:if="{{bgmStatus}}">
+    <text class="status-text">{{bgmStatus}}</text>
+  </view>
+
+  <!-- 播放中名称 -->
+  <view class="status-card" wx:if="{{bgmPlayingName}}">
+    <text class="status-text">{{bgmPaused ? '⏸' : '▶'}} {{bgmPaused ? '已暂停' : '正在播放'}}: {{bgmPlayingName}}</text>
+  </view>
+
+  <!-- BGM 列表 -->
+  <scroll-view scroll-y class="se-scroll">
+    <view
+      wx:for="{{bgmList}}"
+      wx:key="idx"
+      class="se-item {{bgmPlayingIdx === item.idx ? 'se-playing' : ''}}"
+      bindtap="playBgm"
+      data-idx="{{item.idx}}"
+    >
+      <view class="se-left">
+        <text class="se-idx">{{item.id}} · {{item.name}}</text>
+        <text class="se-addr">{{item.type}} · Bank {{item.bank}} · {{item.bytes}}B</text>
+        <text class="se-chtag" wx:if="{{item.chTag}}">{{item.chTag}}</text>
+      </view>
+      <view class="se-right">
+        <text class="se-desc">{{item.desc}}</text>
+        <text class="se-play-icon">{{bgmPlayingIdx === item.idx ? (bgmPaused ? '▶' : '⏸') : '▶'}}</text>
+      </view>
+    </view>
+  </scroll-view>
+  </block>
+
+  <!-- ═══ SE 列表 Tab ═══ -->
+  <block wx:if="{{tab === 'se'}}">
+  <view class="se-header">
+    <text class="se-header-title">游戏音效列表 (SE#0 ~ SE#15)</text>
+    <text class="se-header-sub">Bank 12 SE 指针表 · Header地址: $8E42~$974D</text>
+  </view>
+
+  <!-- SE 状态 -->
+  <view class="status-card" wx:if="{{seStatus}}">
+    <text class="status-text">{{seStatus}}</text>
+  </view>
+
+  <!-- SE 列表 -->
+  <scroll-view scroll-y class="se-scroll">
+    <view
+      wx:for="{{seList}}"
+      wx:key="idx"
+      class="se-item {{item.hasData ? '' : 'se-disabled'}} {{sePlayingIdx === item.idx ? 'se-playing' : ''}}"
+      bindtap="playSe"
+      data-idx="{{item.idx}}"
+    >
+      <view class="se-left">
+        <text class="se-idx">SE#{{item.idx}}</text>
+        <text class="se-addr" wx:if="{{item.hasData}}">{{item.addr}} · {{item.totalBytes}}字节</text>
+        <text class="se-addr se-empty" wx:else>{{item.addr}} · 静音</text>
+        <text class="se-chtag" wx:if="{{item.chTag}}">{{item.chTag}}</text>
+      </view>
+      <view class="se-right">
+        <text class="se-desc">{{item.desc}}</text>
+        <text class="se-play-icon">{{sePlayingIdx === item.idx ? '⏸' : (item.hasData ? '▶' : '')}}</text>
+      </view>
+    </view>
+  </scroll-view>
+  </block>
 </view>

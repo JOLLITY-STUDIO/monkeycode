@@ -9,7 +9,8 @@
     "pages/bankpage/bank-detail-30/bank-detail",
     "pages/bankpage/bank-detail-31/bank-detail",
     "pages/mini-audio-page/mini-audio-page",
-    "pages/game-audio/game-audio"
+    "pages/game-audio/game-audio",
+    "pages/game-bgmse/game-bgmse"
   ],
   "window": {
     "navigationBarTitleText": "天使之翼2 (H5引擎)",

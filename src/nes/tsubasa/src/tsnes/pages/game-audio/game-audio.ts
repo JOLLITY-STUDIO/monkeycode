@@ -16,7 +16,9 @@ import { NES_PRG_ROM, NES_CHR_ROM } from '../../mini-audio/rom-data/index-full';
 import {
   Tsubasa2AudioPlayer,
   BGM00_RAW, BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE,
+  BGM_SID_LIST, BgmSidEntry,
 } from '../../mini-audio/bgm-data/index';
+import { SE_CHANNELS, SE_COUNT } from '../../mini-audio/se-data/index';
 
 const SAMPLE_RATE = 48000;
 const NES_TOTAL_FRAMES = 4500;
@@ -75,6 +77,18 @@ Page({
     // Canvas
     canvasWidth: 375,
     canvasHeight: 100,
+
+    // SE tab
+    tab: 'bgm' as 'bgm' | 'se' | 'bgmlist',
+    seList: [] as any[],
+    sePlayingIdx: -1,
+    seStatus: '',
+    // BGM list tab
+    bgmList: [] as any[],
+    bgmPlayingIdx: -1,
+    bgmStatus: '',
+    bgmPlayingName: '',
+    bgmPaused: false,
   },
 
   // ─── 内部状态 ───
@@ -90,12 +104,32 @@ Page({
   _canvasLoop: null as ReturnType<typeof setInterval> | null,
   _waveBufA: [] as number[],
   _waveBufB: [] as number[],
+  // SE 播放
+  _sePcmCache: {} as Record<number, Float32Array>,
+  _seActivePcm: null as Float32Array | null,
+  _sePlayPos: 0,
+  // BGM 播放
+  _bgmPcmCache: {} as Record<string, Float32Array>,
+  _bgmActivePcm: null as Float32Array | null,
+  _bgmPlayPos: 0,
+  _bgmStopRequested: false,
+  _bgmCtx: null as any,
+  _bgmScriptNode: null as any,
+  _bgmRenderToken: 0,
+  // BGM 流式播放（实时 tick → ring buffer → ScriptProcessor）
+  _bgmStreamPlayer: null as any,
+  _bgmStreamTimer: null as any,
+  _bgmRing: null as Float32Array | null,
+  _bgmRingW: 0,
+  _bgmRingR: 0,
 
   // ═══ 生命周期 ═══
 
   onLoad() {
     const sysInfo = wx.getSystemInfoSync();
     this.setData({ canvasWidth: sysInfo.windowWidth - 32 });
+    this._buildSeList();
+    this._buildBgmList();
   },
 
   onReady() {
@@ -532,12 +566,14 @@ Page({
 
   _stop() {
     this._stopCanvasLoop();
+    this._stopSePlayback();
+    this._stopBgmPlayback();
     this._destroy();
     this._playPos = 0;
     this._waveBufA = [];
     this._waveBufB = [];
-    if (this.data.ready) {
-      this.setData({ playing: false, elapsedFrames: 0, elapsedTime: '0:00', status: '就绪' });
+    if (this.data.ready || this.data.tab === 'se' || this.data.tab === 'bgmlist') {
+      this.setData({ playing: false, elapsedFrames: 0, elapsedTime: '0:00', status: '就绪', sePlayingIdx: -1, seStatus: '', bgmPlayingIdx: -1, bgmStatus: '', bgmPlayingName: '', bgmPaused: false });
     }
     this._drawBgs();
   },
@@ -684,6 +720,515 @@ Page({
     if (this._canvasLoop !== null) {
       clearInterval(this._canvasLoop);
       this._canvasLoop = null;
+    }
+  },
+
+  // ════════════════════════════════════════════════
+  // SE 播放列表
+  // ════════════════════════════════════════════════
+
+  /** 构建 SE 列表 */
+  _buildSeList() {
+    const list = SE_CHANNELS.map((ch, i) => {
+      const subValid = (arr: readonly number[]): boolean =>
+        arr.length > 1 || (arr.length === 1 && arr[0] !== 0xFF);
+      const hasSub0 = subValid(ch.subData[0] || []);
+      const hasSub1 = subValid(ch.subData[1] || []);
+      const hasSub3 = subValid(ch.subData[3] || []);
+      // 总有效数据字节数
+      const totalBytes =
+        (hasSub0 ? (ch.subData[0]?.length || 0) : 0) +
+        (hasSub1 ? (ch.subData[1]?.length || 0) : 0) +
+        (hasSub3 ? (ch.subData[3]?.length || 0) : 0);
+
+      // 通道标签
+      const chLabels: string[] = [];
+      if (hasSub0) chLabels.push('SQ1');
+      if (hasSub1) chLabels.push('SQ2');
+      if (hasSub3) chLabels.push('NOISE');
+      const chTag = chLabels.length > 0 ? chLabels.join('+') : '';
+
+      return {
+        idx: i,
+        addr: '0x' + ch.headerAddr.toString(16).toUpperCase(),
+        totalBytes,
+        hasData: hasSub0 || hasSub1 || hasSub3,
+        chTag,
+        desc: this._seDesc(i),
+      };
+    });
+    this.setData({ seList: list });
+  },
+
+  _seDesc(idx: number): string {
+    const descs: Record<number, string> = {
+      2: '上行滑音',
+      3: '下行滑音',
+      4: '渐强爬升', 
+      5: '短跳转',
+      6: '多段组合',
+      7: '方波+N 滑音',
+      8: '完整乐句',
+      9: '和弦装饰',
+      10: '上升级进',
+      11: '简单装饰',
+      12: '跳转B',
+      13: '方波+N下行',
+      14: '上升B',
+      15: '方波+N 完整',
+    };
+    return descs[idx] || '';
+  },
+
+  /** 切换 tab */
+  switchTab(e: any) {
+    const tab = e.currentTarget.dataset.tab as string;
+    this._stopSePlayback();
+    this._stopBgmPlayback();
+    this._sePcmCache = {}; // 清除旧缓存（避免之前用错误方式渲染的缓存）
+    this._bgmPcmCache = {};
+    this.setData({ tab, playing: false, sePlayingIdx: -1, seStatus: '', bgmPlayingIdx: -1, bgmStatus: '', bgmPlayingName: '', bgmPaused: false });
+  },
+
+  /** 点击 SE 按钮：渲染 + 播放 */
+  async playSe(e: any) {
+    const idx = e.currentTarget.dataset.idx as number;
+    const ch = SE_CHANNELS[idx];
+    if (!ch) return;
+
+    // 检查是否有任何有效子段落数据
+    const hasData = Object.values(ch.subData).some(arr =>
+      arr.length > 1 || (arr.length === 1 && arr[0] !== 0xFF)
+    );
+    if (!hasData) return;
+
+    // 停止当前 SE
+    this._stopSePlayback();
+
+    // 检查缓存
+    let pcm = this._sePcmCache[idx];
+    if (!pcm) {
+      this.setData({ seStatus: `渲染 SE#${idx}...` });
+      pcm = await this._renderSePcm(idx);
+      this._sePcmCache[idx] = pcm;
+    }
+
+    const len = pcm.length;
+    const duration = (len / SAMPLE_RATE).toFixed(1);
+    this.setData({
+      sePlayingIdx: idx,
+      seStatus: `SE#${idx} | ${len}采样 | ${duration}s`,
+      playing: true,
+    });
+
+    this._playSePcm(pcm, idx);
+  },
+
+  /** 渲染 SE 到 PCM（多通道，SE 数据已完整提取无需共享数据） */
+  _renderSePcm(seIdx: number): Promise<Float32Array> {
+    return new Promise((resolve) => {
+      const ch = SE_CHANNELS[seIdx];
+      const player = new Tsubasa2AudioPlayer(SAMPLE_RATE);
+      const samples: number[] = [];
+      player.setSampleCallback((l: number, r: number) => {
+        samples.push((l + r) * 0.5);
+      });
+      player.setOneShot(true);
+
+      // 过滤有效 track（去掉只有 [$FF] 的终止符假数据）
+      const valid = (arr: readonly number[] | undefined): readonly number[] => {
+        if (!arr || arr.length === 0) return [];
+        if (arr.length === 1 && arr[0] === 0xFF) return [];
+        return arr;
+      };
+
+      // sub-section tag 映射:
+      //   tag 0 → SQ1 (ch4), tag 1 → SQ2 (ch5), tag 2 → TRI (ch6), tag 3 → NOISE (ch7)
+      const sub = ch.subData;
+      const sq1 = valid(sub[0]);  // SQ1 data
+      const sq2 = valid(sub[1]);  // SQ2 data
+      const tri: number[] = [];   // TRI not used in SEs
+      const noise = valid(sub[3]); // NOISE data
+
+      // 不传共享数据：SE 子段落数据已完整提取，$E8/$E9 已展平为内联数据
+      // 12字节 BGM header 解析不适用于 SE 格式，传 B12_RAW 会导致 channel 无法初始化
+      player.load(sq1, sq2, tri, noise);
+      player.start();
+
+      const maxFrames = 4800; // 80秒上限
+      for (let f = 0; f < maxFrames; f++) {
+        player.tick();
+        if (!player.progress.playing) break;
+      }
+      resolve(new Float32Array(samples));
+    });
+  },
+
+  /** 播放 SE PCM */
+  _playSePcm(pcm: Float32Array, idx: number) {
+    this._seActivePcm = pcm;
+    this._sePlayPos = 0;
+
+    try {
+      const ctx = wx.createWebAudioContext();
+      this._ctx = ctx;
+      const self = this;
+      const node = ctx.createScriptProcessor(SCRIPT_BUF, 0, 1);
+      node.onaudioprocess = function (e: any) {
+        const out = e.outputBuffer.getChannelData(0);
+        const needed = (out as Float32Array).length;
+        const active = self._seActivePcm;
+        if (!active) return;
+
+        for (let i = 0; i < needed; i++) {
+          if (self._sePlayPos >= active.length) {
+            // 播放完毕
+            self._stopSePlayback();
+            self.setData({ sePlayingIdx: -1, seStatus: `SE#${idx} 播放完毕`, playing: false });
+            return;
+          }
+          (out as any)[i] = Math.max(-1, Math.min(1, active[self._sePlayPos] ?? 0));
+          self._sePlayPos++;
+        }
+      };
+      node.connect(ctx.destination);
+      this._scriptNode = node;
+      ctx.resume();
+    } catch (e: any) {
+      console.error('[SE] 播放失败:', e);
+    }
+  },
+
+  _stopSePlayback() {
+    this._seActivePcm = null;
+    this._sePlayPos = 0;
+    if (this._scriptNode) {
+      try { (this._scriptNode as any).onaudioprocess = null; } catch (_) {}
+      this._scriptNode = null;
+    }
+  },
+
+  // ════════════════════════════════════════════════
+  // BGM 播放列表
+  // ════════════════════════════════════════════════
+
+  /** 构建 BGM 列表（BGM00 不展示在列表中，仅供对比 tab 使用） */
+  _buildBgmList() {
+    // 先 map 保留 BGM_SID_LIST 原始索引，再过滤掉 BGM00，
+    // 保证 item.idx 与 BGM_SID_LIST[idx] 一致（playBgm 直接用该索引取值）
+    const list = BGM_SID_LIST
+      .map((entry, i) => {
+        // 通道标签
+        const chLabels: string[] = [];
+        if (entry.trackSQ1.length > 0) chLabels.push('SQ1');
+        if (entry.trackSQ2.length > 0) chLabels.push('SQ2');
+        if (entry.trackTRI.length > 0) chLabels.push('TRI');
+        if (entry.trackNOISE.length > 0) chLabels.push('NOISE');
+        const chTag = chLabels.length > 0 ? chLabels.join('+') : '-';
+        const durSec = (entry.bytes / 60).toFixed(1); // rough estimate
+
+        return {
+          idx: i,
+          id: entry.id,
+          name: entry.name,
+          desc: entry.desc,
+          bank: entry.bank,
+          type: entry.type,
+          bytes: entry.bytes,
+          notes: entry.notes,
+          chTag,
+          durSec,
+          hasData: true,
+        };
+      })
+      .filter(item => item.id !== 'BGM00');
+    this.setData({ bgmList: list });
+  },
+
+  /** 点击 BGM 按钮：播放 / 暂停 / 继续 */
+  async playBgm(e: any) {
+    const idx = e.currentTarget.dataset.idx as number;
+    const entry = BGM_SID_LIST[idx];
+    if (!entry) return;
+
+    // 同一首：暂停/继续切换
+    if (this.data.bgmPlayingIdx === idx && this._bgmStreamPlayer) {
+      if (this.data.bgmPaused) {
+        this._resumeBgmPlayback();
+      } else {
+        this._pauseBgmPlayback();
+      }
+      return;
+    }
+
+    // 切换新 BGM：取消旧渲染、停止旧播放
+    this._bgmRenderToken++;
+    this._stopBgmPlayback();
+
+    // 流式播放：实时 tick + ring buffer，点击即出声，无需预渲染
+    this._playBgmStreaming(entry, idx);
+  },
+
+  /**
+   * 流式播放 BGM（实时管道）
+   *
+   * Tsubasa2AudioPlayer.tick() 按 60fps 帧生成 ~800 采样/帧（生产者），
+   * 写入环形缓冲；ScriptProcessor 的 onaudioprocess 按音频时钟消费（消费者）。
+   * 两者由 JS 单线程调度，无锁安全。setInterval 按需补帧，音频回调兜底防欠载。
+   */
+  _playBgmStreaming(entry: BgmSidEntry, idx: number) {
+    // 取消旧渲染、停止旧播放
+    this._bgmRenderToken++;
+    this._stopBgmPlayback();
+
+    const player = new Tsubasa2AudioPlayer(SAMPLE_RATE);
+    this._bgmStreamPlayer = player;
+    player.setOneShot(false); // BGM 循环模式
+    this._bgmStopRequested = false;
+
+    // 环形缓冲：2 秒容量，tick 生产者 → onaudioprocess 消费者
+    const RING = SAMPLE_RATE * 2;
+    const ring = new Float32Array(RING);
+    this._bgmRing = ring;
+    this._bgmRingW = 0;
+    this._bgmRingR = 0;
+
+    player.setSampleCallback((l: number, r: number) => {
+      ring[this._bgmRingW] = Math.max(-1, Math.min(1, (l + r) * 0.5));
+      this._bgmRingW = (this._bgmRingW + 1) % RING;
+    });
+
+    // 传递 raw+nesBase+headerOffset 作为 sharedData，使 header 解析和 CALL/JUMP 正常工作
+    if (entry.raw && entry.raw.length > 0) {
+      player.load(
+        entry.trackSQ1, entry.trackSQ2,
+        entry.trackTRI, entry.trackNOISE,
+        entry.raw, entry.nesBase, entry.headerOffset,
+      );
+    } else {
+      player.load(
+        entry.trackSQ1, entry.trackSQ2,
+        entry.trackTRI, entry.trackNOISE,
+      );
+    }
+    player.start();
+
+    // 预填 ~0.5 秒音频，使 onaudioprocess 首次回调即有数据
+    for (let i = 0; i < 30; i++) player.tick();
+
+    this.setData({
+      bgmPlayingIdx: idx,
+      bgmPlayingName: entry.name,
+      bgmStatus: `${entry.id} | 流式播放`,
+      playing: true,
+      bgmPaused: false,
+    });
+
+    // ── AudioContext + ScriptProcessor（实时消费环形缓冲）──
+    try {
+      if (!this._bgmCtx) {
+        this._bgmCtx = wx.createWebAudioContext();
+      } else {
+        try { this._bgmCtx.resume(); } catch (_) {}
+      }
+      const ctx = this._bgmCtx;
+      const self = this;
+
+      // 断开旧节点
+      if (this._bgmScriptNode) {
+        try { (this._bgmScriptNode as any).onaudioprocess = null; } catch (_) {}
+        try { this._bgmScriptNode.disconnect(); } catch (_) {}
+        this._bgmScriptNode = null;
+      }
+
+      // 后台补帧：缓冲低于 250ms 时 tick 一帧
+      if (this._bgmStreamTimer) { clearInterval(this._bgmStreamTimer); }
+      this._bgmStreamTimer = setInterval(() => this._bgmStreamTick(), 16);
+
+      const node = ctx.createScriptProcessor(SCRIPT_BUF, 0, 1);
+      node.onaudioprocess = function (e: any) {
+        const out = e.outputBuffer.getChannelData(0);
+        if (self._bgmStopRequested) return; // 静音
+        for (let i = 0; i < out.length; i++) {
+          if (self._bgmRingR === self._bgmRingW) {
+            // 缓冲空 → 紧急补帧（音频时钟驱动，防止欠载卡顿）
+            if (self._bgmStreamPlayer) self._bgmStreamPlayer.tick();
+            if (self._bgmRingR === self._bgmRingW) { out[i] = 0; continue; }
+          }
+          out[i] = self._bgmRing![self._bgmRingR];
+          self._bgmRingR = (self._bgmRingR + 1) % RING;
+        }
+      };
+      node.connect(ctx.destination);
+      this._bgmScriptNode = node;
+      ctx.resume();
+    } catch (e: any) {
+      console.error('[BGM] 流式播放失败:', e);
+    }
+  },
+
+  /** 后台补帧：缓冲低于 250ms 时 tick 一帧 */
+  _bgmStreamTick() {
+    if (this._bgmStopRequested || !this._bgmStreamPlayer || !this._bgmRing) return;
+    const ring = this._bgmRing;
+    const avail = (this._bgmRingW - this._bgmRingR + ring.length) % ring.length;
+    if (avail < SAMPLE_RATE / 4) {
+      this._bgmStreamPlayer.tick();
+    }
+  },
+
+  /** 渲染 BGM 到 PCM（可取消、不卡 UI） */
+  _renderBgmPcm(entry: BgmSidEntry): Promise<Float32Array> {
+    return new Promise((resolve) => {
+      const token = ++this._bgmRenderToken;
+      const player = new Tsubasa2AudioPlayer(SAMPLE_RATE);
+      const samples: number[] = [];
+      player.setSampleCallback((l: number, r: number) => {
+        if (token !== this._bgmRenderToken) return; // 已取消，丢弃采样
+        samples.push((l + r) * 0.5);
+      });
+      // BGM 使用循环模式
+      player.setOneShot(false);
+
+      // 传递 raw+nesBase+headerOffset 作为 sharedData，使 header 解析和 CALL/JUMP 正常工作
+      // BGM00: native ch 4-7；SID: ch 0-3（load() 自动映射到 4-7）
+      if (entry.raw && entry.raw.length > 0) {
+        player.load(
+          entry.trackSQ1, entry.trackSQ2,
+          entry.trackTRI, entry.trackNOISE,
+          entry.raw, entry.nesBase, entry.headerOffset,
+        );
+      } else {
+        player.load(
+          entry.trackSQ1, entry.trackSQ2,
+          entry.trackTRI, entry.trackNOISE,
+        );
+      }
+      player.start();
+
+      // BGM 渲染上限：约 5 分钟
+      const maxFrames = 18000;
+      let f = 0;
+      let loopCount = 0;
+
+      const step = () => {
+        if (token !== this._bgmRenderToken) {
+          resolve(new Float32Array(0)); // 被取消
+          return;
+        }
+        const batch = 60; // 1 秒 60 帧，小批量不卡 UI
+        const end = Math.min(f + batch, maxFrames);
+        for (; f < end; f++) {
+          player.tick();
+          if (!player.progress.playing) {
+            loopCount++;
+            if (loopCount >= 2) {
+              resolve(new Float32Array(samples));
+              return;
+            }
+            if (!player.progress.playing) break;
+          }
+        }
+        if (f >= maxFrames) {
+          resolve(new Float32Array(samples));
+        } else {
+          setTimeout(step, 16);
+        }
+      };
+      setTimeout(step, 0);
+    });
+  },
+
+  /** 播放 BGM PCM（复用独立 AudioContext） */
+  _playBgmPcm(pcm: Float32Array, id: string) {
+    this._bgmActivePcm = pcm;
+    this._bgmPlayPos = 0;
+    this._bgmStopRequested = false;
+
+    try {
+      if (!this._bgmCtx) {
+        this._bgmCtx = wx.createWebAudioContext();
+      } else {
+        try { this._bgmCtx.resume(); } catch (_) {}
+      }
+      const ctx = this._bgmCtx;
+      const self = this;
+
+      // 断开旧节点
+      if (this._bgmScriptNode) {
+        try { (this._bgmScriptNode as any).onaudioprocess = null; } catch (_) {}
+        try { this._bgmScriptNode.disconnect(); } catch (_) {}
+        this._bgmScriptNode = null;
+      }
+
+      const node = ctx.createScriptProcessor(SCRIPT_BUF, 0, 1);
+      node.onaudioprocess = function (e: any) {
+        const out = e.outputBuffer.getChannelData(0);
+        const needed = (out as Float32Array).length;
+        const active = self._bgmActivePcm;
+        if (!active || self._bgmStopRequested) return;
+
+        for (let i = 0; i < needed; i++) {
+          if (self._bgmPlayPos >= active.length) {
+            // 播放完毕
+            self._stopBgmPlayback();
+            self.setData({ bgmPlayingIdx: -1, bgmStatus: `${id} 播放完毕`, playing: false, bgmPlayingName: '', bgmPaused: false });
+            return;
+          }
+          (out as any)[i] = Math.max(-1, Math.min(1, active[self._bgmPlayPos] ?? 0));
+          self._bgmPlayPos++;
+        }
+      };
+      node.connect(ctx.destination);
+      this._bgmScriptNode = node;
+      ctx.resume();
+    } catch (e: any) {
+      console.error('[BGM] 播放失败:', e);
+    }
+  },
+
+  _pauseBgmPlayback() {
+    if (!this._bgmCtx || !this._bgmStreamPlayer) return;
+    // 停止补帧定时器，避免 ring buffer 溢出
+    if (this._bgmStreamTimer) {
+      clearInterval(this._bgmStreamTimer);
+      this._bgmStreamTimer = null;
+    }
+    try { this._bgmCtx.suspend(); } catch (_) {}
+    this.setData({ bgmPaused: true, bgmStatus: `${this.data.bgmPlayingName || ''} 已暂停` });
+  },
+
+  _resumeBgmPlayback() {
+    if (!this._bgmCtx || !this._bgmStreamPlayer) return;
+    try { this._bgmCtx.resume(); } catch (_) {}
+    // 重启补帧定时器
+    if (!this._bgmStreamTimer) {
+      this._bgmStreamTimer = setInterval(() => this._bgmStreamTick(), 16);
+    }
+    const entry = BGM_SID_LIST[this.data.bgmPlayingIdx];
+    const id = entry ? entry.id : '';
+    this.setData({ bgmPaused: false, bgmStatus: `${id} | 流式播放` });
+  },
+
+  _stopBgmPlayback() {
+    this._bgmActivePcm = null;
+    this._bgmPlayPos = 0;
+    this._bgmStopRequested = true;
+    if (this._bgmStreamTimer) {
+      clearInterval(this._bgmStreamTimer);
+      this._bgmStreamTimer = null;
+    }
+    this._bgmStreamPlayer = null;
+    this._bgmRing = null;
+    this._bgmRingW = 0;
+    this._bgmRingR = 0;
+    if (this._bgmScriptNode) {
+      try { (this._bgmScriptNode as any).onaudioprocess = null; } catch (_) {}
+      try { this._bgmScriptNode.disconnect(); } catch (_) {}
+      this._bgmScriptNode = null;
+    }
+    if (this._bgmCtx) {
+      try { this._bgmCtx.suspend(); } catch (_) {}
     }
   },
 });

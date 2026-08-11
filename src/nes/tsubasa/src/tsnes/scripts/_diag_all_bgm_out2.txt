@@ -1,0 +1,57 @@
+﻿鍏?44 涓?BGM 鏉＄洰
+
+[BGM00] BGM     tracks=487,672,549,365 raw=2117B peak=0.760 rms=0.0758 鉁?(nonZero 100%) | head=04 ba b7 05 bd ba 06 5e bd 07 3f bf ff e0 22 e2
+[0x30 ] BGM     tracks=1,1,1,1 raw=25B peak=0.763 rms=0.0387 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%) | head=00 5a 8e 01 5a 8e 02 5a 8e 03 5a 8e 04 5a 8e 05
+[0x31 ] BGM     tracks=1,1,1,1 raw=13B peak=0.763 rms=0.0387 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%) | head=00 67 8e 01 67 8e 02 67 8e 03 67 8e ff
+[0x32 ] BGM     tracks=24,24,1,23 raw=33B peak=0.732 rms=0.1043 鉁?(nonZero 100%) | head=00 71 8e 01 71 8e 03 72 8e ff e0 12 e3 00 81 00
+[0x33 ] BGM     tracks=61,61,1,60 raw=70B peak=0.624 rms=0.0979 鉁?(nonZero 100%) | head=00 92 8e 01 92 8e 03 93 8e ff 81 e0 12 e3 00 0f
+[0x34 ] BGM     tracks=60,60,1,59 raw=69B peak=0.732 rms=0.0961 鉁?(nonZero 100%) | head=00 d8 8e 01 d8 8e 03 d9 8e ff e0 12 e3 00 81 00
+[0x35 ] SFX     tracks=15,15,1,14 raw=24B peak=0.763 rms=0.0387 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%) | head=00 b6 8f 01 b6 8f 03 b7 8f ff 82 e8 94 8e 00 c5
+[0x36 ] JINGLE  tracks=61,19,1,60 raw=70B peak=0.659 rms=0.0895 鉁?(nonZero 100%) | head=00 1d 8f 01 47 8f 03 1e 8f ff e0 14 e3 00 81 00
+[0x37 ] BGM     tracks=73,25,1,72 raw=82B peak=0.659 rms=0.0848 鉁?(nonZero 100%) | head=00 ad 90 01 dd 90 03 ae 90 ff e0 12 e3 00 eb 04
+[0x38 ] BGM     tracks=283,282,1,125 raw=292B peak=0.672 rms=0.0653 鉁?(nonZero 83%) | head=00 3e 92 01 3f 92 03 dc 92 ff e0 14 e2 80 e3 08
+[0x39 ] BGM     tracks=116,115,1,40 raw=125B peak=0.689 rms=0.0778 鉁?(nonZero 100%) | head=00 d5 96 01 d6 96 03 21 97 ff e0 14 e2 80 e3 08
+[0x3A ] BGM     tracks=37,37,1,36 raw=46B peak=0.732 rms=0.0906 鉁?(nonZero 100%) | head=00 52 97 01 52 97 03 53 97 ff e0 12 e3 00 81 00
+[0x3B ] JINGLE  tracks=96,95,1,70 raw=105B peak=0.615 rms=0.0985 鉁?(nonZero 100%) | head=00 8a 91 01 8b 91 03 a4 91 ff e0 14 e2 c0 e3 00
+[0x3C ] BGM     tracks=75,15,1,76 raw=85B peak=0.761 rms=0.0589 鉁?(nonZero 94%) | head=00 f4 91 01 30 92 03 f3 91 ff e0 11 e2 c0 e3 00
+[0x3D ] BGM     tracks=91,90,1,42 raw=100B peak=0.629 rms=0.0899 鉁?(nonZero 100%) | head=00 26 91 01 27 91 03 57 91 ff e0 12 e2 80 e3 05
+[0x3E ] BGM     tracks=34,34,1,33 raw=43B peak=0.732 rms=0.0927 鉁?(nonZero 100%) | head=00 82 90 01 82 90 03 83 90 ff e0 12 e3 00 81 00
+[0x3F ] SFX     tracks=19,46,1,83 raw=93B peak=0.728 rms=0.0855 鉁?(nonZero 100%) | head=00 a4 8f 01 89 8f 03 64 8f ff e0 12 e3 00 82 07
+[0x40 ] BGM     tracks=180,56,1,51 raw=190B peak=0.619 rms=0.0634 鉁?(nonZero 100%) | head=00 c5 8f 01 41 90 03 46 90 ff e0 11 e2 c0 e3 00
+[0x41 ] BGM     tracks=29,28,1,15 raw=38B peak=0.628 rms=0.1008 鉁?(nonZero 100%) | head=00 36 94 01 37 94 03 44 94 ff e0 12 e2 80 e3 00
+[0x42 ] BGM     tracks=91,90,1,53 raw=100B peak=0.675 rms=0.0675 鉁?(nonZero 100%) | head=00 6b 94 01 6c 94 03 91 94 ff e0 12 e2 80 e3 00
+[0x43 ] BGM     tracks=94,93,1,52 raw=103B peak=0.675 rms=0.0853 鉁?(nonZero 95%) | head=00 cf 94 01 d0 94 03 f9 94 ff e0 12 e2 80 e3 00
+[0x44 ] JINGLE  tracks=16,16,1,15 raw=25B peak=0.747 rms=0.1003 鉁?(nonZero 100%) | head=00 ed 9d 01 ed 9d 03 ee 9d ff e0 14 e3 00 8a 01
+[0x45 ] JINGLE  tracks=27,27,1,26 raw=36B peak=0.763 rms=0.0387 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%) | head=00 06 9e 01 06 9e 03 07 9e ff e0 17 e3 00 81 01
+[0x46 ] BGM     tracks=202,134,1,66 raw=212B peak=0.671 rms=0.0655 鉁?(nonZero 99%) | head=00 63 93 01 a7 93 03 eb 93 ff e0 13 e2 40 81 e3
+[0x47 ] BGM     tracks=42,84,1,111 raw=121B peak=0.748 rms=0.0883 鉁?(nonZero 100%) | head=00 a2 96 01 78 96 03 5d 96 ff e0 2f e3 00 82 04
+[0x48 ] BGM     tracks=16,16,1,15 raw=25B peak=0.732 rms=0.1061 鉁?(nonZero 100%) | head=00 88 9e 01 88 9e 03 89 9e ff e0 11 e3 00 81 00
+[0x49 ] BGM     tracks=29,28,1,14 raw=38B peak=0.634 rms=0.0953 鉁?(nonZero 100%) | head=00 80 97 01 81 97 03 8f 97 ff e0 12 e2 80 e3 00
+[0x4A ] JINGLE  tracks=41,40,1,10 raw=50B peak=0.536 rms=0.0879 鉁?(nonZero 100%) | head=00 27 9b 01 28 9b 03 46 9b ff e0 16 e2 80 e3 00
+[0x4B ] BGM     tracks=27,14,1,26 raw=36B peak=0.505 rms=0.0999 鉁?(nonZero 100%) | head=00 dc 9e 01 e9 9e 03 dd 9e ff e0 15 e3 00 81 0e
+[0x4C ] JINGLE  tracks=71,35,1,26 raw=81B peak=0.736 rms=0.0716 鉁?(nonZero 100%) | head=00 d7 9a 01 fb 9a 03 04 9b ff e2 40 e3 00 82 0c
+[0x4D ] SFX     tracks=67,35,1,68 raw=77B peak=0.758 rms=0.0591 鉁?(nonZero 81%) | head=00 5a 9b 01 7a 9b 03 59 9b ff e0 14 e2 80 e3 00
+[0x4E ] BGM     tracks=77,76,1,77 raw=86B peak=0.763 rms=0.0387 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%) | head=00 a6 9b 01 a7 9b 03 a6 9b ff e0 17 e2 40 89 e3
+[0x4F ] BGM     tracks=50,50,1,49 raw=59B peak=0.763 rms=0.0387 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%) | head=00 a1 9e 01 a1 9e 03 a2 9e ff e0 17 e3 0c 83 00
+[0x51 ] BGM     tracks=70,70,1,69 raw=79B peak=0.732 rms=0.0990 鉁?(nonZero 100%) | head=00 00 9f 01 00 9f 03 01 9f ff e0 12 e3 00 82 00
+[0x52 ] BGM     tracks=43,42,1,25 raw=52B peak=0.675 rms=0.1056 鉁?(nonZero 100%) | head=00 36 95 01 37 95 03 48 95 ff e0 12 e2 80 e3 00
+[0x53 ] BGM     tracks=242,172,1,165 raw=252B peak=0.763 rms=0.0387 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%) | head=00 61 95 01 a7 95 03 ae 95 ff e0 17 e2 00 e3 05
+[0x54 ] BGM     tracks=17,17,1,16 raw=26B peak=0.684 rms=0.1052 鉁?(nonZero 100%) | head=00 f7 9c 01 f7 9c 03 f8 9c ff e0 11 e3 00 83 0a
+[0x55 ] BGM     tracks=18,18,1,17 raw=27B peak=0.624 rms=0.0991 鉁?(nonZero 100%) | head=00 61 9d 01 61 9d 03 62 9d ff e0 12 e3 00 81 0c
+[0x56 ] JINGLE  tracks=103,60,1,17 raw=113B peak=0.624 rms=0.0766 鉁?(nonZero 100%) | head=00 7d 9d 01 a8 9d 03 d3 9d ff e0 00 82 0c e2 c0
+[0x57 ] JINGLE  tracks=25,25,1,24 raw=34B peak=0.684 rms=0.1021 鉁?(nonZero 100%) | head=00 5e 9a 01 5e 9a 03 5f 9a ff e0 12 e3 00 81 0a
+[0x58 ] JINGLE  tracks=36,35,1,12 raw=45B peak=0.651 rms=0.0881 鉁?(nonZero 100%) | head=00 df 97 01 e0 97 03 f7 97 ff e0 16 e2 80 e3 00
+[0x59 ] JINGLE  tracks=26,25,1,11 raw=35B peak=0.505 rms=0.0996 鉁?(nonZero 100%) | head=00 80 9a 01 81 9a 03 8f 9a ff e0 12 e2 80 e3 00
+[0x5A ] BGM     tracks=6,1,1,5 raw=15B peak=0.763 rms=0.0387 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%) | head=00 5c 94 01 37 94 03 5d 94 ff e9 49 94 0f ff
+[0x5B ] SFX     tracks=15,15,1,14 raw=24B peak=0.624 rms=0.0793 鉁?(nonZero 100%) | head=00 0c 98 01 0c 98 03 0d 98 ff e0 12 e3 00 82 0d
+
+鈺愨晲鈺愨晲鈺愨晲鈺愨晲 姹囨€?鈺愨晲鈺愨晲鈺愨晲鈺愨晲
+鉂?鏈夐棶棰? 0 涓?鈿狅笍 璀﹀憡: 8 涓?  [0x30] 0x30 路 Bank 12 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%)
+  [0x31] 0x31 路 Bank 12 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%)
+  [0x35] 0x35 路 Bank 13 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%)
+  [0x45] 0x45 路 Bank 14 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%)
+  [0x4E] 0x4E 路 Bank 14 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%)
+  [0x4F] 0x4F 路 Bank 14 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%)
+  [0x53] 0x53 路 Bank 15 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%)
+  [0x5A] 0x5A 路 Bank 15 鈿狅笍 鍑犱箮鏃犲０ (nonZero=2.0%)
+鉁?姝ｅ父: 36 涓?

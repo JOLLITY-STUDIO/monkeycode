@@ -8,6 +8,10 @@
 export { BGM00_RAW, BGM00_META, fillBGM00Bank } from './BGM00';
 export { BGM00_HEADER, BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE } from './BGM00';
 
+// BGM SID — 全量 BGM/JINGLE/SFX 索引 (43 SID + BGM00)
+export { BGM_SID_LIST, BGM_BY_BANK, BGM_BY_TYPE, ALL_BGM_LIST, BGM_TOTAL_COUNT } from './bgm-sid/index';
+export type { BgmSidEntry } from './bgm-sid/index';
+
 // SE — Sound Effects from Bank 12 ($8BDA)
 export {
   SE_CH2_TRACK, SE_CH3_TRACK, SE_CH4_TRACK,
@@ -15,10 +19,10 @@ export {
   SE_SUBSECTIONS, SE_CHANNEL_SIZES,
 } from './SEData';
 
-// BGM00 播放器 (Bank 12 音频引擎，支持 BGM + SE)
+// 播放器 (Bank 12 音频引擎，支持 BGM + SE)
 export { Tsubasa2AudioPlayer } from './Tsubasa2AudioPlayer';
 
-/** All available BGM datasets */
+/** All available BGM datasets (legacy) */
 export const BGM_LIST = [
   {
     id: 'BGM00',
