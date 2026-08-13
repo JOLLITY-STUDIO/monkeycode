@@ -1,0 +1,705 @@
+### 9F0F — action exec 1
+$9F0F: 86 00       STX ram_0000
+$9F11: A9 07       LDA #$07
+$9F13: 05 22       ORA ram_0022
+$9F15: 85 23       STA ram_0023
+$9F17: 8D 00 80    STA $8000
+$9F1A: B5 03       LDA ram_0003,X
+$9F1C: 85 25       STA ram_0025
+$9F1E: 8D 01 80    STA $8001
+$9F21: A9 06       LDA #$06
+$9F23: 05 22       ORA ram_0022
+$9F25: 85 23       STA ram_0023
+$9F27: 8D 00 80    STA $8000
+$9F2A: B5 02       LDA ram_0002,X
+$9F2C: 85 24       STA ram_0024
+$9F2E: 8D 01 80    STA $8001
+$9F31: B5 01       LDA ram_0001,X
+$9F33: AA          TAX
+$9F34: 9A          TXS
+$9F35: 68          PLA
+$9F36: 85 E6       STA ram_00E6
+$9F38: 68          PLA
+$9F39: 85 E7       STA ram_00E7
+$9F3B: 68          PLA
+$9F3C: 85 E8       STA ram_00E8
+$9F3E: 68          PLA
+$9F3F: 85 E9       STA ram_00E9
+$9F41: 68          PLA
+$9F42: 85 EA       STA ram_00EA
+$9F44: 68          PLA
+$9F45: 85 EB       STA ram_00EB
+$9F47: 68          PLA
+$9F48: 85 EC       STA ram_00EC
+$9F4A: 68          PLA
+$9F4B: 85 ED       STA ram_00ED
+$9F4D: 68          PLA
+$9F4E: A8          TAY
+$9F4F: 68          PLA
+$9F50: AA          TAX
+$9F51: 60          RTS
+
+### 9F52 — action exec 2
+$9F52: 86 00       STX ram_0000
+$9F54: A9 06       LDA #$06
+$9F56: 05 22       ORA ram_0022
+$9F58: 85 23       STA ram_0023
+$9F5A: 8D 00 80    STA $8000
+$9F5D: B5 02       LDA ram_0002,X
+$9F5F: 85 24       STA ram_0024
+$9F61: 8D 01 80    STA $8001
+$9F64: B5 01       LDA ram_0001,X
+$9F66: AA          TAX
+$9F67: 9A          TXS
+$9F68: 60          RTS
+
+### 84C1 — bank02 dispatcher
+$84C1: A6 ED       LDX ram_00ED
+$84C3: 4C B9 C4    JMP $C4B9
+$84C6: A6 56       LDX ram_0056
+$84C8: 20 B9 C4    JSR $C4B9
+$84CB: A9 08       LDA #$08
+$84CD: 85 55       STA ram_0055
+$84CF: A9 49       LDA #$49
+$84D1: 85 4F       STA ram_004F
+$84D3: A9 22       LDA #$22
+$84D5: 85 50       STA ram_0050
+$84D7: A5 4F       LDA ram_004F
+$84D9: 85 51       STA ram_0051
+$84DB: 29 1F       AND #$1F
+$84DD: 85 54       STA ram_0054
+$84DF: A5 50       LDA ram_0050
+$84E1: 85 52       STA ram_0052
+$84E3: A5 51       LDA ram_0051
+$84E5: 85 53       STA ram_0053
+$84E7: A0 00       LDY #$00
+$84E9: B1 4D       LDA (ram_004D),Y
+$84EB: C9 D8       CMP #$D8
+$84ED: B0 15       BCS $8504
+$84EF: A6 52       LDX ram_0052
+$84F1: A4 53       LDY ram_0053
+$84F3: 20 CA 88    JSR $88CA
+$84F6: E6 53       INC ram_0053
+$84F8: A5 55       LDA ram_0055
+$84FA: F0 03       BEQ $84FF
+$84FC: 20 5D 89    JSR $895D
+$84FF: A9 01       LDA #$01
+$8501: 4C 79 88    JMP $8879
+$8504: C9 E0       CMP #$E0
+$8506: B0 14       BCS $851C
+$8508: 38          SEC
+$8509: E9 D8       SBC #$D8
+$850B: AA          TAX
+$850C: BD E6 8A    LDA $8AE6,X
+$850F: 48          PHA
+$8510: 20 9A 89    JSR $899A
+$8513: 68          PLA
+$8514: 20 A8 9F    JSR $9FA8
+$8517: A9 01       LDA #$01
+$8519: 4C 79 88    JMP $8879
+$851C: C9 E8       CMP #$E8
+$851E: B0 17       BCS $8537
+$8520: 38          SEC
+$8521: E9 E1       SBC #$E1
+$8523: 49 FF       EOR #$FF
+$8525: 18          CLC
+$8526: 65 53       ADC ram_0053
+$8528: 85 53       STA ram_0053
+$852A: 29 1F       AND #$1F
+$852C: C5 54       CMP ram_0054
+$852E: B0 02       BCS $8532
+$8530: 85 54       STA ram_0054
+$8532: A9 01       LDA #$01
+$8534: 4C 79 88    JMP $8879
+$8537: 38          SEC
+$8538: E9 E8       SBC #$E8
+$853A: 0A          ASL
+$853B: AA          TAX
+$853C: BD 46 85    LDA $8546,X
+$853F: 48          PHA
+$8540: BD 45 85    LDA $8545,X
+$8543: 48          PHA
+$8544: 60          RTS
+
+### 8017 — frame loop
+$8017: A2 02       LDX #$02
+$8019: 20 B9 C4    JSR $C4B9
+$801C: 4C 03 A2    JMP $A203
+$801F: 20 A0 9B    JSR $9BA0
+$8022: A9 00       LDA #$00
+$8024: 20 64 84    JSR $8464
+$8027: A9 01       LDA #$01
+$8029: 20 A8 9F    JSR $9FA8
+$802C: A5 1E       LDA ram_001E
+$802E: 29 10       AND #$10
+$8030: F0 F5       BEQ $8027
+$8032: A9 00       LDA #$00
+$8034: 85 05       STA ram_0005
+$8036: 85 06       STA ram_0006
+$8038: 85 09       STA ram_0009
+$803A: 85 0A       STA ram_000A
+$803C: 85 11       STA ram_0011
+$803E: 85 12       STA ram_0012
+$8040: 85 0D       STA ram_000D
+$8042: 85 0E       STA ram_000E
+$8044: 85 4C       STA ram_004C
+$8046: 85 5B       STA ram_005B
+$8048: A9 01       LDA #$01
+$804A: 8D 00 07    STA ram_0700
+$804D: A5 1B       LDA ram_001B
+$804F: 29 01       AND #$01
+$8051: D0 27       BNE $807A
+$8053: 20 11 9B    JSR $9B11
+$8056: A9 02       LDA #$02
+$8058: 20 A8 9F    JSR $9FA8
+$805B: 20 7F 9B    JSR $9B7F
+$805E: 20 A0 98    JSR $98A0
+$8061: A9 0D       LDA #$0D
+$8063: 20 97 82    JSR $8297
+$8066: A9 00       LDA #$00
+$8068: 85 7B       STA ram_007B
+$806A: A9 17       LDA #$17
+$806C: 20 F7 8A    JSR $8AF7
+$806F: A9 30       LDA #$30
+$8071: 20 0C 89    JSR $890C
+$8074: 20 FB 88    JSR $88FB
+$8077: 20 35 9A    JSR $9A35
+$807A: A9 00       LDA #$00
+$807C: 20 20 89    JSR $8920
+$807F: A9 00       LDA #$00
+$8081: 85 90       STA ram_0090
+$8083: A9 02       LDA #$02
+$8085: 85 91       STA ram_0091
+$8087: A5 1B       LDA ram_001B
+$8089: 29 FE       AND #$FE
+$808B: 85 1B       STA ram_001B
+$808D: A9 0A       LDA #$0A
+$808F: 85 ED       STA ram_00ED
+$8091: A5 ED       LDA ram_00ED
+$8093: 85 E6       STA ram_00E6
+$8095: A9 22       LDA #$22
+$8097: 85 E7       STA ram_00E7
+$8099: A0 01       LDY #$01
+$809B: A2 01       LDX #$01
+$809D: A9 7F       LDA #$7F
+$809F: 20 EA 98    JSR $98EA
+$80A2: A9 01       LDA #$01
+$80A4: 20 A8 9F    JSR $9FA8
+$80A7: A5 1E       LDA ram_001E
+$80A9: 29 3C       AND #$3C
+$80AB: F0 F5       BEQ $80A2
+$80AD: 0A          ASL
+$80AE: 0A          ASL
+$80AF: 30 0B       BMI $80BC
+$80B1: 0A          ASL
+$80B2: 30 20       BMI $80D4
+$80B4: 0A          ASL
+$80B5: 29 40       AND #$40
+$80B7: 09 0A       ORA #$0A
+$80B9: 4C C0 80    JMP $80C0
+$80BC: A5 ED       LDA ram_00ED
+$80BE: 49 40       EOR #$40
+$80C0: 85 ED       STA ram_00ED
+$80C2: A9 0A       LDA #$0A
+$80C4: 85 E6       STA ram_00E6
+$80C6: A9 22       LDA #$22
+$80C8: 85 E7       STA ram_00E7
+$80CA: A0 03       LDY #$03
+$80CC: A2 01       LDX #$01
+$80CE: 20 E8 98    JSR $98E8
+$80D1: 4C 91 80    JMP $8091
+$80D4: A5 1C       LDA ram_001C
+$80D6: 29 C0       AND #$C0
+$80D8: C9 C0       CMP #$C0
+$80DA: D0 03       BNE $80DF
+$80DC: 4C          .byte $4C   ; <L>
+$80DD: 09          .byte $09   ; 
+$80DE: A2          .byte $A2   ; 
+$80DF: 24 ED       BIT ram_00ED
+$80E1: 50 03       BVC $80E6
+$80E3: 4C 6A 82    JMP $826A
+$80E6: 20 A0 9B    JSR $9BA0
+$80E9: A9 01       LDA #$01
+$80EB: 20 64 84    JSR $8464
+$80EE: 20 B5 82    JSR $82B5
+$80F1: A9 C0       LDA #$C0
+$80F3: 85 E0       STA ram_00E0
+$80F5: A2 02       LDX #$02
+$80F7: 20 B9 C4    JSR $C4B9
+$80FA: 20 0F A2    JSR $A20F
+$80FD: A9 00       LDA #$00
+$80FF: 85 28       STA ram_0028
+$8101: 85 29       STA ram_0029
+$8103: 85 27       STA ram_0027
+$8105: A9 01       LDA #$01
+$8107: 8D 00 07    STA ram_0700
+$810A: A2 02       LDX #$02
+$810C: 20 B9 C4    JSR $C4B9
+$810F: 20 0C A2    JSR $A20C
+$8112: A9 00       LDA #$00
+$8114: 20 20 89    JSR $8920
+$8117: A2 01       LDX #$01
+$8119: 20 B9 C4    JSR $C4B9
+$811C: 20 06 A0    JSR $A006
+$811F: 20 72 C5    JSR $C572
+$8122: A2 55       LDX #$55
+$8124: A5 26       LDA ram_0026
+$8126: C9 20       CMP #$20
+$8128: 90 02       BCC $812C
+$812A: A2 4C       LDX #$4C
+$812C: 8E 00 07    STX ram_0700
+$812F: A9 00       LDA #$00
+$8131: 8D 50 04    STA ram_0450
+$8134: 8D 51 04    STA ram_0451
+$8137: 8D 52 04    STA ram_0452
+$813A: 8D 53 04    STA ram_0453
+$813D: A2 01       LDX #$01
+$813F: 20 B9 C4    JSR $C4B9
+$8142: 20 09 A0    JSR $A009
+$8145: 24 E0       BIT ram_00E0
+$8147: 30 06       BMI $814F
+$8149: A5 E4       LDA ram_00E4
+$814B: C5 26       CMP ram_0026
+$814D: B0 14       BCS $8163
+$814F: AE 26 00    LDX a: ram_0026
+$8152: BD DC 83    LDA $83DC,X
+$8155: F0 0C       BEQ $8163
+$8157: 20 64 84    JSR $8464
+$815A: 20 B5 82    JSR $82B5
+$815D: A5 E0       LDA ram_00E0
+$815F: 29 7F       AND #$7F
+$8161: 85 E0       STA ram_00E0
+$8163: 4C 17 80    JMP $8017
+$8166: A9 01       LDA #$01
+$8168: 85 27       STA ram_0027
+$816A: 20 6C C5    JSR $C56C
+$816D: 20 85 82    JSR $8285
+$8170: A5 26       LDA ram_0026
+$8172: C5 E4       CMP ram_00E4
+$8174: F0 12       BEQ $8188
+$8176: 90 10       BCC $8188
+$8178: 85 E4       STA ram_00E4
+$817A: AE 26 00    LDX a: ram_0026
+$817D: BD FE 83    LDA $83FE,X
+$8180: F0 06       BEQ $8188
+$8182: 20 64 84    JSR $8464
+$8185: 20 B5 82    JSR $82B5
+$8188: 4C 17 80    JMP $8017
+$818B: A5 28       LDA ram_0028
+$818D: C5 29       CMP ram_0029
+$818F: F0 05       BEQ $8196
+$8191: B0 73       BCS $8206
+$8193: 4C E6 81    JMP $81E6
+$8196: A6 26       LDX ram_0026
+$8198: BD BA 83    LDA $83BA,X
+$819B: F0 49       BEQ $81E6
+$819D: C9 01       CMP #$01
+$819F: F0 33       BEQ $81D4
+$81A1: A9 02       LDA #$02
+$81A3: 85 27       STA ram_0027
+$81A5: 20 6C C5    JSR $C56C
+$81A8: 20 85 82    JSR $8285
+$81AB: 4C 17 80    JMP $8017
+$81AE: A9 03       LDA #$03
+$81B0: 85 27       STA ram_0027
+$81B2: 4C 17 80    JMP $8017
+$81B5: A5 28       LDA ram_0028
+$81B7: C5 29       CMP ram_0029
+$81B9: F0 05       BEQ $81C0
+$81BB: B0 49       BCS $8206
+$81BD: 4C E6 81    JMP $81E6
+$81C0: A6 26       LDX ram_0026
+$81C2: BD BA 83    LDA $83BA,X
+$81C5: C9 03       CMP #$03
+$81C7: F0 0B       BEQ $81D4
+$81C9: A5          .byte $A5   ; 
+$81CA: 26          .byte $26   ; 
+$81CB: C9          .byte $C9   ; 
+$81CC: 20          .byte $20   ; 
+$81CD: D0          .byte $D0   ; 
+$81CE: 02          .byte $02   ; 
+$81CF: E6          .byte $E6   ; 
+$81D0: 26          .byte $26   ; 
+$81D1: 4C          .byte $4C   ; <L>
+$81D2: FD          .byte $FD   ; 
+$81D3: 80          .byte $80   ; 
+$81D4: A9 04       LDA #$04
+$81D6: 85 27       STA ram_0027
+$81D8: 4C 17 80    JMP $8017
+$81DB: A5 28       LDA ram_0028
+$81DD: C5 29       CMP ram_0029
+$81DF: F0 05       BEQ $81E6
+$81E1: B0 23       BCS $8206
+$81E3: 4C E6 81    JMP $81E6
+$81E6: A2 01       LDX #$01
+$81E8: 20 B9 C4    JSR $C4B9
+$81EB: 20 15 A0    JSR $A015
+$81EE: A9 60       LDA #$60
+$81F0: 20 64 84    JSR $8464
+$81F3: 20 B5 82    JSR $82B5
+$81F6: 20 F0 99    JSR $99F0
+$81F9: A6 26       LDX ram_0026
+$81FB: BD 98 83    LDA $8398,X
+$81FE: 85 26       STA ram_0026
+$8200: 20 78 C5    JSR $C578
+$8203: 4C FD 80    JMP $80FD
+$8206: A2 01       LDX #$01
+$8208: 20 B9 C4    JSR $C4B9
+$820B: 20 12 A0    JSR $A012
+$820E: 24 E0       BIT ram_00E0
+$8210: 70 0A       BVS $821C
+$8212: A5 26       LDA ram_0026
+$8214: C5 E5       CMP ram_00E5
+$8216: F0 17       BEQ $822F
+$8218: 90 15       BCC $822F
+$821A: 85 E5       STA ram_00E5
+$821C: A6 26       LDX ram_0026
+$821E: BD 20 84    LDA $8420,X
+$8221: F0 0C       BEQ $822F
+$8223: 20 64 84    JSR $8464
+$8226: 20 B5 82    JSR $82B5
+$8229: A5 E0       LDA ram_00E0
+$822B: 29 BF       AND #$BF
+$822D: 85 E0       STA ram_00E0
+$822F: AE 26 00    LDX a: ram_0026
+$8232: BD 42 84    LDA $8442,X
+$8235: F0 0C       BEQ $8243
+$8237: 20 64 84    JSR $8464
+$823A: 20 A9 82    JSR $82A9
+$823D: A5 26       LDA ram_0026
+$823F: C9 20       CMP #$20
+$8241: B0 20       BCS $8263
+$8243: A9 01       LDA #$01
+$8245: 8D 00 07    STA ram_0700
+$8248: 20 78 C5    JSR $C578
+$824B: E6 26       INC ram_0026
+$824D: A2 01       LDX #$01
+$824F: 20 B9 C4    JSR $C4B9
+$8252: 20 18 A0    JSR $A018
+$8255: A5 26       LDA ram_0026
+$8257: C9 03       CMP #$03
+$8259: 90 05       BCC $8260
+$825B: A2 05       LDX #$05
+$825D: 8E 46 04    STX ram_0446
+$8260: 4C FD 80    JMP $80FD
+$8263: A9 05       LDA #$05
+$8265: 85 27       STA ram_0027
+$8267: 4C 7B C5    JMP $C57B
+$826A: A2 01       LDX #$01
+$826C: 20 B9 C4    JSR $C4B9
+$826F: 20 03 A0    JSR $A003
+$8272: A2 02       LDX #$02
+$8274: 20 B9 C4    JSR $C4B9
+$8277: 20 0F A2    JSR $A20F
+$827A: A2 01       LDX #$01
+$827C: 20 B9 C4    JSR $C4B9
+$827F: 20 1B A0    JSR $A01B
+$8282: 4C FD 80    JMP $80FD
+$8285: A9 01       LDA #$01
+$8287: 8D 00 07    STA ram_0700
+$828A: A9 01       LDA #$01
+$828C: 20 A8 9F    JSR $9FA8
+$828F: A2 01       LDX #$01
+$8291: 20 B9 C4    JSR $C4B9
+$8294: 4C 0C A0    JMP $A00C
+$8297: 85 E7       STA ram_00E7
+$8299: A9 01       LDA #$01
+$829B: 85 E6       STA ram_00E6
+$829D: A9 E5       LDA #$E5
+$829F: 85 4D       STA ram_004D
+$82A1: A9 00       LDA #$00
+$82A3: 85 4E       STA ram_004E
+$82A5: 20 85 90    JSR $9085
+$82A8: 60          RTS
+
+### 801F — scene init entry
+$801F: 20 A0 9B    JSR $9BA0
+$8022: A9 00       LDA #$00
+$8024: 20 64 84    JSR $8464
+$8027: A9 01       LDA #$01
+$8029: 20 A8 9F    JSR $9FA8
+$802C: A5 1E       LDA ram_001E
+$802E: 29 10       AND #$10
+$8030: F0 F5       BEQ $8027
+$8032: A9 00       LDA #$00
+$8034: 85 05       STA ram_0005
+$8036: 85 06       STA ram_0006
+$8038: 85 09       STA ram_0009
+$803A: 85 0A       STA ram_000A
+$803C: 85 11       STA ram_0011
+$803E: 85 12       STA ram_0012
+$8040: 85 0D       STA ram_000D
+$8042: 85 0E       STA ram_000E
+$8044: 85 4C       STA ram_004C
+$8046: 85 5B       STA ram_005B
+$8048: A9 01       LDA #$01
+$804A: 8D 00 07    STA ram_0700
+$804D: A5 1B       LDA ram_001B
+$804F: 29 01       AND #$01
+$8051: D0 27       BNE $807A
+$8053: 20 11 9B    JSR $9B11
+$8056: A9 02       LDA #$02
+$8058: 20 A8 9F    JSR $9FA8
+$805B: 20 7F 9B    JSR $9B7F
+$805E: 20 A0 98    JSR $98A0
+$8061: A9 0D       LDA #$0D
+$8063: 20 97 82    JSR $8297
+$8066: A9 00       LDA #$00
+$8068: 85 7B       STA ram_007B
+$806A: A9 17       LDA #$17
+$806C: 20 F7 8A    JSR $8AF7
+$806F: A9 30       LDA #$30
+$8071: 20 0C 89    JSR $890C
+$8074: 20 FB 88    JSR $88FB
+$8077: 20 35 9A    JSR $9A35
+$807A: A9 00       LDA #$00
+$807C: 20 20 89    JSR $8920
+$807F: A9 00       LDA #$00
+$8081: 85 90       STA ram_0090
+$8083: A9 02       LDA #$02
+$8085: 85 91       STA ram_0091
+$8087: A5 1B       LDA ram_001B
+$8089: 29 FE       AND #$FE
+$808B: 85 1B       STA ram_001B
+$808D: A9 0A       LDA #$0A
+$808F: 85 ED       STA ram_00ED
+$8091: A5 ED       LDA ram_00ED
+$8093: 85 E6       STA ram_00E6
+$8095: A9 22       LDA #$22
+$8097: 85 E7       STA ram_00E7
+$8099: A0 01       LDY #$01
+$809B: A2 01       LDX #$01
+$809D: A9 7F       LDA #$7F
+$809F: 20 EA 98    JSR $98EA
+$80A2: A9 01       LDA #$01
+$80A4: 20 A8 9F    JSR $9FA8
+$80A7: A5 1E       LDA ram_001E
+$80A9: 29 3C       AND #$3C
+$80AB: F0 F5       BEQ $80A2
+$80AD: 0A          ASL
+$80AE: 0A          ASL
+$80AF: 30 0B       BMI $80BC
+$80B1: 0A          ASL
+$80B2: 30 20       BMI $80D4
+$80B4: 0A          ASL
+$80B5: 29 40       AND #$40
+$80B7: 09 0A       ORA #$0A
+$80B9: 4C C0 80    JMP $80C0
+$80BC: A5 ED       LDA ram_00ED
+$80BE: 49 40       EOR #$40
+$80C0: 85 ED       STA ram_00ED
+$80C2: A9 0A       LDA #$0A
+$80C4: 85 E6       STA ram_00E6
+$80C6: A9 22       LDA #$22
+$80C8: 85 E7       STA ram_00E7
+$80CA: A0 03       LDY #$03
+$80CC: A2 01       LDX #$01
+$80CE: 20 E8 98    JSR $98E8
+$80D1: 4C 91 80    JMP $8091
+$80D4: A5 1C       LDA ram_001C
+$80D6: 29 C0       AND #$C0
+$80D8: C9 C0       CMP #$C0
+$80DA: D0 03       BNE $80DF
+$80DC: 4C          .byte $4C   ; <L>
+$80DD: 09          .byte $09   ; 
+$80DE: A2          .byte $A2   ; 
+$80DF: 24 ED       BIT ram_00ED
+$80E1: 50 03       BVC $80E6
+$80E3: 4C 6A 82    JMP $826A
+$80E6: 20 A0 9B    JSR $9BA0
+$80E9: A9 01       LDA #$01
+$80EB: 20 64 84    JSR $8464
+$80EE: 20 B5 82    JSR $82B5
+$80F1: A9 C0       LDA #$C0
+$80F3: 85 E0       STA ram_00E0
+$80F5: A2 02       LDX #$02
+$80F7: 20 B9 C4    JSR $C4B9
+$80FA: 20 0F A2    JSR $A20F
+$80FD: A9 00       LDA #$00
+$80FF: 85 28       STA ram_0028
+$8101: 85 29       STA ram_0029
+$8103: 85 27       STA ram_0027
+$8105: A9 01       LDA #$01
+$8107: 8D 00 07    STA ram_0700
+$810A: A2 02       LDX #$02
+$810C: 20 B9 C4    JSR $C4B9
+$810F: 20 0C A2    JSR $A20C
+$8112: A9 00       LDA #$00
+$8114: 20 20 89    JSR $8920
+$8117: A2 01       LDX #$01
+$8119: 20 B9 C4    JSR $C4B9
+$811C: 20 06 A0    JSR $A006
+$811F: 20 72 C5    JSR $C572
+$8122: A2 55       LDX #$55
+$8124: A5 26       LDA ram_0026
+$8126: C9 20       CMP #$20
+$8128: 90 02       BCC $812C
+$812A: A2 4C       LDX #$4C
+$812C: 8E 00 07    STX ram_0700
+$812F: A9 00       LDA #$00
+$8131: 8D 50 04    STA ram_0450
+$8134: 8D 51 04    STA ram_0451
+$8137: 8D 52 04    STA ram_0452
+$813A: 8D 53 04    STA ram_0453
+$813D: A2 01       LDX #$01
+$813F: 20 B9 C4    JSR $C4B9
+$8142: 20 09 A0    JSR $A009
+$8145: 24 E0       BIT ram_00E0
+$8147: 30 06       BMI $814F
+$8149: A5 E4       LDA ram_00E4
+$814B: C5 26       CMP ram_0026
+$814D: B0 14       BCS $8163
+$814F: AE 26 00    LDX a: ram_0026
+$8152: BD DC 83    LDA $83DC,X
+$8155: F0 0C       BEQ $8163
+$8157: 20 64 84    JSR $8464
+$815A: 20 B5 82    JSR $82B5
+$815D: A5 E0       LDA ram_00E0
+$815F: 29 7F       AND #$7F
+$8161: 85 E0       STA ram_00E0
+$8163: 4C 17 80    JMP $8017
+$8166: A9 01       LDA #$01
+$8168: 85 27       STA ram_0027
+$816A: 20 6C C5    JSR $C56C
+$816D: 20 85 82    JSR $8285
+$8170: A5 26       LDA ram_0026
+$8172: C5 E4       CMP ram_00E4
+$8174: F0 12       BEQ $8188
+$8176: 90 10       BCC $8188
+$8178: 85 E4       STA ram_00E4
+$817A: AE 26 00    LDX a: ram_0026
+$817D: BD FE 83    LDA $83FE,X
+$8180: F0 06       BEQ $8188
+$8182: 20 64 84    JSR $8464
+$8185: 20 B5 82    JSR $82B5
+$8188: 4C 17 80    JMP $8017
+$818B: A5 28       LDA ram_0028
+$818D: C5 29       CMP ram_0029
+$818F: F0 05       BEQ $8196
+$8191: B0 73       BCS $8206
+$8193: 4C E6 81    JMP $81E6
+$8196: A6 26       LDX ram_0026
+$8198: BD BA 83    LDA $83BA,X
+$819B: F0 49       BEQ $81E6
+$819D: C9 01       CMP #$01
+$819F: F0 33       BEQ $81D4
+$81A1: A9 02       LDA #$02
+$81A3: 85 27       STA ram_0027
+$81A5: 20 6C C5    JSR $C56C
+$81A8: 20 85 82    JSR $8285
+$81AB: 4C 17 80    JMP $8017
+$81AE: A9 03       LDA #$03
+$81B0: 85 27       STA ram_0027
+$81B2: 4C 17 80    JMP $8017
+$81B5: A5 28       LDA ram_0028
+$81B7: C5 29       CMP ram_0029
+$81B9: F0 05       BEQ $81C0
+$81BB: B0 49       BCS $8206
+$81BD: 4C E6 81    JMP $81E6
+$81C0: A6 26       LDX ram_0026
+$81C2: BD BA 83    LDA $83BA,X
+$81C5: C9 03       CMP #$03
+$81C7: F0 0B       BEQ $81D4
+$81C9: A5          .byte $A5   ; 
+$81CA: 26          .byte $26   ; 
+$81CB: C9          .byte $C9   ; 
+$81CC: 20          .byte $20   ; 
+$81CD: D0          .byte $D0   ; 
+$81CE: 02          .byte $02   ; 
+$81CF: E6          .byte $E6   ; 
+$81D0: 26          .byte $26   ; 
+$81D1: 4C          .byte $4C   ; <L>
+$81D2: FD          .byte $FD   ; 
+$81D3: 80          .byte $80   ; 
+$81D4: A9 04       LDA #$04
+$81D6: 85 27       STA ram_0027
+$81D8: 4C 17 80    JMP $8017
+$81DB: A5 28       LDA ram_0028
+$81DD: C5 29       CMP ram_0029
+$81DF: F0 05       BEQ $81E6
+$81E1: B0 23       BCS $8206
+$81E3: 4C E6 81    JMP $81E6
+$81E6: A2 01       LDX #$01
+$81E8: 20 B9 C4    JSR $C4B9
+$81EB: 20 15 A0    JSR $A015
+$81EE: A9 60       LDA #$60
+$81F0: 20 64 84    JSR $8464
+$81F3: 20 B5 82    JSR $82B5
+$81F6: 20 F0 99    JSR $99F0
+$81F9: A6 26       LDX ram_0026
+$81FB: BD 98 83    LDA $8398,X
+$81FE: 85 26       STA ram_0026
+$8200: 20 78 C5    JSR $C578
+$8203: 4C FD 80    JMP $80FD
+$8206: A2 01       LDX #$01
+$8208: 20 B9 C4    JSR $C4B9
+$820B: 20 12 A0    JSR $A012
+$820E: 24 E0       BIT ram_00E0
+$8210: 70 0A       BVS $821C
+$8212: A5 26       LDA ram_0026
+$8214: C5 E5       CMP ram_00E5
+$8216: F0 17       BEQ $822F
+$8218: 90 15       BCC $822F
+$821A: 85 E5       STA ram_00E5
+$821C: A6 26       LDX ram_0026
+$821E: BD 20 84    LDA $8420,X
+$8221: F0 0C       BEQ $822F
+$8223: 20 64 84    JSR $8464
+$8226: 20 B5 82    JSR $82B5
+$8229: A5 E0       LDA ram_00E0
+$822B: 29 BF       AND #$BF
+$822D: 85 E0       STA ram_00E0
+$822F: AE 26 00    LDX a: ram_0026
+$8232: BD 42 84    LDA $8442,X
+$8235: F0 0C       BEQ $8243
+$8237: 20 64 84    JSR $8464
+$823A: 20 A9 82    JSR $82A9
+$823D: A5 26       LDA ram_0026
+$823F: C9 20       CMP #$20
+$8241: B0 20       BCS $8263
+$8243: A9 01       LDA #$01
+$8245: 8D 00 07    STA ram_0700
+$8248: 20 78 C5    JSR $C578
+$824B: E6 26       INC ram_0026
+$824D: A2 01       LDX #$01
+$824F: 20 B9 C4    JSR $C4B9
+$8252: 20 18 A0    JSR $A018
+$8255: A5 26       LDA ram_0026
+$8257: C9 03       CMP #$03
+$8259: 90 05       BCC $8260
+$825B: A2 05       LDX #$05
+$825D: 8E 46 04    STX ram_0446
+$8260: 4C FD 80    JMP $80FD
+$8263: A9 05       LDA #$05
+$8265: 85 27       STA ram_0027
+$8267: 4C 7B C5    JMP $C57B
+$826A: A2 01       LDX #$01
+$826C: 20 B9 C4    JSR $C4B9
+$826F: 20 03 A0    JSR $A003
+$8272: A2 02       LDX #$02
+$8274: 20 B9 C4    JSR $C4B9
+$8277: 20 0F A2    JSR $A20F
+$827A: A2 01       LDX #$01
+$827C: 20 B9 C4    JSR $C4B9
+$827F: 20 1B A0    JSR $A01B
+$8282: 4C FD 80    JMP $80FD
+$8285: A9 01       LDA #$01
+$8287: 8D 00 07    STA ram_0700
+$828A: A9 01       LDA #$01
+$828C: 20 A8 9F    JSR $9FA8
+$828F: A2 01       LDX #$01
+$8291: 20 B9 C4    JSR $C4B9
+$8294: 4C 0C A0    JMP $A00C
+$8297: 85 E7       STA ram_00E7
+$8299: A9 01       LDA #$01
+$829B: 85 E6       STA ram_00E6
+$829D: A9 E5       LDA #$E5
+$829F: 85 4D       STA ram_004D
+$82A1: A9 00       LDA #$00
+$82A3: 85 4E       STA ram_004E
+$82A5: 20 85 90    JSR $9085
+$82A8: 60          RTS
+
+### 9EA2 palette addr table (64B)
+0x0F,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x0F,0x00,0x00,0x00,0x00,0x00,0x10,0x10,0x20,0x20,0x30,0x30,0x20,0x20,0x10,0x10,0x0F,0x00,0x00,0x00,0x10,0x10,0x10,0x20,0x20,0x20,0x30,0x30,0x30,0x20,0x20,0x20,0x0F,0x00,0x10,0x10,0x10,0x20,0x20,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30,0x30
+

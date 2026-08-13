@@ -18,7 +18,6 @@
 import { DataStore } from '../data/DataStore';
 import type { Player, Team, PlayerStats } from '../model/types';
 import { PlayerPosition, FormationType } from '../model/types';
-import { SCENE_TABLE } from '../data/scene/index';
 
 // ── Bank 01 常量 ──
 
@@ -71,6 +70,11 @@ export class DataQueryService {
 
   // ── 主入口 (每帧调用) ──
   // $A201: 主循环 → 屏幕选择管理器
+
+  /** 选项屏幕入口 (BootService TITLE→MEETING 时调用) */
+  initOptionScreen(): void {
+    this.entry1_OptionScreenInit();
+  }
 
   update(_buttons: number, _frameCount: number): void {
     const ed = this._store.read(KEY_ED);

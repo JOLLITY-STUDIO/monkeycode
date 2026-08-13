@@ -20,15 +20,15 @@ enabled: true
 
 ## 输入
 - 反汇编与函数索引（04）
-- `ROM_STRUCTURE_REPORT.md`（03）
-- `game-context.md`（初始猜测，此处确认或修正）
+- `docs/reverse/ROM_STRUCTURE_REPORT.md`（03）
+- `docs/context/game-context.md`（初始猜测，此处确认或修正）
 - 状态机分析脚本输出（tools/ 下）
 
 ## 输出
-- `STATE_MACHINE.md`：状态枚举、转移表、状态图（mermaid/UML）
-- `SCENE_MAPPING.md`：状态 → 场景 → 资源目录映射表
+- `docs/reverse/STATE_MACHINE.md`：状态枚举、转移表、状态图（mermaid/UML）
+- `docs/reverse/SCENE_MAPPING.md`：状态 → 场景 → 资源目录映射表
 - 事件/子状态表（供 09 场景开发直接使用）
-- game-context.md 状态表更新
+- `docs/context/game-context.md` 状态表更新
 
 ## 工作流程（SOP）
 1. 从反汇编中提取所有 setState 调用点

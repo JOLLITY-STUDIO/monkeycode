@@ -1,0 +1,3 @@
+To https://github.com/JOLLITY-STUDIO/monkeycode.git
+ ! [remote rejected] picpic-v1 -> picpic-v1 (cannot lock ref 'refs/heads/picpic-v1': reference already exists)
+error: failed to push some refs to 'https://github.com/JOLLITY-STUDIO/monkeycode.git'

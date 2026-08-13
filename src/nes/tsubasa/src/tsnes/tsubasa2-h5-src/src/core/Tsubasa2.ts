@@ -10,25 +10,30 @@
  *   Control — GameLoop + Bank 服务
  *
  * Reset 链 (不模拟 MMC3，直接对象调用):
- *   Bank31 $FFF0 → H5: no-op (无需 MMC3 复位)
- *   Bank30 $C64E → Bank30Service.init()    硬件初始化
- *   Bank30 $C400 → Bank02Service.resetEntry(0)  场景初始化
- *   Bank02 $A21B → Bank00Service (内部调用)      NT清零/调色板/场景
- *   Bank02 $A26D → Bank00Service.mainLoop()      主循环
+ *   Bank31 $FFF0 → InterruptService.reset()   (H5: no-op，无需 MMC3)
+ *   Bank30 $C64E → Bank30Service.init()       硬件初始化
+ *   Bank30 $C400 → Bank02Service.resetEntry(0) 场景初始化
+ *   Bank02 $A21B → Bank00Service (内部调用)    NT清零/调色板/场景
+ *   Bank02 $A26D → Bank00Service.mainLoop()    主循环
+ *   BootService (场景路由器) → BOOT/TITLE/MEETING/MATCH/RESULT
  */
 
 import { GameLoop } from './GameLoop';
 import { DataStore } from '../data/DataStore';
-import { Renderer } from '../render/Renderer';
+import { Renderer } from './engine/render/Renderer';
 import { Bank00Service } from '../game/bank00.service';
 import { Bank02Service } from '../game/bank02.service';
 import { Bank30Service } from '../game/bank30.service';
 import { Bank12AudioService } from '../game/bank12_audio.service';
-import { Bank15DataProvider, BgmId } from '../game/bank15_data.service';
-import { WebAudioOutput } from '../audio/WebAudioOutput';
+import { BootService } from '../game/boot';
+import { DataQueryService } from '../game/data-query';
+import { MatchEngineService } from '../game/bank26_match.service';
+import { InterruptService } from '../game/bank31_interrupt.service';
+import { WebAudioOutput } from './engine/audio/WebAudioOutput';
 import { BUTTON, NES_WIDTH, NES_HEIGHT } from './types';
 import type { Tsubasa2Config, DebugInfo, GameState } from './types';
 import { GameState as GS } from './types';
+import { SceneRoot } from '../data/scene/index';
 
 // CHR Bank 数据 (直接 import，无需 MMC3)
 import _chr00 from '../../../rom-data/chr-bank-00';
@@ -82,23 +87,29 @@ export class Tsubasa2 {
   /** Bank 30: 硬件初始化 */
   private _bank30!: Bank30Service;
 
+  /** Bank 01: 数据查询 (球员/队伍数据 + 选项屏幕) */
+  private _dataQuery!: DataQueryService;
+
+  /** Bank 26: 比赛引擎 */
+  private _matchEngine!: MatchEngineService;
+
+  /** Bank 31: 中断/向量服务 */
+  private _interrupt!: InterruptService;
+
+  /** 场景路由器 (BOOT/TITLE/MEETING/MATCH/RESULT) */
+  private _boot!: BootService;
+
   /** 渲染器 (View) — 消费 NT+OAM 真实绘制 CHR tile */
   private _renderer!: Renderer;
 
   /** 音频输出 (Web Audio API 桥接) */
   private _audioOut!: WebAudioOutput;
 
-  /** Bank 12: 音频引擎 */
+  /** Bank 12: 音频引擎 (含 BGM/SFX 数据: Bank 0D/0E/0F/12/15) */
   private _audioService!: Bank12AudioService;
-
-  /** Bank 15: BGM/SFX 数据提供者 */
-  private _bgmProvider!: Bank15DataProvider;
 
   /** 上一次按键值 (用于上升沿检测) */
   private _lastButtons = 0;
-
-  /** 输入管理 */
-  // private _input: InputManager;
 
   // ✂️ ── 构造与生命周期 ──
   // ------------------------------------------------------------
@@ -113,11 +124,16 @@ export class Tsubasa2 {
     this._bank00 = new Bank00Service(this._store);
     this._bank02 = new Bank02Service(this._store, this._bank00);
     this._bank30 = new Bank30Service(this._store, this._bank00, this._bank02);
+    this._dataQuery = new DataQueryService(this._store);
+    this._matchEngine = new MatchEngineService(this._store);
+    this._interrupt = new InterruptService(this._store);
 
-    // 音频链路: WebAudioOutput → Bank12AudioService → Bank15DataProvider
+    // 音频链路: WebAudioOutput → Bank12AudioService
     this._audioOut = new WebAudioOutput();
     this._audioService = new Bank12AudioService(this._store, this._audioOut);
-    this._bgmProvider = new Bank15DataProvider(this._store, this._audioService);
+
+    // 场景路由器 — 持有 DataQuery/MatchEngine 引用以委派场景
+    this._boot = new BootService(this._store, this._dataQuery, this._matchEngine);
 
     // 渲染器 — 消费 DataStore NT/OAM + CHR 数据
     this._renderer = new Renderer(this._store);
@@ -141,17 +157,23 @@ export class Tsubasa2 {
       this._renderer.setupCanvas(this._ctx);
     }
 
-    // 注入 Bank15 BGM 数据 + Bank12 SE 数据 + 音效表
-    this._bgmProvider.initWithRomData(
-      _prg15 as readonly number[],
-      _prg12 as readonly number[],
-    );
+    // 注入 Bank15 BGM 数据 + Bank12 SE 数据 (替代 MMC3 R7/R6 映射)
+    this._audioService.setBankData({
+      bank12: [..._prg12],
+      bank15: [..._prg15],
+    });
 
     // 对应原始 Reset 链
+    //   Bank31 $FFF0 → no-op (H5 无需 MMC3)
+    //   Bank30 init → Bank02 resetEntry(0) → Bank00 mainLoop
+    this._interrupt.reset();
     this._bank30.init();
 
+    // 场景路由器接管根场景 (BOOT)
+    this._boot.init();
+
     // 触发开场 BGM (TECMO Theater, id=0x31)
-    const queued = this._bgmProvider.playBgm(BgmId.TECMO_THEATER);
+    const queued = this._audioService.requestPlay(0x31);
     console.log(`[Tsubasa2] BGM 0x31 request queued: ${queued}`);
 
     this._setState(GS.OPENING);
@@ -187,7 +209,7 @@ export class Tsubasa2 {
 
   /** 注册全部 16 个 CHR Bank 到渲染器 */
   private _registerAllChrBanks(): void {
-    const chrBanks: readonly number[][] = [
+    const chrBanks: Array<readonly number[]> = [
       _chr00, _chr01, _chr02, _chr03, _chr04, _chr05, _chr06, _chr07,
       _chr08, _chr09, _chr10, _chr11, _chr12, _chr13, _chr14, _chr15,
     ];
@@ -250,12 +272,15 @@ export class Tsubasa2 {
     this._loop.callbacks?.onStateChange?.(prev, next);
   }
 
-  /** 每帧逻辑更新 */
+  /** 每帧逻辑更新 — 场景路由器分发 */
   private _onFrame(_dt: number): void {
-    // Bank00 主循环 (帧循环核心)
+    // Bank00 主循环 (帧循环核心: PPU Buffer/场景初始化链)
     if (this._bank00.isRunning) {
       this._bank00.update(this._buttons);
     }
+
+    // 场景路由器: 按 SceneRoot 分发到对应服务
+    this._boot.update(this._buttons, this._bank00.frameCount);
 
     // 音频引擎更新 (每帧处理请求队列 + 通道状态机 + APU 输出)
     try {
@@ -267,149 +292,23 @@ export class Tsubasa2 {
     this._lastButtons = this._buttons;
   }
 
-  /** 每帧渲染 */
+  /** 每帧渲染 — 全部走 View 层 */
   private _onRender(_dt: number): void {
     if (!this._ctx) return;
 
-    const displayState = this._bank00.displayState;
-    const frameCount = this._bank00.frameCount;
+    const root = this._store.read('boot_root') as SceneRoot;
 
-    if (displayState) {
-      // 开场动画：仍使用文字/色块渲染 (scene_opening.controller 尚未写入真实 NT 数据)
-      this._renderOpeningWithText(this._ctx, displayState, frameCount);
-    } else {
-      // 使用真实 Renderer 绘制 NT + OAM → CHR tile
-      this._renderer.render(this._ctx);
-    }
-  }
-
-  /** [待移除] 开场文字渲染 (场景尚未写入 NT tile 时的过渡方案) */
-  private _renderOpeningWithText(
-    ctx: CanvasRenderingContext2D,
-    ds: import('../game/scene_opening.controller').OpeningDisplayState,
-    _frameCount: number,
-  ): void {
-    const W = NES_WIDTH; const H = NES_HEIGHT;
-    ctx.fillStyle = '#0a0a18';
-    ctx.fillRect(0, 0, W, H);
-
-    const alpha = ds.transitionAlpha;
-    ctx.globalAlpha = alpha;
-
-    if (ds.isTitle) {
-      this._renderTitleScreen(ctx, ds, W, H);
-    } else {
-      this._renderShot(ctx, ds, W, H);
-    }
-
-    ctx.globalAlpha = 1;
-
-    // 帧数调试
-    ctx.fillStyle = '#333';
-    ctx.font = '9px monospace';
-    ctx.fillText(`f:${ds.shotFrame}/${ds.shotTotalFrames} shot:${ds.shot}`, 4, H - 4);
-  }
-
-  /** 渲染单镜画面 */
-  private _renderShot(
-    ctx: CanvasRenderingContext2D,
-    ds: import('../game/scene_opening.controller').OpeningDisplayState,
-    W: number, H: number,
-  ): void {
-    const cx = W / 2;
-
-    if (ds.showLogo) {
-      // TECMO logo
-      ctx.fillStyle = '#ffcc00';
-      ctx.font = 'bold 32px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(ds.text, cx, 110);
-
-      ctx.fillStyle = '#aaa';
-      ctx.font = '10px monospace';
-      ctx.fillText('CAPTAIN TSUBASA II', cx, 135);
-    } else if (ds.showPortrait) {
-      // 人物肖像区域 (占位)
-      ctx.fillStyle = '#1a1a3a';
-      ctx.fillRect(cx - 48, 60, 96, 96);
-
-      // 边框
-      ctx.strokeStyle = '#888';
-      ctx.lineWidth = 1;
-      ctx.strokeRect(cx - 48, 60, 96, 96);
-
-      // 名字
-      ctx.fillStyle = '#ffe0a0';
-      ctx.font = 'bold 18px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(ds.text, cx, 190);
-
-      // 英文名
-      ctx.fillStyle = '#888';
-      ctx.font = '11px monospace';
-      ctx.fillText(ds.subText, cx, 210);
-    } else if (ds.shot === 5) {
-      // WORLD CUP
-      ctx.fillStyle = '#ffffff';
-      ctx.font = 'bold 28px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText(ds.text, cx, 115);
-    }
-
-    // START 提示
-    if (ds.textBlink && ds.shotFrame > 30) {
-      ctx.fillStyle = '#664400';
-      ctx.font = '10px monospace';
-      ctx.textAlign = 'center';
-      ctx.fillText('- PRESS START -', cx, H - 30);
-    }
-
-    ctx.textAlign = 'left';
-  }
-
-  /** 渲染标题画面 */
-  private _renderTitleScreen(
-    ctx: CanvasRenderingContext2D,
-    ds: import('../game/scene_opening.controller').OpeningDisplayState,
-    W: number, H: number,
-  ): void {
-    const cx = W / 2;
-
-    // 标题
-    ctx.fillStyle = '#ff6600';
-    ctx.font = 'bold 22px monospace';
-    ctx.textAlign = 'center';
-    ctx.fillText('CAPTAIN TSUBASA II', cx, 80);
-
-    // 副标题
-    ctx.fillStyle = '#888';
-    ctx.font = '12px monospace';
-    ctx.fillText('SUPER STRIKER', cx, 100);
-
-    // 菜单项
-    const yBase = 145;
-    const items = ds.titleItems;
-    for (let i = 0; i < items.length; i++) {
-      const y = yBase + i * 28;
-
-      if (i === ds.titleCursor) {
-        // 选中项
-        ctx.fillStyle = ds.textBlink ? '#ffff00' : '#aa8800';
-        ctx.fillRect(cx - 80, y - 14, 160, 22);
-        ctx.fillStyle = '#000';
-      } else {
-        ctx.fillStyle = '#888';
+    // BOOT/TITLE 阶段: 开场控制器提供显示状态 → Renderer.renderOpening (临时过渡)
+    // 真实 NT 数据翻译完成后 (T2/T3) 统一走 renderer.render()
+    if (root === SceneRoot.BOOT || root === SceneRoot.TITLE) {
+      const ds = this._boot.getOpeningDisplayState();
+      if (ds) {
+        this._renderer.renderOpening(this._ctx, ds);
+        return;
       }
-
-      ctx.font = '14px monospace';
-      ctx.fillText(items[i].label, cx, y);
     }
 
-    // 版权
-    ctx.fillStyle = '#444';
-    ctx.font = '9px monospace';
-    ctx.fillText('(c) 1990 TECMO', cx, H - 20);
-
-    ctx.textAlign = 'left';
+    // 其他场景: 使用真实 Renderer 绘制 NT + OAM → CHR tile
+    this._renderer.render(this._ctx);
   }
 }

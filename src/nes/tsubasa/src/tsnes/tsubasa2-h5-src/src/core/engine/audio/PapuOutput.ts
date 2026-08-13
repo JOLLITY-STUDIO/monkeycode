@@ -12,7 +12,7 @@
  */
 
 import PAPU from './papu/index';
-import { apuBuffer } from '../data/audio/audioCache';
+import { apuBuffer } from '../../../data/audio/audioCache';
 
 // ════════════════════════════════════════════
 // 音频参数

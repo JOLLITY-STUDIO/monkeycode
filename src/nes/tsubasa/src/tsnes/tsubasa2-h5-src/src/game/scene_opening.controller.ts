@@ -146,6 +146,31 @@ export class OpeningSceneController {
   get titleCursor(): number { return this._titleCursor; }
   get complete(): boolean { return this._complete; }
 
+  /** 当前显示状态快照 (View 层消费) */
+  getDisplayState(): OpeningDisplayState {
+    return this._buildDisplayState();
+  }
+
+  /** 外部强制跳转到标题画面 (START 跳过) */
+  jumpToTitle(): void {
+    this._shot = OpeningShot.TITLE;
+    this._shotFrame = 0;
+    this._isTitle = true;
+    this._titleCursor = TitleMenu.KICKOFF;
+  }
+
+  /** 推进到下一镜头 (外部兜底计时驱动) */
+  nextShot(): void {
+    this._startPressed = false;
+    this._nextShot();
+  }
+
+  /** 设置标题光标 (外部 TITLE 菜单操作) */
+  setTitleCursor(cursor: number): void {
+    if (!this._isTitle) return;
+    this._titleCursor = cursor;
+  }
+
   // ──────────────────────────────────────────────
   // 初始化 (对应 sceneLoad(0x17) 后首次进入)
   // ──────────────────────────────────────────────
@@ -245,7 +270,7 @@ export class OpeningSceneController {
   private _nextShot(): void {
     const nextShot = this._shot + 1;
 
-    if (nextShot > OpeningShot[OpeningShot.TITLE]
+    if (nextShot > OpeningShot.TITLE
         || OpeningShot[nextShot] === undefined) {
       this._complete = true;
       return;

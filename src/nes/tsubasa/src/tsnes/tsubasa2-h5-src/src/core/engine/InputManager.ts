@@ -9,7 +9,7 @@
  * 小程序环境通过 Tsubasa2.setButtons() 直接驱动。
  */
 
-import { BUTTON } from '../core/types';
+import { BUTTON } from '../../core/types';
 
 /** 输入快照 (每帧) */
 export interface InputState {

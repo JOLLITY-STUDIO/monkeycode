@@ -1,5 +1,6 @@
 /**
  * SID 0x58 — Bank 15
+ * 游戏启动的第一个bgm，boot场景
  * Channels: 4,5,6,7
  * Bytes: 2118 | Notes: 2054
  * initPtr = 0xB7AD（$8349 引擎真实入口，SE_MAP 索引 SE#-1）

@@ -35,7 +35,7 @@ class ChannelDM {
   data: number;
 
   /** Sample data provider (替代 papu.nes.mmap.load) */
-  private _sampleProvider: ((address: number) => number) | null = null;
+  private _sampleProvider: ((address: number) => number | null) | null = null;
 
   constructor(papu: any) {
     this.papu = papu;

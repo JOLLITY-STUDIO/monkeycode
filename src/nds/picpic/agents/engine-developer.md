@@ -17,7 +17,11 @@ enabled: true
 4. **渲染管线**：Canvas 2D 渲染上下文封装、dpr 适配、清屏/图层；**资源解码管线**：LZ 解压 + 瓦片(NCGR)/调色板(NCLR)/地图(NSCR) 解码为像素/位图缓存，统一 Canvas 绘制（原始压缩数据单元运行时解码，不依赖 PNG 资源）
 5. **输入分发**：触摸坐标 → 当前场景 onTouch 系列
 6. **存档管理**：槽位存档读写（Storage 封装）、存档迁移（槽位数以实际游戏为准）
-7. **数据缓存中心**：KV 缓存（类 Redis）实现与封装；通过 `data/index.json` 索引按需加载数据单元（images/audio/maps/palettes/text），解压/解码后缓存，支持 LRU 淘汰（Code/Data 分离，代码不内嵌数据）
+7. **数据服务层（Repository/DAL，本体系"mock 后端"的正规实现）**：
+    - 在 `engine/data/` 实现类 API 数据访问接口（如 `getSceneResources(sceneId)`、`getLevelData(levelId)`、`getPattern(id)`、`getSave(profile)`），场景与 Controller 只依赖这些接口取数，不直接触碰 `data/index.json` 或数据文件（MVC 中 Model 与 View/Controller 的边界）
+    - 接口内部 = 按 `data/index.json` 索引加载 → 解码器解压/解码 → 缓存（可 LRU），对上层表现为"同步/异步查询"
+    - **禁止编造数据**：服务层只返回 06 提取的真实数据 + 07 逻辑常量；无数据时显式抛"数据未就绪（FIDELITY-PENDING）"，不得返回 mock 值冒充真实数据
+    - 数据接口签名以 02 的 `INTERFACES.md`/`DATA_DICTIONARY.md` 契约为准，变更走架构师流程
 8. **工具集**：canvas-util（尺寸/dpr/坐标换算）等
 
 ## 输入

@@ -7,10 +7,15 @@
  *   3. 渲染 BG (NameTable) + 精灵 (OAM)
  *
  * 不包含任何业务逻辑，纯渲染。
+ *
+ * ⚠ renderOpening(): 临时开场文字渲染。
+ * 真实开场 (Scene 0x17 Tecmo Theater) 由 Bank01 NMI 写入 NT 数据，
+ * 待 Bank01/T2 翻译完成写入真实 NT 后删除此方法。
  */
-import { DataStore, type NameTableEntry } from '../data/DataStore';
-import { NES_WIDTH, NES_HEIGHT, TILE_PX, CHR_BANK_SIZE } from '../core/types';
-import { type PaletteTable, type PaletteEntry } from '../model/types';
+import { DataStore, type NameTableEntry } from '../../../data/DataStore';
+import { NES_WIDTH, NES_HEIGHT, TILE_PX, CHR_BANK_SIZE } from '../../types';
+import { type PaletteTable, type PaletteEntry } from '../../../model/types';
+import type { OpeningDisplayState } from '../../../game/scene_opening.controller';
 
 const TILE_PX2 = TILE_PX * TILE_PX;
 
@@ -143,7 +148,7 @@ export class Renderer {
    * 按缓存查找 tile → 无则解码并缓存。
    * 缓存 key: `${bankId}:${tileId}:${palGrp}`
    */
-  private _getOrDecodeTile(entry: NameTableEntry): ImageData | null {
+  private _getOrDecodeTile(entry: Pick<NameTableEntry, 'bank' | 'tile' | 'palette'>): ImageData | null {
     const key = `${entry.bank}:${entry.tile}:${entry.palette}`;
     let cached = this._tileCache.get(key);
     if (cached) return cached;
@@ -196,6 +201,141 @@ export class Renderer {
 
     this._tileCache.set(key, img);
     return img;
+  }
+
+  // ── 临时开场渲染 (View 层文字绘制) ──
+  // TODO(T2): 真实开场 NT 数据翻译完成后移除，改用 render() 绘制真实 NT
+
+  /**
+   * 渲染开场动画 (Scene 0x17 Tecmo Theater 过渡方案)。
+   * 消费 OpeningSceneController 的显示状态，绘制文字/色块。
+   * 真实场景数据 (Bank07 NT 数据 + Bank01 NMI 渲染) 翻译完成后删除。
+   */
+  renderOpening(ctx: CanvasRenderingContext2D, ds: OpeningDisplayState): void {
+    const W = NES_WIDTH;
+    const H = NES_HEIGHT;
+
+    // 背景 (按镜头的调色板索引)
+    ctx.fillStyle = this._bgColorToCss(ds.bgColor);
+    ctx.fillRect(0, 0, W, H);
+
+    ctx.globalAlpha = Math.max(0, Math.min(1, ds.transitionAlpha));
+
+    if (ds.isTitle) {
+      this._renderTitleScreen(ctx, ds, W, H);
+    } else if (ds.showLogo) {
+      this._renderOpeningLogo(ctx, ds, W, H);
+    } else if (ds.showPortrait) {
+      this._renderOpeningPortrait(ctx, ds, W, H);
+    } else if (ds.shot === 5) {
+      // WORLD CUP
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 28px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(ds.text, W / 2, 115);
+      ctx.textAlign = 'left';
+    }
+
+    ctx.globalAlpha = 1;
+
+    // START 提示
+    if (ds.textBlink && ds.shotFrame > 30) {
+      ctx.fillStyle = '#664400';
+      ctx.font = '10px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('- PRESS START -', W / 2, H - 30);
+      ctx.textAlign = 'left';
+    }
+  }
+
+  /** NES 调色板索引 → CSS 颜色 (简化映射) */
+  private _bgColorToCss(idx: number): string {
+    switch (idx) {
+    case 0x12: return '#102060'; // 深蓝
+    case 0x06: return '#501010'; // 深红
+    case 0x1A: return '#0a4010'; // 绿
+    case 0x05: return '#505010'; // 深黄
+    default:   return '#0a0a18'; // 黑
+    }
+  }
+
+  /** TECMO logo 镜 */
+  private _renderOpeningLogo(
+    ctx: CanvasRenderingContext2D,
+    ds: OpeningDisplayState,
+    W: number, H: number,
+  ): void {
+    ctx.fillStyle = '#ffcc00';
+    ctx.font = 'bold 32px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(ds.text, W / 2, 110);
+
+    ctx.fillStyle = '#aaa';
+    ctx.font = '10px monospace';
+    ctx.fillText('CAPTAIN TSUBASA II', W / 2, 135);
+    ctx.textAlign = 'left';
+  }
+
+  /** 人物肖像镜 (占位) */
+  private _renderOpeningPortrait(
+    ctx: CanvasRenderingContext2D,
+    ds: OpeningDisplayState,
+    W: number, H: number,
+  ): void {
+    const cx = W / 2;
+    ctx.fillStyle = '#1a1a3a';
+    ctx.fillRect(cx - 48, 60, 96, 96);
+    ctx.strokeStyle = '#888';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cx - 48, 60, 96, 96);
+
+    ctx.fillStyle = '#ffe0a0';
+    ctx.font = 'bold 18px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(ds.text, cx, 190);
+
+    ctx.fillStyle = '#888';
+    ctx.font = '11px monospace';
+    ctx.fillText(ds.subText, cx, 210);
+    ctx.textAlign = 'left';
+  }
+
+  /** 标题画面 */
+  private _renderTitleScreen(
+    ctx: CanvasRenderingContext2D,
+    ds: OpeningDisplayState,
+    W: number, H: number,
+  ): void {
+    const cx = W / 2;
+
+    ctx.fillStyle = '#ff6600';
+    ctx.font = 'bold 22px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('CAPTAIN TSUBASA II', cx, 80);
+
+    ctx.fillStyle = '#888';
+    ctx.font = '12px monospace';
+    ctx.fillText('SUPER STRIKER', cx, 100);
+
+    const yBase = 145;
+    const items = ds.titleItems;
+    for (let i = 0; i < items.length; i++) {
+      const y = yBase + i * 28;
+      if (i === ds.titleCursor) {
+        ctx.fillStyle = ds.textBlink ? '#ffff00' : '#aa8800';
+        ctx.fillRect(cx - 80, y - 14, 160, 22);
+        ctx.fillStyle = '#000';
+      } else {
+        ctx.fillStyle = '#888';
+      }
+      ctx.font = '14px monospace';
+      ctx.fillText(items[i].label, cx, y);
+    }
+
+    ctx.fillStyle = '#444';
+    ctx.font = '9px monospace';
+    ctx.fillText('(c) 1990 TECMO', cx, H - 20);
+    ctx.textAlign = 'left';
   }
 
   // ── 调色板设置 (向后兼容) ──

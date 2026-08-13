@@ -11,8 +11,7 @@
  *   Bank 30 → Bank30Service (硬件初始化)
  *
  * 翻译中 (结构完成，handler/数据 持续迭代):
- *   Bank 12 → Bank12AudioService (音频引擎: APU 模拟)
- *   Bank 15 → Bank15DataProvider (BGM/SFX 音频数据)
+ *   Bank 12 → Bank12AudioService (音频引擎: APU 模拟 + BGM/SFX 数据)
  *   Bank 26 → MatchEngineService (比赛核心引擎)
  *   Bank 31 → InterruptService (中断/NMI 服务)
  */
@@ -21,14 +20,13 @@ export { Bank00Service } from './bank00.service';
 export { Bank02Service } from './bank02.service';
 export { Bank30Service } from './bank30.service';
 export { DataQueryService } from './data-query';
-export { Bank12AudioService } from './bank12_audio.service';
+export { Bank12AudioService, SE_POINTER_TABLE, BGM_DATA_MAP } from './bank12_audio.service';
 export type { IAudioOutput, ApuWriteEvent, ChannelType } from './bank12_audio.service';
-export { Bank15DataProvider, SE_POINTER_TABLE, BgmId, BGM_DATA_MAP } from './bank15_data.service';
 export { OpeningSceneController } from './scene_opening.controller';
 export type { OpeningDisplayState } from './scene_opening.controller';
 export { MatchEngineService } from './bank26_match.service';
 export { InterruptService } from './bank31_interrupt.service';
 export type { BankConfig } from './bank31_interrupt.service';
 
-// 旧版兼容 (待移除)
-export { BootService } from './boot';
+// 场景路由器 (BOOT/TITLE/MEETING/MATCH/RESULT 全路由)
+export { BootService, BOOT_KEYS } from './boot';

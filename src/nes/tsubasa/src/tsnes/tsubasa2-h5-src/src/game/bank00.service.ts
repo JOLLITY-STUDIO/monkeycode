@@ -33,7 +33,6 @@
 import { DataStore, RAM_KEYS } from '../data/DataStore';
 import { palWriteAll } from '../data/pallete/paletteManager';
 import { SceneRoot } from '../data/scene/index';
-import { OpeningSceneController, OpeningDisplayState } from './scene_opening.controller';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -90,12 +89,6 @@ export class Bank00Service {
 
   /** 主循环是否运行中 */
   private _running = false;
-
-  /** 开场场景控制器 */
-  private _openingScene?: OpeningSceneController;
-
-  /** 当前显示状态 (供渲染器读取) */
-  private _displayState: OpeningDisplayState | null = null;
 
   constructor(private _store: DataStore) {}
 
@@ -176,12 +169,7 @@ export class Bank00Service {
    */
   sceneLoad(sceneId: number): void {
     this._store.write(SCENE_ID, sceneId & 0xFF);
-
-    // 场景 0x17 (TECMO Theater) → 创建开场控制器
-    if (sceneId === 0x17) {
-      this._openingScene = new OpeningSceneController(this._store);
-      this._openingScene.init();
-    }
+    // 场景渲染/流转由 BootService 场景路由器接管
   }
 
   // ──────────────────────────────────────────────
@@ -363,26 +351,8 @@ export class Bank00Service {
     // ── $801F: 场景初始化链入口 ──
     this.sceneInitEntry();
 
-    const sceneId = this._store.read(SCENE_ID);
-
-    // 场景 0x17 (TECMO Theater) → 开场动画控制器
-    if (sceneId === 0x17 && this._openingScene && !this._openingScene.complete) {
-      this._displayState = this._openingScene.update(buttons);
-
-      // 检测开场完成 → 场景切换
-      if (this._openingScene.complete) {
-        // → 进入赛前会议流程 (场景切换)
-        this._store.write(SCENE_ID, SceneRoot.MEETING);
-      }
-      return true;
-    }
-
+    // 场景流转由 BootService 场景路由器接管 (BOOT/TITLE/MEETING/MATCH)
     return false;
-  }
-
-  /** 获取当前显示状态 (供渲染器消费) */
-  get displayState(): OpeningDisplayState | null {
-    return this._displayState;
   }
 
   // ──────────────────────────────────────────────
@@ -419,23 +389,13 @@ export class Bank00Service {
   }
 
   // ──────────────────────────────────────────────
-  // $9FA8: Bank 切换 (H5: 本地栈帧管理)
+  // $84C1: Bank 02 跳转表分发
   // ──────────────────────────────────────────────
-
-  /**
-   * 对应原始 $9FA8: A=bank编号 → 保存到 ram_0019 → 保存寄存器 → JMP $9EFB。
-   * H5: 不需要 MMC3 写入，仅记录当前活跃的 bank 编号。
-   *
-   * @param bankId 目标 Bank 编号
-   */
-  bankSwitch(bankId: number): void {
-    this._store.write(BANK_CUR, bankId & 0xFF);
-  }
 
   /**
    * 对应原始 $84C1: Bank 02 跳转表分发。
    * 查表跳转到 Bank 02 的不同入口 ($A003/$A006/$A009/$A00C/$A00F/$A012/$A015/$A018)。
-   * H5: 根据索引调用 Bank02Service 的对应方法。
+   * H5: 直接调用 Bank02Service 对应方法。
    */
   bank02Dispatch(index: number): void {
     this._store.write('bank02_entry', index);

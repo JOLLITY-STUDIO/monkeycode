@@ -33,5 +33,5 @@ export type {
 export { Bank00Service, Bank02Service, Bank30Service, BootService, DataQueryService } from './game/index';
 
 // 引擎
-export { Renderer } from './render/Renderer';
-export { InputManager } from './engine/InputManager';
+export { Renderer } from './core/engine/render/Renderer';
+export { InputManager } from './core/engine/InputManager';

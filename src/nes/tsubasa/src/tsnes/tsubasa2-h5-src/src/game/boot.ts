@@ -1,5 +1,5 @@
 /**
- * Boot & Init Service
+ * Boot & Init Service — 场景路由器 (Control 层)
  *
  * 对应 Bank 31 RESET 向量 ($FFF0) 及 Bank 30/00 初始化链。
  *
@@ -10,11 +10,23 @@
  *   Bank 00:       场景/PPU 初始化 → 主循环 → 开场动画
  *
  * H5 不再需要 MMC3 / bank 切换，直接：
- *   init() → 清零 DataStore → 设置初始状态 → 推进 OpeningShot 序列
+ *   init() → 清零 DataStore → 设置初始状态 → 按 SceneRoot 分发到各服务。
+ *
+ * 路由表 (SceneRoot → Service):
+ *   BOOT     → 开场动画 (OpeningSceneController)
+ *   TITLE    → 标题菜单 (KICK OFF / CONTINUE)
+ *   PASSWORD → 密码输入 (TODO: Bank 02 entryC 密码逻辑)
+ *   MEETING  → DataQueryService (Bank 01 选项屏幕)
+ *   STORY    → 剧情 (TODO: Bank 18/19)
+ *   MATCH    → MatchEngineService (Bank 26)
+ *   RESULT   → 赛果 (TODO)
  */
 
 import { DataStore } from '../data/DataStore';
 import { SceneRoot, OpeningShot, TitleMenu } from '../data/scene/index';
+import { OpeningSceneController, type OpeningDisplayState } from './scene_opening.controller';
+import { DataQueryService } from './data-query';
+import { MatchEngineService } from './bank26_match.service';
 import { BUTTON } from '../core/types';
 import { palReset } from '../data/pallete/paletteManager';
 
@@ -38,31 +50,44 @@ export class BootService {
   /** 上一帧按键（边沿检测，防止按键穿透场景） */
   private _prevButtons = 0;
 
-  constructor(private _store: DataStore) {}
+  /** 开场场景控制器 (BOOT 阶段) */
+  private _opening!: OpeningSceneController;
+
+  constructor(
+    private _store: DataStore,
+    private _dataQuery: DataQueryService,
+    private _matchEngine: MatchEngineService,
+  ) {}
 
   // ── 公开接口 ──
 
-  /** 完整初始化（对应 RESET 向量执行的逻辑） */
+  /**
+   * 完整初始化（对应 RESET 向量执行的逻辑）。
+   *
+   * 注意: 硬件初始化 (RAM 清零/NT 清零/OAM 清零/PPU 配置) 由
+   * Bank30Service.init() 完成，此处只设置场景路由状态。
+   */
   init(): void {
-    // 1. 对应 $FFF0: 复位 MMC3 — H5 无需硬件，只清数据中心
-    this._store.reset();
-
-    // 2. 对应 Bank 30 硬件初始化 — 设定 RAM 默认值
+    // 1. 对应 Bank 30 硬件初始化 — 设定 RAM 默认值
     this._initRamDefaults();
 
-    // 3. 对应 Bank 30 PPU 初始化 — paletteRAM 加载默认调色板
+    // 2. 对应 Bank 30 PPU 初始化 — paletteRAM 加载默认调色板
     palReset();
 
-    // 4. 进入 BOOT 场景，开始开场动画第一帧
+    // 3. 进入 BOOT 场景，开始开场动画第一帧
     this._writeRoot(SceneRoot.BOOT);
     this._writeShot(OpeningShot.LOGO);
     this._shotFrame = 0;
+
+    // 4. 创建开场场景控制器 (对应 Bank01 NMI handler 驱动)
+    this._opening = new OpeningSceneController(this._store);
+    this._opening.init();
 
     // 标题默认光标
     this._store.write(BOOT_KEYS.TITLE_CURSOR, TitleMenu.KICKOFF);
   }
 
-  /** 每帧更新 */
+  /** 每帧更新 — 场景路由分发 */
   update(buttons: number, _frameCount: number): boolean {
     // 上升沿检测：只响应本帧新按下的按键
     const pressed = buttons & ~this._prevButtons;
@@ -77,8 +102,19 @@ export class BootService {
     case SceneRoot.TITLE:
       return this._updateTitle(pressed);
 
+    case SceneRoot.MEETING:
+      // Bank 01 选项屏幕 (赛前会议/队伍选择)
+      this._dataQuery.update(pressed, _frameCount);
+      return false;
+
+    case SceneRoot.MATCH:
+      // Bank 26 比赛引擎
+      this._matchEngine.mainLoop();
+      return false;
+
     default:
-      return true; // 其他场景由对应 Service 处理
+      // PASSWORD/STORY/RESULT/CREDITS — TODO 场景翻译完成后接入
+      return true;
     }
   }
 
@@ -98,6 +134,12 @@ export class BootService {
   getTitleCursor(): TitleMenu {
     const v = this._store.read(BOOT_KEYS.TITLE_CURSOR);
     return v as TitleMenu;
+  }
+
+  /** 获取开场显示状态 (View 层消费) */
+  getOpeningDisplayState(): OpeningDisplayState | null {
+    if (!this._opening) return null;
+    return this._opening.getDisplayState();
   }
 
   // ── 内部 ──
@@ -140,30 +182,28 @@ export class BootService {
   private _updateBoot(buttons: number): boolean {
     this._shotFrame++;
 
-    const curShot = this.getShot();
+    // 每帧驱动开场控制器 (对应 Bank01 NMI handler 每帧渲染)
+    this._opening.update(buttons);
 
     // START 键跳过整个开场动画 → 直接进标题
     if (buttons & BUTTON.START) {
       this._writeRoot(SceneRoot.TITLE);
+      this._opening.jumpToTitle();
       return false;
     }
 
-    // 镜头计时
-    if (this._shotFrame < BootService.SHOT_DURATION) {
-      return false; // 当前镜头继续
-    }
-
-    // 推进到下个镜头
-    const nextShot = curShot + 1 as OpeningShot;
-
-    if (nextShot > OpeningShot.TITLE) {
-      // 开场动画完 → 进入标题场景
+    // 开场控制器推进到标题 → 根场景切到 TITLE
+    if (this._opening.isTitle) {
       this._writeRoot(SceneRoot.TITLE);
       return false;
     }
 
-    this._writeShot(nextShot);
-    this._shotFrame = 0;
+    // 镜头计时 (开场控制器内部已处理, 此处做兜底)
+    if (this._shotFrame >= BootService.SHOT_DURATION) {
+      this._shotFrame = 0;
+      this._opening.nextShot();
+    }
+
     return false;
   }
 
@@ -181,11 +221,15 @@ export class BootService {
     }
     this._store.write(BOOT_KEYS.TITLE_CURSOR, cursor);
 
+    // 同步给开场控制器 (标题菜单由它渲染)
+    this._opening.setTitleCursor(cursor);
+
     // START 确认
     if (buttons & BUTTON.START) {
       if (cursor === TitleMenu.KICKOFF) {
-        // 新游戏 → MEETING
+        // 新游戏 → MEETING (赛前会议, Bank 01 选项屏幕)
         this._writeRoot(SceneRoot.MEETING);
+        this._dataQuery.initOptionScreen();
       } else {
         // 续关 → PASSWORD
         this._writeRoot(SceneRoot.PASSWORD);

@@ -1,0 +1,538 @@
+- $A4C0: A7 .byte $A7 ;
+C $A4C1: 20 0D 9A JSR $9A0D
+C $A4C4: A9 10 LDA #$10
+C $A4C6: 20 A8 9F JSR $9FA8
+C $A4C9: A0 30 LDY #$30
+C $A4CB: A9 01 LDA #$01
+C $A4CD: 20 A8 9F JSR $9FA8
+C $A4D0: A9 01 LDA #$01
+C $A4D2: 20 0C 89 JSR $890C
+C $A4D5: 88 DEY
+C $A4D6: D0 F3 BNE $84CB
+C $A4D8: A9 00 LDA #$00
+C $A4DA: 85 5B STA ram_005B
+C $A4DC: 85 7B STA ram_007B
+C $A4DE: A9 17 LDA #$17
+C $A4E0: 20 F7 8A JSR $8AF7
+C $A4E3: A9 68 LDA #$68
+C $A4E5: 85 44 STA ram_0044
+C $A4E7: A9 03 LDA #$03
+C $A4E9: 20 20 89 JSR $8920
+C $A4EC: A5 8E LDA ram_008E
+C $A4EE: 85 90 STA ram_0090
+C $A4F0: A5 8F LDA ram_008F
+C $A4F2: 85 91 STA ram_0091
+C $A4F4: A9 04 LDA #$04
+C $A4F6: 20 A8 9F JSR $9FA8
+C $A4F9: 20 35 9A JSR $9A35
+C $A4FC: 20 FB 88 JSR $88FB
+C $A4FF: A9 01 LDA #$01
+C $A501: 20 A8 9F JSR $9FA8
+C $A504: E6 79 INC ram_0079
+C $A506: C6 7C DEC ram_007C
+C $A508: C6 7C DEC ram_007C
+C $A50A: A5 44 LDA ram_0044
+C $A50C: 38 SEC
+C $A50D: E9 02 SBC #$02
+C $A50F: 85 44 STA ram_0044
+C $A511: C9 03 CMP #$03
+C $A513: B0 EA BCS $84FF
+C $A515: A9 00 LDA #$00
+C $A517: 20 20 89 JSR $8920
+C $A51A: A5 1B LDA ram_001B
+C $A51C: 09 01 ORA #$01
+C $A51E: 85 1B STA ram_001B
+C $A520: A9 F0 LDA #$F0
+C $A522: 20 A8 9F JSR $9FA8
+C $A525: A9 3C LDA #$3C
+C $A527: 20 A8 9F JSR $9FA8
+C $A52A: A5 1B LDA ram_001B
+C $A52C: 29 FE AND #$FE
+C $A52E: 85 1B STA ram_001B
+C $A530: A9 00 LDA #$00
+C $A532: 85 90 STA ram_0090
+C $A534: A9 02 LDA #$02
+C $A536: 85 91 STA ram_0091
+C $A538: 20 F0 99 JSR $99F0
+C $A53B: 20 7F 9B JSR $9B7F
+C $A53E: 20 A0 98 JSR $98A0
+C $A541: A9 C0 LDA #$C0
+C $A543: 85 E6 STA ram_00E6
+C $A545: A9 23 LDA #$23
+C $A547: 85 E7 STA ram_00E7
+C $A549: A0 02 LDY #$02
+C $A54B: A2 20 LDX #$20
+C $A54D: A9 55 LDA #$55
+C $A54F: 20 EA 98 JSR $98EA
+C $A552: A9 01 LDA #$01
+C $A554: 20 20 89 JSR $8920
+C $A557: A9 02 LDA #$02
+C $A559: 60 RTS
+C $A55A: A9 00 LDA #$00
+C $A55C: 85 60 STA ram_0060
+C $A55E: A5 EC LDA ram_00EC
+C $A560: 4A LSR
+C $A561: 66 60 ROR ram_0060
+C $A563: 4A LSR
+C $A564: 66 60 ROR ram_0060
+C $A566: 85 61 STA ram_0061
+C $A568: 24 62 BIT ram_0062
+C $A56A: 30 0D BMI $8579
+C $A56C: A9 00 LDA #$00
+C $A56E: 38 SEC
+C $A56F: E5 60 SBC ram_0060
+C $A571: 85 60 STA ram_0060
+C $A573: A9 00 LDA #$00
+C $A575: E5 61 SBC ram_0061
+C $A577: 85 61 STA ram_0061
+C $A579: A9 03 LDA #$03
+C $A57B: 60 RTS
+C $A57C: 20 91 9B JSR $9B91
+C $A57F: A9 02 LDA #$02
+C $A581: 60 RTS
+- $A582: A9 .byte $A9 ;
+- $A583: 00 .byte $00 ;
+- $A584: 85 .byte $85 ;
+- $A585: E6 .byte $E6 ;
+- $A586: A9 .byte $A9 ;
+- $A587: 20 .byte $20 ;
+- $A588: 85 .byte $85 ;
+- $A589: E7 .byte $E7 ;
+- $A58A: A0 .byte $A0 ;
+- $A58B: 10 .byte $10 ;
+- $A58C: A2 .byte $A2 ;
+- $A58D: 20 .byte $20 ;
+- $A58E: 20 .byte $20 ;
+- $A58F: E8 .byte $E8 ;
+- $A590: 98 .byte $98 ;
+- $A591: A9 .byte $A9 ;
+- $A592: 00 .byte $00 ;
+- $A593: 85 .byte $85 ;
+- $A594: E6 .byte $E6 ;
+- $A595: A9 .byte $A9 ;
+- $A596: 24 .byte $24 ;
+- $A597: 85 .byte $85 ;
+- $A598: E7 .byte $E7 ;
+- $A599: A0 .byte $A0 ;
+- $A59A: 20 .byte $20 ;
+- $A59B: A2 .byte $A2 ;
+- $A59C: 20 .byte $20 ;
+- $A59D: 20 .byte $20 ;
+- $A59E: E8 .byte $E8 ;
+- $A59F: 98 .byte $98 ;
+- $A5A0: A9 .byte $A9 ;
+- $A5A1: 02 .byte $02 ;
+- $A5A2: 60 .byte $60 ;
+- $A5A3: 20 .byte $20 ;
+- $A5A4: 7F .byte $7F ;
+- $A5A5: 9B .byte $9B ;
+- $A5A6: A9 .byte $A9 ;
+- $A5A7: 02 .byte $02 ;
+- $A5A8: 60 .byte $60 ;
+C $A5A9: A2 09 LDX #$09
+C $A5AB: 20 96 9F JSR $9F96
+C $A5AE: A9 02 LDA #$02
+C $A5B0: 60 RTS
+C $A5B1: A2 09 LDX #$09
+C $A5B3: 20 89 9F JSR $9F89
+C $A5B6: A9 02 LDA #$02
+C $A5B8: 60 RTS
+- $A5B9: A9 .byte $A9 ;
+- $A5BA: FF .byte $FF ;
+- $A5BB: 85 .byte $85 ;
+- $A5BC: 99 .byte $99 ;
+- $A5BD: A9 .byte $A9 ;
+- $A5BE: 02 .byte $02 ;
+- $A5BF: 60 .byte $60 ;
+- $A5C0: A9 .byte $A9 ;
+- $A5C1: 00 .byte $00 ;
+- $A5C2: 8D .byte $8D ;
+- $A5C3: 00 .byte $00 ;
+- $A5C4: A0 .byte $A0 ;
+- $A5C5: A5 .byte $A5 ;
+- $A5C6: 1B .byte $1B ;
+- $A5C7: 29 .byte $29 ;
+- $A5C8: BF .byte $BF ;
+- $A5C9: 85 .byte $85 ;
+- $A5CA: 1B .byte $1B ;
+- $A5CB: A9 .byte $A9 ;
+- $A5CC: 02 .byte $02 ;
+- $A5CD: 60 .byte $60 ;
+- $A5CE: A9 .byte $A9 ;
+- $A5CF: 01 .byte $01 ;
+- $A5D0: 8D .byte $8D ;
+- $A5D1: 00 .byte $00 ;
+- $A5D2: A0 .byte $A0 ;
+- $A5D3: A5 .byte $A5 ;
+- $A5D4: 1B .byte $1B ;
+- $A5D5: 09 .byte $09 ;
+- $A5D6: 40 .byte $40 ;
+- $A5D7: 85 .byte $85 ;
+- $A5D8: 1B .byte $1B ;
+- $A5D9: A9 .byte $A9 ;
+- $A5DA: 02 .byte $02 ;
+- $A5DB: 60 .byte $60 ;
+C $A5DC: A9 00 LDA #$00
+C $A5DE: 20 95 88 JSR $8895
+C $A5E1: A9 05 LDA #$05
+C $A5E3: 20 20 89 JSR $8920
+C $A5E6: A9 02 LDA #$02
+C $A5E8: 60 RTS
+C $A5E9: A5 0D LDA ram_000D
+C $A5EB: D0 0D BNE $85FA
+C $A5ED: A9 10 LDA #$10
+C $A5EF: 20 95 88 JSR $8895
+C $A5F2: A9 06 LDA #$06
+C $A5F4: 20 20 89 JSR $8920
+C $A5F7: A9 02 LDA #$02
+C $A5F9: 60 RTS
+C $A5FA: A9 00 LDA #$00
+C $A5FC: 85 0D STA ram_000D
+C $A5FE: 85 0E STA ram_000E
+C $A600: A9 02 LDA #$02
+C $A602: 60 RTS
+C $A603: A5 0D LDA ram_000D
+C $A605: D0 0D BNE $8614
+C $A607: A9 30 LDA #$30
+C $A609: 20 95 88 JSR $8895
+C $A60C: A9 08 LDA #$08
+C $A60E: 20 20 89 JSR $8920
+C $A611: A9 02 LDA #$02
+C $A613: 60 RTS
+C $A614: A9 00 LDA #$00
+C $A616: 85 0D STA ram_000D
+C $A618: 85 0E STA ram_000E
+C $A61A: A9 02 LDA #$02
+C $A61C: 60 RTS
+C $A61D: A9 20 LDA #$20
+C $A61F: 20 95 88 JSR $8895
+C $A622: A9 07 LDA #$07
+C $A624: 20 20 89 JSR $8920
+C $A627: A9 02 LDA #$02
+C $A629: 60 RTS
+C $A62A: A2 BD LDX #$BD
+C $A62C: A0 23 LDY #$23
+C $A62E: 20 76 89 JSR $8976
+C $A631: 20 35 9A JSR $9A35
+C $A634: A9 01 LDA #$01
+C $A636: 20 A8 9F JSR $9FA8
+C $A639: AD 8F 05 LDA ram_058F
+C $A63C: 29 7F AND #$7F
+C $A63E: 8D 8F 05 STA ram_058F
+C $A641: A9 82 LDA #$82
+C $A643: 85 4C STA ram_004C
+C $A645: A0 28 LDY #$28
+C $A647: A2 20 LDX #$20
+C $A649: A9 C8 LDA #$C8
+C $A64B: 20 2F A8 JSR $A82F
+C $A64E: A9 02 LDA #$02
+C $A650: 60 RTS
+C $A651: A9 00 LDA #$00
+C $A653: 85 ED STA ram_00ED
+C $A655: A4 ED LDY ram_00ED
+C $A657: B9 97 AA LDA $AA97,Y
+C $A65A: 85 EA STA ram_00EA
+C $A65C: 29 7F AND #$7F
+C $A65E: 85 EB STA ram_00EB
+C $A660: A5 7B LDA ram_007B
+C $A662: 29 01 AND #$01
+C $A664: 0A ASL
+C $A665: 0A ASL
+C $A666: 05 EB ORA ram_00EB
+C $A668: AA TAX
+C $A669: C8 INY
+C $A66A: B9 97 AA LDA $AA97,Y
+C $A66D: 85 EB STA ram_00EB
+C $A66F: C8 INY
+C $A670: B9 97 AA LDA $AA97,Y
+C $A673: C8 INY
+C $A674: 84 ED STY ram_00ED
+C $A676: A4 EB LDY ram_00EB
+C $A678: 20 28 9B JSR $9B28
+C $A67B: 29 7F AND #$7F
+C $A67D: 85 EB STA ram_00EB
+C $A67F: A9 00 LDA #$00
+C $A681: 9D E8 05 STA ram_05E8,X
+C $A684: E8 INX
+C $A685: C6 EB DEC ram_00EB
+C $A687: D0 F8 BNE $8681
+C $A689: 20 5E 9B JSR $9B5E
+C $A68C: 24 EA BIT ram_00EA
+C $A68E: 30 0A BMI $869A
+C $A690: 50 C3 BVC $8655
+C $A692: A9 02 LDA #$02
+C $A694: 20 A8 9F JSR $9FA8
+C $A697: 4C 55 A6 JMP $A655
+C $A69A: A9 02 LDA #$02
+C $A69C: 60 RTS
+C $A69D: AD E5 04 LDA ram_04E5
+C $A6A0: C9 FF CMP #$FF
+C $A6A2: F0 30 BEQ $86D4
+C $A6A4: 20 67 A7 JSR $A767
+C $A6A7: A0 80 LDY #$80
+C $A6A9: A9 00 LDA #$00
+C $A6AB: 85 EA STA ram_00EA
+C $A6AD: A2 2F LDX #$2F
+C $A6AF: A9 FF LDA #$FF
+C $A6B1: 85 ED STA ram_00ED
+C $A6B3: A9 FE LDA #$FE
+C $A6B5: 85 EC STA ram_00EC
+C $A6B7: A9 07 LDA #$07
+C $A6B9: 85 EB STA ram_00EB
+C $A6BB: A9 F7 LDA #$F7
+C $A6BD: 20 2C A7 JSR $A72C
+C $A6C0: A0 D8 LDY #$D8
+C $A6C2: A2 30 LDX #$30
+C $A6C4: A9 01 LDA #$01
+C $A6C6: 85 ED STA ram_00ED
+C $A6C8: A9 FF LDA #$FF
+C $A6CA: 85 EC STA ram_00EC
+C $A6CC: A9 FC LDA #$FC
+C $A6CE: 20 2C A7 JSR $A72C
+C $A6D1: A9 02 LDA #$02
+C $A6D3: 60 RTS
+C $A6D4: 20 67 A7 JSR $A767
+C $A6D7: A0 80 LDY #$80
+C $A6D9: A2 2F LDX #$2F
+C $A6DB: A9 02 LDA #$02
+C $A6DD: 85 EA STA ram_00EA
+C $A6DF: A9 FF LDA #$FF
+C $A6E1: 85 ED STA ram_00ED
+C $A6E3: A9 FE LDA #$FE
+C $A6E5: 85 EC STA ram_00EC
+C $A6E7: A9 07 LDA #$07
+C $A6E9: 85 EB STA ram_00EB
+C $A6EB: A9 F7 LDA #$F7
+C $A6ED: 20 2C A7 JSR $A72C
+C $A6F0: A2 08 LDX #$08
+C $A6F2: A9 FE LDA #$FE
+C $A6F4: 20 2C A7 JSR $A72C
+C $A6F7: A0 FC LDY #$FC
+C $A6F9: B9 7B A6 LDA $A67B,Y
+C $A6FC: 99 60 04 STA ram_0460,Y
+C $A6FF: C8 INY
+C $A700: D0 F7 BNE $86F9
+C $A702: A0 B8 LDY #$B8
+C $A704: A2 1C LDX #$1C
+C $A706: A9 02 LDA #$02
+C $A708: 85 ED STA ram_00ED
+C $A70A: A9 FF LDA #$FF
+C $A70C: 85 EC STA ram_00EC
+C $A70E: A9 03 LDA #$03
+C $A710: 85 EB STA ram_00EB
+C $A712: A9 F6 LDA #$F6
+C $A714: 20 2C A7 JSR $A72C
+C $A717: A0 D8 LDY #$D8
+C $A719: B9 6A 04 LDA ram_046A,Y
+C $A71C: 09 02 ORA #$02
+C $A71E: 99 6A 04 STA ram_046A,Y
+C $A721: C8 INY
+C $A722: C8 INY
+C $A723: C8 INY
+C $A724: C8 INY
+C $A725: C0 F0 CPY #$F0
+C $A727: 90 F0 BCC $8719
+C $A729: A9 02 LDA #$02
+C $A72B: 60 RTS
+C $A72C: 85 E9 STA ram_00E9
+C $A72E: AD E4 04 LDA ram_04E4
+C $A731: 18 CLC
+C $A732: 65 ED ADC ram_00ED
+C $A734: 8D E4 04 STA ram_04E4
+C $A737: AD E7 04 LDA ram_04E7
+C $A73A: 18 CLC
+C $A73B: 65 EC ADC ram_00EC
+C $A73D: 8D E7 04 STA ram_04E7
+C $A740: 25 EB AND ram_00EB
+C $A742: D0 1A BNE $875E
+C $A744: AD E4 04 LDA ram_04E4
+C $A747: 99 68 04 STA ram_0468,Y
+C $A74A: A5 E9 LDA ram_00E9
+C $A74C: 99 69 04 STA ram_0469,Y
+C $A74F: A5 EA LDA ram_00EA
+C $A751: 99 6A 04 STA ram_046A,Y
+C $A754: AD E7 04 LDA ram_04E7
+C $A757: 99 6B 04 STA ram_046B,Y
+C $A75A: C8 INY
+C $A75B: C8 INY
+C $A75C: C8 INY
+C $A75D: C8 INY
+C $A75E: A9 01 LDA #$01
+C $A760: 20 A8 9F JSR $9FA8
+C $A763: CA DEX
+C $A764: D0 C8 BNE $872E
+C $A766: 60 RTS
+C $A767: A0 FC LDY #$FC
+C $A769: B9 77 A6 LDA $A677,Y
+C $A76C: 99 E8 03 STA ram_03E8,Y
+C $A76F: C8 INY
+C $A770: D0 F7 BNE $8769
+C $A772: 60 RTS
+- $A773: 79 .byte $79 ; <y>
+- $A774: FF .byte $FF ;
+- $A775: 03 .byte $03 ;
+- $A776: C2 .byte $C2 ;
+- $A777: 46 .byte $46 ; <F>
+- $A778: F6 .byte $F6 ;
+- $A779: 02 .byte $02 ;
+- $A77A: 52 .byte $52 ; <R>
+C $A77B: A9 80 LDA #$80
+C $A77D: 20 95 88 JSR $8895
+C $A780: A9 02 LDA #$02
+C $A782: 60 RTS
+C $A783: A9 02 LDA #$02
+C $A785: 20 A8 9F JSR $9FA8
+C $A788: 20 FB 88 JSR $88FB
+C $A78B: A9 02 LDA #$02
+C $A78D: 60 RTS
+- $A78E: A0 .byte $A0 ;
+- $A78F: 40 .byte $40 ;
+- $A790: A9 .byte $A9 ;
+- $A791: 01 .byte $01 ;
+- $A792: 20 .byte $20 ;
+- $A793: A8 .byte $A8 ;
+- $A794: 9F .byte $9F ;
+- $A795: A2 .byte $A2 ;
+- $A796: 20 .byte $20 ;
+- $A797: BD .byte $BD ;
+- $A798: 68 .byte $68 ; <h>
+- $A799: 04 .byte $04 ;
+- $A79A: 10 .byte $10 ;
+- $A79B: 08 .byte $08 ;
+- $A79C: BD .byte $BD ;
+- $A79D: 6A .byte $6A ; <j>
+- $A79E: 04 .byte $04 ;
+- $A79F: 09 .byte $09 ;
+- $A7A0: 08 .byte $08 ;
+- $A7A1: 9D .byte $9D ;
+- $A7A2: 6A .byte $6A ; <j>
+- $A7A3: 04 .byte $04 ;
+- $A7A4: E8 .byte $E8 ;
+- $A7A5: E8 .byte $E8 ;
+- $A7A6: E8 .byte $E8 ;
+- $A7A7: E8 .byte $E8 ;
+- $A7A8: E0 .byte $E0 ;
+- $A7A9: C4 .byte $C4 ;
+- $A7AA: D0 .byte $D0 ;
+- $A7AB: EB .byte $EB ;
+- $A7AC: 88 .byte $88 ;
+- $A7AD: D0 .byte $D0 ;
+- $A7AE: E1 .byte $E1 ;
+- $A7AF: 20 .byte $20 ;
+- $A7B0: 91 .byte $91 ;
+- $A7B1: 9B .byte $9B ;
+- $A7B2: A9 .byte $A9 ;
+- $A7B3: 01 .byte $01 ;
+- $A7B4: 20 .byte $20 ;
+- $A7B5: A8 .byte $A8 ;
+- $A7B6: 9F .byte $9F ;
+- $A7B7: A5 .byte $A5 ;
+- $A7B8: 09 .byte $09 ;
+- $A7B9: D0 .byte $D0 ;
+- $A7BA: F7 .byte $F7 ;
+- $A7BB: 4C .byte $4C ; <L>
+- $A7BC: 51 .byte $51 ; <Q>
+- $A7BD: A6 .byte $A6 ;
+C $A7BE: A9 01 LDA #$01
+C $A7C0: 20 A8 9F JSR $9FA8
+C $A7C3: A0 28 LDY #$28
+C $A7C5: A2 64 LDX #$64
+C $A7C7: A9 B0 LDA #$B0
+C $A7C9: 20 2F A8 JSR $A82F
+C $A7CC: A9 02 LDA #$02
+C $A7CE: 60 RTS
+C $A7CF: A9 81 LDA #$81
+C $A7D1: 20 95 88 JSR $8895
+C $A7D4: A9 02 LDA #$02
+C $A7D6: 60 RTS
+C $A7D7: A0 80 LDY #$80
+C $A7D9: A9 01 LDA #$01
+C $A7DB: 20 A8 9F JSR $9FA8
+C $A7DE: A2 20 LDX #$20
+C $A7E0: BD 68 04 LDA ram_0468,X
+C $A7E3: 10 08 BPL $87ED
+C $A7E5: BD 6A 04 LDA ram_046A,X
+C $A7E8: 09 04 ORA #$04
+C $A7EA: 9D 6A 04 STA ram_046A,X
+C $A7ED: E8 INX
+C $A7EE: E8 INX
+C $A7EF: E8 INX
+C $A7F0: E8 INX
+C $A7F1: E0 C4 CPX #$C4
+C $A7F3: D0 EB BNE $87E0
+C $A7F5: 88 DEY
+C $A7F6: D0 E1 BNE $87D9
+C $A7F8: A9 02 LDA #$02
+C $A7FA: 60 RTS
+- $A7FB: A5 .byte $A5 ;
+- $A7FC: 28 .byte $28 ;
+- $A7FD: 20 .byte $20 ;
+- $A7FE: 7C .byte $7C ;
+- $A7FF: 9E .byte $9E ;
+- $A800: A5 .byte $A5 ;
+- $A801: EC .byte $EC ;
+- $A802: 29 .byte $29 ;
+- $A803: F0 .byte $F0 ;
+- $A804: F0 .byte $F0 ;
+- $A805: 11 .byte $11 ;
+- $A806: 20 .byte $20 ;
+- $A807: 6D .byte $6D ; <m>
+- $A808: AC .byte $AC ;
+- $A809: A6 .byte $A6 ;
+- $A80A: 52 .byte $52 ; <R>
+- $A80B: A4 .byte $A4 ;
+- $A80C: 53 .byte $53 ; <S>
+- $A80D: 20 .byte $20 ;
+- $A80E: CA .byte $CA ;
+- $A80F: 88 .byte $88 ;
+- $A810: E6 .byte $E6 ;
+- $A811: 53 .byte $53 ; <S>
+- $A812: A9 .byte $A9 ;
+- $A813: 06 .byte $06 ;
+- $A814: 20 .byte $20 ;
+- $A815: A8 .byte $A8 ;
+- $A816: 9F .byte $9F ;
+- $A817: A5 .byte $A5 ;
+- $A818: EC .byte $EC ;
+- $A819: 29 .byte $29 ;
+- $A81A: 0F .byte $0F ;
+- $A81B: 20 .byte $20 ;
+- $A81C: 71 .byte $71 ; <q>
+- $A81D: AC .byte $AC ;
+- $A81E: A6 .byte $A6 ;
+- $A81F: 52 .byte $52 ; <R>
+- $A820: A4 .byte $A4 ;
+- $A821: 53 .byte $53 ; <S>
+- $A822: 20 .byte $20 ;
+- $A823: CA .byte $CA ;
+- $A824: 88 .byte $88 ;
+- $A825: E6 .byte $E6 ;
+- $A826: 53 .byte $53 ; <S>
+- $A827: A9 .byte $A9 ;
+- $A828: 06 .byte $06 ;
+- $A829: 20 .byte $20 ;
+- $A82A: A8 .byte $A8 ;
+- $A82B: 9F .byte $9F ;
+- $A82C: A9 .byte $A9 ;
+- $A82D: 02 .byte $02 ;
+- $A82E: 60 .byte $60 ;
+C $A82F: 85 EC STA ram_00EC
+C $A831: 86 ED STX ram_00ED
+C $A833: A9 01 LDA #$01
+C $A835: 20 A8 9F JSR $9FA8
+C $A838: A6 ED LDX ram_00ED
+C $A83A: BD 68 04 LDA ram_0468,X
+C $A83D: C9 82 CMP #$82
+C $A83F: B0 08 BCS $8849
+C $A841: BD 6A 04 LDA ram_046A,X
+C $A844: 29 F3 AND #$F3
+C $A846: 9D 6A 04 STA ram_046A,X
+C $A849: E8 INX
+C $A84A: E8 INX
+C $A84B: E8 INX
+C $A84C: E8 INX
+C $A84D: E4 EC CPX ram_00EC
+C $A84F: D0 E9 BNE $883A
+C $A851: 88 DEY
+C $A852: D0 DF BNE $8833
+C $A854: 60 RTS

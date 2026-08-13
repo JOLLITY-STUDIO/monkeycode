@@ -1,0 +1,96 @@
+$9E7C: 85 ED STA ram_00ED
+$9E7E: A9 0A LDA #$0A
+$9E80: 85 EC STA ram_00EC
+$9E82: 20 36 9E JSR $9E36
+$9E85: A5 EA LDA ram_00EA
+$9E87: 85 EB STA ram_00EB
+$9E89: 20 36 9E JSR $9E36
+$9E8C: A5 EA LDA ram_00EA
+$9E8E: 0A ASL
+$9E8F: 0A ASL
+$9E90: 0A ASL
+$9E91: 0A ASL
+$9E92: 05 EB ORA ram_00EB
+$9E94: 85 EB STA ram_00EB
+$9E96: 20 36 9E JSR $9E36
+$9E99: A5 EA LDA ram_00EA
+$9E9B: 85 ED STA ram_00ED
+$9E9D: A5 EB LDA ram_00EB
+$9E9F: 85 EC STA ram_00EC
+$9EA1: 60 RTS
+$9EA2: 0F .byte $0F ;
+$9EA3: 00 .byte $00 ;
+$9EA4: 00 .byte $00 ;
+$9EA5: 00 .byte $00 ;
+$9EA6: 00 .byte $00 ;
+$9EA7: 00 .byte $00 ;
+$9EA8: 00 .byte $00 ;
+$9EA9: 00 .byte $00 ;
+$9EAA: 00 .byte $00 ;
+$9EAB: 00 .byte $00 ;
+$9EAC: 00 .byte $00 ;
+$9EAD: 00 .byte $00 ;
+$9EAE: 00 .byte $00 ;
+$9EAF: 00 .byte $00 ;
+$9EB0: 00 .byte $00 ;
+$9EB1: 00 .byte $00 ;
+$9EB2: 0F .byte $0F ;
+$9EB3: 00 .byte $00 ;
+$9EB4: 00 .byte $00 ;
+$9EB5: 00 .byte $00 ;
+$9EB6: 00 .byte $00 ;
+$9EB7: 00 .byte $00 ;
+$9EB8: 10 .byte $10 ;
+$9EB9: 10 .byte $10 ;
+$9EBA: 20 .byte $20 ;
+$9EBB: 20 .byte $20 ;
+$9EBC: 30 .byte $30 ; <0>
+$9EBD: 30 .byte $30 ; <0>
+$9EBE: 20 .byte $20 ;
+$9EBF: 20 .byte $20 ;
+$9EC0: 10 .byte $10 ;
+$9EC1: 10 .byte $10 ;
+$9EC2: 0F .byte $0F ;
+$9EC3: 00 .byte $00 ;
+$9EC4: 00 .byte $00 ;
+$9EC5: 00 .byte $00 ;
+$9EC6: 10 .byte $10 ;
+$9EC7: 10 .byte $10 ;
+$9EC8: 10 .byte $10 ;
+$9EC9: 20 .byte $20 ;
+$9ECA: 20 .byte $20 ;
+$9ECB: 20 .byte $20 ;
+$9ECC: 30 .byte $30 ; <0>
+$9ECD: 30 .byte $30 ; <0>
+$9ECE: 30 .byte $30 ; <0>
+$9ECF: 20 .byte $20 ;
+$9ED0: 20 .byte $20 ;
+$9ED1: 20 .byte $20 ;
+$9ED2: 0F .byte $0F ;
+$9ED3: 00 .byte $00 ;
+$9ED4: 10 .byte $10 ;
+$9ED5: 10 .byte $10 ;
+$9ED6: 10 .byte $10 ;
+$9ED7: 20 .byte $20 ;
+$9ED8: 20 .byte $20 ;
+$9ED9: 30 .byte $30 ; <0>
+$9EDA: 30 .byte $30 ; <0>
+$9EDB: 30 .byte $30 ; <0>
+$9EDC: 30 .byte $30 ; <0>
+$9EDD: 30 .byte $30 ; <0>
+$9EDE: 30 .byte $30 ; <0>
+$9EDF: 30 .byte $30 ; <0>
+$9EE0: 30 .byte $30 ; <0>
+$9EE1: 30 .byte $30 ; <0>
+$9EE2: 00 .byte $00 ;
+$9EE3: 00 .byte $00 ;
+$9EE4: 00 .byte $00 ;
+$9EE5: 00 .byte $00 ;
+$9EE6: 10 .byte $10 ;
+$9EE7: 00 .byte $00 ;
+$9EE8: 00 .byte $00 ;
+$9EE9: 00 .byte $00 ;
+$9EEA: F0 .byte $F0 ;
+$9EEB: 00 .byte $00 ;
+$9EEC: 00 .byte $00 ;
+$9EED: A2 01 LDX #$01

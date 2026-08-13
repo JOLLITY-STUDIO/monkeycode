@@ -101,6 +101,97 @@ interface ChannelParams {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// 音效指针表 (Bank 12 $8BDA — 31 entries × 2B)
+// 从 ROM 提取: PRG offset 0x019BDA-0x019BFD
+// 原定义于 bank15_data.service.ts，已合并到音频引擎
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * 音效指针表: seId → [ptrLo, ptrHi]
+ * 每个 seId 占 2B。索引: (seId - 1) * 2
+ */
+export const SE_POINTER_TABLE: number[] = [
+  // seId=0x01: $8E42 — 静音(8ch)
+  0x42, 0x8E,
+  // seId=0x02: $8E5B — 静音(4ch)
+  0x5B, 0x8E,
+  // seId=0x03: $8E68 — ch0:$8E71 ch1:$8E71 ch3:$8E72
+  0x68, 0x8E,
+  // seId=0x04: $8E89 — ch0:$8E92 ch1:$8E92 ch3:$8E93
+  0x89, 0x8E,
+  // seId=0x05: $8ECF — ch0:$8ED8 ch1:$8ED8 ch3:$8ED9
+  0xCF, 0x8E,
+  // seId=0x06: $8FAD — ch0:$8FB6 ch1:$8FB6 ch3:$8FB7
+  0xAD, 0x8F,
+  // seId=0x07: $8F14 — ch0:$8F1D ch1:$8F47 ch3:$8F1E
+  0x14, 0x8F,
+  // seId=0x08: $90A4 — ch0:$90AD ch1:$90DD ch3:$90AE
+  0xA4, 0x90,
+  // seId=0x09: $9235 — ch0:$923E ch1:$923F ch3:$92DC
+  0x35, 0x92,
+  // seId=0x0A: $96CC — ch0:$96D5 ch1:$96D6 ch3:$9721
+  0xCC, 0x96,
+  // seId=0x0B: $9749 — ch0:$9752 ch1:$9752 ch3:$9753
+  0x49, 0x97,
+  // seId=0x0C: $9181 — ch0:$918A ch1:$918B ch3:$91A4
+  0x81, 0x91,
+  // seId=0x0D: $91EA — ch0:$91F4 ch1:$9230 ch3:$91F3
+  0xEA, 0x91,
+  // seId=0x0E: $911D — ch0:$9126 ch1:$9127 ch3:$9157
+  0x1D, 0x91,
+  // seId=0x0F: $9079 — ch0:$9082 ch1:$9082 ch3:$9083
+  0x79, 0x90,
+  // seId=0x10: $8F5A — ch0:$8FA4 ch1:$8F89 ch3:$8F64
+  0x5A, 0x8F,
+  // seId=0x11: $8FBB — ch0:$8FC5 ch1:$9041 ch3:$9046
+  0xBB, 0x8F,
+  // seId=0x12: $942D — ch0:$9436 ch1:$9437 ch3:$9444
+  0x2D, 0x94,
+  // seId=0x13: $9462 — ch0:$946B ch1:$946C ch3:$9491
+  0x62, 0x94,
+  // seId=0x14: $94C6 — ch0:$94CF ch1:$94D0 ch3:$94F9
+  0xC6, 0x94,
+  // seId=0x15: $9DE4 — ch0:$9DED ch1:$9DED ch3:$9DEE
+  0xE4, 0x9D,
+  // seId=0x16: $9DFD — ch0:$9E06 ch1:$9E06 ch3:$9E07
+  0xFD, 0x9D,
+  // seId=0x17: $9359 — ch0:$9363 ch1:$93A7 ch3:$93EB
+  0x59, 0x93,
+  // seId=0x18: $9653 — ch0:$96A2 ch1:$9678 ch3:$965D
+  0x53, 0x96,
+  // seId=0x19: $9E7F — ch0:$9E88 ch1:$9E88 ch3:$9E89
+  0x7F, 0x9E,
+  // seId=0x1A: $9777 — Bank 0D/0E/0F
+  0x77, 0x97,
+  // seId=0x1B: $9B1E — Bank 0D/0E/0F
+  0x1E, 0x9B,
+  // seId=0x1C: $9ED3 — Bank 0D/0E/0F
+  0xD3, 0x9E,
+  // seId=0x1D: $9ACD — Bank 0D/0E/0F
+  0xCD, 0x9A,
+  // seId=0x1E: $9B50 — Bank 0D/0E/0F
+  0x50, 0x9B,
+  // seId=0x1F: $9B9D — Bank 0D/0E/0F
+  0x9D, 0x9B,
+  // seId=0x20 sentinel: $FF00
+  0x00, 0xFF,
+];
+
+// ═══════════════════════════════════════════════════════════════
+// BGM 音乐序列数据 (Bank 15 $8000-$9FFF)
+// 开场 TECMO Theater BGM — 从 ROM 提取的完整音序
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * BGM 数据表: BGM ID (0x31-0x35) → Bank15 ROM 偏移
+ * 原定义于 bank15_data.service.ts，已合并到音频引擎
+ */
+export const BGM_DATA_MAP: Record<number, number> = {
+  // TECMO Theater BGM → Bank15 $800D (从 ROM 提取)
+  0x31: 0x800D,
+};
+
+// ═══════════════════════════════════════════════════════════════
 // Bank12 Audio Manager
 // ═══════════════════════════════════════════════════════════════
 
@@ -163,7 +254,7 @@ export class Bank12AudioService {
   private _bank15: number[] = [];
 
   /** 音效指针表 (Bank 12 $8BDA, 31 entries × 2B) */
-  private _seTable: number[] = [];
+  private _seTable: number[] = SE_POINTER_TABLE;
 
   // ── 工作变量 ──
 
@@ -373,7 +464,6 @@ export class Bank12AudioService {
    * ptrLo|ptrHi 为 Bank15 内 CPU 地址 ($Axxx)，存入时转成数组偏移。
    */
   private _audioInitBgm(bgmId: number): void {
-    const { BGM_DATA_MAP } = require('./bank15_data.service');
     const offset = BGM_DATA_MAP[bgmId];
     if (offset === undefined || this._bank15.length === 0) {
       console.warn(`[Bank12] BGM 0x${bgmId.toString(16)}: Bank15 数据未加载`);

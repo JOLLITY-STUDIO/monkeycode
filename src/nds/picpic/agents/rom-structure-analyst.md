@@ -16,7 +16,7 @@ enabled: true
 3. **Bank/资源目录划分**：识别全部资源目录与系统目录（目录名以 ROM 实际为准）
 4. **资源类型索引**：按扩展名/魔数分类（图形、调色板、精灵、地图、文本、音频、数据等），统计数量与大小
 5. **交叉验证**：对照游戏说明书（如有），确认资源用途与场景归属
-6. **输出结构报告**：编写 `ROM_STRUCTURE_REPORT.md`，含每个 Bank 的资源清单、偏移、大小
+6. **输出结构报告**：编写 `docs/reverse/ROM_STRUCTURE_REPORT.md`，含每个 Bank 的资源清单、偏移、大小
 
 ## 输入
 - `game-context.md`（01 生成，含平台/格式/目标信息）
@@ -24,10 +24,10 @@ enabled: true
 - 游戏说明书（如有）
 
 ## 输出
-- `ROM_STRUCTURE_REPORT.md`：完整结构分析报告
+- `docs/reverse/ROM_STRUCTURE_REPORT.md`：完整结构分析报告
 - `tools/extracted-index.tsv`：文件/目录索引表（含偏移、大小、用途）
 - 资源清单（每 Bank 一个 section）
-- game-context.md 的 ROM 概览/资源分类更新
+- `docs/context/game-context.md` 的 ROM 概览/资源分类更新
 
 ## 工作流程（SOP）
 1. 解析 Header，记录主/辅固件、文件系统位置
