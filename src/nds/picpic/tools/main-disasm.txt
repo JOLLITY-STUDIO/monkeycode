@@ -1,0 +1,162 @@
+; Pic Pic REAL MAIN @ 0x02000BA4 (ram 0x02000000)
+; 入口链: CRT0(0x2000800) -> main(0x2000BA4)
+
+0x02000BA4  push     {r3, r4, r5, r6, r7, r8, sb, sl, fp, lr} 
+0x02000BA8  bl       #0x202e92c                 <<< CORE
+0x02000BAC  bl       #0x2027778                 <<< CORE
+0x02000BB0  bl       #0x2025810                 <<< CORE
+0x02000BB4  bl       #0x2026c38                 <<< CORE
+0x02000BB8  ldr      r0, [pc, #0x174]         
+0x02000BBC  mov      r1, #0                   
+0x02000BC0  str      r1, [r0, #4]             
+0x02000BC4  mov      r1, #1                   
+0x02000BC8  str      r1, [r0]                 
+0x02000BCC  bl       #0x200cd38                 <<< CORE
+0x02000BD0  bl       #0x2004e30                 <<< CORE
+0x02000BD4  bl       #0x20048b8                 <<< CORE
+0x02000BD8  cmp      r0, #1                   
+0x02000BDC  bne      #0x2000bd4               
+0x02000BE0  bl       #0x200ceec                 <<< CORE
+0x02000BE4  bl       #0x2027f40                 <<< CORE
+0x02000BE8  bl       #0x2020088                 <<< CORE
+0x02000BEC  mov      r0, #0                   
+0x02000BF0  mov      r1, r0                   
+0x02000BF4  mov      r2, #0x20                
+0x02000BF8  bl       #0x2023b90                 <<< CORE
+0x02000BFC  bl       #0x2051040                 <<< CORE
+0x02000C00  ldr      r0, [pc, #0x130]         
+0x02000C04  mov      r1, #0xf                 
+0x02000C08  bl       #0x2028030                 <<< CORE
+0x02000C0C  bl       #0x2023430                 <<< CORE
+0x02000C10  mov      sb, #0                   
+0x02000C14  mov      r8, #1                   
+0x02000C18  ldr      sl, [pc, #0x11c]         
+0x02000C1C  ldr      r5, [pc, #0x110]         
+0x02000C20  ldr      r4, [pc, #0x118]         
+0x02000C24  mov      fp, #0xc                 
+0x02000C28  mov      r7, sb                   
+0x02000C2C  mov      r6, r8                   
+0x02000C30  bl       #0x2027f74                 <<< CORE
+0x02000C34  ldr      r0, [r5]                 
+0x02000C38  cmp      r0, #0                   
+0x02000C3C  beq      #0x2000c4c               
+0x02000C40  bl       #0x2025790                 <<< CORE
+0x02000C44  bl       #0x20200b4                 <<< CORE
+0x02000C48  bl       #0x203ba08                 <<< CORE
+0x02000C4C  bl       #0x2023650                 <<< CORE
+0x02000C50  bl       #0x205113c                 <<< CORE
+0x02000C54  bl       #0x200619c                 <<< CORE
+0x02000C58  bl       #0x20518a4                 <<< CORE
+0x02000C5C  ldr      r0, [r5]                 
+0x02000C60  cmp      r0, #0                   
+0x02000C64  beq      #0x2000c70               
+0x02000C68  bl       #0x20257d8                 <<< CORE
+0x02000C6C  bl       #0x203dac0                 <<< CORE
+0x02000C70  bl       #0x2025ea4                 <<< CORE
+0x02000C74  bl       #0x20259b8                 <<< CORE
+0x02000C78  bl       #0x2027e98                 <<< CORE
+0x02000C7C  bl       #0x20277f4                 <<< CORE
+0x02000C80  ldr      r0, [r5, #4]             
+0x02000C84  cmp      r0, #0                   
+0x02000C88  bne      #0x2000ccc               
+0x02000C8C  ldrh     r0, [sl]                 
+0x02000C90  and      r0, r0, #0x8000          
+0x02000C94  asr      r0, r0, #0xf             
+0x02000C98  cmp      r0, #1                   
+0x02000C9C  bne      #0x2000c30               
+0x02000CA0  mov      r0, sb                   
+0x02000CA4  bl       #0x200bb7c                 <<< CORE
+0x02000CA8  mov      r1, #0                   
+0x02000CAC  mov      r0, fp                   
+0x02000CB0  mov      r2, r1                   
+0x02000CB4  bl       #0x200bc8c                 <<< CORE
+0x02000CB8  bl       #0x200619c                 <<< CORE
+0x02000CBC  mov      r0, #1                   
+0x02000CC0  bl       #0x200bb7c                 <<< CORE
+0x02000CC4  str      r8, [r4]                 
+0x02000CC8  b        #0x2000c30               
+0x02000CCC  ldrh     r0, [sl]                 
+0x02000CD0  and      r0, r0, #0x8000          
+0x02000CD4  asr      r0, r0, #0xf             
+0x02000CD8  cmp      r0, #1                   
+0x02000CDC  ldr      r0, [r4]                 
+0x02000CE0  bne      #0x2000cfc               
+0x02000CE4  cmp      r0, #0                   
+0x02000CE8  beq      #0x2000c30               
+0x02000CEC  mov      r0, #0                   
+0x02000CF0  bl       #0x200bb7c                 <<< CORE
+0x02000CF4  str      r7, [r4]                 
+0x02000CF8  b        #0x2000c30               
+0x02000CFC  cmp      r0, #1                   
+0x02000D00  beq      #0x2000c30               
+0x02000D04  bl       #0x200619c                 <<< CORE
+0x02000D08  bl       #0x200619c                 <<< CORE
+0x02000D0C  bl       #0x200619c                 <<< CORE
+0x02000D10  bl       #0x200619c                 <<< CORE
+0x02000D14  bl       #0x200619c                 <<< CORE
+0x02000D18  bl       #0x200619c                 <<< CORE
+0x02000D1C  bl       #0x200619c                 <<< CORE
+0x02000D20  mov      r0, #1                   
+0x02000D24  bl       #0x200bb7c                 <<< CORE
+0x02000D28  cmp      r0, #0                   
+0x02000D2C  strne    r6, [r4]                 
+0x02000D30  b        #0x2000c30               
+0x02000D34  andeq    fp, ip, #192, #14        
+0x02000D38  andeq    lr, r2, #156, #26        
+0x02000D3C  rsbseq   pc, pc, #168, #30        
+0x02000D40  andeq    pc, r6, #36, #24         
+0x02000D44  ldr      r2, [pc, #0x24]          
+0x02000D48  mov      ip, #1                   
+0x02000D4C  ldr      r3, [pc, #0x20]          
+0x02000D50  strh     ip, [r2]                 
+0x02000D54  mov      ip, #0                   
+0x02000D58  str      ip, [r3]                 
+0x02000D5C  ldr      r2, [pc, #0x14]          
+0x02000D60  str      r0, [r3, #4]             
+0x02000D64  str      r1, [r2]                 
+0x02000D68  str      ip, [r2, #4]             
+0x02000D6C  bx       lr                       
+0x02000D70  streq    r0, [r0], #-0x280        
+0x02000D74  streq    r0, [r0], #-0x290        
+0x02000D78  streq    r0, [r0], #-0x298        
+0x02000D7C  ldr      r1, [pc, #0x1c]          
+0x02000D80  ldrh     r0, [r1]                 
+0x02000D84  ands     r0, r0, #0x8000          
+0x02000D88  bne      #0x2000d80               
+0x02000D8C  ldr      r0, [pc, #0x10]          
+0x02000D90  ldr      r0, [r0]                 
+0x02000D94  add      r0, r0, #0x200           
+0x02000D98  lsr      r0, r0, #0xa             
+0x02000D9C  bx       lr                       
+0x02000DA0  streq    r0, [r0], #-0x2b0        
+0x02000DA4  streq    r0, [r0], #-0x2b4        
+0x02000DA8  ldr      r1, [pc, #0x28]          
+0x02000DAC  mov      r3, #1                   
+0x02000DB0  ldr      r2, [pc, #0x24]          
+0x02000DB4  strh     r3, [r1]                 
+0x02000DB8  mov      ip, #0                   
+0x02000DBC  str      ip, [r2]                 
+0x02000DC0  mov      r3, #0x1000              
+0x02000DC4  ldr      r1, [pc, #0x14]          
+0x02000DC8  str      r3, [r2, #4]             
+0x02000DCC  str      r0, [r1]                 
+0x02000DD0  str      ip, [r1, #4]             
+0x02000DD4  bx       lr                       
+0x02000DD8  streq    r0, [r0], #-0x280        
+0x02000DDC  streq    r0, [r0], #-0x290        
+0x02000DE0  streq    r0, [r0], #-0x298        
+0x02000DE4  ldr      r1, [pc, #0x2c]          
+0x02000DE8  ldrh     r0, [r1]                 
+0x02000DEC  ands     r0, r0, #0x8000          
+0x02000DF0  bne      #0x2000de8               
+0x02000DF4  ldr      r1, [pc, #0x20]          
+0x02000DF8  mov      r0, #0x80000             
+0x02000DFC  ldr      r2, [r1]                 
+0x02000E00  ldr      r1, [r1, #4]             
+0x02000E04  adds     r0, r2, r0               
+0x02000E08  adc      r1, r1, #0               
+0x02000E0C  lsr      r0, r0, #0x14            
+0x02000E10  orr      r0, r0, r1, lsl #12      
+0x02000E14  bx       lr                       
+0x02000E18  streq    r0, [r0], #-0x280        
+0x02000E1C  streq    r0, [r0], #-0x2a0        

@@ -1,0 +1,610 @@
+有引用的目标字符串数: 203
+
+'f_make/hand_R.NCER' @0x0206FE08
+  0x0206FD4E (T)
+
+'option/chu_no.NCER' @0x0206FE44
+  0x0206FD88 (T)
+
+'select/button.NCLR' @0x0206FE58
+  0x0206FD9C (T)
+
+'f_make/caution.NSCR' @0x0206FF70
+  0x0206FEB6 (T)
+
+'f_make/clr_res.NCLR' @0x0206FF84
+  0x0206FECA (T)
+
+'title/btn_down.NCER' @0x0206FF98
+  0x0206FEDE (T)
+
+'option/chu_yes.NCER' @0x0206FFAC
+  0x0206FEF2 (T)
+
+'title/file_cas.NCER' @0x0206FFC0
+  0x0206FF06 (T)
+
+'title/btn_down.NCLR' @0x0206FFD4
+  0x0206FF1A (T)
+
+'title/file_cas.NCGR' @0x0206FFE8
+  0x0206FF2E (T)
+
+'f_make/hand_L_LZ.bin' @0x02070010
+  0x0206FF56 (T)
+
+'title/conceptis.NCLR' @0x02070040
+  0x0206FF30 (T)
+
+'option/chu_no_LZ.bin' @0x02070088
+  0x0206FFCE (T)
+
+'f_make/btn_yame_LZ.bin' @0x020701F0
+  0x020700E2 (T)
+
+'title/btn_XtoKill.NCLR' @0x02070298
+  0x0207018A (T)
+
+'otamesi/otamesi_BG.NCLR' @0x020702E0
+  0x020701D2 (T)
+
+'title/btn_XtoKill_LZ.bin' @0x0207044C
+  0x0207028C (T)
+
+'otamesi/otamesi_BG_LZ.bin' @0x020704A0
+  0x02070320 (T)
+
+'main_bg/bg_32f.NCGR' @0x02070FC0
+  0x02070F06 (T)
+
+'main_bg/bg_51f.NCGR' @0x02070FD4
+  0x02070F1A (T)
+
+'main_bg/bg_33f.NCGR' @0x02070FE8
+  0x02070F2E (T)
+
+'main_bg/bg_52f.NCGR' @0x02070FFC
+  0x02070F42 (T)
+
+'main_bg/bg_50f.NSCR' @0x02071010
+  0x02070F56 (T)
+
+'main_bg/bg_51f.NSCR' @0x02071024
+  0x02070F6A (T)
+
+'main_bg/bg_33f.NSCR' @0x02071038
+  0x02070F7E (T)
+
+'main_bg/bg_31f.NSCR' @0x0207104C
+  0x02070F92 (T)
+
+'main_bg/bg_35f.NCGR' @0x02071060
+  0x02070FA6 (T)
+
+'main_bg/bg_49f.NSCR' @0x02071074
+  0x02070FBA (T)
+
+'battle/sent_bk.NCLR' @0x02071088
+  0x02070FCE (T)
+
+'main_bg/bg_52f.NSCR' @0x0207109C
+  0x02070FE2 (T)
+
+'main_bg/bg_03f.NCGR' @0x020710B0
+  0x02070FF6 (T)
+
+'main_bg/bg_53f.NCGR' @0x020710C4
+  0x0207100A (T)
+
+'main_bg/bg_36f.NSCR' @0x020710D8
+  0x0207101E (T)
+
+'main_bg/bg_04f.NCGR' @0x020710EC
+  0x02071032 (T)
+
+'main_bg/bg_37f.NCGR' @0x02071100
+  0x02071046 (T)
+
+'main_bg/bg_05f.NCGR' @0x02071114
+  0x0207105A (T)
+
+'main_bg/bg_02f.NSCR' @0x02071128
+  0x0207106E (T)
+
+'main_bg/bg_36f.NCGR' @0x0207113C
+  0x02071082 (T)
+
+'main_bg/bg_35f.NSCR' @0x02071150
+  0x02071096 (T)
+
+'main_bg/bg_01f.NCGR' @0x02071164
+  0x020710AA (T)
+
+'main_bg/bg_00f.NCGR' @0x02071178
+  0x020710BE (T)
+
+'main_bg/bg_34f.NSCR' @0x0207118C
+  0x020710D2 (T)
+
+'main_bg/bg_64f.NSCR' @0x020711A0
+  0x020710E6 (T)
+
+'main_bg/bg_61f.NCGR' @0x020711B4
+  0x020710FA (T)
+
+'main_bg/bg_05f.NSCR' @0x020711C8
+  0x0207110E (T)
+
+'main_bg/bg_67f.NSCR' @0x020711DC
+  0x02071122 (T)
+
+'main_bg/bg_29f.NSCR' @0x020711F0
+  0x02071136 (T)
+
+'main_bg/bg_32f.NSCR' @0x02071204
+  0x0207114A (T)
+
+'main_bg/bg_37f.NSCR' @0x02071218
+  0x0207115E (T)
+
+'main_bg/bg_53f.NSCR' @0x0207122C
+  0x02071172 (T)
+
+'main_bg/bg_30f.NSCR' @0x02071240
+  0x02071186 (T)
+
+'main_bg/bg_31f.NCGR' @0x02071254
+  0x0207119A (T)
+
+'main_bg/bg_61f.NSCR' @0x02071268
+  0x020711AE (T)
+
+'main_bg/bg_60f.NCGR' @0x0207127C
+  0x020711C2 (T)
+
+'main_bg/bg_65f.NSCR' @0x02071290
+  0x020711D6 (T)
+
+'main_bg/bg_38f.NCGR' @0x020712A4
+  0x020711EA (T)
+
+'main_bg/bg_07f.NCGR' @0x020712B8
+  0x020711FE (T)
+
+'main_bg/bg_54f.NCGR' @0x020712CC
+  0x02071212 (T)
+
+'main_bg/bg_38f.NSCR' @0x020712E0
+  0x02071226 (T)
+
+'main_bg/bg_08f.NCGR' @0x020712F4
+  0x0207123A (T)
+
+'main_bg/bg_39f.NCGR' @0x02071308
+  0x0207124E (T)
+
+'main_bg/bg_62f.NCGR' @0x0207131C
+  0x02071262 (T)
+
+'main_bg/bg_27f.NSCR' @0x02071330
+  0x02071276 (T)
+
+'main_bg/bg_09f.NCGR' @0x02071344
+  0x0207128A (T)
+
+'main_bg/bg_39f.NSCR' @0x02071358
+  0x0207129E (T)
+
+'main_bg/bg_54f.NSCR' @0x0207136C
+  0x020712B2 (T)
+
+'main_bg/bg_40f.NCGR' @0x02071380
+  0x020712C6 (T)
+
+'main_bg/bg_10f.NSCR' @0x02071394
+  0x020712DA (T)
+
+'main_bg/bg_11f.NCGR' @0x020713A8
+  0x020712EE (T)
+
+'main_bg/bg_55f.NCGR' @0x020713BC
+  0x02071302 (T)
+
+'main_bg/bg_66f.NCGR' @0x020713D0
+  0x02071316 (T)
+
+'main_bg/bg_40f.NSCR' @0x020713E4
+  0x0207132A (T)
+
+'main_bg/bg_12f.NCGR' @0x020713F8
+  0x0207133E (T)
+
+'main_bg/bg_41f.NCGR' @0x0207140C
+  0x02071352 (T)
+
+'main_bg/bg_13f.NCGR' @0x02071420
+  0x02071366 (T)
+
+'main_bg/bg_41f.NSCR' @0x02071434
+  0x0207137A (T)
+
+'main_bg/bg_55f.NSCR' @0x02071448
+  0x0207138E (T)
+
+'main_bg/bg_62f.NSCR' @0x0207145C
+  0x020713A2 (T)
+
+'main_bg/bg_42f.NCGR' @0x02071470
+  0x020713B6 (T)
+
+'main_bg/bg_15f.NCGR' @0x02071484
+  0x020713CA (T)
+
+'main_bg/bg_56f.NCGR' @0x02071498
+  0x020713DE (T)
+
+'main_bg/bg_15f.NSCR' @0x020714AC
+  0x020713F2 (T)
+
+'main_bg/bg_42f.NSCR' @0x020714C0
+  0x02071406 (T)
+
+'main_bg/bg_16f.NCGR' @0x020714D4
+  0x0207141A (T)
+
+'main_bg/bg_43f.NCGR' @0x020714E8
+  0x0207142E (T)
+
+'main_bg/bg_63f.NCGR' @0x020714FC
+  0x02071442 (T)
+
+'main_bg/bg_17f.NCGR' @0x02071510
+  0x02071456 (T)
+
+'main_bg/bg_17f.NSCR' @0x02071524
+  0x0207146A (T)
+
+'main_bg/bg_43f.NSCR' @0x02071538
+  0x0207147E (T)
+
+'main_bg/bg_56f.NSCR' @0x0207154C
+  0x02071492 (T)
+
+'main_bg/bg_18f.NCGR' @0x02071560
+  0x020714A6 (T)
+
+'main_bg/bg_44f.NCGR' @0x02071574
+  0x020714BA (T)
+
+'main_bg/bg_18f.NSCR' @0x02071588
+  0x020714CE (T)
+
+'main_bg/bg_19f.NCGR' @0x0207159C
+  0x020714E2 (T)
+
+'main_bg/bg_57f.NCGR' @0x020715B0
+  0x020714F6 (T)
+
+'main_bg/bg_16f.NSCR' @0x020715C4
+  0x0207150A (T)
+
+'main_bg/bg_19f.NSCR' @0x020715D8
+  0x0207151E (T)
+
+'main_bg/bg_44f.NSCR' @0x020715EC
+  0x02071532 (T)
+
+'main_bg/bg_20f.NCGR' @0x02071600
+  0x02071546 (T)
+
+'main_bg/bg_45f.NCGR' @0x02071614
+  0x0207155A (T)
+
+'main_bg/bg_20f.NSCR' @0x02071628
+  0x0207156E (T)
+
+'main_bg/bg_14f.NSCR' @0x0207163C
+  0x02071582 (T)
+
+'main_bg/bg_21f.NCGR' @0x02071650
+  0x02071596 (T)
+
+'main_bg/bg_14f.NCGR' @0x02071664
+  0x020715AA (T)
+
+'main_bg/bg_13f.NSCR' @0x02071678
+  0x020715BE (T)
+
+'main_bg/bg_21f.NSCR' @0x0207168C
+  0x020715D2 (T)
+
+'main_bg/bg_45f.NSCR' @0x020716A0
+  0x020715E6 (T)
+
+'main_bg/bg_12f.NSCR' @0x020716B4
+  0x020715FA (T)
+
+'main_bg/bg_57f.NSCR' @0x020716C8
+  0x0207160E (T)
+
+'main_bg/bg_63f.NSCR' @0x020716DC
+  0x02071622 (T)
+
+'main_bg/bg_11f.NSCR' @0x020716F0
+  0x02071636 (T)
+
+'main_bg/bg_66f.NSCR' @0x02071704
+  0x0207164A (T)
+
+'main_bg/bg_22f.NCGR' @0x02071718
+  0x0207165E (T)
+
+'main_bg/bg_46f.NCGR' @0x0207172C
+  0x02071672 (T)
+
+'main_bg/bg_22f.NSCR' @0x02071740
+  0x02071686 (T)
+
+'main_bg/bg_10f.NCGR' @0x02071754
+  0x0207169A (T)
+
+'main_bg/bg_09f.NSCR' @0x02071768
+  0x020716AE (T)
+
+'main_bg/bg_23f.NCGR' @0x0207177C
+  0x020716C2 (T)
+
+'main_bg/bg_58f.NCGR' @0x02071790
+  0x020716D6 (T)
+
+'main_bg/bg_08f.NSCR' @0x020717A4
+  0x020716EA (T)
+
+'main_bg/bg_23f.NSCR' @0x020717B8
+  0x020716FE (T)
+
+'main_bg/bg_46f.NSCR' @0x020717CC
+  0x02071712 (T)
+
+'main_bg/bg_07f.NSCR' @0x020717E0
+  0x02071726 (T)
+
+'main_bg/bg_24f.NCGR' @0x020717F4
+  0x0207173A (T)
+
+'main_bg/bg_47f.NCGR' @0x02071808
+  0x0207174E (T)
+
+'main_bg/bg_06f.NSCR' @0x0207181C
+  0x02071762 (T)
+
+'main_bg/bg_64f.NCGR' @0x02071830
+  0x02071776 (T)
+
+'main_bg/bg_06f.NCGR' @0x02071844
+  0x0207178A (T)
+
+'main_bg/bg_24f.NSCR' @0x02071858
+  0x0207179E (T)
+
+'main_bg/bg_25f.NCGR' @0x0207186C
+  0x020717B2 (T)
+
+'main_bg/bg_25f.NSCR' @0x02071880
+  0x020717C6 (T)
+
+'main_bg/bg_04f.NSCR' @0x02071894
+  0x020717DA (T)
+
+'main_bg/bg_47f.NSCR' @0x020718A8
+  0x020717EE (T)
+
+'main_bg/bg_58f.NSCR' @0x020718BC
+  0x02071802 (T)
+
+'main_bg/bg_03f.NSCR' @0x020718D0
+  0x02071816 (T)
+
+'main_bg/bg_26f.NCGR' @0x020718E4
+  0x0207182A (T)
+
+'main_bg/bg_48f.NCGR' @0x020718F8
+  0x0207183E (T)
+
+'main_bg/bg_26f.NSCR' @0x0207190C
+  0x02071852 (T)
+
+'main_bg/bg_27f.NCGR' @0x02071920
+  0x02071866 (T)
+
+'main_bg/bg_02f.NCGR' @0x02071934
+  0x0207187A (T)
+
+'main_bg/bg_01f.NSCR' @0x02071948
+  0x0207188E (T)
+
+'main_bg/bg_59f.NCGR' @0x0207195C
+  0x020718A2 (T)
+
+'main_bg/bg_67f.NCGR' @0x02071970
+  0x020718B6 (T)
+
+'main_bg/bg_00f.NSCR' @0x02071984
+  0x020718CA (T)
+
+'main_bg/bg_29f.NCGR' @0x02071998
+  0x020718DE (T)
+
+'battle/sent_bkf.NCGR' @0x020719AC
+  0x020718F2 (T)
+
+'main_bg/main_bg00.NSCR' @0x02071A24
+  0x0207196A (T)
+
+'main_bg/map_materu.NCGR' @0x02071AFC
+  0x020719EE (T)
+
+'main_bg/map_makimodosi.NCGR' @0x02071C28
+  0x02071B6E (T)
+
+'cinario_select/sinario_bgF.NSCR' @0x02071CDC
+  0x02071C20 (T)
+
+'map/map_waku.NCLR' @0x02080204
+  0x02080148 (T)
+
+'map/map_wakuf.NCGR' @0x02080268
+  0x0208015A (T)
+
+'sample/map_dmy.NCLR' @0x020802A4
+  0x020801EA (T)
+
+'map/map_partsf_LZ.bin' @0x020802CC
+  0x02080210 (T)
+
+'select/window_01.NCLR' @0x020802FC
+  0x020801EC (T)
+
+'select/crsl.NCER' @0x02080374
+  0x020801F6 (T)
+
+'select/button.NCLR' @0x020803B0
+  0x020802F4 (T)
+
+'select/button.NCLR' @0x020803C4
+  0x020802B4 (T)
+
+'select/slider.NCGR' @0x02080428
+  0x02080368 (T)
+
+'title/bg_title_v_LZ.bin' @0x020805C8
+  0x020804BA (T)
+
+'select/No_window_lap.NSCR' @0x02080764
+  0x02080654 (T)
+
+'map_d/4000119_Bus.map' @0x02081C9C
+  0x02081A8E (T)
+
+'map_d/4002004_Ram.map' @0x02081D8C
+  0x02081B7C (T)
+
+'fap/bg_fap_LZ.bin' @0x020854EC
+  0x02085430 (T)
+
+'fap/fap_pen_g.NCER' @0x02085550
+  0x02085442 (T)
+
+'taiken/btn_no.NCER' @0x0208558C
+  0x020854D2 (T)
+
+'fap/fap_pen_k.NCGR' @0x020855A0
+  0x020854E4 (T)
+
+'fap/fap_pen_w.NCGR' @0x020855C8
+  0x0208550C (T)
+
+'fap/fap_parts_LZ.bin' @0x0208571C
+  0x02085662 (T)
+
+'select/window_01.NCLR' @0x02085794
+  0x020856DA (T)
+
+'fap/hojyo_undo_1.NCER' @0x020857C4
+  0x020856B4 (T)
+
+'fap/hojyo_waku_12.NCER' @0x020858B4
+  0x020857A6 (T)
+
+'map/X123.NCGR' @0x02085AC8
+  0x02085A0C (T)
+
+'lap/l_clear.NCGR' @0x02085BBC
+  0x02085B00 (T)
+
+'select/button.NCLR' @0x02085C5C
+  0x02085BA2 (T)
+
+'lap/lap_BG_ue.NSCR' @0x02085CAC
+  0x02085BF0 (T)
+
+'clear/ani_map_L.NCER' @0x02085CC0
+  0x02085C04 (T)
+
+'lap_d/2_dat/2200403_Dog.lap' @0x02087034
+  0x02086E24 (T)
+
+'fap_d/3301611_ram.fap' @0x0208B8B8
+  0x0208B6A8 (T)
+
+'fap_d/3301020_pub.fap' @0x0208B930
+  0x0208B722 (T)
+
+'fap_d/3002010_tea.fap' @0x0208B9A8
+  0x0208B798 (T)
+
+'kakuninn/continue_LZ.bin' @0x0208F33C
+  0x0208F12E (T)
+
+'kakuninn/continue_vtm.NSCR' @0x0208F390
+  0x0208F2D4 (T)
+
+'option/_X_L.NCGR' @0x02090594
+  0x020904DA (T)
+
+'option/_L_L.NCER' @0x020905E4
+  0x0209052A (T)
+
+'option/_R_L.NCER' @0x0209060C
+  0x020904FC (T)
+
+'option/chu_no.NCER' @0x020906E8
+  0x0209062C (T)
+
+'fap/fap_BG_ue.NSCR' @0x02090710
+  0x02090654 (T)
+
+'select/hatena.NCGR' @0x02090724
+  0x02090668 (T)
+
+'select/hatena.NCLR' @0x02090738
+  0x0209067C (T)
+
+'select/hatena.NSCR' @0x0209074C
+  0x02090690 (T)
+
+'option/yaji_D.NCER' @0x02090760
+  0x020906A4 (T)
+
+'lap/lap_BG_ue.NSCR' @0x02090774
+  0x020906B8 (T)
+
+'option/yaji_D.NCGR' @0x0209079C
+  0x020906E0 (T)
+
+'option/opt_sc_5.NCER' @0x02090918
+  0x0209085E (T)
+
+'option/05_map_BG_LZ.bin' @0x02090B28
+  0x02090A1A (T)
+
+'option/05_lap_BG_LZ.bin' @0x02090B40
+  0x02090A32 (T)
+
+'option/05_menu_BG_LZ.bin' @0x02090BE8
+  0x02090ADA (T)
+
+'taiken/ant.NCGR' @0x02090E94
+  0x02090D14 (T)
+
+'taiken/taiken_kubaru.NCLR' @0x020911BC
+  0x020910AC (T)
+
+'taiken/taiken_kubaru_LZ.bin' @0x02091210
+  0x02091090 (T)
+
+'tutorial/step_2.NCER' @0x020913F0
+  0x020912E2 (T)
+
+'tutorial/btn_chuudan_pc.NCLR' @0x02091A38
+  0x0209192A (T)

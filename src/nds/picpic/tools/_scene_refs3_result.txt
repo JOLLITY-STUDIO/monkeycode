@@ -1,0 +1,7 @@
+=== 引用场景表基址的 ldr (4) ===
+  0x020348B4: ldr r1 -> 表[map_comp]
+  0x02034D04: ldr r1 -> 表[comp3]
+  0x020461A0: ldr r1 -> 表[fap_comp]
+  0x0204E584: ldr r1 -> 表[lap_comp]
+
+=== 引用字符串区(0x0206C000+)的 ldr 汇总 ===
