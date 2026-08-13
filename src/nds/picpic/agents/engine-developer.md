@@ -14,10 +14,10 @@ enabled: true
 1. **帧循环**：兼容目标平台（Canvas 2D 节点 rAF → 全局 rAF → setTimeout 回退），统一 `now()` 时间源
 2. **场景系统**：`SceneHandler` 接口（onEnter/update/render/onTouch/onTouchMove/onTouchEnd）、注册与状态切换（setState/setSubState）
 3. **状态机驱动**：按状态分析结果（05）分发到对应场景，服务状态内部流转
-4. **渲染管线**：Canvas 2D 渲染上下文封装、dpr 适配、清屏/图层
+4. **渲染管线**：Canvas 2D 渲染上下文封装、dpr 适配、清屏/图层；**资源解码管线**：LZ 解压 + 瓦片(NCGR)/调色板(NCLR)/地图(NSCR) 解码为像素/位图缓存，统一 Canvas 绘制（原始压缩数据单元运行时解码，不依赖 PNG 资源）
 5. **输入分发**：触摸坐标 → 当前场景 onTouch 系列
 6. **存档管理**：槽位存档读写（Storage 封装）、存档迁移（槽位数以实际游戏为准）
-7. **数据缓存中心**：KV 缓存（类 Redis）实现与封装
+7. **数据缓存中心**：KV 缓存（类 Redis）实现与封装；通过 `data/index.json` 索引按需加载数据单元（images/audio/maps/palettes/text），解压/解码后缓存，支持 LRU 淘汰（Code/Data 分离，代码不内嵌数据）
 8. **工具集**：canvas-util（尺寸/dpr/坐标换算）等
 
 ## 输入

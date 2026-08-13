@@ -15,7 +15,12 @@ enabled: true
 2. **模块边界划分**：引擎 core / 数据 data / 场景 scenes / 平台适配 adapter 分层
 3. **接口契约定义**：定义 `SceneHandler`、`Engine`、`GameState` 等核心接口签名（命名以 game-context 的目标产物为准）
 4. **数据中台设计**：将 ROM 内存/OAM/VRAM 读写改造为 Key-Value 数据缓存中心（类 Redis 结构），去除硬件模拟
-5. **资源架构**：图形→PNG 图片资源、调色板、地图、文本的声明式数据结构设计
+5. **资源架构（Code/Data 分离 + 资源最小化）**：
+    - 物理分层：`code/`（引擎/场景/逻辑/解码器）与 `data/`（images/audio/maps/palettes/text/sprites/meta）互不混入；代码只经 `data/index.json` 按需加载
+    - 游戏包内资源 = ROM 原始压缩数据单元（LZ 等）+ JSON 声明式数据；PNG 仅开发期预览
+    - 设计运行时解码器管线（LZ 解压 + 瓦片/调色板/地图/音频解码）
+    - 单元分解：一个文件多资源 → 独立单元模块（每单元独立文件/模块）
+    - 头文件/元数据 JSON 化：ROM Header/文件系统表/资源索引/偏移映射等一律 JSON（data/meta/），禁止代码硬编码
 6. **多端适配**：目标平台（小程序 / HTML 等，见 game-context `目标转写产物`）双端架构，仅对外暴露创建/操作接口（`new Engine(ctx).start()` 即插即用）
 7. **技术选型**：纯 TypeScript + Canvas 2D，不使用 DOM，不依赖任何模拟器
 
