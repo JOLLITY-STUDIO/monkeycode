@@ -16,6 +16,9 @@
     <view class="tab-item {{tab === 'se' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="se">
       <text>SE 音效</text>
     </view>
+    <view class="tab-item {{tab === 'emu' ? 'tab-active' : ''}}" bindtap="switchTab" data-tab="emu">
+      <text>模拟器原声</text>
+    </view>
   </view>
 
   <!-- ═══ BGM 对比 Tab ═══ -->
@@ -115,7 +118,7 @@
   <block wx:if="{{tab === 'bgmlist'}}">
   <view class="se-header">
     <text class="se-header-title">游戏 BGM 列表 ({{bgmList.length}} 首)</text>
-    <text class="se-header-sub">Banks 12/13/14/15 · 全部音频轨道 · BGM00 仅用于对比</text>
+    <text class="se-header-sub">Banks 12/13/14/15 · 全部音频轨道 · 0x58 用于对比</text>
   </view>
 
   <!-- BGM 状态 -->
@@ -180,6 +183,60 @@
       <view class="se-right">
         <text class="se-desc">{{item.desc}}</text>
         <text class="se-play-icon">{{sePlayingIdx === item.idx ? '⏸' : (item.hasData ? '▶' : '')}}</text>
+      </view>
+    </view>
+  </scroll-view>
+  </block>
+
+  <!-- ═══ 模拟器原声 Tab ═══ -->
+  <block wx:if="{{tab === 'emu'}}">
+  <view class="se-header">
+    <text class="se-header-title">模拟器原声 (A 侧参考)</text>
+    <text class="se-header-sub">NES 模拟器强制播放全部 {{emuList.length}} 条 BGM/SE · 与 TS 引擎对照试听</text>
+  </view>
+
+  <!-- 模式切换 -->
+  <view class="mode-bar">
+    <view class="mode-btn {{emuMode === 'bgm' ? 'mode-active' : ''}}" bindtap="switchEmuMode" data-mode="bgm">全部 BGM</view>
+    <view class="mode-btn {{emuMode === 'se' ? 'mode-active' : ''}}" bindtap="switchEmuMode" data-mode="se">全部 SE</view>
+  </view>
+
+  <!-- 状态 / boot 进度 -->
+  <view class="status-card" wx:if="{{emuStatus}}">
+    <text class="status-text">{{emuStatus}}</text>
+    <view class="progress-bar" wx:if="{{!emuReady}}">
+      <view class="progress-fill" style="width:{{emuProgress}}%;"></view>
+    </view>
+  </view>
+
+  <!-- 播放中名称 -->
+  <view class="status-card" wx:if="{{emuPlayingName}}">
+    <text class="status-text">▶ 模拟器原声播放中: {{emuPlayingName}}</text>
+  </view>
+
+  <!-- 停止 -->
+  <view class="play-controls" wx:if="{{emuReady}}">
+    <button class="btn btn-stop" bindtap="emuStop">⏹ 停止模拟器</button>
+  </view>
+
+  <!-- 列表 -->
+  <scroll-view scroll-y class="se-scroll">
+    <view
+      wx:for="{{emuList}}"
+      wx:key="key"
+      wx:if="{{item.kind === emuMode}}"
+      class="se-item {{item.silent ? 'se-disabled' : ''}} {{emuPlayingIdx === item.idx ? 'se-playing' : ''}}"
+      bindtap="playEmu"
+      data-idx="{{item.idx}}"
+    >
+      <view class="se-left">
+        <text class="se-idx">{{item.name}}</text>
+        <text class="se-addr">{{item.badge}} · 请求 {{item.reqHex}}</text>
+        <text class="se-chtag" wx:if="{{item.desc}}">{{item.desc}}</text>
+      </view>
+      <view class="se-right">
+        <text class="se-desc">{{item.reqHex}}</text>
+        <text class="se-play-icon">{{emuPlayingIdx === item.idx ? '⏸' : (item.silent ? '' : '▶')}}</text>
       </view>
     </view>
   </scroll-view>

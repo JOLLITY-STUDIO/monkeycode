@@ -4,11 +4,7 @@
  * 每个 BGM/SE 从 Bank ROM 中独立提取，脱离原始 bank 依赖
  */
 
-// BGM00 — Opening Animation BGM
-export { BGM00_RAW, BGM00_META, fillBGM00Bank } from './BGM00';
-export { BGM00_HEADER, BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE } from './BGM00';
-
-// BGM SID — 全量 BGM/JINGLE/SFX 索引 (43 SID + BGM00)
+// BGM SID — 全量 BGM/JINGLE/SFX 索引 (43 SID)
 export { BGM_SID_LIST, BGM_BY_BANK, BGM_BY_TYPE, ALL_BGM_LIST, BGM_TOTAL_COUNT } from './bgm-sid/index';
 export type { BgmSidEntry } from './bgm-sid/index';
 
@@ -21,18 +17,6 @@ export {
 
 // 播放器 (Bank 12 音频引擎，支持 BGM + SE)
 export { Tsubasa2AudioPlayer } from './Tsubasa2AudioPlayer';
-
-/** All available BGM datasets (legacy) */
-export const BGM_LIST = [
-  {
-    id: 'BGM00',
-    name: 'Opening Animation',
-    desc: '开场动画背景音乐',
-    size: 2117,
-    source: 'Bank 15 ($17AD-$1FF1)',
-    tracks: ['SQ1', 'SQ2', 'TRI', 'NOISE'],
-  },
-] as const;
 
 /** All available SE datasets */
 export const SE_LIST = [

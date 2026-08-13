@@ -2,17 +2,18 @@
  * game-bgmse — BGM / SE / BGM+SE 多实例混合播放测试
  *
  * 三个按钮:
- *   1. BGM only — 纯 BGM00 播放
+ *   1. BGM only — 纯 0x58 (开场BGM) 播放
  *   2. SE only  — 纯 SE (SQ2+NOISE) 播放
  *   3. BGM+SE   — 两个 Player 实例同时渲染，叠加输出
  *
  * 原理: 每个 Tsubasa2AudioPlayer 自带独立 PAPU，
  *       各自生成 PCM 采样，加法混合后播给 ScriptProcessor。
  */
+import { Tsubasa2AudioPlayer } from '../../mini-audio/bgm-data/index';
 import {
-  Tsubasa2AudioPlayer,
-  BGM00_RAW, BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE,
-} from '../../mini-audio/bgm-data/index';
+  BGM_58_RAW, BGM_58_TRACK_SQ1, BGM_58_TRACK_SQ2, BGM_58_TRACK_TRI, BGM_58_TRACK_NOISE,
+  BGM_58_NES_BASE,
+} from '../../mini-audio/bgm-data/bgm-sid/BGM_0x58';
 
 const SAMPLE_RATE = 48000;
 const SCRIPT_BUF = 2048;
@@ -56,8 +57,8 @@ Page({
       // ── 1. BGM ──
       this.setData({ status: '渲染 BGM...' });
       this._pcmBgm = this._renderPlayer(
-        BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE,
-        BGM00_RAW, 0xB7AD,
+        BGM_58_TRACK_SQ1, BGM_58_TRACK_SQ2, BGM_58_TRACK_TRI, BGM_58_TRACK_NOISE,
+        BGM_58_RAW, BGM_58_NES_BASE,
       );
 
       // ── 2. SE (SQ2 + NOISE, one-shot) ──
@@ -70,9 +71,9 @@ Page({
       // ── 3. BGM + SE 混合（两个独立实例同时渲染） ──
       this.setData({ status: '渲染 BGM+SE 混合...' });
       this._pcmBoth = this._renderMixed(
-        BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE,
+        BGM_58_TRACK_SQ1, BGM_58_TRACK_SQ2, BGM_58_TRACK_TRI, BGM_58_TRACK_NOISE,
         TEST_SE_SQ2, TEST_SE_NOISE,
-        BGM00_RAW, 0xB7AD,
+        BGM_58_RAW, BGM_58_NES_BASE,
       );
 
       this.setData({

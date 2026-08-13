@@ -6,7 +6,7 @@
  *
  * 策略:
  * 1. A 侧跑 4500 帧，记录每帧 APU 写入
- * 2. B 侧跑 BGM00 完整时长，记录 APU 写入
+ * 2. B 侧跑开场 BGM (0x58) 完整时长，记录 APU 写入
  * 3. 自动找同步点：在 A 侧 trace 中搜索 B 侧前 50 条写入的最佳匹配位置
  * 4. 对齐后逐帧对比
  */
@@ -15,9 +15,12 @@ import PAPU from '../../src/papu/index';
 import { NES_PRG_ROM, NES_CHR_ROM } from '../../mini-audio/rom-data/index-full';
 import {
   Tsubasa2AudioPlayer,
-  BGM00_RAW, BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE,
   BGM_SID_LIST, BgmSidEntry,
 } from '../../mini-audio/bgm-data/index';
+import {
+  BGM_58_TRACK_SQ1, BGM_58_TRACK_SQ2, BGM_58_TRACK_TRI, BGM_58_TRACK_NOISE,
+  BGM_58_RAW, BGM_58_NES_BASE,
+} from '../../mini-audio/bgm-data/bgm-sid/BGM_0x58';
 import { SE_CHANNELS, SE_COUNT } from '../../mini-audio/se-data/index';
 
 const SAMPLE_RATE = 48000;
@@ -89,6 +92,14 @@ Page({
     bgmStatus: '',
     bgmPlayingName: '',
     bgmPaused: false,
+    // 模拟器原声 tab
+    emuList: [] as any[],
+    emuMode: 'bgm' as 'bgm' | 'se',
+    emuPlayingIdx: -1,
+    emuPlayingName: '',
+    emuStatus: '',
+    emuReady: false,
+    emuProgress: 0,
   },
 
   // ─── 内部状态 ───
@@ -122,6 +133,18 @@ Page({
   _bgmRing: null as Float32Array | null,
   _bgmRingW: 0,
   _bgmRingR: 0,
+  // 模拟器原声播放（A 侧参考）
+  _emuNes: null as any,
+  _emuToken: 0,
+  _emuFrame: 0,
+  _emuRing: null as Float32Array | null,
+  _emuRingW: 0,
+  _emuRingR: 0,
+  _emuStreamTimer: null as any,
+  _emuScriptNode: null as any,
+  _emuCtx: null as any,
+  _emuStopRequested: false,
+  _emuCurReq: -1,
 
   // ═══ 生命周期 ═══
 
@@ -130,13 +153,14 @@ Page({
     this.setData({ canvasWidth: sysInfo.windowWidth - 32 });
     this._buildSeList();
     this._buildBgmList();
+    this._buildEmuList();
   },
 
   onReady() {
     setTimeout(() => this._initCanvases(), 100);
   },
 
-  onUnload() { this._destroy(); },
+  onUnload() { this._stopEmuPlayback(true); this._destroy(); },
 
   // ═══ Canvas ═══
 
@@ -297,13 +321,13 @@ Page({
 
     player.channelMuteMask = this._getMuteMask('B');
     player.load(
-      BGM00_TRACK_SQ1, BGM00_TRACK_SQ2,
-      BGM00_TRACK_TRI, BGM00_TRACK_NOISE,
-      BGM00_RAW, 0xB7AD,
+      BGM_58_TRACK_SQ1, BGM_58_TRACK_SQ2,
+      BGM_58_TRACK_TRI, BGM_58_TRACK_NOISE,
+      BGM_58_RAW, BGM_58_NES_BASE,
     );
     player.start();
 
-    this.setData({ status: `B侧: TS引擎解析BGM00...` });
+    this.setData({ status: `B侧: TS引擎解析 0x58 (开场BGM)...` });
 
     // 跑到 BGM 播完（自动循环一次也可以，但我们只跑第一轮）
     let maxFrames = 3000;
@@ -568,12 +592,13 @@ Page({
     this._stopCanvasLoop();
     this._stopSePlayback();
     this._stopBgmPlayback();
+    this._stopEmuPlayback();
     this._destroy();
     this._playPos = 0;
     this._waveBufA = [];
     this._waveBufB = [];
-    if (this.data.ready || this.data.tab === 'se' || this.data.tab === 'bgmlist') {
-      this.setData({ playing: false, elapsedFrames: 0, elapsedTime: '0:00', status: '就绪', sePlayingIdx: -1, seStatus: '', bgmPlayingIdx: -1, bgmStatus: '', bgmPlayingName: '', bgmPaused: false });
+    if (this.data.ready || this.data.tab === 'se' || this.data.tab === 'bgmlist' || this.data.tab === 'emu') {
+      this.setData({ playing: false, elapsedFrames: 0, elapsedTime: '0:00', status: '就绪', sePlayingIdx: -1, seStatus: '', bgmPlayingIdx: -1, bgmStatus: '', bgmPlayingName: '', bgmPaused: false, emuPlayingIdx: -1, emuPlayingName: '', emuStatus: '' });
     }
     this._drawBgs();
   },
@@ -785,9 +810,10 @@ Page({
     const tab = e.currentTarget.dataset.tab as string;
     this._stopSePlayback();
     this._stopBgmPlayback();
+    this._stopEmuPlayback();
     this._sePcmCache = {}; // 清除旧缓存（避免之前用错误方式渲染的缓存）
     this._bgmPcmCache = {};
-    this.setData({ tab, playing: false, sePlayingIdx: -1, seStatus: '', bgmPlayingIdx: -1, bgmStatus: '', bgmPlayingName: '', bgmPaused: false });
+    this.setData({ tab, playing: false, sePlayingIdx: -1, seStatus: '', bgmPlayingIdx: -1, bgmStatus: '', bgmPlayingName: '', bgmPaused: false, emuPlayingIdx: -1, emuPlayingName: '', emuStatus: '' });
   },
 
   /** 点击 SE 按钮：渲染 + 播放 */
@@ -912,9 +938,9 @@ Page({
   // BGM 播放列表
   // ════════════════════════════════════════════════
 
-  /** 构建 BGM 列表（BGM00 不展示在列表中，仅供对比 tab 使用） */
+  /** 构建 BGM 列表 */
   _buildBgmList() {
-    // 先 map 保留 BGM_SID_LIST 原始索引，再过滤掉 BGM00，
+    // map 保留 BGM_SID_LIST 原始索引，
     // 保证 item.idx 与 BGM_SID_LIST[idx] 一致（playBgm 直接用该索引取值）
     const list = BGM_SID_LIST
       .map((entry, i) => {
@@ -940,8 +966,7 @@ Page({
           durSec,
           hasData: true,
         };
-      })
-      .filter(item => item.id !== 'BGM00');
+      });
     this.setData({ bgmList: list });
   },
 
@@ -983,7 +1008,8 @@ Page({
 
     const player = new Tsubasa2AudioPlayer(SAMPLE_RATE);
     this._bgmStreamPlayer = player;
-    player.setOneShot(false); // BGM 循环模式
+    // 取消自动循环：播完即停（BGM 循环会掩盖真实曲长，短音效更会被无限循环）
+    player.setOneShot(true);
     this._bgmStopRequested = false;
 
     // 环形缓冲：2 秒容量，tick 生产者 → onaudioprocess 消费者
@@ -1087,11 +1113,11 @@ Page({
         if (token !== this._bgmRenderToken) return; // 已取消，丢弃采样
         samples.push((l + r) * 0.5);
       });
-      // BGM 使用循环模式
-      player.setOneShot(false);
+      // 取消自动循环：播完即停（BGM 渲染只跑第一轮）
+      player.setOneShot(true);
 
       // 传递 raw+nesBase+headerOffset 作为 sharedData，使 header 解析和 CALL/JUMP 正常工作
-      // BGM00: native ch 4-7；SID: ch 0-3（load() 自动映射到 4-7）
+      // 0x58: native ch 4-7；SID: ch 0-3（load() 自动映射到 4-7）
       if (entry.raw && entry.raw.length > 0) {
         player.load(
           entry.trackSQ1, entry.trackSQ2,
@@ -1106,10 +1132,9 @@ Page({
       }
       player.start();
 
-      // BGM 渲染上限：约 5 分钟
+      // 渲染上限：约 5 分钟（兜底）；one-shot 下播完自然停止即返回
       const maxFrames = 18000;
       let f = 0;
-      let loopCount = 0;
 
       const step = () => {
         if (token !== this._bgmRenderToken) {
@@ -1121,12 +1146,8 @@ Page({
         for (; f < end; f++) {
           player.tick();
           if (!player.progress.playing) {
-            loopCount++;
-            if (loopCount >= 2) {
-              resolve(new Float32Array(samples));
-              return;
-            }
-            if (!player.progress.playing) break;
+            resolve(new Float32Array(samples)); // 播完即停
+            return;
           }
         }
         if (f >= maxFrames) {
@@ -1230,5 +1251,285 @@ Page({
     if (this._bgmCtx) {
       try { this._bgmCtx.suspend(); } catch (_) {}
     }
+  },
+
+  // ════════════════════════════════════════════════
+  // 模拟器原声播放（A 侧参考标准）
+  // ════════════════════════════════════════════════
+
+  /** 构建模拟器原声列表（全部 BGM + 全部 SE） */
+  _buildEmuList() {
+    const bgmItems = BGM_SID_LIST.map((entry, i) => {
+      // 歌曲请求 ID：直接取 entry.id（0x58 即开场 BGM，同 init 0xB7AD）
+      const req = parseInt(entry.id, 16);
+      const silent = !!entry.silent;
+      return {
+        kind: 'bgm',
+        key: 'bgm' + i,
+        idx: i,
+        id: entry.id,
+        name: entry.name || entry.id,
+        desc: entry.desc,
+        req,
+        reqHex: '0x' + req.toString(16).padStart(2, '0').toUpperCase(),
+        silent,
+        type: entry.type,
+        badge: `BANK${entry.bank} · ${entry.type}`,
+      };
+    });
+
+    const seItems = SE_CHANNELS.map((_, i) => {
+      const hasData = Object.values(SE_CHANNELS[i].subData).some(arr =>
+        arr.length > 1 || (arr.length === 1 && arr[0] !== 0xFF)
+      );
+      return {
+        kind: 'se',
+        key: 'se' + i,
+        idx: i,
+        id: `SE#${i}`,
+        name: `SE#${i} · ID 0x${(i + 1).toString(16).toUpperCase()}`,
+        desc: this._seDesc(i),
+        req: 0x01 + i,
+        reqHex: '0x' + (0x01 + i).toString(16).padStart(2, '0').toUpperCase(),
+        silent: !hasData,
+        type: 'SE',
+        badge: `ID ${'0x' + (i + 1).toString(16).toUpperCase()}`,
+      };
+    });
+
+    this.setData({ emuList: [...bgmItems, ...seItems] });
+  },
+
+  /** 切换模拟器原声子模式（bgm / se） */
+  switchEmuMode(e: any) {
+    const mode = e.currentTarget.dataset.mode as 'bgm' | 'se';
+    if (mode === this.data.emuMode) return;
+    this._stopEmuPlayback(true);
+    this.setData({ emuMode: mode, emuPlayingIdx: -1, emuPlayingName: '', emuStatus: '' });
+  },
+
+  /**
+   * 点击模拟器原声列表项：NES 模拟器强制切换播放该 BGM/SE
+   */
+  async playEmu(e: any) {
+    const idx = e.currentTarget.dataset.idx as number;
+    const item = this.data.emuList[idx];
+    if (!item || item.silent) return;
+
+    const token = ++this._emuToken;
+    this._emuStopRequested = true;
+
+    // 确保模拟器已 boot（未 boot 时先初始化，完成后继续）
+    const ok = await this._ensureEmuBooted();
+    if (!ok || token !== this._emuToken) return;
+
+    // 停止旧播放（保留 NES 实例与已加载 bank 状态）
+    this._stopEmuPlayback(true);
+    this._emuStopRequested = false;
+    this.setData({
+      emuPlayingIdx: idx,
+      emuPlayingName: item.name,
+      emuStatus: `${item.kind === 'bgm' ? item.id : item.name} | 模拟器原声播放中`,
+      playing: true,
+    });
+
+    this._emuInject(item.req);
+    this._startEmuStream();
+  },
+
+  /**
+   * 确保模拟器 boot 完成（只 boot 一次，之后复用同一实例）
+   * boot 流程：构建 ROM → loadROM → hook APU/采样 → 跑 800 帧到标题画面
+   */
+  _ensureEmuBooted(): Promise<boolean> {
+    if (this._emuNes) return Promise.resolve(true);
+
+    return new Promise((resolve) => {
+      try {
+        const prg = new Uint8Array(NES_PRG_ROM);
+        const chr = new Uint8Array(NES_CHR_ROM);
+        const rom = new Uint8Array(INES_HEADER.length + prg.length + chr.length);
+        rom.set(INES_HEADER, 0);
+        rom.set(prg, INES_HEADER.length);
+        rom.set(chr, INES_HEADER.length + prg.length);
+
+        const nes = new NES({ emulateSound: true, sampleRate: SAMPLE_RATE });
+        const self = this;
+
+        // 采样回调 → 环形缓冲（生产者）
+        nes.opts.onAudioSample = (l: number, r: number) => {
+          const ring = self._emuRing;
+          if (!ring) return;
+          ring[self._emuRingW] = Math.max(-1, Math.min(1, (l + r) * 0.5));
+          self._emuRingW = (self._emuRingW + 1) % ring.length;
+        };
+
+        nes.loadROM(rom); // 必须在 patch 之前：内部 reset 会重建 cpu/papu
+
+        this._emuNes = nes;
+        this._emuRing = new Float32Array(SAMPLE_RATE * 2); // 2 秒环形缓冲
+        this._emuRingW = 0;
+        this._emuRingR = 0;
+
+        this.setData({ emuStatus: '模拟器启动中 (boot 800帧)...', emuProgress: 0 });
+
+        // 复用调用方（playEmu）已递增的 token，不再自增，否则会导致调用方 token 失效
+        const token = this._emuToken;
+        const BOOT_FRAMES = 800;
+        const BATCH = 10;
+        let f = 0;
+
+        const step = () => {
+          if (this._emuToken !== token) { resolve(false); return; }
+          const end = Math.min(f + BATCH, BOOT_FRAMES);
+          try {
+            for (; f < end; f++) {
+              nes.frame();
+            }
+          } catch (err: any) {
+            console.error('[emu] boot 崩溃:', err);
+            this._emuNes = null;
+            this.setData({ emuStatus: '模拟器启动失败: ' + (err.message || err) });
+            resolve(false);
+            return;
+          }
+          this.setData({ emuProgress: Math.floor((f / BOOT_FRAMES) * 100) });
+          if (f < BOOT_FRAMES) {
+            setTimeout(step, 0);
+          } else {
+            // boot 完成：清掉 boot 期间游戏自播的开场动画音乐（0x58）残留，
+            // 注入静音请求让音频引擎归零，再清一次 ring，
+            // 保证用户点播放时听到的是从"注入目标 ID"这一刻开始的干净声音
+            this._emuRingW = 0;
+            this._emuRingR = 0;
+            this._emuInject(0x4A); // 静音请求
+            for (let i = 0; i < 30; i++) {
+              try { nes.frame(); } catch (_) { break; }
+            }
+            this._emuRingW = 0;
+            this._emuRingR = 0;
+            this._emuCurReq = -1;
+            this.setData({ emuReady: true, emuStatus: '模拟器就绪（已静音待命）' });
+            resolve(true);
+          }
+        };
+        setTimeout(step, 0);
+      } catch (err: any) {
+        console.error('[emu] 初始化失败:', err);
+        this.setData({ emuStatus: '模拟器初始化失败: ' + (err.message || err) });
+        resolve(false);
+      }
+    });
+  },
+
+  /**
+   * 注入歌曲请求：向 $0700[0] 写歌曲 ID（音频引擎 NMI 轮询消费并切换播放）
+   * 0x01-0x10 = SE；0x30/0x32-0x5B = BGM/JINGLE/SFX；0x4A = 静音
+   */
+  _emuInject(req: number) {
+    const nes = this._emuNes;
+    if (!nes) return;
+    nes.cpu.mem[0x0700 + 0] = req & 0xFF;
+    this._emuCurReq = req & 0xFF;
+  },
+
+  /** 开始流式播放：后台跑帧 → 环形缓冲 → ScriptProcessor 输出 */
+  _startEmuStream() {
+    const nes = this._emuNes;
+    if (!nes || !this._emuRing) return;
+
+    // 预填 ~0.5 秒音频，避免首帧无声
+    for (let i = 0; i < 30; i++) {
+      try { nes.frame(); } catch (_) { break; }
+    }
+
+    // AudioContext + ScriptProcessor（消费者）
+    try {
+      if (!this._emuCtx) {
+        this._emuCtx = wx.createWebAudioContext();
+      } else {
+        try { this._emuCtx.resume(); } catch (_) {}
+      }
+      const ctx = this._emuCtx;
+      const self = this;
+
+      if (this._emuScriptNode) {
+        try { (this._emuScriptNode as any).onaudioprocess = null; } catch (_) {}
+        try { this._emuScriptNode.disconnect(); } catch (_) {}
+        this._emuScriptNode = null;
+      }
+
+      // 后台跑帧：缓冲低于 300ms 时补一帧（模拟器 ~4x 实时，足够维持）
+      if (this._emuStreamTimer) { clearInterval(this._emuStreamTimer); }
+      this._emuStreamTimer = setInterval(() => this._emuStreamTick(), 16);
+
+      const node = ctx.createScriptProcessor(SCRIPT_BUF, 0, 1);
+      node.onaudioprocess = function (e: any) {
+        const out = e.outputBuffer.getChannelData(0);
+        if (self._emuStopRequested) return; // 静音
+        const ring = self._emuRing;
+        if (!ring) return;
+        for (let i = 0; i < out.length; i++) {
+          if (self._emuRingR === self._emuRingW) {
+            // 缓冲空 → 紧急补帧
+            try { if (self._emuNes) self._emuNes.frame(); } catch (_) {}
+            if (self._emuRingR === self._emuRingW) { out[i] = 0; continue; }
+          }
+          out[i] = ring[self._emuRingR];
+          self._emuRingR = (self._emuRingR + 1) % ring.length;
+        }
+      };
+      node.connect(ctx.destination);
+      this._emuScriptNode = node;
+      ctx.resume();
+    } catch (e: any) {
+      console.error('[emu] 音频输出失败:', e);
+    }
+  },
+
+  /** 后台补帧：缓冲低于 300ms 时跑一帧模拟器 */
+  _emuStreamTick() {
+    if (this._emuStopRequested || !this._emuNes || !this._emuRing) return;
+    const ring = this._emuRing;
+    const avail = (this._emuRingW - this._emuRingR + ring.length) % ring.length;
+    if (avail < SAMPLE_RATE * 0.3) {
+      try { this._emuNes.frame(); } catch (_) {}
+    }
+  },
+
+  /** 停止模拟器播放（keepNes=true 保留实例，仅停止输出） */
+  _stopEmuPlayback(keepNes: boolean = true) {
+    this._emuStopRequested = true;
+    this._emuCurReq = -1;
+    if (this._emuStreamTimer) {
+      clearInterval(this._emuStreamTimer);
+      this._emuStreamTimer = null;
+    }
+    if (this._emuScriptNode) {
+      try { (this._emuScriptNode as any).onaudioprocess = null; } catch (_) {}
+      try { this._emuScriptNode.disconnect(); } catch (_) {}
+      this._emuScriptNode = null;
+    }
+    if (this._emuCtx) {
+      try { this._emuCtx.suspend(); } catch (_) {}
+    }
+    if (this._emuRing) {
+      this._emuRingW = 0;
+      this._emuRingR = 0;
+    }
+    if (!keepNes) {
+      this._emuNes = null;
+      this._emuRing = null;
+    }
+  },
+
+  /** 停止并静音模拟器（注入 0x4A 让引擎归零，保留实例供下次复用） */
+  emuStop() {
+    this._emuStopRequested = true;
+    if (this._emuNes) {
+      this._emuInject(0x4A); // 静音请求，引擎消费后所有通道归零
+    }
+    this._stopEmuPlayback(true);
+    this.setData({ emuPlayingIdx: -1, emuPlayingName: '', emuStatus: '已停止', playing: false });
   },
 });

@@ -5,13 +5,13 @@
  */
 import { NesAudio } from '../mini-audio/emu/nes-audio';
 import { NES_PRG_ROM, NES_CHR_ROM } from '../mini-audio/rom-data/index';
+import { Tsubasa2AudioPlayer } from '../mini-audio/bgm-data/index';
 import {
-  Tsubasa2AudioPlayer,
-  BGM00_TRACK_SQ1,
-  BGM00_TRACK_SQ2,
-  BGM00_TRACK_TRI,
-  BGM00_TRACK_NOISE,
-} from '../mini-audio/bgm-data/index';
+  BGM_58_TRACK_SQ1,
+  BGM_58_TRACK_SQ2,
+  BGM_58_TRACK_TRI,
+  BGM_58_TRACK_NOISE,
+} from '../mini-audio/bgm-data/bgm-sid/BGM_0x58';
 
 const MAX_FRAMES = 600;
 const SAMPLE_RATE = 48000;
@@ -62,7 +62,7 @@ function runEmu(frames: number): { writes: ApuWrite[]; sampleCount: number } {
 
 function runSeq(frames: number): { writes: ApuWrite[]; sampleCount: number } {
   const player = new Tsubasa2AudioPlayer(SAMPLE_RATE);
-  player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE);
+  player.load(BGM_58_TRACK_SQ1, BGM_58_TRACK_SQ2, BGM_58_TRACK_TRI, BGM_58_TRACK_NOISE);
   if (!player.start()) return { writes: [], sampleCount: 0 };
 
   const writes: ApuWrite[] = [];

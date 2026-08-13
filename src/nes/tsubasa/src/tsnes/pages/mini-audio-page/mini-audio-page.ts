@@ -1,16 +1,17 @@
 /**
- * mini-audio-page — 使用 Tsubasa2AudioPlayer 播放开场动画 BGM。
+ * mini-audio-page — 使用 Tsubasa2AudioPlayer 播放开场动画 BGM (0x58)。
  * 纯 TS 音序器 + PAPU，无需 CPU 模拟、MMC3、ROM 读取。
  */
+import { Tsubasa2AudioPlayer } from '../../mini-audio/bgm-data/index';
 import {
-  Tsubasa2AudioPlayer,
-  BGM00_RAW,
-  BGM00_META,
-  BGM00_TRACK_SQ1,
-  BGM00_TRACK_SQ2,
-  BGM00_TRACK_TRI,
-  BGM00_TRACK_NOISE,
-} from '../../mini-audio/bgm-data/index';
+  BGM_58_RAW,
+  BGM_58_META,
+  BGM_58_TRACK_SQ1,
+  BGM_58_TRACK_SQ2,
+  BGM_58_TRACK_TRI,
+  BGM_58_TRACK_NOISE,
+  BGM_58_NES_BASE,
+} from '../../mini-audio/bgm-data/bgm-sid/BGM_0x58';
 import { NES_PRG_ROM } from '../../mini-audio/rom-data/index-full';
 
 const SAMPLE_RATE = 48000;
@@ -32,15 +33,15 @@ const state: AudioState = {
   playing: false,
 };
 
-/** 分块渲染 BGM00，避免阻塞主线程 */
-function renderBGM00Async(
+/** 分块渲染开场 BGM (0x58)，避免阻塞主线程 */
+function renderBGM58Async(
   maxFrames: number,
   onProgress: (frame: number) => void,
   onDone: (samples: Float32Array, frameCount: number) => void,
 ): void {
   const player = new Tsubasa2AudioPlayer(SAMPLE_RATE);
   player.setPrgRom(NES_PRG_ROM);
-  player.load(BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE, BGM00_RAW, 0xB7AD);
+  player.load(BGM_58_TRACK_SQ1, BGM_58_TRACK_SQ2, BGM_58_TRACK_TRI, BGM_58_TRACK_NOISE, BGM_58_RAW, BGM_58_NES_BASE);
   if (!player.start()) {
     onDone(new Float32Array(0), 0);
     return;
@@ -77,19 +78,19 @@ Page({
   data: {
     status: '初始化中...',
     sampleCount: 0,
-    currentBgm: BGM00_META.name,
-    bgmInfo: BGM00_META,
+    currentBgm: BGM_58_META.name,
+    bgmInfo: BGM_58_META,
   },
 
   onLoad() {
-    this.setData({ status: '准备就绪', bgmInfo: BGM00_META });
+    this.setData({ status: '准备就绪', bgmInfo: BGM_58_META });
   },
   onReady() { this.startAudio(); },
   onShow() { this.tryResume(); },
   onHide() {},
   onUnload() { this.destroyAudio(); },
 
-  /** 播放 BGM00 */
+  /** 播放开场 BGM (0x58) */
   playBGM() {
     this.destroyAudio();
     this.startAudio();
@@ -97,9 +98,9 @@ Page({
 
   startAudio() {
     try {
-      this.setData({ status: '渲染中... BGM00', sampleCount: 0 });
+      this.setData({ status: '渲染中... 0x58 开场BGM', sampleCount: 0 });
 
-      renderBGM00Async(
+      renderBGM58Async(
         1800,
         (frame) => {
           if (frame % 120 === 0) {
@@ -140,7 +141,7 @@ Page({
             state.playing = true;
 
             this.setData({
-              status: '播放中 ♪ ' + BGM00_META.name,
+              status: '播放中 ♪ ' + BGM_58_META.name,
               sampleCount: samples.length,
             });
           } catch (e: any) {

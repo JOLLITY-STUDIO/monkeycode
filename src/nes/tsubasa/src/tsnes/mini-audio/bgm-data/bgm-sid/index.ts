@@ -1,13 +1,7 @@
 /**
  * BGM SID 数据索引 — Bank 12/13/14/15 所有音频轨道
- * 自动生成 — 43 SID 轨道 + BGM00
+ * 自动生成 — 43 SID 轨道
  */
-
-// BGM00 从上层 index 导入
-import {
-  BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE,
-  BGM00_RAW, BGM00_META,
-} from '../BGM00';
 
 import {
   BGM_30_TRACK_SQ1, BGM_30_TRACK_SQ2, BGM_30_TRACK_TRI, BGM_30_TRACK_NOISE,
@@ -250,26 +244,15 @@ export interface BgmSidEntry {
   nesBase: number;
   /** header 在 raw 内的偏移（initPtr - RAW_START），默认 0 */
   headerOffset?: number;
-  /** Whether raw is a real shared BGM header (true only for BGM00). SID tracks should load from split track arrays. */
+  /** Whether raw is a real shared BGM header (true for bank-shared raw data). SID tracks should load from split track arrays. */
   useSharedRaw?: boolean;
 }
 
 // ════════════════════════════════════════════════
-// BGM 主列表（BGM00 置顶 + SID 轨道）
+// BGM 主列表（SID 轨道）
 // ════════════════════════════════════════════════
 
 export const BGM_SID_LIST: BgmSidEntry[] = [
-  // ── BGM00: Opening Animation BGM (Bank 15 $17AD) ──
-  {
-    id: 'BGM00', bank: 15, type: 'BGM', chCount: 4,
-    bytes: 2117, notes: 0,
-    name: 'Opening Animation',
-    desc: 'Bank 15 $17AD · 开场动画BGM',
-    trackSQ1: BGM00_TRACK_SQ1, trackSQ2: BGM00_TRACK_SQ2,
-    trackTRI: BGM00_TRACK_TRI, trackNOISE: BGM00_TRACK_NOISE,
-    raw: BGM00_RAW, nesBase: 0xB7AD, headerOffset: 0, useSharedRaw: true,
-  },
-
   {
     id: '0x30', bank: 12, type: 'SFX', chCount: 3,
     bytes: 34, notes: 0,
@@ -621,10 +604,11 @@ export const BGM_SID_LIST: BgmSidEntry[] = [
   },
 
   {
-    id: '0x4A', bank: 14, type: 'SFX', chCount: 4,
-    bytes: 38, notes: 0,
+    id: '0x4A', bank: 14, type: 'SILENT', chCount: 0,
+    bytes: 0, notes: 0,
     name: '0x4A · Bank 14',
-    desc: 'SFX · 38B · 0 notes · init 0x8E42',
+    desc: '空轨道 · init 0x8E42 · 实机即无声',
+    silent: true,
     trackSQ1: BGM_4A_TRACK_SQ1,
     trackSQ2: BGM_4A_TRACK_SQ2,
     trackTRI: BGM_4A_TRACK_TRI,

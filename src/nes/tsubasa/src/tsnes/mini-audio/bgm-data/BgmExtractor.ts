@@ -160,7 +160,7 @@ export class BgmExtractor {
 
     // 已知的 BGM 偏移 (来自 bank15_data.service.ts BGM_DATA_MAP)
     const knownOffsets: Record<number, string> = {
-      0x17AD: 'BGM00 - TECMO Theater',
+      0x17AD: '0x58 (开场BGM, 原BGM00) - TECMO Theater',
       0x0000: 'BGM01 - Title',
       0x0200: 'BGM02 - Meeting?',
       0x0400: 'BGM03 - Match?',

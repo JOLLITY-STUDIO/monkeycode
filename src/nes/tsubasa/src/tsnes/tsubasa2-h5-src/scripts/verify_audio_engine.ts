@@ -110,10 +110,10 @@ const store = new MockDataStore();
 const audioOut = new MockAudioOutput();
 const svc = new Bank12AudioService(store as any, audioOut);
 
-// 注入数据
-const bank12 = makeFakeBank();
+// 注入数据: SE 音序数据在 Bank 12 (指针表 $8BDA 指向 $8Exx)
 svc.setBankData({
   seTable: MOCK_SE_TABLE,
+  bank12: makeFakeBank(), // SE 数据所在 bank
   bank15: [], // Bank 15 暂无
 });
 

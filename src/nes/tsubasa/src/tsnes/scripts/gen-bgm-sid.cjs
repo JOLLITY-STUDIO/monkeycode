@@ -186,6 +186,20 @@ function traceReachable(sid, initPtr, entries) {
 function hex2(n) { return '0x' + n.toString(16).toUpperCase().padStart(2, '0'); }
 function hex4(n) { return '0x' + n.toString(16).toUpperCase().padStart(4, '0'); }
 
+/**
+ * 实测时长修正（_analyze_bgm_dur.ts one-shot 实测）：
+ * 轨道 raw 长度偏大但实际 7s 自然停，应归类为音效 SFX 而非 JINGLE。
+ * <10s 的一律视为音效（用户确认）。
+ */
+const TYPE_FIX = { '0x45': 'SFX', '0x57': 'SFX' };
+
+/** 类型判定：silent → SILENT；TYPE_FIX 覆盖 → 修正值；否则按 raw 长度猜 */
+function guessType(hexId, rawLen, silent) {
+  if (silent) return 'SILENT';
+  if (TYPE_FIX[hexId]) return TYPE_FIX[hexId];
+  return rawLen < 200 ? 'SFX' : rawLen < 700 ? 'JINGLE' : 'BGM';
+}
+
 function fmtArr(arr, perLine = 12) {
   if (!arr || arr.length === 0) return '';
   const lines = [];
@@ -206,8 +220,7 @@ function genBgmFile(se, info) {
   const trackMap = info.trackMap; // {4,5,6,7 → number[]}
   const chNums = info.chNums;     // header 中的通道号（文档用）
 
-  const typeGuess = info.silent ? 'SILENT'
-    : (raw.length < 200 ? 'SFX' : raw.length < 700 ? 'JINGLE' : 'BGM');
+  const typeGuess = guessType(hexId, raw.length, info.silent);
   const notesEst = info.silent ? 0 : Math.max(0, raw.length - 64);
 
   const ts = `/**
@@ -289,7 +302,12 @@ for (let se = 0x30; se <= 0x5B; se++) {
   const initPtr = (hi << 8) | lo;
   const bank = sidToBank(se);
 
-  const { entries, silent } = parseInitList(se, initPtr);
+  const { entries, silent: hdrSilent } = parseInitList(se, initPtr);
+  // ★ 0x4A 修复：header 非空但所有入口首字节均为 0xFF 终止符 → 引擎启动即静音（实机无声）。
+  //   parseInitList 只看 header 是否有条目；0x4A 的 8 个 ch 全指向 0x8E5A（=0xFF），
+  //   每个通道读到第一个字节就是终止符 → 无声。这里补判"入口全死"。
+  //   注意：只能判定 === 0xFF。0xE0/0xE2 等是命令字节（正常轨道数据），不是终止。
+  const silent = hdrSilent || (entries.length > 0 && entries.every(e => readByte(se, e.tp) === 0xFF));
   const chNums = entries.map(e => e.ch);
   if (silent) {
     console.log(`${hex2(se)} bank${bank}: initPtr=${hex4(initPtr)} 空轨道（实机即无声），标记 silent`);
@@ -359,14 +377,8 @@ function genIndex() {
   const lines = [];
   lines.push('/**');
   lines.push(' * BGM SID 数据索引 — Bank 12/13/14/15 所有音频轨道');
-  lines.push(` * 自动生成 — ${ENTRIES.length} SID 轨道 + BGM00`);
+  lines.push(` * 自动生成 — ${ENTRIES.length} SID 轨道`);
   lines.push(' */');
-  lines.push('');
-  lines.push('// BGM00 从上层 index 导入');
-  lines.push('import {');
-  lines.push('  BGM00_TRACK_SQ1, BGM00_TRACK_SQ2, BGM00_TRACK_TRI, BGM00_TRACK_NOISE,');
-  lines.push('  BGM00_RAW, BGM00_META,');
-  lines.push("} from '../BGM00';");
   lines.push('');
 
   const ids = [];
@@ -406,25 +418,15 @@ function genIndex() {
   lines.push('  nesBase: number;');
   lines.push('  /** header 在 raw 内的偏移（initPtr - RAW_START），默认 0 */');
   lines.push('  headerOffset?: number;');
-  lines.push('  /** Whether raw is a real shared BGM header (true only for BGM00). SID tracks should load from split track arrays. */');
+  lines.push('  /** Whether raw is a real shared BGM header (true for bank-shared raw data). SID tracks should load from split track arrays. */');
   lines.push('  useSharedRaw?: boolean;');
   lines.push('}');
   lines.push('');
   lines.push('// ════════════════════════════════════════════════');
-  lines.push('// BGM 主列表（BGM00 置顶 + SID 轨道）');
+  lines.push('// BGM 主列表（SID 轨道）');
   lines.push('// ════════════════════════════════════════════════');
   lines.push('');
   lines.push('export const BGM_SID_LIST: BgmSidEntry[] = [');
-  lines.push('  // ── BGM00: Opening Animation BGM (Bank 15 $17AD) ──');
-  lines.push('  {');
-  lines.push("    id: 'BGM00', bank: 15, type: 'BGM', chCount: 4,");
-  lines.push('    bytes: 2117, notes: 0,');
-  lines.push("    name: 'Opening Animation',");
-  lines.push("    desc: 'Bank 15 $17AD · 开场动画BGM',");
-  lines.push('    trackSQ1: BGM00_TRACK_SQ1, trackSQ2: BGM00_TRACK_SQ2,');
-  lines.push('    trackTRI: BGM00_TRACK_TRI, trackNOISE: BGM00_TRACK_NOISE,');
-  lines.push('    raw: BGM00_RAW, nesBase: 0xB7AD, headerOffset: 0, useSharedRaw: true,');
-  lines.push('  },');
   lines.push('');
 
   for (const e of ENTRIES) {
@@ -432,7 +434,7 @@ function genIndex() {
     const hexIdL = '0x' + hexId;
     const bank = e.bank;
     const chCount = e.silent ? 0 : new Set(e.chNums.map(c => (c >= 4 ? c : c + 4))).size;
-    const type = e.silent ? 'SILENT' : (e.rawLen < 200 ? 'SFX' : e.rawLen < 700 ? 'JINGLE' : 'BGM');
+    const type = guessType(hexId, e.rawLen, e.silent);
     const notes = e.silent ? 0 : Math.max(0, e.rawLen - 64);
     const desc = e.silent
       ? `空轨道 · init ${hex4(e.initPtr)} · 实机即无声`
@@ -482,7 +484,7 @@ function genIndex() {
 
   const indexPath = path.join(OUT_DIR, 'index.ts');
   fs.writeFileSync(indexPath, lines.join('\n'));
-  console.log('\nindex.ts 已重新生成（' + ENTRIES.length + ' SID + BGM00）');
+  console.log('\nindex.ts 已重新生成（' + ENTRIES.length + ' SID）');
 }
 
 genIndex();

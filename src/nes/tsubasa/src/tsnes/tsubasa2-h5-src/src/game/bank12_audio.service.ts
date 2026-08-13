@@ -151,6 +151,8 @@ export class Bank12AudioService {
 
   // ── Bank 数据 (直接引用，无 MMC3) ──
 
+  /** Bank 12: SE 音序数据 (指针表 $8BDA 指向此处) */
+  private _bank12: number[] = [];
   /** Bank 0D: 音频数据 */
   private _bank0D: number[] = [];
   /** Bank 0E: 音频数据 */
@@ -187,17 +189,19 @@ export class Bank12AudioService {
   // Bank 数据注入 (外部调用，替代 MMC3 映射)
   // ──────────────────────────────────────────────
 
-  /** 设置 Bank 0D/0E/0F/15 数据 + 音效指针表 */
+  /** 设置 Bank 0D/0E/0F/12/15 数据 + 音效指针表 */
   setBankData(params: {
     bank0D?: number[];
     bank0E?: number[];
     bank0F?: number[];
+    bank12?: number[];
     bank15?: number[];
     seTable?: number[];
   }): void {
     if (params.bank0D) this._bank0D = params.bank0D;
     if (params.bank0E) this._bank0E = params.bank0E;
     if (params.bank0F) this._bank0F = params.bank0F;
+    if (params.bank12) this._bank12 = params.bank12;
     if (params.bank15) this._bank15 = params.bank15;
     if (params.seTable) this._seTable = params.seTable;
   }
@@ -303,6 +307,11 @@ export class Bank12AudioService {
 
   /**
    * 对应 $8349: A=seId → 查 $8BDA 指针表 → 分配通道 → 初始化参数。
+   *
+   * ROM 槽位规则 (已对照汇编 $836E/$8394):
+   *   - 通道块 ($0727 + ch*16) 与时长数组 ($0707 + ch*4): 索引 = ch
+   *   - 状态数组 ($07A7/$07AF/$07CF/$07D7/$07EA/$07F4): 索引 = 8-ch
+   * H5 统一用 slot = ch (通道块语义)，状态数组经 _stateIdx() 换算。
    */
   private _audioInit(seId: number, bankData: number[] | null): void {
     const idx = (seId - 1) * 2;
@@ -313,15 +322,14 @@ export class Bank12AudioService {
     if (ptrLo === 0xFF && ptrHi === 0x00) return; // $FF00 哨兵
 
     // 通道初始化列表: [ch, ptrLo, ptrHi] × N, ≥$80 终止
-    let pos = ptrLo | (ptrHi << 8);
+    let pos = ptrLo | (ptrHi << 8); // CPU 地址 ($8000-$9FFF)
     const bank = bankData ?? this._bank12Data();
 
-    while (true) {
-      // 读 ch 编号
-      const ch = bank[pos - 0x8000] ?? 0;
-      if (ch >= 0x80) {
-        // 终止符 → $0F→$4015 (打开所有通道)
-        break;
+    // 安全上限: 最多 8 通道 + 终止符，防止数据异常时死循环
+    for (let guard = 0; guard < 9; guard++) {
+      const ch = bank[pos - 0x8000] ?? 0xFF;
+      if (ch >= 0x80 || ch < 0) {
+        break; // 终止符
       }
       pos++;
       const tLo = bank[pos - 0x8000] ?? 0;
@@ -329,29 +337,30 @@ export class Bank12AudioService {
       const tHi = bank[pos - 0x8000] ?? 0;
       pos++;
 
-      const trackPtr = tLo | (tHi << 8);
-      const slot = 7 - ch; // 高位通道映射到低 slot
+      // trackPtr 是 CPU 地址 → 转数组偏移 (SE 数据区 $8000-$9FFF)
+      const trackPtr = (tLo | (tHi << 8)) - 0x8000;
+      if (trackPtr < 0 || trackPtr >= bank.length) continue;
 
-      // 清除 per-channel 状态
-      this._chParams[slot] = this._makeChannelParams();
-      this._chTypes[slot] = 0; // type=0→无输出，直到 $EC 命令激活
-      this._baseFreqLo[slot] = 0;
-      this._baseFreqHi[slot] = 0;
-      this._seqIndexes[slot] = 0;
-      this._volModes[slot] = 0x0F;
+      // 清除 per-channel 状态 (通道块索引 = ch)
+      this._chParams[ch] = this._makeChannelParams();
+      this._chTypes[ch] = 0; // type=0→无输出，直到 $EC 命令激活
+      this._baseFreqLo[ch] = 0;
+      this._baseFreqHi[ch] = 0;
+      this._seqIndexes[ch] = 0;
+      this._volModes[ch] = 0x0F;
 
       // 存 track ptr
-      this._trackPtrs[slot] = trackPtr;
-      this._trackBanks[slot] = seId; // track bank identification
+      this._trackPtrs[ch] = trackPtr;
+      this._trackBanks[ch] = seId; // track bank identification
 
       // 初始化 volume=0x0F, duration=1
-      const cp = this._chParams[slot];
+      const cp = this._chParams[ch];
       cp.volRaw = 0x0F;
       cp.durLo = 1;
       cp.durHi = 0;
 
-      // 设 $0706 bitmask
-      this._chActive |= (1 << slot);
+      // 设 $0706 bitmask (bit = ch)
+      this._chActive |= (1 << ch);
     }
   }
 
@@ -386,7 +395,7 @@ export class Bank12AudioService {
       // 原始数据中的指针是 Bank15 CPU 地址 ($A000-$BFFF)，转成数组偏移
       const cpuPtr = (tLo | (tHi << 8)) & 0xFFFF;
       const trackPtr = cpuPtr - 0xA000; // $A000 → 0, $B000 → 0x1000
-      const slot = 7 - (ch & 0x07);
+      const slot = ch & 0x07;
 
       this._chParams[slot] = this._makeChannelParams();
       this._chTypes[slot] = 0;
@@ -460,22 +469,20 @@ export class Bank12AudioService {
   // ──────────────────────────────────────────────
 
   /**
-   * 对应 $8063: LDX #$05 → loop X=5→0。
-   * 遍历活跃通道: dec 剩余时长 → 到期时读下一个音序字节。
+   * 对应 ROM $80CA-$811B: 遍历 8 个活跃通道。
+   * $80CA: LDA $0706 → LSR → 逐位检查 bit0-7 (通道 0-7)。
+   * 每通道: DEC $0707 (dur) → 到期 JSR $83CB 读音序;
+   *         DEC $0709 (nextDur) → 到期读下一音符 → JSR $81DB 音量。
    */
   private _processActiveChannels(): void {
-    for (let x = 5; x >= 0; x--) {
-      const req = this._reqQueue[x];
-      if (req !== 0) continue;
+    for (let ch = 0; ch < 8; ch++) {
+      // 对应 $80CA: LSR $0706 — bit 0 = 通道 0
+      if (!(this._chActive & (1 << ch))) continue;
 
-      // Check channel active bit
-      if (!(this._chActive & (1 << x))) continue;
+      this._curChIndex = ch;
+      const cp = this._chParams[ch];
 
-      this._curChIndex = x;
-      const cp = this._chParams[x];
-
-      // 对应 $80BA: 检查 $0706 bitmask
-      // DEC $0707: 减去剩余时长
+      // 对应 $80D9: DEC $0707 (剩余时长 lo)
       cp.durLo--;
       if (cp.durLo < 0) {
         cp.durLo = 0xFF;
@@ -485,12 +492,12 @@ export class Bank12AudioService {
         }
       }
 
-      // 时长到期？ → $83CB 读下一个音序字节
+      // 时长到期 → $80DE: JSR $83CB 读下一个音序字节
       if (cp.durLo === 0 && cp.durHi === 0) {
-        this._readNextSeqByte(x);
+        this._readNextSeqByte(ch);
       }
 
-      // DEC $0709: 音符时长
+      // 对应 $80E3: DEC $0709 (音符时长)
       cp.nextDurLo--;
       if (cp.nextDurLo < 0) {
         cp.nextDurLo = 0xFF;
@@ -501,8 +508,8 @@ export class Bank12AudioService {
       }
 
       if (cp.nextDurLo === 0 && cp.nextDurHi === 0) {
-        // 读下一个音符 → $81DB 音量处理
-        this._readNextNote(x);
+        // $80E8: 读下一个音符 → $8109: JSR $81DB 音量处理
+        this._readNextNote(ch);
       }
     }
   }
@@ -652,7 +659,7 @@ export class Bank12AudioService {
     case 0xE4: { // 子调用
       const subLo = bankData[tp] ?? 0;
       const subHi = bankData[tp + 1] ?? 0x80;
-      this._trackPtrs[chIdx] = subLo | (subHi << 8);
+      this._trackPtrs[chIdx] = this._cpuToOffset(subLo | (subHi << 8), chIdx);
       break;
     }
     case 0xE5: // 返回 — 简化: 丢弃
@@ -662,9 +669,9 @@ export class Bank12AudioService {
       {
         const jLo = bankData[tp] ?? 0;
         const jHi = bankData[tp + 1] ?? 0x80;
-        // CPU 地址 → 数组偏移
+        // CPU 地址 → 数组偏移 (按 track 所属 bank 换算)
         const cpuPtr = jLo | (jHi << 8);
-        this._trackPtrs[chIdx] = cpuPtr - 0xA000;
+        this._trackPtrs[chIdx] = this._cpuToOffset(cpuPtr, chIdx);
       }
       break;
 
@@ -762,44 +769,38 @@ export class Bank12AudioService {
   /**
    * 对应 ROM $811D-$816D 通道组处理 + $816E-$81DA APU 寄存器写入。
    *
-   * ROM 将 $0706 活跃位掩码分为 3 组，每组对应一个 APU 物理通道：
-   *   - 掩码 $11 (ch0/ch4) → $4004 (SQ2)
-   *   - 掩码 $22 (ch1/ch5) → $4008 (TRI)
-   *   - 掩码 $44 (ch2/ch6) → $400C (NOISE)
+   * ROM $8131-$8161: F2=3,2,1,0 循环 4 次, 掩码 0x11/0x22/0x44/0x88
+   * (通道对 {ch, ch+4})。X = (3^F2)*4 → $4000/$4004/$4008/$400C:
+   *   - 掩码 $11 (ch0/ch4) → $4000 (SQ1)   去重: 是 ($07E0+3)
+   *   - 掩码 $22 (ch1/ch5) → $4004 (SQ2)   去重: 是 ($07E0+2)
+   *   - 掩码 $44 (ch2/ch6) → $4008 (TRI)   $80|vol, 无去重
+   *   - 掩码 $88 (ch3/ch7) → $400C (NOISE) 无去重
    *
    * $816E 逻辑:
-   *   - $4000/$4004/$400C: $30 | (vol_control_byte & 0x0F)  [常数音量+Duty=00]
-   *   - $4008 (TRI):           $80 | (vol_control_byte & 0x0F)  [线性计数器加载]
-   *   - $4001/$4005 (Sweep):   $08 [关闭 sweep]，由 offset+5 bit 4 控制
-   *   - $4002/$4006/$400A:     freqRawLo (offset+7)
-   *   - $4003/$4007/$400B:     (freqRawHi & 0x7F) | $18, 仅 freqRawHi bit7 置位时写入
-   *   - $4003 去重:            SQ2 组与上次 $4003 比较，相同则跳过
+   *   - 读通道块 +6 (volRaw): SQ/NOISE → $30|vol, TRI → $80|vol
+   *   - 块 +5 bit4=0 → 写 $4001/$4005 sweep disable ($08)
+   *   - 块 +7 → $4002 freqLo; 块 +8 bit7=1 (key-on) → $4003 = (freqHi&$7F)|$18
+   *   - 去重 (FB=2/3): 与上次 $4003 相同则跳过
    */
   private _writeApuGrouped(events: ApuWriteEvent[]): void {
-    // ROM $8366: LDX #$0F / STX $4015 — 启用所有 4 个物理通道
-    // $4015 bits: 0=SQ1, 1=SQ2, 2=TRI, 3=NOISE
+    // ROM $83C2: $0F → $4015 (启用所有通道)
     if (this._chActive !== 0) {
       events.push({ addr: 0x4015, value: 0x0F });
     }
 
-    // ROM 3 组通道定义 ($8131-$815F loop + $816E EOR #$03 logic):
-    //   迭代0 (mask 0x11, F2=0, EOR→X=$0C): $400C (NOISE)  ← ch0/ch4
-    //   迭代1 (mask 0x22, F2=1, EOR→X=$08): $4008 (TRI)    ← ch1/ch5
-    //   迭代2 (mask 0x44, F2=2, EOR→X=$04): $4004 (SQ2)    ← ch2/ch6
-    // $4000 (SQ1) 未使用。
-    // 去重仅对 SQ2 组 ($81C5: CMP $07E0,Y, Y=2)
     const groups = [
-      { mask: 0x11, base: 0x400C, chLo: 0, chHi: 4, isTri: false, dedupIdx: -1 },
-      { mask: 0x22, base: 0x4008, chLo: 1, chHi: 5, isTri: true,  dedupIdx: -1 },
-      { mask: 0x44, base: 0x4004, chLo: 2, chHi: 6, isTri: false, dedupIdx: 2 },
+      { mask: 0x11, base: 0x4000, chLo: 0, chHi: 4, isTri: false, fb: 3 }, // SQ1
+      { mask: 0x22, base: 0x4004, chLo: 1, chHi: 5, isTri: false, fb: 2 }, // SQ2
+      { mask: 0x44, base: 0x4008, chLo: 2, chHi: 6, isTri: true,  fb: 1 }, // TRI
+      { mask: 0x88, base: 0x400C, chLo: 3, chHi: 7, isTri: false, fb: 0 }, // NOISE
     ];
 
     for (const g of groups) {
-      const active = this._chActive & g.mask;
-      if (active === 0) continue;
+      const pair = this._chActive & g.mask;
+      if (pair === 0) continue;
 
-      // 选活跃的那个子通道 (chLo / chHi)
-      const useHi = (active & 0xF0) !== 0;
+      // ROM $8138: AND #$0F → 低 nibble 非零用低通道块, 否则高通道块
+      const useHi = (pair & 0x0F) === 0;
       const chIdx = useHi ? g.chHi : g.chLo;
       if (!(this._chActive & (1 << chIdx))) continue;
       if (this._chTypes[chIdx] === 0) continue;
@@ -811,38 +812,32 @@ export class Bank12AudioService {
         this._calcFreqType1(chIdx);
       }
 
-      // $4000/$4004/$4008/$400C: vol/env
-      // ROM: $816E 读 channel 块 offset+6 = vol_control_byte
-      // TRI: $80|vol,  SQ/NOISE: $30|vol
-      const volCtrl = cp.volRaw & 0x0F;
-      const reg0 = g.isTri ? (0x80 | volCtrl) : (0x30 | volCtrl);
+      // $816E: vol = 块+6, TRI → $80|vol, 其他 → $30|vol
+      const reg0 = g.isTri ? (0x80 | (cp.volRaw & 0x0F)) : (0x30 | (cp.volRaw & 0x0F));
       events.push({ addr: g.base, value: reg0 });
 
-      // $4001/$4005: sweep off ($08) — ROM $8191-$819E, 仅 SQ 通道
-      // SQ2 组 (base=$4004): 写 sweep disable
-      if (g.base === 0x4004) {
+      // $8191-$819E: sweep — 块+5 bit4=0 → 写 $4001 sweep disable
+      // (仅 SQ 通道; 块+5 对应 freqHi)
+      if (!g.isTri && (cp.freqHi & 0x10) === 0) {
         events.push({ addr: g.base + 1, value: 0x08 });
       }
 
-      // $4002/$4006/$400A: freqLo from offset+7 (freqRawLo)
+      // $81B1-$81B4: $4002 = 块+7 (freqRawLo)
       events.push({ addr: g.base + 2, value: cp.freqRawLo });
 
-      // $4003/$4007/$400B: freqHi from offset+8 (freqRawHi)
-      // ROM: ORA #$18 设置 bits 3-4 (Length Counter 索引)
-      //      仅 bit7=1 (key-on) 时才写入
+      // $81A7-$81DA: 块+8 bit7=1 (key-on) 时写 $4003
       if (cp.freqRawHi & 0x80) {
         const reg3 = (cp.freqRawHi & 0x7F) | 0x18;
+        // 清除 key-on 标识 (ROM: AND #$7F 后写回)
+        cp.freqRawHi &= 0x7F;
 
-        // ROM: 仅 SQ2 ($F2=2) 做 $4003 去重 (CMP $07E0,Y)
-        if (g.dedupIdx >= 0) {
-          const lastV = this._last4003[g.dedupIdx];
-          if (reg3 === lastV) continue; // 无变化，跳过整组
-          this._last4003[g.dedupIdx] = reg3;
+        // $81BD-$81C8: 去重 — FB=0/1 直写, FB=2/3 与 $07E0[FB] 比较
+        if (g.fb >= 2) {
+          if (this._last4003[g.fb] === reg3) continue; // 无变化，跳过整组
+          this._last4003[g.fb] = reg3;
         }
 
         events.push({ addr: g.base + 3, value: reg3 });
-        // 清除 key-on 标识 (ROM: AND #$7F 后写回)
-        cp.freqRawHi &= 0x7F;
       }
     }
   }
@@ -866,15 +861,29 @@ export class Bank12AudioService {
     };
   }
 
-  /** 获取通道对应的音频 Bank 数据 */
+  /**
+   * 获取通道对应的音频 Bank 数据。
+   * BGM (0x31-0x35) 音序在 Bank 15; SE (1-0x1F) 音序在 Bank 12。
+   */
   private _getBankForTrack(chIdx: number): number[] {
-    const seId = this._trackBanks[chIdx];
-    return this._bank15; // 简化: 当前仅支持 Bank 15
+    const id = this._trackBanks[chIdx];
+    if (id >= 0x31 && id <= 0x35) return this._bank15;
+    return this._bank12;
   }
 
-  /** Bank 12 自身数据 (调色板等，暂空) */
+  /** Bank 12 自身数据 (SE 指针表 + 音序数据) */
   private _bank12Data(): number[] {
-    return [];
+    return this._bank12;
+  }
+
+  /**
+   * CPU 地址 → 数组偏移。
+   * BGM (bank15) 映射 $A000-$BFFF, SE (bank12) 映射 $8000-$9FFF。
+   */
+  private _cpuToOffset(cpuAddr: number, chIdx: number): number {
+    const id = this._trackBanks[chIdx];
+    if (id >= 0x31 && id <= 0x35) return cpuAddr - 0xA000;
+    return cpuAddr - 0x8000;
   }
 
   /** 初始化 $31 请求的音量值 */

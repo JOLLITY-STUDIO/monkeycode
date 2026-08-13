@@ -27,9 +27,9 @@ if (realBanksMatch) {
 // 3. 检查 NES_PRG_ROM 构建逻辑
 console.log(`\nNES_PRG_ROM 构建方式: ${content.includes('buildPRG') ? 'buildPRG() 函数' : '直接导出'}`);
 
-// 4. 检查 BGM00 数据填充
-const bgmLine = content.match(/fillBGM00Bank\(_bgm15\)/);
-console.log(`Bank 15 数据源: ${bgmLine ? 'BGM00 数据填充' : '未找到填充调用'}`);
+// 4. 检查 Bank 15 数据源
+const b15Line = content.match(/15:\s*_prg15/);
+console.log(`Bank 15 数据源: ${b15Line ? 'prg-bank-15 ROM' : '未找到 Bank 15 数据'}`);
 
 // 5. 尝试以 Node.js 方式加载并运行
 console.log('\n=== 尝试加载 TypeScript 模块 ===');

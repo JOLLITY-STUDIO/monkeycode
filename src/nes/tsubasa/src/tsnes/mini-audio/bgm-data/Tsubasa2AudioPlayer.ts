@@ -18,6 +18,9 @@
  */
 import PAPU from '../../src/papu/index';
 import { TIMING_SUB_TABLES } from './_timing_data';
+// Bank 12 原始数据 — SE 音效 header 表 ($8BDA) 与音效轨道数据 ($8000-$9FFF)
+// 直接消费结构化数据，无需 MMC3 bank 切换/内存窗口模拟。
+import PRG_BANK_12 from '../rom-data/prg-bank-12';
 
 // ════════════════════════════════════════════════
 // 常量 (Bank 12 ROM)
@@ -197,6 +200,21 @@ export class Tsubasa2AudioPlayer {
   /** one-shot mode: $FF stops channel instead of looping; chMask→0 stops player */
   private _oneShot = false;
 
+  /**
+   * 音频请求槽位 ($0700-$0705, 6 个)。
+   * 模拟器 $8000 入口第二个循环 ($8061-$80B8) 每帧从高到低遍历:
+   *   0 或 >=0x72 → 忽略(不清理, 与 ASM 一致)
+   *   0x31      → 特殊重置 ($07CF-$07DE 音量衰减)
+   *   其它       → JSR $8349 初始化对应 SE/BGM, 清槽
+   */
+  private slots = new Uint8Array(6);
+
+  /** Bank 12 数据源 — SE header 表与音效轨道 (直接 import, 无 ROM 读取) */
+  private seBankData: Uint8Array | null = null;
+
+  /** 标记该通道当前由 SE 占用 (数据来自 bank12, 轨道位置 = bank offset) */
+  private seChannel = new Array<boolean>(NUM_CHANNELS).fill(false);
+
   /** Track start positions in sharedData (for restart on end-of-data) */
   private startOffsets: number[] = [0, 0, 0, 0, 0, 0, 0, 0];
 
@@ -260,6 +278,8 @@ export class Tsubasa2AudioPlayer {
     for (let i = 0; i < NUM_CHANNELS; i++) {
       this.tracks.push(null);
     }
+    // Bank 12 (SE 数据源) — 直接拷贝结构化数据
+    this.seBankData = new Uint8Array(PRG_BANK_12);
   }
 
   setSampleCallback(cb: ((l: number, r: number) => void) | null): void {
@@ -273,6 +293,22 @@ export class Tsubasa2AudioPlayer {
    */
   setOneShot(enabled: boolean): void {
     this._oneShot = enabled;
+  }
+
+  /**
+   * 请求播放一个 SE 音效 (模拟 $0700 槽位写入)。
+   * req: 1-0x71。模拟器对应 $8000 分发: <0x72 → $8349 初始化;
+   *     0x31 → 特殊重置; >=0x72 → 忽略。
+   * 数据来自 Bank 12 $8BDA header 表, 与模拟器完全一致。
+   */
+  setSeRequest(req: number): void {
+    this.requestSlot(0, req);
+  }
+
+  /** 向指定槽位 (0-5) 写入音频请求 (0 = 清空) */
+  requestSlot(idx: number, req: number): void {
+    if (idx < 0 || idx > 5) return;
+    this.slots[idx] = req & 0xFF;
   }
 
   /**
@@ -292,7 +328,7 @@ export class Tsubasa2AudioPlayer {
    * 通道映射: SQ1→ch4, SQ2→ch5, TRI→ch6, NOISE→ch7
    * 
    * @param sharedRaw    可选: 完整BGM数据，用于CALL/JUMP NES地址转换
-   * @param nesBase      sharedRaw[0] 对应的 NES 地址 (RAW_START, e.g. 0xB7AD for BGM00)
+   * @param nesBase      sharedRaw[0] 对应的 NES 地址 (RAW_START, e.g. 0xB7AD for 0x58)
    * @param headerOffset header 在 sharedRaw 内的偏移 (initPtr - RAW_START)，
    *                     默认 0。含共享乐句区的 SID 轨道 > 0（E8/E9 目标低于 initPtr）。
    */
@@ -321,7 +357,7 @@ export class Tsubasa2AudioPlayer {
 
     // Parse header from shared data to get NES address entry points.
     // Two formats:
-    //   BGM00: [ch4 lo hi] [ch5 lo hi] [ch6 lo hi] [ch7 lo hi] [FF] …data (chNum=4-7)
+    //   0x58:  [ch4 lo hi] [ch5 lo hi] [ch6 lo hi] [ch7 lo hi] [FF] …data (chNum=4-7)
     //   SID:   [FF] [ch0 lo hi] [ch1 lo hi] [ch2 lo hi] [ch3 lo hi] [FF] …data (chNum=0-3)
     // The header NES addresses are the Bank 12 engine's channel start positions.
     // headerOffset: 含共享乐句区的 SID 轨道 raw 起始低于 header，从 headerOffset 起读。
@@ -339,7 +375,7 @@ export class Tsubasa2AudioPlayer {
         const hi = this.sharedData[pos + 2];
         pos += 3;
 
-        const chNum = byte0; // 4-7 for BGM00, 0-3 for SID
+        const chNum = byte0; // 4-7 for 0x58, 0-3 for SID
         const nesAddr = lo | (hi << 8);
         const off = this._nesAddrToOffset(nesAddr);
 
@@ -405,6 +441,144 @@ export class Tsubasa2AudioPlayer {
     this.w.chMask |= bit;
   }
 
+  // ════════════════════════════════════════════════
+  // $8002 入口 — 音频请求槽位分发 (第二个循环 $8061-$80B8)
+  // ════════════════════════════════════════════════
+
+  /**
+   * 遍历 6 个请求槽位 (X=5→0), 严格对照 ASM:
+   *   $8063 LDA $0700,X; BEQ $80B7   (0 → 跳过)
+   *   $8068 CMP #$72;   BCS $80B7   (>=0x72 → 跳过, 不清理)
+   *   $806C CMP #$31;   BNE $80AF   (!=0x31 → JSR $8349)
+   *   (==0x31) 特殊重置 → JMP $80B7
+   *   $80AF JSR $8349; STA $0700,X (清槽)
+   *   $80B7 DEX; BPL $8063
+   */
+  private _processSlots(): void {
+    const data = this.seBankData;
+    if (!data) return;
+    for (let x = 5; x >= 0; x--) {
+      const val = this.slots[x];
+      if (val === 0) continue;
+      if (val >= 0x72) continue;   // 忽略 (ASM 不清槽)
+      if (val === 0x31) {
+        this._slotReset();
+      } else {
+        this._initSe(val);
+      }
+      this.slots[x] = 0;
+    }
+  }
+
+  /**
+   * $8070 特殊重置: 音量衰减计数器全部重载。
+   *   $07CF-$07DE: 偶/奇地址 = 0x19, 仅 $07D0/$07D4/$07D8/$07DC = 0x0A
+   *   → volDecay/volDecayReload[ch]: ch∈{1,5} = 0x0A, 其余 0x19
+   */
+  private _slotReset(): void {
+    for (let ch = 0; ch < NUM_CHANNELS; ch++) {
+      const v = (ch === 1 || ch === 5) ? 0x0A : 0x19;
+      this.w.volDecay[ch] = v;
+      this.w.volDecayReload[ch] = v;
+    }
+  }
+
+  /**
+   * $8349 — SE/歌曲初始化 (来自槽位请求)。
+   *   Y=req-1; A=(req-1)*2; 查 Bank12 $8BDA 表 → header 指针 (NES 地址)
+   *   header[0] bit7 置位 → 哨兵 → $4015=0x0F 返回
+   *   否则逐条 [chNum trackLo trackHi] 初始化通道 (物理通道号, 不加 +4!),
+   *   直到遇到 0xFF 哨兵。
+   */
+  private _initSe(req: number): void {
+    const data = this.seBankData;
+    if (!data) return;
+
+    // $8354: LDA $8BDA,Y; LDA $8BDB,Y → header 指针
+    const idx = ((req - 1) * 2) & 0xFF;
+    const t = 0xBDA + idx;                    // $8BDA 表位于 bank offset 0xBDA
+    if (t + 1 >= data.length) return;
+    const headerPtr = data[t] | (data[t + 1] << 8);
+
+    // NES $8000-$9FFF → bank offset
+    let pos = headerPtr - 0x8000;
+    if (pos < 0 || pos >= data.length) return;
+
+    // $8360: LDA (F0),Y; BPL → bit7 置位 = 哨兵
+    if (data[pos] & 0x80) {
+      this.papu.writeReg(0x4015, 0x0F);
+      return;
+    }
+
+    // $8360-$83C9: 循环读取 [chNum trackLo trackHi], 0xFF 结束
+    while (pos + 2 < data.length) {
+      const chNum = data[pos];
+      if (chNum & 0x80) break;   // 0xFF 哨兵
+      const trackLo = data[pos + 1];
+      const trackHi = data[pos + 2];
+      pos += 3;
+      if (chNum > 7) continue;
+      const trackAddr = trackLo | (trackHi << 8);
+      const trackOff = trackAddr - 0x8000;
+      if (trackOff < 0 || trackOff >= data.length) continue;
+      this._initSeChannel(chNum, trackOff);
+    }
+  }
+
+  /**
+   * $8349 单通道初始化 (SE 版)。
+   * 关键差异: SE 使用物理通道号 chNum 0-7 (直接映射到内部块 $0727+ch*16),
+   * 不像 BGM/SID 那样 +4 映射。SE 结束后低通道让位给 BGM 高通道。
+   */
+  private _initSeChannel(ch: number, startOff: number): void {
+    const blk = this.blocks[ch];
+
+    // $8374-$8391: 清零通道参数
+    this.w.portamentoVal[ch] = 0;
+    this.w.chType[ch] = 0;
+    this.w.portamentoEn[ch] = 0;
+    this.w.volDecay[ch] = 0;
+    this.w.volDecayReload[ch] = 0;
+    this.w.seqIdx[ch] = 0;
+    this.w.freqDirty[ch] = 0;
+    this.w.notePlayed[ch] = 0;
+
+    // $8394-$83AE: 轨道指针 / 时序指针 / 栈指针
+    blk.trackLo = startOff & 0xFF;
+    blk.trackHi = (startOff >> 8) & 0xFF;
+    blk.timingLo = 0;
+    blk.timingHi = 0;
+    blk.timingOff = 0;
+    blk.stkPtr = 0x0F;   // $0730+X = $0F
+    // volCtrl 默认值来自 Bank31 NMI 初始化 (按物理通道):
+    //   ch%4==1(SQ2 duty) → 0x80; ch%4==2(TRI linear) → 0x0F; 其余 0
+    const pm = ch & 3;
+    blk.volCtrl = (pm === 1) ? 0x80 : (pm === 2) ? 0x0F : 0x00;
+    blk.apuVol = 0x30;
+    blk.freqLo = 0;
+    blk.freqHi = 0x80;
+
+    // $83B6-$83B8: durLo = 1 (首帧立即读轨道)
+    this.w.durLo[ch] = 1;
+    this.w.durHi[ch] = 1;
+    this.w.noteDur[ch] = 1;
+    this.w.nextDurHi[ch] = 0;
+
+    this.tracks[ch] = this.seBankData!;
+    this.startOffsets[ch] = startOff;
+    this.seChannel[ch] = true;
+    this._callStacks[ch] = [];
+    this._loopStacks[ch] = [];
+
+    // $83BE-$83C5: chMask |= (1 << ch)
+    this.w.chMask |= (1 << ch);
+
+    // $837C-$8391: 全局清零
+    this.w.last4003[2] = 0;
+    this.w.last4003[3] = 0;
+    this.w.dmcActive = 0;
+  }
+
   start(): boolean {
     if (this.w.chMask === 0) return false;
     this.isPlaying = true;
@@ -435,6 +609,8 @@ export class Tsubasa2AudioPlayer {
       this.blocks[i] = createChBlock();
       this.tracks[i] = null;
     }
+    this.seChannel.fill(false);
+    this.slots.fill(0);
     this.frameCount = 0;
   }
 
@@ -443,6 +619,12 @@ export class Tsubasa2AudioPlayer {
     // Rebuild chMask and reset all active channels to start positions
     this.w.chMask = 0;
     for (let ch = 0; ch < NUM_CHANNELS; ch++) {
+      if (this.seChannel[ch]) {
+        // SE 通道不参与 BGM 循环重启 — 丢弃, 等待下一次请求
+        this.seChannel[ch] = false;
+        this.tracks[ch] = null;
+        continue;
+      }
       if (!this.tracks[ch]) continue;
       const blk = this.blocks[ch];
       const startOff = this.startOffsets[ch] || 0;
@@ -498,6 +680,11 @@ export class Tsubasa2AudioPlayer {
 
   tick(): void {
     if (!this.isPlaying) return;
+
+    // $8000 入口第二个循环: 遍历 6 个音频请求槽位 (X=5→0)。
+    // 需在 chMask 检查之前处理 — SE 请求可能重新激活通道。
+    this._processSlots();
+
     if (this.w.chMask === 0) {
       if (this._oneShot) {
         this.isPlaying = false;
@@ -622,13 +809,19 @@ export class Tsubasa2AudioPlayer {
     // $83CB-$83D1: AND #$CF on vol_ctrl (clear bits 4+5)
     blk.volCtrl &= 0xCF;
 
-    // Use shared data if available (for CALL/JUMP NES address resolution)
-    const data = this.sharedData || track;
+    // Use shared data if available (for CALL/JUMP NES address resolution).
+    // SE 通道使用 Bank 12 数据 (轨道位置 = bank offset), 忽略 sharedData。
+    const data = this.seChannel[ch] && this.seBankData ? this.seBankData : (this.sharedData || track);
     const maxLen = data.length;
 
     while (true) {
       const pos = blk.trackLo | (blk.trackHi << 8);
       if (pos >= maxLen) {
+        if (this.seChannel[ch]) {
+          // SE 数据越界 (正常以 $FF 结束) → 停止该通道, 让位给同组高通道
+          this.w.chMask &= ~(1 << ch);
+          return;
+        }
         // End of track data — restart from start offset (song loop)
         let restartOff = this.startOffsets[ch] || 0;
         // Skip leading 0xFF sentinel byte(s) — header entry points AT the sentinel
@@ -682,10 +875,16 @@ export class Tsubasa2AudioPlayer {
       }
 
       // $83ED-$8402: b ∈ [$80,$DF] = 时长前缀
+      // 只写 durLo/noteDur；不写 durHi！
+      // 原引擎中 durHi 由 timing table（E0）独立控制（每帧消耗一个 entry，dh=entry.durLo），
+      // 时长前缀不会覆写它。此前误写了 durHi=dur，导致：
+      //   1) 首个鼓点后衰减延迟 6 帧（F85-F90 音量保持 0x39）
+      //   2) 滚奏子程序命中（$BFD8 的 0x87 前缀）后下一鼓点静音（F112 漏鼓点）
+      // 对比 _diag_noise_v4_out.txt 的 ndh 序列 15,13,11,9,7,5,3 与 emu 的
+      // $400C 衰减 39,37,35,33,31,30,30 完全吻合（每条目 durLo=1 → 每帧消费一次）。
       const durIdx = b & 0x3F;
       const dur = DUR_TABLE[durIdx] || 1;
       this.w.durLo[ch] = dur;
-      this.w.durHi[ch] = dur;
       this.w.noteDur[ch] = dur;  // save for note reuse (unaffected by timing table reload)
       // loop to read next byte (which should be a note byte)
     }
@@ -884,7 +1083,9 @@ export class Tsubasa2AudioPlayer {
       case 0x08: {
         const lo = read();
         const hi = read();
-        const target = this._nesAddrToOffset(lo | (hi << 8));
+        const nesAddr = lo | (hi << 8);
+        // SE 轨道使用 Bank 12 NES 地址 ($8000-$9FFF) → bank offset
+        const target = this.seChannel[ch] ? (nesAddr - 0x8000) : this._nesAddrToOffset(nesAddr);
         blk.trackLo = target & 0xFF;
         blk.trackHi = (target >> 8) & 0xFF;
         return true;
@@ -894,7 +1095,8 @@ export class Tsubasa2AudioPlayer {
       case 0x09: {
         const lo = read();
         const hi = read();
-        const target = this._nesAddrToOffset(lo | (hi << 8));
+        const nesAddr = lo | (hi << 8);
+        const target = this.seChannel[ch] ? (nesAddr - 0x8000) : this._nesAddrToOffset(nesAddr);
         // Push current position as return address
         this._pushReturn(blk);
         blk.trackLo = target & 0xFF;
@@ -940,28 +1142,24 @@ export class Tsubasa2AudioPlayer {
         return true;
       }
 
-      // $EE → $8690: CLEAR_CHANNEL_TYPE (ram_07AF=0)
+      // $EE → $8707: NOP (INY;RTS)
       case 0x0E: {
-        this.w.chType[ch] = 0;
-        this.w.seqIdx[ch] = 0;
         return true;
       }
 
-      // $EF → $8699: DMC init A
+      // $EF → $8690: CLEAR_CHANNEL_TYPE (ram_07AF=0)
       case 0x0F: {
-        this._dmcInit(0x00, 0x0C);
+        this.w.chType[ch] = 0;
         return true;
       }
 
-      // $F0 → $86B8: DMC init B
+      // $F0 → $8709: NOP (INY;INY;INY;RTS)
       case 0x10: {
-        this._dmcInit(0x03, 0x20);
         return true;
       }
 
-      // $F1 → $86D7: DMC init C
+      // $F1 → $8707: NOP (INY;RTS)
       case 0x11: {
-        this._dmcInit(0x0B, 0x13);
         return true;
       }
 
@@ -987,23 +1185,33 @@ export class Tsubasa2AudioPlayer {
         return true;
       }
 
-      // $F9 → In BGM00 data used as REST (short rest, 1 frame)
+      // $F9 → $8699: DMC init A — 写 $4010=$0F/$4012=$00/$4013=$0C，不消费参数！
+      // 后随字节是音符数据（NOISE 通道鼓点）
       case 0x19: {
-        blk.volCtrl |= 0x20;
-        this.w.durLo[ch] = 1;
+        this._dmcInit(0x00, 0x0C);
         return true;
       }
 
-      // $FA → REST_DURATION (1B duration)
+      // $FA → $86B8: DMC init B — 写 $4010=$0F/$4012=$03/$4013=$20，不消费参数！
+      // 后随字节是音符数据 → 写 $400E → 鼓点周期递增（Tom 下滑音）
       case 0x1A: {
-        const dur = read();
-        blk.volCtrl |= 0x20;
-        this.w.durLo[ch] = dur;
+        this._dmcInit(0x03, 0x20);
         return true;
       }
 
-      // $FB-$FE: NOP / various DMC variants
-      case 0x1B: case 0x1C: case 0x1D: case 0x1E: {
+      // $FB → $86D7: DMC init C — 写 $4010=$0F/$4012=$0B/$4013=$13，不消费参数
+      case 0x1B: {
+        this._dmcInit(0x0B, 0x13);
+        return true;
+      }
+
+      // $FC/$FD → $8707: NOP
+      case 0x1C: case 0x1D: {
+        return true;
+      }
+
+      // $FE → $86F6: 读取 1 字节存入 ram_07CF/07D7（0x58 未使用）
+      case 0x1E: {
         return true;
       }
 
@@ -1012,8 +1220,9 @@ export class Tsubasa2AudioPlayer {
       // NOTE: Header entry point often points at the trailing 0xFF sentinel byte
       // (off-by-one vs actual data). After restart, advance past any leading 0xFF.
       case 0x1F: {
-        if (this._oneShot) {
-          // One-shot mode: clear channel from mask → stops this channel permanently
+        if (this._oneShot || this.seChannel[ch]) {
+          // One-shot mode / SE 通道: 清除该通道 bit → 同组高通道 (BGM) 恢复。
+          // 模拟器 $8655: chMask &= 0x7F (当前通道 bit 经 Phase1 旋转后位于 bit7)。
           this.w.chMask &= ~(1 << ch);
           return false;
         }
@@ -1248,25 +1457,24 @@ export class Tsubasa2AudioPlayer {
     }
 
     // $81A7-$81DA: 写入频率
-    // Bank 12 ASM: $81A7: LDA $51,x; $81A9: BPL skip — check freqHi bit7 directly
-    if (blk.freqHi & 0x80) {
-      // $81B1: LDA (ram_00F0),Y → read freqHi
-      // $81B3: AND #$7F → clear bit7 (dirty flag)
-      // $81B5: STA (ram_00F0),Y → write back cleared freqHi
-      // $81B8: AND #$07 → keep only bits 0-2
-      // $81BA: ORA #$18 → set length counter
-      // $81BC: STA $4003,X
-      blk.freqHi &= 0x7F;  // clear bit7 dirty flag
-      this.w.freqDirty[ch] = 0;
+    // Bank 12 ASM 关键分支: $8195 BNE $81A7
+    //   - vol_ctrl bit4=1 (sweep 使能): 走 $81A7 — 检查 freqHi bit7,
+    //     bit7=1 则 AND #$7F 清除 dirty 后写回 ($81AD-$81AF), 再写频率。
+    //   - vol_ctrl bit4=0 (sweep 禁用): JMP $81B1 — 跳过 bit7 清除,
+    //     freqHi 原样 (含 bit7) | 0x18 写入 $4003 → 如 0x80|0x18=0x98 (LC=19)。
+    //   这正是 NOISE 鼓点 (data[5] bit4=0) 的路径, player 之前无条件
+    //   清除 bit7 导致 $400F 恒为 0x18 (LC=3), 与 emu 的 0x98 全部不匹配。
+    const sweepEnabled = (blk.volCtrl & 0x10) !== 0;
 
-      // $81B3-$81B5: freq_lo → $4002+X
+    if (!sweepEnabled) {
+      // $8197-$81A1: sweep 禁用 → $4001+X=0x08, muteFlags=0x08, JMP $81B1
+      // 注意: 此路径不做 freqHi bit7 检查, 总是写频率 (无 BPL 跳过)
       this.papu.writeReg(apuAddr + 2, blk.freqLo);
 
-      // $81B8-$81CA: (freqHi & 7) | 0x18 → $4003+X
-      const fh = blk.freqHi & 7;
-      const fhLen = fh | 0x18;
+      // $81B9-$81BB: freqHi 不清除 → freqHi | 0x18
+      const fhLen = blk.freqHi | 0x18;
 
-      // $81C5-$81C8: SQ 通道做 $4003 去重；NOISE/TRI 不做
+      // $81BD-$81C8: group 0/1 不比较直接写; group 2/3 比较上次值
       if (group >= 2 && fhLen === this.w.last4003[group]) {
         return;
       }
@@ -1274,11 +1482,42 @@ export class Tsubasa2AudioPlayer {
       this.papu.writeReg(apuAddr + 3, fhLen);
       this.w.last4003[group] = fhLen;
 
-      // $81D0-$81D7: muteFlags==0 时清零 last4003 强制下帧重新触发 $4003；
-      // muteFlags!=0 时保留绕过 dedup 限制（sweep 未启用时 dedup）
+      // $81D0-$81D7: muteFlags==0 → 清零 last4003 强制下帧重写
       if (this.w.muteFlags[group] === 0) {
         this.w.last4003[group] = 0;
       }
+      return;
+    }
+
+    // $81A7: sweep 使能路径
+    // $81A9-$81AB: LDA freqHi; BPL → bit7=0 (无 dirty) 直接 RTS
+    if (!(blk.freqHi & 0x80)) {
+      return;
+    }
+
+    // $81AD-$81AF: AND #$7F 清除 bit7 并写回
+    blk.freqHi &= 0x7F;
+    this.w.freqDirty[ch] = 0;
+
+    // $81B3-$81B5: freq_lo → $4002+X
+    this.papu.writeReg(apuAddr + 2, blk.freqLo);
+
+    // $81B9-$81BB: (freqHi & 7) | 0x18 → $4003+X
+    const fh = blk.freqHi & 7;
+    const fhLen = fh | 0x18;
+
+    // $81C5-$81C8: SQ 通道做 $4003 去重；NOISE/TRI 不做
+    if (group >= 2 && fhLen === this.w.last4003[group]) {
+      return;
+    }
+
+    this.papu.writeReg(apuAddr + 3, fhLen);
+    this.w.last4003[group] = fhLen;
+
+    // $81D0-$81D7: muteFlags==0 时清零 last4003 强制下帧重新触发 $4003；
+    // muteFlags!=0 时保留绕过 dedup 限制（sweep 未启用时 dedup）
+    if (this.w.muteFlags[group] === 0) {
+      this.w.last4003[group] = 0;
     }
   }
 

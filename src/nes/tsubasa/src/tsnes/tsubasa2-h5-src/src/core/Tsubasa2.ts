@@ -48,8 +48,9 @@ import _chr13 from '../../../rom-data/chr-bank-13';
 import _chr14 from '../../../rom-data/chr-bank-14';
 import _chr15 from '../../../rom-data/chr-bank-15';
 
-// PRG Bank 15 (音频数据)
+// PRG Bank 15 (音频数据) + Bank 12 (SE 音序数据)
 import _prg15 from '../../../rom-data/prg-bank-15';
+import _prg12 from '../../../rom-data/prg-bank-12';
 
 export class Tsubasa2 {
   /** Canvas 2d 上下文 */
@@ -140,8 +141,11 @@ export class Tsubasa2 {
       this._renderer.setupCanvas(this._ctx);
     }
 
-    // 注入 Bank15 音频数据 + 音效表
-    this._bgmProvider.initWithRomData(_prg15 as readonly number[]);
+    // 注入 Bank15 BGM 数据 + Bank12 SE 数据 + 音效表
+    this._bgmProvider.initWithRomData(
+      _prg15 as readonly number[],
+      _prg12 as readonly number[],
+    );
 
     // 对应原始 Reset 链
     this._bank30.init();

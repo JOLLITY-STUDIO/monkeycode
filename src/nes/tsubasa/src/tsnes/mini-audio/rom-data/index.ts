@@ -1,10 +1,10 @@
 /**
- * mini-audio 精简 ROM 数据 — BGM00 版
+ * mini-audio 精简 ROM 数据
  * 
  * 当前保留 9 个 PRG bank — 精简到音频核心:
  *   00-03, 07  — 初始化
  *   12         — 音频引擎入口
- *   15         — BGM 数据(来自 BGM00, 不含原始 bank15 ROM)
+ *   15         — BGM 数据 (Bank 15 ROM, 含 0x58 开场动画 BGM)
  *   30-31      — 固定 bank (向量)
  */
 
@@ -14,9 +14,9 @@ import _prg02 from '../../rom-data/prg-bank-02';
 import _prg03 from '../../rom-data/prg-bank-03';
 import _prg07 from '../../rom-data/prg-bank-07';
 import _prg12 from '../../rom-data/prg-bank-12';
+import _prg15 from '../../rom-data/prg-bank-15';
 import _prg30 from '../../rom-data/prg-bank-30';
 import _prg31 from '../../rom-data/prg-bank-31';
-import { fillBGM00Bank } from '../bgm-data/BGM00';
 
 const BANK_8K = 8192;
 const TOTAL_BANKS = 32;
@@ -30,17 +30,13 @@ function stubBank(): readonly number[] {
   return b;
 }
 
-// Bank 15 — 使用 BGM00 数据填充
-const _bgm15 = new Array<number>(BANK_8K).fill(0);
-fillBGM00Bank(_bgm15);
-
 const STUB = stubBank();
 
 const REAL_BANKS: Record<number, readonly number[]> = {
   0:  _prg00, 1:  _prg01, 2:  _prg02, 3:  _prg03,
   7:  _prg07,
   12: _prg12,
-  15: _bgm15, // ✅ 由 BGM00 填充
+  15: _prg15, // Bank 15 ROM（含 0x58 开场动画 BGM）
   30: _prg30, 31: _prg31,
 };
 
