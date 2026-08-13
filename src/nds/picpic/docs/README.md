@@ -19,21 +19,22 @@
 
 | 状态 | 文档 | 路径 | 负责 | 最近更新 | 备注 |
 |------|------|------|------|----------|------|
-| 待建 | 游戏上下文 | `docs/context/game-context.md` | 01 | - | 首次初始化 |
-| 待建 | 项目计划/WBS | `docs/plan/PROJECT_PLAN.md` | 01 | - | - |
-| 待建 | 开发日志 | `docs/plan/PROGRESS_LOG.md` | 01 | - | - |
-| 待建 | ROM 结构报告 | `docs/reverse/ROM_STRUCTURE_REPORT.md` | 03 | - | - |
-| 待建 | 反汇编/函数表 | `docs/reverse/DISASSEMBLY.md` | 04 | - | - |
-| 待建 | 状态机 | `docs/reverse/STATE_MACHINE.md` | 05 | - | - |
-| 待建 | 场景映射表 | `docs/reverse/SCENE_MAPPING.md` | 05 | - | - |
-| 待建 | 资源索引/单元清单 | `docs/reverse/RESOURCE_INDEX.md` | 06 | - | - |
-| 待建 | 架构设计 | `docs/design/ARCHITECTURE.md` | 02 | - | - |
-| 待建 | 接口契约 | `docs/design/INTERFACES.md` | 02 | - | - |
-| 待建 | BUG 记录 | `docs/qa/BUGS.md` | 11/12 | - | - |
-| 待建 | 审查记录 | `docs/qa/REVIEW_LOG.md` | 12 | - | - |
-| 待建 | 测试报告 | `docs/qa/TEST_REPORT.md` | 11 | - | - |
-| 待建 | 版本记录 | `docs/release/CHANGELOG.md` | 13 | - | - |
-| 待建 | 收尾验收报告 | `docs/release/DELIVERY_REPORT.md` | 13 | - | - |
+| ✅ | 游戏上下文 | `docs/context/game-context.md` | 01 | 2026-08-14 | - |
+| ✅ | 项目计划/WBS | `docs/plan/PROJECT_PLAN.md` | 01 | 2026-08-14 | - |
+| ✅ | 开发日志 | `docs/plan/PROGRESS_LOG.md` | 01 | 2026-08-14 | - |
+| ✅ | ROM 结构报告 | `docs/reverse/ROM_STRUCTURE_REPORT.md` | 03 | 2026-08-14 | - |
+| ✅ | 反汇编/函数表 | `docs/reverse/DISASSEMBLY.md` | 04 | 2026-08-14 | - |
+| ✅ | 状态机 | `docs/reverse/STATE_MACHINE.md` | 05 | 2026-08-14 | - |
+| ✅ | 场景映射表 | `docs/reverse/SCENE_MAPPING.md` | 05 | 2026-08-14 | - |
+| ✅ | 资源索引/单元清单 | `docs/reverse/RESOURCE_INDEX.md` | 06 | 2026-08-14 | - |
+| ✅ | 架构设计 | `docs/design/ARCHITECTURE.md` | 02 | 2026-08-14 | - |
+| ✅ | 接口契约 | `docs/design/INTERFACES.md` | 02 | 2026-08-14 | - |
+| ✅ | 数据字典/关系映射 | `docs/design/DATA_DICTIONARY.md` | 02 | 2026-08-14 | 本体系 DBA 职责交付物 |
+| ✅ | BUG 记录 | `docs/qa/BUGS.md` | 11/12 | 2026-08-14 | - |
+| ✅ | 审查记录 | `docs/qa/REVIEW_LOG.md` | 12 | 2026-08-14 | - |
+| ✅ | 测试报告 | `docs/qa/TEST_REPORT.md` | 11 | 2026-08-14 | - |
+| ✅ | 版本记录 | `docs/release/CHANGELOG.md` | 13 | 2026-08-14 | - |
+| ✅ | 收尾验收报告 | `docs/release/DELIVERY_REPORT.md` | 13 | 2026-08-14 | - |
 
 ## 命名规范
 
