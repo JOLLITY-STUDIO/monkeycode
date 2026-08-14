@@ -12,7 +12,7 @@
  */
 
 import { DataStore } from '../data/DataStore';
-import { Bank00Service } from './bank00.service';
+import { Bank00Service } from './bank00_core.service';
 
 // ── 常量 ──
 

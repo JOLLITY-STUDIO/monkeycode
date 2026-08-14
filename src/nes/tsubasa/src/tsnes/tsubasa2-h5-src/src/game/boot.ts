@@ -25,7 +25,7 @@
 import { DataStore } from '../data/DataStore';
 import { SceneRoot, OpeningShot, TitleMenu } from '../data/scene/index';
 import { OpeningSceneController, type OpeningDisplayState } from './scene_opening.controller';
-import { DataQueryService } from './bank01.service';
+import { DataQueryService } from './bank01_data-query.service';
 import { MatchEngineService } from './bank26_match.service';
 import { BUTTON } from '../core/types';
 import { palReset } from '../data/pallete/paletteManager';

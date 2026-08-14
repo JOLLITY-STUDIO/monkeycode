@@ -16,8 +16,8 @@
 
 import { DataStore } from '../data/DataStore';
 import { palReset } from '../data/pallete/paletteManager';
-import { Bank00Service } from './bank00.service';
-import { Bank02Service } from './bank02.service';
+import { Bank00Service } from './bank00_core.service';
+import { Bank02Service } from './bank02_scene.service';
 
 // ═══════════════════════════════════════════════════════════════
 // Bank 30 Service

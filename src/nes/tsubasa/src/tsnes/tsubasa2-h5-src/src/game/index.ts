@@ -16,10 +16,10 @@
  *   Bank 31 → InterruptService (中断/NMI 服务)
  */
 
-export { Bank00Service } from './bank00.service';
-export { Bank02Service } from './bank02.service';
-export { Bank30Service } from './bank30.service';
-export { DataQueryService } from './bank01.service';
+export { Bank00Service } from './bank00_core.service';
+export { Bank02Service } from './bank02_scene.service';
+export { Bank30Service } from './bank30_init.service';
+export { DataQueryService } from './bank01_data-query.service';
 export { Bank12AudioService, SE_POINTER_TABLE, BGM_DATA_MAP } from './bank12_audio.service';
 export type { IAudioOutput, ApuWriteEvent, ChannelType } from './bank12_audio.service';
 export { OpeningSceneController } from './scene_opening.controller';

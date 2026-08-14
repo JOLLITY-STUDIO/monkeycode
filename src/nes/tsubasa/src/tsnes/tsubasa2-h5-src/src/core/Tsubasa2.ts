@@ -21,12 +21,12 @@
 import { GameLoop } from './GameLoop';
 import { DataStore } from '../data/DataStore';
 import { Renderer } from './engine/render/Renderer';
-import { Bank00Service } from '../game/bank00.service';
-import { Bank02Service } from '../game/bank02.service';
-import { Bank30Service } from '../game/bank30.service';
+import { Bank00Service } from '../game/bank00_core.service';
+import { Bank02Service } from '../game/bank02_scene.service';
+import { Bank30Service } from '../game/bank30_init.service';
 import { Bank12AudioService } from '../game/bank12_audio.service';
 import { BootService } from '../game/boot';
-import { DataQueryService } from '../game/bank01.service';
+import { DataQueryService } from '../game/bank01_data-query.service';
 import { MatchEngineService } from '../game/bank26_match.service';
 import { InterruptService } from '../game/bank31_interrupt.service';
 import { WebAudioOutput } from './engine/audio/WebAudioOutput';
