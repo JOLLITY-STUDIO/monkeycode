@@ -26,7 +26,7 @@ import { Bank02Service } from '../game/bank02.service';
 import { Bank30Service } from '../game/bank30.service';
 import { Bank12AudioService } from '../game/bank12_audio.service';
 import { BootService } from '../game/boot';
-import { DataQueryService } from '../game/data-query';
+import { DataQueryService } from '../game/bank01.service';
 import { MatchEngineService } from '../game/bank26_match.service';
 import { InterruptService } from '../game/bank31_interrupt.service';
 import { WebAudioOutput } from './engine/audio/WebAudioOutput';

@@ -1,6 +1,6 @@
 const { execSync } = require('child_process');
 try {
-  const out = execSync('npx tsc --noEmit', { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' });
+  const out = execSync('npx tsc --noEmit -p tsconfig.check.json', { stdio: ['ignore', 'pipe', 'pipe'], encoding: 'utf8' });
   console.log('TSC_OK');
   if (out.trim()) console.log(out);
 } catch (e) {

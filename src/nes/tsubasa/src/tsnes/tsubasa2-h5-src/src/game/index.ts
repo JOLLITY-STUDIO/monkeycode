@@ -19,7 +19,7 @@
 export { Bank00Service } from './bank00.service';
 export { Bank02Service } from './bank02.service';
 export { Bank30Service } from './bank30.service';
-export { DataQueryService } from './data-query';
+export { DataQueryService } from './bank01.service';
 export { Bank12AudioService, SE_POINTER_TABLE, BGM_DATA_MAP } from './bank12_audio.service';
 export type { IAudioOutput, ApuWriteEvent, ChannelType } from './bank12_audio.service';
 export { OpeningSceneController } from './scene_opening.controller';
