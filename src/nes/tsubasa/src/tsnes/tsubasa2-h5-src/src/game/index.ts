@@ -8,6 +8,7 @@
  *   Bank 00 → Bank00Service (核心系统服务: NT/PPU Buffer/调色板/场景/主循环)
  *   Bank 01 → DataQueryService (球员/队伍数据查询 + 选项屏幕管理)
  *   Bank 02 → Bank02Service (场景控制器: RESET 入口, 8路入口分发表)
+ *   Bank 28 → Bank28MatchService (比赛对阵/阵型/等级配置)
  *   Bank 30 → Bank30Service (硬件初始化)
  *
  * 翻译中 (结构完成，handler/数据 持续迭代):
@@ -25,6 +26,7 @@ export type { IAudioOutput, ApuWriteEvent, ChannelType } from './bank12_audio.se
 export { OpeningSceneController } from './scene_opening.controller';
 export type { OpeningDisplayState } from './scene_opening.controller';
 export { MatchEngineService } from './bank26_match.service';
+export { Bank28MatchService } from './bank28_match.service';
 export { InterruptService } from './bank31_interrupt.service';
 export type { BankConfig } from './bank31_interrupt.service';
 

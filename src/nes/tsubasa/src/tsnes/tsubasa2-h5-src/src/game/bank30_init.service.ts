@@ -18,6 +18,7 @@ import { DataStore } from '../data/DataStore';
 import { palReset } from '../data/pallete/paletteManager';
 import { Bank00Service } from './bank00_core.service';
 import { Bank02Service } from './bank02_scene.service';
+import { Bank29RosterService } from './bank29_roster.service';
 
 // ═══════════════════════════════════════════════════════════════
 // Bank 30 Service
@@ -28,6 +29,7 @@ export class Bank30Service {
     private _store: DataStore,
     private _bank00: Bank00Service,
     private _bank02: Bank02Service,
+    private _bank29?: Bank29RosterService,
   ) {}
 
   // ── 公开接口 ──
@@ -146,6 +148,34 @@ export class Bank30Service {
     // H5: 不需要切 bank，直接调 bank02.resetEntry(A=0)
     // TYA(A=0); JMP $A200: A=0 进入 Bank02 → JMP $A21B
     this._bank02.resetEntry(0);
+  }
+
+  // ──────────────────────────────────────────────
+  // $CE08: 加载 Bank28($8000) + Bank29($A000) 窗口
+  // ──────────────────────────────────────────────
+
+  /**
+   * 对应 bank_30 $CE08 (asm):
+   *   TAY / PHA 保存 ram_0024/0025
+   *   LDA #$1C / STA ram_0024   → R6 = Bank28 → $8000-$9FFF
+   *   LDA #$1D / STA ram_0025   → R7 = Bank29 → $A000-$BFFF
+   *   JSR $CE2D                 → MMC3 写 $8000/$8001 切换
+   *   JSR $8000                 → 调用 Bank28 $8000 入口
+   *   PLA / PLA / JMP $CE2D     → 恢复原 bank
+   *
+   * H5: 无 MMC3。Bank29 数据已内嵌 (data/team/roster.ts),
+   * Bank29RosterService 即窗口 $A000 的等价物。
+   * 返回 bank29 service 供调用方直接消费数据。
+   */
+  loadBank29(): Bank29RosterService {
+    if (!this._bank29) {
+      this._bank29 = new Bank29RosterService(this._store);
+    }
+    // 对应 asm: STA ram_0022 状态保持 (H5: 记录窗口状态)
+    this._store.write('ram_0022', 0);
+    this._store.write('ram_0024', 0x1C); // Bank28 (数据消费方)
+    this._store.write('ram_0025', 0x1D); // Bank29 (阵容/战术数据)
+    return this._bank29;
   }
 
   // ── 辅助: 设置默认 RAM 值 ──

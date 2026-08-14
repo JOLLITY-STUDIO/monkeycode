@@ -30,7 +30,7 @@ export type {
 } from './model/types';
 
 // 服务 (Bank 翻译)
-export { Bank00Service, Bank02Service, Bank30Service, BootService, DataQueryService } from './game/index';
+export { Bank00Service, Bank02Service, Bank28MatchService, Bank30Service, BootService, DataQueryService } from './game/index';
 
 // 引擎
 export { Renderer } from './core/engine/render/Renderer';
