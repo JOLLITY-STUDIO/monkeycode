@@ -1,14 +1,11 @@
 /**
  * Bank 02 Service — 场景控制器 / RESET 入口
  *
- * CPU 映射: $A000-$BFFF (MMC3 R7 select)
- * PRG offset: 0x004010-0x00600F
+ * 原始 PRG 数据已直接 import (rom-data/prg-bank-02.ts)，无 MMC3 bank 切换。
+ * Bank 02 是普通 Service 对象，持有 Bank00 引用，直接调用 bank00 方法完成初始化。
  *
  * 原始 $A200: JMP $A21B (3 字节跳板)
  * 原始 $A21B: RESET 后首个业务入口 — 初始化完毕后 JMP $9EED 进入 Bank00 主循环。
- *
- * H5 版本: Bank 02 是普通 Service 对象，持有 Bank00 引用，
- * 直接调用 bank00 方法完成初始化，不需要 MMC3/R6/R7/地址映射。
  */
 
 import { DataStore } from '../data/DataStore';
@@ -343,8 +340,7 @@ export class Bank02Service {
       s.write(`temp_EC_${y.toString(16)}`, 0);
     }
 
-    // 82F8: JSR $9FA8 → Bank switch to Bank 01 (H5: 数据已在内存)
-    this._bank00.bankSwitch(0x01);
+    // 82F8: JSR $9FA8 → 切 Bank 01 (H5: 数据已直接 import，无需切换)
 
     // 82FD-8335: 摄像机滚动处理 — 最多5组 delta
     s.write('ram_00EC', 0); // 组计数器
@@ -353,7 +349,6 @@ export class Bank02Service {
     // 8335: JMP $A2F8 → 循环回 $9FA8
     // 在原始代码中这会重新切换 Bank01 并继续处理
     // H5: 直接再跑一次循环
-    this._bank00.bankSwitch(0x01);
     this._entryC_scrollLoop();
   }
 

@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "./_test_out",
+    "lib": ["ES2020", "DOM"]
+  },
+  "include": [
+    "src/data/DataStore.ts",
+    "src/data/OamManager.ts",
+    "src/data/bank27-data.ts",
+    "src/data/bank16-data.ts",
+    "src/game/bank27_minimal.service.ts",
+    "src/game/bank16_skills.service.ts"
+  ]
+}

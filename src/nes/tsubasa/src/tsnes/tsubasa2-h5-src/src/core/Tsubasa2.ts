@@ -29,7 +29,6 @@ import { BootService } from '../game/boot';
 import { DataQueryService } from '../game/bank01_data-query.service';
 import { MatchEngineService } from '../game/bank26_match.service';
 import { InterruptService } from '../game/bank31_interrupt.service';
-import { WebAudioOutput } from './engine/audio/WebAudioOutput';
 import { BUTTON, NES_WIDTH, NES_HEIGHT } from './types';
 import type { Tsubasa2Config, DebugInfo, GameState } from './types';
 import { GameState as GS } from './types';
@@ -102,10 +101,7 @@ export class Tsubasa2 {
   /** 渲染器 (View) — 消费 NT+OAM 真实绘制 CHR tile */
   private _renderer!: Renderer;
 
-  /** 音频输出 (Web Audio API 桥接) */
-  private _audioOut!: WebAudioOutput;
-
-  /** Bank 12: 音频引擎 (含 BGM/SFX 数据: Bank 0D/0E/0F/12/15) */
+  /** Bank 12: 音频引擎 (PAPU + PapuOutput，含 BGM/SFX 数据) */
   private _audioService!: Bank12AudioService;
 
   /** 上一次按键值 (用于上升沿检测) */
@@ -128,9 +124,8 @@ export class Tsubasa2 {
     this._matchEngine = new MatchEngineService(this._store);
     this._interrupt = new InterruptService(this._store);
 
-    // 音频链路: WebAudioOutput → Bank12AudioService
-    this._audioOut = new WebAudioOutput();
-    this._audioService = new Bank12AudioService(this._store, this._audioOut);
+    // 音频链路: Bank12AudioService (内部使用 PapuOutput + PAPU 完整模拟 NES APU)
+    this._audioService = new Bank12AudioService(this._store);
 
     // 场景路由器 — 持有 DataQuery/MatchEngine 引用以委派场景
     this._boot = new BootService(this._store, this._dataQuery, this._matchEngine);

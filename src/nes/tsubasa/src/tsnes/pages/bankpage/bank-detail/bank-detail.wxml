@@ -39,8 +39,8 @@
     <view class="view-tab {{viewMode === 'records' ? 'active' : ''}}" bindtap="onViewRecords">📋 记录</view>
     <view class="view-tab {{viewMode === 'tiles' ? 'active' : ''}}" bindtap="onViewCHRTiles">🎨 图块</view>
     <view class="view-tab {{viewMode === 'field' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 7}}" bindtap="onViewField">🏟️ 场地</view>
-    <view class="view-tab {{viewMode === 'structure' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 12 || bankId === 30 || bankId === 31}}" bindtap="onViewStructure">🏗️ 结构</view>
-    <view class="view-tab {{viewMode === 'functions' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 12 || bankId === 30 || bankId === 31}}" bindtap="onViewFunctions">🔧 函数</view>
+    <view class="view-tab {{viewMode === 'structure' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 12 || bankId === 27 || bankId === 30 || bankId === 31}}" bindtap="onViewStructure">🏗️ 结构</view>
+    <view class="view-tab {{viewMode === 'functions' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 12 || bankId === 27 || bankId === 30 || bankId === 31}}" bindtap="onViewFunctions">🔧 函数</view>
     <view class="view-tab {{viewMode === 'music' ? 'active' : ''}}" wx:if="{{bankId === 12}}" bindtap="onViewMusic">🎵 播放器</view>
     <view class="view-tab {{viewMode === 'debug' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 12 || bankId === 30 || bankId === 31}}" bindtap="onViewDebug">🐛 调试</view>
     <view class="view-tab {{viewMode === 'data' ? 'active' : ''}}" wx:if="{{bankId === 2 || bankId === 30 || bankId === 31}}" bindtap="onViewData">🧬 数据</view>
@@ -287,6 +287,58 @@
     </scroll-view>
   </view>
 
+  <!-- ── Bank 27 结构视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'structure' && bankId === 27}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 27 精灵/场景动画 · CPU $8000-$9FFF (R6) · 已完整翻译 (2026-08)</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="b02-section">
+        <text class="b02-section-title">翻译状态 (✅ 已完成)</text>
+        <text class="b02-note" style="display:block;">✅ H5: src/game/bank27_minimal.service.ts (Bank27Service) · 数据: src/data/bank27-data.ts</text>
+        <text class="b02-note" style="display:block;">✅ 差分验证: _verify_bank27.cjs — 7274 组 PASS (entry_8104 随机差分 4000 + _fixedC539 3000 + _fixedC536 256 + entry_81EE 确定性帧/OAM 逐字节)</text>
+        <text class="b02-note" style="display:block;">📊 CDL: 代码 {{codeBytes}}B + 数据 {{dataBytes}}B + 未访问 {{unaccessed}}B · 2 段代码 + 5 张数据表</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">代码段</text>
+        <view wx:for="{{b27Subroutines}}" wx:key="startBankAddr" style="margin-bottom:8px;">
+          <text class="func-name">{{item.name}}</text>
+          <text class="func-meta">{{item.startBankAddr}} · {{item.length}}</text>
+          <text class="b02-note" style="display:block;">{{item.desc}}</text>
+          <text class="b02-note" wx:if="{{item.note}}" style="display:block;color:#58a6ff;">⚠ {{item.note}}</text>
+        </view>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">数据表 ({{b27DataTables.length}})</text>
+        <view wx:for="{{b27DataTables}}" wx:key="bankAddr" style="margin-bottom:6px;">
+          <text class="data-table-name">{{item.name}} · {{item.bankAddr}} · {{item.length}}</text>
+          <text class="b02-note" style="display:block;">{{item.desc}}</text>
+        </view>
+      </view>
+      <view class="b02-section" wx:if="{{b27Deps}}">
+        <text class="b02-section-title">依赖关系</text>
+        <text class="b02-note" style="display:block;color:#ffa657;">依赖 (deps):</text>
+        <text class="b02-note" wx:for="{{b27Deps.dependsOn}}" wx:key="*this" style="display:block;">→ {{item}}</text>
+        <text class="b02-note" style="display:block;color:#ffa657;margin-top:4px;">被使用 (usedBy):</text>
+        <text class="b02-note" wx:for="{{b27Deps.usedBy}}" wx:key="*this" style="display:block;">← {{item}}</text>
+      </view>
+      <view class="b02-section" wx:if="{{b27Architecture}}">
+        <text class="b02-section-title">架构角色</text>
+        <text class="b02-note" style="display:block;">{{b27Architecture.role}}</text>
+        <text class="b02-note" style="display:block;">{{b27Architecture.pattern}}</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">🎨 精灵调色板位置 (SPR Palette)</text>
+        <text class="b02-note" style="display:block;">① 选组: 动画块首字节 attr 低 2 位 → SPR 组 0-3 (OamManager.ts:226 palette = attr & 0x03)。实测 30 块中 SPR0/SPR1/块19/27/28/29 用 SPR3</text>
+        <text class="b02-note" style="display:block;">② 颜色值: bank00_core.service.ts PALETTE_TABLE_0D (32B = PPU $3F00-$3F1F)</text>
+        <text class="b02-note" style="display:block;">③ SPR 区: $3F10-$3F1F = 精灵 4 组 (paletteManager.ts SPR_OFFSETS=[0x10,0x14,0x18,0x1C])</text>
+        <text class="b02-note" style="display:block;">④ 写入: paletteInit(0x0D) → palWriteAll → paletteRAM (调用点 bank02_scene.service.ts 场景初始化)</text>
+        <text class="b02-note" style="display:block;">⑤ 换算: nesColorToRGBA + NES_PALETTE (nes-pallete-table.ts)</text>
+        <text class="b02-note" style="display:block;color:#f85149;">⚠ ROM 真实链路待提取: bank00 $8297(paletteInit)→$9085→切 bank09 $A000+palIdx*2 指针表 + bank00 $978B 模板。当前 H5 PALETTE_TABLE_0D 为占位数据。</text>
+      </view>
+    </scroll-view>
+  </view>
+
   <!-- ── Bank 02 函数视图 ── -->
   <view class="view-content" wx:if="{{viewMode === 'functions' && bankId === 2}}">
     <view class="b02-toolbar">
@@ -392,6 +444,45 @@
           </text>
         </view>
         
+      </view>
+    </scroll-view>
+  </view>
+
+  <!-- ── Bank 27 函数视图 ── -->
+  <view class="view-content" wx:if="{{viewMode === 'functions' && bankId === 27}}">
+    <view class="b02-toolbar">
+      <text class="b02-hint">Bank 27: {{b27Subroutines.length}} 个子程序 · 5 张数据表 · 已完整翻译 · 点击查看详情</text>
+    </view>
+    <scroll-view class="b02-scroll" scroll-y="true" enhanced="true">
+      <view class="func-list">
+        <view class="func-item" wx:for="{{b27Subroutines}}" wx:key="startBankAddr" data-idx="{{index}}" bindtap="onB27SelectFunction">
+          <text class="func-name">🔹 {{item.name}}</text>
+          <text class="func-meta">{{item.startBankAddr}} · {{item.length}} · {{item.desc}}</text>
+        </view>
+      </view>
+      <view class="b02-section" wx:if="{{b27SelectedFunc}}">
+        <text class="b02-section-title">选中函数详情</text>
+        <text class="func-detail" style="font-weight:bold;font-size:14px;">{{b27SelectedFunc.name}}</text>
+        <text class="func-detail">Bank 地址: {{b27SelectedFunc.startBankAddr}}</text>
+        <text class="func-detail">长度: {{b27SelectedFunc.length}}</text>
+        <text class="func-detail">说明: {{b27SelectedFunc.desc}}</text>
+        <text class="func-detail" wx:if="{{b27SelectedFunc.note}}" style="color:#58a6ff;">备注: {{b27SelectedFunc.note}}</text>
+      </view>
+      <view class="b02-section">
+        <text class="b02-section-title">数据表 ({{b27DataTables.length}})</text>
+        <view class="data-table-item" wx:for="{{b27DataTables}}" wx:key="bankAddr">
+          <text class="data-table-name">{{item.name}} · {{item.bankAddr}} · {{item.length}}</text>
+          <text class="b02-note" style="font-size:9px;">  {{item.desc}}</text>
+        </view>
+      </view>
+      <view class="b02-section" wx:if="{{b27Deps}}">
+        <text class="b02-section-title">依赖关系</text>
+        <view class="data-table-item" wx:for="{{b27Deps.dependsOn}}" wx:key="*this">
+          <text class="data-table-name">→ {{item}}</text>
+        </view>
+        <view class="data-table-item" wx:for="{{b27Deps.usedBy}}" wx:key="*this">
+          <text class="data-table-name">← {{item}}</text>
+        </view>
       </view>
     </scroll-view>
   </view>

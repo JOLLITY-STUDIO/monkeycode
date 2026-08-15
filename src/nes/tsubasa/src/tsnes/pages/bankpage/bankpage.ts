@@ -89,7 +89,7 @@ const PRG_DESCRIPTIONS: Record<number, string> = {
   24: 'AI & Decision Logic — AI/决策逻辑 & 数据',
   25: 'Extended Data (PT3) — 扩展数据',
   26: 'Match Core Engine — 比赛核心引擎 (7362B code)',
-  27: 'Data + Minimal Code — 数据(极少量代码)',
+  27: 'Sprite & Scene Animation — 精灵/场景动画数据+帧推进(已完整翻译) → 依赖 Bank30固定辅助($C50C/$C536/$C539)· Bank30/31 切#$1B消费',
   28: 'Auxiliary Logic & Data — 辅助逻辑 & 数据',
   29: 'Team Tactics & CPU Roster — 球队战术/阵型块(241×22B) + 阵容指针表(34项) + CPU阵容区 → Bank30/26/31切到$A000 · Bank01主消费',
   30: 'Core System Library (FIXED $C000) — HW初始化 + Bank31唯一对外接口(JMP跳转表)',
@@ -125,7 +125,7 @@ const PRG_NAMES: Record<number, string> = {
   24: 'AI & Decision Logic',
   25: 'Extended Data III',
   26: 'Match Core Engine',
-  27: 'Data + Minimal Code',
+  27: 'Sprite & Scene Animation',
   28: 'Auxiliary Logic & Data',
   29: 'Team Tactics & Roster',
   30: 'Core System Library',
@@ -198,7 +198,9 @@ const PRG_RELATIONS: Record<number, BankRel> = {
   24: { deps: [], usedBy: [] },
   25: { deps: [], usedBy: [] },
   26: { deps: [], usedBy: [] },
-  27: { deps: [], usedBy: [] },
+  // Bank 27: 精灵/场景动画数据+帧推进。依赖 Bank 30 固定辅助($C50C 名字区指针/$C536 坐标解码/$C539 坐标编码/$C515 渲染同步/$C527 场景缓冲);
+  // 被 Bank 30($CF72 图形工具)与 Bank 31(比赛动画场景切换)通过 LDA #$1B 切换消费。与 Bank 24 共享 ram_05E3 场景忙标志。
+  27: { deps: [30], usedBy: [30, 31] },
   28: { deps: [], usedBy: [] },
   29: { deps: [], usedBy: [1, 0, 20, 28] },
   // Bank 30: 核心系统库；启动时通过 R6=0 映射 Bank 00，R7=2 映射 Bank 02；被 Bank 31 中断向量和 Bank 00 调用

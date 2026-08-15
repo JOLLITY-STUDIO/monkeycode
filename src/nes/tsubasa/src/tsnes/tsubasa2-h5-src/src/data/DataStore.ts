@@ -25,7 +25,7 @@ import { OamManager } from './OamManager';
 export interface NameTableEntry {
   tile: number;       // tile 索引 (0-255)
   palette: number;    // 调色板组 (0-3, 2-bit)
-  bank: number;       // CHR Bank (针对 MMC3)
+  bank: number;       // CHR Bank 索引
   flipH: boolean;
   flipV: boolean;
   behindBg: boolean;  // 精灵背面标志

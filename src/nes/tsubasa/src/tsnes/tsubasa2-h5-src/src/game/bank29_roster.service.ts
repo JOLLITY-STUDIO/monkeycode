@@ -253,12 +253,12 @@ export class Bank29RosterService {
     return getRosterByAddr(cpuAddr);
   }
 
-  /** 读原始字节 (替代 readMem) */
+  /** 读内嵌数据字节 (Model 层透传) */
   read(cpuAddr: number): number {
     return readBank29(cpuAddr);
   }
 
-  /** 读 16bit LE (替代 readMem16) */
+  /** 读内嵌数据 16bit LE (Model 层透传) */
   read16(cpuAddr: number): number {
     return readBank29U16(cpuAddr);
   }

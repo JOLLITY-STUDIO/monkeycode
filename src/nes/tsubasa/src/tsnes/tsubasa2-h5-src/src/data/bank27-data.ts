@@ -2,7 +2,7 @@
  * Bank 27 数据 (Data/Model 层) — 原始提取, 未结构化
  *
  * 来源: rom-data/prg-bank-27.ts (自动生成, 原始字节, 自动提取)
- * CPU 映射: bank 0x1B = 27, MMC3 R6 切到 $8000-$9FFF
+ * 数据已直接 import，cpuAddr (0x8000-0x9FFF) 仅作数据索引保留
  * PRG offset: 0x036010-0x03800F
  *
  * ⚠ 本文件由脚本自动提取, 不结构化。service 仅通过 readB27/readB27U16

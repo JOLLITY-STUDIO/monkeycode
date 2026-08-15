@@ -1,10 +1,10 @@
 /**
- * Match Engine Service — Bank 26 (CPU $8000-$9FFF)
+ * Match Engine Service — Bank 26 (数据已直接 import, 无 MMC3 切换)
  *
  * 比赛核心引擎: 主循环、球员 AI、开球/门球/角球、球员替换、
  * 事件分发、数值计算、经验/能力计算、任意球、射门、必杀技、战术/阵型菜单。
  *
- * H5 版本: 无 MMC3、无 CPU 模拟。逻辑直接翻译自 bank_26.asm,
+ * 逻辑直接翻译自 bank_26.asm,
  * 数据来自 `data/bank26-tables.ts`。
  *
  * 原始入口跳转表 ($8000):

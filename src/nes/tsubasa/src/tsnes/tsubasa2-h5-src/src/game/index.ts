@@ -9,6 +9,7 @@
  *   Bank 01 → DataQueryService (球员/队伍数据查询 + 选项屏幕管理)
  *   Bank 02 → Bank02Service (场景控制器: RESET 入口, 8路入口分发表)
  *   Bank 24 → Bank24HudService (HUD 文本流渲染 + 精灵加载)
+ *   Bank 27 → Bank27Service (精灵/场景动画数据加载 + 动画帧推进, 差分验证 7274/0)
  *   Bank 28 → Bank28MatchService (比赛对阵/阵型/等级配置)
  *   Bank 30 → Bank30Service (硬件初始化)
  *
@@ -23,7 +24,6 @@
  *   Bank 19 → Bank19Service (辅助逻辑)
  *   Bank 20 → Bank20Service (比赛辅助逻辑)
  *   Bank 22 → Bank22Service (数据+代码混合)
- *   Bank 27 → Bank27Service (数据+极少量代码)
  */
 
 export { Bank00Service } from './bank00_core.service';

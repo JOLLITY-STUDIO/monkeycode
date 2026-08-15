@@ -1,11 +1,10 @@
 /**
  * Bank 11 Service — Match Turn Logic (PT1) (骨架)
  *
- * CPU 映射: $8000-$9FFF (MMC3 R6 切换, Bank #0x0B = 11)
+ * 数据已直接 import `rom-data/prg-bank-11.ts` (Bank #0x0B = 11), 无 MMC3 切换。
  * PRG offset: 0x016010-0x01800F
  *
- * H5 版本: 无 MMC3 / CPU 模拟。数据直接使用 `rom-data/prg-bank-11.ts` 原始字节,
- *           本文件为 code 翻译骨架 (来源: _tmp_bzk_out/bank_11.asm, CDL C 标记)。
+ * 本文件为 code 翻译骨架 (来源: _tmp_bzk_out/bank_11.asm, CDL C 标记)。
  *
  * 原始入口 (跳转表):
  *   [0] $8083

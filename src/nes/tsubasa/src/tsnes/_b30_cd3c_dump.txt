@@ -1,0 +1,43 @@
+C D 2 - - - 0x03CD4C 0F:CD3C: 8A        TXA
+C - - - - - 0x03CD4D 0F:CD3D: 48        PHA
+C - - - - - 0x03CD4E 0F:CD3E: A9 00     LDA #$00
+C - - - - - 0x03CD50 0F:CD40: 85 72     STA ram_0072
+C - - - - - 0x03CD52 0F:CD42: 85 73     STA ram_0073
+C - - - - - 0x03CD54 0F:CD44: A2 10     LDX #$10
+C - - - - - 0x03CD56 0F:CD46: 26 6F     ROL ram_006F
+C - - - - - 0x03CD58 0F:CD48: 26 70     ROL ram_0070
+C - - - - - 0x03CD5A 0F:CD4A: 26 72     ROL ram_0072
+C - - - - - 0x03CD5C 0F:CD4C: 26 73     ROL ram_0073
+C - - - - - 0x03CD5E 0F:CD4E: B0 10     BCS $CD60
+C - - - - - 0x03CD60 0F:CD50: A5 73     LDA ram_0073
+C - - - - - 0x03CD62 0F:CD52: C5 74     CMP ram_0074
+C - - - - - 0x03CD64 0F:CD54: F0 04     BEQ $CD5A
+C - - - - - 0x03CD66 0F:CD56: 90 15     BCC $CD6D
+C - - - - - 0x03CD68 0F:CD58: B0 06     BCS $CD60
+C - - - - - 0x03CD6A 0F:CD5A: A5 72     LDA ram_0072
+C - - - - - 0x03CD6C 0F:CD5C: C5 71     CMP ram_0071
+C - - - - - 0x03CD6E 0F:CD5E: 90 0D     BCC $CD6D
+C - - - - - 0x03CD70 0F:CD60: A5 72     LDA ram_0072
+C - - - - - 0x03CD72 0F:CD62: E5 71     SBC ram_0071
+C - - - - - 0x03CD74 0F:CD64: 85 72     STA ram_0072
+C - - - - - 0x03CD76 0F:CD66: A5 73     LDA ram_0073
+C - - - - - 0x03CD78 0F:CD68: E5 74     SBC ram_0074
+C - - - - - 0x03CD7A 0F:CD6A: 85 73     STA ram_0073
+C - - - - - 0x03CD7C 0F:CD6C: 38        SEC
+C - - - - - 0x03CD7D 0F:CD6D: 26 6F     ROL ram_006F
+C - - - - - 0x03CD7F 0F:CD6F: 26 70     ROL ram_0070
+C - - - - - 0x03CD81 0F:CD71: CA        DEX
+C - - - - - 0x03CD82 0F:CD72: D0 D6     BNE $CD4A
+C - - - - - 0x03CD84 0F:CD74: 68        PLA
+C - - - - - 0x03CD85 0F:CD75: AA        TAX
+C - - - - - 0x03CD86 0F:CD76: 60        RTS
+C D 2 - - - 0x03CD87 0F:CD77: AD FB 05  LDA ram_05FB
+C - - - - - 0x03CD8A 0F:CD7A: 49 0B     EOR #$0B
+C D 2 - - - 0x03CD8C 0F:CD7C: 0A        ASL
+C - - - - - 0x03CD8D 0F:CD7D: A8        TAY
+C - - - - - 0x03CD8E 0F:CD7E: B9 89 CD  LDA $CD89,Y
+C - - - - - 0x03CD91 0F:CD81: 85 34     STA ram_0034
+C - - - - - 0x03CD93 0F:CD83: B9 8A CD  LDA $CD8A,Y
+C - - - - - 0x03CD96 0F:CD86: 85 35     STA ram_0035
+C - - - - - 0x03CD98 0F:CD88: 60        RTS
+- D 2 - - - 0x03CD99 0F:CD89: 00        .byte $00   ; 

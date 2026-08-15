@@ -191,7 +191,7 @@ export class DataQueryService {
    * 对应 asm $B050-$C???
    */
   entry8_DataLoad(): void {
-    // MMC3 bank select → 加载其他 Bank 数据表
+    // 原始: bank 切换加载其他 Bank 数据表
     // H5: 直接引用对应 Bank 数据即可
     // TODO: 翻译 $B050
   }

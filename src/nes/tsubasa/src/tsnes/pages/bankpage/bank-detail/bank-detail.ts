@@ -6,6 +6,7 @@ import { NES_PRG_ROM, NES_CHR_ROM } from '../../../rom-data/index';
 import PRG_BANK_07 from '../../../rom-data/prg-bank-07';
 import BANK02_ANALYSIS from './bank02_analysis';
 import BANK12_ANALYSIS from './bank12_analysis';
+import BANK27_ANALYSIS from './bank27_analysis';
 import BANK30_ANALYSIS from './bank30_analysis';
 import BANK31_ANALYSIS from './bank31_analysis';
 import { Bank12AudioPlayer, ApuChannelState } from './bank12-audio-player';
@@ -167,6 +168,13 @@ Page({
     b30Architecture: null as any,
     b30Deps: {} as any,
 
+    // ── Bank 27 精灵/场景动画 ──
+    b27Subroutines: [] as any[],
+    b27DataTables: [] as any[],
+    b27Deps: null as any,
+    b27Architecture: null as any,
+    b27SelectedFunc: null as any,
+
     // ── Bank 12 音频引擎 ──
     b12Subroutines: [] as any[],
     b12DataTables: [] as any[],
@@ -315,6 +323,8 @@ Page({
       setTimeout(() => this._renderStructureMap(), 300);
     } else if (this.data.bankId === 12) {
       this._loadBank12Analysis();
+    } else if (this.data.bankId === 27) {
+      this._loadBank27Analysis();
     } else if (this.data.bankId === 30 && !this.data.b30StructureReady) {
       setTimeout(() => this._renderBank30StructureMap(), 300);
     } else if (this.data.bankId === 31 && !this.data.b31StructureReady) {
@@ -325,6 +335,7 @@ Page({
     this.setData({ viewMode: 'functions' });
     if (this.data.bankId === 2) this._loadBank02Analysis();
     if (this.data.bankId === 12) this._loadBank12Analysis();
+    if (this.data.bankId === 27) this._loadBank27Analysis();
     if (this.data.bankId === 30) this._loadBank30Analysis();
     if (this.data.bankId === 31) this._loadBank31Analysis();
   },
@@ -358,6 +369,21 @@ Page({
     this.setData({
       b02Subroutines: subs,
       b02DataTables: tables,
+    });
+  },
+  _loadBank27Analysis() {
+    const analysis = BANK27_ANALYSIS as any;
+    const subs = analysis.subroutines || [];
+    const tables = analysis.dataTables || [];
+    const deps = {
+      dependsOn: (analysis.deps?.dependsOn || []).map((d: any) => d.bank + ': ' + d.what),
+      usedBy: (analysis.deps?.usedBy || []).map((u: any) => u.bank + ': ' + u.what),
+    };
+    this.setData({
+      b27Subroutines: subs,
+      b27DataTables: tables,
+      b27Deps: deps,
+      b27Architecture: analysis.architecture || null,
     });
   },
   _loadBank31Analysis() {
@@ -2279,6 +2305,11 @@ Page({
       },
     });
   },
+  onB27SelectFunction(e: any) {
+    const idx = parseInt(e.currentTarget.dataset.idx, 10);
+    const func = this.data.b27Subroutines[idx];
+    this.setData({ b27SelectedFunc: func });
+  },
 
   // ── Bank 12 音频引擎 ──
   onB12SelectFunction(e: any) {
@@ -2836,7 +2867,7 @@ Page({
       24: 'AI & Decision Logic',
       25: 'Extended Data III',
       26: 'Match Core Engine',
-      27: 'Data + Minimal Code',
+      27: 'Sprite & Scene Animation',
       28: 'Auxiliary Logic & Data',
       29: 'Extended Data (Low Use)',
       30: 'Core System Library',
@@ -2876,7 +2907,7 @@ Page({
       24:'AI & Decision Logic — AI/决策逻辑 & 数据 (4776B data, 新CDL增加90B)',
       25:'Extended Data (PT3) — 扩展数据 (7724B data, 新CDL增加204B)',
       26:'Match Core Engine — 比赛核心引擎 (7362B code, 最大代码Bank)',
-      27:'Data + Minimal Code — 数据(极少量代码)',
+      27:'Sprite & Scene Animation — 精灵/场景动画数据加载 + 动画帧推进 (已完整翻译, 差分验证 7274/0) → 依赖 Bank30 固定辅助($C50C 名字区指针/$C536 坐标解码/$C539 坐标编码) · 被 Bank30/31 切#$1B 消费',
       28:'Auxiliary Logic & Data — 辅助逻辑 & 数据',
       29:'Extended Data (Low Usage) — 扩展数据(低利用率)',
       30:'Core System Library (FIXED $C000) — HW初始化 + Bank31唯一对外接口 — JMP跳转表API | NMI/IRQ/Bank切换 | PPU/APU/控制器/数学',

@@ -2,7 +2,7 @@
  * Bank 25 数据模型 (Data/Model 层) — HUD 文本流数据 / 精灵配置表
  *
  * 来源: rom-data/prg-bank-25.ts (自动生成, 原始字节)
- * CPU 映射: bank 0x19 切到 $A000-$BFFF (MMC3 R7 窗口)
+ * 数据已直接 import，cpuAddr (0xA000-0xBFFF) 仅作数据索引保留
  *           offset = cpuAddr - 0xA000
  *
  * Bank 25 是纯数据 bank (无代码)。Bank 24 (HUD service) 引用了本 bank 的

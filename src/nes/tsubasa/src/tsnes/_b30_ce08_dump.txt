@@ -1,0 +1,68 @@
+C D 2 - - - 0x03CE18 0F:CE08: A8        TAY
+C - - - - - 0x03CE19 0F:CE09: AD 24 00  LDA a: ram_0024
+C - - - - - 0x03CE1C 0F:CE0C: 48        PHA
+C - - - - - 0x03CE1D 0F:CE0D: AD 25 00  LDA a: ram_0025
+C - - - - - 0x03CE20 0F:CE10: 48        PHA
+C - - - - - 0x03CE21 0F:CE11: 98        TYA
+C - - - - - 0x03CE22 0F:CE12: 48        PHA
+C - - - - - 0x03CE23 0F:CE13: A5 22     LDA ram_0022
+C - - - - - 0x03CE25 0F:CE15: A9 1C     LDA #$1C
+C - - - - - 0x03CE27 0F:CE17: 85 24     STA ram_0024
+C - - - - - 0x03CE29 0F:CE19: A9 1D     LDA #$1D
+C - - - - - 0x03CE2B 0F:CE1B: 85 25     STA ram_0025
+C - - - - - 0x03CE2D 0F:CE1D: 20 2D CE  JSR $CE2D
+C - - - - - 0x03CE30 0F:CE20: 68        PLA
+C - - - - - 0x03CE31 0F:CE21: 20 00 80  JSR $8000
+C - - - - - 0x03CE34 0F:CE24: 68        PLA
+C - - - - - 0x03CE35 0F:CE25: 85 25     STA ram_0025
+C - - - - - 0x03CE37 0F:CE27: 68        PLA
+C - - - - - 0x03CE38 0F:CE28: 85 24     STA ram_0024
+C - - - - - 0x03CE3A 0F:CE2A: 4C 2D CE  JMP $CE2D
+C D 2 - - - 0x03CE3D 0F:CE2D: A5 22     LDA ram_0022
+C - - - - - 0x03CE3F 0F:CE2F: 09 06     ORA #$06
+C - - - - - 0x03CE41 0F:CE31: 85 23     STA ram_0023
+C - - - - - 0x03CE43 0F:CE33: 8D 00 80  STA $8000
+C - - - - - 0x03CE46 0F:CE36: A5 24     LDA ram_0024
+C - - - - - 0x03CE48 0F:CE38: 8D 01 80  STA $8001
+C - - - - - 0x03CE4B 0F:CE3B: A5 22     LDA ram_0022
+C - - - - - 0x03CE4D 0F:CE3D: 09 07     ORA #$07
+C - - - - - 0x03CE4F 0F:CE3F: 85 23     STA ram_0023
+C - - - - - 0x03CE51 0F:CE41: 8D 00 80  STA $8000
+C - - - - - 0x03CE54 0F:CE44: A5 25     LDA ram_0025
+C - - - - - 0x03CE56 0F:CE46: 8D 01 80  STA $8001
+C - - - - - 0x03CE59 0F:CE49: 60        RTS
+C D 2 - - - 0x03CE5A 0F:CE4A: 18        CLC
+C - - - - - 0x03CE5B 0F:CE4B: 69 40     ADC #$40
+C D 2 - - - 0x03CE5D 0F:CE4D: 0A        ASL
+C - - - - - 0x03CE5E 0F:CE4E: 08        PHP
+C - - - - - 0x03CE5F 0F:CE4F: 10 02     BPL $CE53
+C - - - - - 0x03CE61 0F:CE51: 49 FF     EOR #$FF
+C - - - - - 0x03CE63 0F:CE53: 29 7E     AND #$7E
+C - - - - - 0x03CE65 0F:CE55: AA        TAX
+C - - - - - 0x03CE66 0F:CE56: BD 4D FB  LDA $FB4D,X
+C - - - - - 0x03CE69 0F:CE59: A8        TAY
+C - - - - - 0x03CE6A 0F:CE5A: BD 4C FB  LDA $FB4C,X
+C - - - - - 0x03CE6D 0F:CE5D: AA        TAX
+C - - - - - 0x03CE6E 0F:CE5E: 28        PLP
+C - - - - - 0x03CE6F 0F:CE5F: 90 0C     BCC $CE6D
+C - - - - - 0x03CE71 0F:CE61: 8A        TXA
+C - - - - - 0x03CE72 0F:CE62: 49 FF     EOR #$FF
+C - - - - - 0x03CE74 0F:CE64: AA        TAX
+C - - - - - 0x03CE75 0F:CE65: 98        TYA
+C - - - - - 0x03CE76 0F:CE66: 49 FF     EOR #$FF
+C - - - - - 0x03CE78 0F:CE68: A8        TAY
+C - - - - - 0x03CE79 0F:CE69: E8        INX
+C - - - - - 0x03CE7A 0F:CE6A: D0 01     BNE $CE6D
+C - - - - - 0x03CE7C 0F:CE6C: C8        INY
+C - - - - - 0x03CE7D 0F:CE6D: 60        RTS
+C D 2 - - - 0x03CE7E 0F:CE6E: 85 36     STA ram_0036
+C - - - - - 0x03CE80 0F:CE70: 0A        ASL
+C - - - - - 0x03CE81 0F:CE71: 65 36     ADC ram_0036
+C - - - - - 0x03CE83 0F:CE73: 85 36     STA ram_0036
+C - - - - - 0x03CE85 0F:CE75: A9 80     LDA #$80
+C - - - - - 0x03CE87 0F:CE77: 85 37     STA ram_0037
+C - - - - - 0x03CE89 0F:CE79: A5 24     LDA ram_0024
+C - - - - - 0x03CE8B 0F:CE7B: 48        PHA
+C - - - - - 0x03CE8C 0F:CE7C: A5 25     LDA ram_0025
+C - - - - - 0x03CE8E 0F:CE7E: 48        PHA
+C - - - - - 0x03CE8F 0F:CE7F: A9 1C     LDA #$1C

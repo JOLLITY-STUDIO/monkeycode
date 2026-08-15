@@ -1,13 +1,13 @@
 /**
  * Bank 30 Service — 硬件初始化 (H5 简化版)
  *
- * CPU 映射: $C000-$DFFF (MMC3 固定 Bank)
+ * 数据已直接 import `rom-data/prg-bank-30.ts`, 无 MMC3 bank 切换。
  * PRG offset: 0x3C010-0x3E00F
  *
  * 原始 Bank 30 是核心系统库，包含:
  *   - RESET/NMI/IRQ 中断向量跳转
  *   - 公共 API 跳转表 ($C509-$C5FF, ~80 entries)
- *   - 数学运算、Bank 切换、球员数据处理等
+ *   - 数学运算、球员数据处理等
  *
  * H5 版本: 不需要 MMC3、不需要 NMI/IRQ 模拟、
  * 不需要 CPU 指令执行。Bank30 只做初始化工作，

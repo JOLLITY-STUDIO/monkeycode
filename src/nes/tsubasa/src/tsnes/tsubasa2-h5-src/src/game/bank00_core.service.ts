@@ -1,14 +1,11 @@
 /**
  * Bank 00 Service — 核心系统服务层
  *
- * CPU 映射: $8000-$9FFF (MMC3 R6 select)
- * PRG offset: 0x000010-0x00200F
- *
- * Bank 00 是所有 bank 共享调用的系统服务层。
- * H5 版本: 不模拟 MMC3 bank 切换，Bank 00 就是一个普通 Service 对象，
+ * 原始 PRG 数据已直接 import (rom-data/prg-bank-00.ts)，无 MMC3 bank 切换。
+ * Bank 00 是所有 bank 共享调用的系统服务层，H5 中就是一个普通 Service 对象，
  * 其他 bank 直接调用其方法。
  *
- * 对应原始汇编中的关键函数:
+ * 翻译来源 (bank_00 汇编关键函数):
  *   $9EED — 主循环入口
  *   $98A0 — Nametable 全屏清零
  *   $9B11 — Nametable + 属性表清零
@@ -24,7 +21,6 @@
  *   $9B28 — PPU Buffer 空间分配
  *   $9B5E — PPU Buffer 结束标记
  *   $9BA0 — 等待 VBlank
- *   $9FA8 — Bank 切换 (原: MMC3 寄存器写入 → H5: 本地栈帧管理)
  *   $84C1 — Bank 02 入口分发
  *   $801F — 场景初始化链入口
  *   $8091 — 主输入循环
@@ -48,7 +44,6 @@ const PPU_BUF_PTR = 'ppuBufPtr';
 /** 帧状态标志 */
 const FRAME_FLAG   = 'frameFlag';   // ram_001E: bit4=vblank done, bit5=?
 const SCENE_ID     = 'sceneId';     // ram_0026
-const BANK_CUR     = 'bankCur';     // ram_0019: 当前 bank 编号
 const RAM_1B       = 'ram_1B';      // ram_001B: 场景状态标志
 
 // PPU 寄存器镜像
@@ -262,21 +257,6 @@ export class Bank00Service {
   }
 
   // ──────────────────────────────────────────────
-  // $9FA8 & $9FA5: Bank 切换
-  // ──────────────────────────────────────────────
-
-  /**
-   * 对应原始 $9FA8 / $9FA5: MMC3 寄存器操作实现 Bank 切换。
-   * H5: 不操作 MMC3 硬件，仅记录当前活跃 Bank 编号。
-   *
-   * @param bankId 要切换到的 Bank 编号 (A register)
-   */
-  bankSwitch(bankId: number): void {
-    this._store.write(BANK_CUR, bankId & 0xFF);
-    // H5 不需要实际切换 — 所有 Bank 数据可直接访问
-  }
-
-  // ──────────────────────────────────────────────
   // $9F69: 数据写入辅助
   // ──────────────────────────────────────────────
 
@@ -395,11 +375,10 @@ export class Bank00Service {
   /**
    * 对应原始 $84C1: Bank 02 跳转表分发。
    * 查表跳转到 Bank 02 的不同入口 ($A003/$A006/$A009/$A00C/$A00F/$A012/$A015/$A018)。
-   * H5: 直接调用 Bank02Service 对应方法。
+   * H5: 记录入口索引，由调用方直接调用 Bank02Service 对应方法。
    */
   bank02Dispatch(index: number): void {
     this._store.write('bank02_entry', index);
-    this.bankSwitch(2);
   }
 
   // ──────────────────────────────────────────────

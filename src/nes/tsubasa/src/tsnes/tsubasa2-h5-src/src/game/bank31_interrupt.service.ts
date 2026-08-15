@@ -1,13 +1,13 @@
 /**
- * Interrupt Service — Bank 31 (CPU $C000-$FFFF, Fixed Bank)
+ * Interrupt Service — Bank 31 (数据已直接 import, 无 MMC3)
  *
- * NMI/IRQ/RESET 向量表 + MMC3 Bank 切换表。
+ * NMI/IRQ/RESET 向量 + 场景 → Bank 配置表。
  *
- * H5: 不模拟 MMC3，Bank 31 的 bank 切换表作为配置数据保留，
- * NMI handler 逻辑合并到 Bank 00/01 的帧循环中。
+ * H5: 不模拟 MMC3，NMI handler 逻辑合并到 Bank 00/01 的帧循环中，
+ * Bank 配置表仅作数据索引保留。
  *
  * 原始结构:
- *   $C000-$C502 — MMC3 中断处理
+ *   $C000-$C502 — MMC3 中断处理 (H5: 无需)
  *   $C503-$C6DF — 硬件初始化 (Bank 30 已翻译)
  *   $C6E0-$CFFF — 数据表: 场景入口表、Bank 配置表
  *   $E000-$FFFF — Fixed Bank (Bank 31 固定)
@@ -15,11 +15,11 @@
  */
 import { DataStore } from '../data/DataStore';
 
-/** Bank 切换配置条目 */
+/** Bank 配置条目 (H5: 仅数据索引, 不涉及硬件切换) */
 export interface BankConfig {
   bankId: number;    // PRG bank number
-  r6Select: number;  // MMC3 R6 value (CPU $8000-$9FFF)
-  r7Select: number;  // MMC3 R7 value (CPU $A000-$BFFF)
+  r6Select: number;  // 原始 R6 值 (仅存档参考)
+  r7Select: number;  // 原始 R7 值 (仅存档参考)
 }
 
 export class InterruptService {

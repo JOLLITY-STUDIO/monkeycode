@@ -1,10 +1,10 @@
 /**
  * Bank 28 Service — 比赛对阵/阵型/等级配置服务
  *
- * CPU 映射: $8000-$9FFF (MMC3 R6 切换, Bank #0x1C = 28)
+ * 数据已直接 import `rom-data/prg-bank-28.ts` (Bank #0x1C = 28), 无 MMC3 切换。
  * PRG offset: 0x38010-0x3A00F
  *
- * H5 版本: 无 MMC3, 无 CPU 模拟。数据来自 `data/bank28-tables.ts`,
+ * 数据来自 `data/bank28-tables.ts`,
  * 本 service 直接翻译 bank_28 全部业务逻辑, 供 Bank30/Bank26/Bank31 调用。
  *
  * 原始入口 (bank_28.asm $8003 跳转表):

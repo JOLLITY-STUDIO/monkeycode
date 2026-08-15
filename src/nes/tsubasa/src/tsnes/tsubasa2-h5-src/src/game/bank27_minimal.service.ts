@@ -1,11 +1,10 @@
 /**
  * Bank 27 Service — 精灵/场景动画数据加载 + 动画帧推进
  *
- * CPU 映射: $8000-$9FFF (MMC3 R6 切换, Bank #0x1B = 27)
- *           同时经 $A000-$BFFF 窗口访问本 bank 表数据 (物理偏移 = cpuAddr - 0xA000)
+ * 数据已直接 import `rom-data/prg-bank-27.ts` (Bank #0x1B = 27), 无 MMC3 切换。
  * PRG offset: 0x036010-0x03800F
  *
- * H5 版本: 无 MMC3 / CPU 模拟。逻辑直接翻译自 _tmp_bzk_out/bank_27.asm (CDL C 标记),
+ * 逻辑直接翻译自 _tmp_bzk_out/bank_27.asm (CDL C 标记),
  * 数据经 `data/bank27-data.ts` (原始 ROM 字节直读) 访问。
  *
  * code 段 (2):

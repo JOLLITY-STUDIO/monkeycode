@@ -1,9 +1,9 @@
 /**
- * HUD Service — Bank 24 (CPU $8000-$9FFF)
+ * HUD Service — Bank 24 (数据已直接 import, 无 MMC3 切换)
  *
  * 比赛界面 HUD 文本流渲染引擎 + 精灵数据加载。
  *
- * H5 版本: 无 MMC3、无 CPU 模拟。逻辑直接翻译自 bank_24.asm,
+ * 逻辑直接翻译自 bank_24.asm,
  * 数据来自 `data/bank24-tables.ts` (bank24 自身) + `data/bank25-data.ts`
  * (HUD 指针表/文本流数据/精灵配置表, 原始 ROM 字节直读)。
  *

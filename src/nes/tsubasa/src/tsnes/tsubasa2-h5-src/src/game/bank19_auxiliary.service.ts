@@ -1,11 +1,10 @@
 /**
  * Bank 19 Service — Auxiliary Logic & Data (骨架)
  *
- * CPU 映射: $8000-$9FFF (MMC3 R6 切换, Bank #0x13 = 19)
+ * 数据已直接 import `rom-data/prg-bank-19.ts` (Bank #0x13 = 19), 无 MMC3 切换。
  * PRG offset: 0x026010-0x02800F
  *
- * H5 版本: 无 MMC3 / CPU 模拟。数据直接使用 `rom-data/prg-bank-19.ts` 原始字节,
- *           本文件为 code 翻译骨架 (来源: _tmp_bzk_out/bank_19.asm, CDL C 标记)。
+ * 本文件为 code 翻译骨架 (来源: _tmp_bzk_out/bank_19.asm, CDL C 标记)。
  *
  * 原始入口 (跳转表):
  *   (无跳转表, 直接执行 $9000)

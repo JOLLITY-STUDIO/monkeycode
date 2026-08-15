@@ -98,7 +98,7 @@ export class OamManager {
    * 同时同步语义精灵的可确定字段 (tile/palette/翻转/优先级)。
    */
   writeSlot(index: number, attr: number, tileLo: number, tileHi: number): void {
-    this._ensure(index);
+    if (!this._ensure(index)) return;
     const slot = this._shadow[index];
     slot.attr = attr & 0xff;
     slot.tileLo = tileLo & 0xff;
@@ -109,7 +109,7 @@ export class OamManager {
   /** 单字节写 (offset 相对 $04A5) */
   writeByte(offset: number, v: number): void {
     const i = Math.floor(offset / 3);
-    this._ensure(i);
+    if (!this._ensure(i)) return;
     const r = offset % 3;
     const slot = this._shadow[i];
     if (r === 0) slot.attr = v & 0xff;
@@ -161,7 +161,7 @@ export class OamManager {
 
   /** 设置精灵屏幕坐标与激活 (y=0xF8 表示屏幕外不可见) */
   setPos(index: number, x: number, y: number, active: boolean): void {
-    this._ensure(index);
+    if (!this._ensure(index)) return;
     this._entries[index].x = x & 0xff;
     this._entries[index].y = y & 0xff;
     this._entries[index].active = active;
@@ -169,7 +169,7 @@ export class OamManager {
 
   /** 设置精灵 CHR bank (图案取自哪个 CHR Bank) */
   setBank(index: number, bank: number): void {
-    this._ensure(index);
+    if (!this._ensure(index)) return;
     this._entries[index].bank = bank;
   }
 
@@ -196,10 +196,14 @@ export class OamManager {
 
   // ── 内部 ──
 
-  private _ensure(index: number): void {
+  /**
+   * 确保索引在 [0, OAM_MAX) 范围内并按需扩展缓冲。
+   * @returns true=索引有效可继续操作; false=越界已忽略
+   */
+  private _ensure(index: number): boolean {
     if (index < 0 || index >= OAM_MAX) {
       console.warn(`[OamManager] 精灵槽越界: ${index} (上限 ${OAM_MAX})`);
-      return;
+      return false;
     }
     while (this._shadow.length <= index) {
       this._shadow.push({ attr: 0, tileLo: 0, tileHi: 0 });
@@ -215,6 +219,7 @@ export class OamManager {
         bank: 0,
       });
     }
+    return true;
   }
 
   /** 由影子槽同步语义精灵的可确定字段 */
