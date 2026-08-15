@@ -277,6 +277,84 @@ export async function runUnitTests(ctx: TestContext): Promise<void> {
     record('单元-常量', '按键位掩码不重叠', allBtns === 0xFF, `mask=0x${allBtns.toString(16)}`);
   }
 
+  // 1.8 ScriptVM 脚本虚拟机
+  {
+    const { ScriptVM } = await import('../src/data/tile/textscript/script-vm');
+    const { getScriptData } = await import('../src/data/tile/textscript/script-data-loader');
+
+    // 脚本 0x00 存在性
+    const script00 = getScriptData(0x00);
+    record('单元-ScriptVM', '脚本 0x00 存在', script00 !== undefined, `bank=${script00?.bank}`);
+
+    // ScriptVM 构造与启动
+    let vm: ScriptVM | null = null;
+    let crashed = false;
+    try {
+      vm = new ScriptVM(0x00);
+      vm.start();
+    } catch (_) {
+      crashed = true;
+    }
+    record('单元-ScriptVM', '构造并启动脚本 0x00', !crashed, crashed ? '抛异常' : 'ok');
+
+    if (vm) {
+      // 初始状态检查
+      const initState = vm.getState();
+      record('单元-ScriptVM', '初始状态 complete=false', !initState.complete, `complete=${initState.complete}`);
+      record('单元-ScriptVM', '初始状态 isLooping=false', !initState.isLooping, `looping=${initState.isLooping}`);
+
+      // 执行 100 帧, 验证不崩溃
+      let execCrashed = false;
+      let lastState = initState;
+      try {
+        for (let i = 0; i < 100; i++) {
+          lastState = vm.update();
+        }
+      } catch (_) {
+        execCrashed = true;
+      }
+      record('单元-ScriptVM', '执行 100 帧不崩溃', !execCrashed, execCrashed ? '抛异常' : `shot=${lastState.blockIndex}`);
+
+      // 验证脚本推进 (100 帧后应该有场景数据加载)
+      record('单元-ScriptVM', '100 帧后 sceneDataId > 0', lastState.sceneDataId > 0, `sceneDataId=${lastState.sceneDataId}`);
+
+      // 验证等待帧机制 (在某帧应该有 waitFrames > 0)
+      let hasWait = false;
+      try {
+        for (let i = 0; i < 300; i++) {
+          const s = vm.update();
+          if (s.waitFrames > 0) { hasWait = true; break; }
+        }
+      } catch (_) { /* ignore */ }
+      record('单元-ScriptVM', 'WAIT 指令触发等待', hasWait, hasWait ? '检测到等待帧' : '未检测到');
+
+      // 循环检测: 执行 3000 帧, 验证能检测到循环
+      let detectedLoop = vm.isLooping;
+      if (!detectedLoop) {
+        try {
+          for (let i = 0; i < 3000; i++) {
+            vm.update();
+            if (vm.isLooping) { detectedLoop = true; break; }
+          }
+        } catch (_) { /* ignore */ }
+      }
+      record('单元-ScriptVM', '循环检测 (SET_PTR 跳回)', detectedLoop, detectedLoop ? '检测到循环' : '未检测到');
+
+      // 脚本信息
+      const info = vm.getScriptInfo();
+      record('单元-ScriptVM', 'getScriptInfo 返回非空', info.length > 0, info);
+    }
+
+    // 不存在的脚本 ID 应抛异常
+    let invalidCrashed = false;
+    try {
+      new ScriptVM(0xFF);
+    } catch (_) {
+      invalidCrashed = true;
+    }
+    record('单元-ScriptVM', '无效脚本 ID 0xFF 抛异常', invalidCrashed, invalidCrashed ? '正确抛异常' : '未抛异常');
+  }
+
   log('━━━ 单元测试完成 ━━━', 'step');
 }
 
@@ -357,6 +435,56 @@ export async function runIntegrationTests(ctx: TestContext): Promise<void> {
     // 通过 game 内部 store 检查（需通过 getDebugInfo 间接验证）
     log(`场景流转验证: 当前状态=${dbg2.gameStateName}, frame=${dbg2.frame}`, 'info');
     record('集成-场景', 'OPENING 状态保持', dbg2.gameStateName === 'OPENING', '开场阶段');
+  }
+
+  // 2.8 OpeningSceneController 脚本驱动模式集成测试
+  {
+    const { OpeningSceneController } = await import('../src/game/scene_opening.controller');
+    const { OpeningShot } = await import('../src/data/scene/index');
+    const store = new DataStore();
+    const ctrl = new OpeningSceneController(store);
+
+    // 初始化 (应启动 ScriptVM)
+    let initCrashed = false;
+    try {
+      ctrl.init();
+    } catch (_) {
+      initCrashed = true;
+    }
+    record('集成-OpeningScript', 'init() 不崩溃 (启动 ScriptVM)', !initCrashed, initCrashed ? '抛异常' : 'ok');
+
+    // 获取初始显示状态, 验证脚本驱动模式启用
+    const initState = ctrl.getDisplayState();
+    record('集成-OpeningScript', 'scriptDriven=true (脚本模式启用)', initState.scriptDriven, `scriptDriven=${initState.scriptDriven}`);
+    record('集成-OpeningScript', '初始 shot=LOGO', initState.shot === OpeningShot.LOGO, `shot=${initState.shot}`);
+
+    // 执行 300 帧, 验证脚本驱动不崩溃
+    let execCrashed = false;
+    let lastState = initState;
+    try {
+      for (let i = 0; i < 300; i++) {
+        lastState = ctrl.update(0); // 无按键
+      }
+    } catch (_) {
+      execCrashed = true;
+    }
+    record('集成-OpeningScript', '300 帧脚本驱动不崩溃', !execCrashed, execCrashed ? '抛异常' : `frame=${lastState.shotFrame}`);
+
+    // 验证脚本字段有效 (sceneDataId 或 mode 应有变化)
+    const hasScriptData = lastState.scriptSceneDataId > 0 || lastState.scriptMode > 0;
+    record('集成-OpeningScript', '脚本字段有效 (sceneDataId/mode > 0)', hasScriptData, `scene=${lastState.scriptSceneDataId}, mode=${lastState.scriptMode}`);
+
+    // 验证脚本文本行累积 (执行足够帧后应有文本)
+    log(`脚本状态: textLines=${lastState.scriptTextLines.length}, lastInstr="${lastState.scriptLastInstr}"`, 'info');
+
+    // START 键跳过测试 — 脚本模式下 START 应能跳过到标题
+    ctrl.jumpToTitle();
+    const titleState = ctrl.getDisplayState();
+    record('集成-OpeningScript', 'jumpToTitle() 进入标题画面', titleState.isTitle, `isTitle=${titleState.isTitle}`);
+    record('集成-OpeningScript', '标题画面 shot=TITLE', titleState.shot === OpeningShot.TITLE, `shot=${titleState.shot}`);
+
+    // 截图记录脚本驱动状态
+    screenshot('集成-OpeningScript-脚本驱动状态');
   }
 
   log('━━━ 集成测试完成 ━━━', 'step');

@@ -308,14 +308,18 @@ export class Renderer {
   ): void {
     const cx = W / 2;
 
+    // 优先显示脚本/控制层传入的标题文本, 无则使用默认标题
+    const titleMain = ds.text && ds.text.length > 0 ? ds.text : 'CAPTAIN TSUBASA II';
+    const titleSub = ds.subText && ds.subText.length > 0 ? ds.subText : 'SUPER STRIKER';
+
     ctx.fillStyle = '#ff6600';
     ctx.font = 'bold 22px monospace';
     ctx.textAlign = 'center';
-    ctx.fillText('CAPTAIN TSUBASA II', cx, 80);
+    ctx.fillText(titleMain, cx, 80);
 
     ctx.fillStyle = '#888';
     ctx.font = '12px monospace';
-    ctx.fillText('SUPER STRIKER', cx, 100);
+    ctx.fillText(titleSub, cx, 100);
 
     const yBase = 145;
     const items = ds.titleItems;

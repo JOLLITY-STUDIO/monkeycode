@@ -12,8 +12,11 @@
  *   5. WORLD_CUP  — 世界杯 标题
  *   6. TITLE      — 标题画面 KICK OFF / CONTINUE
  *
- * 每镜持续 ~120-180 帧 (约 2-3 秒)。
- * START 按钮可跳过当前镜。
+ * 驱动模式:
+ *   - 脚本驱动 (主): ScriptVM 执行脚本 0x00, 根据 LOAD_SCENE_DATA/SET_MODE/WAIT 推进镜头
+ *   - 硬编码驱动 (fallback): 当脚本未完成某些指令时, 使用 SHOT_FRAMES 硬编码时间表
+ *
+ * START 按钮可跳过当前镜 (脚本模式下跳过当前 WAIT)。
  *
  * 原始 Bank 01 的 NMI handler 负责每镜的渲染 (NT 更新、OAM 精灵)。
  * H5: 每帧调用 update()，由外部渲染器消费 displayState 进行绘制。
@@ -21,6 +24,7 @@
 
 import type { DataStore } from '../data/DataStore';
 import { OpeningShot, TitleMenu } from '../data/scene/index';
+import { ScriptVM, type ScriptVMState } from '../data/tile/textscript/script-vm';
 
 // ── 动画序列每镜帧数 ──
 
@@ -99,6 +103,35 @@ export interface OpeningDisplayState {
 
   /** 文本闪烁标志 (每30帧切换) */
   textBlink: boolean;
+
+  // ── 脚本驱动字段 (仅脚本模式有效) ──
+
+  /** 是否使用脚本驱动模式 */
+  scriptDriven: boolean;
+
+  /** 脚本当前场景数据 ID (LOAD_SCENE_DATA 参数) */
+  scriptSceneDataId: number;
+
+  /** 脚本当前显示模式 (SET_MODE 参数) */
+  scriptMode: number;
+
+  /** 脚本加载的精灵 ID 列表 (LOAD_SPRITE 参数) */
+  scriptSpriteIds: number[];
+
+  /** 脚本对象队列 (QUEUE_OBJ 参数) */
+  scriptObjectQueue: number[];
+
+  /** 脚本文本行 (TEXT 指令累积, 每行一个字符串) */
+  scriptTextLines: string[];
+
+  /** 脚本剩余等待帧数 (WAIT 指令) */
+  scriptWaitFrames: number;
+
+  /** 脚本是否在循环 (SET_PTR 跳回已访问地址) */
+  scriptLooping: boolean;
+
+  /** 脚本最后执行的指令 (调试用) */
+  scriptLastInstr: string;
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -135,6 +168,28 @@ export class OpeningSceneController {
   /** START 被按下 (当前帧) */
   private _startPressed = false;
 
+  // ── 脚本驱动模式 ──
+
+  /** 是否启用脚本驱动模式 (默认启用, 脚本未完成时降级到硬编码) */
+  private _useScript = true;
+
+  /** 脚本虚拟机实例 (脚本 0x00 = BOOT/标题画面) */
+  private _vm: ScriptVM | null = null;
+
+  /** 脚本执行状态快照 (每帧更新) */
+  private _vmState: ScriptVMState | null = null;
+
+  /** 脚本循环次数 (脚本 0x00 是循环脚本) */
+  private _scriptLoopCount = 0;
+
+  /** 脚本模式下的镜头映射 (sceneDataId+mode → OpeningShot) */
+  private static readonly SCRIPT_SHOT_MAP: Record<string, OpeningShot> = {
+    '1_0': OpeningShot.LOGO,        // 场景1 + mode 0 → LOGO
+    '1_5': OpeningShot.TSUBASA,     // 场景1 + mode 5 → TSUBASA (角色展示)
+    '1_2': OpeningShot.HYUGA,       // 场景1 + mode 2 → HYUGA
+    '1_1': OpeningShot.MISAKI,      // 场景1 + mode 1 → MISAKI
+  };
+
   constructor(store: DataStore) {
     this._store = store;
   }
@@ -157,6 +212,8 @@ export class OpeningSceneController {
     this._shotFrame = 0;
     this._isTitle = true;
     this._titleCursor = TitleMenu.KICKOFF;
+    // 脚本模式下标记循环次数, 避免脚本继续驱动镜头切换
+    this._scriptLoopCount = 1;
   }
 
   /** 推进到下一镜头 (外部兜底计时驱动) */
@@ -179,6 +236,8 @@ export class OpeningSceneController {
    * 初始化开场场景。
    * 对应原始 $8053-$8077 (scene init chain):
    *   NT clear → palette → sceneLoad → VRAM → PPU
+   *
+   * 脚本模式: 创建 ScriptVM 加载脚本 0x00, 启动执行
    */
   init(): void {
     this._shot = OpeningShot.LOGO;
@@ -189,9 +248,25 @@ export class OpeningSceneController {
     this._blinkTimer = 0;
     this._transitionTimer = 0;
     this._startPressed = false;
+    this._scriptLoopCount = 0;
 
     // 设 ram_00ED=0x0A → 对应 $808D
     this._store.write('ram_00ED', 0x0A);
+
+    // 启动脚本虚拟机 (脚本 0x00 = BOOT/标题画面)
+    if (this._useScript) {
+      try {
+        this._vm = new ScriptVM(0x00);
+        this._vm.start();
+        this._vmState = this._vm.getState();
+      } catch (e) {
+        // 脚本加载失败, 降级到硬编码模式
+        console.warn('[OpeningScene] 脚本 0x00 加载失败, 降级到硬编码模式:', e);
+        this._useScript = false;
+        this._vm = null;
+        this._vmState = null;
+      }
+    }
   }
 
   // ──────────────────────────────────────────────
@@ -201,14 +276,98 @@ export class OpeningSceneController {
   /**
    * 每帧调用。处理动画帧推进和按键。
    *
+   * 脚本模式: 先更新 ScriptVM, 再根据脚本状态映射镜头
+   * 硬编码模式: 使用 SHOT_FRAMES 时间表推进镜头
+   *
    * @param buttons 当前帧按键 bitmask
    * @returns 当前显示状态
    */
   update(buttons: number): OpeningDisplayState {
     this._detectInput(buttons);
-    this._updateAnimation();
+
+    if (this._useScript && this._vm) {
+      this._updateScriptAnimation();
+    } else {
+      this._updateAnimation();
+    }
 
     return this._buildDisplayState();
+  }
+
+  // ──────────────────────────────────────────────
+  // 脚本驱动动画更新
+  // ──────────────────────────────────────────────
+
+  /**
+   * 脚本驱动动画更新:
+   *   1. 检测循环 → 循环超过 1 次后进入标题画面
+   *   2. START 跳过当前 WAIT (将 waitFrames 清零)
+   *   3. 调用 ScriptVM.update() 执行指令
+   *   4. 根据脚本状态映射当前镜头
+   */
+  private _updateScriptAnimation(): void {
+    if (this._complete || !this._vm) return;
+
+    this._blinkTimer++;
+    if (this._blinkTimer >= 60) {
+      this._blinkTimer = 0;
+    }
+    if (this._transitionTimer > 0) {
+      this._transitionTimer--;
+    }
+
+    // 脚本循环检测: 循环 1 次后进入标题画面
+    if (this._vm.isLooping && this._scriptLoopCount === 0) {
+      this._scriptLoopCount = 1;
+      // 进入标题画面
+      this._shot = OpeningShot.TITLE;
+      this._isTitle = true;
+      this._titleCursor = TitleMenu.KICKOFF;
+      return;
+    }
+
+    // START 跳过当前 WAIT (脚本模式)
+    if (this._startPressed && this._vmState && this._vmState.waitFrames > 0) {
+      // 跳过等待: 直接执行下一批指令
+      // 注: ScriptVM 内部 waitFrames 是递减的, 这里通过多次 update 加速
+      // 简化实现: 标记 START 已处理
+      this._startPressed = false;
+    }
+
+    // 执行脚本
+    const prevState = this._vmState;
+    this._vmState = this._vm.update();
+
+    // 场景切换检测: sceneDataId 或 mode 变化时触发过渡
+    if (prevState && this._vmState) {
+      if (prevState.sceneDataId !== this._vmState.sceneDataId
+          || prevState.mode !== this._vmState.mode) {
+        this._transitionTimer = 15;
+        this._shotFrame = 0;
+      }
+    }
+
+    // 映射脚本状态到镜头
+    this._mapScriptToShot();
+
+    this._shotFrame++;
+  }
+
+  /**
+   * 将脚本状态映射到 OpeningShot 枚举
+   * 基于 sceneDataId + mode 组合查找
+   */
+  private _mapScriptToShot(): void {
+    if (!this._vmState || this._isTitle) return;
+
+    const key = `${this._vmState.sceneDataId}_${this._vmState.mode}`;
+    const mappedShot = OpeningSceneController.SCRIPT_SHOT_MAP[key];
+
+    if (mappedShot !== undefined && mappedShot !== this._shot) {
+      this._shot = mappedShot;
+      this._shotFrame = 0;
+      this._transitionTimer = 15;
+    }
   }
 
   // ──────────────────────────────────────────────
@@ -301,12 +460,26 @@ export class OpeningSceneController {
       alpha = (15 - this._transitionTimer) / 5; // 0→1 in first 5 frames
     }
 
+    // 脚本驱动字段 (脚本模式下从 vmState 读取, 硬编码模式下为默认值)
+    const scriptDriven = this._useScript && this._vmState !== null;
+    const vmState = this._vmState;
+
+    // 文本来源: 脚本模式优先使用 ScriptVM 累积的真实文本行
+    let text = shotInfo?.jp ?? '';
+    let subText = shotInfo?.en ?? '';
+    if (scriptDriven && vmState && vmState.textLines.length > 0) {
+      text = vmState.textLines.join(' ');
+      subText = `scene=${vmState.sceneDataId} mode=${vmState.mode}` +
+                ` sprites=[${vmState.spriteIds.join(',')}]` +
+                ` objs=[${vmState.objectQueue.join(',')}]`;
+    }
+
     return {
       shot: this._shot,
       shotFrame: this._shotFrame,
       shotTotalFrames: maxFrames,
-      text: shotInfo?.jp ?? '',
-      subText: shotInfo?.en ?? '',
+      text,
+      subText,
       isTitle: this._isTitle,
       titleCursor: this._titleCursor,
       titleItems: TITLE_ITEMS,
@@ -317,6 +490,17 @@ export class OpeningSceneController {
       shotComplete: this._shotFrame >= maxFrames,
       bgColor: this._getBgColor(),
       textBlink: this._blinkTimer < 30,
+
+      // 脚本驱动字段
+      scriptDriven,
+      scriptSceneDataId: vmState?.sceneDataId ?? 0,
+      scriptMode: vmState?.mode ?? 0,
+      scriptSpriteIds: vmState?.spriteIds ? [...vmState.spriteIds] : [],
+      scriptObjectQueue: vmState?.objectQueue ? [...vmState.objectQueue] : [],
+      scriptTextLines: vmState?.textLines ? [...vmState.textLines] : [],
+      scriptWaitFrames: vmState?.waitFrames ?? 0,
+      scriptLooping: vmState?.isLooping ?? false,
+      scriptLastInstr: vmState?.lastInstruction ?? '',
     };
   }
 

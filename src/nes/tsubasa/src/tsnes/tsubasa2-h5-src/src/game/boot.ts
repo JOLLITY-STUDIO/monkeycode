@@ -183,7 +183,8 @@ export class BootService {
     this._shotFrame++;
 
     // 每帧驱动开场控制器 (对应 Bank01 NMI handler 每帧渲染)
-    this._opening.update(buttons);
+    // 脚本模式下, ScriptVM 驱动镜头切换; 硬编码模式下, 使用兜底计时
+    const displayState = this._opening.update(buttons);
 
     // START 键跳过整个开场动画 → 直接进标题
     if (buttons & BUTTON.START) {
@@ -198,8 +199,8 @@ export class BootService {
       return false;
     }
 
-    // 镜头计时 (开场控制器内部已处理, 此处做兜底)
-    if (this._shotFrame >= BootService.SHOT_DURATION) {
+    // 镜头计时兜底 (仅硬编码模式, 脚本模式由 ScriptVM 驱动)
+    if (!displayState.scriptDriven && this._shotFrame >= BootService.SHOT_DURATION) {
       this._shotFrame = 0;
       this._opening.nextShot();
     }
