@@ -1,13 +1,15 @@
 // 完成画面 —— STATE 0x14（资源 map_comp/ lap_comp/ fap_comp/）
 // 真实流程: achieve（完成确认）→ saving(0x10) → 回选关
+// UI 全在 canvas 内自绘：OK → SAVE 按钮 + 背景/光效/标题/完成图
 import { SceneHandler, GameState, PicPicEngine } from '../core/engine';
 import { ROM_STATE, ROM_SUBSTATE } from '../core/rom-states';
 import { getStageDetail } from '../data/stage-data';
 import { canvasSize } from '../core/canvas-util';
+import { drawButton, drawText, hitTest, Rect } from '../core/canvas-ui';
 
 export class AchieveScene implements SceneHandler {
   private time = 0;
-  private okBtn = { x: 0, y: 0, w: 0, h: 0 };
+  private okRect: Rect = { x: 0, y: 0, w: 0, h: 0 };
 
   onEnter(_state: GameState): void {
     this.time = 0;
@@ -18,11 +20,10 @@ export class AchieveScene implements SceneHandler {
   }
 
   render(ctx: CanvasRenderingContext2D, state: GameState): void {
-    const W = this.canvasW(ctx);
-    const H = this.canvasH(ctx);
+    const { w: W, h: H } = canvasSize(ctx);
 
-    // 深色底 + 完成标题
-    ctx.fillStyle = '#0a2a12';
+    // 深色底
+    ctx.fillStyle = '#1d1236';
     ctx.fillRect(0, 0, W, H);
 
     // 光芒闪烁
@@ -66,32 +67,27 @@ export class AchieveScene implements SceneHandler {
       }
     }
 
-    // 确定按钮 → saving
-    const bw = 180, bh = 46;
-    ctx.fillStyle = '#1e7a3c';
-    ctx.fillRect((W - bw) / 2, H * 0.78, bw, bh);
-    this.okBtn = { x: (W - bw) / 2, y: H * 0.78, w: bw, h: bh };
-    ctx.fillStyle = '#fff';
-    ctx.font = '16px sans-serif';
-    ctx.fillText('OK → SAVE', W / 2, H * 0.78 + 29);
-
-    ctx.font = '11px sans-serif';
-    ctx.fillStyle = '#6a9a78';
-    ctx.fillText('（0x14 achieve → 0x10 saving）', W / 2, H * 0.78 + 60);
+    // OK → SAVE 按钮（底部）
+    this.okRect = drawButton(
+      ctx,
+      W * 0.28,
+      H * 0.85,
+      W * 0.44,
+      38,
+      'OK → SAVE',
+      { bg: '#1e7a3c', border: '#66bb6a', text: '#fff', font: 'bold 14px sans-serif' },
+    );
   }
 
+  onOkTap(engine: PicPicEngine): void {
+    engine.setSubState(ROM_SUBSTATE.SUB_MAIN);
+    engine.setState(ROM_STATE.ST_SAVING); // 0x10
+  }
+
+  // ===== Canvas 触摸命中 =====
   onTouch(x: number, y: number, _state: GameState, engine: PicPicEngine): void {
-    const b = this.okBtn;
-    if (x >= b.x && x <= b.x + b.w && y >= b.y && y <= b.y + b.h) {
-      engine.setSubState(ROM_SUBSTATE.SUB_MAIN);
-      engine.setState(ROM_STATE.ST_SAVING); // 0x10
+    if (hitTest(x, y, this.okRect)) {
+      this.onOkTap(engine);
     }
-  }
-
-  private canvasW(ctx: CanvasRenderingContext2D): number {
-    return canvasSize(ctx).w;
-  }
-  private canvasH(ctx: CanvasRenderingContext2D): number {
-    return canvasSize(ctx).h;
   }
 }

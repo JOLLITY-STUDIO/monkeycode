@@ -1,0 +1,2113 @@
+; === MODE_INIT_A 0x02052BF4 - 0x02055BF4 ===
+0x02052C2C  cmp      r0, #0
+0x02052C34  beq      #0x2052c48
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02052C4C  cmp      r3, #7
+0x02052C58  cmp      r3, #2
+0x02052C60  cmp      r3, #0
+0x02052C68  beq      #0x2052d50
+0x02052C6C  cmp      r3, #2
+  ; >>> JUMP 0x02052D68
+0x02052C78  cmp      r3, #9
+0x02052C80  beq      #0x2052d04
+  ; >>> JUMP 0x02052D68
+0x02052C88  cmp      r3, #0x1a
+0x02052C8C  beq      #0x2052d34
+  ; >>> JUMP 0x02052D68
+0x02052C9C  cmp      r2, #0
+0x02052CA0  beq      #0x2052cac
+0x02052CB4  cmp      r1, #0
+0x02052CB8  beq      #0x2052cf0
+0x02052CC4  cmp      r0, #0
+0x02052CC8  bne      #0x2052cf0
+  ; >>> JUMP 0x0200FF08
+0x02052CD8  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02052D0C  cmp      r2, #0
+0x02052D10  beq      #0x2052d1c
+0x02052D3C  cmp      r2, #0
+  ; >>> JUMP 0x02052D9C
+0x02052D54  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+0x02052D70  cmp      r2, #0
+0x02052DAC  cmp      r0, #4
+0x02052DB0  cmpne    r0, #6
+0x02052DB4  cmpne    r0, #5
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0201072C
+0x02052E00  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02052E3C  cmp      r0, #0
+0x02052E40  beq      #0x2052e54
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02052E5C  cmp      r0, #3
+  ; >>> JUMP 0x02052F24
+  ; >>> JUMP 0x02052E78
+  ; >>> JUMP 0x02052F24
+  ; >>> JUMP 0x02052F24
+0x02052E80  cmp      r1, #2
+0x02052E84  bne      #0x2052ed0
+0x02052E8C  cmp      r0, #4
+0x02052E90  bne      #0x2052ec4
+  ; >>> JUMP 0x02052F54
+0x02052E98  cmp      r0, #0
+0x02052EA8  cmp      r1, #0
+0x02052EAC  beq      #0x2052eb8
+  ; >>> JUMP 0x02052A00
+0x02052EC4  cmp      r0, #6
+0x02052EC8  bne      #0x2052f18
+0x02052ED0  cmp      r1, #4
+0x02052ED4  bne      #0x2052f18
+  ; >>> JUMP 0x02011474
+0x02052EF4  cmp      r0, #0
+0x02052EF8  beq      #0x2052f0c
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+0x02052F2C  cmp      r2, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020116FC
+0x02052F6C  cmp      r0, #0
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x020116F0
+0x02052F94  cmp      r0, #0
+0x02052F98  beq      #0x2052fa8
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052FEC
+0x02052FAC  cmp      r0, #0
+0x02052FB0  bne      #0x2052fd8
+0x02052FBC  cmp      r1, #0
+0x02052FC0  beq      #0x2052fcc
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02010544
+0x02053000  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02053024  cmp      r0, #0
+0x02053028  beq      #0x2053038
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x0205306C
+0x0205303C  cmp      r0, #0
+0x0205304C  cmp      r1, #0
+0x02053050  beq      #0x205305c
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02010234
+0x02053078  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x0205309C  cmp      r0, #0
+0x020530A0  beq      #0x20530ac
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x020530E0  cmp      r3, #0
+0x020530E4  beq      #0x20530f0
+0x020530F8  cmp      r2, #0
+0x020530FC  beq      #0x205310c
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053184
+0x02053158  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+0x02053190  cmp      r0, #2
+0x02053194  beq      #0x20531a0
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x0200FAE4
+0x020531A4  cmp      r0, #0x8000
+0x020531A8  bne      #0x20531bc
+  ; >>> JUMP 0x02052A64
+0x020531BC  cmp      r0, #0
+0x020531C0  bne      #0x20531d4
+  ; >>> JUMP 0x02052A64
+0x020531DC  cmp      r2, #0
+0x020531E0  bne      #0x2053218
+0x020531FC  cmp      r2, #0x10
+0x02053210  bne      #0x205321c
+  ; >>> JUMP 0x020531EC
+  ; >>> JUMP 0x0200F8F4
+  ; >>> JUMP 0x02010134
+0x0205323C  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02053274  cmp      r0, #0
+0x02053278  beq      #0x2053290
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053298  cmp      r0, #2
+0x0205329C  beq      #0x20532c0
+  ; >>> JUMP 0x0205349C
+0x020532A4  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+0x020532C4  cmp      r0, #3
+0x020532D0  cmp      r0, #4
+0x020532D4  beq      #0x205345c
+0x020532D8  cmp      r0, #5
+0x020532DC  bne      #0x205345c
+0x020532E4  cmp      r0, #0
+0x020532E8  beq      #0x205331c
+  ; >>> JUMP 0x020057A0
+0x02053330  cmp      r0, #0
+0x02053334  beq      #0x205337c
+  ; >>> JUMP 0x02019F6C
+0x02053340  cmp      r0, #0
+0x02053344  beq      #0x205337c
+0x02053350  cmp      r1, #0
+0x02053354  beq      #0x2053360
+0x02053368  cmp      r1, #0
+0x0205336C  beq      #0x205345c
+  ; >>> JUMP 0x0205345C
+0x02053384  cmp      r0, #0x10
+0x02053390  cmp      r0, #1
+0x02053398  cmp      r1, #0
+0x0205339C  beq      #0x20533b4
+0x020533AC  cmp      r2, r1
+0x020533B0  beq      #0x20533d0
+0x020533BC  cmp      r1, #0
+0x020533C0  beq      #0x205345c
+  ; >>> JUMP 0x0205345C
+0x020533D8  cmp      r1, #1
+0x020533E0  cmpne    r1, #0
+0x020533E4  beq      #0x20533f0
+0x020533F8  cmp      r1, #0
+0x020533FC  beq      #0x2053408
+0x02053418  cmp      r1, #0
+0x02053420  beq      #0x205342c
+0x02053434  cmp      r0, #0
+0x02053438  beq      #0x205345c
+  ; >>> JUMP 0x0205349C
+0x02053440  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053184
+0x02053460  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020100EC
+0x020534A8  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x020534CC  cmp      r0, #0
+0x020534D0  beq      #0x20534dc
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x020534EC  cmp      r1, #0
+0x020534F8  cmp      r0, #0
+0x020534FC  beq      #0x2053518
+  ; >>> JUMP 0x02053550
+0x02053504  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053608
+0x0205351C  cmp      r0, #0
+0x0205352C  cmp      r1, #0
+0x02053530  beq      #0x205353c
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0201194C
+0x02053580  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x020535B8  cmp      r0, #0
+0x020535BC  beq      #0x20535d0
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053608
+0x020535D4  cmp      r0, #0
+0x020535E4  cmp      r1, #0
+0x020535E8  beq      #0x20535f4
+  ; >>> JUMP 0x02052A00
+0x02053614  cmp      r0, #4
+0x02053618  cmpne    r0, #6
+0x0205361C  cmpne    r0, #5
+0x02053620  bne      #0x2053644
+0x0205362C  cmp      r1, #0
+0x02053630  beq      #0x205363c
+  ; >>> JUMP 0x02052A00
+0x0205365C  cmp      r0, #0
+  ; >>> JUMP 0x02010010
+0x02053680  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x020536B4  cmp      r0, #0
+0x020536B8  beq      #0x205370c
+  ; >>> JUMP 0x02052A64
+0x020536C4  cmp      r0, #0xc
+0x020536C8  bne      #0x20536d8
+  ; >>> JUMP 0x02052A00
+0x020536D8  cmp      r0, #0xb
+0x020536DC  bne      #0x20536ec
+  ; >>> JUMP 0x02052A00
+0x020536EC  cmp      r0, #1
+0x020536F0  bne      #0x2053700
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+0x02053710  cmp      r0, #8
+0x02053718  cmp      r0, #7
+0x0205371C  bne      #0x2053780
+0x02053728  cmp      r1, #0
+0x0205372C  beq      #0x2053738
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053810
+0x02053744  cmp      r0, #0
+0x02053748  bne      #0x2053770
+0x02053754  cmp      r1, #0
+0x02053758  beq      #0x2053764
+  ; >>> JUMP 0x02052A00
+0x02053780  cmp      r0, #6
+0x02053788  cmp      r0, #9
+0x0205378C  bne      #0x20537bc
+0x02053798  cmp      r1, #0
+0x0205379C  beq      #0x20537a8
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x020537BC  cmp      r0, #0x1a
+0x020537CC  cmp      r1, #0
+0x020537D0  beq      #0x20537f0
+  ; >>> JUMP 0x020529E4
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0201072C
+0x0205384C  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02053888  cmp      r0, #0
+0x0205388C  beq      #0x20538ac
+0x02053890  cmp      r0, #0xf
+0x02053894  cmpne    r0, #9
+0x02053898  cmpne    r0, #0xd
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02054238
+0x020538B4  cmp      r0, #3
+  ; >>> JUMP 0x02053988
+  ; >>> JUMP 0x020538D0
+  ; >>> JUMP 0x02053988
+0x020538D8  cmp      r1, #3
+0x020538DC  bne      #0x2053920
+0x020538E4  cmp      r0, #6
+0x020538EC  cmp      r0, #4
+0x020538F0  bne      #0x205397c
+  ; >>> JUMP 0x020539BC
+0x020538F8  cmp      r0, #0
+0x02053908  cmp      r1, #0
+0x0205390C  beq      #0x2053918
+  ; >>> JUMP 0x02054254
+0x02053920  cmp      r1, #5
+0x02053924  bne      #0x205397c
+  ; >>> JUMP 0x02011474
+0x02053944  cmp      r0, #0
+0x02053948  beq      #0x2053958
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02054254
+0x02053960  cmp      r1, #0
+0x02053964  beq      #0x2053970
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+0x02053990  cmp      r2, #0
+0x020539C8  cmp      r0, #6
+0x020539D4  cmp      r0, #4
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020116FC
+0x020539F4  cmp      r0, #0
+  ; >>> JUMP 0x02052A64
+0x02053A20  cmp      r0, #6
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020116F0
+0x02053A3C  cmp      r0, #0
+0x02053A40  beq      #0x2053a50
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02053A6C
+0x02053A54  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02010544
+0x02053A80  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02053AA4  cmp      r0, #0
+0x02053AA8  beq      #0x2053ab8
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02054254
+  ; >>> JUMP 0x02053AD0
+0x02053ABC  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0200FF08
+0x02053AE8  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02054238
+0x02053B10  cmp      r0, #0
+0x02053B14  beq      #0x2053b20
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0201049C
+0x02053B40  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02053B68  cmp      r0, #0
+0x02053B6C  beq      #0x2053b84
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053B98  cmp      r0, #0
+0x02053B9C  beq      #0x2053bac
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020062EC
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053CB4
+0x02053C5C  cmp      r0, #0x18
+0x02053C60  bne      #0x2053c80
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053C80  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0200FAE4
+0x02053CC0  cmp      r0, #0x8000
+0x02053CC4  bne      #0x2053ce0
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053CE0  cmp      r0, #0
+0x02053CE4  bne      #0x2053d00
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053D0C  bne      #0x2053d34
+0x02053D1C  cmp      r4, #0x10
+0x02053D30  beq      #0x2053d10
+  ; >>> JUMP 0x02053E1C
+0x02053D5C  cmp      r0, #0
+0x02053D60  beq      #0x2053d74
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053D7C  cmp      r3, #0
+0x02053D80  beq      #0x2053d94
+0x02053DA4  cmp      r1, r3
+  ; >>> JUMP 0x02053DDC
+0x02053DC4  bne      #0x2053ddc
+  ; >>> JUMP 0x02053CB4
+0x02053DEC  cmp      r0, #0x18
+0x02053DF0  bne      #0x2053e00
+  ; >>> JUMP 0x02052A00
+0x02053E00  cmp      r0, #2
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02011728
+0x02053E48  cmp      r0, #7
+0x02053E4C  beq      #0x2053e54
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053E9C
+0x02053E74  cmp      r2, #0
+0x02053E78  beq      #0x2053e88
+0x02053EB4  beq      #0x2053ed0
+0x02053EDC  cmp      lr, #0x10
+0x02053EE4  cmp      r1, #1
+0x02053F24  beq      #0x2053f4c
+0x02053F28  cmp      r3, #0
+0x02053F2C  bne      #0x2053f40
+0x02053F5C  cmp      r2, #0x10
+  ; >>> JUMP 0x02053FDC
+0x02053FAC  cmp      r0, #0
+0x02053FC8  cmp      r0, #8
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020104DC
+0x02053FF8  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02054028  cmp      r0, #0
+0x0205402C  beq      #0x2054040
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0200FEBC
+0x02054048  cmp      r0, #0
+0x0205404C  beq      #0x2054060
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+0x0205408C  cmp      r0, #1
+0x02054090  beq      #0x205409c
+  ; >>> JUMP 0x020064C8
+0x020540B4  cmp      r2, #0
+0x020540B8  beq      #0x20540c4
+0x020540CC  cmp      r2, #0
+0x020540D0  beq      #0x20540e0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0200F998
+0x02054130  cmp      r7, #2
+0x0205413C  cmp      r7, #0
+0x02054140  cmpne    r7, #2
+0x02054148  cmpne    r7, #4
+0x0205414C  bne      #0x2054158
+  ; >>> JUMP 0x02052A80
+0x0205415C  cmp      r2, #0
+0x02054160  beq      #0x2054170
+  ; >>> JUMP 0x020110A0
+0x020541D4  cmp      r4, #7
+0x020541E0  cmp      r4, #5
+0x020541E4  bne      #0x2054210
+0x020541F0  cmp      r1, #0
+0x020541F4  beq      #0x2054200
+  ; >>> JUMP 0x02052A64
+0x02054210  cmp      r4, #0
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02053B2C
+0x02054240  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+0x02054260  cmp      r1, #1
+0x02054264  bne      #0x2054280
+0x0205426C  cmp      r1, #0
+0x02054284  cmp      r2, #0
+0x02054288  beq      #0x2054294
+0x0205429C  cmp      r0, #6
+0x020542A0  cmpne    r0, #5
+0x020542A4  cmpne    r0, #4
+0x020542AC  beq      #0x20542bc
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02052A00
+0x020542C8  cmp      r0, #5
+  ; >>> JUMP 0x02054328
+  ; >>> JUMP 0x02054300
+  ; >>> JUMP 0x02054314
+  ; >>> JUMP 0x020542EC
+  ; >>> JUMP 0x02054328
+  ; >>> JUMP 0x02054300
+  ; >>> JUMP 0x02053A14
+0x020542F0  cmp      r0, #0
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02053A6C
+0x02054304  cmp      r0, #0
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02052F88
+0x02054318  cmp      r0, #0
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02052FEC
+0x0205432C  cmp      r0, #0
+  ; >>> JUMP 0x02054238
+0x02054354  cmp      r0, #1
+0x02054358  beq      #0x2054360
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02010454
+0x02054370  cmp      r0, #2
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02006B80
+0x020543B8  cmp      r1, #0
+0x020543BC  beq      #0x20543cc
+0x020543C0  cmp      r1, #1
+0x020543C4  beq      #0x205440c
+  ; >>> JUMP 0x02054414
+0x020543D4  cmp      r1, #0
+0x020543D8  beq      #0x20543e8
+0x020543E0  cmp      r1, #2
+0x020543E4  beq      #0x20543f0
+0x020543F4  cmp      r1, #0
+  ; >>> JUMP 0x02054ED0
+0x0205443C  cmp      r4, #0
+0x02054444  bne      #0x2054450
+0x02054448  cmp      r1, #0
+  ; >>> JUMP 0x0200A154
+  ; >>> JUMP 0x0200A1C0
+0x02054468  cmp      r4, #0
+0x0205446C  beq      #0x2054484
+  ; >>> JUMP 0x0200D6F4
+  ; >>> JUMP 0x020544BC
+  ; >>> JUMP 0x02009CCC
+  ; >>> JUMP 0x02009C60
+0x020544BC  cmp      fp, #0
+0x020544C0  bne      #0x2054508
+  ; >>> JUMP 0x0205455C
+  ; >>> JUMP 0x0200D6F4
+  ; >>> JUMP 0x0200D6F4
+0x02054560  cmp      fp, #0
+0x02054574  beq      #0x20545e8
+0x020545D8  cmp      r0, #4
+  ; >>> JUMP 0x0205461C
+0x02054610  cmp      r0, #4
+  ; >>> JUMP 0x02006120
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x02009C60
+  ; >>> JUMP 0x02009CCC
+0x020546B0  cmp      sl, #4
+0x020546B8  cmp      fp, #0
+0x020546BC  beq      #0x2054788
+0x02054700  cmp      r8, #0
+  ; >>> JUMP 0x02009C60
+  ; >>> JUMP 0x02009CCC
+0x02054760  cmp      sb, r8
+0x02054774  cmp      r0, #4
+  ; >>> JUMP 0x020057D8
+  ; >>> JUMP 0x020057FC
+  ; >>> JUMP 0x02009DBC
+  ; >>> JUMP 0x0200965C
+  ; >>> JUMP 0x0200945C
+  ; >>> JUMP 0x02009204
+0x02054828  cmp      r3, #4
+  ; >>> JUMP 0x02009524
+  ; >>> JUMP 0x0200A4D8
+  ; >>> JUMP 0x0200A4D8
+0x020548B0  cmp      r2, #0
+0x020548B8  cmpne    r1, #0
+0x020548C0  cmpne    r1, #0
+0x020548CC  cmp      r0, #0
+  ; >>> JUMP 0x02054964
+  ; >>> JUMP 0x02013BD0
+0x02054970  cmp      r2, #0
+0x0205497C  cmpne    r0, #0
+0x0205498C  cmp      r0, #0
+0x020549D8  cmp      r0, #0
+0x020549DC  beq      #0x2054a4c
+0x020549E4  cmp      r0, #0
+0x020549E8  bne      #0x2054a4c
+  ; >>> JUMP 0x02013EB4
+0x02054A0C  cmp      r0, #0
+  ; >>> JUMP 0x020548EC
+0x02054A2C  cmp      r0, #0
+0x02054A54  cmp      r5, #0
+0x02054A64  cmp      r3, #0
+0x02054A68  beq      #0x2054a7c
+0x02054A70  cmp      r3, r0
+0x02054A78  beq      #0x2054a80
+0x02054A80  cmp      r6, #0
+0x02054A9C  cmp      r5, r0, lsl r2
+0x02054AAC  beq      #0x2054ae8
+0x02054AB0  cmp      r1, #0
+0x02054AB8  beq      #0x2054ae8
+0x02054AD0  cmp      r8, r7, lsr #28
+0x02054ADC  cmpeq    r8, r7
+  ; >>> JUMP 0x02054A9C
+0x02054AF4  cmp      r6, #0
+0x02054AF8  cmpne    r5, r3
+0x02054B08  cmp      r1, #0
+0x02054B1C  beq      #0x2054b2c
+0x02054B20  cmp      r2, #2
+0x02054B24  beq      #0x2054b3c
+  ; >>> JUMP 0x02054B5C
+  ; >>> JUMP 0x02054B5C
+  ; >>> JUMP 0x020548EC
+0x02054B80  cmp      r0, #0
+  ; >>> JUMP 0x02006120
+0x02054BCC  cmp      r0, #0
+0x02054BD4  cmpne    r0, #0
+0x02054BD8  beq      #0x2054c7c
+0x02054BFC  cmp      r0, #0
+0x02054C14  cmp      r0, #0x400
+  ; >>> JUMP 0x02013DBC
+  ; >>> JUMP 0x02054E38
+0x02054C48  cmp      r5, r1, lsl r2
+0x02054C58  beq      #0x2054c70
+  ; >>> JUMP 0x02054C48
+  ; >>> JUMP 0x02006134
+0x02054C9C  cmp      r0, #0
+0x02054CA8  cmp      r3, #2
+0x02054CB0  cmpeq    r1, ip
+0x02054CB8  subeq    r3, r3, ip
+0x02054CBC  cmpeq    r2, r3
+0x02054CC8  cmp      r0, #0
+0x02054CCC  bne      #0x2054ca4
+0x02054CE8  cmp      r4, #0
+0x02054CEC  beq      #0x2054d18
+0x02054CF4  cmp      r1, #1
+0x02054CFC  cmpeq    r1, r6
+0x02054D04  cmpeq    r1, r5
+0x02054D08  beq      #0x2054d18
+0x02054D10  cmp      r4, #0
+0x02054D14  bne      #0x2054cf0
+0x02054D18  cmp      r4, #0
+0x02054D1C  bne      #0x2054d3c
+  ; >>> JUMP 0x02054DF0
+  ; >>> JUMP 0x02055DB8
+0x02054D4C  cmp      r0, #0
+0x02054D58  cmp      r2, #2
+0x02054D60  cmpeq    r2, r1
+0x02054D6C  cmp      r0, #0
+0x02054D70  bne      #0x2054d54
+  ; >>> JUMP 0x02006120
+0x02054D90  cmp      r1, #0
+0x02054D94  beq      #0x2054de8
+0x02054D9C  cmp      r2, r4
+0x02054DA0  bne      #0x2054dd8
+0x02054DB0  cmp      r1, #0
+0x02054DB4  beq      #0x2054dc8
+0x02054DC0  cmp      r1, #0
+0x02054DC4  bne      #0x2054db8
+  ; >>> JUMP 0x02054DE8
+0x02054DE0  cmp      r1, #0
+0x02054DE4  bne      #0x2054d98
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02055470
+  ; >>> JUMP 0x020548EC
+0x02054F14  cmp      r0, #0
+  ; >>> JUMP 0x020064C8
+0x02054F3C  cmp      r2, #0
+0x02054F54  cmp      r0, #0
+0x02054F60  cmp      r2, #0
+0x02054F68  beq      #0x2054f74
+  ; >>> JUMP 0x02013508
+  ; >>> JUMP 0x02054F78
+  ; >>> JUMP 0x02013470
+  ; >>> JUMP 0x020105D0
+0x02054FA8  cmp      r0, #2
+0x02054FC4  cmp      r0, #0
+; === MODE_INIT_B 0x0205318C - 0x0205618C ===
+0x02053190  cmp      r0, #2
+0x02053194  beq      #0x20531a0
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x0200FAE4
+0x020531A4  cmp      r0, #0x8000
+0x020531A8  bne      #0x20531bc
+  ; >>> JUMP 0x02052A64
+0x020531BC  cmp      r0, #0
+0x020531C0  bne      #0x20531d4
+  ; >>> JUMP 0x02052A64
+0x020531DC  cmp      r2, #0
+0x020531E0  bne      #0x2053218
+0x020531FC  cmp      r2, #0x10
+0x02053210  bne      #0x205321c
+  ; >>> JUMP 0x020531EC
+  ; >>> JUMP 0x0200F8F4
+  ; >>> JUMP 0x02010134
+0x0205323C  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02053274  cmp      r0, #0
+0x02053278  beq      #0x2053290
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053298  cmp      r0, #2
+0x0205329C  beq      #0x20532c0
+  ; >>> JUMP 0x0205349C
+0x020532A4  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+0x020532C4  cmp      r0, #3
+0x020532D0  cmp      r0, #4
+0x020532D4  beq      #0x205345c
+0x020532D8  cmp      r0, #5
+0x020532DC  bne      #0x205345c
+0x020532E4  cmp      r0, #0
+0x020532E8  beq      #0x205331c
+  ; >>> JUMP 0x020057A0
+0x02053330  cmp      r0, #0
+0x02053334  beq      #0x205337c
+  ; >>> JUMP 0x02019F6C
+0x02053340  cmp      r0, #0
+0x02053344  beq      #0x205337c
+0x02053350  cmp      r1, #0
+0x02053354  beq      #0x2053360
+0x02053368  cmp      r1, #0
+0x0205336C  beq      #0x205345c
+  ; >>> JUMP 0x0205345C
+0x02053384  cmp      r0, #0x10
+0x02053390  cmp      r0, #1
+0x02053398  cmp      r1, #0
+0x0205339C  beq      #0x20533b4
+0x020533AC  cmp      r2, r1
+0x020533B0  beq      #0x20533d0
+0x020533BC  cmp      r1, #0
+0x020533C0  beq      #0x205345c
+  ; >>> JUMP 0x0205345C
+0x020533D8  cmp      r1, #1
+0x020533E0  cmpne    r1, #0
+0x020533E4  beq      #0x20533f0
+0x020533F8  cmp      r1, #0
+0x020533FC  beq      #0x2053408
+0x02053418  cmp      r1, #0
+0x02053420  beq      #0x205342c
+0x02053434  cmp      r0, #0
+0x02053438  beq      #0x205345c
+  ; >>> JUMP 0x0205349C
+0x02053440  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053184
+0x02053460  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020100EC
+0x020534A8  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x020534CC  cmp      r0, #0
+0x020534D0  beq      #0x20534dc
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x020534EC  cmp      r1, #0
+0x020534F8  cmp      r0, #0
+0x020534FC  beq      #0x2053518
+  ; >>> JUMP 0x02053550
+0x02053504  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053608
+0x0205351C  cmp      r0, #0
+0x0205352C  cmp      r1, #0
+0x02053530  beq      #0x205353c
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0201194C
+0x02053580  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x020535B8  cmp      r0, #0
+0x020535BC  beq      #0x20535d0
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053608
+0x020535D4  cmp      r0, #0
+0x020535E4  cmp      r1, #0
+0x020535E8  beq      #0x20535f4
+  ; >>> JUMP 0x02052A00
+0x02053614  cmp      r0, #4
+0x02053618  cmpne    r0, #6
+0x0205361C  cmpne    r0, #5
+0x02053620  bne      #0x2053644
+0x0205362C  cmp      r1, #0
+0x02053630  beq      #0x205363c
+  ; >>> JUMP 0x02052A00
+0x0205365C  cmp      r0, #0
+  ; >>> JUMP 0x02010010
+0x02053680  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x020536B4  cmp      r0, #0
+0x020536B8  beq      #0x205370c
+  ; >>> JUMP 0x02052A64
+0x020536C4  cmp      r0, #0xc
+0x020536C8  bne      #0x20536d8
+  ; >>> JUMP 0x02052A00
+0x020536D8  cmp      r0, #0xb
+0x020536DC  bne      #0x20536ec
+  ; >>> JUMP 0x02052A00
+0x020536EC  cmp      r0, #1
+0x020536F0  bne      #0x2053700
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+0x02053710  cmp      r0, #8
+0x02053718  cmp      r0, #7
+0x0205371C  bne      #0x2053780
+0x02053728  cmp      r1, #0
+0x0205372C  beq      #0x2053738
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053810
+0x02053744  cmp      r0, #0
+0x02053748  bne      #0x2053770
+0x02053754  cmp      r1, #0
+0x02053758  beq      #0x2053764
+  ; >>> JUMP 0x02052A00
+0x02053780  cmp      r0, #6
+0x02053788  cmp      r0, #9
+0x0205378C  bne      #0x20537bc
+0x02053798  cmp      r1, #0
+0x0205379C  beq      #0x20537a8
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x020537BC  cmp      r0, #0x1a
+0x020537CC  cmp      r1, #0
+0x020537D0  beq      #0x20537f0
+  ; >>> JUMP 0x020529E4
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0201072C
+0x0205384C  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02053888  cmp      r0, #0
+0x0205388C  beq      #0x20538ac
+0x02053890  cmp      r0, #0xf
+0x02053894  cmpne    r0, #9
+0x02053898  cmpne    r0, #0xd
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02054238
+0x020538B4  cmp      r0, #3
+  ; >>> JUMP 0x02053988
+  ; >>> JUMP 0x020538D0
+  ; >>> JUMP 0x02053988
+0x020538D8  cmp      r1, #3
+0x020538DC  bne      #0x2053920
+0x020538E4  cmp      r0, #6
+0x020538EC  cmp      r0, #4
+0x020538F0  bne      #0x205397c
+  ; >>> JUMP 0x020539BC
+0x020538F8  cmp      r0, #0
+0x02053908  cmp      r1, #0
+0x0205390C  beq      #0x2053918
+  ; >>> JUMP 0x02054254
+0x02053920  cmp      r1, #5
+0x02053924  bne      #0x205397c
+  ; >>> JUMP 0x02011474
+0x02053944  cmp      r0, #0
+0x02053948  beq      #0x2053958
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02054254
+0x02053960  cmp      r1, #0
+0x02053964  beq      #0x2053970
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+0x02053990  cmp      r2, #0
+0x020539C8  cmp      r0, #6
+0x020539D4  cmp      r0, #4
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020116FC
+0x020539F4  cmp      r0, #0
+  ; >>> JUMP 0x02052A64
+0x02053A20  cmp      r0, #6
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020116F0
+0x02053A3C  cmp      r0, #0
+0x02053A40  beq      #0x2053a50
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02053A6C
+0x02053A54  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02010544
+0x02053A80  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02053AA4  cmp      r0, #0
+0x02053AA8  beq      #0x2053ab8
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02054254
+  ; >>> JUMP 0x02053AD0
+0x02053ABC  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0200FF08
+0x02053AE8  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02054238
+0x02053B10  cmp      r0, #0
+0x02053B14  beq      #0x2053b20
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0201049C
+0x02053B40  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02053B68  cmp      r0, #0
+0x02053B6C  beq      #0x2053b84
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053B98  cmp      r0, #0
+0x02053B9C  beq      #0x2053bac
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020062EC
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053CB4
+0x02053C5C  cmp      r0, #0x18
+0x02053C60  bne      #0x2053c80
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053C80  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0200FAE4
+0x02053CC0  cmp      r0, #0x8000
+0x02053CC4  bne      #0x2053ce0
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053CE0  cmp      r0, #0
+0x02053CE4  bne      #0x2053d00
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053D0C  bne      #0x2053d34
+0x02053D1C  cmp      r4, #0x10
+0x02053D30  beq      #0x2053d10
+  ; >>> JUMP 0x02053E1C
+0x02053D5C  cmp      r0, #0
+0x02053D60  beq      #0x2053d74
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02053D7C  cmp      r3, #0
+0x02053D80  beq      #0x2053d94
+0x02053DA4  cmp      r1, r3
+  ; >>> JUMP 0x02053DDC
+0x02053DC4  bne      #0x2053ddc
+  ; >>> JUMP 0x02053CB4
+0x02053DEC  cmp      r0, #0x18
+0x02053DF0  bne      #0x2053e00
+  ; >>> JUMP 0x02052A00
+0x02053E00  cmp      r0, #2
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02011728
+0x02053E48  cmp      r0, #7
+0x02053E4C  beq      #0x2053e54
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02053E9C
+0x02053E74  cmp      r2, #0
+0x02053E78  beq      #0x2053e88
+0x02053EB4  beq      #0x2053ed0
+0x02053EDC  cmp      lr, #0x10
+0x02053EE4  cmp      r1, #1
+0x02053F24  beq      #0x2053f4c
+0x02053F28  cmp      r3, #0
+0x02053F2C  bne      #0x2053f40
+0x02053F5C  cmp      r2, #0x10
+  ; >>> JUMP 0x02053FDC
+0x02053FAC  cmp      r0, #0
+0x02053FC8  cmp      r0, #8
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020104DC
+0x02053FF8  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02054028  cmp      r0, #0
+0x0205402C  beq      #0x2054040
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0200FEBC
+0x02054048  cmp      r0, #0
+0x0205404C  beq      #0x2054060
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+0x0205408C  cmp      r0, #1
+0x02054090  beq      #0x205409c
+  ; >>> JUMP 0x020064C8
+0x020540B4  cmp      r2, #0
+0x020540B8  beq      #0x20540c4
+0x020540CC  cmp      r2, #0
+0x020540D0  beq      #0x20540e0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0200F998
+0x02054130  cmp      r7, #2
+0x0205413C  cmp      r7, #0
+0x02054140  cmpne    r7, #2
+0x02054148  cmpne    r7, #4
+0x0205414C  bne      #0x2054158
+  ; >>> JUMP 0x02052A80
+0x0205415C  cmp      r2, #0
+0x02054160  beq      #0x2054170
+  ; >>> JUMP 0x020110A0
+0x020541D4  cmp      r4, #7
+0x020541E0  cmp      r4, #5
+0x020541E4  bne      #0x2054210
+0x020541F0  cmp      r1, #0
+0x020541F4  beq      #0x2054200
+  ; >>> JUMP 0x02052A64
+0x02054210  cmp      r4, #0
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02053B2C
+0x02054240  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+0x02054260  cmp      r1, #1
+0x02054264  bne      #0x2054280
+0x0205426C  cmp      r1, #0
+0x02054284  cmp      r2, #0
+0x02054288  beq      #0x2054294
+0x0205429C  cmp      r0, #6
+0x020542A0  cmpne    r0, #5
+0x020542A4  cmpne    r0, #4
+0x020542AC  beq      #0x20542bc
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02052A00
+0x020542C8  cmp      r0, #5
+  ; >>> JUMP 0x02054328
+  ; >>> JUMP 0x02054300
+  ; >>> JUMP 0x02054314
+  ; >>> JUMP 0x020542EC
+  ; >>> JUMP 0x02054328
+  ; >>> JUMP 0x02054300
+  ; >>> JUMP 0x02053A14
+0x020542F0  cmp      r0, #0
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02053A6C
+0x02054304  cmp      r0, #0
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02052F88
+0x02054318  cmp      r0, #0
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02052FEC
+0x0205432C  cmp      r0, #0
+  ; >>> JUMP 0x02054238
+0x02054354  cmp      r0, #1
+0x02054358  beq      #0x2054360
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02010454
+0x02054370  cmp      r0, #2
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02006B80
+0x020543B8  cmp      r1, #0
+0x020543BC  beq      #0x20543cc
+0x020543C0  cmp      r1, #1
+0x020543C4  beq      #0x205440c
+  ; >>> JUMP 0x02054414
+0x020543D4  cmp      r1, #0
+0x020543D8  beq      #0x20543e8
+0x020543E0  cmp      r1, #2
+0x020543E4  beq      #0x20543f0
+0x020543F4  cmp      r1, #0
+  ; >>> JUMP 0x02054ED0
+0x0205443C  cmp      r4, #0
+0x02054444  bne      #0x2054450
+0x02054448  cmp      r1, #0
+  ; >>> JUMP 0x0200A154
+  ; >>> JUMP 0x0200A1C0
+0x02054468  cmp      r4, #0
+0x0205446C  beq      #0x2054484
+  ; >>> JUMP 0x0200D6F4
+  ; >>> JUMP 0x020544BC
+  ; >>> JUMP 0x02009CCC
+  ; >>> JUMP 0x02009C60
+0x020544BC  cmp      fp, #0
+0x020544C0  bne      #0x2054508
+  ; >>> JUMP 0x0205455C
+  ; >>> JUMP 0x0200D6F4
+  ; >>> JUMP 0x0200D6F4
+0x02054560  cmp      fp, #0
+0x02054574  beq      #0x20545e8
+0x020545D8  cmp      r0, #4
+  ; >>> JUMP 0x0205461C
+0x02054610  cmp      r0, #4
+  ; >>> JUMP 0x02006120
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x02009C60
+  ; >>> JUMP 0x02009CCC
+0x020546B0  cmp      sl, #4
+0x020546B8  cmp      fp, #0
+0x020546BC  beq      #0x2054788
+0x02054700  cmp      r8, #0
+  ; >>> JUMP 0x02009C60
+  ; >>> JUMP 0x02009CCC
+0x02054760  cmp      sb, r8
+0x02054774  cmp      r0, #4
+  ; >>> JUMP 0x020057D8
+  ; >>> JUMP 0x020057FC
+  ; >>> JUMP 0x02009DBC
+  ; >>> JUMP 0x0200965C
+  ; >>> JUMP 0x0200945C
+  ; >>> JUMP 0x02009204
+0x02054828  cmp      r3, #4
+  ; >>> JUMP 0x02009524
+  ; >>> JUMP 0x0200A4D8
+  ; >>> JUMP 0x0200A4D8
+0x020548B0  cmp      r2, #0
+0x020548B8  cmpne    r1, #0
+0x020548C0  cmpne    r1, #0
+0x020548CC  cmp      r0, #0
+  ; >>> JUMP 0x02054964
+  ; >>> JUMP 0x02013BD0
+0x02054970  cmp      r2, #0
+0x0205497C  cmpne    r0, #0
+0x0205498C  cmp      r0, #0
+0x020549D8  cmp      r0, #0
+0x020549DC  beq      #0x2054a4c
+0x020549E4  cmp      r0, #0
+0x020549E8  bne      #0x2054a4c
+  ; >>> JUMP 0x02013EB4
+0x02054A0C  cmp      r0, #0
+  ; >>> JUMP 0x020548EC
+0x02054A2C  cmp      r0, #0
+0x02054A54  cmp      r5, #0
+0x02054A64  cmp      r3, #0
+0x02054A68  beq      #0x2054a7c
+0x02054A70  cmp      r3, r0
+0x02054A78  beq      #0x2054a80
+0x02054A80  cmp      r6, #0
+0x02054A9C  cmp      r5, r0, lsl r2
+0x02054AAC  beq      #0x2054ae8
+0x02054AB0  cmp      r1, #0
+0x02054AB8  beq      #0x2054ae8
+0x02054AD0  cmp      r8, r7, lsr #28
+0x02054ADC  cmpeq    r8, r7
+  ; >>> JUMP 0x02054A9C
+0x02054AF4  cmp      r6, #0
+0x02054AF8  cmpne    r5, r3
+0x02054B08  cmp      r1, #0
+0x02054B1C  beq      #0x2054b2c
+0x02054B20  cmp      r2, #2
+0x02054B24  beq      #0x2054b3c
+  ; >>> JUMP 0x02054B5C
+  ; >>> JUMP 0x02054B5C
+  ; >>> JUMP 0x020548EC
+0x02054B80  cmp      r0, #0
+  ; >>> JUMP 0x02006120
+0x02054BCC  cmp      r0, #0
+0x02054BD4  cmpne    r0, #0
+0x02054BD8  beq      #0x2054c7c
+0x02054BFC  cmp      r0, #0
+0x02054C14  cmp      r0, #0x400
+  ; >>> JUMP 0x02013DBC
+  ; >>> JUMP 0x02054E38
+0x02054C48  cmp      r5, r1, lsl r2
+0x02054C58  beq      #0x2054c70
+  ; >>> JUMP 0x02054C48
+  ; >>> JUMP 0x02006134
+0x02054C9C  cmp      r0, #0
+0x02054CA8  cmp      r3, #2
+0x02054CB0  cmpeq    r1, ip
+0x02054CB8  subeq    r3, r3, ip
+0x02054CBC  cmpeq    r2, r3
+0x02054CC8  cmp      r0, #0
+0x02054CCC  bne      #0x2054ca4
+0x02054CE8  cmp      r4, #0
+0x02054CEC  beq      #0x2054d18
+0x02054CF4  cmp      r1, #1
+0x02054CFC  cmpeq    r1, r6
+0x02054D04  cmpeq    r1, r5
+0x02054D08  beq      #0x2054d18
+0x02054D10  cmp      r4, #0
+0x02054D14  bne      #0x2054cf0
+0x02054D18  cmp      r4, #0
+0x02054D1C  bne      #0x2054d3c
+  ; >>> JUMP 0x02054DF0
+  ; >>> JUMP 0x02055DB8
+0x02054D4C  cmp      r0, #0
+0x02054D58  cmp      r2, #2
+0x02054D60  cmpeq    r2, r1
+0x02054D6C  cmp      r0, #0
+0x02054D70  bne      #0x2054d54
+  ; >>> JUMP 0x02006120
+0x02054D90  cmp      r1, #0
+0x02054D94  beq      #0x2054de8
+0x02054D9C  cmp      r2, r4
+0x02054DA0  bne      #0x2054dd8
+0x02054DB0  cmp      r1, #0
+0x02054DB4  beq      #0x2054dc8
+0x02054DC0  cmp      r1, #0
+0x02054DC4  bne      #0x2054db8
+  ; >>> JUMP 0x02054DE8
+0x02054DE0  cmp      r1, #0
+0x02054DE4  bne      #0x2054d98
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02055470
+  ; >>> JUMP 0x020548EC
+0x02054F14  cmp      r0, #0
+  ; >>> JUMP 0x020064C8
+0x02054F3C  cmp      r2, #0
+0x02054F54  cmp      r0, #0
+0x02054F60  cmp      r2, #0
+0x02054F68  beq      #0x2054f74
+  ; >>> JUMP 0x02013508
+  ; >>> JUMP 0x02054F78
+  ; >>> JUMP 0x02013470
+  ; >>> JUMP 0x020105D0
+0x02054FA8  cmp      r0, #2
+0x02054FC4  cmp      r0, #0
+; === GAME_SETUP 0x02054BC8 - 0x02057BC8 ===
+0x02054BCC  cmp      r0, #0
+0x02054BD4  cmpne    r0, #0
+0x02054BD8  beq      #0x2054c7c
+0x02054BFC  cmp      r0, #0
+0x02054C14  cmp      r0, #0x400
+  ; >>> JUMP 0x02013DBC
+  ; >>> JUMP 0x02054E38
+0x02054C48  cmp      r5, r1, lsl r2
+0x02054C58  beq      #0x2054c70
+  ; >>> JUMP 0x02054C48
+  ; >>> JUMP 0x02006134
+0x02054C9C  cmp      r0, #0
+0x02054CA8  cmp      r3, #2
+0x02054CB0  cmpeq    r1, ip
+0x02054CB8  subeq    r3, r3, ip
+0x02054CBC  cmpeq    r2, r3
+0x02054CC8  cmp      r0, #0
+0x02054CCC  bne      #0x2054ca4
+0x02054CE8  cmp      r4, #0
+0x02054CEC  beq      #0x2054d18
+0x02054CF4  cmp      r1, #1
+0x02054CFC  cmpeq    r1, r6
+0x02054D04  cmpeq    r1, r5
+0x02054D08  beq      #0x2054d18
+0x02054D10  cmp      r4, #0
+0x02054D14  bne      #0x2054cf0
+0x02054D18  cmp      r4, #0
+0x02054D1C  bne      #0x2054d3c
+  ; >>> JUMP 0x02054DF0
+  ; >>> JUMP 0x02055DB8
+0x02054D4C  cmp      r0, #0
+0x02054D58  cmp      r2, #2
+0x02054D60  cmpeq    r2, r1
+0x02054D6C  cmp      r0, #0
+0x02054D70  bne      #0x2054d54
+  ; >>> JUMP 0x02006120
+0x02054D90  cmp      r1, #0
+0x02054D94  beq      #0x2054de8
+0x02054D9C  cmp      r2, r4
+0x02054DA0  bne      #0x2054dd8
+0x02054DB0  cmp      r1, #0
+0x02054DB4  beq      #0x2054dc8
+0x02054DC0  cmp      r1, #0
+0x02054DC4  bne      #0x2054db8
+  ; >>> JUMP 0x02054DE8
+0x02054DE0  cmp      r1, #0
+0x02054DE4  bne      #0x2054d98
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02054D78
+  ; >>> JUMP 0x02055470
+  ; >>> JUMP 0x020548EC
+0x02054F14  cmp      r0, #0
+  ; >>> JUMP 0x020064C8
+0x02054F3C  cmp      r2, #0
+0x02054F54  cmp      r0, #0
+0x02054F60  cmp      r2, #0
+0x02054F68  beq      #0x2054f74
+  ; >>> JUMP 0x02013508
+  ; >>> JUMP 0x02054F78
+  ; >>> JUMP 0x02013470
+  ; >>> JUMP 0x020105D0
+0x02054FA8  cmp      r0, #2
+0x02054FC4  cmp      r0, #0
+; === MAIN_SCHEDULER 0x0205013C - 0x0205313C ===
+  ; >>> JUMP 0x02025DE8
+  ; >>> JUMP 0x02025DE8
+  ; >>> JUMP 0x02025DE8
+  ; >>> JUMP 0x02025DE8
+  ; >>> JUMP 0x02025DE8
+  ; >>> JUMP 0x02025DE8
+  ; >>> JUMP 0x02025DE8
+  ; >>> JUMP 0x02025938
+  ; >>> JUMP 0x02025938
+  ; >>> JUMP 0x02025938
+  ; >>> JUMP 0x02025938
+  ; >>> JUMP 0x02025938
+  ; >>> JUMP 0x02027C34
+  ; >>> JUMP 0x02027C50
+  ; >>> JUMP 0x02027D14
+  ; >>> JUMP 0x02027E78
+  ; >>> JUMP 0x0201F808
+  ; >>> JUMP 0x02020EF0
+  ; >>> JUMP 0x02020EF0
+  ; >>> JUMP 0x020223F0
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+0x02050368  cmp      r6, #2
+  ; >>> JUMP 0x0202547C
+  ; >>> JUMP 0x0202547C
+  ; >>> JUMP 0x02025644
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+  ; >>> JUMP 0x02025644
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+  ; >>> JUMP 0x02025644
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+  ; >>> JUMP 0x02025644
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+  ; >>> JUMP 0x020376A0
+  ; >>> JUMP 0x020377A4
+  ; >>> JUMP 0x02025644
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+  ; >>> JUMP 0x02025644
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+  ; >>> JUMP 0x02025644
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+  ; >>> JUMP 0x02025644
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+  ; >>> JUMP 0x02025644
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+  ; >>> JUMP 0x02025644
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+  ; >>> JUMP 0x02025644
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x02020030
+  ; >>> JUMP 0x020280FC
+  ; >>> JUMP 0x02028018
+  ; >>> JUMP 0x020226B4
+  ; >>> JUMP 0x020226B4
+  ; >>> JUMP 0x020226B4
+  ; >>> JUMP 0x020226B4
+  ; >>> JUMP 0x020226B4
+  ; >>> JUMP 0x0202EAC0
+  ; >>> JUMP 0x02023460
+  ; >>> JUMP 0x020280FC
+  ; >>> JUMP 0x02028018
+  ; >>> JUMP 0x020280FC
+  ; >>> JUMP 0x02028018
+0x02050948  cmp      sl, #0
+0x02050950  bne      #0x2050b5c
+0x02050968  bne      #0x20509cc
+0x0205097C  bne      #0x20509cc
+0x02050988  beq      #0x20509a8
+0x0205098C  cmp      r8, #0
+  ; >>> JUMP 0x020509CC
+  ; >>> JUMP 0x020509CC
+0x020509B0  beq      #0x20509cc
+0x020509B4  cmp      r8, #0
+  ; >>> JUMP 0x020509CC
+0x020509CC  cmp      sb, #0
+  ; >>> JUMP 0x0202EAD4
+0x020509E4  cmp      sb, #0
+0x020509EC  cmp      sb, r8
+0x020509F0  beq      #0x2050a70
+  ; >>> JUMP 0x02027C34
+  ; >>> JUMP 0x02027E10
+  ; >>> JUMP 0x02027E48
+0x02050A18  cmp      r8, #0
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0205093C
+0x02050A70  cmp      r8, #0
+0x02050A74  bne      #0x2050aa4
+  ; >>> JUMP 0x02027C34
+  ; >>> JUMP 0x02027E10
+  ; >>> JUMP 0x02027E48
+  ; >>> JUMP 0x02050D58
+  ; >>> JUMP 0x02027C34
+  ; >>> JUMP 0x02027E10
+  ; >>> JUMP 0x02027E48
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0201FE64
+  ; >>> JUMP 0x0205093C
+0x02050B5C  cmp      sl, #1
+0x02050B60  bne      #0x205093c
+0x02050B78  bne      #0x2050bdc
+0x02050B8C  bne      #0x2050bdc
+0x02050B98  beq      #0x2050bb8
+0x02050B9C  cmp      r8, #0
+  ; >>> JUMP 0x02050BDC
+  ; >>> JUMP 0x02050BDC
+0x02050BC0  beq      #0x2050bdc
+0x02050BC4  cmp      r8, #0
+  ; >>> JUMP 0x02050BDC
+0x02050BDC  cmp      sb, #0
+  ; >>> JUMP 0x0202EAD4
+0x02050BF4  cmp      sb, #0
+0x02050BFC  cmp      sb, r8
+0x02050C00  beq      #0x2050c80
+  ; >>> JUMP 0x02027C34
+  ; >>> JUMP 0x02027E10
+  ; >>> JUMP 0x02027E48
+0x02050C28  cmp      r8, #0
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0201FEFC
+  ; >>> JUMP 0x0205093C
+0x02050C80  cmp      r8, #0
+0x02050C88  bne      #0x2050d30
+  ; >>> JUMP 0x02027C34
+  ; >>> JUMP 0x02027E10
+  ; >>> JUMP 0x02027E48
+  ; >>> JUMP 0x02050D58
+  ; >>> JUMP 0x02027C34
+  ; >>> JUMP 0x02027E10
+  ; >>> JUMP 0x02027E48
+  ; >>> JUMP 0x020234D8
+  ; >>> JUMP 0x020280FC
+  ; >>> JUMP 0x02028018
+  ; >>> JUMP 0x02027D38
+  ; >>> JUMP 0x020010C8
+  ; >>> JUMP 0x020010AC
+  ; >>> JUMP 0x02020F18
+  ; >>> JUMP 0x02020F18
+  ; >>> JUMP 0x0201FF9C
+0x02050DC4  cmp      r5, #2
+  ; >>> JUMP 0x0201FF9C
+  ; >>> JUMP 0x02022C38
+0x02050DF4  cmp      r6, #5
+  ; >>> JUMP 0x02037F5C
+  ; >>> JUMP 0x02037F5C
+  ; >>> JUMP 0x02025F24
+  ; >>> JUMP 0x02025F24
+  ; >>> JUMP 0x02025F24
+  ; >>> JUMP 0x02025F24
+  ; >>> JUMP 0x02025F24
+  ; >>> JUMP 0x02025F24
+  ; >>> JUMP 0x02025F24
+  ; >>> JUMP 0x02025F24
+  ; >>> JUMP 0x020528E0
+  ; >>> JUMP 0x020528AC
+0x02050FC0  cmp      r0, r1
+  ; >>> JUMP 0x020164C0
+0x02051008  cmp      r2, #0
+0x0205100C  bne      #0x2051024
+  ; >>> JUMP 0x02037F98
+  ; >>> JUMP 0x02037F5C
+  ; >>> JUMP 0x02051AFC
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x0200F87C
+  ; >>> JUMP 0x02053BD4
+  ; >>> JUMP 0x02019F28
+0x020510A8  cmp      r4, #0
+  ; >>> JUMP 0x02011884
+0x020510E4  cmp      r4, #0
+  ; >>> JUMP 0x02051B1C
+0x020510F8  cmp      r0, #9
+  ; >>> JUMP 0x02051BE8
+  ; >>> JUMP 0x02053BD4
+  ; >>> JUMP 0x02051ADC
+0x0205114C  cmp      r1, #1
+0x02051150  bne      #0x2051568
+  ; >>> JUMP 0x02053BE4
+0x0205115C  cmp      r4, #0xa
+  ; >>> JUMP 0x020511D0
+  ; >>> JUMP 0x020511D0
+  ; >>> JUMP 0x020511D0
+  ; >>> JUMP 0x020511D0
+  ; >>> JUMP 0x020511D0
+  ; >>> JUMP 0x020511D0
+  ; >>> JUMP 0x020511D0
+  ; >>> JUMP 0x020511D0
+  ; >>> JUMP 0x020511A4
+  ; >>> JUMP 0x02051194
+  ; >>> JUMP 0x02051194
+  ; >>> JUMP 0x02051194
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x020511D0
+  ; >>> JUMP 0x02053E3C
+  ; >>> JUMP 0x02054070
+0x020511D8  cmp      r1, #0
+0x020511E0  cmpne    r0, #0
+0x020511E4  beq      #0x205121c
+  ; >>> JUMP 0x02053BD4
+0x020511FC  cmp      r1, r0
+0x02051200  beq      #0x205121c
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02054238
+0x02051224  cmp      r1, #0x14
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020512CC
+  ; >>> JUMP 0x02051284
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020512CC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051374
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020513A0
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020513F4
+  ; >>> JUMP 0x0205145C
+  ; >>> JUMP 0x02051480
+  ; >>> JUMP 0x02051520
+  ; >>> JUMP 0x02051538
+  ; >>> JUMP 0x02051080
+  ; >>> JUMP 0x02053BD4
+  ; >>> JUMP 0x020512C0
+0x020512C0  cmp      r4, #5
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051360
+0x020512DC  cmp      r0, #0
+0x020512E0  bne      #0x2051354
+  ; >>> JUMP 0x02051330
+0x0205131C  bne      #0x2051310
+0x02051330  cmp      r6, ip
+  ; >>> JUMP 0x0205135C
+0x02051368  cmp      r5, r0
+  ; >>> JUMP 0x02051828
+0x02051374  cmp      r4, #1
+0x02051378  bne      #0x2051828
+  ; >>> JUMP 0x02054348
+  ; >>> JUMP 0x02051AFC
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051B50
+0x020513A4  cmp      r0, #0
+0x020513A8  beq      #0x20513bc
+  ; >>> JUMP 0x02051D5C
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051B84
+0x020513C8  beq      #0x2051828
+0x020513D0  cmp      r0, #0xff
+0x020513D4  bne      #0x2051828
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051D5C
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02053BE4
+0x020513F8  cmp      r0, #1
+0x020513FC  bne      #0x2051828
+  ; >>> JUMP 0x0200A154
+  ; >>> JUMP 0x02009E04
+  ; >>> JUMP 0x020558F0
+  ; >>> JUMP 0x02009DBC
+  ; >>> JUMP 0x02051B2C
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02053BE4
+0x02051460  cmp      r0, #1
+0x02051464  bne      #0x2051828
+  ; >>> JUMP 0x02053BF4
+  ; >>> JUMP 0x0205418C
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02053BE4
+0x02051484  cmp      r0, #6
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020514AC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020514D0
+  ; >>> JUMP 0x020514D0
+  ; >>> JUMP 0x02054070
+  ; >>> JUMP 0x02051828
+0x020514E0  cmp      r1, #0x258
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02053BD4
+0x02051504  cmp      r2, r0
+0x02051508  bne      #0x2051828
+  ; >>> JUMP 0x02055BC8
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02055D9C
+0x02051524  cmp      r0, #2
+0x02051528  bne      #0x2051828
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051AFC
+  ; >>> JUMP 0x02051BE8
+  ; >>> JUMP 0x02053BD4
+  ; >>> JUMP 0x02051D5C
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+0x02051568  cmp      r1, #2
+0x0205156C  bne      #0x205171c
+  ; >>> JUMP 0x02053BE4
+0x02051580  cmp      r0, #3
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x0205159C
+  ; >>> JUMP 0x02051610
+  ; >>> JUMP 0x02051640
+  ; >>> JUMP 0x02051618
+  ; >>> JUMP 0x02053BE4
+0x020515A0  cmp      r0, #9
+  ; >>> JUMP 0x02051608
+  ; >>> JUMP 0x020515F4
+  ; >>> JUMP 0x020515D4
+  ; >>> JUMP 0x02051608
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051608
+  ; >>> JUMP 0x02051608
+  ; >>> JUMP 0x02051608
+  ; >>> JUMP 0x020515DC
+  ; >>> JUMP 0x02051608
+  ; >>> JUMP 0x02051600
+  ; >>> JUMP 0x02053BF4
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02053E3C
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051D20
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020527C0
+0x0205161C  cmp      r0, #0
+0x02051620  beq      #0x205162c
+0x02051624  cmp      r0, #6
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051AFC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020527C0
+0x02051644  cmp      r0, #7
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051670
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020516C0
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020516D4
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020516FC
+  ; >>> JUMP 0x02006B80
+  ; >>> JUMP 0x02006B80
+  ; >>> JUMP 0x02051F18
+  ; >>> JUMP 0x02016540
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02052304
+0x020516C4  cmp      r0, #0
+0x020516C8  beq      #0x2051828
+  ; >>> JUMP 0x02052364
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020527D0
+  ; >>> JUMP 0x02051AFC
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02052448
+0x02051708  cmp      r0, #0
+0x0205170C  beq      #0x2051828
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+0x0205171C  cmp      r1, #3
+0x02051720  bne      #0x2051828
+0x0205172C  cmp      r0, #3
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051748
+  ; >>> JUMP 0x02051768
+  ; >>> JUMP 0x02051800
+  ; >>> JUMP 0x02051818
+  ; >>> JUMP 0x02055AE8
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02053BE4
+0x0205176C  cmp      r0, #9
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020517A8
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020517F0
+  ; >>> JUMP 0x020517F0
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020517A0
+  ; >>> JUMP 0x020517E8
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02051828
+0x020517B0  cmp      r1, #0xc8
+  ; >>> JUMP 0x02053BB8
+  ; >>> JUMP 0x020530B8
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02055BC8
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02055D9C
+0x02051804  cmp      r0, #2
+0x02051808  bne      #0x2051828
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051828
+  ; >>> JUMP 0x02051AFC
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02053BE4
+0x0205187C  cmp      r0, #9
+0x02051880  cmpne    r0, #8
+0x02051884  cmpne    r0, #0xa
+0x02051890  cmpne    r0, #5
+0x020518B0  cmp      r1, #1
+0x020518C0  cmp      r0, #0
+0x020518C4  beq      #0x20518d4
+  ; >>> JUMP 0x02053BD4
+0x020518CC  cmp      r0, #1
+0x020518D0  beq      #0x20519a0
+  ; >>> JUMP 0x02053BE4
+0x020518D8  cmp      r0, #5
+0x020518DC  bne      #0x20519a0
+  ; >>> JUMP 0x020541BC
+0x020518E8  cmp      r0, #0
+0x020518EC  beq      #0x2051970
+  ; >>> JUMP 0x0205193C
+  ; >>> JUMP 0x0205419C
+0x02051914  cmp      r0, #0
+0x0205191C  beq      #0x2051930
+  ; >>> JUMP 0x02006B80
+0x0205193C  cmp      sb, #5
+  ; >>> JUMP 0x02051960
+0x02051960  cmp      sb, #0x10
+  ; >>> JUMP 0x02051990
+0x02051990  cmp      r3, #0x10
+  ; >>> JUMP 0x020519C0
+0x020519C0  cmp      r3, #0x10
+  ; >>> JUMP 0x02005384
+0x020519EC  cmp      r0, #0
+0x02051A04  cmp      r0, #0
+0x02051A08  bne      #0x2051a88
+  ; >>> JUMP 0x02006270
+  ; >>> JUMP 0x02006B80
+  ; >>> JUMP 0x02053F78
+0x02051A44  cmp      r0, #0
+0x02051A48  bne      #0x2051a50
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x02053BB8
+  ; >>> JUMP 0x02051AFC
+0x02051A80  cmp      r2, #5
+0x02051AB0  cmp      r0, #0
+0x02051AB4  beq      #0x2051ad0
+  ; >>> JUMP 0x02055C40
+  ; >>> JUMP 0x02054254
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02051AFC
+0x02051AE4  cmp      r2, r0
+0x02051B04  cmp      r2, r0
+0x02051B38  cmp      r2, #1
+0x02051B6C  cmp      r2, #1
+0x02051B94  cmp      r0, #1
+0x02051B98  bne      #0x2051bd4
+  ; >>> JUMP 0x02051B1C
+0x02051BA0  cmp      r0, #9
+0x02051BA4  bne      #0x2051bc8
+0x02051BB4  cmp      r1, r0
+  ; >>> JUMP 0x020527D0
+  ; >>> JUMP 0x020527D0
+  ; >>> JUMP 0x020527D0
+  ; >>> JUMP 0x02019F28
+  ; >>> JUMP 0x02051B1C
+0x02051C50  cmp      r0, #0
+  ; >>> JUMP 0x02053BE4
+0x02051C60  cmp      r0, #5
+0x02051C68  cmp      r4, #0
+  ; >>> JUMP 0x02053BC8
+  ; >>> JUMP 0x02053BB8
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02052448
+  ; >>> JUMP 0x02051ADC
+  ; >>> JUMP 0x02005384
+0x02051CFC  cmp      r0, #0
+0x02051D00  beq      #0x2051d10
+  ; >>> JUMP 0x02051AFC
+  ; >>> JUMP 0x02051D18
+  ; >>> JUMP 0x02051AFC
+  ; >>> JUMP 0x02051DF8
+  ; >>> JUMP 0x02051ADC
+0x02051D90  cmp      ip, #5
+0x02051DB8  beq      #0x2051dd0
+0x02051DD4  cmp      r5, #5
+  ; >>> JUMP 0x02006270
+  ; >>> JUMP 0x02006B80
+0x02051E94  bne      #0x2051e78
+  ; >>> JUMP 0x02037F98
+  ; >>> JUMP 0x020177CC
+0x02051ED8  cmp      r0, #0
+0x02051EDC  beq      #0x2051ee4
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x020176B8
+  ; >>> JUMP 0x02015604
+  ; >>> JUMP 0x020527B0
+  ; >>> JUMP 0x020527B0
+  ; >>> JUMP 0x02017380
+0x02051F34  cmp      r0, #0
+0x02051F38  beq      #0x2051f48
+  ; >>> JUMP 0x020527B0
+  ; >>> JUMP 0x02051F60
+0x02051F50  cmp      r0, #0
+  ; >>> JUMP 0x020064C8
+0x02051F74  cmp      r0, #0
+0x02051F7C  beq      #0x2051fa8
+  ; >>> JUMP 0x0200A154
+  ; >>> JUMP 0x02009E04
+0x02051F94  cmp      r0, #0
+  ; >>> JUMP 0x020163B8
+0x02051FB4  cmp      r7, #0x10000
+0x02051FBC  cmp      r7, #0
+0x02051FC0  beq      #0x2052030
+  ; >>> JUMP 0x02037F98
+0x02051FE4  beq      #0x2052030
+  ; >>> JUMP 0x02015F4C
+0x02051FF4  cmp      r0, #0
+0x02051FF8  beq      #0x2052014
+  ; >>> JUMP 0x02015BE0
+0x0205200C  cmp      r0, #0
+0x02052014  cmp      r5, #0
+0x02052018  bne      #0x2052030
+  ; >>> JUMP 0x02037F5C
+0x02052034  cmp      r4, r0
+0x02052038  bne      #0x2052040
+  ; >>> JUMP 0x02009DBC
+  ; >>> JUMP 0x02015410
+0x02052064  cmp      r0, #0
+  ; >>> JUMP 0x02006120
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x020170C4
+  ; >>> JUMP 0x02015410
+0x020520EC  cmp      r0, #0
+0x020520F0  bne      #0x2052160
+  ; >>> JUMP 0x02006120
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x020170C4
+  ; >>> JUMP 0x02006120
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x02015410
+0x020521A4  cmp      r0, #0
+0x020521A8  bne      #0x2052218
+  ; >>> JUMP 0x02006120
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x020170C4
+  ; >>> JUMP 0x02006120
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x02051B60
+  ; >>> JUMP 0x020527B0
+0x02052274  beq      #0x20522e8
+  ; >>> JUMP 0x020527E4
+0x02052280  cmp      r0, #1
+0x02052284  bne      #0x20522e8
+  ; >>> JUMP 0x02006120
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x020170C4
+0x020522F4  cmp      r5, #0x10
+0x02052310  cmp      r0, #0
+0x0205232C  beq      #0x2052344
+  ; >>> JUMP 0x0201550C
+0x02052338  cmp      r0, #0
+0x02052350  cmp      r6, #0x10
+0x02052384  beq      #0x2052408
+  ; >>> JUMP 0x02015410
+0x02052394  cmp      r0, #0
+0x020523A4  bne      #0x2052408
+  ; >>> JUMP 0x02006120
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x020170C4
+0x02052414  cmp      r7, #0x10
+0x0205241C  cmp      r8, #0
+0x02052420  bne      #0x2052430
+  ; >>> JUMP 0x020527B0
+  ; >>> JUMP 0x020527B0
+  ; >>> JUMP 0x02051B60
+  ; >>> JUMP 0x020527B0
+  ; >>> JUMP 0x02017270
+0x02052468  cmp      r1, #4
+0x02052474  cmpeq    r1, r0
+  ; >>> JUMP 0x02017270
+0x02052494  cmp      r1, #0xe
+  ; >>> JUMP 0x02052780
+  ; >>> JUMP 0x02052780
+  ; >>> JUMP 0x020524DC
+  ; >>> JUMP 0x02052564
+  ; >>> JUMP 0x02052678
+  ; >>> JUMP 0x020526A0
+  ; >>> JUMP 0x020525EC
+  ; >>> JUMP 0x020526CC
+  ; >>> JUMP 0x02052740
+  ; >>> JUMP 0x0205264C
+  ; >>> JUMP 0x020527C0
+0x020524E0  cmp      r0, #2
+  ; >>> JUMP 0x02006120
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x020527E4
+0x02052568  cmp      r0, #6
+  ; >>> JUMP 0x02006120
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x02051D4C
+0x020525D4  cmp      r0, #0
+0x020525D8  beq      #0x20525e4
+  ; >>> JUMP 0x020527B0
+  ; >>> JUMP 0x0205245C
+  ; >>> JUMP 0x020527C0
+0x020525F0  cmp      r0, #2
+0x020525F4  beq      #0x2052604
+  ; >>> JUMP 0x020520DC
+  ; >>> JUMP 0x02052054
+  ; >>> JUMP 0x02015568
+0x02052628  cmp      r0, #0
+  ; >>> JUMP 0x02006B80
+  ; >>> JUMP 0x02052194
+  ; >>> JUMP 0x0205245C
+  ; >>> JUMP 0x020527C0
+0x020526D0  cmp      r0, #4
+0x020526D4  bne      #0x20526e4
+  ; >>> JUMP 0x020527B0
+  ; >>> JUMP 0x020526EC
+  ; >>> JUMP 0x020527B0
+0x020526F4  cmp      r1, #0
+0x020526F8  beq      #0x2052714
+  ; >>> JUMP 0x02037F5C
+0x0205271C  cmp      r1, #0
+  ; >>> JUMP 0x02037F5C
+0x02052744  cmp      r0, #8
+0x02052750  cmp      r0, #2
+0x02052758  cmp      r0, #1
+0x02052760  cmpne    r0, #2
+0x02052764  beq      #0x2052774
+0x0205276C  cmp      r0, #9
+  ; >>> JUMP 0x020527B0
+  ; >>> JUMP 0x020064C8
+  ; >>> JUMP 0x02006120
+0x02052810  bne      #0x2052824
+  ; >>> JUMP 0x02006134
+  ; >>> JUMP 0x02006B80
+  ; >>> JUMP 0x02006134
+0x02052900  beq      #0x20529bc
+0x0205291C  cmp      r5, r4
+0x02052920  ldrbeq   sl, [r0, #1]
+0x02052924  ldrbeq   sb, [r8, #-7]
+0x02052930  cmpeq    sl, sb
+0x0205293C  cmp      fp, #0
+0x02052940  beq      #0x2052954
+0x0205294C  cmp      sl, sb
+0x02052954  cmp      r5, #0
+0x02052958  beq      #0x205296c
+0x02052964  cmp      sb, r5
+0x0205296C  cmp      r4, #0
+0x02052970  beq      #0x2052984
+0x0205297C  cmp      r5, r4
+0x02052984  cmp      lr, #0
+0x02052988  beq      #0x205299c
+0x02052994  cmp      r5, r4
+0x0205299C  cmp      ip, #0
+0x020529A0  beq      #0x20529bc
+0x020529C8  cmp      r7, #5
+0x020529E4  cmp      r0, #0x1b
+0x02052A10  cmp      r3, #0
+0x02052A14  beq      #0x2052a2c
+0x02052A38  cmp      r2, #0
+0x02052A70  cmp      r2, #1
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0201034C
+0x02052A98  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02052AC8  cmp      r0, #0
+0x02052ACC  beq      #0x2052ae0
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02052AE8  cmp      r0, #0
+0x02052AEC  beq      #0x2052b08
+  ; >>> JUMP 0x02052B24
+0x02052AF4  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052BBC
+0x02052B0C  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0201194C
+0x02052B54  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02052B8C  cmp      r0, #0
+0x02052B90  beq      #0x2052ba4
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052BBC
+0x02052BA8  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+0x02052BCC  cmp      r0, #2
+  ; >>> JUMP 0x0201027C
+0x02052BE0  cmp      r0, #2
+0x02052BE4  beq      #0x2052bf4
+  ; >>> JUMP 0x02052A64
+0x02052C2C  cmp      r0, #0
+0x02052C34  beq      #0x2052c48
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02052C4C  cmp      r3, #7
+0x02052C58  cmp      r3, #2
+0x02052C60  cmp      r3, #0
+0x02052C68  beq      #0x2052d50
+0x02052C6C  cmp      r3, #2
+  ; >>> JUMP 0x02052D68
+0x02052C78  cmp      r3, #9
+0x02052C80  beq      #0x2052d04
+  ; >>> JUMP 0x02052D68
+0x02052C88  cmp      r3, #0x1a
+0x02052C8C  beq      #0x2052d34
+  ; >>> JUMP 0x02052D68
+0x02052C9C  cmp      r2, #0
+0x02052CA0  beq      #0x2052cac
+0x02052CB4  cmp      r1, #0
+0x02052CB8  beq      #0x2052cf0
+0x02052CC4  cmp      r0, #0
+0x02052CC8  bne      #0x2052cf0
+  ; >>> JUMP 0x0200FF08
+0x02052CD8  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02052D0C  cmp      r2, #0
+0x02052D10  beq      #0x2052d1c
+0x02052D3C  cmp      r2, #0
+  ; >>> JUMP 0x02052D9C
+0x02052D54  cmp      r0, #0
+  ; >>> JUMP 0x02052A00
+0x02052D70  cmp      r2, #0
+0x02052DAC  cmp      r0, #4
+0x02052DB0  cmpne    r0, #6
+0x02052DB4  cmpne    r0, #5
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x0201072C
+0x02052E00  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02052E3C  cmp      r0, #0
+0x02052E40  beq      #0x2052e54
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x02052E5C  cmp      r0, #3
+  ; >>> JUMP 0x02052F24
+  ; >>> JUMP 0x02052E78
+  ; >>> JUMP 0x02052F24
+  ; >>> JUMP 0x02052F24
+0x02052E80  cmp      r1, #2
+0x02052E84  bne      #0x2052ed0
+0x02052E8C  cmp      r0, #4
+0x02052E90  bne      #0x2052ec4
+  ; >>> JUMP 0x02052F54
+0x02052E98  cmp      r0, #0
+0x02052EA8  cmp      r1, #0
+0x02052EAC  beq      #0x2052eb8
+  ; >>> JUMP 0x02052A00
+0x02052EC4  cmp      r0, #6
+0x02052EC8  bne      #0x2052f18
+0x02052ED0  cmp      r1, #4
+0x02052ED4  bne      #0x2052f18
+  ; >>> JUMP 0x02011474
+0x02052EF4  cmp      r0, #0
+0x02052EF8  beq      #0x2052f0c
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02052A00
+0x02052F2C  cmp      r2, #0
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x020116FC
+0x02052F6C  cmp      r0, #0
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x020116F0
+0x02052F94  cmp      r0, #0
+0x02052F98  beq      #0x2052fa8
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052FEC
+0x02052FAC  cmp      r0, #0
+0x02052FB0  bne      #0x2052fd8
+0x02052FBC  cmp      r1, #0
+0x02052FC0  beq      #0x2052fcc
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02052A00
+  ; >>> JUMP 0x02010544
+0x02053000  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x02053024  cmp      r0, #0
+0x02053028  beq      #0x2053038
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x0205306C
+0x0205303C  cmp      r0, #0
+0x0205304C  cmp      r1, #0
+0x02053050  beq      #0x205305c
+  ; >>> JUMP 0x02054238
+  ; >>> JUMP 0x02010234
+0x02053078  cmp      r0, #2
+  ; >>> JUMP 0x02052A64
+0x0205309C  cmp      r0, #0
+0x020530A0  beq      #0x20530ac
+  ; >>> JUMP 0x02052A64
+  ; >>> JUMP 0x02052A00
+0x020530E0  cmp      r3, #0
+0x020530E4  beq      #0x20530f0
+0x020530F8  cmp      r2, #0
+0x020530FC  beq      #0x205310c
+  ; >>> JUMP 0x02052A00

@@ -11,6 +11,8 @@
 | v0.4 | - | M3 核心：引擎 + 状态机转写 + 6 场景 | - |
 | v0.5 | - | M4 数据：map 404→392 + 调色板 8 batch | - |
 | v0.6 | 2026-08-14 | M5 场景/适配：小程序 Canvas 接线 + 触摸绘制闭环 + 文档补齐（context/plan/reverse/design/qa/release 16 篇） | - |
+| v0.7 | 2026-08-14 | M4 补：lap 407（400+7 教学）+ fap 405（400+5 教学）全量转换接入 stage-data + 默认 16 色调色板 + 文档更新（BUG-005 关闭 / 新增 BUG-008/009） | - |
+| v0.8 | 2026-08-14 | 逆向确认：map/lap/fap 模式身份（反汇编证据链 0x34CF0/0x34BAC/0x204D18C/0x204D31C + 数据文件 hex 对比），新增 MODE_CONFIRMATION.md，更新 SCENE_MAPPING/ROM_STRUCTURE_REPORT/PROGRESS_LOG | - |
 
 ## Git 提交记录（本仓库）
 - `02d74da` feat(picpic): 第一个 picpic 版本 - NDS Pic Pic 逆向转写项目初始化

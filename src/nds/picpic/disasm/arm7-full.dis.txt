@@ -1,0 +1,115 @@
+; Pic Pic ARM7 完整反汇编
+; RAM base: 0x02380000  entry: 0x02380000  size: 0x289C0
+; 指令: 106  代码块: 2  函数: 3
+
+; ---- block 0x02380000 - 0x02380194 (404 bytes) ----
+0x02380000  mov      ip, #0x4000000
+0x02380004  str      ip, [ip, #0x208]
+0x02380008  ldr      r1, [pc, #0xbc]
+0x0238000C  mov      r0, #0x3800000
+0x02380010  cmp      r0, r1
+0x02380014  movpl    r1, r0
+0x02380018  ldr      r2, [pc, #0xb0]
+0x0238001C  mov      r0, #0
+0x02380020  cmp      r1, r2
+0x02380024  stmlt    r1!, {r0}
+0x02380028  blt      #0x2380020
+0x0238002C  mov      r0, #0x13
+0x02380030  msr      cpsr_c, r0
+0x02380034  ldr      sp, [pc, #0x98]
+0x02380038  mov      r0, #0x12
+0x0238003C  msr      cpsr_c, r0
+0x02380040  ldr      r0, [pc, #0x90]
+0x02380044  mov      sp, r0
+0x02380048  ldr      r1, [pc, #0x8c]
+0x0238004C  sub      r1, r0, r1
+0x02380050  mov      r0, #0x1f
+0x02380054  msr      cpsr_fsxc, r0
+0x02380058  sub      sp, r1, #4
+0x0238005C  ldr      r0, [pc, #0x7c]
+0x02380060  ldr      r1, [pc, #0x7c]
+0x02380064  add      r2, r1, #0x160
+0x02380068  ldr      r3, [r0], #4
+0x0238006C  str      r3, [r1], #4
+0x02380070  cmp      r1, r2
+0x02380074  bmi      #0x2380068
+0x02380078  ldr      r0, [pc, #0x68]
+0x0238007C  add      r2, r1, #0x20
+0x02380080  ldr      r3, [r0], #4
+0x02380084  str      r3, [r1], #4
+0x02380088  cmp      r1, r2
+0x0238008C  bmi      #0x2380080
+0x02380090  bl       #0x2380100
+0x02380094  ldr      r0, [pc, #0x50]
+0x02380098  ldr      r1, [r0, #0xc]
+0x0238009C  ldr      r2, [r0, #0x10]
+0x023800A0  mov      r0, #0
+0x023800A4  cmp      r1, r2
+0x023800A8  strlo    r0, [r1], #4
+0x023800AC  blo      #0x23800a4
+0x023800B0  bl       #0x238015c
+0x023800B4  ldr      r1, [pc, #0x34]
+0x023800B8  ldr      r0, [pc, #0x34]
+0x023800BC  str      r0, [r1]
+0x023800C0  ldr      r1, [pc, #0x30]
+0x023800C4  ldr      lr, [pc, #0x30]
+0x023800C8  bx       r1
+0x023800CC  eorseq   r0, r8, #176, #2
+0x023800D0  orreq    pc, r0, #0, #30
+0x023800D4  orreq    pc, r0, #192, #30
+0x023800D8  orreq    pc, r0, #128, #30
+0x023800DC  andeq    r0, r0, r0, lsl #8
+0x023800E0  eorseq   lr, pc, #64, #18
+0x023800E4  rsbseq   pc, pc, #128, #20
+0x023800E8  eorseq   lr, pc, #4, #18
+0x023800EC  eorseq   r0, r8, #152, #2
+0x023800F0  orreq    pc, r0, #252, #30
+0x023800F4  cmneq    pc, #212, #18
+0x023800F8  cmneq    pc, #104, #8
+; ===== FUNC 0x02380100 (1 refs: 0x02380090) =====
+0x02380100  ldr      r0, [pc, #0x4c]
+0x02380104  ldr      r1, [r0]
+0x02380108  ldr      r2, [r0, #4]
+0x0238010C  ldr      r3, [r0, #8]
+0x02380110  cmp      r1, r2
+0x02380114  beq      #0x2380150
+0x02380118  ldr      r4, [r1], #4
+0x0238011C  ldr      r5, [r1], #4
+0x02380120  add      r6, r4, r5
+0x02380124  cmp      r4, r6
+0x02380128  ldrmi    r7, [r3], #4
+0x0238012C  strmi    r7, [r4], #4
+0x02380130  bmi      #0x2380124
+0x02380134  ldr      r5, [r1], #4
+0x02380138  add      r6, r4, r5
+0x0238013C  mov      r7, #0
+0x02380140  cmp      r4, r6
+0x02380144  strlo    r7, [r4], #4
+0x02380148  blo      #0x2380140
+0x0238014C  beq      #0x2380110
+0x02380150  b        #0x2380158
+0x02380154  eorseq   r0, r8, #152, #2
+0x02380158  bx       lr
+; ===== FUNC 0x0238015C (1 refs: 0x023800B0) =====
+0x0238015C  mov      r0, #1
+0x02380160  mov      r1, #0
+0x02380164  ldr      r2, [pc, #0x28]
+0x02380168  sub      r3, r2, #0x400000
+0x0238016C  strh     r1, [r2]
+0x02380170  ldrh     ip, [r3]
+0x02380174  cmp      r1, ip
+0x02380178  movne    r0, #2
+0x0238017C  bne      #0x238018c
+0x02380180  add      r1, r1, #1
+0x02380184  cmp      r1, #2
+0x02380188  bne      #0x238016c
+0x0238018C  strh     r0, [r2]
+0x02380190  bx       lr
+; ---- block 0x023A89A8 - 0x023A89C0 (24 bytes) ----
+; ===== FUNC 0x023A89A8 (0 refs: ) =====
+0x023A89A8  cmneq    pc, #0
+0x023A89AC  andeq    r0, r1, r4, lsr #7
+0x023A89B0  andeq    r3, r0, ip, asr #20
+0x023A89B4  rsbseq   r0, lr, #0
+0x023A89B8  andeq    r8, r1, r4, asr r4
+0x023A89BC  andeq    r1, r0, r8, ror #18

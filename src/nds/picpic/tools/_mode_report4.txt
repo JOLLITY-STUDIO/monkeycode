@@ -1,0 +1,6 @@
+2992	; ===== FUNC 0x02003CB0 (2 refs: 0x0203DE48, 0x0203DE74) =====
+40378	; ---- block 0x02034BAC - 0x02034DE4 (568 bytes) ----
+46760	0x0203DE40  mov      r5, r0
+46761	0x0203DE44  mov      r4, r2
+46762	0x0203DE48  bl       #0x2003cb0
+46763	0x0203DE4C  mov      r0, r5

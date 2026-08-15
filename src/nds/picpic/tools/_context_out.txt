@@ -1,0 +1,1020 @@
+--- 0x02053BF4  push     {r3, lr} ---
+0x02053BA8  pop      {r3, pc}
+0x02053BAC  mov      r0, #0
+0x02053BB0  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053BB4  pop      {r3, pc}
+0x02053BB8  ldr      r1, [pc, #4]
+0x02053BBC  str      r0, [r1, #0xa8]
+0x02053BC0  bx       lr
+0x02053BC4  andeq    pc, sp, #128, #2
+0x02053BC8  ldr      ip, [pc]
+0x02053BCC  bx       ip
+0x02053BD0  andeq    pc, r0, #60, #20
+0x02053BD4  ldr      r0, [pc, #4]
+0x02053BD8  ldrh     r0, [r0]
+0x02053BDC  bx       lr
+0x02053BE0  andeq    pc, sp, #128, #2
+0x02053BE4  ldr      r0, [pc, #4]
+0x02053BE8  ldr      r0, [r0, #0x28]
+0x02053BEC  bx       lr
+0x02053BF0  andeq    pc, sp, #128, #2
+0x02053BF4  push     {r3, lr}
+0x02053BF8  sub      sp, sp, #8
+0x02053BFC  add      r0, sp, #0
+0x02053C00  bl       #0x20062ec
+  ; >>> JUMP 0x020062EC
+0x02053C04  ldr      r1, [pc, #0x9c]
+0x02053C08  ldrh     r0, [sp]
+0x02053C0C  ldr      r2, [r1]
+0x02053C10  ldrh     r1, [sp, #2]
+0x02053C14  add      r0, r0, r2
+0x02053C18  ldrh     r2, [sp, #4]
+0x02053C1C  add      r1, r1, r0
+0x02053C20  ldr      r0, [pc, #0x84]
+0x02053C24  add      r1, r2, r1
+0x02053C28  mul      r0, r1, r0
+0x02053C2C  add      r0, r0, #0x39
+0x02053C30  ldr      r1, [pc, #0x78]
+0x02053C34  add      r0, r0, #0x3000
+0x02053C38  str      r0, [r1, #0x20]
+0x02053C3C  mov      r0, #0
+0x02053C40  strh     r0, [r1, #0xa]
+0x02053C44  mov      r2, #0x65
+0x02053C48  mov      r0, #3
+0x02053C4C  strh     r2, [r1, #6]
+0x02053C50  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053C54  mov      r0, #1
+0x02053C58  bl       #0x2053cb4
+  ; >>> JUMP 0x02053CB4
+0x02053C5C  cmp      r0, #0x18
+0x02053C60  bne      #0x2053c80
+0x02053C64  mov      r0, #0x18
+0x02053C68  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02053C6C  mov      r0, #9
+0x02053C70  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053C74  add      sp, sp, #8
+0x02053C78  mov      r0, #0
+0x02053C7C  pop      {r3, pc}
+0x02053C80  cmp      r0, #2
+0x02053C84  addeq    sp, sp, #8
+0x02053C88  moveq    r0, #1
+0x02053C8C  popeq    {r3, pc}
+0x02053C90  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02053C94  mov      r0, #9
+0x02053C98  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053C9C  mov      r0, #0
+0x02053CA0  add      sp, sp, #8
+0x02053CA4  pop      {r3, pc}
+0x02053CA8  rsbseq   pc, pc, #60, #24
+0x02053CAC  andeq    r0, r1, sp, asr #27
+0x02053CB0  andeq    pc, sp, #128, #2
+0x02053CB4  push     {r4, lr}
+0x02053CB8  mov      r4, r0
+0x02053CBC  bl       #0x200fae4
+  ; >>> JUMP 0x0200FAE4
+0x02053CC0  cmp      r0, #0x8000
+0x02053CC4  bne      #0x2053ce0
+0x02053CC8  mov      r0, #3
+0x02053CCC  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02053CD0  mov      r0, #9
+0x02053CD4  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053CD8  mov      r0, #3
+0x02053CDC  pop      {r4, pc}
+0x02053CE0  cmp      r0, #0
+0x02053CE4  bne      #0x2053d00
+0x02053CE8  mov      r0, #0x16
+0x02053CEC  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02053CF0  mov      r0, #9
+0x02053CF4  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053CF8  mov      r0, #0x18
+0x02053CFC  pop      {r4, pc}
+0x02053D00  sub      r1, r4, #1
+
+--- 0x0205418C  ldr      r1, [pc, #4] ---
+0x02054140  cmpne    r7, #2
+0x02054144  strh     r2, [r0, #0xb4]
+0x02054148  cmpne    r7, #4
+0x0205414C  bne      #0x2054158
+0x02054150  bl       #0x2052a80
+  ; >>> JUMP 0x02052A80
+0x02054154  pop      {r3, r4, r5, r6, r7, pc}
+0x02054158  ldr      r2, [r0, #0x34]
+0x0205415C  cmp      r2, #0
+0x02054160  beq      #0x2054170
+0x02054164  ldr      r0, [pc, #0x1c]
+0x02054168  mov      r1, r7
+0x0205416C  blx      r2
+0x02054170  mov      r0, #0
+0x02054174  pop      {r3, r4, r5, r6, r7, pc}
+0x02054178  andeq    pc, sp, #128, #2
+0x0205417C  andeq    r0, sb, #180, #2
+0x02054180  andeq    r0, sb, #204, #2
+0x02054184  andeq    r0, r0, sl, asr #3
+0x02054188  andeq    r0, sb, #228, #2
+0x0205418C  ldr      r1, [pc, #4]
+0x02054190  str      r0, [r1, #0x30]
+0x02054194  bx       lr
+0x02054198  andeq    pc, sp, #128, #2
+0x0205419C  ldr      ip, [pc, #0xc]
+0x020541A0  mov      r2, r0
+0x020541A4  ldr      r0, [pc, #8]
+0x020541A8  ldr      r1, [pc, #8]
+0x020541AC  bx       ip
+0x020541B0  andeq    r0, r1, #252, #18
+0x020541B4  andeq    pc, sp, #64, #26
+0x020541B8  andeq    pc, sp, #32, #6
+0x020541BC  push     {r4, lr}
+0x020541C0  mov      r1, r0
+0x020541C4  ldr      r0, [pc, #0x5c]
+0x020541C8  ldr      r2, [pc, #0x5c]
+0x020541CC  bl       #0x20110a0
+  ; >>> JUMP 0x020110A0
+0x020541D0  mov      r4, r0
+0x020541D4  cmp      r4, #7
+0x020541D8  moveq    r0, #1
+0x020541DC  popeq    {r4, pc}
+0x020541E0  cmp      r4, #5
+0x020541E4  bne      #0x2054210
+0x020541E8  ldr      r0, [pc, #0x40]
+0x020541EC  ldr      r1, [r0, #0x34]
+0x020541F0  cmp      r1, #0
+0x020541F4  beq      #0x2054200
+0x020541F8  ldr      r0, [pc, #0x34]
+0x020541FC  blx      r1
+0x02054200  mov      r0, r4
+0x02054204  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02054208  mov      r0, #0
+0x0205420C  pop      {r4, pc}
+0x02054210  cmp      r4, #0
+0x02054214  moveq    r0, #1
+0x02054218  popeq    {r4, pc}
+0x0205421C  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02054220  mov      r0, #0
+0x02054224  pop      {r4, pc}
+0x02054228  andeq    pc, sp, #64, #26
+0x0205422C  andeq    pc, sp, #32, #6
+0x02054230  andeq    pc, sp, #128, #2
+0x02054234  andeq    r0, sb, #0, #4
+0x02054238  push     {r3, lr}
+0x0205423C  bl       #0x2053b2c
+  ; >>> JUMP 0x02053B2C
+0x02054240  cmp      r0, #0
+0x02054244  popne    {r3, pc}
+0x02054248  mov      r0, #0xa
+0x0205424C  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02054250  pop      {r3, pc}
+0x02054254  push     {r3, lr}
+0x02054258  ldr      r0, [pc, #0xdc]
+0x0205425C  ldr      r1, [r0, #0x28]
+0x02054260  cmp      r1, #1
+0x02054264  bne      #0x2054280
+0x02054268  ldr      r1, [r0, #0x34]
+0x0205426C  cmp      r1, #0
+0x02054270  popeq    {r3, pc}
+0x02054274  ldr      r0, [pc, #0xc4]
+0x02054278  blx      r1
+0x0205427C  pop      {r3, pc}
+0x02054280  ldr      r2, [r0, #0x34]
+0x02054284  cmp      r2, #0
+0x02054288  beq      #0x2054294
+0x0205428C  ldr      r0, [pc, #0xb0]
+0x02054290  blx      r2
+0x02054294  ldr      r0, [pc, #0xa0]
+0x02054298  ldr      r0, [r0, #0x28]
+0x0205429C  cmp      r0, #6
+0x020542A0  cmpne    r0, #5
+0x020542A4  cmpne    r0, #4
+0x020542A8  mov      r0, #3
+0x020542AC  beq      #0x20542bc
+0x020542B0  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+
+--- 0x02053BF4  push     {r3, lr} ---
+0x02053BA8  pop      {r3, pc}
+0x02053BAC  mov      r0, #0
+0x02053BB0  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053BB4  pop      {r3, pc}
+0x02053BB8  ldr      r1, [pc, #4]
+0x02053BBC  str      r0, [r1, #0xa8]
+0x02053BC0  bx       lr
+0x02053BC4  andeq    pc, sp, #128, #2
+0x02053BC8  ldr      ip, [pc]
+0x02053BCC  bx       ip
+0x02053BD0  andeq    pc, r0, #60, #20
+0x02053BD4  ldr      r0, [pc, #4]
+0x02053BD8  ldrh     r0, [r0]
+0x02053BDC  bx       lr
+0x02053BE0  andeq    pc, sp, #128, #2
+0x02053BE4  ldr      r0, [pc, #4]
+0x02053BE8  ldr      r0, [r0, #0x28]
+0x02053BEC  bx       lr
+0x02053BF0  andeq    pc, sp, #128, #2
+0x02053BF4  push     {r3, lr}
+0x02053BF8  sub      sp, sp, #8
+0x02053BFC  add      r0, sp, #0
+0x02053C00  bl       #0x20062ec
+  ; >>> JUMP 0x020062EC
+0x02053C04  ldr      r1, [pc, #0x9c]
+0x02053C08  ldrh     r0, [sp]
+0x02053C0C  ldr      r2, [r1]
+0x02053C10  ldrh     r1, [sp, #2]
+0x02053C14  add      r0, r0, r2
+0x02053C18  ldrh     r2, [sp, #4]
+0x02053C1C  add      r1, r1, r0
+0x02053C20  ldr      r0, [pc, #0x84]
+0x02053C24  add      r1, r2, r1
+0x02053C28  mul      r0, r1, r0
+0x02053C2C  add      r0, r0, #0x39
+0x02053C30  ldr      r1, [pc, #0x78]
+0x02053C34  add      r0, r0, #0x3000
+0x02053C38  str      r0, [r1, #0x20]
+0x02053C3C  mov      r0, #0
+0x02053C40  strh     r0, [r1, #0xa]
+0x02053C44  mov      r2, #0x65
+0x02053C48  mov      r0, #3
+0x02053C4C  strh     r2, [r1, #6]
+0x02053C50  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053C54  mov      r0, #1
+0x02053C58  bl       #0x2053cb4
+  ; >>> JUMP 0x02053CB4
+0x02053C5C  cmp      r0, #0x18
+0x02053C60  bne      #0x2053c80
+0x02053C64  mov      r0, #0x18
+0x02053C68  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02053C6C  mov      r0, #9
+0x02053C70  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053C74  add      sp, sp, #8
+0x02053C78  mov      r0, #0
+0x02053C7C  pop      {r3, pc}
+0x02053C80  cmp      r0, #2
+0x02053C84  addeq    sp, sp, #8
+0x02053C88  moveq    r0, #1
+0x02053C8C  popeq    {r3, pc}
+0x02053C90  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02053C94  mov      r0, #9
+0x02053C98  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053C9C  mov      r0, #0
+0x02053CA0  add      sp, sp, #8
+0x02053CA4  pop      {r3, pc}
+0x02053CA8  rsbseq   pc, pc, #60, #24
+0x02053CAC  andeq    r0, r1, sp, asr #27
+0x02053CB0  andeq    pc, sp, #128, #2
+0x02053CB4  push     {r4, lr}
+0x02053CB8  mov      r4, r0
+0x02053CBC  bl       #0x200fae4
+  ; >>> JUMP 0x0200FAE4
+0x02053CC0  cmp      r0, #0x8000
+0x02053CC4  bne      #0x2053ce0
+0x02053CC8  mov      r0, #3
+0x02053CCC  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02053CD0  mov      r0, #9
+0x02053CD4  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053CD8  mov      r0, #3
+0x02053CDC  pop      {r4, pc}
+0x02053CE0  cmp      r0, #0
+0x02053CE4  bne      #0x2053d00
+0x02053CE8  mov      r0, #0x16
+0x02053CEC  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02053CF0  mov      r0, #9
+0x02053CF4  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02053CF8  mov      r0, #0x18
+0x02053CFC  pop      {r4, pc}
+0x02053D00  sub      r1, r4, #1
+
+--- 0x0205418C  ldr      r1, [pc, #4] ---
+0x02054140  cmpne    r7, #2
+0x02054144  strh     r2, [r0, #0xb4]
+0x02054148  cmpne    r7, #4
+0x0205414C  bne      #0x2054158
+0x02054150  bl       #0x2052a80
+  ; >>> JUMP 0x02052A80
+0x02054154  pop      {r3, r4, r5, r6, r7, pc}
+0x02054158  ldr      r2, [r0, #0x34]
+0x0205415C  cmp      r2, #0
+0x02054160  beq      #0x2054170
+0x02054164  ldr      r0, [pc, #0x1c]
+0x02054168  mov      r1, r7
+0x0205416C  blx      r2
+0x02054170  mov      r0, #0
+0x02054174  pop      {r3, r4, r5, r6, r7, pc}
+0x02054178  andeq    pc, sp, #128, #2
+0x0205417C  andeq    r0, sb, #180, #2
+0x02054180  andeq    r0, sb, #204, #2
+0x02054184  andeq    r0, r0, sl, asr #3
+0x02054188  andeq    r0, sb, #228, #2
+0x0205418C  ldr      r1, [pc, #4]
+0x02054190  str      r0, [r1, #0x30]
+0x02054194  bx       lr
+0x02054198  andeq    pc, sp, #128, #2
+0x0205419C  ldr      ip, [pc, #0xc]
+0x020541A0  mov      r2, r0
+0x020541A4  ldr      r0, [pc, #8]
+0x020541A8  ldr      r1, [pc, #8]
+0x020541AC  bx       ip
+0x020541B0  andeq    r0, r1, #252, #18
+0x020541B4  andeq    pc, sp, #64, #26
+0x020541B8  andeq    pc, sp, #32, #6
+0x020541BC  push     {r4, lr}
+0x020541C0  mov      r1, r0
+0x020541C4  ldr      r0, [pc, #0x5c]
+0x020541C8  ldr      r2, [pc, #0x5c]
+0x020541CC  bl       #0x20110a0
+  ; >>> JUMP 0x020110A0
+0x020541D0  mov      r4, r0
+0x020541D4  cmp      r4, #7
+0x020541D8  moveq    r0, #1
+0x020541DC  popeq    {r4, pc}
+0x020541E0  cmp      r4, #5
+0x020541E4  bne      #0x2054210
+0x020541E8  ldr      r0, [pc, #0x40]
+0x020541EC  ldr      r1, [r0, #0x34]
+0x020541F0  cmp      r1, #0
+0x020541F4  beq      #0x2054200
+0x020541F8  ldr      r0, [pc, #0x34]
+0x020541FC  blx      r1
+0x02054200  mov      r0, r4
+0x02054204  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02054208  mov      r0, #0
+0x0205420C  pop      {r4, pc}
+0x02054210  cmp      r4, #0
+0x02054214  moveq    r0, #1
+0x02054218  popeq    {r4, pc}
+0x0205421C  bl       #0x2052a64
+  ; >>> JUMP 0x02052A64
+0x02054220  mov      r0, #0
+0x02054224  pop      {r4, pc}
+0x02054228  andeq    pc, sp, #64, #26
+0x0205422C  andeq    pc, sp, #32, #6
+0x02054230  andeq    pc, sp, #128, #2
+0x02054234  andeq    r0, sb, #0, #4
+0x02054238  push     {r3, lr}
+0x0205423C  bl       #0x2053b2c
+  ; >>> JUMP 0x02053B2C
+0x02054240  cmp      r0, #0
+0x02054244  popne    {r3, pc}
+0x02054248  mov      r0, #0xa
+0x0205424C  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+0x02054250  pop      {r3, pc}
+0x02054254  push     {r3, lr}
+0x02054258  ldr      r0, [pc, #0xdc]
+0x0205425C  ldr      r1, [r0, #0x28]
+0x02054260  cmp      r1, #1
+0x02054264  bne      #0x2054280
+0x02054268  ldr      r1, [r0, #0x34]
+0x0205426C  cmp      r1, #0
+0x02054270  popeq    {r3, pc}
+0x02054274  ldr      r0, [pc, #0xc4]
+0x02054278  blx      r1
+0x0205427C  pop      {r3, pc}
+0x02054280  ldr      r2, [r0, #0x34]
+0x02054284  cmp      r2, #0
+0x02054288  beq      #0x2054294
+0x0205428C  ldr      r0, [pc, #0xb0]
+0x02054290  blx      r2
+0x02054294  ldr      r0, [pc, #0xa0]
+0x02054298  ldr      r0, [r0, #0x28]
+0x0205429C  cmp      r0, #6
+0x020542A0  cmpne    r0, #5
+0x020542A4  cmpne    r0, #4
+0x020542A8  mov      r0, #3
+0x020542AC  beq      #0x20542bc
+0x020542B0  bl       #0x2052a00
+  ; >>> JUMP 0x02052A00
+
+--- 0x0205113C  push     {r4, r5, r6, r7, r8, sb, sl, fp, lr} ---
+0x020510F8  cmp      r0, #9
+0x020510FC  addeq    sp, sp, #8
+0x02051100  popeq    {r4, pc}
+0x02051104  bl       #0x2051be8
+  ; >>> JUMP 0x02051BE8
+0x02051108  mov      r4, r0
+0x0205110C  mov      r0, #0xff
+0x02051110  strb     r0, [r4]
+0x02051114  bl       #0x2053bd4
+  ; >>> JUMP 0x02053BD4
+0x02051118  strh     r0, [r4, #2]
+0x0205111C  mov      r0, #8
+0x02051120  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x02051124  add      sp, sp, #8
+0x02051128  pop      {r4, pc}
+0x0205112C  andeq    lr, sp, #64, #22
+0x02051130  andeq    r0, r5, #124, #30
+0x02051134  andeq    lr, sp, #132, #22
+0x02051138  andeq    r0, r0, r5, asr r5
+0x0205113C  push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+0x02051140  sub      sp, sp, #0x54
+0x02051144  ldr      r0, [pc, #0x6e8]
+0x02051148  ldr      r1, [r0, #0x14]
+0x0205114C  cmp      r1, #1
+0x02051150  bne      #0x2051568
+0x02051154  bl       #0x2053be4
+  ; >>> JUMP 0x02053BE4
+0x02051158  mov      r4, r0
+0x0205115C  cmp      r4, #0xa
+0x02051160  addls    pc, pc, r4, lsl #2
+0x02051164  b        #0x20511d0
+  ; >>> JUMP 0x020511D0
+0x02051168  b        #0x20511d0
+  ; >>> JUMP 0x020511D0
+0x0205116C  b        #0x20511d0
+  ; >>> JUMP 0x020511D0
+0x02051170  b        #0x20511d0
+  ; >>> JUMP 0x020511D0
+0x02051174  b        #0x20511d0
+  ; >>> JUMP 0x020511D0
+0x02051178  b        #0x20511d0
+  ; >>> JUMP 0x020511D0
+0x0205117C  b        #0x20511d0
+  ; >>> JUMP 0x020511D0
+0x02051180  b        #0x20511d0
+  ; >>> JUMP 0x020511D0
+0x02051184  b        #0x20511a4
+  ; >>> JUMP 0x020511A4
+0x02051188  b        #0x2051194
+  ; >>> JUMP 0x02051194
+0x0205118C  b        #0x2051194
+  ; >>> JUMP 0x02051194
+0x02051190  b        #0x2051194
+  ; >>> JUMP 0x02051194
+0x02051194  mov      r0, #5
+0x02051198  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x0205119C  bl       #0x2054238
+  ; >>> JUMP 0x02054238
+0x020511A0  b        #0x20511d0
+  ; >>> JUMP 0x020511D0
+0x020511A4  bl       #0x2053e3c
+  ; >>> JUMP 0x02053E3C
+0x020511A8  ldr      r3, [pc, #0x684]
+0x020511AC  strh     r0, [r3, #8]
+0x020511B0  ldrh     r1, [r3]
+0x020511B4  mov      r0, #4
+0x020511B8  add      r1, r1, #1
+0x020511BC  strh     r1, [r3]
+0x020511C0  ldrh     r1, [r3]
+0x020511C4  ldrh     r2, [r3, #8]
+0x020511C8  ldrh     r3, [r3, #4]
+0x020511CC  bl       #0x2054070
+  ; >>> JUMP 0x02054070
+0x020511D0  ldr      r0, [pc, #0x65c]
+0x020511D4  ldr      r1, [r0, #0x24]
+0x020511D8  cmp      r1, #0
+0x020511DC  ldrne    r0, [r0, #0xc]
+0x020511E0  cmpne    r0, #0
+0x020511E4  beq      #0x205121c
+0x020511E8  bl       #0x2053bd4
+  ; >>> JUMP 0x02053BD4
+0x020511EC  ldr      r1, [pc, #0x640]
+0x020511F0  bic      r0, r0, #1
+0x020511F4  ldrh     r1, [r1, #6]
+0x020511F8  bic      r1, r1, #1
+0x020511FC  cmp      r1, r0
+0x02051200  beq      #0x205121c
+0x02051204  mov      r0, #5
+0x02051208  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x0205120C  bl       #0x2054238
+  ; >>> JUMP 0x02054238
+0x02051210  ldr      r0, [pc, #0x61c]
+0x02051214  mov      r1, #0
+0x02051218  str      r1, [r0, #0x24]
+0x0205121C  ldr      r0, [pc, #0x610]
+0x02051220  ldr      r1, [r0, #0x28]
+0x02051224  cmp      r1, #0x14
+
+--- ; >>> JUMP 0x02053BF4 ---
+0x02051434  mov      r3, #0
+0x02051438  str      r4, [sp, #8]
+0x0205143C  bl       #0x20558f0
+  ; >>> JUMP 0x020558F0
+0x02051440  add      r0, sp, #0xc
+0x02051444  bl       #0x2009dbc
+  ; >>> JUMP 0x02009DBC
+0x02051448  mov      r0, r4
+0x0205144C  bl       #0x2051b2c
+  ; >>> JUMP 0x02051B2C
+0x02051450  mov      r0, #0x11
+0x02051454  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x02051458  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x0205145C  bl       #0x2053be4
+  ; >>> JUMP 0x02053BE4
+0x02051460  cmp      r0, #1
+0x02051464  bne      #0x2051828
+0x02051468  bl       #0x2053bf4
+  ; >>> JUMP 0x02053BF4
+0x0205146C  ldr      r0, [pc, #0x3e4]
+0x02051470  bl       #0x205418c
+  ; >>> JUMP 0x0205418C
+0x02051474  mov      r0, #0x12
+0x02051478  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x0205147C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051480  bl       #0x2053be4
+  ; >>> JUMP 0x02053BE4
+0x02051484  cmp      r0, #6
+0x02051488  addls    pc, pc, r0, lsl #2
+0x0205148C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051490  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051494  b        #0x20514ac
+  ; >>> JUMP 0x020514AC
+0x02051498  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x0205149C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020514A0  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020514A4  b        #0x20514d0
+  ; >>> JUMP 0x020514D0
+0x020514A8  b        #0x20514d0
+  ; >>> JUMP 0x020514D0
+0x020514AC  ldr      r3, [pc, #0x380]
+0x020514B0  mov      r0, #4
+0x020514B4  ldrh     r1, [r3]
+0x020514B8  add      r2, r1, #1
+0x020514BC  strh     r2, [r3]
+0x020514C0  ldrh     r2, [r3, #8]
+0x020514C4  ldrh     r3, [r3, #4]
+0x020514C8  bl       #0x2054070
+  ; >>> JUMP 0x02054070
+0x020514CC  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020514D0  ldr      r0, [pc, #0x35c]
+0x020514D4  ldr      r1, [r0, #0x20]
+0x020514D8  add      r1, r1, #1
+0x020514DC  str      r1, [r0, #0x20]
+0x020514E0  cmp      r1, #0x258
+0x020514E4  blt      #0x20514f4
+0x020514E8  mov      r0, #5
+0x020514EC  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x020514F0  bl       #0x2054238
+  ; >>> JUMP 0x02054238
+0x020514F4  bl       #0x2053bd4
+  ; >>> JUMP 0x02053BD4
+0x020514F8  ldr      r1, [pc, #0x334]
+0x020514FC  bic      r0, r0, #1
+0x02051500  ldrh     r2, [r1, #2]
+0x02051504  cmp      r2, r0
+0x02051508  bne      #0x2051828
+0x0205150C  strh     r2, [r1, #6]
+0x02051510  bl       #0x2055bc8
+  ; >>> JUMP 0x02055BC8
+0x02051514  mov      r0, #0x13
+0x02051518  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x0205151C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051520  bl       #0x2055d9c
+  ; >>> JUMP 0x02055D9C
+0x02051524  cmp      r0, #2
+0x02051528  bne      #0x2051828
+0x0205152C  mov      r0, #0x14
+0x02051530  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x02051534  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051538  mov      r0, #1
+0x0205153C  bl       #0x2051afc
+  ; >>> JUMP 0x02051AFC
+0x02051540  bl       #0x2051be8
+  ; >>> JUMP 0x02051BE8
+
+--- ; >>> JUMP 0x0205418C ---
+  ; >>> JUMP 0x020558F0
+0x02051440  add      r0, sp, #0xc
+0x02051444  bl       #0x2009dbc
+  ; >>> JUMP 0x02009DBC
+0x02051448  mov      r0, r4
+0x0205144C  bl       #0x2051b2c
+  ; >>> JUMP 0x02051B2C
+0x02051450  mov      r0, #0x11
+0x02051454  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x02051458  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x0205145C  bl       #0x2053be4
+  ; >>> JUMP 0x02053BE4
+0x02051460  cmp      r0, #1
+0x02051464  bne      #0x2051828
+0x02051468  bl       #0x2053bf4
+  ; >>> JUMP 0x02053BF4
+0x0205146C  ldr      r0, [pc, #0x3e4]
+0x02051470  bl       #0x205418c
+  ; >>> JUMP 0x0205418C
+0x02051474  mov      r0, #0x12
+0x02051478  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x0205147C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051480  bl       #0x2053be4
+  ; >>> JUMP 0x02053BE4
+0x02051484  cmp      r0, #6
+0x02051488  addls    pc, pc, r0, lsl #2
+0x0205148C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051490  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051494  b        #0x20514ac
+  ; >>> JUMP 0x020514AC
+0x02051498  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x0205149C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020514A0  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020514A4  b        #0x20514d0
+  ; >>> JUMP 0x020514D0
+0x020514A8  b        #0x20514d0
+  ; >>> JUMP 0x020514D0
+0x020514AC  ldr      r3, [pc, #0x380]
+0x020514B0  mov      r0, #4
+0x020514B4  ldrh     r1, [r3]
+0x020514B8  add      r2, r1, #1
+0x020514BC  strh     r2, [r3]
+0x020514C0  ldrh     r2, [r3, #8]
+0x020514C4  ldrh     r3, [r3, #4]
+0x020514C8  bl       #0x2054070
+  ; >>> JUMP 0x02054070
+0x020514CC  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020514D0  ldr      r0, [pc, #0x35c]
+0x020514D4  ldr      r1, [r0, #0x20]
+0x020514D8  add      r1, r1, #1
+0x020514DC  str      r1, [r0, #0x20]
+0x020514E0  cmp      r1, #0x258
+0x020514E4  blt      #0x20514f4
+0x020514E8  mov      r0, #5
+0x020514EC  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x020514F0  bl       #0x2054238
+  ; >>> JUMP 0x02054238
+0x020514F4  bl       #0x2053bd4
+  ; >>> JUMP 0x02053BD4
+0x020514F8  ldr      r1, [pc, #0x334]
+0x020514FC  bic      r0, r0, #1
+0x02051500  ldrh     r2, [r1, #2]
+0x02051504  cmp      r2, r0
+0x02051508  bne      #0x2051828
+0x0205150C  strh     r2, [r1, #6]
+0x02051510  bl       #0x2055bc8
+  ; >>> JUMP 0x02055BC8
+0x02051514  mov      r0, #0x13
+0x02051518  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x0205151C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051520  bl       #0x2055d9c
+  ; >>> JUMP 0x02055D9C
+0x02051524  cmp      r0, #2
+0x02051528  bne      #0x2051828
+0x0205152C  mov      r0, #0x14
+0x02051530  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x02051534  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051538  mov      r0, #1
+0x0205153C  bl       #0x2051afc
+  ; >>> JUMP 0x02051AFC
+0x02051540  bl       #0x2051be8
+  ; >>> JUMP 0x02051BE8
+0x02051544  mov      r4, r0
+0x02051548  mov      r0, #0xff
+0x0205154C  strb     r0, [r4]
+
+--- ; >>> JUMP 0x02055BC8 ---
+0x020514D0  ldr      r0, [pc, #0x35c]
+0x020514D4  ldr      r1, [r0, #0x20]
+0x020514D8  add      r1, r1, #1
+0x020514DC  str      r1, [r0, #0x20]
+0x020514E0  cmp      r1, #0x258
+0x020514E4  blt      #0x20514f4
+0x020514E8  mov      r0, #5
+0x020514EC  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x020514F0  bl       #0x2054238
+  ; >>> JUMP 0x02054238
+0x020514F4  bl       #0x2053bd4
+  ; >>> JUMP 0x02053BD4
+0x020514F8  ldr      r1, [pc, #0x334]
+0x020514FC  bic      r0, r0, #1
+0x02051500  ldrh     r2, [r1, #2]
+0x02051504  cmp      r2, r0
+0x02051508  bne      #0x2051828
+0x0205150C  strh     r2, [r1, #6]
+0x02051510  bl       #0x2055bc8
+  ; >>> JUMP 0x02055BC8
+0x02051514  mov      r0, #0x13
+0x02051518  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x0205151C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051520  bl       #0x2055d9c
+  ; >>> JUMP 0x02055D9C
+0x02051524  cmp      r0, #2
+0x02051528  bne      #0x2051828
+0x0205152C  mov      r0, #0x14
+0x02051530  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x02051534  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051538  mov      r0, #1
+0x0205153C  bl       #0x2051afc
+  ; >>> JUMP 0x02051AFC
+0x02051540  bl       #0x2051be8
+  ; >>> JUMP 0x02051BE8
+0x02051544  mov      r4, r0
+0x02051548  mov      r0, #0xff
+0x0205154C  strb     r0, [r4]
+0x02051550  bl       #0x2053bd4
+  ; >>> JUMP 0x02053BD4
+0x02051554  strh     r0, [r4, #2]
+0x02051558  bl       #0x2051d5c
+  ; >>> JUMP 0x02051D5C
+0x0205155C  mov      r0, #8
+0x02051560  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x02051564  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051568  cmp      r1, #2
+0x0205156C  bne      #0x205171c
+0x02051570  bl       #0x2053be4
+  ; >>> JUMP 0x02053BE4
+0x02051574  ldr      r0, [pc, #0x2b8]
+0x02051578  ldr      r0, [r0, #0x28]
+0x0205157C  sub      r0, r0, #0xb
+0x02051580  cmp      r0, #3
+0x02051584  addls    pc, pc, r0, lsl #2
+0x02051588  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x0205158C  b        #0x205159c
+  ; >>> JUMP 0x0205159C
+0x02051590  b        #0x2051610
+  ; >>> JUMP 0x02051610
+0x02051594  b        #0x2051640
+  ; >>> JUMP 0x02051640
+0x02051598  b        #0x2051618
+  ; >>> JUMP 0x02051618
+0x0205159C  bl       #0x2053be4
+  ; >>> JUMP 0x02053BE4
+0x020515A0  cmp      r0, #9
+0x020515A4  addls    pc, pc, r0, lsl #2
+0x020515A8  b        #0x2051608
+  ; >>> JUMP 0x02051608
+0x020515AC  b        #0x20515f4
+  ; >>> JUMP 0x020515F4
+0x020515B0  b        #0x20515d4
+  ; >>> JUMP 0x020515D4
+0x020515B4  b        #0x2051608
+  ; >>> JUMP 0x02051608
+0x020515B8  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020515BC  b        #0x2051608
+  ; >>> JUMP 0x02051608
+0x020515C0  b        #0x2051608
+  ; >>> JUMP 0x02051608
+0x020515C4  b        #0x2051608
+  ; >>> JUMP 0x02051608
+0x020515C8  b        #0x20515dc
+  ; >>> JUMP 0x020515DC
+0x020515CC  b        #0x2051608
+  ; >>> JUMP 0x02051608
+0x020515D0  b        #0x2051600
+  ; >>> JUMP 0x02051600
+0x020515D4  bl       #0x2053bf4
+  ; >>> JUMP 0x02053BF4
+
+--- ; >>> JUMP 0x02053BF4 ---
+  ; >>> JUMP 0x020515F4
+0x020515B0  b        #0x20515d4
+  ; >>> JUMP 0x020515D4
+0x020515B4  b        #0x2051608
+  ; >>> JUMP 0x02051608
+0x020515B8  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020515BC  b        #0x2051608
+  ; >>> JUMP 0x02051608
+0x020515C0  b        #0x2051608
+  ; >>> JUMP 0x02051608
+0x020515C4  b        #0x2051608
+  ; >>> JUMP 0x02051608
+0x020515C8  b        #0x20515dc
+  ; >>> JUMP 0x020515DC
+0x020515CC  b        #0x2051608
+  ; >>> JUMP 0x02051608
+0x020515D0  b        #0x2051600
+  ; >>> JUMP 0x02051600
+0x020515D4  bl       #0x2053bf4
+  ; >>> JUMP 0x02053BF4
+0x020515D8  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020515DC  bl       #0x2053e3c
+  ; >>> JUMP 0x02053E3C
+0x020515E0  ldr      r1, [pc, #0x24c]
+0x020515E4  strh     r0, [r1, #8]
+0x020515E8  mov      r0, #0xc
+0x020515EC  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x020515F0  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020515F4  mov      r0, #0xc
+0x020515F8  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x020515FC  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051600  bl       #0x2054238
+  ; >>> JUMP 0x02054238
+0x02051604  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051608  bl       #0x20064c8
+  ; >>> JUMP 0x020064C8
+0x0205160C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051610  bl       #0x2051d20
+  ; >>> JUMP 0x02051D20
+0x02051614  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051618  bl       #0x20527c0
+  ; >>> JUMP 0x020527C0
+0x0205161C  cmp      r0, #0
+0x02051620  beq      #0x205162c
+0x02051624  cmp      r0, #6
+0x02051628  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x0205162C  mov      r0, #2
+0x02051630  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x02051634  mov      r0, #1
+0x02051638  bl       #0x2051afc
+  ; >>> JUMP 0x02051AFC
+0x0205163C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051640  bl       #0x20527c0
+  ; >>> JUMP 0x020527C0
+0x02051644  cmp      r0, #7
+0x02051648  addls    pc, pc, r0, lsl #2
+0x0205164C  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051650  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051654  b        #0x2051670
+  ; >>> JUMP 0x02051670
+0x02051658  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x0205165C  b        #0x20516c0
+  ; >>> JUMP 0x020516C0
+0x02051660  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051664  b        #0x20516d4
+  ; >>> JUMP 0x020516D4
+0x02051668  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x0205166C  b        #0x20516fc
+  ; >>> JUMP 0x020516FC
+0x02051670  ldr      r0, [pc, #0x1bc]
+0x02051674  ldr      r1, [pc, #0x1e0]
+0x02051678  ldr      r0, [r0, #0x10]
+0x0205167C  mov      r2, #0x3c
+0x02051680  bl       #0x2006b80
+  ; >>> JUMP 0x02006B80
+0x02051684  ldr      r0, [pc, #0x1d4]
+0x02051688  ldr      r1, [pc, #0x1d4]
+0x0205168C  mov      r2, #8
+0x02051690  bl       #0x2006b80
+  ; >>> JUMP 0x02006B80
+0x02051694  ldr      r1, [pc, #0x198]
+0x02051698  ldr      r0, [pc, #0x1bc]
+0x0205169C  ldrh     r2, [r1, #4]
+
+--- ; >>> JUMP 0x02055BC8 ---
+0x020517BC  bl       #0x2053bb8
+  ; >>> JUMP 0x02053BB8
+0x020517C0  ldr      r1, [pc, #0xa4]
+0x020517C4  mov      r0, #5
+0x020517C8  mov      r2, #0
+0x020517CC  bl       #0x20530b8
+  ; >>> JUMP 0x020530B8
+0x020517D0  ldr      r0, [pc, #0x5c]
+0x020517D4  ldr      r1, [r0, #0x18]
+0x020517D8  add      r1, r1, #1
+0x020517DC  str      r1, [r0, #0x18]
+0x020517E0  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020517E4  bl       #0x20064c8
+  ; >>> JUMP 0x020064C8
+0x020517E8  bl       #0x20064c8
+  ; >>> JUMP 0x020064C8
+0x020517EC  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x020517F0  bl       #0x2055bc8
+  ; >>> JUMP 0x02055BC8
+0x020517F4  mov      r0, #0x18
+0x020517F8  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x020517FC  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051800  bl       #0x2055d9c
+  ; >>> JUMP 0x02055D9C
+0x02051804  cmp      r0, #2
+0x02051808  bne      #0x2051828
+0x0205180C  mov      r0, #0x19
+0x02051810  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x02051814  b        #0x2051828
+  ; >>> JUMP 0x02051828
+0x02051818  mov      r0, #1
+0x0205181C  bl       #0x2051afc
+  ; >>> JUMP 0x02051AFC
+0x02051820  mov      r0, #8
+0x02051824  bl       #0x2051adc
+  ; >>> JUMP 0x02051ADC
+0x02051828  mov      r0, #1
+0x0205182C  add      sp, sp, #0x54
+0x02051830  pop      {r4, r5, r6, r7, r8, sb, sl, fp, pc}
+0x02051834  andeq    lr, sp, #64, #22
+0x02051838  andeq    lr, sp, #112, #22
+0x0205183C  andeq    lr, sp, #224, #14
+0x02051840  andeq    lr, sp, #208, #14
+0x02051844  andeq    lr, sp, #44, #16
+0x02051848  andeq    pc, r8, #168, #8
+0x0205184C  andeq    r0, r0, sl, asr #3
+0x02051850  andeq    r0, r5, #248, #30
+0x02051854  andeq    r1, r5, #4
+0x02051858  andeq    r0, r5, #128, #30
+0x0205185C  andeq    lr, sp, #240, #14
+0x02051860  andeq    lr, sp, #44, #22
+0x02051864  andeq    lr, sp, #12, #16
+0x02051868  andeq    r0, r5, #180, #30
+0x0205186C  andeq    lr, sp, #4, #24
+0x02051870  push     {r4, lr}
+0x02051874  mov      r4, #0
+0x02051878  bl       #0x2053be4
+  ; >>> JUMP 0x02053BE4
+0x0205187C  cmp      r0, #9
+0x02051880  cmpne    r0, #8
+0x02051884  cmpne    r0, #0xa
+0x02051888  ldrne    r0, [pc, #0x10]
+0x0205188C  ldrne    r0, [r0, #0x28]
+0x02051890  cmpne    r0, #5
+0x02051894  moveq    r4, #1
+0x02051898  mov      r0, r4
+0x0205189C  pop      {r4, pc}
+0x020518A0  andeq    lr, sp, #64, #22
+0x020518A4  push     {r3, r4, r5, r6, r7, r8, sb, lr}
+0x020518A8  ldr      r0, [pc, #0x120]
+0x020518AC  ldr      r1, [r0, #0x14]
+0x020518B0  cmp      r1, #1
+0x020518B4  movne    r0, #1
+0x020518B8  popne    {r3, r4, r5, r6, r7, r8, sb, pc}
+0x020518BC  ldr      r0, [r0, #0xc]
+0x020518C0  cmp      r0, #0
+0x020518C4  beq      #0x20518d4
+0x020518C8  bl       #0x2053bd4
+  ; >>> JUMP 0x02053BD4
+0x020518CC  cmp      r0, #1
+0x020518D0  beq      #0x20519a0
+0x020518D4  bl       #0x2053be4
+  ; >>> JUMP 0x02053BE4
+0x020518D8  cmp      r0, #5
+0x020518DC  bne      #0x20519a0
+0x020518E0  ldr      r0, [pc, #0xec]
+0x020518E4  bl       #0x20541bc
+  ; >>> JUMP 0x020541BC
+0x020518E8  cmp      r0, #0
+0x020518EC  beq      #0x2051970
+0x020518F0  mov      sb, #0
+0x020518F4  mov      r7, #1
+0x020518F8  ldr      r8, [pc, #0xd8]
+0x020518FC  mov      r4, sb
+0x02051900  ldr      r5, [pc, #0xd4]
+

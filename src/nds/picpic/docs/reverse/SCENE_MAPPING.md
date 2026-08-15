@@ -1,12 +1,13 @@
 # 场景映射表（SCENE_MAPPING）
 
 > 由 05 输出。状态机 → 场景/资源 → TS 实现的映射。数据来源：`STATE_MACHINE.md` + `miniprogram/engine/scenes/`。
+> 模式（map/lap/fap）身份与差异证据见 `MODE_CONFIRMATION.md`（04/05 反汇编确认）。
 
 ## 场景 ↔ 状态 ↔ 资源 ↔ TS
 | 场景 | STATE | 资源目录 | TS 实现 | 状态 |
 |------|-------|----------|---------|------|
 | 启动画面 | 0x0B ST_PATH_BUILD | boot（开场 logo） | `scenes/boot-scene.ts` BootScene | ✅ |
-| 标题+建档 | 0x11 ST_TITLE | title/ + f_make/ | `scenes/title-scene.ts` TitleScene | ✅（Canvas 占位渲染） |
+| 标题+建档 | 0x11 ST_TITLE | title/ + f_make/ | `scenes/title-scene.ts` TitleScene（选档→手绘建档→删除确认） | ✅（Canvas 占位渲染，结构对齐截图 7252/8134） |
 | 模式选择 | 0x12 ST_MODE_SELECT | cinario_select/ | `scenes/mode-select-scene.ts` ModeSelectScene | ✅ |
 | 选关 | 0x0D ST_STATE_SELECT | select/ + No_window_map/lap/fap | `scenes/state-select-scene.ts` StateSelectScene | ✅ |
 | 游玩 | 0x13 ST_GAMING | map/ lap/ fap/ | `scenes/game-scene.ts` GameScene（动态装配） | ✅ |

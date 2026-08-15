@@ -1,0 +1,590 @@
+/* NDS 双屏容器：上屏 50% / 下屏 50%（真双屏，无 NDS 屏幕概念）
+   竖屏：上下排列；横屏：左右各 50%
+   注意：page 必须 height:100%，否则 100vh 会包含微信导航栏导致底部溢出
+   无分割线、背景一致 —— 从视觉上不暴露双屏边界 */
+page {
+  height: 100%;
+  overflow: hidden;
+  background: #1d1236;
+}
+
+.ds-wrap {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #1d1236;
+  position: relative; /* HUD overlay 定位基准 */
+}
+
+.ds-top {
+  height: 50%;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.ds-bottom {
+  height: 50%;
+  position: relative;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.ds-canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ==================== 下屏 HUD 覆盖层 ==================== */
+/* 页面根节点下的 cover-view：fixed 全屏覆盖 canvas（canvas 是原生组件，只有 cover-view 能浮在其上） */
+.hud-overlay {
+  position: fixed;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 999; /* 确保浮在原生 canvas 之上 */
+  pointer-events: none; /* 让触摸穿透到 canvas（除了可点击元素） */
+  box-sizing: border-box;
+}
+
+/* HUD 块定位：竖屏下屏起点 = 50% 高度（真双屏 50/50），横屏见底部 media query */
+.hud-block {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 50%;
+  box-sizing: border-box;
+}
+
+/* ---------- 通用按钮 ---------- */
+.hud-btn {
+  min-width: 88px;
+  height: 32px;
+  line-height: 32px;
+  text-align: center;
+  font-size: 12px;
+  color: #fff;
+  border-radius: 2px;
+  pointer-events: auto;
+}
+
+.hud-btn-del {
+  background: #8e2a2a;
+  border: 1px solid #e57373;
+}
+
+.hud-btn-ok {
+  background: #1e7a3c;
+  border: 1px solid #66bb6a;
+}
+
+.hud-btn-quit {
+  background: #555;
+  border: 1px solid #888;
+}
+
+.hud-hint {
+  color: #e0b8b8;
+  font-size: 9px;
+  pointer-events: none;
+}
+
+/* 遮罩（详情/确认弹窗底） */
+.hud-mask {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* ==================== 1) 标题选档 ==================== */
+.hud-title {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 0;
+}
+
+.hud-slots {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-evenly;
+  pointer-events: auto;
+}
+
+.hud-slot + .hud-slot {
+  margin-top: 2px;
+}
+
+.hud-slot {
+  width: 72%;
+  max-width: 320px;
+  flex: 1;
+  min-height: 34px;
+  background: #3a2a6e;
+  border: 1px solid #6a5ab0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 12px;
+  box-sizing: border-box;
+  position: relative;
+}
+
+.hud-slot-sel {
+  border-color: #ffd23f;
+  border-width: 2px;
+}
+
+.hud-slot-has {
+  background: #fff;
+  padding: 0;
+  overflow: hidden;
+}
+
+.slot-icon-img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 隐藏离屏 canvas：生成槽位图标后导出（置于屏幕外，不遮挡任何 UI） */
+.icon-gen-canvas {
+  position: fixed;
+  left: -9999px;
+  top: 0;
+  width: 64px;
+  height: 64px;
+}
+
+.slot-empty {
+  display: flex;
+  flex-direction: column;
+}
+
+.slot-name {
+  color: #b8a9e8;
+  font-size: 14px;
+}
+
+.slot-hint {
+  color: #8a7ab8;
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+.hud-actions {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  pointer-events: auto;
+}
+
+.hud-actions .hud-hint {
+  margin-top: 4px;
+}
+
+/* ==================== 2) 手绘建档 ==================== */
+.hud-draw {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.hud-draw-head {
+  padding-top: 8px;
+  text-align: center;
+}
+
+.hud-draw-title {
+  color: #ffd23f;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.hud-draw-sub {
+  color: #b8a9e8;
+  font-size: 11px;
+  margin-top: 2px;
+}
+
+.hud-draw-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.hud-tools {
+  display: flex;
+  margin-bottom: 8px;
+  pointer-events: auto;
+}
+
+.hud-tool + .hud-tool {
+  margin-left: 10px;
+}
+
+.hud-tool {
+  width: 108px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-size: 13px;
+  color: #fff;
+  background: #33236b;
+  border: 1px solid #5a46a0;
+  border-radius: 2px;
+}
+
+.hud-tool-sel {
+  background: #4a2d9e;
+  border-color: #ffd23f;
+}
+
+.hud-draw-btns {
+  width: 100%;
+  display: flex;
+  pointer-events: auto;
+}
+
+.hud-draw-btns .hud-btn {
+  flex: 1;
+  height: 38px;
+  line-height: 38px;
+  font-size: 14px;
+  border-radius: 0;
+  border: none;
+}
+
+/* ==================== 3) 删除确认 ==================== */
+.hud-confirm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.hud-confirm-box {
+  position: relative;
+  width: 78%;
+  max-width: 300px;
+  background: #2b1a4d;
+  border: 2px solid #ffd23f;
+  border-radius: 4px;
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hud-confirm-title {
+  color: #ffd23f;
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.hud-confirm-sub {
+  color: #cfc3ff;
+  font-size: 12px;
+  margin-bottom: 14px;
+}
+
+.hud-confirm-btns {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.hud-confirm-btns .hud-btn + .hud-btn {
+  margin-left: 16px;
+}
+
+/* ==================== 4) 模式选择 ==================== */
+.hud-mode {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hud-mode-title {
+  color: #ffd23f;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.hud-mode-cards {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  justify-content: center;
+}
+
+.hud-mode-card + .hud-mode-card {
+  margin-top: 8px;
+}
+
+.hud-mode-card {
+  width: 78%;
+  max-width: 320px;
+  flex: 1;
+  min-height: 42px;
+  background: #143a5c;
+  border: 2px solid #2f6b9e;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 14px;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.hud-mode-card-sel {
+  background: #1d4e7a;
+  border-color: #ffd23f;
+}
+
+.hud-mode-name {
+  color: #fff;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.hud-mode-info {
+  color: #9fc3e8;
+  font-size: 10px;
+  margin-top: 2px;
+}
+
+.hud-mode-ok {
+  width: 56%;
+  max-width: 220px;
+  margin-top: 10px;
+}
+
+/* ==================== 5) 选关 ==================== */
+.hud-state-top {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  background: #1f3d56;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 4px 0;
+  pointer-events: none;
+}
+
+.hud-state-title {
+  color: #ffd23f;
+  font-size: 15px;
+  font-weight: bold;
+}
+
+.hud-state-sub {
+  color: #a8c8e8;
+  font-size: 10px;
+  margin-top: 1px;
+}
+
+.hud-state-page {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 8px;
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.hud-btn-page {
+  min-width: 52px;
+  height: 30px;
+  line-height: 30px;
+  background: #4a6274;
+  border: 1px solid #6a8aa0;
+}
+
+.hud-page-text {
+  color: #ffd23f;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.hud-state-detail {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+}
+
+.hud-detail-box {
+  position: relative;
+  width: 80%;
+  max-width: 300px;
+  background: #2b1a4d;
+  border: 2px solid #ffd23f;
+  border-radius: 4px;
+  padding: 18px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.hud-detail-title {
+  color: #ffd23f;
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.hud-detail-info {
+  color: #a8c8e8;
+  font-size: 13px;
+  margin-bottom: 4px;
+}
+
+.hud-detail-new {
+  color: #4caf50;
+  font-weight: bold;
+}
+
+.hud-detail-btns {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.hud-detail-btns .hud-btn + .hud-btn {
+  margin-left: 14px;
+}
+
+/* ==================== 6) 完成画面 ==================== */
+.hud-achieve {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 14px;
+}
+
+.hud-achieve-ok {
+  width: 52%;
+  max-width: 200px;
+  height: 38px;
+  line-height: 38px;
+  font-size: 14px;
+}
+
+/* ==================== 7) 游玩 ==================== */
+.hud-game-top {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  background: #2b1a4d;
+  box-sizing: border-box;
+}
+
+.hud-btn-back {
+  min-width: 64px;
+  height: 26px;
+  line-height: 26px;
+  font-size: 11px;
+  background: #3a2a6e;
+  border: 1px solid #6a5ab0;
+  margin-left: 4px;
+}
+
+.hud-game-name {
+  flex: 1;
+  text-align: center;
+  color: #cfc3ff;
+  font-size: 12px;
+  pointer-events: none;
+}
+
+.hud-game-time {
+  color: #fff;
+  font-size: 12px;
+  margin-right: 8px;
+  pointer-events: none;
+}
+
+.hud-palette {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 36px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4px;
+  background: rgba(20, 10, 50, 0.6);
+  box-sizing: border-box;
+  pointer-events: auto;
+}
+
+.hud-color {
+  flex: 1 1 14px;
+  max-width: 22px;
+  min-width: 10px;
+  height: 26px;
+  border: 1px solid #555;
+  box-sizing: border-box;
+}
+
+.hud-color + .hud-color {
+  margin-left: 3px;
+}
+
+.hud-color-sel {
+  border: 2px solid #fff;
+}
+
+/* 横屏：左右各一半（NDS 双屏横置），HUD 块定位到右半屏 */
+@media (orientation: landscape) {
+  .ds-wrap {
+    flex-direction: row;
+  }
+  .ds-top,
+  .ds-bottom {
+    width: 50%;
+    height: 100%;
+  }
+  .hud-block {
+    left: 50%;
+    top: 0;
+    width: 50%;
+    height: 100%;
+  }
+}

@@ -26,6 +26,7 @@
 | ✅ | 反汇编/函数表 | `docs/reverse/DISASSEMBLY.md` | 04 | 2026-08-14 | - |
 | ✅ | 状态机 | `docs/reverse/STATE_MACHINE.md` | 05 | 2026-08-14 | - |
 | ✅ | 场景映射表 | `docs/reverse/SCENE_MAPPING.md` | 05 | 2026-08-14 | - |
+| ✅ | 模式确认报告 | `docs/reverse/MODE_CONFIRMATION.md` | 04/05 | 2026-08-14 | map/lap/fap 身份反汇编确认（v0.8） |
 | ✅ | 资源索引/单元清单 | `docs/reverse/RESOURCE_INDEX.md` | 06 | 2026-08-14 | - |
 | ✅ | 架构设计 | `docs/design/ARCHITECTURE.md` | 02 | 2026-08-14 | - |
 | ✅ | 接口契约 | `docs/design/INTERFACES.md` | 02 | 2026-08-14 | - |
@@ -33,7 +34,7 @@
 | ✅ | BUG 记录 | `docs/qa/BUGS.md` | 11/12 | 2026-08-14 | - |
 | ✅ | 审查记录 | `docs/qa/REVIEW_LOG.md` | 12 | 2026-08-14 | - |
 | ✅ | 测试报告 | `docs/qa/TEST_REPORT.md` | 11 | 2026-08-14 | - |
-| ✅ | 版本记录 | `docs/release/CHANGELOG.md` | 13 | 2026-08-14 | - |
+| ✅ | 版本记录 | `docs/release/CHANGELOG.md` | 13 | 2026-08-14 | v0.8：模式身份反汇编确认 |
 | ✅ | 收尾验收报告 | `docs/release/DELIVERY_REPORT.md` | 13 | 2026-08-14 | - |
 
 ## 命名规范

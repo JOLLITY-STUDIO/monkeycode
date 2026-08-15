@@ -57,8 +57,10 @@ mode init(0x0C) ──► mode select(0x12)
 SUBSTATE=3（tutorial/option/taiken/otamesi）从主流程任意处进入，返回主流程
 ```
 
-## 4. 存档槽（5 个）
-- 初始化 `0x2051D5C`；写槽 `0x2051BE8`；每槽：玩家名/解锁关号/通关列表/最短用时
+## 4. 存档槽（3 个）
+- 欧版截图 `7252-choose-profile`：下方 3 个手绘存档槽，上方展示三模式完成进度（完成标红 OK）
+- 建档（`8134-new profile`）：**手绘输入名字**（Pencil/Eraser 工具，Delete/OK/Quit 按钮），非键盘输入
+- 写槽 `0x2051BE8`；每槽：手绘图标/名/三模式通关列表/最短用时
 - 流转：`0x10 → 0x08 → 0x0D`（写档后回选关）
 
 ## 5. 完成检查

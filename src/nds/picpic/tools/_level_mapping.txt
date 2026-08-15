@@ -1,0 +1,58 @@
+=== map_d 前20文件（排序后） ===
+    1: 4000101_Cat & mouse.map
+    2: 4000103_Frog.map
+    3: 4000106_Airplane.map
+    4: 4000109_Eagle.map
+    5: 4000112_Ship.map
+    6: 4000114_Pharaoh.map
+    7: 4000115_Cowboy.map
+    8: 4000119_Bus.map
+    9: 4000120_Cannon.map
+   10: 4000201_House.map
+   11: 4000202_Cat.map
+   12: 4000204_Wooden horse.map
+   13: 4000206_Snail.map
+   14: 4000207_Woodpecker.map
+   15: 4000210_Dance.map
+   16: 4000211_Microscope.map
+   17: 4000215_Dog.map
+   18: 4000216_Chameleon.map
+   19: 4000217_Man.map
+   20: 4000218_Mouse.map
+
+=== map_d 中 rooster 文件: 4000504_Rooster.map, 4000717_Rooster fight.map ===
+
+=== lap_d 各目录文件数量 ===
+  1_dat: 50 files  (e.g. 2000203_Coffee maker.lap, 2000301_Chess.lap, 2000702_Toaster.lap...)
+  2_dat: 115 files  (e.g. 2001203_Karate kid.lap, 2001207_Meditation.lap, 2001305_Cupid.lap...)
+  3_dat: 130 files  (e.g. 2000101_Baker.lap, 2000103_Businessman.lap, 2000108_Barber.lap...)
+  4_dat: 60 files  (e.g. 2001617_Movers.lap, 2003617_X ray.lap, 2101407_Jogger.lap...)
+  5_dat: 45 files  (e.g. 2001319_Knight.lap, 2001419_Wagon.lap, 2001719_Evolution.lap...)
+  tutorial: 7 files  (e.g. tu_lap_00.lap, tu_lap_01.lap, tu_lap_02.lap...)
+
+=== fap_d 前20文件（含大小） ===
+  3000110_Japanese.fap           size=144
+  3000204_shakespeare.fap        size=144
+  3000211_crab.fap               size=144
+  3000213_fish.fap               size=144
+  3000301_ninja.fap              size=144
+  3000302_kendama.fap            size=144
+  3000305_frog.fap               size=144
+  3000306_chick.fap              size=144
+  3000401_dance.fap              size=144
+  3000403_chase.fap              size=144
+  3000602_turtle.fap             size=253
+  3000605_waiter.fap             size=253
+  3000606_horse.fap              size=253
+  3000607_elephant.fap           size=253
+  3000608_cook.fap               size=253
+  3000610_reading.fap            size=394
+  3000612_koala.fap              size=394
+  3000613_tango.fap              size=394
+  3000614_draftsman.fap          size=394
+  3000615_skiing.fap             size=394
+
+=== fap_d 中 rooster 文件: 3300401_rooster.fap ===
+
+=== map_comp 文件数量: 801 ===
+  前10: m001.NSCR, m001_LZ.bin, m001_pc.NCLR, m002_LZ.bin, m002_pc.NCLR, m003_LZ.bin, m003_pc.NCLR, m004_LZ.bin, m004_pc.NCLR, m005_LZ.bin

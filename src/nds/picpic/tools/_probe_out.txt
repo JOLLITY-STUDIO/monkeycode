@@ -1,0 +1,15 @@
+=== lap_d (dir 9) files=0 subdirs=['1_dat', '2_dat', '3_dat', '4_dat', '5_dat', 'tutorial']
+  sub 1_dat: 50 files, first=2000203_Coffee maker.lap last=2103620_Bee.lap
+  sub 2_dat: 115 files, first=2001203_Karate kid.lap last=2301405_Fishing.lap
+  sub 3_dat: 130 files, first=2000101_Baker.lap last=2301409_Cats and fireworks.lap
+  sub 4_dat: 60 files, first=2001617_Movers.lap last=2301415_Hindu god.lap
+  sub 5_dat: 45 files, first=2001319_Knight.lap last=2301419_Bird shop.lap
+  sub tutorial: 7 files, first=tu_lap_00.lap last=tu_lap_06.lap
+=== lap_comp (dir 8) files=201 subdirs=[]
+  first=l001.NSCR last=l370_pc.NCLR
+=== fap_d (dir 5) files=405 subdirs=[]
+  first=3000110_Japanese.fap last=tu_fap_04.fap
+=== fap_comp (dir 4) files=801 subdirs=[]
+  first=f001.NSCR last=f400_pc.NCLR
+lap_comp/l001_pc.NCLR fid= 1326 size= 72
+fap_comp/f001_pc.NCLR fid= 93 size= 72

@@ -86,9 +86,9 @@ export function makeSetState() {
 export type ModeId = 'map' | 'lap' | 'fap';
 
 export const MODES: { id: ModeId; name: string; resDir: string; compDir: string }[] = [
-  { id: 'map', name: 'MAP', resDir: 'map/', compDir: 'map_comp/' },
-  { id: 'lap', name: 'LAP', resDir: 'lap/', compDir: 'lap_comp/' },
-  { id: 'fap', name: 'FAP', resDir: 'fap/', compDir: 'fap_comp/' },
+  { id: 'map', name: '迷宫', resDir: 'map/', compDir: 'map_comp/' },
+  { id: 'lap', name: '连线', resDir: 'lap/', compDir: 'lap_comp/' },
+  { id: 'fap', name: '数格子', resDir: 'fap/', compDir: 'fap_comp/' },
 ];
 
 // 各模式关卡数（真实数据）
@@ -98,5 +98,22 @@ export const MODE_STAGE_COUNT: Record<ModeId, number> = {
   fap: 405,
 };
 
-// --- 5 个存档槽（0x2051D5C 初始化 5 slots） ---
-export const SAVE_SLOT_COUNT = 5;
+// --- 难度等级（Lv1-Lv5）分段：均匀分 5 段，滑块跳转用 ---
+// 返回 [start, end]（1-based，闭区间）
+export function getLevelRange(mode: ModeId, lv: number): [number, number] {
+  const total = MODE_STAGE_COUNT[mode];
+  const seg = Math.ceil(total / 5);
+  const start = (lv - 1) * seg + 1;
+  const end = Math.min(lv * seg, total);
+  return [start, end];
+}
+
+// 某关卡属于哪个 Lv（1-5）
+export function getStageLevel(mode: ModeId, stage: number): number {
+  const total = MODE_STAGE_COUNT[mode];
+  const seg = Math.ceil(total / 5);
+  return Math.min(5, Math.ceil(stage / seg));
+}
+
+// --- 3 个存档槽（欧版截图 choose-profile：3 个手绘存档槽） ---
+export const SAVE_SLOT_COUNT = 3;

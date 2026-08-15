@@ -1,5 +1,14 @@
-<canvas type="2d" id="gameCanvas" style="width: 100vw; height: 100vh;"
-  bindtouchstart="onTouchStart"
-  bindtouchmove="onTouchMove"
-  bindtouchend="onTouchEnd"
-></canvas>
+<!-- NDS 双屏布局：上屏显示 / 下屏交互
+     全部 UI 由引擎在 canvas 内自绘（渲染+交互都在 canvas，绕开原生组件层级问题） -->
+<view class="ds-wrap">
+  <view class="ds-screen ds-top">
+    <canvas type="2d" id="canvasTop" class="ds-canvas"></canvas>
+  </view>
+  <view class="ds-screen ds-bottom">
+    <canvas type="2d" id="canvasMain" class="ds-canvas"
+      bindtouchstart="onTouchStart"
+      bindtouchmove="onTouchMove"
+      bindtouchend="onTouchEnd"
+    ></canvas>
+  </view>
+</view>

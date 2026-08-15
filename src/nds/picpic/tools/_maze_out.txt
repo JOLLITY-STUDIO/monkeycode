@@ -1,0 +1,50 @@
+
+=== rooster.fap (len=144) ===
+0000: 0f 0f f1 f5 65 ff ff 0f ff ff ff ff ff f0 ff f5
+0010: f3 ff 4f ff 3f 0f f5 8f ff 2f f4 f4 ff 3f ff f5
+0020: ff f6 ff 3f f3 ff ff ff f5 f5 ff ff ff 65 f3 f0
+0030: f4 f3 ff ff ff 4f 2f ff f4 ff 2f f3 f3 ff ff f0
+0040: f3 4f 34 ff ff f0 ff ff f3 f5 54 ff f0 1f ff 0f
+0050: f4 44 ff 2f ff 55 f3 ff f7 ff ff f3 ff 7f 33 ff
+0060: 55 3f 78 ff 5f 4f ff f5 f3 ff 5f ff ff ff 0f ff
+0070: 0f ff f0 1e 00 78 18 48 78 d0 f7 3f a3 03 46 02
+0080: 82 94 04 d0 04 40 07 03 04 7f ff cc 11 c0 20 00
+
+=== rooster nibble 值视图 (15x15) ===
+1f5f56fffff0fff
+fffffff0fff5f3f
+fff4fff3f05ff8f
+ff24f4ffff3ff5f
+ff6ffff33ffffff
+f5f5fffffff563f
+0f4f3ffffffff4f
+2ff4ffff23f3fff
+ff0f3ff443ffff0
+fffff3f5f45ff0f
+f1fff04f44fff2f
+f553fff7fffff3f
+fff733ff55f387f
+ff5f4ff5f3ffff5
+fffffff0fff0ff0
+
+=== Coffee maker.lap 值网格 (head=26, 20x20) ===
+..##29212161##41#####19#19.
+..#29.#######59###59.1111
+...19.###1111###2121##21.31
+...#.#####4119..2941##.#
+...1911.##31#19#..####.#
+....11931##619...##2121.#
+.......9......#41##.#
+..............29##21.31
+.......9......31##21##
+...21##21.19#1939..21#31##21
+21##21...9...#..29#2151##
+19..1919#19.41###..#.39###
+#..#.195129####..#39###31
+19..19.#######..###51##
+.19#19.19#212129##..29.21###
+...1111.##51##39..##21##59
+....9#####41...59###31#
+.....49###49....######
+..#19#######19#19#11#19#19
+..1939#39###49###494911##49.

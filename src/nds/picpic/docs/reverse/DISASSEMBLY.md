@@ -1,41 +1,209 @@
-# 反汇编 / 函数表（DISASSEMBLY）
+# 反汇编 / 加载管线与模式路径所有权分析（DISASSEMBLY）
 
-> 由 04 反汇编/代码分析师输出。数据来源：`tools/arm9-full.dis.txt`（4.16MB）、`tools/arm9-functions.tsv`、`tools/core_disasm*.txt`、`_dump_funcs_out.txt`。
+> 由 04 反汇编/代码分析师输出。数据来源：`disasm/arm9-full.dis.txt`（120,941 行）、`arm9-functions.tsv`、`disasm/core_disasm.txt`、`disasm/mode-init-analysis.txt`。
+> 本报告回答两个问题：**谜题文件是谁加载的？模式对应的路径是谁构造/负责的？** 全部结论可回溯到汇编行号。
 
-## 1. 分析方法
-- 工具：`tools/disasm_full.py` / `disasm_entry.py` / `disasm_core.py` / `disasm_main_full.py`
-- 输入：`roms/extracted/_system/arm9.bin`
-- 输出：ARM 反汇编文本 + 函数表 TSV + 场景引用分析
+---
 
-## 2. 函数表（节选，完整见 arm9-functions.tsv）
-| 地址 | 函数/用途 |
-|------|-----------|
-| `0x205113c` | 主调度器（SUBSTATE 双层分派） |
-| `0x205171c` | SUBSTATE=3 分派 |
-| `0x2052a00` | setState：exit 回调 → 写 STATE → enter 回调 |
-| `0x2052a64` | 选关内部状态分派（STATE>9） |
-| `0x2053bf4` | 模式初始化（RNG） |
-| `0x205418c` | 模式初始化续 |
-| `0x2051be8` | 存档写槽 |
-| `0x2051d5c` | 5 槽初始化 |
-| `0x2055bc8` | GAME SETUP（游玩装配） |
-| `0x2055d9c` | 完成检查（返回 2=完成） |
-| `0x20558f0` | 路径/场景初始化 |
+## 1. 一句话结论（谁负责什么）
 
-## 3. 状态机相关交叉引用
-- 全局基址 `0x020DEB70` 字段读写点集中在 `0x205113c`~`0x2055d9c` 区间
-- 状态常量与地址映射 → 见 `docs/reverse/STATE_MACHINE.md`
+| 职责 | 负责函数 | 汇编位置 | 说明 |
+|------|----------|----------|------|
+| **模式索引来源** | 选关界面 handler（两套同构：0x2035xxx / 0x2036xxx） | L41476-41508 / L42512-42544 | 光标 `sl`(0/1/2) → mode 0/1/2 |
+| **光标→谜题号换算** | `0x203772C`（19 refs） | L43089-43096 | 越界返回 0 |
+| **谜题号段门槛** | `0x204D18C`（2 refs，仅 lap 分支调用） | L58748-58840 | 号段命中才加载 |
+| **路径构造（模式→3 条路径）** | `0x2034CF0`（6 refs，唯一入口） | L40460-40521 | mode 三分支，格式化 `%03d` |
+| **谜题加载器** | `0x204D31C`（1 ref：0x34DD8） | L58842-58921 | 分配缓冲 → NiFi 读档 → 瓦片解码 → VRAM |
+| **NiFi 文件加载器** | `0x20226B4`（97 refs 通用） | L22421-22510 | 按路径读 ROM 归档 |
+| **瓦片解码** | `0x204C680` | L58057-58089 | 4bpp→8bpp 展开 |
+| **VRAM 上传** | `0x20057D8` / `0x2003584` | - | 上传图形/调色板 |
+| **游玩装配** | `0x2055F80`（3 refs：调度器分派） | L65241-65290 | GAME SETUP：建 UI + 4× NiFi 加载 |
 
-## 4. 汇编 → TS 转写对照（07 转写）
-| ROM 地址 | TS 文件/符号 |
-|----------|-------------|
-| `0x205113c` | `engine.ts` `tick()`（SUBSTATE→STATE 分派） |
-| `0x2052a00` | `engine.ts` `setState()` |
-| `0x020DEB70` | `rom-states.ts` `GBL` |
-| `0x2055bc8` | `state-select-scene.ts` START → `GameScene` 装配 |
-| `0x2055d9c` | `engine.ts` `checkCompleteResult()` |
-| `0x2051be8`/`0x2051d5c` | `engine.ts` `writeSlot()`/`loadSlotsFromStorageSafe()` |
+**核心链路：`选关(0x2035xxx) → 换算(0x203772C) → [门槛 0x204D18C] → 路径构造(0x2034CF0) → 加载器(0x204D31C) → NiFi(0x20226B4) → 瓦片(0x204C680) → VRAM(0x20057D8)`**
 
-## 5. 已知 BUG/偏差
-- map 关卡 404→392：`map_d/` 原始单元存在损坏，非反汇编问题（记录于 BUGS.md）
-- 音频 Bank 分析属 NES 项目（见记忆），与本 NDS 项目无关
+---
+
+## 2. 模式路径所有权：`0x2034CF0`（路径构造器，唯一权威）
+
+### 2.1 调用点（6 处，全部来自选关 handler）
+```
+0x02035DA4 / 0x02035DD8 / 0x02035DF4   ← 第一套选关 handler（0x2035xxx）
+0x02036DD4 / 0x02036E08 / 0x02036E24   ← 第二套选关 handler（0x2036xxx）
+```
+三处调用分别以 `mov r0, #0/#1/#2` 传入 mode，`r1 = 谜题号`（经 0x203772C 换算）。
+
+### 2.2 汇编行为（L40460-40521）
+```
+0x02034CF0  mov r4, r1                     ; r4 = 谜题号
+0x02034CFC  cmp r0, #0 / bne 0x34D34       ; mode==0:
+0x02034D04  ldr r1, [pc,#0xd8]             ;   fmt0a（LZ 路径模板）
+0x02034D10  bl 0x201C304                    ;   sprintf %03d
+0x02034D14  ldr r1, [pc,#0xcc]             ;   fmt0b（NCLR 路径模板）
+0x02034D24  ldr r1, [pc,#0xc0]             ;   fmt0c（NSCR 路径模板）
+0x02034D30  b   0x34DA0
+0x02034D34  cmp r0, #1 / bne 0x34D6C       ; mode==1: 同构三模板
+0x02034D6C  cmp r0, #2 / bne 0x34DA0       ; mode==2: 同构三模板
+0x02034DA0  ... 组装 6 字结构（3 条路径）...
+0x02034DD8  bl  0x204D31C                   ; 交给加载器
+```
+
+### 2.3 三条路径模板（ARM9 偏移 0x80898，9 项指针表）
+| mode | 路径 1（LZ 瓦片） | 路径 2（调色板） | 路径 3（屏幕映射） |
+|:---:|-------------------|------------------|--------------------|
+| 0 | `map_comp/M%03d_LZ.bin` | `map_comp/M%03d_pc.NCLR` | `map_comp/M001.NSCR` |
+| 1 | `lap_comp/L%03d_LZ.bin` | `lap_comp/L%03d_pc.NCLR` | `lap_comp/L001.NSCR` |
+| 2 | `fap_comp/F%03d_LZ.bin` | `fap_comp/F%03d_pc.NCLR` | `fap_comp/F001.NSCR` |
+
+> **结论：路径由 `0x2034CF0` 独占构造，模式由调用它的选关 handler 通过 r0=0/1/2 指定。没有任何其他函数直接拼接这些路径。**
+
+---
+
+## 3. 加载管线：`0x204D31C`（谜题加载器）
+
+### 3.1 入口与缓冲（L58842-58867）
+```
+0x0204D324  ldr r0; mov r1, #0x4000; mov r2, #4
+0x0204D334  bl  0x2037F98              ; 分配 0x4000 图形缓冲
+0x0204D340  bl  0x201A124              ; 清零
+0x0204D35C  str r4, [r3, #0x48]        ; 存入全局 [+0x48]（图形缓冲）
+0x0204D354  mov r1, #0x84
+0x0204D360  bl  0x2037F98              ; 分配 0x84 元数据缓冲
+0x0204D37C  str r4, [r0, #0x84]        ; 存入全局 [+0x84]（元数据）
+```
+
+### 3.2 文件读取（L58868-58875）
+```
+0x0204D384  ldr r1, [r0, #0x84]        ; 元数据缓冲
+0x0204D388  mov r0, #2                 ; type=2（归档）
+0x0204D38C  add r2, sp, #0x20          ; 路径结构（来自 0x34CF0 的 6 字结构）
+0x0204D390  bl  0x20226B4              ; ← NiFi 文件加载器
+0x0204D39C  bl  0x2022C38              ; 解压/后处理
+0x0204D3A0  bl  0x2002470              ; 获取解码上下文
+```
+
+### 3.3 瓦片与调色板上传（L58876-58921）
+```
+0x0204D3A4  mov sb, #0                 ; 外层循环：调色板 16 条
+0x0204D3AC  mov r4, #0x20              ; 内层循环：瓦片 16×16
+0x0204D3C0  bl  0x201A104              ; 拷贝调色板行（r1=基址, r2=0x20）
+0x0204D3D4  bl  0x204C680              ; ← 瓦片解码 4bpp→8bpp
+0x0204D3F4  ... 16×16 双层循环结束 ...
+0x0204D404  bl  0x201A104              ; 拷全量调色板（0x4000）
+0x0204D410  bl  0x20057D8              ; VRAM 上传（图形）
+0x0204D420  bl  0x2003584              ; VRAM 上传（调色板）
+0x0204D434 / 0x204D448  bl 0x2037F5C   ; 注册对象
+```
+
+### 3.4 NiFi 加载器 `0x20226B4` 内部（L22421-22510）
+- 解析路径结构三级字段 `[r5+0x14] / [r5+0x10] / [r5]`（L22436-22468）
+- 依次调 `0x2023370` / `0x2021668` / `0x20233D0`（FAT 索引）
+- 按 NDS VRAM 行宽 `0x120` 与 tile 偏移 `0x48` 步长计算写入地址 → `0x20057D8` 上传
+
+> **结论：加载动作由 `0x204D31C` 发起、`0x20226B4` 执行文件读取、`0x204C680` 解码、`0x20057D8/0x2003584` 上传。加载器与模式无关 —— 它只消费 `0x2034CF0` 给出的 3 条路径。**
+
+---
+
+## 4. 模式选择与选关（模式索引从哪来）
+
+### 4.1 模式选择 UI `0x2034BAC`（1 ref: 0x31884，选关装配）
+- L40378-40459：7× `0x2025F24` 建窗 + `0x20264A4`/`0x2026230` 布局
+- 资源佐证：`select/No_window_map.NSCR` · `No_window_lap.NSCR` · `No_window_fap.NSCR`
+
+### 4.2 选关 handler 三元组（两套同构）
+第一套 `0x2035xxx`（L41476-41508）：
+```
+0x02035D74  cmp sl,#0 / beq 0x35D90
+0x02035D90  mov r0,sl; mov r1,sb; bl 0x203772C   ; 光标→谜题号
+            mov r1,r0; mov r0,#0; bl 0x2034CF0    ; mode 0（map）直通
+0x02035D7C  cmp sl,#1 / beq 0x35DAC
+0x02035DAC  mov r0,sl; mov r1,sb; bl 0x203772C
+            bl 0x204D18C; cmp r0,#0; beq 0x35DF8  ; mode 1（lap）过号段门槛
+            mov r1,r0; mov r0,#1; bl 0x2034CF0
+0x02035D84  cmp sl,#2 / beq 0x35DE0
+0x02035DE0  mov r0,sl; mov r1,sb; bl 0x203772C
+            mov r1,r0; mov r0,#2; bl 0x2034CF0    ; mode 2（fap）直通
+```
+第二套 `0x2036xxx`（L42512-42544）与上述逐行同构（0x2036DD4/0x2036E08/0x2036E24 调用 0x2034CF0；0x2036DE8 调用 0x204D18C）。
+
+### 4.3 门槛检查 `0x204D18C`（仅 lap 分支调用）
+```
+0x0204D1B0  cmp r2,#0x0E / blt 下一段
+0x0204D1B8  cmp r2,#0x31 / ble 命中
+0x0204D1C0  cmp r2,#0x52 / blt 下一段
+0x0204D1C8  cmp r2,#0xA4 / ble 命中
+0x0204D1D0  cmp r2,#0xBB / blt 下一段
+0x0204D1DC  cmp r2, [pc] / ble 命中          ; 上界表
+0x0204D1E4  cmp r2,#0x138 / blt 下一段
+0x0204D1F0  cmp r2, [pc] / ble 命中
+0x0204D1FC  cmp r2, [pc] / blt 0x204D2DC     ; 失败路径（返回 1，拒绝）
+0x0204D208  cmp r2, r0+0x1D / bgt 失败
+0x0204D210  命中：读全局号段表 → 0x2023A90 查表 → 渲染 → 返回 0（允许）
+0x0204D2DC  失败：mov r4,#1 → 返回 1（拒绝，仅播放音效）
+```
+号段：`0x0E~0x31`、`0x52~0xA4`、`0xBB~上界`、`0x138~上界`、`上界~上界+0x1D`。
+
+> **差异修正：原 MODE_CONFIRMATION.md 写"mode 1/2 均需过 0x204D18C"。核对汇编后，0x204D18C 仅被 sl==1（lap）分支调用（L41493/L42529），sl==2（fap）分支无门槛检查，直接进 0x2034CF0。fap 的稀疏选题由数据本身（fap_d 只有 405 关文件）约束，而非门槛函数。**
+
+---
+
+## 5. 游玩装配 `0x2055F80`（GAME SETUP，调度器分派）
+
+L65241-65290：
+```
+0x02055F98  bl 0x20234D8 / 0x2025824    ; 模式/屏幕切换
+0x02055FD0  bl 0x205C5F4                ; 建游玩 UI 窗口
+0x02055FFC  mla r2, r3, #0x18, r4       ; 路径结构寻址（每关 0x18 字节表）
+0x02056008  bl 0x20226B4                ; ← 加载本关 LZ（type=2）
+0x02056028  bl 0x20226B4                ; ← 加载第 2 文件
+（后续同构：共 4× 0x20226B4，type=2,1,2,8）
+```
+完成检查 `0x2055D9C`（L65178-65184）：读 `[game_obj+0xc]` 标志，非 0 → 调度器转 `0x14`（成就）。
+
+---
+
+## 6. 全局结构与状态机交叉引用
+
+- 全局基址 `0x020DEB70`：`[+0x0c]` SCENE ID、`[+0x14]` SUBSTATE、`[+0x28]` STATE、`[+0x34]` enter/exit 回调、`[+0x48]` 谜题图形缓冲、`[+0x84]` 谜题元数据
+- 主调度器 `0x205113C`：SUBSTATE=1 → STATE 0x00~0x0A；SUBSTATE=2 → 0x0B~0x14；SUBSTATE=3 → `0x205171C` 再分派（0x16~0x19）
+- 状态常量与流转详见 `STATE_MACHINE.md`
+
+---
+
+## 7. 汇编 → TS 转写对照
+
+| ROM 地址 | 职责 | TS 文件/符号 |
+|----------|------|-------------|
+| `0x205113C` | 主调度器 | `engine/core/engine.ts` `tick()` |
+| `0x2052A00` | 状态切换 | `engine.ts` `setState()` |
+| `0x2034CF0` | 模式路径构造 | `engine/data/stage-data.ts` `getStageDetail()` 路径拼接 |
+| `0x204D31C` | 谜题加载 | `engine/data/puzzles/index.ts`（静态数据替代 ROM 读取） |
+| `0x2055F80` | 游玩装配 | `engine/scenes/game-scene.ts`（动态装配） |
+| `0x2055D9C` | 完成检查 | `engine.ts` `checkCompleteResult()` |
+| `0x020DEB70` | 全局结构 | `engine/core/rom-states.ts` `GBL` |
+
+---
+
+## 8. 已知 BUG/偏差
+
+- **map 关卡 404→392**：`map_d/` 原始单元存在损坏，非反汇编问题（BUGS.md）
+- **MODE_CONFIRMATION.md 门槛描述偏差**：lap 独有号段门槛，fap 无（本报告 §4.3 已修正）
+- 音频 Bank 分析属 NES 项目，与本 NDS 项目无关
+
+---
+
+## 9. 证据地址索引
+
+| 项 | 位置 |
+|----|------|
+| 路径构造器 0x2034CF0 三分支 | `arm9-full.dis.txt` L40460-40521 |
+| 路径字符串表 0x34DE4 | ARM9 偏移 0x80898（9 项指针） |
+| 选关 handler 第一套 | L41476-41508 |
+| 选关 handler 第二套 | L42512-42544 |
+| 光标→谜题号 0x203772C | L43089-43096 |
+| 门槛检查 0x204D18C | L58748-58840 |
+| 加载器 0x204D31C | L58842-58921 |
+| NiFi 加载器 0x20226B4 | L22421-22510 |
+| 瓦片解码 0x204C680 | L58057-58089 |
+| GAME SETUP 0x2055F80 | L65241-65290 |
+| 完成检查 0x2055D9C | L65178-65184 |
+| 模式选择 UI 0x2034BAC | L40378-40459 |
