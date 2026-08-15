@@ -18,8 +18,17 @@
  *   }
  */
 
-import { getScriptData, type ScriptData, type ScriptInstruction, type ScriptBlock } from './script-data-loader';
-import { InstrType, type LongInstrDef, LONG_INSTRS } from './script-opcodes';
+import { getScriptData, type ScriptData, type ScriptInstruction } from './script-data-loader';
+import { InstrType } from './script-opcodes';
+
+// ── 文本行 (保留原始字节, 供 CHR tile 渲染, 不依赖 Unicode 映射) ──
+
+export interface ScriptTextLine {
+  /** 原始脚本文本字节 (字符值 < $A0 单 tile, $A0-$D7 双 tile 假名) */
+  bytes: number[];
+  /** 调试用可读文本 (占位, 非渲染依据) */
+  text: string;
+}
 
 // ── 虚拟机状态 ──
 
@@ -32,8 +41,8 @@ export interface ScriptVMState {
   instrIndex: number;
   /** 剩余等待帧数 */
   waitFrames: number;
-  /** 文本行缓冲区 (每行一个字符串) */
-  textLines: string[];
+  /** 文本行缓冲区 (保留原始字节) */
+  textLines: ScriptTextLine[];
   /** 当前场景数据 ID (LOAD_SCENE_DATA 参数) */
   sceneDataId: number;
   /** 已加载的精灵 ID 列表 (LOAD_SPRITE 参数) */
@@ -64,9 +73,9 @@ export class ScriptVM {
   /** 剩余等待帧数 */
   private _waitFrames = 0;
   /** 文本行缓冲区 */
-  private _textLines: string[] = [];
-  /** 当前文本行 (累积中) */
-  private _currentLine = '';
+  private _textLines: ScriptTextLine[] = [];
+  /** 当前文本行字节 (累积中) */
+  private _currentBytes: number[] = [];
   /** 场景数据 ID */
   private _sceneDataId = 0;
   /** 精灵 ID 列表 */
@@ -108,7 +117,7 @@ export class ScriptVM {
       blockIndex: this._blockIndex,
       instrIndex: this._instrIndex,
       waitFrames: this._waitFrames,
-      textLines: [...this._textLines],
+      textLines: this._textLines.map(l => ({ bytes: [...l.bytes], text: l.text })),
       sceneDataId: this._sceneDataId,
       spriteIds: [...this._spriteIds],
       objectQueue: [...this._objectQueue],
@@ -128,7 +137,7 @@ export class ScriptVM {
     this._instrIndex = 0;
     this._waitFrames = 0;
     this._textLines = [];
-    this._currentLine = '';
+    this._currentBytes = [];
     this._sceneDataId = 0;
     this._spriteIds = [];
     this._objectQueue = [];
@@ -215,31 +224,40 @@ export class ScriptVM {
 
   // ── 文本处理 ──
 
+  /** 将当前累积的文本字节推入行缓冲区 */
+  private _flushLine(): void {
+    if (this._currentBytes.length > 0) {
+      this._textLines.push({
+        bytes: [...this._currentBytes],
+        text: this._currentBytes
+          .map(b => b < 0xA0 ? String.fromCharCode(b) : `[${b.toString(16).toUpperCase()}]`)
+          .join(''),
+      });
+      this._currentBytes = [];
+    }
+  }
+
   private _handleText(instr: ScriptInstruction): void {
-    if (instr.text) {
-      this._currentLine += instr.text;
+    if (instr.bytes && instr.bytes.length > 0) {
+      // 保留原始文本字节 — 渲染层直接按 CHR tile 渲染, 不依赖 Unicode 映射
+      this._currentBytes.push(...instr.bytes);
+    } else if (instr.text) {
+      // 兼容: 无字节时推入调试文本对应的字节 (不渲染)
+      this._currentBytes.push(...Array.from(instr.text).map(c => c.charCodeAt(0) & 0xFF));
     }
   }
 
   private _handleTextCtrl(instr: ScriptInstruction): void {
-    // 文本格式控制: 换行/缩进等
-    // E0: 换行, E1-E7: 其他格式控制
+    // 文本格式控制: E0/E1 换行, E2-E7 其他格式控制
     if (instr.opcode === 0xE0 || instr.opcode === 0xE1) {
-      // 换行: 将当前行推入缓冲区
-      if (this._currentLine.length > 0) {
-        this._textLines.push(this._currentLine);
-        this._currentLine = '';
-      }
+      this._flushLine();
     }
   }
 
   private _handleWait(instr: ScriptInstruction): void {
     this._waitFrames = instr.frames ?? 0;
     // 等待前, 将当前文本行推入缓冲区
-    if (this._currentLine.length > 0) {
-      this._textLines.push(this._currentLine);
-      this._currentLine = '';
-    }
+    this._flushLine();
   }
 
   // ── 长指令处理 ──
@@ -253,7 +271,7 @@ export class ScriptVM {
       break;
     case 0xEA: // CLEAR_RESET
       this._textLines = [];
-      this._currentLine = '';
+      this._currentBytes = [];
       this._spriteIds = [];
       this._objectQueue = [];
       break;
@@ -267,7 +285,7 @@ export class ScriptVM {
       break;
     case 0xEE: // CLEAR_WINDOW
       this._textLines = [];
-      this._currentLine = '';
+      this._currentBytes = [];
       break;
     case 0xF1: // LOAD_SPRITE
       if (instr.params && instr.params.length > 0) {
@@ -279,10 +297,7 @@ export class ScriptVM {
       break;
     case 0xFC: // ADVANCE_PTR
       // 推进指针: 将当前文本行推入缓冲区
-      if (this._currentLine.length > 0) {
-        this._textLines.push(this._currentLine);
-        this._currentLine = '';
-      }
+      this._flushLine();
       break;
     case 0xFE: // SET_PTR (跳转)
       this._handleSetPtr(instr);

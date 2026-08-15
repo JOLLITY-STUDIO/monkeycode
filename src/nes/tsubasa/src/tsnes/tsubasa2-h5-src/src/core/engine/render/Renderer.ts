@@ -8,21 +8,25 @@
  *
  * 不包含任何业务逻辑，纯渲染。
  *
- * ⚠ renderOpening(): 临时开场文字渲染。
- * 真实开场 (Scene 0x17 Tecmo Theater) 由 Bank01 NMI 写入 NT 数据，
- * 待 Bank01/T2 翻译完成写入真实 NT 后删除此方法。
+ * ⚠ renderOpening(): 开场过渡渲染。
+ * 优先消费脚本字节 (scriptTextBytes) 用真实 CHR 字形绘制文本，
+ * 完整 NT 渲染接入后此方法可删除。
  */
 import { DataStore, type NameTableEntry } from '../../../data/DataStore';
 import { NES_WIDTH, NES_HEIGHT, TILE_PX, CHR_BANK_SIZE } from '../../types';
 import { type PaletteTable, type PaletteEntry } from '../../../model/types';
 import type { OpeningDisplayState } from '../../../game/scene_opening.controller';
+import { CHAR_MAP_DOUBLE } from '../../../data/tile/textscript/char-map';
 
 const TILE_PX2 = TILE_PX * TILE_PX;
 
 export class Renderer {
   private _store: DataStore;
 
-  /** 用于创建 ImageData 的 canvas 引用 (小程序兼容) */
+  /** 当前渲染 Context 引用 (微信小程序 2d context 的 createImageData 在此, 标准 HTML5 亦然) */
+  private _ctxRef: CanvasRenderingContext2D | null = null;
+
+  /** 用于创建 ImageData 的 canvas 引用 (小程序兼容, 兜底用) */
   private _canvasRef: any = null;
 
   /** CHR 原始数据 [bankId] → Uint8Array */
@@ -37,8 +41,19 @@ export class Renderer {
   /** Tile 解码缓存: key="${bankId}:${tileId}:${palGrp}" → ImageData */
   private _tileCache: Map<string, ImageData> = new Map();
 
+  /** 文本 tile 解码缓存 (CHR bank 0 字体, 固定白字调色板): key="${tileId}" → ImageData */
+  private _textTileCache: Map<number, ImageData> = new Map();
+
   /** 上次同步的调色板 hash (避免无谓重建 tile 缓存) */
   private _palHash = '';
+
+  /** 文本渲染固定调色板 (CT2 文本典型: 透明 + 白 + 白 + 白) */
+  private static readonly TEXT_PAL: Array<{ r: number; g: number; b: number; a: number }> = [
+    { r: 0x0F, g: 0x0F, b: 0x0F, a: 0 },
+    { r: 0xFF, g: 0xFF, b: 0xFF, a: 255 },
+    { r: 0xFF, g: 0xFF, b: 0xFF, a: 255 },
+    { r: 0xFF, g: 0xFF, b: 0xFF, a: 255 },
+  ];
 
   // ── 构造 ──
 
@@ -60,21 +75,34 @@ export class Renderer {
 
   // ── Canvas 设置 ──
 
-  /** 挂载主 Canvas Context (同时保存 canvas 引用用于创建 ImageData) */
+  /** 挂载主 Canvas Context (同时保存 ctx/canvas 引用用于创建 ImageData) */
   setupCanvas(ctx: CanvasRenderingContext2D): void {
+    this._ctxRef = ctx;
     this._canvasRef = (ctx as any).canvas || ctx;
   }
 
   /**
-   * 创建 ImageData，兼容微信小程序 Canvas 2D
+   * 创建 ImageData，兼容微信小程序 Canvas 2D 与标准 DOM。
+   * 优先级:
+   *   1. 当前绘制 context.createImageData (标准 Canvas2D / 小程序 2d canvas 均提供)
+   *   2. 挂载时保存的 _ctxRef.createImageData
+   *   3. _canvasRef.createImageData
+   *   4. DOM 全局 ImageData 构造
+   *   5. 纯对象兜底 { width, height, data } (部分环境 putImageData 按鸭子类型接受)
    */
-  private _createImageData(w: number, h: number): ImageData {
-    // 优先用 canvas.createImageData (微信小程序兼容路径)
-    if (this._canvasRef?.createImageData) {
-      return this._canvasRef.createImageData(w, h) as ImageData;
+  private _createImageData(w: number, h: number, ctx?: CanvasRenderingContext2D): ImageData {
+    const sources: any[] = [ctx, this._ctxRef, this._canvasRef];
+    for (const s of sources) {
+      if (s && typeof s.createImageData === 'function') {
+        return s.createImageData(w, h) as ImageData;
+      }
     }
-    // fallback: DOM 环境 new ImageData
-    return new (ImageData as any)(w, h) as ImageData;
+    // DOM 环境
+    if (typeof (ImageData as any) !== 'undefined') {
+      return new (ImageData as any)(w, h) as ImageData;
+    }
+    // 兜底: 纯对象 (小程序无全局 ImageData 时的最后手段)
+    return { width: w, height: h, data: new Uint8ClampedArray(w * h * 4) } as unknown as ImageData;
   }
 
   // ── 渲染主入口 ──
@@ -159,6 +187,7 @@ export class Renderer {
     const off = entry.tile * 16;
     if (off + 16 > chr.length) return null;
 
+    // _ctxRef 已在 setupCanvas 挂载, 无需逐帧传 ctx
     const img = this._createImageData(TILE_PX, TILE_PX) as ImageData;
     const pixels = img.data;
 
@@ -203,13 +232,94 @@ export class Renderer {
     return img;
   }
 
-  // ── 临时开场渲染 (View 层文字绘制) ──
-  // TODO(T2): 真实开场 NT 数据翻译完成后移除，改用 render() 绘制真实 NT
+  // ── CHR tile 文本渲染 (真实游戏字形, 不依赖 Unicode) ──
 
   /**
-   * 渲染开场动画 (Scene 0x17 Tecmo Theater 过渡方案)。
-   * 消费 OpeningSceneController 的显示状态，绘制文字/色块。
-   * 真实场景数据 (Bank07 NT 数据 + Bank01 NMI 渲染) 翻译完成后删除。
+   * 绘制单个文本 tile (CHR bank 0 字体, 固定白字调色板)。
+   * @param tileId tile 索引 (0-255)
+   * @param x 屏幕 x (像素)
+   * @param y 屏幕 y (像素)
+   */
+  private _putTextTile(ctx: CanvasRenderingContext2D, tileId: number, x: number, y: number): void {
+    let img = this._textTileCache.get(tileId);
+    if (!img) {
+      const chr = this._chrBanks[0];
+      if (!chr) return;
+      const off = tileId * 16;
+      if (off + 16 > chr.length) return;
+
+      img = this._createImageData(TILE_PX, TILE_PX, ctx) as ImageData;
+      const pixels = img.data;
+      for (let row = 0; row < TILE_PX; row++) {
+        const byte0 = chr[off + row];
+        const byte1 = chr[off + row + 8];
+        for (let col = 0; col < TILE_PX; col++) {
+          const mask = 0x80 >> col;
+          const colorIdx = ((byte1 & mask) ? 2 : 0) | ((byte0 & mask) ? 1 : 0);
+          const p = (row * TILE_PX + col) * 4;
+          const pal = Renderer.TEXT_PAL[colorIdx] ?? Renderer.TEXT_PAL[0];
+          pixels[p] = pal.r;
+          pixels[p + 1] = pal.g;
+          pixels[p + 2] = pal.b;
+          pixels[p + 3] = pal.a;
+        }
+      }
+      this._textTileCache.set(tileId, img);
+    }
+    ctx.putImageData(img, x, y);
+  }
+
+  /**
+   * 绘制一行脚本字节文本 (真实 CHR 字形)。
+   * 字节编码 (与 char-map.ts 一致):
+   *   < $A0      → 单 tile (tile = 字节值)
+   *   $A0-$D7    → 双 tile 假名 (CHAR_MAP_DOUBLE: hiTile + loTile 并排)
+   *   $D8+       → 非文本指令, 跳过不占位
+   * @returns 行宽 (像素)
+   */
+  private _renderTextLineBytes(
+    ctx: CanvasRenderingContext2D,
+    bytes: number[],
+    x: number,
+    y: number,
+  ): number {
+    let cx = x;
+    for (const b of bytes) {
+      if (b < 0xA0) {
+        this._putTextTile(ctx, b, cx, y);
+        cx += TILE_PX;
+      } else if (b <= 0xD7) {
+        const entry = CHAR_MAP_DOUBLE[b];
+        if (entry) {
+          this._putTextTile(ctx, entry.hiTile, cx, y);
+          this._putTextTile(ctx, entry.loTile, cx + TILE_PX, y);
+        }
+        cx += TILE_PX * 2;
+      }
+      // $D8+ 指令字节: 不绘制不占位
+    }
+    return cx - x;
+  }
+
+  /** 计算脚本字节文本行宽度 (像素) */
+  private _measureTextLineBytes(bytes: number[]): number {
+    let w = 0;
+    for (const b of bytes) {
+      if (b < 0xA0) {
+        w += TILE_PX;
+      } else if (b <= 0xD7 && CHAR_MAP_DOUBLE[b]) {
+        w += TILE_PX * 2;
+      }
+    }
+    return w;
+  }
+
+  // ── 开场渲染 ──
+
+  /**
+   * 渲染开场动画 (Scene 0x17 Tecmo Theater)。
+   * 优先消费脚本字节 (scriptTextBytes) 用真实 CHR 字形绘制文本;
+   * 无字节数据时回退到 Unicode 兜底绘制。
    */
   renderOpening(ctx: CanvasRenderingContext2D, ds: OpeningDisplayState): void {
     const W = NES_WIDTH;
@@ -221,7 +331,25 @@ export class Renderer {
 
     ctx.globalAlpha = Math.max(0, Math.min(1, ds.transitionAlpha));
 
-    if (ds.isTitle) {
+    const hasChrText = ds.scriptTextBytes && ds.scriptTextBytes.length > 0;
+
+    if (hasChrText) {
+      // ── 真实 CHR 字形文本 (脚本字节) ──
+      const lineH = TILE_PX;
+      // 从屏幕下部向上排列: 最后一行位于 H - 2*lineH
+      let y = H - 2 * lineH - (ds.scriptTextBytes.length - 1) * lineH;
+      if (y < 8) y = 8;
+      for (const bytes of ds.scriptTextBytes) {
+        const w = this._measureTextLineBytes(bytes);
+        const x = Math.floor((W - w) / 2);
+        this._renderTextLineBytes(ctx, bytes, x, y);
+        y += lineH;
+      }
+      // 标题菜单项仍用 Unicode 兜底
+      if (ds.isTitle) {
+        this._renderTitleMenu(ctx, ds, W, H);
+      }
+    } else if (ds.isTitle) {
       this._renderTitleScreen(ctx, ds, W, H);
     } else if (ds.showLogo) {
       this._renderOpeningLogo(ctx, ds, W, H);
@@ -321,6 +449,21 @@ export class Renderer {
     ctx.font = '12px monospace';
     ctx.fillText(titleSub, cx, 100);
 
+    this._renderTitleMenu(ctx, ds, W, H);
+
+    ctx.fillStyle = '#444';
+    ctx.font = '9px monospace';
+    ctx.fillText('(c) 1990 TECMO', cx, H - 20);
+    ctx.textAlign = 'left';
+  }
+
+  /** 标题菜单项绘制 (光标 + 列表, 供标题画面复用) */
+  private _renderTitleMenu(
+    ctx: CanvasRenderingContext2D,
+    ds: OpeningDisplayState,
+    W: number, H: number,
+  ): void {
+    const cx = W / 2;
     const yBase = 145;
     const items = ds.titleItems;
     for (let i = 0; i < items.length; i++) {
@@ -335,11 +478,6 @@ export class Renderer {
       ctx.font = '14px monospace';
       ctx.fillText(items[i].label, cx, y);
     }
-
-    ctx.fillStyle = '#444';
-    ctx.font = '9px monospace';
-    ctx.fillText('(c) 1990 TECMO', cx, H - 20);
-    ctx.textAlign = 'left';
   }
 
   // ── 调色板设置 (向后兼容) ──

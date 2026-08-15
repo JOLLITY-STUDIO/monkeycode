@@ -24,7 +24,7 @@
 
 import type { DataStore } from '../data/DataStore';
 import { OpeningShot, TitleMenu } from '../data/scene/index';
-import { ScriptVM, type ScriptVMState } from '../data/tile/textscript/script-vm';
+import { ScriptVM, type ScriptVMState, type ScriptTextLine } from '../data/tile/textscript/script-vm';
 
 // ── 动画序列每镜帧数 ──
 
@@ -123,6 +123,9 @@ export interface OpeningDisplayState {
 
   /** 脚本文本行 (TEXT 指令累积, 每行一个字符串) */
   scriptTextLines: string[];
+
+  /** 脚本文本行原始字节 (TEXT 指令累积, 供 CHR tile 渲染) */
+  scriptTextBytes: number[][];
 
   /** 脚本剩余等待帧数 (WAIT 指令) */
   scriptWaitFrames: number;
@@ -464,11 +467,13 @@ export class OpeningSceneController {
     const scriptDriven = this._useScript && this._vmState !== null;
     const vmState = this._vmState;
 
-    // 文本来源: 脚本模式优先使用 ScriptVM 累积的真实文本行
+    // 文本来源: 脚本模式优先使用 ScriptVM 累积的真实文本行 (字节)
     let text = shotInfo?.jp ?? '';
     let subText = shotInfo?.en ?? '';
+    let scriptTextBytes: number[][] = [];
     if (scriptDriven && vmState && vmState.textLines.length > 0) {
-      text = vmState.textLines.join(' ');
+      text = vmState.textLines.map(l => l.text).join(' ');
+      scriptTextBytes = vmState.textLines.map(l => l.bytes);
       subText = `scene=${vmState.sceneDataId} mode=${vmState.mode}` +
                 ` sprites=[${vmState.spriteIds.join(',')}]` +
                 ` objs=[${vmState.objectQueue.join(',')}]`;
@@ -497,7 +502,8 @@ export class OpeningSceneController {
       scriptMode: vmState?.mode ?? 0,
       scriptSpriteIds: vmState?.spriteIds ? [...vmState.spriteIds] : [],
       scriptObjectQueue: vmState?.objectQueue ? [...vmState.objectQueue] : [],
-      scriptTextLines: vmState?.textLines ? [...vmState.textLines] : [],
+      scriptTextLines: vmState?.textLines ? vmState.textLines.map(l => l.text) : [],
+      scriptTextBytes,
       scriptWaitFrames: vmState?.waitFrames ?? 0,
       scriptLooping: vmState?.isLooping ?? false,
       scriptLastInstr: vmState?.lastInstruction ?? '',
