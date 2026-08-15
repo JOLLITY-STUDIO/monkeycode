@@ -530,11 +530,57 @@ export const B27_DATA: readonly number[] = [
 
 /** 读 bank27 原始字节 (CPU 地址) */
 export function readB27(cpuAddr: number): number {
-  const off = cpuAddr - B27_CPU_BASE;
+  // bank27 代码经 $A000-$BFFF 窗口访问本 bank 表数据 (物理偏移 = cpuAddr - 0xA000)
+  let off = cpuAddr - B27_CPU_BASE;
+  if (cpuAddr >= 0xA000) off = cpuAddr - 0xA000;
   return off >= 0 && off < B27_DATA.length ? B27_DATA[off] : 0;
 }
 
 /** 读 bank27 16bit LE (CPU 地址) */
 export function readB27U16(cpuAddr: number): number {
   return readB27(cpuAddr) | (readB27(cpuAddr + 1) << 8);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// 结构化表访问 ($A000-$BFFF 窗口, 物理偏移 = cpuAddr - 0xA000)
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * $A1DC 场景索引递减表 (15 项: 索引 0-14 → 0x0E-0x00)。
+ * $8104 入口按 ram_062A&0x7F 查表得到子记录索引 Y。
+ */
+export function readB27Decrement(idx: number): number {
+  return B27_DATA[0x1dc + (idx & 0x0f)] ?? 0;
+}
+
+/**
+ * $A292 动画脚本指针表 (14 项有效, 每项 2B LE)。
+ * 由 entry_81EE 按 ram_05F3 索引, 指向本 bank $A000 窗口内的脚本流。
+ */
+export function readB27AnimScriptPtr(idx: number): number {
+  return readB27U16(0xa292 + ((idx & 0xff) << 1));
+}
+
+/**
+ * $A42A 精灵动画数据指针表 (30 项有效, 每项 2B LE)。
+ * 由 entry_81EE 按脚本帧的块索引*2 定位, 指向动画帧块数据。
+ */
+export function readB27AnimBlockPtr(idx: number): number {
+  return readB27U16(0xa42a + ((idx & 0x3f) << 1));
+}
+
+/**
+ * $A6AD 场景指针表 (4 项有效, 每项 2B LE)。
+ * entry_8104 在 (carry clear) 分支按 ram_002C[X]*2 索引。
+ */
+export function readB27ScenePtr(idx: number): number {
+  return readB27U16(0xa6ad + ((idx & 0x0f) << 1));
+}
+
+/**
+ * $AB65 场景数据指针表 (10 项有效, 每项 2B LE)。
+ * entry_8104 在 (carry set) 分支按 ram_002D[X]*2 + ram_002C[X]*6 索引。
+ */
+export function readB27SceneDataPtr(idx: number): number {
+  return readB27U16(0xab65 + ((idx & 0x1f) << 1));
 }
