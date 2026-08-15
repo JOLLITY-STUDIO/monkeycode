@@ -1,0 +1,171 @@
+
+8002: 80        UNDEFINED 8003: A0 00     LDY #$00
+8005: 84 3F     STY ram_003F
+8007: 84 41     STY ram_0041
+8009: B1 3C     LDA (ram_003C),Y
+800B: 4A        LSR 800C: 26 3F     ROL ram_003F
+800E: 4A        LSR 800F: 26 41     ROL ram_0041
+8011: B1 3C     LDA (ram_003C),Y
+8013: 29 60     AND #$60
+8015: 0A        ASL 8016: 4D 17 05  EOR ram_0517
+8019: 85 49     STA ram_0049
+801B: A0 08     LDY #$08
+801D: B1 3C     LDA (ram_003C),Y
+801F: 38        SEC 8020: E9 80     SBC #$80
+8022: AA        TAX 8023: A5 3F     LDA ram_003F
+8025: E9 00     SBC #$00
+8027: A8        TAY 8028: A9 00     LDA #$00
+802A: 85 3F     STA ram_003F
+802C: AD 38 05  LDA ram_0538
+802F: 49 FF     EOR #$FF
+8031: 18        CLC 8032: 69 01     ADC #$01
+8034: 10 02     BPL $8038
+8036: C6 3F     DEC ram_003F
+8038: 85 3E     STA ram_003E
+803A: 8A        TXA 803B: 18        CLC 803C: 65 3E     ADC ram_003E
+803E: AA        TAX 803F: 98        TYA 8040: 65 3F     ADC ram_003F
+8042: A8        TAY 8043: 2C 17 05  BIT ram_0517
+8046: 50 0D     BVC $8055
+8048: 8A        TXA 8049: 49 FF     EOR #$FF
+804B: AA        TAX 804C: 98        TYA 804D: 49 FF     EOR #$FF
+804F: A8        TAY 8050: E8        INX 8051: D0 01     BNE $8054
+8053: C8        INY 8054: C8        INY 8055: 24 49     BIT ram_0049
+8057: 50 09     BVC $8062
+8059: 38        SEC 805A: 8A        TXA 805B: E9 08     SBC #$08
+805D: AA        TAX 805E: 98        TYA 805F: E9 00     SBC #$00
+8061: A8        TAY 8062: 86 3E     STX ram_003E
+8064: 84 3F     STY ram_003F
+8066: A0 0C     LDY #$0C
+8068: B1 3C     LDA (ram_003C),Y
+806A: 38        SEC 806B: 24 49     BIT ram_0049
+806D: 10 03     BPL $8072
+806F: E9 88     SBC #$88
+8071: 2C E9 80  BIT $80E9
+8074: 85 40     STA ram_0040
+8076: A5 41     LDA ram_0041
+8078: E9 00     SBC #$00
+807A: 85 41     STA ram_0041
+807C: A9 80     LDA #$80
+807E: 85 42     STA ram_0042
+8080: A9 82     LDA #$82
+8082: 85 43     STA ram_0043
+8084: A0 12     LDY #$12
+8086: B1 3C     LDA (ram_003C),Y
+8088: 0A        ASL 8089: 90 02     BCC $808D
+808B: E6 43     INC ram_0043
+808D: A8        TAY 808E: B1 42     LDA (ram_0042),Y
+8090: AA        TAX 8091: C8        INY 8092: B1 42     LDA (ram_0042),Y
+8094: 85 43     STA ram_0043
+8096: 86 42     STX ram_0042
+8098: 20 87 81  JSR $8187
+809B: A0 00     LDY #$00
+809D: 84 44     STY ram_0044
+809F: A4 44     LDY ram_0044
+80A1: B1 42     LDA (ram_0042),Y
+80A3: 29 07     AND #$07
+80A5: D0 06     BNE $80AD
+80A7: 20 C0 80  JSR $80C0
+80AA: 4C 9F 80  JMP $809F
+80AD: 20 B3 80  JSR $80B3
+80B0: 4C 9F 80  JMP $809F
+80B3: E6 44     INC ram_0044
+80B5: 20 09 C5  JSR $C509
+80C0: A4 44     LDY ram_0044
+80C2: B1 42     LDA (ram_0042),Y
+80C4: 29 38     AND #$38
+80C6: 4A        LSR 80C7: 4A        LSR 80C8: 4A        LSR 80C9: 85 45     STA ram_0045
+80CB: C8        INY 80CC: B1 42     LDA (ram_0042),Y
+80CE: AA        TAX 80CF: BD D2 81  LDA $81D2,X
+80D2: A2 00     LDX #$00
+80D4: 24 49     BIT ram_0049
+80D6: 10 05     BPL $80DD
+80D8: 49 FF     EOR #$FF
+80DA: 18        CLC 80DB: 69 01     ADC #$01
+80DD: 48        PHA 80DE: 68        PLA 80DF: 10 01     BPL $80E2
+80E1: CA        DEX 80E2: 18        CLC 80E3: 65 40     ADC ram_0040
+80E5: 85 46     STA ram_0046
+80E7: 8A        TXA 80E8: 65 41     ADC ram_0041
+80EA: D0 11     BNE $80FD
+80EC: A5 46     LDA ram_0046
+80EE: CD 40 05  CMP ram_0540
+80F1: 90 0A     BCC $80FD
+80F3: CD 41 05  CMP ram_0541
+80F6: F0 11     BEQ $8109
+80F8: B0 03     BCS $80FD
+80FA: 4C 09 81  JMP $8109
+80FD: C8        INY 80FE: A9 F8     LDA #$F8
+8100: C8        INY 8101: C8        INY 8102: C6 45     DEC ram_0045
+8104: 10 FA     BPL $8100
+8106: 84 44     STY ram_0044
+8108: 60        RTS 8109: C8        INY 810A: B1 42     LDA (ram_0042),Y
+810C: 4A        LSR 810D: 4A        LSR 810E: AA        TAX 810F: BD FA 81  LDA $81FA,X
+8112: A2 00     LDX #$00
+8114: 24 49     BIT ram_0049
+8116: 50 05     BVC $811D
+8118: 49 FF     EOR #$FF
+811A: 18        CLC 811B: 69 01     ADC #$01
+811D: 48        PHA 811E: 68        PLA 811F: 10 01     BPL $8122
+8121: CA        DEX 8122: 18        CLC 8123: 65 3E     ADC ram_003E
+8125: 85 47     STA ram_0047
+8127: 8A        TXA 8128: 65 3F     ADC ram_003F
+812A: F0 0A     BEQ $8136
+812C: A6 3B     LDX ram_003B
+812E: A9 F8     LDA #$F8
+8130: 9D 00 02  STA ram_0200,X
+8133: C8        INY 8134: D0 23     BNE $8159
+8136: A6 3B     LDX ram_003B
+8138: A5 46     LDA ram_0046
+813A: 9D 00 02  STA ram_0200,X
+813D: A5 47     LDA ram_0047
+813F: 9D 03 02  STA ram_0203,X
+8142: B1 42     LDA (ram_0042),Y
+8144: 29 03     AND #$03
+8146: 05 49     ORA ram_0049
+8148: 9D 02 02  STA ram_0202,X
+814B: C8        INY 814C: B1 42     LDA (ram_0042),Y
+814E: 9D 01 02  STA ram_0201,X
+8151: E8        INX 8152: E8        INX 8153: E8        INX 8154: E8        INX 8155: 86 3B     STX ram_003B
+8157: E6 48     INC ram_0048
+8159: C8        INY 815A: C6 45     DEC ram_0045
+815C: 10 AC     BPL $810A
+815E: 84 44     STY ram_0044
+8160: 60        RTS 8161: 68        PLA 8162: 68        PLA 8163: 60        RTS 8164: A4 44     LDY ram_0044
+8166: B1 42     LDA (ram_0042),Y
+8168: AA        TAX 8169: C8        INY 816A: B1 42     LDA (ram_0042),Y
+816C: 85 43     STA ram_0043
+816E: 86 42     STX ram_0042
+8170: A9 00     LDA #$00
+8172: 85 44     STA ram_0044
+8174: 60        RTS 8175: AD 46 05  LDA ram_0546
+8178: C9 0C     CMP #$0C
+817A: 90 02     BCC $817E
+817C: E9 0C     SBC #$0C
+817E: 0A        ASL 817F: 18        CLC 8180: 65 44     ADC ram_0044
+8182: 85 44     STA ram_0044
+8184: 4C 64 81  JMP $8164
+8187: A0 00     LDY #$00
+8189: B1 3C     LDA (ram_003C),Y
+818B: 4D 17 05  EOR ram_0517
+818E: 29 40     AND #$40
+8190: 08        PHP 8191: A0 13     LDY #$13
+8193: B1 3C     LDA (ram_003C),Y
+8195: F0 1A     BEQ $81B1
+8197: A2 00     LDX #$00
+8199: 28        PLP 819A: 08        PHP 819B: F0 05     BEQ $81A2
+819D: 49 FF     EOR #$FF
+819F: 18        CLC 81A0: 69 01     ADC #$01
+81A2: 48        PHA 81A3: 68        PLA 81A4: 10 01     BPL $81A7
+81A6: CA        DEX 81A7: 18        CLC 81A8: 65 3E     ADC ram_003E
+81AA: 85 3E     STA ram_003E
+81AC: 8A        TXA 81AD: 65 3F     ADC ram_003F
+81AF: 85 3F     STA ram_003F
+81B1: C8        INY 81B2: B1 3C     LDA (ram_003C),Y
+81B4: F0 1A     BEQ $81D0
+81B6: A2 00     LDX #$00
+81B8: 28        PLP 81B9: 08        PHP 81BA: 10 05     BPL $81C1
+81C1: 48        PHA 81C2: 68        PLA 81C3: 10 01     BPL $81C6
+81C5: CA        DEX 81C6: 18        CLC 81C7: 65 40     ADC ram_0040
+81C9: 85 40     STA ram_0040
+81CB: 8A        TXA 81CC: 65 41     ADC ram_0041
+81CE: 85 41     STA ram_0041
+81D0: 28        PLP 81D1: 60        RTS

@@ -1,3 +1,0 @@
-.container { padding: 10px; background: #000; }
-.header { color: #ff0; font-size: 16px; margin-bottom: 10px; }
-canvas { image-rendering: pixelated; }

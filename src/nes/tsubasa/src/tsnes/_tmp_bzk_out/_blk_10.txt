@@ -1,0 +1,39 @@
+C - - - - - 0x0031AC 00:919C: 20 27 9D  JSR $9D27
+C - - - - - 0x0031AF 00:919F: A9 03     LDA #$03
+C - - - - - 0x0031B1 00:91A1: 4C BB B1  JMP $B1BB
+C - - - - - 0x0031B7 00:91A7: A9 01     LDA #$01
+C - - - - - 0x0031B9 00:91A9: 4C BB B1  JMP $B1BB
+C - - - - - 0x0031BD 00:91AD: B1 EC     LDA (ram_00EC),Y
+C - - - - - 0x0031BF 00:91AF: AA        TAX
+C - - - - - 0x0031C0 00:91B0: C8        INY
+C - - - - - 0x0031C1 00:91B1: B1 EC     LDA (ram_00EC),Y
+C - - - - - 0x0031C3 00:91B3: 85 ED     STA ram_00ED
+C - - - - - 0x0031C5 00:91B5: 86 EC     STX ram_00EC
+C - - - - - 0x0031C7 00:91B7: 4C C4 B0  JMP $B0C4
+C - - - - - 0x0031CC 00:91BC: 65 EC     ADC ram_00EC
+C - - - - - 0x0031CE 00:91BE: 85 EC     STA ram_00EC
+C - - - - - 0x0031D0 00:91C0: A5 ED     LDA ram_00ED
+C - - - - - 0x0031D2 00:91C2: 69 00     ADC #$00
+C - - - - - 0x0031D4 00:91C4: 85 ED     STA ram_00ED
+C - - - - - 0x0031D6 00:91C6: 4C C4 B0  JMP $B0C4
+C - - - - - 0x0031D9 00:91C9: A0 02     LDY #$02
+C - - - - - 0x0031DB 00:91CB: B1 EC     LDA (ram_00EC),Y
+C - - - - - 0x0031DD 00:91CD: AA        TAX
+C - - - - - 0x0031DE 00:91CE: 88        DEY
+C - - - - - 0x0031DF 00:91CF: B1 EC     LDA (ram_00EC),Y
+C - - - - - 0x0031E1 00:91D1: A8        TAY
+C - - - - - 0x0031E2 00:91D2: 60        RTS
+C - - - - - 0x0031E3 00:91D3: C8        INY
+C - - - - - 0x0031E4 00:91D4: B1 EC     LDA (ram_00EC),Y
+C - - - - - 0x0031E6 00:91D6: 85 E6     STA ram_00E6
+C - - - - - 0x0031E8 00:91D8: C8        INY
+C - - - - - 0x0031E9 00:91D9: B1 EC     LDA (ram_00EC),Y
+C - - - - - 0x0031EB 00:91DB: 85 E7     STA ram_00E7
+C - - - - - 0x0031ED 00:91DD: 60        RTS
+C - - - - - 0x0031EE 00:91DE: C8        INY
+C - - - - - 0x0031EF 00:91DF: B1 EC     LDA (ram_00EC),Y
+C - - - - - 0x0031F1 00:91E1: 85 E9     STA ram_00E9
+C - - - - - 0x0031F3 00:91E3: C8        INY
+C - - - - - 0x0031F4 00:91E4: B1 EC     LDA (ram_00EC),Y
+C - - - - - 0x0031F6 00:91E6: C8        INY
+C - - - - - 0x0031F7 00:91E7: 60        RTS

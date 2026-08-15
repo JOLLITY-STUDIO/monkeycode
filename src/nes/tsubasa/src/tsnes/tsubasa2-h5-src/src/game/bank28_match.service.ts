@@ -67,11 +67,7 @@ const KEY_0444 = 'ram_0444'; // 从配置块读取的 byte0
 const KEY_0445 = 'ram_0445'; // 从配置块读取的 byte0 (客队)
 const KEY_044E = 'ram_044E'; // 全局偏移/标志
 
-// $04A5 OAM 缓冲区
-const BASE_04A5 = 0x04A5;
-
-// $05FB / $0515 / $0628 状态标志
-const KEY_0515 = 'ram_0515';
+// $05FB / $0628 状态标志 (OAM 忙标志 ram_0515 由 OamManager 统一管理)
 const KEY_05FB = 'ram_05FB';
 const KEY_0628 = 'ram_0628';
 const KEY_0635 = 'ram_0635';
@@ -602,11 +598,12 @@ export class Bank28MatchService {
 
   private _oamInitGroup(a: number): void {
     const s = this._store;
-    // 等待 ram_0515 == 0
-    while ((s.read(KEY_0515) & 0xFF) !== 0) {
+    const oam = s.oam;
+    // 等待渲染空闲 (对应 ram_0515 == 0)
+    while (oam.isBusy()) {
       /* spin — 原始为忙等 */
     }
-    s.write(KEY_0515, 0x01);
+    oam.beginBuild();
 
     let x = 0;
     this._oamWriteSlot(x, a);
@@ -615,29 +612,25 @@ export class Bank28MatchService {
     // 从 (0061) 复制 24B
     const ptr = this._readIndirectPtr(KEY_61, KEY_62);
     const base = ptr.lo + (ptr.hi << 8);
-    for (let y = 0; y < 0x18; y++) {
-      s.write(`ram_${(BASE_04A5 + x + y).toString(16)}`, readB28(base + y));
-    }
+    const block: number[] = [];
+    for (let y = 0; y < 0x18; y++) block.push(readB28(base + y));
+    oam.writeBlock(x, block);
     x += 0x18;
-    s.write(`ram_${(BASE_04A5 + x).toString(16)}`, 0);
+    oam.writeByte(x, 0);
 
     // 更新 0061:0062
     const newBase = base + 0x18;
     s.write(KEY_61, newBase & 0xFF);
     s.write(KEY_62, (newBase >> 8) & 0xFF);
 
-    s.write(KEY_0515, 0x80);
+    oam.endBuild();
   }
 
   private _oamWriteSlot(x: number, a: number): void {
-    const s = this._store;
-    s.write(`ram_${(BASE_04A5 + x).toString(16)}`, 0x18);
-    s.write(`ram_${(BASE_04A5 + x + 1).toString(16)}`, 0x40);
-
     let v = a + 0x11;
     v = v >> 3;
     v |= 0x20;
-    s.write(`ram_${(BASE_04A5 + x + 2).toString(16)}`, v);
+    this._store.oam.writeBlock(x, [0x18, 0x40, v]);
   }
 
   // ════════════════════════════════════════════

@@ -91,7 +91,7 @@ const PRG_DESCRIPTIONS: Record<number, string> = {
   26: 'Match Core Engine — 比赛核心引擎 (7362B code)',
   27: 'Data + Minimal Code — 数据(极少量代码)',
   28: 'Auxiliary Logic & Data — 辅助逻辑 & 数据',
-  29: 'Extended Data (Low Usage) — 扩展数据(低利用)',
+  29: 'Team Tactics & CPU Roster — 球队战术/阵型块(241×22B) + 阵容指针表(34项) + CPU阵容区 → Bank30/26/31切到$A000 · Bank01主消费',
   30: 'Core System Library (FIXED $C000) — HW初始化 + Bank31唯一对外接口(JMP跳转表)',
   31: 'Interrupt Vectors (FIXED $E000) — RESET→Bank30 — 不直接调$8000-$BFFF',
 };
@@ -127,7 +127,7 @@ const PRG_NAMES: Record<number, string> = {
   26: 'Match Core Engine',
   27: 'Data + Minimal Code',
   28: 'Auxiliary Logic & Data',
-  29: 'Extended Data (Low Use)',
+  29: 'Team Tactics & Roster',
   30: 'Core System Library',
   31: 'Interrupt Vectors',
 };
@@ -200,7 +200,7 @@ const PRG_RELATIONS: Record<number, BankRel> = {
   26: { deps: [], usedBy: [] },
   27: { deps: [], usedBy: [] },
   28: { deps: [], usedBy: [] },
-  29: { deps: [], usedBy: [] },
+  29: { deps: [], usedBy: [1, 0, 20, 28] },
   // Bank 30: 核心系统库；启动时通过 R6=0 映射 Bank 00，R7=2 映射 Bank 02；被 Bank 31 中断向量和 Bank 00 调用
   30: { deps: [0, 2], usedBy: [0, 31] },
   31: { deps: [30], usedBy: [0] },
@@ -282,7 +282,7 @@ Page({
     const { type, id } = e.currentTarget.dataset as { type: string; id: number };
     // 特殊 bank 跳转独立详情页
     const SPECIAL_BANKS: Record<number, string> = {
-      2: 'bank-detail-02', 12: 'bank-detail-12', 30: 'bank-detail-30', 31: 'bank-detail-31',
+      2: 'bank-detail-02', 12: 'bank-detail-12', 29: 'bank-detail-29', 30: 'bank-detail-30', 31: 'bank-detail-31',
     };
     const subDir = SPECIAL_BANKS[id] || 'bank-detail';
     wx.navigateTo({

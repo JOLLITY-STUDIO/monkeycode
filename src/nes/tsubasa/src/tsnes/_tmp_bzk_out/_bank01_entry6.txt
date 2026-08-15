@@ -1,0 +1,8 @@
+C D 1 - - - 0x002F89 00:8F79: A5 26     LDA ram_0026
+C - - - - - 0x002F8B 00:8F7B: 0A        ASL
+C - - - - - 0x002F8C 00:8F7C: AA        TAX
+C - - - - - 0x002F8D 00:8F7D: BD 4C BA  LDA $BA4C,X
+C - - - - - 0x002F90 00:8F80: 85 E6     STA ram_00E6
+C - - - - - 0x002F92 00:8F82: BD 4D BA  LDA $BA4D,X
+C - - - - - 0x002F95 00:8F85: 85 E7     STA ram_00E7
+C - - - - - 0x002F97 00:8F87: 4C 9E AF  JMP $AF9E

@@ -1,0 +1,235 @@
+C - - - - - 0x002DF9 00:8DE9: 85 EC     STA ram_00EC
+C - - - - - 0x002DFB 00:8DEB: A5 2A     LDA ram_002A
+C - - - - - 0x002DFD 00:8DED: 0A        ASL
+C - - - - - 0x002DFE 00:8DEE: 0A        ASL
+C - - - - - 0x002DFF 00:8DEF: 0A        ASL
+C - - - - - 0x002E00 00:8DF0: 0A        ASL
+C - - - - - 0x002E01 00:8DF1: 18        CLC
+C - - - - - 0x002E02 00:8DF2: 69 BB     ADC #$BB
+C - - - - - 0x002E04 00:8DF4: A8        TAY
+C - - - - - 0x002E05 00:8DF5: A9 00     LDA #$00
+C - - - - - 0x002E07 00:8DF7: 69 B6     ADC #$B6
+C - - - - - 0x002E09 00:8DF9: AA        TAX
+C - - - - - 0x002E0A 00:8DFA: AD EC 00  LDA a: ram_00EC
+C - - - - - 0x002E0D 00:8DFD: 20 B8 97  JSR $97B8
+C - - - - - 0x002E10 00:8E00: 60        RTS
+C - - - - - 0x002E11 00:8E01: 85 E7     STA ram_00E7
+C - - - - - 0x002E13 00:8E03: A0 24     LDY #$24
+C - - - - - 0x002E15 00:8E05: A2 00     LDX #$00
+C - - - - - 0x002E17 00:8E07: BD 23 B8  LDA $B823,X
+C - - - - - 0x002E1A 00:8E0A: 99 69 04  STA ram_0469,Y
+C - - - - - 0x002E1D 00:8E0D: A9 00     LDA #$00
+C - - - - - 0x002E1F 00:8E0F: 99 6A 04  STA ram_046A,Y
+C - - - - - 0x002E22 00:8E12: E8        INX
+C - - - - - 0x002E23 00:8E13: 88        DEY
+C - - - - - 0x002E24 00:8E14: 88        DEY
+C - - - - - 0x002E25 00:8E15: 88        DEY
+C - - - - - 0x002E26 00:8E16: 88        DEY
+C - - - - - 0x002E27 00:8E17: 10 EE     BPL $8E07
+C - - - - - 0x002E29 00:8E19: A4 2C     LDY ram_002C
+C - - - - - 0x002E2B 00:8E1B: 4C 8F AE  JMP $AE8F
+C - - - - - 0x002E2E 00:8E1E: 85 E7     STA ram_00E7
+C - - - - - 0x002E30 00:8E20: A9 71     LDA #$71
+C - - - - - 0x002E32 00:8E22: 8D 61 05  STA ram_0561
+C - - - - - 0x002E35 00:8E25: A9 00     LDA #$00
+C - - - - - 0x002E37 00:8E27: 8D 62 05  STA ram_0562
+C - - - - - 0x002E3A 00:8E2A: 8E 63 05  STX ram_0563
+C - - - - - 0x002E3D 00:8E2D: A5 2C     LDA ram_002C
+C - - - - - 0x002E3F 00:8E2F: 0A        ASL
+C - - - - - 0x002E40 00:8E30: 0A        ASL
+C - - - - - 0x002E41 00:8E31: 0A        ASL
+C - - - - - 0x002E42 00:8E32: 0A        ASL
+C - - - - - 0x002E43 00:8E33: 18        CLC
+C - - - - - 0x002E44 00:8E34: 69 48     ADC #$48
+C - - - - - 0x002E46 00:8E36: 8D 60 05  STA ram_0560
+C - - - - - 0x002E49 00:8E39: 60        RTS
+C - - - - - 0x002E4A 00:8E3A: 85 E7     STA ram_00E7
+C - - - - - 0x002E4C 00:8E3C: A5 2C     LDA ram_002C
+C - - - - - 0x002E4E 00:8E3E: 85 E6     STA ram_00E6
+C - - - - - 0x002E50 00:8E40: A9 01     LDA #$01
+C - - - - - 0x002E52 00:8E42: 20 A8 9F  JSR $9FA8
+C - - - - - 0x002E55 00:8E45: A5 1E     LDA ram_001E
+C - - - - - 0x002E57 00:8E47: 29 0C     AND #$0C
+C - - - - - 0x002E59 00:8E49: F0 1C     BEQ $8E67
+C - - - - - 0x002E5B 00:8E4B: 49 0C     EOR #$0C
+C - - - - - 0x002E5D 00:8E4D: 4A        LSR
+C - - - - - 0x002E5E 00:8E4E: 38        SEC
+C - - - - - 0x002E5F 00:8E4F: E9 03     SBC #$03
+C - - - - - 0x002E61 00:8E51: 18        CLC
+C - - - - - 0x002E62 00:8E52: 65 E6     ADC ram_00E6
+C - - - - - 0x002E64 00:8E54: 29 03     AND #$03
+C - - - - - 0x002E66 00:8E56: 85 E6     STA ram_00E6
+C - - - - - 0x002E68 00:8E58: 0A        ASL
+C - - - - - 0x002E69 00:8E59: 0A        ASL
+C - - - - - 0x002E6A 00:8E5A: 0A        ASL
+C - - - - - 0x002E6B 00:8E5B: 0A        ASL
+C - - - - - 0x002E6C 00:8E5C: 18        CLC
+C - - - - - 0x002E6D 00:8E5D: 69 48     ADC #$48
+C - - - - - 0x002E6F 00:8E5F: 8D 60 05  STA ram_0560
+C - - - - - 0x002E72 00:8E62: A4 E6     LDY ram_00E6
+C - - - - - 0x002E74 00:8E64: 20 8F AE  JSR $AE8F
+C - - - - - 0x002E77 00:8E67: 24 1E     BIT ram_001E
+C - - - - - 0x002E79 00:8E69: 70 07     BVS $8E72
+C - - - - - 0x002E7B 00:8E6B: 10 D3     BPL $8E40
+C - - - - - 0x002E7D 00:8E6D: A5 E6     LDA ram_00E6
+C - - - - - 0x002E7F 00:8E6F: 85 2C     STA ram_002C
+C - - - - - 0x002E81 00:8E71: 60        RTS
+C - - - - - 0x002E82 00:8E72: A4 2C     LDY ram_002C
+C - - - - - 0x002E84 00:8E74: 4C 8F AE  JMP $AE8F
+C - - - - - 0x002E87 00:8E77: 20 3A 9C  JSR $9C3A
+C - - - - - 0x002E8A 00:8E7A: A5 2D     LDA ram_002D
+C - - - - - 0x002E8C 00:8E7C: 0A        ASL
+C - - - - - 0x002E8D 00:8E7D: 0A        ASL
+C - - - - - 0x002E8E 00:8E7E: 0A        ASL
+C - - - - - 0x002E8F 00:8E7F: 0A        ASL
+C - - - - - 0x002E90 00:8E80: 18        CLC
+C - - - - - 0x002E91 00:8E81: 69 58     ADC #$58
+C - - - - - 0x002E93 00:8E83: 8D 60 05  STA ram_0560
+C - - - - - 0x002E96 00:8E86: 20 0D 9C  JSR $9C0D
+C - - - - - 0x002E99 00:8E89: B0 03     BCS $8E8E
+C - - - - - 0x002E9B 00:8E8B: 4A        LSR
+C - - - - - 0x002E9C 00:8E8C: 85 2D     STA ram_002D
+C - - - - - 0x002E9E 00:8E8E: 60        RTS
+C - - - - - 0x002EA2 00:8E92: A0 24     LDY #$24
+C - - - - - 0x002EA4 00:8E94: BD 31 B8  LDA $B831,X
+C - - - - - 0x002EA7 00:8E97: 99 68 04  STA ram_0468,Y
+C - - - - - 0x002EAA 00:8E9A: BD 32 B8  LDA $B832,X
+C - - - - - 0x002EAD 00:8E9D: 18        CLC
+C - - - - - 0x002EAE 00:8E9E: 65 E7     ADC ram_00E7
+C - - - - - 0x002EB0 00:8EA0: 99 6B 04  STA ram_046B,Y
+C - - - - - 0x002EB3 00:8EA3: E8        INX
+C - - - - - 0x002EB4 00:8EA4: E8        INX
+C - - - - - 0x002EB5 00:8EA5: 88        DEY
+C - - - - - 0x002EB6 00:8EA6: 88        DEY
+C - - - - - 0x002EB7 00:8EA7: 88        DEY
+C - - - - - 0x002EB8 00:8EA8: 88        DEY
+C - - - - - 0x002EB9 00:8EA9: 10 E9     BPL $8E94
+C - - - - - 0x002EBB 00:8EAB: 60        RTS
+C - - - - - 0x002EBC 00:8EAC: A9 0A     LDA #$0A
+C - - - - - 0x002EBE 00:8EAE: A2 0B     LDX #$0B
+C - - - - - 0x002EC0 00:8EB0: A0 FF     LDY #$FF
+C - - - - - 0x002EC2 00:8EB2: 4C DA AE  JMP $AEDA
+C - - - - - 0x002EC5 00:8EB5: A9 16     LDA #$16
+C - - - - - 0x002EC7 00:8EB7: A2 0A     LDX #$0A
+C - - - - - 0x002EC9 00:8EB9: A0 01     LDY #$01
+C - - - - - 0x002ECB 00:8EBB: 4C DA AE  JMP $AEDA
+C - - - - - 0x002ECE 00:8EBE: A9 16     LDA #$16
+C - - - - - 0x002ED0 00:8EC0: A2 08     LDX #$08
+C - - - - - 0x002ED2 00:8EC2: A0 01     LDY #$01
+C - - - - - 0x002ED4 00:8EC4: 20 DA AE  JSR $AEDA
+C - - - - - 0x002ED7 00:8EC7: A5 E6     LDA ram_00E6
+C - - - - - 0x002ED9 00:8EC9: 18        CLC
+C - - - - - 0x002EDA 00:8ECA: 69 40     ADC #$40
+C - - - - - 0x002EDC 00:8ECC: 85 E6     STA ram_00E6
+C - - - - - 0x002EDE 00:8ECE: A5 E7     LDA ram_00E7
+C - - - - - 0x002EE0 00:8ED0: 69 00     ADC #$00
+C - - - - - 0x002EE2 00:8ED2: 85 E7     STA ram_00E7
+C - - - - - 0x002EE4 00:8ED4: A9 1E     LDA #$1E
+C - - - - - 0x002EE6 00:8ED6: A2 02     LDX #$02
+C - - - - - 0x002EE8 00:8ED8: A0 01     LDY #$01
+C - - - - - 0x002EEC 00:8EDC: 86 E9     STX ram_00E9
+C - - - - - 0x002EEE 00:8EDE: 84 EB     STY ram_00EB
+C - - - - - 0x002EF0 00:8EE0: A5 E8     LDA ram_00E8
+C - - - - - 0x002EF2 00:8EE2: 20 0C C5  JSR $C50C
+C - - - - - 0x002EF5 00:8EE5: A0 00     LDY #$00
+C - - - - - 0x002EF7 00:8EE7: B1 34     LDA (ram_0034),Y
+C - - - - - 0x002EF9 00:8EE9: 20 09 AF  JSR $AF09
+C - - - - - 0x002EFC 00:8EEC: A5 E8     LDA ram_00E8
+C - - - - - 0x002EFE 00:8EEE: 18        CLC
+C - - - - - 0x002EFF 00:8EEF: 65 EB     ADC ram_00EB
+C - - - - - 0x002F01 00:8EF1: 85 E8     STA ram_00E8
+C - - - - - 0x002F03 00:8EF3: A5 E6     LDA ram_00E6
+C - - - - - 0x002F05 00:8EF5: 18        CLC
+C - - - - - 0x002F06 00:8EF6: 69 40     ADC #$40
+C - - - - - 0x002F08 00:8EF8: 85 E6     STA ram_00E6
+C - - - - - 0x002F0A 00:8EFA: A5 E7     LDA ram_00E7
+C - - - - - 0x002F0C 00:8EFC: 69 00     ADC #$00
+C - - - - - 0x002F0E 00:8EFE: 85 E7     STA ram_00E7
+C - - - - - 0x002F10 00:8F00: C6 E9     DEC ram_00E9
+C - - - - - 0x002F12 00:8F02: D0 DC     BNE $8EE0
+C - - - - - 0x002F14 00:8F04: 60        RTS
+C - - - - - 0x002F15 00:8F05: 84 E6     STY ram_00E6
+C - - - - - 0x002F17 00:8F07: 86 E7     STX ram_00E7
+C - - - - - 0x002F19 00:8F09: 20 3C C5  JSR $C53C
+C - - - - - 0x002F1C 00:8F0C: A9 05     LDA #$05
+C - - - - - 0x002F1E 00:8F0E: 85 ED     STA ram_00ED
+C - - - - - 0x002F20 00:8F10: A2 00     LDX #$00
+C - - - - - 0x002F22 00:8F12: A0 00     LDY #$00
+C - - - - - 0x002F24 00:8F14: B1 30     LDA (ram_0030),Y
+C - - - - - 0x002F26 00:8F16: C9 FC     CMP #$FC
+C - - - - - 0x002F28 00:8F18: B0 07     BCS $8F21
+C - - - - - 0x002F2A 00:8F1A: E6 30     INC ram_0030
+C - - - - - 0x002F2C 00:8F1C: D0 02     BNE $8F20
+C - - - - - 0x002F30 00:8F20: AA        TAX
+C - - - - - 0x002F31 00:8F21: 8A        TXA
+C - - - - - 0x002F32 00:8F22: A4 E6     LDY ram_00E6
+C - - - - - 0x002F34 00:8F24: A6 E7     LDX ram_00E7
+C - - - - - 0x002F36 00:8F26: 20 CA 88  JSR $88CA
+C - - - - - 0x002F39 00:8F29: E6 E6     INC ram_00E6
+C - - - - - 0x002F3B 00:8F2B: C6 ED     DEC ram_00ED
+C - - - - - 0x002F3D 00:8F2D: D0 E1     BNE $8F10
+C - - - - - 0x002F3F 00:8F2F: A5 E6     LDA ram_00E6
+C - - - - - 0x002F41 00:8F31: 38        SEC
+C - - - - - 0x002F42 00:8F32: E9 05     SBC #$05
+C - - - - - 0x002F44 00:8F34: 85 E6     STA ram_00E6
+C - - - - - 0x002F46 00:8F36: 60        RTS
+C - - - - - 0x002F47 00:8F37: A5 5E     LDA ram_005E
+C - - - - - 0x002F49 00:8F39: 20 0C C5  JSR $C50C
+C - - - - - 0x002F4C 00:8F3C: A0 01     LDY #$01
+C - - - - - 0x002F4E 00:8F3E: B1 34     LDA (ram_0034),Y
+C - - - - - 0x002F50 00:8F40: 85 EC     STA ram_00EC
+C - - - - - 0x002F52 00:8F42: C8        INY
+C - - - - - 0x002F53 00:8F43: B1 34     LDA (ram_0034),Y
+C - - - - - 0x002F55 00:8F45: 85 ED     STA ram_00ED
+C - - - - - 0x002F57 00:8F47: 20 4F 9E  JSR $9E4F
+C - - - - - 0x002F5A 00:8F4A: A4 5C     LDY ram_005C
+C - - - - - 0x002F5C 00:8F4C: A6 5D     LDX ram_005D
+C - - - - - 0x002F5E 00:8F4E: A5 E8     LDA ram_00E8
+C - - - - - 0x002F60 00:8F50: 85 EC     STA ram_00EC
+C - - - - - 0x002F62 00:8F52: A5 E9     LDA ram_00E9
+C - - - - - 0x002F64 00:8F54: 85 ED     STA ram_00ED
+C - - - - - 0x002F66 00:8F56: 20 B5 9D  JSR $9DB5
+C - - - - - 0x002F69 00:8F59: A5 5C     LDA ram_005C
+C - - - - - 0x002F6B 00:8F5B: 18        CLC
+C - - - - - 0x002F6C 00:8F5C: 69 40     ADC #$40
+C - - - - - 0x002F6E 00:8F5E: 85 5C     STA ram_005C
+C - - - - - 0x002F70 00:8F60: A5 5D     LDA ram_005D
+C - - - - - 0x002F72 00:8F62: 69 00     ADC #$00
+C - - - - - 0x002F74 00:8F64: 85 5D     STA ram_005D
+C - - - - - 0x002F76 00:8F66: 60        RTS
+C - - - - - 0x002F77 00:8F67: A0 00     LDY #$00
+C - - - - - 0x002F79 00:8F69: B1 E6     LDA (ram_00E6),Y
+C - - - - - 0x002F7B 00:8F6B: AA        TAX
+C - - - - - 0x002F7C 00:8F6C: B1 34     LDA (ram_0034),Y
+C - - - - - 0x002F7E 00:8F6E: 91 E6     STA (ram_00E6),Y
+C - - - - - 0x002F80 00:8F70: 8A        TXA
+C - - - - - 0x002F81 00:8F71: 91 34     STA (ram_0034),Y
+C - - - - - 0x002F83 00:8F73: C8        INY
+C - - - - - 0x002F84 00:8F74: C0 04     CPY #$04
+C - - - - - 0x002F86 00:8F76: D0 F1     BNE $8F69
+C - - - - - 0x002F88 00:8F78: 60        RTS
+C - - - - - 0x002F8B 00:8F7B: 0A        ASL
+C - - - - - 0x002F8C 00:8F7C: AA        TAX
+C - - - - - 0x002F8D 00:8F7D: BD 4C BA  LDA $BA4C,X
+C - - - - - 0x002F90 00:8F80: 85 E6     STA ram_00E6
+C - - - - - 0x002F92 00:8F82: BD 4D BA  LDA $BA4D,X
+C - - - - - 0x002F95 00:8F85: 85 E7     STA ram_00E7
+C - - - - - 0x002F97 00:8F87: 4C 9E AF  JMP $AF9E
+C - - - - - 0x002F9C 00:8F8C: 0A        ASL
+C - - - - - 0x002F9D 00:8F8D: AA        TAX
+C - - - - - 0x002F9E 00:8F8E: BD 4C BA  LDA $BA4C,X
+C - - - - - 0x002FA1 00:8F91: 85 E6     STA ram_00E6
+C - - - - - 0x002FA3 00:8F93: BD 4D BA  LDA $BA4D,X
+C - - - - - 0x002FA6 00:8F96: 4A        LSR
+C - - - - - 0x002FA7 00:8F97: 66 E6     ROR ram_00E6
+C - - - - - 0x002FA9 00:8F99: 4A        LSR
+C - - - - - 0x002FAA 00:8F9A: 66 E6     ROR ram_00E6
+C - - - - - 0x002FAC 00:8F9C: 85 E7     STA ram_00E7
+C - - - - - 0x002FB0 00:8FA0: BD 54 04  LDA ram_0454,X
+C - - - - - 0x002FB3 00:8FA3: 18        CLC
+C - - - - - 0x002FB4 00:8FA4: 65 E6     ADC ram_00E6
+C - - - - - 0x002FB6 00:8FA6: 9D 54 04  STA ram_0454,X
+C - - - - - 0x002FB9 00:8FA9: BD 55 04  LDA ram_0455,X
+C - - - - - 0x002FBC 00:8FAC: 65 E7     ADC ram_00E7
+C - - - - - 0x002FBE 00:8FAE: 9D 55 04  STA ram_0455,X
+C - - - - - 0x002FC1 00:8FB1: 90 08     BCC $8FBB

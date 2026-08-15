@@ -18,6 +18,7 @@ import {
   type PaletteColor,
   createBlankPaletteTable,
 } from '../model/types';
+import { OamManager } from './OamManager';
 
 // ── NT 类型 ──
 
@@ -95,6 +96,12 @@ export class DataStore {
 
   // ── 语义化 RAM ──
 
+  /**
+   * OAM 总管 — 全局唯一精灵数据出口。
+   * 所有 Bank 一律通过 oam.* 读写精灵, 不再各自维护 ram_04A5 键。
+   */
+  readonly oam = new OamManager();
+
   /** 内存 KV 表 (替代实地址) */
   ram = new Map<string, number>();
 
@@ -104,6 +111,7 @@ export class DataStore {
   constructor() {
     this.nt0 = this._blankNT();
     this.nt1 = this._blankNT();
+    this.oam.attach(this);
   }
 
   // ── NT 操作 ──
@@ -188,7 +196,7 @@ export class DataStore {
   }
 
   clearOAM(): void {
-    this.sprites.length = 0;
+    this.oam.reset();
   }
 
   // ── 语义化内存 ──

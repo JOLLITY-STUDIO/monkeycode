@@ -91,21 +91,8 @@ export class Bank30Service {
     this._bank00.ntClear();
 
     // ── 8. 对应 $C6A8: JSR $CB8B — OAM 清零 (LDA #$F8 填充) ──
-    this._store.clearOAM();
-    // 设默认 OAM Y 坐标 = 0xF8 (不可见)
-    for (let i = 0; i < 64; i++) {
-      this._store.sprites.push({
-        active: false,
-        x: 0,
-        y: 0xF8,
-        tile: 0,
-        palette: 0,
-        priority: false,
-        flipH: false,
-        flipV: false,
-        bank: 0,
-      });
-    }
+    // 走 OAM 总管: 清空全部精灵槽 (渲染出口默认 y=0xF8 屏幕外)
+    this._store.oam.reset();
 
     // ── 9. 对应 $C6B5: STA $E000 (MMC3 R6=Bank00); CLI ──
     // H5: 不需要 MMC3 bank 映射。Bank00 已经作为构造参数注入。

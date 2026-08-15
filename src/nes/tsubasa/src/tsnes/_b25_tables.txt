@@ -1,0 +1,18 @@
+=== HUD1 PTR ($AD6E, 64B) ===
+$ad6e: f6 ad fc ad 10 ae 31 ae 43 ae 5e ae 71 ae 86 ae 
+$ad7e: 87 ae 9b ae f8 ae 06 af 28 af 30 af 39 af 42 af 
+$ad8e: 61 af 71 af 89 af a1 af b5 af d3 af e6 af f7 af 
+$ad9e: 2d b0 35 b0 39 b0 4c b0 5b b0 72 b0 87 b0 90 b0 
+=== HUD2 PTR ($AD1C, 40B) ===
+$ad1c: 24 ad 30 ad 3c ad 48 ad 02 3c 52 02 3c 20 02 3c 
+$ad2c: 26 f1 24 ad 06 40 42 06 42 44 06 44 40 f1 30 ad 
+$ad3c: 04 40 42 04 42 44 04 44 40 f1 3c ad 02 40 42 02 
+=== HUD3 PTR ($AD54, 40B) ===
+$ad54: 5e ad 61 ad 68 ad 6b ad 6e ad 78 b8 f0 01 02 01 
+$ad64: fe f1 61 ad 78 30 f0 78 d0 f0 f6 ad fc ad 10 ae 
+$ad74: 31 ae 43 ae 5e ae 71 ae 86 ae 87 ae 9b ae f8 ae 
+=== SPR B3BD ($B3BD, 16B) ===
+$b3bd: 00 00 00 00 00 00 00 02 00 00 00 00 3f 00 00 a0 
+=== SPR B3CF PTR ($B3CF, 32B) ===
+$b3cf: 53 b4 64 b4 7d b4 8a b4 a7 b4 c4 b4 e1 b4 fa b4 
+$b3df: 07 b5 28 b5 39 b5 4e b5 67 b5 78 b5 8d b5 8d b5 

@@ -1,53 +1,50 @@
-// Extract bank00 action-list executor + dispatcher; bank02 tables
 const fs = require('fs');
-const asm = fs.readFileSync('_tmp_bzk_out/bank_00.asm', 'utf8').split(/\r?\n/);
-const addrMap = new Map();
-for (const line of asm) {
-  const m = line.match(/0x[0-9A-F]{6} 00:([0-9A-F]{4}):\s+((?:[0-9A-F]{2} )+)\s+(.*)/);
-  if (!m) continue;
-  addrMap.set(m[1], { bytes: m[2].trim().split(' '), mne: m[3] });
-}
-function extract(startAddr, limit = 300) {
-  let out = [];
-  let addr = startAddr.toUpperCase();
-  let guard = 0;
-  while (addrMap.has(addr) && guard < limit) {
-    const e = addrMap.get(addr);
-    out.push('$' + addr + ': ' + e.bytes.join(' ').padEnd(12) + e.mne);
-    const op = e.mne.split(/\s+/)[0];
-    if (op === 'RTS' || op === 'RTI') break;
-    const len = e.bytes.length;
-    addr = (parseInt(addr, 16) + len).toString(16).toUpperCase().padStart(4, '0');
-    guard++;
+const lines = fs.readFileSync('_tmp_bzk_out/bank_01.asm', 'utf8').split(/\r?\n/);
+const data = new Map();
+for (let i = 0; i < lines.length; i++) {
+  const line = lines[i];
+  // 匹配: flags 0xPRG 00:CPU: b1 [b2 [b3]]  mnemonic/.byte
+  const m = line.match(/00:([0-9A-F]{4}):\s+((?:[0-9A-F]{2})(?:\s+[0-9A-F]{2}){0,2})\s+\S/);
+  if (m) {
+    const cpu = parseInt(m[1], 16);
+    const bytes = m[2].trim().split(/\s+/).map(b => parseInt(b, 16));
+    for (let j = 0; j < bytes.length; j++) {
+      data.set(cpu + j, bytes[j]);
+    }
   }
-  return out.join('\n');
 }
-let full = '';
-for (const [addr, name] of [['9F0F','action exec 1'],['9F52','action exec 2'],['84C1','bank02 dispatcher'],['8017','frame loop'],['801F','scene init entry']]) {
-  full += '### ' + addr + ' — ' + name + '\n' + extract(addr) + '\n\n';
+console.log('parsed bytes:', data.size);
+function dump(start, len, name) {
+  const bytes = [];
+  for (let i = 0; i < len; i++) {
+    const b = data.get(start + i);
+    bytes.push(b === undefined ? -1 : b);
+  }
+  const arr = [];
+  for (let i = 0; i < bytes.length; i += 16) {
+    arr.push(bytes.slice(i, i + 16).map(b => b < 0 ? '??' : '0x' + b.toString(16).padStart(2, '0').toUpperCase()).join(', '));
+  }
+  console.log(`/** ${name} — $${start.toString(16).toUpperCase()} (${len} 字节) */`);
+  console.log(`export const ${name}: readonly number[] = [` + arr.map(l => '\n  ' + l).join('') + '\n];\n');
 }
-// $9EA2 table (64 bytes) from bank00
-const t9EA2 = [];
-for (let i = 0; i < 64; i++) {
-  const a = (0x9EA2 + i).toString(16).toUpperCase().padStart(4, '0');
-  if (addrMap.has(a)) t9EA2.push('0x' + addrMap.get(a).bytes[0]);
-}
-full += '### 9EA2 palette addr table (64B)\n' + t9EA2.join(',') + '\n\n';
-fs.writeFileSync('_tmp_bzk_out/_sec00_more3.txt', full, 'utf8');
-console.log('written _sec00_more3.txt');
-
-// bank02 tables from prg-bank-02.ts
-const b2 = fs.readFileSync('rom-data/prg-bank-02.ts', 'utf8');
-const m2 = b2.match(/\[\s*([\s\S]*?)\s*\]/);
-const vals = m2[1].split(',').map(s => parseInt(s.trim(), 16));
-const get = (cpuAddr, n) => vals.slice(cpuAddr - 0xA000, cpuAddr - 0xA000 + n);
-const tables = {
-  A677_sprites_256B: get(0xA677, 256),
-  A67B_tail_4B: get(0xA67B, 4),
-  A472_unknown_18B: get(0xA472, 18),
-  A49E_: get(0xA49E, 8),
-};
-let out2 = '';
-for (const [k, v] of Object.entries(tables)) out2 += '### ' + k + '\n' + v.map(x=>'0x'+x.toString(16).padStart(2,'0')).join(',') + '\n\n';
-fs.writeFileSync('_tmp_bzk_out/_bank02_tables.txt', out2, 'utf8');
-console.log('written _bank02_tables.txt');
+const tables = [
+  ['B1E8', 0x80, 'MENU_TBL'],
+  ['B229', 0x18, 'CURSOR_GFX'],
+  ['B241', 0x20, 'OPTION_SCREEN_Y'],
+  ['B2ED', 0x10, 'INPUT_EC_DELTA2'],
+  ['B205', 0x30, 'COPY_B205'],
+  ['B271', 0x10, 'COPY_B271'],
+  ['AD8A', 0x10, 'POS_TABLE_AD8A'],
+  ['BCD1', 0x22, 'SCENE_TEAM_BITS'],
+  ['BCF3', 0x10, 'GFX_PTR_BCF3'],
+  ['BD64', 0x2C, 'GFX_PTR_BD64'],
+  ['BDA8', 0x10, 'GFX_PTR_BDA8'],
+  ['B393', 0x22, 'SCENE_STAT_B393'],
+  ['B3B5', 0x22, 'SCENE_STAT_B3B5'],
+  ['B3D7', 0x22, 'SCENE_STAT_B3D7'],
+  ['B3F9', 0x22, 'SCENE_STAT_B3F9'],
+  ['B41B', 0x22, 'SCENE_STAT_B41B'],
+  ['B0D7', 0x40, 'SCRIPT_DISPATCH'],
+  ['BC6E', 0x24, 'PLAYER_DATA_BC6E'],
+];
+for (const [a, len, name] of tables) dump(parseInt(a, 16), len, name);
