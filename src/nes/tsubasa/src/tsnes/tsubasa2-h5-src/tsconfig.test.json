@@ -10,11 +10,13 @@
     "lib": ["ES2020", "DOM"]
   },
   "include": [
-    "src/data/DataStore.ts",
-    "src/data/OamManager.ts",
-    "src/data/bank27-data.ts",
-    "src/data/bank16-data.ts",
-    "src/game/bank27_minimal.service.ts",
-    "src/game/bank16_skills.service.ts"
+    "src/game/data/DataStore.ts",
+    "src/core/OamManager.ts",
+    "src/game/data/bank11-data.ts",
+    "src/game/service/bank11_match-turn.service.ts",
+    "src/game/data/bank27-data.ts",
+    "src/game/service/bank27_minimal.service.ts",
+    "src/game/data/bank16-data.ts",
+    "src/game/service/bank16_skills.service.ts"
   ]
 }
