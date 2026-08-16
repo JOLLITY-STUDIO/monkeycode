@@ -21,6 +21,7 @@
 import { GameLoop } from './GameLoop';
 import { DataStore } from '../game/data/DataStore';
 import { Renderer } from './engine/render/Renderer';
+import { FrameCompositor } from './engine/render/FrameCompositor';
 import { Bank00Service } from '../game/service/bank00_core.service';
 import { Bank02Service } from '../game/service/bank02_scene.service';
 import { Bank30Service } from '../game/service/bank30_init.service';
@@ -32,7 +33,6 @@ import { InterruptService } from '../game/service/bank31_interrupt.service';
 import { BUTTON, NES_WIDTH, NES_HEIGHT } from './types';
 import type { Tsubasa2Config, DebugInfo, GameState } from './types';
 import { GameState as GS } from './types';
-import { SceneRoot } from '../game/data/scene/index';
 
 // CHR Bank 数据 (直接 import，无需 MMC3)
 import _chr00 from '../../../rom-data/chr-bank-00';
@@ -98,7 +98,10 @@ export class Tsubasa2 {
   /** 场景路由器 (BOOT/TITLE/MEETING/MATCH/RESULT) */
   private _boot!: BootService;
 
-  /** 渲染器 (View) — 消费 NT+OAM 真实绘制 CHR tile */
+  /** 帧合成器 (PPU 层) — 消费 DataStore NT/OAM/调色板 + CHR → 帧缓冲 */
+  private _compositor!: FrameCompositor;
+
+  /** 渲染器 (View) — 对应模拟器 ui.writeFrame: 仅将帧缓冲 putImageData 到画布 */
   private _renderer!: Renderer;
 
   /** Bank 12: 音频引擎 (PAPU + PapuOutput，含 BGM/SFX 数据) */
@@ -130,8 +133,11 @@ export class Tsubasa2 {
     // 场景路由器 — 持有 DataQuery/MatchEngine 引用以委派场景
     this._boot = new BootService(this._store, this._dataQuery, this._matchEngine);
 
-    // 渲染器 — 消费 DataStore NT/OAM + CHR 数据
-    this._renderer = new Renderer(this._store);
+    // 帧合成器 (PPU 层) — DataStore → 帧缓冲
+    this._compositor = new FrameCompositor(this._store);
+
+    // 渲染器 (View) — 帧缓冲 → 画布 (对应模拟器 ui.writeFrame)
+    this._renderer = new Renderer();
 
     // 注册全部 16 个 CHR Bank (直接从 rom-data import)
     this._registerAllChrBanks();
@@ -199,17 +205,17 @@ export class Tsubasa2 {
 
   /** 加载 CHR Bank 数据 (图形资源) */
   loadChrBank(bankId: number, data: Uint8Array): void {
-    this._renderer.registerChrBank(bankId, data);
+    this._compositor.registerChrBank(bankId, data);
   }
 
-  /** 注册全部 16 个 CHR Bank 到渲染器 */
+  /** 注册全部 16 个 CHR Bank 到帧合成器 (PPU 层) */
   private _registerAllChrBanks(): void {
     const chrBanks: Array<readonly number[]> = [
       _chr00, _chr01, _chr02, _chr03, _chr04, _chr05, _chr06, _chr07,
       _chr08, _chr09, _chr10, _chr11, _chr12, _chr13, _chr14, _chr15,
     ];
     for (let i = 0; i < chrBanks.length; i++) {
-      this._renderer.registerChrBank(i, new Uint8Array(chrBanks[i]));
+      this._compositor.registerChrBank(i, new Uint8Array(chrBanks[i]));
     }
     console.log(`[Tsubasa2] 注册 ${chrBanks.length} 个 CHR Bank`);
   }
@@ -287,23 +293,14 @@ export class Tsubasa2 {
     this._lastButtons = this._buttons;
   }
 
-  /** 每帧渲染 — 全部走 View 层 */
+  /** 每帧渲染 — PPU 层合成帧缓冲, View 层呈现 (对应模拟器 PPU.endFrame → ui.writeFrame) */
   private _onRender(_dt: number): void {
     if (!this._ctx) return;
 
-    const root = this._store.read('boot_root') as SceneRoot;
+    // 1. 合成: DataStore (NT/OAM/调色板) + CHR → Uint32Array 帧缓冲
+    const buf = this._compositor.compose();
 
-    // BOOT/TITLE 阶段: 开场控制器提供显示状态 → Renderer.renderOpening (临时过渡)
-    // 真实 NT 数据翻译完成后 (T2/T3) 统一走 renderer.render()
-    if (root === SceneRoot.BOOT || root === SceneRoot.TITLE) {
-      const ds = this._boot.getOpeningDisplayState();
-      if (ds) {
-        this._renderer.renderOpening(this._ctx, ds);
-        return;
-      }
-    }
-
-    // 其他场景: 使用真实 Renderer 绘制 NT + OAM → CHR tile
-    this._renderer.render(this._ctx);
+    // 2. 呈现: 帧缓冲 → putImageData (Renderer = ui.writeFrame 的实现)
+    this._renderer.writeFrame(buf);
   }
 }

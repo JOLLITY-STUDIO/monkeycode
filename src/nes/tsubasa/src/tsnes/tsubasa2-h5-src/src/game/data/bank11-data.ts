@@ -18,7 +18,7 @@
  *   访问本 bank 数据, 不直接引用 rom-data/prg-bank-11.ts。
  */
 
-import PRG_BANK_11 from '../../../../rom-data/prg-bank-11';
+import PRG_BANK_11 from './prg-bank-11';
 
 /** bank11 CPU 基址 ($8000 窗口) */
 export const B11_CPU_BASE = 0x8000;

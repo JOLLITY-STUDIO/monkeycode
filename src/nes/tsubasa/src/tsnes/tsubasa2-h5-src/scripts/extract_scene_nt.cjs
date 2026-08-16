@@ -1,13 +1,17 @@
 /**
- * 场景 NT 数据提取器 v2 — 模拟 $8AF7 场景加载函数
+ * 镜头 NT 数据提取器 v2 — 模拟 $8AF7 镜头加载函数
  *
  * 修正:
  *   - Bank 00 映射在 $8000-$9FFF (代码区)
- *   - Bank 07 映射在 $A000-$BFFF (场景数据)
+ *   - Bank 07 映射在 $A000-$BFFF (镜头数据)
  *   - Bank 30 映射在 $C000-$DFFF ($C4B9 MMC3 切换)
  *   - Bank 31 映射在 $E000-$FFFF
  *   - $8000/$8001 写入作为 MMC3 寄存器处理
  *   - $2006/$2007 写入作为 PPU 处理
+ *
+ * 说明: bank07 $A000 指针表的每一项 = 一个静态镜头 (cut),
+ *   由 $8AF7 加载成一块 NT (tile 命令流) + palette。
+ *   脚本按时间轴顺序切换这些镜头, 构成动画序列。
  *
  * 用法: node scripts/extract_scene_nt.cjs
  */
@@ -443,7 +447,7 @@ for (let y = 0; y < 8; y++) {
 }
 
 // 导出 TypeScript
-const outPath = path.resolve(__dirname, '../src/data/scene/00-boot/scene_0x17_nt.ts');
+const outPath = path.resolve(__dirname, '../src/data/nametable/cut/cut_0x17_nt.ts');
 function fmt(arr, per) {
   const lines = [];
   for (let i = 0; i < arr.length; i += per) {
@@ -451,23 +455,23 @@ function fmt(arr, per) {
   }
   return lines.join('\n');
 }
-const ts = `/** 场景 0x17 (TECMO Theater) NT 数据 — 由 scripts/extract_scene_nt.cjs 自动生成 */
-export const SCENE_0x17_NT0: readonly number[] = [
+const ts = `/** 镜头 0x17 (TECMO Theater) NT 数据 — 由 scripts/extract_scene_nt.cjs 自动生成 */
+export const CUT_0x17_NT0: readonly number[] = [
 ${fmt(result.nt0, 32)}
 ];
-export const SCENE_0x17_NT1: readonly number[] = [
+export const CUT_0x17_NT1: readonly number[] = [
 ${fmt(result.nt1, 32)}
 ];
-export const SCENE_0x17_ATTR0: readonly number[] = [
+export const CUT_0x17_ATTR0: readonly number[] = [
 ${fmt(result.attr0, 16)}
 ];
-export const SCENE_0x17_ATTR1: readonly number[] = [
+export const CUT_0x17_ATTR1: readonly number[] = [
 ${fmt(result.attr1, 16)}
 ];
-export const SCENE_0x17_BG_PALETTE: readonly number[] = [
+export const CUT_0x17_BG_PALETTE: readonly number[] = [
 ${fmt(result.palBg, 16)}
 ];
-export const SCENE_0x17_SPR_PALETTE: readonly number[] = [
+export const CUT_0x17_SPR_PALETTE: readonly number[] = [
 ${fmt(result.palSpr, 16)}
 ];
 `;

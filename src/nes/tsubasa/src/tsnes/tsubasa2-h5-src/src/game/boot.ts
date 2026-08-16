@@ -25,6 +25,7 @@
 import { DataStore } from './data/DataStore';
 import { SceneRoot, OpeningShot, TitleMenu } from './data/scene/index';
 import { OpeningSceneController, type OpeningDisplayState } from './service/scene_opening.controller';
+import { TitleSceneController, type TitleDisplayState } from './service/title_scene.controller';
 import { DataQueryService } from './service/bank01_data-query.service';
 import { MatchEngineService } from './service/bank26_match.service';
 import { BUTTON } from '../core/types';
@@ -50,8 +51,11 @@ export class BootService {
   /** 上一帧按键（边沿检测，防止按键穿透场景） */
   private _prevButtons = 0;
 
-  /** 开场场景控制器 (BOOT 阶段) */
+  /** 开场场景控制器 (BOOT 阶段: TECMO 字母占位, 真正开场数据待提取) */
   private _opening!: OpeningSceneController;
+
+  /** 标题场景控制器 (TITLE 阶段: KICK OFF / CONTINUE 菜单) */
+  private _title!: TitleSceneController;
 
   constructor(
     private _store: DataStore,
@@ -74,14 +78,15 @@ export class BootService {
     // 2. 对应 Bank 30 PPU 初始化 — paletteRAM 加载默认调色板
     palReset();
 
-    // 3. 进入 BOOT 场景，开始开场动画第一帧
+    // 3. 创建控制器
+    this._title = new TitleSceneController();
+    this._opening = new OpeningSceneController(this._store);
+
+    // 4. 进入 BOOT 场景 — 开场占位 (TECMO 字母模式块; 真正 TECMO Theater 开场数据待提取)
+    this._opening.initBoot();
     this._writeRoot(SceneRoot.BOOT);
     this._writeShot(OpeningShot.LOGO);
     this._shotFrame = 0;
-
-    // 4. 创建开场场景控制器 (对应 Bank01 NMI handler 驱动)
-    this._opening = new OpeningSceneController(this._store);
-    this._opening.init();
 
     // 标题默认光标
     this._store.write(BOOT_KEYS.TITLE_CURSOR, TitleMenu.KICKOFF);
@@ -136,6 +141,12 @@ export class BootService {
     return v as TitleMenu;
   }
 
+  /** 获取标题菜单显示状态 (View 层消费) */
+  getTitleDisplayState(): TitleDisplayState | null {
+    if (!this._title) return null;
+    return this._title.getDisplayState();
+  }
+
   /** 获取开场显示状态 (View 层消费) */
   getOpeningDisplayState(): OpeningDisplayState | null {
     if (!this._opening) return null;
@@ -182,52 +193,34 @@ export class BootService {
   private _updateBoot(buttons: number): boolean {
     this._shotFrame++;
 
-    // 每帧驱动开场控制器 (对应 Bank01 NMI handler 每帧渲染)
-    // 脚本模式下, ScriptVM 驱动镜头切换; 硬编码模式下, 使用兜底计时
-    const displayState = this._opening.update(buttons);
-
-    // START 键跳过整个开场动画 → 直接进标题
-    if (buttons & BUTTON.START) {
-      this._writeRoot(SceneRoot.TITLE);
-      this._opening.jumpToTitle();
-      return false;
-    }
-
-    // 开场控制器推进到标题 → 根场景切到 TITLE
-    if (this._opening.isTitle) {
-      this._writeRoot(SceneRoot.TITLE);
-      return false;
-    }
-
-    // 镜头计时兜底 (仅硬编码模式, 脚本模式由 ScriptVM 驱动)
-    if (!displayState.scriptDriven && this._shotFrame >= BootService.SHOT_DURATION) {
-      this._shotFrame = 0;
-      this._opening.nextShot();
+    // BOOT 占位: 简短过渡 (真正 TECMO Theater 开场动画待提取),
+    // START 或超时 → 进入标题场景 (灌入 Cut 0x17 标题菜单背景)
+    if ((buttons & BUTTON.START) || this._shotFrame >= BootService.SHOT_DURATION) {
+      this._enterTitle();
     }
 
     return false;
   }
 
+  /** 从 BOOT 进入 TITLE — 灌入 Cut 0x17 标题菜单背景 + 初始化菜单 */
+  private _enterTitle(): void {
+    // 标题菜单背景 (Cut 0x17: 大标题 + 菜单框 + 奖杯 + 版权信息)
+    this._opening.init();
+    // 标题菜单逻辑 (KICK OFF / CONTINUE)
+    this._title.init();
+    this._writeRoot(SceneRoot.TITLE);
+  }
+
   // ── Title 场景更新 ──
 
   private _updateTitle(buttons: number): boolean {
-    let cursor = this.getTitleCursor();
+    const selected = this._title.update(buttons);
 
-    // 上下切换
-    if (buttons & BUTTON.UP && cursor !== TitleMenu.KICKOFF) {
-      cursor = Math.max(TitleMenu.KICKOFF, cursor - 1) as TitleMenu;
-    }
-    if (buttons & BUTTON.DOWN && cursor !== TitleMenu.CONTINUE) { // DOWN
-      cursor = Math.min(TitleMenu.CONTINUE, cursor + 1) as TitleMenu;
-    }
-    this._store.write(BOOT_KEYS.TITLE_CURSOR, cursor);
+    // 同步光标到数据中心 (对外 API getTitleCursor 兼容)
+    this._store.write(BOOT_KEYS.TITLE_CURSOR, this._title.cursor);
 
-    // 同步给开场控制器 (标题菜单由它渲染)
-    this._opening.setTitleCursor(cursor);
-
-    // START 确认
-    if (buttons & BUTTON.START) {
-      if (cursor === TitleMenu.KICKOFF) {
+    if (selected !== null) {
+      if (selected === TitleMenu.KICKOFF) {
         // 新游戏 → MEETING (赛前会议, Bank 01 选项屏幕)
         this._writeRoot(SceneRoot.MEETING);
         this._dataQuery.initOptionScreen();

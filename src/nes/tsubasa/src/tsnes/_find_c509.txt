@@ -1,2 +1,0 @@
-tsubasa2-h5-src\src\game\bank24_hud.service.ts
-tsubasa2-h5-src\src\game\bank30_init.service.ts

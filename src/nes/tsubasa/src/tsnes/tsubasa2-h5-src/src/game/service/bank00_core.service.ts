@@ -27,10 +27,14 @@
  */
 
 import { DataStore, RAM_KEYS } from '../data/DataStore';
-import { palWriteAll } from '../data/ppu/pallete/paletteManager';
+import { palWriteAll, palExportRGBA } from '../data/ppu/pallete/paletteManager';
 import { SCENE_BG_PALETTE, SCENE_SPR_PALETTE } from '../data/ppu/pallete/scene-palette-table';
 import { SCENE_BG_GRP } from '../data/ppu/pallete/scene-palette-group';
 import { SceneRoot } from '../data/scene/index';
+import {
+  CUT_0x17_NT0,
+  CUT_0x17_ATTR0,
+} from '../data/ppu/nametable/cut/cut_0x17_nt';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -167,34 +171,21 @@ export class Bank00Service {
       data[i + 16] = SCENE_SPR_PALETTE[sprIdx + i] ?? 0x0F;
     }
     palWriteAll(data);
-  }
 
-  /**
-   * 对应原始 $9A31: 主循环初始化参数。
-   * 汇编: STA ram_0048 (BG 组号) → STX ram_0049 (SPR 组号) → 落到 $9A35 (调色板加载链)。
-   * H5: 记录组号到数据中心后执行 mainLoopInit2()。
-   *
-   * @param bgGrp  BG 调色板组号 (A)
-   * @param sprGrp SPR 调色板组号 (X)
-   */
-  mainInitParam(bgGrp: number, sprGrp: number): void {
-    this._store.write('ram_0048', bgGrp & 0xFF);
-    this._store.write('ram_0049', sprGrp & 0xFF);
-    this.mainLoopInit2();
-  }
-
-  /**
-   * 对应原始 $9A31: 主循环初始化参数。
-   * 汇编: STA ram_0048 (BG 组号) → STX ram_0049 (SPR 组号) → 落到 $9A35 (调色板加载链)。
-   * H5: 记录组号到数据中心后执行 mainLoopInit2()。
-   *
-   * @param bgGrp  BG 调色板组号 (A)
-   * @param sprGrp SPR 调色板组号 (X)
-   */
-  mainInitParam(bgGrp: number, sprGrp: number): void {
-    this._store.write('ram_0048', bgGrp & 0xFF);
-    this._store.write('ram_0049', sprGrp & 0xFF);
-    this.mainLoopInit2();
+    // 同步到 DataStore.paletteTable，供 H5 帧合成器消费
+    const rgba = palExportRGBA();
+    for (let p = 0; p < 4; p++) {
+      const bgColors = [];
+      const sprColors = [];
+      for (let c = 0; c < 4; c++) {
+        const bg = rgba[p * 4 + c];
+        const spr = rgba[16 + p * 4 + c];
+        bgColors.push({ r: bg[0], g: bg[1], b: bg[2], a: bg[3] });
+        sprColors.push({ r: spr[0], g: spr[1], b: spr[2], a: spr[3] });
+      }
+      this._store.writeBgPalette(p as 0 | 1 | 2 | 3, { colors: bgColors });
+      this._store.writeSprPalette(p as 0 | 1 | 2 | 3, { colors: sprColors });
+    }
   }
 
   // ──────────────────────────────────────────────
@@ -216,7 +207,46 @@ export class Bank00Service {
     this._store.write('ram_0048', bgGrp & 0xFF);
     // SPR 组号由场景 setup 指令设置, 默认 0
     this._store.write('ram_0049', 0);
-    // 场景渲染/流转由 BootService 场景路由器接管
+
+    // H5: 直接把场景的 NT tile + 属性表写入 DataStore
+    if (sceneId === 0x17) {
+      this._loadCut0x17();
+    }
+  }
+
+  /** 加载镜头 0x17 (标题菜单背景) 的 NT/ATTR 到 DataStore */
+  private _loadCut0x17(): void {
+    // CHR bank: 原始 $CA22 设 ram_0490=0/ram_0491=2 (BG bank 对),
+    // 与 scene_opening.controller 暴力渲染验证一致 = 14
+    const CHR_BANK = 14;
+    const nt = CUT_0x17_NT0;
+    const attr = CUT_0x17_ATTR0;
+
+    for (let y = 0; y < 30; y++) {
+      for (let x = 0; x < 32; x++) {
+        const tile = nt[y * 32 + x] ?? 0;
+        const pal = this._attrPalette(attr, x, y);
+        this._store.writeNT(0, x, y, {
+          tile,
+          palette: pal,
+          bank: CHR_BANK,
+          flipH: false,
+          flipV: false,
+          behindBg: false,
+        });
+      }
+    }
+  }
+
+  /** 由 NES 属性表解析 tile (x,y) 的调色板组 (0-3) */
+  private _attrPalette(attr: readonly number[], tx: number, ty: number): number {
+    const ax = tx >> 2;
+    const ay = ty >> 2;
+    const byte = attr[(ay << 3) + ax] ?? 0;
+    const subX = (tx >> 1) & 1;
+    const subY = (ty >> 1) & 1;
+    const shift = (subY << 2) | (subX << 1);
+    return (byte >> shift) & 0x03;
   }
 
   // ──────────────────────────────────────────────
@@ -496,6 +526,9 @@ export class Bank00Service {
 
     // JSR $88FB: PPU 寄存器设置
     this.ppuRegSetup();
+
+    // H5: 用 sceneLoad 设置的 ram_0048/0049 加载调色板到 DataStore (原 $9A35 链)
+    this.mainLoopInit2();
   }
 
   // ──────────────────────────────────────────────
