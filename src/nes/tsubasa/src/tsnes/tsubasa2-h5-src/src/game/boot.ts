@@ -22,13 +22,13 @@
  *   RESULT   → 赛果 (TODO)
  */
 
-import { DataStore } from '../data/DataStore';
-import { SceneRoot, OpeningShot, TitleMenu } from '../data/scene/index';
-import { OpeningSceneController, type OpeningDisplayState } from './scene_opening.controller';
-import { DataQueryService } from './bank01_data-query.service';
-import { MatchEngineService } from './bank26_match.service';
+import { DataStore } from './data/DataStore';
+import { SceneRoot, OpeningShot, TitleMenu } from './data/scene/index';
+import { OpeningSceneController, type OpeningDisplayState } from './service/scene_opening.controller';
+import { DataQueryService } from './service/bank01_data-query.service';
+import { MatchEngineService } from './service/bank26_match.service';
 import { BUTTON } from '../core/types';
-import { palReset } from '../data/pallete/paletteManager';
+import { palReset } from './data/ppu/pallete/paletteManager';
 
 /** 游戏根状态（存 DataStore.ram 中） */
 export const BOOT_KEYS = {

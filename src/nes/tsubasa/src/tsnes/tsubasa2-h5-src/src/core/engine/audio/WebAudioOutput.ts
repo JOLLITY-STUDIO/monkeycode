@@ -16,7 +16,7 @@
  *   $4010-$4013 → DMC (暂不实现)
  */
 
-import type { IAudioOutput, ApuWriteEvent, ChannelType } from '../../../game/bank12_audio.service';
+import type { IAudioOutput, ApuWriteEvent, ChannelType } from '../../../game/service/bank12_audio.service';
 
 // ════════════════════════════════════════════
 // APU 寄存器常量

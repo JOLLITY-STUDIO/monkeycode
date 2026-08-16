@@ -19,20 +19,20 @@
  */
 
 import { GameLoop } from './GameLoop';
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../game/data/DataStore';
 import { Renderer } from './engine/render/Renderer';
-import { Bank00Service } from '../game/bank00_core.service';
-import { Bank02Service } from '../game/bank02_scene.service';
-import { Bank30Service } from '../game/bank30_init.service';
-import { Bank12AudioService } from '../game/bank12_audio.service';
+import { Bank00Service } from '../game/service/bank00_core.service';
+import { Bank02Service } from '../game/service/bank02_scene.service';
+import { Bank30Service } from '../game/service/bank30_init.service';
+import { Bank12AudioService } from '../game/service/bank12_audio.service';
 import { BootService } from '../game/boot';
-import { DataQueryService } from '../game/bank01_data-query.service';
-import { MatchEngineService } from '../game/bank26_match.service';
-import { InterruptService } from '../game/bank31_interrupt.service';
+import { DataQueryService } from '../game/service/bank01_data-query.service';
+import { MatchEngineService } from '../game/service/bank26_match.service';
+import { InterruptService } from '../game/service/bank31_interrupt.service';
 import { BUTTON, NES_WIDTH, NES_HEIGHT } from './types';
 import type { Tsubasa2Config, DebugInfo, GameState } from './types';
 import { GameState as GS } from './types';
-import { SceneRoot } from '../data/scene/index';
+import { SceneRoot } from '../game/data/scene/index';
 
 // CHR Bank 数据 (直接 import，无需 MMC3)
 import _chr00 from '../../../rom-data/chr-bank-00';
