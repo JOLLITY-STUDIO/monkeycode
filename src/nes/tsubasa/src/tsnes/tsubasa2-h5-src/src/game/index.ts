@@ -26,7 +26,7 @@
  *   Bank 22 → Bank22Service (数据+代码混合)
  */
 
-export { Bank00Service } from './service/bank00_core.service';
+export { Bank00Service } from './service/bank00/bank00_core.service';
 export { Bank02Service } from './service/bank02_scene.service';
 export { Bank30Service } from './service/bank30_init.service';
 export { DataQueryService } from './service/bank01_data-query.service';

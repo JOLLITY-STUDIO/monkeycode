@@ -34,7 +34,7 @@ exports.readB11Disp827F = readB11Disp827F;
 exports.readB11Attr = readB11Attr;
 exports.readB11Block = readB11Block;
 exports.readB11PatternAttr = readB11PatternAttr;
-const prg_bank_11_1 = __importDefault(require("../../../../rom-data/prg-bank-11"));
+const prg_bank_11_1 = __importDefault(require("./prg-bank-11"));
 /** bank11 CPU 基址 ($8000 窗口) */
 exports.B11_CPU_BASE = 0x8000;
 /** bank11 原始字节 (CPU $8000-$9FFF, 8KB) */

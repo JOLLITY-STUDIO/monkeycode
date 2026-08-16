@@ -16,7 +16,7 @@
 
 import { DataStore } from '../data/DataStore';
 import { palReset } from '../data/ppu/pallete/paletteManager';
-import { Bank00Service } from './bank00_core.service';
+import { Bank00Service } from './bank00/bank00_core.service';
 import { Bank02Service } from './bank02_scene.service';
 import { Bank29RosterService } from './bank29_roster.service';
 

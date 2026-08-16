@@ -22,7 +22,7 @@ import { GameLoop } from './GameLoop';
 import { DataStore } from '../game/data/DataStore';
 import { Renderer } from './engine/render/Renderer';
 import { FrameCompositor } from './engine/render/FrameCompositor';
-import { Bank00Service } from '../game/service/bank00_core.service';
+import { Bank00Service } from '../game/service/bank00/bank00_core.service';
 import { Bank02Service } from '../game/service/bank02_scene.service';
 import { Bank30Service } from '../game/service/bank30_init.service';
 import { Bank12AudioService } from '../game/service/bank12_audio.service';

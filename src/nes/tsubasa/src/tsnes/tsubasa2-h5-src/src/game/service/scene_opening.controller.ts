@@ -18,7 +18,7 @@
 import type { DataStore } from '../data/DataStore';
 import { BUTTON } from '../../core/types';
 import { OpeningShot } from '../data/scene/index';
-import { ScriptVM, type ScriptVMState, type ScriptTextLine } from './script-vm';
+import { ScriptVM, type ScriptVMState, type ScriptTextLine } from './bank00/script-vm';
 import { CUT_0x17_NT0, CUT_0x17_ATTR0, CUT_0x17_BG_PALETTE, CUT_0x17_SPR_PALETTE, CUT_0x17_BG_GRP, CUT_0x17_SPR_GRP } from '../data/ppu/nametable/cut/cut_0x17_nt';
 import { MODE_BLOCK_PTRS, applyModeBlocks } from '../data/ppu/nametable/cut/cut0x17-mode-blocks';
 import PRG_BANK_06 from '../../../../rom-data/prg-bank-06';

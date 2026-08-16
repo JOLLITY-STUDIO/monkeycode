@@ -26,15 +26,15 @@
  *   $8091 — 主输入循环
  */
 
-import { DataStore, RAM_KEYS } from '../data/DataStore';
-import { palWriteAll, palExportRGBA } from '../data/ppu/pallete/paletteManager';
-import { SCENE_BG_PALETTE, SCENE_SPR_PALETTE } from '../data/ppu/pallete/scene-palette-table';
-import { SCENE_BG_GRP } from '../data/ppu/pallete/scene-palette-group';
-import { SceneRoot } from '../data/scene/index';
+import { DataStore, RAM_KEYS } from '../../data/DataStore';
+import { palWriteAll, palExportRGBA } from '../../data/ppu/pallete/paletteManager';
+import { SCENE_BG_PALETTE, SCENE_SPR_PALETTE } from '../../data/ppu/pallete/scene-palette-table';
+import { SCENE_BG_GRP } from '../../data/ppu/pallete/scene-palette-group';
+import { SceneRoot } from '../../data/scene/index';
 import {
   CUT_0x17_NT0,
   CUT_0x17_ATTR0,
-} from '../data/ppu/nametable/cut/cut_0x17_nt';
+} from '../../data/ppu/nametable/cut/cut_0x17_nt';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 

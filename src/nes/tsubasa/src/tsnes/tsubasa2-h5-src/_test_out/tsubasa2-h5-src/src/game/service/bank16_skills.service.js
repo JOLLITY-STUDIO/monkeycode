@@ -934,15 +934,13 @@ class Bank16Service {
         }
         return 4;
     }
-    /** $86CC — 0441 名字区 byte0 匹配 $86E3(17B) → X; 命中置 0516 bit2 (X==$11 不置) */
+    /** $86CC — 0441 名字区 byte0 匹配 $86E3(17B) → X (0-16/17); 恒调 fn_8211(名字字节) 置 0516 bit2 */
     pred_86CC() {
         const v = this.fn_8207(this._store.read(KEY_0441));
         let x = 0;
         while (x < 0x11 && v !== (0, bank16_data_1.readB16Table86E3)(x))
             x++;
-        if (x !== 0x11) {
-            this._store.write(KEY_0516, this._store.read(KEY_0516) | 0x04);
-        }
+        this.fn_8211(v); // $86DE-$86E1: 匹配/未匹配两路均 JMP $8211 (A=名字字节)
         return x;
     }
     // ──────────────────────────────────────────────
@@ -1112,27 +1110,27 @@ class Bank16Service {
     /**
      * $890D/$8910 — 表 G idx1: 反击推进条件
      *   ram_05FB==0 且 ram_002B==5 且 ram_0446≠0 且 ram_043C≠3 且 ram_0446<4 且 ram_043C≠0
-     *   → ram_0446++ 且 X=1; 否则 X=0 → JMP $812F
+     *   → ram_0446++ 且 X=旧 ram_0446 ($8927 LDX 先于 $8933 INC); 否则 X=0 → JMP $812F
      */
     entry_8910() {
         let x = 0;
         if (this._store.read(KEY_05FB) === 0 && this._store.read(KEY_002B) === 5) {
             const v = this._store.read(KEY_0446);
             if (v === 0) {
-                x = 0;
+                x = 0; // $8919 LDX 0446 → $891C BEQ $893A
             }
             else if (this._store.read(KEY_043C) === 3) {
-                x = 1;
+                x = 1; // $891E LDX #$01 → $8925 BEQ $893A
             }
             else if (v >= 4) {
-                x = 0;
+                x = 0; // $892A CPX #$04 → $892C BCS $8938
             }
             else if (this._store.read(KEY_043C) === 0) {
-                x = 0;
+                x = 0; // $8931 BEQ $8938
             }
             else {
                 this._store.write(KEY_0446, (v + 1) & 0xff);
-                x = 1;
+                x = v; // $8927 LDX 0446 (旧值) → $8936 BNE $893A → JMP $812F
             }
         }
         this._jmp812F(x);

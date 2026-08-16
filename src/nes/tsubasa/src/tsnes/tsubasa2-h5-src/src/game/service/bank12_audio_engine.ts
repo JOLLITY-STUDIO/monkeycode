@@ -19,7 +19,7 @@ import {
   SEQ_MOD_TABLE_TYPE1, SEQ_MOD_TABLE_TYPE2,
   TIMING_SUB_TABLES, APU_GROUP_BASE,
   ChBlock, WorkArea, createChBlock, createWorkArea,
-} from './bank12_audio_tables';
+} from '../data/bank12_audio_tables';
 
 // ════════════════════════════════════════════════
 // Bank12AudioEngine

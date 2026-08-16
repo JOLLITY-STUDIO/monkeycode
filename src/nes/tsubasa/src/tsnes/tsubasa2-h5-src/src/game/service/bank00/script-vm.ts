@@ -18,8 +18,8 @@
  *   }
  */
 
-import { getScriptData, type ScriptData, type ScriptInstruction } from './script-data-loader';
-import { InstrType } from './script-opcodes';
+import { getScriptData, type ScriptData, type ScriptInstruction } from '../../data/scene/textscript/script-data-loader';
+import { InstrType } from '../../data/scene/textscript/script-opcodes';
 
 // ── 文本行 (保留原始字节, 供 CHR tile 渲染, 不依赖 Unicode 映射) ──
 
