@@ -9,6 +9,7 @@ import { PUZZLES } from "../../src/data/puzzles";
 import { puzzleFromData } from "../../src/core/puzzle-loader";
 import { recordPuzzle } from "../../src/core/save";
 import { getLang, Lang, uiStrings, puzzleName } from "../../src/i18n";
+import { Sfx } from "../../src/audio/sfx";
 
 interface BoardNode {
   width: number;
@@ -25,6 +26,7 @@ Page({
     maxMistakes: 5,
     progress: 0,
     solved: false,
+    failed: false,
     stars: 0,
     markMode: "cycle" as "cycle" | "cross",
     flashError: false,
@@ -36,6 +38,7 @@ Page({
   flashTimer: null as any,
 
   // ---- 实例字段（挂载到页面对象，避免 setData 开销）----
+  sfx: null as Sfx | null,
   engine: null as PicrossEngine | null,
   renderer: null as PicrossRenderer | null,
   board: null as BoardNode | null,
@@ -47,14 +50,17 @@ Page({
   lastCell: null as { x: number; y: number } | null,
 
   onLoad(options: any) {
-    const id = options && options.puzzle !== undefined ? parseInt(options.puzzle, 10) : 0;
-    this.puzzleIndex = isNaN(id) ? 0 : id % PUZZLES.length;
+    // 拼图 id 与数组索引不再一致（空拼图已过滤，保留原 ROM id），需按 id 定位
+    const id = options && options.puzzle !== undefined ? parseInt(options.puzzle, 10) : NaN;
+    const idx = isNaN(id) ? -1 : PUZZLES.findIndex((p) => p.id === id);
+    this.puzzleIndex = idx >= 0 ? idx : 0;
     this.lang = getLang();
     this.lastCell = null;
     this.engine = null;
   },
 
   onReady() {
+    this.sfx = new Sfx();
     this.dpr = (wx.getSystemInfoSync() && wx.getSystemInfoSync().pixelRatio) || 2;
     wx.createSelectorQuery()
       .select("#board")
@@ -105,6 +111,7 @@ Page({
         this.setData({ stars });
         recordPuzzle(puzzle.id, stars, s.elapsedSec);
         wx.vibrateShort && wx.vibrateShort({ type: "medium" });
+        if (this.sfx) this.sfx.play("win");
       },
     });
     this.renderer = this.board ? new PicrossRenderer(this.board) : null;
@@ -113,6 +120,7 @@ Page({
     this.setData({
       puzzleName: this.puzzleTitle(this.puzzleIndex),
       solved: false,
+      failed: false,
       stars: 0,
       t: uiStrings(this.lang),
     });
@@ -133,6 +141,7 @@ Page({
     if (flashError) {
       if (this.flashTimer) clearTimeout(this.flashTimer);
       this.flashTimer = setTimeout(() => this.setData({ flashError: false }), 500);
+      if (this.sfx) this.sfx.play("mistake");
     }
     this.setData({
       timeText: `${tt}:${mm < 10 ? "0" : ""}${mm}`,
@@ -140,6 +149,7 @@ Page({
       maxMistakes: s.maxMistakes,
       progress: Math.min(100, Math.round((s.filledCount / s.totalFilled) * 100)),
       solved: s.solved,
+      failed: s.failed,
       flashError: flashError || this.data.flashError,
     });
   },
@@ -182,11 +192,19 @@ Page({
     const mode = this.data.markMode;
     if (mode === "cross") {
       this.engine.tapCell(x, y, "mark", "crossed");
-    } else if (mode === "cycle") {
-      this.engine.tapCell(x, y, "cycle");
-    } else {
-      this.engine.tapCell(x, y, "mark", "filled");
+      if (this.sfx) this.sfx.play("cross");
+      return;
     }
+    // cycle / fill：按当前格状态预判音效
+    const st = this.engine.getState();
+    const cur = st.marks[y * st.puzzle.width + x];
+    if (mode === "cycle" && cur === "filled") {
+      this.engine.tapCell(x, y, "cycle");
+      if (this.sfx) this.sfx.play("cross");
+      return;
+    }
+    this.engine.tapCell(x, y, mode === "cycle" ? "cycle" : "mark", "filled");
+    if (this.sfx) this.sfx.play(cur === "crossed" ? "clear" : "tap");
   },
 
   onToggleMark() {

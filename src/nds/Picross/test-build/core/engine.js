@@ -5,9 +5,13 @@ export class PicrossEngine {
         this.mistakes = 0;
         this.maxMistakes = 5; // Picross DS: 5 次失误
         this.solved = false;
+        this.failed = false; // G5: 失误达上限游戏结束
         this.filledCount = 0;
         this.totalFilled = 0;
         this.timer = null;
+        // F2: 状态缓存，仅 dirty 时重建，减少对象分配
+        this.stateCache = null;
+        this.dirty = true;
         this.puzzle = puzzle;
         this.cb = cb;
         this.marks = new Array(puzzle.width * puzzle.height).fill("empty");
@@ -18,9 +22,11 @@ export class PicrossEngine {
     }
     start() {
         this.stopTimer();
+        this.dirty = true;
         this.timer = setInterval(() => {
             if (!this.solved) {
                 this.elapsed++;
+                this.dirty = true;
                 this.emit();
             }
         }, 1000);
@@ -39,7 +45,9 @@ export class PicrossEngine {
         }
     }
     getState() {
-        return {
+        if (this.stateCache && !this.dirty)
+            return this.stateCache;
+        this.stateCache = {
             puzzle: this.puzzle,
             marks: this.marks,
             rowHints: this.rowHints,
@@ -48,16 +56,19 @@ export class PicrossEngine {
             mistakes: this.mistakes,
             maxMistakes: this.maxMistakes,
             solved: this.solved,
+            failed: this.failed,
             filledCount: this.filledCount,
             totalFilled: this.totalFilled,
         };
+        this.dirty = false;
+        return this.stateCache;
     }
     /**
      * 单元格操作（Picross DS 触摸循环：填充 → 叉 → 清除 → 填充）
      * 模式: cycle=按序切换, mark=直接指定
      */
     tapCell(x, y, mode = "cycle", mark) {
-        if (this.solved)
+        if (this.solved || this.failed)
             return;
         if (x < 0 || y < 0 || x >= this.puzzle.width || y >= this.puzzle.height)
             return;
@@ -76,14 +87,21 @@ export class PicrossEngine {
         const isCorrect = this.isSolutionCell(x, y);
         if (isFilledNow && !wasFilled) {
             this.filledCount++;
-            if (!isCorrect)
+            if (!isCorrect) {
                 this.mistakes++;
+                // G5: 失误达上限 → 游戏结束（Picross DS 规则）
+                if (this.mistakes >= this.maxMistakes) {
+                    this.failed = true;
+                    this.stopTimer();
+                }
+            }
         }
         else if (wasFilled && !isFilledNow) {
             this.filledCount--;
         }
         this.marks[idx] = next;
         this.refreshHints();
+        this.dirty = true;
         this.checkSolved();
         this.emit();
     }
@@ -94,6 +112,7 @@ export class PicrossEngine {
             this.filledCount--;
         this.marks[idx] = "empty";
         this.refreshHints();
+        this.dirty = true;
         this.emit();
     }
     refreshHints() {

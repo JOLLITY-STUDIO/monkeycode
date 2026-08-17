@@ -59,10 +59,15 @@ def main():
     print(f"file_94 size: {len(data)} bytes")
 
     puzzles = []
+    skipped = []
     for i in range(SOL_COUNT):
         sol = data[SOL_START + i * SOL_BLOCK: SOL_START + (i + 1) * SOL_BLOCK]
         if len(sol) < SOL_BLOCK:
             break
+        # 空拼图过滤：全块无填充（所有字节 < 3）→ 不可玩，跳过（保留原 ROM id）
+        if not any(b >= 3 for b in sol):
+            skipped.append(i)
+            continue
         puzzles.append({
             "id": i,
             "name": f"Picross {i + 1}",
@@ -77,7 +82,7 @@ def main():
         print(f"--- solution block {i} (16x16, #=filled) ---")
         for r in range(16):
             print("".join("#" if b >= 3 else "." for b in sol[r * 16:(r + 1) * 16]))
-    print(f"total puzzles: {len(puzzles)}")
+    print(f"total puzzles: {len(puzzles)} (skipped {len(skipped)} empty blocks: {skipped})")
 
     os.makedirs(os.path.dirname(OUT_TS), exist_ok=True)
     with open(OUT_TS, "w", encoding="utf-8") as f:

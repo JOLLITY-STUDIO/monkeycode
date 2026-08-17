@@ -52,6 +52,8 @@ export interface GameState {
   mistakes: number;
   maxMistakes: number;
   solved: boolean;
+  /** 失误达上限游戏结束（Picross DS: 5 次） */
+  failed: boolean;
   /** 正确填充数 / 总填充数（用于进度条） */
   filledCount: number;
   totalFilled: number;

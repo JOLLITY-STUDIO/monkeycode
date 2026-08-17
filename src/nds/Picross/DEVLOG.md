@@ -76,8 +76,35 @@
 - [x] `pages/select`：顶栏语言切换胶囊（激活态高亮），难度标签与拼图名随语言切换
 - [x] `pages/index`：结算标题/用时/失误/按钮/工具栏全部按语言渲染
 
+### 阶段 5：纵深拓展（G）
+- [x] G2 B5 存档格式逆向（结论定案）：
+  - `default_data_00.pmd`（23,444B）：无 256×R 记录周期，XOR 全 key 可读率 ≤0.56 → 加密/压缩，静态不可逆
+  - `01.pmd`=4B、`02.pmd`=20B、`03.pmd`=368B 均 FF 填充/极小配置，无明文文本
+  - 结论：原版存档加密，导入/兼容价值低；wx.storage 方案（E3）跨平台可读可迁移 → **不迁移，保留 E3 方案**（B5 取舍）
+- [x] G3 E4 文本纵深（定案）：
+  - 结构：开头 ARM 函数 `f(x)=(x+1)*0x190+base`（ENG_JP_Easy 基址 `0x020E396C` 为 RAM 加载地址），0x18 起为模块代码段，0x1A8 起为 400B×N 记录区
+  - **新发现（本轮）**：Msg 模块为「数据即代码」——`SPA_JP_Easy`(160B) 整文件即编译 ARM 代码（ldr/mov/bl/bx 全合法），含 RAM 导入表（0x020F23C0 / 0x020DE4DC / 0x020F235C）与**调试字符串 `Seq_AotoSampleA_Init()`**（旧记录 `SqAtSmlAIi(e_ooape_nt)` 系错位误读）
+  - `FRE_JP_Easy` 尾部含资源路径碎片（`Classic/Seq_Edit`、`BJ_CHR1`、`PackDat`）→ 模块内嵌资源引用
+  - 记录区（0x1A8 起）验证：非有效文本（XOR 0x20/0x40/0x80、±0x10、奇偶分离可读率均 ≤0.63，无 UTF-16/ASCII 明文）且非有效代码（Thumb 指令密度仅 1 条/10B）→ **自定义消息脚本编译器产物**，需 ARM9 记录解释器逆向
+  - 12 个 `Msg/*.dat`（id 5-16）仅 6 个有内容：ENG 36KB/28KB（93+ 记录）、FRE 2.3KB/5.4KB、SPA 8.1KB/0.2KB → **FR/ES 模块过小，即使解码也不含完整本地化文本**
+  - 结论：Msg 模块无用户可见增量（B3 file_86 已提取 372 条 EN 全文 + i18n 四语 UI + EN/FR/ES 拼图名覆盖全部面向文本）→ **维持 B3+i18n 管线，不接入**；记录为深度逆向专项（ARM9 记录解释器）
+- [x] G1 B4 音频（务实方案）：
+  - `PR.sdat`（14,196B）非标准 SDAT 魔数、XOR 全 key 可读率 ≤0.59 → 加密/压缩暂不可解
+  - 实现 `src/audio/sfx.ts`：WebAudio 振荡器合成五类音效（tap 涂黑 / cross 画叉 / clear 清除 / mistake 失误 / win 完成），微信 `wx.createWebAudioContext` + HTML `AudioContext` 双平台，不支持环境静默降级
+- [x] G5 BUG-007 原版 5 次失误判负：
+  - 引擎：`failed` 标志 + `maxMistakes=5`，第 5 次误填 → failed=true + 停表 + 后续操作忽略（types.ts GameState.failed）
+  - 页面：失败结算面板（GAME OVER / 失误次数已用完 / 重试），`syncState` 同步 failed
+  - `test_headless` 新增失败流用例（5 次误填 → failed、操作忽略、onStateChange 收到 failed）
+- [x] BUG-009 空拼图过滤（数据修正）：
+  - file_94 解法区 33 块全零（id 5/6/13/14/21/22/29/30/37/38/181/189-195/237-251）→ 全 0 解法不可玩（开局即 solved）
+  - `extract_puzzles.py` 过滤空块并重新生成 `src/data/puzzles.ts`（256→223 题，保留原 ROM id，名称/存档映射不受影响）
+  - `pages/index` 修复：onLoad 由 `id % length` 改为按 id `findIndex`（数组索引与 id 不再一致）
+  - `test_headless` 重构：适配 16×16 真实数据、动态找非解法格做失误/失败用例、数据合法性断言（非空 + 223 题）
+
 ### 工具类开发
 - `tools/parse_ntr_header.py`、`tools/extract_rom.py`、`tools/disasm.py`、`tools/sniff_files.py`、`tools/extract_puzzles.py`、`tools/build_web.cjs`、`tools/test_headless.mjs`
+- `tools/_g3_*.py`（Msg 结构分析：ARM 前导/400B 块/交错文本）、`tools/_g2_*.py`（存档周期/XOR 探测）、`tools/_g1_probe.py`（PR.sdat 探测）
+- `tools/_g3_dump.py`（Msg 文件/记录转储 + 字节频率 + 简单变换可读率）、`tools/_g3_rec_code.py`（记录区 ARM/Thumb 反汇编，验证非代码）
 
 ## 卡点与攻关记录
 1. **FNT 解析溢出**：标准 NDS FNT 布局不适用 Picross DS → 按二进制特征自定义解析。
@@ -85,8 +112,14 @@
 3. **Node ESM 扩展名**：tsc 产物 import 无 `.js` 后缀 → 无界面测试用 `--experimental-specifier-resolution=node`。
 4. **引擎完成检测 bug**：`checkSolved` 曾要求全格 filled（永远无法完成）→ 改为"filledCount==totalFilled 且无误填格"（见 BUGS.md）。
 
-## 下一步（G 纵深）
-- [ ] G1：B4 PR.sdat 音频逆向 + 小程序音效接入
-- [ ] G2：B5 default_data_*.pmd 存档格式逆向
-- [ ] G3：E4 纵深 Msg/*.dat 模式索引接入 ROM 原版全量文本（进行中）
-- [ ] G4：B1 纵深 记录区↔解法区映射（BUG-008）接入 ROM 原版提示
+## 下一步（G 纵深已全部收口）
+- [x] G1：B4 PR.sdat 音频逆向 + 小程序音效接入
+- [x] G2：B5 default_data_*.pmd 存档格式逆向
+- [x] G3：E4 纵深 Msg/*.dat 模式索引接入 ROM 原版全量文本（定案：数据即代码 + 记录非文本非代码，FR/ES 过小 → 不接入）
+- [x] G4：B1 纵深 记录区↔解法区映射（BUG-008）→ 定案无映射，引擎从解法推导提示
+- [x] G5：BUG-007 原版 5 次失误判负（引擎 + UI + 测试）
+- [x] BUG-009：空拼图过滤（256→223 题，保留原 ROM id）
+
+### 深度逆向专项（候选，非当前主线）
+- [ ] ARM9 记录解释器：解码 Msg/*.dat 记录区自定义消息脚本（G3 遗留，无用户可见增量，优先级低）
+- [ ] ARM9 拼图提示编码：确认记录区提示生成算法（G4 已定案引擎从解法推导，提示完全一致无需接入）

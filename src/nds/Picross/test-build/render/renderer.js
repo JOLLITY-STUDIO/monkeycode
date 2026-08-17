@@ -6,6 +6,12 @@ export class PicrossRenderer {
         this.cell = 0; // 单元格像素
         this.gridX = 0;
         this.gridY = 0;
+        // F2: 脏区缓存 —— 布局快照 + 上一帧 marks
+        this.lastW = 0;
+        this.lastH = 0;
+        this.lastCW = 0;
+        this.lastCH = 0;
+        this.lastMarks = null;
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.opts = {
@@ -28,7 +34,42 @@ export class PicrossRenderer {
     }
     draw(state) {
         const { width, height } = state.puzzle;
-        this.layout(width, height);
+        const cw = this.canvas.width;
+        const ch = this.canvas.height;
+        // 布局变化 → 全量重绘
+        if (this.lastCW !== cw || this.lastCH !== ch ||
+            this.lastW !== width || this.lastH !== height) {
+            this.layout(width, height);
+            this.drawFull(state);
+            this.lastW = width;
+            this.lastH = height;
+            this.lastCW = cw;
+            this.lastCH = ch;
+            this.lastMarks = state.marks.slice();
+            return;
+        }
+        // 脏区：仅重绘变化的格子 + 受影响行列提示
+        const changed = [];
+        for (let i = 0; i < state.marks.length; i++) {
+            if (state.marks[i] !== this.lastMarks[i])
+                changed.push(i);
+        }
+        if (changed.length) {
+            for (const i of changed) {
+                const x = i % width;
+                const y = (i / width) | 0;
+                this.drawCell(x, y, state.marks[i]);
+                this.redrawRowHint(state.rowHints[y].nums, y, state.rowHints[y].satisfied);
+                this.redrawColHint(state.colHints[x].nums, x, state.colHints[x].satisfied);
+            }
+            this.lastMarks = state.marks.slice();
+        }
+        // 顶部标签/进度条（时间每帧变化）
+        this.drawLabels(state);
+    }
+    /** 全量重绘（布局变化/首帧） */
+    drawFull(state) {
+        const { width, height } = state.puzzle;
         const ctx = this.ctx;
         ctx.fillStyle = "#0f0f1a";
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
@@ -39,20 +80,7 @@ export class PicrossRenderer {
         // 网格
         for (let y = 0; y < height; y++) {
             for (let x = 0; x < width; x++) {
-                const px = this.gridX + x * this.cell;
-                const py = this.gridY + y * this.cell;
-                const mark = state.marks[y * width + x];
-                if (mark === "filled") {
-                    ctx.fillStyle = this.opts.fillColor;
-                    ctx.fillRect(px + 1, py + 1, this.cell - 2, this.cell - 2);
-                }
-                else {
-                    ctx.fillStyle = this.opts.bgColor;
-                    ctx.fillRect(px + 1, py + 1, this.cell - 2, this.cell - 2);
-                }
-                if (mark === "crossed") {
-                    this.drawCross(px, py);
-                }
+                this.drawCell(x, y, state.marks[y * width + x]);
             }
         }
         // 网格线
@@ -83,6 +111,30 @@ export class PicrossRenderer {
         }
         // 顶部/左侧标签
         this.drawLabels(state);
+    }
+    /** 绘制单个格子（背景 + 填充 + 叉） */
+    drawCell(x, y, mark) {
+        const ctx = this.ctx;
+        const px = this.gridX + x * this.cell;
+        const py = this.gridY + y * this.cell;
+        ctx.fillStyle = mark === "filled" ? this.opts.fillColor : this.opts.bgColor;
+        ctx.fillRect(px + 1, py + 1, this.cell - 2, this.cell - 2);
+        if (mark === "crossed")
+            this.drawCross(px, py);
+    }
+    /** 重绘行提示（先擦除旧数字） */
+    redrawRowHint(nums, row, satisfied) {
+        const ctx = this.ctx;
+        ctx.fillStyle = "#1c1c33";
+        ctx.fillRect(0, this.gridY + row * this.cell, this.hintW, this.cell);
+        this.drawRowHint(nums, row, satisfied);
+    }
+    /** 重绘列提示（先擦除旧数字） */
+    redrawColHint(nums, col, satisfied) {
+        const ctx = this.ctx;
+        ctx.fillStyle = "#1c1c33";
+        ctx.fillRect(this.gridX + col * this.cell, 0, this.cell, this.hintH);
+        this.drawColHint(nums, col, satisfied);
     }
     drawRowHint(nums, row, satisfied) {
         const ctx = this.ctx;

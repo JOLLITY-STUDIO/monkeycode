@@ -9,7 +9,7 @@
 
   <!-- 进度条 -->
   <view class="progress-wrap">
-    <view class="progress-bar {{solved ? 'done' : ''}}" style="width: {{progress}}%;"></view>
+    <view class="progress-bar {{solved ? 'done' : (failed ? 'fail' : '')}}" style="width: {{progress}}%;"></view>
   </view>
 
   <!-- 游戏画布（type=2d，触摸绘制） -->
@@ -33,6 +33,17 @@
       </view>
       <text class="solved-sub">{{t.timeLabel}} {{timeText}} · {{t.mistakeLabel}} {{mistakes}}</text>
       <button class="btn-primary" bindtap="onNext">{{t.nextBtn}}</button>
+      <button class="btn-ghost" bindtap="onBack">{{t.backBtn}}</button>
+    </view>
+  </view>
+
+  <!-- 失败遮罩（G5：5 次失误游戏结束） -->
+  <view class="solved-mask" wx:if="{{failed}}">
+    <view class="solved-card pop-in fail-card">
+      <text class="solved-title fail-title">{{t.failedTitle}}</text>
+      <text class="solved-sub">{{t.failedSub}}</text>
+      <text class="solved-sub">{{t.timeLabel}} {{timeText}} · {{t.mistakeLabel}} {{mistakes}}/{{maxMistakes}}</text>
+      <button class="btn-primary" bindtap="onReset">{{t.retryBtn}}</button>
       <button class="btn-ghost" bindtap="onBack">{{t.backBtn}}</button>
     </view>
   </view>

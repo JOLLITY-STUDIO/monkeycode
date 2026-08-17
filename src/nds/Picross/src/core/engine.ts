@@ -19,6 +19,7 @@ export class PicrossEngine {
   private mistakes = 0;
   private readonly maxMistakes = 5; // Picross DS: 5 次失误
   private solved = false;
+  private failed = false; // G5: 失误达上限游戏结束
   private filledCount = 0;
   private totalFilled = 0;
   private timer: any = null;
@@ -76,6 +77,7 @@ export class PicrossEngine {
       mistakes: this.mistakes,
       maxMistakes: this.maxMistakes,
       solved: this.solved,
+      failed: this.failed,
       filledCount: this.filledCount,
       totalFilled: this.totalFilled,
     };
@@ -88,7 +90,7 @@ export class PicrossEngine {
    * 模式: cycle=按序切换, mark=直接指定
    */
   tapCell(x: number, y: number, mode: "cycle" | "mark" = "cycle", mark?: CellMark): void {
-    if (this.solved) return;
+    if (this.solved || this.failed) return;
     if (x < 0 || y < 0 || x >= this.puzzle.width || y >= this.puzzle.height) return;
 
     const idx = y * this.puzzle.width + x;
@@ -106,7 +108,14 @@ export class PicrossEngine {
     const isCorrect = this.isSolutionCell(x, y);
     if (isFilledNow && !wasFilled) {
       this.filledCount++;
-      if (!isCorrect) this.mistakes++;
+      if (!isCorrect) {
+        this.mistakes++;
+        // G5: 失误达上限 → 游戏结束（Picross DS 规则）
+        if (this.mistakes >= this.maxMistakes) {
+          this.failed = true;
+          this.stopTimer();
+        }
+      }
     } else if (wasFilled && !isFilledNow) {
       this.filledCount--;
     }

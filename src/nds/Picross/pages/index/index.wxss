@@ -65,6 +65,11 @@
   background: #4caf50;
 }
 
+/* G5: 失败进度条 */
+.progress-bar.fail {
+  background: #d23b3b;
+}
+
 .board {
   flex: 1;
   width: 100%;
@@ -173,6 +178,15 @@
   font-size: 56rpx;
   font-weight: 700;
   letter-spacing: 6rpx;
+}
+
+/* G5: 失败卡片 */
+.fail-card {
+  border-color: #d23b3b;
+}
+
+.fail-title {
+  color: #d23b3b;
 }
 
 .solved-sub {

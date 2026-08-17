@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * 无界面测试：验证引擎逻辑（先跑 tools/build_web.cjs 再执行）
- * 覆盖：错误计数、完成检测、清除、画叉、提示满足状态
+ * 覆盖：错误计数、完成检测、清除、画叉、提示满足状态、G5 失败判定、数据合法性
  * 运行: node --experimental-specifier-resolution=node tools/test_headless.mjs
  */
 import { PicrossEngine } from "../test-build/core/engine.js";
@@ -19,8 +19,12 @@ const check = (name, cond) => {
   if (!cond) failures++;
 };
 
-// 使用 P2（fc631f80 = 空心方块）做完整流程测试
-const d = PUZZLES[1];
+// 数据合法性（前置）：全部非空、尺寸 16x16
+check("数据非空（空拼图已过滤）", PUZZLES.every((p) => /[1-9A-Fa-f]/.test(p.solutionHex)));
+check("数据尺寸 16x16", PUZZLES.every((p) => p.width === 16 && p.height === 16));
+
+// 使用第一题（id 0，非空）做完整流程测试
+const d = PUZZLES[0];
 const puzzle = {
   id: d.id, name: d.name, width: d.width, height: d.height,
   difficulty: d.difficulty, unlocked: d.unlocked,
@@ -28,7 +32,17 @@ const puzzle = {
 };
 
 const sol = puzzle.solution;
-const isCell = (x, y) => (sol[(y * 5 + x) >> 3] >> (7 - ((y * 5 + x) & 7))) & 1;
+const isCell = (x, y) => (sol[(y * 16 + x) >> 3] >> (7 - ((y * 16 + x) & 7))) & 1;
+
+// 动态找一个非解法格（用于失误/失败测试）
+let wrongCell = null;
+for (let y = 0; y < 16 && !wrongCell; y++) {
+  for (let x = 0; x < 16 && !wrongCell; x++) {
+    if (!isCell(x, y)) wrongCell = { x, y };
+  }
+}
+check("存在非解法格", !!wrongCell);
+const wx0 = wrongCell.x, wy0 = wrongCell.y;
 
 const engine = new PicrossEngine(puzzle, {
   onSolved: (s) => console.log("  [onSolved] elapsed=" + s.elapsedSec + " mistakes=" + s.mistakes),
@@ -36,15 +50,15 @@ const engine = new PicrossEngine(puzzle, {
 
 check("初始未完成", !engine.getState().solved);
 check("初始填充 0", engine.getState().filledCount === 0);
-check("提示行数=5", engine.getState().rowHints.length === 5);
-check("提示列数=5", engine.getState().colHints.length === 5);
+check("提示行数=16", engine.getState().rowHints.length === 16);
+check("提示列数=16", engine.getState().colHints.length === 16);
 
 // 1) 故意填错一个空单元格 → 失误 +1
-engine.tapCell(2, 2, "mark", "filled");
+engine.tapCell(wx0, wy0, "mark", "filled");
 check("误填失误计数=1", engine.getState().mistakes === 1);
 
 // 2) 清除错误格，改填一个正确格 → 失误不增
-engine.clearCell(2, 2);
+engine.clearCell(wx0, wy0);
 engine.tapCell(0, 0, "mark", "filled");
 check("清除+正确填不增失误", engine.getState().mistakes === 1);
 
@@ -54,9 +68,9 @@ engine.tapCell(1, 1, "mark", "empty");
 check("画叉不增失误", engine.getState().mistakes === 1);
 
 // 4) 按解法填充所有剩余格子 → 完成
-for (let y = 0; y < 5; y++) {
-  for (let x = 0; x < 5; x++) {
-    if (isCell(x, y) && engine.getState().marks[y * 5 + x] !== "filled") {
+for (let y = 0; y < 16; y++) {
+  for (let x = 0; x < 16; x++) {
+    if (isCell(x, y) && engine.getState().marks[y * 16 + x] !== "filled") {
       engine.tapCell(x, y, "mark", "filled");
     }
   }
@@ -74,13 +88,36 @@ check("完成后操作忽略", engine.getState().marks.every((m, i) => m === mar
 
 engine.destroy();
 
-// 6) 三题数据均合法且可解
+// 6) 全部数据均合法且可解（非空，可正确完成）
 for (const p of PUZZLES) {
   const pp = { ...p, solution: solHexToBytes(p.solutionHex) };
   const e2 = new PicrossEngine(pp, {});
-  check(`数据 ${p.id} 合法(尺寸${p.width}x${p.height})`, e2.getState().totalFilled > 0);
+  const ok = e2.getState().totalFilled > 0;
+  if (!ok) check(`数据 ${p.id} 合法(非空)`, false);
   e2.destroy();
 }
+check(`数据全部合法(共 ${PUZZLES.length} 题非空)`, failures === 0);
+check("数据总量=223", PUZZLES.length === 223);
+
+// 7) G5: 5 次失误 → failed 游戏结束
+const e3 = new PicrossEngine({ ...puzzle }, {});
+check("失败初始 false", !e3.getState().failed);
+let failFired = false;
+const e3b = new PicrossEngine(
+  { ...puzzle },
+  { onStateChange: (s) => { if (s.failed) failFired = true; } }
+);
+// 用同一非解法格反复填错（错误填充 → 失误；clear 后重置再试）
+for (let i = 0; i < 5; i++) {
+  e3b.tapCell(wx0, wy0, "mark", "filled"); // 错误填充 → 失误
+  e3b.clearCell(wx0, wy0);
+}
+const st3 = e3b.getState();
+check("5 次失误后 failed=true", st3.failed === true);
+check("失败后操作忽略", (() => { const m = st3.marks.slice(); e3b.tapCell(0, 0, "cycle"); return e3b.getState().marks.every((mm, i) => mm === m[i]); })());
+check("onStateChange 收到 failed", failFired === true);
+e3b.destroy();
+e3.destroy();
 
 console.log(failures === 0 ? "\nALL PASS" : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);
