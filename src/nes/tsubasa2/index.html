@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>天使之翼2 H5 引擎测试台 — tsubasa2-h5-src</title>
+  <style>
+    /* ═══ 满屏视口布局（符合规范：每个页面相当于满屏视口） ═══ */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      width: 100%; height: 100%; overflow: hidden;
+      background: #0a0a18; color: #e6edf3;
+      font-family: "Cascadia Code", "Consolas", "Microsoft YaHei", monospace;
+      font-size: 13px;
+    }
+    #app {
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+    }
+    /* ── 顶部状态栏 ── */
+    .topbar {
+      flex: 0 0 auto; height: 40px;
+      display: flex; align-items: center; gap: 16px;
+      padding: 0 16px;
+      background: linear-gradient(90deg, #010409, #0d1117);
+      border-bottom: 1px solid #30363d;
+    }
+    .topbar .title { font-size: 15px; font-weight: 700; color: #58a6ff; }
+    .topbar .badge {
+      padding: 2px 8px; border-radius: 4px; font-size: 11px;
+      background: #21262d; border: 1px solid #30363d; color: #8b949e;
+    }
+    .topbar .badge.ok { color: #3fb950; border-color: #238636; }
+    .topbar .badge.err { color: #f85149; border-color: #da3633; }
+    .topbar .spacer { flex: 1; }
+    .topbar .stat { font-size: 12px; color: #8b949e; }
+    .topbar .stat b { color: #d29922; }
+
+    /* ── 主体：左画布 + 右面板 ── */
+    .main {
+      flex: 1 1 auto; min-height: 0;
+      display: flex; flex-direction: row;
+    }
+    /* 左侧：游戏画布区 */
+    .canvas-area {
+      flex: 0 0 560px; height: 100%;
+      display: flex; flex-direction: column;
+      background: #010409; border-right: 1px solid #30363d;
+    }
+    .canvas-wrap {
+      flex: 1 1 auto; min-height: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: #000; position: relative;
+      overflow: hidden;
+    }
+    #gameCanvas {
+      width: 512px; height: 480px;
+      image-rendering: pixelated;
+      image-rendering: crisp-edges;
+      background: #000;
+      border: 1px solid #30363d;
+    }
+    .canvas-hint {
+      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+      font-size: 11px; color: #6e7681; pointer-events: none;
+    }
+    /* 画布下方：手柄按钮 */
+    .gamepad {
+      flex: 0 0 auto; padding: 8px 12px;
+      display: flex; align-items: center; gap: 12px; justify-content: center;
+      background: #0d1117; border-top: 1px solid #30363d;
+    }
+    .gp-btn {
+      width: 36px; height: 36px; border-radius: 6px;
+      background: #21262d; border: 1px solid #30363d; color: #c9d1d9;
+      font-size: 12px; font-weight: 700; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      user-select: none; transition: background .1s;
+    }
+    .gp-btn:active, .gp-btn.active { background: #1f6feb; color: #fff; border-color: #1f6feb; }
+    .gp-btn.dp { font-size: 16px; }
+    .gp-sep { width: 1px; height: 28px; background: #30363d; }
+
+    /* 右侧：测试面板 */
+    .panel {
+      flex: 1 1 auto; min-width: 0; height: 100%;
+      display: flex; flex-direction: column;
+      background: #0d1117;
+    }
+    /* 测试控制按钮组 */
+    .controls {
+      flex: 0 0 auto; padding: 10px 12px;
+      display: flex; flex-wrap: wrap; gap: 8px;
+      border-bottom: 1px solid #30363d;
+      background: #010409;
+    }
+    .btn {
+      height: 30px; padding: 0 12px; border-radius: 6px;
+      background: #21262d; border: 1px solid #30363d; color: #c9d1d9;
+      font-size: 12px; cursor: pointer; white-space: nowrap;
+      transition: all .1s;
+    }
+    .btn:hover { background: #30363d; border-color: #8b949e; }
+    .btn.primary { background: #238636; border-color: #2ea043; color: #fff; }
+    .btn.primary:hover { background: #2ea043; }
+    .btn.warn { background: #da3633; border-color: #f85149; color: #fff; }
+    .btn.info { background: #1f6feb; border-color: #388bfd; color: #fff; }
+
+    /* Tab 切换：日志 / 截图 / 报告 */
+    .tabs {
+      flex: 0 0 auto; display: flex; gap: 0;
+      border-bottom: 1px solid #30363d; background: #010409;
+    }
+    .tab {
+      padding: 8px 16px; cursor: pointer; font-size: 12px;
+      color: #8b949e; border-bottom: 2px solid transparent;
+    }
+    .tab.active { color: #58a6ff; border-bottom-color: #58a6ff; background: #0d1117; }
+
+    /* 内容区 */
+    .content { flex: 1 1 auto; min-height: 0; position: relative; }
+    .pane { position: absolute; inset: 0; overflow: auto; padding: 8px; display: none; }
+    .pane.active { display: block; }
+
+    /* 日志 */
+    #logPane { font-size: 12px; line-height: 1.6; }
+    .log-line { padding: 1px 4px; white-space: pre-wrap; word-break: break-all; }
+    .log-info  { color: #8b949e; }
+    .log-pass  { color: #3fb950; }
+    .log-fail  { color: #f85149; }
+    .log-warn  { color: #d29922; }
+    .log-step  { color: #58a6ff; font-weight: 700; }
+    .log-time  { color: #6e7681; }
+
+    /* 截图预览 */
+    #shotPane { display: flex; flex-wrap: wrap; gap: 8px; align-content: flex-start; }
+    .shot-card {
+      width: 280px; border: 1px solid #30363d; border-radius: 6px; overflow: hidden;
+      background: #010409;
+    }
+    .shot-card img { display: block; width: 100%; image-rendering: pixelated; }
+    .shot-card .shot-label {
+      padding: 4px 8px; font-size: 11px; color: #8b949e;
+      border-top: 1px solid #30363d; word-break: break-all;
+    }
+
+    /* 报告 */
+    #reportPane { padding: 12px; font-size: 12px; line-height: 1.7; }
+    #reportPane h3 { color: #58a6ff; margin: 12px 0 4px; font-size: 14px; }
+    #reportPane table { border-collapse: collapse; width: 100%; margin: 6px 0; }
+    #reportPane th, #reportPane td { border: 1px solid #30363d; padding: 4px 8px; text-align: left; font-size: 11px; }
+    #reportPane th { background: #161b22; color: #d29922; }
+    .sev-Critical { color: #f85149; font-weight: 700; }
+    .sev-Major { color: #d29922; font-weight: 700; }
+    .sev-Minor { color: #8b949e; }
+    .sev-Pass { color: #3fb950; }
+
+    /* 进度条 */
+    .progress {
+      flex: 0 0 auto; height: 3px; background: #21262d;
+    }
+    .progress-bar { height: 100%; width: 0; background: #1f6feb; transition: width .2s; }
+  </style>
+</head>
+<body>
+<div id="app">
+  <!-- 顶部状态栏 -->
+  <div class="topbar">
+    <span class="title">天使之翼2 · H5 引擎测试台</span>
+    <span class="badge" id="engineBadge">引擎未启动</span>
+    <span class="spacer"></span>
+    <span class="stat">FPS: <b id="fpsVal">0</b></span>
+    <span class="stat">帧: <b id="frameVal">0</b></span>
+    <span class="stat">状态: <b id="stateVal">--</b></span>
+  </div>
+
+  <!-- 主体 -->
+  <div class="main">
+    <!-- 左侧画布 -->
+    <div class="canvas-area">
+      <div class="canvas-wrap">
+        <canvas id="gameCanvas" width="256" height="240"></canvas>
+        <div class="canvas-hint">256×240 (NES 原始分辨率 · 2x 显示)</div>
+      </div>
+      <div class="gamepad">
+        <div class="gp-btn dp" data-key="UP">▲</div>
+        <div class="gp-btn dp" data-key="DOWN">▼</div>
+        <div class="gp-btn dp" data-key="LEFT">◀</div>
+        <div class="gp-btn dp" data-key="RIGHT">▶</div>
+        <div class="gp-sep"></div>
+        <div class="gp-btn" data-key="SELECT">SEL</div>
+        <div class="gp-btn" data-key="START">START</div>
+        <div class="gp-sep"></div>
+        <div class="gp-btn" data-key="B">B</div>
+        <div class="gp-btn" data-key="A">A</div>
+      </div>
+    </div>
+
+    <!-- 右侧测试面板 -->
+    <div class="panel">
+      <div class="controls">
+        <button class="btn primary" id="btnRunAll">▶ 运行全套测试</button>
+        <button class="btn info" id="btnInit">初始化引擎</button>
+        <button class="btn" id="btnRunUnit">单元测试</button>
+        <button class="btn" id="btnRunInteg">集成测试</button>
+        <button class="btn" id="btnRunInput">输入测试</button>
+        <button class="btn" id="btnRunPerf">性能测试</button>
+        <button class="btn" id="btnRunEdge">边界测试</button>
+        <button class="btn" id="btnShot">截图</button>
+        <button class="btn" id="btnAutoShot">自动截图</button>
+        <button class="btn warn" id="btnClear">清空日志</button>
+        <button class="btn" id="btnExport">导出报告</button>
+      </div>
+
+      <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+
+      <div class="tabs">
+        <div class="tab active" data-tab="log">调试日志</div>
+        <div class="tab" data-tab="shot">截图 (<span id="shotCount">0</span>)</div>
+        <div class="tab" data-tab="report">测试报告</div>
+      </div>
+
+      <div class="content">
+        <div class="pane active" id="logPane"></div>
+        <div class="pane" id="shotPane"></div>
+        <div class="pane" id="reportPane"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="module" src="/test/main.ts"></script>
+</body>
+</html>

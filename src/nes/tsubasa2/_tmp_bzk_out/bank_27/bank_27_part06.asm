@@ -1,0 +1,1002 @@
+; bank_27.asm 分片 6/9 (原文件行 5001-6000, 共 8021 行)
+
+- D 1 - I - 0x037447 0D:9437: F0        .byte $F0   ; 
+- D 1 - I - 0x037448 0D:9438: 44        .byte $44   ; <D>
+- D 1 - I - 0x037449 0D:9439: F0        .byte $F0   ; 
+- D 1 - I - 0x03744A 0D:943A: F0        .byte $F0   ; 
+- D 1 - I - 0x03744B 0D:943B: F0        .byte $F0   ; 
+- D 1 - I - 0x03744C 0D:943C: 5A        .byte $5A   ; <Z>
+- D 1 - I - 0x03744D 0D:943D: 55        .byte $55   ; <U>
+- D 1 - I - 0x03744E 0D:943E: 1B        .byte $1B   ; 
+- D 1 - I - 0x03744F 0D:943F: 20        .byte $20   ; 
+- D 1 - I - 0x037450 0D:9440: 5E        .byte $5E   ; 
+- D 1 - I - 0x037451 0D:9441: 11        .byte $11   ; 
+- D 1 - I - 0x037452 0D:9442: 12        .byte $12   ; 
+- D 1 - I - 0x037453 0D:9443: 4B        .byte $4B   ; <K>
+- D 1 - I - 0x037454 0D:9444: 35        .byte $35   ; <5>
+- D 1 - I - 0x037455 0D:9445: F0        .byte $F0   ; 
+- D 1 - I - 0x037456 0D:9446: 63        .byte $63   ; <c>
+- D 1 - I - 0x037457 0D:9447: F0        .byte $F0   ; 
+- D 1 - I - 0x037458 0D:9448: 68        .byte $68   ; <h>
+- D 1 - I - 0x037459 0D:9449: 36        .byte $36   ; <6>
+- D 1 - I - 0x03745A 0D:944A: 4F        .byte $4F   ; <O>
+- D 1 - I - 0x03745B 0D:944B: F0        .byte $F0   ; 
+- D 1 - I - 0x03745C 0D:944C: F0        .byte $F0   ; 
+- D 1 - I - 0x03745D 0D:944D: F0        .byte $F0   ; 
+- D 1 - I - 0x03745E 0D:944E: 59        .byte $59   ; <Y>
+- D 1 - I - 0x03745F 0D:944F: F0        .byte $F0   ; 
+- D 1 - I - 0x037460 0D:9450: F0        .byte $F0   ; 
+- D 1 - I - 0x037461 0D:9451: 79        .byte $79   ; <y>
+- D 1 - I - 0x037462 0D:9452: 3F        .byte $3F   ; 
+- D 1 - I - 0x037463 0D:9453: 44        .byte $44   ; <D>
+- D 1 - I - 0x037464 0D:9454: 82        .byte $82   ; 
+- D 1 - I - 0x037465 0D:9455: 4D        .byte $4D   ; <M>
+- D 1 - I - 0x037466 0D:9456: 5A        .byte $5A   ; <Z>
+- D 1 - I - 0x037467 0D:9457: F0        .byte $F0   ; 
+- D 1 - I - 0x037468 0D:9458: 58        .byte $58   ; <X>
+- D 1 - I - 0x037469 0D:9459: F0        .byte $F0   ; 
+- D 1 - I - 0x03746A 0D:945A: 9F        .byte $9F   ; 
+- D 1 - I - 0x03746B 0D:945B: F0        .byte $F0   ; 
+- D 1 - I - 0x03746C 0D:945C: A4        .byte $A4   ; 
+- D 1 - I - 0x03746D 0D:945D: F0        .byte $F0   ; 
+- D 1 - I - 0x03746E 0D:945E: 5A        .byte $5A   ; <Z>
+- D 1 - I - 0x03746F 0D:945F: F0        .byte $F0   ; 
+- D 1 - I - 0x037470 0D:9460: F0        .byte $F0   ; 
+- D 1 - I - 0x037471 0D:9461: F0        .byte $F0   ; 
+- D 1 - I - 0x037472 0D:9462: 71        .byte $71   ; <q>
+- D 1 - I - 0x037473 0D:9463: F0        .byte $F0   ; 
+- D 1 - I - 0x037474 0D:9464: F0        .byte $F0   ; 
+- D 1 - I - 0x037475 0D:9465: 9D        .byte $9D   ; 
+- D 1 - I - 0x037476 0D:9466: 62        .byte $62   ; <b>
+- D 1 - I - 0x037477 0D:9467: 68        .byte $68   ; <h>
+- D 1 - I - 0x037478 0D:9468: A6        .byte $A6   ; 
+- D 1 - I - 0x037479 0D:9469: 4D        .byte $4D   ; <M>
+- D 1 - I - 0x03747A 0D:946A: 5A        .byte $5A   ; <Z>
+- D 1 - I - 0x03747B 0D:946B: 94        .byte $94   ; 
+- D 1 - I - 0x03747C 0D:946C: 88        .byte $88   ; 
+- D 1 - I - 0x03747D 0D:946D: F0        .byte $F0   ; 
+- D 1 - I - 0x03747E 0D:946E: B6        .byte $B6   ; 
+- D 1 - I - 0x03747F 0D:946F: F0        .byte $F0   ; 
+- D 1 - I - 0x037480 0D:9470: BD        .byte $BD   ; 
+- D 1 - I - 0x037481 0D:9471: 8B        .byte $8B   ; 
+- D 1 - I - 0x037482 0D:9472: 98        .byte $98   ; 
+- D 1 - I - 0x037483 0D:9473: F0        .byte $F0   ; 
+- D 1 - I - 0x037484 0D:9474: F0        .byte $F0   ; 
+- D 1 - I - 0x037485 0D:9475: F0        .byte $F0   ; 
+- D 1 - I - 0x037486 0D:9476: B9        .byte $B9   ; 
+- D 1 - I - 0x037487 0D:9477: F0        .byte $F0   ; 
+- D 1 - I - 0x037488 0D:9478: F0        .byte $F0   ; 
+- D 1 - I - 0x037489 0D:9479: 04        .byte $04   ; 
+- D 1 - I - 0x03748A 0D:947A: 04        .byte $04   ; 
+- D 1 - I - 0x03748B 0D:947B: F0        .byte $F0   ; 
+- D 1 - I - 0x03748C 0D:947C: F0        .byte $F0   ; 
+- D 1 - I - 0x03748D 0D:947D: 07        .byte $07   ; 
+- D 1 - I - 0x03748E 0D:947E: 07        .byte $07   ; 
+- D 1 - I - 0x03748F 0D:947F: 12        .byte $12   ; 
+- D 1 - I - 0x037490 0D:9480: 12        .byte $12   ; 
+- D 1 - I - 0x037491 0D:9481: 1D        .byte $1D   ; 
+- D 1 - I - 0x037492 0D:9482: 1D        .byte $1D   ; 
+- D 1 - I - 0x037493 0D:9483: F0        .byte $F0   ; 
+- D 1 - I - 0x037494 0D:9484: F0        .byte $F0   ; 
+- D 1 - I - 0x037495 0D:9485: F0        .byte $F0   ; 
+- D 1 - I - 0x037496 0D:9486: 14        .byte $14   ; 
+- D 1 - I - 0x037497 0D:9487: F0        .byte $F0   ; 
+- D 1 - I - 0x037498 0D:9488: F0        .byte $F0   ; 
+- D 1 - I - 0x037499 0D:9489: 1F        .byte $1F   ; 
+- D 1 - I - 0x03749A 0D:948A: 1F        .byte $1F   ; 
+- D 1 - I - 0x03749B 0D:948B: 57        .byte $57   ; <W>
+- D 1 - I - 0x03749C 0D:948C: 37        .byte $37   ; <7>
+- D 1 - I - 0x03749D 0D:948D: 06        .byte $06   ; 
+- D 1 - I - 0x03749E 0D:948E: 06        .byte $06   ; 
+- D 1 - I - 0x03749F 0D:948F: F0        .byte $F0   ; 
+- D 1 - I - 0x0374A0 0D:9490: 2F        .byte $2F   ; 
+- D 1 - I - 0x0374A1 0D:9491: 07        .byte $07   ; 
+- D 1 - I - 0x0374A2 0D:9492: 1F        .byte $1F   ; 
+- D 1 - I - 0x0374A3 0D:9493: F0        .byte $F0   ; 
+- D 1 - I - 0x0374A4 0D:9494: 2B        .byte $2B   ; 
+- D 1 - I - 0x0374A5 0D:9495: 1D        .byte $1D   ; 
+- D 1 - I - 0x0374A6 0D:9496: 1D        .byte $1D   ; 
+- D 1 - I - 0x0374A7 0D:9497: F0        .byte $F0   ; 
+- D 1 - I - 0x0374A8 0D:9498: F0        .byte $F0   ; 
+- D 1 - I - 0x0374A9 0D:9499: F0        .byte $F0   ; 
+- D 1 - I - 0x0374AA 0D:949A: 20        .byte $20   ; 
+- D 1 - I - 0x0374AB 0D:949B: F0        .byte $F0   ; 
+- D 1 - I - 0x0374AC 0D:949C: F0        .byte $F0   ; 
+- D 1 - I - 0x0374AD 0D:949D: F0        .byte $F0   ; 
+- D 1 - I - 0x0374AE 0D:949E: 38        .byte $38   ; <8>
+- D 1 - I - 0x0374AF 0D:949F: 63        .byte $63   ; <c>
+- D 1 - I - 0x0374B0 0D:94A0: 4C        .byte $4C   ; <L>
+- D 1 - I - 0x0374B1 0D:94A1: 40        .byte $40   ; 
+- D 1 - I - 0x0374B2 0D:94A2: 1E        .byte $1E   ; 
+- D 1 - I - 0x0374B3 0D:94A3: F0        .byte $F0   ; 
+- D 1 - I - 0x0374B4 0D:94A4: 47        .byte $47   ; <G>
+- D 1 - I - 0x0374B5 0D:94A5: 1F        .byte $1F   ; 
+- D 1 - I - 0x0374B6 0D:94A6: 20        .byte $20   ; 
+- D 1 - I - 0x0374B7 0D:94A7: 37        .byte $37   ; <7>
+- D 1 - I - 0x0374B8 0D:94A8: 4F        .byte $4F   ; <O>
+- D 1 - I - 0x0374B9 0D:94A9: F0        .byte $F0   ; 
+- D 1 - I - 0x0374BA 0D:94AA: 59        .byte $59   ; <Y>
+- D 1 - I - 0x0374BB 0D:94AB: F0        .byte $F0   ; 
+- D 1 - I - 0x0374BC 0D:94AC: F0        .byte $F0   ; 
+- D 1 - I - 0x0374BD 0D:94AD: F0        .byte $F0   ; 
+- D 1 - I - 0x0374BE 0D:94AE: 45        .byte $45   ; <E>
+- D 1 - I - 0x0374BF 0D:94AF: F0        .byte $F0   ; 
+- D 1 - I - 0x0374C0 0D:94B0: F0        .byte $F0   ; 
+- D 1 - I - 0x0374C1 0D:94B1: F0        .byte $F0   ; 
+- D 1 - I - 0x0374C2 0D:94B2: 5C        .byte $5C   ; 
+- D 1 - I - 0x0374C3 0D:94B3: F0        .byte $F0   ; 
+- D 1 - I - 0x0374C4 0D:94B4: 7E        .byte $7E   ; 
+- D 1 - I - 0x0374C5 0D:94B5: 71        .byte $71   ; <q>
+- D 1 - I - 0x0374C6 0D:94B6: 35        .byte $35   ; <5>
+- D 1 - I - 0x0374C7 0D:94B7: 51        .byte $51   ; <Q>
+- D 1 - I - 0x0374C8 0D:94B8: 8F        .byte $8F   ; 
+- D 1 - I - 0x0374C9 0D:94B9: 2B        .byte $2B   ; 
+- D 1 - I - 0x0374CA 0D:94BA: 38        .byte $38   ; <8>
+- D 1 - I - 0x0374CB 0D:94BB: 4E        .byte $4E   ; <N>
+- D 1 - I - 0x0374CC 0D:94BC: 7E        .byte $7E   ; 
+- D 1 - I - 0x0374CD 0D:94BD: F0        .byte $F0   ; 
+- D 1 - I - 0x0374CE 0D:94BE: 96        .byte $96   ; 
+- D 1 - I - 0x0374CF 0D:94BF: F0        .byte $F0   ; 
+- D 1 - I - 0x0374D0 0D:94C0: 81        .byte $81   ; 
+- D 1 - I - 0x0374D1 0D:94C1: F0        .byte $F0   ; 
+- D 1 - I - 0x0374D2 0D:94C2: 5B        .byte $5B   ; 
+- D 1 - I - 0x0374D3 0D:94C3: F0        .byte $F0   ; 
+- D 1 - I - 0x0374D4 0D:94C4: F0        .byte $F0   ; 
+- D 1 - I - 0x0374D5 0D:94C5: F0        .byte $F0   ; 
+- D 1 - I - 0x0374D6 0D:94C6: F0        .byte $F0   ; 
+- D 1 - I - 0x0374D7 0D:94C7: F0        .byte $F0   ; 
+- D 1 - I - 0x0374D8 0D:94C8: BB        .byte $BB   ; 
+- D 1 - I - 0x0374D9 0D:94C9: 64        .byte $64   ; <d>
+- D 1 - I - 0x0374DA 0D:94CA: 94        .byte $94   ; 
+- D 1 - I - 0x0374DB 0D:94CB: 69        .byte $69   ; <i>
+- D 1 - I - 0x0374DC 0D:94CC: 8F        .byte $8F   ; 
+- D 1 - I - 0x0374DD 0D:94CD: 5A        .byte $5A   ; <Z>
+- D 1 - I - 0x0374DE 0D:94CE: 50        .byte $50   ; <P>
+- D 1 - I - 0x0374DF 0D:94CF: 8A        .byte $8A   ; 
+- D 1 - I - 0x0374E0 0D:94D0: A4        .byte $A4   ; 
+- D 1 - I - 0x0374E1 0D:94D1: F0        .byte $F0   ; 
+- D 1 - I - 0x0374E2 0D:94D2: AE        .byte $AE   ; 
+- D 1 - I - 0x0374E3 0D:94D3: F0        .byte $F0   ; 
+- D 1 - I - 0x0374E4 0D:94D4: F0        .byte $F0   ; 
+- D 1 - I - 0x0374E5 0D:94D5: F0        .byte $F0   ; 
+- D 1 - I - 0x0374E6 0D:94D6: 80        .byte $80   ; 
+- D 1 - I - 0x0374E7 0D:94D7: F0        .byte $F0   ; 
+- D 1 - I - 0x0374E8 0D:94D8: F0        .byte $F0   ; 
+- D 1 - I - 0x0374E9 0D:94D9: F0        .byte $F0   ; 
+- D 1 - I - 0x0374EA 0D:94DA: B2        .byte $B2   ; 
+- D 1 - I - 0x0374EB 0D:94DB: F0        .byte $F0   ; 
+- D 1 - I - 0x0374EC 0D:94DC: D3        .byte $D3   ; 
+- D 1 - I - 0x0374ED 0D:94DD: F0        .byte $F0   ; 
+- D 1 - I - 0x0374EE 0D:94DE: F0        .byte $F0   ; 
+- D 1 - I - 0x0374EF 0D:94DF: 07        .byte $07   ; 
+- D 1 - I - 0x0374F0 0D:94E0: 07        .byte $07   ; 
+- D 1 - I - 0x0374F1 0D:94E1: 04        .byte $04   ; 
+- D 1 - I - 0x0374F2 0D:94E2: 04        .byte $04   ; 
+- D 1 - I - 0x0374F3 0D:94E3: F0        .byte $F0   ; 
+- D 1 - I - 0x0374F4 0D:94E4: 0F        .byte $0F   ; 
+- D 1 - I - 0x0374F5 0D:94E5: F0        .byte $F0   ; 
+- D 1 - I - 0x0374F6 0D:94E6: F0        .byte $F0   ; 
+- D 1 - I - 0x0374F7 0D:94E7: 1E        .byte $1E   ; 
+- D 1 - I - 0x0374F8 0D:94E8: 1E        .byte $1E   ; 
+- D 1 - I - 0x0374F9 0D:94E9: 11        .byte $11   ; 
+- D 1 - I - 0x0374FA 0D:94EA: 11        .byte $11   ; 
+- D 1 - I - 0x0374FB 0D:94EB: 7E        .byte $7E   ; 
+- D 1 - I - 0x0374FC 0D:94EC: 59        .byte $59   ; <Y>
+- D 1 - I - 0x0374FD 0D:94ED: 1C        .byte $1C   ; 
+- D 1 - I - 0x0374FE 0D:94EE: 1C        .byte $1C   ; 
+- D 1 - I - 0x0374FF 0D:94EF: 56        .byte $56   ; <V>
+- - - - - - 0x037500 0D:94F0: 7A        .byte $7A   ; <z>
+- D 1 - I - 0x037501 0D:94F1: 0D        .byte $0D   ; 
+- D 1 - I - 0x037502 0D:94F2: 0F        .byte $0F   ; 
+- D 1 - I - 0x037503 0D:94F3: 05        .byte $05   ; 
+- D 1 - I - 0x037504 0D:94F4: 05        .byte $05   ; 
+- D 1 - I - 0x037505 0D:94F5: 04        .byte $04   ; 
+- D 1 - I - 0x037506 0D:94F6: 04        .byte $04   ; 
+- D 1 - I - 0x037507 0D:94F7: F0        .byte $F0   ; 
+- D 1 - I - 0x037508 0D:94F8: 26        .byte $26   ; 
+- D 1 - I - 0x037509 0D:94F9: F0        .byte $F0   ; 
+- D 1 - I - 0x03750A 0D:94FA: F0        .byte $F0   ; 
+- D 1 - I - 0x03750B 0D:94FB: 29        .byte $29   ; 
+- D 1 - I - 0x03750C 0D:94FC: 1F        .byte $1F   ; 
+- D 1 - I - 0x03750D 0D:94FD: 1B        .byte $1B   ; 
+- D 1 - I - 0x03750E 0D:94FE: 1C        .byte $1C   ; 
+- D 1 - I - 0x03750F 0D:94FF: 7C        .byte $7C   ; 
+- D 1 - I - 0x037510 0D:9500: 80        .byte $80   ; 
+- D 1 - I - 0x037511 0D:9501: 33        .byte $33   ; <3>
+- D 1 - I - 0x037512 0D:9502: 36        .byte $36   ; <6>
+- D 1 - I - 0x037513 0D:9503: F0        .byte $F0   ; 
+- D 1 - I - 0x037514 0D:9504: F0        .byte $F0   ; 
+- D 1 - I - 0x037515 0D:9505: 3C        .byte $3C   ; 
+- D 1 - I - 0x037516 0D:9506: 19        .byte $19   ; 
+- D 1 - I - 0x037517 0D:9507: 13        .byte $13   ; 
+- D 1 - I - 0x037518 0D:9508: 39        .byte $39   ; <9>
+- D 1 - I - 0x037519 0D:9509: 03        .byte $03   ; 
+- D 1 - I - 0x03751A 0D:950A: 10        .byte $10   ; 
+- D 1 - I - 0x03751B 0D:950B: 1B        .byte $1B   ; 
+- D 1 - I - 0x03751C 0D:950C: 33        .byte $33   ; <3>
+- D 1 - I - 0x03751D 0D:950D: F0        .byte $F0   ; 
+- D 1 - I - 0x03751E 0D:950E: F0        .byte $F0   ; 
+- D 1 - I - 0x03751F 0D:950F: 43        .byte $43   ; <C>
+- D 1 - I - 0x037520 0D:9510: 69        .byte $69   ; <i>
+- D 1 - I - 0x037521 0D:9511: 35        .byte $35   ; <5>
+- D 1 - I - 0x037522 0D:9512: 1D        .byte $1D   ; 
+- D 1 - I - 0x037523 0D:9513: 96        .byte $96   ; 
+- D 1 - I - 0x037524 0D:9514: 7F        .byte $7F   ; 
+- D 1 - I - 0x037525 0D:9515: 3E        .byte $3E   ; 
+- D 1 - I - 0x037526 0D:9516: 4E        .byte $4E   ; <N>
+- D 1 - I - 0x037527 0D:9517: F0        .byte $F0   ; 
+- D 1 - I - 0x037528 0D:9518: F0        .byte $F0   ; 
+- D 1 - I - 0x037529 0D:9519: 30        .byte $30   ; <0>
+- D 1 - I - 0x03752A 0D:951A: 49        .byte $49   ; <I>
+- D 1 - I - 0x03752B 0D:951B: 51        .byte $51   ; <Q>
+- D 1 - I - 0x03752C 0D:951C: 37        .byte $37   ; <7>
+- D 1 - I - 0x03752D 0D:951D: 27        .byte $27   ; 
+- D 1 - I - 0x03752E 0D:951E: 1D        .byte $1D   ; 
+- D 1 - I - 0x03752F 0D:951F: 3E        .byte $3E   ; 
+- D 1 - I - 0x037530 0D:9520: 57        .byte $57   ; <W>
+- D 1 - I - 0x037531 0D:9521: 6C        .byte $6C   ; <l>
+- D 1 - I - 0x037532 0D:9522: 6E        .byte $6E   ; <n>
+- D 1 - I - 0x037533 0D:9523: 74        .byte $74   ; <t>
+- D 1 - I - 0x037534 0D:9524: A5        .byte $A5   ; 
+- D 1 - I - 0x037535 0D:9525: 35        .byte $35   ; <5>
+- D 1 - I - 0x037536 0D:9526: 66        .byte $66   ; <f>
+- D 1 - I - 0x037537 0D:9527: B8        .byte $B8   ; 
+- D 1 - I - 0x037538 0D:9528: BB        .byte $BB   ; 
+- D 1 - I - 0x037539 0D:9529: F0        .byte $F0   ; 
+- D 1 - I - 0x03753A 0D:952A: 70        .byte $70   ; <p>
+- D 1 - I - 0x03753B 0D:952B: F0        .byte $F0   ; 
+- D 1 - I - 0x03753C 0D:952C: F0        .byte $F0   ; 
+- D 1 - I - 0x03753D 0D:952D: 6C        .byte $6C   ; <l>
+- - - - - - 0x03753E 0D:952E: 56        .byte $56   ; <V>
+- D 1 - I - 0x03753F 0D:952F: 5C        .byte $5C   ; 
+- - - - - - 0x037540 0D:9530: 82        .byte $82   ; 
+- - - - - - 0x037541 0D:9531: 3F        .byte $3F   ; 
+- D 1 - I - 0x037542 0D:9532: 4D        .byte $4D   ; <M>
+- D 1 - I - 0x037543 0D:9533: 85        .byte $85   ; 
+- - - - - - 0x037544 0D:9534: 6F        .byte $6F   ; <o>
+- - - - - - 0x037545 0D:9535: F0        .byte $F0   ; 
+- D 1 - I - 0x037546 0D:9536: 9C        .byte $9C   ; 
+- D 1 - I - 0x037547 0D:9537: 97        .byte $97   ; 
+- - - - - - 0x037548 0D:9538: BD        .byte $BD   ; 
+- - - - - - 0x037549 0D:9539: 65        .byte $65   ; <e>
+- D 1 - I - 0x03754A 0D:953A: 89        .byte $89   ; 
+- D 1 - I - 0x03754B 0D:953B: EA        .byte $EA   ; 
+- - - - - - 0x03754C 0D:953C: EA        .byte $EA   ; 
+- D 1 - I - 0x03754D 0D:953D: 93        .byte $93   ; 
+- - - - - - 0x03754E 0D:953E: AD        .byte $AD   ; 
+- - - - - - 0x03754F 0D:953F: F0        .byte $F0   ; 
+- D 1 - I - 0x037550 0D:9540: F0        .byte $F0   ; 
+- D 1 - I - 0x037551 0D:9541: F0        .byte $F0   ; 
+- D 1 - I - 0x037552 0D:9542: 04        .byte $04   ; 
+- D 1 - I - 0x037553 0D:9543: F0        .byte $F0   ; 
+- D 1 - I - 0x037554 0D:9544: 07        .byte $07   ; 
+- D 1 - I - 0x037555 0D:9545: F0        .byte $F0   ; 
+- D 1 - I - 0x037556 0D:9546: F0        .byte $F0   ; 
+- D 1 - I - 0x037557 0D:9547: F0        .byte $F0   ; 
+- D 1 - I - 0x037558 0D:9548: F0        .byte $F0   ; 
+- D 1 - I - 0x037559 0D:9549: F0        .byte $F0   ; 
+- D 1 - I - 0x03755A 0D:954A: 1D        .byte $1D   ; 
+- D 1 - I - 0x03755B 0D:954B: F0        .byte $F0   ; 
+- D 1 - I - 0x03755C 0D:954C: 12        .byte $12   ; 
+- D 1 - I - 0x03755D 0D:954D: F0        .byte $F0   ; 
+- D 1 - I - 0x03755E 0D:954E: F0        .byte $F0   ; 
+- D 1 - I - 0x03755F 0D:954F: 44        .byte $44   ; <D>
+- D 1 - I - 0x037560 0D:9550: 80        .byte $80   ; 
+- D 1 - I - 0x037561 0D:9551: F0        .byte $F0   ; 
+- D 1 - I - 0x037562 0D:9552: 1E        .byte $1E   ; 
+- D 1 - I - 0x037563 0D:9553: 4B        .byte $4B   ; <K>
+- D 1 - I - 0x037564 0D:9554: 6F        .byte $6F   ; <o>
+- D 1 - I - 0x037565 0D:9555: 03        .byte $03   ; 
+- D 1 - I - 0x037566 0D:9556: 10        .byte $10   ; 
+- D 1 - I - 0x037567 0D:9557: 13        .byte $13   ; 
+- D 1 - I - 0x037568 0D:9558: 08        .byte $08   ; 
+- D 1 - I - 0x037569 0D:9559: F0        .byte $F0   ; 
+- D 1 - I - 0x03756A 0D:955A: 05        .byte $05   ; 
+- D 1 - I - 0x03756B 0D:955B: F0        .byte $F0   ; 
+- D 1 - I - 0x03756C 0D:955C: 28        .byte $28   ; 
+- D 1 - I - 0x03756D 0D:955D: F0        .byte $F0   ; 
+- D 1 - I - 0x03756E 0D:955E: 3F        .byte $3F   ; 
+- D 1 - I - 0x03756F 0D:955F: F0        .byte $F0   ; 
+- D 1 - I - 0x037570 0D:9560: 2B        .byte $2B   ; 
+- D 1 - I - 0x037571 0D:9561: F0        .byte $F0   ; 
+- D 1 - I - 0x037572 0D:9562: 1E        .byte $1E   ; 
+- D 1 - I - 0x037573 0D:9563: 73        .byte $73   ; <s>
+- D 1 - I - 0x037574 0D:9564: 69        .byte $69   ; <i>
+- D 1 - I - 0x037575 0D:9565: F0        .byte $F0   ; 
+- D 1 - I - 0x037576 0D:9566: F0        .byte $F0   ; 
+- D 1 - I - 0x037577 0D:9567: 56        .byte $56   ; <V>
+- D 1 - I - 0x037578 0D:9568: 6F        .byte $6F   ; <o>
+- D 1 - I - 0x037579 0D:9569: 48        .byte $48   ; <H>
+- D 1 - I - 0x03757A 0D:956A: 0F        .byte $0F   ; 
+- D 1 - I - 0x03757B 0D:956B: 14        .byte $14   ; 
+- D 1 - I - 0x03757C 0D:956C: 53        .byte $53   ; <S>
+- D 1 - I - 0x03757D 0D:956D: 05        .byte $05   ; 
+- D 1 - I - 0x03757E 0D:956E: 06        .byte $06   ; 
+- D 1 - I - 0x03757F 0D:956F: 1C        .byte $1C   ; 
+- D 1 - I - 0x037580 0D:9570: 35        .byte $35   ; <5>
+- D 1 - I - 0x037581 0D:9571: 26        .byte $26   ; 
+- D 1 - I - 0x037582 0D:9572: 62        .byte $62   ; <b>
+- D 1 - I - 0x037583 0D:9573: 39        .byte $39   ; <9>
+- D 1 - I - 0x037584 0D:9574: 69        .byte $69   ; <i>
+- D 1 - I - 0x037585 0D:9575: 1E        .byte $1E   ; 
+- D 1 - I - 0x037586 0D:9576: 4F        .byte $4F   ; <O>
+- D 1 - I - 0x037587 0D:9577: F0        .byte $F0   ; 
+- D 1 - I - 0x037588 0D:9578: F0        .byte $F0   ; 
+- D 1 - I - 0x037589 0D:9579: F0        .byte $F0   ; 
+- D 1 - I - 0x03758A 0D:957A: 59        .byte $59   ; <Y>
+- D 1 - I - 0x03758B 0D:957B: F0        .byte $F0   ; 
+- D 1 - I - 0x03758C 0D:957C: F0        .byte $F0   ; 
+- D 1 - I - 0x03758D 0D:957D: 61        .byte $61   ; <a>
+- - - - - - 0x03758E 0D:957E: 32        .byte $32   ; <2>
+- D 1 - I - 0x03758F 0D:957F: 39        .byte $39   ; <9>
+- - - - - - 0x037590 0D:9580: 6A        .byte $6A   ; <j>
+- - - - - - 0x037591 0D:9581: 28        .byte $28   ; 
+- D 1 - I - 0x037592 0D:9582: 2B        .byte $2B   ; 
+- - - - - - 0x037593 0D:9583: 36        .byte $36   ; <6>
+- - - - - - 0x037594 0D:9584: 59        .byte $59   ; <Y>
+- - - - - - 0x037595 0D:9585: 57        .byte $57   ; <W>
+- D 1 - I - 0x037596 0D:9586: 90        .byte $90   ; 
+- D 1 - I - 0x037597 0D:9587: 5C        .byte $5C   ; 
+- - - - - - 0x037598 0D:9588: 9B        .byte $9B   ; 
+- - - - - - 0x037599 0D:9589: 40        .byte $40   ; 
+- D 1 - I - 0x03759A 0D:958A: 4F        .byte $4F   ; <O>
+- D 1 - I - 0x03759B 0D:958B: F0        .byte $F0   ; 
+- - - - - - 0x03759C 0D:958C: 9F        .byte $9F   ; 
+- D 1 - I - 0x03759D 0D:958D: 70        .byte $70   ; <p>
+- - - - - - 0x03759E 0D:958E: 73        .byte $73   ; <s>
+- D 1 - I - 0x03759F 0D:958F: F0        .byte $F0   ; 
+- - - - - - 0x0375A0 0D:9590: F0        .byte $F0   ; 
+- D 1 - I - 0x0375A1 0D:9591: 79        .byte $79   ; <y>
+- - - - - - 0x0375A2 0D:9592: 57        .byte $57   ; <W>
+- D 1 - I - 0x0375A3 0D:9593: 5C        .byte $5C   ; 
+- - - - - - 0x0375A4 0D:9594: 82        .byte $82   ; 
+- D 1 - I - 0x0375A5 0D:9595: 4E        .byte $4E   ; <N>
+- - - - - - 0x0375A6 0D:9596: 35        .byte $35   ; <5>
+- D 1 - I - 0x0375A7 0D:9597: 59        .byte $59   ; <Y>
+- - - - - - 0x0375A8 0D:9598: 88        .byte $88   ; 
+- D 1 - I - 0x0375A9 0D:9599: B5        .byte $B5   ; 
+- - - - - - 0x0375AA 0D:959A: 92        .byte $92   ; 
+- - - - - - 0x0375AB 0D:959B: 99        .byte $99   ; 
+- D 1 - I - 0x0375AC 0D:959C: BE        .byte $BE   ; 
+- - - - - - 0x0375AD 0D:959D: 66        .byte $66   ; <f>
+- D 1 - I - 0x0375AE 0D:959E: 8B        .byte $8B   ; 
+- - - - - - 0x0375AF 0D:959F: F0        .byte $F0   ; 
+- D 1 - I - 0x0375B0 0D:95A0: F0        .byte $F0   ; 
+- - - - - - 0x0375B1 0D:95A1: B9        .byte $B9   ; 
+- D 1 - I - 0x0375B2 0D:95A2: A2        .byte $A2   ; 
+- D 1 - I - 0x0375B3 0D:95A3: F0        .byte $F0   ; 
+- - - - - - 0x0375B4 0D:95A4: F0        .byte $F0   ; 
+- - - - - - 0x0375B5 0D:95A5: 04        .byte $04   ; 
+- D 1 - I - 0x0375B6 0D:95A6: 04        .byte $04   ; 
+- D 1 - I - 0x0375B7 0D:95A7: F0        .byte $F0   ; 
+- - - - - - 0x0375B8 0D:95A8: F0        .byte $F0   ; 
+- - - - - - 0x0375B9 0D:95A9: 07        .byte $07   ; 
+- D 1 - I - 0x0375BA 0D:95AA: 07        .byte $07   ; 
+- - - - - - 0x0375BB 0D:95AB: 12        .byte $12   ; 
+- D 1 - I - 0x0375BC 0D:95AC: 12        .byte $12   ; 
+- D 1 - I - 0x0375BD 0D:95AD: 1D        .byte $1D   ; 
+- - - - - - 0x0375BE 0D:95AE: 1D        .byte $1D   ; 
+- - - - - - 0x0375BF 0D:95AF: F0        .byte $F0   ; 
+- D 1 - I - 0x0375C0 0D:95B0: F0        .byte $F0   ; 
+- - - - - - 0x0375C1 0D:95B1: F0        .byte $F0   ; 
+- D 1 - I - 0x0375C2 0D:95B2: 14        .byte $14   ; 
+- D 1 - I - 0x0375C3 0D:95B3: 74        .byte $74   ; <t>
+- - - - - - 0x0375C4 0D:95B4: 6A        .byte $6A   ; <j>
+- - - - - - 0x0375C5 0D:95B5: 1F        .byte $1F   ; 
+- D 1 - I - 0x0375C6 0D:95B6: 1F        .byte $1F   ; 
+- - - - - - 0x0375C7 0D:95B7: 70        .byte $70   ; <p>
+- D 1 - I - 0x0375C8 0D:95B8: 4E        .byte $4E   ; <N>
+- D 1 - I - 0x0375C9 0D:95B9: 06        .byte $06   ; 
+- - - - - - 0x0375CA 0D:95BA: 06        .byte $06   ; 
+- - - - - - 0x0375CB 0D:95BB: 14        .byte $14   ; 
+- - - - - - 0x0375CC 0D:95BC: 16        .byte $16   ; 
+- D 1 - I - 0x0375CD 0D:95BD: 07        .byte $07   ; 
+- - - - - - 0x0375CE 0D:95BE: 07        .byte $07   ; 
+- - - - - - 0x0375CF 0D:95BF: 1F        .byte $1F   ; 
+- D 1 - I - 0x0375D0 0D:95C0: 20        .byte $20   ; 
+- - - - - - 0x0375D1 0D:95C1: 1C        .byte $1C   ; 
+- D 1 - I - 0x0375D2 0D:95C2: 2A        .byte $2A   ; 
+- D 1 - I - 0x0375D3 0D:95C3: F0        .byte $F0   ; 
+- - - - - - 0x0375D4 0D:95C4: F0        .byte $F0   ; 
+- D 1 - I - 0x0375D5 0D:95C5: F0        .byte $F0   ; 
+- - - - - - 0x0375D6 0D:95C6: 39        .byte $39   ; <9>
+- - - - - - 0x0375D7 0D:95C7: F0        .byte $F0   ; 
+- D 1 - I - 0x0375D8 0D:95C8: F0        .byte $F0   ; 
+- D 1 - I - 0x0375D9 0D:95C9: 34        .byte $34   ; <4>
+- - - - - - 0x0375DA 0D:95CA: 37        .byte $37   ; <7>
+- - - - - - 0x0375DB 0D:95CB: 7C        .byte $7C   ; 
+- D 1 - I - 0x0375DC 0D:95CC: 7F        .byte $7F   ; 
+- D 1 - I - 0x0375DD 0D:95CD: 32        .byte $32   ; <2>
+- D 1 - I - 0x0375DE 0D:95CE: 10        .byte $10   ; 
+- D 1 - I - 0x0375DF 0D:95CF: 22        .byte $22   ; 
+- D 1 - I - 0x0375E0 0D:95D0: 47        .byte $47   ; <G>
+- D 1 - I - 0x0375E1 0D:95D1: 13        .byte $13   ; 
+- D 1 - I - 0x0375E2 0D:95D2: 08        .byte $08   ; 
+- - - - - - 0x0375E3 0D:95D3: 1E        .byte $1E   ; 
+- D 1 - I - 0x0375E4 0D:95D4: 36        .byte $36   ; <6>
+- D 1 - I - 0x0375E5 0D:95D5: 62        .byte $62   ; <b>
+- D 1 - I - 0x0375E6 0D:95D6: 40        .byte $40   ; 
+- D 1 - I - 0x0375E7 0D:95D7: F0        .byte $F0   ; 
+- D 1 - I - 0x0375E8 0D:95D8: F0        .byte $F0   ; 
+- D 1 - I - 0x0375E9 0D:95D9: 20        .byte $20   ; 
+- D 1 - I - 0x0375EA 0D:95DA: 44        .byte $44   ; <D>
+- D 1 - I - 0x0375EB 0D:95DB: F0        .byte $F0   ; 
+- - - - - - 0x0375EC 0D:95DC: 99        .byte $99   ; 
+- D 1 - I - 0x0375ED 0D:95DD: 59        .byte $59   ; <Y>
+- - - - - - 0x0375EE 0D:95DE: 51        .byte $51   ; <Q>
+- D 1 - I - 0x0375EF 0D:95DF: 7C        .byte $7C   ; 
+- D 1 - I - 0x0375F0 0D:95E0: 95        .byte $95   ; 
+- D 1 - I - 0x0375F1 0D:95E1: 4A        .byte $4A   ; <J>
+- D 1 - I - 0x0375F2 0D:95E2: 34        .byte $34   ; <4>
+- D 1 - I - 0x0375F3 0D:95E3: 52        .byte $52   ; <R>
+- D 1 - I - 0x0375F4 0D:95E4: 3B        .byte $3B   ; 
+- D 1 - I - 0x0375F5 0D:95E5: 1E        .byte $1E   ; 
+- D 1 - I - 0x0375F6 0D:95E6: 2C        .byte $2C   ; 
+- - - - - - 0x0375F7 0D:95E7: 36        .byte $36   ; <6>
+- D 1 - I - 0x0375F8 0D:95E8: 65        .byte $65   ; <e>
+- D 1 - I - 0x0375F9 0D:95E9: 9E        .byte $9E   ; 
+- D 1 - I - 0x0375FA 0D:95EA: 6F        .byte $6F   ; <o>
+- - - - - - 0x0375FB 0D:95EB: 74        .byte $74   ; <t>
+- D 1 - I - 0x0375FC 0D:95EC: 8F        .byte $8F   ; 
+- D 1 - I - 0x0375FD 0D:95ED: 5B        .byte $5B   ; 
+- - - - - - 0x0375FE 0D:95EE: 45        .byte $45   ; <E>
+- - - - - - 0x0375FF 0D:95EF: F0        .byte $F0   ; 
+- D 1 - I - 0x037600 0D:95F0: F0        .byte $F0   ; 
+- - - - - - 0x037601 0D:95F1: F0        .byte $F0   ; 
+- D 1 - I - 0x037602 0D:95F2: 7E        .byte $7E   ; 
+- D 1 - I - 0x037603 0D:95F3: B8        .byte $B8   ; 
+- - - - - - 0x037604 0D:95F4: BB        .byte $BB   ; 
+- - - - - - 0x037605 0D:95F5: 79        .byte $79   ; <y>
+- - - - - - 0x037606 0D:95F6: 57        .byte $57   ; <W>
+- - - - - - 0x037607 0D:95F7: 5D        .byte $5D   ; 
+- - - - - - 0x037608 0D:95F8: 77        .byte $77   ; <w>
+- - - - - - 0x037609 0D:95F9: 4E        .byte $4E   ; <N>
+- - - - - - 0x03760A 0D:95FA: 44        .byte $44   ; <D>
+- - - - - - 0x03760B 0D:95FB: 66        .byte $66   ; <f>
+- - - - - - 0x03760C 0D:95FC: 8A        .byte $8A   ; 
+- - - - - - 0x03760D 0D:95FD: B6        .byte $B6   ; 
+- - - - - - 0x03760E 0D:95FE: 94        .byte $94   ; 
+- - - - - - 0x03760F 0D:95FF: F0        .byte $F0   ; 
+- - - - - - 0x037610 0D:9600: B3        .byte $B3   ; 
+- - - - - - 0x037611 0D:9601: 74        .byte $74   ; <t>
+- - - - - - 0x037612 0D:9602: 8E        .byte $8E   ; 
+- - - - - - 0x037613 0D:9603: F0        .byte $F0   ; 
+- - - - - - 0x037614 0D:9604: F0        .byte $F0   ; 
+- - - - - - 0x037615 0D:9605: AE        .byte $AE   ; 
+- - - - - - 0x037616 0D:9606: 98        .byte $98   ; 
+- - - - - - 0x037617 0D:9607: E9        .byte $E9   ; 
+- - - - - - 0x037618 0D:9608: E9        .byte $E9   ; 
+- D 1 - I - 0x037619 0D:9609: F0        .byte $F0   ; 
+- D 1 - I - 0x03761A 0D:960A: F0        .byte $F0   ; 
+- D 1 - I - 0x03761B 0D:960B: 07        .byte $07   ; 
+- D 1 - I - 0x03761C 0D:960C: 07        .byte $07   ; 
+- D 1 - I - 0x03761D 0D:960D: F0        .byte $F0   ; 
+- D 1 - I - 0x03761E 0D:960E: F0        .byte $F0   ; 
+- D 1 - I - 0x03761F 0D:960F: 04        .byte $04   ; 
+- D 1 - I - 0x037620 0D:9610: 04        .byte $04   ; 
+- D 1 - I - 0x037621 0D:9611: 11        .byte $11   ; 
+- D 1 - I - 0x037622 0D:9612: 11        .byte $11   ; 
+- D 1 - I - 0x037623 0D:9613: 4F        .byte $4F   ; <O>
+- D 1 - I - 0x037624 0D:9614: 6A        .byte $6A   ; <j>
+- D 1 - I - 0x037625 0D:9615: 1E        .byte $1E   ; 
+- D 1 - I - 0x037626 0D:9616: 1E        .byte $1E   ; 
+- D 1 - I - 0x037627 0D:9617: 56        .byte $56   ; <V>
+- D 1 - I - 0x037628 0D:9618: 71        .byte $71   ; <q>
+- D 1 - I - 0x037629 0D:9619: 1C        .byte $1C   ; 
+- D 1 - I - 0x03762A 0D:961A: 1C        .byte $1C   ; 
+- D 1 - I - 0x03762B 0D:961B: F0        .byte $F0   ; 
+- D 1 - I - 0x03762C 0D:961C: 0F        .byte $0F   ; 
+- D 1 - I - 0x03762D 0D:961D: F0        .byte $F0   ; 
+- D 1 - I - 0x03762E 0D:961E: F0        .byte $F0   ; 
+- D 1 - I - 0x03762F 0D:961F: 07        .byte $07   ; 
+- D 1 - I - 0x037630 0D:9620: 1F        .byte $1F   ; 
+- D 1 - I - 0x037631 0D:9621: 24        .byte $24   ; 
+- D 1 - I - 0x037632 0D:9622: 0F        .byte $0F   ; 
+- D 1 - I - 0x037633 0D:9623: 05        .byte $05   ; 
+- D 1 - I - 0x037634 0D:9624: 05        .byte $05   ; 
+- D 1 - I - 0x037635 0D:9625: 1C        .byte $1C   ; 
+- D 1 - I - 0x037636 0D:9626: 1C        .byte $1C   ; 
+- D 1 - I - 0x037637 0D:9627: 5D        .byte $5D   ; 
+- D 1 - I - 0x037638 0D:9628: 76        .byte $76   ; <v>
+- D 1 - I - 0x037639 0D:9629: 29        .byte $29   ; 
+- D 1 - I - 0x03763A 0D:962A: 36        .byte $36   ; <6>
+- D 1 - I - 0x03763B 0D:962B: 78        .byte $78   ; <x>
+- D 1 - I - 0x03763C 0D:962C: 7C        .byte $7C   ; 
+- D 1 - I - 0x03763D 0D:962D: F0        .byte $F0   ; 
+- D 1 - I - 0x03763E 0D:962E: 32        .byte $32   ; <2>
+- D 1 - I - 0x03763F 0D:962F: F0        .byte $F0   ; 
+- D 1 - I - 0x037640 0D:9630: F0        .byte $F0   ; 
+- D 1 - I - 0x037641 0D:9631: 3C        .byte $3C   ; 
+- D 1 - I - 0x037642 0D:9632: 3E        .byte $3E   ; 
+- D 1 - I - 0x037643 0D:9633: 1F        .byte $1F   ; 
+- D 1 - I - 0x037644 0D:9634: 3A        .byte $3A   ; 
+- D 1 - I - 0x037645 0D:9635: 19        .byte $19   ; 
+- D 1 - I - 0x037646 0D:9636: 1C        .byte $1C   ; 
+- D 1 - I - 0x037647 0D:9637: 35        .byte $35   ; <5>
+- D 1 - I - 0x037648 0D:9638: 12        .byte $12   ; 
+- D 1 - I - 0x037649 0D:9639: 56        .byte $56   ; <V>
+- D 1 - I - 0x03764A 0D:963A: 4C        .byte $4C   ; <L>
+- D 1 - I - 0x03764B 0D:963B: 5D        .byte $5D   ; 
+- D 1 - I - 0x03764C 0D:963C: 8E        .byte $8E   ; 
+- D 1 - I - 0x03764D 0D:963D: 4E        .byte $4E   ; <N>
+- D 1 - I - 0x03764E 0D:963E: 8B        .byte $8B   ; 
+- D 1 - I - 0x03764F 0D:963F: 9E        .byte $9E   ; 
+- D 1 - I - 0x037650 0D:9640: A2        .byte $A2   ; 
+- D 1 - I - 0x037651 0D:9641: F0        .byte $F0   ; 
+- D 1 - I - 0x037652 0D:9642: 6F        .byte $6F   ; <o>
+- D 1 - I - 0x037653 0D:9643: F0        .byte $F0   ; 
+- D 1 - I - 0x037654 0D:9644: F0        .byte $F0   ; 
+- D 1 - I - 0x037655 0D:9645: 6C        .byte $6C   ; <l>
+- D 1 - I - 0x037656 0D:9646: 6E        .byte $6E   ; <n>
+- D 1 - I - 0x037657 0D:9647: 44        .byte $44   ; <D>
+- D 1 - I - 0x037658 0D:9648: 75        .byte $75   ; <u>
+- D 1 - I - 0x037659 0D:9649: 3D        .byte $3D   ; 
+- D 1 - I - 0x03765A 0D:964A: 27        .byte $27   ; 
+- D 1 - I - 0x03765B 0D:964B: 35        .byte $35   ; <5>
+- D 1 - I - 0x03765C 0D:964C: 2A        .byte $2A   ; 
+- D 1 - I - 0x03765D 0D:964D: 57        .byte $57   ; <W>
+- D 1 - I - 0x03765E 0D:964E: 64        .byte $64   ; <d>
+- D 1 - I - 0x03765F 0D:964F: BD        .byte $BD   ; 
+- D 1 - I - 0x037660 0D:9650: 9A        .byte $9A   ; 
+- D 1 - I - 0x037661 0D:9651: AE        .byte $AE   ; 
+- D 1 - I - 0x037662 0D:9652: 7E        .byte $7E   ; 
+- D 1 - I - 0x037663 0D:9653: C3        .byte $C3   ; 
+- D 1 - I - 0x037664 0D:9654: C7        .byte $C7   ; 
+- D 1 - I - 0x037665 0D:9655: F0        .byte $F0   ; 
+- D 1 - I - 0x037666 0D:9656: F0        .byte $F0   ; 
+- D 1 - I - 0x037667 0D:9657: 90        .byte $90   ; 
+- D 1 - I - 0x037668 0D:9658: 87        .byte $87   ; 
+- D 1 - I - 0x037669 0D:9659: 84        .byte $84   ; 
+- D 1 - I - 0x03766A 0D:965A: 6E        .byte $6E   ; <n>
+- D 1 - I - 0x03766B 0D:965B: 74        .byte $74   ; <t>
+- D 1 - I - 0x03766C 0D:965C: 9A        .byte $9A   ; 
+- D 1 - I - 0x03766D 0D:965D: 4C        .byte $4C   ; <L>
+- D 1 - I - 0x03766E 0D:965E: 57        .byte $57   ; <W>
+- D 1 - I - 0x03766F 0D:965F: 65        .byte $65   ; <e>
+- D 1 - I - 0x037670 0D:9660: 4E        .byte $4E   ; <N>
+- D 1 - I - 0x037671 0D:9661: AA        .byte $AA   ; 
+- D 1 - I - 0x037672 0D:9662: 87        .byte $87   ; 
+- D 1 - I - 0x037673 0D:9663: D6        .byte $D6   ; 
+- D 1 - I - 0x037674 0D:9664: D6        .byte $D6   ; 
+- D 1 - I - 0x037675 0D:9665: A1        .byte $A1   ; 
+- D 1 - I - 0x037676 0D:9666: C7        .byte $C7   ; 
+- D 1 - I - 0x037677 0D:9667: E8        .byte $E8   ; 
+- D 1 - I - 0x037678 0D:9668: EA        .byte $EA   ; 
+- D 1 - I - 0x037679 0D:9669: F0        .byte $F0   ; 
+- D 1 - I - 0x03767A 0D:966A: F0        .byte $F0   ; 
+- D 1 - I - 0x03767B 0D:966B: F0        .byte $F0   ; 
+- D 1 - I - 0x03767C 0D:966C: F0        .byte $F0   ; 
+- D 1 - I - 0x03767D 0D:966D: F0        .byte $F0   ; 
+- D 1 - I - 0x03767E 0D:966E: 04        .byte $04   ; 
+- D 1 - I - 0x03767F 0D:966F: F0        .byte $F0   ; 
+- D 1 - I - 0x037680 0D:9670: 07        .byte $07   ; 
+- D 1 - I - 0x037681 0D:9671: F0        .byte $F0   ; 
+- D 1 - I - 0x037682 0D:9672: F0        .byte $F0   ; 
+- D 1 - I - 0x037683 0D:9673: F0        .byte $F0   ; 
+- D 1 - I - 0x037684 0D:9674: F0        .byte $F0   ; 
+- D 1 - I - 0x037685 0D:9675: F0        .byte $F0   ; 
+- D 1 - I - 0x037686 0D:9676: F0        .byte $F0   ; 
+- D 1 - I - 0x037687 0D:9677: 51        .byte $51   ; <Q>
+- D 1 - I - 0x037688 0D:9678: 6B        .byte $6B   ; <k>
+- D 1 - I - 0x037689 0D:9679: F0        .byte $F0   ; 
+- D 1 - I - 0x03768A 0D:967A: 12        .byte $12   ; 
+- D 1 - I - 0x03768B 0D:967B: 6F        .byte $6F   ; <o>
+- D 1 - I - 0x03768C 0D:967C: 74        .byte $74   ; <t>
+- D 1 - I - 0x03768D 0D:967D: F0        .byte $F0   ; 
+- D 1 - I - 0x03768E 0D:967E: 3F        .byte $3F   ; 
+- D 1 - I - 0x03768F 0D:967F: F0        .byte $F0   ; 
+- D 1 - I - 0x037690 0D:9680: F0        .byte $F0   ; 
+- D 1 - I - 0x037691 0D:9681: 03        .byte $03   ; 
+- D 1 - I - 0x037692 0D:9682: 10        .byte $10   ; 
+- D 1 - I - 0x037693 0D:9683: 13        .byte $13   ; 
+- D 1 - I - 0x037694 0D:9684: 08        .byte $08   ; 
+- D 1 - I - 0x037695 0D:9685: F0        .byte $F0   ; 
+- D 1 - I - 0x037696 0D:9686: 05        .byte $05   ; 
+- D 1 - I - 0x037697 0D:9687: F0        .byte $F0   ; 
+- D 1 - I - 0x037698 0D:9688: 1E        .byte $1E   ; 
+- D 1 - I - 0x037699 0D:9689: F0        .byte $F0   ; 
+- D 1 - I - 0x03769A 0D:968A: F0        .byte $F0   ; 
+- D 1 - I - 0x03769B 0D:968B: 45        .byte $45   ; <E>
+- D 1 - I - 0x03769C 0D:968C: 77        .byte $77   ; <w>
+- D 1 - I - 0x03769D 0D:968D: F0        .byte $F0   ; 
+- D 1 - I - 0x03769E 0D:968E: 2B        .byte $2B   ; 
+- D 1 - I - 0x03769F 0D:968F: 74        .byte $74   ; <t>
+- D 1 - I - 0x0376A0 0D:9690: 71        .byte $71   ; <q>
+- D 1 - I - 0x0376A1 0D:9691: F0        .byte $F0   ; 
+- D 1 - I - 0x0376A2 0D:9692: 56        .byte $56   ; <V>
+- D 1 - I - 0x0376A3 0D:9693: F0        .byte $F0   ; 
+- D 1 - I - 0x0376A4 0D:9694: 28        .byte $28   ; 
+- D 1 - I - 0x0376A5 0D:9695: 55        .byte $55   ; <U>
+- D 1 - I - 0x0376A6 0D:9696: 27        .byte $27   ; 
+- D 1 - I - 0x0376A7 0D:9697: 2C        .byte $2C   ; 
+- D 1 - I - 0x0376A8 0D:9698: 5E        .byte $5E   ; 
+- D 1 - I - 0x0376A9 0D:9699: 1C        .byte $1C   ; 
+- D 1 - I - 0x0376AA 0D:969A: 10        .byte $10   ; 
+- D 1 - I - 0x0376AB 0D:969B: 1E        .byte $1E   ; 
+- D 1 - I - 0x0376AC 0D:969C: 13        .byte $13   ; 
+- D 1 - I - 0x0376AD 0D:969D: 35        .byte $35   ; <5>
+- D 1 - I - 0x0376AE 0D:969E: 59        .byte $59   ; <Y>
+- D 1 - I - 0x0376AF 0D:969F: 82        .byte $82   ; 
+- D 1 - I - 0x0376B0 0D:96A0: 8F        .byte $8F   ; 
+- D 1 - I - 0x0376B1 0D:96A1: 4F        .byte $4F   ; <O>
+- D 1 - I - 0x0376B2 0D:96A2: 74        .byte $74   ; <t>
+- D 1 - I - 0x0376B3 0D:96A3: F0        .byte $F0   ; 
+- D 1 - I - 0x0376B4 0D:96A4: F0        .byte $F0   ; 
+- D 1 - I - 0x0376B5 0D:96A5: F0        .byte $F0   ; 
+- D 1 - I - 0x0376B6 0D:96A6: F0        .byte $F0   ; 
+- D 1 - I - 0x0376B7 0D:96A7: F0        .byte $F0   ; 
+- D 1 - I - 0x0376B8 0D:96A8: 4B        .byte $4B   ; <K>
+- D 1 - I - 0x0376B9 0D:96A9: 79        .byte $79   ; <y>
+- D 1 - I - 0x0376BA 0D:96AA: 4B        .byte $4B   ; <K>
+- D 1 - I - 0x0376BB 0D:96AB: 51        .byte $51   ; <Q>
+- D 1 - I - 0x0376BC 0D:96AC: 82        .byte $82   ; 
+- D 1 - I - 0x0376BD 0D:96AD: 28        .byte $28   ; 
+- D 1 - I - 0x0376BE 0D:96AE: 40        .byte $40   ; 
+- D 1 - I - 0x0376BF 0D:96AF: 2B        .byte $2B   ; 
+- D 1 - I - 0x0376C0 0D:96B0: 42        .byte $42   ; <B>
+- D 1 - I - 0x0376C1 0D:96B1: 59        .byte $59   ; <Y>
+- D 1 - I - 0x0376C2 0D:96B2: 5A        .byte $5A   ; <Z>
+- D 1 - I - 0x0376C3 0D:96B3: A5        .byte $A5   ; 
+- D 1 - I - 0x0376C4 0D:96B4: BE        .byte $BE   ; 
+- D 1 - I - 0x0376C5 0D:96B5: 73        .byte $73   ; <s>
+- D 1 - I - 0x0376C6 0D:96B6: 80        .byte $80   ; 
+- D 1 - I - 0x0376C7 0D:96B7: F0        .byte $F0   ; 
+- D 1 - I - 0x0376C8 0D:96B8: F0        .byte $F0   ; 
+- D 1 - I - 0x0376C9 0D:96B9: 9E        .byte $9E   ; 
+- D 1 - I - 0x0376CA 0D:96BA: A0        .byte $A0   ; 
+- D 1 - I - 0x0376CB 0D:96BB: 7B        .byte $7B   ; 
+- D 1 - I - 0x0376CC 0D:96BC: 71        .byte $71   ; <q>
+- D 1 - I - 0x0376CD 0D:96BD: 9D        .byte $9D   ; 
+- D 1 - I - 0x0376CE 0D:96BE: 6E        .byte $6E   ; <n>
+- D 1 - I - 0x0376CF 0D:96BF: 75        .byte $75   ; <u>
+- D 1 - I - 0x0376D0 0D:96C0: A6        .byte $A6   ; 
+- D 1 - I - 0x0376D1 0D:96C1: 4C        .byte $4C   ; <L>
+- D 1 - I - 0x0376D2 0D:96C2: 70        .byte $70   ; <p>
+- D 1 - I - 0x0376D3 0D:96C3: 4F        .byte $4F   ; <O>
+- D 1 - I - 0x0376D4 0D:96C4: 67        .byte $67   ; <g>
+- D 1 - I - 0x0376D5 0D:96C5: 89        .byte $89   ; 
+- D 1 - I - 0x0376D6 0D:96C6: B9        .byte $B9   ; 
+- D 1 - I - 0x0376D7 0D:96C7: ED        .byte $ED   ; 
+- D 1 - I - 0x0376D8 0D:96C8: D6        .byte $D6   ; 
+- D 1 - I - 0x0376D9 0D:96C9: 7E        .byte $7E   ; 
+- D 1 - I - 0x0376DA 0D:96CA: B0        .byte $B0   ; 
+- D 1 - I - 0x0376DB 0D:96CB: F0        .byte $F0   ; 
+- D 1 - I - 0x0376DC 0D:96CC: F0        .byte $F0   ; 
+- D 1 - I - 0x0376DD 0D:96CD: F0        .byte $F0   ; 
+- D 1 - I - 0x0376DE 0D:96CE: F0        .byte $F0   ; 
+- D 1 - I - 0x0376DF 0D:96CF: CD        .byte $CD   ; 
+- D 1 - I - 0x0376E0 0D:96D0: 9F        .byte $9F   ; 
+- D 1 - I - 0x0376E1 0D:96D1: 04        .byte $04   ; 
+- D 1 - I - 0x0376E2 0D:96D2: 04        .byte $04   ; 
+- D 1 - I - 0x0376E3 0D:96D3: F0        .byte $F0   ; 
+- D 1 - I - 0x0376E4 0D:96D4: F0        .byte $F0   ; 
+- D 1 - I - 0x0376E5 0D:96D5: 07        .byte $07   ; 
+- D 1 - I - 0x0376E6 0D:96D6: 07        .byte $07   ; 
+- D 1 - I - 0x0376E7 0D:96D7: F0        .byte $F0   ; 
+- D 1 - I - 0x0376E8 0D:96D8: F0        .byte $F0   ; 
+- D 1 - I - 0x0376E9 0D:96D9: 12        .byte $12   ; 
+- D 1 - I - 0x0376EA 0D:96DA: 12        .byte $12   ; 
+- D 1 - I - 0x0376EB 0D:96DB: 52        .byte $52   ; <R>
+- D 1 - I - 0x0376EC 0D:96DC: 77        .byte $77   ; <w>
+- D 1 - I - 0x0376ED 0D:96DD: F0        .byte $F0   ; 
+- D 1 - I - 0x0376EE 0D:96DE: 1F        .byte $1F   ; 
+- D 1 - I - 0x0376EF 0D:96DF: 72        .byte $72   ; <r>
+- D 1 - I - 0x0376F0 0D:96E0: 5B        .byte $5B   ; 
+- D 1 - I - 0x0376F1 0D:96E1: 34        .byte $34   ; <4>
+- D 1 - I - 0x0376F2 0D:96E2: 62        .byte $62   ; <b>
+- D 1 - I - 0x0376F3 0D:96E3: 1D        .byte $1D   ; 
+- D 1 - I - 0x0376F4 0D:96E4: 1D        .byte $1D   ; 
+- D 1 - I - 0x0376F5 0D:96E5: 1C        .byte $1C   ; 
+- D 1 - I - 0x0376F6 0D:96E6: 04        .byte $04   ; 
+- D 1 - I - 0x0376F7 0D:96E7: F0        .byte $F0   ; 
+- D 1 - I - 0x0376F8 0D:96E8: F0        .byte $F0   ; 
+- D 1 - I - 0x0376F9 0D:96E9: 06        .byte $06   ; 
+- D 1 - I - 0x0376FA 0D:96EA: 12        .byte $12   ; 
+- D 1 - I - 0x0376FB 0D:96EB: 14        .byte $14   ; 
+- D 1 - I - 0x0376FC 0D:96EC: 2F        .byte $2F   ; 
+- D 1 - I - 0x0376FD 0D:96ED: 2A        .byte $2A   ; 
+- D 1 - I - 0x0376FE 0D:96EE: 1F        .byte $1F   ; 
+- D 1 - I - 0x0376FF 0D:96EF: F0        .byte $F0   ; 
+- D 1 - I - 0x037700 0D:96F0: F0        .byte $F0   ; 
+- D 1 - I - 0x037701 0D:96F1: F0        .byte $F0   ; 
+- D 1 - I - 0x037702 0D:96F2: 38        .byte $38   ; <8>
+- D 1 - I - 0x037703 0D:96F3: 7F        .byte $7F   ; 
+- D 1 - I - 0x037704 0D:96F4: 83        .byte $83   ; 
+- D 1 - I - 0x037705 0D:96F5: 57        .byte $57   ; <W>
+- D 1 - I - 0x037706 0D:96F6: 6E        .byte $6E   ; <n>
+- D 1 - I - 0x037707 0D:96F7: 32        .byte $32   ; <2>
+- D 1 - I - 0x037708 0D:96F8: 34        .byte $34   ; <4>
+- D 1 - I - 0x037709 0D:96F9: 31        .byte $31   ; <1>
+- D 1 - I - 0x03770A 0D:96FA: 33        .byte $33   ; <3>
+- D 1 - I - 0x03770B 0D:96FB: 45        .byte $45   ; <E>
+- D 1 - I - 0x03770C 0D:96FC: 47        .byte $47   ; <G>
+- D 1 - I - 0x03770D 0D:96FD: 1C        .byte $1C   ; 
+- D 1 - I - 0x03770E 0D:96FE: 11        .byte $11   ; 
+- D 1 - I - 0x03770F 0D:96FF: 1F        .byte $1F   ; 
+- D 1 - I - 0x037710 0D:9700: 16        .byte $16   ; 
+- D 1 - I - 0x037711 0D:9701: 36        .byte $36   ; <6>
+- D 1 - I - 0x037712 0D:9702: 4F        .byte $4F   ; <O>
+- D 1 - I - 0x037713 0D:9703: F0        .byte $F0   ; 
+- D 1 - I - 0x037714 0D:9704: F0        .byte $F0   ; 
+- D 1 - I - 0x037715 0D:9705: F0        .byte $F0   ; 
+- D 1 - I - 0x037716 0D:9706: 5D        .byte $5D   ; 
+- D 1 - I - 0x037717 0D:9707: A1        .byte $A1   ; 
+- D 1 - I - 0x037718 0D:9708: A5        .byte $A5   ; 
+- D 1 - I - 0x037719 0D:9709: 6E        .byte $6E   ; <n>
+- D 1 - I - 0x03771A 0D:970A: 91        .byte $91   ; 
+- D 1 - I - 0x03771B 0D:970B: 4D        .byte $4D   ; <M>
+- D 1 - I - 0x03771C 0D:970C: 7C        .byte $7C   ; 
+- D 1 - I - 0x03771D 0D:970D: 32        .byte $32   ; <2>
+- D 1 - I - 0x03771E 0D:970E: 6E        .byte $6E   ; <n>
+- D 1 - I - 0x03771F 0D:970F: 5D        .byte $5D   ; 
+- D 1 - I - 0x037720 0D:9710: 8F        .byte $8F   ; 
+- D 1 - I - 0x037721 0D:9711: 40        .byte $40   ; 
+- D 1 - I - 0x037722 0D:9712: 29        .byte $29   ; 
+- D 1 - I - 0x037723 0D:9713: 38        .byte $38   ; <8>
+- D 1 - I - 0x037724 0D:9714: 2E        .byte $2E   ; 
+- D 1 - I - 0x037725 0D:9715: 72        .byte $72   ; <r>
+- D 1 - I - 0x037726 0D:9716: 5B        .byte $5B   ; 
+- D 1 - I - 0x037727 0D:9717: F0        .byte $F0   ; 
+- D 1 - I - 0x037728 0D:9718: F0        .byte $F0   ; 
+- D 1 - I - 0x037729 0D:9719: 8C        .byte $8C   ; 
+- D 1 - I - 0x03772A 0D:971A: 81        .byte $81   ; 
+- D 1 - I - 0x03772B 0D:971B: C4        .byte $C4   ; 
+- D 1 - I - 0x03772C 0D:971C: C8        .byte $C8   ; 
+- D 1 - I - 0x03772D 0D:971D: 85        .byte $85   ; 
+- D 1 - I - 0x03772E 0D:971E: B6        .byte $B6   ; 
+- D 1 - I - 0x03772F 0D:971F: 70        .byte $70   ; <p>
+- D 1 - I - 0x037730 0D:9720: AD        .byte $AD   ; 
+- D 1 - I - 0x037731 0D:9721: 91        .byte $91   ; 
+- D 1 - I - 0x037732 0D:9722: 6F        .byte $6F   ; <o>
+- D 1 - I - 0x037733 0D:9723: 75        .byte $75   ; <u>
+- D 1 - I - 0x037734 0D:9724: 8F        .byte $8F   ; 
+- D 1 - I - 0x037735 0D:9725: 4C        .byte $4C   ; <L>
+- D 1 - I - 0x037736 0D:9726: 65        .byte $65   ; <e>
+- D 1 - I - 0x037737 0D:9727: 5B        .byte $5B   ; 
+- D 1 - I - 0x037738 0D:9728: 50        .byte $50   ; <P>
+- D 1 - I - 0x037739 0D:9729: 7E        .byte $7E   ; 
+- D 1 - I - 0x03773A 0D:972A: BC        .byte $BC   ; 
+- D 1 - I - 0x03773B 0D:972B: F0        .byte $F0   ; 
+- D 1 - I - 0x03773C 0D:972C: F0        .byte $F0   ; 
+- D 1 - I - 0x03773D 0D:972D: F0        .byte $F0   ; 
+- D 1 - I - 0x03773E 0D:972E: F0        .byte $F0   ; 
+- D 1 - I - 0x03773F 0D:972F: F0        .byte $F0   ; 
+- D 1 - I - 0x037740 0D:9730: E9        .byte $E9   ; 
+- D 1 - I - 0x037741 0D:9731: AA        .byte $AA   ; 
+- D 1 - I - 0x037742 0D:9732: D3        .byte $D3   ; 
+- D 1 - I - 0x037743 0D:9733: D0        .byte $D0   ; 
+- D 1 - I - 0x037744 0D:9734: A1        .byte $A1   ; 
+- D 1 - I - 0x037745 0D:9735: F0        .byte $F0   ; 
+- D 1 - I - 0x037746 0D:9736: F0        .byte $F0   ; 
+- D 1 - I - 0x037747 0D:9737: 07        .byte $07   ; 
+- D 1 - I - 0x037748 0D:9738: 07        .byte $07   ; 
+- D 1 - I - 0x037749 0D:9739: F0        .byte $F0   ; 
+- D 1 - I - 0x03774A 0D:973A: F0        .byte $F0   ; 
+- D 1 - I - 0x03774B 0D:973B: 04        .byte $04   ; 
+- D 1 - I - 0x03774C 0D:973C: 04        .byte $04   ; 
+- D 1 - I - 0x03774D 0D:973D: 11        .byte $11   ; 
+- D 1 - I - 0x03774E 0D:973E: 11        .byte $11   ; 
+- D 1 - I - 0x03774F 0D:973F: 21        .byte $21   ; 
+- D 1 - I - 0x037750 0D:9740: 37        .byte $37   ; <7>
+- D 1 - I - 0x037751 0D:9741: 1E        .byte $1E   ; 
+- D 1 - I - 0x037752 0D:9742: 1E        .byte $1E   ; 
+- D 1 - I - 0x037753 0D:9743: 40        .byte $40   ; 
+- D 1 - I - 0x037754 0D:9744: 65        .byte $65   ; <e>
+- D 1 - I - 0x037755 0D:9745: 1C        .byte $1C   ; 
+- D 1 - I - 0x037756 0D:9746: 1C        .byte $1C   ; 
+- D 1 - I - 0x037757 0D:9747: 0F        .byte $0F   ; 
+- D 1 - I - 0x037758 0D:9748: 0F        .byte $0F   ; 
+- D 1 - I - 0x037759 0D:9749: F0        .byte $F0   ; 
+- D 1 - I - 0x03775A 0D:974A: F0        .byte $F0   ; 
+- D 1 - I - 0x03775B 0D:974B: 06        .byte $06   ; 
+- D 1 - I - 0x03775C 0D:974C: 1F        .byte $1F   ; 
+- D 1 - I - 0x03775D 0D:974D: F0        .byte $F0   ; 
+- D 1 - I - 0x03775E 0D:974E: 0F        .byte $0F   ; 
+- D 1 - I - 0x03775F 0D:974F: 1C        .byte $1C   ; 
+- D 1 - I - 0x037760 0D:9750: 05        .byte $05   ; 
+- D 1 - I - 0x037761 0D:9751: F0        .byte $F0   ; 
+- D 1 - I - 0x037762 0D:9752: 1B        .byte $1B   ; 
+- D 1 - I - 0x037763 0D:9753: 45        .byte $45   ; <E>
+- D 1 - I - 0x037764 0D:9754: 76        .byte $76   ; <v>
+- D 1 - I - 0x037765 0D:9755: F0        .byte $F0   ; 
+- D 1 - I - 0x037766 0D:9756: 34        .byte $34   ; <4>
+- D 1 - I - 0x037767 0D:9757: F0        .byte $F0   ; 
+- D 1 - I - 0x037768 0D:9758: F0        .byte $F0   ; 
+- D 1 - I - 0x037769 0D:9759: F0        .byte $F0   ; 
+- D 1 - I - 0x03776A 0D:975A: 26        .byte $26   ; 
+- D 1 - I - 0x03776B 0D:975B: F0        .byte $F0   ; 
+- D 1 - I - 0x03776C 0D:975C: F0        .byte $F0   ; 
+- D 1 - I - 0x03776D 0D:975D: F0        .byte $F0   ; 
+- D 1 - I - 0x03776E 0D:975E: 3C        .byte $3C   ; 
+- D 1 - I - 0x03776F 0D:975F: 1F        .byte $1F   ; 
+- D 1 - I - 0x037770 0D:9760: 4F        .byte $4F   ; <O>
+- D 1 - I - 0x037771 0D:9761: 25        .byte $25   ; 
+- D 1 - I - 0x037772 0D:9762: 1B        .byte $1B   ; 
+- D 1 - I - 0x037773 0D:9763: 1C        .byte $1C   ; 
+- D 1 - I - 0x037774 0D:9764: 1D        .byte $1D   ; 
+- D 1 - I - 0x037775 0D:9765: F0        .byte $F0   ; 
+- D 1 - I - 0x037776 0D:9766: 33        .byte $33   ; <3>
+- D 1 - I - 0x037777 0D:9767: 50        .byte $50   ; <P>
+- D 1 - I - 0x037778 0D:9768: 8E        .byte $8E   ; 
+- D 1 - I - 0x037779 0D:9769: F0        .byte $F0   ; 
+- D 1 - I - 0x03777A 0D:976A: 4C        .byte $4C   ; <L>
+- D 1 - I - 0x03777B 0D:976B: F0        .byte $F0   ; 
+- D 1 - I - 0x03777C 0D:976C: F0        .byte $F0   ; 
+- D 1 - I - 0x03777D 0D:976D: F0        .byte $F0   ; 
+- D 1 - I - 0x03777E 0D:976E: 56        .byte $56   ; <V>
+- D 1 - I - 0x03777F 0D:976F: F0        .byte $F0   ; 
+- D 1 - I - 0x037780 0D:9770: F0        .byte $F0   ; 
+- D 1 - I - 0x037781 0D:9771: 6C        .byte $6C   ; <l>
+- D 1 - I - 0x037782 0D:9772: 6E        .byte $6E   ; <n>
+- D 1 - I - 0x037783 0D:9773: 42        .byte $42   ; <B>
+- D 1 - I - 0x037784 0D:9774: 73        .byte $73   ; <s>
+- D 1 - I - 0x037785 0D:9775: 49        .byte $49   ; <I>
+- D 1 - I - 0x037786 0D:9776: 33        .byte $33   ; <3>
+- D 1 - I - 0x037787 0D:9777: 29        .byte $29   ; 
+- D 1 - I - 0x037788 0D:9778: 35        .byte $35   ; <5>
+- D 1 - I - 0x037789 0D:9779: F0        .byte $F0   ; 
+- D 1 - I - 0x03778A 0D:977A: 64        .byte $64   ; <d>
+- D 1 - I - 0x03778B 0D:977B: 80        .byte $80   ; 
+- D 1 - I - 0x03778C 0D:977C: BD        .byte $BD   ; 
+- D 1 - I - 0x03778D 0D:977D: F0        .byte $F0   ; 
+- D 1 - I - 0x03778E 0D:977E: 95        .byte $95   ; 
+- D 1 - I - 0x03778F 0D:977F: F0        .byte $F0   ; 
+- D 1 - I - 0x037790 0D:9780: F0        .byte $F0   ; 
+- D 1 - I - 0x037791 0D:9781: F0        .byte $F0   ; 
+- D 1 - I - 0x037792 0D:9782: F0        .byte $F0   ; 
+- D 1 - I - 0x037793 0D:9783: F0        .byte $F0   ; 
+- D 1 - I - 0x037794 0D:9784: 79        .byte $79   ; <y>
+- D 1 - I - 0x037795 0D:9785: 84        .byte $84   ; 
+- D 1 - I - 0x037796 0D:9786: 6E        .byte $6E   ; <n>
+- D 1 - I - 0x037797 0D:9787: 67        .byte $67   ; <g>
+- D 1 - I - 0x037798 0D:9788: A4        .byte $A4   ; 
+- D 1 - I - 0x037799 0D:9789: 57        .byte $57   ; <W>
+- D 1 - I - 0x03779A 0D:978A: 4C        .byte $4C   ; <L>
+- D 1 - I - 0x03779B 0D:978B: 65        .byte $65   ; <e>
+- D 1 - I - 0x03779C 0D:978C: 4E        .byte $4E   ; <N>
+- D 1 - I - 0x03779D 0D:978D: F0        .byte $F0   ; 
+- D 1 - I - 0x03779E 0D:978E: 87        .byte $87   ; 
+- D 1 - I - 0x03779F 0D:978F: 81        .byte $81   ; 
+- D 1 - I - 0x0377A0 0D:9790: D6        .byte $D6   ; 
+- D 1 - I - 0x0377A1 0D:9791: A0        .byte $A0   ; 
+- D 1 - I - 0x0377A2 0D:9792: C5        .byte $C5   ; 
+- D 1 - I - 0x0377A3 0D:9793: F0        .byte $F0   ; 
+- D 1 - I - 0x0377A4 0D:9794: F0        .byte $F0   ; 
+- D 1 - I - 0x0377A5 0D:9795: F0        .byte $F0   ; 
+- D 1 - I - 0x0377A6 0D:9796: B5        .byte $B5   ; 
+- D 1 - I - 0x0377A7 0D:9797: F0        .byte $F0   ; 
+- D 1 - I - 0x0377A8 0D:9798: F0        .byte $F0   ; 
+- D 1 - I - 0x0377A9 0D:9799: F0        .byte $F0   ; 
+- D 1 - I - 0x0377AA 0D:979A: 04        .byte $04   ; 
+- D 1 - I - 0x0377AB 0D:979B: F0        .byte $F0   ; 
+- D 1 - I - 0x0377AC 0D:979C: 07        .byte $07   ; 
+- D 1 - I - 0x0377AD 0D:979D: F0        .byte $F0   ; 
+- D 1 - I - 0x0377AE 0D:979E: F0        .byte $F0   ; 
+- D 1 - I - 0x0377AF 0D:979F: F0        .byte $F0   ; 
+- D 1 - I - 0x0377B0 0D:97A0: F0        .byte $F0   ; 
+- D 1 - I - 0x0377B1 0D:97A1: F0        .byte $F0   ; 
+- D 1 - I - 0x0377B2 0D:97A2: F0        .byte $F0   ; 
+- D 1 - I - 0x0377B3 0D:97A3: 2D        .byte $2D   ; 
+- D 1 - I - 0x0377B4 0D:97A4: 5E        .byte $5E   ; 
+- D 1 - I - 0x0377B5 0D:97A5: F0        .byte $F0   ; 
+- D 1 - I - 0x0377B6 0D:97A6: 12        .byte $12   ; 
+- D 1 - I - 0x0377B7 0D:97A7: 4B        .byte $4B   ; <K>
+- D 1 - I - 0x0377B8 0D:97A8: 5B        .byte $5B   ; 
+- D 1 - I - 0x0377B9 0D:97A9: F0        .byte $F0   ; 
+- D 1 - I - 0x0377BA 0D:97AA: 28        .byte $28   ; 
+- D 1 - I - 0x0377BB 0D:97AB: F0        .byte $F0   ; 
+- D 1 - I - 0x0377BC 0D:97AC: 1D        .byte $1D   ; 
+- D 1 - I - 0x0377BD 0D:97AD: 03        .byte $03   ; 
+- D 1 - I - 0x0377BE 0D:97AE: 10        .byte $10   ; 
+- D 1 - I - 0x0377BF 0D:97AF: 08        .byte $08   ; 
+- D 1 - I - 0x0377C0 0D:97B0: 13        .byte $13   ; 
+- D 1 - I - 0x0377C1 0D:97B1: F0        .byte $F0   ; 
+- D 1 - I - 0x0377C2 0D:97B2: 05        .byte $05   ; 
+- D 1 - I - 0x0377C3 0D:97B3: F0        .byte $F0   ; 
+- D 1 - I - 0x0377C4 0D:97B4: 1E        .byte $1E   ; 
+- D 1 - I - 0x0377C5 0D:97B5: F0        .byte $F0   ; 
+- D 1 - I - 0x0377C6 0D:97B6: 35        .byte $35   ; <5>
+- D 1 - I - 0x0377C7 0D:97B7: F0        .byte $F0   ; 
+- D 1 - I - 0x0377C8 0D:97B8: 51        .byte $51   ; <Q>
+- D 1 - I - 0x0377C9 0D:97B9: F0        .byte $F0   ; 
+- D 1 - I - 0x0377CA 0D:97BA: F0        .byte $F0   ; 
+- D 1 - I - 0x0377CB 0D:97BB: F0        .byte $F0   ; 
+- D 1 - I - 0x0377CC 0D:97BC: 66        .byte $66   ; <f>
+- D 1 - I - 0x0377CD 0D:97BD: F0        .byte $F0   ; 
+- D 1 - I - 0x0377CE 0D:97BE: 3F        .byte $3F   ; 
+- D 1 - I - 0x0377CF 0D:97BF: F0        .byte $F0   ; 
+- D 1 - I - 0x0377D0 0D:97C0: F0        .byte $F0   ; 
+- D 1 - I - 0x0377D1 0D:97C1: 55        .byte $55   ; <U>
+- D 1 - I - 0x0377D2 0D:97C2: 1B        .byte $1B   ; 
+- D 1 - I - 0x0377D3 0D:97C3: 2B        .byte $2B   ; 
+- D 1 - I - 0x0377D4 0D:97C4: 5E        .byte $5E   ; 
+- D 1 - I - 0x0377D5 0D:97C5: 10        .byte $10   ; 
+- D 1 - I - 0x0377D6 0D:97C6: 1D        .byte $1D   ; 
+- D 1 - I - 0x0377D7 0D:97C7: 12        .byte $12   ; 
+- D 1 - I - 0x0377D8 0D:97C8: 1E        .byte $1E   ; 
+- D 1 - I - 0x0377D9 0D:97C9: 35        .byte $35   ; <5>
+- D 1 - I - 0x0377DA 0D:97CA: 36        .byte $36   ; <6>
+- D 1 - I - 0x0377DB 0D:97CB: F0        .byte $F0   ; 
+- D 1 - I - 0x0377DC 0D:97CC: 74        .byte $74   ; <t>
+- D 1 - I - 0x0377DD 0D:97CD: F0        .byte $F0   ; 
+- D 1 - I - 0x0377DE 0D:97CE: 5B        .byte $5B   ; 
+- D 1 - I - 0x0377DF 0D:97CF: F0        .byte $F0   ; 
+- D 1 - I - 0x0377E0 0D:97D0: F0        .byte $F0   ; 
+- D 1 - I - 0x0377E1 0D:97D1: F0        .byte $F0   ; 
+- D 1 - I - 0x0377E2 0D:97D2: 6F        .byte $6F   ; <o>
+- D 1 - I - 0x0377E3 0D:97D3: F0        .byte $F0   ; 
+- D 1 - I - 0x0377E4 0D:97D4: 58        .byte $58   ; <X>
+- D 1 - I - 0x0377E5 0D:97D5: 79        .byte $79   ; <y>
+- D 1 - I - 0x0377E6 0D:97D6: 4B        .byte $4B   ; <K>
+- D 1 - I - 0x0377E7 0D:97D7: 50        .byte $50   ; <P>
+- D 1 - I - 0x0377E8 0D:97D8: 82        .byte $82   ; 
+- D 1 - I - 0x0377E9 0D:97D9: 34        .byte $34   ; <4>
+- D 1 - I - 0x0377EA 0D:97DA: 41        .byte $41   ; <A>
+- D 1 - I - 0x0377EB 0D:97DB: 42        .byte $42   ; <B>
+- D 1 - I - 0x0377EC 0D:97DC: 37        .byte $37   ; <7>
+- D 1 - I - 0x0377ED 0D:97DD: 59        .byte $59   ; <Y>
+- D 1 - I - 0x0377EE 0D:97DE: 72        .byte $72   ; <r>
+- D 1 - I - 0x0377EF 0D:97DF: F0        .byte $F0   ; 
+- D 1 - I - 0x0377F0 0D:97E0: A4        .byte $A4   ; 
+- D 1 - I - 0x0377F1 0D:97E1: F0        .byte $F0   ; 
+- D 1 - I - 0x0377F2 0D:97E2: 8B        .byte $8B   ; 
+- D 1 - I - 0x0377F3 0D:97E3: F0        .byte $F0   ; 
+- D 1 - I - 0x0377F4 0D:97E4: F0        .byte $F0   ; 
+- D 1 - I - 0x0377F5 0D:97E5: F0        .byte $F0   ; 
+- D 1 - I - 0x0377F6 0D:97E6: 9F        .byte $9F   ; 
+- D 1 - I - 0x0377F7 0D:97E7: F0        .byte $F0   ; 
+- D 1 - I - 0x0377F8 0D:97E8: 7C        .byte $7C   ; 
+- D 1 - I - 0x0377F9 0D:97E9: 91        .byte $91   ; 
+- D 1 - I - 0x0377FA 0D:97EA: 63        .byte $63   ; <c>
+- D 1 - I - 0x0377FB 0D:97EB: 74        .byte $74   ; <t>
+- D 1 - I - 0x0377FC 0D:97EC: 9A        .byte $9A   ; 
+- D 1 - I - 0x0377FD 0D:97ED: 70        .byte $70   ; <p>
+- D 1 - I - 0x0377FE 0D:97EE: 59        .byte $59   ; <Y>
+- D 1 - I - 0x0377FF 0D:97EF: 66        .byte $66   ; <f>
+- D 1 - I - 0x037800 0D:97F0: 4E        .byte $4E   ; <N>
+- D 1 - I - 0x037801 0D:97F1: F0        .byte $F0   ; 
+- D 1 - I - 0x037802 0D:97F2: 89        .byte $89   ; 
+- D 1 - I - 0x037803 0D:97F3: F0        .byte $F0   ; 
+- D 1 - I - 0x037804 0D:97F4: B0        .byte $B0   ; 
+- D 1 - I - 0x037805 0D:97F5: F0        .byte $F0   ; 
+- D 1 - I - 0x037806 0D:97F6: A2        .byte $A2   ; 
+- D 1 - I - 0x037807 0D:97F7: F0        .byte $F0   ; 
+- D 1 - I - 0x037808 0D:97F8: F0        .byte $F0   ; 
+- D 1 - I - 0x037809 0D:97F9: F0        .byte $F0   ; 
+- D 1 - I - 0x03780A 0D:97FA: F0        .byte $F0   ; 
+- D 1 - I - 0x03780B 0D:97FB: F0        .byte $F0   ; 
+- D 1 - I - 0x03780C 0D:97FC: 9F        .byte $9F   ; 
+- D 1 - I - 0x03780D 0D:97FD: 04        .byte $04   ; 
+- D 1 - I - 0x03780E 0D:97FE: 04        .byte $04   ; 
+- D 1 - I - 0x03780F 0D:97FF: F0        .byte $F0   ; 
+- D 1 - I - 0x037810 0D:9800: F0        .byte $F0   ; 
+- D 1 - I - 0x037811 0D:9801: 07        .byte $07   ; 
+- D 1 - I - 0x037812 0D:9802: 07        .byte $07   ; 
+- D 1 - I - 0x037813 0D:9803: F0        .byte $F0   ; 
+- D 1 - I - 0x037814 0D:9804: F0        .byte $F0   ; 
+- D 1 - I - 0x037815 0D:9805: 12        .byte $12   ; 
+- D 1 - I - 0x037816 0D:9806: 12        .byte $12   ; 
+- D 1 - I - 0x037817 0D:9807: F0        .byte $F0   ; 
+- D 1 - I - 0x037818 0D:9808: F0        .byte $F0   ; 
+- D 1 - I - 0x037819 0D:9809: F0        .byte $F0   ; 
+- D 1 - I - 0x03781A 0D:980A: 1F        .byte $1F   ; 
+- D 1 - I - 0x03781B 0D:980B: 33        .byte $33   ; <3>
+- D 1 - I - 0x03781C 0D:980C: 65        .byte $65   ; <e>
+- D 1 - I - 0x03781D 0D:980D: 29        .byte $29   ; 
+- D 1 - I - 0x03781E 0D:980E: 2A        .byte $2A   ; 
+- D 1 - I - 0x03781F 0D:980F: 1D        .byte $1D   ; 
+- D 1 - I - 0x037820 0D:9810: 1D        .byte $1D   ; 
+- D 1 - I - 0x037821 0D:9811: 1C        .byte $1C   ; 
+- D 1 - I - 0x037822 0D:9812: 05        .byte $05   ; 
+- D 1 - I - 0x037823 0D:9813: F0        .byte $F0   ; 
+- D 1 - I - 0x037824 0D:9814: F0        .byte $F0   ; 
+- D 1 - I - 0x037825 0D:9815: 06        .byte $06   ; 
+- D 1 - I - 0x037826 0D:9816: 12        .byte $12   ; 
+- D 1 - I - 0x037827 0D:9817: F0        .byte $F0   ; 
+- D 1 - I - 0x037828 0D:9818: 14        .byte $14   ; 
+- D 1 - I - 0x037829 0D:9819: F0        .byte $F0   ; 
+- D 1 - I - 0x03782A 0D:981A: 1F        .byte $1F   ; 
+- D 1 - I - 0x03782B 0D:981B: F0        .byte $F0   ; 
+- D 1 - I - 0x03782C 0D:981C: F0        .byte $F0   ; 
+- D 1 - I - 0x03782D 0D:981D: F0        .byte $F0   ; 
+- D 1 - I - 0x03782E 0D:981E: 38        .byte $38   ; <8>

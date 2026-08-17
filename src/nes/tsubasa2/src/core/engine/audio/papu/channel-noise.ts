@@ -1,0 +1,127 @@
+/**
+ * ChannelNoise — NES APU Noise Channel
+ * Adapted from src/papu/channel-noise.ts
+ * Stripped of 'utils' dependency & JSON serialization for H5.
+ */
+
+class ChannelNoise {
+  papu: any;
+
+  progTimerCount: number;
+  progTimerMax: number;
+  isEnabled: boolean;
+  lengthCounter: number;
+  lengthCounterEnable: boolean;
+  envDecayDisable: boolean;
+  envDecayLoopEnable: boolean;
+  envReset: boolean;
+  shiftNow: boolean;
+  envDecayRate: number;
+  envDecayCounter: number;
+  envVolume: number;
+  masterVolume: number;
+  shiftReg: number;
+  randomBit: number;
+  randomMode: number;
+  sampleValue: number;
+  tmp: number;
+  accValue: number;
+  accCount: number;
+
+  constructor(papu: any) {
+    this.papu = papu;
+
+    this.progTimerCount = 0;
+    this.progTimerMax = 0;
+    this.isEnabled = false;
+    this.lengthCounter = 0;
+    this.lengthCounterEnable = false;
+    this.envDecayDisable = false;
+    this.envDecayLoopEnable = false;
+    this.envReset = false;
+    this.shiftNow = false;
+    this.envDecayRate = 0;
+    this.envDecayCounter = 0;
+    this.envVolume = 0;
+    this.masterVolume = 0;
+    this.shiftReg = 1;
+    this.randomBit = 0;
+    this.randomMode = 0;
+    this.sampleValue = 0;
+    this.tmp = 0;
+    this.accValue = 0;
+    this.accCount = 1;
+  }
+
+  clockLengthCounter(): void {
+    if (this.lengthCounterEnable && this.lengthCounter > 0) {
+      this.lengthCounter--;
+      if (this.lengthCounter === 0) {
+        this.updateSampleValue();
+      }
+    }
+  }
+
+  clockEnvDecay(): void {
+    if (this.envReset) {
+      this.envReset = false;
+      this.envDecayCounter = this.envDecayRate + 1;
+      this.envVolume = 0xf;
+    } else if (--this.envDecayCounter <= 0) {
+      this.envDecayCounter = this.envDecayRate + 1;
+      if (this.envVolume > 0) {
+        this.envVolume--;
+      } else {
+        this.envVolume = this.envDecayLoopEnable ? 0xf : 0;
+      }
+    }
+    if (this.envDecayDisable) {
+      this.masterVolume = this.envDecayRate;
+    } else {
+      this.masterVolume = this.envVolume;
+    }
+    this.updateSampleValue();
+  }
+
+  updateSampleValue(): void {
+    if (this.isEnabled && this.lengthCounter > 0) {
+      this.sampleValue = this.randomBit * this.masterVolume;
+    }
+  }
+
+  writeReg(address: number, value: number): void {
+    if (address === 0x400c) {
+      this.envDecayDisable = (value & 0x10) !== 0;
+      this.envDecayRate = value & 0xf;
+      this.envDecayLoopEnable = (value & 0x20) !== 0;
+      this.lengthCounterEnable = (value & 0x20) === 0;
+      if (this.envDecayDisable) {
+        this.masterVolume = this.envDecayRate;
+      } else {
+        this.masterVolume = this.envVolume;
+      }
+    } else if (address === 0x400e) {
+      this.progTimerMax = this.papu.getNoiseWaveLength(value & 0xf);
+      this.randomMode = value >> 7;
+    } else if (address === 0x400f) {
+      if (this.isEnabled) {
+        this.lengthCounter = this.papu.getLengthMax(value & 248);
+      }
+      this.envReset = true;
+    }
+  }
+
+  setEnabled(value: boolean): void {
+    this.isEnabled = value;
+    if (!value) {
+      this.lengthCounter = 0;
+    }
+    this.updateSampleValue();
+  }
+
+  getLengthStatus(): number {
+    return this.lengthCounter === 0 || !this.isEnabled ? 0 : 1;
+  }
+}
+
+export default ChannelNoise;

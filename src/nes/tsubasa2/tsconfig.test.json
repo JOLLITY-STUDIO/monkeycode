@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "./_test_out",
+    "lib": ["ES2020", "DOM"]
+  },
+  "include": [
+    "src/game/data/DataStore.ts",
+    "src/core/OamManager.ts",
+    "src/game/data/bank11-data.ts",
+    "src/game/service/bank11_match-turn.service.ts",
+    "src/game/data/bank27-data.ts",
+    "src/game/service/bank27_minimal.service.ts",
+    "src/game/data/bank16-data.ts",
+    "src/game/service/bank16_skills.service.ts"
+  ]
+}

@@ -1,0 +1,43 @@
+Mini-Audio 音效/BGM ID 扫描
+==================================================
+
+── 短音效 (SE) ──
+  SE ID=0x30 (90帧 → 跑完90帧)
+  写入: SQ1=0 SQ2=0 TRI=0 NOISE=0 DMC=0
+  频率: SQ1=0 SQ2=0 TRI=0
+  STAT: 0次 采样: 0
+  BGMID=0x31 (90帧 → 跑完90帧)
+  写入: SQ1=0 SQ2=0 TRI=0 NOISE=0 DMC=0
+  频率: SQ1=0 SQ2=0 TRI=0
+  STAT: 0次 采样: 0
+  BGMID=0x32 (90帧 → 跑完90帧)
+  写入: SQ1=0 SQ2=0 TRI=0 NOISE=0 DMC=0
+  频率: SQ1=0 SQ2=0 TRI=0
+  STAT: 0次 采样: 0
+  BGMID=0x33 (90帧 → 跑完90帧)
+  写入: SQ1=0 SQ2=0 TRI=0 NOISE=0 DMC=0
+  频率: SQ1=0 SQ2=0 TRI=0
+  STAT: 0次 采样: 0
+  BGMID=0x34 (90帧 → 跑完90帧)
+  写入: SQ1=0 SQ2=0 TRI=0 NOISE=0 DMC=0
+  频率: SQ1=0 SQ2=0 TRI=0
+  STAT: 0次 采样: 0
+
+── 可能 BGM (0x35-0x80) ──
+  ID=0x37: 无输出
+  ID=0x3c: 无输出
+  ID=0x41: 无输出
+  ID=0x46: 无输出
+  ID=0x4b: 无输出
+  ID=0x50: 无输出
+  ID=0x55: 无输出
+  ID=0x5a: 无输出
+  ID=0x5f: 无输出
+  ID=0x64: 无输出
+  ID=0x69: 无输出
+  ID=0x6e: 无输出
+  ID=0x73: 无输出
+  ID=0x78: 无输出
+  ID=0x7d: 无输出
+
+写入: D:\studio\github\monkeycode\src\nes\tsubasa\src\tsnes\scripts\_mini_test_result.txt

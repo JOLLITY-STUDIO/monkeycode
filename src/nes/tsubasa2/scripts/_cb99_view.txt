@@ -1,0 +1,237 @@
+--- CAE7: @line 1953 ---
+C - - - - - 0x03CAF5 0F:CAE5: 9A        TXS
+C - - - - - 0x03CAF6 0F:CAE6: 60        RTS
+C D 2 - - - 0x03CAF7 0F:CAE7: 48        PHA
+C - - - - - 0x03CAF8 0F:CAE8: 98        TYA
+C - - - - - 0x03CAF9 0F:CAE9: B4 01     LDY ram_0001,X
+C - - - - - 0x03CAFB 0F:CAEB: 99 01 01  STA ram_0101,Y
+C - - - - - 0x03CAFE 0F:CAEE: 68        PLA
+C - - - - - 0x03CAFF 0F:CAEF: 99 02 01  STA ram_0102,Y
+C - - - - - 0x03CB02 0F:CAF2: A9 FF     LDA #$FF
+C - - - - - 0x03CB04 0F:CAF4: 95 00     STA ram_0000,X
+C - - - - - 0x03CB06 0F:CAF6: 60        RTS
+C D 2 - - - 0x03CB07 0F:CAF7: A9 00     LDA #$00
+C - - - - - 0x03CB09 0F:CAF9: A6 00     LDX ram_0000
+C - - - - - 0x03CB0B 0F:CAFB: 95 00     STA ram_0000,X
+C - - - - - 0x03CB0D 0F:CAFD: 95 01     STA ram_0001,X
+C - - - - - 0x03CB0F 0F:CAFF: 4C A5 CA  JMP $CAA5
+C D 2 - - - 0x03CB12 0F:CB02: B5 01     LDA ram_0001,X
+C - - - - - 0x03CB14 0F:CB04: F0 06     BEQ $CB0C
+C - - - - - 0x03CB16 0F:CB06: B5 00     LDA ram_0000,X
+C - - - - - 0x03CB18 0F:CB08: D0 02     BNE $CB0C
+C - - - - - 0x03CB1A 0F:CB0A: F6 00     INC ram_0000,X
+C - - - - - 0x03CB1C 0F:CB0C: 60        RTS
+- - - - - - 0x03CB1D 0F:CB0D: A9        .byte $A9   ; 
+- - - - - - 0x03CB1E 0F:CB0E: 00        .byte $00   ; 
+C D 2 - - - 0x03CB1F 0F:CB0F: 85 7F     STA ram_007F
+C - - - - - 0x03CB21 0F:CB11: 8A        TXA
+C - - - - - 0x03CB22 0F:CB12: 48        PHA
+C - - - - - 0x03CB23 0F:CB13: 98        TYA
+C - - - - - 0x03CB24 0F:CB14: 48        PHA
+C - - - - - 0x03CB25 0F:CB15: A6 00     LDX ram_0000
+C - - - - - 0x03CB27 0F:CB17: A5 24     LDA ram_0024
+C - - - - - 0x03CB29 0F:CB19: 95 02     STA ram_0002,X
+C - - - - - 0x03CB2B 0F:CB1B: A5 25     LDA ram_0025
+C - - - - - 0x03CB2D 0F:CB1D: 95 03     STA ram_0003,X
+C - - - - - 0x03CB2F 0F:CB1F: A5 7F     LDA ram_007F
+C - - - - - 0x03CB31 0F:CB21: 95 00     STA ram_0000,X
+C - - - - - 0x03CB33 0F:CB23: 8A        TXA
+C - - - - - 0x03CB34 0F:CB24: A8        TAY
+C - - - - - 0x03CB35 0F:CB25: BA        TSX
+C - - - - - 0x03CB36 0F:CB26: 96 01     STX ram_0001,Y
+C - - - - - 0x03CB38 0F:CB28: A6 00     LDX ram_0000
+C - - - - - 0x03CB3A 0F:CB2A: 4C A5 CA  JMP $CAA5
+--- CB02: @line 1967 ---
+C - - - - - 0x03CB0D 0F:CAFD: 95 01     STA ram_0001,X
+C - - - - - 0x03CB0F 0F:CAFF: 4C A5 CA  JMP $CAA5
+C D 2 - - - 0x03CB12 0F:CB02: B5 01     LDA ram_0001,X
+C - - - - - 0x03CB14 0F:CB04: F0 06     BEQ $CB0C
+C - - - - - 0x03CB16 0F:CB06: B5 00     LDA ram_0000,X
+C - - - - - 0x03CB18 0F:CB08: D0 02     BNE $CB0C
+C - - - - - 0x03CB1A 0F:CB0A: F6 00     INC ram_0000,X
+C - - - - - 0x03CB1C 0F:CB0C: 60        RTS
+- - - - - - 0x03CB1D 0F:CB0D: A9        .byte $A9   ; 
+- - - - - - 0x03CB1E 0F:CB0E: 00        .byte $00   ; 
+C D 2 - - - 0x03CB1F 0F:CB0F: 85 7F     STA ram_007F
+C - - - - - 0x03CB21 0F:CB11: 8A        TXA
+C - - - - - 0x03CB22 0F:CB12: 48        PHA
+C - - - - - 0x03CB23 0F:CB13: 98        TYA
+C - - - - - 0x03CB24 0F:CB14: 48        PHA
+C - - - - - 0x03CB25 0F:CB15: A6 00     LDX ram_0000
+C - - - - - 0x03CB27 0F:CB17: A5 24     LDA ram_0024
+C - - - - - 0x03CB29 0F:CB19: 95 02     STA ram_0002,X
+C - - - - - 0x03CB2B 0F:CB1B: A5 25     LDA ram_0025
+C - - - - - 0x03CB2D 0F:CB1D: 95 03     STA ram_0003,X
+C - - - - - 0x03CB2F 0F:CB1F: A5 7F     LDA ram_007F
+C - - - - - 0x03CB31 0F:CB21: 95 00     STA ram_0000,X
+C - - - - - 0x03CB33 0F:CB23: 8A        TXA
+C - - - - - 0x03CB34 0F:CB24: A8        TAY
+C - - - - - 0x03CB35 0F:CB25: BA        TSX
+C - - - - - 0x03CB36 0F:CB26: 96 01     STX ram_0001,Y
+C - - - - - 0x03CB38 0F:CB28: A6 00     LDX ram_0000
+C - - - - - 0x03CB3A 0F:CB2A: 4C A5 CA  JMP $CAA5
+- - - - - - 0x03CB3D 0F:CB2D: 20        .byte $20   ; 
+- - - - - - 0x03CB3E 0F:CB2E: 40        .byte $40   ; 
+- - - - - - 0x03CB3F 0F:CB2F: 18        .byte $18   ; 
+- - - - - - 0x03CB40 0F:CB30: 18        .byte $18   ; 
+- - - - - - 0x03CB41 0F:CB31: 18        .byte $18   ; 
+- - - - - - 0x03CB42 0F:CB32: 18        .byte $18   ; 
+- - - - - - 0x03CB43 0F:CB33: 18        .byte $18   ; 
+- - - - - - 0x03CB44 0F:CB34: 18        .byte $18   ; 
+C - - - - - 0x03CB45 0F:CB35: A5 20     LDA ram_0020
+C - - - - - 0x03CB47 0F:CB37: 29 7F     AND #$7F
+C - - - - - 0x03CB49 0F:CB39: 85 20     STA ram_0020
+C - - - - - 0x03CB4B 0F:CB3B: 8D 00 20  STA $2000
+C - - - - - 0x03CB4E 0F:CB3E: A9 06     LDA #$06
+C - - - - - 0x03CB50 0F:CB40: 8D 01 20  STA $2001
+--- CB99: @line 2049 ---
+C - - - - - 0x03CBA6 0F:CB96: D0 F7     BNE $CB8F
+C - - - - - 0x03CBA8 0F:CB98: 60        RTS
+C D 2 - - - 0x03CBA9 0F:CB99: 0A        ASL
+C - - - - - 0x03CBAA 0F:CB9A: A8        TAY
+C - - - - - 0x03CBAB 0F:CB9B: 68        PLA
+C - - - - - 0x03CBAC 0F:CB9C: 85 36     STA ram_0036
+C - - - - - 0x03CBAE 0F:CB9E: 68        PLA
+C - - - - - 0x03CBAF 0F:CB9F: 85 37     STA ram_0037
+C - - - - - 0x03CBB1 0F:CBA1: C8        INY
+C - - - - - 0x03CBB2 0F:CBA2: B1 36     LDA (ram_0036),Y
+C - - - - - 0x03CBB4 0F:CBA4: 48        PHA
+C - - - - - 0x03CBB5 0F:CBA5: C8        INY
+C - - - - - 0x03CBB6 0F:CBA6: B1 36     LDA (ram_0036),Y
+C - - - - - 0x03CBB8 0F:CBA8: 85 37     STA ram_0037
+C - - - - - 0x03CBBA 0F:CBAA: 68        PLA
+C - - - - - 0x03CBBB 0F:CBAB: 85 36     STA ram_0036
+C - - - - - 0x03CBBD 0F:CBAD: 6C 36 00  JMP (ram_0036)
+C D 2 - - - 0x03CBC0 0F:CBB0: 8D 18 05  STA ram_0518
+C - - - - - 0x03CBC3 0F:CBB3: A9 80     LDA #$80
+C - - - - - 0x03CBC5 0F:CBB5: 8D 16 05  STA ram_0516
+C - - - - - 0x03CBC8 0F:CBB8: A9 00     LDA #$00
+C - - - - - 0x03CBCA 0F:CBBA: 85 05     STA ram_0005
+C - - - - - 0x03CBCC 0F:CBBC: A9 00     LDA #$00
+C - - - - - 0x03CBCE 0F:CBBE: 20 0F CB  JSR $CB0F
+C - - - - - 0x03CBD1 0F:CBC1: 60        RTS
+C D 2 - - - 0x03CBD2 0F:CBC2: A0 00     LDY #$00
+C - - - - - 0x03CBD4 0F:CBC4: C9 A0     CMP #$A0
+C - - - - - 0x03CBD6 0F:CBC6: 90 28     BCC $CBF0
+C - - - - - 0x03CBD8 0F:CBC8: A0 94     LDY #$94
+C - - - - - 0x03CBDA 0F:CBCA: C9 C8     CMP #$C8
+C - - - - - 0x03CBDC 0F:CBCC: 90 0C     BCC $CBDA
+C - - - - - 0x03CBDE 0F:CBCE: A0 95     LDY #$95
+C - - - - - 0x03CBE0 0F:CBD0: E9 AE     SBC #$AE
+C - - - - - 0x03CBE2 0F:CBD2: C9 1F     CMP #$1F
+C - - - - - 0x03CBE4 0F:CBD4: 90 1A     BCC $CBF0
+C - - - - - 0x03CBE6 0F:CBD6: E9 05     SBC #$05
+C - - - - - 0x03CBE8 0F:CBD8: B0 13     BCS $CBED
+C - - - - - 0x03CBEA 0F:CBDA: C9 B4     CMP #$B4
+C - - - - - 0x03CBEC 0F:CBDC: 08        PHP
+C - - - - - 0x03CBED 0F:CBDD: 90 02     BCC $CBE1
+C - - - - - 0x03CBEF 0F:CBDF: E9 14     SBC #$14
+C - - - - - 0x03CBF1 0F:CBE1: 38        SEC
+C D 2 - - - 0x03CD8C 0F:CD7C: 0A        ASL
+C - - - - - 0x03CD8D 0F:CD7D: A8        TAY
+C - - - - - 0x03CD8E 0F:CD7E: B9 89 CD  LDA $CD89,Y
+C - - - - - 0x03CD91 0F:CD81: 85 34     STA ram_0034
+C - - - - - 0x03CD93 0F:CD83: B9 8A CD  LDA $CD8A,Y
+C - - - - - 0x03CD96 0F:CD86: 85 35     STA ram_0035
+C - - - - - 0x03CD98 0F:CD88: 60        RTS
+- D 2 - - - 0x03CD99 0F:CD89: 00        .byte $00   ; 
+- D 2 - - - 0x03CD9A 0F:CD8A: 03        .byte $03   ; 
+- D 2 - - - 0x03CD9B 0F:CD8B: 0C        .byte $0C   ; 
+- D 2 - - - 0x03CD9C 0F:CD8C: 03        .byte $03   ; 
+- D 2 - - - 0x03CD9D 0F:CD8D: 18        .byte $18   ; 
+- D 2 - - - 0x03CD9E 0F:CD8E: 03        .byte $03   ; 
+- D 2 - - - 0x03CD9F 0F:CD8F: 24        .byte $24   ; 
+- D 2 - - - 0x03CDA0 0F:CD90: 03        .byte $03   ; 
+- D 2 - - - 0x03CDA1 0F:CD91: 30        .byte $30   ; <0>
+- D 2 - - - 0x03CDA2 0F:CD92: 03        .byte $03   ; 
+- D 2 - - - 0x03CDA3 0F:CD93: 3C        .byte $3C   ; 
+- D 2 - - - 0x03CDA4 0F:CD94: 03        .byte $03   ; 
+- D 2 - - - 0x03CDA5 0F:CD95: 48        .byte $48   ; <H>
+- D 2 - - - 0x03CDA6 0F:CD96: 03        .byte $03   ; 
+- D 2 - - - 0x03CDA7 0F:CD97: 54        .byte $54   ; <T>
+- D 2 - - - 0x03CDA8 0F:CD98: 03        .byte $03   ; 
+- D 2 - - - 0x03CDA9 0F:CD99: 60        .byte $60   ; 
+- D 2 - - - 0x03CDAA 0F:CD9A: 03        .byte $03   ; 
+- D 2 - - - 0x03CDAB 0F:CD9B: 6C        .byte $6C   ; <l>
+- D 2 - - - 0x03CDAC 0F:CD9C: 03        .byte $03   ; 
+- D 2 - - - 0x03CDAD 0F:CD9D: 78        .byte $78   ; <x>
+- D 2 - - - 0x03CDAE 0F:CD9E: 03        .byte $03   ; 
+- D 2 - - - 0x03CDAF 0F:CD9F: 84        .byte $84   ; 
+- D 2 - - - 0x03CDB0 0F:CDA0: 03        .byte $03   ; 
+- D 2 - - - 0x03CDB1 0F:CDA1: 90        .byte $90   ; 
+- D 2 - - - 0x03CDB2 0F:CDA2: 03        .byte $03   ; 
+- D 2 - - - 0x03CDB3 0F:CDA3: 9C        .byte $9C   ; 
+- D 2 - - - 0x03CDB4 0F:CDA4: 03        .byte $03   ; 
+- D 2 - - - 0x03CDB5 0F:CDA5: A8        .byte $A8   ; 
+- D 2 - - - 0x03CDB6 0F:CDA6: 03        .byte $03   ; 
+- D 2 - - - 0x03CDB7 0F:CDA7: B4        .byte $B4   ; 
+--- CD7C: @line 2304 ---
+C D 2 - - - 0x03CD87 0F:CD77: AD FB 05  LDA ram_05FB
+C - - - - - 0x03CD8A 0F:CD7A: 49 0B     EOR #$0B
+C D 2 - - - 0x03CD8C 0F:CD7C: 0A        ASL
+C - - - - - 0x03CD8D 0F:CD7D: A8        TAY
+C - - - - - 0x03CD8E 0F:CD7E: B9 89 CD  LDA $CD89,Y
+C - - - - - 0x03CD91 0F:CD81: 85 34     STA ram_0034
+C - - - - - 0x03CD93 0F:CD83: B9 8A CD  LDA $CD8A,Y
+C - - - - - 0x03CD96 0F:CD86: 85 35     STA ram_0035
+C - - - - - 0x03CD98 0F:CD88: 60        RTS
+- D 2 - - - 0x03CD99 0F:CD89: 00        .byte $00   ; 
+- D 2 - - - 0x03CD9A 0F:CD8A: 03        .byte $03   ; 
+- D 2 - - - 0x03CD9B 0F:CD8B: 0C        .byte $0C   ; 
+- D 2 - - - 0x03CD9C 0F:CD8C: 03        .byte $03   ; 
+- D 2 - - - 0x03CD9D 0F:CD8D: 18        .byte $18   ; 
+- D 2 - - - 0x03CD9E 0F:CD8E: 03        .byte $03   ; 
+- D 2 - - - 0x03CD9F 0F:CD8F: 24        .byte $24   ; 
+- D 2 - - - 0x03CDA0 0F:CD90: 03        .byte $03   ; 
+- D 2 - - - 0x03CDA1 0F:CD91: 30        .byte $30   ; <0>
+- D 2 - - - 0x03CDA2 0F:CD92: 03        .byte $03   ; 
+- D 2 - - - 0x03CDA3 0F:CD93: 3C        .byte $3C   ; 
+- D 2 - - - 0x03CDA4 0F:CD94: 03        .byte $03   ; 
+- D 2 - - - 0x03CDA5 0F:CD95: 48        .byte $48   ; <H>
+- D 2 - - - 0x03CDA6 0F:CD96: 03        .byte $03   ; 
+- D 2 - - - 0x03CDA7 0F:CD97: 54        .byte $54   ; <T>
+- D 2 - - - 0x03CDA8 0F:CD98: 03        .byte $03   ; 
+- D 2 - - - 0x03CDA9 0F:CD99: 60        .byte $60   ; 
+- D 2 - - - 0x03CDAA 0F:CD9A: 03        .byte $03   ; 
+- D 2 - - - 0x03CDAB 0F:CD9B: 6C        .byte $6C   ; <l>
+- D 2 - - - 0x03CDAC 0F:CD9C: 03        .byte $03   ; 
+- D 2 - - - 0x03CDAD 0F:CD9D: 78        .byte $78   ; <x>
+- D 2 - - - 0x03CDAE 0F:CD9E: 03        .byte $03   ; 
+- D 2 - - - 0x03CDAF 0F:CD9F: 84        .byte $84   ; 
+- D 2 - - - 0x03CDB0 0F:CDA0: 03        .byte $03   ; 
+- D 2 - - - 0x03CDB1 0F:CDA1: 90        .byte $90   ; 
+- D 2 - - - 0x03CDB2 0F:CDA2: 03        .byte $03   ; 
+- D 2 - - - 0x03CDB3 0F:CDA3: 9C        .byte $9C   ; 
+- D 2 - - - 0x03CDB4 0F:CDA4: 03        .byte $03   ; 
+- D 2 - - - 0x03CDB5 0F:CDA5: A8        .byte $A8   ; 
+- D 2 - - - 0x03CDB6 0F:CDA6: 03        .byte $03   ; 
+- D 2 - - - 0x03CDB7 0F:CDA7: B4        .byte $B4   ; 
+- D 2 - - - 0x03CDB8 0F:CDA8: 03        .byte $03   ; 
+- D 2 - - - 0x03CDB9 0F:CDA9: C0        .byte $C0   ; 
+C - - - - - 0x03CEC5 0F:CEB5: 20 7C CD  JSR $CD7C
+C - - - - - 0x03CEC8 0F:CEB8: A0 0A     LDY #$0A
+C - - - - - 0x03CECA 0F:CEBA: B1 34     LDA (ram_0034),Y
+C - - - - - 0x03CECC 0F:CEBC: D0 05     BNE $CEC3
+C - - - - - 0x03CECE 0F:CEBE: 20 D6 CE  JSR $CED6
+C - - - - - 0x03CED1 0F:CEC1: B0 10     BCS $CED3
+C - - - - - 0x03CED3 0F:CEC3: E6 48     INC ram_0048
+C - - - - - 0x03CED5 0F:CEC5: C6 49     DEC ram_0049
+C - - - - - 0x03CED7 0F:CEC7: D0 E0     BNE $CEA9
+C - - - - - 0x03CED9 0F:CEC9: A5 47     LDA ram_0047
+C - - - - - 0x03CEDB 0F:CECB: 18        CLC
+C - - - - - 0x03CEDC 0F:CECC: 69 08     ADC #$08
+C - - - - - 0x03CEDE 0F:CECE: 85 47     STA ram_0047
+C - - - - - 0x03CEE0 0F:CED0: 4C A1 CE  JMP $CEA1
+C - - - - - 0x03CEE3 0F:CED3: A5 48     LDA ram_0048
+C - - - - - 0x03CEE5 0F:CED5: 60        RTS
+C - - - - - 0x03CEE6 0F:CED6: A0 06     LDY #$06
+C - - - - - 0x03CEE8 0F:CED8: B1 34     LDA (ram_0034),Y
+C - - - - - 0x03CEEA 0F:CEDA: 38        SEC
+C - - - - - 0x03CEEB 0F:CEDB: ED 35 06  SBC ram_0635
+C - - - - - 0x03CEEE 0F:CEDE: B0 04     BCS $CEE4
+C - - - - - 0x03CEF0 0F:CEE0: 49 FF     EOR #$FF
+C - - - - - 0x03CEF2 0F:CEE2: 69 01     ADC #$01
+C - - - - - 0x03CEF4 0F:CEE4: C5 47     CMP ram_0047
+C - - - - - 0x03CEF6 0F:CEE6: B0 14     BCS $CEFC
+C - - - - - 0x03CEF8 0F:CEE8: A0 08     LDY #$08
+C - - - - - 0x03CEFA 0F:CEEA: B1 34     LDA (ram_0034),Y

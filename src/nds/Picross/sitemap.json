@@ -1,0 +1,9 @@
+{
+  "desc": "Picross DS 逆向转写 H5 微信小程序",
+  "rules": [
+    {
+      "action": "allow",
+      "page": "*"
+    }
+  ]
+}

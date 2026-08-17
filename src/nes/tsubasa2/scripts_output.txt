@@ -1,0 +1,2816 @@
+﻿已加载 32 个 bank
+════════════════════════════════════════════════════════════
+解析 bank 3 脚本 (ID 0x00-0x0F)
+════════════════════════════════════════════════════════════
+════════════════════════════════════════════════════════════
+脚本 0x00 (ID=0)
+  Bank: 3
+  入口: $A020
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x20, $A020) ──
+    0x0020 $A020  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x0022 $A022  $F9  CALL_8AF7 $00
+    0x0024 $A024  $FB  CALL_9085
+    0x0025 $A025        [01][8D]
+    0x0027 $A027  $E9  YIELD2_CHECK
+    0x0028 $A028  $DF  WAIT 240帧
+    0x0029 $A029  $EA  CLEAR_RESET
+    0x002A $A02A  $ED  QUEUE_OBJ $58
+    0x002C $A02C  $DC  WAIT 60帧
+    0x002D $A02D  $F1  LOADsprITE $01
+    0x002F $A02F  $EC  COND_SET $00
+    0x0031 $A031  $F9  CALL_8AF7 $01
+    0x0033 $A033  $FB  CALL_9085
+    0x0034 $A034        [01]n
+    0x0036 $A036  $F8  VAR_DATA sub=$0A
+    0x0038 $A038  $F3  VAR_LEN $00
+    0x003A $A03A  $F5  SUB_DISPATCH2 $00 (JSR_99B0)
+    0x003C $A03C  $ED  QUEUE_OBJ $68
+    0x003E $A03E  $F2  SET_MODE $05
+    0x0040 $A040        [1A][0C])/y
+    0x0045 $A045  $DC  WAIT 60帧
+    0x0046 $A046        [00][C5]g[BA]i[B8]}i-"[A5][0C]
+    0x0052 $A052  $FC  ADVANCE_PTR
+    0x0053 $A053        [A8].[16][1E].e}M[00]Gp[CF]Sn
+    0x0061 $A061  $FC  ADVANCE_PTR
+    0x0062 $A062        [05][05][A9]'[00][12][AF][0B][08].[A0]
+    0x006D $A06D  $FC  ADVANCE_PTR
+    0x006E $A06E        [C2]h[C5]i[AD][00][11]1[03][05][03][14]/[C8][AA]y
+    0x007E $A07E  $FC  ADVANCE_PTR
+    0x007F $A07F  $DC  WAIT 60帧
+    0x0080 $A080  $EA  CLEAR_RESET
+    0x0081 $A081  $FD  YIELD_FA8
+    0x0082 $A082  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x0084 $A084  $EC  COND_SET $FF
+    0x0086 $A086  $EE  CLEAR_WINDOW
+    0x0087 $A087  $FA  CALL_8AF7B $03
+    0x0089 $A089  $FB  CALL_9085
+    0x008A $A08A        [01]u
+    0x008C $A08C  $F3  VAR_LEN $00
+    0x008E $A08E  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x0090 $A090  $F2  SET_MODE $01
+    0x0092 $A092        [00][00][00][05][05][A9]'[00][12][AF][0B]
+    0x009D $A09D  $FC  ADVANCE_PTR
+    0x009E $A09E        [00][00][00][00][00][C5]g[BA]i
+    0x00A7 $A0A7  $FC  ADVANCE_PTR
+    0x00A8 $A0A8        [00][00]Kn[CD]Ck[86][83][00][8C][86]
+    0x00B4 $A0B4  $FC  ADVANCE_PTR
+    0x00B5 $A0B5  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x00B7 $A0B7  $DE  WAIT 120帧
+    0x00B8 $A0B8  $EA  CLEAR_RESET
+    0x00B9 $A0B9  $FD  YIELD_FA8
+    0x00BA $A0BA  $F9  CALL_8AF7 $08
+    0x00BC $A0BC  $FB  CALL_9085
+    0x00BD $A0BD        [02][C1][82]
+    0x00C0 $A0C0  $F3  VAR_LEN $00
+    0x00C2 $A0C2  $F5  SUB_DISPATCH2 $10 (SUB_$10)
+    0x00C4 $A0C4  $ED  QUEUE_OBJ $28
+    0x00C6 $A0C6  $DA  WAIT 20帧
+    0x00C7 $A0C7  $ED  QUEUE_OBJ $28
+    0x00C9 $A0C9  $DA  WAIT 20帧
+    0x00CA $A0CA  $ED  QUEUE_OBJ $28
+    0x00CC $A0CC  $DA  WAIT 20帧
+    0x00CD $A0CD  $ED  QUEUE_OBJ $0E
+    0x00CF $A0CF  $F1  LOADsprITE $01
+    0x00D1 $A0D1  $EC  COND_SET $05
+    0x00D3 $A0D3  $F2  SET_MODE $05
+    0x00D5 $A0D5        [1B]1[03][A0][08]
+    0x00DA $A0DA  $ED  QUEUE_OBJ $6B
+    0x00DC $A0DC        .
+    0x00DD $A0DD  $FC  ADVANCE_PTR
+    0x00DE $A0DE        [02][07][15]([00]PB[B4]}PoHiy
+    0x00EC $A0EC  $FC  ADVANCE_PTR
+    0x00ED $A0ED  $DB  WAIT 40帧
+    0x00EE $A0EE        [04]#[19]-[18]'[03][00]Tg[19][A4][14][08]
+    0x00FC $A0FC  $FC  ADVANCE_PTR
+    0x00FD $A0FD        [C7]}i-[03][AF][02][14]/[10]y
+    0x0108 $A108  $FC  ADVANCE_PTR
+    0x0109 $A109  $DC  WAIT 60帧
+    0x010A $A10A  $ED  QUEUE_OBJ $02
+    0x010C $A10C  $EA  CLEAR_RESET
+    0x010D $A10D  $FD  YIELD_FA8
+    0x010E $A10E  $EC  COND_SET $FF
+    0x0110 $A110  $EE  CLEAR_WINDOW
+    0x0111 $A111  $FA  CALL_8AF7B $07
+    0x0113 $A113  $FB  CALL_9085
+    0x0114 $A114        [01]v
+    0x0116 $A116  $F3  VAR_LEN $00
+    0x0118 $A118  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x011A $A11A  $F2  SET_MODE $02
+    0x011C $A11C        [00][00][1B]1[03][A0][00][0A][A6]+[03]
+    0x0127 $A127  $FC  ADVANCE_PTR
+    0x0128 $A128        [00][14][03][1E][03][A0][08][04].[00][83][86]
+    0x0134 $A134  $FC  ADVANCE_PTR
+    0x0135 $A135  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x0137 $A137  $DE  WAIT 120帧
+    0x0138 $A138  $EA  CLEAR_RESET
+    0x0139 $A139  $FD  YIELD_FA8
+    0x013A $A13A  $F1  LOADsprITE $01
+    0x013C $A13C  $EC  COND_SET $02
+    0x013E $A13E  $F9  CALL_8AF7 $09
+    0x0140 $A140  $FB  CALL_9085
+    0x0141 $A141        [01][84]
+    0x0143 $A143  $F3  VAR_LEN $00
+    0x0145 $A145  $F5  SUB_DISPATCH2 $01 (JSR_99D1)
+    0x0147 $A147  $ED  QUEUE_OBJ $0E
+    0x0149 $A149  $F2  SET_MODE $05
+    0x014B $A14B        [AD][10]y
+    0x014E $A14E  $DB  WAIT 40帧
+    0x014F $A14F  $ED  QUEUE_OBJ $09
+    0x0151 $A151        [00][B8]}i[C1]nJn[C4]
+    0x015A $A15A  $FC  ADVANCE_PTR
+    0x015B $A15B        [1B]/[0B][12][19][00]RBn
+    0x0164 $A164  $ED  QUEUE_OBJ $30
+    0x0166 $A166        Lq}Ty
+    0x016B $A16B  $FC  ADVANCE_PTR
+    0x016C $A16C  $DB  WAIT 40帧
+    0x016D $A16D        [1C][10]([19][02][07][1A][00][C9]/[10]([AA]y
+    0x017B $A17B  $FC  ADVANCE_PTR
+    0x017C $A17C        [02][09]}y
+    0x0180 $A180  $FC  ADVANCE_PTR
+    0x0181 $A181  $DC  WAIT 60帧
+    0x0182 $A182  $EA  CLEAR_RESET
+    0x0183 $A183  $FD  YIELD_FA8
+    0x0184 $A184  $EC  COND_SET $FF
+    0x0186 $A186  $EE  CLEAR_WINDOW
+    0x0187 $A187  $FA  CALL_8AF7B $03
+    0x0189 $A189  $FB  CALL_9085
+    0x018A $A18A        [01]w
+    0x018C $A18C  $F3  VAR_LEN $00
+    0x018E $A18E  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x0190 $A190  $F2  SET_MODE $02
+    0x0192 $A192        [00][00][00] [0B][07][00][10]+[03]
+    0x019C $A19C  $FC  ADVANCE_PTR
+    0x019D $A19D        [00][15].[06][12][0A][03][0A][03][00][8C][86]
+    0x01A9 $A1A9  $FC  ADVANCE_PTR
+    0x01AA $A1AA  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x01AC $A1AC  $DE  WAIT 120帧
+    0x01AD $A1AD  $EA  CLEAR_RESET
+    0x01AE $A1AE  $FD  YIELD_FA8
+    0x01AF $A1AF  $F1  LOADsprITE $01
+    0x01B1 $A1B1  $EC  COND_SET $04
+    0x01B3 $A1B3  $F9  CALL_8AF7 $0A
+    0x01B5 $A1B5  $FB  CALL_9085
+    0x01B6 $A1B6        [03][C0][A2]}
+    0x01BA $A1BA  $F3  VAR_LEN $00
+    0x01BC $A1BC  $ED  QUEUE_OBJ $07
+    0x01BE $A1BE  $F2  SET_MODE $05
+    0x01C0 $A1C0        ,[06][AF]$[0C][08].[00]ln
+    0x01CA $A1CA  $ED  QUEUE_OBJ $12
+    0x01CC $A1CC        Zn[C2]GpoQy
+    0x01D4 $A1D4  $FC  ADVANCE_PTR
+    0x01D5 $A1D5  $DB  WAIT 40帧
+    0x01D6 $A1D6        [0B][0D][A0][00][14][03]&[03][19][0C]1[A4][0C].
+    0x01E4 $A1E4  $FC  ADVANCE_PTR
+    0x01E5 $A1E5        [B6]j}TM}[CD]}[B8]}iG}[CD]}
+    0x01F4 $A1F4  $FC  ADVANCE_PTR
+    0x01F5 $A1F5        ,[06][AF]$[0C][00][A3].[A9][03]y
+    0x0200 $A200  $FC  ADVANCE_PTR
+    0x0201 $A201  $DC  WAIT 60帧
+    0x0202 $A202  $EA  CLEAR_RESET
+    0x0203 $A203  $FD  YIELD_FA8
+    0x0204 $A204  $EC  COND_SET $FF
+    0x0206 $A206  $EE  CLEAR_WINDOW
+    0x0207 $A207  $FA  CALL_8AF7B $0B
+    0x0209 $A209  $FB  CALL_9085
+    0x020A $A20A        [01]|
+    0x020C $A20C  $F3  VAR_LEN $00
+    0x020E $A20E  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x0210 $A210  $F2  SET_MODE $01
+    0x0212 $A212        [00][00],[06][AF]$[0C][00][A3].[A9][03]
+    0x021E $A21E  $FC  ADVANCE_PTR
+    0x021F $A21F        [00][00][00][00][00]VL[C2]BR
+    0x0229 $A229  $FC  ADVANCE_PTR
+    0x022A $A22A        [00][00]Zn[C5]i[B4]}[8F][91][00][87][8B]
+    0x0237 $A237  $FC  ADVANCE_PTR
+    0x0238 $A238  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x023A $A23A  $DE  WAIT 120帧
+    0x023B $A23B  $EA  CLEAR_RESET
+    0x023C $A23C  $FD  YIELD_FA8
+    0x023D $A23D  $EC  COND_SET $FF
+    0x023F $A23F  $EE  CLEAR_WINDOW
+    0x0240 $A240  $FB  CALL_9085
+    0x0241 $A241        [01][0D]
+    0x0243 $A243  $F2  SET_MODE $00
+    0x0245 $A245  $E3  CTRL_E3
+    0x0246 $A246        [0B][02][AA][02][19][13][07][00][C5]g[BA]ie}M-[1F][04][16][0C]
+    0x025A $A25A  $FC  ADVANCE_PTR
+    0x025B $A25B  $E2  CTRL_E2
+    0x025C $A25C        KoF}[0E][06][02][02][11][1D][19][00]%"-[06][09][10]
+    0x026E $A26E  $FC  ADVANCE_PTR
+    0x026F $A26F        ,*'[A0][00][A8].[16][1E].e}M[19]
+    0x027D $A27D  $FC  ADVANCE_PTR
+    0x027E $A27E  $E3  CTRL_E3
+    0x027F $A27F        \sBUi[B7]}a[A0][00][1A][A6][1F]+[03][14][0C][13][02][10]
+    0x0293 $A293  $FC  ADVANCE_PTR
+    0x0294 $A294  $E9  YIELD2_CHECK
+    0x0295 $A295  $DA  WAIT 20帧
+    0x0296 $A296  $DF  WAIT 240帧
+    0x0297 $A297  $DF  WAIT 240帧
+    0x0298 $A298  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x029A $A29A  $FD  YIELD_FA8
+    0x029B $A29B  $F8  VAR_DATA sub=$00
+    0x029D $A29D  $DF  WAIT 240帧
+    0x029E $A29E  $FE  SET_PTR $A020 (设置脚本指针)
+
+════════════════════════════════════════════════════════════
+脚本 0x01 (ID=1)
+  Bank: 3
+  入口: $A2A1
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x2A1, $A2A1) ──
+    0x02A1 $A2A1  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x02A3 $A2A3  $F9  CALL_8AF7 $5C
+    0x02A5 $A2A5  $FB  CALL_9085
+    0x02A6 $A2A6        [01]m
+    0x02A8 $A2A8  $DD  WAIT 80帧
+    0x02A9 $A2A9  $E9  YIELD2_CHECK
+    0x02AA $A2AA  $ED  QUEUE_OBJ $55
+    0x02AC $A2AC  $DD  WAIT 80帧
+    0x02AD $A2AD        KoF}[C7]}i-[00][14]#[AA][11][16]
+    0x02BB $A2BB  $FC  ADVANCE_PTR
+    0x02BC $A2BC        [00][16][1E].[A0]l}i[C2]Fo[CF][AD]
+    0x02C9 $A2C9  $FC  ADVANCE_PTR
+    0x02CA $A2CA        %[03][0C]2[03][0D])[1B]-[00]%" )
+    0x02D8 $A2D8  $FC  ADVANCE_PTR
+    0x02D9 $A2D9        [0C]2[03][18].
+    0x02DE $A2DE  $DA  WAIT 20帧
+    0x02DF $A2DF        [00][05][05][A9]'[00][12][AF][0B]
+    0x02E8 $A2E8  $EB  YIELD_CALL
+    0x02E9 $A2E9  $EA  CLEAR_RESET
+    0x02EA $A2EA  $F9  CALL_8AF7 $5D
+    0x02EC $A2EC  $FB  CALL_9085
+    0x02ED $A2ED        [01][17]
+    0x02EF $A2EF  $E9  YIELD2_CHECK
+    0x02F0 $A2F0        [00][00][B1][10][02][1A][00][0E][06][02][1D]y
+    0x02FC $A2FC  $FC  ADVANCE_PTR
+    0x02FD $A2FD  $DC  WAIT 60帧
+    0x02FE $A2FE  $E2  CTRL_E2
+    0x02FF $A2FF        [A8].[16][1E].>e}M[1A][00]\gnM[0A][08][0B][02]
+    0x0312 $A312  $FC  ADVANCE_PTR
+    0x0313 $A313  $E1  CTRL_E1
+    0x0314 $A314        >e}M[10][02][06][02][00][09]/[0C]2[03][0E].[AD]
+    0x0325 $A325  $FC  ADVANCE_PTR
+    0x0326 $A326  $E2  CTRL_E2
+    0x0327 $A327        VL[C2]BR-[10][05][0C][00][0E][06][02][02][11][14][15]/[10]
+    0x033A $A33A  $EB  YIELD_CALL
+    0x033B $A33B  $EA  CLEAR_RESET
+    0x033C $A33C  $F9  CALL_8AF7 $04
+    0x033E $A33E  $FB  CALL_9085
+    0x033F $A33F        [01]P
+    0x0341 $A341  $E9  YIELD2_CHECK
+    0x0342 $A342  $E1  CTRL_E1
+    0x0343 $A343        [10][02][06][02][0C]1[03](2[03][A4][00][12][AF][0B][1A]
+    0x0353 $A353  $FC  ADVANCE_PTR
+    0x0354 $A354  $E2  CTRL_E2
+    0x0355 $A355        [06][12][13][19]J}Q[00]k[C6]iT[14][00][0B][02][06][02][0C]
+    0x0368 $A368  $FC  ADVANCE_PTR
+    0x0369 $A369  $E2  CTRL_E2
+    0x036A $A36A        [12][02][16][00][C5]g[BA]i[1D],[10])[00]%"-[14][A3][10]
+    0x037D $A37D  $EB  YIELD_CALL
+    0x037E $A37E  $EA  CLEAR_RESET
+    0x037F $A37F  $F9  CALL_8AF7 $5E
+    0x0381 $A381  $FB  CALL_9085
+    0x0382 $A382        [01]Q
+    0x0384 $A384  $E9  YIELD2_CHECK
+    0x0385 $A385  $F2  SET_MODE $08
+    0x0387 $A387        [00][00][0F][0C][13][00]6[18].[A4]???
+    0x0394 $A394  $FC  ADVANCE_PTR
+    0x0395 $A395  $DD  WAIT 80帧
+    0x0396 $A396  $F3  VAR_LEN $FF $23 $41 (3字节, $FF模式)
+    0x039A $A39A  $F6  CALL_FA8 $01
+    0x039C $A39C  $F3  VAR_LEN $FF $24 $42 (3字节, $FF模式)
+    0x03A0 $A3A0  $F6  CALL_FA8 $06
+    0x03A2 $A3A2  $F3  VAR_LEN $FF $00 $17 (3字节, $FF模式)
+    0x03A6 $A3A6  $E2  CTRL_E2
+    0x03A7 $A3A7  $DC  WAIT 60帧
+    0x03A8 $A3A8        Kn[CD]Ck[86][83][16][00][0B].[06][0C][10][00][12][AF][0B][19]
+    0x03BB $A3BB  $FC  ADVANCE_PTR
+    0x03BC $A3BC  $E1  CTRL_E1
+    0x03BD $A3BD        [01]'[10][15][10][10][06][02][A0][00]MP}T[0C][10]y
+    0x03CE $A3CE  $FC  ADVANCE_PTR
+    0x03CF $A3CF  $F4  SUB_DISPATCH $06 (SUB6)
+    0x03D1 $A3D1        [05]
+    0x03D2 $A3D2  $EA  CLEAR_RESET
+    0x03D3 $A3D3  $ED  QUEUE_OBJ $31
+    0x03D5 $A3D5  $DE  WAIT 120帧
+    0x03D6 $A3D6  $ED  QUEUE_OBJ $01
+    0x03D8 $A3D8  $DE  WAIT 120帧
+    0x03D9 $A3D9  $ED  QUEUE_OBJ $51
+    0x03DB $A3DB  $F2  SET_MODE $08
+    0x03DD $A3DD  $F9  CALL_8AF7 $2D
+    0x03DF $A3DF  $FB  CALL_9085
+    0x03E0 $A3E0        [01][0B]
+    0x03E2 $A3E2  $E9  YIELD2_CHECK
+    0x03E3 $A3E3  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x03E5 $A3E5        [C5]g[BA]i?Kn[CD]Ck[86][83]
+    0x03F1 $A3F1  $FC  ADVANCE_PTR
+    0x03F2 $A3F2  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x03F4 $A3F4  $DE  WAIT 120帧
+    0x03F5 $A3F5  $DF  WAIT 240帧
+    0x03F6 $A3F6  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x03F8 $A3F8  $FD  YIELD_FA8
+    0x03F9 $A3F9  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x03FB $A3FB  $E1  CTRL_E1
+    0x03FC $A3FC  $DF  WAIT 240帧
+    0x03FD $A3FD        @&[0C][00] .[15][07][09]z
+    0x0407 $A407  $DB  WAIT 40帧
+    0x0408 $A408        e}MHgM[19]
+    0x040F $A40F  $FC  ADVANCE_PTR
+    0x0410 $A410        Un[C3]}ln-[07]")[00]hEFo[CF][A0]
+    0x0421 $A421  $FC  ADVANCE_PTR
+    0x0422 $A422        [02]&[02]&[00][01][0D][16][0E][1F]/[10]{
+    0x042F $A42F  $EB  YIELD_CALL
+    0x0430 $A430  $E1  CTRL_E1
+    0x0431 $A431        @[02][1F][00]Un[C3]}lnQ}a[14][02],*)
+    0x0443 $A443  $FC  ADVANCE_PTR
+    0x0444 $A444        \gbn[B8]#[00]T}UbnT[19]
+    0x0452 $A452  $FC  ADVANCE_PTR
+    0x0453 $A453        [0B].[06][A0][00][07][1F]/[13][02]){
+    0x045F $A45F  $EB  YIELD_CALL
+    0x0460 $A460  $FB  CALL_9085
+    0x0461 $A461        [01]<
+    0x0463 $A463  $E1  CTRL_E1
+    0x0464 $A464        @Gp[CF]Sn[19]FikM[1A][00]&[0E].[AD]
+    0x0475 $A475  $FC  ADVANCE_PTR
+    0x0476 $A476        [A8].[0C][01][02][00]ZoTThoH-
+    0x0484 $A484  $FC  ADVANCE_PTR
+    0x0485 $A485        [10]/[0E][02][0C][10][00][12],#[19][AA]{
+    0x0492 $A492  $EB  YIELD_CALL
+    0x0493 $A493  $E1  CTRL_E1
+    0x0494 $A494        @[1E][06][16]#[00][0B][1F][A5][1F][15]Q}a[A0]
+    0x04A3 $A4A3  $FC  ADVANCE_PTR
+    0x04A4 $A4A4        %[03][0C]2[03]-[18]'/[13][08]){
+    0x04B1 $A4B1  $FC  ADVANCE_PTR
+    0x04B2 $A4B2  $DC  WAIT 60帧
+    0x04B3 $A4B3        [13][07][19][C1]}P[1A][00]&[08][00] [13][05][09]{
+    0x04C3 $A4C3  $EB  YIELD_CALL
+    0x04C4 $A4C4  $FB  CALL_9085
+    0x04C5 $A4C5        [01];
+    0x04C7 $A4C7  $E1  CTRL_E1
+    0x04C8 $A4C8        @[14][0A]+[AD]z
+    0x04CE $A4CE  $DB  WAIT 40帧
+    0x04CF $A4CF        [07]2[03][00][0A][19]Q}a[16]
+    0x04D9 $A4D9  $FC  ADVANCE_PTR
+    0x04DA $A4DA        [16][1E].KoF}[07]2[03][06][02][06]'
+    0x04E8 $A4E8  $FC  ADVANCE_PTR
+    0x04E9 $A4E9        [09].[0C]1[03][0E][02][A0][00][1A][09].[0B]*[10][19][AD]
+    0x04FA $A4FA  $FC  ADVANCE_PTR
+    0x04FB $A4FB        [0C]2[03][06][02][0D]){
+    0x0503 $A503  $EB  YIELD_CALL
+    0x0504 $A504  $EA  CLEAR_RESET
+    0x0505 $A505  $F9  CALL_8AF7 $13
+    0x0507 $A507  $FA  CALL_8AF7B $12
+    0x0509 $A509  $FB  CALL_9085
+    0x050A $A50A        [01]*
+    0x050C $A50C  $E9  YIELD2_CHECK
+    0x050D $A50D  $DC  WAIT 60帧
+    0x050E $A50E  $E1  CTRL_E1
+    0x050F $A50F        @[1A][A6]"[1F][0C][13]z
+    0x0517 $A517  $DB  WAIT 40帧
+    0x0518 $A518        [06][10][A1]([00]&[03][0A][AD][0D]{
+    0x0523 $A523  $FC  ADVANCE_PTR
+    0x0524 $A524  $DC  WAIT 60帧
+    0x0525 $A525        [07]2[03][06]'[00][0C][AF]'[08][19][01][02][AA]
+    0x0533 $A533  $FC  ADVANCE_PTR
+    0x0534 $A534        _X}[BA]p}[14][0C][13][00][B2].[07]2[03][0B][0E][13]
+    0x0546 $A546  $FC  ADVANCE_PTR
+    0x0547 $A547        #'[02][1F][0D]z
+    0x054D $A54D  $DB  WAIT 40帧
+    0x054E $A54E  $FB  CALL_9085
+    0x054F $A54F        [01]+&+[0C][08]{
+    0x0556 $A556  $ED  QUEUE_OBJ $62
+    0x0558 $A558  $EB  YIELD_CALL
+    0x0559 $A559  $FB  CALL_9085
+    0x055A $A55A        [01]*
+    0x055C $A55C  $E1  CTRL_E1
+    0x055D $A55D        @[12][AF][0B][08].z
+    0x0564 $A564  $DB  WAIT 40帧
+    0x0565 $A565        [01][15][10][19][0A][14][1A]
+    0x056C $A56C  $FC  ADVANCE_PTR
+    0x056D $A56D        [01][16][06]'[00]&[08][00][07][02][13][02]),{
+    0x057C $A57C  $FC  ADVANCE_PTR
+    0x057D $A57D  $DD  WAIT 80帧
+    0x057E $A57E  $FD  YIELD_FA8
+    0x057F $A57F  $FB  CALL_9085
+    0x0580 $A580        [01][12]
+    0x0582 $A582  $F7  TOGGLE_BANK
+    0x0583 $A583  $F3  VAR_LEN $00
+    0x0585 $A585  $F2  SET_MODE $00
+    0x0587 $A587  $E1  CTRL_E1
+    0x0588 $A588        @[04]/
+    0x058B $A58B  $FC  ADVANCE_PTR
+    0x058C $A58C  $DE  WAIT 120帧
+    0x058D $A58D  $FD  YIELD_FA8
+    0x058E $A58E  $FB  CALL_9085
+    0x058F $A58F        [01]+
+    0x0591 $A591  $F7  TOGGLE_BANK
+    0x0592 $A592  $F3  VAR_LEN $00
+    0x0594 $A594  $DB  WAIT 40帧
+    0x0595 $A595  $F2  SET_MODE $08
+    0x0597 $A597  $E1  CTRL_E1
+    0x0598 $A598        @,[10][0C][19][00][01][16][1A]z
+    0x05A2 $A5A2  $DB  WAIT 40帧
+    0x05A3 $A5A3        [16][1E].KoF}
+    0x05AA $A5AA  $FC  ADVANCE_PTR
+    0x05AB $A5AB        [07]2[03][06][02][19][00][06][10][A1]([00]![18][1F][0B][15]
+    0x05BC $A5BC  $FB  CALL_9085
+    0x05BD $A5BD        [01]*[19]{
+    0x05C1 $A5C1  $FC  ADVANCE_PTR
+    0x05C2 $A5C2  $DD  WAIT 80帧
+    0x05C3 $A5C3  $F2  SET_MODE $2C
+    0x05C5 $A5C5        &+[0C][08]
+    0x05C9 $A5C9  $FB  CALL_9085
+    0x05CA $A5CA        [01],
+    0x05CC $A5CC  $F2  SET_MODE $00
+    0x05CE $A5CE        [18]{
+    0x05D0 $A5D0  $FC  ADVANCE_PTR
+    0x05D1 $A5D1  $DC  WAIT 60帧
+    0x05D2 $A5D2  $ED  QUEUE_OBJ $31
+    0x05D4 $A5D4  $DE  WAIT 120帧
+    0x05D5 $A5D5  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x05D7 $A5D7  $FB  CALL_9085
+    0x05D8 $A5D8        [01]+
+    0x05DA $A5DA  $ED  QUEUE_OBJ $01
+    0x05DC $A5DC  $DC  WAIT 60帧
+    0x05DD $A5DD  $FD  YIELD_FA8
+    0x05DE $A5DE        [12][AF][0B][00][0B][02][0C]2[19][10][10][06][02][1A]
+    0x05EC $A5EC  $FC  ADVANCE_PTR
+    0x05ED $A5ED  $E2  CTRL_E2
+    0x05EE $A5EE        [0A][0A][00][C5]g[BA]i?hEFo[CF][16][1A][A6][1F])
+    0x0600 $A600  $FC  ADVANCE_PTR
+    0x0601 $A601  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x0603 $A603  $DF  WAIT 240帧
+    0x0604 $A604  $EA  CLEAR_RESET
+    0x0605 $A605  $FD  YIELD_FA8
+    0x0606 $A606  $F9  CALL_8AF7 $14
+    0x0608 $A608  $DC  WAIT 60帧
+    0x0609 $A609  $E9  YIELD2_CHECK
+    0x060A $A60A  $F6  CALL_FA8 $B4
+    0x060C $A60C  $EA  CLEAR_RESET
+    0x060D $A60D  $E8  LOAD_SCENE_DATA 0 (bank6偏移 0x1F00)
+    0x060F $A60F  $F9  CALL_8AF7 $15
+    0x0611 $A611  $FB  CALL_9085
+    0x0612 $A612        [02][C7][C6]
+    0x0615 $A615  $ED  QUEUE_OBJ $45
+    0x0617 $A617  $E9  YIELD2_CHECK
+    0x0618 $A618  $F6  CALL_FA8 $B4
+    0x061A $A61A  $FB  CALL_9085
+    0x061B $A61B        [01][CB]
+    0x061D $A61D  $F3  VAR_LEN $00
+    0x061F $A61F  $F5  SUB_DISPATCH2 $06 (SUB6)
+    0x0621 $A621  $ED  QUEUE_OBJ $30
+    0x0623 $A623  $DC  WAIT 60帧
+    0x0624 $A624  $DF  WAIT 240帧
+    0x0625 $A625  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x02 (ID=2)
+  Bank: 3
+  入口: $A626
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x626, $A626) ──
+    0x0626 $A626  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x0628 $A628  $F9  CALL_8AF7 $02
+    0x062A $A62A  $FB  CALL_9085
+    0x062B $A62B        [01][15]
+    0x062D $A62D  $DE  WAIT 120帧
+    0x062E $A62E  $E9  YIELD2_CHECK
+    0x062F $A62F  $ED  QUEUE_OBJ $53
+    0x0631 $A631  $F2  SET_MODE $02
+    0x0633 $A633  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x0635 $A635        [00][00]\gbn[B8][00]Gp[CF]Sn
+    0x0642 $A642  $FC  ADVANCE_PTR
+    0x0643 $A643        [00][00]FikM?KnP}U
+    0x064F $A64F  $FC  ADVANCE_PTR
+    0x0650 $A650  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x0652 $A652  $F6  CALL_FA8 $B4
+    0x0654 $A654  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x0656 $A656  $FD  YIELD_FA8
+    0x0657 $A657  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x0659 $A659  $F2  SET_MODE $08
+    0x065B $A65B  $E1  CTRL_E1
+    0x065C $A65C        @Kn[CD]Ck[86][83][16][00][02])[14][02][03]
+    0x066B $A66B  $FC  ADVANCE_PTR
+    0x066C $A66C        [0D][A4][03][AD][19][05][14][0A][14][1A][00][01][02][12][06]{
+    0x067C $A67C  $FC  ADVANCE_PTR
+    0x067D $A67D  $DC  WAIT 60帧
+    0x067E $A67E        [AE]*[1E][AE][19][03][AD][06][00] [0E][13]#'[05][03]
+    0x068E $A68E  $FC  ADVANCE_PTR
+    0x068F $A68F  $DE  WAIT 120帧
+    0x0690 $A690  $EA  CLEAR_RESET
+    0x0691 $A691  $FD  YIELD_FA8
+    0x0692 $A692  $F9  CALL_8AF7 $19
+    0x0694 $A694  $FB  CALL_9085
+    0x0695 $A695        [01][14]
+    0x0697 $A697  $ED  QUEUE_OBJ $69
+    0x0699 $A699  $E9  YIELD2_CHECK
+    0x069A $A69A  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x069C $A69C  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x069E $A69E  $E1  CTRL_E1
+    0x069F $A69F        @R[C3]K?EE[BD]gyy
+    0x06AA $A6AA  $FC  ADVANCE_PTR
+    0x06AB $A6AB  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x06AD $A6AD  $F6  CALL_FA8 $B4
+    0x06AF $A6AF  $ED  QUEUE_OBJ $31
+    0x06B1 $A6B1  $DE  WAIT 120帧
+    0x06B2 $A6B2  $EA  CLEAR_RESET
+    0x06B3 $A6B3  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x03 (ID=3)
+  Bank: 3
+  入口: $A6B4
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x6B4, $A6B4) ──
+    0x06B4 $A6B4  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x06B6 $A6B6  $F9  CALL_8AF7 $02
+    0x06B8 $A6B8  $FB  CALL_9085
+    0x06B9 $A6B9        [01][15]
+    0x06BB $A6BB  $DE  WAIT 120帧
+    0x06BC $A6BC  $E9  YIELD2_CHECK
+    0x06BD $A6BD  $ED  QUEUE_OBJ $5A
+    0x06BF $A6BF  $DD  WAIT 80帧
+    0x06C0 $A6C0  $E1  CTRL_E1
+    0x06C1 $A6C1        @[AE][03]$'[00][03],[0B][1A]
+    0x06CB $A6CB  $FC  ADVANCE_PTR
+    0x06CC $A6CC        [1E].[14][03][AA]/[10][15]{
+    0x06D5 $A6D5  $FC  ADVANCE_PTR
+    0x06D6 $A6D6  $DD  WAIT 80帧
+    0x06D7 $A6D7  $ED  QUEUE_OBJ $31
+    0x06D9 $A6D9  $DE  WAIT 120帧
+    0x06DA $A6DA  $EA  CLEAR_RESET
+    0x06DB $A6DB  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x04 (ID=4)
+  Bank: 3
+  入口: $A6DC
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x6DC, $A6DC) ──
+    0x06DC $A6DC  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x06DE $A6DE  $F9  CALL_8AF7 $02
+    0x06E0 $A6E0  $FB  CALL_9085
+    0x06E1 $A6E1        [01]8
+    0x06E3 $A6E3  $DE  WAIT 120帧
+    0x06E4 $A6E4  $E9  YIELD2_CHECK
+    0x06E5 $A6E5  $ED  QUEUE_OBJ $57
+    0x06E7 $A6E7  $DD  WAIT 80帧
+    0x06E8 $A6E8  $EF  TOGGLE_FLAG
+    0x06E9 $A6E9  $E1  CTRL_E1
+    0x06EA $A6EA        @R[C3]K?EE[BD]gz
+    0x06F4 $A6F4  $DB  WAIT 40帧
+    0x06F5 $A6F5        [05][1F][04][19][11][06]'-
+    0x06FD $A6FD  $FC  ADVANCE_PTR
+    0x06FE $A6FE        [10]"[0B][0E][13]#'[03][A8]???
+    0x070A $A70A  $FC  ADVANCE_PTR
+    0x070B $A70B  $DE  WAIT 120帧
+    0x070C $A70C  $EA  CLEAR_RESET
+    0x070D $A70D  $FD  YIELD_FA8
+    0x070E $A70E  $F9  CALL_8AF7 $1B
+    0x0710 $A710  $E9  YIELD2_CHECK
+    0x0711 $A711  $ED  QUEUE_OBJ $46
+    0x0713 $A713  $DC  WAIT 60帧
+    0x0714 $A714  $F2  SET_MODE $06
+    0x0716 $A716        [00]&[08][A6][12][00][12][AF][0B][10][11][1A]
+    0x0722 $A722  $FC  ADVANCE_PTR
+    0x0723 $A723        [01][0D][19][B6]j`E[0E].[16]![09][13]
+    0x0730 $A730  $FC  ADVANCE_PTR
+    0x0731 $A731        [00][11][06][08][19][B6]gCn[C2][AD]
+    0x073C $A73C  $FC  ADVANCE_PTR
+    0x073D $A73D        *.[0C]1[03]-[06][02][0C][0C][13][02][10]
+    0x074A $A74A  $FC  ADVANCE_PTR
+    0x074B $A74B  $DF  WAIT 240帧
+    0x074C $A74C  $EA  CLEAR_RESET
+    0x074D $A74D  $DC  WAIT 60帧
+    0x074E $A74E  $FD  YIELD_FA8
+    0x074F $A74F  $FA  CALL_8AF7B $12
+    0x0751 $A751  $FB  CALL_9085
+    0x0752 $A752        [01][07]
+    0x0754 $A754  $F7  TOGGLE_BANK
+    0x0755 $A755  $F3  VAR_LEN $FF $00 $17 (3字节, $FF模式)
+    0x0759 $A759  $E1  CTRL_E1
+    0x075A $A75A        @[05][1F][04][A0][00]R[C3]K[06]{
+    0x0765 $A765  $FC  ADVANCE_PTR
+    0x0766 $A766  $DD  WAIT 80帧
+    0x0767 $A767  $FD  YIELD_FA8
+    0x0768 $A768  $FA  CALL_8AF7B $58
+    0x076A $A76A  $FB  CALL_9085
+    0x076B $A76B        [01]C
+    0x076D $A76D  $F7  TOGGLE_BANK
+    0x076E $A76E  $F3  VAR_LEN $00
+    0x0770 $A770  $F9  CALL_8AF7 $1C
+    0x0772 $A772  $F8  VAR_DATA sub=$05
+    0x0774 $A774  $D9  WAIT 10帧
+    0x0775 $A775  $F8  VAR_DATA sub=$06
+    0x0777 $A777  $DE  WAIT 120帧
+    0x0778 $A778  $E1  CTRL_E1
+    0x0779 $A779        @[AA]*[AA][00][05][1F][04][1A]y
+    0x0783 $A783  $FC  ADVANCE_PTR
+    0x0784 $A784  $DD  WAIT 80帧
+    0x0785 $A785  $FD  YIELD_FA8
+    0x0786 $A786  $FA  CALL_8AF7B $3D
+    0x0788 $A788  $FB  CALL_9085
+    0x0789 $A789        [01]8
+    0x078B $A78B  $F7  TOGGLE_BANK
+    0x078C $A78C  $F3  VAR_LEN $00
+    0x078E $A78E  $FA  CALL_8AF7B $12
+    0x0790 $A790  $F2  SET_MODE $08
+    0x0792 $A792  $E1  CTRL_E1
+    0x0793 $A793        @[05]*[1A][00][B6]j`E[19]G}[CD]}[00]bEn{
+    0x07A6 $A7A6  $FC  ADVANCE_PTR
+    0x07A7 $A7A7  $DC  WAIT 60帧
+    0x07A8 $A7A8        Kn[CD]Ck[19][00][10][10][06][02][B1]([1A]
+    0x07B6 $A7B6  $FC  ADVANCE_PTR
+    0x07B7 $A7B7        [07][19][03][00] [0E][13]#'/[10]{
+    0x07C3 $A7C3  $FC  ADVANCE_PTR
+    0x07C4 $A7C4  $DE  WAIT 120帧
+    0x07C5 $A7C5  $FD  YIELD_FA8
+    0x07C6 $A7C6  $E1  CTRL_E1
+    0x07C7 $A7C7        @R[C3]Kz
+    0x07CC $A7CC  $DB  WAIT 40帧
+    0x07CD $A7CD        [01][0D][19][00][0A][13][0C]'[B2][16]
+    0x07D7 $A7D7  $FC  ADVANCE_PTR
+    0x07D8 $A7D8        [05]*[14][00][01][0F].[AD] [15][02][06]x
+    0x07E5 $A7E5  $FC  ADVANCE_PTR
+    0x07E6 $A7E6  $DE  WAIT 120帧
+    0x07E7 $A7E7  $FD  YIELD_FA8
+    0x07E8 $A7E8  $FB  CALL_9085
+    0x07E9 $A7E9        [01][11]
+    0x07EB $A7EB  $F7  TOGGLE_BANK
+    0x07EC $A7EC  $F3  VAR_LEN $00
+    0x07EE $A7EE  $E1  CTRL_E1
+    0x07EF $A7EF  $DC  WAIT 60帧
+    0x07F0 $A7F0        @[15][A2]([0A] 
+    0x07F6 $A7F6  $DB  WAIT 40帧
+    0x07F7 $A7F7        /[13],[09][06]{
+    0x07FD $A7FD  $FC  ADVANCE_PTR
+    0x07FE $A7FE  $DE  WAIT 120帧
+    0x07FF $A7FF  $FD  YIELD_FA8
+    0x0800 $A800  $FB  CALL_9085
+    0x0801 $A801        [01]8
+    0x0803 $A803  $F7  TOGGLE_BANK
+    0x0804 $A804  $F3  VAR_LEN $00
+    0x0806 $A806  $E1  CTRL_E1
+    0x0807 $A807        @[1F][01][00][09]/[06][1A][00] [04][13][02])[06]'
+    0x0817 $A817  $FC  ADVANCE_PTR
+    0x0818 $A818        [02]$[15]'[00][02][02].[AA][A8]z
+    0x0823 $A823  $DB  WAIT 40帧
+    0x0824 $A824        Gp[CF]Sn{
+    0x082A $A82A  $FC  ADVANCE_PTR
+    0x082B $A82B  $DE  WAIT 120帧
+    0x082C $A82C  $FD  YIELD_FA8
+    0x082D $A82D  $FB  CALL_9085
+    0x082E $A82E        [01][11]
+    0x0830 $A830  $F7  TOGGLE_BANK
+    0x0831 $A831  $F3  VAR_LEN $00
+    0x0833 $A833  $E1  CTRL_E1
+    0x0834 $A834  $DE  WAIT 120帧
+    0x0835 $A835        @[02][02][AA]+[03][00]bEnz
+    0x0840 $A840  $FC  ADVANCE_PTR
+    0x0841 $A841  $DB  WAIT 40帧
+    0x0842 $A842        [05][1F][04][19][11]2[03][0E].[00][03][09][13]$)y
+    0x0852 $A852  $FC  ADVANCE_PTR
+    0x0853 $A853  $DE  WAIT 120帧
+    0x0854 $A854  $FD  YIELD_FA8
+    0x0855 $A855  $FB  CALL_9085
+    0x0856 $A856        [01]8
+    0x0858 $A858  $F7  TOGGLE_BANK
+    0x0859 $A859  $F3  VAR_LEN $00
+    0x085B $A85B  $E1  CTRL_E1
+    0x085C $A85C        @[0B][0D][A0][00]Gp[CF]Snz
+    0x0867 $A867  $DB  WAIT 40帧
+    0x0868 $A868        [1A][15][0C][A0],[06])[A8]{
+    0x0871 $A871  $FC  ADVANCE_PTR
+    0x0872 $A872  $DC  WAIT 60帧
+    0x0873 $A873        [0B]/[0F][08][00][0C]2[03][B1][14][02][08][06]y
+    0x0881 $A881  $FC  ADVANCE_PTR
+    0x0882 $A882  $DE  WAIT 120帧
+    0x0883 $A883  $EA  CLEAR_RESET
+    0x0884 $A884  $DC  WAIT 60帧
+    0x0885 $A885  $FD  YIELD_FA8
+    0x0886 $A886  $F9  CALL_8AF7 $1E
+    0x0888 $A888  $FB  CALL_9085
+    0x0889 $A889        [01][8C]
+    0x088B $A88B  $E9  YIELD2_CHECK
+    0x088C $A88C  $F2  SET_MODE $04
+    0x088E $A88E  $E1  CTRL_E1
+    0x088F $A88F        @[0B]s[00][0A][02]y
+    0x0896 $A896  $FC  ADVANCE_PTR
+    0x0897 $A897  $DD  WAIT 80帧
+    0x0898 $A898  $EA  CLEAR_RESET
+    0x0899 $A899  $FD  YIELD_FA8
+    0x089A $A89A  $F9  CALL_8AF7 $67
+    0x089C $A89C  $FB  CALL_9085
+    0x089D $A89D        [03]pq[9A]
+    0x08A1 $A8A1  $ED  QUEUE_OBJ $6B
+    0x08A3 $A8A3  $E9  YIELD2_CHECK
+    0x08A4 $A8A4  $DC  WAIT 60帧
+    0x08A5 $A8A5  $E1  CTRL_E1
+    0x08A6 $A8A6        @[02][08][A9]yy
+    0x08AC $A8AC  $FC  ADVANCE_PTR
+    0x08AD $A8AD  $DD  WAIT 80帧
+    0x08AE $A8AE  $FD  YIELD_FA8
+    0x08AF $A8AF  $FA  CALL_8AF7B $21
+    0x08B1 $A8B1  $FB  CALL_9085
+    0x08B2 $A8B2        [02]st
+    0x08B5 $A8B5  $F7  TOGGLE_BANK
+    0x08B6 $A8B6  $F3  VAR_LEN $00
+    0x08B8 $A8B8  $F5  SUB_DISPATCH2 $03 (JSR_9A1F)
+    0x08BA $A8BA  $ED  QUEUE_OBJ $0E
+    0x08BC $A8BC  $DB  WAIT 40帧
+    0x08BD $A8BD  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x08BF $A8BF  $FA  CALL_8AF7B $1F
+    0x08C1 $A8C1  $FB  CALL_9085
+    0x08C2 $A8C2        [01][01]
+    0x08C4 $A8C4  $F7  TOGGLE_BANK
+    0x08C5 $A8C5  $F3  VAR_LEN $FF $00 $12 (3字节, $FF模式)
+    0x08C9 $A8C9  $ED  QUEUE_OBJ $03
+    0x08CB $A8CB  $FA  CALL_8AF7B $20
+    0x08CD $A8CD  $F7  TOGGLE_BANK
+    0x08CE $A8CE  $ED  QUEUE_OBJ $04
+    0x08D0 $A8D0  $F6  CALL_FA8 $35
+    0x08D2 $A8D2  $F7  TOGGLE_BANK
+    0x08D3 $A8D3  $ED  QUEUE_OBJ $05
+    0x08D5 $A8D5  $FA  CALL_8AF7B $56
+    0x08D7 $A8D7  $FB  CALL_9085
+    0x08D8 $A8D8        [03][C0][A6]
+    0x08DC $A8DC  $F7  TOGGLE_BANK
+    0x08DD $A8DD  $ED  QUEUE_OBJ $03
+    0x08DF $A8DF  $F6  CALL_FA8 $1C
+    0x08E1 $A8E1  $ED  QUEUE_OBJ $03
+    0x08E3 $A8E3  $F6  CALL_FA8 $1C
+    0x08E5 $A8E5  $ED  QUEUE_OBJ $03
+    0x08E7 $A8E7  $F6  CALL_FA8 $1C
+    0x08E9 $A8E9  $ED  QUEUE_OBJ $2A
+    0x08EB $A8EB  $DB  WAIT 40帧
+    0x08EC $A8EC  $FA  CALL_8AF7B $23
+    0x08EE $A8EE  $FB  CALL_9085
+    0x08EF $A8EF        [01][AE]
+    0x08F1 $A8F1  $F7  TOGGLE_BANK
+    0x08F2 $A8F2  $F3  VAR_LEN $00
+    0x08F4 $A8F4  $ED  QUEUE_OBJ $52
+    0x08F6 $A8F6  $F5  SUB_DISPATCH2 $08 (SUB_$8)
+    0x08F8 $A8F8  $F2  SET_MODE $02
+    0x08FA $A8FA  $E1  CTRL_E1
+    0x08FB $A8FB        @[15][16]tyy
+    0x0901 $A901  $FC  ADVANCE_PTR
+    0x0902 $A902  $F3  VAR_LEN $2E
+    0x0904 $A904  $DC  WAIT 60帧
+    0x0905 $A905  $DF  WAIT 240帧
+    0x0906 $A906  $FD  YIELD_FA8
+    0x0907 $A907  $FA  CALL_8AF7B $24
+    0x0909 $A909  $FB  CALL_9085
+    0x090A $A90A        [01]7
+    0x090C $A90C  $F7  TOGGLE_BANK
+    0x090D $A90D  $F3  VAR_LEN $00
+    0x090F $A90F  $ED  QUEUE_OBJ $49
+    0x0911 $A911  $DE  WAIT 120帧
+    0x0912 $A912  $F2  SET_MODE $08
+    0x0914 $A914  $E1  CTRL_E1
+    0x0915 $A915        @R[C3]Kz
+    0x091A $A91A  $DB  WAIT 40帧
+    0x091B $A91B        [C2]gB[C5]Lq}T[1A]
+    0x0924 $A924  $FC  ADVANCE_PTR
+    0x0925 $A925        [05]*[16][1A][00][07][06][15][02][A8]{
+    0x0930 $A930  $FC  ADVANCE_PTR
+    0x0931 $A931  $DE  WAIT 120帧
+    0x0932 $A932        [01][0D][19][0C][01][02][A0][00] #[19][AA][15]{
+    0x0940 $A940  $FC  ADVANCE_PTR
+    0x0941 $A941  $DE  WAIT 120帧
+    0x0942 $A942  $EA  CLEAR_RESET
+    0x0943 $A943  $FD  YIELD_FA8
+    0x0944 $A944  $F9  CALL_8AF7 $22
+    0x0946 $A946  $FB  CALL_9085
+    0x0947 $A947        [01][AF]
+    0x0949 $A949  $E9  YIELD2_CHECK
+    0x094A $A94A  $DF  WAIT 240帧
+    0x094B $A94B  $E1  CTRL_E1
+    0x094C $A94C        @[C2]gB[C5]Lq}T[A0]
+    0x0956 $A956  $DD  WAIT 80帧
+    0x0957 $A957  $ED  QUEUE_OBJ $31
+    0x0959 $A959        [00][07][06][15][02]???
+    0x0961 $A961  $FC  ADVANCE_PTR
+    0x0962 $A962  $ED  QUEUE_OBJ $57
+    0x0964 $A964  $DF  WAIT 240帧
+    0x0965 $A965  $DF  WAIT 240帧
+    0x0966 $A966  $EA  CLEAR_RESET
+    0x0967 $A967  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x05 (ID=5)
+  Bank: 3
+  入口: $A968
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x968, $A968) ──
+    0x0968 $A968  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x096A $A96A  $F9  CALL_8AF7 $55
+    0x096C $A96C  $FB  CALL_9085
+    0x096D $A96D        [01]c
+    0x096F $A96F  $DE  WAIT 120帧
+    0x0970 $A970  $E9  YIELD2_CHECK
+    0x0971 $A971  $ED  QUEUE_OBJ $54
+    0x0973 $A973  $DD  WAIT 80帧
+    0x0974 $A974  $EF  TOGGLE_FLAG
+    0x0975 $A975  $E1  CTRL_E1
+    0x0976 $A976        @$)[15][00][12][AF][0B]z
+    0x097F $A97F  $DB  WAIT 40帧
+    0x0980 $A980        [05][1F][04][14][1A]
+    0x0985 $A985  $FC  ADVANCE_PTR
+    0x0986 $A986        [09]/[0C]2[03][AD][00][01][02][10][02][A8]{
+    0x0993 $A993  $FC  ADVANCE_PTR
+    0x0994 $A994  $DE  WAIT 120帧
+    0x0995 $A995  $F2  SET_MODE $06
+    0x0997 $A997  $E1  CTRL_E1
+    0x0998 $A998        @\o
+    0x099B $A99B  $DB  WAIT 40帧
+    0x099C $A99C        [00][01][1F][02][15]{
+    0x09A2 $A9A2  $FC  ADVANCE_PTR
+    0x09A3 $A9A3  $DC  WAIT 60帧
+    0x09A4 $A9A4  $FB  CALL_9085
+    0x09A5 $A9A5        [01]d
+    0x09A7 $A9A7  $F2  SET_MODE $00
+    0x09A9 $A9A9  $E1  CTRL_E1
+    0x09AA $A9AA        @[04]/
+    0x09AD $A9AD  $FC  ADVANCE_PTR
+    0x09AE $A9AE  $DC  WAIT 60帧
+    0x09AF $A9AF  $FA  CALL_8AF7B $25
+    0x09B1 $A9B1  $FD  YIELD_FA8
+    0x09B2 $A9B2  $DD  WAIT 80帧
+    0x09B3 $A9B3  $F8  VAR_DATA sub=$0F
+    0x09B5 $A9B5  $DC  WAIT 60帧
+    0x09B6 $A9B6  $ED  QUEUE_OBJ $15
+    0x09B8 $A9B8  $F4  SUB_DISPATCH $03 (JSR_9A1F)
+    0x09BA $A9BA  $FB  CALL_9085
+    0x09BB $A9BB        [01]E
+    0x09BD $A9BD  $DA  WAIT 20帧
+    0x09BE $A9BE  $F4  SUB_DISPATCH $01 (JSR_99D1)
+    0x09C0 $A9C0  $F2  SET_MODE $08
+    0x09C2 $A9C2  $DD  WAIT 80帧
+    0x09C3 $A9C3  $E1  CTRL_E1
+    0x09C4 $A9C4        @bEn[A4][14][07][16][00][13][0A][A7])&[03][AD][1A]
+    0x09D5 $A9D5  $FC  ADVANCE_PTR
+    0x09D6 $A9D6        [0B][07][A0][00][05]#[02]$'*)[A8]{
+    0x09E3 $A9E3  $FC  ADVANCE_PTR
+    0x09E4 $A9E4  $DE  WAIT 120帧
+    0x09E5 $A9E5  $FD  YIELD_FA8
+    0x09E6 $A9E6  $FA  CALL_8AF7B $4A
+    0x09E8 $A9E8  $FB  CALL_9085
+    0x09E9 $A9E9        [01]a
+    0x09EB $A9EB  $F7  TOGGLE_BANK
+    0x09EC $A9EC  $F3  VAR_LEN $00
+    0x09EE $A9EE  $FA  CALL_8AF7B $49
+    0x09F0 $A9F0  $E1  CTRL_E1
+    0x09F1 $A9F1        @[15].[AA][00][05][1F][04][1A]x
+    0x09FB $A9FB  $FC  ADVANCE_PTR
+    0x09FC $A9FC  $DE  WAIT 120帧
+    0x09FD $A9FD  $FD  YIELD_FA8
+    0x09FE $A9FE  $FB  CALL_9085
+    0x09FF $A9FF        [01]`
+    0x0A01 $AA01  $F7  TOGGLE_BANK
+    0x0A02 $AA02  $F3  VAR_LEN $00
+    0x0A04 $AA04  $E1  CTRL_E1
+    0x0A05 $AA05  $DC  WAIT 60帧
+    0x0A06 $AA06        @[AA][A0][00]FikMz
+    0x0A0F $AA0F  $DB  WAIT 40帧
+    0x0A10 $AA10        [0A][19]hEFo[CF]
+    0x0A17 $AA17  $FC  ADVANCE_PTR
+    0x0A18 $AA18  $DB  WAIT 40帧
+    0x0A19 $AA19        \gbn[B8][19][00]%[03][0C]2[03][1A]
+    0x0A26 $AA26  $FC  ADVANCE_PTR
+    0x0A27 $AA27        [15][02][06]#[15]{
+    0x0A2D $AA2D  $FC  ADVANCE_PTR
+    0x0A2E $AA2E  $DE  WAIT 120帧
+    0x0A2F $AA2F  $FD  YIELD_FA8
+    0x0A30 $AA30  $FB  CALL_9085
+    0x0A31 $AA31        [01]a
+    0x0A33 $AA33  $F7  TOGGLE_BANK
+    0x0A34 $AA34  $F3  VAR_LEN $00
+    0x0A36 $AA36  $E1  CTRL_E1
+    0x0A37 $AA37        @[AE][03][02][03][02] [AA]{
+    0x0A40 $AA40  $FC  ADVANCE_PTR
+    0x0A41 $AA41  $DE  WAIT 120帧
+    0x0A42 $AA42  $FD  YIELD_FA8
+    0x0A43 $AA43  $FB  CALL_9085
+    0x0A44 $AA44        [01]`
+    0x0A46 $AA46  $F7  TOGGLE_BANK
+    0x0A47 $AA47  $F3  VAR_LEN $00
+    0x0A49 $AA49  $E1  CTRL_E1
+    0x0A4A $AA4A  $DC  WAIT 60帧
+    0x0A4B $AA4B        @R[C3]K?EE[BD]g
+    0x0A54 $AA54  $EF  TOGGLE_FLAG
+    0x0A55 $AA55        ?
+    0x0A56 $AA56  $EF  TOGGLE_FLAG
+    0x0A57 $AA57        ??
+    0x0A59 $AA59  $FC  ADVANCE_PTR
+    0x0A5A $AA5A  $DC  WAIT 60帧
+    0x0A5B $AA5B        [01][02][12][1A][00][1F][AA][00][A6][B1].[A0]#[12]
+    0x0A69 $AA69  $FC  ADVANCE_PTR
+    0x0A6A $AA6A        [1E].[14][03][19][00][11][06]'-[0C]'[15][02]{
+    0x0A79 $AA79  $FC  ADVANCE_PTR
+    0x0A7A $AA7A  $DE  WAIT 120帧
+    0x0A7B $AA7B  $FD  YIELD_FA8
+    0x0A7C $AA7C  $E1  CTRL_E1
+    0x0A7D $AA7D        @#[0C][00]M}[CD]}MTgBF}[14][0C][13]
+    0x0A8E $AA8E  $FC  ADVANCE_PTR
+    0x0A8F $AA8F        "[A5]"[10][14][0C][10]'
+    0x0A97 $AA97  $EF  TOGGLE_FLAG
+    0x0A98 $AA98        ?
+    0x0A99 $AA99  $EF  TOGGLE_FLAG
+    0x0A9A $AA9A        ??
+    0x0A9C $AA9C  $FC  ADVANCE_PTR
+    0x0A9D $AA9D  $DC  WAIT 60帧
+    0x0A9E $AA9E        [05][1F][04][10][11][16][00][06][11]"[1A][15][02]{
+    0x0AAC $AAAC  $FC  ADVANCE_PTR
+    0x0AAD $AAAD  $DE  WAIT 120帧
+    0x0AAE $AAAE  $FD  YIELD_FA8
+    0x0AAF $AAAF  $FB  CALL_9085
+    0x0AB0 $AAB0        [01]a
+    0x0AB2 $AAB2  $F7  TOGGLE_BANK
+    0x0AB3 $AAB3  $F3  VAR_LEN $00
+    0x0AB5 $AAB5  $E1  CTRL_E1
+    0x0AB6 $AAB6        @M}[CD]}MTgBF}x
+    0x0AC2 $AAC2  $FC  ADVANCE_PTR
+    0x0AC3 $AAC3  $DE  WAIT 120帧
+    0x0AC4 $AAC4  $FD  YIELD_FA8
+    0x0AC5 $AAC5  $FB  CALL_9085
+    0x0AC6 $AAC6        [01]`
+    0x0AC8 $AAC8  $F7  TOGGLE_BANK
+    0x0AC9 $AAC9  $F3  VAR_LEN $00
+    0x0ACB $AACB  $E1  CTRL_E1
+    0x0ACC $AACC  $DC  WAIT 60帧
+    0x0ACD $AACD        @[05][1F][04][16]#[00][02][A7]*,[06])[0B]z
+    0x0ADC $AADC  $FC  ADVANCE_PTR
+    0x0ADD $AADD  $DB  WAIT 40帧
+    0x0ADE $AADE        [0F]*[1F][AD][00][0E][02][A8][02][00][A0].[AF]).[AA][15]{
+    0x0AF0 $AAF0  $FC  ADVANCE_PTR
+    0x0AF1 $AAF1  $DE  WAIT 120帧
+    0x0AF2 $AAF2  $ED  QUEUE_OBJ $16
+    0x0AF4 $AAF4  $F4  SUB_DISPATCH $03 (JSR_9A1F)
+    0x0AF6 $AAF6  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x0AF8 $AAF8  $DE  WAIT 120帧
+    0x0AF9 $AAF9  $FD  YIELD_FA8
+    0x0AFA $AAFA  $FA  CALL_8AF7B $54
+    0x0AFC $AAFC  $FB  CALL_9085
+    0x0AFD $AAFD        [01][05]
+    0x0AFF $AAFF  $F4  SUB_DISPATCH $01 (JSR_99D1)
+    0x0B01 $AB01  $ED  QUEUE_OBJ $46
+    0x0B03 $AB03  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x0B05 $AB05  $DF  WAIT 240帧
+    0x0B06 $AB06  $DF  WAIT 240帧
+    0x0B07 $AB07  $E1  CTRL_E1
+    0x0B08 $AB08        @[01][02][12]???
+    0x0B0F $AB0F  $DE  WAIT 120帧
+    0x0B10 $AB10        [15][16]#[19][15].[AA]x
+    0x0B18 $AB18  $FC  ADVANCE_PTR
+    0x0B19 $AB19  $DE  WAIT 120帧
+    0x0B1A $AB1A        [1F])[AD][00][0D][B2][13]-[0C]/[13][02])&[03][15]
+    0x0B2A $AB2A  $FC  ADVANCE_PTR
+    0x0B2B $AB2B        [08][11][B1]([AA]/[10]{
+    0x0B33 $AB33  $FC  ADVANCE_PTR
+    0x0B34 $AB34  $DE  WAIT 120帧
+    0x0B35 $AB35  $FD  YIELD_FA8
+    0x0B36 $AB36  $E1  CTRL_E1
+    0x0B37 $AB37        @[0F]*[16][00][01][02][12][A0][00][02]/[10]
+    0x0B44 $AB44  $FC  ADVANCE_PTR
+    0x0B45 $AB45        M}[CD]}MTgBF}[14][1A]
+    0x0B51 $AB51  $FC  ADVANCE_PTR
+    0x0B52 $AB52  $DB  WAIT 40帧
+    0x0B53 $AB53        [02]/[10][02]???
+    0x0B5A $AB5A  $FC  ADVANCE_PTR
+    0x0B5B $AB5B  $DE  WAIT 120帧
+    0x0B5C $AB5C  $ED  QUEUE_OBJ $31
+    0x0B5E $AB5E  $DE  WAIT 120帧
+    0x0B5F $AB5F  $EA  CLEAR_RESET
+    0x0B60 $AB60  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x06 (ID=6)
+  Bank: 3
+  入口: $AB61
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0xB61, $AB61) ──
+    0x0B61 $AB61  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x0B63 $AB63  $F9  CALL_8AF7 $26
+    0x0B65 $AB65  $FA  CALL_8AF7B $27
+    0x0B67 $AB67  $FB  CALL_9085
+    0x0B68 $AB68        [01];
+    0x0B6A $AB6A  $DE  WAIT 120帧
+    0x0B6B $AB6B  $E9  YIELD2_CHECK
+    0x0B6C $AB6C  $F5  SUB_DISPATCH2 $0E (SUB_$E)
+    0x0B6E $AB6E  $ED  QUEUE_OBJ $47
+    0x0B70 $AB70  $DD  WAIT 80帧
+    0x0B71 $AB71  $E1  CTRL_E1
+    0x0B72 $AB72        @[02]&[02]&[00][01][0C][10][AA][15][00][12][AF][0B]{
+    0x0B82 $AB82  $FC  ADVANCE_PTR
+    0x0B83 $AB83  $DE  WAIT 120帧
+    0x0B84 $AB84  $FD  YIELD_FA8
+    0x0B85 $AB85  $FB  CALL_9085
+    0x0B86 $AB86        [01]N
+    0x0B88 $AB88  $F7  TOGGLE_BANK
+    0x0B89 $AB89  $F3  VAR_LEN $00
+    0x0B8B $AB8B  $E1  CTRL_E1
+    0x0B8C $AB8C        @\gbn[B8][14][19][00][09]/[0C]2[03][0E].z
+    0x0B9D $AB9D  $FC  ADVANCE_PTR
+    0x0B9E $AB9E  $DB  WAIT 40帧
+    0x0B9F $AB9F        [12][02][16][00]FikM[14][10][02][09][12][AA][18]{
+    0x0BAF $ABAF  $FC  ADVANCE_PTR
+    0x0BB0 $ABB0  $DE  WAIT 120帧
+    0x0BB1 $ABB1  $FD  YIELD_FA8
+    0x0BB2 $ABB2  $FB  CALL_9085
+    0x0BB3 $ABB3        [01];
+    0x0BB5 $ABB5  $F7  TOGGLE_BANK
+    0x0BB6 $ABB6  $F3  VAR_LEN $00
+    0x0BB8 $ABB8  $E1  CTRL_E1
+    0x0BB9 $ABB9        @[AA][A0][00][12][AF][0B]z
+    0x0BC1 $ABC1  $DB  WAIT 40帧
+    0x0BC2 $ABC2  $FB  CALL_9085
+    0x0BC3 $ABC3        [01]<FikM[1A]
+    0x0BCA $ABCA  $FC  ADVANCE_PTR
+    0x0BCB $ABCB        &[0F][03][02][A6]2[03][16][00][13][A4],[02][A9]{
+    0x0BDA $ABDA  $FC  ADVANCE_PTR
+    0x0BDB $ABDB  $DE  WAIT 120帧
+    0x0BDC $ABDC  $FD  YIELD_FA8
+    0x0BDD $ABDD  $E1  CTRL_E1
+    0x0BDE $ABDE        @[15][16][0C]+[00][01][19][00][AD].[0E][12][19]MTgBF}
+    0x0BF2 $ABF2  $FC  ADVANCE_PTR
+    0x0BF3 $ABF3  $DB  WAIT 40帧
+    0x0BF4 $ABF4        [BA]pBk[19][00][0B][02]'[02][AA]z[14][02][03][1B][14]#
+    0x0C06 $AC06  $FC  ADVANCE_PTR
+    0x0C07 $AC07        [02])[08]'[02][AA]{
+    0x0C0E $AC0E  $FC  ADVANCE_PTR
+    0x0C0F $AC0F  $DE  WAIT 120帧
+    0x0C10 $AC10  $FD  YIELD_FA8
+    0x0C11 $AC11  $FB  CALL_9085
+    0x0C12 $AC12        [01][11]
+    0x0C14 $AC14  $F7  TOGGLE_BANK
+    0x0C15 $AC15  $F3  VAR_LEN $00
+    0x0C17 $AC17  $E1  CTRL_E1
+    0x0C18 $AC18        @[BA]pBk
+    0x0C1D $AC1D  $EF  TOGGLE_FLAG
+    0x0C1E $AC1E        ??
+    0x0C20 $AC20  $EF  TOGGLE_FLAG
+    0x0C21 $AC21        ?x
+    0x0C23 $AC23  $FC  ADVANCE_PTR
+    0x0C24 $AC24  $DC  WAIT 60帧
+    0x0C25 $AC25  $FB  CALL_9085
+    0x0C26 $AC26        [01]Nk[C6]iTz
+    0x0C2D $AC2D  $DB  WAIT 40帧
+    0x0C2E $AC2E        [BA]pBk/[13][00][AA]*[AA][02]x
+    0x0C3A $AC3A  $FC  ADVANCE_PTR
+    0x0C3B $AC3B  $DE  WAIT 120帧
+    0x0C3C $AC3C  $FD  YIELD_FA8
+    0x0C3D $AC3D  $FB  CALL_9085
+    0x0C3E $AC3E        [01];
+    0x0C40 $AC40  $F7  TOGGLE_BANK
+    0x0C41 $AC41  $F3  VAR_LEN $00
+    0x0C43 $AC43  $E1  CTRL_E1
+    0x0C44 $AC44        @[0F][03][06]z
+    0x0C49 $AC49  $DB  WAIT 40帧
+    0x0C4A $AC4A        [05][1F][04][1A][00][BA]pBk-
+    0x0C54 $AC54  $FC  ADVANCE_PTR
+    0x0C55 $AC55        [0C]'[15][02].[AA]/[10][15]
+    0x0C5E $AC5E  $EF  TOGGLE_FLAG
+    0x0C5F $AC5F        ?
+    0x0C60 $AC60  $EF  TOGGLE_FLAG
+    0x0C61 $AC61        ??
+    0x0C63 $AC63  $FC  ADVANCE_PTR
+    0x0C64 $AC64  $DC  WAIT 60帧
+    0x0C65 $AC65        [BA]pBk[1A][00][D0]j[A0][00][06][12]$[08][0D])[1F][04][19]
+    0x0C78 $AC78  $FC  ADVANCE_PTR
+    0x0C79 $AC79        [0E][AA][02][19][00]MTgBF}[15].[AA]{
+    0x0C88 $AC88  $EB  YIELD_CALL
+    0x0C89 $AC89  $EA  CLEAR_RESET
+    0x0C8A $AC8A  $ED  QUEUE_OBJ $31
+    0x0C8C $AC8C  $DE  WAIT 120帧
+    0x0C8D $AC8D  $FD  YIELD_FA8
+    0x0C8E $AC8E  $ED  QUEUE_OBJ $69
+    0x0C90 $AC90  $DC  WAIT 60帧
+    0x0C91 $AC91  $ED  QUEUE_OBJ $3E
+    0x0C93 $AC93  $F9  CALL_8AF7 $01
+    0x0C95 $AC95  $FB  CALL_9085
+    0x0C96 $AC96        [01][A1]
+    0x0C98 $AC98  $F8  VAR_DATA sub=$0A
+    0x0C9A $AC9A  $E9  YIELD2_CHECK
+    0x0C9B $AC9B  $F5  SUB_DISPATCH2 $00 (JSR_99B0)
+    0x0C9D $AC9D  $DD  WAIT 80帧
+    0x0C9E $AC9E  $E1  CTRL_E1
+    0x0C9F $AC9F        @[C5]g[BA]iKoF}[00][AD].[0E][12][19][05][14][0A]
+    0x0CB1 $ACB1  $FC  ADVANCE_PTR
+    0x0CB2 $ACB2        [BA]pBk[1A][00]][C1]tn[B6][19][16][A0][13][15]
+    0x0CC2 $ACC2  $FC  ADVANCE_PTR
+    0x0CC3 $ACC3        [CF]k[0E].[0C]1[AA]/[10]{
+    0x0CCD $ACCD  $EB  YIELD_CALL
+    0x0CCE $ACCE  $E1  CTRL_E1
+    0x0CCF $ACCF        @[AA][A0][00] [0A][03][16].[07]+[08]#[00][1C][08]![14]
+    0x0CE1 $ACE1  $FC  ADVANCE_PTR
+    0x0CE2 $ACE2        4333[B8]}i[11][06][02][00][14][08][13].-[01][A3][10]
+    0x0CF5 $ACF5  $FC  ADVANCE_PTR
+    0x0CF6 $ACF6        D}MMTgBF}[15].[AA]{
+    0x0D03 $AD03  $EB  YIELD_CALL
+    0x0D04 $AD04  $EA  CLEAR_RESET
+    0x0D05 $AD05  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x0D07 $AD07  $F9  CALL_8AF7 $68
+    0x0D09 $AD09  $FB  CALL_9085
+    0x0D0A $AD0A        [03][9E][93][A5]
+    0x0D0E $AD0E  $ED  QUEUE_OBJ $6B
+    0x0D10 $AD10  $E9  YIELD2_CHECK
+    0x0D11 $AD11  $F3  VAR_LEN $94
+    0x0D13 $AD13  $E1  CTRL_E1
+    0x0D14 $AD14        @[0F]*[1A][00][BA]pBk[A0][00] [A7][06]'
+    0x0D23 $AD23  $FC  ADVANCE_PTR
+    0x0D24 $AD24        [01] [AA][0C][10]Lq}Tz
+    0x0D2E $AD2E  $DA  WAIT 20帧
+    0x0D2F $AD2F        KBHkn[16]&/[13]
+    0x0D38 $AD38  $FC  ADVANCE_PTR
+    0x0D39 $AD39        [07][A7][06]*[10]#[19][AA]{
+    0x0D42 $AD42  $FC  ADVANCE_PTR
+    0x0D43 $AD43  $DC  WAIT 60帧
+    0x0D44 $AD44  $ED  QUEUE_OBJ $02
+    0x0D46 $AD46  $FD  YIELD_FA8
+    0x0D47 $AD47  $FA  CALL_8AF7B $21
+    0x0D49 $AD49  $FB  CALL_9085
+    0x0D4A $AD4A        [02]st
+    0x0D4D $AD4D  $F7  TOGGLE_BANK
+    0x0D4E $AD4E  $F3  VAR_LEN $00
+    0x0D50 $AD50  $F5  SUB_DISPATCH2 $03 (JSR_9A1F)
+    0x0D52 $AD52  $ED  QUEUE_OBJ $0E
+    0x0D54 $AD54  $DB  WAIT 40帧
+    0x0D55 $AD55  $ED  QUEUE_OBJ $10
+    0x0D57 $AD57  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x0D59 $AD59  $FA  CALL_8AF7B $09
+    0x0D5B $AD5B  $F7  TOGGLE_BANK
+    0x0D5C $AD5C  $F3  VAR_LEN $00
+    0x0D5E $AD5E  $F5  SUB_DISPATCH2 $07 (SUB_$7)
+    0x0D60 $AD60  $ED  QUEUE_OBJ $04
+    0x0D62 $AD62  $DA  WAIT 20帧
+    0x0D63 $AD63  $ED  QUEUE_OBJ $06
+    0x0D65 $AD65  $DA  WAIT 20帧
+    0x0D66 $AD66  $ED  QUEUE_OBJ $24
+    0x0D68 $AD68  $DB  WAIT 40帧
+    0x0D69 $AD69  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x0D6B $AD6B  $F3  VAR_LEN $FF $25 $43 (3字节, $FF模式)
+    0x0D6F $AD6F  $FA  CALL_8AF7B $56
+    0x0D71 $AD71  $FB  CALL_9085
+    0x0D72 $AD72        [03][C0][A0][80]
+    0x0D76 $AD76  $F7  TOGGLE_BANK
+    0x0D77 $AD77  $F3  VAR_LEN $00
+    0x0D79 $AD79  $ED  QUEUE_OBJ $24
+    0x0D7B $AD7B  $FA  CALL_8AF7B $39
+    0x0D7D $AD7D  $FB  CALL_9085
+    0x0D7E $AD7E        [01][86]
+    0x0D80 $AD80  $F7  TOGGLE_BANK
+    0x0D81 $AD81  $F3  VAR_LEN $FF $21 $35 (3字节, $FF模式)
+    0x0D85 $AD85  $ED  QUEUE_OBJ $61
+    0x0D87 $AD87  $DF  WAIT 240帧
+    0x0D88 $AD88  $EA  CLEAR_RESET
+    0x0D89 $AD89  $DE  WAIT 120帧
+    0x0D8A $AD8A  $F9  CALL_8AF7 $26
+    0x0D8C $AD8C  $FA  CALL_8AF7B $27
+    0x0D8E $AD8E  $FB  CALL_9085
+    0x0D8F $AD8F        [01];
+    0x0D91 $AD91  $E9  YIELD2_CHECK
+    0x0D92 $AD92  $F5  SUB_DISPATCH2 $0E (SUB_$E)
+    0x0D94 $AD94  $ED  QUEUE_OBJ $47
+    0x0D96 $AD96  $DC  WAIT 60帧
+    0x0D97 $AD97  $E1  CTRL_E1
+    0x0D98 $AD98        @KBHkn-[14]*)G}[CD]}[1A]
+    0x0DA7 $ADA7  $FC  ADVANCE_PTR
+    0x0DA8 $ADA8        [AA]*#[02][15][06]/[10]{
+    0x0DB1 $ADB1  $FC  ADVANCE_PTR
+    0x0DB2 $ADB2  $DC  WAIT 60帧
+    0x0DB3 $ADB3        [BA]pBk[1A][00][A6][B1].[19]Zn[C1]-[05][A1][15][03]
+    0x0DC5 $ADC5  $FC  ADVANCE_PTR
+    0x0DC6 $ADC6        ![13][07][19]Lq}T-[00][01] [AA][0C][10].[AA]{
+    0x0DD8 $ADD8  $FC  ADVANCE_PTR
+    0x0DD9 $ADD9  $DE  WAIT 120帧
+    0x0DDA $ADDA  $FD  YIELD_FA8
+    0x0DDB $ADDB  $E1  CTRL_E1
+    0x0DDC $ADDC        @[AA][A0][00][02][1F][AD][1A][00][AA]*#[03][13][15][02]
+    0x0DEC $ADEC  $FC  ADVANCE_PTR
+    0x0DED $ADED        [1F][B3]+[0C][19]Lq}T[14][02],*z
+    0x0DFB $ADFB  $FC  ADVANCE_PTR
+    0x0DFC $ADFC  $DB  WAIT 40帧
+    0x0DFD $ADFD        [02][12][0C][06][00][0C]'*[A5])[AD].[0E][12][16]
+    0x0E0C $AE0C  $FC  ADVANCE_PTR
+    0x0E0D $AE0D        [15]/[10].[AA]{
+    0x0E13 $AE13  $FC  ADVANCE_PTR
+    0x0E14 $AE14  $DE  WAIT 120帧
+    0x0E15 $AE15  $FD  YIELD_FA8
+    0x0E16 $AE16  $E1  CTRL_E1
+    0x0E17 $AE17  $DC  WAIT 60帧
+    0x0E18 $AE18  $FB  CALL_9085
+    0x0E19 $AE19        [01]<@[12][AF][0B]z
+    0x0E20 $AE20  $DB  WAIT 40帧
+    0x0E21 $AE21        [CF]k-"[A5][0D][16][1A][00][1F][A7]
+    0x0E2C $AE2C  $FC  ADVANCE_PTR
+    0x0E2D $AE2D        [01][0D][19][0C][01][02][16][00][06][12][0A][14][AA]{
+    0x0E3B $AE3B  $FC  ADVANCE_PTR
+    0x0E3C $AE3C  $DC  WAIT 60帧
+    0x0E3D $AE3D        [0C]/[06]([15]{
+    0x0E43 $AE43  $FC  ADVANCE_PTR
+    0x0E44 $AE44  $DE  WAIT 120帧
+    0x0E45 $AE45  $FD  YIELD_FA8
+    0x0E46 $AE46  $FB  CALL_9085
+    0x0E47 $AE47        [01]N
+    0x0E49 $AE49  $F7  TOGGLE_BANK
+    0x0E4A $AE4A  $F3  VAR_LEN $00
+    0x0E4C $AE4C  $E1  CTRL_E1
+    0x0E4D $AE4D        @[03].z
+    0x0E51 $AE51  $DB  WAIT 40帧
+    0x0E52 $AE52        [01][0D][19][0C][01][02]
+    0x0E58 $AE58  $FC  ADVANCE_PTR
+    0x0E59 $AE59        [06][15]'[A7][00][06]/[13] [0E])&{
+    0x0E66 $AE66  $FC  ADVANCE_PTR
+    0x0E67 $AE67  $DD  WAIT 80帧
+    0x0E68 $AE68  $ED  QUEUE_OBJ $31
+    0x0E6A $AE6A  $DE  WAIT 120帧
+    0x0E6B $AE6B  $EA  CLEAR_RESET
+    0x0E6C $AE6C  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x07 (ID=7)
+  Bank: 3
+  入口: $AE6D
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0xE6D, $AE6D) ──
+    0x0E6D $AE6D  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x0E6F $AE6F  $F9  CALL_8AF7 $11
+    0x0E71 $AE71  $FA  CALL_8AF7B $10
+    0x0E73 $AE73  $FB  CALL_9085
+    0x0E74 $AE74        [01][15]
+    0x0E76 $AE76  $DE  WAIT 120帧
+    0x0E77 $AE77  $ED  QUEUE_OBJ $69
+    0x0E79 $AE79  $E9  YIELD2_CHECK
+    0x0E7A $AE7A  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x0E7C $AE7C  $ED  QUEUE_OBJ $53
+    0x0E7E $AE7E  $F1  LOADsprITE $00
+    0x0E80 $AE80  $EC  COND_SET $00
+    0x0E82 $AE82        [0B]s[00][0E].[0C]1[10][11][1A][00][0D][AD][16]
+    0x0E90 $AE90  $FC  ADVANCE_PTR
+    0x0E91 $AE91        [D1][BA]Lrn[16][12][07][00][0C][01][02][06][02][0C][19]
+    0x0EA1 $AEA1  $FC  ADVANCE_PTR
+    0x0EA2 $AEA2        ^BoMi-[1F][11][1F][0D]{
+    0x0EAD $AEAD  $FC  ADVANCE_PTR
+    0x0EAE $AEAE  $DE  WAIT 120帧
+    0x0EAF $AEAF  $FD  YIELD_FA8
+    0x0EB0 $AEB0  $FB  CALL_9085
+    0x0EB1 $AEB1        [01]X
+    0x0EB3 $AEB3  $F7  TOGGLE_BANK
+    0x0EB4 $AEB4  $F3  VAR_LEN $00
+    0x0EB6 $AEB6        [AA][02][06].[0C]1[03][19][00] [1F]#)[15][06]
+    0x0EC5 $AEC5  $FC  ADVANCE_PTR
+    0x0EC6 $AEC6        hEFo[CF][00][09]/[0C]2[03][0E].
+    0x0ED3 $AED3  $FC  ADVANCE_PTR
+    0x0ED4 $AED4        [02]&[02]&[00]GoHE\[AD][0D]y
+    0x0EE1 $AEE1  $FC  ADVANCE_PTR
+    0x0EE2 $AEE2  $DD  WAIT 80帧
+    0x0EE3 $AEE3  $ED  QUEUE_OBJ $31
+    0x0EE5 $AEE5  $DE  WAIT 120帧
+    0x0EE6 $AEE6  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x0EE8 $AEE8  $EA  CLEAR_RESET
+    0x0EE9 $AEE9  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x08 (ID=8)
+  Bank: 3
+  入口: $AEEA
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0xEEA, $AEEA) ──
+    0x0EEA $AEEA  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x0EEC $AEEC  $F9  CALL_8AF7 $2B
+    0x0EEE $AEEE  $FA  CALL_8AF7B $10
+    0x0EF0 $AEF0  $FB  CALL_9085
+    0x0EF1 $AEF1        [01]C
+    0x0EF3 $AEF3  $DE  WAIT 120帧
+    0x0EF4 $AEF4  $ED  QUEUE_OBJ $69
+    0x0EF6 $AEF6  $E9  YIELD2_CHECK
+    0x0EF7 $AEF7  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x0EF9 $AEF9  $DD  WAIT 80帧
+    0x0EFA $AEFA  $ED  QUEUE_OBJ $4D
+    0x0EFC $AEFC  $F1  LOADsprITE $00
+    0x0EFE $AEFE  $EC  COND_SET $02
+    0x0F00 $AF00        hEFo[CF][1A][00]Kn[CD]Ck[19][0C]2[03](y
+    0x0F12 $AF12  $FC  ADVANCE_PTR
+    0x0F13 $AF13  $DB  WAIT 40帧
+    0x0F14 $AF14        \gbn[B8]-[10][05][0C][00] [A4][14]
+    0x0F21 $AF21  $FC  ADVANCE_PTR
+    0x0F22 $AF22        %[03][0C]2[03]-[07]"[1F][0C][10]y
+    0x0F2E $AF2E  $FC  ADVANCE_PTR
+    0x0F2F $AF2F  $F4  SUB_DISPATCH $06 (SUB6)
+    0x0F31 $AF31        [02]
+    0x0F32 $AF32  $ED  QUEUE_OBJ $62
+    0x0F34 $AF34  $EC  COND_SET $FF
+    0x0F36 $AF36  $EE  CLEAR_WINDOW
+    0x0F37 $AF37  $FB  CALL_9085
+    0x0F38 $AF38        [01]*
+    0x0F3A $AF3A  $F7  TOGGLE_BANK
+    0x0F3B $AF3B  $F3  VAR_LEN $00
+    0x0F3D $AF3D  $DA  WAIT 20帧
+    0x0F3E $AF3E  $FB  CALL_9085
+    0x0F3F $AF3F        [01]+
+    0x0F41 $AF41  $E1  CTRL_E1
+    0x0F42 $AF42        @$/[10][18][00] .[15]y
+    0x0F4C $AF4C  $FC  ADVANCE_PTR
+    0x0F4D $AF4D  $DC  WAIT 60帧
+    0x0F4E $AF4E  $FA  CALL_8AF7B $11
+    0x0F50 $AF50  $FD  YIELD_FA8
+    0x0F51 $AF51  $FB  CALL_9085
+    0x0F52 $AF52        [01];
+    0x0F54 $AF54  $F7  TOGGLE_BANK
+    0x0F55 $AF55  $F3  VAR_LEN $00
+    0x0F57 $AF57  $DC  WAIT 60帧
+    0x0F58 $AF58  $EF  TOGGLE_FLAG
+    0x0F59 $AF59  $E1  CTRL_E1
+    0x0F5A $AF5A        @[12][AF][0B]???
+    0x0F61 $AF61  $DC  WAIT 60帧
+    0x0F62 $AF62        &[08][00]$/[10][15]{
+    0x0F6A $AF6A  $FC  ADVANCE_PTR
+    0x0F6B $AF6B  $DC  WAIT 60帧
+    0x0F6C $AF6C        [01]'[10][15]gB[C3]i[10][11][14][00][AD][01]/[10]
+    0x0F7C $AF7C  $FC  ADVANCE_PTR
+    0x0F7D $AF7D        hEFo[CF]#[00][0A]*[AD][05],([AA]{
+    0x0F8C $AF8C  $FC  ADVANCE_PTR
+    0x0F8D $AF8D  $DE  WAIT 120帧
+    0x0F8E $AF8E  $FD  YIELD_FA8
+    0x0F8F $AF8F  $FB  CALL_9085
+    0x0F90 $AF90        [01]<
+    0x0F92 $AF92  $EF  TOGGLE_FLAG
+    0x0F93 $AF93  $E1  CTRL_E1
+    0x0F94 $AF94        @[AA][A0][00][0E][06][02][16][1A][00][1F][AA][1F][AA]
+    0x0FA2 $AFA2  $FC  ADVANCE_PTR
+    0x0FA3 $AFA3        [0D][A4][02]$[12]'[A0][00][02]).[AA]{
+    0x0FB0 $AFB0  $FC  ADVANCE_PTR
+    0x0FB1 $AFB1  $DC  WAIT 60帧
+    0x0FB2 $AFB2        [1E].[14][03][19][10][10][06][02][1A][00][0A]*[06]'[AA]{
+    0x0FC3 $AFC3  $FC  ADVANCE_PTR
+    0x0FC4 $AFC4  $DE  WAIT 120帧
+    0x0FC5 $AFC5  $EA  CLEAR_RESET
+    0x0FC6 $AFC6  $FD  YIELD_FA8
+    0x0FC7 $AFC7  $F9  CALL_8AF7 $0F
+    0x0FC9 $AFC9  $FB  CALL_9085
+    0x0FCA $AFCA        [01][0C]
+    0x0FCC $AFCC  $E9  YIELD2_CHECK
+    0x0FCD $AFCD  $ED  QUEUE_OBJ $62
+    0x0FCF $AFCF  $E1  CTRL_E1
+    0x0FD0 $AFD0        @$/[10][A8][00][12][AF][0B]y
+    0x0FDA $AFDA  $FC  ADVANCE_PTR
+    0x0FDB $AFDB        [05]*[10][11][19][00]%[03][0C]2[03][AA]y
+    0x0FE8 $AFE8  $FC  ADVANCE_PTR
+    0x0FE9 $AFE9  $DC  WAIT 60帧
+    0x0FEA $AFEA  $E1  CTRL_E1
+    0x0FEB $AFEB        @[0A]*#[00] .[15][19][05][06][A3][AA]&
+    0x0FF9 $AFF9  $FC  ADVANCE_PTR
+    0x0FFA $AFFA  $DB  WAIT 40帧
+    0x0FFB $AFFB        [01]([A0][14][03]y
+    0x1001 $B001  $FC  ADVANCE_PTR
+    0x1002 $B002  $DE  WAIT 120帧
+    0x1003 $B003  $FD  YIELD_FA8
+    0x1004 $B004  $F2  SET_MODE $02
+    0x1006 $B006  $DC  WAIT 60帧
+    0x1007 $B007  $E1  CTRL_E1
+    0x1008 $B008        @[12][AF][0B]yy
+    0x100E $B00E  $FC  ADVANCE_PTR
+    0x100F $B00F  $DC  WAIT 60帧
+    0x1010 $B010  $FD  YIELD_FA8
+    0x1011 $B011  $FA  CALL_8AF7B $10
+    0x1013 $B013  $FB  CALL_9085
+    0x1014 $B014        [01][13]
+    0x1016 $B016  $F7  TOGGLE_BANK
+    0x1017 $B017  $F3  VAR_LEN $00
+    0x1019 $B019  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x101B $B01B  $E1  CTRL_E1
+    0x101C $B01C        @[04]/
+    0x101F $B01F  $FC  ADVANCE_PTR
+    0x1020 $B020  $DC  WAIT 60帧
+    0x1021 $B021  $FD  YIELD_FA8
+    0x1022 $B022  $FB  CALL_9085
+    0x1023 $B023        [01][12]
+    0x1025 $B025  $FA  CALL_8AF7B $11
+    0x1027 $B027  $DC  WAIT 60帧
+    0x1028 $B028  $FB  CALL_9085
+    0x1029 $B029        [01][15]
+    0x102B $B02B  $F7  TOGGLE_BANK
+    0x102C $B02C  $F3  VAR_LEN $00
+    0x102E $B02E  $F2  SET_MODE $08
+    0x1030 $B030  $DC  WAIT 60帧
+    0x1031 $B031  $E1  CTRL_E1
+    0x1032 $B032        @FikM???
+    0x103A $B03A  $FC  ADVANCE_PTR
+    0x103B $B03B  $DD  WAIT 80帧
+    0x103C $B03C  $FD  YIELD_FA8
+    0x103D $B03D  $FB  CALL_9085
+    0x103E $B03E        [01]c
+    0x1040 $B040  $E1  CTRL_E1
+    0x1041 $B041  $DC  WAIT 60帧
+    0x1042 $B042        @[0A][19][10][02][06][02][00][1A][A6]"[13][1F][09][10]&z
+    0x1053 $B053  $FC  ADVANCE_PTR
+    0x1054 $B054  $DB  WAIT 40帧
+    0x1055 $B055        [0B][0D][A0][00]k[C6]iT[A0][00] [0A].[AA][05][14][0A][AA]{
+    0x1068 $B068  $FC  ADVANCE_PTR
+    0x1069 $B069  $DC  WAIT 60帧
+    0x106A $B06A        [12][AF][0B]z
+    0x106E $B06E  $DB  WAIT 40帧
+    0x106F $B06F        %[03][0C]2[03][00][05]"[AD][14][03]{
+    0x107B $B07B  $FC  ADVANCE_PTR
+    0x107C $B07C  $DE  WAIT 120帧
+    0x107D $B07D  $EA  CLEAR_RESET
+    0x107E $B07E  $FD  YIELD_FA8
+    0x107F $B07F  $F9  CALL_8AF7 $06
+    0x1081 $B081  $FB  CALL_9085
+    0x1082 $B082        [01][A3]
+    0x1084 $B084  $F3  VAR_LEN $00
+    0x1086 $B086  $ED  QUEUE_OBJ $25
+    0x1088 $B088  $F5  SUB_DISPATCH2 $08 (SUB_$8)
+    0x108A $B08A  $DA  WAIT 20帧
+    0x108B $B08B  $F7  TOGGLE_BANK
+    0x108C $B08C  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x108E $B08E  $ED  QUEUE_OBJ $62
+    0x1090 $B090  $DE  WAIT 120帧
+    0x1091 $B091  $EA  CLEAR_RESET
+    0x1092 $B092  $F9  CALL_8AF7 $10
+    0x1094 $B094  $FA  CALL_8AF7B $11
+    0x1096 $B096  $FB  CALL_9085
+    0x1097 $B097        [01]N
+    0x1099 $B099  $E9  YIELD2_CHECK
+    0x109A $B09A  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x109C $B09C  $E1  CTRL_E1
+    0x109D $B09D        @FikMz
+    0x10A3 $B0A3  $DB  WAIT 40帧
+    0x10A4 $B0A4        [01]([A0][14][03]{
+    0x10AA $B0AA  $FC  ADVANCE_PTR
+    0x10AB $B0AB  $DE  WAIT 120帧
+    0x10AC $B0AC  $FD  YIELD_FA8
+    0x10AD $B0AD  $FB  CALL_9085
+    0x10AE $B0AE        [01]c
+    0x10B0 $B0B0  $F7  TOGGLE_BANK
+    0x10B1 $B0B1  $F3  VAR_LEN $00
+    0x10B3 $B0B3  $E1  CTRL_E1
+    0x10B4 $B0B4        @[12][A1][16][00][01][03][19][1A][00][CF]k[19][B6]gCn[C2][19]
+    0x10C7 $B0C7  $FC  ADVANCE_PTR
+    0x10C8 $B0C8        [03][04][06]#[15]z
+    0x10CE $B0CE  $DB  WAIT 40帧
+    0x10CF $B0CF        [0F][19][14][07][1A][00][1F][09][15][02][A8]{
+    0x10DB $B0DB  $FC  ADVANCE_PTR
+    0x10DC $B0DC  $DE  WAIT 120帧
+    0x10DD $B0DD  $FD  YIELD_FA8
+    0x10DE $B0DE  $FB  CALL_9085
+    0x10DF $B0DF        [01]N
+    0x10E1 $B0E1  $F7  TOGGLE_BANK
+    0x10E2 $B0E2  $F3  VAR_LEN $00
+    0x10E4 $B0E4  $E1  CTRL_E1
+    0x10E5 $B0E5        @[19][A9]![14][0A]+[0B]{
+    0x10EE $B0EE  $FC  ADVANCE_PTR
+    0x10EF $B0EF  $EF  TOGGLE_FLAG
+    0x10F0 $B0F0  $DE  WAIT 120帧
+    0x10F1 $B0F1  $F2  SET_MODE $04
+    0x10F3 $B0F3  $E1  CTRL_E1
+    0x10F4 $B0F4        @[0C]2[08].z
+    0x10FA $B0FA  $DB  WAIT 40帧
+    0x10FB $B0FB  $ED  QUEUE_OBJ $01
+    0x10FD $B0FD        [1F][AA][00][1B][14][0C]2[03][B1][00][01])[A9]y
+    0x110B $B10B  $FC  ADVANCE_PTR
+    0x110C $B10C  $FB  CALL_9085
+    0x110D $B10D        [01][12]
+    0x110F $B10F  $DE  WAIT 120帧
+    0x1110 $B110  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x1112 $B112  $FD  YIELD_FA8
+    0x1113 $B113  $FA  CALL_8AF7B $23
+    0x1115 $B115  $FB  CALL_9085
+    0x1116 $B116        [01][AE]
+    0x1118 $B118  $F7  TOGGLE_BANK
+    0x1119 $B119  $F3  VAR_LEN $00
+    0x111B $B11B  $F5  SUB_DISPATCH2 $08 (SUB_$8)
+    0x111D $B11D  $ED  QUEUE_OBJ $43
+    0x111F $B11F  $DE  WAIT 120帧
+    0x1120 $B120  $FA  CALL_8AF7B $10
+    0x1122 $B122  $FB  CALL_9085
+    0x1123 $B123        [01]@
+    0x1125 $B125  $F7  TOGGLE_BANK
+    0x1126 $B126  $F3  VAR_LEN $00
+    0x1128 $B128  $ED  QUEUE_OBJ $52
+    0x112A $B12A  $DB  WAIT 40帧
+    0x112B $B12B  $EF  TOGGLE_FLAG
+    0x112C $B12C  $E1  CTRL_E1
+    0x112D $B12D        @[06][10][A1]([0B].z
+    0x1135 $B135  $DB  WAIT 40帧
+    0x1136 $B136        [AE][03][0C][13][00][0A][0A][16]yy
+    0x1140 $B140  $FC  ADVANCE_PTR
+    0x1141 $B141  $DE  WAIT 120帧
+    0x1142 $B142  $F3  VAR_LEN $FF $24 $42 (3字节, $FF模式)
+    0x1146 $B146  $F6  CALL_FA8 $06
+    0x1148 $B148  $F3  VAR_LEN $FF $23 $41 (3字节, $FF模式)
+    0x114C $B14C  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x114E $B14E  $FD  YIELD_FA8
+    0x114F $B14F  $ED  QUEUE_OBJ $53
+    0x1151 $B151  $DD  WAIT 80帧
+    0x1152 $B152  $F2  SET_MODE $06
+    0x1154 $B154  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x1156 $B156  $E2  CTRL_E2
+    0x1157 $B157        [A3][07][0E].[19][0D][04][00]%[03][0C]2[03]-[13][16][0C][10]
+    0x1169 $B169  $FC  ADVANCE_PTR
+    0x116A $B16A  $E2  CTRL_E2
+    0x116B $B16B        Kn[CD]Ck[86][83]
+    0x1172 $B172  $DB  WAIT 40帧
+    0x1173 $B173        [00][0F][0A][16][1A][00][01][10]'[0C][02]
+    0x117E $B17E  $FC  ADVANCE_PTR
+    0x117F $B17F  $E2  CTRL_E2
+    0x1180 $B180        [0E][06][02][AD][00][CF]k-"[A5][0D][00][12][AF][0B][A0][02][10]
+    0x1192 $B192  $EB  YIELD_CALL
+    0x1193 $B193        [AA][A0][00][14][12][A6]2[00][12][AF][0B][19][1F][04][16]
+    0x11A2 $B1A2  $FC  ADVANCE_PTR
+    0x11A3 $B1A3  $E2  CTRL_E2
+    0x11A4 $B1A4        [01]',*[10][00][06][10][A1]([16]&/[13]
+    0x11B2 $B1B2  $DB  WAIT 40帧
+    0x11B3 $B1B3        [00][A6][10][02][1A]
+    0x11B8 $B1B8  $FC  ADVANCE_PTR
+    0x11B9 $B1B9  $E2  CTRL_E2
+    0x11BA $B1BA        [01]'[10][15][13].[06][02]-[00]![06][04])[0A][14][16][15])
+    0x11CD $B1CD  $EB  YIELD_CALL
+    0x11CE $B1CE        [02]/[CC][03][00]4[0C]1[03][06].[1F][04][19]
+    0x11DC $B1DC  $FC  ADVANCE_PTR
+    0x11DD $B1DD        [00][00][00][16][1E].[AD][1A]???
+    0x11E8 $B1E8  $FC  ADVANCE_PTR
+    0x11E9 $B1E9  $DE  WAIT 120帧
+    0x11EA $B1EA  $EA  CLEAR_RESET
+    0x11EB $B1EB  $ED  QUEUE_OBJ $31
+    0x11ED $B1ED  $DE  WAIT 120帧
+    0x11EE $B1EE  $ED  QUEUE_OBJ $01
+    0x11F0 $B1F0  $FD  YIELD_FA8
+    0x11F1 $B1F1  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x11F3 $B1F3  $DF  WAIT 240帧
+    0x11F4 $B1F4  $ED  QUEUE_OBJ $69
+    0x11F6 $B1F6  $DE  WAIT 120帧
+    0x11F7 $B1F7  $F9  CALL_8AF7 $0C
+    0x11F9 $B1F9  $FB  CALL_9085
+    0x11FA $B1FA        [01]C
+    0x11FC $B1FC  $E9  YIELD2_CHECK
+    0x11FD $B1FD  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x11FF $B1FF  $ED  QUEUE_OBJ $51
+    0x1201 $B201  $F1  LOADsprITE $00
+    0x1203 $B203  $EC  COND_SET $00
+    0x1205 $B205  $F2  SET_MODE $08
+    0x1207 $B207        [06][0A][00]5[18].[19][00]%[03][0C]2[03]-
+    0x1215 $B215  $FC  ADVANCE_PTR
+    0x1216 $B216        [15].[06][12]z
+    0x121B $B21B  $DA  WAIT 20帧
+    0x121C $B21C        [14][03][1E][03][A0][00],[09][01][02]
+    0x1226 $B226  $FC  ADVANCE_PTR
+    0x1227 $B227        [91]5[09]/[0E].[19][00][0C]%[03]-[09]/[0D])
+    0x1237 $B237  $FC  ADVANCE_PTR
+    0x1238 $B238        [14][07][A0][00][07][1F][0C][10]{
+    0x1241 $B241  $EB  YIELD_CALL
+    0x1242 $B242        [1C]%[19][00][A8].[0A][08][0A][03][0A][03]KoF}
+    0x1252 $B252  $FC  ADVANCE_PTR
+    0x1253 $B253        [0E].[0C]1[09].[10][02][06][02]
+    0x125D $B25D  $FC  ADVANCE_PTR
+    0x125E $B25E        [12][02][16][00][06][02][1F][08][AD][0D]y
+    0x1269 $B269  $FC  ADVANCE_PTR
+    0x126A $B26A  $FA  CALL_8AF7B $11
+    0x126C $B26C  $EB  YIELD_CALL
+    0x126D $B26D  $ED  QUEUE_OBJ $62
+    0x126F $B26F  $FB  CALL_9085
+    0x1270 $B270        [01]I
+    0x1272 $B272  $F7  TOGGLE_BANK
+    0x1273 $B273  $F3  VAR_LEN $00
+    0x1275 $B275  $FA  CALL_8AF7B $10
+    0x1277 $B277        %[03][0C]2[03][0A][03][1E][19][00][1B][14][12]
+    0x1284 $B284  $FC  ADVANCE_PTR
+    0x1285 $B285        [05][14][14][0C][91]4[19][00][14][03][1E][03]-[1B][07][02])
+    0x1296 $B296  $FC  ADVANCE_PTR
+    0x1297 $B297        Gp[CF]Sn[00][1B]1[03][A0][08].{
+    0x12A4 $B2A4  $EB  YIELD_CALL
+    0x12A5 $B2A5  $ED  QUEUE_OBJ $62
+    0x12A7 $B2A7  $FB  CALL_9085
+    0x12A8 $B2A8        [01][1E]
+    0x12AA $B2AA  $F7  TOGGLE_BANK
+    0x12AB $B2AB  $F3  VAR_LEN $00
+    0x12AD $B2AD  $FA  CALL_8AF7B $2B
+    0x12AF $B2AF        [0B][08][18].[91]4[00][0F][0C][13][00][91]5[10]/[0E][02][16]
+    0x12C1 $B2C1  $FC  ADVANCE_PTR
+    0x12C2 $B2C2        #[04])[00][15].[06][12]Gp[CF]Sn
+    0x12CF $B2CF  $FC  ADVANCE_PTR
+    0x12D0 $B2D0         [0B][07][08].{
+    0x12D6 $B2D6  $EB  YIELD_CALL
+    0x12D7 $B2D7  $FB  CALL_9085
+    0x12D8 $B2D8        [01]C
+    0x12DA $B2DA  $F7  TOGGLE_BANK
+    0x12DB $B2DB  $EC  COND_SET $05
+    0x12DD $B2DD  $ED  QUEUE_OBJ $62
+    0x12DF $B2DF        [0A][0A][00][0A][08]([12][07]2[03][A1][A6]2[03][16]
+    0x12EE $B2EE  $FC  ADVANCE_PTR
+    0x12EF $B2EF        [1F][07][05][0A])[00]^oT\sBTy
+    0x12FD $B2FD  $FC  ADVANCE_PTR
+    0x12FE $B2FE  $DB  WAIT 40帧
+    0x12FF $B2FF        [0C].[08][19][00]%[03][0C]2[03][07]-"[A5][0D]
+    0x130E $B30E  $FC  ADVANCE_PTR
+    0x130F $B30F        [10][10][06][02][A0][00][1A][A6][1F]([1F][0D]{
+    0x131C $B31C  $FC  ADVANCE_PTR
+    0x131D $B31D  $DE  WAIT 120帧
+    0x131E $B31E  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x1320 $B320  $EA  CLEAR_RESET
+    0x1321 $B321  $ED  QUEUE_OBJ $31
+    0x1323 $B323  $DE  WAIT 120帧
+    0x1324 $B324  $ED  QUEUE_OBJ $01
+    0x1326 $B326  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x09 (ID=9)
+  Bank: 3
+  入口: $B1F1
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x11F1, $B1F1) ──
+    0x11F1 $B1F1  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x11F3 $B1F3  $DF  WAIT 240帧
+    0x11F4 $B1F4  $ED  QUEUE_OBJ $69
+    0x11F6 $B1F6  $DE  WAIT 120帧
+    0x11F7 $B1F7  $F9  CALL_8AF7 $0C
+    0x11F9 $B1F9  $FB  CALL_9085
+    0x11FA $B1FA        [01]C
+    0x11FC $B1FC  $E9  YIELD2_CHECK
+    0x11FD $B1FD  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x11FF $B1FF  $ED  QUEUE_OBJ $51
+    0x1201 $B201  $F1  LOADsprITE $00
+    0x1203 $B203  $EC  COND_SET $00
+    0x1205 $B205  $F2  SET_MODE $08
+    0x1207 $B207        [06][0A][00]5[18].[19][00]%[03][0C]2[03]-
+    0x1215 $B215  $FC  ADVANCE_PTR
+    0x1216 $B216        [15].[06][12]z
+    0x121B $B21B  $DA  WAIT 20帧
+    0x121C $B21C        [14][03][1E][03][A0][00],[09][01][02]
+    0x1226 $B226  $FC  ADVANCE_PTR
+    0x1227 $B227        [91]5[09]/[0E].[19][00][0C]%[03]-[09]/[0D])
+    0x1237 $B237  $FC  ADVANCE_PTR
+    0x1238 $B238        [14][07][A0][00][07][1F][0C][10]{
+    0x1241 $B241  $EB  YIELD_CALL
+    0x1242 $B242        [1C]%[19][00][A8].[0A][08][0A][03][0A][03]KoF}
+    0x1252 $B252  $FC  ADVANCE_PTR
+    0x1253 $B253        [0E].[0C]1[09].[10][02][06][02]
+    0x125D $B25D  $FC  ADVANCE_PTR
+    0x125E $B25E        [12][02][16][00][06][02][1F][08][AD][0D]y
+    0x1269 $B269  $FC  ADVANCE_PTR
+    0x126A $B26A  $FA  CALL_8AF7B $11
+    0x126C $B26C  $EB  YIELD_CALL
+    0x126D $B26D  $ED  QUEUE_OBJ $62
+    0x126F $B26F  $FB  CALL_9085
+    0x1270 $B270        [01]I
+    0x1272 $B272  $F7  TOGGLE_BANK
+    0x1273 $B273  $F3  VAR_LEN $00
+    0x1275 $B275  $FA  CALL_8AF7B $10
+    0x1277 $B277        %[03][0C]2[03][0A][03][1E][19][00][1B][14][12]
+    0x1284 $B284  $FC  ADVANCE_PTR
+    0x1285 $B285        [05][14][14][0C][91]4[19][00][14][03][1E][03]-[1B][07][02])
+    0x1296 $B296  $FC  ADVANCE_PTR
+    0x1297 $B297        Gp[CF]Sn[00][1B]1[03][A0][08].{
+    0x12A4 $B2A4  $EB  YIELD_CALL
+    0x12A5 $B2A5  $ED  QUEUE_OBJ $62
+    0x12A7 $B2A7  $FB  CALL_9085
+    0x12A8 $B2A8        [01][1E]
+    0x12AA $B2AA  $F7  TOGGLE_BANK
+    0x12AB $B2AB  $F3  VAR_LEN $00
+    0x12AD $B2AD  $FA  CALL_8AF7B $2B
+    0x12AF $B2AF        [0B][08][18].[91]4[00][0F][0C][13][00][91]5[10]/[0E][02][16]
+    0x12C1 $B2C1  $FC  ADVANCE_PTR
+    0x12C2 $B2C2        #[04])[00][15].[06][12]Gp[CF]Sn
+    0x12CF $B2CF  $FC  ADVANCE_PTR
+    0x12D0 $B2D0         [0B][07][08].{
+    0x12D6 $B2D6  $EB  YIELD_CALL
+    0x12D7 $B2D7  $FB  CALL_9085
+    0x12D8 $B2D8        [01]C
+    0x12DA $B2DA  $F7  TOGGLE_BANK
+    0x12DB $B2DB  $EC  COND_SET $05
+    0x12DD $B2DD  $ED  QUEUE_OBJ $62
+    0x12DF $B2DF        [0A][0A][00][0A][08]([12][07]2[03][A1][A6]2[03][16]
+    0x12EE $B2EE  $FC  ADVANCE_PTR
+    0x12EF $B2EF        [1F][07][05][0A])[00]^oT\sBTy
+    0x12FD $B2FD  $FC  ADVANCE_PTR
+    0x12FE $B2FE  $DB  WAIT 40帧
+    0x12FF $B2FF        [0C].[08][19][00]%[03][0C]2[03][07]-"[A5][0D]
+    0x130E $B30E  $FC  ADVANCE_PTR
+    0x130F $B30F        [10][10][06][02][A0][00][1A][A6][1F]([1F][0D]{
+    0x131C $B31C  $FC  ADVANCE_PTR
+    0x131D $B31D  $DE  WAIT 120帧
+    0x131E $B31E  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x1320 $B320  $EA  CLEAR_RESET
+    0x1321 $B321  $ED  QUEUE_OBJ $31
+    0x1323 $B323  $DE  WAIT 120帧
+    0x1324 $B324  $ED  QUEUE_OBJ $01
+    0x1326 $B326  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x0A (ID=10)
+  Bank: 3
+  入口: $B327
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x1327, $B327) ──
+    0x1327 $B327  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x1329 $B329  $ED  QUEUE_OBJ $01
+    0x132B $B32B  $DE  WAIT 120帧
+    0x132C $B32C  $ED  QUEUE_OBJ $69
+    0x132E $B32E  $DC  WAIT 60帧
+    0x132F $B32F  $F9  CALL_8AF7 $19
+    0x1331 $B331  $FB  CALL_9085
+    0x1332 $B332        [01][18]
+    0x1334 $B334  $E9  YIELD2_CHECK
+    0x1335 $B335  $ED  QUEUE_OBJ $53
+    0x1337 $B337  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x1339 $B339  $F1  LOADsprITE $00
+    0x133B $B33B  $EC  COND_SET $05
+    0x133D $B33D        [0B]s[00]![0B][0C][1A][00][12][02][16]
+    0x1348 $B348  $FC  ADVANCE_PTR
+    0x1349 $B349         [0D][A1][08].-[14][03][16]1[03]y
+    0x1355 $B355  $FC  ADVANCE_PTR
+    0x1356 $B356  $DB  WAIT 40帧
+    0x1357 $B357        [0A][03][1A].[00][0C]2[03][B1][16][AD][1F][0D]{
+    0x1365 $B365  $FC  ADVANCE_PTR
+    0x1366 $B366  $DD  WAIT 80帧
+    0x1367 $B367  $FA  CALL_8AF7B $30
+    0x1369 $B369  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x136B $B36B  $FD  YIELD_FA8
+    0x136C $B36C  $EC  COND_SET $FF
+    0x136E $B36E  $EE  CLEAR_WINDOW
+    0x136F $B36F  $FB  CALL_9085
+    0x1370 $B370        [01].
+    0x1372 $B372  $F7  TOGGLE_BANK
+    0x1373 $B373  $F3  VAR_LEN $00
+    0x1375 $B375  $FA  CALL_8AF7B $11
+    0x1377 $B377  $E4  CTRL_E4
+    0x1378 $B378        $&[02]@[A6]1.z
+    0x1380 $B380  $DB  WAIT 40帧
+    0x1381 $B381        [A0].[AF]/[13]???
+    0x1389 $B389  $FC  ADVANCE_PTR
+    0x138A $B38A  $DE  WAIT 120帧
+    0x138B $B38B  $FD  YIELD_FA8
+    0x138C $B38C  $FB  CALL_9085
+    0x138D $B38D        [01] 
+    0x138F $B38F  $F7  TOGGLE_BANK
+    0x1390 $B390  $F3  VAR_LEN $00
+    0x1392 $B392  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x1394 $B394  $DD  WAIT 80帧
+    0x1395 $B395  $EF  TOGGLE_FLAG
+    0x1396 $B396  $E1  CTRL_E1
+    0x1397 $B397        @[B3][08][1A][00][1F][10][00][06][04]/[13][07][10].[AA]z
+    0x13A8 $B3A8  $FC  ADVANCE_PTR
+    0x13A9 $B3A9  $DB  WAIT 40帧
+    0x13AA $B3AA        [0A][19][B6]gCn[C2][16]???
+    0x13B5 $B3B5  $FC  ADVANCE_PTR
+    0x13B6 $B3B6  $DE  WAIT 120帧
+    0x13B7 $B3B7  $FD  YIELD_FA8
+    0x13B8 $B3B8  $E1  CTRL_E1
+    0x13B9 $B3B9        @ [0B][07][08].z
+    0x13C0 $B3C0  $DB  WAIT 40帧
+    0x13C1 $B3C1        [07] [10][11][19][CF]jB[1A]
+    0x13CA $B3CA  $FC  ADVANCE_PTR
+    0x13CB $B3CB        [A6]1[03][B1].[00] [0E][13]#'/[10]{
+    0x13D9 $B3D9  $FC  ADVANCE_PTR
+    0x13DA $B3DA  $DC  WAIT 60帧
+    0x13DB $B3DB        [0A].[AE][1A][00][B3][08][19][AF].[AA]y
+    0x13E7 $B3E7  $FC  ADVANCE_PTR
+    0x13E8 $B3E8  $DD  WAIT 80帧
+    0x13E9 $B3E9  $ED  QUEUE_OBJ $31
+    0x13EB $B3EB  $DE  WAIT 120帧
+    0x13EC $B3EC  $EA  CLEAR_RESET
+    0x13ED $B3ED  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x0B (ID=11)
+  Bank: 3
+  入口: $B3EE
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x13EE, $B3EE) ──
+    0x13EE $B3EE  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x13F0 $B3F0  $F9  CALL_8AF7 $10
+    0x13F2 $B3F2  $FA  CALL_8AF7B $11
+    0x13F4 $B3F4  $FB  CALL_9085
+    0x13F5 $B3F5        [01][1B]
+    0x13F7 $B3F7  $DE  WAIT 120帧
+    0x13F8 $B3F8  $E9  YIELD2_CHECK
+    0x13F9 $B3F9  $ED  QUEUE_OBJ $47
+    0x13FB $B3FB  $DD  WAIT 80帧
+    0x13FC $B3FC  $E1  CTRL_E1
+    0x13FD $B3FD        @ [0D][A1][08].z
+    0x1404 $B404  $FC  ADVANCE_PTR
+    0x1405 $B405  $DB  WAIT 40帧
+    0x1406 $B406        [07] [1A][00][1F][0B][06]
+    0x140D $B40D  $EF  TOGGLE_FLAG
+    0x140E $B40E        ???
+    0x1411 $B411  $FC  ADVANCE_PTR
+    0x1412 $B412  $DE  WAIT 120帧
+    0x1413 $B413  $FD  YIELD_FA8
+    0x1414 $B414  $FB  CALL_9085
+    0x1415 $B415        [01] 
+    0x1417 $B417  $F7  TOGGLE_BANK
+    0x1418 $B418  $F3  VAR_LEN $00
+    0x141A $B41A  $E1  CTRL_E1
+    0x141B $B41B  $DC  WAIT 60帧
+    0x141C $B41C        @[07] [16][1A][00][06][08][0E][15][02][18]{
+    0x1429 $B429  $FC  ADVANCE_PTR
+    0x142A $B42A  $DC  WAIT 60帧
+    0x142B $B42B        [10][0C][06][16][00][B3][08][19][0C].[A9][03][1A][00][1F][AA]
+    0x143B $B43B  $FC  ADVANCE_PTR
+    0x143C $B43C        [1C][06].[A8].[AA]{
+    0x1443 $B443  $EB  YIELD_CALL
+    0x1444 $B444  $E1  CTRL_E1
+    0x1445 $B445        @[AA][09][AE][00][0A][03][0C][13][00][0C][01][02]-[0D])[10][B0][16]
+    0x1458 $B458  $FC  ADVANCE_PTR
+    0x1459 $B459  $DB  WAIT 40帧
+    0x145A $B45A        [B3][08][19][0C].[A9][03][1A][00][0D][0A][0C][A7][12][AA][09][AE]
+    0x146B $B46B  $FC  ADVANCE_PTR
+    0x146C $B46C        [12]&[08][15]).[AA]{
+    0x1474 $B474  $EB  YIELD_CALL
+    0x1475 $B475  $E1  CTRL_E1
+    0x1476 $B476        @[10][14][04][00]4[CA].$5[1C].[0C][06]
+    0x1484 $B484  $FC  ADVANCE_PTR
+    0x1485 $B485        [CF]jB[AD][07][15][08][13]#[00][B3][08][1A][00][06][15]'[A7]
+    0x1497 $B497  $FC  ADVANCE_PTR
+    0x1498 $B498        [B6]gCn[C2][16][10][12]{
+    0x14A1 $B4A1  $EB  YIELD_CALL
+    0x14A2 $B4A2  $E1  CTRL_E1
+    0x14A3 $B4A3        @[0F][0C][13][02][12][06]z
+    0x14AB $B4AB  $DB  WAIT 40帧
+    0x14AC $B4AC        [0A][19][00][0C].[A9][03][B0]2[03][16]#
+    0x14B8 $B4B8  $FC  ADVANCE_PTR
+    0x14B9 $B4B9        [03][11][06]/[13] [0E]){
+    0x14C2 $B4C2  $DC  WAIT 60帧
+    0x14C3 $B4C3        [00][B3][08][1A][00]KoF}-
+    0x14CD $B4CD  $FC  ADVANCE_PTR
+    0x14CE $B4CE        [01][07]'"[10]([0C][15][02]&{
+    0x14D9 $B4D9  $EB  YIELD_CALL
+    0x14DA $B4DA  $FB  CALL_9085
+    0x14DB $B4DB        [01][19]
+    0x14DD $B4DD  $F7  TOGGLE_BANK
+    0x14DE $B4DE  $F3  VAR_LEN $00
+    0x14E0 $B4E0  $FA  CALL_8AF7B $30
+    0x14E2 $B4E2  $E1  CTRL_E1
+    0x14E3 $B4E3        @ [0D][A1][08].
+    0x14E9 $B4E9  $EF  TOGGLE_FLAG
+    0x14EA $B4EA        ???
+    0x14ED $B4ED  $FC  ADVANCE_PTR
+    0x14EE $B4EE  $DE  WAIT 120帧
+    0x14EF $B4EF  $FD  YIELD_FA8
+    0x14F0 $B4F0  $FB  CALL_9085
+    0x14F1 $B4F1        [01].
+    0x14F3 $B4F3  $F7  TOGGLE_BANK
+    0x14F4 $B4F4  $F3  VAR_LEN $00
+    0x14F6 $B4F6  $E1  CTRL_E1
+    0x14F7 $B4F7  $DC  WAIT 60帧
+    0x14F8 $B4F8        @[A6]1.???
+    0x14FF $B4FF  $FC  ADVANCE_PTR
+    0x1500 $B500  $DD  WAIT 80帧
+    0x1501 $B501  $ED  QUEUE_OBJ $31
+    0x1503 $B503  $DE  WAIT 120帧
+    0x1504 $B504  $EA  CLEAR_RESET
+    0x1505 $B505  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x0C (ID=12)
+  Bank: 3
+  入口: $B506
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x1506, $B506) ──
+    0x1506 $B506  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x1508 $B508  $F9  CALL_8AF7 $11
+    0x150A $B50A  $FA  CALL_8AF7B $10
+    0x150C $B50C  $FB  CALL_9085
+    0x150D $B50D        [01][1D]
+    0x150F $B50F  $DE  WAIT 120帧
+    0x1510 $B510  $E9  YIELD2_CHECK
+    0x1511 $B511  $ED  QUEUE_OBJ $53
+    0x1513 $B513  $DD  WAIT 80帧
+    0x1514 $B514  $E1  CTRL_E1
+    0x1515 $B515        @ [0B][07]z
+    0x151A $B51A  $DB  WAIT 40帧
+    0x151B $B51B        [AA][14][03][00][15].[06][12][1A]
+    0x1524 $B524  $FC  ADVANCE_PTR
+    0x1525 $B525        [07]2[03][00][1A][10][0B][0E][13]#'[03][A8]{
+    0x1533 $B533  $FC  ADVANCE_PTR
+    0x1534 $B534  $DE  WAIT 120帧
+    0x1535 $B535  $FD  YIELD_FA8
+    0x1536 $B536  $FB  CALL_9085
+    0x1537 $B537        [01][1B]
+    0x1539 $B539  $F7  TOGGLE_BANK
+    0x153A $B53A  $F3  VAR_LEN $00
+    0x153C $B53C  $E1  CTRL_E1
+    0x153D $B53D        @[1F][12]$[1F]z
+    0x1543 $B543  $DB  WAIT 40帧
+    0x1544 $B544        [05]*[1A][00][1F][09][15][02]y
+    0x154D $B54D  $FC  ADVANCE_PTR
+    0x154E $B54E  $DD  WAIT 80帧
+    0x154F $B54F  $FA  CALL_8AF7B $30
+    0x1551 $B551  $FD  YIELD_FA8
+    0x1552 $B552  $FB  CALL_9085
+    0x1553 $B553        [01]/
+    0x1555 $B555  $F7  TOGGLE_BANK
+    0x1556 $B556  $F3  VAR_LEN $00
+    0x1558 $B558  $FA  CALL_8AF7B $10
+    0x155A $B55A  $E1  CTRL_E1
+    0x155B $B55B  $DC  WAIT 60帧
+    0x155C $B55C        @[1F][12]$[1F][08].z
+    0x1564 $B564  $DB  WAIT 40帧
+    0x1565 $B565        [A0].[AF]/[13]???
+    0x156D $B56D  $FC  ADVANCE_PTR
+    0x156E $B56E  $DE  WAIT 120帧
+    0x156F $B56F  $FD  YIELD_FA8
+    0x1570 $B570  $FB  CALL_9085
+    0x1571 $B571        [01][1C]
+    0x1573 $B573  $F7  TOGGLE_BANK
+    0x1574 $B574  $F3  VAR_LEN $00
+    0x1576 $B576  $DC  WAIT 60帧
+    0x1577 $B577  $EF  TOGGLE_FLAG
+    0x1578 $B578  $E1  CTRL_E1
+    0x1579 $B579        @[1C][A6][0B],z
+    0x157F $B57F  $DB  WAIT 40帧
+    0x1580 $B580         [13][02][13][08]*???
+    0x1589 $B589  $FC  ADVANCE_PTR
+    0x158A $B58A  $DD  WAIT 80帧
+    0x158B $B58B  $ED  QUEUE_OBJ $31
+    0x158D $B58D  $DE  WAIT 120帧
+    0x158E $B58E  $EA  CLEAR_RESET
+    0x158F $B58F  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x0D (ID=13)
+  Bank: 3
+  入口: $B590
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x1590, $B590) ──
+    0x1590 $B590  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x1592 $B592  $F9  CALL_8AF7 $11
+    0x1594 $B594  $FA  CALL_8AF7B $10
+    0x1596 $B596  $FB  CALL_9085
+    0x1597 $B597        [01][1D]
+    0x1599 $B599  $DE  WAIT 120帧
+    0x159A $B59A  $E9  YIELD2_CHECK
+    0x159B $B59B  $ED  QUEUE_OBJ $47
+    0x159D $B59D  $DD  WAIT 80帧
+    0x159E $B59E  $E1  CTRL_E1
+    0x159F $B59F        @ [0B][07]z
+    0x15A4 $B5A4  $DB  WAIT 40帧
+    0x15A5 $B5A5        [08]$[0C][02][A0][00][05]*[10][11][19][1F][09][AA]{
+    0x15B4 $B5B4  $FC  ADVANCE_PTR
+    0x15B5 $B5B5  $DC  WAIT 60帧
+    0x15B6 $B5B6        [14][03][14][03][00][05][1F][04][16][1A][00][06][13][15][06]/[10][15]{
+    0x15C9 $B5C9  $EB  YIELD_CALL
+    0x15CA $B5CA  $FB  CALL_9085
+    0x15CB $B5CB        [01][19]
+    0x15CD $B5CD  $F7  TOGGLE_BANK
+    0x15CE $B5CE  $F3  VAR_LEN $00
+    0x15D0 $B5D0  $E1  CTRL_E1
+    0x15D1 $B5D1        @[1F][12]$[1F]
+    0x15D6 $B5D6  $EF  TOGGLE_FLAG
+    0x15D7 $B5D7        ???
+    0x15DA $B5DA  $FC  ADVANCE_PTR
+    0x15DB $B5DB  $DE  WAIT 120帧
+    0x15DC $B5DC  $FD  YIELD_FA8
+    0x15DD $B5DD  $FB  CALL_9085
+    0x15DE $B5DE        [01][1D]
+    0x15E0 $B5E0  $F7  TOGGLE_BANK
+    0x15E1 $B5E1  $F3  VAR_LEN $00
+    0x15E3 $B5E3  $E1  CTRL_E1
+    0x15E4 $B5E4  $DC  WAIT 60帧
+    0x15E5 $B5E5        @[AA][A0][00][05][1F][04][10][11][14][00][10][10][06][04][13]
+    0x15F5 $B5F5  $FC  ADVANCE_PTR
+    0x15F6 $B5F6        &[06]/[10][A8]{
+    0x15FC $B5FC  $FC  ADVANCE_PTR
+    0x15FD $B5FD  $DC  WAIT 60帧
+    0x15FE $B5FE        [01][0D][19][09]/[0C]2[03][00][A0].[AF]*&{
+    0x160D $B60D  $EB  YIELD_CALL
+    0x160E $B60E  $FB  CALL_9085
+    0x160F $B60F        [01][19]
+    0x1611 $B611  $F7  TOGGLE_BANK
+    0x1612 $B612  $F3  VAR_LEN $00
+    0x1614 $B614  $E1  CTRL_E1
+    0x1615 $B615        @[03].{
+    0x1619 $B619  $FC  ADVANCE_PTR
+    0x161A $B61A  $EF  TOGGLE_FLAG
+    0x161B $B61B  $ED  QUEUE_OBJ $31
+    0x161D $B61D  $DE  WAIT 120帧
+    0x161E $B61E  $FD  YIELD_FA8
+    0x161F $B61F  $EA  CLEAR_RESET
+    0x1620 $B620  $ED  QUEUE_OBJ $37
+    0x1622 $B622  $DE  WAIT 120帧
+    0x1623 $B623  $F9  CALL_8AF7 $0C
+    0x1625 $B625  $ED  QUEUE_OBJ $69
+    0x1627 $B627  $E9  YIELD2_CHECK
+    0x1628 $B628  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x162A $B62A  $F1  LOADsprITE $00
+    0x162C $B62C  $EC  COND_SET $00
+    0x162E $B62E        [0A]*[AD][00][09]/[0C]2[03][0E].[1A]
+    0x163A $B63A  $FC  ADVANCE_PTR
+    0x163B $B63B        [15].[06][12]z
+    0x1640 $B640  $DA  WAIT 20帧
+    0x1641 $B641        [14][03][1E][03][19]
+    0x1646 $B646  $FC  ADVANCE_PTR
+    0x1647 $B647        [91]5[09]/[0E].[14][15]([1F][0C][10]{
+    0x1654 $B654  $EB  YIELD_CALL
+    0x1655 $B655  $EC  COND_SET $05
+    0x1657 $B657        [0A][03][0A][03]KoF}[00]gMT[C3]Tiy
+    0x1667 $B667  $FC  ADVANCE_PTR
+    0x1668 $B668  $DB  WAIT 40帧
+    0x1669 $B669        [04][02][0A][03][19][1A][0C]0[1A][00][AE][11]'[A0][15])[06]x
+    0x167B $B67B  $FC  ADVANCE_PTR
+    0x167C $B67C  $DB  WAIT 40帧
+    0x167D $B67D  $EC  COND_SET $03
+    0x167F $B67F  $ED  QUEUE_OBJ $62
+    0x1681 $B681        [A|[00]#[04])y
+    0x1689 $B689  $EB  YIELD_CALL
+    0x168A $B68A  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x168C $B68C  $EE  CLEAR_WINDOW
+    0x168D $B68D  $EC  COND_SET $FF
+    0x168F $B68F  $FA  CALL_8AF7B $02
+    0x1691 $B691  $FB  CALL_9085
+    0x1692 $B692        [01]I
+    0x1694 $B694  $F7  TOGGLE_BANK
+    0x1695 $B695  $F3  VAR_LEN $00
+    0x1697 $B697  $E1  CTRL_E1
+    0x1698 $B698  $DD  WAIT 80帧
+    0x1699 $B699        @$[1A]([07][10][15][00] [0B][07]{
+    0x16A5 $B6A5  $FC  ADVANCE_PTR
+    0x16A6 $B6A6  $DC  WAIT 60帧
+    0x16A7 $B6A7        [AA][A0][00][01][0D][19][0C][01][02]z
+    0x16B1 $B6B1  $DB  WAIT 40帧
+    0x16B2 $B6B2        [05][1F][04][10][11][16]
+    0x16B8 $B6B8  $FC  ADVANCE_PTR
+    0x16B9 $B6B9        [06][11][1A][00][15][02][A8]y
+    0x16C1 $B6C1  $FC  ADVANCE_PTR
+    0x16C2 $B6C2  $DD  WAIT 80帧
+    0x16C3 $B6C3  $ED  QUEUE_OBJ $31
+    0x16C5 $B6C5  $DE  WAIT 120帧
+    0x16C6 $B6C6  $EA  CLEAR_RESET
+    0x16C7 $B6C7  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x0E (ID=14)
+  Bank: 3
+  入口: $B6C8
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x16C8, $B6C8) ──
+    0x16C8 $B6C8  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x16CA $B6CA  $F9  CALL_8AF7 $11
+    0x16CC $B6CC  $FA  CALL_8AF7B $10
+    0x16CE $B6CE  $FB  CALL_9085
+    0x16CF $B6CF        [01]I
+    0x16D1 $B6D1  $DE  WAIT 120帧
+    0x16D2 $B6D2  $ED  QUEUE_OBJ $69
+    0x16D4 $B6D4  $E9  YIELD2_CHECK
+    0x16D5 $B6D5  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x16D7 $B6D7  $ED  QUEUE_OBJ $53
+    0x16D9 $B6D9  $DD  WAIT 80帧
+    0x16DA $B6DA  $E1  CTRL_E1
+    0x16DB $B6DB        @[0A][03][0A][03]KoF}[00][0B][02][A4][19][0C][01][02]
+    0x16EC $B6EC  $FC  ADVANCE_PTR
+    0x16ED $B6ED  $DB  WAIT 40帧
+    0x16EE $B6EE         [0B][07]z
+    0x16F2 $B6F2  $DB  WAIT 40帧
+    0x16F3 $B6F3        [05]*[A0][00]Ih-[12][09][13]$)[A8]y
+    0x1701 $B701  $FC  ADVANCE_PTR
+    0x1702 $B702  $DE  WAIT 120帧
+    0x1703 $B703  $FD  YIELD_FA8
+    0x1704 $B704  $FB  CALL_9085
+    0x1705 $B705        [01][1E]
+    0x1707 $B707  $F7  TOGGLE_BANK
+    0x1708 $B708  $F3  VAR_LEN $00
+    0x170A $B70A  $E1  CTRL_E1
+    0x170B $B70B  $DC  WAIT 60帧
+    0x170C $B70C        @[05]*[10][11][19][00][0B][02][A4][19][0C][01][02]
+    0x171A $B71A  $FC  ADVANCE_PTR
+    0x171B $B71B  $DB  WAIT 40帧
+    0x171C $B71C        [06][15]'[A7][00][06]/[13] [0E])y
+    0x1728 $B728  $FC  ADVANCE_PTR
+    0x1729 $B729  $DD  WAIT 80帧
+    0x172A $B72A  $ED  QUEUE_OBJ $31
+    0x172C $B72C  $DE  WAIT 120帧
+    0x172D $B72D  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x172F $B72F  $EA  CLEAR_RESET
+    0x1730 $B730  $FF  END
+
+════════════════════════════════════════════════════════════
+脚本 0x0F (ID=15)
+  Bank: 3
+  入口: $B731
+  代码块数: 1
+────────────────────────────────────────────────────────────
+  ── entry (bank 3, 偏移 0x1731, $B731) ──
+    0x1731 $B731  $E8  LOAD_SCENE_DATA 1 (bank6偏移 0x1F13)
+    0x1733 $B733  $F9  CALL_8AF7 $2B
+    0x1735 $B735  $FB  CALL_9085
+    0x1736 $B736        [01]C
+    0x1738 $B738  $DE  WAIT 120帧
+    0x1739 $B739  $ED  QUEUE_OBJ $69
+    0x173B $B73B  $E9  YIELD2_CHECK
+    0x173C $B73C  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x173E $B73E  $DD  WAIT 80帧
+    0x173F $B73F  $ED  QUEUE_OBJ $4E
+    0x1741 $B741  $F1  LOADsprITE $00
+    0x1743 $B743  $EC  COND_SET $02
+    0x1745 $B745        [18]/[0E].[19][12][AC][02][10][00][0A][03][0A][03]KoF}
+    0x1757 $B757  $FC  ADVANCE_PTR
+    0x1758 $B758        [0E].[0C]1[09].#[00][0A]*[AD][00][A8].[0C][01][02][A0]
+    0x176A $B76A  $FC  ADVANCE_PTR
+    0x176B $B76B        [0C]1[03](2[03][0C][1F][0C][10]y
+    0x1776 $B776  $EB  YIELD_CALL
+    0x1777 $B777  $ED  QUEUE_OBJ $62
+    0x1779 $B779        [91]5[09]/[0E].#[00][15].[06][12][19][0C]2[03]([AD]
+    0x178B $B78B  $FC  ADVANCE_PTR
+    0x178C $B78C        [1F][08]-[14][A6][00]MPn[C2][06]'[1A]
+    0x1799 $B799  $FC  ADVANCE_PTR
+    0x179A $B79A        [05][05][07][15][0E][02][04].[A0][00][05][08]'*[13][02][1F][0D]y
+    0x17AD $B7AD  $FC  ADVANCE_PTR
+    0x17AE $B7AE  $F4  SUB_DISPATCH $06 (SUB6)
+    0x17B0 $B7B0        [03]
+    0x17B1 $B7B1  $EA  CLEAR_RESET
+    0x17B2 $B7B2  $EC  COND_SET $FF
+    0x17B4 $B7B4  $EE  CLEAR_WINDOW
+    0x17B5 $B7B5  $F9  CALL_8AF7 $0E
+    0x17B7 $B7B7  $E9  YIELD2_CHECK
+    0x17B8 $B7B8  $E1  CTRL_E1
+    0x17B9 $B7B9        @$/[10][00]$/[10][A8]y
+    0x17C3 $B7C3  $FC  ADVANCE_PTR
+    0x17C4 $B7C4  $DB  WAIT 40帧
+    0x17C5 $B7C5  $E1  CTRL_E1
+    0x17C6 $B7C6        @[05]*[10][11][19][00]%[03][0C]2[03][AA]y
+    0x17D4 $B7D4  $FC  ADVANCE_PTR
+    0x17D5 $B7D5  $DB  WAIT 40帧
+    0x17D6 $B7D6  $E1  CTRL_E1
+    0x17D7 $B7D7        @[15].[06][12][A0][00][06]/[10][A9]y
+    0x17E3 $B7E3  $FC  ADVANCE_PTR
+    0x17E4 $B7E4  $DD  WAIT 80帧
+    0x17E5 $B7E5  $EA  CLEAR_RESET
+    0x17E6 $B7E6  $FD  YIELD_FA8
+    0x17E7 $B7E7  $F9  CALL_8AF7 $1A
+    0x17E9 $B7E9  $FB  CALL_9085
+    0x17EA $B7EA        [01][03]
+    0x17EC $B7EC  $ED  QUEUE_OBJ $69
+    0x17EE $B7EE  $E9  YIELD2_CHECK
+    0x17EF $B7EF  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x17F1 $B7F1  $DD  WAIT 80帧
+    0x17F2 $B7F2  $DF  WAIT 240帧
+    0x17F3 $B7F3  $DF  WAIT 240帧
+    0x17F4 $B7F4  $FA  CALL_8AF7B $10
+    0x17F6 $B7F6  $E1  CTRL_E1
+    0x17F7 $B7F7        @ [0B][07]z
+    0x17FC $B7FC  $DB  WAIT 40帧
+    0x17FD $B7FD        [12][AF][0B][19][02][15][02][00][15].[06][12][AD]
+    0x180A $B80A  $FC  ADVANCE_PTR
+    0x180B $B80B        &[08][00][0A][0A][1F][AD][00][10][10][06]/[10][15]{
+    0x181A $B81A  $FC  ADVANCE_PTR
+    0x181B $B81B  $DE  WAIT 120帧
+    0x181C $B81C  $FD  YIELD_FA8
+    0x181D $B81D  $FB  CALL_9085
+    0x181E $B81E        [01][19]
+    0x1820 $B820  $F7  TOGGLE_BANK
+    0x1821 $B821  $F3  VAR_LEN $00
+    0x1823 $B823  $E1  CTRL_E1
+    0x1824 $B824        @[0A][A6]+[03]z
+    0x182A $B82A  $DB  WAIT 40帧
+    0x182B $B82B        [07]2[03][00][06][13][10][19][1A]
+    0x1834 $B834  $FC  ADVANCE_PTR
+    0x1835 $B835        [15].[06][12]Q}a[00][A8].[02].[A0]
+    0x1842 $B842  $FC  ADVANCE_PTR
+    0x1843 $B843        [11][06]'-[01],[0E][10][06]'[AA]{
+    0x184F $B84F  $FC  ADVANCE_PTR
+    0x1850 $B850  $DE  WAIT 120帧
+    0x1851 $B851  $FD  YIELD_FA8
+    0x1852 $B852  $E1  CTRL_E1
+    0x1853 $B853        @[0A][A6]+[03][AA]/[13][00]Q}a[19] .[15][14]
+    0x1864 $B864  $FC  ADVANCE_PTR
+    0x1865 $B865        [11][06]'-[01],[0E][10][06]'[00][0A][0A][1F][AD]
+    0x1874 $B874  $FC  ADVANCE_PTR
+    0x1875 $B875        [10][10][06][04][10][1A][A7][AA]&{
+    0x187F $B87F  $FC  ADVANCE_PTR
+    0x1880 $B880  $DE  WAIT 120帧
+    0x1881 $B881  $FD  YIELD_FA8
+    0x1882 $B882  $FB  CALL_9085
+    0x1883 $B883        [01]1
+    0x1885 $B885  $F7  TOGGLE_BANK
+    0x1886 $B886  $F3  VAR_LEN $00
+    0x1888 $B888  $E1  CTRL_E1
+    0x1889 $B889  $DC  WAIT 60帧
+    0x188A $B88A        @ [0B][07]
+    0x188E $B88E  $EF  TOGGLE_FLAG
+    0x188F $B88F        ???
+    0x1892 $B892  $FC  ADVANCE_PTR
+    0x1893 $B893  $DE  WAIT 120帧
+    0x1894 $B894  $EA  CLEAR_RESET
+    0x1895 $B895  $FD  YIELD_FA8
+    0x1896 $B896  $F9  CALL_8AF7 $06
+    0x1898 $B898  $FB  CALL_9085
+    0x1899 $B899        [01][A3]
+    0x189B $B89B  $F3  VAR_LEN $00
+    0x189D $B89D  $ED  QUEUE_OBJ $25
+    0x189F $B89F  $F5  SUB_DISPATCH2 $08 (SUB_$8)
+    0x18A1 $B8A1  $DA  WAIT 20帧
+    0x18A2 $B8A2  $F7  TOGGLE_BANK
+    0x18A3 $B8A3  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x18A5 $B8A5  $F1  LOADsprITE $00
+    0x18A7 $B8A7  $EC  COND_SET $02
+    0x18A9 $B8A9        (2[03]Gp[CF]Sn[19][00][01][08][0C]1y
+    0x18B8 $B8B8  $FC  ADVANCE_PTR
+    0x18B9 $B8B9  $DB  WAIT 40帧
+    0x18BA $B8BA        [1F][0B][16][00][0C]1[08]"[02][19][10][02][09][12][19]
+    0x18C9 $B8C9  $FC  ADVANCE_PTR
+    0x18CA $B8CA        [0B][02][A4]-[06][A5])[16][00][1C][0B],[0C][02]
+    0x18D8 $B8D8  $FC  ADVANCE_PTR
+    0x18D9 $B8D9        [09][12][1F][12][AD][0D]y
+    0x18E0 $B8E0  $FC  ADVANCE_PTR
+    0x18E1 $B8E1  $DE  WAIT 120帧
+    0x18E2 $B8E2  $EA  CLEAR_RESET
+    0x18E3 $B8E3  $FD  YIELD_FA8
+    0x18E4 $B8E4  $EC  COND_SET $FF
+    0x18E6 $B8E6  $EE  CLEAR_WINDOW
+    0x18E7 $B8E7  $F9  CALL_8AF7 $11
+    0x18E9 $B8E9  $FA  CALL_8AF7B $10
+    0x18EB $B8EB  $FB  CALL_9085
+    0x18EC $B8EC        [01]1
+    0x18EE $B8EE  $ED  QUEUE_OBJ $69
+    0x18F0 $B8F0  $E9  YIELD2_CHECK
+    0x18F1 $B8F1  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x18F3 $B8F3  $DC  WAIT 60帧
+    0x18F4 $B8F4  $E1  CTRL_E1
+    0x18F5 $B8F5        @[BA]p[CD]nFo[CF][1A][00][05][10][A0][02]
+    0x1903 $B903  $FC  ADVANCE_PTR
+    0x1904 $B904        [A8].[16][1E].e}M[19]bn[C3]}[AD]
+    0x1912 $B912  $FC  ADVANCE_PTR
+    0x1913 $B913        [10][10][06][05][03][A8]{
+    0x191A $B91A  $FC  ADVANCE_PTR
+    0x191B $B91B  $DE  WAIT 120帧
+    0x191C $B91C  $FD  YIELD_FA8
+    0x191D $B91D  $FB  CALL_9085
+    0x191E $B91E        [01][19]
+    0x1920 $B920  $F7  TOGGLE_BANK
+    0x1921 $B921  $F3  VAR_LEN $00
+    0x1923 $B923  $E1  CTRL_E1
+    0x1924 $B924        @[03].z
+    0x1928 $B928  $DB  WAIT 40帧
+    0x1929 $B929        l}i[C2]e}M[1D][19]
+    0x1932 $B932  $FC  ADVANCE_PTR
+    0x1933 $B933        [AA][02][A6][15][0C][01][02][AA]
+    0x193B $B93B  $DB  WAIT 40帧
+    0x193C $B93C        [00][A0].[AF]+[03]y
+    0x1943 $B943  $FC  ADVANCE_PTR
+    0x1944 $B944  $DE  WAIT 120帧
+    0x1945 $B945  $EA  CLEAR_RESET
+    0x1946 $B946  $ED  QUEUE_OBJ $31
+    0x1948 $B948  $DE  WAIT 120帧
+    0x1949 $B949  $ED  QUEUE_OBJ $01
+    0x194B $B94B  $FD  YIELD_FA8
+    0x194C $B94C  $DC  WAIT 60帧
+    0x194D $B94D  $ED  QUEUE_OBJ $69
+    0x194F $B94F  $DE  WAIT 120帧
+    0x1950 $B950  $ED  QUEUE_OBJ $47
+    0x1952 $B952  $F9  CALL_8AF7 $2F
+    0x1954 $B954  $FB  CALL_9085
+    0x1955 $B955        [01][1F]
+    0x1957 $B957  $E9  YIELD2_CHECK
+    0x1958 $B958  $F1  LOADsprITE $00
+    0x195A $B95A  $EC  COND_SET $04
+    0x195C $B95C        [0B]s[00][02][1F][00][0C].[08][19]%[03][0C]2[03][07][A0]
+    0x196D $B96D  $FC  ADVANCE_PTR
+    0x196E $B96E         [0B][07][00][10]+[03][08].[16][00],[10]([1F][0C][10]y
+    0x1980 $B980  $FC  ADVANCE_PTR
+    0x1981 $B981  $ED  QUEUE_OBJ $62
+    0x1983 $B983  $DD  WAIT 80帧
+    0x1984 $B984  $FD  YIELD_FA8
+    0x1985 $B985        [15].[06][12]Gp[CF]Sn[14][0C][13][00][91]5-[1A][10][0C][10]
+    0x1999 $B999  $FC  ADVANCE_PTR
+    0x199A $B99A        [06][12]$[08][16][00][A6]2[03][15][02][00] [0B][07]J}i[19]
+    0x19AD $B9AD  $FC  ADVANCE_PTR
+    0x19AE $B9AE        [01]'[0C][AD][0D]y
+    0x19B4 $B9B4  $FC  ADVANCE_PTR
+    0x19B5 $B9B5  $ED  QUEUE_OBJ $62
+    0x19B7 $B9B7  $DE  WAIT 120帧
+    0x19B8 $B9B8  $EA  CLEAR_RESET
+    0x19B9 $B9B9  $FD  YIELD_FA8
+    0x19BA $B9BA  $EC  COND_SET $FF
+    0x19BC $B9BC  $EE  CLEAR_WINDOW
+    0x19BD $B9BD  $F9  CALL_8AF7 $02
+    0x19BF $B9BF  $FB  CALL_9085
+    0x19C0 $B9C0        [01]B
+    0x19C2 $B9C2  $E9  YIELD2_CHECK
+    0x19C3 $B9C3  $DD  WAIT 80帧
+    0x19C4 $B9C4  $EF  TOGGLE_FLAG
+    0x19C5 $B9C5  $E1  CTRL_E1
+    0x19C6 $B9C6        @[0A]*[AD][00]bn[C3]}[A0][0F]+/[10][15]{
+    0x19D6 $B9D6  $FC  ADVANCE_PTR
+    0x19D7 $B9D7  $DC  WAIT 60帧
+    0x19D8 $B9D8        >e}M-[06][11][17][02][10][00][06]*'[A0]z
+    0x19E8 $B9E8  $FC  ADVANCE_PTR
+    0x19E9 $B9E9  $DB  WAIT 40帧
+    0x19EA $B9EA        [A8].[16][1E].e}M[14][0C][13][00][1C]/[06][12][AA]{
+    0x19FC $B9FC  $FC  ADVANCE_PTR
+    0x19FD $B9FD  $DE  WAIT 120帧
+    0x19FE $B9FE  $FD  YIELD_FA8
+    0x19FF $B9FF  $E1  CTRL_E1
+    0x1A00 $BA00        @5[0C]1[03][06].[A4][19][BA]p[CD]nFo[CF][1A]
+    0x1A11 $BA11  $FC  ADVANCE_PTR
+    0x1A12 $BA12        [06]*'[16][14]/[13][00][0B][02][0C]2[19][0C]*.[AA]{
+    0x1A24 $BA24  $FC  ADVANCE_PTR
+    0x1A25 $BA25  $DE  WAIT 120帧
+    0x1A26 $BA26  $FD  YIELD_FA8
+    0x1A27 $BA27  $E1  CTRL_E1
+    0x1A28 $BA28        @[15][16][0C]+
+    0x1A2D $BA2D  $DB  WAIT 40帧
+    0x1A2E $BA2E        [00][01][19][00][05][14][0A][10][11][A0]
+    0x1A38 $BA38  $FC  ADVANCE_PTR
+    0x1A39 $BA39        [08])[19][AA][06]'[15]???
+    0x1A43 $BA43  $FC  ADVANCE_PTR
+    0x1A44 $BA44  $DF  WAIT 240帧
+    0x1A45 $BA45  $EA  CLEAR_RESET
+    0x1A46 $BA46  $ED  QUEUE_OBJ $31
+    0x1A48 $BA48  $DE  WAIT 120帧
+    0x1A49 $BA49  $FD  YIELD_FA8
+    0x1A4A $BA4A  $F9  CALL_8AF7 $2F
+    0x1A4C $BA4C  $FB  CALL_9085
+    0x1A4D $BA4D        [01][1F]
+    0x1A4F $BA4F  $E9  YIELD2_CHECK
+    0x1A50 $BA50  $ED  QUEUE_OBJ $53
+    0x1A52 $BA52  $DD  WAIT 80帧
+    0x1A53 $BA53  $F2  SET_MODE $06
+    0x1A55 $BA55        [00][00][00]&+[0A][B0]#[12][06][19][1F]
+    0x1A61 $BA61  $FC  ADVANCE_PTR
+    0x1A62 $BA62  $DC  WAIT 60帧
+    0x1A63 $BA63  $E2  CTRL_E2
+    0x1A64 $BA64        5[0C]1[03][06].[A4][19][00][BA]p[CD]nFo[CF][16]![09]
+    0x1A77 $BA77  $FC  ADVANCE_PTR
+    0x1A78 $BA78  $E2  CTRL_E2
+    0x1A79 $BA79        [0E].[AF][12]Q}a[1A][00][A0]/[0C]1[08][16][1A][02]/[10]
+    0x1A8C $BA8C  $EB  YIELD_CALL
+    0x1A8D $BA8D        [BA]p[CD]nFo[CF][AD][00][06]*'-[1F][12]
+    0x1A9C $BA9C  $FC  ADVANCE_PTR
+    0x1A9D $BA9D        [0C]*.[14][1A][00][1A][10][0C][13][00][15][16][06]x
+    0x1AAC $BAAC  $FC  ADVANCE_PTR
+    0x1AAD $BAAD  $DC  WAIT 60帧
+    0x1AAE $BAAE  $E2  CTRL_E2
+    0x1AAF $BAAF        [0F][0C][13]
+    0x1AB2 $BAB2  $DB  WAIT 40帧
+    0x1AB3 $BAB3        [00][16][1E].[1D][08])[00][05][14][0A][10][11][14][1A]x
+    0x1AC3 $BAC3  $EB  YIELD_CALL
+    0x1AC4 $BAC4  $E2  CTRL_E2
+    0x1AC5 $BAC5        [B1][10][02][1A][00]hEFo[CF][0C]1[03](2[03][A4][19]
+    0x1AD7 $BAD7  $FC  ADVANCE_PTR
+    0x1AD8 $BAD8        [00][00][00][C5]g[BA]i]???
+    0x1AE3 $BAE3  $FC  ADVANCE_PTR
+    0x1AE4 $BAE4  $DE  WAIT 120帧
+    0x1AE5 $BAE5  $EA  CLEAR_RESET
+    0x1AE6 $BAE6  $ED  QUEUE_OBJ $31
+    0x1AE8 $BAE8  $DE  WAIT 120帧
+    0x1AE9 $BAE9  $ED  QUEUE_OBJ $01
+    0x1AEB $BAEB  $DF  WAIT 240帧
+    0x1AEC $BAEC  $FD  YIELD_FA8
+    0x1AED $BAED  $F9  CALL_8AF7 $06
+    0x1AEF $BAEF  $FB  CALL_9085
+    0x1AF0 $BAF0        [01][A3]
+    0x1AF2 $BAF2  $F3  VAR_LEN $00
+    0x1AF4 $BAF4  $ED  QUEUE_OBJ $25
+    0x1AF6 $BAF6  $F5  SUB_DISPATCH2 $08 (SUB_$8)
+    0x1AF8 $BAF8  $DA  WAIT 20帧
+    0x1AF9 $BAF9  $F7  TOGGLE_BANK
+    0x1AFA $BAFA  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x1AFC $BAFC  $DE  WAIT 120帧
+    0x1AFD $BAFD  $ED  QUEUE_OBJ $62
+    0x1AFF $BAFF  $EA  CLEAR_RESET
+    0x1B00 $BB00  $F9  CALL_8AF7 $10
+    0x1B02 $BB02  $FA  CALL_8AF7B $11
+    0x1B04 $BB04  $FB  CALL_9085
+    0x1B05 $BB05        [01]N
+    0x1B07 $BB07  $E9  YIELD2_CHECK
+    0x1B08 $BB08  $ED  QUEUE_OBJ $4D
+    0x1B0A $BB0A  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x1B0C $BB0C  $F2  SET_MODE $08
+    0x1B0E $BB0E  $E1  CTRL_E1
+    0x1B0F $BB0F        @FikMz
+    0x1B15 $BB15  $DB  WAIT 40帧
+    0x1B16 $BB16        [01]([A0][14][03]{
+    0x1B1C $BB1C  $FC  ADVANCE_PTR
+    0x1B1D $BB1D  $DE  WAIT 120帧
+    0x1B1E $BB1E  $FD  YIELD_FA8
+    0x1B1F $BB1F  $FB  CALL_9085
+    0x1B20 $BB20        [01]c
+    0x1B22 $BB22  $F7  TOGGLE_BANK
+    0x1B23 $BB23  $F3  VAR_LEN $00
+    0x1B25 $BB25  $E1  CTRL_E1
+    0x1B26 $BB26        @[12][A1][16][00][01][03][19][1A][00][CF]k[19][B6]gCn[C2][19]
+    0x1B39 $BB39  $FC  ADVANCE_PTR
+    0x1B3A $BB3A        [03][04][06]#[15]z
+    0x1B40 $BB40  $DB  WAIT 40帧
+    0x1B41 $BB41        [0F][19][14][07][1A][00][1F][09][15][02][A8]{
+    0x1B4D $BB4D  $FC  ADVANCE_PTR
+    0x1B4E $BB4E  $DE  WAIT 120帧
+    0x1B4F $BB4F  $FD  YIELD_FA8
+    0x1B50 $BB50  $FB  CALL_9085
+    0x1B51 $BB51        [01]N
+    0x1B53 $BB53  $F7  TOGGLE_BANK
+    0x1B54 $BB54  $F3  VAR_LEN $00
+    0x1B56 $BB56  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x1B58 $BB58  $E1  CTRL_E1
+    0x1B59 $BB59        @[19][A9]![14][0A]+[0B]{
+    0x1B62 $BB62  $FC  ADVANCE_PTR
+    0x1B63 $BB63  $EF  TOGGLE_FLAG
+    0x1B64 $BB64  $DE  WAIT 120帧
+    0x1B65 $BB65  $F2  SET_MODE $04
+    0x1B67 $BB67  $E1  CTRL_E1
+    0x1B68 $BB68        @[0C]2[08].z
+    0x1B6E $BB6E  $DB  WAIT 40帧
+    0x1B6F $BB6F  $ED  QUEUE_OBJ $01
+    0x1B71 $BB71        [1F][AA][00][1B][14][0C]2[03][B1][00][01])[A9]y
+    0x1B7F $BB7F  $FC  ADVANCE_PTR
+    0x1B80 $BB80  $FB  CALL_9085
+    0x1B81 $BB81        [01][12]
+    0x1B83 $BB83  $DE  WAIT 120帧
+    0x1B84 $BB84  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x1B86 $BB86  $FD  YIELD_FA8
+    0x1B87 $BB87  $FA  CALL_8AF7B $23
+    0x1B89 $BB89  $FB  CALL_9085
+    0x1B8A $BB8A        [01][AE]
+    0x1B8C $BB8C  $F7  TOGGLE_BANK
+    0x1B8D $BB8D  $F3  VAR_LEN $00
+    0x1B8F $BB8F  $F5  SUB_DISPATCH2 $08 (SUB_$8)
+    0x1B91 $BB91  $ED  QUEUE_OBJ $43
+    0x1B93 $BB93  $DE  WAIT 120帧
+    0x1B94 $BB94  $FA  CALL_8AF7B $10
+    0x1B96 $BB96  $FB  CALL_9085
+    0x1B97 $BB97        [01]@
+    0x1B99 $BB99  $F7  TOGGLE_BANK
+    0x1B9A $BB9A  $F3  VAR_LEN $00
+    0x1B9C $BB9C  $ED  QUEUE_OBJ $52
+    0x1B9E $BB9E  $EF  TOGGLE_FLAG
+    0x1B9F $BB9F  $FA  CALL_8AF7B $11
+    0x1BA1 $BBA1  $E1  CTRL_E1
+    0x1BA2 $BBA2        @[06][10][A1]([0B].z
+    0x1BAA $BBAA  $DB  WAIT 40帧
+    0x1BAB $BBAB        [AE][03][0C][13][00][0A][0A][16]
+    0x1BB3 $BBB3  $EF  TOGGLE_FLAG
+    0x1BB4 $BBB4        yy
+    0x1BB6 $BBB6  $FC  ADVANCE_PTR
+    0x1BB7 $BBB7  $DE  WAIT 120帧
+    0x1BB8 $BBB8  $F4  SUB_DISPATCH $05 (LOOP2_FA8)
+    0x1BBA $BBBA  $FD  YIELD_FA8
+    0x1BBB $BBBB  $F4  SUB_DISPATCH $04 (LOOP_FA8)
+    0x1BBD $BBBD  $ED  QUEUE_OBJ $46
+    0x1BBF $BBBF  $F2  SET_MODE $08
+    0x1BC1 $BBC1  $E1  CTRL_E1
+    0x1BC2 $BBC2        @[12][AF][0B]z
+    0x1BC7 $BBC7  $DB  WAIT 40帧
+    0x1BC8 $BBC8        [05][1F][04][16][00][A8].[16][1E].e}M
+    0x1BD5 $BBD5  $FC  ADVANCE_PTR
+    0x1BD6 $BBD6        Q}a[1D][19][00][0B].[06]-&[03][0E][02][0D]){
+    0x1BE7 $BBE7  $FC  ADVANCE_PTR
+    0x1BE8 $BBE8  $DC  WAIT 60帧
+    0x1BE9 $BBE9  $F2  SET_MODE $00
+    0x1BEB $BBEB  $E1  CTRL_E1
+    0x1BEC $BBEC        @[04]/
+    0x1BEF $BBEF  $DA  WAIT 20帧
+    0x1BF0 $BBF0  $EB  YIELD_CALL
+    0x1BF1 $BBF1  $F2  SET_MODE $08
+    0x1BF3 $BBF3  $E1  CTRL_E1
+    0x1BF4 $BBF4        @6[06][A3][12][A4][16][00][C5]g[BA]i[AD][00][1B]'[06]*)
+    0x1C07 $BC07  $FC  ADVANCE_PTR
+    0x1C08 $BC08        l}i[C2]e}M[00]KoF}[10][02][06][02][16]
+    0x1C19 $BC19  $FC  ADVANCE_PTR
+    0x1C1A $BC1A        [16][1E].[19][00][0B].[06][A0][07][1F]/[10]{
+    0x1C28 $BC28  $EB  YIELD_CALL
+    0x1C29 $BC29  $E1  CTRL_E1
+    0x1C2A $BC2A        @[16][1E].[02][A0][02][16]#[00][A6]#[14][C5]g[BA]iz
+    0x1C3C $BC3C  $FC  ADVANCE_PTR
+    0x1C3D $BC3D  $DB  WAIT 40帧
+    0x1C3E $BC3E        [0F][0C][13][00]6[18].[1F][04][00]>e}M[AD]
+    0x1C4D $BC4D  $FC  ADVANCE_PTR
+    0x1C4E $BC4E        [09]/[0C]2[03]-[10][10][06]/[10][00]VL[C2]BR#
+    0x1C60 $BC60  $FC  ADVANCE_PTR
+    0x1C61 $BC61        [0B].[06][0D]){
+    0x1C67 $BC67  $EB  YIELD_CALL
+    0x1C68 $BC68  $E1  CTRL_E1
+    0x1C69 $BC69        @[12][AF][0B]z
+    0x1C6E $BC6E  $DB  WAIT 40帧
+    0x1C6F $BC6F        [05][1F][04]#[00][A8].[16][1E].43[AF].[19]
+    0x1C7E $BC7E  $FC  ADVANCE_PTR
+    0x1C7F $BC7F        eV\v}a-[07][13][00][0C]1[12][A6]2[03][0D]).[AA]{
+    0x1C94 $BC94  $FC  ADVANCE_PTR
+    0x1C95 $BC95  $EF  TOGGLE_FLAG
+    0x1C96 $BC96  $DC  WAIT 60帧
+    0x1C97 $BC97  $F2  SET_MODE $04
+    0x1C99 $BC99  $E1  CTRL_E1
+    0x1C9A $BC9A        @[1F]/[13][00][16][02][0B].y
+    0x1CA4 $BCA4  $FC  ADVANCE_PTR
+    0x1CA5 $BCA5  $F5  SUB_DISPATCH2 $08 (SUB_$8)
+    0x1CA7 $BCA7  $DD  WAIT 80帧
+    0x1CA8 $BCA8  $FD  YIELD_FA8
+    0x1CA9 $BCA9  $FB  CALL_9085
+    0x1CAA $BCAA        [01]*
+    0x1CAC $BCAC  $F7  TOGGLE_BANK
+    0x1CAD $BCAD  $F3  VAR_LEN $00
+    0x1CAF $BCAF  $FA  CALL_8AF7B $10
+    0x1CB1 $BCB1  $EF  TOGGLE_FLAG
+    0x1CB2 $BCB2  $F2  SET_MODE $08
+    0x1CB4 $BCB4  $E1  CTRL_E1
+    0x1CB5 $BCB5        @&[03][0A]x
+    0x1CBA $BCBA  $DC  WAIT 60帧
+    0x1CBB $BCBB        [00][05][1F][04]
+    0x1CBF $BCBF  $EF  TOGGLE_FLAG
+    0x1CC0 $BCC0        [06]y
+    0x1CC2 $BCC2  $FC  ADVANCE_PTR
+    0x1CC3 $BCC3  $DE  WAIT 120帧
+    0x1CC4 $BCC4  $FD  YIELD_FA8
+    0x1CC5 $BCC5  $E1  CTRL_E1
+    0x1CC6 $BCC6        @[12][AF][0B][08].z
+    0x1CCD $BCCD  $DB  WAIT 40帧
+    0x1CCE $BCCE        [0F][19][1F][04][16][00][01][15][10][1A]
+    0x1CD8 $BCD8  $FC  ADVANCE_PTR
+    0x1CD9 $BCD9        5[0C]1[03][06].[A4]z
+    0x1CE1 $BCE1  $DB  WAIT 40帧
+    0x1CE2 $BCE2        [16][1E].[AD][00][1B]'[06]*)
+    0x1CEC $BCEC  $FC  ADVANCE_PTR
+    0x1CED $BCED        [BA]p[CD]nFo[CF][16][00][AD])[19]&{
+    0x1CFB $BCFB  $EB  YIELD_CALL
+    0x1CFC $BCFC  $FB  CALL_9085
+    0x1CFD $BCFD        [01][11]
+    0x1CFF $BCFF  $F7  TOGGLE_BANK
+    0x1D00 $BD00  $F3  VAR_LEN $00
+    0x1D02 $BD02  $E1  CTRL_E1
+    0x1D03 $BD03        @[BA]p[CD]nFo[CF]x
+    0x1D0C $BD0C  $FC  ADVANCE_PTR
+    0x1D0D $BD0D  $DE  WAIT 120帧
+    0x1D0E $BD0E  $FD  YIELD_FA8
+    0x1D0F $BD0F  $FB  CALL_9085
+    0x1D10 $BD10        [01]*
+    0x1D12 $BD12  $F7  TOGGLE_BANK
+    0x1D13 $BD13  $F3  VAR_LEN $00
+    0x1D15 $BD15  $E1  CTRL_E1
+    0x1D16 $BD16        @[A8].[16][1E].e}M[19][00][07]2[03][06][14]
+    0x1D26 $BD26  $FC  ADVANCE_PTR
+    0x1D27 $BD27        [07][10])[00]e}M[10][02][06][02][16]![09][13]z
+    0x1D37 $BD37  $FC  ADVANCE_PTR
+    0x1D38 $BD38  $DB  WAIT 40帧
+    0x1D39 $BD39        8[06][0A][08][19]e}MQ}a[A0][00][16][1E].[AD]
+    0x1D4A $BD4A  $FC  ADVANCE_PTR
+    0x1D4B $BD4B        [0C].[A8].[A6][01][02]-[0D])[19]{
+    0x1D57 $BD57  $EB  YIELD_CALL
+    0x1D58 $BD58  $E1  CTRL_E1
+    0x1D59 $BD59        @,[06][AF]$[0C][08].[19][02])[00]Zn[C5]i[B6]#
+    0x1D6B $BD6B  $FC  ADVANCE_PTR
+    0x1D6C $BD6C        [0B].[06][A0][00][07][1F]/[10],{
+    0x1D77 $BD77  $FC  ADVANCE_PTR
+    0x1D78 $BD78  $DD  WAIT 80帧
+    0x1D79 $BD79  $FD  YIELD_FA8
+    0x1D7A $BD7A  $E1  CTRL_E1
+    0x1D7B $BD7B        @[12][1F]([01][15][10][1A][00],[06][AF]$[0C][08].[14]z
+    0x1D8D $BD8D  $FC  ADVANCE_PTR
+    0x1D8E $BD8E  $DB  WAIT 40帧
+    0x1D8F $BD8F        [0F][0C][13][00][16][1E].[14][10][10][06][03][19]&{
+    0x1D9E $BD9E  $FC  ADVANCE_PTR
+    0x1D9F $BD9F  $DE  WAIT 120帧
+    0x1DA0 $BDA0  $FD  YIELD_FA8
+    0x1DA1 $BDA1  $FB  CALL_9085
+    0x1DA2 $BDA2        [01][11]
+    0x1DA4 $BDA4  $F7  TOGGLE_BANK
+    0x1DA5 $BDA5  $F3  VAR_LEN $00
+    0x1DA7 $BDA7  $E1  CTRL_E1
+    0x1DA8 $BDA8        @,[06][AF]$[0C][08].$[00] [0B][07][08].[14]x
+    0x1DB9 $BDB9  $FC  ADVANCE_PTR
+    0x1DBA $BDBA  $DC  WAIT 60帧
+    0x1DBB $BDBB        [AD]#[00][05]*[1A]z
+    0x1DC2 $BDC2  $DB  WAIT 40帧
+    0x1DC3 $BDC3        [CF]k[16][15])[1F][AD]
+    0x1DCA $BDCA  $FC  ADVANCE_PTR
+    0x1DCB $BDCB        [16][1E].[1D][1A]
+    0x1DD0 $BDD0  $EF  TOGGLE_FLAG
+    0x1DD1 $BDD1        ???
+    0x1DD4 $BDD4  $FC  ADVANCE_PTR
+    0x1DD5 $BDD5  $DE  WAIT 120帧
+    0x1DD6 $BDD6  $FD  YIELD_FA8
+    0x1DD7 $BDD7  $FA  CALL_8AF7B $0F
+    0x1DD9 $BDD9  $FB  CALL_9085
+    0x1DDA $BDDA        [01]C
+    0x1DDC $BDDC  $F7  TOGGLE_BANK
+    0x1DDD $BDDD  $F3  VAR_LEN $00
+    0x1DDF $BDDF  $E1  CTRL_E1
+    0x1DE0 $BDE0        @[12][AF][0B]z
+    0x1DE5 $BDE5  $DB  WAIT 40帧
+    0x1DE6 $BDE6        Kn[CD]Ck[19]Gp[CF]Sn[1A]
+    0x1DF2 $BDF2  $FC  ADVANCE_PTR
+    0x1DF3 $BDF3        [05][1F][04][15].[AA][A8]y
+    0x1DFB $BDFB  $FC  ADVANCE_PTR
+    0x1DFC $BDFC  $DC  WAIT 60帧
+    0x1DFD $BDFD  $E1  CTRL_E1
+    0x1DFE $BDFE        @[0F][03][AA]&[00][12][AF][0B]z
+    0x1E08 $BE08  $DB  WAIT 40帧
+    0x1E09 $BE09        [02]/[0C]2[16]
+    0x1E0E $BE0E  $FC  ADVANCE_PTR
+    0x1E0F $BE0F        [16][1E].[1D][02]/[13][00][10][10][06][05][03]y
+    0x1E1D $BE1D  $FC  ADVANCE_PTR
+    0x1E1E $BE1E  $DE  WAIT 120帧
+    0x1E1F $BE1F  $FD  YIELD_FA8
+    0x1E20 $BE20  $FA  CALL_8AF7B $10
+    0x1E22 $BE22  $FB  CALL_9085
+    0x1E23 $BE23        [01]@
+    0x1E25 $BE25  $F7  TOGGLE_BANK
+    0x1E26 $BE26  $F3  VAR_LEN $00
+    0x1E28 $BE28  $FA  CALL_8AF7B $11
+    0x1E2A $BE2A  $E1  CTRL_E1
+    0x1E2B $BE2B        @[0F][0C][13][00][A8].[16][1E].e}M[19][00][07]2[03][06][16][1A]
+    0x1E40 $BE40  $FC  ADVANCE_PTR
+    0x1E41 $BE41        [05][1F][04][19][11][06]'[A0][00][1B][12]&[03][15].[AA]{
+    0x1E52 $BE52  $FC  ADVANCE_PTR
+    0x1E53 $BE53  $DC  WAIT 60帧
+    0x1E54 $BE54        [12][AF][0B]z
+    0x1E58 $BE58  $DB  WAIT 40帧
+    0x1E59 $BE59        [16][1E].[1D][07][13][08]*y
+    0x1E62 $BE62  $FC  ADVANCE_PTR
+    0x1E63 $BE63  $DE  WAIT 120帧
+    0x1E64 $BE64  $FD  YIELD_FA8
+    0x1E65 $BE65  $FB  CALL_9085
+    0x1E66 $BE66        [01][09]
+    0x1E68 $BE68  $F7  TOGGLE_BANK
+    0x1E69 $BE69  $F3  VAR_LEN $00
+    0x1E6B $BE6B  $E1  CTRL_E1
+    0x1E6C $BE6C        @[06][10][A1]([0B].z
+    0x1E74 $BE74  $DB  WAIT 40帧
+    0x1E75 $BE75         .[15]
+    0x1E78 $BE78  $EF  TOGGLE_FLAG
+    0x1E79 $BE79        ???
+    0x1E7C $BE7C  $FC  ADVANCE_PTR
+    0x1E7D $BE7D  $DE  WAIT 120帧
+    0x1E7E $BE7E  $FD  YIELD_FA8
+    0x1E7F $BE7F  $FB  CALL_9085
+    0x1E80 $BE80        [01]M
+    0x1E82 $BE82  $F7  TOGGLE_BANK
+    0x1E83 $BE83  $F3  VAR_LEN $00
+    0x1E85 $BE85  $E1  CTRL_E1
+    0x1E86 $BE86  $DC  WAIT 60帧
+    0x1E87 $BE87        @[12][AF][0B]
+    0x1E8B $BE8B  $EF  TOGGLE_FLAG
+    0x1E8C $BE8C        ?
+    0x1E8D $BE8D  $EF  TOGGLE_FLAG
+    0x1E8E $BE8E        ??
+    0x1E90 $BE90  $FC  ADVANCE_PTR
+    0x1E91 $BE91  $DE  WAIT 120帧
+    0x1E92 $BE92         .[15]z
+    0x1E96 $BE96  $DB  WAIT 40帧
+    0x1E97 $BE97        [05][1F][04]-[00][1F]/[13][02]).[AA]{
+    0x1EA4 $BEA4  $FC  ADVANCE_PTR
+    0x1EA5 $BEA5  $DE  WAIT 120帧
+    0x1EA6 $BEA6  $FD  YIELD_FA8
+    0x1EA7 $BEA7  $FB  CALL_9085
+    0x1EA8 $BEA8        [01][09]
+    0x1EAA $BEAA  $F7  TOGGLE_BANK
+    0x1EAB $BEAB  $F3  VAR_LEN $00
+    0x1EAD $BEAD  $E1  CTRL_E1
+    0x1EAE $BEAE        @k[C6]iT
+    0x1EB3 $BEB3  $EF  TOGGLE_FLAG
+    0x1EB4 $BEB4        ???
+    0x1EB7 $BEB7  $FC  ADVANCE_PTR
+    0x1EB8 $BEB8  $ED  QUEUE_OBJ $31
+    0x1EBA $BEBA  $DF  WAIT 240帧
+    0x1EBB $BEBB  $ED  QUEUE_OBJ $01
+    0x1EBD $BEBD  $DE  WAIT 120帧
+    0x1EBE $BEBE  $FD  YIELD_FA8
+    0x1EBF $BEBF  $FB  CALL_9085
+    0x1EC0 $BEC0        [01][10]
+    0x1EC2 $BEC2  $E1  CTRL_E1
+    0x1EC3 $BEC3  $DE  WAIT 120帧
+    0x1EC4 $BEC4        @,[06]/[10]&{
+    0x1ECB $BECB  $DE  WAIT 120帧
+    0x1ECC $BECC        [00][05]*
+    0x1ECF $BECF  $ED  QUEUE_OBJ $4C
+    0x1ED1 $BED1  $EF  TOGGLE_FLAG
+    0x1ED2 $BED2        ?
+    0x1ED3 $BED3  $EF  TOGGLE_FLAG
+    0x1ED4 $BED4        ??
+    0x1ED6 $BED6  $FC  ADVANCE_PTR
+    0x1ED7 $BED7  $DD  WAIT 80帧
+    0x1ED8 $BED8        [16][1E].[1D][02][08]&{
+    0x1EE0 $BEE0  $FC  ADVANCE_PTR
+    0x1EE1 $BEE1  $F5  SUB_DISPATCH2 $04 (LOOP_FA8)
+    0x1EE3 $BEE3  $ED  QUEUE_OBJ $69
+    0x1EE5 $BEE5  $DE  WAIT 120帧
+    0x1EE6 $BEE6  $FD  YIELD_FA8
+    0x1EE7 $BEE7  $FB  CALL_9085
+    0x1EE8 $BEE8        [01]M
+    0x1EEA $BEEA  $F7  TOGGLE_BANK
+    0x1EEB $BEEB  $F3  VAR_LEN $00
+    0x1EED $BEED  $ED  QUEUE_OBJ $62
+    0x1EEF $BEEF  $E1  CTRL_E1
+    0x1EF0 $BEF0        @[12][AF][0B]?
+    0x1EF5 $BEF5  $F8  VAR_DATA sub=$02
+    0x1EF7 $BEF7        ??
+    0x1EF9 $BEF9  $FC  ADVANCE_PTR
+    0x1EFA $BEFA  $DE  WAIT 120帧
+    0x1EFB $BEFB  $FD  YIELD_FA8
+    0x1EFC $BEFC  $FB  CALL_9085
+    0x1EFD $BEFD        [01][10]
+    0x1EFF $BEFF  $F7  TOGGLE_BANK
+    0x1F00 $BF00  $F3  VAR_LEN $00
+    0x1F02 $BF02  $DC  WAIT 60帧
+    0x1F03 $BF03  $E1  CTRL_E1
+    0x1F04 $BF04        @[0F][19][06],([00][06][10][A1]([0B].z
+    0x1F12 $BF12  $FC  ADVANCE_PTR
+    0x1F13 $BF13  $DC  WAIT 60帧
+    0x1F14 $BF14  $FB  CALL_9085
+    0x1F15 $BF15        [01][09][BA]p[CD]nFo[CF][1A][00]Kn[CD]Ck[A0]
+    0x1F26 $BF26  $FC  ADVANCE_PTR
+    0x1F27 $BF27        [06][11][1F][0D]&{
+    0x1F2D $BF2D  $FC  ADVANCE_PTR
+    0x1F2E $BF2E  $DC  WAIT 60帧
+    0x1F2F $BF2F  $FB  CALL_9085
+    0x1F30 $BF30        [01][10]
+    0x1F32 $BF32  $DD  WAIT 80帧
+    0x1F33 $BF33  $FD  YIELD_FA8
+    0x1F34 $BF34  $FB  CALL_9085
+    0x1F35 $BF35        [01]@
+    0x1F37 $BF37  $F7  TOGGLE_BANK
+    0x1F38 $BF38  $F3  VAR_LEN $00
+    0x1F3A $BF3A  $E1  CTRL_E1
+    0x1F3B $BF3B        @\
+    0x1F3D $BF3D  $F8  VAR_DATA sub=$02
+    0x1F3F $BF3F        o???
+    0x1F43 $BF43  $FC  ADVANCE_PTR
+    0x1F44 $BF44  $DE  WAIT 120帧
+    0x1F45 $BF45  $FD  YIELD_FA8
+    0x1F46 $BF46  $FB  CALL_9085
+    0x1F47 $BF47        [01]c
+    0x1F49 $BF49  $F7  TOGGLE_BANK
+    0x1F4A $BF4A  $F3  VAR_LEN $00
+    0x1F4C $BF4C  $E1  CTRL_E1
+    0x1F4D $BF4D        @[12][AF][0B]z
+    0x1F52 $BF52  $DC  WAIT 60帧
+    0x1F53 $BF53        [07]2[03][19][06]([1A]
+    0x1F5A $BF5A  $FC  ADVANCE_PTR
+    0x1F5B $BF5B        l}i[C2]e}M[AD][00][06][04][0D][A8]{
+    0x1F69 $BF69  $FC  ADVANCE_PTR
+    0x1F6A $BF6A  $DE  WAIT 120帧
+    0x1F6B $BF6B  $FD  YIELD_FA8
+    0x1F6C $BF6C  $FB  CALL_9085
+    0x1F6D $BF6D        [01][13]
+    0x1F6F $BF6F  $F7  TOGGLE_BANK
+    0x1F70 $BF70  $F3  VAR_LEN $00
+    0x1F72 $BF72  $E1  CTRL_E1
+    0x1F73 $BF73        @FikMz
+    0x1F79 $BF79  $F6  CALL_FA8 $1E
+    0x1F7B $BF7B  $FB  CALL_9085
+    0x1F7C $BF7C        [01][11]
+    0x1F7E $BF7E  $DD  WAIT 80帧
+    0x1F7F $BF7F        [05]*[1A][00][06][15]'[A7]
+    0x1F87 $BF87  $FC  ADVANCE_PTR
+    0x1F88 $BF88  $DB  WAIT 40帧
+    0x1F89 $BF89        [0A][19][00][C5]g[BA]i[1D]#[AE])[A9]{
+    0x1F96 $BF96  $FC  ADVANCE_PTR
+    0x1F97 $BF97  $DE  WAIT 120帧
+    0x1F98 $BF98  $FD  YIELD_FA8
+    0x1F99 $BF99  $FB  CALL_9085
+    0x1F9A $BF9A        [01]c
+    0x1F9C $BF9C  $F7  TOGGLE_BANK
+    0x1F9D $BF9D  $F3  VAR_LEN $00
+    0x1F9F $BF9F  $E1  CTRL_E1
+    0x1FA0 $BFA0        @[01][01]
+    0x1FA3 $BFA3  $DB  WAIT 40帧
+    0x1FA4 $BFA4        [00][1F]/[13][02])[A8]{
+    0x1FAC $BFAC  $FC  ADVANCE_PTR
+    0x1FAD $BFAD  $DE  WAIT 120帧
+    0x1FAE $BFAE  $F5  SUB_DISPATCH2 $FF (SUB_$FF)
+    0x1FB0 $BFB0  $FD  YIELD_FA8
+    0x1FB1 $BFB1  $FA  CALL_8AF7B $0F
+    0x1FB3 $BFB3  $FB  CALL_9085
+    0x1FB4 $BFB4        [01][0C]
+    0x1FB6 $BFB6  $F7  TOGGLE_BANK
+    0x1FB7 $BFB7  $F3  VAR_LEN $00
+    0x1FB9 $BFB9  $E1  CTRL_E1
+    0x1FBA $BFBA        @&}[0C][00][07][1F]/[10]y
+    0x1FC4 $BFC4  $FC  ADVANCE_PTR
+    0x1FC5 $BFC5  $DB  WAIT 40帧
+    0x1FC6 $BFC6  $E1  CTRL_E1
+    0x1FC7 $BFC7        @[02][0A][03][A8][00]Gp[CF]Sny
+    0x1FD3 $BFD3  $FC  ADVANCE_PTR
+    0x1FD4 $BFD4  $DB  WAIT 40帧
+    0x1FD5 $BFD5  $E1  CTRL_E1
+    0x1FD6 $BFD6        @ .[15]???
+    0x1FDD $BFDD  $DC  WAIT 60帧
+    0x1FDE $BFDE        &[0C][00][02][0A][03][00][16][1E].[1D]y
+    0x1FEA $BFEA  $FC  ADVANCE_PTR
+    0x1FEB $BFEB  $DB  WAIT 40帧
+    0x1FEC $BFEC  $F2  SET_MODE $02
+    0x1FEE $BFEE  $E1  CTRL_E1
+    0x1FEF $BFEF        @[05][03]yy
+    0x1FF4 $BFF4  $FC  ADVANCE_PTR
+    0x1FF5 $BFF5  $ED  QUEUE_OBJ $62
+    0x1FF7 $BFF7  $DF  WAIT 240帧
+    0x1FF8 $BFF8  $EA  CLEAR_RESET
+    0x1FF9 $BFF9  $ED  QUEUE_OBJ $31
+    0x1FFB $BFFB  $DE  WAIT 120帧
+    0x1FFC $BFFC  $ED  QUEUE_OBJ $01
+    0x1FFE $BFFE  $FF  END
+

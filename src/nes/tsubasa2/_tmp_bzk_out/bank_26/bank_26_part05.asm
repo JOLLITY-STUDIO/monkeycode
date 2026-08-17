@@ -1,0 +1,72 @@
+; bank_26.asm 分片 5/5 (原文件行 4001-4071, 共 4071 行)
+
+- D 0 - - - 0x035FCD 0D:9FBD: D5        .byte $D5   ; 
+- D 0 - - - 0x035FCE 0D:9FBE: 9F        .byte $9F   ; 
+- D 0 - - - 0x035FCF 0D:9FBF: DE        .byte $DE   ; 
+- D 0 - - - 0x035FD0 0D:9FC0: 9F        .byte $9F   ; 
+- D 0 - - - 0x035FD1 0D:9FC1: E6        .byte $E6   ; 
+- D 0 - - - 0x035FD2 0D:9FC2: 9F        .byte $9F   ; 
+- D 0 - I - 0x035FD3 0D:9FC3: B4        .byte $B4   ; 
+- D 0 - I - 0x035FD4 0D:9FC4: C0        .byte $C0   ; 
+- D 0 - I - 0x035FD5 0D:9FC5: C1        .byte $C1   ; 
+- D 0 - I - 0x035FD6 0D:9FC6: CC        .byte $CC   ; 
+- D 0 - I - 0x035FD7 0D:9FC7: CD        .byte $CD   ; 
+- D 0 - I - 0x035FD8 0D:9FC8: D8        .byte $D8   ; 
+- D 0 - I - 0x035FD9 0D:9FC9: D9        .byte $D9   ; 
+- D 0 - I - 0x035FDA 0D:9FCA: E4        .byte $E4   ; 
+- D 0 - I - 0x035FDB 0D:9FCB: E5        .byte $E5   ; 
+- D 0 - I - 0x035FDC 0D:9FCC: FF        .byte $FF   ; 
+- D 0 - I - 0x035FDD 0D:9FCD: A8        .byte $A8   ; 
+- D 0 - I - 0x035FDE 0D:9FCE: A9        .byte $A9   ; 
+- D 0 - I - 0x035FDF 0D:9FCF: AA        .byte $AA   ; 
+- D 0 - I - 0x035FE0 0D:9FD0: AB        .byte $AB   ; 
+- D 0 - I - 0x035FE1 0D:9FD1: B5        .byte $B5   ; 
+- D 0 - I - 0x035FE2 0D:9FD2: B6        .byte $B6   ; 
+- D 0 - I - 0x035FE3 0D:9FD3: B7        .byte $B7   ; 
+- D 0 - I - 0x035FE4 0D:9FD4: FF        .byte $FF   ; 
+- D 0 - I - 0x035FE5 0D:9FD5: AC        .byte $AC   ; 
+- D 0 - I - 0x035FE6 0D:9FD6: AD        .byte $AD   ; 
+- D 0 - I - 0x035FE7 0D:9FD7: AE        .byte $AE   ; 
+- D 0 - I - 0x035FE8 0D:9FD8: AF        .byte $AF   ; 
+- D 0 - I - 0x035FE9 0D:9FD9: B8        .byte $B8   ; 
+- D 0 - I - 0x035FEA 0D:9FDA: B9        .byte $B9   ; 
+- D 0 - I - 0x035FEB 0D:9FDB: BA        .byte $BA   ; 
+- D 0 - I - 0x035FEC 0D:9FDC: BB        .byte $BB   ; 
+- D 0 - I - 0x035FED 0D:9FDD: FF        .byte $FF   ; 
+- D 0 - I - 0x035FEE 0D:9FDE: B0        .byte $B0   ; 
+- D 0 - I - 0x035FEF 0D:9FDF: B1        .byte $B1   ; 
+- D 0 - I - 0x035FF0 0D:9FE0: B2        .byte $B2   ; 
+- D 0 - I - 0x035FF1 0D:9FE1: B3        .byte $B3   ; 
+- D 0 - I - 0x035FF2 0D:9FE2: BC        .byte $BC   ; 
+- D 0 - I - 0x035FF3 0D:9FE3: BD        .byte $BD   ; 
+- D 0 - I - 0x035FF4 0D:9FE4: BE        .byte $BE   ; 
+- D 0 - I - 0x035FF5 0D:9FE5: FF        .byte $FF   ; 
+- D 0 - I - 0x035FF6 0D:9FE6: BF        .byte $BF   ; 
+- D 0 - I - 0x035FF7 0D:9FE7: CA        .byte $CA   ; 
+- D 0 - I - 0x035FF8 0D:9FE8: CB        .byte $CB   ; 
+- D 0 - I - 0x035FF9 0D:9FE9: D6        .byte $D6   ; 
+- D 0 - I - 0x035FFA 0D:9FEA: D7        .byte $D7   ; 
+- D 0 - I - 0x035FFB 0D:9FEB: E2        .byte $E2   ; 
+- D 0 - I - 0x035FFC 0D:9FEC: E3        .byte $E3   ; 
+- D 0 - I - 0x035FFD 0D:9FED: EE        .byte $EE   ; 
+- D 0 - I - 0x035FFE 0D:9FEE: EF        .byte $EF   ; 
+- D 0 - I - 0x035FFF 0D:9FEF: FF        .byte $FF   ; 
+- D 0 - - - 0x036000 0D:9FF0: 06        .byte $06   ; 
+- D 0 - - - 0x036001 0D:9FF1: A0        .byte $A0   ; 
+- D 0 - - - 0x036002 0D:9FF2: 1C        .byte $1C   ; 
+- D 0 - - - 0x036003 0D:9FF3: A0        .byte $A0   ; 
+- D 0 - - - 0x036004 0D:9FF4: 32        .byte $32   ; <2>
+- D 0 - - - 0x036005 0D:9FF5: A0        .byte $A0   ; 
+- D 0 - - - 0x036006 0D:9FF6: 48        .byte $48   ; <H>
+- D 0 - - - 0x036007 0D:9FF7: A0        .byte $A0   ; 
+- D 0 - - - 0x036008 0D:9FF8: 5E        .byte $5E   ; 
+- D 0 - - - 0x036009 0D:9FF9: A0        .byte $A0   ; 
+- D 0 - - - 0x03600A 0D:9FFA: 74        .byte $74   ; <t>
+- D 0 - - - 0x03600B 0D:9FFB: A0        .byte $A0   ; 
+- D 0 - - - 0x03600C 0D:9FFC: 8A        .byte $8A   ; 
+- D 0 - - - 0x03600D 0D:9FFD: A0        .byte $A0   ; 
+- D 0 - - - 0x03600E 0D:9FFE: A0        .byte $A0   ; 
+- D 0 - - - 0x03600F 0D:9FFF: A0        .byte $A0   ; 
+
+
+

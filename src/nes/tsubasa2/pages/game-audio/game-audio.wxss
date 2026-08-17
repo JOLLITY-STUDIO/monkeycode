@@ -1,0 +1,439 @@
+/* game-audio — A/B 音频对比 */
+page {
+  background: #0a0a1a;
+  color: #e0e0f0;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+/** ─── 容器 ─── */
+.container {
+  padding: 12px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+/** ─── 标题 ─── */
+.header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.title {
+  display: block;
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffd700;
+  margin-bottom: 2px;
+}
+.subtitle {
+  display: block;
+  font-size: 11px;
+  color: #8888aa;
+}
+
+/** ─── A/B 切换条 ─── */
+.mode-bar {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+.mode-btn {
+  flex: 1;
+  text-align: center;
+  padding: 6px 0;
+  font-size: 12px;
+  font-weight: bold;
+  border-radius: 6px;
+  background: #151528;
+  color: #666688;
+  border: 1px solid #252540;
+}
+.mode-active {
+  background: #1a3040;
+  color: #ffd700;
+  border-color: #4466aa;
+}
+
+/** ─── 侧边卡片 ─── */
+.side-card {
+  background: #0f0f22;
+  border-radius: 8px;
+  border: 1px solid #252540;
+  margin-bottom: 4px;
+  padding: 8px 10px;
+}
+.side-a { border-left: 3px solid #ff6b6b; }
+.side-b { border-left: 3px solid #6bb5ff; }
+
+/** ─── 侧标题 ─── */
+.side-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 6px;
+  gap: 6px;
+}
+.side-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+.side-dot-a { background: #ff6b6b; }
+.side-dot-b { background: #6bb5ff; }
+.side-label {
+  font-size: 13px;
+  font-weight: bold;
+  color: #ccccdd;
+  flex: 1;
+}
+.side-badge {
+  font-size: 9px;
+  color: #555577;
+  background: #1a1a2e;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.side-badge.editable {
+  color: #88cc88;
+}
+
+/** ─── 波形 ─── */
+.wave-box {
+  background: #1a1a2e;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 6px;
+}
+.wave-canvas {
+  display: block;
+  width: 100%;
+}
+
+/** ─── 通道行 ─── */
+.ch-row {
+  display: flex;
+  gap: 4px;
+}
+.ch-item {
+  flex: 1;
+  text-align: center;
+  padding: 5px 2px;
+  border-radius: 4px;
+  border: 1px solid #2a2a40;
+  background: #0d0d1f;
+}
+.ch-item.ch-on {
+  border-color: #335566;
+  background: #141a28;
+}
+.ch-item.ch-off {
+  opacity: 0.5;
+  border-color: #1a1a2a;
+}
+.ch-toggle-btn { /* make it look clickable */ }
+.ch-dot-c {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin: 0 auto 2px auto;
+}
+.ch-dot-sq1 { background: #ff6b6b; }
+.ch-dot-sq2 { background: #6bb5ff; }
+.ch-dot-tri { background: #6bff6b; }
+.ch-dot-noise { background: #ffcc6b; }
+.ch-txt {
+  display: block;
+  font-size: 9px;
+  font-weight: bold;
+  color: #aaaacc;
+}
+.ch-state {
+  display: block;
+  font-size: 8px;
+  color: #555577;
+  margin-top: 1px;
+}
+.ch-on .ch-state { color: #88aacc; }
+
+/** ─── 分割线 ─── */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 6px 0;
+}
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: #252540;
+}
+.divider-text {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ff6600;
+}
+
+/** ─── 状态卡片 ─── */
+.status-card {
+  background: #151528;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  border: 1px solid #252540;
+}
+.status-text {
+  display: block;
+  font-size: 13px;
+  color: #aaccff;
+  margin-bottom: 4px;
+}
+.info-text {
+  display: block;
+  font-size: 11px;
+  color: #666688;
+}
+
+/** ─── 进度条 ─── */
+.progress-bar {
+  height: 4px;
+  background: #252540;
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ff6b6b, #6bb5ff);
+  border-radius: 2px;
+  transition: width 0.2s ease;
+}
+
+/** ─── 播放控制 ─── */
+.play-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.btn {
+  flex: 1;
+  height: 40px;
+  line-height: 40px;
+  font-size: 15px;
+  border-radius: 8px;
+  border: none;
+  text-align: center;
+  padding: 0;
+}
+.btn::after { border: none; }
+.btn:disabled {
+  opacity: 0.3;
+}
+.btn-play {
+  background: #1a6b3a;
+  color: #fff;
+}
+.btn-pause {
+  background: #c59020;
+  color: #fff;
+}
+.btn-stop {
+  background: #6b1a1a;
+  color: #fff;
+}
+
+/** ─── 对比结果卡片 ─── */
+.cmp-card {
+  background: #0f1a1a;
+  border-radius: 8px;
+  padding: 10px 12px;
+  margin-bottom: 10px;
+  border: 1px solid #2a4040;
+}
+.cmp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+.cmp-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #ffd700;
+}
+.cmp-score {
+  font-size: 12px;
+  color: #44ff44;
+}
+.cmp-stats {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+.cmp-stat {
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+.cmp-stat.good {
+  background: #0a2a0a;
+  color: #44ff44;
+}
+.cmp-stat.bad {
+  background: #2a0a0a;
+  color: #ff4444;
+}
+.cmp-detail {
+  max-height: 320px;
+  background: #0a0a1a;
+  border-radius: 4px;
+  padding: 6px 8px;
+  margin-top: 6px;
+  border: 1px solid #1a2a2a;
+}
+.cmp-text {
+  display: block;
+  font-size: 10px;
+  font-family: 'Courier New', monospace;
+  color: #8888bb;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+/** ─── 提示 ─── */
+.tip {
+  background: #151528;
+  border-radius: 8px;
+  padding: 10px 14px;
+  border: 1px solid #252540;
+}
+.tip text {
+  display: block;
+  font-size: 10px;
+  color: #555577;
+  line-height: 1.7;
+}
+
+/** ─── Tab 切换条 ─── */
+.tab-bar {
+  display: flex;
+  gap: 0;
+  margin-bottom: 12px;
+  background: #0d0d1f;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid #252540;
+}
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: #555577;
+  background: #0d0d1f;
+  transition: all 0.15s ease;
+}
+.tab-active {
+  background: #1a2a3a;
+  color: #ffd700;
+  border-bottom: 2px solid #ffd700;
+}
+
+/** ─── SE 列表头 ─── */
+.se-header {
+  text-align: center;
+  margin-bottom: 10px;
+}
+.se-header-title {
+  display: block;
+  font-size: 16px;
+  font-weight: bold;
+  color: #ff9900;
+  margin-bottom: 3px;
+}
+.se-header-sub {
+  display: block;
+  font-size: 10px;
+  color: #555577;
+}
+
+/** ─── SE 滚动列表 ─── */
+.se-scroll {
+  max-height: 520px;
+  background: #0f0f22;
+  border-radius: 8px;
+  border: 1px solid #252540;
+  padding: 4px 0;
+}
+
+/** ─── SE 列表项 ─── */
+.se-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  margin: 2px 6px;
+  border-radius: 6px;
+  background: #141428;
+  border: 1px solid transparent;
+  transition: all 0.12s ease;
+}
+.se-item:active {
+  transform: scale(0.97);
+  border-color: #446688;
+  background: #1a2a3a;
+}
+
+/** 静音 SE */
+.se-disabled {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+/** 正在播放的 SE */
+.se-playing {
+  border-color: #ff9900;
+  background: #1a2010;
+  box-shadow: 0 0 12px rgba(255, 153, 0, 0.15);
+}
+
+/** SE 左侧信息 */
+.se-left {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.se-idx {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ccccdd;
+}
+.se-addr {
+  font-size: 10px;
+  color: #556688;
+}
+.se-empty {
+  color: #443344;
+}
+.se-chtag {
+  font-size: 10px;
+  color: #44aa77;
+  margin-top: 1px;
+  font-weight: bold;
+}
+
+/** SE 右侧 */
+.se-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.se-desc {
+  font-size: 11px;
+  color: #8899aa;
+}
+.se-play-icon {
+  font-size: 18px;
+  color: #ff9900;
+  width: 24px;
+  text-align: center;
+}

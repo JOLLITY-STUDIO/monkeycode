@@ -1,0 +1,122 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #0f0f1a;
+  box-sizing: border-box;
+  padding: 16rpx 20rpx 20rpx;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12rpx;
+}
+
+.title {
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.stat {
+  color: #9aa3b8;
+  font-size: 26rpx;
+}
+
+.progress-wrap {
+  height: 12rpx;
+  background: #24243a;
+  border-radius: 6rpx;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #3b6fd4;
+  border-radius: 6rpx;
+  transition: width 0.2s;
+}
+
+.progress-bar.done {
+  background: #4caf50;
+}
+
+.board {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 16rpx;
+}
+
+.tool-btn {
+  flex: 1;
+  margin: 0 6rpx;
+  font-size: 24rpx;
+  background: #24243a;
+  color: #e8ecf2;
+  border-radius: 12rpx;
+  line-height: 2.6;
+}
+
+.tool-btn::after {
+  border: none;
+}
+
+.tool-btn.active {
+  background: #3b6fd4;
+  color: #ffffff;
+}
+
+.solved-mask {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 20, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.solved-card {
+  width: 520rpx;
+  background: #1c1c33;
+  border: 1rpx solid #3b6fd4;
+  border-radius: 24rpx;
+  padding: 48rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.solved-title {
+  color: #4caf50;
+  font-size: 56rpx;
+  font-weight: 700;
+  letter-spacing: 6rpx;
+}
+
+.solved-sub {
+  color: #9aa3b8;
+  font-size: 26rpx;
+  margin: 16rpx 0 32rpx;
+}
+
+.btn-primary {
+  background: #3b6fd4;
+  color: #ffffff;
+  border-radius: 16rpx;
+  font-size: 30rpx;
+  width: 60%;
+}
+
+.btn-primary::after {
+  border: none;
+}

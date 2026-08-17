@@ -1,0 +1,688 @@
+{
+  "backup/default_data_00.pmd": {
+    "id": 0,
+    "start": 548352,
+    "end": 571796,
+    "mem": "0x8ba00",
+    "size": 23444
+  },
+  "backup/default_data_01.pmd": {
+    "id": 1,
+    "start": 577532,
+    "end": 577536,
+    "mem": "0x8e610",
+    "size": 4
+  },
+  "backup/default_data_02.pmd": {
+    "id": 2,
+    "start": 583680,
+    "end": 583700,
+    "mem": "0x8ea00",
+    "size": 20
+  },
+  "backup/default_data_03.pmd": {
+    "id": 3,
+    "start": 602768,
+    "end": 603136,
+    "mem": "0x98a4c",
+    "size": 368
+  },
+  "dwc/utility.bin": {
+    "id": 4,
+    "start": 625664,
+    "end": 642064,
+    "mem": "0x9ce00",
+    "size": 16400
+  },
+  "Msg/PicrossDS_messageList_ENG_JP.dat": {
+    "id": 5,
+    "start": 656416,
+    "end": 656896,
+    "mem": "0xa5fa8",
+    "size": 480
+  },
+  "Msg/PicrossDS_messageList_ENG_JP_Easy.dat": {
+    "id": 6,
+    "start": 679936,
+    "end": 717500,
+    "mem": "0xaf400",
+    "size": 37564
+  },
+  "Msg/PicrossDS_messageList_ENG_JP_Free.dat": {
+    "id": 7,
+    "start": 724816,
+    "end": 724992,
+    "mem": "0xb7a8c",
+    "size": 176
+  },
+  "Msg/PicrossDS_messageList_ENG_JP_Normal.dat": {
+    "id": 8,
+    "start": 752640,
+    "end": 781136,
+    "mem": "0xbec00",
+    "size": 28496
+  },
+  "Msg/PicrossDS_messageList_FRE_JP.dat": {
+    "id": 9,
+    "start": 792480,
+    "end": 792576,
+    "mem": "0xc2bd8",
+    "size": 96
+  },
+  "Msg/PicrossDS_messageList_FRE_JP_Easy.dat": {
+    "id": 10,
+    "start": 797696,
+    "end": 800072,
+    "mem": "0xc3600",
+    "size": 2376
+  },
+  "Msg/PicrossDS_messageList_FRE_JP_Free.dat": {
+    "id": 11,
+    "start": 808180,
+    "end": 808448,
+    "mem": "0xc5cd8",
+    "size": 268
+  },
+  "Msg/PicrossDS_messageList_FRE_JP_Normal.dat": {
+    "id": 12,
+    "start": 810496,
+    "end": 815936,
+    "mem": "0xc7400",
+    "size": 5440
+  },
+  "Msg/PicrossDS_messageList_SPA_JP.dat": {
+    "id": 13,
+    "start": 818176,
+    "end": 818176,
+    "mem": "0xca890",
+    "size": 0
+  },
+  "Msg/PicrossDS_messageList_SPA_JP_Easy.dat": {
+    "id": 14,
+    "start": 829952,
+    "end": 830112,
+    "mem": "0xcac00",
+    "size": 160
+  },
+  "Msg/PicrossDS_messageList_SPA_JP_Free.dat": {
+    "id": 15,
+    "start": 830624,
+    "end": 830976,
+    "mem": "0xcafa4",
+    "size": 352
+  },
+  "Msg/PicrossDS_messageList_SPA_JP_Normal.dat": {
+    "id": 16,
+    "start": 831488,
+    "end": 839620,
+    "mem": "0xcd000",
+    "size": 8132
+  },
+  "PackData/_out.pck": {
+    "id": 17,
+    "start": 849336,
+    "end": 849408,
+    "mem": "0xd2238",
+    "size": 72
+  },
+  "Sound/PR.sdat": {
+    "id": 18,
+    "start": 861184,
+    "end": 875380,
+    "mem": "0xd5c00",
+    "size": 14196
+  },
+  "wireless/icon_multi.chr": {
+    "id": 19,
+    "start": 902372,
+    "end": 902656,
+    "mem": "0xe10fc",
+    "size": 284
+  },
+  "wireless/icon_multi.plt": {
+    "id": 20,
+    "start": 922112,
+    "end": 922132,
+    "mem": "0xe1400",
+    "size": 20
+  },
+  "wireless/icon_otameshi.chr": {
+    "id": 21,
+    "start": 925696,
+    "end": 925696,
+    "mem": "0xe2db4",
+    "size": 0
+  },
+  "wireless/icon_otameshi.plt": {
+    "id": 22,
+    "start": 929280,
+    "end": 929736,
+    "mem": "0xe3000",
+    "size": 456
+  },
+  "unnamed/file_23.bin": {
+    "id": 23,
+    "start": 929952,
+    "end": 930304,
+    "mem": "0xe3214",
+    "size": 352
+  },
+  "unnamed/file_24.bin": {
+    "id": 24,
+    "start": 930816,
+    "end": 947908,
+    "mem": "0xe7800",
+    "size": 17092
+  },
+  "unnamed/file_25.bin": {
+    "id": 25,
+    "start": 951412,
+    "end": 951808,
+    "mem": "0xe9df4",
+    "size": 396
+  },
+  "unnamed/file_26.bin": {
+    "id": 26,
+    "start": 957952,
+    "end": 963368,
+    "mem": "0xeb400",
+    "size": 5416
+  },
+  "unnamed/file_27.bin": {
+    "id": 27,
+    "start": 969396,
+    "end": 969728,
+    "mem": "0xed474",
+    "size": 332
+  },
+  "unnamed/file_28.bin": {
+    "id": 28,
+    "start": 972288,
+    "end": 972696,
+    "mem": "0xed800",
+    "size": 408
+  },
+  "unnamed/file_29.bin": {
+    "id": 29,
+    "start": 973148,
+    "end": 973312,
+    "mem": "0xf3a40",
+    "size": 164
+  },
+  "unnamed/file_30.bin": {
+    "id": 30,
+    "start": 998400,
+    "end": 1029956,
+    "mem": "0xfb800",
+    "size": 31556
+  },
+  "unnamed/file_31.bin": {
+    "id": 31,
+    "start": 1034696,
+    "end": 1034752,
+    "mem": "0x1001c0",
+    "size": 56
+  },
+  "unnamed/file_32.bin": {
+    "id": 32,
+    "start": 1049088,
+    "end": 1049108,
+    "mem": "0x100400",
+    "size": 20
+  },
+  "unnamed/file_33.bin": {
+    "id": 33,
+    "start": 1051796,
+    "end": 1052160,
+    "mem": "0x101644",
+    "size": 364
+  },
+  "unnamed/file_34.bin": {
+    "id": 34,
+    "start": 1054720,
+    "end": 1062080,
+    "mem": "0x103600",
+    "size": 7360
+  },
+  "unnamed/file_35.bin": {
+    "id": 35,
+    "start": 1062748,
+    "end": 1062912,
+    "mem": "0x10b178",
+    "size": 164
+  },
+  "unnamed/file_36.bin": {
+    "id": 36,
+    "start": 1094144,
+    "end": 1094164,
+    "mem": "0x10b400",
+    "size": 20
+  },
+  "unnamed/file_37.bin": {
+    "id": 37,
+    "start": 1100196,
+    "end": 1100288,
+    "mem": "0x11e07c",
+    "size": 92
+  },
+  "unnamed/file_38.bin": {
+    "id": 38,
+    "start": 1171968,
+    "end": 1174680,
+    "mem": "0x11ee00",
+    "size": 2712
+  },
+  "unnamed/file_39.bin": {
+    "id": 39,
+    "start": 1180124,
+    "end": 1180160,
+    "mem": "0x126300",
+    "size": 36
+  },
+  "unnamed/file_40.bin": {
+    "id": 40,
+    "start": 1205248,
+    "end": 1209080,
+    "mem": "0x127400",
+    "size": 3832
+  },
+  "unnamed/file_41.bin": {
+    "id": 41,
+    "start": 1212788,
+    "end": 1212928,
+    "mem": "0x128fa0",
+    "size": 140
+  },
+  "unnamed/file_42.bin": {
+    "id": 42,
+    "start": 1216512,
+    "end": 1219692,
+    "mem": "0x129e00",
+    "size": 3180
+  },
+  "unnamed/file_43.bin": {
+    "id": 43,
+    "start": 1223140,
+    "end": 1223168,
+    "mem": "0x12b674",
+    "size": 28
+  },
+  "unnamed/file_44.bin": {
+    "id": 44,
+    "start": 1226752,
+    "end": 1229664,
+    "mem": "0x12c400",
+    "size": 2912
+  },
+  "unnamed/file_45.bin": {
+    "id": 45,
+    "start": 1233132,
+    "end": 1233408,
+    "mem": "0x12dcfc",
+    "size": 276
+  },
+  "unnamed/file_46.bin": {
+    "id": 46,
+    "start": 1236480,
+    "end": 1239472,
+    "mem": "0x12ea00",
+    "size": 2992
+  },
+  "unnamed/file_47.bin": {
+    "id": 47,
+    "start": 1242248,
+    "end": 1242624,
+    "mem": "0x130548",
+    "size": 376
+  },
+  "unnamed/file_48.bin": {
+    "id": 48,
+    "start": 1246720,
+    "end": 1249776,
+    "mem": "0x131200",
+    "size": 3056
+  },
+  "unnamed/file_49.bin": {
+    "id": 49,
+    "start": 1252552,
+    "end": 1252864,
+    "mem": "0x1328a4",
+    "size": 312
+  },
+  "unnamed/file_50.bin": {
+    "id": 50,
+    "start": 1255936,
+    "end": 1258564,
+    "mem": "0x133600",
+    "size": 2628
+  },
+  "unnamed/file_51.bin": {
+    "id": 51,
+    "start": 1261800,
+    "end": 1262080,
+    "mem": "0x134c00",
+    "size": 280
+  },
+  "unnamed/file_52.bin": {
+    "id": 52,
+    "start": 1264640,
+    "end": 1267352,
+    "mem": "0x135800",
+    "size": 2712
+  },
+  "unnamed/file_53.bin": {
+    "id": 53,
+    "start": 1270068,
+    "end": 1270272,
+    "mem": "0x136a70",
+    "size": 204
+  },
+  "unnamed/file_54.bin": {
+    "id": 54,
+    "start": 1272832,
+    "end": 1275004,
+    "mem": "0x137600",
+    "size": 2172
+  },
+  "unnamed/file_55.bin": {
+    "id": 55,
+    "start": 1277380,
+    "end": 1277440,
+    "mem": "0x138444",
+    "size": 60
+  },
+  "unnamed/file_56.bin": {
+    "id": 56,
+    "start": 1279488,
+    "end": 1281152,
+    "mem": "0x138e00",
+    "size": 1664
+  },
+  "unnamed/file_57.bin": {
+    "id": 57,
+    "start": 1283116,
+    "end": 1283584,
+    "mem": "0x139c4c",
+    "size": 468
+  },
+  "unnamed/file_58.bin": {
+    "id": 58,
+    "start": 1285632,
+    "end": 1287296,
+    "mem": "0x13a600",
+    "size": 1664
+  },
+  "unnamed/file_59.bin": {
+    "id": 59,
+    "start": 1288788,
+    "end": 1289216,
+    "mem": "0x13affc",
+    "size": 428
+  },
+  "unnamed/file_60.bin": {
+    "id": 60,
+    "start": 1290240,
+    "end": 1291276,
+    "mem": "0x13b600",
+    "size": 1036
+  },
+  "unnamed/file_61.bin": {
+    "id": 61,
+    "start": 1292796,
+    "end": 1292800,
+    "mem": "0x13bdd4",
+    "size": 4
+  },
+  "unnamed/file_62.bin": {
+    "id": 62,
+    "start": 1293824,
+    "end": 1294836,
+    "mem": "0x13c200",
+    "size": 1012
+  },
+  "unnamed/file_63.bin": {
+    "id": 63,
+    "start": 1295936,
+    "end": 1296384,
+    "mem": "0x13cc90",
+    "size": 448
+  },
+  "unnamed/file_64.bin": {
+    "id": 64,
+    "start": 1297920,
+    "end": 1299068,
+    "mem": "0x13d400",
+    "size": 1148
+  },
+  "unnamed/file_65.bin": {
+    "id": 65,
+    "start": 1300600,
+    "end": 1300992,
+    "mem": "0x13de58",
+    "size": 392
+  },
+  "unnamed/file_66.bin": {
+    "id": 66,
+    "start": 1302528,
+    "end": 1303056,
+    "mem": "0x13e400",
+    "size": 528
+  },
+  "unnamed/file_67.bin": {
+    "id": 67,
+    "start": 1304376,
+    "end": 1304576,
+    "mem": "0x13ee60",
+    "size": 200
+  },
+  "unnamed/file_68.bin": {
+    "id": 68,
+    "start": 1306624,
+    "end": 1309440,
+    "mem": "0x13fc00",
+    "size": 2816
+  },
+  "unnamed/file_69.bin": {
+    "id": 69,
+    "start": 1313948,
+    "end": 1314304,
+    "mem": "0x141170",
+    "size": 356
+  },
+  "unnamed/file_70.bin": {
+    "id": 70,
+    "start": 1315328,
+    "end": 1316788,
+    "mem": "0x141800",
+    "size": 1460
+  },
+  "unnamed/file_71.bin": {
+    "id": 71,
+    "start": 1318248,
+    "end": 1318400,
+    "mem": "0x14226c",
+    "size": 152
+  },
+  "unnamed/file_72.bin": {
+    "id": 72,
+    "start": 1319936,
+    "end": 1321652,
+    "mem": "0x142c00",
+    "size": 1716
+  },
+  "unnamed/file_73.bin": {
+    "id": 73,
+    "start": 1323568,
+    "end": 1324032,
+    "mem": "0x143e44",
+    "size": 464
+  },
+  "unnamed/file_74.bin": {
+    "id": 74,
+    "start": 1327104,
+    "end": 1329100,
+    "mem": "0x144800",
+    "size": 1996
+  },
+  "unnamed/file_75.bin": {
+    "id": 75,
+    "start": 1330256,
+    "end": 1330688,
+    "mem": "0x1450e0",
+    "size": 432
+  },
+  "unnamed/file_76.bin": {
+    "id": 76,
+    "start": 1331712,
+    "end": 1333136,
+    "mem": "0x145800",
+    "size": 1424
+  },
+  "unnamed/file_77.bin": {
+    "id": 77,
+    "start": 1334024,
+    "end": 1334272,
+    "mem": "0x145e90",
+    "size": 248
+  },
+  "unnamed/file_78.bin": {
+    "id": 78,
+    "start": 1335296,
+    "end": 1335840,
+    "mem": "0x146400",
+    "size": 544
+  },
+  "unnamed/file_79.bin": {
+    "id": 79,
+    "start": 1337800,
+    "end": 1337856,
+    "mem": "0x146f68",
+    "size": 56
+  },
+  "unnamed/file_80.bin": {
+    "id": 80,
+    "start": 1339392,
+    "end": 1341856,
+    "mem": "0x147a00",
+    "size": 2464
+  },
+  "unnamed/file_81.bin": {
+    "id": 81,
+    "start": 1344368,
+    "end": 1344512,
+    "mem": "0x148800",
+    "size": 144
+  },
+  "unnamed/file_82.bin": {
+    "id": 82,
+    "start": 1345536,
+    "end": 1347000,
+    "mem": "0x1f01000",
+    "size": 1464
+  },
+  "unnamed/file_83.bin": {
+    "id": 83,
+    "start": 32511952,
+    "end": 32512000,
+    "mem": "0x1f01fd0",
+    "size": 48
+  },
+  "unnamed/file_84.bin": {
+    "id": 84,
+    "start": 32514048,
+    "end": 32516048,
+    "mem": "0x1f02800",
+    "size": 2000
+  },
+  "unnamed/file_85.bin": {
+    "id": 85,
+    "start": 32518096,
+    "end": 32518144,
+    "mem": "0x1fde4c0",
+    "size": 48
+  },
+  "unnamed/file_86.bin": {
+    "id": 86,
+    "start": 32316416,
+    "end": 32371238,
+    "mem": "0x1edf400",
+    "size": 54822
+  },
+  "unnamed/file_87.bin": {
+    "id": 87,
+    "start": 32372058,
+    "end": 32372224,
+    "mem": "0x1ee05e2",
+    "size": 166
+  },
+  "unnamed/file_88.bin": {
+    "id": 88,
+    "start": 32376320,
+    "end": 32379682,
+    "mem": "0x1ee1400",
+    "size": 3362
+  },
+  "unnamed/file_89.bin": {
+    "id": 89,
+    "start": 32436410,
+    "end": 32436736,
+    "mem": "0x1eef382",
+    "size": 326
+  },
+  "unnamed/file_90.bin": {
+    "id": 90,
+    "start": 32437248,
+    "end": 32441832,
+    "mem": "0x1ef0600",
+    "size": 4584
+  },
+  "unnamed/file_91.bin": {
+    "id": 91,
+    "start": 32445616,
+    "end": 32445952,
+    "mem": "0x1efecd4",
+    "size": 336
+  },
+  "unnamed/file_92.bin": {
+    "id": 92,
+    "start": 32501248,
+    "end": 32501570,
+    "mem": "0x1eff000",
+    "size": 322
+  },
+  "unnamed/file_93.bin": {
+    "id": 93,
+    "start": 32505990,
+    "end": 32506368,
+    "mem": "0x1f00ff4",
+    "size": 378
+  },
+  "unnamed/file_94.bin": {
+    "id": 94,
+    "start": 1518592,
+    "end": 26363636,
+    "mem": "0x1924800",
+    "size": 24845044
+  },
+  "unnamed/file_95.bin": {
+    "id": 95,
+    "start": 32315936,
+    "end": 33416704,
+    "mem": "0x1fde800",
+    "size": 1100768
+  },
+  "unnamed/file_96.bin": {
+    "id": 96,
+    "start": 33417728,
+    "end": 33417760,
+    "mem": "0x1fde800",
+    "size": 32
+  },
+  "unnamed/file_97.bin": {
+    "id": 97,
+    "start": 33417728,
+    "end": 33418240,
+    "mem": "0x1fdec20",
+    "size": 512
+  }
+}

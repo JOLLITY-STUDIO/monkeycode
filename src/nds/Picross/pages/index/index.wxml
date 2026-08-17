@@ -1,0 +1,43 @@
+<view class="page">
+  <!-- 顶部状态栏 -->
+  <view class="topbar">
+    <text class="title">{{puzzleName}}</text>
+    <text class="stat">⏱ {{timeText}}</text>
+    <text class="stat">✕ {{mistakes}}/{{maxMistakes}}</text>
+  </view>
+
+  <!-- 进度条 -->
+  <view class="progress-wrap">
+    <view class="progress-bar {{solved ? 'done' : ''}}" style="width: {{progress}}%;"></view>
+  </view>
+
+  <!-- 游戏画布（type=2d，触摸绘制） -->
+  <canvas
+    type="2d"
+    id="board"
+    class="board"
+    bindtouchstart="onTouchStart"
+    bindtouchmove="onTouchMove"
+    bindtouchend="onTouchEnd"
+  ></canvas>
+
+  <!-- 完成遮罩 -->
+  <view class="solved-mask" wx:if="{{solved}}">
+    <view class="solved-card">
+      <text class="solved-title">CLEAR!</text>
+      <text class="solved-sub">用时 {{timeText}} · 失误 {{mistakes}}</text>
+      <button class="btn-primary" bindtap="onNext">下一题</button>
+    </view>
+  </view>
+
+  <!-- 底部工具栏 -->
+  <view class="toolbar">
+    <button class="tool-btn" bindtap="onPrev">‹ 上一题</button>
+    <button
+      class="tool-btn {{markMode === 'cross' ? 'active' : ''}}"
+      bindtap="onToggleMark"
+    >{{markMode === 'cross' ? '✕ 画叉' : '● 涂黑'}}</button>
+    <button class="tool-btn" bindtap="onReset">重置</button>
+    <button class="tool-btn" bindtap="onNext">下一题 ›</button>
+  </view>
+</view>
