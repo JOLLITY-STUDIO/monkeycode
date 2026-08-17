@@ -20,10 +20,12 @@
  *   Bank 31 → InterruptService (中断/NMI 服务)
  *
  * 骨架 (结构完成, code 待翻译):
+ *   Bank 20 → Bank20Service (比赛辅助逻辑)
+ *
+ * 已翻译 (完整实现, 不再属于骨架):
  *   Bank 16 → Bank16Service (特殊动作/技能)
  *   Bank 19 → Bank19Service (辅助逻辑)
- *   Bank 20 → Bank20Service (比赛辅助逻辑)
- *   Bank 22 → Bank22Service (数据+代码混合)
+ *   Bank 22 → Bank22Service (数据+代码混合, 精灵生成器)
  */
 
 export { Bank00Service } from './service/bank00/bank00_core.service';
@@ -45,6 +47,7 @@ export { Bank19Service } from './service/bank19_auxiliary.service';
 export { Bank20Service } from './service/bank20_match-aux.service';
 export { Bank22Service } from './service/bank22_hybrid.service';
 export { Bank27Service } from './service/bank27_minimal.service';
+export { Bank29RosterService } from './service/bank29_roster.service';
 
 // 场景路由器 (BOOT/TITLE/MEETING/MATCH/RESULT 全路由)
 export { BootService, BOOT_KEYS } from './boot';

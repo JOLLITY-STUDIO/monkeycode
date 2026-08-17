@@ -1,0 +1,28 @@
+﻿D:\studio\github\monkeycode\src\nes\tsubasa2\src\core\OamManager.ts|106|this._syncEntryFields(index);
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\core\OamManager.ts|118|this._syncEntryFields(i);
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\core\OamManager.ts|132|this._syncEntryFields(index);
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\core\OamManager.ts|226|private _syncEntryFields(index: number): void {
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank00\scene_opening.controller.ts|264|// 设 ram_00ED=0x0A → 对应 $808D
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank00\scene_opening.controller.ts|265|this._store.write('ram_00ED', 0x0A);
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank01_data-query.service.ts|32|/** ram_00ED: 当前选项屏幕光标 (0-17) */
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank01_data-query.service.ts|33|const KEY_ED = 'ram_00ED';
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank01_data-query.service.ts|169|// ── ⑤ $A0AF-$A0F2: 18 行数据显示循环 (ram_00ED = 0..0x11) ──
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|118|s.write('ram_00ED', 0x04);
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|234|*   STY ram_00ED; INX; LDY #$00; PHA
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|243|const base = (s.read('ram_00ED') << 8) | s.read('ram_00EC');
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|257|//           $A20C(entryD), $A20F(entryE), $A212(entryF), $A215(entryG)
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|265|//   $8212: JMP $A484  (entryF — 跳转表分发器)
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|300|s.write('ram_00ED', 0x04);
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|331|// 82EC: STA ram_00ED
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|332|s.write('ram_00ED', param);
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|370|*   LDA ram_00ED; ASL; TAX
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|384|* @param ed ram_00ED 跳转索引
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|387|entryF(ed?: number): number {
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|388|const index = ed ?? this._store.read('ram_00ED');
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank02_scene.service.ts|459|let y = s.read('ram_00ED');
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank28_match.service.ts|110|case 6: this.entryFormationConfig(); break;
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank28_match.service.ts|215|entryFormationConfig(): void {
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank28_match.service.ts|263|const sceneId = s.read('ram_00ED') & 0x1F;
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank28_match.service.ts|328|const roleIdx = s.read('ram_00ED') & 0x0F;
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\service\bank29_roster.service.ts|50|const KEY_ED = 'ram_00ED';
+DONE

@@ -18,6 +18,14 @@
 import { DataStore } from '../data/DataStore';
 import type { Player, Team, PlayerStats } from '../model/types';
 import { PlayerPosition, FormationType } from '../model/types';
+import {
+  LOOKUP_16BIT,
+  OPTION_FLAG_B255,
+  OPTION_SCREEN_Y,
+  PLAYER_DATA_BC6E,
+  POS_TABLE_AD8A,
+} from '../data/bank01-more-tables';
+import { CHAR_MAP_DOUBLE } from './bank00/char-map';
 
 // ── Bank 01 常量 ──
 
@@ -96,19 +104,98 @@ export class DataQueryService {
 
   /**
    * 入口0 (A=0): 球员数据处理 — 读取队伍/球员属性表，计算能力值
-   * 对应 asm $A01E-$A0D0 (~190 bytes)
+   * 对应 asm $A01E-$A10C (CPU 窗口), 完整 1:1 转写:
+   *   1. $A01E-$A038: 由 ram_0448/0446/044D + 场景号计算 ram_0660/0661 标志
+   *   2. $A03B-$A08B: 10 项能力编码循环 (ram_0454 查询表 × LOOKUP_16BIT)
+   *   3. $A08D-$A0AC: 汇总求和 → ram_0662/0663/0661
+   *   4. $A0AF-$A0F2: 18 行数据显示循环 ($A438 字段提取 → $88CA 字符显示)
+   *   5. $A0F4-$A10C: 帧等待 + $98E8 块填充 (4 行 × 11 列, 地址 $228A)
    */
   entry0_PlayerData(): void {
     const s = this._store;
-    // 从 RAM 读取查询参数: ram_0448 (teamId?), ram_0446 (position?), ram_044D (playerIndex)
+    // 从 RAM 读取查询参数: ram_0448 (队伍ID), ram_0446 (位置), ram_044D (球员索引)
     const teamId = s.read('ram_0448');
-    const posIdx = s.read('ram_0446');
     const playerIdx = s.read('ram_044D');
 
-    // 查球员数据表 → 写入 $0656-$0665 缓冲区 (10名球员)
-    // 调用 $B016 (加法)/$B02E (减法)/$B045 (乘法) 数学函数
-    // TODO: 从 ROM 数据表提取球员能力值
-    this._decodePlayerStats(teamId, playerIdx);
+    // ── ① $A01E-$A02C: ram_0660 = ((scene<<1)|bit0(0448))<<1 | (0446>=5) ──
+    // LDA ram_0448; LSR → carry=bit0; LDA ram_0026; ROL → A=(scene<<1)|carry;
+    // CLC; LDX ram_0446; CPX #$05 → carry=(posIdx>=5); ROL
+    const carry0 = teamId & 1;
+    const sceneId = s.read('ram_0026');
+    const a1 = ((sceneId << 1) | carry0) & 0xFF;
+    // 第二 ROL 的 carry = bit7(a1) = scene bit6 (供后续 ROR 使用)
+    const carryScene = (sceneId >> 6) & 1;
+    const posIdx = s.read('ram_0446');
+    s.write('ram_0660', ((a1 << 1) | (posIdx >= 5 ? 1 : 0)) & 0xFF);
+
+    // ── ② $A02F-$A038: ram_0661 = ((ram_00E1>>1)|((044D&1)<<7)) & 0xB0 ──
+    // LDA ram_044D; ROR (carry=044D&1) → LDA ram_00E1; ROR; AND #$B0
+    const carryP = playerIdx & 1;
+    const e1 = s.read('ram_00E1');
+    s.write('ram_0661', (((e1 >> 1) | (carryP << 7)) & 0xB0));
+
+    // ── ③ $A03B-$A08B: 10 项能力编码循环 ──
+    // 每项: 查询值 V = ram_0454[i*2..+1] (16-bit, 调用方预填)
+    //   E7 = LOOKUP_16BIT 最大 ≤ V 的表项索引 ($B02E)
+    //   q  = (V - LOOKUP[E7]) / ((LOOKUP[E7+1] - LOOKUP[E7]) >> 2) ($9E0C 16位除法)
+    //   ram_0656[i] = (E7 << 2) | q
+    for (let i = 0; i < 10; i++) {
+      const query = this._query16(i);
+      const e7 = this._lookupIndex16(query);
+      const tableVal = this._lookupValue16(e7);
+      const rem = (query - tableVal) & 0xFFFF;
+      let delta = 0;
+      if (e7 < 63) delta = (this._lookupValue16(e7 + 1) - tableVal) & 0xFFFF;
+      delta >>= 2;
+      const q = delta > 0 ? Math.min(3, Math.floor(rem / delta)) : 0;
+      // ram_0656,X = (ram_00E7 << 2) | ram_00EC ($807E-$8084)
+      s.write(`ram_${(0x0656 + i).toString(16).toUpperCase()}`, ((e7 << 2) | q) & 0xFF);
+    }
+
+    // ── ④ $A08D-$A0AC: 汇总计算 ──
+    // ram_0663 = ram_00E2 & 0xF0;  ram_00EB = (ram_0663>>4) | ram_0661
+    const e2 = s.read('ram_00E2');
+    s.write('ram_0663', e2 & 0xF0);
+    let eb = ((e2 >> 4) & 0x0F) | s.read('ram_0661');
+
+    // $A402: 16-bit 求和 = (0661&0xF0) + 0663 + Σ(ram_0656[0..10]) + $0309
+    let sum = (s.read('ram_0661') & 0xF0) + s.read('ram_0663');
+    for (let x = 0; x < 11; x++) sum += this._r8(0x0656 + x);
+    sum += 0x0309;
+    // $80A0: ram_0662 = sum lo; ram_0661 |= sum hi & 0x0F
+    s.write('ram_0662', sum & 0xFF);
+    s.write('ram_0661', s.read('ram_0661') | ((sum >> 8) & 0x0F));
+
+    // ── ⑤ $A0AF-$A0F2: 18 行数据显示循环 (ram_00ED = 0..0x11) ──
+    for (let ed = 0; ed < 0x12; ed++) {
+      // JSR $A438: 按 POS_TABLE_AD8A[ed] 提取状态字段
+      const field = this._extractStatField(ed);
+      // $80B8-$80BE: 扫描 OPTION_FLAG_B255 找到匹配项
+      let x = 0;
+      while (x < OPTION_FLAG_B255.length && OPTION_FLAG_B255[x] !== field) x++;
+      if (x >= OPTION_FLAG_B255.length) x = 0; // 防御: 正常流程必然命中
+      // $80C0-$80CE: ed < 0x0F 时 ram_00EB++ 且 X = (X + ram_00EB) & 0x3F
+      if (ed < 0x0F) {
+        eb = (eb + 1) & 0xFF;
+        x = (x + eb) & 0x3F;
+      }
+      // $80CF: char = PLAYER_DATA_BC6E[X]; $80D6-$80DD: Y = OPTION_SCREEN_Y[ed]+$80, X=$22
+      const ch = PLAYER_DATA_BC6E[x % PLAYER_DATA_BC6E.length];
+      this._charDisplay(ch, (OPTION_SCREEN_Y[ed] + 0x80) & 0xFF, 0x22);
+      // $80E4-$80EA: ram_0099 bit7 置位时 EOR #$41 (破折号切换)
+      if (s.read('ram_0099') & 0x80) {
+        s.write('ram_0099', s.read('ram_0099') ^ 0x41);
+      }
+    }
+
+    // ── ⑥ $A0F4-$A10C: 帧等待 + PPU 块填充 ──
+    // $9FA8(1) bank 切换 (H5 no-op); 等待 ram_001E bit7 (帧同步, H5 由帧循环保证)
+    this._bankSwitch(1);
+    // $98E8: Y=4 行, X=$0B 列, 起始地址 $228A, 填充 0x00
+    this._ppuBlockFill(4, 0x0B, 0x228A, 0x00);
+
+    // H5 适配: 将解码结果提供给模型层
+    void this._decodePlayerStats(teamId, playerIdx);
   }
 
   /**
@@ -265,22 +352,129 @@ export class DataQueryService {
   // ── 内部: 球员数据解码 ──
 
   /**
-   * 从 ROM 数据表解码球员能力值。
-   * 原始数据在 Banks 03-10 的球员数据表中，每条记录 32-64 bytes，
-   * 包含: 名字、位置、6项能力值、必杀技ID列表。
+   * 从 ram_0656 解码缓冲中读取 10 项能力编码，提供给 H5 模型层。
+   * 原始数据经 entry0 的 $A03B-$A08B 循环解码后存放于 ram_0656-065F。
    *
-   * @param teamId 队伍ID
-   * @param playerIdx 队内球员索引
+   * 编码格式 (每字节): [3:0] = LOOKUP_16BIT 表项索引 << 2 | [1:0] 细分值
+   *
+   * @param teamId 队伍ID (ram_0448)
+   * @param playerIdx 队内球员索引 (ram_044D)
    */
-  private _decodePlayerStats(teamId: number, playerIdx: number): void {
-    // 球员数据表格式 (每条 ~32 bytes):
-    //   [0-1] 名字指针 / [2] 位置档位 [3-7] 能力值曲线索引
-    //   [8-12] 能力值增量 / [13-18] 姓名编码
-    //   [19-30] 必杀技ID * 6 bytes (shot/pass/dribble/tackle/save) * 2
-    //   [31] 进场画面/特殊标志
+  private _decodePlayerStats(teamId: number, playerIdx: number): number[] {
+    const raw: number[] = [];
+    for (let i = 0; i < 10; i++) raw.push(this._r8(0x0656 + i));
+    // H5 适配: 暂存查询参数供模型层注册 (字段语义映射见 _extractStatField / $A438)
+    this._store.write('ram_0672', teamId & 0xFF);
+    this._store.write('ram_0673', playerIdx & 0xFF);
+    return raw;
+  }
 
-    // ROM 数据表偏移: Bank 03-10
-    // TODO: 从 ROM data bank 提取并转换为 Player 对象
+  // ── 内部: 内存读写辅助 (KV 键: ram_XXXX 大写 16 进制) ──
+
+  /** 读 ram_XXXX (大写十六进制键名) */
+  private _r8(addr: number): number {
+    return this._store.read(`ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`);
+  }
+
+  /** 对应 bank01 $B016: 读取 ram_0454 查询表 16-bit 值 (A=索引, 取低 4 位) */
+  private _query16(index: number): number {
+    const base = 0x0454 + (index & 0x0F) * 2;
+    return this._r8(base) | (this._r8(base + 1) << 8);
+  }
+
+  /** 对应 bank01 $B045: LOOKUP_16BIT[index] 16-bit 查表 (Y/X 返回值合并) */
+  private _lookupValue16(index: number): number {
+    const i = Math.max(0, Math.min(63, index | 0)) * 2;
+    return (LOOKUP_16BIT[i] ?? 0) | ((LOOKUP_16BIT[i + 1] ?? 0) << 8);
+  }
+
+  /** 对应 bank01 $B02E: 扫描 LOOKUP_16BIT 返回最大 ≤ value 的表项索引 */
+  private _lookupIndex16(value: number): number {
+    for (let i = 63; i >= 0; i--) {
+      if (value >= this._lookupValue16(i)) return i;
+    }
+    return 0;
+  }
+
+  /**
+   * 对应 bank01 $A438: 状态字段提取。
+   * X = 屏幕行索引 (0-17); Y = POS_TABLE_AD8A[X] (能力槽); 选择器 = X & 3:
+   *   0: lo >> 2
+   *   1: ((lo & 0x03) << 4) | (hi >> 4)   ($845E: 16-bit 移位组合)
+   *   2: ((lo & 0x0F) << 2) | ((hi >> 6) & 0x03)  ($844E)
+   *   3: lo & 0x3F
+   */
+  private _extractStatField(x: number): number {
+    const y = POS_TABLE_AD8A[x % POS_TABLE_AD8A.length] ?? 0;
+    const lo = this._r8(0x0656 + y);
+    const hi = this._r8(0x0657 + y);
+    switch (x & 3) {
+      case 0: return (lo >> 2) & 0xFF;
+      case 1: return (((lo & 0x03) << 4) | (hi >> 4)) & 0xFF;
+      case 2: return (((lo & 0x0F) << 2) | ((hi >> 6) & 0x03)) & 0xFF;
+      default: return lo & 0x3F;
+    }
+  }
+
+  // ── 内部: PPU Buffer 记录 (对应 bank00 $9B28/$9B5E/$88CA/$98E8) ──
+  // 记录格式: [control, PPU addr lo, PPU addr hi] + 数据 + 0x00 终止
+
+  /** 对应 bank00 $9B28: 分配 PPU Buffer 记录头, 返回数据区写偏移 */
+  private _ppuBufAlloc(control: number, addrLo: number, addrHi: number): number {
+    const s = this._store;
+    const ptr = s.read('ppuBufPtr');
+    if (ptr + (control & 0x3F) + 3 > 64) return ptr; // 空间不足 (H5 简化处理)
+    s.write(`ppuBuf_${ptr}`, control & 0xFF);
+    s.write(`ppuBuf_${ptr + 1}`, addrLo & 0xFF);
+    s.write(`ppuBuf_${ptr + 2}`, addrHi & 0xFF);
+    return ptr + 3;
+  }
+
+  /** 对应 bank00 $9B5E: PPU Buffer 记录 0x00 终止 + 指针推进 */
+  private _ppuBufEnd(x: number): void {
+    this._store.write(`ppuBuf_${x}`, 0);
+    this._store.write('ppuBufPtr', x);
+  }
+
+  /**
+   * 对应 bank00 $88CA: 字符显示 (A=char, Y=PPU addr lo, X=PPU addr hi)。
+   * char < $A0: 单 tile [0x00, char];  char >= $A0: 双 tile [hiTile($94/$95), loTile($8A14)]
+   */
+  private _charDisplay(ch: number, addrLo: number, addrHi: number): void {
+    let x = this._ppuBufAlloc(0x82, addrLo, addrHi);
+    if (ch < 0xA0) {
+      this._store.write(`ppuBuf_${x}`, 0);
+      this._store.write(`ppuBuf_${x + 1}`, ch & 0xFF);
+      x += 2;
+    } else {
+      const hi = ch >= 0xC8 ? 0x95 : 0x94;
+      const lo = CHAR_MAP_DOUBLE[ch]?.loTile ?? 0;
+      this._store.write(`ppuBuf_${x}`, hi);
+      this._store.write(`ppuBuf_${x + 1}`, lo);
+      x += 2;
+    }
+    this._ppuBufEnd(x);
+  }
+
+  /**
+   * 对应 bank00 $98E8: PPU 块填充。
+   * Y=行数, X=每行字节数, ram_00E6/00E7=起始 PPU 地址, 填充值 0; 行间地址 +$20。
+   */
+  private _ppuBlockFill(rows: number, bytesPerRow: number, startAddr: number, fill: number): void {
+    let addr = startAddr & 0xFFFF;
+    for (let r = 0; r < rows; r++) {
+      const x = this._ppuBufAlloc(bytesPerRow, addr & 0xFF, (addr >> 8) & 0xFF);
+      for (let b = 0; b < bytesPerRow; b++) {
+        this._store.write(`ppuBuf_${x + b}`, fill & 0xFF);
+      }
+      this._ppuBufEnd(x + bytesPerRow);
+      addr = (addr + 0x20) & 0xFFFF;
+    }
+  }
+
+  /** 对应 bank00 $9FA8: bank 切换 (H5: 数据已内嵌, no-op) */
+  private _bankSwitch(_param: number): void {
+    // no-op
   }
 
   // ── 公开: 数据注册接口 ──

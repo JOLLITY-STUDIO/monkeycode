@@ -1,14 +1,17 @@
 /**
  * Bank 28 数据模型 (Data/Model 层) — 比赛对阵/角色/阵型配置
  *
- * 来源: rom-data/prg-bank-28.ts (自动生成, 原始字节)
+ * 来源: ./prg-bank-28 本地副本 (自动生成, 原始字节, 复制自 rom-data)
  * CPU 映射: bank 0x1C 切到 $8000-$9FFF (由 Bank 30 $CE08 加载, Bank 26/31 消费)
  *
  * 本文件把原始 ROM 字节切分为语义化数据表 (model), 供 bank28_match.service.ts
- * 读取。禁止在 service 外直接访问原始地址。
+ * 读取。禁止在 service 外直接访问原始地址。service 不直接引用 rom-data。
  */
 
-import PRG_BANK_28 from '../../../../rom-data/prg-bank-28';
+import PRG_BANK_28 from './prg-bank-28';
+
+/** Bank 28 完整 8KB 原始字节 (本地副本, 不直接引用 rom-data) */
+export const B28_DATA: readonly number[] = PRG_BANK_28;
 
 /** bank28 CPU 基址 */
 export const B28_CPU_BASE = 0x8000;
@@ -16,7 +19,7 @@ export const B28_CPU_BASE = 0x8000;
 /** 读 bank28 原始字节 (CPU 地址) */
 export function readB28(cpuAddr: number): number {
   const off = cpuAddr - B28_CPU_BASE;
-  return off >= 0 && off < PRG_BANK_28.length ? PRG_BANK_28[off] : 0;
+  return off >= 0 && off < B28_DATA.length ? B28_DATA[off] : 0;
 }
 
 /** 读 bank28 16bit LE (CPU 地址) */

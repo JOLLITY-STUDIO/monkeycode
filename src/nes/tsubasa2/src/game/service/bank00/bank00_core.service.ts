@@ -29,7 +29,7 @@
 import { DataStore, RAM_KEYS } from '../../data/DataStore';
 import { palWriteAll, palExportRGBA } from '../../data/ppu/pallete/paletteManager';
 import { SCENE_BG_PALETTE, SCENE_SPR_PALETTE } from '../../data/ppu/pallete/scene-palette-table';
-import { SCENE_BG_GRP } from '../../data/ppu/pallete/scene-palette-group';
+import { getSceneBgGrp } from '../../data/bank07-data';
 import { SceneRoot } from '../../data/scene/index';
 import {
   CUT_0x17_NT0,
@@ -202,8 +202,8 @@ export class Bank00Service {
    */
   sceneLoad(sceneId: number): void {
     this._store.write(SCENE_ID, sceneId & 0xFF);
-    // $8AF7: header h[2]&0x3F → ram_0048 (真实 bank7 场景表)
-    const bgGrp = SCENE_BG_GRP[sceneId & 0xFF] ?? 0;
+    // $8AF7: 切 Bank07 → 场景指针表 → header h[2]&0x3F → ram_0048
+    const bgGrp = getSceneBgGrp(sceneId & 0xFF);
     this._store.write('ram_0048', bgGrp & 0xFF);
     // SPR 组号由场景 setup 指令设置, 默认 0
     this._store.write('ram_0049', 0);
@@ -287,9 +287,11 @@ export class Bank00Service {
 
   /**
    * 对应原始 $9A43: 主循环初始化 part1。
+   * 汇编: LDA #$0F → STA ram_004A → STA ram_004B → JMP $9A71。
    */
   mainLoopInit1(): void {
-    this._store.write('ram_004C', 0x8A);
+    this._store.write('ram_004A', 0x0F);
+    this._store.write('ram_004B', 0x0F);
   }
 
   /**
@@ -355,8 +357,153 @@ export class Bank00Service {
    * 对应原始 $9F69: 数据写入辅助 (A=0x28 → Y=0x00?)。
    * 具体功能待从汇编进一步分析。
    */
-  dataWriteHelper(a: number): void {
+  dataWriteHelper(a: number, y?: number): void {
+    void a;
+    void y;
     // 功能待补充
+  }
+
+  // ──────────────────────────────────────────────
+  // Bank 02 共享调用 ($8895/$8920/$8976/$9A0D/$98EA/
+  //                  $9F89/$9F96/$9B91/$9FA8)
+  // ──────────────────────────────────────────────
+
+  /**
+   * 对应原始 $8895: 设置场景参数 + 数据指针。
+   * 汇编:
+   *   STA ram_0057; LDX #$0D; LDA #$A8; STA ram_0000,X
+   *   LDA #$88; STA ram_0001,X; LDY #$A0; LDA #$00
+   *   JSR $9F69 (dataWriteHelper(0x00, 0xA0)); RTS
+   *
+   * @param a 场景参数 (写入 ram_0057)
+   */
+  sceneParamSet(a: number): void {
+    const s = this._store;
+    s.write('ram_0057', a & 0xFF);
+    s.write('ram_000D', 0xA8);
+    s.write('ram_000E', 0x88);
+    this.dataWriteHelper(0x00, 0xA0);
+  }
+
+  /**
+   * 对应原始 $8920: 场景数据加载。
+   * 汇编: LDX #$13 → JSR $9DEE → 指针 += $BF00 → JSR $C4B9
+   *   等待 ram_0078==0 → 读 19 字节到 ram_0079/007A/007B..
+   * H5: ROM 数据已内嵌, 无动态源。保留参数记录 + TODO。
+   *
+   * @param param 数据组编号 (A)
+   */
+  tableLoad(param: number): void {
+    const s = this._store;
+    // TODO: 从 (ram_00EC) 指向的数据源读取 → ram_0079/007B.. (数据源待接线)
+    s.write('ram_0079', param & 0xFF); // 记录参数
+    s.write('ram_007A', 0);
+    for (let i = 0; i < 0x12; i++) {
+      s.write(`ram_007${(i + 1).toString(16).toUpperCase()}`, 0);
+    }
+  }
+
+  /**
+   * 对应原始 $8976: 数据源切换。
+   * 汇编: 4D/4E → EA/EB; E6=2; E7=X; E8=Y; 4D=$E5; 4E=0;
+   *   JSR $9085 (文本 buffer); 恢复 4D/4E。
+   *
+   * @param x 参数 → ram_00E7
+   * @param y 参数 → ram_00E8
+   */
+  dataSourceSwitch(x: number, y: number): void {
+    const s = this._store;
+    s.write('ram_00EA', s.read('ram_004D'));
+    s.write('ram_00EB', s.read('ram_004E'));
+    s.write('ram_00E6', 2);
+    s.write('ram_00E7', x & 0xFF);
+    s.write('ram_00E8', y & 0xFF);
+    s.write('ram_004D', 0xE5);
+    s.write('ram_004E', 0x00);
+    this.paletteWriteBuf([]);
+    s.write('ram_004D', s.read('ram_00EA'));
+    s.write('ram_004E', s.read('ram_00EB'));
+  }
+
+  /**
+   * 对应原始 $9A0D: 帧计数器等待。
+   * 汇编: ram_004A != 0 时 DEC + JSR $9A71 + JSR $9FA8(1) + 循环。
+   * H5: 近似为单次递减 (帧边界语义)。
+   */
+  waitCounter(): void {
+    const s = this._store;
+    const a = s.read('ram_004A');
+    if (a !== 0) {
+      s.write('ram_004A', (a - 1) & 0xFF);
+      this.bankSwitch9FA8(1);
+    }
+  }
+
+  /**
+   * 对应原始 $98EA: PPU 16 字节块填充。
+   * 汇编: A=填充值; Y=行数; X=行字节数 → $9B28 buffer + $9B5E 结束。
+   * H5: PPU buffer 由帧合成器消费, 记录请求标志。
+   *
+   * @param y 行数
+   * @param x 每行字节数
+   * @param a 填充值
+   */
+  ppuFill98EA(y: number, x: number, a: number): void {
+    // TODO: 将 a 填充到 ram_00E6/00E7 指向的 NT 区域
+    void y; void x; void a;
+    this._store.write('ppuFillPending', 1);
+  }
+
+  /**
+   * 对应原始 $9F89: OAM 终止判定。
+   * 汇编: ram_0001,X != 0 且 ram_0000,X == 0 → ram_0000,X = 1。
+   *
+   * @param x zp 索引
+   */
+  oamTerm89(x: number): void {
+    const s = this._store;
+    if (s.read(`ram_000${x.toString(16).toUpperCase()}`) !== 0) {
+      if (s.read(`ram_000${(x + 1).toString(16).toUpperCase()}`) === 0) {
+        s.write(`ram_000${x.toString(16).toUpperCase()}`, 1);
+      }
+    }
+  }
+
+  /**
+   * 对应原始 $9F96: OAM 终止处理。
+   * 汇编: ram_0000,X == 0xFF → JSR $9FA8(1); 然后 ram_0000,X = 0。
+   *
+   * @param x zp 索引
+   */
+  oamTerm96(x: number): void {
+    const s = this._store;
+    if (s.read(`ram_000${x.toString(16).toUpperCase()}`) === 0xFF) {
+      this.bankSwitch9FA8(1);
+    }
+    s.write(`ram_000${x.toString(16).toUpperCase()}`, 0);
+  }
+
+  /**
+   * 对应原始 $9B91: OAM 区域标志清零。
+   * 汇编: 清零 ram_0568/0588/05A8/05C8。
+   */
+  oamFlagClear(): void {
+    const s = this._store;
+    s.write('ram_0568', 0);
+    s.write('ram_0588', 0);
+    s.write('ram_05A8', 0);
+    s.write('ram_05C8', 0);
+  }
+
+  /**
+   * 对应原始 $9FA8: 栈保存 + bank 切换 (H5: no-op)。
+   * 汇编: 保存 A/X/Y/E6-ED 到栈, 栈指针写入 ram_0000,X。
+   * H5: 数据已直接 import, 无需 bank 切换。
+   *
+   * @param _param 原始 A 参数 (保留)
+   */
+  bankSwitch9FA8(_param: number): void {
+    // no-op
   }
 
   // ──────────────────────────────────────────────

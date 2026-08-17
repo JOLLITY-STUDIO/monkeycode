@@ -1,7 +1,7 @@
 /**
  * Bank 24 数据模型 (Data/Model 层) — HUD 文本流渲染 + 精灵加载
  *
- * 来源: rom-data/prg-bank-24.ts (自动生成, 原始字节)
+ * 来源: ./prg-bank-24 / ./prg-bank-31 本地副本 (自动生成, 原始字节, 复制自 rom-data)
  * CPU 映射: bank 0x18 切到 $8000-$9FFF
  *
  * HUD 文本流指针表 ($AD6E/$AD1C/$AD54) 与精灵配置表 ($B3BD/$B3CF)
@@ -12,8 +12,14 @@
  * 覆盖精灵加载核心 ($88B9-$8D9D) 与比赛 HUD 场景状态机全部查表。
  */
 
-import PRG_BANK_24 from '../../../../rom-data/prg-bank-24';
-import PRG_BANK_31 from '../../../../rom-data/prg-bank-31';
+import PRG_BANK_24 from './prg-bank-24';
+import PRG_BANK_31 from './prg-bank-31';
+
+/** Bank 24 完整 8KB 原始字节 (本地副本, 不直接引用 rom-data) */
+export const B24_DATA: readonly number[] = PRG_BANK_24;
+
+/** Bank 31 完整 8KB 原始字节 (本地副本, 不直接引用 rom-data) */
+export const B31_DATA: readonly number[] = PRG_BANK_31;
 import {
   readB25,
   readB25U16,
@@ -32,7 +38,7 @@ export const B24_CPU_BASE = 0x8000;
 /** 读 bank24 原始字节 (CPU 地址) */
 export function readB24(cpuAddr: number): number {
   const off = cpuAddr - B24_CPU_BASE;
-  return off >= 0 && off < PRG_BANK_24.length ? PRG_BANK_24[off] : 0;
+  return off >= 0 && off < B24_DATA.length ? B24_DATA[off] : 0;
 }
 
 /** 读 bank24 16bit LE (CPU 地址) */
@@ -46,7 +52,7 @@ export const B31_CPU_BASE = 0xe000;
 /** 读 bank31 原始字节 (CPU 地址, 固定区文本数据/指针表) */
 export function readB31(cpuAddr: number): number {
   const off = cpuAddr - B31_CPU_BASE;
-  return off >= 0 && off < PRG_BANK_31.length ? PRG_BANK_31[off] : 0;
+  return off >= 0 && off < B31_DATA.length ? B31_DATA[off] : 0;
 }
 
 /** 读 bank31 16bit LE (CPU 地址) */

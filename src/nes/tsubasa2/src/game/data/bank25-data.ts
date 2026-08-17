@@ -1,7 +1,7 @@
 /**
  * Bank 25 数据模型 (Data/Model 层) — HUD 文本流数据 / 精灵配置表
  *
- * 来源: rom-data/prg-bank-25.ts (自动生成, 原始字节)
+ * 来源: ./prg-bank-25 本地副本 (自动生成, 原始字节, 复制自 rom-data)
  * 数据已直接 import，cpuAddr (0xA000-0xBFFF) 仅作数据索引保留
  *           offset = cpuAddr - 0xA000
  *
@@ -17,7 +17,10 @@
  * 完成后, 再拆分为命名数据表。
  */
 
-import PRG_BANK_25 from '../../../../rom-data/prg-bank-25';
+import PRG_BANK_25 from './prg-bank-25';
+
+/** Bank 25 完整 8KB 原始字节 (本地副本, 不直接引用 rom-data) */
+export const B25_DATA: readonly number[] = PRG_BANK_25;
 
 /** bank25 CPU 基址 ($A000-$BFFF) */
 export const B25_CPU_BASE = 0xa000;
@@ -39,7 +42,7 @@ export const B25_SEG = {
 /** 读 bank25 原始字节 (CPU 地址 $A000-$BFFF) */
 export function readB25(cpuAddr: number): number {
   const off = cpuAddr - B25_CPU_BASE;
-  return off >= 0 && off < PRG_BANK_25.length ? PRG_BANK_25[off] : 0;
+  return off >= 0 && off < B25_DATA.length ? B25_DATA[off] : 0;
 }
 
 /** 读 bank25 16bit LE (CPU 地址) */

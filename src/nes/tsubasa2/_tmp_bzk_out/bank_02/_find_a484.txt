@@ -1,0 +1,41 @@
+﻿D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_00\bank_00_part01.asm|665|C - - - - - 0x0004B0 00:84A0: A9 00     LDA #$00
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_00\bank_00_part05.asm|455|C D 0 - - - 0x001EFD 00:9EED: A2 01     LDX #$01
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_00\bank_00_part05.asm|472|C - - - - - 0x001F1C 00:9F0C: 4C ED 9E  JMP $9EED
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_01\bank_01_part06.asm|662|- D 1 - I - 0x003EFD 00:9EED: BE        .byte $BE   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_02\bank_02_part01.asm|295|C - - - - - 0x004222 01:8212: 4C 84 A4  JMP $A484
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_02\bank_02_part01.asm|369|C - - - - - 0x0042BC 01:82AC: 4C ED 9E  JMP $9EED
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_02\bank_02_part01.asm|709|- - - - - - 0x0044B0 01:84A0: A5        .byte $A5   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_02\bank_02_part07.asm|966|- - - - - - 0x005EFD 01:9EED: FF        .byte $FF   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_03\bank_03_part02.asm|191|- D 1 - I - 0x0064B0 01:84A0: 7D        .byte $7D   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_03\bank_03_part08.asm|924|- D 1 - I - 0x007EFD 01:9EED: ED        .byte $ED   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_04\bank_04_part02.asm|175|- D 1 - I - 0x0084A0 02:8490: FD        .byte $FD   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_04\bank_04_part02.asm|191|- D 1 - I - 0x0084B0 02:84A0: 0C        .byte $0C   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_04\bank_04_part08.asm|908|- D 1 - I - 0x009EED 02:9EDD: DC        .byte $DC   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_04\bank_04_part08.asm|924|- D 1 - I - 0x009EFD 02:9EED: 0C        .byte $0C   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_05\bank_05_part02.asm|147|- D 1 - I - 0x00A484 02:8474: 7D        .byte $7D   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_05\bank_05_part02.asm|191|- D 1 - I - 0x00A4B0 02:84A0: 01        .byte $01   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_05\bank_05_part08.asm|924|- D 1 - I - 0x00BEFD 02:9EED: 26        .byte $26   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_06\bank_06_part02.asm|191|- - - - - - 0x00C4B0 03:84A0: 19        .byte $19   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_06\bank_06_part08.asm|924|- - - - - - 0x00DEFD 03:9EED: FF        .byte $FF   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_07\bank_07_part02.asm|191|- D 1 - I - 0x00E4B0 03:84A0: 11        .byte $11   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_07\bank_07_part08.asm|924|- - - - - - 0x00FEFD 03:9EED: FF        .byte $FF   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_08\bank_08_part02.asm|191|- D 1 - I - 0x0104B0 04:84A0: 01        .byte $01   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_08\bank_08_part08.asm|924|- - - - - - 0x011EFD 04:9EED: FF        .byte $FF   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_09\bank_09_part02.asm|191|- D 1 - I - 0x0124B0 04:84A0: 4A        .byte $4A   ; <J>
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_09\bank_09_part08.asm|924|- - - - - - 0x013EFD 04:9EED: FF        .byte $FF   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_10\bank_10_part02.asm|191|- D 1 - I - 0x0144B0 05:84A0: 00        .byte $00   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_10\bank_10_part08.asm|924|- - - - - - 0x015EFD 05:9EED: FF        .byte $FF   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_11\bank_11_part01.asm|725|C - - - - - 0x0164B0 05:84A0: 60        RTS
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_11\bank_11_part08.asm|193|- - - - - - 0x017EFD 05:9EED: FF        .byte $FF   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_12\bank_12_part01.asm|593|C - - - - - 0x0184A0 06:8490: 7D A7 07  ADC ram_07A7,X
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_12\bank_12_part08.asm|75|- - - - - - 0x019EED 06:9EDD: E0        .byte $E0   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_12\bank_12_part08.asm|91|- - - - - - 0x019EFD 06:9EED: E3        .byte $E3   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_13\bank_13_part02.asm|147|- D 1 - I - 0x01A484 06:8474: 2A        .byte $2A   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_13\bank_13_part02.asm|191|- D 1 - I - 0x01A4B0 06:84A0: 90        .byte $90   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_13\bank_13_part08.asm|924|- D 1 - I - 0x01BEFD 06:9EED: 39        .byte $39   ; <9>
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_14\bank_14_part02.asm|191|- D 1 - I - 0x01C4B0 07:84A0: 0C        .byte $0C   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_14\bank_14_part08.asm|924|- D 1 - I - 0x01DEFD 07:9EED: E0        .byte $E0   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_15\bank_15_part02.asm|191|- D 1 - I - 0x01E4B0 07:84A0: 24        .byte $24   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_15\bank_15_part08.asm|924|- D 1 - I - 0x01FEFD 07:9EED: 8C        .byte $8C   ;
+D:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out\bank_16\bank_16_part07.asm|967|- D 0 - I - 0x021EFD 08:9EED: B9        .byte $B9   ;
+DONE

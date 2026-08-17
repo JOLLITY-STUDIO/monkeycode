@@ -1,0 +1,25 @@
+﻿bank_03_part02.asm|223|- D 1 - I - 0x0064D0 01:84C0: 05        .byte $05   ;
+bank_03_part02.asm|376|- D 1 - I - 0x006569 01:8559: FB        .byte $FB   ;
+bank_03_part02.asm|410|- D 1 - I - 0x00658B 01:857B: 7B        .byte $7B   ;
+bank_03_part02.asm|416|- D 1 - I - 0x006591 01:8581: 12        .byte $12   ;
+bank_03_part02.asm|449|- D 1 - I - 0x0065B2 01:85A2: DB        .byte $DB   ;
+bank_03_part02.asm|455|- D 1 - I - 0x0065B8 01:85A8: 46        .byte $46   ; <F>
+bank_03_part02.asm|463|- D 1 - I - 0x0065C0 01:85B0: 19        .byte $19   ;
+bank_03_part02.asm|471|- D 1 - I - 0x0065C8 01:85B8: 18        .byte $18   ;
+bank_03_part02.asm|478|- D 1 - I - 0x0065CF 01:85BF: 19        .byte $19   ;
+bank_03_part02.asm|492|- D 1 - I - 0x0065DD 01:85CD: 00        .byte $00   ;
+bank_03_part02.asm|506|- D 1 - I - 0x0065EB 01:85DB: 01        .byte $01   ;
+bank_03_part02.asm|519|- D 1 - I - 0x0065F8 01:85E8: 10        .byte $10   ;
+bank_03_part02.asm|545|- D 1 - I - 0x006612 01:8602: 04        .byte $04   ;
+bank_03_part02.asm|571|- D 1 - I - 0x00662C 01:861C: CB        .byte $CB   ;
+bank_03_part02.asm|584|- D 1 - I - 0x006639 01:8629: 02        .byte $02   ;
+bank_03_part02.asm|623|- D 1 - I - 0x006660 01:8650: F4        .byte $F4   ;
+bank_03_part02.asm|699|- D 1 - I - 0x0066AC 01:869C: F4        .byte $F4   ;
+bank_03_part02.asm|921|- D 1 - I - 0x00678A 01:877A: AA        .byte $AA   ;
+bank_03_part02.asm|929|- D 1 - I - 0x006792 01:8782: 79        .byte $79   ; <y>
+bank_03_part02.asm|940|- D 1 - I - 0x00679D 01:878D: 00        .byte $00   ;
+bank_03_part02.asm|988|- D 1 - I - 0x0067CD 01:87BD: 13        .byte $13   ;
+bank_03_part03.asm|5|- D 1 - I - 0x0067DE 01:87CE: 0D        .byte $0D   ;
+bank_03_part03.asm|13|- D 1 - I - 0x0067E6 01:87D6: 16        .byte $16   ;
+bank_03_part03.asm|49|- D 1 - I - 0x00680A 01:87FA: 09        .byte $09   ;
+DONE

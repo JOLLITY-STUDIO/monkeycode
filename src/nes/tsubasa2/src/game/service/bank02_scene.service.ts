@@ -10,11 +10,44 @@
 
 import { DataStore } from '../data/DataStore';
 import { Bank00Service } from './bank00/bank00_core.service';
+import type { Bank30Service } from './bank30_init.service';
+import {
+  SCROLL_DX,
+  SCROLL_DY,
+  PW_OAM_FIX,
+  FIELD_TILES,
+  FIELD_KIND,
+  SCENE_SCRIPT,
+  SPRITE_UPLOAD,
+  SPRITE_UPLOAD2,
+} from '../data/bank02-tables';
 
 // ── 常量 ──
 
 /** ram_001B 标志位 */
 const BIT_NMI_ENABLE = 0x80; // bit7
+
+/** $A773-$A776 — handler[16] 子程序 $A767 的拷贝源 (→ ram_03E8-$03EB) */
+const SPRITE_TAIL_A677: readonly number[] = [0x79, 0xFF, 0x03, 0xC2];
+
+/** $A777-$A77A — handler[16] $A6F9 循环的拷贝源 (→ ram_0460-$0463) */
+const SPRITE_TAIL_A67B: readonly number[] = [0x46, 0xF6, 0x02, 0x52];
+
+/**
+ * $AADF 滚动 delta 表 (Bank02 ROM offset $4AEF, 0x40 字节)。
+ * 交错存储: 偶数下标 = X delta ($AADF,Y), 奇数下标 = Y delta ($AAE0,Y)。
+ * 由 $8308/$8312 (LDA $AADF,Y / LDA $AAE0,Y) 以 Y 步进 2 读取。
+ */
+const SCROLL_DELTA: readonly number[] = [
+  0x10, 0x00, 0x10, 0x00, 0x40, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x04, 0x00, 0x0E, 0x00, 0x1C, 0x00,
+  0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0xF0, 0xFF, 0xE0, 0xFF, 0x80, 0xFF,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x04, 0x00, 0x0E, 0x00, 0x1C, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+];
 
 // ═══════════════════════════════════════════════════════════════
 // Bank 02 Service
@@ -24,6 +57,7 @@ export class Bank02Service {
   constructor(
     private _store: DataStore,
     private _bank00: Bank00Service,
+    private _bank30?: Bank30Service,
   ) {}
 
   // ── 公开接口 ──
@@ -103,8 +137,9 @@ export class Bank02Service {
 
     // 对应 823E-8247: 设参数 A=$98, X=2, Y=$68 → $EC=$68 → LDY #4
     s.write('ram_00EC', 0x68);
+    s.write('ram_00ED', 0x04);
 
-    // 对应 8248: JSR $AA06 — Bank 02 内部函数(调色板/CHR init)
+    // 对应 8248: JSR $AA06 — 清零 (ram_00EC) 指向的 $98×2=304 字节
     this._internalAA06();
 
     // 对应 824B-8254: 填充 $0F 到 $054A+$E0~$FF 区域
@@ -143,37 +178,23 @@ export class Bank02Service {
   // ──────────────────────────────────────────────
 
   /**
-   * 对应原始 $8281-$82AC (A=0 分支):
-   * 设置 ZP 指针 → 开 NMI → JMP $9EED 进入主循环。
-   *
-   * 不执行调色板/场景初始化。这些在主循环内按需触发。
+   * 对应原始 $8281-$828F (A=0 分支):
+   *   LDX #$01; LDA #$1E → ram_0001; LDA #$80 → ram_0002;
+   *   LDY #$28; LDA #$00; JSR $9F69 → dataWriteHelper(0x00, 0x28)
+   * 然后落入 $8292 共享块。
    */
   private _onAEqualToZero(): void {
     const s = this._store;
 
-    // 对应 $8281-$828A: X=$01 → A=$1E → STA $0001 → A=$80 → STA $0002
+    // 对应 $8281-$828A
     s.write('ram_0001', 0x1E);
     s.write('ram_0002', 0x80);
 
-    // 对应 $828B-$8290: Y=$28; A=$00 → JSR $9F69
-    this._bank00.dataWriteHelper(0x00);
-    s.write('ram_000Y', 0x28); // Y parameter
+    // 对应 $828B-$828F: Y=$28; JSR $9F69
+    this._bank00.dataWriteHelper(0x00, 0x28);
 
-    // 对应 $8292-$82A1: X=$15 → A=$EC → STA $0015 → A=$82 → STA $0016 → Y=$F0 → JSR $9F69
-    s.write('ram_0015', 0xEC);
-    s.write('ram_0016', 0x82);
-    this._bank00.dataWriteHelper(0x00);
-    s.write('ram_000Y', 0xF0); // Y parameter
-
-    // 对应 $82A3-$82A9: ORA $0020,#$80 → STA $0020 → STA $2000 (开 NMI)
-    let ppuctrl = s.read('ppuctrl');
-    ppuctrl |= BIT_NMI_ENABLE;
-    s.write('ppuctrl', ppuctrl);
-    // $2000 write → H5: 设 PPUCTRL 镜像
-    s.write('ppuctrl_hw', ppuctrl);
-
-    // 对应 $82AC: JMP $9EED → 进入主循环
-    this._bank00.mainLoop();
+    // 落入 $8292 共享块
+    this._doShared8292();
   }
 
   // ──────────────────────────────────────────────
@@ -181,78 +202,72 @@ export class Bank02Service {
   // ──────────────────────────────────────────────
 
   /**
-   * 对应原始 $826D-$827E (A≠0 分支) → $A292 → 调色板/场景初始化 → $83D5 JMP $9EED。
-   *
-   * 完整场景初始化路径，包含:
-   *   - $9F69 数据写入
-   *   - $8297 调色板初始化
-   *   - $8AF7 场景描述加载
-   *   - $890C VRAM 地址设置
-   *   - $88FB PPU 寄存器设置
-   *   - $9A35 主循环初始化
+   * 对应原始 $826D-$827E (A≠0 分支):
+   *   LDX #$01; LDA #$FF → ram_0001; LDA #$7F → ram_0002;
+   *   LDY #$28; LDA #$00; JSR $9F69 → dataWriteHelper(0x00, 0x28)
+   *   JMP $A292 → $8292 共享块。
    */
   private _onANotZero(): void {
     const s = this._store;
 
-    // 对应 $826D-$827B: LDX #$01 → $FF/$7F → $0001/$0002 → Y=$28 → JSR $9F69
+    // 对应 $826D-$827B
     s.write('ram_0001', 0xFF);
     s.write('ram_0002', 0x7F);
-    this._bank00.dataWriteHelper(0x00);
-    s.write('ram_000Y', 0x28);
+    this._bank00.dataWriteHelper(0x00, 0x28);
 
-    // 对应 $827E: JMP $A292 — 跳转到 $A292 继续
-    // $A292 部分代码调用:
-    //   JSR $8297 (Bank00 调色板, A=sceneIndex)
-    //   JSR $8AF7 (Bank00 场景加载, A=sceneId)
-    //   JSR $890C (Bank00 VRAM设置, A=0x30)
-    //   JSR $88FB (Bank00 PPU 设置)
-    //   JSR $9A35 (Bank00 主循环初始化)
-    //   JMP $9EED (Bank00 主循环)
-    this._doFullSceneInit();
+    // 对应 $827E: JMP $A292
+    this._doShared8292();
   }
 
   /**
-   * 完整场景初始化 ($A292 → $83D5):
-   *   文本 buffer → 场景加载 → VRAM → PPU → 主循环(真实调色板)
+   * 对应原始 $8292-$82AC (A=0/A≠0 两条路径的共享收尾):
+   *   X=$15; A=$EC → ram_0015; A=$82 → ram_0016;
+   *   Y=$F0; JSR $9F69 → dataWriteHelper(0x00, 0xF0);
+   *   ram_0020 |= $80 → ppuctrl (开 NMI);
+   *   JMP $9EED → 主循环。
+   *
+   * 场景初始化(调色板/场景)在主循环首帧由 Bank00 $801F 触发。
    */
-  private _doFullSceneInit(): void {
-    const bk00 = this._bank00;
+  private _doShared8292(): void {
+    const s = this._store;
 
-    // $8297: 文本 buffer 参数设置 (A=0x0D, 非调色板)
-    // 真实调色板由 $9A35/mainLoopInit2 → paletteLoad 从 bank06 表加载
-    bk00.paletteInit(0x0D);
+    // 对应 $8292-$82A0
+    s.write('ram_0015', 0xEC);
+    s.write('ram_0016', 0x82);
+    this._bank00.dataWriteHelper(0x00, 0xF0);
 
-    // $8AF7: 场景描述加载 (A=scene_id) → 设置 ram_0048 = header[2]&0x3F (BG 组号)
-    // scene=0x17 (Tecmo Theater) → 切 Bank07 → 读场景指针表
-    bk00.sceneLoad(0x17);
+    // 对应 $82A3-$82A9: ORA $0020,#$80 → STA $0020 → STA $2000 (开 NMI)
+    const ppuctrl = (s.read('ram_0020') | BIT_NMI_ENABLE) & 0xFF;
+    s.write('ram_0020', ppuctrl);
+    s.write('ppuctrl', ppuctrl);
+    s.write('ppuctrl_hw', ppuctrl);
 
-    // $890C: VRAM 地址/滚动设置 (A=0x30)
-    bk00.vramAddrSetup(0x30);
-
-    // $88FB: PPU 寄存器设置
-    bk00.ppuRegSetup();
-
-    // $9A35: 主循环初始化
-    bk00.mainLoopInit2();
-
-    // $83D5: JMP $9EED → 进入主循环
-    bk00.mainLoop();
+    // 对应 $82AC: JMP $9EED → 进入主循环
+    this._bank00.mainLoop();
   }
 
   // ──────────────────────────────────────────────
-  // $AA06: Bank 02 内部函数 (调色板/CHR 初始化)
+  // $AA06: Bank 02 内部清零函数 (=$8A06)
   // ──────────────────────────────────────────────
 
   /**
-   * 对应原始 $AA06: 调色板/CHR 初始化入口。
-   * 被 $821B (RESET) 和 $8A06 (跳转入口) 调用。
-   * Bank 02 asm L1623-L1638 (16 bytes)。
-   * 具体功能待从汇编完全翻译。
+   * 对应原始 $AA06 (=$8A06): 清零 (ram_00EC) 指向的 A 字节, 重复 X 次。
+   * 汇编:
+   *   STY ram_00ED; INX; LDY #$00; PHA
+   *   循环: LDA #$00; STA (ram_00EC),Y; INC EC; BNE +2; INC ED
+   *         PLA; SEC; SBC #$01; BNE 循环; DEX; BNE 循环; RTS
+   *
+   * 调用约定 (RESET/entryB): A=$98, X=2, EC=$68, Y=4 → ED=$04
+   * → 清零 $0468 起 304 字节 ($98×2)。
    */
   private _internalAA06(): void {
-    // 参数: A=$98, X=2, Y=4, EC=$68
-    // 具体功能待翻译
-    // 根据 Bank 02 analysis: AA06 是调色板/CHR 相关的跳转入口
+    const s = this._store;
+    const base = (s.read('ram_00ED') << 8) | s.read('ram_00EC');
+    // 参数 A=$98 × X=2 = 304 字节
+    const count = 0x98 * 2;
+    for (let i = 0; i < count; i++) {
+      s.write(`ram_${(base + i).toString(16).toUpperCase()}`, 0);
+    }
   }
 
   // ──────────────────────────────────────────────
@@ -304,6 +319,7 @@ export class Bank02Service {
 
     // 82D8-82E2: 设 A=$98,X=2,Y=$68→$EC=$68,Y=4 → JSR $AA06
     s.write('ram_00EC', 0x68);
+    s.write('ram_00ED', 0x04);
     this._internalAA06();
 
     // 82E5: JMP $C557 → Bank30 场景控制器
@@ -325,9 +341,11 @@ export class Bank02Service {
 
     // 82EA: BMI $8338 — bit7 检查
     if (param & 0x80) {
+      // $8338-$833A: CMP #$81 / BEQ $83A3
       if (param === 0x81) {
-        // 833A: BEQ $83A3 — 密码特殊路径
-        this._entryC_passwordPath();
+        this._entryC_passwordPath(); // $83A3 密码特殊路径
+      } else {
+        this._entryC_oamSlotPath();  // $833C 普通负值路径
       }
       return;
     }
@@ -340,15 +358,11 @@ export class Bank02Service {
       s.write(`temp_EC_${y.toString(16)}`, 0);
     }
 
-    // 82F8: JSR $9FA8 → 切 Bank 01 (H5: 数据已直接 import，无需切换)
+    // 82F8: JSR $9FA8(1) — H5: bank 切换 no-op
+    this._bank00.bankSwitch9FA8(1);
 
-    // 82FD-8335: 摄像机滚动处理 — 最多5组 delta
-    s.write('ram_00EC', 0); // 组计数器
-    this._entryC_scrollLoop();
-
-    // 8335: JMP $A2F8 → 循环回 $9FA8
-    // 在原始代码中这会重新切换 Bank01 并继续处理
-    // H5: 直接再跑一次循环
+    // 82FD-8335: 摄像机滚动处理 (5 组 delta)
+    // 原 $8335 JMP $A2F8 是帧驱动死循环, H5 单次执行完成镜头位移
     this._entryC_scrollLoop();
   }
 
@@ -358,16 +372,16 @@ export class Bank02Service {
    * 负责绘制足球场背景 tile。
    */
   entryD(): void {
-    // 对应 sub_85DC — 场地生成主流程
-    this._fieldGenerationMain();
+    // $820C: JMP $A855 → sceneTile loader ($8855-$88B6)
+    this._sceneTileLoader8855();
   }
 
   /**
    * 入场 E: $820F → $A86E
-   * 场地块填充 (场地生成辅助, sub_877B 附近)
+   * sceneTile loader 的区间分发入口 ($886E-$887A)。
    */
   entryE(): void {
-    this._fieldTileFill();
+    this._sceneTileLoader886E();
   }
 
   /**
@@ -380,37 +394,45 @@ export class Bank02Service {
    *   LDA $A491,X; PHA  (push lo)
    *   RTS               (= JMP to target)
    *
-   * 跳转表 (18 entries, D1=CDL标记已访问):
+   * 跳转表 (24 entries, D1=CDL标记已访问):
    *   [0] $A4C0, [1] $A559, [2] $A57B, [3] $A581(unused),
-   *   [4] $A5A2(unused), [5] $A5A8, [6] $A5B0,
+   *   [4] $A5A2, [5] $A5A8, [6] $A5B0,
    *   [7] $A5B8(unused), [8] $A5BF(unused), [9] $A5CD(unused),
    *   [10] $A5DB, [11] $A5E8, [12] $A602, [13] $A61C,
-   *   [14] $A629, [15] $A650, [16] $A69C, [17] $A77A, [18] $A782
+   *   [14] $A629, [15] $A650, [16] $A69C, [17] $A77A, [18] $A782,
+   *   [19] $A78D(unused), [20] $A7BD, [21] $A7CE, [22] $A7D6,
+   *   [23] $A7FA(unused)
    *
    * @param ed ram_00ED 跳转索引
+   * @returns 处理器返回的状态码 (原始 LDA #$02/$03 的 A 值)
    */
-  entryF(ed?: number): void {
+  entryF(ed?: number): number {
     const index = ed ?? this._store.read('ram_00ED');
     switch (index) {
-      case 0:  this._jumpHandler_00_A4C0(); break;
-      case 1:  this._jumpHandler_01_A559(); break;
-      case 2:  this._jumpHandler_02_A57B(); break;
-      case 3:  this._jumpHandler_03_A581(); break;
-      case 4:  this._jumpHandler_04_A5A2(); break;
-      case 5:  this._jumpHandler_05_A5A8(); break;
-      case 6:  this._jumpHandler_06_A5B0(); break;
-      case 7:  this._jumpHandler_07_A5B8(); break;
-      case 8:  this._jumpHandler_08_A5BF(); break;
-      case 9:  this._jumpHandler_09_A5CD(); break;
-      case 10: this._jumpHandler_10_A5DB(); break;
-      case 11: this._jumpHandler_11_A5E8(); break;
-      case 12: this._jumpHandler_12_A602(); break;
-      case 13: this._jumpHandler_13_A61C(); break;
-      case 14: this._jumpHandler_14_A629(); break;
-      case 15: this._jumpHandler_15_A650(); break;
-      case 16: this._jumpHandler_16_A69C(); break;
-      case 17: this._jumpHandler_17_A77A(); break;
-      default: this._jumpHandler_18_A782(); break; // 18
+      case 0:  return this._jumpHandler_00_A4C0();
+      case 1:  return this._jumpHandler_01_A559();
+      case 2:  return this._jumpHandler_02_A57B();
+      case 3:  return this._jumpHandler_03_A581();
+      case 4:  return this._jumpHandler_04_A5A2();
+      case 5:  return this._jumpHandler_05_A5A8();
+      case 6:  return this._jumpHandler_06_A5B0();
+      case 7:  return this._jumpHandler_07_A5B8();
+      case 8:  return this._jumpHandler_08_A5BF();
+      case 9:  return this._jumpHandler_09_A5CD();
+      case 10: return this._jumpHandler_10_A5DB();
+      case 11: return this._jumpHandler_11_A5E8();
+      case 12: return this._jumpHandler_12_A602();
+      case 13: return this._jumpHandler_13_A61C();
+      case 14: return this._jumpHandler_14_A629();
+      case 15: return this._jumpHandler_15_A650();
+      case 16: return this._jumpHandler_16_A69C();
+      case 17: return this._jumpHandler_17_A77A();
+      case 18: return this._jumpHandler_18_A782();
+      case 19: return this._jumpHandler_19_A78D();
+      case 20: return this._jumpHandler_20_A7BD();
+      case 21: return this._jumpHandler_21_A7CE();
+      case 22: return this._jumpHandler_22_A7D6();
+      default: return this._jumpHandler_23_A7FA(); // 23
     }
   }
 
@@ -440,9 +462,12 @@ export class Bank02Service {
     for (let y = 0x5A; y <= 0xF9; y++) s.write(`temp_E0_${y.toString(16)}`, 0);
   }
 
-  /** Bank30 $C557: 场景控制器入口 (H5: 转发到 Bank30) */
+  /** Bank30 $C557: 场景控制器入口 ($82E5: JMP $C557) */
   private _jumpToBank30SceneCtrl(): void {
-    // TODO: Bank30 scene controller — 对应的 Bank30 $C557 实现
+    if (this._bank30) {
+      this._bank30.sceneCtrl557();
+    }
+    // TODO: Bank30 $C557 场景控制器 — 未注入 bank30 时保持占位
   }
 
   // ════════════════════════════════════════════
@@ -474,11 +499,18 @@ export class Bank02Service {
     }
   }
 
-  /** $AADF 表: 滚动X delta (Bank02 PRG offset $4ADF, 具体数据待ROM提取) */
-  private _readTable_AADF(_offset: number): number { return 0; }
+  /** $AADF 表: 滚动 X delta — 偶数下标 (Y 步进 2), 越界返回 0 */
+  private _readTable_AADF(offset: number): number {
+    if (offset < 0 || offset >= SCROLL_DELTA.length) return 0;
+    return SCROLL_DELTA[offset];
+  }
 
-  /** $AAE0 表: 滚动Y delta */
-  private _readTable_AAE0(_offset: number): number { return 0; }
+  /** $AAE0 表: 滚动 Y delta — $AADF 的奇数下标 (Y 步进 2), 越界返回 0 */
+  private _readTable_AAE0(offset: number): number {
+    const i = offset + 1;
+    if (i < 0 || i >= SCROLL_DELTA.length) return 0;
+    return SCROLL_DELTA[i];
+  }
 
   /** 密码逻辑 ($8338+): ram_0057=$81特殊处理 */
   private _entryC_passwordPath(): void {
@@ -500,29 +532,430 @@ export class Bank02Service {
   }
 
   // ════════════════════════════════════════════
-  // Entry F — 跳转表处理器 (18 handlers)
+  // Entry F — 跳转表处理器 (24 handlers)
   // 对应 $8484 dispatch table, CDL D1=accessed
+  // 跳转表存目标 T, 分发 RTS 使 PC = T+1, 故代码从 T+1 开始。
   // ════════════════════════════════════════════
 
-  /**[0]$A4C0 D1*/ private _jumpHandler_00_A4C0(): void { /* TODO */ }
-  /**[1]$A559 D1*/ private _jumpHandler_01_A559(): void { /* TODO */ }
-  /**[2]$A57B D1*/ private _jumpHandler_02_A57B(): void { /* TODO */ }
-  /**[3]$A581 --*/ private _jumpHandler_03_A581(): void { /* unaccessed */ }
-  /**[4]$A5A2 --*/ private _jumpHandler_04_A5A2(): void { /* unaccessed */ }
-  /**[5]$A5A8 D1*/ private _jumpHandler_05_A5A8(): void { /* TODO */ }
-  /**[6]$A5B0 D1*/ private _jumpHandler_06_A5B0(): void { /* TODO */ }
-  /**[7]$A5B8 --*/ private _jumpHandler_07_A5B8(): void { /* unaccessed */ }
-  /**[8]$A5BF --*/ private _jumpHandler_08_A5BF(): void { /* unaccessed */ }
-  /**[9]$A5CD --*/ private _jumpHandler_09_A5CD(): void { /* unaccessed */ }
-  /**[10]$A5DB D1*/ private _jumpHandler_10_A5DB(): void { /* TODO */ }
-  /**[11]$A5E8 D1*/ private _jumpHandler_11_A5E8(): void { /* TODO */ }
-  /**[12]$A602 D1*/ private _jumpHandler_12_A602(): void { /* TODO */ }
-  /**[13]$A61C D1*/ private _jumpHandler_13_A61C(): void { /* TODO */ }
-  /**[14]$A629 D1*/ private _jumpHandler_14_A629(): void { /* TODO */ }
-  /**[15]$A650 D1*/ private _jumpHandler_15_A650(): void { /* TODO */ }
-  /**[16]$A69C D1*/ private _jumpHandler_16_A69C(): void { /* TODO */ }
-  /**[17]$A77A D1*/ private _jumpHandler_17_A77A(): void { /* TODO */ }
-  /**[18]$A782 D1*/ private _jumpHandler_18_A782(): void { /* TODO */ }
+  /**[0]$A4C0 D1 — 场景动画初始化链 ($A4C1 起), 返回 2 */
+  private _jumpHandler_00_A4C0(): number {
+    const s = this._store;
+
+    // $A4C1: JSR $9A0D — 帧计数器等待
+    this._bank00.waitCounter();
+    // $A4C4: LDA #$10; JSR $9FA8
+    this._bank00.bankSwitch9FA8(0x10);
+
+    // $A4C9-$A4D6: LDY #$30 循环 48 次 { LDA #$01; JSR $9FA8; LDA #$01; JSR $890C; DEY; BNE }
+    for (let y = 0x30; y > 0; y--) {
+      this._bank00.bankSwitch9FA8(1);
+      this._bank00.vramAddrSetup(1);
+    }
+
+    // $A4D8-$A4DC: LDA #$00; STA ram_005B; STA ram_007B
+    s.write('ram_005B', 0);
+    s.write('ram_007B', 0);
+
+    // $A4DE: LDA #$17; JSR $8AF7 — 场景描述加载
+    this._bank00.sceneLoad(0x17);
+
+    // $A4E3-$A4E5: LDA #$68 → ram_0044
+    s.write('ram_0044', 0x68);
+
+    // $A4E7: LDA #$03; JSR $8920
+    this._bank00.tableLoad(3);
+
+    // $A4EC-$A4F2: ram_0090 = ram_008E; ram_0091 = ram_008F
+    s.write('ram_0090', s.read('ram_008E'));
+    s.write('ram_0091', s.read('ram_008F'));
+
+    // $A4F4: LDA #$04; JSR $9FA8
+    this._bank00.bankSwitch9FA8(4);
+    // $A4F9: JSR $9A35 — 主循环初始化 part2
+    this._bank00.mainLoopInit2();
+    // $A4FC: JSR $88FB — PPU 寄存器设置
+    this._bank00.ppuRegSetup();
+
+    // $A4FF-$A513: 循环 { JSR $9FA8(1); INC ram_0079; DEC ram_007C×2;
+    //   ram_0044 -= 2; CMP #$03; BCS } — ram_0044 ≥ 3 时继续
+    for (;;) {
+      this._bank00.bankSwitch9FA8(1);
+      s.write('ram_0079', (s.read('ram_0079') + 1) & 0xFF);
+      s.write('ram_007C', (s.read('ram_007C') - 1) & 0xFF);
+      s.write('ram_007C', (s.read('ram_007C') - 1) & 0xFF);
+      const v44 = (s.read('ram_0044') - 2) & 0xFF;
+      s.write('ram_0044', v44);
+      if (v44 < 3) break; // BCS $A4FF 取反
+    }
+
+    // $A515: LDA #$00; JSR $8920
+    this._bank00.tableLoad(0);
+
+    // $A51A-$A51E: ram_001B |= 0x01
+    s.write('ram_1B', s.read('ram_1B') | 0x01);
+
+    // $A520-$A527: LDA #$F0 / #$3C; JSR $9FA8 ×2
+    this._bank00.bankSwitch9FA8(0xF0);
+    this._bank00.bankSwitch9FA8(0x3C);
+
+    // $A52A-$A52E: ram_001B &= 0xFE
+    s.write('ram_1B', s.read('ram_1B') & 0xFE);
+
+    // $A530-$A536: LDA #$00 → ram_0090; LDA #$02 → ram_0091
+    s.write('ram_0090', 0);
+    s.write('ram_0091', 2);
+
+    // $A538-$A53E: JSR $99F0; JSR $9B7F; JSR $98A0
+    this._bank00.unknownInit();
+    this._bank00.ppuInit();
+    this._bank00.ntClear();
+
+    // $A541-$A547: LDA #$C0 → ram_00E6; LDA #$23 → ram_00E7 (PPU 地址 $23C0)
+    s.write('ram_00E6', 0xC0);
+    s.write('ram_00E7', 0x23);
+
+    // $A549-$A54F: LDY #$02; LDX #$20; LDA #$55; JSR $98EA — PPU 块填充
+    this._bank00.ppuFill98EA(0x02, 0x20, 0x55);
+
+    // $A552: LDA #$01; JSR $8920
+    this._bank00.tableLoad(1);
+
+    // $A557-$A559: LDA #$02; RTS
+    return 2;
+  }
+
+  /**[1]$A559 D1 — $A55A: ram_00EC → 16-bit ram_0060/0061 (符号取负由 ram_0062 bit7 决定), 返回 3 */
+  private _jumpHandler_01_A559(): number {
+    const s = this._store;
+    const ec = s.read('ram_00EC');
+    // $A55A-$A566: LDA #$00; STA ram_0060; LDA ram_00EC; LSR; ROR ram_0060; LSR; ROR ram_0060; STA ram_0061
+    // → ram_0061:ram_0060 = ram_00EC << 6 (16-bit)
+    let lo = (((ec & 0x02) << 7) | ((ec & 0x01) << 6)) & 0xFF; // ram_0060
+    let hi = (ec >> 2) & 0xFF;                                 // ram_0061
+    // $A568-$A577: BIT ram_0062; BMI $8579 — bit7 清则 16-bit 取负
+    if ((s.read('ram_0062') & 0x80) === 0) {
+      const loOrig = lo;
+      lo = (0 - lo) & 0xFF;
+      hi = (0 - hi - (loOrig !== 0 ? 1 : 0)) & 0xFF;
+    }
+    s.write('ram_0060', lo);
+    s.write('ram_0061', hi);
+    // $A579-$A57B: LDA #$03; RTS
+    return 3;
+  }
+
+  /**[2]$A57B D1 — $A57C: JSR $9B91 (OAM 区域标志清零), 返回 2 */
+  private _jumpHandler_02_A57B(): number {
+    this._bank00.oamFlagClear();
+    return 2;
+  }
+
+  /**[3]$A581 -- (CDL unaccessed, 死代码) */
+  private _jumpHandler_03_A581(): number { return 2; }
+
+  /**[4]$A5A2 -- $A5A3: JSR $9B7F (PPU 初始化), 返回 2 */
+  private _jumpHandler_04_A5A2(): number {
+    this._bank00.ppuInit();
+    return 2;
+  }
+
+  /**[5]$A5A8 D1 — $A5A9: LDX #$09; JSR $9F96 (OAM 终止处理), 返回 2 */
+  private _jumpHandler_05_A5A8(): number {
+    this._bank00.oamTerm96(9);
+    return 2;
+  }
+
+  /**[6]$A5B0 D1 — $A5B1: LDX #$09; JSR $9F89 (OAM 终止判定), 返回 2 */
+  private _jumpHandler_06_A5B0(): number {
+    this._bank00.oamTerm89(9);
+    return 2;
+  }
+
+  /**[7]$A5B8 -- (CDL unaccessed, 死代码) */
+  private _jumpHandler_07_A5B8(): number { return 2; }
+
+  /**[8]$A5BF -- (CDL unaccessed, 死代码) */
+  private _jumpHandler_08_A5BF(): number { return 2; }
+
+  /**[9]$A5CD -- (CDL unaccessed, 死代码) */
+  private _jumpHandler_09_A5CD(): number { return 2; }
+
+  /**[10]$A5DB D1 — $A5DC: JSR $8895(0); JSR $8920(5), 返回 2 */
+  private _jumpHandler_10_A5DB(): number {
+    this._bank00.sceneParamSet(0x00);
+    this._bank00.tableLoad(5);
+    return 2;
+  }
+
+  /**[11]$A5E8 D1 — $A5E9: ram_000D==0 → $8895($10)+$8920(6), 否则清 ram_000D/000E, 返回 2 */
+  private _jumpHandler_11_A5E8(): number {
+    const s = this._store;
+    if (s.read('ram_000D') === 0) {
+      this._bank00.sceneParamSet(0x10);
+      this._bank00.tableLoad(6);
+    } else {
+      s.write('ram_000D', 0);
+      s.write('ram_000E', 0);
+    }
+    return 2;
+  }
+
+  /**[12]$A602 D1 — $A603: ram_000D==0 → $8895($30)+$8920(8), 否则清 ram_000D/000E, 返回 2 */
+  private _jumpHandler_12_A602(): number {
+    const s = this._store;
+    if (s.read('ram_000D') === 0) {
+      this._bank00.sceneParamSet(0x30);
+      this._bank00.tableLoad(8);
+    } else {
+      s.write('ram_000D', 0);
+      s.write('ram_000E', 0);
+    }
+    return 2;
+  }
+
+  /**[13]$A61C D1 — $A61D: JSR $8895($20); JSR $8920(7), 返回 2 */
+  private _jumpHandler_13_A61C(): number {
+    this._bank00.sceneParamSet(0x20);
+    this._bank00.tableLoad(7);
+    return 2;
+  }
+
+  /**[14]$A629 D1 — $A62A: 数据源切换 + 主循环初始化 + 精灵属性清理, 返回 2 */
+  private _jumpHandler_14_A629(): number {
+    const s = this._store;
+    // $A62A-$A62E: LDX #$BD; LDY #$23; JSR $8976 — 数据源切换
+    this._bank00.dataSourceSwitch(0xBD, 0x23);
+    // $A631: JSR $9A35 — 主循环初始化 part2
+    this._bank00.mainLoopInit2();
+    // $A634-$A636: LDA #$01; JSR $9FA8
+    this._bank00.bankSwitch9FA8(1);
+    // $A639-$A63E: ram_058F &= $7F
+    s.write('ram_058F', s.read('ram_058F') & 0x7F);
+    // $A641-$A643: LDA #$82 → ram_004C
+    s.write('ram_004C', 0x82);
+    // $A645-$A64B: LDY #$28; LDX #$20; LDA #$C8; JSR $A82F
+    this._subA82F(0xC8, 0x20, 0x28);
+    // $A64E-$A650: LDA #$02; RTS
+    return 2;
+  }
+
+  /**[15]$A650 D1 — $A651: $AA97 (SCENE_SCRIPT) 精灵上传循环, 返回 2 */
+  private _jumpHandler_15_A650(): number {
+    const s = this._store;
+    // $A651: LDA #$00; STA ram_00ED — ED 从 0 开始
+    let ed = 0;
+    s.write('ram_00ED', 0);
+    const table = SCENE_SCRIPT; // $AA97
+    // $A655 循环: 每轮读 3 字节 (flags/count/value), 直到 flags bit7 置位
+    while (ed + 2 < table.length) {
+      const flags = table[ed] ?? 0;         // ram_00EA
+      const eb0 = flags & 0x7F;             // ram_00EB (临时)
+      // LDA ram_007B; AND #$01; ASL; ASL; ORA ram_00EB; TAX
+      const x = (((s.read('ram_007B') & 0x01) << 2) | eb0) & 0xFF;
+      const count = table[ed + 1] ?? 0;     // ram_00EB (分配大小)
+      ed += 3;
+      s.write('ram_00ED', ed & 0xFF);       // STY ram_00ED
+
+      // $A676: LDY ram_00EB; JSR $9B28 — PPU buffer 空间分配
+      const alloc = this._bank00.ppuBufAlloc(count);
+      const eb = alloc & 0x7F;              // AND #$7F; STA ram_00EB
+
+      // $A681-$A687: 清 ram_05E8+X 起 EB 字节 (PPU buffer 区)
+      for (let i = 0; i < eb; i++) {
+        s.write(`ram_${(0x05E8 + x + i).toString(16)}`, 0);
+      }
+      // $A689: JSR $9B5E — PPU buffer 结束标记
+      this._bank00.ppuBufEnd();
+
+      s.write('ram_00EA', flags);
+      s.write('ram_00EB', eb);
+
+      // $A68C-$A68E: BIT ram_00EA; BMI $A69A — bit7 置位 → 退出返回 2
+      if (flags & 0x80) {
+        return 2;
+      }
+      // $A690 BVC $A655 (V 清 → 循环); V 置位路径 LDA #$02; JSR $9FA8 → 也循环 (H5: bank 切换 no-op)
+      if (flags & 0x40) {
+        this._bank00.bankSwitch9FA8(2);
+      }
+    }
+    return 2;
+  }
+
+  /**[16]$A69C D1 — $A69D: 屏幕精灵数据初始化 (ram_04E5 分支), 返回 2 */
+  private _jumpHandler_16_A69C(): number {
+    const s = this._store;
+    if (s.read('ram_04E5') !== 0xFF) {
+      // ── $A69D: ram_04E5 != $FF 分支 ──
+      this._subA767();
+      // $A6A7-$A6BB: Y=$80; EA=0; X=$2F; ED=$FF; EC=$FE; EB=$07; JSR $A72C($F7)
+      s.write('ram_00EA', 0x00);
+      s.write('ram_00ED', 0xFF);
+      s.write('ram_00EC', 0xFE);
+      s.write('ram_00EB', 0x07);
+      this._subA72C(0xF7, 0x2F, 0x80);
+      // $A6C0-$A6CE: Y=$D8; X=$30; ED=$01; EC=$FF; JSR $A72C($FC)
+      s.write('ram_00ED', 0x01);
+      s.write('ram_00EC', 0xFF);
+      this._subA72C(0xFC, 0x30, 0xD8);
+      // $A6D1-$A6D3: LDA #$02; RTS
+      return 2;
+    }
+
+    // ── $A6D4: ram_04E5 == $FF 分支 ──
+    this._subA767();
+    // $A6D7-$A6EB: Y=$80; X=$2F; EA=$02; ED=$FF; EC=$FE; EB=$07; JSR $A72C($F7)
+    s.write('ram_00EA', 0x02);
+    s.write('ram_00ED', 0xFF);
+    s.write('ram_00EC', 0xFE);
+    s.write('ram_00EB', 0x07);
+    this._subA72C(0xF7, 0x2F, 0x80);
+    // $A6F0-$A6F4: X=$08; LDA #$FE; JSR $A72C — Y 保持 $80
+    this._subA72C(0xFE, 0x08, 0x80);
+    // $A6F7-$A700: LDY #$FC 循环 4 次: ram_0460+i = $A67B+FC+i ($A777-$A77A)
+    for (let i = 0; i < 4; i++) {
+      s.write(`ram_${(0x0460 + i).toString(16)}`, SPRITE_TAIL_A67B[i]);
+    }
+    // $A702-$A714: Y=$B8; X=$1C; ED=$02; EC=$FF; EB=$03; JSR $A72C($F6)
+    s.write('ram_00ED', 0x02);
+    s.write('ram_00EC', 0xFF);
+    s.write('ram_00EB', 0x03);
+    this._subA72C(0xF6, 0x1C, 0xB8);
+    // $A717-$A727: Y=$D8..$F0 step 4: ram_046A,Y |= $02
+    for (let yi = 0xD8; yi < 0xF0; yi += 4) {
+      const k = `ram_${(0x046A + yi).toString(16)}`;
+      s.write(k, s.read(k) | 0x02);
+    }
+    // $A729-$A72B: LDA #$02; RTS
+    return 2;
+  }
+
+  /**[17]$A77A D1 — $A77B: JSR $8895($80), 返回 2 */
+  private _jumpHandler_17_A77A(): number {
+    this._bank00.sceneParamSet(0x80);
+    return 2;
+  }
+
+  /**[18]$A782 D1 — $A783: JSR $9FA8(2); JSR $88FB, 返回 2 */
+  private _jumpHandler_18_A782(): number {
+    this._bank00.bankSwitch9FA8(2);
+    this._bank00.ppuRegSetup();
+    return 2;
+  }
+
+  /**[19]$A78D -- (CDL unaccessed, 死代码) */
+  private _jumpHandler_19_A78D(): number { return 2; }
+
+  /**[20]$A7BD D1 — $A7BE: JSR $9FA8(1); Y=$28; X=$64; A=$B0; JSR $A82F, 返回 2 */
+  private _jumpHandler_20_A7BD(): number {
+    this._bank00.bankSwitch9FA8(1);
+    this._subA82F(0xB0, 0x64, 0x28);
+    return 2;
+  }
+
+  /**[21]$A7CE D1 — $A7CF: JSR $8895($81), 返回 2 */
+  private _jumpHandler_21_A7CE(): number {
+    this._bank00.sceneParamSet(0x81);
+    return 2;
+  }
+
+  /**[22]$A7D6 D1 — $A7D7: OAM 精灵循环 (ram_0468 负值 → ram_046A |= $04), 返回 2 */
+  private _jumpHandler_22_A7D6(): number {
+    const s = this._store;
+    // $A7D7: LDY #$80 外层循环 0x80 次
+    for (let outer = 0; outer < 0x80; outer++) {
+      // $A7D9: LDA #$01; JSR $9FA8
+      this._bank00.bankSwitch9FA8(1);
+      // $A7DE-$A7F3: X=$20..$C4 step 4
+      for (let x = 0x20; x !== 0xC4; x = (x + 4) & 0xFF) {
+        // $A7E0: LDA ram_0468,X; BPL $A7ED — bit7 置位才处理
+        if (s.read(`ram_${(0x0468 + x).toString(16)}`) & 0x80) {
+          const k6a = `ram_${(0x046A + x).toString(16)}`;
+          s.write(k6a, s.read(k6a) | 0x04);
+        }
+      }
+    }
+    // $A7F8-$A7FA: LDA #$02; RTS
+    return 2;
+  }
+
+  /**[23]$A7FA -- (CDL unaccessed, 死代码) */
+  private _jumpHandler_23_A7FA(): number { return 2; }
+
+  // ── Entry F 共用子程序 ──
+
+  /**
+   * 对应原始 $A82F (CPU 01:882F): 精灵 OAM 属性清理。
+   * 汇编: A→ram_00EC(结束偏移), X→ram_00ED(起始偏移), Y=行数;
+   *   Y 行循环 { LDX start; 循环 { ram_0468,X ≥ $82 时跳过;
+   *   ram_046A,X &= $F3; X+=4; 直到 X==end } }
+   *
+   * @param a 结束偏移 (EC)
+   * @param x 起始偏移 (ED)
+   * @param y 行数 (Y)
+   */
+  private _subA82F(a: number, x: number, y: number): void {
+    const s = this._store;
+    const end = a & 0xFF;
+    const start = x & 0xFF;
+    for (let row = 0; row < y; row++) {
+      let xi = start;
+      for (;;) {
+        // $A83A: LDA ram_0468,X; CMP #$82; BCS $A849 — ≥$82 跳过
+        if (s.read(`ram_${(0x0468 + xi).toString(16)}`) < 0x82) {
+          // $A841: ram_046A,X &= $F3
+          const k6a = `ram_${(0x046A + xi).toString(16)}`;
+          s.write(k6a, s.read(k6a) & 0xF3);
+        }
+        xi = (xi + 4) & 0xFF;
+        if (xi === end) break; // $A84D: CPX ram_00EC; BNE
+      }
+    }
+  }
+
+  /** 对应原始 $A767 (CPU 01:8767): 拷贝 $A773-$A776 → ram_03E8-$03EB */
+  private _subA767(): void {
+    const s = this._store;
+    // LDY #$FC; 循环: LDA $A677,Y; STA ram_03E8,Y; INY; BNE — 4 字节
+    for (let i = 0; i < 4; i++) {
+      s.write(`ram_${(0x03E8 + i).toString(16)}`, SPRITE_TAIL_A677[i]);
+    }
+  }
+
+  /**
+   * 对应原始 $A72C (CPU 01:872C): 精灵位置写入。
+   * 汇编: A→ram_00E9; X 次循环 {
+   *   ram_04E4 += ram_00ED; ram_04E7 += ram_00EC;
+   *   若 (ram_04E7 & ram_00EB) != 0 → 跳过存储;
+   *   否则 ram_0468/69/6A/6B,Y = 04E4/E9/EA/04E7; Y += 4;
+   *   JSR $9FA8(1); DEX; BNE }
+   *
+   * @param a A 参数 (→ ram_00E9)
+   * @param x 循环次数 (X)
+   * @param y 精灵缓冲偏移 (Y)
+   */
+  private _subA72C(a: number, x: number, y: number): void {
+    const s = this._store;
+    s.write('ram_00E9', a & 0xFF); // $A72C: STA ram_00E9
+    for (let i = 0; i < x; i++) {
+      // $A72E: ram_04E4 += ram_00ED
+      const e4 = (s.read('ram_04E4') + s.read('ram_00ED')) & 0xFF;
+      // $A737: ram_04E7 += ram_00EC
+      const e7 = (s.read('ram_04E7') + s.read('ram_00EC')) & 0xFF;
+      s.write('ram_04E4', e4);
+      s.write('ram_04E7', e7);
+      // $A740: AND ram_00EB; BNE $A75E — 非 0 跳过存储
+      if ((e7 & s.read('ram_00EB')) === 0) {
+        s.write(`ram_${(0x0468 + y).toString(16)}`, e4);
+        s.write(`ram_${(0x0469 + y).toString(16)}`, a & 0xFF);
+        s.write(`ram_${(0x046A + y).toString(16)}`, s.read('ram_00EA'));
+        s.write(`ram_${(0x046B + y).toString(16)}`, e7);
+        y = (y + 4) & 0xFF; // INY×4
+      }
+      // $A75E: LDA #$01; JSR $9FA8
+      this._bank00.bankSwitch9FA8(1);
+    }
+  }
 
   // ════════════════════════════════════════════
   // Entry G — OAM 精灵复制

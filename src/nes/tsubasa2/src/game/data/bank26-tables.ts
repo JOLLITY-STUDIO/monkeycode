@@ -1,13 +1,17 @@
 /**
  * Bank 26 数据模型 (Data/Model 层) — 比赛核心引擎数据
  *
- * 来源: rom-data/prg-bank-26.ts (自动生成, 原始字节)
+ * 来源: ./prg-bank-26 本地副本 (自动生成, 原始字节, 复制自 rom-data)
  * CPU 映射: bank 0x1A 切到 $8000-$9FFF
  *
  * 本文件由 scripts/dump_b26_tables.cjs 自动生成 — 禁止手工编辑。
+ * service 仅通过 readB26/readB26U16 等接口访问, 不直接引用 rom-data。
  */
 
-import PRG_BANK_26 from '../../../../rom-data/prg-bank-26';
+import PRG_BANK_26 from './prg-bank-26';
+
+/** Bank 26 完整 8KB 原始字节 (本地副本, 不直接引用 rom-data) */
+export const B26_DATA: readonly number[] = PRG_BANK_26;
 
 /** bank26 CPU 基址 */
 export const B26_CPU_BASE = 0x8000;
@@ -15,7 +19,7 @@ export const B26_CPU_BASE = 0x8000;
 /** 读 bank26 原始字节 (CPU 地址) */
 export function readB26(cpuAddr: number): number {
   const off = cpuAddr - B26_CPU_BASE;
-  return off >= 0 && off < PRG_BANK_26.length ? PRG_BANK_26[off] : 0;
+  return off >= 0 && off < B26_DATA.length ? B26_DATA[off] : 0;
 }
 
 /** 读 bank26 16bit LE (CPU 地址) */

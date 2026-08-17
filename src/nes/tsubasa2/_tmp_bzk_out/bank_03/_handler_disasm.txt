@@ -1,0 +1,529 @@
+A4C0: ;; === [0] $A4C0 === 05 09   ORA $9
+A4C2: 7B   .byte $7B
+A4C3: EB   .byte $EB
+A4C4: FB   .byte $FB
+A4C5: 01 3B   ORA ($3B,X)
+A4C7: E1 40   SBC ($40,X)
+A4C9: 14   .byte $14
+A4CA: 0A   ASL
+A4CB: 2B   .byte $2B
+A4CC: AD 7A DB   LDA $DB7A
+A4CF: 07   .byte $07
+A4D0: 32   .byte $32
+A4D1: 03   .byte $03
+A4D2: 00   BRK
+A4D3: 0A   ASL
+A4D4: 19 51 7D   ORA $7D51,Y
+A4D7: 61 16   ADC ($16,X)
+A4D9: FC   .byte $FC
+A4DA: 16 1E   ASL $1E,X
+A4DC: 2E 4B 6F   ROL $6F4B
+A4DF: 46 7D   LSR $7D
+A4E1: 07   .byte $07
+A4E2: 32   .byte $32
+A4E3: 03   .byte $03
+A4E4: 06 02   ASL $2
+A4E6: 06 27   ASL $27
+A4E8: FC   .byte $FC
+A4E9: 09 2E   ORA #$2E
+A4EB: 0C   .byte $0C
+A4EC: 31 03   AND ($3),Y
+A4EE: 0E 02 A0   ASL $A002
+A4F1: 00   BRK
+A4F2: 1A   .byte $1A
+A4F3: 09 2E   ORA #$2E
+A4F5: 0B   .byte $0B
+A4F6: 2A   ROL
+A4F7: 10 19   BPL $0512
+A4F9: AD FC 0C   LDA $0CFC
+A4FC: 32   .byte $32
+A4FD: 03   .byte $03
+A4FE: 06 02   ASL $2
+A500: 0D 29 7B   ORA $7B29
+A503: EB   .byte $EB
+A504: EA   NOP
+A505: F9 13 FA   SBC $FA13,Y
+A508: 12   .byte $12
+A509: FB   .byte $FB
+A50A: 01 2A   ORA ($2A,X)
+A50C: E9 DC   SBC #$DC
+A50E: E1 40   SBC ($40,X)
+A510: 1A   .byte $1A
+A511: A6 22   LDX $22
+A513: 1F   .byte $1F
+A514: 0C   .byte $0C
+A515: 13   .byte $13
+A516: 7A   .byte $7A
+A517: DB   .byte $DB
+A518: 06 10   ASL $10
+A51A: A1 28   LDA ($28,X)
+A51C: 00   BRK
+A51D: 26 03   ROL $3
+A51F: 0A   ASL
+A520: AD 0D 7B   LDA $7B0D
+A523: FC   .byte $FC
+A524: DC   .byte $DC
+A525: 07   .byte $07
+A526: 32   .byte $32
+A527: 03   .byte $03
+A528: 06 27   ASL $27
+A52A: 00   BRK
+A52B: 0C   .byte $0C
+A52C: AF   .byte $AF
+A52D: 27   .byte $27
+A52E: 08   PHP
+A52F: 19 01 02   ORA $0201,Y
+A532: AA   TAX
+A533: FC   .byte $FC
+A534: 5F   .byte $5F
+A535: 58   CLI
+A536: 7D BA 70   ADC $70BA,X
+A539: 7D 14 0C   ADC $0C14,X
+A53C: 13   .byte $13
+A53D: 00   BRK
+A53E: B2   .byte $B2
+A53F: 2E 07 32   ROL $3207
+A542: 03   .byte $03
+A543: 0B   .byte $0B
+A544: 0E 13 FC   ASL $FC13
+A547: 23   .byte $23
+A548: 27   .byte $27
+A549: 02   .byte $02
+A54A: 1F   .byte $1F
+A54B: 0D 7A DB   ORA $DB7A
+A54E: FB   .byte $FB
+A54F: 01 2B   ORA ($2B,X)
+A551: 26 2B   ROL $2B
+A553: 0C   .byte $0C
+A554: 08   PHP
+A555: 7B   .byte $7B
+A556: ED 62 EB   SBC $EB62
+A559: ;; === [1] $A559 === FB   .byte $FB
+A55A: 01 2A   ORA ($2A,X)
+A55C: E1 40   SBC ($40,X)
+A55E: 12   .byte $12
+A55F: AF   .byte $AF
+A560: 0B   .byte $0B
+A561: 08   PHP
+A562: 2E 7A DB   ROL $DB7A
+A565: 01 15   ORA ($15,X)
+A567: 10 19   BPL $0582
+A569: 0A   ASL
+A56A: 14   .byte $14
+A56B: 1A   .byte $1A
+A56C: FC   .byte $FC
+A56D: 01 16   ORA ($16,X)
+A56F: 06 27   ASL $27
+A571: 00   BRK
+A572: 26 08   ROL $8
+A574: 00   BRK
+A575: 07   .byte $07
+A576: 02   .byte $02
+A577: 13   .byte $13
+A578: 02   .byte $02
+A579: 29 2C   AND #$2C
+A57B: ;; === [2] $A57B === 7B   .byte $7B
+A57C: FC   .byte $FC
+A57D: DD FD FB   CMP $FBFD,X
+A580: 01 12   ORA ($12,X)
+A582: F7   .byte $F7
+A583: F3   .byte $F3
+A584: 00   BRK
+A585: F2   .byte $F2
+A586: 00   BRK
+A587: E1 40   SBC ($40,X)
+A589: 04   .byte $04
+A58A: 2F   .byte $2F
+A58B: FC   .byte $FC
+A58C: DE FD FB   DEC $FBFD,X
+A58F: 01 2B   ORA ($2B,X)
+A591: F7   .byte $F7
+A592: F3   .byte $F3
+A593: 00   BRK
+A594: DB   .byte $DB
+A595: F2   .byte $F2
+A596: 08   PHP
+A597: E1 40   SBC ($40,X)
+A599: 2C 10 0C   BIT $0C10
+A59C: 19 00 01   ORA $0100,Y
+A59F: 16 1A   ASL $1A,X
+A5A1: 7A   .byte $7A
+A5A2: ;; === [4] $A5A2 === DB   .byte $DB
+A5A3: 16 1E   ASL $1E,X
+A5A5: 2E 4B 6F   ROL $6F4B
+A5A8: ;; === [5] $A5A8 === 46 7D   LSR $7D
+A5AA: FC   .byte $FC
+A5AB: 07   .byte $07
+A5AC: 32   .byte $32
+A5AD: 03   .byte $03
+A5AE: 06 02   ASL $2
+A5B0: ;; === [6] $A5B0 === 19 00 06   ORA $0600,Y
+A5B3: 10 A1   BPL $0556
+A5B5: 28   PLP
+A5B6: 00   BRK
+A5B7: 21 18   AND ($18,X)
+A5B9: 1F   .byte $1F
+A5BA: 0B   .byte $0B
+A5BB: 15 FB   ORA $FB,X
+A5BD: 01 2A   ORA ($2A,X)
+A5BF: ;; === [8] $A5BF === 19 7B FC   ORA $FC7B,Y
+A5C2: DD F2 2C   CMP $2CF2,X
+A5C5: 26 2B   ROL $2B
+A5C7: 0C   .byte $0C
+A5C8: 08   PHP
+A5C9: FB   .byte $FB
+A5CA: 01 2C   ORA ($2C,X)
+A5CC: F2   .byte $F2
+A5CD: ;; === [9] $A5CD === 00   BRK
+A5CE: 18   CLC
+A5CF: 7B   .byte $7B
+A5D0: FC   .byte $FC
+A5D1: DC   .byte $DC
+A5D2: ED 31 DE   SBC $DE31
+A5D5: F4   .byte $F4
+A5D6: 05 FB   ORA $FB
+A5D8: 01 2B   ORA ($2B,X)
+A5DA: ED 01 DC   SBC $DC01
+A5DD: FD 12 AF   SBC $AF12,X
+A5E0: 0B   .byte $0B
+A5E1: 00   BRK
+A5E2: 0B   .byte $0B
+A5E3: 02   .byte $02
+A5E4: 0C   .byte $0C
+A5E5: 32   .byte $32
+A5E6: 19 10 10   ORA $1010,Y
+A5E9: 06 02   ASL $2
+A5EB: 1A   .byte $1A
+A5EC: FC   .byte $FC
+A5ED: E2   .byte $E2
+A5EE: 0A   ASL
+A5EF: 0A   ASL
+A5F0: 00   BRK
+A5F1: C5 67   CMP $67
+A5F3: BA   TSX
+A5F4: 69 3F   ADC #$3F
+A5F6: 68   PLA
+A5F7: 45 46   EOR $46
+A5F9: 6F   .byte $6F
+A5FA: CF   .byte $CF
+A5FB: 16 1A   ASL $1A,X
+A5FD: A6 1F   LDX $1F
+A5FF: 29 FC   AND #$FC
+A601: F4   .byte $F4
+A602: ;; === [12] $A602 === 04   .byte $04
+A603: DF   .byte $DF
+A604: EA   NOP
+A605: FD F9 14   SBC $14F9,X
+A608: DC   .byte $DC
+A609: E9 F6   SBC #$F6
+A60B: B4 EA   LDY $EA,X
+A60D: E8   INX
+A60E: 00   BRK
+A60F: F9 15 FB   SBC $FB15,Y
+A612: 02   .byte $02
+A613: C7   .byte $C7
+A614: C6 ED   DEC $ED
+A616: 45 E9   EOR $E9
+A618: F6 B4   INC $B4,X
+A61A: FB   .byte $FB
+A61B: 01 CB   ORA ($CB,X)
+A61D: F3   .byte $F3
+A61E: 00   BRK
+A61F: F5 06   SBC $6,X
+A621: ED 30 DC   SBC $DC30
+A624: DF   .byte $DF
+A625: FF   .byte $FF
+A626: E8   INX
+A627: 01 F9   ORA ($F9,X)
+A629: ;; === [14] $A629 === 02   .byte $02
+A62A: FB   .byte $FB
+A62B: 01 15   ORA ($15,X)
+A62D: DE E9 ED   DEC $EDE9,X
+A630: 53   .byte $53
+A631: F2   .byte $F2
+A632: 02   .byte $02
+A633: F4   .byte $F4
+A634: 05 00   ORA $0
+A636: 00   BRK
+A637: 5C   .byte $5C
+A638: 67   .byte $67
+A639: 62   .byte $62
+A63A: 6E B8 00   ROR $00B8
+A63D: 47   .byte $47
+A63E: 70 CF   BVS $060F
+A640: 53   .byte $53
+A641: 6E FC 00   ROR $00FC
+A644: 00   BRK
+A645: 46 69   LSR $69
+A647: 6B   .byte $6B
+A648: 4D 3F 4B   EOR $4B3F
+A64B: 6E 50 7D   ROR $7D50
+A64E: 55 FC   EOR $FC,X
+A650: ;; === [15] $A650 === F4   .byte $F4
+A651: 04   .byte $04
+A652: F6 B4   INC $B4,X
+A654: F4   .byte $F4
+A655: 05 FD   ORA $FD
+A657: F4   .byte $F4
+A658: 04   .byte $04
+A659: F2   .byte $F2
+A65A: 08   PHP
+A65B: E1 40   SBC ($40,X)
+A65D: 4B   .byte $4B
+A65E: 6E CD 43   ROR $43CD
+A661: 6B   .byte $6B
+A662: 86 83   STX $83
+A664: 16 00   ASL $0,X
+A666: 02   .byte $02
+A667: 29 14   AND #$14
+A669: 02   .byte $02
+A66A: 03   .byte $03
+A66B: FC   .byte $FC
+A66C: 0D A4 03   ORA $03A4
+A66F: AD 19 05   LDA $0519
+A672: 14   .byte $14
+A673: 0A   ASL
+A674: 14   .byte $14
+A675: 1A   .byte $1A
+A676: 00   BRK
+A677: 01 02   ORA ($2,X)
+A679: 12   .byte $12
+A67A: 06 7B   ASL $7B
+A67C: FC   .byte $FC
+A67D: DC   .byte $DC
+A67E: AE 2A 1E   LDX $1E2A
+A681: AE 19 03   LDX $0319
+A684: AD 06 00   LDA $0006
+A687: 20 0E 13   JSR $130E
+A68A: 23   .byte $23
+A68B: 27   .byte $27
+A68C: 05 03   ORA $3
+A68E: FC   .byte $FC
+A68F: DE EA FD   DEC $FDEA,X
+A692: F9 19 FB   SBC $FB19,Y
+A695: 01 14   ORA ($14,X)
+A697: ED 69 E9   SBC $E969
+A69A: F5 04   SBC $4,X
+A69C: ;; === [16] $A69C === F4   .byte $F4
+A69D: 05 E1   ORA $E1
+A69F: 40   RTI
+A6A0: 52   .byte $52
+A6A1: C3   .byte $C3
+A6A2: 4B   .byte $4B
+A6A3: 3F   .byte $3F
+A6A4: 45 45   EOR $45
+A6A6: BD 67 79   LDA $7967,X
+A6A9: 79 FC F4   ADC $F4FC,Y
+A6AC: 04   .byte $04
+A6AD: F6 B4   INC $B4,X
+A6AF: ED 31 DE   SBC $DE31
+A6B2: EA   NOP
+A6B3: FF   .byte $FF
+A6B4: E8   INX
+A6B5: 01 F9   ORA ($F9,X)
+A6B7: 02   .byte $02
+A6B8: FB   .byte $FB
+A6B9: 01 15   ORA ($15,X)
+A6BB: DE E9 ED   DEC $EDE9,X
+A6BE: 5A   .byte $5A
+A6BF: DD E1 40   CMP $40E1,X
+A6C2: AE 03 24   LDX $2403
+A6C5: 27   .byte $27
+A6C6: 00   BRK
+A6C7: 03   .byte $03
+A6C8: 2C 0B 1A   BIT $1A0B
+A6CB: FC   .byte $FC
+A6CC: 1E 2E 14   ASL $142E,X
+A6CF: 03   .byte $03
+A6D0: AA   TAX
+A6D1: 2F   .byte $2F
+A6D2: 10 15   BPL $06E9
+A6D4: 7B   .byte $7B
+A6D5: FC   .byte $FC
+A6D6: DD ED 31   CMP $31ED,X
+A6D9: DE EA FF   DEC $FFEA,X
+A6DC: E8   INX
+A6DD: 01 F9   ORA ($F9,X)
+A6DF: 02   .byte $02
+A6E0: FB   .byte $FB
+A6E1: 01 38   ORA ($38,X)
+A6E3: DE E9 ED   DEC $EDE9,X
+A6E6: 57   .byte $57
+A6E7: DD EF E1   CMP $E1EF,X
+A6EA: 40   RTI
+A6EB: 52   .byte $52
+A6EC: C3   .byte $C3
+A6ED: 4B   .byte $4B
+A6EE: 3F   .byte $3F
+A6EF: 45 45   EOR $45
+A6F1: BD 67 7A   LDA $7A67,X
+A6F4: DB   .byte $DB
+A6F5: 05 1F   ORA $1F
+A6F7: 04   .byte $04
+A6F8: 19 11 06   ORA $0611,Y
+A6FB: 27   .byte $27
+A6FC: 2D FC 10   AND $10FC
+A6FF: 22   .byte $22
+A700: 0B   .byte $0B
+A701: 0E 13 23   ASL $2313
+A704: 27   .byte $27
+A705: 03   .byte $03
+A706: A8   TAY
+A707: 3F   .byte $3F
+A708: 3F   .byte $3F
+A709: 3F   .byte $3F
+A70A: FC   .byte $FC
+A70B: DE EA FD   DEC $FDEA,X
+A70E: F9 1B E9   SBC $E91B,Y
+A711: ED 46 DC   SBC $DC46
+A714: F2   .byte $F2
+A715: 06 00   ASL $0
+A717: 26 08   ROL $8
+A719: A6 12   LDX $12
+A71B: 00   BRK
+A71C: 12   .byte $12
+A71D: AF   .byte $AF
+A71E: 0B   .byte $0B
+A71F: 10 11   BPL $0732
+A721: 1A   .byte $1A
+A722: FC   .byte $FC
+A723: 01 0D   ORA ($D,X)
+A725: 19 B6 6A   ORA $6AB6,Y
+A728: 60   RTS
+A729: 45 0E   EOR $E
+A72B: 2E 16 21   ROL $2116
+A72E: 09 13   ORA #$13
+A730: FC   .byte $FC
+A731: 00   BRK
+A732: 11 06   ORA ($6),Y
+A734: 08   PHP
+A735: 19 B6 67   ORA $67B6,Y
+A738: 43   .byte $43
+A739: 6E C2 AD   ROR $ADC2
+A73C: FC   .byte $FC
+A73D: 2A   ROL
+A73E: 2E 0C 31   ROL $310C
+A741: 03   .byte $03
+A742: 2D 06 02   AND $0206
+A745: 0C   .byte $0C
+A746: 0C   .byte $0C
+A747: 13   .byte $13
+A748: 02   .byte $02
+A749: 10 FC   BPL $0747
+A74B: DF   .byte $DF
+A74C: EA   NOP
+A74D: DC   .byte $DC
+A74E: FD FA 12   SBC $12FA,X
+A751: FB   .byte $FB
+A752: 01 07   ORA ($7,X)
+A754: F7   .byte $F7
+A755: F3   .byte $F3
+A756: FF   .byte $FF
+A757: 00   BRK
+A758: 17   .byte $17
+A759: E1 40   SBC ($40,X)
+A75B: 05 1F   ORA $1F
+A75D: 04   .byte $04
+A75E: A0 00   LDY #$0
+A760: 52   .byte $52
+A761: C3   .byte $C3
+A762: 4B   .byte $4B
+A763: 06 7B   ASL $7B
+A765: FC   .byte $FC
+A766: DD FD FA   CMP $FAFD,X
+A769: 58   CLI
+A76A: FB   .byte $FB
+A76B: 01 43   ORA ($43,X)
+A76D: F7   .byte $F7
+A76E: F3   .byte $F3
+A76F: 00   BRK
+A770: F9 1C F8   SBC $F81C,Y
+A773: 05 D9   ORA $D9
+A775: F8   SED
+A776: 06 DE   ASL $DE
+A778: E1 40   SBC ($40,X)
+A77A: ;; === [17] $A77A === AA   TAX
+A77B: 2A   ROL
+A77C: AA   TAX
+A77D: 00   BRK
+A77E: 05 1F   ORA $1F
+A780: 04   .byte $04
+A781: 1A   .byte $1A
+A782: ;; === [18] $A782 === 79 FC DD   ADC $DDFC,Y
+A785: FD FA 3D   SBC $3DFA,X
+A788: FB   .byte $FB
+A789: 01 38   ORA ($38,X)
+A78B: F7   .byte $F7
+A78C: F3   .byte $F3
+A78D: ;; === [19] $A78D === 00   BRK
+A78E: FA   .byte $FA
+A78F: 12   .byte $12
+A790: F2   .byte $F2
+A791: 08   PHP
+A792: E1 40   SBC ($40,X)
+A794: 05 2A   ORA $2A
+A796: 1A   .byte $1A
+A797: 00   BRK
+A798: B6 6A   LDX $6A,Y
+A79A: 60   RTS
+A79B: 45 19   EOR $19
+A79D: 47   .byte $47
+A79E: 7D CD 7D   ADC $7DCD,X
+A7A1: 00   BRK
+A7A2: 62   .byte $62
+A7A3: 45 6E   EOR $6E
+A7A5: 7B   .byte $7B
+A7A6: FC   .byte $FC
+A7A7: DC   .byte $DC
+A7A8: 4B   .byte $4B
+A7A9: 6E CD 43   ROR $43CD
+A7AC: 6B   .byte $6B
+A7AD: 19 00 10   ORA $1000,Y
+A7B0: 10 06   BPL $07B8
+A7B2: 02   .byte $02
+A7B3: B1 28   LDA ($28),Y
+A7B5: 1A   .byte $1A
+A7B6: FC   .byte $FC
+A7B7: 07   .byte $07
+A7B8: 19 03 00   ORA $0003,Y
+A7BB: 20 0E 13   JSR $130E
+A7BE: 23   .byte $23
+A7BF: 27   .byte $27
+A7C0: 2F   .byte $2F
+A7C1: 10 7B   BPL $083E
+A7C3: FC   .byte $FC
+A7C4: DE FD E1   DEC $E1FD,X
+A7C7: 40   RTI
+A7C8: 52   .byte $52
+A7C9: C3   .byte $C3
+A7CA: 4B   .byte $4B
+A7CB: 7A   .byte $7A
+A7CC: DB   .byte $DB
+A7CD: 01 0D   ORA ($D,X)
+A7CF: 19 00 0A   ORA $0A00,Y
+A7D2: 13   .byte $13
+A7D3: 0C   .byte $0C
+A7D4: 27   .byte $27
+A7D5: B2   .byte $B2
+A7D6: ;; === [22] $A7D6 === 16 FC   ASL $FC,X
+A7D8: 05 2A   ORA $2A
+A7DA: 14   .byte $14
+A7DB: 00   BRK
+A7DC: 01 0F   ORA ($F,X)
+A7DE: 2E AD 20   ROL $20AD
+A7E1: 15 02   ORA $2,X
+A7E3: 06 78   ASL $78
+A7E5: FC   .byte $FC
+A7E6: DE FD FB   DEC $FBFD,X
+A7E9: 01 11   ORA ($11,X)
+A7EB: F7   .byte $F7
+A7EC: F3   .byte $F3
+A7ED: 00   BRK
+A7EE: E1 DC   SBC ($DC,X)
+A7F0: 40   RTI
+A7F1: 15 A2   ORA $A2,X
+A7F3: 28   PLP
+A7F4: 0A   ASL
+A7F5: 20 DB 2F   JSR $2FDB
+A7F8: 13   .byte $13
+A7F9: 2C 09 06   BIT $0609
