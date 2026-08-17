@@ -1,0 +1,372 @@
+[  0] 'ᅬ'
+[  1] 'ば'
+[  2] '斴'
+[  3] ''
+[  4] ''
+[  5] '腂'
+[  6] '頼'
+[  7] ''
+[  8] '쯰'
+[  9] 's now\nbeing restored.\nPlease wait...\nThis will erase all save data,\nincluding your Friend Code,\nFrie'
+[ 10] 'nd Roster, and any\npuzzles you have created\nor received.\nDo you want to proceed?\nQuick Save Data found.\nWould you'
+[ 11] ' like to\nload this data?\nStarting up.\nPlease wait...\nHow to play Picross.\nHere are some simple\nin'
+[ 12] 'troductory puzzles.\nNormal Mode rules\napply, so if you make\na mista'
+[ 13] "ke, we'll let\nyou know.\nPuzzles for beginner\nto intermediate player"
+[ 14] "s.\nNormal Mode rules\napply, so if you make\na mistake, we'll let\nyou"
+[ 15] ' know.\nPuzzles for intermediate\nto advanced players.\nFree Mode rule'
+[ 16] "s apply,\nso you won't be told if\nyou make a mistake.\nPuzzles for be"
+[ 17] 'ginner\nto intermediate players.\nNormal Mode rules\napply, so if you m'
+[ 18] "ake\na mistake, we'll let\nyou know.\nCongratulations!\n\nYou've finished all the\npuzzles in Normal Mode"
+[ 19] '\nand have opened up an\nextra stage!\nPuzzles for intermediate\nto a'
+[ 20] "dvanced players.\nFree Mode rules apply,\nso you won't be told if\ny"
+[ 21] "ou make a mistake.\nCongratulations!\n\nYou've finished all the\npuzz"
+[ 22] 'les in Free Mode and\nhave unlocked an\nextra stage!\nCongratulation'
+[ 23] 's!\n\nNow you can try the\nNormal Mode Level 5\npuzzles!\nCongratulati'
+[ 24] 'ons!\n\nNow you can try the\nNormal Mode Level 6\npuzzles!\nCongratulat'
+[ 25] 'ions!\n\nNow you can try the\nNormal Mode Level 7\npuzzles!\nCongratulations!\n\nNow you can try the\nNor'
+[ 26] 'mal Mode Level 8\npuzzles!\nCongratulations!'
+[ 27] '\n\nNow you can try the\nNormal Mode Level 9\npu'
+[ 28] "zzles!\nCongratulations!\n\nNow you can try the\nNormal Mode Level 10\npuzzles!\nCongratulations!\n\nYou've finishe"
+[ 29] 'd all the\npuzzles in Normal Mode\nand have unlocked an\nextra stage!\nCongratula'
+[ 30] 'tions!\n\nNow you can try the\nFree Mode Level 5\npuzzles!\nCongratulations!\n\nNow you can try the\nFree Mode Level 6\npuzzles!\nCongratulation'
+[ 31] 's!\n\nNow you can try the\nFree Mode Level 7\npuzzles!\nCongratulations!\n\nNow you can try the\nFree Mode Level 8\npuzzles!'
+[ 32] '\nCongratulations!\n\nNow you can try the\nFree Mode Level 9\npuzzles!\nCongratulations!\n\nNow you c'
+[ 33] "an try the\nFree Mode Level 10\npuzzles!\nCongratulations!\n\nYou've finished all the\npuzzles in Free "
+[ 34] 'Mode and\nhave unlocked an\nextra stage!\nBasic instructions and\nrules for Picross.\nUseful functions on the\nin'
+[ 35] '-game pause menu.\nHow to play Free Mode.\nIncludes tips on using the\nspecial Try It '
+[ 36] 'Out feature,\navailable only in Free Mode.\nHow to use the Zoom\nfunction, available in\n'
+[ 37] 'puzzles of 15x15 squares\nor more.\nWelcome to the world of\nPicross!\nThe tutorial is about to\nbegin. When you'
+[ 38] "'ve finished\nreading, touch the OK icon\non the lower screen.\nThis tutorial is designed to\nintroduce you "
+[ 39] 'to the basic\nrules and techniques you will\nneed to know before playing.\nThe numbers above each\ncolumn show how many\nsquares within each column\nneed to be filled in.'
+[ 40] '\nFor example, the number\n5 here shows you that 5\nsquares within this column\nneed to be filled in.\nBecause this is a small\npuzzle (only 5x5 s'
+[ 41] 'quares!),\nyou know that you'
+[ 42] ' can fill\nin the whole column safely.\nFill them in now.\nYou can fill in all 5 in\none go by sliding the\nst'
+[ 43] "ylus over them.\nYou'll find it's easier to\nsolve a puzzle if you start\nwith the large numbers first"
+[ 44] ".\nSee how the number 5\nfaded? This happens\nwhen you've successfully\nfilled in the correct\nnumbe"
+[ 45] 'r of squares.\nThe numbers that appear\nbeside each row indicate how\nmany squares within that\nrow need'
+[ 46] ' to be filled in.\nThe 3 and 1 here mean that\nyou must fill in 3 squares\nconsecutively and then 1\nadditional square, from left'
+[ 47] '\nto right. You must leave at\nleast 1 space between them.\nBecause this is a 5x5 puzzle,\nt'
+[ 48] 'he only possible solution\nis if you fill in the first\n3 squares, leave 1 space,\nand fill in the last square.\nGo ahead and fill t'
+[ 49] 'hem in.\nTo show that the remaining\nsquare cannot possibly be\nfilled in, you can place an\nX mark to block it off.\nThe X marks are extremely\nimportant. First, touch\n'
+[ 50] 'the X icon in the top-left\ncorner of the screen.\nThis activates X Mode.\nNow, place an X into the\nsquare between'
+[ 51] " the 3\nsquares and the 1 square.\nNow, take a look at the\ncolumn that crosses this\nsquare, and you'll see how\nuseful the X really is!\nThe X serv"
+[ 52] 'es as a hint:\nyou have to fill 3 squares\nin a row, and the only\nconnected squares are the\n3 directly below '
+[ 53] 'your X.\nNow, go back to Pen Mode by\ntouching the Pen i'
+[ 54] 'con in the\ntop-left corner of the\nscreen.\nYou can switch between Pen\nand X Mode easily by tapping\nthese icons at any time.\nNow you can fill '
+[ 55] 'in the\n3 squares below the X.\nThis column already h'
+[ 56] 'as a\nhint--the square you filled\nin earlier. You know that the\nsquares above and below\nhave to be blank, so you can\nmark them both with an '
+[ 57] "X.\nLet's mark those squares!\nFirst, switch to X Mode,\nand then place one X\nabove and one below th"
+[ 58] 'e\nfilled squar'
+[ 59] 'e.\nThat X you placed on the top\nrow means that, to solve the\nfirst row, you have to fill in\nthe square to t'
+[ 60] "he right of\nthe already-filled square.\nBy using the X marks and the\nnumbers along the puzzle's\nedge, you can figure out\nwhich squares to fill"
+[ 61] " in.\nNow, switch back to Pen Mode\nand fill in that square.\nOK, let's take a look at the\nnext "
+[ 62] 'row. If the hint shows\nonly a single number, any\nunconnected filled squares\nwill definitely be connected.\nFill in the square between\nthe two fille'
+[ 63] 'd squares.\nNow, over at the last column,\nyou can see that there are\ntwo possible solutions: fill\nin either the top 4 squares\nor the'
+[ 64] ' bottom 4 squares.\nBut either way you look at it,\nall 3 squares in the middle\nwill definitely need to be\nfilled in.\nSo get to it!\nAs you see, by counting'
+[ 65] '\nthe numbers in the hints\nfrom both directions,\nyou can fill in areas\nthat overlap'
+[ 66] ".\nAlmost done! Just a few\nmore squares to go...\nRemember, Picross doesn't\nrely on guesswork. Every\npuzzle can be solved by\nthinking lo"
+[ 67] "gically.\nNow, use the techniques\nyou've learned, and try\nto solve the rest of\nthe puzzle on your own.\nWel"
+[ 68] "l done! You've solved\nthe puzzle! You seem to\nhave mastered the "
+[ 69] "basic\nrules of Picross. Now let's\ntake a look at some of the\nother featu"
+[ 70] 'res...\nFirst, we have the Helpful\nHint Roulette. Use this if you\nwant a helping hand'
+[ 71] " to get\nyou started at the beginning\nof a new puzzle.\nWhen you start a new puzzle,\nyou'll see a prompt as"
+[ 72] 'king if\nyou\'d like to "Use hints?"\nIf you choose Yes, '
+[ 73] 'the\nHelpful Hint Roulette\nwill start rolling...\nStop the roulette either\nby tapping the Touch\nScreen or by pressing\nthe A '
+[ 74] 'Button.\nThe left-hand section\nstops first, followed by\nthe top section.\nOnce both have stopped,\n'
+[ 75] 'the answers for those\nlines will be revealed.\nNormal Mode and Free\nMode have'
+[ 76] " slightly\ndifferent rules. Let's\ntake a look at the rules\nfor "
+[ 77] "Normal Mode.\nIn Normal Mode, you'll\nbe notified whenever\nyou make "
+[ 78] 'a mistake.\nEach mistake you make\nadds a time penalty\nto your timer, so\nb'
+[ 79] "e careful!\nThere's a time limit\nof 60 minutes. If you\ntake longer, you"
+[ 80] "'ll\nreceive a TIME OVER.\nIf you're over the time\nlimit when you finish\nthe pu"
+[ 81] "zzle, you won't\nearn the special picture\nat the end!\nThat brings us to the\nend "
+[ 82] 'of the tutorial.\nGood luck!\nThat brings us to the\nend of the tutoria'
+[ 83] 'l.\nYou can view this\ntutorial again by going\nto the How to Play\noption. Ha'
+[ 84] "ve fun!\nWait a minute! If you fill in\nthat square, you won't be\nable to f"
+[ 85] "ill in the others\nin the hint!\nGo to the X icon in the\ntop-left corner of the\nscreen and switch to\nX Mode.\nYou don't know if th"
+[ 86] 'at\nsquare should be marked\nwith an X yet.\nGo to the Pen icon in\nthe top-left corner and\nswitch to '
+[ 87] "Pen Mode.\nNot so fast! You don't know\nif that square can be filled\ni"
+[ 88] "n just yet...\nThat square isn't an X.\nTake an"
+[ 89] "other look at the\nnumbers in the hint.\nYou can't fill in that square.\nTake another look at the\nnumbers in the hint.\nLet's learn "
+[ 90] "about some of\nthe useful things you can\ndo while you're playing...\nWhenever yo"
+[ 91] "u press START\nduring a game, you'll see\nthis pause menu.\nIf you want"
+[ 92] ' to stop\nworking on a puzzle,\nselect Quit and then\nchoose Yes.\nHowever, if you do'
+[ 93] " this,\nyou will lose all your\nprogress on this puzzle.\nIf you don't want to"
+[ 94] ' lose\nyour progress, select Stop\nand then choose Yes to\nsave your progress and\nret'
+[ 95] 'urn to the title screen.\nWhen you want to resume,\nsimply select your Qui'
+[ 96] 'ck\nSave Data and pick right up\nwhere you left off.\nSelect Control Method to\nswitch between stylus and\nbutton controls.\nSelect Music to change the\nbackground mus'
+[ 97] 'ic.\nThe Overlay function is\nessential for solving the\nmore difficult puzzles.\nThis function is available\nonly in Free Mode puzzles.\nFor more information on\nO'
+[ 98] 'verlays and Try It Out Mode,\nselect About Free Mode.\nThat brings us to the end\nof the Useful Functions\nguide'
+[ 99] '. Good luck!\nThis section will teach you\neverything you need to know\nabout playing Free Mode.\nUnlike Norm'
+[100] "al Mode, Free\nMode doesn't tell you when\nyou've made a mistake.\n"
+[101] "If you succeed in filling in\nall the squares correctly,\nyou'll finish the puzzle.\nFree Mode has no time limit,\nbut the puzzles are much\nmore chall"
+[102] 'enging.\nSome Free Mode puzzles will\nrequire that you use more\nthan just the b'
+[103] "asic logic\ntechniques you learned in\nthe tutorial. This is where\nTry It Out Mode comes in.\nIf you're not sure whether\nyou shoul"
+[104] 'd fill a square\nor place an X in it, use Try It\nOut Mode to mark a square\ntemporarily so you can\nget on with the puzzle'
+[105] ".\nTo begin Try It Out Mode,\nyou'll need to turn on the\nOverlay. This function is\navailable only in Free Mode.\nFirst, pre"
+[106] 'ss START to open\nthe pause menu. At the\nbottom of the menu, you can\nsee the Overlay On'
+[107] ' option.\nSelect Overlay On and then\nchoose Yes to begin\nTry It Out Mode.\nUse Try It Out Mode to\nfill in squares and X marks'
+[108] '\non a temporary grid, so that\nyou can test out your ideas\nfreely without affecting\nyour puzzle.\nTo exit'
+[109] " this mode,\npress START to open the\nmenu and then select\nOverlay Off.\nIf you're happy with the\nway your experiments turned\nout, select Apply Overlay\nto plac"
+[110] "e your changes\ndirectly onto the puzzle.\nIf you aren't happy with\nyour results, you can\nselect Discard Overlay.\nThis will"
+[111] ' leave your\noriginal puzzle unchanged.\nThis kind of experimentation\nis essential if you want to\ntackle some of the more\ndifficult puzzles.\nPut it to good use!\nThi'
+[112] 's section will explain\na little about zooming\non puzzles of 15x15 squares\nor more.\nIf you are using the stylus\nto control t'
+[113] 'he game, puzzles\nof 15x15 squares or more\nwill be displayed on a\nzoomed-in screen.\nTouching the puzzle\ngrid will zoom the scree'
+[114] "n\nin for a closer view. Go\nahead and touch the screen\nnow.\nOnce you're zoomed in, you'll\nsee four icons in the top-\nleft corner "
+[115] "of the screen.\nFirst, note the highlighted\nMove icon. This means you\nare in Move Mode.\nOnce you're in this mode,\nyou "
+[116] 'can slide the puzzle\naround freely by sliding\nyour stylus on the Touch'
+[117] '\nScreen. Try it out!\nIf you cannot see the edges\nof the puzzle wh'
+[118] "en you're\nzoomed, you'll see six sets\nof floating numbers s"
+[119] "howing\nthe hints for the squares\naround the one you're on.\nAs usual, selecting the Pen\nico"
+[120] 'n lets you fill in squares\nand selecting the X icon\nallows you to place X marks\nin squares.\nThe Lens icon lets you zoom\nin and out on the puzzle,\nso '
+[121] 'that you can see the\nwhole grid whenever you\nwant. Give it a try now.\nWith the screen zoomed out,\nyou will be able to see the\nentire puz'
+[122] "zle. However, you\nwon't be able to fill in\nsquares or add Xs.\nIf you're using the buttons\ninstead of the stylus, you\ncan still switch betwe"
+[123] 'en\nzoom modes by pressing the\nX Bu'
+[124] 'tton.\nUse the Zoom function to\nkeep the "big picture" in\nmind at all times.\nFirst, touch the Lens\nicon in the top-left\ncorner of '
+[125] "the screen.\nLet's see how quickly\nyou can solve five puzzles\nin a row.\nLet's see ho"
+[126] 'w quickly\nyou can solve five puzzles\nin a row. Remember the\nrule: No X marks!\nFind the mistakes in the\nco'
+[127] "mpleted puzzles. Erase\nincorrect squares and fill in\nthe correct ones. Keep it up\nuntil you've finished all"
+[128] '\nfive puzzles.\nHints will appear for\n20 seconds at the start.\nThey will then disappear,\nand the game w'
+[129] "ill begin.\nUse your memory to solve\nthe puzzles.\nThe 3 numbers on the upper\nscreen are hints to what's \nhid"
+[130] 'den on the lower screen. \nFind out where they fit in \norder to'
+[131] ' solve t'
+[132] 'he'
+[133] " puzzle.\n\n\nThis mode is not\navailable yet.\nSee how you've been doing\non the Results screen.\nYou can view your high\nscores for ind"
+[134] 'ividual modes\nas well as overall progress.\nRemember the numbers.\nWhen the counter reaches\n0, the hint numbers will\n'
+[135] "disappear.\nAs you've been playing\nPicross for 3 days, a\nnew mode has become\navailable. Try your hand\nat No X M"
+[136] "arks!\nAs you've been playing\nPi"
+[137] 'cross for 7 days, a\nnew mode has become\navailable. Try your hand\nat Error Search!\n'
+[138] "As you've been playing\nPicross for 12 days"
+[139] ", a\nnew mode has become\navailable. Try your hand\nat Memory!\nAs you've been playing\nPicross for 20 days"
+[140] ', a\nnew mode has become\navailable. Try your hand\nat Secret Mode!\nYou can set only one\nrecord a day when\npl'
+[141] 'aying Daily Picross.\nMM/YYYY\n \nMake your own Picross\npuzzles and exchange\nthem wit'
+[142] 'h friends using\nPuzzle Exchange.\nEnjoy solving puzzles\nfrom other people too.\nNintendo Wi-Fi\nConnection lets you\ndownload and play\nClassic '
+[143] "puzzles too.\nSimply delete them when\nyou'r"
+[144] 'e finished.\nThere are no Classic\npuzz'
+[145] 'les at the moment.\nYou can download Classic\npuzzles using Nintendo\nWi-Fi Connection.\nDeleting puzzle.\nAre you sur'
+[146] 'e?\nPlease enter a title for\nyour puzzle. You can\nchange the title later\nif you want.\nSaving puzzle.\nDo not turn the power off.\nSa'
+[147] 've successful.\nIf you want to edit your\npuzzles, go to the\npuzzle-selection screen\nand select Edit.\nSave successful.'
+[148] '\nIf you want to continue\nworking on your puzzle,\nselect the file and\ntouch the Edit icon'
+[149] '.\nPlease enter a title for\nthis puzzle. You can\nchange the title later\nif you want.\nDraw the outline of the\npicture for you'
+[150] 'r puzzle.\nThe puzzle will then be\ncreated automatically.\n(You can add colors to'
+[151] '\nthe picture later.)\nYour puzzle has been\ncreated. Is this OK?\nPlease enter a name for\nyour puzzle.\nChoose a puzzle mode.'
+[152] '\n(Puzzles that require\nyou to use the Try It Out\nfunction can only be\nplayed in Free Mode.'
+[153] ')\nUp to 5 players can\ncompete using DS\nWireles'
+[154] 's Communications.\nDS Download Play allows\nplayers without'
+[155] ' Game\nCards to join in too.\nWhen using DS Wireless\nCommunications, Original\np'
+[156] 'uzzles and downloaded\nClassic puzzles can '
+[157] 'be\nshared among players.\nPlayers without Game\nCards can use\nDS Download Play to\n'
+[158] 'receive single puzzles\nas demos.\nOriginal puzzles sent\nfrom friends '
+[159] "over DS\nWireless Communications\ncan be accessed from the\nOriginal option in My\nPicross.\nPuzzles you've "
+[160] 'created\ncan be sent to friends\nover DS Wireless\nC'
+[161] 'ommunications.\nClassic puzzles sent\nfrom friends over DS\nWireless Communications\ncan b'
+[162] 'e accessed from the\nClass'
+[163] 'ic option in My\nPicross.\nClassi'
+[164] "c puzzles you've\ndownloaded can be sent\nto friends over DS\nWirel"
+[165] 'ess Communications.\nSearching for users\nsendi'
+[166] 'ng Original\npuzzles.\nPlease select a user to\nreceive an'
+[167] ' Original\npuzzle from.\n%s is\nattempting to send you\nan Original puzzle. \nD'
+[168] 'o you want to receive\nit?\nReady to'
+[169] ' receive\nOriginal puzzle from\n%s.\nDownload successful.\nAccess the file through\nthe Original option in\n'
+[170] 'My Picross.\nThe connection has been\nlost. Original puzzle\ncould'
+[171] "n't be received.\nThere isn't enough space\nto receive the Original\npuzzle data. Would you\nlike to delet"
+[172] 'e another\npuzzle?\nSearching for users to\nsend Or'
+[173] 'iginal puzzles\nto.\nFound users ready to\nreceive Original puzzles.\n\n\nUsers currently a'
+[174] 'waiting\npuzzles: %d\nSendi'
+[175] 'ng Original puzzle.\nOriginal pu'
+[176] 'zzle has been\nsent.\nThe connection has been\nlost. Original puzzl'
+[177] "e\ncouldn't be sent.\nSearching for users\nsen"
+[178] 'ding Classic puzzles.\nPlease select a user'
+[179] ' to\nreceive a Classic puzzle\nfrom.\n%s is\nattempting to send you a\nClassic puzzle. Do you\nwant to receive'
+[180] ' it?\nReceiving Classic\npuzzle from\n%s.\nYou have successf'
+[181] 'ully\nreceived a new Classic\npuzzle. Access it from\nthe Classic option in\nMy Picross'
+[182] ".\nThe connection has been\nlost. Classic puzzle\ncouldn't be sent.\nThere isn't enough sp"
+[183] 'ace\nto receive the Clas'
+[184] 'sic\npuzzle data. Would y'
+[185] 'ou\nlike to delete anoth'
+[186] 'er\npuzzle?\nSearch'
+[187] 'ing for users t'
+[188] 'o\nsend Classic puzzles t'
+[189] 'o.\nFound users ready to\nreceive Classic '
+[190] 'puzzles.\n\n\nUsers curre'
+[191] 'ntly awaiting\npuzzles: %d\n\nSen'
+[192] 'ding Classic puzzle.\n\nClassic puzzle has'
+[193] ' been\nsent.\n\nThe con'
+[194] "nection has been\nlost. Classic puzzle\ncouldn't be sent.\nReady to send Original\npuzzle. Is this OK?\nReady to send Classic\npuzzle. Is this OK?\nFor"
+[195] 'm a group and\ninvite members to play\nMulti-Picross. The\nplayer who forms the\ngroup will be the host.\nPlayers joining other\ngroups wil'
+[196] 'l be classed\nas guests.\nAvailable groups are\nshown on the lower\nsc'
+[197] "reen. Choose a group\nyou'd like to join.\nUp to 5 players can "
+[198] 'take\npart in Multi-Picross at\none time.\n\n'
+[199] '\nCurrent members    %d/5\n\n\nEnteri'
+[200] "ng\n%s's\ngroup.\nEntry was unsuccessful."
+[201] '\nGroup has disappeared.\nData bein'
+[202] 'g sent.\nDownloading...\nPuzzle data being sent.\nHost is choosing a game.\nPlease wait...'
+[203] '\nDownloading puzzle...\nThe connection has been\nlost.\nWaiti'
+[204] 'ng for all players\nto get ready...\nThe game h'
+[205] 'as ended.\nWrite a word with up to\n10 letters. E'
+[206] 'ach guest\nsolves one lett'
+[207] 'er at a\ntime and can answer '
+[208] "when\nready. The host decides\nif the answer's correct.\nDra"
+[209] 'w a quick picture.\nThe guests guess what\nthe picture is and send'
+[210] '\ntheir answers. The host\ndecides if the answer is\ncorrect or not.\nThe host competes with\nthe guests '
+[211] 'and plays two\npuzzles in a row.'
+[212] '\nEnd Multi-Picross and\ndisconnect DS Wireless\nCommunications.\nEnter the letters to use\nin your puzzle.\nHer'
+[213] 'e is your puzzle.\nIs this OK?\nDraw a p'
+[214] 'icture to use in\ny'
+[215] "our puzzle.\nHere is your puzzle.\nIs this OK?\n\nOne puzzle will be sent\nas a Demo puzzle. Please\nselect a puzzle you'd\nlike to send.\nThi"
+[216] 's puzzle will be sent\nas a Demo puzzle.   \nIs this OK?\n\nSearching for users to\nsend Demo puzzle to.\nFound users.\n\n\nThere are currently '
+[217] "%d\nuser(s).\n\nDemo puzzle being sent.\n\nDemo puzzle has been\nsent.\n\nConnection has been\nlost. Demo puzzle\ncouldn't be sent.\nUse Ninte"
+[218] 'ndo Wi-Fi\nConnection to compete\nagains'
+[219] 't other players.\nUse Nintendo Wi-Fi\nConnection to share'
+[220] '\npuzzles with other\nplayers or download p'
+[221] 'ast\nPicross puzzles.\nDownload past Picro'
+[222] 'ss\npuzzles.\nConnect using Nintendo\nWFC to upload puz'
+[223] 'zles\nto your own area and\ndownload or share\npuzzles '
+[224] 'with friends.\nAccessing informati'
+[225] 'on.\nPlease wait...\nSaving user data.\nChallenge '
+[226] 'players the\nworld ov'
+[227] 'er in a race to\nfinish two puzzles. Your\nr'
+[228] 'esults will be recorded\nand will affect your\noverall ranking.\nCh'
+[229] "allenge friends who've\nregistered on yo"
+[230] 'ur\nFriend Roster.\nThere will be two puzzles'
+[231] '\nin a row. This mode will\nnot '
+[232] 'affect your ranking.\n'
+[233] 'Searching for opponents.\n(Disco'
+[234] 'nnecting midgame\nme'
+[235] "ans you lose by\ndefault. Also, pause and\nSleep Mode can't be used\nduring games.)\nConnection lost.\nYou lose by d"
+[236] "efault.\nOpponent's connection\nlost. "
+[237] 'Opponent loses\nby'
+[238] ' default.\nSearching for opponents\namong '
+[239] 'friends...\nWaiting for all players\nto get ready...\nThe game has ended\nbecau'
+[240] 'se the connection\nwas lost.\nThe game has'
+[241] ' ended\nbecause the connection\nwas lost.\nW'
+[242] 'aiting for opponents'
+[243] ' to\njoin...\nThe game has e'
+[244] 'nded\nbecause your opponent\nleft.\nThe'
+[245] ' game has ended.\nThere are no names on\nyour Friend R'
+[246] 'oster.\nCannot fi'
+[247] 'nd any friends\nconnected to Nintendo\nWi-Fi Connection.\nConnecting to opponent.\nPlease wait...\nReady to download\nPuzzle Pack.\nIs this OK?\nD'
+[248] 'ownloading Classic\npuzzle...\nDownload successful.\nCancel download.\nAre you sure?\nDownload c'
+[249] 'anceled.\nNot enough space. This \nPack requi'
+[250] 'res more than\n%d free space(s).'
+[251] ' Would\nyou like to de'
+[252] 'lete some\nother puzzles?\nSearch'
+[253] 'ing for Packs to\nto download.\nCannot download.\nSaving d'
+[254] 'ata. Do not turn\nthe power off.\nUp'
+[255] 'load Original\npuzzle to your area.\nYou can store up to ten\npuzzles here.\nDownload a puzzl'
+[256] "e from\na friend's area.\nAbout to upload t"
+[257] 'his\npuzzle. Is this OK?\nUploading puzzle...'
+[258] '\nPuzzle upload\nsuccessful.\nCanc'
+[259] 'el puzzle upload.\nAre'
+[260] ' you sure?\nDeleting puzzle from'
+[261] '\nyour area. Is this'
+[262] " \nreally OK?\nPuzzle deleted.\nFriend's name is on the\nFriend Roster, but could\nnot find friend's area.\nMake sur"
+[263] 'e your friend\nis connected to Nintendo\nWi-Fi Connection.\nDownload a puzzle from'
+[264] "\nfriend's area.\nWhich fr"
+[265] "iend's area\nwould you like "
+[266] 'to\ndownload from?\nAbout to download this'
+[267] '\npuzzle. Is this OK?\nDownloading Original\npuzzl'
+[268] 'e...\nDownload successful.\nCancel do'
+[269] 'wnload.\nAre you s'
+[270] 'ure?\nThere are no friends\nregistered on '
+[271] 'your\nFriend Roster.\nTh'
+[272] 'ere are no puzzles to\ndownload.\nNot enough space. Would\nyou like to delete an\nOriginal puzzle in order\nto download this?\nT'
+[273] 'here are no Original\npuzzles to upload.\nAbout to download this\npuzzle. Is this OK?\nDownloading Original\npuzzle...\nDownload successful.\nCan'
+[274] 'cel download.\nAre you sure?\nDownload canceled.\nNot enough space.\nTh'
+[275] 'is Pack requires more\nthan'
+[276] ' %d free space(s).\nWould you like to delete\nsome other puzzles?\nSubmitting this puzzle.\nIs this OK?\n(You can only submit one\nen'
+[277] 'try per event.)\n'
+[278] 'Submitting your puzzle.\nPuzzle has been\nsubmit'
+[279] 'ted.\nCancel puzzle\nsubmission?'
+[280] '\nAre you sure?\nThere are no Original\npuzzles to be submitted.\nSearching '
+[281] 'for Packs to\ndownload...\nCannot download.\nSaving data. Do not turn\nthe power off.\nThi'
+[282] 's event has ended.\nChange'
+[283] ' Control Method,\nRumble Feature, and\nSound Settings.\nChang'
+[284] "e in-game Nickname\nand Picross/Original\nPattern settings.\nEdit your Friend Roster,\ncheck your friend's\nregistration, and view\nyour own Friend"
+[285] ' Code.\nAutomatically regist'
+[286] 'er\nothers in Multi-'
+[287] 'Picross.\nDS Wireless\nCommu'
+[288] 'nications and\nNintendo Wi-Fi\nConnection '
+[289] 'settings.\nIn-game control\nsettings.\nTurn Rumble F'
+[290] "eature on/off.\nIf you don't have "
+[291] 'a\nRumble Pak inserted at\npower-up, turning this\nfunction on will have no\neffect.\nSound settings.\nPicross and Original\npuzzle P'
+[292] 'attern settings.\nChange your in-game\nNickname.\nCha'
+[293] 'nge Picross Pattern\non each level (default)\nor s'
+[294] 'witch to Plain Mode.\nOriginal puzzle in-game'
+[295] '\nsettings.\nYou can set the Pattern\nfor each individual\nlevel.\nPlease enter a Nickname.\nEnter a Friend Code to add\ns'
+[296] 'omeone to your Friend\nRoster.\nView Friend Roster. You can\nadd a maximum of 64 player'
+[297] 's\nto your Friend Roster. If\nyou exceed 64 players, the\noldest entries will be\ndeleted.\nView your ow'
+[298] 'n\nFriend Code.\nEnter Friend Code.\nFriend Code is\nincorrect.\nThis Friend Code is\nalready reg'
+[299] 'istered.\n      \n      \n\nRegister Friend Code.\nIs this OK?\nFriend Code has been\nregistered.\nYou can register a maximum\nof 64 player'
+[300] 's to your Friend'
+[301] '\nRoster. If you exceed 64\nplayers, the oldest entries\nwill be deleted.\nDeleting\n鮫\nfrom your Friend Roster.\nAre you sure?\nYour Friend Code is:\n\n檬1檬1檬1檬1檬1檬1\n'
+[302] '檬1檬1檬1檬1檬1檬1\nThe'
+[303] "re are no players on\nyour Friend Roster.\nYou don't have a Friend\nCode yet. Connect to\nNintendo Wi-Fi Connection,\nand a Friend"
+[304] ' Code will be\ncr'
+[305] 'eated for you.\nUnable to enter Friend\nCode. You must first\nestablish a connection\nto Nintendo WFC.\nCould not access save data.\nPress the A Button to\nturn the power off, th'
+[306] 'en\nreinsert the '
+[307] 'Game Card.\nError writing data.\nPress the A Button to\nturn the power off, then\nreinsert the Game Card.'
+[308] '\nUnable to conne'
+[309] 'ct to\nNintendo Wi-Fi \nConnection. For help,\ncheck the software\nInstruction Booklet,\nor visit\nwww.nintendowifi.com.\n\n\nErro'
+[310] 'r Code\n%d\nEither'
+[311] ' Nintendo Wi-Fi\nConnection is experiencing\nhigh traffic volumes or\nthe service is down. Please\ntry again later. For help,'
+[312] '\nvisit www.ninte'
+[313] 'ndowifi.com.\n\n\nError Code\n%d\nThis Nintendo Wi-Fi\nConnection ID was re'
+[314] 'moved\nbecause it was inactive\nfor a long time. For help,\nvisit www.nintendowifi.com.\n\n\nError Code\n%d\nNinte'
+[315] 'ndo Wi-Fi Connection\nservice for this '
+[316] 'software\nhas been discontinued. Visit\nwww.nintendowifi.com for a\nlist of current Nintendo\nWi-Fi Connection-compatible\nsoft'
+[317] 'ware.\n\n\nError Code\n%d\nThe access point is busy.\nYou cannot connect. Try\nagain later. For help, visit\nwww.nintendowifi.com.\n\n\nError Code\n'
+[318] '%d\nNo compatible'
+[319] ' access point\nin range. Check your\nconnection settings and try\nagain. For help, visit\nwww.nintendowifi.com.\n\n\nError Code\n%d\nNo compatible acc'
+[320] 'ess point\nin ran'
+[321] 'ge. Check your\nconnection settings and try\nagain. For help, visit\nwww.nintendowifi.com.\n\n\nError Code\n%d\nUnable to connect to the\nNintendo'
+[322] ' Wi-Fi USB\nConnector.\nError Code\n%d'
+[323] '\nConfirm connection\nsettings'
+[324] ' in the Nintendo\nWi-Fi Connection setup.\nFor help, visit\nwww.nintendowifi.com.\nThere is no response.\n\n\nError Code\n%d\nEither the player is no'
+[325] 't'
+[326] '\nconnected to Nintendo\nWi-Fi Connectio'
+[327] "n or you\nhave been removed from\nthe player's Friend Roster.\nCommunication error. You\nh"
+[328] 'ave been disconnected\nfrom Nintendo Wi-Fi\nConnection. Try again later.\nFor help, visit \nwww.nintendowifi.'
+[329] 'com.\n\n\nError Code\n%d\nUnable to connect to\nNintendo Wi-Fi Connection.\nConfirm connection settings\nand access point settings.\nFor help, visit\nwww.nintendowifi.'
+[330] 'c'
+[331] 'om.\n\n\nError Code\n%d\nCommunication error. You\nhave been disconnected\nfrom Nintendo Wi-Fi\nConnection. Please try\n'
+[332] 'a'
+[333] 'gain.\nFor help, visit \nwww.nintendowifi.com'
+[334] '.\nPlease reset the DS and\ntry again.\nCould not acquire the\ndata.\nYour Nintendo Wi-Fi\nConnection User Information\nmay hav'
+[335] 'e been erased.\nCheck your connection\nsettings. For help,\nvisit www.nintendowifi.com.\n\n'
+[336] 'Connect to Nintendo\nWi-Fi Con'
+[337] 'nection?\nNintendo Wi-Fi Connection\ntreats your Nintendo DS\nGame Car'
+[338] "d and Nintendo DS\nas a set.\nSave this Nintendo DS\nsystem's Nintend"
+[339] 'o WFC\nconfiguration to this\nGame Card and co'
+[340] 'nnect to\nNintendo WFC?\nNintendo WFC ID from this\n'
+[341] 'Nintendo DS has been saved\nto this Game Card. '
+[342] 'From\nnow on, please use this\nNintendo DS when attempting\nto'
+[343] ' connect to Nintendo WFC.\n\nUnable to con'
+[344] 'nect to\nNintendo WFC because the\nNintendo'
+[345] ' WFC ID from the\nNintendo DS and Game Card'
+[346] '\ndo not match.\n\nUpdate Nintendo WFC ID\ns'
+[347] 'aved to Gam'
+[348] 'e Card?\nWhen you update your\nNintendo WFC'
+[349] ' ID'
+[350] ', you will\n'
+[351] 'lose all data that was\nused to connect to\nNint'
+[352] 'endo WFC up to this\n'
+[353] 'point.\nYour Friend Roster and\npuzzl'
+[354] 'e data shared through\nyour upload area will'
+[355] '\nalso be lost.\nDo you still want to\nupdate?\nConnecting to Nintendo\nW'
+[356] 'i-Fi Connection...\nPlease wait a moment...\n'
+[357] 'You canno'
+[358] 't access\n'
+[359] 'Nintendo '
+[360] 'Wi-Fi\nCon'
+[361] 'nect'
+[362] 'ion us'
+[363] 'ing this'
+[364] '\nuser '
+[365] 'name.\nPlease change your\nuser name and try again.\nOK to disconnect from\nNintendo Wi-Fi Connection?\nDisconnectin'
+[366] 'g from\nNintendo Wi-Fi Connection.\nYou have been disconnected\nfrom Nintendo Wi-Fi\nConnection.\nTouch the panels within\nthe ti'
+[367] 'me limit!\nCopy this picture within\nthe time limit!\nReverse the colors\nwithin the time limit!\nTouch the panels within\nthe'
+[368] ' time limit!\nPicross DS\nPicross Demo puzzle.\nSending one puz'
+[369] 'zle.\n16\nPicross DS\nPlay three types of Picross!\nUp to 5 players.\nPicross DS\nNintend'
+[370] 'o\nYou can play 4\nPicross DS puzzles.\nSolve'
+[371] " puzzles using\nhints to fill squares.\nChoose a puzzle from\nOriginal in My Picross\nto upload to this area.\nThere aren't any\nOriginal puzzles\nto send.\nSample 1\nSample 2\nSample 3\nSample 4\nCat\nPanda\nPenguin\nKoala\nTutorial has been\nstopped. \nView this again anytime\nby selecting the \nTutorial option in the\nHow to Play menu.\nAbout Free Mode has\nbeen stopped.\nView this again anytime\nby selecting the About\nFree Mode option in the\nHow to Play menu.\nAbout Zooming has been\nstopped.\nView this again anytime\nby selecting the About \nZooming option in the\nHow to Play menu.\nESRB Notice:\nGame Experience\nMay Change During\nOnline Play.\nThanks for downloading!\nWe hope you enjoy playing\nthe trial version of\nPicross DS!\nSaving data...\nDo not turn the power off.\n"

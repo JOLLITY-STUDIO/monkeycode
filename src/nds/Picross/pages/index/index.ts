@@ -6,6 +6,7 @@
 import { PicrossEngine } from "../../src/core/engine";
 import { PicrossRenderer } from "../../src/render/renderer";
 import { PUZZLES } from "../../src/data/puzzles";
+import { PUZZLE_NAMES } from "../../src/data/messages";
 import { puzzleFromData } from "../../src/core/puzzle-loader";
 
 interface BoardNode {
@@ -23,6 +24,7 @@ Page({
     maxMistakes: 5,
     progress: 0,
     solved: false,
+    stars: 0,
     markMode: "cycle" as "cycle" | "cross",
   },
 
@@ -35,8 +37,9 @@ Page({
   puzzleIndex: 0,
   lastCell: null as { x: number; y: number } | null,
 
-  onLoad() {
-    this.puzzleIndex = 0;
+  onLoad(options: any) {
+    const id = options && options.puzzle !== undefined ? parseInt(options.puzzle, 10) : 0;
+    this.puzzleIndex = isNaN(id) ? 0 : id % PUZZLES.length;
     this.lastCell = null;
     this.engine = null;
   },
@@ -69,6 +72,13 @@ Page({
     return puzzleFromData(PUZZLES[idx % PUZZLES.length]);
   },
 
+  /** 拼图名：优先 ROM 提取名（B3），无则回退 Picross N */
+  private puzzleTitle(idx: number): string {
+    const p = PUZZLES[idx % PUZZLES.length];
+    const n = PUZZLE_NAMES.en[p.id];
+    return (n && n.trim()) || p.name || `Picross ${p.id + 1}`;
+  },
+
   startPuzzle(idx: number) {
     if (this.engine) this.engine.destroy();
     const puzzle = this.buildPuzzle(idx);
@@ -76,6 +86,7 @@ Page({
       onStateChange: (s) => this.syncState(s),
       onSolved: (s) => {
         this.syncState(s);
+        this.setData({ stars: this.starsFor(s) });
         wx.vibrateShort && wx.vibrateShort({ type: "medium" });
       },
     });
@@ -83,9 +94,17 @@ Page({
     this.lastCell = null;
     this.engine.start();
     this.setData({
-      puzzleName: puzzle.name,
+      puzzleName: this.puzzleTitle(this.puzzleIndex),
       solved: false,
+      stars: 0,
     });
+  },
+
+  /** 结算星级：0 失误 3 星，1-2 失误 2 星，其余 1 星 */
+  private starsFor(s: any): number {
+    if (s.mistakes <= 0) return 3;
+    if (s.mistakes <= 2) return 2;
+    return 1;
   },
 
   syncState(s: any) {
@@ -161,6 +180,10 @@ Page({
   onNext() {
     this.puzzleIndex = (this.puzzleIndex + 1) % PUZZLES.length;
     this.startPuzzle(this.puzzleIndex);
+  },
+
+  onBack() {
+    wx.navigateBack({ delta: 1 });
   },
 
   onUnload() {

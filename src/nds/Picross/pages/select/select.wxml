@@ -1,0 +1,23 @@
+<!-- E1 拼图选择界面（TODO: 分组渲染 + 点击跳转） -->
+<view class="page">
+  <view class="header">
+    <text class="title">Picross</text>
+    <text class="sub">选择拼图</text>
+  </view>
+  <view class="group" wx:for="{{groups}}" wx:key="label">
+    <view class="group-head">{{item.label}}</view>
+    <view class="grid">
+      <view
+        class="puzzle-card"
+        wx:for="{{item.items}}"
+        wx:for-item="p"
+        wx:key="id"
+        data-id="{{p.id}}"
+        bindtap="onPick"
+      >
+        <text class="p-name">{{p.name}}</text>
+        <text class="p-size">{{p.w}}×{{p.h}}</text>
+      </view>
+    </view>
+  </view>
+</view>

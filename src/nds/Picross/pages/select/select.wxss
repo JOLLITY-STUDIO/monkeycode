@@ -1,0 +1,59 @@
+/* E1 拼图选择界面样式（TODO: 完整配色） */
+.page {
+  min-height: 100vh;
+  background: #0f0f1a;
+  padding: 24rpx;
+  box-sizing: border-box;
+}
+
+.header {
+  margin-bottom: 24rpx;
+}
+
+.title {
+  color: #ffffff;
+  font-size: 44rpx;
+  font-weight: 700;
+}
+
+.sub {
+  color: #9aa3b8;
+  font-size: 26rpx;
+  margin-top: 4rpx;
+}
+
+.group-head {
+  color: #3b6fd4;
+  font-size: 28rpx;
+  font-weight: 600;
+  margin: 24rpx 0 12rpx;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.puzzle-card {
+  width: calc((100% - 32rpx) / 3);
+  background: #1c1c33;
+  border-radius: 16rpx;
+  padding: 20rpx 12rpx;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.p-name {
+  color: #e8ecf2;
+  font-size: 24rpx;
+  text-align: center;
+}
+
+.p-size {
+  color: #9aa3b8;
+  font-size: 20rpx;
+  margin-top: 6rpx;
+}
