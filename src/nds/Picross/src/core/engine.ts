@@ -23,6 +23,9 @@ export class PicrossEngine {
   private totalFilled = 0;
   private timer: any = null;
   private cb: EngineCallbacks;
+  // F2: 状态缓存，仅 dirty 时重建，减少对象分配
+  private stateCache: GameState | null = null;
+  private dirty = true;
 
   constructor(puzzle: Puzzle, cb: EngineCallbacks) {
     this.puzzle = puzzle;
@@ -36,9 +39,11 @@ export class PicrossEngine {
 
   start(): void {
     this.stopTimer();
+    this.dirty = true;
     this.timer = setInterval(() => {
       if (!this.solved) {
         this.elapsed++;
+        this.dirty = true;
         this.emit();
       }
     }, 1000);
@@ -61,7 +66,8 @@ export class PicrossEngine {
   }
 
   getState(): GameState {
-    return {
+    if (this.stateCache && !this.dirty) return this.stateCache;
+    this.stateCache = {
       puzzle: this.puzzle,
       marks: this.marks,
       rowHints: this.rowHints,
@@ -73,6 +79,8 @@ export class PicrossEngine {
       filledCount: this.filledCount,
       totalFilled: this.totalFilled,
     };
+    this.dirty = false;
+    return this.stateCache;
   }
 
   /**
@@ -105,6 +113,7 @@ export class PicrossEngine {
 
     this.marks[idx] = next;
     this.refreshHints();
+    this.dirty = true;
     this.checkSolved();
     this.emit();
   }
@@ -115,6 +124,7 @@ export class PicrossEngine {
     if (this.marks[idx] === "filled") this.filledCount--;
     this.marks[idx] = "empty";
     this.refreshHints();
+    this.dirty = true;
     this.emit();
   }
 

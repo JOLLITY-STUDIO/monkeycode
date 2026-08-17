@@ -1,14 +1,28 @@
-<!-- E1 拼图选择界面（TODO: 分组渲染 + 点击跳转） -->
+<!-- E1 拼图选择界面 + E4 语言切换 -->
 <view class="page">
   <view class="header">
+    <view class="lang-row">
+      <text
+        class="lang-btn {{index === langIdx ? 'active' : ''}}"
+        wx:for="{{langLabels}}"
+        wx:key="*this"
+        wx:for-index="index"
+        data-idx="{{index}}"
+        bindtap="onSwitchLang"
+      >{{item}}</text>
+    </view>
     <text class="title">Picross</text>
-    <text class="sub">选择拼图</text>
+    <text class="sub">Select Puzzle</text>
+    <view class="stats-row">
+      <text class="stat-chip">★ {{clearedCount}}/{{totalCount}}</text>
+      <text class="stat-bar"><view class="stat-fill" style="width: {{totalCount ? (clearedCount / totalCount * 100) : 0}}%;"></view></text>
+    </view>
   </view>
   <view class="group" wx:for="{{groups}}" wx:key="label">
     <view class="group-head">{{item.label}}</view>
     <view class="grid">
       <view
-        class="puzzle-card"
+        class="puzzle-card {{p.stars > 0 ? 'cleared' : ''}}"
         wx:for="{{item.items}}"
         wx:for-item="p"
         wx:key="id"
@@ -16,7 +30,12 @@
         bindtap="onPick"
       >
         <text class="p-name">{{p.name}}</text>
-        <text class="p-size">{{p.w}}×{{p.h}}</text>
+        <text class="p-size" wx:if="{{p.stars === 0}}">{{p.w}}×{{p.h}}</text>
+        <text class="p-stars" wx:else>
+          <text class="star {{p.stars >= 1 ? 'on' : ''}}">★</text>
+          <text class="star {{p.stars >= 2 ? 'on' : ''}}">★</text>
+          <text class="star {{p.stars >= 3 ? 'on' : ''}}">★</text>
+        </text>
       </view>
     </view>
   </view>

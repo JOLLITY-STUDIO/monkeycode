@@ -37,7 +37,7 @@
  */
 
 import { DataStore } from '../data/DataStore';
-import PRG_BANK_20 from "../../../../rom-data/prg-bank-20";
+import PRG_BANK_20 from "../data/prg-bank-20";
 
 // ═══════════════════════════════════════════════════════════════
 // Bank20Service

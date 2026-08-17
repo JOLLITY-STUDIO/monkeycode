@@ -31,7 +31,7 @@
  *   - 场地 tile 数据区 (part02-05: 0x03E4/0x07CC 起) 与 header 的引用关系
  */
 
-import PRG_BANK_07 from '../../../rom-data/prg-bank-07';
+import PRG_BANK_07 from './prg-bank-07';
 
 /** bank07 CPU 窗口基址 ($8000-$9FFF) */
 export const B7_CPU_BASE = 0x8000;

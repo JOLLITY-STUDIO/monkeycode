@@ -6,8 +6,9 @@
 import { PicrossEngine } from "../../src/core/engine";
 import { PicrossRenderer } from "../../src/render/renderer";
 import { PUZZLES } from "../../src/data/puzzles";
-import { PUZZLE_NAMES } from "../../src/data/messages";
 import { puzzleFromData } from "../../src/core/puzzle-loader";
+import { recordPuzzle } from "../../src/core/save";
+import { getLang, Lang, uiStrings, puzzleName } from "../../src/i18n";
 
 interface BoardNode {
   width: number;
@@ -26,7 +27,13 @@ Page({
     solved: false,
     stars: 0,
     markMode: "cycle" as "cycle" | "cross",
+    flashError: false,
+    t: {} as Record<string, string>,
   },
+
+  // F1: 上次失误数（用于红闪反馈）
+  lastMistakes: 0,
+  flashTimer: null as any,
 
   // ---- 实例字段（挂载到页面对象，避免 setData 开销）----
   engine: null as PicrossEngine | null,
@@ -35,11 +42,14 @@ Page({
   rect: null as any,
   dpr: 2,
   puzzleIndex: 0,
+  curPuzzleId: 0,
+  lang: "zh" as Lang,
   lastCell: null as { x: number; y: number } | null,
 
   onLoad(options: any) {
     const id = options && options.puzzle !== undefined ? parseInt(options.puzzle, 10) : 0;
     this.puzzleIndex = isNaN(id) ? 0 : id % PUZZLES.length;
+    this.lang = getLang();
     this.lastCell = null;
     this.engine = null;
   },
@@ -72,21 +82,28 @@ Page({
     return puzzleFromData(PUZZLES[idx % PUZZLES.length]);
   },
 
-  /** 拼图名：优先 ROM 提取名（B3），无则回退 Picross N */
+  /** 拼图名：按语言取 ROM 提取名（B3），无则回退 Picross N */
   private puzzleTitle(idx: number): string {
     const p = PUZZLES[idx % PUZZLES.length];
-    const n = PUZZLE_NAMES.en[p.id];
-    return (n && n.trim()) || p.name || `Picross ${p.id + 1}`;
+    return puzzleName(this.lang, p.id);
   },
 
   startPuzzle(idx: number) {
     if (this.engine) this.engine.destroy();
     const puzzle = this.buildPuzzle(idx);
+    this.lastMistakes = 0;
+    if (this.flashTimer) {
+      clearTimeout(this.flashTimer);
+      this.flashTimer = null;
+    }
+    this.curPuzzleId = puzzle.id;
     this.engine = new PicrossEngine(puzzle, {
       onStateChange: (s) => this.syncState(s),
       onSolved: (s) => {
+        const stars = this.starsFor(s);
         this.syncState(s);
-        this.setData({ stars: this.starsFor(s) });
+        this.setData({ stars });
+        recordPuzzle(puzzle.id, stars, s.elapsedSec);
         wx.vibrateShort && wx.vibrateShort({ type: "medium" });
       },
     });
@@ -97,6 +114,7 @@ Page({
       puzzleName: this.puzzleTitle(this.puzzleIndex),
       solved: false,
       stars: 0,
+      t: uiStrings(this.lang),
     });
   },
 
@@ -110,12 +128,19 @@ Page({
   syncState(s: any) {
     const mm = s.elapsedSec % 60;
     const tt = Math.floor(s.elapsedSec / 60);
+    const flashError = s.mistakes > this.lastMistakes;
+    this.lastMistakes = s.mistakes;
+    if (flashError) {
+      if (this.flashTimer) clearTimeout(this.flashTimer);
+      this.flashTimer = setTimeout(() => this.setData({ flashError: false }), 500);
+    }
     this.setData({
       timeText: `${tt}:${mm < 10 ? "0" : ""}${mm}`,
       mistakes: s.mistakes,
       maxMistakes: s.maxMistakes,
       progress: Math.min(100, Math.round((s.filledCount / s.totalFilled) * 100)),
       solved: s.solved,
+      flashError: flashError || this.data.flashError,
     });
   },
 
@@ -183,7 +208,12 @@ Page({
   },
 
   onBack() {
-    wx.navigateBack({ delta: 1 });
+    const pages = getCurrentPages();
+    if (pages.length > 1) {
+      wx.navigateBack({ delta: 1 });
+    } else {
+      wx.reLaunch({ url: "/pages/select/select" });
+    }
   },
 
   onUnload() {

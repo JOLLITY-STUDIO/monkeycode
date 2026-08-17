@@ -59,8 +59,8 @@ import {
   readB11Block,
   readB11PatternAttr,
 } from '../data/bank11-data';
-import PRG_BANK_12 from '../../../../rom-data/prg-bank-12';
-import PRG_BANK_13 from '../../../../rom-data/prg-bank-13';
+import PRG_BANK_12 from '../data/prg-bank-12';
+import PRG_BANK_13 from '../data/prg-bank-13';
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)

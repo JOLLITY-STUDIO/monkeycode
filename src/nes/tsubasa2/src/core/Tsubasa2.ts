@@ -34,27 +34,27 @@ import { BUTTON, NES_WIDTH, NES_HEIGHT } from './types';
 import type { Tsubasa2Config, DebugInfo, GameState } from './types';
 import { GameState as GS } from './types';
 
-// CHR Bank 数据 (直接 import，无需 MMC3)
-import _chr00 from '../../../rom-data/chr-bank-00';
-import _chr01 from '../../../rom-data/chr-bank-01';
-import _chr02 from '../../../rom-data/chr-bank-02';
-import _chr03 from '../../../rom-data/chr-bank-03';
-import _chr04 from '../../../rom-data/chr-bank-04';
-import _chr05 from '../../../rom-data/chr-bank-05';
-import _chr06 from '../../../rom-data/chr-bank-06';
-import _chr07 from '../../../rom-data/chr-bank-07';
-import _chr08 from '../../../rom-data/chr-bank-08';
-import _chr09 from '../../../rom-data/chr-bank-09';
-import _chr10 from '../../../rom-data/chr-bank-10';
-import _chr11 from '../../../rom-data/chr-bank-11';
-import _chr12 from '../../../rom-data/chr-bank-12';
-import _chr13 from '../../../rom-data/chr-bank-13';
-import _chr14 from '../../../rom-data/chr-bank-14';
-import _chr15 from '../../../rom-data/chr-bank-15';
+// CHR Bank 数据 (直接 import data 本地副本，无需 MMC3)
+import _chr00 from '../game/data/ppu/tile/chr/chr-bank-00';
+import _chr01 from '../game/data/ppu/tile/chr/chr-bank-01';
+import _chr02 from '../game/data/ppu/tile/chr/chr-bank-02';
+import _chr03 from '../game/data/ppu/tile/chr/chr-bank-03';
+import _chr04 from '../game/data/ppu/tile/chr/chr-bank-04';
+import _chr05 from '../game/data/ppu/tile/chr/chr-bank-05';
+import _chr06 from '../game/data/ppu/tile/chr/chr-bank-06';
+import _chr07 from '../game/data/ppu/tile/chr/chr-bank-07';
+import _chr08 from '../game/data/ppu/tile/chr/chr-bank-08';
+import _chr09 from '../game/data/ppu/tile/chr/chr-bank-09';
+import _chr10 from '../game/data/ppu/tile/chr/chr-bank-10';
+import _chr11 from '../game/data/ppu/tile/chr/chr-bank-11';
+import _chr12 from '../game/data/ppu/tile/chr/chr-bank-12';
+import _chr13 from '../game/data/ppu/tile/chr/chr-bank-13';
+import _chr14 from '../game/data/ppu/tile/chr/chr-bank-14';
+import _chr15 from '../game/data/ppu/tile/chr/chr-bank-15';
 
-// PRG Bank 15 (音频数据) + Bank 12 (SE 音序数据)
-import _prg15 from '../../../rom-data/prg-bank-15';
-import _prg12 from '../../../rom-data/prg-bank-12';
+// PRG Bank 15 (音频数据) + Bank 12 (SE 音序数据) — data 本地副本
+import _prg15 from '../game/data/prg-bank-15';
+import _prg12 from '../game/data/prg-bank-12';
 
 export class Tsubasa2 {
   /** Canvas 2d 上下文 */
