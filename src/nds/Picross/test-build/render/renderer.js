@@ -1,3 +1,16 @@
+/** 原版 Picross DS 主题色 */
+export const NDS_THEME = {
+    bg: "#ffffff", // 网格白底
+    hintBg: "#fff6c8", // 提示区浅黄
+    grid: "#c8c8c8", // 细网格线
+    gridStrong: "#333333", // 5 格粗线
+    fill: "#111111", // 填充黑块
+    cross: "#e60000", // 叉红色
+    hint: "#111111", // 提示数字黑
+    hintDone: "#e60000", // 满足变红
+    label: "#ffd800", // 顶部标签条黄
+    labelText: "#111111", // 标签条黑字
+};
 export class PicrossRenderer {
     constructor(canvas, opts = {}) {
         // 布局
@@ -15,20 +28,22 @@ export class PicrossRenderer {
         this.canvas = canvas;
         this.ctx = canvas.getContext("2d");
         this.opts = {
-            fillColor: "#3b6fd4",
-            bgColor: "#e8ecf2",
-            hintColor: "#1a1a2e",
+            fillColor: NDS_THEME.fill,
+            bgColor: NDS_THEME.bg,
+            hintColor: NDS_THEME.hint,
+            showLabels: false,
+            maxCell: Infinity,
             ...opts,
         };
     }
     /** 根据拼图尺寸重新计算布局 */
-    layout(width, height, maxCell = 34) {
+    layout(width, height) {
         const cw = this.canvas.width;
         const ch = this.canvas.height;
-        // 预留提示区（最多 ~8 位数字）
-        this.hintH = Math.min(72, Math.floor(ch * 0.22));
-        this.hintW = Math.min(72, Math.floor(cw * 0.22));
-        this.cell = Math.floor(Math.min((cw - this.hintW) / width, (ch - this.hintH) / height, maxCell));
+        // 提示区：占画布 16%，无硬上限，让网格尽可能填满画布
+        this.hintH = Math.floor(ch * 0.16);
+        this.hintW = Math.floor(cw * 0.16);
+        this.cell = Math.floor(Math.min((cw - this.hintW) / width, (ch - this.hintH) / height, this.opts.maxCell));
         this.gridX = Math.floor((cw - this.hintW - this.cell * width) / 2) + this.hintW;
         this.gridY = Math.floor((ch - this.hintH - this.cell * height) / 2) + this.hintH;
     }
@@ -64,17 +79,18 @@ export class PicrossRenderer {
             }
             this.lastMarks = state.marks.slice();
         }
-        // 顶部标签/进度条（时间每帧变化）
-        this.drawLabels(state);
+        // 顶部标签/进度条（仅在独立画布模式下绘制）
+        if (this.opts.showLabels)
+            this.drawLabels(state);
     }
     /** 全量重绘（布局变化/首帧） */
     drawFull(state) {
         const { width, height } = state.puzzle;
         const ctx = this.ctx;
-        ctx.fillStyle = "#0f0f1a";
+        ctx.fillStyle = NDS_THEME.bg;
         ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-        // 提示区背景
-        ctx.fillStyle = "#1c1c33";
+        // 提示区背景（浅黄）
+        ctx.fillStyle = NDS_THEME.hintBg;
         ctx.fillRect(0, 0, this.canvas.width, this.hintH);
         ctx.fillRect(0, 0, this.hintW, this.canvas.height);
         // 网格
@@ -83,10 +99,11 @@ export class PicrossRenderer {
                 this.drawCell(x, y, state.marks[y * width + x]);
             }
         }
-        // 网格线
-        ctx.strokeStyle = "#4a4a6a";
-        ctx.lineWidth = 1;
+        // 网格线：5 格一组粗线，其余细线（原版分组）
         for (let x = 0; x <= width; x++) {
+            const strong = x % 5 === 0;
+            ctx.strokeStyle = strong ? NDS_THEME.gridStrong : NDS_THEME.grid;
+            ctx.lineWidth = strong ? 2 : 1;
             const px = this.gridX + x * this.cell;
             ctx.beginPath();
             ctx.moveTo(px, this.gridY);
@@ -94,6 +111,9 @@ export class PicrossRenderer {
             ctx.stroke();
         }
         for (let y = 0; y <= height; y++) {
+            const strong = y % 5 === 0;
+            ctx.strokeStyle = strong ? NDS_THEME.gridStrong : NDS_THEME.grid;
+            ctx.lineWidth = strong ? 2 : 1;
             const py = this.gridY + y * this.cell;
             ctx.beginPath();
             ctx.moveTo(this.gridX, py);
@@ -109,8 +129,9 @@ export class PicrossRenderer {
             const hint = state.colHints[x];
             this.drawColHint(hint.nums, x, hint.satisfied);
         }
-        // 顶部/左侧标签
-        this.drawLabels(state);
+        // 顶部/左侧标签（独立画布模式）
+        if (this.opts.showLabels)
+            this.drawLabels(state);
     }
     /** 绘制单个格子（背景 + 填充 + 叉） */
     drawCell(x, y, mark) {
@@ -125,14 +146,14 @@ export class PicrossRenderer {
     /** 重绘行提示（先擦除旧数字） */
     redrawRowHint(nums, row, satisfied) {
         const ctx = this.ctx;
-        ctx.fillStyle = "#1c1c33";
+        ctx.fillStyle = NDS_THEME.hintBg;
         ctx.fillRect(0, this.gridY + row * this.cell, this.hintW, this.cell);
         this.drawRowHint(nums, row, satisfied);
     }
     /** 重绘列提示（先擦除旧数字） */
     redrawColHint(nums, col, satisfied) {
         const ctx = this.ctx;
-        ctx.fillStyle = "#1c1c33";
+        ctx.fillStyle = NDS_THEME.hintBg;
         ctx.fillRect(this.gridX + col * this.cell, 0, this.cell, this.hintH);
         this.drawColHint(nums, col, satisfied);
     }
@@ -145,7 +166,7 @@ export class PicrossRenderer {
         ctx.textBaseline = "middle";
         for (let i = 0; i < n; i++) {
             const cx = this.hintW - (n - i) * (this.hintW / (n + 0.5)) + this.hintW * 0.08;
-            ctx.fillStyle = satisfied ? "#4caf50" : "#ffffff";
+            ctx.fillStyle = satisfied ? NDS_THEME.hintDone : NDS_THEME.hint;
             ctx.fillText(String(nums[i]), cx, cy);
         }
     }
@@ -158,14 +179,14 @@ export class PicrossRenderer {
         ctx.textBaseline = "middle";
         for (let i = 0; i < n; i++) {
             const cy = this.hintH - (n - i) * (this.hintH / (n + 0.5)) + this.hintH * 0.08;
-            ctx.fillStyle = satisfied ? "#4caf50" : "#ffffff";
+            ctx.fillStyle = satisfied ? NDS_THEME.hintDone : NDS_THEME.hint;
             ctx.fillText(String(nums[i]), cx, cy);
         }
     }
     drawCross(px, py) {
         const ctx = this.ctx;
         const m = this.cell * 0.25;
-        ctx.strokeStyle = "#d23b3b";
+        ctx.strokeStyle = NDS_THEME.cross;
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(px + m, py + m);
@@ -174,19 +195,32 @@ export class PicrossRenderer {
         ctx.lineTo(px + m, py + this.cell - m);
         ctx.stroke();
     }
+    /** 顶部黄色标签条（拼图名/时间/失误）+ 底部进度条，还原原版布局 */
     drawLabels(state) {
         const ctx = this.ctx;
-        ctx.font = "12px sans-serif";
-        ctx.fillStyle = "#ffffff";
-        ctx.textAlign = "center";
-        ctx.fillText(`${state.puzzle.name || "Puzzle"}  ${state.elapsedSec}s  ✕${state.mistakes}/${state.maxMistakes}`, this.canvas.width / 2, 14);
-        // 进度条
+        const cw = this.canvas.width;
+        // 黄色标签条
+        ctx.fillStyle = NDS_THEME.label;
+        ctx.fillRect(0, 0, cw, 26);
+        ctx.fillStyle = NDS_THEME.labelText;
+        ctx.font = "bold 13px sans-serif";
+        ctx.textAlign = "left";
+        ctx.textBaseline = "middle";
+        ctx.fillText(state.puzzle.name || "Puzzle", 8, 13);
+        ctx.textAlign = "right";
+        ctx.fillText(`${state.elapsedSec}s  ✕${state.mistakes}/${state.maxMistakes}`, cw - 8, 13);
+        // 进度条（黑底黄条）
         const pct = state.totalFilled > 0 ? state.filledCount / state.totalFilled : 0;
-        const bw = this.canvas.width * 0.5;
-        ctx.fillStyle = "#33334d";
-        ctx.fillRect(this.canvas.width / 2 - bw / 2, 22, bw, 6);
-        ctx.fillStyle = state.solved ? "#4caf50" : "#3b6fd4";
-        ctx.fillRect(this.canvas.width / 2 - bw / 2, 22, bw * pct, 6);
+        const bw = cw * 0.5;
+        const bx = cw / 2 - bw / 2;
+        const by = 30;
+        ctx.fillStyle = "#d0d0d0";
+        ctx.fillRect(bx, by, bw, 6);
+        ctx.fillStyle = NDS_THEME.label;
+        ctx.fillRect(bx, by, bw * pct, 6);
+        ctx.strokeStyle = "#999999";
+        ctx.lineWidth = 1;
+        ctx.strokeRect(bx, by, bw, 6);
     }
     /** 触摸坐标 → 网格单元 */
     hitTest(x, y, state) {
