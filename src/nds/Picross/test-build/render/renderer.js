@@ -36,14 +36,24 @@ export class PicrossRenderer {
             ...opts,
         };
     }
-    /** 根据拼图尺寸重新计算布局 */
-    layout(width, height) {
+    /** 根据拼图尺寸与提示数量重新计算布局，提示数字与网格严格一格一格格对齐 */
+    layout(state) {
+        const { width, height } = state.puzzle;
         const cw = this.canvas.width;
         const ch = this.canvas.height;
-        // 提示区：占画布 16%，无硬上限，让网格尽可能填满画布
-        this.hintH = Math.floor(ch * 0.16);
-        this.hintW = Math.floor(cw * 0.16);
-        this.cell = Math.floor(Math.min((cw - this.hintW) / width, (ch - this.hintH) / height, this.opts.maxCell));
+        const maxRow = Math.max(1, ...state.rowHints.map((h) => h.nums.length));
+        const maxCol = Math.max(1, ...state.colHints.map((h) => h.nums.length));
+        // 迭代求解 cell：提示区宽度 = maxRow*cell，高度 = maxCol*cell
+        let cell = Math.min(cw / (width + maxRow), ch / (height + maxCol));
+        for (let i = 0; i < 6; i++) {
+            const next = Math.min((cw - maxRow * cell) / width, (ch - maxCol * cell) / height, this.opts.maxCell);
+            if (Math.abs(next - cell) < 0.5)
+                break;
+            cell = next;
+        }
+        this.cell = Math.max(4, Math.floor(cell));
+        this.hintW = maxRow * this.cell;
+        this.hintH = maxCol * this.cell;
         this.gridX = Math.floor((cw - this.hintW - this.cell * width) / 2) + this.hintW;
         this.gridY = Math.floor((ch - this.hintH - this.cell * height) / 2) + this.hintH;
     }
@@ -54,7 +64,7 @@ export class PicrossRenderer {
         // 布局变化 → 全量重绘
         if (this.lastCW !== cw || this.lastCH !== ch ||
             this.lastW !== width || this.lastH !== height) {
-            this.layout(width, height);
+            this.layout(state);
             this.drawFull(state);
             this.lastW = width;
             this.lastH = height;
@@ -159,27 +169,29 @@ export class PicrossRenderer {
     }
     drawRowHint(nums, row, satisfied) {
         const ctx = this.ctx;
-        const n = nums.length;
         const cy = this.gridY + row * this.cell + this.cell / 2;
-        ctx.font = `bold ${Math.max(10, this.cell * 0.4)}px sans-serif`;
+        ctx.font = `bold ${Math.max(8, this.cell * 0.55)}px sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        for (let i = 0; i < n; i++) {
-            const cx = this.hintW - (n - i) * (this.hintW / (n + 0.5)) + this.hintW * 0.08;
-            ctx.fillStyle = satisfied ? NDS_THEME.hintDone : NDS_THEME.hint;
+        ctx.fillStyle = satisfied ? NDS_THEME.hintDone : NDS_THEME.hint;
+        // 从右往左一格一个：nums[0] 在最右侧，靠近网格
+        for (let i = 0; i < nums.length; i++) {
+            const slot = nums.length - 1 - i;
+            const cx = this.hintW - slot * this.cell - this.cell / 2;
             ctx.fillText(String(nums[i]), cx, cy);
         }
     }
     drawColHint(nums, col, satisfied) {
         const ctx = this.ctx;
-        const n = nums.length;
         const cx = this.gridX + col * this.cell + this.cell / 2;
-        ctx.font = `bold ${Math.max(10, this.cell * 0.4)}px sans-serif`;
+        ctx.font = `bold ${Math.max(8, this.cell * 0.55)}px sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        for (let i = 0; i < n; i++) {
-            const cy = this.hintH - (n - i) * (this.hintH / (n + 0.5)) + this.hintH * 0.08;
-            ctx.fillStyle = satisfied ? NDS_THEME.hintDone : NDS_THEME.hint;
+        ctx.fillStyle = satisfied ? NDS_THEME.hintDone : NDS_THEME.hint;
+        // 从下往上一格一个：nums[0] 在最下方，靠近网格
+        for (let i = 0; i < nums.length; i++) {
+            const slot = nums.length - 1 - i;
+            const cy = this.hintH - slot * this.cell - this.cell / 2;
             ctx.fillText(String(nums[i]), cx, cy);
         }
     }
