@@ -29,13 +29,15 @@ export interface RendererOptions {
 /** 原版 Picross DS 主题色 */
 export const NDS_THEME = {
   bg: "#ffffff",          // 网格白底
-  hintBg: "#fff6c8",      // 提示区浅黄
+  hintBg: "#fff6c8",      // 提示区浅黄底色
+  hintBgDark: "#ffee90",  // 提示区渐变深色（5 格一组）
   grid: "#c8c8c8",        // 细网格线
   gridStrong: "#333333",  // 5 格粗线
   fill: "#111111",        // 填充黑块
   cross: "#e60000",       // 叉红色
   hint: "#111111",        // 提示数字黑
   hintDone: "#e60000",    // 满足变红
+  hintFade: "#b0b0b0",    // 满足后变淡灰（原版数字会变淡）
   label: "#ffd800",       // 顶部标签条黄
   labelText: "#111111",   // 标签条黑字
 } as const;
@@ -80,22 +82,17 @@ export class PicrossRenderer {
     const maxRow = Math.max(1, ...state.rowHints.map((h) => h.nums.length));
     const maxCol = Math.max(1, ...state.colHints.map((h) => h.nums.length));
 
-    // 迭代求解 cell：提示区宽度 = maxRow*cell，高度 = maxCol*cell
-    let cell = Math.min(cw / (width + maxRow), ch / (height + maxCol));
-    for (let i = 0; i < 6; i++) {
-      const next = Math.min(
-        (cw - maxRow * cell) / width,
-        (ch - maxCol * cell) / height,
-        this.opts.maxCell
-      );
-      if (Math.abs(next - cell) < 0.5) break;
-      cell = next;
-    }
+    // cell 占满整个画布：网格 + 提示区刚好填满，无额外居中留白
+    const cell = Math.min(
+      cw / (width + maxRow),
+      ch / (height + maxCol),
+      this.opts.maxCell
+    );
     this.cell = Math.max(4, Math.floor(cell));
     this.hintW = maxRow * this.cell;
     this.hintH = maxCol * this.cell;
-    this.gridX = Math.floor((cw - this.hintW - this.cell * width) / 2) + this.hintW;
-    this.gridY = Math.floor((ch - this.hintH - this.cell * height) / 2) + this.hintH;
+    this.gridX = this.hintW;
+    this.gridY = this.hintH;
   }
 
   draw(state: GameState): void {
@@ -143,22 +140,21 @@ export class PicrossRenderer {
     const { width, height } = state.puzzle;
     const ctx = this.ctx;
 
+    // 1) 背景
     ctx.fillStyle = NDS_THEME.bg;
     ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-    // 提示区背景（浅黄）
-    ctx.fillStyle = NDS_THEME.hintBg;
-    ctx.fillRect(0, 0, this.canvas.width, this.hintH);
-    ctx.fillRect(0, 0, this.hintW, this.canvas.height);
+    // 2) 提示区背景（渐变条 + 每个数字一个 cell）
+    this.drawHintBackground(state);
 
-    // 网格
+    // 3) 网格
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         this.drawCell(x, y, state.marks[y * width + x]);
       }
     }
 
-    // 网格线：5 格一组粗线，其余细线（原版分组）
+    // 4) 网格线：5 格一组粗线，其余细线（原版分组）
     for (let x = 0; x <= width; x++) {
       const strong = x % 5 === 0;
       ctx.strokeStyle = strong ? NDS_THEME.gridStrong : NDS_THEME.grid;
@@ -180,7 +176,7 @@ export class PicrossRenderer {
       ctx.stroke();
     }
 
-    // 行列提示
+    // 5) 行列提示数字
     for (let y = 0; y < height; y++) {
       const hint = state.rowHints[y];
       this.drawRowHint(hint.nums, y, hint.satisfied);
@@ -190,8 +186,58 @@ export class PicrossRenderer {
       this.drawColHint(hint.nums, x, hint.satisfied);
     }
 
-    // 顶部/左侧标签（独立画布模式）
+    // 6) 顶部/左侧标签（独立画布模式）
     if (this.opts.showLabels) this.drawLabels(state);
+  }
+
+  /** 绘制提示区背景：渐变条 + 每个数字所在 cell 的细边框 */
+  private drawHintBackground(state: GameState): void {
+    const ctx = this.ctx;
+    const { width, height } = state.puzzle;
+    const maxRow = this.hintW / this.cell;
+    const maxCol = this.hintH / this.cell;
+
+    // 列提示区（顶部）：每列一个竖向渐变条
+    for (let x = 0; x < width; x++) {
+      const gx = this.gridX + x * this.cell;
+      const strong = x % 5 === 0;
+      const grad = ctx.createLinearGradient(gx, 0, gx + this.cell, 0);
+      grad.addColorStop(0, strong ? NDS_THEME.hintBgDark : NDS_THEME.hintBg);
+      grad.addColorStop(1, NDS_THEME.bg);
+      ctx.fillStyle = grad;
+      ctx.fillRect(gx, 0, this.cell, this.hintH);
+    }
+
+    // 行提示区（左侧）：每行一个横向渐变条
+    for (let y = 0; y < height; y++) {
+      const gy = this.gridY + y * this.cell;
+      const strong = y % 5 === 0;
+      const grad = ctx.createLinearGradient(0, gy, 0, gy + this.cell);
+      grad.addColorStop(0, strong ? NDS_THEME.hintBgDark : NDS_THEME.hintBg);
+      grad.addColorStop(1, NDS_THEME.bg);
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, gy, this.hintW, this.cell);
+    }
+
+    // 提示区每个数字 cell 的细边框（让"一格一格"感更明显）
+    ctx.strokeStyle = NDS_THEME.grid;
+    ctx.lineWidth = 1;
+    // 列提示区横线
+    for (let i = 0; i <= maxCol; i++) {
+      const py = i * this.cell;
+      ctx.beginPath();
+      ctx.moveTo(this.gridX, py);
+      ctx.lineTo(this.gridX + width * this.cell, py);
+      ctx.stroke();
+    }
+    // 行提示区竖线
+    for (let i = 0; i <= maxRow; i++) {
+      const px = i * this.cell;
+      ctx.beginPath();
+      ctx.moveTo(px, this.gridY);
+      ctx.lineTo(px, this.gridY + height * this.cell);
+      ctx.stroke();
+    }
   }
 
   /** 绘制单个格子（背景 + 填充 + 叉） */
@@ -204,50 +250,84 @@ export class PicrossRenderer {
     if (mark === "crossed") this.drawCross(px, py);
   }
 
-  /** 重绘行提示（先擦除旧数字） */
+  /** 重绘行提示（先重绘该行背景条 + 格子线） */
   private redrawRowHint(nums: number[], row: number, satisfied: boolean): void {
     const ctx = this.ctx;
-    ctx.fillStyle = NDS_THEME.hintBg;
-    ctx.fillRect(0, this.gridY + row * this.cell, this.hintW, this.cell);
+    const gy = this.gridY + row * this.cell;
+    const strong = row % 5 === 0;
+    const grad = ctx.createLinearGradient(0, gy, 0, gy + this.cell);
+    grad.addColorStop(0, strong ? NDS_THEME.hintBgDark : NDS_THEME.hintBg);
+    grad.addColorStop(1, NDS_THEME.bg);
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, gy, this.hintW, this.cell);
+    ctx.strokeStyle = NDS_THEME.grid;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, gy);
+    ctx.lineTo(this.hintW, gy);
+    ctx.moveTo(0, gy + this.cell);
+    ctx.lineTo(this.hintW, gy + this.cell);
+    ctx.stroke();
     this.drawRowHint(nums, row, satisfied);
   }
 
-  /** 重绘列提示（先擦除旧数字） */
+  /** 重绘列提示（先重绘该列背景条 + 格子线） */
   private redrawColHint(nums: number[], col: number, satisfied: boolean): void {
     const ctx = this.ctx;
-    ctx.fillStyle = NDS_THEME.hintBg;
-    ctx.fillRect(this.gridX + col * this.cell, 0, this.cell, this.hintH);
+    const gx = this.gridX + col * this.cell;
+    const strong = col % 5 === 0;
+    const grad = ctx.createLinearGradient(gx, 0, gx + this.cell, 0);
+    grad.addColorStop(0, strong ? NDS_THEME.hintBgDark : NDS_THEME.hintBg);
+    grad.addColorStop(1, NDS_THEME.bg);
+    ctx.fillStyle = grad;
+    ctx.fillRect(gx, 0, this.cell, this.hintH);
+    ctx.strokeStyle = NDS_THEME.grid;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(gx, 0);
+    ctx.lineTo(gx, this.hintH);
+    ctx.moveTo(gx + this.cell, 0);
+    ctx.lineTo(gx + this.cell, this.hintH);
+    ctx.stroke();
     this.drawColHint(nums, col, satisfied);
   }
 
   private drawRowHint(nums: number[], row: number, satisfied: boolean): void {
     const ctx = this.ctx;
     const cy = this.gridY + row * this.cell + this.cell / 2;
-    ctx.font = `bold ${Math.max(8, this.cell * 0.55)}px sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
+    // 数字字体根据位数自适应：一位数尽量大，多位数缩小
+    const fontSize = Math.max(8, this.cell * (nums.some((n) => n >= 10) ? 0.5 : 0.68));
+    ctx.font = `bold ${fontSize}px sans-serif`;
     ctx.fillStyle = satisfied ? NDS_THEME.hintDone : NDS_THEME.hint;
+    // 满足后变淡：在原版中已满足的数字会明显变淡
+    if (satisfied) ctx.globalAlpha = 0.35;
     // 从右往左一格一个：nums[0] 在最右侧，靠近网格
     for (let i = 0; i < nums.length; i++) {
       const slot = nums.length - 1 - i;
       const cx = this.hintW - slot * this.cell - this.cell / 2;
       ctx.fillText(String(nums[i]), cx, cy);
     }
+    ctx.globalAlpha = 1;
   }
 
   private drawColHint(nums: number[], col: number, satisfied: boolean): void {
     const ctx = this.ctx;
     const cx = this.gridX + col * this.cell + this.cell / 2;
-    ctx.font = `bold ${Math.max(8, this.cell * 0.55)}px sans-serif`;
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
+    const fontSize = Math.max(8, this.cell * (nums.some((n) => n >= 10) ? 0.5 : 0.68));
+    ctx.font = `bold ${fontSize}px sans-serif`;
     ctx.fillStyle = satisfied ? NDS_THEME.hintDone : NDS_THEME.hint;
+    if (satisfied) ctx.globalAlpha = 0.35;
     // 从下往上一格一个：nums[0] 在最下方，靠近网格
     for (let i = 0; i < nums.length; i++) {
       const slot = nums.length - 1 - i;
       const cy = this.hintH - slot * this.cell - this.cell / 2;
       ctx.fillText(String(nums[i]), cx, cy);
     }
+    ctx.globalAlpha = 1;
   }
 
   private drawCross(px: number, py: number): void {
