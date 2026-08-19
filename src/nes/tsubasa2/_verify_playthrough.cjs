@@ -72,10 +72,10 @@ function sampleOam(tag) {
   oamSamples++;
 }
 try {
-  // 1. BOOT 开场 → 自动进 TITLE (SHOT_DURATION 120 帧)
+  // 1. BOOT 开场 → START 跳过进 TITLE (真实 ROM: 按 START 跳过 TECMO Theater)
   stage = 'BOOT→TITLE';
-  for (let f = 0; f < 200; f++) boot.update(0, f);
-  if (root(store) !== SceneRoot.TITLE) throw new Error('expected TITLE, got ' + root(store));
+  tap(START, 100);
+  if (root(store) !== SceneRoot.TITLE) throw new Error('expected TITLE after START, got ' + root(store));
   pass++;
   sampleOam('TITLE');
 
