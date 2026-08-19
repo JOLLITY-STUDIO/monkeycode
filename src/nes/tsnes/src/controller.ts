@@ -1,4 +1,4 @@
-import { toJSON, fromJSON } from "../../../../src/utils";
+import { toJSON, fromJSON } from "./utils";
 
 export type ButtonKey = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
 
