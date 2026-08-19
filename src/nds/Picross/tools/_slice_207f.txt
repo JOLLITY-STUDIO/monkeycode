@@ -1,0 +1,96 @@
+ 0x207f880  andeq    lr, lr, #196, #20
+ 0x207f884  andeq    lr, r7, #232, #24
+ 0x207f888  push     {r4, r5, r6, lr}
+ 0x207f88c  movs     r4, r0
+ 0x207f890  mov      r6, r2
+ 0x207f894  mov      r5, r3
+ 0x207f898  moveq    r0, #0
+ 0x207f89c  popeq    {r4, r5, r6, pc}
+ 0x207f8a0  bl       #0x207d3cc
+ 0x207f8a4  cmp      r0, #0
+ 0x207f8a8  bne      #0x207f8c0
+ 0x207f8ac  ldr      r0, [pc, #0xdc]
+ 0x207f8b0  ldr      r2, [r0]
+ 0x207f8b4  ldr      r1, [r2, #0x24]
+ 0x207f8b8  cmp      r1, #0
+ 0x207f8bc  beq      #0x207f8c8
+ 0x207f8c0  mov      r0, #0
+ 0x207f8c4  pop      {r4, r5, r6, pc}
+ 0x207f8c8  str      r6, [r2, #0x70]
+ 0x207f8cc  ldr      r1, [r0]
+ 0x207f8d0  cmp      r4, #0
+ 0x207f8d4  str      r5, [r1, #0x74]
+ 0x207f8d8  beq      #0x207f8e8
+ 0x207f8dc  ldrh     r1, [r4]
+ 0x207f8e0  cmp      r1, #0
+ 0x207f8e4  bne      #0x207f8f0
+ 0x207f8e8  mov      r5, #0
+ 0x207f8ec  b        #0x207f93c
+ 0x207f8f0  ldr      r1, [r0]
+ 0x207f8f4  mov      r0, #0
+ 0x207f8f8  add      r1, r1, #0x2e
+ 0x207f8fc  mov      r2, #0x34
+ 0x207f900  bl       #0x2050e6c
+ 0x207f904  mov      r0, r4
+ 0x207f908  bl       #0x207e2d0
+ 0x207f90c  cmp      r0, #0x19
+ 0x207f910  movhi    r5, #0x19
+ 0x207f914  bhi      #0x207f924
+ 0x207f918  mov      r0, r4
+ 0x207f91c  bl       #0x207e2d0
+ 0x207f920  mov      r5, r0
+ 0x207f924  ldr      r1, [pc, #0x64]
+ 0x207f928  mov      r0, r4
+ 0x207f92c  ldr      r1, [r1]
+ 0x207f930  lsl      r2, r5, #1
+ 0x207f934  add      r1, r1, #0x2e
+ 0x207f938  bl       #0x2050e84
+ 0x207f93c  ldr      r0, [pc, #0x4c]
+ 0x207f940  mov      r1, #0
+ 0x207f944  ldr      r0, [r0]
+ 0x207f948  add      r0, r0, r5, lsl #1
+ 0x207f94c  strh     r1, [r0, #0x2e]
+ 0x207f950  bl       #0x207d898
+ 0x207f954  cmp      r0, #4
+ 0x207f958  beq      #0x207f970
+ 0x207f95c  ldr      r1, [pc, #0x30]
+ 0x207f960  mov      r0, #2
+ 0x207f964  bl       #0x2080920
+ 0x207f968  mov      r0, #1
+ 0x207f96c  pop      {r4, r5, r6, pc}
+ 0x207f970  mov      r0, #1
+ 0x207f974  bl       #0x207f000
+ 0x207f978  ldr      r0, [pc, #0x10]
+ 0x207f97c  ldr      r0, [r0]
+ 0x207f980  ldr      r0, [r0, #0x68]
+ 0x207f984  bl       #0x20b8b0c
+ 0x207f988  mov      r0, #1
+ 0x207f98c  pop      {r4, r5, r6, pc}
+ 0x207f990  andeq    lr, lr, #196, #20
+ 0x207f994  .byte    0x96, 0x15, 0xff, 0xff
+ 0x207f998  stmdb    sp!, {lr}
+ 0x207f99c  sub      sp, sp, #4
+ 0x207f9a0  bl       #0x207d67c
+ 0x207f9a4  cmp      r0, #0
+ 0x207f9a8  beq      #0x207f9b0
+ 0x207f9ac  bl       #0x207f020
+ 0x207f9b0  ldr      r0, [pc, #0x250]
+ 0x207f9b4  ldr      r0, [r0]
+ 0x207f9b8  cmp      r0, #0
+ 0x207f9bc  addeq    sp, sp, #4
+ 0x207f9c0  ldmeq    sp!, {pc}
+ 0x207f9c4  ldr      r0, [r0, #0x24]
+ 0x207f9c8  cmp      r0, #0
+ 0x207f9cc  addeq    sp, sp, #4
+ 0x207f9d0  ldmeq    sp!, {pc}
+ 0x207f9d4  bl       #0x207d3cc
+ 0x207f9d8  cmp      r0, #0
+ 0x207f9dc  addne    sp, sp, #4
+ 0x207f9e0  ldmne    sp!, {pc}
+ 0x207f9e4  ldr      r0, [pc, #0x21c]
+ 0x207f9e8  ldr      r0, [r0]
+ 0x207f9ec  ldr      r0, [r0, #0x24]
+ 0x207f9f0  cmp      r0, #6
+ 0x207f9f4  addls    pc, pc, r0, lsl #2
+ 0x207f9f8  b        #0x207fbb8
+ 0x207f9fc  b        #0x207fbb8

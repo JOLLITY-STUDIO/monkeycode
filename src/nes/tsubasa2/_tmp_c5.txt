@@ -1,0 +1,8 @@
+bank_30_part02.asm 161: C - - - - - 0x03C519 0F:C509: 4C 99 CB  JMP $CB99
+bank_30_part02.asm 162: C D 2 - - - 0x03C51C 0F:C50C: 4C 7C CD  JMP $CD7C
+bank_30_part02.asm 165: C - - - - - 0x03C525 0F:C515: 4C 0F CB  JMP $CB0F
+bank_30_part02.asm 172: C - - - - - 0x03C534 0F:C524: 4C C2 CB  JMP $CBC2
+bank_30_part02.asm 175: C D 2 - - - 0x03C53D 0F:C52D: 4C 46 CC  JMP $CC46
+bank_30_part02.asm 176: C - - - - - 0x03C540 0F:C530: 4C 02 CC  JMP $CC02
+bank_30_part02.asm 177: C - - - - - 0x03C543 0F:C533: 4C D2 CC  JMP $CCD2
+bank_30_part02.asm 188: C - - - - - 0x03C55E 0F:C54E: 4C B0 CB  JMP $CBB0

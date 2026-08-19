@@ -21,7 +21,7 @@
  * 同步为 DataStore.sprites 供渲染器消费。
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore, SpriteEntry } from '../data/DataStore';
 import {
   readB22,
   readB22U16,
@@ -434,7 +434,7 @@ export class Bank22Service {
    * $0200 属性字节: bit0-1=palette, bit5=flipH, bit6=flipV, bit7=priority。
    */
   emitSprites(): void {
-    const out = [];
+    const out: SpriteEntry[] = [];
     for (let i = 0; i < 64; i++) {
       const y = this._oam0200[i * 4];
       const x = this._oam0200[i * 4 + 3];

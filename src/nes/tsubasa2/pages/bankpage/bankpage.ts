@@ -1,7 +1,7 @@
 /**
  * ROM Bank 浏览器 — 列出所有 PRG / CHR Bank，支持跳转到详情页
  */
-import { NES_PRG_ROM, NES_CHR_ROM, PRG_ROM_SIZE, CHR_ROM_SIZE } from '../../rom-data/index';
+import { NES_PRG_ROM, NES_CHR_ROM, PRG_ROM_SIZE, CHR_ROM_SIZE } from '../../src/game/data/rom-data/index';
 
 const BANK_SIZE = 8192;
 

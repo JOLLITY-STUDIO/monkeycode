@@ -1,0 +1,16 @@
+bank_01_part01.asm:14: C - - - - - 0x00201F 00:800F: 4C C2 AF  JMP $AFC2
+bank_01_part01.asm:15: C - - - - - 0x002022 00:8012: 4C 79 AF  JMP $AF79
+bank_01_part01.asm:16: C - - - - - 0x002025 00:8015: 4C 8A AF  JMP $AF8A
+bank_01_part01.asm:17: C - - - - - 0x002028 00:8018: 4C 50 B0  JMP $B050
+bank_01_part01.asm:204: C - - - - - 0x00219C 00:818C: 20 C0 B0  JSR $B0C0
+bank_01_part01.asm:637: C - - - - - 0x002510 00:8500: 20 C0 B0  JSR $B0C0
+bank_01_part01.asm:897: C - - - - - 0x002757 00:8747: 20 C0 B0  JSR $B0C0
+bank_01_part02.asm:13: C - - - - - 0x002862 00:8852: 20 C0 B0  JSR $B0C0
+bank_01_part02.asm:317: C - - - - - 0x002AFC 00:8AEC: 20 C0 B0  JSR $B0C0
+bank_01_part02.asm:435: C - - - - - 0x002C02 00:8BF2: 20 C0 B0  JSR $B0C0
+bank_01_part02.asm:440: C - - - - - 0x002C0E 00:8BFE: 20 C0 B0  JSR $B0C0
+bank_01_part03.asm:160: C - - - - - 0x00310F 00:90FF: 4C BB B1  JMP $B1BB
+bank_01_part03.asm:168: C - - - - - 0x003120 00:9110: 4C BB B1  JMP $B1BB
+bank_01_part03.asm:208: C - - - - - 0x00315A 00:914A: 4C BB B1  JMP $B1BB
+bank_01_part03.asm:288: C - - - - - 0x0031B1 00:91A1: 4C BB B1  JMP $B1BB
+bank_01_part03.asm:291: C - - - - - 0x0031B9 00:91A9: 4C BB B1  JMP $B1BB

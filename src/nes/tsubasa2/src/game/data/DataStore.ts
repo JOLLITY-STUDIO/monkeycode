@@ -19,6 +19,7 @@ import {
   createBlankPaletteTable,
 } from '../model/types';
 import { OamManager } from '../../core/OamManager';
+import { ShadowOam } from './ShadowOam';
 
 // ── NT 类型 ──
 
@@ -102,6 +103,12 @@ export class DataStore {
    */
   readonly oam = new OamManager();
 
+  /**
+   * 影子 OAM — $0468 影子精灵表唯一读写出口 (64 槽 × 4B: Y/tile/attr/X)。
+   * 所有 Bank 的场景精灵写入一律走 oamShadow.*, 不再直接拼 ram_0468 KV 键。
+   */
+  readonly oamShadow = new ShadowOam();
+
   /** 内存 KV 表 (替代实地址) */
   ram = new Map<string, number>();
 
@@ -112,6 +119,10 @@ export class DataStore {
     this.nt0 = this._blankNT();
     this.nt1 = this._blankNT();
     this.oam.attach(this);
+    this.oamShadow.attach(this);
+    // 影子 OAM 初始化为 $F8 (屏幕外), 未使用槽不产生"幽灵精灵"
+    // (对应 NES 上电/复位后 OAM 缓冲的已知状态, spriteClear 也同此语义)
+    this.oamShadow.clearAll();
   }
 
   // ── NT 操作 ──
@@ -299,5 +310,7 @@ export class DataStore {
     this.paletteTable = createBlankPaletteTable();
     this.ram.clear();
     this.zp.fill(0);
+    // 影子 OAM 区重新填 $F8 (与构造初始化一致)
+    this.oamShadow.clearAll();
   }
 }

@@ -8,8 +8,9 @@ import { PicrossRenderer } from "../../src/render/renderer";
 import { PUZZLES } from "../../src/data/puzzles";
 import { puzzleFromData } from "../../src/core/puzzle-loader";
 import { recordPuzzle } from "../../src/core/save";
-import { getLang, Lang, uiStrings, puzzleName } from "../../src/i18n";
+import { getLang, Lang, uiStrings, puzzleName } from "../../src/i18n/index";
 import { Sfx } from "../../src/audio/sfx";
+import { bgm } from "../../src/audio/bgm";
 
 interface BoardNode {
   width: number;
@@ -46,8 +47,10 @@ Page({
   dpr: 2,
   puzzleIndex: 0,
   curPuzzleId: 0,
-  lang: "zh" as Lang,
+  lang: "tc" as Lang,
   lastCell: null as { x: number; y: number } | null,
+  digits: null as any,
+  tiles: null as any,
 
   onLoad(options: any) {
     // 拼图 id 与数组索引不再一致（空拼图已过滤，保留原 ROM id），需按 id 定位
@@ -61,6 +64,7 @@ Page({
 
   onReady() {
     this.sfx = new Sfx();
+    bgm.start("game");
     this.dpr = (wx.getSystemInfoSync() && wx.getSystemInfoSync().pixelRatio) || 2;
     wx.createSelectorQuery()
       .select("#board")
@@ -72,7 +76,34 @@ Page({
         node.height = height * this.dpr;
         this.board = node;
         this.rect = rect;
-        this.startPuzzle(this.puzzleIndex);
+        // 预加载 ROM 数字字体与 UI tile atlas（失败也继续：renderer 有内嵌像素字体兜底）
+        let pending = 2;
+        const done = () => {
+          pending--;
+          if (pending === 0) this.startPuzzle(this.puzzleIndex);
+        };
+        const digits = node.createImage();
+        digits.onload = () => {
+          console.log("[digits] loaded", digits.width, digits.height);
+          this.digits = digits;
+          done();
+        };
+        digits.onerror = () => {
+          console.warn("[digits] load failed, using embedded pixel font");
+          done();
+        };
+        digits.src = "/assets/digits.png";
+        const tiles = node.createImage();
+        tiles.onload = () => {
+          console.log("[tiles] loaded", tiles.width, tiles.height);
+          this.tiles = tiles;
+          done();
+        };
+        tiles.onerror = () => {
+          console.warn("[tiles] load failed");
+          done();
+        };
+        tiles.src = "/assets/nds_tiles.png";
         const loop = () => {
           if (this.engine && this.renderer) {
             this.renderer.draw(this.engine.getState());
@@ -84,12 +115,12 @@ Page({
   },
 
   /** 从 PuzzleData 构造 Puzzle（hex → Uint8Array） */
-  private buildPuzzle(idx: number) {
+  buildPuzzle(idx: number) {
     return puzzleFromData(PUZZLES[idx % PUZZLES.length]);
   },
 
   /** 拼图名：按语言取 ROM 提取名（B3），无则回退 Picross N */
-  private puzzleTitle(idx: number): string {
+  puzzleTitle(idx: number): string {
     const p = PUZZLES[idx % PUZZLES.length];
     return puzzleName(this.lang, p.id);
   },
@@ -114,7 +145,7 @@ Page({
         if (this.sfx) this.sfx.play("win");
       },
     });
-    this.renderer = this.board ? new PicrossRenderer(this.board) : null;
+    this.renderer = this.board ? new PicrossRenderer(this.board, { digits: this.digits, tiles: this.tiles }) : null;
     this.lastCell = null;
     this.engine.start();
     this.setData({
@@ -127,7 +158,7 @@ Page({
   },
 
   /** 结算星级：0 失误 3 星，1-2 失误 2 星，其余 1 星 */
-  private starsFor(s: any): number {
+  starsFor(s: any): number {
     if (s.mistakes <= 0) return 3;
     if (s.mistakes <= 2) return 2;
     return 1;
@@ -155,7 +186,7 @@ Page({
   },
 
   /** 触摸坐标 → 网格单元（CSS 像素 × dpr → 设备像素） */
-  private cellFromTouch(e: any): { x: number; y: number } | null {
+  cellFromTouch(e: any): { x: number; y: number } | null {
     if (!this.engine || !this.rect) return null;
     const t = e.touches && e.touches[0];
     if (!t) return null;
@@ -165,7 +196,11 @@ Page({
       (t.y - this.rect.top) * this.dpr,
       state
     );
-    return h.type === "cell" ? { x: h.x, y: h.y } : null;
+    if (h.type === "cell") {
+      if (this.renderer) this.renderer.setCursor(h.x, h.y);
+      return { x: h.x, y: h.y };
+    }
+    return null;
   },
 
   onTouchStart(e: any) {
@@ -185,9 +220,10 @@ Page({
 
   onTouchEnd() {
     this.lastCell = null;
+    if (this.renderer) this.renderer.setCursor(-1, -1);
   },
 
-  private applyMark(x: number, y: number) {
+  applyMark(x: number, y: number) {
     if (!this.engine) return;
     const mode = this.data.markMode;
     if (mode === "cross") {
@@ -234,7 +270,16 @@ Page({
     }
   },
 
+  onGoSelect() {
+    wx.reLaunch({ url: "/pages/select/select" });
+  },
+
+  onHide() {
+    bgm.stop();
+  },
+
   onUnload() {
+    bgm.stop();
     if (this.engine) this.engine.destroy();
   },
 });

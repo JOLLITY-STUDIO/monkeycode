@@ -1,7 +1,8 @@
 <view class="page">
-  <!-- 顶部状态栏（F1：返回按钮） -->
+  <!-- 顶部状态栏（F1：返回按钮 / 选关 / 计时 / 失误） -->
   <view class="topbar">
     <button class="back-btn" bindtap="onBack" hover-class="pressed">‹</button>
+    <button class="select-btn" bindtap="onGoSelect" hover-class="pressed">{{t.selectBtn||'选择'}}</button>
     <text class="title">{{puzzleName}}</text>
     <text class="stat">⏱ {{timeText}}</text>
     <text class="stat">✕ {{mistakes}}/{{maxMistakes}}</text>

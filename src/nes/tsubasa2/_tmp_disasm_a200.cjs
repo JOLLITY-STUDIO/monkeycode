@@ -113,9 +113,21 @@ function disasm2(baseAddr, startOff, count) {
   }
 }
 
-console.log('=== bank_02 $821B (任务加载器, PLA取A分发) 完整反汇编 ===');
-disasm(0x821B, 0x21B, 60);
-console.log('\n=== bank_02 $826D (A!=0路径) 看 A 是否做索引 ===');
-disasm(0x826D, 0x26D, 20);
-console.log('\n=== bank_02 $8281 (A==0路径) ===');
-disasm(0x8281, 0x281, 20);
+console.log('=== bank_02 $8484 间接跳转分发 (ram_00ED索引×2→地址表$A491) ===');
+// 地址表 @ $8491 (反汇编), 每项2字节小端, 索引=ram_00ED
+console.log('地址表 $A491 内容:');
+for (let idx=0; idx<16; idx++) {
+  const off = 0x491 + idx*2;
+  if (off+1 >= bytes.length) break;
+  const lo = bytes[off], hi = bytes[off+1];
+  const target = (hi<<8)|lo;
+  console.log(`  idx${idx}: $${(0x8491+idx*2).toString(16).toUpperCase()} = $${lo.toString(16).padStart(2,'0')} $${hi.toString(16).padStart(2,'0')} → $${target.toString(16).toUpperCase()}`);
+}
+
+// 反汇编几个目标找密码特征
+console.log('\n=== idx0 $A4C0 (反汇编$84C0) ===');
+disasm(0x84C0, 0x4C0, 25);
+console.log('\n=== idx1 $A559 (反汇编$8559) ===');
+disasm(0x8559, 0x559, 25);
+console.log('\n=== idx10 $A5DB (反汇编$85DB, 开场ram_00ED=$0A) ===');
+disasm(0x85DB, 0x5DB, 25);

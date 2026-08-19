@@ -17,6 +17,13 @@
     "src/game/data/bank27-data.ts",
     "src/game/service/bank27_minimal.service.ts",
     "src/game/data/bank16-data.ts",
-    "src/game/service/bank16_skills.service.ts"
+    "src/game/service/bank16_skills.service.ts",
+    "src/game/data/prg-bank-19.ts",
+    "src/game/data/prg-bank-20.ts",
+    "src/game/data/prg-bank-21.ts",
+    "src/game/data/prg-bank-31.ts",
+    "src/game/service/bank20_match-aux.service.ts",
+    "src/game/service/bank19_auxiliary.service.ts",
+    "src/game/service/bank18_story.service.ts"
   ]
 }

@@ -1,0 +1,87 @@
+﻿SEQ=27 BANK=52 WAR=55
+title_SEQ              seq=file_000 bank[27]=title(file_081) war=['title_ARC']
+stage_jazz_SEQ         seq=file_001 bank[28]=stage_jazz(file_082) war=['stage_jazz_ARC']
+stage_waltz_SEQ        seq=file_002 bank[29]=stage_waltz(file_083) war=['stage_waltz_ARC']
+stage_bossanova_SEQ    seq=file_003 bank[30]=stage_bossanova(file_084) war=['stage_bossanova_ARC']
+stage_musette_SEQ      seq=file_004 bank[31]=stage_musette(file_085) war=['stage_musette_ARC']
+stage_musicbox_SEQ     seq=file_005 bank[32]=stage_musicbox(file_086) war=['stage_musicbox_ARC']
+stage_reggae_SEQ       seq=file_006 bank[33]=stage_reggae(file_087) war=['stage_raggae_ARC']
+stage_rock_SEQ         seq=file_007 bank[34]=stage_rock(file_088) war=['stage_rock_ARC']
+stage_house_SEQ        seq=file_008 bank[35]=stage_house(file_089) war=['stage_house_ARC']
+how_to_play_SEQ        seq=file_009 bank[36]=how_to_play(file_090) war=['how_to_play_ARC']
+SMB_arr1_SEQ           seq=file_010 bank[37]=SMB_arr1(file_091) war=['SMB_arr1_ARC']
+SMB_arr2_SEQ           seq=file_011 bank[38]=SMB_arr2(file_092) war=['SMB_arr2_ARC']
+SFC_copy1_SEQ          seq=file_012 bank[40]=SFC_copy1(file_094) war=['SFC_copy1_ARC']
+SFC_copy2_SEQ          seq=file_013 bank[41]=SFC_copy2(file_095) war=['SFC_copy2_ARC']
+SFC_copy3_SEQ          seq=file_014 bank[42]=SFC_copy3(file_096) war=['SFC_copy3_ARC']
+game_clear_jingle_SEQ  seq=file_015 bank[39]=game_clear(file_093) war=['game_clear_ARC']
+game_clear_loop_SEQ    seq=file_016 bank[39]=game_clear(file_093) war=['game_clear_ARC']
+game_over_jingle_SEQ   seq=file_017 bank[39]=game_clear(file_093) war=['game_clear_ARC']
+result_SEQ             seq=file_018 bank[43]=snd_result(file_097) war=['result_ARC']
+edit_mode_SEQ          seq=file_019 bank[44]=edit_mode(file_098) war=['edit_mode_ARC']
+event_SEQ              seq=file_020 bank[45]=event(file_099) war=['event_ARC']
+stage_sine_SEQ         seq=file_021 bank[46]=stage_sine(file_100) war=['stage_sine_ARC']
+today_SEQ              seq=file_022 bank[47]=today(file_101) war=['today_ARC']
+vs_SEQ                 seq=file_023 bank[48]=vs(file_102) war=['vs_ARC']
+multi_SEQ              seq=file_024 bank[49]=multi(file_103) war=['multi_ARC']
+mini_game_SEQ          seq=file_025 bank[50]=mini_game(file_104) war=['mini_game_ARC']
+complete_jingle_SEQ    seq=file_026 bank[51]=complete_jingle(file_105) war=['complete_jingle_ARC']
+
+=== bank 涔愬櫒鏁伴噺姒傝 ===
+bank 鏁?52
+
+=== SWAR 娉㈠舰杞瓨 ===
+  title_ARC: file_136 waves=37 types={2} total_samples=545176
+  stage_jazz_ARC: file_137 waves=51 types={2} total_samples=717034
+  stage_waltz_ARC: file_138 waves=29 types={2} total_samples=368766
+  stage_bossanova_ARC: file_139 waves=50 types={2} total_samples=697056
+  stage_musette_ARC: file_140 waves=14 types={2} total_samples=177066
+  stage_musicbox_ARC: file_141 waves=3 types={2} total_samples=58990
+  stage_raggae_ARC: file_142 waves=45 types={2} total_samples=748176
+  stage_rock_ARC: file_143 waves=48 types={2} total_samples=743912
+  stage_house_ARC: file_144 waves=49 types={2} total_samples=786408
+  how_to_play_ARC: file_145 waves=36 types={2} total_samples=522444
+  SMB_arr1_ARC: file_146 waves=47 types={2} total_samples=644786
+  SMB_arr2_ARC: file_147 waves=42 types={2} total_samples=484538
+  game_clear_ARC: file_148 waves=8 types={2} total_samples=96878
+  SFC_copy1_ARC: file_149 waves=41 types={2} total_samples=521946
+  SFC_copy2_ARC: file_150 waves=46 types={2} total_samples=729482
+  SFC_copy3_ARC: file_151 waves=43 types={2} total_samples=572528
+  result_ARC: file_152 waves=36 types={2} total_samples=438806
+  edit_mode_ARC: file_153 waves=26 types={2} total_samples=248092
+  event_ARC: file_154 waves=46 types={2} total_samples=521566
+  stage_sine_ARC: file_155 waves=40 types={2} total_samples=648684
+  today_ARC: file_156 waves=45 types={2} total_samples=644180
+  multi_ARC: file_157 waves=46 types={2} total_samples=665884
+  vs_ARC: file_158 waves=50 types={2} total_samples=787078
+  mini_game_ARC: file_159 waves=52 types={2} total_samples=713302
+  complete_jingle_ARC: file_160 waves=4 types={2} total_samples=31084
+
+=== SBNK 涔愬櫒琛ㄨ浆瀛?===
+  title: file_081 涔愬櫒 11
+  stage_jazz: file_082 涔愬櫒 18
+  stage_waltz: file_083 涔愬櫒 11
+  stage_bossanova: file_084 涔愬櫒 18
+  stage_musette: file_085 涔愬櫒 11
+  stage_musicbox: file_086 涔愬櫒 4
+  stage_reggae: file_087 涔愬櫒 18
+  stage_rock: file_088 涔愬櫒 18
+  stage_house: file_089 涔愬櫒 18
+  how_to_play: file_090 涔愬櫒 11
+  SMB_arr1: file_091 涔愬櫒 18
+  SMB_arr2: file_092 涔愬櫒 18
+  SFC_copy1: file_094 涔愬櫒 18
+  SFC_copy2: file_095 涔愬櫒 18
+  SFC_copy3: file_096 涔愬櫒 18
+  game_clear: file_093 涔愬櫒 16
+  snd_result: file_097 涔愬櫒 11
+  edit_mode: file_098 涔愬櫒 11
+  event: file_099 涔愬櫒 18
+  stage_sine: file_100 涔愬櫒 18
+  today: file_101 涔愬櫒 18
+  vs: file_102 涔愬櫒 18
+  multi: file_103 涔愬櫒 18
+  mini_game: file_104 涔愬櫒 18
+  complete_jingle: file_105 涔愬櫒 18
+
+瀹屾垚: bgm_links.json / assets/audio/waves.json / assets/audio/banks.json

@@ -9,5 +9,5 @@
     "skipLibCheck": true,
     "lib": ["es2018", "dom"]
   },
-  "include": ["src/**/*.ts"]
+  "include": ["src/**/*.ts", "typings/**/*.d.ts"]
 }

@@ -1,0 +1,2 @@
+FILES=223 DIAGS=1
+D:/studio/github/monkeycode/src/nes/tsubasa2/test/test-suite.ts:235:20 [2554] Expected 4-5 arguments, but got 3.

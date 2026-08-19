@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2019",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "outDir": "_test19"
+  },
+  "include": [
+    "src/game/data/DataStore.ts",
+    "src/core/OamManager.ts",
+    "src/core/types.ts",
+    "src/game/config.ts",
+    "src/game/model/types.ts",
+    "src/game/data/prg-bank-19.ts",
+    "src/game/data/prg-bank-31.ts",
+    "src/game/service/bank19_auxiliary.service.ts"
+  ]
+}

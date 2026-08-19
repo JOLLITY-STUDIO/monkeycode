@@ -59,8 +59,8 @@ import {
   readB11Block,
   readB11PatternAttr,
 } from '../data/bank11-data';
-import PRG_BANK_12 from '../data/prg-bank-12';
-import PRG_BANK_13 from '../data/prg-bank-13';
+import PRG_BANK_18 from '../data/prg-bank-18'; // MMC3 R7=0x12 → 物理 bank 18
+import PRG_BANK_19 from '../data/prg-bank-19'; // MMC3 R7=0x13 → 物理 bank 19
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
@@ -1077,13 +1077,13 @@ export class Bank11Service {
     // $8667-$866C: ram_0057 = (mid & $1F) | $A0
     const ptrHi = ((mid & 0x1f) | 0xa0) & 0xff;
     // $866F-$8679: bank = (mid & $20) ? $13 : $12
-    const bank = (mid & 0x20) ? 0x13 : 0x12;
+    const bank = (mid & 0x20) ? 0x13 : 0x12; // MMC3 R7 寄存器值 → 物理 bank 18/19
     // $867A-$8687: MMC3 R7 (H5: 记录到 ram_0023/0025)
     s.write(KEY_0023, (s.read(KEY_0022) | 0x07) & 0xff);
     s.write(KEY_0025, bank);
     // $868A-$86A6: 4×4 读 pattern → ram_04A8,X 起 (X+3..X+18)
     const patternBase = ((ptrHi & 0x1f) << 8 | lo) & 0x1fff; // $A000 窗口 → 0-0x1FFF
-    const src = bank === 0x12 ? PRG_BANK_12 : PRG_BANK_13;
+    const src = bank === 0x12 ? PRG_BANK_18 : PRG_BANK_19;
     let xi = x + 3; // 起偏移 ram_04A8,X
     for (let o = 0; o < 4; o++) {
       for (let i = 0; i < 4; i++) {

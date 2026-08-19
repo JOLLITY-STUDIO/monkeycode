@@ -1,0 +1,16 @@
+src\core\OamManager.ts:15: * 渲染出口: emitSprites() 把影子缓冲解析为 SpriteEntry[]
+src\core\OamManager.ts:40: /** 语义化精灵 (渲染出口, 由 emitSprites 同步到 DataStore.sprites) */
+src\core\OamManager.ts:56: /** 持有 DataStore 引用 (供 emitSprites 写回), 由 DataStore 构造时注入 */
+src\core\OamManager.ts:70: isBusy(): boolean {
+src\core\OamManager.ts:85: setIdle(): void {
+src\core\OamManager.ts:183: emitSprites(): void {
+src\game\service\bank11_match-turn.service.ts:1145: while (oam.isBusy() && guard++ < 100000) {
+src\game\service\bank11_match-turn.service.ts:1148: if (guard >= 100000) oam.setIdle();
+src\game\service\bank19_auxiliary.service.ts:86: return this._store.oam.busy;
+src\game\service\bank22_hybrid.service.ts:20: * OAM $0200 (NES 硬件 OAM 区) → 本 service 内部 256B 缓冲, 由 emitSprites()
+src\game\service\bank22_hybrid.service.ts:436: emitSprites(): void {
+src\game\service\bank24_hud.service.ts:434: while (this._store.oam.isBusy()) {
+src\game\service\bank24_hud.service.ts:605: while (oam.isBusy()) this._fixedC515();
+src\game\service\bank24_hud.service.ts:690: while (oam.isBusy()) this._fixedC515();
+src\game\service\bank27_minimal.service.ts:246: while (oam.isBusy() && guard++ < 100000) this._fixedC515();
+src\game\service\bank28_match.service.ts:603: while (oam.isBusy()) {

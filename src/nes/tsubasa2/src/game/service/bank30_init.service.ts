@@ -19,6 +19,25 @@ import { palReset } from '../data/ppu/pallete/paletteManager';
 import { Bank00Service } from './bank00/bank00_core.service';
 import { Bank02Service } from './bank02_scene.service';
 import { Bank29RosterService } from './bank29_roster.service';
+import { Bank16Service } from './bank16_skills.service';
+import { Bank26ShowcaseExecutor } from './bank26_showcase-executor.service';
+import PRG_BANK_30 from '../data/prg-bank-30';
+
+// ── RAM 语义键 (Bank30 演出链 $043C 区域 + 演出请求) ──
+const KEY_0034 = 'ram_0034'; // 名字区指针 lo
+const KEY_0035 = 'ram_0035'; // 名字区指针 hi
+const KEY_0005 = 'ram_0005'; // $CBB0 写入的任务参数
+const KEY_043B = 'ram_043B'; // 演出类型 (0-6, 0x1E-0x20)
+const KEY_043C = 'ram_043C'; // 特殊技能 ID (043C 演出链核心)
+const KEY_043F = 'ram_043F'; // 位置差值参考 X
+const KEY_0440 = 'ram_0440'; // 位置差值参考 Y
+const KEY_0448 = 'ram_0448'; // Cyclone 触发标志
+const KEY_0449 = 'ram_0449'; // 演出 #11 清空目标
+const KEY_044A = 'ram_044A';
+const KEY_044E = 'ram_044E'; // 043C<3 时的技能 ID 替换源
+const KEY_0516 = 'ram_0516'; // 演出/技能状态位 (bit7=busy, bit6=技能命令待执行, bit3=退出)
+const KEY_0518 = 'ram_0518'; // 演出脚本表索引 (Bank16 表 H/I)
+const KEY_062D = 'ram_062D'; // 暂停/演出锁标志
 
 // ═══════════════════════════════════════════════════════════════
 // Bank 30 Service
@@ -29,12 +48,21 @@ export class Bank30Service {
     private _store: DataStore,
     private _bank00: Bank00Service,
     private _bank02: Bank02Service,
+    private _bank16: Bank16Service,
     private _bank29?: Bank29RosterService,
   ) {}
+
+  /** Bank26 演出执行器 (由 Tsubasa2 注入, 供 $D792 Cyclone 链调用) */
+  private _executor?: Bank26ShowcaseExecutor;
 
   // ── 公开接口 ──
 
   get store(): DataStore { return this._store; }
+
+  /** 注入 Bank26 演出执行器 (对应切 Bank26 窗口) */
+  setShowcaseExecutor(executor: Bank26ShowcaseExecutor): void {
+    this._executor = executor;
+  }
 
   // ──────────────────────────────────────────────
   // $C503 → $C64E: RESET 硬件初始化
@@ -151,6 +179,28 @@ export class Bank30Service {
   }
 
   // ──────────────────────────────────────────────
+  // $C4B2/$C4B9/$C4BD: MMC3 bank 窗口选择写入
+  // ──────────────────────────────────────────────
+
+  /**
+   * 对应原始 $C4BD (含 $C4B2/$C4B9 两个前导入口):
+   * ```
+   * $C4B2: STX ram_0024; LDA #$06; JMP $C4BD   // 记录 R6, 选 $8000 窗口寄存器
+   * $C4B9: STX ram_0025; LDA #$07; JMP $C4BD   // 记录 R7, 选 $A000 窗口寄存器
+   * $C4BD: ORA ram_0022; STA ram_0023          // ram_0023 = A | ram_0022
+   *        STA $8000; STX $8001                 // MMC3 bank select/data (H5: no-op)
+   *        RTS
+   * ```
+   * H5: 无 MMC3 硬件窗口, $8000/$8001 写入为 no-op,
+   * 仅记录 ram_0023 (当前选中 bank 寄存器值) 供逻辑消费。
+   */
+  bankSelect(a: number, x: number): void {
+    const v = (a | this._store.read('ram_0022')) & 0xFF;
+    this._store.write('ram_0023', v);
+    void x; // $8001 bank data — H5 no-op
+  }
+
+  // ──────────────────────────────────────────────
   // $CE08: 加载 Bank28($8000) + Bank29($A000) 窗口
   // ──────────────────────────────────────────────
 
@@ -203,5 +253,166 @@ export class Bank30Service {
     s.write('animLock',      0);      // $0515
     s.write('zoneFlag',      0xFF);   // $062A
     s.write('pauseFlag',     0);      // $062D
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // $CBB0 演出请求 API + $043C 演出链 (Bank30)
+  //
+  // 链路 (原始 ROM):
+  //   $CBB0(id): ram_0518=id; ram_0516|=0x80; ram_0005=0; JSR $CB0F
+  //              → Bank16 $8008 按 ram_0518 查表 H/I → 脚本指针
+  //              → Bank16 $8021 解释器执行演出决策脚本
+  //   $D67C: 读 $D6DE[ram_043B] → ram_043C=0 → $E93D → 判定/切 bank
+  //   $D717: $D76B 状态检查 → LDA #$3D; JSR $CBB0 (特写演出)
+  //   $D792: 043C<3 → 用 ram_044E 替换; ==0x12 → 演出 #46 (Cyclone);
+  //          ==0x11 → 清 ram_0449/044A
+  //   $D7E8: LDA #$38; JSR $CBB0 (演出 #38)
+  // ══════════════════════════════════════════════════════════════
+
+  /** 读 Bank30 原始字节 (CPU $C000-$DFFF → PRG_BANK_30 索引) */
+  private _b30(addr: number): number {
+    return PRG_BANK_30[addr - 0xC000] ?? 0;
+  }
+
+  /** $D6DE 表 (10B): [02 01 00 03 04 05 06 1E 1F 20] — 按 ram_043B 的演出类型映射 */
+  readD6DE(idx: number): number {
+    return this._b30(0xD6DE + (idx & 0x3f));
+  }
+
+  /** 读 RAM 语义键 (地址化访问, 与 Bank16 一致: ram_XXXX) */
+  private _readRamByte(addr: number): number {
+    return this._store.read(`ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`);
+  }
+
+  /** $D700 表 (37B): 射门演出方向/子状态表 (供 $D5D1/$D5DA 使用) */
+  readD700(idx: number): number {
+    return this._b30(0xD700 + (idx & 0x3f));
+  }
+
+  /**
+   * $CBB0 — 演出请求 API:
+   *   STA ram_0518 / LDA #$80; ORA ram_0516; STA ram_0516 / LDA #$00; STA ram_0005
+   *   JSR $CB0F; RTS
+   * H5: $CB0F 任务入队 → 直接调 Bank16 解释器消费 ram_0518 (脚本决策链)。
+   */
+  requestShowcase(id: number): void {
+    // TODO: $CB0F 槽位调度语义 (ram_0000-XX 6槽×4B) — H5 直连解释器, busy 生命周期由 0516 bit7 表达
+    const s = this._store;
+    s.write(KEY_0518, id & 0xff);                                  // STA ram_0518
+    s.write(KEY_0516, (s.read(KEY_0516) | 0x80) & 0xff);           // ram_0516 bit7 = busy
+    s.write(KEY_0005, 0);                                          // LDA #$00; STA ram_0005
+    this._bank16.entry_8021();                                     // $CB0F → Bank16 解释器
+  }
+
+  /**
+   * $D76B — 状态检查: 名字区(ram_0034 指针)+1/+2 与 ram_043F/0440 差值 → 有差(负)。
+   * 原始 ROM: LDA (ram_0034),Y 读名字区坐标字节, 与 ram_043F/0440 做差值, 符号位=负 → 触发特写。
+   * TODO: 精确差值与阈值待对照 $D76B-$D7B0 完整汇编 (当前为符号位近似)。
+   */
+  private _d76bCheck(): boolean {
+    const s = this._store;
+    const ptr = ((s.read(KEY_0035) & 0xff) << 8) | (s.read(KEY_0034) & 0xff);
+    const n1 = this._readRamByte(ptr + 1);  // 名字区坐标/朝向 X
+    const n2 = this._readRamByte(ptr + 2);  // 名字区坐标/朝向 Y
+    const dx = (n1 - (s.read(KEY_043F) & 0xff)) & 0xff;
+    const dy = (n2 - (s.read(KEY_0440) & 0xff)) & 0xff;
+    if ((dx & 0x80) !== 0) return true;     // 差值负数 → 有差
+    if ((dy & 0x80) !== 0) return true;
+    return dx !== 0 || dy !== 0;
+  }
+
+  /**
+   * $D684 — STX ram_043C; JSR $E93D (写技能 ID + 刷新演出精灵)。
+   * $E93D (Bank31): 演出期精灵刷新任务, 走 OAM 影子缓冲 (ram_04A5 区)。
+   * H5: oam.emitSprites() 把影子缓冲导出到渲染出口 (DataStore.sprites)。
+   * TODO: $E93D 精灵动画帧推进逻辑待 Bank31 完整翻译。
+   */
+  entry_D684(x: number): void {
+    this._store.write(KEY_043C, x & 0xff);   // STX ram_043C
+    this._store.oam.emitSprites();           // JSR $E93D (H5 简化: 导出 OAM)
+  }
+
+  /**
+   * $D717 — 特写演出触发 (ROM 语义):
+   *   JSR $D76B 状态检查 → N 标志=负 (有差) 才继续, BPL (非负) → 跳过
+   *   ram_043B == 0 || == 3 → 直接触发 #3D
+   *   否则 ram_043C != 0 → 触发 #3D
+   * TODO: $D745 之后的 $8012 Bank28 入口分支未 TS 化。
+   */
+  entry_D717(): void {
+    const s = this._store;
+    if (!this._d76bCheck()) return;          // BPL $D745 → 跳过
+    const t = s.read(KEY_043B);
+    if (t === 0 || t === 3) {                 // 直接触发
+      this.requestShowcase(0x3d);
+      return;
+    }
+    if (s.read(KEY_043C) !== 0) {             // 043C!=0 触发
+      this.requestShowcase(0x3d);
+    }
+  }
+
+  /**
+   * $D792 — 技能名判定链 (ROM 语义):
+   *   ram_043C < 3  → 用 ram_044E 替换 (写回 ram_043C)
+   *   CMP #$12 / #$11 用替换前的原值比较 (A 寄存器)
+   *   == 0x12 → 查 ram_0448 (已触发过则跳过) → INC ram_0448
+   *             → ram_062D=0 → JSR $CBB0(#46) → 切 Bank26 → $8021 → $8036
+   *   == 0x11 → 清 ram_0449/044A
+   */
+  entry_D792(): void {
+    const s = this._store;
+    const orig = s.read(KEY_043C);            // 原值 (A 寄存器)
+    if (orig < 3) {
+      const c = s.read(KEY_044E);
+      s.write(KEY_043C, c);                   // 替换写回
+    }
+    if (orig === 0x12) {
+      // Cyclone 旋风波: 演出 #46
+      if (s.read(KEY_0448) !== 0) return;     // 已触发过 → 跳过
+      s.write(KEY_0448, (s.read(KEY_0448) + 1) & 0xff); // INC ram_0448
+      s.write(KEY_062D, 0);
+      this.requestShowcase(0x46);
+      this._executor?.entry_8021();           // 切 Bank26 $8021 (能力计算)
+      this._executor?.entry_8036();           // 切 Bank26 $8036 (演出状态机)
+    } else if (orig === 0x11) {
+      s.write(KEY_0449, 0);
+      s.write(KEY_044A, 0);
+    }
+  }
+
+  /**
+   * $D7E8 — 演出 #38 触发:
+   *   LDA #$81; STA ram_062D (暂停/演出锁)
+   *   LDA #$1F; STA ram_0494 (演出状态)
+   *   LDA #$38; JSR $CBB0 → 演出 #38
+   * TODO: $D7E8-$D84B 完整链 (Bank26 执行器) 未 TS 化。
+   */
+  entry_D7E8(): void {
+    const s = this._store;
+    s.write(KEY_062D, 0x81);
+    s.write('ram_0494', 0x1F);
+    this.requestShowcase(0x38);
+  }
+
+  /**
+   * $D67C — 射门演出主流程:
+   *   读 $D6DE[ram_043B] 演出类型 → entry_D684(0) 写 ram_043C=0 + $E93D
+   *   → $D717 特写判定 (演出 #3D) → $D792 技能名判定 (#46 Cyclone / #11 清状态)
+   * TODO: $D67C-$D6C4 完整链 (含 $E93D、$8009 Bank28 入口、ram_0430 判定) 未 TS 化。
+   */
+  entry_D67C(): void {
+    const s = this._store;
+    const t = s.read(KEY_043B);
+    const type = this.readD6DE(t);         // $D6DE[ram_043B] → 演出类型 (含 0x1E-0x20 特写类)
+    void type;
+    this.entry_D684(0);                    // STX ram_043C = 0; JSR $E93D
+    this.entry_D717();                     // 特写演出判定 → #3D
+    this.entry_D792();                     // 技能名判定 → #46 / #11
+  }
+
+  /** H5 演示入口: 直接触发指定演出 (0x3D 特写 / 0x46 Cyclone / 0x38 等) */
+  triggerShowcase(id: number): void {
+    this.requestShowcase(id);
   }
 }

@@ -215,6 +215,15 @@ export class MatchEngineService {
     this._checkPhaseChange();
   }
 
+  /**
+   * 比赛是否结束 (供 boot MATCH 守卫调用)。
+   * 原版由 Bank00 主循环检测终场哨/比赛时钟; 此 stub 返回 false,
+   * 实际结束由 boot 的帧计数守卫触发 (后续按原版时钟对齐此处)。
+   */
+  isMatchOver(): boolean {
+    return false;
+  }
+
   /** $8045 附近: 处理单个球员 */
   private _processPlayer(idx: number): void {
     const s = this._store;

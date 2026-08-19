@@ -1,0 +1,353 @@
+{
+ "title_SEQ": {
+  "seqFile": 0,
+  "bankID": 27,
+  "bankName": "title",
+  "bankFile": 81,
+  "warIDs": [
+   30
+  ],
+  "warNames": [
+   "title_ARC"
+  ],
+  "tempo": null
+ },
+ "stage_jazz_SEQ": {
+  "seqFile": 1,
+  "bankID": 28,
+  "bankName": "stage_jazz",
+  "bankFile": 82,
+  "warIDs": [
+   31
+  ],
+  "warNames": [
+   "stage_jazz_ARC"
+  ],
+  "tempo": null
+ },
+ "stage_waltz_SEQ": {
+  "seqFile": 2,
+  "bankID": 29,
+  "bankName": "stage_waltz",
+  "bankFile": 83,
+  "warIDs": [
+   32
+  ],
+  "warNames": [
+   "stage_waltz_ARC"
+  ],
+  "tempo": null
+ },
+ "stage_bossanova_SEQ": {
+  "seqFile": 3,
+  "bankID": 30,
+  "bankName": "stage_bossanova",
+  "bankFile": 84,
+  "warIDs": [
+   33
+  ],
+  "warNames": [
+   "stage_bossanova_ARC"
+  ],
+  "tempo": null
+ },
+ "stage_musette_SEQ": {
+  "seqFile": 4,
+  "bankID": 31,
+  "bankName": "stage_musette",
+  "bankFile": 85,
+  "warIDs": [
+   34
+  ],
+  "warNames": [
+   "stage_musette_ARC"
+  ],
+  "tempo": null
+ },
+ "stage_musicbox_SEQ": {
+  "seqFile": 5,
+  "bankID": 32,
+  "bankName": "stage_musicbox",
+  "bankFile": 86,
+  "warIDs": [
+   35
+  ],
+  "warNames": [
+   "stage_musicbox_ARC"
+  ],
+  "tempo": null
+ },
+ "stage_reggae_SEQ": {
+  "seqFile": 6,
+  "bankID": 33,
+  "bankName": "stage_reggae",
+  "bankFile": 87,
+  "warIDs": [
+   36
+  ],
+  "warNames": [
+   "stage_raggae_ARC"
+  ],
+  "tempo": null
+ },
+ "stage_rock_SEQ": {
+  "seqFile": 7,
+  "bankID": 34,
+  "bankName": "stage_rock",
+  "bankFile": 88,
+  "warIDs": [
+   37
+  ],
+  "warNames": [
+   "stage_rock_ARC"
+  ],
+  "tempo": null
+ },
+ "stage_house_SEQ": {
+  "seqFile": 8,
+  "bankID": 35,
+  "bankName": "stage_house",
+  "bankFile": 89,
+  "warIDs": [
+   38
+  ],
+  "warNames": [
+   "stage_house_ARC"
+  ],
+  "tempo": null
+ },
+ "how_to_play_SEQ": {
+  "seqFile": 9,
+  "bankID": 36,
+  "bankName": "how_to_play",
+  "bankFile": 90,
+  "warIDs": [
+   39
+  ],
+  "warNames": [
+   "how_to_play_ARC"
+  ],
+  "tempo": null
+ },
+ "SMB_arr1_SEQ": {
+  "seqFile": 10,
+  "bankID": 37,
+  "bankName": "SMB_arr1",
+  "bankFile": 91,
+  "warIDs": [
+   40
+  ],
+  "warNames": [
+   "SMB_arr1_ARC"
+  ],
+  "tempo": null
+ },
+ "SMB_arr2_SEQ": {
+  "seqFile": 11,
+  "bankID": 38,
+  "bankName": "SMB_arr2",
+  "bankFile": 92,
+  "warIDs": [
+   41
+  ],
+  "warNames": [
+   "SMB_arr2_ARC"
+  ],
+  "tempo": null
+ },
+ "SFC_copy1_SEQ": {
+  "seqFile": 12,
+  "bankID": 40,
+  "bankName": "SFC_copy1",
+  "bankFile": 94,
+  "warIDs": [
+   43
+  ],
+  "warNames": [
+   "SFC_copy1_ARC"
+  ],
+  "tempo": null
+ },
+ "SFC_copy2_SEQ": {
+  "seqFile": 13,
+  "bankID": 41,
+  "bankName": "SFC_copy2",
+  "bankFile": 95,
+  "warIDs": [
+   44
+  ],
+  "warNames": [
+   "SFC_copy2_ARC"
+  ],
+  "tempo": null
+ },
+ "SFC_copy3_SEQ": {
+  "seqFile": 14,
+  "bankID": 42,
+  "bankName": "SFC_copy3",
+  "bankFile": 96,
+  "warIDs": [
+   45
+  ],
+  "warNames": [
+   "SFC_copy3_ARC"
+  ],
+  "tempo": null
+ },
+ "game_clear_jingle_SEQ": {
+  "seqFile": 15,
+  "bankID": 39,
+  "bankName": "game_clear",
+  "bankFile": 93,
+  "warIDs": [
+   42
+  ],
+  "warNames": [
+   "game_clear_ARC"
+  ],
+  "tempo": null
+ },
+ "game_clear_loop_SEQ": {
+  "seqFile": 16,
+  "bankID": 39,
+  "bankName": "game_clear",
+  "bankFile": 93,
+  "warIDs": [
+   42
+  ],
+  "warNames": [
+   "game_clear_ARC"
+  ],
+  "tempo": null
+ },
+ "game_over_jingle_SEQ": {
+  "seqFile": 17,
+  "bankID": 39,
+  "bankName": "game_clear",
+  "bankFile": 93,
+  "warIDs": [
+   42
+  ],
+  "warNames": [
+   "game_clear_ARC"
+  ],
+  "tempo": null
+ },
+ "result_SEQ": {
+  "seqFile": 18,
+  "bankID": 43,
+  "bankName": "snd_result",
+  "bankFile": 97,
+  "warIDs": [
+   46
+  ],
+  "warNames": [
+   "result_ARC"
+  ],
+  "tempo": null
+ },
+ "edit_mode_SEQ": {
+  "seqFile": 19,
+  "bankID": 44,
+  "bankName": "edit_mode",
+  "bankFile": 98,
+  "warIDs": [
+   47
+  ],
+  "warNames": [
+   "edit_mode_ARC"
+  ],
+  "tempo": null
+ },
+ "event_SEQ": {
+  "seqFile": 20,
+  "bankID": 45,
+  "bankName": "event",
+  "bankFile": 99,
+  "warIDs": [
+   48
+  ],
+  "warNames": [
+   "event_ARC"
+  ],
+  "tempo": null
+ },
+ "stage_sine_SEQ": {
+  "seqFile": 21,
+  "bankID": 46,
+  "bankName": "stage_sine",
+  "bankFile": 100,
+  "warIDs": [
+   49
+  ],
+  "warNames": [
+   "stage_sine_ARC"
+  ],
+  "tempo": null
+ },
+ "today_SEQ": {
+  "seqFile": 22,
+  "bankID": 47,
+  "bankName": "today",
+  "bankFile": 101,
+  "warIDs": [
+   50
+  ],
+  "warNames": [
+   "today_ARC"
+  ],
+  "tempo": null
+ },
+ "vs_SEQ": {
+  "seqFile": 23,
+  "bankID": 48,
+  "bankName": "vs",
+  "bankFile": 102,
+  "warIDs": [
+   52
+  ],
+  "warNames": [
+   "vs_ARC"
+  ],
+  "tempo": null
+ },
+ "multi_SEQ": {
+  "seqFile": 24,
+  "bankID": 49,
+  "bankName": "multi",
+  "bankFile": 103,
+  "warIDs": [
+   51
+  ],
+  "warNames": [
+   "multi_ARC"
+  ],
+  "tempo": null
+ },
+ "mini_game_SEQ": {
+  "seqFile": 25,
+  "bankID": 50,
+  "bankName": "mini_game",
+  "bankFile": 104,
+  "warIDs": [
+   53
+  ],
+  "warNames": [
+   "mini_game_ARC"
+  ],
+  "tempo": null
+ },
+ "complete_jingle_SEQ": {
+  "seqFile": 26,
+  "bankID": 51,
+  "bankName": "complete_jingle",
+  "bankFile": 105,
+  "warIDs": [
+   54
+  ],
+  "warNames": [
+   "complete_jingle_ARC"
+  ],
+  "tempo": null
+ }
+}

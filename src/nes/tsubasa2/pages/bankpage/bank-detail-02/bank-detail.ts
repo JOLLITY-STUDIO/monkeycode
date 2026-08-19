@@ -2,8 +2,8 @@
  * Bank 详情页 — 支持 HEX / 柱状图 / 记录视图 / CHR 图块画廊
  * 自动检测数据类型：游戏数据 vs 渲染数据
  */
-import { NES_PRG_ROM, NES_CHR_ROM } from '../../../rom-data/index';
-import PRG_BANK_07 from '../../../rom-data/prg-bank-07';
+import { NES_PRG_ROM, NES_CHR_ROM } from '../../../src/game/data/rom-data/index';
+import PRG_BANK_07 from '../../../src/game/data/prg-bank-07';
 import BANK02_ANALYSIS from '../bank-detail/bank02_analysis';
 import BANK12_ANALYSIS from '../bank-detail/bank12_analysis';
 import BANK30_ANALYSIS from '../bank-detail/bank30_analysis';
@@ -205,7 +205,7 @@ Page({
 
   // ── 生命周期 ──
   onLoad(_options?: any) {
-    const type = 'PRG';
+    const type: string = 'PRG';
     const id = 2;
     const isCHR = type === 'CHR';
     const label = `${type} Bank ${String(id).padStart(2, '0')}`;
@@ -1710,7 +1710,7 @@ Page({
   /** 核心：解析 PPU Buffer hex 字符串 */
   _parsePpuBuf() {
     const hexStr = this.data.ppuBufHex.replace(/\s+/g, ' ').trim();
-    const bytes = hexStr.split(/[\s,]+/).map(s => parseInt(s, 16)).filter(b => !isNaN(b));
+    const bytes = hexStr.split(/[\s,]+/).map((s: string) => parseInt(s, 16)).filter((b: number) => !isNaN(b));
     if (bytes.length === 0) { this.setData({ ppuBufParsed: [] }); return; }
 
     const entries: any[] = [];

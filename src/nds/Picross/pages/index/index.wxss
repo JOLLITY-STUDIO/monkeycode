@@ -1,8 +1,9 @@
+/* pages/index —— 还原 NDS 原版 Picross DS 风格（黄/白/黑） */
 .page {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #0f0f1a;
+  background: #fffdf0;
   box-sizing: border-box;
   padding: 16rpx 20rpx 20rpx;
 }
@@ -20,10 +21,12 @@
   height: 64rpx;
   line-height: 56rpx;
   padding: 0;
-  background: #24243a;
-  color: #e8ecf2;
+  background: #ffd800;
+  color: #111111;
   font-size: 40rpx;
+  font-weight: 700;
   border-radius: 12rpx;
+  border: 2rpx solid #111111;
   flex-shrink: 0;
 }
 
@@ -32,23 +35,48 @@
 }
 
 .back-btn.pressed {
-  background: #3b6fd4;
+  background: #ffb700;
+}
+
+.select-btn {
+  flex-shrink: 0;
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 22rpx;
+  background: #ffd800;
+  color: #111111;
+  font-size: 24rpx;
+  font-weight: 600;
+  border-radius: 12rpx;
+  border: 2rpx solid #111111;
+  margin-right: 12rpx;
+}
+
+.select-btn::after {
+  border: none;
+}
+
+.select-btn.pressed {
+  background: #ffb700;
+  color: #111111;
 }
 
 .title {
-  color: #ffffff;
+  color: #111111;
   font-size: 32rpx;
-  font-weight: 600;
+  font-weight: 700;
 }
 
 .stat {
-  color: #9aa3b8;
+  color: #333333;
   font-size: 26rpx;
+  font-weight: 600;
 }
 
 .progress-wrap {
   height: 12rpx;
-  background: #24243a;
+  background: #e0e0e0;
+  border: 1rpx solid #999999;
   border-radius: 6rpx;
   overflow: hidden;
   margin-bottom: 16rpx;
@@ -56,36 +84,38 @@
 
 .progress-bar {
   height: 100%;
-  background: #3b6fd4;
+  background: #ffd800;
   border-radius: 6rpx;
   transition: width 0.2s;
 }
 
 .progress-bar.done {
-  background: #4caf50;
+  background: #ffb700;
 }
 
 /* G5: 失败进度条 */
 .progress-bar.fail {
-  background: #d23b3b;
+  background: #e60000;
 }
 
+/* 下屏 4:3 满屏（NDS 256x192 逻辑分辨率），渲染器内部整数缩放居中 */
 .board {
-  flex: 1;
   width: 100%;
-  min-height: 0;
+  aspect-ratio: 4 / 3;
+  max-height: 62vh;
   border-radius: 12rpx;
+  margin: 0 auto;
 }
 
 /* F1: 失误红闪反馈 */
 .board.flash {
   animation: flashRed 0.5s ease-out;
-  box-shadow: 0 0 0 4rpx rgba(210, 59, 59, 0.6);
+  box-shadow: 0 0 0 4rpx rgba(230, 0, 0, 0.6);
 }
 
 @keyframes flashRed {
-  0% { box-shadow: 0 0 0 6rpx rgba(210, 59, 59, 0.9); }
-  100% { box-shadow: 0 0 0 4rpx rgba(210, 59, 59, 0); }
+  0% { box-shadow: 0 0 0 6rpx rgba(230, 0, 0, 0.9); }
+  100% { box-shadow: 0 0 0 4rpx rgba(230, 0, 0, 0); }
 }
 
 .pressed {
@@ -103,10 +133,12 @@
   flex: 1;
   margin: 0 6rpx;
   font-size: 24rpx;
-  background: #24243a;
-  color: #e8ecf2;
+  font-weight: 600;
+  background: #ffd800;
+  color: #111111;
+  border: 2rpx solid #111111;
   border-radius: 12rpx;
-  line-height: 2.6;
+  line-height: 2.4;
 }
 
 .tool-btn::after {
@@ -114,14 +146,14 @@
 }
 
 .tool-btn.active {
-  background: #3b6fd4;
-  color: #ffffff;
+  background: #111111;
+  color: #ffd800;
 }
 
 .solved-mask {
   position: fixed;
   inset: 0;
-  background: rgba(10, 10, 20, 0.78);
+  background: rgba(255, 255, 255, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -130,13 +162,14 @@
 
 .solved-card {
   width: 520rpx;
-  background: #1c1c33;
-  border: 1rpx solid #3b6fd4;
+  background: #fffdf0;
+  border: 4rpx solid #111111;
   border-radius: 24rpx;
   padding: 48rpx 32rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
+  box-shadow: 0 8rpx 0 #ffd800;
 }
 
 .pop-in {
@@ -155,13 +188,13 @@
 
 .star {
   font-size: 64rpx;
-  color: #3a3a55;
+  color: #d0d0d0;
   margin: 0 12rpx;
   animation: starIn 0.4s ease-out backwards;
 }
 
 .star.on {
-  color: #ffd54f;
+  color: #ffd800;
 }
 
 .star.s1 { animation-delay: 0.25s; }
@@ -174,32 +207,35 @@
 }
 
 .solved-title {
-  color: #4caf50;
+  color: #111111;
   font-size: 56rpx;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: 6rpx;
 }
 
 /* G5: 失败卡片 */
 .fail-card {
-  border-color: #d23b3b;
+  border-color: #e60000;
+  box-shadow: 0 8rpx 0 #e60000;
 }
 
 .fail-title {
-  color: #d23b3b;
+  color: #e60000;
 }
 
 .solved-sub {
-  color: #9aa3b8;
+  color: #333333;
   font-size: 26rpx;
   margin: 16rpx 0 24rpx;
 }
 
 .btn-primary {
-  background: #3b6fd4;
-  color: #ffffff;
+  background: #ffd800;
+  color: #111111;
+  border: 2rpx solid #111111;
   border-radius: 16rpx;
   font-size: 30rpx;
+  font-weight: 700;
   width: 80%;
   margin-bottom: 16rpx;
 }
@@ -209,13 +245,14 @@
 }
 
 .btn-ghost {
-  background: transparent;
-  color: #9aa3b8;
+  background: #ffffff;
+  color: #111111;
+  border: 2rpx solid #111111;
   border-radius: 16rpx;
   font-size: 26rpx;
   width: 80%;
 }
 
 .btn-ghost::after {
-  border: 1rpx solid #3a3a55;
+  border: none;
 }

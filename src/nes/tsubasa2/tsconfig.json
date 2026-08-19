@@ -11,6 +11,6 @@
     "outDir": "./dist",
     "lib": ["ES2020", "DOM"]
   },
-  "include": ["src/**/*.ts", "../rom-data/**/*.ts"],
+  "include": ["src/**/*.ts", "pages/**/*.ts", "test/**/*.ts"],
   "exclude": ["node_modules", "dist"]
 }

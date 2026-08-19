@@ -12,16 +12,16 @@
  */
 
 import { Tsubasa2 } from '../src/core/Tsubasa2';
-import { DataStore } from '../src/data/DataStore';
+import { DataStore } from '../src/game/data/DataStore';
 import { Renderer } from '../src/core/engine/render/Renderer';
-import { Bank00Service } from '../src/game/bank00_core.service';
-import { Bank12AudioService } from '../src/game/bank12_audio.service';
-import { Bank30Service } from '../src/game/bank30_init.service';
-import { Bank02Service } from '../src/game/bank02_scene.service';
-import { OamManager } from '../src/data/OamManager';
+import { Bank00Service } from '../src/game/service/bank00/bank00_core.service';
+import { Bank12AudioService } from '../src/game/service/bank12_audio.service';
+import { Bank30Service } from '../src/game/service/bank30_init.service';
+import { Bank02Service } from '../src/game/service/bank02_scene.service';
+import { OamManager } from '../src/core/OamManager';
 import { WebAudioOutput } from '../src/core/engine/audio/WebAudioOutput';
-import { BUTTON, NES_WIDTH, NES_HEIGHT, GameState } from '../src/core/types';
-import { SceneRoot } from '../src/data/scene';
+import { BUTTON, NES_WIDTH, NES_HEIGHT } from '../src/core/types';
+import { SceneRoot } from '../src/game/data/scene';
 import { log, assert, sleep, screenshot, progress } from './utils';
 
 export interface TestResult {
@@ -152,39 +152,27 @@ export async function runUnitTests(ctx: TestContext): Promise<void> {
     record('单元-OamManager', 'clearRange 清零', s3 !== null && s3.attr === 0 && s3.tileLo === 0, '已清零');
   }
 
-  // 1.3 Renderer CHR Bank 注册
+  // 1.3 Renderer 帧呈现
   {
-    const store = new DataStore();
-    const renderer = new Renderer(store);
-    const dummyChr = new Uint8Array(0x2000); // 8KB 空 CHR
-
-    let crashed = false;
-    try {
-      renderer.registerChrBank(0, dummyChr);
-      renderer.registerChrBank(15, dummyChr);
-    } catch (_) {
-      crashed = true;
-    }
-    record('单元-Renderer', '注册 CHR Bank 0~15', !crashed, crashed ? '抛异常' : 'ok');
-
-    // 越界 bankId
-    crashed = false;
-    try {
-      renderer.registerChrBank(16, dummyChr); // 越界
-      renderer.registerChrBank(-1, dummyChr);
-    } catch (_) {
-      crashed = true;
-    }
-    record('单元-Renderer', '越界 bankId 不崩溃', !crashed, crashed ? '抛异常' : '安全忽略');
+    const renderer = new Renderer();
 
     // setupCanvas
-    crashed = false;
+    let crashed = false;
     try {
       renderer.setupCanvas(ctx.ctx);
     } catch (_) {
       crashed = true;
     }
     record('单元-Renderer', 'setupCanvas', !crashed, crashed ? '抛异常' : 'ok');
+
+    // writeFrame 空帧 (全黑 256×240)
+    crashed = false;
+    try {
+      renderer.writeFrame(new Uint32Array(256 * 240));
+    } catch (_) {
+      crashed = true;
+    }
+    record('单元-Renderer', 'writeFrame 空帧', !crashed, crashed ? '抛异常' : 'ok');
   }
 
   // 1.4 Bank00Service 初始化
@@ -279,15 +267,15 @@ export async function runUnitTests(ctx: TestContext): Promise<void> {
 
   // 1.8 ScriptVM 脚本虚拟机
   {
-    const { ScriptVM } = await import('../src/data/tile/textscript/script-vm');
-    const { getScriptData } = await import('../src/data/tile/textscript/script-data-loader');
+    const { ScriptVM } = await import('../src/game/service/bank00/script-vm');
+    const { getScriptData } = await import('../src/game/service/bank00/script-data-loader');
 
     // 脚本 0x00 存在性
     const script00 = getScriptData(0x00);
     record('单元-ScriptVM', '脚本 0x00 存在', script00 !== undefined, `bank=${script00?.bank}`);
 
-    // ScriptVM 构造与启动
-    let vm: ScriptVM | null = null;
+    // ScriptVM 构造与启动 (动态 import 解构为值, 用 InstanceType 取类型)
+    let vm: InstanceType<typeof ScriptVM> | null = null;
     let crashed = false;
     try {
       vm = new ScriptVM(0x00);
@@ -439,8 +427,8 @@ export async function runIntegrationTests(ctx: TestContext): Promise<void> {
 
   // 2.8 OpeningSceneController 脚本驱动模式集成测试
   {
-    const { OpeningSceneController } = await import('../src/game/scene_opening.controller');
-    const { OpeningShot } = await import('../src/data/scene/index');
+    const { OpeningSceneController } = await import('../src/game/service/bank00/scene_opening.controller');
+    const { OpeningShot } = await import('../src/game/data/scene/index');
     const store = new DataStore();
     const ctrl = new OpeningSceneController(store);
 
@@ -477,11 +465,11 @@ export async function runIntegrationTests(ctx: TestContext): Promise<void> {
     // 验证脚本文本行累积 (执行足够帧后应有文本)
     log(`脚本状态: textLines=${lastState.scriptTextLines.length}, lastInstr="${lastState.scriptLastInstr}"`, 'info');
 
-    // START 键跳过测试 — 脚本模式下 START 应能跳过到标题
-    ctrl.jumpToTitle();
+    // 开场推进测试 — 逐镜头推进直到开场完成 (进入标题由 BootService 流转)
+    let guard = 0;
+    while (!ctrl.complete && guard++ < 200) ctrl.nextShot();
     const titleState = ctrl.getDisplayState();
-    record('集成-OpeningScript', 'jumpToTitle() 进入标题画面', titleState.isTitle, `isTitle=${titleState.isTitle}`);
-    record('集成-OpeningScript', '标题画面 shot=TITLE', titleState.shot === OpeningShot.TITLE, `shot=${titleState.shot}`);
+    record('集成-OpeningScript', '逐镜头推进至开场完成', ctrl.complete, `shot=${titleState.shot}, guard=${guard}`);
 
     // 截图记录脚本驱动状态
     screenshot('集成-OpeningScript-脚本驱动状态');

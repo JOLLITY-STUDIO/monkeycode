@@ -23,7 +23,7 @@ export function fromJSON(obj: any, state: any): void {
     if (ArrayBuffer.isView(current) && Array.isArray(value)) {
       // Typed arrays: copy data in-place instead of replacing the array,
       // since JSON.parse produces plain arrays not typed arrays.
-      current.set(value);
+      (current as unknown as { set(v: number[]): void }).set(value);
     } else {
       obj[prop] = value;
     }
@@ -38,7 +38,7 @@ export function toJSON(obj: any): any {
     const value = obj[prop];
     // Typed arrays must be converted to plain arrays for JSON.stringify,
     // which otherwise serializes them as objects ({0: v, 1: v, ...}).
-    state[prop] = ArrayBuffer.isView(value) ? Array.from(value) : value;
+    state[prop] = ArrayBuffer.isView(value) ? Array.from(value as unknown as ArrayLike<number>) : value;
   }
   return state;
 }

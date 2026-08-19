@@ -12,6 +12,7 @@
     "jsnes": "^2.1.0"
   },
   "devDependencies": {
+    "canvas": "^3.2.3",
     "tsx": "^4.23.1"
   }
 }

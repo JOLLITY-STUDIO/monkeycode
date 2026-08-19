@@ -21,7 +21,8 @@ Half Select,
 
 Shoot Select,
 -------------
-
+Bank31 的演出调度入口
+bank26_match.service.ts 无技能参数消费
 After Selecting a Shot,
 043C:XX
 

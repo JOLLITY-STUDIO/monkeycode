@@ -22,13 +22,21 @@ import { GameLoop } from './GameLoop';
 import { DataStore } from '../game/data/DataStore';
 import { Renderer } from './engine/render/Renderer';
 import { FrameCompositor } from './engine/render/FrameCompositor';
+import { PasswordView } from '../game/view/PasswordView';
+import { OamView } from '../game/view/OamView';
+import { ShowcaseView } from '../game/view/ShowcaseView';
+import { Bank26ShowcaseExecutor } from '../game/service/bank26_showcase-executor.service';
 import { Bank00Service } from '../game/service/bank00/bank00_core.service';
 import { Bank02Service } from '../game/service/bank02_scene.service';
 import { Bank30Service } from '../game/service/bank30_init.service';
+import { Bank16Service } from '../game/service/bank16_skills.service';
 import { Bank12AudioService } from '../game/service/bank12_audio.service';
 import { BootService } from '../game/boot';
 import { DataQueryService } from '../game/service/bank01_data-query.service';
 import { MatchEngineService } from '../game/service/bank26_match.service';
+import { Bank19Service } from '../game/service/bank19_auxiliary.service';
+import { Bank18Service } from '../game/service/bank18_story.service';
+import { Bank20Service } from '../game/service/bank20_match-aux.service';
 import { InterruptService } from '../game/service/bank31_interrupt.service';
 import { BUTTON, NES_WIDTH, NES_HEIGHT } from './types';
 import type { Tsubasa2Config, DebugInfo, GameState } from './types';
@@ -86,6 +94,9 @@ export class Tsubasa2 {
   /** Bank 30: 硬件初始化 */
   private _bank30!: Bank30Service;
 
+  /** Bank 16: 特殊技能/演出脚本解释器 (被 Bank30 演出链消费) */
+  private _bank16!: Bank16Service;
+
   /** Bank 01: 数据查询 (球员/队伍数据 + 选项屏幕) */
   private _dataQuery!: DataQueryService;
 
@@ -94,6 +105,15 @@ export class Tsubasa2 {
 
   /** Bank 31: 中断/向量服务 */
   private _interrupt!: InterruptService;
+
+  /** Bank 19: 剧情场景精灵/文字渲染库 (STORY 场景) */
+  private _bank19!: Bank19Service;
+
+  /** Bank 18: 剧情场景主控制器 (STORY 调度层) */
+  private _bank18!: Bank18Service;
+
+  /** Bank 20: 比赛辅助逻辑 (MATCH 场景辅助驱动) */
+  private _bank20!: Bank20Service;
 
   /** 场景路由器 (BOOT/TITLE/MEETING/MATCH/RESULT) */
   private _boot!: BootService;
@@ -104,11 +124,32 @@ export class Tsubasa2 {
   /** 渲染器 (View) — 对应模拟器 ui.writeFrame: 仅将帧缓冲 putImageData 到画布 */
   private _renderer!: Renderer;
 
+  /** 场景 View 层 (渲染数据写入 NT/OAM) */
+  private _passwordView!: PasswordView;
+
+  /** OAM 桥接 View (ram_0468 影子 OAM → DataStore.sprites) */
+  private _oamView!: OamView;
+
+  /** Bank26 演出执行器 (技能演出状态机) */
+  private _showcaseExecutor!: Bank26ShowcaseExecutor;
+
+  /** 演出画面 View (球员射门特写 + Cyclone 特效) */
+  private _showcaseView!: ShowcaseView;
+
   /** Bank 12: 音频引擎 (PAPU + PapuOutput，含 BGM/SFX 数据) */
   private _audioService!: Bank12AudioService;
 
   /** 上一次按键值 (用于上升沿检测) */
   private _lastButtons = 0;
+
+  /** 帧索引 (无头驱动/录制用) */
+  private _frameIndex = 0;
+
+  /** 最近一次合成帧 (无头 capture 缓存) */
+  private _lastFrame: Uint32Array | null = null;
+
+  /** 帧捕获 hook — 每帧渲染后回调 (无头录制/预览用) */
+  onFrameCapture: ((buf: Uint32Array, w: number, h: number, index: number) => void) | null = null;
 
   // ✂️ ── 构造与生命周期 ──
   // ------------------------------------------------------------
@@ -122,7 +163,8 @@ export class Tsubasa2 {
     // 构造 Bank 服务链 — 依赖注入，不模拟 MMC3
     this._bank00 = new Bank00Service(this._store);
     this._bank02 = new Bank02Service(this._store, this._bank00);
-    this._bank30 = new Bank30Service(this._store, this._bank00, this._bank02);
+    this._bank16 = new Bank16Service(this._store);
+    this._bank30 = new Bank30Service(this._store, this._bank00, this._bank02, this._bank16);
     this._dataQuery = new DataQueryService(this._store);
     this._matchEngine = new MatchEngineService(this._store);
     this._interrupt = new InterruptService(this._store);
@@ -130,14 +172,29 @@ export class Tsubasa2 {
     // 音频链路: Bank12AudioService (内部使用 PapuOutput + PAPU 完整模拟 NES APU)
     this._audioService = new Bank12AudioService(this._store);
 
-    // 场景路由器 — 持有 DataQuery/MatchEngine 引用以委派场景
-    this._boot = new BootService(this._store, this._dataQuery, this._matchEngine);
+    // 场景路由器 — 持有 DataQuery/MatchEngine/Bank18/Bank19/Bank20 引用以委派场景
+    this._bank19 = new Bank19Service(this._store);
+    this._bank18 = new Bank18Service(this._store, this._bank19);
+    this._bank20 = new Bank20Service(this._store);
+    this._boot = new BootService(this._store, this._dataQuery, this._matchEngine, this._bank19, this._bank20, this._bank18, this._bank02);
 
     // 帧合成器 (PPU 层) — DataStore → 帧缓冲
     this._compositor = new FrameCompositor(this._store);
 
     // 渲染器 (View) — 帧缓冲 → 画布 (对应模拟器 ui.writeFrame)
     this._renderer = new Renderer();
+
+    // 场景 View 层 (渲染数据写入 NT/OAM, 读 service DisplayState)
+    this._passwordView = new PasswordView(this._store);
+
+    // Bank26 演出执行器 + 演出画面 View (球员射门特写/Cyclone)
+    this._showcaseExecutor = new Bank26ShowcaseExecutor(this._store);
+    this._showcaseView = new ShowcaseView(this._store);
+    // 注入 Bank30 (供 $D792 Cyclone 链调用 $8021/$8036)
+    this._bank30.setShowcaseExecutor(this._showcaseExecutor);
+
+    // OAM 桥接 View — ram_0468 影子 OAM → store.sprites (每帧合成前 emit)
+    this._oamView = new OamView(this._store);
 
     // 注册全部 16 个 CHR Bank (直接从 rom-data import)
     this._registerAllChrBanks();
@@ -264,6 +321,74 @@ export class Tsubasa2 {
     this._config.aiMode = false;
   }
 
+  // ── 演示 / 录制接口 (无头可用) ──
+
+  /** 数据中心 (Model) — 供外部读写演出状态 */
+  get store(): DataStore {
+    return this._store;
+  }
+
+  /** Bank30 服务 — 演出链入口 (requestShowcase / entry_D67C / entry_D792 …) */
+  get bank30(): Bank30Service {
+    return this._bank30;
+  }
+
+  /** Bank16 服务 — 演出脚本解释器 */
+  get bank16(): Bank16Service {
+    return this._bank16;
+  }
+
+  /** 帧合成器 — 消费 DataStore → Uint32Array 帧缓冲 */
+  get compositor(): FrameCompositor {
+    return this._compositor;
+  }
+
+  /**
+   * 无头初始化 — 等价 start() 的初始化链但跳过循环/渲染器/音频：
+   *   RESET → Bank30 init → Bank02 resetEntry(0) → Boot 根场景
+   * 供录制脚本 / 无头测试使用。
+   */
+  prepare(): void {
+    if (this._state !== GS.INIT) {
+      console.warn('[Tsubasa2] prepare() 已执行过，忽略');
+      return;
+    }
+    this._interrupt.reset();
+    this._bank30.init();
+    this._boot.init();
+    this._setState(GS.OPENING);
+    console.log('[Tsubasa2] 无头初始化完成 (prepare)');
+  }
+
+  /**
+   * 触发并驱动演出 (043C 演出链演示入口)。
+   * @param showId 演出 ID: 0x3D 特写 / 0x46 Cyclone / 0x38 等; 省略则走完整 $D67C 链
+   */
+  demoShowcase(showId?: number): void {
+    if (showId !== undefined) {
+      this._bank30.triggerShowcase(showId);
+    } else {
+      this._bank30.entry_D67C();
+    }
+    this._frameIndex = 0;
+  }
+
+  /**
+   * 推进一帧逻辑 + 渲染 (无头可用)，返回合成帧缓冲。
+   * 与 onFrameCapture 配合实现逐帧录制。
+   */
+  stepFrame(): Uint32Array | null {
+    this._onFrame(16.67);
+    this._onRender(16.67);
+    this._frameIndex++;
+    return this._lastFrame;
+  }
+
+  /** 合成当前一帧 (不推进逻辑) */
+  captureFrame(): Uint32Array {
+    return this._compositor.compose();
+  }
+
   // ✂️ ── 内部 ──
   // ------------------------------------------------------------
 
@@ -283,6 +408,9 @@ export class Tsubasa2 {
     // 场景路由器: 按 SceneRoot 分发到对应服务
     this._boot.update(this._buttons, this._bank00.frameCount);
 
+    // Bank26 演出执行器 tick (技能演出状态机推进)
+    this._showcaseExecutor.tick();
+
     // 音频引擎更新 (每帧处理请求队列 + 通道状态机 + APU 输出)
     try {
       this._audioService.update();
@@ -295,12 +423,28 @@ export class Tsubasa2 {
 
   /** 每帧渲染 — PPU 层合成帧缓冲, View 层呈现 (对应模拟器 PPU.endFrame → ui.writeFrame) */
   private _onRender(_dt: number): void {
-    if (!this._ctx) return;
+    // 0. 场景 View 层: 读 service DisplayState, 写 NT/OAM (对应 NES NMI 把场景数据写到 PPU)
+    const pwState = this._boot.getPasswordDisplayState();
+    if (pwState) this._passwordView.render(pwState);
 
-    // 1. 合成: DataStore (NT/OAM/调色板) + CHR → Uint32Array 帧缓冲
+    // 0.4 演出画面 View: 球员射门特写 + Cyclone (读 Bank26 executor DisplayState)
+    this._showcaseView.render(this._showcaseExecutor.getDisplayState());
+
+    // 0.5 OAM 桥接: ram_0468 影子 OAM → DataStore.sprites (对应 NES NMI OAM DMA)
+    this._oamView.emit();
+
+    // 1. 合成: DataStore (NT/OAM/调色板) + CHR → Uint32Array 帧缓冲 (无头可用)
     const buf = this._compositor.compose();
+    this._lastFrame = buf;
 
-    // 2. 呈现: 帧缓冲 → putImageData (Renderer = ui.writeFrame 的实现)
-    this._renderer.writeFrame(buf);
+    // 2. 帧捕获 hook (无头录制/预览)
+    if (this.onFrameCapture) {
+      this.onFrameCapture(buf, NES_WIDTH, NES_HEIGHT, this._frameIndex);
+    }
+
+    // 3. 呈现: 帧缓冲 → putImageData (有 canvas 时)
+    if (this._ctx) {
+      this._renderer.writeFrame(buf);
+    }
   }
 }

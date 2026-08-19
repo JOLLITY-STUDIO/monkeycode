@@ -19,12 +19,13 @@
  *   Bank 26 → MatchEngineService (比赛核心引擎)
  *   Bank 31 → InterruptService (中断/NMI 服务)
  *
- * 骨架 (结构完成, code 待翻译):
- *   Bank 20 → Bank20Service (比赛辅助逻辑)
- *
  * 已翻译 (完整实现, 不再属于骨架):
  *   Bank 16 → Bank16Service (特殊动作/技能)
- *   Bank 19 → Bank19Service (辅助逻辑)
+ *   Bank 18 → Bank18Service (剧情场景主控制器: 章节→Bank19 数据流偏移调度, 骨架已接入 STORY 路由, 数据表建模 TODO)
+ *   Bank 19 → Bank19Service (剧情场景精灵/文字渲染库: 数据流驱动/控制码分发/精灵渲染/场景重置, 差分验证 5600/0, 已接入 STORY 路由)
+ *   ResultController → 赛果场景 (RESULT 路由: A→TITLE, 玩链路闭环)
+ *   PasswordController → 密码输入场景 (PASSWORD 路由: Bank02 $A484 分发+$A4C0 主逻辑, 骨架已接入)
+ *   Bank 20 → Bank20Service (比赛辅助: 计时状态机×2/精灵渲染/动画偏移/计分板, 差分验证 17014/0, 已接入 MATCH 路由 frameTick)
  *   Bank 22 → Bank22Service (数据+代码混合, 精灵生成器)
  */
 
@@ -36,6 +37,8 @@ export { Bank12AudioService, SE_POINTER_TABLE, BGM_DATA_MAP } from './service/ba
 export type { IAudioOutput, ApuWriteEvent, ChannelType } from './service/bank12_audio.service';
 export { OpeningSceneController } from './service/bank00/scene_opening.controller';
 export type { OpeningDisplayState } from './service/bank00/scene_opening.controller';
+export { ResultController } from './service/bank00_result.controller';
+export { PasswordController, PASSWORD_DISPATCH_TABLE } from './service/bank02_password.service';
 export { MatchEngineService } from './service/bank26_match.service';
 export { Bank24HudService } from './service/bank24_hud.service';
 export { Bank28MatchService } from './service/bank28_match.service';
@@ -44,6 +47,7 @@ export type { BankConfig } from './service/bank31_interrupt.service';
 export { Bank11Service } from './service/bank11_match-turn.service';
 export { Bank16Service } from './service/bank16_skills.service';
 export { Bank19Service } from './service/bank19_auxiliary.service';
+export { Bank18Service, StoryChapter } from './service/bank18_story.service';
 export { Bank20Service } from './service/bank20_match-aux.service';
 export { Bank22Service } from './service/bank22_hybrid.service';
 export { Bank27Service } from './service/bank27_minimal.service';

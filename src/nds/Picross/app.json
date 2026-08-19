@@ -1,13 +1,14 @@
 {
   "pages": [
+    "pages/tutorial/tutorial",
     "pages/select/select",
     "pages/index/index"
   ],
   "window": {
-    "navigationBarBackgroundColor": "#1a1a2e",
+    "navigationBarBackgroundColor": "#ffd800",
     "navigationBarTitleText": "Picross DS",
-    "navigationBarTextStyle": "white",
-    "backgroundColor": "#0f0f1a"
+    "navigationBarTextStyle": "black",
+    "backgroundColor": "#fffdf0"
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

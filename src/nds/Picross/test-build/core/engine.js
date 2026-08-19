@@ -3,7 +3,7 @@ export class PicrossEngine {
     constructor(puzzle, cb) {
         this.elapsed = 0;
         this.mistakes = 0;
-        this.maxMistakes = 5; // Picross DS: 5 次失误
+        this.maxMistakes = 5; // Picross DS: 5 次失误（=ARM9 失败态 7/8 触发阈值，0x207d898）
         this.solved = false;
         this.failed = false; // G5: 失误达上限游戏结束
         this.filledCount = 0;
@@ -64,7 +64,8 @@ export class PicrossEngine {
         return this.stateCache;
     }
     /**
-     * 单元格操作（Picross DS 触摸循环：填充 → 叉 → 清除 → 填充）
+     * 单元格操作（Picross DS 触摸循环：填充 → 叉 → 清除 → 填充，
+     * 按键等价循环 KEY_CROSS=UP 0x8 / KEY_COL=LEFT 0x10）
      * 模式: cycle=按序切换, mark=直接指定
      */
     tapCell(x, y, mode = "cycle", mark) {
@@ -189,6 +190,7 @@ export class PicrossEngine {
     checkSolved() {
         if (this.solved)
             return;
+        // 完成条件（=ARM9 内部态 0x10「全对」→ 0x2075310 结果 5 → state 4）：
         // 所有解法格已填充（filledCount == totalFilled）
         if (this.filledCount !== this.totalFilled)
             return;

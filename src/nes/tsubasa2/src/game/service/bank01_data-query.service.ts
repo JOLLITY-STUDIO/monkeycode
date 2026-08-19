@@ -19,13 +19,36 @@ import { DataStore } from '../data/DataStore';
 import type { Player, Team, PlayerStats } from '../model/types';
 import { PlayerPosition, FormationType } from '../model/types';
 import {
+  COPY_B271,
+  GFX_PTR_BCF3,
+  GFX_PTR_BD64,
+  GFX_PTR_BDA8,
   LOOKUP_16BIT,
+  MENU_TBL,
   OPTION_FLAG_B255,
   OPTION_SCREEN_Y,
   PLAYER_DATA_BC6E,
+  PLAYER_GFX_TBL,
   POS_TABLE_AD8A,
+  ROSTER_PTR,
+  SCENE_STAT_B393,
+  SCENE_STAT_B3B5,
+  SCENE_STAT_B3D7,
+  SCENE_STAT_B3F9,
+  SCENE_STAT_B41B,
+  SCENE_SUB_TBL,
+  SCRIPT_ENTRY2,
+  SCRIPT_ENTRY4A,
+  SEARCH_IDX,
+  SEARCH_TABLE,
+  TEAM_BLOCK_06,
+  TEAM_BLOCK_0C,
+  TEAM_BLOCK_10,
+  TEAM_GFX_BASE,
 } from '../data/bank01-more-tables';
 import { CHAR_MAP_DOUBLE } from './bank00/char-map';
+import { ScriptVM } from './bank00/script-vm';
+import { getScriptData } from './bank00/script-data-loader';
 
 // ── Bank 01 常量 ──
 
@@ -54,6 +77,37 @@ const JUMP_TARGETS: Record<number, { addr: number; name: string }> = {
   7:  { addr: 0xAF8A, name: 'VRAM 缓冲区写入 2' },
   8:  { addr: 0xB050, name: 'Bank 切换 + 数据加载' },
   9:  { addr: 0xA39B, name: '球队数据初始化' },
+};
+
+// ── 跨 Bank 数据 (固定例程引用, 原硬件经 $8000/$A000 窗口同时可见) ──
+
+/**
+ * Bank30 $CD89 — 球队能力指针表 (32 × 16bit RAM 地址)。
+ * $C50C: ram_0034/35 = 16bit[$CD89 + ((ram_05FB ^ 0x0B) << 1)]
+ */
+const TEAM_STAT_PTR_CD89: readonly number[] = [
+  0x00, 0x03, 0x0C, 0x03, 0x18, 0x03, 0x24, 0x03, 0x30, 0x03, 0x3C, 0x03, 0x48, 0x03, 0x54, 0x03,
+  0x60, 0x03, 0x6C, 0x03, 0x78, 0x03, 0x84, 0x03, 0x90, 0x03, 0x9C, 0x03, 0xA8, 0x03, 0xB4, 0x03,
+  0xC0, 0x03, 0xCC, 0x03, 0xD8, 0x03, 0xE4, 0x03, 0xF0, 0x03, 0xFC, 0x03, 0x08, 0x04, 0x0C, 0x04,
+  0x10, 0x04, 0x14, 0x04, 0x18, 0x04, 0x1C, 0x04, 0x20, 0x04, 0x24, 0x04, 0x28, 0x04, 0x2C, 0x04,
+];
+
+/**
+ * Bank31 $F329 — 球员图形指针表 (16bit 指针, 指向 CHR 数据)。
+ * $C53C → $F30F: ram_0030/31 = 16bit[$F329 + (A << 1)]
+ */
+const PLAYER_GFX_PTR_F329: readonly number[] = [
+  0xEB, 0x05, 0x09, 0xF5, 0x0D, 0xF5, 0x12, 0xF5, 0x15, 0xF5, 0x1A, 0xF5, 0x1F, 0xF5, 0x24, 0xF5,
+  0x29, 0xF5, 0x2E, 0xF5, 0x34, 0xF5, 0x37, 0xF5, 0x3C, 0xF5, 0x40, 0xF5, 0x44, 0xF5, 0x49, 0xF5,
+  0x4E, 0xF5, 0x53, 0xF5, 0x57, 0xF5, 0x5B, 0xF5, 0x5E, 0xF5, 0x63, 0xF5, 0x67, 0xF5, 0x6B, 0xF5,
+  0x6F, 0xF5, 0x73, 0xF5,
+];
+
+/** 队伍阵容块指针表 (entry8 $B050 用): 场景 6/0xC/0x10 → 表 */ 
+const TEAM_BLOCK_BY_SCENE: Record<number, readonly number[]> = {
+  0x06: TEAM_BLOCK_06,
+  0x0C: TEAM_BLOCK_0C,
+  0x10: TEAM_BLOCK_10,
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -257,40 +311,114 @@ export class DataQueryService {
 
   /**
    * 入口6 (A=6): VRAM 缓冲区写入 1
-   * 对应 asm $AF79-$AF89
+   * 对应 asm $AF79-$AF89:
+   *   E6/E7 = TEAM_GFX_BASE[scene*2] (16bit) → $AF9E
+   *   $AF9E: 对 ram_0454[0..0x16] 每项 16bit 累加 E6/E7
    */
   entry6_VramBuf1(): void {
-    // 将数据从 RAM 缓冲区复制到 VRAM (PPU 写入)
-    // TODO: 翻译 $AF79
+    const s = this._store;
+    const scene = s.read('ram_0026');
+    const base = this._read16t(TEAM_GFX_BASE, scene * 2);
+    this._add16ToQuery(base);
   }
 
   /**
    * 入口7 (A=7): VRAM 缓冲区写入 2
-   * 对应 asm $AF8A-$B04F
+   * 对应 asm $AF8A-$AF9D:
+   *   E6/E7 = TEAM_GFX_BASE[scene*2] >> 2 (16bit 右移 2 位) → $AF9E
    */
   entry7_VramBuf2(): void {
-    // VRAM 写入第 2 路径
-    // TODO: 翻译 $AF8A
+    const s = this._store;
+    const scene = s.read('ram_0026');
+    const base = this._read16t(TEAM_GFX_BASE, scene * 2) >> 2;
+    this._add16ToQuery(base);
+  }
+
+  /** $AF9E: 对 ram_0454[0..0x16] 每项 16bit 累加 base (溢出饱和 FF FF) */
+  private _add16ToQuery(base: number): void {
+    const s = this._store;
+    const bLo = base & 0xFF;
+    const bHi = (base >> 8) & 0xFF;
+    for (let x = 0; x < 0x16; x += 2) {
+      const lo0 = this._r8(0x0454 + x);
+      const hi0 = this._r8(0x0455 + x);
+      const sumLo = lo0 + bLo;
+      const sumHi = hi0 + bHi + (sumLo >> 8);
+      const lo = (sumHi >> 8) !== 0 ? 0xFF : (sumLo & 0xFF); // BCC → 饱和
+      const hi = (sumHi >> 8) !== 0 ? 0xFF : (sumHi & 0xFF);
+      s.write(`ram_${(0x0454 + x).toString(16).toUpperCase()}`, lo);
+      s.write(`ram_${(0x0455 + x).toString(16).toUpperCase()}`, hi);
+    }
+  }
+
+  /** 读内置 16bit 表 (little-endian) */
+  private _read16t(t: readonly number[], i: number): number {
+    const lo = t[i] ?? 0;
+    const hi = t[i + 1] ?? 0;
+    return (hi << 8) | lo;
   }
 
   /**
    * 入口8 (A=8): Bank 切换 + 数据加载
-   * 对应 asm $B050-$C???
+   * 对应 asm $B050-$B0BF:
+   *   场景 6/0xC/0x10 → 选 TEAM_BLOCK_06/0C/10;
+   *   先把 ram_0368-0453 复制到 ram_056A (队伍状态备份);
+   *   再把阵容表块 10×2 字节拷入 ram_0454 查询表。
    */
   entry8_DataLoad(): void {
-    // 原始: bank 切换加载其他 Bank 数据表
-    // H5: 直接引用对应 Bank 数据即可
-    // TODO: 翻译 $B050
+    const s = this._store;
+    const scene = s.read('ram_0026');
+    const block = TEAM_BLOCK_BY_SCENE[scene];
+    if (!block) return; // 场景不是 6/0xC/0x10 → $90A0 RTS
+
+    // $9076-$907D: ram_0368,Y → ram_056A,Y (256 字节拷贝)
+    for (let y = 0; y < 0x100; y++) {
+      s.write(`ram_${(0x056A + y).toString(16).toUpperCase()}`, this._r8(0x0368 + y));
+    }
+
+    // $9083-$909E: ram_0454[Y] = ram_0656[block[i]]; 10 次, Y 步进 2
+    let y = 0;
+    for (let i = 0; i < 10; i++) {
+      const xi = block[i] ?? 0;
+      s.write(`ram_${(0x0454 + y).toString(16).toUpperCase()}`, this._r8(0x0656 + xi));
+      s.write(`ram_${(0x0455 + y).toString(16).toUpperCase()}`, this._r8(0x0657 + xi));
+      y += 2;
+    }
   }
 
   /**
    * 入口9 (A=9): 球队数据初始化
-   * 对应 asm $A39B-$A3CF
+   * 对应 asm $A39B-$A3CF:
+   *   第 1 轮: EA=0, 11 次 $A3B4;
+   *   场景 >= 0x10 时第 2 轮: EA=0x16, 10 次 $A3B4。
+   *   $A3B4: ptr = $CD89[(ram_05FB^0x0B)*2]; ram[ptr+3] = LOOKUP_16BIT 最大 ≤ ram_0454[EA] 的索引。
    */
   entry9_TeamDataInit(): void {
-    // 初始化队伍阵型、球员列表
-    // 从 ROM 队伍数据表 ($A4xx+) 加载到 RAM
-    // TODO: 翻译 $A39B
+    const s = this._store;
+    const scene = s.read('ram_0026');
+    this._teamDataInitLoop(0, 0x0B);
+    if (scene >= 0x10) this._teamDataInitLoop(0x16, 0x0A);
+  }
+
+  /** $A3B4: EA 起始索引 + EB 次数 */
+  private _teamDataInitLoop(start: number, count: number): void {
+    const s = this._store;
+    let ea = start;
+    let eb = count;
+    while (eb > 0) {
+      const ptr = this._teamDataPtr();
+      const query = this._query16(ea);
+      const idx = this._lookupIndex16(query);
+      s.write(`ram_${(ptr + 3).toString(16).toUpperCase()}`, idx);
+      ea = (ea + 1) & 0xFF;
+      eb--;
+    }
+  }
+
+  /** Bank30 $C50C → $CD7C: 返回球队能力块 RAM 基址 (ram_0034/35) */
+  private _teamDataPtr(): number {
+    const x = (this._store.read('ram_05FB') ^ 0x0B) & 0xFF;
+    return this._read16t(TEAM_STAT_PTR_CD89, (x * 2) & 0xFE);
   }
 
   // ── 内部: 跳转分发 ──

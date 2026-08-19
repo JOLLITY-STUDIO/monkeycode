@@ -7,7 +7,7 @@
  *   [0x1AF8-0x1CFE] CPU 球队阵容区 (GFX 4B + 队标 3B + [位置码,球员ID]×N + $0F)
  *   [0x1D00-0x1FFF] 0xFF 填充
  */
-import { NES_PRG_ROM } from '../../../rom-data/index';
+import { NES_PRG_ROM } from '../../../src/game/data/rom-data/index';
 import BANK29_ANALYSIS from '../bank-detail/bank29_analysis';
 
 const BANK_SIZE = 8192;

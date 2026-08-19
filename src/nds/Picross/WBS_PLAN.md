@@ -18,7 +18,7 @@
 | B1 | file_94 拼图数据库格式 | ✅ | 提示记录区（0xb2fd00 起 90 条）+ 解法区（0x10c0000 起 256 块）定案；记录↔解法映射见 G4 |
 | B2 | file_86 消息索引表（嵌套偏移） | ✅ | 头 6B + 372×u32 已识别，`extract_messages.py` 解出 372 条 EN 全文（B3） |
 | B3 | messageList_*.dat 文本编码 | ✅ | G3 定案：Msg 模块为「数据即代码」编译产物，记录区非文本非代码，FR/ES 模块过小 → 不接入（维持 B3+i18n 管线） |
-| B4 | PR.sdat 音频格式 | ✅ | G1 定案：非标准 SDAT 且加密不可解 → `src/audio/sfx.ts` WebAudio 合成音效替代 |
+| B4 | PR.sdat 音频格式 | ✅ | S87/G6 修正定案：真实音频在 0x1924800 **隐藏标准 SDAT**（未注册 FAT，161 文件/27 BGM，非加密）；`PR.sdat` 14KB 非本体。SSEQ 轨道流已解码，SE 已转 WAV（`extracted/SDAT/wav/`） |
 | B5 | default_data_*.pmd 存档格式 | ✅ | G2 定案：加密/压缩不可逆 → 保留 wx.storage 方案不迁移 |
 
 ## C. 游戏内核（纯 TS）
@@ -59,11 +59,14 @@
 
 | ID | 任务 | 状态 | 备注 |
 |---|---|---|---|
-| G1 | B4：PR.sdat 音频逆向 + 小程序音效接入 | ✅ | `PR.sdat` 14KB 非标准 SDAT 且加密暂不可解；改用 `src/audio/sfx.ts` WebAudio 合成五类音效接入 |
+| G1 | B4：PR.sdat 音频逆向 + 小程序音效接入 | ✅ | `PR.sdat` 14KB 曾判加密不可解（**BUG-010 已被 S87/G6 推翻**）；`src/audio/sfx.ts` 合成音效为占位，真实音频见 G6 |
 | G2 | B5：default_data_*.pmd 存档格式逆向 | ✅ | `00.pmd` 23KB 加密/压缩（无周期、XOR 不可解）；结论：保留 wx.storage 方案，不迁移 |
 | G3 | E4 纵深：Msg/*.dat 模式索引接入 ROM 原版全量文本 | ✅ | 定案：Msg 模块为「数据即代码」自定义编译产物（SPA 模块含 RAM 导入表 + 调试字符串 `Seq_AotoSampleA_Init()`）；记录区非文本非代码；FR/ES 模块过小不含全量本地化文本 → 维持 B3+i18n 管线不接入（ARM9 记录解释器为深度逆向专项） |
 | G4 | B1 纵深：记录区↔解法区映射（BUG-008）接入 ROM 原版提示 | ✅ | `tools/_g4_match.py` 全量比对定案：记录区与解法区无提示映射 → 引擎从解法推导提示，不接入 ROM 记录区 |
 | G5 | BUG-007：原版 5 次失误判负（failed + UI 失败结算） | ✅ | 引擎 `failed`/`maxMistakes=5` + 失败停表 + 操作忽略；页面 GAME OVER 结算面板；空拼图过滤见 BUG-009（256→223 题） |
+| G6 | B4 修正：隐藏标准 SDAT 音频全量逆向 | ✅ | 0x1924800 隐藏 SDAT（5.95MB/161 文件）边界+结构确认；SYMB 全解析（SEQ 27 BGM）；SSEQ 轨道事件流解码；161 文件全量提取（`extracted/SDAT/files/`）；SE 转 WAV（`extracted/SDAT/wav/`）——BUG-010「加密不可解」结论推翻 |
+| G7 | S101：ARM9 主程序函数级逆向（场景状态机/状态驱动/拼图数据结构） | ✅ | 主入口 0x2003000 + 主循环 0x2003388；场景状态机 0x202bea8（bc0 相位 0-4 + c42 待办位）；状态驱动 0x207d898（0x2075310 校验，0x10=全对→完成态 4、≥0x12/负→失败态 7/8）；会话结构 gCurScenePtr@0x20df650（拼图计数+0x28 / 索引@0x20df624）；TS 引擎语义对照一致（BUG-018 定案） |
+| G8 | 画布渲染素材 ROM 化（用户反馈"造旧"专项） | ✅ | 解码 file_94.bin 4bpp 8x8 tile + file_97.bin 16 色调色板；生成 `assets/nds_tiles.png`（tile 0-31）；`src/render/renderer.ts` 改用 ROM tile 绘制外框/提示区/单元格/网格线；页面预加载 `digits.png` + `nds_tiles.png`（DEVLOG 阶段 8） |
 
 ## 开发日志（DEVLOG.md）与 BUG 记录（BUGS.md）随任务推进维护。
 
@@ -76,3 +79,5 @@
 | v0.3.0 | 完整游戏流程（选择/解谜/结算/存档） | ✅ |
 | v1.0.0 | 优化重构完成 | ✅ |
 | v1.1.0 | G 纵深全部收口（G1 音效 / G2 存档 / G3 文本 / G4 提示映射 / G5 失败判定 + BUG-009 空拼图过滤，223 题） | ✅ |
+| v1.2.0 | B4 修正：隐藏标准 SDAT 音频定案（27 真实 BGM + SE 全部可解码，BUG-010 加密结论推翻，BUG-016） | ✅ |
+| v1.3.0 | S101：ARM9 主程序逆向定案（主入口/主循环/场景状态机/状态驱动，BUG-018，DEVLOG 阶段 7） | ✅ |

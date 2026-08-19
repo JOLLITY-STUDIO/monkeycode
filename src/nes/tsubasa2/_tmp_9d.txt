@@ -1,0 +1,13 @@
+bank_00_part01.asm L1: ; bank_00.asm 分片 1/5 (原文件行 1-1000, 共 4621 行)
+
+.segment "???"
+.include "bank_ram.
+bank_00_part02.asm L1: ; bank_00.asm 分片 2/5 (原文件行 1001-2000, 共 4621 行)
+
+C - - - - - 0x000737 00:8727: E
+bank_00_part04.asm L1: ; bank_00.asm 分片 4/5 (原文件行 3001-4000, 共 4621 行)
+
+C - - - - - 0x0014DC 00:94CC: 8
+bank_00_part05.asm L1: ; bank_00.asm 分片 5/5 (原文件行 4001-4621, 共 4621 行)
+
+C - - - - - 0x001BF5 00:9BE5: 8

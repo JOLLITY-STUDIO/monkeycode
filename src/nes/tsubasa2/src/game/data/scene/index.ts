@@ -44,6 +44,8 @@ export enum OpeningShot {
 export enum TitleMenu {
   KICKOFF = 0,
   CONTINUE = 1,
+  /** パスワード — 密码输入 (bank2 $A484 分发 idx0 $A4C0) */
+  PASSWORD = 2,
 }
 
 // ═══════════════════════════════════════════════════════════════

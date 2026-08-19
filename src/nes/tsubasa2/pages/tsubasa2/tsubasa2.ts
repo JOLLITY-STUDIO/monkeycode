@@ -2,9 +2,9 @@
  * 天使之翼2 — 微信小程序游戏页面 + NT 交叉测试
  */
 
-import { Tsubasa2 } from '../../tsubasa2-h5-src/src/core/Tsubasa2';
-import { DataStore } from '../../tsubasa2-h5-src/src/game/data/DataStore';
-import { NES_WIDTH, NES_HEIGHT, TILE_PX, NT_COLS, NT_ROWS } from '../../tsubasa2-h5-src/src/core/types';
+import { Tsubasa2 } from '../../src/core/Tsubasa2';
+import { DataStore } from '../../src/game/data/DataStore';
+import { NES_WIDTH, NES_HEIGHT, TILE_PX, NT_COLS, NT_ROWS } from '../../src/core/types';
 
 type PageMode = 'game' | 'nt_test';
 

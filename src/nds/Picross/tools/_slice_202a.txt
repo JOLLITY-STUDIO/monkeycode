@@ -1,0 +1,256 @@
+ 0x202a400  cmp      r6, #0
+ 0x202a404  popeq    {r4, r5, r6, pc}
+ 0x202a408  bl       #0x203a594
+ 0x202a40c  mov      r0, r5
+ 0x202a410  bl       #0x202a5a8
+ 0x202a414  mov      r4, r0
+ 0x202a418  mov      r0, r6
+ 0x202a41c  bl       #0x2082558
+ 0x202a420  mov      r0, r5
+ 0x202a424  bl       #0x2029894
+ 0x202a428  cmp      r0, #0
+ 0x202a42c  ldrne    r0, [pc, #0x48]
+ 0x202a430  ldrne    r1, [r0]
+ 0x202a434  ldrsbne  r0, [r1, #0x28]
+ 0x202a438  subne    r0, r0, #1
+ 0x202a43c  strbne   r0, [r1, #0x28]
+ 0x202a440  mov      r0, #0x14
+ 0x202a444  mul      r3, r5, r0
+ 0x202a448  mov      r5, #0
+ 0x202a44c  ldr      r1, [pc, #0x28]
+ 0x202a450  strb     r5, [r4]
+ 0x202a454  mov      r2, r5
+ 0x202a458  ldr      r0, [r1]
+ 0x202a45c  add      r0, r3, r0
+ 0x202a460  add      r0, r0, r5, lsl #1
+ 0x202a464  add      r0, r0, #0x600
+ 0x202a468  add      r5, r5, #1
+ 0x202a46c  strh     r2, [r0, #0xc0]
+ 0x202a470  cmp      r5, #0xa
+ 0x202a474  blt      #0x202a458
+ 0x202a478  pop      {r4, r5, r6, pc}
+ 0x202a47c  andeq    pc, sp, #80, #12
+ 0x202a480  push     {r4, r5, r6, lr}
+ 0x202a484  mov      r5, r0
+ 0x202a488  bl       #0x203a594
+ 0x202a48c  mov      r0, r5
+ 0x202a490  bl       #0x202a5c4
+ 0x202a494  mov      r6, r0
+ 0x202a498  mov      r0, r5
+ 0x202a49c  bl       #0x202a5a8
+ 0x202a4a0  mov      r4, r0
+ 0x202a4a4  cmp      r6, #0
+ 0x202a4a8  popeq    {r4, r5, r6, pc}
+ 0x202a4ac  mov      r0, r6
+ 0x202a4b0  bl       #0x2082558
+ 0x202a4b4  mov      r0, r5
+ 0x202a4b8  bl       #0x2029894
+ 0x202a4bc  cmp      r0, #0
+ 0x202a4c0  ldrne    r0, [pc, #0x48]
+ 0x202a4c4  ldrne    r1, [r0]
+ 0x202a4c8  ldrsbne  r0, [r1, #0x28]
+ 0x202a4cc  subne    r0, r0, #1
+ 0x202a4d0  strbne   r0, [r1, #0x28]
+ 0x202a4d4  mov      r0, #0x14
+ 0x202a4d8  mul      r3, r5, r0
+ 0x202a4dc  mov      r5, #0
+ 0x202a4e0  ldr      r1, [pc, #0x28]
+ 0x202a4e4  strb     r5, [r4]
+ 0x202a4e8  mov      r2, r5
+ 0x202a4ec  ldr      r0, [r1]
+ 0x202a4f0  add      r0, r3, r0
+ 0x202a4f4  add      r0, r0, r5, lsl #1
+ 0x202a4f8  add      r0, r0, #0x600
+ 0x202a4fc  add      r5, r5, #1
+ 0x202a500  strh     r2, [r0, #0xc0]
+ 0x202a504  cmp      r5, #0xa
+ 0x202a508  blt      #0x202a4ec
+ 0x202a50c  pop      {r4, r5, r6, pc}
+ 0x202a510  andeq    pc, sp, #80, #12
+ 0x202a514  ldr      ip, [pc]
+ 0x202a518  bx       ip
+ 0x202a51c  andeq    r8, r7, #224, #16
+ 0x202a520  ldr      r2, [pc, #0x10]
+ 0x202a524  mov      r1, #0x14
+ 0x202a528  ldr      r2, [r2]
+ 0x202a52c  add      r2, r2, #0x6c0
+ 0x202a530  mla      r0, r1, r0, r2
+ 0x202a534  bx       lr
+ 0x202a538  andeq    pc, sp, #80, #12
+ 0x202a53c  push     {r4, r5, lr}
+ 0x202a540  sub      sp, sp, #4
+ 0x202a544  mov      r5, r0
+ 0x202a548  mov      r4, #0
+ 0x202a54c  mov      r0, r4
+ 0x202a550  bl       #0x202a5c4
+ 0x202a554  cmp      r0, #0
+ 0x202a558  beq      #0x202a578
+ 0x202a55c  bl       #0x202a514
+ 0x202a560  cmp      r0, #0
+ 0x202a564  beq      #0x202a578
+ 0x202a568  cmp      r5, #0
+ 0x202a56c  beq      #0x202a588
+ 0x202a570  sub      r0, r5, #1
+ 0x202a574  and      r5, r0, #0xff
+ 0x202a578  add      r0, r4, #1
+ 0x202a57c  and      r4, r0, #0xff
+ 0x202a580  cmp      r4, #0x40
+ 0x202a584  blo      #0x202a54c
+ 0x202a588  ldr      r1, [pc, #0x14]
+ 0x202a58c  mov      r0, #0x1a
+ 0x202a590  ldr      r1, [r1]
+ 0x202a594  add      r1, r1, #0x40
+ 0x202a598  mla      r0, r4, r0, r1
+ 0x202a59c  add      sp, sp, #4
+ 0x202a5a0  pop      {r4, r5, pc}
+ 0x202a5a4  andeq    pc, sp, #80, #12
+ 0x202a5a8  ldr      r2, [pc, #0x10]
+ 0x202a5ac  mov      r1, #0x1a
+ 0x202a5b0  ldr      r2, [r2]
+ 0x202a5b4  add      r2, r2, #0x40
+ 0x202a5b8  mla      r0, r1, r0, r2
+ 0x202a5bc  bx       lr
+ 0x202a5c0  andeq    pc, sp, #80, #12
+ 0x202a5c4  ldr      ip, [pc]
+ 0x202a5c8  bx       ip
+ 0x202a5cc  andeq    sl, r3, #120, #8
+ 0x202a5d0  push     {r4, r5, r6, r7, lr}
+ 0x202a5d4  sub      sp, sp, #4
+ 0x202a5d8  mov      r5, r0
+ 0x202a5dc  mov      r4, r1
+ 0x202a5e0  bl       #0x203a588
+ 0x202a5e4  mov      r0, r5
+ 0x202a5e8  bl       #0x207843c
+ 0x202a5ec  cmp      r0, #0
+ 0x202a5f0  beq      #0x202a770
+ 0x202a5f4  mov      r0, r5
+ 0x202a5f8  bl       #0x203a3a0
+ 0x202a5fc  cmp      r0, #0
+ 0x202a600  bne      #0x202a758
+ 0x202a604  ldr      r0, [pc, #0x170]
+ 0x202a608  ldr      r0, [r0]
+ 0x202a60c  ldrsb    r0, [r0, #0x28]
+ 0x202a610  cmp      r0, #0x40
+ 0x202a614  mvnge    r7, #0
+ 0x202a618  bge      #0x202a624
+ 0x202a61c  bl       #0x203a430
+ 0x202a620  mov      r7, r0
+ 0x202a624  mvn      r0, #0
+ 0x202a628  cmp      r7, r0
+ 0x202a62c  beq      #0x202a6ac
+ 0x202a630  bl       #0x203a4dc
+ 0x202a634  mov      r2, #0xc
+ 0x202a638  mla      r1, r7, r2, r0
+ 0x202a63c  mov      r0, r5
+ 0x202a640  bl       #0x2050eb4
+ 0x202a644  and      r0, r7, #0xff
+ 0x202a648  bl       #0x202a5a8
+ 0x202a64c  mov      r6, r0
+ 0x202a650  cmp      r4, #0
+ 0x202a654  bne      #0x202a66c
+ 0x202a658  ldr      r0, [r5]
+ 0x202a65c  ldr      r1, [r5, #4]
+ 0x202a660  mov      r2, r6
+ 0x202a664  bl       #0x20296bc
+ 0x202a668  b        #0x202a684
+ 0x202a66c  mov      r0, r4
+ 0x202a670  mov      r1, r6
+ 0x202a674  mov      r2, #0x14
+ 0x202a678  bl       #0x2050fe4
+ 0x202a67c  mov      r0, #0
+ 0x202a680  strh     r0, [r6, #0x14]
+ 0x202a684  ldr      r1, [pc, #0xf0]
+ 0x202a688  and      r0, r7, #0xff
+ 0x202a68c  ldr      r2, [r1]
+ 0x202a690  ldrsb    r1, [r2, #0x28]
+ 0x202a694  add      r1, r1, #1
+ 0x202a698  strb     r1, [r2, #0x28]
+ 0x202a69c  bl       #0x2029920
+ 0x202a6a0  add      sp, sp, #4
+ 0x202a6a4  mov      r0, #0
+ 0x202a6a8  pop      {r4, r5, r6, r7, pc}
+ 0x202a6ac  ldr      r0, [pc, #0xc8]
+ 0x202a6b0  ldr      r0, [r0]
+ 0x202a6b4  ldrb     r0, [r0, #0xc40]
+ 0x202a6b8  bl       #0x202a480
+ 0x202a6bc  bl       #0x203a430
+ 0x202a6c0  mov      r7, r0
+ 0x202a6c4  mvn      r0, #0
+ 0x202a6c8  cmp      r7, r0
+ 0x202a6cc  beq      #0x202a74c
+ 0x202a6d0  bl       #0x203a4dc
+ 0x202a6d4  mov      r2, #0xc
+ 0x202a6d8  mla      r1, r7, r2, r0
+ 0x202a6dc  mov      r0, r5
+ 0x202a6e0  bl       #0x2050eb4
+ 0x202a6e4  and      r0, r7, #0xff
+ 0x202a6e8  bl       #0x202a5a8
+ 0x202a6ec  mov      r6, r0
+ 0x202a6f0  cmp      r4, #0
+ 0x202a6f4  bne      #0x202a70c
+ 0x202a6f8  ldr      r0, [r5]
+ 0x202a6fc  ldr      r1, [r5, #4]
+ 0x202a700  mov      r2, r6
+ 0x202a704  bl       #0x20296bc
+ 0x202a708  b        #0x202a724
+ 0x202a70c  mov      r0, r4
+ 0x202a710  mov      r1, r6
+ 0x202a714  mov      r2, #0x14
+ 0x202a718  bl       #0x2050fe4
+ 0x202a71c  mov      r0, #0
+ 0x202a720  strh     r0, [r6, #0x14]
+ 0x202a724  ldr      r1, [pc, #0x50]
+ 0x202a728  and      r0, r7, #0xff
+ 0x202a72c  ldr      r2, [r1]
+ 0x202a730  ldrsb    r1, [r2, #0x28]
+ 0x202a734  add      r1, r1, #1
+ 0x202a738  strb     r1, [r2, #0x28]
+ 0x202a73c  bl       #0x2029920
+ 0x202a740  add      sp, sp, #4
+ 0x202a744  mov      r0, #0
+ 0x202a748  pop      {r4, r5, r6, r7, pc}
+ 0x202a74c  add      sp, sp, #4
+ 0x202a750  mov      r0, #4
+ 0x202a754  pop      {r4, r5, r6, r7, pc}
+ 0x202a758  sub      r0, r0, #1
+ 0x202a75c  and      r0, r0, #0xff
+ 0x202a760  bl       #0x2029920
+ 0x202a764  add      sp, sp, #4
+ 0x202a768  mov      r0, #3
+ 0x202a76c  pop      {r4, r5, r6, r7, pc}
+ 0x202a770  mov      r0, #2
+ 0x202a774  add      sp, sp, #4
+ 0x202a778  pop      {r4, r5, r6, r7, pc}
+ 0x202a77c  andeq    pc, sp, #80, #12
+ 0x202a780  push     {r4, r5, r6, lr}
+ 0x202a784  sub      sp, sp, #0x10
+ 0x202a788  mov      r6, r0
+ 0x202a78c  mov      r5, r1
+ 0x202a790  bl       #0x203a588
+ 0x202a794  mov      r1, r6
+ 0x202a798  mov      r2, r5
+ 0x202a79c  bl       #0x2078810
+ 0x202a7a0  cmp      r0, #0
+ 0x202a7a4  beq      #0x202a8d8
+ 0x202a7a8  add      r0, sp, #0
+ 0x202a7ac  mov      r1, r6
+ 0x202a7b0  mov      r2, r5
+ 0x202a7b4  bl       #0x2078184
+ 0x202a7b8  add      r0, sp, #0
+ 0x202a7bc  bl       #0x203a3a0
+ 0x202a7c0  cmp      r0, #0
+ 0x202a7c4  bne      #0x202a8cc
+ 0x202a7c8  ldr      r0, [pc, #0x114]
+ 0x202a7cc  ldr      r0, [r0]
+ 0x202a7d0  ldrsb    r0, [r0, #0x28]
+ 0x202a7d4  cmp      r0, #0x40
+ 0x202a7d8  mvnge    r4, #0
+ 0x202a7dc  bge      #0x202a7e8
+ 0x202a7e0  bl       #0x203a430
+ 0x202a7e4  mov      r4, r0
+ 0x202a7e8  mvn      r0, #0
+ 0x202a7ec  cmp      r4, r0
+ 0x202a7f0  beq      #0x202a848
+ 0x202a7f4  bl       #0x203a4dc
+ 0x202a7f8  mov      r2, #0xc
+ 0x202a7fc  mla      r1, r4, r2, r0

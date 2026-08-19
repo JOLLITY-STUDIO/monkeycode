@@ -1,16 +1,16 @@
 /**
  * 多语言（E4）
- * - UI 文案：zh/en/fr/es 四语（人工维护，ROM 只提供 en/fr/es）
- * - 拼图名：优先取 PUZZLE_NAMES[lang]（B3 ROM 提取），无则回退英文/默认名
+ * - UI 文案：en/tc/ja/ko 四语（繁中/英文/日文/韩文）
+ * - 拼图名：ROM 只提供 en/fr/es，故非英文一律回退英文，再空则回退默认名
  * - 语言持久化：wx.storage / localStorage，key=picross_lang
  */
 import { PUZZLE_NAMES } from "../data/messages";
-export const LANGS = ["zh", "en", "fr", "es"];
+export const LANGS = ["en", "tc", "ja", "ko"];
 export const LANG_LABELS = {
-    zh: "中文",
     en: "EN",
-    fr: "FR",
-    es: "ES",
+    tc: "繁中",
+    ja: "日本語",
+    ko: "한국어",
 };
 const SAVE_KEY = "picross_lang";
 function storage() {
@@ -25,33 +25,13 @@ function storage() {
 }
 export function getLang() {
     const saved = storage().get(SAVE_KEY);
-    return LANGS.indexOf(saved) >= 0 ? saved : "zh";
+    return saved && LANGS.indexOf(saved) >= 0 ? saved : "tc";
 }
 export function setLang(l) {
     storage().set(SAVE_KEY, l);
 }
-/** UI 文案表 */
+/** UI 文案表（puzzleFallback 为函数，其余为字符串） */
 export const T = {
-    zh: {
-        appTitle: "Picross DS",
-        diffEasy: "简单",
-        diffNormal: "普通",
-        diffHard: "困难",
-        cleared: "已通关",
-        solvedTitle: "CLEAR!",
-        failedTitle: "GAME OVER",
-        failedSub: "失误次数已用完",
-        retryBtn: "重新开始",
-        timeLabel: "用时",
-        mistakeLabel: "失误",
-        nextBtn: "下一题",
-        prevBtn: "上一题",
-        backBtn: "返回选择",
-        resetBtn: "重置",
-        markCross: "画叉",
-        markFill: "涂黑",
-        puzzleFallback: (n) => `Picross ${n}`,
-    },
     en: {
         appTitle: "Picross DS",
         diffEasy: "Easy",
@@ -70,46 +50,106 @@ export const T = {
         resetBtn: "Reset",
         markCross: "Mark X",
         markFill: "Fill",
+        selectBtn: "Select",
+        playBtn: "Play",
+        selectTitle: "Select Puzzle",
+        howtoTitle: "How to Play",
+        skipBtn: "Skip",
+        tutOk: "OK",
+        tutPen: "Pen",
+        tutX: "X",
+        tutPenMode: "Pen Mode",
+        tutXMode: "X Mode",
         puzzleFallback: (n) => `Picross ${n}`,
     },
-    fr: {
+    tc: {
         appTitle: "Picross DS",
-        diffEasy: "Facile",
-        diffNormal: "Normal",
-        diffHard: "Difficile",
-        cleared: "Terminé",
-        solvedTitle: "GAGNÉ!",
-        failedTitle: "PERDU",
-        failedSub: "Plus d'erreurs",
-        retryBtn: "Réessayer",
-        timeLabel: "Temps",
-        mistakeLabel: "Erreurs",
-        nextBtn: "Suivant",
-        prevBtn: "Précédent",
-        backBtn: "Retour",
-        resetBtn: "Réinitialiser",
-        markCross: "Marquer X",
-        markFill: "Remplir",
+        diffEasy: "簡單",
+        diffNormal: "普通",
+        diffHard: "困難",
+        cleared: "已通關",
+        solvedTitle: "CLEAR!",
+        failedTitle: "GAME OVER",
+        failedSub: "失誤次數已用完",
+        retryBtn: "重新開始",
+        timeLabel: "用時",
+        mistakeLabel: "失誤",
+        nextBtn: "下一題",
+        prevBtn: "上一題",
+        backBtn: "返回選擇",
+        resetBtn: "重置",
+        markCross: "畫叉",
+        markFill: "塗黑",
+        selectBtn: "選擇",
+        playBtn: "開始遊戲",
+        selectTitle: "選擇拼圖",
+        howtoTitle: "玩法教學",
+        skipBtn: "跳過",
+        tutOk: "OK",
+        tutPen: "筆",
+        tutX: "叉",
+        tutPenMode: "筆模式",
+        tutXMode: "叉模式",
         puzzleFallback: (n) => `Picross ${n}`,
     },
-    es: {
+    ja: {
         appTitle: "Picross DS",
-        diffEasy: "Fácil",
-        diffNormal: "Normal",
-        diffHard: "Difícil",
-        cleared: "Completado",
-        solvedTitle: "¡GANA!",
-        failedTitle: "FIN",
-        failedSub: "Sin errores",
-        retryBtn: "Reintentar",
-        timeLabel: "Tiempo",
-        mistakeLabel: "Errores",
-        nextBtn: "Siguiente",
-        prevBtn: "Anterior",
-        backBtn: "Volver",
-        resetBtn: "Reiniciar",
-        markCross: "Marcar X",
-        markFill: "Rellenar",
+        diffEasy: "かんたん",
+        diffNormal: "ふつう",
+        diffHard: "むずかしい",
+        cleared: "クリア済み",
+        solvedTitle: "CLEAR!",
+        failedTitle: "GAME OVER",
+        failedSub: "ミス回数が上限に達しました",
+        retryBtn: "リトライ",
+        timeLabel: "タイム",
+        mistakeLabel: "ミス",
+        nextBtn: "次へ",
+        prevBtn: "前へ",
+        backBtn: "選択に戻る",
+        resetBtn: "リセット",
+        markCross: "バツをつける",
+        markFill: "塗る",
+        selectBtn: "選択",
+        playBtn: "ゲーム開始",
+        selectTitle: "パズルを選ぶ",
+        howtoTitle: "遊び方",
+        skipBtn: "スキップ",
+        tutOk: "OK",
+        tutPen: "ペン",
+        tutX: "バツ",
+        tutPenMode: "ペンモード",
+        tutXMode: "バツモード",
+        puzzleFallback: (n) => `Picross ${n}`,
+    },
+    ko: {
+        appTitle: "Picross DS",
+        diffEasy: "쉬움",
+        diffNormal: "보통",
+        diffHard: "어려움",
+        cleared: "클리어",
+        solvedTitle: "CLEAR!",
+        failedTitle: "GAME OVER",
+        failedSub: "실수 횟수를 모두 사용했습니다",
+        retryBtn: "다시 시작",
+        timeLabel: "시간",
+        mistakeLabel: "실수",
+        nextBtn: "다음",
+        prevBtn: "이전",
+        backBtn: "선택으로 돌아가기",
+        resetBtn: "리셋",
+        markCross: "X 표시",
+        markFill: "칠하기",
+        selectBtn: "선택",
+        playBtn: "게임 시작",
+        selectTitle: "퍼즐 선택",
+        howtoTitle: "게임 방법",
+        skipBtn: "걸러뛰기",
+        tutOk: "OK",
+        tutPen: "펜",
+        tutX: "X",
+        tutPenMode: "펜 모드",
+        tutXMode: "X 모드",
         puzzleFallback: (n) => `Picross ${n}`,
     },
 };
@@ -127,13 +167,9 @@ export function uiStrings(lang) {
 export function diffLabel(lang, diff) {
     return T[lang][DIFF_KEYS[diff] || "diffEasy"] || "";
 }
-/** 拼图名：PUZZLE_NAMES[lang]（B3），空则回退英文，再空回退 Picross N */
+/** 拼图名：ROM 只提供 en/fr/es，因此所有语言均回退英文；空则回退 Picross N */
 export function puzzleName(lang, id) {
-    const pick = (l) => {
-        const arr = PUZZLE_NAMES[l];
-        return arr && arr[id] ? arr[id].replace(/\n/g, "").trim() : "";
-    };
-    const n = lang === "zh" ? "" : pick(lang);
-    const en = pick("en");
-    return n || en || T[lang].puzzleFallback(id + 1);
+    const arr = PUZZLE_NAMES["en"];
+    const n = arr && arr[id] ? arr[id].replace(/\n/g, "").trim() : "";
+    return n || T[lang].puzzleFallback(id + 1);
 }

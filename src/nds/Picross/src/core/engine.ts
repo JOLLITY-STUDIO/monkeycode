@@ -1,6 +1,13 @@
 /**
  * Picross 游戏引擎 —— 纯 TS 实现，不依赖任何平台 API
  * 状态管理 / 单元格操作 / 提示校验 / 完成检测
+ *
+ * 与 ARM9 主程序语义对照（S101 反汇编定案，见 DEVLOG 阶段 7 / BUGS BUG-018）：
+ * - 完成检测 = ARM9 状态驱动 0x207d898 → 0x2075310 校验板面，内部态 0x10=全对
+ *   → 结果码 5 → state=4（完成）；等价于本类 checkSolved（全填且无误填）
+ * - 失败判负 = ARM9 校验错误路径（≥0x12 / 负值）→ 0x207d3a8 → state 7/8（失败态）
+ *   → 等价于本类 mistakes>=maxMistakes → failed
+ * - 单元格循环（填充→叉→清除→填充）= 按键循环 KEY_CROSS=UP(0x8)/KEY_COL=LEFT(0x10)
  */
 import { CellMark, GameState, LineHint, Puzzle } from "./types";
 import { computeLineHints } from "./hints";
@@ -17,7 +24,7 @@ export class PicrossEngine {
   private colHints: LineHint[];
   private elapsed = 0;
   private mistakes = 0;
-  private readonly maxMistakes = 5; // Picross DS: 5 次失误
+  private readonly maxMistakes = 5; // Picross DS: 5 次失误（=ARM9 失败态 7/8 触发阈值，0x207d898）
   private solved = false;
   private failed = false; // G5: 失误达上限游戏结束
   private filledCount = 0;
@@ -86,7 +93,8 @@ export class PicrossEngine {
   }
 
   /**
-   * 单元格操作（Picross DS 触摸循环：填充 → 叉 → 清除 → 填充）
+   * 单元格操作（Picross DS 触摸循环：填充 → 叉 → 清除 → 填充，
+   * 按键等价循环 KEY_CROSS=UP 0x8 / KEY_COL=LEFT 0x10）
    * 模式: cycle=按序切换, mark=直接指定
    */
   tapCell(x: number, y: number, mode: "cycle" | "mark" = "cycle", mark?: CellMark): void {
@@ -212,6 +220,7 @@ export class PicrossEngine {
 
   private checkSolved(): void {
     if (this.solved) return;
+    // 完成条件（=ARM9 内部态 0x10「全对」→ 0x2075310 结果 5 → state 4）：
     // 所有解法格已填充（filledCount == totalFilled）
     if (this.filledCount !== this.totalFilled) return;
     // 且不存在误填格（错误填充仍会计入 filledCount）

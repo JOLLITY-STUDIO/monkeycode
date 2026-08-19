@@ -45,6 +45,8 @@ import { Bank20Service } from './service/bank20_match-aux.service';
 import { BUTTON } from '../core/types';
 import { palReset } from './data/ppu/pallete/paletteManager';
 import { ResultController } from './service/bank00_result.controller';
+import { PasswordController, type PasswordDisplayState } from './service/bank02_password.service';
+import { Bank02Service } from './service/bank02_scene.service';
 import { getMatchConfig } from './data/match-config';
 
 /** 游戏根状态（存 DataStore.ram 中） */
@@ -77,7 +79,7 @@ const MATCH_DURATION_FRAMES = 60 * 90; // ~90 秒 @60fps (占位, 后续按原�
  */
 interface CoroutineSlot {
   /** 场景协程 (null=空槽) */
-  gen: Generator<number, SceneRoot | void, number> | null;
+  gen: Generator<number | undefined, SceneRoot | void, number> | null;
   /** 协程对应场景标签 (用于 _dispatch 识别) */
   scene: SceneRoot;
 }
@@ -100,6 +102,9 @@ export class BootService {
 
   /** 赛果场景控制器 */
   private _result!: ResultController;
+
+  /** 密码输入场景控制器 (Bank02 $A484 分发 + $A4C0 主逻辑) */
+  private _password!: PasswordController;
 
   /**
    * 协程槽表 — 对应 ROM bank0 $9EED 主循环的 ram_0001-$0018 (6槽)。
@@ -124,6 +129,8 @@ export class BootService {
     private _bank19: Bank19Service,
     private _bank20: Bank20Service,
     private _bank18: Bank18Service,
+    /** Bank02 场景服务 — 供 PASSWORD 场景执行真实 $A484/$A4C0 初始化链 (可选注入) */
+    private _bank02?: Bank02Service,
   ) {}
 
   // ── 公开接口 ──
@@ -145,6 +152,7 @@ export class BootService {
     this._title = new TitleSceneController();
     this._opening = new OpeningSceneController(this._store);
     this._result = new ResultController(this._store);
+    this._password = new PasswordController(this._store);
 
     // 4. 进入 BOOT 场景 — 等价 JMP $C400 (A=0) → bank2 $A21B 加载初始协程 → JMP $9EED 主循环
     // H5: 启动 BOOT 协程到槽0 (协程模型, 对应 ram_0001 初始任务)
@@ -217,6 +225,13 @@ export class BootService {
     return this._opening.getDisplayState();
   }
 
+  /** 获取密码界面显示状态 (View 层消费, 写 NT/OAM) */
+  getPasswordDisplayState(): PasswordDisplayState | null {
+    if (!this._password) return null;
+    if (this.getRoot() !== SceneRoot.PASSWORD) return null;
+    return this._password.getDisplayState();
+  }
+
   // ── 内部 ──
 
   /** 初始化默认 RAM 值（对应 Bank 30 硬件初始化部分） */
@@ -286,7 +301,7 @@ export class BootService {
    * yield 返回 SceneRoot = 请求切换场景; return SceneRoot = 协程完成切下一场景。
    * @param _buttons 帧按键 (yield 接收值)
    */
-  private *_makeCoroutine(scene: SceneRoot): Generator<number, SceneRoot | void, number> {
+  private *_makeCoroutine(scene: SceneRoot): Generator<number | undefined, SceneRoot | void, number> {
     switch (scene) {
     case SceneRoot.BOOT:
       return yield* this._bootCoroutine();
@@ -300,13 +315,36 @@ export class BootService {
       return yield* this._matchCoroutine();
     case SceneRoot.RESULT:
       return yield* this._resultCoroutine();
+    case SceneRoot.PASSWORD:
+      return yield* this._passwordCoroutine();
     default:
-      return; // PASSWORD/CREDITS — TODO
+      return; // CREDITS — TODO
+    }
+  }
+
+  /**
+   * PASSWORD 协程 — 密码输入 (Bank02 $A484 分发 + $A4C0 主逻辑)。
+   * 真实入口: $A200 跳转表第7项 → $A484 → 按 ram_00ED 索引分发 → idx0 $A4C0。
+   * 密码确认后切 TITLE (回标题) 或 STORY (续关)。
+   */
+  private *_passwordCoroutine(): Generator<number | undefined, SceneRoot, number> {
+    this._password.init(0);  // idx0 = $A4C0 密码输入主逻辑
+    // 真实 $A4C0 初始化链 (bank02 翻译): 字符表加载 + Cut 0x17 背景 NT + 滚动 + 调色板 + NT 块填充
+    // 对应 $A200 → $A484 分发 (ram_00ED=0) → $A4C0 场景动画初始化
+    if (this._bank02) this._bank02.entryF(0);
+    for (;;) {
+      const buttons = yield;
+      const r = this._password.update(buttons);
+      if (r === 'success') {
+        // 密码校验通过 → 回标题 (真实续关逻辑待抠 $A4C0 后续, 通过后应切 STORY 续关)
+        return SceneRoot.TITLE;
+      }
+      // r === 'fail' | 'continue' → 留在密码界面 (原版失败有错误反馈, 待抠 $A4C0 后续)
     }
   }
 
   /** BOOT 协程 — 开场占位过渡, START 或超时切换 TITLE */
-  private *_bootCoroutine(): Generator<number, SceneRoot, number> {
+  private *_bootCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._opening.initBoot();
     this._writeShot(OpeningShot.LOGO);
     this._shotFrame = 0;
@@ -320,7 +358,7 @@ export class BootService {
   }
 
   /** TITLE 协程 — 标题菜单, 选项确认后切 MEETING/STORY/PASSWORD */
-  private *_titleCoroutine(): Generator<number, SceneRoot, number> {
+  private *_titleCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._opening.init();  // Cut 0x17 标题菜单背景
     this._title.init();
     for (;;) {
@@ -336,7 +374,7 @@ export class BootService {
   }
 
   /** MEETING 协程 — 赛前会议/选项屏幕, 确认后切 STORY */
-  private *_meetingCoroutine(): Generator<number, SceneRoot, number> {
+  private *_meetingCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._dataQuery.initOptionScreen();
     for (;;) {
       const buttons = yield;
@@ -348,7 +386,7 @@ export class BootService {
   }
 
   /** STORY 协程 — 剧情场景 (Bank18 驱动 Bank19), A/START 跳过或结束切 MATCH */
-  private *_storyCoroutine(): Generator<number, SceneRoot, number> {
+  private *_storyCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._bank18.enterChapter(StoryChapter.OPENING);
     this._matchFrame = 0;
     for (;;) {
@@ -375,7 +413,7 @@ export class BootService {
    *   算出, 指向 bank2 $A000+ 区比赛配置数据表)。
    * 当前用占位初始值 ($80/$04), 待 bank2 比赛配置数据表建模后替换。
    */
-  private *_matchCoroutine(): Generator<number, SceneRoot, number> {
+  private *_matchCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._matchFrame = 0;
     // 比赛配置加载 (对应 bank0 $8B1C-$8B6F: ram_00ED 索引→bank7 指针表→配置数据)
     const matchIdx = (this._store.read('ram_00ED') as number) || 0;
@@ -409,7 +447,7 @@ export class BootService {
   }
 
   /** RESULT 协程 — 赛果, 确认后切 TITLE (回标题) */
-  private *_resultCoroutine(): Generator<number, SceneRoot, number> {
+  private *_resultCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._matchFrame = 0;
     this._result.init();
     for (;;) {

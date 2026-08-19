@@ -512,23 +512,195 @@ export class Bank02Service {
     return SCROLL_DELTA[i];
   }
 
-  /** 密码逻辑 ($8338+): ram_0057=$81特殊处理 */
+  /** $833C-$83A0: 普通负值路径 — OAM 精灵槽位初始化 (33 槽 × 4 属性) + 坐标修正循环 */
+  private _entryC_oamSlotPath(): void {
+    const s = this._store;
+    // $833C-$8340: LDX #$67; LDA #$05; JSR $C4BD — MMC3 bank 选择
+    //   ($8000=$05|ram_0022 → ram_0023; $8001=$67; H5: no-op)
+    if (this._bank30) {
+      this._bank30.bankSelect(0x05, 0x67);
+    }
+    // $8343-$8348: LDA #$00; STA ram_00ED; TAY; LDX #$78
+    s.write('ram_00ED', 0);
+    let y = 0;
+    // $834A-$8370: 填充 ram_0468..046B (33 槽, X=$78..$FB 步进 4) — 经 oamShadow 接口
+    for (let x = 0x78; x < 0xFC; x += 4) {
+      // $834A-$8350: ram_0469,X = (ram_00EC & $01) | $F2
+      // $8353-$8355: ram_046A,X = $03
+      // $8358-$835F: ram_0468,X = Y; Y += 3
+      // $8360-$8368: ram_046B,X = ram_00EC; ram_00EC += $0D
+      const ec = s.read('ram_00EC');
+      s.oamShadow.writeSlot(x, y & 0xFF, (ec & 0x01) | 0xF2, 0x03, ec);
+      y = (y + 3) & 0xFF;
+      s.write('ram_00EC', (ec + 0x0D) & 0xFF);
+    }
+    // $8372-$8375: LDA #$01; JSR $9FA8 — 帧推进 (H5: no-op)
+    this._bank00.bankSwitch9FA8(1);
+    // $8379-$839E: 坐标修正循环 (33 槽) — 依据 PW_OAM_FIX($AB1F) 表
+    //   Y = X & $0C; limit=$AB1F,Y; xDelta=$AB21,Y; yDelta=$AB22,Y
+    for (let x = 0x78; x < 0xFC; x += 4) {
+      const yIdx = x & 0x0C;
+      let a = s.oamShadow.readByte(x);
+      // $837D-$8385: CMP $AB1F,Y; BCC $8387; LDA #$00 → a >= limit ? 0 : a
+      if (a >= (PW_OAM_FIX[yIdx] ?? 0)) a = 0;
+      // $8387-$838B: ADC $AB21,Y → a += xDelta
+      a = (a + (PW_OAM_FIX[yIdx + 2] ?? 0)) & 0xFF;
+      s.oamShadow.writeByte(x, a);
+      // $838E-$8395: LDA ram_046B,X; ADC $AB22,Y → y += yDelta
+      const b = (s.oamShadow.readByte(x + 3) + (PW_OAM_FIX[yIdx + 3] ?? 0)) & 0xFF;
+      s.oamShadow.writeByte(x + 3, b);
+    }
+    // $83A0: JMP $A372 — 原帧驱动死循环, H5 单次执行
+  }
+
+  /** $83A3-$83D5: 密码逻辑 — ram_0057=$81 特殊处理 */
   private _entryC_passwordPath(): void {
-    // TODO: 翻译密码/特殊场景逻辑 asm L434-L511
+    const s = this._store;
+    // $83A3-$83A8: ram_0568 |= $10
+    s.write('ram_0568', s.read('ram_0568') | 0x10);
+    // $83AB-$83AD: LDA #$04; JSR $9FA8
+    this._bank00.bankSwitch9FA8(4);
+    // $83B0-$83B2: ram_0044 = $08; ram_0046 = $08
+    s.write('ram_0044', 0x08);
+    s.write('ram_0046', 0x08);
+    // $83B6-$83BC: ram_056D -= 4
+    s.write('ram_056D', (s.read('ram_056D') - 4) & 0xFF);
+    // $83BF-$83C1: LDA #$04; JSR $9FA8
+    this._bank00.bankSwitch9FA8(4);
+    // $83C4-$83CA: ram_0044 = $00; ram_0046 = $F8
+    s.write('ram_0044', 0x00);
+    s.write('ram_0046', 0xF8);
+    // $83CC-$83D2: ram_056D += 4
+    s.write('ram_056D', (s.read('ram_056D') + 4) & 0xFF);
+    // $83D5: JMP $A3AB — 后续场景逻辑 (TODO: $A3AB 待翻译)
   }
 
   // ════════════════════════════════════════════
   // Entry D/E — 场地生成
   // ════════════════════════════════════════════
 
-  /** sub_85DC: 场地生成主流程 (~196 bytes) */
-  private _fieldGenerationMain(): void {
-    // TODO: 翻译 sub_85DC — 足球场tile布局
+  /**
+   * $8855: sceneTile loader — 入场 D ($820C→$A855→$8855)
+   *
+   * ram_00E4 < ram_0026 时按 ram_0026 值分发:
+   *   $00/$0C → $887C (X=$00), $06 → $8884 (X=$0C), $10 → $888C (X=$18),
+   *   其余 → $A8A8 (仅尾段)。
+   */
+  private _sceneTileLoader8855(): void {
+    const s = this._store;
+    const v26 = s.read('ram_0026');
+    // $8855-$8859: LDA ram_00E4; CMP ram_0026; BCS $88A8
+    if (s.read('ram_00E4') >= v26) {
+      this._sceneTileTail88A8();
+      return;
+    }
+    if (v26 === 0x00 || v26 === 0x0C) {
+      this._sceneTileCore(0x00, false);   // $887C: X=$00
+    } else if (v26 === 0x06) {
+      this._sceneTileCore(0x0C, false);   // $8884: X=$0C
+    } else if (v26 === 0x10) {
+      this._sceneTileCore(0x18, true);    // $888C: X=$18 + OAM 拷贝
+    } else {
+      this._sceneTileTail88A8();          // $886B: JMP $A8A8
+    }
   }
 
-  /** sub_877B + $A86E: 场地块填充 */
-  private _fieldTileFill(): void {
-    // TODO: 翻译 sub_877B
+  /**
+   * $886E: sceneTile 区间分发 — 入场 E ($820F→$A86E→$886E)
+   *
+   *   ram_0026 < $06 → $887C (X=$00)
+   *   $06 ≤ ram_0026 < $0C → $8884 (X=$0C)
+   *   $0C ≤ ram_0026 < $10 → 落空 $887C (X=$00)
+   *   ram_0026 ≥ $10 → $888C (X=$18 + OAM 拷贝)
+   */
+  private _sceneTileLoader886E(): void {
+    const v26 = this._store.read('ram_0026');
+    if (v26 < 0x06) {
+      this._sceneTileCore(0x00, false);       // BCC $887C
+    } else if (v26 < 0x0C) {
+      this._sceneTileCore(0x0C, false);       // BCC $8884
+    } else if (v26 >= 0x10) {
+      this._sceneTileCore(0x18, true);        // BCS $888C
+    } else {
+      this._sceneTileCore(0x00, false);       // 落空 $887C
+    }
+  }
+
+  /**
+   * $887C-$88B6 共享核心:
+   *   $A8B7: 11 项 FIELD_TILES → ram_0300 (stride $0C)
+   *   $8893: (可选) 10 项 → ram_0408 (stride $04)
+   *   $88A3: ram_002C = FIELD_TILES[X]
+   *   $88A8/$88AF: ram_002A/002B 尾段
+   */
+  private _sceneTileCore(startX: number, copyOam: boolean): void {
+    const s = this._store;
+    let x = startX;
+    // $A8B7: LDA #$0B; STA ram_00ED; LDY #$00; 循环 Y<0x84, stride $0C
+    s.write('ram_00ED', 0x0B);
+    for (let addr = 0x0300; addr < 0x0384; addr += 0x0C) {
+      s.write(`ram_${addr.toString(16)}`, this._readFieldTiles(x++));
+    }
+    if (copyOam) {
+      // $8893-$88A1: 循环 Y<0x28, stride $04 → ram_0408
+      for (let addr = 0x0408; addr < 0x0430; addr += 0x04) {
+        s.write(`ram_${addr.toString(16)}`, this._readFieldTiles(x++));
+      }
+    }
+    // $88A3-$88A6: LDA $AA47,X → ram_002C
+    s.write('ram_002C', this._readFieldTiles(x));
+    this._sceneTileTail88A8();
+  }
+
+  /**
+   * $88A8-$88B6 尾段 (X 不再使用):
+   *   $88A8: LDX ram_0026; LDA $AA75,X → ram_002A
+   *   $88AF: LDA ram_0026; ADC #$03 → ram_002B
+   */
+  private _sceneTileTail88A8(): void {
+    const s = this._store;
+    const v26 = s.read('ram_0026');
+    s.write('ram_002A', this._readFieldKind(v26));
+    s.write('ram_002B', (v26 + 3) & 0xFF);
+  }
+
+  /** $AA47 FIELD_TILES 表读取 (越界返回 0) */
+  private _readFieldTiles(i: number): number {
+    if (i < 0 || i >= FIELD_TILES.length) return 0;
+    return FIELD_TILES[i];
+  }
+
+  /** $AA75 FIELD_KIND 表读取 (越界返回 0) */
+  private _readFieldKind(i: number): number {
+    if (i < 0 || i >= FIELD_KIND.length) return 0;
+    return FIELD_KIND[i];
+  }
+
+  /**
+   * sub_85DC: 场景初始化 (足球场入口) — 13 bytes
+   * ```
+   * $85DC: LDA #$00; JSR $8895  // sceneParamSet(0x00)
+   * $85E1: LDA #$05; JSR $8920  // tableLoad(5)
+   * $85E6: LDA #$02; RTS        // 返回 2
+   * ```
+   * 与 handler[10] ($A5DB) 逻辑相同 (共享子程序)。
+   */
+  private _fieldGenerationMain(): number {
+    this._bank00.sceneParamSet(0x00);
+    this._bank00.tableLoad(5);
+    return 2;
+  }
+
+  /**
+   * sub_877B: 场地块填充入口 — 7 bytes
+   * ```
+   * $877B: LDA #$80; JSR $8895  // sceneParamSet(0x80)
+   * $8780: LDA #$02; RTS        // 返回 2
+   * ```
+   */
+  private _fieldTileFill(): number {
+    this._bank00.sceneParamSet(0x80);
+    return 2;
   }
 
   // ════════════════════════════════════════════
@@ -609,6 +781,10 @@ export class Bank02Service {
     this._bank00.unknownInit();
     this._bank00.ppuInit();
     this._bank00.ntClear();
+    // ⚠️ H5 顺序修正: ROM 中 $8AF7 (sceneLoad) 是业务初始化不写 NT,
+    // NT 由渲染链写入。此处 ntClear 会清掉 sceneLoad(0x17) 的 loadSceneNT,
+    // 故按 ROM 最终显示语义在清屏后重新写入 Cut 0x17 背景 (标题/密码共用背景)。
+    this._bank00.renderSceneNT(0x17);
 
     // $A541-$A547: LDA #$C0 → ram_00E6; LDA #$23 → ram_00E7 (PPU 地址 $23C0)
     s.write('ram_00E6', 0xC0);
@@ -814,7 +990,7 @@ export class Bank02Service {
     this._subA72C(0xFE, 0x08, 0x80);
     // $A6F7-$A700: LDY #$FC 循环 4 次: ram_0460+i = $A67B+FC+i ($A777-$A77A)
     for (let i = 0; i < 4; i++) {
-      s.write(`ram_${(0x0460 + i).toString(16)}`, SPRITE_TAIL_A67B[i]);
+      s.oamShadow.writeTailByte(i, SPRITE_TAIL_A67B[i]);
     }
     // $A702-$A714: Y=$B8; X=$1C; ED=$02; EC=$FF; EB=$03; JSR $A72C($F6)
     s.write('ram_00ED', 0x02);
@@ -823,8 +999,7 @@ export class Bank02Service {
     this._subA72C(0xF6, 0x1C, 0xB8);
     // $A717-$A727: Y=$D8..$F0 step 4: ram_046A,Y |= $02
     for (let yi = 0xD8; yi < 0xF0; yi += 4) {
-      const k = `ram_${(0x046A + yi).toString(16)}`;
-      s.write(k, s.read(k) | 0x02);
+      s.oamShadow.attrOr(yi + 2, 0x02);
     }
     // $A729-$A72B: LDA #$02; RTS
     return 2;
@@ -869,9 +1044,9 @@ export class Bank02Service {
       // $A7DE-$A7F3: X=$20..$C4 step 4
       for (let x = 0x20; x !== 0xC4; x = (x + 4) & 0xFF) {
         // $A7E0: LDA ram_0468,X; BPL $A7ED — bit7 置位才处理
-        if (s.read(`ram_${(0x0468 + x).toString(16)}`) & 0x80) {
-          const k6a = `ram_${(0x046A + x).toString(16)}`;
-          s.write(k6a, s.read(k6a) | 0x04);
+        if (s.oamShadow.readByte(x) & 0x80) {
+          // $A7EC: ram_046A,X |= $04
+          s.oamShadow.attrOr(x + 2, 0x04);
         }
       }
     }
@@ -902,10 +1077,9 @@ export class Bank02Service {
       let xi = start;
       for (;;) {
         // $A83A: LDA ram_0468,X; CMP #$82; BCS $A849 — ≥$82 跳过
-        if (s.read(`ram_${(0x0468 + xi).toString(16)}`) < 0x82) {
+        if (s.oamShadow.readByte(xi) < 0x82) {
           // $A841: ram_046A,X &= $F3
-          const k6a = `ram_${(0x046A + xi).toString(16)}`;
-          s.write(k6a, s.read(k6a) & 0xF3);
+          s.oamShadow.attrAnd(xi + 2, 0xF3);
         }
         xi = (xi + 4) & 0xFF;
         if (xi === end) break; // $A84D: CPX ram_00EC; BNE
@@ -939,17 +1113,15 @@ export class Bank02Service {
     s.write('ram_00E9', a & 0xFF); // $A72C: STA ram_00E9
     for (let i = 0; i < x; i++) {
       // $A72E: ram_04E4 += ram_00ED
-      const e4 = (s.read('ram_04E4') + s.read('ram_00ED')) & 0xFF;
+      const e4 = (s.oamShadow.readCoordX() + s.read('ram_00ED')) & 0xFF;
       // $A737: ram_04E7 += ram_00EC
-      const e7 = (s.read('ram_04E7') + s.read('ram_00EC')) & 0xFF;
-      s.write('ram_04E4', e4);
-      s.write('ram_04E7', e7);
+      const e7 = (s.oamShadow.readCoordY() + s.read('ram_00EC')) & 0xFF;
+      s.oamShadow.writeCoordX(e4);
+      s.oamShadow.writeCoordY(e7);
       // $A740: AND ram_00EB; BNE $A75E — 非 0 跳过存储
       if ((e7 & s.read('ram_00EB')) === 0) {
-        s.write(`ram_${(0x0468 + y).toString(16)}`, e4);
-        s.write(`ram_${(0x0469 + y).toString(16)}`, a & 0xFF);
-        s.write(`ram_${(0x046A + y).toString(16)}`, s.read('ram_00EA'));
-        s.write(`ram_${(0x046B + y).toString(16)}`, e7);
+        // $A74B: ram_0468/69/6A/6B,Y = 04E4/E9/EA/04E7
+        s.oamShadow.writeSlot(y, e4, a & 0xFF, s.read('ram_00EA'), e7);
         y = (y + 4) & 0xFF; // INY×4
       }
       // $A75E: LDA #$01; JSR $9FA8
@@ -961,8 +1133,54 @@ export class Bank02Service {
   // Entry G — OAM 精灵复制
   // ════════════════════════════════════════════
 
-  /** $A8CE + sub_882F: AA47读取与OAM缓冲写入 (~102 bytes) */
+  /**
+   * sub_88CE: OAM 精灵数据复制 → $0200 OAM 缓冲 (64 精灵 × 4 字节)
+   *
+   * $A8CE 入口本体位于 $A000 窗口的另一 PRG bank (CDL 未追踪到该地址),
+   * Bank02 内可达的实质逻辑是 sub_88CE — 将 ram_0468-$0567 精灵表
+   * 拷贝到 ram_0200-$02FF OAM 缓冲, 属性 bit2-3 非 0 的精灵置 Y=$F8 (屏外)。
+   * ```
+   * $88CE: LDA #$01; JSR $9FA8          // bankSwitch9FA8(1)
+   * $88D3: LDY #$00
+   * $88D5: LDX ram_0468,Y                // X = tile
+   *        LDA ram_046A,Y; AND #$0C      // 属性 bit2-3
+   *        BEQ $88E1; LDX #$F8           // 非 0 → Y 坐标 $F8 (屏外隐藏)
+   * $88E1: TXA; STA ram_0200,Y           // OAM.Y
+   *        LDA ram_0469,Y; STA ram_0201,Y // OAM.tile
+   *        LDA ram_046A,Y; STA ram_0202,Y // OAM.attr
+   *        LDA ram_046B,Y; STA ram_0203,Y // OAM.X
+   *        INY ×4; BNE $88D5             // 256 项循环
+   * $88FD: RTS
+   * ```
+   */
   private _oamDataCopy(): void {
-    // TODO: 翻译 OAM 精灵数据复制
+    this._bank00.bankSwitch9FA8(1);
+    // $88CE-$88FD: 影子 OAM → $0200 硬件 OAM (attr bit2-3 非 0 → Y=$F8)
+    this._store.oamShadow.copyToHw();
+  }
+
+  /**
+   * sub_882F: 精灵属性清理 — 入参 A=结束X, X=起始X, Y=轮次
+   * ```
+   * $882F: STA ram_00EC (endX); STX ram_00ED (startX)
+   * $8833: LDA #$01; JSR $9FA8
+   * $8838: LDX ram_00ED
+   * $883A: LDA ram_0468,X; CMP #$82; BCS $8849  // tile ≥ $82 跳过
+   *        LDA ram_046A,X; AND #$F3; STA ram_046A,X
+   * $8849: INX ×4; CPX ram_00EC; BNE $883A
+   *        DEY; BNE $8833
+   * $8854: RTS
+   * ```
+   */
+  private _sub882F(endX: number, startX: number, passes: number): void {
+    const s = this._store;
+    for (let p = 0; p < passes; p++) {
+      this._bank00.bankSwitch9FA8(1);
+      for (let x = startX; x !== endX; x = (x + 4) & 0xFF) {
+        if (s.oamShadow.readByte(x) < 0x82) {
+          s.oamShadow.attrAnd(x + 2, 0xF3);
+        }
+      }
+    }
   }
 }

@@ -1,0 +1,31 @@
+src\game\service\bank11_match-turn.service.ts:515|let a = (c.x - this._readRamByte(namePtr + 6)) & 0xff;
+src\game\service\bank11_match-turn.service.ts:550|let a = (c.x - this._readRamByte(namePtr + 6)) & 0xff;
+src\game\service\bank11_match-turn.service.ts:1219|private _readRamByte(addr: number): number {
+src\game\service\bank16_skills.service.ts:193|if (this._readRamByte(ptr + 0x0a) !== 0) continue;
+src\game\service\bank16_skills.service.ts:195|let dx = (this._readRamByte(ptr + 0x06) - x0) & 0xff;
+src\game\service\bank16_skills.service.ts:198|let dy = (this._readRamByte(ptr + 0x08) - y0) & 0xff;
+src\game\service\bank16_skills.service.ts:219|const hi = this._readRamByte(0x0001 + (x & 0xff));
+src\game\service\bank16_skills.service.ts:221|const lo = this._readRamByte(0x0000 + (x & 0xff));
+src\game\service\bank16_skills.service.ts:231|private _readRamByte(addr: number): number {
+src\game\service\bank16_skills.service.ts:252|return this._readRamByte(this._queryNamePtr0034(id) + off);
+src\game\service\bank16_skills.service.ts:391|const ret = this._readRamByte(0x051a + nx) | (this._readRamByte(0x051b + nx) << 8);
+src\game\service\bank16_skills.service.ts:534|let v = this._readRamByte(ptr + 1) | (this._readRamByte(ptr + 2) << 8);
+src\game\service\bank16_skills.service.ts:634|return this._readRamByte(this._queryNamePtr0034(id));
+src\game\service\bank16_skills.service.ts:795|const hp = this._readRamByte(ptr + 1) | (this._readRamByte(ptr + 2) << 8);
+src\game\service\bank16_skills.service.ts:861|let v = this._readRamByte(ptr + 5);
+src\game\service\bank16_skills.service.ts:1070|if (y < this._readRamByte(np + 0x08)) c++;    // $888A-$888F
+src\game\service\bank16_skills.service.ts:1071|if (x < this._readRamByte(np + 0x06)) c += 2; // $8894-$889B
+src\game\service\bank16_skills.service.ts:1078|let a = this._readRamByte(np + 0x08);
+src\game\service\bank16_skills.service.ts:1126|if (this._readRamByte(this._queryNamePtr0034(id)) === 0x1a) { hit = true; break; }
+src\game\service\bank24_hud.service.ts:826|const b0 = this._readRamByte(namePtr); // (ram_0034),Y Y=0
+src\game\service\bank24_hud.service.ts:1009|this._renderText863C(this._readRamByte(namePtr));
+src\game\service\bank24_hud.service.ts:1014|const x = this._readRamByte(namePtr); // (ram_0034),Y
+src\game\service\bank24_hud.service.ts:1031|this._renderText863C(this._readRamByte(namePtr)); // $8572
+src\game\service\bank24_hud.service.ts:1036|const b0 = this._readRamByte(this._queryNamePtr0034(a));
+src\game\service\bank24_hud.service.ts:1073|private _readRamByte(addr: number): number {
+src\game\service\bank24_hud.service.ts:1082|return this._readRamByte(addr);
+src\game\service\bank27_minimal.service.ts:154|const v = this._readRamByte(0x002c + x);
+src\game\service\bank27_minimal.service.ts:160|const v = this._readRamByte(0x002c + x);
+src\game\service\bank27_minimal.service.ts:161|const w = this._readRamByte(0x002d + x);
+src\game\service\bank27_minimal.service.ts:199|const py = this._readRamByte(namePtr + 8);
+src\game\service\bank27_minimal.service.ts:366|private _readRamByte(addr: number): number {

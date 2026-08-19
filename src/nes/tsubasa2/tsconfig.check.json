@@ -13,6 +13,7 @@
   },
   "include": [
     "src/**/*.ts",
-    "../rom-data/**/*.ts"
+    "pages/**/*.ts",
+    "test/**/*.ts"
   ]
 }
