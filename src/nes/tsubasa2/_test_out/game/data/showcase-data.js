@@ -1,18 +1,22 @@
 "use strict";
 /**
- * Bank31 $E9DA 演出精灵表 — 自动生成 (scripts/gen-showcase-data.cjs)
+ * Bank31 $E9DA 演出 NT 块表 — 自动生成 (scripts/gen-showcase-data.cjs)
  *
- * $E93D 解包语义 (见脚本头注释):
- *   block = [xLo, xHi, attr, tiles...]
- *   attr bit0-1 = 行数, bit2-7 = 每行精灵数
- *   tiles[r] 长度 = perRow (0x00 是合法 tile, 0xFE 提前终止补 0)
- *   xLo/xHi = 演出画面位置 (H5: 屏幕像素 (x, y))
+ * $E93D 解包语义 (反汇编确认):
+ *   A = $D6DE[ram_043B] 演出类型码 → Y=A<<1 查 $E9DA 指针表 (块索引 = 类型码)
+ *   X = 坐标进位: ram_003E=(X&3)<<6, ram_003F=X>>2 ($D67C 调用 X=0)
+ *   block = [xLo, xHi, attr, tiles...]; attr bit0-1=行数, bit2-7=每行 tile 数
+ *   NT 名表地址 = xHi<<8 | xLo (行间 +0x20); 0x00 合法 tile, 0xFE 行终止补 0
+ *   类型码 bit7 置位 → 整块画空 (13 帧闪烁, $D65F 链 ORA #$80)
+ * 消费方 $C951 把组写到 PPU $2006/$2007 → NT 名表渲染 (非 OAM 精灵)
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SHOWCASE_D6DE = exports.SHOWCASE_SPRITE_BLOCKS = exports.SHOWCASE_SPRITE_PTRS = void 0;
 exports.showcaseBlockIndexByType = showcaseBlockIndexByType;
+exports.showcaseTypeIsFlash = showcaseTypeIsFlash;
+exports.ntAddrToTile = ntAddrToTile;
 exports.getShowcaseBlock = getShowcaseBlock;
-/** $E9DA 指针表 (32 项, CPU $E000 窗口) */
+/** $E9DA 指针表 (33 项, CPU $E000 窗口, 索引 = 类型码 0x00-0x20) */
 exports.SHOWCASE_SPRITE_PTRS = [
     59932,
     59945,
@@ -46,13 +50,14 @@ exports.SHOWCASE_SPRITE_PTRS = [
     60254,
     60263,
     60274,
+    60283,
 ];
-/** 演出精灵块表 (32 项) */
+/** 演出 NT 块表 (33 项) */
 exports.SHOWCASE_SPRITE_BLOCKS = [
     {
         addr: 0xEA1C,
-        x: 172,
-        y: 34,
+        xLo: 0xAC,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -62,8 +67,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA29,
-        x: 172,
-        y: 34,
+        xLo: 0xAC,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -73,8 +78,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA34,
-        x: 172,
-        y: 34,
+        xLo: 0xAC,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -84,8 +89,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA3D,
-        x: 172,
-        y: 34,
+        xLo: 0xAC,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -95,8 +100,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA46,
-        x: 172,
-        y: 34,
+        xLo: 0xAC,
+        xHi: 0x22,
         rows: 2,
         perRow: 4,
         tiles: [
@@ -106,8 +111,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA51,
-        x: 172,
-        y: 34,
+        xLo: 0xAC,
+        xHi: 0x22,
         rows: 2,
         perRow: 4,
         tiles: [
@@ -117,8 +122,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA59,
-        x: 172,
-        y: 34,
+        xLo: 0xAC,
+        xHi: 0x22,
         rows: 2,
         perRow: 4,
         tiles: [
@@ -128,8 +133,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA61,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -139,8 +144,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA6A,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -150,8 +155,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA73,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -161,8 +166,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA7C,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -172,8 +177,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA87,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -183,8 +188,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA94,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -194,8 +199,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEA9F,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -205,8 +210,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEAAC,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -216,8 +221,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEAB7,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -227,8 +232,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEAC4,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -238,8 +243,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEACE,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -249,8 +254,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEADB,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -260,8 +265,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEAE6,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -271,8 +276,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEAEF,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -282,8 +287,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEAF8,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -293,8 +298,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEB01,
-        x: 171,
-        y: 34,
+        xLo: 0xAB,
+        xHi: 0x22,
         rows: 2,
         perRow: 6,
         tiles: [
@@ -304,8 +309,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEB0D,
-        x: 171,
-        y: 34,
+        xLo: 0xAB,
+        xHi: 0x22,
         rows: 2,
         perRow: 6,
         tiles: [
@@ -315,8 +320,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEB17,
-        x: 171,
-        y: 34,
+        xLo: 0xAB,
+        xHi: 0x22,
         rows: 2,
         perRow: 6,
         tiles: [
@@ -326,8 +331,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEB26,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -337,8 +342,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEB33,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -348,8 +353,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEB3E,
-        x: 171,
-        y: 34,
+        xLo: 0xAB,
+        xHi: 0x22,
         rows: 3,
         perRow: 5,
         tiles: [
@@ -360,8 +365,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEB4C,
-        x: 171,
-        y: 34,
+        xLo: 0xAB,
+        xHi: 0x22,
         rows: 3,
         perRow: 5,
         tiles: [
@@ -372,8 +377,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEB5E,
-        x: 110,
-        y: 34,
+        xLo: 0x6E,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -383,8 +388,8 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEB67,
-        x: 170,
-        y: 34,
+        xLo: 0xAA,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
@@ -394,13 +399,24 @@ exports.SHOWCASE_SPRITE_BLOCKS = [
     },
     {
         addr: 0xEB72,
-        x: 170,
-        y: 34,
+        xLo: 0xAA,
+        xHi: 0x22,
         rows: 2,
         perRow: 5,
         tiles: [
             [0x00, 0x00, 0x00, 0x00, 0x00],
             [0x0C, 0x32, 0x03, 0x22, 0x2E],
+        ],
+    },
+    {
+        addr: 0xEB7B,
+        xLo: 0xAA,
+        xHi: 0x22,
+        rows: 2,
+        perRow: 5,
+        tiles: [
+            [0x00, 0x94, 0x00, 0x00, 0x00],
+            [0x20, 0x07, 0x4D, 0x60, 0x00],
         ],
     },
 ];
@@ -412,16 +428,31 @@ exports.SHOWCASE_D6DE = [
     0x02, 0x01, 0x00, 0x03, 0x04, 0x05, 0x06, 0x1e, 0x1f, 0x20,
 ];
 /**
- * 类型码 → 精灵块索引 (对应 $E93D 的 A>>2 查表)
- * 类型 0x00-0x03 → idx0; 0x04-0x06 → idx1; 0x1E/0x1F → idx7; 0x20 → idx8
+ * 类型码 → NT 块索引 (对应 $E93D: Y=类型码<<1 查 $E9DA)。
+ * 位 7 为闪烁标志 (ORA #$80, $D672), 剥掉后索引 0x00-0x20。
  */
 function showcaseBlockIndexByType(type) {
-    return (type >> 2) & 0x1f;
+    return (type & 0x7f) & 0xff;
+}
+/** 类型码 bit7 = 闪烁 (整块画空, 对应 $E93D 中 ram_003A bit7 → 跳过数据读取) */
+function showcaseTypeIsFlash(type) {
+    return (type & 0x80) !== 0;
 }
 /**
- * ram_043B → 演出精灵块 (走 $D6DE 类型映射)
+ * NT 名表地址 → (tileX, tileY) (NT0: 低 5 位=列, 高 5 位=行)。
+ * $C951 消费方写 PPU $2006 地址即此语义。
+ */
+function ntAddrToTile(addr) {
+    return { tileX: addr & 0x1f, tileY: (addr >> 5) & 0x1f };
+}
+/**
+ * ram_043B → 演出 NT 块 (走 $D6DE 类型码 → $E9DA 表)。
+ * 块索引 = 类型码 (非 ram_043B, 非 类型>>2) — 反汇编 $E93D 确认。
  */
 function getShowcaseBlock(ram043B) {
     const type = exports.SHOWCASE_D6DE[ram043B & 0x3f] ?? 0;
-    return exports.SHOWCASE_SPRITE_BLOCKS[showcaseBlockIndexByType(type)];
+    const idx = showcaseBlockIndexByType(type);
+    const blk = exports.SHOWCASE_SPRITE_BLOCKS[idx] ?? exports.SHOWCASE_SPRITE_BLOCKS[0];
+    const { tileX, tileY } = ntAddrToTile((blk.xHi << 8) | blk.xLo);
+    return { ...blk, x: tileX * 8, y: tileY * 8 };
 }

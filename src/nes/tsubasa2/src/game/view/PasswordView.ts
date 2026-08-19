@@ -12,6 +12,7 @@
 import { SceneView } from './SceneView';
 import { passwordCharToTile, type PasswordDisplayState } from '../service/bank02_password.service';
 import { PASSWORD_SPRITES } from '../data/password-sprites';
+import type { SpriteEntry } from '../data/DataStore';
 
 /** 光标高亮调色板 (attr 切换) */
 const CURSOR_ATTR_HIGHLIGHT = 0x01;
@@ -27,7 +28,7 @@ export class PasswordView extends SceneView {
     // 背景 NT (Cut 0x17) 由 boot 协程委派 bank02.entryF(0) 写入, 不清屏 (否则清掉背景)
 
     // 1. 静态假名网格/边框/标题精灵 (真实 trace)
-    const sprites: Array<Record<string, unknown>> = PASSWORD_SPRITES.map((spr) => ({
+    const sprites: SpriteEntry[] = PASSWORD_SPRITES.map((spr) => ({
       active: true,
       x: spr.x,
       y: spr.y,

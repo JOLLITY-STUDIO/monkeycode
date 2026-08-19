@@ -10,11 +10,10 @@
 import { BUTTON } from '../../../core/types';
 import { TitleMenu } from '../../data/scene/index';
 
-/** 标题菜单项 (原版脚本 0x00 文本: キックオフ / コンティニュー / パスワード) */
+/** 标题菜单项 (说明书: キックオフ=新游戏 / コンティニュー=续关→密码输入) */
 const TITLE_ITEMS = [
   { label: 'KICK OFF', jp: 'キックオフ' },
   { label: 'CONTINUE', jp: 'コンティニュー' },
-  { label: 'PASSWORD', jp: 'パスワード' },
 ] as const;
 
 /** 标题显示状态 (View 层消费) */
@@ -65,9 +64,9 @@ export class TitleSceneController {
     this._frame++;
     this._selected = null;
 
-    // 光标移动 (上下, 三选项循环)
-    if (buttons & BUTTON.UP) this._cursor = (this._cursor + 2) % 3; // -1 mod 3
-    if (buttons & BUTTON.DOWN) this._cursor = (this._cursor + 1) % 3;
+    // 光标移动 (上下, 两选项循环)
+    if (buttons & BUTTON.UP) this._cursor = (this._cursor + 1) % 2;
+    if (buttons & BUTTON.DOWN) this._cursor = (this._cursor + 1) % 2;
 
     // START 确认
     if (buttons & BUTTON.START) this._selected = this._cursor;

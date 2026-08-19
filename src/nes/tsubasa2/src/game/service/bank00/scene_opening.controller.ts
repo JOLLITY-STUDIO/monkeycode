@@ -227,6 +227,17 @@ export class OpeningSceneController {
     this._startPressed = false;
     this._nextShot();
   }
+
+  /**
+   * BOOT 阶段帧同步 — 仅推进帧计数/闪烁计时, 不触发 NT 重灌或镜头切换。
+   * 供 BootService._bootCoroutine 占位开场使用 (开场真实数据未提取, 只播 TECMO 模式块)。
+   * @param frame BOOT 协程已过帧数
+   */
+  syncBootFrame(frame: number): void {
+    this._shotFrame = frame;
+    this._blinkTimer = frame % 60;
+  }
+
  
 
   // ──────────────────────────────────────────────

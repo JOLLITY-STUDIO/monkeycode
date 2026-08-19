@@ -1,30 +1,40 @@
 /**
- * Bank31 $E9DA 演出精灵表 — 自动生成 (scripts/gen-showcase-data.cjs)
+ * Bank31 $E9DA 演出 NT 块表 — 自动生成 (scripts/gen-showcase-data.cjs)
  *
- * $E93D 解包语义 (见脚本头注释):
- *   block = [xLo, xHi, attr, tiles...]
- *   attr bit0-1 = 行数, bit2-7 = 每行精灵数
- *   tiles[r] 长度 = perRow (0x00 是合法 tile, 0xFE 提前终止补 0)
- *   xLo/xHi = 演出画面位置 (H5: 屏幕像素 (x, y))
+ * $E93D 解包语义 (反汇编确认):
+ *   A = $D6DE[ram_043B] 演出类型码 → Y=A<<1 查 $E9DA 指针表 (块索引 = 类型码)
+ *   X = 坐标进位: ram_003E=(X&3)<<6, ram_003F=X>>2 ($D67C 调用 X=0)
+ *   block = [xLo, xHi, attr, tiles...]; attr bit0-1=行数, bit2-7=每行 tile 数
+ *   NT 名表地址 = xHi<<8 | xLo (行间 +0x20); 0x00 合法 tile, 0xFE 行终止补 0
+ *   类型码 bit7 置位 → 整块画空 (13 帧闪烁, $D65F 链 ORA #$80)
+ * 消费方 $C951 把组写到 PPU $2006/$2007 → NT 名表渲染 (非 OAM 精灵)
  */
 
-/** 演出精灵块 */
+/** 演出 NT 块 */
 export interface ShowcaseSpriteBlock {
   /** PRG 地址 ($E9DA 表指向) */
   addr: number;
-  /** 画面位置 x (像素) */
-  x: number;
-  /** 画面位置 y (像素) */
-  y: number;
+  /** NT 名表地址低字节 (xLo) */
+  xLo: number;
+  /** NT 名表地址高字节 (xHi) */
+  xHi: number;
   /** 行数 (垂直 tile 数) */
   rows: number;
-  /** 每行精灵数 (水平 tile 数) */
+  /** 每行 tile 数 (水平) */
   perRow: number;
-  /** 每行 tile 索引 (0x00 = 透明) */
+  /** 每行 tile 索引 (0x00 是合法 tile, 画空白) */
   tiles: number[][];
 }
 
-/** $E9DA 指针表 (32 项, CPU $E000 窗口) */
+/** 带像素坐标的展示块 (getShowcaseBlock 从 NT 名表地址派生) */
+export interface ShowcaseBlockView extends ShowcaseSpriteBlock {
+  /** 左上角像素 X (tileX * 8) */
+  x: number;
+  /** 左上角像素 Y (tileY * 8) */
+  y: number;
+}
+
+/** $E9DA 指针表 (33 项, CPU $E000 窗口, 索引 = 类型码 0x00-0x20) */
 export const SHOWCASE_SPRITE_PTRS: readonly number[] = [
   59932,
   59945,
@@ -58,14 +68,15 @@ export const SHOWCASE_SPRITE_PTRS: readonly number[] = [
   60254,
   60263,
   60274,
+  60283,
 ];
 
-/** 演出精灵块表 (32 项) */
+/** 演出 NT 块表 (33 项) */
 export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   {
     addr: 0xEA1C,
-    x: 172,
-    y: 34,
+    xLo: 0xAC,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -75,8 +86,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA29,
-    x: 172,
-    y: 34,
+    xLo: 0xAC,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -86,8 +97,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA34,
-    x: 172,
-    y: 34,
+    xLo: 0xAC,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -97,8 +108,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA3D,
-    x: 172,
-    y: 34,
+    xLo: 0xAC,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -108,8 +119,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA46,
-    x: 172,
-    y: 34,
+    xLo: 0xAC,
+    xHi: 0x22,
     rows: 2,
     perRow: 4,
     tiles: [
@@ -119,8 +130,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA51,
-    x: 172,
-    y: 34,
+    xLo: 0xAC,
+    xHi: 0x22,
     rows: 2,
     perRow: 4,
     tiles: [
@@ -130,8 +141,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA59,
-    x: 172,
-    y: 34,
+    xLo: 0xAC,
+    xHi: 0x22,
     rows: 2,
     perRow: 4,
     tiles: [
@@ -141,8 +152,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA61,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -152,8 +163,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA6A,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -163,8 +174,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA73,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -174,8 +185,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA7C,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -185,8 +196,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA87,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -196,8 +207,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA94,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -207,8 +218,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEA9F,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -218,8 +229,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEAAC,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -229,8 +240,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEAB7,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -240,8 +251,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEAC4,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -251,8 +262,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEACE,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -262,8 +273,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEADB,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -273,8 +284,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEAE6,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -284,8 +295,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEAEF,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -295,8 +306,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEAF8,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -306,8 +317,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEB01,
-    x: 171,
-    y: 34,
+    xLo: 0xAB,
+    xHi: 0x22,
     rows: 2,
     perRow: 6,
     tiles: [
@@ -317,8 +328,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEB0D,
-    x: 171,
-    y: 34,
+    xLo: 0xAB,
+    xHi: 0x22,
     rows: 2,
     perRow: 6,
     tiles: [
@@ -328,8 +339,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEB17,
-    x: 171,
-    y: 34,
+    xLo: 0xAB,
+    xHi: 0x22,
     rows: 2,
     perRow: 6,
     tiles: [
@@ -339,8 +350,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEB26,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -350,8 +361,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEB33,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -361,8 +372,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEB3E,
-    x: 171,
-    y: 34,
+    xLo: 0xAB,
+    xHi: 0x22,
     rows: 3,
     perRow: 5,
     tiles: [
@@ -373,8 +384,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEB4C,
-    x: 171,
-    y: 34,
+    xLo: 0xAB,
+    xHi: 0x22,
     rows: 3,
     perRow: 5,
     tiles: [
@@ -385,8 +396,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEB5E,
-    x: 110,
-    y: 34,
+    xLo: 0x6E,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -396,8 +407,8 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEB67,
-    x: 170,
-    y: 34,
+    xLo: 0xAA,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
@@ -407,13 +418,24 @@ export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
   },
   {
     addr: 0xEB72,
-    x: 170,
-    y: 34,
+    xLo: 0xAA,
+    xHi: 0x22,
     rows: 2,
     perRow: 5,
     tiles: [
       [0x00, 0x00, 0x00, 0x00, 0x00],
       [0x0C, 0x32, 0x03, 0x22, 0x2E],
+    ],
+  },
+  {
+    addr: 0xEB7B,
+    xLo: 0xAA,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x94, 0x00, 0x00, 0x00],
+      [0x20, 0x07, 0x4D, 0x60, 0x00],
     ],
   },
 ];
@@ -427,17 +449,34 @@ export const SHOWCASE_D6DE: readonly number[] = [
 ];
 
 /**
- * 类型码 → 精灵块索引 (对应 $E93D 的 A>>2 查表)
- * 类型 0x00-0x03 → idx0; 0x04-0x06 → idx1; 0x1E/0x1F → idx7; 0x20 → idx8
+ * 类型码 → NT 块索引 (对应 $E93D: Y=类型码<<1 查 $E9DA)。
+ * 位 7 为闪烁标志 (ORA #$80, $D672), 剥掉后索引 0x00-0x20。
  */
 export function showcaseBlockIndexByType(type: number): number {
-  return (type >> 2) & 0x1f;
+  return (type & 0x7f) & 0xff;
+}
+
+/** 类型码 bit7 = 闪烁 (整块画空, 对应 $E93D 中 ram_003A bit7 → 跳过数据读取) */
+export function showcaseTypeIsFlash(type: number): boolean {
+  return (type & 0x80) !== 0;
 }
 
 /**
- * ram_043B → 演出精灵块 (走 $D6DE 类型映射)
+ * NT 名表地址 → (tileX, tileY) (NT0: 低 5 位=列, 高 5 位=行)。
+ * $C951 消费方写 PPU $2006 地址即此语义。
  */
-export function getShowcaseBlock(ram043B: number): ShowcaseSpriteBlock {
+export function ntAddrToTile(addr: number): { tileX: number; tileY: number } {
+  return { tileX: addr & 0x1f, tileY: (addr >> 5) & 0x1f };
+}
+
+/**
+ * ram_043B → 演出 NT 块 (走 $D6DE 类型码 → $E9DA 表)。
+ * 块索引 = 类型码 (非 ram_043B, 非 类型>>2) — 反汇编 $E93D 确认。
+ */
+export function getShowcaseBlock(ram043B: number): ShowcaseBlockView {
   const type = SHOWCASE_D6DE[ram043B & 0x3f] ?? 0;
-  return SHOWCASE_SPRITE_BLOCKS[showcaseBlockIndexByType(type)];
+  const idx = showcaseBlockIndexByType(type);
+  const blk = SHOWCASE_SPRITE_BLOCKS[idx] ?? SHOWCASE_SPRITE_BLOCKS[0];
+  const { tileX, tileY } = ntAddrToTile((blk.xHi << 8) | blk.xLo);
+  return { ...blk, x: tileX * 8, y: tileY * 8 };
 }

@@ -19,6 +19,7 @@ var SceneRoot;
     SceneRoot[SceneRoot["STORY"] = 4] = "STORY";
     SceneRoot[SceneRoot["MATCH"] = 5] = "MATCH";
     SceneRoot[SceneRoot["RESULT"] = 6] = "RESULT";
+    SceneRoot[SceneRoot["LEVELUP"] = 8] = "LEVELUP";
     SceneRoot[SceneRoot["CREDITS"] = 7] = "CREDITS";
 })(SceneRoot || (exports.SceneRoot = SceneRoot = {}));
 // ═══════════════════════════════════════════════════════════════
@@ -45,8 +46,8 @@ var TitleMenu;
 (function (TitleMenu) {
     TitleMenu[TitleMenu["KICKOFF"] = 0] = "KICKOFF";
     TitleMenu[TitleMenu["CONTINUE"] = 1] = "CONTINUE";
-    /** パスワード — 密码输入 (bank2 $A484 分发 idx0 $A4C0) */
-    TitleMenu[TitleMenu["PASSWORD"] = 2] = "PASSWORD";
+    // 真实 ROM 标题菜单只有 2 项 (说明书: KICKOFF=新游戏, CONTINUE=续关→密码输入画面)
+    // 密码输入画面是 CONTINUE 确认后的子流程, 不是标题菜单第三项
 })(TitleMenu || (exports.TitleMenu = TitleMenu = {}));
 // ═══════════════════════════════════════════════════════════════
 // Meeting → 赛前会议

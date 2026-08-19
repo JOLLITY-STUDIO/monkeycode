@@ -18,6 +18,7 @@ import { Bank00Service } from '../src/game/service/bank00/bank00_core.service';
 import { Bank12AudioService } from '../src/game/service/bank12_audio.service';
 import { Bank30Service } from '../src/game/service/bank30_init.service';
 import { Bank02Service } from '../src/game/service/bank02_scene.service';
+import { Bank16Service } from '../src/game/service/bank16_skills.service';
 import { OamManager } from '../src/core/OamManager';
 import { WebAudioOutput } from '../src/core/engine/audio/WebAudioOutput';
 import { BUTTON, NES_WIDTH, NES_HEIGHT } from '../src/core/types';
@@ -232,7 +233,8 @@ export async function runUnitTests(ctx: TestContext): Promise<void> {
     const store = new DataStore();
     const bank00 = new Bank00Service(store);
     const bank02 = new Bank02Service(store, bank00);
-    const bank30 = new Bank30Service(store, bank00, bank02);
+    const bank16 = new Bank16Service(store);
+    const bank30 = new Bank30Service(store, bank00, bank02, bank16);
 
     let crashed = false;
     try {

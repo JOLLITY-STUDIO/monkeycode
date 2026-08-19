@@ -11,11 +11,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TitleSceneController = void 0;
 const types_1 = require("../../../core/types");
 const index_1 = require("../../data/scene/index");
-/** 标题菜单项 (原版脚本 0x00 文本: キックオフ / コンティニュー / パスワード) */
+/** 标题菜单项 (说明书: キックオフ=新游戏 / コンティニュー=续关→密码输入) */
 const TITLE_ITEMS = [
     { label: 'KICK OFF', jp: 'キックオフ' },
     { label: 'CONTINUE', jp: 'コンティニュー' },
-    { label: 'PASSWORD', jp: 'パスワード' },
 ];
 class TitleSceneController {
     constructor() {
@@ -42,11 +41,11 @@ class TitleSceneController {
     update(buttons) {
         this._frame++;
         this._selected = null;
-        // 光标移动 (上下, 三选项循环)
+        // 光标移动 (上下, 两选项循环)
         if (buttons & types_1.BUTTON.UP)
-            this._cursor = (this._cursor + 2) % 3; // -1 mod 3
+            this._cursor = (this._cursor + 1) % 2;
         if (buttons & types_1.BUTTON.DOWN)
-            this._cursor = (this._cursor + 1) % 3;
+            this._cursor = (this._cursor + 1) % 2;
         // START 确认
         if (buttons & types_1.BUTTON.START)
             this._selected = this._cursor;

@@ -1,6 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DataQueryService = void 0;
+const types_1 = require("../model/types");
+const index_1 = require("../data/scene/index");
 const bank01_more_tables_1 = require("../data/bank01-more-tables");
 const char_map_1 = require("./bank00/char-map");
 // ── Bank 01 常量 ──
@@ -65,11 +67,19 @@ class DataQueryService {
         this._players = new Map();
         /** 队伍表 (id → Team) */
         this._teams = new Map();
-        /** 选项屏幕状态 */
+        /** 选项屏幕状态 (对应 MeetingMenu 状态机) */
         this._optionScreen = {
             active: false,
-            cursorPos: 0,
-            menuIndex: 0,
+            cursorPos: 0, // MeetingMenu 光标 (0-3: 情報/スコアメモ/チームデータ/キックオフ)
+            menuIndex: 0, // 当前菜单层级 (0=主菜单, 1=チームデータ子菜单, 2=二级操作)
+            subCursor: 0, // 子菜单光标 (TeamDataMenu: 0-4)
+            confirmed: null, // 确认的菜单项 (null=未确认, MeetingMenu值=已确认)
+            subConfirmed: null, // 子菜单确认项
+            // 二级操作状态 (阵型/防守选择等)
+            level2Cursor: 0, // 二级光标 (阵型4项/防守3项/换人选手/等级选手)
+            level2Max: 0, // 二级选项数 (阵型=4, 防守=3)
+            formation: types_1.FormationType.FORM_433, // 当前阵型 (写 ram_0448 区)
+            defense: 0, // 当前防守类型 (0=normal, 1=press, 2=counter)
         };
     }
     // ── 主入口 (每帧调用) ──
@@ -372,38 +382,188 @@ class DataQueryService {
                 break;
         }
     }
-    // ── 内部: 选项屏幕状态机 ──
+    // ── 内部: 选项屏幕状态机 (MeetingMenu 真实菜单) ──
+    /**
+     * MeetingMenu 状态机 (说明书: 情報/スコアメモ/チームデータ/キックオフ)
+     * 上下移光标, A 确认, B 返回子菜单
+     */
     _optionScreenUpdate() {
         const s = this._store;
         const btn = s.read(KEY_1C);
-        // bit0-3 检测 (A/B/SELECT/START)
-        if (btn & 0x01) { // A → 确认
-            this._optionConfirm();
+        if (this._optionScreen.menuIndex === 0) {
+            // 主菜单 (MeetingMenu 4项) — 按键位对齐 BUTTON 枚举 (UP=0x10, DOWN=0x20, A=1, B=2)
+            if (btn & 0x10)
+                this._meetingCursorUp(); // UP (BUTTON.UP = 1<<4)
+            if (btn & 0x20)
+                this._meetingCursorDown(); // DOWN (BUTTON.DOWN = 1<<5)
+            if (btn & 0x01)
+                this._meetingConfirm(); // A (BUTTON.A = 1<<0)
         }
-        if (btn & 0x04) { // SELECT → 上移
-            this._optionCursorUp();
+        else if (this._optionScreen.menuIndex === 1) {
+            // チームデータ子菜单 (TeamDataMenu 5项: 阵型/防守/换人/等级/返回)
+            if (btn & 0x10)
+                this._subCursorUp();
+            if (btn & 0x20)
+                this._subCursorDown();
+            if (btn & 0x01)
+                this._subConfirm();
+            if (btn & 0x02) { // B 返回主菜单 (BUTTON.B = 1<<1)
+                this._optionScreen.menuIndex = 0;
+            }
         }
-        if (btn & 0x08) { // START → 下移
-            this._optionCursorDown();
+        else if (this._optionScreen.menuIndex === 2) {
+            // 二级操作 (阵型4项/防守3项选择)
+            this._level2Update();
         }
     }
-    _optionConfirm() {
-        const ed = this._store.read(KEY_ED);
-        // $B255 表: 每个选项对应一个action (非$FF=选择数据, $FF=状态切换)
-        // TODO: 读取 $B255 表判断选项类型
-        this._store.write('ram_0701', 0x12);
+    /** MeetingMenu 光标上移 (4项循环) */
+    _meetingCursorUp() {
+        const cur = this._optionScreen.cursorPos;
+        this._optionScreen.cursorPos = (cur + 3) % 4; // -1 mod 4
+        this._store.write(KEY_ED, this._optionScreen.cursorPos);
     }
-    _optionCursorUp() {
-        let ed = this._store.read(KEY_ED);
-        ed = ed > 0 ? ed - 1 : 17;
-        this._store.write(KEY_ED, ed);
-        this._optionScreen.cursorPos = ed;
+    /** MeetingMenu 光标下移 (4项循环) */
+    _meetingCursorDown() {
+        const cur = this._optionScreen.cursorPos;
+        this._optionScreen.cursorPos = (cur + 1) % 4;
+        this._store.write(KEY_ED, this._optionScreen.cursorPos);
     }
-    _optionCursorDown() {
-        let ed = this._store.read(KEY_ED);
-        ed = (ed + 1) % 18;
-        this._store.write(KEY_ED, ed);
-        this._optionScreen.cursorPos = ed;
+    /**
+     * MeetingMenu A 确认 (说明书):
+     *   情報(0) → 显示对手信息 (TODO: 渲染)
+     *   スコアメモ(1) → 显示密码 (TODO: 渲染)
+     *   チームデータ(2) → 进子菜单 (menuIndex=1)
+     *   キックオフ(3) → 开球, 返回 STORY (进比赛)
+     */
+    _meetingConfirm() {
+        const sel = this._optionScreen.cursorPos;
+        this._optionScreen.confirmed = sel;
+        if (sel === index_1.MeetingMenu.TEAM_DATA) {
+            // 进チームデータ子菜单
+            this._optionScreen.menuIndex = 1;
+            this._optionScreen.subCursor = 0;
+            this._optionScreen.confirmed = null; // 子菜单未确认
+        }
+        // 情報/スコアメモ/キックオフ 的具体行为由 _meetingCoroutine 根据 getConfirmedMenu() 判断
+    }
+    /** TeamDataMenu 光标上移 (5项循环) */
+    _subCursorUp() {
+        this._optionScreen.subCursor = (this._optionScreen.subCursor + 4) % 5;
+    }
+    /** TeamDataMenu 光标下移 (5项循环) */
+    _subCursorDown() {
+        this._optionScreen.subCursor = (this._optionScreen.subCursor + 1) % 5;
+    }
+    /**
+     * TeamDataMenu A 确认 (说明书):
+     *   フォーメーション(0) → 选阵型 (4:3:3/4:4:2/3:5:2/ブラジル) → 进二级选择
+     *   ディフェンスタイプ(1) → 选防守 (ノーマル/プレス/カウンター) → 进二级选择
+     *   チェンジ(2) → 换人 (ポジション/メンバー) → TODO: 选选手
+     *   レベル(3) → 看等级 (选手能力/必杀技) → TODO: 选选手查看
+     *   もどる(4) → 返回主菜单
+     */
+    _subConfirm() {
+        const sel = this._optionScreen.subCursor;
+        this._optionScreen.subConfirmed = sel;
+        switch (sel) {
+            case index_1.TeamDataMenu.FORMATION:
+                // 进阵型选择二级菜单 (4项循环)
+                this._optionScreen.menuIndex = 2;
+                this._optionScreen.level2Cursor = this._optionScreen.formation;
+                this._optionScreen.level2Max = 4;
+                break;
+            case index_1.TeamDataMenu.DEFENSE_TYPE:
+                // 进防守选择二级菜单 (3项循环)
+                this._optionScreen.menuIndex = 2;
+                this._optionScreen.level2Cursor = this._optionScreen.defense;
+                this._optionScreen.level2Max = 3;
+                break;
+            case index_1.TeamDataMenu.CHANGE:
+                // TODO: 换人子菜单 (ポジションチェンジ/メンバーチェンジ)
+                break;
+            case index_1.TeamDataMenu.LEVEL:
+                // TODO: 等级查看 (选选手查看能力/必杀技)
+                break;
+            case index_1.TeamDataMenu.BACK:
+                // 返回主菜单
+                this._optionScreen.menuIndex = 0;
+                this._optionScreen.subCursor = 0;
+                this._optionScreen.subConfirmed = null;
+                break;
+        }
+    }
+    /**
+     * 二级操作状态机 (阵型/防守选择):
+     *   上下移光标, A 确认写入, B 返回子菜单
+     */
+    _level2Update() {
+        const btn = this._store.read(KEY_1C);
+        if (btn & 0x10)
+            this._level2CursorUp(); // UP
+        if (btn & 0x20)
+            this._level2CursorDown(); // DOWN
+        if (btn & 0x01)
+            this._level2Confirm(); // A 确认
+        if (btn & 0x02) { // B 返回子菜单
+            this._optionScreen.menuIndex = 1;
+            this._optionScreen.level2Cursor = 0;
+        }
+    }
+    _level2CursorUp() {
+        const max = this._optionScreen.level2Max;
+        this._optionScreen.level2Cursor = (this._optionScreen.level2Cursor + max - 1) % max;
+    }
+    _level2CursorDown() {
+        const max = this._optionScreen.level2Max;
+        this._optionScreen.level2Cursor = (this._optionScreen.level2Cursor + 1) % max;
+    }
+    /** 二级 A 确认: 写入阵型/防守到状态, 返回子菜单 */
+    _level2Confirm() {
+        const sel = this._optionScreen.subConfirmed;
+        const cur = this._optionScreen.level2Cursor;
+        if (sel === index_1.TeamDataMenu.FORMATION) {
+            this._optionScreen.formation = cur; // 写阵型 (FormationType 0-3)
+            this._store.write('ram_0048', cur); // 对应真实 ROM 阵型写 ram_0048
+        }
+        else if (sel === index_1.TeamDataMenu.DEFENSE_TYPE) {
+            this._optionScreen.defense = cur; // 写防守 (0-2)
+            this._store.write('ram_0049', cur); // 对应真实 ROM 防守写 ram_0049 (FIXME: 地址待确认)
+        }
+        // 返回子菜单
+        this._optionScreen.menuIndex = 1;
+        this._optionScreen.level2Cursor = 0;
+    }
+    /** 获取主菜单确认项 (null=未确认, MeetingMenu值=已确认) */
+    getConfirmedMenu() {
+        return this._optionScreen.confirmed;
+    }
+    /** 获取当前主菜单光标 */
+    getMeetingCursor() {
+        return this._optionScreen.cursorPos;
+    }
+    /** 获取当前子菜单层级 (0=主, 1=チームデータ) */
+    getMenuIndex() {
+        return this._optionScreen.menuIndex;
+    }
+    /** 获取子菜单光标 */
+    getSubCursor() {
+        return this._optionScreen.subCursor;
+    }
+    /** 获取二级菜单光标 (阵型/防守选择) */
+    getLevel2Cursor() {
+        return this._optionScreen.level2Cursor;
+    }
+    /** 获取当前阵型 */
+    getFormation() {
+        return this._optionScreen.formation;
+    }
+    /** 获取当前防守类型 */
+    getDefense() {
+        return this._optionScreen.defense;
+    }
+    /** 获取菜单层级 (0=主, 1=チームデータ子, 2=二级选择) */
+    getMenuLevel() {
+        return this._optionScreen.menuIndex;
     }
     // ── 内部: 球员数据解码 ──
     /**

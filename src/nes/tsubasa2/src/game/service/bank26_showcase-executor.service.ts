@@ -21,7 +21,7 @@ import { DataStore } from '../data/DataStore';
 import {
   SHOWCASE_D6DE,
   getShowcaseBlock,
-  type ShowcaseSpriteBlock,
+  type ShowcaseBlockView,
 } from '../data/showcase-data';
 import { getShowcasePalette, SHOWCASE_PALETTE_DEFAULT } from '../data/showcase-palette';
 import { nesColorToRGBA } from '../data/ppu/pallete/paletteManager';
@@ -60,7 +60,7 @@ export interface ShowcaseDisplayState {
   /** 精灵块索引 (0-31) */
   blockIndex: number;
   /** 精灵块数据 */
-  block: ShowcaseSpriteBlock | null;
+  block: ShowcaseBlockView | null;
   /** x 偏移 (像素) */
   xOff: number;
   /** 已播帧数 */

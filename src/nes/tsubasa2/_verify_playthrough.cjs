@@ -43,8 +43,9 @@ function press(btn, frames = 1, betweenFrames = 0) {
 let stage = 'init';
 // 按键辅助: 按一下键 (含释放帧, 让边沿检测正确触发)
 function tap(btn, frame) {
-  boot.update(btn, frame);
-  boot.update(0, frame + 1); // 释放帧
+  boot.update(btn, frame);       // 按下
+  boot.update(0, frame + 1);     // 释放
+  for (let i = 0; i < 118; i++) boot.update(0, frame + 2 + i); // 等 2 秒(120帧)给场景切换
 }
 
 // ── OAM 桥接采样 (OamView.emit → store.sprites) ──
@@ -72,30 +73,38 @@ function sampleOam(tag) {
   oamSamples++;
 }
 try {
-  // 1. BOOT 开场 → START 跳过进 TITLE (真实 ROM: 按 START 跳过 TECMO Theater)
+  // 1. BOOT 开场 → 等开场播 4-5秒(280帧) → START 跳过进 TITLE (真实 ROM: 开场动画需播放后才能跳)
   stage = 'BOOT→TITLE';
-  tap(START, 100);
+  for (let f = 0; f < 280; f++) boot.update(0, f);  // 等开场播 4-5 秒
+  tap(START, 290);                                    // START 跳过开场
   if (root(store) !== SceneRoot.TITLE) throw new Error('expected TITLE after START, got ' + root(store));
   pass++;
   sampleOam('TITLE');
 
-  // 2. TITLE: KICKOFF 默认光标 → 按 START 进 MEETING (TitleSceneController 仅响应 START)
-  stage = 'TITLE→MEETING';
+  // 2. TITLE: KICKOFF 默认光标 → 按 START → STORY(赛前剧情) (真实流程: KICKOFF→STORY→MEETING)
+  stage = 'TITLE→STORY';
   tap(START, 200);
-  if (root(store) !== SceneRoot.MEETING) throw new Error('expected MEETING, got ' + root(store));
-  pass++;
-  sampleOam('MEETING');
-
-  // 3. MEETING: 按 START 进 STORY
-  stage = 'MEETING→STORY';
-  tap(START, 210);
   if (root(store) !== SceneRoot.STORY) throw new Error('expected STORY, got ' + root(store));
   pass++;
   sampleOam('STORY');
 
+  // 3. STORY → MEETING: A 跳过剧情 → 进赛前会议
+  stage = 'STORY→MEETING';
+  tap(A, 210);
+  if (root(store) !== SceneRoot.MEETING) throw new Error('expected MEETING, got ' + root(store));
+  pass++;
+  sampleOam('MEETING');
+
+  // 3b. MEETING: 按 START 进 STORY(比赛剧情) (FIXME: 真实会议菜单4分支待补, 当前简化)
+  stage = 'MEETING→STORY';
+  tap(START, 220); // START 跳会议 → STORY(赛前剧情)
+  if (root(store) !== SceneRoot.STORY) throw new Error('expected STORY after MEETING, got ' + root(store));
+  pass++;
+  sampleOam('MEETING_STORY');
+
   // 4. STORY: 按 A 跳过 → MATCH
   stage = 'STORY→MATCH';
-  tap(A, 220);
+  tap(A, 230);
   if (root(store) !== SceneRoot.MATCH) throw new Error('expected MATCH, got ' + root(store));
   pass++;
   sampleOam('MATCH');
@@ -111,19 +120,33 @@ try {
   pass++;
   sampleOam('RESULT');
 
-  // 6. RESULT: 按 A → TITLE
-  stage = 'RESULT→TITLE';
+  // 6. RESULT: 按 A → LEVELUP (每场打完升级, 不是回标题)
+  stage = 'RESULT→LEVELUP';
+  // 6. RESULT: 按 A → LEVELUP (每场打完升级, 不是回标题)
+  stage = 'RESULT→LEVELUP';
+  boot.update(0, 229);  // 空跑一帧让 RESULT 协程到 yield
   tap(A, 230);
-  if (root(store) !== SceneRoot.TITLE) throw new Error('expected TITLE after RESULT, got ' + root(store));
+  if (root(store) !== SceneRoot.LEVELUP) throw new Error('expected LEVELUP after RESULT, got ' + root(store));
   pass++;
-  sampleOam('RETURN_TITLE');
+  sampleOam('LEVELUP');
 
-  // 7. TITLE → PASSWORD: DOWN×2 → 第三项 パスワード → START
-  //    (TitleMenu 三选项: KICKOFF/CONTINUE/PASSWORD, boot 第三分支 return PASSWORD)
+  // 6b. LEVELUP: 按 A → STORY (赛前剧情, 赢→下一场, 输→重打本场)
+  stage = 'LEVELUP→STORY';
+  tap(A, 232);
+  if (root(store) !== SceneRoot.STORY) throw new Error('expected STORY after LEVELUP, got ' + root(store));
+  pass++;
+  sampleOam('LEVELUP_STORY');
+
+  // 7. (独立分支) 重置回 TITLE 测 CONTINUE→PASSWORD 路径
   stage = 'TITLE→PASSWORD';
-  tap(32, 240); // DOWN → CONTINUE
-  tap(32, 242); // DOWN → PASSWORD
-  tap(START, 244);
+  boot.init();  // 重置回 BOOT
+  // 等开场播完(SHOT_DURATION=300帧), 再空跑几帧让 TITLE gen 到 yield
+  for (let f = 0; f < 320; f++) boot.update(0, f);
+  if (root(store) !== SceneRoot.TITLE) throw new Error('expected TITLE after reset, got ' + root(store));
+  // TITLE: DOWN → CONTINUE → START → PASSWORD
+  boot.update(0, 330);  // 空跑让 TITLE gen 到 yield
+  tap(32, 340);  // DOWN → CONTINUE
+  tap(START, 350);  // START 确认 → 密码输入画面
   if (root(store) !== SceneRoot.PASSWORD) throw new Error('expected PASSWORD, got ' + root(store));
   pass++;
   // PasswordView 渲染: 静态假名网格 (PASSWORD_SPRITES) + 16 输入槽位 OAM 精灵 (2行×8列)
@@ -180,9 +203,10 @@ try {
   tap(A, f); f += 2;
   for (let i = 0; i < 14; i++) { tap(A, f); f += 2; }
   tap(START, f);
-  if (root(store) !== SceneRoot.TITLE) throw new Error('expected TITLE after valid PASSWORD, got ' + root(store));
+  // 真实流程: 密码成功 → STORY(续关剧情) → MEETING → MATCH
+  if (root(store) !== SceneRoot.STORY) throw new Error('expected STORY after valid PASSWORD, got ' + root(store));
   pass++;
-  sampleOam('PW_RETURN_TITLE');
+  sampleOam('PW_RETURN_STORY');
 
 } catch (e) {
   fail++;
@@ -191,5 +215,5 @@ try {
 
 console.log(`\nPASS=${pass} FAIL=${fail}`);
 if (fail > 0) { console.log(fails.join('\n')); process.exit(1); }
-if (oamSamples !== 8) { console.log('FAIL: OAM 采样点应为 8, 实际 ' + oamSamples); process.exit(1); }
-console.log('PLAYTHROUGH LINK TEST PASSED (TITLE→MEETING→STORY→MATCH→RESULT→TITLE→PASSWORD→TITLE, OAM×8)');
+if (oamSamples !== 10) { console.log('FAIL: OAM 采样点应为 10, 实际 ' + oamSamples); process.exit(1); }
+console.log('PLAYTHROUGH LINK TEST PASSED (TITLE→STORY→MEETING→STORY→MATCH→RESULT→LEVELUP→STORY + TITLE→PASSWORD→STORY, OAM×10)');

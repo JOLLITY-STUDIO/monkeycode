@@ -91,8 +91,8 @@ const COROUTINE_SLOT_COUNT = 6;
 export type CoroutineYield = SceneRoot | void;
 
 export class BootService {
-  /** 开场每镜头持续帧数 */
-  private static readonly SHOT_DURATION = 120; // ~2 秒
+  /** 开场每镜头持续帧数 (真实 ROM: 开场动画约 4-5 秒后才能跳过, ~280-300帧) */
+  private static readonly SHOT_DURATION = 300; // ~5 秒 @60fps
 
   /** 当前镜头已过帧数 */
   private _shotFrame = 0;
@@ -114,6 +114,33 @@ export class BootService {
 
   /** 上一帧按键（边沿检测，防止按键穿透场景） */
   private _prevButtons = 0;
+
+  /** 当前关卡 (里约杯场次 1-6, 初始1) */
+  private _matchRound = 1;
+
+  /**
+   * 胜负→关卡回退逻辑 (2026-08 确认):
+   *   赢 → 场次+1 (下一场), 最大6=决赛后通关
+   *   输 → 回到上一个奇数关卡 (1赢2输→回1, 3输→回3, 偶数场输→回前一个奇数场)
+   *   即: 输偶数场N → 回 N-1 (奇数); 输奇数场N → 回 N (自回, 重打)
+   */
+  private _advanceRound(win: boolean): SceneRoot {
+    if (win) {
+      this._matchRound++;
+      if (this._matchRound > 6) {
+        // 通关 (决赛获胜) → CREDITS
+        return SceneRoot.CREDITS;
+      }
+      return SceneRoot.LEVELUP;  // 赢 → 升级 → 下一场 STORY→MEETING→MATCH
+    } else {
+      // 输: 偶数场回前一场, 奇数场自回
+      if (this._matchRound % 2 === 0) {
+        this._matchRound--;  // 偶数场输 → 回前一个奇数场
+      }
+      // 奇数场输 → 自回 (不改变 _matchRound)
+      return SceneRoot.LEVELUP;  // 输也显示升级(经验) → 重打本场
+    }
+  }
 
 
   /** 开场场景控制器 (BOOT 阶段: TECMO 字母占位, 真正开场数据待提取) */
@@ -315,6 +342,8 @@ export class BootService {
       return yield* this._matchCoroutine();
     case SceneRoot.RESULT:
       return yield* this._resultCoroutine();
+    case SceneRoot.LEVELUP:
+      return yield* this._levelupCoroutine();
     case SceneRoot.PASSWORD:
       return yield* this._passwordCoroutine();
     default:
@@ -336,8 +365,9 @@ export class BootService {
       const buttons = yield;
       const r = this._password.update(buttons);
       if (r === 'success') {
-        // 密码校验通过 → 回标题 (真实续关逻辑待抠 $A4C0 后续, 通过后应切 STORY 续关)
-        return SceneRoot.TITLE;
+        // 密码成功 → STORY(续关剧情) → MEETING: 设 ram_00ED=$0A (赛前STORY后进 MEETING)
+        this._store.write('ram_00ED', 0x0A);
+        return SceneRoot.STORY;
       }
       // r === 'fail' | 'continue' → 留在密码界面 (原版失败有错误反馈, 待抠 $A4C0 后续)
     }
@@ -351,6 +381,7 @@ export class BootService {
     for (;;) {
       const buttons = yield;
       this._shotFrame++;
+      this._opening.syncBootFrame(this._shotFrame);
       if ((buttons & BUTTON.START) || this._shotFrame >= BootService.SHOT_DURATION) {
         return SceneRoot.TITLE; // 切换到 TITLE (Cut 0x17 标题菜单)
       }
@@ -366,37 +397,59 @@ export class BootService {
       const selected = this._title.update(buttons);
       this._store.write(BOOT_KEYS.TITLE_CURSOR, this._title.cursor);
       if (selected !== null) {
-        if (selected === TitleMenu.KICKOFF) return SceneRoot.MEETING;
-        if (selected === TitleMenu.CONTINUE) return SceneRoot.STORY;
-        return SceneRoot.PASSWORD;
+        // 真实流程: KICKOFF=新游戏→STORY(赛前剧情)→MEETING; CONTINUE=续关→PASSWORD
+        if (selected === TitleMenu.KICKOFF) return SceneRoot.STORY;
+        if (selected === TitleMenu.CONTINUE) return SceneRoot.PASSWORD;
       }
     }
   }
 
-  /** MEETING 协程 — 赛前会议/选项屏幕, 确认后切 STORY */
+  /**
+   * MEETING 协程 — 赛前会议 (说明书 MeetingMenu: 情報/スコアメモ/チームデータ/キックオフ)
+   * 上下移光标, A 确认, キックオフ→STORY(进比赛), チームデータ→子菜单
+   */
   private *_meetingCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._dataQuery.initOptionScreen();
     for (;;) {
       const buttons = yield;
+      // 写按键到 ram_001C (DataQueryService 读取)
+      this._store.write('ram_001C', buttons);
       this._dataQuery.update(buttons, 0);
+      // 检查主菜单确认: キックオフ(MeetingMenu.KICKOFF=3) → 进比赛
+      const confirmed = this._dataQuery.getConfirmedMenu?.() ?? -1;
+      if (confirmed === 3) { // MeetingMenu.KICKOFF
+        this._store.write('ram_00ED', 0);
+        return SceneRoot.STORY;
+      }
+      // FIXME: 真实会议4分支菜单(情報/スコアメモ/チームデータ/キックオフ)待补
+      // 当前简化: START 直跳 STORY(赛前剧情) → MATCH
       if ((buttons & (BUTTON.START | BUTTON.A)) !== 0) {
+        this._store.write('ram_00ED', 0);
         return SceneRoot.STORY;
       }
     }
   }
 
-  /** STORY 协程 — 剧情场景 (Bank18 驱动 Bank19), A/START 跳过或结束切 MATCH */
+  /**
+   * STORY 协程 — 剧情场景 (Bank18 驱动 Bank19)。
+   * 结束去向取决于来源: KICKOFF→STORY→MEETING; MEETING→STORY→MATCH; 密码→STORY→MEETING。
+   * 用 ram_00ED 区分: ram_00ED=$0A(开场)→MEETING; 其他→MATCH。
+   * A/START 跳过, 或数据流结束自动切下一场景。
+   */
   private *_storyCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._bank18.enterChapter(StoryChapter.OPENING);
     this._matchFrame = 0;
+    // 判断 STORY 后去向: 开场(ram_00ED=$0A)→MEETING, 比赛前→MATCH
+    const isOpening = (this._store.read('ram_00ED') as number) === 0x0A;
+    const nextScene = isOpening ? SceneRoot.MEETING : SceneRoot.MATCH;
     for (;;) {
       const buttons = yield;
       if ((buttons & (BUTTON.A | BUTTON.START)) !== 0) {
         this._bank18.skip();
-        return SceneRoot.MATCH;
+        return nextScene;
       }
       const done = this._bank18.update(0);
-      if (done) return SceneRoot.MATCH;
+      if (done) return nextScene;
     }
   }
 
@@ -446,14 +499,31 @@ export class BootService {
     }
   }
 
-  /** RESULT 协程 — 赛果, 确认后切 TITLE (回标题) */
+  /**
+   * RESULT 协程 — 赛果画面, 确认后按胜负分支:
+   *   赢 → LEVELUP(升级) → 下一场(STORY→MEETING→MATCH)
+   *   输 → LEVELUP(升级) → 回退关卡(偶数场回前一场, 奇数场自回) → 重打
+   *   通关(决赛赢) → CREDITS
+   */
   private *_resultCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._matchFrame = 0;
     this._result.init();
     for (;;) {
       const buttons = yield;
       if (this._result.update(buttons, 0)) {
-        return SceneRoot.TITLE;
+        const win = this._result.isWin();
+        return this._advanceRound(win);
+      }
+    }
+  }
+
+  /** LEVELUP 协程 — 升级界面(每场后选手经验/升级), 确认后切下一场 STORY 或重打 */
+  private *_levelupCoroutine(): Generator<number | undefined, SceneRoot, number> {
+    for (;;) {
+      const buttons = yield;
+      if ((buttons & (BUTTON.A | BUTTON.START)) !== 0) {
+        // 升级确认 → 进 STORY(赛前剧情) → MEETING → MATCH (重打本场或下一场)
+        return SceneRoot.STORY;
       }
     }
   }

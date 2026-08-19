@@ -17,6 +17,7 @@ export enum SceneRoot {
   STORY = 4,
   MATCH = 5,
   RESULT = 6,
+  LEVELUP = 8,      // 升级界面 (每场打完显示选手经验/升级)
   CREDITS = 7,
 }
 
@@ -44,8 +45,8 @@ export enum OpeningShot {
 export enum TitleMenu {
   KICKOFF = 0,
   CONTINUE = 1,
-  /** パスワード — 密码输入 (bank2 $A484 分发 idx0 $A4C0) */
-  PASSWORD = 2,
+  // 真实 ROM 标题菜单只有 2 项 (说明书: KICKOFF=新游戏, CONTINUE=续关→密码输入画面)
+  // 密码输入画面是 CONTINUE 确认后的子流程, 不是标题菜单第三项
 }
 
 // ═══════════════════════════════════════════════════════════════
