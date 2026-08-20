@@ -901,17 +901,11 @@ src/game/data/prg/index.ts(37,25): error TS2307: Cannot find module '../prg-bank
 src/game/data/prg/index.ts(38,25): error TS2307: Cannot find module '../prg-bank-29' or its corresponding type declarations.
 src/game/data/prg/index.ts(39,25): error TS2307: Cannot find module '../prg-bank-30' or its corresponding type declarations.
 src/game/data/prg/index.ts(40,25): error TS2307: Cannot find module '../prg-bank-31' or its corresponding type declarations.
-src/game/FrameCompositor.ts(41,50): error TS2339: Property 'bank' does not exist on type 'NameTableEntry[]'.
-src/game/FrameCompositor.ts(44,32): error TS2339: Property 'tile' does not exist on type 'NameTableEntry[]'.
-src/game/Renderer.ts(54,44): error TS2339: Property 'buffer' does not exist on type 'number[] | Uint32Array<ArrayBufferLike>'.
-  Property 'buffer' does not exist on type 'number[]'.
-src/game/Renderer.ts(54,56): error TS2339: Property 'byteOffset' does not exist on type 'number[] | Uint32Array<ArrayBufferLike>'.
-  Property 'byteOffset' does not exist on type 'number[]'.
 src/game/service/bank01_data-query.service.ts(1475,52): error TS2552: Cannot find name 'SCRIPT_ENTRY4B'. Did you mean 'SCRIPT_ENTRY4A'?
 src/game/service/bank11_match-turn.service.ts(61,8): error TS2307: Cannot find module '../data/bank11-data' or its corresponding type declarations.
 src/game/service/bank11_match-turn.service.ts(62,25): error TS2307: Cannot find module '../data/prg-bank-18' or its corresponding type declarations.
 src/game/service/bank11_match-turn.service.ts(63,25): error TS2307: Cannot find module '../data/prg-bank-19' or its corresponding type declarations.
-src/game/service/bank12_audio.service.ts(27,28): error TS2307: Cannot find module '../../core/engine/audio/PapuOutput' or its corresponding type declarations.
+src/game/service/bank12_audio.service.ts(194,16): error TS2339: Property 'silence' does not exist on type 'PAPU'.
 src/game/service/bank19_auxiliary.service.ts(27,25): error TS2307: Cannot find module '../data/prg-bank-19' or its corresponding type declarations.
 src/game/service/bank19_auxiliary.service.ts(28,25): error TS2307: Cannot find module '../data/prg-bank-31' or its corresponding type declarations.
 src/game/service/bank20_match-aux.service.ts(24,25): error TS2307: Cannot find module '../data/prg-bank-20' or its corresponding type declarations.
@@ -923,7 +917,6 @@ src/game/service/bank24_hud.service.ts(43,29): error TS2307: Cannot find module 
 src/game/service/bank26_match.service.ts(69,8): error TS2307: Cannot find module '../data/bank26-tables' or its corresponding type declarations.
 src/game/service/bank27_minimal.service.ts(31,8): error TS2307: Cannot find module '../data/bank27-data' or its corresponding type declarations.
 src/game/service/bank28_match.service.ts(46,8): error TS2307: Cannot find module '../data/bank28-tables' or its corresponding type declarations.
-src/game/service/bank29_roster.service.ts(42,8): error TS2307: Cannot find module '../data/team/roster' or its corresponding type declarations.
 src/game/service/bank31_match.service.ts(1481,15): error TS2552: Cannot find name 'KEY_04A6'. Did you mean 'KEY_0469'?
 src/game/service/bank31_match.service.ts(1484,17): error TS2552: Cannot find name 'KEY_04A6'. Did you mean 'KEY_0469'?
 src/game/service/bank31_match.service.ts(1484,36): error TS2552: Cannot find name 'KEY_04A6'. Did you mean 'KEY_0469'?
@@ -934,28 +927,9 @@ src/game/service/bank31_match.service.ts(1509,13): error TS2552: Cannot find nam
 src/game/service/bank31_match.service.ts(1511,13): error TS2552: Cannot find name 'KEY_04A9'. Did you mean 'KEY_0469'?
 src/game/service/bank31_match.service.ts(1526,13): error TS2552: Cannot find name 'KEY_04A6'. Did you mean 'KEY_0469'?
 src/game/service/bank31_match.service.ts(1528,13): error TS2304: Cannot find name 'KEY_04A7'.
-src/game/Tsubasa2.ts(255,22): error TS2339: Property 'buffer' does not exist on type 'PPU'.
-src/game/Tsubasa2.ts(258,50): error TS2339: Property 'buffer' does not exist on type 'PPU'.
-src/game/Tsubasa2.ts(336,39): error TS2339: Property 'buffer' does not exist on type 'PPU'.
-src/game/view/LevelUpView.ts(21,30): error TS2307: Cannot find module '../data/rom-data/team-roster' or its corresponding type declarations.
-src/game/view/MeetingView.ts(25,66): error TS2307: Cannot find module '../data/rom-data/player-stats' or its corresponding type declarations.
-src/game/view/MeetingView.ts(26,30): error TS2307: Cannot find module '../data/rom-data/team-roster' or its corresponding type declarations.
-src/game/view/MeetingView.ts(27,75): error TS2307: Cannot find module '../data/rom-data/special-moves' or its corresponding type declarations.
-src/game/view/MeetingView.ts(95,48): error TS7006: Parameter 'id' implicitly has an 'any' type.
-src/game/view/MeetingView.ts(95,52): error TS7006: Parameter 'idx' implicitly has an 'any' type.
 src/game/view/PasswordView.ts(14,34): error TS2307: Cannot find module '../data/password-sprites' or its corresponding type declarations.
 src/game/view/PasswordView.ts(31,58): error TS7006: Parameter 'spr' implicitly has an 'any' type.
-src/index.ts(31,125): error TS2300: Duplicate identifier 'Tsubasa2'.
-src/index.ts(34,10): error TS2300: Duplicate identifier 'Tsubasa2'.
-test/main.ts(12,26): error TS2307: Cannot find module '../src/core/Tsubasa2' or its corresponding type declarations.
-test/main.ts(54,25): error TS7006: Parameter 'from' implicitly has an 'any' type.
-test/main.ts(54,31): error TS7006: Parameter 'to' implicitly has an 'any' type.
-test/main.ts(55,19): error TS7006: Parameter 'err' implicitly has an 'any' type.
-test/test-suite.ts(14,26): error TS2307: Cannot find module '../src/core/Tsubasa2' or its corresponding type declarations.
 test/test-suite.ts(15,27): error TS2307: Cannot find module '../src/game/data/DataStore' or its corresponding type declarations.
 test/test-suite.ts(16,26): error TS2307: Cannot find module '../src/core/engine/render/Renderer' or its corresponding type declarations.
 test/test-suite.ts(23,32): error TS2307: Cannot find module '../src/core/engine/audio/WebAudioOutput' or its corresponding type declarations.
 test/test-suite.ts(25,27): error TS2307: Cannot find module '../src/game/data/scene' or its corresponding type declarations.
-test/test-suite.ts(366,25): error TS7006: Parameter 'from' implicitly has an 'any' type.
-test/test-suite.ts(366,31): error TS7006: Parameter 'to' implicitly has an 'any' type.
-test/test-suite.ts(367,19): error TS7006: Parameter 'err' implicitly has an 'any' type.

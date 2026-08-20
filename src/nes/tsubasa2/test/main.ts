@@ -9,7 +9,7 @@
  *   5. Tab 切换（日志/截图/报告）
  */
 
-import { Tsubasa2 } from '../src/core/Tsubasa2';
+import { Tsubasa2 } from '../src/index';
 import { BUTTON, GameState } from '../src/core/types';
 import { installWxMock } from './wx-mock';
 import { log, screenshot, clearLog, progress, sleep } from './utils';

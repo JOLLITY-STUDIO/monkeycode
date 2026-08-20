@@ -22,9 +22,9 @@ import { SceneView } from './SceneView';
 import type { TeamDataDisplayState } from '../service/bank01_data-query.service';
 import type { SpriteEntry, NameTableEntry } from '../data/prg/DataStore';
 import { getCharacterName, getCharacterNameCn, isGoalkeeper } from '../data/prg/character-list';
-import { getPlayerStatsById, codeToStamina, codeToAbility } from '../data/rom-data/player-stats';
-import { PLAYER_TEAMS } from '../data/rom-data/team-roster';
-import { SHOT_DIGITS, DRIBBLE_DIGITS, PASS_DIGITS, getSpecialMoves } from '../data/rom-data/special-moves';
+import { getPlayerStatsById, codeToStamina, codeToAbility } from '../data/prg/player-stats';
+import { PLAYER_TEAMS } from '../data/prg/team-roster';
+import { SHOT_DIGITS, DRIBBLE_DIGITS, PASS_DIGITS, getSpecialMoves } from '../data/prg/special-moves';
 
 // ── CHR Bank (文字 tile, 暂用 bank 14 与标题背景一致) ──
 const CHR_BANK = 14;

@@ -18,7 +18,7 @@
 import { SceneView } from './SceneView';
 import type { NameTableEntry, SpriteEntry } from '../data/prg/DataStore';
 import { getCharacterName, getCharacterNameCn, isGoalkeeper } from '../data/prg/character-list';
-import { PLAYER_TEAMS } from '../data/rom-data/team-roster';
+import { PLAYER_TEAMS } from '../data/prg/team-roster';
 import type { LevelUpService, PlayerRamSlot } from '../service/levelup.service';
 
 /** 玩家队 (Sao Paulo) 11 人首发 */

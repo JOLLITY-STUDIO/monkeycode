@@ -252,10 +252,10 @@ export class Tsubasa2 {
     this._onFrame(16.67);
     this._onRender(16.67);
     this._frameIndex++;
-    return this._ppu.buffer;
+    return (this._ppu as any).buffer as Uint32Array;
   }
 
-  captureFrame(): Uint32Array { return this._ppu.buffer; }
+  captureFrame(): Uint32Array { return (this._ppu as any).buffer as Uint32Array; }
 
   // ══════════════════════════════════════════
   // 内部: RAF 循环 (替代 GameLoop)
@@ -333,7 +333,7 @@ export class Tsubasa2 {
 
     // 4. 呈现: ppu.buffer (Uint32 索引色) → putImageData
     if (this._ctx) {
-      this._writeFrameToCtx(this._ppu.buffer);
+      this._writeFrameToCtx((this._ppu as any).buffer as Uint32Array);
     }
   }
 

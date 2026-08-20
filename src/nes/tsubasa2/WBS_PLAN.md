@@ -21,7 +21,7 @@
 | A1 | DataStore（KV 内存替代，ZP/ram 分区） | ✅ | `data/DataStore.ts` |
 | A2 | GameLoop / OamManager / Tsubasa2 即插即用入口 | ✅ | `core/` |
 | A3 | boot 场景路由（BOOT→TITLE→MEETING→MATCH） | ✅ | `game/boot.ts` |
-| A4 | 场景路由扩展（STORY/PASSWORD/RESULT 接入） | 🔄 | boot.ts 路由已接 (L374-385), STORY→bank18(骨架)/PASSWORD→bank02(校验占位)/CREDITS TODO |
+| A4 | 场景路由扩展（STORY/PASSWORD/RESULT 接入） | ✅ | G2/G3/G4 完成: STORY→Bank19/18、PASSWORD→PasswordController、RESULT→ResultController 均接入 boot 路由; CREDITS 待 v0.4+ |
 
 ## B. 开场 / 标题 / 脚本（Bank 00, 03-05）
 
@@ -38,7 +38,7 @@
 | ID | 任务 | 状态 | 备注 |
 |---|---|---|---|
 | C1 | Bank01 DataQueryService（选项屏幕） | ✅ | entry2-5 已补译 (2026-08-20): entry2_PpuGraphics($A4EB)/entry3_ScreenDraw($A64C)/entry4_AttrBlock($A6D2)/entry5_CharDecode($AFC2) 完整翻译, 修正 ram_0044/45 地址错误 |
-| C2 | Bank02 SceneService | 🔄 | PasswordController 骨架 ✅ (_verifyPassword 占位); 真实校验算法+33槽位假名网格待 trace |
+| C2 | Bank02 SceneService | ✅ | G2 完成: PasswordController + $83A3 续关载入动画 playContinueLoadAnimation; _verifyPassword=形态守卫+一律false 诚实占位; 真实校验算法待 tsnes trace START 帧 (记录在 G2) |
 | C3 | Bank06/07 数据 | ✅ | `data/bank06-data.ts` `bank07-data.ts` |
 
 ## D. 比赛核心（Bank 11, 16, 24, 26, 27, 28, 29）

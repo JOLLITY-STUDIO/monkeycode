@@ -39,7 +39,7 @@ import {
   type RosterPlayerSlot,
   getCpuRoster,
   getRosterByAddr,
-} from '../data/team/roster';
+} from '../data/prg/team/roster';
 
 // ── RAM 键 ──
 const KEY_26 = 'ram_0026';   // 当前球队 ID

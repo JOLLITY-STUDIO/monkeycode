@@ -11,7 +11,7 @@
  * 每个测试用例返回 { name, pass, detail } 由 runner 汇总。
  */
 
-import { Tsubasa2 } from '../src/core/Tsubasa2';
+import { Tsubasa2 } from '../src/index';
 import { DataStore } from '../src/game/data/DataStore';
 import { Renderer } from '../src/core/engine/render/Renderer';
 import { Bank00Service } from '../src/game/service/bank00/bank00_core.service';

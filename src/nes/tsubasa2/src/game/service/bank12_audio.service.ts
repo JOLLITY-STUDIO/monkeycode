@@ -24,7 +24,7 @@
  */
 
 import type { DataStore } from '../data/prg/DataStore';
-import { PapuOutput } from '../../core/engine/audio/PapuOutput';
+import PAPU from '../../core/papu';
 import { Bank12AudioEngine } from './bank12_audio_engine';
 
 // ═══════════════════════════════════════════════════════════════
@@ -78,8 +78,8 @@ export const SE_POINTER_TABLE: number[] = [
 // ═══════════════════════════════════════════════════════════════
 
 export class Bank12AudioService {
-  /** PAPU + AudioContext 桥接 */
-  private _papu: PapuOutput;
+  /** PAPU 完整 NES APU 模拟 */
+  private _papu: PAPU;
   /** 核心音频引擎 */
   private _engine: Bank12AudioEngine;
 
@@ -88,8 +88,8 @@ export class Bank12AudioService {
   private _bank15: Uint8Array = new Uint8Array(0);
 
   constructor(_store: DataStore, _audioOut?: IAudioOutput) {
-    // 忽略旧的 IAudioOutput，改用 PapuOutput (PAPU 完整模拟 NES APU)
-    this._papu = new PapuOutput();
+    // 直接用 PAPU 完整模拟 NES APU (不再需要 PapuOutput 桥接层)
+    this._papu = new PAPU();
     this._engine = new Bank12AudioEngine(this._papu);
   }
 
@@ -211,7 +211,7 @@ export class Bank12AudioService {
   // ──────────────────────────────────────────────
 
   /** 获取 PAPU 实例 (调试/高级用途) */
-  get papu(): PapuOutput {
+  get papu(): PAPU {
     return this._papu;
   }
 
