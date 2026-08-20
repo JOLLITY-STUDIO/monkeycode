@@ -115,7 +115,7 @@ class Bank16Service {
         this._exitFlag = false;
     }
     // ── 数据访问 (原始字节, 经 bank16-data 层) ──
-    /** 读取本 bank 内地址 addr 的原始字节 (addr: $8000-$9FFF) */
+    /** 读取本 bank 内地址 addr 的原始字节 (addr: $8000-$9FFF, 内部数据访问) */
     readByte(addr) {
         return (0, bank16_data_1.readB16)(addr);
     }

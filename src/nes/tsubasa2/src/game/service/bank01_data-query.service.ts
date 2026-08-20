@@ -289,8 +289,7 @@ export class DataQueryService {
     }
 
     // ── ⑥ $A0F4-$A10C: 帧等待 + PPU 块填充 ──
-    // $9FA8(1) bank 切换 (H5 no-op); 等待 ram_001E bit7 (帧同步, H5 由帧循环保证)
-    this._bankSwitch(1);
+    // 等待 ram_001E bit7 (帧同步, H5 由帧循环保证)
     // $98E8: Y=4 行, X=$0B 列, 起始地址 $228A, 填充 0x00
     this._ppuBlockFill(4, 0x0B, 0x228A, 0x00);
 
@@ -965,10 +964,7 @@ export class DataQueryService {
     }
   }
 
-  /** 对应 bank00 $9FA8: bank 切换 (H5: 数据已内嵌, no-op) */
-  private _bankSwitch(_param: number): void {
-    // no-op
-  }
+
 
   // ── 公开: 数据注册接口 ──
 

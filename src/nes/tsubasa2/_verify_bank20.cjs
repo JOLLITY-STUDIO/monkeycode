@@ -471,14 +471,16 @@ const LIMIT = 800;
 
 // ── 通用: 同一随机输入 → ref 执行 vs service 执行 → 终态对比 ──
 function runBoth(name, setup, refFn, svcFn) {
+  const store = new DataStore();
   const input = new RefMem();
   setup(input);
+  // ref 初始状态与 DataStore 构造一致: oamShadow.clearAll() 预置 $0468-$0567 = $F8 (4位 key)
   const ref = new RefMem();
-  ref.m = new Map(input.m);
+  ref.m = new Map(store.ram);
+  for (const [k, v] of input.m.entries()) ref.m.set(k, v); // input 覆盖预置
   let ok;
   try { ok = refFn(ref); } catch (e) { return null; } // 循环超限跳过该组
   void ok;
-  const store = new DataStore();
   for (const [k, v] of input.m.entries()) store.write(k, v);
   const svc = new Bank20Service(store);
   svcFn(svc, store);

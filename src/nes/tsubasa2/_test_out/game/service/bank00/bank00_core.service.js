@@ -295,9 +295,7 @@ class Bank00Service {
      * 渐显推进委托 view.fadeWait()。
      */
     waitCounter() {
-        if (this._render.fadeWait()) {
-            this.bankSwitch9FA8(1);
-        }
+        this._render.fadeWait();
     }
     /**
      * 对应原始 $98EA: PPU 16 字节块填充。
@@ -337,9 +335,7 @@ class Bank00Service {
      */
     oamTerm96(x) {
         const s = this._store;
-        if (s.read(`ram_000${x.toString(16).toUpperCase()}`) === 0xFF) {
-            this.bankSwitch9FA8(1);
-        }
+        // $9F96: ram_0000,X == 0xFF 时原 JSR $9FA8(1) (bank 切换, H5 no-op) 已省略
         s.write(`ram_000${x.toString(16).toUpperCase()}`, 0);
     }
     /**
@@ -348,16 +344,6 @@ class Bank00Service {
      */
     oamFlagClear() {
         this._render.oamFlagClear();
-    }
-    /**
-     * 对应原始 $9FA8: 栈保存 + bank 切换 (H5: no-op)。
-     * 汇编: 保存 A/X/Y/E6-ED 到栈, 栈指针写入 ram_0000,X。
-     * H5: 数据已直接 import, 无需 bank 切换。
-     *
-     * @param _param 原始 A 参数 (保留)
-     */
-    bankSwitch9FA8(_param) {
-        // no-op
     }
     // ──────────────────────────────────────────────
     // $9BA0: 等待 VBlank

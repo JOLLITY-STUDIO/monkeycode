@@ -141,13 +141,13 @@ export class Bank11Service {
 
   // ── 数据访问 (原始字节, 经 bank11-data 层) ──
 
-  /** 读取本 bank 内地址 addr 的原始字节 (addr: $8000-$9FFF / $A000-$BFFF) */
-  readByte(addr: number): number {
+  /** 读取本 bank 内地址 addr 的原始字节 (addr: $8000-$9FFF / $A000-$BFFF, 内部数据访问) */
+  private readByte(addr: number): number {
     return readB11(addr);
   }
 
   /** 读取本 bank 内 16bit 小端数值 */
-  readU16(addr: number): number {
+  private readU16(addr: number): number {
     return readB11U16(addr);
   }
 

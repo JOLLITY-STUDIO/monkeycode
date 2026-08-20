@@ -19,9 +19,9 @@ const HW_BASE = 0x0200;
 const SPR_BYTES = 4;
 /** 屏幕外 Y 值 */
 const Y_HIDDEN = 0xf8;
-/** KV 键名构造 (ram_XXXX) */
+/** KV 键名构造 (ram_XXXX, 4 位十六进制大写 — 与全库 service 约定一致) */
 function ramKey(addr) {
-    return `ram_${addr.toString(16)}`;
+    return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
 }
 class ShadowOam {
     constructor() {

@@ -358,9 +358,7 @@ export class Bank02Service {
       s.write(`temp_EC_${y.toString(16)}`, 0);
     }
 
-    // 82F8: JSR $9FA8(1) — H5: bank 切换 no-op
-    this._bank00.bankSwitch9FA8(1);
-
+    // 82F8: 原 JSR $9FA8(1) — H5 no-op 已省略
     // 82FD-8335: 摄像机滚动处理 (5 组 delta)
     // 原 $8335 JMP $A2F8 是帧驱动死循环, H5 单次执行完成镜头位移
     this._entryC_scrollLoop();
@@ -534,8 +532,7 @@ export class Bank02Service {
       y = (y + 3) & 0xFF;
       s.write('ram_00EC', (ec + 0x0D) & 0xFF);
     }
-    // $8372-$8375: LDA #$01; JSR $9FA8 — 帧推进 (H5: no-op)
-    this._bank00.bankSwitch9FA8(1);
+    // $8372-$8375: 原 LDA #$01; JSR $9FA8 — 帧推进 (H5 no-op)
     // $8379-$839E: 坐标修正循环 (33 槽) — 依据 PW_OAM_FIX($AB1F) 表
     //   Y = X & $0C; limit=$AB1F,Y; xDelta=$AB21,Y; yDelta=$AB22,Y
     for (let x = 0x78; x < 0xFC; x += 4) {
@@ -558,15 +555,13 @@ export class Bank02Service {
     const s = this._store;
     // $83A3-$83A8: ram_0568 |= $10
     s.write('ram_0568', s.read('ram_0568') | 0x10);
-    // $83AB-$83AD: LDA #$04; JSR $9FA8
-    this._bank00.bankSwitch9FA8(4);
+    // $83AB-$83AD: 原 LDA #$04; JSR $9FA8 (H5 no-op)
     // $83B0-$83B2: ram_0044 = $08; ram_0046 = $08
     s.write('ram_0044', 0x08);
     s.write('ram_0046', 0x08);
     // $83B6-$83BC: ram_056D -= 4
     s.write('ram_056D', (s.read('ram_056D') - 4) & 0xFF);
-    // $83BF-$83C1: LDA #$04; JSR $9FA8
-    this._bank00.bankSwitch9FA8(4);
+    // $83BF-$83C1: 原 LDA #$04; JSR $9FA8 (H5 no-op)
     // $83C4-$83CA: ram_0044 = $00; ram_0046 = $F8
     s.write('ram_0044', 0x00);
     s.write('ram_0046', 0xF8);
@@ -715,12 +710,10 @@ export class Bank02Service {
 
     // $A4C1: JSR $9A0D — 帧计数器等待
     this._bank00.waitCounter();
-    // $A4C4: LDA #$10; JSR $9FA8
-    this._bank00.bankSwitch9FA8(0x10);
+    // $A4C4: 原 LDA #$10; JSR $9FA8 (H5 no-op)
 
-    // $A4C9-$A4D6: LDY #$30 循环 48 次 { LDA #$01; JSR $9FA8; LDA #$01; JSR $890C; DEY; BNE }
+    // $A4C9-$A4D6: LDY #$30 循环 48 次 { LDA #$01; JSR $890C; DEY; BNE }
     for (let y = 0x30; y > 0; y--) {
-      this._bank00.bankSwitch9FA8(1);
       this._bank00.vramAddrSetup(1);
     }
 
@@ -741,8 +734,7 @@ export class Bank02Service {
     s.write('ram_0090', s.read('ram_008E'));
     s.write('ram_0091', s.read('ram_008F'));
 
-    // $A4F4: LDA #$04; JSR $9FA8
-    this._bank00.bankSwitch9FA8(4);
+    // $A4F4: 原 LDA #$04; JSR $9FA8 (H5 no-op)
     // $A4F9: JSR $9A35 — 主循环初始化 part2
     this._bank00.mainLoopInit2();
     // $A4FC: JSR $88FB — PPU 寄存器设置
@@ -751,7 +743,6 @@ export class Bank02Service {
     // $A4FF-$A513: 循环 { JSR $9FA8(1); INC ram_0079; DEC ram_007C×2;
     //   ram_0044 -= 2; CMP #$03; BCS } — ram_0044 ≥ 3 时继续
     for (;;) {
-      this._bank00.bankSwitch9FA8(1);
       s.write('ram_0079', (s.read('ram_0079') + 1) & 0xFF);
       s.write('ram_007C', (s.read('ram_007C') - 1) & 0xFF);
       s.write('ram_007C', (s.read('ram_007C') - 1) & 0xFF);
@@ -766,10 +757,7 @@ export class Bank02Service {
     // $A51A-$A51E: ram_001B |= 0x01
     s.write('ram_1B', s.read('ram_1B') | 0x01);
 
-    // $A520-$A527: LDA #$F0 / #$3C; JSR $9FA8 ×2
-    this._bank00.bankSwitch9FA8(0xF0);
-    this._bank00.bankSwitch9FA8(0x3C);
-
+    // $A520-$A527: 原 LDA #$F0 / #$3C; JSR $9FA8 ×2 (H5 no-op)
     // $A52A-$A52E: ram_001B &= 0xFE
     s.write('ram_1B', s.read('ram_1B') & 0xFE);
 
@@ -903,8 +891,7 @@ export class Bank02Service {
     this._bank00.dataSourceSwitch(0xBD, 0x23);
     // $A631: JSR $9A35 — 主循环初始化 part2
     this._bank00.mainLoopInit2();
-    // $A634-$A636: LDA #$01; JSR $9FA8
-    this._bank00.bankSwitch9FA8(1);
+    // $A634-$A636: 原 LDA #$01; JSR $9FA8 (H5 no-op)
     // $A639-$A63E: ram_058F &= $7F
     s.write('ram_058F', s.read('ram_058F') & 0x7F);
     // $A641-$A643: LDA #$82 → ram_004C
@@ -950,9 +937,9 @@ export class Bank02Service {
       if (flags & 0x80) {
         return 2;
       }
-      // $A690 BVC $A655 (V 清 → 循环); V 置位路径 LDA #$02; JSR $9FA8 → 也循环 (H5: bank 切换 no-op)
+      // $A690 BVC $A655 (V 清 → 循环); V 置位路径原 LDA #$02; JSR $9FA8 → 也循环 (H5 no-op)
       if (flags & 0x40) {
-        this._bank00.bankSwitch9FA8(2);
+        // no-op (原 bank 切换已省略)
       }
     }
     return 2;
@@ -1013,7 +1000,7 @@ export class Bank02Service {
 
   /**[18]$A782 D1 — $A783: JSR $9FA8(2); JSR $88FB, 返回 2 */
   private _jumpHandler_18_A782(): number {
-    this._bank00.bankSwitch9FA8(2);
+    // $A783: 原 JSR $9FA8(2) (H5 no-op)
     this._bank00.ppuRegSetup();
     return 2;
   }
@@ -1023,7 +1010,7 @@ export class Bank02Service {
 
   /**[20]$A7BD D1 — $A7BE: JSR $9FA8(1); Y=$28; X=$64; A=$B0; JSR $A82F, 返回 2 */
   private _jumpHandler_20_A7BD(): number {
-    this._bank00.bankSwitch9FA8(1);
+    // $A7BE: 原 JSR $9FA8(1) (H5 no-op)
     this._subA82F(0xB0, 0x64, 0x28);
     return 2;
   }
@@ -1039,8 +1026,7 @@ export class Bank02Service {
     const s = this._store;
     // $A7D7: LDY #$80 外层循环 0x80 次
     for (let outer = 0; outer < 0x80; outer++) {
-      // $A7D9: LDA #$01; JSR $9FA8
-      this._bank00.bankSwitch9FA8(1);
+      // $A7D9: 原 LDA #$01; JSR $9FA8 (H5 no-op)
       // $A7DE-$A7F3: X=$20..$C4 step 4
       for (let x = 0x20; x !== 0xC4; x = (x + 4) & 0xFF) {
         // $A7E0: LDA ram_0468,X; BPL $A7ED — bit7 置位才处理
@@ -1124,8 +1110,7 @@ export class Bank02Service {
         s.oamShadow.writeSlot(y, e4, a & 0xFF, s.read('ram_00EA'), e7);
         y = (y + 4) & 0xFF; // INY×4
       }
-      // $A75E: LDA #$01; JSR $9FA8
-      this._bank00.bankSwitch9FA8(1);
+      // $A75E: 原 LDA #$01; JSR $9FA8 (H5 no-op)
     }
   }
 
@@ -1140,7 +1125,7 @@ export class Bank02Service {
    * Bank02 内可达的实质逻辑是 sub_88CE — 将 ram_0468-$0567 精灵表
    * 拷贝到 ram_0200-$02FF OAM 缓冲, 属性 bit2-3 非 0 的精灵置 Y=$F8 (屏外)。
    * ```
-   * $88CE: LDA #$01; JSR $9FA8          // bankSwitch9FA8(1)
+   * $88CE: LDA #$01; JSR $9FA8          // 原 bank 切换 (H5 no-op)
    * $88D3: LDY #$00
    * $88D5: LDX ram_0468,Y                // X = tile
    *        LDA ram_046A,Y; AND #$0C      // 属性 bit2-3
@@ -1154,7 +1139,7 @@ export class Bank02Service {
    * ```
    */
   private _oamDataCopy(): void {
-    this._bank00.bankSwitch9FA8(1);
+    // $88CE: 原 LDA #$01; JSR $9FA8 (H5 no-op)
     // $88CE-$88FD: 影子 OAM → $0200 硬件 OAM (attr bit2-3 非 0 → Y=$F8)
     this._store.oamShadow.copyToHw();
   }
@@ -1175,7 +1160,7 @@ export class Bank02Service {
   private _sub882F(endX: number, startX: number, passes: number): void {
     const s = this._store;
     for (let p = 0; p < passes; p++) {
-      this._bank00.bankSwitch9FA8(1);
+      // $8833: 原 LDA #$01; JSR $9FA8 (H5 no-op)
       for (let x = startX; x !== endX; x = (x + 4) & 0xFF) {
         if (s.oamShadow.readByte(x) < 0x82) {
           s.oamShadow.attrAnd(x + 2, 0xF3);

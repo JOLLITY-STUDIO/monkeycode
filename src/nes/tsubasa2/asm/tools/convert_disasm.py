@@ -1,247 +1,255 @@
+"""convert_disasm.py v3 - split by entry/data subfiles
+
+Input:  _tmp_bzk_out/bank_NN/bank_NN_partMM.asm
+Output: asm/bankNN/
+    bankNN.s        - top file (.include all subs)
+    entry_XXXX.s    - function starting at $XXXX (ends with RTS/RTI)
+    data_XXXX.s     - data table (contiguous .byte, non-code)
 """
-convert_disasm.py - 反汇编转换工具 v2
-将 _tmp_bzk_out/bank_NN/bank_NN_partMM.asm 转换为 asm/bankNN/bankNN.s 可编译源码
-
-输出真实 6502 汇编指令 (LDA/STA/JSR/BNE...), 数据段保持 .byte
-build_nes.py 可直接编译产出 .nes 文件
-
-反汇编源格式 (whipon/tsnes):
-  C - - - - - 0x03E009 0F:E00B: 90 02     BCC $E00F      ← 代码
-  - - - - - - 0x03E010 0F:E000: FF        .byte $FF       ← 数据
-
-输出格式 (我们的 .s):
-  .segment "PRG_BANK31"
-  .org $E000
-  LDA #$00              ; $E000
-  STA $2003             ; $E003
-  .byte $FF             ; $E010 (data)
-
-特性:
-  - 跳过 CDL 标志解析
-  - 代码区输出助记符 + 操作数 (保留 $XXXX 绝对地址)
-  - 数据区输出 .byte
-  - build_nes.py 自动计算分支偏移
-  - 按地址排序, 填充空隙为 .byte $FF
-"""
-
-import os
-import re
-import sys
+import os, re, sys
 from pathlib import Path
 
-# 解析一行反汇编
-# 格式: [CDL] [file_off] [bank:cpu_addr]: [hex bytes] [mnemonic operand]
 LINE_RE = re.compile(
-    r'^([CD\- ]+?)\s+0x([0-9A-Fa-f]+)\s+([0-9A-Fa-f]+):([0-9A-Fa-f]{4}):\s+([0-9A-Fa-f ]+?)\s{2,}(.*)$'
-)
+    r'^([CD\- ]+?)\s+0x([0-9A-Fa-f]+)\s+([0-9A-Fa-f]+):([0-9A-Fa-f]{4}):\s+([0-9A-Fa-f ]+?)\s{2,}(.*)$')
+DATA_RE = re.compile(
+    r'^([CD\- ]+?)\s+0x([0-9A-Fa-f]+)\s+([0-9A-Fa-f]+):([0-9A-Fa-f]{4}):\s+([0-9A-Fa-f ]+?)\s{2,}\.byte\s+(.*)$')
 
-# 数据行 (无 mnemonic, 只有 .byte $XX)
-DATA_LINE_RE = re.compile(
-    r'^([CD\- ]+?)\s+0x([0-9A-Fa-f]+)\s+([0-9A-Fa-f]+):([0-9A-Fa-f]{4}):\s+([0-9A-Fa-f ]+?)\s{2,}\.byte\s+(.*)$'
-)
+BRANCH_OPS = {'BCC','BCS','BEQ','BMI','BNE','BPL','BVC','BVS'}
 
 
 def parse_line(line):
-    """返回 dict 或 None"""
     line = line.rstrip()
     if not line.strip():
         return None
-    # 先尝试数据行
-    m = DATA_LINE_RE.match(line)
+    m = DATA_RE.match(line)
     if m:
-        cdl = m.group(1)
-        cpu = int(m.group(4), 16)
-        bytes_str = m.group(5).strip()
-        operand = m.group(6).strip()
-        bytes_list = [int(b, 16) for b in bytes_str.split()]
-        return {
-            'is_code': 'C' in cdl,
-            'is_data': 'D' in cdl or '-' in cdl,
-            'cpu_addr': cpu,
-            'bytes': bytes_list,
-            'mnemonic': '.byte',
-            'operand': operand,
-            'raw': line,
-        }
-    # 代码行
+        return {'is_code': 'C' in m.group(1), 'cpu': int(m.group(4), 16),
+                'bytes': [int(b, 16) for b in m.group(5).split()],
+                'mn': '.byte', 'op': m.group(6).split(';')[0].strip(), 'raw': line}
     m = LINE_RE.match(line)
     if not m:
         return None
-    cdl = m.group(1)
-    cpu = int(m.group(4), 16)
-    bytes_str = m.group(5).strip()
-    operand_str = m.group(6).strip()
-    bytes_list = [int(b, 16) for b in bytes_str.split()]
-    is_code = 'C' in cdl
-    # 解析 mnemonic + operand
-    parts = operand_str.split(None, 1)
-    mn = parts[0] if parts else ''
-    op = parts[1].strip() if len(parts) > 1 else ''
-    # 去掉注释部分 (有些行 mnemonic 后有 ; 注释)
-    return {
-        'is_code': is_code,
-        'is_data': not is_code,
-        'cpu_addr': cpu,
-        'bytes': bytes_list,
-        'mnemonic': mn,
-        'operand': op,
-        'raw': line,
-    }
+    operand = m.group(6).strip()
+    if ';' in operand:
+        operand = operand.split(';', 1)[0].strip()
+    parts = operand.split(None, 1)
+    return {'is_code': 'C' in m.group(1), 'cpu': int(m.group(4), 16),
+            'bytes': [int(b, 16) for b in m.group(5).split()],
+            'mn': parts[0] if parts else '', 'op': parts[1].strip() if len(parts) > 1 else '',
+            'raw': line}
 
 
-def convert_bank(bank_num, src_dir, asm_root):
-    """转换一个 bank → asm/bankNN/bankNN.s (可编译)"""
-    bank_name = f'bank_{bank_num:02d}'
+def get_target(op):
+    if not op:
+        return None
+    m = re.match(r'\$([0-9A-Fa-f]{4})', op)
+    return int(m.group(1), 16) if m else None
+
+
+def norm_op(op):
+    if not op:
+        return op
+    op = re.sub(r'ram_([0-9A-Fa-f]{4})\b', r'$\1', op)
+    op = re.sub(r'\b[bBdD]:\s*', '', op)
+    return op
+
+
+def convert_bank(bn, src_dir, asm_root):
+    bank_name = f'bank_{bn:02d}'
     src_bank_dir = Path(src_dir) / bank_name
     if not src_bank_dir.exists():
-        return 0, f"跳过: {src_bank_dir} 不存在"
+        return 0, f'skip {bank_name} not exist'
+    parts = sorted(src_bank_dir.glob(f'{bank_name}_part*.asm'))
+    if not parts:
+        return 0, f'skip {bank_name} no parts'
 
-    part_files = sorted(src_bank_dir.glob(f'{bank_name}_part*.asm'))
-    if not part_files:
-        return 0, f"跳过: {src_bank_dir} 无 _part*.asm"
-
-    # 解析所有行, 按 CPU 地址排序
+    # Pass A: parse all lines
     entries = []
-    for pf in part_files:
-        with open(pf, 'r', encoding='utf-8') as f:
+    for pf in parts:
+        with open(pf, encoding='utf-8') as f:
             for line in f:
                 e = parse_line(line)
                 if e:
                     entries.append(e)
-    entries.sort(key=lambda x: x['cpu_addr'])
+    entries.sort(key=lambda x: x['cpu'])
     if not entries:
-        return 0, "WARN: 无可解析行"
+        return 0, f'bank{bn:02d} empty'
 
-    # bank CPU 基址
-    if bank_num == 30:
-        cpu_base = 0xC000
-    elif bank_num == 31:
-        cpu_base = 0xE000
-    else:
-        cpu_base = 0x8000
-    seg_name = f'PRG_BANK{bank_num:02d}'
+    cpu_base = 0xC000 if bn == 30 else 0xE000 if bn == 31 else 0x8000
+    seg_name = f'PRG_BANK{bn:02d}'
+    bank_end = cpu_base + 0x2000
+    addr_map = {e['cpu']: e for e in entries}
+    entries_set = set(addr_map.keys())
 
-    # 读取原始 ROM 字节 (用于填充反汇编未覆盖的空隙)
-    rom_bytes_path = Path(asm_root) / f'bank{bank_num:02d}' / 'rom_bytes.bin'
-    rom_bytes = None
-    if rom_bytes_path.exists():
-        with open(rom_bytes_path, 'rb') as f:
-            rom_bytes = f.read()
-        if len(rom_bytes) != 8192:
-            rom_bytes = None
+    # Pass B: collect entry points (JSR/JMP targets in-bank)
+    entry_points = set()
+    for e in entries:
+        if not e['is_code'] or e['mn'] == '.byte':
+            continue
+        mn = e['mn'].upper()
+        if mn in ('JSR', 'JMP'):
+            tgt = get_target(e['op'])
+            if tgt is not None and tgt in entries_set:
+                entry_points.add(tgt)
+    if bn == 31:
+        entry_points.add(0xFFF0)
+    if bn == 30:
+        entry_points.update([0xC000, 0xC503])
+    entry_points.add(min(entries_set))
 
-    # 输出路径: bankNN/bankNN.s (覆盖 stub)
-    dst_dir = Path(asm_root) / f'bank{bank_num:02d}'
-    dst_dir.mkdir(parents=True, exist_ok=True)
-    out_path = dst_dir / f'bank{bank_num:02d}.s'
+    # Pass C: trace functions from each entry
+    functions = {}
+    visited = set()
 
-    with open(out_path, 'w', encoding='utf-8', newline='\n') as f:
-        f.write(f'; ============================================================\n')
-        f.write(f'; bank{bank_num:02d}/bank{bank_num:02d}.s\n')
-        f.write(f'; bank {bank_num} - 真实 6502 汇编 (8KB)\n')
-        f.write(f'; CPU 地址范围: ${cpu_base:04X}-${cpu_base+0x1FFF:04X}\n')
-        f.write(f'; 源: _tmp_bzk_out/{bank_name}/{bank_name}_partMM.asm\n')
-        f.write(f'; 代码=助记符, 数据=.byte, build_nes.py 可直接编译\n')
-        f.write(f'; ============================================================\n\n')
-        f.write(f'.segment "{seg_name}"\n')
-        f.write(f'.org ${cpu_base:04X}\n\n')
-
-        cur_addr = cpu_base
-        code_count = 0
-        data_count = 0
-        # 用于合并连续 .byte 行 (避免太多行)
-        pending_bytes = []
-
-        def flush_bytes():
-            nonlocal pending_bytes
-            if not pending_bytes:
-                return
-            # 每行最多 16 字节
-            for i in range(0, len(pending_bytes), 16):
-                chunk = pending_bytes[i:i+16]
-                hex_str = ','.join(f'${b:02X}' for b in chunk)
-                f.write(f'    .byte {hex_str}\n')
-            pending_bytes = []
-
-        for e in entries:
-            # 填充空隙 (用原始 ROM 字节, 不是 $FF)
-            while cur_addr < e['cpu_addr']:
-                off = cur_addr - cpu_base
-                if rom_bytes and 0 <= off < len(rom_bytes):
-                    pending_bytes.append(rom_bytes[off])
-                else:
-                    pending_bytes.append(0xFF)
-                cur_addr += 1
-                if len(pending_bytes) >= 64:
-                    flush_bytes()
-
-            if e['is_code'] and e['mnemonic'] and e['mnemonic'] != '.byte':
-                # UNDEFINED mnemonic → 作为数据
-                if e['mnemonic'].upper() in ('UNDEFINED', 'UNKNOWN', '???'):
-                    pending_bytes.extend(e['bytes'])
-                    data_count += len(e['bytes'])
-                    cur_addr = e['cpu_addr'] + len(e['bytes'])
+    def trace(entry):
+        body = []
+        cur = entry
+        seen = set()
+        while cur in addr_map:
+            if cur in seen:
+                break
+            seen.add(cur)
+            e = addr_map[cur]
+            if not e['is_code'] or e['mn'] == '.byte':
+                break
+            body.append(cur)
+            mn = e['mn'].upper()
+            if mn in BRANCH_OPS:
+                tgt = get_target(e['op'])
+                if tgt is not None and tgt in entries_set:
+                    entry_points.add(tgt)
+            if mn in ('RTS', 'RTI', 'BRK'):
+                break
+            if mn == 'JMP':
+                tgt = get_target(e['op'])
+                if tgt is not None and tgt in entries_set and tgt not in seen:
+                    cur = tgt
                     continue
-                flush_bytes()
-                # 输出指令
-                # 把 ram_XXXX 符号替换为 $XXXX (避免依赖 ram_map.inc 不全)
-                op_str = e['operand']
-                if op_str:
-                    # ram_XXXX → $XXXX
-                    op_str = re.sub(r'ram_([0-9A-Fa-f]{4})\b', r'$\1', op_str)
-                    # 保留 a: 前缀 (强制 absolute), 去掉 d:/b: 等
-                    op_str = re.sub(r'\b[bBdD]:\s*', '', op_str)
-                    line_out = f'    {e["mnemonic"]} {op_str}'
+                break
+            cur = e['cpu'] + len(e['bytes'])
+        return body
+
+    pending = sorted(entry_points)
+    while pending:
+        ep = pending.pop(0)
+        if ep in functions:
+            continue
+        body = trace(ep)
+        if body:
+            functions[ep] = body
+            visited.update(body)
+        new = [t for t in entry_points if t not in functions and t not in visited and t not in pending]
+        pending.extend(sorted(new))
+
+    # Pass D: orphan code -> single-instr functions
+    for a in sorted(entries_set):
+        if a in visited:
+            continue
+        e = addr_map[a]
+        if e['is_code'] and e['mn'] != '.byte':
+            functions.setdefault(a, []).append(a)
+            visited.add(a)
+
+    # Pass E: output
+    dst_dir = Path(asm_root) / f'bank{bn:02d}'
+    dst_dir.mkdir(parents=True, exist_ok=True)
+    for old in list(dst_dir.glob('entry_*.s')) + list(dst_dir.glob('data_*.s')):
+        old.unlink()
+
+    sub_files = []
+    for entry_addr in sorted(functions.keys()):
+        body = functions[entry_addr]
+        fname = f'entry_{entry_addr:04X}.s'
+        fpath = dst_dir / fname
+        with open(fpath, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(f'; entry ${entry_addr:04X} (bank {bn}) len={len(body)}\n\n')
+            f.write(f'.org ${entry_addr:04X}\n')
+            f.write(f'L_{entry_addr:04X}:\n')
+            for addr in body:
+                e = addr_map[addr]
+                if addr in entry_points and addr != entry_addr:
+                    f.write(f'L_{addr:04X}:\n')
+                if e['mn'] == '.byte':
+                    bs = ','.join(f'${b:02X}' for b in e['bytes'])
+                    f.write(f'    .byte {bs:<24}; ${addr:04X}\n')
                 else:
-                    line_out = f'    {e["mnemonic"]}'
-                f.write(f'{line_out:<30} ; ${e["cpu_addr"]:04X}\n')
-                code_count += 1
-            else:
-                # 数据: 累积
-                pending_bytes.extend(e['bytes'])
-                data_count += len(e['bytes'])
-            cur_addr = e['cpu_addr'] + len(e['bytes'])
+                    op = norm_op(e['op'])
+                    tgt = get_target(e['op'])
+                    if tgt is not None and tgt in entry_points:
+                        op = re.sub(r'\$' + f'{tgt:04X}', f'L_{tgt:04X}', op, count=1)
+                    line = f'    {e["mn"]} {op}' if op else f'    {e["mn"]}'
+                    f.write(f'{line:<30}; ${addr:04X}\n')
+        sub_files.append(fname)
 
-        flush_bytes()
-        # 填充到 8KB (用原始 ROM 字节)
-        while cur_addr < cpu_base + 0x2000:
-            off = cur_addr - cpu_base
-            if rom_bytes and 0 <= off < len(rom_bytes):
-                pending_bytes.append(rom_bytes[off])
+    # data subfiles
+    data_files = []
+    data_addrs = sorted(a for a in entries_set if a not in visited)
+    if data_addrs:
+        segs = []
+        cur_seg = [data_addrs[0]]
+        for a in data_addrs[1:]:
+            prev = addr_map.get(cur_seg[-1])
+            expected = cur_seg[-1] + (len(prev['bytes']) if prev else 1)
+            if a == expected:
+                cur_seg.append(a)
             else:
-                pending_bytes.append(0xFF)
-            cur_addr += 1
-            if len(pending_bytes) >= 64:
-                flush_bytes()
-        flush_bytes()
+                segs.append(cur_seg)
+                cur_seg = [a]
+        segs.append(cur_seg)
 
-    return len(entries), f"bank{bank_num:02d}: code={code_count}, data_bytes={data_count}, total={len(entries)}"
+        for seg in segs:
+            start = seg[0]
+            fname = f'data_{start:04X}.s'
+            fpath = dst_dir / fname
+            with open(fpath, 'w', encoding='utf-8', newline='\n') as f:
+                f.write(f'; data ${start:04X} (bank {bn}) len={len(seg)}\n\n')
+                f.write(f'.org ${start:04X}\n')
+                f.write(f'D_{start:04X}:\n')
+                all_bytes = []
+                for addr in seg:
+                    all_bytes.extend(addr_map[addr]['bytes'])
+                for i in range(0, len(all_bytes), 16):
+                    chunk = all_bytes[i:i+16]
+                    f.write('    .byte ' + ','.join(f'${b:02X}' for b in chunk) + '\n')
+            data_files.append(fname)
+
+    # top bankNN.s
+    top = dst_dir / f'bank{bn:02d}.s'
+    with open(top, 'w', encoding='utf-8', newline='\n') as f:
+        f.write(f'; bank{bn:02d}.s - bank {bn} ({cpu_base:04X}-{bank_end-1:04X})\n')
+        f.write(f'; functions={len(functions)} data_segs={len(data_files)}\n\n')
+        f.write(f'.segment "{seg_name}"\n\n')
+        if sub_files:
+            f.write(f'; --- functions ({len(sub_files)}) ---\n')
+            for sf in sub_files:
+                f.write(f'.include "{sf}"\n')
+        if data_files:
+            f.write(f'\n; --- data ({len(data_files)}) ---\n')
+            for df in data_files:
+                f.write(f'.include "{df}"\n')
+
+    return len(entries), f'bank{bn:02d}: entries={len(entries)} funcs={len(functions)} data={len(data_files)}'
 
 
 def main():
-    print("=== convert_disasm.py v2 - 真实 6502 ASM 转换 ===")
+    print('convert_disasm v3')
     src_dir = r'd:\studio\github\monkeycode\src\nes\tsubasa2\_tmp_bzk_out'
     asm_root = r'd:\studio\github\monkeycode\src\nes\tsubasa2\asm'
-
     if len(sys.argv) > 1:
-        banks = []
-        for arg in sys.argv[1:]:
-            m = re.match(r'bank_(\d+)', arg)
-            if m:
-                banks.append(int(m.group(1)))
-            elif arg.isdigit():
-                banks.append(int(arg))
-            else:
-                print(f"忽略参数: {arg}")
+        banks = [int(re.match(r'bank_(\d+)', a).group(1) if re.match(r'bank_(\d+)', a) else a) for a in sys.argv[1:]]
     else:
         banks = list(range(32))
-
     total = 0
     for n in banks:
-        cnt, msg = convert_bank(n, src_dir, asm_root)
-        total += cnt
-        print(f"  {msg}")
-    print(f"\n转换完成: {total} 条记录 → bankNN/bankNN.s")
+        try:
+            cnt, msg = convert_bank(n, src_dir, asm_root)
+            total += cnt
+            print('  ' + msg)
+        except Exception as e:
+            import traceback
+            print('  bank%02d ERROR: %s' % (n, e))
+            traceback.print_exc()
+    print('done: %d' % total)
 
 
 if __name__ == '__main__':

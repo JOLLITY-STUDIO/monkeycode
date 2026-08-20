@@ -659,13 +659,13 @@ export class Bank19Service {
     if (guard >= 100000) oam.setIdle();
   }
 
-  /** 读本 bank 数组原始字节 */
-  readByte(addr: number): number {
+  /** 读本 bank 数组原始字节 (内部数据访问, 仅本 service 可用) */
+  private readByte(addr: number): number {
     return PRG_BANK_19[addr - 0x8000] ?? 0xff;
   }
 
   /** 读本 bank 16bit 小端 */
-  readU16(addr: number): number {
+  private readU16(addr: number): number {
     return this.readByte(addr) | (this.readByte(addr + 1) << 8);
   }
 

@@ -595,7 +595,10 @@ class Bank24HudService {
             groupLoop: while (true) {
                 if (nextSprite) {
                     // $8279-$8284: 写精灵槽 3B (attr=组属性, tileLo/Hi=源地址)
-                    oam.writeSlot(x, s.read(KEY_05E7), tileLo, tileHi);
+                    // 原始为 STA $04A5,X / $04A6,X / $04A7,X 三连字节写 (X=字节偏移)
+                    oam.writeByte(x, s.read(KEY_05E7));
+                    oam.writeByte(x + 1, tileLo);
+                    oam.writeByte(x + 2, tileHi);
                     // $8287-$8290: 下一精灵源地址 +$20
                     const sum = tileLo + 0x20;
                     tileLo = sum & 0xff;
@@ -604,7 +607,8 @@ class Bank24HudService {
                     nextSprite = false;
                 }
                 // $8294-$82B5: RLE 数据流 (填充后续槽字节)
-                for (;;) {
+                let rleGuard = 0; // H5 防死循环 (原始数据流理论上有限)
+                for (; rleGuard < 512; rleGuard++) {
                     const db = (0, bank24_tables_1.readSceneByte)(block + dy);
                     if (db & 0x80) {
                         // 压缩: 后续 N 个 0
@@ -639,6 +643,8 @@ class Bank24HudService {
                         continue; // BCC $8294 → 继续读数据
                     break groupLoop; // $82CC: 组/帧结束
                 }
+                if (rleGuard >= 512)
+                    break groupLoop; // H5 上限兜底
             }
             // $82CC-$82D3: 填 0 结束 + 置完成
             oam.writeByte(x, 0);

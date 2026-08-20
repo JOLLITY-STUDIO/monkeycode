@@ -341,6 +341,12 @@ function setupInput() {
   for (let i = 0; i < 0x20; i++) m.wrx('ram_0408', i, rng());
   // 名字区随机
   ['ram_02F8','ram_02F9','ram_02FA','ram_02FB','ram_02FC','ram_02FD','ram_02FE','ram_02FF'].forEach(k => m.wrk(k, rng()));
+  // OAM 影子区 ($0468-$0567) 预置 $F8 — 对应 DataStore 构造 oamShadow.clearAll (4位 key),
+  // 与 service 端初始状态一致 (ref 读 OAM 区应返回 $F8 而非 0)
+  for (let a = 0x0468; a <= 0x0567; a++) {
+    const k = 'ram_' + a.toString(16).toUpperCase().padStart(4, '0');
+    if (!m.m.has(k)) m.m.set(k, 0xf8);
+  }
   return m;
 }
 

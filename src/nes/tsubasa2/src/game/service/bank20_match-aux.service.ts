@@ -95,13 +95,13 @@ export class Bank20Service {
   // 数据访问 (原始字节)
   // ──────────────────────────────────────────────
 
-  /** 读取本 bank 内地址 addr 的原始字节 (addr: $8000-$9FFF) */
-  readByte(addr: number): number {
+  /** 读取本 bank 内地址 addr 的原始字节 (addr: $8000-$9FFF, 内部数据访问) */
+  private readByte(addr: number): number {
     return PRG_BANK_20[addr - 0x8000] ?? 0xFF;
   }
 
   /** 读取本 bank 内 16bit 小端数值 */
-  readU16(addr: number): number {
+  private readU16(addr: number): number {
     return this.readByte(addr) | (this.readByte(addr + 1) << 8);
   }
 

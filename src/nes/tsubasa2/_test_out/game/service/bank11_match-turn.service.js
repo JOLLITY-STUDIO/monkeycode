@@ -126,7 +126,7 @@ class Bank11Service {
         this._store = _store;
     }
     // ── 数据访问 (原始字节, 经 bank11-data 层) ──
-    /** 读取本 bank 内地址 addr 的原始字节 (addr: $8000-$9FFF / $A000-$BFFF) */
+    /** 读取本 bank 内地址 addr 的原始字节 (addr: $8000-$9FFF / $A000-$BFFF, 内部数据访问) */
     readByte(addr) {
         return (0, bank11_data_1.readB11)(addr);
     }

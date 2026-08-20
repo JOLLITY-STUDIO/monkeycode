@@ -662,7 +662,7 @@ class Bank19Service {
         if (guard >= 100000)
             oam.setIdle();
     }
-    /** 读本 bank 数组原始字节 */
+    /** 读本 bank 数组原始字节 (内部数据访问, 仅本 service 可用) */
     readByte(addr) {
         return prg_bank_19_1.default[addr - 0x8000] ?? 0xff;
     }

@@ -145,13 +145,13 @@ export class Bank16Service {
 
   // ── 数据访问 (原始字节, 经 bank16-data 层) ──
 
-  /** 读取本 bank 内地址 addr 的原始字节 (addr: $8000-$9FFF) */
-  readByte(addr: number): number {
+  /** 读取本 bank 内地址 addr 的原始字节 (addr: $8000-$9FFF, 内部数据访问) */
+  private readByte(addr: number): number {
     return readB16(addr);
   }
 
   /** 读取本 bank 内 16bit 小端数值 */
-  readU16(addr: number): number {
+  private readU16(addr: number): number {
     return readB16U16(addr);
   }
 
