@@ -1,7 +1,8 @@
 /**
  * Bank 16 Service — Special Moves & Skills (骨架)
  *
- * 数据已直接 import `rom-data/prg-bank-16.ts` (Bank #0x10 = 16), 无 MMC3 切换。
+ * 数据经 `data/prg/bank16-data.ts` 访问 (仅 readB16/readB16U16 等访问器),
+ * 无 PRG_BANK 原始字节残留, 无 MMC3 切换。
  * PRG offset: 0x020010-0x02200F
  *
  * 本文件为 code 翻译骨架 (来源: _tmp_bzk_out/bank_16.asm, CDL C 标记)。
@@ -60,7 +61,7 @@ import {
   readB16Table86E3,
   readB16AnimAction,
   readB16AnimHigh,
-} from '../data/bank16-data';
+} from '../data/prg/bank16-data';
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)

@@ -29,16 +29,19 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank00RenderView = void 0;
-const paletteManager_1 = require("../../data/ppu/pallete/paletteManager");
-const scene_palette_table_1 = require("../../data/ppu/pallete/scene-palette-table");
-const cut_0x17_nt_1 = require("../../data/ppu/nametable/cut/cut_0x17_nt");
+const paletteManager_1 = require("../../data/prg/ppu/pallete/paletteManager");
+const scene_palette_table_1 = require("../../data/prg/ppu/pallete/scene-palette-table");
+const cut_0x17_nt_1 = require("../../data/prg/ppu/nametable/cut/cut_0x17_nt");
 /* eslint-disable @typescript-eslint/no-unused-vars */
+/** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
+function ramKey(addr) {
+    return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+}
 // ── 常量 ──
-/** PPU Buffer 地址 ($05E8-$0628, 64B) */
-const PPU_BUF_BASE = 'ppuBuf_';
+/** PPU Buffer 地址 ($05E8-$0628, 64B) — 真实 RAM 地址键 */
 const PPU_BUF_SIZE = 64;
-/** PPU Buffer 写指针 */
-const PPU_BUF_PTR = 'ppuBufPtr';
+const PPU_BUF_BASE = 0x05E8;
+const PPU_BUF_PTR = 'ram_0628'; // $9B48: LDX $0628 指针
 /**
  * 调色板渐显矩阵表 (bank0 $9EA2, 4×16)。
  * 原始 $9A71: X = (数据&$30) + 渐显进度 → 查此表得到该调色板值的"渐显行"。
@@ -261,7 +264,7 @@ class Bank00RenderView {
     /** 清零 PPU Buffer + 重置写指针 (场景初始化链每帧调用) */
     ppuBufClear() {
         for (let i = 0; i < PPU_BUF_SIZE; i++) {
-            this._store.write(PPU_BUF_BASE + i, 0);
+            this._store.write(ramKey(PPU_BUF_BASE + i), 0);
         }
         this._store.write(PPU_BUF_PTR, 0);
     }
@@ -275,11 +278,75 @@ class Bank00RenderView {
     /** 对应 $9B5E: PPU Buffer 结束标记 (末尾写 0x00 → 更新指针) */
     ppuBufEnd() {
         const ptr = this._store.read(PPU_BUF_PTR);
-        this._store.write(PPU_BUF_BASE + ptr, 0x00);
+        this._store.write(ramKey(PPU_BUF_BASE + ptr), 0x00);
     }
     /** 写单个字节到 PPU Buffer */
     ppuBufWrite(offset, value) {
-        this._store.write(PPU_BUF_BASE + offset, value & 0xFF);
+        this._store.write(ramKey(PPU_BUF_BASE + offset), value & 0xFF);
+    }
+    /**
+     * 对应 $98EA 的渲染部分: 把单个填充值写入 NT/属性表区域 (Y 行 × X 字节)。
+     * 原始把 ram_00E6/00E7 指向的 VRAM 区域逐行 (每行 +$20) 填充 A。
+     * H5: 把目标 VRAM 字节映射到 DataStore nt0/nt1 网格:
+     *   - $2000-$23BF (NT tile 区): 写 tile 索引
+     *   - $23C0-$23FF (NT0 属性区): 写调色板组 (每属性字节覆盖 2×2 tile 块)
+     *   - $2400-$27FF (NT1, 水平镜像): 同理映射到 nt1
+     *
+     * @param vramAddr 起始 VRAM 地址 (ram_00E6/00E7 拼合)
+     * @param rows 行数 (Y)
+     * @param cols 每行字节数 (X)
+     * @param value 填充值 (A)
+     */
+    ppuFillRegion(vramAddr, rows, cols, value) {
+        const s = this._store;
+        const val = value & 0xFF;
+        let addr = vramAddr & 0xFFFF;
+        const rowStep = 0x20;
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < cols; c++) {
+                this._applyVramByte((addr + c) & 0xFFFF, val);
+            }
+            addr = (addr + rowStep) & 0xFFFF;
+        }
+    }
+    /** 把单个 VRAM 地址的字节写入对应 NT 网格 (tile 区或属性区) */
+    _applyVramByte(addr, val) {
+        const s = this._store;
+        if (addr < 0x2000 || addr > 0x27FF)
+            return;
+        const base = addr & 0xFFF; // 相对 nametable 起始 $2000/$2400 的偏移
+        const ntSel = (addr & 0x400) !== 0 ? 1 : 0;
+        if (base < 0x3C0) {
+            // NT tile 区: 偏移即 tile 序号
+            const t = base & 0x3FF;
+            const tx = t % 32;
+            const ty = Math.floor(t / 32);
+            if (ty < 30) {
+                const entry = s.readNT(ntSel, tx, ty) ?? {
+                    tile: 0, palette: 0, bank: 0, flipH: false, flipV: false, behindBg: false,
+                };
+                s.writeNT(ntSel, tx, ty, { ...entry, tile: val });
+            }
+        }
+        else {
+            // 属性表区 ($23C0-$23FF / $27C0-$27FF): 每字节含 4 个 2-bit 调色板组
+            const aoff = base - 0x3C0; // 0..63
+            const ax = aoff % 8;
+            const ay = Math.floor(aoff / 8);
+            const pal = val & 0x03; // 取低 2 bit 作为调色板组
+            for (let dy = 0; dy < 2; dy++) {
+                for (let dx = 0; dx < 2; dx++) {
+                    const tx = ax * 4 + dx;
+                    const ty = ay * 4 + dy;
+                    if (ty < 30 && tx < 32) {
+                        const entry = s.readNT(ntSel, tx, ty) ?? {
+                            tile: 0, palette: 0, bank: 0, flipH: false, flipV: false, behindBg: false,
+                        };
+                        s.writeNT(ntSel, tx, ty, { ...entry, palette: pal });
+                    }
+                }
+            }
+        }
     }
 }
 exports.Bank00RenderView = Bank00RenderView;

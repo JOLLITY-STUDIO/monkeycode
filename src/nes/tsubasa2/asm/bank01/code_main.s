@@ -133,7 +133,7 @@
     LDX #$0B                   ; $8107
     JSR $98E8                  ; $8109
     RTS                        ; $810C
-    .byte $20,$A0,$9B
+    JSR $9BA0                  ; $810D  (原反汇编误标 .byte $20,$A0,$9B → JSR $9BA0)
     LDA #$00                   ; $8110
     LDY #$F0                   ; $8112
     STA $0566,Y                ; $8114
@@ -205,7 +205,7 @@
     LDA #$00                   ; $819F
     STA $00ED                  ; $81A1
     JMP $A201                  ; $81A3
-    .byte $A9,$01
+    LDA #$01                   ; $81A6  (原反汇编误标 .byte $A9,$01 → LDA #$01)
     JSR $9FA8                  ; $81A8
     JSR $A3D0                  ; $81AB
     BIT $001E                  ; $81AE
@@ -248,7 +248,7 @@
     BCC $8201                  ; $81FC
     CLC                        ; $81FE
     ADC #$41                   ; $81FF
-    .byte $85,$EC
+    STA $00EC                  ; $8201  (原反汇编误标 .byte $85,$EC → STA $EC)
     TAX                        ; $8203
     LDA $B1E8,X                ; $8204
     AND #$C0                   ; $8207
@@ -616,7 +616,7 @@
     STA $00E9                  ; $84E4
     LDA $00E8                  ; $84E6
     JMP $9895                  ; $84E8
-    .byte $A2,$6A
+    LDX #$6A                   ; $84EB  (原反汇编误标 .byte $A2,$6A → LDX #$6A)
     LDY #$6B                   ; $84ED
     JSR $9B6F                  ; $84EF
     LDX #$7A                   ; $84F2

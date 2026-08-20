@@ -19,7 +19,7 @@ exports.LevelUpView = void 0;
  *   11 选手列表: 序号 + 名字(简) + Lv + Exp
  */
 const SceneView_1 = require("./SceneView");
-const character_list_1 = require("../data/rom-data/character-list");
+const character_list_1 = require("../data/prg/character-list");
 const team_roster_1 = require("../data/rom-data/team-roster");
 /** 玩家队 (Sao Paulo) 11 人首发 */
 const PLAYER_TEAM = team_roster_1.PLAYER_TEAMS[0];

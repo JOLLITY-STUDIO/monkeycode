@@ -1,0 +1,13 @@
+ASM data_tables.s byte count: 5864
+
+SCROLL_DX (len=63): FOUND in ASM at byte offset 456
+SCROLL_DY (len=63): FOUND in ASM at byte offset 457
+PW_OAM_FIX (len=15): FOUND in ASM at byte offset 520
+FIELD_TILES (len=45): FOUND in ASM at byte offset 304
+FIELD_KIND (len=33): FOUND in ASM at byte offset 350
+SCENE_SCRIPT (len=71): FOUND in ASM at byte offset 384
+SPRITE_UPLOAD (len=255): NOT FOUND as contiguous ASM sequence!
+SPRITE_UPLOAD2 (len=255): NOT FOUND as contiguous ASM sequence!
+TINY_TABLE (len=17): NOT FOUND as contiguous ASM sequence!
+
+RESULT: pass=6 fail=3

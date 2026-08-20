@@ -1,0 +1,5 @@
+SPRITE_UPLOAD lines removed: 0
+remaining SPRITE_UPLOAD: false
+remaining PRG_BANK: true
+import path prg: true
+lines before: 1171, after: 1171

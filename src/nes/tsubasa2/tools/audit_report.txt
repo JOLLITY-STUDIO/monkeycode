@@ -1,0 +1,1861 @@
+扫描 32 个 bank, 142 个 .s 文件
+★ 入口被误标(引用=数据块起点): 182 处
+数据块内部引用: 122 处
+弱候选(跨 bank/未定义): 152 处
+====================================================
+=== bank00 (定义 3616, 未命中 83: ★入口误标37 数据块内10 弱36) ===
+  [跨bank/未定义] 物理 0x8006 (窗口 0xA006)
+      ↳ 最近定义: code_main.s:10  0x8007  PHA                        ; $8007
+        <- [jsr/jmp] code_main.s:130  JSR $A006                  ; $811C
+  [跨bank/未定义] 物理 0x8009 (窗口 0xA009)
+      ↳ 最近定义: code_main.s:11  0x8008  LDA $800D,X                ; $8008
+        <- [jsr/jmp] code_main.s:145  JSR $A009                  ; $8142
+  [数据块内部引用] 物理 0x8012 (窗口 0xA012)
+      ↳ 数据块内: code_main.s:14  0x800D-0x8018  .byte $65,$81,$8A,$81,$AD,$81,$B4,$81,$DA,$81,$A2,$02
+        <- [jsr/jmp] code_main.s:225  JSR $A012                  ; $820B
+  [数据块内部引用] 物理 0x8015 (窗口 0xA015)
+      ↳ 数据块内: code_main.s:14  0x800D-0x8018  .byte $65,$81,$8A,$81,$AD,$81,$B4,$81,$DA,$81,$A2,$02
+        <- [jsr/jmp] code_main.s:213  JSR $A015                  ; $81EB
+  [数据块内部引用] 物理 0x8017 (窗口 0xA017)
+      ↳ 数据块内: code_main.s:14  0x800D-0x8018  .byte $65,$81,$8A,$81,$AD,$81,$B4,$81,$DA,$81,$A2,$02
+        <- [jsr/jmp] code_main.s:159  JMP $8017                  ; $8163
+        <- [jsr/jmp] code_main.s:174  JMP $8017                  ; $8188
+        <- [jsr/jmp] code_main.s:189  JMP $8017                  ; $81AB
+        <- [jsr/jmp] code_main.s:192  JMP $8017                  ; $81B2
+        <- [jsr/jmp] code_main.s:205  JMP $8017                  ; $81D8
+  [数据块内部引用] 物理 0x8018 (窗口 0xA018)
+      ↳ 数据块内: code_main.s:14  0x800D-0x8018  .byte $65,$81,$8A,$81,$AD,$81,$B4,$81,$DA,$81,$A2,$02
+        <- [jsr/jmp] code_main.s:255  JSR $A018                  ; $8252
+  [跨bank/未定义] 物理 0x801B (窗口 0xA01B)
+      ↳ 最近定义: code_main.s:16  0x801C  JMP $A203                  ; $801C
+        <- [jsr/jmp] code_main.s:273  JSR $A01B                  ; $827F
+  [跨bank/未定义] 物理 0x8091 (窗口 0xA091)
+      ↳ 最近定义: code_main.s:66  0x808F  STA $00ED                  ; $808F
+        <- [jsr/jmp] code_main.s:99  JMP $8091                  ; $80D1
+  [★入口被误标] 物理 0x80C0 (窗口 0xA0C0)
+      ↳ 数据块起点: code_main.s:91  0x80C0-0x80C1  .byte $85,$ED
+        <- [jsr/jmp] code_main.s:88  JMP $80C0                  ; $80B9
+  [★入口被误标] 物理 0x80FD (窗口 0xA0FD)
+      ↳ 数据块起点: code_main.s:117  0x80FD-0x80FE  .byte $A9,$00
+        <- [jsr/jmp] code_main.s:222  JMP $80FD                  ; $8203
+        <- [jsr/jmp] code_main.s:261  JMP $80FD                  ; $8260
+        <- [jsr/jmp] code_main.s:274  JMP $80FD                  ; $8282
+  [★入口被误标] 物理 0x81E6 (窗口 0xA1E6)
+      ↳ 数据块起点: code_main.s:211  0x81E6-0x81E7  .byte $A2,$01
+        <- [jsr/jmp] code_main.s:179  JMP $81E6                  ; $8193
+        <- [jsr/jmp] code_main.s:197  JMP $81E6                  ; $81BD
+        <- [jsr/jmp] code_main.s:210  JMP $81E6                  ; $81E3
+  [跨bank/未定义] 物理 0x820C (窗口 0xA20C)
+      ↳ 最近定义: code_main.s:225  0x820B  JSR $A012                  ; $820B
+        <- [jsr/jmp] code_main.s:125  JSR $A20C                  ; $810F
+  [跨bank/未定义] 物理 0x820F (窗口 0xA20F)
+      ↳ 最近定义: code_main.s:226  0x820E  BIT $00E0                  ; $820E
+        <- [jsr/jmp] code_main.s:116  JSR $A20F                  ; $80FA
+        <- [jsr/jmp] code_main.s:270  JSR $A20F                  ; $8277
+  [跨bank/未定义] 物理 0x8215 (窗口 0xA215)
+      ↳ 最近定义: code_main.s:229  0x8214  CMP $00E5                  ; $8214
+        <- [jsr/jmp] code_main.s:402  JSR $A215                  ; $838F
+  [★入口被误标] 物理 0x826A (窗口 0xA26A)
+      ↳ 数据块起点: code_main.s:265  0x826A-0x826B  .byte $A2,$01
+        <- [jsr/jmp] code_main.s:107  JMP $826A                  ; $80E3
+  [★入口被误标] 物理 0x82ED (窗口 0xA2ED)
+      ↳ 数据块起点: code_main.s:324  0x82ED-0x82EF  .byte $20,$8A,$83
+        <- [jsr/jmp] code_main.s:399  JMP $82ED                  ; $8387
+  [跨bank/未定义] 物理 0x830C (窗口 0xA30C)
+      ↳ 最近定义: code_main.s:338  0x830A  STA $00EB                  ; $830A
+        <- [jsr/jmp] code_main.s:373  JMP $830C                  ; $8352
+  [跨bank/未定义] 物理 0x835D (窗口 0xA35D)
+      ↳ 最近定义: code_main.s:377  0x835B  STA $00EB                  ; $835B
+        <- [jsr/jmp] code_main.s:396  JMP $835D                  ; $8380
+  [★入口被误标] 物理 0x8383 (窗口 0xA383)
+      ↳ 数据块起点: code_main.s:397  0x8383-0x8384  .byte $A9,$00
+        <- [jsr/jmp] code_main.s:366  JMP $8383                  ; $8341
+  [跨bank/未定义] 物理 0x84D7 (窗口 0xA4D7)
+      ↳ 最近定义: code_main.s:475  0x84D5  STA $0050                  ; $84D5
+        <- [jsr/jmp] code_main.s:861  JMP $84D7                  ; $8892
+  [跨bank/未定义] 物理 0x84E3 (窗口 0xA4E3)
+      ↳ 最近定义: code_main.s:481  0x84E1  STA $0052                  ; $84E1
+        <- [jsr/jmp] code_main.s:630  JMP $84E3                  ; $8647
+        <- [jsr/jmp] code_main.s:830  JMP $84E3                  ; $8852
+  [跨bank/未定义] 物理 0x84E7 (窗口 0xA4E7)
+      ↳ 最近定义: code_main.s:483  0x84E5  STA $0053                  ; $84E5
+        <- [jsr/jmp] code_main.s:816  JMP $84E7                  ; $8834
+        <- [jsr/jmp] code_main.s:843  JMP $84E7                  ; $886D
+        <- [jsr/jmp] code_main.s:854  JMP $84E7                  ; $8884
+  [★入口被误标] 物理 0x86B4 (窗口 0xA6B4)
+      ↳ 数据块起点: code_main.s:680  0x86B4-0x86B4  .byte $98
+        <- [jsr/jmp] code_main.s:662  JMP $86B4                  ; $868C
+        <- [jsr/jmp] code_main.s:668  JMP $86B4                  ; $869A
+        <- [jsr/jmp] code_main.s:672  JMP $86B4                  ; $86A4
+  [★入口被误标] 物理 0x8743 (窗口 0xA743)
+      ↳ 数据块起点: code_main.s:735  0x8743-0x8744  .byte $A9,$01
+        <- [jsr/jmp] code_main.s:749  JMP $8743                  ; $8760
+  [★入口被误标] 物理 0x881F (窗口 0xA81F)
+      ↳ 数据块起点: code_main.s:807  0x881F-0x8820  .byte $85,$5B
+        <- [jsr/jmp] code_main.s:804  JMP $881F                  ; $8818
+  [★入口被误标] 物理 0x8879 (窗口 0xA879)
+      ↳ 数据块起点: code_main.s:848  0x8879-0x8879  .byte $18
+        <- [jsr/jmp] code_main.s:496  JMP $8879                  ; $8501
+        <- [jsr/jmp] code_main.s:508  JMP $8879                  ; $8519
+        <- [jsr/jmp] code_main.s:522  JMP $8879                  ; $8534
+        <- [jsr/jmp] code_main.s:539  JMP $8879                  ; $857D
+        <- [jsr/jmp] code_main.s:544  JMP $8879                  ; $858A
+        ... 另有 19 处引用
+  [★入口被误标] 物理 0x8887 (窗口 0xA887)
+      ↳ 数据块起点: code_main.s:855  0x8887-0x8887  .byte $18
+        <- [jsr/jmp] code_main.s:574  JMP $8887                  ; $85CF
+        <- [jsr/jmp] code_main.s:753  JMP $8887                  ; $876B
+        <- [jsr/jmp] code_main.s:835  JMP $8887                  ; $885F
+  [★入口被误标] 物理 0x89B2 (窗口 0xA9B2)
+      ↳ 数据块起点: code_main.s:1011  0x89B2-0x89B3  .byte $A9,$01
+        <- [jsr/jmp] code_main.s:1021  JMP $89B2                  ; $89C7
+  [★入口被误标] 物理 0x8A14 (窗口 0xAA14)
+      ↳ 数据块起点: code_main.s:1054  0x8A14-0x8A16  .byte $AD,$54,$06
+        <- [jsr/jmp] code_main.s:1106  JMP $8A14                  ; $8A83
+  [数据块内部引用] 物理 0x8A8B (窗口 0xAA8B)
+      ↳ 数据块内: code_main.s:1107  0x8A86-0x8A8C  .byte $A9,$00,$8D,$52,$06,$A6,$56
+        <- [jsr/jmp] code_main.s:1102  JMP $8A8B                  ; $8A78
+  [★入口被误标] 物理 0x8A90 (窗口 0xAA90)
+      ↳ 数据块起点: code_main.s:1109  0x8A90-0x8A90  .byte $60
+        <- [jsr/jmp] code_main.s:1048  JMP $8A90                  ; $8A04
+        <- [jsr/jmp] code_main.s:1051  JMP $8A90                  ; $8A0C
+  [★入口被误标] 物理 0x8BAE (窗口 0xABAE)
+      ↳ 数据块起点: code_scene.s:109  0x8BAE-0x8BAF  .byte $A9,$01
+        <- [jsr/jmp] code_scene.s:107  JMP $8BAE                  ; $8BA8
+  [跨bank/未定义] 物理 0x8C59 (窗口 0xAC59)
+      ↳ 最近定义: code_scene.s:197  0x8C57  LDY $005F                  ; $8C57
+        <- [jsr/jmp] code_scene.s:157  JMP $8C59                  ; $8C09
+        <- [jsr/jmp] code_scene.s:161  JMP $8C59                  ; $8C12
+        <- [jsr/jmp] code_scene.s:185  JMP $8C59                  ; $8C40
+  [★入口被误标] 物理 0x8CA5 (窗口 0xACA5)
+      ↳ 数据块起点: code_scene.s:234  0x8CA5-0x8CA6  .byte $A5,$75
+        <- [jsr/jmp] code_scene.s:220  JMP $8CA5                  ; $8C86
+  [★入口被误标] 物理 0x8D22 (窗口 0xAD22)
+      ↳ 数据块起点: code_scene.s:294  0x8D22-0x8D23  .byte $A2,$07
+        <- [jsr/jmp] code_scene.s:410  JMP $8D22                  ; $8DF9
+  [跨bank/未定义] 物理 0x8D59 (窗口 0xAD59)
+      ↳ 最近定义: code_scene.s:322  0x8D57  BVC $8D88                  ; $8D57
+        <- [jsr/jmp] code_scene.s:293  JMP $8D59                  ; $8D1F
+  [跨bank/未定义] 物理 0x8DC8 (窗口 0xADC8)
+      ↳ 最近定义: code_scene.s:382  0x8DC6  STA $0047                  ; $8DC6
+        <- [jsr/jmp] code_scene.s:347  JMP $8DC8                  ; $8D85
+  [跨bank/未定义] 物理 0x8E19 (窗口 0xAE19)
+      ↳ 最近定义: code_scene.s:423  0x8E17  STX $006B                  ; $8E17
+        <- [jsr/jmp] code_scene.s:539  JMP $8E19                  ; $8EEC
+  [★入口被误标] 物理 0x8E6E (窗口 0xAE6E)
+      ↳ 数据块起点: code_scene.s:471  0x8E6E-0x8E6F  .byte $85,$64
+        <- [jsr/jmp] code_scene.s:468  JMP $8E6E                  ; $8E67
+  [★入口被误标] 物理 0x8E8A (窗口 0xAE8A)
+      ↳ 数据块起点: code_scene.s:486  0x8E8A-0x8E8B  .byte $85,$64
+        <- [jsr/jmp] code_scene.s:483  JMP $8E8A                  ; $8E83
+  [跨bank/未定义] 物理 0x8EE8 (窗口 0xAEE8)
+      ↳ 最近定义: code_scene.s:536  0x8EE6  STA $005D                  ; $8EE6
+        <- [jsr/jmp] code_scene.s:515  JMP $8EE8                  ; $8EBF
+  [跨bank/未定义] 物理 0x8F3E (窗口 0xAF3E)
+      ↳ 最近定义: code_render.s:48  0x8F3C  STA $00E8                  ; $8F3C
+        <- [jsr/jmp] code_render.s:111  JMP $8F3E                  ; $8FB5
+        <- [jsr/jmp] code_render.s:121  JMP $8F3E                  ; $8FC8
+  [跨bank/未定义] 物理 0x9041 (窗口 0xB041)
+      ↳ 最近定义: code_render.s:172  0x903F  LDA $00E7                  ; $903F
+        <- [jsr/jmp] code_render.s:169  JMP $9041                  ; $9037
+  [★入口被误标] 物理 0x9078 (窗口 0xB078)
+      ↳ 数据块起点: code_render.s:206  0x9078-0x9079  .byte $85,$E7
+        <- [jsr/jmp] code_render.s:204  JMP $9078                  ; $9073
+  [跨bank/未定义] 物理 0x90AE (窗口 0xB0AE)
+      ↳ 最近定义: code_render.s:232  0x90AC  STA $0095                  ; $90AC
+        <- [jsr/jmp] code_render.s:304  JMP $90AE                  ; $912E
+        <- [jsr/jmp] code_sub.s:81  JMP $90AE                  ; $912E
+  [★入口被误标] 物理 0x9143 (窗口 0xB143)
+      ↳ 数据块起点: code_render.s:314  0x9143-0x9144  .byte $A9,$01
+        <- [jsr/jmp] code_render.s:704  JMP $9143                  ; $94D5
+        <- [jsr/jmp] code_sub.s:481  JMP $9143                  ; $94D5
+  [跨bank/未定义] 物理 0x9154 (窗口 0xB154)
+      ↳ 最近定义: code_render.s:321  0x9152  STA $0096                  ; $9152
+        <- [jsr/jmp] code_render.s:703  JMP $9154                  ; $94D2
+        <- [jsr/jmp] code_sub.s:480  JMP $9154                  ; $94D2
+  [跨bank/未定义] 物理 0x91B4 (窗口 0xB1B4)
+      ↳ 最近定义: code_render.s:368  0x91B2  STA $00E8                  ; $91B2
+        <- [jsr/jmp] code_render.s:360  JMP $91B4                  ; $91A3
+        <- [jsr/jmp] code_sub.s:137  JMP $91B4                  ; $91A3
+  [跨bank/未定义] 物理 0x91F3 (窗口 0xB1F3)
+      ↳ 最近定义: code_render.s:402  0x91F1  BNE $91BF                  ; $91F1
+        <- [jsr/jmp] code_render.s:337  JMP $91F3                  ; $9172
+        <- [jsr/jmp] code_sub.s:114  JMP $91F3                  ; $9172
+  [★入口被误标] 物理 0x9224 (窗口 0xB224)
+      ↳ 数据块起点: code_render.s:428  0x9224-0x9225  .byte $A0,$00
+        <- [jsr/jmp] code_render.s:462  JMP $9224                  ; $9265
+        <- [jsr/jmp] code_render.s:501  JMP $9224                  ; $92D4
+        <- [jsr/jmp] code_render.s:535  JMP $9224                  ; $9328
+        <- [jsr/jmp] code_render.s:690  JMP $9224                  ; $94B9
+        <- [jsr/jmp] code_sub.s:239  JMP $9224                  ; $9265
+        ... 另有 3 处引用
+  [跨bank/未定义] 物理 0x93DE (窗口 0xB3DE)
+      ↳ 最近定义: code_render.s:600  0x93DC  STA ($0094),Y              ; $93DC
+        <- [jsr/jmp] code_render.s:587  JMP $93DE                  ; $93C4
+        <- [jsr/jmp] code_sub.s:364  JMP $93DE                  ; $93C4
+  [跨bank/未定义] 物理 0x9413 (窗口 0xB413)
+      ↳ 最近定义: code_render.s:629  0x9411  STA ($0094),Y              ; $9411
+        <- [jsr/jmp] code_render.s:616  JMP $9413                  ; $93F9
+        <- [jsr/jmp] code_sub.s:393  JMP $9413                  ; $93F9
+  [跨bank/未定义] 物理 0x9459 (窗口 0xB459)
+      ↳ 最近定义: code_render.s:659  0x9457  STA ($0094),Y              ; $9457
+        <- [jsr/jmp] code_render.s:427  JMP $9459                  ; $9221
+        <- [jsr/jmp] code_sub.s:204  JMP $9459                  ; $9221
+  [数据块内部引用] 物理 0x94AE (窗口 0xB4AE)
+      ↳ 数据块内: code_render.s:684  0x94A2-0x94AE  .byte $B1,$94,$85,$92,$C8,$B1,$94,$85,$93,$4C,$24,$92,$18
+        <- [jsr/jmp] code_render.s:454  JMP $94AE                  ; $9255
+        <- [jsr/jmp] code_render.s:542  JMP $94AE                  ; $9336
+        <- [jsr/jmp] code_render.s:552  JMP $94AE                  ; $934D
+        <- [jsr/jmp] code_render.s:562  JMP $94AE                  ; $9397
+        <- [jsr/jmp] code_render.s:568  JMP $94AE                  ; $93A4
+        ... 另有 11 处引用
+  [跨bank/未定义] 物理 0x94C1 (窗口 0xB4C1)
+      ↳ 最近定义: code_render.s:693  0x94BF  STA ($0094),Y              ; $94BF
+        <- [jsr/jmp] code_render.s:325  JMP $94C1                  ; $915A
+        <- [jsr/jmp] code_render.s:409  JMP $94C1                  ; $91FE
+        <- [jsr/jmp] code_render.s:443  JMP $94C1                  ; $923E
+        <- [jsr/jmp] code_render.s:681  JMP $94C1                  ; $947F
+        <- [jsr/jmp] code_sub.s:102  JMP $94C1                  ; $915A
+        ... 另有 3 处引用
+  [跨bank/未定义] 物理 0x9515 (窗口 0xB515)
+      ↳ 最近定义: code_render.s:736  0x9513  STA $00E9                  ; $9513
+        <- [jsr/jmp] code_render.s:797  JMP $9515                  ; $9586
+        <- [jsr/jmp] code_render.s:818  JMP $9515                  ; $95AC
+        <- [jsr/jmp] code_render.s:850  JMP $9515                  ; $95E2
+        <- [jsr/jmp] code_render.s:937  JMP $9515                  ; $9681
+        <- [jsr/jmp] code_sub.s:574  JMP $9515                  ; $9586
+        ... 另有 7 处引用
+  [跨bank/未定义] 物理 0x9541 (窗口 0xB541)
+      ↳ 最近定义: code_render.s:760  0x953F  SBC $009B                  ; $953F
+        <- [jsr/jmp] code_render.s:752  JMP $9541                  ; $9530
+        <- [jsr/jmp] code_sub.s:529  JMP $9541                  ; $9530
+  [★入口被误标] 物理 0x960D (窗口 0xB60D)
+      ↳ 数据块起点: code_render.s:874  0x960D-0x960D  .byte $18
+        <- [jsr/jmp] code_render.s:870  JMP $960D                  ; $9605
+        <- [jsr/jmp] code_sub.s:647  JMP $960D                  ; $9605
+  [★入口被误标] 物理 0x9645 (窗口 0xB645)
+      ↳ 数据块起点: code_render.s:905  0x9645-0x9646  .byte $29,$01
+        <- [jsr/jmp] code_render.s:896  JMP $9645                  ; $9634
+        <- [jsr/jmp] code_sub.s:673  JMP $9645                  ; $9634
+  [★入口被误标] 物理 0x9684 (窗口 0xB684)
+      ↳ 数据块起点: code_render.s:938  0x9684-0x9684  .byte $38
+        <- [jsr/jmp] code_render.s:853  JMP $9684                  ; $95E9
+        <- [jsr/jmp] code_sub.s:630  JMP $9684                  ; $95E9
+  [★入口被误标] 物理 0x9727 (窗口 0xB727)
+      ↳ 数据块起点: code_sub.s:801  0x9727-0x9728  .byte $A5,$98
+        <- [jsr/jmp] code_sub.s:778  JMP $9727                  ; $9700
+        <- [jsr/jmp] code_util.s:60  JMP $9727                  ; $9700
+  [跨bank/未定义] 物理 0x9734 (窗口 0xB734)
+      ↳ 最近定义: code_sub.s:810  0x9735  TAX                        ; $9735
+        <- [jsr/jmp] code_sub.s:800  JMP $9734                  ; $9724
+        <- [jsr/jmp] code_util.s:82  JMP $9734                  ; $9724
+  [跨bank/未定义] 物理 0x97C4 (窗口 0xB7C4)
+      ↳ 最近定义: code_sub.s:876  0x97C2  STA $00EB                  ; $97C2
+        <- [jsr/jmp] code_sub.s:869  JMP $97C4                  ; $97B3
+        <- [jsr/jmp] code_util.s:151  JMP $97C4                  ; $97B3
+  [跨bank/未定义] 物理 0x982F (窗口 0xB82F)
+      ↳ 最近定义: code_sub.s:932  0x982D  STX $00E7                  ; $982D
+        <- [jsr/jmp] code_sub.s:971  JMP $982F                  ; $9874
+        <- [jsr/jmp] code_util.s:253  JMP $982F                  ; $9874
+  [数据块内部引用] 物理 0x98E8 (窗口 0xB8E8)
+      ↳ 数据块内: code_sub.s:1015  0x98DD-0x98EB  .byte $A9,$00,$85,$EB,$98,$09,$80,$A8,$4C,$F2,$98,$A9,$00,$85,$EB
+        <- [jsr/jmp] code_main.s:98  JSR $98E8                  ; $80CE
+        <- [jsr/jmp] code_main.s:553  JSR $98E8                  ; $859F
+        <- [jsr/jmp] code_main.s:560  JSR $98E8                  ; $85AE
+        <- [jsr/jmp] code_main.s:603  JSR $98E8                  ; $8610
+        <- [jsr/jmp] code_main.s:637  JSR $98E8                  ; $8656
+        ... 另有 2 处引用
+  [数据块内部引用] 物理 0x98EA (窗口 0xB8EA)
+      ↳ 数据块内: code_sub.s:1015  0x98DD-0x98EB  .byte $A9,$00,$85,$EB,$98,$09,$80,$A8,$4C,$F2,$98,$A9,$00,$85,$EB
+        <- [jsr/jmp] code_main.s:74  JSR $98EA                  ; $809F
+        <- [jsr/jmp] code_main.s:465  JSR $98EA                  ; $84BE
+        <- [jsr/jmp] code_sub.s:985  JMP $98EA                  ; $989D
+        <- [jsr/jmp] code_util.s:267  JMP $98EA                  ; $989D
+  [数据块内部引用] 物理 0x99B0 (窗口 0xB9B0)
+      ↳ 数据块内: code_sub.s:1108  0x99AE-0x99BD  .byte $85,$48,$20,$07,$9B,$20,$B8,$9A,$A6,$E9,$20,$B9,$C4,$A5,$4A,$C9
+        <- [byte-jsr] code_main.s:692  JSR $99b0  .byte $20,$B0,$99,$A9,$02,$4C,$79,$88
+  [★入口被误标] 物理 0x99DC (窗口 0xB9DC)
+      ↳ 数据块起点: code_sub.s:1115  0x99DC-0x99DD  .byte $A5,$4B
+        <- [jsr/jmp] code_sub.s:1122  JMP $99DC                  ; $99EC
+        <- [jsr/jmp] code_util.s:404  JMP $99DC                  ; $99EC
+  [★入口被误标] 物理 0x99F0 (窗口 0xB9F0)
+      ↳ 数据块起点: code_sub.s:1124  0x99F0-0x99F1  .byte $A5,$4A
+        <- [jsr/jmp] code_main.s:217  JSR $99F0                  ; $81F6
+        <- [jsr/jmp] code_main.s:545  JSR $99F0                  ; $858D
+        <- [jsr/jmp] code_sub.s:1136  JMP $99F0                  ; $9A09
+        <- [jsr/jmp] code_sub.s:1333  JSR $99F0                  ; $9BA0
+        <- [jsr/jmp] code_util.s:418  JMP $99F0                  ; $9A09
+        ... 另有 1 处引用
+  [★入口被误标] 物理 0x9A0D (窗口 0xBA0D)
+      ↳ 数据块起点: code_sub.s:1138  0x9A0D-0x9A0E  .byte $A5,$4A
+        <- [jsr/jmp] code_main.s:696  JSR $9A0D                  ; $86E6
+        <- [jsr/jmp] code_sub.s:1144  JMP $9A0D                  ; $9A1B
+        <- [jsr/jmp] code_util.s:426  JMP $9A0D                  ; $9A1B
+  [★入口被误标] 物理 0x9A1F (窗口 0xBA1F)
+      ↳ 数据块起点: code_sub.s:1146  0x9A1F-0x9A20  .byte $A5,$4B
+        <- [jsr/jmp] code_main.s:699  JSR $9A1F                  ; $86EE
+        <- [jsr/jmp] code_sub.s:1152  JMP $9A1F                  ; $9A2D
+        <- [jsr/jmp] code_util.s:434  JMP $9A1F                  ; $9A2D
+  [跨bank/未定义] 物理 0x9A71 (窗口 0xBA71)
+      ↳ 最近定义: code_sub.s:1179  0x9A6F  STA $004B                  ; $9A6F
+        <- [jsr/jmp] code_main.s:707  JSR $9A71                  ; $8702
+        <- [jsr/jmp] code_main.s:719  JSR $9A71                  ; $871F
+        <- [jsr/jmp] code_sub.s:1099  JSR $9A71                  ; $999C
+        <- [byte-jsr] code_sub.s:1109  JSR $9a71  .byte $0F,$B0,$0D,$E6,$4A,$20,$71,$9A,$A9,$01,$20,$A8,$9F,$4C,$BB,$99
+        <- [jsr/jmp] code_sub.s:1119  JSR $9A71                  ; $99E4
+        ... 另有 15 处引用
+  [★入口被误标] 物理 0x9AF9 (窗口 0xBAF9)
+      ↳ 数据块起点: code_sub.s:1251  0x9AF9-0x9AFA  .byte $A0,$00
+        <- [jsr/jmp] code_sub.s:1232  JMP $9AF9                  ; $9AD7
+        <- [jsr/jmp] code_util.s:514  JMP $9AF9                  ; $9AD7
+  [★入口被误标] 物理 0x9B28 (窗口 0xBB28)
+      ↳ 数据块起点: code_sub.s:1275  0x9B28-0x9B28  .byte $48
+        <- [jsr/jmp] code_main.s:890  JSR $9B28                  ; $88CD
+        <- [jsr/jmp] code_main.s:1111  JSR $9B28                  ; $8A93
+        <- [jsr/jmp] code_render.s:52  JSR $9B28                  ; $8F44
+        <- [jsr/jmp] code_render.s:92  JSR $9B28                  ; $8F93
+        <- [jsr/jmp] code_render.s:131  JSR $9B28                  ; $8FDE
+        ... 另有 16 处引用
+  [★入口被误标] 物理 0x9B5E (窗口 0xBB5E)
+      ↳ 数据块起点: code_sub.s:1302  0x9B5E-0x9B5F  .byte $A9,$00
+        <- [jsr/jmp] code_main.s:905  JSR $9B5E                  ; $88E9
+        <- [jsr/jmp] code_main.s:912  JSR $9B5E                  ; $88F7
+        <- [jsr/jmp] code_main.s:1119  JSR $9B5E                  ; $8AA3
+        <- [jsr/jmp] code_render.s:60  JSR $9B5E                  ; $8F54
+        <- [jsr/jmp] code_render.s:110  JSR $9B5E                  ; $8FB2
+        ... 另有 15 处引用
+  [★入口被误标] 物理 0x9B7F (窗口 0xBB7F)
+      ↳ 数据块起点: code_sub.s:1318  0x9B7F-0x9B80  .byte $A2,$00
+        <- [jsr/jmp] code_main.s:44  JSR $9B7F                  ; $805B
+        <- [jsr/jmp] code_main.s:546  JSR $9B7F                  ; $8590
+        <- [jsr/jmp] code_sub.s:1335  JMP $9B7F                  ; $9BA6
+        <- [jsr/jmp] code_util.s:617  JMP $9B7F                  ; $9BA6
+  [★入口被误标] 物理 0x9BE0 (窗口 0xBBE0)
+      ↳ 数据块起点: code_sub.s:1367  0x9BE0-0x9BE1  .byte $85,$7B
+        <- [jsr/jmp] code_sub.s:1364  JMP $9BE0                  ; $9BD9
+        <- [jsr/jmp] code_util.s:646  JMP $9BE0                  ; $9BD9
+  [★入口被误标] 物理 0x9C73 (窗口 0xBC73)
+      ↳ 数据块起点: code_sub.s:1448  0x9C73-0x9C74  .byte $85,$E8
+        <- [jsr/jmp] code_sub.s:1485  JMP $9C73                  ; $9CC5
+        <- [jsr/jmp] code_util.s:767  JMP $9C73                  ; $9CC5
+  [跨bank/未定义] 物理 0x9CB3 (窗口 0xBCB3)
+      ↳ 最近定义: code_sub.s:1476  0x9CB1  BEQ $9C75                  ; $9CB1
+        <- [jsr/jmp] code_sub.s:1457  JMP $9CB3                  ; $9C86
+        <- [jsr/jmp] code_util.s:739  JMP $9CB3                  ; $9C86
+  [跨bank/未定义] 物理 0x9D58 (窗口 0xBD58)
+      ↳ 最近定义: code_sub.s:1567  0x9D56  STA $00EB                  ; $9D56
+        <- [jsr/jmp] code_sub.s:1551  JSR $9D58                  ; $9D38
+        <- [jsr/jmp] code_sub.s:1579  JMP $9D58                  ; $9D6F
+        <- [jsr/jmp] code_util.s:833  JSR $9D58                  ; $9D38
+        <- [jsr/jmp] code_util.s:861  JMP $9D58                  ; $9D6F
+  [数据块内部引用] 物理 0x9EED (窗口 0xBEED)
+      ↳ 数据块内: code_sub.s:1749  0x9EE2-0x9EEE  .byte $00,$00,$00,$00,$10,$00,$00,$00,$F0,$00,$00,$A2,$01
+        <- [jsr/jmp] code_sub.s:1766  JMP $9EED                  ; $9F0C
+        <- [jsr/jmp] data_tail.s:22  JMP $9EED                  ; $9F0C
+  [跨bank/未定义] 物理 0x9EFB (窗口 0xBEFB)
+      ↳ 最近定义: code_sub.s:1757  0x9EFC  CLC                        ; $9EFC
+        <- [jsr/jmp] code_sub.s:1833  JMP $9EFB                  ; $9F86
+        <- [jsr/jmp] code_sub.s:1885  JMP $9EFB                  ; $9FE2
+        <- [jsr/jmp] data_tail.s:89  JMP $9EFB                  ; $9F86
+        <- [jsr/jmp] data_tail.s:141  JMP $9EFB                  ; $9FE2
+  [★入口被误标] 物理 0x9F7E (窗口 0xBF7E)
+      ↳ 数据块起点: code_sub.s:1829  0x9F7E-0x9F7F  .byte $A9,$00
+        <- [jsr/jmp] code_main.s:847  JMP $9F7E                  ; $8876
+        <- [jsr/jmp] code_scene.s:411  JMP $9F7E                  ; $8DFC
+        <- [jsr/jmp] code_scene.s:421  JMP $9F7E                  ; $8E12
+
+=== bank01 (定义 1970, 未命中 74: ★入口误标25 数据块内33 弱16) ===
+  [★入口被误标] 物理 0x810D (窗口 0xA10D)
+      ↳ 数据块起点: code_main.s:136  0x810D-0x810F  .byte $20,$A0,$9B
+        <- [jsr/jmp] code_main.s:6  JMP $A10D                  ; $8003
+  [★入口被误标] 物理 0x81A6 (窗口 0xA1A6)
+      ↳ 数据块起点: code_main.s:208  0x81A6-0x81A7  .byte $A9,$01
+        <- [jsr/jmp] code_main.s:269  JMP $A1A6                  ; $8225
+        <- [jsr/jmp] code_main.s:294  JMP $A1A6                  ; $825D
+        <- [jsr/jmp] code_main.s:300  JMP $A1A6                  ; $8269
+  [★入口被误标] 物理 0x8201 (窗口 0xA201)
+      ↳ 数据块起点: code_main.s:251  0x8201-0x8202  .byte $85,$EC
+        <- [jsr/jmp] code_main.s:207  JMP $A201                  ; $81A3
+        <- [jsr/jmp] code_main.s:244  JMP $A201                  ; $81F4
+  [跨bank/未定义] 物理 0x82A9 (窗口 0xA2A9)
+      ↳ 最近定义: code_main.s:328  0x82A8  JSR $A402                  ; $82A8
+        <- [jsr/jmp] code_main.s:717  JSR $82A9                  ; $85BD
+        <- [jsr/jmp] code_sub.s:73  JSR $82A9                  ; $865A
+        <- [jsr/jmp] code_sub.s:102  JSR $82A9                  ; $86AA
+        <- [jsr/jmp] code_sub.s:106  JSR $82A9                  ; $86B5
+        <- [jsr/jmp] code_sub.s:114  JSR $82A9                  ; $86CC
+        ... 另有 1 处引用
+  [★入口被误标] 物理 0x84EB (窗口 0xA4EB)
+      ↳ 数据块起点: code_main.s:619  0x84EB-0x84EC  .byte $A2,$6A
+        <- [jsr/jmp] code_main.s:7  JMP $A4EB                  ; $8006
+  [★入口被误标] 物理 0x864C (窗口 0xA64C)
+      ↳ 数据块起点: code_sub.s:68  0x864C-0x864E  .byte $20,$A0,$98
+        <- [jsr/jmp] code_main.s:8  JMP $A64C                  ; $8009
+        <- [jsr/jmp] code_sub.s:108  JMP $A64C                  ; $86BB
+        <- [jsr/jmp] code_sub.s:110  JMP $A64C                  ; $86C1
+  [★入口被误标] 物理 0x86E8 (窗口 0xA6E8)
+      ↳ 数据块起点: code_sub.s:124  0x86E8-0x86EA  .byte $20,$A0,$98
+        <- [jsr/jmp] code_sub.s:139  JMP $A6E8                  ; $870D
+  [★入口被误标] 物理 0x86F9 (窗口 0xA6F9)
+      ↳ 数据块起点: code_sub.s:131  0x86F9-0x86FB  .byte $20,$A9,$82
+        <- [jsr/jmp] code_sub.s:123  JMP $A6F9                  ; $86E5
+  [★入口被误标] 物理 0x8715 (窗口 0xA715)
+      ↳ 数据块起点: code_sub.s:142  0x8715-0x8717  .byte $20,$A0,$9B
+        <- [jsr/jmp] code_sub.s:115  JMP $A715                  ; $86CF
+  [★入口被误标] 物理 0x8721 (窗口 0xA721)
+      ↳ 数据块起点: code_sub.s:148  0x8721-0x8723  .byte $20,$A0,$9B
+        <- [jsr/jmp] code_data.s:7  JMP $A721                  ; $8B8B
+        <- [byte-jsr] code_sub.s:109  JSR $a721  .byte $20,$21,$A7
+        <- [jsr/jmp] code_sub.s:138  JSR $A721                  ; $870A
+  [★入口被误标] 物理 0x8771 (窗口 0xA771)
+      ↳ 数据块起点: code_sub.s:183  0x8771-0x8772  .byte $A9,$FC
+        <- [jsr/jmp] code_sub.s:202  JMP $A771                  ; $87A9
+        <- [jsr/jmp] code_sub.s:212  JMP $A771                  ; $87C2
+        <- [jsr/jmp] code_sub.s:268  JMP $A771                  ; $884B
+  [跨bank/未定义] 物理 0x87CE (窗口 0xA7CE)
+      ↳ 最近定义: code_sub.s:216  0x87CC  STA $004C                  ; $87CC
+        <- [jsr/jmp] code_sub.s:261  JMP $A7CE                  ; $8839
+  [跨bank/未定义] 物理 0x889C (窗口 0xA89C)
+      ↳ 最近定义: code_sub.s:302  0x889A  JMP $9C28                  ; $889A
+        <- [byte-jsr] data_tables.s:94  JSR $a89c  .byte $0A,$64,$20,$9C,$A8,$5C,$6A,$42,$64,$7D,$00,$A8,$9D,$0A,$44,$23
+        <- [byte-jsr] data_tables.s:97  JSR $a89c  .byte $00,$37,$00,$36,$00,$35,$42,$25,$23,$87,$8B,$0D,$B0,$20,$9C,$A8
+        <- [byte-jsr] data_tables.s:110  JSR $a89c  .byte $00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$0D,$AB,$20,$9C,$A8
+  [★入口被误标] 物理 0x88CA (窗口 0xA8CA)
+      ↳ 数据块起点: code_sub.s:317  0x88CA-0x88CB  .byte $A0,$90
+        <- [jsr/jmp] code_data.s:137  JSR $88CA                  ; $8CAC
+        <- [jsr/jmp] code_data.s:419  JSR $88CA                  ; $8F26
+        <- [jsr/jmp] code_main.s:116  JSR $88CA                  ; $80E1
+        <- [jsr/jmp] code_main.s:175  JSR $88CA                  ; $815F
+        <- [jsr/jmp] code_main.s:285  JSR $88CA                  ; $824A
+  [跨bank/未定义] 物理 0x8988 (窗口 0xA988)
+      ↳ 最近定义: code_sub.s:396  0x8987  STA $00E6                  ; $8987
+        <- [byte-jsr] data_tables.s:167  JSR $8988  .byte $20,$88,$89,$06,$6C,$20,$89,$89,$90,$00,$9C,$A8,$03,$7A,$20,$A8
+  [跨bank/未定义] 物理 0x8A07 (窗口 0xAA07)
+      ↳ 最近定义: code_sub.s:450  0x8A06  STA $00E6                  ; $8A06
+        <- [byte-jsr] data_tables.s:162  JSR $8a07  .byte $83,$20,$07,$8A,$04,$8E,$20,$07,$8A,$05,$64,$21,$0A,$89,$04,$90
+        <- [byte-jsr] data_tables.s:162  JSR $8a07  .byte $83,$20,$07,$8A,$04,$8E,$20,$07,$8A,$05,$64,$21,$0A,$89,$04,$90
+  [跨bank/未定义] 物理 0x8A16 (窗口 0xAA16)
+      ↳ 最近定义: code_sub.s:456  0x8A15  JSR $AF67                  ; $8A15
+        <- [byte-jsr] data_tables.s:90  JSR $aa16  .byte $58,$58,$58,$58,$58,$04,$84,$20,$16,$AA,$04,$8D,$20,$16,$AB,$00
+        <- [byte-jsr] data_tables.s:91  JSR $aa16  .byte $74,$B4,$00,$B3,$B4,$00,$53,$B6,$0F,$04,$81,$20,$16,$AA,$04,$8A
+        <- [byte-jsr] data_tables.s:93  JSR $aa16  .byte $20,$16,$AA,$04,$9E,$20,$16,$AB,$00,$A1,$B6,$0F,$01,$46,$20,$95
+  [跨bank/未定义] 物理 0x8A17 (窗口 0xAA17)
+      ↳ 最近定义: code_sub.s:457  0x8A18  LDA #$F8                   ; $8A18
+        <- [byte-jsr] data_tables.s:159  JSR $8a17  .byte $23,$1B,$89,$04,$81,$20,$17,$8A,$04,$9D,$20,$17,$8A,$00,$99,$B8
+        <- [byte-jsr] data_tables.s:159  JSR $8a17  .byte $23,$1B,$89,$04,$81,$20,$17,$8A,$04,$9D,$20,$17,$8A,$00,$99,$B8
+  [跨bank/未定义] 物理 0x8AE5 (窗口 0xAAE5)
+      ↳ 最近定义: code_sub.s:552  0x8AE3  STA $0061                  ; $8AE3
+        <- [jsr/jmp] code_data.s:83  JMP $AAE5                  ; $8C3A
+        <- [jsr/jmp] code_data.s:92  JMP $AAE5                  ; $8C4A
+        <- [jsr/jmp] code_data.s:235  JMP $AAE5                  ; $8D75
+        <- [jsr/jmp] code_data.s:243  JMP $AAE5                  ; $8D87
+  [跨bank/未定义] 物理 0x8B0A (窗口 0xAB0A)
+      ↳ 最近定义: code_sub.s:569  0x8B09  DEC $005E                  ; $8B09
+        <- [byte-jsr] data_tables.s:163  JSR $ab0a  .byte $20,$0A,$AA,$04,$9C,$20,$0A,$AB,$05,$D1,$21,$0B,$A9,$04,$C3,$21
+  [跨bank/未定义] 物理 0x8B16 (窗口 0xAB16)
+      ↳ 最近定义: code_sub.s:575  0x8B15  LDA #$92                   ; $8B15
+        <- [byte-jsr] data_tables.s:90  JSR $ab16  .byte $58,$58,$58,$58,$58,$04,$84,$20,$16,$AA,$04,$8D,$20,$16,$AB,$00
+        <- [byte-jsr] data_tables.s:92  JSR $ab16  .byte $20,$16,$AB,$01,$74,$B4,$FD,$00,$83,$B5,$01,$53,$B6,$FB,$04,$97
+        <- [byte-jsr] data_tables.s:93  JSR $ab16  .byte $20,$16,$AA,$04,$9E,$20,$16,$AB,$00,$A1,$B6,$0F,$01,$46,$20,$95
+  [★入口被误标] 物理 0x8C03 (窗口 0xAC03)
+      ↳ 数据块起点: code_data.s:60  0x8C03-0x8C06  .byte $84,$E6,$A4,$E6
+        <- [jsr/jmp] code_data.s:55  JMP $AC03                  ; $8BF7
+  [数据块内部引用] 物理 0x8C05 (窗口 0xAC05)
+      ↳ 数据块内: code_data.s:60  0x8C03-0x8C06  .byte $84,$E6,$A4,$E6
+        <- [jsr/jmp] code_data.s:77  JMP $AC05                  ; $8C2B
+  [跨bank/未定义] 物理 0x8C60 (窗口 0xAC60)
+      ↳ 最近定义: code_data.s:100  0x8C5E  STA $005E                  ; $8C5E
+        <- [jsr/jmp] code_data.s:191  JMP $AC60                  ; $8D20
+  [跨bank/未定义] 物理 0x8CA0 (窗口 0xACA0)
+      ↳ 最近定义: code_data.s:130  0x8C9E  STA $00E9                  ; $8C9E
+        <- [jsr/jmp] code_data.s:144  JMP $ACA0                  ; $8CBB
+  [跨bank/未定义] 物理 0x8D13 (窗口 0xAD13)
+      ↳ 最近定义: code_data.s:183  0x8D11  INC $005E                  ; $8D11
+        <- [jsr/jmp] code_data.s:112  JMP $AD13                  ; $8C78
+        <- [jsr/jmp] code_data.s:120  JMP $AD13                  ; $8C89
+  [★入口被误标] 物理 0x8D23 (窗口 0xAD23)
+      ↳ 数据块起点: code_data.s:192  0x8D23-0x8D24  .byte $A5,$5E
+        <- [jsr/jmp] code_data.s:106  JMP $AD23                  ; $8C6A
+  [★入口被误标] 物理 0x8E8F (窗口 0xAE8F)
+      ↳ 数据块起点: code_data.s:342  0x8E8F-0x8E91  .byte $BE,$2D,$B8
+        <- [jsr/jmp] code_data.s:279  JMP $AE8F                  ; $8E1B
+        <- [jsr/jmp] code_data.s:319  JSR $AE8F                  ; $8E64
+        <- [jsr/jmp] code_data.s:327  JMP $AE8F                  ; $8E74
+  [★入口被误标] 物理 0x8EDA (窗口 0xAEDA)
+      ↳ 数据块起点: code_data.s:380  0x8EDA-0x8EDB  .byte $85,$E8
+        <- [jsr/jmp] code_data.s:361  JMP $AEDA                  ; $8EB2
+        <- [jsr/jmp] code_data.s:365  JMP $AEDA                  ; $8EBB
+        <- [jsr/jmp] code_data.s:369  JSR $AEDA                  ; $8EC4
+  [★入口被误标] 物理 0x8F79 (窗口 0xAF79)
+      ↳ 数据块起点: code_data.s:463  0x8F79-0x8F7A  .byte $A5,$26
+        <- [jsr/jmp] code_main.s:11  JMP $AF79                  ; $8012
+  [★入口被误标] 物理 0x8F8A (窗口 0xAF8A)
+      ↳ 数据块起点: code_data.s:471  0x8F8A-0x8F8B  .byte $A5,$26
+        <- [jsr/jmp] code_main.s:12  JMP $AF8A                  ; $8015
+  [跨bank/未定义] 物理 0x8F9E (窗口 0xAF9E)
+      ↳ 最近定义: code_data.s:481  0x8F9C  STA $00E7                  ; $8F9C
+        <- [jsr/jmp] code_data.s:470  JMP $AF9E                  ; $8F87
+  [★入口被误标] 物理 0x8FC2 (窗口 0xAFC2)
+      ↳ 数据块起点: code_data.s:497  0x8FC2-0x8FC3  .byte $86,$EC
+        <- [jsr/jmp] code_main.s:10  JMP $AFC2                  ; $800F
+  [跨bank/未定义] 物理 0x9014 (窗口 0xB014)
+      ↳ 最近定义: code_data.s:536  0x9013  JSR $B023                  ; $9013
+        <- [byte-jsr] data_tables.s:274  JSR $b014  .byte $48,$68,$41,$7D,$FD,$31,$23,$0E,$28,$01,$02,$FF,$91,$20,$14,$B0
+  [★入口被误标] 物理 0x9050 (窗口 0xB050)
+      ↳ 数据块起点: code_data.s:571  0x9050-0x9051  .byte $A5,$26
+        <- [jsr/jmp] code_main.s:13  JMP $B050                  ; $8018
+  [★入口被误标] 物理 0x9070 (窗口 0xB070)
+      ↳ 数据块起点: code_data.s:586  0x9070-0x9071  .byte $84,$E6
+        <- [jsr/jmp] code_data.s:580  JMP $B070                  ; $9062
+        <- [jsr/jmp] code_data.s:583  JMP $B070                  ; $9069
+  [跨bank/未定义] 物理 0x90C4 (窗口 0xB0C4)
+      ↳ 最近定义: code_data.s:626  0x90C2  STX $00ED                  ; $90C2
+        <- [jsr/jmp] data_tables.s:24  JMP $B0C4                  ; $91B7
+        <- [jsr/jmp] data_tables.s:31  JMP $B0C4                  ; $91C6
+  [数据块内部引用] 物理 0x91BB (窗口 0xB1BB)
+      ↳ 数据块内: data_tables.s:25  0x91BA-0x91BB  .byte $60,$18
+        <- [jsr/jmp] code_data.s:641  JMP $B1BB                  ; $90FF
+        <- [jsr/jmp] code_data.s:649  JMP $B1BB                  ; $9110
+        <- [jsr/jmp] code_data.s:662  JMP $B1BB                  ; $914A
+        <- [jsr/jmp] data_tables.s:13  JMP $B1BB                  ; $91A1
+        <- [jsr/jmp] data_tables.s:16  JMP $B1BB                  ; $91A9
+  [数据块内部引用] 物理 0x97AB (窗口 0xB7AB)
+      ↳ 数据块内: data_tables.s:145  0x97A8-0x97B7  .byte $5C,$A8,$9D,$0C,$51,$21,$AA,$00,$00,$00,$00,$00,$00,$00,$95,$00
+        <- [byte-jsr] code_data.s:650  JSR $97ab  .byte $20,$C9,$B1,$20,$AB,$97,$A9,$03,$4C,$BB,$B1,$A0,$03,$B1,$EC,$48
+        <- [jsr/jmp] code_sub.s:146  JSR $97AB                  ; $871D
+        <- [jsr/jmp] code_sub.s:192  JSR $97AB                  ; $878F
+        <- [jsr/jmp] code_sub.s:205  JSR $97AB                  ; $87B0
+        <- [jsr/jmp] code_sub.s:498  JSR $97AB                  ; $8A7B
+  [数据块内部引用] 物理 0x97AD (窗口 0xB7AD)
+      ↳ 数据块内: data_tables.s:145  0x97A8-0x97B7  .byte $5C,$A8,$9D,$0C,$51,$21,$AA,$00,$00,$00,$00,$00,$00,$00,$95,$00
+        <- [byte-jsr] code_data.s:651  JSR $97ad  .byte $20,$C9,$B1,$68,$20,$AD,$97,$A9,$04,$4C,$BB,$B1,$20,$D3,$B1
+        <- [jsr/jmp] code_sub.s:306  JSR $97AD                  ; $88AD
+        <- [jsr/jmp] code_sub.s:320  JSR $97AD                  ; $88D0
+  [数据块内部引用] 物理 0x97B6 (窗口 0xB7B6)
+      ↳ 数据块内: data_tables.s:145  0x97A8-0x97B7  .byte $5C,$A8,$9D,$0C,$51,$21,$AA,$00,$00,$00,$00,$00,$00,$00,$95,$00
+        <- [jsr/jmp] code_data.s:614  JSR $97B6                  ; $90A9
+        <- [jsr/jmp] code_data.s:639  JSR $97B6                  ; $90FA
+  [★入口被误标] 物理 0x97B8 (窗口 0xB7B8)
+      ↳ 数据块起点: data_tables.s:146  0x97B8-0x97C7  .byte $00,$AB,$0C,$71,$21,$AA,$00,$59,$7D,$5F,$69,$50,$42,$5C,$00,$00
+        <- [jsr/jmp] code_data.s:263  JSR $97B8                  ; $8DFD
+        <- [jsr/jmp] code_data.s:647  JSR $97B8                  ; $910B
+  [数据块内部引用] 物理 0x9895 (窗口 0xB895)
+      ↳ 数据块内: data_tables.s:159  0x9888-0x9897  .byte $23,$1B,$89,$04,$81,$20,$17,$8A,$04,$9D,$20,$17,$8A,$00,$99,$B8
+        <- [jsr/jmp] code_data.s:623  JSR $9895                  ; $90BC
+        <- [jsr/jmp] code_main.s:618  JMP $9895                  ; $84E8
+  [数据块内部引用] 物理 0x98A0 (窗口 0xB8A0)
+      ↳ 数据块内: data_tables.s:160  0x9898-0x98A7  .byte $0F,$01,$61,$20,$88,$01,$61,$23,$8E,$01,$7D,$20,$90,$41,$7D,$23
+        <- [jsr/jmp] code_main.s:689  JSR $98A0                  ; $8580
+        <- [byte-jsr] code_sub.s:68  JSR $98a0  .byte $20,$A0,$98
+        <- [jsr/jmp] code_sub.s:118  JSR $98A0                  ; $86D7
+        <- [byte-jsr] code_sub.s:124  JSR $98a0  .byte $20,$A0,$98
+        <- [byte-jsr] data_tables.s:14  JSR $98a0  .byte $20,$A0,$98
+  [数据块内部引用] 物理 0x98DF (窗口 0xB8DF)
+      ↳ 数据块内: data_tables.s:164  0x98D8-0x98E7  .byte $0D,$AA,$04,$CE,$21,$0D,$AB,$05,$64,$23,$0A,$A9,$04,$30,$22,$0A
+        <- [byte-jsr] data_tables.s:8  JSR $98df  .byte $E9,$20,$DF,$98,$A9,$05,$4C,$BB,$B1,$20,$D3,$B1,$20,$DE,$B1,$AA
+        <- [byte-jsr] data_tables.s:9  JSR $98df  .byte $B1,$EC,$A4,$E9,$20,$DF,$98,$A9,$06,$4C,$BB,$B1,$20
+  [★入口被误标] 物理 0x98E8 (窗口 0xB8E8)
+      ↳ 数据块起点: data_tables.s:165  0x98E8-0x98F7  .byte $AA,$04,$3C,$22,$0A,$AB,$05,$71,$23,$0B,$A9,$05,$ED,$24,$08,$A8
+        <- [jsr/jmp] code_main.s:134  JSR $98E8                  ; $8109
+        <- [jsr/jmp] code_sub.s:33  JSR $98E8                  ; $8600
+  [数据块内部引用] 物理 0x98EA (窗口 0xB8EA)
+      ↳ 数据块内: data_tables.s:165  0x98E8-0x98F7  .byte $AA,$04,$3C,$22,$0A,$AB,$05,$71,$23,$0B,$A9,$05,$ED,$24,$08,$A8
+        <- [jsr/jmp] code_data.s:660  JSR $98EA                  ; $9145
+        <- [byte-jsr] data_tables.s:5  JSR $98ea  .byte $20,$D3,$B1,$20,$DE,$B1,$AA,$A9,$00,$A4,$E9,$20,$EA,$98,$A9,$05
+  [数据块内部引用] 物理 0x997A (窗口 0xB97A)
+      ↳ 数据块内: data_tables.s:174  0x9978-0x9987  .byte $A9,$A9,$A9,$A9,$A9,$A9,$A9,$A9,$9F,$03,$09,$22,$02,$49,$22,$01
+        <- [jsr/jmp] code_main.s:200  JSR $997A                  ; $8193
+        <- [jsr/jmp] code_main.s:680  JSR $997A                  ; $856C
+        <- [jsr/jmp] code_sub.s:182  JSR $997A                  ; $876E
+        <- [jsr/jmp] code_sub.s:295  JSR $997A                  ; $888A
+  [数据块内部引用] 物理 0x997E (窗口 0xB97E)
+      ↳ 数据块内: data_tables.s:174  0x9978-0x9987  .byte $A9,$A9,$A9,$A9,$A9,$A9,$A9,$A9,$9F,$03,$09,$22,$02,$49,$22,$01
+        <- [jsr/jmp] code_data.s:78  JSR $997E                  ; $8C2E
+        <- [jsr/jmp] code_sub.s:591  JSR $997E                  ; $8B37
+  [数据块内部引用] 物理 0x99F0 (窗口 0xB9F0)
+      ↳ 数据块内: data_tables.s:182  0x99EF-0x99FE  .byte $21,$21,$02,$03,$04,$05,$06,$07,$08,$09,$00,$00,$00,$00,$00,$00
+        <- [jsr/jmp] code_data.s:9  JSR $99F0                  ; $8B90
+        <- [jsr/jmp] code_main.s:688  JSR $99F0                  ; $857D
+        <- [jsr/jmp] code_sub.s:38  JSR $99F0                  ; $860D
+        <- [jsr/jmp] code_sub.s:94  JSR $99F0                  ; $8694
+        <- [byte-jsr] code_sub.s:98  JSR $99f0  .byte $20,$F0,$99
+        ... 另有 2 处引用
+  [★入口被误标] 物理 0x9B6F (窗口 0xBB6F)
+      ↳ 数据块起点: data_tables.s:206  0x9B6F-0x9B7E  .byte $BE,$02,$01,$06,$00,$C5,$01,$01,$06,$10,$C9,$03,$01,$06,$FF,$00
+        <- [jsr/jmp] code_main.s:144  JSR $9B6F                  ; $811E
+        <- [jsr/jmp] code_main.s:621  JSR $9B6F                  ; $84EF
+        <- [jsr/jmp] code_sub.s:151  JSR $9B6F                  ; $8728
+  [数据块内部引用] 物理 0x9B74 (窗口 0xBB74)
+      ↳ 数据块内: data_tables.s:206  0x9B6F-0x9B7E  .byte $BE,$02,$01,$06,$00,$C5,$01,$01,$06,$10,$C9,$03,$01,$06,$FF,$00
+        <- [jsr/jmp] code_main.s:147  JSR $9B74                  ; $8125
+        <- [jsr/jmp] code_main.s:624  JSR $9B74                  ; $84F6
+  [★入口被误标] 物理 0x9B7F (窗口 0xBB7F)
+      ↳ 数据块起点: data_tables.s:207  0x9B7F-0x9B8E  .byte $A8,$00,$0E,$06,$10,$A3,$00,$09,$06,$00,$AA,$00,$10,$06,$10,$C9
+        <- [jsr/jmp] code_main.s:625  JSR $9B7F                  ; $84F9
+        <- [jsr/jmp] code_sub.s:69  JSR $9B7F                  ; $864F
+        <- [jsr/jmp] code_sub.s:119  JSR $9B7F                  ; $86DA
+        <- [jsr/jmp] code_sub.s:125  JSR $9B7F                  ; $86EB
+  [数据块内部引用] 物理 0x9BA0 (窗口 0xBBA0)
+      ↳ 数据块内: data_tables.s:209  0x9B9F-0x9BAE  .byte $A0,$00,$06,$06,$FF,$00,$A2,$00,$08,$06,$00,$A4,$00,$0A,$06,$00
+        <- [byte-jsr] code_main.s:136  JSR $9ba0  .byte $20,$A0,$9B
+        <- [jsr/jmp] code_main.s:445  JSR $9BA0                  ; $8397
+        <- [byte-jsr] code_sub.s:142  JSR $9ba0  .byte $20,$A0,$9B
+        <- [byte-jsr] code_sub.s:148  JSR $9ba0  .byte $20,$A0,$9B
+        <- [byte-jsr] code_sub.s:553  JSR $9ba0  .byte $20,$A0,$9B
+  [数据块内部引用] 物理 0x9BE3 (窗口 0xBBE3)
+      ↳ 数据块内: data_tables.s:213  0x9BDF-0x9BEE  .byte $03,$07,$00,$CF,$00,$02,$07,$00,$D8,$02,$01,$07,$FF,$00,$A6,$00
+        <- [jsr/jmp] code_sub.s:186  JSR $9BE3                  ; $8777
+        <- [jsr/jmp] code_sub.s:299  JSR $9BE3                  ; $8893
+  [数据块内部引用] 物理 0x9BE8 (窗口 0xBBE8)
+      ↳ 数据块内: data_tables.s:213  0x9BDF-0x9BEE  .byte $03,$07,$00,$CF,$00,$02,$07,$00,$D8,$02,$01,$07,$FF,$00,$A6,$00
+        <- [jsr/jmp] code_sub.s:79  JSR $9BE8                  ; $8669
+        <- [jsr/jmp] code_sub.s:135  JSR $9BE8                  ; $8703
+  [数据块内部引用] 物理 0x9C0D (窗口 0xBC0D)
+      ↳ 数据块内: data_tables.s:215  0x9BFF-0x9C0E  .byte $06,$00,$CA,$03,$02,$06,$00,$D5,$01,$04,$07,$FF,$00,$A1,$00,$07
+        <- [jsr/jmp] code_data.s:337  JSR $9C0D                  ; $8E86
+  [数据块内部引用] 物理 0x9C28 (窗口 0xBC28)
+      ↳ 数据块内: data_tables.s:217  0x9C1F-0x9C2E  .byte $06,$00,$BF,$02,$02,$06,$00,$D4,$01,$03,$07,$00,$D0,$00,$03,$07
+        <- [jsr/jmp] code_sub.s:82  JMP $9C28                  ; $8670
+        <- [jsr/jmp] code_sub.s:189  JMP $9C28                  ; $877E
+        <- [jsr/jmp] code_sub.s:302  JMP $9C28                  ; $889A
+  [数据块内部引用] 物理 0x9C3A (窗口 0xBC3A)
+      ↳ 数据块内: data_tables.s:218  0x9C2F-0x9C3E  .byte $FF,$00,$A5,$00,$0B,$06,$FF,$00,$CA,$03,$02,$06,$FF,$00,$A9,$00
+        <- [jsr/jmp] code_data.s:328  JSR $9C3A                  ; $8E77
+        <- [jsr/jmp] code_sub.s:78  JSR $9C3A                  ; $8666
+        <- [jsr/jmp] code_sub.s:134  JSR $9C3A                  ; $8700
+        <- [jsr/jmp] code_sub.s:219  JSR $9C3A                  ; $87D2
+        <- [jsr/jmp] code_sub.s:334  JSR $9C3A                  ; $88F2
+        ... 另有 2 处引用
+  [数据块内部引用] 物理 0x9C3C (窗口 0xBC3C)
+      ↳ 数据块内: data_tables.s:218  0x9C2F-0x9C3E  .byte $FF,$00,$A5,$00,$0B,$06,$FF,$00,$CA,$03,$02,$06,$FF,$00,$A9,$00
+        <- [jsr/jmp] code_sub.s:232  JSR $9C3C                  ; $87F2
+        <- [jsr/jmp] code_sub.s:358  JSR $9C3C                  ; $892C
+        <- [byte-jsr] data_tables.s:204  JSR $bc3c  .byte $20,$3C,$BC,$22,$42,$BC,$00,$9D,$00,$03,$06,$00,$A8,$00,$0E,$06
+  [数据块内部引用] 物理 0x9C71 (窗口 0xBC71)
+      ↳ 数据块内: data_tables.s:222  0x9C6F-0x9C7E  .byte $06,$0B,$10,$15,$1A,$1F,$27,$A0,$A5,$AF,$C8,$24,$02,$07,$0C,$11
+        <- [jsr/jmp] code_sub.s:604  JSR $9C71                  ; $8B56
+  [数据块内部引用] 物理 0x9CC9 (窗口 0xBCC9)
+      ↳ 数据块内: data_tables.s:227  0x9CBF-0x9CCE  .byte $25,$05,$2F,$14,$79,$00,$0A,$2A,$1A,$60,$4D,$47,$6F,$48,$AA,$79
+        <- [jsr/jmp] code_sub.s:222  JSR $9CC9                  ; $87DA
+        <- [jsr/jmp] code_sub.s:235  JSR $9CC9                  ; $87FA
+        <- [jsr/jmp] code_sub.s:342  JSR $9CC9                  ; $8905
+        <- [jsr/jmp] code_sub.s:371  JSR $9CC9                  ; $8949
+        <- [jsr/jmp] code_sub.s:438  JSR $9CC9                  ; $89E9
+  [数据块内部引用] 物理 0x9CD3 (窗口 0xBCD3)
+      ↳ 数据块内: data_tables.s:228  0x9CCF-0x9CDE  .byte $79,$FF,$01,$02,$03,$04,$05,$06,$11,$12,$13,$14,$15,$16,$21,$22
+        <- [jsr/jmp] code_sub.s:228  JSR $9CD3                  ; $87E8
+        <- [jsr/jmp] code_sub.s:354  JSR $9CD3                  ; $8922
+        <- [jsr/jmp] code_sub.s:390  JSR $9CD3                  ; $8979
+  [数据块内部引用] 物理 0x9D08 (窗口 0xBD08)
+      ↳ 数据块内: data_tables.s:231  0x9CFF-0x9D0E  .byte $6A,$21,$C5,$67,$BA,$69,$00,$68,$45,$46,$6F,$CF,$FF,$66,$21,$A8
+        <- [jsr/jmp] code_data.s:14  JSR $9D08                  ; $8B9D
+        <- [jsr/jmp] code_sub.s:241  JSR $9D08                  ; $8808
+        <- [jsr/jmp] code_sub.s:248  JSR $9D08                  ; $8818
+        <- [jsr/jmp] code_sub.s:448  JSR $9D08                  ; $8A01
+        <- [jsr/jmp] code_sub.s:455  JSR $9D08                  ; $8A12
+        ... 另有 1 处引用
+  [数据块内部引用] 物理 0x9D27 (窗口 0xBD27)
+      ↳ 数据块内: data_tables.s:233  0x9D1F-0x9D2E  .byte $09,$2E,$FF,$6C,$21,$BA,$70,$CD,$6E,$46,$6F,$CF,$FF,$68,$21,$6C
+        <- [jsr/jmp] code_main.s:647  JSR $9D27                  ; $8526
+        <- [jsr/jmp] data_tables.s:11  JSR $9D27                  ; $919C
+  [数据块内部引用] 物理 0x9D50 (窗口 0xBD50)
+      ↳ 数据块内: data_tables.s:236  0x9D4F-0x9D5E  .byte $21,$6C,$7D,$69,$C2,$65,$7D,$4D,$00,$09,$2F,$0C,$32,$03,$54,$7D
+        <- [jsr/jmp] code_main.s:660  JSR $9D50                  ; $8541
+        <- [jsr/jmp] code_sub.s:18  JSR $9D50                  ; $85E0
+        <- [jsr/jmp] code_sub.s:67  JMP $9D50                  ; $8649
+  [数据块内部引用] 物理 0x9D73 (窗口 0xBD73)
+      ↳ 数据块内: data_tables.s:238  0x9D6F-0x9D7E  .byte $BD,$9A,$BD,$A2,$BD,$04,$2E,$0E,$02,$A6,$01,$02,$FF,$34,$06,$02
+        <- [jsr/jmp] code_data.s:214  JSR $9D73                  ; $8D48
+  [数据块内部引用] 物理 0x9D8E (窗口 0xBD8E)
+      ↳ 数据块内: data_tables.s:239  0x9D7F-0x9D8E  .byte $0E,$2E,$FF,$35,$06,$02,$0E,$2E,$FF,$36,$06,$02,$0E,$2E,$FF,$37
+        <- [jsr/jmp] code_data.s:31  JSR $9D8E                  ; $8BC2
+  [数据块内部引用] 物理 0x9DB5 (窗口 0xBDB5)
+      ↳ 数据块内: data_tables.s:242  0x9DAF-0x9DBE  .byte $BE,$11,$BE,$1A,$BE,$21,$BE,$29,$BE,$30,$BE,$37,$BE,$3F,$BE,$48
+        <- [jsr/jmp] code_data.s:46  JSR $9DB5                  ; $8BE3
+        <- [jsr/jmp] code_data.s:72  JSR $9DB5                  ; $8C21
+        <- [jsr/jmp] code_data.s:182  JSR $9DB5                  ; $8D0E
+        <- [jsr/jmp] code_data.s:443  JSR $9DB5                  ; $8F56
+  [数据块内部引用] 物理 0x9DEE (窗口 0xBDEE)
+      ↳ 数据块内: data_tables.s:245  0x9DDF-0x9DEE  .byte $BE,$CA,$BE,$D2,$BE,$DA,$BE,$E2,$BE,$EA,$BE,$F2,$BE,$FC,$BE,$05
+        <- [jsr/jmp] code_data.s:201  JSR $9DEE                  ; $8D30
+        <- [jsr/jmp] code_data.s:517  JSR $9DEE                  ; $8FE6
+  [数据块内部引用] 物理 0x9E0C (窗口 0xBE0C)
+      ↳ 数据块内: data_tables.s:247  0x9DFF-0x9E0E  .byte $FF,$A8,$2E,$16,$1E,$2E,$65,$7D,$4D,$FF,$00,$5C,$69,$60,$58,$6E
+        <- [jsr/jmp] code_main.s:62  JSR $9E0C                  ; $8079
+  [★入口被误标] 物理 0x9E4F (窗口 0xBE4F)
+      ↳ 数据块起点: data_tables.s:252  0x9E4F-0x9E5E  .byte $21,$0B,$0C,$02,$AA,$02,$1C,$A9,$08,$FF,$00,$00,$1C,$27,$19,$FF
+        <- [jsr/jmp] code_data.s:39  JSR $9E4F                  ; $8BD4
+        <- [jsr/jmp] code_data.s:165  JSR $9E4F                  ; $8CEE
+        <- [jsr/jmp] code_data.s:436  JSR $9E4F                  ; $8F47
+  [数据块内部引用] 物理 0x9E7C (窗口 0xBE7C)
+      ↳ 数据块内: data_tables.s:254  0x9E6F-0x9E7E  .byte $69,$B6,$41,$42,$FF,$5A,$6E,$C5,$69,$B4,$7D,$8F,$91,$FF,$00,$A8
+        <- [jsr/jmp] code_data.s:28  JSR $9E7C                  ; $8BBB
+        <- [jsr/jmp] code_data.s:67  JSR $9E7C                  ; $8C15
+  [数据块内部引用] 物理 0x9FA8 (窗口 0xBFA8)
+      ↳ 数据块内: data_tables.s:273  0x9F9F-0x9FAE  .byte $FD,$71,$22,$4C,$71,$7D,$54,$FD,$B1,$22,$4D,$69,$7D,$FD,$F1,$22
+        <- [jsr/jmp] code_data.s:80  JSR $9FA8                  ; $8C33
+        <- [jsr/jmp] code_data.s:224  JSR $9FA8                  ; $8D5D
+        <- [jsr/jmp] code_data.s:231  JSR $9FA8                  ; $8D6C
+        <- [jsr/jmp] code_data.s:239  JSR $9FA8                  ; $8D7E
+        <- [jsr/jmp] code_data.s:299  JSR $9FA8                  ; $8E42
+        ... 另有 13 处引用
+
+=== bank02 (定义 862, 未命中 52: ★入口误标9 数据块内33 弱10) ===
+  [★入口被误标] 物理 0x81A8 (窗口 0xA1A8)
+      ↳ 数据块起点: code_main.s:178  0x81A8-0x81A9  .byte $B5,$78
+        <- [jsr/jmp] code_main.s:164  JMP $A1A8                  ; $818A
+  [★入口被误标] 物理 0x8292 (窗口 0xA292)
+      ↳ 数据块起点: code_main.s:270  0x8292-0x8293  .byte $A2,$15
+        <- [jsr/jmp] code_main.s:261  JMP $A292                  ; $827E
+  [跨bank/未定义] 物理 0x82F8 (窗口 0xA2F8)
+      ↳ 最近定义: code_main.s:315  0x82F6  BNE $82F2                  ; $82F6
+        <- [jsr/jmp] code_sub.s:34  JMP $A2F8                  ; $8335
+  [数据块内部引用] 物理 0x8454 (窗口 0xA454)
+      ↳ 数据块内: code_sub.s:120  0x8448-0x8457  .byte $00,$07,$A9,$00,$85,$4C,$20,$F0,$99,$4C,$53,$80,$A5,$E7,$20,$7C
+        <- [byte-jsr] code_sub.s:114  JSR $a454  .byte $99,$60,$04,$C8,$D0,$F7,$A9,$00,$85,$E7,$20,$54,$A4,$A9,$01,$20
+        <- [byte-jsr] code_sub.s:118  JSR $a454  .byte $00,$F0,$02,$A9,$63,$85,$E7,$20,$54,$A4,$A9,$01,$20,$A8,$9F,$20
+  [数据块内部引用] 物理 0x8464 (窗口 0xA464)
+      ↳ 数据块内: code_sub.s:121  0x8458-0x8467  .byte $9E,$A5,$EC,$4A,$4A,$4A,$4A,$A8,$B9,$72,$A4,$8D,$59,$05,$A5,$EC
+        <- [byte-jsr] code_sub.s:113  JSR $8464  .byte $20,$F0,$99,$A9,$61,$20,$64,$84,$20,$A9,$82,$A0,$F8,$B9,$84,$A3
+  [数据块内部引用] 物理 0x8484 (窗口 0xA484)
+      ↳ 数据块内: code_sub.s:123  0x8478-0x8484  .byte $1D,$1E,$1F,$20,$80,$10,$03,$90,$80,$10,$03,$98,$A5
+        <- [jsr/jmp] code_main.s:211  JMP $A484                  ; $8212
+  [跨bank/未定义] 物理 0x8655 (窗口 0xA655)
+      ↳ 最近定义: code_data.s:45  0x8653  STA $00ED                  ; $8653
+        <- [jsr/jmp] code_data.s:79  JMP $A655                  ; $8697
+  [数据块内部引用] 物理 0x8807 (窗口 0xA807)
+      ↳ 数据块内: code_data.s:229  0x87FB-0x880A  .byte $A5,$28,$20,$7C,$9E,$A5,$EC,$29,$F0,$F0,$11,$20,$6D,$AC,$A6,$52
+        <- [byte-jsr] data_tables.s:49  JSR $8807  .byte $20,$E6,$89,$60,$F9,$89,$20,$E7,$12,$20,$07,$88,$E0,$18,$88,$10
+  [★入口被误标] 物理 0x8855 (窗口 0xA855)
+      ↳ 数据块起点: code_data.s:253  0x8855-0x8856  .byte $A5,$E4
+        <- [jsr/jmp] code_main.s:209  JMP $A855                  ; $820C
+  [★入口被误标] 物理 0x886E (窗口 0xA86E)
+      ↳ 数据块起点: code_data.s:265  0x886E-0x886F  .byte $A5,$26
+        <- [jsr/jmp] code_main.s:210  JMP $A86E                  ; $820F
+        <- [byte-jsr] data_tables.s:13  JSR $a86e  .byte $04,$A5,$43,$9D,$55,$04,$E8,$E8,$E0,$14,$D0,$F0,$20,$6E,$A8,$60
+  [跨bank/未定义] 物理 0x8895 (窗口 0xA895)
+      ↳ 最近定义: code_data.s:282  0x8896  STA $0408,Y                ; $8896
+        <- [jsr/jmp] code_data.s:11  JSR $8895                  ; $8609
+        <- [jsr/jmp] code_data.s:22  JSR $8895                  ; $861F
+        <- [jsr/jmp] code_data.s:187  JSR $8895                  ; $877D
+        <- [jsr/jmp] code_data.s:207  JSR $8895                  ; $87D1
+        <- [jsr/jmp] code_sub.s:241  JSR $8895                  ; $85DE
+        ... 另有 1 处引用
+  [跨bank/未定义] 物理 0x88A3 (窗口 0xA8A3)
+      ↳ 最近定义: code_data.s:289  0x88A1  BCC $8893                  ; $88A1
+        <- [jsr/jmp] code_data.s:274  JMP $A8A3                  ; $8881
+        <- [jsr/jmp] code_data.s:277  JMP $A8A3                  ; $8889
+  [跨bank/未定义] 物理 0x88A8 (窗口 0xA8A8)
+      ↳ 最近定义: code_data.s:291  0x88A6  STA $002C                  ; $88A6
+        <- [jsr/jmp] code_data.s:264  JMP $A8A8                  ; $886B
+  [跨bank/未定义] 物理 0x88CA (窗口 0xA8CA)
+      ↳ 最近定义: code_data.s:310  0x88C9  CMP #$84                   ; $88C9
+        <- [byte-jsr] code_data.s:230  JSR $88ca  .byte $A4,$53,$20,$CA,$88,$E6,$53,$A9,$06,$20,$A8,$9F,$A5,$EC,$29,$0F
+        <- [byte-jsr] code_data.s:231  JSR $88ca  .byte $20,$71,$AC,$A6,$52,$A4,$53,$20,$CA,$88,$E6,$53,$A9,$06,$20,$A8
+  [★入口被误标] 物理 0x88CE (窗口 0xA8CE)
+      ↳ 数据块起点: code_data.s:313  0x88CE-0x88CF  .byte $A9,$01
+        <- [jsr/jmp] code_main.s:212  JMP $A8CE                  ; $8215
+  [跨bank/未定义] 物理 0x890C (窗口 0xA90C)
+      ↳ 最近定义: code_data.s:334  0x88FD  RTS                        ; $88FD
+        <- [jsr/jmp] code_sub.s:142  JSR $890C                  ; $84D2
+  [跨bank/未定义] 物理 0x8920 (窗口 0xA920)
+      ↳ 最近定义: code_data.s:334  0x88FD  RTS                        ; $88FD
+        <- [jsr/jmp] code_data.s:13  JSR $8920                  ; $860E
+        <- [jsr/jmp] code_data.s:24  JSR $8920                  ; $8624
+        <- [jsr/jmp] code_sub.s:153  JSR $8920                  ; $84E9
+        <- [jsr/jmp] code_sub.s:174  JSR $8920                  ; $8517
+        <- [jsr/jmp] code_sub.s:201  JSR $8920                  ; $8554
+        ... 另有 2 处引用
+  [跨bank/未定义] 物理 0x8976 (窗口 0xA976)
+      ↳ 最近定义: code_data.s:334  0x88FD  RTS                        ; $88FD
+        <- [jsr/jmp] code_data.s:29  JSR $8976                  ; $862E
+  [跨bank/未定义] 物理 0x89E6 (窗口 0xA9E6)
+      ↳ 最近定义: data_tables.s:22  0x8A06  STY $00ED                  ; $8A06
+        <- [byte-jsr] data_tables.s:49  JSR $89e6  .byte $20,$E6,$89,$60,$F9,$89,$20,$E7,$12,$20,$07,$88,$E0,$18,$88,$10
+  [★入口被误标] 物理 0x8A20 (窗口 0xAA20)
+      ↳ 数据块起点: data_tables.s:38  0x8A20-0x8A2F  .byte $A5,$1C,$29,$08,$F0,$04,$A9,$01,$38,$60,$A5,$1C,$29,$04,$F0,$04
+        <- [byte-jsr] code_sub.s:116  JSR $aa20  .byte $4C,$13,$A4,$A6,$E7,$BD,$2F,$AB,$8D,$00,$07,$20,$20,$AA,$90,$DD
+        <- [byte-jsr] data_tables.s:8  JSR $aa20  .byte $36,$AA,$A9,$01,$20,$A8,$9F,$A5,$1E,$30,$25,$20,$20,$AA,$90,$F2
+        <- [byte-jsr] data_tables.s:10  JSR $aa20  .byte $20,$A8,$9F,$20,$20,$AA,$90,$DA,$CA,$D0,$F3,$A2,$04,$4C,$40,$A9
+  [数据块内部引用] 物理 0x8A36 (窗口 0xAA36)
+      ↳ 数据块内: data_tables.s:39  0x8A30-0x8A3F  .byte $A9,$FF,$38,$60,$18,$60,$A5,$42,$20,$6D,$AC,$8D,$59,$05,$A5,$42
+        <- [byte-jsr] data_tables.s:9  JSR $aa36  .byte $A2,$10,$18,$65,$42,$C9,$21,$B0,$02,$85,$42,$20,$36,$AA,$A9,$01
+  [数据块内部引用] 物理 0x8AA8 (窗口 0xAAA8)
+      ↳ 数据块内: data_tables.s:46  0x8AA0-0x8AAF  .byte $20,$21,$1E,$20,$41,$8E,$60,$5E,$8E,$20,$42,$1C,$20,$62,$8D,$60
+        <- [byte-jsr] data_tables.s:76  JSR $aaa8  .byte $8D,$01,$20,$A9,$00,$8D,$05,$20,$8D,$05,$20,$A8,$AA,$A9,$40,$88
+  [数据块内部引用] 物理 0x8AC5 (窗口 0xAAC5)
+      ↳ 数据块内: data_tables.s:48  0x8AC0-0x8ACF  .byte $8B,$60,$BB,$8B,$20,$A5,$16,$20,$C5,$8A,$60,$DA,$8A,$20,$C6,$14
+        <- [byte-jsr] data_tables.s:48  JSR $8ac5  .byte $8B,$60,$BB,$8B,$20,$A5,$16,$20,$C5,$8A,$60,$DA,$8A,$20,$C6,$14
+  [数据块内部引用] 物理 0x8AF7 (窗口 0xAAF7)
+      ↳ 数据块内: data_tables.s:51  0x8AF0-0x8AFF  .byte $00,$04,$00,$0E,$00,$1C,$00,$80,$00,$00,$00,$00,$00,$00,$00,$00
+        <- [jsr/jmp] code_sub.s:149  JSR $8AF7                  ; $84E0
+  [数据块内部引用] 物理 0x8C6D (窗口 0xAC6D)
+      ↳ 数据块内: data_tables.s:74  0x8C60-0x8C6F  .byte $20,$7E,$AC,$C6,$EB,$F0,$03,$4C,$ED,$AB,$4C,$E3,$AB,$4A,$4A,$4A
+        <- [byte-jsr] code_data.s:229  JSR $ac6d  .byte $A5,$28,$20,$7C,$9E,$A5,$EC,$29,$F0,$F0,$11,$20,$6D,$AC,$A6,$52
+        <- [byte-jsr] data_tables.s:39  JSR $ac6d  .byte $A9,$FF,$38,$60,$18,$60,$A5,$42,$20,$6D,$AC,$8D,$59,$05,$A5,$42
+        <- [byte-jsr] data_tables.s:68  JSR $ac6d  .byte $8D,$06,$20,$A5,$E9,$20,$71,$AC,$8D,$07,$20,$A5,$E8,$20,$6D,$AC
+        <- [byte-jsr] data_tables.s:70  JSR $ac6d  .byte $8D,$07,$20,$A0,$00,$B1,$E8,$20,$6D,$AC,$8D,$07,$20,$B1,$E8,$20
+  [数据块内部引用] 物理 0x8C71 (窗口 0xAC71)
+      ↳ 数据块内: data_tables.s:75  0x8C70-0x8C7F  .byte $4A,$29,$0F,$18,$69,$33,$C9,$3D,$90,$03,$18,$69,$44,$60,$A9,$18
+        <- [byte-jsr] code_data.s:231  JSR $ac71  .byte $20,$71,$AC,$A6,$52,$A4,$53,$20,$CA,$88,$E6,$53,$A9,$06,$20,$A8
+        <- [byte-jsr] data_tables.s:40  JSR $ac71  .byte $20,$71,$AC,$8D,$5D,$05,$60,$02,$03,$04,$05,$06,$07,$08,$09,$0A
+        <- [byte-jsr] data_tables.s:68  JSR $ac71  .byte $8D,$06,$20,$A5,$E9,$20,$71,$AC,$8D,$07,$20,$A5,$E8,$20,$6D,$AC
+        <- [byte-jsr] data_tables.s:69  JSR $ac71  .byte $8D,$07,$20,$A5,$E8,$20,$71,$AC,$8D,$07,$20,$A9,$00,$8D,$07,$20
+  [数据块内部引用] 物理 0x8C7E (窗口 0xAC7E)
+      ↳ 数据块内: data_tables.s:75  0x8C70-0x8C7F  .byte $4A,$29,$0F,$18,$69,$33,$C9,$3D,$90,$03,$18,$69,$44,$60,$A9,$18
+        <- [byte-jsr] data_tables.s:74  JSR $ac7e  .byte $20,$7E,$AC,$C6,$EB,$F0,$03,$4C,$ED,$AB,$4C,$E3,$AB,$4A,$4A,$4A
+  [数据块内部引用] 物理 0x8C83 (窗口 0xAC83)
+      ↳ 数据块内: data_tables.s:76  0x8C80-0x8C8F  .byte $8D,$01,$20,$A9,$00,$8D,$05,$20,$8D,$05,$20,$A8,$AA,$A9,$40,$88
+        <- [byte-jsr] data_tables.s:47  JSR $8c83  .byte $7D,$8D,$20,$63,$1A,$20,$83,$8C,$60,$9C,$8C,$20,$84,$18,$20,$A4
+  [数据块内部引用] 物理 0x8D62 (窗口 0xAD62)
+      ↳ 数据块内: data_tables.s:90  0x8D60-0x8D6F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [byte-jsr] data_tables.s:46  JSR $8d62  .byte $20,$21,$1E,$20,$41,$8E,$60,$5E,$8E,$20,$42,$1C,$20,$62,$8D,$60
+  [数据块内部引用] 物理 0x8E41 (窗口 0xAE41)
+      ↳ 数据块内: data_tables.s:104  0x8E40-0x8E4F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [byte-jsr] data_tables.s:46  JSR $8e41  .byte $20,$21,$1E,$20,$41,$8E,$60,$5E,$8E,$20,$42,$1C,$20,$62,$8D,$60
+  [★入口被误标] 物理 0x8F20 (窗口 0xAF20)
+      ↳ 数据块起点: data_tables.s:118  0x8F20-0x8F2F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [byte-jsr] data_tables.s:45  JSR $8f20  .byte $02,$02,$02,$02,$02,$02,$02,$20,$00,$20,$20,$20,$8F,$60,$3F,$8F
+  [数据块内部引用] 物理 0x90AA (窗口 0xB0AA)
+      ↳ 数据块内: data_tables.s:142  0x90A0-0x90AF  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [byte-jsr] code_sub.s:116  JSR $90aa  .byte $4C,$13,$A4,$A6,$E7,$BD,$2F,$AB,$8D,$00,$07,$20,$20,$AA,$90,$DD
+        <- [byte-jsr] code_sub.s:119  JSR $90aa  .byte $20,$AA,$90,$B9,$C6,$E6,$D0,$F2,$A2,$04,$4C,$1A,$A4,$A9,$01,$8D
+        <- [byte-jsr] data_tables.s:8  JSR $90aa  .byte $36,$AA,$A9,$01,$20,$A8,$9F,$A5,$1E,$30,$25,$20,$20,$AA,$90,$F2
+        <- [byte-jsr] data_tables.s:10  JSR $90aa  .byte $20,$A8,$9F,$20,$20,$AA,$90,$DA,$CA,$D0,$F3,$A2,$04,$4C,$40,$A9
+  [数据块内部引用] 物理 0x914C (窗口 0xB14C)
+      ↳ 数据块内: data_tables.s:152  0x9140-0x914F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [byte-jsr] code_main.s:49  JSR $914c  .byte $A5,$7B,$8D,$06,$20,$A5,$7A,$8D,$06,$20,$4C,$91,$A0
+  [★入口被误标] 物理 0x98A0 (窗口 0xB8A0)
+      ↳ 数据块起点: data_tables.s:270  0x98A0-0x98AF  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_main.s:246  JSR $98A0                  ; $825E
+        <- [jsr/jmp] code_main.s:284  JSR $98A0                  ; $82B2
+        <- [jsr/jmp] code_sub.s:191  JSR $98A0                  ; $853E
+        <- [byte-jsr] data_tables.s:5  JSR $98a0  .byte $A9,$02,$20,$A8,$9F,$20,$A0,$98,$20,$7F,$9B,$A2,$00,$A0,$01,$20
+  [数据块内部引用] 物理 0x98E8 (窗口 0xB8E8)
+      ↳ 数据块内: data_tables.s:274  0x98E0-0x98EF  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [byte-jsr] code_sub.s:226  JSR $98e8  .byte $A9,$00,$85,$E6,$A9,$20,$85,$E7,$A0,$10,$A2,$20,$20,$E8,$98,$A9
+        <- [byte-jsr] code_sub.s:227  JSR $98e8  .byte $00,$85,$E6,$A9,$24,$85,$E7,$A0,$20,$A2,$20,$20,$E8,$98,$A9,$02
+  [数据块内部引用] 物理 0x98EA (窗口 0xB8EA)
+      ↳ 数据块内: data_tables.s:274  0x98E0-0x98EF  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_sub.s:199  JSR $98EA                  ; $854F
+  [数据块内部引用] 物理 0x997A (窗口 0xB97A)
+      ↳ 数据块内: data_tables.s:283  0x9970-0x997F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [byte-jsr] data_tables.s:7  JSR $997a  .byte $04,$C8,$D0,$F7,$A9,$01,$A2,$01,$20,$7A,$99,$A5,$26,$85,$42,$20
+  [★入口被误标] 物理 0x99F0 (窗口 0xB9F0)
+      ↳ 数据块起点: data_tables.s:291  0x99F0-0x99FF  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [byte-jsr] code_main.s:283  JSR $99f0  .byte $20,$F0,$99
+        <- [byte-jsr] code_sub.s:113  JSR $99f0  .byte $20,$F0,$99,$A9,$61,$20,$64,$84,$20,$A9,$82,$A0,$F8,$B9,$84,$A3
+        <- [byte-jsr] code_sub.s:120  JSR $99f0  .byte $00,$07,$A9,$00,$85,$4C,$20,$F0,$99,$4C,$53,$80,$A5,$E7,$20,$7C
+        <- [jsr/jmp] code_sub.s:189  JSR $99F0                  ; $8538
+        <- [byte-jsr] data_tables.s:11  JSR $99f0  .byte $20,$F0,$99,$20,$7F,$9B,$A5,$42,$C5,$26,$F0,$23,$85,$26,$0A,$AA
+  [数据块内部引用] 物理 0x9A0D (窗口 0xBA0D)
+      ↳ 数据块内: data_tables.s:292  0x9A00-0x9A0F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_sub.s:135  JSR $9A0D                  ; $84C1
+  [数据块内部引用] 物理 0x9A35 (窗口 0xBA35)
+      ↳ 数据块内: data_tables.s:295  0x9A30-0x9A3F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_data.s:30  JSR $9A35                  ; $8631
+        <- [jsr/jmp] code_sub.s:160  JSR $9A35                  ; $84F9
+  [数据块内部引用] 物理 0x9A43 (窗口 0xBA43)
+      ↳ 数据块内: data_tables.s:296  0x9A40-0x9A4F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_main.s:242  JSR $9A43                  ; $8255
+  [数据块内部引用] 物理 0x9B28 (窗口 0xBB28)
+      ↳ 数据块内: data_tables.s:310  0x9B20-0x9B2F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_data.s:65  JSR $9B28                  ; $8678
+  [数据块内部引用] 物理 0x9B5E (窗口 0xBB5E)
+      ↳ 数据块内: data_tables.s:313  0x9B50-0x9B5F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_data.s:73  JSR $9B5E                  ; $8689
+  [数据块内部引用] 物理 0x9B74 (窗口 0xBB74)
+      ↳ 数据块内: data_tables.s:315  0x9B70-0x9B7F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [byte-jsr] data_tables.s:6  JSR $9b74  .byte $6F,$9B,$A2,$02,$A0,$03,$20,$74,$9B,$A0,$F8,$B9,$96,$A8,$99,$60
+  [数据块内部引用] 物理 0x9B7F (窗口 0xBB7F)
+      ↳ 数据块内: data_tables.s:315  0x9B70-0x9B7F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_main.s:247  JSR $9B7F                  ; $8261
+        <- [jsr/jmp] code_main.s:285  JSR $9B7F                  ; $82B5
+        <- [jsr/jmp] code_sub.s:190  JSR $9B7F                  ; $853B
+        <- [byte-jsr] code_sub.s:228  JSR $9b7f  .byte $60,$20,$7F,$9B,$A9,$02,$60
+        <- [byte-jsr] data_tables.s:5  JSR $9b7f  .byte $A9,$02,$20,$A8,$9F,$20,$A0,$98,$20,$7F,$9B,$A2,$00,$A0,$01,$20
+        ... 另有 1 处引用
+  [数据块内部引用] 物理 0x9B91 (窗口 0xBB91)
+      ↳ 数据块内: data_tables.s:317  0x9B90-0x9B9F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [byte-jsr] code_data.s:197  JSR $9b91  .byte $E1,$20,$91,$9B,$A9,$01,$20,$A8,$9F,$A5,$09,$D0,$F7,$4C,$51,$A6
+        <- [jsr/jmp] code_sub.s:223  JSR $9B91                  ; $857C
+  [数据块内部引用] 物理 0x9E7C (窗口 0xBE7C)
+      ↳ 数据块内: data_tables.s:363  0x9E70-0x9E7F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [byte-jsr] code_data.s:229  JSR $9e7c  .byte $A5,$28,$20,$7C,$9E,$A5,$EC,$29,$F0,$F0,$11,$20,$6D,$AC,$A6,$52
+  [数据块内部引用] 物理 0x9EED (窗口 0xBEED)
+      ↳ 数据块内: data_tables.s:370  0x9EE0-0x9EEF  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_main.s:282  JMP $9EED                  ; $82AC
+  [数据块内部引用] 物理 0x9F69 (窗口 0xBF69)
+      ↳ 数据块内: data_tables.s:378  0x9F60-0x9F6F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_main.s:260  JSR $9F69                  ; $827B
+        <- [jsr/jmp] code_main.s:269  JSR $9F69                  ; $828F
+        <- [jsr/jmp] code_main.s:277  JSR $9F69                  ; $82A0
+  [数据块内部引用] 物理 0x9F89 (窗口 0xBF89)
+      ↳ 数据块内: data_tables.s:380  0x9F80-0x9F8F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_sub.s:234  JSR $9F89                  ; $85B3
+  [数据块内部引用] 物理 0x9F96 (窗口 0xBF96)
+      ↳ 数据块内: data_tables.s:381  0x9F90-0x9F9F  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_sub.s:230  JSR $9F96                  ; $85AB
+  [数据块内部引用] 物理 0x9FA8 (窗口 0xBFA8)
+      ↳ 数据块内: data_tables.s:382  0x9FA0-0x9FAF  .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+        <- [jsr/jmp] code_data.s:32  JSR $9FA8                  ; $8636
+        <- [jsr/jmp] code_data.s:78  JSR $9FA8                  ; $8694
+        <- [jsr/jmp] code_data.s:175  JSR $9FA8                  ; $8760
+        <- [jsr/jmp] code_data.s:191  JSR $9FA8                  ; $8785
+        <- [byte-jsr] code_data.s:195  JSR $9fa8  .byte $A0,$40,$A9,$01,$20,$A8,$9F,$A2,$20,$BD,$68,$04,$10,$08,$BD,$6A
+        ... 另有 20 处引用
+
+=== bank03 (定义 0, 未命中 2: ★入口误标0 数据块内0 弱2) ===
+  [跨bank/未定义] 物理 0x810D (窗口 0xA10D)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_maps.s:143  JSR $a10d  .byte $21,$0B,$0C,$1A,$00,$12,$02,$16,$FC,$20,$0D,$A1,$08,$2E,$2D,$14
+        <- [byte-jsr] data_maps.s:169  JSR $a10d  .byte $FA,$30,$E1,$40,$20,$0D,$A1,$08,$2E,$EF,$3F,$3F,$3F,$FC,$DE,$FD
+  [跨bank/未定义] 物理 0x81A0 (窗口 0xA1A0)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tables.s:5  JSR $a1a0  .byte $20,$A0,$A1,$A2,$26,$A6,$B4,$A6,$DC,$A6,$68,$A9,$61,$AB,$6D,$AE
+
+=== bank04 (定义 0, 未命中 3: ★入口误标0 数据块内0 弱3) ===
+  [跨bank/未定义] 物理 0x8012 (窗口 0xA012)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_maps.s:169  JSR $a012  .byte $20,$12,$A0,$01,$29,$2E,$AA,$3F,$3F,$3F,$FC,$DD,$ED,$31,$DE,$EA
+  [跨bank/未定义] 物理 0x8A12 (窗口 0xAA12)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_maps.s:86  JSR $aa12  .byte $2A,$F7,$F3,$00,$E1,$40,$02,$1F,$1A,$00,$1B,$20,$12,$AA,$09,$AE
+  [跨bank/未定义] 物理 0x99A0 (窗口 0xB9A0)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tables.s:5  JSR $99a0  .byte $20,$A0,$99,$A0,$34,$A1,$95,$A1,$D6,$A5,$03,$A7,$95,$AC,$35,$AF
+
+=== bank05 (定义 0, 未命中 2: ★入口误标0 数据块内0 弱2) ===
+  [跨bank/未定义] 物理 0x810D (窗口 0xA10D)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_maps.s:167  JSR $a10d  .byte $23,$AE,$03,$28,$00,$0A,$03,$1A,$2E,$16,$FC,$20,$0D,$A1,$2D,$02
+        <- [byte-jsr] data_maps.s:168  JSR $a10d  .byte $2A,$13,$08,$29,$AA,$2B,$03,$7B,$EB,$E1,$40,$20,$0D,$A1,$19,$1A
+        <- [byte-jsr] data_maps.s:170  JSR $a10d  .byte $00,$AA,$2E,$A8,$2E,$01,$A0,$29,$7B,$FC,$20,$0D,$A1,$19,$02,$15
+  [跨bank/未定义] 物理 0x85B7 (窗口 0xA5B7)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tables.s:7  JSR $85b7  .byte $1E,$B6,$61,$B6,$DF,$B6,$20,$B7,$85,$B7,$C3,$B7,$06,$B8,$53,$B8
+
+=== bank10 (定义 0, 未命中 1: ★入口误标0 数据块内0 弱1) ===
+  [跨bank/未定义] 物理 0x808A (窗口 0xA08A)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tables.s:28  JSR $808a  .byte $8A,$3E,$01,$F1,$30,$3B,$8A,$3E,$01,$F0,$F1,$30,$20,$8A,$80,$01
+
+=== bank11 (定义 721, 未命中 13: ★入口误标10 数据块内3 弱0) ===
+  [★入口被误标] 物理 0x800C (窗口 0xA00C)
+      ↳ 数据块起点: code_main.s:9  0x800C-0x800D  .byte $A9,$01
+        <- [jsr/jmp] code_main.s:20  JMP $800C                  ; $8025
+        <- [jsr/jmp] code_main.s:65  JMP $800C                  ; $8080
+  [★入口被误标] 物理 0x8083 (窗口 0xA083)
+      ↳ 数据块起点: code_main.s:66  0x8083-0x8084  .byte $A9,$01
+        <- [jsr/jmp] code_main.s:6  JMP $8083                  ; $8003
+        <- [jsr/jmp] code_main.s:77  JMP $8083                  ; $809C
+        <- [jsr/jmp] code_main.s:136  JMP $8083                  ; $8109
+  [★入口被误标] 物理 0x814C (窗口 0xA14C)
+      ↳ 数据块起点: code_main.s:176  0x814C-0x814D  .byte $A9,$F6
+        <- [jsr/jmp] code_main.s:8  JMP $814C                  ; $8009
+  [★入口被误标] 物理 0x819C (窗口 0xA19C)
+      ↳ 数据块起点: code_main.s:215  0x819C-0x819E  .byte $AD,$16,$05
+        <- [jsr/jmp] code_main.s:204  JMP $819C                  ; $8185
+  [数据块内部引用] 物理 0x8279 (窗口 0xA279)
+      ↳ 数据块内: code_sub.s:24  0x8276-0x827B  .byte $20,$F7,$82,$BD,$7F,$82
+        <- [jsr/jmp] code_sub.s:23  JMP $8279                  ; $8273
+  [数据块内部引用] 物理 0x8329 (窗口 0xA329)
+      ↳ 数据块内: code_sub.s:64  0x8327-0x832D  .byte $A0,$02,$B1,$52,$8D,$CC,$05
+        <- [jsr/jmp] code_sub.s:94  JMP $8329                  ; $8374
+  [数据块内部引用] 物理 0x832B (窗口 0xA32B)
+      ↳ 数据块内: code_sub.s:64  0x8327-0x832D  .byte $A0,$02,$B1,$52,$8D,$CC,$05
+        <- [jsr/jmp] code_main.s:228  JMP $832B                  ; $81D2
+        <- [jsr/jmp] code_sub.s:25  JMP $832B                  ; $827C
+  [★入口被误标] 物理 0x8386 (窗口 0xA386)
+      ↳ 数据块起点: code_sub.s:101  0x8386-0x8387  .byte $A9,$01
+        <- [jsr/jmp] code_sub.s:138  JMP $8386                  ; $83E4
+  [★入口被误标] 物理 0x840D (窗口 0xA40D)
+      ↳ 数据块起点: code_sub.s:150  0x840D-0x840E  .byte $A9,$01
+        <- [jsr/jmp] code_sub.s:147  JMP $840D                  ; $83FC
+  [★入口被误标] 物理 0x8493 (窗口 0xA493)
+      ↳ 数据块起点: code_sub.s:206  0x8493-0x8494  .byte $A9,$05
+        <- [jsr/jmp] code_sub.s:130  JMP $8493                  ; $83CF
+        <- [jsr/jmp] code_sub.s:181  JMP $8493                  ; $8459
+  [★入口被误标] 物理 0x84A1 (窗口 0xA4A1)
+      ↳ 数据块起点: code_data.s:7  0x84A1-0x84A2  .byte $A2,$02
+        <- [jsr/jmp] code_main.s:7  JMP $84A1                  ; $8006
+        <- [jsr/jmp] code_sub.s:107  JSR $84A1                  ; $8395
+        <- [jsr/jmp] code_sub.s:156  JSR $84A1                  ; $841C
+  [★入口被误标] 物理 0x856D (窗口 0xA56D)
+      ↳ 数据块起点: code_data.s:121  0x856D-0x856E  .byte $A9,$01
+        <- [jsr/jmp] code_data.s:154  JMP $856D                  ; $85B3
+  [★入口被误标] 物理 0x86DF (窗口 0xA6DF)
+      ↳ 数据块起点: code_data.s:322  0x86DF-0x86DF  .byte $CA
+        <- [jsr/jmp] code_data.s:326  JMP $86DF                  ; $86E4
+
+=== bank12 (定义 798, 未命中 13: ★入口误标7 数据块内3 弱3) ===
+  [★入口被误标] 物理 0x805E (窗口 0xA05E)
+      ↳ 数据块起点: code_main.s:42  0x805E-0x805E  .byte $CA
+        <- [jsr/jmp] code_main.s:13  JMP $805E                  ; $8014
+        <- [jsr/jmp] code_main.s:21  JMP $805E                  ; $8028
+        <- [jsr/jmp] code_main.s:29  JMP $805E                  ; $803C
+        <- [jsr/jmp] code_main.s:37  JMP $805E                  ; $8050
+  [★入口被误标] 物理 0x80B7 (窗口 0xA0B7)
+      ↳ 数据块起点: code_main.s:76  0x80B7-0x80B7  .byte $CA
+        <- [jsr/jmp] code_main.s:72  JMP $80B7                  ; $80AC
+  [跨bank/未定义] 物理 0x81B1 (窗口 0xA1B1)
+      ↳ 最近定义: code_main.s:200  0x81AF  STA ($00F0),Y              ; $81AF
+        <- [jsr/jmp] code_main.s:194  JMP $81B1                  ; $81A1
+  [数据块内部引用] 物理 0x827F (窗口 0xA27F)
+      ↳ 数据块内: code_sub.s:16  0x8279-0x827F  .byte $92,$82,$7D,$82,$A9,$01,$18
+        <- [jsr/jmp] code_sub.s:26  JMP $827F                  ; $8294
+  [跨bank/未定义] 物理 0x82A4 (窗口 0xA2A4)
+      ↳ 最近定义: code_sub.s:32  0x82A2  STA ($00F0),Y              ; $82A2
+        <- [jsr/jmp] code_sub.s:24  JMP $82A4                  ; $828F
+        <- [jsr/jmp] code_sub.s:50  JMP $82A4                  ; $82C6
+  [★入口被误标] 物理 0x82BA (窗口 0xA2BA)
+      ↳ 数据块起点: code_sub.s:44  0x82BA-0x82BB  .byte $A0,$07
+        <- [jsr/jmp] code_sub.s:54  JMP $82BA                  ; $82CF
+  [★入口被误标] 物理 0x82D2 (窗口 0xA2D2)
+      ↳ 数据块起点: code_sub.s:55  0x82D2-0x82D4  .byte $BD,$C7,$07
+        <- [jsr/jmp] code_sub.s:5  JMP $82D2                  ; $8253
+  [数据块内部引用] 物理 0x82F6 (窗口 0xA2F6)
+      ↳ 数据块内: code_sub.s:64  0x82F4-0x82F6  .byte $A9,$03,$18
+        <- [jsr/jmp] code_sub.s:74  JMP $82F6                  ; $830B
+  [跨bank/未定义] 物理 0x831B (窗口 0xA31B)
+      ↳ 最近定义: code_sub.s:80  0x8319  STA ($00F0),Y              ; $8319
+        <- [jsr/jmp] code_sub.s:72  JMP $831B                  ; $8306
+        <- [jsr/jmp] code_sub.s:98  JMP $831B                  ; $833D
+  [★入口被误标] 物理 0x8331 (窗口 0xA331)
+      ↳ 数据块起点: code_sub.s:92  0x8331-0x8332  .byte $A0,$07
+        <- [jsr/jmp] code_sub.s:102  JMP $8331                  ; $8346
+  [★入口被误标] 物理 0x8484 (窗口 0xA484)
+      ↳ 数据块起点: code_sub.s:266  0x8484-0x8485  .byte $09,$80
+        <- [jsr/jmp] code_sub.s:259  JMP $8484                  ; $8475
+  [★入口被误标] 物理 0x84A6 (窗口 0xA4A6)
+      ↳ 数据块起点: code_data.s:6  0x84A6-0x84A7  .byte $A6,$F3
+        <- [jsr/jmp] code_sub.s:270  JMP $84A6                  ; $848C
+  [数据块内部引用] 物理 0x84E4 (窗口 0xA4E4)
+      ↳ 数据块内: code_data.s:30  0x84DA-0x84E9  .byte $44,$85,$07,$87,$41,$86,$5F,$85,$17,$86,$70,$86,$07,$87,$07,$87
+        <- [byte-jsr] data_tables.s:241  JSR $84e4  .byte $E9,$9D,$95,$FF,$E4,$84,$20,$E4,$84,$30,$E4,$84,$40,$EA,$E5,$01
+
+=== bank14 (定义 0, 未命中 7: ★入口误标0 数据块内0 弱7) ===
+  [跨bank/未定义] 物理 0x8DE9 (窗口 0xADE9)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tail.s:168  JSR $8de9  .byte $20,$1B,$20,$0C,$19,$1B,$20,$E9,$8D,$BF,$E8,$4E,$BF,$82,$37,$36
+  [跨bank/未定义] 物理 0x8EE8 (窗口 0xAEE8)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tail.s:36  JSR $aee8  .byte $17,$17,$1B,$20,$20,$20,$20,$E8,$AE,$B6,$E0,$16,$E3,$04,$87,$00
+  [跨bank/未定义] 物理 0x9024 (窗口 0xB024)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tail.s:165  JSR $9024  .byte $EB,$02,$95,$20,$24,$90,$27,$EC,$EB,$02,$95,$19,$20,$90,$24,$EC
+  [跨bank/未定义] 物理 0x9420 (窗口 0xB420)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tail.s:29  JSR $9420  .byte $27,$94,$0C,$8C,$20,$20,$94,$0C,$8C,$25,$25,$94,$0C,$8C,$22,$22
+        <- [byte-jsr] data_tail.s:30  JSR $9420  .byte $94,$0C,$8C,$27,$27,$94,$0C,$8C,$20,$20,$94,$0C,$8C,$25,$25,$94
+  [跨bank/未定义] 物理 0x94EC (窗口 0xB4EC)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tail.s:27  JSR $94ec  .byte $94,$20,$EC,$94,$24,$24,$29,$27,$26,$26,$27,$27,$30,$30,$2B,$24
+  [跨bank/未定义] 物理 0x98EC (窗口 0xB8EC)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_maps.s:55  JSR $98ec  .byte $20,$20,$EC,$98,$20,$1A,$18,$17,$E8,$AC,$AD,$E0,$16,$E3,$06,$EB
+  [跨bank/未定义] 物理 0x9BEC (窗口 0xBBEC)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tail.s:144  JSR $9bec  .byte $E0,$20,$89,$21,$F3,$97,$21,$F4,$97,$20,$EC,$9B,$1A,$E0,$1C,$89
+
+=== bank15 (定义 0, 未命中 3: ★入口误标0 数据块内0 弱3) ===
+  [跨bank/未定义] 物理 0x8120 (窗口 0xA120)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tail.s:11  JSR $8120  .byte $2B,$2B,$E0,$1E,$8B,$29,$2B,$20,$20,$20,$20,$81,$40,$3B,$3A,$39
+  [跨bank/未定义] 物理 0x8720 (窗口 0xA720)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tail.s:135  JSR $8720  .byte $9C,$27,$8C,$0C,$94,$28,$2A,$E0,$1F,$8C,$20,$0C,$20,$20,$20,$87
+  [跨bank/未定义] 物理 0x87EF (窗口 0xA7EF)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tail.s:95  JSR $87ef  .byte $02,$91,$30,$F4,$EF,$E9,$43,$BC,$E0,$27,$ED,$02,$9C,$20,$EF,$87
+
+=== bank16 (定义 794, 未命中 8: ★入口误标4 数据块内2 弱2) ===
+  [★入口被误标] 物理 0x8021 (窗口 0xA021)
+      ↳ 数据块起点: code_main.s:23  0x8021-0x8023  .byte $AD,$17,$05
+        <- [jsr/jmp] code_main.s:6  JMP $8021                  ; $8003
+  [跨bank/未定义] 物理 0x803F (窗口 0xA03F)
+      ↳ 最近定义: code_main.s:33  0x803D  STA $003A                  ; $803D
+        <- [jsr/jmp] code_main.s:40  JMP $803F                  ; $804C
+  [★入口被误标] 物理 0x80CF (窗口 0xA0CF)
+      ↳ 数据块起点: code_main.s:87  0x80CF-0x80D0  .byte $A9,$00
+        <- [jsr/jmp] code_data.s:110  JMP $80CF                  ; $8841
+  [数据块内部引用] 物理 0x80F6 (窗口 0xA0F6)
+      ↳ 数据块内: code_main.s:104  0x80F4-0x80F7  .byte $A4,$3A,$B1,$5D
+        <- [jsr/jmp] code_data.s:104  JMP $80F6                  ; $8834
+        <- [jsr/jmp] code_main.s:142  JMP $80F6                  ; $8135
+  [★入口被误标] 物理 0x812F (窗口 0xA12F)
+      ↳ 数据块起点: code_main.s:137  0x812F-0x812F  .byte $8A
+        <- [jsr/jmp] code_data.s:212  JMP $812F                  ; $893A
+        <- [jsr/jmp] code_data.s:249  JMP $812F                  ; $898E
+  [数据块内部引用] 物理 0x8142 (窗口 0xA142)
+      ↳ 数据块内: code_main.s:148  0x8141-0x8142  .byte $C5,$3B
+        <- [jsr/jmp] code_main.s:151  JMP $8142                  ; $8148
+  [★入口被误标] 物理 0x8211 (窗口 0xA211)
+      ↳ 数据块起点: code_main.s:190  0x8211-0x8212  .byte $F0,$08
+        <- [jsr/jmp] code_data.s:24  JSR $8211                  ; $86A2
+        <- [jsr/jmp] code_data.s:45  JMP $8211                  ; $86E0
+        <- [jsr/jmp] code_sub.s:74  JSR $8211                  ; $83F1
+        <- [jsr/jmp] code_sub.s:77  JSR $8211                  ; $83F7
+        <- [jsr/jmp] code_sub.s:85  JMP $8211                  ; $8407
+        ... 另有 5 处引用
+  [跨bank/未定义] 物理 0x9BF3 (窗口 0xBBF3)
+      ↳ 最近定义: code_data.s:264  0x89B3  RTS                        ; $89B3
+        <- [byte-jsr] data_tables.s:49  JSR $9bf3  .byte $23,$31,$21,$20,$F3,$9B,$CD,$2B,$CB,$CA,$FA,$79,$9C,$FA,$47,$B3
+
+=== bank19 (定义 408, 未命中 5: ★入口误标2 数据块内0 弱3) ===
+  [跨bank/未定义] 物理 0x810D (窗口 0xA10D)
+      ↳ 最近定义: code_main.s:262  0x9000  LDA #$00                   ; $9000
+        <- [byte-jsr] data_tables.s:15  JSR $a10d  .byte $00,$20,$0D,$A1,$00,$A6,$31,$2E,$FC,$E5,$03,$E1,$68,$E5,$02,$E0
+  [跨bank/未定义] 物理 0x83E4 (窗口 0xA3E4)
+      ↳ 最近定义: code_main.s:262  0x9000  LDA #$00                   ; $9000
+        <- [byte-jsr] data_tables.s:38  JSR $83e4  .byte $69,$E4,$41,$C1,$74,$6A,$48,$50,$7D,$FC,$E1,$20,$E4,$83,$5C,$73
+        <- [byte-jsr] data_tables.s:44  JSR $83e4  .byte $CF,$67,$6E,$55,$7D,$FC,$E1,$20,$E4,$83,$01,$06,$02,$07,$12,$18
+        <- [byte-jsr] data_tables.s:46  JSR $83e4  .byte $61,$C1,$74,$6A,$48,$50,$7D,$FC,$E1,$20,$E4,$83,$03,$1F,$FC,$E1
+        <- [byte-jsr] data_tables.s:48  JSR $83e4  .byte $C1,$74,$6A,$48,$50,$7D,$FC,$E1,$20,$E4,$83,$16,$2C,$06,$1F,$29
+        <- [byte-jsr] data_tables.s:50  JSR $83e4  .byte $48,$FC,$E1,$20,$E4,$83,$24,$1F,$0B,$2E,$FC,$E4,$84,$62,$50,$69
+        ... 另有 7 处引用
+  [跨bank/未定义] 物理 0x8948 (窗口 0xA948)
+      ↳ 最近定义: code_main.s:262  0x9000  LDA #$00                   ; $9000
+        <- [byte-jsr] code_main.s:512  JSR $a948  .byte $D0,$F5,$20,$10,$B3,$A9,$30,$20,$15,$C5,$A9,$20,$48,$A9,$05,$20
+  [★入口被误标] 物理 0x92A6 (窗口 0xB2A6)
+      ↳ 数据块起点: code_main.s:517  0x92A6-0x92A6  .byte $A9
+        <- [jsr/jmp] code_main.s:587  JSR $B2A6                  ; $9349
+  [★入口被误标] 物理 0x9310 (窗口 0xB310)
+      ↳ 数据块起点: code_main.s:573  0x9310-0x931F  .byte $A2,$00,$BD,$6F,$04,$29,$0F,$09,$30,$C9,$3F,$D0,$02,$A9,$30,$9D
+        <- [byte-jsr] code_main.s:512  JSR $b310  .byte $D0,$F5,$20,$10,$B3,$A9,$30,$20,$15,$C5,$A9,$20,$48,$A9,$05,$20
+
+=== bank20 (定义 965, 未命中 25: ★入口误标13 数据块内5 弱7) ===
+  [★入口被误标] 物理 0x806D (窗口 0xA06D)
+      ↳ 数据块起点: code_main.s:55  0x806D-0x806E  .byte $A0,$00
+        <- [jsr/jmp] code_main.s:60  JMP $806D                  ; $8078
+  [★入口被误标] 物理 0x8164 (窗口 0xA164)
+      ↳ 数据块起点: code_main.s:163  0x8164-0x8169  .byte $20,$33,$C5,$00,$6C,$04
+        <- [jsr/jmp] code_main.s:160  JMP $8164                  ; $815C
+  [数据块内部引用] 物理 0x81EC (窗口 0xA1EC)
+      ↳ 数据块内: code_main.s:216  0x81E9-0x81ED  .byte $AD,$42,$04,$85,$3A
+        <- [jsr/jmp] code_main.s:208  JMP $81EC                  ; $81D2
+        <- [jsr/jmp] code_main.s:210  JMP $81EC                  ; $81D8
+        <- [jsr/jmp] code_main.s:212  JMP $81EC                  ; $81DE
+        <- [jsr/jmp] code_main.s:215  JMP $81EC                  ; $81E6
+  [★入口被误标] 物理 0x825A (窗口 0xA25A)
+      ↳ 数据块起点: code_main.s:273  0x825A-0x825C  .byte $9D,$7F,$04
+        <- [jsr/jmp] code_main.s:268  JMP $825A                  ; $8250
+  [数据块内部引用] 物理 0x8337 (窗口 0xA337)
+      ↳ 数据块内: code_sub.s:24  0x8335-0x8339  .byte $A9,$03,$AE,$2A,$00
+        <- [jsr/jmp] code_sub.s:31  JMP $8337                  ; $8344
+        <- [jsr/jmp] code_sub.s:49  JMP $8337                  ; $8367
+  [★入口被误标] 物理 0x83CF (窗口 0xA3CF)
+      ↳ 数据块起点: code_sub.s:84  0x83CF-0x83CF  .byte $18
+        <- [jsr/jmp] code_main.s:63  JSR $83CF                  ; $8080
+        <- [jsr/jmp] code_main.s:145  JSR $83CF                  ; $8127
+        <- [jsr/jmp] code_main.s:155  JMP $83CF                  ; $8150
+        <- [jsr/jmp] code_main.s:165  JMP $83CF                  ; $816C
+        <- [jsr/jmp] code_main.s:186  JMP $83CF                  ; $8192
+        ... 另有 5 处引用
+  [★入口被误标] 物理 0x83D9 (窗口 0xA3D9)
+      ↳ 数据块起点: code_sub.s:90  0x83D9-0x83DA  .byte $A0,$10
+        <- [jsr/jmp] code_main.s:7  JMP $83D9                  ; $8006
+  [跨bank/未定义] 物理 0x8409 (窗口 0xA409)
+      ↳ 最近定义: code_sub.s:115  0x8407  STY $0040                  ; $8407
+        <- [jsr/jmp] code_sub.s:122  JMP $8409                  ; $8416
+  [数据块内部引用] 物理 0x8450 (窗口 0xA450)
+      ↳ 数据块内: code_sub.s:147  0x844E-0x8451  .byte $D2,$84,$A0,$10
+        <- [jsr/jmp] code_sub.s:224  JMP $8450                  ; $84CF
+  [★入口被误标] 物理 0x84DC (窗口 0xA4DC)
+      ↳ 数据块起点: code_sub.s:230  0x84DC-0x84DD  .byte $A0,$11
+        <- [jsr/jmp] code_main.s:6  JMP $84DC                  ; $8003
+  [跨bank/未定义] 物理 0x852A (窗口 0xA52A)
+      ↳ 最近定义: code_sub.s:270  0x8528  STA ($003C),Y              ; $8528
+        <- [jsr/jmp] code_sub.s:239  JMP $852A                  ; $84EC
+  [★入口被误标] 物理 0x857A (窗口 0xA57A)
+      ↳ 数据块起点: code_sub.s:312  0x857A-0x857B  .byte $A4,$40
+        <- [jsr/jmp] code_sub.s:261  JSR $857A                  ; $8517
+        <- [jsr/jmp] code_sub.s:325  JMP $857A                  ; $859D
+  [★入口被误标] 物理 0x85A9 (窗口 0xA5A9)
+      ↳ 数据块起点: code_sub.s:332  0x85A9-0x85AB  .byte $20,$E7,$85
+        <- [byte-jsr] code_data.s:21  JSR $85a9  .byte $20,$A9,$85
+  [数据块内部引用] 物理 0x85D8 (窗口 0xA5D8)
+      ↳ 数据块内: code_data.s:16  0x85D5-0x85D9  .byte $20,$E7,$85,$A0,$00
+        <- [jsr/jmp] code_data.s:22  JMP $85D8                  ; $85E4
+  [★入口被误标] 物理 0x8624 (窗口 0xA624)
+      ↳ 数据块起点: code_data.s:62  0x8624-0x8626  .byte $AD,$2D,$06
+        <- [jsr/jmp] code_main.s:8  JMP $8624                  ; $8009
+  [跨bank/未定义] 物理 0x8637 (窗口 0xA637)
+      ↳ 最近定义: code_data.s:69  0x8635  STA $0046                  ; $8635
+        <- [jsr/jmp] code_data.s:147  JMP $8637                  ; $86D7
+  [★入口被误标] 物理 0x86B5 (窗口 0xA6B5)
+      ↳ 数据块起点: code_data.s:128  0x86B5-0x86B6  .byte $C9,$0B
+        <- [jsr/jmp] code_data.s:122  JMP $86B5                  ; $86A5
+  [★入口被误标] 物理 0x86C4 (窗口 0xA6C4)
+      ↳ 数据块起点: code_data.s:136  0x86C4-0x86C6  .byte $9D,$01,$02
+        <- [jsr/jmp] code_data.s:127  JMP $86C4                  ; $86B2
+  [跨bank/未定义] 物理 0x86CF (窗口 0xA6CF)
+      ↳ 最近定义: code_data.s:142  0x86CD  INC $0048                  ; $86CD
+        <- [jsr/jmp] code_data.s:72  JMP $86CF                  ; $863B
+        <- [jsr/jmp] code_data.s:75  JMP $86CF                  ; $8642
+        <- [jsr/jmp] code_data.s:78  JMP $86CF                  ; $864A
+  [★入口被误标] 物理 0x8796 (窗口 0xA796)
+      ↳ 数据块起点: code_data.s:226  0x8796-0x8797  .byte $A9,$10
+        <- [jsr/jmp] code_main.s:9  JMP $8796                  ; $800C
+  [★入口被误标] 物理 0x87E7 (窗口 0xA7E7)
+      ↳ 数据块起点: code_data.s:267  0x87E7-0x87E7  .byte $8A
+        <- [jsr/jmp] code_data.s:208  JMP $87E7                  ; $876E
+        <- [jsr/jmp] code_data.s:217  JMP $87E7                  ; $8781
+        <- [jsr/jmp] code_data.s:225  JMP $87E7                  ; $8793
+  [数据块内部引用] 物理 0x8861 (窗口 0xA861)
+      ↳ 数据块内: code_data.s:326  0x885B-0x8863  .byte $36,$37,$3D,$3D,$37,$36,$AD,$2C,$00
+        <- [jsr/jmp] code_data.s:66  JMP $8861                  ; $862D
+  [跨bank/未定义] 物理 0x985A (窗口 0xB85A)
+      ↳ 最近定义: code_data.s:365  0x88A7  RTS                        ; $88A7
+        <- [byte-jsr] data_tables.s:124  JSR $985a  .byte $98,$BB,$04,$F1,$20,$5A,$98,$BB,$08,$F1,$20,$5B,$98,$BB,$0C,$2A
+  [跨bank/未定义] 物理 0x985B (窗口 0xB85B)
+      ↳ 最近定义: code_data.s:365  0x88A7  RTS                        ; $88A7
+        <- [byte-jsr] data_tables.s:124  JSR $985b  .byte $98,$BB,$04,$F1,$20,$5A,$98,$BB,$08,$F1,$20,$5B,$98,$BB,$0C,$2A
+  [跨bank/未定义] 物理 0x9BE8 (窗口 0xBBE8)
+      ↳ 最近定义: code_data.s:365  0x88A7  RTS                        ; $88A7
+        <- [byte-jsr] data_tables.s:142  JSR $bbe8  .byte $BB,$08,$02,$F1,$2A,$20,$E8,$BB,$08,$F1,$00,$00,$80,$FB,$00,$F1
+
+=== bank21 (定义 0, 未命中 2: ★入口误标0 数据块内0 弱2) ===
+  [跨bank/未定义] 物理 0x8000 (窗口 0xA000)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tables.s:166  JSR $a000  .byte $10,$00,$F8,$FF,$03,$14,$CC,$02,$00,$00,$20,$00,$A0,$FF,$00,$01
+  [跨bank/未定义] 物理 0x8001 (窗口 0xA001)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tables.s:96  JSR $8001  .byte $00,$01,$1E,$CD,$FC,$00,$00,$00,$01,$32,$20,$01,$80,$FB,$00,$01
+
+=== bank22 (定义 252, 未命中 3: ★入口误标2 数据块内0 弱1) ===
+  [跨bank/未定义] 物理 0x809F (窗口 0xA09F)
+      ↳ 最近定义: code_main.s:94  0x809D  STY $0044                  ; $809D
+        <- [jsr/jmp] code_main.s:100  JMP $809F                  ; $80AA
+        <- [jsr/jmp] code_main.s:102  JMP $809F                  ; $80B0
+  [★入口被误标] 物理 0x8109 (窗口 0xA109)
+      ↳ 数据块起点: code_main.s:148  0x8109-0x8109  .byte $C8
+        <- [jsr/jmp] code_main.s:139  JMP $8109                  ; $80FA
+  [★入口被误标] 物理 0x8164 (窗口 0xA164)
+      ↳ 数据块起点: code_main.s:201  0x8164-0x8165  .byte $A4,$44
+        <- [jsr/jmp] code_main.s:219  JMP $8164                  ; $8184
+
+=== bank23 (定义 0, 未命中 1: ★入口误标0 数据块内0 弱1) ===
+  [跨bank/未定义] 物理 0x9E09 (窗口 0xBE09)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_maps.s:74  JSR $9e09  .byte $11,$9D,$00,$20,$09,$9E,$01,$08,$03,$08,$BD,$0C,$E8,$08,$04,$08
+
+=== bank24 (定义 1246, 未命中 31: ★入口误标17 数据块内9 弱5) ===
+  [★入口被误标] 物理 0x8045 (窗口 0xA045)
+      ↳ 数据块起点: code_main.s:35  0x8045-0x8046  .byte $A9,$01
+        <- [jsr/jmp] code_main.s:39  JMP $8045                  ; $8050
+  [数据块内部引用] 物理 0x806E (窗口 0xA06E)
+      ↳ 数据块内: code_main.s:49  0x8068-0x8070  .byte $6E,$80,$18,$82,$F2,$82,$AC,$E5,$05
+        <- [jsr/jmp] code_main.s:55  JMP $806E                  ; $807D
+  [★入口被误标] 物理 0x8234 (窗口 0xA234)
+      ↳ 数据块起点: code_main.s:220  0x8234-0x8235  .byte $B1,$5F
+        <- [jsr/jmp] code_main.s:217  JMP $8234                  ; $822B
+  [跨bank/未定义] 物理 0x8346 (窗口 0xA346)
+      ↳ 最近定义: code_main.s:357  0x8344  STA $003B                  ; $8344
+        <- [jsr/jmp] code_main.s:364  JMP $8346                  ; $8355
+        <- [jsr/jmp] code_main.s:366  JMP $8346                  ; $835B
+  [跨bank/未定义] 物理 0x8410 (窗口 0xA410)
+      ↳ 最近定义: code_main.s:414  0x840E  BEQ $8413                  ; $840E
+        <- [jsr/jmp] code_main.s:405  JMP $8410                  ; $83F8
+  [数据块内部引用] 物理 0x8478 (窗口 0xA478)
+      ↳ 数据块内: code_main.s:450  0x8475-0x847A  .byte $AD,$FB,$05,$AC,$2A,$00
+        <- [jsr/jmp] code_main.s:449  JMP $8478                  ; $8472
+  [数据块内部引用] 物理 0x84EF (窗口 0xA4EF)
+      ↳ 数据块内: code_sub.s:38  0x84EC-0x84F0  .byte $AD,$2B,$00,$C9,$24
+        <- [jsr/jmp] code_sub.s:37  JMP $84EF                  ; $84E9
+  [数据块内部引用] 物理 0x8534 (窗口 0xA534)
+      ↳ 数据块内: code_sub.s:66  0x852C-0x8534  .byte $01,$11,$44,$34,$45,$15,$42,$38,$08
+        <- [jsr/jmp] code_sub.s:47  JMP $8534                  ; $8504
+        <- [jsr/jmp] code_sub.s:51  JMP $8534                  ; $8510
+  [数据块内部引用] 物理 0x8629 (窗口 0xA629)
+      ↳ 数据块内: code_sub.s:141  0x861D-0x862B  .byte $8D,$E3,$05,$60,$A9,$00,$8D,$E3,$05,$68,$68,$60,$20,$24,$C5
+        <- [jsr/jmp] code_main.s:365  JSR $8629                  ; $8358
+        <- [jsr/jmp] code_sub.s:35  JMP $8629                  ; $84E3
+        <- [jsr/jmp] code_sub.s:96  JSR $8629                  ; $856B
+        <- [jsr/jmp] code_sub.s:98  JMP $8629                  ; $856F
+        <- [jsr/jmp] code_sub.s:114  JSR $8629                  ; $85C6
+        ... 另有 4 处引用
+  [★入口被误标] 物理 0x863C (窗口 0xA63C)
+      ↳ 数据块起点: code_sub.s:150  0x863C-0x863E  .byte $20,$3C,$C5
+        <- [jsr/jmp] code_main.s:386  JMP $863C                  ; $83BC
+        <- [jsr/jmp] code_main.s:394  JMP $863C                  ; $83D9
+        <- [byte-jsr] code_main.s:415  JSR $863c  .byte $20,$3C,$86
+        <- [jsr/jmp] code_main.s:431  JMP $863C                  ; $8432
+        <- [jsr/jmp] code_main.s:439  JSR $863C                  ; $8452
+        ... 另有 12 处引用
+  [★入口被误标] 物理 0x8653 (窗口 0xA653)
+      ↳ 数据块起点: code_sub.s:161  0x8653-0x8654  .byte $85,$3D
+        <- [jsr/jmp] code_main.s:446  JMP $8653                  ; $846A
+        <- [jsr/jmp] code_sub.s:9  JMP $8653                  ; $8496
+        <- [jsr/jmp] code_sub.s:11  JMP $8653                  ; $849C
+        <- [jsr/jmp] code_sub.s:13  JMP $8653                  ; $84A2
+        <- [jsr/jmp] code_sub.s:15  JMP $8653                  ; $84A8
+        ... 另有 2 处引用
+  [数据块内部引用] 物理 0x86B2 (窗口 0xA6B2)
+      ↳ 数据块内: code_sub.s:188  0x86A6-0x86B2  .byte $00,$3C,$AF,$2E,$34,$33,$AF,$2E,$34,$34,$AF,$2E,$18
+        <- [jsr/jmp] code_sub.s:7  JMP $86B2                  ; $8490
+  [★入口被误标] 物理 0x86F8 (窗口 0xA6F8)
+      ↳ 数据块起点: code_sub.s:195  0x86F8-0x86F8  .byte $AD
+        <- [jsr/jmp] code_main.s:6  JMP $86F8                  ; $8003
+  [★入口被误标] 物理 0x8723 (窗口 0xA723)
+      ↳ 数据块起点: code_sub.s:216  0x8723-0x8724  .byte $A0,$00
+        <- [jsr/jmp] code_sub.s:262  JMP $8723                  ; $8776
+  [★入口被误标] 物理 0x8779 (窗口 0xA779)
+      ↳ 数据块起点: code_sub.s:263  0x8779-0x877B  .byte $AD,$34,$05
+        <- [jsr/jmp] code_main.s:7  JMP $8779                  ; $8006
+  [★入口被误标] 物理 0x87A4 (窗口 0xA7A4)
+      ↳ 数据块起点: code_sub.s:283  0x87A4-0x87A5  .byte $A0,$00
+        <- [jsr/jmp] code_sub.s:315  JMP $87A4                  ; $87E3
+  [★入口被误标] 物理 0x87E6 (窗口 0xA7E6)
+      ↳ 数据块起点: code_sub.s:316  0x87E6-0x87E8  .byte $AD,$36,$05
+        <- [jsr/jmp] code_main.s:8  JMP $87E6                  ; $8009
+  [★入口被误标] 物理 0x8815 (窗口 0xA815)
+      ↳ 数据块起点: code_sub.s:338  0x8815-0x8816  .byte $A0,$00
+        <- [jsr/jmp] code_sub.s:367  JMP $8815                  ; $884E
+  [★入口被误标] 物理 0x8851 (窗口 0xA851)
+      ↳ 数据块起点: code_sub.s:368  0x8851-0x8851  .byte $A8
+        <- [jsr/jmp] code_main.s:9  JMP $8851                  ; $800C
+  [★入口被误标] 物理 0x8869 (窗口 0xA869)
+      ↳ 数据块起点: code_sub.s:383  0x8869-0x8869  .byte $CA
+        <- [jsr/jmp] code_sub.s:387  JMP $8869                  ; $886E
+  [跨bank/未定义] 物理 0x899C (窗口 0xA99C)
+      ↳ 最近定义: code_data.s:75  0x899A  STA $0040                  ; $899A
+        <- [jsr/jmp] code_data.s:82  JMP $899C                  ; $89A9
+  [★入口被误标] 物理 0x8A43 (窗口 0xAA43)
+      ↳ 数据块起点: code_data.s:119  0x8A43-0x8A43  .byte $AA
+        <- [jsr/jmp] code_data.s:112  JMP $8A43                  ; $8A31
+        <- [jsr/jmp] code_data.s:114  JMP $8A43                  ; $8A36
+        <- [jsr/jmp] code_data.s:116  JMP $8A43                  ; $8A3B
+        <- [jsr/jmp] code_data.s:118  JMP $8A43                  ; $8A40
+  [★入口被误标] 物理 0x8A56 (窗口 0xAA56)
+      ↳ 数据块起点: code_data.s:130  0x8A56-0x8A57  .byte $85,$47
+        <- [jsr/jmp] code_data.s:110  JMP $8A56                  ; $8A2C
+        <- [jsr/jmp] code_data.s:128  JMP $8A56                  ; $8A52
+  [★入口被误标] 物理 0x8A6F (窗口 0xAA6F)
+      ↳ 数据块起点: code_data.s:143  0x8A6F-0x8A70  .byte $85,$49
+        <- [jsr/jmp] code_data.s:210  JMP $8A6F                  ; $8B07
+  [跨bank/未定义] 物理 0x8B69 (窗口 0xAB69)
+      ↳ 最近定义: code_data.s:238  0x8B67  INC $003D                  ; $8B67
+        <- [jsr/jmp] code_data.s:237  JMP $8B69                  ; $8B64
+  [★入口被误标] 物理 0x8C55 (窗口 0xAC55)
+      ↳ 数据块起点: code_data.s:335  0x8C55-0x8C56  .byte $A4,$3C
+        <- [jsr/jmp] code_data.s:223  JMP $8C55                  ; $8B45
+        <- [jsr/jmp] code_data.s:276  JMP $8C55                  ; $8BC6
+        <- [jsr/jmp] code_data.s:294  JMP $8C55                  ; $8C01
+        <- [jsr/jmp] code_data.s:323  JSR $8C55                  ; $8C3E
+        <- [jsr/jmp] code_data.s:331  JMP $8C55                  ; $8C4F
+  [★入口被误标] 物理 0x8CA5 (窗口 0xACA5)
+      ↳ 数据块起点: code_data.s:375  0x8CA5-0x8CA5  .byte $48
+        <- [jsr/jmp] code_data.s:97  JMP $8CA5                  ; $8A03
+        <- [jsr/jmp] code_data.s:101  JMP $8CA5                  ; $8A0F
+        <- [jsr/jmp] code_data.s:176  JMP $8CA5                  ; $8ABE
+        <- [jsr/jmp] code_data.s:193  JMP $8CA5                  ; $8AE4
+  [跨bank/未定义] 物理 0x8CD9 (窗口 0xACD9)
+      ↳ 最近定义: code_data.s:402  0x8CD7  LDX $0033                  ; $8CD7
+        <- [jsr/jmp] code_data.s:387  JMP $8CD9                  ; $8CBA
+  [数据块内部引用] 物理 0x8CDC (窗口 0xACDC)
+      ↳ 数据块内: code_data.s:403  0x8CDA-0x8CDD  .byte $4C,$55,$8C,$48
+        <- [jsr/jmp] code_data.s:95  JMP $8CDC                  ; $89FD
+        <- [jsr/jmp] code_data.s:99  JMP $8CDC                  ; $8A09
+        <- [jsr/jmp] code_data.s:173  JMP $8CDC                  ; $8AB5
+        <- [jsr/jmp] code_data.s:190  JMP $8CDC                  ; $8ADC
+  [数据块内部引用] 物理 0x8D1A (窗口 0xAD1A)
+      ↳ 数据块内: code_data.s:424  0x8D14-0x8D1B  .byte $86,$92,$8C,$86,$86,$92,$85,$47
+        <- [jsr/jmp] code_data.s:159  JMP $8D1A                  ; $8A90
+        <- [jsr/jmp] code_data.s:187  JMP $8D1A                  ; $8AD4
+        <- [jsr/jmp] code_data.s:280  JMP $8D1A                  ; $8BDB
+        <- [jsr/jmp] code_data.s:282  JMP $8D1A                  ; $8BE1
+        <- [jsr/jmp] code_data.s:284  JMP $8D1A                  ; $8BED
+        ... 另有 2 处引用
+  [数据块内部引用] 物理 0x8D6C (窗口 0xAD6C)
+      ↳ 数据块内: code_data.s:446  0x8D60-0x8D6E  .byte $00,$3C,$AF,$2E,$34,$33,$AF,$2E,$34,$34,$AF,$2E,$20,$3C,$C5
+        <- [jsr/jmp] code_data.s:170  JMP $8D6C                  ; $8AA9
+        <- [jsr/jmp] code_data.s:443  JMP $8D6C                  ; $8D3D
+
+=== bank26 (定义 3129, 未命中 58: ★入口误标39 数据块内15 弱4) ===
+  [★入口被误标] 物理 0x8074 (窗口 0xA074)
+      ↳ 数据块起点: code_main.s:44  0x8074-0x8076  .byte $AE,$17,$06
+        <- [jsr/jmp] code_main.s:90  JMP $8074                  ; $80E7
+  [★入口被误标] 物理 0x80DC (窗口 0xA0DC)
+      ↳ 数据块起点: code_main.s:86  0x80DC-0x80DE  .byte $EE,$16,$06
+        <- [jsr/jmp] code_main.s:53  JMP $80DC                  ; $808B
+  [★入口被误标] 物理 0x80ED (窗口 0xA0ED)
+      ↳ 数据块起点: code_main.s:92  0x80ED-0x80EF  .byte $20,$06,$C6
+        <- [jsr/jmp] code_main.s:116  JMP $80ED                  ; $812F
+  [★入口被误标] 物理 0x8127 (窗口 0xA127)
+      ↳ 数据块起点: code_main.s:113  0x8127-0x8129  .byte $20,$DD,$90
+        <- [jsr/jmp] code_main.s:33  JMP $8127                  ; $8057
+  [★入口被误标] 物理 0x8132 (窗口 0xA132)
+      ↳ 数据块起点: code_main.s:117  0x8132-0x8132  .byte $48
+        <- [jsr/jmp] code_main.s:84  JSR $8132                  ; $80D6
+        <- [jsr/jmp] code_main.s:881  JMP $8132                  ; $88A5
+  [★入口被误标] 物理 0x8148 (窗口 0xA148)
+      ↳ 数据块起点: code_main.s:130  0x8148-0x814A  .byte $8C,$12,$06
+        <- [jsr/jmp] code_data.s:45  JSR $8148                  ; $955A
+        <- [jsr/jmp] code_main.s:129  JMP $8148                  ; $8145
+        <- [jsr/jmp] code_main.s:349  JSR $8148                  ; $837F
+        <- [jsr/jmp] code_main.s:557  JSR $8148                  ; $8591
+        <- [jsr/jmp] code_main.s:760  JSR $8148                  ; $876E
+        ... 另有 4 处引用
+  [★入口被误标] 物理 0x81BC (窗口 0xA1BC)
+      ↳ 数据块起点: code_main.s:173  0x81BC-0x81BE  .byte $20,$C8,$8B
+        <- [jsr/jmp] code_main.s:895  JMP $81BC                  ; $88D2
+  [★入口被误标] 物理 0x81DE (窗口 0xA1DE)
+      ↳ 数据块起点: code_main.s:187  0x81DE-0x81E0  .byte $AD,$42,$04
+        <- [jsr/jmp] code_sub.s:14  JMP $81DE                  ; $8AA6
+  [数据块内部引用] 物理 0x81EB (窗口 0xA1EB)
+      ↳ 数据块内: code_main.s:192  0x81EA-0x81EC  .byte $4C,$66,$93
+        <- [jsr/jmp] code_main.s:17  JMP $A1EB                  ; $802A
+  [★入口被误标] 物理 0x8298 (窗口 0xA298)
+      ↳ 数据块起点: code_main.s:255  0x8298-0x8299  .byte $A9,$02
+        <- [jsr/jmp] code_sub.s:110  JMP $8298                  ; $8B96
+  [★入口被误标] 物理 0x82FC (窗口 0xA2FC)
+      ↳ 数据块起点: code_main.s:293  0x82FC-0x82FD  .byte $A9,$01
+        <- [jsr/jmp] code_main.s:384  JMP $82FC                  ; $83CE
+  [★入口被误标] 物理 0x8349 (窗口 0xA349)
+      ↳ 数据块起点: code_main.s:323  0x8349-0x834B  .byte $20,$F3,$8F
+        <- [jsr/jmp] code_main.s:313  JMP $8349                  ; $8330
+  [★入口被误标] 物理 0x83A2 (窗口 0xA3A2)
+      ↳ 数据块起点: code_main.s:366  0x83A2-0x83A4  .byte $AD,$12,$06
+        <- [jsr/jmp] code_main.s:310  JMP $83A2                  ; $8328
+        <- [jsr/jmp] code_main.s:317  JMP $83A2                  ; $833A
+        <- [jsr/jmp] code_main.s:320  JMP $83A2                  ; $8341
+  [数据块内部引用] 物理 0x83F5 (窗口 0xA3F5)
+      ↳ 数据块内: code_main.s:388  0x83E7-0x83F6  .byte $80,$00,$00,$80,$80,$00,$00,$00,$00,$00,$A0,$60,$40,$00,$20,$06
+        <- [jsr/jmp] code_main.s:265  JMP $83F5                  ; $82B3
+        <- [jsr/jmp] code_main.s:386  JMP $83F5                  ; $83D4
+  [★入口被误标] 物理 0x852F (窗口 0xA52F)
+      ↳ 数据块起点: code_main.s:511  0x852F-0x8530  .byte $A9,$08
+        <- [jsr/jmp] code_main.s:499  JMP $852F                  ; $8511
+  [数据块内部引用] 物理 0x85AC (窗口 0xA5AC)
+      ↳ 数据块内: code_main.s:564  0x85A4-0x85AD  .byte $AC,$85,$05,$86,$1C,$86,$46,$86,$A2,$00
+        <- [jsr/jmp] code_main.s:21  JMP $85AC                  ; $8036
+        <- [jsr/jmp] code_main.s:949  JMP $85AC                  ; $896F
+        <- [jsr/jmp] code_sub.s:445  JMP $85AC                  ; $8EE5
+  [★入口被误标] 物理 0x8687 (窗口 0xA687)
+      ↳ 数据块起点: code_main.s:659  0x8687-0x8689  .byte $DD,$B1,$86
+        <- [jsr/jmp] code_main.s:662  JMP $8687                  ; $868F
+  [数据块内部引用] 物理 0x87E1 (窗口 0xA7E1)
+      ↳ 数据块内: code_main.s:797  0x87D4-0x87E3  .byte $4C,$66,$93,$00,$80,$00,$00,$80,$00,$A8,$5A,$52,$00,$AD,$FB,$05
+        <- [jsr/jmp] code_main.s:9  JMP $87E1                  ; $800F
+        <- [jsr/jmp] code_sub.s:92  JSR $87E1                  ; $8B6A
+  [★入口被误标] 物理 0x8835 (窗口 0xA835)
+      ↳ 数据块起点: code_main.s:835  0x8835-0x8837  .byte $AD,$00,$06
+        <- [jsr/jmp] code_main.s:8  JMP $8835                  ; $800C
+  [数据块内部引用] 物理 0x888D (窗口 0xA88D)
+      ↳ 数据块内: code_main.s:869  0x888B-0x888E  .byte $00,$02,$A9,$00
+        <- [jsr/jmp] code_main.s:10  JMP $888D                  ; $8012
+        <- [jsr/jmp] code_main.s:857  JSR $888D                  ; $886D
+  [★入口被误标] 物理 0x88A8 (窗口 0xA8A8)
+      ↳ 数据块起点: code_main.s:882  0x88A8-0x88A9  .byte $A9,$0B
+        <- [jsr/jmp] code_main.s:11  JMP $88A8                  ; $8015
+        <- [jsr/jmp] code_main.s:860  JSR $88A8                  ; $8874
+  [数据块内部引用] 物理 0x88F3 (窗口 0xA8F3)
+      ↳ 数据块内: code_main.s:905  0x88EB-0x88F4  .byte $80,$00,$00,$00,$00,$00,$80,$00,$A9,$00
+        <- [jsr/jmp] code_main.s:407  JMP $88F3                  ; $8439
+        <- [jsr/jmp] code_main.s:771  JMP $88F3                  ; $8796
+  [数据块内部引用] 物理 0x892A (窗口 0xA92A)
+      ↳ 数据块内: code_main.s:924  0x8922-0x892B  .byte $AC,$85,$05,$86,$1C,$86,$10,$00,$A0,$00
+        <- [jsr/jmp] code_main.s:774  JMP $892A                  ; $879C
+  [数据块内部引用] 物理 0x8978 (窗口 0xA978)
+      ↳ 数据块内: code_main.s:950  0x8972-0x8979  .byte $4C,$DF,$8B,$56,$45,$00,$A9,$02
+        <- [jsr/jmp] code_sub.s:111  JMP $8978                  ; $8B99
+  [★入口被误标] 物理 0x89D0 (窗口 0xA9D0)
+      ↳ 数据块起点: code_main.s:983  0x89D0-0x89D1  .byte $A9,$01
+        <- [jsr/jmp] code_main.s:1043  JMP $89D0                  ; $8A5A
+  [跨bank/未定义] 物理 0x8A4F (窗口 0xAA4F)
+      ↳ 最近定义: code_main.s:1038  0x8A4D  BCS $8A60                  ; $8A4D
+        <- [jsr/jmp] code_main.s:996  JMP $8A4F                  ; $89F3
+        <- [jsr/jmp] code_main.s:999  JMP $8A4F                  ; $89FA
+  [数据块内部引用] 物理 0x8A6F (窗口 0xAA6F)
+      ↳ 数据块内: code_main.s:1046  0x8A63-0x8A71  .byte $00,$00,$00,$00,$01,$00,$02,$00,$00,$00,$00,$01,$20,$06,$C6
+        <- [jsr/jmp] code_main.s:959  JMP $8A6F                  ; $8990
+        <- [jsr/jmp] code_main.s:1045  JMP $8A6F                  ; $8A60
+  [数据块内部引用] 物理 0x8AB0 (窗口 0xAAB0)
+      ↳ 数据块内: code_sub.s:16  0x8AAC-0x8AB2  .byte $A0,$60,$40,$00,$AD,$41,$04
+        <- [jsr/jmp] code_sub.s:1056  JMP $8AB0                  ; $946D
+  [数据块内部引用] 物理 0x8B4A (窗口 0xAB4A)
+      ↳ 数据块内: code_sub.s:78  0x8B46-0x8B4C  .byte $A0,$60,$40,$00,$20,$9C,$8B
+        <- [jsr/jmp] code_main.s:13  JMP $8B4A                  ; $801E
+        <- [jsr/jmp] code_sub.s:180  JSR $8B4A                  ; $8C31
+  [★入口被误标] 物理 0x8B73 (窗口 0xAB73)
+      ↳ 数据块起点: code_sub.s:96  0x8B73-0x8B74  .byte $A9,$0A
+        <- [jsr/jmp] code_sub.s:95  JMP $8B73                  ; $8B70
+  [★入口被误标] 物理 0x8BD4 (窗口 0xABD4)
+      ↳ 数据块起点: code_sub.s:140  0x8BD4-0x8BD6  .byte $20,$0C,$C5
+        <- [jsr/jmp] code_main.s:566  JSR $8BD4                  ; $85B1
+        <- [jsr/jmp] code_sub.s:132  JMP $8BD4                  ; $8BC4
+  [★入口被误标] 物理 0x8BDF (窗口 0xABDF)
+      ↳ 数据块起点: code_sub.s:145  0x8BDF-0x8BE1  .byte $20,$70,$90
+        <- [jsr/jmp] code_main.s:181  JMP $8BDF                  ; $81CE
+        <- [jsr/jmp] code_main.s:214  JMP $8BDF                  ; $821F
+        <- [jsr/jmp] code_main.s:412  JMP $8BDF                  ; $8448
+        <- [jsr/jmp] code_main.s:628  JMP $8BDF                  ; $8643
+        <- [jsr/jmp] code_main.s:784  JMP $8BDF                  ; $87B4
+        ... 另有 2 处引用
+  [★入口被误标] 物理 0x8BE5 (窗口 0xABE5)
+      ↳ 数据块起点: code_sub.s:147  0x8BE5-0x8BE7  .byte $20,$06,$C6
+        <- [jsr/jmp] code_main.s:676  JMP $8BE5                  ; $86AE
+  [跨bank/未定义] 物理 0x8C10 (窗口 0xAC10)
+      ↳ 最近定义: code_sub.s:166  0x8C0E  STX $003A                  ; $8C0E
+        <- [jsr/jmp] code_sub.s:163  JMP $8C10                  ; $8C06
+  [★入口被误标] 物理 0x8CA4 (窗口 0xACA4)
+      ↳ 数据块起点: code_sub.s:235  0x8CA4-0x8CA4  .byte $4A
+        <- [jsr/jmp] code_main.s:15  JMP $8CA4                  ; $8024
+        <- [jsr/jmp] code_sub.s:220  JSR $8CA4                  ; $8C8E
+  [跨bank/未定义] 物理 0x8D4C (窗口 0xAD4C)
+      ↳ 最近定义: code_sub.s:317  0x8D4A  LDY $003B                  ; $8D4A
+        <- [jsr/jmp] code_sub.s:322  JMP $8D4C                  ; $8D54
+  [★入口被误标] 物理 0x8D60 (窗口 0xAD60)
+      ↳ 数据块起点: code_sub.s:329  0x8D60-0x8D61  .byte $24,$3A
+        <- [jsr/jmp] code_sub.s:316  JMP $8D60                  ; $8D47
+  [★入口被误标] 物理 0x8E86 (窗口 0xAE86)
+      ↳ 数据块起点: code_sub.s:402  0x8E86-0x8E88  .byte $AD,$46,$04
+        <- [jsr/jmp] code_main.s:20  JMP $8E86                  ; $8033
+        <- [jsr/jmp] code_sub.s:105  JSR $8E86                  ; $8B89
+        <- [jsr/jmp] code_sub.s:183  JSR $8E86                  ; $8C39
+  [★入口被误标] 物理 0x8F72 (窗口 0xAF72)
+      ↳ 数据块起点: code_sub.s:516  0x8F72-0x8F74  .byte $AD,$41,$04
+        <- [jsr/jmp] code_data.s:18  JSR $8F72                  ; $9521
+        <- [jsr/jmp] code_main.s:14  JMP $8F72                  ; $8021
+        <- [jsr/jmp] code_main.s:29  JSR $8F72                  ; $804C
+        <- [jsr/jmp] code_main.s:257  JSR $8F72                  ; $829D
+        <- [jsr/jmp] code_main.s:719  JSR $8F72                  ; $8718
+        ... 另有 3 处引用
+  [★入口被误标] 物理 0x904E (窗口 0xB04E)
+      ↳ 数据块起点: code_sub.s:620  0x904E-0x9050  .byte $2C,$4B,$04
+        <- [jsr/jmp] code_main.s:22  JMP $904E                  ; $8039
+        <- [jsr/jmp] code_main.s:589  JSR $904E                  ; $85E8
+  [数据块内部引用] 物理 0x9095 (窗口 0xB095)
+      ↳ 数据块内: code_sub.s:649  0x908E-0x9095  .byte $02,$01,$01,$04,$04,$01,$02,$08
+        <- [jsr/jmp] code_main.s:141  JMP $9095                  ; $816D
+        <- [jsr/jmp] code_main.s:172  JMP $9095                  ; $81B9
+        <- [jsr/jmp] code_main.s:175  JSR $9095                  ; $81C0
+        <- [jsr/jmp] code_main.s:184  JSR $9095                  ; $81D5
+        <- [jsr/jmp] code_main.s:361  JSR $9095                  ; $8396
+        ... 另有 3 处引用
+  [跨bank/未定义] 物理 0x90D5 (窗口 0xB0D5)
+      ↳ 最近定义: code_sub.s:681  0x90D6  TAX                        ; $90D6
+        <- [jsr/jmp] code_sub.s:671  JMP $90D5                  ; $90C0
+  [★入口被误标] 物理 0x911C (窗口 0xB11C)
+      ↳ 数据块起点: code_sub.s:696  0x911C-0x911D  .byte $A9,$29
+        <- [jsr/jmp] code_sub.s:254  JMP $911C                  ; $8CC8
+  [★入口被误标] 物理 0x91FC (窗口 0xB1FC)
+      ↳ 数据块起点: code_sub.s:790  0x91FC-0x91FD  .byte $A9,$01
+        <- [jsr/jmp] code_sub.s:856  JMP $91FC                  ; $9287
+        <- [jsr/jmp] code_sub.s:859  JMP $91FC                  ; $928F
+  [★入口被误标] 物理 0x925F (窗口 0xB25F)
+      ↳ 数据块起点: code_sub.s:839  0x925F-0x9261  .byte $AD,$1E,$06
+        <- [jsr/jmp] code_sub.s:816  JMP $925F                  ; $9231
+  [★入口被误标] 物理 0x9298 (窗口 0xB298)
+      ↳ 数据块起点: code_sub.s:863  0x9298-0x9299  .byte $A9,$0C
+        <- [jsr/jmp] code_sub.s:778  JMP $9298                  ; $91DD
+  [数据块内部引用] 物理 0x92EE (窗口 0xB2EE)
+      ↳ 数据块内: code_sub.s:894  0x92EA-0x92EF  .byte $01,$05,$02,$07,$A9,$24
+        <- [jsr/jmp] code_sub.s:265  JMP $92EE                  ; $8CE1
+  [★入口被误标] 物理 0x9318 (窗口 0xB318)
+      ↳ 数据块起点: code_sub.s:911  0x9318-0x931A  .byte $AD,$1E,$06
+        <- [jsr/jmp] code_sub.s:908  JMP $9318                  ; $9310
+  [★入口被误标] 物理 0x9395 (窗口 0xB395)
+      ↳ 数据块起点: code_sub.s:959  0x9395-0x9397  .byte $AD,$FB,$05
+        <- [jsr/jmp] code_sub.s:1023  JMP $9395                  ; $941B
+  [★入口被误标] 物理 0x93E4 (窗口 0xB3E4)
+      ↳ 数据块起点: code_sub.s:994  0x93E4-0x93E4  .byte $AA
+        <- [jsr/jmp] code_sub.s:958  JMP $93E4                  ; $9392
+  [★入口被误标] 物理 0x94CF (窗口 0xB4CF)
+      ↳ 数据块起点: code_sub.s:1101  0x94CF-0x94D0  .byte $A9,$1F
+        <- [jsr/jmp] code_sub.s:946  JMP $94CF                  ; $9376
+  [★入口被误标] 物理 0x955E (窗口 0xB55E)
+      ↳ 数据块起点: code_data.s:47  0x955E-0x9560  .byte $AD,$FB,$05
+        <- [jsr/jmp] code_sub.s:268  JMP $955E                  ; $8CE7
+  [★入口被误标] 物理 0x98D5 (窗口 0xB8D5)
+      ↳ 数据块起点: code_data.s:426  0x98D5-0x98D6  .byte $A9,$34
+        <- [jsr/jmp] code_data.s:442  JMP $98D5                  ; $98FE
+  [数据块内部引用] 物理 0x990C (窗口 0xB90C)
+      ↳ 数据块内: code_data.s:444  0x9904-0x990E  .byte $1A,$99,$3A,$99,$50,$99,$AD,$9B,$20,$2D,$C5
+        <- [jsr/jmp] code_data.s:401  JSR $990C                  ; $9897
+        <- [jsr/jmp] code_data.s:418  JSR $990C                  ; $98C3
+        <- [jsr/jmp] code_data.s:485  JMP $990C                  ; $996F
+        <- [jsr/jmp] code_data.s:669  JSR $990C                  ; $9B0B
+        <- [jsr/jmp] code_data.s:772  JMP $990C                  ; $9BEB
+  [数据块内部引用] 物理 0x9979 (窗口 0xB979)
+      ↳ 数据块内: code_data.s:487  0x9975-0x997B  .byte $79,$99,$C7,$9A,$AD,$50,$04
+        <- [jsr/jmp] code_data.s:584  JMP $9979                  ; $9A50
+        <- [jsr/jmp] code_data.s:624  JMP $9979                  ; $9AA8
+  [★入口被误标] 物理 0x9AC7 (窗口 0xBAC7)
+      ↳ 数据块起点: code_data.s:641  0x9AC7-0x9AC8  .byte $A9,$00
+        <- [jsr/jmp] code_data.s:475  JMP $9AC7                  ; $9957
+        <- [jsr/jmp] code_data.s:725  JMP $9AC7                  ; $9B8D
+  [★入口被误标] 物理 0x9ADB (窗口 0xBADB)
+      ↳ 数据块起点: code_data.s:649  0x9ADB-0x9ADC  .byte $A9,$01
+        <- [jsr/jmp] code_data.s:706  JMP $9ADB                  ; $9B65
+  [★入口被误标] 物理 0x9E4B (窗口 0xBE4B)
+      ↳ 数据块起点: code_data.s:1029  0x9E4B-0x9E4D  .byte $20,$EE,$9B
+        <- [jsr/jmp] code_data.s:1026  JMP $9E4B                  ; $9E43
+
+=== bank27 (定义 201, 未命中 3: ★入口误标2 数据块内0 弱1) ===
+  [★入口被误标] 物理 0x8179 (窗口 0xA179)
+      ↳ 数据块起点: code_main.s:90  0x8179-0x8179  .byte $18
+        <- [jsr/jmp] code_main.s:74  JMP $A179                  ; $8159
+  [★入口被误标] 物理 0x8224 (窗口 0xA224)
+      ↳ 数据块起点: code_main.s:170  0x8224-0x8225  .byte $A0,$00
+        <- [jsr/jmp] code_main.s:184  JMP $A224                  ; $823F
+  [跨bank/未定义] 物理 0x884D (窗口 0xA84D)
+      ↳ 最近定义: code_main.s:226  0x8291  RTS                        ; $8291
+        <- [byte-jsr] data_tables.s:163  JSR $884d  .byte $37,$12,$20,$4D,$88,$F0,$F0,$F0,$5D,$8B,$A1,$4F,$68,$62,$85,$35
+
+=== bank28 (定义 1336, 未命中 26: ★入口误标15 数据块内9 弱2) ===
+  [★入口被误标] 物理 0x80F9 (窗口 0xA0F9)
+      ↳ 数据块起点: code_main.s:130  0x80F9-0x80F9  .byte $8A
+        <- [jsr/jmp] code_main.s:105  JMP $80F9                  ; $80CE
+  [★入口被误标] 物理 0x813F (窗口 0xA13F)
+      ↳ 数据块起点: code_main.s:171  0x813F-0x8140  .byte $E0,$25
+        <- [jsr/jmp] code_main.s:73  JMP $813F                  ; $8097
+  [跨bank/未定义] 物理 0x818B (窗口 0xA18B)
+      ↳ 最近定义: code_main.s:218  0x818C  PLA                        ; $818C
+        <- [jsr/jmp] code_main.s:170  JMP $818B                  ; $813C
+        <- [jsr/jmp] code_main.s:208  JMP $818B                  ; $817B
+  [数据块内部引用] 物理 0x825B (窗口 0xA25B)
+      ↳ 数据块内: code_main.s:294  0x824C-0x825B  .byte $04,$04,$04,$05,$05,$05,$06,$0E,$16,$FF,$0C,$14,$FF,$0D,$15,$AD
+        <- [jsr/jmp] code_main.s:293  JMP $825B                  ; $8249
+        <- [jsr/jmp] code_main.s:347  JMP $825B                  ; $82BD
+  [★入口被误标] 物理 0x8278 (窗口 0xA278)
+      ↳ 数据块起点: code_main.s:311  0x8278-0x8279  .byte $86,$32
+        <- [jsr/jmp] code_main.s:273  JMP $8278                  ; $8200
+  [数据块内部引用] 物理 0x82CA (窗口 0xA2CA)
+      ↳ 数据块内: code_main.s:348  0x82C0-0x82CC  .byte $19,$1A,$19,$1D,$1E,$1C,$1B,$1A,$1A,$1A,$20,$2D,$C5
+        <- [jsr/jmp] code_main.s:12  JMP $82CA                  ; $8024
+  [★入口被误标] 物理 0x85B5 (窗口 0xA5B5)
+      ↳ 数据块起点: code_sub.s:115  0x85B5-0x85B6  .byte $A9,$00
+        <- [jsr/jmp] code_sub.s:191  JMP $85B5                  ; $8650
+  [★入口被误标] 物理 0x868E (窗口 0xA68E)
+      ↳ 数据块起点: code_sub.s:219  0x868E-0x868F  .byte $A0,$07
+        <- [jsr/jmp] code_sub.s:197  JMP $868E                  ; $8660
+  [★入口被误标] 物理 0x86FF (窗口 0xA6FF)
+      ↳ 数据块起点: code_sub.s:255  0x86FF-0x8700  .byte $A9,$04
+        <- [jsr/jmp] code_sub.s:260  JMP $86FF                  ; $870D
+  [数据块内部引用] 物理 0x8721 (窗口 0xA721)
+      ↳ 数据块内: code_sub.s:263  0x8716-0x8722  .byte $1E,$87,$21,$87,$27,$87,$2A,$87,$4C,$F9,$86,$A9,$03
+        <- [jsr/jmp] code_sub.s:268  JMP $8721                  ; $872F
+  [★入口被误标] 物理 0x8732 (窗口 0xA732)
+      ↳ 数据块起点: code_sub.s:269  0x8732-0x8734  .byte $AD,$42,$04
+        <- [jsr/jmp] code_sub.s:238  JMP $8732                  ; $86CD
+        <- [jsr/jmp] code_sub.s:241  JMP $8732                  ; $86D5
+        <- [jsr/jmp] code_sub.s:244  JMP $8732                  ; $86DD
+  [数据块内部引用] 物理 0x875D (窗口 0xA75D)
+      ↳ 数据块内: code_sub.s:278  0x8757-0x875F  .byte $07,$08,$07,$08,$07,$08,$AD,$41,$04
+        <- [jsr/jmp] code_sub.s:160  JMP $875D                  ; $860E
+  [★入口被误标] 物理 0x879C (窗口 0xA79C)
+      ↳ 数据块起点: code_sub.s:306  0x879C-0x879D  .byte $A0,$04
+        <- [jsr/jmp] code_sub.s:285  JMP $879C                  ; $8770
+  [数据块内部引用] 物理 0x87F2 (窗口 0xA7F2)
+      ↳ 数据块内: code_sub.s:326  0x87EF-0x87F3  .byte $4C,$33,$89,$A9,$02
+        <- [jsr/jmp] code_sub.s:362  JMP $87F2                  ; $8841
+  [★入口被误标] 物理 0x8911 (窗口 0xA911)
+      ↳ 数据块起点: code_sub.s:444  0x8911-0x8912  .byte $A9,$06
+        <- [jsr/jmp] code_sub.s:451  JMP $8911                  ; $8924
+  [数据块内部引用] 物理 0x8987 (窗口 0xA987)
+      ↳ 数据块内: code_data.s:20  0x8984-0x8989  .byte $20,$B3,$89,$6E,$E2,$00
+        <- [jsr/jmp] code_data.s:26  JMP $8987                  ; $8999
+        <- [jsr/jmp] code_data.s:29  JMP $8987                  ; $89A2
+  [★入口被误标] 物理 0x89A5 (窗口 0xA9A5)
+      ↳ 数据块起点: code_data.s:30  0x89A5-0x89A7  .byte $AE,$21,$06
+        <- [jsr/jmp] code_data.s:19  JMP $89A5                  ; $8981
+        <- [jsr/jmp] code_data.s:23  JMP $89A5                  ; $8990
+  [★入口被误标] 物理 0x8A3F (窗口 0xAA3F)
+      ↳ 数据块起点: code_data.s:103  0x8A3F-0x8A41  .byte $AD,$41,$04
+        <- [jsr/jmp] code_data.s:50  JSR $8A3F                  ; $89D4
+        <- [jsr/jmp] code_data.s:73  JSR $8A3F                  ; $8A03
+        <- [jsr/jmp] code_sub.s:325  JMP $8A3F                  ; $87EC
+        <- [jsr/jmp] code_sub.s:328  JMP $8A3F                  ; $87F7
+        <- [jsr/jmp] code_sub.s:331  JSR $8A3F                  ; $87FF
+        ... 另有 1 处引用
+  [★入口被误标] 物理 0x8B22 (窗口 0xAB22)
+      ↳ 数据块起点: code_data.s:228  0x8B22-0x8B23  .byte $A9,$0B
+        <- [jsr/jmp] code_main.s:6  JMP $8B22                  ; $8003
+  [跨bank/未定义] 物理 0x8B61 (窗口 0xAB61)
+      ↳ 最近定义: code_data.s:261  0x8B5F  STY $003A                  ; $8B5F
+        <- [jsr/jmp] code_data.s:276  JMP $8B61                  ; $8B7B
+  [数据块内部引用] 物理 0x8C06 (窗口 0xAC06)
+      ↳ 数据块内: code_data.s:295  0x8C04-0x8C07  .byte $11,$0C,$E0,$04
+        <- [jsr/jmp] code_data.s:105  JSR $8C06                  ; $8A45
+        <- [jsr/jmp] code_main.s:8  JMP $8C06                  ; $8009
+        <- [jsr/jmp] code_sub.s:28  JSR $8C06                  ; $84E5
+  [★入口被误标] 物理 0x8CC7 (窗口 0xACC7)
+      ↳ 数据块起点: code_data.s:359  0x8CC7-0x8CC8  .byte $A5,$47
+        <- [jsr/jmp] code_data.s:385  JMP $8CC7                  ; $8CF7
+        <- [jsr/jmp] code_data.s:391  JMP $8CC7                  ; $8D03
+        <- [jsr/jmp] code_data.s:420  JMP $8CC7                  ; $8D3E
+  [★入口被误标] 物理 0x8CD4 (窗口 0xACD4)
+      ↳ 数据块起点: code_data.s:365  0x8CD4-0x8CD5  .byte $A4,$46
+        <- [jsr/jmp] code_data.s:406  JMP $8CD4                  ; $8D1E
+        <- [jsr/jmp] code_data.s:409  JMP $8CD4                  ; $8D26
+  [数据块内部引用] 物理 0x8D58 (窗口 0xAD58)
+      ↳ 数据块内: code_data.s:430  0x8D55-0x8D58  .byte $4C,$E2,$8D,$A8
+        <- [jsr/jmp] code_main.s:9  JMP $8D58                  ; $800C
+        <- [jsr/jmp] code_sub.s:271  JSR $8D58                  ; $8738
+  [数据块内部引用] 物理 0x8DA6 (窗口 0xADA6)
+      ↳ 数据块内: code_data.s:465  0x8DA0-0x8DA7  .byte $E2,$8D,$E2,$8D,$E2,$8D,$E0,$00
+        <- [jsr/jmp] code_data.s:432  JMP $8DA6                  ; $8D5B
+        <- [jsr/jmp] code_sub.s:152  JSR $8DA6                  ; $85F5
+  [★入口被误标] 物理 0x8E11 (窗口 0xAE11)
+      ↳ 数据块起点: code_data.s:519  0x8E11-0x8E13  .byte $AE,$30,$04
+        <- [jsr/jmp] code_data.s:360  JMP $8E11                  ; $8CC9
+        <- [jsr/jmp] code_data.s:425  JMP $8E11                  ; $8D4A
+        <- [jsr/jmp] code_data.s:429  JMP $8E11                  ; $8D52
+        <- [jsr/jmp] code_data.s:498  JMP $8E11                  ; $8DEA
+        <- [jsr/jmp] code_data.s:518  JMP $8E11                  ; $8E0E
+
+=== bank29 (定义 0, 未命中 4: ★入口误标0 数据块内0 弱4) ===
+  [跨bank/未定义] 物理 0x8505 (窗口 0xA505)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_maps.s:108  JSR $a505  .byte $50,$04,$40,$04,$86,$03,$D0,$02,$80,$05,$80,$03,$20,$05,$A5,$03
+  [跨bank/未定义] 物理 0x9505 (窗口 0xB505)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_maps.s:107  JSR $9505  .byte $C0,$04,$D0,$03,$20,$05,$95,$04,$96,$03,$E0,$02,$A0,$04,$80,$03
+  [跨bank/未定义] 物理 0x9700 (窗口 0xB700)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tail.s:113  JSR $9700  .byte $0A,$37,$06,$38,$01,$39,$0F,$20,$00,$97,$98,$99,$99,$A0,$1F,$1E
+  [跨bank/未定义] 物理 0x9D00 (窗口 0xBD00)
+      ↳ 最近定义: (bank 内无定义)
+        <- [byte-jsr] data_tail.s:126  JSR $bd00  .byte $BC,$70,$1F,$1E,$09,$57,$0A,$58,$0F,$20,$00,$BD,$BE,$BF,$BF,$70
+
+=== bank30 (定义 2880, 未命中 20: ★入口误标0 数据块内0 弱20) ===
+  [跨bank/未定义] 物理 0x8000 (窗口 0xA000)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_main.s:96  JSR $A000                  ; $C43A
+        <- [jsr/jmp] code_main.s:102  JSR $8000                  ; $C449
+        <- [jsr/jmp] code_main.s:542  JSR $8000                  ; $C8DB
+        <- [jsr/jmp] code_sub.s:96  JSR $8000                  ; $CE21
+  [跨bank/未定义] 物理 0x8003 (窗口 0xA003)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_data.s:507  JSR $8003                  ; $DB43
+  [跨bank/未定义] 物理 0x8006 (窗口 0xA006)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_data.s:706  JMP $8006                  ; $DD33
+  [跨bank/未定义] 物理 0x8009 (窗口 0xA009)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_data.s:5  JSR $8009                  ; $D6A8
+  [跨bank/未定义] 物理 0x800C (窗口 0xA00C)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_sub.s:762  JSR $800C                  ; $D3E3
+  [跨bank/未定义] 物理 0x800F (窗口 0xA00F)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_main.s:175  JSR $A00F                  ; $C4E6
+  [跨bank/未定义] 物理 0x8012 (窗口 0xA012)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_data.s:38  JSR $8012                  ; $D726
+  [跨bank/未定义] 物理 0x8015 (窗口 0xA015)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_data.s:61  JSR $8015                  ; $D755
+  [跨bank/未定义] 物理 0x8018 (窗口 0xA018)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_data.s:714  JMP $8018                  ; $DD44
+  [跨bank/未定义] 物理 0x801B (窗口 0xA01B)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_data.s:694  JMP $801B                  ; $DD19
+        <- [jsr/jmp] code_data.s:870  JMP $801B                  ; $DED9
+  [跨bank/未定义] 物理 0x801E (窗口 0xA01E)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_data.s:839  JSR $801E                  ; $DE88
+        <- [jsr/jmp] code_data.s:901  JSR $801E                  ; $DF1C
+  [跨bank/未定义] 物理 0x8021 (窗口 0xA021)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_data.s:114  JSR $8021                  ; $D7C4
+  [跨bank/未定义] 物理 0x802A (窗口 0xA02A)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_sub.s:280  JSR $802A                  ; $CF81
+  [跨bank/未定义] 物理 0x8030 (窗口 0xA030)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_sub.s:474  JSR $8030                  ; $D14C
+  [跨bank/未定义] 物理 0x8036 (窗口 0xA036)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_data.s:123  JSR $8036                  ; $D7D6
+  [跨bank/未定义] 物理 0x8039 (窗口 0xA039)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_data.s:456  JSR $8039                  ; $DAC1
+  [跨bank/未定义] 物理 0x8160 (窗口 0xA160)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_main.s:136  JSR $A160                  ; $C491
+  [跨bank/未定义] 物理 0x8200 (窗口 0xA200)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_main.s:83  JMP $A200                  ; $C41E
+  [跨bank/未定义] 物理 0x9000 (窗口 0xB000)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [jsr/jmp] code_sub.s:453  JMP $B000                  ; $D11B
+  [跨bank/未定义] 物理 0x9701 (窗口 0xB701)
+      ↳ 最近定义: code_main.s:70  0xC401  LDA #$08                   ; $C401
+        <- [byte-jsr] code_main.s:25  JSR $9701  .byte $BB,$5F,$FF,$FE,$79,$A4,$81,$28,$82,$90,$20,$01,$97,$9F,$EB,$6D
+
+=== bank31 (定义 1852, 未命中 17: ★入口误标0 数据块内0 弱17) ===
+  [跨bank/未定义] 物理 0x8000 (窗口 0xA000)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:80  JSR $8000                  ; $E0AB
+        <- [jsr/jmp] code_main.s:512  JSR $8000                  ; $E44A
+        <- [jsr/jmp] code_main.s:1266  JSR $8000                  ; $EC29
+        <- [jsr/jmp] code_main.s:1550  JSR $8000                  ; $EEAE
+        <- [jsr/jmp] code_main.s:1606  JSR $8000                  ; $EF35
+  [跨bank/未定义] 物理 0x8003 (窗口 0xA003)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:430  JMP $8003                  ; $E3A0
+        <- [jsr/jmp] code_main.s:577  JMP $8003                  ; $E4D4
+        <- [jsr/jmp] code_main.s:664  JMP $8003                  ; $E58D
+        <- [jsr/jmp] code_main.s:1211  JSR $8003                  ; $EBB0
+        <- [jsr/jmp] code_main.s:1296  JSR $8003                  ; $EC71
+        ... 另有 2 处引用
+  [跨bank/未定义] 物理 0x8006 (窗口 0xA006)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:194  JSR $8006                  ; $E1AF
+        <- [jsr/jmp] code_main.s:1220  JSR $8006                  ; $EBC2
+        <- [jsr/jmp] code_main.s:1346  JSR $8006                  ; $ECEA
+        <- [jsr/jmp] code_main.s:1588  JSR $8006                  ; $EF11
+  [跨bank/未定义] 物理 0x8009 (窗口 0xA009)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:315  JMP $8009                  ; $E2B9
+        <- [jsr/jmp] code_main.s:1229  JSR $8009                  ; $EBD4
+        <- [jsr/jmp] code_main.s:1621  JSR $8009                  ; $EF54
+  [跨bank/未定义] 物理 0x800C (窗口 0xA00C)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:693  JSR $800C                  ; $E5C9
+        <- [jsr/jmp] code_main.s:909  JSR $800C                  ; $E7CC
+        <- [jsr/jmp] code_main.s:1653  JSR $800C                  ; $EF96
+  [跨bank/未定义] 物理 0x800F (窗口 0xA00F)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:901  JSR $800F                  ; $E7B4
+  [跨bank/未定义] 物理 0x8012 (窗口 0xA012)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:760  JSR $8012                  ; $E662
+  [跨bank/未定义] 物理 0x8015 (窗口 0xA015)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:745  JSR $8015                  ; $E645
+        <- [jsr/jmp] code_main.s:769  JSR $8015                  ; $E674
+  [跨bank/未定义] 物理 0x801E (窗口 0xA01E)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:34  JSR $801E                  ; $E04B
+  [跨bank/未定义] 物理 0x8021 (窗口 0xA021)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:206  JSR $8021                  ; $E1C8
+  [跨bank/未定义] 物理 0x8024 (窗口 0xA024)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:263  JSR $8024                  ; $E247
+        <- [jsr/jmp] code_main.s:703  JSR $8024                  ; $E5DD
+  [跨bank/未定义] 物理 0x8027 (窗口 0xA027)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:218  JMP $8027                  ; $E1E4
+  [跨bank/未定义] 物理 0x8033 (窗口 0xA033)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:251  JSR $8033                  ; $E22D
+  [跨bank/未定义] 物理 0x8039 (窗口 0xA039)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [jsr/jmp] code_main.s:242  JSR $8039                  ; $E21B
+  [跨bank/未定义] 物理 0x810D (窗口 0xA10D)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [byte-jsr] data_scripts.s:41  JSR $a10d  .byte $1F,$11,$FC,$0B,$2C,$AA,$FC,$20,$0D,$A1,$FC,$2C,$06,$AF,$24,$0C
+        <- [byte-jsr] data_scripts.s:47  JSR $a10d  .byte $05,$FC,$0F,$03,$AA,$FC,$15,$06,$16,$0C,$FC,$20,$0D,$A1,$FC,$1F
+        <- [byte-jsr] data_scripts.s:53  JSR $a10d  .byte $20,$0D,$A1,$FC,$1F,$0B,$05,$FC,$06,$A7,$05,$FC,$A6,$14,$03,$FC
+  [跨bank/未定义] 物理 0x8200 (窗口 0xA200)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [byte-jsr] data_sprites.s:23  JSR $8200  .byte $DE,$DF,$00,$04,$01,$00,$84,$85,$90,$91,$05,$20,$00,$82,$80,$80
+  [跨bank/未定义] 物理 0x9800 (窗口 0xB800)
+      ↳ 最近定义: code_main.s:2  0xE002  ADC #$01                   ; $E002
+        <- [byte-jsr] data_sprites.s:5  JSR $9800  .byte $CC,$F1,$E9,$F1,$02,$00,$00,$98,$AC,$02,$20,$00,$98,$99,$00,$04

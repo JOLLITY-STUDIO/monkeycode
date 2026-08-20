@@ -11,9 +11,9 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ResultController = void 0;
-/** 比分在 DataStore 中的键 (TODO: 对齐 Bank26 实际写入字段) */
-const KEY_SCORE_HOME = 'ram_044E';
-const KEY_SCORE_AWAY = 'ram_0621';
+/** 比分在 DataStore 中的键 — 真实 ROM: $85E3 INC ram_0028,X (主队), ram_0029 (客队) */
+const KEY_SCORE_HOME = 'ram_0028';
+const KEY_SCORE_AWAY = 'ram_0029';
 class ResultController {
     constructor(store) {
         this._frame = 0;

@@ -26,6 +26,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank24HudService = void 0;
 const numUtils_1 = require("../../core/numUtils");
 const bank24_tables_1 = require("../data/bank24-tables");
+/** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
+function ramKey(addr) {
+    return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+}
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
 // ═══════════════════════════════════════════════════════════════
@@ -1355,11 +1359,10 @@ class Bank24HudService {
     }
     /**
      * $8C85: 写 tile 到 PPU Buffer (ram_04A8,X)
-     * H5: 写入 store.sprites 或 NT (由调用方决定)
+     * 真实地址: $8C99 STA $04A8,X — 数字显示缓冲 ($04A8 区, 与 $05E8 NMI 缓冲不同)
      */
     writeTile8C85(tile, x) {
-        // H5: PPU Buffer 写入简化为 store 键值
-        this._store.write(`ppuBuf_${x}`, tile & 0xFF);
+        this._store.write(ramKey(0x04A8 + x), tile & 0xFF);
     }
     /**
      * 完整数值显示: 数值→tile IDs→写 PPU Buffer

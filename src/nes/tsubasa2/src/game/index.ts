@@ -13,6 +13,7 @@
  *   Bank 27 → Bank27Service (精灵/场景动画数据加载 + 动画帧推进, 差分验证 7274/0)
  *   Bank 28 → Bank28MatchService (比赛对阵/阵型/等级配置)
  *   Bank 30 → Bank30Service (硬件初始化)
+ *   Dispatch → DispatchService (真实 RESET 分发链: $C400/$C64E/$CEFE/$A200, 替代 boot.ts 人工路由层)
  *
  * 翻译中 (结构完成，handler/数据 持续迭代):
  *   Bank 12 → Bank12AudioService (音频引擎: APU 模拟 + BGM/SFX 数据)
@@ -21,7 +22,7 @@
  *
  * 已翻译 (完整实现, 不再属于骨架):
  *   Bank 16 → Bank16Service (特殊动作/技能)
- *   Bank 18 → Bank18Service (剧情场景主控制器: 章节→Bank19 数据流偏移调度, 骨架已接入 STORY 路由, 数据表建模 TODO)
+ *   Bank 18 → Bank18Service (剧情场景主控制器: 章节→Bank19 数据流偏移调度, 已接入 STORY 路由, 渲染数据 Bank 无章节表, 真实映射待 bank00/bank02 trace)
  *   Bank 19 → Bank19Service (剧情场景精灵/文字渲染库: 数据流驱动/控制码分发/精灵渲染/场景重置, 差分验证 5600/0, 已接入 STORY 路由)
  *   ResultController → 赛果场景 (RESULT 路由: A→TITLE, 玩链路闭环)
  *   PasswordController → 密码输入场景 (PASSWORD 路由: Bank02 $A484 分发+$A4C0 主逻辑, 骨架已接入)
@@ -53,5 +54,10 @@ export { Bank22Service } from './service/bank22_hybrid.service';
 export { Bank27Service } from './service/bank27_minimal.service';
 export { Bank29RosterService } from './service/bank29_roster.service';
 
-// 场景路由器 (BOOT/TITLE/MEETING/MATCH/RESULT 全路由)
-export { BootService, BOOT_KEYS } from './boot';
+// 真实 RESET 分发链 (替代已废弃的 boot.ts 人工路由层, 按 asm 翻译 $C400/$C64E/$CEFE/$A200)
+// boot.ts 已备份为 boot.ts.bak 不再使用 (asm 无对应结构, 是人工编造的协程路由层)
+export { DispatchService, TaskIndex } from './dispatch.service';
+
+// 游戏主类 (对外唯一入口: new Tsubasa2(ctx, config).start(canvas))
+// 内含 PPU + RAF 循环 + onFrame 回调, 替代旧 GameLoop/Renderer/FrameCompositor
+export { Tsubasa2 } from './Tsubasa2';

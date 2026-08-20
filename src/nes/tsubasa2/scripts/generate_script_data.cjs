@@ -13,14 +13,38 @@
 const fs = require('fs');
 const path = require('path');
 
-// ── 加载所有 32 个 ROM bank ──
+// ── 加载 ROM bank ──
+// bank 03-06: 从 asm/bank{03,04,05,06}/_full.s 提取 8192 字节 (8KB, .byte 行)
+// 其他 bank: 从 src/game/data/prg/prg-bank-{id}.ts 读取 (若存在)
+function loadAsmBytes(asmPath) {
+  const src = fs.readFileSync(asmPath, 'utf-8');
+  const m = src.match(/\.byte\s+((?:\$[0-9A-Fa-f]{2}(?:,\s*)?)+)/g);
+  const bytes = [];
+  if (m) {
+    for (const line of m) {
+      const arr = line.match(/\$[0-9A-Fa-f]{2}/g);
+      for (const a of arr) bytes.push(parseInt(a.slice(1), 16));
+    }
+  }
+  return bytes;
+}
 const BANKS = [];
 for (let i = 0; i < 32; i++) {
+  if (i >= 3 && i <= 6) {
+    const asmPath = path.resolve(__dirname, `../asm/bank${i.toString().padStart(2, '0')}/_full.s`);
+    if (fs.existsSync(asmPath)) {
+      const b = loadAsmBytes(asmPath);
+      if (b.length !== 0x2000) throw new Error(`asm bank ${i} 字节数异常: ${b.length}`);
+      BANKS[i] = b;
+      continue;
+    }
+  }
   const id = i.toString().padStart(2, '0');
-  const p = path.resolve(__dirname, `../../rom-data/prg-bank-${id}.ts`);
+  const p = path.resolve(__dirname, `../src/game/data/prg/prg-bank-${id}.ts`);
+  if (!fs.existsSync(p)) { BANKS[i] = new Array(0x2000).fill(0xFF); continue; }
   const src = fs.readFileSync(p, 'utf-8');
   const m = src.match(/const PRG_BANK_\d+[\s\S]*?=\s*\[([\s\S]*?)\]/);
-  if (!m) throw new Error(`无法解析 bank ${id}`);
+  if (!m) throw new Error(`无法解析 bank ${id} (路径: ${p})`);
   BANKS[i] = m[1].split(',').map(s => s.trim()).filter(s => /^0x[0-9A-Fa-f]+$/.test(s)).map(s => parseInt(s, 16));
 }
 
@@ -94,6 +118,23 @@ const CHAR_MAP_SINGLE = {
   0x4D: 'M', 0x4E: 'N', 0x4F: 'O', 0x50: 'P', 0x51: 'Q', 0x52: 'R',
   0x53: 'S', 0x54: 'T', 0x55: 'U', 0x56: 'V', 0x57: 'W', 0x58: 'X',
   0x59: 'Y', 0x5A: 'Z',
+  0x81: 'ガ', 0x82: 'ザ', 0x83: 'ダ', 0x84: 'バ',
+  0x85: 'パ', 0x86: '゛', 0x87: '゜', 0x88: 'ャ', 0x89: 'ュ',
+  0x8A: 'ョ', 0x8B: 'ッ', 0x8C: 'ー', 0x8D: 'ァ', 0x8E: 'ィ', 0x8F: 'ゥ',
+};
+
+// 双 tile 字符 ($A0-$D7): 浊点(上)+基础假名(下)
+const CHAR_MAP_DOUBLE = {
+  0xA0: '゛', 0xA1: '゛', 0xA2: '゛', 0xA3: '゛', 0xA4: '゛', 0xA5: '゛',
+  0xA6: 'ガ', 0xA7: 'ギ', 0xA8: 'グ', 0xA9: 'ゲ', 0xAA: 'ゴ',
+  0xAB: 'ガ', 0xAC: 'ギ', 0xAD: 'グ', 0xAE: 'ゲ',
+  0xAF: 'ザ', 0xB0: 'ジ', 0xB1: 'ヂ', 0xB2: 'ヅ', 0xB3: 'デ',
+  0xB4: '゛', 0xB5: '゛', 0xB6: '゛', 0xB7: '゛', 0xB8: '゛', 0xB9: '゛',
+  0xBA: '゛', 0xBB: '゛', 0xBC: '゛', 0xBD: '゛', 0xBE: '゛', 0xBF: '゛',
+  0xC0: '゛', 0xC1: '゛', 0xC2: '゛', 0xC3: '゛', 0xC4: '゛', 0xC5: '゛',
+  0xC6: '゛', 0xC7: '゛',
+  0xC8: '゜', 0xC9: '゜', 0xCA: '゜', 0xCB: '゜', 0xCC: '゜',
+  0xCD: '゜', 0xCE: '゜', 0xCF: '゜', 0xD0: '゜', 0xD1: '゜',
 };
 
 function decodeText(bytes) {
@@ -102,7 +143,7 @@ function decodeText(bytes) {
     if (b < 0xA0) {
       result += CHAR_MAP_SINGLE[b] ?? `[${b.toString(16).padStart(2, '0').toUpperCase()}]`;
     } else if (b <= 0xD7) {
-      result += `「${b.toString(16).padStart(2, '0').toUpperCase()}」`;
+      result += CHAR_MAP_DOUBLE[b] ?? `[${b.toString(16).padStart(2, '0').toUpperCase()}]`;
     } else {
       result += `[${b.toString(16).padStart(2, '0').toUpperCase()}]`;
     }
@@ -298,25 +339,28 @@ function parseBlock(bank, startOffset, label, queue) {
 }
 
 // ── 主程序: 按 bank 分割输出 TypeScript 模块 ──
+// 每个 bank 只生成其指针表范围内的有效脚本 ID
+const BANK_ID_RANGES = { 3: [0x00, 0x0F], 4: [0x10, 0x1F], 5: [0x20, 0x5F], 6: [0x60, 0x65] };
 const scriptsByBank = { 3: [], 4: [], 5: [], 6: [] };
-for (let id = 0; id < 0xFF; id++) {
-  try {
-    const script = parseScript(id);
-    const bank = getScriptBank(id);
-    scriptsByBank[bank].push(script);
-  } catch (e) {
-    const bank = getScriptBank(id);
-    scriptsByBank[bank].push({ id, idHex: '0x' + id.toString(16).padStart(2,'0').toUpperCase(), error: e.message });
+for (const bank of [3, 4, 5, 6]) {
+  const [lo, hi] = BANK_ID_RANGES[bank];
+  for (let id = lo; id <= hi; id++) {
+    try {
+      const script = parseScript(id);
+      scriptsByBank[bank].push(script);
+    } catch (e) {
+      scriptsByBank[bank].push({ id, idHex: '0x' + id.toString(16).padStart(2,'0').toUpperCase(), error: e.message });
+    }
   }
 }
 
 // 输出到 4 个 TS 文件 (bank 3-6) — 紧凑格式: 每个脚本单行 JSON, 控制行数 < 1000
-const outDir = path.resolve(__dirname, '../src/data/tile/textscript');
+const outDir = path.resolve(__dirname, '../src/game/data/prg/scene/textscript');
 const bankRanges = {
   3: '0x00-0x0F',
   4: '0x10-0x1F',
   5: '0x20-0x5F',
-  6: '0x60-0xFE',
+  6: '0x60-0x65',
 };
 
 for (const bank of [3, 4, 5, 6]) {

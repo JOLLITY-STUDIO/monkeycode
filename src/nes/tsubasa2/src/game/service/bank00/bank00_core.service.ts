@@ -25,10 +25,11 @@
 import { DataStore, RAM_KEYS } from '../../data/prg/DataStore';
 import { getSceneBgGrp } from '../../data/prg/bank07-data';
 import { SceneRoot } from '../../data/prg/scene/index';
-import PRG_BANK_06 from '../../data/prg/prg-bank-06';
+import { BANK06_TABLE_LOAD_DATA } from '../../data/prg/bank06-data';
 import { Bank00RenderView } from '../../view/bank00/Bank00RenderView';
 import { getScriptBank } from './script-opcodes';
 import { getScriptData } from './script-data-loader';
+import { CHAR_MAP_DOUBLE } from './char-map';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -41,6 +42,17 @@ function ramKey(addr: number): string {
 const FRAME_FLAG   = 'ram_001E';   // ram_001E: bit4=vblank done, bit5=?
 const SCENE_ID     = 'ram_0026';   // ram_0026: 场景 ID (与 bank01/02/24/29 一致)
 const RAM_1B       = 'ram_001B';   // ram_001B: 场景状态标志 (与 bank02 一致)
+
+/**
+ * 对应原始 bank0 $9EE2: 精灵 Y 坐标移动增量表 (16 项, 供 $9CE7 查表)。
+ * 索引 = ram_001E & 0x0F (低 nibble 事件/方向码)。
+ * asm 可见数据: $00,$00,$00,$00,$10,$00,$00,$00,$F0,$00,$00 (X=0..10),
+ *               X=11..15 越界读到后续代码, 此处保守填 0 (无移动)。
+ * X=4 → +$10 (向下移动), X=8 → $F0 (即 -$10, 向上移动)。
+ */
+const SPR_Y_DELTA_TABLE: readonly number[] = [
+  0x00, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0xF0, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+];
 
 
 
@@ -387,15 +399,21 @@ export class Bank00Service {
     const s = this._store;
     // 计算 bank06 数据偏移 (CPU $BF00 = bank06 偏移 $1F00)
     const off = (0x1F00 + (param & 0xFF) * 0x13) & 0x1FFF;
+    // BANK06_TABLE_LOAD_DATA[0] 即 bank06 偏移 0x1F00 (从 _full.s 提取)
+    const idx = off - 0x1F00;
+    const readT = (i: number): number => {
+      const j = idx + i;
+      return j >= 0 && j < BANK06_TABLE_LOAD_DATA.length ? BANK06_TABLE_LOAD_DATA[j] : 0xFF;
+    };
     // $8941: ram_0079 = data[0]
-    s.write('ram_0079', PRG_BANK_06[off] ?? 0);
+    s.write('ram_0079', readT(0));
     // $8948: ram_007A = 0
     s.write('ram_007A', 0);
     // $894B-$8955: ram_007B+Y = data[Y], Y=1..18 (X=0x12 次)
     for (let y = 1; y <= 0x12; y++) {
       const zpOff = 0x7B + y;
       const key = `ram_00${zpOff.toString(16).padStart(2, '0').toUpperCase()}`;
-      s.write(key, PRG_BANK_06[off + y] ?? 0);
+      s.write(key, readT(y));
     }
   }
 
@@ -428,6 +446,52 @@ export class Bank00Service {
    */
   waitCounter(): void {
     this._render.fadeWait();
+  }
+
+  // ──────────────────────────────────────────────
+  // $997A: 帧等待 + 调色板渐显循环 (共享渲染原语)
+  // ──────────────────────────────────────────────
+
+  /**
+   * 对应原始 $997A: 帧等待 + 调色板渐显 (fade-in to full) 循环。
+   * asm ($997A-$99AD):
+   *   $997C: STA $0048; STX $0049          → 记录 BG/SPR 调色板组号
+   *   $997E: JSR $9B07                     → ram_00E9 = ram_0025; 切 bank6 (no-op)
+   *   $9981/$9984: JSR $9AB8/$9ADA         → BG/SPR 调色板加载 (view.paletteLoad)
+   *   $9987-$9989: LDX $00E9; JSR $C4B9    → 恢复 bank (no-op)
+   *   $998C 循环: LDA $004A; CMP #$0F; BCS $9994 → ram_004A < 0x0F 则 INC (渐显进度)
+   *             LDA $004B; CMP #$0F; BCS $999C → ram_004B < 0x0F 则 INC
+   *             JSR $9A71                  → 渐显渲染 (H5: 帧合成器消费 paletteTable)
+   *             JSR $9FA8(1)               → 切 bank (no-op)
+   *             LDA $004A; CLC; ADC $004B; CMP #$1E; BCC $998C
+   *                                          → ram_004A+004B < 0x1E 继续渐显
+   *   $99AD: RTS
+   * H5: 每步以 waitVBlank() 标记帧边界, 渐显进度由 ram_004A/004B 递增,
+   *      $9A71 的实际调色板渐变由帧合成器依据计数器消费 paletteTable。
+   *
+   * @param bgGrp  BG 调色板组号 (A)
+   * @param sprGrp SPR 调色板组号 (X)
+   */
+  fadeInFromCurrent(bgGrp: number, sprGrp: number): void {
+    const s = this._store;
+    s.write('ram_0048', bgGrp & 0xFF);     // $997C: STA $0048
+    s.write('ram_0049', sprGrp & 0xFF);    // $997C: STX $0049
+    // $997E/$9981/$9984: 调色板加载 (view)
+    this._render.paletteLoad(bgGrp & 0xFF, sprGrp & 0xFF);
+    // $9987-$9989: 恢复原 bank (H5 no-op, 但 ram_00E9 = ram_0025 记录)
+    s.write('ram_00E9', s.read('ram_0025'));
+    // $998C-$99AB: 渐显循环 (ram_004A/004B 递增至 0x0F, 和 >= 0x1E 退出)
+    let a = s.read('ram_004A');
+    let b = s.read('ram_004B');
+    while (true) {
+      if (a < 0x0F) a = (a + 1) & 0xFF;    // $9992: INC $004A
+      if (b < 0x0F) b = (b + 1) & 0xFF;    // $999A: INC $004B
+      s.write('ram_004A', a);
+      s.write('ram_004B', b);
+      // $999C: JSR $9A71 (渐显渲染) + $99A1: JSR $9FA8 (no-op) → 帧边界
+      this.waitVBlank();
+      if ((a + b) >= 0x1E) break;          // $99A9: CMP #$1E; $99AB: BCC $998C
+    }
   }
 
   // ──────────────────────────────────────────────
@@ -632,6 +696,194 @@ export class Bank00Service {
   }
 
   // ──────────────────────────────────────────────
+  // $9B6F / $9B74: OAM 精灵起点/终点坐标设置 (共享渲染原语)
+  // ──────────────────────────────────────────────
+
+  /**
+   * 对应原始 $9B6F: 保存精灵起点坐标。
+   * asm: STX $009E; STY $009F; RTS → ram_009E/009F。
+   * 渲染部分实现在 view/bank00/Bank00RenderView.spriteSetStart()。
+   *
+   * @param x 起点 X → ram_009E
+   * @param y 起点 Y → ram_009F
+   */
+  oamSetStart(x: number, y: number): void {
+    this._render.spriteSetStart(x, y);
+  }
+
+  /**
+   * 对应原始 $9B74: 保存精灵终点坐标并闭合区域标志。
+   * asm ($9B74-$9B7E):
+   *   STX $00A0; STY $00A1         → 终点 X/Y → ram_00A0/00A1
+   *   LDA $009E; ORA #$80; STA $009E  → 起点 ram_009E bit7 置位 (区域闭合)
+   * 渲染部分实现在 view/bank00/Bank00RenderView.spriteSetEnd()。
+   *
+   * @param x 终点 X → ram_00A0
+   * @param y 终点 Y → ram_00A1
+   */
+  oamSetEnd(x: number, y: number): void {
+    this._render.spriteSetEnd(x, y);
+  }
+
+  // ──────────────────────────────────────────────
+  // $9D27/$9D52/$9D58: GFX 图形数据复制 (共享渲染原语)
+  // ──────────────────────────────────────────────
+
+  /**
+   * 对应原始 $9D27 (含 $9D52/$9D58): GFX 图形数据复制。
+   * 从数据表复制一串"tile 字符串"到 PPU Buffer, 每个字符以递增 VRAM 地址写入。
+   * asm ($9D27-$9D4F):
+   *   $9D27: STY $00E6; STX $00E7     → 数据表指针
+   *   $9D2B 循环: 读 2 字节段头 → ram_00E8(VRAM lo)/ram_00E9(VRAM hi)
+   *             STY $00EB (ram_00EB=1)
+   *             JSR $9D58 (处理字符段)
+   *             TAX; INC $00EB; ram_00E6 += ram_00EB   → 跳到下一段
+   *             CPX #$FF; BNE $9D2B                    → X==0xFF 结束
+   *   $9D52 (另入口): ram_00E6=ram_00E7=X; ram_00EB=0xFF
+   *   $9D58 (字符处理): INC ram_00EB; 读字符
+   *            字符 >= 0xFC → 段结束返回 (X 保持 = 最后写入后 buffer 偏移)
+   *            字符 < 0xFC → JSR $88CA (写字符到 PPU Buffer), ram_00E8++
+   *   H5: 数据源为提取后的数组 (data), 字符段以 >=0xFC 字节结束,
+   *       每个字符用 (ram_00E8/00E9) VRAM 地址头写入 PPU Buffer (同 $88CA 逻辑)。
+   *       X==0xFF 语义映射为"某段无有效字符 (首个字节即结束标记)" → 停止。
+   *
+   * @param data GFX 数据表数组 (段头 lo/hi + 字符... + 结束标记 0xFC..0xFF)
+   */
+  gfxCopy9D27(data: number[]): void {
+    let idx = 0;
+    // $9D2B 主循环: 逐段处理
+    while (idx < data.length) {
+      // 段头: data[idx]=VRAM lo, data[idx+1]=VRAM hi → ram_00E8/00E9
+      let vramLo = (data[idx] ?? 0) & 0xFF;
+      let vramHi = (data[idx + 1] ?? 0) & 0xFF;
+      idx += 2;
+      let wroteAny = false;
+      // $9D58: 处理字符段 (每个字符写 PPU Buffer, 遇到 >= 0xFC 结束)
+      while (idx < data.length) {
+        const ch = data[idx];
+        idx++;
+        if (ch >= 0xFC) {
+          // 段结束标记 (>=0xFC), 该标记不写入
+          break;
+        }
+        // $9D62/$9D64/$9D66: LDY ram_00E8; LDX ram_00E9; JSR $88CA (写字符)
+        this._writeGfxChar(ch, vramLo, vramHi);
+        // $9D69-$9D6E: ram_00E8++ (回卷则 ram_00E9++)
+        vramLo = (vramLo + 1) & 0xFF;
+        if (vramLo === 0) vramHi = (vramHi + 1) & 0xFF;
+        wroteAny = true;
+      }
+      // $9D4B/$9D4D: CPX #$FF → 无有效字符 (首个即结束标记) 视为结束
+      if (!wroteAny) break;
+    }
+  }
+
+  /**
+   * 对应原始 $88CA: 写单个文本字符到 PPU Buffer (GFX 复制内部用)。
+   * asm ($88CA-$88FA):
+   *   $88CD: JSR $9B28 (ppuBufAlloc(0x82), 头控制=0x82, VRAM lo/hi 用 ram_00E8/00E9)
+   *   单 tile (字符 < 0xA0): buffer = [头3B, 字符, 0x00]
+   *   双 tile (字符 >= 0xA0): buffer = [头3B, hiTile(0x94/0x95), loTile(查 $8A14)]
+   * 每个字符写 5 字节 (头 3 + 2 tile 数据) 到 PPU Buffer。
+   *
+   * @param ch     字符值 (A)
+   * @param vramLo VRAM 地址低字节 (ram_00E8)
+   * @param vramHi VRAM 地址高字节 (ram_00E9)
+   */
+  private _writeGfxChar(ch: number, vramLo: number, vramHi: number): void {
+    const off = this._render.ppuBufAlloc(5);
+    if (off < 0) return;
+    // $9B28 头: buffer[off]=0x82(控制), [off+1]=VRAM lo, [off+2]=VRAM hi
+    this._render.ppuBufWrite(off, 0x82);
+    this._render.ppuBufWrite(off + 1, vramLo & 0xFF);
+    this._render.ppuBufWrite(off + 2, vramHi & 0xFF);
+    if (ch < 0xA0) {
+      // 单 tile ($88ED): buffer[off+3]=字符, buffer[off+4]=0
+      this._render.ppuBufWrite(off + 3, ch & 0xFF);
+      this._render.ppuBufWrite(off + 4, 0x00);
+    } else {
+      // 双 tile ($88D8-$88E5): hi = 字符>=0xC8 ? 0x95 : 0x94; lo = 查 $8A14
+      const hiTile = ch >= 0xC8 ? 0x95 : 0x94;
+      const entry = CHAR_MAP_DOUBLE[ch];
+      const loTile = entry?.loTile ?? 0x00;
+      this._render.ppuBufWrite(off + 3, hiTile);
+      this._render.ppuBufWrite(off + 4, loTile);
+    }
+    this._render.ppuBufEnd();
+  }
+
+  // ──────────────────────────────────────────────
+  // $9C3A: 指针表装载 (把 5 字节项写入 ram_0468+X 精灵组区)
+  // ──────────────────────────────────────────────
+
+  /**
+   * 对应原始 $9C3A: 指针表装载 (共享渲染原语)。
+   * asm ($9C3A-$9C70):
+   *   $9C3C: ram_00E9 = 0
+   *   $9C3E/$9C40: ram_00E6/00E7 = (Y,X) 指针 → 指向数据表
+   *   $9C44: X = data[0] (精灵索引起始)
+   *   $9C4A: ram_00E8 = data[1]
+   *   $9C4C/$9C4E/$9C50/$9C51: data[1]==ram_00E9(0) 时 data[1] += 0x10
+   *   $9C53-$9C61: 循环把 data[1..5] 写入 ram_0468+X (共 5 字节)
+   *   $9C63/$9C65: ram_00E6 = data[5] (下一块指针低字节)
+   *   $9C67-$9C6B: Y = X - 4 (当前块索引回退)
+   *   $9C6C/$9C6E: ram_00E7 = ram_00E8 (data[1])
+   *   $9C70: RTS
+   * H5: 数据源为提取后的声明式数组 (data), 原 asm 指针 (ram_00E6/00E7) 语义
+   *     由调用方传入数组代替, 副作用 (ram_00E6/E7/E8) 保留供其他原语参考。
+   *
+   * @param data 6 字节数据表: [0]=精灵索引起始, [1]=首值(0 时 +0x10), [2..4]=后续值, [5]=下一块指针
+   * @returns 写入起始 X 索引 (ram_0468 区基址偏移, = 起始 - 4)
+   */
+  tableLoad0468(data: number[]): number {
+    const s = this._store;
+    const startX = (data[0] ?? 0) & 0xFF;   // $9C44: X = data[0]
+    let d1 = (data[1] ?? 0) & 0xFF;         // $9C4A: ram_00E8 = data[1]
+    if (d1 === 0) {                         // $9C4C/$9C4E/$9C50/$9C51
+      d1 = (d1 + 0x10) & 0xFF;
+    }
+    // $9C53-$9C61: 写 5 字节 data[1..5] → ram_0468 + startX
+    for (let i = 0; i < 5; i++) {
+      s.write(ramKey(0x0468 + startX + i), (i === 0 ? d1 : (data[1 + i] ?? 0)) & 0xFF);
+    }
+    // $9C63/$9C65: ram_00E6 = data[5] (下一块指针低字节)
+    s.write('ram_00E6', (data[5] ?? 0) & 0xFF);
+    // $9C67-$9C6B: Y = X - 4
+    const yRet = (startX - 4) & 0xFF;
+    // $9C6C/$9C6E: ram_00E7 = ram_00E8 = data[1]
+    s.write('ram_00E7', d1);
+    return yRet;
+  }
+
+  /**
+   * 对应原始 $9C28: 指针表间接分发 (6502 JMP (abs) 翻译)。
+   * asm ($9C28-$9C37):
+   *   $9C28: STX $00E6 (经 .byte $84,$E6)
+   *   $9C2A: STX $00E7                 → ram_00E6=ram_00E7=X (指针)
+   *   $9C2C: TAY
+   *   $9C2D: LDA ($00E6),Y; TAX       → 读指针低字节
+   *   $9C30: INY; LDA ($00E6),Y       → 读指针高字节
+   *   $9C33: STA $00E7; STX $00E6     → 拼合成目标地址
+   *   $9C37: JMP ($00E6)               → 间接跳转
+   * H5: 跳转表为提取后的声明式数组 (2 字节 LE 指针项), 解析出目标地址,
+   *     返回由调用方进行方法分发 (无 CPU 跳转)。
+   *
+   * @param jumpTable 跳转表数组 (每项 2 字节小端指针)
+   * @param index 表内索引 (Y, 2 字节/项)
+   * @returns 解析出的目标地址
+   */
+  tableDispatch(jumpTable: number[], index: number): number {
+    const s = this._store;
+    const i = (index & 0xFF) * 2;
+    const lo = (jumpTable[i] ?? 0) & 0xFF;
+    const hi = (jumpTable[i + 1] ?? 0) & 0xFF;
+    const target = (hi << 8) | lo;
+    s.write('ram_00E6', lo);
+    s.write('ram_00E7', hi);
+    return target;
+  }
+
+  // ──────────────────────────────────────────────
   // $9BA0: 等待 VBlank
   // ──────────────────────────────────────────────
 
@@ -641,6 +893,128 @@ export class Bank00Service {
    */
   waitVBlank(): void {
     this._render.waitVBlank();
+  }
+
+  // ──────────────────────────────────────────────
+  // $9BE3/$9BE8: 帧等待循环 (精灵 Y 移动 + 隐藏, 共享渲染原语)
+  // ──────────────────────────────────────────────
+
+  /**
+   * 对应原始 $9BE3/$9BE8: 帧等待循环 (精灵 Y 移动处理 + 隐藏)。
+   * 被 bank01/02/03 大量调用, 用于驱动精灵在上下边界间移动直到帧事件。
+   * asm ($9BE3-$9C0C):
+   *   $9BE3: STX $00E7; STY $00E6; TAY   → ram_00E7=X(上界), ram_00E6=Y(下界), Y=A(精灵索引)
+   *   $9BE8 循环: LDA #$01; JSR $9FA8 (切 bank, H5 no-op)
+   *             LDA $001E; JSR $9CE7      → 处理精灵 Y 移动 (钳制)
+   *             LDA $001E; AND #$90; BPL $9BE8   → 等待 ram_001E bit7 置位
+   *   $9BF8: LDA $0468,Y; TAX; SEC; SBC $00E7
+   *          LSR×3; STA $00E7             → ram_00E7 = (Y坐标 - 上界) >> 3
+   *          LDA #$F8; STA $0468,Y        → 隐藏精灵 (Y=$F8 屏幕外)
+   *          LDA $00E7; CLC; RTS          → 返回 A = (原Y - 上界)>>3
+   *
+   * H5: 轮询 ram_001E 改为帧同步 (waitVBlank), 精灵 Y 由 $9CE7 逻辑钳制,
+   *     最终隐藏精灵并返回位移格数。
+   *
+   * @param oamIdx 精灵 OAM 索引 (A, 相对 ram_0468)
+   * @param hi     上界坐标 (X → ram_00E7)
+   * @param lo     下界坐标 (Y → ram_00E6)
+   * @returns (原Y坐标 - 上界) >> 3
+   */
+  frameWait(oamIdx: number, hi: number, lo: number): number {
+    const s = this._store;
+    s.write('ram_00E7', hi & 0xFF);
+    s.write('ram_00E6', lo & 0xFF);
+    const yIdx = oamIdx & 0xFF;
+    // $9BE8-$9BF6: 等待 ram_001E bit7 置位 (AND #$90 → BPL 循环)
+    while (true) {
+      this.waitVBlank();                       // $9BE8 (JSR $9FA8 切 bank no-op)
+      const frame = s.read(FRAME_FLAG) ?? 0;
+      this._oamYClamp(yIdx, frame);            // $9BEF: JSR $9CE7 (精灵 Y 钳制)
+      if ((frame & 0x80) !== 0) break;         // $9BF6: BPL $9BE8 (bit7 置位退出)
+    }
+    // $9BF8: LDA $0468,Y; TAX; SEC; SBC $00E7; LSR×3
+    const yVal = s.read(ramKey(0x0468 + yIdx)) ?? 0;
+    let a = (yVal - (hi & 0xFF)) & 0xFF;
+    a = (a >> 3) & 0xFF;                       // LSR×3
+    s.write('ram_00E7', a);
+    // $9C04/$9C06: 隐藏精灵 (Y=$F8)
+    s.write(ramKey(0x0468 + yIdx), 0xF8);
+    // $9C09/$9C0B: 返回 A = ram_00E7, CLC
+    return a;
+  }
+
+  /**
+   * 对应原始 $9C0D: 帧等待循环变体 (等待 ram_001E bit6 或 bit7/bit4)。
+   * asm ($9C0D-$9C27):
+   *   $9C0D 循环: LDA #$01; JSR $9FA8 (切 bank, H5 no-op)
+   *             LDA $001E; JSR $9CE7      → 处理精灵 Y 移动
+   *             LDA $001E; AND #$90; BNE $9BF8   → bit7 或 bit4 置位 → 隐藏精灵返回 (CLC)
+   *             BIT $001E; BVC $9C0D      → bit6 清 → 继续循环
+   *   $9C21: LDA #$F8; STA $0468,Y; SEC; RTS → 隐藏精灵并返回进位 (SEC)
+   *
+   * H5: 帧同步等待, 精灵 Y 钳制, 直到 ram_001E 相应位触发后隐藏精灵。
+   *
+   * @param oamIdx 精灵 OAM 索引 (Y, 相对 ram_0468)
+   * @param hi     上界坐标 (ram_00E7)
+   * @param lo     下界坐标 (ram_00E6)
+   * @returns true=返回进位 (SEC, bit6 触发); false=不进位 (CLC, bit7/bit4 触发)
+   */
+  frameWaitAlt(oamIdx: number, hi: number, lo: number): boolean {
+    const s = this._store;
+    s.write('ram_00E7', hi & 0xFF);
+    s.write('ram_00E6', lo & 0xFF);
+    const yIdx = oamIdx & 0xFF;
+    while (true) {
+      this.waitVBlank();                       // $9C0D
+      const frame = s.read(FRAME_FLAG) ?? 0;
+      this._oamYClamp(yIdx, frame);            // $9C14: JSR $9CE7
+      // $9C19: AND #$90; $9C1B: BNE $9BF8 (bit7/bit4 置位)
+      if ((frame & 0x90) !== 0) {
+        // $9BF8 隐藏精灵返回 (见 frameWait 尾部逻辑), 尾部走 CLC → 返回 false
+        const yVal = s.read(ramKey(0x0468 + yIdx)) ?? 0;
+        let a = (yVal - (hi & 0xFF)) & 0xFF;
+        a = (a >> 3) & 0xFF;
+        s.write('ram_00E7', a);
+        s.write(ramKey(0x0468 + yIdx), 0xF8);
+        return false;                           // $9C0C: CLC
+      }
+      // $9C1D: BIT $001E; $9C1F: BVC $9C0D (bit6 置位退出)
+      if ((frame & 0x40) !== 0) {
+        s.write(ramKey(0x0468 + yIdx), 0xF8);   // $9C21/$9C23
+        return true;                            // $9C26: SEC
+      }
+    }
+  }
+
+  /**
+   * 对应原始 $9CE7: 精灵 Y 坐标钳制移动 (共享渲染原语)。
+   * asm ($9CE7-$9D07):
+   *   $9CE7: AND #$0F; TAX; LDA $9EE2,X  → delta = SPR_Y_DELTA_TABLE[frame & 0x0F]
+   *   $9CED: BEQ $9D06  → delta==0 返回不进位 (无移动)
+   *   $9CF0: CLC; ADC $0468,Y            → newY = Y坐标 + delta
+   *   $9CF3: CMP $00E7; BCS $9CF9        → newY >= 上界 保持 newY
+   *   $9CF7: LDA $00E6                    → 否则 newY = 下界
+   *   $9CF9: CMP $00E6; BEQ/BCC $9D01    → newY <= 下界 保持下界
+   *   $9CFF: LDA $00E7                    → 否则 newY = 上界
+   *   $9D01: STA $0468,Y; SEC; RTS       → 写回, 返回进位
+   * 逻辑: result = (newY < 上界) ? 下界 : 上界 (两边界间往返)。
+   *
+   * @param oamIdx 精灵 OAM 索引 (Y)
+   * @param frame  ram_001E 当前帧标志值
+   * @returns true=移动过 (进位); false=无移动
+   */
+  private _oamYClamp(oamIdx: number, frame: number): boolean {
+    const s = this._store;
+    const idx = frame & 0x0F;                      // $9CE7: AND #$0F
+    const delta = SPR_Y_DELTA_TABLE[idx] ?? 0;     // $9CEA: LDA $9EE2,X
+    if (delta === 0) return false;                 // $9CED: BEQ (无移动)
+    const hi = s.read('ram_00E7') ?? 0;
+    const lo = s.read('ram_00E6') ?? 0;
+    const newY = (s.read(ramKey(0x0468 + oamIdx)) + delta) & 0xFF;  // $9CF0
+    // $9CF3/$9CF5/$9CF7/$9CF9/$9CFF/$9D01: 钳制逻辑
+    const result = newY < hi ? lo : hi;
+    s.write(ramKey(0x0468 + oamIdx), result);      // $9D01
+    return true;                                   // $9D04: SEC
   }
 
   // ──────────────────────────────────────────────
@@ -726,6 +1100,66 @@ export class Bank00Service {
     this._render.ppuBufWrite(offset, value);
   }
 
+  /**
+   * 对应原始 $97AB: PPU 缓冲数据载入 (共享渲染原语)。
+   * 被 bank01 entry4 调用, 用于把"PPU 数据块"格式化写入 PPU Buffer ($05E8 区)。
+   * asm ($97AB-$9818) 数据块格式:
+   *   data[0]      = 控制字节 (bit6=继续标志; 低 6 位 = 本块 tile 字节数; bit7 供 VRAM hi 进位)
+   *   data[1]      = VRAM 地址低字节 (实际 = data[1] + ram_00E9)
+   *   data[2]      = VRAM 地址高字节 (实际 = data[2] + (ram_00E9 bit7 ? 0xFF : 0))
+   *   data[3..3+n) = 要写入的 n 个 tile 字节 (n = data[0] & 0x3F)
+   * 多个块以 control.bit6 为"继续"标志串接在同一 buffer 中。
+   *
+   * H5: 数据源已提取为声明式数组 (由调用方传入 block), 通过 view 的
+   *     ppuBufAlloc/ppuBufWrite/ppuBufEnd 写入 PPU Buffer 头 (控制/lo/hi) + tile 数据。
+   *     $97B6 渐隐检查 (ram_004A|004B==0 时直接写 VRAM) 在 H5 中统一走 buffer
+   *     由渲染合成器消费, 语义一致。
+   *
+   * @param block 数据块数组 (含全部串接块, 每块 3+n 字节)
+   */
+  ppuBufLoad97AB(block: number[]): void {
+    const s = this._store;
+    const e9 = s.read('ram_00E9') ?? 0;
+    let idx = 0;
+    // $97C8 循环: 逐个块写入 buffer
+    while (idx < block.length) {
+      const control = block[idx] ?? 0;                    // data[0]
+      const lo = ((block[idx + 1] ?? 0) + e9) & 0xFF;     // data[1] + ram_00E9
+      // data[2] + 进位 (ram_00E9 bit7 → 负进位 0xFF)
+      const hi = ((block[idx + 2] ?? 0) + (e9 & 0x80 ? 0xFF : 0)) & 0xFF;
+      const count = control & 0x3F;                       // 数据字节数
+      // $9B28: ppuBufAlloc + 写 buffer 头 (控制清 bit6 / VRAM lo / VRAM hi)
+      const bufOff = this._render.ppuBufAlloc(3 + count);
+      if (bufOff < 0) break;                              // 空间不足 (原始循环等待, H5 保守截断)
+      this._render.ppuBufWrite(bufOff, control & 0xBF);
+      this._render.ppuBufWrite(bufOff + 1, lo);
+      this._render.ppuBufWrite(bufOff + 2, hi);
+      // $97F0-$97FC: 写 count 个 tile 字节
+      for (let i = 0; i < count; i++) {
+        this._render.ppuBufWrite(bufOff + 3 + i, block[idx + 3 + i] ?? 0);
+      }
+      this._render.ppuBufEnd();
+      idx += 3 + count;
+      if ((control & 0x40) === 0) break;                  // $9816: bit6 清 → 结束
+    }
+  }
+
+  // ──────────────────────────────────────────────
+  // $A721: 屏幕补绘 (归 bank01 实现, 此处仅占位)
+  // ──────────────────────────────────────────────
+
+  /**
+   * 对应原始 $A721: 屏幕补绘 (被 bank01 entry3/4 调用做补绘)。
+   * 注意: $A721 属于 bank01 自己的子程 (asm/bank01/code_sub.s $8721 起,
+   * 反汇编器把入口 JSR $9BA0 误标为 .byte $20,$A0,$9B 数据)。
+   * bank0 不实现, 由 bank01_data-query.service.ts 翻译。
+   * (rule5: 死方法保留, 待其他 bank 翻译连通)
+   */
+  drawScreenA721(): void {
+    // 归 bank01: 由 bank01 工程师在 bank01_data-query.service.ts 实现 $A721。
+    // eslint-disable-next-line no-empty
+  }
+
   // ──────────────────────────────────────────────
   // $84C1: Bank 02 跳转表分发
   // ──────────────────────────────────────────────
@@ -736,7 +1170,9 @@ export class Bank00Service {
    * H5: 记录入口索引，由调用方直接调用 Bank02Service 对应方法。
    */
   bank02Dispatch(index: number): void {
-    // H5 逻辑记录键 (对应 MMC3 $84C1 bank 切换后的入口索引, 无真实 RAM 地址)
+    // H5 内部扩展键 (非 RAM 键, 不遵循 ram_XXXX 约定):
+    // 对应 MMC3 $84C1 bank 切换后的入口索引, 原汇编无真实 RAM 写,
+    // 此键仅为 H5 分发逻辑记录用。无读取方 (死键, 待其他 bank 翻译连通)。 (rule6)
     this._store.write('bank02_entry', index);
   }
 

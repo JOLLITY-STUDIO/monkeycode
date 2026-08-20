@@ -1,9 +1,6 @@
 "use strict";
-/**
- * 通用工具函数 (序列化/复制)
- *
- * 供 PAPU/PPU 等模块使用。与原 tsnes/src/utils.ts 保持一致。
- */
+// 从 jsnes (d:/studio/github/monkeycode/src/nes/tools/jsnes/src/utils.js) 复制
+// tsnes 是 jsnes 的 TS 版, 此文件补全遗漏的 utils 模块
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.copyArrayElements = copyArrayElements;
 exports.copyArray = copyArray;
@@ -15,7 +12,7 @@ function copyArrayElements(src, srcPos, dest, destPos, length) {
     }
 }
 function copyArray(src) {
-    return src.slice(0);
+    return Array.prototype.slice.call(src, 0);
 }
 function fromJSON(obj, state) {
     const props = obj.constructor.JSON_PROPERTIES;

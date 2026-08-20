@@ -19,10 +19,10 @@ exports.getScriptData = getScriptData;
 exports.getScriptsByBank = getScriptsByBank;
 exports.getScriptCount = getScriptCount;
 exports.getScriptCategories = getScriptCategories;
-const scripts_bank_03_1 = require("../../data/scene/textscript/scripts-bank-03");
-const scripts_bank_04_1 = require("../../data/scene/textscript/scripts-bank-04");
-const scripts_bank_05_1 = require("../../data/scene/textscript/scripts-bank-05");
-const scripts_bank_06_1 = require("../../data/scene/textscript/scripts-bank-06");
+const scripts_bank_03_1 = require("../../data/prg/scene/textscript/scripts-bank-03");
+const scripts_bank_04_1 = require("../../data/prg/scene/textscript/scripts-bank-04");
+const scripts_bank_05_1 = require("../../data/prg/scene/textscript/scripts-bank-05");
+const scripts_bank_06_1 = require("../../data/prg/scene/textscript/scripts-bank-06");
 const script_opcodes_1 = require("./script-opcodes");
 // ── 所有脚本数据 (按 bank 分组) ──
 const ALL_SCRIPTS = {

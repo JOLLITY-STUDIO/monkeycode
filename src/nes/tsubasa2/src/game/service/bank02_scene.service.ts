@@ -1,7 +1,8 @@
 /**
  * Bank 02 Service — 场景控制器 / RESET 入口
  *
- * 原始 PRG 数据已直接 import (rom-data/prg-bank-02.ts)，无 MMC3 bank 切换。
+ * 数据已从 ASM (asm/bank02/*.s) 提取至 `data/prg/bank02-tables.ts`，
+ * 无 MMC3 bank 切换、无 PRG_BANK 原始字节残留。
  * Bank 02 是普通 Service 对象，持有 Bank00 引用，直接调用 bank00 方法完成初始化。
  *
  * 原始 $A200: JMP $A21B (3 字节跳板)
@@ -12,15 +13,11 @@ import { DataStore } from '../data/prg/DataStore';
 import { Bank00Service } from './bank00/bank00_core.service';
 import type { Bank30Service } from './bank30_init.service';
 import {
-  SCROLL_DX,
-  SCROLL_DY,
   PW_OAM_FIX,
   FIELD_TILES,
   FIELD_KIND,
   SCENE_SCRIPT,
-  SPRITE_UPLOAD,
-  SPRITE_UPLOAD2,
-} from '../data/bank02-tables';
+} from '../data/prg/bank02-tables';
 
 // ── 常量 ──
 

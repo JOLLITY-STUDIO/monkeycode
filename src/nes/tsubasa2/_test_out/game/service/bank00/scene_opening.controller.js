@@ -15,20 +15,17 @@
  *
  * H5: 每帧调用 update()，由外部渲染器消费 displayState 绘制。
  */
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OpeningSceneController = void 0;
 const types_1 = require("../../../core/types");
-const index_1 = require("../../data/scene/index");
+const index_1 = require("../../data/prg/scene/index");
 const script_vm_1 = require("./script-vm");
-const cut_0x17_nt_1 = require("../../data/ppu/nametable/cut/cut_0x17_nt");
-const cut0x17_mode_blocks_1 = require("../../data/ppu/nametable/cut/cut0x17-mode-blocks");
-const cut_0x00_boot_1 = require("../../data/ppu/nametable/cut/cut_0x00_boot");
+const cut_0x17_nt_1 = require("../../data/prg/ppu/nametable/cut/cut_0x17_nt");
+const cut0x17_mode_blocks_1 = require("../../data/prg/ppu/nametable/cut/cut0x17-mode-blocks");
+const cut_0x00_boot_1 = require("../../data/prg/ppu/nametable/cut/cut_0x00_boot");
 const chr_slot_mapper_1 = require("../../data/ppu/chr/chr-slot-mapper");
-const prg_bank_06_1 = __importDefault(require("../../data/prg-bank-06"));
-const nes_pallete_table_1 = require("../../data/ppu/pallete/nes-pallete-table");
+const bank06_data_1 = require("../../data/prg/bank06-data");
+const nes_pallete_table_1 = require("../../data/prg/ppu/pallete/nes-pallete-table");
 // ═══════════════════════════════════════════════════════════════
 // Cut 0x17 标题菜单真实 CHR bank
 //   原始场景 setup 的 BG 2KB CHR bank = 0/2 → 都在 H5 8KB bank 0 内,
@@ -316,8 +313,9 @@ class OpeningSceneController {
             return;
         const ptr = cut0x17_mode_blocks_1.MODE_BLOCK_PTRS[mode];
         const count = (0, cut0x17_mode_blocks_1.applyModeBlocks)(this._store, ptr, (off) => {
-            // 指针低 13 位即 bank6 数组偏移 (已验证)
-            return off >= 0 && off < prg_bank_06_1.default.length ? prg_bank_06_1.default[off] : 0xFF;
+            // 指针低 13 位即 bank6 绝对偏移 (如 0x1B48); BANK06_MODE_BLOCK_DATA[0] = 0x1B40
+            const idx = off - bank06_data_1.BANK06_MODE_BLOCK_BASE;
+            return idx >= 0 && idx < bank06_data_1.BANK06_MODE_BLOCK_DATA.length ? bank06_data_1.BANK06_MODE_BLOCK_DATA[idx] : 0xFF;
         }, CUT_0x17_CHR_BANK);
         if (count > 0) {
             console.log(`[OpeningScene] SET_MODE ${mode} → 模式块写入 ${count} 块`);

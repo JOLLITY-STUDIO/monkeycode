@@ -22,7 +22,7 @@ exports.MeetingView = void 0;
  *   - 每帧重写 NT (清屏 → 重绘) — NES NMI 风格
  */
 const SceneView_1 = require("./SceneView");
-const character_list_1 = require("../data/rom-data/character-list");
+const character_list_1 = require("../data/prg/character-list");
 const player_stats_1 = require("../data/rom-data/player-stats");
 const team_roster_1 = require("../data/rom-data/team-roster");
 const special_moves_1 = require("../data/rom-data/special-moves");

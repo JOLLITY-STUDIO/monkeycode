@@ -1,0 +1,14 @@
+=== PRG_BANK ===
+  line 5: * 无 MMC3 bank 切换、无 PRG_BANK 原始字节残留。
+=== prg-bank ===
+  (none)
+=== rom-data ===
+  (none)
+=== SPRITE_UPLOAD ===
+  (none)
+=== SCROLL_DX ===
+  (none)
+=== SCROLL_DY ===
+  (none)
+
+Total lines: 1171

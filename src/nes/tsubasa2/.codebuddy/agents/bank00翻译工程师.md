@@ -41,6 +41,17 @@ enabledAutoRun: true
 - **asm 对照**：翻译必须逐指令对照 `asm/bank00/code_*.s`，禁止凭猜测。分支/循环/进位/取反（`(~x)+1` & 0xFF）都要精确还原。asm 每行指令尾部有 `; $XXXX` 地址注释，可直接定位。
 - **bank 切换指令**（`JSR $C4B9` / `STA $8000` / `STA $8001` 等 MMC3 寄存器写）在 H5 中为 no-op 或记录语义，直接省略并注释说明。
 
+## RAM 键名对齐规则（全 bank 强制，2026-08 全库对齐结论）
+
+DataStore 是纯 KV Map（无归一化），键必须精确匹配，`ram_62a` ≠ `ram_062A` = 静默断链。翻译时所有 RAM 键必须使用真实地址格式：
+
+1. **单字节地址键**：`ram_XXXX`（4 位大写十六进制补零）。禁止小写、禁止不补零、禁止语义键（如 `match_timer_lo`、`tactic_slot_i`、`player_data_x`、`scene_pos_i`）。
+2. **数组/多实例键**：优先写连续地址 `ramKey(base + offset)`（= `ram_${(base+off).toString(16).toUpperCase().padStart(4,'0')}`）。跨 bank 共享数组必须与消费方一致：球员 ID 数组 `ram_0601+`、状态数组 `ram_0606+`、位置数组 `ram_060B+`（X/Y 成对）、战术位置 `ram_0610+X` 均为连续地址；HUD 区域用 `ram_046F+${off}` 形式。采用哪种以消费方为准，不可自创。
+3. **寄存器模拟键**：仅 `ram_call_x` / `ram_call_y`（对应 NES X/Y 寄存器）为约定语义键，全库统一。
+4. **已确认真实地址**（对照 asm，勿自造）：比分 `ram_0028`(主)/`ram_0029`(客)；比赛时钟 `ram_0060`(lo)/`ram_0061`(hi)；比赛阶段/模式 `ram_043B`；回合倒计时 `ram_005E`、阶段倒计时 `ram_0072`、控制标志 `ram_0062`(bit5=终场)；经验值 `ram_0454+idx*2`(16bit LE)；忙/状态/方向标志 `ram_0515`/`ram_0516`/`ram_0517`。
+5. **死方法/死键不删**：翻译后写方无读者的"死键/死方法"保留（其他 bank 未翻译完，等连通），但键名必须对齐真实地址并加注释说明。
+6. **新翻译键检查**：翻译完成后必须扫描确认无新语义键（node 临时脚本 grep `.write(`/`.read(` 的非 `ram_XXXX` 键），有则改。
+
 ## 当前待办（已完成项勿重复做）
 
 已完成（勿重做）：
@@ -61,7 +72,17 @@ enabledAutoRun: true
 - import 路径修正（重构迁移后）：`../../data/DataStore`→`../../data/prg/DataStore`、`../../data/bank07-data`→`../../data/prg/bank07-data`、`../../data/prg-bank-06`→`../../data/prg/prg-bank-06`、`../../data/prg/ppu/chr/chr-slot-mapper`→`../../data/ppu/chr/chr-slot-mapper`、`../../core/types`→`../../../core/types`、`../config`→`../../header`（CONFIG/Mirroring 现从 src/game/header.ts 导出）。
 
 剩余待办（新任务时从这开始）：
-- **bank00 翻译本身已全部完成**。剩余 4 个编译错误是【项目级重构遗留】，不属于 bank00 翻译范围，需要用户在重构中恢复：
+- **【2026-08 新任务】共享渲染原语 1:1 补齐（此前被漏掉的 bank0 公共子程，bank01/02/03 大量调用）**：
+  - `$9D27`+`$9D52`+`$9D58`（code_sub.s $9D27 起）：GFX 图形数据复制——STY/STX 指针到 ram_00E6/00E7，循环 `LDA (ram_00E6),Y` 读 2 字节指针、JSR $9D58 处理、`CPX #$FF` 结束；$9D58 为每项处理子程（含 $9D50 附近 .byte $84,$E6 是 $9D52 函数体起始操作码，非独立地址）。
+  - `$9C3A`（code_sub.s $9C3A 起）：指针表装载到 ram_0468+X 区——STY/STX 指针到 ram_00E6/00E7，每项 5 字节写 `ram_0468+X`（X 为索引），`CMP ram_00E9` 相等则 `ADC #$10`。
+  - `$9BE8`+`$9CE7`（code_sub.s $9BE8 起）：帧等待循环——`JSR $9FA8`(no-op)、轮询 ram_001E bit4、JSR $9CE7（LDA ram_001E AND #$0F → 查 $9EE2 表 → 处理 ram_0468,Y 精灵 Y 坐标钳制）、`LDA #$F8; STA ram_0468,Y` 隐藏精灵。
+  - `$997A`（code_sub.s $997A 起）：帧等待+调色板渐显循环——STA/STX 到 ram_0048/0049、JSR $9B07/$9AB8/$9ADA、调色板 ram_004A/004B 递增至 $0F、JSR $9A71。
+  - `$97AB`（code_sub.s $97AB 起）：PPU 缓冲数据载入——从指针 (ram_00E6) 读数据写 PPU 缓冲（对应 bank01 entry4 的 `$97AB 载入 PPU_BUF_A`）。
+  - `$9B6F`/`$9B74`（code_sub.s $9B6F 起）：OAM 起始地址设置——`STX ram_009E; STY ram_009F; RTS` / `STX ram_00A0; STY ram_00A1; LDA ram_009E; ORA #$80; STA ram_009E`。
+  - ~~`$A721`~~：**已确认不属于 bank0**——是 bank01 自己的屏幕补绘子程（asm/bank01/code_sub.s `$8721` 起，反汇编器把入口 `JSR $9BA0`（.byte $20,$A0,$9B）误标为数据，故按 `; $A721` 搜不到定义）。bank0 侧不实现，由 bank01 翻译工程师负责。bank0 的 `drawScreenA721()` 占位接口保留但注释标注"归 bank01 实现"。
+  - `$9C28`：$9C3A 的指针表分发入口（bank01 entry3 注释提到 $9C28 指针表分发），同 $9C3A 一起处理。
+  - 完成后更新 bank01/02/03 等调用方统一改调公共实现（此项可后续分批，本批先在 bank0 侧补齐原语）。
+- **bank00 翻译本身已全部完成（除上述新任务）**。剩余 4 个编译错误是【项目级重构遗留】，不属于 bank00 翻译范围，需要用户在重构中恢复：
   1. `src/game/model/types.ts` 缺失（被删）：`PaletteTable/PaletteEntry/PaletteColor/createBlankPaletteTable` 全项目无定义，被 `src/game/data/prg/DataStore.ts`、`scene_opening.controller.ts`、`Bank00RenderView.ts`、`src/index.ts` 引用。
   2. `src/game/core/OamManager.ts` 缺失（被删）：`DataStore.oam` 依赖它，全 src 有 32 处 `.oam.` 调用（bank11/19/24/27/28/30），API 含 attach/reset/busy/isBusy/beginBuild/endBuild/commitVramToNT/writeBlock 等。
 - **注意事项**：`dataWriteHelper` 已改 3 参数签名，后续若发现其他 bank 以 2 参数调用（如 bank02_scene.service.ts 曾如此），需对照 asm 补传零页基址 x（bank02 $8281/$826D 用 x=$01，$8292 用 x=$15）。

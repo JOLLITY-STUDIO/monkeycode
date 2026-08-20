@@ -28,7 +28,7 @@ import {
   readB22OffX,
   readB22OffY,
   readB22Dispatch,
-} from '../data/bank22-data';
+} from '../data/prg/bank22-data';
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)

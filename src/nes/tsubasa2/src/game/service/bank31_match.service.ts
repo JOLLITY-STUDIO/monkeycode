@@ -35,6 +35,11 @@ import {
 // RAM 语义键 (替代 NES 内存地址)
 // ═══════════════════════════════════════════════════════════════
 
+/** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
+function ramKey(addr: number): string {
+  return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+}
+
 const KEY_043B = 'ram_043B'; // 当前模式/阶段
 const KEY_0441 = 'ram_0441'; // 当前球员 ID (0-21)
 const KEY_0442 = 'ram_0442'; // 动作目标球员 ID
@@ -950,7 +955,7 @@ export class Bank31MatchService {
           // $E53A-$E541: CPU 队上限 4
           if (this._r(KEY_05FB) === 0 || active < 0x04) {
             // $E543-$E548: 记录球员 ID
-            this._store.write(KEY_0601 + '_' + active, pid);
+            this._store.write(ramKey(0x0601 + active), pid);
             this._w(KEY_0600, (active + 1) & 0xFF);
           }
         }
@@ -981,12 +986,12 @@ export class Bank31MatchService {
     let dst = 0;
     for (let src = 0; src < n; src++) {
       // $E55A: 状态 == $05 才处理
-      if (this._r(KEY_060B + '_' + src) !== 0x05) continue;
-      const pid = this._r(KEY_0601 + '_' + src);
+      if (this._r(ramKey(0x060B + src)) !== 0x05) continue;
+      const pid = this._r(ramKey(0x0601 + src));
       // $E561-$E568: 跳过 0/$0B
       if (pid === 0x00 || pid === 0x0B) continue;
       // $E56A: 压缩写入
-      this._store.write(KEY_0601 + '_' + dst, pid);
+      this._store.write(ramKey(0x0601 + dst), pid);
       dst++;
     }
     // $E574-$E575: 无有效 → $E0DF
@@ -1037,7 +1042,7 @@ export class Bank31MatchService {
     if (n !== 0) {
       for (let idx = 0; idx < n; idx++) {
         // $E5F9: $060B,X == $05 → 处理
-        if (this._r(KEY_060B + '_' + idx) === 0x05) {
+        if (this._r(ramKey(0x060B + idx)) === 0x05) {
           this._attackHelper(idx);
         }
       }
@@ -1059,7 +1064,7 @@ export class Bank31MatchService {
     this._w(KEY_043D, 0x02);
     this._w(KEY_043E, 0x00);
     // $E62A: LDA $0601,X (目标 ID)
-    const pid = this._r(KEY_0601 + '_' + idx);
+    const pid = this._r(ramKey(0x0601 + idx));
     if (pid === 0x00 || pid === 0x0B) return; // BEQ/BEQ $E677
     // $E633: STA $0442
     this._w(KEY_0442, pid);
@@ -1369,9 +1374,9 @@ export class Bank31MatchService {
     // $E98C 行循环
     while (rows !== 0) {
       // $E98E-$E99D: PPU 缓冲头: 计数, NTaddr lo, NTaddr hi
-      this._w(KEY_04A5 + '_' + x, count);
-      this._w(KEY_04A5 + '_' + (x + 1), ntLo);
-      this._w(KEY_04A5 + '_' + (x + 2), ntHi);
+      this._w(ramKey(0x04A5 + x), count);
+      this._w(ramKey(0x04A5 + x + 1), ntLo);
+      this._w(ramKey(0x04A5 + x + 2), ntHi);
       // $E997-$E9A2: NT 地址 += $20 (下一行)
       const sumLo = (ntLo + 0x20) & 0xFF;
       ntHi = (ntHi + ((sumLo < ntLo) ? 1 : 0)) & 0xFF;
@@ -1388,19 +1393,19 @@ export class Bank31MatchService {
           if (tile === 0xFE) {
             zeroFill = true;
           } else {
-            this._w(KEY_04A5 + '_' + x, tile);
+            this._w(ramKey(0x04A5 + x), tile);
             x++;
           }
         }
         if (zeroFill) {
           // $E9C1-$E9C9: 零填充 (含本迭代)
-          this._w(KEY_04A5 + '_' + x, 0x00);
+          this._w(ramKey(0x04A5 + x), 0x00);
           x++;
         }
         n--;
       }
       // $E9CB-$E9CD: 终止符 0
-      this._w(KEY_04A5 + '_' + x, 0x00);
+      this._w(ramKey(0x04A5 + x), 0x00);
       x++;
       rows--;
     }
@@ -1552,24 +1557,24 @@ export class Bank31MatchService {
     for (;;) {
       // $F116-$F118: 行数/计数
       const count = read8();
-      this._w(KEY_04A5 + '_' + x, count);
+      this._w(ramKey(0x04A5 + x), count);
       // $F11B: 0 → 结束
       if (count === 0) break;
       // $F11D: rows = count
       this._w(KEY_003E, count);
       // $F120-$F128: NT lo = 数据 + $003C (保存进位)
       const loSum = read8() + this._r(KEY_003C);
-      this._w(KEY_04A6 + '_' + x, loSum & 0xFF);
+      this._w(ramKey(0x04A6 + x), loSum & 0xFF);
       const carry = (loSum >> 8) & 1;
       // $F12A-$F13B: 属性 = ($003D >= $22 ? 0 : $05CE>>4) | 数据
       const attrBase = this._r(KEY_003D) >= 0x22 ? 0 : (this._r(KEY_05CE) >>> 4);
       const attr = (attrBase | read8()) & 0xFF;
       // $F13D-$F140: NT hi = $003D + 进位 + 属性
-      this._w(KEY_04A7 + '_' + x, (this._r(KEY_003D) + carry + attr) & 0xFF);
+      this._w(ramKey(0x04A7 + x), (this._r(KEY_003D) + carry + attr) & 0xFF);
       x += 3;
       // $F147-$F150: 写 count 个 tile
       for (let n = count; n > 0; n--) {
-        this._w(KEY_04A5 + '_' + x, read8());
+        this._w(ramKey(0x04A5 + x), read8());
         x++;
       }
     }
@@ -1637,9 +1642,9 @@ export class Bank31MatchService {
     this._store.write(key, v & 0xFF);
   }
 
-  /** 记录键 (对应 $0034 指针指向的 RAM 记录 + 字段偏移) */
+  /** 记录键 (对应 $0034 指针指向的 RAM 记录 + 字段偏移, 连续地址 ramKey(base+off)) */
   private _recKey(base: number, off: number): string {
-    return 'ram_rec_' + base.toString(16).padStart(4, '0') + '_' + off.toString(16).padStart(2, '0');
+    return ramKey(base + off);
   }
 
   /** 读记录字段 ($0034 指针 + Y 偏移) */

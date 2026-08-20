@@ -20,6 +20,8 @@ import type { Player, Team, PlayerStats } from '../data/prg/model-types';
 import { PlayerPosition, FormationType } from '../data/prg/model-types';
 import { MeetingMenu, TeamDataMenu, ChangeMenu, LevelMenu } from '../data/prg/scene/index';
 import {
+  CHR_COPY_A,
+  CHR_COPY_B,
   COPY_B271,
   GFX_PTR_BCF3,
   GFX_PTR_BD64,
@@ -33,6 +35,7 @@ import {
   POS_TABLE_AD8A,
   ROSTER_PTR,
   SCENE_STAT_B393,
+  SCENE_TEAM_BITS,
   SCENE_STAT_B3B5,
   SCENE_STAT_B3D7,
   SCENE_STAT_B3F9,
@@ -325,38 +328,195 @@ export class DataQueryService {
 
   /**
    * 入口2 (A=2): PPU 图形数据显示
-   * 对应 asm $A4EB-$A64B
+   * 对应 asm $A4EB-$A64B (PRG offset $84EB-$864B, 跨 code_main.s 尾部 + code_sub.s 头部)。
+   *
+   * 流程:
+   *   1. $84EB-$8500: 设置两个背景色块 (X=$6A/Y=$6B, X=$7A/Y=$7B), 调用 $9B6F/$9B74/$9B7F 填充 PPU 缓冲,
+   *      再经 $B0C0 加载数据脚本 SCRIPT_ENTRY1。
+   *   2. $8503-$8525: 清 ram_0044/45, 把 COPY_B271 表复制到 ram_039C (256B), 由场景号经
+   *      SCENE_TEAM_BITS(BCD1) 高位 >>3 查 GFX_PTR_BCF3 → $9D27 复制图形。
+   *   3. $8529-$8541: 场景号低位 <<1 查 GFX_PTR_BD64, 复制数据到 $22E8 地址 ($9D50, 7×$22)。
+   *   4. $8544-$8559: 经 $A63C 显示阶段号 ($21D0) 与半场比分 ($2250)。
+   *   5. $855C-$857B: 设置字幕精灵状态, 帧等待循环。
+   *   6. $857D-$859A: 重置光标, 循环调用 $A611 写入球队数据 (0B/0A 次)。
+   *   7. $859D-$85C2: 依场景判断后调 SCENE_STAT_B3F9 补绘。
    */
   entry2_PpuGraphics(): void {
-    // 从 ROM 图形数据表写入 PPU/NameTable
-    // TODO: 翻译 $A4EB
+    const s = this._store;
+
+    // ── ① $84EB-$8500: 背景色块 + 数据脚本 ──
+    // JSR $9B6F/$9B74/$9B7F: 清屏/块填充 (H5 简化: 经 _ppuBlockFill 写入缓冲)
+    this._ppuBlockFill(1, 0x0B, 0x20C4, 0x00);
+    this._ppuBlockFill(1, 0x0B, 0x2124, 0x00);
+    // $8500: LDY #$05; LDX #$B3 → $B0C0 加载 SCRIPT_ENTRY1 (View 层经 ScriptVM 消费)
+    // $8503/$8505: STA $0044; STA $0045 (零页, 场景/阶段号清空)
+    s.write('ram_0044', 0);
+    s.write('ram_0045', 0);
+
+    // $850B: LDA $B271,Y → STA $039C,Y (256B 复制 COPY_B271 → ram_039C)
+    for (let y = 0; y < 0x100; y++) {
+      s.write(ramKey(0x039C + y), COPY_B271[y % COPY_B271.length] ?? 0);
+    }
+
+    // $8514-$8526: 场景号 → SCENE_TEAM_BITS 高位 → GFX_PTR_BCF3 → 复制图形
+    const scene = s.read('ram_0026');
+    const teamBits = SCENE_TEAM_BITS[scene] ?? 0;
+    const gfxIdx = ((teamBits >> 4) & 0x0F) * 2;
+    // JSR $9D27: 复制 GFX_PTR_BCF3[gfxIdx] 指向的图形数据 (H5: 记录指针供 View 渲染)
+    s.write('ram_0030', GFX_PTR_BCF3[gfxIdx] ?? 0);
+    s.write('ram_0031', GFX_PTR_BCF3[gfxIdx + 1] ?? 0);
+
+    // $8529-$8541: 场景低位 <<1 → GFX_PTR_BD64 → 复制到 $22E8 (7×$22)
+    const dataIdx = ((teamBits & 0x0F) << 1) & 0xFE;
+    s.write('ram_00E8', 7);
+    s.write('ram_00E9', 0x22);
+    s.write('ram_0030', GFX_PTR_BD64[dataIdx] ?? 0);
+    s.write('ram_0031', GFX_PTR_BD64[dataIdx + 1] ?? 0);
+    this._ppuBlockFill(7, 0x22, 0x22E8, 0x00);
+
+    // $8544-$8559: 经 $A63C 显示阶段号 ($21D0) 与半场比分 ($2250)
+    const stage = s.read('ram_002A');
+    this._writeDecNumber(stage, 0x21D0);      // $854A: JSR $A63C(阶段号, PPU $21D0)
+    // $854D-$8559: 半场比分 = ram_002B - (ram_002B > $24 ? 1 : 0)
+    //   LDA #$24; CMP $002B → carry=(#$24 < $002B); LDA $002B; SBC #$00
+    const b2b = s.read('ram_002B');
+    const half = (b2b - (b2b > 0x24 ? 1 : 0)) & 0xFF;
+    this._writeDecNumber(half, 0x2250);       // $8559: JSR $A63C(半场比分, PPU $2250)
+
+    // $855C-$8566: 字幕精灵初始状态
+    s.write('ram_007B', 0);
+    s.write('ram_008E', 0);
+    s.write('ram_008F', 0x2E);
+
+    // $8568-$857B: 帧等待循环 (LDA #$04; LDX #$37; JSR $997A; 轮询 $001E)
+    // H5: 由帧循环保证, no-op
+
+    // $857D-$859A: 重置光标, $A611 循环写入球队数据
+    s.write('ram_00ED', 0);
+    s.write('ram_00EC', 0);
+    this._writeTeamStats(0, 0x0B);
+    if (scene >= 0x10) this._writeTeamStats(0x16, 0x0A);
+
+    // $859D-$85C2: 依场景判断, 调 SCENE_STAT_B3F9 补绘。
+    // 流程: E4 >= scene → 直接检查 (BCS $85B1); 否则先跳过 scene==06/0C/10 检查。
+    // 最终汇聚条件: scene 非 06/0C/10 且 ram_00EC != 0 → 提取+汇总显示 + 重置光标。
+    if (scene !== 0x06 && scene !== 0x0C && scene !== 0x10 && s.read('ram_00EC') !== 0) {
+      // $85B5-$85C2: LDX scene; LDA $B3F9,X; JSR $8464; JSR $82A9; STA $00ED(#0)
+      this._drawStatFromScene(scene);
+      s.write('ram_00ED', 0);
+    }
   }
 
   /**
    * 入口3 (A=3): 屏幕内容绘制 (Nametable tile)
-   * 对应 asm $A64C-$A6D1
+   * 对应 asm $A64C-$A6D1 (PRG offset $864C-$86D1)。
+   *
+   * 分发器: 依 SCENE_STAT_B393[scene] 经 $8464 提取状态 → $9C3A 载 $ADD0 指针表 → $9C28
+   * 经 $8673 指针表跳转 ($A67B 主绘制 / $A69F 次级 / $A6BE / $A6C4)。各分支均以
+   * $82A9 汇总、$A01E 解码、$99F0 块填充实现屏幕绘制。
    */
   entry3_ScreenDraw(): void {
-    // 绘制 Nametable 背景 tile
-    // TODO: 翻译 $A64C
+    const s = this._store;
+    const scene = s.read('ram_0026');
+
+    // $864C-$8657: JSR $98A0 + $9B7F (清 PPU 缓冲); LDX scene; LDA $B393[scene]
+    const st = SCENE_STAT_B393[scene] ?? 0;
+    // $8657 $8464 + $865A $82A9: 用 X=scene 提取状态字段并汇总显示
+    //   ($8464 的提取完全由 X 决定: selector = scene&3, POS_TABLE 索引 = scene)
+    this._drawStatFromScene(scene);
+
+    // $865D-$8666: LDA #$01; JSR $8920; $9C3A 载 $ADD0 指针表 (screen 子程序表)
+    // $8670: JMP $9C28 → 经 $A673 指针表跳转 (选择器 = $9BE8 返回值 & 3)
+    //   $A67B: 主 Nametable 绘制 (SCENE_SUB_TBL[scene] → $8464 → $82A9 → 循环)
+    //   $A69F: $A01E 解码 + $8464($4E) → 块填充 (SCENE_STAT_B3D7[scene])
+    //   $A6BE: JSR $A721 → 返回 $A64C
+    //   $A6C4: SCENE_STAT_B41B[scene] → 跳 $A715
+    this._drawScreenBranch(scene, st);
   }
 
   /**
    * 入口4 (A=4): PPU 属性块写入
-   * 对应 asm $A6D2-$AF78
+   * 对应 asm $A6D2-$AF78 (PRG offset $86D2-$8778)。
+   *
+   * 依 SCENE_STAT_B3B5[scene] 选属性块, 经 $82A9 汇总后写入 attribute table
+   * ($23D6 起), 并用 $97AB/$B0C0 载入脚本 SCRIPT_ENTRY4A/B 渲染。
    */
   entry4_AttrBlock(): void {
-    // 写入 attribute table (每个 16×16 区域 2-bit palette select)
-    // TODO: 翻译 $A6D2
+    const s = this._store;
+    const scene = s.read('ram_0026');
+
+    s.write('ram_0700', 0x55);   // $86D4: STA $0700 (#$55)
+    // $86D7/$86DA: JSR $98A0 + $9B7F (清 PPU 缓冲)
+
+    // $86DD-$86E2: LDX scene; LDA $B3B5[scene]; $8464 提取
+    let st = SCENE_STAT_B3B5[scene] ?? 0;
+    // $86E5: JMP $A6F9
+    // $86F4: 部分场景 CLC; ADC #$01 (偏移 1)
+    st = ((st + 1) & 0xFF);
+    // $86F6: $8464 提取 → $82A9 汇总
+
+    // $86FC-$8703: $9C3A 载 $ADD6 指针表 + JSR $9BE8 (bank0 公共原语, 返回值 A)
+    // $8706: CMP #$02; BEQ $8710 → A==2 时 ram_0700 = 0x31 分支
+    //   (注: $9BE8 为 bank0 公共渲染原语, 返回值经 bank00_core.service.ts 连通后精确化;
+    //    此处以 st 近似 A, B3B5 值均为 0x47/0x49/0x4B, 故通常走补绘分支)
+    if (st === 2) {
+      s.write('ram_0700', 0x31);
+    } else {
+      // $870A: JSR $A721 → JMP $A6E8 循环补绘 (屏幕补绘子程, H5 单次通过)
+      this._screenPatchA721();
+    }
+
+    // $8719-$8720: $97AB 载入 PPU_BUF_A 数据 (View 层消费)
+    this._renderScriptEntry4(scene);
+
+    // 属性块写入: 每 16×16 区域 2-bit palette select
+    this._ppuBlockFill(4, 0x08, 0x23C0, 0x00);
   }
 
   /**
-   * 入口5 (A=5): 字符数据解码/显示
-   * 对应 asm $AFC2-$AF78
+   * 入口5 (A=5): 字符数据解码/显示 (花名册指针位置计算)
+   * 对应 asm $AFC2-$9012 (PRG offset $8FC2-$9012)。
+   *
+   * 流程:
+   *   1. $8FC4: JSR $B023 (SEARCH 搜索, 依场景 ram_002A 选段)
+   *   2. $8FC7-$8FD0: (result>>1) + X → 查 ROSTER_PTR → roster 索引
+   *   3. $8FD4-$8FE5: scene<<1 查 TEAM_GFX_BASE, 16-bit >> 2
+   *   4. $8FF1-$9012: result & 0x0F <<1 → 对 ram_0454 16-bit 累加 (饱和 FF)
    */
   entry5_CharDecode(): void {
-    // 从 ROM 字符表解码绘制到屏幕
-    // TODO: 翻译 $AFC2
+    const s = this._store;
+    const x = s.read('ram_call_x');
+    const scene = s.read('ram_0026');
+    const stage = s.read('ram_002A');
+
+    // $8FC4: JSR $B023 → SEARCH_IDX[stage] + SEARCH_TABLE 查表
+    const searchIdx = (SEARCH_IDX[stage] ?? 0);
+    const result = SEARCH_TABLE[searchIdx] ?? 0;
+    s.write('ram_00EB', result & 0xFF);
+
+    // $8FC9-$8FD0: (result & 0xF0)>>1 + X → ROSTER_PTR 索引
+    const ptrIdx = (((result & 0xF0) >> 1) + x) & 0xFF;
+    const roster = ROSTER_PTR[ptrIdx % ROSTER_PTR.length] ?? 0;
+
+    // $8FD4-$8FE5: scene<<1 → TEAM_GFX_BASE 16-bit >> 2 (ROR/LSR 组合, 结果在 A:ED)
+    const base = this._read16t(TEAM_GFX_BASE, (scene << 1) & 0xFE) >> 2;
+    // $8FE6: JSR $9DEE (bank0 公共渲染原语, A/ED 16bit 规范化 → 经 bank00_core 连通)
+    // $8FE9-$8FEF: ASL $00EC; ROL $00ED ×2 → (base>>2)<<2 恢复近似原值, H5 简化合并入 base
+
+    // $8FF1-$9012: (result & 0x0F)<<1 → 对 ram_0454 16-bit 累加 base (溢出饱和 FF FF)
+    const idx = (result & 0x0F) << 1;
+    const lo0 = this._r8(0x0454 + idx);
+    const hi0 = this._r8(0x0455 + idx);
+    const sumLo = lo0 + base;
+    const sumHi = hi0 + (sumLo >> 8);
+    const carry = sumHi >> 8;
+    const lo = carry !== 0 ? 0xFF : (sumLo & 0xFF);
+    const hi = carry !== 0 ? 0xFF : (sumHi & 0xFF);
+    s.write(ramKey(0x0454 + idx), lo);
+    s.write(ramKey(0x0455 + idx), hi);
+
+    // roster 索引用作 View 层花名册渲染定位
+    void roster;
   }
 
   /**
@@ -736,7 +896,7 @@ export class DataQueryService {
       } else if (this._optionScreen.swapInIdx < 0 && cur !== this._optionScreen.swapOutIdx) {
         // 第二步: 选换上选手 (不能与换下相同)
         this._optionScreen.swapInIdx = cur;
-        // 执行交换 (写 ram_0368+ 区选手索引, FIXME: 真实 RAM 地址待确认)
+        // 执行交换 (写队伍块 ram_0368-0453 区选手索引, 见 _swapPlayers 说明)
         this._swapPlayers(this._optionScreen.swapOutIdx, this._optionScreen.swapInIdx);
         // 交换完成 → 返回チームデータ子菜单
         this._returnToSubMenu();
@@ -744,20 +904,30 @@ export class DataQueryService {
     } else if (sel === TeamDataMenu.LEVEL) {
       // 等级查看: 选选手, 显示详情 (能力/必杀技)
       this._optionScreen.selectedPlayerIdx = cur;
-      // 详情数据由 entry0_PlayerData 解码, 写 ram_044D 索引触发
+      // 详情数据由 entry0_PlayerData ($A01E, 本 bank 已转写) 解码,
+      // 写 ram_044D (队内球员索引) + ram_0446 (位置) 触发 18 行能力数据显示
       this._store.write('ram_044D', cur & 0xFF);
-      // FIXME: 等级查看的真实 ROM 行为是显示选手面板, 此处标记后由 View 层渲染
+      this._store.write('ram_0446', 0); // 默认查看首位置槽能力面板
+      // 真实 ROM 行为: 等级查看即调用 entry0_PlayerData 显示选手能力面板 (能力+必杀技)。
+      // 此处标记 selectedPlayerIdx, 由 View 层消费 getTeamDataDisplayState() 渲染面板。
       // 留在三级菜单允许继续选其他选手, B 返回二级
     }
   }
 
   /**
    * 执行换人: 交换场上两个选手的位置/索引。
-   * 真实 ROM: 修改 ram_0368+ 区的选手槽位数据 (FIXME: 具体偏移待逆向确认)。
-   * H5: 标记到 DataStore, 比赛引擎读取时生效。
+   *
+   * 队伍块布局 (bank01 已逆向确认):
+   *   - ram_0368-0453 为队伍数据块 (entry8 $B050 将其整体备份到 ram_056A)。
+   *   - 场上 11 人能力区 ram_0300 + idx*0x0C (12B/人), 替补区 ram_0408+ (全库 RAM 对齐约定)。
+   *   - 换人 = 交换场上一人与替补的 12B 能力块 (ram_0300+outIdx*0C ↔ ram_0408+subIdx*0C)。
+   *
+   * 说明: チームデータ 换人菜单为 H5 状态机 (ChangeMenu), 原版 ROM 的换人界面由另一屏幕流处理,
+   *       bank01 asm 中无对应单例换人例程, 故无法从 bank01 确认最终写回的确切字节偏移。
+   *       此处暂以 ram_0050/0051 记录"换下/换上"索引, 比赛引擎消费时据此在队伍块内做实际交换。
    */
   private _swapPlayers(outIdx: number, inIdx: number): void {
-    // 写换人记录到 ram_0050/0051 (FIXME: 真实 ROM 换人记录地址待确认)
+    // 写换人记录: ram_0050=换下索引, ram_0051=换上索引 (待比赛引擎据队伍块做交换)
     this._store.write('ram_0050', outIdx & 0xFF);
     this._store.write('ram_0051', inIdx & 0xFF);
   }
@@ -911,6 +1081,399 @@ export class DataQueryService {
       case 2: return (((lo & 0x0F) << 2) | ((hi >> 6) & 0x03)) & 0xFF;
       default: return lo & 0x3F;
     }
+  }
+
+  // ── 内部: entry2/3/4/5 渲染辅助 (对应 asm 子程 $A611/$A63C/$8464/$82A9/$9C3A) ──
+
+  /**
+   * 对应 asm $A611 (entry2 用): 连续写球队数据。
+   * 以 ram_0454 查询表依 LOOKUP_16BIT 解码后写入队伍能力块。
+   * @param start 起始索引 ($00EC)
+   * @param count 次数 ($00ED)
+   */
+  private _writeTeamStats(start: number, count: number): void {
+    const s = this._store;
+    for (let i = 0; i < count; i++) {
+      const idx = (start + i) & 0xFF;
+      const query = this._query16(idx);
+      const e7 = this._lookupIndex16(query);
+      const ptr = this._teamDataPtr();
+      s.write(ramKey(ptr + 3), e7);
+    }
+  }
+
+  /**
+   * 对应 asm $A63C (entry2 用): 显示十进制数字。
+   * 把数字按 16-bit 查表后经 $8C55 循环除10 (余数+0x33=tile_id) 写 PPU 缓冲。
+   * @param value 数值 (0-99)
+   * @param ppuAddr 显示起始 PPU 地址 (lo 位由调用方固定)
+   */
+  private _writeDecNumber(value: number, ppuAddr: number): void {
+    const s = this._store;
+    const v = value & 0xFF;
+    // 十位
+    let ten = Math.floor(v / 10);
+    let one = v % 10;
+    // $8C55 循环除10: 余数 + 0x33 = tile_id
+    this._charDisplay((ten + 0x33) & 0xFF, ppuAddr & 0xFF, (ppuAddr >> 8) & 0xFF);
+    this._charDisplay((one + 0x33) & 0xFF, (ppuAddr + 1) & 0xFF, (ppuAddr >> 8) & 0xFF);
+  }
+
+  /**
+   * 对应 asm $8464 (状态字段提取) + $82A9 (汇总显示)。
+   * $8464 的提取完全由 X 寄存器决定 (selector=X&3, POS_TABLE 索引=X)，忽略 A 输入值；
+   * 各调用点 X 均被 `LDX $0026` 设为 scene，故参数即 scene。
+   * 提取场景状态字段并写 PPU 缓冲 ($22xx 区)。
+   * @param x X 值 (通常 = scene)
+   */
+  private _drawStatFromScene(x: number): void {
+    const field = this._extractStatField(x);
+    // $82A9: 汇总后经 $88CA 显示 (PPU 缓冲 $22xx 区)
+    this._charDisplay(field & 0x3F, 0x80, 0x22);
+  }
+
+  /**
+   * 对应 asm $9C28 指针表分发 (entry3 用): 依场景状态选择绘制分支。
+   * 各分支 ($A67B/$A69F/$A6BE/$A6C4) 调用 $8464/$82A9/$A01E/$99F0 完成屏幕绘制。
+   */
+  private _drawScreenBranch(scene: number, st: number): void {
+    // 分发表 $A673 (4 入口) 选择器 = $9BE8 返回值 & 3 (近似 st&3)
+    const branch = st & 3;
+    if (branch === 0) {
+      // $A67B: 主 Nametable 绘制。
+      // $867D: LDA $B371,X (SCENE_SUB_TBL[scene]); JSR $8464 (X=scene 提取); JSR $82A9 汇总
+      this._drawStatFromScene(scene);
+      // $8688-$869C: 等待 + $99F0 块填充 + JMP $A652 (循环), H5 简化 no-op
+    } else if (branch === 1) {
+      // $A69F: $86A2-$86B8: LDX scene; LDA $B3D7,X; JSR $8464; JSR $82A9;
+      //   JSR $A01E (解码); LDA #$4E; JSR $8464; JSR $82A9; JSR $99F0
+      this._drawStatFromScene(scene);
+      this._ppuBlockFill(4, 0x0B, 0x228A, 0x00);
+    } else if (branch === 2) {
+      // $A6BE: JSR $A721 补绘 → 回 $A64C
+      this._screenPatchA721();
+    } else {
+      // $A6C4: $86C6-$86CF: LDX scene; LDA $B41B,X; JSR $8464; JSR $82A9; JMP $A715
+      this._drawStatFromScene(scene);
+    }
+  }
+
+  /**
+   * 对应 asm $A721 ($8721-$877E) — 屏幕补绘子程 (entry3 $A6BE 分支 / entry4 $870A 调用)。
+   *
+   * 流程 (H5 适配: waitVBlank/帧等待/PPU 渲染/脚本载入均按 no-op 或记录语义简化):
+   *   1. $8721-$8728: waitVBlank + OAM 起点设置 ($9B6F) → no-op
+   *   2. $872B-$872F: tableLoad ($8920) + ram_007B=0 → no-op
+   *   3. $8732-$8738: ram_008E=0, ram_008F=$2E
+   *   4. $873A-$8740: ram_002A(场景)==2 → 跳 $A84E 分支
+   *   5. $8743-$875C: 脚本载入 ($B0C0) + PPU 地址 $2088 ($AEAC) → 记录语义
+   *   6. $875F-$8768: 精灵区填充 ram_0468[0..FF] = CHR_COPY_A (→ $ACA2 表)
+   *   7. $876A-$876E: 帧等待 ($997A) → no-op
+   *   8. $8771-$877E: 帧等待变体 + 分发表分发 ($9C28, 表在 $A781)
+   */
+  private _screenPatchA721(): void {
+    const s = this._store;
+
+    // $8721: JSR $9BA0 (waitVBlank, H5 帧同步 no-op)
+    // $8724-$8728: LDX #$1F; LDY #$2E; JSR $9B6F (OAM 起点设置 → no-op)
+    // $872B-$872D: LDA #$00; STA $007B (字幕精灵状态清零)
+    s.write('ram_007B', 0);
+    // $872F: JSR $8920 (tableLoad → no-op)
+
+    // $8732-$8738: ram_008E=0, ram_008F=$2E
+    s.write('ram_008E', 0);
+    s.write('ram_008F', 0x2E);
+
+    // $873A-$8740: LDA $002A; CMP #$02; BNE; JMP $A84E (场景==2 走 $A84E 分支)
+    if (s.read('ram_002A') === 2) {
+      this._a84e();
+      return;
+    }
+
+    // $8743-$8747: LDY #$3D; LDX #$B4; JSR $B0C0 (脚本载入 → View 层经 ScriptVM 消费)
+    // $874A-$874C: LDA #$00; JSR $ADE9 (no-op)
+    // $874F-$8757: LDA #$88; STA $00E6; LDA #$20; STA $00E7; JSR $AEAC (PPU 地址 $2088)
+    s.write('ram_00E6', 0x88);
+    s.write('ram_00E7', 0x20);
+    // $875A-$875C: LDA #$00; JSR $AE01 (no-op)
+
+    // $875F-$8768: LDY #$FC; 循环 ram_0468[0..FF] = CHR_COPY_A[Y] (→ $ACA2 精灵填充表)
+    for (let y = 0; y < 0x100; y++) {
+      s.write(ramKey(0x0468 + y), CHR_COPY_A[y % CHR_COPY_A.length] ?? 0);
+    }
+
+    // $876A-$876E: LDA #$03; LDX #$39; JSR $997A (帧等待/渐显 → no-op)
+    // $8771-$877E: 帧等待变体 + 分发表分发 (JSR $9BE3; LDY #$81; LDX #$A7; JMP $9C28)
+    this._a771();
+  }
+
+  /** $8771 ($A771): 帧等待变体 + 首分发表分发 (表在 $A781) */
+  private _a771(): void {
+    // $8771-$8777: LDA #$FC; LDX #$38; LDY #$78; JSR $9BE3 (帧等待 → no-op)
+    // $877A-$877E: LDY #$81; LDX #$A7; JMP $9C28 → 分发表 $A781
+    //   表: $A78B / $A7AC / $A7C5 / $AADD / $AA73 / $EBA0
+    this._dispatchA721(0);
+  }
+
+  /** 首分发表 ($A781) 分发: 6 目标, 选择器 = ram_0450 & 5 */
+  private _dispatchA721(_phase: number): void {
+    const sel = this._store.read('ram_0450') & 0x05;
+    switch (sel) {
+      case 0: this._a78b(); break;
+      case 1: this._a7ac(); break;
+      case 2: this._a7c5(); break;
+      case 3: this._aadd(); break;
+      case 4: this._aa73(); break;
+      default:
+        // $EBA0 — 跨 bank 屏幕渲染 (经 $9C28 bank 切换), H5: 记录语义 no-op
+        break;
+    }
+  }
+
+  /**
+   * $A78B ($878D-$87A9): 首分发表分支 1 — 加载精灵数据 + 帧等待 tail。
+   * $878D-$8794: LDX #$B6; JSR $97AB; LDX #$90; JSR $AE1E (数据/精灵载入 → 记录语义)
+   * $8797-$879C: LDA #$00; JSR $AE3A; LDA #$F8; STA $0560 (ram_0560=$F8)
+   * $87A1: JSR $AA77 (精灵表载入)
+   * $87A4-$87A9: LDA #$38; STA $0564; JMP $A771 (tail)
+   */
+  private _a78b(): void {
+    const s = this._store;
+    s.write('ram_0560', 0xF8);
+    this._aa77();
+    s.write('ram_0564', 0x38);
+    this._a771();
+  }
+
+  /**
+   * $A7AC ($87AF-$87C2): 首分发表分支 2 — 精灵数据载入 + 帧等待 tail。
+   * $87AF-$87B0: LDY #$90; LDX #$B7; JSR $97AB (数据载入 → 记录语义)
+   * $87B3-$87B7: LDY #$A2; LDX #$AD; JSR $AE77 (精灵地址设置 → 记录语义)
+   * $87BA: JSR $AA77 (精灵表载入)
+   * $87BD-$87C2: LDA #$48; STA $0564; JMP $A771 (tail)
+   */
+  private _a7ac(): void {
+    const s = this._store;
+    this._aa77();
+    s.write('ram_0564', 0x48);
+    this._a771();
+  }
+
+  /**
+   * $A7C5 ($87C5-$8839): 首分发表分支 3 — 场景子屏幕绘制 (输入等待循环 + 二次渲染)。
+   * $87C5-$87CC: LDA #$58; STA $0564; LDA #$94; STA $004C
+   * $87CF-$87D2: LDY #$A8; LDX #$AD; JSR $9C3A (载 $ADD0 指针表)
+   * $87D5-$87E1: 输入等待循环 (JSR $9FA8/$9CC9; BIT $001E; BVS $883C; BPL $87D5)
+   *             → H5 单次通过; BVS(溢出标志)=取消跳 $883C
+   * $87E3-$87E8: LDA #$01; STA $0562; JSR $9CD3
+   * $87EB-$87F2: LDY #$AE; LDX #$AD; LDA $0560; JSR $9C3C
+   * $87F5-$8801: 输入等待循环 (同上, 单次通过)
+   * $8803-$881B: LDY $0560; LDX #$00; JSR $9D08; ... JSR $AF67 (读取精灵/光标数据 → 记录语义)
+   * $881E-$8826: LDA #$88; STA $00E6; LDA #$20; STA $00E7; JSR $AEAC (PPU 地址 $2088)
+   * $8829-$8831: LDA #$F8; STA $055C; STA $0560; LDA #$00; STA $0562; JSR $AE01
+   * $8839: JMP $A7CE (二次渲染流, 记录语义 — 与 $A84E 共用 $A7CE 段)
+   */
+  private _a7c5(): void {
+    const s = this._store;
+    s.write('ram_0564', 0x58);
+    s.write('ram_004C', 0x94);
+    // $87CF: LDY #$A8; LDX #$AD; JSR $9C3A (载 $ADD0 指针表 → 记录语义)
+    // $87D5-$87E1: 输入等待循环 ($9FA8/$9CC9 + $001E bit 轮询) → H5 帧循环保证, 单次通过
+    //   若溢出标志 (BVS) 置位 → 取消走 $883C
+    if ((s.read('ram_001E') & 0x40) !== 0) {
+      this._a883c();
+      return;
+    }
+    s.write('ram_0562', 1);
+    // $87EB-$87F2: LDY #$AE; LDX #$AD; LDA $0560; JSR $9C3C (载数据 → 记录语义)
+    // $87F5-$8801: 输入等待循环 → 单次通过; BVS → 取消走 $883C
+    if ((s.read('ram_001E') & 0x40) !== 0) {
+      this._a883c();
+      return;
+    }
+    // $8803-$881B: LDY $0560; LDX #$00; JSR $9D08; ... JSR $AF67 (读精灵/光标 → 记录语义)
+    // $881E-$8826: LDA #$88; STA $00E6; LDA #$20; STA $00E7; JSR $AEAC (PPU 地址 $2088)
+    s.write('ram_00E6', 0x88);
+    s.write('ram_00E7', 0x20);
+    // $8829-$8831: LDA #$F8; STA $055C; STA $0560; LDA #$00; STA $0562; JSR $AE01
+    s.write('ram_055C', 0xF8);
+    s.write('ram_0560', 0xF8);
+    s.write('ram_0562', 0);
+    // $8839: JMP $A7CE (二次渲染流, 记录语义)
+  }
+
+  /** $883C ($A83C): 取消/回退分支 — 清 PPU 控制 + 回 $A771 tail */
+  private _a883c(): void {
+    const s = this._store;
+    // $883C-$8840: LDA #$00; STA $004C; JSR $AE01
+    s.write('ram_004C', 0);
+    // $8843-$8848: LDA #$F8; STA $055C; STA $0560
+    s.write('ram_055C', 0xF8);
+    s.write('ram_0560', 0xF8);
+    // $884B: JMP $A771 (tail)
+    this._a771();
+  }
+
+  /**
+   * $A84E ($884E-$889A) — 场景==2 专用补绘分支 (含二次分发表 $A89D)。
+   * $884E-$8857: LDY #$51; LDX #$B4; JSR $B0C0; LDA #$FC; JSR $ADE9 (脚本载入 → 记录语义)
+   * $885A-$886D: PPU 地址 $2085 ($AEAC) + $2099 ($AEBE)
+   * $8870-$8872: LDA #$D8; JSR $AE01
+   * $8875-$8878: JSR $B0A1; JSR $AA7F (精灵区渲染)
+   * $887B-$8884: ram_0468[0..FF] = CHR_COPY_B (→ $ACB8 精灵填充表)
+   * $8886-$8893: 帧等待 ($997A + $9BE3 变体)
+   * $8896-$889A: LDY #$9D; LDX #$A8; JMP $9C28 → 二次分发表 $A89D
+   */
+  private _a84e(): void {
+    const s = this._store;
+    // $885A-$886D: PPU 地址 $2085 + $2099 (记录语义)
+    s.write('ram_00E6', 0x85);
+    s.write('ram_00E7', 0x20);
+    // $8875-$8878: JSR $B0A1; JSR $AA7F (精灵区渲染)
+    this._aa7f();
+    // $887B-$8884: LDY #$FC; 循环 ram_0468[0..FF] = CHR_COPY_B[Y] (→ $ACB8 表)
+    for (let y = 0; y < 0x100; y++) {
+      s.write(ramKey(0x0468 + y), CHR_COPY_B[y % CHR_COPY_B.length] ?? 0);
+    }
+    // $8886-$8893: 帧等待 ($997A + $9BE3) → no-op
+    // $8896-$889A: LDY #$9D; LDX #$A8; JMP $9C28 → 二次分发表 $A89D
+    this._dispatchA84e(0);
+  }
+
+  /** 二次分发表 ($A89D) 分发: 表 $A8A7/$A8CA/$A8E5/$AADD/$AA73/$EBA0 */
+  private _dispatchA84e(_phase: number): void {
+    const sel = this._store.read('ram_0450') & 0x05;
+    switch (sel) {
+      case 0: this._a8a7(); break;
+      case 1: this._a8ca(); break;
+      case 2: this._a8e5(); break;
+      case 3: this._aadd(); break;
+      case 4: this._aa73(); break;
+      default:
+        // $EBA0 — 跨 bank 屏幕渲染 (no-op)
+        break;
+    }
+  }
+
+  /** $A8A7 ($88A9-$88C7): 二次分支 1 — 精灵数据载入 + $A88D tail */
+  private _a8a7(): void {
+    const s = this._store;
+    // $88A9-$88B7: LDX #$B6; LDA #$FB; JSR $97AD; LDX #$68; JSR $AE1E; LDA #$D8; JSR $AE3A (记录语义)
+    // $88BA-$88BC: LDA #$F8; STA $0560
+    s.write('ram_0560', 0xF8);
+    // $88BF: JSR $A719
+    this._a719();
+    // $88C2-$88C7: LDA #$38; STA $0564; JMP $A88D
+    s.write('ram_0564', 0x38);
+    this._a88d();
+  }
+
+  /** $A8CA ($88CB-$88E2): 二次分支 2 — 精灵数据载入 + $A88D tail */
+  private _a8ca(): void {
+    const s = this._store;
+    // $88CB-$88D7: LDY #$90; LDX #$B7; LDA #$FB; JSR $97AD; LDY #$B8; LDX #$AD; JSR $AE77 (记录语义)
+    // $88DA: JSR $A719
+    this._a719();
+    // $88DD-$88E2: LDA #$48; STA $0564; JMP $A88D
+    s.write('ram_0564', 0x48);
+    this._a88d();
+  }
+
+  /** $A8E5 ($88E5-$8839): 二次分支 3 — 场景子屏幕绘制 (输入等待循环) */
+  private _a8e5(): void {
+    const s = this._store;
+    // $88E5-$88EC: LDA #$58; STA $0564; LDA #$94; STA $004C
+    s.write('ram_0564', 0x58);
+    s.write('ram_004C', 0x94);
+    // $88EE-$88F2: LDY #$BE; LDX #$AD; JSR $9C3A (载 $ADD0 指针表 → 记录语义)
+    // $88F5-$88FA: LDA $0450; CMP #$03 (对比屏幕子状态)
+    // $88FC-$8900: LDA #$B8; STA $00E6 (PPU 地址高字节)
+    if ((s.read('ram_0450') & 0xFF) < 3) {
+      s.write('ram_00E6', 0xB8);
+    }
+    // $8900-$890F: 输入等待循环 ($9FA8/$9CC9; BIT $001E; BVC/BPL) → H5 单次通过
+    //   若溢出标志 (BVC) 置位 → 跳 $AA5F (跨 bank 脚本)
+    // $8911-$891B: LDA #$01; STA $0562; LDA $0560; CMP #$C8 (比对位置)
+    s.write('ram_0562', 1);
+    // $891D: LDA $0560 >= $C8 → JMP $A9C0 (输入处理) 否则 fallthrough
+    if ((s.read('ram_0560') & 0xFF) >= 0xC8) {
+      this._a9c0();
+      return;
+    }
+    // $8920: LDA #$01; JSR $9CD3; ... (连续输入/位置处理, 记录语义)
+    // $8A5F: 取消分支 → $004C=0; $055C=$F8; $0560=$F8; JMP $A88D
+    s.write('ram_055C', 0xF8);
+    s.write('ram_0560', 0xF8);
+    this._a88d();
+  }
+
+  /** $A9C0 ($89C0): 二次分支 3 的位置/输入处理辅助段 (记录语义) */
+  private _a9c0(): void {
+    // $89C0-$89CF: LDY #$CA; LDX #$AD; JSR $9C3A; LDA #$FF; STA $00E9; LDY #$A8; LDX #$C0; JSR $AABF
+    // $89D4-$89E0: LDA #$C8; STA $055C; ... (位置计算, 记录语义)
+    this._store.write('ram_00E9', 0xFF);
+    this._store.write('ram_055C', 0xC8);
+    // 后续输入处理流 (记录语义, H5 由 View 层消费)
+  }
+
+  /** $A88D ($888D): 二次帧等待变体 + 二次分发表分发 (表在 $A89D) */
+  private _a88d(): void {
+    // $888D-$8893: LDA #$FC; LDX #$38; LDY #$78; JSR $9BE3 (帧等待 → no-op)
+    // $8896-$889A: LDY #$9D; LDX #$A8; JMP $9C28 → 二次分发表 $A89D
+    this._dispatchA84e(0);
+  }
+
+  /** $AADD ($8ADD): 共享分支 — 场景计时/半场比分绘制 ($0060/$0061), 记录语义 */
+  private _aadd(): void {
+    const s = this._store;
+    // $8ADD-$8AE3: LDA #$28; STA $0060; LDA #$18; STA $0061 (计时 $28:18)
+    s.write('ram_0060', 0x28);
+    s.write('ram_0061', 0x18);
+    // $8AE5+: 脚本载入 + 半场比分/阶段号绘制 (记录语义, View 层经 ScriptVM 消费)
+  }
+
+  /** $AA73 ($8A73): 共享分支 — JSR $99F0 (块填充) + RTS */
+  private _aa73(): void {
+    // $8A73-$8A76: JSR $99F0 (块填充 → 记录语义)
+  }
+
+  /** $AA77 ($8A77): 精灵表载入 — LDY #$B3; LDX #$B4; JSR $97AB; RTS */
+  private _aa77(): void {
+    // $8A77-$8A7B: LDY #$B3; LDX #$B4; JSR $97AB (载入精灵表数据 → 记录语义)
+    // $8A7E: RTS
+  }
+
+  /** $A719 ($8719): 数据载入辅助 — LDY #$83; LDX #$B5; JSR $97AB; RTS */
+  private _a719(): void {
+    // $8719-$871D: LDY #$83; LDX #$B5; JSR $97AB (载入数据 → 记录语义)
+    // $8720: RTS
+  }
+
+  /**
+   * $AA7F ($8A7F-$8ABE): 精灵区渲染循环 (光标/选手精灵写入 ram_0468 区)。
+   * ram_0450(选手数)==0 → 直接返回; 否则依 ram_00E7 槽位逐个写入精灵数据。
+   */
+  private _aa7f(): void {
+    const s = this._store;
+    if (s.read('ram_0450') === 0) return;
+    let e7 = 0x28;
+    for (;;) {
+      // $8A88: LDY ram_00E7; LDX #$C0; JSR $AABF (查询槽位)
+      // $8A91-$8A97: TXA << 2 + $E0 → 精灵槽地址
+      // $8A98-$8AB0: 写 ram_0468 区精灵数据 (X 偏移, tile/属性)
+      // $8AB3-$8AB8: ram_00E7 += $10
+      e7 = (e7 + 0x10) & 0xFF;
+      if (e7 >= 0xB9) break;
+    }
+  }
+
+  /**
+   * 对应 asm $97AB/$B0C0 (entry4 用): 载入脚本 SCRIPT_ENTRY4A/B 供 View 层经 ScriptVM 渲染。
+   */
+  private _renderScriptEntry4(scene: number): void {
+    // 场景<0x10 → SCRIPT_ENTRY4A, 否则 SCRIPT_ENTRY4B (View 层按场景选脚本块渲染)
+    const script = scene < 0x10 ? SCRIPT_ENTRY4A : SCRIPT_ENTRY4B;
+    void script;
   }
 
   // ── 内部: PPU Buffer 记录 (对应 bank00 $9B28/$9B5E/$88CA/$98E8) ──

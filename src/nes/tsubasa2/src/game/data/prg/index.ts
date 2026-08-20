@@ -12,10 +12,7 @@
 import PRG_BANK_00 from '../prg-bank-00';
 import PRG_BANK_01 from '../prg-bank-01';
 import PRG_BANK_02 from '../prg-bank-02';
-import PRG_BANK_03 from '../prg-bank-03';
-import PRG_BANK_04 from '../prg-bank-04';
-import PRG_BANK_05 from '../prg-bank-05';
-import PRG_BANK_06 from '../prg-bank-06';
+// bank03-06 已删除（纯脚本数据，翻译产物在 scene/textscript/，不再用原始 PRG 字节）
 import PRG_BANK_07 from '../prg-bank-07';
 import PRG_BANK_08 from '../prg-bank-08';
 import PRG_BANK_09 from '../prg-bank-09';
@@ -65,8 +62,9 @@ export const CHR_BANK_SIZE = 0x2000; // 8192
 
 /** 本地 PRG bank 副本表（bank 数据为 readonly number[]，拼装时转 number[]） */
 const PRG_COPIES: Record<number, number[]> = {
-  0: [...PRG_BANK_00], 1: [...PRG_BANK_01], 2: [...PRG_BANK_02], 3: [...PRG_BANK_03],
-  4: [...PRG_BANK_04], 5: [...PRG_BANK_05], 6: [...PRG_BANK_06], 7: [...PRG_BANK_07],
+  0: [...PRG_BANK_00], 1: [...PRG_BANK_01], 2: [...PRG_BANK_02],
+  // bank 3-6 已删除（脚本数据翻译到 scene/textscript/，不再聚合到 NES_PRG_ROM）
+  7: [...PRG_BANK_07],
   8: [...PRG_BANK_08], 9: [...PRG_BANK_09], 10: [...PRG_BANK_10], 11: [...PRG_BANK_11],
   12: [...PRG_BANK_12], 13: [...PRG_BANK_13], 14: [...PRG_BANK_14], 15: [...PRG_BANK_15],
   16: [...PRG_BANK_16], 17: [...PRG_BANK_17], 18: [...PRG_BANK_18], 19: [...PRG_BANK_19],

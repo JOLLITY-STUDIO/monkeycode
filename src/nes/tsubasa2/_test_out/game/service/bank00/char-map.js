@@ -26,6 +26,12 @@
  *   高位 tile $95: 字符 $C8-$D7 (16 个, 实际表只到 $D1)
  *
  * 注: 实际字符外观需通过 CHR tile 渲染确认, 此表为初步映射
+ *
+ * TODO(双 tile 假名映射待完成):
+ *   CHAR_MAP_DOUBLE 的 hiTile/loTile 已从 $8A14 表提取 (与 ROM 一致),
+ *   但 char 字段仍是占位符 (?A0..?D1)。完整假名需通过 chr-bank-00/01
+ *   的双 tile (16x8) 并排渲染识别确认; 后续可用已知日语台词反推校准。
+ *   不影响编译与主流程 (script-data-loader 仍可用占位符文本)。
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TEXT_CTRL_MAP = exports.CHAR_MAP_DOUBLE = exports.CHAR_MAP_SINGLE = void 0;

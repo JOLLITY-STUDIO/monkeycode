@@ -1,0 +1,41 @@
+=== Tsubasa2 NES Builder (with 6502 assembler) ===
+Found 32 source files (top-level):
+  - bank00\bank00.s
+  - bank01\bank01.s
+  - bank02\bank02.s
+  - bank03\bank03.s
+  - bank04\bank04.s
+  - bank05\bank05.s
+  - bank06\bank06.s
+  - bank07\bank07.s
+  - bank08\bank08.s
+  - bank09\bank09.s
+  - bank10\bank10.s
+  - bank11\bank11.s
+  - bank12\bank12.s
+  - bank13\bank13.s
+  - bank14\bank14.s
+  - bank15\bank15.s
+  - bank16\bank16.s
+  - bank17\bank17.s
+  - bank18\bank18.s
+  - bank19\bank19.s
+  - bank20\bank20.s
+  - bank21\bank21.s
+  - bank22\bank22.s
+  - bank23\bank23.s
+  - bank24\bank24.s
+  - bank25\bank25.s
+  - bank26\bank26.s
+  - bank27\bank27.s
+  - bank28\bank28.s
+  - bank29\bank29.s
+  - bank30\bank30.s
+  - bank31\bank31.s
+
+Loaded CHR (131072 bytes)
+
+Built: d:\studio\github\monkeycode\src\nes\tsubasa2\asm\dist\tsubasa2.nes (393232 bytes)
+  Header: 16B | PRG: 262144B | CHR: 131072B
+  Mapper: 4
+  Symbols: 0 written to tsubasa2.sym

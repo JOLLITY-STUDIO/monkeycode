@@ -1,0 +1,7 @@
+=== SPRITE_UPLOAD ===
+=== SPRITE_UPLOAD2 ===
+=== TINY_TABLE ===
+=== SCROLL_DX ===
+=== SCROLL_DY ===
+
+done

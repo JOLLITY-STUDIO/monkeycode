@@ -46,6 +46,17 @@ enabledAutoRun: true
 - **PLAYER_MAX = 0x16**；PLAYER_STATE/PLAYER_FLAG/PLAYER_POS_X/PLAYER_POS_Y 等字段常量在文件内已定义（读文件确认后使用，别重复定义）。
 - **asm 对照**：翻译必须逐指令对照 `asm/bank31/code_main.s`，禁止凭猜测。分支/循环/进位/取反（`(~x)+1` & 0xFF）都要精确还原。
 
+## RAM 键名对齐规则（全 bank 强制，2026-08 全库对齐结论）
+
+DataStore 是纯 KV Map（无归一化），键必须精确匹配，`ram_62a` ≠ `ram_062A` = 静默断链。翻译时所有 RAM 键必须使用真实地址格式：
+
+1. **单字节地址键**：`ram_XXXX`（4 位大写十六进制补零）。禁止小写、禁止不补零、禁止语义键（如 `match_timer_lo`、`tactic_slot_i`、`player_data_x`、`scene_pos_i`）。
+2. **数组/多实例键**：优先写连续地址 `ramKey(base + offset)`（= `ram_${(base+off).toString(16).toUpperCase().padStart(4,'0')}`）。跨 bank 共享数组必须与消费方一致：球员 ID 数组 `ram_0601+`、状态数组 `ram_0606+`、位置数组 `ram_060B+`（X/Y 成对）、战术位置 `ram_0610+X` 均为连续地址；HUD 区域用 `ram_046F+${off}` 形式。采用哪种以消费方为准，不可自创。
+3. **寄存器模拟键**：仅 `ram_call_x` / `ram_call_y`（对应 NES X/Y 寄存器）为约定语义键，全库统一。
+4. **已确认真实地址**（对照 asm，勿自造）：比分 `ram_0028`(主)/`ram_0029`(客)；比赛时钟 `ram_0060`(lo)/`ram_0061`(hi)；比赛阶段/模式 `ram_043B`；回合倒计时 `ram_005E`、阶段倒计时 `ram_0072`、控制标志 `ram_0062`(bit5=终场)；经验值 `ram_0454+idx*2`(16bit LE)；忙/状态/方向标志 `ram_0515`/`ram_0516`/`ram_0517`。
+5. **死方法/死键不删**：翻译后写方无读者的"死键/死方法"保留（其他 bank 未翻译完，等连通），但键名必须对齐真实地址并加注释说明。
+6. **新翻译键检查**：翻译完成后必须扫描确认无新语义键（node 临时脚本 grep `.write(`/`.read(` 的非 `ram_XXXX` 键），有则改。
+
 ## 当前待办（已完成项勿重复做）
 
 已完成（code_main.s 全段覆盖，勿重做）：

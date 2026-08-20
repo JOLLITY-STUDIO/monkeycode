@@ -26,7 +26,7 @@ import {
   BOOT_BG_CHR_BANK, bootFadeStep, bootFadeByte,
 } from '../../data/prg/ppu/nametable/cut/cut_0x00_boot';
 import { spriteAttrToPalette } from '../../data/ppu/chr/chr-slot-mapper';
-import PRG_BANK_06 from '../../data/prg/prg-bank-06';
+import { BANK06_MODE_BLOCK_DATA, BANK06_MODE_BLOCK_BASE } from '../../data/prg/bank06-data';
 import { NES_PALETTE } from '../../data/prg/ppu/pallete/nes-pallete-table';
 import type { PaletteTable, PaletteEntry } from '../../data/prg/model-types';
 
@@ -468,8 +468,9 @@ export class OpeningSceneController {
 
     const ptr = MODE_BLOCK_PTRS[mode];
     const count = applyModeBlocks(this._store, ptr, (off: number) => {
-      // 指针低 13 位即 bank6 数组偏移 (已验证)
-      return off >= 0 && off < PRG_BANK_06.length ? PRG_BANK_06[off] : 0xFF;
+      // 指针低 13 位即 bank6 绝对偏移 (如 0x1B48); BANK06_MODE_BLOCK_DATA[0] = 0x1B40
+      const idx = off - BANK06_MODE_BLOCK_BASE;
+      return idx >= 0 && idx < BANK06_MODE_BLOCK_DATA.length ? BANK06_MODE_BLOCK_DATA[idx] : 0xFF;
     }, CUT_0x17_CHR_BANK);
     if (count > 0) {
       console.log(`[OpeningScene] SET_MODE ${mode} → 模式块写入 ${count} 块`);

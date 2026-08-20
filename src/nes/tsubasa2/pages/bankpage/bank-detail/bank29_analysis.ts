@@ -7,11 +7,15 @@
 //   - Bank 31: LDA #$1D → STA ram_0025（同 Bank 30 模式）
 //
 // 数据结构总览:
-//   [0x0000 - 0x1AB1]  球队战术/阵型属性块（241 个块，每块以 00 00 分隔，多数 22 字节）
+//   [0x0000 - 0x1AB1]  球队战术/阵型属性块（183 个块，每块以 00 00 分隔，多数 22 字节）
 //   [0x1AB2 - 0x1AF5]  指针表（34 项 × 2 字节 LE，指向 $BAF6-$BCE0 阵容区）
 //   [0x1AF6 - 0x1AF7]  00 00 表尾标记
 //   [0x1AF8 - 0x1CFE]  CPU 球队阵容区（每条: GFX 4B + 队标 3B + [位置码,球员ID]×N + $0F 终止）
 //   [0x1D00 - 0x1FFF]  0xFF 填充（未使用 768B）
+//
+// 注: 战术块实际解析数为 183（与 data/prg/team/roster.ts TACTICAL_BLOCKS 一致，
+//     按 "00 00 分隔 + 段长 ≥4" 统计，块长度分布: 22 字节为主(128 块)，
+//     其余 4~145 字节不等）。此前记录为 241 系误判。
 //
 // CPU 地址 = $A000 + offset，因此:
 //   offset 0x1AB2-0x1AF5 → CPU $BAB2-$BAF5（指针表）
@@ -35,12 +39,12 @@ const data = {
     unaccessedBytes: 3557,
     subroutineCount: 0,
     dataTableCount: 3,
-    note: "Bank 29 是纯数据 bank（8200 行全部 .byte，无代码/标签/JSR/JMP）。包含 241 个 22 字节球队战术块、34 项指针表、CPU 球队阵容区。由 Bank 30/26/31 加载到 $A000 窗口，被 Bank 01 主消费。",
+    note: "Bank 29 是纯数据 bank（8192 字节全部 .byte，无代码/标签/JSR/JMP）。包含 183 个球队战术块（多数 22 字节，00 00 分隔）、34 项指针表、CPU 球队阵容区(34 队)。由 Bank 30/26/31 加载到 $A000 窗口，被 Bank 01 主消费。",
   },
 
   // ── 数据块结构 ──
   structure: {
-    blockCount: 241,
+    blockCount: 183,
     blockSize: 22,       // 多数块为 22 字节（以 00 00 分隔）
     blockRange: { start: 0x0000, end: 0x1AB1 },
     pointerTable: {
@@ -85,7 +89,7 @@ const data = {
 
   // ── 数据表清单 ──
   dataTables: [
-    { name: '战术/阵型属性块', bankAddr: '$8000-$9AB1', length: '~6834B', desc: '241 个 22 字节块，以 00 00 分隔。每块含 20 字节有效数据：队伍战术倾向、球员位置配置等（消费方 Bank 01/20/28）' },
+    { name: '战术/阵型属性块', bankAddr: '$8000-$9AB1', length: '~6834B', desc: '183 个块（以 00 00 分隔，多数 22 字节）。每块含 20 字节有效数据：队伍战术倾向、球员位置配置等（消费方 Bank 01/20/28）' },
     { name: '阵容指针表', bankAddr: '$BAB2-$BAF5', length: '68B', desc: '34 项 2 字节 LE 指针，指向 $BAF6-$BCE0 各球队阵容数据' },
     { name: 'CPU 球队阵容区', bankAddr: '$BAF8-$BCFE', length: '~519B', desc: '每球队: GFX 4B + 队标 3B + [位置码, 球员ID] 对 + $0F 终止符。球员ID 指向球员属性表' },
   ],

@@ -27,8 +27,8 @@ export type {
   PaletteColor, PaletteEntry, PaletteTable,
 } from './game/data/prg/model-types';
 
-// 服务 (Bank 翻译)
-export { Bank00Service, Bank02Service, Bank11Service, Bank28MatchService, Bank30Service, BootService, DataQueryService } from './game/index';
+// 服务 (Bank 翻译) + 游戏主类 Tsubasa2
+export { Bank00Service, Bank02Service, Bank11Service, Bank28MatchService, Bank30Service, DataQueryService, DispatchService, Tsubasa2 } from './game/index';
 
 // 硬件核心 (tsnes 原结构)
 export { default as PPU } from './core/ppu';

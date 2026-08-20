@@ -2,7 +2,8 @@
 /**
  * Bank 02 Service — 场景控制器 / RESET 入口
  *
- * 原始 PRG 数据已直接 import (rom-data/prg-bank-02.ts)，无 MMC3 bank 切换。
+ * 数据已从 ASM (asm/bank02/*.s) 提取至 `data/prg/bank02-tables.ts`，
+ * 无 MMC3 bank 切换、无 PRG_BANK 原始字节残留。
  * Bank 02 是普通 Service 对象，持有 Bank00 引用，直接调用 bank00 方法完成初始化。
  *
  * 原始 $A200: JMP $A21B (3 字节跳板)
@@ -10,8 +11,12 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank02Service = void 0;
-const bank02_tables_1 = require("../data/bank02-tables");
+const bank02_tables_1 = require("../data/prg/bank02-tables");
 // ── 常量 ──
+/** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
+function ramKey(addr) {
+    return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+}
 /** ram_001B 标志位 */
 const BIT_NMI_ENABLE = 0x80; // bit7
 /** $A773-$A776 — handler[16] 子程序 $A767 的拷贝源 (→ ram_03E8-$03EB) */
@@ -95,27 +100,26 @@ class Bank02Service {
     _doCommonInit(a) {
         const s = this._store;
         // 对应 8224: ORA $001B,#$40 → 设置标志
-        let ram1b = s.read('ram_1B');
+        let ram1b = s.read('ram_001B');
         ram1b |= 0x40;
-        s.write('ram_1B', ram1b);
-        // 对应 822A-8233: 清零 $FF19+$E8 区域 (24 bytes)
-        // H5: 语义化为 key "temp_A0_xx"
+        s.write('ram_001B', ram1b);
+        // 对应 822A-8233: STA $FF19,Y (Y=$E8-$FF) → 地址环绕到零页 $0001-$0018
+        // (6502: $FF19+$E8=$10001→16bit 截断=$0001; $FF19+$FF=$10018→$0018)
         for (let y = 0xE8; y <= 0xFF; y++) {
-            s.write(`temp_A0_${y.toString(16)}`, 0);
+            s.write(ramKey((0xFF19 + y) & 0xFFFF), 0);
         }
-        // 对应 8234-823D: 清零 $FFE0+$5A 区域 (166 bytes)
-        // H5: 语义化为 key "temp_E0_xx"
-        for (let y = 0x5A; y <= 0xF9; y++) {
-            s.write(`temp_E0_${y.toString(16)}`, 0);
+        // 对应 8234-823D: STA $FFE0,Y (Y=$5A-$FF) → 地址环绕到零页 $003A-$00DF
+        for (let y = 0x5A; y <= 0xFF; y++) {
+            s.write(ramKey((0xFFE0 + y) & 0xFFFF), 0);
         }
         // 对应 823E-8247: 设参数 A=$98, X=2, Y=$68 → $EC=$68 → LDY #4
         s.write('ram_00EC', 0x68);
         s.write('ram_00ED', 0x04);
         // 对应 8248: JSR $AA06 — 清零 (ram_00EC) 指向的 $98×2=304 字节
         this._internalAA06();
-        // 对应 824B-8254: 填充 $0F 到 $054A+$E0~$FF 区域
+        // 对应 824B-8254: STA $054A,Y (Y=$E0-$FF) → 填充 $0F 到 $062A-$0649
         for (let y = 0xE0; y <= 0xFF; y++) {
-            s.write(`ram_${(0x054A + y).toString(16)}`, 0x0F);
+            s.write(ramKey(0x054A + y), 0x0F);
         }
         // 对应 8255: JSR $9A43 — Bank00 主循环初始化 part1
         this._bank00.mainLoopInit1();
@@ -152,8 +156,8 @@ class Bank02Service {
         // 对应 $8281-$828A
         s.write('ram_0001', 0x1E);
         s.write('ram_0002', 0x80);
-        // 对应 $828B-$828F: Y=$28; JSR $9F69
-        this._bank00.dataWriteHelper(0x00, 0x28);
+        // 对应 $828B-$828F: LDX #$01 基址, Y=$28; JSR $9F69
+        this._bank00.dataWriteHelper(0x00, 0x28, 0x01);
         // 落入 $8292 共享块
         this._doShared8292();
     }
@@ -171,7 +175,7 @@ class Bank02Service {
         // 对应 $826D-$827B
         s.write('ram_0001', 0xFF);
         s.write('ram_0002', 0x7F);
-        this._bank00.dataWriteHelper(0x00, 0x28);
+        this._bank00.dataWriteHelper(0x00, 0x28, 0x01);
         // 对应 $827E: JMP $A292
         this._doShared8292();
     }
@@ -186,15 +190,14 @@ class Bank02Service {
      */
     _doShared8292() {
         const s = this._store;
-        // 对应 $8292-$82A0
+        // 对应 $8292-$82A0: X 基址 = $15 (.byte $A2,$15 即 LDX #$15)
         s.write('ram_0015', 0xEC);
         s.write('ram_0016', 0x82);
-        this._bank00.dataWriteHelper(0x00, 0xF0);
+        this._bank00.dataWriteHelper(0x00, 0xF0, 0x15);
         // 对应 $82A3-$82A9: ORA $0020,#$80 → STA $0020 → STA $2000 (开 NMI)
         const ppuctrl = (s.read('ram_0020') | BIT_NMI_ENABLE) & 0xFF;
         s.write('ram_0020', ppuctrl);
-        s.write('ppuctrl', ppuctrl);
-        s.write('ppuctrl_hw', ppuctrl);
+        s.write('ppuctrl', ppuctrl); // PPU $2000 控制器 (硬件寄存器镜像)
         // 对应 $82AC: JMP $9EED → 进入主循环
         this._bank00.mainLoop();
     }
@@ -217,7 +220,7 @@ class Bank02Service {
         // 参数 A=$98 × X=2 = 304 字节
         const count = 0x98 * 2;
         for (let i = 0; i < count; i++) {
-            s.write(`ram_${(base + i).toString(16).toUpperCase()}`, 0);
+            s.write(ramKey(base + i), 0);
         }
     }
     // ──────────────────────────────────────────────
@@ -260,7 +263,7 @@ class Bank02Service {
         // 82B8-82C3: 关 NMI
         let ppuctrl = s.read('ram_0020') & 0x7F;
         s.write('ram_0020', ppuctrl);
-        s.write('ppuctrl_hw', ppuctrl);
+        s.write('ppuctrl', ppuctrl); // PPU $2000 控制器 (硬件寄存器镜像)
         // 82C4-82D6: 清零临时区域
         this._zeroTempAreas();
         // 82D8-82E2: 设 A=$98,X=2,Y=$68→$EC=$68,Y=4 → JSR $AA06
@@ -295,9 +298,9 @@ class Bank02Service {
         }
         // 82EC: STA ram_00ED
         s.write('ram_00ED', param);
-        // 82EE-82F6: 清零 $FFEC+$FA (6 bytes)
+        // 82EE-82F6: STA $FFEC,Y (Y=$FA-$FF) → 地址环绕到零页 $00E6-$00EB
         for (let y = 0xFA; y <= 0xFF; y++) {
-            s.write(`temp_EC_${y.toString(16)}`, 0);
+            s.write(ramKey((0xFFEC + y) & 0xFFFF), 0);
         }
         // 82F8: 原 JSR $9FA8(1) — H5 no-op 已省略
         // 82FD-8335: 摄像机滚动处理 (5 组 delta)
@@ -387,13 +390,13 @@ class Bank02Service {
     // ════════════════════════════════════════════
     // 内部: 共享工具
     // ════════════════════════════════════════════
-    /** 清零临时变量区 ($FF19+$E8 和 $FFE0+$5A) — 被 entryB 和 resetEntry 调用 */
+    /** 清零临时变量区 ($FF19+$E8→$0001-$0018 和 $FFE0+$5A→$003A-$00DF) — 被 entryB 和 resetEntry 调用 */
     _zeroTempAreas() {
         const s = this._store;
         for (let y = 0xE8; y <= 0xFF; y++)
-            s.write(`temp_A0_${y.toString(16)}`, 0);
-        for (let y = 0x5A; y <= 0xF9; y++)
-            s.write(`temp_E0_${y.toString(16)}`, 0);
+            s.write(ramKey((0xFF19 + y) & 0xFFFF), 0);
+        for (let y = 0x5A; y <= 0xFF; y++)
+            s.write(ramKey((0xFFE0 + y) & 0xFFFF), 0);
     }
     /** Bank30 $C557: 场景控制器入口 ($82E5: JMP $C557) */
     _jumpToBank30SceneCtrl() {
@@ -414,11 +417,12 @@ class Bank02Service {
             const xIdx = (y & 0x0F) >> 1;
             const dx = this._readTable_AADF(y);
             const dy = this._readTable_AAE0(y);
-            // scroll X
-            s.write(`ram_${(0xE6 + xIdx).toString(16)}`, (s.read(`ram_${(0xE6 + xIdx).toString(16)}`) + dx) & 0xFF);
-            // scroll Y 16-bit signed add
-            const key7a = `ram_${(0x7A + ec).toString(16)}`;
-            const key7b = `ram_${(0x7B + ec).toString(16)}`;
+            // scroll X (零页 $00E6/$00E7)
+            const keyE6 = ramKey(0xE6 + xIdx);
+            s.write(keyE6, (s.read(keyE6) + dx) & 0xFF);
+            // scroll Y 16-bit signed add (零页 $007A+ec)
+            const key7a = ramKey(0x7A + ec);
+            const key7b = ramKey(0x7B + ec);
             const lo = s.read(key7a) + dy;
             const signExt = dy < 0 ? 0xFF : 0x00;
             const carry = (lo > 0xFF || lo < 0) ? 1 : 0;
@@ -568,12 +572,12 @@ class Bank02Service {
         // $A8B7: LDA #$0B; STA ram_00ED; LDY #$00; 循环 Y<0x84, stride $0C
         s.write('ram_00ED', 0x0B);
         for (let addr = 0x0300; addr < 0x0384; addr += 0x0C) {
-            s.write(`ram_${addr.toString(16)}`, this._readFieldTiles(x++));
+            s.write(ramKey(addr), this._readFieldTiles(x++));
         }
         if (copyOam) {
             // $8893-$88A1: 循环 Y<0x28, stride $04 → ram_0408
             for (let addr = 0x0408; addr < 0x0430; addr += 0x04) {
-                s.write(`ram_${addr.toString(16)}`, this._readFieldTiles(x++));
+                s.write(ramKey(addr), this._readFieldTiles(x++));
             }
         }
         // $88A3-$88A6: LDA $AA47,X → ram_002C
@@ -674,10 +678,10 @@ class Bank02Service {
         // $A515: LDA #$00; JSR $8920
         this._bank00.tableLoad(0);
         // $A51A-$A51E: ram_001B |= 0x01
-        s.write('ram_1B', s.read('ram_1B') | 0x01);
+        s.write('ram_001B', s.read('ram_001B') | 0x01);
         // $A520-$A527: 原 LDA #$F0 / #$3C; JSR $9FA8 ×2 (H5 no-op)
         // $A52A-$A52E: ram_001B &= 0xFE
-        s.write('ram_1B', s.read('ram_1B') & 0xFE);
+        s.write('ram_001B', s.read('ram_001B') & 0xFE);
         // $A530-$A536: LDA #$00 → ram_0090; LDA #$02 → ram_0091
         s.write('ram_0090', 0);
         s.write('ram_0091', 2);
@@ -822,7 +826,7 @@ class Bank02Service {
             const eb = alloc & 0x7F; // AND #$7F; STA ram_00EB
             // $A681-$A687: 清 ram_05E8+X 起 EB 字节 (PPU buffer 区)
             for (let i = 0; i < eb; i++) {
-                s.write(`ram_${(0x05E8 + x + i).toString(16)}`, 0);
+                s.write(ramKey(0x05E8 + x + i), 0);
             }
             // $A689: JSR $9B5E — PPU buffer 结束标记
             this._bank00.ppuBufEnd();
@@ -962,7 +966,7 @@ class Bank02Service {
         const s = this._store;
         // LDY #$FC; 循环: LDA $A677,Y; STA ram_03E8,Y; INY; BNE — 4 字节
         for (let i = 0; i < 4; i++) {
-            s.write(`ram_${(0x03E8 + i).toString(16)}`, SPRITE_TAIL_A677[i]);
+            s.write(ramKey(0x03E8 + i), SPRITE_TAIL_A677[i]);
         }
     }
     /**

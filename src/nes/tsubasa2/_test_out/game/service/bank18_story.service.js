@@ -12,10 +12,13 @@
  *   3. 由 Bank02/Bank00 选关后调用, 设置 Bank19 streamOffset 并启动
  *   4. 驱动 Bank19.update 推进剧情
  *
+ * 数据层: 原始字节经 `data/prg/bank18-data.ts` (readB18/readB18U16) 访问。
+ *
  * 后续补全: 从 Bank00/Bank02 代码提取真实章节→offset 映射, 替换占位。
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank18Service = exports.StoryChapter = void 0;
+const bank18_data_1 = require("../data/prg/bank18-data");
 const bank19_auxiliary_service_1 = require("./bank19_auxiliary.service");
 /** 章节枚举 (剧情进度, 对应原版 STORY 选关/章节推进) */
 var StoryChapter;
@@ -80,6 +83,21 @@ class Bank18Service {
     /** 跳过当前剧情 — 直接进入下一场景 */
     skip() {
         this._active = false;
+    }
+    // ──────────────────────────────────────────────
+    // Bank18 渲染数据访问 (供 Bank19 读取渲染)
+    // ──────────────────────────────────────────────
+    /** 读本 bank 内 cpuAddr ($8000-$9FFF) 原始字节 */
+    readByte(cpuAddr) {
+        return (0, bank18_data_1.readB18)(cpuAddr);
+    }
+    /** 读本 bank 内 16bit LE */
+    readU16(cpuAddr) {
+        return (0, bank18_data_1.readB18U16)(cpuAddr);
+    }
+    /** 读背景 tile 图块行 (row 索引, 每行 16 字节 = 4×4 tile) */
+    readTileRow(row) {
+        return (0, bank18_data_1.readB18TileRow)(row);
     }
 }
 exports.Bank18Service = Bank18Service;

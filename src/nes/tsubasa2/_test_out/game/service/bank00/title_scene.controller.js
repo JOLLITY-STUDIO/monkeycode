@@ -10,7 +10,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TitleSceneController = void 0;
 const types_1 = require("../../../core/types");
-const index_1 = require("../../data/scene/index");
+const index_1 = require("../../data/prg/scene/index");
 /** 标题菜单项 (说明书: キックオフ=新游戏 / コンティニュー=续关→密码输入) */
 const TITLE_ITEMS = [
     { label: 'KICK OFF', jp: 'キックオフ' },

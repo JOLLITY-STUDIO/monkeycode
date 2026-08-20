@@ -1,0 +1,956 @@
+﻿pages/bankpage/bank-detail-02/bank-detail.ts(5,42): error TS2307: Cannot find module '../../../src/game/data/rom-data/index' or its corresponding type declarations.
+pages/bankpage/bank-detail-02/bank-detail.ts(6,25): error TS2307: Cannot find module '../../../src/game/data/prg-bank-07' or its corresponding type declarations.
+pages/bankpage/bank-detail-02/bank-detail.ts(432,31): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(435,25): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(437,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(440,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(441,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(442,42): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(442,62): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(448,33): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(450,52): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(472,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(474,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(474,56): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(479,26): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(493,25): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(5,42): error TS2307: Cannot find module '../../../src/game/data/rom-data/index' or its corresponding type declarations.
+pages/bankpage/bank-detail-12/bank-detail.ts(6,25): error TS2307: Cannot find module '../../../src/game/data/prg-bank-07' or its corresponding type declarations.
+pages/bankpage/bank-detail-12/bank-detail.ts(446,31): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(449,25): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(451,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(454,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(455,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(456,42): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(456,62): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(462,33): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(464,52): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(486,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(488,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(488,56): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(493,26): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(507,25): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-29/bank-detail.ts(10,29): error TS2307: Cannot find module '../../../src/game/data/rom-data/index' or its corresponding type declarations.
+pages/bankpage/bank-detail-30/bank-detail.ts(5,42): error TS2307: Cannot find module '../../../src/game/data/rom-data/index' or its corresponding type declarations.
+pages/bankpage/bank-detail-30/bank-detail.ts(6,25): error TS2307: Cannot find module '../../../src/game/data/prg-bank-07' or its corresponding type declarations.
+pages/bankpage/bank-detail-30/bank-detail.ts(432,31): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(435,25): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(437,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(440,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(441,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(442,42): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(442,62): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(448,33): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(450,52): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(472,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(474,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(474,56): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(479,26): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(493,25): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(5,42): error TS2307: Cannot find module '../../../src/game/data/rom-data/index' or its corresponding type declarations.
+pages/bankpage/bank-detail-31/bank-detail.ts(6,25): error TS2307: Cannot find module '../../../src/game/data/prg-bank-07' or its corresponding type declarations.
+pages/bankpage/bank-detail-31/bank-detail.ts(432,31): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(435,25): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(437,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(440,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(441,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(442,42): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(442,62): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(448,33): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(450,52): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(472,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(474,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(474,56): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(479,26): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-31/bank-detail.ts(493,25): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(5,42): error TS2307: Cannot find module '../../../src/game/data/rom-data/index' or its corresponding type declarations.
+pages/bankpage/bank-detail/bank-detail.ts(6,25): error TS2307: Cannot find module '../../../src/game/data/prg-bank-07' or its corresponding type declarations.
+pages/bankpage/bank-detail/bank-detail.ts(472,31): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(475,25): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(477,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(480,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(481,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(482,42): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(482,62): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(488,33): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(490,52): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(512,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(514,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(514,56): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(519,26): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail/bank-detail.ts(533,25): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bankpage.ts(4,70): error TS2307: Cannot find module '../../src/game/data/rom-data/index' or its corresponding type declarations.
+pages/tsubasa2/tsubasa2.ts(5,26): error TS2307: Cannot find module '../../src/core/Tsubasa2' or its corresponding type declarations.
+pages/tsubasa2/tsubasa2.ts(6,27): error TS2307: Cannot find module '../../src/game/data/DataStore' or its corresponding type declarations.
+src/core/debug/hooks.ts(8,22): error TS2307: Cannot find module '../cpu' or its corresponding type declarations.
+src/core/debug/hooks.ts(9,22): error TS2307: Cannot find module '../nes' or its corresponding type declarations.
+src/core/debug/nametable-viewer.ts(10,22): error TS2307: Cannot find module '../nes' or its corresponding type declarations.
+src/core/debug/palette-viewer.ts(18,22): error TS2307: Cannot find module '../nes' or its corresponding type declarations.
+src/core/debug/pattern-table-viewer.ts(8,22): error TS2307: Cannot find module '../nes' or its corresponding type declarations.
+src/core/debug/sprite-viewer.ts(7,22): error TS2307: Cannot find module '../nes' or its corresponding type declarations.
+src/core/ppu/index.ts(3,8): error TS2613: Module '"D:/studio/github/monkeycode/src/nes/tsubasa2/src/core/ppu/nametable"' has no default export. Did you mean to use 'import { NameTable } from "D:/studio/github/monkeycode/src/nes/tsubasa2/src/core/ppu/nametable"' instead?
+src/core/ppu/index.ts(4,8): error TS2613: Module '"D:/studio/github/monkeycode/src/nes/tsubasa2/src/core/ppu/palette-table"' has no default export. Did you mean to use 'import { PaletteTable } from "D:/studio/github/monkeycode/src/nes/tsubasa2/src/core/ppu/palette-table"' instead?
+src/core/ppu/index.ts(13,15): error TS7006: Parameter 'nes' implicitly has an 'any' type.
+src/core/ppu/index.ts(14,10): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(17,10): error TS2339: Property 'showSpr0Hit' does not exist on type 'PPU'.
+src/core/ppu/index.ts(18,10): error TS2339: Property 'clipToTvSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(23,10): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(24,10): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts(27,10): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(28,10): error TS2339: Property 'vramTmpAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(29,10): error TS2339: Property 'vramBufferedReadValue' does not exist on type 'PPU'.
+src/core/ppu/index.ts(30,10): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(35,10): error TS2339: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts(36,10): error TS2339: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts(39,10): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(41,10): error TS2551: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts(45,10): error TS2339: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts(46,10): error TS2339: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts(50,10): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(52,10): error TS2339: Property 'frameEnded' does not exist on type 'PPU'.
+src/core/ppu/index.ts(53,10): error TS2339: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts(54,10): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(55,10): error TS2339: Property 'scanlineAlreadyRendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(58,10): error TS2339: Property 'f_nmiOnVblank' does not exist on type 'PPU'.
+src/core/ppu/index.ts(59,10): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(60,10): error TS2339: Property 'f_bgPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(61,10): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(62,10): error TS2339: Property 'f_addrInc' does not exist on type 'PPU'.
+src/core/ppu/index.ts(63,10): error TS2339: Property 'f_nTblAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(66,10): error TS2339: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts(67,10): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(68,10): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(69,10): error TS2339: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(70,10): error TS2339: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(71,10): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(74,10): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(75,10): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(76,10): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(77,10): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(78,10): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(81,10): error TS2339: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(82,10): error TS2339: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(83,10): error TS2339: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(84,10): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(85,10): error TS2339: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(86,10): error TS2339: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(87,10): error TS2339: Property 'regS' does not exist on type 'PPU'.
+src/core/ppu/index.ts(92,10): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(95,10): error TS2339: Property 'attrib' does not exist on type 'PPU'.
+src/core/ppu/index.ts(96,10): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(97,10): error TS2339: Property 'bgbuffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(98,10): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(100,10): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(102,10): error TS2339: Property 'scantile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(105,10): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(106,10): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(107,10): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(110,10): error TS2339: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(111,10): error TS2339: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(112,10): error TS2339: Property 'sprTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(113,10): error TS2339: Property 'sprCol' does not exist on type 'PPU'.
+src/core/ppu/index.ts(114,10): error TS2339: Property 'vertFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts(115,10): error TS2339: Property 'horiFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts(116,10): error TS2339: Property 'bgPriority' does not exist on type 'PPU'.
+src/core/ppu/index.ts(117,10): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(118,10): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(119,10): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(129,10): error TS2339: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(130,10): error TS2339: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(132,10): error TS2339: Property 'spritesFound' does not exist on type 'PPU'.
+src/core/ppu/index.ts(135,10): error TS2339: Property 'sprite0InSecondary' does not exist on type 'PPU'.
+src/core/ppu/index.ts(144,10): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(145,10): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(146,10): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(149,10): error TS2339: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(150,10): error TS2339: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(153,10): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(155,12): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(160,10): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(161,10): error TS2551: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts(162,10): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(164,12): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(168,10): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(170,12): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(173,10): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(174,10): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(182,16): error TS7006: Parameter 'mirroring' implicitly has an 'any' type.
+src/core/ppu/index.ts(183,28): error TS2551: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts(187,10): error TS2551: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts(191,14): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(192,12): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(195,12): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(208,28): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(211,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(212,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(213,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(214,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(218,35): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(221,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(222,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(223,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(224,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(228,35): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(231,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(232,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(233,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(234,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(239,35): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(240,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(241,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(242,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(243,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(251,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(252,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(253,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(254,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(261,22): error TS7006: Parameter 'fromStart' implicitly has an 'any' type.
+src/core/ppu/index.ts(261,33): error TS7006: Parameter 'toStart' implicitly has an 'any' type.
+src/core/ppu/index.ts(261,42): error TS7006: Parameter 'size' implicitly has an 'any' type.
+src/core/ppu/index.ts(263,12): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(274,14): error TS2339: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts(275,12): error TS2339: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts(276,16): error TS2339: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts(277,14): error TS2339: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts(282,14): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(284,14): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(285,20): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(293,10): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(300,18): error TS7006: Parameter 'cpu' implicitly has an 'any' type.
+src/core/ppu/index.ts(300,23): error TS7006: Parameter 'dotsRemaining' implicitly has an 'any' type.
+src/core/ppu/index.ts(301,10): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(302,15): error TS2339: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts(309,10): error TS2339: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts(311,10): error TS2339: Property 'frameEnded' does not exist on type 'PPU'.
+src/core/ppu/index.ts(320,20): error TS7006: Parameter 'cpu' implicitly has an 'any' type.
+src/core/ppu/index.ts(320,25): error TS7006: Parameter 'isLastDot' implicitly has an 'any' type.
+src/core/ppu/index.ts(331,10): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(332,10): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(333,10): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(343,15): error TS7006: Parameter 'dots' implicitly has an 'any' type.
+src/core/ppu/index.ts(344,26): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(352,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(353,14): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(354,14): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(357,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(357,38): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(358,13): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(358,29): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(358,42): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(360,12): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(365,20): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(368,16): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(368,39): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(368,58): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(370,14): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(375,16): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(375,40): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(383,14): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(383,28): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(384,14): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(385,14): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(386,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(386,37): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(391,12): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(392,16): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(393,14): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(405,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(405,37): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(405,56): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(408,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(408,38): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(415,18): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(419,18): error TS2339: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts(422,16): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(423,16): error TS2339: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts(423,41): error TS2339: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts(438,18): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(438,47): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(440,16): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(440,29): error TS2339: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(441,16): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(441,28): error TS2339: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(442,16): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(442,28): error TS2339: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(443,16): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(443,29): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(444,16): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(444,29): error TS2339: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(452,20): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(452,49): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(465,16): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(466,16): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(468,18): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(478,18): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(478,65): error TS2339: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(480,16): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(480,46): error TS2339: Property 'spritesFound' does not exist on type 'PPU'.
+src/core/ppu/index.ts(481,16): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(481,42): error TS2339: Property 'sprite0InSecondary' does not exist on type 'PPU'.
+src/core/ppu/index.ts(484,16): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(487,18): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(487,47): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(498,17): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(499,16): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(500,16): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(503,18): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(507,18): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(507,47): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(509,16): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(517,14): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(520,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(525,18): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(525,41): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(530,33): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(545,20): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(545,49): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(546,23): error TS2339: Property 'scanlineAlreadyRendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(548,20): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(548,33): error TS2339: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(549,20): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(549,32): error TS2339: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(552,18): error TS2339: Property 'scanlineAlreadyRendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(559,21): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(560,20): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(561,20): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(562,20): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(565,22): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(587,19): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(588,18): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(589,18): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(592,22): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(593,20): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(597,20): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(597,49): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(599,18): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(604,10): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(621,10): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(622,10): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(627,14): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(631,22): error TS2339: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(635,20): error TS2339: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts(662,10): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(663,10): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(668,23): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(671,14): error TS2339: Property 'showSpr0Hit' does not exist on type 'PPU'.
+src/core/ppu/index.ts(674,14): error TS2339: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(675,14): error TS2339: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(676,14): error TS2339: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(677,14): error TS2339: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(680,24): error TS2339: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(683,34): error TS2339: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(688,14): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(689,14): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(690,14): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(691,14): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(694,24): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(697,34): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(706,12): error TS2339: Property 'clipToTvSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(707,12): error TS2339: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(708,12): error TS2339: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(716,14): error TS2339: Property 'clipToTvSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(727,10): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(730,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(733,10): error TS2339: Property 'f_nmiOnVblank' does not exist on type 'PPU'.
+src/core/ppu/index.ts(734,10): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(735,10): error TS2339: Property 'f_bgPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(736,10): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(737,10): error TS2339: Property 'f_addrInc' does not exist on type 'PPU'.
+src/core/ppu/index.ts(738,10): error TS2339: Property 'f_nTblAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(740,10): error TS2339: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(741,10): error TS2339: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(742,10): error TS2339: Property 'regS' does not exist on type 'PPU'.
+src/core/ppu/index.ts(776,24): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(777,26): error TS2339: Property 'f_nmiOnVblank' does not exist on type 'PPU'.
+src/core/ppu/index.ts(778,28): error TS2339: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts(782,12): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(783,12): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(783,44): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(784,35): error TS2339: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts(786,16): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(788,16): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(788,46): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(791,39): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(795,16): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(800,10): error TS2339: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts(803,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(806,10): error TS2339: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts(807,10): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(808,10): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(809,10): error TS2339: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(810,10): error TS2339: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(811,10): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(819,13): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(820,12): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(821,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(822,12): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(823,12): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(825,29): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(826,16): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(828,16): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(833,14): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(834,12): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(834,38): error TS2339: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts(839,17): error TS7006: Parameter 'flag' implicitly has an 'any' type.
+src/core/ppu/index.ts(839,23): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(841,10): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(842,13): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(848,20): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(851,10): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(865,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(865,37): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(866,12): error TS2339: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts(877,32): error TS2339: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts(878,10): error TS2339: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts(879,10): error TS2339: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts(887,20): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(888,10): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(902,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(902,41): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(907,34): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(907,57): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(908,22): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(920,24): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts(920,39): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(921,19): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(936,22): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts(936,37): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(937,15): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(946,13): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(948,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(948,41): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(950,34): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(950,57): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(956,12): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(956,32): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(959,12): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts(959,27): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(960,38): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(961,12): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(962,12): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(970,15): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(973,14): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(975,12): error TS2339: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(976,12): error TS2339: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(979,12): error TS2339: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(980,12): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(982,10): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(982,29): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(988,20): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(989,14): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(990,12): error TS2339: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(991,12): error TS2339: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(992,12): error TS2339: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(993,12): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(993,26): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(997,12): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(997,26): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(998,12): error TS2339: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1000,12): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1000,25): error TS2339: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1001,12): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1001,24): error TS2339: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1002,12): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1002,24): error TS2339: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1003,12): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1003,25): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1004,12): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1004,25): error TS2339: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1006,30): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1009,10): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1009,29): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1013,14): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1014,12): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1014,38): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1027,14): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1028,18): error TS2339: Property 'vramBufferedReadValue' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1031,16): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1032,14): error TS2339: Property 'vramBufferedReadValue' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1032,43): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1032,56): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1034,14): error TS2339: Property 'vramBufferedReadValue' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1034,61): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1038,16): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1039,14): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1039,40): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1057,23): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1061,17): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1061,58): error TS2339: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1064,10): error TS2339: Property 'vramBufferedReadValue' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1064,57): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1076,13): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(1081,14): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1083,31): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1089,16): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1089,42): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1090,28): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1094,12): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1094,38): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1107,11): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(1111,19): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1112,27): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1113,12): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts(1123,20): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1131,25): error TS2339: Property 'vramTmpAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1132,10): error TS2339: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1133,10): error TS2339: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1134,10): error TS2339: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1135,10): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1135,24): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1137,20): error TS2339: Property 'vramTmpAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1138,10): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1138,24): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1139,10): error TS2339: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1152,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1152,41): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1154,36): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1154,59): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1158,17): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1159,14): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1160,14): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1162,14): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1166,17): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1167,14): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1169,14): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1170,29): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1173,16): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1179,14): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1179,34): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1183,12): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1183,32): error TS2339: Property 'f_addrInc' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1189,25): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1190,10): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1191,10): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1192,10): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1193,10): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1193,24): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1195,20): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1196,10): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1196,24): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1197,10): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1201,20): error TS2339: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1202,17): error TS2339: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1203,17): error TS2339: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1204,17): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1206,20): error TS2339: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1207,16): error TS2339: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1209,10): error TS2339: Property 'vramTmpAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1213,20): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1214,17): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1215,17): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1216,17): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1218,20): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1219,16): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1221,10): error TS2339: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1224,18): error TS7006: Parameter 'count' implicitly has an 'any' type.
+src/core/ppu/index.ts(1226,12): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1227,16): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1228,14): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1229,14): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1230,18): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1231,16): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1232,20): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1233,18): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1234,18): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1235,22): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1236,20): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1237,20): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1238,20): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1248,16): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(1249,17): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1249,30): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1254,17): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(1254,26): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(1274,26): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1275,28): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1286,14): error TS2339: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1287,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1287,37): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1290,14): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(1291,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1291,35): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(1295,12): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(1295,40): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1299,24): error TS7006: Parameter 'startScan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1299,35): error TS7006: Parameter 'scanCount' implicitly has an 'any' type.
+src/core/ppu/index.ts(1300,10): error TS2339: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1304,10): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1306,14): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1310,14): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1316,25): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1317,27): error TS2339: Property 'bgbuffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1318,30): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1326,14): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1331,10): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1333,10): error TS2339: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1334,10): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1337,20): error TS7006: Parameter 'bgbuffer' implicitly has an 'any' type.
+src/core/ppu/index.ts(1337,30): error TS7006: Parameter 'scan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1338,25): error TS2339: Property 'regS' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1342,25): error TS2339: Property 'regS' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1343,40): error TS2339: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1345,10): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1345,23): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1345,36): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1345,48): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1345,60): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1347,10): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1347,23): error TS2339: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1348,10): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1348,22): error TS2339: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1349,10): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1349,23): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1349,36): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1349,48): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1349,60): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1351,35): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1352,30): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1353,27): error TS2339: Property 'scantile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1354,25): error TS2339: Property 'attrib' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1355,25): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1356,28): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1357,29): error TS2339: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1358,30): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1359,42): error TS2339: Property 'bgbuffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1359,58): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1360,23): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1364,12): error TS2339: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1368,12): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1379,16): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1387,42): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1388,18): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1389,18): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1393,20): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1408,34): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1408,56): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1408,68): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1418,22): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1419,22): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1434,38): error TS2339: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1441,31): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1468,61): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1472,20): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1473,16): error TS2339: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1474,16): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1475,16): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1476,16): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1476,29): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1476,43): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1476,61): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1479,12): error TS2339: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1483,12): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1487,10): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1488,14): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1489,12): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1490,12): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1491,16): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1492,14): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1493,14): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1494,14): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1495,14): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1495,27): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1495,41): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1495,59): error TS2339: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1496,23): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1497,14): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1501,12): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1512,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1512,41): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1514,14): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1516,24): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1518,12): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts(1518,32): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts(1522,41): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts(1540,19): error TS7006: Parameter 'targetScanline' implicitly has an 'any' type.
+src/core/ppu/index.ts(1542,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1542,41): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1553,12): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1555,10): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1556,10): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1558,29): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1568,24): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1569,23): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1595,24): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts(1609,18): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1610,20): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts(1618,18): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1643,10): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1653,12): error TS2339: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1653,35): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1655,10): error TS2339: Property 'spritesFound' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1656,10): error TS2339: Property 'sprite0InSecondary' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1656,36): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1660,10): error TS2339: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1673,26): error TS7006: Parameter 'startscan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1673,37): error TS7006: Parameter 'scancount' implicitly has an 'any' type.
+src/core/ppu/index.ts(1673,48): error TS7006: Parameter 'bgPri' implicitly has an 'any' type.
+src/core/ppu/index.ts(1674,14): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1676,21): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1677,23): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1678,23): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1679,27): error TS2339: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1680,28): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1685,24): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1689,25): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1690,28): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1691,28): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1692,25): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1700,18): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1702,32): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1703,34): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1782,16): error TS7006: Parameter 'scan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1783,10): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1784,10): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1787,15): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1788,14): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1792,21): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1793,24): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1794,24): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1795,18): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1806,25): error TS2339: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1806,52): error TS2339: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1816,21): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1818,14): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1820,28): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1853,20): error TS7006: Parameter 'tile' implicitly has an 'any' type.
+src/core/ppu/index.ts(1853,26): error TS7006: Parameter 'toffset' implicitly has an 'any' type.
+src/core/ppu/index.ts(1853,35): error TS7006: Parameter 'startX' implicitly has an 'any' type.
+src/core/ppu/index.ts(1853,43): error TS7006: Parameter 'horiFlip' implicitly has an 'any' type.
+src/core/ppu/index.ts(1853,53): error TS7006: Parameter 'scan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1853,59): error TS7006: Parameter 'leftClip' implicitly has an 'any' type.
+src/core/ppu/index.ts(1870,16): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1873,16): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1874,16): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1895,25): error TS7006: Parameter 'nextBufferScan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1897,15): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1898,14): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1902,21): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1903,24): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1904,24): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1905,21): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1910,25): error TS2339: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1910,52): error TS2339: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1913,29): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1924,14): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1926,28): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1927,25): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1935,16): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1939,16): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1947,24): error TS2339: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1948,26): error TS2339: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1949,22): error TS2339: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1950,27): error TS2339: Property 'regS' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1965,40): error TS2339: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1966,25): error TS2339: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1967,24): error TS2339: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1974,24): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1975,30): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1976,25): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1980,38): error TS2339: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1985,14): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1986,14): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1996,12): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(1996,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(1997,10): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2001,12): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2004,32): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2006,34): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2008,32): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2010,34): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2012,32): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2014,34): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2016,32): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2018,34): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2030,16): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2031,14): error TS2339: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2031,35): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2032,16): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2035,14): error TS2339: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2035,35): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2036,16): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2041,16): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2042,14): error TS2339: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2042,35): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2043,16): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2046,14): error TS2339: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2046,35): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2047,16): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2056,16): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(2056,25): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(2060,12): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2063,14): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2066,12): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2068,14): error TS2339: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2076,18): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/core/ppu/index.ts(2076,25): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(2076,34): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(2077,10): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2080,27): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2087,20): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/core/ppu/index.ts(2087,27): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(2087,36): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(2088,10): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2094,10): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2099,24): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(2099,33): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(2103,29): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2110,14): error TS2339: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2114,14): error TS2339: Property 'sprTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2118,14): error TS2339: Property 'vertFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2119,14): error TS2339: Property 'horiFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2120,14): error TS2339: Property 'bgPriority' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2121,14): error TS2339: Property 'sprCol' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2125,14): error TS2339: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2130,16): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/core/ppu/index.ts(2130,19): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/core/ppu/index.ts(2132,17): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2140,26): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2141,33): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2145,26): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2146,30): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2152,12): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/core/ppu/index.ts(2157,26): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2158,12): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2161,26): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2162,12): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2166,26): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts(2167,41): error TS2551: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/tile.ts(27,9): error TS2322: Type 'boolean' is not assignable to type 'number'.
+src/core/utils.ts(38,58): error TS2352: Conversion of type 'ArrayBufferView<ArrayBufferLike>' to type 'ArrayLike<number>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'length' is missing in type 'ArrayBufferView<ArrayBufferLike>' but required in type 'ArrayLike<number>'.
+src/game/boot.ts(36,27): error TS2307: Cannot find module './data/DataStore' or its corresponding type declarations.
+src/game/boot.ts(50,32): error TS2307: Cannot find module './data/match-config' or its corresponding type declarations.
+src/game/data/prg/bank11-data.ts(21,25): error TS2307: Cannot find module './prg-bank-11' or its corresponding type declarations.
+src/game/data/prg/bank22-data.ts(13,25): error TS2307: Cannot find module './prg-bank-22' or its corresponding type declarations.
+src/game/data/prg/bank24-tables.ts(16,25): error TS2307: Cannot find module './prg-bank-31' or its corresponding type declarations.
+src/game/data/prg/bank26-tables.ts(11,25): error TS2307: Cannot find module './prg-bank-26' or its corresponding type declarations.
+src/game/data/prg/bank28-tables.ts(11,25): error TS2307: Cannot find module './prg-bank-28' or its corresponding type declarations.
+src/game/data/prg/bank31-data-ptrs.ts(10,32): error TS2307: Cannot find module '../DataStore' or its corresponding type declarations.
+src/game/data/prg/gk-stats.ts(63,5): error TS7053: Element implicitly has an 'any' type because expression of type '"pass" | "stamina" | "catching" | "punching" | "vsShots" | "vsDribbles" | "lowRush" | "highClaim"' can't be used to index type '{}'.
+  Property 'pass' does not exist on type '{}'.
+src/game/data/prg/index.ts(12,25): error TS2307: Cannot find module '../prg-bank-00' or its corresponding type declarations.
+src/game/data/prg/index.ts(13,25): error TS2307: Cannot find module '../prg-bank-01' or its corresponding type declarations.
+src/game/data/prg/index.ts(14,25): error TS2307: Cannot find module '../prg-bank-02' or its corresponding type declarations.
+src/game/data/prg/index.ts(16,25): error TS2307: Cannot find module '../prg-bank-07' or its corresponding type declarations.
+src/game/data/prg/index.ts(17,25): error TS2307: Cannot find module '../prg-bank-08' or its corresponding type declarations.
+src/game/data/prg/index.ts(18,25): error TS2307: Cannot find module '../prg-bank-09' or its corresponding type declarations.
+src/game/data/prg/index.ts(19,25): error TS2307: Cannot find module '../prg-bank-10' or its corresponding type declarations.
+src/game/data/prg/index.ts(20,25): error TS2307: Cannot find module '../prg-bank-11' or its corresponding type declarations.
+src/game/data/prg/index.ts(21,25): error TS2307: Cannot find module '../prg-bank-12' or its corresponding type declarations.
+src/game/data/prg/index.ts(22,25): error TS2307: Cannot find module '../prg-bank-13' or its corresponding type declarations.
+src/game/data/prg/index.ts(23,25): error TS2307: Cannot find module '../prg-bank-14' or its corresponding type declarations.
+src/game/data/prg/index.ts(24,25): error TS2307: Cannot find module '../prg-bank-15' or its corresponding type declarations.
+src/game/data/prg/index.ts(25,25): error TS2307: Cannot find module '../prg-bank-16' or its corresponding type declarations.
+src/game/data/prg/index.ts(26,25): error TS2307: Cannot find module '../prg-bank-17' or its corresponding type declarations.
+src/game/data/prg/index.ts(27,25): error TS2307: Cannot find module '../prg-bank-18' or its corresponding type declarations.
+src/game/data/prg/index.ts(28,25): error TS2307: Cannot find module '../prg-bank-19' or its corresponding type declarations.
+src/game/data/prg/index.ts(29,25): error TS2307: Cannot find module '../prg-bank-20' or its corresponding type declarations.
+src/game/data/prg/index.ts(30,25): error TS2307: Cannot find module '../prg-bank-21' or its corresponding type declarations.
+src/game/data/prg/index.ts(31,25): error TS2307: Cannot find module '../prg-bank-22' or its corresponding type declarations.
+src/game/data/prg/index.ts(32,25): error TS2307: Cannot find module '../prg-bank-23' or its corresponding type declarations.
+src/game/data/prg/index.ts(33,25): error TS2307: Cannot find module '../prg-bank-24' or its corresponding type declarations.
+src/game/data/prg/index.ts(34,25): error TS2307: Cannot find module '../prg-bank-25' or its corresponding type declarations.
+src/game/data/prg/index.ts(35,25): error TS2307: Cannot find module '../prg-bank-26' or its corresponding type declarations.
+src/game/data/prg/index.ts(36,25): error TS2307: Cannot find module '../prg-bank-27' or its corresponding type declarations.
+src/game/data/prg/index.ts(37,25): error TS2307: Cannot find module '../prg-bank-28' or its corresponding type declarations.
+src/game/data/prg/index.ts(38,25): error TS2307: Cannot find module '../prg-bank-29' or its corresponding type declarations.
+src/game/data/prg/index.ts(39,25): error TS2307: Cannot find module '../prg-bank-30' or its corresponding type declarations.
+src/game/data/prg/index.ts(40,25): error TS2307: Cannot find module '../prg-bank-31' or its corresponding type declarations.
+src/game/service/bank01_data-query.service.ts(1470,52): error TS2552: Cannot find name 'SCRIPT_ENTRY4B'. Did you mean 'SCRIPT_ENTRY4A'?
+src/game/service/bank11_match-turn.service.ts(61,8): error TS2307: Cannot find module '../data/bank11-data' or its corresponding type declarations.
+src/game/service/bank11_match-turn.service.ts(62,25): error TS2307: Cannot find module '../data/prg-bank-18' or its corresponding type declarations.
+src/game/service/bank11_match-turn.service.ts(63,25): error TS2307: Cannot find module '../data/prg-bank-19' or its corresponding type declarations.
+src/game/service/bank12_audio.service.ts(27,28): error TS2307: Cannot find module '../../core/engine/audio/PapuOutput' or its corresponding type declarations.
+src/game/service/bank19_auxiliary.service.ts(27,25): error TS2307: Cannot find module '../data/prg-bank-19' or its corresponding type declarations.
+src/game/service/bank19_auxiliary.service.ts(28,25): error TS2307: Cannot find module '../data/prg-bank-31' or its corresponding type declarations.
+src/game/service/bank20_match-aux.service.ts(24,25): error TS2307: Cannot find module '../data/prg-bank-20' or its corresponding type declarations.
+src/game/service/bank20_match-aux.service.ts(25,25): error TS2307: Cannot find module '../data/prg-bank-21' or its corresponding type declarations.
+src/game/service/bank20_match-aux.service.ts(26,25): error TS2307: Cannot find module '../data/prg-bank-31' or its corresponding type declarations.
+src/game/service/bank22_hybrid.service.ts(31,8): error TS2307: Cannot find module '../data/bank22-data' or its corresponding type declarations.
+src/game/service/bank24_hud.service.ts(26,57): error TS2307: Cannot find module '../../core/numUtils' or its corresponding type declarations.
+src/game/service/bank24_hud.service.ts(42,8): error TS2307: Cannot find module '../data/bank24-tables' or its corresponding type declarations.
+src/game/service/bank24_hud.service.ts(43,29): error TS2307: Cannot find module '../data/bank28-tables' or its corresponding type declarations.
+src/game/service/bank26_match.service.ts(69,8): error TS2307: Cannot find module '../data/bank26-tables' or its corresponding type declarations.
+src/game/service/bank27_minimal.service.ts(31,8): error TS2307: Cannot find module '../data/bank27-data' or its corresponding type declarations.
+src/game/service/bank28_match.service.ts(46,8): error TS2307: Cannot find module '../data/bank28-tables' or its corresponding type declarations.
+src/game/service/bank29_roster.service.ts(42,8): error TS2307: Cannot find module '../data/team/roster' or its corresponding type declarations.
+src/game/service/bank31_match.service.ts(1481,15): error TS2552: Cannot find name 'KEY_04A6'. Did you mean 'KEY_0469'?
+src/game/service/bank31_match.service.ts(1484,17): error TS2552: Cannot find name 'KEY_04A6'. Did you mean 'KEY_0469'?
+src/game/service/bank31_match.service.ts(1484,36): error TS2552: Cannot find name 'KEY_04A6'. Did you mean 'KEY_0469'?
+src/game/service/bank31_match.service.ts(1485,17): error TS2552: Cannot find name 'KEY_04A7'. Did you mean 'KEY_0047'?
+src/game/service/bank31_match.service.ts(1487,17): error TS2552: Cannot find name 'KEY_04A7'. Did you mean 'KEY_0047'?
+src/game/service/bank31_match.service.ts(1492,15): error TS2552: Cannot find name 'KEY_04A8'. Did you mean 'KEY_0048'?
+src/game/service/bank31_match.service.ts(1509,13): error TS2552: Cannot find name 'KEY_04A8'. Did you mean 'KEY_0048'?
+src/game/service/bank31_match.service.ts(1511,13): error TS2552: Cannot find name 'KEY_04A9'. Did you mean 'KEY_0469'?
+src/game/service/bank31_match.service.ts(1526,13): error TS2552: Cannot find name 'KEY_04A6'. Did you mean 'KEY_0469'?
+src/game/service/bank31_match.service.ts(1528,13): error TS2304: Cannot find name 'KEY_04A7'.
+src/game/view/LevelUpView.ts(21,30): error TS2307: Cannot find module '../data/rom-data/team-roster' or its corresponding type declarations.
+src/game/view/MeetingView.ts(25,66): error TS2307: Cannot find module '../data/rom-data/player-stats' or its corresponding type declarations.
+src/game/view/MeetingView.ts(26,30): error TS2307: Cannot find module '../data/rom-data/team-roster' or its corresponding type declarations.
+src/game/view/MeetingView.ts(27,75): error TS2307: Cannot find module '../data/rom-data/special-moves' or its corresponding type declarations.
+src/game/view/MeetingView.ts(95,48): error TS7006: Parameter 'id' implicitly has an 'any' type.
+src/game/view/MeetingView.ts(95,52): error TS7006: Parameter 'idx' implicitly has an 'any' type.
+src/game/view/PasswordView.ts(14,34): error TS2307: Cannot find module '../data/password-sprites' or its corresponding type declarations.
+src/game/view/PasswordView.ts(31,58): error TS7006: Parameter 'spr' implicitly has an 'any' type.
+test/main.ts(12,26): error TS2307: Cannot find module '../src/core/Tsubasa2' or its corresponding type declarations.
+test/main.ts(54,25): error TS7006: Parameter 'from' implicitly has an 'any' type.
+test/main.ts(54,31): error TS7006: Parameter 'to' implicitly has an 'any' type.
+test/main.ts(55,19): error TS7006: Parameter 'err' implicitly has an 'any' type.
+test/test-suite.ts(14,26): error TS2307: Cannot find module '../src/core/Tsubasa2' or its corresponding type declarations.
+test/test-suite.ts(15,27): error TS2307: Cannot find module '../src/game/data/DataStore' or its corresponding type declarations.
+test/test-suite.ts(16,26): error TS2307: Cannot find module '../src/core/engine/render/Renderer' or its corresponding type declarations.
+test/test-suite.ts(23,32): error TS2307: Cannot find module '../src/core/engine/audio/WebAudioOutput' or its corresponding type declarations.
+test/test-suite.ts(25,27): error TS2307: Cannot find module '../src/game/data/scene' or its corresponding type declarations.
+test/test-suite.ts(366,25): error TS7006: Parameter 'from' implicitly has an 'any' type.
+test/test-suite.ts(366,31): error TS7006: Parameter 'to' implicitly has an 'any' type.
+test/test-suite.ts(367,19): error TS7006: Parameter 'err' implicitly has an 'any' type.

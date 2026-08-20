@@ -1,0 +1,4 @@
+/** PRG Bank 3 脚本数据 (ID 0x00-0x0F) — 由 generate_script_data.cjs 自动生成, 禁止手改 */
+export const SCRIPTS_BANK_03: readonly any[] = [
+  {"id":0,"idHex":"0x00","bank":3,"entryAddr":"$A020","blocks":[{"label":"entry","bank":3,"startOffset":32,"startAddr":"$A020","instructions":[{"type":"LONG_INSTR","offset":32,"addr":"$A020","opcode":232,"mnemonic":"LOAD_SCENE_DATA","params":[1],"text":"LOAD_SCENE_DATA $01
+---LEN 300966

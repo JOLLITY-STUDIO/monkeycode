@@ -1,7 +1,8 @@
 /**
  * Bank 30 Service — 硬件初始化 (H5 简化版)
  *
- * 数据已直接 import `rom-data/prg-bank-30.ts`, 无 MMC3 bank 切换。
+ * 数据已提取到 `data/prg/bank30-data.ts` (从 ASM code_data.s/code_sub.s),
+ * 无 MMC3 bank 切换、无 PRG_BANK_30 原始字节残留。
  * PRG offset: 0x3C010-0x3E00F
  *
  * 原始 Bank 30 是核心系统库，包含:
@@ -21,13 +22,14 @@ import { Bank02Service } from './bank02_scene.service';
 import { Bank29RosterService } from './bank29_roster.service';
 import { Bank16Service } from './bank16_skills.service';
 import { Bank26ShowcaseExecutor } from './bank26_showcase-executor.service';
-import PRG_BANK_30 from '../data/prg/prg-bank-30';
 import {
   NAME_AREA_PTR_TABLE,
   NAME_AREA_PTR_TABLE_COUNT,
   TABLE_FB4C,
   PALETTE_FBCC,
   PALETTE_ENTRY_SIZE,
+  SHOWCASE_TYPE_TABLE,
+  SHOOT_STATE_TABLE,
 } from '../data/prg/bank30-data';
 
 // ── RAM 语义键 (Bank30 演出链 $043C 区域 + 演出请求) ──
@@ -292,14 +294,12 @@ export class Bank30Service {
   //   $D7E8: LDA #$38; JSR $CBB0 (演出 #38)
   // ══════════════════════════════════════════════════════════════
 
-  /** 读 Bank30 原始字节 (CPU $C000-$DFFF → PRG_BANK_30 索引) */
-  private _b30(addr: number): number {
-    return PRG_BANK_30[addr - 0xC000] ?? 0;
-  }
-
-  /** $D6DE 表 (10B): [02 01 00 03 04 05 06 1E 1F 20] — 按 ram_043B 的演出类型映射 */
+  /**
+   * $D6DE 表 (10B): SHOWCASE_TYPE_TABLE [02 01 00 03 04 05 06 1E 1F 20] — 按 ram_043B 的演出类型映射。
+   * 数据源 bank30-data.ts (从 code_data.s $D6DE 提取)。
+   */
   readD6DE(idx: number): number {
-    return this._b30(0xD6DE + (idx & 0x3f));
+    return SHOWCASE_TYPE_TABLE[idx & 0x0f] ?? 0;
   }
 
   /** 读 RAM 语义键 (地址化访问, 与 Bank16 一致: ram_XXXX) */
@@ -307,9 +307,9 @@ export class Bank30Service {
     return this._store.read(`ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`);
   }
 
-  /** $D700 表 (37B): 射门演出方向/子状态表 (供 $D5D1/$D5DA 使用) */
+  /** $D700 表 (15B): SHOOT_STATE_TABLE 射门演出方向/子状态表 (供 $D5D1/$D5DA 使用) */
   readD700(idx: number): number {
-    return this._b30(0xD700 + (idx & 0x3f));
+    return SHOOT_STATE_TABLE[idx & 0x0f] ?? 0;
   }
 
   // ══════════════════════════════════════════════════════════════

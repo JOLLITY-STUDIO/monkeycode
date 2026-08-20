@@ -776,8 +776,14 @@ export class Bank12AudioEngine {
       }
       // $FC/$FD: NOP
       case 0x1C: case 0x1D: return true;
-      // $FE: NOP (0x58 未使用)
-      case 0x1E: return true;
+      // $FE → SET_VOL_DECAY ($86F6): 读 1 参数, 写 $07CF/$07D7 (volDecay/volDecayReload)
+      // asm: LDA ($F4),Y; INY; STY $F6; LDX $F3; DEX; STA $07CF,X; STA $07D7,X; LDY $F6; RTS
+      case 0x1E: {
+        const decay = read();
+        this.w.volDecay[ch] = decay;
+        this.w.volDecayReload[ch] = decay;
+        return true;
+      }
       // $FF → STOP CHANNEL
       case 0x1F: {
         if (this._oneShot || this.seChannel[ch]) {
