@@ -57,9 +57,6 @@ const TEAM_BLOCK_BY_SCENE = {
     0x0C: bank01_more_tables_1.TEAM_BLOCK_0C,
     0x10: bank01_more_tables_1.TEAM_BLOCK_10,
 };
-// ═══════════════════════════════════════════════════════════════
-// DataQueryService
-// ═══════════════════════════════════════════════════════════════
 class DataQueryService {
     constructor(_store) {
         this._store = _store;
@@ -71,15 +68,22 @@ class DataQueryService {
         this._optionScreen = {
             active: false,
             cursorPos: 0, // MeetingMenu 光标 (0-3: 情報/スコアメモ/チームデータ/キックオフ)
-            menuIndex: 0, // 当前菜单层级 (0=主菜单, 1=チームデータ子菜单, 2=二级操作)
+            menuIndex: 0, // 当前菜单层级 (0=主菜单, 1=チームデータ子菜单, 2=二级操作, 3=三级操作)
             subCursor: 0, // 子菜单光标 (TeamDataMenu: 0-4)
             confirmed: null, // 确认的菜单项 (null=未确认, MeetingMenu值=已确认)
             subConfirmed: null, // 子菜单确认项
-            // 二级操作状态 (阵型/防守选择等)
-            level2Cursor: 0, // 二级光标 (阵型4项/防守3项/换人选手/等级选手)
-            level2Max: 0, // 二级选项数 (阵型=4, 防守=3)
+            // 二级操作状态 (阵型/防守选择, 换人/等级的子菜单)
+            level2Cursor: 0, // 二级光标 (阵型4项/防守3项/换人子菜单3项/等级子菜单4项)
+            level2Max: 0, // 二级选项数 (阵型=4, 防守=3, 换人=3, 等级=4)
             formation: types_1.FormationType.FORM_433, // 当前阵型 (写 ram_0448 区)
             defense: 0, // 当前防守类型 (0=normal, 1=press, 2=counter)
+            // 三级操作状态 (换人选手选择/等级查看详情)
+            level3Cursor: 0, // 三级光标 (选手列表 0-10)
+            level3Max: 0, // 三级选项数 (选手数 11)
+            selectedPlayerIdx: 0, // 换人/等级查看选中的选手索引 (0-10, 对应场上11人)
+            swapOutIdx: -1, // 换人: 已选换下选手 (-1=未选)
+            swapInIdx: -1, // 换人: 已选换上选手 (-1=未选)
+            levelDetailMode: 0, // 等级查看详情模式 (0=能力, 1=必杀技)
         };
     }
     // ── 主入口 (每帧调用) ──
@@ -412,21 +416,26 @@ class DataQueryService {
             }
         }
         else if (this._optionScreen.menuIndex === 2) {
-            // 二级操作 (阵型4项/防守3项选择)
+            // 二级操作 (阵型/防守选择, 换人/等级子菜单)
             this._level2Update();
+        }
+        else if (this._optionScreen.menuIndex === 3) {
+            // 三级操作 (选选手: 换人换上换下, 等级查看选手)
+            this._level3Update();
         }
     }
     /** MeetingMenu 光标上移 (4项循环) */
     _meetingCursorUp() {
         const cur = this._optionScreen.cursorPos;
         this._optionScreen.cursorPos = (cur + 3) % 4; // -1 mod 4
-        this._store.write(KEY_ED, this._optionScreen.cursorPos);
+        // 注: 不写 ram_00ED — 光标与 JUMP_TARGETS 分发共用 ram_00ED 会造成
+        // 下一帧 dispatch entry1 重置光标 (bug 修复 2026-08)。boot 路由用 getConfirmedMenu()。
     }
     /** MeetingMenu 光标下移 (4项循环) */
     _meetingCursorDown() {
         const cur = this._optionScreen.cursorPos;
         this._optionScreen.cursorPos = (cur + 1) % 4;
-        this._store.write(KEY_ED, this._optionScreen.cursorPos);
+        // 注: 不写 ram_00ED — 同上, 避免触发 JUMP_TARGETS 分发重置菜单状态
     }
     /**
      * MeetingMenu A 确认 (说明书):
@@ -458,8 +467,8 @@ class DataQueryService {
      * TeamDataMenu A 确认 (说明书):
      *   フォーメーション(0) → 选阵型 (4:3:3/4:4:2/3:5:2/ブラジル) → 进二级选择
      *   ディフェンスタイプ(1) → 选防守 (ノーマル/プレス/カウンター) → 进二级选择
-     *   チェンジ(2) → 换人 (ポジション/メンバー) → TODO: 选选手
-     *   レベル(3) → 看等级 (选手能力/必杀技) → TODO: 选选手查看
+     *   チェンジ(2) → 换人子菜单 (ポジション/メンバー/もどる) → 进二级选择
+     *   レベル(3) → 等级子菜单 (せんてい/とくぎ/もどる) → 进二级选择
      *   もどる(4) → 返回主菜单
      */
     _subConfirm() {
@@ -479,10 +488,19 @@ class DataQueryService {
                 this._optionScreen.level2Max = 3;
                 break;
             case index_1.TeamDataMenu.CHANGE:
-                // TODO: 换人子菜单 (ポジションチェンジ/メンバーチェンジ)
+                // 进换人子菜单二级 (ChangeMenu 3项: ポジション/メンバー/もどる)
+                this._optionScreen.menuIndex = 2;
+                this._optionScreen.level2Cursor = 0;
+                this._optionScreen.level2Max = 3;
+                this._optionScreen.swapOutIdx = -1;
+                this._optionScreen.swapInIdx = -1;
                 break;
             case index_1.TeamDataMenu.LEVEL:
-                // TODO: 等级查看 (选选手查看能力/必杀技)
+                // 进等级子菜单二级 (LevelMenu 4项: せんてい/とくぎ/とくぎせつめい/もどる)
+                this._optionScreen.menuIndex = 2;
+                this._optionScreen.level2Cursor = 0;
+                this._optionScreen.level2Max = 4;
+                this._optionScreen.selectedPlayerIdx = 0;
                 break;
             case index_1.TeamDataMenu.BACK:
                 // 返回主菜单
@@ -493,8 +511,8 @@ class DataQueryService {
         }
     }
     /**
-     * 二级操作状态机 (阵型/防守选择):
-     *   上下移光标, A 确认写入, B 返回子菜单
+     * 二级操作状态机 (阵型/防守选择, 换人/等级子菜单):
+     *   上下移光标, A 确认, B 返回チームデータ子菜单
      */
     _level2Update() {
         const btn = this._store.read(KEY_1C);
@@ -504,7 +522,7 @@ class DataQueryService {
             this._level2CursorDown(); // DOWN
         if (btn & 0x01)
             this._level2Confirm(); // A 确认
-        if (btn & 0x02) { // B 返回子菜单
+        if (btn & 0x02) { // B 返回チームデータ子菜单
             this._optionScreen.menuIndex = 1;
             this._optionScreen.level2Cursor = 0;
         }
@@ -517,21 +535,133 @@ class DataQueryService {
         const max = this._optionScreen.level2Max;
         this._optionScreen.level2Cursor = (this._optionScreen.level2Cursor + 1) % max;
     }
-    /** 二级 A 确认: 写入阵型/防守到状态, 返回子菜单 */
+    /**
+     * 二级 A 确认: 按 subConfirmed 分发
+     *   FORMATION  → 写阵型, 返回子菜单
+     *   DEFENSE    → 写防守, 返回子菜单
+     *   CHANGE     → 按 ChangeMenu[level2Cursor] 分: ポジション/メンバー→进三级选选手, もどる→回子菜单
+     *   LEVEL      → 按 LevelMenu[level2Cursor] 分: せんてい/とくぎ→进三级选选手, もどる→回子菜单
+     */
     _level2Confirm() {
         const sel = this._optionScreen.subConfirmed;
         const cur = this._optionScreen.level2Cursor;
         if (sel === index_1.TeamDataMenu.FORMATION) {
-            this._optionScreen.formation = cur; // 写阵型 (FormationType 0-3)
-            this._store.write('ram_0048', cur); // 对应真实 ROM 阵型写 ram_0048
+            this._optionScreen.formation = cur;
+            this._store.write('ram_0048', cur);
+            this._returnToSubMenu();
         }
         else if (sel === index_1.TeamDataMenu.DEFENSE_TYPE) {
-            this._optionScreen.defense = cur; // 写防守 (0-2)
-            this._store.write('ram_0049', cur); // 对应真实 ROM 防守写 ram_0049 (FIXME: 地址待确认)
+            this._optionScreen.defense = cur;
+            this._store.write('ram_0049', cur);
+            this._returnToSubMenu();
         }
-        // 返回子菜单
+        else if (sel === index_1.TeamDataMenu.CHANGE) {
+            // ChangeMenu: 0=ポジション, 1=メンバー, 2=もどる
+            if (cur === index_1.ChangeMenu.BACK) {
+                this._returnToSubMenu();
+            }
+            else {
+                // ポジション/メンバー → 进三级选选手 (场上 11 人)
+                this._optionScreen.menuIndex = 3;
+                this._optionScreen.level3Cursor = 0;
+                this._optionScreen.level3Max = 11;
+                this._optionScreen.swapOutIdx = -1;
+                this._optionScreen.swapInIdx = -1;
+            }
+        }
+        else if (sel === index_1.TeamDataMenu.LEVEL) {
+            // LevelMenu: 0=せんてい(选选手), 1=とくぎ(看必杀技), 2=とくぎせつめい, 3=もどる
+            if (cur === index_1.LevelMenu.BACK) {
+                this._returnToSubMenu();
+            }
+            else {
+                // 选选手 → 进三级选选手 (场上 11 人)
+                this._optionScreen.menuIndex = 3;
+                this._optionScreen.level3Cursor = 0;
+                this._optionScreen.level3Max = 11;
+                this._optionScreen.levelDetailMode = cur === index_1.LevelMenu.SPECIAL_DETAIL ? 1 : 0;
+            }
+        }
+    }
+    /** 返回チームデータ子菜单 (二级→一级) */
+    _returnToSubMenu() {
         this._optionScreen.menuIndex = 1;
         this._optionScreen.level2Cursor = 0;
+        this._optionScreen.level3Cursor = 0;
+        this._optionScreen.swapOutIdx = -1;
+        this._optionScreen.swapInIdx = -1;
+    }
+    /**
+     * 三级操作状态机 (选选手):
+     *   换人: 先选换下(swapOutIdx), 再选换上(swapInIdx), A 确认交换写 RAM
+     *   等级: 选选手查看能力/必杀技, A 确认显示详情
+     *   B 返回二级菜单
+     */
+    _level3Update() {
+        const btn = this._store.read(KEY_1C);
+        if (btn & 0x10)
+            this._level3CursorUp();
+        if (btn & 0x20)
+            this._level3CursorDown();
+        if (btn & 0x01)
+            this._level3Confirm();
+        if (btn & 0x02) {
+            // B 返回二级菜单
+            this._optionScreen.menuIndex = 2;
+            this._optionScreen.level3Cursor = 0;
+            this._optionScreen.swapOutIdx = -1;
+            this._optionScreen.swapInIdx = -1;
+        }
+    }
+    _level3CursorUp() {
+        const max = this._optionScreen.level3Max;
+        this._optionScreen.level3Cursor = (this._optionScreen.level3Cursor + max - 1) % max;
+    }
+    _level3CursorDown() {
+        const max = this._optionScreen.level3Max;
+        this._optionScreen.level3Cursor = (this._optionScreen.level3Cursor + 1) % max;
+    }
+    /**
+     * 三级 A 确认: 按 subConfirmed 分发
+     *   CHANGE: 第一次选 = 换下(swapOutIdx), 第二次选 = 换上(swapInIdx), 确认交换
+     *   LEVEL:  选选手 → 标记 selectedPlayerIdx, 查看详情 (能力/必杀技)
+     */
+    _level3Confirm() {
+        const sel = this._optionScreen.subConfirmed;
+        const cur = this._optionScreen.level3Cursor;
+        if (sel === index_1.TeamDataMenu.CHANGE) {
+            // 换人: 两步选择
+            if (this._optionScreen.swapOutIdx < 0) {
+                // 第一步: 选换下选手
+                this._optionScreen.swapOutIdx = cur;
+            }
+            else if (this._optionScreen.swapInIdx < 0 && cur !== this._optionScreen.swapOutIdx) {
+                // 第二步: 选换上选手 (不能与换下相同)
+                this._optionScreen.swapInIdx = cur;
+                // 执行交换 (写 ram_0368+ 区选手索引, FIXME: 真实 RAM 地址待确认)
+                this._swapPlayers(this._optionScreen.swapOutIdx, this._optionScreen.swapInIdx);
+                // 交换完成 → 返回チームデータ子菜单
+                this._returnToSubMenu();
+            }
+        }
+        else if (sel === index_1.TeamDataMenu.LEVEL) {
+            // 等级查看: 选选手, 显示详情 (能力/必杀技)
+            this._optionScreen.selectedPlayerIdx = cur;
+            // 详情数据由 entry0_PlayerData 解码, 写 ram_044D 索引触发
+            this._store.write('ram_044D', cur & 0xFF);
+            // FIXME: 等级查看的真实 ROM 行为是显示选手面板, 此处标记后由 View 层渲染
+            // 留在三级菜单允许继续选其他选手, B 返回二级
+        }
+    }
+    /**
+     * 执行换人: 交换场上两个选手的位置/索引。
+     * 真实 ROM: 修改 ram_0368+ 区的选手槽位数据 (FIXME: 具体偏移待逆向确认)。
+     * H5: 标记到 DataStore, 比赛引擎读取时生效。
+     */
+    _swapPlayers(outIdx, inIdx) {
+        // 写换人记录到 ram_0050/0051 (FIXME: 真实 ROM 换人记录地址待确认)
+        this._store.write('ram_0050', outIdx & 0xFF);
+        this._store.write('ram_0051', inIdx & 0xFF);
     }
     /** 获取主菜单确认项 (null=未确认, MeetingMenu值=已确认) */
     getConfirmedMenu() {
@@ -561,9 +691,47 @@ class DataQueryService {
     getDefense() {
         return this._optionScreen.defense;
     }
-    /** 获取菜单层级 (0=主, 1=チームデータ子, 2=二级选择) */
+    /** 获取菜单层级 (0=主, 1=チームデータ子, 2=二级选择, 3=三级选选手) */
     getMenuLevel() {
         return this._optionScreen.menuIndex;
+    }
+    /** 获取三级光标 (选选手) */
+    getLevel3Cursor() {
+        return this._optionScreen.level3Cursor;
+    }
+    /** 获取换人: 换下选手索引 (-1=未选) */
+    getSwapOutIdx() {
+        return this._optionScreen.swapOutIdx;
+    }
+    /** 获取换人: 换上选手索引 (-1=未选) */
+    getSwapInIdx() {
+        return this._optionScreen.swapInIdx;
+    }
+    /** 获取等级查看: 当前选中选手索引 */
+    getSelectedPlayerIdx() {
+        return this._optionScreen.selectedPlayerIdx;
+    }
+    /** 获取等级查看: 详情模式 (0=能力, 1=必杀技) */
+    getLevelDetailMode() {
+        return this._optionScreen.levelDetailMode;
+    }
+    /** 获取チームデータ子菜单完整显示状态 (View 层消费) */
+    getTeamDataDisplayState() {
+        return {
+            menuLevel: this._optionScreen.menuIndex,
+            subCursor: this._optionScreen.subCursor,
+            subConfirmed: this._optionScreen.subConfirmed,
+            level2Cursor: this._optionScreen.level2Cursor,
+            level2Max: this._optionScreen.level2Max,
+            level3Cursor: this._optionScreen.level3Cursor,
+            level3Max: this._optionScreen.level3Max,
+            formation: this._optionScreen.formation,
+            defense: this._optionScreen.defense,
+            swapOutIdx: this._optionScreen.swapOutIdx,
+            swapInIdx: this._optionScreen.swapInIdx,
+            selectedPlayerIdx: this._optionScreen.selectedPlayerIdx,
+            levelDetailMode: this._optionScreen.levelDetailMode,
+        };
     }
     // ── 内部: 球员数据解码 ──
     /**

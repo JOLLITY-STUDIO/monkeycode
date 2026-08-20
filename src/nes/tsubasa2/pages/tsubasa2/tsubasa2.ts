@@ -298,6 +298,15 @@ Page({
     this._startGame(mc.canvas, ctx);
   },
 
+  /** 模式切换按钮（WXML 事件名必须为静态字符串） */
+  onSwitchMode() {
+    if (this.data.pageMode === 'nt_test') {
+      this.switchToGame();
+    } else {
+      this.switchToNtTest();
+    }
+  },
+
   // ══════════════════════════════════════════
   // 触摸事件
   // ══════════════════════════════════════════

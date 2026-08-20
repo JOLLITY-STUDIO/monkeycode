@@ -23,6 +23,8 @@ import { DataStore } from '../game/data/DataStore';
 import { Renderer } from './engine/render/Renderer';
 import { FrameCompositor } from './engine/render/FrameCompositor';
 import { PasswordView } from '../game/view/PasswordView';
+import { MeetingView } from '../game/view/MeetingView';
+import { LevelUpView } from '../game/view/LevelUpView';
 import { OamView } from '../game/view/OamView';
 import { ShowcaseView } from '../game/view/ShowcaseView';
 import { Bank26ShowcaseExecutor } from '../game/service/bank26_showcase-executor.service';
@@ -38,6 +40,7 @@ import { Bank19Service } from '../game/service/bank19_auxiliary.service';
 import { Bank18Service } from '../game/service/bank18_story.service';
 import { Bank20Service } from '../game/service/bank20_match-aux.service';
 import { InterruptService } from '../game/service/bank31_interrupt.service';
+import { LevelUpService } from '../game/service/levelup.service';
 import { BUTTON, NES_WIDTH, NES_HEIGHT } from './types';
 import type { Tsubasa2Config, DebugInfo, GameState } from './types';
 import { GameState as GS } from './types';
@@ -127,6 +130,12 @@ export class Tsubasa2 {
   /** 场景 View 层 (渲染数据写入 NT/OAM) */
   private _passwordView!: PasswordView;
 
+  /** MEETING 赛前会议 View (主菜单/子菜单/二级/三级 渲染) */
+  private _meetingView!: MeetingView;
+
+  /** LEVELUP 升级界面 View (选手经验/等级显示) */
+  private _levelupView!: LevelUpView;
+
   /** OAM 桥接 View (ram_0468 影子 OAM → DataStore.sprites) */
   private _oamView!: OamView;
 
@@ -138,6 +147,9 @@ export class Tsubasa2 {
 
   /** Bank 12: 音频引擎 (PAPU + PapuOutput，含 BGM/SFX 数据) */
   private _audioService!: Bank12AudioService;
+
+  /** 球员升级服务 (经验值/等级/Guts RAM 读写) */
+  private _levelup!: LevelUpService;
 
   /** 上一次按键值 (用于上升沿检测) */
   private _lastButtons = 0;
@@ -172,11 +184,14 @@ export class Tsubasa2 {
     // 音频链路: Bank12AudioService (内部使用 PapuOutput + PAPU 完整模拟 NES APU)
     this._audioService = new Bank12AudioService(this._store);
 
-    // 场景路由器 — 持有 DataQuery/MatchEngine/Bank18/Bank19/Bank20 引用以委派场景
+    // 球员升级服务 (经验值/等级/Guts RAM 读写)
+    this._levelup = new LevelUpService(this._store);
+
+    // 场景路由器 — 持有 DataQuery/MatchEngine/Bank18/Bank19/Bank20/LevelUp 引用以委派场景
     this._bank19 = new Bank19Service(this._store);
     this._bank18 = new Bank18Service(this._store, this._bank19);
     this._bank20 = new Bank20Service(this._store);
-    this._boot = new BootService(this._store, this._dataQuery, this._matchEngine, this._bank19, this._bank20, this._bank18, this._bank02);
+    this._boot = new BootService(this._store, this._dataQuery, this._matchEngine, this._bank19, this._bank20, this._bank18, this._bank02, this._levelup);
 
     // 帧合成器 (PPU 层) — DataStore → 帧缓冲
     this._compositor = new FrameCompositor(this._store);
@@ -186,6 +201,8 @@ export class Tsubasa2 {
 
     // 场景 View 层 (渲染数据写入 NT/OAM, 读 service DisplayState)
     this._passwordView = new PasswordView(this._store);
+    this._meetingView = new MeetingView(this._store);
+    this._levelupView = new LevelUpView(this._store);
 
     // Bank26 演出执行器 + 演出画面 View (球员射门特写/Cyclone)
     this._showcaseExecutor = new Bank26ShowcaseExecutor(this._store);
@@ -343,6 +360,11 @@ export class Tsubasa2 {
     return this._compositor;
   }
 
+  /** 球员升级服务 (经验值/等级/Guts 读写 + maxOut 满级) */
+  get levelup(): LevelUpService {
+    return this._levelup;
+  }
+
   /**
    * 无头初始化 — 等价 start() 的初始化链但跳过循环/渲染器/音频：
    *   RESET → Bank30 init → Bank02 resetEntry(0) → Boot 根场景
@@ -426,6 +448,14 @@ export class Tsubasa2 {
     // 0. 场景 View 层: 读 service DisplayState, 写 NT/OAM (对应 NES NMI 把场景数据写到 PPU)
     const pwState = this._boot.getPasswordDisplayState();
     if (pwState) this._passwordView.render(pwState);
+
+    // 0.1 MEETING 赛前会议 View: 主菜单/子菜单/二级/三级 渲染
+    const mtgState = this._boot.getMeetingDisplayState();
+    if (mtgState) this._meetingView.render(mtgState);
+
+    // 0.2 LEVELUP 升级界面 View: 选手经验/等级显示
+    const lvlSvc = this._boot.getLevelUpService();
+    if (lvlSvc) this._levelupView.render(lvlSvc);
 
     // 0.4 演出画面 View: 球员射门特写 + Cyclone (读 Bank26 executor DisplayState)
     this._showcaseView.render(this._showcaseExecutor.getDisplayState());

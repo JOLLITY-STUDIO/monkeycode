@@ -28,6 +28,8 @@ const DataStore_1 = require("../game/data/DataStore");
 const Renderer_1 = require("./engine/render/Renderer");
 const FrameCompositor_1 = require("./engine/render/FrameCompositor");
 const PasswordView_1 = require("../game/view/PasswordView");
+const MeetingView_1 = require("../game/view/MeetingView");
+const LevelUpView_1 = require("../game/view/LevelUpView");
 const OamView_1 = require("../game/view/OamView");
 const ShowcaseView_1 = require("../game/view/ShowcaseView");
 const bank26_showcase_executor_service_1 = require("../game/service/bank26_showcase-executor.service");
@@ -43,6 +45,7 @@ const bank19_auxiliary_service_1 = require("../game/service/bank19_auxiliary.ser
 const bank18_story_service_1 = require("../game/service/bank18_story.service");
 const bank20_match_aux_service_1 = require("../game/service/bank20_match-aux.service");
 const bank31_interrupt_service_1 = require("../game/service/bank31_interrupt.service");
+const levelup_service_1 = require("../game/service/levelup.service");
 const types_1 = require("./types");
 const types_2 = require("./types");
 // CHR Bank 数据 (直接 import data 本地副本，无需 MMC3)
@@ -97,17 +100,21 @@ class Tsubasa2 {
         this._interrupt = new bank31_interrupt_service_1.InterruptService(this._store);
         // 音频链路: Bank12AudioService (内部使用 PapuOutput + PAPU 完整模拟 NES APU)
         this._audioService = new bank12_audio_service_1.Bank12AudioService(this._store);
-        // 场景路由器 — 持有 DataQuery/MatchEngine/Bank18/Bank19/Bank20 引用以委派场景
+        // 球员升级服务 (经验值/等级/Guts RAM 读写)
+        this._levelup = new levelup_service_1.LevelUpService(this._store);
+        // 场景路由器 — 持有 DataQuery/MatchEngine/Bank18/Bank19/Bank20/LevelUp 引用以委派场景
         this._bank19 = new bank19_auxiliary_service_1.Bank19Service(this._store);
         this._bank18 = new bank18_story_service_1.Bank18Service(this._store, this._bank19);
         this._bank20 = new bank20_match_aux_service_1.Bank20Service(this._store);
-        this._boot = new boot_1.BootService(this._store, this._dataQuery, this._matchEngine, this._bank19, this._bank20, this._bank18, this._bank02);
+        this._boot = new boot_1.BootService(this._store, this._dataQuery, this._matchEngine, this._bank19, this._bank20, this._bank18, this._bank02, this._levelup);
         // 帧合成器 (PPU 层) — DataStore → 帧缓冲
         this._compositor = new FrameCompositor_1.FrameCompositor(this._store);
         // 渲染器 (View) — 帧缓冲 → 画布 (对应模拟器 ui.writeFrame)
         this._renderer = new Renderer_1.Renderer();
         // 场景 View 层 (渲染数据写入 NT/OAM, 读 service DisplayState)
         this._passwordView = new PasswordView_1.PasswordView(this._store);
+        this._meetingView = new MeetingView_1.MeetingView(this._store);
+        this._levelupView = new LevelUpView_1.LevelUpView(this._store);
         // Bank26 演出执行器 + 演出画面 View (球员射门特写/Cyclone)
         this._showcaseExecutor = new bank26_showcase_executor_service_1.Bank26ShowcaseExecutor(this._store);
         this._showcaseView = new ShowcaseView_1.ShowcaseView(this._store);
@@ -234,6 +241,10 @@ class Tsubasa2 {
     get compositor() {
         return this._compositor;
     }
+    /** 球员升级服务 (经验值/等级/Guts 读写 + maxOut 满级) */
+    get levelup() {
+        return this._levelup;
+    }
     /**
      * 无头初始化 — 等价 start() 的初始化链但跳过循环/渲染器/音频：
      *   RESET → Bank30 init → Bank02 resetEntry(0) → Boot 根场景
@@ -309,6 +320,14 @@ class Tsubasa2 {
         const pwState = this._boot.getPasswordDisplayState();
         if (pwState)
             this._passwordView.render(pwState);
+        // 0.1 MEETING 赛前会议 View: 主菜单/子菜单/二级/三级 渲染
+        const mtgState = this._boot.getMeetingDisplayState();
+        if (mtgState)
+            this._meetingView.render(mtgState);
+        // 0.2 LEVELUP 升级界面 View: 选手经验/等级显示
+        const lvlSvc = this._boot.getLevelUpService();
+        if (lvlSvc)
+            this._levelupView.render(lvlSvc);
         // 0.4 演出画面 View: 球员射门特写 + Cyclone (读 Bank26 executor DisplayState)
         this._showcaseView.render(this._showcaseExecutor.getDisplayState());
         // 0.5 OAM 桥接: ram_0468 影子 OAM → DataStore.sprites (对应 NES NMI OAM DMA)

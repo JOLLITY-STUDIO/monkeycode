@@ -20,9 +20,11 @@ import { Bank19Service, BANK19_STREAM_OFFSET } from './bank19_auxiliary.service'
 /** 章节枚举 (剧情进度, 对应原版 STORY 选关/章节推进) */
 export enum StoryChapter {
   OPENING = 0,      // 开场
-  CHAPTER_1 = 1,    // 第一章
+  CHAPTER_1 = 1,    // 第一章 (赛前剧情)
   CHAPTER_2 = 2,    // 第二章
   CHAPTER_3 = 3,    // 第三章
+  HALF_TIME = 4,    // 中场剧情 (MATCH 中场嵌入)
+  EXTRA_TIME = 5,   // 加时赛开场剧情
   CONTINUE = 0xff,  // 续关 (从存档恢复)
 }
 
@@ -35,6 +37,8 @@ const CHAPTER_STREAM_OFFSET: Record<number, number> = {
   [StoryChapter.CHAPTER_1]: BANK19_STREAM_OFFSET,
   [StoryChapter.CHAPTER_2]: BANK19_STREAM_OFFSET,
   [StoryChapter.CHAPTER_3]: BANK19_STREAM_OFFSET,
+  [StoryChapter.HALF_TIME]: BANK19_STREAM_OFFSET,
+  [StoryChapter.EXTRA_TIME]: BANK19_STREAM_OFFSET,
   [StoryChapter.CONTINUE]: BANK19_STREAM_OFFSET,
 };
 

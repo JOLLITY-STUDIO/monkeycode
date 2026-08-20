@@ -34,7 +34,7 @@
       <view class="ctrl-btn mini ctrl-switch" bindtap="toggleScale">{{canvasScale === 1 ? 'fit' : '1x'}}</view>
       <view class="ctrl-btn mini {{aiMode ? 'active' : ''}}" bindtap="toggleAi" wx:if="{{pageMode === 'game'}}">AI</view>
       <!-- NT 测试 / 游戏切换 -->
-      <view class="ctrl-btn ctrl-switch {{pageMode === 'nt_test' ? 'active' : ''}}" bindtap="{{pageMode === 'nt_test' ? 'switchToGame' : 'switchToNtTest'}}">
+      <view class="ctrl-btn ctrl-switch {{pageMode === 'nt_test' ? 'active' : ''}}" bindtap="onSwitchMode">
         {{pageMode === 'nt_test' ? '游戏' : 'NT测试'}}
       </view>
     </view>

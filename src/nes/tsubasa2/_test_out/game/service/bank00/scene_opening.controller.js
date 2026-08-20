@@ -9,9 +9,9 @@
  * 真正的开场动画 (小女孩 + TECMO THEATER 字母) 是另一段逻辑，数据待提取。
  *
  * 职责边界:
+ *   - 负责 SceneRoot.BOOT 阶段的真实开场画面 (initBoot: bank0 NT + 40 精灵 + 调色板渐显)
  *   - 负责 SceneRoot.TITLE 阶段的标题菜单背景 NT + 调色板
- *   - 不负责 BOOT 阶段真正的 TECMO Theater 开场动画 (TODO)
- *   - 由 BootService 在 TITLE 阶段调用 init() 灌入背景
+ *   - 由 BootService 在 BOOT 阶段调用 initBoot()、TITLE 阶段调用 init() 灌入背景
  *
  * H5: 每帧调用 update()，由外部渲染器消费 displayState 绘制。
  */
@@ -25,6 +25,8 @@ const index_1 = require("../../data/scene/index");
 const script_vm_1 = require("./script-vm");
 const cut_0x17_nt_1 = require("../../data/ppu/nametable/cut/cut_0x17_nt");
 const cut0x17_mode_blocks_1 = require("../../data/ppu/nametable/cut/cut0x17-mode-blocks");
+const cut_0x00_boot_1 = require("../../data/ppu/nametable/cut/cut_0x00_boot");
+const chr_slot_mapper_1 = require("../../data/ppu/chr/chr-slot-mapper");
 const prg_bank_06_1 = __importDefault(require("../../data/prg-bank-06"));
 const nes_pallete_table_1 = require("../../data/ppu/pallete/nes-pallete-table");
 // ═══════════════════════════════════════════════════════════════
@@ -104,13 +106,16 @@ class OpeningSceneController {
         this._nextShot();
     }
     /**
-     * BOOT 阶段帧同步 — 仅推进帧计数/闪烁计时, 不触发 NT 重灌或镜头切换。
-     * 供 BootService._bootCoroutine 占位开场使用 (开场真实数据未提取, 只播 TECMO 模式块)。
+     * BOOT 阶段帧同步 — 每帧按 shotFrame 推进调色板渐显。
+     * NT/OAM 静态 (initBoot 已灌入), 仅调色板变化 (对应 bank0 $9A71 fade + $9A0D 帧等待)。
+     * 渐显序列 (实测): 帧 1-10 全黑 → 帧 12/14/16/18 逐级显色 → 帧 28+ 稳定为全量调色板。
      * @param frame BOOT 协程已过帧数
      */
     syncBootFrame(frame) {
         this._shotFrame = frame;
         this._blinkTimer = frame % 60;
+        const step = (0, cut_0x00_boot_1.bootFadeStep)(frame);
+        this._applyBootPalette(step);
     }
     // ──────────────────────────────────────────────
     // 初始化 (对应 sceneLoad(0x17) 后首次进入)
@@ -162,20 +167,75 @@ class OpeningSceneController {
     // Cut 0x17 解码数据应用 (纯数据 → DataStore)
     // ──────────────────────────────────────────────
     /**
-     * BOOT 阶段占位初始化 (TECMO 字母模式块)。
-     * ⚠️ 真正的开场动画 (小女孩 + TECMO THEATER 字母) 数据尚未提取 (TODO),
-     *     此处仅清屏 + 应用模式块 0 (TECMO 字母) 作为过渡画面。
-     *     标题菜单背景 (Cut 0x17) 在 TITLE 阶段由 init() 灌入。
+     * BOOT 阶段初始化 — 写入真实 BOOT 开场画面 (bank0 NT + 40 精灵 + 全黑调色板)。
+     * 数据: cut_0x00_boot.ts (真实 ROM 模拟器 dump: 标题字母 0x28-0x3F + 版权文字,
+     *       MMC3 chrBanks [00,01,02,03,FC,71,52,53] 已翻译成 H5 bank/tile)。
+     * 之后每帧由 syncBootFrame() 推进调色板渐显 (对应 bank0 $9A71 fade + $9A0D 帧等待)。
      */
     initBoot() {
-        // 清空 NT0 (对应 ntAttrClear 语义)
+        this._applyBootData();
+        // 渐显初始: step 0 = 全黑 (帧 1-10 全黑, 与模拟器一致)
+        this._applyBootPalette(0);
+    }
+    /**
+     * 写入 BOOT 真实画面 (NT + 精灵) 到 DataStore。
+     * 对应原版 BOOT 场景加载链 (bank0 $8AF7 场景 → 共享渲染子程写 NT/OAM):
+     *   - NT tile: BG pattern table 0 → H5 8KB CHR bank 0 (tile 原样)
+     *   - OAM 精灵: 40 个, 已按 BOOT_CHR_SLOTS 翻译成 H5 (bank, h5Tile)
+     */
+    _applyBootData() {
+        const store = this._store;
+        // 0) 清空 NT0 (对应 ntAttrClear 语义)
         for (let y = 0; y < 30; y++) {
             for (let x = 0; x < 32; x++) {
-                this._store.writeNT(0, x, y, { tile: 0, palette: 0, bank: 0, flipH: false, flipV: false, behindBg: false });
+                store.writeNT(0, x, y, { tile: 0, palette: 0, bank: 0, flipH: false, flipV: false, behindBg: false });
             }
         }
-        // TECMO 字母模式块 (mode 0, 占位开场画面)
-        this._applyModeSprites(0);
+        // 0.5) 影子 OAM 填 $F8 (bank30 init 的 ram.clear() 已清掉构造时的 $F8 键,
+        //      不补的话 OamView 会把全 0 影子读成 64 个活跃哑元精灵)
+        store.oamShadow.clearAll();
+        // 1) NT0: 25 个非零 tile (行 12-13 标题字母 + 行 15 版权文字), palette 由 ATTR 推导
+        for (let i = 0; i < 960; i++) {
+            const x = i % 32;
+            const y = (i / 32) | 0;
+            const tile = cut_0x00_boot_1.BOOT_NT0[i];
+            if (tile === 0)
+                continue;
+            store.writeNT(0, x, y, {
+                tile,
+                palette: this._attrPaletteAt(x, y),
+                bank: cut_0x00_boot_1.BOOT_BG_CHR_BANK,
+                flipH: false, flipV: false, behindBg: false,
+            });
+        }
+        // 2) OAM 精灵: 40 个真实精灵 (y+1 对齐 NES OAM 显示行语义: OAM y = 显示行-1)
+        store.sprites = cut_0x00_boot_1.BOOT_OAM.map((e) => ({
+            active: true,
+            x: e.x,
+            y: e.y + 1,
+            tile: e.h5Tile,
+            palette: (0, chr_slot_mapper_1.spriteAttrToPalette)(e.attr),
+            priority: false,
+            flipH: false,
+            flipV: false,
+            bank: e.bank,
+        }));
+    }
+    /** 由 BOOT ATTR0 解析 tile (tx,ty) 的调色板组 (0-3, 2×2 象限) */
+    _attrPaletteAt(tx, ty) {
+        const ax = tx >> 2;
+        const ay = ty >> 2;
+        const byte = cut_0x00_boot_1.BOOT_ATTR0[(ay << 3) + ax] ?? 0;
+        const subX = (tx >> 1) & 1;
+        const subY = (ty >> 1) & 1;
+        const shift = (subY << 2) | (subX << 1);
+        return (byte >> shift) & 0x03;
+    }
+    /** 应用 BOOT 调色板 (step 0=全黑, 1-9=渐显, 对应 bank0 $9A71 fade 表) */
+    _applyBootPalette(step) {
+        const bg = cut_0x00_boot_1.BOOT_BG_PALETTE.map((c) => (0, cut_0x00_boot_1.bootFadeByte)(c, step));
+        const spr = cut_0x00_boot_1.BOOT_SPR_PALETTE.map((c) => (0, cut_0x00_boot_1.bootFadeByte)(c, step));
+        this._store.setPaletteTable(this._nesPaletteToTable(bg, spr));
     }
     /**
      * 将 Cut 0x17 (标题菜单背景) 的 NT/属性/调色板数据写入数据中心。
@@ -195,6 +255,9 @@ class OpeningSceneController {
                 store.writeNT(0, x, y, { tile: 0, palette: 0, bank: 0, flipH: false, flipV: false, behindBg: false });
             }
         }
+        // 0.6) 清空精灵 + 影子 OAM (场景切换清 OAM): 防止 BOOT 阶段精灵泄漏到 TITLE
+        store.sprites = [];
+        store.oamShadow.clearAll();
         // 1) NT0: 扁平 960 字节 → 32×30 tile 网格 (tile 0 = 空, palette 由 ATTR 象限推导)
         for (let i = 0; i < 960; i++) {
             const x = i % 32;

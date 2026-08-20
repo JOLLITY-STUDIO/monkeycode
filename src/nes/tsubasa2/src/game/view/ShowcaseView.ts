@@ -40,7 +40,9 @@ export class ShowcaseView extends SceneView {
 
     // 演出结束 → 隐藏特写
     if (!state.active || !state.block) {
-      oam.emitSprites();
+      // 仅当 OamManager 有内容时才整体导出 — 空表时导出 [] 会冲掉
+      // 其他 View (PasswordView/BOOT) 直接写入 store.sprites 的精灵
+      if (oam.slotCount() > 0) oam.emitSprites();
       return;
     }
 

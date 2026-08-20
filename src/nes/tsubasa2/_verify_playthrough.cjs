@@ -17,7 +17,7 @@ const { OamView } = require(path.join(OUT, 'game/view/OamView.js'));
 
 let pass = 0, fail = 0;
 const fails = [];
-const A = 1, START = 8; // BUTTON.A = 1<<0, BUTTON.START = 1<<3
+const A = 1, START = 8, SELECT = 4; // BUTTON.A = 1<<0, BUTTON.START = 1<<3, BUTTON.SELECT = 1<<2
 
 function root(store) { return store.read('boot_root'); }
 
@@ -88,35 +88,128 @@ try {
   pass++;
   sampleOam('STORY');
 
-  // 3. STORY → MEETING: A 跳过剧情 → 进赛前会议
+  // 3. STORY → MEETING: SELECT 跳过剧情 → 进赛前会议 (关卡剧情用 SELECT 跳过)
   stage = 'STORY→MEETING';
-  tap(A, 210);
+  tap(SELECT, 210);
   if (root(store) !== SceneRoot.MEETING) throw new Error('expected MEETING, got ' + root(store));
   pass++;
   sampleOam('MEETING');
 
-  // 3b. MEETING: 按 START 进 STORY(比赛剧情) (FIXME: 真实会议菜单4分支待补, 当前简化)
-  stage = 'MEETING→STORY';
-  tap(START, 220); // START 跳会议 → STORY(赛前剧情)
-  if (root(store) !== SceneRoot.STORY) throw new Error('expected STORY after MEETING, got ' + root(store));
+  // 3b. MEETING チームデータ子菜单完整流转 (M2 任务验证):
+  //   主菜单: 下移2次→チームデータ(TeamDataMenu=2)→A 进子菜单
+  //   子菜单: 阵型→A进二级→B返回; 防守→A进二级→B返回;
+  //           换人→A进二级→A进三级选选手→A选换下→A选换上→自动返回;
+  //           等级→A进二级→A进三级选选手→B返回→B返回;
+  //           返回→A回主菜单
+  //   主菜单: 下移到キックオフ(MeetingMenu=3)→A 进 STORY(比赛剧情)
+  stage = 'MEETING:チームデータ 子菜单流转';
+  {
+    // 空跑一帧让 MEETING gen 到 yield (协程首次 next 参数被丢弃)
+    boot.update(0, 218);
+    // 主菜单: 下移2次到 チームデータ (MeetingMenu.TEAM_DATA=2)
+    tap(0x20, 219);  // DOWN → スコアメモ(1)
+    tap(0x20, 230);  // DOWN → チームデータ(2)
+    if (dq.getMeetingCursor() !== 2) throw new Error('チームデータ光标应为2, got ' + dq.getMeetingCursor());
+    pass++;
+    // A 确认进子菜单
+    tap(A, 240);
+    if (dq.getMenuLevel() !== 1) throw new Error('应进チームデータ子菜单(menuLevel=1), got ' + dq.getMenuLevel());
+    pass++;
+
+    // 子菜单项0: 阵型 → A 进二级 → B 返回
+    if (dq.getSubCursor() !== 0) throw new Error('子菜单光标应停在阵型(0)');
+    tap(A, 250);  // A 进二级 (阵型选择)
+    if (dq.getMenuLevel() !== 2) throw new Error('应进阵型二级(menuLevel=2), got ' + dq.getMenuLevel());
+    pass++;
+    tap(2, 260);  // B 返回子菜单
+    if (dq.getMenuLevel() !== 1) throw new Error('B应返回チームデータ子菜单, got ' + dq.getMenuLevel());
+    pass++;
+
+    // 子菜单项1: 防守 → DOWN → A 进二级 → B 返回
+    tap(0x20, 270);  // DOWN → 防守
+    tap(A, 280);  // A 进二级
+    if (dq.getMenuLevel() !== 2) throw new Error('应进防守二级, got ' + dq.getMenuLevel());
+    pass++;
+    tap(2, 290);  // B 返回
+    if (dq.getMenuLevel() !== 1) throw new Error('B应返回子菜单');
+    pass++;
+
+    // 子菜单项2: 换人 → DOWN → A 进二级(ChangeMenu) → A 进三级选选手
+    tap(0x20, 300);  // DOWN → 换人
+    tap(A, 310);  // A 进二级 (ChangeMenu: ポジション/メンバー/もどる)
+    if (dq.getMenuLevel() !== 2) throw new Error('应进换人二级, got ' + dq.getMenuLevel());
+    pass++;
+    tap(A, 320);  // A 确认 ポジション(ChangeMenu.POSITION=0) → 进三级选选手
+    if (dq.getMenuLevel() !== 3) throw new Error('应进三级选选手(menuLevel=3), got ' + dq.getMenuLevel());
+    pass++;
+    // 三级: A 选第一个为换下, A 选第二个为换上, 自动执行交换返回
+    tap(A, 330);  // A 选 swapOut=0
+    if (dq.getSwapOutIdx() !== 0) throw new Error('换下应为0, got ' + dq.getSwapOutIdx());
+    pass++;
+    tap(0x20, 340);  // DOWN 移到选手1
+    tap(A, 350);  // A 选 swapIn=1 → 执行交换 → 自动返回子菜单
+    if (dq.getMenuLevel() !== 1) throw new Error('换人完成后应返回チームデータ子菜单, got ' + dq.getMenuLevel());
+    pass++;
+
+    // 子菜单项3: 等级 → DOWN → A 进二级(LevelMenu) → A 进三级 → B 返回
+    tap(0x20, 360);  // DOWN → 等级
+    tap(A, 370);  // A 进二级
+    if (dq.getMenuLevel() !== 2) throw new Error('应进等级二级');
+    pass++;
+    tap(A, 380);  // A 确认 せんてい(LevelMenu.SELECT_PLAYER=0) → 进三级选选手
+    if (dq.getMenuLevel() !== 3) throw new Error('应进三级选选手');
+    pass++;
+    tap(0x20, 390);  // DOWN 选选手1
+    tap(A, 400);  // A 选中, 标记 selectedPlayerIdx=1
+    if (dq.getSelectedPlayerIdx() !== 1) throw new Error('应选中选手1, got ' + dq.getSelectedPlayerIdx());
+    pass++;
+    tap(2, 410);  // B 返回二级
+    if (dq.getMenuLevel() !== 2) throw new Error('B应返回二级');
+    pass++;
+    tap(2, 420);  // B 返回チームデータ子菜单
+    if (dq.getMenuLevel() !== 1) throw new Error('B应返回子菜单');
+    pass++;
+
+    // 子菜单项4: 返回 → DOWN → A 回主菜单
+    tap(0x20, 430);  // DOWN → 返回(TeamDataMenu.BACK=4)
+    tap(A, 440);  // A 回主菜单
+    if (dq.getMenuLevel() !== 0) throw new Error('应回主菜单, got ' + dq.getMenuLevel());
+    pass++;
+
+    // 主菜单: 当前光标在 チームデータ(2), DOWN → キックオフ(3)
+    tap(0x20, 450);  // DOWN → キックオフ
+    if (dq.getMeetingCursor() !== 3) throw new Error('应到キックオフ(3), got ' + dq.getMeetingCursor());
+    pass++;
+  }
+
+  // 4. MEETING キックオフ确认 → STORY(赛前剧情) → SELECT 跳过 → MATCH
+  stage = 'MEETING→STORY→MATCH';
+  tap(A, 460);  // A 确认 キックオフ → STORY
+  if (root(store) !== SceneRoot.STORY) throw new Error('expected STORY after MEETING キックオフ, got ' + root(store));
   pass++;
   sampleOam('MEETING_STORY');
-
-  // 4. STORY: 按 A 跳过 → MATCH
-  stage = 'STORY→MATCH';
-  tap(A, 230);
+  tap(SELECT, 470);  // SELECT 跳过剧情 → MATCH (关卡剧情用 SELECT 跳过)
   if (root(store) !== SceneRoot.MATCH) throw new Error('expected MATCH, got ' + root(store));
   pass++;
   sampleOam('MATCH');
 
   // 5. MATCH: 驱动足够帧触发帧守卫 → RESULT
+  //    多阶段验证: 上半场(KICKOFF)→中场(HALF_TIME)→下半场(KICKOFF)→PK(PK_SHOOTOUT)→RESULT
   stage = 'MATCH→RESULT';
   let reachedResult = false;
+  let seenHalfTime = false, seenPk = false;
   for (let f = 0; f < 6000; f++) {
     boot.update(0, f);
+    const phase = store.read('boot_match_phase');
+    if (phase === 7) seenHalfTime = true;   // MatchPhase.HALF_TIME=7
+    if (phase === 10) seenPk = true;       // MatchPhase.PK_SHOOTOUT=10
     if (root(store) === SceneRoot.RESULT) { reachedResult = true; break; }
   }
   if (!reachedResult) throw new Error('MATCH did not reach RESULT within 6000 frames (root=' + root(store) + ')');
+  pass++;
+  if (!seenHalfTime) throw new Error('MATCH 未经过中场(HALF_TIME)阶段');
+  pass++;
+  if (!seenPk) throw new Error('MATCH 未经过 PK 阶段 (平局应触发 PK)');
   pass++;
   sampleOam('RESULT');
 

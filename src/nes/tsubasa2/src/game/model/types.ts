@@ -46,14 +46,37 @@ export enum FormationType {
 // 球员
 // ═══════════════════════════════════════════════════════════════
 
-/** 球员能力值 */
+/** 球员能力值 (扩展为 22 字段, 对应 ROM 0x39fde 真实布局) */
 export interface PlayerStats {
-  shoot: number;     // 射门 0-99
-  pass: number;      // 传球 0-99
-  dribble: number;   // 盘带 0-99
-  tackle: number;    // 拦截 0-99
-  speed: number;     // 速度 0-99
-  stamina: number;   // 体力 0-99
+  // 基础能力 (6 项, 偏移 1-6)
+  shoot: number;        // 射门 0-255 (偏移1)
+  pass: number;         // 传球 0-255 (偏移2)
+  dribble: number;      // 盘带 0-255 (偏移3)
+  block: number;        // 阻挡 0-255 (偏移4)
+  tackle: number;       // 铲球 0-255 (偏移5)
+  intercept: number;   // 拦截 0-255 (偏移6)
+  // 低空能力 (7 项, 偏移 7-13)
+  lowShot: number;       // 低空射门 (偏移7)
+  lowPass: number;       // 低空传球 (偏移8)
+  lowTrap: number;       // 低空停球 (偏移9)
+  lowLetThrough: number; // 低空漏球 (偏移10)
+  lowControlledClear: number; // 低空受控解围 (偏移11)
+  lowUncontrolledClear: number; // 低空非受控解围 (偏移12)
+  lowBallChallenge: number; // 低空争球 (偏移13)
+  // 低空拦截 (偏移14, 单独项)
+  lowInterception: number; // 低空拦截 (偏移14)
+  // 高空能力 (7 项, 偏移 15-21)
+  highShot: number;      // 高空射门 (偏移15)
+  highPass: number;      // 高空传球 (偏移16)
+  highTrap: number;      // 高空停球 (偏移17)
+  highLetThrough: number; // 高空漏球 (偏移18)
+  highControlledClear: number; // 高空受控解围 (偏移19)
+  highUncontrolledClear: number; // 高空非受控解围 (偏移20)
+  highBallChallenge: number; // 高空争球 (偏移21)
+  // 高空拦截 (偏移22)
+  highInterception: number; // 高空拦截 (偏移22)
+  // 体力单独字段 (偏移0, 不在 22 能力内)
+  stamina: number;      // 体力 0-255 (偏移0)
 }
 
 /** 球员必杀技 */

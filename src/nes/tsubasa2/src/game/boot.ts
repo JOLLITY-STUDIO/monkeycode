@@ -34,7 +34,7 @@
  */
 
 import { DataStore } from './data/DataStore';
-import { SceneRoot, OpeningShot, TitleMenu } from './data/scene/index';
+import { SceneRoot, OpeningShot, TitleMenu, MeetingMenu, MatchPhase } from './data/scene/index';
 import { OpeningSceneController, type OpeningDisplayState } from './service/bank00/scene_opening.controller';
 import { TitleSceneController, type TitleDisplayState } from './service/bank00/title_scene.controller';
 import { DataQueryService } from './service/bank01_data-query.service';
@@ -48,6 +48,8 @@ import { ResultController } from './service/bank00_result.controller';
 import { PasswordController, type PasswordDisplayState } from './service/bank02_password.service';
 import { Bank02Service } from './service/bank02_scene.service';
 import { getMatchConfig } from './data/match-config';
+import type { TeamDataDisplayState } from './service/bank01_data-query.service';
+import { LevelUpService } from './service/levelup.service';
 
 /** 游戏根状态（存 DataStore.ram 中） */
 export const BOOT_KEYS = {
@@ -59,6 +61,12 @@ export const BOOT_KEYS = {
   TITLE_CURSOR: 'boot_title_cursor',
   /** 赛果场景已确认 */
   RESULT_DONE:  'boot_result_done',
+  /** STORY 后去向: true=MEETING(开场/续关), false=MATCH(比赛前) */
+  STORY_TO_MEETING: 'boot_story_to_meeting',
+  /** MATCH 当前阶段 (MatchPhase 枚举值) */
+  MATCH_PHASE:  'boot_match_phase',
+  /** MATCH 中场/加时 STORY 是否已完成 (避免重复触发) */
+  MATCH_STORY_DONE: 'boot_match_story_done',
 } as const;
 
 /** 模拟比赛时长 (帧) — FIXME(占位): 原版由 Bank00 主循环检测终场哨/比赛时钟, 此处帧守卫待对齐真实条件 (todo: 抠 bank2/bank26 终场检测) */
@@ -102,6 +110,9 @@ export class BootService {
 
   /** 赛果场景控制器 */
   private _result!: ResultController;
+
+  /** 球员升级服务 (经验值/等级 RAM 读写, LEVELUP 协程调用) */
+  private _levelup!: LevelUpService;
 
   /** 密码输入场景控制器 (Bank02 $A484 分发 + $A4C0 主逻辑) */
   private _password!: PasswordController;
@@ -158,6 +169,8 @@ export class BootService {
     private _bank18: Bank18Service,
     /** Bank02 场景服务 — 供 PASSWORD 场景执行真实 $A484/$A4C0 初始化链 (可选注入) */
     private _bank02?: Bank02Service,
+    /** 球员升级服务 (可选注入, LEVELUP 协程用) */
+    private _levelupSvc?: LevelUpService,
   ) {}
 
   // ── 公开接口 ──
@@ -180,6 +193,7 @@ export class BootService {
     this._opening = new OpeningSceneController(this._store);
     this._result = new ResultController(this._store);
     this._password = new PasswordController(this._store);
+    this._levelup = this._levelupSvc ?? new LevelUpService(this._store);
 
     // 4. 进入 BOOT 场景 — 等价 JMP $C400 (A=0) → bank2 $A21B 加载初始协程 → JMP $9EED 主循环
     // H5: 启动 BOOT 协程到槽0 (协程模型, 对应 ram_0001 初始任务)
@@ -257,6 +271,24 @@ export class BootService {
     if (!this._password) return null;
     if (this.getRoot() !== SceneRoot.PASSWORD) return null;
     return this._password.getDisplayState();
+  }
+
+  /**
+   * 获取 MEETING 赛前会议界面显示状态 (View 层消费, 写 NT/OAM)。
+   * 包含主菜单(4项)/子菜单(チームデータ 5项)/二级/三级 状态。
+   */
+  getMeetingDisplayState(): TeamDataDisplayState | null {
+    if (this.getRoot() !== SceneRoot.MEETING) return null;
+    return this._dataQuery.getTeamDataDisplayState();
+  }
+
+  /**
+   * 获取 LEVELUP 升级界面显示状态 (View 层消费)。
+   * 返回 LevelUpService 实例供 LevelUpView 渲染选手等级/经验。
+   */
+  getLevelUpService(): LevelUpService | null {
+    if (this.getRoot() !== SceneRoot.LEVELUP) return null;
+    return this._levelup;
   }
 
   // ── 内部 ──
@@ -365,7 +397,8 @@ export class BootService {
       const buttons = yield;
       const r = this._password.update(buttons);
       if (r === 'success') {
-        // 密码成功 → STORY(续关剧情) → MEETING: 设 ram_00ED=$0A (赛前STORY后进 MEETING)
+        // 密码成功 → STORY(续关剧情) → MEETING: 标记 STORY 后去 MEETING
+        this._store.write(BOOT_KEYS.STORY_TO_MEETING, 1);  // 续关剧情→MEETING
         this._store.write('ram_00ED', 0x0A);
         return SceneRoot.STORY;
       }
@@ -373,7 +406,7 @@ export class BootService {
     }
   }
 
-  /** BOOT 协程 — 开场占位过渡, START 或超时切换 TITLE */
+  /** BOOT 协程 — 真实开场画面 (bank0 NT + 精灵 + 调色板渐显), START 或超时切换 TITLE */
   private *_bootCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._opening.initBoot();
     this._writeShot(OpeningShot.LOGO);
@@ -398,7 +431,10 @@ export class BootService {
       this._store.write(BOOT_KEYS.TITLE_CURSOR, this._title.cursor);
       if (selected !== null) {
         // 真实流程: KICKOFF=新游戏→STORY(赛前剧情)→MEETING; CONTINUE=续关→PASSWORD
-        if (selected === TitleMenu.KICKOFF) return SceneRoot.STORY;
+        if (selected === TitleMenu.KICKOFF) {
+          this._store.write(BOOT_KEYS.STORY_TO_MEETING, 1);  // 开场剧情→MEETING
+          return SceneRoot.STORY;
+        }
         if (selected === TitleMenu.CONTINUE) return SceneRoot.PASSWORD;
       }
     }
@@ -406,7 +442,12 @@ export class BootService {
 
   /**
    * MEETING 协程 — 赛前会议 (说明书 MeetingMenu: 情報/スコアメモ/チームデータ/キックオフ)
-   * 上下移光标, A 确认, キックオフ→STORY(进比赛), チームデータ→子菜单
+   * 上下移光标, A 确认:
+   *   情報(0)        → 显示对手信息 (TODO: 渲染)
+   *   スコアメモ(1)   → 显示密码 (TODO: 渲染)
+   *   チームデータ(2) → 进子菜单 (阵型/防守/换人/等级/返回, 三级状态机)
+   *   キックオフ(3)   → 进比赛 (STORY→MATCH)
+   * チームデータ子菜单的上下/A/B 按键由 DataQueryService 内部状态机处理, boot 只检查退出条件。
    */
   private *_meetingCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._dataQuery.initOptionScreen();
@@ -416,35 +457,32 @@ export class BootService {
       this._store.write('ram_001C', buttons);
       this._dataQuery.update(buttons, 0);
       // 检查主菜单确认: キックオフ(MeetingMenu.KICKOFF=3) → 进比赛
+      // チームデータ子菜单内按 A/B 不触发主菜单确认 (subConfirmed!=null 时不写 confirmed)
       const confirmed = this._dataQuery.getConfirmedMenu?.() ?? -1;
-      if (confirmed === 3) { // MeetingMenu.KICKOFF
+      if (confirmed === MeetingMenu.KICKOFF) {
         this._store.write('ram_00ED', 0);
-        return SceneRoot.STORY;
-      }
-      // FIXME: 真实会议4分支菜单(情報/スコアメモ/チームデータ/キックオフ)待补
-      // 当前简化: START 直跳 STORY(赛前剧情) → MATCH
-      if ((buttons & (BUTTON.START | BUTTON.A)) !== 0) {
-        this._store.write('ram_00ED', 0);
+        this._store.write(BOOT_KEYS.STORY_TO_MEETING, 0);  // 比赛前剧情→MATCH
         return SceneRoot.STORY;
       }
     }
   }
 
   /**
-   * STORY 协程 — 剧情场景 (Bank18 驱动 Bank19)。
+   * STORY 协程 — 关卡剧情场景 (Bank18 驱动 Bank19)。
    * 结束去向取决于来源: KICKOFF→STORY→MEETING; MEETING→STORY→MATCH; 密码→STORY→MEETING。
-   * 用 ram_00ED 区分: ram_00ED=$0A(开场)→MEETING; 其他→MATCH。
-   * A/START 跳过, 或数据流结束自动切下一场景。
+   * 用 boot_story_to_meeting 独立键区分去向 (不读 ram_00ED, 避免与 MEETING 光标冲突)。
+   * SELECT 跳过 (原版按键), 或数据流结束自动切下一场景。
+   * 注: BOOT(intro/开场动画) 用 START 跳过, 关卡内 STORY 用 SELECT 跳过 — 二者不同。
    */
   private *_storyCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._bank18.enterChapter(StoryChapter.OPENING);
     this._matchFrame = 0;
-    // 判断 STORY 后去向: 开场(ram_00ED=$0A)→MEETING, 比赛前→MATCH
-    const isOpening = (this._store.read('ram_00ED') as number) === 0x0A;
-    const nextScene = isOpening ? SceneRoot.MEETING : SceneRoot.MATCH;
+    // 判断 STORY 后去向: 开场/续关→MEETING, 比赛前→MATCH
+    const toMeeting = (this._store.read(BOOT_KEYS.STORY_TO_MEETING) as number) !== 0;
+    const nextScene = toMeeting ? SceneRoot.MEETING : SceneRoot.MATCH;
     for (;;) {
       const buttons = yield;
-      if ((buttons & (BUTTON.A | BUTTON.START)) !== 0) {
+      if ((buttons & BUTTON.SELECT) !== 0) {
         this._bank18.skip();
         return nextScene;
       }
@@ -454,47 +492,132 @@ export class BootService {
   }
 
   /**
-   * MATCH 协程 — 比赛 (Bank26 引擎 + Bank20 辅助), 终场切 RESULT。
+   * MATCH 协程 — 比赛 (Bank26 引擎 + Bank20 辅助), 多阶段:
+   *   1. 上半场 (ram_005E 倒计时) → 归零切中场
+   *   2. 中场 STORY (Bank18 嵌入, SELECT/A 跳过) → 下半场
+   *   3. 下半场 (ram_005E 重置) → 归零检测比分
+   *   4. 平局 → 加时赛 (ram_005E 再重置) 或 PK (由比赛配置决定, 当前默认 PK)
+   *   5. 分出胜负 → RESULT
    *
    * 真实终场检测 (2026-08 反汇编, bank0 $8D0A-$8DC8):
    *   - ram_005E (回合倒计时) DEC 归零 → 下一阶段 ($8D1B)
    *   - ram_0072 (阶段倒计时) DEC 归零 → $8DC8 终场检测 ($8D81)
    *   - ram_0062 bit5 置位 → BNE $8DFC (终场分支) ($8DC8)
-   *
-   * ram_005E/ram_0072 初始值是数据驱动的 (bank0 $8B55:
-   *   LDA (ram_0063),Y; STA ram_005E — ram_0063 指针由 ram_00ED 比赛索引
-   *   算出, 指向 bank2 $A000+ 区比赛配置数据表)。
-   * 当前用占位初始值 ($80/$04), 待 bank2 比赛配置数据表建模后替换。
    */
   private *_matchCoroutine(): Generator<number | undefined, SceneRoot, number> {
     this._matchFrame = 0;
     // 比赛配置加载 (对应 bank0 $8B1C-$8B6F: ram_00ED 索引→bank7 指针表→配置数据)
     const matchIdx = (this._store.read('ram_00ED') as number) || 0;
-    const cfg = getMatchConfig(matchIdx);  // 一级配置字节 (二级指针链待运行时解析)
-    void cfg;  // FIXME: 二级指针链解析后, 从 cfg 提取 ram_005E(二级数据[3])/ram_0072 等
-    // ram_005E/ram_0072 真实值依赖运行时多级指针 (二级指针 ram_0063/ram_0070 动态设置),
-    // 静态无法精确提取 — 字段偏移: ram_005E=二级数据[3], ram_0072=ram_0070指针[Y]
-    // 当前用占位常量, 待运行时指针链完整解析或模拟器对照后替换
-    const RAM_005E_INIT = 0x80;  // FIXME: 二级指针链解析后从 cfg 动态取 (偏移二级数据[3])
-    const RAM_0072_INIT = 0x04;  // FIXME: ram_0070 指针链解析后从 cfg 动态取
-    this._store.write('ram_005E', RAM_005E_INIT);
-    this._store.write('ram_0072', RAM_0072_INIT);
+    const cfg = getMatchConfig(matchIdx);  // 一级配置字节
+    void cfg;
+    // ram_005E/ram_0072 真实值依赖运行时多级指针, 当前用占位常量
+    const HALF_DURATION = 0x80;   // 半场倒计时 (占位, 真实值从 cfg 二级指针链取)
+    const EXTRA_DURATION = 0x40;   // 加时赛倒计时 (占位)
     this._store.write('ram_0062', 0);
+    this._store.write(BOOT_KEYS.MATCH_STORY_DONE, 0);
+
+    // ── 阶段 1: 上半场 ──
+    this._store.write(BOOT_KEYS.MATCH_PHASE, MatchPhase.KICKOFF);
+    this._store.write('ram_005E', HALF_DURATION);
+    this._store.write('ram_0072', 0x02);  // 2 个半场
+    yield* this._runHalfPhase(false);
+
+    // ── 阶段 2: 中场 STORY (嵌入, 不切场景根) ──
+    this._store.write(BOOT_KEYS.MATCH_PHASE, MatchPhase.HALF_TIME);
+    yield* this._runEmbeddedStory(StoryChapter.HALF_TIME);
+
+    // ── 阶段 3: 下半场 ──
+    this._store.write(BOOT_KEYS.MATCH_PHASE, MatchPhase.KICKOFF);
+    this._store.write('ram_005E', HALF_DURATION);
+    yield* this._runHalfPhase(false);
+
+    // ── 阶段 4: 终场检测 — 平局 → 加时/PK, 分胜负 → RESULT ──
+    const scoreA = this._store.read('scoreA') as number;
+    const scoreB = this._store.read('scoreB') as number;
+    if (scoreA === scoreB) {
+      // 平局 → 加时赛 (可选, 由比赛配置决定; 当前默认有加时)
+      // FIXME: 真实 ROM 由 ram_0062 bit 标志或比赛配置字段决定是否有加时
+      this._store.write(BOOT_KEYS.MATCH_PHASE, MatchPhase.EXTRA_TIME);
+      // 加时赛开场 STORY
+      yield* this._runEmbeddedStory(StoryChapter.EXTRA_TIME);
+      this._store.write(BOOT_KEYS.MATCH_PHASE, MatchPhase.KICKOFF);
+      this._store.write('ram_005E', EXTRA_DURATION);
+      yield* this._runHalfPhase(true);
+
+      // 加时赛后仍平局 → PK
+      const sa2 = this._store.read('scoreA') as number;
+      const sb2 = this._store.read('scoreB') as number;
+      if (sa2 === sb2) {
+        // PK 阶段
+        this._store.write(BOOT_KEYS.MATCH_PHASE, MatchPhase.PK_SHOOTOUT);
+        yield* this._runPkPhase();
+      }
+    }
+
+    return SceneRoot.RESULT;
+  }
+
+  /**
+   * 单半场协程 — 倒计时驱动, 归零返回。
+   * @param isExtra true=加时赛 (短倒计时)
+   */
+  private *_runHalfPhase(isExtra: boolean): Generator<number | undefined, void, number> {
+    const guard = isExtra ? (60 * 45) : MATCH_DURATION_FRAMES;  // 加时 45秒 / 正常 90秒 帧守卫
+    let frame = 0;
     for (;;) {
       const _buttons = yield;
       this._matchEngine.mainLoop();
       this._bank20.frameTick();
       this._matchFrame++;
-      // 模拟 bank0 比赛协程倒计时 (对应 $8D1B DEC ram_005E / $8D81 DEC ram_0072)
-      // FIXME: matchEngine/bank20 真实实现后移除此模拟, 由引擎内部 DEC
+      frame++;
+      // 模拟 bank0 比赛协程倒计时
       const r5E = (this._store.read('ram_005E') as number) || 0;
-      const r72 = (this._store.read('ram_0072') as number) || 0;
       if (r5E > 0) this._store.write('ram_005E', r5E - 1);
-      else if (r72 > 0) { this._store.write('ram_0072', r72 - 1); this._store.write('ram_005E', 0x80); }
       const r62 = (this._store.read('ram_0062') as number) || 0;
-      // 真实终场: ram_005E==0 && ram_0072==0, 或 ram_0062 bit5; 降级帧守卫兜底
-      if ((r5E === 0 && r72 === 0) || (r62 & 0x20) !== 0 || this._matchFrame >= MATCH_DURATION_FRAMES) {
-        return SceneRoot.RESULT;
+      // 终场: ram_005E==0 或 ram_0062 bit5 或帧守卫
+      if (r5E === 0 || (r62 & 0x20) !== 0 || frame >= guard) return;
+    }
+  }
+
+  /**
+   * 嵌入式 STORY 协程 (中场/加时开场) — 不切场景根, 在 MATCH 内部播放剧情。
+   * SELECT/A 跳过, 或数据流结束自动返回, 或帧守卫超时兜底 (避免卡死)。
+   */
+  private *_runEmbeddedStory(chapter: StoryChapter): Generator<number | undefined, void, number> {
+    this._bank18.enterChapter(chapter);
+    let frame = 0;
+    const STORY_GUARD = 300;  // 5 秒帧守卫, 超时自动跳过 (FIXME: 真实 ROM 由数据流自然结束)
+    for (;;) {
+      const buttons = yield;
+      frame++;
+      if ((buttons & (BUTTON.SELECT | BUTTON.A)) !== 0 || frame >= STORY_GUARD) {
+        this._bank18.skip();
+        return;
+      }
+      const done = this._bank18.update(0);
+      if (done) return;
+    }
+  }
+
+  /**
+   * PK 阶段协程 — 点球大战, 帧守卫兜底, 分出胜负返回。
+   * FIXME: 真实 ROM PK 逻辑由 Bank26 引擎驱动, 当前用帧守卫占位。
+   * 帧守卫超时后强制分胜负 (写 scoreA+1 模拟主队胜)。
+   */
+  private *_runPkPhase(): Generator<number | undefined, void, number> {
+    const PK_GUARD = 60 * 30;  // 30 秒帧守卫
+    let frame = 0;
+    for (;;) {
+      const _buttons = yield;
+      this._matchEngine.mainLoop();
+      this._bank20.frameTick();
+      frame++;
+      const sa = this._store.read('scoreA') as number;
+      const sb = this._store.read('scoreB') as number;
+      if (sa !== sb || frame >= PK_GUARD) {
+        // 帧守卫超时且仍平局 → 强制分胜负 (主队+1)
+        if (sa === sb) this._store.write('scoreA', sa + 1);
+        return;
       }
     }
   }
@@ -519,10 +642,19 @@ export class BootService {
 
   /** LEVELUP 协程 — 升级界面(每场后选手经验/升级), 确认后切下一场 STORY 或重打 */
   private *_levelupCoroutine(): Generator<number | undefined, SceneRoot, number> {
+    // 比赛结束后给玩家队 11 人 + 替补加经验值 (对应真实 ROM 赛后升级逻辑)
+    // 真实 ROM: 经验值 RAM $0454 + idx*2, 比赛结果决定 gain 值
+    const win = this._result?.isWin?.() ?? false;
+    const expGain = win ? 50 : 20;  // 赢 +50 经验, 输 +20 (占位, 真实值待 ROM 对照)
+    for (let i = 0; i < 11; i++) {
+      this._levelup.addExp(i, expGain);
+      this._levelup.tryLevelUp(i);
+    }
     for (;;) {
       const buttons = yield;
       if ((buttons & (BUTTON.A | BUTTON.START)) !== 0) {
         // 升级确认 → 进 STORY(赛前剧情) → MEETING → MATCH (重打本场或下一场)
+        this._store.write(BOOT_KEYS.STORY_TO_MEETING, 0);  // 下一场赛前剧情→MATCH
         return SceneRoot.STORY;
       }
     }

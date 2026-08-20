@@ -24,6 +24,8 @@ var StoryChapter;
     StoryChapter[StoryChapter["CHAPTER_1"] = 1] = "CHAPTER_1";
     StoryChapter[StoryChapter["CHAPTER_2"] = 2] = "CHAPTER_2";
     StoryChapter[StoryChapter["CHAPTER_3"] = 3] = "CHAPTER_3";
+    StoryChapter[StoryChapter["HALF_TIME"] = 4] = "HALF_TIME";
+    StoryChapter[StoryChapter["EXTRA_TIME"] = 5] = "EXTRA_TIME";
     StoryChapter[StoryChapter["CONTINUE"] = 255] = "CONTINUE";
 })(StoryChapter || (exports.StoryChapter = StoryChapter = {}));
 /**
@@ -35,6 +37,8 @@ const CHAPTER_STREAM_OFFSET = {
     [StoryChapter.CHAPTER_1]: bank19_auxiliary_service_1.BANK19_STREAM_OFFSET,
     [StoryChapter.CHAPTER_2]: bank19_auxiliary_service_1.BANK19_STREAM_OFFSET,
     [StoryChapter.CHAPTER_3]: bank19_auxiliary_service_1.BANK19_STREAM_OFFSET,
+    [StoryChapter.HALF_TIME]: bank19_auxiliary_service_1.BANK19_STREAM_OFFSET,
+    [StoryChapter.EXTRA_TIME]: bank19_auxiliary_service_1.BANK19_STREAM_OFFSET,
     [StoryChapter.CONTINUE]: bank19_auxiliary_service_1.BANK19_STREAM_OFFSET,
 };
 class Bank18Service {

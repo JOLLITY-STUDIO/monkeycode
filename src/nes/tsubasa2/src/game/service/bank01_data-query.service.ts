@@ -520,14 +520,15 @@ export class DataQueryService {
   private _meetingCursorUp(): void {
     const cur = this._optionScreen.cursorPos;
     this._optionScreen.cursorPos = (cur + 3) % 4; // -1 mod 4
-    this._store.write(KEY_ED, this._optionScreen.cursorPos);
+    // 注: 不写 ram_00ED — 光标与 JUMP_TARGETS 分发共用 ram_00ED 会造成
+    // 下一帧 dispatch entry1 重置光标 (bug 修复 2026-08)。boot 路由用 getConfirmedMenu()。
   }
 
   /** MeetingMenu 光标下移 (4项循环) */
   private _meetingCursorDown(): void {
     const cur = this._optionScreen.cursorPos;
     this._optionScreen.cursorPos = (cur + 1) % 4;
-    this._store.write(KEY_ED, this._optionScreen.cursorPos);
+    // 注: 不写 ram_00ED — 同上, 避免触发 JUMP_TARGETS 分发重置菜单状态
   }
 
   /**
