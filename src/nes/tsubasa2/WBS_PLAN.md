@@ -87,7 +87,7 @@
 | G3 | STORY 剧情场景（Bank18/19） | ✅ | Bank18 已查证=纯渲染数据(无章节表, 4个.s全审阅); 章节→Bank19 streamOffset 真实映射在 bank00/bank02 未反汇编段, 待 trace 章节选择流程; 注释已更新 (bank18_story/bank18-data/index.ts); **章节场景数据建模✅**: 按全$01/$00 padding 分隔识别 12 个真实场景 tile-map 段 (B18_SCENE_MAPS), enterChapter 按章节选择场景段 (CHAPTER_SCENE_IDX) + readB18Scene/readB18SceneRow 访问器 |
 | G4 | RESULT 赛果场景 | ✅ | ResultController 骨架接入 boot RESULT 路由 (A→TITLE); MATCH 帧守卫 → RESULT; 玩链路集成测试 PASS=6/0 |
 | G5 | CHR→PNG 全部图形资源化 | ✅ | scripts/export_all_chr_png.cjs: 16 bank × 2 pattern table = 32 张 PNG, 输出 output/chr-png/chr-bank-NN-pt[0|1].png |
-| G6 | 各 Bank 全量差分验证 | ✅ | scripts/verify_all_banks.cjs: 7 PASS (bank07/10/17/18/21/23/25 纯数据 bank asm=ts=8192B diff=0) / 10 FAIL (bank11/16/19/20/22/24/26/27/28/31 asm 含代码行 .byte 提取不完整, ts 是完整 ROM) / 15 SKIP (bank00-06/08/09/12-15/29/30 service 翻译无内嵌数组) |
+| G6 | 各 Bank 全量差分验证 | ✅ | scripts/verify_all_banks.cjs (ROM 权威基准): 19 PASS (bank07/08/09/10/11/16/17/18/19/20/21/22/23/24/25/26/27/28/31 ts==ROM 8192B diff=0) / 0 FAIL / 13 SKIP (bank00-06/12-15/29/30 service 翻译无内嵌数组) |
 | G7 | 版本推进 + Tag 里程碑 | ✅ | v0.4.0 (2026-08-20): dispatch层重建+prg-bank依赖修复+CHR PNG+编译零错误 |
 | G8 | char-map.ts 双 tile 假名映射补全 (?A0..?D1 → 真实假名) | ✅ | 双 tile=浊点(上)+基础假名(下), $A6-$AE=ガ-ゲ等, 部分 loTile 待精确识别标 TODO |
 | G9 | textscript text 字段刷新 (char-map 补全后重新解码) | ✅ | generate_script_data.cjs 从 asm 重新生成 4 个 scripts-bank, text 含可读假名 |
@@ -106,7 +106,7 @@
 | G22 | B2 OpeningSceneController 真开场数据提取 | ⬜ | 当前 TECMO 字母占位, 真开场动画数据待提取 |
 | G23 | A4 场景路由扩展 (dispatch.service.ts 接入 STORY/PASSWORD/RESULT) | ⬜ | dispatch 目前只翻译 $C400 RESET 链, 场景切换分发待补 |
 | G24 | G8 后续: char-map 双 tile loTile 精确识别 | ⬜ | 部分 loTile $06-$0B/$46-$5E 标 TODO, 需 CHR 双 tile 渲染确认 |
-| G25 | G6 后续: 差分验证 FAIL 的 10 个 bank | ⬜ | bank11/16/19/20/22/24/26/27/28/31 asm 含代码行 .byte 提取不完整, 需对比完整 ROM |
+| G25 | G6 后续: 差分验证 FAIL 的 10 个 bank | ✅ | 2026-08-21 解决: 验证基准从 asm .byte 提取改为 ROM 原始字节 (docs/roms/Captain Tsubasa II - Super Striker (Japan).nes) 权威对比, scripts/verify_all_banks.cjs 重写; bank11/16/19/20/22/24/26/27/28/31 全部 PASS, 最终 19 PASS / 0 FAIL / 13 SKIP (SKIP=service 翻译 bank 无内嵌数组属正常) |
 
 ## 里程碑
 

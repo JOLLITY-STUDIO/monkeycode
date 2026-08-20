@@ -1,40 +1,26 @@
-// G6: 各 Bank 全量差分验证 — asm/bankXX/_full.s .byte 数据 vs TS 内嵌数据
-// 对比: asm/bankXX/_full.s → .byte 提取 8192B vs src/game/data/prg/prg-bank-XX.ts 或 bankXX-data.ts 内嵌数组
+// G6: 各 Bank 全量差分验证 — ROM 原始字节 vs TS 内嵌数据
+// 权威基准: docs/roms/Captain Tsubasa II - Super Striker (Japan).nes (header 16B + 32×8KB PRG)
+// 对比: src/game/data/prg/prg-bank-XX.ts 内嵌数组 == ROM bank 8KB
+// 说明: asm .byte 提取不完整(含代码行), 不作为基准, 仅记录参考
 const fs = require('fs');
 const path = require('path');
 
-// 从 asm _full.s 提取 .byte 数据
-function extractAsmBytes(asmPath) {
-  const src = fs.readFileSync(asmPath, 'utf8');
-  const lines = src.split('\n');
-  const bytes = [];
-  let pending = false;
-  for (const raw of lines) {
-    const l = raw.trim();
-    if (!l || l.startsWith(';')) continue;
-    if (l.startsWith('.byte')) {
-      let c = l.slice(5).trim();
-      c = c.split(';')[0].trim();
-      if (c === '') { pending = true; continue; }
-      const parts = c.split(',').map(s => s.trim());
-      for (const p of parts) {
-        if (p === '') continue;
-        bytes.push(p[0] === '$' ? parseInt(p.slice(1), 16) : parseInt(p, 16));
-      }
-      pending = !c.endsWith(',');
-    } else if (pending) {
-      let c = l.split(';')[0].trim();
-      if (c === '') continue;
-      const parts = c.split(',').map(s => s.trim());
-      for (const p of parts) {
-        if (p === '') continue;
-        bytes.push(p[0] === '$' ? parseInt(p.slice(1), 16) : parseInt(p, 16));
-      }
-      pending = !l.trim().endsWith(',');
-    }
-  }
-  return bytes;
+const ROOT = path.resolve(__dirname, '..');
+const ROM_PATH = path.join(ROOT, 'docs', 'roms', 'Captain Tsubasa II - Super Striker (Japan).nes');
+const BANK = 0x2000;
+
+let rom = null;
+try {
+  rom = fs.readFileSync(ROM_PATH);
+} catch (e) {
+  console.error(`无法读取 ROM: ${ROM_PATH}`);
+  process.exit(1);
 }
+if (rom.length < 0x10 + 32 * BANK) {
+  console.error(`ROM 大小不足: ${rom.length}`);
+  process.exit(1);
+}
+const romBank = (n) => Array.from(rom.subarray(0x10 + n * BANK, 0x10 + (n + 1) * BANK));
 
 // 从 TS 文件提取内嵌数组
 function extractTsArray(tsPath, varName) {
@@ -54,18 +40,11 @@ function extractTsArray(tsPath, varName) {
 // 验证单个 bank
 function verifyBank(bankNum) {
   const bankId = bankNum.toString().padStart(2, '0');
-  const asmPath = `asm/bank${bankId}/_full.s`;
-  if (!fs.existsSync(asmPath)) {
-    return { bank: bankId, status: 'no-asm', diff: -1 };
-  }
+  const expected = romBank(bankNum);
 
-  const asmBytes = extractAsmBytes(asmPath);
-  if (asmBytes.length === 0) {
-    return { bank: bankId, status: 'asm-empty', asmLen: 0 };
-  }
-
-  // 找 TS 数据源: prg-bank-XX.ts 或 bankXX-data.ts
+  // 找 TS 数据源: prg-bank-XX.ts / bankXX-data.ts / bankXX-tables.ts
   const tsCandidates = [
+    { path: `src/game/data/prg/prg-bank-${bankId}.ts`, var: `PRG_BANK_${bankId}` },
     { path: `src/game/data/prg/prg-bank-${bankId}.ts`, var: `PRG_BANK_${bankNum}` },
     { path: `src/game/data/prg/bank${bankId}-data.ts`, var: `B${bankNum}_DATA` },
     { path: `src/game/data/prg/bank${bankId}-tables.ts`, var: `B${bankNum}_DATA` },
@@ -74,8 +53,9 @@ function verifyBank(bankNum) {
   let tsBytes = null;
   let tsSource = '';
   for (const c of tsCandidates) {
-    if (fs.existsSync(c.path)) {
-      tsBytes = extractTsArray(c.path, c.var);
+    const abs = path.join(ROOT, c.path);
+    if (fs.existsSync(abs)) {
+      tsBytes = extractTsArray(abs, c.var);
       if (tsBytes && tsBytes.length > 0) {
         tsSource = c.path;
         break;
@@ -84,26 +64,26 @@ function verifyBank(bankNum) {
   }
 
   if (!tsBytes) {
-    return { bank: bankId, status: 'no-ts', asmLen: asmBytes.length };
+    return { bank: bankId, status: 'no-ts', romLen: expected.length };
   }
 
-  // 对比
-  const minLen = Math.min(asmBytes.length, tsBytes.length);
+  // 对比 ROM 权威基准
+  const minLen = Math.min(tsBytes.length, expected.length);
   let diff = 0;
   const diffs = [];
   for (let i = 0; i < minLen; i++) {
-    if (asmBytes[i] !== tsBytes[i]) {
+    if (tsBytes[i] !== expected[i]) {
       diff++;
-      if (diffs.length < 5) diffs.push({ offset: i, asm: asmBytes[i], ts: tsBytes[i] });
+      if (diffs.length < 5) diffs.push({ offset: i, rom: expected[i], ts: tsBytes[i] });
     }
   }
-  // 长度差异
-  const lenDiff = Math.abs(asmBytes.length - tsBytes.length);
+  const lenDiff = Math.abs(tsBytes.length - expected.length);
+  const exact = diff === 0 && lenDiff === 0;
 
   return {
     bank: bankId,
-    status: diff === 0 && lenDiff === 0 ? 'PASS' : 'FAIL',
-    asmLen: asmBytes.length,
+    status: exact ? 'PASS' : 'FAIL',
+    romLen: expected.length,
     tsLen: tsBytes.length,
     diff,
     lenDiff,
@@ -114,7 +94,7 @@ function verifyBank(bankNum) {
 
 // 验证全部 32 个 bank
 console.log('═══════════════════════════════════════════════════════════');
-console.log('G6: 各 Bank 全量差分验证 (asm .byte vs TS 内嵌)');
+console.log('G6: 各 Bank 全量差分验证 (ROM vs TS 内嵌)');
 console.log('═══════════════════════════════════════════════════════════');
 let passCount = 0, failCount = 0, skipCount = 0;
 const results = [];
@@ -123,16 +103,16 @@ for (let b = 0; b < 32; b++) {
   results.push(r);
   if (r.status === 'PASS') {
     passCount++;
-    console.log(`bank ${r.bank}: ✅ PASS (asm=${r.asmLen}B ts=${r.tsLen}B diff=0)`);
+    console.log(`bank ${r.bank}: ✅ PASS (ts=${r.tsLen}B rom=${r.romLen}B diff=0) ← ${r.tsSource}`);
   } else if (r.status === 'FAIL') {
     failCount++;
-    console.log(`bank ${r.bank}: ❌ FAIL (asm=${r.asmLen}B ts=${r.tsLen}B diff=${r.diff} lenDiff=${r.lenDiff}) ← ${r.tsSource}`);
+    console.log(`bank ${r.bank}: ❌ FAIL (ts=${r.tsLen}B rom=${r.romLen}B diff=${r.diff} lenDiff=${r.lenDiff}) ← ${r.tsSource}`);
     if (r.diffs.length > 0) {
-      r.diffs.forEach(d => console.log(`  offset=0x${d.offset.toString(16)} asm=0x${d.asm.toString(16)} ts=0x${d.ts.toString(16)}`));
+      r.diffs.forEach(d => console.log(`  offset=0x${d.offset.toString(16)} rom=0x${d.rom.toString(16)} ts=0x${d.ts.toString(16)}`));
     }
   } else {
     skipCount++;
-    console.log(`bank ${r.bank}: ⏭️ ${r.status} (asm=${r.asmLen || 0}B)`);
+    console.log(`bank ${r.bank}: ⏭️ ${r.status} (rom=${r.romLen}B)`);
   }
 }
 console.log('═══════════════════════════════════════════════════════════');
