@@ -1,3 +1,4 @@
+.org $E9DA
     .byte $1C,$EA,$29,$EA,$34,$EA,$3D,$EA,$46,$EA,$51,$EA,$59,$EA,$61,$EA
     .byte $6A,$EA,$73,$EA,$7C,$EA,$87,$EA,$94,$EA,$9F,$EA,$AC,$EA,$B7,$EA
     .byte $C4,$EA,$CE,$EA,$DB,$EA,$E6,$EA,$EF,$EA,$F8,$EA,$01,$EB,$0D,$EB

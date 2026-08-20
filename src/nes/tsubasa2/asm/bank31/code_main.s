@@ -1188,7 +1188,8 @@
     LDA #$80                   ; $E9D4
     STA $0515                  ; $E9D6
     RTS                        ; $E9D9
-; --- gap $E9FA-$E9FE ---
+; --- gap $E9DA-$EB87: filled by data_ptrs.s ---
+.org $EB88
     JSR $CB0F                  ; $EB88
     LDA $0021                  ; $EB8B
     AND #$1E                   ; $EB8D
@@ -1868,7 +1869,8 @@
     LDA #$80                   ; $F154
     STA $0515                  ; $F156
     RTS                        ; $F159
-; --- gap $F187-$F186 ---
+; --- gap $F15A-$F310: filled by data_sprites.s ---
+.org $F311
     STY $0030                  ; $F311
     LDY #$F3                   ; $F313
     STY $0031                  ; $F315

@@ -415,8 +415,6 @@ class Assembler:
                             b = SEGMENTS_TO_BANK[cur_seg]
                             base = bank_base_cpu.get(b, 0x8000)
                             bank_pc2[b] = target - base
-                            if b == 31 and target >= 0xFA00:
-                                print(f'  DEBUG .org ${target:04X} -> bank_pc2[{b}]={bank_pc2[b]} (0x{bank_pc2[b]:04X}) file={os.path.basename(ln.file)}')
                         continue
                     if ln.mnemonic == '.byte':
                         self._emit_bytes(cur_seg, cur_bank, bank_pc2, ln)

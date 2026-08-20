@@ -1,3 +1,4 @@
+.org $FFF0
     LDA #$00                   ; $FFF0
     STA $8000                  ; $FFF2
     JMP $C503                  ; $FFF5
