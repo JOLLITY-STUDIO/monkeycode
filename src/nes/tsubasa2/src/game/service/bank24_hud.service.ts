@@ -23,6 +23,7 @@
  */
 
 import { DataStore } from '../data/DataStore';
+import { DIGIT_TILE_BASE, numberToTiles16, div16 } from '../../core/numUtils';
 import {
   readHud1Ptr,
   readHud2Ptr,
@@ -1333,5 +1334,59 @@ export class Bank24HudService {
   private _setPtr(loKey: string, hiKey: string, ptr: number): void {
     this._store.write(loKey, ptr & 0xff);
     this._store.write(hiKey, (ptr >> 8) & 0xff);
+  }
+
+  // ──────────────────────────────────────────────
+  // $8C55: 数值→tile 显示 (对应 bank24_part02.asm:863-902)
+  // ──────────────────────────────────────────────
+
+  /**
+   * $8C55: 16bit 数值→tile IDs 循环显示
+   *
+   * 入口: A=数值lo, X=数值hi, ram_003C=显示位数
+   * 流程: 循环除 10 (JSR $C51E → div16), 余数+0x33=tile_id (JSR $8C7A),
+   *       递归处理商高位, 直到 hi=0 且 lo<10
+   *
+   * @param valueLo 数值 lo (A 寄存器, ram_006F)
+   * @param valueHi 数值 hi (X 寄存器, ram_0070)
+   * @param digitCount 显示位数 (ram_003C)
+   * @returns tile ID 数组 (正序, 直接写 NT)
+   */
+  renderNumber8C55(valueLo: number, valueHi: number, digitCount: number = 5): number[] {
+    // H5 简化: 直接用 numUtils.numberToTiles16 (对应 $8C55 + $CD3C 完整逻辑)
+    return numberToTiles16(valueLo, valueHi, digitCount);
+  }
+
+  /**
+   * $8C7A: 单数字→tile ID (CLC; ADC #$33)
+   * 数字 + 0x33 = tile ID
+   */
+  digitToTile8C7A(digit: number): number {
+    return (digit & 0x0F) + DIGIT_TILE_BASE;
+  }
+
+  /**
+   * $8C85: 写 tile 到 PPU Buffer (ram_04A8,X)
+   * H5: 写入 store.sprites 或 NT (由调用方决定)
+   */
+  writeTile8C85(tile: number, x: number): void {
+    // H5: PPU Buffer 写入简化为 store 键值
+    this._store.write(`ppuBuf_${x}`, tile & 0xFF);
+  }
+
+  /**
+   * 完整数值显示: 数值→tile IDs→写 PPU Buffer
+   * @param value 16bit 数值
+   * @param ppuAddr PPU 写入地址
+   * @param digitCount 显示位数
+   */
+  displayNumber(value: number, ppuAddr: number, digitCount: number = 5): void {
+    const valueLo = value & 0xFF;
+    const valueHi = (value >> 8) & 0xFF;
+    const tiles = this.renderNumber8C55(valueLo, valueHi, digitCount);
+    // 写 PPU Buffer (对应 $8C85 写 ram_04A8,X)
+    for (let i = 0; i < tiles.length; i++) {
+      this.writeTile8C85(tiles[i], i);
+    }
   }
 }

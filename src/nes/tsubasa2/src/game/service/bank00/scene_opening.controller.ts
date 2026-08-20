@@ -31,11 +31,14 @@ import { NES_PALETTE } from '../../data/ppu/pallete/nes-pallete-table';
 import type { PaletteTable, PaletteEntry } from '../../model/types';
 
 // ═══════════════════════════════════════════════════════════════
-// Cut 0x17 标题菜单真实 CHR bank (暴力渲染验证: bank 14/15 可出画面)
+// Cut 0x17 标题菜单真实 CHR bank
+//   原始场景 setup 的 BG 2KB CHR bank = 0/2 → 都在 H5 8KB bank 0 内,
+//   NT tile 索引本身就是 PPU pattern-table 0 偏移, 直接取 bank 0。
+//   (之前误用 bank 14 导致把 sprite pattern table 的图块当成背景)
 // ═══════════════════════════════════════════════════════════════
 
-/** 标题菜单背景 NT tile 所在的 CHR bank (原写死 0 导致黑屏) */
-const CUT_0x17_CHR_BANK = 14;
+/** 标题菜单背景 NT tile 所在的 CHR bank (BG pattern table → H5 bank 0) */
+const CUT_0x17_CHR_BANK = 0;
 
 // ═══════════════════════════════════════════════════════════════
 // 开场镜头表 (TODO: 待真正 TECMO Theater 开场数据提取后填充)
@@ -278,7 +281,7 @@ export class OpeningSceneController {
     this._cutApplied = true;
 
     // 不再应用 LOGO 模式块 — 那是开场动画 (TECMO 字母) 内容,
-    // 标题菜单背景仅由 Cut 0x17 NT 数据构成 (已修正为正确 CHR bank 14)
+    // 标题菜单背景仅由 Cut 0x17 NT 数据构成 (BG CHR bank = 0)
 
     // 设 ram_00ED=0x0A → 对应 $808D
     this._store.write('ram_00ED', 0x0A);

@@ -16,7 +16,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PapuOutput = void 0;
-const index_1 = __importDefault(require("../../papu/index"));
+const index_1 = __importDefault(require("./papu/index"));
 const audioCache_1 = require("../../../game/data/audio/audioCache");
 // ════════════════════════════════════════════
 // 音频参数

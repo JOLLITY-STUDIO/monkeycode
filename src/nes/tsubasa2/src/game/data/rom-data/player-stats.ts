@@ -1,41 +1,79 @@
 /**
- * 球员能力值数据 (真实 ROM 提取)
+ * 球员能力值数据 (真实 ROM 提取 + 查表显示逻辑)
  *
- * 来源: ROM 0x39fde + mazongIndex * 24
+ * 数据链路 (2026-08 逆向确认, docs/number-display-pipeline.md):
+ *   ROM 0x39fde + mazongIndex * 24 (24 字节编码值)
+ *     → 查 STAMINA_TABLE[编码] (体力, 16bit) / ABILITY_TABLE[编码] (能力, 8bit)
+ *     → 真实显示数值
+ *     → $8C55 循环除 10, 余数+0x33 = tile_id (待转写)
+ *     → 写 PPU Buffer 显示
  *
- * ⚠️ 重要: mazongIndex 与 ROM 角色 ID 不同!
- *   mazongIndex 是 mazong Hack CT2 工具的 player_data_arr 顺序:
- *     index 0 = Lima/Batista/Nakayama (杂鱼)
- *     index 1 = Tsubasa (大空翼)
- *     index 2 = Misaki (岬太郎)
- *     ...
- *   ROM 角色 ID (0x01-0x75) 是另一个编号系统 (见 character-list.ts)
+ * ⚠️ mazongIndex 与 ROM 角色 ID 不同!
+ *   mazong 工具 player_data_arr 顺序: index 0=Lima/Batista(杂鱼), 1=Tsubasa, 2=Misaki...
  *
- * 每条记录 24 字节:
- *   [0-7]  前 8 字节: 杂鱼/共享模板的占位 (明星角色此区多为 00)
- *   [8-13] Low Shot/Pass/Trap/Let-through/Controlled Clear/Uncontrolled Clear/Ball Challenge
- *   [14-20] High Shot/Pass/Trap/Let-through/Controlled Clear/Uncontrolled Clear/Ball Challenge
- *   [21-23] High Interception + 保留
- *
- * 真实数据对照 (tsnes 验证):
- *   Tsubasa (mazongIndex=1, ROM 0x39ff6): 15 0C 17 0E 0C 10 0E 00 20 0E 15 18 09 0F 0F 11 15 0C 17 0C 0B 0F 0E 11
- *   杂鱼 (mazongIndex=0, ROM 0x39fde): 00 00 00 00 00 00 00 00 2E 0F 15 18 0C 0F 0F 12 15 0C 17 0E 0C 10 0E 12
- *
- * 数据来源文档: docs/rom-data-locations.md
- * 提取工具: _tmp_extract_data.cjs
+ * 数据来源文档: docs/rom-data-locations.md, docs/number-display-pipeline.md
  */
+
+// ── 查表数据 (ROM 0x39F1E 体力表 + 0x39E5E 能力表) ──
+
+/** 体力映射表 (ROM 0x39F1E, 16bit per entry, 编码→真实体力值) */
+export const STAMINA_TABLE: readonly number[] = [
+  464, 482, 490, 498, 506, 514, 522, 530,
+  538, 546, 554, 562, 570, 578, 586, 594,
+  602, 610, 618, 626, 634, 642, 650, 658,
+  664, 670, 676, 682, 688, 694, 700, 706,
+];
+
+/** 能力映射表 (ROM 0x39E5E, 8bit per entry, 编码→显示能力值) */
+export const ABILITY_TABLE: readonly number[] = [
+  13, 13, 13, 14, 14, 14, 15, 15,
+  16, 16, 17, 17, 17, 18, 18, 19,
+  20, 20, 21, 21, 22, 22, 23, 24,
+  24, 25, 26, 26, 27, 28, 29, 29,
+];
+
+/** tile_id = 数字 + 0x33 (公式来自 $8C7A: CLC; ADC #$33) */
+export const DIGIT_TILE_BASE = 0x33;
+
+/**
+ * 数值→tile IDs 转换 (对应 $8C55, 待完整转写)
+ * 748 → [0x3A, 0x37, 0x3B] (正序, 直接写 NT)
+ */
+export function numberToTiles(value: number): number[] {
+  if (value === 0) return [DIGIT_TILE_BASE]; // '0'
+  const tiles: number[] = [];
+  let v = value;
+  while (v > 0) {
+    const digit = v % 10;
+    tiles.push(digit + DIGIT_TILE_BASE); // 数字 + 0x33 = tile_id
+    v = Math.floor(v / 10);
+  }
+  return tiles.reverse(); // 逆序产生, 正序显示
+}
+
+/** 编码→真实体力值 (查 STAMINA_TABLE) */
+export function codeToStamina(code: number): number {
+  return STAMINA_TABLE[code & 0x1F] ?? 0;
+}
+
+/** 编码→显示能力值 (查 ABILITY_TABLE) */
+export function codeToAbility(code: number): number {
+  return ABILITY_TABLE[code & 0x1F] ?? 0;
+}
+
+// ── 球员原始字节表 ──
 
 /** 球员能力值字段名 (按字节偏移, mazong 工具布局) */
 export const PLAYER_STAT_FIELDS = [
-  'reserved0',    // 0  (杂鱼占位/前8字节区)
-  'reserved1',    // 1
-  'reserved2',    // 2
-  'reserved3',    // 3
-  'reserved4',    // 4
-  'reserved5',    // 5
-  'reserved6',    // 6
-  'reserved7',    // 7
-  'lowShot',      // 8  低空射门
+  'staminaCode',  // 0  体力编码 (查 STAMINA_TABLE)
+  'shotCode',     // 1  射门编码 (查 ABILITY_TABLE)
+  'passCode',     // 2  传球编码
+  'dribbleCode',  // 3  盘带编码
+  'blockCode',    // 4  阻挡编码
+  'tackleCode',   // 5  铲球编码
+  'interceptCode',// 6  拦截编码
+  'reserved7',    // 7  占位
+  'lowShot',      // 8  低空射门 (编码, 查 ABILITY_TABLE)
   'lowPass',      // 9  低空传球
   'lowTrap',      // 10 低空停球
   'lowLetThrough', // 11 低空漏球
@@ -190,12 +228,50 @@ export function getPlayerStatsById(romId: number): readonly number[] {
   return getPlayerStatsRaw(mazongIndex);
 }
 
-/** 按 playerIndex 获取结构化能力值对象 */
+/** 按 playerIndex 获取结构化能力值对象 (编码值) */
 export function getPlayerStats(playerIndex: number): Record<string, number> {
   const raw = getPlayerStatsRaw(playerIndex);
-  const obj = {};
+  const obj: Record<string, number> = {};
   for (let i = 0; i < PLAYER_STAT_FIELDS.length; i++) {
     obj[PLAYER_STAT_FIELDS[i]] = raw[i] ?? 0;
   }
   return obj;
+}
+
+/**
+ * 按 playerIndex 获取显示用能力值对象 (编码→查表后的真实显示值)
+ * 体力查 STAMINA_TABLE, 其他能力查 ABILITY_TABLE
+ */
+export function getPlayerDisplayStats(playerIndex: number): {
+  stamina: number;
+  shot: number;
+  pass: number;
+  dribble: number;
+  block: number;
+  tackle: number;
+  intercept: number;
+  raw: readonly number[];
+} {
+  const raw = getPlayerStatsRaw(playerIndex);
+  return {
+    stamina: codeToStamina(raw[0]),      // 体力 (16bit 查表)
+    shot: codeToAbility(raw[1]),         // 射门
+    pass: codeToAbility(raw[2]),         // 传球
+    dribble: codeToAbility(raw[3]),     // 盘带
+    block: codeToAbility(raw[4]),       // 阻挡
+    tackle: codeToAbility(raw[5]),      // 铲球
+    intercept: codeToAbility(raw[6]),   // 拦截
+    raw,
+  };
+}
+
+/**
+ * 按 playerIndex 获取体力 tile IDs (用于 NT 显示)
+ * 例: Tsubasa(playerIndex=1) 体力编码 21 → STAMINA_TABLE[21]=642 → tiles [0x3F,0x3E,0x3A,0x3E,0x3B] = "642"
+ * FIXME: Tsubasa 真实体力 748, 编码应为 38, 但当前 mazongIndex 偏移待校正
+ */
+export function getPlayerStaminaTiles(playerIndex: number): number[] {
+  const raw = getPlayerStatsRaw(playerIndex);
+  const stamina = codeToStamina(raw[0]);
+  return numberToTiles(stamina);
 }
