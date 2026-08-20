@@ -22,8 +22,8 @@
  * 渲染函数委托: $98A0/$9B11/$8297/$9085/$9AB8/$9ADA/$890C/$88FB/$9B7F/$9B91/$9B28/$9B5E → Bank00RenderView
  */
 
-import { DataStore, RAM_KEYS } from '../../data/DataStore';
-import { getSceneBgGrp } from '../../data/bank07-data';
+import { DataStore, RAM_KEYS } from '../../data/prg/DataStore';
+import { getSceneBgGrp } from '../../data/prg/bank07-data';
 import { SceneRoot } from '../../data/prg/scene/index';
 import PRG_BANK_06 from '../../data/prg/prg-bank-06';
 import { Bank00RenderView } from '../../view/bank00/Bank00RenderView';

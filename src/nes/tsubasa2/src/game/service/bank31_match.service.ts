@@ -4,7 +4,7 @@
  * 逻辑直接翻译自 asm/bank31/entry_E000.s + entry_E6CF.s + entry_E9DA.s。
  * 数据经 DataStore 语义键读写 (替代 NES RAM 地址)，不模拟 MMC3。
  */
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import {
   PTR_TABLE_E9DA,
   PTR_TABLE_E9DA_COUNT,

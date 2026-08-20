@@ -53,13 +53,17 @@ enabledAutoRun: true
 - `title_scene.controller.ts`：标题菜单光标/确认
 - `script-vm.ts` / `script-opcodes.ts` / `script-data-loader.ts` / `char-map.ts`：脚本引擎已建
 
+已完成（第二批，勿重做）：
+- **$8464 scriptLoader(id)**（`bank00_core.service.ts`）：忠实还原脚本加载全流程——`getScriptBank` 决定 bank（<0x10→3 / <0x20→4 / <0x60→5 / else→6）写入 ram_0056；ram_00ED=ram_0025；经 getScriptData 解析入口指针写入 ram_004D/004E；`dataWriteHelper(0x00, 0x50, 0x05)`（$8494-$84A2 重点调用点，zp 基址 x=$05）；清 ram_000D/000E、ram_0652；`ppuFill98EA(1, 0x20, 0x55)` 填充 $23E0-$23FF 属性区。
+- code_main.s $8000-$8AB2 逐段核对完成：脚本分派器 $84E7 / 入口分发 $8017/$8019 / $8091 主输入循环确认已有对应实现（script-vm/script-opcodes 体系），无缺失。
+- code_scene.s / code_render.s / code_util.s / data_tail.s 逐段核对完成，渲染方法均分流到 Bank00RenderView，业务逻辑留在 service。
+- import 路径修正（重构迁移后）：`../../data/DataStore`→`../../data/prg/DataStore`、`../../data/bank07-data`→`../../data/prg/bank07-data`、`../../data/prg-bank-06`→`../../data/prg/prg-bank-06`、`../../data/prg/ppu/chr/chr-slot-mapper`→`../../data/ppu/chr/chr-slot-mapper`、`../../core/types`→`../../../core/types`、`../config`→`../../header`（CONFIG/Mirroring 现从 src/game/header.ts 导出）。
+
 剩余待办（新任务时从这开始）：
-1. **code_main.s $8000-$8AB2 逐段核对覆盖**（重点：脚本分派器 $84E7、入口分发 $8017/$8019、$8091 主输入循环、**$8492 处 `LDX #$05` + `JSR $9F69`（Y=$50）调用点**尚未见对应实现——先 grep `dataWriteHelper(0x00, 0x50, 0x05)` 确认，缺失则补译）。
-2. **code_scene.s $8AB3-$8EEF**：场景数据块与代码块逐段对照 service 场景方法，缺失补译。
-3. **code_render.s $8EF0-$968F**：确认渲染方法全部分流到 `Bank00RenderView.ts`，业务部分留在 service。
-4. **code_util.s $9691-$9EA0**：跳转表/PPU/I/O/数学段逐段核对（$99F0/$9B7F/$9F69/$9EED/$9BA0 等已建方法对照），缺失补译。
-5. **data_tail.s $9EEF-$9FFF**：调度器尾部 + 栈恢复（$9F52 链）核对。
-6. **注意事项**：`dataWriteHelper` 已改 3 参数签名，后续若发现其他 bank 以 2 参数调用（如 bank02_scene.service.ts 曾如此），需对照 asm 补传零页基址 x（bank02 $8281/$826D 用 x=$01，$8292 用 x=$15）。
+- **bank00 翻译本身已全部完成**。剩余 4 个编译错误是【项目级重构遗留】，不属于 bank00 翻译范围，需要用户在重构中恢复：
+  1. `src/game/model/types.ts` 缺失（被删）：`PaletteTable/PaletteEntry/PaletteColor/createBlankPaletteTable` 全项目无定义，被 `src/game/data/prg/DataStore.ts`、`scene_opening.controller.ts`、`Bank00RenderView.ts`、`src/index.ts` 引用。
+  2. `src/game/core/OamManager.ts` 缺失（被删）：`DataStore.oam` 依赖它，全 src 有 32 处 `.oam.` 调用（bank11/19/24/27/28/30），API 含 attach/reset/busy/isBusy/beginBuild/endBuild/commitVramToNT/writeBlock 等。
+- **注意事项**：`dataWriteHelper` 已改 3 参数签名，后续若发现其他 bank 以 2 参数调用（如 bank02_scene.service.ts 曾如此），需对照 asm 补传零页基址 x（bank02 $8281/$826D 用 x=$01，$8292 用 x=$15）。
 
 ## 验证流程（每批必做）
 

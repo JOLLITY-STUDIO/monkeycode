@@ -9,7 +9,7 @@
  * 每个 SceneView 对应一个场景, 由 Tsubasa2 主循环每帧调用 render(state)。
  * view 不持有逻辑状态, 只做 state→NT/OAM 的映射写入。
  */
-import type { DataStore } from '../data/DataStore';
+import type { DataStore } from '../data/prg/DataStore';
 
 export abstract class SceneView {
   protected _store: DataStore;

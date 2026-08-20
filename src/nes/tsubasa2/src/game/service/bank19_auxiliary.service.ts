@@ -23,7 +23,7 @@
  * 外部通过 start() 开始播放, update() 每帧驱动 (渲染层消费 oam/NT)。
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import PRG_BANK_19 from '../data/prg-bank-19';
 import PRG_BANK_31 from '../data/prg-bank-31'; // $FBCC 调色板表 (固定区)
 

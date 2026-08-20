@@ -35,7 +35,7 @@
  * 校验子程序 + 模拟器 trace 抠出 (TODO, 不编造数据)。
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import { BUTTON } from '../../core/types';
 
 /** $A491 地址表 (idx→运行时$A4xx目标, 16项) — 对应 $8484 分发器 */

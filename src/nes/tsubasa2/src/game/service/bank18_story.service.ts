@@ -14,7 +14,7 @@
  * 后续补全: 从 Bank00/Bank02 代码提取真实章节→offset 映射, 替换占位。
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import { Bank19Service, BANK19_STREAM_OFFSET } from './bank19_auxiliary.service';
 
 /** 章节枚举 (剧情进度, 对应原版 STORY 选关/章节推进) */

@@ -13,7 +13,7 @@
  *   $E000-$FFFF — Fixed Bank (Bank 31 固定)
  *   $FFF0-$FFFA — RESET/NMI/IRQ 向量
  */
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 
 /** Bank 配置条目 (H5: 仅数据索引, 不涉及硬件切换) */
 export interface BankConfig {

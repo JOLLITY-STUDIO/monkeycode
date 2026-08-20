@@ -15,7 +15,7 @@
  * H5: 每帧调用 update()，由外部渲染器消费 displayState 绘制。
  */
 
-import type { DataStore } from '../../data/DataStore';
+import type { DataStore } from '../../data/prg/DataStore';
 import { BUTTON } from '../../../core/types';
 import { OpeningShot } from '../../data/prg/scene/index';
 import { ScriptVM, type ScriptVMState, type ScriptTextLine } from './script-vm';
@@ -25,10 +25,10 @@ import {
   BOOT_NT0, BOOT_ATTR0, BOOT_OAM, BOOT_BG_PALETTE, BOOT_SPR_PALETTE,
   BOOT_BG_CHR_BANK, bootFadeStep, bootFadeByte,
 } from '../../data/prg/ppu/nametable/cut/cut_0x00_boot';
-import { spriteAttrToPalette } from '../../data/prg/ppu/chr/chr-slot-mapper';
-import PRG_BANK_06 from '../../data/prg-bank-06';
+import { spriteAttrToPalette } from '../../data/ppu/chr/chr-slot-mapper';
+import PRG_BANK_06 from '../../data/prg/prg-bank-06';
 import { NES_PALETTE } from '../../data/prg/ppu/pallete/nes-pallete-table';
-import type { PaletteTable, PaletteEntry } from '../../model/types';
+import type { PaletteTable, PaletteEntry } from '../../data/prg/model-types';
 
 // ═══════════════════════════════════════════════════════════════
 // Cut 0x17 标题菜单真实 CHR bank

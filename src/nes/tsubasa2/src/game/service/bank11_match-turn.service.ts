@@ -45,7 +45,7 @@
  *   $A000 窗口 pattern: bank 12/13 (物理) — 由 fn_85C2 直接 import 读取
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import {
   readB11,
   readB11U16,

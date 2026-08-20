@@ -22,7 +22,7 @@
  *        $F0 → 结束; $F1 → 跳转(后2B 绝对地址)
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import { DIGIT_TILE_BASE, numberToTiles16, div16 } from '../../core/numUtils';
 import {
   readHud1Ptr,

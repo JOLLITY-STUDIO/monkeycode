@@ -20,7 +20,7 @@
  *   [9] $82CA  OAM 初始化
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import {
   B28_CPU_BASE,
   readB28,

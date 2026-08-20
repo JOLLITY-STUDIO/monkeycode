@@ -15,7 +15,7 @@
  *   view (本类)    → 每帧解析影子缓冲 → DataStore.sprites
  *   core (合成器)  → 消费 DataStore.sprites 画像素
  */
-import { DataStore, type SpriteEntry } from '../data/DataStore';
+import { DataStore, type SpriteEntry } from '../data/prg/DataStore';
 
 /** 影子 OAM 起始 KV 偏移 (ram_0468) */
 const OAM_SHADOW_BASE = 0x0468;

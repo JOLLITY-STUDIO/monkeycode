@@ -11,21 +11,21 @@ export type { DebugInfo } from './core/types';
 export { Mirroring, CONFIG } from './game/header';
 
 // 数据中心
-export { DataStore, RAM_KEYS } from './game/data/DataStore';
-export type { NameTable, NameTableEntry, SpriteEntry } from './game/data/DataStore';
+export { DataStore, RAM_KEYS } from './game/data/prg/DataStore';
+export type { NameTable, NameTableEntry, SpriteEntry } from './game/data/prg/DataStore';
 
 // 领域模型
 export {
   PlayerPosition, FormationType, MatchPhase, SceneType,
   BLANK_PALETTE, createBlankPaletteTable,
-} from './game/model/types';
+} from './game/data/prg/model-types';
 export type {
   Player, PlayerStats, SpecialMove,
   Team, Field, PlayerOnField,
   MatchState, DialogCommand, StoryNode,
   AnimationFrame, AnimationSequence,
   PaletteColor, PaletteEntry, PaletteTable,
-} from './game/model/types';
+} from './game/data/prg/model-types';
 
 // 服务 (Bank 翻译)
 export { Bank00Service, Bank02Service, Bank11Service, Bank28MatchService, Bank30Service, BootService, DataQueryService } from './game/index';

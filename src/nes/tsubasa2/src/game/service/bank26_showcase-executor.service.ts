@@ -17,7 +17,7 @@
  *   - $85AC 演出子状态机完整链 (ram_0629/0635/0637/05FB 等)
  *   - Cyclone #46 的逐帧位移动画表 (当前为几何近似)
  */
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import {
   SHOWCASE_D6DE,
   getShowcaseBlock,

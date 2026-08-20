@@ -15,7 +15,7 @@
  *
  * 数据来源文档: docs/rom-data-locations.md
  */
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 
 /** 经验值 RAM 基址 (16bit per player) */
 const EXP_RAM_BASE = 0x0454;

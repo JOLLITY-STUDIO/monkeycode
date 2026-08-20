@@ -19,7 +19,7 @@ import { Bank12AudioService } from '../src/game/service/bank12_audio.service';
 import { Bank30Service } from '../src/game/service/bank30_init.service';
 import { Bank02Service } from '../src/game/service/bank02_scene.service';
 import { Bank16Service } from '../src/game/service/bank16_skills.service';
-import { OamManager } from '../src/core/OamManager';
+import { OamManager } from '../src/game/data/prg/DataStore';
 import { WebAudioOutput } from '../src/core/engine/audio/WebAudioOutput';
 import { BUTTON, NES_WIDTH, NES_HEIGHT } from '../src/core/types';
 import { SceneRoot } from '../src/game/data/scene';

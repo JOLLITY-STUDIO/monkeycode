@@ -15,9 +15,9 @@
  *   入口8 $B050 — Bank 切换 + 数据加载
  *   入口9 $A39B — 球队数据初始化
  */
-import { DataStore } from '../data/DataStore';
-import type { Player, Team, PlayerStats } from '../model/types';
-import { PlayerPosition, FormationType } from '../model/types';
+import { DataStore } from '../data/prg/DataStore';
+import type { Player, Team, PlayerStats } from '../data/prg/model-types';
+import { PlayerPosition, FormationType } from '../data/prg/model-types';
 import { MeetingMenu, TeamDataMenu, ChangeMenu, LevelMenu } from '../data/prg/scene/index';
 import {
   COPY_B271,

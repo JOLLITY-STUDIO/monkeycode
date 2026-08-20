@@ -8,7 +8,7 @@
  * 原始 $A21B: RESET 后首个业务入口 — 初始化完毕后 JMP $9EED 进入 Bank00 主循环。
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import { Bank00Service } from './bank00/bank00_core.service';
 import type { Bank30Service } from './bank30_init.service';
 import {

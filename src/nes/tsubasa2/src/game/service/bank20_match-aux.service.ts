@@ -20,7 +20,7 @@
  * 外部通过 dispatch(index) 驱动 (0=$84DC 1=$83D9 2=$8624 3=$8796)。
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import PRG_BANK_20 from '../data/prg-bank-20';
 import PRG_BANK_21 from '../data/prg-bank-21'; // $A000-$BFFF 窗口 → 物理 bank 21
 import PRG_BANK_31 from '../data/prg-bank-31'; // 固定区 $FBCC/$FB4C 表

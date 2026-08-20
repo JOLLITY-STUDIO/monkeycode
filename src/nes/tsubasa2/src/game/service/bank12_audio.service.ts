@@ -23,7 +23,7 @@
  *   $81DB: 音量/衰减处理
  */
 
-import type { DataStore } from '../data/DataStore';
+import type { DataStore } from '../data/prg/DataStore';
 import { PapuOutput } from '../../core/engine/audio/PapuOutput';
 import { Bank12AudioEngine } from './bank12_audio_engine';
 

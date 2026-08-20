@@ -9,7 +9,7 @@
  * 后续补全: 赛果画面布局/动画/胜负分支 (对应原版赛果渲染逻辑)。
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 
 /** 比分在 DataStore 中的键 (TODO: 对齐 Bank26 实际写入字段) */
 const KEY_SCORE_HOME = 'ram_044E';

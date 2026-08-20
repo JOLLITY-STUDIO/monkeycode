@@ -14,14 +14,21 @@
  * 然后直接将控制权交给 Bank02。
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import { palReset } from '../data/prg/ppu/pallete/paletteManager';
 import { Bank00Service } from './bank00/bank00_core.service';
 import { Bank02Service } from './bank02_scene.service';
 import { Bank29RosterService } from './bank29_roster.service';
 import { Bank16Service } from './bank16_skills.service';
 import { Bank26ShowcaseExecutor } from './bank26_showcase-executor.service';
-import PRG_BANK_30 from '../data/prg-bank-30';
+import PRG_BANK_30 from '../data/prg/prg-bank-30';
+import {
+  NAME_AREA_PTR_TABLE,
+  NAME_AREA_PTR_TABLE_COUNT,
+  TABLE_FB4C,
+  PALETTE_FBCC,
+  PALETTE_ENTRY_SIZE,
+} from '../data/prg/bank30-data';
 
 // ── RAM 语义键 (Bank30 演出链 $043C 区域 + 演出请求) ──
 const KEY_0034 = 'ram_0034'; // 名字区指针 lo
@@ -38,6 +45,21 @@ const KEY_044E = 'ram_044E'; // 043C<3 时的技能 ID 替换源
 const KEY_0516 = 'ram_0516'; // 演出/技能状态位 (bit7=busy, bit6=技能命令待执行, bit3=退出)
 const KEY_0518 = 'ram_0518'; // 演出脚本表索引 (Bank16 表 H/I)
 const KEY_062D = 'ram_062D'; // 暂停/演出锁标志
+
+// ── 数学/查表子程序 RAM 键 ($CD3C 除法 / $CD77 名字区 / $CE99 搜索) ──
+const KEY_006F = 'ram_006F'; // 16bit 被除数/余数 lo (div16)
+const KEY_0070 = 'ram_0070'; // 16bit 被除数/余数 hi
+const KEY_0071 = 'ram_0071'; // 16bit 除数 lo
+const KEY_0072 = 'ram_0072'; // 16bit 商 lo
+const KEY_0073 = 'ram_0073'; // 16bit 商 hi
+const KEY_0074 = 'ram_0074'; // 16bit 除数 hi
+const KEY_05FB = 'ram_05FB'; // 控球方/当前队伍索引 (名字区指针索引 ^0x0B)
+const KEY_0441 = 'ram_0441'; // 活跃球员 A (CE99 跳过候选)
+const KEY_0442 = 'ram_0442'; // 活跃球员 B (CE99 跳过候选)
+const KEY_0635 = 'ram_0635'; // 球坐标 X (CE99 距离参考)
+const KEY_0637 = 'ram_0637'; // 球坐标 Y (CE99 距离参考)
+const KEY_046C = 'ram_046C'; // 调色板填充计数器 ($CC02)
+const KEY_046F = 'ram_046F'; // 调色板输出区基址 (16B + X 偏移)
 
 // ═══════════════════════════════════════════════════════════════
 // Bank 30 Service
@@ -287,6 +309,395 @@ export class Bank30Service {
   /** $D700 表 (37B): 射门演出方向/子状态表 (供 $D5D1/$D5DA 使用) */
   readD700(idx: number): number {
     return this._b30(0xD700 + (idx & 0x3f));
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // 跳转表 API 补全 (batch 1)
+  //   1. $CD3C div16       2. $CD77 namePtr
+  //   3. $CDC9 linearToXY  4. $CDE2 pixelToIndex
+  //   5. $CE08 valueToTile 6. $CE4A/$CE4D tableFB4C
+  //   7. $CC02 paletteLoad 8. $CE99 findNearestPlayer
+  //   9. $CBC2 mapCharCBC2 10. $CB99/$CB02/$CB0F/$CAE7
+  // ══════════════════════════════════════════════════════════════
+
+  /**
+   * $CD3C — 16bit / 16bit 无符号恢复除法 (shift-subtract)。
+   * 被跳转表 $C51E 引用, 数值显示链路 ($8C55) 核心依赖。
+   *
+   * asm (code_main.s $CD3C + code_sub.s $CD54-$CD76):
+   *   TXA;PHA          ; 保存 X
+   *   quotient($0072/0073)=0; LDX #$10  (16 轮)
+   *   每轮 (恢复除法):
+   *     ROL $0072/$0073   ; 高16位(部分余数)左移带进位
+   *     BCS → 减 (溢出即>=除数)
+   *     LDA $0073; CMP $0074   ; 高字节比较
+   *     LDA $0072; CMP $0071   ; 低字节比较 (高相等时)
+   *     若部分余数 >= 除数 → 减除数, 进位=1
+   *     否则进位=0
+   *     ROL $006F/$0070   ; 低16位(被除数)左移, 进位作为商位进入
+   *   结束: 商=$0072/0073, 余数=$006F/0070
+   *
+   * 输入: dividend(16bit 被除数), divisor(16bit 除数, !=0)
+   * 返回: 商 (16bit); 余数留在 ram_006F/0070。
+   */
+  div16(dividend: number, divisor: number): number {
+    const s = this._store;
+    const d = dividend & 0xFFFF;
+    const ds = divisor & 0xFFFF;
+
+    // 写回输入 RAM (约定: 被除数 $006F/0070, 除数 $0071/0074)
+    s.write(KEY_006F, d & 0xFF);           // $006F = 被除数 lo
+    s.write(KEY_0070, (d >> 8) & 0xFF);    // $0070 = 被除数 hi
+    s.write(KEY_0071, ds & 0xFF);          // $0071 = 除数 lo
+    s.write(KEY_0074, (ds >> 8) & 0xFF);   // $0074 = 除数 hi
+
+    // 32bit 组合寄存器: 低16位=被除数, 高16位=部分余数 (商位从低位进)
+    let combined = d & 0xFFFF;
+    for (let i = 0; i < 16; i++) {         // LDX #$10 循环
+      // ROL $0072/$0073 (高16位左移), 溢出位=高16位 MSB → 进位
+      const overflow = (combined >> 31) & 1; // BCS $CD4E (ROL $0073 进位)
+      combined = (combined << 1) & 0xFFFFFFFF;
+      const hi16 = (combined >>> 16) & 0xFFFF; // 部分余数 (高16位)
+      // 部分余数 >= 除数? (含溢出 → 必 >=)
+      if (overflow || hi16 >= ds) {
+        // LDA $0073;CMP $0074 / LDA $0072;CMP $0071 → 减法
+        const rem = (hi16 - ds) & 0xFFFF;   // SBC 减除数
+        // ROL $006F (进位=商位=1 进入低16位 LSB)
+        combined = ((rem << 16) & 0xFFFFFFFF) | (combined & 0xFFFF) | 1;
+      }
+      // 否则进位=0 → 低16位 LSB 保持 0 (shift 已清)
+    }
+
+    const quotient = combined & 0xFFFF;          // 低16位 = 商
+    const remainder = (combined >>> 16) & 0xFFFF; // 高16位 = 余数
+
+    s.write(KEY_0072, quotient & 0xFF);          // $0072 = 商 lo
+    s.write(KEY_0073, (quotient >> 8) & 0xFF);   // $0073 = 商 hi
+    s.write(KEY_006F, remainder & 0xFF);         // $006F = 余数 lo
+    s.write(KEY_0070, (remainder >> 8) & 0xFF);  // $0070 = 余数 hi
+    return quotient;
+  }
+
+  /**
+   * $CD77 — 名字区指针: A = ram_05FB ^ $0B → 查 $CD89 表 → ram_0034/0035。
+   * 被跳转表 $C551 引用 (bank16 用 A=ram_05FB^$0B 查名字区指针)。
+   *
+   * asm (code_sub.s $CD77-$CD88):
+   *   LDA ram_05FB; EOR #$0B; ASL; TAY
+   *   LDA $CD89,Y → ram_0034 (lo); LDA $CD8A,Y → ram_0035 (hi); RTS
+   *
+   * 返回: 名字区 16bit 指针 (lo/hi 已写 ram_0034/0035)。
+   */
+  namePtr(): number {
+    const s = this._store;
+    const a = s.read(KEY_05FB) & 0xFF;   // LDA ram_05FB
+    return this._nameAreaPtrDirect(a ^ 0x0B); // EOR #$0B → ASL → 查表
+  }
+
+  /**
+   * $CD7C (namePtr 内层) — A(ID) 直接查 $CD89 表 → ram_0034/0035。
+   * 供 $CE99 搜索空位球员使用 (跳过 ram_05FB XOR, 直接以 A 为索引)。
+   *
+   * asm: $CD7C: ASL; TAY; LDA $CD89,Y → 0034; LDA $CD8A,Y → 0035; RTS
+   * 返回: 名字区 16bit 指针。
+   */
+  private _nameAreaPtrDirect(idx: number): number {
+    const s = this._store;
+    const i = idx & 0xFF;
+    // ASL 索引, 若超出表范围则回绕到表尾
+    const n = i < NAME_AREA_PTR_TABLE_COUNT ? i : (NAME_AREA_PTR_TABLE_COUNT - 1);
+    const ptr = NAME_AREA_PTR_TABLE[n] & 0xFFFF; // LDA $CD89,Y / $CD8A,Y (16bit LE)
+    s.write(KEY_0034, ptr & 0xFF);      // STA ram_0034
+    s.write(KEY_0035, (ptr >> 8) & 0xFF); // STA ram_0035
+    return ptr;
+  }
+
+  /**
+   * $CDC9 — 线性索引 → [列,行] 场地坐标。
+   * 被跳转表 $C536 引用 (bank11/16/20 用 A 线性索引→X/Y 坐标)。
+   *
+   * asm (code_sub.s $CDC9-$CDE1):
+   *   LDX #$00
+   *   循环: CMP #$0C; BCC → 跳出; SBC #$0C; INX; BNE 循环
+   *       → X = A/12 (商), A = A%12 (余数)
+   *   ASL×3; ADC #$54; TAY   → Y = (A%12)*8 + $54  (行)
+   *   TXA; ASL×3; ADC #$34; TAX → X = (A/12)*8 + $34  (列)
+   *
+   * 返回 {x(列), y(行)}。
+   */
+  linearToXY(a: number): { x: number; y: number } {
+    let rem = a & 0xFF;
+    let quotient = 0;                  // LDX #$00
+    while (rem >= 0x0C) {              // CMP #$0C; BCC → 跳出
+      rem = (rem - 0x0C) & 0xFF;       // SBC #$0C
+      quotient++;                      // INX
+    }
+    const y = (((rem << 3) & 0xFF) + 0x54) & 0xFF;   // ASL×3; ADC #$54 → 行
+    const x = (((quotient << 3) & 0xFF) + 0x34) & 0xFF; // ASL×3; ADC #$34 → 列
+    return { x, y };
+  }
+
+  /**
+   * $CDE2 — (X,Y) 像素 → 精灵位置索引 (行号 + 12*列号)。
+   * 被跳转表 $C539 引用 (bank11)。
+   *
+   * asm (code_sub.s $CDE2-$CE07):
+   *   TXA; SEC; SBC #$30   → X-0x30, 借位 → $FF
+   *   CMP #$A0; BCS → $FF  ; X>>3 = 列
+   *   TYA; SEC; SBC #$50   → Y-0x50, 借位 → $FF
+   *   CMP #$60; BCS → $FF  ; Y>>3 = 行
+   *   DEX; BMI → $FF; 循环: CLC; ADC #$0C; BNE 循环  → 行 + 12*列
+   *
+   * 返回索引 (0-239), 越界返回 $FF。
+   */
+  pixelToIndex(x: number, y: number): number {
+    let a = x & 0xFF;
+    if (a < 0x30) return 0xFF;          // SBC #$30; BCC → $FF
+    a = (a - 0x30) & 0xFF;
+    if (a >= 0xA0) return 0xFF;         // CMP #$A0; BCS → $FF
+    const column = a >> 3;              // LSR×3 → 列
+    a = y & 0xFF;
+    if (a < 0x50) return 0xFF;          // SBC #$50; BCC → $FF
+    a = (a - 0x50) & 0xFF;
+    if (a >= 0x60) return 0xFF;         // CMP #$60; BCS → $FF
+    const row = a >> 3;                 // LSR×3 → 行
+    return (row + 12 * column) & 0xFF;  // DEX/BMI + ADC #$0C 循环 → 行+12*列
+  }
+
+  /**
+   * $CE08 — 数值 → 图案 tile id (数值显示链路)。
+   * 被跳转表 $C527 引用。
+   *
+   * asm (code_sub.s $CE08-$CE49):
+   *   保存 bank 状态 → 切 Bank28 窗口 → JSR $8000 (Bank28 数值→图案)
+   *   → 恢复 bank。
+   * H5: 无 MMC3, bank 切换 no-op。数值→图案核心在 Bank28 $8000,
+   * 数值显示链路约定 tile_id = 数字 + $33 (多位数由调用方逐位拆分)。
+   * 这里直接返回该映射。
+   */
+  valueToTile(v: number): number {
+    // $CE08: TAY/PHA 保存 → 切 Bank28 → JSR $8000 → 恢复 (H5 no-op)
+    return (v & 0xFF) + 0x33; // Bank28 $8000: 数字 + $33 → tile id
+  }
+
+  /**
+   * $CE4A/$CE4D — $FB4C 表 16bit LE 有符号查找。
+   * 被跳转表 $C545($CE4A) / $C542($CE4D) 引用 (动画偏移/速度表)。
+   *
+   * asm (code_sub.s $CE4A-$CE6D):
+   *   $CE4D 入口: CLC; ADC #$40  (A += $40)
+   *   $CE4A 入口: ASL            (A <<= 1, C=旧bit7, N=旧bit6)
+   *   PHP; BPL → 跳过取反        (旧bit6=1 → EOR #$FF 取反索引)
+   *   AND #$7E; TAX              (偶数索引)
+   *   LDA $FB4D,X → Y(hi); LDA $FB4C,X → X(lo)
+   *   PLP; BCC → 返回 (正)
+   *   否则 (旧bit7=1): 16bit 补码取反 [lo,hi]
+   *
+   * @param mode 'CE4A' 不加 $40; 'CE4D' 先 A+$40。
+   * @returns 16bit 小端 [lo, hi]
+   */
+  tableFB4C(a: number, mode: 'CE4A' | 'CE4D'): { lo: number; hi: number } {
+    let v = a & 0xFF;
+    if (mode === 'CE4D') v = (v + 0x40) & 0xFF; // $CE4D: CLC; ADC #$40
+    const negate = (v >> 7) & 1;                // ASL 进位 = 旧 bit7
+    const invertIdx = ((v << 1) >> 7) & 1;      // ASL 后 N = 旧 bit6
+    let idx = (v << 1) & 0xFF;                  // ASL
+    if (invertIdx) idx = (~idx) & 0xFF;         // EOR #$FF
+    idx &= 0x7E;                                // AND #$7E (偶数索引)
+    // LDA $FB4D,X (hi); LDA $FB4C,X (lo)
+    let lo = TABLE_FB4C[idx] & 0xFF;
+    let hi = TABLE_FB4C[idx + 1] & 0xFF;
+    if (negate) {
+      // 16bit 补码取反: X=~X+1; 若 X==0 则 Y=~Y+1
+      lo = ((~lo) & 0xFF);
+      hi = ((~hi) & 0xFF);
+      lo = (lo + 1) & 0xFF;
+      if (lo === 0) hi = (hi + 1) & 0xFF;
+    }
+    return { lo, hi };
+  }
+
+  /**
+   * $CC02 — 调色板查表填充: A 查 $FBCC 表 (A*12) → 填 ram_046F+X 16B。
+   * 被跳转表 $C530 引用 (bank19._fixedC530 等价)。
+   *
+   * asm (code_main.s $CC02-$CC45):
+   *   计算表指针 = $FBCC + A*12 (A<<3 并入 $0066 高位)
+   *   LDA #$10; STA ram_046C (计数器 16)
+   *   LDY #$00; 循环 16 次:
+   *     X&3==0 → LDA #$0F (每组第 0 色透明)
+   *     否则   → LDA ($0065),Y; INY (读表连续字节)
+   *     STA ram_046F,X; INX; DEC ram_046C; BNE 循环
+   *   LDA #$20; STA ram_046C; RTS
+   *
+   * 调色板真实数据 (每项 12B) 在 Bank31 固定区 $FBCC (PALETTE_FBCC stub)。
+   *
+   * @param a 调色板索引
+   * @param x ram_046F 输出偏移
+   */
+  paletteLoadByIndex(a: number, x: number): void {
+    const s = this._store;
+    const entry = (a & 0xFF) * PALETTE_ENTRY_SIZE; // A*12 → 表偏移
+    let src = entry & 0xFF;          // ($0065),Y 低字节
+    let out = x & 0xFF;              // ram_046F,X 输出偏移
+    s.write(KEY_046C, 0x10);         // LDA #$10; STA ram_046C
+    for (let i = 0; i < 16; i++) {   // DEC ram_046C; BNE 循环 (16 次)
+      let v: number;
+      if ((out & 3) === 0) {
+        v = 0x0F;                    // X&3==0 → LDA #$0F (透明)
+      } else {
+        v = PALETTE_FBCC[src] ?? 0x0F; // LDA ($0065),Y; INY
+        src = (src + 1) & 0xFF;
+      }
+      s.write(`${KEY_046F}+${out}`, v); // STA ram_046F,X
+      out = (out + 1) & 0xFF;          // INX
+    }
+    s.write(KEY_046C, 0x20);         // LDA #$20; STA ram_046C; RTS
+  }
+
+  /**
+   * $CE99 — 搜索空位球员: 从 A+1 起搜名字区==0 且距 ram_0635/0637 半径内球员。
+   * 被跳转表 $C548 引用。
+   *
+   * asm (code_sub.s $CE99-$CEFD):
+   *   base = A+1; radius=8; 重试:
+   *     candidate=base; attempts=10;
+   *     循环: candidate==0441 || ==0442 → 跳过
+   *           namePtr(candidate)+10 != 0 → 跳过 (已占用)
+   *           $CED6 距离检查 (|x-0635|<radius 且 |y-0637|<radius) → 命中
+   *           candidate++; attempts--; 直到 0
+   *     radius += 8; 回到重试
+   *
+   * @param start 起始球员 ID
+   * @returns 命中球员 ID; 无命中时返回最后一个候选 (radius 循环至溢出)。
+   */
+  findNearestPlayer(start: number): number {
+    const s = this._store;
+    let base = (start + 1) & 0xFF;   // INC $0046
+    let radius = 8;                  // LDA #$08; STA $0047
+    const refX = s.read(KEY_0635) & 0xFF; // ram_0635 (球 X)
+    const refY = s.read(KEY_0637) & 0xFF; // ram_0637 (球 Y)
+    const pA = s.read(KEY_0441) & 0xFF;   // ram_0441
+    const pB = s.read(KEY_0442) & 0xFF;   // ram_0442
+    for (;;) {
+      let candidate = base;          // LDA $0046; STA $0048
+      let attempts = 10;             // LDA #$0A; STA $0049
+      while (true) {
+        // CMP $0441 / $0442; BEQ → 跳过
+        if (candidate !== pA && candidate !== pB) {
+          const ptr = this._nameAreaPtrDirect(candidate); // JSR $CD7C
+          // LDY #$0A; LDA ($0034),Y; BNE → 跳过 (已占用)
+          if (this._readRamByte(ptr + 10) === 0) {
+            // JSR $CED6; BCS → 命中返回
+            if (this._withinRadius(ptr, radius, refX, refY)) {
+              return candidate;      // LDA $0048; RTS
+            }
+          }
+        }
+        candidate = (candidate + 1) & 0xFF; // INC $0048
+        attempts--;                         // DEC $0049
+        if (attempts === 0) break;          // BNE $CEA9 → 继续循环
+      }
+      radius = (radius + 8) & 0xFF;  // LDA $0047; CLC; ADC #$08; STA $0047
+      // JMP $CEA1 → 重试 (candidate/attempts 重置)
+    }
+  }
+
+  /**
+   * $CED6 — 距离检查: 球员 X/Y 坐标与参考 (ram_0635/0637) 的曼哈顿半径判定。
+   * asm: |x - refX| < radius 且 |y - refY| < radius → 进位=1 (命中)。
+   */
+  private _withinRadius(ptr: number, radius: number, refX: number, refY: number): boolean {
+    // LDY #$06; LDA ($0034),Y → X 坐标; SEC; SBC ram_0635
+    const cx = this._readRamByte(ptr + 6);
+    let dx = (cx - refX) & 0xFF;
+    if ((dx & 0x80) !== 0) dx = ((~dx) & 0xFF) + 1 & 0xFF; // EOR #$FF; ADC #$01 (abs)
+    if (dx >= radius) return false;  // CMP $0047; BCS → 太远 (CLC; RTS)
+    // LDY #$08; LDA ($0034),Y → Y 坐标; SEC; SBC ram_0637
+    const cy = this._readRamByte(ptr + 8);
+    let dy = (cy - refY) & 0xFF;
+    if ((dy & 0x80) !== 0) dy = ((~dy) & 0xFF) + 1 & 0xFF; // abs
+    if (dy >= radius) return false;  // CMP $0047; BCS → 太远
+    return true;                     // SEC; RTS (命中)
+  }
+
+  /**
+   * $CBC2 — 假名/ASCII 编码 → [图案 tile, 属性]。
+   * 被跳转表 $C524 引用 (bank19._mapCharC524 等价, 已本地实现)。
+   *
+   * asm (code_main.s $CBC2-$CBF0):
+   *   A < $A0   → 直接返回 [A, $00]
+   *   A >= $C8  → 属性 $95; v=A-$AE; v<$1F 返回; 否则 v-=$05 → +$40
+   *   否则      → 属性 $94; carry= (A>=$B4); A>=$B4 → v-=$14; v-=$9A;
+   *               v>=$15 → v+=$05; carry 清除 → 返回; 否则 +$40
+   *
+   * 返回 [tile, attr]。
+   */
+  mapCharCBC2(a: number): [number, number] {
+    const v0 = a & 0xFF;
+    if (v0 < 0xa0) return [v0, 0x00];        // CBC4: BCC → 直接返回
+    let attr = 0x94;                          // LDY #$94
+    let v = v0;
+    if (v0 >= 0xc8) {                         // CBCA: BCC → 跳 $CBDA
+      attr = 0x95;                            // LDY #$95
+      v = (v0 - 0xae) & 0xFF;                 // SBC #$AE
+      if (v < 0x1f) return [v, attr];         // CBD4: BCC → 返回
+      v = (v - 0x05) & 0xFF;                  // SBC #$05
+      return [(v + 0x40) & 0xFF, attr];       // CBED: CLC; ADC #$40
+    }
+    // CBDA-$CBE8: A<0xC8 分支
+    const carryB4 = v0 >= 0xb4;               // CMP #$B4; PHP
+    if (v0 >= 0xb4) v = (v - 0x14) & 0xFF;    // BCS → SBC #$14
+    v = (v - 0x9a) & 0xFF;                    // SEC; SBC #$9A
+    if (v >= 0x15) v = (v + 0x05) & 0xFF;     // CMP #$15; BCC → 跳过; ADC #$04(+C)
+    if (!carryB4) return [v, attr];           // PLP; BCC → 返回
+    return [(v + 0x40) & 0xFF, attr];         // CLC; ADC #$40
+  }
+
+  /**
+   * $CB99 — 表跳转 (call via table)。
+   * 被跳转表 $C509 引用 (bank11/16/19/20 已本地 switch)。
+   * asm: ASL; TAY; PLA×2 取返回地址; 读 表[Y+2]/[Y+3] → JMP ($0036)。
+   * H5: 调用方直接 switch 分派, 无需返回地址表跳转 → no-op。
+   */
+  tableJump(a: number): void {
+    void a; // $CB99: ASL/查表/JMP 已由调用方 switch 语义化, H5 no-op
+  }
+
+  /**
+   * $CB02 — 槽位计数器: 若 ram_0001+X(hi)!=0 且 ram_0000+X(lo)==0 → lo 置 1。
+   * 被跳转表 $C51B 引用。
+   * asm: LDA $0001,X; BEQ → 返回; LDA $0000,X; BNE → 返回; INC $0000,X; RTS
+   * (bank16 注释: hi!=0 且 lo==0 → lo 递增; 从 0 → 1)。
+   */
+  slotCounter(x: number): void {
+    const s = this._store;
+    const hi = s.read(`ram_0001+${x}`) & 0xFF; // LDA $0001,X
+    const lo = s.read(`ram_0000+${x}`) & 0xFF; // LDA $0000,X
+    if (hi !== 0 && lo === 0) {
+      s.write(`ram_0000+${x}`, (lo + 1) & 0xFF); // INC $0000,X → 1
+    }
+  }
+
+  /**
+   * $CB0F — 任务入队 (task enqueue)。
+   * 被跳转表 $C515 引用 (H5 空实现, 同步由渲染层驱动)。
+   * asm: 将当前 bank 状态与返回栈存入任务槽 $0000-X 区, JMP $CAA5 调度。
+   * H5: 渲染同步由外层驱动, 任务槽调度无意义 → no-op。
+   */
+  taskEnqueue(): void {
+    // $CB0F: TXA/PHA; TYA/PHA; 存 bank/栈; JMP $CAA5 → H5 no-op
+  }
+
+  /**
+   * $CAE7 — 返回地址存储 (task slot)。
+   * 被跳转表 $C50F 引用。
+   * asm: PHA; 存 A/Y 到 $0101/$0102 (任务槽), ram_0000+X=$FF, RTS。
+   * H5: 无任务栈, 返回地址由调用方直接持有 → no-op。
+   */
+  storeReturnAddr(a: number, x: number): void {
+    void a; // $CAE7: 存返回地址到任务槽 → H5 no-op
+    void x;
   }
 
   /**

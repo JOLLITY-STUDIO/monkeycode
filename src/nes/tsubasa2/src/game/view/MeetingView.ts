@@ -20,7 +20,7 @@
  */
 import { SceneView } from './SceneView';
 import type { TeamDataDisplayState } from '../service/bank01_data-query.service';
-import type { SpriteEntry, NameTableEntry } from '../data/DataStore';
+import type { SpriteEntry, NameTableEntry } from '../data/prg/DataStore';
 import { getCharacterName, getCharacterNameCn, isGoalkeeper } from '../data/prg/character-list';
 import { getPlayerStatsById, codeToStamina, codeToAbility } from '../data/rom-data/player-stats';
 import { PLAYER_TEAMS } from '../data/rom-data/team-roster';

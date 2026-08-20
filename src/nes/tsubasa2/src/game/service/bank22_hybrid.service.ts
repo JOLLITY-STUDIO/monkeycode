@@ -21,7 +21,7 @@
  * 同步为 DataStore.sprites 供渲染器消费。
  */
 
-import { DataStore, SpriteEntry } from '../data/DataStore';
+import { DataStore, SpriteEntry } from '../data/prg/DataStore';
 import {
   readB22,
   readB22U16,

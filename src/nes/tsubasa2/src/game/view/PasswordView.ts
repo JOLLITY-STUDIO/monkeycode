@@ -12,7 +12,7 @@
 import { SceneView } from './SceneView';
 import { passwordCharToTile, type PasswordDisplayState } from '../service/bank02_password.service';
 import { PASSWORD_SPRITES } from '../data/password-sprites';
-import type { SpriteEntry } from '../data/DataStore';
+import type { SpriteEntry } from '../data/prg/DataStore';
 
 /** 光标高亮调色板 (attr 切换) */
 const CURSOR_ATTR_HIGHLIGHT = 0x01;

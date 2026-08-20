@@ -29,7 +29,7 @@
  *   [18] $9731  阵型编辑
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import {
   B26_CPU_BASE,
   readB26,

@@ -9,10 +9,10 @@
  *   2. Phase 2 ($8129-$8161): 按 4 个 APU 组写入寄存器
  *   3. 每组通过 $816E 写入 $4000-$4003 (X = (3^group)*4)
  *
- * 适配: 使用 PapuOutput (项目内 PAPU + AudioContext 桥接)
+ * 适配: 直接接 PAPU (core/papu), 页面层注入实例
  */
 
-import { PapuOutput } from '../../core/engine/audio/PapuOutput';
+import PAPU from '../../core/papu/index';
 import {
   NUM_CHANNELS, CYCLES_PER_FRAME,
   FREQ_TABLE, DUR_TABLE,
@@ -26,7 +26,7 @@ import {
 // ════════════════════════════════════════════════
 
 export class Bank12AudioEngine {
-  private _papu: PapuOutput;
+  private _papu: PAPU;
   private blocks: ChBlock[] = [];
   private w: WorkArea = createWorkArea();
   private tracks: (Uint8Array | null)[] = [];
@@ -59,7 +59,7 @@ export class Bank12AudioEngine {
   private _loopStacks: Array<Array<{ count: number; addr: number }>> =
     Array.from({ length: NUM_CHANNELS }, () => []);
 
-  constructor(papu: PapuOutput) {
+  constructor(papu: PAPU) {
     this._papu = papu;
     for (let i = 0; i < NUM_CHANNELS; i++) {
       this.blocks.push(createChBlock());
@@ -450,7 +450,7 @@ export class Bank12AudioEngine {
     const CHUNK = 32;
     while (remaining > 0) {
       const n = remaining < CHUNK ? remaining : CHUNK;
-      this._papu.papu.clockFrameCounter(n);
+      this._papu.clockFrameCounter(n);
       remaining -= n;
     }
 

@@ -19,7 +19,7 @@
  *   $8C96        — 球员属性指针 ($BC48)
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import {
   readBank29,
   readBank29U16,

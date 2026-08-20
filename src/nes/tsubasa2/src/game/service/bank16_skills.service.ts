@@ -36,7 +36,7 @@
  *   $8021×1 $803F×1 $80CF×1 $80F6×2 $812F×2 $8142×1 $8211×2
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import {
   readB16,
   readB16U16,

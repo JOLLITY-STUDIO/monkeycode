@@ -19,7 +19,7 @@
  *   $C539→$CDE2  (X,Y) 像素 → A 精灵位置 (行号+12*列号, 越界 $FF)
  */
 
-import { DataStore } from '../data/DataStore';
+import { DataStore } from '../data/prg/DataStore';
 import {
   readB27,
   readB27U16,

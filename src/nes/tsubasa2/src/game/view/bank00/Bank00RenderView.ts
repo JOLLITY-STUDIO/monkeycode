@@ -27,14 +27,14 @@
  *   core (合成器)   → 消费 DataStore 合成像素帧
  */
 
-import { DataStore } from '../../data/DataStore';
+import { DataStore } from '../../data/prg/DataStore';
 import { palWriteAll, palExportRGBA } from '../../data/prg/ppu/pallete/paletteManager';
 import { SCENE_BG_PALETTE, SCENE_SPR_PALETTE } from '../../data/prg/ppu/pallete/scene-palette-table';
 import {
   CUT_0x17_NT0,
   CUT_0x17_ATTR0,
 } from '../../data/prg/ppu/nametable/cut/cut_0x17_nt';
-import type { PaletteColor } from '../../model/types';
+import type { PaletteColor } from '../../data/prg/model-types';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
