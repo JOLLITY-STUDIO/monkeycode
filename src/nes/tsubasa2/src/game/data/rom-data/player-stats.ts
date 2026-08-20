@@ -218,14 +218,13 @@ export function getPlayerStatsRaw(mazongIndex: number): readonly number[] {
 }
 
 /**
- * 按 ROM 角色 ID 获取能力值 (需先做 ID→mazongIndex 映射)
- * FIXME: ROM ID 与 mazong index 映射表待完善, 当前用简易映射
+ * 按 ROM 角色 ID 获取能力值原始字节。
+ * PLAYER_STATS_RAW 按 ROM 角色 ID 排序 (ID 0x01-0x75 → 索引 0-116), 即 romId - 1。
  */
 export function getPlayerStatsById(romId: number): readonly number[] {
-  // 简易映射: Tsubasa(0x01)→mazongIndex 1, 其他按近似偏移
-  // 完整映射待从 player_data_arr 提取
-  const mazongIndex = romId; // 临时: 假设 ROM ID ≈ mazongIndex (近似, 后续修正)
-  return getPlayerStatsRaw(mazongIndex);
+  const idx = romId - 1;
+  if (idx < 0 || idx >= PLAYER_STATS_RAW.length) return new Array(24).fill(0);
+  return PLAYER_STATS_RAW[idx];
 }
 
 /** 按 playerIndex 获取结构化能力值对象 (编码值) */

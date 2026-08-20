@@ -22,7 +22,7 @@ import { SceneView } from './SceneView';
 import type { TeamDataDisplayState } from '../service/bank01_data-query.service';
 import type { SpriteEntry, NameTableEntry } from '../data/DataStore';
 import { getCharacterName, getCharacterNameCn, isGoalkeeper } from '../data/rom-data/character-list';
-import { getPlayerStatsById, PLAYER_STAT_FIELDS } from '../data/rom-data/player-stats';
+import { getPlayerStatsById, codeToStamina, codeToAbility } from '../data/rom-data/player-stats';
 import { PLAYER_TEAMS } from '../data/rom-data/team-roster';
 import { SHOT_DIGITS, DRIBBLE_DIGITS, PASS_DIGITS, getSpecialMoves } from '../data/rom-data/special-moves';
 
@@ -223,19 +223,21 @@ export class MeetingView extends SceneView {
     this._drawText(`>${nameEn.slice(0, 10)}`, PX, PY - 1, false);
 
     if (detailMode === 0) {
-      // 能力值模式: 显示 Shot/Pass/Dribble/Block/Tackle/Intercept
+      // 能力值模式: 显示 体力 + Shot/Pass/Dribble/Block/Tackle/Intercept (编码→查表真实值)
+      // 数据链路 (docs/number-display-pipeline.md): ROM编码 → STAMINA_TABLE/ABILITY_TABLE → 真实显示值
       const stats = getPlayerStatsById(playerId);
+      const stamina = codeToStamina(stats[0]);        // 体力 (16bit, 查 STAMINA_TABLE)
       const fields = [
-        { label: 'SHT', offset: 1 },  // Shot
-        { label: 'PAS', offset: 2 },  // Pass
-        { label: 'DRB', offset: 3 },  // Dribble
-        { label: 'BLK', offset: 4 },  // Block
-        { label: 'TCK', offset: 5 },  // Tackle
-        { label: 'ITC', offset: 6 },  // Intercept
+        { label: 'STM', value: stamina },              // 体力 (真实值, 如 748)
+        { label: 'SHT', value: codeToAbility(stats[1]) },  // Shot
+        { label: 'PAS', value: codeToAbility(stats[2]) },  // Pass
+        { label: 'DRB', value: codeToAbility(stats[3]) },  // Dribble
+        { label: 'BLK', value: codeToAbility(stats[4]) },  // Block
+        { label: 'TCK', value: codeToAbility(stats[5]) },  // Tackle
+        { label: 'ITC', value: codeToAbility(stats[6]) },  // Intercept
       ];
       for (let i = 0; i < fields.length; i++) {
-        const val = stats[fields[i].offset] ?? 0;
-        const valStr = val.toString().padStart(3, ' ');
+        const valStr = fields[i].value.toString().padStart(3, ' ');
         this._drawText(`${fields[i].label}:${valStr}`, PX, PY + i, false);
       }
     } else {
