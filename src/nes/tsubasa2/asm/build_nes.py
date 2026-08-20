@@ -203,11 +203,19 @@ class Assembler:
         except Exception as e:
             raise AsmError(f"无法解析表达式: {s!r} ({e})")
 
-    def get_addr_mode(self, operand):
-        """识别地址模式, 返回 (mode, value_str)"""
+    def get_addr_mode(self, operand, mnemonic=None):
+        """识别地址模式, 返回 (mode, value_str)
+        mnemonic 用于判断 zpx/zpy 是否可用 (STA/LDA 等某些指令只有 abx/aby)
+        支持 'a:' 前缀强制 absolute (zeropage → absolute)"""
         op = operand.strip()
         if not op or op.upper() == 'A':
             return ('imp' if not op else 'acc'), ''
+        # a: 前缀 = 强制 absolute (不降级到 zeropage)
+        force_abs = False
+        m = re.match(r'^a:\s*(.+)$', op, re.I)
+        if m:
+            force_abs = True
+            op = m.group(1).strip()
         # immediate
         if op.startswith('#'):
             return 'imm', op[1:].strip()
@@ -227,10 +235,14 @@ class Assembler:
         m = re.match(r'(.+?)\s*,\s*X\s*$', op, re.I)
         if m:
             v = m.group(1).strip()
-            # 判断 zp vs abs
             try:
                 val = self.eval_expr(v)
-                return ('zpx' if val < 256 else 'abx'), v
+                # zpx 只有部分指令支持; 若不支持或 force_abs 则用 abx
+                if not force_abs and val < 256 and mnemonic and mnemonic in OPCODES and 'zpx' in OPCODES[mnemonic]:
+                    return 'zpx', v
+                if not force_abs and val < 256 and (not mnemonic or mnemonic not in OPCODES):
+                    return 'zpx', v
+                return 'abx', v
             except Exception:
                 return 'abx', v
         # zp,Y / abs,Y
@@ -239,12 +251,17 @@ class Assembler:
             v = m.group(1).strip()
             try:
                 val = self.eval_expr(v)
-                return ('zpy' if val < 256 else 'aby'), v
+                # zpy 只有 LDX/STX 支持; 其他强制 aby
+                if not force_abs and val < 256 and mnemonic and mnemonic in OPCODES and 'zpy' in OPCODES[mnemonic]:
+                    return 'zpy', v
+                return 'aby', v
             except Exception:
                 return 'aby', v
         # 单个值: zp 或 abs
         try:
             val = self.eval_expr(op)
+            if force_abs:
+                return 'abs', op
             return ('zp' if val < 256 else 'abs'), op
         except Exception:
             return 'abs', op
@@ -427,6 +444,12 @@ class Assembler:
                 tb = traceback.format_exc().splitlines()
                 self.errors.append(f"{ln.file}:{ln.lineno}: {e}\n    " + "\n    ".join(tb[-3:]))
 
+        # 打印 PC 偏移警告 (帮助诊断)
+        if hasattr(self, '_pc_warnings') and self._pc_warnings:
+            print("\nPC 偏移警告 (pass1 估算 vs pass2 实际不一致):")
+            for w in self._pc_warnings[:10]:
+                print(f"  {w}")
+
         if self.errors:
             print("Pass 2 errors:")
             for e in self.errors[:20]:
@@ -473,7 +496,7 @@ class Assembler:
             return 2
         if not ln.operand or ln.operand.upper() == 'A':
             return 1
-        mode, _ = self.get_addr_mode(ln.operand)
+        mode, _ = self.get_addr_mode(ln.operand, mn)
         if mode in ('imp', 'acc'): return 1
         if mode == 'rel': return 2
         if mode in ('imm', 'zp', 'zpx', 'zpy', 'indx', 'indy'): return 2
@@ -513,6 +536,19 @@ class Assembler:
         if mn not in OPCODES:
             raise AsmError(f"未知指令: {mn}")
 
+        # 从注释提取原始 CPU 地址用于一致性检查
+        orig_addr = None
+        m = re.search(r';\s*\$([0-9A-Fa-f]{4})', ln.raw)
+        if m:
+            orig_addr = int(m.group(1), 16)
+        cur_pc_calc = (0xE000 if b == 31 else 0xC000 if b == 30 else 0x8000) + bank_pc[b]
+        if orig_addr is not None and abs(cur_pc_calc - orig_addr) > 0:
+            # PC 偏移了 - 报告但不中断 (帮助定位问题)
+            if not hasattr(self, '_pc_warnings'):
+                self._pc_warnings = []
+            if len(self._pc_warnings) < 10:
+                self._pc_warnings.append(f"{ln.file}:{ln.lineno}: PC偏移 cur=${cur_pc_calc:04X} orig=${orig_addr:04X} diff={cur_pc_calc-orig_addr:+d} ({mn} {ln.operand})")
+
         if not ln.operand or ln.operand.upper() == 'A':
             # accumulator / implied
             if 'acc' in OPCODES[mn]:
@@ -542,7 +578,7 @@ class Assembler:
             bank_pc[b] += 2
             return
 
-        mode, val_str = self.get_addr_mode(ln.operand)
+        mode, val_str = self.get_addr_mode(ln.operand, mn)
         if mode not in OPCODES[mn]:
             raise AsmError(f"{mn} 不支持 {mode} 地址模式")
 
@@ -585,14 +621,14 @@ def main():
     for bank_dir in sorted(asm_root.iterdir()):
         if not bank_dir.is_dir(): continue
         if not bank_dir.name.lower().startswith('bank'): continue
-        # 顶层入口: bankNN/bankNN.s
+        # 顶层入口: bankNN/bankNN.s (严格的入口名, 不包括 _disasm.s 等参考文件)
         top = bank_dir / f"{bank_dir.name}.s"
         if top.exists():
             source_files.append(top)
         else:
-            # 兼容: 没有 bankNN.s 时取该目录下所有 .s
-            for f in sorted(bank_dir.glob("*.s")):
-                source_files.append(f)
+            # 没有 bankNN.s 时, 跳过该 bank (用默认 $FF 填充)
+            # 不再 fallback 扫描整个目录, 避免误编译 _disasm.s 等参考文件
+            pass
     if not source_files:
         print("WARN: 未找到 .s 源文件, 使用内置字节流")
         # fallback 走之前的硬编码逻辑
@@ -625,7 +661,8 @@ def main():
         chr_data = b'\x00' * (128 * 1024)
 
     # --- 5. iNES Header ---
-    header = bytes([0x4E, 0x45, 0x53, 0x1A, 0x10, 0x10, 0x40, 0x08, 0,0,0,0,0,0,0,0])
+    # 偏移 15 = PRG RAM size (0x01 = 8KB, 天使之翼2 用 battery-backed 8KB PRG RAM)
+    header = bytes([0x4E, 0x45, 0x53, 0x1A, 0x10, 0x10, 0x40, 0x08, 0,0,0,0,0,0,0,0x01])
 
     # --- 6. 输出 ---
     nes_data = header + bytes(prg) + chr_data
