@@ -95,7 +95,9 @@ class BootService {
     /** Bank02 场景服务 — 供 PASSWORD 场景执行真实 $A484/$A4C0 初始化链 (可选注入) */
     _bank02, 
     /** 球员升级服务 (可选注入, LEVELUP 协程用) */
-    _levelupSvc) {
+    _levelupSvc, 
+    /** Bank24 HUD 服务 (可选注入, 比赛主循环逐帧驱动 HUD 渲染) */
+    _hud) {
         this._store = _store;
         this._dataQuery = _dataQuery;
         this._matchEngine = _matchEngine;
@@ -104,6 +106,7 @@ class BootService {
         this._bank18 = _bank18;
         this._bank02 = _bank02;
         this._levelupSvc = _levelupSvc;
+        this._hud = _hud;
         /** 当前镜头已过帧数 */
         this._shotFrame = 0;
         /** 比赛已进行帧数 (MATCH 守卫) */
@@ -482,10 +485,14 @@ class BootService {
     *_runHalfPhase(isExtra) {
         const guard = isExtra ? (60 * 45) : MATCH_DURATION_FRAMES; // 加时 45秒 / 正常 90秒 帧守卫
         let frame = 0;
+        // 比赛 HUD 初始化 (对应 bank31 $ED06: ram_05EA/0532/0534/0536 触发)
+        this._hud?.initMatchHud();
         for (;;) {
             const _buttons = yield;
             this._matchEngine.mainLoop();
             this._bank20.frameTick();
+            // 比赛 HUD 逐帧驱动 (对应 bank31 $EB86: HUD 行1/2/3 + 场景状态机)
+            this._hud?.matchFrameTick();
             this._matchFrame++;
             frame++;
             // 模拟 bank0 比赛协程倒计时
@@ -526,10 +533,12 @@ class BootService {
     *_runPkPhase() {
         const PK_GUARD = 60 * 30; // 30 秒帧守卫
         let frame = 0;
+        this._hud?.initMatchHud();
         for (;;) {
             const _buttons = yield;
             this._matchEngine.mainLoop();
             this._bank20.frameTick();
+            this._hud?.matchFrameTick();
             frame++;
             const sa = this._store.read('scoreA');
             const sb = this._store.read('scoreB');

@@ -87,9 +87,9 @@ class Bank00RenderView {
     }
     /** 加载镜头 0x17 (标题菜单背景) 的 NT/ATTR 到 DataStore */
     _loadCut0x17() {
-        // CHR bank: 原始 $CA22 设 ram_0490=0/ram_0491=2 (BG bank 对),
-        // 与 scene_opening.controller 暴力渲染验证一致 = 14
-        const CHR_BANK = 14;
+        // CHR bank: 原始 BG 2KB CHR bank = 0/2, 对应 H5 8KB bank 0
+        // (NT tile 索引即 PPU pattern-table 0 偏移, 无需 slot 转换)
+        const CHR_BANK = 0;
         const nt = cut_0x17_nt_1.CUT_0x17_NT0;
         const attr = cut_0x17_nt_1.CUT_0x17_ATTR0;
         for (let y = 0; y < 30; y++) {

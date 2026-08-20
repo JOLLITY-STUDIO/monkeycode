@@ -182,6 +182,43 @@ export class Bank24HudService {
   /** $80A0 等待输入中 (H5: 帧模型, 非忙等) */
   private _waitingInput = false;
 
+  /** 场景状态 2 图案游标起点 (ram_003A 初始 = e6+3), 用于 VRAM 数据区归一化 */
+  private _vramDataStart = 0;
+
+  // ──────────────────────────────────────────────
+  // 比赛 HUD 启动/逐帧驱动 (对应 bank31 $EB86/$ED06 主循环链)
+  // ──────────────────────────────────────────────
+
+  /**
+   * 比赛开始前初始化 HUD (对应 bank31 $ED06-$ED19):
+   *   LDA ram_0529 → STA ram_05EA (场景索引, 运行时值 2);
+   *   ram_0532/0534/0536 |= 0x80 (触发 HUD 行1/2/3 文本流)。
+   */
+  initMatchHud(): void {
+    const s = this._store;
+    // $ED06-$ED19: ram_05EA = ram_0529 (bank16 $91FF 脚本运行时 = 2)
+    s.write('ram_05EA', (s.read('ram_0529') || 0x02) & 0xff);
+    s.write('ram_063F', s.read('ram_063F') & 0x7f); // 允许场景状态机运行
+    this._sceneActive = false;
+    this._waitingInput = false;
+    // 触发 3 条 HUD 文本流
+    s.write('ram_0532', (s.read('ram_0532') | 0x80) & 0xff);
+    s.write('ram_0534', (s.read('ram_0534') | 0x80) & 0xff);
+    s.write('ram_0536', (s.read('ram_0536') | 0x80) & 0xff);
+  }
+
+  /**
+   * 比赛主循环每帧驱动 (对应 bank31 $EB86-$EB90):
+   *   JSR $8003/$8006/$8009 (HUD 行1/2/3) + ram_0516 bit7 → $8000 场景状态机。
+   */
+  matchFrameTick(): void {
+    this.dispatch(0); // $8003 → HUD 行1
+    this.dispatch(1); // $8006 → HUD 行2
+    this.dispatch(2); // $8009 → HUD 行3
+    // ram_0516 bit7 → $8000 场景状态机 (H5: 比赛期间一直运行)
+    this.matchHudTick();
+  }
+
   // ──────────────────────────────────────────────
   // $8003: 入口跳转表
   // ──────────────────────────────────────────────
@@ -614,7 +651,10 @@ export class Bank24HudService {
       groupLoop: while (true) {
         if (nextSprite) {
           // $8279-$8284: 写精灵槽 3B (attr=组属性, tileLo/Hi=源地址)
-          oam.writeSlot(x, s.read(KEY_05E7), tileLo, tileHi);
+          // 原始为 STA $04A5,X / $04A6,X / $04A7,X 三连字节写 (X=字节偏移)
+          oam.writeByte(x, s.read(KEY_05E7));
+          oam.writeByte(x + 1, tileLo);
+          oam.writeByte(x + 2, tileHi);
           // $8287-$8290: 下一精灵源地址 +$20
           const sum = tileLo + 0x20;
           tileLo = sum & 0xff;
@@ -624,7 +664,8 @@ export class Bank24HudService {
         }
 
         // $8294-$82B5: RLE 数据流 (填充后续槽字节)
-        for (;;) {
+        let rleGuard = 0; // H5 防死循环 (原始数据流理论上有限)
+        for (; rleGuard < 512; rleGuard++) {
           const db = readSceneByte(block + dy);
           if (db & 0x80) {
             // 压缩: 后续 N 个 0
@@ -656,6 +697,7 @@ export class Bank24HudService {
           if (a2 < attr0) continue; // BCC $8294 → 继续读数据
           break groupLoop; // $82CC: 组/帧结束
         }
+        if (rleGuard >= 512) break groupLoop; // H5 上限兜底
       }
 
       // $82CC-$82D3: 填 0 结束 + 置完成
@@ -673,14 +715,17 @@ export class Bank24HudService {
   }
 
   /**
-   * $82F2-$8361: 状态 2 — 精灵组帧渲染。
+   * $82F2-$8361: 状态 2 — 精灵组帧渲染 (VRAM 文本块构建 → NT)。
    *
    * 流程:
    *   1. 等待渲染空闲 → 置忙
    *   2. 清槽区 [0..ram_05E6*2+7]; [0]=e6, [ram_05E6+3]=e6
    *   3. $86E8[ram_05E7*2] → 源地址 → [1]/[2], [e6+4]/[e6+5] = 地址+$20
-   *   4. 读流循环: >=$E0 → 命令 (SBC #$E0 → 表 $8364: $83A4/$83CA/$83E2/
-   *      $8443/$8467/$846D/$8475/$848D, 任务3); <$E0 → $8629 精灵数据 (任务3)
+   *   4. 读流循环: >=$E0 → 命令 (SBC #$E0 → 表 $8364); <$E0 → $8629 精灵数据
+   *
+   * VRAM 提交语义 (H5, 对应 bank30 $C951): [0]=count, [1]/[2]=NT 地址,
+   * [3..] = tile 数据。$86E8 源地址 (0x2270/0x22B0/0x22F0/0x2330...) 即
+   * NT0 内的 HUD 文本位置。构建完成后 commitVramToNT() 写入 DataStore.nt0。
    */
   private _sceneSub2(): void {
     const s = this._store;
@@ -690,21 +735,26 @@ export class Bank24HudService {
     this._fixedC515();
     while (oam.isBusy()) this._fixedC515();
     oam.beginBuild(); // $82FC-$82FE
+    oam.beginVramBuild(); // H5: 同步开启 VRAM 线性缓冲
 
     // $8301-$8312: 清 [0..ram_05E6*2+7]
     const e6 = s.read(KEY_05E6);
     const y0 = e6 * 2 + 6;
     for (let y = y0 + 1; y >= 0; y--) {
       oam.writeByte(y, 0);
+      oam.writeVramByte(y, 0);
     }
 
     // $8314-$831A: ram_003A = e6+3 (图案游标起点)
     s.write(KEY_003A, e6 + 3);
+    this._vramDataStart = e6 + 3;
 
     // $831D-$8323: [0]=e6, [e6+3]=e6
     const xa = e6 + 3;
     oam.writeByte(0, e6);
+    oam.writeVramByte(0, e6); // VRAM count
     oam.writeByte(xa, e6);
+    oam.writeVramByte(xa, e6);
 
     // $8326-$833F: $86E8[ram_05E7*2] → 源地址 (2B)
     const e7 = s.read(KEY_05E7);
@@ -712,9 +762,13 @@ export class Bank24HudService {
     const srcHi = readB24(0x86e9 + e7 * 2);
     oam.writeByte(1, srcLo);
     oam.writeByte(2, srcHi);
+    oam.writeVramByte(1, srcLo); // VRAM addrLo
+    oam.writeVramByte(2, srcHi); // VRAM addrHi
     const next = (srcHi << 8 | srcLo) + 0x20;
     oam.writeByte(xa + 1, next & 0xff);
     oam.writeByte(xa + 2, next >> 8);
+    oam.writeVramByte(xa + 1, next & 0xff);
+    oam.writeVramByte(xa + 2, next >> 8);
 
     // $8342-$8344: ram_003B = 0
     s.write(KEY_003B, 0);
@@ -751,8 +805,16 @@ export class Bank24HudService {
     const idxB = s.read(KEY_003B);
     oam.writeByte(3 + idxA, pat); // $862C-$862E: STA ram_04A8,X
     oam.writeByte(3 + idxB, attr); // $8631-$8634
+    // H5 VRAM 提交: 图案归一化到数据区 [3..], 属性写块后备用区
+    oam.writeVramByte(3 + (idxA - this._vramDataStart), pat);
+    oam.writeVramByte(3 + this._vramDataStart + idxB, attr);
     s.write(KEY_003A, idxA + 1); // $8637
     s.write(KEY_003B, idxB + 1); // $8639
+  }
+
+  /** H5: 场景帧构建完成后把 VRAM 缓冲提交到 NameTable (对应 bank30 $C951) */
+  private _commitVram(): void {
+    this._store.oam.commitVramToNT();
   }
 
   /**
@@ -1059,6 +1121,7 @@ export class Bank24HudService {
   private _cmd85D6(): void {
     const s = this._store;
     s.oam.endBuild(); // $85D8: STA ram_0515 = $80
+    this._commitVram(); // H5: 场景文本块 → NT (对应 bank30 $C951 消费 $04A5)
     const e7 = s.read(KEY_05E7);
     if (e7 === s.read(KEY_05E8)) {
       s.write(KEY_05E4, 0); // $85E3-$85E5: 状态 0

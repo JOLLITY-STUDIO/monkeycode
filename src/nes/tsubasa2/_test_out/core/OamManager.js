@@ -18,6 +18,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OamManager = exports.OAM_MAX = exports.OAM_READY = exports.OAM_BUILDING = exports.OAM_IDLE = void 0;
+const types_1 = require("./types");
 /** 忙标志值 (对应 NES ram_0515) */
 exports.OAM_IDLE = 0;
 exports.OAM_BUILDING = 0x01;
@@ -34,6 +35,22 @@ class OamManager {
         this._busy = exports.OAM_IDLE;
         /** 持有 DataStore 引用 (供 emitSprites 写回), 由 DataStore 构造时注入 */
         this._store = null;
+        // ── $04A5 线性 VRAM 写缓冲 (对应 bank30 $C951-$C981 消费) ──
+        //
+        // 真实格式 (2026-08 反汇编 $C951 确认):
+        //   0,0 = 缓冲结束 (count==0)
+        //   [count][addrLo][addrHi][data × count]  — 一个 VRAM 写块
+        //   $C951: LDA abs,X $04A5 → count; 无则结束; Y=count;
+        //          $C962: lo=$04A5+1; $C967: hi=$04A5+2 → $2006 (PPU 地址);
+        //          $C975: 循环 $04A5+3.. 每字节 → $2007 (PPU 写数据);
+        //   addr 为 PPU VRAM 地址 ($2000-$23FF=NT0, $2400-$27FF=NT1)。
+        // 比赛 HUD 文本/比分/时钟即通过此缓冲写 NT (非 OAM 精灵)。
+        //
+        // H5 提交: 解析序列 → DataStore.writeNT (tile 索引 = 数据字节)。
+        /** $04A5 线性 VRAM 缓冲 (256B 上限, 对应 NES 04A5-$05A4 区) */
+        this._vram = new Uint8Array(256);
+        /** 已写入的缓冲长度 (max offset+1) */
+        this._vramLen = 0;
     }
     attach(store) {
         this._store = store;
@@ -125,6 +142,84 @@ class OamManager {
     /** 当前已分配槽数 */
     slotCount() {
         return this._shadow.length;
+    }
+    /** 开启 VRAM 缓冲构建 (置忙, 对应 STA ram_0515 = 1) */
+    beginVramBuild() {
+        this._vramLen = 0;
+        this._busy = exports.OAM_BUILDING;
+    }
+    /** 单字节写入 VRAM 缓冲 (offset 相对 $04A5) */
+    writeVramByte(offset, v) {
+        if (offset < 0 || offset >= this._vram.length) {
+            console.warn(`[OamManager] VRAM 缓冲越界: ${offset} (上限 ${this._vram.length})`);
+            return;
+        }
+        this._vram[offset] = v & 0xff;
+        if (offset + 1 > this._vramLen)
+            this._vramLen = offset + 1;
+    }
+    /** 连续字节写入 VRAM 缓冲 */
+    writeVramBlock(offset, bytes) {
+        for (let k = 0; k < bytes.length; k++)
+            this.writeVramByte(offset + k, bytes[k]);
+    }
+    /** 读 VRAM 缓冲单字节 (越界返回 0) */
+    readVramByte(offset) {
+        if (offset < 0 || offset >= this._vram.length)
+            return 0;
+        return this._vram[offset];
+    }
+    /** 构建完成 (对应 STA ram_0515 = $80) */
+    endVramBuild() {
+        this._busy = exports.OAM_READY;
+    }
+    /** 当前 VRAM 缓冲已写长度 */
+    vramLen() {
+        return this._vramLen;
+    }
+    /**
+     * 把 VRAM 缓冲提交到 NameTable (对应 bank30 $C951 逐块写 $2006/$2007)。
+     * 支持多块: [count][addrLo][addrHi][data×count] [count]... 直到 count==0 或越界。
+     * PPU 地址 → NT: $2000-$23FF=nt0, $2400-$27FF=nt1; 偏移 = addr & 0x3FF;
+     * x = off % 32, y = off / 32 (tile 网格)。
+     */
+    commitVramToNT() {
+        if (!this._store)
+            return;
+        let i = 0;
+        while (i < this._vramLen) {
+            const count = this._vram[i];
+            if (count === 0)
+                break;
+            if (i + 2 + count > this._vramLen)
+                break;
+            const addr = (this._vram[i + 2] << 8) | this._vram[i + 1];
+            const nt = addr < 0x2400 ? 0 : 1;
+            const off = addr & 0x3ff;
+            for (let k = 0; k < count; k++) {
+                const tile = this._vram[i + 3 + k];
+                const pos = off + k;
+                const x = pos % types_1.NT_COLS;
+                const y = (pos / types_1.NT_COLS) | 0;
+                if (x < types_1.NT_COLS && y < types_1.NT_ROWS) {
+                    this._store.writeNT(nt, x, y, {
+                        tile,
+                        palette: 0,
+                        bank: 0,
+                        flipH: false,
+                        flipV: false,
+                        behindBg: false,
+                    });
+                }
+            }
+            i += 3 + count;
+        }
+        this._busy = exports.OAM_IDLE; // 消费完置空闲 (对应 $C958 STX $0515 = 0)
+    }
+    /** 清空 VRAM 缓冲 */
+    clearVram() {
+        this._vram.fill(0);
+        this._vramLen = 0;
     }
     // ── 语义精灵设置 (对应尚未翻译的坐标/翻转逻辑, 翻译后调用) ──
     /** 设置精灵屏幕坐标与激活 (y=0xF8 表示屏幕外不可见) */

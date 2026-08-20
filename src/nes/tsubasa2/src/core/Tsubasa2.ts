@@ -41,6 +41,7 @@ import { Bank18Service } from '../game/service/bank18_story.service';
 import { Bank20Service } from '../game/service/bank20_match-aux.service';
 import { InterruptService } from '../game/service/bank31_interrupt.service';
 import { LevelUpService } from '../game/service/levelup.service';
+import { Bank24HudService } from '../game/service/bank24_hud.service';
 import { BUTTON, NES_WIDTH, NES_HEIGHT } from './types';
 import type { Tsubasa2Config, DebugInfo, GameState } from './types';
 import { GameState as GS } from './types';
@@ -151,6 +152,9 @@ export class Tsubasa2 {
   /** 球员升级服务 (经验值/等级/Guts RAM 读写) */
   private _levelup!: LevelUpService;
 
+  /** Bank 24: 比赛 HUD 服务 (比分/时间文本流 + 场景状态机) */
+  private _hudSvc!: Bank24HudService;
+
   /** 上一次按键值 (用于上升沿检测) */
   private _lastButtons = 0;
 
@@ -187,11 +191,14 @@ export class Tsubasa2 {
     // 球员升级服务 (经验值/等级/Guts RAM 读写)
     this._levelup = new LevelUpService(this._store);
 
-    // 场景路由器 — 持有 DataQuery/MatchEngine/Bank18/Bank19/Bank20/LevelUp 引用以委派场景
+    // 比赛 HUD 服务 (bank24 文本流引擎 + 场景状态机, 比赛主循环逐帧驱动)
+    this._hudSvc = new Bank24HudService(this._store);
+
+    // 场景路由器 — 持有 DataQuery/MatchEngine/Bank18/Bank19/Bank20/LevelUp/HUD 引用以委派场景
     this._bank19 = new Bank19Service(this._store);
     this._bank18 = new Bank18Service(this._store, this._bank19);
     this._bank20 = new Bank20Service(this._store);
-    this._boot = new BootService(this._store, this._dataQuery, this._matchEngine, this._bank19, this._bank20, this._bank18, this._bank02, this._levelup);
+    this._boot = new BootService(this._store, this._dataQuery, this._matchEngine, this._bank19, this._bank20, this._bank18, this._bank02, this._levelup, this._hudSvc);
 
     // 帧合成器 (PPU 层) — DataStore → 帧缓冲
     this._compositor = new FrameCompositor(this._store);
@@ -363,6 +370,11 @@ export class Tsubasa2 {
   /** 球员升级服务 (经验值/等级/Guts 读写 + maxOut 满级) */
   get levelup(): LevelUpService {
     return this._levelup;
+  }
+
+  /** Bank24 比赛 HUD 服务 (比分/时间文本流 + 场景状态机) */
+  get hud(): Bank24HudService {
+    return this._hudSvc;
   }
 
   /**

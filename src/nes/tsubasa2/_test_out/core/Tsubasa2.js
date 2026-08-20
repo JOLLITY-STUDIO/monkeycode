@@ -46,6 +46,7 @@ const bank18_story_service_1 = require("../game/service/bank18_story.service");
 const bank20_match_aux_service_1 = require("../game/service/bank20_match-aux.service");
 const bank31_interrupt_service_1 = require("../game/service/bank31_interrupt.service");
 const levelup_service_1 = require("../game/service/levelup.service");
+const bank24_hud_service_1 = require("../game/service/bank24_hud.service");
 const types_1 = require("./types");
 const types_2 = require("./types");
 // CHR Bank 数据 (直接 import data 本地副本，无需 MMC3)
@@ -102,11 +103,13 @@ class Tsubasa2 {
         this._audioService = new bank12_audio_service_1.Bank12AudioService(this._store);
         // 球员升级服务 (经验值/等级/Guts RAM 读写)
         this._levelup = new levelup_service_1.LevelUpService(this._store);
-        // 场景路由器 — 持有 DataQuery/MatchEngine/Bank18/Bank19/Bank20/LevelUp 引用以委派场景
+        // 比赛 HUD 服务 (bank24 文本流引擎 + 场景状态机, 比赛主循环逐帧驱动)
+        this._hudSvc = new bank24_hud_service_1.Bank24HudService(this._store);
+        // 场景路由器 — 持有 DataQuery/MatchEngine/Bank18/Bank19/Bank20/LevelUp/HUD 引用以委派场景
         this._bank19 = new bank19_auxiliary_service_1.Bank19Service(this._store);
         this._bank18 = new bank18_story_service_1.Bank18Service(this._store, this._bank19);
         this._bank20 = new bank20_match_aux_service_1.Bank20Service(this._store);
-        this._boot = new boot_1.BootService(this._store, this._dataQuery, this._matchEngine, this._bank19, this._bank20, this._bank18, this._bank02, this._levelup);
+        this._boot = new boot_1.BootService(this._store, this._dataQuery, this._matchEngine, this._bank19, this._bank20, this._bank18, this._bank02, this._levelup, this._hudSvc);
         // 帧合成器 (PPU 层) — DataStore → 帧缓冲
         this._compositor = new FrameCompositor_1.FrameCompositor(this._store);
         // 渲染器 (View) — 帧缓冲 → 画布 (对应模拟器 ui.writeFrame)
@@ -244,6 +247,10 @@ class Tsubasa2 {
     /** 球员升级服务 (经验值/等级/Guts 读写 + maxOut 满级) */
     get levelup() {
         return this._levelup;
+    }
+    /** Bank24 比赛 HUD 服务 (比分/时间文本流 + 场景状态机) */
+    get hud() {
+        return this._hudSvc;
     }
     /**
      * 无头初始化 — 等价 start() 的初始化链但跳过循环/渲染器/音频：

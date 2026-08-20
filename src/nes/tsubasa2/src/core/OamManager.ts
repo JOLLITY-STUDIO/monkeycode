@@ -17,6 +17,7 @@
  */
 
 import type { DataStore } from '../game/data/DataStore';
+import { NT_COLS, NT_ROWS } from './types';
 
 /** 影子缓冲槽 (3B, 对应 $04A5+X / $04A6+X / $04A7+X) */
 export interface OamShadowSlot {
@@ -155,6 +156,105 @@ export class OamManager {
   /** 当前已分配槽数 */
   slotCount(): number {
     return this._shadow.length;
+  }
+
+  // ── $04A5 线性 VRAM 写缓冲 (对应 bank30 $C951-$C981 消费) ──
+  //
+  // 真实格式 (2026-08 反汇编 $C951 确认):
+  //   0,0 = 缓冲结束 (count==0)
+  //   [count][addrLo][addrHi][data × count]  — 一个 VRAM 写块
+  //   $C951: LDA abs,X $04A5 → count; 无则结束; Y=count;
+  //          $C962: lo=$04A5+1; $C967: hi=$04A5+2 → $2006 (PPU 地址);
+  //          $C975: 循环 $04A5+3.. 每字节 → $2007 (PPU 写数据);
+  //   addr 为 PPU VRAM 地址 ($2000-$23FF=NT0, $2400-$27FF=NT1)。
+  // 比赛 HUD 文本/比分/时钟即通过此缓冲写 NT (非 OAM 精灵)。
+  //
+  // H5 提交: 解析序列 → DataStore.writeNT (tile 索引 = 数据字节)。
+
+  /** $04A5 线性 VRAM 缓冲 (256B 上限, 对应 NES 04A5-$05A4 区) */
+  private _vram = new Uint8Array(256);
+
+  /** 已写入的缓冲长度 (max offset+1) */
+  private _vramLen = 0;
+
+  /** 开启 VRAM 缓冲构建 (置忙, 对应 STA ram_0515 = 1) */
+  beginVramBuild(): void {
+    this._vramLen = 0;
+    this._busy = OAM_BUILDING;
+  }
+
+  /** 单字节写入 VRAM 缓冲 (offset 相对 $04A5) */
+  writeVramByte(offset: number, v: number): void {
+    if (offset < 0 || offset >= this._vram.length) {
+      console.warn(`[OamManager] VRAM 缓冲越界: ${offset} (上限 ${this._vram.length})`);
+      return;
+    }
+    this._vram[offset] = v & 0xff;
+    if (offset + 1 > this._vramLen) this._vramLen = offset + 1;
+  }
+
+  /** 连续字节写入 VRAM 缓冲 */
+  writeVramBlock(offset: number, bytes: ArrayLike<number>): void {
+    for (let k = 0; k < bytes.length; k++) this.writeVramByte(offset + k, bytes[k]);
+  }
+
+  /** 读 VRAM 缓冲单字节 (越界返回 0) */
+  readVramByte(offset: number): number {
+    if (offset < 0 || offset >= this._vram.length) return 0;
+    return this._vram[offset];
+  }
+
+  /** 构建完成 (对应 STA ram_0515 = $80) */
+  endVramBuild(): void {
+    this._busy = OAM_READY;
+  }
+
+  /** 当前 VRAM 缓冲已写长度 */
+  vramLen(): number {
+    return this._vramLen;
+  }
+
+  /**
+   * 把 VRAM 缓冲提交到 NameTable (对应 bank30 $C951 逐块写 $2006/$2007)。
+   * 支持多块: [count][addrLo][addrHi][data×count] [count]... 直到 count==0 或越界。
+   * PPU 地址 → NT: $2000-$23FF=nt0, $2400-$27FF=nt1; 偏移 = addr & 0x3FF;
+   * x = off % 32, y = off / 32 (tile 网格)。
+   */
+  commitVramToNT(): void {
+    if (!this._store) return;
+    let i = 0;
+    while (i < this._vramLen) {
+      const count = this._vram[i];
+      if (count === 0) break;
+      if (i + 2 + count > this._vramLen) break;
+      const addr = (this._vram[i + 2] << 8) | this._vram[i + 1];
+      const nt = addr < 0x2400 ? 0 : 1;
+      const off = addr & 0x3ff;
+      for (let k = 0; k < count; k++) {
+        const tile = this._vram[i + 3 + k];
+        const pos = off + k;
+        const x = pos % NT_COLS;
+        const y = (pos / NT_COLS) | 0;
+        if (x < NT_COLS && y < NT_ROWS) {
+          this._store.writeNT(nt as 0 | 1, x, y, {
+            tile,
+            palette: 0,
+            bank: 0,
+            flipH: false,
+            flipV: false,
+            behindBg: false,
+          });
+        }
+      }
+      i += 3 + count;
+    }
+    this._busy = OAM_IDLE; // 消费完置空闲 (对应 $C958 STX $0515 = 0)
+  }
+
+  /** 清空 VRAM 缓冲 */
+  clearVram(): void {
+    this._vram.fill(0);
+    this._vramLen = 0;
   }
 
   // ── 语义精灵设置 (对应尚未翻译的坐标/翻转逻辑, 翻译后调用) ──

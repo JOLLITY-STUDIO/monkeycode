@@ -36,7 +36,7 @@ exports.MODE_BLOCK_PTRS = [
  * @param store 数据中心
  * @param ptr   bank6 内偏移 (指针表值)
  * @param readByte 按偏移读取 bank6 字节 (注入, 便于未来修正基址映射)
- * @param chrBank 模式块 tile 所在的 CHR bank (标题菜单背景用 14)
+ * @param chrBank 模式块 tile 所在的 CHR bank (标题菜单背景用 0)
  * @returns 写入的 tile 块数
  */
 function applyModeBlocks(store, ptr, readByte, chrBank = 0) {

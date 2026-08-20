@@ -43,15 +43,21 @@ class Renderer {
     }
     /**
      * 呈现一帧 (对应模拟器 Screen.setBuffer + writeBuffer)。
-     * @param buffer PPU 帧缓冲, 256×240, 每像素 0xRRGGBB (小端写入, 高位强制 alpha=FF)
+     * @param buffer PPU 帧缓冲, 256×240, 每像素 0xRRGGBB
+     *               转换为 Canvas ImageData 的 RGBA (小端平台不能直接 0xFFRRGGBB 写入 Uint32)
      */
     writeFrame(buffer) {
         if (!this._ctx || !this._imageData || !this._buf8 || !this._buf32)
             return;
-        const buf32 = this._buf32;
-        const n = Math.min(buf32.length, buffer.length);
+        const dst = this._buf8;
+        const n = Math.min(dst.length / 4, buffer.length);
+        let di = 0;
         for (let i = 0; i < n; i++) {
-            buf32[i] = 0xff000000 | buffer[i]; // Full alpha, 与模拟器 screen.ts 行为一致
+            const px = buffer[i];
+            dst[di++] = (px >> 16) & 0xff; // R
+            dst[di++] = (px >> 8) & 0xff; // G
+            dst[di++] = px & 0xff; // B
+            dst[di++] = 0xff; // A
         }
         this._imageData.data.set(this._buf8);
         this._ctx.putImageData(this._imageData, 0, 0);

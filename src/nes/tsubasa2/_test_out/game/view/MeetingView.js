@@ -205,19 +205,21 @@ class MeetingView extends SceneView_1.SceneView {
         // 标题: 选手名
         this._drawText(`>${nameEn.slice(0, 10)}`, PX, PY - 1, false);
         if (detailMode === 0) {
-            // 能力值模式: 显示 Shot/Pass/Dribble/Block/Tackle/Intercept
+            // 能力值模式: 显示 体力 + Shot/Pass/Dribble/Block/Tackle/Intercept (编码→查表真实值)
+            // 数据链路 (docs/number-display-pipeline.md): ROM编码 → STAMINA_TABLE/ABILITY_TABLE → 真实显示值
             const stats = (0, player_stats_1.getPlayerStatsById)(playerId);
+            const stamina = (0, player_stats_1.codeToStamina)(stats[0]); // 体力 (16bit, 查 STAMINA_TABLE)
             const fields = [
-                { label: 'SHT', offset: 1 }, // Shot
-                { label: 'PAS', offset: 2 }, // Pass
-                { label: 'DRB', offset: 3 }, // Dribble
-                { label: 'BLK', offset: 4 }, // Block
-                { label: 'TCK', offset: 5 }, // Tackle
-                { label: 'ITC', offset: 6 }, // Intercept
+                { label: 'STM', value: stamina }, // 体力 (真实值, 如 748)
+                { label: 'SHT', value: (0, player_stats_1.codeToAbility)(stats[1]) }, // Shot
+                { label: 'PAS', value: (0, player_stats_1.codeToAbility)(stats[2]) }, // Pass
+                { label: 'DRB', value: (0, player_stats_1.codeToAbility)(stats[3]) }, // Dribble
+                { label: 'BLK', value: (0, player_stats_1.codeToAbility)(stats[4]) }, // Block
+                { label: 'TCK', value: (0, player_stats_1.codeToAbility)(stats[5]) }, // Tackle
+                { label: 'ITC', value: (0, player_stats_1.codeToAbility)(stats[6]) }, // Intercept
             ];
             for (let i = 0; i < fields.length; i++) {
-                const val = stats[fields[i].offset] ?? 0;
-                const valStr = val.toString().padStart(3, ' ');
+                const valStr = fields[i].value.toString().padStart(3, ' ');
                 this._drawText(`${fields[i].label}:${valStr}`, PX, PY + i, false);
             }
         }

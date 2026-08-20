@@ -37,9 +37,9 @@ class LevelUpView extends SceneView_1.SceneView {
             const playerId = PLAYER_TEAM.starters[i] ?? 0;
             const name = (0, character_list_1.getCharacterName)(playerId).slice(0, 8);
             const gk = (0, character_list_1.isGoalkeeper)(playerId) ? 'GK' : '  ';
-            const lv = slot.level.toString(16).toUpperCase().padStart(2, '0');
-            const exp = slot.exp.toString(16).toUpperCase().padStart(4, '0');
-            const guts = slot.guts.toString(16).toUpperCase().padStart(4, '0');
+            const lv = slot.level.toString().padStart(2, '0');
+            const exp = slot.exp.toString().padStart(4, '0');
+            const guts = slot.guts.toString().padStart(4, '0');
             const row = `${(i + 1).toString().padStart(2, '0')} ${name}${gk} L${lv} E${exp} G${guts}`.slice(0, 28);
             this._drawText(row, LIST_X, LIST_Y + i, false);
         }

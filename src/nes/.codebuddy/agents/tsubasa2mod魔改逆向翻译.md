@@ -1,0 +1,2 @@
+
+关于游戏角色、初始数值和升级规则，目前我们还不清楚原始NES中这些内容具体是在哪里实现的，需要整理出来。说明书应该没有详细说明，所以只能通过翻译来获取信息，然后更新到我们的项目中。具体可以参考 mod 中的 `tsubasa2\tools\tsubasa2-mod-nes` 以及 `tsubasa2\_tmp_bzk_out\CaptainTsubasaVol.II-SuperStrikerROM修改参考.txt`。

@@ -50,6 +50,7 @@ import { Bank02Service } from './service/bank02_scene.service';
 import { getMatchConfig } from './data/match-config';
 import type { TeamDataDisplayState } from './service/bank01_data-query.service';
 import { LevelUpService } from './service/levelup.service';
+import { Bank24HudService } from './service/bank24_hud.service';
 
 /** 游戏根状态（存 DataStore.ram 中） */
 export const BOOT_KEYS = {
@@ -171,6 +172,8 @@ export class BootService {
     private _bank02?: Bank02Service,
     /** 球员升级服务 (可选注入, LEVELUP 协程用) */
     private _levelupSvc?: LevelUpService,
+    /** Bank24 HUD 服务 (可选注入, 比赛主循环逐帧驱动 HUD 渲染) */
+    private _hud?: Bank24HudService,
   ) {}
 
   // ── 公开接口 ──
@@ -564,10 +567,14 @@ export class BootService {
   private *_runHalfPhase(isExtra: boolean): Generator<number | undefined, void, number> {
     const guard = isExtra ? (60 * 45) : MATCH_DURATION_FRAMES;  // 加时 45秒 / 正常 90秒 帧守卫
     let frame = 0;
+    // 比赛 HUD 初始化 (对应 bank31 $ED06: ram_05EA/0532/0534/0536 触发)
+    this._hud?.initMatchHud();
     for (;;) {
       const _buttons = yield;
       this._matchEngine.mainLoop();
       this._bank20.frameTick();
+      // 比赛 HUD 逐帧驱动 (对应 bank31 $EB86: HUD 行1/2/3 + 场景状态机)
+      this._hud?.matchFrameTick();
       this._matchFrame++;
       frame++;
       // 模拟 bank0 比赛协程倒计时
@@ -607,10 +614,12 @@ export class BootService {
   private *_runPkPhase(): Generator<number | undefined, void, number> {
     const PK_GUARD = 60 * 30;  // 30 秒帧守卫
     let frame = 0;
+    this._hud?.initMatchHud();
     for (;;) {
       const _buttons = yield;
       this._matchEngine.mainLoop();
       this._bank20.frameTick();
+      this._hud?.matchFrameTick();
       frame++;
       const sa = this._store.read('scoreA') as number;
       const sb = this._store.read('scoreB') as number;
