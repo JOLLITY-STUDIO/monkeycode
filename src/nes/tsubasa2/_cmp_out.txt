@@ -1,2 +1,0 @@
-candidates checked. found: NONE
-No typescript found in candidates
