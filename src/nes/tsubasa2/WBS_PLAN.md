@@ -88,7 +88,7 @@
 | G4 | RESULT 赛果场景 | ✅ | ResultController 骨架接入 boot RESULT 路由 (A→TITLE); MATCH 帧守卫 → RESULT; 玩链路集成测试 PASS=6/0 |
 | G5 | CHR→PNG 全部图形资源化 | ✅ | scripts/export_all_chr_png.cjs: 16 bank × 2 pattern table = 32 张 PNG, 输出 output/chr-png/chr-bank-NN-pt[0|1].png |
 | G6 | 各 Bank 全量差分验证 | ✅ | scripts/verify_all_banks.cjs: 7 PASS (bank07/10/17/18/21/23/25 纯数据 bank asm=ts=8192B diff=0) / 10 FAIL (bank11/16/19/20/22/24/26/27/28/31 asm 含代码行 .byte 提取不完整, ts 是完整 ROM) / 15 SKIP (bank00-06/08/09/12-15/29/30 service 翻译无内嵌数组) |
-| G7 | 版本推进 + Tag 里程碑 | 🔄 | 当前 0.3.0 (2026-08-21 从 0.2.0 推进: v0.3.0 里程碑条件满足) |
+| G7 | 版本推进 + Tag 里程碑 | ✅ | v0.4.0 (2026-08-20): dispatch层重建+prg-bank依赖修复+CHR PNG+编译零错误 |
 | G8 | char-map.ts 双 tile 假名映射补全 (?A0..?D1 → 真实假名) | ✅ | 双 tile=浊点(上)+基础假名(下), $A6-$AE=ガ-ゲ等, 部分 loTile 待精确识别标 TODO |
 | G9 | textscript text 字段刷新 (char-map 补全后重新解码) | ✅ | generate_script_data.cjs 从 asm 重新生成 4 个 scripts-bank, text 含可读假名 |
 | G10 | prg/index.ts PRG_COPIES 表 bank03-06 占位修正 | ✅ | bank03-06 import 已移除, NES_PRG_ROM 缺失 bank 用 0xFF 填充 |
@@ -102,6 +102,11 @@
 | G18 | bank31 KEY_04A6 等常量未定义修复 | ✅ | 补充 KEY_04A6/04A7/04A8/04A9 常量声明 |
 | G19 | bank12 PAPU.silence 接口修复 | ✅ | 替换为 PAPU.writeReg(0x4015, 0) (禁所有 APU 通道) |
 | G20 | bank24_hud numUtils 路径修复 | ✅ | 内嵌 DIGIT_TILE_BASE/div16By10/numberToTiles16 (对应 asm $8C55/$8C7A/$CD3C) |
+| G21 | C2 Bank02 PASSWORD entryC 密码校验逻辑翻译 | ⬜ | _verifyPassword 占位, 真实校验算法待 tsnes trace START 帧 |
+| G22 | B2 OpeningSceneController 真开场数据提取 | ⬜ | 当前 TECMO 字母占位, 真开场动画数据待提取 |
+| G23 | A4 场景路由扩展 (dispatch.service.ts 接入 STORY/PASSWORD/RESULT) | ⬜ | dispatch 目前只翻译 $C400 RESET 链, 场景切换分发待补 |
+| G24 | G8 后续: char-map 双 tile loTile 精确识别 | ⬜ | 部分 loTile $06-$0B/$46-$5E 标 TODO, 需 CHR 双 tile 渲染确认 |
+| G25 | G6 后续: 差分验证 FAIL 的 10 个 bank | ⬜ | bank11/16/19/20/22/24/26/27/28/31 asm 含代码行 .byte 提取不完整, 需对比完整 ROM |
 
 ## 里程碑
 
@@ -110,4 +115,5 @@
 | v0.1.0 | 框架 + Bank00/01/02 基础链路 | ✅ |
 | v0.2.0 | Bank11 完整翻译 + 差分验证 | ✅ |
 | v0.3.0 | Bank19/20 翻译完成 + STORY/PASSWORD/RESULT 场景接入 | ✅ | 2026-08-21 推进 (G7): E3/E4/G2/G3/G4 全 ✅, 版本 0.2.0→0.3.0 |
-| v1.0.0 | CHR 资源化 + 全量差分验证 + 优化重构 | ⬜ |
+| v0.4.0 | dispatch 层重建 + prg-bank 依赖修复 + 编译零错误 | ✅ | 2026-08-20: G5-G20 全 ✅, boot 删除/dispatch 重建/CHR PNG/差分验证/PPU @ts-nocheck |
+| v1.0.0 | CHR 资源化 + 全量差分验证 + 优化重构 | ⬜ | 待 G21-G25 完成 |
