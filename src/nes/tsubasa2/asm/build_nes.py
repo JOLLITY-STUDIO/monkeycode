@@ -249,20 +249,53 @@ class Assembler:
         except Exception:
             return 'abs', op
 
+    def _expand_includes(self, path, out_lines, visited):
+        """递归展开 .include "filename" 指令
+        path: 当前文件路径
+        out_lines: 累积输出的 SourceLine 列表
+        visited: 已访问文件集合 (防止循环引用)
+        """
+        path = os.path.abspath(path)
+        if path in visited:
+            self.errors.append(f"{path}: 循环 .include 检测到, 跳过")
+            return
+        visited.add(path)
+        base_dir = os.path.dirname(path)
+
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                lines = f.readlines()
+        except Exception as e:
+            self.errors.append(f"{path}: cannot read: {e}")
+            return
+
+        for i, raw in enumerate(lines, 1):
+            ln = SourceLine(path, i, raw)
+            # 检测 .include "path"
+            if ln.mnemonic and ln.mnemonic.lower() == '.include':
+                inc_name = ln.operand.strip().strip('"').strip("'")
+                if not os.path.isabs(inc_name):
+                    inc_path = os.path.join(base_dir, inc_name)
+                else:
+                    inc_path = inc_name
+                # 递归展开
+                self._expand_includes(inc_path, out_lines, visited)
+            else:
+                # 普通行直接加入
+                # 同时把文件路径设为相对路径, 让错误信息更可读
+                ln.file = path
+                out_lines.append(ln)
+
     def assemble(self, source_files):
         """主入口: 2-pass 汇编"""
         # bank30 → CPU $C000, bank31 → CPU $E000, 其他 bank → $8000 (bank 内偏移)
         bank_base_cpu = {30: 0xC000, 31: 0xE000}
 
         # --- Pass 1: 收集标号地址 ---
+        # 先递归展开 .include 指令, 得到一个完整的 SourceLine 列表
         all_lines = []
         for path in source_files:
-            try:
-                with open(path, 'r', encoding='utf-8') as f:
-                    for i, raw in enumerate(f, 1):
-                        all_lines.append(SourceLine(path, i, raw))
-            except Exception as e:
-                self.errors.append(f"{path}: cannot read: {e}")
+            self._expand_includes(path, all_lines, set())
 
         # 当前段 + bank 内 PC
         cur_seg = None
@@ -543,18 +576,29 @@ class Assembler:
 def main():
     print("=== Tsubasa2 NES Builder (with 6502 assembler) ===")
     asm_root = Path(r"d:\studio\github\monkeycode\src\nes\tsubasa2\asm")
-    dist_dir = Path(r"d:\studio\github\monkeycode\src\nes\tsubasa2\dist")
+    dist_dir = asm_root / "dist"
     dist_dir.mkdir(parents=True, exist_ok=True)
     out_nes = dist_dir / "tsubasa2.nes"
 
-    # --- 1. 扫描所有 .s 源文件 ---
-    source_files = sorted(asm_root.glob("**/*.s"))
+    # --- 1. 扫描顶层源文件 (bankNN/bankNN.s, 不含被 .include 的子文件) ---
+    source_files = []
+    for bank_dir in sorted(asm_root.iterdir()):
+        if not bank_dir.is_dir(): continue
+        if not bank_dir.name.lower().startswith('bank'): continue
+        # 顶层入口: bankNN/bankNN.s
+        top = bank_dir / f"{bank_dir.name}.s"
+        if top.exists():
+            source_files.append(top)
+        else:
+            # 兼容: 没有 bankNN.s 时取该目录下所有 .s
+            for f in sorted(bank_dir.glob("*.s")):
+                source_files.append(f)
     if not source_files:
         print("WARN: 未找到 .s 源文件, 使用内置字节流")
         # fallback 走之前的硬编码逻辑
         return build_fallback(out_nes)
 
-    print(f"Found {len(source_files)} source files:")
+    print(f"Found {len(source_files)} source files (top-level):")
     for f in source_files:
         print(f"  - {f.relative_to(asm_root)}")
     print()
