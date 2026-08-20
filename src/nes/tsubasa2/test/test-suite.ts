@@ -430,7 +430,7 @@ export async function runIntegrationTests(ctx: TestContext): Promise<void> {
   // 2.8 OpeningSceneController 脚本驱动模式集成测试
   {
     const { OpeningSceneController } = await import('../src/game/service/bank00/scene_opening.controller');
-    const { OpeningShot } = await import('../src/game/data/scene/index');
+    const { OpeningShot } = await import('../src/game/data/prg/scene/index');
     const store = new DataStore();
     const ctrl = new OpeningSceneController(store);
 

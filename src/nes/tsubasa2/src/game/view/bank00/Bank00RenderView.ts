@@ -28,12 +28,12 @@
  */
 
 import { DataStore } from '../../data/DataStore';
-import { palWriteAll, palExportRGBA } from '../../data/ppu/pallete/paletteManager';
-import { SCENE_BG_PALETTE, SCENE_SPR_PALETTE } from '../../data/ppu/pallete/scene-palette-table';
+import { palWriteAll, palExportRGBA } from '../../data/prg/ppu/pallete/paletteManager';
+import { SCENE_BG_PALETTE, SCENE_SPR_PALETTE } from '../../data/prg/ppu/pallete/scene-palette-table';
 import {
   CUT_0x17_NT0,
   CUT_0x17_ATTR0,
-} from '../../data/ppu/nametable/cut/cut_0x17_nt';
+} from '../../data/prg/ppu/nametable/cut/cut_0x17_nt';
 import type { PaletteColor } from '../../model/types';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
@@ -318,5 +318,69 @@ export class Bank00RenderView {
   /** 写单个字节到 PPU Buffer */
   ppuBufWrite(offset: number, value: number): void {
     this._store.write(PPU_BUF_BASE + offset, value & 0xFF);
+  }
+
+  /**
+   * 对应 $98EA 的渲染部分: 把单个填充值写入 NT/属性表区域 (Y 行 × X 字节)。
+   * 原始把 ram_00E6/00E7 指向的 VRAM 区域逐行 (每行 +$20) 填充 A。
+   * H5: 把目标 VRAM 字节映射到 DataStore nt0/nt1 网格:
+   *   - $2000-$23BF (NT tile 区): 写 tile 索引
+   *   - $23C0-$23FF (NT0 属性区): 写调色板组 (每属性字节覆盖 2×2 tile 块)
+   *   - $2400-$27FF (NT1, 水平镜像): 同理映射到 nt1
+   *
+   * @param vramAddr 起始 VRAM 地址 (ram_00E6/00E7 拼合)
+   * @param rows 行数 (Y)
+   * @param cols 每行字节数 (X)
+   * @param value 填充值 (A)
+   */
+  ppuFillRegion(vramAddr: number, rows: number, cols: number, value: number): void {
+    const s = this._store;
+    const val = value & 0xFF;
+    let addr = vramAddr & 0xFFFF;
+    const rowStep = 0x20;
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        this._applyVramByte((addr + c) & 0xFFFF, val);
+      }
+      addr = (addr + rowStep) & 0xFFFF;
+    }
+  }
+
+  /** 把单个 VRAM 地址的字节写入对应 NT 网格 (tile 区或属性区) */
+  private _applyVramByte(addr: number, val: number): void {
+    const s = this._store;
+    if (addr < 0x2000 || addr > 0x27FF) return;
+    const base = addr & 0xFFF;   // 相对 nametable 起始 $2000/$2400 的偏移
+    const ntSel = (addr & 0x400) !== 0 ? 1 : 0;
+    if (base < 0x3C0) {
+      // NT tile 区: 偏移即 tile 序号
+      const t = base & 0x3FF;
+      const tx = t % 32;
+      const ty = Math.floor(t / 32);
+      if (ty < 30) {
+        const entry = s.readNT(ntSel as 0 | 1, tx, ty) ?? {
+          tile: 0, palette: 0, bank: 0, flipH: false, flipV: false, behindBg: false,
+        };
+        s.writeNT(ntSel as 0 | 1, tx, ty, { ...entry, tile: val });
+      }
+    } else {
+      // 属性表区 ($23C0-$23FF / $27C0-$27FF): 每字节含 4 个 2-bit 调色板组
+      const aoff = base - 0x3C0;   // 0..63
+      const ax = aoff % 8;
+      const ay = Math.floor(aoff / 8);
+      const pal = val & 0x03;      // 取低 2 bit 作为调色板组
+      for (let dy = 0; dy < 2; dy++) {
+        for (let dx = 0; dx < 2; dx++) {
+          const tx = ax * 4 + dx;
+          const ty = ay * 4 + dy;
+          if (ty < 30 && tx < 32) {
+            const entry = s.readNT(ntSel as 0 | 1, tx, ty) ?? {
+              tile: 0, palette: 0, bank: 0, flipH: false, flipV: false, behindBg: false,
+            };
+            s.writeNT(ntSel as 0 | 1, tx, ty, { ...entry, palette: pal });
+          }
+        }
+      }
+    }
   }
 }

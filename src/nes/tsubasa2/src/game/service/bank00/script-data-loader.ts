@@ -14,10 +14,10 @@
  * 数据由脚本自动生成, 禁止手改。
  */
 
-import { SCRIPTS_BANK_03 } from '../../data/scene/textscript/scripts-bank-03';
-import { SCRIPTS_BANK_04 } from '../../data/scene/textscript/scripts-bank-04';
-import { SCRIPTS_BANK_05 } from '../../data/scene/textscript/scripts-bank-05';
-import { SCRIPTS_BANK_06 } from '../../data/scene/textscript/scripts-bank-06';
+import { SCRIPTS_BANK_03 } from '../../data/prg/scene/textscript/scripts-bank-03';
+import { SCRIPTS_BANK_04 } from '../../data/prg/scene/textscript/scripts-bank-04';
+import { SCRIPTS_BANK_05 } from '../../data/prg/scene/textscript/scripts-bank-05';
+import { SCRIPTS_BANK_06 } from '../../data/prg/scene/textscript/scripts-bank-06';
 import { getScriptBank } from './script-opcodes';
 
 // ── 脚本数据类型 ──

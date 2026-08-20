@@ -8,7 +8,7 @@
  */
 
 import { BUTTON } from '../../../core/types';
-import { TitleMenu } from '../../data/scene/index';
+import { TitleMenu } from '../../data/prg/scene/index';
 
 /** 标题菜单项 (说明书: キックオフ=新游戏 / コンティニュー=续关→密码输入) */
 const TITLE_ITEMS = [

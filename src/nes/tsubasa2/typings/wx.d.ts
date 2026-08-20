@@ -1,7 +1,7 @@
 /**
  * 微信小程序全局类型声明 (根目录 typings — 微信开发者工具与 tsc 均自动识别)
  *
- * 覆盖 pages/**/*.ts 用到的全部小程序全局 API：
+ * 覆盖 pages 下全部页面 TS 用到的全局小程序 API：
  *   - 页面/组件注册: Page / App / Component / Behavior / getApp / getCurrentPages
  *   - wx 核心 API: createSelectorQuery / getSystemInfoSync / canvasToTempFilePath / showToast / navigateTo / createWebAudioContext
  */

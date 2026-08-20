@@ -24,8 +24,11 @@
 
 import { DataStore, RAM_KEYS } from '../../data/DataStore';
 import { getSceneBgGrp } from '../../data/bank07-data';
-import { SceneRoot } from '../../data/scene/index';
+import { SceneRoot } from '../../data/prg/scene/index';
+import PRG_BANK_06 from '../../data/prg/prg-bank-06';
 import { Bank00RenderView } from '../../view/bank00/Bank00RenderView';
+import { getScriptBank } from './script-opcodes';
+import { getScriptData } from './script-data-loader';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
@@ -235,11 +238,21 @@ export class Bank00Service {
   // ──────────────────────────────────────────────
 
   /**
-   * 对应原始 $9B7F: 场景初始化链中的一个环节。
-   * 具体功能待从汇编进一步分析。
+   * 对应原始 $9B7F: 清空全部精灵 (OAM 复位)。
+   * asm ($9B7F-$9B9F):
+   *   $9B7F: LDX #$00
+   *   $9B81: LDA #$F8
+   *   $9B83: STA $0468,X  → 影子 OAM $0468-$04FF 填 $F8 (屏幕外)
+   *   $9B87: BNE $9B83
+   *   $9B89: LDA #$F8
+   *   $9B8B: STA $0200,X  → 直接 OAM $0200-$02FF 填 $F8
+   *   $9B8F: BNE $9B8B
+   *   $9B91: LDA #$00
+   *   $9B93/$9B96/$9B99/$9B9C: STA $0568/$0588/$05A8/$05C8 (4 组精灵计数清零)
+   * 渲染部分 (影子 OAM/直接 OAM/组计数) 实现在 view.spriteClear()。
    */
   initHelper(): void {
-    // 功能待补充
+    this._render.spriteClear();
   }
 
   /** 别名: $9B7F PPU 初始化 — 与 initHelper() 相同 */
@@ -252,11 +265,35 @@ export class Bank00Service {
   // ──────────────────────────────────────────────
 
   /**
-   * 对应原始 $99F0: 密码/选择画面等场景的前置初始化。
-   * 具体功能待从汇编分析。
+   * 对应原始 $99F0: 调色板渐隐 (fade-out to black)。
+   * 被 entryB $82AF 等调用, 在切场景前把画面渐隐到黑。
+   * asm ($99F0-$9A0C):
+   *   $99F0: LDA $004A; $99F2: ORA $004B
+   *   $99F4: BEQ $9A0C (RTS)  → 双计数器都 0 则退出
+   *   $99F6: TAX (X= 4A|4B, 恒非零); $99F7: BEQ 不跳
+   *   $99F9: DEC $004A
+   *   $99FB: LDA $004B; $99FD: BEQ $9A01 (跳过) → 非零则 $99FF DEC $004B
+   *   $9A01: JSR $9A71 (渐隐渲染)
+   *   $9A04: LDA #$01; JSR $9FA8 (bank 切换, H5 no-op)
+   *   $9A09: JMP $99F0 (循环)
+   *   $9A0C: RTS
+   * H5: 递减 ram_004A/004B, 渐隐渲染由帧合成器依据调色板计数器消费 paletteTable,
+   * 每步以 waitVBlank() 标记帧边界。
    */
   unknownInit(): void {
-    // 功能待补充 — 对应 asm $99F0
+    const s = this._store;
+    let a = s.read('ram_004A');
+    let b = s.read('ram_004B');
+    while ((a | b) !== 0) {
+      a = (a - 1) & 0xFF;      // $99F9 DEC $004A (X 恒非零故必执行)
+      if (b !== 0) {           // $99FD BEQ 跳过
+        b = (b - 1) & 0xFF;    // $99FF DEC $004B
+      }
+      s.write('ram_004A', a);
+      s.write('ram_004B', b);
+      // $9A01 JSR $9A71 (渐隐渲染) + $9A04 bank 切换 no-op → 帧边界
+      this.waitVBlank();
+    }
   }
 
   // ──────────────────────────────────────────────
@@ -264,13 +301,42 @@ export class Bank00Service {
   // ──────────────────────────────────────────────
 
   /**
-   * 对应原始 $9F69: 数据写入辅助 (A=0x28 → Y=0x00?)。
-   * 具体功能待从汇编进一步分析。
+   * 对应原始 $9F69: 数据写入辅助 (调度器栈帧构建)。
+   * asm:
+   *   $9F69: STA $0002,X      → ram_000X+2 = A
+   *   $9F6B: DEY; $9F6C: DEY  → Y -= 2
+   *   $9F6D: LDA $0000,X      → 取 ram_000X+0
+   *   $9F6F: STA $0101,Y      → 写入栈区 $0101+Y
+   *   $9F72: LDA $0001,X      → 取 ram_000X+1
+   *   $9F74: STA $0102,Y      → 写入栈区 $0102+Y
+   *   $9F77: STY $0001,X      → ram_000X+1 = Y
+   *   $9F79: LDA #$FF
+   *   $9F7B: STA $0000,X      → ram_000X+0 = 0xFF
+   *   $9F7D: RTS
+   * 用于在零页 ($0000,X) 构造一个"调度器返回帧"并保存到栈区 $0100 段。
+   *
+   * @param a 待写入 ram_000X+2 的值
+   * @param y 初始 Y (调用前由调用方设置, 如 sceneParamSet 用 0xA0)
+   * @param x 零页基址索引 (zp[X], 调用方设置, 如 sceneParamSet 用 0x0D)
    */
-  dataWriteHelper(a: number, y?: number): void {
-    void a;
-    void y;
-    // 功能待补充
+  dataWriteHelper(a: number, y: number, x: number): void {
+    const s = this._store;
+    const zp = (off: number) => `ram_00${(off & 0xFF).toString(16).padStart(2, '0').toUpperCase()}`;
+    // $9F69: STA $0002,X
+    s.write(zp(x + 2), a & 0xFF);
+    // $9F6B/$9F6C: DEY; DEY
+    const yy = (y - 2) & 0xFF;
+    // $9F6D: LDA $0000,X ; $9F6F: STA $0101,Y
+    const v0 = s.read(zp(x));
+    // $9F72: LDA $0001,X ; $9F74: STA $0102,Y
+    const v1 = s.read(zp(x + 1));
+    const abs = (off: number) => `ram_${(off & 0xFFFF).toString(16).padStart(4, '0').toUpperCase()}`;
+    s.write(abs(0x0101 + yy), v0);
+    s.write(abs(0x0102 + yy), v1);
+    // $9F77: STY $0001,X
+    s.write(zp(x + 1), yy);
+    // $9F79: LDA #$FF ; $9F7B: STA $0000,X
+    s.write(zp(x), 0xFF);
   }
 
   // ──────────────────────────────────────────────
@@ -292,24 +358,39 @@ export class Bank00Service {
     s.write('ram_0057', a & 0xFF);
     s.write('ram_000D', 0xA8);
     s.write('ram_000E', 0x88);
-    this.dataWriteHelper(0x00, 0xA0);
+    // asm $8895: LDX #$0D; ... LDY #$A0; LDA #$00; JSR $9F69
+    this.dataWriteHelper(0x00, 0xA0, 0x0D);
   }
 
   /**
-   * 对应原始 $8920: 场景数据加载。
-   * 汇编: LDX #$13 → JSR $9DEE → 指针 += $BF00 → JSR $C4B9
-   *   等待 ram_0078==0 → 读 19 字节到 ram_0079/007A/007B..
-   * H5: ROM 数据已内嵌, 无动态源。保留参数记录 + TODO。
+   * 对应原始 $8920: 场景数据加载 (读取 19 字节到 ram_0079/007B..)。
+   * asm ($8920-$895C):
+   *   $8920: LDX #$13
+   *   $8922: JSR $9DEE        → 16-bit 乘法 ram_00EC/00ED = A * 0x13
+   *   $8925-$8930: ram_00EC/00ED += $BF00  (CPU 地址, bank06)
+   *   $8932-$8938: 切 bank06 (LDX #$06 → JSR $C4B9, H5 no-op)
+   *   $893B: LDA $0078; $893D: BNE (等待 ram_0078==0)
+   *   $893F-$8948: ram_0079 = data[0]; ram_007A = 0
+   *   $894B-$8955: 循环 18 次 (X=$12): ram_007B+Y = data[Y], Y=1..18
+   *   $8957-$895C: 恢复原 bank (H5 no-op); RTS
+   * 数据源: bank06 CPU $BF00 + A*0x13 = bank06 偏移 $1F00 + A*0x13 (ROM 已内嵌)。
+   * 19 字节结果: ram_0079, ram_007A(=0), ram_007B..ram_008C。
    *
    * @param param 数据组编号 (A)
    */
   tableLoad(param: number): void {
     const s = this._store;
-    // TODO: 从 (ram_00EC) 指向的数据源读取 → ram_0079/007B.. (数据源待接线)
-    s.write('ram_0079', param & 0xFF); // 记录参数
+    // 计算 bank06 数据偏移 (CPU $BF00 = bank06 偏移 $1F00)
+    const off = (0x1F00 + (param & 0xFF) * 0x13) & 0x1FFF;
+    // $8941: ram_0079 = data[0]
+    s.write('ram_0079', PRG_BANK_06[off] ?? 0);
+    // $8948: ram_007A = 0
     s.write('ram_007A', 0);
-    for (let i = 0; i < 0x12; i++) {
-      s.write(`ram_007${(i + 1).toString(16).toUpperCase()}`, 0);
+    // $894B-$8955: ram_007B+Y = data[Y], Y=1..18 (X=0x12 次)
+    for (let y = 1; y <= 0x12; y++) {
+      const zpOff = 0x7B + y;
+      const key = `ram_00${zpOff.toString(16).padStart(2, '0').toUpperCase()}`;
+      s.write(key, PRG_BANK_06[off + y] ?? 0);
     }
   }
 
@@ -344,19 +425,170 @@ export class Bank00Service {
     this._render.fadeWait();
   }
 
+  // ──────────────────────────────────────────────
+  // $82A9 / $82B5 / $899A: 主菜单/脚本转移等待与状态复位 (业务)
+  // ──────────────────────────────────────────────
+
   /**
-   * 对应原始 $98EA: PPU 16 字节块填充。
-   * 汇编: A=填充值; Y=行数; X=行字节数 → $9B28 buffer + $9B5E 结束。
-   * H5: PPU buffer 由帧合成器消费, 记录请求标志。
+   * 对应原始 $82A9: 等待脚本/文本转移完成。
+   * 汇编 ($82A9-$82B4):
+   *   $82A9: LDA #$01; JSR $9FA8            (切 bank 1, H5 no-op)
+   *   $82AE: LDA $004D; ORA $004E
+   *   $82B2: BNE $82A9                       (ram_004D|004E != 0 时循环等待)
+   *   $82B4: RTS
+   * 用于菜单逻辑等待文本 buffer 指针 (ram_004D/004E) 被 NMI 消费完毕。
+   * H5: 单步等待, 由帧循环驱动; ram_004D/004E 清零即转移完成。
+   */
+  waitScriptTransfer(): void {
+    const s = this._store;
+    // $82AE: ram_004D | ram_004E != 0 → 继续等待
+    while ((s.read('ram_004D') | s.read('ram_004E')) !== 0) {
+      // $82B2 BNE 循环 — 帧边界
+      this.waitVBlank();
+    }
+  }
+
+  /**
+   * 对应原始 $82B5: 等待文本转移完成并复位一组显示状态变量。
+   * 汇编 ($82B5-$82EC):
+   *   $82B5: LDA #$01; JSR $9FA8            (切 bank 1, H5 no-op)
+   *   $82BA: LDA $004D; ORA $004E
+   *   $82BE: BEQ $82C6                       (4D|4E==0 直接跳复位)
+   *   $82C0: LDA $001E; AND #$20
+   *   $82C4: BEQ $82B5                       (等待 ram_001E bit5)
+   *   $82C6: 清 ram_0005/0006/0009/000A/0011/0012/000D/000E/004C
+   *   $82DA: ram_0700 = 1
+   *   $82DF: JSR $9BA0                       (waitVBlank)
+   *   $82E2: 清 ram_0044/0045/007A/007B
+   *   $82EC: RTS
+   */
+  waitTransferThenReset(): void {
+    const s = this._store;
+    // $82BA-$82C4: 等 ram_004D/004E 转移完成
+    this.waitScriptTransfer();
+    // $82C6-$82D8: 复位一组状态变量
+    s.write('ram_0005', 0);
+    s.write('ram_0006', 0);
+    s.write('ram_0009', 0);
+    s.write('ram_000A', 0);
+    s.write('ram_0011', 0);
+    s.write('ram_0012', 0);
+    s.write('ram_000D', 0);
+    s.write('ram_000E', 0);
+    s.write('ram_004C', 0);
+    // $82DA: ram_0700 = 1 (精灵组标志)
+    s.write('ram_0700', 1);
+    // $82DF: waitVBlank
+    this.waitVBlank();
+    // $82E2-$82EA: 复位滚动/位置变量
+    s.write('ram_0044', 0);
+    s.write('ram_0045', 0);
+    s.write('ram_007A', 0);
+    s.write('ram_007B', 0);
+  }
+
+  /**
+   * 对应原始 $899A: 设置 ram_0099 转移控制标志。
+   * 汇编 ($899A-$89A2):
+   *   $899A: LDA $0099; AND #$80; ORA #$40; STA $0099
+   * 保留 bit7 (EOR 用之), 置 bit6 (当前文本块正在转移)。
+   */
+  setTransferFlag99(): void {
+    const s = this._store;
+    const v = s.read('ram_0099');
+    s.write('ram_0099', (v & 0x80) | 0x40);
+  }
+
+  // ──────────────────────────────────────────────
+  // $8464: 脚本加载器 (含 $8494 dataWriteHelper(0, 0x50, 0x05) 调用点)
+  // ──────────────────────────────────────────────
+
+  /**
+   * 对应原始 $8464: 按脚本 ID 加载脚本 (启动脚本分派器)。
+   *
+   * asm 流程 ($8464-$84C3):
+   *   $8464-$8471: 查脚本 ID 映射表 ($8AEE 阈值 / $8AED 目标 bank)
+   *                 → 得到目标 bank 与 ID 相对基址的差值 (A)
+   *   $8474-$847D: A<<1 + 进位 → 脚本入口指针 = $A000 + A*2
+   *   $847F: ram_0056 = 目标 bank
+   *   $8481-$8483: ram_00ED = ram_0025 (当前 bank)
+   *   $8488-$8492: 读脚本入口表 16 位指针 → ram_004D/004E = 脚本起始地址
+   *   $8494-$84A2: 构建调度器返回帧 → dataWriteHelper(0x00, 0x50, 0x05)
+   *                 (zp[5]={0xC5,0x84} 已先写入, 见下)
+   *   $84A5-$84A9: 清 ram_000D/000E
+   *   $84AB: 清 ram_0652
+   *   $84B0-$84BE: ppuFill98EA 填充 $23E0-$23FF 属性区为 $55
+   *   $84C1-$84C3: 恢复原 bank (H5 no-op)
+   *
+   * 脚本 ID → bank 映射 (与 script-opcodes.getScriptBank 一致):
+   *   <0x10 → bank 3 | <0x20 → bank 4 | <0x60 → bank 5 | else → bank 6
+   *
+   * H5: 脚本内容已由 scripts-bank-03..06.ts 自动生成并通过 getScriptData 读取,
+   *     此方法忠实还原 $8464 的调度器栈帧构建与状态复位副作用。
+   *
+   * @param id 脚本 ID (A)
+   */
+  scriptLoader(id: number): void {
+    const s = this._store;
+
+    // $8477/$847D: 脚本入口表指针 = $A000 + A*2 (bank 由 getScriptBank 决定)
+    const bank = getScriptBank(id & 0xFF);
+    // $847F: ram_0056 = 目标 bank
+    s.write('ram_0056', bank & 0xFF);
+    // $8481-$8483: ram_00ED = ram_0025 (H5: 记录原 bank 无意义, no-op 语义保留)
+    s.write('ram_00ED', s.read('ram_0025'));
+
+    // $8488-$8492: 读脚本入口指针 → ram_004D/004E
+    // (H5: 由 getScriptData 解析出的首块地址代替原始 ROM 指针表)
+    const script = getScriptData(id & 0xFF);
+    const startAddr = script?.entryAddr ?? '$A000';
+    const entry = parseInt(startAddr.replace('$', ''), 16) || 0xA000;
+    s.write('ram_004D', entry & 0xFF);
+    s.write('ram_004E', (entry >> 8) & 0xFF);
+
+    // $8494-$8496: LDX #$05; LDA #$C5; STA $0000,X  → zp[5] 低 = $C5
+    // $849A-$849C: LDA #$84; STA $0001,X           → zp[6] 高 = $84
+    s.write('ram_0005', 0xC5);
+    s.write('ram_0006', 0x84);
+    // $849E-$84A2: LDY #$50; LDA #$00; JSR $9F69  → dataWriteHelper(0x00, 0x50, 0x05)
+    this.dataWriteHelper(0x00, 0x50, 0x05);
+
+    // $84A5-$84A9: 清 ram_000D/000E
+    s.write('ram_000D', 0);
+    s.write('ram_000E', 0);
+    // $84AB: 清 ram_0652
+    s.write('ram_0652', 0);
+
+    // $84B0-$84BE: ram_00E6=$E0, ram_00E7=$23, Y=1, X=$20, A=$55
+    //              → ppuFill98EA 填充 $23E0-$23FF 属性区为 $55
+    s.write('ram_00E6', 0xE0);
+    s.write('ram_00E7', 0x23);
+    this.ppuFill98EA(1, 0x20, 0x55);
+
+    // $84C1-$84C3: LDX $00ED; JMP $C4B9 — 恢复原 bank (H5 no-op)
+  }
+
+  /**
+   * 对应原始 $98EA: PPU 块填充 (把 A 填充到 ram_00E6/00E7 指向的 VRAM 区域)。
+   * asm ($98EA-$992B, 渐隐计数非零分支):
+   *   $98EC: LDA $004A; ORA $004B; BEQ $992C (直接写 $2006/$2007 分支)
+   *   $98F2: STY $00E8 (行数); STX $00E9 (每行字节数)
+   *   $98F6 循环: JSR $9B28 (PPU buffer 分配) → LDA $00EB; STA $05E8,X × 每行字节数
+   *             → JSR $9B5E (buffer 结束) → 地址 += $20 → DEC $00E8 → BNE
+   *   $992C (渐隐计数为 0): 直接写 $2006/$2007 每行 X 字节 + $20 行步进。
+   * H5: 目标 VRAM 地址 = (ram_00E7<<8)|ram_00E6, 行数=Y, 每行字节数=X, 值=A。
+   * 渲染部分 (映射到 nt0/nt1 网格) 委托 view.ppuFillRegion()。
+   * 调用示例 ($84BE): ram_00E6=$E0, ram_00E7=$23, Y=1, X=$20, A=$55
+   *                  → 填充 NT0 属性区 $23E0-$23FF。
    *
    * @param y 行数
    * @param x 每行字节数
    * @param a 填充值
    */
   ppuFill98EA(y: number, x: number, a: number): void {
-    // TODO: 将 a 填充到 ram_00E6/00E7 指向的 NT 区域
-    void y; void x; void a;
-    this._store.write('ppuFillPending', 1);
+    const s = this._store;
+    const vramAddr = ((s.read('ram_00E7') << 8) | s.read('ram_00E6')) & 0xFFFF;
+    this._render.ppuFillRegion(vramAddr, y & 0xFF, x & 0xFF, a & 0xFF);
   }
 
   /**

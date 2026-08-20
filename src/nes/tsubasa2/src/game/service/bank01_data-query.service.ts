@@ -18,7 +18,7 @@
 import { DataStore } from '../data/DataStore';
 import type { Player, Team, PlayerStats } from '../model/types';
 import { PlayerPosition, FormationType } from '../model/types';
-import { MeetingMenu, TeamDataMenu, ChangeMenu, LevelMenu } from '../data/scene/index';
+import { MeetingMenu, TeamDataMenu, ChangeMenu, LevelMenu } from '../data/prg/scene/index';
 import {
   COPY_B271,
   GFX_PTR_BCF3,
@@ -46,7 +46,7 @@ import {
   TEAM_BLOCK_0C,
   TEAM_BLOCK_10,
   TEAM_GFX_BASE,
-} from '../data/bank01-more-tables';
+} from '../data/prg/bank01-more-tables';
 import { CHAR_MAP_DOUBLE } from './bank00/char-map';
 import { ScriptVM } from './bank00/script-vm';
 import { getScriptData } from './bank00/script-data-loader';

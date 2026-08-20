@@ -17,17 +17,17 @@
 
 import type { DataStore } from '../../data/DataStore';
 import { BUTTON } from '../../../core/types';
-import { OpeningShot } from '../../data/scene/index';
+import { OpeningShot } from '../../data/prg/scene/index';
 import { ScriptVM, type ScriptVMState, type ScriptTextLine } from './script-vm';
-import { CUT_0x17_NT0, CUT_0x17_ATTR0, CUT_0x17_BG_PALETTE, CUT_0x17_SPR_PALETTE, CUT_0x17_BG_GRP, CUT_0x17_SPR_GRP } from '../../data/ppu/nametable/cut/cut_0x17_nt';
-import { MODE_BLOCK_PTRS, applyModeBlocks } from '../../data/ppu/nametable/cut/cut0x17-mode-blocks';
+import { CUT_0x17_NT0, CUT_0x17_ATTR0, CUT_0x17_BG_PALETTE, CUT_0x17_SPR_PALETTE, CUT_0x17_BG_GRP, CUT_0x17_SPR_GRP } from '../../data/prg/ppu/nametable/cut/cut_0x17_nt';
+import { MODE_BLOCK_PTRS, applyModeBlocks } from '../../data/prg/ppu/nametable/cut/cut0x17-mode-blocks';
 import {
   BOOT_NT0, BOOT_ATTR0, BOOT_OAM, BOOT_BG_PALETTE, BOOT_SPR_PALETTE,
   BOOT_BG_CHR_BANK, bootFadeStep, bootFadeByte,
-} from '../../data/ppu/nametable/cut/cut_0x00_boot';
-import { spriteAttrToPalette } from '../../data/ppu/chr/chr-slot-mapper';
+} from '../../data/prg/ppu/nametable/cut/cut_0x00_boot';
+import { spriteAttrToPalette } from '../../data/prg/ppu/chr/chr-slot-mapper';
 import PRG_BANK_06 from '../../data/prg-bank-06';
-import { NES_PALETTE } from '../../data/ppu/pallete/nes-pallete-table';
+import { NES_PALETTE } from '../../data/prg/ppu/pallete/nes-pallete-table';
 import type { PaletteTable, PaletteEntry } from '../../model/types';
 
 // ═══════════════════════════════════════════════════════════════

@@ -34,7 +34,7 @@
  */
 
 import { DataStore } from './data/DataStore';
-import { SceneRoot, OpeningShot, TitleMenu, MeetingMenu, MatchPhase } from './data/scene/index';
+import { SceneRoot, OpeningShot, TitleMenu, MeetingMenu, MatchPhase } from './data/prg/scene/index';
 import { OpeningSceneController, type OpeningDisplayState } from './service/bank00/scene_opening.controller';
 import { TitleSceneController, type TitleDisplayState } from './service/bank00/title_scene.controller';
 import { DataQueryService } from './service/bank01_data-query.service';
@@ -43,7 +43,7 @@ import { Bank19Service } from './service/bank19_auxiliary.service';
 import { Bank18Service, StoryChapter } from './service/bank18_story.service';
 import { Bank20Service } from './service/bank20_match-aux.service';
 import { BUTTON } from '../core/types';
-import { palReset } from './data/ppu/pallete/paletteManager';
+import { palReset } from './data/prg/ppu/pallete/paletteManager';
 import { ResultController } from './service/bank00_result.controller';
 import { PasswordController, type PasswordDisplayState } from './service/bank02_password.service';
 import { Bank02Service } from './service/bank02_scene.service';

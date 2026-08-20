@@ -1,5 +1,5 @@
 /**
- * Interrupt Service — Bank 31 (数据已直接 import, 无 MMC3)
+ * Interrupt Service — Bank 31 (数据已直接 import, 无 MMC3) 对应vectors.s
  *
  * NMI/IRQ/RESET 向量 + 场景 → Bank 配置表。
  *

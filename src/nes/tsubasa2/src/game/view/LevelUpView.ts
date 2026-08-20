@@ -17,7 +17,7 @@
  */
 import { SceneView } from './SceneView';
 import type { NameTableEntry, SpriteEntry } from '../data/DataStore';
-import { getCharacterName, getCharacterNameCn, isGoalkeeper } from '../data/rom-data/character-list';
+import { getCharacterName, getCharacterNameCn, isGoalkeeper } from '../data/prg/character-list';
 import { PLAYER_TEAMS } from '../data/rom-data/team-roster';
 import type { LevelUpService, PlayerRamSlot } from '../service/levelup.service';
 

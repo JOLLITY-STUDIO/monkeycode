@@ -1,0 +1,14 @@
+const fs = require('fs');
+const s = fs.readFileSync('_tmp_full_tsc.txt', 'utf8');
+const errs = s.split('\n').filter(l => /error TS/.test(l));
+const b00 = errs.filter(l => /bank00/i.test(l));
+const b01 = errs.filter(l => /bank01/i.test(l));
+const b02 = errs.filter(l => /bank02/i.test(l));
+const srcOnly = errs.filter(l => l.startsWith('src/'));
+console.log('total:', errs.length);
+console.log('bank00:', b00.length, '| bank01:', b01.length, '| bank02:', b02.length);
+console.log('src/ only:', srcOnly.length);
+console.log('--- bank00 errors ---');
+console.log(b00.slice(0, 30).join('\n') || '(none)');
+console.log('--- src/ only sample ---');
+console.log(srcOnly.slice(0, 20).join('\n') || '(none)');

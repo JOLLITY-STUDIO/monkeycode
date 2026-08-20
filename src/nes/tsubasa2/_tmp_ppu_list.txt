@@ -1,0 +1,16 @@
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\mmc3-bank-map.ts
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\nametable
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\pallete
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\sprite
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\nametable\background
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\nametable\cut
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\nametable\nametableCache.ts
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\nametable\cut\cut0x17-mode-blocks.ts
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\nametable\cut\cut_0x00_boot.ts
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\nametable\cut\cut_0x17_nt.ts
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\pallete\nes-pallete-table.ts
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\pallete\paletteManager.ts
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\pallete\palleteCache.ts
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\pallete\scene-palette-group.ts
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\pallete\scene-palette-table.ts
+D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\data\prg\ppu\sprite\index.ts

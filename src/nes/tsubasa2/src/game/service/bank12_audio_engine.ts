@@ -503,11 +503,8 @@ export class Bank12AudioEngine {
 
       // $83E1: BPL → b < $80 = 音符字节
       if (b < 0x80) {
-        this._parseNote(ch, blk, b);
-        if (this.w.portamentoEn[ch] === 0) {
-          blk.timingOff = 0;
-        }
-        this.w.durLo[ch] = this.w.noteDur[ch] || 1;
+        this._parseNote(ch, blk, b); // 内含 $84A6 尾部 (timing 重置/portamentoVal 清 0)
+        this.w.durLo[ch] = this.w.noteDur[ch] || 1; // $84C5 STA $0707,X
         return;
       }
 
@@ -530,76 +527,89 @@ export class Bank12AudioEngine {
   // $8404-$848D: 音符频率计算
   // ════════════════════════════════════════════════
 
+  /**
+   * $8404-$84A3 音符解析 + $84A6 公共尾部
+   *
+   * 直通通道 (ch==3 TRI / ch==7 NOISE): noteByte 直接作频率低字节 ($8426/$842A)。
+   * 半音通道: 低 4 位 = 半音 (FREQ_TABLE), 高 4 位 = 八度 (右移 $8455-$845A)。
+   * $8435 休止: volCtrl |= $20。
+   * $845C-$84A3 滑音: 非零 portamentoVal → 减 portamentoScratch; 否则加。
+   */
   private _parseNote(ch: number, blk: ChBlock, noteByte: number): void {
     const isDirect = (ch === 3 || ch === 7);
 
+    let fLo: number;
+    let fHi: number;
+
     if (isDirect) {
+      // $8424-$842C: 直通通道
       if (noteByte === 0x10) {
-        blk.volCtrl |= 0x20;
+        blk.volCtrl |= 0x20; // $8435 休止
+        this._noteTail(ch);
         return;
       }
-      let fLo = noteByte;
-      let fHi = 0;
-      if (this.w.portamentoVal[ch] !== 0) {
-        const upper = fLo & 0xF0;
-        const lower = (fLo + this.w.portamentoVal[ch]) & 0x0F;
-        fLo = upper | lower;
-      }
-      this.w.baseFreqLo[ch] = fLo;
-      this.w.baseFreqHi[ch] = fHi;
-      blk.freqLo = fLo;
-      blk.freqHi = fHi | 0x80;
-      this.w.freqDirty[ch] = 0xFF;
-      this.w.notePlayed[ch] = 1;
-      return;
-    }
-
-    // 半音 + 八度编码
-    const semitone = noteByte & 0x0F;
-    if (semitone >= 0x0C) {
-      blk.volCtrl |= 0x20;
-      return;
-    }
-
-    let period = FREQ_TABLE[semitone];
-    let fLo = period & 0xFF;
-    let fHi = (period >> 8) & 7;
-
-    const octave = (noteByte & 0xF0) >> 4;
-    for (let o = 0; o < octave; o++) {
-      const carry = fHi & 1;
-      fHi >>= 1;
-      fLo = (fLo >> 1) | (carry << 7);
-      fHi &= 7;
-    }
-    if (fLo < 2 && fHi === 0) fLo = 2;
-
-    const portVal = this.w.portamentoVal[ch];
-    const portEn = this.w.portamentoEn[ch];
-
-    if (portEn !== 0 && this.w.baseFreqLo[ch] !== 0) {
-      let baseLo = this.w.baseFreqLo[ch];
-      let baseHi = this.w.baseFreqHi[ch] & 0x7F;
-      let basePeriod = baseLo | (baseHi << 8);
-      if (portVal < 0) {
-        basePeriod += (-portVal);
-      } else {
-        basePeriod += portVal;
-      }
-      fLo = basePeriod & 0xFF;
-      fHi = (basePeriod >> 8) & 7;
-      if (fLo === 0 && fHi === 0) fLo = 1;
+      fLo = noteByte; // $8426
+      fHi = 0;        // $842A
     } else {
-      fLo = (fLo + (portVal & 0xFF)) & 0xFF;
+      // $842E-$8433: 半音 + 休止检测
+      const semitone = noteByte & 0x0F;
+      if (semitone >= 0x0C) {
+        blk.volCtrl |= 0x20; // $8435 休止
+        this._noteTail(ch);
+        return;
+      }
+      // $843F-$845A: 频率表 + 八度移位
+      let period = FREQ_TABLE[semitone];
+      fLo = period & 0xFF;
+      fHi = (period >> 8) & 7;
+      const octave = (noteByte & 0xF0) >> 4;
+      for (let o = 0; o < octave; o++) {
+        const carry = fHi & 1;
+        fHi >>= 1;
+        fLo = (fLo >> 1) | (carry << 7);
+        fHi &= 7;
+      }
       if (fLo < 2 && fHi === 0) fLo = 2;
     }
+
+    // $845C-$84A3: 滑音
+    const pVal = this.w.portamentoVal[ch];
+    const scratch = this.w.portamentoScratch[ch];
+    if (pVal !== 0) {
+      // $8466-$8478: 减法路径
+      const res = fLo - scratch;
+      if (res >= 0) {
+        fLo = res;            // 无借位: freqHi 不变
+      } else {
+        fLo = res & 0xFF;     // 借位: freqHi - 1
+        fHi = (fHi - 1) & 0xFF;
+      }
+    } else {
+      // $848F-$849F: 加法路径
+      const res = fLo + scratch;
+      fLo = res & 0xFF;
+      fHi = (fHi + (res > 0xFF ? 1 : 0)) & 0xFF; // 进位加入 freqHi
+    }
+    fHi |= 0x80; // $8484 ORA #$80
 
     this.w.baseFreqLo[ch] = fLo;
     this.w.baseFreqHi[ch] = fHi;
     blk.freqLo = fLo;
-    blk.freqHi = fHi | 0x80;
+    blk.freqHi = fHi;
     this.w.freqDirty[ch] = 0xFF;
     this.w.notePlayed[ch] = 1;
+
+    this._noteTail(ch);
+  }
+
+  /** $84A6-$84C8 公共尾部: 清 portamentoVal, 必要时重置 timing */
+  private _noteTail(ch: number): void {
+    this.w.portamentoVal[ch] = 0; // $84AB STA $07F4,X
+    if (this.w.portamentoEn[ch] === 0) {
+      // $84B5-$84BE: portamento 未使能 → durHi=1, timingOff=0
+      this.w.durHi[ch] = 1;
+      this.blocks[ch].timingOff = 0;
+    }
   }
 
   // ════════════════════════════════════════════════
@@ -660,13 +670,14 @@ export class Bank12AudioEngine {
         return true;
       }
       // $E5 → SET_PORTAMENTO_AMOUNT
+      // $8670: A=param; ASL; if !bit7 → $07F4,X = param<<1 (portamentoVal);
+      //        LSR; $07A7,X = param (portamentoScratch, 音符解析加减量)
       case 0x05: {
         const param = read();
-        const shifted = (param << 1) & 0xFF;
         if (!(param & 0x80)) {
-          this.w.portamentoEn[ch] = shifted;
+          this.w.portamentoVal[ch] = (param << 1) & 0xFF;
         }
-        this.w.portamentoVal[ch] = param >> 1;
+        this.w.portamentoScratch[ch] = param;
         return true;
       }
       // $E6, $E7: NOP

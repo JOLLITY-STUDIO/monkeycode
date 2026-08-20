@@ -1,0 +1,13 @@
+=== tsc b00: FAIL === count=12
+src/game/data/prg/DataStore.ts(13,54): error TS2307: Cannot find module '../../core/types' or its corresponding type declarations.
+src/game/data/prg/DataStore.ts(14,35): error TS2307: Cannot find module '../config' or its corresponding type declarations.
+src/game/data/prg/DataStore.ts(20,8): error TS2307: Cannot find module '../model/types' or its corresponding type declarations.
+src/game/data/prg/DataStore.ts(21,28): error TS2307: Cannot find module '../../core/OamManager' or its corresponding type declarations.
+src/game/service/bank00/bank00_core.service.ts(25,37): error TS2307: Cannot find module '../../data/DataStore' or its corresponding type declarations.
+src/game/service/bank00/bank00_core.service.ts(26,31): error TS2307: Cannot find module '../../data/bank07-data' or its corresponding type declarations.
+src/game/service/bank00/scene_opening.controller.ts(18,32): error TS2307: Cannot find module '../../data/DataStore' or its corresponding type declarations.
+src/game/service/bank00/scene_opening.controller.ts(28,37): error TS2307: Cannot find module '../../data/prg/ppu/chr/chr-slot-mapper' or its corresponding type declarations.
+src/game/service/bank00/scene_opening.controller.ts(29,25): error TS2307: Cannot find module '../../data/prg-bank-06' or its corresponding type declarations.
+src/game/service/bank00/scene_opening.controller.ts(31,49): error TS2307: Cannot find module '../../model/types' or its corresponding type declarations.
+src/game/view/bank00/Bank00RenderView.ts(30,27): error TS2307: Cannot find module '../../data/DataStore' or its corresponding type declarations.
+src/game/view/bank00/Bank00RenderView.ts(37,35): error TS2307: Cannot find module '../../model/types' or its corresponding type declarations.

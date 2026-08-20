@@ -190,8 +190,8 @@ export class Bank02Service {
     s.write('ram_0001', 0x1E);
     s.write('ram_0002', 0x80);
 
-    // 对应 $828B-$828F: Y=$28; JSR $9F69
-    this._bank00.dataWriteHelper(0x00, 0x28);
+    // 对应 $828B-$828F: LDX #$01 基址, Y=$28; JSR $9F69
+    this._bank00.dataWriteHelper(0x00, 0x28, 0x01);
 
     // 落入 $8292 共享块
     this._doShared8292();
@@ -213,7 +213,7 @@ export class Bank02Service {
     // 对应 $826D-$827B
     s.write('ram_0001', 0xFF);
     s.write('ram_0002', 0x7F);
-    this._bank00.dataWriteHelper(0x00, 0x28);
+    this._bank00.dataWriteHelper(0x00, 0x28, 0x01);
 
     // 对应 $827E: JMP $A292
     this._doShared8292();
@@ -231,10 +231,10 @@ export class Bank02Service {
   private _doShared8292(): void {
     const s = this._store;
 
-    // 对应 $8292-$82A0
+    // 对应 $8292-$82A0: X 基址 = $15 (.byte $A2,$15 即 LDX #$15)
     s.write('ram_0015', 0xEC);
     s.write('ram_0016', 0x82);
-    this._bank00.dataWriteHelper(0x00, 0xF0);
+    this._bank00.dataWriteHelper(0x00, 0xF0, 0x15);
 
     // 对应 $82A3-$82A9: ORA $0020,#$80 → STA $0020 → STA $2000 (开 NMI)
     const ppuctrl = (s.read('ram_0020') | BIT_NMI_ENABLE) & 0xFF;

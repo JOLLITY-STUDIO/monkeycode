@@ -24,7 +24,7 @@ import {
   type ShowcaseBlockView,
 } from '../data/showcase-data';
 import { getShowcasePalette, SHOWCASE_PALETTE_DEFAULT } from '../data/showcase-palette';
-import { nesColorToRGBA } from '../data/ppu/pallete/paletteManager';
+import { nesColorToRGBA } from '../data/prg/ppu/pallete/paletteManager';
 
 // ── RAM 语义键 ──
 const KEY_003A = 'ram_003A';

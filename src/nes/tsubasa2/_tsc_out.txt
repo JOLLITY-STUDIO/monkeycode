@@ -1,0 +1,61 @@
+﻿EXIT=2 errors=997
+pages/bankpage/bank-detail-02/bank-detail.ts(5,42): error TS2307: Cannot find module '../../../src/game/data/rom-data/index' or its corresponding type declarations.
+pages/bankpage/bank-detail-02/bank-detail.ts(6,25): error TS2307: Cannot find module '../../../src/game/data/prg-bank-07' or its corresponding type declarations.
+pages/bankpage/bank-detail-02/bank-detail.ts(432,31): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(435,25): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(437,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(440,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(441,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(442,42): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(442,62): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(448,33): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(450,52): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(472,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(474,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(474,56): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(479,26): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-02/bank-detail.ts(493,25): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(5,42): error TS2307: Cannot find module '../../../src/game/data/rom-data/index' or its corresponding type declarations.
+pages/bankpage/bank-detail-12/bank-detail.ts(6,25): error TS2307: Cannot find module '../../../src/game/data/prg-bank-07' or its corresponding type declarations.
+pages/bankpage/bank-detail-12/bank-detail.ts(446,31): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(449,25): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(451,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(454,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(455,29): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(456,42): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(456,62): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(462,33): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(464,52): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(486,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(488,36): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(488,56): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(493,26): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-12/bank-detail.ts(507,25): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-29/bank-detail.ts(10,29): error TS2307: Cannot find module '../../../src/game/data/rom-data/index' or its corresponding type declarations.
+pages/bankpage/bank-detail-30/bank-detail.ts(5,42): error TS2307: Cannot find module '../../../src/game/data/rom-data/index' or its corresponding type declarations.
+pages/bankpage/bank-detail-30/bank-detail.ts(6,25): error TS2307: Cannot find module '../../../src/game/data/prg-bank-07' or its corresponding type declarations.
+pages/bankpage/bank-detail-30/bank-detail.ts(432,31): error TS2345: Argument of type '(b: number) => string' is not assignable to parameter of type '(value: unknown, index: number, array: unknown[]) => string'.
+  Types of parameters 'b' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(435,25): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
+pages/bankpage/bank-detail-30/bank-detail.ts(437,41): error TS2345: Argument of type 'unknown' is not assignable to parameter of type 'number'.
