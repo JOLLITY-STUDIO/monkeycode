@@ -258,23 +258,24 @@ export class Bank30Service {
    */
   initMatchDefaults(): void {
     const s = this._store;
-    s.write('gameState',     0);
-    s.write('timerLo',       0);
-    s.write('timerHi',       0x18);   // 1800秒 = 30分钟
-    s.write('scoreA',        0);
-    s.write('scoreB',        0);
-    s.write('ballOwner',     0);
-    s.write('ballX',         0);
-    s.write('ballY',         0);
-    s.write('nearCount',     0);      // $0600
-    s.write('roundCount',    0);      // $0613
-    s.write('actionClock',   0x0A);   // $0614
-    s.write('bpmCounter',    0);      // $0618
-    s.write('ctrlStatus',    0);      // $0516
-    s.write('scrollDir',     0);      // $0517
-    s.write('animLock',      0);      // $0515
-    s.write('zoneFlag',      0xFF);   // $062A
-    s.write('pauseFlag',     0);      // $062D
+    // 注: 当前无调用者 (H5 由 boot._initRamDefaults 初始化), 保留仅供文档/调试。
+    // 键名统一为真实 RAM 地址 (与 PRG 翻译层 ram_XXXX 一致)。
+    s.write('ram_0060',     0);       // 比赛时钟低位
+    s.write('ram_0061',     0);       // 比赛时钟高位
+    s.write('ram_0028',     0);       // 比分主队 $0028
+    s.write('ram_0029',     0);       // 比分客队 $0029
+    s.write('ram_05FC',     0);       // 持球球员 $05FC
+    s.write('ram_0635',     0);       // 球坐标 X $0635
+    s.write('ram_0637',     0);       // 球坐标 Y $0637
+    s.write('ram_0600',     0);       // 场上活跃球员数 $0600
+    s.write('ram_0613',     0);       // 回合计数 $0613
+    s.write('ram_0614',     0x0A);    // 动作时钟 $0614
+    s.write('ram_0618',     0);       // 移动计数器 $0618
+    s.write('ram_0516',     0);       // 场景/技能状态位 $0516
+    s.write('ram_0517',     0);       // 滚动方向 $0517
+    s.write('ram_0515',     0);       // 动画锁定 $0515
+    s.write('ram_062A',     0xFF);    // 区域标志 $062A
+    s.write('ram_062D',     0);       // 暂停/锁定 $062D
   }
 
   // ══════════════════════════════════════════════════════════════

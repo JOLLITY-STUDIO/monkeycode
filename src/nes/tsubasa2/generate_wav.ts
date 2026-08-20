@@ -1,13 +1,17 @@
 /**
- * generate_wav.ts — 用 bank12 引擎 + PAPU 生成 WAV
- * 用法: npx tsx generate_wav.ts [bgmIdHex] [frames] [output.wav]
- * 默认: BGM 0x36, 3600帧(60秒), output.wav
+ * generate_wav.ts — 用 bank12 引擎 + PAPU 生成所有 BGM 的 WAV
+ * 用法: npx tsx generate_wav.ts [frames]
+ * 默认: 3600帧(60秒), 输出到 output/bgm_XX_YYYYf.wav
  */
 import fs from 'fs';
 import path from 'path';
 import PAPU from './src/core/papu/index';
 import { Bank12AudioEngine } from './src/game/service/bank12_audio_engine';
-import * as bgmMod from './src/game/data/prg/audio/bgm/BGM_0x36';
+// DMC 采样数据（bank30 $C000-$C2BF，704 字节），由 bank12 音频引擎的 DMC 通道播放
+import { DMC_SAMPLES_BY_ADDR } from './src/game/data/prg/audio/dmc-samples';
+
+// 所有 BGM ID 列表 (0x30-0x5B)
+const BGM_IDS = Array.from({ length: 0x5C - 0x30 }, (_, i) => 0x30 + i);
 
 function writeWav(filename: string, samplesL: number[], samplesR: number[], sampleRate: number) {
   const n = samplesL.length;
@@ -25,51 +29,82 @@ function writeWav(filename: string, samplesL: number[], samplesR: number[], samp
     buf.writeInt16LE((r * 32767) | 0, off); off += 2;
   }
   fs.writeFileSync(filename, buf);
-  console.log(`WAV: ${filename} (${n} samples, ${(n/sampleRate).toFixed(1)}s)`);
 }
 
-async function main() {
-  const bgmId = 0x36; // 默认 BGM 0x36
-  const frames = parseInt(process.argv[3] || '3600');
-  const outFile = process.argv[4] || 'output.wav';
-  const sampleRate = 44100;
+async function generateOne(bgmId: number, frames: number, outDir: string, sampleRate: number): Promise<boolean> {
+  const idHex = bgmId.toString(16).toUpperCase();
+  const prefix = 'BGM_' + idHex;
+  const bgmPath = path.join(__dirname, 'src/game/data/prg/audio/bgm/BGM_0x' + idHex + '.ts');
+  if (!fs.existsSync(bgmPath)) {
+    console.log(`BGM 0x${idHex}: 文件不存在，跳过`);
+    return false;
+  }
 
-  console.log(`Generating WAV: BGM=0x${bgmId.toString(16)}, frames=${frames}`);
+  // 动态 import
+  const bgmMod = await import('./src/game/data/prg/audio/bgm/BGM_0x' + idHex);
+  const sq1 = (bgmMod as any)[prefix + '_TRACK_SQ1'];
+  const sq2 = (bgmMod as any)[prefix + '_TRACK_SQ2'];
+  const tri = (bgmMod as any)[prefix + '_TRACK_TRI'];
+  const noise = (bgmMod as any)[prefix + '_TRACK_NOISE'];
+  const raw = (bgmMod as any)[prefix + '_RAW'];
+  const base = (bgmMod as any)[prefix + '_NES_BASE'];
+  const hdrOff = (bgmMod as any)[prefix + '_HEADER_OFFSET'] || 0;
+
+  if (!sq1 || sq1.length === 0) {
+    console.log(`BGM 0x${idHex}: 无数据，跳过`);
+    return false;
+  }
 
   const papu = new PAPU(sampleRate);
   const engine = new Bank12AudioEngine(papu as any);
-
-  // 用 BGM_0x36.ts 的数据
-  const sq1 = (bgmMod as any).BGM_36_TRACK_SQ1;
-  const sq2 = (bgmMod as any).BGM_36_TRACK_SQ2;
-  const tri = (bgmMod as any).BGM_36_TRACK_TRI;
-  const noise = (bgmMod as any).BGM_36_TRACK_NOISE;
-  const raw = (bgmMod as any).BGM_36_RAW;
-  const base = (bgmMod as any).BGM_36_NES_BASE;
-  const hdrOff = (bgmMod as any).BGM_36_HEADER_OFFSET || 0;
-  console.log(`BGM 0x36: sq1=${sq1?.length} sq2=${sq2?.length} tri=${tri?.length} noise=${noise?.length} raw=${raw?.length} base=0x${(base||0).toString(16)} hdrOff=${hdrOff}`);
-
-  if (!sq1) { console.error('BGM data not found'); process.exit(1); }
-
   const samplesL: number[] = [];
   const samplesR: number[] = [];
   (papu as any).setSampleCallback((l: number, r: number) => { samplesL.push(l); samplesR.push(r); });
+
+  // 注入 DMC sample data（bank30 $C000-$C2BF = DMC_SAMPLE_A/B/C）
+  (papu as any).dmc.setSampleProvider((addr: number) => DMC_SAMPLES_BY_ADDR[addr - 0xC000] ?? 0);
 
   engine.load(sq1, sq2, tri, noise, raw, base, hdrOff);
   engine.start();
 
   for (let f = 0; f < frames; f++) {
     engine.tick();
-    if (f % 600 === 0) console.log(`  frame ${f}/${frames} samples=${samplesL.length}`);
-    if (!(engine as any).progress || !(engine as any).progress.playing) {
-      console.log(`  Engine stopped at frame ${f}`);
-      break;
+    if (!engine.progress || !engine.progress.playing) break;
+  }
+
+  if (samplesL.length === 0) {
+    console.log(`BGM 0x${idHex}: 无采样，跳过`);
+    return false;
+  }
+
+  const outFile = path.join(outDir, `bgm_${idHex}_${frames}f.wav`);
+  writeWav(outFile, samplesL, samplesR, sampleRate);
+  console.log(`BGM 0x${idHex}: ${samplesL.length} samples, ${(samplesL.length/sampleRate).toFixed(1)}s → ${outFile}`);
+  return true;
+}
+
+async function main() {
+  const frames = parseInt(process.argv[2] || '3600');
+  const sampleRate = 44100;
+  const outDir = path.join(__dirname, 'output');
+  if (!fs.existsSync(outDir)) fs.mkdirSync(outDir, { recursive: true });
+
+  console.log(`生成所有 BGM WAV: ${frames}帧, 输出到 ${outDir}`);
+  console.log('='.repeat(60));
+
+  let ok = 0, fail = 0;
+  for (const id of BGM_IDS) {
+    try {
+      const success = await generateOne(id, frames, outDir, sampleRate);
+      if (success) ok++; else fail++;
+    } catch (e: any) {
+      console.log(`BGM 0x${id.toString(16).toUpperCase()}: 错误 ${e.message}`);
+      fail++;
     }
   }
 
-  if (samplesL.length === 0) { console.error('ERROR: No samples generated!'); process.exit(1); }
-  writeWav(outFile, samplesL, samplesR, sampleRate);
-  console.log('Done.');
+  console.log('='.repeat(60));
+  console.log(`完成: ${ok} 成功, ${fail} 跳过/失败`);
 }
 
 main().catch(e => { console.error(e); process.exit(1); });

@@ -74,8 +74,9 @@ const KEY_0635 = 'ram_0635';
 const KEY_0637 = 'ram_0637';
 const KEY_0638 = 'ram_0638';
 
-// 调用者传入的 X 参数 (对应 NES X 寄存器)
+// 调用者传入的 X/Y 参数 (对应 NES X/Y 寄存器, 与 bank26 KEY_CALL_Y 一致)
 const KEY_CALL_X = 'ram_call_x';
+const KEY_CALL_Y = 'ram_call_y';
 
 // ── 常量 ──
 const SCENE_ENTRY_SIZE = 12; // 每个场景 12B 数据
@@ -168,7 +169,7 @@ export class Bank28MatchService {
     s.write(KEY_0441, pos);
     this._queryRoleAttributes(pos);
 
-    s.write('ram_tempY', y); // 保存 Y
+    s.write(KEY_CALL_Y, y); // 保存 Y (对应 NES Y 寄存器, 与 bank26 ram_call_y 对齐)
 
     const ptrIdx = teamIdx * 2;
     const cfgAddr = readB28U16(0x9460 + ptrIdx);
@@ -266,6 +267,7 @@ export class Bank28MatchService {
     const base = dataAddr - B28_CPU_BASE;
 
     // 每个场景 12B 数据, 每项 2B LE (坐标/属性指针)
+    // 注: $8B22 实为角色数据清零循环, 此处为场景位置缓存(写后暂无人读, 保留待其他 bank 接入)
     for (let i = 0; i < 6; i++) {
       const lo = SCENE_DATA[base + i * 2];
       const hi = SCENE_DATA[base + i * 2 + 1];
@@ -292,14 +294,15 @@ export class Bank28MatchService {
    */
   entryMatchInit(): void {
     const s = this._store;
-    // 清零/初始化比赛状态区
+    // 清零/初始化比赛状态区 ($0500-$057F, 4 位大写补零)
     for (let i = 0x500; i <= 0x57F; i++) {
-      s.write(`ram_${i.toString(16)}`, 0);
+      s.write(`ram_${i.toString(16).toUpperCase().padStart(4, '0')}`, 0);
     }
-    // 默认计时器
-    s.write('match_timer_lo', 0x00);
-    s.write('match_timer_hi', 0x00);
-    s.write('match_phase', 0);
+    // 默认比赛时钟 (ram_0060/0061: boot 已定义比赛时钟低位/高位)
+    s.write('ram_0060', 0x00);
+    s.write('ram_0061', 0x00);
+    // 默认比赛阶段 (ram_043B: 与 bank26 PHASE_* 共享)
+    s.write(KEY_043B, 0);
   }
 
   // ──────────────────────────────────────────────
@@ -589,6 +592,7 @@ export class Bank28MatchService {
     const posTables = [T_POS_8604, T_POS_86B5, T_POS_87C3, T_POS_8604];
     const table = posTables[idx] ?? T_POS_8604;
     const result = table[0] ?? 0;
+    // 角色位置缓存 (语义键, 写后暂无人读, 保留待其他 bank 接入)
     s.write('ram_role_pos', result);
   }
 

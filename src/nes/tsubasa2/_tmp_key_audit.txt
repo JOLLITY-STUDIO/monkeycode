@@ -1,0 +1,200 @@
+=== 非 ram_XXXX 语义键总数: 55 ===
+
+### bank02_entry (1 处)
+  src\game\service\bank00\bank00_core.service.ts:734 this._store.write('bank02_entry', index);
+
+### match_phase (1 处)
+  src\game\service\bank28_match.service.ts:302 s.write('match_phase', 0);
+
+### match_timer_hi (1 处)
+  src\game\service\bank28_match.service.ts:301 s.write('match_timer_hi', 0x00);
+
+### match_timer_lo (1 处)
+  src\game\service\bank28_match.service.ts:300 s.write('match_timer_lo', 0x00);
+
+### player_data_${offset.toString(16)} (1 处)
+  src\game\service\bank26_match.service.ts:1144 this._store.write(`player_data_${offset.toString(16)}`, value & 0xFF);
+
+### ppuBufPtr (2 处)
+  src\game\service\bank01_data-query.service.ts:917 const ptr = s.read('ppuBufPtr');
+  src\game\service\bank01_data-query.service.ts:928 this._store.write('ppuBufPtr', x);
+
+### ppuBuf_${ptr + 1} (1 处)
+  src\game\service\bank01_data-query.service.ts:920 s.write(`ppuBuf_${ptr + 1}`, addrLo & 0xFF);
+
+### ppuBuf_${ptr + 2} (1 处)
+  src\game\service\bank01_data-query.service.ts:921 s.write(`ppuBuf_${ptr + 2}`, addrHi & 0xFF);
+
+### ppuBuf_${ptr} (1 处)
+  src\game\service\bank01_data-query.service.ts:919 s.write(`ppuBuf_${ptr}`, control & 0xFF);
+
+### ppuBuf_${x + 1} (2 处)
+  src\game\service\bank01_data-query.service.ts:939 this._store.write(`ppuBuf_${x + 1}`, ch & 0xFF);
+  src\game\service\bank01_data-query.service.ts:945 this._store.write(`ppuBuf_${x + 1}`, lo);
+
+### ppuBuf_${x + b} (1 处)
+  src\game\service\bank01_data-query.service.ts:960 this._store.write(`ppuBuf_${x + b}`, fill & 0xFF);
+
+### ppuBuf_${x} (4 处)
+  src\game\service\bank01_data-query.service.ts:927 this._store.write(`ppuBuf_${x}`, 0);
+  src\game\service\bank01_data-query.service.ts:938 this._store.write(`ppuBuf_${x}`, 0);
+  src\game\service\bank01_data-query.service.ts:944 this._store.write(`ppuBuf_${x}`, hi);
+  src\game\service\bank24_hud.service.ts:1437 this._store.write(`ppuBuf_${x}`, tile & 0xFF);
+
+### ppuctrl (4 处)
+  src\game\service\bank02_scene.service.ts:242 s.write('ppuctrl', ppuctrl);
+  src\game\service\bank30_init.service.ts:132 this._store.write('ppuctrl', 0x08);
+  src\game\service\bank30_init.service.ts:175 s.write('ppuctrl', 0x08);  // NMI on, NT0
+  src\game\view\bank00\Bank00RenderView.ts:148 this._store.write('ppuctrl', 0x08);
+
+### ppuctrl_hw (2 处)
+  src\game\service\bank02_scene.service.ts:243 s.write('ppuctrl_hw', ppuctrl);
+  src\game\service\bank02_scene.service.ts:315 s.write('ppuctrl_hw', ppuctrl);
+
+### ppumask (3 处)
+  src\game\service\bank30_init.service.ts:134 this._store.write('ppumask', 0x06);
+  src\game\service\bank30_init.service.ts:176 s.write('ppumask', 0x1E);  // BG on, SPR on, 允许左8px渲染
+  src\game\view\bank00\Bank00RenderView.ts:150 this._store.write('ppumask', 0x1E);
+
+### ram_${(0x03E8 + i).toString(16)} (1 处)
+  src\game\service\bank02_scene.service.ts:1081 s.write(`ram_${(0x03E8 + i).toString(16)}`, SPRITE_TAIL_A677[i]);
+
+### ram_${(0x0454 + x).toString(16).toUpperCase()} (1 处)
+  src\game\service\bank01_data-query.service.ts:394 s.write(`ram_${(0x0454 + x).toString(16).toUpperCase()}`, lo);
+
+### ram_${(0x0454 + y).toString(16).toUpperCase()} (1 处)
+  src\game\service\bank01_data-query.service.ts:428 s.write(`ram_${(0x0454 + y).toString(16).toUpperCase()}`, this._r8(0x0656 + xi));
+
+### ram_${(0x0455 + x).toString(16).toUpperCase()} (1 处)
+  src\game\service\bank01_data-query.service.ts:395 s.write(`ram_${(0x0455 + x).toString(16).toUpperCase()}`, hi);
+
+### ram_${(0x0455 + y).toString(16).toUpperCase()} (1 处)
+  src\game\service\bank01_data-query.service.ts:429 s.write(`ram_${(0x0455 + y).toString(16).toUpperCase()}`, this._r8(0x0657 + xi));
+
+### ram_${(0x054A + y).toString(16)} (1 处)
+  src\game\service\bank02_scene.service.ts:147 s.write(`ram_${(0x054A + y).toString(16)}`, 0x0F);
+
+### ram_${(0x056A + y).toString(16).toUpperCase()} (1 处)
+  src\game\service\bank01_data-query.service.ts:421 s.write(`ram_${(0x056A + y).toString(16).toUpperCase()}`, this._r8(0x0368 + y));
+
+### ram_${(0x05E8 + x + i).toString(16)} (1 处)
+  src\game\service\bank02_scene.service.ts:928 s.write(`ram_${(0x05E8 + x + i).toString(16)}`, 0);
+
+### ram_${(0x0656 + i).toString(16).toUpperCase()} (1 处)
+  src\game\service\bank01_data-query.service.ts:252 s.write(`ram_${(0x0656 + i).toString(16).toUpperCase()}`, ((e7 << 2) | q) & 0xFF);
+
+### ram_${(0xE6 + xIdx).toString(16)} (2 处)
+  src\game\service\bank02_scene.service.ts:485 s.write(`ram_${(0xE6 + xIdx).toString(16)}`,
+  src\game\service\bank02_scene.service.ts:486 (s.read(`ram_${(0xE6 + xIdx).toString(16)}`) + dx) & 0xFF);
+
+### ram_${(BASE_0368 + slot).toString(16)} (1 处)
+  src\game\service\bank29_roster.service.ts:126 const attr = s.read(`ram_${(BASE_0368 + slot).toString(16)}`); // 对应 $B023 读表
+
+### ram_${(BASE_0454 + slot * 2).toString(16)} (2 处)
+  src\game\service\bank29_roster.service.ts:61 return store.read(`ram_${(BASE_0454 + slot * 2).toString(16)}`);
+  src\game\service\bank29_roster.service.ts:65 store.write(`ram_${(BASE_0454 + slot * 2).toString(16)}`, val & 0xFF);
+
+### ram_${(base + i).toString(16).toUpperCase()} (1 处)
+  src\game\service\bank02_scene.service.ts:269 s.write(`ram_${(base + i).toString(16).toUpperCase()}`, 0);
+
+### ram_${(ptr + 3).toString(16).toUpperCase()} (1 处)
+  src\game\service\bank01_data-query.service.ts:457 s.write(`ram_${(ptr + 3).toString(16).toUpperCase()}`, idx);
+
+### ram_${addr.toString(16)} (2 处)
+  src\game\service\bank02_scene.service.ts:637 s.write(`ram_${addr.toString(16)}`, this._readFieldTiles(x++));
+  src\game\service\bank02_scene.service.ts:642 s.write(`ram_${addr.toString(16)}`, this._readFieldTiles(x++));
+
+### ram_${i.toString(16)} (2 处)
+  src\game\service\bank01_data-query.service.ts:317 s.write(`ram_${i.toString(16)}`, 0);
+  src\game\service\bank28_match.service.ts:297 s.write(`ram_${i.toString(16)}`, 0);
+
+### ram_000${(x + 1).toString(16).toUpperCase()} (1 处)
+  src\game\service\bank00\bank00_core.service.ts:603 if (s.read(`ram_000${(x + 1).toString(16).toUpperCase()}`) === 0) {
+
+### ram_000${x.toString(16).toUpperCase()} (3 处)
+  src\game\service\bank00\bank00_core.service.ts:602 if (s.read(`ram_000${x.toString(16).toUpperCase()}`) !== 0) {
+  src\game\service\bank00\bank00_core.service.ts:604 s.write(`ram_000${x.toString(16).toUpperCase()}`, 1);
+  src\game\service\bank00\bank00_core.service.ts:618 s.write(`ram_000${x.toString(16).toUpperCase()}`, 0);
+
+### ram_0000+${x} (2 处)
+  src\game\service\bank30_init.service.ts:677 const lo = s.read(`ram_0000+${x}`) & 0xFF; // LDA $0000,X
+  src\game\service\bank30_init.service.ts:679 s.write(`ram_0000+${x}`, (lo + 1) & 0xFF); // INC $0000,X → 1
+
+### ram_0001+${x} (1 处)
+  src\game\service\bank30_init.service.ts:676 const hi = s.read(`ram_0001+${x}`) & 0xFF; // LDA $0001,X
+
+### ram_002A+${idx} (1 处)
+  src\game\service\bank20_match-aux.service.ts:632 const v = (s.read(`ram_002A+${idx}`) & 0xff) << 1; // ram_002A/002B << 1
+
+### ram_0408+${x} (2 处)
+  src\game\service\bank19_auxiliary.service.ts:371 s.write(`ram_0408+${x}`, s.read(`ram_046F+${x}`)); // $924D-$9256 复制
+  src\game\service\bank19_auxiliary.service.ts:379 const lo = s.read(`ram_0408+${x}`);
+
+### ram_046F+${x} (10 处)
+  src\game\service\bank19_auxiliary.service.ts:371 s.write(`ram_0408+${x}`, s.read(`ram_046F+${x}`)); // $924D-$9256 复制
+  src\game\service\bank19_auxiliary.service.ts:389 s.write(`ram_046F+${x}`, out);          // $9291
+  src\game\service\bank19_auxiliary.service.ts:402 let v = (s.read(`ram_046F+${x}`) & 0x0f) | value; // $92B8-$92BD
+  src\game\service\bank19_auxiliary.service.ts:404 s.write(`ram_046F+${x}`, v);             // $92C5
+  src\game\service\bank19_auxiliary.service.ts:425 s.write(`ram_046F+${x}`, a); // $92F9-$9302: STA ram_046F,X; X+=4
+  src\game\service\bank19_auxiliary.service.ts:435 let v = (s.read(`ram_046F+${x}`) & 0x0f) | 0x30; // $9312-$9317
+  src\game\service\bank19_auxiliary.service.ts:437 s.write(`ram_046F+${x}`, v);
+  src\game\service\bank19_auxiliary.service.ts:619 s.write(`ram_046F+${x}`, v);
+
+### ram_047F+${xx} (1 处)
+  src\game\service\bank20_match-aux.service.ts:540 s.write(`ram_047F+${xx}`, v);
+
+### ram_047F+${x} (1 处)
+  src\game\service\bank20_match-aux.service.ts:634 s.write(`ram_047F+${x}`, T_83A6[x] ?? 0);
+
+### ram_0493+${y} (1 处)
+  src\game\service\bank20_match-aux.service.ts:408 s.write(`ram_0493+${y}`, this.readByte(0x8000 + this._streamPtr + y));
+
+### ram_0494+${i} (1 处)
+  src\game\service\bank19_auxiliary.service.ts:473 s.write(`ram_0494+${i}`, [0x7c, 0x71, 0x52, 0x53][i]);
+
+### ram_0542+${y} (1 处)
+  src\game\service\bank20_match-aux.service.ts:462 s.write(`ram_0542+${y}`, this.readByte(0x8000 + this._streamPtr + y));
+
+### ram_0547+${x} (2 处)
+  src\game\service\bank20_match-aux.service.ts:292 s.write(`ram_0547+${x}`, 0);
+  src\game\service\bank20_match-aux.service.ts:470 this._store.write(`ram_0547+${x}`, 0);
+
+### ram_0557+${x} (1 处)
+  src\game\service\bank19_auxiliary.service.ts:304 s.write(`ram_0557+${x}`, 0xff);
+
+### ram_0558+${x} (1 处)
+  src\game\service\bank19_auxiliary.service.ts:305 s.write(`ram_0558+${x}`, 0xff);
+
+### ram_1B (6 处)
+  src\game\service\bank02_scene.service.ts:122 let ram1b = s.read('ram_1B');
+  src\game\service\bank02_scene.service.ts:124 s.write('ram_1B', ram1b);
+  src\game\service\bank02_scene.service.ts:758 s.write('ram_1B', s.read('ram_1B') | 0x01);
+  src\game\service\bank02_scene.service.ts:758 s.write('ram_1B', s.read('ram_1B') | 0x01);
+  src\game\service\bank02_scene.service.ts:762 s.write('ram_1B', s.read('ram_1B') & 0xFE);
+  src\game\service\bank02_scene.service.ts:762 s.write('ram_1B', s.read('ram_1B') & 0xFE);
+
+### ram_role_pos (1 处)
+  src\game\service\bank28_match.service.ts:592 s.write('ram_role_pos', result);
+
+### ram_tempY (1 处)
+  src\game\service\bank28_match.service.ts:171 s.write('ram_tempY', y); // 保存 Y
+
+### scene_pos_${i} (1 处)
+  src\game\service\bank28_match.service.ts:273 s.write(`scene_pos_${i}`, val);
+
+### tactic_slot_${i} (1 处)
+  src\game\service\bank26_match.service.ts:1065 s.write(`tactic_slot_${i}`, newIdx);
+
+### temp_A0_${y.toString(16)} (2 处)
+  src\game\service\bank02_scene.service.ts:129 s.write(`temp_A0_${y.toString(16)}`, 0);
+  src\game\service\bank02_scene.service.ts:459 for (let y = 0xE8; y <= 0xFF; y++) s.write(`temp_A0_${y.toString(16)}`, 0);
+
+### temp_E0_${y.toString(16)} (2 处)
+  src\game\service\bank02_scene.service.ts:135 s.write(`temp_E0_${y.toString(16)}`, 0);
+  src\game\service\bank02_scene.service.ts:460 for (let y = 0x5A; y <= 0xF9; y++) s.write(`temp_E0_${y.toString(16)}`, 0);
+
+### temp_EC_${y.toString(16)} (1 处)
+  src\game\service\bank02_scene.service.ts:358 s.write(`temp_EC_${y.toString(16)}`, 0);
+
+### vblankReady (1 处)
+  src\game\view\bank00\Bank00RenderView.ts:288 this._store.write('vblankReady', 1);

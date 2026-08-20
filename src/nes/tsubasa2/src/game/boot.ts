@@ -309,26 +309,26 @@ export class BootService {
     s.write('ram_0072',     0);       // 阶段倒计时 (DEC ram_0072 归零→终场检测)
     s.write('ram_0062',     0);       // 比赛控制标志
     s.write('ram_00ED',     0x0A);    // 比赛/场景索引 (初始$0A开场, 比赛时=里约杯场次0-5)
-    s.write('scoreA',       0);
-    s.write('scoreB',       0);
-    s.write('ballOwner',    0);
-    s.write('ballX',        0);
-    s.write('ballY',        0);
+    s.write('ram_0028',     0);       // 比分主队 $0028 ($85E3 INC ram_0028,X)
+    s.write('ram_0029',     0);       // 比分客队 $0029
+    s.write('ram_05FC',     0);       // 持球球员 $05FC
+    s.write('ram_0635',     0);       // 球坐标 X (带符号) $0635
+    s.write('ram_0637',     0);       // 球坐标 Y (带符号) $0637
 
     // Bank 31 核心 RAM 默认值（从 bank31_analysis 提取）
-    s.write('nearCount',    0);       // $0600
-    s.write('roundCount',   0);       // $0613
-    s.write('actionClock',  0x0A);    // $0614
-    s.write('bpmCounter',   0);       // $0618
+    s.write('ram_0600',     0);       // 场上活跃球员数 $0600
+    s.write('ram_0613',     0);       // 回合计数 $0613
+    s.write('ram_0614',     0x0A);    // 动作时钟 $0614
+    s.write('ram_0618',     0);       // 移动计数器 $0618
 
     // 控制器默认值
-    s.write('ctrlStatus',   0);       // $0516
-    s.write('scrollDir',    0);       // $0517
-    s.write('animLock',     0);       // $0515
-    s.write('zoneFlag',     0xFF);    // $062A
+    s.write('ram_0516',     0);       // 场景/技能状态位 $0516
+    s.write('ram_0517',     0);       // 滚动方向 $0517
+    s.write('ram_0515',     0);       // 动画锁定 $0515
+    s.write('ram_062A',     0xFF);    // 区域标志 $062A
 
     // 暂停/清场标志
-    s.write('pauseFlag',    0);       // $062D
+    s.write('ram_062D',     0);       // 暂停/锁定 $062D
 
     // ZP 零页全部清零（对应 Bank 30 init 中 A2 00 循环）
     this._store.zp.fill(0);
@@ -535,8 +535,8 @@ export class BootService {
     yield* this._runHalfPhase(false);
 
     // ── 阶段 4: 终场检测 — 平局 → 加时/PK, 分胜负 → RESULT ──
-    const scoreA = this._store.read('scoreA') as number;
-    const scoreB = this._store.read('scoreB') as number;
+    const scoreA = this._store.read('ram_0028') as number;
+    const scoreB = this._store.read('ram_0029') as number;
     if (scoreA === scoreB) {
       // 平局 → 加时赛 (可选, 由比赛配置决定; 当前默认有加时)
       // FIXME: 真实 ROM 由 ram_0062 bit 标志或比赛配置字段决定是否有加时
@@ -548,8 +548,8 @@ export class BootService {
       yield* this._runHalfPhase(true);
 
       // 加时赛后仍平局 → PK
-      const sa2 = this._store.read('scoreA') as number;
-      const sb2 = this._store.read('scoreB') as number;
+      const sa2 = this._store.read('ram_0028') as number;
+      const sb2 = this._store.read('ram_0029') as number;
       if (sa2 === sb2) {
         // PK 阶段
         this._store.write(BOOT_KEYS.MATCH_PHASE, MatchPhase.PK_SHOOTOUT);
@@ -609,7 +609,7 @@ export class BootService {
   /**
    * PK 阶段协程 — 点球大战, 帧守卫兜底, 分出胜负返回。
    * FIXME: 真实 ROM PK 逻辑由 Bank26 引擎驱动, 当前用帧守卫占位。
-   * 帧守卫超时后强制分胜负 (写 scoreA+1 模拟主队胜)。
+   * 帧守卫超时后强制分胜负 (写 ram_0028+1 模拟主队胜)。
    */
   private *_runPkPhase(): Generator<number | undefined, void, number> {
     const PK_GUARD = 60 * 30;  // 30 秒帧守卫
@@ -621,11 +621,11 @@ export class BootService {
       this._bank20.frameTick();
       this._hud?.matchFrameTick();
       frame++;
-      const sa = this._store.read('scoreA') as number;
-      const sb = this._store.read('scoreB') as number;
+      const sa = this._store.read('ram_0028') as number;
+      const sb = this._store.read('ram_0029') as number;
       if (sa !== sb || frame >= PK_GUARD) {
         // 帧守卫超时且仍平局 → 强制分胜负 (主队+1)
-        if (sa === sb) this._store.write('scoreA', sa + 1);
+        if (sa === sb) this._store.write('ram_0028', sa + 1);
         return;
       }
     }

@@ -32,10 +32,15 @@ import { getScriptData } from './script-data-loader';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-/** 帧状态标志 */
-const FRAME_FLAG   = 'frameFlag';   // ram_001E: bit4=vblank done, bit5=?
-const SCENE_ID     = 'sceneId';     // ram_0026
-const RAM_1B       = 'ram_1B';      // ram_001B: 场景状态标志
+/** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致) */
+function ramKey(addr: number): string {
+  return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+}
+
+/** 帧状态标志 — 真实 RAM 地址键 (与 bank26/31 的 ram_001E 一致) */
+const FRAME_FLAG   = 'ram_001E';   // ram_001E: bit4=vblank done, bit5=?
+const SCENE_ID     = 'ram_0026';   // ram_0026: 场景 ID (与 bank01/02/24/29 一致)
+const RAM_1B       = 'ram_001B';   // ram_001B: 场景状态标志 (与 bank02 一致)
 
 
 
@@ -599,9 +604,9 @@ export class Bank00Service {
    */
   oamTerm89(x: number): void {
     const s = this._store;
-    if (s.read(`ram_000${x.toString(16).toUpperCase()}`) !== 0) {
-      if (s.read(`ram_000${(x + 1).toString(16).toUpperCase()}`) === 0) {
-        s.write(`ram_000${x.toString(16).toUpperCase()}`, 1);
+    if (s.read(ramKey(0x0000 + x)) !== 0) {
+      if (s.read(ramKey(0x0001 + x)) === 0) {
+        s.write(ramKey(0x0000 + x), 1);
       }
     }
   }
@@ -615,7 +620,7 @@ export class Bank00Service {
   oamTerm96(x: number): void {
     const s = this._store;
     // $9F96: ram_0000,X == 0xFF 时原 JSR $9FA8(1) (bank 切换, H5 no-op) 已省略
-    s.write(`ram_000${x.toString(16).toUpperCase()}`, 0);
+    s.write(ramKey(0x0000 + x), 0);
   }
 
   /**
@@ -731,6 +736,7 @@ export class Bank00Service {
    * H5: 记录入口索引，由调用方直接调用 Bank02Service 对应方法。
    */
   bank02Dispatch(index: number): void {
+    // H5 逻辑记录键 (对应 MMC3 $84C1 bank 切换后的入口索引, 无真实 RAM 地址)
     this._store.write('bank02_entry', index);
   }
 

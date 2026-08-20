@@ -560,20 +560,19 @@ export interface SpriteEntry {
 /** 语义化内存键名 */
 export const RAM_KEYS = {
   // 游戏状态
-  GAME_STATE:   'gameState',
   FRAME_COUNT:  'frameCount',
   // 控制器
   BTN_CUR:      'btnCurrent',
   BTN_PREV:     'btnPrevious',
   BTN_EDGE:     'btnEdge',
-  // 比赛
-  TIMER_L:      'timerLo',
-  TIMER_H:      'timerHi',
-  SCORE_A:      'scoreA',
-  SCORE_B:      'scoreB',
-  BALL_X:       'ballX',
-  BALL_Y:       'ballY',
-  BALL_OWNER:   'ballOwner',
+  // 比赛 (键名 = 真实 RAM 地址, 与 PRG 翻译层 ram_XXXX 一致)
+  TIMER_L:      'ram_0060',   // 比赛时钟低位
+  TIMER_H:      'ram_0061',   // 比赛时钟高位
+  SCORE_A:      'ram_0028',   // 比分主队 $0028
+  SCORE_B:      'ram_0029',   // 比分客队 $0029
+  BALL_X:       'ram_0635',   // 球坐标 X
+  BALL_Y:       'ram_0637',   // 球坐标 Y
+  BALL_OWNER:   'ram_05FC',   // 持球球员
   // 临时变量区 (Bank 之间传递参数)
   TEMP_00:      'temp00',
   TEMP_01:      'temp01',

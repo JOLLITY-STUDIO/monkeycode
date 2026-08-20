@@ -38,14 +38,17 @@ import type { PaletteColor } from '../../data/prg/model-types';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
+/** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
+function ramKey(addr: number): string {
+  return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+}
+
 // ── 常量 ──
 
-/** PPU Buffer 地址 ($05E8-$0628, 64B) */
-const PPU_BUF_BASE = 'ppuBuf_';
+/** PPU Buffer 地址 ($05E8-$0628, 64B) — 真实 RAM 地址键 */
 const PPU_BUF_SIZE = 64;
-
-/** PPU Buffer 写指针 */
-const PPU_BUF_PTR = 'ppuBufPtr';
+const PPU_BUF_BASE = 0x05E8;
+const PPU_BUF_PTR = 'ram_0628'; // $9B48: LDX $0628 指针
 
 /**
  * 调色板渐显矩阵表 (bank0 $9EA2, 4×16)。
@@ -297,7 +300,7 @@ export class Bank00RenderView {
   /** 清零 PPU Buffer + 重置写指针 (场景初始化链每帧调用) */
   ppuBufClear(): void {
     for (let i = 0; i < PPU_BUF_SIZE; i++) {
-      this._store.write(PPU_BUF_BASE + i, 0);
+      this._store.write(ramKey(PPU_BUF_BASE + i), 0);
     }
     this._store.write(PPU_BUF_PTR, 0);
   }
@@ -312,12 +315,12 @@ export class Bank00RenderView {
   /** 对应 $9B5E: PPU Buffer 结束标记 (末尾写 0x00 → 更新指针) */
   ppuBufEnd(): void {
     const ptr = this._store.read(PPU_BUF_PTR);
-    this._store.write(PPU_BUF_BASE + ptr, 0x00);
+    this._store.write(ramKey(PPU_BUF_BASE + ptr), 0x00);
   }
 
   /** 写单个字节到 PPU Buffer */
   ppuBufWrite(offset: number, value: number): void {
-    this._store.write(PPU_BUF_BASE + offset, value & 0xFF);
+    this._store.write(ramKey(PPU_BUF_BASE + offset), value & 0xFF);
   }
 
   /**

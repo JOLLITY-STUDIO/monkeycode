@@ -30,6 +30,12 @@
  */
 
 import { DataStore } from '../data/prg/DataStore';
+
+/** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
+function ramKey(addr: number): string {
+  return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+}
+
 import {
   B26_CPU_BASE,
   readB26,
@@ -80,9 +86,9 @@ const KEY_05FB = 'ram_05FB'; // 控球方/进攻方向 (0=home, 11=away)
 const KEY_05FC = 'ram_05FC'; // 目标球员 ID
 const KEY_05FE = 'ram_05FE'; // 区域编码
 const KEY_0600 = 'ram_0600'; // 场上活跃球员数
-const KEY_0601 = 'ram_0601'; // 球员 ID 数组基址
-const KEY_0606 = 'ram_0606'; // 球员状态数组基址
-const KEY_060B = 'ram_060B'; // 球员位置数组基址
+const KEY_0601 = 0x0601; // 球员 ID 数组基址 (真实连续地址, _readArr/_writeArr 按 base+off 读写)
+const KEY_0606 = 0x0606; // 球员状态数组基址
+const KEY_060B = 0x060B; // 球员位置数组基址 (X/Y 成对, off=idx*2)
 const KEY_0612 = 'ram_0612'; // 事件/动作 ID
 const KEY_0616 = 'ram_0616'; // 当前处理索引
 const KEY_0617 = 'ram_0617'; // 处理标志
@@ -830,15 +836,13 @@ export class MatchEngineService {
     s.write(KEY_0619, total & 0xFF);
   }
 
-  /** 给指定球员加经验 */
+  /** 给指定球员加经验 (真实 RAM: $0454+id*2, 16bit LE) */
   private _addExp(id: number, gain: number): void {
-    const s = this._store;
     const base = this._playerDataAddr(id);
     if (base < 0) return;
-    const exp = readB26(base + 5) & 0xFF;
-    const next = (exp + gain) & 0xFF;
-    // 写入球员数据 (通过 Bank29 数据窗口)
-    this._writePlayerData(base + 5, next);
+    // 经验持久化 → RAM $0454+id*2 (16bit LE), 每次累加 gain
+    this._writePlayerData(id, gain);
+    void base;
   }
 
   // ──────────────────────────────────────────────
@@ -1061,8 +1065,8 @@ export class MatchEngineService {
       if (slot === 0) continue;
       const pid = slot + (side === 0 ? 0 : 11);
       const newIdx = this._formationSlotFor(pid);
-      // 调整位置权重
-      s.write(`tactic_slot_${i}`, newIdx);
+      // 战术位置权重 → RAM $0610+i (真实: $96C1 INC $0610,X)
+      s.write(ramKey(0x0610 + i), newIdx);
     }
   }
 
@@ -1111,14 +1115,14 @@ export class MatchEngineService {
   // 内部: 数据访问
   // ──────────────────────────────────────────────
 
-  /** 读数组 (模拟内存数组读取) */
-  private _readArr(baseKey: string, offset: number): number {
-    return this._store.read(`${baseKey}_${offset.toString(16)}`) & 0xFF;
+  /** 读数组 (模拟内存数组读取, base+off → 连续真实 RAM 键) */
+  private _readArr(baseKey: number, offset: number): number {
+    return this._store.read(ramKey(baseKey + offset)) & 0xFF;
   }
 
   /** 写数组 */
-  private _writeArr(baseKey: string, offset: number, value: number): void {
-    this._store.write(`${baseKey}_${offset.toString(16)}`, value & 0xFF);
+  private _writeArr(baseKey: number, offset: number, value: number): void {
+    this._store.write(ramKey(baseKey + offset), value & 0xFF);
   }
 
   /** 球员数据基址 (通过 T_9FF0 → Bank29 $A000) */
@@ -1138,10 +1142,15 @@ export class MatchEngineService {
     return readB26(base + (statIdx & 0x07)) & 0xFF;
   }
 
-  /** 写球员数据 */
-  private _writePlayerData(offset: number, value: number): void {
-    // H5: 球员数据为只读 ROM 时, 写入内存缓存
-    this._store.write(`player_data_${offset.toString(16)}`, value & 0xFF);
+  /** 写球员经验 (真实 RAM: $0454+id*2, 16bit LE) */
+  private _writePlayerData(id: number, gain: number): void {
+    const s = this._store;
+    const loKey = ramKey(0x0454 + id * 2);
+    const hiKey = ramKey(0x0454 + id * 2 + 1);
+    const cur = (s.read(loKey) & 0xFF) | ((s.read(hiKey) & 0xFF) << 8);
+    const next = (cur + gain) & 0xFFFF;
+    s.write(loKey, next & 0xFF);
+    s.write(hiKey, (next >> 8) & 0xFF);
   }
 
   /** 球员状态 */
@@ -1284,7 +1293,7 @@ export class MatchEngineService {
   /** 记分 */
   private _addScore(side: number, points: number): void {
     const s = this._store;
-    const key = side === 0 ? 'score_home' : 'score_away';
+    const key = side === 0 ? 'ram_0028' : 'ram_0029'; // 真实 ROM: 比分 = $0028(主)/$0029(客), $85E3 INC ram_0028,X
     const cur = s.read(key) & 0xFF;
     s.write(key, (cur + points) & 0xFF);
   }
@@ -1343,8 +1352,8 @@ export class MatchEngineService {
     const s = this._store;
     return {
       phase: s.read(KEY_043B) & 0xFF,
-      scoreHome: s.read('score_home') & 0xFF,
-      scoreAway: s.read('score_away') & 0xFF,
+      scoreHome: s.read('ram_0028') & 0xFF,
+      scoreAway: s.read('ram_0029') & 0xFF,
       ballX: s.read(KEY_0635) & 0xFF,
       ballY: s.read(KEY_0637) & 0xFF,
       ballOwner: s.read(KEY_05FC) & 0xFF,

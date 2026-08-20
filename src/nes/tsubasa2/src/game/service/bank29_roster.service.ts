@@ -51,6 +51,11 @@ const KEY_ED = 'ram_00ED';
 const KEY_5C = 'ram_005C';
 const KEY_5D = 'ram_005D';
 
+/** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
+function ramKey(addr: number): string {
+  return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+}
+
 /** ram_0454 区域 (16 个 16bit 槽位 = 32B) — 各队数据暂存 */
 const BASE_0454 = 0x0454;
 const BASE_056A = 0x056A;
@@ -58,11 +63,11 @@ const BASE_0368 = 0x0368;
 
 /** 按球队读 ram_0454 区域槽位 (16bit) */
 function read0454(store: DataStore, slot: number): number {
-  return store.read(`ram_${(BASE_0454 + slot * 2).toString(16)}`);
+  return store.read(ramKey(BASE_0454 + slot * 2));
 }
 
 function write0454(store: DataStore, slot: number, val: number): void {
-  store.write(`ram_${(BASE_0454 + slot * 2).toString(16)}`, val & 0xFF);
+  store.write(ramKey(BASE_0454 + slot * 2), val & 0xFF);
 }
 
 /**

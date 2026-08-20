@@ -53,6 +53,11 @@ import { getScriptData } from './bank00/script-data-loader';
 
 // ── Bank 01 常量 ──
 
+/** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
+function ramKey(addr: number): string {
+  return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+}
+
 /** ram_00ED: 当前选项屏幕光标 (0-17) */
 const KEY_ED = 'ram_00ED';
 /** ram_00EC: 当前菜单索引 (0-64) */
@@ -249,7 +254,7 @@ export class DataQueryService {
       delta >>= 2;
       const q = delta > 0 ? Math.min(3, Math.floor(rem / delta)) : 0;
       // ram_0656,X = (ram_00E7 << 2) | ram_00EC ($807E-$8084)
-      s.write(`ram_${(0x0656 + i).toString(16).toUpperCase()}`, ((e7 << 2) | q) & 0xFF);
+      s.write(ramKey(0x0656 + i), ((e7 << 2) | q) & 0xFF);
     }
 
     // ── ④ $A08D-$A0AC: 汇总计算 ──
@@ -314,7 +319,7 @@ export class DataQueryService {
 
     // 清零 $0566-$0665
     for (let i = 0x0566; i <= 0x0665; i++) {
-      s.write(`ram_${i.toString(16)}`, 0);
+      s.write(ramKey(i), 0);
     }
   }
 
@@ -391,8 +396,8 @@ export class DataQueryService {
       const sumHi = hi0 + bHi + (sumLo >> 8);
       const lo = (sumHi >> 8) !== 0 ? 0xFF : (sumLo & 0xFF); // BCC → 饱和
       const hi = (sumHi >> 8) !== 0 ? 0xFF : (sumHi & 0xFF);
-      s.write(`ram_${(0x0454 + x).toString(16).toUpperCase()}`, lo);
-      s.write(`ram_${(0x0455 + x).toString(16).toUpperCase()}`, hi);
+      s.write(ramKey(0x0454 + x), lo);
+      s.write(ramKey(0x0455 + x), hi);
     }
   }
 
@@ -418,15 +423,15 @@ export class DataQueryService {
 
     // $9076-$907D: ram_0368,Y → ram_056A,Y (256 字节拷贝)
     for (let y = 0; y < 0x100; y++) {
-      s.write(`ram_${(0x056A + y).toString(16).toUpperCase()}`, this._r8(0x0368 + y));
+      s.write(ramKey(0x056A + y), this._r8(0x0368 + y));
     }
 
     // $9083-$909E: ram_0454[Y] = ram_0656[block[i]]; 10 次, Y 步进 2
     let y = 0;
     for (let i = 0; i < 10; i++) {
       const xi = block[i] ?? 0;
-      s.write(`ram_${(0x0454 + y).toString(16).toUpperCase()}`, this._r8(0x0656 + xi));
-      s.write(`ram_${(0x0455 + y).toString(16).toUpperCase()}`, this._r8(0x0657 + xi));
+      s.write(ramKey(0x0454 + y), this._r8(0x0656 + xi));
+      s.write(ramKey(0x0455 + y), this._r8(0x0657 + xi));
       y += 2;
     }
   }
@@ -454,7 +459,7 @@ export class DataQueryService {
       const ptr = this._teamDataPtr();
       const query = this._query16(ea);
       const idx = this._lookupIndex16(query);
-      s.write(`ram_${(ptr + 3).toString(16).toUpperCase()}`, idx);
+      s.write(ramKey(ptr + 3), idx);
       ea = (ea + 1) & 0xFF;
       eb--;
     }
@@ -912,20 +917,21 @@ export class DataQueryService {
   // 记录格式: [control, PPU addr lo, PPU addr hi] + 数据 + 0x00 终止
 
   /** 对应 bank00 $9B28: 分配 PPU Buffer 记录头, 返回数据区写偏移 */
+  // 真实地址: NMI 渲染缓冲 $05E8 区, 指针 ram_0628 ($9B48: LDX $0628)
   private _ppuBufAlloc(control: number, addrLo: number, addrHi: number): number {
     const s = this._store;
-    const ptr = s.read('ppuBufPtr');
+    const ptr = s.read('ram_0628');
     if (ptr + (control & 0x3F) + 3 > 64) return ptr; // 空间不足 (H5 简化处理)
-    s.write(`ppuBuf_${ptr}`, control & 0xFF);
-    s.write(`ppuBuf_${ptr + 1}`, addrLo & 0xFF);
-    s.write(`ppuBuf_${ptr + 2}`, addrHi & 0xFF);
+    s.write(ramKey(0x05E8 + ptr), control & 0xFF);
+    s.write(ramKey(0x05E8 + ptr + 1), addrLo & 0xFF);
+    s.write(ramKey(0x05E8 + ptr + 2), addrHi & 0xFF);
     return ptr + 3;
   }
 
   /** 对应 bank00 $9B5E: PPU Buffer 记录 0x00 终止 + 指针推进 */
   private _ppuBufEnd(x: number): void {
-    this._store.write(`ppuBuf_${x}`, 0);
-    this._store.write('ppuBufPtr', x);
+    this._store.write(ramKey(0x05E8 + x), 0);
+    this._store.write('ram_0628', x);
   }
 
   /**
@@ -935,14 +941,14 @@ export class DataQueryService {
   private _charDisplay(ch: number, addrLo: number, addrHi: number): void {
     let x = this._ppuBufAlloc(0x82, addrLo, addrHi);
     if (ch < 0xA0) {
-      this._store.write(`ppuBuf_${x}`, 0);
-      this._store.write(`ppuBuf_${x + 1}`, ch & 0xFF);
+      this._store.write(ramKey(0x05E8 + x), 0);
+      this._store.write(ramKey(0x05E8 + x + 1), ch & 0xFF);
       x += 2;
     } else {
       const hi = ch >= 0xC8 ? 0x95 : 0x94;
       const lo = CHAR_MAP_DOUBLE[ch]?.loTile ?? 0;
-      this._store.write(`ppuBuf_${x}`, hi);
-      this._store.write(`ppuBuf_${x + 1}`, lo);
+      this._store.write(ramKey(0x05E8 + x), hi);
+      this._store.write(ramKey(0x05E8 + x + 1), lo);
       x += 2;
     }
     this._ppuBufEnd(x);
@@ -957,7 +963,7 @@ export class DataQueryService {
     for (let r = 0; r < rows; r++) {
       const x = this._ppuBufAlloc(bytesPerRow, addr & 0xFF, (addr >> 8) & 0xFF);
       for (let b = 0; b < bytesPerRow; b++) {
-        this._store.write(`ppuBuf_${x + b}`, fill & 0xFF);
+        this._store.write(ramKey(0x05E8 + x + b), fill & 0xFF);
       }
       this._ppuBufEnd(x + bytesPerRow);
       addr = (addr + 0x20) & 0xFFFF;

@@ -12,6 +12,7 @@ enabledAutoRun: true
 
 1. **不做模拟器**：项目已用 TypeScript 直接 import 全部 PRG bank 原始数据（`src/game/data/prg/prg-bank-00.ts` 等），不需要 MMC3 bank 切换/CPU 汇编解析。翻译就是把 asm 逻辑直译成 TS 高级语言，最终版不得残留指令/汇编/编码解码。
 2. **bank 即 service，code 即业务逻辑，data 即 model**：当前 bank 的代码写进 `src/game/service/bank00/*.ts`，数据写进 `src/game/data/prg/`（场景 NT/脚本/字符表等声明式数组）。外部只能通过 service 接口访问数据。
+2a. **必须提取所有 ASM 数据，禁止残留 PRG_BANK 原始字节做随机访问**：ASM 里所有 `.byte` 数据（包括 DMC 采样、跳转表、频率表、指针表等）必须提取成 TS 声明式数组。如果 service 还在 `import PRG_BANK_XX` 做随机地址访问（如 `PRG_BANK_XX[addr - 0xC000]`），必须改成 import 提取后的 TS 数据。每个 ASM `.byte` 段都要有对应 TS 数组，不能跳过。
 3. **渲染与业务分离**：bank00 的渲染部分（NT/调色板/OAM/PPU Buffer/帧同步）已剥到 `src/game/view/bank00/Bank00RenderView.ts`，Service 只保留业务逻辑（状态机/场景调度/帧循环/输入/脚本）并委托 `this._render` 调渲染。
 4. **逐批小步翻译**：禁止一次性写大量代码。先确认 asm 段 → 读现有 TS 对应 stub 位置 → `replace_in_file` 覆盖一个函数（或一组相邻函数）→ 跑 `npx tsc -p tsconfig.json --noEmit` 验证 → 再下一批。
 5. **不要用 PowerShell 写脚本**：用 node 脚本 / `npx tsc` 验证。Windows 开发环境。node -e 里含分号/引号会被 PS 转义破坏，复杂扫描写临时 `.cjs` 文件再 `node xxx.cjs`。
