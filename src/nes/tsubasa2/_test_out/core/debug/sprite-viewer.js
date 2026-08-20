@@ -1,4 +1,5 @@
 "use strict";
+// @ts-nocheck
 /**
  * Sprite Viewer — 参照 FCEUX ppuViewer 的 oamPatternView / sprite 面板
  *

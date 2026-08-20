@@ -20,7 +20,7 @@ exports.LevelUpView = void 0;
  */
 const SceneView_1 = require("./SceneView");
 const character_list_1 = require("../data/prg/character-list");
-const team_roster_1 = require("../data/rom-data/team-roster");
+const team_roster_1 = require("../data/prg/team-roster");
 /** 玩家队 (Sao Paulo) 11 人首发 */
 const PLAYER_TEAM = team_roster_1.PLAYER_TEAMS[0];
 class LevelUpView extends SceneView_1.SceneView {

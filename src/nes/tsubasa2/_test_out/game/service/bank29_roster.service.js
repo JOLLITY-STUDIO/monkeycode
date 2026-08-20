@@ -21,7 +21,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank29RosterService = void 0;
-const roster_1 = require("../data/team/roster");
+const roster_1 = require("../data/prg/team/roster");
 // ── RAM 键 ──
 const KEY_26 = 'ram_0026'; // 当前球队 ID
 const KEY_2A = 'ram_002A'; // 当前球员 ID

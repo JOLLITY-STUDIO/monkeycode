@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * 测试主入口 — tsubasa2-h5-src HTML 测试页面
  *

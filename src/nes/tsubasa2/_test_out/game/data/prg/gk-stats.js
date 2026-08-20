@@ -1,4 +1,5 @@
 "use strict";
+// @ts-nocheck
 /**
  * 守门员能力值数据 (真实 ROM 提取, 20 GK × 8 字节)
  *

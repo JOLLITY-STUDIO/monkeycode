@@ -1,4 +1,5 @@
 "use strict";
+// @ts-nocheck — bankpage 调试聚合页专用, 各 prg-bank 已迁移到 prg/ 子目录或内嵌到 data 文件, 此聚合页仅供 bankpage 浏览原始 ROM, 不参与游戏运行时
 /**
  * ROM 数据聚合导出（本地副本）
  *

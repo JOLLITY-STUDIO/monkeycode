@@ -51,7 +51,7 @@ export { Bank19Service } from './service/bank19_auxiliary.service';
 export { Bank18Service, StoryChapter } from './service/bank18_story.service';
 export { Bank20Service } from './service/bank20_match-aux.service';
 export { Bank22Service } from './service/bank22_hybrid.service';
-export { Bank27Service } from './service/bank27_minimal.service';
+export { Bank27Service } from './service/bank27.service';
 export { Bank29RosterService } from './service/bank29_roster.service';
 
 // 真实 RESET 分发链 (替代已废弃的 boot.ts 人工路由层, 按 asm 翻译 $C400/$C64E/$CEFE/$A200)

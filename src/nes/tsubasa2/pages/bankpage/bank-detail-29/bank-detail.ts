@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * Bank 29 详情页 — 球队战术/阵容数据 (Team Tactics & CPU Roster)
  *

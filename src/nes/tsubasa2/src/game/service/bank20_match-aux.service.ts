@@ -21,9 +21,9 @@
  */
 
 import { DataStore } from '../data/prg/DataStore';
-import PRG_BANK_20 from '../data/prg-bank-20';
-import PRG_BANK_21 from '../data/prg-bank-21'; // $A000-$BFFF 窗口 → 物理 bank 21
-import PRG_BANK_31 from '../data/prg-bank-31'; // 固定区 $FBCC/$FB4C 表
+import PRG_BANK_20 from '../data/prg/prg-bank-20';
+import PRG_BANK_21 from '../data/prg/prg-bank-21'; // $A000-$BFFF 窗口 → 物理 bank 21
+import PRG_BANK_31 from '../data/prg/prg-bank-31'; // 固定区 $FBCC/$FB4C 表
 
 // ═══════════════════════════════════════════════════════════════
 // 常量表 (标注地址 → 本 bank 数组索引 = 地址-$8000)

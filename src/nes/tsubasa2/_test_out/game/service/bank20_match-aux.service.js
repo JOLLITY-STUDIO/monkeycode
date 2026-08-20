@@ -25,9 +25,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank20Service = exports.NAME_MAP_TABLE = exports.MAIN_STREAM_TABLE = exports.T_88DF = exports.T_88DA = exports.T_88D0 = exports.T_88A8 = exports.T_885B = exports.T_83A6 = exports.T_82F6 = exports.T_8264 = exports.T_88E4 = exports.NAME_RECORD_TABLE = void 0;
-const prg_bank_20_1 = __importDefault(require("../data/prg-bank-20"));
-const prg_bank_21_1 = __importDefault(require("../data/prg-bank-21")); // $A000-$BFFF 窗口 → 物理 bank 21
-const prg_bank_31_1 = __importDefault(require("../data/prg-bank-31")); // 固定区 $FBCC/$FB4C 表
+const prg_bank_20_1 = __importDefault(require("../data/prg/prg-bank-20"));
+const prg_bank_21_1 = __importDefault(require("../data/prg/prg-bank-21")); // $A000-$BFFF 窗口 → 物理 bank 21
+const prg_bank_31_1 = __importDefault(require("../data/prg/prg-bank-31")); // 固定区 $FBCC/$FB4C 表
 // ═══════════════════════════════════════════════════════════════
 // 常量表 (标注地址 → 本 bank 数组索引 = 地址-$8000)
 // ═══════════════════════════════════════════════════════════════

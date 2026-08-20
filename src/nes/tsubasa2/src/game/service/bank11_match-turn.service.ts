@@ -58,9 +58,9 @@ import {
   readB11Attr,
   readB11Block,
   readB11PatternAttr,
-} from '../data/bank11-data';
-import PRG_BANK_18 from '../data/prg-bank-18'; // MMC3 R7=0x12 → 物理 bank 18
-import PRG_BANK_19 from '../data/prg-bank-19'; // MMC3 R7=0x13 → 物理 bank 19
+} from '../data/prg/bank11-data';
+import PRG_BANK_18 from '../data/prg/prg-bank-18'; // MMC3 R7=0x12 → 物理 bank 18
+import PRG_BANK_19 from '../data/prg/prg-bank-19'; // MMC3 R7=0x13 → 物理 bank 19
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)

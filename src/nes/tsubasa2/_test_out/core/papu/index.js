@@ -1,4 +1,5 @@
 "use strict";
+// @ts-nocheck — tsnes 原版 JS 风格类, 作为黑盒 PAPU 模拟器使用, 不做 TS strict 检查
 /**
  * PAPU — NES APU (Audio Processing Unit) 纯逻辑实现
  * Adapted from src/papu/index.ts

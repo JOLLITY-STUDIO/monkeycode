@@ -123,6 +123,10 @@ const KEY_0539 = 'ram_0539'; // 状态切换标志
 const KEY_05CE = 'ram_05CE'; // 渲染属性 (tile 属性合并)
 const KEY_063D = 'ram_063D'; // 精灵模式 (0-3, 由 $F00F 表索引)
 const KEY_04A5 = 'ram_04A5'; // PPU 缓冲 (writeSprites 写入区, 3B/行)
+const KEY_04A6 = 'ram_04A6'; // PPU 缓冲 (NT 地址 lo/hi, sprite 属性合并)
+const KEY_04A7 = 'ram_04A7'; // PPU 缓冲 (NT 属性高位)
+const KEY_04A8 = 'ram_04A8'; // PPU 缓冲 (sprite tile ID)
+const KEY_04A9 = 'ram_04A9'; // PPU 缓冲 (sprite 计数/控制)
 const KEY_0030 = 'ram_0030'; // 指针暂存 lo (readPtr 结果)
 const KEY_0031 = 'ram_0031'; // 指针暂存 hi (readPtr 结果)
 

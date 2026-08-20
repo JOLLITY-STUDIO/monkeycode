@@ -50,9 +50,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank11Service = void 0;
-const bank11_data_1 = require("../data/bank11-data");
-const prg_bank_18_1 = __importDefault(require("../data/prg-bank-18")); // MMC3 R7=0x12 → 物理 bank 18
-const prg_bank_19_1 = __importDefault(require("../data/prg-bank-19")); // MMC3 R7=0x13 → 物理 bank 19
+const bank11_data_1 = require("../data/prg/bank11-data");
+const prg_bank_18_1 = __importDefault(require("../data/prg/prg-bank-18")); // MMC3 R7=0x12 → 物理 bank 18
+const prg_bank_19_1 = __importDefault(require("../data/prg/prg-bank-19")); // MMC3 R7=0x13 → 物理 bank 19
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
 // ═══════════════════════════════════════════════════════════════

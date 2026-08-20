@@ -23,9 +23,12 @@
  *   $816E: APU 寄存器写入
  *   $81DB: 音量/衰减处理
  */
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank12AudioService = exports.SE_POINTER_TABLE = exports.BGM_DATA_MAP = exports.ChannelType = void 0;
-const PapuOutput_1 = require("../../core/engine/audio/PapuOutput");
+const papu_1 = __importDefault(require("../../core/papu"));
 const bank12_audio_engine_1 = require("./bank12_audio_engine");
 // ═══════════════════════════════════════════════════════════════
 // 兼容类型导出 (保持 WebAudioOutput 等旧代码的 import 兼容)
@@ -64,8 +67,8 @@ class Bank12AudioService {
         // Bank 数据缓存 (setBankData 注入)
         this._bank12 = new Uint8Array(0);
         this._bank15 = new Uint8Array(0);
-        // 忽略旧的 IAudioOutput，改用 PapuOutput (PAPU 完整模拟 NES APU)
-        this._papu = new PapuOutput_1.PapuOutput();
+        // 直接用 PAPU 完整模拟 NES APU (不再需要 PapuOutput 桥接层)
+        this._papu = new papu_1.default();
         this._engine = new bank12_audio_engine_1.Bank12AudioEngine(this._papu);
     }
     // ──────────────────────────────────────────────
@@ -148,7 +151,7 @@ class Bank12AudioService {
     /** 停止所有播放 */
     stopAll() {
         this._engine.stop();
-        this._papu.silence();
+        this._papu.writeReg(0x4015, 0); // 禁所有 APU 通道 (替代 PapuOutput.silence)
     }
     // ──────────────────────────────────────────────
     // 每帧更新 (NMI $8002 入口)

@@ -1,0 +1,28 @@
+T1: T_TEAM_8528 = [0xb3, 0x4f, 0x0, 0xaa, 0x54, 0x0, 0xa0, 0x6]
+T2: T_ATTR_ROLE_8A9D 有效区 = [0x2, 0x3, 0x3, 0x3, 0x3, 0x4, 0x5, 0x4, 0x5, 0x4, 0x5]
+T3 start
+T3a start
+T3b start
+T3c start
+T3d start
+T3e start
+T3e dispatch(0)
+T3e dispatch(0) done
+T3e dispatch(1)
+T3e dispatch(1) done
+T3e dispatch(2)
+T3e dispatch(2) done
+T3e dispatch(3)
+T3e dispatch(3) done
+T3e dispatch(4)
+T3e dispatch(4) done
+T3e dispatch(5)
+T3e dispatch(5) done
+T3e dispatch(6)
+T3e dispatch(6) done
+T3e dispatch(7)
+T3e dispatch(7) done
+T3e dispatch(8)
+T3e dispatch(8) done
+T3e dispatch(9)
+T3e dispatch(9) done

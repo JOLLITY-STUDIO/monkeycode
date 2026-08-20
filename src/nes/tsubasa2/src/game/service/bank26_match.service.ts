@@ -66,7 +66,7 @@ import {
   T_9F79,
   T_9FB9,
   T_9FF0,
-} from '../data/bank26-tables';
+} from '../data/prg/bank26-tables';
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)

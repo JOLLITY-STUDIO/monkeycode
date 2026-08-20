@@ -240,8 +240,9 @@ class DataQueryService {
         this._ppuBlockFill(1, 0x0B, 0x20C4, 0x00);
         this._ppuBlockFill(1, 0x0B, 0x2124, 0x00);
         // $8500: LDY #$05; LDX #$B3 → $B0C0 加载 SCRIPT_ENTRY1 (View 层经 ScriptVM 消费)
-        s.write('ram_0444', 0);
-        s.write('ram_0445', 0);
+        // $8503/$8505: STA $0044; STA $0045 (零页, 场景/阶段号清空)
+        s.write('ram_0044', 0);
+        s.write('ram_0045', 0);
         // $850B: LDA $B271,Y → STA $039C,Y (256B 复制 COPY_B271 → ram_039C)
         for (let y = 0; y < 0x100; y++) {
             s.write(ramKey(0x039C + y), bank01_more_tables_1.COPY_B271[y % bank01_more_tables_1.COPY_B271.length] ?? 0);
@@ -262,9 +263,12 @@ class DataQueryService {
         this._ppuBlockFill(7, 0x22, 0x22E8, 0x00);
         // $8544-$8559: 经 $A63C 显示阶段号 ($21D0) 与半场比分 ($2250)
         const stage = s.read('ram_002A');
-        this._writeDecNumber(stage, 0x21D0); // $A63C(阶段号)
-        const half = s.read('ram_002B');
-        this._writeDecNumber(half, 0x2250); // $A63C(半场比分)
+        this._writeDecNumber(stage, 0x21D0); // $854A: JSR $A63C(阶段号, PPU $21D0)
+        // $854D-$8559: 半场比分 = ram_002B - (ram_002B > $24 ? 1 : 0)
+        //   LDA #$24; CMP $002B → carry=(#$24 < $002B); LDA $002B; SBC #$00
+        const b2b = s.read('ram_002B');
+        const half = (b2b - (b2b > 0x24 ? 1 : 0)) & 0xFF;
+        this._writeDecNumber(half, 0x2250); // $8559: JSR $A63C(半场比分, PPU $2250)
         // $855C-$8566: 字幕精灵初始状态
         s.write('ram_007B', 0);
         s.write('ram_008E', 0);
@@ -277,14 +281,13 @@ class DataQueryService {
         this._writeTeamStats(0, 0x0B);
         if (scene >= 0x10)
             this._writeTeamStats(0x16, 0x0A);
-        // $859D-$85C2: 依场景判断, 调 SCENE_STAT_B3F9 补绘
-        const e4 = s.read('ram_00E4');
-        if (e4 >= scene) {
-            if (scene !== 0x06 && scene !== 0x0C && scene !== 0x10 && s.read('ram_00EC') !== 0) {
-                const st = bank01_more_tables_1.SCENE_STAT_B3F9[scene] ?? 0;
-                this._drawStatFromScene(st); // $8464 提取 + $82A9 显示
-                s.write('ram_00ED', 0);
-            }
+        // $859D-$85C2: 依场景判断, 调 SCENE_STAT_B3F9 补绘。
+        // 流程: E4 >= scene → 直接检查 (BCS $85B1); 否则先跳过 scene==06/0C/10 检查。
+        // 最终汇聚条件: scene 非 06/0C/10 且 ram_00EC != 0 → 提取+汇总显示 + 重置光标。
+        if (scene !== 0x06 && scene !== 0x0C && scene !== 0x10 && s.read('ram_00EC') !== 0) {
+            // $85B5-$85C2: LDX scene; LDA $B3F9,X; JSR $8464; JSR $82A9; STA $00ED(#0)
+            this._drawStatFromScene(scene);
+            s.write('ram_00ED', 0);
         }
     }
     /**
@@ -300,19 +303,16 @@ class DataQueryService {
         const scene = s.read('ram_0026');
         // $864C-$8657: JSR $98A0 + $9B7F (清 PPU 缓冲); LDX scene; LDA $B393[scene]
         const st = bank01_more_tables_1.SCENE_STAT_B393[scene] ?? 0;
-        // $8657 $8464: 提取状态字段 (选择器 = st&3)
-        const field = this._extractStatField(st);
+        // $8657 $8464 + $865A $82A9: 用 X=scene 提取状态字段并汇总显示
+        //   ($8464 的提取完全由 X 决定: selector = scene&3, POS_TABLE 索引 = scene)
+        this._drawStatFromScene(scene);
         // $865D-$8666: LDA #$01; JSR $8920; $9C3A 载 $ADD0 指针表 (screen 子程序表)
-        // $8670: JMP $9C28 → 经 $8673 指针表跳转
-        //   $A67B: 主 Nametable 绘制 (SCENE_STAT_B3B5[scene]+1 → $8464 → $82A9)
+        // $8670: JMP $9C28 → 经 $A673 指针表跳转 (选择器 = $9BE8 返回值 & 3)
+        //   $A67B: 主 Nametable 绘制 (SCENE_SUB_TBL[scene] → $8464 → $82A9 → 循环)
         //   $A69F: $A01E 解码 + $8464($4E) → 块填充 (SCENE_STAT_B3D7[scene])
-        //   $A6BE: $A721 → 返回 $A64C
+        //   $A6BE: JSR $A721 → 返回 $A64C
         //   $A6C4: SCENE_STAT_B41B[scene] → 跳 $A715
         this._drawScreenBranch(scene, st);
-        // $867D-$869C: 次级绘制: SCENE_SUB_TBL[scene] → $8464 提取; 轮询 ram_004D/4E 与 $001E bit4
-        const sub = bank01_more_tables_1.SCENE_SUB_TBL[scene] ?? 0;
-        this._drawStatFromScene(sub);
-        // 等待 ram_001E bit4 (帧同步, H5 no-op), 再 $99F0 块填充
     }
     /**
      * 入口4 (A=4): PPU 属性块写入
@@ -332,13 +332,15 @@ class DataQueryService {
         // $86F4: 部分场景 CLC; ADC #$01 (偏移 1)
         st = ((st + 1) & 0xFF);
         // $86F6: $8464 提取 → $82A9 汇总
-        // $86FC-$8703: $9C3A 载 $ADD6 指针表 + $9BE8
-        // $8706: CMP #$02; BEQ $8710 → ram_0700 = 0x31 分支
+        // $86FC-$8703: $9C3A 载 $ADD6 指针表 + JSR $9BE8 (bank0 公共原语, 返回值 A)
+        // $8706: CMP #$02; BEQ $8710 → A==2 时 ram_0700 = 0x31 分支
+        //   (注: $9BE8 为 bank0 公共渲染原语, 返回值经 bank00_core.service.ts 连通后精确化;
+        //    此处以 st 近似 A, B3B5 值均为 0x47/0x49/0x4B, 故通常走补绘分支)
         if (st === 2) {
             s.write('ram_0700', 0x31);
         }
         else {
-            // $870A: JSR $A721 → $86E8 循环补绘 (屏幕补绘子程)
+            // $870A: JSR $A721 → JMP $A6E8 循环补绘 (屏幕补绘子程, H5 单次通过)
             this._screenPatchA721();
         }
         // $8719-$8720: $97AB 载入 PPU_BUF_A 数据 (View 层消费)
@@ -368,9 +370,11 @@ class DataQueryService {
         // $8FC9-$8FD0: (result & 0xF0)>>1 + X → ROSTER_PTR 索引
         const ptrIdx = (((result & 0xF0) >> 1) + x) & 0xFF;
         const roster = bank01_more_tables_1.ROSTER_PTR[ptrIdx % bank01_more_tables_1.ROSTER_PTR.length] ?? 0;
-        // $8FD4-$8FE5: scene<<1 → TEAM_GFX_BASE 16-bit >> 2
+        // $8FD4-$8FE5: scene<<1 → TEAM_GFX_BASE 16-bit >> 2 (ROR/LSR 组合, 结果在 A:ED)
         const base = this._read16t(bank01_more_tables_1.TEAM_GFX_BASE, (scene << 1) & 0xFE) >> 2;
-        // $8FF1-$9012: (result & 0x0F)<<1 → 对 ram_0454 16-bit 累加 base (饱和 FF)
+        // $8FE6: JSR $9DEE (bank0 公共渲染原语, A/ED 16bit 规范化 → 经 bank00_core 连通)
+        // $8FE9-$8FEF: ASL $00EC; ROL $00ED ×2 → (base>>2)<<2 恢复近似原值, H5 简化合并入 base
+        // $8FF1-$9012: (result & 0x0F)<<1 → 对 ram_0454 16-bit 累加 base (溢出饱和 FF FF)
         const idx = (result & 0x0F) << 1;
         const lo0 = this._r8(0x0454 + idx);
         const hi0 = this._r8(0x0455 + idx);
@@ -975,12 +979,14 @@ class DataQueryService {
         this._charDisplay((one + 0x33) & 0xFF, (ppuAddr + 1) & 0xFF, (ppuAddr >> 8) & 0xFF);
     }
     /**
-     * 对应 asm $8464 (状态字段提取, 选择器=st&3) + $82A9 (汇总显示)。
-     * 提取场景状态字段并写 PPU 缓冲。
-     * @param st 状态表值
+     * 对应 asm $8464 (状态字段提取) + $82A9 (汇总显示)。
+     * $8464 的提取完全由 X 寄存器决定 (selector=X&3, POS_TABLE 索引=X)，忽略 A 输入值；
+     * 各调用点 X 均被 `LDX $0026` 设为 scene，故参数即 scene。
+     * 提取场景状态字段并写 PPU 缓冲 ($22xx 区)。
+     * @param x X 值 (通常 = scene)
      */
-    _drawStatFromScene(st) {
-        const field = this._extractStatField(st);
+    _drawStatFromScene(x) {
+        const field = this._extractStatField(x);
         // $82A9: 汇总后经 $88CA 显示 (PPU 缓冲 $22xx 区)
         this._charDisplay(field & 0x3F, 0x80, 0x22);
     }
@@ -989,17 +995,18 @@ class DataQueryService {
      * 各分支 ($A67B/$A69F/$A6BE/$A6C4) 调用 $8464/$82A9/$A01E/$99F0 完成屏幕绘制。
      */
     _drawScreenBranch(scene, st) {
-        const s = this._store;
+        // 分发表 $A673 (4 入口) 选择器 = $9BE8 返回值 & 3 (近似 st&3)
         const branch = st & 3;
         if (branch === 0) {
-            // $A67B: 主 Nametable 绘制 (SCENE_STAT_B3B5[scene]+1 提取 + 汇总)
-            const st2 = bank01_more_tables_1.SCENE_STAT_B3B5[scene] ?? 0;
-            this._drawStatFromScene((st2 + 1) & 0xFF);
+            // $A67B: 主 Nametable 绘制。
+            // $867D: LDA $B371,X (SCENE_SUB_TBL[scene]); JSR $8464 (X=scene 提取); JSR $82A9 汇总
+            this._drawStatFromScene(scene);
+            // $8688-$869C: 等待 + $99F0 块填充 + JMP $A652 (循环), H5 简化 no-op
         }
         else if (branch === 1) {
-            // $A69F: $A01E 解码 (player data) + $8464($4E) → 块填充
-            const st3 = bank01_more_tables_1.SCENE_STAT_B3D7[scene] ?? 0;
-            this._drawStatFromScene(st3);
+            // $A69F: $86A2-$86B8: LDX scene; LDA $B3D7,X; JSR $8464; JSR $82A9;
+            //   JSR $A01E (解码); LDA #$4E; JSR $8464; JSR $82A9; JSR $99F0
+            this._drawStatFromScene(scene);
             this._ppuBlockFill(4, 0x0B, 0x228A, 0x00);
         }
         else if (branch === 2) {
@@ -1007,9 +1014,8 @@ class DataQueryService {
             this._screenPatchA721();
         }
         else {
-            // $A6C4: SCENE_STAT_B41B[scene] → $A715
-            const st5 = bank01_more_tables_1.SCENE_STAT_B41B[scene] ?? 0;
-            this._drawStatFromScene(st5);
+            // $A6C4: $86C6-$86CF: LDX scene; LDA $B41B,X; JSR $8464; JSR $82A9; JMP $A715
+            this._drawStatFromScene(scene);
         }
     }
     /**
@@ -1323,7 +1329,7 @@ class DataQueryService {
      */
     _renderScriptEntry4(scene) {
         // 场景<0x10 → SCRIPT_ENTRY4A, 否则 SCRIPT_ENTRY4B (View 层按场景选脚本块渲染)
-        const script = scene < 0x10 ? bank01_more_tables_1.SCRIPT_ENTRY4A : SCRIPT_ENTRY4B;
+        const script = scene < 0x10 ? bank01_more_tables_1.SCRIPT_ENTRY4A : bank01_more_tables_1.SCRIPT_ENTRY4A; // TODO: SCRIPT_ENTRY4B 待翻译, 暂用 4A
         void script;
     }
     // ── 内部: PPU Buffer 记录 (对应 bank00 $9B28/$9B5E/$88CA/$98E8) ──

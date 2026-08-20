@@ -24,11 +24,34 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank24HudService = void 0;
-const numUtils_1 = require("../../core/numUtils");
-const bank24_tables_1 = require("../data/bank24-tables");
+const bank24_tables_1 = require("../data/prg/bank24-tables");
 /** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
 function ramKey(addr) {
     return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+}
+// ── 数字→tile 工具 (内嵌, 对应 asm $8C55/$8C7A/$CD3C) ──
+// 数字 tile 基址: 数字+0x33=tile ID (asm $8C7A: CLC; ADC #$33)
+const DIGIT_TILE_BASE = 0x33;
+/** $CD3C: 16bit 除法 (被除数 / 10, 返回商和余数) */
+function div16By10(lo, hi) {
+    let dividend = lo | (hi << 8);
+    const q = Math.floor(dividend / 10);
+    const rem = dividend % 10;
+    return { qLo: q & 0xFF, qHi: (q >> 8) & 0xFF, rem };
+}
+/** $8C55: 16bit 数值→tile IDs (循环除10, 余数+0x33=tile_id) */
+function numberToTiles16(valueLo, valueHi, digitCount = 5) {
+    const tiles = [];
+    let lo = valueLo & 0xFF;
+    let hi = valueHi & 0xFF;
+    for (let i = 0; i < digitCount; i++) {
+        const { qLo, qHi, rem } = div16By10(lo, hi);
+        tiles.push((rem & 0x0F) + DIGIT_TILE_BASE);
+        lo = qLo;
+        hi = qHi;
+    }
+    tiles.reverse(); // 正序 (高位在前)
+    return tiles;
 }
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
@@ -1348,14 +1371,14 @@ class Bank24HudService {
      */
     renderNumber8C55(valueLo, valueHi, digitCount = 5) {
         // H5 简化: 直接用 numUtils.numberToTiles16 (对应 $8C55 + $CD3C 完整逻辑)
-        return (0, numUtils_1.numberToTiles16)(valueLo, valueHi, digitCount);
+        return numberToTiles16(valueLo, valueHi, digitCount);
     }
     /**
      * $8C7A: 单数字→tile ID (CLC; ADC #$33)
      * 数字 + 0x33 = tile ID
      */
     digitToTile8C7A(digit) {
-        return (digit & 0x0F) + numUtils_1.DIGIT_TILE_BASE;
+        return (digit & 0x0F) + DIGIT_TILE_BASE;
     }
     /**
      * $8C85: 写 tile 到 PPU Buffer (ram_04A8,X)

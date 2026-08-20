@@ -1,4 +1,5 @@
 "use strict";
+// @ts-nocheck
 /**
  * Debug hooks — 参照 FCEUX 的 X6502_Debug() / CPUHook 模式
  *

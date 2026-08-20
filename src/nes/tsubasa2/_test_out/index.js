@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Controller = exports.PAPU = exports.PPU = exports.DataQueryService = exports.BootService = exports.Bank30Service = exports.Bank28MatchService = exports.Bank11Service = exports.Bank02Service = exports.Bank00Service = exports.createBlankPaletteTable = exports.BLANK_PALETTE = exports.SceneType = exports.MatchPhase = exports.FormationType = exports.PlayerPosition = exports.RAM_KEYS = exports.DataStore = exports.CONFIG = exports.Mirroring = exports.GameState = exports.BUTTON = exports.PRG_BANK_SIZE = exports.CHR_BANK_SIZE = exports.NT_ROWS = exports.NT_COLS = exports.TILE_PX = exports.NES_HEIGHT = exports.NES_WIDTH = void 0;
+exports.Controller = exports.PAPU = exports.PPU = exports.Tsubasa2 = exports.DispatchService = exports.DataQueryService = exports.Bank30Service = exports.Bank28MatchService = exports.Bank11Service = exports.Bank02Service = exports.Bank00Service = exports.createBlankPaletteTable = exports.BLANK_PALETTE = exports.SceneType = exports.MatchPhase = exports.FormationType = exports.PlayerPosition = exports.RAM_KEYS = exports.DataStore = exports.CONFIG = exports.Mirroring = exports.GameState = exports.BUTTON = exports.PRG_BANK_SIZE = exports.CHR_BANK_SIZE = exports.NT_ROWS = exports.NT_COLS = exports.TILE_PX = exports.NES_HEIGHT = exports.NES_WIDTH = void 0;
 /** 天使之翼2 — 公共导出 */
 var types_1 = require("./core/types");
 Object.defineProperty(exports, "NES_WIDTH", { enumerable: true, get: function () { return types_1.NES_WIDTH; } });
@@ -31,15 +31,16 @@ Object.defineProperty(exports, "MatchPhase", { enumerable: true, get: function (
 Object.defineProperty(exports, "SceneType", { enumerable: true, get: function () { return model_types_1.SceneType; } });
 Object.defineProperty(exports, "BLANK_PALETTE", { enumerable: true, get: function () { return model_types_1.BLANK_PALETTE; } });
 Object.defineProperty(exports, "createBlankPaletteTable", { enumerable: true, get: function () { return model_types_1.createBlankPaletteTable; } });
-// 服务 (Bank 翻译)
+// 服务 (Bank 翻译) + 游戏主类 Tsubasa2
 var index_1 = require("./game/index");
 Object.defineProperty(exports, "Bank00Service", { enumerable: true, get: function () { return index_1.Bank00Service; } });
 Object.defineProperty(exports, "Bank02Service", { enumerable: true, get: function () { return index_1.Bank02Service; } });
 Object.defineProperty(exports, "Bank11Service", { enumerable: true, get: function () { return index_1.Bank11Service; } });
 Object.defineProperty(exports, "Bank28MatchService", { enumerable: true, get: function () { return index_1.Bank28MatchService; } });
 Object.defineProperty(exports, "Bank30Service", { enumerable: true, get: function () { return index_1.Bank30Service; } });
-Object.defineProperty(exports, "BootService", { enumerable: true, get: function () { return index_1.BootService; } });
 Object.defineProperty(exports, "DataQueryService", { enumerable: true, get: function () { return index_1.DataQueryService; } });
+Object.defineProperty(exports, "DispatchService", { enumerable: true, get: function () { return index_1.DispatchService; } });
+Object.defineProperty(exports, "Tsubasa2", { enumerable: true, get: function () { return index_1.Tsubasa2; } });
 // 硬件核心 (tsnes 原结构)
 var ppu_1 = require("./core/ppu");
 Object.defineProperty(exports, "PPU", { enumerable: true, get: function () { return __importDefault(ppu_1).default; } });

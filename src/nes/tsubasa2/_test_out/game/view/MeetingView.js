@@ -23,9 +23,9 @@ exports.MeetingView = void 0;
  */
 const SceneView_1 = require("./SceneView");
 const character_list_1 = require("../data/prg/character-list");
-const player_stats_1 = require("../data/rom-data/player-stats");
-const team_roster_1 = require("../data/rom-data/team-roster");
-const special_moves_1 = require("../data/rom-data/special-moves");
+const player_stats_1 = require("../data/prg/player-stats");
+const team_roster_1 = require("../data/prg/team-roster");
+const special_moves_1 = require("../data/prg/special-moves");
 // ── CHR Bank (文字 tile, 暂用 bank 14 与标题背景一致) ──
 const CHR_BANK = 14;
 // ── 光标精灵 tile (占位: 箭头符号) ──

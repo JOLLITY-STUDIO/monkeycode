@@ -7,7 +7,7 @@
  *
  * 纯数据声明式保存, 由 bank31_match.service.ts 消费。
  */
-import type { DataStore } from '../DataStore';
+import type { DataStore } from './DataStore';
 
 // ═══════════════════════════════════════════════════════════════
 // 跳转指针表 $E9DA (33 项 × 16bit LE)

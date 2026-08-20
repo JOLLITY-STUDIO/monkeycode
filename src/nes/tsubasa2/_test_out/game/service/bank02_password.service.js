@@ -13,12 +13,13 @@
  *     LDA #$17; JSR $8AF7 (Cut 0x17 标题背景); LDA #$68; STA ram_0044 (滚动)
  *     后续: 调色板/PPU/清屏/块填充
  *
- *   密码模式入口 (真实调度): bank0 $82E8 读 ram_0057; BMI $8338 (bit7=密码模式)
- *     $8338: CMP #$81; BEQ $83A3 (校验通过续关载入路径)
+ *   密码模式入口 (真实调度): bank02 $82E8 (运行时 $A2E8) 读 ram_0057; BMI $8338
+ *     (bit7=密码模式); $8338: CMP #$81; BEQ $83A3 (校验通过续关载入路径)
  *     $833C (输入模式): 33 槽位初始化 (ram_0468 起, 步长4, Y步长3, X步长13,
  *       tile=(ram_00EC&1)|$F2, attr=3) + $8372 字符集钳制动画循环
  *       (CMP $AB1F,Y / ADC $AB21,Y / ADC $AB22,Y, Y=槽位&$0C → 4组字符集上限)
- *     $83A3 (续关载入): ram_0568 |= $10; 滚动动画 ram_0044/0046/056D
+ *     $83A3 (续关载入): ram_0568 |= $10; 滚动动画 ram_0044/0046/056D (见
+ *       playContinueLoadAnimation)
  *
  *   AB1F 字符集表 (ROM 0x4B2F, 16字节, 每4字节一组 [上限, tile增量, X增量, ?]):
  *     [6c 00 04 fc] [6e 00 05 fc] [70 00 06 fa] [74 00 07 fa]
@@ -34,6 +35,13 @@
  *
  * 真实密码验证算法 (校验通过→ram_0057=$81→$83A3 续关载入) 待从 ROM
  * 校验子程序 + 模拟器 trace 抠出 (TODO, 不编造数据)。
+ *
+ * ⚠️ 校验子程序定位结论 (2026-08 逆向):
+ *   在已反汇编的 bank02 (asm/bank02/*.s) 与 bank00 (asm/bank00/*.s) 中,
+ *   $82E8/$8338/$83A3 只是「读取 ram_0057 后的分发/动画」, 不含 16 字符
+ *   校验和计算本体。负责把 ram_0057 置为 $81 的校验子程序位于未反汇编段
+ *   (需 tsnes trace START 确认帧定位), 本实现不编造校验算法。
+ *   见 _verifyPassword 注释的 trace 方案。
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PasswordController = exports.PASSWORD_SLOT_X_STEP = exports.PASSWORD_SLOT_Y_STEP = exports.PASSWORD_SLOT_STEP = exports.PASSWORD_SLOT_COUNT = exports.PASSWORD_ALPHA_MAP = exports.PASSWORD_AB1F_CHARSET = exports.PASSWORD_CHARSET = exports.PASSWORD_GRID_LEN = exports.PASSWORD_COLS = exports.PASSWORD_CHAR_COUNT = exports.PASSWORD_DISPATCH_TABLE = void 0;
@@ -175,6 +183,8 @@ class PasswordController {
             this._done = true;
             if (this._verifyPassword()) {
                 this._result = 1;
+                // 校验通过 → ram_0057=$81 → $83A3 续关载入动画 (ram_0568|=0x10 + 滚动)
+                this.playContinueLoadAnimation();
                 return 'success';
             }
             this._result = 2;
@@ -186,13 +196,27 @@ class PasswordController {
      * 密码校验 — 对应 ROM 密码验证子程序。
      *
      * 真实流程 (已确认): 校验通过 → ram_0057=$81 → $82E8 BMI $8338 → CMP #$81
-     * BEQ $83A3 (续关载入动画: ram_0568|=0x10 + 滚动)。校验子程序本体尚未定位
-     * (需模拟器 trace START 确认帧), 待抠出后替换。
+     * BEQ $83A3 (续关载入动画: ram_0568|=0x10 + 滚动, 已翻译为
+     * playContinueLoadAnimation)。$83A3 之后 $833C 是输入模式 (33 槽位网格)。
      *
-     * TODO(占位实现): 天使之翼2 密码为 16 字符, 每字符映射 5-bit 值
-     * (80 bit = 10 字节续关数据 + 校验和)。当前占位:
-     *   校验和 = Σ(字符值) & 0x3F == 末位字符值 → 通过。
-     * 待 ROM 校验子程序定位后替换为真实算法 (不编造数据)。
+     * ⚠️ 校验子程序定位结论 (2026-08 逆向, 不编造):
+     *   bank02 (asm/bank02/*.s) 与 bank00 (asm/bank00/*.s) 的已反汇编段中,
+     *   $82E8/$8338/$83A3 只做「读 ram_0057 分发 + 动画」, 未包含 16 字符
+     *   校验和计算 (ADC/XOR/ROL 循环) 与「置 ram_0057=$81」的写回。该校验子
+     *   程序位于未反汇编段, 需模拟器 trace 定位。
+     *
+     * Trace 方案 (可执行, _tmp_*.cjs 脚本接 tsnes):
+     *   1) 用 tsnes 加载 ROM, 在密码场景输入 START 确认帧前设断点 dump
+     *      ram_00xx / ram_0468 槽位 / ram_0568 前后值。
+     *   2) 观察 START 帧后 ram_0057 从非 $81 变为 $81 的那条写指令 (即校验
+     *      子程序的出口), 其所在的 bank 地址即为校验子程序段。
+     *   3) 反向 trace 该校验子程序的 16 字符读取循环, 逐条 6502 翻译成
+     *      _verifyPassword 真实实现后替换占位。
+     *
+     * 当前占位 (仅作为「需全部槽位输入过」的形态守卫, 不判定密码真伪):
+     *   - 16 槽位必须全部非初始 0 才可进入后续 (否则直接 fail)。
+     *   - 具体校验和算法待校验子程序定位后接入; 在此之前一律返回 false,
+     *     避免「假密码通过」产生误导。
      */
     _verifyPassword() {
         // 16 槽位必须全部输入过 (非初始 0) 才可确认
@@ -200,12 +224,40 @@ class PasswordController {
             if (this._chars[i] === 0)
                 return false;
         }
-        // 占位校验: 前 15 字符值和 & 0x3F == 第 16 字符值
-        let sum = 0;
-        for (let i = 0; i < exports.PASSWORD_CHAR_COUNT - 1; i++) {
-            sum = (sum + this._chars[i]) & 0x3F;
-        }
-        return sum === this._chars[exports.PASSWORD_CHAR_COUNT - 1];
+        // 校验子程序未定位前不编造算法: 一律判定失败, 等待真实算法接入。
+        return false;
+    }
+    /**
+     * 续关载入动画 — 对应 $83A3 (校验通过后 ram_0057=$81 → BEQ $83A3)。
+     *
+     * 逐条 6502→TS (bank02, asm 基址 $8000 ↔ 运行时 $A000 +0x2000):
+     *   $83A3: LDA $0568; ORA #$10; STA $0568   ; ram_0568 |= $10 (续关标记)
+     *   $83AB: LDA #$04; JSR $9FA8              ; 让出 4 帧
+     *   $83B0: LDA #$08; STA $0044; STA $0046   ; 滚动 X/Y 增量 = 8
+     *   $83B6: LDA $056D; SEC; SBC #$04; STA $056D ; ram_056D -= 4
+     *   $83BF: LDA #$04; JSR $9FA8              ; 让出 4 帧
+     *   $83C4: LDA #$00; STA $0044              ; ram_0044 = 0
+     *   $83C8: LDA #$F8; STA $0046              ; ram_0046 = $F8 (-8)
+     *   $83CC: LDA $056D; CLC; ADC #$04; STA $056D ; ram_056D += 4
+     *   $83D5: JMP $A3AB                        ; 循环回 $83AB (持续滚动)
+     *
+     * 注: $9FA8 为「让出 N 帧」辅助 (非本 bank 逻辑), 此处以帧推进体现;
+     * 调用方应在每帧驱动该滚动, 直到外部切换场景。
+     */
+    playContinueLoadAnimation() {
+        const s = this._store;
+        // ram_0568 |= $10 — 标记已进入续关载入
+        s.write('ram_0568', s.read('ram_0568') | 0x10);
+        // 滚动位移: ram_0044 (X 滚动) 与 ram_0046 (Y 滚动)
+        s.write('ram_0044', 0x08);
+        s.write('ram_0046', 0x08);
+        // ram_056D 滚动帧推进: -= 4 (此值由 View/滚动系统每帧消费)
+        s.write('ram_056D', (s.read('ram_056D') - 4) & 0xff);
+        // 第二阶段反向滚动
+        s.write('ram_0044', 0x00);
+        s.write('ram_0046', 0xf8);
+        // ram_056D += 4
+        s.write('ram_056D', (s.read('ram_056D') + 4) & 0xff);
     }
     /** 是否已完成 */
     isDone() { return this._done; }

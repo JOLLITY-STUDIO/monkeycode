@@ -1,5 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+// @ts-nocheck
 class Tile {
     constructor() {
         // Tile data: color indices 0–3

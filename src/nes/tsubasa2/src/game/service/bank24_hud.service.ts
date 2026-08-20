@@ -23,7 +23,6 @@
  */
 
 import { DataStore } from '../data/prg/DataStore';
-import { DIGIT_TILE_BASE, numberToTiles16, div16 } from '../../core/numUtils';
 import {
   readHud1Ptr,
   readHud2Ptr,
@@ -39,12 +38,39 @@ import {
   readB24U16,
   readB31,
   readB31U16,
-} from '../data/bank24-tables';
-import { T_LEVEL_MAP } from '../data/bank28-tables';
+} from '../data/prg/bank24-tables';
+import { T_LEVEL_MAP } from '../data/prg/bank28-tables';
 
 /** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
 function ramKey(addr: number): string {
   return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+}
+
+// ── 数字→tile 工具 (内嵌, 对应 asm $8C55/$8C7A/$CD3C) ──
+// 数字 tile 基址: 数字+0x33=tile ID (asm $8C7A: CLC; ADC #$33)
+const DIGIT_TILE_BASE = 0x33;
+
+/** $CD3C: 16bit 除法 (被除数 / 10, 返回商和余数) */
+function div16By10(lo: number, hi: number): { qLo: number; qHi: number; rem: number } {
+  let dividend = lo | (hi << 8);
+  const q = Math.floor(dividend / 10);
+  const rem = dividend % 10;
+  return { qLo: q & 0xFF, qHi: (q >> 8) & 0xFF, rem };
+}
+
+/** $8C55: 16bit 数值→tile IDs (循环除10, 余数+0x33=tile_id) */
+function numberToTiles16(valueLo: number, valueHi: number, digitCount: number = 5): number[] {
+  const tiles: number[] = [];
+  let lo = valueLo & 0xFF;
+  let hi = valueHi & 0xFF;
+  for (let i = 0; i < digitCount; i++) {
+    const { qLo, qHi, rem } = div16By10(lo, hi);
+    tiles.push((rem & 0x0F) + DIGIT_TILE_BASE);
+    lo = qLo;
+    hi = qHi;
+  }
+  tiles.reverse(); // 正序 (高位在前)
+  return tiles;
 }
 
 // ═══════════════════════════════════════════════════════════════

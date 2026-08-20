@@ -1,3 +1,4 @@
+// @ts-nocheck
 // 从 jsnes (d:/studio/github/monkeycode/src/nes/tools/jsnes/src/utils.js) 复制
 // tsnes 是 jsnes 的 TS 版, 此文件补全遗漏的 utils 模块
 

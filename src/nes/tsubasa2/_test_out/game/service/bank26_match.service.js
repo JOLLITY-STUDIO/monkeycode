@@ -35,7 +35,7 @@ exports.MatchEngineService = exports.PHASE_CORNER = exports.PHASE_GOAL = exports
 function ramKey(addr) {
     return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
 }
-const bank26_tables_1 = require("../data/bank26-tables");
+const bank26_tables_1 = require("../data/prg/bank26-tables");
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
 // ═══════════════════════════════════════════════════════════════

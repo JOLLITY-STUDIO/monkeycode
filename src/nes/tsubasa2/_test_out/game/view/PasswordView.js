@@ -14,7 +14,7 @@ exports.PasswordView = void 0;
  */
 const SceneView_1 = require("./SceneView");
 const bank02_password_service_1 = require("../service/bank02_password.service");
-const password_sprites_1 = require("../data/password-sprites");
+const password_sprites_1 = require("../data/prg/password-sprites");
 /** 光标高亮调色板 (attr 切换) */
 const CURSOR_ATTR_HIGHLIGHT = 0x01;
 /** 输入槽位精灵起始坐标 (对应 shadow OAM $0478: X=0x78, 2行×8列, 假名网格下方) */

@@ -191,7 +191,7 @@ export class Bank12AudioService {
   /** 停止所有播放 */
   stopAll(): void {
     this._engine.stop();
-    this._papu.silence();
+    this._papu.writeReg(0x4015, 0);  // 禁所有 APU 通道 (替代 PapuOutput.silence)
   }
 
   // ──────────────────────────────────────────────

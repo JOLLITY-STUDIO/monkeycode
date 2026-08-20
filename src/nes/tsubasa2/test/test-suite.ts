@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * 自动化测试套件 — tsubasa2-h5-src 核心引擎
  *

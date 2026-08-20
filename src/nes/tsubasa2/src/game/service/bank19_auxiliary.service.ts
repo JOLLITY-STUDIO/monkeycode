@@ -24,8 +24,8 @@
  */
 
 import { DataStore } from '../data/prg/DataStore';
-import PRG_BANK_19 from '../data/prg-bank-19';
-import PRG_BANK_31 from '../data/prg-bank-31'; // $FBCC 调色板表 (固定区)
+import PRG_BANK_19 from '../data/prg/prg-bank-19';
+import PRG_BANK_31 from '../data/prg/prg-bank-31'; // $FBCC 调色板表 (固定区)
 
 // ═══════════════════════════════════════════════════════════════
 // 常量 (地址均为本 bank 数组内索引)

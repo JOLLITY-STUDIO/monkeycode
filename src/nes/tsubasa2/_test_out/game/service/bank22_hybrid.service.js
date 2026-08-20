@@ -23,7 +23,7 @@
  */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank22Service = void 0;
-const bank22_data_1 = require("../data/bank22-data");
+const bank22_data_1 = require("../data/prg/bank22-data");
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
 // ═══════════════════════════════════════════════════════════════

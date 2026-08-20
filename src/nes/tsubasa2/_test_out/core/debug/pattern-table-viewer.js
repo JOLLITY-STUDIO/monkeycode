@@ -1,4 +1,5 @@
 "use strict";
+// @ts-nocheck
 /**
  * Pattern Table Viewer — 参照 FCEUX ppuViewer (src/drivers/Qt/ppuViewer.cpp)
  *

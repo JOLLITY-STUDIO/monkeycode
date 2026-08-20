@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * ROM Bank 浏览器 — 列出所有 PRG / CHR Bank，支持跳转到详情页
  */

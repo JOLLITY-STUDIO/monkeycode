@@ -872,6 +872,8 @@ export class Bank28MatchService {
     // ── 3) 名字区字段循环写 ($8B5D-$8B7B) ──
     // $8B5F: STY $003A (Y=9)
     let yy = 9;
+    // H5 防御: 真实 ROM 以 $0F 终止; 若 _readBAB2 stub 指向无 $0F 的数据, 限次避免死循环
+    let guard = 0;
     for (;;) {
       // $8B63: LDA ($0038),Y
       const b = readB28(ptr2 + yy);
@@ -885,6 +887,7 @@ export class Bank28MatchService {
       // $8B79: STA (0034),Y (Y=0)
       const p3 = this._readIndirectPtr(KEY_34, KEY_35);
       this._writeRamAbs(p3.lo + (p3.hi << 8), b2);
+      if (++guard >= 64) break; // 限次保护 (stub $BAB2 TODO)
     }
 
     // ── 4) 队伍校验标志 ($8B7E-$8B93) ──
@@ -1168,9 +1171,7 @@ export class Bank28MatchService {
       // $82DD: JSR $C515 (渲染同步, H5 空)
       this._fixedC515();
       // $82E0-$82E6: LDA $0515; BNE $82DD (忙等待)
-      while (this._store.oam.isBusy()) {
-        this._fixedC515();
-      }
+      // H5 同步环境无渲染消费线程, busy 不会自动归零 → 跳过忙等待, 直接构建
       this._store.oam.beginBuild(); // LDA #$01; STA $0515
       // $82EE: LDX #$00; JSR $830A
       this._oamInitGroup(a);

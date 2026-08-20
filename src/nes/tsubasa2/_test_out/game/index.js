@@ -14,6 +14,7 @@
  *   Bank 27 → Bank27Service (精灵/场景动画数据加载 + 动画帧推进, 差分验证 7274/0)
  *   Bank 28 → Bank28MatchService (比赛对阵/阵型/等级配置)
  *   Bank 30 → Bank30Service (硬件初始化)
+ *   Dispatch → DispatchService (真实 RESET 分发链: $C400/$C64E/$CEFE/$A200, 替代 boot.ts 人工路由层)
  *
  * 翻译中 (结构完成，handler/数据 持续迭代):
  *   Bank 12 → Bank12AudioService (音频引擎: APU 模拟 + BGM/SFX 数据)
@@ -22,7 +23,7 @@
  *
  * 已翻译 (完整实现, 不再属于骨架):
  *   Bank 16 → Bank16Service (特殊动作/技能)
- *   Bank 18 → Bank18Service (剧情场景主控制器: 章节→Bank19 数据流偏移调度, 骨架已接入 STORY 路由, 数据表建模 TODO)
+ *   Bank 18 → Bank18Service (剧情场景主控制器: 章节→Bank19 数据流偏移调度, 已接入 STORY 路由, 渲染数据 Bank 无章节表, 真实映射待 bank00/bank02 trace)
  *   Bank 19 → Bank19Service (剧情场景精灵/文字渲染库: 数据流驱动/控制码分发/精灵渲染/场景重置, 差分验证 5600/0, 已接入 STORY 路由)
  *   ResultController → 赛果场景 (RESULT 路由: A→TITLE, 玩链路闭环)
  *   PasswordController → 密码输入场景 (PASSWORD 路由: Bank02 $A484 分发+$A4C0 主逻辑, 骨架已接入)
@@ -30,7 +31,7 @@
  *   Bank 22 → Bank22Service (数据+代码混合, 精灵生成器)
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BOOT_KEYS = exports.BootService = exports.Bank29RosterService = exports.Bank27Service = exports.Bank22Service = exports.Bank20Service = exports.StoryChapter = exports.Bank18Service = exports.Bank19Service = exports.Bank16Service = exports.Bank11Service = exports.InterruptService = exports.Bank28MatchService = exports.Bank24HudService = exports.MatchEngineService = exports.PASSWORD_DISPATCH_TABLE = exports.PasswordController = exports.ResultController = exports.OpeningSceneController = exports.BGM_DATA_MAP = exports.SE_POINTER_TABLE = exports.Bank12AudioService = exports.DataQueryService = exports.Bank30Service = exports.Bank02Service = exports.Bank00Service = void 0;
+exports.Tsubasa2 = exports.TaskIndex = exports.DispatchService = exports.Bank29RosterService = exports.Bank27Service = exports.Bank22Service = exports.Bank20Service = exports.StoryChapter = exports.Bank18Service = exports.Bank19Service = exports.Bank16Service = exports.Bank11Service = exports.InterruptService = exports.Bank28MatchService = exports.Bank24HudService = exports.MatchEngineService = exports.PASSWORD_DISPATCH_TABLE = exports.PasswordController = exports.ResultController = exports.OpeningSceneController = exports.BGM_DATA_MAP = exports.SE_POINTER_TABLE = exports.Bank12AudioService = exports.DataQueryService = exports.Bank30Service = exports.Bank02Service = exports.Bank00Service = void 0;
 var bank00_core_service_1 = require("./service/bank00/bank00_core.service");
 Object.defineProperty(exports, "Bank00Service", { enumerable: true, get: function () { return bank00_core_service_1.Bank00Service; } });
 var bank02_scene_service_1 = require("./service/bank02_scene.service");
@@ -71,11 +72,16 @@ var bank20_match_aux_service_1 = require("./service/bank20_match-aux.service");
 Object.defineProperty(exports, "Bank20Service", { enumerable: true, get: function () { return bank20_match_aux_service_1.Bank20Service; } });
 var bank22_hybrid_service_1 = require("./service/bank22_hybrid.service");
 Object.defineProperty(exports, "Bank22Service", { enumerable: true, get: function () { return bank22_hybrid_service_1.Bank22Service; } });
-var bank27_minimal_service_1 = require("./service/bank27_minimal.service");
-Object.defineProperty(exports, "Bank27Service", { enumerable: true, get: function () { return bank27_minimal_service_1.Bank27Service; } });
+var bank27_service_1 = require("./service/bank27.service");
+Object.defineProperty(exports, "Bank27Service", { enumerable: true, get: function () { return bank27_service_1.Bank27Service; } });
 var bank29_roster_service_1 = require("./service/bank29_roster.service");
 Object.defineProperty(exports, "Bank29RosterService", { enumerable: true, get: function () { return bank29_roster_service_1.Bank29RosterService; } });
-// 场景路由器 (BOOT/TITLE/MEETING/MATCH/RESULT 全路由)
-var boot_1 = require("./boot");
-Object.defineProperty(exports, "BootService", { enumerable: true, get: function () { return boot_1.BootService; } });
-Object.defineProperty(exports, "BOOT_KEYS", { enumerable: true, get: function () { return boot_1.BOOT_KEYS; } });
+// 真实 RESET 分发链 (替代已废弃的 boot.ts 人工路由层, 按 asm 翻译 $C400/$C64E/$CEFE/$A200)
+// boot.ts 已备份为 boot.ts.bak 不再使用 (asm 无对应结构, 是人工编造的协程路由层)
+var dispatch_service_1 = require("./dispatch.service");
+Object.defineProperty(exports, "DispatchService", { enumerable: true, get: function () { return dispatch_service_1.DispatchService; } });
+Object.defineProperty(exports, "TaskIndex", { enumerable: true, get: function () { return dispatch_service_1.TaskIndex; } });
+// 游戏主类 (对外唯一入口: new Tsubasa2(ctx, config).start(canvas))
+// 内含 PPU + RAF 循环 + onFrame 回调, 替代旧 GameLoop/Renderer/FrameCompositor
+var Tsubasa2_1 = require("./Tsubasa2");
+Object.defineProperty(exports, "Tsubasa2", { enumerable: true, get: function () { return Tsubasa2_1.Tsubasa2; } });

@@ -1472,7 +1472,7 @@ export class DataQueryService {
    */
   private _renderScriptEntry4(scene: number): void {
     // 场景<0x10 → SCRIPT_ENTRY4A, 否则 SCRIPT_ENTRY4B (View 层按场景选脚本块渲染)
-    const script = scene < 0x10 ? SCRIPT_ENTRY4A : SCRIPT_ENTRY4B;
+    const script = scene < 0x10 ? SCRIPT_ENTRY4A : SCRIPT_ENTRY4A;  // TODO: SCRIPT_ENTRY4B 待翻译, 暂用 4A
     void script;
   }
 

@@ -28,8 +28,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank19Service = exports.BANK19_CTRL_TABLE = exports.BANK19_CTRL_MIN = exports.BANK19_STREAM_OFFSET = void 0;
-const prg_bank_19_1 = __importDefault(require("../data/prg-bank-19"));
-const prg_bank_31_1 = __importDefault(require("../data/prg-bank-31")); // $FBCC 调色板表 (固定区)
+const prg_bank_19_1 = __importDefault(require("../data/prg/prg-bank-19"));
+const prg_bank_31_1 = __importDefault(require("../data/prg/prg-bank-31")); // $FBCC 调色板表 (固定区)
 // ═══════════════════════════════════════════════════════════════
 // 常量 (地址均为本 bank 数组内索引)
 // ═══════════════════════════════════════════════════════════════
