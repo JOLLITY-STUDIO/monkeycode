@@ -1,5 +1,8 @@
 # 开发日志 (DEVLOG)
 
+## 2026-08-21
+- bank27/bank28 修复完成：bank27.service.ts import 路径补 prg/ 层级（`../data/prg/bank27-data`）；bank28_match.service.ts import 路径补 prg/ 层级（`../data/prg/bank28-tables`）+ 从 asm/bank28 提取真实数据补建 `T_TEAM_8528`（$8528 队伍表）/`T_ATTR_ROLE_8A9D`（$8A9D 属性角色表），bank28-tables.ts 198→726 行。tsc 零错误。已 push (80a6e980)。
+
 ## 2026-08-20
 - G12 WBS 完成：bank0 共享渲染原语 1:1 补齐（$9D27/$9C3A/$9BE8/$997A/$97AB/$9B6F/$9B74 → bank00_core.service.ts），$A721 归属更正（实为 bank01 $8721）并翻译 _screenPatchA721（bank01_data-query.service.ts）。tsc 零错误。
 - G1 WBS 完成：bank21/25 纯数据已全量（prg-bank-21/25.ts 8192B 逐字节一致），bank22 恢复 prg-bank-22.ts + bank22-data.ts + import 修复，bank13/15 音频已校准，bank31 service+数据已存在。tsc 零错误。

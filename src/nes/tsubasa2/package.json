@@ -1,6 +1,6 @@
 {
   "name": "tsubasa2-h5",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "天使之翼2 — H5游戏引擎（纯TypeScript，无CPU模拟）",
   "main": "src/index.ts",
   "scripts": {

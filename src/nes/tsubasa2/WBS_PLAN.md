@@ -50,7 +50,7 @@
 | D3 | Bank24 HudService（HUD） | ✅ | |
 | D4 | Bank26 MatchEngineService（比赛主循环） | ✅ | |
 | D5 | Bank27 场景/精灵数据加载 + 动画帧 | ✅ | 差分验证 7274/0 |
-| D6 | Bank28 对阵/阵型/等级/OAM | ✅ | |
+| D6 | Bank28 对阵/阵型/等级/OAM | ✅ | 2026-08-21 修复: import 路径补 prg/ 层级 + 补建 T_TEAM_8528($8528 队伍表)/T_ATTR_ROLE_8A9D($8A9D 属性角色表), bank28-tables.ts 198→726 行 |
 | D7 | Bank29 RosterService（球员名单） | ✅ | `data/team/roster.ts` |
 
 ## E. 待翻译 Bank（当前重点）
@@ -88,7 +88,7 @@
 | G4 | RESULT 赛果场景 | ✅ | ResultController 骨架接入 boot RESULT 路由 (A→TITLE); MATCH 帧守卫 → RESULT; 玩链路集成测试 PASS=6/0 |
 | G5 | CHR→PNG 全部图形资源化 | ⬜ | |
 | G6 | 各 Bank 全量差分验证 | ⬜ | |
-| G7 | 版本推进 + Tag 里程碑 | 🔄 | 当前 0.2.0 |
+| G7 | 版本推进 + Tag 里程碑 | 🔄 | 当前 0.3.0 (2026-08-21 从 0.2.0 推进: v0.3.0 里程碑条件满足) |
 | G8 | char-map.ts 双 tile 假名映射补全 (?A0..?D1 → 真实假名) | ✅ | 双 tile=浊点(上)+基础假名(下), $A6-$AE=ガ-ゲ等, 部分 loTile 待精确识别标 TODO |
 | G9 | textscript text 字段刷新 (char-map 补全后重新解码) | ✅ | generate_script_data.cjs 从 asm 重新生成 4 个 scripts-bank, text 含可读假名 |
 | G10 | prg/index.ts PRG_COPIES 表 bank03-06 占位修正 | ✅ | bank03-06 import 已移除, NES_PRG_ROM 缺失 bank 用 0xFF 填充 |
@@ -104,5 +104,5 @@
 |---|---|---|
 | v0.1.0 | 框架 + Bank00/01/02 基础链路 | ✅ |
 | v0.2.0 | Bank11 完整翻译 + 差分验证 | ✅ |
-| v0.3.0 | Bank19/20 翻译完成 + STORY/PASSWORD/RESULT 场景接入 | ⬜ |
+| v0.3.0 | Bank19/20 翻译完成 + STORY/PASSWORD/RESULT 场景接入 | ✅ | 2026-08-21 推进 (G7): E3/E4/G2/G3/G4 全 ✅, 版本 0.2.0→0.3.0 |
 | v1.0.0 | CHR 资源化 + 全量差分验证 + 优化重构 | ⬜ |
