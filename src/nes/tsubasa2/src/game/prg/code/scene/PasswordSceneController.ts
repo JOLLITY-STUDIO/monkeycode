@@ -9,23 +9,16 @@
  */
 import { DataStore } from '../../data/store/DataStore';
 import {
-  PASSWORD_DISPATCH_TABLE,
   PASSWORD_KANA_CHARS,
   PASSWORD_GRID_TILES,
 } from '../../data/tables/password-table';
-import { PasswordSceneData } from '../../data/scene/password-scene';
 
 /**
  * PASSWORD_DISPATCH_TABLE — 密码/场景分发地址表 (asm $A491)。
  * 由 $8484 分发器查表跳转, 24 个场景入口。
+ * 单一数据源: data/tables/password-table.ts。
  */
-export const PASSWORD_DISPATCH_TABLE = PasswordDispatchTable;
-
-const PasswordDispatchTable: readonly number[] = [
-  0xa4c0, 0xa559, 0xa57b, 0xa581, 0xa5a2, 0xa5a8, 0xa5b0, 0xa5b8,
-  0xa5bf, 0xa5cd, 0xa5db, 0xa5e8, 0xa602, 0xa61c, 0xa629, 0xa650,
-  0xa69c, 0xa77a, 0xa782, 0xa78d, 0xa7bd, 0xa7ce, 0xa7d6, 0xa7fa,
-];
+export { PASSWORD_DISPATCH_TABLE } from '../../data/tables/password-table';
 
 export class PasswordSceneController {
   protected _store: DataStore;

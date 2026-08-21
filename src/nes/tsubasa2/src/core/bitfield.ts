@@ -18,6 +18,17 @@ export function setBit(value: number, bit: number, on: boolean): number {
   return on ? (value | mask) : (value & ~mask);
 }
 
+/**
+ * `bit.get` 别名 — 等价于 getBit。
+ *
+ * 历史上 PPU/APU 代码大量使用 `bit.get(value, n)` 形式调用,
+ * 此别名保持向后兼容, 避免逐处改写 PPU 调用点引入风险。
+ */
+export const get = getBit;
+
+/** `bit.set` 别名 — 等价于 setBit */
+export const set = setBit;
+
 /** 读取低 N 位 */
 export function lowBits(value: number, count: number): number {
   const mask = (1 << count) - 1;

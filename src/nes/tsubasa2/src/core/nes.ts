@@ -225,7 +225,7 @@ class NES {
   // romDef 来自 game/index.ts 的 ROM 定义 (header/prg/chr)。
   loadTsROM(romDef: { header: Uint8Array; prg: unknown; chr: Uint8Array }): void {
     this.rom = new ROM(this);
-    this.rom.loadTs(romDef.header, romDef.prg, romDef.chr);
+    this.rom.loadTs(romDef);
 
     this.reset();
     this.mmap = this.rom.createMapper();
