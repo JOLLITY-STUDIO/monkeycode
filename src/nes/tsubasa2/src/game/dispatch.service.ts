@@ -86,6 +86,12 @@ export enum TaskIndex {
   MATCH = 5,
   /** RESULT 赛果场景 */
   RESULT = 6,
+  /**
+   * TITLE 标题菜单 (KICK OFF / CONTINUE)
+   * H5 场景路由语义 (对应 boot.ts.bak SceneRoot.TITLE); 真实 ROM 由 ram_00ED
+   * 分发链进入, 此处为 H5 层语义映射 (避免占用 FULL_INIT=1 的 $A21B 完整初始化语义)。
+   */
+  TITLE = 7,
 }
 
 /**
@@ -143,6 +149,9 @@ export class DispatchService {
   init(taskIndex: number = TaskIndex.BOOT): void {
     this._resetC64E();
     this._resetCEFE(taskIndex);
+    // 初始场景处理器 (如 BOOT 开场) — 等价 dispatch(): $C400 分发后调 handler.init()
+    const handler = this._scenes.get(taskIndex);
+    if (handler) handler.init();
   }
 
   /**

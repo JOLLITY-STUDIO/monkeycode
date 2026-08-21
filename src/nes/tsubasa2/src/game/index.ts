@@ -26,6 +26,7 @@
  *   Bank 19 → Bank19Service (剧情场景精灵/文字渲染库: 数据流驱动/控制码分发/精灵渲染/场景重置, 差分验证 5600/0, 已接入 STORY 路由)
  *   ResultController → 赛果场景 (RESULT 路由: A→TITLE, 玩链路闭环)
  *   PasswordController → 密码输入场景 (PASSWORD 路由: Bank02 $A484 分发+$A4C0 主逻辑, 骨架已接入)
+ *   OpeningSceneController → BOOT 开场场景 (TECMO Theater: initBoot 灌真实 NT/OAM/调色板 + syncBootFrame 渐显; 数据侧完成, 运行时接线待 bank00 主循环接管)
  *   Bank 20 → Bank20Service (比赛辅助: 计时状态机×2/精灵渲染/动画偏移/计分板, 差分验证 17014/0, 已接入 MATCH 路由 frameTick)
  *   Bank 22 → Bank22Service (数据+代码混合, 精灵生成器)
  */
