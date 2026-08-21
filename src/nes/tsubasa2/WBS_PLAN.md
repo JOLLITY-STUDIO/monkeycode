@@ -117,6 +117,8 @@
 | G33 | **P2 BUG-OPEN-07: bit0 交替逻辑修正** | ✅ | `_mainInputLoop` 去掉每帧 else 清 bit0(对照 asm $802C START 边沿一次性块 + $8087 清 bit0 仅在场景切换); 置位后保持, 场景切换时再清 |
 | G34 | **验证: 开场自动播放** | ✅ | 2026-08-21: tsc --noEmit 零错误 + `_verify_g34_opening.cjs` OPENING 6/6 PASS(opening 注入✓ NT 26 tile✓ 调色板渐显 17 色✓ 40 精灵✓ PPU buffer 非黑采样=21✓); 补 PPU stub `getSpritePatternTile`(mapper0 语义: ptTile[index]) 修 sprite0 命中崩溃 |
 | G35 | **bank19 数据文件补全 + 裸地址清理** | ✅ | 2026-08-21: `src/game/prg/data/prg-bank-19.ts` 缺失重建 (8192B 从 ROM 提取, $B166 控制码表 `A6 B1 E0 B1 F3 B1 18 B2 1B B2 24 B2` 与 BANK19_CTRL_TABLE 逐字节一致, 数据流起点 $9467=`E0 5C E5...`); bank19_auxiliary.ts 整改: L609 `0x1bcc` 裸数字→`B31_FBCC` 常量, 删除死代码 readByte/readU16 (CPU 地址 -0x8000 语义, 无调用); 引用链确认 bank18_story.ts/prg/index.ts 均为新路径, bank18_story.ts readByte/readU16 是公开 service 接口合法; data/index.ts 聚合页 prg-bank-19 import 同步解析; read_lints 0 错误 |
+| G36 | **B02-01: BootRouter 编造 RESET 分发链修复** | ✅ | 2026-08-22: 核实 `BootRouter.ts` 注释声称的 "RESET 分发链 BOOT→TITLE→MEETING→STORY→PASSWORD→MATCH→RESULT" + TaskIndex 7 状态机 + resetChain()/next() 线性推进均为编造。asm bank02 `$8484` 分发器查 `$A491` 表共 24 项入口 (idx 0-23), 非 7 项; ram_00ED 唯一 INC 在 $8A14 是 16 位指针高字节自增非状态机; 实际场景跳转由 sceneLoad(sceneId) 显式指定 0-23 任意值。修复: 删除 resetChain()/next() (无外部调用), TaskIndex 改 24 项 (2 项已确认语义 SCENE_00_INIT/SCENE_23_PASSWORD, 22 项 ADDR_XXXX 待确认), 类头注释区分 sceneLoad(装载) 与 $8484 dispatcher(帧处理)。tsc --noEmit + lint 零错误。详见 BUGS.md B02-01 |
+| G37 | **B02-02: 22 个场景入口语义确认 (待办)** | ⬜ | BootRouter TaskIndex 22 项 ADDR_XXXX 待逐个对照 asm bank02 $84C0-$87FA 代码段确认语义 (标题/会议/剧情/比赛/结果等)。每个入口是"场景每帧处理子程"返回下一帧分支号 |
 
 ## 里程碑
 

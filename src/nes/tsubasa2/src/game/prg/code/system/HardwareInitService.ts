@@ -7,13 +7,13 @@
  * OAM 全离屏填充 $CB8B。
  *
  * 翻译版不写 MMC3/PPU/APU 寄存器 (帧合成器按 DataStore 消费), 直接初始化
- * RAM 默认值并驱动 SceneController 进入 BOOT 场景。
+ * RAM 默认值并驱动 BootRouter 进入 BOOT 场景。
  *
  * 命名规范: 旧名 Bank30Service → 新名 HardwareInitService。
  */
 import { DataStore } from '../../data/store/DataStore';
 import type { GameSystemService } from './GameSystemService';
-import type { SceneController } from '../scene/SceneController';
+import type { BootRouter } from './BootRouter';
 import type { SkillService } from '../skill/SkillService';
 
 /** 4 位大写十六进制 RAM 键 */
@@ -24,13 +24,13 @@ function ramKey(addr: number): string {
 export class HardwareInitService {
   protected _store: DataStore;
   protected _system: GameSystemService;
-  protected _scene: SceneController;
+  protected _scene: BootRouter;
   protected _skill: SkillService;
 
   constructor(
     store: DataStore,
     system: GameSystemService,
-    scene: SceneController,
+    scene: BootRouter,
     skill: SkillService,
   ) {
     this._store = store;
@@ -110,7 +110,7 @@ export class HardwareInitService {
     // $C418-$C41A: LDX #$02; JSR $C4B9 → ram_0025=bank2 ($A000 窗口, MMC3 省略)
     this.wr(0x0025, 0x02);
     // $C41D-$C41E: TYA (场景 id); JMP $A200 → bank0 场景引导
-    // 翻译版: bank0 = GameSystemService, 场景引导 = SceneController.resetEntry
+    // 翻译版: bank0 = GameSystemService, 场景引导 = BootRouter.resetEntry
     this._scene.resetEntry(sceneId);
   }
 

@@ -1,0 +1,4 @@
+TSC: FAIL
+TaskIndex 旧名残留: 无 (PASS)
+新枚举名缺失: 无 (PASS)
+SCRIPT ERROR: ENOENT: no such file or directory, open 'D:\studio\github\monkeycode\src\nes\tsubasa2\src\game\prg\code\scene\SceneController.ts'

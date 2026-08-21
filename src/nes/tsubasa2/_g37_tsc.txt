@@ -1,0 +1,1470 @@
+src/core/browser/frame-timer.ts(28,34): error TS2565: Property 'onAnimationFrame' is used before being assigned.
+src/core/browser/frame-timer.ts(54,3): error TS2300: Duplicate identifier 'onAnimationFrame'.
+src/core/browser/index.ts(41,15): error TS2741: Property 'container' is missing in type '{}' but required in type 'BrowserOptions'.
+src/core/browser/index.ts(92,7): error TS2322: Type '(controller: ControllerId, button: ButtonKey) => void' is not assignable to type '(player: number, button: number) => void'.
+  Types of parameters 'controller' and 'player' are incompatible.
+    Type 'number' is not assignable to type 'ControllerId'.
+src/core/browser/index.ts(93,7): error TS2322: Type '(controller: ControllerId, button: ButtonKey) => void' is not assignable to type '(player: number, button: number) => void'.
+  Types of parameters 'controller' and 'player' are incompatible.
+    Type 'number' is not assignable to type 'ControllerId'.
+src/core/browser/index.ts(99,58): error TS2345: Argument of type '(controller: ControllerId, button: ButtonKey) => void' is not assignable to parameter of type '(playerId: number, buttonId: number) => void'.
+  Types of parameters 'controller' and 'playerId' are incompatible.
+    Type 'number' is not assignable to type 'ControllerId'.
+src/core/browser/index.ts(100,56): error TS2345: Argument of type '(controller: ControllerId, button: ButtonKey) => void' is not assignable to parameter of type '(playerId: number, buttonId: number) => void'.
+  Types of parameters 'controller' and 'playerId' are incompatible.
+    Type 'number' is not assignable to type 'ControllerId'.
+src/core/index.ts(17,45): error TS2614: Module '"./browser-mini"' has no exported member 'GameInstance'. Did you mean to use 'import GameInstance from "./browser-mini"' instead?
+src/core/nes.ts(79,7): error TS2322: Type 'null' is not assignable to type '((left: number, right: number) => void) | undefined'.
+src/core/nes.ts(95,26): error TS2345: Argument of type 'this' is not assignable to parameter of type 'null | undefined'.
+  Type 'NES' is not assignable to type 'null | undefined'.
+src/core/nes.ts(127,26): error TS2345: Argument of type 'this' is not assignable to parameter of type 'null | undefined'.
+  Type 'NES' is not assignable to type 'null | undefined'.
+src/core/nes.ts(267,7): error TS2353: Object literal may only specify known properties, and 'controllers' does not exist in type 'EmulatorData'.
+src/core/papu/channel-dm.ts(29,15): error TS7006: Parameter 'papu' implicitly has an 'any' type.
+src/core/papu/channel-dm.ts(30,10): error TS2339: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(32,10): error TS2551: Property 'isEnabled' does not exist on type 'ChannelDM'. Did you mean 'setEnabled'?
+src/core/papu/channel-dm.ts(33,10): error TS2339: Property 'hasSample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(34,10): error TS2339: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(35,10): error TS2339: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(36,10): error TS2339: Property 'dmaFrequency' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(37,10): error TS2339: Property 'dmaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(38,10): error TS2339: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(39,10): error TS2339: Property 'playStartAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(40,10): error TS2339: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(41,10): error TS2339: Property 'playLength' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(42,10): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(43,10): error TS2339: Property 'sample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(44,10): error TS2339: Property 'dacLsb' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(45,10): error TS2339: Property 'shiftCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(46,10): error TS2339: Property 'reg4012' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(47,10): error TS2339: Property 'reg4013' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(48,10): error TS2339: Property 'data' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(49,10): error TS2339: Property 'lastFetchedByte' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(54,14): error TS2339: Property 'hasSample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(55,17): error TS2339: Property 'data' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(57,18): error TS2339: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(58,16): error TS2339: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(62,18): error TS2339: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(63,16): error TS2339: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(68,12): error TS2339: Property 'sample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(68,26): error TS2551: Property 'isEnabled' does not exist on type 'ChannelDM'. Did you mean 'setEnabled'?
+src/core/papu/channel-dm.ts(68,44): error TS2339: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(68,70): error TS2339: Property 'dacLsb' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(71,12): error TS2339: Property 'data' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(74,10): error TS2339: Property 'dmaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(75,14): error TS2339: Property 'dmaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(77,12): error TS2339: Property 'hasSample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(79,12): error TS2339: Property 'dmaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(82,14): error TS2339: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(83,12): error TS2339: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(83,41): error TS2339: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(88,14): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(88,46): error TS2339: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(90,12): error TS2339: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(90,31): error TS2339: Property 'playStartAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(91,12): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(91,37): error TS2339: Property 'playLength' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(94,14): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(98,16): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(100,18): error TS2339: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(102,16): error TS2339: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(110,10): error TS2339: Property 'data' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(110,22): error TS2339: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(110,46): error TS2339: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(114,10): error TS2339: Property 'lastFetchedByte' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(114,33): error TS2339: Property 'data' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(115,10): error TS2339: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(117,10): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(118,10): error TS2339: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(119,14): error TS2339: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(120,12): error TS2339: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(123,10): error TS2339: Property 'hasSample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(126,12): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/channel-dm.ts(126,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-dm.ts(130,14): error TS2339: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(132,14): error TS2339: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(134,14): error TS2339: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(138,14): error TS2339: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(141,12): error TS2339: Property 'dmaFrequency' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(141,32): error TS2339: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(144,12): error TS2339: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(145,12): error TS2339: Property 'dacLsb' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(146,12): error TS2339: Property 'sample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(146,27): error TS2339: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(146,53): error TS2339: Property 'dacLsb' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(152,12): error TS2339: Property 'playStartAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(153,12): error TS2339: Property 'reg4012' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(160,12): error TS2339: Property 'playLength' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(161,12): error TS2339: Property 'reg4013' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(169,12): error TS2339: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(173,14): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(178,18): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(179,16): error TS2339: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(179,35): error TS2339: Property 'playStartAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(180,16): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(180,41): error TS2339: Property 'playLength' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(185,21): error TS2339: Property 'hasSample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(185,39): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(187,18): error TS2339: Property 'dmaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(188,18): error TS2339: Property 'shiftCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(188,38): error TS2339: Property 'dmaFrequency' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(192,20): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(193,20): error TS2339: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(195,20): error TS2339: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(203,14): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-dm.ts(207,10): error TS2551: Property 'isEnabled' does not exist on type 'ChannelDM'. Did you mean 'setEnabled'?
+src/core/papu/channel-dm.ts(211,17): error TS2339: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(211,50): error TS2551: Property 'isEnabled' does not exist on type 'ChannelDM'. Did you mean 'setEnabled'?
+src/core/papu/channel-dm.ts(215,17): error TS2339: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts(222,12): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/core/papu/channel-noise.ts(4,15): error TS7006: Parameter 'papu' implicitly has an 'any' type.
+src/core/papu/channel-noise.ts(5,10): error TS2339: Property 'papu' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(7,10): error TS2339: Property 'progTimerCount' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(8,10): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(9,10): error TS2551: Property 'isEnabled' does not exist on type 'ChannelNoise'. Did you mean 'setEnabled'?
+src/core/papu/channel-noise.ts(10,10): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(11,10): error TS2339: Property 'lengthCounterEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(12,10): error TS2339: Property 'envDecayDisable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(13,10): error TS2339: Property 'envDecayLoopEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(14,10): error TS2339: Property 'envReset' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(15,10): error TS2339: Property 'shiftNow' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(16,10): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(17,10): error TS2339: Property 'envDecayCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(18,10): error TS2339: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(19,10): error TS2339: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(20,10): error TS2339: Property 'shiftReg' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(21,10): error TS2339: Property 'randomBit' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(22,10): error TS2339: Property 'randomMode' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(23,10): error TS2339: Property 'sampleValue' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(24,10): error TS2339: Property 'tmp' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(25,10): error TS2339: Property 'accValue' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(26,10): error TS2339: Property 'accCount' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(30,14): error TS2339: Property 'lengthCounterEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(30,42): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(31,12): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(32,16): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(39,14): error TS2339: Property 'envReset' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(41,12): error TS2339: Property 'envReset' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(42,12): error TS2339: Property 'envDecayCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(42,35): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(43,12): error TS2339: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(44,23): error TS2339: Property 'envDecayCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(46,12): error TS2339: Property 'envDecayCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(46,35): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(47,16): error TS2339: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(48,14): error TS2339: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(50,14): error TS2339: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(50,31): error TS2339: Property 'envDecayLoopEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(53,14): error TS2339: Property 'envDecayDisable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(54,12): error TS2339: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(54,32): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(56,12): error TS2339: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(56,32): error TS2339: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(62,14): error TS2551: Property 'isEnabled' does not exist on type 'ChannelNoise'. Did you mean 'setEnabled'?
+src/core/papu/channel-noise.ts(62,32): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(63,12): error TS2339: Property 'sampleValue' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(63,31): error TS2339: Property 'randomBit' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(63,48): error TS2339: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(67,12): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/channel-noise.ts(67,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-noise.ts(70,12): error TS2339: Property 'envDecayDisable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(71,12): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(72,12): error TS2339: Property 'envDecayLoopEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(73,12): error TS2339: Property 'lengthCounterEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(74,16): error TS2339: Property 'envDecayDisable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(75,14): error TS2339: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(75,34): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(77,14): error TS2339: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(77,34): error TS2339: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(81,12): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(81,32): error TS2339: Property 'papu' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(82,12): error TS2339: Property 'randomMode' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(87,16): error TS2551: Property 'isEnabled' does not exist on type 'ChannelNoise'. Did you mean 'setEnabled'?
+src/core/papu/channel-noise.ts(88,14): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(88,35): error TS2339: Property 'papu' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(90,12): error TS2339: Property 'envReset' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(96,14): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-noise.ts(97,10): error TS2551: Property 'isEnabled' does not exist on type 'ChannelNoise'. Did you mean 'setEnabled'?
+src/core/papu/channel-noise.ts(99,12): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(105,17): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts(105,46): error TS2551: Property 'isEnabled' does not exist on type 'ChannelNoise'. Did you mean 'setEnabled'?
+src/core/papu/channel-noise.ts(112,12): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/core/papu/channel-square.ts(4,15): error TS7006: Parameter 'papu' implicitly has an 'any' type.
+src/core/papu/channel-square.ts(4,21): error TS7006: Parameter 'square1' implicitly has an 'any' type.
+src/core/papu/channel-square.ts(5,10): error TS2339: Property 'papu' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(8,10): error TS2339: Property 'dutyLookup' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(15,10): error TS2339: Property 'impLookup' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(22,10): error TS2339: Property 'sqr1' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(24,10): error TS2339: Property 'progTimerCount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(25,10): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(26,10): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(27,10): error TS2339: Property 'squareCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(28,10): error TS2339: Property 'sweepCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(29,10): error TS2339: Property 'sweepCounterMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(30,10): error TS2339: Property 'sweepMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(31,10): error TS2339: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(32,10): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(33,10): error TS2339: Property 'envDecayCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(34,10): error TS2339: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(35,10): error TS2339: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(36,10): error TS2339: Property 'dutyMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(37,10): error TS2339: Property 'vol' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(38,10): error TS2551: Property 'isEnabled' does not exist on type 'ChannelSquare'. Did you mean 'setEnabled'?
+src/core/papu/channel-square.ts(39,10): error TS2339: Property 'lengthCounterEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(40,10): error TS2339: Property 'sweepActive' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(41,10): error TS2339: Property 'sweepCarry' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(42,10): error TS2339: Property 'envDecayDisable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(43,10): error TS2339: Property 'envDecayLoopEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(44,10): error TS2339: Property 'envReset' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(45,10): error TS2339: Property 'updateSweepPeriod' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(46,10): error TS2339: Property 'sweepResult' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(47,10): error TS2339: Property 'sampleValue' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(51,14): error TS2339: Property 'lengthCounterEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(51,42): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(52,12): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(53,16): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(60,14): error TS2339: Property 'envReset' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(62,12): error TS2339: Property 'envReset' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(63,12): error TS2339: Property 'envDecayCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(63,35): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(64,12): error TS2339: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(65,23): error TS2339: Property 'envDecayCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(67,12): error TS2339: Property 'envDecayCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(67,35): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(68,16): error TS2339: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(69,14): error TS2339: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(71,14): error TS2339: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(71,31): error TS2339: Property 'envDecayLoopEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(75,14): error TS2339: Property 'envDecayDisable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(76,12): error TS2339: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(76,32): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(78,12): error TS2339: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(78,32): error TS2339: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(84,16): error TS2339: Property 'sweepCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(85,12): error TS2339: Property 'sweepCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(85,32): error TS2339: Property 'sweepCounterMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(87,14): error TS2339: Property 'sweepActive' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(88,14): error TS2339: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(89,14): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(92,14): error TS2339: Property 'sweepCarry' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(93,18): error TS2339: Property 'sweepMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(94,16): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(94,37): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(94,58): error TS2339: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(95,20): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(96,18): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(97,18): error TS2339: Property 'sweepCarry' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(100,16): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(101,18): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(102,20): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(102,41): error TS2339: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(103,21): error TS2339: Property 'sqr1' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(108,14): error TS2339: Property 'updateSweepPeriod' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(109,12): error TS2339: Property 'updateSweepPeriod' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(110,12): error TS2339: Property 'sweepCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(110,32): error TS2339: Property 'sweepCounterMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(115,14): error TS2551: Property 'isEnabled' does not exist on type 'ChannelSquare'. Did you mean 'setEnabled'?
+src/core/papu/channel-square.ts(115,32): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(115,58): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(117,14): error TS2339: Property 'sweepMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(118,14): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(118,35): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(118,56): error TS2339: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(121,14): error TS2339: Property 'sampleValue' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(123,14): error TS2339: Property 'sampleValue' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(124,16): error TS2339: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(125,16): error TS2339: Property 'dutyLookup' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(125,33): error TS2339: Property 'dutyMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(125,55): error TS2339: Property 'squareCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(128,12): error TS2339: Property 'sampleValue' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(132,12): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/channel-square.ts(132,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-square.ts(133,24): error TS2339: Property 'sqr1' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(136,12): error TS2339: Property 'envDecayDisable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(137,12): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(138,12): error TS2339: Property 'envDecayLoopEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(139,12): error TS2339: Property 'dutyMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(140,12): error TS2339: Property 'lengthCounterEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(141,16): error TS2339: Property 'envDecayDisable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(142,14): error TS2339: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(142,34): error TS2339: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(144,14): error TS2339: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(144,34): error TS2339: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(149,12): error TS2339: Property 'sweepActive' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(150,12): error TS2339: Property 'sweepCounterMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(151,12): error TS2339: Property 'sweepMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(152,12): error TS2339: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(153,12): error TS2339: Property 'updateSweepPeriod' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(156,12): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(157,12): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(160,12): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(161,12): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(163,16): error TS2551: Property 'isEnabled' does not exist on type 'ChannelSquare'. Did you mean 'setEnabled'?
+src/core/papu/channel-square.ts(164,14): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(164,35): error TS2339: Property 'papu' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(167,12): error TS2339: Property 'envReset' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(171,14): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-square.ts(172,10): error TS2551: Property 'isEnabled' does not exist on type 'ChannelSquare'. Did you mean 'setEnabled'?
+src/core/papu/channel-square.ts(174,12): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(180,17): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts(180,46): error TS2551: Property 'isEnabled' does not exist on type 'ChannelSquare'. Did you mean 'setEnabled'?
+src/core/papu/channel-square.ts(187,12): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts(4,15): error TS7006: Parameter 'papu' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts(5,10): error TS2339: Property 'papu' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(7,10): error TS2339: Property 'progTimerCount' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(8,10): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(9,10): error TS2339: Property 'triangleCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(10,10): error TS2551: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts(11,10): error TS2339: Property 'sampleCondition' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(12,10): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(13,10): error TS2339: Property 'lengthCounterEnable' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(14,10): error TS2339: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(15,10): error TS2339: Property 'lcLoadValue' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(16,10): error TS2339: Property 'lcHalt' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(17,10): error TS2339: Property 'lcControl' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(18,10): error TS2339: Property 'tmp' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(19,10): error TS2339: Property 'sampleValue' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(23,14): error TS2339: Property 'lengthCounterEnable' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(23,42): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(24,12): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(25,16): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(32,14): error TS2339: Property 'lcHalt' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(34,12): error TS2339: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(34,33): error TS2339: Property 'lcLoadValue' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(36,21): error TS2339: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(38,12): error TS2339: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(41,15): error TS2339: Property 'lcControl' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(43,12): error TS2339: Property 'lcHalt' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(48,17): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(48,46): error TS2551: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts(52,11): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts(56,12): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts(56,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts(59,12): error TS2339: Property 'lcControl' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(60,12): error TS2339: Property 'lcLoadValue' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(63,12): error TS2339: Property 'lengthCounterEnable' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(63,40): error TS2339: Property 'lcControl' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(66,12): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(67,12): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(70,12): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(71,12): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(75,16): error TS2551: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts(76,14): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(76,35): error TS2339: Property 'papu' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(78,12): error TS2339: Property 'lcHalt' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(84,26): error TS7006: Parameter 'nCycles' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts(85,14): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(86,12): error TS2339: Property 'progTimerCount' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(88,14): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(89,14): error TS2339: Property 'progTimerCount' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(89,37): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(91,14): error TS2339: Property 'progTimerCount' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(91,37): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(93,16): error TS2551: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts(94,16): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(95,16): error TS2339: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(104,10): error TS2339: Property 'triangleCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(105,10): error TS2339: Property 'triangleCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(108,14): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts(109,10): error TS2551: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts(111,12): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(117,10): error TS2339: Property 'sampleCondition' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(118,12): error TS2551: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts(119,12): error TS2339: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(120,12): error TS2339: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(121,12): error TS2339: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts(128,12): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/core/papu/index.ts(26,10): error TS2339: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts(28,10): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(29,10): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(30,10): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(31,10): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(32,10): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(34,10): error TS2339: Property 'startedPlaying' does not exist on type 'PAPU'.
+src/core/papu/index.ts(35,10): error TS2339: Property 'recordOutput' does not exist on type 'PAPU'.
+src/core/papu/index.ts(36,10): error TS2339: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(39,10): error TS2339: Property 'prevSampleL' does not exist on type 'PAPU'.
+src/core/papu/index.ts(40,10): error TS2339: Property 'prevSampleR' does not exist on type 'PAPU'.
+src/core/papu/index.ts(41,10): error TS2339: Property 'smpAccumL' does not exist on type 'PAPU'.
+src/core/papu/index.ts(42,10): error TS2339: Property 'smpAccumR' does not exist on type 'PAPU'.
+src/core/papu/index.ts(45,10): error TS2339: Property 'dacRange' does not exist on type 'PAPU'.
+src/core/papu/index.ts(46,10): error TS2339: Property 'dcValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(49,10): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(52,10): error TS2339: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts(53,26): error TS2339: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts(70,10): error TS2339: Property 'sampleRate' does not exist on type 'PAPU'.
+src/core/papu/index.ts(70,28): error TS2339: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts(71,10): error TS2339: Property 'sampleTimerMax' does not exist on type 'PAPU'.
+src/core/papu/index.ts(72,39): error TS2339: Property 'sampleRate' does not exist on type 'PAPU'.
+src/core/papu/index.ts(74,10): error TS2339: Property 'sampleTimer' does not exist on type 'PAPU'.
+src/core/papu/index.ts(76,10): error TS2339: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts(77,10): error TS2339: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts(78,10): error TS2339: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts(79,10): error TS2339: Property 'sampleCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts(80,10): error TS2339: Property 'frameIrqEnabled' does not exist on type 'PAPU'.
+src/core/papu/index.ts(81,10): error TS2339: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts(91,10): error TS2339: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts(94,10): error TS2339: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts(95,10): error TS2339: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts(96,10): error TS2339: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(97,10): error TS2339: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(98,10): error TS2339: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(99,10): error TS2339: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(100,10): error TS2339: Property 'channelEnableValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(101,10): error TS2339: Property 'extraCycles' does not exist on type 'PAPU'.
+src/core/papu/index.ts(102,10): error TS2551: Property 'maxSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts(103,10): error TS2551: Property 'minSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts(107,11): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/index.ts(110,17): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(111,17): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(112,17): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(113,17): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(114,17): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(117,17): error TS2339: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts(121,18): error TS2339: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts(122,17): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(132,14): error TS2339: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts(133,12): error TS2339: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts(139,12): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/index.ts(139,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts(142,12): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(146,12): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(149,12): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(152,12): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(155,12): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(158,12): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(161,12): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(164,12): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(170,12): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(176,12): error TS2339: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts(186,22): error TS2339: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts(188,31): error TS2339: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts(191,12): error TS2339: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts(192,12): error TS2339: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts(197,14): error TS2339: Property 'frameIrqEnabled' does not exist on type 'PAPU'.
+src/core/papu/index.ts(198,14): error TS2339: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts(199,14): error TS2339: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts(202,14): error TS2339: Property 'frameIrqEnabled' does not exist on type 'PAPU'.
+src/core/papu/index.ts(205,16): error TS2339: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts(219,23): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts(220,10): error TS2339: Property 'channelEnableValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(221,10): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(222,10): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(223,10): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(224,10): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(225,10): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(233,21): error TS7006: Parameter 'nCycles' implicitly has an 'any' type.
+src/core/papu/index.ts(239,10): error TS2339: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts(239,33): error TS2339: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts(242,21): error TS2339: Property 'extraCycles' does not exist on type 'PAPU'.
+src/core/papu/index.ts(243,26): error TS2339: Property 'sampleTimerMax' does not exist on type 'PAPU'.
+src/core/papu/index.ts(243,48): error TS2339: Property 'sampleTimer' does not exist on type 'PAPU'.
+src/core/papu/index.ts(245,12): error TS2339: Property 'extraCycles' does not exist on type 'PAPU'.
+src/core/papu/index.ts(246,23): error TS2339: Property 'extraCycles' does not exist on type 'PAPU'.
+src/core/papu/index.ts(248,12): error TS2339: Property 'extraCycles' does not exist on type 'PAPU'.
+src/core/papu/index.ts(251,20): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(252,25): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(253,24): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(254,24): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(255,22): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(350,14): error TS2339: Property 'frameIrqEnabled' does not exist on type 'PAPU'.
+src/core/papu/index.ts(350,38): error TS2339: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts(351,12): error TS2339: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts(351,36): error TS2339: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts(362,10): error TS2339: Property 'sampleTimer' does not exist on type 'PAPU'.
+src/core/papu/index.ts(363,14): error TS2339: Property 'sampleTimer' does not exist on type 'PAPU'.
+src/core/papu/index.ts(363,34): error TS2339: Property 'sampleTimerMax' does not exist on type 'PAPU'.
+src/core/papu/index.ts(366,12): error TS2339: Property 'sampleTimer' does not exist on type 'PAPU'.
+src/core/papu/index.ts(366,32): error TS2339: Property 'sampleTimerMax' does not exist on type 'PAPU'.
+src/core/papu/index.ts(377,24): error TS7006: Parameter 'nCycles' implicitly has an 'any' type.
+src/core/papu/index.ts(378,15): error TS2339: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts(380,33): error TS2339: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts(382,12): error TS2339: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts(383,12): error TS2339: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts(391,23): error TS7006: Parameter 'nCycles' implicitly has an 'any' type.
+src/core/papu/index.ts(393,10): error TS2339: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts(393,33): error TS2339: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts(405,22): error TS7006: Parameter 'frameCounterCycles' implicitly has an 'any' type.
+src/core/papu/index.ts(406,10): error TS2339: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts(407,22): error TS2339: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts(408,23): error TS2339: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts(411,14): error TS2339: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts(412,14): error TS2339: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts(412,46): error TS2339: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts(414,33): error TS2339: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts(415,14): error TS2339: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts(417,14): error TS2339: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts(418,14): error TS2339: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts(421,14): error TS2339: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts(422,14): error TS2339: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts(429,18): error TS2339: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts(430,16): error TS2339: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts(430,38): error TS2339: Property 'frameIrqEnabled' does not exist on type 'PAPU'.
+src/core/papu/index.ts(431,16): error TS2339: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts(439,13): error TS7006: Parameter 'cycles' implicitly has an 'any' type.
+src/core/papu/index.ts(441,14): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(442,12): error TS2339: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(443,15): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(443,53): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(445,16): error TS2339: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(446,14): error TS2339: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(448,16): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(449,14): error TS2339: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(449,35): error TS2339: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(453,12): error TS2339: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(453,29): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(458,12): error TS2339: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(458,32): error TS2339: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(459,12): error TS2339: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(459,27): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(460,12): error TS2339: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(460,31): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(461,12): error TS2339: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(461,31): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(462,12): error TS2339: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts(464,12): error TS2339: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(464,32): error TS2339: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(465,12): error TS2339: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(465,27): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(466,12): error TS2339: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(466,31): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(467,12): error TS2339: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(467,31): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(468,12): error TS2339: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts(470,12): error TS2339: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(470,41): error TS2339: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(471,12): error TS2339: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(471,36): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(472,12): error TS2339: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(472,40): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(473,12): error TS2339: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(473,40): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(474,12): error TS2339: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts(481,17): error TS7006: Parameter 'step' implicitly has an 'any' type.
+src/core/papu/index.ts(482,14): error TS2339: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts(512,16): error TS2339: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts(513,16): error TS2339: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts(519,16): error TS2339: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts(520,16): error TS2339: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts(554,10): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(555,10): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(556,10): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(557,10): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(562,10): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(563,10): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(564,10): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(565,10): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(566,10): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(567,10): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(574,14): error TS2339: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts(575,12): error TS2339: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(576,12): error TS2339: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(576,41): error TS2339: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(576,59): error TS2339: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts(578,12): error TS2339: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(579,12): error TS2339: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(579,41): error TS2339: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(579,59): error TS2339: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts(581,12): error TS2339: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(581,42): error TS2339: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(581,61): error TS2339: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts(583,12): error TS2339: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(584,12): error TS2339: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(584,37): error TS2339: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(584,51): error TS2339: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts(586,12): error TS2339: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts(588,12): error TS2339: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(588,30): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(589,12): error TS2339: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(589,30): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(590,12): error TS2339: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(590,31): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(591,12): error TS2339: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(591,26): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(594,37): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(594,65): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(595,10): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(596,10): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(602,13): error TS2339: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(602,31): error TS2339: Property 'stereoPosLSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(603,14): error TS2339: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(603,32): error TS2339: Property 'stereoPosLSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(606,17): error TS2339: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(606,36): error TS2339: Property 'stereoPosLTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(607,32): error TS2339: Property 'stereoPosLNoise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(608,14): error TS2339: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(608,28): error TS2339: Property 'stereoPosLDMC' does not exist on type 'PAPU'.
+src/core/papu/index.ts(610,26): error TS2339: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(611,23): error TS2339: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(613,27): error TS2339: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(614,24): error TS2339: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(617,12): error TS2339: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(617,42): error TS2339: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(617,70): error TS2339: Property 'dcValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(621,13): error TS2339: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(621,31): error TS2339: Property 'stereoPosRSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(622,14): error TS2339: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(622,32): error TS2339: Property 'stereoPosRSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(625,17): error TS2339: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(625,36): error TS2339: Property 'stereoPosRTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(626,32): error TS2339: Property 'stereoPosRNoise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(627,14): error TS2339: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(627,28): error TS2339: Property 'stereoPosRDMC' does not exist on type 'PAPU'.
+src/core/papu/index.ts(629,26): error TS2339: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(630,23): error TS2339: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(632,27): error TS2339: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(633,24): error TS2339: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(636,12): error TS2339: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(636,42): error TS2339: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(636,70): error TS2339: Property 'dcValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(639,40): error TS2339: Property 'prevSampleL' does not exist on type 'PAPU'.
+src/core/papu/index.ts(640,10): error TS2339: Property 'prevSampleL' does not exist on type 'PAPU'.
+src/core/papu/index.ts(641,10): error TS2339: Property 'smpAccumL' does not exist on type 'PAPU'.
+src/core/papu/index.ts(641,40): error TS2339: Property 'smpAccumL' does not exist on type 'PAPU'.
+src/core/papu/index.ts(642,25): error TS2339: Property 'smpAccumL' does not exist on type 'PAPU'.
+src/core/papu/index.ts(645,40): error TS2339: Property 'prevSampleR' does not exist on type 'PAPU'.
+src/core/papu/index.ts(646,10): error TS2339: Property 'prevSampleR' does not exist on type 'PAPU'.
+src/core/papu/index.ts(647,10): error TS2339: Property 'smpAccumR' does not exist on type 'PAPU'.
+src/core/papu/index.ts(647,40): error TS2339: Property 'smpAccumR' does not exist on type 'PAPU'.
+src/core/papu/index.ts(648,25): error TS2339: Property 'smpAccumR' does not exist on type 'PAPU'.
+src/core/papu/index.ts(651,29): error TS2551: Property 'maxSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts(652,12): error TS2551: Property 'maxSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts(654,29): error TS2551: Property 'minSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts(655,12): error TS2551: Property 'minSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts(658,14): error TS2339: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts(659,12): error TS2339: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts(663,10): error TS2339: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(664,10): error TS2339: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(665,10): error TS2339: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(666,10): error TS2339: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(669,16): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts(670,17): error TS2551: Property 'lengthLookup' does not exist on type 'PAPU'. Did you mean 'initLengthLookup'?
+src/core/papu/index.ts(673,19): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts(675,19): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(680,22): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts(682,19): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(691,16): error TS7006: Parameter 'rate' implicitly has an 'any' type.
+src/core/papu/index.ts(692,10): error TS2339: Property 'sampleTimerMax' does not exist on type 'PAPU'.
+src/core/papu/index.ts(693,47): error TS2339: Property 'sampleRate' does not exist on type 'PAPU'.
+src/core/papu/index.ts(697,14): error TS7006: Parameter 'pos' implicitly has an 'any' type.
+src/core/papu/index.ts(699,12): error TS2339: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts(704,19): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts(711,10): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(716,10): error TS2339: Property 'stereoPosLSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(716,36): error TS2339: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts(716,54): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(717,10): error TS2339: Property 'stereoPosLSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(717,36): error TS2339: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts(717,54): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(718,10): error TS2339: Property 'stereoPosLTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(718,37): error TS2339: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts(718,55): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(719,10): error TS2339: Property 'stereoPosLNoise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(719,34): error TS2339: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts(719,52): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(720,10): error TS2339: Property 'stereoPosLDMC' does not exist on type 'PAPU'.
+src/core/papu/index.ts(720,32): error TS2339: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts(720,50): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(722,10): error TS2339: Property 'stereoPosRSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(722,35): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(722,55): error TS2339: Property 'stereoPosLSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(723,10): error TS2339: Property 'stereoPosRSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(723,35): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(723,55): error TS2339: Property 'stereoPosLSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(724,10): error TS2339: Property 'stereoPosRTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(724,36): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(724,56): error TS2339: Property 'stereoPosLTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(725,10): error TS2339: Property 'stereoPosRNoise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(725,33): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(725,53): error TS2339: Property 'stereoPosLNoise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(726,10): error TS2339: Property 'stereoPosRDMC' does not exist on type 'PAPU'.
+src/core/papu/index.ts(726,31): error TS2551: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts(726,51): error TS2339: Property 'stereoPosLDMC' does not exist on type 'PAPU'.
+src/core/papu/index.ts(731,10): error TS2551: Property 'lengthLookup' does not exist on type 'PAPU'. Did you mean 'initLengthLookup'?
+src/core/papu/index.ts(752,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(754,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(755,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(756,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(757,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(758,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(759,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(760,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(761,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(762,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(763,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(764,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(765,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(766,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(767,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(768,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(769,10): error TS2339: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts(774,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(776,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(777,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(778,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(779,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(780,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(781,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(782,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(783,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(784,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(785,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(786,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(787,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(788,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(789,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(790,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(791,10): error TS2551: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts(799,10): error TS2339: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(800,10): error TS2339: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(808,12): error TS2339: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(820,12): error TS2339: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts(826,10): error TS2339: Property 'dacRange' does not exist on type 'PAPU'.
+src/core/papu/index.ts(827,10): error TS2339: Property 'dcValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts(827,25): error TS2339: Property 'dacRange' does not exist on type 'PAPU'.
+src/core/papu/index.ts(832,20): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(833,22): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(834,24): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(835,24): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(836,25): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts(840,12): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/core/papu/index.ts(842,10): error TS2339: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts(843,10): error TS2339: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts(844,10): error TS2339: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts(845,10): error TS2339: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts(846,10): error TS2339: Property 'triangle' does not exist on type 'PAPU'.
+src/core/ppu/index.ts(18,15): error TS7006: Parameter 'nes' implicitly has an 'any' type.
+src/core/ppu/index.ts(19,10): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(22,10): error TS2339: Property 'showSpr0Hit' does not exist on type 'PPU'.
+src/core/ppu/index.ts(23,10): error TS2339: Property 'clipToTvSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(29,10): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(31,10): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(33,10): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(35,10): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(38,10): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(43,10): error TS2339: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts(44,10): error TS2339: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts(46,10): error TS2551: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts(50,10): error TS2339: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts(51,10): error TS2339: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts(55,10): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(57,10): error TS2339: Property 'frameEnded' does not exist on type 'PPU'.
+src/core/ppu/index.ts(58,10): error TS2339: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts(59,10): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(60,10): error TS2339: Property 'scanlineAlreadyRendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(65,10): error TS2339: Property 'f_nmiOnVblank' does not exist on type 'PPU'.
+src/core/ppu/index.ts(66,10): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(67,10): error TS2339: Property 'f_bgPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(68,10): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(69,10): error TS2339: Property 'f_nTblAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(72,10): error TS2339: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts(73,10): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(74,10): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(75,10): error TS2339: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(76,10): error TS2339: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(77,10): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(86,10): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(89,10): error TS2339: Property 'attrib' does not exist on type 'PPU'.
+src/core/ppu/index.ts(90,10): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(91,10): error TS2339: Property 'bgbuffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(92,10): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(94,10): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(96,10): error TS2339: Property 'scantile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(99,10): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(100,10): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(101,10): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(104,10): error TS2339: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(105,10): error TS2339: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(106,10): error TS2339: Property 'sprTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(107,10): error TS2339: Property 'sprCol' does not exist on type 'PPU'.
+src/core/ppu/index.ts(108,10): error TS2339: Property 'vertFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts(109,10): error TS2339: Property 'horiFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts(110,10): error TS2339: Property 'bgPriority' does not exist on type 'PPU'.
+src/core/ppu/index.ts(111,10): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(112,10): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(113,10): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(123,10): error TS2339: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(124,10): error TS2339: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(126,10): error TS2339: Property 'spritesFound' does not exist on type 'PPU'.
+src/core/ppu/index.ts(129,10): error TS2339: Property 'sprite0InSecondary' does not exist on type 'PPU'.
+src/core/ppu/index.ts(138,10): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(139,10): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(140,10): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(143,10): error TS2339: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(144,10): error TS2339: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(147,10): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(149,12): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(154,10): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(155,10): error TS2551: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts(156,10): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(158,12): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(162,10): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(164,12): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(167,10): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(168,10): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(182,17): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(187,17): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(192,17): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(196,17): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(200,17): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(204,17): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(208,17): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(212,17): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(216,17): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(220,16): error TS7006: Parameter 'mirroring' implicitly has an 'any' type.
+src/core/ppu/index.ts(221,28): error TS2551: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts(225,10): error TS2551: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts(229,14): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(230,12): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(233,12): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(246,28): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(249,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(250,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(251,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(252,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(256,35): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(259,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(260,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(261,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(262,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(266,35): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(269,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(270,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(271,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(272,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(277,35): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(278,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(279,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(280,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(281,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(289,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(290,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(291,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(292,12): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(299,22): error TS7006: Parameter 'fromStart' implicitly has an 'any' type.
+src/core/ppu/index.ts(299,33): error TS7006: Parameter 'toStart' implicitly has an 'any' type.
+src/core/ppu/index.ts(299,42): error TS7006: Parameter 'size' implicitly has an 'any' type.
+src/core/ppu/index.ts(301,12): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(312,14): error TS2339: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts(313,12): error TS2339: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts(314,16): error TS2339: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts(315,14): error TS2339: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts(320,14): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(322,14): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(323,20): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(331,10): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(338,18): error TS7006: Parameter 'cpu' implicitly has an 'any' type.
+src/core/ppu/index.ts(338,23): error TS7006: Parameter 'dotsRemaining' implicitly has an 'any' type.
+src/core/ppu/index.ts(339,10): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(340,15): error TS2339: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts(347,10): error TS2339: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts(349,10): error TS2339: Property 'frameEnded' does not exist on type 'PPU'.
+src/core/ppu/index.ts(358,20): error TS7006: Parameter 'cpu' implicitly has an 'any' type.
+src/core/ppu/index.ts(358,25): error TS7006: Parameter 'isLastDot' implicitly has an 'any' type.
+src/core/ppu/index.ts(369,10): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(370,10): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(371,10): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(381,15): error TS7006: Parameter 'dots' implicitly has an 'any' type.
+src/core/ppu/index.ts(382,26): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(390,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(391,14): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(392,14): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(395,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(395,38): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(396,13): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(396,29): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(396,42): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(398,12): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(403,20): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(406,16): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(406,39): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(406,58): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(408,14): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(413,16): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(413,40): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(421,14): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(421,28): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(422,14): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(423,14): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(424,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(424,37): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(429,12): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(430,16): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(431,14): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(443,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(443,37): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(443,56): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(446,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(446,38): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(453,18): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(457,18): error TS2339: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts(460,16): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(461,16): error TS2339: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts(461,41): error TS2339: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts(476,18): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(476,47): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(478,16): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(479,25): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(480,23): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(481,23): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(482,25): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(483,25): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(492,20): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(492,49): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(505,16): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(506,16): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(508,18): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(518,18): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(518,65): error TS2339: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(520,16): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(520,46): error TS2339: Property 'spritesFound' does not exist on type 'PPU'.
+src/core/ppu/index.ts(521,16): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(521,42): error TS2339: Property 'sprite0InSecondary' does not exist on type 'PPU'.
+src/core/ppu/index.ts(524,16): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(527,18): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(527,47): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(538,17): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(539,16): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(540,16): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(543,18): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(547,18): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(547,47): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(549,16): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(557,14): error TS2339: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts(560,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(565,18): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(565,41): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(570,33): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(585,20): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(585,49): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(586,23): error TS2339: Property 'scanlineAlreadyRendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(588,20): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(588,42): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(589,20): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(589,40): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(592,18): error TS2339: Property 'scanlineAlreadyRendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(599,21): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(600,20): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(601,20): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(602,20): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(605,22): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(627,19): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(628,18): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(629,18): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(632,22): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(633,20): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(637,20): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(637,49): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(639,18): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(644,10): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(661,10): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(662,10): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(667,14): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(671,22): error TS2339: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(675,20): error TS2339: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts(702,10): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(703,10): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(708,23): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(711,14): error TS2339: Property 'showSpr0Hit' does not exist on type 'PPU'.
+src/core/ppu/index.ts(714,14): error TS2339: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(715,14): error TS2339: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(716,14): error TS2339: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(717,14): error TS2339: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(720,23): error TS2339: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(723,33): error TS2339: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(728,14): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(729,14): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(730,14): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(731,14): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(734,23): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(737,33): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(746,12): error TS2339: Property 'clipToTvSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(747,12): error TS2339: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(748,12): error TS2339: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(756,14): error TS2339: Property 'clipToTvSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(767,10): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(770,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(773,10): error TS2339: Property 'f_nmiOnVblank' does not exist on type 'PPU'.
+src/core/ppu/index.ts(774,10): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(775,10): error TS2339: Property 'f_bgPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(776,10): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(777,10): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(778,10): error TS2339: Property 'f_nTblAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts(781,10): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(815,32): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(816,26): error TS2339: Property 'f_nmiOnVblank' does not exist on type 'PPU'.
+src/core/ppu/index.ts(817,28): error TS2339: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts(821,12): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(822,12): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(822,44): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(823,35): error TS2339: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts(825,16): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(827,16): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(827,46): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(830,39): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(834,16): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(839,10): error TS2339: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts(842,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(845,10): error TS2339: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts(846,10): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(847,10): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(848,10): error TS2339: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(849,10): error TS2339: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(850,10): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(858,13): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(859,12): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(860,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(861,12): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(862,12): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(864,29): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(865,16): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(867,16): error TS2339: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(872,14): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(873,12): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(873,38): error TS2339: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts(878,17): error TS7006: Parameter 'flag' implicitly has an 'any' type.
+src/core/ppu/index.ts(878,23): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(880,10): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(881,13): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(887,20): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(890,10): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(904,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(904,37): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(905,12): error TS2339: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts(916,43): error TS2339: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts(917,10): error TS2339: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts(918,10): error TS2339: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts(926,20): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(927,10): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(941,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(941,41): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(946,34): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(946,57): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(947,22): error TS2339: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(959,24): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(959,42): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(960,18): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(975,22): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(975,40): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(976,14): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(985,13): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(987,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(987,41): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(989,34): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(989,57): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(995,12): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(998,28): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(999,12): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1001,12): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1009,15): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(1012,14): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1014,12): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1015,12): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1018,12): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1019,12): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1021,10): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1021,29): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1027,20): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(1028,14): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1029,12): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1030,12): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1031,12): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1032,12): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1034,15): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1039,12): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1041,15): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1043,12): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1046,12): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1047,21): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1048,19): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1049,19): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1050,21): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1051,21): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1054,30): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1057,10): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1057,29): error TS2339: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1061,14): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1062,12): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1062,38): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1075,14): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1076,18): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1079,16): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1080,14): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1080,49): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1081,16): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1084,14): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1085,16): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1090,16): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1091,14): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1091,40): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1109,35): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1114,24): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1115,13): error TS2339: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1118,10): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1119,12): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1132,13): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(1137,14): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1139,31): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1145,16): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1145,42): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1146,28): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1150,12): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1150,38): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1163,11): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(1167,19): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1168,36): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1169,12): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1179,20): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1187,10): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1187,39): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1200,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1200,41): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1202,36): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1202,59): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1204,10): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1209,10): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1209,36): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1214,10): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1214,35): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1219,10): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1219,32): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1222,18): error TS7006: Parameter 'count' implicitly has an 'any' type.
+src/core/ppu/index.ts(1223,10): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1228,16): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(1229,17): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1229,36): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1234,17): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(1234,26): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(1254,26): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1255,28): error TS2339: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1266,14): error TS2339: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1267,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1267,37): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1270,14): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(1271,14): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1271,35): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(1275,12): error TS2551: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts(1275,40): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1279,24): error TS7006: Parameter 'startScan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1279,35): error TS7006: Parameter 'scanCount' implicitly has an 'any' type.
+src/core/ppu/index.ts(1280,10): error TS2339: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1284,10): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1286,14): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1290,14): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1296,25): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1297,27): error TS2339: Property 'bgbuffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1298,30): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1306,14): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1311,10): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1313,10): error TS2339: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1314,10): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1317,20): error TS7006: Parameter 'bgbuffer' implicitly has an 'any' type.
+src/core/ppu/index.ts(1317,30): error TS7006: Parameter 'scan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1318,21): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1319,22): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1330,10): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1330,23): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1334,10): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1334,23): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1338,27): error TS2339: Property 'scantile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1339,25): error TS2339: Property 'attrib' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1340,25): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1341,28): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1342,29): error TS2339: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1343,30): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1344,42): error TS2339: Property 'bgbuffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1344,58): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1345,23): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1349,12): error TS2339: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1353,12): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1364,16): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1372,42): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1378,20): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1393,34): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1461,16): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1461,29): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1464,12): error TS2339: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1468,12): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1480,14): error TS2339: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1480,27): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1486,12): error TS2339: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1497,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1497,41): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1499,15): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1502,10): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1505,41): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1523,19): error TS7006: Parameter 'targetScanline' implicitly has an 'any' type.
+src/core/ppu/index.ts(1525,12): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1525,41): error TS2339: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1536,12): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1538,10): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1539,10): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1541,29): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1551,23): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1552,23): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1578,24): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1592,18): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1593,20): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1601,18): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1626,10): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1636,12): error TS2339: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1636,35): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1638,10): error TS2339: Property 'spritesFound' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1639,10): error TS2339: Property 'sprite0InSecondary' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1639,36): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1643,10): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1656,26): error TS7006: Parameter 'startscan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1656,37): error TS7006: Parameter 'scancount' implicitly has an 'any' type.
+src/core/ppu/index.ts(1656,48): error TS7006: Parameter 'bgPri' implicitly has an 'any' type.
+src/core/ppu/index.ts(1657,14): error TS2339: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1659,21): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1660,23): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1661,23): error TS2339: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1662,27): error TS2339: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1663,28): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1668,24): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1672,25): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1673,28): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1674,28): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1675,25): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1683,18): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1685,32): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1686,34): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1765,16): error TS7006: Parameter 'scan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1766,10): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1767,10): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1770,15): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1771,14): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1775,21): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1776,24): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1777,24): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1778,18): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1789,25): error TS2339: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1789,52): error TS2339: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1799,21): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1801,14): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1803,28): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1836,20): error TS7006: Parameter 'tile' implicitly has an 'any' type.
+src/core/ppu/index.ts(1836,26): error TS7006: Parameter 'toffset' implicitly has an 'any' type.
+src/core/ppu/index.ts(1836,35): error TS7006: Parameter 'startX' implicitly has an 'any' type.
+src/core/ppu/index.ts(1836,43): error TS7006: Parameter 'horiFlip' implicitly has an 'any' type.
+src/core/ppu/index.ts(1836,53): error TS7006: Parameter 'scan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1836,59): error TS7006: Parameter 'leftClip' implicitly has an 'any' type.
+src/core/ppu/index.ts(1853,16): error TS2339: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1856,16): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1857,16): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1878,25): error TS7006: Parameter 'nextBufferScan' implicitly has an 'any' type.
+src/core/ppu/index.ts(1880,15): error TS2339: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1881,14): error TS2339: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1885,21): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1886,24): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1887,24): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1888,21): error TS2339: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1893,25): error TS2339: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1893,52): error TS2339: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1896,29): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1907,14): error TS2339: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1909,28): error TS2339: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1910,25): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1918,16): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1922,16): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1930,24): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1931,26): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1932,22): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1933,27): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1934,24): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1935,24): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1936,23): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1960,24): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1961,30): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1962,25): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1971,14): error TS2339: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1972,14): error TS2339: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1982,12): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(1982,21): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(1983,10): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1987,12): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1990,32): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1992,34): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1994,32): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1996,34): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(1998,32): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2000,34): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2002,32): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2004,34): error TS2339: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2016,16): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2017,14): error TS2339: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2017,35): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2018,28): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2021,14): error TS2339: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2021,35): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2022,25): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2027,16): error TS2339: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2028,14): error TS2339: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2028,35): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2029,28): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2032,14): error TS2339: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2032,35): error TS2339: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2033,25): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2042,16): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(2042,25): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(2046,12): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2049,14): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2052,12): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2054,14): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2062,18): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/core/ppu/index.ts(2062,25): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(2062,34): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(2063,10): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2066,27): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2073,20): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/core/ppu/index.ts(2073,27): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(2073,36): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(2074,10): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2080,10): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2085,24): error TS7006: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts(2085,33): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts(2089,29): error TS2339: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2096,14): error TS2339: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2100,14): error TS2339: Property 'sprTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2104,14): error TS2339: Property 'vertFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2105,14): error TS2339: Property 'horiFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2106,14): error TS2339: Property 'bgPriority' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2107,14): error TS2339: Property 'sprCol' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2111,14): error TS2339: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2116,16): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/core/ppu/index.ts(2116,19): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/core/ppu/index.ts(2118,17): error TS2339: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2126,28): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2127,27): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2128,30): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2129,27): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2132,26): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2133,33): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2137,26): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2138,30): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2144,12): error TS7006: Parameter 'state' implicitly has an 'any' type.
+src/core/ppu/index.ts(2150,10): error TS2339: Property 'vramStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2151,10): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2152,10): error TS2339: Property 'scrollStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2153,10): error TS2339: Property 'counters' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2155,26): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2156,12): error TS2339: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2159,26): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2160,12): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2164,26): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/index.ts(2165,41): error TS2339: Property 'oamStore' does not exist on type 'PPU'.
+src/core/ppu/nametable.ts(2,15): error TS7006: Parameter 'width' implicitly has an 'any' type.
+src/core/ppu/nametable.ts(2,22): error TS7006: Parameter 'height' implicitly has an 'any' type.
+src/core/ppu/nametable.ts(2,30): error TS7006: Parameter 'name' implicitly has an 'any' type.
+src/core/ppu/nametable.ts(3,10): error TS2339: Property 'width' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(4,10): error TS2339: Property 'height' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(5,10): error TS2339: Property 'name' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(7,10): error TS2339: Property 'tile' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(8,10): error TS2339: Property 'attrib' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(11,16): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/core/ppu/nametable.ts(11,19): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/core/ppu/nametable.ts(12,17): error TS2339: Property 'tile' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(12,31): error TS2339: Property 'width' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(15,13): error TS7006: Parameter 'x' implicitly has an 'any' type.
+src/core/ppu/nametable.ts(15,16): error TS7006: Parameter 'y' implicitly has an 'any' type.
+src/core/ppu/nametable.ts(16,17): error TS2339: Property 'attrib' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(16,33): error TS2339: Property 'width' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(19,15): error TS7006: Parameter 'index' implicitly has an 'any' type.
+src/core/ppu/nametable.ts(19,22): error TS7006: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/nametable.ts(33,34): error TS2339: Property 'width' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(34,18): error TS2339: Property 'attrib' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(43,29): error TS2339: Property 'tile' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(44,31): error TS2339: Property 'attrib' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(48,12): error TS7006: Parameter 's' implicitly has an 'any' type.
+src/core/ppu/nametable.ts(49,10): error TS2339: Property 'tile' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts(50,10): error TS2339: Property 'attrib' does not exist on type 'NameTable'.
+src/core/ppu/palette-table.ts(3,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(4,10): error TS2339: Property 'emphTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(5,10): error TS2339: Property 'currentEmph' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(10,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(17,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(50,12): error TS2339: Property 'emphTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(54,20): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(58,14): error TS2339: Property 'emphTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(63,15): error TS7006: Parameter 'emph' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts(64,23): error TS2339: Property 'currentEmph' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(65,12): error TS2339: Property 'currentEmph' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(67,14): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(67,33): error TS2339: Property 'emphTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(72,12): error TS7006: Parameter 'yiq' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts(73,17): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(76,10): error TS7006: Parameter 'rgb' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts(80,12): error TS7006: Parameter 'rgb' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts(84,11): error TS7006: Parameter 'rgb' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts(88,10): error TS7006: Parameter 'r' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts(88,13): error TS7006: Parameter 'g' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts(88,16): error TS7006: Parameter 'b' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts(93,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(94,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(95,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(96,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(97,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(98,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(99,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(100,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(101,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(102,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(103,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(104,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(105,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(106,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(107,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(108,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(109,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(110,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(111,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(112,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(113,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(114,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(115,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(116,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(117,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(118,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(119,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(120,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(121,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(122,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(123,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(124,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(125,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(126,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(127,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(128,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(129,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(130,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(131,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(132,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(133,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(134,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(135,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(136,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(137,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(138,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(139,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(140,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(141,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(142,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(143,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(144,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(145,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(146,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(147,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(148,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(149,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(150,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(151,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(152,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(153,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(154,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(155,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts(156,10): error TS2339: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/tile.ts(27,9): error TS2322: Type 'boolean' is not assignable to type 'number'.
+src/core/utils.ts(38,58): error TS2352: Conversion of type 'ArrayBufferView<ArrayBufferLike>' to type 'ArrayLike<number>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Property 'length' is missing in type 'ArrayBufferView<ArrayBufferLike>' but required in type 'ArrayLike<number>'.
+src/game/prg/code/index.ts(12,35): error TS2614: Module '"./scene/PasswordSceneController"' has no exported member 'PASSWORD_DISPATCH_TABLE'. Did you mean to use 'import PASSWORD_DISPATCH_TABLE from "./scene/PasswordSceneController"' instead?

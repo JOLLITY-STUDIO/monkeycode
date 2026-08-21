@@ -9,7 +9,6 @@ import { NES_CHR_ROM } from './chr/index';
 
 import {
   GameSystemService,
-  SceneController,
   HardwareInitService,
   PlayerQueryService,
   AudioService,
@@ -33,7 +32,7 @@ import {
 
 /** PRG bank 类集合 (供 NES.loadTsROM 存到 rom.tsPrg) */
 const PRG = {
-  GameSystemService, SceneController, HardwareInitService, PlayerQueryService,
+  GameSystemService, HardwareInitService, PlayerQueryService,
   AudioService, OpeningSceneController, ResultSceneController,
   PasswordSceneController, MatchEngineService, MatchHudService,
   MatchConfigService, InterruptService, MatchTurnService, SkillService,

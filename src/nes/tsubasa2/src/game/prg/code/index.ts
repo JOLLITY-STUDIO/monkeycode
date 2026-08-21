@@ -7,7 +7,6 @@ export { BootRouter, TaskIndex } from './system/BootRouter';
 export { HardwareInitService } from './system/HardwareInitService';
 export { InterruptService, type BankConfig } from './system/InterruptService';
 
-export { SceneController } from './scene/SceneController';
 export { OpeningSceneController, type OpeningDisplayState } from './scene/OpeningSceneController';
 export { TitleSceneController } from './scene/TitleSceneController';
 export { PasswordSceneController, PASSWORD_DISPATCH_TABLE } from './scene/PasswordSceneController';
