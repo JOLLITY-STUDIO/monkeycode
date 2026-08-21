@@ -1,0 +1,14 @@
+const fs = require('fs');
+const fn = process.argv[2] || '_tsc_all2.txt';
+const b = fs.readFileSync(fn);
+let s;
+if (b[0] === 0xff && b[1] === 0xfe) s = b.toString('utf16le');
+else s = b.toString('utf8');
+const lines = s.split(/\r?\n/).filter(l => /error TS/.test(l));
+const prg = lines.filter(l => /game\/prg|game\/rom|game\/index/.test(l));
+const pages = lines.filter(l => /pages\//.test(l));
+console.log('TOTAL errors:', lines.length);
+console.log('PRG errors:', prg.length);
+prg.slice(0, 40).forEach(l => console.log(l));
+console.log('--- PAGES errors:', pages.length);
+pages.slice(0, 20).forEach(l => console.log(l));

@@ -23,6 +23,8 @@ export type { ButtonId } from './input';
 export interface BrowserMiniOptions {
   /** 小程序 Canvas 2D 节点 (wx.createSelectorQuery 获取的 node) */
   canvas: any;
+  /** 运行模式 (h5=纯浏览器 / mini=小程序) */
+  mode?: 'h5' | 'mini';
   /** 帧回调 (调试/统计用) */
   onFrame?: (frameIndex: number) => void;
   /** 错误回调 */

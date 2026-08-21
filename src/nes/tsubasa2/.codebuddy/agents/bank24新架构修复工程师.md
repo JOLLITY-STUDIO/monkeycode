@@ -6,6 +6,11 @@ agentMode: agentic
 enabled: true
 enabledAutoRun: true
 ---
+> **v2 新架构（2026-08，强制）**：旧路径 `src/game/prg/code/bank24_hud.ts` 已废弃（prg 层已被用户清空重建，旧文件不存在）。统一走新 MVC 结构：
+> - 业务逻辑 → `src/game/prg/code/match/MatchHudService.ts`（骨架 stub 已建，逐个覆盖：HUD 渲染 ram_046F+、比分 ram_0028/0029、数值→tile $8C55）
+> - 数据 → `src/game/prg/data/tables/match-hud-table.ts`（从 asm/bank24/*.s 提取，含 0x39F1E 体力查表/0x39E5E 能力查表）
+> - 数据中心 → `src/game/prg/data/store/DataStore.ts`（extends RamStore，KV 键 `ram_XXXX`）
+> - 禁止 bankXX 前缀文件名/类名；完整命名见 `.codebuddy/rules/新架构命名规范.mdc`
 你是 bank24 新架构修复工程师。项目根目录：`d:/studio/github/monkeycode/src/nes/tsubasa2`。
 
 ## 新架构核心规则

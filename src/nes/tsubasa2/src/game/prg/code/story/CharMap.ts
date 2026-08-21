@@ -12,9 +12,18 @@ export const CHAR_MAP_DOUBLE: Record<number, readonly number[]> = {
   // TODO: 从 asm/bank00 提取双 tile 表
 };
 
-export function decodeChar(code: number): readonly number[] | undefined {
-  // TODO: 字符解码
-  return CHAR_MAP_DOUBLE[code];
+export class CharMap {
+  /** 双 tile 表 */
+  static readonly DOUBLE: Record<number, readonly number[]> = CHAR_MAP_DOUBLE;
+
+  /** 字符解码 (原 $88CA 字符处理) */
+  static decode(code: number): readonly number[] | undefined {
+    return CHAR_MAP_DOUBLE[code];
+  }
 }
 
-export default CHAR_MAP_DOUBLE;
+export function decodeChar(code: number): readonly number[] | undefined {
+  return CharMap.decode(code);
+}
+
+export default CharMap;

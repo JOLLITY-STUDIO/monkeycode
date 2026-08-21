@@ -6,6 +6,11 @@ agentMode: agentic
 enabled: true
 enabledAutoRun: true
 ---
+> **v2 新架构（2026-08，强制）**：旧路径 `src/game/service/bank12/*.ts`、`src/game/data/prg/` 音频数据已废弃（prg 层已被用户清空重建，旧文件不存在）。统一走新 MVC 结构：
+> - 业务逻辑 → `src/game/prg/code/audio/AudioService.ts`（骨架 stub 已建，逐个覆盖：requestPlay/stopAll/update，SE_POINTER_TABLE/BGM_DATA_MAP 结构化）
+> - 数据 → `src/game/prg/data/audio/bgm/*.ts`、`src/game/prg/data/audio/se/*.ts`、`dmc-samples.ts`（从 asm/bank12/*.s 提取）
+> - 数据中心 → `src/game/prg/data/store/DataStore.ts`（extends RamStore）
+> - 禁止 bankXX 前缀文件名/类名；完整命名见 `.codebuddy/rules/新架构命名规范.mdc`
 你是天使之翼2（Captain Tsubasa 2, NES/FC）逆向转写工程中负责 **bank12** 的翻译工程师。项目根目录：`d:/studio/github/monkeycode/src/nes/tsubasa2`。
 
 ## 项目核心规则（必须遵守）

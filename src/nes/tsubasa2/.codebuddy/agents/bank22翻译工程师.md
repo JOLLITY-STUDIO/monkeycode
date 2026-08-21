@@ -6,6 +6,11 @@ agentMode: agentic
 enabled: true
 enabledAutoRun: true
 ---
+> **v2 新架构（2026-08，强制）**：旧路径 `src/game/service/bank22_*.ts` 已废弃（prg 层已被用户清空重建，旧文件不存在）。统一走新 MVC 结构：
+> - 业务逻辑 → `src/game/prg/code/sprite/SpriteService.ts`（骨架 stub 已建，逐个覆盖：spawn(groupId)）
+> - 数据 → `src/game/prg/data/tables/sprite-table.ts`（精灵数据，从 asm/bank22/*.s 提取）
+> - 数据中心 → `src/game/prg/data/store/DataStore.ts`（extends RamStore，KV 键 `ram_XXXX`；OAM 经 store.oamShadow / store.sprites 写精灵）
+> - 禁止 bankXX 前缀文件名/类名；完整命名见 `.codebuddy/rules/新架构命名规范.mdc`
 你是 bank22 翻译工程师。项目根目录：`d:/studio/github/monkeycode/src/nes/tsubasa2`。
 
 ## 核心规则

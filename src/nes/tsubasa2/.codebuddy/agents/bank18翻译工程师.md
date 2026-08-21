@@ -6,6 +6,11 @@ agentMode: agentic
 enabled: true
 enabledAutoRun: true
 ---
+> **v2 新架构（2026-08，强制）**：旧路径 `src/game/service/bank18_*.ts` 已废弃（prg 层已被用户清空重建，旧文件不存在）。统一走新 MVC 结构：
+> - 业务逻辑 → `src/game/prg/code/scene/StorySceneController.ts`（bank18/19 剧情主线，骨架 stub 已建，逐个覆盖：章节指针表/enterChapter/update）
+> - 数据 → `src/game/prg/data/scene/chapter-table.ts`（章节指针表数据建模，从 asm/bank18/data_tables.s 提取）
+> - 数据中心 → `src/game/prg/data/store/DataStore.ts`（extends RamStore，KV 键 `ram_XXXX`）
+> - 禁止 bankXX 前缀文件名/类名；完整命名见 `.codebuddy/rules/新架构命名规范.mdc`
 你是 bank18 翻译工程师。项目根目录：`d:/studio/github/monkeycode/src/nes/tsubasa2`。
 
 ## 核心规则

@@ -717,10 +717,10 @@ class PPU {
         this.sprY[0] < 240
       ) {
         for (i = 0; i < 256; i++) {
-          buffer[(this.sprY[0] << 8) + i] = 0xff5555;
+          buffer[this.sprY[0] * 256 + i] = 0xff5555;
         }
         for (i = 0; i < 240; i++) {
-          buffer[(i << 8) + this.sprX[0]] = 0xff5555;
+          buffer[i * 256 + this.sprX[0]] = 0xff5555;
         }
       }
       // Hit position:
@@ -731,10 +731,10 @@ class PPU {
         this.spr0HitY < 240
       ) {
         for (i = 0; i < 256; i++) {
-          buffer[(this.spr0HitY << 8) + i] = 0x55ff55;
+          buffer[this.spr0HitY * 256 + i] = 0x55ff55;
         }
         for (i = 0; i < 240; i++) {
-          buffer[(i << 8) + this.spr0HitX] = 0x55ff55;
+          buffer[i * 256 + this.spr0HitX] = 0x55ff55;
         }
       }
     }
@@ -749,19 +749,19 @@ class PPU {
     ) {
       // Clip left 8-pixels column:
       for (y = 0; y < 240; y++) {
-        buffer.fill(0, y << 8, (y << 8) + 8);
+        buffer.fill(0, y * 256, (y * 256) + 8);
       }
     }
 
     if (this.clipToTvSize) {
       // Clip right 8-pixels column too:
       for (y = 0; y < 240; y++) {
-        buffer.fill(0, (y << 8) + 248, (y << 8) + 256);
+        buffer.fill(0, (y * 256) + 248, (y * 256) + 256);
       }
 
       // Clip top and bottom 8 pixels:
-      buffer.fill(0, 0, 8 << 8);
-      buffer.fill(0, 232 << 8, 240 << 8);
+      buffer.fill(0, 0, 8 * 256);
+      buffer.fill(0, 232 * 256, 240 * 256);
     }
 
     this.nes.ui.writeFrame(buffer);
@@ -812,7 +812,7 @@ class PPU {
   // nmiPending (promoted from a previous instruction) is never cleared.
   // See https://www.nesdev.org/wiki/NMI
   _updateNmiOutput() {
-    let vblank = (this.nes.cpu.mem[0x2002] & 0x80) !== 0;
+    let vblank = bit.bit7(this.nes.cpu.mem[0x2002]);
     let newOutput = this.f_nmiOnVblank !== 0 && vblank;
     if (newOutput && !this.nmiOutput) {
       // Rising edge: set nmiRaised. At the end of the current instruction,
@@ -876,7 +876,7 @@ class PPU {
   }
 
   setStatusFlag(flag, value) {
-    let n = 1 << flag;
+    let n = Math.pow(2, flag);
     this.nes.cpu.mem[0x2002] =
       (this.nes.cpu.mem[0x2002] & (255 - n)) | (value ? n : 0);
   }
@@ -913,7 +913,7 @@ class PPU {
     this._updateNmiOutput();
 
     // Only bits 7-5 come from the status register; bits 4-0 are open bus.
-    tmp = (tmp & 0xe0) | (this.openBusLatch & 0x1f);
+    tmp = (tmp & 0xe0) | bit.lowBits(this.openBusLatch, 5);
     this.openBusLatch = tmp;
     this.openBusDecayFrames = 36; // ~600ms at 60fps
 
@@ -1106,17 +1106,17 @@ class PPU {
     // Backdrop mirrors: $3F10/$3F14/$3F18/$3F1C → $3F00/$3F04/$3F08/$3F0C.
     // Values are 6-bit; upper 2 bits come from the PPU open bus latch.
     // See https://www.nesdev.org/wiki/PPU_palettes
-    let palIdx = this.vramStore.addr & 0x1f;
+    let palIdx = bit.lowBits(this.vramStore.addr, 5);
     if ((palIdx & 0x13) === 0x10) {
       palIdx &= 0x0f; // backdrop mirror
     }
     tmp =
-      (this.vramStore.get(0x3f00 + palIdx) & 0x3f) |
+      bit.lowBits(this.vramStore.get(0x3f00 + palIdx), 6) |
       (this.openBusLatch & 0xc0);
 
     // Update buffer with nametable data behind the palette
     this.vramStore.bufferedReadValue = this.mirroredLoad(
-      this.vramStore.addr & 0x2fff,
+      this.vramStore.addr & 0x2FFF,
     );
 
     this._incrementVramAddress();
@@ -1288,8 +1288,8 @@ class PPU {
     }
 
     if (this.f_bgVisibility === 1) {
-      let si = startScan << 8;
-      let ei = (startScan + scanCount) << 8;
+      let si = startScan * 256;
+      let ei = (startScan + scanCount) * 256;
       if (ei > 0xf000) {
         ei = 0xf000;
       }
@@ -1325,7 +1325,7 @@ class PPU {
     // On real hardware, the PPU puts this address on its bus when fetching tile
     // data, and mappers like MMC2 monitor these fetches.
     let baseAddr = regS === 0 ? 0x0000 : 0x1000;
-    let destIndex = (scan << 8) - regFH;
+    let destIndex = scan * 256 - regFH;
 
     this.curNt = this.ntable1[cnt.ntV + cnt.ntV + cnt.ntH];
 
@@ -1334,7 +1334,7 @@ class PPU {
     this.curNt = this.ntable1[cnt.ntV + cnt.ntV + cnt.ntH];
 
     if (scan < 240 && scan - cnt.fineV >= 0) {
-      let tscanoffset = cnt.fineV << 3;
+      let tscanoffset = cnt.fineV * 8;
       let scantile = this.scantile;
       let attrib = this.attrib;
       let ptTile = this.ptTile;
@@ -1416,7 +1416,7 @@ class PPU {
 
           // Render tile scanline:
           let sx = 0;
-          let x = (tile << 3) - regFH;
+          let x = tile * 8 - regFH;
 
           if (x > -8) {
             if (x < 0) {
@@ -1458,7 +1458,7 @@ class PPU {
           cnt.tileH = 0;
           cnt.ntH++;
           cnt.ntH %= 2;
-          this.curNt = this.ntable1[(cnt.ntV << 1) + cnt.ntH];
+          this.curNt = this.ntable1[cnt.ntV * 2 + cnt.ntH];
         }
       }
       this._inRendering = false;
@@ -1477,7 +1477,7 @@ class PPU {
         cnt.tileV = 0;
         cnt.ntV++;
         cnt.ntV %= 2;
-        this.curNt = this.ntable1[(cnt.ntV << 1) + cnt.ntH];
+        this.curNt = this.ntable1[cnt.ntV * 2 + cnt.ntH];
       } else if (cnt.tileV === 32) {
         cnt.tileV = 0;
       }
@@ -1575,7 +1575,7 @@ class PPU {
       }
       firstSprite = false;
 
-      let yByte = this.oamStore.get((n * 4 + m) & 0xff);
+      let yByte = this.oamStore.get(bit.wrap8(n * 4 + m));
 
       // Check if sprite is in range for the target buffer row.
       // On real hardware the comparison is NES_scanline >= Y && < Y + height.
@@ -1590,7 +1590,7 @@ class PPU {
           // by bytes from the next entry, matching hardware behavior.
           for (let b = 0; b < 4; b++) {
             this.scanlineSecondaryOAM[oamBase + secondaryIndex + b] =
-              this.oamStore.get((n * 4 + m + b) & 0xff);
+              this.oamStore.get(bit.wrap8(n * 4 + m + b));
           }
           // The first sprite in evaluation order (at OAMADDR/4) is the one
           // that triggers sprite 0 hit, regardless of its OAM index.
@@ -1616,10 +1616,10 @@ class PPU {
         // attributes, and X coordinates as if they were Y coordinates.
         // This produces both false positives and false negatives for overflow.
         // See https://www.nesdev.org/wiki/PPU_sprite_evaluation
-        overflowM = (overflowM + 1) & 0x03;
+        overflowM = bit.lowBits(overflowM + 1, 2);
       }
 
-      n = (n + 1) & 0x3f;
+      n = bit.lowBits(n + 1, 6);
       evaluated++;
     } while (n !== 0);
 
@@ -1674,10 +1674,10 @@ class PPU {
         let sprAttr = this.scanlineSecondaryOAM[oamBase + i * 4 + 2];
         let sprX = this.scanlineSecondaryOAM[oamBase + i * 4 + 3];
 
-        let vertFlip = (sprAttr >> 7) & 1;
-        let horiFlip = (sprAttr >> 6) & 1;
-        let priority = (sprAttr >> 5) & 1;
-        let palAdd = (sprAttr & 3) << 2;
+        let vertFlip = bit.get(sprAttr, 7);
+        let horiFlip = bit.get(sprAttr, 6);
+        let priority = bit.get(sprAttr, 5);
+        let palAdd = bit.lowBits(sprAttr, 2) * 4;
 
         if (priority !== bgPri) continue;
         if (this.f_spriteSize === 0) {
@@ -1711,9 +1711,9 @@ class PPU {
         } else {
           // 8x16 sprites: tile index bit 0 selects pattern table ($0000/$1000),
           // top tile is (index & $FE), bottom tile is (index & $FE) + 1.
-          let sprBaseAddr = (sprTile & 1) !== 0 ? 0x1000 : 0x0000;
-          let topTileNum = sprTile & 0xfe;
-          let top = (sprTile & 1) !== 0 ? topTileNum - 1 + 256 : topTileNum;
+          let sprBaseAddr = bit.bit0(sprTile) ? 0x1000 : 0x0000;
+          let topTileNum = sprTile & 0xFE;
+          let top = bit.bit0(sprTile) ? topTileNum - 1 + 256 : topTileNum;
 
           let dy = sprY + 1;
           let fineY = scan - dy;
@@ -1778,8 +1778,8 @@ class PPU {
     let x = this.scanlineSecondaryOAM[oamBase + 3];
     let y = sprY + 1; // +1 because sprite Y in OAM is display line - 1
 
-    let vertFlip = (sprAttr >> 7) & 1;
-    let horiFlip = (sprAttr >> 6) & 1;
+    let vertFlip = bit.get(sprAttr, 7);
+    let horiFlip = bit.get(sprAttr, 6);
 
     // Sprite 0 hit has additional conditions beyond pixel overlap:
     // - No hit at x=255 (hardware doesn't check the last pixel)
@@ -1814,11 +1814,11 @@ class PPU {
 
         if (toffset < 8) {
           t = mmap.getSpritePatternTile(
-            sprTile + (vertFlip ? 1 : 0) + ((sprTile & 1) !== 0 ? 255 : 0),
+            sprTile + (vertFlip ? 1 : 0) + (bit.bit0(sprTile) ? 255 : 0),
           );
         } else {
           t = mmap.getSpritePatternTile(
-            sprTile + (vertFlip ? 0 : 1) + ((sprTile & 1) !== 0 ? 255 : 0),
+            sprTile + (vertFlip ? 0 : 1) + (bit.bit0(sprTile) ? 255 : 0),
           );
           toffset = vertFlip ? 15 - toffset : toffset - 8;
         }
@@ -1888,8 +1888,8 @@ class PPU {
     let sprX = this.scanlineSecondaryOAM[oamBase + 3];
     let y = sprY + 1; // +1 because sprite Y in OAM is display line - 1
 
-    let vertFlip = (sprAttr >> 7) & 1;
-    let horiFlip = (sprAttr >> 6) & 1;
+    let vertFlip = bit.get(sprAttr, 7);
+    let horiFlip = bit.get(sprAttr, 6);
     let leftClip = this.f_spClipping === 0 || this.f_bgClipping === 0;
 
     // Check if sprite 0 overlaps the next scanline.
@@ -1911,7 +1911,7 @@ class PPU {
       toffset = sprRow * 8;
     } else {
       // 8x16 sprites: tile index bit 0 selects pattern table.
-      let patternBase = (sprTile & 1) !== 0 ? 256 : 0;
+      let patternBase = bit.bit0(sprTile) ? 256 : 0;
       let baseTileIdx = sprTile & ~1;
       if (sprRow < 8) {
         sprTileObj =
@@ -1948,7 +1948,7 @@ class PPU {
       // Compute which BG tile covers this screen X using the horizontal
       // scroll registers (regHT/regH are reloaded at the start of each
       // visible scanline on real hardware).
-      let tileOffset = (screenX + regFH) >> 3;
+      let tileOffset = Math.floor((screenX + regFH) / 8);
       let absCol = regHT + tileOffset;
       let bgNtH = regH;
       if (absCol >= 32) {
@@ -1957,13 +1957,13 @@ class PPU {
       }
 
       // Look up the BG tile from the nametable.
-      let ntIdx = this.ntable1[(bgNtV << 1) + bgNtH];
+      let ntIdx = this.ntable1[bgNtV * 2 + bgNtH];
       let bgTileIndex = this.nameTable[ntIdx].getTileIndex(absCol, bgCoarseY);
       let bgTile = this.ptTile[baseBgTile + bgTileIndex];
       if (!bgTile) continue;
 
       // Check BG pixel non-transparent at (fineX, fineY).
-      let bgPixelX = (screenX + regFH) & 7;
+      let bgPixelX = bit.lowBits(screenX + regFH, 3);
       if (bgTile.pix[bgFineY * 8 + bgPixelX] !== 0) {
         // Hit found! Store in NES scanline coordinates for step() matching.
         // step() compares scanline - 21 against spr0HitY, where
@@ -2015,22 +2015,22 @@ class PPU {
     for (i = 0; i < 16; i++) {
       if (this.f_dispType === 0) {
         this.imgPalette[i] = this.palTable.getEntry(
-          this.vramStore.get(0x3f00 + i) & 63,
+          bit.lowBits(this.vramStore.get(0x3f00 + i), 6),
         );
       } else {
         this.imgPalette[i] = this.palTable.getEntry(
-          this.vramStore.get(0x3f00 + i) & 0x30,
+          bit.bits(this.vramStore.get(0x3f00 + i), 4, 2),
         );
       }
     }
     for (i = 0; i < 16; i++) {
       if (this.f_dispType === 0) {
         this.sprPalette[i] = this.palTable.getEntry(
-          this.vramStore.get(0x3f10 + i) & 63,
+          bit.lowBits(this.vramStore.get(0x3f10 + i), 6),
         );
       } else {
         this.sprPalette[i] = this.palTable.getEntry(
-          this.vramStore.get(0x3f10 + i) & 0x30,
+          bit.bits(this.vramStore.get(0x3f10 + i), 4, 2),
         );
       }
     }
@@ -2040,7 +2040,7 @@ class PPU {
   // table buffers with this new byte.
   // In vNES, there is a version of this with 4 arguments which isn't used.
   patternWrite(address, value) {
-    let tileIndex = address >> 4;
+    let tileIndex = Math.floor(address / 16);
     let leftOver = address & 15;
     if (leftOver < 8) {
       this.ptTile[tileIndex].setScanline(
@@ -2083,7 +2083,7 @@ class PPU {
   // Updates the internally buffered sprite
   // data with this new byte of info.
   spriteRamWriteUpdate(address, value) {
-    let tIndex = address >> 2;
+    let tIndex = Math.floor(address / 4);
 
     if (tIndex === 0) {
       let bufferScan = this.scanline + 1 - 21;
@@ -2101,10 +2101,10 @@ class PPU {
         break;
       case 2:
         // Attributes
-        this.vertFlip[tIndex] = (value >> 7) & 1;
-        this.horiFlip[tIndex] = (value >> 6) & 1;
-        this.bgPriority[tIndex] = (value >> 5) & 1;
-        this.sprCol[tIndex] = (value & 3) << 2;
+        this.vertFlip[tIndex] = bit.get(value, 7);
+        this.horiFlip[tIndex] = bit.get(value, 6);
+        this.bgPriority[tIndex] = bit.get(value, 5);
+        this.sprCol[tIndex] = bit.lowBits(value, 2) * 4;
         break;
       case 3:
         // X coordinate
@@ -2115,7 +2115,7 @@ class PPU {
 
   isPixelWhite(x, y) {
     this.triggerRendering();
-    return this.nes.ppu.buffer[(y << 8) + x] === 0xffffff;
+    return this.nes.ppu.buffer[(y * 256) + x] === 0xffffff;
   }
 
   toJSON() {

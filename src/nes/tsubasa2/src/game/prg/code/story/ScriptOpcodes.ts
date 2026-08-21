@@ -18,8 +18,18 @@ export const WAIT_FRAME_TABLE: readonly number[] = [
   // TODO: 从 asm 提取等待帧表 $8AE6
 ];
 
-export function initScriptOpcodes(_store: DataStore): void {
-  // TODO: 注册指令处理器
+export class ScriptOpcodes {
+  /** TODO: 指令码 → 处理器映射 (从 asm 提取) */
+  static readonly OPCODES: Record<number, string> = SCRIPT_OPCODES;
+
+  /** 注册指令处理器 */
+  static init(_store: DataStore): void {
+    // TODO: 注册指令处理器
+  }
 }
 
-export default SCRIPT_OPCODES;
+export function initScriptOpcodes(_store: DataStore): void {
+  ScriptOpcodes.init(_store);
+}
+
+export default ScriptOpcodes;

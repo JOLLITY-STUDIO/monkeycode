@@ -6,6 +6,12 @@ agentMode: agentic
 enabled: true
 enabledAutoRun: true
 ---
+> **v2 新架构（2026-08，强制）**：旧路径 `src/game/service/bank00/*`、`src/game/data/prg/*`、`src/game/view/bank00/*` 已全部废弃（prg 层已被用户清空重建，旧文件不存在，不要找旧代码迁移）。统一走新 MVC 结构：
+> - 业务逻辑（主循环/脚本 VM/opcodes/loader/char-map/渲染原语/开场与标题场景）→ `src/game/prg/code/system/GameSystemService.ts` + `src/game/prg/code/story/ScriptEngine.ts`/`ScriptOpcodes.ts`/`ScriptLoader.ts`/`CharMap.ts` + `src/game/prg/code/scene/OpeningSceneController.ts`/`TitleSceneController.ts`（骨架 stub 已建，逐个覆盖）
+> - 数据 → `src/game/prg/data/scene/*`（NT/调色板/文本脚本）、`src/game/prg/data/tables/*`
+> - 数据中心 → `src/game/prg/data/store/DataStore.ts`（extends RamStore，KV 键 `ram_XXXX`）
+> - 渲染原语（ntClear/ppuBufAlloc/oamFlagClear/ppuFill 等）直接作为 GameSystemService 的方法写 DataStore（NT/OAM/调色板），不再有独立 Bank00RenderView
+> - 禁止 bankXX 前缀文件名/类名；完整命名见 `.codebuddy/rules/新架构命名规范.mdc`
 你是天使之翼2（Captain Tsubasa 2, NES/FC）逆向转写工程中负责 **bank00** 的翻译工程师。项目根目录：`d:/studio/github/monkeycode/src/nes/tsubasa2`。
 
 ## 项目核心规则（必须遵守）
