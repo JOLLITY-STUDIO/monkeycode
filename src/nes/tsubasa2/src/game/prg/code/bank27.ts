@@ -20,7 +20,7 @@
  *   $C539→$CDE2  (X,Y) 像素 → A 精灵位置 (行号+12*列号, 越界 $FF)
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import {
   readB27,
   readB27U16,
@@ -29,7 +29,7 @@ import {
   readB27AnimBlockPtr,
   readB27ScenePtr,
   readB27SceneDataPtr,
-} from '../bank27-data';
+} from '../data/bank27-data';
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
@@ -63,9 +63,9 @@ const KEY_0064 = 'ram_0064'; // 动画脚本指针 hi
 // ═══════════════════════════════════════════════════════════════
 
 export class Bank27Service {
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
-  get store(): DataStore {
+  get store(): RamStore {
     return this._store;
   }
 
@@ -362,7 +362,7 @@ export class Bank27Service {
    * 调用方 (entry_81EE 的 oam.isBusy() 忙等) 完整承接。
    */
   private _fixedC515(): void {
-    // 同步已由 DataStore.oam 忙标志 + 渲染层 RAF 承接, 无需空转。
+    // 同步已由 RamStore.oam 忙标志 + 渲染层 RAF 承接, 无需空转。
   }
 
   /**
@@ -372,10 +372,10 @@ export class Bank27Service {
    * (PPU 名字区指针上下文) → JSR $CE2D (属性/缓冲装载) → JSR $8000
    * (切换 bank 后的场景渲染) → 恢复 $0024/$0025 → JSR $CE2D。
    * 纯 MMC3/PPU 名字区缓冲操作, 对 ROM 字节数据与 OAM 无副作用;
-   * H5 下名字区由 DataStore NT 网格直接持有, 无需物理缓冲切换。
+   * H5 下名字区由 RamStore NT 网格直接持有, 无需物理缓冲切换。
    */
   private _fixedC527(): void {
-    // 名字区缓冲已由 DataStore NT 网格持有, 无 MMC3 切换。
+    // 名字区缓冲已由 RamStore NT 网格持有, 无 MMC3 切换。
   }
 
   // ──────────────────────────────────────────────

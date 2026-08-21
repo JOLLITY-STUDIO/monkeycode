@@ -7,7 +7,7 @@
  *
  * 纯数据声明式保存, 由 bank31_match.ts 消费。
  */
-import type { DataStore } from './DataStore';
+import type { RamStore } from '../../../core/ram';
 
 // ═══════════════════════════════════════════════════════════════
 // 跳转指针表 $E9DA (33 项 × 16bit LE)
@@ -78,8 +78,8 @@ export function readPtrLE16(table: ReadonlyArray<number>, idx: number): number {
 }
 
 /**
- * 通过 DataStore 占位构造（保留签名, 后续翻译 $E93D 时使用）
+ * 通过 RamStore 占位构造（保留签名, 后续翻译 $E93D 时使用）
  */
-export function ptrDispatch(_store: DataStore, _idx: number): number {
+export function ptrDispatch(_store: RamStore, _idx: number): number {
   return readPtrLE16(PTR_TABLE_E9DA, _idx);
 }

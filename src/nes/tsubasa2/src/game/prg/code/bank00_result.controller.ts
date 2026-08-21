@@ -3,23 +3,23 @@
  *
  * ⚠️ 骨架 (stub)。原版赛果画面由 Bank00/Bank24 绘制:
  *   显示最终比分、胜负判定、可能的中间剧情衔接。
- * 当前实现: 从 DataStore 读取比分 (ram_0621/ram_044E 等),
+ * 当前实现: 从 RamStore 读取比分 (ram_0621/ram_044E 等),
  *   显示赛果文本, A 键返回 TITLE。
  *
  * 后续补全: 赛果画面布局/动画/胜负分支 (对应原版赛果渲染逻辑)。
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 
-/** 比分在 DataStore 中的键 — 真实 ROM: $85E3 INC ram_0028,X (主队), ram_0029 (客队) */
+/** 比分在 RamStore 中的键 — 真实 ROM: $85E3 INC ram_0028,X (主队), ram_0029 (客队) */
 const KEY_SCORE_HOME = 'ram_0028';
 const KEY_SCORE_AWAY = 'ram_0029';
 
 export class ResultController {
-  private _store: DataStore;
+  private _store: RamStore;
   private _frame = 0;
 
-  constructor(store: DataStore) {
+  constructor(store: RamStore) {
     this._store = store;
   }
 

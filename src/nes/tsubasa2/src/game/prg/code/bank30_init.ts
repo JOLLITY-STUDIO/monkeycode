@@ -15,7 +15,7 @@
  * 然后直接将控制权交给 Bank02。
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import { palReset } from '../data/ppu/pallete/paletteManager';
 import { Bank00Service } from './bank00/bank00_core';
 import { Bank02Service } from './bank02_scene';
@@ -31,7 +31,7 @@ import {
   PALETTE_ENTRY_SIZE,
   SHOWCASE_TYPE_TABLE,
   SHOOT_STATE_TABLE,
-} from '../bank30-data';
+} from '../data/bank30-data';
 
 // ── RAM 语义键 (Bank30 演出链 $043C 区域 + 演出请求) ──
 const KEY_0034 = 'ram_0034'; // 名字区指针 lo
@@ -70,7 +70,7 @@ const KEY_046F = 'ram_046F'; // 调色板输出区基址 (16B + X 偏移)
 
 export class Bank30Service {
   constructor(
-    private _store: DataStore,
+    private _store: RamStore,
     private _bank00: Bank00Service,
     private _bank02: Bank02Service,
     private _bank16: Bank16Service,
@@ -82,7 +82,7 @@ export class Bank30Service {
 
   // ── 公开接口 ──
 
-  get store(): DataStore { return this._store; }
+  get store(): RamStore { return this._store; }
 
   /** 注入 Bank26 演出执行器 (对应切 Bank26 窗口) */
   setShowcaseExecutor(executor: Bank26ShowcaseExecutor): void {
@@ -127,9 +127,9 @@ export class Bank30Service {
     // H5: no-op (不需要 MMC3)
 
     // ── 4. 对应 $C667-$C679: 清零 $0000-$07FF (8 页) ──
-    // H5: DataStore.reset() 已清 zp + ram
+    // H5: RamStore.reset() 已清 zp + ram
     this._store.zp.fill(0);
-    this._store.ram.clear();
+    this._store.mem.fill(0, 0, 0x2000);
 
     // ── 5. 对应 $C67A-$C686: PPU 镜像设置 ──
     // $20=$08 (PPUCTRL 镜像: NMI on, 使用 NT0)
@@ -742,7 +742,7 @@ export class Bank30Service {
   /**
    * $D684 — STX ram_043C; JSR $E93D (写技能 ID + 刷新演出精灵)。
    * $E93D (Bank31): 演出期精灵刷新任务, 走 OAM 影子缓冲 (ram_04A5 区)。
-   * H5: oam.emitSprites() 把影子缓冲导出到渲染出口 (DataStore.sprites)。
+   * H5: oam.emitSprites() 把影子缓冲导出到渲染出口 (RamStore.sprites)。
    * TODO: $E93D 精灵动画帧推进逻辑待 Bank31 完整翻译。
    */
   entry_D684(x: number): void {

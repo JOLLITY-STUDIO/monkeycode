@@ -18,7 +18,7 @@
  *   → Bank30 $C503: SEI/CLD/TXS → VBlank×2 → 清 RAM → PPU 配置
  *   → $C64E: NT/OAM 清零 → $CEFE → $C400 → bank02.resetEntry(0)
  */
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import { Bank30Service } from './bank30_init';
 import { Bank00Service } from './bank00/bank00_core';
 import { trace } from '../../../core/debug/trace';
@@ -38,7 +38,7 @@ export class InterruptService {
   /** NMI 调用计数 (用于 trace 采样, 避免每帧刷屏) */
   private _nmiCount = 0;
 
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   /** 注入 Bank30 (RESET 链实际执行者, 对应 $C503-$C6DF 硬件初始化) */
   setBank30(bank30: Bank30Service): void {

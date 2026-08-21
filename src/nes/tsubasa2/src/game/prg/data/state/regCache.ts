@@ -1,9 +1,9 @@
 /**
  * 寄存器缓存 (Model 层)
  *
- * 替代 6502 CPU 寄存器 (A/X/Y/SP/P) — KV 结构, 与 DataStore 保持一致。
+ * 替代 6502 CPU 寄存器 (A/X/Y/SP/P) — KV 结构, 与 RamStore 保持一致。
  * bank service 翻译时, 原本的寄存器读写 (LDA/TAX/... ) 直接映射为对本 cache 的
- * 读写, 不再有 CPU 解析。零页变量 (ram_00xx) 仍由 DataStore.zp / KV 提供。
+ * 读写, 不再有 CPU 解析。零页变量 (ram_00xx) 仍由 RamStore.zp / KV 提供。
  */
 
 /** 状态标志位 (P 寄存器) */

@@ -2,15 +2,15 @@
  * Bank 31 Match Service — 比赛主循环 (Fixed Bank $E000)
  *
  * 逻辑直接翻译自 asm/bank31/entry_E000.s + entry_E6CF.s + entry_E9DA.s。
- * 数据经 DataStore 语义键读写 (替代 NES RAM 地址)，不模拟 MMC3。
+ * 数据经 RamStore 语义键读写 (替代 NES RAM 地址)，不模拟 MMC3。
  */
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import {
   PTR_TABLE_E9DA,
   PTR_TABLE_E9DA_COUNT,
   LAYOUT_DATA_EA1C,
   readPtrLE16,
-} from '../bank31-data-ptrs';
+} from '../data/bank31-data-ptrs';
 import {
   SPRITE_PTR_TABLE_F15A,
   SPRITE_PTR_TABLE_F15A_COUNT,
@@ -20,7 +20,7 @@ import {
   SPRITE_SUB_PTR_F182,
   SCENE_LAYOUT_PTR_F206,
   NT_LAYOUT_DATA,
-} from '../bank31-data-sprites';
+} from '../data/bank31-data-sprites';
 import {
   DIALOG_PTR_TABLE_F329,
   DIALOG_PTR_TABLE_F329_COUNT,
@@ -29,7 +29,7 @@ import {
   PALETTE_DATA,
   NT_BUFFER_DATA,
   readDialogPtr,
-} from '../bank31-data-scripts';
+} from '../data/bank31-data-scripts';
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
@@ -220,7 +220,7 @@ export class Bank31MatchService {
   /** 当前记录指针 $0034 的 H5 表示: RAM 基址 (球员=0x0300+ID*12, 球区=0x062F) */
   private _ptrBase = 0;
 
-  constructor(private _store: DataStore, routines?: Bank31Routines) {
+  constructor(private _store: RamStore, routines?: Bank31Routines) {
     // 默认空实现: 未注入时对应调用为 no-op (stub 阶段)
     this._rt = routines ?? {
       playerPtr: () => {},

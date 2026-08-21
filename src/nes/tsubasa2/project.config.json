@@ -1,35 +1,130 @@
-{
-  "setting": {
-    "es6": true,
-    "postcss": true,
-    "minified": true,
-    "uglifyFileName": false,
-    "enhance": true,
-    "packNpmRelationList": [],
-    "babelSetting": {
-      "ignore": [],
-      "disablePlugins": [],
-      "outputPath": ""
-    },
-    "useCompilerPlugins": ["typescript"],
-    "minifyWXML": true,
-    "compileWorklet": false,
-    "uploadWithSourceMap": true,
-    "packNpmManually": false,
-    "minifyWXSS": true,
-    "localPlugins": false,
-    "disableUseStrict": false,
-    "condition": false,
-    "swc": false,
-    "disableSWC": true
-  },
-  "compileType": "miniprogram",
-  "simulatorPluginLibVersion": {},
-  "packOptions": {
-    "ignore": [],
-    "include": []
-  },
-  "appid": "wxa5186294d8f02117",
-  "editorSetting": {},
-  "libVersion": "3.17.1"
+﻿{
+    "setting":  {
+                    "es6":  true,
+                    "postcss":  true,
+                    "minified":  true,
+                    "uglifyFileName":  false,
+                    "enhance":  true,
+                    "packNpmRelationList":  [
+
+                                            ],
+                    "babelSetting":  {
+                                         "ignore":  [
+
+                                                    ],
+                                         "disablePlugins":  [
+
+                                                            ],
+                                         "outputPath":  ""
+                                     },
+                    "useCompilerPlugins":  [
+                                               "typescript"
+                                           ],
+                    "minifyWXML":  true,
+                    "compileWorklet":  false,
+                    "uploadWithSourceMap":  true,
+                    "packNpmManually":  false,
+                    "minifyWXSS":  true,
+                    "localPlugins":  false,
+                    "disableUseStrict":  false,
+                    "condition":  false,
+                    "swc":  false,
+                    "disableSWC":  true
+                },
+    "compileType":  "miniprogram",
+    "simulatorPluginLibVersion":  {
+
+                                  },
+    "packOptions":  {
+                        "ignore":  [
+                                       {
+                                           "value":  "dist",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "_test_out",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "_test19",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "_tmp_bzk_out",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "asm",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "tools",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "output",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "docs",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "node_modules",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "src/game",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "src/core/debug",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "src/core/browser",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "test",
+                                           "type":  "folder"
+                                       },
+                                       {
+                                           "value":  "tsconfig.json",
+                                           "type":  "file"
+                                       },
+                                       {
+                                           "value":  "tsconfig.check.json",
+                                           "type":  "file"
+                                       },
+                                       {
+                                           "value":  "tsconfig.play.json",
+                                           "type":  "file"
+                                       },
+                                       {
+                                           "value":  "tsconfig.test.json",
+                                           "type":  "file"
+                                       },
+                                       {
+                                           "value":  "BUGS_OPENING.md",
+                                           "type":  "file"
+                                       },
+                                       {
+                                           "value":  "WBS_PLAN.md",
+                                           "type":  "file"
+                                       },
+                                       {
+                                           "value":  "README.md",
+                                           "type":  "file"
+                                       }
+                                   ],
+                        "include":  [
+
+                                    ]
+                    },
+    "appid":  "wxa5186294d8f02117",
+    "editorSetting":  {
+
+                      },
+    "libVersion":  "3.17.1"
 }

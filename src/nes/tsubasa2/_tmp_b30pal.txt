@@ -1,6 +1,0 @@
-id=21 off=0x43c84 row=14 50 74 49 02 07 07 0d 0b 0f 0b 36 f7 ff ff 7f
-id=22 off=0x43c8c row=0b 0f 0b 36 f7 ff ff 7f 3d 80 80 40 56 fa 34 bd
-id=0 row=07 07 07 03 01 00 00 10 3a 7f 7f ff fe ff ff ef
-id=1 row=3a 7f 7f ff fe ff ff ef d5 aa ac 26 fc fb f9 f9
-id=2 row=d5 aa ac 26 fc fb f9 f9 fd fc fe ff 30 f4 f6 f6
-id=3 row=fd fc fe ff 30 f4 f6 f6 fa fb bd 00 f7 ff ff 7f

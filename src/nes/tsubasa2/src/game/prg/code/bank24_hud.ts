@@ -22,7 +22,7 @@
  *        $F0 → 结束; $F1 → 跳转(后2B 绝对地址)
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import {
   readHud1Ptr,
   readHud2Ptr,
@@ -38,8 +38,8 @@ import {
   readB24U16,
   readB31,
   readB31U16,
-} from '../bank24-tables';
-import { T_LEVEL_MAP } from '../bank28-tables';
+} from '../data/bank24-tables';
+import { T_LEVEL_MAP } from '../data/bank28-tables';
 
 /** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
 function ramKey(addr: number): string {
@@ -179,7 +179,7 @@ const KEY_005F = 'ram_005F'; // 场景数据指针 lo
 const KEY_0060 = 'ram_0060'; // 场景数据指针 hi
 const KEY_0049 = 'ram_0049'; // 查询临时 (场景标志字节 $81AC[ram_0026])
 
-// 查询输入 (与其他 service 共享的 DataStore 键)
+// 查询输入 (与其他 service 共享的 RamStore 键)
 const KEY_001C = 'ram_001C'; // 输入状态 1 (bit7=确认/继续)
 const KEY_043C = 'ram_043C'; // 主队阵型/场景参数 (bit7)
 const KEY_05FB = 'ram_05FB'; // 状态标志
@@ -205,7 +205,7 @@ const FLAG_81AC: readonly number[] = [
 // ═══════════════════════════════════════════════════════════════
 
 export class Bank24HudService {
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   /** 比赛场景已初始化 (对应 $800F 一次性初始化段) */
   private _sceneActive = false;
@@ -756,7 +756,7 @@ export class Bank24HudService {
    *
    * VRAM 提交语义 (H5, 对应 bank30 $C951): [0]=count, [1]/[2]=NT 地址,
    * [3..] = tile 数据。$86E8 源地址 (0x2270/0x22B0/0x22F0/0x2330...) 即
-   * NT0 内的 HUD 文本位置。构建完成后 commitVramToNT() 写入 DataStore.nt0。
+   * NT0 内的 HUD 文本位置。构建完成后 commitVramToNT() 写入 RamStore.nt0。
    */
   private _sceneSub2(): void {
     const s = this._store;
@@ -1164,7 +1164,7 @@ export class Bank24HudService {
     }
   }
 
-  /** 读 RAM 字节 (DataStore 键, 未写返回 0) */
+  /** 读 RAM 字节 (RamStore 键, 未写返回 0) */
   private _readRamByte(addr: number): number {
     const key = `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
     return this._store.read(key);
@@ -1389,7 +1389,7 @@ export class Bank24HudService {
 
   /** 对应固定区 $C533 (HUD 行1 渲染同步) */
   private _fixedC533(): void {
-    // H5: 文本流写已直接进入 DataStore, 无需硬件同步
+    // H5: 文本流写已直接进入 RamStore, 无需硬件同步
   }
 
   /** 对应固定区 $C515 (渲染同步等待) */

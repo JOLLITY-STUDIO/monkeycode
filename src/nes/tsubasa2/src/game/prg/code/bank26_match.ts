@@ -29,7 +29,7 @@
  *   [18] $9731  阵型编辑
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 
 /** 真实 RAM 键 (4 位大写补零, 与全库 ram_XXXX 约定一致, 防断链) */
 function ramKey(addr: number): string {
@@ -66,7 +66,7 @@ import {
   T_9F79,
   T_9FB9,
   T_9FF0,
-} from '../bank26-tables';
+} from '../data/bank26-tables';
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
@@ -154,7 +154,7 @@ export const PHASE_CORNER = 3;
 // ═══════════════════════════════════════════════════════════════
 
 export class MatchEngineService {
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   // ──────────────────────────────────────────────
   // $8000: 入口跳转表

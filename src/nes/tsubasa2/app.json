@@ -1,13 +1,6 @@
 {
   "pages": [
-    "pages/tsubasa2/tsubasa2",
-    "pages/bankpage/bankpage",
-    "pages/bankpage/bank-detail/bank-detail",
-    "pages/bankpage/bank-detail-02/bank-detail",
-    "pages/bankpage/bank-detail-12/bank-detail",
-    "pages/bankpage/bank-detail-29/bank-detail",
-    "pages/bankpage/bank-detail-30/bank-detail",
-    "pages/bankpage/bank-detail-31/bank-detail"
+    "pages/tsubasa2/tsubasa2"
   ],
   "window": {
     "navigationBarTitleText": "天使之翼2 (H5引擎)",

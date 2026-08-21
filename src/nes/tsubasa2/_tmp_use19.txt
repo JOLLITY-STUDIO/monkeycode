@@ -1,7 +1,0 @@
-src\game\index.ts:27|*   Bank 19 → Bank19Service (辅助逻辑)
-src\game\index.ts:46|export { Bank19Service } from './service/bank19_auxiliary.service';
-src\game\index.ts:46|export { Bank19Service } from './service/bank19_auxiliary.service';
-src\game\service\bank19_auxiliary.service.ts:45|// Bank19Service
-src\game\service\bank19_auxiliary.service.ts:48|export class Bank19Service {
-src\game\service\bank19_auxiliary.service.ts:34|export const BANK19_STREAM_OFFSET = 0x1467;
-src\game\service\bank19_auxiliary.service.ts:73|start(streamOffset: number = BANK19_STREAM_OFFSET): void {

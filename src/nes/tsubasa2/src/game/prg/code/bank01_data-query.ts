@@ -15,9 +15,9 @@
  *   入口8 $B050 — Bank 切换 + 数据加载
  *   入口9 $A39B — 球队数据初始化
  */
-import { DataStore } from '../DataStore';
-import type { Player, Team, PlayerStats } from '../model-types';
-import { PlayerPosition, FormationType } from '../model-types';
+import { RamStore } from '../../../core/ram';
+import type { Player, Team, PlayerStats } from '../data/model-types';
+import { PlayerPosition, FormationType } from '../data/model-types';
 import { MeetingMenu, TeamDataMenu, ChangeMenu, LevelMenu } from '../data/scene/index';
 import {
   CHR_COPY_A,
@@ -49,7 +49,7 @@ import {
   TEAM_BLOCK_0C,
   TEAM_BLOCK_10,
   TEAM_GFX_BASE,
-} from '../bank01-more-tables';
+} from '../data/bank01-more-tables';
 import { CHAR_MAP_DOUBLE } from './bank00/char-map';
 import { ScriptVM } from './bank00/script-vm';
 import { getScriptData } from './bank00/script-data-loader';
@@ -182,7 +182,7 @@ export class DataQueryService {
     levelDetailMode: 0, // 等级查看详情模式 (0=能力, 1=必杀技)
   };
 
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   // ── 主入口 (每帧调用) ──
   // $A201: 主循环 → 屏幕选择管理器

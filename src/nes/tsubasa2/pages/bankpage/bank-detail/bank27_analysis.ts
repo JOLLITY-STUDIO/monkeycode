@@ -27,11 +27,11 @@
 // 1. bank27 精灵选组: 动画块首字节 (OAM 属性 attr) 低 2 位 → SPR 组 0-3
 //    对应 H5 OamManager.ts:226 `palette = slot.attr & 0x03`
 //    实测 30 个动画块中: SPR0 (attr&3=0)、SPR1 (attr&3=1)、块 19/27/28/29 用 SPR3
-// 2. 颜色值定义: game/bank00_core.service.ts PALETTE_TABLE_0D (32B, PPU $3F00-$3F1F)
+// 2. 颜色值定义: game/bank00_core.ts PALETTE_TABLE_0D (32B, PPU $3F00-$3F1F)
 //    $3F10-$3F1F = 精灵调色板 4 组 (SPR_OFFSETS = [0x10,0x14,0x18,0x1C])
 // 3. 写入流程: paletteInit(0x0D) → palWriteAll(PALETTE_TABLE_0D) → paletteRAM
 //    (data/pallete/paletteManager.ts, 对应 PPU $3F00-$3F1F)
-//    调用点: game/bank02_scene.service.ts 场景完整初始化
+//    调用点: game/bank02_scene.ts 场景完整初始化
 // 4. 颜色换算: nesColorToRGBA + NES_PALETTE (data/pallete/nes-pallete-table.ts)
 // 5. ⚠ ROM 真实链路 (待提取): bank00 $8297(paletteInit)→$9085→切 bank09
 //    $A000+palIdx*2 指针表 → 数据流 + bank00 $978B 32B 模板。
@@ -123,13 +123,13 @@ const data = {
   // ── 架构说明 ──
   architecture: {
     role: "精灵/场景动画数据 + 动画帧推进 — 被 Bank 30/31 切到 $A000 窗口读取精灵数据",
-    pattern: "Bank 27 是数据为主 + 极少量代码的混合 bank。代码段只有两个入口: entry_8104 (场景/精灵数据加载, 输出到名字区 9 号槽) 和 entry_81EE (动画帧推进, 构建 OAM 影子缓冲)。\n\nbank27 表数据均位于本 bank 的 $A000-$BFFF 窗口 (物理偏移 = cpuAddr - 0xA000), 代码通过 MMC3 双窗口映射直接访问。\n\n动画渲染链路: 动画脚本指针表($A292) → 帧延迟/块索引对 → 精灵动画块指针表($A42A) → 动画块数据 [count, tileLo, tileHi, tile×count] → OamManager 影子缓冲 → emitSprites() 输出 DataStore.sprites → 渲染器消费。\n\n调色板链路: 动画块首字节 attr 低 2 位选 SPR 组 → 颜色值来自 PALETTE_TABLE_0D (bank00_core.service.ts) → paletteRAM $3F10-$3F1F (SPR_OFFSETS) → nesColorToRGBA + NES_PALETTE 换算 RGBA。",
+    pattern: "Bank 27 是数据为主 + 极少量代码的混合 bank。代码段只有两个入口: entry_8104 (场景/精灵数据加载, 输出到名字区 9 号槽) 和 entry_81EE (动画帧推进, 构建 OAM 影子缓冲)。\n\nbank27 表数据均位于本 bank 的 $A000-$BFFF 窗口 (物理偏移 = cpuAddr - 0xA000), 代码通过 MMC3 双窗口映射直接访问。\n\n动画渲染链路: 动画脚本指针表($A292) → 帧延迟/块索引对 → 精灵动画块指针表($A42A) → 动画块数据 [count, tileLo, tileHi, tile×count] → OamManager 影子缓冲 → emitSprites() 输出 DataStore.sprites → 渲染器消费。\n\n调色板链路: 动画块首字节 attr 低 2 位选 SPR 组 → 颜色值来自 PALETTE_TABLE_0D (bank00_core.ts) → paletteRAM $3F10-$3F1F (SPR_OFFSETS) → nesColorToRGBA + NES_PALETTE 换算 RGBA。",
     h5Files: [
       "src/game/bank27_minimal.service.ts — Bank27Service (entry_8104 / entry_81EE / 固定辅助语义化)",
       "src/data/bank27-data.ts — 原始字节 + 结构化表访问 (readB27 / readB27U16 / readB27Decrement / readB27AnimScriptPtr / readB27AnimBlockPtr / readB27ScenePtr / readB27SceneDataPtr)",
       "src/data/OamManager.ts — 精灵输出统一管理 (palette = attr & 0x03)",
       "src/data/pallete/paletteManager.ts — paletteRAM $3F00-$3F1F (SPR_OFFSETS=[0x10,0x14,0x18,0x1C])",
-      "src/game/bank00_core.service.ts — PALETTE_TABLE_0D (32B 调色板, 当前为占位数据)",
+      "src/game/bank00_core.ts — PALETTE_TABLE_0D (32B 调色板, 当前为占位数据)",
     ],
   },
 };

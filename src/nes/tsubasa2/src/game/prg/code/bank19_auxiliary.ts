@@ -23,9 +23,9 @@
  * 外部通过 start() 开始播放, update() 每帧驱动 (渲染层消费 oam/NT)。
  */
 
-import { DataStore } from '../DataStore';
-import PRG_BANK_19 from '../prg-bank-19';
-import PRG_BANK_31 from '../prg-bank-31'; // $FBCC 调色板表 (固定区)
+import { RamStore } from '../../../core/ram';
+import PRG_BANK_19 from '../data/prg-bank-19';
+import PRG_BANK_31 from '../data/prg-bank-31'; // $FBCC 调色板表 (固定区)
 
 // ═══════════════════════════════════════════════════════════════
 // 常量 (地址均为本 bank 数组内索引)
@@ -93,7 +93,7 @@ export class Bank19Service {
   /** $B349 场景重置初始延时帧数 (ram_004A 递减前的 $60 帧) */
   private _sceneDelay = 0;
 
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   // ──────────────────────────────────────────────
   // 公开接口
@@ -669,5 +669,5 @@ export class Bank19Service {
     return this.readByte(addr) | (this.readByte(addr + 1) << 8);
   }
 
-  get store(): DataStore { return this._store; }
+  get store(): RamStore { return this._store; }
 }

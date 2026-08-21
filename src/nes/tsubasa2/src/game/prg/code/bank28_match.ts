@@ -24,7 +24,7 @@
  *       10 项语义化 dispatch (索引 0-9), 其余入口在覆盖清单中列出。
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import {
   B28_CPU_BASE,
   readB28,
@@ -49,7 +49,7 @@ import {
   T_LEVEL_MAP,
   T_TEAM_8528,
   T_ATTR_ROLE_8A9D,
-} from '../bank28-tables';
+} from '../data/bank28-tables';
 
 // ── RAM 键 (语义化, 替代 NES ZP/内存地址) ──
 const KEY_32 = 'ram_0032'; // 16bit 指针/临时 lo
@@ -131,7 +131,7 @@ interface IndirectPtr { lo: number; hi: number; }
 // ═══════════════════════════════════════════════════════════════
 
 export class Bank28MatchService {
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   // ──────────────────────────────────────────────
   // $8003: 入口跳转表 + 等级查询

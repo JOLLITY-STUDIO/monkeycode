@@ -15,7 +15,7 @@
  * H5: 每帧调用 update()，由外部渲染器消费 displayState 绘制。
  */
 
-import type { DataStore } from '../../DataStore';
+import type { RamStore } from '../../../../core/ram';
 import { BUTTON } from '../../../../core/types';
 import { OpeningShot } from '../../data/scene/index';
 import { ScriptVM, type ScriptVMState, type ScriptTextLine } from './script-vm';
@@ -25,11 +25,11 @@ import {
   BOOT_NT0, BOOT_ATTR0, BOOT_OAM, BOOT_BG_PALETTE, BOOT_SPR_PALETTE,
   BOOT_BG_CHR_BANK, bootFadeStep, bootFadeByte,
 } from '../../data/ppu/nametable/cut/cut_0x00_boot';
-import { spriteAttrToPalette } from '../../data/ppu/chr/chr-slot-mapper';
-import { BANK06_MODE_BLOCK_DATA, BANK06_MODE_BLOCK_BASE } from '../../bank06-data';
+
+import { BANK06_MODE_BLOCK_DATA, BANK06_MODE_BLOCK_BASE } from '../../data/bank06-data';
 import { NES_PALETTE } from '../../data/ppu/pallete/nes-pallete-table';
 import { palWriteAll } from '../../data/ppu/pallete/paletteManager';
-import type { PaletteTable, PaletteEntry } from '../../model-types';
+import type { PaletteTable, PaletteEntry } from '../../data/model-types';
 
 // ═══════════════════════════════════════════════════════════════
 // Cut 0x17 标题菜单真实 CHR bank
@@ -144,7 +144,7 @@ export interface OpeningDisplayState {
 // ═══════════════════════════════════════════════════════════════
 
 export class OpeningSceneController {
-  private _store: DataStore;
+  private _store: RamStore;
 
   /** 当前镜头 */
   private _shot: OpeningShot = OpeningShot.LOGO;
@@ -190,7 +190,7 @@ export class OpeningSceneController {
   private _scriptLoopCount = 0;
 
   /**
-   * Cut 0x17 NT 是否已灌入 DataStore。
+   * Cut 0x17 NT 是否已灌入 RamStore。
    * 注: Bank00 主循环的首帧会执行 ntAttrClear() 清空 NT,
    *     因此开场控制器的首帧 update() 必须重新灌入一次。
    */
@@ -227,7 +227,7 @@ export class OpeningSceneController {
     [OpeningShot.WORLD_CUP]: 3,     // 世界杯标题文字块
   };
 
-  constructor(store: DataStore) {
+  constructor(store: RamStore) {
     this._store = store;
   }
 
@@ -314,7 +314,7 @@ export class OpeningSceneController {
   }
 
   // ──────────────────────────────────────────────
-  // Cut 0x17 解码数据应用 (纯数据 → DataStore)
+  // Cut 0x17 解码数据应用 (纯数据 → RamStore)
   // ──────────────────────────────────────────────
 
   /**
@@ -342,7 +342,7 @@ export class OpeningSceneController {
   }
 
   /**
-   * 写入 BOOT 真实画面 (NT + 精灵) 到 DataStore。
+   * 写入 BOOT 真实画面 (NT + 精灵) 到 RamStore。
    * 对应原版 BOOT 场景加载链 (bank0 $8AF7 场景 → 共享渲染子程写 NT/OAM):
    *   - NT tile: BG pattern table 0 → H5 8KB CHR bank 0 (tile 原样)
    *   - OAM 精灵: 40 个, 已按 BOOT_CHR_SLOTS 翻译成 H5 (bank, h5Tile)
@@ -381,7 +381,7 @@ export class OpeningSceneController {
       x: e.x,
       y: e.y + 1,
       tile: e.h5Tile,
-      palette: spriteAttrToPalette(e.attr),
+      palette: e.attr & 0x03,
       priority: false,
       flipH: false,
       flipV: false,
@@ -407,7 +407,7 @@ export class OpeningSceneController {
     // ⚠️ BUG-OPEN-05 修复 (黑屏根因): 调色板必须写入 paletteManager.paletteRAM,
     //   PpuSync.syncPalette() 从 paletteRAM (palRead) 读取后刷入 PPU vramMem[0x3F00]
     //   → updatePalettes() → imgPalette → renderBgScanline 取色。此前只写
-    //   DataStore.paletteTable (setPaletteTable), 那是 H5 帧合成器消费路径,
+    //   RamStore.paletteTable (setPaletteTable), 那是 H5 帧合成器消费路径,
     //   PPU 渲染读不到 → 调色板恒黑 → 开场黑屏。
     //   这里把渐显后的 32 字节 NES 索引 (16 BG + 16 SPR) 一并写入 paletteRAM,
     //   与 Bank00RenderView.paletteLoad 的 palWriteAll 桥接一致。
@@ -489,7 +489,7 @@ export class OpeningSceneController {
    * 加载指定显示模式的精灵/NT 模式块 (SET_MODE 语义)。
    *
    * 原版: bank6 $BB40 指针表 + $97B6 解码 → PPU Buffer → NMI 刷 Nametable。
-   * H5: 解析模式块 → 直接写 DataStore NT。
+   * H5: 解析模式块 → 直接写 RamStore NT。
    *
    * mode 0-3 有有效块链 (已验证); mode 4+ 原版即指向垃圾区不产生画面,
    * 表缩为 4 项后自然 return, 与原始行为一致。

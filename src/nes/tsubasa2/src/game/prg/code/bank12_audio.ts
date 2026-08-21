@@ -23,7 +23,7 @@
  *   $81DB: 音量/衰减处理
  */
 
-import type { DataStore } from '../DataStore';
+import type { RamStore } from '../../../core/ram';
 import PAPU from '../../../core/papu';
 import { Bank12AudioEngine } from './bank12_audio_engine';
 
@@ -87,7 +87,7 @@ export class Bank12AudioService {
   private _bank12: Uint8Array = new Uint8Array(0);
   private _bank15: Uint8Array = new Uint8Array(0);
 
-  constructor(_store: DataStore, _audioOut?: IAudioOutput) {
+  constructor(_store: RamStore, _audioOut?: IAudioOutput) {
     // 直接用 PAPU 完整模拟 NES APU (不再需要 PapuOutput 桥接层)
     this._papu = new PAPU();
     this._engine = new Bank12AudioEngine(this._papu);

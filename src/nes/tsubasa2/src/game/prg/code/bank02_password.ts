@@ -43,7 +43,7 @@
  *   见 _verifyPassword 注释的 trace 方案。
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import { BUTTON } from '../../../core/types';
 
 /** $A491 地址表 (idx→运行时$A4xx目标, 24 项) — 对应 $8484 分发器
@@ -152,7 +152,7 @@ export class PasswordController {
   /** 帧计数 (驱动光标闪烁) */
   private _frame = 0;
 
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   /**
    * 初始化密码输入场景 — 对应 $A4C0:

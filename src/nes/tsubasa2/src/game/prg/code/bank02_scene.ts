@@ -9,7 +9,7 @@
  * 原始 $A21B: RESET 后首个业务入口 — 初始化完毕后 JMP $9EED 进入 Bank00 主循环。
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import { Bank00Service } from './bank00/bank00_core';
 import type { Bank30Service } from './bank30_init';
 import { trace } from '../../../core/debug/trace';
@@ -18,7 +18,7 @@ import {
   FIELD_TILES,
   FIELD_KIND,
   SCENE_SCRIPT,
-} from '../bank02-tables';
+} from '../data/bank02-tables';
 
 // ── 常量 ──
 
@@ -58,14 +58,14 @@ const SCROLL_DELTA: readonly number[] = [
 
 export class Bank02Service {
   constructor(
-    private _store: DataStore,
+    private _store: RamStore,
     private _bank00: Bank00Service,
     private _bank30?: Bank30Service,
   ) {}
 
   // ── 公开接口 ──
 
-  get store(): DataStore { return this._store; }
+  get store(): RamStore { return this._store; }
   get bank00(): Bank00Service { return this._bank00; }
 
   // ──────────────────────────────────────────────

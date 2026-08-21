@@ -31,10 +31,10 @@
  * Service 保留业务逻辑 (状态机/场景调度/帧循环) 并委托渲染方法。
  */
 
-import { DataStore } from '../../DataStore';
-import { getSceneBgGrp } from '../../bank07-data';
-import { BANK06_TABLE_LOAD_DATA } from '../../bank06-data';
-import { Bank00RenderView } from '../../view/bank00/Bank00RenderView';
+import { RamStore } from '../../../../core/ram';
+import { getSceneBgGrp } from '../../data/bank07-data';
+import { BANK06_TABLE_LOAD_DATA } from '../../data/bank06-data';
+import { Bank00RenderView } from '../view/bank00/Bank00RenderView';
 import { getScriptBank } from './script-opcodes';
 import { getScriptData } from './script-data-loader';
 import { CHAR_MAP_DOUBLE } from './char-map';
@@ -110,7 +110,7 @@ export class Bank00Service {
   /** BOOT 协程是否已 spawn (首帧只 spawn 一次) */
   private _bootSpawned = false;
 
-  constructor(private _store: DataStore) {
+  constructor(private _store: RamStore) {
     this._render = new Bank00RenderView(_store);
   }
 
@@ -121,7 +121,7 @@ export class Bank00Service {
 
   // ── 公共接口 ──
 
-  get store(): DataStore { return this._store; }
+  get store(): RamStore { return this._store; }
   get frameCount(): number { return this._frameCount; }
   get renderView(): Bank00RenderView { return this._render; }
   get isRunning(): boolean { return this._running; }
@@ -361,7 +361,7 @@ export class Bank00Service {
     // 首帧数据已由 _firstFrameInit → _opening.initBoot() 灌入; 此处仅推进动画
     this._shotFrame = 0;
     for (;;) {
-      const buttons = yield;
+      const buttons = (yield) as number;
       this._shotFrame++;
       // 调色板渐显 (对应 bank0 $9A71 fade + $9A0D 帧等待)
       if (this._opening) this._opening.syncBootFrame(this._shotFrame);
@@ -375,7 +375,7 @@ export class Bank00Service {
   private *_titleCoroutine(): Generator<number, number | void, number> {
     if (this._opening) this._opening.init();  // Cut 0x17 标题菜单背景
     for (;;) {
-      const buttons = yield;
+      const buttons = (yield) as number;
       if (this._opening) this._opening.update(buttons);  // ⚠️ OpeningSceneController.update 被调 (阶段3验证点)
       // TODO: 标题菜单 KICK OFF/CONTINUE 选择逻辑 (细节后续打磨)
     }

@@ -19,7 +19,7 @@
  *   $8C96        — 球员属性指针 ($BC48)
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import {
   readBank29,
   readBank29U16,
@@ -39,7 +39,7 @@ import {
   type RosterPlayerSlot,
   getCpuRoster,
   getRosterByAddr,
-} from '../team/roster';
+} from '../data/team/roster';
 
 // ── RAM 键 ──
 const KEY_26 = 'ram_0026';   // 当前球队 ID
@@ -62,11 +62,11 @@ const BASE_056A = 0x056A;
 const BASE_0368 = 0x0368;
 
 /** 按球队读 ram_0454 区域槽位 (16bit) */
-function read0454(store: DataStore, slot: number): number {
+function read0454(store: RamStore, slot: number): number {
   return store.read(ramKey(BASE_0454 + slot * 2));
 }
 
-function write0454(store: DataStore, slot: number, val: number): void {
+function write0454(store: RamStore, slot: number, val: number): void {
   store.write(ramKey(BASE_0454 + slot * 2), val & 0xFF);
 }
 
@@ -75,7 +75,7 @@ function write0454(store: DataStore, slot: number, val: number): void {
  * 翻译 bank_01 中消费 $BAxx-$BExx 数据的逻辑 (全部 38 处引用)
  */
 export class Bank29RosterService {
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   // ──────────────────────────────────────────────
   // 加载 (对应 Bank30/26/31 的 bank 切换 API)

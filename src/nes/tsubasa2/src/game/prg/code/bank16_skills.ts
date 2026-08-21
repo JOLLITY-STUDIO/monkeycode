@@ -37,7 +37,7 @@
  *   $8021×1 $803F×1 $80CF×1 $80F6×2 $812F×2 $8142×1 $8211×2
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import {
   readB16,
   readB16U16,
@@ -61,7 +61,7 @@ import {
   readB16Table86E3,
   readB16AnimAction,
   readB16AnimHigh,
-} from '../bank16-data';
+} from '../data/bank16-data';
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
@@ -139,7 +139,7 @@ const KEY_0638 = 'ram_0638'; // 场地线性索引
 // ═══════════════════════════════════════════════════════════════
 
 export class Bank16Service {
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   /** 解释器退出标志 (对应 $80CF PLA;PLA 丢弃返回地址后 RTS 直接回到外层) */
   private _exitFlag = false;
@@ -156,7 +156,7 @@ export class Bank16Service {
     return readB16U16(addr);
   }
 
-  get store(): DataStore { return this._store; }
+  get store(): RamStore { return this._store; }
 
   // ──────────────────────────────────────────────
   // 固定区辅助 (bank30, H5 语义化)

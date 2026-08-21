@@ -15,7 +15,7 @@
  *
  * 数据来源文档: docs/rom-data-locations.md
  */
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 
 /** 经验值 RAM 基址 (16bit per player) */
 const EXP_RAM_BASE = 0x0454;
@@ -52,7 +52,7 @@ export interface PlayerRamSlot {
 }
 
 export class LevelUpService {
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   // ── 经验值 ──
 

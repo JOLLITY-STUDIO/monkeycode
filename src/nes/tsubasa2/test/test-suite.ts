@@ -13,17 +13,17 @@
  */
 
 import { Tsubasa2 } from '../src/index';
-import { DataStore } from '../src/game/data/DataStore';
+import { DataStore } from '../src/game/prg/data/DataStore';
 import { Renderer } from '../src/core/engine/render/Renderer';
-import { Bank00Service } from '../src/game/service/bank00/bank00_core.service';
-import { Bank12AudioService } from '../src/game/service/bank12_audio.service';
-import { Bank30Service } from '../src/game/service/bank30_init.service';
-import { Bank02Service } from '../src/game/service/bank02_scene.service';
-import { Bank16Service } from '../src/game/service/bank16_skills.service';
-import { OamManager } from '../src/game/data/prg/DataStore';
+import { Bank00Service } from '../src/game/prg/code/bank00/bank00_core';
+import { Bank12AudioService } from '../src/game/prg/code/bank12_audio';
+import { Bank30Service } from '../src/game/prg/code/bank30_init';
+import { Bank02Service } from '../src/game/prg/code/bank02_scene';
+import { Bank16Service } from '../src/game/prg/code/bank16_skills';
+import { OamManager } from '../src/game/prg/DataStore';
 import { WebAudioOutput } from '../src/core/engine/audio/WebAudioOutput';
 import { BUTTON, NES_WIDTH, NES_HEIGHT } from '../src/core/types';
-import { SceneRoot } from '../src/game/data/scene';
+import { SceneRoot } from '../src/game/prg/data/scene';
 import { log, assert, sleep, screenshot, progress } from './utils';
 
 export interface TestResult {
@@ -270,8 +270,8 @@ export async function runUnitTests(ctx: TestContext): Promise<void> {
 
   // 1.8 ScriptVM 脚本虚拟机
   {
-    const { ScriptVM } = await import('../src/game/service/bank00/script-vm');
-    const { getScriptData } = await import('../src/game/service/bank00/script-data-loader');
+    const { ScriptVM } = await import('../src/game/prg/code/bank00/script-vm');
+    const { getScriptData } = await import('../src/game/prg/code/bank00/script-data-loader');
 
     // 脚本 0x00 存在性
     const script00 = getScriptData(0x00);
@@ -430,8 +430,8 @@ export async function runIntegrationTests(ctx: TestContext): Promise<void> {
 
   // 2.8 OpeningSceneController 脚本驱动模式集成测试
   {
-    const { OpeningSceneController } = await import('../src/game/service/bank00/scene_opening.controller');
-    const { OpeningShot } = await import('../src/game/data/prg/scene/index');
+    const { OpeningSceneController } = await import('../src/game/prg/code/bank00/scene_opening.controller');
+    const { OpeningShot } = await import('../src/game/prg/data/scene/index');
     const store = new DataStore();
     const ctrl = new OpeningSceneController(store);
 

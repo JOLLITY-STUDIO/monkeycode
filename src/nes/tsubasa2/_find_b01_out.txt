@@ -1,9 +1,0 @@
-bank_01_part01.asm:87: C - - - - - 0x0020AD 00:809D: 20 02 A4  JSR $A402
-bank_01_part01.asm:333: C - - - - - 0x0022B0 00:82A0: 20 74 A4  JSR $A474
-bank_01_part01.asm:337: C - - - - - 0x0022B8 00:82A8: 20 02 A4  JSR $A402
-bank_01_part01.asm:726: C - - - - - 0x0025CD 00:85BD: 20 A9 82  JSR $82A9
-bank_01_part01.asm:797: C - - - - - 0x00266A 00:865A: 20 A9 82  JSR $82A9
-bank_01_part01.asm:834: C - - - - - 0x0026BA 00:86AA: 20 A9 82  JSR $82A9
-bank_01_part01.asm:838: C - - - - - 0x0026C5 00:86B5: 20 A9 82  JSR $82A9
-bank_01_part01.asm:846: C - - - - - 0x0026DC 00:86CC: 20 A9 82  JSR $82A9
-bank_01_part01.asm:863: C D 1 - - - 0x002709 00:86F9: 20 A9 82  JSR $82A9

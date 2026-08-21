@@ -1,10 +1,22 @@
 /**
  * 天使之翼2 — 微信小程序游戏页面 + NT 交叉测试
+ *
+ * 使用 BrowserMini (借鉴 core/browser 的小程序版主板外壳) 封装:
+ *   - Canvas/帧定时/音频/输入 统一由 BrowserMini 管理
+ *   - page 只负责 WXML 事件 → BrowserMini.input API 转发
  */
 
-import { Tsubasa2 } from '../../src/index';
-import { DataStore } from '../../src/index';
-import { NES_WIDTH, NES_HEIGHT, TILE_PX, NT_COLS, NT_ROWS } from '../../src/index';
+import { BrowserMini, NES_WIDTH, NES_HEIGHT, TILE_PX, NT_COLS, NT_ROWS } from '../../src/index';
+import {
+  BUTTON_A, BUTTON_B, BUTTON_START,
+  BUTTON_UP, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT,
+} from '../../src/index';
+import type { GameInstance } from '../../src/index';
+import InputMini from '../../src/core/browser-mini/input';
+
+// TODO: DataStore 待 game/prg 层恢复后从 '../../src/index' 重新导入
+// 当前 NT 测试模式用 any 占位, 切换到 nt_test 时会提示不可用
+type DataStore = any;
 
 type PageMode = 'game' | 'nt_test';
 
@@ -48,8 +60,7 @@ Page({
     },
   } as PageData,
 
-  _game: null as Tsubasa2 | null,
-  _ctx: null as any,
+  _bm: null as BrowserMini | null,
   _debugTimer: 0,
   _ntTest: null as NtTestState | null,
   _mainCtx: null as any,
@@ -68,7 +79,7 @@ Page({
 
   onUnload() {
     if (this._debugTimer) clearInterval(this._debugTimer);
-    if (this._game) this._game.stop();
+    if (this._bm) this._bm.stop();
     this._stopNtTest();
   },
 
@@ -89,12 +100,26 @@ Page({
 
         const canvas = res[0].node;
         const areaRect = res[1] || {};
-        // 开机自动根据容器算最大整数倍 scale
-        const scale = this._calcFillScale(areaRect.width || 0, areaRect.height || 0);
-        this._applyScale(canvas, scale);
-        this.setData({ canvasScale: scale });
 
-        this._startGame(canvas, this._mainCtx.ctx);
+        // 先实例化 BrowserMini (内部已设 canvas 内部分辨率 256×240)
+        this._bm = new BrowserMini({
+          canvas,
+          mode: 'h5',
+          onStatus: (status) => this.setData({ status }),
+          onError: (e) => {
+            console.error('[Tsubasa2] 运行错误:', e);
+            this.setData({ status: '错误: ' + e.message });
+          },
+        });
+
+        // 自适应父容器 (ScreenMini.fitInParent 内部按 256:240 等比缩放 + 设 CSS 显示尺寸)
+        const fit = this._bm.fitInParent(areaRect.width || 0, areaRect.height || 0);
+        this.setData({ canvasStyleW: fit.w, canvasStyleH: fit.h });
+
+        // 保留 mainCtx 供 NT 测试切换时复用 canvas
+        this._mainCtx = { canvas, ctx: canvas.getContext('2d'), scale: fit.w / NES_WIDTH };
+
+        this._startGame(canvas);
       });
     } catch (err) {
       console.error('[Tsubasa2] 初始化失败:', err);
@@ -102,81 +127,66 @@ Page({
     }
   },
 
-  _startGame(canvas: any, ctx: any) {
-    this._game = new Tsubasa2(ctx, {
-      scale: 1,
-      debug: true,
-      aiMode: this.data.aiMode,
-    });
+  _startGame(_canvas: any) {
+    // TODO: 游戏主类 (Tsubasa2) 恢复后取消注释
+    // const { Tsubasa2 } = await import('../../src/game/Tsubasa2');
+    // const ctx = _canvas.getContext('2d');
+    // const game = new Tsubasa2(ctx, { scale: 1, debug: true, aiMode: this.data.aiMode });
+    // game.start(_canvas);
+    // this._bm.setGame(game);
+
+    // 当前 stub: 空游戏实例 (等待 Tsubasa2 主类恢复)
+    const stubGame: GameInstance = {
+      start: () => {},
+      stop: () => {},
+      setButtons: () => {},
+      getDebugInfo: () => ({ frame: 0, gameStateName: 'STUB', fps: 0 }),
+      enableAi: () => {},
+      disableAi: () => {},
+    };
+    this._bm!.setGame(stubGame);
+
     this._startDebugTimer();
-    this._game.start(canvas);
-    this.setData({ status: '运行中', pageMode: 'game' });
+    this._bm!.start().then(() => {
+      this.setData({ pageMode: 'game', status: '运行中 (stub - 待 Tsubasa2 主类恢复)' });
+    }).catch((e: Error) => {
+      console.error('[Tsubasa2] 启动失败:', e);
+      this.setData({ status: '启动失败: ' + e.message });
+    });
   },
 
   _startDebugTimer() {
     this._debugTimer = setInterval(() => {
-      if (!this._game) return;
-      const info = this._game.getDebugInfo();
+      if (!this._bm?.game) return;
+      const info = this._bm.game.getDebugInfo();
       this.setData({
         debugInfo: { frame: info.frame, gameStateName: info.gameStateName },
-        fps: String(info.fps),
+        fps: String(this._bm.fps || info.fps),
       });
     }, 500);
   },
 
-  // ══════════════════════════════════════════
-  // Canvas 自适应缩放
-  // ══════════════════════════════════════════
-
-  /**
-   * 根据容器计算最大 tile 对齐的缩放比例（每个 tile 8px 必须放大到整像素）
-   * scale 只能是 n/8 的倍数：如 1, 1.125, 1.25, ..., 2, 2.125, ...
-   */
-  _calcFillScale(containerW: number, containerH: number): number {
-    if (containerW <= 0 || containerH <= 0) return 1;
-    const raw = Math.min(containerW / NES_WIDTH, containerH / NES_HEIGHT);
-    // 单个 tile 放大后的整像素数（最小 8 = 1x scale）
-    const tilePx = Math.max(8, Math.floor(raw * 8));
-    const scale = tilePx / 8;
-    console.log(`[SCALE] container=${containerW}x${containerH}  raw=${raw.toFixed(3)}  tilePx=${tilePx}  scale=${scale.toFixed(3)}`);
-    return scale;
-  },
-
-  /** 设置 canvas 尺寸 + ctx.scale + CSS 显示尺寸（scale 对齐后尺寸必为整数） */
-  _applyScale(canvas: any, scale: number) {
-    // NES_WIDTH=32×8, NES_HEIGHT=30×8, scale×8=整数 → 尺寸必为整数
-    const w = NES_WIDTH * scale;
-    const h = NES_HEIGHT * scale;
-    canvas.width = w;
-    canvas.height = h;
-
-    const ctx = canvas.getContext('2d')!;
-    ctx.scale(scale, scale);
-
-    this._mainCtx = { canvas, ctx, scale };
-    this._ctx = ctx;
-
-    this.setData({ canvasStyleW: w, canvasStyleH: h, canvasScale: Math.round(scale * 10) / 10 });
-    console.log(`[SCALE] scale=${scale.toFixed(3)}x  canvas=${w}×${h}`);
-  },
-
-  /** 满屏 ↔ 原始大小 切换 */
+  /** 满屏 ↔ 原始大小 切换 (委托 BrowserMini.fitInParent) */
   toggleScale() {
+    if (!this._bm) return;
     const mc = this._mainCtx;
     if (!mc?.canvas) return;
 
     const isFilled = mc.scale > 1;
     if (isFilled) {
-      this._applyScale(mc.canvas, 1);
-      this.setData({ status: 'Canvas 1x' });
+      // 切回 1x (用 fitInParent 传 NES 原始尺寸)
+      const fit = this._bm.fitInParent(NES_WIDTH, NES_HEIGHT);
+      mc.scale = 1;
+      this.setData({ canvasScale: 1, canvasStyleW: fit.w, canvasStyleH: fit.h, status: 'Canvas 1x' });
     } else {
+      // 切满屏
       const query = wx.createSelectorQuery().in(this);
       query.select('#canvas-area').boundingClientRect();
       query.exec((res: any) => {
         const rect = res?.[0] || {};
-        const fill = this._calcFillScale(rect.width || 0, rect.height || 0);
-        this._applyScale(mc.canvas, fill);
-        this.setData({ status: `Canvas ${fill}x` });
+        const fit = this._bm!.fitInParent(rect.width || 0, rect.height || 0);
+        mc.scale = fit.w / NES_WIDTH;
+        this.setData({ canvasScale: mc.scale, canvasStyleW: fit.w, canvasStyleH: fit.h, status: `Canvas ${mc.scale.toFixed(1)}x` });
       });
     }
   },
@@ -186,9 +196,9 @@ Page({
   // ══════════════════════════════════════════
 
   switchToNtTest() {
-    if (this._game) {
-      this._game.stop();
-      this._game = null;
+    if (this._bm) {
+      this._bm.stop();
+      this._bm = null;
     }
     if (this._debugTimer) clearInterval(this._debugTimer);
 
@@ -203,77 +213,14 @@ Page({
     const ctx = canvas.getContext('2d');
     ctx.scale(mc.scale, mc.scale);
     mc.ctx = ctx;
-    this._ctx = ctx;
 
     this._startNtLoop(canvas, ctx);
   },
 
   _startNtLoop(canvas: any, _ctx: any) {
-    const store = new DataStore();
-
-    for (let y = 0; y < NT_ROWS; y++) {
-      for (let x = 0; x < NT_COLS; x++) {
-        store.writeNT(0, x, y, { tile: 1, palette: 0, bank: 0, flipH: false, flipV: false, behindBg: false });
-        store.writeNT(1, x, y, { tile: 2, palette: 0, bank: 0, flipH: false, flipV: false, behindBg: false });
-      }
-    }
-
-    store.scrollX = 0;
-
-    let scrollDir = 1;
-    const MS_PER_FRAME = 16;
-
-    // 离屏 1x NES canvas，先在上面按原始分辨率绘制，再一次性 drawImage 缩放，避免 tile 间缝隙
-    const off = (wx as any).createOffscreenCanvas({ type: '2d', width: NES_WIDTH + TILE_PX, height: NES_HEIGHT });
-    const offCtx = off.getContext('2d');
-
-    const state: NtTestState = { store, rafId: 0, scrollDir: 1 };
-    state.rafId = setInterval(() => {
-      if (!this._ntTest) return;
-      const main = this._mainCtx;
-      if (!main?.ctx) return;
-      const ctx = main.ctx;
-
-      const maxScroll = NT_COLS * TILE_PX + NES_WIDTH;
-      let sx = store.scrollX + scrollDir * 2;
-      if (sx >= maxScroll) { sx = maxScroll; scrollDir = -1; }
-      else if (sx <= 0) { sx = 0; scrollDir = 1; }
-      store.scrollX = sx;
-
-      // 1) 在离屏 canvas 上按 1x 绘制（坐标永远是整数像素）
-      offCtx.fillStyle = '#000';
-      offCtx.fillRect(0, 0, off.width, off.height);
-
-      offCtx.fillStyle = '#FF0000';
-      offCtx.fillRect(NES_WIDTH - 40, NES_HEIGHT - 40, 32, 32);
-
-      const startTx = Math.floor(sx / TILE_PX);
-      const tilesWide = Math.ceil(NES_WIDTH / TILE_PX) + 1;
-      const tilesHigh = Math.ceil(NES_HEIGHT / TILE_PX) + 1;
-      const fineX = sx % TILE_PX;
-
-      for (let ty = 0; ty < tilesHigh; ty++) {
-        for (let tx = 0; tx < tilesWide; tx++) {
-          const worldTx = startTx + tx;
-          const entry = store.getWorldTile(worldTx, ty);
-          if (!entry || entry.tile === 0) continue;
-
-          offCtx.fillStyle = entry.tile === 1 ? '#00AA00' : '#0066FF';
-          offCtx.fillRect(tx * TILE_PX - fineX, ty * TILE_PX, TILE_PX, TILE_PX);
-        }
-      }
-
-      // 2) 主 canvas：清屏后把离屏图 nearest-neighbor 缩放到整个 canvas
-      ctx.fillStyle = '#000';
-      ctx.fillRect(0, 0, NES_WIDTH, NES_HEIGHT);
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(off, 0, 0, NES_WIDTH, NES_HEIGHT);
-
-      this.setData({ ntScrollX: sx });
-    }, MS_PER_FRAME) as unknown as number;
-
-    this._ntTest = state;
-    this.setData({ status: 'NT 交叉测试中', pageMode: 'nt_test' });
+    // TODO: DataStore 待 game/prg 层恢复后启用 NT 测试
+    // NT 测试逻辑已移至 git 历史 (commit 前), 待 DataStore 恢复后从历史恢复
+    this.setData({ status: 'NT 测试不可用 (DataStore 未恢复)' });
   },
 
   _stopNtTest() {
@@ -293,9 +240,8 @@ Page({
     const ctx = mc.canvas.getContext('2d');
     ctx.scale(mc.scale, mc.scale);
     mc.ctx = ctx;
-    this._ctx = ctx;
 
-    this._startGame(mc.canvas, ctx);
+    this._startGame(mc.canvas);
   },
 
   /** 模式切换按钮（WXML 事件名必须为静态字符串） */
@@ -312,7 +258,7 @@ Page({
   // ══════════════════════════════════════════
 
   onTouchStart(e: any) {
-    if (!this._game) return;
+    if (!this._bm) return;
     const touch = e.touches[0];
     if (!touch) return;
 
@@ -327,16 +273,9 @@ Page({
         const w = rect.width;
         const h = rect.height;
 
-        const thirdW = w / 3;
-        const thirdH = h / 3;
-
-        let mask = 0;
-        if (x < thirdW) mask |= 0x40;
-        else if (x > thirdW * 2) mask |= 0x80;
-        if (y < thirdH) mask |= 0x10;
-        else if (y > thirdH * 2) mask |= 0x20;
-
-        this._game!.setButtons(mask);
+        // 用 InputMini.dPadMask 计算方向 (借鉴 browser-mini/input.ts)
+        const mask = InputMini.dPadMask(x, y, w, h);
+        this._bm!.input.setMask(mask);
       });
   },
 
@@ -345,14 +284,14 @@ Page({
   },
 
   onTouchEnd(_e: any) {
-    if (!this._game) return;
-    this._game.setButtons(0);
+    if (!this._bm) return;
+    this._bm.input.clear();
   },
 
   onDoubleTouch() {
-    if (!this._game) return;
-    this._game.pressButton('START');
-    setTimeout(() => this._game?.releaseButton('START'), 100);
+    if (!this._bm) return;
+    this._bm.input.press(BUTTON_START);
+    setTimeout(() => this._bm?.input.release(BUTTON_START), 100);
   },
 
   // ══════════════════════════════════════════
@@ -366,26 +305,27 @@ Page({
   toggleAi() {
     const aiMode = !this.data.aiMode;
     this.setData({ aiMode });
-    if (this._game) {
-      aiMode ? this._game.enableAi() : this._game.disableAi();
-    }
+    const game = this._bm?.game;
+    if (!game) return;
+    if (aiMode && game.enableAi) game.enableAi();
+    else if (!aiMode && game.disableAi) game.disableAi();
   },
 
   onBtnA() {
-    if (!this._game) return;
-    this._game.pressButton('A');
-    setTimeout(() => this._game?.releaseButton('A'), 100);
+    if (!this._bm) return;
+    this._bm.input.press(BUTTON_A);
+    setTimeout(() => this._bm?.input.release(BUTTON_A), 100);
   },
 
   onBtnB() {
-    if (!this._game) return;
-    this._game.pressButton('B');
-    setTimeout(() => this._game?.releaseButton('B'), 100);
+    if (!this._bm) return;
+    this._bm.input.press(BUTTON_B);
+    setTimeout(() => this._bm?.input.release(BUTTON_B), 100);
   },
 
   onBtnStart() {
-    if (!this._game) return;
-    this._game.pressButton('START');
-    setTimeout(() => this._game?.releaseButton('START'), 100);
+    if (!this._bm) return;
+    this._bm.input.press(BUTTON_START);
+    setTimeout(() => this._bm?.input.release(BUTTON_START), 100);
   },
 });

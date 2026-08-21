@@ -51,10 +51,10 @@
  * 用 taskIndex (对应 A 寄存器) + DispatchService.dispatch() 模拟 $C400。
  */
 
-import { DataStore } from './DataStore';
-import { Bank02Service } from './code/bank02_scene';
-import { Bank00Service } from './code/bank00/bank00_core';
-import { palReset } from './data/ppu/pallete/paletteManager';
+import { RamStore } from '../../../core/ram';
+import { Bank02Service } from './bank02_scene';
+import { Bank00Service } from './bank00/bank00_core';
+import { palReset } from '../data/ppu/pallete/paletteManager';
 
 // ── RAM 语义键 (对应真实 ram 地址) ──
 const KEY_0020 = 'ram_0020'; // PPUCTRL 镜像
@@ -110,7 +110,7 @@ export interface SceneHandler {
  */
 export class DispatchService {
   constructor(
-    private _store: DataStore,
+    private _store: RamStore,
     private _bank00: Bank00Service,
     private _bank02: Bank02Service,
     /** 场景路由器 (SceneRouter 接口, 兼容 BootService 的 init/update 语义) */
@@ -232,7 +232,7 @@ export class DispatchService {
 
     // $C667-$C678: 清零 $0000-$07FF (8 页) → store 重置
     s.zp.fill(0);
-    s.ram.clear();
+    s.mem.fill(0, 0, 0x2000);
 
     // $C67A-$C67C: LDA #$08; STA $0020 (ram_0020 = PPUCTRL 镜像)
     s.write(KEY_0020, 0x08);

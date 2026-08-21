@@ -20,10 +20,10 @@
  * 外部通过 dispatch(index) 驱动 (0=$84DC 1=$83D9 2=$8624 3=$8796)。
  */
 
-import { DataStore } from '../DataStore';
-import PRG_BANK_20 from '../prg-bank-20';
-import PRG_BANK_21 from '../prg-bank-21'; // $A000-$BFFF 窗口 → 物理 bank 21
-import PRG_BANK_31 from '../prg-bank-31'; // 固定区 $FBCC/$FB4C 表
+import { RamStore } from '../../../core/ram';
+import PRG_BANK_20 from '../data/prg-bank-20';
+import PRG_BANK_21 from '../data/prg-bank-21'; // $A000-$BFFF 窗口 → 物理 bank 21
+import PRG_BANK_31 from '../data/prg-bank-31'; // 固定区 $FBCC/$FB4C 表
 
 // ═══════════════════════════════════════════════════════════════
 // 常量表 (标注地址 → 本 bank 数组索引 = 地址-$8000)
@@ -89,7 +89,7 @@ export class Bank20Service {
   /** $80A2 stop 标记 (PLA PLA → 停主状态机) */
   private _stopped = false;
 
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   // ──────────────────────────────────────────────
   // 数据访问 (原始字节)
@@ -110,7 +110,7 @@ export class Bank20Service {
     return PRG_BANK_21[addr - 0xA000] ?? 0xFF;
   }
 
-  get store(): DataStore { return this._store; }
+  get store(): RamStore { return this._store; }
 
   /**
    * 每帧驱动 (对应原版 NMI 中断中 Bank20 的调用序列)。
@@ -135,7 +135,7 @@ export class Bank20Service {
   // RAM 读写辅助
   // ──────────────────────────────────────────────
 
-  /** 生成 DataStore key: ram_XXXX (4 位大写 hex) */
+  /** 生成 RamStore key: ram_XXXX (4 位大写 hex) */
   private _ramKey(addr: number): string {
     return 'ram_' + (addr & 0xffff).toString(16).toUpperCase().padStart(4, '0');
   }

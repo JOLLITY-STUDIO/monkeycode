@@ -6,7 +6,7 @@
  * 原版链路 (SET_MODE $86xx → bank 6 指针表 $BB40 → JSR $97B6):
  *   $97B6 把一连串「VRAM tile 写块」灌入 PPU Buffer, NMI 时刷入 Nametable。
  *   即开场人物肖像是【写入 Nametable 的 tile 块】(非硬件 OAM 精灵),
- *   与背景共用 CHR 图案管道 — H5 中直接写 DataStore NT 网格即可。
+ *   与背景共用 CHR 图案管道 — H5 中直接写 RamStore NT 网格即可。
  *
  * 块格式 (由 $97B6 反汇编确认):
  *   block[0] = flags: bit6=结束标记, bits0-5 = tile 个数 (count)
@@ -24,7 +24,7 @@
  * 指针为 $A000-$BFFF 窗口地址, 低 13 位 (ptr & 0x1FFF) 即 bank6 数组偏移。
  */
 
-import type { DataStore } from '../../../../DataStore';
+import type { RamStore } from '../../../../../../core/ram';
 
 /** bank6 $BB40 模式指针表 (mode 0-3 有有效块链, mode 4+ 原版即无数据) */
 export const MODE_BLOCK_PTRS: readonly number[] = [
@@ -32,7 +32,7 @@ export const MODE_BLOCK_PTRS: readonly number[] = [
 ];
 
 /**
- * 解析单个模式的全部写块并写入 DataStore NT。
+ * 解析单个模式的全部写块并写入 RamStore NT。
  * @param store 数据中心
  * @param ptr   bank6 内偏移 (指针表值)
  * @param readByte 按偏移读取 bank6 字节 (注入, 便于未来修正基址映射)
@@ -40,7 +40,7 @@ export const MODE_BLOCK_PTRS: readonly number[] = [
  * @returns 写入的 tile 块数
  */
 export function applyModeBlocks(
-  store: DataStore,
+  store: RamStore,
   ptr: number,
   readByte: (offset: number) => number,
   chrBank = 0,

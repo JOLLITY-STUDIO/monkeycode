@@ -25,14 +25,14 @@
  *   $C54B/$C54E/$C50C/$C4C8/$C52A/$C521/$C515/$C52D/$C600/$C636/$C603 → _fixedXXXX
  *   H5 无硬件 bank 切换/渲染同步, 硬件副作用为空实现; RAM 副作用按可翻译部分保留
  */
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import {
   SHOWCASE_D6DE,
   getShowcaseBlock,
   showcaseBlockIndexByType,
   type ShowcaseBlockView,
-} from '../showcase-data';
-import { getShowcasePalette, SHOWCASE_PALETTE_DEFAULT } from '../showcase-palette';
+} from '../data/showcase-data';
+import { getShowcasePalette, SHOWCASE_PALETTE_DEFAULT } from '../data/showcase-palette';
 import { nesColorToRGBA } from '../data/ppu/pallete/paletteManager';
 
 // ── RAM 语义键 ──
@@ -106,7 +106,7 @@ export interface ShowcaseDisplayState {
 }
 
 export class Bank26ShowcaseExecutor {
-  private _store: DataStore;
+  private _store: RamStore;
   /** 内部帧计数 (演出激活后递增) */
   private _frame = 0;
   /** 上一帧 busy 状态 (上升沿检测) */
@@ -124,7 +124,7 @@ export class Bank26ShowcaseExecutor {
   /** $92EA 方向查表 = [01, 05, 02, 07] (球方向偏移, $911C LDA $92EA,X) */
   private readonly _BALL_DIR_TABLE = [0x01, 0x05, 0x02, 0x07];
 
-  constructor(store: DataStore) {
+  constructor(store: RamStore) {
     this._store = store;
   }
 
@@ -511,7 +511,7 @@ export class Bank26ShowcaseExecutor {
   }
 
   /**
-   * 加载演出精灵调色板 (Bank31 $FBCC 表) → DataStore。
+   * 加载演出精灵调色板 (Bank31 $FBCC 表) → RamStore。
    * 对应原 ROM 演出启动时加载专用调色板。BG 0 置黑底。
    */
   private _loadPalette(): void {

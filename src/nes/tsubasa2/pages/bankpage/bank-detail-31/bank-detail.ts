@@ -3,8 +3,8 @@
  * Bank 详情页 — 支持 HEX / 柱状图 / 记录视图 / CHR 图块画廊
  * 自动检测数据类型：游戏数据 vs 渲染数据
  */
-import { NES_PRG_ROM, NES_CHR_ROM } from '../../../src/game/data/rom-data/index';
-import PRG_BANK_07 from '../../../src/game/data/prg-bank-07';
+import { NES_PRG_ROM, NES_CHR_ROM } from '../../../src/game/prg/data/rom-data/index';
+import PRG_BANK_07 from '../../../src/game/prg/data/prg-bank-07';
 import BANK02_ANALYSIS from '../bank-detail/bank02_analysis';
 import BANK12_ANALYSIS from '../bank-detail/bank12_analysis';
 import BANK30_ANALYSIS from '../bank-detail/bank30_analysis';

@@ -45,7 +45,7 @@
  *   $A000 窗口 pattern: bank 12/13 (物理) — 由 fn_85C2 直接 import 读取
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import {
   readB11,
   readB11U16,
@@ -58,9 +58,9 @@ import {
   readB11Attr,
   readB11Block,
   readB11PatternAttr,
-} from '../bank11-data';
-import PRG_BANK_18 from '../prg-bank-18'; // MMC3 R7=0x12 → 物理 bank 18
-import PRG_BANK_19 from '../prg-bank-19'; // MMC3 R7=0x13 → 物理 bank 19
+} from '../data/bank11-data';
+import PRG_BANK_18 from '../data/prg-bank-18'; // MMC3 R7=0x12 → 物理 bank 18
+import PRG_BANK_19 from '../data/prg-bank-19'; // MMC3 R7=0x13 → 物理 bank 19
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
@@ -137,7 +137,7 @@ const KEY_0638 = 'ram_0638'; // 场地坐标
 // ═══════════════════════════════════════════════════════════════
 
 export class Bank11Service {
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   // ── 数据访问 (原始字节, 经 bank11-data 层) ──
 
@@ -151,7 +151,7 @@ export class Bank11Service {
     return readB11U16(addr);
   }
 
-  get store(): DataStore { return this._store; }
+  get store(): RamStore { return this._store; }
 
   // ──────────────────────────────────────────────
   // $8003: 入口跳转表 (3 路)

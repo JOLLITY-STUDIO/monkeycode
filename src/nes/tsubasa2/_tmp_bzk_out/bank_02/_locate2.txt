@@ -1,3 +1,0 @@
-﻿bank_02_part01.asm|295|C - - - - - 0x004222 01:8212: 4C 84 A4  JMP $A484
-bank_02_part01.asm|691|C - - - - - 0x00449C 01:848C: BD 91 A4  LDA $A491,X
-DONE

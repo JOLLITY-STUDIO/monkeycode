@@ -89,7 +89,7 @@ export const KNOWN_BUGS: KnownBug[] = [
     id: 'BUG-005',
     severity: 'Major',
     title: '10+ 个 Bank 服务文件跨目录引用外部 rom-data/prg-bank-XX',
-    file: 'src/game/bank16_skills.service.ts, bank11_match-turn.service.ts, bank22_hybrid.service.ts, bank20_match-aux.service.ts, bank19_auxiliary.service.ts, src/data/bank25-data.ts, bank24-tables.ts, bank28-tables.ts, bank26-tables.ts',
+    file: 'src/game/bank16_skills.ts, bank11_match-turn.ts, bank22_hybrid.ts, bank20_match-aux.ts, bank19_auxiliary.ts, src/data/bank25-data.ts, bank24-tables.ts, bank28-tables.ts, bank26-tables.ts',
     line: 'import 语句',
     description:
       '除 Tsubasa2.ts 外，还有至少 8 个 Bank 服务/数据文件通过 "../../../rom-data/prg-bank-XX" 引用外部 PRG Bank 原始字节。' +

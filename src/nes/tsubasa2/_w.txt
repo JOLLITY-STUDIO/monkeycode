@@ -1,4 +1,0 @@
-node_modules: true
-typescript: true
-tsc.cmd: true
-tsc.js: true

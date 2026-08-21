@@ -58,7 +58,7 @@ export { Bank27Service } from './code/bank27';
 export { Bank29RosterService } from './code/bank29_roster';
 
 // 真实 RESET 分发链 ($C400/$C64E/$CEFE/$A200)
-export { DispatchService, TaskIndex } from './dispatch';
+export { DispatchService, TaskIndex } from './code/dispatch';
 
 // ── 原始字节数据 (data, 供 bankpage/调试浏览) ─────
 export { NES_PRG_ROM, PRG_ROM_SIZE, PRG_BANK_SIZE } from './data/index';

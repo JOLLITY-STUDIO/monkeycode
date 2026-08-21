@@ -26,7 +26,7 @@
  * 后续补全: 见 CHAPTER_STREAM_OFFSET 注释 (待 trace 真实章节→offset 映射)。
  */
 
-import { DataStore } from '../DataStore';
+import { RamStore } from '../../../core/ram';
 import {
   readB18,
   readB18U16,
@@ -35,7 +35,7 @@ import {
   readB18SceneRow,
   B18_SCENE_MAPS,
   B18_SCENE_COUNT,
-} from '../bank18-data';
+} from '../data/bank18-data';
 import { Bank19Service, BANK19_STREAM_OFFSET } from './bank19_auxiliary';
 
 /** 章节枚举 (剧情进度, 对应原版 STORY 选关/章节推进) */
@@ -92,7 +92,7 @@ const CHAPTER_SCENE_IDX: Record<number, number> = {
 };
 
 export class Bank18Service {
-  private _store: DataStore;
+  private _store: RamStore;
   private _bank19: Bank19Service;
   /** 当前章节 */
   private _chapter: number = StoryChapter.OPENING;
@@ -101,12 +101,12 @@ export class Bank18Service {
   /** 剧情是否进行中 */
   private _active: boolean = false;
 
-  constructor(store: DataStore, bank19: Bank19Service) {
+  constructor(store: RamStore, bank19: Bank19Service) {
     this._store = store;
     this._bank19 = bank19;
   }
 
-  get store(): DataStore { return this._store; }
+  get store(): RamStore { return this._store; }
   get isActive(): boolean { return this._active; }
   get chapter(): number { return this._chapter; }
 

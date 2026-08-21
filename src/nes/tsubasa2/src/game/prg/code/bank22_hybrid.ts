@@ -18,17 +18,18 @@
  *     A=1 → $8161 直接返回    A=2 → $8164 更新指针    A=3 → $8175 计算指针
  *
  * OAM $0200 (NES 硬件 OAM 区) → 本 service 内部 256B 缓冲, 由 emitSprites()
- * 同步为 DataStore.sprites 供渲染器消费。
+ * 同步为 RamStore.sprites 供渲染器消费。
  */
 
-import { DataStore, SpriteEntry } from '../DataStore';
+import { RamStore } from '../../../core/ram';
+import type { SpriteEntry } from '../../../core/nes-ram';
 import {
   readB22,
   readB22U16,
   readB22OffX,
   readB22OffY,
   readB22Dispatch,
-} from '../bank22-data';
+} from '../data/bank22-data';
 
 // ═══════════════════════════════════════════════════════════════
 // RAM 语义键 (替代 NES 内存地址)
@@ -64,7 +65,7 @@ export class Bank22Service {
   /** $0200 OAM 影子缓冲 (256B, NES 硬件 OAM: 每精灵 4B = Y,tile,attr,X) */
   private _oam0200 = new Uint8Array(256);
 
-  constructor(private _store: DataStore) {}
+  constructor(private _store: RamStore) {}
 
   // ── 数据访问 (原始字节, 经 bank22-data 层) ──
 
@@ -78,7 +79,7 @@ export class Bank22Service {
     return readB22U16(addr);
   }
 
-  get store(): DataStore {
+  get store(): RamStore {
     return this._store;
   }
 
@@ -430,7 +431,7 @@ export class Bank22Service {
   }
 
   /**
-   * 把 $0200 缓冲解析为 SpriteEntry[] 写入 DataStore.sprites (渲染出口)。
+   * 把 $0200 缓冲解析为 SpriteEntry[] 写入 RamStore.sprites (渲染出口)。
    * $0200 属性字节: bit0-1=palette, bit5=flipH, bit6=flipV, bit7=priority。
    */
   emitSprites(): void {
