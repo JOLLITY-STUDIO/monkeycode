@@ -163,9 +163,13 @@ export const PASSWORD_POS_INC_HI: readonly number[] = [
 ];
 
 /**
- * SPRITE_POS_TABLE — 精灵位置表 (asm $A896)
- * 36 项 16 位字 (小端), 每项 = (Y << 8 | X) 精灵坐标。
- * 被 $84CB 密码界面渲染循环 (LDY #$30; LDA #$01; JSR $9FA8; JSR $890C) 间接引用。
+ * SPRITE_POS_TABLE — 精灵位置表 (asm $A98E, 118 字节)
+ * 59 项 16 位字 (小端), 每项 = (Y << 8 | X) 精灵坐标。
+ * 被 $A918 循环 (LDY #$F8; LDA $A896,Y; STA $0460,Y; INY; BNE $A918)
+ * 读取 $A98E 起 8 字节 → $0460-$0467 精灵数据。
+ *
+ * ⚠ 2026-08 校准: 表真实起点 $A98E (asm data_tables.s 第 14 行),
+ *   $A896 处实为代码 (rosterLoad), 表尾 $AA04-$AA05 = $FF,$FF 为填充。
  *
  * asm data_tables.s 第 14-21 行:
  *   $80,$33,$00,$A0, $80,$33,$00,$A8, $00,$00,$60,$00, $D0,$00,$50,$01,
