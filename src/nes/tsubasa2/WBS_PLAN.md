@@ -129,3 +129,5 @@
 | v0.3.0 | Bank19/20 翻译完成 + STORY/PASSWORD/RESULT 场景接入 | ✅ | 2026-08-21 推进 (G7): E3/E4/G2/G3/G4 全 ✅, 版本 0.2.0→0.3.0 |
 | v0.4.0 | dispatch 层重建 + prg-bank 依赖修复 + 编译零错误 | ✅ | 2026-08-20: G5-G20 全 ✅, boot 删除/dispatch 重建/CHR PNG/差分验证/PPU @ts-nocheck |
 | v1.0.0 | CHR 资源化 + 全量差分验证 + 优化重构 | ⬜ | 待 G21-G25 完成 |
+
+| G38 | bank08-metatile 细拆: 修正错误切分(旧版), 查证真实消费方=bank00渲染子程(非bank26), 按真实结构(等长17B*482条)拆为MT_000~MT_481具名导出+MetatileRecord接口+getMetatile查询 | ✅ | 2026-08-22 B08-01修复, tsc零错误 |

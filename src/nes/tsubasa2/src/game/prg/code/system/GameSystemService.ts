@@ -24,7 +24,8 @@ import {
 } from '../../data/tables/bank00-tables';
 import {
   getSceneData as getBank07SceneData,
-} from '../../data/tables/bank07-scenes';
+  SCENE_PTR_TABLE,
+} from '../../data/tables/bank07-scenes-metatile';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {

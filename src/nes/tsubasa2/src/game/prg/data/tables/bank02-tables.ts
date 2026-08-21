@@ -70,8 +70,8 @@ export const PASSWORD_KANA_CHARS: readonly number[] = [
 ];
 
 /**
- * PASSWORD_GRID_TILES — 假名网格 CHR tile 集合 (asm $AB00 段)
- * 100 字节, 从 $58 到 $70 (含 KANA_CHARS 的 40 字节 + 后续 60 字节)。
+ * PASSWORD_GRID_TILES — 假名网格 CHR tile 集合 (asm $AB2F 起)
+ * 101 字节, 从 $58 到 $70 (含 KANA_CHARS 的 40 字节 + 后续 61 字节)。
  * 密码盘假名选择网格, 用于 NMI 回调渲染。
  *
  * asm data_tables.s 第 54-61 行 (跨行, 从 $58 起到 $70 止):
@@ -94,9 +94,9 @@ export const PASSWORD_GRID_TILES = [
 ] as const;
 
 /**
- * PASSWORD_SPRITE_DATA — 密码界面精灵表 (asm $A677)
- * 对应 $86F9 循环写入 $0460 尾数据的精灵表 (8 字节)。
- * 被 $8767 spriteTableCopy (LDA $A677,Y; STA $03E8,Y) 引用。
+ * PASSWORD_SPRITE_DATA — 密码界面精灵表 (asm $A773, 8 字节)
+ * ⚠ 2026-08 校准: 旧注释误标 $A677 (该处实为 spriteTableCopy 代码);
+ *   8 字节序列 $79,$FF,$03,$C2,$46,$F6,$02,$52 在 ROM 中位于 $A773。
  */
 export const PASSWORD_SPRITE_DATA = [
   0x79, 0xff, 0x03, 0xc2, 0x46, 0xf6, 0x02, 0x52,

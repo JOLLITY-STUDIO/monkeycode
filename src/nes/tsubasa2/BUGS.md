@@ -37,3 +37,14 @@
   - SceneController.resetEntry: case 4 → case TaskIndex.SCENE_23_PASSWORD_CHECK (0x17 密码校验/续关解码), case 0 注释更正为 SCENE_00_PASSWORD_INIT
   - BootRouter 枚举注释统一标注"表值→实际执行 (RTS+1)"
 - **验证**: 2026-08-22 src/game 区 tsc 零错误 (src/core 模拟器核心预存 1458 错误与本次无关), TaskIndex 旧名全清除, `_g37_verify.cjs` 全 PASS。详见 WBS G37。
+
+### B08-01 (已修复) — bank08-metatile.ts 切分逻辑完全错误 + 注释编造消费链路
+- **现象**: 旧版按 $AA// 当分隔符切三块, 注释写 'bank26直接引用不切bank'
+- **核实** (对照 asm):
+  1.  不是分隔符是fill/数据内容(出现1743次), bank08.s注释明说 'gaps='
+  2. bank26不读bank8: bank26调'比赛阶段→RAM玩家数据指针'查表函数(- RAM区), bank26全程0处JSR
+  3. bank8真实消费方=bank00/code_render.s:(全项目仅1处LDX#;JSR)
+  4. bank8真实结构=等长17字节记录数组482条,索引N→偏移N*17,每条[0]=类型标记(///)+[1..16]=16B tile数据,渲染子程入口A=索引算指针=+索引*17 LDA(),Y读
+- **修复**: 重写bank08-metatile.ts为482条具名导出MT_000~MT_481(MetatileRecord:type首字节+tiles16B)+MetatileType const enum+METATILE_TABLE聚合+getMetatile查询,注释修正
+- **验证**: 2026-08-22 npx tsc --noEmit零错误
+- **类型分布**: BG()147/MAP()190/SPR()23/SPR2()16/其他首字节106
