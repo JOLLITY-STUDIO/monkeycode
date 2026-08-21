@@ -41,8 +41,18 @@ import type { PaletteTable, PaletteEntry } from '../../data/prg/model-types';
 const CUT_0x17_CHR_BANK = 0;
 
 // ═══════════════════════════════════════════════════════════════
-// 开场镜头表 (TODO: 待真正 TECMO Theater 开场数据提取后填充)
-// 当前开场数据未提取, 镜头表为空桩; 硬编码镜头驱动逻辑暂不启用。
+// 开场镜头表 (SHOT_TEXT / SHOT_FRAMES)
+//
+// ⚠️ 数据来源说明 (忠于 asm, 禁止编造):
+//   BOOT 开场 (TECMO Theater) 的真实画面数据已由 cut_0x00_boot.ts 提取,
+//   并由 initBoot() 灌入 (NT/OAM/调色板), 见 BOOT_NT0/BOOT_OAM/BOOT_BG_PALETTE。
+//
+//   镜头文本/帧数时间表: 原始 ROM 中开场镜头的文本与切换帧数由 bank06/07
+//   场景数据表驱动 (bank00 $8AF7 场景指针表 → scene data), 该表尚未从 ROM
+//   解码提取。故此处保持空桩, 不虚构任何镜头文本/时长。
+//
+//   当前实现: BOOT 帧由 initBoot() 静态灌入 + syncBootFrame() 推进调色板渐显,
+//   镜头切换由外部 dispatch (BOOT → TITLE/STORY) 驱动, 不依赖本时间表。
 // ═══════════════════════════════════════════════════════════════
 const SHOT_TEXT: Record<number, { jp: string; en: string }> = {};
 const SHOT_FRAMES: Record<number, number> = {};
@@ -313,6 +323,18 @@ export class OpeningSceneController {
    * 之后每帧由 syncBootFrame() 推进调色板渐显 (对应 bank0 $9A71 fade + $9A0D 帧等待)。
    */
   initBoot(): void {
+    // 重置开场状态 (镜头/帧/完成标志), 供 BOOT 场景 dispatch 重入时干净初始化。
+    // (对应 Bank00 $8017→$801F 场景初始化链的协程重置语义)
+    this._shot = OpeningShot.LOGO;
+    this._shotFrame = 0;
+    this._complete = false;
+    this._blinkTimer = 0;
+    this._transitionTimer = 0;
+    this._startPressed = false;
+    this._scriptLoopCount = 0;
+    this._lastButtons = 0;
+    this._needsReapply = true;
+
     this._applyBootData();
     // 渐显初始: step 0 = 全黑 (帧 1-10 全黑, 与模拟器一致)
     this._applyBootPalette(0);

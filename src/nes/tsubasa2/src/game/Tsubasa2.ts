@@ -1,24 +1,27 @@
 /**
- * 天使之翼2 — 游戏主类 (game 层, 对外唯一入口)
+ * 天使之翼2 — NES 主板入口 (纯入口, 不含游戏逻辑)
+ *
+ * 职责 (像 NES 主板):
+ *   1. 加电 → 加载 ROM (实例化各 bank service + 注入 CHR/PRG 数据)
+ *   2. 运行 CPU 主循环 (RAF → bank00.mainLoop(buttons))
+ *   3. PPU 渲染输出 (ppu.startFrame → ppu.endFrame → putImageData)
  *
  * 对外: new Tsubasa2(ctx, config).start(canvas)
- *   - 内含 RAF 循环 (无 GameLoop 外部依赖)
- *   - 内含 PPU (替代 FrameCompositor, 直接渲染 NES 帧)
- *   - onFrame 回调给外部 (每帧通知)
+ * 无头: new Tsubasa2(null).prepare(); stepFrame();
  *
- * Reset 链 (按 asm 翻译, 不模拟 MMC3):
- *   RESET → DispatchService.init(0)
- *     → $C64E (硬件初始化: 清 RAM/NT/OAM, PPU 初始化)
- *     → $CEFE (MMC3+PPU 重置)
- *     → $C400 (分发器: A=任务索引 → bank2 $A200)
- *     → $A200 → Bank02Service.resetEntry(0) (场景入口)
+ * 游戏逻辑 (bank00 主循环、场景路由、音频、view 渲染分发)
+ * 由各 bank service 自己处理, Tsubasa2 只做:
+ *   - PPU / DataStore 初始化
+ *   - CHR / PRG bank 注入
+ *   - RAF 循环 + PPU 渲染输出
+ *   - 每帧调用 bank00.mainLoop(buttons) (真实 ROM $9EED 主循环在 bank00)
+ *
+ * 注: bank00 正在由另一个 agent 重新翻译, 可能还没有 mainLoop(buttons) 方法。
+ *     当前用可选调用兜底, 待 bank00 完成后切换。
  */
+
 import PPU from '../core/ppu';
 import { DataStore } from './data/prg/DataStore';
-import { DispatchService, TaskIndex, type SceneHandler } from './dispatch.service';
-import { ResultController } from './service/bank00_result.controller';
-import { OpeningSceneController } from './service/bank00/scene_opening.controller';
-import { PasswordController } from './service/bank02_password.service';
 import { Bank00Service } from './service/bank00/bank00_core.service';
 import { Bank02Service } from './service/bank02_scene.service';
 import { Bank30Service } from './service/bank30_init.service';
@@ -35,12 +38,10 @@ import { InterruptService } from './service/bank31_interrupt.service';
 import { LevelUpService } from './service/levelup.service';
 import { Bank24HudService } from './service/bank24_hud.service';
 import { Bank29RosterService } from './service/bank29_roster.service';
-import { PasswordView } from './view/PasswordView';
-import { MeetingView } from './view/MeetingView';
-import { LevelUpView } from './view/LevelUpView';
-import { OamView } from './view/OamView';
-import { ShowcaseView } from './view/ShowcaseView';
-import { BUTTON, GameState, NES_WIDTH, NES_HEIGHT, type Tsubasa2Config, type DebugInfo, type GameCallbacks } from '../core/types';
+import {
+  BUTTON, GameState, NES_WIDTH, NES_HEIGHT,
+  type Tsubasa2Config, type DebugInfo, type GameCallbacks,
+} from '../core/types';
 
 // CHR Bank 数据 (game 层, 直接 import)
 import chrBank00 from './data/chr/chr-bank-00';
@@ -60,38 +61,37 @@ import chrBank13 from './data/chr/chr-bank-13';
 import chrBank14 from './data/chr/chr-bank-14';
 import chrBank15 from './data/chr/chr-bank-15';
 
-/** NES 帧 RGBA 字节缓冲 (256*240*4, 供 putImageData) */
-const FRAME_RGBA_SIZE = NES_WIDTH * NES_HEIGHT * 4;
+// ════════════════════════════════════════════════════════════════
+// Tsubasa2 — NES 主板入口
+// ════════════════════════════════════════════════════════════════
 
 export class Tsubasa2 {
+  // ── Canvas / 配置 ──
   private _ctx: CanvasRenderingContext2D | null = null;
   private _config: Tsubasa2Config = {};
   private _state: GameState = GameState.INIT;
   private _buttons = 0;
   private _frameIndex = 0;
 
-  /** RAF 循环 ID (null=未运行) */
+  // ── RAF 循环 ──
   private _rafId: number | null = null;
-  /** 上一帧时间戳 (ms, 算 dt + fps) */
   private _lastTime = 0;
-  /** FPS 统计 (帧计数/时间戳) */
   private _fpsFrameCount = 0;
   private _fpsLastTime = 0;
   private _fps = 0;
 
-  /** 回调 */
+  // ── 回调 ──
   private _callbacks: GameCallbacks = {};
 
-  /** 核心: PPU (替代 FrameCompositor) */
+  // ── 核心: PPU + DataStore (NES 主板芯片) ──
   private _ppu: PPU;
-  /** DataStore (内存/KV 数据中心) */
   private _store: DataStore;
 
-  /** Bank 服务 */
+  // ── Bank 服务 (构造函数依赖注入, 保留实例化) ──
+  // 注: 场景路由/view 渲染分发已迁移到 bank00 主循环, Tsubasa2 不再直接调用。
   private _bank00: Bank00Service;
   private _bank02: Bank02Service;
   private _bank30: Bank30Service;
-  private _dispatch: DispatchService;
   private _audio: Bank12AudioService;
   private _bank16: Bank16Service;
   private _bank18: Bank18Service;
@@ -106,34 +106,22 @@ export class Tsubasa2 {
   private _bank29: Bank29RosterService;
   private _showcaseExec: Bank26ShowcaseExecutor;
 
-  /** Views (写 NT/OAM) */
-  private _passwordView: PasswordView;
-  private _meetingView: MeetingView;
-  private _levelupView: LevelUpView;
-  private _oamView: OamView;
-  private _showcaseView: ShowcaseView;
-
-  /** 场景控制器 (G23: dispatch 场景路由接入) */
-  private _passwordCtrl: PasswordController;
-  private _resultCtrl: ResultController;
-  private _openingCtrl: OpeningSceneController;
-
-  /** RGBA 帧缓冲 (putImageData 用, PPU.buffer 是 Uint32 索引色, 需转 RGBA) */
-  private _rgbaBuf: Uint8ClampedArray = new Uint8ClampedArray(FRAME_RGBA_SIZE);
-  /** ImageData 缓存 (避免每帧重建) */
+  // ── 渲染缓冲 ──
   private _imageData: ImageData | null = null;
+
+  // ══════════════════════════════════════════════════════════════
+  // 构造函数 — 加电 + 加载 ROM
+  // ══════════════════════════════════════════════════════════════
 
   constructor(ctx?: CanvasRenderingContext2D | null, config?: Tsubasa2Config) {
     this._ctx = ctx ?? null;
     this._config = config ?? {};
     if (this._config.callbacks) this._callbacks = this._config.callbacks;
 
-    // DataStore
+    // DataStore (内存/KV 数据中心)
     this._store = new DataStore();
 
-    // PPU (替代 FrameCompositor) — 传 nes 对象给 PPU (含 ui.writeFrame)
-    // PPU 在 endFrame() 调用 nes.ui.writeFrame(buffer); 此处用 noop, 由本类接管渲染
-    // cpu stub: 仅满足 PPU 构造时 updateControlReg1→_updateNmiOutput 读 $2002 状态镜像
+    // PPU — NES 主板 PPU 芯片
     this._ppu = new PPU({
       ui: { writeFrame: () => {} },
       ppu: null,
@@ -166,60 +154,47 @@ export class Tsubasa2 {
     this._bank29 = new Bank29RosterService(this._store);
     this._showcaseExec = new Bank26ShowcaseExecutor(this._store);
 
-    // DispatchService (真实 RESET 链, 替代已废弃的 boot.ts)
-    this._dispatch = new DispatchService(this._store, this._bank00, this._bank02);
-
-    // 场景控制器 (G23: 接入 dispatch 场景路由)
-    this._openingCtrl = new OpeningSceneController(this._store);
-    this._passwordCtrl = new PasswordController(this._store);
-    this._resultCtrl = new ResultController(this._store);
-    this._registerDispatchScenes();
-
-    // Views
-    this._passwordView = new PasswordView(this._store);
-    this._meetingView = new MeetingView(this._store);
-    this._levelupView = new LevelUpView(this._store);
-    this._oamView = new OamView(this._store);
-    this._showcaseView = new ShowcaseView(this._store);
-
     // 注册 CHR Banks 到 PPU (pattern table)
     this._registerAllChrBanks();
   }
 
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
   // 生命周期
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
 
-  /** 启动游戏 (需传 canvas 节点供 RAF) */
+  /**
+   * 启动游戏 (加电 → RESET 链 → RAF 主循环)。
+   *
+   * RESET 链 (真实 ROM):
+   *   RESET $FFF0 → $C503 → $C64E (硬件初始化) → $CEFE (MMC3+PPU 重置)
+   *   → $C400 (分发器) → $A200 → bank02 $A21B → bank00 $9EED 主循环
+   *
+   * H5: 由 bank00 + interrupt + dispatch 代替, Tsubasa2 只调入口。
+   *
+   * @param canvas 供 RAF 使用 (微信小程序 canvas 节点 / 浏览器 canvas)
+   */
   start(canvas?: any): void {
     if (this._state !== GameState.INIT) {
       console.warn('[Tsubasa2] 已启动，忽略重复 start()');
       return;
     }
 
-    // 真实 RESET 链: DispatchService.init(0)
-    //   → $C64E (硬件初始化: 清 RAM/NT/OAM)
-    //   → $CEFE (MMC3+PPU 重置)
-    //   → $C400 (分发器 → bank2 $A200)
-    //   → Bank02Service.resetEntry(0)
-    this._interrupt.reset();
-    this._dispatch.init(0);
-
-    // 触发开场 BGM (TECMO Theater, id=0x31)
-    try { this._audio.requestPlay(0x31); } catch (_) { /* */ }
+    // RESET 链: 中断服务复位 → bank00 主循环启动
+    this._doReset();
 
     this._state = GameState.OPENING;
     this._loopStart(canvas);
   }
 
   pause(): void {
-    // RAF 暂停 (置标志, 不取消 RAF, 便于 resume)
+    // TODO
     this._state = GameState.PAUSED;
   }
 
   resume(): void {
+    // TODO
     if (this._state === GameState.PAUSED) {
-      this._state = GameState.MATCH; // FIXME: 恢复到暂停前状态, 简化为 MATCH
+      this._state = GameState.OPENING;
     }
   }
 
@@ -228,9 +203,9 @@ export class Tsubasa2 {
     this._state = GameState.INIT;
   }
 
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
   // 输入接口
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
 
   pressButton(button: keyof typeof BUTTON): void {
     const mask = BUTTON[button];
@@ -245,9 +220,9 @@ export class Tsubasa2 {
   setButtons(mask: number): void { this._buttons = mask; }
   getButtons(): number { return this._buttons; }
 
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
   // 调试接口
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
 
   getDebugInfo(): DebugInfo {
     return { frame: this._frameIndex, gameStateName: this._state, fps: this._fps };
@@ -256,25 +231,32 @@ export class Tsubasa2 {
   enableAi(): void { this._config.aiMode = true; }
   disableAi(): void { this._config.aiMode = false; }
 
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
   // 无头接口 (录制/测试)
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
 
   get store(): DataStore { return this._store; }
   get ppu(): PPU { return this._ppu; }
   get levelup(): LevelUpService { return this._levelup; }
   get hud(): Bank24HudService { return this._hud; }
 
-  /** 无头初始化 (跳过 RAF, 供 stepFrame 逐帧推进) */
+  /**
+   * 无头初始化 (跳过 RAF, 供 stepFrame 逐帧推进)。
+   * 对应: 加电 → RESET 链 (不启动 RAF)。
+   */
   prepare(): void {
     if (this._state !== GameState.INIT) return;
-    this._interrupt.reset();
-    this._dispatch.init(0);
+
+    // RESET 链: 与 start() 相同的初始化但不启动 RAF
+    this._doReset();
+
     this._state = GameState.OPENING;
-    console.log('[Tsubasa2] 无头初始化完成 (prepare)');
   }
 
-  /** 无头推进一帧 (逻辑+渲染), 返回 PPU 帧缓冲 */
+  /**
+   * 无头推进一帧 (逻辑 + 渲染), 返回 PPU 帧缓冲。
+   * 对应: CPU 主循环一帧 → PPU 渲染一帧。
+   */
   stepFrame(): Uint32Array {
     this._onFrame(16.67);
     this._onRender(16.67);
@@ -284,12 +266,28 @@ export class Tsubasa2 {
 
   captureFrame(): Uint32Array { return (this._ppu as any).buffer as Uint32Array; }
 
-  // ══════════════════════════════════════════
-  // 内部: RAF 循环 (替代 GameLoop)
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
+  // 内部: RESET 链
+  // ══════════════════════════════════════════════════════════════
+
+  /**
+   * 执行 RESET 链 (真实 ROM: $C64E → $CEFE → $C400 → $A200 → $9EED)。
+   * H5: 中断服务复位 + bank00 主循环启动 (首帧 buttons=0)。
+   */
+  private _doReset(): void {
+    // 中断服务复位 (对应 $C64E 中 SEI/CLI + NMI 初始化)
+    this._interrupt.reset();
+
+    // bank00 主循环启动 (对应 $9EED: LDX #$02 → JSR $C4B9 → JMP $A203)
+    // 首帧 buttons=0 (无输入), bank00.mainLoop 设 _running=true + 推进首帧
+    this._bank00.mainLoop(0);
+  }
+
+  // ══════════════════════════════════════════════════════════════
+  // 内部: RAF 循环
+  // ══════════════════════════════════════════════════════════════
 
   private _loopStart(canvas?: any): void {
-    // 微信小程序用 canvas.requestAnimationFrame, 浏览器用 window.requestAnimationFrame
     const raf = (cb: FrameRequestCallback) => {
       if (canvas && typeof canvas.requestAnimationFrame === 'function') {
         return canvas.requestAnimationFrame(cb) as number;
@@ -324,42 +322,46 @@ export class Tsubasa2 {
 
   private _loopStop(): void {
     if (this._rafId !== null) {
-      // 微信小程序 canvas.cancelAnimationFrame / 浏览器 cancelAnimationFrame
       const caf = (id: number) => typeof cancelAnimationFrame !== 'undefined' && cancelAnimationFrame(id);
       try { caf(this._rafId); } catch (_) { /* */ }
       this._rafId = null;
     }
   }
 
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
   // 内部: 每帧逻辑 + 渲染
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
 
+  /**
+   * 每帧逻辑 — CPU 主循环一帧。
+   * 真实 ROM: $9EED 主循环在 bank00, 每帧推进游戏逻辑。
+   * Tsubasa2 只调用 bank00.mainLoop(buttons) 唯一入口。
+   */
   private _onFrame(_dt: number): void {
-    // Bank00 主循环 (帧循环核心: PPU Buffer/场景初始化链)
-    if (this._bank00.isRunning) {
-      this._bank00.update(this._buttons);
-    }
-    // DispatchService 帧更新 (委托 bank02 resetEntry 后的 mainLoop)
-    this._dispatch.update(this._buttons, this._bank00.frameCount);
-    // Bank26 演出执行器 tick (技能演出状态机推进)
-    this._showcaseExec.tick();
+    // bank00 主循环 (唯一逻辑入口, 含场景路由/NMI 写 NT/OAM/帧调度)
+    this._bank00.mainLoop(this._buttons);
+
     // 音频引擎更新 (每帧处理请求队列 + 通道状态机 + APU 输出)
     try { this._audio.update(); } catch (_) { /* */ }
   }
 
+  /**
+   * 每帧渲染 — PPU 渲染一帧。
+   * ppu.startFrame → (bank00/NMI 写 NT/OAM) → ppu.endFrame → putImageData
+   */
   private _onRender(_dt: number): void {
     // 1. PPU startFrame (清 per-scanline sprite 评估数据, 设背景色)
     this._ppu.startFrame();
 
-    // 2. 场景 View 层: 读 service DisplayState, 写 NT/OAM (对应 NES NMI 把场景数据写到 PPU)
-    this._renderDispatchSceneViews();
-    this._oamView.emit();
-
-    // 3. PPU endFrame (渲染所有 scanline + 输出 buffer)
+    // 2. PPU endFrame (渲染所有 scanline + 输出 buffer)
+    //    注: bank00 主循环 (_onFrame) 中已通过 DataStore 写 NT/OAM/调色板,
+    //        PPU endFrame 读取这些数据渲染。
+    //    TODO: bank00 agent 完成后, NMI 写 NT/OAM 逻辑在 bank00.mainLoop 中完成,
+    //          此处只需 startFrame/endFrame。当前 bank00.update 中的渲染委托
+    //          Bank00RenderView 已写 DataStore, PPU 需从 DataStore 同步。
     this._ppu.endFrame();
 
-    // 4. 呈现: ppu.buffer (Uint32 索引色) → putImageData
+    // 3. 呈现: ppu.buffer (Uint32 索引色) → putImageData
     if (this._ctx) {
       this._writeFrameToCtx((this._ppu as any).buffer as Uint32Array);
     }
@@ -374,144 +376,24 @@ export class Tsubasa2 {
     const data = this._imageData.data;
     for (let i = 0; i < buf.length; i++) {
       const c = buf[i];
-      // Uint32 ABGR (PPU 内部格式) → RGBA
-      data[i * 4 + 0] = c & 0xFF;         // R
-      data[i * 4 + 1] = (c >> 8) & 0xFF;  // G
-      data[i * 4 + 2] = (c >> 16) & 0xFF; // B
-      data[i * 4 + 3] = 0xFF;             // A
+      data[i * 4 + 0] = c & 0xFF;
+      data[i * 4 + 1] = (c >> 8) & 0xFF;
+      data[i * 4 + 2] = (c >> 16) & 0xFF;
+      data[i * 4 + 3] = 0xFF;
     }
     this._ctx.putImageData(this._imageData, 0, 0);
   }
 
-  // ══════════════════════════════════════════
-  // G23: dispatch 场景路由注册 (STORY/PASSWORD/RESULT)
-  // ══════════════════════════════════════════
-
-  /** 场景后去向键 (DataStore, 对应 boot.ts 的 boot_story_to_meeting) */
-  private static readonly KEY_STORY_TO_MEETING = 'boot_story_to_meeting';
-
-  /**
-   * 注册 STORY/PASSWORD/RESULT 到 DispatchService。
-   * 每个 handler 的 update 返回下一 taskIndex (null=留本场景), 等价
-   * 真实 ROM "设 A=下一任务索引 → JMP $C400 重新分发"。
-   */
-  private _registerDispatchScenes(): void {
-    const dispatch = this._dispatch;
-
-    // ── BOOT: 开场 (TECMO Theater) ──
-    // 对应 Bank00 $801F 场景初始化链 → initBoot() 灌入真实 BOOT NT/OAM/调色板,
-    // 之后每帧 update() 推进调色板渐显 (syncBootFrame), 开场结束 → 流转下一场景。
-    const bootHandler: SceneHandler = {
-      init: () => {
-        // 对应 $8017→$801F 场景初始化链 (sceneLoad(0x17) 由 Bank00 主循环触发)
-        this._openingCtrl.init();
-        this._openingCtrl.initBoot();
-      },
-      update: (pressed: number, frame: number) => {
-        // 开场阶段: 推进渐显 (对应 bank0 $9A71 fade + $9A0D 帧等待)
-        this._openingCtrl.syncBootFrame(frame);
-        this._openingCtrl.update(pressed);
-        if (this._openingCtrl.complete) {
-          // 开场播完 → TITLE 场景
-          return TaskIndex.STORY;
-        }
-        return null;
-      },
-    };
-    dispatch.registerScene(TaskIndex.BOOT, bootHandler);
-
-    // ── PASSWORD: 密码输入 (Bank02 $A484 分发 + $A4C0 主逻辑) ──
-    const passwordHandler: SceneHandler = {
-      init: () => {
-        this._passwordCtrl.init(0);
-        // 对应 $A200 → $A484 分发 (ram_00ED=0) → $A4C0 场景动画初始化链
-        this._bank02.entryF(0);
-      },
-      update: (pressed: number, _frame: number) => {
-        const r = this._passwordCtrl.update(pressed);
-        if (r === 'success') {
-          // 密码成功 → STORY(续关剧情) → MEETING
-          this._store.write(Tsubasa2.KEY_STORY_TO_MEETING, 1);
-          this._store.write('ram_00ED', 0x0A);
-          return TaskIndex.STORY;
-        }
-        return null; // fail/continue → 留在密码界面
-      },
-    };
-    dispatch.registerScene(TaskIndex.PASSWORD, passwordHandler);
-
-    // ── STORY: 剧情场景 (Bank18 驱动 Bank19) ──
-    const storyHandler: SceneHandler = {
-      init: () => {
-        this._bank18.enterChapter(0); // StoryChapter.OPENING
-      },
-      update: (pressed: number, _frame: number) => {
-        // SELECT 跳过剧情 (原版按键), 或数据流结束 → 切下一场景
-        if ((pressed & BUTTON.SELECT) !== 0) {
-          this._bank18.skip();
-          return this._storyNextScene();
-        }
-        const done = this._bank18.update(0);
-        if (done) return this._storyNextScene();
-        return null;
-      },
-    };
-    dispatch.registerScene(TaskIndex.STORY, storyHandler);
-
-    // ── RESULT: 赛果画面, A 确认返回 TITLE ──
-    const resultHandler: SceneHandler = {
-      init: () => {
-        this._resultCtrl.init();
-      },
-      update: (pressed: number, _frame: number) => {
-        if (this._resultCtrl.update(pressed, 0)) {
-          return TaskIndex.BOOT; // A 确认 → 返回 TITLE (重新开始)
-        }
-        return null;
-      },
-    };
-    dispatch.registerScene(TaskIndex.RESULT, resultHandler);
-  }
-
-  /** STORY 结束后的去向: 开场/续关→MEETING, 比赛前→MATCH */
-  private _storyNextScene(): number {
-    const toMeeting = (this._store.read(Tsubasa2.KEY_STORY_TO_MEETING) as number) !== 0;
-    return toMeeting ? TaskIndex.MEETING : TaskIndex.MATCH;
-  }
-
-  /**
-   * 按 dispatch 当前场景渲染对应 View (PASSWORD/MEETING/LEVELUP)。
-   * 场景切换后由 handler.init 写背景 NT, 此处只做输入槽位/光标等精灵渲染。
-   */
-  private _renderDispatchSceneViews(): void {
-    switch (this._dispatch.currentScene) {
-      case TaskIndex.BOOT:
-        // 开场: BOOT NT/OAM/调色板已由 OpeningSceneController.initBoot() 灌入 DataStore,
-        // OAM 精灵由 _oamView.emit() 统一输出 (对应 NES NMI 写 OAM)。
-        break;
-      case TaskIndex.PASSWORD:
-        if (this._passwordCtrl) {
-          this._passwordView.render(this._passwordCtrl.getDisplayState());
-        }
-        break;
-      default:
-        break;
-    }
-  }
-
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
   // CHR Bank 注册 (PPU pattern table)
-  // ══════════════════════════════════════════
+  // ══════════════════════════════════════════════════════════════
 
   private _registerAllChrBanks(): void {
     const banks = [
       chrBank00, chrBank01, chrBank02, chrBank03, chrBank04, chrBank05, chrBank06, chrBank07,
       chrBank08, chrBank09, chrBank10, chrBank11, chrBank12, chrBank13, chrBank14, chrBank15,
     ];
-    // PPU pattern table: tile.render(buffer,...) 用 chrMem
-    // 每个 CHR Bank 8KB = 512 tiles, 前256是BG pattern, 后256是SPR pattern
-    // TODO: 将 CHR Bank 数据写入 PPU 的 pattern table (ptTile)
-    //       PPU 的 chrMem / ptTile 需要对接, 当前先占位
+    // TODO: 将 CHR Bank 数据写入 PPU 的 pattern table (chrMem / ptTile)
     console.log(`[Tsubasa2] 注册 ${banks.length} 个 CHR Bank (待对接 PPU pattern table)`);
   }
 }

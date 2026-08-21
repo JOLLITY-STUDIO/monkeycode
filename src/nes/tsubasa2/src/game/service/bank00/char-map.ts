@@ -5,12 +5,16 @@
  *   - 字符 < $A0: 单 tile, 字符值直接作为 tile 索引
  *   - 字符 $A0-$D7: 双 tile, 高位 $94/$95 + 低位 tile (从 $8A14 表读取)
  *
+ * $88E1: TAY (Y=字符值); $88E2: LDA $8A14,Y → 实际读地址 = $8A14 + 字符值
+ *   - 字符 $A0 读 $8AB4 (ROM 偏移 0x0AC4)
+ *   - 字符 $D7 读 $8AEB
+ *
  * 字符分类:
  *   $00:      空白
  *   $01:      特殊符号
  *   $02-$0B:  数字 0-9 (ASCII 直接映射)
- *   $0C-$1F:  片假名 (单 tile, chr-bank-00 tile $0C-$1F)
- *   $20-$3F:  符号和片假名
+ *   $0C-$1F:  符号和片假名
+ *   $20-$3F:  ASCII 符号
  *   $40-$5A:  英文大写字母 A-Z (ASCII 直接映射)
  *   $5B-$7F:  符号和片假名 (chr-bank-00 中非 ASCII)
  *   $80-$8F:  片假名浊音/半浊音 (单 tile)
@@ -20,55 +24,43 @@
  *   $E0-$E7:  文本格式控制 (非文本)
  *   $E8-$FF:  长指令 (非文本)
  *
- * $8A14 表 (字符 $A0-$D7 → 低位 tile):
- *   高位 tile $94: 字符 $A0-$C7 (40 个)
- *   高位 tile $95: 字符 $C8-$D7 (16 个, 实际表只到 $D1)
+ * $8A14 表 (实际):
+ *   高位 tile $94 (浊点): 字符 $A0-$C7 (40 个)
+ *   高位 tile $95 (半浊点): 字符 $C8-$D7 (16 个)
  *
- * 注: 实际字符外观需通过 CHR tile 渲染确认, 此表为初步映射
- *
- * TODO(双 tile 假名映射待完成):
- *   CHAR_MAP_DOUBLE 的 hiTile/loTile 已从 $8A14 表提取 (与 ROM 一致),
- *   但 char 字段仍是占位符 (?A0..?D1)。完整假名需通过 chr-bank-00/01
- *   的双 tile (16x8) 并排渲染识别确认; 后续可用已知日语台词反推校准。
- *   不影响编译与主流程 (script-data-loader 仍可用占位符文本)。
+ * G24 状态 (2026-08):
+ *   - hiTile/loTile 精确值已从 $8A14 表 + ROM 0x0AC4 提取 (43 个 unique loTile)
+ *   - 每个 loTile 实际对应哪个假名, 已通过 password-sprites (7x6 假名表) +
+ *     chr-bank-00.ts 8x8 渲染识别. 但完整的 46 基础音 ↔ CHR tile 映射
+ *     尚未完全确定 (待后续 G24.1 用 tsnes trace 校验)
+ *   - char 字段全部置为 '?' (G24 占位), 避免错误文本输出
+ *   - decodeScriptText 在 char 缺失时回退到 [XX] 十六进制, 不影响编译/运行
+ *   - LO_TILE_HINT 提供 loTile → 假名 候选映射 (用于人工校准)
  */
 
 // ── 单 tile 字符 ($00-$9F) ──
-// 基于 chr-bank-00 tile 渲染分析
+// 基于 chr-bank-00 tile 渲染分析 (G24 之前的部分识别, 准确度待 G24.1 校验)
 export const CHAR_MAP_SINGLE: Record<number, string> = {
   // 空白和特殊
-  0x00: ' ',       // 空白
-  0x01: '·',       // 特殊符号 (箭头/标记)
+  0x00: ' ',
+  0x01: '?',
 
-  // 数字 0-9 (ASCII 直接映射)
-  0x02: '0',
-  0x03: '1',
-  0x04: '2',
-  0x05: '3',
-  0x06: '4',
-  0x07: '5',
-  0x08: '6',
-  0x09: '7',
-  0x0A: '8',
-  0x0B: '9',
+  // 数字 0-9 (ASCII 直接映射, 确认)
+  0x02: '0', 0x03: '1', 0x04: '2', 0x05: '3', 0x06: '4',
+  0x07: '5', 0x08: '6', 0x09: '7', 0x0A: '8', 0x0B: '9',
 
-  // 片假名 (单 tile, chr-bank-00 tile $0C-$1F)
-  // 注: 具体假名需通过 CHR tile 渲染确认, 以下为推测
-  0x0C: 'ア', 0x0D: 'イ', 0x0E: 'ウ', 0x0F: 'エ',
-  0x10: 'オ', 0x11: 'カ', 0x12: 'キ', 0x13: 'ク',
-  0x14: 'ケ', 0x15: 'コ', 0x16: 'サ', 0x17: 'シ',
-  0x18: 'ス', 0x19: 'セ', 0x1A: 'ソ', 0x1B: 'タ',
-  0x1C: 'チ', 0x1D: 'ツ', 0x1E: 'テ', 0x1F: 'ト',
-
-  // ASCII 符号 ($20-$3F)
+  // ASCII 符号 ($20-$3F) - 通用映射
   0x20: ' ',  0x21: '!',  0x22: '"',  0x23: '#',
   0x24: '$',  0x25: '%',  0x26: '&',  0x27: "'",
   0x28: '(',  0x29: ')',  0x2A: '*',  0x2B: '+',
   0x2C: ',',  0x2D: '-',  0x2E: '.',  0x2F: '/',
-  // $30-$3F: 0-9 和符号 (但 $30 可能不是 ASCII '0', 因为数字在 $02)
-  // 注: $30-$3F 在 chr-bank-00 中可能是片假名或符号, 待确认
+  0x30: '0',  0x31: '1',  0x32: '2',  0x33: '3',
+  0x34: '4',  0x35: '5',  0x36: '6',  0x37: '7',
+  0x38: '8',  0x39: '9',
+  0x3A: ':',  0x3B: ';',  0x3C: '<',  0x3D: '=',
+  0x3E: '>',  0x3F: '?',
 
-  // 英文大写字母 A-Z ($41-$5A, ASCII 直接映射)
+  // 英文大写字母 A-Z ($41-$5A, ASCII 直接映射, 确认)
   0x41: 'A', 0x42: 'B', 0x43: 'C', 0x44: 'D',
   0x45: 'E', 0x46: 'F', 0x47: 'G', 0x48: 'H',
   0x49: 'I', 0x4A: 'J', 0x4B: 'K', 0x4C: 'L',
@@ -77,94 +69,148 @@ export const CHAR_MAP_SINGLE: Record<number, string> = {
   0x55: 'U', 0x56: 'V', 0x57: 'W', 0x58: 'X',
   0x59: 'Y', 0x5A: 'Z',
 
-  // $5B-$7F: 在 chr-bank-00 中是片假名/符号, 非 ASCII
-  // 英文小写字母可能在不同 CHR bank 中, 待确认
-
-  // 片假名浊音/半浊音 ($80-$8F, 单 tile)
-  0x81: 'ア', 0x82: 'カ', 0x83: 'サ', 0x84: 'タ',
-  0x85: 'ナ', 0x86: 'ハ', 0x87: 'マ', 0x88: 'ヤ',
-  0x89: 'ラ', 0x8A: 'ワ', 0x8B: 'ガ', 0x8C: 'ザ',
-  0x8D: 'ダ', 0x8E: 'バ', 0x8F: 'パ',
+  // $0C-$1F, $5B-$7F, $80-$9F: 待 G24.1 识别
 };
 
 // ── 双 tile 字符 ($A0-$D7) ──
-// 双 tile = 上下拼接: hiTile(上,浊点$94/半浊点$95) + loTile(下,基础假名)
-// loTile 是 chr-bank-00 的物理 tile 索引, 对应基础假名如下:
-//   $0C=ア $0D=イ $0E=ウ $0F=エ $10=オ $11=カ $12=キ $13=ク $14=ケ $15=コ
-//   $16=サ $17=シ $18=ス $19=セ $1A=ソ $1B=タ $1C=チ $1D=ツ $1E=テ $1F=ト
-//   $46-$5E 对应其他假名/符号 (部分待确认)
-// 浊点($94)+基础假名 = 浊音; 半浊点($95)+は行 = 半浊音
+// hiTile 精确值 (从反汇编 $88D6-$88DA 提取):
+//   - 字符 < $C8: hiTile = $94 (浊点)
+//   - 字符 ≥ $C8: hiTile = $95 (半浊点)
+// loTile 精确值 (从 ROM 0x0AC4 提取的 $8A14 表):
+//   字符 $A0-$A5: 06 07 08 09 0A 0B
+//   字符 $A6-$AA: 0C 0D 0E 0F 10
+//   字符 $AB-$AE: 11 12 13 14
+//   字符 $AF-$B3: 1A 1B 1C 1D 1E
+//   字符 $B4-$C2: 46 47 48 49 4A 4B 4C 4D 4E 4F 50 51 52 53 54
+//   字符 $C3-$C7: 5A 5B 5C 5D 5E
+//   字符 $C8-$CC: 1A 1B 1C 1D 1E
+//   字符 $CD-$D1: 5A 5B 5C 5D 5E
+//   字符 $D2-$D7: 01 0A 14 28 3C 50
+//
+// char 字段: 全部置 '?' (G24 占位), 等待后续用 tsnes trace 校验
 export const CHAR_MAP_DOUBLE: Record<number, { hiTile: number; loTile: number; char: string }> = {
   // 高位 $94 = 浊点 (字符 $A0-$C7, 40 个)
-  // loTile $06-$0B: chr-bank-00 tile $06-$0B 图案待精确识别, 暂标 TODO
-  0xA0: { hiTile: 0x94, loTile: 0x06, char: '゛' }, // TODO loTile$06 渲染像ネ, 浊音待确认
-  0xA1: { hiTile: 0x94, loTile: 0x07, char: '゛' }, // TODO loTile$07 渲染像フ/ホ
-  0xA2: { hiTile: 0x94, loTile: 0x08, char: '゛' }, // TODO loTile$08 渲染像ノ(斜线)
-  0xA3: { hiTile: 0x94, loTile: 0x09, char: '゛' }, // TODO loTile$09 渲染像ン
-  0xA4: { hiTile: 0x94, loTile: 0x0A, char: '゛' }, // TODO loTile$0A 渲染像ー/ロ
-  0xA5: { hiTile: 0x94, loTile: 0x0B, char: '゛' }, // TODO loTile$0B 渲染像ム
-  // loTile $0C-$1E = ア-テ (char-map $0C-$1E), +浊点 = 浊音
-  0xA6: { hiTile: 0x94, loTile: 0x0C, char: 'ガ' }, // ア+浊
-  0xA7: { hiTile: 0x94, loTile: 0x0D, char: 'ギ' }, // イ+浊 (注: イ无浊音, 可能 loTile$0D≠イ)
-  0xA8: { hiTile: 0x94, loTile: 0x0E, char: 'グ' }, // ウ+浊
-  0xA9: { hiTile: 0x94, loTile: 0x0F, char: 'ゲ' }, // エ+浊 (注: エ无浊音, 待确认)
-  0xAA: { hiTile: 0x94, loTile: 0x10, char: 'ゴ' }, // オ+浊
-  0xAB: { hiTile: 0x94, loTile: 0x11, char: 'ガ' }, // カ+浊 → ガ
-  0xAC: { hiTile: 0x94, loTile: 0x12, char: 'ギ' }, // キ+浊 → ギ
-  0xAD: { hiTile: 0x94, loTile: 0x13, char: 'グ' }, // ク+浊 → グ
-  0xAE: { hiTile: 0x94, loTile: 0x14, char: 'ゲ' }, // ケ+浊 → ゲ
-  0xAF: { hiTile: 0x94, loTile: 0x1A, char: 'ザ' }, // サ+浊(loTile$1A=ソ?) → ザ/ザ
-  0xB0: { hiTile: 0x94, loTile: 0x1B, char: 'ジ' }, // タ+浊(loTile$1B=タ?) → ダ/ジ
-  0xB1: { hiTile: 0x94, loTile: 0x1C, char: 'ヂ' }, // チ+浊 → ヂ
-  0xB2: { hiTile: 0x94, loTile: 0x1D, char: 'ヅ' }, // ツ+浊 → ヅ
-  0xB3: { hiTile: 0x94, loTile: 0x1E, char: 'デ' }, // テ+浊 → デ
-  // loTile $46-$5E: chr-bank-00 tile $46-$5E 对应英文区/符号区, 作为双 tile 下半可能是其他假名
-  // 渲染待精确识别, 暂按常见浊音填候选并标 TODO
-  0xB4: { hiTile: 0x94, loTile: 0x46, char: '゛' }, // TODO loTile$46 渲染像ナ
-  0xB5: { hiTile: 0x94, loTile: 0x47, char: '゛' }, // TODO loTile$47 渲染像マ
-  0xB6: { hiTile: 0x94, loTile: 0x48, char: '゛' }, // TODO loTile$48 渲染像ヤ
-  0xB7: { hiTile: 0x94, loTile: 0x49, char: '゛' }, // TODO loTile$49 渲染像ラ
-  0xB8: { hiTile: 0x94, loTile: 0x4A, char: '゛' }, // TODO loTile$4A 渲染像7?/ヲ
-  0xB9: { hiTile: 0x94, loTile: 0x4B, char: '゛' }, // TODO loTile$4B 渲染像ケ
-  0xBA: { hiTile: 0x94, loTile: 0x4C, char: '゛' }, // TODO loTile$4C 渲染像3?/レ
-  0xBB: { hiTile: 0x94, loTile: 0x4D, char: '゛' }, // TODO loTile$4D 渲染像M
-  0xBC: { hiTile: 0x94, loTile: 0x4E, char: '゛' }, // TODO loTile$4E 渲染像N
-  0xBD: { hiTile: 0x94, loTile: 0x4F, char: '゛' }, // TODO loTile$4F 渲染像O
-  0xBE: { hiTile: 0x94, loTile: 0x50, char: '゛' }, // TODO loTile$50 渲染像P
-  0xBF: { hiTile: 0x94, loTile: 0x51, char: '゛' }, // TODO loTile$51 渲染像Q
-  0xC0: { hiTile: 0x94, loTile: 0x52, char: '゛' }, // TODO loTile$52 渲染像R
-  0xC1: { hiTile: 0x94, loTile: 0x53, char: '゛' }, // TODO loTile$53 渲染像S
-  0xC2: { hiTile: 0x94, loTile: 0x54, char: '゛' }, // TODO loTile$54 渲染像T
-  0xC3: { hiTile: 0x94, loTile: 0x5A, char: '゛' }, // TODO loTile$5A 渲染像Z
-  0xC4: { hiTile: 0x94, loTile: 0x5B, char: '゛' }, // TODO loTile$5B 渲染像[
-  0xC5: { hiTile: 0x94, loTile: 0x5C, char: '゛' }, // TODO loTile$5C 渲染像\
-  0xC6: { hiTile: 0x94, loTile: 0x5D, char: '゛' }, // TODO loTile$5D 渲染像]
-  0xC7: { hiTile: 0x94, loTile: 0x5E, char: '゛' }, // TODO loTile$5E 渲染像^
+  0xA0: { hiTile: 0x94, loTile: 0x06, char: '?' },
+  0xA1: { hiTile: 0x94, loTile: 0x07, char: '?' },
+  0xA2: { hiTile: 0x94, loTile: 0x08, char: '?' },
+  0xA3: { hiTile: 0x94, loTile: 0x09, char: '?' },
+  0xA4: { hiTile: 0x94, loTile: 0x0A, char: '?' },
+  0xA5: { hiTile: 0x94, loTile: 0x0B, char: '?' },
+  0xA6: { hiTile: 0x94, loTile: 0x0C, char: '?' },
+  0xA7: { hiTile: 0x94, loTile: 0x0D, char: '?' },
+  0xA8: { hiTile: 0x94, loTile: 0x0E, char: '?' },
+  0xA9: { hiTile: 0x94, loTile: 0x0F, char: '?' },
+  0xAA: { hiTile: 0x94, loTile: 0x10, char: '?' },
+  0xAB: { hiTile: 0x94, loTile: 0x11, char: '?' },
+  0xAC: { hiTile: 0x94, loTile: 0x12, char: '?' },
+  0xAD: { hiTile: 0x94, loTile: 0x13, char: '?' },
+  0xAE: { hiTile: 0x94, loTile: 0x14, char: '?' },
+  0xAF: { hiTile: 0x94, loTile: 0x1A, char: '?' },
+  0xB0: { hiTile: 0x94, loTile: 0x1B, char: '?' },
+  0xB1: { hiTile: 0x94, loTile: 0x1C, char: '?' },
+  0xB2: { hiTile: 0x94, loTile: 0x1D, char: '?' },
+  0xB3: { hiTile: 0x94, loTile: 0x1E, char: '?' },
+  0xB4: { hiTile: 0x94, loTile: 0x46, char: '?' },
+  0xB5: { hiTile: 0x94, loTile: 0x47, char: '?' },
+  0xB6: { hiTile: 0x94, loTile: 0x48, char: '?' },
+  0xB7: { hiTile: 0x94, loTile: 0x49, char: '?' },
+  0xB8: { hiTile: 0x94, loTile: 0x4A, char: '?' },
+  0xB9: { hiTile: 0x94, loTile: 0x4B, char: '?' },
+  0xBA: { hiTile: 0x94, loTile: 0x4C, char: '?' },
+  0xBB: { hiTile: 0x94, loTile: 0x4D, char: '?' },
+  0xBC: { hiTile: 0x94, loTile: 0x4E, char: '?' },
+  0xBD: { hiTile: 0x94, loTile: 0x4F, char: '?' },
+  0xBE: { hiTile: 0x94, loTile: 0x50, char: '?' },
+  0xBF: { hiTile: 0x94, loTile: 0x51, char: '?' },
+  0xC0: { hiTile: 0x94, loTile: 0x52, char: '?' },
+  0xC1: { hiTile: 0x94, loTile: 0x53, char: '?' },
+  0xC2: { hiTile: 0x94, loTile: 0x54, char: '?' },
+  0xC3: { hiTile: 0x94, loTile: 0x5A, char: '?' },
+  0xC4: { hiTile: 0x94, loTile: 0x5B, char: '?' },
+  0xC5: { hiTile: 0x94, loTile: 0x5C, char: '?' },
+  0xC6: { hiTile: 0x94, loTile: 0x5D, char: '?' },
+  0xC7: { hiTile: 0x94, loTile: 0x5E, char: '?' },
 
   // 高位 $95 = 半浊点 (字符 $C8-$D1, 10 个)
-  // 半浊点+は行 = ぱぴぷぺぽ
-  0xC8: { hiTile: 0x95, loTile: 0x1A, char: '゜' }, // TODO 半浊, loTile$1A 待确认
-  0xC9: { hiTile: 0x95, loTile: 0x1B, char: '゜' }, // TODO
-  0xCA: { hiTile: 0x95, loTile: 0x1C, char: '゜' }, // TODO
-  0xCB: { hiTile: 0x95, loTile: 0x1D, char: '゜' }, // TODO
-  0xCC: { hiTile: 0x95, loTile: 0x1E, char: '゜' }, // TODO
-  0xCD: { hiTile: 0x95, loTile: 0x5A, char: '゜' }, // TODO
-  0xCE: { hiTile: 0x95, loTile: 0x5B, char: '゜' }, // TODO
-  0xCF: { hiTile: 0x95, loTile: 0x5C, char: '゜' }, // TODO
-  0xD0: { hiTile: 0x95, loTile: 0x5D, char: '゜' }, // TODO
-  0xD1: { hiTile: 0x95, loTile: 0x5E, char: '゜' }, // TODO
+  0xC8: { hiTile: 0x95, loTile: 0x1A, char: '?' },
+  0xC9: { hiTile: 0x95, loTile: 0x1B, char: '?' },
+  0xCA: { hiTile: 0x95, loTile: 0x1C, char: '?' },
+  0xCB: { hiTile: 0x95, loTile: 0x1D, char: '?' },
+  0xCC: { hiTile: 0x95, loTile: 0x1E, char: '?' },
+  0xCD: { hiTile: 0x95, loTile: 0x5A, char: '?' },
+  0xCE: { hiTile: 0x95, loTile: 0x5B, char: '?' },
+  0xCF: { hiTile: 0x95, loTile: 0x5C, char: '?' },
+  0xD0: { hiTile: 0x95, loTile: 0x5D, char: '?' },
+  0xD1: { hiTile: 0x95, loTile: 0x5E, char: '?' },
+
+  // 高位 $95 = 半浊点 (字符 $D2-$D7, 6 个, 可能不是半浊音而是其他字符)
+  0xD2: { hiTile: 0x95, loTile: 0x01, char: '?' },
+  0xD3: { hiTile: 0x95, loTile: 0x0A, char: '?' },
+  0xD4: { hiTile: 0x95, loTile: 0x14, char: '?' },
+  0xD5: { hiTile: 0x95, loTile: 0x28, char: '?' },
+  0xD6: { hiTile: 0x95, loTile: 0x3C, char: '?' },
+  0xD7: { hiTile: 0x95, loTile: 0x50, char: '?' },
 };
 
 // ── 文本格式控制 ($E0-$E7) ──
 export const TEXT_CTRL_MAP: Record<number, string> = {
-  0xE0: 'CTRL_E0',  // 可能是换行
-  0xE1: 'CTRL_E1',  // 可能是缩进/新行
-  0xE2: 'CTRL_E2',  // 可能是缩进/新行
+  0xE0: 'CTRL_E0',
+  0xE1: 'CTRL_E1',
+  0xE2: 'CTRL_E2',
   0xE3: 'CTRL_E3',
   0xE4: 'CTRL_E4',
   0xE5: 'CTRL_E5',
   0xE6: 'CTRL_E6',
   0xE7: 'CTRL_E7',
+};
+
+// ── G24 辅助映射: loTile → 候选假名 (待 G24.1 用 tsnes trace 校验) ──
+// 从 password-sprites (7x6 假名表) + chr-bank-00 8x8 渲染形状分析推测
+// 注: 此表为 G24 阶段产物, 准确度约 60-70%, 仅作调试参考
+export const LO_TILE_HINT: Record<number, string> = {
+  0x01: 'ン/ソ',
+  0x06: 'キ/リ',
+  0x07: 'シ/リ',
+  0x08: 'ツ/ミ',
+  0x09: 'ト/フ',
+  0x0A: 'ニ/ー',
+  0x0B: 'ル',
+  0x0C: 'レ',
+  0x0D: 'ロ',
+  0x0E: 'ワ',
+  0x0F: 'ヲ',
+  0x10: 'ン/特殊',
+  0x11: 'ク/ヤ',
+  0x12: 'コ',
+  0x13: 'カ/ー',
+  0x14: 'エ/セ',
+  0x1A: 'チ/ス',
+  0x1B: 'ツ/セ',
+  0x1C: 'シ/フ',
+  0x1D: 'フ/ア',
+  0x1E: 'ヘ/レ',
+  0x28: '長音/ー',
+  0x3C: 'ン/長音',
+  0x46: 'サ',
+  0x47: 'ヤ',
+  0x48: 'マ',
+  0x49: 'ケ/マ',
+  0x4A: 'フ',
+  0x4B: 'コ/ー',
+  0x4C: 'ム',
+  0x4D: 'ウ',
+  0x4E: 'ラ',
+  0x4F: 'リ',
+  0x50: 'ン',
+  0x51: 'ル',
+  0x52: 'ヨ/ヤ',
+  0x53: 'ユ/ヤ',
+  0x54: 'ラ/レ',
+  0x5A: 'ヒ',
+  0x5B: 'ハ',
+  0x5C: 'へ/フ',
+  0x5D: 'ホ',
+  0x5E: 'ナ/ニ',
 };
 
 /**
@@ -181,7 +227,13 @@ export function decodeScriptText(bytes: number[]): string {
     } else if (b <= 0xD7) {
       // 双 tile 字符 (日文假名)
       const entry = CHAR_MAP_DOUBLE[b];
-      result += entry?.char ?? `[${b.toString(16).padStart(2, '0').toUpperCase()}]`;
+      if (entry && entry.char !== '?') {
+        result += entry.char;
+      } else {
+        // 不可识别, 输出十六进制 + LO_TILE_HINT 提示
+        const hint = entry ? LO_TILE_HINT[entry.loTile] : '';
+        result += hint ? `[${b.toString(16).padStart(2, '0').toUpperCase()}?${hint}]` : `[${b.toString(16).padStart(2, '0').toUpperCase()}]`;
+      }
     } else {
       // 非文本字节 (指令)
       result += `[${b.toString(16).padStart(2, '0').toUpperCase()}]`;
