@@ -33,7 +33,9 @@ export const PASSWORD_SPRITE_TABLE = [
   // TODO: 从 asm 提取 7×6 网格 OAM 真实数据
 ] as const;
 
-export default PasswordSceneData = {
+export const PasswordSceneData = {
   ntBlocks: PASSWORD_NT_BLOCKS,
   spriteTable: PASSWORD_SPRITE_TABLE,
-};
+} as const;
+
+export default PasswordSceneData;
