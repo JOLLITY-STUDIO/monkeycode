@@ -12,6 +12,7 @@
  */
 import NES from '../nes';
 import { HEADER, NES_CHR_ROM, PRG } from '../../game/rom';
+import { Tsubasa2 } from '../../game';
 import ScreenMini from './screen';
 import SpeakersMini from './speakers';
 import FrameTimerMini from './frame-timer';
@@ -48,6 +49,8 @@ export default class BrowserMini {
 
   /** NES 主板实例 (去 CPU 化, 持有 PPU/PAPU/mmap/rom) */
   _nes: NES | null;
+  /** 组合根 (Tsubasa2 主类, index 层): 每帧驱动游戏逻辑 + 直写 PPU 内存 */
+  _tsubasa2: Tsubasa2 | null;
   /** 当前按键掩码 (每帧 nes.frame() 前写入 NES controllers) */
   _buttons: number;
 
@@ -59,6 +62,7 @@ export default class BrowserMini {
     this._fps = 0;
     this._running = false;
     this._nes = null;
+    this._tsubasa2 = null;
     this._buttons = 0;
 
     this._screen = new ScreenMini(options.canvas);
@@ -110,6 +114,10 @@ export default class BrowserMini {
       chr: NES_CHR_ROM,
     });
 
+    // 组合根: 实例化 Tsubasa2 主类 (DataStore + 各 Service) 并启动 BOOT 场景
+    this._tsubasa2 = new Tsubasa2();
+    this._tsubasa2.boot();
+
     this._options.onStatus?.('ROM 已加载, 启动帧循环');
 
     this._frameTimer.start();
@@ -136,6 +144,7 @@ export default class BrowserMini {
       this._fpsInterval = undefined;
     }
     this._nes = null;
+    this._tsubasa2 = null;
     this._options.onStatus?.('已停止');
   }
 
@@ -157,7 +166,8 @@ export default class BrowserMini {
       set(0, 'A'); set(1, 'B'); set(2, 'SELECT'); set(3, 'START');
       set(4, 'UP'); set(5, 'DOWN'); set(6, 'LEFT'); set(7, 'RIGHT');
 
-      this._nes.frame();
+      // 组合根每帧驱动: NMI 推进逻辑 → 直写 PPU 内存 → PPU 扫描线渲染
+      this._tsubasa2?.frame(this._nes);
       this._speakers.flush();
 
       this._frameIndex++;

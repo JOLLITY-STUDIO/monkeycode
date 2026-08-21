@@ -10,6 +10,7 @@ import {
   BUTTON_UP, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT,
 } from './core/browser-mini/input';
 import type { BrowserMiniOptions, ButtonId } from './core/browser-mini/index';
+import { Tsubasa2 } from './game';
 
 export {
   NES_WIDTH, NES_HEIGHT, TILE_PX, NT_COLS, NT_ROWS,
@@ -19,5 +20,5 @@ export {
 };
 export type { BrowserMiniOptions, ButtonId };
 
-// game 层暂未恢复, 待 Tsubasa2 主类回归后补充
-// export * from './game';
+// 组合根 (主类): index 就是主板, page 只启动模拟器
+export { Tsubasa2 };
