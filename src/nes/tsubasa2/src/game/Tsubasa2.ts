@@ -2,46 +2,27 @@
  * 天使之翼2 — NES 主板入口 (纯入口, 不含游戏逻辑)
  *
  * 职责 (像 NES 主板):
- *   1. 加电 → 加载 ROM (实例化各 bank service + 注入 CHR/PRG 数据)
- *   2. 运行 CPU 主循环 (RAF → bank00.mainLoop(buttons))
- *   3. PPU 渲染输出 (ppu.startFrame → ppu.endFrame → putImageData)
+ *   1. 加电 → 加载 ROM (实例化 PPU / DataStore / InterruptService / ServiceLoader)
+ *   2. RESET 链 (interrupt.reset → bank30.init 硬件初始化 + 首场景)
+ *   3. RAF 主循环 (≈ NMI 时序: interrupt.nmi(buttons) → bank00.mainLoop)
+ *   4. PPU 渲染输出 (ppu.startFrame → endFrame → putImageData)
  *
  * 对外: new Tsubasa2(ctx, config).start(canvas)
  * 无头: new Tsubasa2(null).prepare(); stepFrame();
  *
  * 游戏逻辑 (bank00 主循环、场景路由、音频、view 渲染分发)
- * 由各 bank service 自己处理, Tsubasa2 只做:
- *   - PPU / DataStore 初始化
- *   - CHR / PRG bank 注入
- *   - RAF 循环 + PPU 渲染输出
- *   - 每帧调用 bank00.mainLoop(buttons) (真实 ROM $9EED 主循环在 bank00)
- *
- * 注: bank00 正在由另一个 agent 重新翻译, 可能还没有 mainLoop(buttons) 方法。
- *     当前用可选调用兜底, 待 bank00 完成后切换。
+ * 全在各 bank service 内部, Tsubasa2 只通过 InterruptService 的两个向量接入:
+ *   - interrupt.reset()  → $FFF0 RESET 向量 → bank30.init()
+ *   - interrupt.nmi(b)    → $FFFA NMI 向量   → bank00.mainLoop(b)
  */
-
 import PPU from '../core/ppu';
 import { DataStore } from './data/prg/DataStore';
-import { Bank00Service } from './service/bank00/bank00_core.service';
-import { Bank02Service } from './service/bank02_scene.service';
-import { Bank30Service } from './service/bank30_init.service';
-import { Bank12AudioService } from './service/bank12_audio.service';
-import { Bank16Service } from './service/bank16_skills.service';
-import { Bank18Service } from './service/bank18_story.service';
-import { Bank19Service } from './service/bank19_auxiliary.service';
-import { Bank20Service } from './service/bank20_match-aux.service';
-import { Bank26ShowcaseExecutor } from './service/bank26_showcase-executor.service';
-import { MatchEngineService } from './service/bank26_match.service';
-import { DataQueryService } from './service/bank01_data-query.service';
-import { Bank28MatchService } from './service/bank28_match.service';
 import { InterruptService } from './service/bank31_interrupt.service';
-import { LevelUpService } from './service/levelup.service';
-import { Bank24HudService } from './service/bank24_hud.service';
-import { Bank29RosterService } from './service/bank29_roster.service';
+import { ServiceLoader } from './ServiceLoader';
 import {
   BUTTON, GameState, NES_WIDTH, NES_HEIGHT,
-  type Tsubasa2Config, type DebugInfo, type GameCallbacks,
 } from '../core/types';
+import type { Tsubasa2Config, DebugInfo, GameCallbacks } from '../core/types';
 
 // CHR Bank 数据 (game 层, 直接 import)
 import chrBank00 from './data/chr/chr-bank-00';
@@ -83,28 +64,12 @@ export class Tsubasa2 {
   // ── 回调 ──
   private _callbacks: GameCallbacks = {};
 
-  // ── 核心: PPU + DataStore (NES 主板芯片) ──
+  // ── NES 主板芯片: PPU + DataStore + InterruptService ──
   private _ppu: PPU;
   private _store: DataStore;
-
-  // ── Bank 服务 (构造函数依赖注入, 保留实例化) ──
-  // 注: 场景路由/view 渲染分发已迁移到 bank00 主循环, Tsubasa2 不再直接调用。
-  private _bank00: Bank00Service;
-  private _bank02: Bank02Service;
-  private _bank30: Bank30Service;
-  private _audio: Bank12AudioService;
-  private _bank16: Bank16Service;
-  private _bank18: Bank18Service;
-  private _bank19: Bank19Service;
-  private _bank20: Bank20Service;
-  private _dataQuery: DataQueryService;
-  private _matchEngine: MatchEngineService;
-  private _bank28: Bank28MatchService;
   private _interrupt: InterruptService;
-  private _levelup: LevelUpService;
-  private _hud: Bank24HudService;
-  private _bank29: Bank29RosterService;
-  private _showcaseExec: Bank26ShowcaseExecutor;
+  /** 游戏内核装配器 (实例化所有 bank + 接入 interrupt 向量) */
+  private _loader: ServiceLoader;
 
   // ── 渲染缓冲 ──
   private _imageData: ImageData | null = null;
@@ -136,23 +101,12 @@ export class Tsubasa2 {
       },
     } as any);
 
-    // Bank 服务链 (依赖注入, 不模拟 MMC3)
-    this._bank00 = new Bank00Service(this._store);
-    this._bank02 = new Bank02Service(this._store, this._bank00);
-    this._bank16 = new Bank16Service(this._store);
-    this._bank30 = new Bank30Service(this._store, this._bank00, this._bank02, this._bank16);
-    this._dataQuery = new DataQueryService(this._store);
-    this._matchEngine = new MatchEngineService(this._store);
+    // InterruptService — $FFF0/$FFFA 向量入口
     this._interrupt = new InterruptService(this._store);
-    this._audio = new Bank12AudioService(this._store);
-    this._levelup = new LevelUpService(this._store);
-    this._hud = new Bank24HudService(this._store);
-    this._bank19 = new Bank19Service(this._store);
-    this._bank18 = new Bank18Service(this._store, this._bank19);
-    this._bank20 = new Bank20Service(this._store);
-    this._bank28 = new Bank28MatchService(this._store);
-    this._bank29 = new Bank29RosterService(this._store);
-    this._showcaseExec = new Bank26ShowcaseExecutor(this._store);
+
+    // ServiceLoader — 实例化所有 bank service + 接入 interrupt 向量
+    // (对应 PRG ROM 加载: 各 bank 装入 CPU 可访问空间)
+    this._loader = new ServiceLoader(this._store, this._interrupt);
 
     // 注册 CHR Banks 到 PPU (pattern table)
     this._registerAllChrBanks();
@@ -166,10 +120,10 @@ export class Tsubasa2 {
    * 启动游戏 (加电 → RESET 链 → RAF 主循环)。
    *
    * RESET 链 (真实 ROM):
-   *   RESET $FFF0 → $C503 → $C64E (硬件初始化) → $CEFE (MMC3+PPU 重置)
-   *   → $C400 (分发器) → $A200 → bank02 $A21B → bank00 $9EED 主循环
+   *   $FFF0 (bank31 向量) → bank30 $C503 (硬件初始化)
+   *   → $C64E (清 RAM/NT/OAM) → $CEFE → $C400 → bank02 $A200 (首场景)
    *
-   * H5: 由 bank00 + interrupt + dispatch 代替, Tsubasa2 只调入口。
+   * H5: interrupt.reset() 委托 bank30.init() 执行完整链。
    *
    * @param canvas 供 RAF 使用 (微信小程序 canvas 节点 / 浏览器 canvas)
    */
@@ -179,20 +133,18 @@ export class Tsubasa2 {
       return;
     }
 
-    // RESET 链: 中断服务复位 → bank00 主循环启动
-    this._doReset();
+    // RESET 链: interrupt.reset → bank30.init (硬件初始化 + 首场景)
+    this._interrupt.reset();
 
     this._state = GameState.OPENING;
     this._loopStart(canvas);
   }
 
   pause(): void {
-    // TODO
     this._state = GameState.PAUSED;
   }
 
   resume(): void {
-    // TODO
     if (this._state === GameState.PAUSED) {
       this._state = GameState.OPENING;
     }
@@ -237,8 +189,7 @@ export class Tsubasa2 {
 
   get store(): DataStore { return this._store; }
   get ppu(): PPU { return this._ppu; }
-  get levelup(): LevelUpService { return this._levelup; }
-  get hud(): Bank24HudService { return this._hud; }
+  get loader(): ServiceLoader { return this._loader; }
 
   /**
    * 无头初始化 (跳过 RAF, 供 stepFrame 逐帧推进)。
@@ -246,10 +197,7 @@ export class Tsubasa2 {
    */
   prepare(): void {
     if (this._state !== GameState.INIT) return;
-
-    // RESET 链: 与 start() 相同的初始化但不启动 RAF
-    this._doReset();
-
+    this._interrupt.reset();
     this._state = GameState.OPENING;
   }
 
@@ -265,23 +213,6 @@ export class Tsubasa2 {
   }
 
   captureFrame(): Uint32Array { return (this._ppu as any).buffer as Uint32Array; }
-
-  // ══════════════════════════════════════════════════════════════
-  // 内部: RESET 链
-  // ══════════════════════════════════════════════════════════════
-
-  /**
-   * 执行 RESET 链 (真实 ROM: $C64E → $CEFE → $C400 → $A200 → $9EED)。
-   * H5: 中断服务复位 + bank00 主循环启动 (首帧 buttons=0)。
-   */
-  private _doReset(): void {
-    // 中断服务复位 (对应 $C64E 中 SEI/CLI + NMI 初始化)
-    this._interrupt.reset();
-
-    // bank00 主循环启动 (对应 $9EED: LDX #$02 → JSR $C4B9 → JMP $A203)
-    // 首帧 buttons=0 (无输入), bank00.mainLoop 设 _running=true + 推进首帧
-    this._bank00.mainLoop(0);
-  }
 
   // ══════════════════════════════════════════════════════════════
   // 内部: RAF 循环
@@ -333,35 +264,25 @@ export class Tsubasa2 {
   // ══════════════════════════════════════════════════════════════
 
   /**
-   * 每帧逻辑 — CPU 主循环一帧。
-   * 真实 ROM: $9EED 主循环在 bank00, 每帧推进游戏逻辑。
-   * Tsubasa2 只调用 bank00.mainLoop(buttons) 唯一入口。
+   * 每帧逻辑 — NMI 向量触发 (≈ 真实 NMI 时序)。
+   * interrupt.nmi(buttons) → bank00.mainLoop(buttons) 推进一帧游戏逻辑。
    */
   private _onFrame(_dt: number): void {
-    // bank00 主循环 (唯一逻辑入口, 含场景路由/NMI 写 NT/OAM/帧调度)
-    this._bank00.mainLoop(this._buttons);
+    // $FFFA NMI 向量 → bank00 $9EED 主循环一帧 (含场景路由/NMI 渲染/帧调度)
+    this._interrupt.nmi(this._buttons);
 
-    // 音频引擎更新 (每帧处理请求队列 + 通道状态机 + APU 输出)
-    try { this._audio.update(); } catch (_) { /* */ }
+    // 音频引擎每帧更新 (NMI 之外, 由主板 RAF 同步驱动)
+    this._loader.tickAudio();
   }
 
   /**
    * 每帧渲染 — PPU 渲染一帧。
-   * ppu.startFrame → (bank00/NMI 写 NT/OAM) → ppu.endFrame → putImageData
+   * ppu.startFrame → (bank00 NMI 已写 NT/OAM 到 DataStore) → ppu.endFrame → putImageData
    */
   private _onRender(_dt: number): void {
-    // 1. PPU startFrame (清 per-scanline sprite 评估数据, 设背景色)
     this._ppu.startFrame();
-
-    // 2. PPU endFrame (渲染所有 scanline + 输出 buffer)
-    //    注: bank00 主循环 (_onFrame) 中已通过 DataStore 写 NT/OAM/调色板,
-    //        PPU endFrame 读取这些数据渲染。
-    //    TODO: bank00 agent 完成后, NMI 写 NT/OAM 逻辑在 bank00.mainLoop 中完成,
-    //          此处只需 startFrame/endFrame。当前 bank00.update 中的渲染委托
-    //          Bank00RenderView 已写 DataStore, PPU 需从 DataStore 同步。
     this._ppu.endFrame();
 
-    // 3. 呈现: ppu.buffer (Uint32 索引色) → putImageData
     if (this._ctx) {
       this._writeFrameToCtx((this._ppu as any).buffer as Uint32Array);
     }
