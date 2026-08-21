@@ -21,7 +21,7 @@
 import { DataStore } from '../DataStore';
 import { Bank30Service } from './bank30_init';
 import { Bank00Service } from './bank00/bank00_core';
-import { trace } from '../../utils/trace';
+import { trace } from '../../../core/debug/trace';
 
 /** Bank 配置条目 (H5: 仅数据索引, 不涉及硬件切换) */
 export interface BankConfig {

@@ -22,7 +22,7 @@ import { Bank02Service } from './bank02_scene';
 import { Bank29RosterService } from './bank29_roster';
 import { Bank16Service } from './bank16_skills';
 import { Bank26ShowcaseExecutor } from './bank26_showcase-executor';
-import { trace } from '../../utils/trace';
+import { trace } from '../../../core/debug/trace';
 import {
   NAME_AREA_PTR_TABLE,
   NAME_AREA_PTR_TABLE_COUNT,

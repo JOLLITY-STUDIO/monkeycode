@@ -41,7 +41,7 @@ import { CHAR_MAP_DOUBLE } from './char-map';
 import { OpeningSceneController } from './scene_opening.controller';
 import { SceneRoot, OpeningShot } from '../../data/scene/index';
 import { BUTTON } from '../../../../core/types';
-import { trace } from '../../../utils/trace';
+import { trace } from '../../../../core/debug/trace';
 
 /* eslint-disable @typescript-eslint/no-unused-vars */
 

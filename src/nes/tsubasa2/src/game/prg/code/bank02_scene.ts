@@ -12,7 +12,7 @@
 import { DataStore } from '../DataStore';
 import { Bank00Service } from './bank00/bank00_core';
 import type { Bank30Service } from './bank30_init';
-import { trace } from '../../utils/trace';
+import { trace } from '../../../core/debug/trace';
 import {
   PW_OAM_FIX,
   FIELD_TILES,
