@@ -1,6 +1,12 @@
 /**
- * BANK08_METATILE — bank08 地图 metatile 定义表 ($8000-$9FFF, 运行时 $A000-$BFFF)
+ * BANK08_MAP_METATILE — bank08 地图 metatile 定义表 ($8000-$9FFF, 运行时 $A000-$BFFF)
  * @bank 08
+ *
+ * 与 bank07 的区分 (文件名 bank07-scenes-metatile.ts vs bank08-map-metatile.ts):
+ *   bank07 = 场景描述符 (scene descriptor): 24 个场景, 每个含 [ptr,ctrl,w,h,pos] + NT tile + 调色板 + 精灵
+ *   bank08 = 地图 metatile 字典 (map metatile dictionary): 482 条等长记录, 每条 = 类型标记 + 16B tile 数据
+ *   即: bank07 说"这个场景长什么样"(用哪些 metatile 铺), bank08 说"每个 metatile 长什么样"(4 个 tile 编号)
+ *   bank07 是"图纸", bank08 是"积木块定义"。两者配合: bank07 引用 metatile 索引, bank08 提供索引对应的 tile。
  *
  * 作用: 足球场的"积木目录"。比赛画面所有草地/球门/看台/球员精灵的图块定义都在这里。
  *       没有 bank8,比赛画面就是一片空白。剧情/MEETING 场景的背景带(草皮+看台+天空)也来自 bank8。
@@ -51,13 +57,19 @@
  *   十四、其他记录 (MT_052/054/055/069~071/081/118~128/130, 首字节非标准, 地图数据区内容)
  *
  * 消费方 (asm 实证):
- *   bank00/code_render.s:$8EF0 地图渲染子程:
+ *   bank00/code_render.s:$8EF0 地图画面绘制子程 (注意: 只管"地图绘制", 不管"界面渲染"):
  *     入口 A = metatile 索引; 算 $00EA/$00EB 指针 = $A000 + 索引×17;
  *     LDX #$08; JSR $C4B9 (切 bank8 到 $A000 窗口);
  *     LDA ($00EA),Y (读 bank8 记录, Y=0 读类型标记, Y=1.. 读 tile 数据);
  *     读完 LDX #$07; JSR $C4B9 (切回 bank7).
  *   这是全项目唯一切 bank8 的地方 (54 处 $C4B9 调用中仅 1 处 LDX #$08).
+ *   $8EF0 全项目仅 1 处调用 (bank00/code_scene.s:436 地图绘制循环, LDA($0063),Y 读地图数据).
  *   bank26 不读 bank8 (bank26 调的 $C50C 是 RAM 玩家数据指针查表, 非 bank8).
+ *
+ * 注意区分 NES 两套画面机制 (避免误以为 bank00 管"界面渲染"):
+ *   地图画面绘制 = bank00 code_render.s $8EF0, 用 NT + metatile 铺图, 读 bank8 ← 本文件
+ *   界面/菜单渲染 = bank02 NMI 回调 ($84C1 等), 画文字/窗口边框, 不读 bank8
+ *   bank8 只服务于"地图画面"链路, 标题/密码/对话框等界面不碰 bank8.
  *
  * 去 CPU 化: 消费方按 metatile 索引取具名导出 MT_NNN, 不做字节偏移.
  */

@@ -1,15 +1,23 @@
 /**
  * OpeningSceneController — BOOT 开场场景 (TECMO Theater)
- * @bank 00 (BOOT 协程)
+ * @bank 00 (BOOT 协程) / bank0 渲染子程
  *
  * 职责: 开场动画自动播放 (无需按键), 调色板渐显, 300 帧后切 TITLE。
  *
- * _applyBootPalette 必须 palWriteAll 写 DataStore.paletteTable 与 paletteRAM。
+ * init(): 灌入真实 BOOT 场景数据 (NT0 文本 + 40 精灵 + 调色板渐显起点)。
+ * update(): 按 bank0 $9A71 fade 机制逐帧推进调色板渐显 (bootFadeStep/bootFadeByte)。
  *
- * 命名规范: 旧名 OpeningSceneController → 新名 OpeningSceneController (不变)。
+ * 精灵 pattern: BOOT_SPR_CHR_SEGMENTS (CHR bank 14/10) 由组合根 writeStoreToPpu
+ * 直写 PPU pattern table 1 (ptTile[0x100+tile]), 本控制器不持有 PPU。
  */
 import { DataStore } from '../../data/store/DataStore';
-import { BOOT_PALETTE, BOOT_TOTAL_FRAMES, BOOT_PALETTE_STEPS, BOOT_TEXT_START_FRAME } from '../../data/scene/opening-scene';
+import {
+  BOOT_OAM,
+  BOOT_TOTAL_FRAMES,
+  buildBootNT,
+  buildBootPalette,
+  bootFadeStep,
+} from '../../data/scene/boot-scene';
 
 export interface OpeningDisplayState {
   frame: number;
@@ -27,54 +35,33 @@ export class OpeningSceneController {
     this._store = store;
   }
 
-  /** 开场初始化 (原 initBoot) */
+  /** 开场初始化 (原 initBoot): 灌 NT0 + 40 精灵 + 调色板渐显起点(全黑) */
   init(): void {
     this._frame = 0;
     this._paletteStep = 0;
     this._initialized = true;
-    // 清空精灵
+    // NT0 背景 (标题字母 + 版权文字 tile)
+    this._store.nt0 = buildBootNT();
+    // 40 精灵 → 影子 OAM → 硬件 OAM ($0200, writeOam 消费)
     this._store.oamShadow.clearAll(0xf8);
-    // 应用开场调色板 (渐显初始全黑)
-    this._applyBootPalette(0);
+    BOOT_OAM.forEach((s, i) => {
+      this._store.oamShadow.writeSlot(i * 4, s.y, s.tile, s.attr, s.x);
+    });
+    this._store.oamShadow.copyToHw();
+    // 调色板: step 0 = 全黑 (渐显起点)
+    this._store.setPaletteTable(buildBootPalette(0));
   }
 
-  /** 每帧推进 (原 _spawnCoroutine + syncBootFrame) */
+  /** 每帧推进 (原 _spawnCoroutine + syncBootFrame): 调色板渐显 */
   update(frame: number): void {
     if (!this._initialized) this.init();
     this._frame = frame;
-    // 调色板渐显: 前 BOOT_PALETTE_STEPS 帧每帧亮一级
-    const step = Math.floor(frame / (BOOT_TOTAL_FRAMES / BOOT_PALETTE_STEPS));
-    if (step !== this._paletteStep && step <= BOOT_PALETTE_STEPS) {
+    // bank0 $9A71 fade: 帧 11 起每 2 帧升一级, 9 级封顶
+    const step = bootFadeStep(frame);
+    if (step !== this._paletteStep) {
       this._paletteStep = step;
-      this._applyBootPalette(step);
+      this._store.setPaletteTable(buildBootPalette(step));
     }
-  }
-
-  /** 调色板渐显并写 DataStore.paletteTable (palWriteAll) */
-  protected _applyBootPalette(step: number): void {
-    // 渐显比例 (0..1), 从全黑淡入
-    const t = Math.min(1, step / BOOT_PALETTE_STEPS);
-    // 写实时调色板表
-    this._store.setPaletteTable(BOOT_PALETTE);
-    // 按渐显比例压暗 BG 调色板 (模拟 paletteWriteAll 渐显)
-    const cur = this._store.paletteTable;
-    const orig = BOOT_PALETTE;
-    for (let p = 0; p < 4; p++) {
-      for (let c = 0; c < 4; c++) {
-        const o = orig.bgPalettes[p].colors[c];
-        const col = cur.bgPalettes[p].colors[c];
-        col.r = Math.round(o.r * t);
-        col.g = Math.round(o.g * t);
-        col.b = Math.round(o.b * t);
-        const so = orig.sprPalettes[p].colors[c];
-        const sc = cur.sprPalettes[p].colors[c];
-        sc.r = Math.round(so.r * t);
-        sc.g = Math.round(so.g * t);
-        sc.b = Math.round(so.b * t);
-      }
-    }
-    // 精灵清空 (开场无精灵)
-    this._store.oamShadow.clearAll(0xf8);
   }
 
   get isTitle(): boolean {
@@ -86,7 +73,7 @@ export class OpeningSceneController {
     return {
       frame: this._frame,
       paletteStep: this._paletteStep,
-      showText: this._frame >= BOOT_TEXT_START_FRAME,
+      showText: this._frame >= 60,
     };
   }
 }

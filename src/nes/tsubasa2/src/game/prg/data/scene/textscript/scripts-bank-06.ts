@@ -2,7 +2,10 @@
  * SCRIPT_BANK_06 — bank6 剧情脚本数据 ($A000-$BFFF 窗口)
  *
  * 每个脚本一条 JSON: instructions 数组 (指令流语义) + text 字段 (可读日文)。
- * 由 asm/bank06/_full.s 逐字节解析 (脚本入口指针表 → 指令流)。
+ * 由 asm/bank06/_full.s 逐字节解析 (脚本入口指针表 → 指令流)。H5 不需要切 bank06:
+
+脚本数据 → scripts-bank-06.ts(已 import)
+调色板数据 → 应该有独立的 bank06-palette.ts 或 DataStore 的 paletteBank_b0/b3 缓存(paletteCopy 已这样读)
  *
  * 指令分类:
  *   opcode < 0xD8  文本字符 (单/双 tile)

@@ -1,11 +1,17 @@
 /**
- * GameSystemService — 游戏主循环 / 场景调度 / 渲染原语
+ * GameSystemService — 游戏主循环 / 场景调度 / 渲染原语 / 地图画面绘制
  * @bank 00 ($8000-$9FFF)
  *
  * 职责: mainLoop 主循环 $9EED、场景装载 $8AF7 sceneLoad、脚本分派入口、
  * 共享渲染原语 (ntClear/ntAttrClear/ppuBufAlloc/oamFlagClear/ppuFill/
  * paletteLoad/fade 等)。渲染原语直接作为方法写 DataStore
  * (NT/调色板/OAM/PPU buffer 区域), 不再有独立 RenderView。
+ *
+ * 含 $8EF0 地图画面绘制子程 (code_render.s):
+ *   入口 A = metatile 索引; 切 bank8; LDA($00EA),Y 读 bank8 metatile 字典;
+ *   画到 NT/OAM; 切回 bank7. 全项目仅此 1 处切 bank8 (读 bank08-metatile.ts).
+ *   注意: 只管"地图画面绘制"(球场/比赛背景), 不管"界面渲染"(标题/密码/菜单
+ *   走 bank02 NMI 回调, 不读 bank8).
  *
  * 命名规范: 旧名 Bank00Service → 新名 GameSystemService。
  */
@@ -327,7 +333,6 @@ export class GameSystemService {
   mainInitParam(bgIdx: number, sprIdx: number): void {
     this.wr(0x0048, bgIdx);
     this.wr(0x0049, sprIdx);
-    this.bankSwitch(0x06);
     this.paletteLoadBG();
     this.paletteLoadSPR();
     this.paletteSetFull();
@@ -338,7 +343,6 @@ export class GameSystemService {
   // ════════════════════════════════════════════════
   mainLoopInit2(bgIdx: number): void {
     this.wr(0x0048, bgIdx);
-    this.bankSwitch(0x06);
     this.paletteLoadBG();
     this.paletteSetFull();
   }
@@ -346,7 +350,6 @@ export class GameSystemService {
   /** $9A4C mainInitParamBgOnly — 仅 BG 置满 */
   mainInitParamBgOnly(bgIdx: number): void {
     this.wr(0x0048, bgIdx);
-    this.bankSwitch(0x06);
     this.paletteLoadBG();
     this.wr(0x004A, 0x0f);
     this.paletteWriteAll();
@@ -355,21 +358,16 @@ export class GameSystemService {
   /** $9A60 mainInitParamSprOnly — 仅 SPR 置满 */
   mainInitParamSprOnly(sprIdx: number): void {
     this.wr(0x0049, sprIdx);
-    this.bankSwitch(0x06);
     this.paletteLoadSPR();
     this.wr(0x004B, 0x0f);
     this.paletteWriteAll();
   }
 
   // ════════════════════════════════════════════════
-  // $9B07 bankSwitch — 切换当前 bank (原 JSR $C4B9)
-  // 翻译版 MMC3 写为 no-op; 记录语义到 ram_0025。
+  // $9B07 bankSwitch — 已移除 (原 JSR $C4B9 切 PRG bank)
+  // 去CPU化: H5 直接 import 各 bank 数据, 无需切 bank.
+  // 原 ram_0025 (当前 bank 号) / ram_00E9 (bankSwitch 复用) 语义已废弃.
   // ════════════════════════════════════════════════
-  bankSwitch(bank: number): void {
-    // $9B07: LDA $0025; STA $00E9; LDX #$06; JSR $C4B9
-    this.wr(0x00E9, this.rd(0x0025));
-    this.wr(0x0025, bank);
-  }
 
   // ════════════════════════════════════════════════
   // $99F0 fadeOut — 调色板渐隐 (递减 $004A/$004B)
@@ -391,7 +389,6 @@ export class GameSystemService {
   // $997A fadeIn — 调色板渐显 (递增加载调色板至满)
   // ════════════════════════════════════════════════
   fadeIn(): void {
-    this.bankSwitch(0x06);
     this.paletteLoadBG();
     this.paletteLoadSPR();
     // $998C-$99AB 循环递增
@@ -410,7 +407,6 @@ export class GameSystemService {
   // $99D1 fadeInSpr — 仅 SPR 渐显
   // ════════════════════════════════════════════════
   fadeInSpr(): void {
-    this.bankSwitch(0x06);
     this.paletteLoadSPR();
     while (true) {
       const b = this.rd(0x004B);
@@ -479,9 +475,7 @@ export class GameSystemService {
     this.wr(0x000D, 0);
     this.wr(0x000E, 0);
     this.wr(0x005B, this.rd(0x005B) & 0x7f);
-    // $8B09-$8B0F: $0077 = $0025 (当前 bank); 切到 bank07
-    this.wr(0x0077, this.rd(0x0025));
-    this.bankSwitch(0x07);
+    // $8B09-$8B0F: 切 bank07 读场景数据 — 去CPU化: H5 直接 import bank07 数据, 无需切 bank
     // $8B12-$8B1A: 清 $0552-$063F
     for (let i = 0; i < 0xEE; i++) this.wr(0x0552 + i, 0);
 
@@ -490,9 +484,7 @@ export class GameSystemService {
     if (sceneData) {
       this.applySceneData(sceneData);
     }
-
-    // $8CB7: 切回场景 bank
-    this.bankSwitch(this.rd(0x0077));
+    // $8CB7: 切回场景 bank — 去CPU化: 无需切回, H5 数据始终可见
   }
 
   /**

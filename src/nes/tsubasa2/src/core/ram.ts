@@ -258,11 +258,15 @@ export class RamStore {
     this.paletteTable.bgPalettes[palIdx].colors[colorIdx] = { ...color };
   }
 
-  /** 批量替换调色板表 */
+  /** 批量替换调色板表 (深拷贝 PaletteColor, 防止共享源常量对象被原地修改) */
   setPaletteTable(table: PaletteTable): void {
     this.paletteTable = {
-      bgPalettes: table.bgPalettes.map((e) => ({ colors: [...e.colors] })) as PaletteTable['bgPalettes'],
-      sprPalettes: table.sprPalettes.map((e) => ({ colors: [...e.colors] })) as PaletteTable['sprPalettes'],
+      bgPalettes: table.bgPalettes.map((e) => ({
+        colors: e.colors.map((c) => ({ ...c })),
+      })) as PaletteTable['bgPalettes'],
+      sprPalettes: table.sprPalettes.map((e) => ({
+        colors: e.colors.map((c) => ({ ...c })),
+      })) as PaletteTable['sprPalettes'],
     };
   }
 
