@@ -8,11 +8,7 @@
  * 被 BootRouter.resetEntry 在 idx 0/23 时调用, 不独立分发。
  */
 import { DataStore } from '../../data/store/DataStore';
-import {
-  PASSWORD_KANA_CHARS,
-  PASSWORD_POS_INC_LO,
-  PASSWORD_POS_INC_HI,
-} from '../../data/tables/bank02-tables';
+import { PASSWORD_POS_INC_TABLE } from '../../data/tables/bank02-tables';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {
@@ -22,9 +18,8 @@ function ramKey(addr: number): string {
 export class PasswordCallbackHandler {
   protected _store: DataStore;
 
-  /** 密码网格 7 列 × 6 行 */
-  static readonly GRID_COLS = 7;
-  static readonly GRID_ROWS = 6;
+  /** 假名网格 CHR tile 集合长度 (100 字节, asm $58-$70) */
+  static readonly GRID_TILE_COUNT = 100;
 
   constructor(store: DataStore) {
     this._store = store;
@@ -43,10 +38,23 @@ export class PasswordCallbackHandler {
 
   /**
    * $9FA8 waitCounter — 等待 vblank 帧边界 (bank00 $9FA8)。
-   * 翻译版: 帧同步由外部帧循环驱动, 此处清 ram_0019 标志 (语义占位)。
+   * asm: STA $0019 (存帧数到 ram_0019); 压栈寄存器; 挂起协程 → 帧调度恢复。
+   * 翻译版: 帧同步由外部帧循环驱动, 此处写 ram_0019 (帧数, 语义占位)。
+   * @param frames 等待帧数 (A 寄存器, asm 传入)
    */
-  protected waitCounter(): void {
-    this.wr(0x0019, 0);
+  protected waitCounter(frames?: number): void {
+    this.wr(0x0019, frames ?? 1);
+  }
+
+  /**
+   * $9A35 renderRefresh — 渲染刷新 + 渐隐初始化 (bank00 $9A35)。
+   * asm: JSR $9B07 (NT 刷新); JSR $9AB8 (OAM 刷新); JSR $9ADA (调色板刷新);
+   *      LDX $00E9; JSR $C4B9 (切 bank); LDA #$0F; STA $004A; STA $004B; JMP $9A71 (渐隐)
+   * 翻译版: NT/OAM/调色板刷新由 PpuSync 驱动, 此处设渐隐计数器。
+   */
+  protected renderRefresh(): void {
+    this.wr(0x004A, 0x0F);
+    this.wr(0x004B, 0x0F);
   }
 
   /**
@@ -173,12 +181,12 @@ export class PasswordCallbackHandler {
   render(): number {
     // $84C1: 清屏
     this.clearScreen();
-    // $84C4: 等 16 帧
-    this.waitCounter();
+    // $84C4: LDA #$10; JSR $9FA8 (等 16 帧)
+    this.waitCounter(0x10);
 
-    // $84C9-$84D6: 48 次循环 (精灵闪烁)
+    // $84C9-$84D6: 48 次循环 (LDA #$01; JSR $9FA8; JSR $890C; DEY; BNE)
     for (let i = 0x30; i > 0; i--) {
-      this.waitCounter();
+      this.waitCounter(0x01);
       this.spriteBlink(1);
     }
 
@@ -197,20 +205,19 @@ export class PasswordCallbackHandler {
     this.wr(0x0090, this.rd(0x008E));
     this.wr(0x0091, this.rd(0x008F));
 
-    // $84F4: 等 4 帧
-    this.waitCounter();
+    // $84F4: LDA #$04; JSR $9FA8 (等 4 帧)
+    this.waitCounter(0x04);
 
     // $84F9: JSR $9A35 (渲染刷新); JSR $88FB (OAM 拷贝)
-    // $9A35 由 BootRouter 覆盖, $88FB = oamCopy
+    // $9A35: NT/OAM/调色板刷新 + 渐隐初始化 (bank00)
+    this.renderRefresh();
     this.oamCopy();
 
     // $84FF-$8513: 循环 (ram_0044 >= 3 时)
-    this.wr(0x0079, (this.rd(0x0079) + 1) & 0xff);
-    this.wr(0x007C, (this.rd(0x007C) - 2) & 0xff);
-    let r44 = (this.rd(0x0044) - 2) & 0xff;
-    this.wr(0x0044, r44);
+    // asm 顺序: waitCounter → INC $0079 → DEC $007C×2 → ram_0044-=2 → CMP #$03; BCS 循环
+    let r44 = this.rd(0x0044);
     while (r44 >= 3) {
-      this.waitCounter();
+      this.waitCounter(0x01);
       this.wr(0x0079, (this.rd(0x0079) + 1) & 0xff);
       this.wr(0x007C, (this.rd(0x007C) - 2) & 0xff);
       r44 = (this.rd(0x0044) - 2) & 0xff;
@@ -223,10 +230,10 @@ export class PasswordCallbackHandler {
     // $851A: ram_001B |= $01
     this.wr(0x001B, this.rd(0x001B) | 0x01);
 
-    // $8520: 等 240 帧
-    this.waitCounter();
-    // $8525: 等 60 帧
-    this.waitCounter();
+    // $8520: LDA #$F0; JSR $9FA8 (等 240 帧)
+    this.waitCounter(0xF0);
+    // $8525: LDA #$3C; JSR $9FA8 (等 60 帧)
+    this.waitCounter(0x3C);
 
     // $852A: ram_001B &= $FE
     this.wr(0x001B, this.rd(0x001B) & 0xFE);
@@ -278,35 +285,28 @@ export class PasswordCallbackHandler {
    * asm 流程:
    *   $82E8: LDA $57; BMI $8338 (bit7=1 跳到密码分支)
    *   $82EC: STA $00ED (存 ram_0057 值到 ram_00ED)
-   *   $82EE: LDA #$00; LDY #$FA; 循环 STA $FFEC,Y (清 $05E6-$05FF 区 6 字节)
+   *   $82EE: LDA #$00; LDY #$FA; 循环 STA $FFEC,Y (清 $05E6-$05EB 区 6 字节)
    *   $82FA: LDA #$01; JSR $9FA8 (等 1 帧)
    *   $82FD: LDY $00ED
-   *   $82FF-$8333: 密码解码循环:
+   *   $82FF-$8333: 密码解码循环 (5 次, ram_00EC 从 0 步进 3 到 0x0F):
    *     LDA #$00; STA $00EC; TYA; AND #$0F; LSR; TAX
-   *     LDA $AADF,Y; CLC; ADC $00E6,X; STA $00E6,X (低字节累加)
-   *     LDX $00EC; LDA $AAE0,Y; ADC $007A,X; STA $007A,X (高字节累加)
+   *     LDA $AADF,Y; CLC; ADC $00E6,X; STA $00E6,X (低字节累加, 增量=tbl[Y])
+   *     LDX $00EC; LDA $AAE0,Y; ADC $007A,X; STA $007A,X (高字节累加, 增量=tbl[Y+1], 表重叠 1 字节)
    *     LDA $AAE0,Y; BPL $8322 (bit7=0 跳过符号扩展)
    *     LDA #$FF; BNE $8324 (bit7=1 符号扩展 $FF)
    *     $8322: LDA #$00; ADC $007B,X; STA $007B,X (进位累加)
    *     INY; INY; ram_00EC += 3; CMP #$0F; BNE $8303 (循环 5 次)
    *   $8335: JMP $A2F8 (跳到后续处理)
    *
-   * @param input 输入的密码字符串
-   * @returns 校验是否通过
+   * 位置增量表 $AADF (16 字节, 2026-08 已校准):
+   *   $10,$00,$10,$00,$40,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+   * Y=0/2/4/6/8 时 LO=tbl[Y]=$10/$10/$40/$00/$00, HI=tbl[Y+1]=$00 (全零, 无符号扩展)。
+   *
+   * 密码输入通过 OAM 精灵选择假名 (由其他 NMI 回调处理), 不是字符串。
+   * 此方法读 ram_0057 (密码种子) 做解码, 不接收字符串参数。
    */
-  check(input: string): boolean {
-    const chars = input.split('').map((ch) => ch.charCodeAt(0) & 0xff);
-    if (chars.length === 0) return false;
-
-    // 映射输入字符 → 密码表索引
-    const mapped: number[] = [];
-    for (const c of chars) {
-      const idx = PASSWORD_KANA_CHARS.indexOf(c);
-      if (idx < 0) return false;
-      mapped.push(idx);
-    }
-
-    // $82E8: LDA $57; BMI $8338
+  check(): boolean {
+    // $82E8: LDA $0057; BMI $8338
     const r57 = this.rd(0x0057);
     if ((r57 & 0x80) !== 0) {
       // bit7=1: 走密码分支 ($8338), 不做解码
@@ -316,57 +316,54 @@ export class PasswordCallbackHandler {
     // $82EC: STA $00ED
     this.wr(0x00ED, r57);
 
-    // $82EE-$82F6: 清 $05E6-$05FF 区 (6 字节, LDY #$FA; STA $FFEC,Y = $05E6+Y)
+    // $82EE-$82F6: 清 $05E6-$05EB 区 (6 字节, LDY #$FA; STA $FFEC,Y; INY; BNE)
     for (let i = 0; i < 6; i++) {
       this.wr(0x05E6 + i, 0);
     }
 
-    // $82FA: 等 1 帧
-    this.waitCounter();
+    // $82FA: LDA #$01; JSR $9FA8 (等 1 帧)
+    this.waitCounter(0x01);
 
     // $82FD: LDY $00ED
     let y = this.rd(0x00ED);
 
-    // $82FF-$8333: 密码解码循环 (5 次, ram_00EC 从 0 步进 3 到 0x0F)
-    for (let loop = 0; loop < 5; loop++) {
-      this.wr(0x00EC, 0);
+    // $82FF-$8333: 密码解码循环 (ram_00EC 从 0 步进 3 到 0x0F, 共 5 次)
+    let ec = 0;
+    while (true) {
+      this.wr(0x00EC, ec);
       // TYA; AND #$0F; LSR; TAX → X = (Y & 0x0F) >> 1
       const x = (y & 0x0F) >> 1;
 
       // LDA $AADF,Y; CLC; ADC $00E6,X; STA $00E6,X (低字节累加)
-      const loInc = PASSWORD_POS_INC_LO[y] ?? 0;
+      const loInc = PASSWORD_POS_INC_TABLE[y] ?? 0;
       const e6Old = this.rd(0x00E6 + x);
-      this.wr(0x00E6 + x, (e6Old + loInc) & 0xff);
+      const e6Sum = e6Old + loInc;
+      this.wr(0x00E6 + x, e6Sum & 0xff);
 
       // LDX $00EC; LDA $AAE0,Y; ADC $007A,X; STA $007A,X (高字节累加, 带进位)
-      const ex = this.rd(0x00EC);
-      const hiInc = PASSWORD_POS_INC_HI[y] ?? 0;
-      const carry = (e6Old + loInc) >> 8; // CLC 后 ADC 的进位
-      const old7A = this.rd(0x007A + ex);
-      this.wr(0x007A + ex, (old7A + hiInc + carry) & 0xff);
+      // $AAE0 = $AADF+1, 高字节增量 = 同一表的下一个字节
+      const hiInc = PASSWORD_POS_INC_TABLE[y + 1] ?? 0;
+      const carry1 = e6Sum >> 8;
+      const old7A = this.rd(0x007A + ec);
+      const sum7A = old7A + hiInc + carry1;
+      this.wr(0x007A + ec, sum7A & 0xff);
 
-      // LDA $AAE0,Y; BPL $8322 (bit7=0 跳过符号扩展)
-      let signExt = 0;
-      if ((hiInc & 0x80) !== 0) {
-        // bit7=1: LDA #$FF
-        signExt = 0xFF;
-      } else {
-        // bit7=0: LDA #$00
-        signExt = 0x00;
-      }
+      // LDA $AAE0,Y; BPL $8322 (bit7=0: LDA #$00; bit7=1: LDA #$FF)
+      const signExt = (hiInc & 0x80) !== 0 ? 0xFF : 0x00;
       // ADC $007B,X; STA $007B,X (进位累加到更高字节)
-      const carry2 = (old7A + hiInc + carry) >> 8;
-      const old7B = this.rd(0x007B + ex);
-      this.wr(0x007B + ex, (old7B + signExt + carry2) & 0xff);
+      const carry2 = sum7A >> 8;
+      const old7B = this.rd(0x007B + ec);
+      this.wr(0x007B + ec, (old7B + signExt + carry2) & 0xff);
 
       // INY; INY; ram_00EC += 3
       y = (y + 2) & 0xff;
-      this.wr(0x00EC, (this.rd(0x00EC) + 3) & 0xff);
+      ec = (ec + 3) & 0xff;
       // CMP #$0F; BNE $8303 (ram_00EC != 0x0F 时继续)
+      if (ec === 0x0F) break;
     }
 
     // $8335: JMP $A2F8 (跳到后续处理)
-    // 翻译版: 校验通过 (解码完成, 后续由场景帧处理消费 ram_00E6/007A)
+    // 解码完成, ram_00E6/007A/007B 区已填充密码数据, 后续由场景帧处理消费
     return true;
   }
 }

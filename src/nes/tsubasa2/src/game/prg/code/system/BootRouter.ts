@@ -160,9 +160,9 @@ export class BootRouter {
     this.resetEntry(index);
   }
 
-  /** 密码校验 — 委托给 PasswordCallbackHandler.check */
-  verifyPassword(input: string): boolean {
-    return this._password.check(input);
+  /** 密码校验 — 委托给 PasswordCallbackHandler.check (读 ram_0057 做解码) */
+  verifyPassword(): boolean {
+    return this._password.check();
   }
 
   /** idx 0 回调: BOOT 初始化 (对应原始 $821D-$8281) */

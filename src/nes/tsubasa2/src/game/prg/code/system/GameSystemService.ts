@@ -22,6 +22,9 @@ import {
   SCENE_SCRIPT_8442,
   PALETTE_ANIM_87B3,
 } from '../../data/tables/bank00-tables';
+import {
+  getSceneData as getBank07SceneData,
+} from '../../data/tables/bank07-scenes';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {
@@ -480,12 +483,41 @@ export class GameSystemService {
     this.bankSwitch(0x07);
     // $8B12-$8B1A: 清 $0552-$063F
     for (let i = 0; i < 0xEE; i++) this.wr(0x0552 + i, 0);
-    // 场景数据指针来自 bank07 (声明式场景表)
-    const sd = this._store.get<SceneData>(`scene_${sceneId}`);
-    if (!sd) return;
-    this.applySceneData(sd);
+
+    // $8B1C-$8B39: 查 SCENE_PTR_TABLE[sceneId] 得场景数据入口, 读前 6 字节 SceneData
+    const sceneData = this.getSceneData(sceneId);
+    if (sceneData) {
+      this.applySceneData(sceneData);
+    }
+
     // $8CB7: 切回场景 bank
     this.bankSwitch(this.rd(0x0077));
+  }
+
+  /**
+   * 从 bank07 场景表读场景数据 (原 asm $8B1C-$8B6B)。
+   * 查 SCENE_PTR_TABLE 得入口地址, 读前 6 字节解析为 SceneData。
+   */
+  private getSceneData(sceneId: number): SceneData | null {
+    if (sceneId < 0 || sceneId >= SCENE_PTR_TABLE.length) return null;
+    // 场景原始字节 (从 bank07-tables 获取)
+    const raw = this.getSceneRawBytes(sceneId);
+    if (!raw || raw.length < 6) return null;
+    // $8B3D-$8B6B: 解析前 6 字节
+    const ptrLo = raw[0];
+    const ptrHi = raw[1];
+    const ctrl = raw[2];
+    const palette = ctrl & 0x3F;
+    const dir = (ctrl >> 6) & 0x03;
+    const w = raw[3];
+    const h = raw[4];
+    const pos = raw[5];
+    return { ptrLo, ptrHi, palette, dir, w, h, pos, ctrl };
+  }
+
+  /** 获取场景原始字节 (从 bank07 完整 8KB 数据按指针表提取) */
+  private getSceneRawBytes(sceneId: number): readonly number[] | null {
+    return getBank07SceneData(sceneId);
   }
 
   /** 应用场景数据 (从 bank07 场景表) */
