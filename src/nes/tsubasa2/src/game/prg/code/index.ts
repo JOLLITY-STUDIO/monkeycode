@@ -3,13 +3,14 @@
  * 按业务域分包: system / scene / story / player / team / match / skill / sprite / audio
  */
 export { GameSystemService } from './system/GameSystemService';
-export { BootRouter, TaskIndex } from './system/BootRouter';
+export { BootRouter, NmiCallbackIndex } from './system/BootRouter';
 export { HardwareInitService } from './system/HardwareInitService';
 export { InterruptService, type BankConfig } from './system/InterruptService';
 
 export { OpeningSceneController, type OpeningDisplayState } from './scene/OpeningSceneController';
 export { TitleSceneController } from './scene/TitleSceneController';
-export { PasswordSceneController, PASSWORD_DISPATCH_TABLE } from './scene/PasswordSceneController';
+export { PasswordCallbackHandler } from './scene/PasswordCallbackHandler';
+export { NMI_CALLBACK_TABLE, PASSWORD_DISPATCH_TABLE } from '../data/tables/bank02-tables';
 export { ResultSceneController } from './scene/ResultSceneController';
 export { StorySceneController, StoryChapter } from './scene/StorySceneController';
 

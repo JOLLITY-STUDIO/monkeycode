@@ -3,22 +3,26 @@
  * @bank 02
  *
  * 来源: asm/bank02/code_sub.s / code_data.s / data_tables.s
- * 职责: 场景分发地址表、阵容表、队伍分组表、密码字符/网格/续关/位置增量表、
+ * 职责: NMI 回调地址表、阵容表、密码字符/网格/续关/位置增量表、
  *       精灵位置/偏移/数据表、等级调节表。
  *
  * 命名规范: 旧名 password-table.ts → 新名 bank02-tables.ts (与 bank00-tables.ts 风格一致)。
  */
 
 /**
- * PASSWORD_DISPATCH_TABLE — 密码/场景分发地址表 (asm $A491)
+ * NMI_CALLBACK_TABLE — NMI 每帧回调地址表 (asm $A491)
  * $8484 分发器: LDA ram_00ED; ASL; TAX; 取本表低/高字节压栈后 RTS 跳转。
- * 24 个 16 位入口地址 (小端字, 即 asm 中 .byte 对), 索引 = ram_00ED * 2。
+ * 24 个 16 位入口地址 (小端字), 索引 = ram_00ED。
+ * 每帧 NMI 按 ram_00ED 索引调用对应子程 (渲染/数据装载/精灵操作), 不是游戏场景。
  */
-export const PASSWORD_DISPATCH_TABLE = [
+export const NMI_CALLBACK_TABLE = [
   0xa4c0, 0xa559, 0xa57b, 0xa581, 0xa5a2, 0xa5a8, 0xa5b0, 0xa5b8,
   0xa5bf, 0xa5cd, 0xa5db, 0xa5e8, 0xa602, 0xa61c, 0xa629, 0xa650,
   0xa69c, 0xa77a, 0xa782, 0xa78d, 0xa7bd, 0xa7ce, 0xa7d6, 0xa7fa,
 ] as const;
+
+/** @deprecated 旧名, 等价于 NMI_CALLBACK_TABLE */
+export const PASSWORD_DISPATCH_TABLE = NMI_CALLBACK_TABLE;
 
 /**
  * ROSTER_TABLE — 阵容表 (asm $AA47)
@@ -199,7 +203,7 @@ export const PASSWORD_LEVEL_ADJ_TABLE = [
  * Bank02Tables — bank02 数据表聚合对象。
  */
 export const Bank02Tables = {
-  dispatch: PASSWORD_DISPATCH_TABLE,
+  callback: NMI_CALLBACK_TABLE,
   roster: ROSTER_TABLE,
   rosterAttr: ROSTER_ATTR_TABLE,
   kanaChars: PASSWORD_KANA_CHARS,

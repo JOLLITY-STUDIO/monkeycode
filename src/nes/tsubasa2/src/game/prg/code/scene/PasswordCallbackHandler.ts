@@ -1,10 +1,11 @@
 /**
- * PasswordSceneController — 密码输入场景
+ * PasswordCallbackHandler — 密码界面回调处理器
  * @bank 02 ($A000-$BFFF 窗口)
  *
- * 职责: 密码界面渲染 ($84C1-$8559), 密码→数据解码校验 ($82E8-$8335)。
+ * 职责: 密码界面渲染 ($84C1-$8559, NMI 回调 idx 0),
+ *       密码→数据解码校验 ($82E8-$8335, NMI 回调 idx 23)。
  *
- * 命名规范: 旧名 PasswordController → 新名 PasswordSceneController。
+ * 被 BootRouter.resetEntry 在 idx 0/23 时调用, 不独立分发。
  */
 import { DataStore } from '../../data/store/DataStore';
 import {
@@ -18,7 +19,7 @@ function ramKey(addr: number): string {
   return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
 }
 
-export class PasswordSceneController {
+export class PasswordCallbackHandler {
   protected _store: DataStore;
 
   /** 密码网格 7 列 × 6 行 */
@@ -370,4 +371,4 @@ export class PasswordSceneController {
   }
 }
 
-export default PasswordSceneController;
+export default PasswordCallbackHandler;

@@ -14,7 +14,7 @@ import {
   AudioService,
   OpeningSceneController,
   ResultSceneController,
-  PasswordSceneController,
+  PasswordCallbackHandler,
   MatchEngineService,
   MatchHudService,
   MatchConfigService,
@@ -27,17 +27,17 @@ import {
   SpriteAnimationService,
   TeamRosterService,
   BootRouter,
-  TaskIndex,
+  NmiCallbackIndex,
 } from './prg/index';
 
 /** PRG bank 类集合 (供 NES.loadTsROM 存到 rom.tsPrg) */
 const PRG = {
   GameSystemService, HardwareInitService, PlayerQueryService,
   AudioService, OpeningSceneController, ResultSceneController,
-  PasswordSceneController, MatchEngineService, MatchHudService,
+  PasswordCallbackHandler, MatchEngineService, MatchHudService,
   MatchConfigService, InterruptService, MatchTurnService, SkillService,
   StorySceneController, MatchAuxService, SpriteService, SpriteAnimationService,
-  TeamRosterService, BootRouter, TaskIndex,
+  TeamRosterService, BootRouter, NmiCallbackIndex,
 };
 
 export { HEADER, NES_CHR_ROM, PRG };

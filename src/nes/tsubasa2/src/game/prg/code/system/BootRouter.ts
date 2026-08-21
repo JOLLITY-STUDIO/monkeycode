@@ -18,92 +18,97 @@
  *   - $8484 dispatcher (bank02): 每帧按 ram_00ED 分发到场景帧处理子程
  *
  * 已在其他 service 覆盖 (不在此重复):
- *   - $82E8 密码→数据解码 → PasswordSceneController.check
- *   - $84C1 密码界面初始化 → PasswordSceneController.render
+ *   - $82E8 密码→数据解码 → PasswordCallbackHandler.check
+ *   - $84C1 密码界面初始化 → PasswordCallbackHandler.render
  *
  * 命名规范: 旧名 DispatchService → 新名 BootRouter。
  */
 import { DataStore } from '../../data/store/DataStore';
 import {
-  PASSWORD_DISPATCH_TABLE,
+  NMI_CALLBACK_TABLE,
   PASSWORD_LEVEL_ADJ_TABLE,
   PASSWORD_SPRITE_DATA,
   ROSTER_TABLE,
   ROSTER_ATTR_TABLE,
   PASSWORD_CONTINUE_TABLE,
 } from '../../data/tables/bank02-tables';
-import { PasswordSceneController } from '../scene/PasswordSceneController';
+import { PasswordCallbackHandler } from '../scene/PasswordCallbackHandler';
 
 /**
- * 场景索引语义化命名 (对应 PASSWORD_DISPATCH_TABLE 的 24 项入口)。
+ * NMI 回调索引 (对应 NMI_CALLBACK_TABLE 的 24 项入口)。
  *
- * 注意:
- *   1. 这不是 asm 中的状态机枚举, 不存在"线性 +1 推进"。
- *   2. 真实场景跳转由 GameSystemService.sceneLoad(sceneId) 或脚本 OpSceneLoad
- *      显式指定 sceneId (0-23 任意值), 可任意跳转。
- *   3. 每个索引对应 asm bank02 中的一段场景帧处理子程。
- *   4. 分发表存储的是"目标-1" (PHA/PHA/RTS 跳转, RTS 弹出后 +1), 实际执行 = 表值+1。
- *      注释格式: 表值 $XXXX (asm $XXXX-1 区) → 实际执行 $XXXX+1。
- *   5. 语义已逐个对照 asm/bank02/code_sub.s / code_data.s 确认 (G37)。
+ * 这些是 NMI 每帧按 ram_00ED 索引调用的子程, 不是游戏场景:
+ *   - 渲染/NT 填充/OAM 清空/精灵属性设置
+ *   - 阵容数据装载到 RAM
+ *   - 密码界面绘制/续关/校验
+ *   - bank 切换/标志置位
+ *
+ * 游戏场景 (标题/会议/比赛/结果) 由脚本引擎 OpSceneLoad (0xFA) 驱动,
+ * 走 bank00 sceneLoad → 主循环调度, 与此表无关。
+ *
+ * 分发表存储的是"目标-1" (PHA/PHA/RTS 跳转, RTS 弹出后 +1), 实际执行 = 表值+1。
  */
-export enum TaskIndex {
+export enum NmiCallbackIndex {
   /** idx 0 → 表值 $A4C0, 实际执行 $84C1: 密码界面初始化 (清屏+48 假名网格滚动+sceneLoad(0x17)) */
-  SCENE_00_PASSWORD_INIT = 0,
+  CALLBACK_00_PASSWORD_INIT = 0,
   /** idx 1 → 表值 $A559, 实际执行 $855A: 角度计算 (ram_00EC>>2 → ram_0060/61, ram_0062 bit7=0 取补) */
-  SCENE_01_ANGLE_CALC = 1,
+  CALLBACK_01_ANGLE_CALC = 1,
   /** idx 2 → 表值 $A57B, 实际执行 $857C: 辅助子程 (JSR $9B91) */
-  SCENE_02_AUX_9B91 = 2,
+  CALLBACK_02_AUX_9B91 = 2,
   /** idx 3 → 表值 $A581, 实际执行 $8582: 双 NT 区填充 ($2000 0x10 行 + $2400 0x20 行, JSR $98EA) */
-  SCENE_03_NT_FILL = 3,
+  CALLBACK_03_NT_FILL = 3,
   /** idx 4 → 表值 $A5A2, 实际执行 $85A3: OAM 清空 (JSR $9B7F) */
-  SCENE_04_OAM_CLEAR = 4,
+  CALLBACK_04_OAM_CLEAR = 4,
   /** idx 5 → 表值 $A5A8, 实际执行 $85A9: 精灵辅助 (LDX #$09; JSR $9F96) */
-  SCENE_05_SPRITE_9F96 = 5,
+  CALLBACK_05_SPRITE_9F96 = 5,
   /** idx 6 → 表值 $A5B0, 实际执行 $85B1: 精灵辅助 (LDX #$09; JSR $9F89) */
-  SCENE_06_SPRITE_9F89 = 6,
+  CALLBACK_06_SPRITE_9F89 = 6,
   /** idx 7 → 表值 $A5B8, 实际执行 $85B9: 标志置位 (ram_0099 = $FF) */
-  SCENE_07_FLAG_0099 = 7,
+  CALLBACK_07_FLAG_0099 = 7,
   /** idx 8 → 表值 $A5BF, 实际执行 $85C0: 切 PRG bank0 (MMC3) + ram_001B 清 bit6 */
-  SCENE_08_BIT6_CLEAR = 8,
+  CALLBACK_08_BIT6_CLEAR = 8,
   /** idx 9 → 表值 $A5CD, 实际执行 $85CE: 切 PRG bank1 (MMC3) + ram_001B 置 bit6 */
-  SCENE_09_BIT6_SET = 9,
-  /** idx 10 → 表值 $A5DB, 实际执行 $85DC: 阵容装载 0x00 + 帧绘制 5 (scene08_frame) */
-  SCENE_10_ROSTER_LOAD0 = 10,
-  /** idx 11 → 表值 $A5E8, 实际执行 $85E9: 阵容装载 0x10 + 帧绘制 6 (scene09_frame, ram_000D 分支) */
-  SCENE_11_ROSTER_LOAD10 = 11,
-  /** idx 12 → 表值 $A602, 实际执行 $8603: 阵容装载 0x30 + 帧绘制 8 (scene11_frame, ram_000D 分支) */
-  SCENE_12_ROSTER_LOAD30 = 12,
-  /** idx 13 → 表值 $A61C, 实际执行 $861D: 阵容装载 0x20 + 帧绘制 7 (scene13_frame) */
-  SCENE_13_ROSTER_LOAD20 = 13,
-  /** idx 14 → 表值 $A629, 实际执行 $862A: 精灵/滚动辅助 (scene14_frame) */
-  SCENE_14_SPRITE_SCROLL = 14,
-  /** idx 15 → 表值 $A650, 实际执行 $8651: 密码续关数据装载 ($AA97 表, scene15_frame) */
-  SCENE_15_CONTINUE_LOAD = 15,
-  /** idx 16 → 表值 $A69C, 实际执行 $869D: 比赛阵容装载 (ram_04E5 分支, scene16/16b_frame) */
-  SCENE_16_MATCH_ROSTER = 16,
-  /** idx 17 → 表值 $A77A, 实际执行 $877B: 阵容装载 0x80 (scene17_frame) */
-  SCENE_17_ROSTER_LOAD80 = 17,
-  /** idx 18 → 表值 $A782, 实际执行 $8783: 等待 + OAM 拷贝 $88FB (scene18_frame) */
-  SCENE_18_WAIT_OAM_COPY = 18,
+  CALLBACK_09_BIT6_SET = 9,
+  /** idx 10 → 表值 $A5DB, 实际执行 $85DC: 阵容装载 0x00 + 帧绘制 5 */
+  CALLBACK_10_ROSTER_LOAD0 = 10,
+  /** idx 11 → 表值 $A5E8, 实际执行 $85E9: 阵容装载 0x10 + 帧绘制 6 (ram_000D 分支) */
+  CALLBACK_11_ROSTER_LOAD10 = 11,
+  /** idx 12 → 表值 $A602, 实际执行 $8603: 阵容装载 0x30 + 帧绘制 8 (ram_000D 分支) */
+  CALLBACK_12_ROSTER_LOAD30 = 12,
+  /** idx 13 → 表值 $A61C, 实际执行 $861D: 阵容装载 0x20 + 帧绘制 7 */
+  CALLBACK_13_ROSTER_LOAD20 = 13,
+  /** idx 14 → 表值 $A629, 实际执行 $862A: 精灵/滚动辅助 */
+  CALLBACK_14_SPRITE_SCROLL = 14,
+  /** idx 15 → 表值 $A650, 实际执行 $8651: 密码续关数据装载 ($AA97 表) */
+  CALLBACK_15_CONTINUE_LOAD = 15,
+  /** idx 16 → 表值 $A69C, 实际执行 $869D: 比赛阵容装载 (ram_04E5 分支) */
+  CALLBACK_16_MATCH_ROSTER = 16,
+  /** idx 17 → 表值 $A77A, 实际执行 $877B: 阵容装载 0x80 */
+  CALLBACK_17_ROSTER_LOAD80 = 17,
+  /** idx 18 → 表值 $A782, 实际执行 $8783: 等待 + OAM 拷贝 $88FB */
+  CALLBACK_18_WAIT_OAM_COPY = 18,
   /** idx 19 → 表值 $A78D, 实际执行 $878E: 精灵属性置 bit3 + 转密码续关装载 */
-  SCENE_19_SPRITE_ATTR_BIT3 = 19,
-  /** idx 20 → 表值 $A7BD, 实际执行 $87BE: 等待 + 精灵属性设置 (scene20_frame) */
-  SCENE_20_SPRITE_ATTR = 20,
-  /** idx 21 → 表值 $A7CE, 实际执行 $87CF: 阵容装载 0x81 (scene21_frame) */
-  SCENE_21_ROSTER_LOAD81 = 21,
-  /** idx 22 → 表值 $A7D6, 实际执行 $87D7: 精灵属性置 bit2 128 帧循环 (scene22_frame) */
-  SCENE_22_SPRITE_ATTR_BIT2 = 22,
-  /** idx 23 (0x17) → 表值 $A7FA, 实际执行 $87FB: 密码校验/续关解码 (PasswordSceneController._loadScene(0x17)) */
-  SCENE_23_PASSWORD_CHECK = 23,
+  CALLBACK_19_SPRITE_ATTR_BIT3 = 19,
+  /** idx 20 → 表值 $A7BD, 实际执行 $87BE: 等待 + 精灵属性设置 */
+  CALLBACK_20_SPRITE_ATTR = 20,
+  /** idx 21 → 表值 $A7CE, 实际执行 $87CF: 阵容装载 0x81 */
+  CALLBACK_21_ROSTER_LOAD81 = 21,
+  /** idx 22 → 表值 $A7D6, 实际执行 $87D7: 精灵属性置 bit2 128 帧循环 */
+  CALLBACK_22_SPRITE_ATTR_BIT2 = 22,
+  /** idx 23 (0x17) → 表值 $A7FA, 实际执行 $87FB: 密码校验/续关解码 */
+  CALLBACK_23_PASSWORD_CHECK = 23,
 }
+
+/** @deprecated 旧名 TaskIndex, 等价于 NmiCallbackIndex */
+export const TaskIndex = NmiCallbackIndex;
 
 export class BootRouter {
   protected _store: DataStore;
-  protected _password: PasswordSceneController;
+  protected _password: PasswordCallbackHandler;
 
   constructor(store: DataStore) {
     this._store = store;
-    this._password = new PasswordSceneController(store);
+    this._password = new PasswordCallbackHandler(store);
   }
 
   // ════════════════════════════════════════════════
@@ -129,19 +134,19 @@ export class BootRouter {
   }
 
   /**
-   * 场景入口 (resetEntry) — 依据场景索引分发并初始化。
-   * 对应原始 resetEntry 场景分发 (asm $8281/$826D 区)。
+   * NMI 回调分发 (resetEntry) — 依据 ram_00ED 索引分发到对应回调子程。
+   * 对应原始 $8484 分发器 + resetEntry (asm $8281/$826D 区)。
    *
-   * @param index 场景索引 (ram_00ED)
+   * @param index 回调索引 (ram_00ED)
    */
   resetEntry(index: number): void {
     const i = index & 0xff;
     this.wr(0x00ED, i);
     switch (i) {
-      case TaskIndex.SCENE_00_PASSWORD_INIT:
+      case NmiCallbackIndex.CALLBACK_00_PASSWORD_INIT:
         this._initBoot();
         break;
-      case TaskIndex.SCENE_23_PASSWORD_CHECK:
+      case NmiCallbackIndex.CALLBACK_23_PASSWORD_CHECK:
         this._password.render();
         break;
       default:
@@ -155,12 +160,12 @@ export class BootRouter {
     this.resetEntry(index);
   }
 
-  /** 密码校验 — 委托给 PasswordSceneController.check */
+  /** 密码校验 — 委托给 PasswordCallbackHandler.check */
   verifyPassword(input: string): boolean {
     return this._password.check(input);
   }
 
-  /** BOOT 场景初始化 (对应原始 $821D-$8281) */
+  /** idx 0 回调: BOOT 初始化 (对应原始 $821D-$8281) */
   protected _initBoot(): void {
     this.wr(0x001B, this.rd(0x001B) | 0x40);
     for (let i = 0; i < 0xe8; i++) this.wr(0xFF19 + i, 0);
@@ -171,9 +176,9 @@ export class BootRouter {
     this.wr(0x0091, 2);
   }
 
-  /** 通用场景初始化 (其余场景归各自域) */
+  /** 通用回调处理 (其余索引由 §6 callbackNN 方法覆盖) */
   protected _initScene(_index: number): void {
-    // 各场景帧处理由 §6 sceneNN_frame 方法覆盖
+    // 各 NMI 回调由 §6 callbackNN 方法覆盖
   }
 
   /**
@@ -187,7 +192,7 @@ export class BootRouter {
    */
   dispatchByIndex(index: number): number {
     const t = index & 0xff;
-    const table = PASSWORD_DISPATCH_TABLE;
+    const table = NMI_CALLBACK_TABLE;
     if (t >= table.length) return -1;
     return table[t];
   }
@@ -751,7 +756,7 @@ export class BootRouter {
    *
    * 计算 ram_00EC >> 2 → ram_0060/0061 (16 位), 若 ram_0062 bit7=0 则取补。
    */
-  scene01_frame(): number {
+  callback01(): number {
     this.wr(0x0060, 0);
     // LDA $00EC; LSR; ROR $0060; LSR; ROR $0060 → ram_00EC >> 2, 两次 ROR 进位
     let ec = this.rd(0x00EC);
@@ -778,25 +783,25 @@ export class BootRouter {
   }
 
   /** $857C-$8580 场景 idx 2 帧处理。asm: JSR $9B91; LDA #$02; RTS */
-  scene02_frame(): number {
+  callback02(): number {
     this.scene02Helper();
     return 2;
   }
 
   /** $85A2-$85AF 场景 idx 4 帧处理。asm: LDX #$09; JSR $9F96; LDA #$02; RTS */
-  scene04_frame(): number {
+  callback04(): number {
     this.scene04Helper();
     return 2;
   }
 
   /** $85B1-$85B7 场景 idx 5 帧处理。asm: LDX #$09; JSR $9F89; LDA #$02; RTS */
-  scene05_frame(): number {
+  callback05(): number {
     this.scene05Helper();
     return 2;
   }
 
   /** $85DC-$85E7 场景 idx 8 帧处理。asm: LDA #$00; JSR $8895; LDA #$05; JSR $8920; LDA #$02; RTS */
-  scene08_frame(): number {
+  callback08(): number {
     this.rosterLoadMain(0x00);
     this.drawFrame(0x05);
     return 2;
@@ -806,9 +811,9 @@ export class BootRouter {
    * $85E9-$85F8 场景 idx 9 帧处理 (带 ram_000D 分支)。
    * asm: LDA $000D; BNE $85FA; LDA #$10; JSR $8895; LDA #$06; JSR $8920; LDA #$02; RTS
    */
-  scene09_frame(): number {
+  callback09(): number {
     if (this.rd(0x000D) !== 0) {
-      return this.scene10_frame();
+      return this.callback10();
     }
     this.rosterLoadMain(0x10);
     this.drawFrame(0x06);
@@ -816,7 +821,7 @@ export class BootRouter {
   }
 
   /** $85FA-$8601 场景 idx 10 帧处理。asm: LDA #$00; STA $000D; STA $000E; LDA #$02; RTS */
-  scene10_frame(): number {
+  callback10(): number {
     this.wr(0x000D, 0);
     this.wr(0x000E, 0);
     return 2;
@@ -826,9 +831,9 @@ export class BootRouter {
    * $8603-$8612 场景 idx 11 帧处理 (带 ram_000D 分支)。
    * asm: LDA $000D; BNE $8614; LDA #$30; JSR $8895; LDA #$08; JSR $8920; LDA #$02; RTS
    */
-  scene11_frame(): number {
+  callback11(): number {
     if (this.rd(0x000D) !== 0) {
-      return this.scene12_frame();
+      return this.callback12();
     }
     this.rosterLoadMain(0x30);
     this.drawFrame(0x08);
@@ -836,14 +841,14 @@ export class BootRouter {
   }
 
   /** $8614-$861B 场景 idx 12 帧处理。asm: LDA #$00; STA $000D; STA $000E; LDA #$02; RTS */
-  scene12_frame(): number {
+  callback12(): number {
     this.wr(0x000D, 0);
     this.wr(0x000E, 0);
     return 2;
   }
 
   /** $861D-$8628 场景 idx 13 帧处理。asm: LDA #$20; JSR $8895; LDA #$07; JSR $8920; LDA #$02; RTS */
-  scene13_frame(): number {
+  callback13(): number {
     this.rosterLoadMain(0x20);
     this.drawFrame(0x07);
     return 2;
@@ -855,7 +860,7 @@ export class BootRouter {
    *      ram_058F &= $7F; ram_004C=$82; LDY #$28; LDX #$20; LDA #$C8; JSR $A82F;
    *      LDA #$02; RTS
    */
-  scene14_frame(): number {
+  callback14(): number {
     this.scene14Helper(0xBD, 0x23);
     this.scene14Helper2();
     this.waitCounter();
@@ -874,7 +879,7 @@ export class BootRouter {
    *      JSR $9B5E; BIT ram_00EA; BMI $869A; BVC $8655; JSR $9FA8; JMP $A655;
    *      LDA #$02; RTS
    */
-  scene15_frame(): number {
+  callback15(): number {
     this.wr(0x00ED, 0);
     // LDY $00ED ($A4,$ED = LDY 零页 $00ED)
     let y = this.rd(0x00ED);
@@ -926,7 +931,7 @@ export class BootRouter {
    *      LDA #$F7; JSR $A72C; LDY #$D8; LDX #$30; ram_00ED=$01; ram_00EC=$FF;
    *      ram_00EB=$FC; JSR $A72C; LDA #$02; RTS
    */
-  scene16_frame(): number {
+  callback16(): number {
     if (this.rd(0x04E5) === 0xFF) {
       return this.scene16b_frame();
     }
@@ -988,13 +993,13 @@ export class BootRouter {
   }
 
   /** $877B-$8780 场景 idx 17 帧处理。asm: LDA #$80; JSR $8895; LDA #$02; RTS */
-  scene17_frame(): number {
+  callback17(): number {
     this.rosterLoadMain(0x80);
     return 2;
   }
 
   /** $8783-$878C 场景 idx 18 帧处理。asm: LDA #$02; JSR $9FA8; JSR $88FB; LDA #$02; RTS */
-  scene18_frame(): number {
+  callback18(): number {
     this.waitCounter();
     this.oamCopy88FB();
     return 2;
@@ -1004,14 +1009,14 @@ export class BootRouter {
    * $87BE-$87CD 场景 idx 20 帧处理。
    * asm: LDA #$01; JSR $9FA8; LDY #$28; LDX #$64; LDA #$B0; JSR $A82F; LDA #$02; RTS
    */
-  scene20_frame(): number {
+  callback20(): number {
     this.waitCounter();
     this.scene14Sprite(0x28, 0x64, 0xB0);
     return 2;
   }
 
   /** $87CF-$87D5 场景 idx 21 帧处理。asm: LDA #$81; JSR $8895; LDA #$02; RTS */
-  scene21_frame(): number {
+  callback21(): number {
     this.rosterLoadMain(0x81);
     return 2;
   }
@@ -1025,7 +1030,7 @@ export class BootRouter {
    * 128 帧 (Y=0x80) 循环, 每帧扫描 $0468-$04C4 工作精灵表 (X 从 0x20 步进 4),
    * 若精灵 Y 坐标 ($0468,X) < 0x80 (BPL), 则给属性字节 ($046A,X) 置 bit2。
    */
-  scene22_frame(): number {
+  callback22(): number {
     for (let y = 0x80; y > 0; y--) {
       this.waitCounter();
       for (let x = 0x20; x < 0xC4; x += 4) {
