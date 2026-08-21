@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * Palette Viewer — 每组 4 色独立显示 (Group 0~3)
  *

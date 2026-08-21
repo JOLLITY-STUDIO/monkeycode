@@ -1,15 +1,5 @@
-/**
- * NameTable — PPU 名字表 (tile 索引 + attribute)
- * 移植自 tsnes/src/ppu/nametable.ts（无外部依赖）
- */
-export class NameTable {
-  width: number;
-  height: number;
-  name: string;
-  tile: Uint8Array;
-  attrib: Uint8Array;
-
-  constructor(width: number, height: number, name: string) {
+class NameTable {
+  constructor(width, height, name) {
     this.width = width;
     this.height = height;
     this.name = name;
@@ -18,20 +8,20 @@ export class NameTable {
     this.attrib = new Uint8Array(width * height);
   }
 
-  getTileIndex(x: number, y: number): number {
+  getTileIndex(x, y) {
     return this.tile[y * this.width + x];
   }
 
-  getAttrib(x: number, y: number): number {
+  getAttrib(x, y) {
     return this.attrib[y * this.width + x];
   }
 
-  writeAttrib(index: number, value: number): void {
+  writeAttrib(index, value) {
     let basex = (index % 8) * 4;
     let basey = Math.floor(index / 8) * 4;
-    let add: number;
-    let tx: number, ty: number;
-    let attindex: number;
+    let add;
+    let tx, ty;
+    let attindex;
 
     for (let sqy = 0; sqy < 2; sqy++) {
       for (let sqx = 0; sqx < 2; sqx++) {
@@ -47,4 +37,18 @@ export class NameTable {
       }
     }
   }
+
+  toJSON() {
+    return {
+      tile: Array.from(this.tile),
+      attrib: Array.from(this.attrib),
+    };
+  }
+
+  fromJSON(s) {
+    this.tile.set(s.tile);
+    this.attrib.set(s.attrib);
+  }
 }
+
+export default NameTable;

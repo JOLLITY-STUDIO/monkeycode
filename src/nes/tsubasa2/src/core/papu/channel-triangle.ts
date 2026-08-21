@@ -1,27 +1,7 @@
-/**
- * ChannelTriangle — NES APU Triangle Wave Channel
- * Adapted from src/papu/channel-triangle.ts
- * Stripped of 'utils' dependency & JSON serialization for H5.
- */
+import { fromJSON, toJSON } from "../utils.js";
 
 class ChannelTriangle {
-  papu: any;
-
-  progTimerCount: number;
-  progTimerMax: number;
-  triangleCounter: number;
-  isEnabled: boolean;
-  sampleCondition: boolean;
-  lengthCounter: number;
-  lengthCounterEnable: boolean;
-  linearCounter: number;
-  lcLoadValue: number;
-  lcHalt: boolean;
-  lcControl: boolean;
-  tmp: number;
-  sampleValue: number;
-
-  constructor(papu: any) {
+  constructor(papu) {
     this.papu = papu;
 
     this.progTimerCount = 0;
@@ -39,7 +19,7 @@ class ChannelTriangle {
     this.sampleValue = 0xf;
   }
 
-  clockLengthCounter(): void {
+  clockLengthCounter() {
     if (this.lengthCounterEnable && this.lengthCounter > 0) {
       this.lengthCounter--;
       if (this.lengthCounter === 0) {
@@ -48,34 +28,50 @@ class ChannelTriangle {
     }
   }
 
-  clockLinearCounter(): void {
+  clockLinearCounter() {
     if (this.lcHalt) {
+      // Load:
       this.linearCounter = this.lcLoadValue;
       this.updateSampleCondition();
     } else if (this.linearCounter > 0) {
+      // Decrement:
       this.linearCounter--;
       this.updateSampleCondition();
     }
     if (!this.lcControl) {
+      // Clear halt flag:
       this.lcHalt = false;
     }
   }
 
-  getLengthStatus(): number {
+  getLengthStatus() {
     return this.lengthCounter === 0 || !this.isEnabled ? 0 : 1;
   }
 
-  writeReg(address: number, value: number): void {
+  // eslint-disable-next-line no-unused-vars
+  readReg(address) {
+    return 0;
+  }
+
+  writeReg(address, value) {
     if (address === 0x4008) {
+      // New values for linear counter:
       this.lcControl = (value & 0x80) !== 0;
       this.lcLoadValue = value & 0x7f;
+
+      // Length counter enable:
       this.lengthCounterEnable = !this.lcControl;
     } else if (address === 0x400a) {
+      // Programmable timer:
       this.progTimerMax &= 0x700;
       this.progTimerMax |= value;
     } else if (address === 0x400b) {
+      // Programmable timer, length counter
       this.progTimerMax &= 0xff;
       this.progTimerMax |= (value & 0x07) << 8;
+      // Length counter is only loaded when the channel is enabled via $4015.
+      // Writing this register while disabled has no effect on the length counter.
+      // See https://www.nesdev.org/wiki/APU#Status_($4015)
       if (this.isEnabled) {
         this.lengthCounter = this.papu.getLengthMax(value & 0xf8);
       }
@@ -85,7 +81,7 @@ class ChannelTriangle {
     this.updateSampleCondition();
   }
 
-  clockProgrammableTimer(nCycles: number): void {
+  clockProgrammableTimer(nCycles) {
     if (this.progTimerMax > 0) {
       this.progTimerCount += nCycles;
       while (
@@ -104,12 +100,12 @@ class ChannelTriangle {
     }
   }
 
-  clockTriangleGenerator(): void {
+  clockTriangleGenerator() {
     this.triangleCounter++;
     this.triangleCounter &= 0x1f;
   }
 
-  setEnabled(value: boolean): void {
+  setEnabled(value) {
     this.isEnabled = value;
     if (!value) {
       this.lengthCounter = 0;
@@ -117,13 +113,37 @@ class ChannelTriangle {
     this.updateSampleCondition();
   }
 
-  updateSampleCondition(): void {
+  updateSampleCondition() {
     this.sampleCondition =
       this.isEnabled &&
       this.progTimerMax > 7 &&
       this.linearCounter > 0 &&
       this.lengthCounter > 0;
   }
+
+  toJSON() {
+    return toJSON(this);
+  }
+
+  fromJSON(s) {
+    fromJSON(this, s);
+  }
+
+  static JSON_PROPERTIES = [
+    "isEnabled",
+    "sampleCondition",
+    "lengthCounterEnable",
+    "lcHalt",
+    "lcControl",
+    "progTimerCount",
+    "progTimerMax",
+    "triangleCounter",
+    "lengthCounter",
+    "linearCounter",
+    "lcLoadValue",
+    "sampleValue",
+    "tmp",
+  ];
 }
 
 export default ChannelTriangle;

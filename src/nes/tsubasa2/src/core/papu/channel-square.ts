@@ -1,57 +1,23 @@
-/**
- * ChannelSquare — NES APU Pulse Channel (SQ1 / SQ2)
- * Adapted from src/papu/channel-square.ts
- * Stripped of 'utils' dependency & JSON serialization for H5.
- */
+import { fromJSON, toJSON } from "../utils.js";
 
 class ChannelSquare {
-  papu: any;
-  sqr1: boolean;
-  dutyLookup: number[];
-  impLookup: number[];
-
-  progTimerCount: number;
-  progTimerMax: number;
-  lengthCounter: number;
-  squareCounter: number;
-  sweepCounter: number;
-  sweepCounterMax: number;
-  sweepMode: number;
-  sweepShiftAmount: number;
-  envDecayRate: number;
-  envDecayCounter: number;
-  envVolume: number;
-  masterVolume: number;
-  dutyMode: number;
-  vol: number;
-  isEnabled: boolean;
-  lengthCounterEnable: boolean;
-  sweepActive: boolean;
-  sweepCarry: boolean;
-  envDecayDisable: boolean;
-  envDecayLoopEnable: boolean;
-  envReset: boolean;
-  updateSweepPeriod: boolean;
-  sweepResult: number;
-  sampleValue: number;
-
-  constructor(papu: any, square1: boolean) {
+  constructor(papu, square1) {
     this.papu = papu;
 
     // prettier-ignore
     this.dutyLookup = [
-          0, 1, 0, 0, 0, 0, 0, 0,
-          0, 1, 1, 0, 0, 0, 0, 0,
-          0, 1, 1, 1, 1, 0, 0, 0,
-          1, 0, 0, 1, 1, 1, 1, 1
-    ];
+           0, 1, 0, 0, 0, 0, 0, 0,
+           0, 1, 1, 0, 0, 0, 0, 0,
+           0, 1, 1, 1, 1, 0, 0, 0,
+           1, 0, 0, 1, 1, 1, 1, 1
+      ];
     // prettier-ignore
     this.impLookup = [
-          1,-1, 0, 0, 0, 0, 0, 0,
-          1, 0,-1, 0, 0, 0, 0, 0,
-          1, 0, 0, 0,-1, 0, 0, 0,
-         -1, 0, 1, 0, 0, 0, 0, 0
-    ];
+           1,-1, 0, 0, 0, 0, 0, 0,
+           1, 0,-1, 0, 0, 0, 0, 0,
+           1, 0, 0, 0,-1, 0, 0, 0,
+          -1, 0, 1, 0, 0, 0, 0, 0
+      ];
 
     this.sqr1 = square1;
 
@@ -81,7 +47,7 @@ class ChannelSquare {
     this.sampleValue = 0;
   }
 
-  clockLengthCounter(): void {
+  clockLengthCounter() {
     if (this.lengthCounterEnable && this.lengthCounter > 0) {
       this.lengthCounter--;
       if (this.lengthCounter === 0) {
@@ -90,12 +56,14 @@ class ChannelSquare {
     }
   }
 
-  clockEnvDecay(): void {
+  clockEnvDecay() {
     if (this.envReset) {
+      // Reset envelope:
       this.envReset = false;
       this.envDecayCounter = this.envDecayRate + 1;
       this.envVolume = 0xf;
     } else if (--this.envDecayCounter <= 0) {
+      // Normal handling:
       this.envDecayCounter = this.envDecayRate + 1;
       if (this.envVolume > 0) {
         this.envVolume--;
@@ -112,7 +80,7 @@ class ChannelSquare {
     this.updateSampleValue();
   }
 
-  clockSweep(): void {
+  clockSweep() {
     if (--this.sweepCounter <= 0) {
       this.sweepCounter = this.sweepCounterMax + 1;
       if (
@@ -120,6 +88,7 @@ class ChannelSquare {
         this.sweepShiftAmount > 0 &&
         this.progTimerMax > 7
       ) {
+        // Calculate result from shifter:
         this.sweepCarry = false;
         if (this.sweepMode === 0) {
           this.progTimerMax += this.progTimerMax >> this.sweepShiftAmount;
@@ -142,12 +111,13 @@ class ChannelSquare {
     }
   }
 
-  updateSampleValue(): void {
+  updateSampleValue() {
     if (this.isEnabled && this.lengthCounter > 0 && this.progTimerMax > 7) {
       if (
         this.sweepMode === 0 &&
         this.progTimerMax + (this.progTimerMax >> this.sweepShiftAmount) > 0x7ff
       ) {
+        //if (this.sweepCarry) {
         this.sampleValue = 0;
       } else {
         this.sampleValue =
@@ -159,9 +129,10 @@ class ChannelSquare {
     }
   }
 
-  writeReg(address: number, value: number): void {
+  writeReg(address, value) {
     let addrAdd = this.sqr1 ? 0 : 4;
     if (address === 0x4000 + addrAdd) {
+      // Volume/Envelope decay:
       this.envDecayDisable = (value & 0x10) !== 0;
       this.envDecayRate = value & 0xf;
       this.envDecayLoopEnable = (value & 0x20) !== 0;
@@ -174,15 +145,18 @@ class ChannelSquare {
       }
       this.updateSampleValue();
     } else if (address === 0x4001 + addrAdd) {
+      // Sweep:
       this.sweepActive = (value & 0x80) !== 0;
       this.sweepCounterMax = (value >> 4) & 7;
       this.sweepMode = (value >> 3) & 1;
       this.sweepShiftAmount = value & 7;
       this.updateSweepPeriod = true;
     } else if (address === 0x4002 + addrAdd) {
+      // Programmable timer:
       this.progTimerMax &= 0x700;
       this.progTimerMax |= value;
     } else if (address === 0x4003 + addrAdd) {
+      // Programmable timer, length counter
       this.progTimerMax &= 0xff;
       this.progTimerMax |= (value & 0x7) << 8;
 
@@ -194,7 +168,7 @@ class ChannelSquare {
     }
   }
 
-  setEnabled(value: boolean): void {
+  setEnabled(value) {
     this.isEnabled = value;
     if (!value) {
       this.lengthCounter = 0;
@@ -202,9 +176,44 @@ class ChannelSquare {
     this.updateSampleValue();
   }
 
-  getLengthStatus(): number {
+  getLengthStatus() {
     return this.lengthCounter === 0 || !this.isEnabled ? 0 : 1;
   }
+
+  toJSON() {
+    return toJSON(this);
+  }
+
+  fromJSON(s) {
+    fromJSON(this, s);
+  }
+
+  static JSON_PROPERTIES = [
+    "isEnabled",
+    "lengthCounterEnable",
+    "sweepActive",
+    "envDecayDisable",
+    "envDecayLoopEnable",
+    "envReset",
+    "sweepCarry",
+    "updateSweepPeriod",
+    "progTimerCount",
+    "progTimerMax",
+    "lengthCounter",
+    "squareCounter",
+    "sweepCounter",
+    "sweepCounterMax",
+    "sweepMode",
+    "sweepShiftAmount",
+    "envDecayRate",
+    "envDecayCounter",
+    "envVolume",
+    "masterVolume",
+    "dutyMode",
+    "sweepResult",
+    "sampleValue",
+    "vol",
+  ];
 }
 
 export default ChannelSquare;

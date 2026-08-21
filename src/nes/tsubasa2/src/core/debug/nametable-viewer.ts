@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * NameTable Viewer — 参照 FCEUX NameTableViewer (src/drivers/Qt/NameTableViewer.cpp)
  *

@@ -1,34 +1,7 @@
-/**
- * ChannelNoise — NES APU Noise Channel
- * Adapted from src/papu/channel-noise.ts
- * Stripped of 'utils' dependency & JSON serialization for H5.
- */
+import { fromJSON, toJSON } from "../utils.js";
 
 class ChannelNoise {
-  papu: any;
-
-  progTimerCount: number;
-  progTimerMax: number;
-  isEnabled: boolean;
-  lengthCounter: number;
-  lengthCounterEnable: boolean;
-  envDecayDisable: boolean;
-  envDecayLoopEnable: boolean;
-  envReset: boolean;
-  shiftNow: boolean;
-  envDecayRate: number;
-  envDecayCounter: number;
-  envVolume: number;
-  masterVolume: number;
-  shiftReg: number;
-  randomBit: number;
-  randomMode: number;
-  sampleValue: number;
-  tmp: number;
-  accValue: number;
-  accCount: number;
-
-  constructor(papu: any) {
+  constructor(papu) {
     this.papu = papu;
 
     this.progTimerCount = 0;
@@ -53,7 +26,7 @@ class ChannelNoise {
     this.accCount = 1;
   }
 
-  clockLengthCounter(): void {
+  clockLengthCounter() {
     if (this.lengthCounterEnable && this.lengthCounter > 0) {
       this.lengthCounter--;
       if (this.lengthCounter === 0) {
@@ -62,12 +35,14 @@ class ChannelNoise {
     }
   }
 
-  clockEnvDecay(): void {
+  clockEnvDecay() {
     if (this.envReset) {
+      // Reset envelope:
       this.envReset = false;
       this.envDecayCounter = this.envDecayRate + 1;
       this.envVolume = 0xf;
     } else if (--this.envDecayCounter <= 0) {
+      // Normal handling:
       this.envDecayCounter = this.envDecayRate + 1;
       if (this.envVolume > 0) {
         this.envVolume--;
@@ -83,14 +58,15 @@ class ChannelNoise {
     this.updateSampleValue();
   }
 
-  updateSampleValue(): void {
+  updateSampleValue() {
     if (this.isEnabled && this.lengthCounter > 0) {
       this.sampleValue = this.randomBit * this.masterVolume;
     }
   }
 
-  writeReg(address: number, value: number): void {
+  writeReg(address, value) {
     if (address === 0x400c) {
+      // Volume/Envelope decay:
       this.envDecayDisable = (value & 0x10) !== 0;
       this.envDecayRate = value & 0xf;
       this.envDecayLoopEnable = (value & 0x20) !== 0;
@@ -101,17 +77,23 @@ class ChannelNoise {
         this.masterVolume = this.envVolume;
       }
     } else if (address === 0x400e) {
+      // Programmable timer:
       this.progTimerMax = this.papu.getNoiseWaveLength(value & 0xf);
       this.randomMode = value >> 7;
     } else if (address === 0x400f) {
+      // Length counter — only loaded when the channel is enabled via $4015.
+      // Writing this register while disabled has no effect on the length counter.
+      // See https://www.nesdev.org/wiki/APU#Status_($4015)
       if (this.isEnabled) {
         this.lengthCounter = this.papu.getLengthMax(value & 248);
       }
       this.envReset = true;
     }
+    // Update:
+    //updateSampleValue();
   }
 
-  setEnabled(value: boolean): void {
+  setEnabled(value) {
     this.isEnabled = value;
     if (!value) {
       this.lengthCounter = 0;
@@ -119,9 +101,40 @@ class ChannelNoise {
     this.updateSampleValue();
   }
 
-  getLengthStatus(): number {
+  getLengthStatus() {
     return this.lengthCounter === 0 || !this.isEnabled ? 0 : 1;
   }
+
+  toJSON() {
+    return toJSON(this);
+  }
+
+  fromJSON(s) {
+    fromJSON(this, s);
+  }
+
+  static JSON_PROPERTIES = [
+    "isEnabled",
+    "envDecayDisable",
+    "envDecayLoopEnable",
+    "lengthCounterEnable",
+    "envReset",
+    "shiftNow",
+    "lengthCounter",
+    "progTimerCount",
+    "progTimerMax",
+    "envDecayRate",
+    "envDecayCounter",
+    "envVolume",
+    "masterVolume",
+    "shiftReg",
+    "randomBit",
+    "randomMode",
+    "sampleValue",
+    "accValue",
+    "accCount",
+    "tmp",
+  ];
 }
 
 export default ChannelNoise;

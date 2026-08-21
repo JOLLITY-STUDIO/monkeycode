@@ -1,12 +1,18 @@
 /**
- * H5 游戏配置对象
+ * 真实 iNES header — Captain Tsubasa II: Super Striker (Japan)
  *
- * 来源: Captain Tsubasa II - Super Striker (Japan)
- * 不是 NES 模拟器，只保留渲染/布局必要的参数。
+ *   prg16k=16  chr8k=16  mapper=4 (MMC3)  mirroring=0 (Horizontal)
  */
+export const HEADER = new Uint8Array([
+  0x4e, 0x45, 0x53, 0x1a, // "NES\x1a"
+  0x10,                   // PRG ROM: 16 × 16KB = 256KB
+  0x10,                   // CHR ROM: 16 × 8KB = 128KB
+  0x40,                   // mapper 4 (MMC3) | mirroring Horizontal(0)
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+]);
 
 // ═══════════════════════════════════════════
-// NameTable 拼接方式
+// NameTable 拼接方式 (渲染参数, 保留)
 // ═══════════════════════════════════════════
 
 export enum Mirroring {

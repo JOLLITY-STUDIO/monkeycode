@@ -1,4 +1,3 @@
-// @ts-nocheck
 class Tile {
   pix: Uint8Array;
   initialized: boolean;
