@@ -10,7 +10,7 @@
 |---|---|---|
 | P0 | 核心框架（DataStore/GameLoop/OamManager/Tsubasa2/boot 路由） | ✅ |
 | P1 | Bank 逐块翻译（下表 A-G 各 Bank） | 🔄 |
-| P2 | 场景链路打通（STORY/PASSWORD/RESULT） | ⬜ |
+| P2 | 场景链路打通（STORY/PASSWORD/RESULT） | ✅ | G23 完成: dispatch.service.ts 接入 STORY/PASSWORD/RESULT 场景路由 |
 | P3 | CHR→PNG 资源化 + 差分验证全量 | ⬜ |
 | P4 | 优化重构（UI/架构） | ⬜ |
 
@@ -103,8 +103,8 @@
 | G19 | bank12 PAPU.silence 接口修复 | ✅ | 替换为 PAPU.writeReg(0x4015, 0) (禁所有 APU 通道) |
 | G20 | bank24_hud numUtils 路径修复 | ✅ | 内嵌 DIGIT_TILE_BASE/div16By10/numberToTiles16 (对应 asm $8C55/$8C7A/$CD3C) |
 | G21 | C2 Bank02 PASSWORD entryC 密码校验逻辑翻译 | ⬜ | _verifyPassword 占位, 真实校验算法待 tsnes trace START 帧 |
-| G22 | B2 OpeningSceneController 真开场数据提取 | ⬜ | 当前 TECMO 字母占位, 真开场动画数据待提取 |
-| G23 | A4 场景路由扩展 (dispatch.service.ts 接入 STORY/PASSWORD/RESULT) | ⬜ | dispatch 目前只翻译 $C400 RESET 链, 场景切换分发待补 |
+| G22 | B2 OpeningSceneController 真开场数据提取 | 🔄 | cut_0x00_boot.ts 真实数据✅(NT0/ATTR0/OAM/调色板) + initBoot()✅; 但控制器未接线到运行时(从未实例化) + SHOT_TEXT/SHOT_FRAMES 空桩 + 各角色镜头真实帧数据未提取 |
+| G23 | A4 场景路由扩展 (dispatch.service.ts 接入 STORY/PASSWORD/RESULT) | ✅ | 2026-08-21: TaskIndex 枚举扩展(BOOT/FULL_INIT/PASSWORD/MEETING/STORY/MATCH/RESULT) + SceneHandler 接口 + registerScene/dispatch(切换时调 handler.init)/update(按键边沿+场景分发); Tsubasa2._registerDispatchScenes 注册 PASSWORD(bank02.entryF(0)+PasswordController, success→STORY)/STORY(bank18.enterChapter, SELECT/done→MEETING或MATCH)/RESULT(A→BOOT); _renderDispatchSceneViews 渲染 PasswordView; 修 PPU 环境问题(ppu/index.ts nametable/palette-table 改 named import + Tsubasa2 PPU stub 补 cpu.mem); _tmp_g23_smoke.cjs SMOKE PASS 6/6 |
 | G24 | G8 后续: char-map 双 tile loTile 精确识别 | ⬜ | 部分 loTile $06-$0B/$46-$5E 标 TODO, 需 CHR 双 tile 渲染确认 |
 | G25 | G6 后续: 差分验证 FAIL 的 10 个 bank | ✅ | 2026-08-21 解决: 验证基准从 asm .byte 提取改为 ROM 原始字节 (docs/roms/Captain Tsubasa II - Super Striker (Japan).nes) 权威对比, scripts/verify_all_banks.cjs 重写; bank11/16/19/20/22/24/26/27/28/31 全部 PASS, 最终 19 PASS / 0 FAIL / 13 SKIP (SKIP=service 翻译 bank 无内嵌数组属正常) |
 

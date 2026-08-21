@@ -1,8 +1,8 @@
 // @ts-nocheck — tsnes 原版 JS 风格类, 作为黑盒 PPU 模拟器使用, 不做 TS strict 检查
 import Tile from "../tile.js";
 import { fromJSON, toJSON } from "../utils.js";
-import NameTable from "./nametable.js";
-import PaletteTable from "./palette-table.js";
+import { NameTable } from "./nametable.js";
+import { PaletteTable } from "./palette-table.js";
 
 class PPU {
   // Status flags:

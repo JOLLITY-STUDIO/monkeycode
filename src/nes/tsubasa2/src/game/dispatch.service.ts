@@ -68,14 +68,38 @@ const KEY_0469 = 'ram_0469'; // MMC3 R6 写入影子 (bank 状态)
 /**
  * 任务索引 (对应 RESET/$C400 时 A 寄存器的值)。
  * 真实 ROM 中 A 由调用方写入后 JMP $C400 重新分发。
+ * 0 与 1 为 $A21B 硬件初始化路径; 场景值对应 boot.ts.bak 路由表语义
+ * (STORY/PASSWORD/RESULT 等由 $A484 分发器 + 场景控制器驱动)。
  */
 export enum TaskIndex {
   /** 初始启动 (RESET A=0) → 走 $A21B 快速初始化路径 */
   BOOT = 0,
+  /** 完整初始化 (A≠0 → $826D 设任务参数路径) */
+  FULL_INIT = 1,
+  /** PASSWORD 密码输入场景 */
+  PASSWORD = 2,
+  /** MEETING 赛前会议 (Bank01 DataQuery) */
+  MEETING = 3,
+  /** STORY 剧情场景 (Bank18/19) */
+  STORY = 4,
+  /** MATCH 比赛 (Bank26 引擎) */
+  MATCH = 5,
+  /** RESULT 赛果场景 */
+  RESULT = 6,
 }
 
 /**
- * Dispatch Service — 真实 RESET 分发链。
+ * 场景处理器 (对应一个 taskIndex 的场景)。
+ * init = 进入场景 ($C400 分发到该场景); update = 每帧推进;
+ * update 返回非 null 的 taskIndex = 请求切换场景 (等价设 A → JMP $C400)。
+ */
+export interface SceneHandler {
+  init(): void;
+  update(buttons: number, frameCount: number): number | null;
+}
+
+/**
+ * Dispatch Service — 真实 RESET 分发链 + 场景路由分发。
  * 暴露与 boot.ts 兼容的 init()/update() 接口, 供 src/index.ts 等引用方逐步迁移。
  */
 export class DispatchService {
@@ -86,6 +110,25 @@ export class DispatchService {
     /** 场景路由器 (SceneRouter 接口, 兼容 BootService 的 init/update 语义) */
     private _sceneRouter?: { init(): void; update(buttons: number, frameCount: number): boolean },
   ) {}
+
+  /** 场景处理器表 (taskIndex → handler), 由调用方 registerScene 注册 */
+  private _scenes = new Map<number, SceneHandler>();
+  /** 当前场景 (对应 A 寄存器/ram_00ED 语义) */
+  private _currentScene: number = TaskIndex.BOOT;
+  /** 上一帧按键 (上升沿检测, 防止按键穿透场景) */
+  private _prevButtons = 0;
+
+  /**
+   * 注册场景处理器 — 由 Tsubasa2 等调用方把 STORY/PASSWORD/RESULT 控制器接入。
+   */
+  registerScene(taskIndex: number, handler: SceneHandler): void {
+    this._scenes.set(taskIndex, handler);
+  }
+
+  /** 当前场景索引 */
+  get currentScene(): number {
+    return this._currentScene;
+  }
 
   // ══════════════════════════════════════════════════════════════
   // 公开接口 (与 boot.ts 兼容)
@@ -103,12 +146,26 @@ export class DispatchService {
   }
 
   /**
-   * 每帧更新 — 委托给场景路由器 (等价 boot.ts update 语义)。
+   * 每帧更新 — 优先驱动当前场景处理器, 否则委托场景路由器。
    * 真实 ROM: $A21B 初始化后 JMP $9EED 进入 Bank00 主循环, 每帧推进。
    *
    * @returns 是否有状态变化 (兼容 boot.ts)
    */
   update(buttons: number, frameCount: number): boolean {
+    // 上升沿检测: 场景处理器只收到本帧新按下的按键 (对应 boot.ts 语义)
+    const pressed = buttons & ~this._prevButtons;
+    this._prevButtons = buttons;
+
+    const handler = this._scenes.get(this._currentScene);
+    if (handler) {
+      const next = handler.update(pressed, frameCount);
+      if (next !== null && next !== this._currentScene) {
+        // 场景切换 — 等价真实 ROM: 设 A=next → JMP $C400 重新分发
+        this.dispatch(next);
+        return true;
+      }
+      return false;
+    }
     if (this._sceneRouter) {
       return this._sceneRouter.update(buttons, frameCount);
     }
@@ -120,9 +177,15 @@ export class DispatchService {
   /**
    * $C400 分发器重入 — 场景代码完成后设 A=任务索引再分发。
    * 对应真实: 设 A → JMP $C400 → JMP $A200 → $A21B。
+   * 若该 taskIndex 注册了场景处理器, 则调用其 init() 进入场景。
    */
   dispatch(taskIndex: number): void {
+    this._currentScene = taskIndex;
     this._c400(taskIndex);
+    const handler = this._scenes.get(taskIndex);
+    if (handler) {
+      handler.init();
+    }
   }
 
   // ══════════════════════════════════════════════════════════════

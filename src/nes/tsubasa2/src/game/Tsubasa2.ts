@@ -15,7 +15,10 @@
  */
 import PPU from '../core/ppu';
 import { DataStore } from './data/prg/DataStore';
-import { DispatchService } from './dispatch.service';
+import { DispatchService, TaskIndex, type SceneHandler } from './dispatch.service';
+import { ResultController } from './service/bank00_result.controller';
+import { OpeningSceneController } from './service/bank00/scene_opening.controller';
+import { PasswordController } from './service/bank02_password.service';
 import { Bank00Service } from './service/bank00/bank00_core.service';
 import { Bank02Service } from './service/bank02_scene.service';
 import { Bank30Service } from './service/bank30_init.service';
@@ -110,6 +113,11 @@ export class Tsubasa2 {
   private _oamView: OamView;
   private _showcaseView: ShowcaseView;
 
+  /** 场景控制器 (G23: dispatch 场景路由接入) */
+  private _passwordCtrl: PasswordController;
+  private _resultCtrl: ResultController;
+  private _openingCtrl: OpeningSceneController;
+
   /** RGBA 帧缓冲 (putImageData 用, PPU.buffer 是 Uint32 索引色, 需转 RGBA) */
   private _rgbaBuf: Uint8ClampedArray = new Uint8ClampedArray(FRAME_RGBA_SIZE);
   /** ImageData 缓存 (避免每帧重建) */
@@ -125,7 +133,20 @@ export class Tsubasa2 {
 
     // PPU (替代 FrameCompositor) — 传 nes 对象给 PPU (含 ui.writeFrame)
     // PPU 在 endFrame() 调用 nes.ui.writeFrame(buffer); 此处用 noop, 由本类接管渲染
-    this._ppu = new PPU({ ui: { writeFrame: () => {} }, ppu: null, mmap: null, rom: null } as any);
+    // cpu stub: 仅满足 PPU 构造时 updateControlReg1→_updateNmiOutput 读 $2002 状态镜像
+    this._ppu = new PPU({
+      ui: { writeFrame: () => {} },
+      ppu: null,
+      mmap: null,
+      rom: null,
+      cpu: {
+        mem: new Uint8Array(0x10000),
+        nmiRaised: false,
+        nmiRaisedAtCycle: 0,
+        instrBusCycles: 0,
+        nmiDotsRemainingInStep: 0,
+      },
+    } as any);
 
     // Bank 服务链 (依赖注入, 不模拟 MMC3)
     this._bank00 = new Bank00Service(this._store);
@@ -147,6 +168,12 @@ export class Tsubasa2 {
 
     // DispatchService (真实 RESET 链, 替代已废弃的 boot.ts)
     this._dispatch = new DispatchService(this._store, this._bank00, this._bank02);
+
+    // 场景控制器 (G23: 接入 dispatch 场景路由)
+    this._openingCtrl = new OpeningSceneController(this._store);
+    this._passwordCtrl = new PasswordController(this._store);
+    this._resultCtrl = new ResultController(this._store);
+    this._registerDispatchScenes();
 
     // Views
     this._passwordView = new PasswordView(this._store);
@@ -326,6 +353,7 @@ export class Tsubasa2 {
     this._ppu.startFrame();
 
     // 2. 场景 View 层: 读 service DisplayState, 写 NT/OAM (对应 NES NMI 把场景数据写到 PPU)
+    this._renderDispatchSceneViews();
     this._oamView.emit();
 
     // 3. PPU endFrame (渲染所有 scanline + 输出 buffer)
@@ -353,6 +381,122 @@ export class Tsubasa2 {
       data[i * 4 + 3] = 0xFF;             // A
     }
     this._ctx.putImageData(this._imageData, 0, 0);
+  }
+
+  // ══════════════════════════════════════════
+  // G23: dispatch 场景路由注册 (STORY/PASSWORD/RESULT)
+  // ══════════════════════════════════════════
+
+  /** 场景后去向键 (DataStore, 对应 boot.ts 的 boot_story_to_meeting) */
+  private static readonly KEY_STORY_TO_MEETING = 'boot_story_to_meeting';
+
+  /**
+   * 注册 STORY/PASSWORD/RESULT 到 DispatchService。
+   * 每个 handler 的 update 返回下一 taskIndex (null=留本场景), 等价
+   * 真实 ROM "设 A=下一任务索引 → JMP $C400 重新分发"。
+   */
+  private _registerDispatchScenes(): void {
+    const dispatch = this._dispatch;
+
+    // ── BOOT: 开场 (TECMO Theater) ──
+    // 对应 Bank00 $801F 场景初始化链 → initBoot() 灌入真实 BOOT NT/OAM/调色板,
+    // 之后每帧 update() 推进调色板渐显 (syncBootFrame), 开场结束 → 流转下一场景。
+    const bootHandler: SceneHandler = {
+      init: () => {
+        // 对应 $8017→$801F 场景初始化链 (sceneLoad(0x17) 由 Bank00 主循环触发)
+        this._openingCtrl.init();
+        this._openingCtrl.initBoot();
+      },
+      update: (pressed: number, frame: number) => {
+        // 开场阶段: 推进渐显 (对应 bank0 $9A71 fade + $9A0D 帧等待)
+        this._openingCtrl.syncBootFrame(frame);
+        this._openingCtrl.update(pressed);
+        if (this._openingCtrl.complete) {
+          // 开场播完 → TITLE 场景
+          return TaskIndex.STORY;
+        }
+        return null;
+      },
+    };
+    dispatch.registerScene(TaskIndex.BOOT, bootHandler);
+
+    // ── PASSWORD: 密码输入 (Bank02 $A484 分发 + $A4C0 主逻辑) ──
+    const passwordHandler: SceneHandler = {
+      init: () => {
+        this._passwordCtrl.init(0);
+        // 对应 $A200 → $A484 分发 (ram_00ED=0) → $A4C0 场景动画初始化链
+        this._bank02.entryF(0);
+      },
+      update: (pressed: number, _frame: number) => {
+        const r = this._passwordCtrl.update(pressed);
+        if (r === 'success') {
+          // 密码成功 → STORY(续关剧情) → MEETING
+          this._store.write(Tsubasa2.KEY_STORY_TO_MEETING, 1);
+          this._store.write('ram_00ED', 0x0A);
+          return TaskIndex.STORY;
+        }
+        return null; // fail/continue → 留在密码界面
+      },
+    };
+    dispatch.registerScene(TaskIndex.PASSWORD, passwordHandler);
+
+    // ── STORY: 剧情场景 (Bank18 驱动 Bank19) ──
+    const storyHandler: SceneHandler = {
+      init: () => {
+        this._bank18.enterChapter(0); // StoryChapter.OPENING
+      },
+      update: (pressed: number, _frame: number) => {
+        // SELECT 跳过剧情 (原版按键), 或数据流结束 → 切下一场景
+        if ((pressed & BUTTON.SELECT) !== 0) {
+          this._bank18.skip();
+          return this._storyNextScene();
+        }
+        const done = this._bank18.update(0);
+        if (done) return this._storyNextScene();
+        return null;
+      },
+    };
+    dispatch.registerScene(TaskIndex.STORY, storyHandler);
+
+    // ── RESULT: 赛果画面, A 确认返回 TITLE ──
+    const resultHandler: SceneHandler = {
+      init: () => {
+        this._resultCtrl.init();
+      },
+      update: (pressed: number, _frame: number) => {
+        if (this._resultCtrl.update(pressed, 0)) {
+          return TaskIndex.BOOT; // A 确认 → 返回 TITLE (重新开始)
+        }
+        return null;
+      },
+    };
+    dispatch.registerScene(TaskIndex.RESULT, resultHandler);
+  }
+
+  /** STORY 结束后的去向: 开场/续关→MEETING, 比赛前→MATCH */
+  private _storyNextScene(): number {
+    const toMeeting = (this._store.read(Tsubasa2.KEY_STORY_TO_MEETING) as number) !== 0;
+    return toMeeting ? TaskIndex.MEETING : TaskIndex.MATCH;
+  }
+
+  /**
+   * 按 dispatch 当前场景渲染对应 View (PASSWORD/MEETING/LEVELUP)。
+   * 场景切换后由 handler.init 写背景 NT, 此处只做输入槽位/光标等精灵渲染。
+   */
+  private _renderDispatchSceneViews(): void {
+    switch (this._dispatch.currentScene) {
+      case TaskIndex.BOOT:
+        // 开场: BOOT NT/OAM/调色板已由 OpeningSceneController.initBoot() 灌入 DataStore,
+        // OAM 精灵由 _oamView.emit() 统一输出 (对应 NES NMI 写 OAM)。
+        break;
+      case TaskIndex.PASSWORD:
+        if (this._passwordCtrl) {
+          this._passwordView.render(this._passwordCtrl.getDisplayState());
+        }
+        break;
+      default:
+        break;
+    }
   }
 
   // ══════════════════════════════════════════

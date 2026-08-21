@@ -1,6 +1,7 @@
 # 开发日志 (DEVLOG)
 
 ## 2026-08-21
+- G23 WBS 完成（A4 场景路由扩展）：dispatch.service.ts TaskIndex 枚举扩展（BOOT/FULL_INIT/PASSWORD/MEETING/STORY/MATCH/RESULT）+ SceneHandler 接口 + registerScene/dispatch（切换场景调 handler.init）/update（按键边沿检测 + 场景分发）；Tsubasa2._registerDispatchScenes 注册 PASSWORD（PasswordController + bank02.entryF(0)，success→STORY）/STORY（bank18.enterChapter(0)，SELECT 或数据流结束→MEETING/MATCH）/RESULT（A 确认→BOOT）；_renderDispatchSceneViews 渲染 PasswordView（接入 _onRender）。修复 PPU 环境问题：src/core/ppu/index.ts nametable/palette-table 改 named import（原 default import 在 CommonJS 下 undefined）+ Tsubasa2 PPU stub 补 cpu.mem（_updateNmiOutput 读 $2002）。_tmp_g23_smoke.cjs SMOKE PASS 6/6，tsc 零错误。
 - bank27/bank28 修复完成：bank27.service.ts import 路径补 prg/ 层级（`../data/prg/bank27-data`）；bank28_match.service.ts import 路径补 prg/ 层级（`../data/prg/bank28-tables`）+ 从 asm/bank28 提取真实数据补建 `T_TEAM_8528`（$8528 队伍表）/`T_ATTR_ROLE_8A9D`（$8A9D 属性角色表），bank28-tables.ts 198→726 行。tsc 零错误。已 push (80a6e980)。
 
 ## 2026-08-20
