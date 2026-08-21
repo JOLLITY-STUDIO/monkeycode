@@ -1,18 +1,12 @@
-const ts = require('typescript');
-const path = require('path');
+const { execSync } = require('child_process');
 const fs = require('fs');
-const cfgPath = path.resolve('tsconfig.play.json');
-const cfg = ts.readConfigFile(cfgPath, ts.sys.readFile);
-const parsed = ts.parseJsonConfigFileContent(cfg.config, ts.sys, path.dirname(cfgPath));
-const prog = ts.createProgram(parsed.fileNames, parsed.options);
-const ds = ts.getPreEmitDiagnostics(prog);
-const lines = [];
-lines.push('files=' + parsed.fileNames.length + ' diagnostics=' + ds.length);
-for (const d of ds) {
-  const f = d.file ? d.file.fileName.replace(/.*tsubasa2[\\/]/, '') : '';
-  lines.push(f + ': ' + ts.flattenDiagnosticMessageText(d.messageText, '\n').split('\n')[0]);
+try {
+  const out = execSync('npx tsc -p tsconfig.json --noEmit', { cwd: process.cwd(), encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+  console.log('TSC OK (no errors)');
+} catch (e) {
+  const s = e.stdout || e.message;
+  const lines = String(s).split(/\r?\n/);
+  const errors = lines.filter(l => /error TS/.test(l));
+  console.log('errors:', errors.length);
+  errors.slice(0, 100).forEach(l => console.log(l));
 }
-fs.writeFileSync(path.resolve('_tsc_err.txt'), lines.join('\n'));
-const rel = lines.filter(l => l.includes('bank20') || l.includes('prg-bank-20') || l.includes('prg-bank-21') || l.includes('prg-bank-31') || l.includes('bank20-data'));
-fs.writeFileSync(path.resolve('_tsc_b20.txt'), rel.join('\n') + ' count=' + rel.length);
-process.exit(0);

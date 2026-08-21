@@ -1,0 +1,81 @@
+---
+description: 天使之翼2 新架构命名规范（Java/Spring 风格，弃用 bankXX 前缀）
+alwaysApply: true
+enabled: true
+---
+
+# 天使之翼2 新架构命名规范（v2，2026-08）
+
+> 旧命名体系（bank00_core.ts / Bank00Service / bank01_data-query.service.ts / bank22_hybrid.ts）已废弃。
+> 目标：Java J2EE Spring / MyBatis 风格的模块化、面向对象、表结构。禁止再出现 bankXX 前缀文件名/类名。
+
+## 一、目录结构（src/game/prg/）
+
+```
+src/game/prg/
+├── index.ts            # 出口契约（按业务域 export，禁止裸地址接口）
+├── code/               # = service（业务逻辑），按业务域分包
+│   ├── system/         # 系统核心（原 bank00 主循环/渲染原语、bank30 初始化、bank31 中断、RESET 分发）
+│   ├── scene/          # 场景控制器（原 bank02 分发、Opening/Title/Password/Result/Story 各场景）
+│   ├── story/          # 剧情脚本引擎（原 bank00 脚本 VM/opcodes/loader/char-map、bank18/19 剧情）
+│   ├── player/         # 球员数据查询（原 bank01）
+│   ├── team/           # 队伍名单（原 bank29）
+│   ├── match/          # 比赛（原 bank11 回合/bank20 辅助/bank24 HUD/bank26 引擎/bank28 配置）
+│   ├── skill/          # 技能/必杀技（原 bank16）
+│   ├── sprite/         # 精灵生成/动画（原 bank22/bank27）
+│   └── audio/          # 音频引擎（原 bank12）
+└── data/               # = model（表结构，ORM 风格）
+    ├── store/          # 数据中心（DataStore = RamStore 封装）
+    ├── tables/         # 数据表（player-table / team-table / skill-table / match-config-table / levelup-table ...）
+    ├── scene/          # 场景数据（NT/调色板/文本脚本 textscript/scripts-*.ts）
+    └── audio/          # 音频数据（bgm/*.ts、se/*.ts、dmc-samples.ts）
+```
+
+## 二、类名/文件名规则（PascalCase 语义化）
+
+1. 文件名 = 类名，去掉 bankXX 前缀。例：`PlayerQueryService.ts`（原 bank01_data-query.service.ts）。
+2. 后缀约定：业务逻辑 `*Service`、场景控制 `*SceneController`（或 `*Scene`）、数据表 `*Table`/`*Data`、引擎 `*Engine`、脚本 `Script*`。
+3. 旧名→新名映射（必须照此迁移）：
+   - Bank00Service → `system/GameSystemService`
+   - DispatchService → `system/BootRouter`
+   - Bank30Service → `system/HardwareInitService`
+   - Bank31Service/InterruptService → `system/InterruptService`
+   - Bank02Service → `scene/SceneController`
+   - OpeningSceneController → `scene/OpeningSceneController`
+   - TitleSceneController → `scene/TitleSceneController`
+   - PasswordController → `scene/PasswordSceneController`
+   - ResultController → `scene/ResultSceneController`
+   - Bank18Service → `scene/StorySceneController`
+   - ScriptVM/ScriptOpcodes/ScriptDataLoader/CharMap → `story/ScriptEngine.ts`/`story/ScriptOpcodes.ts`/`story/ScriptLoader.ts`/`story/CharMap.ts`
+   - DataQueryService → `player/PlayerQueryService`
+   - Bank29RosterService → `team/TeamRosterService`
+   - MatchEngineService → `match/MatchEngineService`
+   - Bank11Service → `match/MatchTurnService`
+   - Bank20Service → `match/MatchAuxService`
+   - Bank24HudService → `match/MatchHudService`
+   - Bank28MatchService → `match/MatchConfigService`
+   - Bank16Service → `skill/SkillService`
+   - Bank22Service → `sprite/SpriteService`
+   - Bank27Service → `sprite/SpriteAnimationService`
+   - Bank12AudioService → `audio/AudioService`
+
+## 三、数据访问规则（ORM/表结构，去 CPU 化）
+
+1. 所有 PRG 数据必须从 asm 提取为 TS 声明式数组/对象（表结构），禁止 `PRG_BANK_XX[addr-0xC000]` 裸地址随机访问。
+2. Service 只能通过本域 Table 的具名查询方法读数据（如 `PlayerTable.findById(id)`、`SkillTable.byMoveId(id)`），禁止导出 `readByte(addr)`/`readU16(addr)`。
+3. 运行时数据统一走 `DataStore`（= `src/core/ram.ts` 的 `RamStore`，Redis 风格 KV + byte 总线）：`store.read('ram_XXXX')` / `store.write('ram_XXXX', v)`。键必须是 4 位大写补零真实地址。
+4. 跨 bank 共享数据（球员 ID 数组 ram_0601+、状态 ram_0606+、位置 ram_060B+、战术 ram_0610+X、HUD ram_046F+、经验 ram_0454+idx*2 等）必须与消费方一致，不可自创。
+5. 禁止任何 bankSwitch/mmc3Map/readMem/setPrgBank 残留；MMC3 寄存器写（JSR $C4B9/STA $8000）直接省略并注释。
+
+## 四、注释/对照规则
+
+1. 每个类头部注释标注来源：`@bank 00 ($8000-$9FFF)`，保持与 asm 可追溯。
+2. 每个方法 doc 注释标注对应 asm 地址段（如 `对应原始 $A01E:`）。
+3. 翻译必须逐指令对照 `asm/bankNN/*.s`，分支/循环/进位/取反精确还原，禁止凭猜测。
+
+## 五、翻译节奏
+
+1. 先写 stub（类声明 + 方法签名 + TODO），保留导出契约，再逐个覆盖实现。
+2. 每批编译验证：`cd d:/studio/github/monkeycode/src/nes/tsubasa2 && npx tsc -p tsconfig.json --noEmit` 零错误。
+3. 不要用 PowerShell 写脚本；复杂扫描写临时 `.cjs` 文件再 `node xxx.cjs`，用完删除。
+4. 只动自己负责的 bank/业务域，不碰其他模块。

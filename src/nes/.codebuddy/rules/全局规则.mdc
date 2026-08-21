@@ -14,4 +14,4 @@ provider:
 记录bugs 更新 wbs merge true 创建todo任务列表，创建agent处理该bug，调用agent每个agent会记录自己处理过的工作日志输出
 
 
-汇编的指针跳转和地址偏移确实可读性极差，跟 Java/Redis/MyBatis 那种清晰的面向对象 + ORM 映射+表结构 完全是两个世界 这正是去 CPU 化要做的事——把这些 $867A 地址跳转、PRG_BANK[偏移] 指针查表，全部翻译成 Java 风格的结构化数据访问：
+汇编的指针跳转和地址偏移确实可读性极差，跟 Java J2EE SPRING /Redis/MyBatis 那种清晰的面向对象 + ORM 映射+表结构  完全是两个世界 这正是去 CPU 化要做的事——把这些 $867A 地址跳转、PRG_BANK[偏移] 指针查表，全部翻译成 Java 风格的结构化数据访问：模块化 面向对象，用正确的开发规范提高可读性：比如 去位移、语义化、去指针

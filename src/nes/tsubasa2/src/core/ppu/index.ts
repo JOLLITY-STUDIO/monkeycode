@@ -6,6 +6,7 @@ import { VramStore } from "./vram-store.js";
 import { OamStore } from "./oam-store.js";
 import { ScrollStore } from "./scroll-store.js";
 import { ScrollCounters } from "./scroll-counters.js";
+import * as bit from "../bitfield.js";
 
 class PPU {
   // Status flags:
@@ -769,12 +770,12 @@ class PPU {
   updateControlReg1(value) {
     this.triggerRendering();
 
-    this.f_nmiOnVblank = (value >> 7) & 1;
-    this.f_spriteSize = (value >> 5) & 1;
-    this.f_bgPatternTable = (value >> 4) & 1;
-    this.f_spPatternTable = (value >> 3) & 1;
-    this.vramStore.addrIncrement = (value >> 2) & 1; // f_addrInc
-    this.f_nTblAddress = value & 3;
+    this.f_nmiOnVblank = bit.get(value, 7);
+    this.f_spriteSize = bit.get(value, 5);
+    this.f_bgPatternTable = bit.get(value, 4);
+    this.f_spPatternTable = bit.get(value, 3);
+    this.vramStore.addrIncrement = bit.get(value, 2);
+    this.f_nTblAddress = bit.lowBits(value, 2);
 
     // regV/regH/regS (nametable 基址位 + 背景 pattern table) → ScrollStore
     this.scrollStore.applyControlReg1(value);
@@ -841,12 +842,12 @@ class PPU {
   updateControlReg2(value) {
     this.triggerRendering();
 
-    this.f_color = (value >> 5) & 7;
-    this.f_spVisibility = (value >> 4) & 1;
-    this.f_bgVisibility = (value >> 3) & 1;
-    this.f_spClipping = (value >> 2) & 1;
-    this.f_bgClipping = (value >> 1) & 1;
-    this.f_dispType = value & 1;
+    this.f_color = bit.bits(value, 5, 3);
+    this.f_spVisibility = bit.get(value, 4);
+    this.f_bgVisibility = bit.get(value, 3);
+    this.f_spClipping = bit.get(value, 2);
+    this.f_bgClipping = bit.get(value, 1);
+    this.f_dispType = bit.get(value, 0);
 
     // When both BG and sprite rendering become enabled mid-scanline,
     // re-check sprite 0 hit. The unified PPU pipeline populates BG shift
@@ -997,7 +998,7 @@ class PPU {
       const oamAddr = this.oamStore.addr;
       this.oamStore.set(oamAddr, value);
       this.spriteRamWriteUpdate(oamAddr, value);
-      this.oamStore.addr = (oamAddr + 1) & 0xff;
+      this.oamStore.addr = bit.wrap8(oamAddr + 1);
     }
   }
 
@@ -1010,12 +1011,12 @@ class PPU {
 
     if (this.firstWrite) {
       // First write, horizontal scroll:
-      this.scrollStore.set("h_tile", (value >> 3) & 31); // regHT
-      this.scrollStore.set("h_fine", value & 7); // regFH
+      this.scrollStore.set("h_tile", bit.bits(value, 3, 5)); // regHT
+      this.scrollStore.set("h_fine", bit.lowBits(value, 3)); // regFH
     } else {
       // Second write, vertical scroll:
-      this.scrollStore.set("v_fine", value & 7); // regFV
-      this.scrollStore.set("v_tile", (value >> 3) & 31); // regVT
+      this.scrollStore.set("v_fine", bit.lowBits(value, 3)); // regFV
+      this.scrollStore.set("v_tile", bit.bits(value, 3, 5)); // regVT
     }
     this.firstWrite = !this.firstWrite;
   }
@@ -1025,21 +1026,21 @@ class PPU {
   // The first write sets the high byte, the second the low byte.
   writeVRAMAddress(address) {
     if (this.firstWrite) {
-      this.scrollStore.set("v_fine", (address >> 4) & 3); // regFV
-      this.scrollStore.set("v_nt", (address >> 3) & 1); // regV
-      this.scrollStore.set("h_nt", (address >> 2) & 1); // regH
+      this.scrollStore.set("v_fine", bit.bits(address, 4, 2)); // regFV
+      this.scrollStore.set("v_nt", bit.get(address, 3)); // regV
+      this.scrollStore.set("h_nt", bit.get(address, 2)); // regH
       this.scrollStore.set(
         "v_tile",
-        (this.scrollStore.get("v_tile") & 7) | ((address & 3) << 3),
+        (this.scrollStore.get("v_tile") & 7) | (bit.lowBits(address, 2) << 3),
       ); // regVT hi
     } else {
       this.triggerRendering();
 
       this.scrollStore.set(
         "v_tile",
-        (this.scrollStore.get("v_tile") & 24) | ((address >> 5) & 7),
+        (this.scrollStore.get("v_tile") & 24) | bit.bits(address, 5, 3),
       ); // regVT lo
-      this.scrollStore.set("h_tile", address & 31); // regHT
+      this.scrollStore.set("h_tile", bit.lowBits(address, 5)); // regHT
 
       // cnt ← reg
       this.counters.copyFromReg({
@@ -1164,7 +1165,7 @@ class PPU {
     let data;
     for (let i = 0; i < 256; i++) {
       data = this.nes.cpu.mem[baseAddress + i];
-      let oamAddr = (this.oamStore.addr + i) & 0xff;
+      let oamAddr = bit.wrap8(this.oamStore.addr + i);
       this.oamStore.set(oamAddr, data);
       this.spriteRamWriteUpdate(oamAddr, data);
     }
