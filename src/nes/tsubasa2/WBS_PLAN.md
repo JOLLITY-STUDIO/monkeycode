@@ -116,6 +116,7 @@
 | G32 | **P1 BUG-OPEN-06: 首帧改走 initBoot()** | ✅ | `_firstFrameInit()` 首帧 `_opening.initBoot()` 灌真实 cut_0x00_boot(NT 26 tile + 40 精灵 + 全黑调色板), 非 sceneLoad(0x17) 标题菜单; smoke 验证 NT=26/精灵=40 |
 | G33 | **P2 BUG-OPEN-07: bit0 交替逻辑修正** | ✅ | `_mainInputLoop` 去掉每帧 else 清 bit0(对照 asm $802C START 边沿一次性块 + $8087 清 bit0 仅在场景切换); 置位后保持, 场景切换时再清 |
 | G34 | **验证: 开场自动播放** | ✅ | 2026-08-21: tsc --noEmit 零错误 + `_verify_g34_opening.cjs` OPENING 6/6 PASS(opening 注入✓ NT 26 tile✓ 调色板渐显 17 色✓ 40 精灵✓ PPU buffer 非黑采样=21✓); 补 PPU stub `getSpritePatternTile`(mapper0 语义: ptTile[index]) 修 sprite0 命中崩溃 |
+| G35 | **bank19 数据文件补全 + 裸地址清理** | ✅ | 2026-08-21: `src/game/prg/data/prg-bank-19.ts` 缺失重建 (8192B 从 ROM 提取, $B166 控制码表 `A6 B1 E0 B1 F3 B1 18 B2 1B B2 24 B2` 与 BANK19_CTRL_TABLE 逐字节一致, 数据流起点 $9467=`E0 5C E5...`); bank19_auxiliary.ts 整改: L609 `0x1bcc` 裸数字→`B31_FBCC` 常量, 删除死代码 readByte/readU16 (CPU 地址 -0x8000 语义, 无调用); 引用链确认 bank18_story.ts/prg/index.ts 均为新路径, bank18_story.ts readByte/readU16 是公开 service 接口合法; data/index.ts 聚合页 prg-bank-19 import 同步解析; read_lints 0 错误 |
 
 ## 里程碑
 

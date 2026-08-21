@@ -61,6 +61,8 @@ export { Bank29RosterService } from './code/bank29_roster';
 export { DispatchService, TaskIndex } from './code/dispatch';
 
 // ── 原始字节数据 (data, 供 bankpage/调试浏览) ─────
-export { NES_PRG_ROM, PRG_ROM_SIZE, PRG_BANK_SIZE } from './data/index';
+// 原始 PRG 字节 (prg-bank-N.ts) 已废弃, NES.loadTsROM 只用 tsPrg (bank 类集合)
+// 不再 export NES_PRG_ROM, 避免拉断裂的原始字节依赖链
+// export { NES_PRG_ROM, PRG_ROM_SIZE, PRG_BANK_SIZE } from './data/index';
 
 // todo: Tsubasa2 游戏主类 (启动入口) — 旧 './Tsubasa2' 引用已断, 待迁移到启动层

@@ -11,7 +11,6 @@ import {
   BUTTON_A, BUTTON_B, BUTTON_START,
   BUTTON_UP, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT,
 } from '../../src/index';
-import type { GameInstance } from '../../src/index';
 import InputMini from '../../src/core/browser-mini/input';
 
 // TODO: DataStore 待 game/prg 层恢复后从 '../../src/index' 重新导入
@@ -128,27 +127,11 @@ Page({
   },
 
   _startGame(_canvas: any) {
-    // TODO: 游戏主类 (Tsubasa2) 恢复后取消注释
-    // const { Tsubasa2 } = await import('../../src/game/Tsubasa2');
-    // const ctx = _canvas.getContext('2d');
-    // const game = new Tsubasa2(ctx, { scale: 1, debug: true, aiMode: this.data.aiMode });
-    // game.start(_canvas);
-    // this._bm.setGame(game);
-
-    // 当前 stub: 空游戏实例 (等待 Tsubasa2 主类恢复)
-    const stubGame: GameInstance = {
-      start: () => {},
-      stop: () => {},
-      setButtons: () => {},
-      getDebugInfo: () => ({ frame: 0, gameStateName: 'STUB', fps: 0 }),
-      enableAi: () => {},
-      disableAi: () => {},
-    };
-    this._bm!.setGame(stubGame);
-
+    // BrowserMini 内部 new NES → loadTsROM(game/index) → reset → 每帧 frame
+    // 不再需要外部注入 stub game
     this._startDebugTimer();
     this._bm!.start().then(() => {
-      this.setData({ pageMode: 'game', status: '运行中 (stub - 待 Tsubasa2 主类恢复)' });
+      this.setData({ pageMode: 'game', status: '运行中' });
     }).catch((e: Error) => {
       console.error('[Tsubasa2] 启动失败:', e);
       this.setData({ status: '启动失败: ' + e.message });
@@ -157,11 +140,10 @@ Page({
 
   _startDebugTimer() {
     this._debugTimer = setInterval(() => {
-      if (!this._bm?.game) return;
-      const info = this._bm.game.getDebugInfo();
+      if (!this._bm) return;
       this.setData({
-        debugInfo: { frame: info.frame, gameStateName: info.gameStateName },
-        fps: String(this._bm.fps || info.fps),
+        debugInfo: { frame: this._bm.frameIndex, gameStateName: 'NES' },
+        fps: String(this._bm.fps),
       });
     }, 500);
   },
@@ -305,10 +287,7 @@ Page({
   toggleAi() {
     const aiMode = !this.data.aiMode;
     this.setData({ aiMode });
-    const game = this._bm?.game;
-    if (!game) return;
-    if (aiMode && game.enableAi) game.enableAi();
-    else if (!aiMode && game.disableAi) game.disableAi();
+    // TODO: NES 模式下 AI 待实现
   },
 
   onBtnA() {

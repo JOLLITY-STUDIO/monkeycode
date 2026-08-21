@@ -1,21 +1,17 @@
 /**
- * BrowserMini — 微信小程序版 NES/H5 主板外壳
+ * BrowserMini — 微信小程序版 NES 主板外壳
  *
- * 借鉴 core/browser/index.ts, 适配微信小程序:
- *   - 不用 document, 改为接收 page 传入的 canvas 节点
- *   - 触摸输入替代 keyboard/gamepad
- *   - 音频降级 (SpeakersMini stub)
+ * 启动链路: BrowserMini → new NES → nes.loadTsROM(game/index ROM) → nes.reset()
+ *   → 每帧 nes.frame() (PPU 扫描线渲染)
+ *   → onFrame 回调输出 Uint32Array 帧缓冲 → ScreenMini 写 Canvas
  *
- * 两种使用模式:
- *   1. NES 模式 (传统模拟器): 内部持有 NES 实例, 每帧 nes.frame()
- *   2. H5 模式 (去 CPU 化): 内部持有 Tsubasa2 实例, 每帧 tsubasa2._onFrame+render
- *
- * 当前 H5 项目走模式 2 (Tsubasa2 主板), NES 实例仅作 PPU/PAPU 容器。
- * 本类对外屏蔽差异, page 只需:
- *   const bm = new BrowserMini({ canvas, mode: 'h5' });
+ * page 只需:
+ *   const bm = new BrowserMini({ canvas });
  *   bm.start();
  *   bm.input.press(BUTTON_A);
  */
+import NES from '../nes';
+import { HEADER, NES_CHR_ROM, PRG } from '../../game/rom';
 import ScreenMini from './screen';
 import SpeakersMini from './speakers';
 import FrameTimerMini from './frame-timer';
@@ -27,31 +23,12 @@ export type { ButtonId } from './input';
 export interface BrowserMiniOptions {
   /** 小程序 Canvas 2D 节点 (wx.createSelectorQuery 获取的 node) */
   canvas: any;
-  /**
-   * 模式: 'nes' = 传统模拟器 (NES.frame), 'h5' = 去 CPU 化 (外部注入游戏实例)
-   *
-   * H5 模式下, 游戏主类 (Tsubasa2 等) 由外部创建后通过 setGame() 注入,
-   * BrowserMini 不 import 游戏类, 避免循环依赖 + 适配主类迁移期。
-   */
-  mode?: 'nes' | 'h5';
   /** 帧回调 (调试/统计用) */
   onFrame?: (frameIndex: number) => void;
   /** 错误回调 */
   onError?: (e: Error) => void;
   /** 状态回调 */
   onStatus?: (status: string) => void;
-}
-
-/** 游戏实例接口 (H5 模式下外部注入的游戏主类需满足此接口) */
-export interface GameInstance {
-  start(canvas?: any): void;
-  stop(): void;
-  setButtons(mask: number): void;
-  pressButton?(button: string): void;
-  releaseButton?(button: string): void;
-  getDebugInfo?(): { frame: number; gameStateName: string; fps: number };
-  enableAi?(): void;
-  disableAi?(): void;
 }
 
 export default class BrowserMini {
@@ -67,8 +44,10 @@ export default class BrowserMini {
   _fps: number;
   _running: boolean;
 
-  /** H5 模式下外部注入的游戏实例 */
-  _game: GameInstance | null;
+  /** NES 主板实例 (去 CPU 化, 持有 PPU/PAPU/mmap/rom) */
+  _nes: NES | null;
+  /** 当前按键掩码 (每帧 nes.frame() 前写入 NES controllers) */
+  _buttons: number;
 
   constructor(options: BrowserMiniOptions) {
     this._options = options;
@@ -77,25 +56,19 @@ export default class BrowserMini {
     this._fpsLastTime = Date.now();
     this._fps = 0;
     this._running = false;
-    this._game = null;
+    this._nes = null;
+    this._buttons = 0;
 
-    // Screen
     this._screen = new ScreenMini(options.canvas);
-
-    // Speakers (stub, 静音)
     this._speakers = new SpeakersMini({
       onBufferUnderrun: () => {
         this._frameTimer.generateFrame();
         this._frameTimer.generateFrame();
       },
     });
-
-    // Input
     this._input = new InputMini({
       onButtonChange: (mask) => this._onButtonChange(mask),
     });
-
-    // FrameTimer (传入 canvas 供 requestAnimationFrame)
     this._frameTimer = new FrameTimerMini({
       onGenerateFrame: () => this._generateFrame(),
       onWriteFrame: () => this._screen.writeBuffer(),
@@ -105,41 +78,41 @@ export default class BrowserMini {
   // ── 公开属性 ──
   get input(): InputMini { return this._input; }
   get screen(): ScreenMini { return this._screen; }
-  get game(): GameInstance | null { return this._game; }
+  get nes(): NES | null { return this._nes; }
   get fps(): number { return this._fps; }
   get frameIndex(): number { return this._frameIndex; }
 
   /**
-   * 注入游戏实例 (H5 模式)。
-   * 外部创建游戏主类后调用此方法, BrowserMini 接管输入转发 + FPS 统计。
-   * 游戏主类自行管理 RAF 帧循环 + 渲染。
-   */
-  setGame(game: GameInstance): void {
-    this._game = game;
-  }
-
-  // ── 生命周期 ──
-
-  /**
-   * 启动外壳 (帧定时器 + 音频 + FPS 统计)。
-   * H5 模式: 游戏实例应已通过 setGame() 注入并 start()。
-   * NES 模式: TODO (当前未实现)
+   * 启动游戏: new NES → loadTsROM(game ROM) → reset → 帧循环
+   *
+   * ROM 定义来自 src/game/index (HEADER + NES_CHR_ROM + PRG bank 类)。
+   * NES.loadTsROM 内部调 reset() 触发 reset 向量, 进入游戏主循环。
    */
   async start(): Promise<void> {
     if (this._running) return;
     this._running = true;
 
-    const mode = this._options.mode ?? 'h5';
-    if (mode === 'nes') {
-      // TODO: NES 模式 (传统模拟器) 待补
-      throw new Error('BrowserMini: NES 模式未实现, 当前仅支持 h5 模式');
-    }
+    // 构造 NES (去 CPU 化, 默认 bus)
+    this._nes = new NES({
+      onFrame: (buffer: Uint32Array) => this._screen.setBuffer(buffer),
+      onStatusUpdate: (status: string) => this._options.onStatus?.(status),
+      onAudioSample: (l: number, r: number) => this._speakers.writeSample(l, r),
+      emulateSound: true,
+      sampleRate: this._speakers.getSampleRate(),
+    });
 
-    // 启动帧定时器 + 音频
+    // 加载 ROM (header + prg + chr) → 内部 reset → mmap 装载 → reset 向量执行
+    this._nes.loadTsROM({
+      header: HEADER,
+      prg: PRG,
+      chr: NES_CHR_ROM,
+    });
+
+    this._options.onStatus?.('ROM 已加载, 启动帧循环');
+
     this._frameTimer.start();
     this._speakers.start();
 
-    // FPS 统计
     this._fpsInterval = setInterval(() => {
       const now = Date.now();
       if (now - this._fpsLastTime > 0) {
@@ -152,7 +125,6 @@ export default class BrowserMini {
     this._options.onStatus?.('运行中');
   }
 
-  /** 停止外壳 */
   stop(): void {
     this._running = false;
     this._frameTimer.stop();
@@ -161,57 +133,48 @@ export default class BrowserMini {
       clearInterval(this._fpsInterval);
       this._fpsInterval = undefined;
     }
-    if (this._game && typeof this._game.stop === 'function') {
-      this._game.stop();
-    }
+    this._nes = null;
     this._options.onStatus?.('已停止');
   }
 
-  // ── 帧生成 ──
-
   /**
-   * 每帧生成 (由 FrameTimer 调用)。
-   * H5 模式: 游戏实例自跑 RAF, 这里仅做 FPS 统计 + 输入已通过 _onButtonChange 转发。
-   * NES 模式 (TODO): 调 nes.frame() + speakers.flush()。
+   * 每帧生成 (由 FrameTimer 调用):
+   * 1. 写入当前按键到 NES controllers
+   * 2. nes.frame() (PPU 扫描线渲染, 内部触发 onFrame 回调)
+   * 3. speakers.flush()
    */
   private _generateFrame(): void {
+    if (!this._nes) return;
     try {
+      // 写入按键到 NES controller 1
+      const b = this._buttons;
+      const set = (bit: number, name: string) => {
+        if (b & (1 << bit)) this._nes!.buttonDown(1, name as any);
+        else this._nes!.buttonUp(1, name as any);
+      };
+      set(0, 'A'); set(1, 'B'); set(2, 'SELECT'); set(3, 'START');
+      set(4, 'UP'); set(5, 'DOWN'); set(6, 'LEFT'); set(7, 'RIGHT');
+
+      this._nes.frame();
+      this._speakers.flush();
+
       this._frameIndex++;
       this._fpsFrameCount++;
       this._options.onFrame?.(this._frameIndex);
-
-      if (this._options.mode === 'nes') {
-        // TODO: this._nes.frame();
-        // this._speakers.flush();
-      }
     } catch (e) {
       this.stop();
       this._options.onError?.(e as Error);
     }
   }
 
-  // ── 输入转发 ──
-
-  /** 输入变化时转发到游戏实例 */
   private _onButtonChange(mask: number): void {
-    if (this._game && typeof this._game.setButtons === 'function') {
-      this._game.setButtons(mask);
-    }
+    this._buttons = mask & 0xFF;
   }
 
-  // ── Canvas 缩放 ──
-
-  /**
-   * 根据容器尺寸自适应 Canvas 显示尺寸 (转发到 ScreenMini.fitInParent)。
-   * ScreenMini 内部按 NES 256:240 宽高比等比缩放, 设置 canvas.style.width/height。
-   *
-   * @returns 应用后的显示尺寸 {w, h}
-   */
   fitInParent(containerW: number, containerH: number): { w: number; h: number } {
     return this._screen.fitInParent(containerW, containerH);
   }
 
-  /** 销毁 */
   destroy(): void {
     this.stop();
   }

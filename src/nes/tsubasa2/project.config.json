@@ -1,4 +1,4 @@
-﻿{
+{
     "setting":  {
                     "es6":  true,
                     "postcss":  true,
@@ -71,14 +71,6 @@
                                        },
                                        {
                                            "value":  "node_modules",
-                                           "type":  "folder"
-                                       },
-                                       {
-                                           "value":  "src/game",
-                                           "type":  "folder"
-                                       },
-                                       {
-                                           "value":  "src/core/debug",
                                            "type":  "folder"
                                        },
                                        {

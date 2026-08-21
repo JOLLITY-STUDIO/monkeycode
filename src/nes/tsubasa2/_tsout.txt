@@ -1,0 +1,2 @@
+TOTAL errors=1567
+D:/studio/github/monkeycode/src/nes/tsubasa2/src/game/prg/code/bank11_match-turn.ts: Cannot find module '../data/prg-bank-19' or its corresponding type declarations.

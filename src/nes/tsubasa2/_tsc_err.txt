@@ -1,0 +1,1600 @@
+files=252 diagnostics=1599
+src/core/browser-mini/speakers.ts: Cannot find name 'wx'.
+src/core/browser-mini/speakers.ts: Cannot find name 'wx'.
+src/core/browser/frame-timer.ts: Property 'onAnimationFrame' is used before being assigned.
+src/core/browser/frame-timer.ts: Duplicate identifier 'onAnimationFrame'.
+src/core/browser/index.ts: Property 'container' is missing in type '{}' but required in type 'BrowserOptions'.
+src/core/browser/index.ts: Type '(controller: ControllerId, button: ButtonKey) => void' is not assignable to type '(player: number, button: number) => void'.
+src/core/browser/index.ts: Type '(controller: ControllerId, button: ButtonKey) => void' is not assignable to type '(player: number, button: number) => void'.
+src/core/browser/index.ts: Argument of type '(controller: ControllerId, button: ButtonKey) => void' is not assignable to parameter of type '(playerId: number, buttonId: number) => void'.
+src/core/browser/index.ts: Argument of type '(controller: ControllerId, button: ButtonKey) => void' is not assignable to parameter of type '(playerId: number, buttonId: number) => void'.
+src/core/debug/debug-canvas.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/debug/debug-panel.ts: Cannot find name 'wx'.
+src/core/index.ts: Module '"./browser-mini"' has no exported member 'GameInstance'. Did you mean to use 'import GameInstance from "./browser-mini"' instead?
+src/core/nes.ts: Type 'null' is not assignable to type '((left: number, right: number) => void) | undefined'.
+src/core/nes.ts: Argument of type 'this' is not assignable to parameter of type 'null | undefined'.
+src/core/nes.ts: Argument of type 'this' is not assignable to parameter of type 'null | undefined'.
+src/core/nes.ts: Expected 1 arguments, but got 3.
+src/core/nes.ts: Object literal may only specify known properties, and 'controllers' does not exist in type 'EmulatorData'.
+src/core/papu/channel-dm.ts: Parameter 'papu' implicitly has an 'any' type.
+src/core/papu/channel-dm.ts: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'isEnabled' does not exist on type 'ChannelDM'. Did you mean 'setEnabled'?
+src/core/papu/channel-dm.ts: Property 'hasSample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dmaFrequency' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dmaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playStartAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLength' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'sample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dacLsb' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'shiftCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'reg4012' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'reg4013' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'data' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'lastFetchedByte' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'hasSample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'data' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'sample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'isEnabled' does not exist on type 'ChannelDM'. Did you mean 'setEnabled'?
+src/core/papu/channel-dm.ts: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dacLsb' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'data' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dmaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dmaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'hasSample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dmaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playStartAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLength' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'data' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'lastFetchedByte' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'data' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'hasSample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/channel-dm.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-dm.ts: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dmaFrequency' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'papu' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dacLsb' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'sample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'deltaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dacLsb' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playStartAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'reg4012' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLength' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'reg4013' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playStartAddress' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLength' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'hasSample' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dmaCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'shiftCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'dmaFrequency' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'playMode' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-dm.ts: Property 'isEnabled' does not exist on type 'ChannelDM'. Did you mean 'setEnabled'?
+src/core/papu/channel-dm.ts: Property 'playLengthCounter' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Property 'isEnabled' does not exist on type 'ChannelDM'. Did you mean 'setEnabled'?
+src/core/papu/channel-dm.ts: Property 'irqGenerated' does not exist on type 'ChannelDM'.
+src/core/papu/channel-dm.ts: Parameter 's' implicitly has an 'any' type.
+src/core/papu/channel-noise.ts: Parameter 'papu' implicitly has an 'any' type.
+src/core/papu/channel-noise.ts: Property 'papu' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'progTimerCount' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'progTimerMax' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'isEnabled' does not exist on type 'ChannelNoise'. Did you mean 'setEnabled'?
+src/core/papu/channel-noise.ts: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'lengthCounterEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayDisable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayLoopEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envReset' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'shiftNow' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'shiftReg' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'randomBit' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'randomMode' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'sampleValue' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'tmp' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'accValue' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'accCount' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'lengthCounterEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envReset' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envReset' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayLoopEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayDisable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'isEnabled' does not exist on type 'ChannelNoise'. Did you mean 'setEnabled'?
+src/core/papu/channel-noise.ts: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'sampleValue' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'randomBit' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/channel-noise.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-noise.ts: Property 'envDecayDisable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayLoopEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'lengthCounterEnable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayDisable' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envDecayRate' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'masterVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envVolume' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'progTimerMax' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'papu' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'randomMode' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'isEnabled' does not exist on type 'ChannelNoise'. Did you mean 'setEnabled'?
+src/core/papu/channel-noise.ts: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'papu' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'envReset' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-noise.ts: Property 'isEnabled' does not exist on type 'ChannelNoise'. Did you mean 'setEnabled'?
+src/core/papu/channel-noise.ts: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'lengthCounter' does not exist on type 'ChannelNoise'.
+src/core/papu/channel-noise.ts: Property 'isEnabled' does not exist on type 'ChannelNoise'. Did you mean 'setEnabled'?
+src/core/papu/channel-noise.ts: Parameter 's' implicitly has an 'any' type.
+src/core/papu/channel-square.ts: Parameter 'papu' implicitly has an 'any' type.
+src/core/papu/channel-square.ts: Parameter 'square1' implicitly has an 'any' type.
+src/core/papu/channel-square.ts: Property 'papu' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'dutyLookup' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'impLookup' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sqr1' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerCount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'squareCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepCounterMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'dutyMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'vol' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'isEnabled' does not exist on type 'ChannelSquare'. Did you mean 'setEnabled'?
+src/core/papu/channel-square.ts: Property 'lengthCounterEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepActive' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepCarry' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayDisable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayLoopEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envReset' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'updateSweepPeriod' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepResult' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sampleValue' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'lengthCounterEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envReset' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envReset' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayLoopEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayDisable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepCounterMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepActive' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepCarry' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepCarry' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sqr1' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'updateSweepPeriod' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'updateSweepPeriod' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepCounterMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'isEnabled' does not exist on type 'ChannelSquare'. Did you mean 'setEnabled'?
+src/core/papu/channel-square.ts: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sampleValue' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sampleValue' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'dutyLookup' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'dutyMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'squareCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sampleValue' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/channel-square.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-square.ts: Property 'sqr1' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayDisable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayLoopEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'dutyMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'lengthCounterEnable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayDisable' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envDecayRate' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'masterVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envVolume' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepActive' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepCounterMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepMode' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'sweepShiftAmount' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'updateSweepPeriod' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'progTimerMax' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'isEnabled' does not exist on type 'ChannelSquare'. Did you mean 'setEnabled'?
+src/core/papu/channel-square.ts: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'papu' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'envReset' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-square.ts: Property 'isEnabled' does not exist on type 'ChannelSquare'. Did you mean 'setEnabled'?
+src/core/papu/channel-square.ts: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'lengthCounter' does not exist on type 'ChannelSquare'.
+src/core/papu/channel-square.ts: Property 'isEnabled' does not exist on type 'ChannelSquare'. Did you mean 'setEnabled'?
+src/core/papu/channel-square.ts: Parameter 's' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts: Parameter 'papu' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts: Property 'papu' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerCount' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'triangleCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts: Property 'sampleCondition' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lengthCounterEnable' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lcLoadValue' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lcHalt' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lcControl' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'tmp' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'sampleValue' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lengthCounterEnable' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lcHalt' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lcLoadValue' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lcControl' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lcHalt' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts: Property 'lcControl' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lcLoadValue' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lengthCounterEnable' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lcControl' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'papu' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lcHalt' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Parameter 'nCycles' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerCount' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerCount' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerCount' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'triangleCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'triangleCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/channel-triangle.ts: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'sampleCondition' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'isEnabled' does not exist on type 'ChannelTriangle'. Did you mean 'setEnabled'?
+src/core/papu/channel-triangle.ts: Property 'progTimerMax' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'linearCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Property 'lengthCounter' does not exist on type 'ChannelTriangle'.
+src/core/papu/channel-triangle.ts: Parameter 's' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'startedPlaying' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'recordOutput' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'prevSampleL' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'prevSampleR' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpAccumL' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpAccumR' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dacRange' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dcValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleRate' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleTimerMax' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleRate' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleTimer' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqEnabled' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'channelEnableValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'extraCycles' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'maxSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts: Property 'minSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/papu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqEnabled' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqEnabled' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'channelEnableValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'nCycles' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'extraCycles' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleTimerMax' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleTimer' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'extraCycles' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'extraCycles' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'extraCycles' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqEnabled' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleTimer' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleTimer' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleTimerMax' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleTimer' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleTimerMax' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'nCycles' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'nCycles' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'apuCycleParity' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'frameCounterCycles' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameStep' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameCycleCounter' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqEnabled' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'cycles' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'step' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'countSequence' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqActive' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'frameIrqClearPending' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'accCount' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosLSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosLSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosLTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosLNoise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosLDMC' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dcValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosRSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosRSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosRTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosRNoise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosRDMC' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dcValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'prevSampleL' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'prevSampleL' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpAccumL' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpAccumL' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpAccumL' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'prevSampleR' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'prevSampleR' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpAccumR' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpAccumR' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpAccumR' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'maxSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts: Property 'maxSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts: Property 'minSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts: Property 'minSample' does not exist on type 'PAPU'. Did you mean 'sample'?
+src/core/papu/index.ts: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'nes' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'smpDmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'lengthLookup' does not exist on type 'PAPU'. Did you mean 'initLengthLookup'?
+src/core/papu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Parameter 'rate' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'sampleTimerMax' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'sampleRate' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'pos' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'stereoPosLSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'stereoPosLSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'stereoPosLTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'stereoPosLNoise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'stereoPosLDMC' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'panning' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'stereoPosRSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'stereoPosLSquare1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosRSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'stereoPosLSquare2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosRTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'stereoPosLTriangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosRNoise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'stereoPosLNoise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'stereoPosRDMC' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'masterVolume' does not exist on type 'PAPU'. Did you mean 'setMasterVolume'?
+src/core/papu/index.ts: Property 'stereoPosLDMC' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'lengthLookup' does not exist on type 'PAPU'. Did you mean 'initLengthLookup'?
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmcFreqLookup' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'noiseWavelengthLookup' does not exist on type 'PAPU'. Did you mean 'initNoiseWavelengthLookup'?
+src/core/papu/index.ts: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'tnd_table' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dacRange' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dcValue' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dacRange' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Parameter 's' implicitly has an 'any' type.
+src/core/papu/index.ts: Property 'dmc' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'noise' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square1' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'square2' does not exist on type 'PAPU'.
+src/core/papu/index.ts: Property 'triangle' does not exist on type 'PAPU'.
+src/core/ppu/index.ts: Parameter 'nes' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'showSpr0Hit' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'clipToTvSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramTmpAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramBufferedReadValue' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'frameEnded' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineAlreadyRendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_nmiOnVblank' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_addrInc' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_nTblAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regS' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'attrib' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'bgbuffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scantile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprCol' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vertFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'horiFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'bgPriority' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spritesFound' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprite0InSecondary' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'mirroring' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts: Property 'currentMirroring' does not exist on type 'PPU'. Did you mean 'setMirroring'?
+src/core/ppu/index.ts: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'fromStart' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'toStart' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'size' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts: Parameter 'cpu' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'dotsRemaining' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'frameEnded' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'cpu' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'isLastDot' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'dots' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'dummyCycleToggle' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spritesFound' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprite0InSecondary' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vblankPending' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineAlreadyRendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineAlreadyRendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'showSpr0Hit' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'clipToTvSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'clipToTvSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'f_nmiOnVblank' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_addrInc' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_nTblAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regS' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_nmiOnVblank' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nmiOutput' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'hitSpr0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_color' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'flag' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nmiSuppressed' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'openBusDecayFrames' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'firstWrite' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramBufferedReadValue' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramBufferedReadValue' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramBufferedReadValue' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'openBusLatch' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramBufferedReadValue' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramTmpAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramTmpAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_addrInc' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramTmpAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'count' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMirrorTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts: Property 'lastRenderedScanline' does not exist on type 'PPU'. Did you mean 'renderBgScanline'?
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'startScan' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'scanCount' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'bgbuffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'bgbuffer' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'scan' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'regS' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regS' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scantile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'attrib' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'bgbuffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property '_inRendering' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'curNt' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'validTileData' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts: Parameter 'targetScanline' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'secondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spritesFound' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprite0InSecondary' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sramAddress' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'startscan' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'scancount' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'bgPri' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'f_spVisibility' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'buffer' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'scan' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'tile' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'toffset' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'startX' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'horiFlip' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'scan' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'leftClip' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'pixrendered' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'nextBufferScan' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'scanlineSprite0' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSpriteCount' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanlineSecondaryOAM' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_bgClipping' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spriteSize' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_spPatternTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntFV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntVT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'cntV' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regS' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regHT' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'regFH' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spr0HitY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ntable1' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'imgPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'f_dispType' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprPalette' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'palTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vramMem' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'index' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'index' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'address' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'scanline' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprY' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'vertFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'horiFlip' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'bgPriority' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprCol' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'sprX' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'x' implicitly has an 'any' type.
+src/core/ppu/index.ts: Parameter 'y' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'nes' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Parameter 'state' implicitly has an 'any' type.
+src/core/ppu/index.ts: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'nameTable' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'ptTile' does not exist on type 'PPU'.
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/index.ts: Property 'spriteMem' does not exist on type 'PPU'. Did you mean 'writeMem'?
+src/core/ppu/nametable.ts: Parameter 'width' implicitly has an 'any' type.
+src/core/ppu/nametable.ts: Parameter 'height' implicitly has an 'any' type.
+src/core/ppu/nametable.ts: Parameter 'name' implicitly has an 'any' type.
+src/core/ppu/nametable.ts: Property 'width' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Property 'height' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Property 'name' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Property 'tile' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Property 'attrib' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Parameter 'x' implicitly has an 'any' type.
+src/core/ppu/nametable.ts: Parameter 'y' implicitly has an 'any' type.
+src/core/ppu/nametable.ts: Property 'tile' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Property 'width' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Parameter 'x' implicitly has an 'any' type.
+src/core/ppu/nametable.ts: Parameter 'y' implicitly has an 'any' type.
+src/core/ppu/nametable.ts: Property 'attrib' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Property 'width' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Parameter 'index' implicitly has an 'any' type.
+src/core/ppu/nametable.ts: Parameter 'value' implicitly has an 'any' type.
+src/core/ppu/nametable.ts: Property 'width' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Property 'attrib' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Property 'tile' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Property 'attrib' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Parameter 's' implicitly has an 'any' type.
+src/core/ppu/nametable.ts: Property 'tile' does not exist on type 'NameTable'.
+src/core/ppu/nametable.ts: Property 'attrib' does not exist on type 'NameTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'emphTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'currentEmph' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'emphTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'emphTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Parameter 'emph' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts: Property 'currentEmph' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'currentEmph' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'emphTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Parameter 'yiq' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Parameter 'rgb' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts: Parameter 'rgb' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts: Parameter 'rgb' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts: Parameter 'r' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts: Parameter 'g' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts: Parameter 'b' implicitly has an 'any' type.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/ppu/palette-table.ts: Property 'curTable' does not exist on type 'PaletteTable'.
+src/core/tile.ts: Type 'boolean' is not assignable to type 'number'.
+src/core/utils.ts: Conversion of type 'ArrayBufferView<ArrayBufferLike>' to type 'ArrayLike<number>' may be a mistake because neither type sufficiently overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+src/game/prg/code/bank00/bank00_core.ts: Type 'undefined' is not assignable to type 'number'.
+src/game/prg/code/bank00/bank00_core.ts: Type 'undefined' is not assignable to type 'number'.
