@@ -12,7 +12,6 @@ export { PasswordCallbackHandler } from './scene/PasswordCallbackHandler';
 export { BootBackgroundRenderer } from './scene/BootBackgroundRenderer';
 export { NMI_CALLBACK_TABLE, PASSWORD_DISPATCH_TABLE } from '../data/tables/bank02-tables';
 export { ResultSceneController } from './scene/ResultSceneController';
-export { StorySceneController, StoryChapter } from './scene/StorySceneController';
 
 export { ScriptEngine } from './story/ScriptEngine';
 export { ScriptOpcodes, WAIT_FRAME_TABLE, initScriptOpcodes } from './story/ScriptOpcodes';

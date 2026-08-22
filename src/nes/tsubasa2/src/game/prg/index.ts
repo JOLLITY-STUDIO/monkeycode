@@ -10,7 +10,7 @@
 import {
   GameSystemService, BootRouter, NmiCallbackIndex, HardwareInitService,
   InterruptService, TitleSceneController,
-  PasswordCallbackHandler, ResultSceneController, StorySceneController,
+  PasswordCallbackHandler, ResultSceneController,
   BootBackgroundRenderer,
   ScriptEngine, ScriptOpcodes, ScriptLoader, CharMap,
   PlayerQueryService, TeamRosterService,
@@ -24,7 +24,7 @@ import { DataStore } from './data/store/DataStore';
 export {
   GameSystemService, BootRouter, NmiCallbackIndex, HardwareInitService,
   InterruptService, TitleSceneController,
-  PasswordCallbackHandler, ResultSceneController, StorySceneController,
+  PasswordCallbackHandler, ResultSceneController,
   BootBackgroundRenderer,
   ScriptEngine, ScriptOpcodes, ScriptLoader, CharMap,
   PlayerQueryService, TeamRosterService,

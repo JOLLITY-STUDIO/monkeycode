@@ -20,7 +20,6 @@ import {
   InterruptService,
   MatchTurnService,
   SkillService,
-  StorySceneController,
   MatchAuxService,
   SpriteService,
   SpriteAnimationService,
@@ -35,7 +34,7 @@ const PRG = {
   AudioService, ResultSceneController,
   PasswordCallbackHandler, MatchEngineService, MatchHudService,
   MatchConfigService, InterruptService, MatchTurnService, SkillService,
-  StorySceneController, MatchAuxService, SpriteService, SpriteAnimationService,
+  MatchAuxService, SpriteService, SpriteAnimationService,
   TeamRosterService, BootRouter, NmiCallbackIndex,
 };
 
