@@ -38,6 +38,19 @@ export { DataStore };
 // 直写函数 — "直接写内存": DataStore 结构化数据 → PPU 渲染内存字节
 // ═══════════════════════════════════════════════════════════
 
+/** 统计 NT 网格非零 tile 数 (调试用) */
+export function countNtNonZero(nt: NameTableEntry[][]): number {
+  let n = 0;
+  for (let y = 0; y < 30; y++) {
+    const row = nt[y];
+    if (!row) continue;
+    for (let x = 0; x < 32; x++) {
+      if (row[x] && row[x].tile !== 0) n++;
+    }
+  }
+  return n;
+}
+
 /** RGB → 最近 NTSC 索引 (0-63), 基于 ppu.palTable.curTable (0xRRGGBB) */
 export function rgbToNearestIndex(
   curTable: Uint32Array,
@@ -143,7 +156,10 @@ export function writeStoreToPpu(store: DataStore, ppu: any): void {
   ppu.updateControlReg1(store.read('ram_0020'));
   ppu.updateControlReg2(store.read('ram_0021'));
   writeNameTable(ppu, 0x2000, store.nt0);
-  writeNameTable(ppu, 0x2400, store.nt1);
+  // 水平镜像 (ntable1=[0,0,1,1]): $2400-$27BF 映射 nameTable[0] (与 $2000 同一物理 NT)。
+  // 若把 nt1 写到 $2400, 空 nt1 会清掉刚填充的 NT0 → 黑屏。
+  // 正确目标: $2800 (物理 NT B, ntable1[2]=1 → nameTable[1])。
+  writeNameTable(ppu, 0x2800, store.nt1);
   writePalettes(ppu, store.paletteTable);
   writeOam(store, ppu);
   writeScroll(store, ppu);
@@ -183,6 +199,11 @@ export class Tsubasa2 {
     this.hardware.init();
     // BOOT 场景走正常 sceneLoad 流程 (GameSystemService.sceneLoad + NMI 回调),
     // 不再用模拟器 dump 的预存快照 (已删除 boot-scene.ts/OpeningSceneController)。
+    console.log(
+      `[Tsubasa2] boot() done. nt0=${countNtNonZero(this.store.nt0)}` +
+        ` nt1=${countNtNonZero(this.store.nt1)} scrollX=${this.store.scrollX}` +
+        ` scrollY=${this.store.scrollY} ram_00ED=${this.store.read('ram_00ED')}`,
+    );
   }
 
   /** 每帧: NMI 推进游戏逻辑 → 直写 PPU 渲染内存 → PPU 扫描线渲染 */
@@ -194,6 +215,20 @@ export class Tsubasa2 {
     // 组合根补一次 startVBlank → endFrame → ui.writeFrame (onFrame 回调 → Canvas)
     nes.ppu.startVBlank();
     this._frame++;
+    // 调试日志: 每 30 帧输出渲染数据摘要 (黑屏排查用, 微信开发者工具控制台可观察)
+    if (this._frame % 30 === 0) {
+      const ppu: any = nes.ppu;
+      const buf = ppu.buffer as Uint32Array;
+      let nz = 0;
+      for (let i = 0; i < buf.length; i++) if (buf[i] !== 0) nz++;
+      console.log(
+        `[Tsubasa2] frame=${this._frame} nt0=${countNtNonZero(this.store.nt0)}` +
+          ` nt1=${countNtNonZero(this.store.nt1)} bgVis=${ppu.f_bgVisibility}` +
+          ` sprVis=${ppu.f_spVisibility} bufNonZero=${nz}` +
+          ` scrollX=${this.store.scrollX} scrollY=${this.store.scrollY}` +
+          ` ram_0538=${this.store.read('ram_0538')}`,
+      );
+    }
   }
 }
 

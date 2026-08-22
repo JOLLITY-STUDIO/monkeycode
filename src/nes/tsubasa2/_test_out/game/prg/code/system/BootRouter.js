@@ -145,6 +145,9 @@ class BootRouter {
             this._bgRenderer.render();
             this._bootBgRendered = true;
         }
+        console.log(`[BootRouter] _initBoot done. ram_00ED=${this.rd(0x00ED)}` +
+            ` ram_004A=${this.rd(0x004A)} ram_0538=${this.rd(0x0538)}` +
+            ` ram_0020=${this.rd(0x0020)} ram_0021=${this.rd(0x0021)}`);
     }
     /** 通用回调处理 (其余索引由 §6 callbackNN 方法覆盖) */
     _initScene(_index) {

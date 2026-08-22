@@ -270,6 +270,15 @@ export class GameSystemService {
     this._store.oamShadow.clearHw(0xf8);
     // $9B91 oamFlagClear
     this.oamFlagClear();
+    // 原版 oamClear ($9B7F) 之后, bank31 $EC3C-$EC4A 立即归零 $0532/$0534/$0536/$0538/$0539
+    // (场景滚动/坐标累加寄存器), 这是游戏的"清屏后归零"不变式。
+    // 翻译版无 bank31 主循环, 在此补齐, 否则 $0538=$F8 会被 NMI 滚动计算
+    // (scrollX=$004A+$0538) 当成 248 → h_tile=31 → 黑屏。
+    this.wr(0x0532, 0);
+    this.wr(0x0534, 0);
+    this.wr(0x0536, 0);
+    this.wr(0x0538, 0);
+    this.wr(0x0539, 0);
   }
 
   // ════════════════════════════════════════════════

@@ -18,7 +18,7 @@ const PRG = {
     AudioService: index_2.AudioService, ResultSceneController: index_2.ResultSceneController,
     PasswordCallbackHandler: index_2.PasswordCallbackHandler, MatchEngineService: index_2.MatchEngineService, MatchHudService: index_2.MatchHudService,
     MatchConfigService: index_2.MatchConfigService, InterruptService: index_2.InterruptService, MatchTurnService: index_2.MatchTurnService, SkillService: index_2.SkillService,
-    StorySceneController: index_2.StorySceneController, MatchAuxService: index_2.MatchAuxService, SpriteService: index_2.SpriteService, SpriteAnimationService: index_2.SpriteAnimationService,
+    MatchAuxService: index_2.MatchAuxService, SpriteService: index_2.SpriteService, SpriteAnimationService: index_2.SpriteAnimationService,
     TeamRosterService: index_2.TeamRosterService, BootRouter: index_2.BootRouter, NmiCallbackIndex: index_2.NmiCallbackIndex,
 };
 exports.PRG = PRG;

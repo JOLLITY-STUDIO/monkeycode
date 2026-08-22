@@ -3,13 +3,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.GameSystemService = void 0;
 const bank00_tables_1 = require("../../data/tables/bank00-tables");
 const bank07_scenes_metatile_1 = require("../../data/tables/bank07-scenes-metatile");
-const scripts_bank_06_1 = require("../../data/scene/textscript/scripts-bank-06");
+const bank06_palette_1 = require("../../data/tables/bank06-palette");
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr) {
     return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
 }
 class GameSystemService {
     constructor(store) {
+        /** bank30 (HardwareInitService) 引用 — 用于 $C5xx 派发表转发 */
+        this._hw = null;
         // 脚本状态缓存 (对应零页 $004D/$004E 等, 由 ScriptEngine 共享)
         this._scriptPtr = 0; // $004D/$004E
         this._scriptBank = 0; // $0056
@@ -19,6 +21,10 @@ class GameSystemService {
         this._textLineLen = 0; // $0054
         this._lineCount = 0; // $0055
         this._store = store;
+    }
+    /** 注入 bank30 (HardwareInitService) 引用, 供 $C5xx 派发表转发 */
+    setHardwareInit(hw) {
+        this._hw = hw;
     }
     // ════════════════════════════════════════════════
     // 零页读/写辅助
@@ -207,6 +213,15 @@ class GameSystemService {
         this._store.oamShadow.clearHw(0xf8);
         // $9B91 oamFlagClear
         this.oamFlagClear();
+        // 原版 oamClear ($9B7F) 之后, bank31 $EC3C-$EC4A 立即归零 $0532/$0534/$0536/$0538/$0539
+        // (场景滚动/坐标累加寄存器), 这是游戏的"清屏后归零"不变式。
+        // 翻译版无 bank31 主循环, 在此补齐, 否则 $0538=$F8 会被 NMI 滚动计算
+        // (scrollX=$004A+$0538) 当成 248 → h_tile=31 → 黑屏。
+        this.wr(0x0532, 0);
+        this.wr(0x0534, 0);
+        this.wr(0x0536, 0);
+        this.wr(0x0538, 0);
+        this.wr(0x0539, 0);
     }
     // ════════════════════════════════════════════════
     // $9A71 paletteWriteAll — 写调色板到 PPU buffer ($3F00)
@@ -243,18 +258,18 @@ class GameSystemService {
     paletteLoadBG() {
         // $9AB8: 索引 = $0048; 每组 16 字节; 从 PALETTE_BG_06[索引*16 .. +16] → $062A
         const idx = this.rd(0x0048);
-        this.paletteCopy16(scripts_bank_06_1.PALETTE_BG_06, idx, 0x062A);
+        this.paletteCopy16(bank06_palette_1.PALETTE_BG_06, idx, 0x062A);
     }
     paletteLoadSPR() {
         // $9ADA: 索引 = $0049; 每组 16 字节; 从 PALETTE_SPR_06[索引*16 .. +16] → $063A
         const idx = this.rd(0x0049);
-        this.paletteCopy16(scripts_bank_06_1.PALETTE_SPR_06, idx, 0x063A);
+        this.paletteCopy16(bank06_palette_1.PALETTE_SPR_06, idx, 0x063A);
     }
-    /** 从调色板表复制 16 字节到指定 RAM 区 (索引 × 16 = 组偏移) */
+    /** 从调色板组表复制一组 (16 字节) 到指定 RAM 区 (索引 → 组) */
     paletteCopy16(table, idx, dst) {
-        const off = (idx * 16) & 0xff;
+        const grp = table[idx & 0xff] ?? [];
         for (let i = 0; i < 0x10; i++) {
-            this.wr(dst + i, table[off + i] ?? 0);
+            this.wr(dst + i, grp[i] ?? 0);
         }
     }
     // ════════════════════════════════════════════════
@@ -496,6 +511,39 @@ class GameSystemService {
                 // 由外部通过协程注入; 翻译版 no-op 记录
             }
         }
+    }
+    // ════════════════════════════════════════════════════════════
+    // bank30 $C500-$C54E 派发表 — 转发到 HardwareInitService (bank30)
+    // 真实实现已迁移到 HardwareInitService, 这里保留转发壳供旧调用方
+    // (this._system.subC5xx) 兼容, 避免改动 6 个 match service 构造函数。
+    // ════════════════════════════════════════════════════════════
+    /** $C515 协程让出 — 转发 bank30 */
+    coroutineYield(a = 1) {
+        this._hw?.coroutineYield(a);
+    }
+    /** $C50C 比赛阶段→RAM指针查表 — 转发 bank30 */
+    subC50C() {
+        this._hw?.subC50C();
+    }
+    /** $C524 坐标变换 — 转发 bank30 */
+    subC524(a) {
+        return this._hw ? this._hw.subC524(a) : a;
+    }
+    /** $C52D 精灵批初始化 — 转发 bank30 */
+    subC52D() {
+        this._hw?.subC52D();
+    }
+    /** $C530 NT 填充 — 转发 bank30 */
+    subC530(x, a) {
+        this._hw?.subC530(x, a);
+    }
+    /** $C533 NT 刷新 — 转发 bank30 */
+    subC533() {
+        this._hw?.subC533();
+    }
+    /** $C54E 读数据+设精灵 — 转发 bank30 */
+    subC54E(a) {
+        this._hw?.subC54E(a);
     }
 }
 exports.GameSystemService = GameSystemService;

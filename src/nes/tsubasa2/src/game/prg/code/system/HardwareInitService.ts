@@ -81,6 +81,22 @@ export class HardwareInitService {
     // 否则场景数据不装载, 画面空白
     this._scene.preMainLoopInit();
     this.resetScene(0);
+    console.log(
+      `[HardwareInitService] init() done. nt0=${this.countNt()} ram_00ED=${this.rd(0x00ED)}` +
+        ` ram_004A=${this.rd(0x004A)} ram_0538=${this.rd(0x0538)}`,
+    );
+  }
+
+  /** 统计 NT0 非零 tile 数 (调试用) */
+  protected countNt(): number {
+    let n = 0;
+    for (let y = 0; y < 30; y++) {
+      for (let x = 0; x < 32; x++) {
+        const e = this._store.readNT(0, x, y);
+        if (e && e.tile !== 0) n++;
+      }
+    }
+    return n;
   }
 
   // ════════════════════════════════════════════════
@@ -153,8 +169,10 @@ export class HardwareInitService {
   // 对应: LDY #$00; LDA #$F8; 循环 STA $0200,Y (INY×4) → $0200-$02FF = $F8
   // ════════════════════════════════════════════════
   fillOamOffscreen(): void {
-    this._store.oamShadow.clearAll(0xf8); // $0468 影子 OAM 表
-    this._store.oamShadow.clearHw(0xf8);  // $0200 硬件 OAM
+    // $CB8B: LDY #$00; LDA #$F8; STA $0200,Y; INY×4; BNE $CB8F → 只填 $0200-$02FF 硬件 OAM。
+    // 注意: 原版从不碰 $0468-$0567 影子区 (那是 $9B7F oamClear 的职责, 且场景代码随后归零 $0538)。
+    // 之前误加 clearAll(0xf8) 会把 $0538(滚动偏移) 污染为 $F8 → scrollX=$004A+$0538=248 → 黑屏。
+    this._store.oamShadow.clearHw(0xf8); // $0200 硬件 OAM 全离屏
   }
 
   // ════════════════════════════════════════════════

@@ -7,10 +7,6 @@ exports.ScriptEngine = void 0;
 const ScriptLoader_1 = __importDefault(require("./ScriptLoader"));
 const CharMap_1 = require("./CharMap");
 const ScriptOpcodes_1 = require("./ScriptOpcodes");
-const scripts_bank_03_1 = require("../../data/scene/textscript/scripts-bank-03");
-const scripts_bank_04_1 = require("../../data/scene/textscript/scripts-bank-04");
-const scripts_bank_05_1 = require("../../data/scene/textscript/scripts-bank-05");
-const scripts_bank_06_1 = require("../../data/scene/textscript/scripts-bank-06");
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr) {
     return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
@@ -86,16 +82,10 @@ class ScriptEngine {
         const data = this.scriptStream();
         return data[ptr] ?? 0xff;
     }
-    /** 当前脚本流 (来自 bank03-06 数据文件 SCRIPT_BANK_0X_BYTES) */
+    /** 当前脚本流 (来自 ScriptLoader 装载的 flatten 场景段字节流, 缓存在 DataStore) */
     scriptStream() {
         const bank = this._store.read('ram_0056');
-        switch (bank) {
-            case 3: return scripts_bank_03_1.SCRIPT_BANK_03_BYTES;
-            case 4: return scripts_bank_04_1.SCRIPT_BANK_04_BYTES;
-            case 5: return scripts_bank_05_1.SCRIPT_BANK_05_BYTES;
-            case 6: return scripts_bank_06_1.SCRIPT_BANK_06_BYTES;
-            default: return [];
-        }
+        return this._store.get(`scriptStream_${bank}`) ?? [];
     }
     /** 推进脚本指针 A 字节并返回 (原 $8879) */
     advancePtr(a) {

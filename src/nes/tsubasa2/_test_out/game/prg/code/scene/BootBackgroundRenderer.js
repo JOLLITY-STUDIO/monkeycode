@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BootBackgroundRenderer = void 0;
 const bank07_scenes_metatile_1 = require("../../data/tables/bank07-scenes-metatile");
 const bank08_map_metatile_1 = require("../../data/tables/bank08-map-metatile");
-const scripts_bank_06_1 = require("../../data/scene/textscript/scripts-bank-06");
+const bank06_palette_1 = require("../../data/tables/bank06-palette");
 /** 标准 NES NTSC 64 色调色板 (0xRRGGBB, 与模拟器 PPU palTable.loadNTSCPalette 一致) */
 const NES_NTSC_RGB = [
     0x525252, 0xB40000, 0xA00000, 0xB1003D, 0x740069, 0x00005B, 0x00005F, 0x001840,
@@ -30,6 +30,16 @@ class BootBackgroundRenderer {
     render() {
         this.renderSceneNt(bank07_scenes_metatile_1.SCENE_0x0A);
         this.renderPalette(bank07_scenes_metatile_1.SCENE_0x0A);
+        // 调试日志: 确认 NT0 填充量 (黑屏排查)
+        let nz = 0;
+        for (let y = 0; y < 30; y++) {
+            for (let x = 0; x < 32; x++) {
+                const e = this._store.readNT(0, x, y);
+                if (e && e.tile !== 0)
+                    nz++;
+            }
+        }
+        console.log(`[BootBackgroundRenderer] render() done. NT0 non-zero tiles=${nz}`);
     }
     // ════════════════════════════════════════════════
     // 场景描述符解析 + metatile 网格平铺 → NT0
@@ -87,28 +97,28 @@ class BootBackgroundRenderer {
         this.applyBgPalette(paletteIdx);
         this.applySprPalette(paletteIdx);
     }
-    /** PALETTE_BG_06[paletteIdx*16 .. +16] → bgPalettes[0..3] */
+    /** PALETTE_BG_06[paletteIdx] (16B 组) → bgPalettes[0..3] */
     applyBgPalette(paletteIdx) {
-        const off = (paletteIdx * 16) & 0xff;
+        const grp = bank06_palette_1.PALETTE_BG_06[paletteIdx & 0xff] ?? [];
         for (let p = 0; p < 4; p++) {
             const colors = [
-                this.nesColor(scripts_bank_06_1.PALETTE_BG_06[off + p * 4 + 0] ?? 0),
-                this.nesColor(scripts_bank_06_1.PALETTE_BG_06[off + p * 4 + 1] ?? 0),
-                this.nesColor(scripts_bank_06_1.PALETTE_BG_06[off + p * 4 + 2] ?? 0),
-                this.nesColor(scripts_bank_06_1.PALETTE_BG_06[off + p * 4 + 3] ?? 0),
+                this.nesColor(grp[p * 4 + 0] ?? 0),
+                this.nesColor(grp[p * 4 + 1] ?? 0),
+                this.nesColor(grp[p * 4 + 2] ?? 0),
+                this.nesColor(grp[p * 4 + 3] ?? 0),
             ];
             this._store.writeBgPalette(p, { colors });
         }
     }
-    /** PALETTE_SPR_06[paletteIdx*16 .. +16] → sprPalettes[0..3] */
+    /** PALETTE_SPR_06[paletteIdx] (16B 组) → sprPalettes[0..3] */
     applySprPalette(paletteIdx) {
-        const off = (paletteIdx * 16) & 0xff;
+        const grp = bank06_palette_1.PALETTE_SPR_06[paletteIdx & 0xff] ?? [];
         for (let p = 0; p < 4; p++) {
             const colors = [
-                this.nesColor(scripts_bank_06_1.PALETTE_SPR_06[off + p * 4 + 0] ?? 0),
-                this.nesColor(scripts_bank_06_1.PALETTE_SPR_06[off + p * 4 + 1] ?? 0),
-                this.nesColor(scripts_bank_06_1.PALETTE_SPR_06[off + p * 4 + 2] ?? 0),
-                this.nesColor(scripts_bank_06_1.PALETTE_SPR_06[off + p * 4 + 3] ?? 0),
+                this.nesColor(grp[p * 4 + 0] ?? 0),
+                this.nesColor(grp[p * 4 + 1] ?? 0),
+                this.nesColor(grp[p * 4 + 2] ?? 0),
+                this.nesColor(grp[p * 4 + 3] ?? 0),
             ];
             this._store.writeSprPalette(p, { colors });
         }

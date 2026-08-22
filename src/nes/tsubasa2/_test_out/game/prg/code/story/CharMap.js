@@ -16,7 +16,7 @@ exports.decodeChar = decodeChar;
  *
  * 命名规范: 旧名 char-map → 新名 CharMap。
  */
-const char_map_table_1 = require("../../data/tables/char-map-table");
+const char_map_table_1 = require("../../data/scene/char-map-table");
 class CharMap {
     /**
      * 字符解码 (原 $88CA 字符处理)

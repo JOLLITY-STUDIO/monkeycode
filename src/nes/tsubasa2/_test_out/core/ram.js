@@ -40,7 +40,7 @@ class RamStore {
         this.zp = new Uint8Array(256);
         this.oam.attach(this);
         this.oamShadow.attach(this);
-        this.oamShadow.clearAll();
+        this.oamShadow.reset();
     }
     /** 存任意类型值（Redis 风格）。key 为任意字符串，不走地址解析 */
     set(key, value) {
@@ -208,7 +208,7 @@ class RamStore {
         this.sprites = [];
         this.paletteTable = (0, nes_ram_1.createBlankPaletteTable)();
         this.oam.reset();
-        this.oamShadow.clearAll();
+        this.oamShadow.reset();
     }
     toJSON() {
         return { mem: Array.from(this.mem) };

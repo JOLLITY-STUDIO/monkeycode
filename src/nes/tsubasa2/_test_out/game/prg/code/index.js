@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BGM_DATA_MAP = exports.SE_POINTER_TABLE = exports.AudioService = exports.SpriteAnimationService = exports.SpriteService = exports.SkillService = exports.MatchConfigService = exports.MatchHudService = exports.MatchAuxService = exports.MatchTurnService = exports.MatchEngineService = exports.TeamRosterService = exports.PlayerQueryService = exports.decodeChar = exports.CharMap = exports.getScriptData = exports.ScriptLoader = exports.initScriptOpcodes = exports.WAIT_FRAME_TABLE = exports.ScriptOpcodes = exports.ScriptEngine = exports.StoryChapter = exports.StorySceneController = exports.ResultSceneController = exports.PASSWORD_DISPATCH_TABLE = exports.NMI_CALLBACK_TABLE = exports.BootBackgroundRenderer = exports.PasswordCallbackHandler = exports.TitleSceneController = exports.InterruptService = exports.HardwareInitService = exports.NmiCallbackIndex = exports.BootRouter = exports.GameSystemService = void 0;
+exports.BGM_DATA_MAP = exports.SE_POINTER_TABLE = exports.AudioService = exports.SpriteAnimationService = exports.SpriteService = exports.SkillService = exports.MatchSceneService = exports.MatchConfigService = exports.MatchHudService = exports.MatchAuxService = exports.MatchTurnService = exports.MatchEngineService = exports.TeamRosterService = exports.PlayerQueryService = exports.decodeChar = exports.CharMap = exports.getScriptData = exports.ScriptLoader = exports.initScriptOpcodes = exports.WAIT_FRAME_TABLE = exports.ScriptOpcodes = exports.ScriptEngine = exports.ResultSceneController = exports.PASSWORD_DISPATCH_TABLE = exports.NMI_CALLBACK_TABLE = exports.BootBackgroundRenderer = exports.PasswordCallbackHandler = exports.TitleSceneController = exports.InterruptService = exports.HardwareInitService = exports.NmiCallbackIndex = exports.BootRouter = exports.GameSystemService = void 0;
 /**
  * prg/code/index.ts — 业务逻辑层 (Service) 聚合出口
  * 按业务域分包: system / scene / story / player / team / match / skill / sprite / audio
@@ -25,9 +25,6 @@ Object.defineProperty(exports, "NMI_CALLBACK_TABLE", { enumerable: true, get: fu
 Object.defineProperty(exports, "PASSWORD_DISPATCH_TABLE", { enumerable: true, get: function () { return bank02_tables_1.PASSWORD_DISPATCH_TABLE; } });
 var ResultSceneController_1 = require("./scene/ResultSceneController");
 Object.defineProperty(exports, "ResultSceneController", { enumerable: true, get: function () { return ResultSceneController_1.ResultSceneController; } });
-var StorySceneController_1 = require("./scene/StorySceneController");
-Object.defineProperty(exports, "StorySceneController", { enumerable: true, get: function () { return StorySceneController_1.StorySceneController; } });
-Object.defineProperty(exports, "StoryChapter", { enumerable: true, get: function () { return StorySceneController_1.StoryChapter; } });
 var ScriptEngine_1 = require("./story/ScriptEngine");
 Object.defineProperty(exports, "ScriptEngine", { enumerable: true, get: function () { return ScriptEngine_1.ScriptEngine; } });
 var ScriptOpcodes_1 = require("./story/ScriptOpcodes");
@@ -54,6 +51,8 @@ var MatchHudService_1 = require("./match/MatchHudService");
 Object.defineProperty(exports, "MatchHudService", { enumerable: true, get: function () { return MatchHudService_1.MatchHudService; } });
 var MatchConfigService_1 = require("./match/MatchConfigService");
 Object.defineProperty(exports, "MatchConfigService", { enumerable: true, get: function () { return MatchConfigService_1.MatchConfigService; } });
+var MatchSceneService_1 = require("./match/MatchSceneService");
+Object.defineProperty(exports, "MatchSceneService", { enumerable: true, get: function () { return MatchSceneService_1.MatchSceneService; } });
 var SkillService_1 = require("./skill/SkillService");
 Object.defineProperty(exports, "SkillService", { enumerable: true, get: function () { return SkillService_1.SkillService; } });
 var SpriteService_1 = require("./sprite/SpriteService");

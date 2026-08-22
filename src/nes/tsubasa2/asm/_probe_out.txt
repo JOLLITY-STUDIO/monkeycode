@@ -1,0 +1,10 @@
+191: JMP $CB99                  ; $C509
+199: JMP $CD0D                  ; $C521
+201: JMP $CE08                  ; $C527
+208: JMP $F30F                  ; $C53C
+220: JMP $CF72                  ; $C560
+1435: JSR $CE08                  ; $D035
+2144: JSR $CB99                  ; $D6C7
+2623: JSR $CB99                  ; $DB27
+2655: JSR $CE08                  ; $DB76
+3032: JSR $CE08                  ; $DF29

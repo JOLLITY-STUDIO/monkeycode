@@ -51,6 +51,15 @@ export class BootBackgroundRenderer {
   render(): void {
     this.renderSceneNt(SCENE_0x0A);
     this.renderPalette(SCENE_0x0A);
+    // 调试日志: 确认 NT0 填充量 (黑屏排查)
+    let nz = 0;
+    for (let y = 0; y < 30; y++) {
+      for (let x = 0; x < 32; x++) {
+        const e = this._store.readNT(0, x, y);
+        if (e && e.tile !== 0) nz++;
+      }
+    }
+    console.log(`[BootBackgroundRenderer] render() done. NT0 non-zero tiles=${nz}`);
   }
 
   // ════════════════════════════════════════════════

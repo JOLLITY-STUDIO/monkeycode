@@ -413,6 +413,30 @@ export class ShadowOam {
     for (let i = 0; i < 0x100; i++) s.write(ramKey(HW_BASE + i), fill);
   }
 
+  /** $0468-$0567 窗口内被游戏复用的控制寄存器 (NES 复位 RAM=0, 不得被 $F8 填充污染) */
+  static readonly CTRL_REGS_IN_SHADOW: readonly number[] = [
+    0x0515, 0x0516, 0x0518, 0x0519, 0x0522,
+    0x0532, 0x0534, 0x0536, 0x0538, 0x0539,
+  ];
+
+  /**
+   * 开机/复位初始化: 全部精灵槽隐藏 (Y=$F8, tile/attr/X=0) + 控制寄存器归零。
+   * 等价 NES 复位 (RAM 清零) + $CB8B 隐藏 OAM。
+   * 关键: 不能整体填 $F8 (clearAll), 否则 $0515(忙标志)/$0538(滚动偏移) 被污染为 $F8,
+   *       导致 NMI 滚动计算 scrollX=$004A+$0538=248 → h_tile=31 → 黑屏。
+   */
+  reset(): void {
+    const s = this._store;
+    if (!s) return;
+    for (let i = 0; i < SHADOW_BYTES; i += SPR_BYTES) {
+      s.write(ramKey(SHADOW_BASE + i), Y_HIDDEN); // Y 屏幕外
+      s.write(ramKey(SHADOW_BASE + i + 1), 0);    // tile
+      s.write(ramKey(SHADOW_BASE + i + 2), 0);    // attr
+      s.write(ramKey(SHADOW_BASE + i + 3), 0);    // X
+    }
+    for (const a of ShadowOam.CTRL_REGS_IN_SHADOW) s.write(ramKey(a), 0);
+  }
+
   /** 影子 OAM → 硬件 OAM ($0200), 对应 NES sub_88CE (attr bit2-3≠0 → Y=$F8) */
   copyToHw(): void {
     const s = this._store;
