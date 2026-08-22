@@ -613,13 +613,15 @@ export class GameSystemService {
       // $9EF3: CMP #$FF; BEQ $9F52 (特殊值: 轻量恢复)
       if (c === 0xff) {
         this._resumeCoroutine(slot, true);
-        return;
+        // $9EFB: TXA; CLC; ADC #$04; TAX; CPX #$19; BNE $9EED — 恢复后继续扫描下一槽
+        continue;
       }
       // $9EF7: DEC $0000,X; BEQ $9F0F (递减, =0 就绪)
       this.wr(0x0000 + slot, c - 1);
       if (c - 1 === 0) {
         this._resumeCoroutine(slot, false);
-        return;
+        // $9EFB: 同上, 恢复后继续扫描下一槽 (所有就绪协程在本帧全部执行)
+        continue;
       }
     }
     // $9F04: LDA $001B; BPL $9F04 (等 VBlank)
@@ -764,10 +766,10 @@ export class GameSystemService {
     this.loadScript8464(0);
     // $8027: LDA #$01; JSR $9FA8 — 让出一帧
     yield this.coroutineYield(1);
-    // $802C: 轮询 $001E bit4 (vblank 帧完成)
-    if ((this.rd(0x001E) & 0x10) === 0) {
+    // $802C: LDA $001E; AND #$10; BEQ $8027 — 轮询 vblank bit4 (帧完成标志),
+    //        bit4=0 则跳回 $8027 让出一帧继续轮询 (真正的轮询循环, 非一次性检查)
+    while ((this.rd(0x001E) & 0x10) === 0) {
       yield this.coroutineYield(1);
-      return;
     }
     // $8032-$8046: 清零页 $0005/6/9/A/11/12/D/E/4C/5B
     this.wr(0x0005, 0);

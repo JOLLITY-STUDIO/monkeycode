@@ -81,7 +81,9 @@ function writeNameTable(ppu: any, base: number, nt: NameTableEntry[][]): void {
     const row = nt[y];
     if (!row) continue;
     for (let x = 0; x < 32; x++) {
-      ppu.writeMem(base + y * 32 + x, row[x].tile & 0xff);
+      const entry = row[x];
+      const tile = entry && entry.tile != null ? entry.tile & 0xff : 0;
+      ppu.writeMem(base + y * 32 + x, tile);
     }
   }
   // 属性表: 每字节 = 4×4 tiles 的 4 个 2bit 调色板 (NES 布局)
@@ -129,22 +131,24 @@ export function writeOam(store: DataStore, ppu: any): void {
 
 /**
  * 直写滚动: store.scrollX/Y (pixel) → PPU 滚动寄存器。
- * tsnes PPU 直接用 regHT/regFH/regH/regV/regVT 字段 (cntH/cntV/cntHT/cntVT 是渲染时副本)。
- * 写 regHT/regFH/regH 后, 下次 startVBlank 会把 reg→cnt 复制触发滚动。
+ * tsnes PPU 直接用 regHT/regFH/regH/regV/regVT/regFV 字段。
+ * 注意: 这些是 tsnes PPU 的可写字段 (非只读 getter), 写入后 startVBlank 会复制到 cnt* 触发渲染。
  */
 export function writeScroll(store: DataStore, ppu: any): void {
   const sx = store.scrollX & 0xff;
   const sy = store.scrollY & 0xff;
-  // 注意: ppu.regHT/regFH/regH/regVT/regFV/regV 是只读 getter (从 scrollStore KV 读),
+  // tsnes PPU 的 regHT/regFH/regH/regVT/regFV/regV 是只读 getter (从 scrollStore KV 读取),
   // 直接赋值会抛 "Cannot set property regHT ... has only a getter"。
-  // 必须走 scrollStore 语义化 setter (key: h_tile/h_fine/h_nt/v_tile/v_fine/v_nt)。
+  // 正确写入: 用 ppu.scrollStore (ScrollStore) 的语义化 setter, setter 内部做 &31/&7/&1 掩码。
   const ss = ppu.scrollStore;
-  ss.hTile = (sx >> 3) & 31; // 水平 tile
-  ss.hFine = sx & 7; // 水平 fine
-  ss.hNt = (sx >> 5) & 1; // 水平 nametable 位
-  ss.vTile = (sy >> 3) & 31; // 垂直 tile
-  ss.vFine = sy & 7; // 垂直 fine
-  ss.vNt = (sy >> 5) & 1; // 垂直 nametable 位
+  if (ss) {
+    ss.hTile = (sx >> 3) & 31;
+    ss.hFine = sx & 7;
+    ss.hNt = (sx >> 5) & 1;
+    ss.vTile = (sy >> 3) & 31;
+    ss.vFine = sy & 7;
+    ss.vNt = (sy >> 5) & 1;
+  }
 }
 
 /**
@@ -234,12 +238,22 @@ export class Tsubasa2 {
     this.interrupts.nmi(this._frame);
     // AudioService 每帧推进 (bank12 音频引擎 update: 读 $0700 请求队列, 写 $4000-$400F APU 寄存器)
     this.audio.update();
-    writeStoreToPpu(this.store, nes.ppu);
+    try {
+      writeStoreToPpu(this.store, nes.ppu);
+    } catch (e) {
+      console.error('writeStoreToPpu error at frame ' + this._frame + ': ' + (e as Error).message);
+      throw e;
+    }
     // APU 同步: DataStore apu_XXXX → tsnes PAPU writeReg
     if (nes.papu) {
       writeApuToPapu(this.store, nes.papu);
     }
-    nes.frame();
+    try {
+      nes.frame();
+    } catch (e) {
+      console.error('nes.frame() error at frame ' + this._frame + ': ' + (e as Error).message);
+      throw e;
+    }
     // NES.frame() 走 endScanline 循环, 不触发 VBlank set/endFrame (原由 advanceDots 触发);
     // 组合根补一次 startVBlank → endFrame → ui.writeFrame (onFrame 回调 → Canvas)
     nes.ppu.startVBlank();

@@ -124,6 +124,10 @@ class ScriptEngine {
     writeCharTiles(vramHi, pos, tiles) {
         // 分配 PPU buffer (原 $9B28: LDX $0000 作为写入位置)
         // H5: 用 _bufWritePos 类成员, 避免与协程槽 $0000 冲突
+        // ram_0628==0 表示上一帧 buffer 已被 nmiRender 消费完, 重置写入位置
+        if (this._store.read('ram_0628') === 0) {
+            this._bufWritePos = 0;
+        }
         const bufX = this._bufWritePos;
         // 写 buffer: [count, addrLo, addrHi, tile×count] 格式 (nmiRender 消费)
         // count = tiles.length | 0x80 (bit7=1 表示 NT 写入模式, nmiRender 用 ctrl & 0x3F)
@@ -137,6 +141,8 @@ class ScriptEngine {
         }
         // 推进写入位置: count(1) + addrLo(1) + addrHi(1) + tiles.length
         this._bufWritePos = (bufX + 3 + tiles.length) & 0xff;
+        // 写 0 终止符 (nmiRender 消费 buffer 时遇到 0 break)
+        this._store.write(ramKey(0x05e8 + this._bufWritePos), 0);
         // 设 NT buffer 更新标志 (nmiRender 检查 ram_0628 非 0 才处理)
         this._store.write('ram_0628', 0x01);
     }
