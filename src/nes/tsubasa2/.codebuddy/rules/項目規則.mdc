@@ -15,3 +15,6 @@ game-engine\native-game 是内置的ts游戲，完全脫離cpu，從asm翻譯。
 
 
 我们已经在 TypeScript 里直接 import 了所有 PRG bank 的原始数据，根本不需要模拟 MMC3 的 bank 切换。那套 bankSwitch + mmc3Map + readMem 机制是模拟硬件内存窗口的，在 H5 环境里纯粹是多此一举,而且如果翻譯正確的話也不需要cpu6502匯編解析。全部改用H5高級語言。
+
+
+每半小时销毁清理终端：node cmd powershell，最好写一个终端管理器，比如java 调用cmd之类的可以获取具体的终端地址，一次性销毁
