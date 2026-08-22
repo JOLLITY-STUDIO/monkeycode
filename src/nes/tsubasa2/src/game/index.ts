@@ -171,6 +171,8 @@ export class Tsubasa2 {
     this.skill = new SkillService(this.store);
     this.interrupts = new InterruptService(this.store, this.system);
     this.hardware = new HardwareInitService(this.store, this.system, this.router, this.skill);
+    // 注入 bank30 引用到 GameSystemService, 供 $C5xx 派发表转发
+    this.system.setHardwareInit(this.hardware);
   }
 
   /** 启动: RESET → 硬件初始化 → resetScene(0) → 进入场景 (走正常场景装载流程) */

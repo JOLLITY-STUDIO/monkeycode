@@ -166,24 +166,95 @@ export class HardwareInitService {
     for (let x = 0xa5; x > 0; x--) this.wr(0x003a + x, 0x00);
   }
 
-  // ════════════════════════════════════════════════
-  // $CA22 控制器/精灵初始化 (NMI 侧初始化入口之一)
-  // 对应: ram_0021 |= 0x1E; ram_0490=0; ram_0491=2; ram_0087=2;
-  //       ram_008E=0; ram_0469=1; ram_0543=0x23; ram_0544=0x45; ram_0545=0
-  // ════════════════════════════════════════════════
-  initControllerSprite(): void {
-    this.wr(0x0021, this.rd(0x0021) | 0x1e);
-    this.wr(0x0490, 0x00);
-    this.wr(0x0491, 0x02);
-    this.wr(0x0087, 0x02);
-    this.wr(0x008e, 0x00);
-    this.wr(0x0469, 0x01);
-    this.wr(0x0543, 0x23);
-    this.wr(0x0544, 0x45);
-    this.wr(0x0545, 0x00);
-    void this._system;
-    void this._skill;
+  // ════════════════════════════════════════════════════════════
+  // bank30 $C500-$C54E 派发表 (通用工具函数, 被所有 bank 调用)
+  // 原 asm bank30 $C500 起 JMP 派发表:
+  //   $C509→$CB99 / $C50C→$CD7C / $C515→$CB0F / $C524→$CBC2
+  //   $C530→$CC02 / $C533→$CCD2 / $C54E→$CBB0
+  // ════════════════════════════════════════════════════════════
+
+  /**
+   * $C515 → $CB0F: 协程让出核心。
+   * asm: LDA #$00; STA $007F; 保存 X/Y; LDX $0000 (协程槽);
+   *   存 bank24/25/标志/栈指针 到协程槽; JMP $CAA5 (调度器)。
+   * H5 版: 不做真正协程切换, 用帧计数模拟 (标记等待, 下一帧推进)。
+   * @param a 让出参数 (1=等1帧, 2=等2帧, $60=等96帧等)
+   */
+  coroutineYield(a: number = 1): void {
+    void a;
+    // H5 版 no-op: 协程让出由 GameSystemService.update() 帧推进控制
+    // 实际 asm 保存协程上下文到 $0000+ 槽, 切换到下一协程
+  }
+
+  /**
+   * $C509 → $CB99: 通用查表/标志检查。
+   * asm $CB99: TAY; 查表; 返回。
+   * H5 版 stub。
+   */
+  subC509(a: number): number {
+    return a;  // stub: 原样返回
+  }
+
+  /**
+   * $C50C → $CD7C: 比赛阶段→RAM玩家数据指针查表。
+   * asm $CD77: LDA $05FB; EOR #$0B; ASL; TAY; LDA $CD89,Y; STA $0034; LDA $CD8A,Y; STA $0035。
+   * $CD89 表 32 项 16 位指针, 全在 $0300-$042C (RAM 玩家数据区)。
+   * 已查证: 索引 = (比赛阶段 ^ $0B) << 1。
+   */
+  subC50C(): void {
+    const phase = this.rd(0x05FB);
+    const idx = ((phase ^ 0x0B) << 1) & 0xFF;
+    // $CD89 表 (bank30 内, 32 项 16 位指针)
+    const table = RAM_PTR_TABLE_CD89;
+    const ptr = table[idx] ?? 0;
+    this.wr(0x0034, ptr & 0xFF);
+    this.wr(0x0035, (ptr >> 8) & 0xFF);
+  }
+
+  /**
+   * $C524 → $CBC2: 坐标变换。
+   * asm $CBC2: 读 ram_00E6/00E7, 算 NT 地址偏移。
+   * H5 版 stub (由渲染管线覆盖)。
+   */
+  subC524(a: number): number {
+    return a;  // stub
+  }
+
+  /**
+   * $C530 → $CC02: NT 填充 (按 X/Y 参数填 NT 区)。
+   * asm $CC02: 读参数, 设 PPU 地址, 循环写 $2007。
+   * H5 版: 委托 GameSystemService.ppuFill (bank00 渲染原语)。
+   */
+  subC530(x: number, a: number): void {
+    // X = NT 区索引, A = 填充值
+    this._system.ppuFill(a, 0x2000 + x * 0x0400, 32, 30);
+  }
+
+  /**
+   * $C533 → $CCD2: NT 刷新 (PPU buffer → PPU VRAM)。
+   * asm $CCD2: 读 $05E8 buffer, 写 $2006/$2007。
+   * H5 版: no-op (帧合成器直接从 DataStore 读 NT)。
+   */
+  subC533(): void {
+    // H5 版: NT 刷新由 writeStoreToPpu (组合根) 每帧做, 此处 no-op
+  }
+
+  /**
+   * $C54E → $CBB0: 读数据+设精灵。
+   * asm $CBB0: 读参数, 设精灵属性。
+   * H5 版 stub。
+   */
+  subC54E(a: number): void {
+    void a;  // stub
   }
 }
+
+/** $CD89 指针表 (bank30, 32 项 16 位 RAM 玩家数据指针) */
+const RAM_PTR_TABLE_CD89: readonly number[] = [
+  0x0300, 0x030C, 0x0318, 0x0324, 0x0330, 0x033C, 0x0348, 0x0354,
+  0x0360, 0x036C, 0x0378, 0x0384, 0x0390, 0x039C, 0x03A8, 0x03B4,
+  0x03C0, 0x03CC, 0x03D8, 0x03E4, 0x03F0, 0x03FC, 0x0408, 0x040C,
+  0x0410, 0x0414, 0x0418, 0x041C, 0x0420, 0x0424, 0x0428, 0x042C,
+];
 
 export default HardwareInitService;
