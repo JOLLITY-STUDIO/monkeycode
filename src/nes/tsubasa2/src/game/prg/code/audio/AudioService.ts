@@ -47,13 +47,16 @@ export const SE_POINTER_TABLE: Readonly<Record<number, number>> = {
 
 /**
  * BGM bank 选择表 (原 bank12 $0700 区逻辑)。
- * BGM ID → bank13/14/15 选择 ($07/$0D/$0E/$0F)。
+ * $07FC 值 → BGM 数据组索引 (非直接 bank 号)。
+ * bank12 自身不切 bank, 由外部 (bank30/NMI) 根据 $07FC 切 R7 bank。
+ *
+ * tsnes 实测 (开场+比赛 3900帧):
+ *   R6 ($8000): bank 0, 12 (bank12 = 音频引擎)
+ *   R7 ($A000): bank 0, 2, 3, 6, 7, 8, 9, 10, 15
+ *   bank 13/14/17/18 未加载 (可能用于特定 BGM 曲目)
  */
 export const BGM_BANK_TABLE: Readonly<Record<number, number>> = {
-  // BGM 0x00-0x31 → bank 13 ($0D)
-  // BGM 0x32-0x43 → bank 14 ($0E)
-  // BGM 0x44-0x50 → bank 15 ($0F)
-  // BGM 0x51+    → bank 13 ($0D, 默认)
+  // $07FC 值: 0x07/0x0D/0x0E/0x0F (BGM 数据组索引)
 };
 
 /**
@@ -134,34 +137,35 @@ export class AudioService {
   // ════════════════════════════════════════════════════════════
   // $8000: 主入口 (BGM/SE 请求分派)
   // asm $8000-$805E: LDX #$05; LDY $0700,X; CPY #$32/$44/$51/$5C;
-  //   按 BGM ID 范围选 bank ($07/$0D/$0E/$0F); STA $07FC; JMP $805E
+  //   按 ID 范围写 $07FC ($07/$0D/$0E/$0F), JMP $805E
+  //
+  // 注意: $07FC 不是 bank 号, 是 BGM 数据组索引。
+  //   bank12 自身不切 bank, 由外部 (bank30 主调度/NMI) 根据 $07FC 切 R7 bank。
+  //   tsnes 实测: 开场动画只需 bank12 (R6) + bank15 (R7)。
+  //   bank13/14/17/18 在开场不加载, 可能用于其他 BGM 曲目 (需进比赛/特定场景)。
   // ════════════════════════════════════════════════════════════
 
   /**
    * 主入口: 处理 BGM/SE 请求队列。
-   * asm $8000: 遍历 $0700[0-5], 按 ID 选 bank, 调 $805E 播放。
+   * asm $8000: 遍历 $0700[0-5], 按 ID 范围写 $07FC, 调 $805E 播放。
    * @return true = 有请求被处理
    */
   requestPlay(id: number): boolean {
-    // asm $805E 入口: 设 BGM bank, 调 $8349 初始化通道
     this.wr(0x0700, id & 0xFF);
-    // 按 ID 范围选 bank
-    let bank: number;
+    // 按 ID 范围写 $07FC (BGM 数据组索引, 非直接 bank 号)
+    let bgmGroup: number;
     if (id < 0x32) {
-      bank = 0x07; // bank13
+      bgmGroup = 0x07;
     } else if (id < 0x44) {
-      bank = 0x0D; // bank14
-      this.wr(0x07FC, 0x0D);
+      bgmGroup = 0x0D;
     } else if (id < 0x51) {
-      bank = 0x0E; // bank15
-      this.wr(0x07FC, 0x0E);
+      bgmGroup = 0x0E;
     } else if (id < 0x5C) {
-      bank = 0x0F;
-      this.wr(0x07FC, 0x0F);
+      bgmGroup = 0x0F;
     } else {
-      bank = 0x07;
+      bgmGroup = 0x07;
     }
-    this.wr(0x07FC, bank);
+    this.wr(0x07FC, bgmGroup);
     // $805E: 调 $8349 (通道初始化)
     this.sub8349(id);
     return true;
