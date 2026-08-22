@@ -9,9 +9,18 @@
  *
  * 含 $8EF0 地图画面绘制子程 (code_render.s):
  *   入口 A = metatile 索引; 切 bank8; LDA($00EA),Y 读 bank8 metatile 字典;
- *   画到 NT/OAM; 切回 bank7. 全项目仅此 1 处切 bank8 (读 bank08-metatile.ts).
+ *   画到 NT/OAM; 切回 bank7. 全项目仅此 1 处切 bank8 (读 bank08-map-metatile.ts).
  *   注意: 只管"地图画面绘制"(球场/比赛背景), 不管"界面渲染"(标题/密码/菜单
  *   走 bank02 NMI 回调, 不读 bank8).
+ *
+ * 调色板动态控制 (bank00 决定用哪组, bank06 提供数据):
+ *   调色板索引由脚本指令/场景数据运行时决定, 非固定写死:
+ *   - 脚本指令 $F3 palette(idx): ScriptEngine.opPalette() (asm $8681) 读 operand 设 ram_0048/0049
+ *   - 场景描述符 ctrl 字段: code_scene.s:56-59 (asm $8B47) LDA($0063),Y; AND #$3F; STA $0048
+ *   - bank28/bank30 也会写 ram_0048 (比赛配置/其他)
+ *   索引设定后调 paletteLoadBG/paletteLoadSPR, 从 bank06 的 PALETTE_BG_06/PALETTE_SPR_06
+ *   按索引×16 取 16 字节 → RAM $062A(BG)/$063A(SPR), 再 paletteWriteAll → PPU.
+ *   PALETTE_BG_06/PALETTE_SPR_06 各 256 字节 (16组×16B), 静态表, 直接 import 不切 bank.
  *
  * 命名规范: 旧名 Bank00Service → 新名 GameSystemService。
  */

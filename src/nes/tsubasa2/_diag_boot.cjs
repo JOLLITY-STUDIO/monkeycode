@@ -14,7 +14,7 @@ console.log('[tsc] compile ...');
 execFileSync(process.execPath, [TSC, '-p', 'tsconfig.play.json'], { stdio: 'inherit' });
 console.log('[tsc] OK');
 
-const { Tsubasa2 } = require(path.join(OUT, 'core/Tsubasa2.js'));
+const { Tsubasa2 } = require(path.join(OUT, 'game/index.js'));
 const { NES } = require(path.join(OUT, 'core/nes.js'));
 
 const ts = new Tsubasa2();
