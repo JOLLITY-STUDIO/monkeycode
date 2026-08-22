@@ -6,5 +6,29 @@
  *
  * 命名规范 v2 (Java/Spring 风格): 弃用 bankXX 前缀, 见 .codebuddy/rules/新架构命名规范.mdc
  */
-export * from './code/index';
-export { DataStore } from './data/store/DataStore';
+// 小程序编译器对 `export *` re-export 支持有限, 改为先 import 再 export (与 src/index.ts 一致)
+import {
+  GameSystemService, BootRouter, NmiCallbackIndex, HardwareInitService,
+  InterruptService, OpeningSceneController, TitleSceneController,
+  PasswordCallbackHandler, ResultSceneController, StorySceneController,
+  ScriptEngine, ScriptOpcodes, ScriptLoader, CharMap,
+  PlayerQueryService, TeamRosterService,
+  MatchEngineService, MatchTurnService, MatchAuxService, MatchHudService, MatchConfigService,
+  SkillService, SpriteService, SpriteAnimationService, AudioService,
+  NMI_CALLBACK_TABLE, PASSWORD_DISPATCH_TABLE,
+  WAIT_FRAME_TABLE, initScriptOpcodes, SE_POINTER_TABLE, BGM_DATA_MAP,
+} from './code/index';
+import { DataStore } from './data/store/DataStore';
+
+export {
+  GameSystemService, BootRouter, NmiCallbackIndex, HardwareInitService,
+  InterruptService, OpeningSceneController, TitleSceneController,
+  PasswordCallbackHandler, ResultSceneController, StorySceneController,
+  ScriptEngine, ScriptOpcodes, ScriptLoader, CharMap,
+  PlayerQueryService, TeamRosterService,
+  MatchEngineService, MatchTurnService, MatchAuxService, MatchHudService, MatchConfigService,
+  SkillService, SpriteService, SpriteAnimationService, AudioService,
+  NMI_CALLBACK_TABLE, PASSWORD_DISPATCH_TABLE,
+  WAIT_FRAME_TABLE, initScriptOpcodes, SE_POINTER_TABLE, BGM_DATA_MAP,
+  DataStore,
+};

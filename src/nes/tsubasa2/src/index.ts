@@ -10,7 +10,7 @@ import {
   BUTTON_UP, BUTTON_DOWN, BUTTON_LEFT, BUTTON_RIGHT,
 } from './core/browser-mini/input';
 import type { BrowserMiniOptions, ButtonId } from './core/browser-mini/index';
-import { Tsubasa2 } from './game';
+import { Tsubasa2 } from './game/index';
 
 export {
   NES_WIDTH, NES_HEIGHT, TILE_PX, NT_COLS, NT_ROWS,

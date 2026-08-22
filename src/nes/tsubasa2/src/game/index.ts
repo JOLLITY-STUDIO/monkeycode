@@ -16,7 +16,6 @@
  */
 import type NES from '../core/nes';
 
-import { DataStore } from './prg/data/store/DataStore';
 import { GameSystemService } from './prg/code/system/GameSystemService';
 import { BootRouter } from './prg/code/system/BootRouter';
 import { InterruptService } from './prg/code/system/InterruptService';
@@ -24,13 +23,18 @@ import { HardwareInitService } from './prg/code/system/HardwareInitService';
 import { SkillService } from './prg/code/skill/SkillService';
 import { OpeningSceneController } from './prg/code/scene/OpeningSceneController';
 import { BOOT_SPR_CHR_SEGMENTS } from './prg/data/scene/boot-scene';
-import { CHR_BANKS } from './chr/index';
-import type { PaletteTable, NameTableEntry } from '../../core/nes-ram';
+import type { PaletteTable, NameTableEntry } from '../core/nes-ram';
 
-export * from './header';
-export * from './chr/index';
-export * from './rom';
-export * from './prg/index';
+// 小程序编译器对 `export *` re-export 支持有限, 改为先 import 再 export (与 src/index.ts 一致)
+import { HEADER, CONFIG, Mirroring } from './header';
+import { NES_CHR_ROM, CHR_BANKS, CHR_BANK_SIZE, CHR_BANK_COUNT } from './chr/index';
+import { PRG } from './rom';
+import { DataStore } from './prg/data/store/DataStore';
+
+export { HEADER, CONFIG, Mirroring };
+export { NES_CHR_ROM, CHR_BANKS, CHR_BANK_SIZE, CHR_BANK_COUNT };
+export { PRG };
+export { DataStore };
 
 // ═══════════════════════════════════════════════════════════
 // 直写函数 — "直接写内存": DataStore 结构化数据 → PPU 渲染内存字节

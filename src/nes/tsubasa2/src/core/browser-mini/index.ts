@@ -12,7 +12,7 @@
  */
 import NES from '../nes';
 import { HEADER, NES_CHR_ROM, PRG } from '../../game/rom';
-import { Tsubasa2 } from '../../game';
+import { Tsubasa2 } from '../../game/index';
 import ScreenMini from './screen';
 import SpeakersMini from './speakers';
 import FrameTimerMini from './frame-timer';
