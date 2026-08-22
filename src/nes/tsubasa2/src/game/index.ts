@@ -127,18 +127,22 @@ export function writeOam(store: DataStore, ppu: any): void {
   }
 }
 
-/** 直写滚动: store.scrollX/Y (pixel) → PPU 滚动寄存器 (regV/regH/regVT/regHT) */
+/**
+ * 直写滚动: store.scrollX/Y (pixel) → PPU 滚动寄存器。
+ * PPU 的 regHT/regH/regVT/regV/cnt* 均为只读 getter (ScrollStore 封装), 直接赋值会抛
+ * "Cannot set property regHT ... which has only a getter"。正确路径是写 ppu.scrollStore
+ * (渲染端 renderBgScanline 每扫描线从 ss.get("h_tile"/"h_fine"/"h_nt"/...) 重载)。
+ */
 export function writeScroll(store: DataStore, ppu: any): void {
   const sx = store.scrollX & 0xff;
   const sy = store.scrollY & 0xff;
-  ppu.regHT = (sx >> 3) & 31;   // 水平 tile
-  ppu.regH = sx & 7;            // 水平 fine
-  ppu.regVT = (sy >> 3) & 31;   // 垂直 tile
-  ppu.regV = sy & 1;            // 垂直 fine (简化)
-  ppu.cntHT = ppu.regHT;
-  ppu.cntH = ppu.regH;
-  ppu.cntVT = ppu.regVT;
-  ppu.cntV = ppu.regV;
+  const ss = ppu.scrollStore;
+  ss.hTile = (sx >> 3) & 31;   // 水平 tile (regHT)
+  ss.hFine = sx & 7;            // 水平 fine (regFH)
+  ss.hNt = (sx >> 5) & 1;       // 水平 nametable 位 (regH)
+  ss.vTile = (sy >> 3) & 31;   // 垂直 tile (regVT)
+  ss.vFine = sy & 7;            // 垂直 fine (regFV)
+  ss.vNt = (sy >> 5) & 1;       // 垂直 nametable 位 (regV)
 }
 
 /**
