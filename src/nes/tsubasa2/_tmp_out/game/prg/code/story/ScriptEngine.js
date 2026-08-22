@@ -49,12 +49,12 @@ class ScriptEngine {
     /**
      * 每帧推进脚本 (原脚本分派器)。
      * 每帧执行一步 (一字符/一指令), 遇等待则暂停至下帧。
+     * 用 ram_0056 (脚本 bank) 判断是否已装载 (ScriptLoader.load 设 ptr=0 是合法值, 不能用 ptr===0 判断)。
      */
     update(frame) {
         void frame;
-        // 若脚本未装载 (ptr=0) 则返回
-        const ptr = this.scriptPtr;
-        if (ptr === 0)
+        // ram_0056 = 脚本 bank, 0 表示未装载
+        if (this._store.read('ram_0056') === 0)
             return;
         this.step();
     }
@@ -324,8 +324,7 @@ class ScriptEngine {
         const b = this.readByteAdvance();
         this._store.write('ram_0050', b);
         this._store.write('ram_0052', b);
-        // 继续分派 (指针已推进)
-        this.step();
+        // 继续分派 (指针已推进) — 不递归调 step, 让外层 update 驱动
     }
     /** $F1 $8649: 文本指针 (bank06) */
     opTextPtr() {
@@ -457,7 +456,8 @@ class ScriptEngine {
     /** $FB $8830: 清文本 buffer + 继续 */
     opClearBuf() {
         this.clearTextBuffer();
-        this.step();
+        this.advancePtr(1);
+        // 不递归调 step (会导致栈溢出), 让外层 update 帧循环驱动下一条
     }
     /** $FC $8836: 等待 + 文本 VRAM 前进 */
     opVramAdvance() {
@@ -468,14 +468,15 @@ class ScriptEngine {
         const h = (this._store.read('ram_0052') + (this._store.read('ram_0051') + 0x40 > 0xff ? 1 : 0)) & 0xff;
         this._store.write('ram_0051', l);
         this._store.write('ram_0052', h);
-        this.advancePtr(0);
-        this.step();
+        this.advancePtr(1);
+        // 不递归调 step
     }
     /** $FD $8854: 填充 + 等待 */
     opFillWait() {
         this.fillText();
         this.waitCounter(4);
-        this.advancePtr(0);
+        this.advancePtr(1);
+        // 不递归调 step
     }
     /** $FE $8861: 跳转 (读 2 字节指针) */
     opJump() {

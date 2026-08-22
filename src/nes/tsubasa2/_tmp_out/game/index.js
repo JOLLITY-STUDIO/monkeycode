@@ -113,18 +113,20 @@ function writeOam(store, ppu) {
         ppu.spriteMem[i] = store.read(0x0200 + i);
     }
 }
-/** 直写滚动: store.scrollX/Y (pixel) → PPU 滚动寄存器 (regV/regH/regVT/regHT) */
+/**
+ * 直写滚动: store.scrollX/Y (pixel) → PPU 滚动寄存器。
+ * tsnes PPU 直接用 regHT/regFH/regH/regV/regVT 字段 (cntH/cntV/cntHT/cntVT 是渲染时副本)。
+ * 写 regHT/regFH/regH 后, 下次 startVBlank 会把 reg→cnt 复制触发滚动。
+ */
 function writeScroll(store, ppu) {
     const sx = store.scrollX & 0xff;
     const sy = store.scrollY & 0xff;
     ppu.regHT = (sx >> 3) & 31; // 水平 tile
-    ppu.regH = sx & 7; // 水平 fine
+    ppu.regFH = sx & 7; // 水平 fine
+    ppu.regH = (sx >> 5) & 1; // 水平 nametable 位
     ppu.regVT = (sy >> 3) & 31; // 垂直 tile
-    ppu.regV = sy & 1; // 垂直 fine (简化)
-    ppu.cntHT = ppu.regHT;
-    ppu.cntH = ppu.regH;
-    ppu.cntVT = ppu.regVT;
-    ppu.cntV = ppu.regV;
+    ppu.regFV = sy & 7; // 垂直 fine
+    ppu.regV = (sy >> 5) & 1; // 垂直 nametable 位
 }
 /**
  * 直写 BOOT 精灵 CHR pattern → PPU pattern table 1 (ptTile[0x100+tile])。
