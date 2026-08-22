@@ -18,10 +18,6 @@ import { DataStore } from '../../data/store/DataStore';
 import ScriptLoader from './ScriptLoader';
 import { CharMap } from './CharMap';
 import { WAIT_FRAME_TABLE, ScriptOp } from './ScriptOpcodes';
-import { SCRIPT_BANK_03_BYTES } from '../../data/scene/textscript/scripts-bank-03';
-import { SCRIPT_BANK_04_BYTES } from '../../data/scene/textscript/scripts-bank-04';
-import { SCRIPT_BANK_05_BYTES } from '../../data/scene/textscript/scripts-bank-05';
-import { SCRIPT_BANK_06_BYTES } from '../../data/scene/textscript/scripts-bank-06';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {
@@ -107,16 +103,10 @@ export class ScriptEngine {
     return data[ptr] ?? 0xff;
   }
 
-  /** 当前脚本流 (来自 bank03-06 数据文件 SCRIPT_BANK_0X_BYTES) */
+  /** 当前脚本流 (来自 ScriptLoader 装载的 flatten 场景段字节流, 缓存在 DataStore) */
   private scriptStream(): readonly number[] {
     const bank = this._store.read('ram_0056');
-    switch (bank) {
-      case 3: return SCRIPT_BANK_03_BYTES;
-      case 4: return SCRIPT_BANK_04_BYTES;
-      case 5: return SCRIPT_BANK_05_BYTES;
-      case 6: return SCRIPT_BANK_06_BYTES;
-      default: return [];
-    }
+    return this._store.get<readonly number[]>(`scriptStream_${bank}`) ?? [];
   }
 
   /** 推进脚本指针 A 字节并返回 (原 $8879) */
