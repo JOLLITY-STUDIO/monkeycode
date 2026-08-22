@@ -135,12 +135,16 @@ export function writeOam(store: DataStore, ppu: any): void {
 export function writeScroll(store: DataStore, ppu: any): void {
   const sx = store.scrollX & 0xff;
   const sy = store.scrollY & 0xff;
-  ppu.regHT = (sx >> 3) & 31;   // 水平 tile
-  ppu.regFH = sx & 7;            // 水平 fine
-  ppu.regH = (sx >> 5) & 1;      // 水平 nametable 位
-  ppu.regVT = (sy >> 3) & 31;   // 垂直 tile
-  ppu.regFV = sy & 7;            // 垂直 fine
-  ppu.regV = (sy >> 5) & 1;      // 垂直 nametable 位
+  // 注意: ppu.regHT/regFH/regH/regVT/regFV/regV 是只读 getter (从 scrollStore KV 读),
+  // 直接赋值会抛 "Cannot set property regHT ... has only a getter"。
+  // 必须走 scrollStore 语义化 setter (key: h_tile/h_fine/h_nt/v_tile/v_fine/v_nt)。
+  const ss = ppu.scrollStore;
+  ss.hTile = (sx >> 3) & 31; // 水平 tile
+  ss.hFine = sx & 7; // 水平 fine
+  ss.hNt = (sx >> 5) & 1; // 水平 nametable 位
+  ss.vTile = (sy >> 3) & 31; // 垂直 tile
+  ss.vFine = sy & 7; // 垂直 fine
+  ss.vNt = (sy >> 5) & 1; // 垂直 nametable 位
 }
 
 /**

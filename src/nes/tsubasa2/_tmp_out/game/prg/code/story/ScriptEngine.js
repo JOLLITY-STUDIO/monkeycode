@@ -21,11 +21,15 @@ class ScriptEngine {
         this._store.write('ram_004E', (v >> 8) & 0xff);
     }
     constructor(store) {
+        /** PPU buffer 写入位置指针 (原 asm $0000 in $9B28 context, H5 用类成员避免与协程槽冲突) */
+        this._bufWritePos = 0;
         this._store = store;
     }
     /** 装载脚本 id (原 $8464 scriptLoader) */
     loadScript(scriptId) {
         ScriptLoader_1.default.load(this._store, scriptId);
+        // 重置 PPU buffer 写入位置
+        this._bufWritePos = 0;
         // ppuFill 属性区 ($23E0, 0x20 列 × 1 行, 值 $55)
         // 原 $84B0-$84BE; 由 system ppuFill 完成 (此处委托渲染)
         this.fillAttribute();
@@ -118,15 +122,23 @@ class ScriptEngine {
     }
     /** 写字符 tile (原 $88CA) */
     writeCharTiles(vramHi, pos, tiles) {
-        // 分配 PPU buffer (A=$82)
-        // 单 tile 或双 tile 写入
-        const bufX = this._store.read('ram_0628');
+        // 分配 PPU buffer (原 $9B28: LDX $0000 作为写入位置)
+        // H5: 用 _bufWritePos 类成员, 避免与协程槽 $0000 冲突
+        const bufX = this._bufWritePos;
+        // 写 buffer: [count, addrLo, addrHi, tile×count] 格式 (nmiRender 消费)
+        // count = tiles.length | 0x80 (bit7=1 表示 NT 写入模式, nmiRender 用 ctrl & 0x3F)
+        this._store.write(ramKey(0x05e8 + bufX), tiles.length | 0x80);
+        // addrLo/addrHi = VRAM 地址 (vramHi<<8 | pos)
+        this._store.write(ramKey(0x05e9 + bufX), pos & 0xff);
+        this._store.write(ramKey(0x05ea + bufX), vramHi & 0xff);
+        // tile 数据
         for (let i = 0; i < tiles.length; i++) {
-            this._store.write(ramKey(0x05e8 + bufX + i), tiles[i]);
+            this._store.write(ramKey(0x05eb + bufX + i), tiles[i]);
         }
-        this._store.write('ram_0628', bufX + tiles.length);
-        void vramHi;
-        void pos;
+        // 推进写入位置: count(1) + addrLo(1) + addrHi(1) + tiles.length
+        this._bufWritePos = (bufX + 3 + tiles.length) & 0xff;
+        // 设 NT buffer 更新标志 (nmiRender 检查 ram_0628 非 0 才处理)
+        this._store.write('ram_0628', 0x01);
     }
     /** 行换行处理 (原 $895D) */
     handleLineWrap() {
