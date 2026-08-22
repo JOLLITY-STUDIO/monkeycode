@@ -86,6 +86,7 @@ function getPaletteTableFBCC(group) {
 }
 /** 按组索引+字节偏移取单个源字节 (越界返回 $0F) */
 function getPaletteByteFBCC(group, idx) {
+    var _a;
     const g = group & 0x1f;
-    return exports.PALETTE_TABLE_FBCC[g * 12 + idx] ?? 0x0f;
+    return (_a = exports.PALETTE_TABLE_FBCC[g * 12 + idx]) !== null && _a !== void 0 ? _a : 0x0f;
 }

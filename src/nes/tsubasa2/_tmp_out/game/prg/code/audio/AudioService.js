@@ -405,13 +405,14 @@ class AudioService {
      *   LDA $826A,Y; STA $00FA; JMP ($00F9)
      */
     sub8257() {
+        var _a;
         const x = this.rd(0x00F2);
         const idx = (this.rd(0x07C7 + x) << 1) & 0xFF;
         // 查 $8269 表 (bank12 内联数据)
         const tableOff = 0x8269 - 0x8000;
         // stub: 跳转表 8 项, 指向 $8297/$8297/$82B4/$82C9/$82B4/$8297/$8297/$827D
         const targets = [0x8297, 0x8297, 0x82B4, 0x82C9, 0x82B4, 0x8297, 0x8297, 0x827D];
-        const target = targets[(idx >> 1) & 0x07] ?? 0x8297;
+        const target = (_a = targets[(idx >> 1) & 0x07]) !== null && _a !== void 0 ? _a : 0x8297;
         switch (target) {
             case 0x827D:
                 this.sub827D();
@@ -483,10 +484,11 @@ class AudioService {
     }
     /** $82D2: 音符事件分派2 (查 $82E4 表) */
     sub82D2() {
+        var _a;
         const x = this.rd(0x00F2);
         const idx = (this.rd(0x07C7 + x) << 1) & 0xFF;
         const targets = [0x830E, 0x832B, 0x8340, 0x832B, 0x830E, 0x82F4, 0x8309, 0x82F4];
-        const target = targets[(idx >> 1) & 0x07] ?? 0x830E;
+        const target = (_a = targets[(idx >> 1) & 0x07]) !== null && _a !== void 0 ? _a : 0x830E;
         switch (target) {
             case 0x82F4:
                 this.sub82F4();
@@ -582,9 +584,10 @@ class AudioService {
      *   INY; BPL $8360 (循环读通道参数)
      */
     sub8349(id) {
+        var _a;
         this.wr(0x00F5, id & 0xFF);
         // 查 SE 指针表 $8BDA (stub: 用 id 作索引)
-        const ptr = exports.SE_POINTER_TABLE[id] ?? 0;
+        const ptr = (_a = exports.SE_POINTER_TABLE[id]) !== null && _a !== void 0 ? _a : 0;
         this.wrPtr(0x00F0, 0x00F1, ptr);
         // LDY #$00; LDA ($00F0),Y
         const firstByte = 0; // stub

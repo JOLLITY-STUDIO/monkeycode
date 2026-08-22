@@ -158,18 +158,19 @@ class BootRouter {
         this.wr(0x004B, 0);
         this.wr(0x008F, 2);
         this.wr(0x0091, 2);
-        // BOOT 开场背景: SCENE_0x0A (bank07) + bank08 metatile + bank06 调色板
-        // 走真实 ROM 数据链路, 不再使用模拟器 dump 快照 (boot-scene.ts 已删)
-        // _initBoot 会被 update 每帧重入 (ram_00ED=2 每帧 resetEntry), 背景只渲染一次
-        if (!this._bootBgRendered) {
-            this._bgRenderer.render();
-            this._bootBgRendered = true;
-            console.log(`[BootRouter] _initBoot BOOT bg rendered. ram_00ED=${this.rd(0x00ED)}` +
-                ` ram_004A=${this.rd(0x004A)} ram_0538=${this.rd(0x0538)}` +
-                ` ram_0020=${this.rd(0x0020)} ram_0021=${this.rd(0x0021)}`);
-        }
+        // tsnes trace 实测: 开场 NT0 几乎全零 (仅 25 个 TECMO 文字 tile),
+        // 由 NMI 渲染主程 $05E8 buffer 循环写入, 不需要 BootBackgroundRenderer 预填充。
+        // BootBackgroundRenderer 用 SCENE_0x0A + bank08 metatile 填了 672 个错误 tile, 已移除。
+        // 调色板也由 NMI 渲染主程 $05E8 buffer 写入 ($3F00-$3F1F), 不需要预填充。
+        // NT/调色板数据由协程调度器 ($9F0F) 驱动场景脚本代码填充 $05E8 buffer,
+        // nmiRender 消费 $05E8 buffer 写入 PPU。
     }
-    /** 通用回调处理 (其余索引由 §6 callbackNN 方法覆盖) */
+    // tsnes trace 实测: 开场 NT0 几乎全零 (仅 25 个 TECMO 文字 tile),
+    // 由 NMI 渲染主程 $05E8 buffer 循环写入, 不需要 BootBackgroundRenderer 预填充。
+    // BootBackgroundRenderer 用 SCENE_0x0A + bank08 metatile 填了 672 个错误 tile, 已移除。
+    // 调色板也由 NMI 渲染主程 $05E8 buffer 写入 ($3F00-$3F1F), 不需要预填充。
+    // NT/调色板数据由协程调度器 ($9F0F) 驱动场景脚本代码填充 $05E8 buffer,
+    // nmiRender 消费 $05E8 buffer 写入 PPU。
     _initScene(_index) {
         // 各 NMI 回调由 §6 callbackNN 方法覆盖
     }
@@ -227,6 +228,7 @@ class BootRouter {
      *         此方法翻译 asm 语义, 硬件操作通过 DataStore 缓存状态。
      */
     nmiRender() {
+        var _a;
         // ── $8000-$800D: OAM DMA ──
         // LDA #$00; STA $2003 (OAM 地址=0); LDA #$02; STA $4014 (OAM DMA, 源=$0200)
         // LDA $0628; BEQ $805D (无 NT buffer 更新则跳过)
@@ -327,7 +329,7 @@ class BootRouter {
         for (let ctrl = 2; ctrl >= 1; ctrl--) {
             const prev = this.rd(0x001B + ctrl);
             // 从 DataStore 读取手柄状态 (InterruptService 每帧写入 controller_1/controller_2)
-            const cur = this._store.read(`controller_${ctrl}`) ?? 0;
+            const cur = (_a = this._store.read(`controller_${ctrl}`)) !== null && _a !== void 0 ? _a : 0;
             const diff = (prev ^ cur) & cur;
             this.wr(0x001D + ctrl, diff & 0xff);
             this.wr(0x001B + ctrl, cur & 0xff);
@@ -389,7 +391,8 @@ class BootRouter {
      * 与真实 PPU 镜像结果一致 (游戏整段写 $3F00 时该位本来就是通用色)。
      */
     writePaletteIndex(palByte, nesIdx) {
-        const rgb = NES_NTSC_RGB[nesIdx & 0x3f] ?? 0;
+        var _a;
+        const rgb = (_a = NES_NTSC_RGB[nesIdx & 0x3f]) !== null && _a !== void 0 ? _a : 0;
         const color = {
             r: (rgb >> 16) & 0xff,
             g: (rgb >> 8) & 0xff,
@@ -496,8 +499,9 @@ class BootRouter {
      * @returns 目标地址 (运行时 $A000 窗口)
      */
     jumpTable4(index) {
+        var _a;
         const table = [0xA855, 0xA86E, 0xA484, 0xA8CE];
-        return table[index & 3] ?? -1;
+        return (_a = table[index & 3]) !== null && _a !== void 0 ? _a : -1;
     }
     /**
      * $82AC-$82E5 pre-main-loop 初始化。
@@ -560,6 +564,7 @@ class BootRouter {
      * @returns 下一帧分支号 (asm RTS 返回值, 此子程无 RTS 走 JMP)
      */
     passwordBranch() {
+        var _a, _b, _c;
         const a = this.rd(0x0057);
         if ((a & 0x80) !== 0) {
             // CMP #$81; BEQ $83A3 → bit7=1 分支
@@ -603,17 +608,17 @@ class BootRouter {
             const ti = txa; // TAY → Y = X & 0x0C (0/4/8/12)
             // LDA $0468,X; CMP $AB1F,Y; BCC $8387
             const v = this.rd(0x0468 + x);
-            const threshold = bank02_tables_1.PASSWORD_LEVEL_ADJ_TABLE[ti] ?? 0x20; // $AB1F,Y
+            const threshold = (_a = bank02_tables_1.PASSWORD_LEVEL_ADJ_TABLE[ti]) !== null && _a !== void 0 ? _a : 0x20; // $AB1F,Y
             let acc = v;
             if (v >= threshold) {
                 acc = 0; // LDA #$00; CLC
             }
             // ADC $AB21,Y → ram_0468,X
-            const adj1 = bank02_tables_1.PASSWORD_LEVEL_ADJ_TABLE[ti + 2] ?? 0x00; // $AB21,Y
+            const adj1 = (_b = bank02_tables_1.PASSWORD_LEVEL_ADJ_TABLE[ti + 2]) !== null && _b !== void 0 ? _b : 0x00; // $AB21,Y
             this.wr(0x0468 + x, (acc + adj1) & 0xff);
             // LDA $046B,X; CLC; ADC $AB22,Y → ram_046B,X
             const v2 = this.rd(0x046B + x);
-            const adj2 = bank02_tables_1.PASSWORD_LEVEL_ADJ_TABLE[ti + 3] ?? 0x20; // $AB22,Y
+            const adj2 = (_c = bank02_tables_1.PASSWORD_LEVEL_ADJ_TABLE[ti + 3]) !== null && _c !== void 0 ? _c : 0x20; // $AB22,Y
             this.wr(0x046B + x, (v2 + adj2) & 0xff);
         }
         // JMP $A372 (跳到场景帧处理, 返回 2)
@@ -632,10 +637,11 @@ class BootRouter {
      * @param teamIdx 球队索引 (X 寄存器, 指向 ROSTER_TABLE 偏移)
      */
     rosterLoadMain(teamIdx) {
+        var _a;
         let x = teamIdx;
         let y = 0;
         for (let i = 0; i < 10; i++) {
-            const playerId = bank02_tables_1.ROSTER_TABLE[x] ?? 0;
+            const playerId = (_a = bank02_tables_1.ROSTER_TABLE[x]) !== null && _a !== void 0 ? _a : 0;
             this.wr(0x0408 + y, playerId);
             x = (x + 1) & 0xff;
             y = (y + 4) & 0xff;
@@ -899,12 +905,13 @@ class BootRouter {
      *      LDA #$02; RTS
      */
     callback15() {
+        var _a, _b, _c;
         this.wr(0x00ED, 0);
         // LDY $00ED ($A4,$ED = LDY 零页 $00ED)
         let y = this.rd(0x00ED);
         // 循环 $8655: LDA $AA97,Y → ram_00EA; AND #$7F → ram_00EB
         while (true) {
-            const ea = bank02_tables_1.PASSWORD_CONTINUE_TABLE[y] ?? 0;
+            const ea = (_a = bank02_tables_1.PASSWORD_CONTINUE_TABLE[y]) !== null && _a !== void 0 ? _a : 0;
             this.wr(0x00EA, ea);
             this.wr(0x00EB, ea & 0x7F);
             // LDA $007B; AND #$01; ASL; ASL; ORA $00EB; TAX
@@ -912,10 +919,10 @@ class BootRouter {
             let x = (teamBit | this.rd(0x00EB)) & 0xff;
             // INY; LDA $AA97,Y → ram_00EB; INY; LDA $AA97,Y; INY; STY $00ED
             y = (y + 1) & 0xff;
-            const eb2 = bank02_tables_1.PASSWORD_CONTINUE_TABLE[y] ?? 0;
+            const eb2 = (_b = bank02_tables_1.PASSWORD_CONTINUE_TABLE[y]) !== null && _b !== void 0 ? _b : 0;
             this.wr(0x00EB, eb2);
             y = (y + 1) & 0xff;
-            const cnt = bank02_tables_1.PASSWORD_CONTINUE_TABLE[y] ?? 0; // 循环次数
+            const cnt = (_c = bank02_tables_1.PASSWORD_CONTINUE_TABLE[y]) !== null && _c !== void 0 ? _c : 0; // 循环次数
             y = (y + 1) & 0xff;
             this.wr(0x00ED, y);
             // LDY $00EB; JSR $9B28 (bank00 子程, 装载球员数据)
@@ -979,6 +986,7 @@ class BootRouter {
      *      LDY #$D8; $046A |= $02 循环; LDA #$02; RTS
      */
     scene16b_frame() {
+        var _a;
         // JSR $A767 (spriteTableCopy)
         this.spriteTableCopy();
         // LDY #$80; LDX #$2F; LDA #$02; STA $00EA; LDA #$FF; STA $00ED; LDA #$FE; STA $00EC; LDA #$07; STA $00EB; LDA #$F7
@@ -994,7 +1002,7 @@ class BootRouter {
         // $A67B = PASSWORD_SPRITE_DATA 后 4 字节 ($79,$FF,$03,$C2 的 $FC-$FF 偏移)
         for (let i = 0; i < 4; i++) {
             const y = (0xFC + i) & 0xff;
-            this.wr(0x0460 + y, bank02_tables_1.PASSWORD_SPRITE_DATA[i] ?? 0);
+            this.wr(0x0460 + y, (_a = bank02_tables_1.PASSWORD_SPRITE_DATA[i]) !== null && _a !== void 0 ? _a : 0);
         }
         // LDY #$B8; LDX #$1C; LDA #$02; STA $00ED; LDA #$FF; STA $00EC; LDA #$03; STA $00EB; LDA #$F6; JSR $A72C
         this.wr(0x00ED, 0x02);
@@ -1172,7 +1180,8 @@ class BootRouter {
     }
     /** $88A3 属性装载: LDA $AA75,X; STA $002A; ram_0026+3 → ram_002B */
     rosterAttrLoad(team) {
-        const attr = bank02_tables_1.ROSTER_ATTR_TABLE[team] ?? 0;
+        var _a;
+        const attr = (_a = bank02_tables_1.ROSTER_ATTR_TABLE[team]) !== null && _a !== void 0 ? _a : 0;
         this.wr(0x002A, attr);
         this.wr(0x002B, (this.rd(0x0026) + 3) & 0xff);
     }
@@ -1186,11 +1195,12 @@ class BootRouter {
      * @param xStart 起始索引 (X 寄存器, 指向 ROSTER_TABLE 偏移)
      */
     rosterLoadB(xStart) {
+        var _a;
         this.wr(0x00ED, 0x0B);
         let x = xStart;
         let y = 0;
         for (let i = 0; i < 11; i++) {
-            const playerId = bank02_tables_1.ROSTER_TABLE[x] ?? 0;
+            const playerId = (_a = bank02_tables_1.ROSTER_TABLE[x]) !== null && _a !== void 0 ? _a : 0;
             this.wr(0x0300 + y, playerId);
             x = (x + 1) & 0xff;
             y = (y + 0x0C) & 0xff;

@@ -127,13 +127,14 @@ class SkillService {
      *     $87FF/$8809/$8812/$881B/$8853/$8858/$885F/$8866/$886A
      */
     sub80A9(opcode) {
+        var _a;
         const cmd = (opcode - 0xF0) & 0xFF;
         const idx = this._system.subC509(cmd);
         const table = [
             0x80D4, 0x80D4, 0x80F4, 0x8105, 0x87E0, 0x87E6, 0x87EC, 0x87F5,
             0x87FF, 0x8809, 0x8812, 0x881B, 0x8853, 0x8858, 0x885F, 0x8866, 0x886A,
         ];
-        const target = table[idx & 0xFF] ?? 0x80D4;
+        const target = (_a = table[idx & 0xFF]) !== null && _a !== void 0 ? _a : 0x80D4;
         switch (target) {
             case 0x80D4:
                 this.sub80D4();
@@ -324,9 +325,10 @@ class SkillService {
      * asm: JSR $C509; 跳转表 $886A: $8877/$88AA/$88B5/$88BF/$88D9
      */
     sub886A() {
+        var _a;
         const idx = this._system.subC509(0);
         const table = [0x8877, 0x88AA, 0x88B5, 0x88BF, 0x88D9];
-        const target = table[idx & 0xFF] ?? 0x8877;
+        const target = (_a = table[idx & 0xFF]) !== null && _a !== void 0 ? _a : 0x8877;
         switch (target) {
             case 0x8877: return this.sub8877();
             case 0x88AA: return this.sub88AA();
@@ -468,15 +470,17 @@ class SkillService {
     }
     /** $83A8: LDY $043D; LDX $83AF,Y (查表) */
     sub83A8() {
+        var _a;
         const y = this.rd(0x043D);
         const table = [0xFF, 0xFF, 0x00, 0xFF, 0x01];
-        return table[y & 0x07] ?? 0xFF;
+        return (_a = table[y & 0x07]) !== null && _a !== void 0 ? _a : 0xFF;
     }
     /** $83B4: LDY $043B; LDX $83BB,Y (查表) */
     sub83B4() {
+        var _a;
         const y = this.rd(0x043B);
         const table = [0xFF, 0x00, 0xFF, 0xFF, 0x01, 0xFF, 0x02];
-        return table[y & 0x07] ?? 0xFF;
+        return (_a = table[y & 0x07]) !== null && _a !== void 0 ? _a : 0xFF;
     }
     /** $83C5: LDA $0441; JSR $8207; CMP #$1C/$48 */
     sub83C5() {
@@ -737,6 +741,7 @@ class SkillService {
      *   INY; INY; CPY #$0E; BNE $8692; LDX $86A7,Y; LDA #$01; JSR $8211
      */
     sub8689() {
+        var _a;
         const id = this.sub8207(this.rd(0x0441));
         const table = [0x1A, 0x00, 0x41, 0x00, 0x36, 0x01, 0x1C, 0x02, 0x48, 0x02, 0x2E, 0x03, 0x57, 0x04];
         let y = 0;
@@ -745,7 +750,7 @@ class SkillService {
                 break;
             y += 2;
         }
-        const x = table[y + 1] ?? 0x05;
+        const x = (_a = table[y + 1]) !== null && _a !== void 0 ? _a : 0x05;
         this.sub8211(1);
         void x;
     }
@@ -777,9 +782,10 @@ class SkillService {
      *   跳转表 $88F0: $88FC/$890D/$893D/$8942
      */
     sub88F0() {
+        var _a;
         const idx = this._system.subC509(0);
         const table = [0x88FC, 0x890D, 0x893D, 0x8942];
-        const target = table[idx & 0x03] ?? 0x88FC;
+        const target = (_a = table[idx & 0x03]) !== null && _a !== void 0 ? _a : 0x88FC;
         switch (target) {
             case 0x88FC:
                 this.sub88FC();

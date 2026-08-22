@@ -137,10 +137,11 @@ class MatchHudService {
     //   $8098/$80A0/$80B5/$80B8/$80CB/$81FD
     // ════════════════════════════════════════════════
     sub8087(a) {
+        var _a;
         const cmd = a & 0x0F;
         // 原 6502: AND #$0F; JSR $C509 (cmd N → 表项 N)
         const table = [0x8098, 0x80A0, 0x80B5, 0x80B8, 0x80CB, 0x81FD];
-        const target = table[cmd] ?? 0x8098;
+        const target = (_a = table[cmd]) !== null && _a !== void 0 ? _a : 0x8098;
         switch (target) {
             case 0x8098:
                 this.sub8098();
@@ -1127,6 +1128,7 @@ class MatchHudService {
     }
     /** $89B4: 命令分派 (SEC; SBC #$E0; 查 ~60 项跳转表) */
     sub89B4(a) {
+        var _a;
         const cmd = (a - 0xE0) & 0xFF;
         const table = [
             0x89FA, 0x8A00, 0x8A06, 0x8A0C, 0x8A12, 0x8A22, 0x8A2F, 0x8A36,
@@ -1135,7 +1137,7 @@ class MatchHudService {
             0x8B31, 0x8B48, 0x8B87, 0x8BD6, 0x8BE1, 0x8BE7, 0x8BF0, 0x8C06,
             0x8C47, 0x8C4A, 0x8C55, 0x8CA5, 0x8CDC, 0x8D1A, 0x8D6C,
         ];
-        const target = table[cmd] ?? 0x89FA;
+        const target = (_a = table[cmd]) !== null && _a !== void 0 ? _a : 0x89FA;
         switch (target) {
             case 0x89FA:
                 this.hD0_89FA();
@@ -1700,10 +1702,11 @@ class MatchHudService {
     }
     /** 读 bank24 ROM 数据字节 (通过 DataStore KV 'bank24_rom') */
     readRomByte(addr) {
+        var _a;
         const rom = this._store.get('bank24_rom');
         if (rom) {
             const off = (addr - 0x8000) & 0xFFFF;
-            return rom[off] ?? 0;
+            return (_a = rom[off]) !== null && _a !== void 0 ? _a : 0;
         }
         return 0;
     }

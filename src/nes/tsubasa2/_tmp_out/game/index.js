@@ -63,6 +63,7 @@ function rgbToNearestIndex(curTable, r, g, b) {
 }
 /** 写一个 NT (960 tile + 64 属性字节) 到 PPU VRAM ($2000/$2400 基址) */
 function writeNameTable(ppu, base, nt) {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
     for (let y = 0; y < 30; y++) {
         const row = nt[y];
         if (!row)
@@ -78,10 +79,10 @@ function writeNameTable(ppu, base, nt) {
         for (let ax = 0; ax < 8; ax++) {
             const x0 = ax * 4;
             const x1 = x0 + 2;
-            const p00 = nt[y0]?.[x0]?.palette ?? 0;
-            const p01 = nt[y0]?.[x1]?.palette ?? 0;
-            const p10 = nt[y1]?.[x0]?.palette ?? 0;
-            const p11 = nt[y1]?.[x1]?.palette ?? 0;
+            const p00 = (_c = (_b = (_a = nt[y0]) === null || _a === void 0 ? void 0 : _a[x0]) === null || _b === void 0 ? void 0 : _b.palette) !== null && _c !== void 0 ? _c : 0;
+            const p01 = (_f = (_e = (_d = nt[y0]) === null || _d === void 0 ? void 0 : _d[x1]) === null || _e === void 0 ? void 0 : _e.palette) !== null && _f !== void 0 ? _f : 0;
+            const p10 = (_j = (_h = (_g = nt[y1]) === null || _g === void 0 ? void 0 : _g[x0]) === null || _h === void 0 ? void 0 : _h.palette) !== null && _j !== void 0 ? _j : 0;
+            const p11 = (_m = (_l = (_k = nt[y1]) === null || _k === void 0 ? void 0 : _k[x1]) === null || _l === void 0 ? void 0 : _l.palette) !== null && _m !== void 0 ? _m : 0;
             const v = (p00 & 3) | ((p01 & 3) << 2) | ((p10 & 3) << 4) | ((p11 & 3) << 6);
             ppu.writeMem(base + 0x3c0 + ay * 8 + ax, v);
         }
@@ -105,23 +106,24 @@ function writePalettes(ppu, paletteTable) {
         }
     }
 }
-/** 直写 OAM: ram_0200 硬件 OAM (ShadowOam.copyToHw 产物) → ppu.oamStore */
+/** 直写 OAM: ram_0200 硬件 OAM (ShadowOam.copyToHw 产物) → ppu.spriteMem */
 function writeOam(store, ppu) {
     for (let i = 0; i < 0x100; i++) {
-        ppu.oamStore.set(i, store.read(0x0200 + i));
+        ppu.spriteMem[i] = store.read(0x0200 + i);
     }
 }
-/** 直写滚动: store.scrollX/Y (pixel) → PPU 滚动寄存器 (fine/tile/nt) */
+/** 直写滚动: store.scrollX/Y (pixel) → PPU 滚动寄存器 (regV/regH/regVT/regHT) */
 function writeScroll(store, ppu) {
     const sx = store.scrollX & 0xff;
     const sy = store.scrollY & 0xff;
-    const ss = ppu.scrollStore;
-    ss.set('h_fine', sx & 7);
-    ss.set('h_tile', (sx >> 3) & 31);
-    ss.set('h_nt', (sx >> 8) & 1);
-    ss.set('v_fine', sy & 7);
-    ss.set('v_tile', (sy >> 3) & 31);
-    ss.set('v_nt', (sy >> 8) & 1);
+    ppu.regHT = (sx >> 3) & 31; // 水平 tile
+    ppu.regH = sx & 7; // 水平 fine
+    ppu.regVT = (sy >> 3) & 31; // 垂直 tile
+    ppu.regV = sy & 1; // 垂直 fine (简化)
+    ppu.cntHT = ppu.regHT;
+    ppu.cntH = ppu.regH;
+    ppu.cntVT = ppu.regVT;
+    ppu.cntV = ppu.regV;
 }
 /**
  * 直写 BOOT 精灵 CHR pattern → PPU pattern table 1 (ptTile[0x100+tile])。

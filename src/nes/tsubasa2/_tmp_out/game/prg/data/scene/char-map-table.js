@@ -103,7 +103,7 @@ exports.CHAR_MAP_DOUBLE = {
  * 用于 textscript 文本解码: 单 tile 查 CHAR_MAP_SINGLE, 双 tile 查 CHAR_MAP_DOUBLE_CHAR。
  */
 exports.CHAR_MAP_FULL = (() => {
-    const map = { ...exports.CHAR_MAP_SINGLE };
+    const map = Object.assign({}, exports.CHAR_MAP_SINGLE);
     // 双 tile 可读字符 (按标准片假名浊音顺序补全)
     const dbl = {
         0xa0: 'ガ', 0xa1: 'ギ', 0xa2: 'グ', 0xa3: 'ゲ', 0xa4: 'ゴ',
@@ -125,8 +125,9 @@ exports.CHAR_MAP_FULL = (() => {
 })();
 /** 双 tile 可读字符子表 ($A0-$D7) */
 exports.CHAR_MAP_DOUBLE_CHAR = (() => {
+    var _a;
     const m = {};
     for (let c = 0xa0; c <= 0xd7; c++)
-        m[c] = exports.CHAR_MAP_FULL[c] ?? '';
+        m[c] = (_a = exports.CHAR_MAP_FULL[c]) !== null && _a !== void 0 ? _a : '';
     return m;
 })();

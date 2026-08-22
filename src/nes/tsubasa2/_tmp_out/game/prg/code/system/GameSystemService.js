@@ -242,9 +242,10 @@ class GameSystemService {
     }
     /** $9AA2 paletteWriteByte — 写单个调色板字节到 buffer */
     paletteWriteByte(y, val) {
+        var _a;
         let x = this.rd(0x00E7);
         // $9AA3: LDA $9EA2,X 查表
-        const base = bank00_tables_1.PAL_HELPER_TABLE[val & 0xff] ?? 0;
+        const base = (_a = bank00_tables_1.PAL_HELPER_TABLE[val & 0xff]) !== null && _a !== void 0 ? _a : 0;
         // $9AA8: 值 = ($062A+Y & 0x0F) | 表
         const b = (this.rd(0x062A + y) & 0x0f) | base;
         this.writePpuBuf(x, b);
@@ -267,9 +268,10 @@ class GameSystemService {
     }
     /** 从调色板组表复制一组 (16 字节) 到指定 RAM 区 (索引 → 组) */
     paletteCopy16(table, idx, dst) {
-        const grp = table[idx & 0xff] ?? [];
+        var _a, _b;
+        const grp = (_a = table[idx & 0xff]) !== null && _a !== void 0 ? _a : [];
         for (let i = 0; i < 0x10; i++) {
-            this.wr(dst + i, grp[i] ?? 0);
+            this.wr(dst + i, (_b = grp[i]) !== null && _b !== void 0 ? _b : 0);
         }
     }
     // ════════════════════════════════════════════════
@@ -397,6 +399,7 @@ class GameSystemService {
     // 原 $8920: LDX #$13; JSR $9DEE; 指针=$A0BF+...; 读 bank06
     // ════════════════════════════════════════════════
     tableLoad(a) {
+        var _a, _b, _c;
         // $9DEE: $00ED=A; $00EC=0; 乘 0x13 (19)
         let ec = 0;
         let ed = a;
@@ -412,11 +415,11 @@ class GameSystemService {
         }
         // 指针 = $A000 + ec/ed + $BF00 调整 → 实际 bank06 表
         // bank06 数据区由 bank06 侧提供 (KV: sceneTable)
-        const tbl = this._store.get(`sceneTable_${(ed & 0xff).toString(16)}`) ?? [];
-        this.wr(0x0079, tbl[0] ?? 0);
+        const tbl = (_a = this._store.get(`sceneTable_${(ed & 0xff).toString(16)}`)) !== null && _a !== void 0 ? _a : [];
+        this.wr(0x0079, (_b = tbl[0]) !== null && _b !== void 0 ? _b : 0);
         this.wr(0x007A, 0);
         for (let i = 1; i < 19; i++) {
-            this.wr(0x007B + (i - 1), tbl[i] ?? 0);
+            this.wr(0x007B + (i - 1), (_c = tbl[i]) !== null && _c !== void 0 ? _c : 0);
         }
     }
     // ════════════════════════════════════════════════
@@ -519,11 +522,13 @@ class GameSystemService {
     // ════════════════════════════════════════════════════════════
     /** $C515 协程让出 — 转发 bank30 */
     coroutineYield(a = 1) {
-        this._hw?.coroutineYield(a);
+        var _a;
+        (_a = this._hw) === null || _a === void 0 ? void 0 : _a.coroutineYield(a);
     }
     /** $C50C 比赛阶段→RAM指针查表 — 转发 bank30 */
     subC50C() {
-        this._hw?.subC50C();
+        var _a;
+        (_a = this._hw) === null || _a === void 0 ? void 0 : _a.subC50C();
     }
     /** $C524 坐标变换 — 转发 bank30 */
     subC524(a) {
@@ -531,19 +536,23 @@ class GameSystemService {
     }
     /** $C52D 精灵批初始化 — 转发 bank30 */
     subC52D() {
-        this._hw?.subC52D();
+        var _a;
+        (_a = this._hw) === null || _a === void 0 ? void 0 : _a.subC52D();
     }
     /** $C530 NT 填充 — 转发 bank30 */
     subC530(x, a) {
-        this._hw?.subC530(x, a);
+        var _a;
+        (_a = this._hw) === null || _a === void 0 ? void 0 : _a.subC530(x, a);
     }
     /** $C533 NT 刷新 — 转发 bank30 */
     subC533() {
-        this._hw?.subC533();
+        var _a;
+        (_a = this._hw) === null || _a === void 0 ? void 0 : _a.subC533();
     }
     /** $C54E 读数据+设精灵 — 转发 bank30 */
     subC54E(a) {
-        this._hw?.subC54E(a);
+        var _a;
+        (_a = this._hw) === null || _a === void 0 ? void 0 : _a.subC54E(a);
     }
 }
 exports.GameSystemService = GameSystemService;

@@ -189,6 +189,7 @@ class MatchEngineService {
      * asm $8835-$888A
      */
     sub8835() {
+        var _a;
         if (this.rd(0x0600) === 0)
             return;
         this.wr(0x0616, 0x00);
@@ -200,7 +201,7 @@ class MatchEngineService {
             const x = this.rd(0x0616);
             this.wr(0x0442, this.rd(0x0601 + x));
             const idx611B = this.rd(0x061B);
-            this.wr(0x043D, TABLE_888B[idx611B & 0x01] ?? 0);
+            this.wr(0x043D, (_a = TABLE_888B[idx611B & 0x01]) !== null && _a !== void 0 ? _a : 0);
             this.wr(0x043E, 0x00);
             this._system.subC54E(0x07);
             this.sub888D();
@@ -254,21 +255,23 @@ class MatchEngineService {
     }
     /** $888D: 球员选择 — 查表+属性计算+行动后处理 */
     sub888D() {
+        var _a;
         this.wr(0x003A, this.rd(0x0442));
         const team = this.rd(0x043B);
         const idx = ((team << 2) + this.rd(0x043D)) & 0xFF;
         this.wr(0x003B, (idx << 1) & 0xFF);
         const TABLE_88EB = [0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x00];
-        this.wr(0x0442, TABLE_88EB[idx & 0x07] ?? 0);
+        this.wr(0x0442, (_a = TABLE_88EB[idx & 0x07]) !== null && _a !== void 0 ? _a : 0);
         this.sub8EE9();
         this.sub8132();
     }
     /** $88A8: 行动选择 — 查 $0612 分派, 读球员速度 */
     sub88A8() {
+        var _a;
         this._system.subC54E(0x0B);
         // $88B0: LDA $0612; JSR $C509 (cmd=行动类型, 6 路)
         const table = [0x8169, 0x819C, 0x88BB, 0x88D5, 0x8BC8, 0x8B20];
-        const target = table[this.rd(0x0612)] ?? 0x8169;
+        const target = (_a = table[this.rd(0x0612)]) !== null && _a !== void 0 ? _a : 0x8169;
         switch (target) {
             case 0x8169:
                 this.sub8169();
@@ -672,13 +675,14 @@ class MatchEngineService {
      *   $816C: SEC; JMP $9095 (跳 $9095)
      */
     sub814C() {
+        var _a;
         if ((this.rd(0x0617) & 0x80) === 0) {
             this.sub8E33();
         }
         this._system.subC54E(0);
         // $8154 后: LDA $0612; JSR $C509 (cmd=行动类型, 6 路)
         const table = [0x8169, 0x819C, 0x81BC, 0x81D1, 0x81EA, 0x8BBA];
-        const target = table[this.rd(0x0612)] ?? 0x8169;
+        const target = (_a = table[this.rd(0x0612)]) !== null && _a !== void 0 ? _a : 0x8169;
         switch (target) {
             case 0x8169:
                 this.sub8169();
@@ -710,9 +714,10 @@ class MatchEngineService {
      *   JMP $C603 (跳 bank30 $C603 — H5 stub)
      */
     sub9085() {
+        var _a;
         const team = this.rd(0x043B);
         const TABLE_908E = [0x02, 0x01, 0x01, 0x04, 0x04, 0x01, 0x02, 0x08];
-        const a = TABLE_908E[team & 0x07] ?? 0;
+        const a = (_a = TABLE_908E[team & 0x07]) !== null && _a !== void 0 ? _a : 0;
         // JMP $C603 — bank30 辅助 (H5 stub, 由 _system 覆盖)
         this._system.coroutineYield(a);
     }
@@ -821,19 +826,20 @@ class MatchEngineService {
      * asm: LDA $043D; ASL; TAX; PLP; BCC; INX; LDA $90F4,X; ...
      */
     sub9095(setCarry = false) {
+        var _a, _b, _c;
         const actionType = this.rd(0x043D);
         let x = (actionType << 1) & 0xFF;
         if (setCarry)
             x = (x + 1) & 0xFF;
         const TABLE_90F4 = [0x02, 0x01, 0x01, 0x01, 0x02, 0x01, 0x01, 0x00];
-        let a = TABLE_90F4[x & 0x07] ?? 0;
+        let a = (_a = TABLE_90F4[x & 0x07]) !== null && _a !== void 0 ? _a : 0;
         const dir = this.rd(0x0442);
         if (dir !== 0 && dir !== 0x0B) {
             const carryFromLsr = (x & 1) !== 0;
             if (carryFromLsr) {
                 this._system.subC50C();
                 const TABLE_9102 = [0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x01, 0x00];
-                const v = TABLE_9102[this.rd(0x043D) & 0x07] ?? 0;
+                const v = (_b = TABLE_9102[this.rd(0x043D) & 0x07]) !== null && _b !== void 0 ? _b : 0;
                 const ptr = this.rdPtr(0x0034, 0x0035);
                 this.writeMemByte(ptr + 0x0A, v);
             }
@@ -846,7 +852,7 @@ class MatchEngineService {
                 }
             }
             const TABLE_90E6 = [0x02, 0x01, 0x01, 0x01, 0x02, 0x01, 0x01, 0x00];
-            a = TABLE_90E6[x & 0x07] ?? 0;
+            a = (_c = TABLE_90E6[x & 0x07]) !== null && _c !== void 0 ? _c : 0;
         }
         this._system.coroutineYield(a);
     }

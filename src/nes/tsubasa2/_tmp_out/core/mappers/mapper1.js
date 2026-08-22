@@ -186,6 +186,7 @@ class Mapper1 extends mapper0_1.default {
         return s;
     }
     fromJSON(s) {
+        var _a, _b;
         super.fromJSON(s);
         this.mirroring = s.mirroring;
         this.oneScreenMirroring = s.oneScreenMirroring;
@@ -197,8 +198,8 @@ class Mapper1 extends mapper0_1.default {
         this.romBankSelect = s.romBankSelect;
         this.regBuffer = s.regBuffer;
         this.regBufferCounter = s.regBufferCounter;
-        this.chrBank4k_0000 = s.chrBank4k_0000 ?? 0;
-        this.chrBank4k_1000 = s.chrBank4k_1000 ?? 1;
+        this.chrBank4k_0000 = (_a = s.chrBank4k_0000) !== null && _a !== void 0 ? _a : 0;
+        this.chrBank4k_1000 = (_b = s.chrBank4k_1000) !== null && _b !== void 0 ? _b : 1;
     }
 }
 Mapper1.mapperName = "MMC1";

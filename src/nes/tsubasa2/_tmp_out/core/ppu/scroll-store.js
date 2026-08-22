@@ -124,7 +124,7 @@ class ScrollStore {
     }
     // ── 序列化 ───────────────────────────────────────────────────────
     toJSON() {
-        return { ...this.map };
+        return Object.assign({}, this.map);
     }
     fromJSON(state) {
         if (!state)

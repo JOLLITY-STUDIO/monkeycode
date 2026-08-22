@@ -209,7 +209,7 @@ class Mapper4 extends mapper0_1.default {
         s.irqEnable = this.irqEnable;
         s.prgAddressChanged = this.prgAddressChanged;
         s.chrBanks = Array.from(this.chrBanks);
-        s.prgBankMap = { ...this.prgBankMap };
+        s.prgBankMap = Object.assign({}, this.prgBankMap);
         return s;
     }
     fromJSON(s) {
@@ -225,7 +225,7 @@ class Mapper4 extends mapper0_1.default {
         if (s.chrBanks)
             this.chrBanks.set(s.chrBanks);
         if (s.prgBankMap)
-            this.prgBankMap = { ...s.prgBankMap };
+            this.prgBankMap = Object.assign({}, s.prgBankMap);
     }
     getChrBankMap() {
         return this.chrBanks;

@@ -47,11 +47,12 @@ class BootBackgroundRenderer {
     // ════════════════════════════════════════════════
     /** 解析场景描述符 header: [0]=ptrLo [1]=ptrHi [2]=ctrl [3]=w [4]=h [5]=pos */
     parseHeader(scene) {
-        const ctrl = scene[2] ?? 0;
+        var _a, _b, _c;
+        const ctrl = (_a = scene[2]) !== null && _a !== void 0 ? _a : 0;
         return {
             ctrl,
-            w: scene[3] ?? 0,
-            h: scene[4] ?? 0,
+            w: (_b = scene[3]) !== null && _b !== void 0 ? _b : 0,
+            h: (_c = scene[4]) !== null && _c !== void 0 ? _c : 0,
             paletteIdx: ctrl & 0x3F,
         };
     }
@@ -73,13 +74,14 @@ class BootBackgroundRenderer {
     }
     /** 写一个 metatile (16B tile, 4 行 × 4 列) 到 NT0 指定 (tileX, tileY) */
     writeMetatile(tiles, tileX, tileY) {
+        var _a;
         for (let r = 0; r < 4; r++) {
             for (let c = 0; c < 4; c++) {
                 const x = tileX + c;
                 const y = tileY + r;
                 if (x >= NT_W || y >= NT_H)
                     continue; // NT 边界裁剪
-                const tile = tiles[r * 4 + c] ?? 0;
+                const tile = (_a = tiles[r * 4 + c]) !== null && _a !== void 0 ? _a : 0;
                 this._store.writeNT(0, x, y, {
                     tile, palette: 0, bank: 0,
                     flipH: false, flipV: false, behindBg: false,
@@ -99,33 +101,36 @@ class BootBackgroundRenderer {
     }
     /** PALETTE_BG_06[paletteIdx] (16B 组) → bgPalettes[0..3] */
     applyBgPalette(paletteIdx) {
-        const grp = bank06_palette_1.PALETTE_BG_06[paletteIdx & 0xff] ?? [];
+        var _a, _b, _c, _d, _e;
+        const grp = (_a = bank06_palette_1.PALETTE_BG_06[paletteIdx & 0xff]) !== null && _a !== void 0 ? _a : [];
         for (let p = 0; p < 4; p++) {
             const colors = [
-                this.nesColor(grp[p * 4 + 0] ?? 0),
-                this.nesColor(grp[p * 4 + 1] ?? 0),
-                this.nesColor(grp[p * 4 + 2] ?? 0),
-                this.nesColor(grp[p * 4 + 3] ?? 0),
+                this.nesColor((_b = grp[p * 4 + 0]) !== null && _b !== void 0 ? _b : 0),
+                this.nesColor((_c = grp[p * 4 + 1]) !== null && _c !== void 0 ? _c : 0),
+                this.nesColor((_d = grp[p * 4 + 2]) !== null && _d !== void 0 ? _d : 0),
+                this.nesColor((_e = grp[p * 4 + 3]) !== null && _e !== void 0 ? _e : 0),
             ];
             this._store.writeBgPalette(p, { colors });
         }
     }
     /** PALETTE_SPR_06[paletteIdx] (16B 组) → sprPalettes[0..3] */
     applySprPalette(paletteIdx) {
-        const grp = bank06_palette_1.PALETTE_SPR_06[paletteIdx & 0xff] ?? [];
+        var _a, _b, _c, _d, _e;
+        const grp = (_a = bank06_palette_1.PALETTE_SPR_06[paletteIdx & 0xff]) !== null && _a !== void 0 ? _a : [];
         for (let p = 0; p < 4; p++) {
             const colors = [
-                this.nesColor(grp[p * 4 + 0] ?? 0),
-                this.nesColor(grp[p * 4 + 1] ?? 0),
-                this.nesColor(grp[p * 4 + 2] ?? 0),
-                this.nesColor(grp[p * 4 + 3] ?? 0),
+                this.nesColor((_b = grp[p * 4 + 0]) !== null && _b !== void 0 ? _b : 0),
+                this.nesColor((_c = grp[p * 4 + 1]) !== null && _c !== void 0 ? _c : 0),
+                this.nesColor((_d = grp[p * 4 + 2]) !== null && _d !== void 0 ? _d : 0),
+                this.nesColor((_e = grp[p * 4 + 3]) !== null && _e !== void 0 ? _e : 0),
             ];
             this._store.writeSprPalette(p, { colors });
         }
     }
     /** NES 调色板索引 (0-63) → RGB (越界回退黑色) */
     nesColor(idx) {
-        const rgb = NES_NTSC_RGB[idx & 0x3f] ?? 0;
+        var _a;
+        const rgb = (_a = NES_NTSC_RGB[idx & 0x3f]) !== null && _a !== void 0 ? _a : 0;
         return {
             r: (rgb >> 16) & 0xff,
             g: (rgb >> 8) & 0xff,

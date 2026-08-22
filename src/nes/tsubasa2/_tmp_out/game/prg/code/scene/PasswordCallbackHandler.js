@@ -26,7 +26,7 @@ class PasswordCallbackHandler {
      * @param frames 等待帧数 (A 寄存器, asm 传入)
      */
     waitCounter(frames) {
-        this.wr(0x0019, frames ?? 1);
+        this.wr(0x0019, frames !== null && frames !== void 0 ? frames : 1);
     }
     /**
      * $9A35 renderRefresh — 渲染刷新 + 渐隐初始化 (bank00 $9A35)。
@@ -259,6 +259,7 @@ class PasswordCallbackHandler {
      * 此方法读 ram_0057 (密码种子) 做解码, 不接收字符串参数。
      */
     check() {
+        var _a, _b;
         // $82E8: LDA $0057; BMI $8338
         const r57 = this.rd(0x0057);
         if ((r57 & 0x80) !== 0) {
@@ -282,13 +283,13 @@ class PasswordCallbackHandler {
             // TYA; AND #$0F; LSR; TAX → X = (Y & 0x0F) >> 1
             const x = (y & 0x0F) >> 1;
             // LDA $AADF,Y; CLC; ADC $00E6,X; STA $00E6,X (低字节累加)
-            const loInc = bank02_tables_1.PASSWORD_POS_INC_TABLE[y] ?? 0;
+            const loInc = (_a = bank02_tables_1.PASSWORD_POS_INC_TABLE[y]) !== null && _a !== void 0 ? _a : 0;
             const e6Old = this.rd(0x00E6 + x);
             const e6Sum = e6Old + loInc;
             this.wr(0x00E6 + x, e6Sum & 0xff);
             // LDX $00EC; LDA $AAE0,Y; ADC $007A,X; STA $007A,X (高字节累加, 带进位)
             // $AAE0 = $AADF+1, 高字节增量 = 同一表的下一个字节
-            const hiInc = bank02_tables_1.PASSWORD_POS_INC_TABLE[y + 1] ?? 0;
+            const hiInc = (_b = bank02_tables_1.PASSWORD_POS_INC_TABLE[y + 1]) !== null && _b !== void 0 ? _b : 0;
             const carry1 = e6Sum >> 8;
             const old7A = this.rd(0x007A + ec);
             const sum7A = old7A + hiInc + carry1;

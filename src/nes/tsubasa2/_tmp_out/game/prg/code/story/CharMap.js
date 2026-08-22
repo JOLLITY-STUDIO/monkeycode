@@ -23,6 +23,7 @@ class CharMap {
      * @returns 双 tile 图案 [tile0, tile1], 或单 tile 图案 [code]
      */
     static decode(code) {
+        var _a, _b;
         const c = code & 0xff;
         if (c < char_map_table_1.DOUBLE_TILE_THRESHOLD) {
             // 单 tile
@@ -30,7 +31,7 @@ class CharMap {
         }
         // 双 tile: 第一 tile 0x94 或 0x95, 第二 tile 查表
         const base = c < 0xc8 ? 0x94 : 0x95;
-        const second = char_map_table_1.CHAR_MAP_DOUBLE[c]?.[0] ?? 0;
+        const second = (_b = (_a = char_map_table_1.CHAR_MAP_DOUBLE[c]) === null || _a === void 0 ? void 0 : _a[0]) !== null && _b !== void 0 ? _b : 0;
         return [base, second];
     }
 }

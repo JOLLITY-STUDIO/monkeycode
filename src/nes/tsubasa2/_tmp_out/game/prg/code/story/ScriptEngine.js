@@ -34,6 +34,7 @@ class ScriptEngine {
     }
     /** 填充属性区 (原 $84B0-$84BE ppuFill) */
     fillAttribute() {
+        var _c, _d;
         // $23E0-$23FF 属性区填 $55
         for (let i = 0; i < 0x20; i++) {
             const a = 0x23e0 + i;
@@ -42,7 +43,7 @@ class ScriptEngine {
             const x = off % 32;
             const y = (off / 32) | 0;
             if (y < 30) {
-                this._store.writeNT(nt, x, y, { tile: this._store.readNT(nt, x, y)?.tile ?? 0, palette: 0x55, bank: 0, flipH: false, flipV: false, behindBg: false });
+                this._store.writeNT(nt, x, y, { tile: (_d = (_c = this._store.readNT(nt, x, y)) === null || _c === void 0 ? void 0 : _c.tile) !== null && _d !== void 0 ? _d : 0, palette: 0x55, bank: 0, flipH: false, flipV: false, behindBg: false });
             }
         }
     }
@@ -78,14 +79,16 @@ class ScriptEngine {
     }
     /** 读脚本流当前字节 (不推进指针) */
     readScriptByte() {
+        var _c;
         const ptr = this.scriptPtr;
         const data = this.scriptStream();
-        return data[ptr] ?? 0xff;
+        return (_c = data[ptr]) !== null && _c !== void 0 ? _c : 0xff;
     }
     /** 当前脚本流 (来自 ScriptLoader 装载的 flatten 场景段字节流, 缓存在 DataStore) */
     scriptStream() {
+        var _c;
         const bank = this._store.read('ram_0056');
-        return this._store.get(`scriptStream_${bank}`) ?? [];
+        return (_c = this._store.get(`scriptStream_${bank}`)) !== null && _c !== void 0 ? _c : [];
     }
     /** 推进脚本指针 A 字节并返回 (原 $8879) */
     advancePtr(a) {
@@ -93,9 +96,10 @@ class ScriptEngine {
     }
     /** 读脚本流当前字节并推进 (原读取序列) */
     readByteAdvance() {
+        var _c;
         const ptr = this.scriptPtr;
         const data = this.scriptStream();
-        const b = data[ptr] ?? 0xff;
+        const b = (_c = data[ptr]) !== null && _c !== void 0 ? _c : 0xff;
         this.advancePtr(1);
         return b;
     }
@@ -139,8 +143,9 @@ class ScriptEngine {
     }
     /** 等待帧指令 0xD8-0xDF (原 $8504 分支) */
     handleWaitFrame(code) {
+        var _c;
         const idx = code - 0xd8;
-        const frames = ScriptOpcodes_1.WAIT_FRAME_TABLE[idx] ?? 1;
+        const frames = (_c = ScriptOpcodes_1.WAIT_FRAME_TABLE[idx]) !== null && _c !== void 0 ? _c : 1;
         // $8510 JSR $899A (设精灵标志)
         this.setSpriteFlag();
         // 等待 frames 帧

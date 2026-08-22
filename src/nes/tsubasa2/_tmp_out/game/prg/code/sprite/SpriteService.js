@@ -53,6 +53,7 @@ class SpriteService {
      *   LDY #$00; STY $0044 (模板流偏移=0)
      */
     spawn(groupId) {
+        var _a, _b;
         void groupId;
         // $8005: LDY #$00; STY $003F; STY $0041
         this.wr(0x003F, 0);
@@ -131,8 +132,8 @@ class SpriteService {
         }
         // $808D: TAY; LDA ($0042),Y; TAX; INY; LDA ($0042),Y; STA $0043; STX $0042
         const tblPtr = this.rdPtr(0x0042, 0x0043);
-        const tplLo = sprite_table_1.TEMPLATE_PTR_8280[tblIdx] ?? 0;
-        const tplHi = sprite_table_1.TEMPLATE_PTR_8280[tblIdx + 1] ?? 0;
+        const tplLo = (_a = sprite_table_1.TEMPLATE_PTR_8280[tblIdx]) !== null && _a !== void 0 ? _a : 0;
+        const tplHi = (_b = sprite_table_1.TEMPLATE_PTR_8280[tblIdx + 1]) !== null && _b !== void 0 ? _b : 0;
         this.wrPtr(0x0042, 0x0043, (tplHi << 8) | tplLo);
         // $8098: JSR $8187 (方向偏移计算)
         this.sub8187();
@@ -206,6 +207,7 @@ class SpriteService {
      * @returns false = 模板流结束
      */
     sub80C0() {
+        var _a, _b;
         let y = this.rd(0x0044);
         const tplPtr = this.rdPtr(0x0042, 0x0043);
         // $80C2: LDA ($0042),Y; AND #$38; LSR×3; STA $0045
@@ -214,7 +216,7 @@ class SpriteService {
         // $80CB: INY; LDA ($0042),Y; TAX; LDA $81D2,X
         y = (y + 1) & 0xFF;
         const yIdx = this.readMem(tplPtr + y);
-        let yDisp = sprite_table_1.DISP_81D2[yIdx & 0x3F] ?? 0;
+        let yDisp = (_a = sprite_table_1.DISP_81D2[yIdx & 0x3F]) !== null && _a !== void 0 ? _a : 0;
         // $80D4: BIT $0049; BPL $80DD; EOR #$FF; CLC; ADC #$01
         const x4 = 0;
         let xSign = 0;
@@ -250,7 +252,7 @@ class SpriteService {
             // $810A: LDA ($0042),Y; LSR; LSR; TAX; LDA $81FA,X
             const xRaw = this.readMem(tplPtr + y);
             const xIdx = xRaw >> 2;
-            let xDisp = sprite_table_1.DISP_81FA[xIdx & 0x3F] ?? 0;
+            let xDisp = (_b = sprite_table_1.DISP_81FA[xIdx & 0x3F]) !== null && _b !== void 0 ? _b : 0;
             // $8114: BIT $0049; BVC $811D; EOR #$FF; CLC; ADC #$01
             let xSign2 = 0;
             if ((this.rd(0x0049) & 0x40) !== 0) {

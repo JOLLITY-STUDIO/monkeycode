@@ -154,7 +154,7 @@ class RamStore {
     writeNT(ntSelect, tileX, tileY, entry) {
         const nt = ntSelect === 0 ? this.nt0 : this.nt1;
         if (tileY >= 0 && tileY < nt.length && tileX >= 0 && tileX < 32) {
-            nt[tileY][tileX] = { ...entry };
+            nt[tileY][tileX] = Object.assign({}, entry);
         }
     }
     /** 读指定 NT 入口（调试用） */
@@ -181,20 +181,20 @@ class RamStore {
     }
     /** 写单个精灵调色板颜色 */
     writeSprColor(palIdx, colorIdx, color) {
-        this.paletteTable.sprPalettes[palIdx].colors[colorIdx] = { ...color };
+        this.paletteTable.sprPalettes[palIdx].colors[colorIdx] = Object.assign({}, color);
     }
     /** 写单个 BG 调色板颜色 */
     writeBgColor(palIdx, colorIdx, color) {
-        this.paletteTable.bgPalettes[palIdx].colors[colorIdx] = { ...color };
+        this.paletteTable.bgPalettes[palIdx].colors[colorIdx] = Object.assign({}, color);
     }
     /** 批量替换调色板表 (深拷贝 PaletteColor, 防止共享源常量对象被原地修改) */
     setPaletteTable(table) {
         this.paletteTable = {
             bgPalettes: table.bgPalettes.map((e) => ({
-                colors: e.colors.map((c) => ({ ...c })),
+                colors: e.colors.map((c) => (Object.assign({}, c))),
             })),
             sprPalettes: table.sprPalettes.map((e) => ({
-                colors: e.colors.map((c) => ({ ...c })),
+                colors: e.colors.map((c) => (Object.assign({}, c))),
             })),
         };
     }

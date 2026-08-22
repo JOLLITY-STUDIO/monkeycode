@@ -13,7 +13,7 @@ class InterruptService {
         /** 上一帧输入掩码 (用于计算按下沿 ram_001E) */
         this._prevInput = 0;
         this._store = store;
-        this._system = system ?? null;
+        this._system = system !== null && system !== void 0 ? system : null;
     }
     /** 挂接主循环服务 (组合根注入) */
     attachSystem(system) {
@@ -43,6 +43,7 @@ class InterruptService {
     //                  → 输入读取 ($C982) → 帧完成标志 → 主逻辑帧推进
     // ════════════════════════════════════════════════
     nmi(frame) {
+        var _a, _b, _c;
         // $C77A-$C781: LDA $0020; AND #$7F; STA $2000; STA $0020 (NMI 期间关 NMI)
         this.wr(0x0020, this.rd(0x0020) & 0x7f);
         // $C78B-$C790: OAM DMA (STA $2003 / STA $4014) — 影子 OAM → 硬件 OAM
@@ -67,12 +68,12 @@ class InterruptService {
         // 翻译版: BootRouter.nmiRender() 回放 $05E8 PPU buffer —
         //   NT 区 ($2000-$2FFF) 直写 DataStore writeNT, 调色板区 ($3F00) 直写 paletteTable
         //   (组合根 attachRouter 注入, 此前 _router 恒 null 导致本调用 no-op)。
-        this._router?.nmiRender();
+        (_a = this._router) === null || _a === void 0 ? void 0 : _a.nmiRender();
         // ── 主游戏逻辑每帧推进 (原 $C982 之后由调度器协程驱动) ──
         // bank00 协程调度器 ($9EED/$9F0F) 每帧按 ram_00ED 分发场景帧处理
         // bank02 $8484 分发器: LDA ram_00ED; ASL; TAX; 查 NMI_CALLBACK_TABLE → 跳转
-        this._router?.update(frame);
-        this._system?.update(frame);
+        (_b = this._router) === null || _b === void 0 ? void 0 : _b.update(frame);
+        (_c = this._system) === null || _c === void 0 ? void 0 : _c.update(frame);
     }
     // ════════════════════════════════════════════════
     // $C8FB — $0498 VRAM 缓冲回放
@@ -92,7 +93,8 @@ class InterruptService {
     // 翻译版: 帧驱动把输入掩码写入 DataStore KV 'input_mask' (bit0=A,1=B,2=SEL,3=START,4=UP,5=DOWN,6=LEFT,7=RIGHT)
     // ════════════════════════════════════════════════
     _readInput() {
-        const mask = (this._store.get('input_mask') ?? 0) & 0xff;
+        var _a;
+        const mask = ((_a = this._store.get('input_mask')) !== null && _a !== void 0 ? _a : 0) & 0xff;
         this.wr(0x001c, mask);
         this.wr(0x001e, mask & ~this._prevInput & 0xff);
         this._prevInput = mask;

@@ -119,24 +119,25 @@ export function writePalettes(ppu: any, paletteTable: PaletteTable): void {
   }
 }
 
-/** 直写 OAM: ram_0200 硬件 OAM (ShadowOam.copyToHw 产物) → ppu.oamStore */
+/** 直写 OAM: ram_0200 硬件 OAM (ShadowOam.copyToHw 产物) → ppu.spriteMem */
 export function writeOam(store: DataStore, ppu: any): void {
   for (let i = 0; i < 0x100; i++) {
-    ppu.oamStore.set(i, store.read(0x0200 + i));
+    ppu.spriteMem[i] = store.read(0x0200 + i);
   }
 }
 
-/** 直写滚动: store.scrollX/Y (pixel) → PPU 滚动寄存器 (fine/tile/nt) */
+/** 直写滚动: store.scrollX/Y (pixel) → PPU 滚动寄存器 (regV/regH/regVT/regHT) */
 export function writeScroll(store: DataStore, ppu: any): void {
   const sx = store.scrollX & 0xff;
   const sy = store.scrollY & 0xff;
-  const ss = ppu.scrollStore;
-  ss.set('h_fine', sx & 7);
-  ss.set('h_tile', (sx >> 3) & 31);
-  ss.set('h_nt', (sx >> 8) & 1);
-  ss.set('v_fine', sy & 7);
-  ss.set('v_tile', (sy >> 3) & 31);
-  ss.set('v_nt', (sy >> 8) & 1);
+  ppu.regHT = (sx >> 3) & 31;   // 水平 tile
+  ppu.regH = sx & 7;            // 水平 fine
+  ppu.regVT = (sy >> 3) & 31;   // 垂直 tile
+  ppu.regV = sy & 1;            // 垂直 fine (简化)
+  ppu.cntHT = ppu.regHT;
+  ppu.cntH = ppu.regH;
+  ppu.cntVT = ppu.regVT;
+  ppu.cntV = ppu.regV;
 }
 
 /**

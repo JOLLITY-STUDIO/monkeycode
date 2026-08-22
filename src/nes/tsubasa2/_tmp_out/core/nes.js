@@ -29,6 +29,7 @@ function createDefaultBus() {
 }
 class NES {
     constructor(opts) {
+        var _a;
         /**
          * 去 CPU 化的帧循环。
          *
@@ -92,20 +93,12 @@ class NES {
                 return;
             this.mmap.zapperFired = false;
         };
-        this.opts = {
-            onFrame: function () { },
-            onAudioSample: null,
-            onStatusUpdate: function () { },
-            onBatteryRamWrite: function () { },
-            emulateSound: true,
-            sampleRate: 48000, // Sound sample rate in hz
-            ...opts,
-        };
+        this.opts = Object.assign({ onFrame: function () { }, onAudioSample: null, onStatusUpdate: function () { }, onBatteryRamWrite: function () { }, emulateSound: true, sampleRate: 48000 }, opts);
         this.ui = {
             writeFrame: this.opts.onFrame,
             updateStatus: this.opts.onStatusUpdate,
         };
-        this.bus = this.opts.bus ?? createDefaultBus();
+        this.bus = (_a = this.opts.bus) !== null && _a !== void 0 ? _a : createDefaultBus();
         this.ppu = new index_1.default(this);
         this.papu = new index_2.default(this);
         this.gameGenie = new gamegenie_1.default();

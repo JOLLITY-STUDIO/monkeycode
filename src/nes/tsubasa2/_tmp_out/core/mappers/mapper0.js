@@ -388,11 +388,12 @@ class Mapper0 {
         };
     }
     fromJSON(s) {
+        var _a;
         this.joy1StrobeState = s.joy1StrobeState;
         this.joy2StrobeState = s.joy2StrobeState;
         this.joypadLastWrite = s.joypadLastWrite;
         this.joypadOutputBit0 = s.joypadOutputBit0 || 0;
-        this.joypadLastWriteCycle = s.joypadLastWriteCycle ?? -2;
+        this.joypadLastWriteCycle = (_a = s.joypadLastWriteCycle) !== null && _a !== void 0 ? _a : -2;
     }
 }
 Mapper0.mapperName = "NROM";

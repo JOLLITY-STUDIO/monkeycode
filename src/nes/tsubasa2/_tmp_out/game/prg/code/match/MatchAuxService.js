@@ -49,6 +49,7 @@ class MatchAuxService {
     // asm $800F-$8083
     // ════════════════════════════════════════════════
     sub800F() {
+        var _a, _b;
         // $800F: LDA $053A
         const idx = this.rd(0x053A);
         // $8012: BEQ $8083 (0=结束)
@@ -72,8 +73,8 @@ class MatchAuxService {
             this.wr(0x004D, (this.rd(0x004D) + 1) & 0xFF);
         }
         // $802B: TAY; LDA ($004C),Y; TAX; INY; LDA ($004C),Y; STX $004C; STA $004D
-        const pLo = bank20_tables_1.TABLE_TIMER_PTR_8968[off & 0x1F] ?? 0;
-        const pHi = bank20_tables_1.TABLE_TIMER_PTR_8968[(off + 1) & 0x1F] ?? 0;
+        const pLo = (_a = bank20_tables_1.TABLE_TIMER_PTR_8968[off & 0x1F]) !== null && _a !== void 0 ? _a : 0;
+        const pHi = (_b = bank20_tables_1.TABLE_TIMER_PTR_8968[(off + 1) & 0x1F]) !== null && _b !== void 0 ? _b : 0;
         this.wr(0x004C, pLo);
         this.wr(0x004D, pHi);
         // $8036-$8044: 清 $0547+X 步长 0x15 直到 X==$7E (计时缓冲区 8 组 × 0x15)
@@ -191,14 +192,15 @@ class MatchAuxService {
     }
     /** $80AA: cmd1 — 精灵组设置 (读计时数据初始化精灵组缓冲) */
     sub80AA() {
+        var _a, _b;
         // $80AA: LDY #$05; LDA ($004C),Y (第 5 字节 = 控制)
         const ptr = this.rdPtr(0x004C, 0x004D);
         const param5 = this.readMemByte(ptr + 5);
         // $80AE: AND #$1C; LSR; TAX (控制 bit2-4 → X)
         const x = (param5 & 0x1C) >> 1;
         // $80B2: LDA $88E4,X; STA $003A; LDA $88E5,X; STA $003B (精灵组基址指针)
-        const baseLo = bank20_tables_1.TABLE_88E4[x & 0x0F] ?? 0;
-        const baseHi = bank20_tables_1.TABLE_88E4[(x & 0x0F) + 1] ?? 0;
+        const baseLo = (_a = bank20_tables_1.TABLE_88E4[x & 0x0F]) !== null && _a !== void 0 ? _a : 0;
+        const baseHi = (_b = bank20_tables_1.TABLE_88E4[(x & 0x0F) + 1]) !== null && _b !== void 0 ? _b : 0;
         this.wr(0x003A, baseLo);
         this.wr(0x003B, baseHi);
         // $80BC-$80C4: 清精灵组缓冲 0x15 字节
@@ -353,6 +355,7 @@ class MatchAuxService {
      *          PLA; RTS
      */
     sub81EC(a0442) {
+        var _a, _b;
         // $81EC: LDA $0442; STA $003A
         this.wr(0x003A, a0442 & 0xFF);
         // $81EE: JSR $C50C (比赛阶段→RAM玩家数据指针 → $0034)
@@ -400,8 +403,8 @@ class MatchAuxService {
         this.wr(0x003A, lo);
         this.wr(0x003B, hi);
         // $822A: CLC; LDA $003A; ADC $8264,X; STA $003A; LDA $003B; ADC $8265,X; STA $003B
-        const offLo = bank20_tables_1.TABLE_8264[x & 0x07] ?? 0;
-        const offHi = bank20_tables_1.TABLE_8264[(x & 0x07) + 1] ?? 0;
+        const offLo = (_a = bank20_tables_1.TABLE_8264[x & 0x07]) !== null && _a !== void 0 ? _a : 0;
+        const offHi = (_b = bank20_tables_1.TABLE_8264[(x & 0x07) + 1]) !== null && _b !== void 0 ? _b : 0;
         const addrLo = (this.rd(0x003A) + offLo) & 0xFF;
         const addrHi = (this.rd(0x003B) + offHi) & 0xFF;
         this.wr(0x003A, addrLo);
@@ -437,10 +440,11 @@ class MatchAuxService {
      *   $827E: RTS
      */
     sub826A() {
+        var _a;
         // $826A: LDY #$00; LDA ($0034),Y
         const d0 = this.rdInd(0x0034, 0);
         // $826E: PHP; TAX; LDA $88F0,X; PLP (查表)
-        const spriteIdx = bank20_tables_1.TABLE_88F0[d0 & 0x0F] ?? 0;
+        const spriteIdx = (_a = bank20_tables_1.TABLE_88F0[d0 & 0x0F]) !== null && _a !== void 0 ? _a : 0;
         // $8274: BNE $827E (查表结果非 0 → 直接返回)
         if (spriteIdx !== 0)
             return;
@@ -511,6 +515,7 @@ class MatchAuxService {
      *   LDA $82F6,X; BPL $82E9
      */
     sub82BC() {
+        var _a;
         // $82BC: LDY #$02; LDA ($004C),Y
         const ptr = this.rdPtr(0x004C, 0x004D);
         let a = this.readMemByte(ptr + 2);
@@ -534,7 +539,7 @@ class MatchAuxService {
         this.wr(0x003A, lo);
         this.wr(0x003B, hi);
         // $82DF: LDA $82F6,X (查表, X=0); BPL $82E9
-        const t = bank20_tables_1.TABLE_82F6[0] ?? 0;
+        const t = (_a = bank20_tables_1.TABLE_82F6[0]) !== null && _a !== void 0 ? _a : 0;
         if ((t & 0x80) === 0)
             return;
         // $82E4: AND #$7F; TAY; LDA ($003A),Y; STA $046F,X ...
@@ -543,9 +548,10 @@ class MatchAuxService {
     }
     /** $82E4: 表项写入 $046F (X=0..0x1F) */
     sub82E4() {
+        var _a;
         // $82E4: AND #$7F; TAY; LDA ($003A),Y; STA $046F,X; INX; CPX #$20; BNE $82DF
         for (let x = 0; x < 0x20; x++) {
-            const t = bank20_tables_1.TABLE_82F6[x & 0x1F] ?? 0;
+            const t = (_a = bank20_tables_1.TABLE_82F6[x & 0x1F]) !== null && _a !== void 0 ? _a : 0;
             const idx = t & 0x7F;
             this.wr(0x046F + x, this.readMemByte((this.rdPtr(0x003A, 0x003B) + idx) & 0xFFFF));
         }
@@ -652,6 +658,7 @@ class MatchAuxService {
     }
     /** $837F: 子命令 5/6 处理器 (队伍/计分板 tile 写入) */
     sub837F() {
+        var _a;
         // $837F: LDX #$00
         // $8381: LDA $05FB; BEQ $8387; INX (若 $05FB!=0 则 X=1)
         let x = 0;
@@ -663,7 +670,7 @@ class MatchAuxService {
         // $838C: LDX #$00
         // $838E: LDA $83A6,X; STA $047F,X; INX; CPX #$08; BNE $838E (复制 8 字节)
         for (let i = 0; i < 8; i++) {
-            this.wr(0x047F + i, bank20_tables_1.TABLE_83A6[i] ?? 0);
+            this.wr(0x047F + i, (_a = bank20_tables_1.TABLE_83A6[i]) !== null && _a !== void 0 ? _a : 0);
         }
         // $8399: LDA $BA87,Y; STA $0481; LDA $BA88,Y; STA $0482 (从 ROM 指针表)
         this.wr(0x0481, this.readMemByte(0xBA87 + y));
@@ -1193,6 +1200,7 @@ class MatchAuxService {
     }
     /** $864D: 渲染单个精灵 (写 OAM) */
     sub864D() {
+        var _a, _b;
         // $864D: LDX $003B (OAM 索引)
         const x = this.rd(0x003B);
         // $864F: LDY #$06; LDA ($0034),Y; CMP #$34; BCS $8659; LDA #$34 (X 下限)
@@ -1204,7 +1212,7 @@ class MatchAuxService {
             sprX = 0xCC;
         // $865F: PHA; LDA $062D; AND #$0F; TAY; PLA; CLC; ADC $88DA,Y; STA $0203,X
         const offIdx = this.rd(0x062D) & 0x0F;
-        this.wr(0x0203 + x, (sprX + (bank20_tables_1.TABLE_88DA[offIdx] ?? 0)) & 0xFF);
+        this.wr(0x0203 + x, (sprX + ((_a = bank20_tables_1.TABLE_88DA[offIdx]) !== null && _a !== void 0 ? _a : 0)) & 0xFF);
         // $866E: LDY #$08; LDA ($0034),Y; CMP #$54; BCS $8678; LDA #$54 (Y 下限)
         let sprY = this.rdInd(0x0034, 8);
         if (sprY < 0x54)
@@ -1213,7 +1221,7 @@ class MatchAuxService {
         if (sprY >= 0xAC)
             sprY = 0xAC;
         // $867E: PHA; LDA $062D; AND #$0F; TAY; PLA; CLC; ADC $88DF,Y; STA $0200,X
-        this.wr(0x0200 + x, (sprY + (bank20_tables_1.TABLE_88DF[offIdx] ?? 0)) & 0xFF);
+        this.wr(0x0200 + x, (sprY + ((_b = bank20_tables_1.TABLE_88DF[offIdx]) !== null && _b !== void 0 ? _b : 0)) & 0xFF);
         // $868D: LDA #$03; STA $0202,X (属性)
         this.wr(0x0202 + x, 0x03);
         // $8692: BIT $0615; BPL $86A8
@@ -1411,11 +1419,11 @@ class MatchAuxService {
     /** $87E7: 设置精灵 (TXA; CLC; ADC #$FD; ...) */
     sub87E7(xIn, yIn) {
         // $87E7: TXA (取 X); CLC; ADC #$FD; LDX $003B; STA $0203,X
-        const sx = (xIn ?? 0) + 0xFD & 0xFF;
+        const sx = (xIn !== null && xIn !== void 0 ? xIn : 0) + 0xFD & 0xFF;
         const xo = this.rd(0x003B);
         this.wr(0x0203 + xo, sx);
         // $87F0: TYA; CLC; ADC #$C7; STA $0200,X
-        const sy = (yIn ?? 0) + 0xC7 & 0xFF;
+        const sy = (yIn !== null && yIn !== void 0 ? yIn : 0) + 0xC7 & 0xFF;
         this.wr(0x0200 + xo, sy);
         // $87F7: LDA #$3C; LDY $062D; CPY #$83; PHP; LDY #$01; PLP; BNE $8808
         let tile = 0x3C;
@@ -1436,6 +1444,7 @@ class MatchAuxService {
     }
     /** $881D: 当前控制精灵渲染 */
     sub881D() {
+        var _a;
         // $881D: LDY $0640; BNE $8834 (帧计数)
         const x = this.rd(0x003B);
         if (this.rd(0x0640) === 0) {
@@ -1468,11 +1477,12 @@ class MatchAuxService {
         // $884E: ORA $0202,X; STA $0202,X (合并属性)
         this.wr(0x0202 + x, (this.rd(0x0202 + x) | mask) & 0xFF);
         // $8854: LDA $885B,Y; DEC $0640; RTS (读 tile)
-        this.wr(0x0201 + x, bank20_tables_1.TABLE_885B[y & 0x0F] ?? 0);
+        this.wr(0x0201 + x, (_a = bank20_tables_1.TABLE_885B[y & 0x0F]) !== null && _a !== void 0 ? _a : 0);
         this.wr(0x0640, (this.rd(0x0640) - 1) & 0xFF);
     }
     /** $8861: 特殊精灵显示 (LDA $002C; ...) */
     sub8861() {
+        var _a, _b;
         // $8861: LDA $002C; ASL; STA $0046; ASL; ASL; ADC $0046; TAX (X = A*10)
         const a2c = this.rd(0x002C);
         const xBase = ((a2c << 3) & 0xFF) + ((a2c << 1) & 0xFF); // A*10
@@ -1483,10 +1493,10 @@ class MatchAuxService {
         const y = this.rd(0x003B);
         while (true) {
             // $8872: LDA $88D0,Y (tile)
-            const tile = bank20_tables_1.TABLE_88D0[i & 0x0F] ?? 0;
+            const tile = (_a = bank20_tables_1.TABLE_88D0[i & 0x0F]) !== null && _a !== void 0 ? _a : 0;
             this.wr(0x0201 + y, tile);
             // $887A: LDA $88A8,X; PHA; AND #$F0; LSR; CLC; ADC #$A0; STA $0203,Y
-            const rec = bank20_tables_1.TABLE_88A8[(xBase + i) & 0x3F] ?? 0;
+            const rec = (_b = bank20_tables_1.TABLE_88A8[(xBase + i) & 0x3F]) !== null && _b !== void 0 ? _b : 0;
             const xOff = ((rec & 0xF0) >> 1) + 0xA0;
             this.wr(0x0203 + y, xOff & 0xFF);
             // $8888: PLA; AND #$0F; ASL; ASL; ADC #$A2; STA $0200,Y
@@ -1568,6 +1578,7 @@ class MatchAuxService {
     }
     /** 未注册 ROM 时, 从 bank20-tables 结构化表回退 */
     readTableFallback(addr) {
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
         switch (addr) {
             case 0x8264:
             case 0x8265:
@@ -1575,7 +1586,7 @@ class MatchAuxService {
             case 0x8267:
             case 0x8268:
             case 0x8269:
-                return bank20_tables_1.TABLE_8264[addr - 0x8264] ?? 0;
+                return (_a = bank20_tables_1.TABLE_8264[addr - 0x8264]) !== null && _a !== void 0 ? _a : 0;
             case 0x82F6:
             case 0x82F7:
             case 0x82F8:
@@ -1608,7 +1619,7 @@ class MatchAuxService {
             case 0x8313:
             case 0x8314:
             case 0x8315:
-                return bank20_tables_1.TABLE_82F6[addr - 0x82F6] ?? 0;
+                return (_b = bank20_tables_1.TABLE_82F6[addr - 0x82F6]) !== null && _b !== void 0 ? _b : 0;
             case 0x83A6:
             case 0x83A7:
             case 0x83A8:
@@ -1617,14 +1628,14 @@ class MatchAuxService {
             case 0x83AB:
             case 0x83AC:
             case 0x83AD:
-                return bank20_tables_1.TABLE_83A6[addr - 0x83A6] ?? 0;
+                return (_c = bank20_tables_1.TABLE_83A6[addr - 0x83A6]) !== null && _c !== void 0 ? _c : 0;
             case 0x885B:
             case 0x885C:
             case 0x885D:
             case 0x885E:
             case 0x885F:
             case 0x8860:
-                return bank20_tables_1.TABLE_885B[addr - 0x885B] ?? 0;
+                return (_d = bank20_tables_1.TABLE_885B[addr - 0x885B]) !== null && _d !== void 0 ? _d : 0;
             case 0x88A8:
             case 0x88A9:
             case 0x88AA:
@@ -1665,7 +1676,7 @@ class MatchAuxService {
             case 0x88CD:
             case 0x88CE:
             case 0x88CF:
-                return bank20_tables_1.TABLE_88A8[addr - 0x88A8] ?? 0;
+                return (_e = bank20_tables_1.TABLE_88A8[addr - 0x88A8]) !== null && _e !== void 0 ? _e : 0;
             case 0x88D0:
             case 0x88D1:
             case 0x88D2:
@@ -1676,19 +1687,19 @@ class MatchAuxService {
             case 0x88D7:
             case 0x88D8:
             case 0x88D9:
-                return bank20_tables_1.TABLE_88D0[addr - 0x88D0] ?? 0;
+                return (_f = bank20_tables_1.TABLE_88D0[addr - 0x88D0]) !== null && _f !== void 0 ? _f : 0;
             case 0x88DA:
             case 0x88DB:
             case 0x88DC:
             case 0x88DD:
             case 0x88DE:
-                return bank20_tables_1.TABLE_88DA[addr - 0x88DA] ?? 0;
+                return (_g = bank20_tables_1.TABLE_88DA[addr - 0x88DA]) !== null && _g !== void 0 ? _g : 0;
             case 0x88DF:
             case 0x88E0:
             case 0x88E1:
             case 0x88E2:
             case 0x88E3:
-                return bank20_tables_1.TABLE_88DF[addr - 0x88DF] ?? 0;
+                return (_h = bank20_tables_1.TABLE_88DF[addr - 0x88DF]) !== null && _h !== void 0 ? _h : 0;
             case 0x88E4:
             case 0x88E5:
             case 0x88E6:
@@ -1701,7 +1712,7 @@ class MatchAuxService {
             case 0x88ED:
             case 0x88EE:
             case 0x88EF:
-                return bank20_tables_1.TABLE_88E4[addr - 0x88E4] ?? 0;
+                return (_j = bank20_tables_1.TABLE_88E4[addr - 0x88E4]) !== null && _j !== void 0 ? _j : 0;
             case 0x88F0:
             case 0x88F1:
             case 0x88F2:
@@ -1718,7 +1729,7 @@ class MatchAuxService {
             case 0x88FD:
             case 0x88FE:
             case 0x88FF:
-                return bank20_tables_1.TABLE_88F0[addr - 0x88F0] ?? 0;
+                return (_k = bank20_tables_1.TABLE_88F0[addr - 0x88F0]) !== null && _k !== void 0 ? _k : 0;
             case 0x8968:
             case 0x8969:
             case 0x896A:
@@ -1751,7 +1762,7 @@ class MatchAuxService {
             case 0x8985:
             case 0x8986:
             case 0x8987:
-                return bank20_tables_1.TABLE_TIMER_PTR_8968[addr - 0x8968] ?? 0;
+                return (_l = bank20_tables_1.TABLE_TIMER_PTR_8968[addr - 0x8968]) !== null && _l !== void 0 ? _l : 0;
             default:
                 return 0;
         }

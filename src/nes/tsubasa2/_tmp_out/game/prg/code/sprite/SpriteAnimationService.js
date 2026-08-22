@@ -26,8 +26,9 @@ class SpriteAnimationService {
     }
     /** 读 bank27 数据字节 (addr = CPU $A000-$BFFF) */
     _read27(addr) {
+        var _a;
         const off = (addr - 0xa000) & 0x1fff;
-        return sprite_animation_table_1.SPRITE_ANIM_DATA_27[off] ?? 0;
+        return (_a = sprite_animation_table_1.SPRITE_ANIM_DATA_27[off]) !== null && _a !== void 0 ? _a : 0;
     }
     // ════════════════════════════════════════════════
     // 共享子程 (bank30 $CD7C / $CDC9 / $CDE2)

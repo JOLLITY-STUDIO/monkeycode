@@ -90,10 +90,11 @@ class OamStore {
         };
     }
     fromJSON(state) {
+        var _a, _b;
         if (!state)
             return;
-        this.data.set(state.data ?? []);
-        this.oamAddr = state.oamAddr ?? 0;
+        this.data.set((_a = state.data) !== null && _a !== void 0 ? _a : []);
+        this.oamAddr = (_b = state.oamAddr) !== null && _b !== void 0 ? _b : 0;
     }
 }
 exports.OamStore = OamStore;

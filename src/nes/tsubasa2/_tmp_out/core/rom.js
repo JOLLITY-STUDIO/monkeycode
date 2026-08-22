@@ -134,6 +134,7 @@ class ROM {
      * CHR 仍为原始字节, 用于 PPU 渲染 tile。
      */
     loadTs(romDef) {
+        var _a;
         let i, j, v;
         const header = romDef.header;
         const prg = romDef.prg;
@@ -159,7 +160,7 @@ class ROM {
         for (i = 0; i < this.vromCount; i++) {
             this.vrom[i] = new Uint8Array(4096);
             for (j = 0; j < 4096; j++) {
-                this.vrom[i][j] = chr[i * 4096 + j] ?? 0xff;
+                this.vrom[i][j] = (_a = chr[i * 4096 + j]) !== null && _a !== void 0 ? _a : 0xff;
             }
         }
         // Create VROM tiles:

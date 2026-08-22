@@ -134,13 +134,14 @@ class VramStore {
         };
     }
     fromJSON(state) {
+        var _a, _b, _c, _d, _e;
         if (!state)
             return;
-        this.data.set(state.data ?? []);
-        this.vramAddr = state.vramAddr ?? 0;
-        this.vramTmp = state.vramTmp ?? 0;
-        this.addrInc = state.addrInc ?? 0;
-        this.bufferedValue = state.bufferedValue ?? 0;
+        this.data.set((_a = state.data) !== null && _a !== void 0 ? _a : []);
+        this.vramAddr = (_b = state.vramAddr) !== null && _b !== void 0 ? _b : 0;
+        this.vramTmp = (_c = state.vramTmp) !== null && _c !== void 0 ? _c : 0;
+        this.addrInc = (_d = state.addrInc) !== null && _d !== void 0 ? _d : 0;
+        this.bufferedValue = (_e = state.bufferedValue) !== null && _e !== void 0 ? _e : 0;
     }
 }
 exports.VramStore = VramStore;

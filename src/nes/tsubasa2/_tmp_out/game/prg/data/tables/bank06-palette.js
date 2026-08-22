@@ -39,9 +39,11 @@ exports.PALETTE_SPR_06 = [
 ];
 /** 按 BG 索引查 16 字节调色板 (等价 paletteLoadBG: $B000+idx*16) */
 function getPaletteBG06(idx) {
-    return exports.PALETTE_BG_06[idx] ?? [];
+    var _a;
+    return (_a = exports.PALETTE_BG_06[idx]) !== null && _a !== void 0 ? _a : [];
 }
 /** 按 SPR 索引查 16 字节调色板 (等价 paletteLoadSPR: $B300+idx*16) */
 function getPaletteSPR06(idx) {
-    return exports.PALETTE_SPR_06[idx] ?? [];
+    var _a;
+    return (_a = exports.PALETTE_SPR_06[idx]) !== null && _a !== void 0 ? _a : [];
 }

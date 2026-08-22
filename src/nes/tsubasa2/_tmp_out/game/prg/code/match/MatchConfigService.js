@@ -124,7 +124,7 @@ class MatchConfigService {
      *     读 RAM $069F+val 16bit 表 → ($0032,$0033)
      */
     readAttrTail(ptr, x, presetY) {
-        const y = presetY ?? x;
+        const y = presetY !== null && presetY !== void 0 ? presetY : x;
         const base = this.readIndirect(ptr, y);
         if (x === 0) {
             // $8113: val = 表[0] + p3, 上限 $5F

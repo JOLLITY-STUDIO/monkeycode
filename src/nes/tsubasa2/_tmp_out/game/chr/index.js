@@ -32,11 +32,12 @@ exports.CHR_BANKS = [
 ];
 /** 完整 CHR ROM (128KB Uint8Array, 供 core ROM.loadTs 直接加载) */
 exports.NES_CHR_ROM = (() => {
+    var _a;
     const rom = new Uint8Array(exports.CHR_BANK_COUNT * exports.CHR_BANK_SIZE);
     for (let b = 0; b < exports.CHR_BANK_COUNT; b++) {
         const bank = exports.CHR_BANKS[b];
         for (let i = 0; i < exports.CHR_BANK_SIZE; i++) {
-            rom[b * exports.CHR_BANK_SIZE + i] = bank[i] ?? 0xff;
+            rom[b * exports.CHR_BANK_SIZE + i] = (_a = bank[i]) !== null && _a !== void 0 ? _a : 0xff;
         }
     }
     return rom;

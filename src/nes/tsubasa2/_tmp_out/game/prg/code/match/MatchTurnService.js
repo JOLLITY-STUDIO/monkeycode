@@ -251,9 +251,10 @@ class MatchTurnService {
     //   跳转表 9 项: $8327/$83E7/$83FF/$8358/$8377/$8364/$83D2/$83E7/$83EE
     // ════════════════════════════════════════════════
     sub81A7(a) {
+        var _a;
         // 原 6502: JSR $C509 (A=cmd, $CB99 采样内联跳转表), cmd N → 表项 N
         const table = [0x8327, 0x83E7, 0x83FF, 0x8358, 0x8377, 0x8364, 0x83D2, 0x83E7, 0x83EE];
-        const target = table[a & 0xFF] ?? 0x8327;
+        const target = (_a = table[a & 0xFF]) !== null && _a !== void 0 ? _a : 0x8327;
         switch (target) {
             case 0x8327:
                 this.sub8327();

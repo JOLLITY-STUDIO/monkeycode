@@ -543,6 +543,7 @@ class MatchSceneService {
      * 协程让出, 渐显计分板。
      */
     matchInit9349() {
+        var _a;
         // $9349: JSR $B2A6 (渐隐)
         this.sub92A8();
         // $934C: ram_046B=1
@@ -568,7 +569,7 @@ class MatchSceneService {
         this.subC533();
         // $9388: 读 $B402 表 (MATCH_CTRL_B402) → $0494-$0497 (4字节)
         for (let i = 0; i < 4; i++) {
-            this.wr(0x0494 + i, match_scene_table_1.MATCH_CTRL_B402[i] ?? 0);
+            this.wr(0x0494 + i, (_a = match_scene_table_1.MATCH_CTRL_B402[i]) !== null && _a !== void 0 ? _a : 0);
         }
         // $9393: ram_0490=$7C, ram_0491=$7E
         this.wr(0x0490, 0x7C);

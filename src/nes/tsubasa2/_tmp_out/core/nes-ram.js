@@ -150,7 +150,8 @@ class OamManager {
         return r === 0 ? slot.attr : r === 1 ? slot.tileLo : slot.tileHi;
     }
     getSlot(index) {
-        return this._shadow[index] ?? null;
+        var _a;
+        return (_a = this._shadow[index]) !== null && _a !== void 0 ? _a : null;
     }
     slotCount() {
         return this._shadow.length;
@@ -235,7 +236,7 @@ class OamManager {
         const st = this._store;
         if (!st)
             return;
-        st.sprites = this._entries.map((e) => ({ ...e }));
+        st.sprites = this._entries.map((e) => (Object.assign({}, e)));
     }
     reset() {
         this._shadow.length = 0;

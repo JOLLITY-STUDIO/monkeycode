@@ -90,7 +90,9 @@ class HardwareInitService {
     // ════════════════════════════════════════════════
     bootScene(sceneId) {
         // $C401-$C40C: PPU CTRL/MASK
-        this.wr(0x0020, 0x08);
+        // tsnes trace 实测: 开场后 $0020=$88 (bit7=NMI + bit3=sprite PT=$1000)
+        // $0021=$1E (BG+SPR 可见 + 无剪裁)
+        this.wr(0x0020, 0x88);
         this.wr(0x0021, 0x1e);
         // $C40F-$C411: bank 基址
         this.wr(0x0022, 0x00);
@@ -176,11 +178,12 @@ class HardwareInitService {
      * 已查证: 索引 = (比赛阶段 ^ $0B) << 1。
      */
     subC50C() {
+        var _a;
         const phase = this.rd(0x05FB);
         const idx = ((phase ^ 0x0B) << 1) & 0xFF;
         // $CD89 表 (bank30 内, 32 项 16 位指针)
         const table = RAM_PTR_TABLE_CD89;
-        const ptr = table[idx] ?? 0;
+        const ptr = (_a = table[idx]) !== null && _a !== void 0 ? _a : 0;
         this.wr(0x0034, ptr & 0xFF);
         this.wr(0x0035, (ptr >> 8) & 0xFF);
     }
