@@ -1,0 +1,955 @@
+===== asm/bank28/code_data.s bank28 8C00-8D2F (sub8C06+8C3B表+8C84表) =====
+    BCS $8C26                  ; $8C08
+    LDY $044E                  ; $8C0A
+    BEQ $8C13                  ; $8C0D
+    CPX #$02                   ; $8C0F
+    BCS $8C26                  ; $8C11
+    JSR $8DC9                  ; $8C13
+    LDA $0430                  ; $8C16
+    ASL                        ; $8C19
+    TAY                        ; $8C1A
+    LDA ($0048),Y              ; $8C1B
+    INY                        ; $8C1D
+    CMP ($0048),Y              ; $8C1E
+    BNE $8C2C                  ; $8C20
+    CMP #$00                   ; $8C22
+    BNE $8C2C                  ; $8C24
+    LDA #$00                   ; $8C26
+    STA $0430                  ; $8C28
+    RTS                        ; $8C2B
+    TAX                        ; $8C2C
+    LDA ($0048),Y              ; $8C2D
+    STA $0049                  ; $8C2F
+    STX $0048                  ; $8C31
+    LDA $0430                  ; $8C33
+    LDX #$00                   ; $8C36
+    STX $0430                  ; $8C38
+    JSR $C509                  ; $8C3B
+    STA $0046                  ; $8C48
+    LDY $0046                  ; $8C4A
+    LDA ($0048),Y              ; $8C4C
+    LSR                        ; $8C4E
+    LSR                        ; $8C4F
+    STA $0047                  ; $8C50
+    LDA ($0048),Y              ; $8C52
+    AND #$03                   ; $8C54
+    CMP #$03                   ; $8C56
+    BEQ $8C7E                  ; $8C58
+    CMP $044E                  ; $8C5A
+    BNE $8C62                  ; $8C5D
+    JSR $8C7F                  ; $8C5F
+    INC $0046                  ; $8C62
+    LDA $0047                  ; $8C64
+    CMP #$08                   ; $8C66
+    BEQ $8C7A                  ; $8C68
+    CMP #$09                   ; $8C6A
+    BEQ $8C7A                  ; $8C6C
+    CMP #$0A                   ; $8C6E
+    BEQ $8C7A                  ; $8C70
+    CMP #$11                   ; $8C72
+    BEQ $8C7A                  ; $8C74
+    CMP #$13                   ; $8C76
+    BNE $8C4A                  ; $8C78
+    INC $0046                  ; $8C7A
+    BNE $8C4A                  ; $8C7C
+    RTS                        ; $8C7E
+    LDA $0047                  ; $8C7F
+    SEC                        ; $8C81
+    SBC #$03                   ; $8C82
+    JSR $C509                  ; $8C84
+    JMP $8E11                  ; $8CC9
+    CMP #$05                   ; $8CCF
+    BEQ $8CC7                  ; $8CD1
+    RTS                        ; $8CD3
+    INY                        ; $8CD6
+    LDA ($0048),Y              ; $8CD7
+    CMP #$FF                   ; $8CD9
+    BEQ $8CF7                  ; $8CDB
+    STA $0045                  ; $8CDD
+    LDA #$01                   ; $8CDF
+    PHA                        ; $8CE1
+    JSR $C50C                  ; $8CE2
+    LDY #$00                   ; $8CE5
+    LDA ($0034),Y              ; $8CE7
+    CMP $0045                  ; $8CE9
+    BEQ $8CF6                  ; $8CEB
+    PLA                        ; $8CED
+    CLC                        ; $8CEE
+    ADC #$01                   ; $8CEF
+    CMP #$0B                   ; $8CF1
+    BNE $8CE1                  ; $8CF3
+    RTS                        ; $8CF5
+    PLA                        ; $8CF6
+    JMP $8CC7                  ; $8CF7
+    INY                        ; $8CFC
+    LDA ($0048),Y              ; $8CFD
+    CMP #$FF                   ; $8CFF
+    BNE $8D06                  ; $8D01
+    JMP $8CC7                  ; $8D03
+    LDA #$01                   ; $8D06
+    PHA                        ; $8D08
+    JSR $C50C                  ; $8D09
+    LDY #$00                   ; $8D0C
+    LDA ($0034),Y              ; $8D0E
+    CMP #$1C                   ; $8D10
+    BEQ $8D1D                  ; $8D12
+    PLA                        ; $8D14
+    CLC                        ; $8D15
+    ADC #$01                   ; $8D16
+    CMP #$0B                   ; $8D18
+    BNE $8D08                  ; $8D1A
+    RTS                        ; $8D1C
+    PLA                        ; $8D1D
+    JMP $8CD4                  ; $8D1E
+    BPL $8D29                  ; $8D24
+    JMP $8CD4                  ; $8D26
+    RTS                        ; $8D29
+    CMP #$04                   ; $8D2D
+    BEQ $8D3D                  ; $8D2F
+
+===== asm/bank28/code_data.s bank28 8D30-8E2F (8D41/4E/55+sub8D58+8E1B) =====
+    LDA a: $002B               ; $8D31
+    CMP #$21                   ; $8D34
+    BCS $8D3E                  ; $8D36
+    LDA $0448                  ; $8D38
+    BNE $8D3E                  ; $8D3B
+    RTS                        ; $8D3D
+    JMP $8CC7                  ; $8D3E
+    BNE $8D4D                  ; $8D44
+    LDY #$00                   ; $8D46
+    LDA ($0048),Y              ; $8D48
+    JMP $8E11                  ; $8D4A
+    RTS                        ; $8D4D
+    LDA ($0048),Y              ; $8D50
+    JMP $8E11                  ; $8D52
+    BNE $8D5E                  ; $8D59
+    JMP $8DA6                  ; $8D5B
+    CMP #$0B                   ; $8D5E
+    BNE $8D65                  ; $8D60
+    CPX #$03                   ; $8D65
+    BCS $8D88                  ; $8D67
+    LDY $044E                  ; $8D69
+    BEQ $8D72                  ; $8D6C
+    CPX #$02                   ; $8D6E
+    BNE $8D88                  ; $8D70
+    JSR $8DC9                  ; $8D72
+    LDA $0430                  ; $8D75
+    CLC                        ; $8D78
+    ADC #$04                   ; $8D79
+    ASL                        ; $8D7B
+    TAY                        ; $8D7C
+    LDA ($0048),Y              ; $8D7D
+    INY                        ; $8D7F
+    CMP ($0048),Y              ; $8D80
+    BNE $8D8E                  ; $8D82
+    CMP #$00                   ; $8D84
+    BNE $8D8E                  ; $8D86
+    LDA #$00                   ; $8D88
+    STA $0430                  ; $8D8A
+    RTS                        ; $8D8D
+    TAX                        ; $8D8E
+    LDA ($0048),Y              ; $8D8F
+    STA $0049                  ; $8D91
+    STX $0048                  ; $8D93
+    LDA $0430                  ; $8D95
+    LDX #$00                   ; $8D98
+    STX $0430                  ; $8D9A
+    JSR $C509                  ; $8D9D
+    BNE $8DBA                  ; $8DA8
+    JSR $8DC9                  ; $8DAA
+    LDY #$00                   ; $8DAD
+    LDA ($0048),Y              ; $8DAF
+    INY                        ; $8DB1
+    CMP ($0048),Y              ; $8DB2
+    BNE $8DC0                  ; $8DB4
+    CMP #$00                   ; $8DB6
+    BNE $8DC0                  ; $8DB8
+    LDA #$00                   ; $8DBA
+    STA $0430                  ; $8DBC
+    RTS                        ; $8DBF
+    STA $0431                  ; $8DC0
+    LDA #$01                   ; $8DC3
+    STA $0430                  ; $8DC5
+    RTS                        ; $8DC8
+    STX $0430                  ; $8DC9
+    STA $0047                  ; $8DCC
+    JSR $C50C                  ; $8DCE
+    LDY #$00                   ; $8DD1
+    LDA ($0034),Y              ; $8DD3
+    ASL                        ; $8DD5
+    TAX                        ; $8DD6
+    LDA $8E1B,X                ; $8DD7
+    STA $0048                  ; $8DDA
+    LDA $8E1C,X                ; $8DDC
+    STA $0049                  ; $8DDF
+    RTS                        ; $8DE1
+    LDA ($0048),Y              ; $8DE4
+    BPL $8DED                  ; $8DE6
+    AND #$7F                   ; $8DE8
+    JMP $8E11                  ; $8DEA
+    INY                        ; $8DED
+    LDA ($0048),Y              ; $8DEE
+    STA $0045                  ; $8DF0
+    LDA #$01                   ; $8DF2
+    PHA                        ; $8DF4
+    JSR $C50C                  ; $8DF5
+    LDY #$00                   ; $8DF8
+    LDA ($0034),Y              ; $8DFA
+    CMP $0045                  ; $8DFC
+    BEQ $8E09                  ; $8DFE
+    PLA                        ; $8E00
+    CLC                        ; $8E01
+    ADC #$01                   ; $8E02
+    CMP #$0B                   ; $8E04
+    BNE $8DF4                  ; $8E06
+    RTS                        ; $8E08
+    PLA                        ; $8E09
+    LDY #$00                   ; $8E0A
+    LDA ($0048),Y              ; $8E0C
+    JMP $8E11                  ; $8E0E
+    STA $0431,X                ; $8E14
+    INC $0430                  ; $8E17
+    RTS                        ; $8E1A
+
+===== asm/bank28/code_sub.s bank28 8680-86EF (sub868E 003F分派表) =====
+    LDX #$00                   ; $8680
+    CMP $8BBE,X                ; $8682
+    BEQ $868B                  ; $8685
+    INX                        ; $8687
+    INX                        ; $8688
+    BNE $8682                  ; $8689
+    LDA $8BBF,X                ; $868B
+    JSR $8ADE                  ; $8690
+    CLC                        ; $8693
+    LDA $003C                  ; $8694
+    ADC #$AE                   ; $8696
+    STA $003C                  ; $8698
+    TXA                        ; $869A
+    ADC #$B8                   ; $869B
+    STA $003D                  ; $869D
+    JSR $8B0B                  ; $869F
+    STA $043D                  ; $86A2
+    LDA #$00                   ; $86A5
+    STA $043E                  ; $86A7
+    LDA $003F                  ; $86AA
+    JSR $C509                  ; $86AC
+    JSR $C509                  ; $86BD
+    STA $043D                  ; $86CA
+    JMP $8732                  ; $86CD
+    STA $043D                  ; $86D2
+    JMP $8732                  ; $86D5
+    STA $043D                  ; $86DA
+    JMP $8732                  ; $86DD
+    STA $043D                  ; $86E2
+    LDA #$05                   ; $86E5
+    STA $043E                  ; $86E7
+    RTS                        ; $86EA
+    JSR $C509                  ; $86EE
+
+===== asm/bank28/code_sub.s bank28 8750-87BF (sub875D/879C 003F分派表) =====
+    JSR $8A62                  ; $8760
+    LDY $0621                  ; $8763
+    LDA $87C3,Y                ; $8766
+    STA $003C                  ; $8769
+    BEQ $8773                  ; $876B
+    JSR $8AB3                  ; $876D
+    JMP $879C                  ; $8770
+    LDA #$14                   ; $8773
+    LDX $0635                  ; $8775
+    CPX #$A0                   ; $8778
+    BCS $879C                  ; $877A
+    LDA #$10                   ; $877C
+    CPX #$60                   ; $877E
+    BCS $879C                  ; $8780
+    LDY $0637                  ; $8782
+    BPL $878B                  ; $8785
+    TYA                        ; $8787
+    EOR #$FF                   ; $8788
+    TAY                        ; $878A
+    JSR $C539                  ; $878B
+    LDX #$00                   ; $878E
+    CMP $8BBE,X                ; $8790
+    BEQ $8799                  ; $8793
+    INX                        ; $8795
+    INX                        ; $8796
+    BNE $8790                  ; $8797
+    LDA $8BBF,X                ; $8799
+    JSR $8ADE                  ; $879E
+    CLC                        ; $87A1
+    LDA $003C                  ; $87A2
+    ADC #$2E                   ; $87A4
+    STA $003C                  ; $87A6
+    TXA                        ; $87A8
+    ADC #$B1                   ; $87A9
+    STA $003D                  ; $87AB
+    JSR $8B0B                  ; $87AD
+    STA $043B                  ; $87B0
+    LDA #$00                   ; $87B3
+    STA $043C                  ; $87B5
+    LDA $003F                  ; $87B8
+    JSR $C509                  ; $87BA
+
+===== asm/bank28/_full.s bank28 8C00-8D2F (sub8C06+8C3B表+8C84表) =====
+    BCS $8C26                  ; $8C08
+    LDY $044E                  ; $8C0A
+    BEQ $8C13                  ; $8C0D
+    CPX #$02                   ; $8C0F
+    BCS $8C26                  ; $8C11
+    JSR $8DC9                  ; $8C13
+    LDA $0430                  ; $8C16
+    ASL                        ; $8C19
+    TAY                        ; $8C1A
+    LDA ($0048),Y              ; $8C1B
+    INY                        ; $8C1D
+    CMP ($0048),Y              ; $8C1E
+    BNE $8C2C                  ; $8C20
+    CMP #$00                   ; $8C22
+    BNE $8C2C                  ; $8C24
+    LDA #$00                   ; $8C26
+    STA $0430                  ; $8C28
+    RTS                        ; $8C2B
+    TAX                        ; $8C2C
+    LDA ($0048),Y              ; $8C2D
+    STA $0049                  ; $8C2F
+    STX $0048                  ; $8C31
+    LDA $0430                  ; $8C33
+    LDX #$00                   ; $8C36
+    STX $0430                  ; $8C38
+    JSR $C509                  ; $8C3B
+    STA $0046                  ; $8C48
+    LDY $0046                  ; $8C4A
+    LDA ($0048),Y              ; $8C4C
+    LSR                        ; $8C4E
+    LSR                        ; $8C4F
+    STA $0047                  ; $8C50
+    LDA ($0048),Y              ; $8C52
+    AND #$03                   ; $8C54
+    CMP #$03                   ; $8C56
+    BEQ $8C7E                  ; $8C58
+    CMP $044E                  ; $8C5A
+    BNE $8C62                  ; $8C5D
+    JSR $8C7F                  ; $8C5F
+    INC $0046                  ; $8C62
+    LDA $0047                  ; $8C64
+    CMP #$08                   ; $8C66
+    BEQ $8C7A                  ; $8C68
+    CMP #$09                   ; $8C6A
+    BEQ $8C7A                  ; $8C6C
+    CMP #$0A                   ; $8C6E
+    BEQ $8C7A                  ; $8C70
+    CMP #$11                   ; $8C72
+    BEQ $8C7A                  ; $8C74
+    CMP #$13                   ; $8C76
+    BNE $8C4A                  ; $8C78
+    INC $0046                  ; $8C7A
+    BNE $8C4A                  ; $8C7C
+    RTS                        ; $8C7E
+    LDA $0047                  ; $8C7F
+    SEC                        ; $8C81
+    SBC #$03                   ; $8C82
+    JSR $C509                  ; $8C84
+    JMP $8E11                  ; $8CC9
+    CMP #$05                   ; $8CCF
+    BEQ $8CC7                  ; $8CD1
+    RTS                        ; $8CD3
+    INY                        ; $8CD6
+    LDA ($0048),Y              ; $8CD7
+    CMP #$FF                   ; $8CD9
+    BEQ $8CF7                  ; $8CDB
+    STA $0045                  ; $8CDD
+    LDA #$01                   ; $8CDF
+    PHA                        ; $8CE1
+    JSR $C50C                  ; $8CE2
+    LDY #$00                   ; $8CE5
+    LDA ($0034),Y              ; $8CE7
+    CMP $0045                  ; $8CE9
+    BEQ $8CF6                  ; $8CEB
+    PLA                        ; $8CED
+    CLC                        ; $8CEE
+    ADC #$01                   ; $8CEF
+    CMP #$0B                   ; $8CF1
+    BNE $8CE1                  ; $8CF3
+    RTS                        ; $8CF5
+    PLA                        ; $8CF6
+    JMP $8CC7                  ; $8CF7
+    INY                        ; $8CFC
+    LDA ($0048),Y              ; $8CFD
+    CMP #$FF                   ; $8CFF
+    BNE $8D06                  ; $8D01
+    JMP $8CC7                  ; $8D03
+    LDA #$01                   ; $8D06
+    PHA                        ; $8D08
+    JSR $C50C                  ; $8D09
+    LDY #$00                   ; $8D0C
+    LDA ($0034),Y              ; $8D0E
+    CMP #$1C                   ; $8D10
+    BEQ $8D1D                  ; $8D12
+    PLA                        ; $8D14
+    CLC                        ; $8D15
+    ADC #$01                   ; $8D16
+    CMP #$0B                   ; $8D18
+    BNE $8D08                  ; $8D1A
+    RTS                        ; $8D1C
+    PLA                        ; $8D1D
+    JMP $8CD4                  ; $8D1E
+    BPL $8D29                  ; $8D24
+    JMP $8CD4                  ; $8D26
+    RTS                        ; $8D29
+    CMP #$04                   ; $8D2D
+    BEQ $8D3D                  ; $8D2F
+
+===== asm/bank28/_full.s bank28 8D30-8E2F (8D41/4E/55+sub8D58+8E1B) =====
+    LDA a: $002B               ; $8D31
+    CMP #$21                   ; $8D34
+    BCS $8D3E                  ; $8D36
+    LDA $0448                  ; $8D38
+    BNE $8D3E                  ; $8D3B
+    RTS                        ; $8D3D
+    JMP $8CC7                  ; $8D3E
+    BNE $8D4D                  ; $8D44
+    LDY #$00                   ; $8D46
+    LDA ($0048),Y              ; $8D48
+    JMP $8E11                  ; $8D4A
+    RTS                        ; $8D4D
+    LDA ($0048),Y              ; $8D50
+    JMP $8E11                  ; $8D52
+    BNE $8D5E                  ; $8D59
+    JMP $8DA6                  ; $8D5B
+    CMP #$0B                   ; $8D5E
+    BNE $8D65                  ; $8D60
+    CPX #$03                   ; $8D65
+    BCS $8D88                  ; $8D67
+    LDY $044E                  ; $8D69
+    BEQ $8D72                  ; $8D6C
+    CPX #$02                   ; $8D6E
+    BNE $8D88                  ; $8D70
+    JSR $8DC9                  ; $8D72
+    LDA $0430                  ; $8D75
+    CLC                        ; $8D78
+    ADC #$04                   ; $8D79
+    ASL                        ; $8D7B
+    TAY                        ; $8D7C
+    LDA ($0048),Y              ; $8D7D
+    INY                        ; $8D7F
+    CMP ($0048),Y              ; $8D80
+    BNE $8D8E                  ; $8D82
+    CMP #$00                   ; $8D84
+    BNE $8D8E                  ; $8D86
+    LDA #$00                   ; $8D88
+    STA $0430                  ; $8D8A
+    RTS                        ; $8D8D
+    TAX                        ; $8D8E
+    LDA ($0048),Y              ; $8D8F
+    STA $0049                  ; $8D91
+    STX $0048                  ; $8D93
+    LDA $0430                  ; $8D95
+    LDX #$00                   ; $8D98
+    STX $0430                  ; $8D9A
+    JSR $C509                  ; $8D9D
+    BNE $8DBA                  ; $8DA8
+    JSR $8DC9                  ; $8DAA
+    LDY #$00                   ; $8DAD
+    LDA ($0048),Y              ; $8DAF
+    INY                        ; $8DB1
+    CMP ($0048),Y              ; $8DB2
+    BNE $8DC0                  ; $8DB4
+    CMP #$00                   ; $8DB6
+    BNE $8DC0                  ; $8DB8
+    LDA #$00                   ; $8DBA
+    STA $0430                  ; $8DBC
+    RTS                        ; $8DBF
+    STA $0431                  ; $8DC0
+    LDA #$01                   ; $8DC3
+    STA $0430                  ; $8DC5
+    RTS                        ; $8DC8
+    STX $0430                  ; $8DC9
+    STA $0047                  ; $8DCC
+    JSR $C50C                  ; $8DCE
+    LDY #$00                   ; $8DD1
+    LDA ($0034),Y              ; $8DD3
+    ASL                        ; $8DD5
+    TAX                        ; $8DD6
+    LDA $8E1B,X                ; $8DD7
+    STA $0048                  ; $8DDA
+    LDA $8E1C,X                ; $8DDC
+    STA $0049                  ; $8DDF
+    RTS                        ; $8DE1
+    LDA ($0048),Y              ; $8DE4
+    BPL $8DED                  ; $8DE6
+    AND #$7F                   ; $8DE8
+    JMP $8E11                  ; $8DEA
+    INY                        ; $8DED
+    LDA ($0048),Y              ; $8DEE
+    STA $0045                  ; $8DF0
+    LDA #$01                   ; $8DF2
+    PHA                        ; $8DF4
+    JSR $C50C                  ; $8DF5
+    LDY #$00                   ; $8DF8
+    LDA ($0034),Y              ; $8DFA
+    CMP $0045                  ; $8DFC
+    BEQ $8E09                  ; $8DFE
+    PLA                        ; $8E00
+    CLC                        ; $8E01
+    ADC #$01                   ; $8E02
+    CMP #$0B                   ; $8E04
+    BNE $8DF4                  ; $8E06
+    RTS                        ; $8E08
+    PLA                        ; $8E09
+    LDY #$00                   ; $8E0A
+    LDA ($0048),Y              ; $8E0C
+    JMP $8E11                  ; $8E0E
+    STA $0431,X                ; $8E14
+    INC $0430                  ; $8E17
+    RTS                        ; $8E1A
+
+===== asm/bank28/_full.s bank28 8680-86EF (sub868E 003F分派表) =====
+    LDX #$00                   ; $8680
+    CMP $8BBE,X                ; $8682
+    BEQ $868B                  ; $8685
+    INX                        ; $8687
+    INX                        ; $8688
+    BNE $8682                  ; $8689
+    LDA $8BBF,X                ; $868B
+    JSR $8ADE                  ; $8690
+    CLC                        ; $8693
+    LDA $003C                  ; $8694
+    ADC #$AE                   ; $8696
+    STA $003C                  ; $8698
+    TXA                        ; $869A
+    ADC #$B8                   ; $869B
+    STA $003D                  ; $869D
+    JSR $8B0B                  ; $869F
+    STA $043D                  ; $86A2
+    LDA #$00                   ; $86A5
+    STA $043E                  ; $86A7
+    LDA $003F                  ; $86AA
+    JSR $C509                  ; $86AC
+    JSR $C509                  ; $86BD
+    STA $043D                  ; $86CA
+    JMP $8732                  ; $86CD
+    STA $043D                  ; $86D2
+    JMP $8732                  ; $86D5
+    STA $043D                  ; $86DA
+    JMP $8732                  ; $86DD
+    STA $043D                  ; $86E2
+    LDA #$05                   ; $86E5
+    STA $043E                  ; $86E7
+    RTS                        ; $86EA
+    JSR $C509                  ; $86EE
+
+===== asm/bank28/_full.s bank28 8750-87BF (sub875D/879C 003F分派表) =====
+    JSR $8A62                  ; $8760
+    LDY $0621                  ; $8763
+    LDA $87C3,Y                ; $8766
+    STA $003C                  ; $8769
+    BEQ $8773                  ; $876B
+    JSR $8AB3                  ; $876D
+    JMP $879C                  ; $8770
+    LDA #$14                   ; $8773
+    LDX $0635                  ; $8775
+    CPX #$A0                   ; $8778
+    BCS $879C                  ; $877A
+    LDA #$10                   ; $877C
+    CPX #$60                   ; $877E
+    BCS $879C                  ; $8780
+    LDY $0637                  ; $8782
+    BPL $878B                  ; $8785
+    TYA                        ; $8787
+    EOR #$FF                   ; $8788
+    TAY                        ; $878A
+    JSR $C539                  ; $878B
+    LDX #$00                   ; $878E
+    CMP $8BBE,X                ; $8790
+    BEQ $8799                  ; $8793
+    INX                        ; $8795
+    INX                        ; $8796
+    BNE $8790                  ; $8797
+    LDA $8BBF,X                ; $8799
+    JSR $8ADE                  ; $879E
+    CLC                        ; $87A1
+    LDA $003C                  ; $87A2
+    ADC #$2E                   ; $87A4
+    STA $003C                  ; $87A6
+    TXA                        ; $87A8
+    ADC #$B1                   ; $87A9
+    STA $003D                  ; $87AB
+    JSR $8B0B                  ; $87AD
+    STA $043B                  ; $87B0
+    LDA #$00                   ; $87B3
+    STA $043C                  ; $87B5
+    LDA $003F                  ; $87B8
+    JSR $C509                  ; $87BA
+
+===== asm/bank20/code_data.s bank20 857A-85F9 (sub857A 分派表) =====
+    INY                        ; $85C5
+    LDA ($003E),Y              ; $85C6
+    INY                        ; $85C8
+    STY $0040                  ; $85C9
+    LDY #$0B                   ; $85CB
+    STA ($003C),Y              ; $85CD
+    DEY                        ; $85CF
+    DEY                        ; $85D0
+    TXA                        ; $85D1
+    STA ($003C),Y              ; $85D2
+    RTS                        ; $85D4
+    LDA ($003C),Y              ; $85DA
+    ORA #$10                   ; $85DC
+    STA ($003C),Y              ; $85DE
+    RTS                        ; $85E0
+    JMP $85D8                  ; $85E4
+    LDY $0040                  ; $85E7
+    LDA ($003E),Y              ; $85E9
+    LDY #$11                   ; $85EB
+    STA ($003C),Y              ; $85ED
+    INC $0040                  ; $85EF
+    RTS                        ; $85F1
+    CLC                        ; $85F2
+    LDA ($003C),Y              ; $85F3
+    INY                        ; $85F5
+    ADC ($003C),Y              ; $85F6
+    STA ($003C),Y              ; $85F8
+
+===== asm/bank20/code_sub.s bank20 8438-8537 (sub8438 分派表) =====
+    SEC                        ; $8438
+    SBC #$F0                   ; $8439
+    JSR $C509                  ; $843B
+    LDA #$FF                   ; $8452
+    STA ($003C),Y              ; $8454
+    PLA                        ; $8456
+    PLA                        ; $8457
+    RTS                        ; $8458
+    BNE $845F                  ; $845B
+    LDY #$00                   ; $845F
+    ORA ($003C),Y              ; $8461
+    STA ($003C),Y              ; $8463
+    RTS                        ; $8465
+    LDA ($003E),Y              ; $8468
+    TAX                        ; $846A
+    INY                        ; $846B
+    LDA ($003E),Y              ; $846C
+    STA $003F                  ; $846E
+    STX $003E                  ; $8470
+    LDA #$00                   ; $8472
+    STA $0040                  ; $8474
+    RTS                        ; $8476
+    LDA ($003E),Y              ; $8479
+    PHA                        ; $847B
+    INY                        ; $847C
+    STY $0040                  ; $847D
+    TYA                        ; $847F
+    LDX $003F                  ; $8480
+    CLC                        ; $8482
+    ADC $003E                  ; $8483
+    BCC $8488                  ; $8485
+    LDY #$0E                   ; $8488
+    STA ($003C),Y              ; $848A
+    TXA                        ; $848C
+    INY                        ; $848D
+    STA ($003C),Y              ; $848E
+    LDY #$0D                   ; $8490
+    PLA                        ; $8492
+    STA ($003C),Y              ; $8493
+    RTS                        ; $8495
+    LDA ($003C),Y              ; $8498
+    SEC                        ; $849A
+    SBC #$01                   ; $849B
+    BNE $84A0                  ; $849D
+    RTS                        ; $849F
+    STA ($003C),Y              ; $84A0
+    LDY #$0E                   ; $84A2
+    LDA ($003C),Y              ; $84A4
+    TAX                        ; $84A6
+    INY                        ; $84A7
+    LDA ($003C),Y              ; $84A8
+    STA $003F                  ; $84AA
+    STX $003E                  ; $84AC
+    LDA #$00                   ; $84AE
+    STA $0040                  ; $84B0
+    RTS                        ; $84B2
+    LDA ($003E),Y              ; $84B5
+    TAX                        ; $84B7
+    INY                        ; $84B8
+    LDA ($003E),Y              ; $84B9
+    INY                        ; $84BB
+    STY $0040                  ; $84BC
+    LDY #$14                   ; $84BE
+    STA ($003C),Y              ; $84C0
+    DEY                        ; $84C2
+    TXA                        ; $84C3
+    STA ($003C),Y              ; $84C4
+    RTS                        ; $84C6
+    LDA ($003E),Y              ; $84C9
+    LDY #$12                   ; $84CB
+    STA ($003C),Y              ; $84CD
+    JMP $8450                  ; $84CF
+    INC $0040                  ; $84D4
+    LDA ($003E),Y              ; $84D6
+    STA $0546                  ; $84D8
+    RTS                        ; $84DB
+    LDA ($003C),Y              ; $84DE
+    BEQ $84EF                  ; $84E0
+    CMP #$FF                   ; $84E2
+    BNE $84E7                  ; $84E4
+    RTS                        ; $84E6
+    SEC                        ; $84E7
+    SBC #$01                   ; $84E8
+    STA ($003C),Y              ; $84EA
+    JMP $852A                  ; $84EC
+    STA $0040                  ; $84EF
+    LDY #$01                   ; $84F1
+    LDA ($003C),Y              ; $84F3
+    STA $003E                  ; $84F5
+    INY                        ; $84F7
+    LDA ($003C),Y              ; $84F8
+    STA $003F                  ; $84FA
+    LDY #$00                   ; $84FC
+    LDA ($003C),Y              ; $84FE
+    AND #$10                   ; $8500
+    BEQ $850F                  ; $8502
+    LDA #$04                   ; $8504
+    CLC                        ; $8506
+    ADC $003E                  ; $8507
+    STA $003E                  ; $8509
+    BCC $850F                  ; $850B
+    INC $003F                  ; $850D
+    LDY #$00                   ; $850F
+    LDA ($003C),Y              ; $8511
+    AND #$EF                   ; $8513
+    STA ($003C),Y              ; $8515
+    JSR $857A                  ; $8517
+    LDA $0040                  ; $851A
+    LDY #$01                   ; $851C
+    CLC                        ; $851E
+    ADC $003E                  ; $851F
+    STA ($003C),Y              ; $8521
+    INY                        ; $8523
+    LDA $003F                  ; $8524
+    ADC #$00                   ; $8526
+    STA ($003C),Y              ; $8528
+    STA $0042                  ; $852C
+    STA $0043                  ; $852E
+    LDY #$00                   ; $8530
+    LDA ($003C),Y              ; $8532
+    AND #$FC                   ; $8534
+    STA $0041                  ; $8536
+
+===== asm/bank20/code_sub.s bank20 857A-85F9 (sub857A 分派表) =====
+    INC $0040                  ; $857C
+    LDA ($003E),Y              ; $857E
+    JSR $C509                  ; $8580
+    LDA ($003E),Y              ; $858F
+    TAX                        ; $8591
+    INY                        ; $8592
+    LDA ($003E),Y              ; $8593
+    STA $003F                  ; $8595
+    STX $003E                  ; $8597
+    LDA #$00                   ; $8599
+    STA $0040                  ; $859B
+    JMP $857A                  ; $859D
+    LDA #$FF                   ; $85A2
+    STA ($003C),Y              ; $85A4
+    PLA                        ; $85A6
+    PLA                        ; $85A7
+    RTS                        ; $85A8
+    LDY $0040                  ; $85AC
+    LDA ($003E),Y              ; $85AE
+    TAX                        ; $85B0
+    INY                        ; $85B1
+    LDA ($003E),Y              ; $85B2
+    INY                        ; $85B4
+    STY $0040                  ; $85B5
+    LDY #$07                   ; $85B7
+    STA ($003C),Y              ; $85B9
+    DEY                        ; $85BB
+    DEY                        ; $85BC
+    TXA                        ; $85BD
+    STA ($003C),Y              ; $85BE
+    LDY $0040                  ; $85C0
+    LDA ($003E),Y              ; $85C2
+    TAX                        ; $85C4
+
+===== asm/bank20/_full.s bank20 8438-8537 (sub8438 分派表) =====
+    SEC                        ; $8438
+    SBC #$F0                   ; $8439
+    JSR $C509                  ; $843B
+    LDA #$FF                   ; $8452
+    STA ($003C),Y              ; $8454
+    PLA                        ; $8456
+    PLA                        ; $8457
+    RTS                        ; $8458
+    BNE $845F                  ; $845B
+    LDY #$00                   ; $845F
+    ORA ($003C),Y              ; $8461
+    STA ($003C),Y              ; $8463
+    RTS                        ; $8465
+    LDA ($003E),Y              ; $8468
+    TAX                        ; $846A
+    INY                        ; $846B
+    LDA ($003E),Y              ; $846C
+    STA $003F                  ; $846E
+    STX $003E                  ; $8470
+    LDA #$00                   ; $8472
+    STA $0040                  ; $8474
+    RTS                        ; $8476
+    LDA ($003E),Y              ; $8479
+    PHA                        ; $847B
+    INY                        ; $847C
+    STY $0040                  ; $847D
+    TYA                        ; $847F
+    LDX $003F                  ; $8480
+    CLC                        ; $8482
+    ADC $003E                  ; $8483
+    BCC $8488                  ; $8485
+    LDY #$0E                   ; $8488
+    STA ($003C),Y              ; $848A
+    TXA                        ; $848C
+    INY                        ; $848D
+    STA ($003C),Y              ; $848E
+    LDY #$0D                   ; $8490
+    PLA                        ; $8492
+    STA ($003C),Y              ; $8493
+    RTS                        ; $8495
+    LDA ($003C),Y              ; $8498
+    SEC                        ; $849A
+    SBC #$01                   ; $849B
+    BNE $84A0                  ; $849D
+    RTS                        ; $849F
+    STA ($003C),Y              ; $84A0
+    LDY #$0E                   ; $84A2
+    LDA ($003C),Y              ; $84A4
+    TAX                        ; $84A6
+    INY                        ; $84A7
+    LDA ($003C),Y              ; $84A8
+    STA $003F                  ; $84AA
+    STX $003E                  ; $84AC
+    LDA #$00                   ; $84AE
+    STA $0040                  ; $84B0
+    RTS                        ; $84B2
+    LDA ($003E),Y              ; $84B5
+    TAX                        ; $84B7
+    INY                        ; $84B8
+    LDA ($003E),Y              ; $84B9
+    INY                        ; $84BB
+    STY $0040                  ; $84BC
+    LDY #$14                   ; $84BE
+    STA ($003C),Y              ; $84C0
+    DEY                        ; $84C2
+    TXA                        ; $84C3
+    STA ($003C),Y              ; $84C4
+    RTS                        ; $84C6
+    LDA ($003E),Y              ; $84C9
+    LDY #$12                   ; $84CB
+    STA ($003C),Y              ; $84CD
+    JMP $8450                  ; $84CF
+    INC $0040                  ; $84D4
+    LDA ($003E),Y              ; $84D6
+    STA $0546                  ; $84D8
+    RTS                        ; $84DB
+    LDA ($003C),Y              ; $84DE
+    BEQ $84EF                  ; $84E0
+    CMP #$FF                   ; $84E2
+    BNE $84E7                  ; $84E4
+    RTS                        ; $84E6
+    SEC                        ; $84E7
+    SBC #$01                   ; $84E8
+    STA ($003C),Y              ; $84EA
+    JMP $852A                  ; $84EC
+    STA $0040                  ; $84EF
+    LDY #$01                   ; $84F1
+    LDA ($003C),Y              ; $84F3
+    STA $003E                  ; $84F5
+    INY                        ; $84F7
+    LDA ($003C),Y              ; $84F8
+    STA $003F                  ; $84FA
+    LDY #$00                   ; $84FC
+    LDA ($003C),Y              ; $84FE
+    AND #$10                   ; $8500
+    BEQ $850F                  ; $8502
+    LDA #$04                   ; $8504
+    CLC                        ; $8506
+    ADC $003E                  ; $8507
+    STA $003E                  ; $8509
+    BCC $850F                  ; $850B
+    INC $003F                  ; $850D
+    LDY #$00                   ; $850F
+    LDA ($003C),Y              ; $8511
+    AND #$EF                   ; $8513
+    STA ($003C),Y              ; $8515
+    JSR $857A                  ; $8517
+    LDA $0040                  ; $851A
+    LDY #$01                   ; $851C
+    CLC                        ; $851E
+    ADC $003E                  ; $851F
+    STA ($003C),Y              ; $8521
+    INY                        ; $8523
+    LDA $003F                  ; $8524
+    ADC #$00                   ; $8526
+    STA ($003C),Y              ; $8528
+    STA $0042                  ; $852C
+    STA $0043                  ; $852E
+    LDY #$00                   ; $8530
+    LDA ($003C),Y              ; $8532
+    AND #$FC                   ; $8534
+    STA $0041                  ; $8536
+
+===== asm/bank20/_full.s bank20 857A-85F9 (sub857A 分派表) =====
+    INC $0040                  ; $857C
+    LDA ($003E),Y              ; $857E
+    JSR $C509                  ; $8580
+    LDA ($003E),Y              ; $858F
+    TAX                        ; $8591
+    INY                        ; $8592
+    LDA ($003E),Y              ; $8593
+    STA $003F                  ; $8595
+    STX $003E                  ; $8597
+    LDA #$00                   ; $8599
+    STA $0040                  ; $859B
+    JMP $857A                  ; $859D
+    LDA #$FF                   ; $85A2
+    STA ($003C),Y              ; $85A4
+    PLA                        ; $85A6
+    PLA                        ; $85A7
+    RTS                        ; $85A8
+    LDY $0040                  ; $85AC
+    LDA ($003E),Y              ; $85AE
+    TAX                        ; $85B0
+    INY                        ; $85B1
+    LDA ($003E),Y              ; $85B2
+    INY                        ; $85B4
+    STY $0040                  ; $85B5
+    LDY #$07                   ; $85B7
+    STA ($003C),Y              ; $85B9
+    DEY                        ; $85BB
+    DEY                        ; $85BC
+    TXA                        ; $85BD
+    STA ($003C),Y              ; $85BE
+    LDY $0040                  ; $85C0
+    LDA ($003E),Y              ; $85C2
+    TAX                        ; $85C4
+    INY                        ; $85C5
+    LDA ($003E),Y              ; $85C6
+    INY                        ; $85C8
+    STY $0040                  ; $85C9
+    LDY #$0B                   ; $85CB
+    STA ($003C),Y              ; $85CD
+    DEY                        ; $85CF
+    DEY                        ; $85D0
+    TXA                        ; $85D1
+    STA ($003C),Y              ; $85D2
+    RTS                        ; $85D4
+    LDA ($003C),Y              ; $85DA
+    ORA #$10                   ; $85DC
+    STA ($003C),Y              ; $85DE
+    RTS                        ; $85E0
+    JMP $85D8                  ; $85E4
+    LDY $0040                  ; $85E7
+    LDA ($003E),Y              ; $85E9
+    LDY #$11                   ; $85EB
+    STA ($003C),Y              ; $85ED
+    INC $0040                  ; $85EF
+    RTS                        ; $85F1
+    CLC                        ; $85F2
+    LDA ($003C),Y              ; $85F3
+    INY                        ; $85F5
+    ADC ($003C),Y              ; $85F6
+    STA ($003C),Y              ; $85F8
