@@ -168,7 +168,7 @@ export class Tsubasa2 {
     this.store = new DataStore();
     this.system = new GameSystemService(this.store);
     this.router = new BootRouter(this.store);
-    this.skill = new SkillService(this.store);
+    this.skill = new SkillService(this.store, this.system);
     this.interrupts = new InterruptService(this.store, this.system);
     this.hardware = new HardwareInitService(this.store, this.system, this.router, this.skill);
     // 注入 bank30 引用到 GameSystemService, 供 $C5xx 派发表转发
