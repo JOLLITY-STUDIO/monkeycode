@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataStore = exports.BGM_DATA_MAP = exports.SE_POINTER_TABLE = exports.initScriptOpcodes = exports.WAIT_FRAME_TABLE = exports.PASSWORD_DISPATCH_TABLE = exports.NMI_CALLBACK_TABLE = exports.AudioService = exports.SpriteAnimationService = exports.SpriteService = exports.SkillService = exports.MatchConfigService = exports.MatchHudService = exports.MatchAuxService = exports.MatchTurnService = exports.MatchEngineService = exports.TeamRosterService = exports.PlayerQueryService = exports.CharMap = exports.ScriptLoader = exports.ScriptOpcodes = exports.ScriptEngine = exports.StorySceneController = exports.ResultSceneController = exports.PasswordCallbackHandler = exports.TitleSceneController = exports.OpeningSceneController = exports.InterruptService = exports.HardwareInitService = exports.NmiCallbackIndex = exports.BootRouter = exports.GameSystemService = void 0;
+exports.DataStore = exports.BGM_DATA_MAP = exports.SE_POINTER_TABLE = exports.initScriptOpcodes = exports.WAIT_FRAME_TABLE = exports.PASSWORD_DISPATCH_TABLE = exports.NMI_CALLBACK_TABLE = exports.AudioService = exports.SpriteAnimationService = exports.SpriteService = exports.SkillService = exports.MatchConfigService = exports.MatchHudService = exports.MatchAuxService = exports.MatchTurnService = exports.MatchEngineService = exports.TeamRosterService = exports.PlayerQueryService = exports.CharMap = exports.ScriptLoader = exports.ScriptOpcodes = exports.ScriptEngine = exports.BootBackgroundRenderer = exports.StorySceneController = exports.ResultSceneController = exports.PasswordCallbackHandler = exports.TitleSceneController = exports.InterruptService = exports.HardwareInitService = exports.NmiCallbackIndex = exports.BootRouter = exports.GameSystemService = void 0;
 /**
  * prg/index.ts — 翻译层出口契约
  *
@@ -16,11 +16,11 @@ Object.defineProperty(exports, "BootRouter", { enumerable: true, get: function (
 Object.defineProperty(exports, "NmiCallbackIndex", { enumerable: true, get: function () { return index_1.NmiCallbackIndex; } });
 Object.defineProperty(exports, "HardwareInitService", { enumerable: true, get: function () { return index_1.HardwareInitService; } });
 Object.defineProperty(exports, "InterruptService", { enumerable: true, get: function () { return index_1.InterruptService; } });
-Object.defineProperty(exports, "OpeningSceneController", { enumerable: true, get: function () { return index_1.OpeningSceneController; } });
 Object.defineProperty(exports, "TitleSceneController", { enumerable: true, get: function () { return index_1.TitleSceneController; } });
 Object.defineProperty(exports, "PasswordCallbackHandler", { enumerable: true, get: function () { return index_1.PasswordCallbackHandler; } });
 Object.defineProperty(exports, "ResultSceneController", { enumerable: true, get: function () { return index_1.ResultSceneController; } });
 Object.defineProperty(exports, "StorySceneController", { enumerable: true, get: function () { return index_1.StorySceneController; } });
+Object.defineProperty(exports, "BootBackgroundRenderer", { enumerable: true, get: function () { return index_1.BootBackgroundRenderer; } });
 Object.defineProperty(exports, "ScriptEngine", { enumerable: true, get: function () { return index_1.ScriptEngine; } });
 Object.defineProperty(exports, "ScriptOpcodes", { enumerable: true, get: function () { return index_1.ScriptOpcodes; } });
 Object.defineProperty(exports, "ScriptLoader", { enumerable: true, get: function () { return index_1.ScriptLoader; } });

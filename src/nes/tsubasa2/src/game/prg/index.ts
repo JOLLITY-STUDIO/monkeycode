@@ -9,8 +9,9 @@
 // 小程序编译器对 `export *` re-export 支持有限, 改为先 import 再 export (与 src/index.ts 一致)
 import {
   GameSystemService, BootRouter, NmiCallbackIndex, HardwareInitService,
-  InterruptService, OpeningSceneController, TitleSceneController,
+  InterruptService, TitleSceneController,
   PasswordCallbackHandler, ResultSceneController, StorySceneController,
+  BootBackgroundRenderer,
   ScriptEngine, ScriptOpcodes, ScriptLoader, CharMap,
   PlayerQueryService, TeamRosterService,
   MatchEngineService, MatchTurnService, MatchAuxService, MatchHudService, MatchConfigService,
@@ -22,8 +23,9 @@ import { DataStore } from './data/store/DataStore';
 
 export {
   GameSystemService, BootRouter, NmiCallbackIndex, HardwareInitService,
-  InterruptService, OpeningSceneController, TitleSceneController,
+  InterruptService, TitleSceneController,
   PasswordCallbackHandler, ResultSceneController, StorySceneController,
+  BootBackgroundRenderer,
   ScriptEngine, ScriptOpcodes, ScriptLoader, CharMap,
   PlayerQueryService, TeamRosterService,
   MatchEngineService, MatchTurnService, MatchAuxService, MatchHudService, MatchConfigService,

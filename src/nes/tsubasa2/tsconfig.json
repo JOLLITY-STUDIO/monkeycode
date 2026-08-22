@@ -11,6 +11,6 @@
     "outDir": "./dist",
     "lib": ["ES2020", "DOM"]
   },
-  "include": ["src/**/*.ts", "pages/**/*.ts", "test/**/*.ts", "typings/**/*.d.ts"],
+  "include": ["src/**/*.ts", "pages/**/*.ts", "test/**/*.ts", "typings/**/*.d.ts", "output/boot-scene.ts"],
   "exclude": ["node_modules", "dist"]
 }

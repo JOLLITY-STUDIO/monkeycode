@@ -1,0 +1,20 @@
+[tsc] compile (force) ...
+[tsc] FAIL errors=1493
+621	src/core/ppu/index.ts
+359	src/core/papu/index.ts
+120	src/core/papu/channel-square.ts
+97	src/core/papu/channel-dm.ts
+85	src/core/ppu/palette-table.ts
+72	src/core/papu/channel-noise.ts
+65	src/core/papu/channel-triangle.ts
+31	src/core/debug/debug-panel.ts
+25	src/core/ppu/nametable.ts
+5	src/core/browser/index.ts
+4	src/core/nes.ts
+2	src/core/browser-mini/speakers.ts
+2	src/core/browser/frame-timer.ts
+1	src/core/debug/debug-canvas.ts
+1	src/core/index.ts
+1	src/core/tile.ts
+1	src/core/utils.ts
+1	src/game/prg/code/scene/BootBackgroundRenderer.ts

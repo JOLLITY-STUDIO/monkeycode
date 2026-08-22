@@ -12,8 +12,6 @@ const BootRouter_1 = require("./prg/code/system/BootRouter");
 const InterruptService_1 = require("./prg/code/system/InterruptService");
 const HardwareInitService_1 = require("./prg/code/system/HardwareInitService");
 const SkillService_1 = require("./prg/code/skill/SkillService");
-const OpeningSceneController_1 = require("./prg/code/scene/OpeningSceneController");
-const boot_scene_1 = require("./prg/data/scene/boot-scene");
 // 小程序编译器对 `export *` re-export 支持有限, 改为先 import 再 export (与 src/index.ts 一致)
 const header_1 = require("./header");
 Object.defineProperty(exports, "HEADER", { enumerable: true, get: function () { return header_1.HEADER; } });
@@ -113,22 +111,11 @@ function writeScroll(store, ppu) {
 /**
  * 直写 BOOT 精灵 CHR pattern → PPU pattern table 1 (ptTile[0x100+tile])。
  * MMC3 映射 (去 CPU 化等价): SPR table=1, tile 0x40-0x7F → CHR bank 14,
- * tile 0xC0-0xFF → CHR bank 10 (见 BOOT_SPR_CHR_SEGMENTS)。
+ * tile 0xC0-0xFF → CHR bank 10。
+ * 注意: BOOT_SPR_CHR_SEGMENTS 已删除 (模拟器 dump 数据), CHR pattern 由正常 CHR bank 切换管理。
  */
-function writeBootChrPatterns(ppu) {
-    for (const seg of boot_scene_1.BOOT_SPR_CHR_SEGMENTS) {
-        const bank = index_1.CHR_BANKS[seg.bank];
-        if (!bank)
-            continue;
-        const buf = new Uint8Array(16);
-        for (let t = 0; t < seg.tileCount; t++) {
-            const tileIdx = 0x100 + seg.tileStart + t;
-            const src = seg.offset + t * 16;
-            for (let b = 0; b < 16; b++)
-                buf[b] = bank[src + b] ?? 0;
-            ppu.ptTile[tileIdx].setBuffer(buf);
-        }
-    }
+function writeBootChrPatterns(_ppu) {
+    // 去CPU化: CHR pattern 由 mapper4 CHR bank 配置管理, 不再直写
 }
 /** 全量直写: DataStore → PPU 渲染内存 (CTRL/MASK/NT/调色板/OAM/滚动/精灵pattern) */
 function writeStoreToPpu(store, ppu) {
@@ -156,22 +143,19 @@ class Tsubasa2 {
         this.skill = new SkillService_1.SkillService(this.store);
         this.interrupts = new InterruptService_1.InterruptService(this.store, this.system);
         this.hardware = new HardwareInitService_1.HardwareInitService(this.store, this.system, this.router, this.skill);
-        this.opening = new OpeningSceneController_1.OpeningSceneController(this.store);
     }
-    /** 启动: RESET → 硬件初始化 → resetScene(0) → bootScene(0) → 进入 BOOT 场景 */
+    /** 启动: RESET → 硬件初始化 → resetScene(0) → 进入场景 (走正常场景装载流程) */
     boot() {
         this._frame = 0;
         this.store.reset();
         this.interrupts.reset();
         this.hardware.init();
-        // BOOT 场景: 开场调色板初始化 (palWriteAll 写 DataStore.paletteTable)
-        this.opening.init();
+        // BOOT 场景走正常 sceneLoad 流程 (GameSystemService.sceneLoad + NMI 回调),
+        // 不再用模拟器 dump 的预存快照 (已删除 boot-scene.ts/OpeningSceneController)。
     }
-    /** 每帧: NMI 推进游戏逻辑 → BOOT 开场推进 → 直写 PPU 渲染内存 → PPU 扫描线渲染 */
+    /** 每帧: NMI 推进游戏逻辑 → 直写 PPU 渲染内存 → PPU 扫描线渲染 */
     frame(nes) {
         this.interrupts.nmi(this._frame);
-        // BOOT 开场每帧推进 (调色板渐显, 300 帧后 isTitle)
-        this.opening.update(this._frame);
         writeStoreToPpu(this.store, nes.ppu);
         nes.frame();
         // NES.frame() 走 endScanline 循环, 不触发 VBlank set/endFrame (原由 advanceDots 触发);

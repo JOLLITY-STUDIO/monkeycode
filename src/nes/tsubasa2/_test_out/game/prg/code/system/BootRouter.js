@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.BootRouter = exports.TaskIndex = exports.NmiCallbackIndex = void 0;
 const bank02_tables_1 = require("../../data/tables/bank02-tables");
 const PasswordCallbackHandler_1 = require("../scene/PasswordCallbackHandler");
+const BootBackgroundRenderer_1 = require("../scene/BootBackgroundRenderer");
 /**
  * NMI 回调索引 (对应 NMI_CALLBACK_TABLE 的 24 项入口)。
  *
@@ -72,8 +73,11 @@ var NmiCallbackIndex;
 exports.TaskIndex = NmiCallbackIndex;
 class BootRouter {
     constructor(store) {
+        /** BOOT 开场背景已渲染标志 (只在 BOOT 初始化时渲染一次) */
+        this._bootBgRendered = false;
         this._store = store;
         this._password = new PasswordCallbackHandler_1.PasswordCallbackHandler(store);
+        this._bgRenderer = new BootBackgroundRenderer_1.BootBackgroundRenderer(store);
     }
     // ════════════════════════════════════════════════
     // 零页读/写辅助
@@ -135,6 +139,12 @@ class BootRouter {
         this.wr(0x004B, 0);
         this.wr(0x008F, 2);
         this.wr(0x0091, 2);
+        // BOOT 开场背景: SCENE_0x0A (bank07) + bank08 metatile + bank06 调色板
+        // 走真实 ROM 数据链路, 不再使用模拟器 dump 快照 (boot-scene.ts 已删)
+        if (!this._bootBgRendered) {
+            this._bgRenderer.render();
+            this._bootBgRendered = true;
+        }
     }
     /** 通用回调处理 (其余索引由 §6 callbackNN 方法覆盖) */
     _initScene(_index) {

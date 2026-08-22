@@ -15,7 +15,7 @@ const index_2 = require("./prg/index");
 /** PRG bank 类集合 (供 NES.loadTsROM 存到 rom.tsPrg) */
 const PRG = {
     GameSystemService: index_2.GameSystemService, HardwareInitService: index_2.HardwareInitService, PlayerQueryService: index_2.PlayerQueryService,
-    AudioService: index_2.AudioService, OpeningSceneController: index_2.OpeningSceneController, ResultSceneController: index_2.ResultSceneController,
+    AudioService: index_2.AudioService, ResultSceneController: index_2.ResultSceneController,
     PasswordCallbackHandler: index_2.PasswordCallbackHandler, MatchEngineService: index_2.MatchEngineService, MatchHudService: index_2.MatchHudService,
     MatchConfigService: index_2.MatchConfigService, InterruptService: index_2.InterruptService, MatchTurnService: index_2.MatchTurnService, SkillService: index_2.SkillService,
     StorySceneController: index_2.StorySceneController, MatchAuxService: index_2.MatchAuxService, SpriteService: index_2.SpriteService, SpriteAnimationService: index_2.SpriteAnimationService,

@@ -33,6 +33,7 @@ import {
   PASSWORD_CONTINUE_TABLE,
 } from '../../data/tables/bank02-tables';
 import { PasswordCallbackHandler } from '../scene/PasswordCallbackHandler';
+import { BootBackgroundRenderer } from '../scene/BootBackgroundRenderer';
 
 /**
  * NMI 回调索引 (对应 NMI_CALLBACK_TABLE 的 24 项入口)。
@@ -105,10 +106,14 @@ export const TaskIndex = NmiCallbackIndex;
 export class BootRouter {
   protected _store: DataStore;
   protected _password: PasswordCallbackHandler;
+  protected _bgRenderer: BootBackgroundRenderer;
+  /** BOOT 开场背景已渲染标志 (只在 BOOT 初始化时渲染一次) */
+  protected _bootBgRendered = false;
 
   constructor(store: DataStore) {
     this._store = store;
     this._password = new PasswordCallbackHandler(store);
+    this._bgRenderer = new BootBackgroundRenderer(store);
   }
 
   // ════════════════════════════════════════════════
@@ -174,6 +179,12 @@ export class BootRouter {
     this.wr(0x004B, 0);
     this.wr(0x008F, 2);
     this.wr(0x0091, 2);
+    // BOOT 开场背景: SCENE_0x0A (bank07) + bank08 metatile + bank06 调色板
+    // 走真实 ROM 数据链路, 不再使用模拟器 dump 快照 (boot-scene.ts 已删)
+    if (!this._bootBgRendered) {
+      this._bgRenderer.render();
+      this._bootBgRendered = true;
+    }
   }
 
   /** 通用回调处理 (其余索引由 §6 callbackNN 方法覆盖) */

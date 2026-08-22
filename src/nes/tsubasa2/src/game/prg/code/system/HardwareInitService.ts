@@ -76,6 +76,9 @@ export class HardwareInitService {
     this.wr(0x0469, 0x00);
     // $C6B8: CLI — 省略
     // $C6B9-$C6BB: LDA #$00 (场景 0 = BOOT); JMP $CEFE → 场景重置辅助
+    // 先执行 preMainLoopInit (asm $821D: 含 JSR $AA06 场景/调色板装载 + JSR $98A0 ntClear + JSR $9B7F oamClear)
+    // 否则场景数据不装载, 画面空白
+    this._scene.preMainLoopInit();
     this.resetScene(0);
   }
 

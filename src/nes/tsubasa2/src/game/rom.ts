@@ -12,7 +12,6 @@ import {
   HardwareInitService,
   PlayerQueryService,
   AudioService,
-  OpeningSceneController,
   ResultSceneController,
   PasswordCallbackHandler,
   MatchEngineService,
@@ -33,7 +32,7 @@ import {
 /** PRG bank 类集合 (供 NES.loadTsROM 存到 rom.tsPrg) */
 const PRG = {
   GameSystemService, HardwareInitService, PlayerQueryService,
-  AudioService, OpeningSceneController, ResultSceneController,
+  AudioService, ResultSceneController,
   PasswordCallbackHandler, MatchEngineService, MatchHudService,
   MatchConfigService, InterruptService, MatchTurnService, SkillService,
   StorySceneController, MatchAuxService, SpriteService, SpriteAnimationService,
