@@ -189,6 +189,8 @@ export class Tsubasa2 {
     this.hardware = new HardwareInitService(this.store, this.system, this.router, this.skill);
     // 注入 bank30 引用到 GameSystemService, 供 $C5xx 派发表转发
     this.system.setHardwareInit(this.hardware);
+    // 注入 bank02 NMI 渲染执行器到 InterruptService, 每帧 NMI 回放 $05E8 PPU buffer
+    this.interrupts.attachRouter(this.router);
   }
 
   /** 启动: RESET → 硬件初始化 → resetScene(0) → 进入场景 (走正常场景装载流程) */

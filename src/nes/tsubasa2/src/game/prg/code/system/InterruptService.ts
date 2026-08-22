@@ -9,6 +9,7 @@
  */
 import { DataStore } from '../../data/store/DataStore';
 import type { GameSystemService } from './GameSystemService';
+import type { BootRouter } from './BootRouter';
 
 /** bank 配置表 (结构化数据, 原 MMC3 窗口映射) */
 export interface BankConfig {
@@ -24,6 +25,8 @@ function ramKey(addr: number): string {
 export class InterruptService {
   protected _store: DataStore;
   protected _system: GameSystemService | null = null;
+  /** bank02 NMI 渲染执行器 (BootRouter.nmiRender, $8000-$8137) — 组合根注入 */
+  protected _router: BootRouter | null = null;
 
   /** 上一帧输入掩码 (用于计算按下沿 ram_001E) */
   protected _prevInput = 0;
@@ -36,6 +39,11 @@ export class InterruptService {
   /** 挂接主循环服务 (组合根注入) */
   attachSystem(system: GameSystemService): void {
     this._system = system;
+  }
+
+  /** 挂接 bank02 NMI 渲染执行器 (组合根注入) */
+  attachRouter(router: BootRouter): void {
+    this._router = router;
   }
 
   protected rd(addr: number): number {
@@ -67,6 +75,12 @@ export class InterruptService {
     // $C796: LDA $046B; STA $A000 (MMC3) — 省略并注释
     // $C799: JSR $C8FB — $0498 VRAM 缓冲回放 (写 NT/属性)
     this._commitVramBuffer();
+    // $A000 窗口 NMI 渲染执行器 (bank02 $8000-$8137, trace 实证 $01:A039 STA $2007):
+    //   $05E8 PPU buffer 回放 (NT → writeNT / 调色板 → paletteTable) + 滚动位计算
+    //   + CHR bank 缓存 + 手柄读取 + ram_00E1-E3/003A 累加。
+    // 原版 NMI = bank30 $C76E 保存现场后跳 $A000 执行渲染, 翻译版直接在此调
+    // BootRouter.nmiRender() 完成同等语义 (OAM DMA 已在上面 copyToHw 完成)。
+    this._router?.nmiRender();
     // $C79F-$C7AC: 调色板地址 ($3F00) — 帧合成器消费 DataStore.paletteTable, 省略
     // $C7B7-$C7C2: 回卷: X = $004A + $0538; Y = $004B
     this._store.scrollX = (this.rd(0x004a) + this.rd(0x0538)) & 0xff;
@@ -78,7 +92,14 @@ export class InterruptService {
     // $C7EA-$C7EE: LDA $001B; ORA #$80; STA $001B — 帧完成标志
     this.wr(0x001b, this.rd(0x001b) | 0x80);
     // $C808-$C81F: 恢复寄存器 + RTI — 省略
+    // ── bank02 NMI 渲染主程 ($8000-$815F) — 写 PPU 配置/NT buffer/调色板/滚动 ──
+    // tsnes trace 实测: 开场每帧走 bank2 $8000 NMI 渲染 (Mesen 前缀 $01 = 块2/3)
+    // 写 $2000/$2001/$2006/$2007 + OAM DMA + 调色板刷新 + 滚动寄存器
+    this._router?.nmiRender();
     // ── 主游戏逻辑每帧推进 (原 $C982 之后由调度器协程驱动) ──
+    // bank00 协程调度器 ($9EED/$9F0F) 每帧按 ram_00ED 分发场景帧处理
+    // bank02 $8484 分发器: LDA ram_00ED; ASL; TAX; 查 NMI_CALLBACK_TABLE → 跳转
+    this._router?.update(frame);
     this._system?.update(frame);
   }
 

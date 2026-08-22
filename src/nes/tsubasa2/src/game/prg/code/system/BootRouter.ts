@@ -24,6 +24,7 @@
  * 命名规范: 旧名 DispatchService → 新名 BootRouter。
  */
 import { DataStore } from '../../data/store/DataStore';
+import type { PaletteColor } from '../../../../core/nes-ram';
 import {
   NMI_CALLBACK_TABLE,
   PASSWORD_LEVEL_ADJ_TABLE,
@@ -34,6 +35,22 @@ import {
 } from '../../data/tables/bank02-tables';
 import { PasswordCallbackHandler } from '../scene/PasswordCallbackHandler';
 import { BootBackgroundRenderer } from '../scene/BootBackgroundRenderer';
+
+/**
+ * 标准 NES NTSC 64 色调色板 (0xRRGGBB)。
+ * 与 BootBackgroundRenderer.NES_NTSC_RGB 一致, 用于 $3F00 buffer 回放:
+ *   NES 调色板索引 ($05E8 buffer 数据) → RGB → DataStore.paletteTable → writePalettes → PPU
+ */
+const NES_NTSC_RGB: readonly number[] = [
+  0x525252, 0xB40000, 0xA00000, 0xB1003D, 0x740069, 0x00005B, 0x00005F, 0x001840,
+  0x002F10, 0x084A08, 0x006700, 0x124200, 0x6D2800, 0x000000, 0x000000, 0x000000,
+  0xC4D5E7, 0xFF4000, 0xDC0E22, 0xFF476B, 0xD7009F, 0x680AD7, 0x0019BC, 0x0054B1,
+  0x006A5B, 0x008C03, 0x00AB00, 0x2C8800, 0xA47200, 0x000000, 0x000000, 0x000000,
+  0xF8F8F8, 0xFFAB3C, 0xFF7981, 0xFF5BC5, 0xFF48F2, 0xDF49FF, 0x476DFF, 0x00B4F7,
+  0x00E0FF, 0x00E375, 0x03F42B, 0x78B82E, 0xE5E218, 0x787878, 0x000000, 0x000000,
+  0xFFFFFF, 0xFFF2BE, 0xF8B8B8, 0xF8B8D8, 0xFFB6FF, 0xFFC3FF, 0xC7D1FF, 0x9ADAFF,
+  0x88EDF8, 0x83FFDD, 0xB8F8B8, 0xF5F8AC, 0xFFFFB0, 0xF8D8F8, 0x000000, 0x000000,
+] as const;
 
 /**
  * NMI 回调索引 (对应 NMI_CALLBACK_TABLE 的 24 项入口)。
@@ -279,17 +296,18 @@ export class BootRouter {
             count = ctrl;
             // $2000 = $80
           }
-          const ntHi = this.rd(0x05EA + x);
-          const ntLo = this.rd(0x05E9 + x);
-          const tile = this.rd(0x05EB + x);
-          // 写 NT: 循环 count 次, 每次 tile → $2007
-          // 翻译版: 写 DataStore NT 区
+          // $8026-$8034: LDA $05EA,X → $2006 (地址高); LDA $05E9,X → $2006 (地址低)
+          const vramAddr = (this.rd(0x05EA + x) << 8) | this.rd(0x05E9 + x);
+          // $8036-$803E: 循环 count 次, 每次 INX 后 LDA $05EB,X → STA $2007
+          //   (每迭代 INX 读不同字节写 PPU, PPU 地址自动递增 — 不是重复写同一 tile!)
+          // 翻译版: 直写 DataStore — NT 区 ($2000-$2FFF) 走 writeNT,
+          //         调色板区 ($3F00-$3FFF) 走 paletteTable (NES 索引 → RGB)
           for (let i = 0; i < count; i++) {
-            const addr = ((ntHi << 8) | ntLo) + i;
-            this.wr(addr & 0xffff, tile);
+            const val = this.rd(0x05EB + x + i);
+            this.writeVramByte(vramAddr + i, val);
           }
-          x = (x + 1) & 0xff;
-          x = (x + 3) & 0xff; // INX×3
+          // INX ×count (数据循环内) + INX×3 (跳过 addrLo/addrHi) → 下一组 ctrl 位置
+          x = (x + count + 3) & 0xff;
           if (this.rd(0x05E8 + x) === 0) break;
         }
         // $8048: LDA #$00; STA $0628 (清 NT buffer 标志)
@@ -373,6 +391,68 @@ export class BootRouter {
     this.wr(0x001B, this.rd(0x001B) | 0x80);
     // INC $003A
     this.wr(0x003A, (this.rd(0x003A) + 1) & 0xff);
+  }
+
+  /**
+   * 写单个 VRAM 字节 ($2007 写语义, 原版 PPU 地址自动递增)。
+   * 翻译版直写 DataStore (去 CPU 化, 无 PPU 寄存器):
+   *   $2000-$2FFF (NT 区) → writeNT 网格 (nt0: $2000 基址 / nt1: $2800 基址,
+   *                与 src/game/index.ts writeNameTable 的物理布局一致)
+   *   $3F00-$3FFF (调色板区) → paletteTable (NES 调色板索引 → RGB)
+   *   其他地址 (图案表/滚动寄存器等) → 由 CHR/滚动管线管理, 此处忽略
+   */
+  protected writeVramByte(vramAddr: number, val: number): void {
+    const addr = vramAddr & 0xffff;
+    if (addr >= 0x3f00 && addr <= 0x3fff) {
+      this.writePaletteIndex(addr & 0x1f, val);
+      return;
+    }
+    if (addr >= 0x2000 && addr <= 0x2fff) {
+      // 水平镜像布局 (ntable1=[0,0,1,1]): $2000-$27FF → 物理 NT A (nt0), $2800-$2FFF → 物理 NT B (nt1)
+      let base = 0x2000;
+      let nt: 0 | 1 = 0;
+      if (addr >= 0x2800) {
+        base = 0x2800;
+        nt = 1;
+      }
+      const a = (addr - base) & 0x3ff;
+      if (a < 0x3c0) {
+        // 0x3c0 起是属性表字节 — 翻译版属性表由 writeNameTable 从 entry.palette 计算, 忽略原始属性字节
+        const tx = a % 32;
+        const ty = (a / 32) | 0;
+        if (ty < 30) {
+          this._store.writeNT(nt, tx, ty, { tile: val, palette: 0, bank: 0, flipH: false, flipV: false, behindBg: false });
+        }
+      }
+      return;
+    }
+    // 其他地址忽略
+  }
+
+  /**
+   * 写单个调色板字节 ($3F00-$3F1F, NES 调色板索引 → DataStore.paletteTable RGB)。
+   * $3F00-$3F0F = BG 4 组 (每 4 字节一组: 通用色+3 色), $3F10-$3F1F = SPR 4 组。
+   * 镜像位 ($3F04/$3F08/$3F0C = $3F00, $3F14/$3F18/$3F1C = $3F10) 直接写同色值,
+   * 与真实 PPU 镜像结果一致 (游戏整段写 $3F00 时该位本来就是通用色)。
+   */
+  protected writePaletteIndex(palByte: number, nesIdx: number): void {
+    const rgb = NES_NTSC_RGB[nesIdx & 0x3f] ?? 0;
+    const color: PaletteColor = {
+      r: (rgb >> 16) & 0xff,
+      g: (rgb >> 8) & 0xff,
+      b: rgb & 0xff,
+      a: 0xff,
+    };
+    const a = palByte & 0x1f;
+    if (a >= 0x10) {
+      const p = ((a - 0x10) >> 2) & 3;
+      const c = (a - 0x10) & 3;
+      this._store.writeSprColor(p as 0 | 1 | 2 | 3, c as 0 | 1 | 2 | 3, color);
+    } else {
+      const p = (a >> 2) & 3;
+      const c = a & 3;
+      this._store.writeBgColor(p as 0 | 1 | 2 | 3, c as 0 | 1 | 2 | 3, color);
+    }
   }
 
   // ════════════════════════════════════════════════════════════════
