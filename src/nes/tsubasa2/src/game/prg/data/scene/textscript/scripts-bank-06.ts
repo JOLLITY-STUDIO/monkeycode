@@ -6,7 +6,8 @@
  * 场景段边界 = sceneLoad(0xFA) / jump(0xFE) / end(0xFF)。
  *
  * bank06 是混合 bank: 前 $1000 字节是脚本, $1000+ 是调色板数据。
- * 调色板单独导出 (PALETTE_BG_06 / PALETTE_SPR_06), 见文件末尾。
+ * 调色板单独导出在 data/tables/bank06-palette.ts (PALETTE_BG_06 / PALETTE_SPR_06),
+ * 不在此文件内。
  */
 
 // ═══ 脚本 0x00 (entryAddr=0xc, 15B, 1个场景段) ═══

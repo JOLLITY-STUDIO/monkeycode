@@ -54,6 +54,10 @@
                                            "type":  "folder"
                                        },
                                        {
+                                           "value":  "_tmp_old_src",
+                                           "type":  "folder"
+                                       },
+                                       {
                                            "value":  "asm",
                                            "type":  "folder"
                                        },

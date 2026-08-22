@@ -10,7 +10,8 @@
 export { SCRIPTS_BANK_03 } from './scripts-bank-03';
 export { SCRIPTS_BANK_04 } from './scripts-bank-04';
 export { SCRIPTS_BANK_05 } from './scripts-bank-05';
-export { SCRIPTS_BANK_06, PALETTE_BG_06, PALETTE_SPR_06 } from './scripts-bank-06';
+export { SCRIPTS_BANK_06 } from './scripts-bank-06';
+export { PALETTE_BG_06, PALETTE_SPR_06 } from '../../tables/bank06-palette';
 
 import { SCRIPTS_BANK_03 } from './scripts-bank-03';
 import { SCRIPTS_BANK_04 } from './scripts-bank-04';

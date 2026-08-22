@@ -18,7 +18,7 @@ import type { PaletteColor } from '../../../../core/nes-ram';
 import { DataStore } from '../../data/store/DataStore';
 import { SCENE_0x0A } from '../../data/tables/bank07-scenes-metatile';
 import { getMetatile } from '../../data/tables/bank08-map-metatile';
-import { PALETTE_BG_06, PALETTE_SPR_06 } from '../../data/scene/textscript/scripts-bank-06';
+import { PALETTE_BG_06, PALETTE_SPR_06 } from '../../data/tables/bank06-palette';
 
 /** 标准 NES NTSC 64 色调色板 (0xRRGGBB, 与模拟器 PPU palTable.loadNTSCPalette 一致) */
 const NES_NTSC_RGB: readonly number[] = [
@@ -115,29 +115,29 @@ export class BootBackgroundRenderer {
     this.applySprPalette(paletteIdx);
   }
 
-  /** PALETTE_BG_06[paletteIdx*16 .. +16] → bgPalettes[0..3] */
+  /** PALETTE_BG_06[paletteIdx] (16B 组) → bgPalettes[0..3] */
   protected applyBgPalette(paletteIdx: number): void {
-    const off = (paletteIdx * 16) & 0xff;
+    const grp = PALETTE_BG_06[paletteIdx & 0xff] ?? [];
     for (let p = 0; p < 4; p++) {
       const colors: [PaletteColor, PaletteColor, PaletteColor, PaletteColor] = [
-        this.nesColor(PALETTE_BG_06[off + p * 4 + 0] ?? 0),
-        this.nesColor(PALETTE_BG_06[off + p * 4 + 1] ?? 0),
-        this.nesColor(PALETTE_BG_06[off + p * 4 + 2] ?? 0),
-        this.nesColor(PALETTE_BG_06[off + p * 4 + 3] ?? 0),
+        this.nesColor(grp[p * 4 + 0] ?? 0),
+        this.nesColor(grp[p * 4 + 1] ?? 0),
+        this.nesColor(grp[p * 4 + 2] ?? 0),
+        this.nesColor(grp[p * 4 + 3] ?? 0),
       ];
       this._store.writeBgPalette(p as 0 | 1 | 2 | 3, { colors });
     }
   }
 
-  /** PALETTE_SPR_06[paletteIdx*16 .. +16] → sprPalettes[0..3] */
+  /** PALETTE_SPR_06[paletteIdx] (16B 组) → sprPalettes[0..3] */
   protected applySprPalette(paletteIdx: number): void {
-    const off = (paletteIdx * 16) & 0xff;
+    const grp = PALETTE_SPR_06[paletteIdx & 0xff] ?? [];
     for (let p = 0; p < 4; p++) {
       const colors: [PaletteColor, PaletteColor, PaletteColor, PaletteColor] = [
-        this.nesColor(PALETTE_SPR_06[off + p * 4 + 0] ?? 0),
-        this.nesColor(PALETTE_SPR_06[off + p * 4 + 1] ?? 0),
-        this.nesColor(PALETTE_SPR_06[off + p * 4 + 2] ?? 0),
-        this.nesColor(PALETTE_SPR_06[off + p * 4 + 3] ?? 0),
+        this.nesColor(grp[p * 4 + 0] ?? 0),
+        this.nesColor(grp[p * 4 + 1] ?? 0),
+        this.nesColor(grp[p * 4 + 2] ?? 0),
+        this.nesColor(grp[p * 4 + 3] ?? 0),
       ];
       this._store.writeSprPalette(p as 0 | 1 | 2 | 3, { colors });
     }

@@ -20,7 +20,7 @@
  *   - bank28/bank30 也会写 ram_0048 (比赛配置/其他)
  *   索引设定后调 paletteLoadBG/paletteLoadSPR, 从 bank06 的 PALETTE_BG_06/PALETTE_SPR_06
  *   按索引×16 取 16 字节 → RAM $062A(BG)/$063A(SPR), 再 paletteWriteAll → PPU.
- *   PALETTE_BG_06/PALETTE_SPR_06 各 256 字节 (16组×16B), 静态表, 直接 import 不切 bank.
+ *   PALETTE_BG_06/PALETTE_SPR_06 各 8 组×16B (bank06-palette.ts), 静态表, 直接 import 不切 bank.
  *
  * 命名规范: 旧名 Bank00Service → 新名 GameSystemService。
  */
@@ -41,7 +41,7 @@ import {
   getSceneData as getBank07SceneData,
   SCENE_PTR_TABLE,
 } from '../../data/tables/bank07-scenes-metatile';
-import { PALETTE_BG_06, PALETTE_SPR_06 } from '../../data/scene/textscript/scripts-bank-06';
+import { PALETTE_BG_06, PALETTE_SPR_06 } from '../../data/tables/bank06-palette';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {
@@ -318,11 +318,11 @@ export class GameSystemService {
     this.paletteCopy16(PALETTE_SPR_06, idx, 0x063A);
   }
 
-  /** 从调色板表复制 16 字节到指定 RAM 区 (索引 × 16 = 组偏移) */
-  private paletteCopy16(table: readonly number[], idx: number, dst: number): void {
-    const off = (idx * 16) & 0xff;
+  /** 从调色板组表复制一组 (16 字节) 到指定 RAM 区 (索引 → 组) */
+  private paletteCopy16(table: readonly (readonly number[])[], idx: number, dst: number): void {
+    const grp = table[idx & 0xff] ?? [];
     for (let i = 0; i < 0x10; i++) {
-      this.wr(dst + i, table[off + i] ?? 0);
+      this.wr(dst + i, grp[i] ?? 0);
     }
   }
 

@@ -12,7 +12,7 @@
  *
  * 命名规范: 旧名 char-map → 新名 CharMap。
  */
-import { CHAR_MAP_DOUBLE, DOUBLE_TILE_THRESHOLD, DOUBLE_TILE_BASE, DOUBLE_TILE_COUNT } from '../../data/tables/char-map-table';
+import { CHAR_MAP_DOUBLE, DOUBLE_TILE_THRESHOLD, DOUBLE_TILE_BASE, DOUBLE_TILE_COUNT } from '../../data/scene/char-map-table';
 
 export class CharMap {
   /** 双 tile 表 */
