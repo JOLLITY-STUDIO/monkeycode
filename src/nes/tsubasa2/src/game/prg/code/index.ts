@@ -27,6 +27,7 @@ export { MatchTurnService } from './match/MatchTurnService';
 export { MatchAuxService } from './match/MatchAuxService';
 export { MatchHudService } from './match/MatchHudService';
 export { MatchConfigService } from './match/MatchConfigService';
+export { MatchSceneService } from './match/MatchSceneService';
 
 export { SkillService } from './skill/SkillService';
 export { SpriteService } from './sprite/SpriteService';

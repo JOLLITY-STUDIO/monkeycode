@@ -15,6 +15,7 @@ import { DataStore } from '../../data/store/DataStore';
 import type { GameSystemService } from './GameSystemService';
 import type { BootRouter } from './BootRouter';
 import type { SkillService } from '../skill/SkillService';
+import { getPaletteByteFBCC } from '../../data/tables/bank30-tables';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {
@@ -212,22 +213,85 @@ export class HardwareInitService {
   }
 
   /**
-   * $C524 → $CBC2: 坐标变换。
-   * asm $CBC2: 读 ram_00E6/00E7, 算 NT 地址偏移。
-   * H5 版 stub (由渲染管线覆盖)。
+   * $C524 → $CBC2: 坐标变换 (A 输入 → A 输出, Y 为分段标志)。
+   * asm $CBC2: 分段比较 $A0/$C8/$1F/$B4, 移位/加减换算精灵坐标。
+   * 字节已验证 (bank30 off $BC2): 逐指令翻译, 无 stub。
    */
   subC524(a: number): number {
-    return a;  // stub
+    // $BC4: CMP #$A0; BCC $BF0 → A < $A0 原样返回 (Y=0)
+    if (a < 0xa0) return a & 0xff;
+    if (a < 0xc8) {
+      // $BCA: BCC $BDA (Y=$94): CMP #$B4; PHP
+      const carryB4 = a >= 0xb4;                 // CMP #$B4 (PHP 保存)
+      // $BDF: BCS 跳过 SBC #$14 (A≥$B4 时减 $14)
+      let v = carryB4 ? (a - 0x14) & 0xff : a;
+      // $BE1: SEC; SBC #$9A
+      v = (v - 0x9a) & 0xff;
+      // $BE4: CMP #$15; BCC 跳过 ADC #$04 (A≥$15 时 +$04+进位1)
+      if (v >= 0x15) v = (v + 0x05) & 0xff;
+      // $BEA: PLP; BCC $BF0 (原 carry=0 → 返回); CLC; ADC #$40
+      if (carryB4) v = (v + 0x40) & 0xff;
+      return v & 0xff;                           // Y=$94
+    }
+    // $BCE: Y=$95; SBC #$AE (C=1); CMP #$1F; BCC $BF0
+    let v = (a - 0xae) & 0xff;
+    if (v < 0x1f) return v & 0xff;               // Y=$95
+    // $BD6: SBC #$05 (C=1); BCS $BED (恒成立); CLC; ADC #$40
+    v = (v - 0x05) & 0xff;
+    return (v + 0x40) & 0xff;
   }
 
   /**
-   * $C530 → $CC02: NT 填充 (按 X/Y 参数填 NT 区)。
-   * asm $CC02: 读参数, 设 PPU 地址, 循环写 $2007。
-   * H5 版: 委托 GameSystemService.ppuFill (bank00 渲染原语)。
+   * $C530 → $CC02: 调色板表拷贝 (NOT NT fill)。
+   * asm $CC02 (bank30 off $C02, 字节已验证):
+   *   源指针 $65/$66 = $FBCC + A*12 (A*8 高字节进位 + ADC #$CC/#$FB);
+   *   16 次循环写 $046F+X: X&3==0 写 $0F (透明), 否则 LDA($65),Y (Y 回绕 256→$0F);
+   *   结束 $046C=0x20 (下一精灵批计数基址)。
+   * @param x 目标 $046F 偏移 (0x10=背景组 / 0x00=精灵组)
+   * @param a 源调色板组索引 ($15/$16 由 matchInit9349 传入)
    */
   subC530(x: number, a: number): void {
-    // X = NT 区索引, A = 填充值
-    this._system.ppuFill(a, 0x2000 + x * 0x0400, 32, 30);
+    let y = 0;
+    for (let i = 0; i < 16; i++) {
+      const xx = (x + i) & 0xff;
+      if ((xx & 3) === 0) {
+        this.wr(0x046f + xx, 0x0f);              // X&3==0 → 透明
+      } else {
+        let v = getPaletteByteFBCC(a, y);        // LDA ($0065),Y
+        y++;
+        if (y === 0) v = 0x0f;                   // Y 回绕 256 → 强制 $0F
+        this.wr(0x046f + xx, v);
+      }
+    }
+    this.wr(0x046c, 0x20);                       // 结束计数基址
+  }
+
+  /**
+   * $C52D → $CC46: 精灵批初始化。
+   * asm (bank30 off $C46, 字节已验证): 清 $05F4; PHA #$06; 让出; 等 $0515=0;
+   *   $0515=1; 清 $04A5-$04F4 (0x50B); $04A5/$04C0=$18; $04A6=$20;
+   *   PLA(#$06)|#$08 → LSR/ROR $04A6 ×2 → $04A7/$04C2=$23, $04C1=$A8;
+   *   $0515=$80。消费方: bank19 event0 ($B1A6)。
+   */
+  subC52D(): void {
+    this.wr(0x05f4, 0x00);
+    this.coroutineYield(1);                      // LDA #$01; JSR $CB0F
+    // (H5: 等 $0515=0 由帧循环保证)
+    this.wr(0x0515, 0x01);
+    for (let i = 0; i < 0x50; i++) this.wr(0x04a5 + i, 0);  // 清 $04A5-$04F4
+    this.wr(0x04a5, 0x18);
+    this.wr(0x04c0, 0x18);
+    this.wr(0x04a6, 0x20);
+    let a = (0x06 | 0x08);                       // PLA; ORA #$08 → $0E
+    a >>= 1;                                     // LSR → $07 (C=0)
+    this.wr(0x04a6, this.rd(0x04a6) >> 1);       // ROR $04A6 (C=0→bit7) → $10
+    a >>= 1;                                     // LSR → $03 (C=1)
+    this.wr(0x04a6, (this.rd(0x04a6) >> 1) | 0x80);  // ROR $04A6 (C=1→bit7) → $88
+    a |= 0x20;                                   // ORA #$20 → $23
+    this.wr(0x04a7, a);
+    this.wr(0x04c2, a);
+    this.wr(0x04c1, (this.rd(0x04a6) + 0x20) & 0xff);  // $04A6+$20 → $A8
+    this.wr(0x0515, 0x80);
   }
 
   /**
@@ -240,12 +304,16 @@ export class HardwareInitService {
   }
 
   /**
-   * $C54E → $CBB0: 读数据+设精灵。
-   * asm $CBB0: 读参数, 设精灵属性。
-   * H5 版 stub。
+   * $C54E → $CBB0: 设精灵批等待标志。
+   * asm (bank30 off $BB0, 字节已验证): STA $0518; LDA #$80; STA $0516;
+   *   LDA #$00; STA $0005; LDA #$00; JSR $CB0F (让出)。
+   * 消费方: bank19 event0 ($B1A6) — 参数为精灵批索引。
    */
   subC54E(a: number): void {
-    void a;  // stub
+    this.wr(0x0518, a & 0xff);
+    this.wr(0x0516, 0x80);
+    this.wr(0x0005, 0x00);
+    this.coroutineYield(0);
   }
 }
 

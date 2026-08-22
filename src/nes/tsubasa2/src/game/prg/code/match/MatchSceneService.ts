@@ -3,22 +3,37 @@
  * @bank 19
  *
  * 职责: 比赛场景切换 + 脚本引导 + 精灵属性设置 + 比赛事件分派。
- *   入口 $9000: 设 $0441=9 (场景bank号=bank09), 通过 $0088/$0089 指针读 bank09 脚本。
- *   循环 $902D: 逐字节读 bank09, A>=$E0 走高字节事件, A<$E0 走低字节精灵设置。
+ *   入口 $9000: 设 $0441=9 (场景bank号=bank09), 通过 $0088/$0089 指针 ($B467) 读脚本流。
+ *   循环 $902D: 逐字节读脚本, A>=$E0 走高字节事件, A<$E0 走低字节精灵设置。
  *   $9043: 低字节子程 (精灵属性/坐标设置, 清 $04A5 区, 填精灵表)
- *   $915A: 高字节子程 (A-$E0 查跳转表 6路比赛事件)
+ *   $915A: 高字节子程 → $B160: SEC; SBC #$E0; JSR $C509 查跳转表 ($116C 起 7+1 项)
  *   $9339: 指针推进 (ram_008A 加到 ram_0088, 归零 ram_008A)
- *   $9349: 比赛初始化 (设计分板/精灵/调色板, 清 $046F 区, 填 $0540 区)
+ *   $9349: 比赛初始化 (计分板/精灵/调色板, 清 $046F 区, 填 $0540 区)
  *   $9405: 精灵批量初始化 (清 $04A5 区, 设精灵基址, 循环填表)
  *
+ * 事件分派表 (字节已验证, 跳转表在 bank19 off $116C):
+ *   $E0 → $B1A6 精灵批初始化 (JSR $C52D) + 参数→$C54E + 清 $0011/$0012/$000D/$000E/$05D2 + 填 $0557/$0558=$FF
+ *   $E1 → $B1E0 逐字节帧等待 (读 N, 每非 $01 字节 1 帧, 循环减到 0)
+ *   $E2 → $B1F3 3 字节玩家写入 (X/值/阶段号; 阶段<$0B→$002A=X 否则 $002B=X; JSR $C50C; 写 ($0034))
+ *   $E3 → $B218 JMP $B349 比赛初始化 (matchInit9349)
+ *   $E4 → $B21B 读字节→ram_008B (精灵索引)
+ *   $E5 → $B224 读字节 0-3 → JSR $C509 调色板子分派 ($B23E 复制 / $B246 复制+渐显 / $B2A6 渐隐 / $B2DB 渐显)
+ *   $E6 → $B235 ram_063F |= $40 (切 $90AF 精灵连续模式)
+ *   $FC → $B333 LDA #$80; STA $0515; RTS (等精灵批完成)
+ *
  * 消费方: bank26 (比赛核心引擎) 切 bank19 执行。
- * 数据: 前 261 行 .byte 是 metatile/tile 数据 (比赛画面图块)。
+ * 数据: src/game/prg/data/tables/match-scene-table.ts (脚本流 MATCH_SCENE_SCRIPT)。
  * 协程: $C515 = 让出 (H5 版用帧计数模拟, 每帧推进一步)。
  *
  * 命名规范: 旧名 Bank19Service → 新名 MatchSceneService。
  */
 import { DataStore } from '../../data/store/DataStore';
 import type { GameSystemService } from '../system/GameSystemService';
+import {
+  MATCH_SCENE_SCRIPT_OFFSET,
+  getMatchScriptByte,
+  MATCH_CTRL_B402,
+} from '../../data/tables/match-scene-table';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {
@@ -41,17 +56,18 @@ export class MatchSceneService {
     this._store.write(ramKey(addr), v);
   }
 
-  /** 读 16 位指针 ($0088/$0089) + Y 偏移 */
+  /** 读 16 位指针 */
+  protected rdPtr(lo: number, hi: number): number {
+    return this.rd(lo) | (this.rd(hi) << 8);
+  }
+
+  /** 读 16 位指针 ($0088/$0089) + Y 偏移 — 实际 asm: LDA ($0088),Y */
   private readPtrY(ptrLo: number, ptrHi: number, y: number): number {
-    const lo = this.rd(ptrLo);
-    const hi = this.rd(ptrHi);
-    // H5 版: 指针指向 bank09 数据, 由 DataStore 缓存提供
-    // 实际 asm: LDA ($0088),Y → 读 $B467+Y
-    // 这里用 scriptStream_9 缓存 (bank09 flatten 脚本流)
-    const stream = this._store.get<readonly number[]>('scriptStream_9') ?? [];
-    const base = (hi << 8) | lo;
-    const off = (base - 0xB467 + y) & 0xffff;
-    return stream[off] ?? 0xFF;
+    // 指针窗口地址 → 脚本流相对索引: 窗口基址 $A000, 脚本流起点窗口 $B467 (offset $1467)
+    const base = this.rdPtr(ptrLo, ptrHi);
+    const idx = base - 0xA000 - MATCH_SCENE_SCRIPT_OFFSET + y;
+    // 越界返回 $FF (与 asm 未映射窗口读 $FF 一致)
+    return getMatchScriptByte(idx);
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -245,23 +261,24 @@ export class MatchSceneService {
 
   /**
    * $915A 高字节子程 (A >= $E0): 比赛事件分派。
-   * JSR $9160 (A-$E0 查跳转表); JMP $9339 (指针推进)
-   * 跳转表 $B1A6: 6 项 → $B1E0/$B1F3/$B218/$B21B/$B224/$B235
+   * $B15A: JSR $B160; JMP $B339 (指针推进)
+   * $B160: SEC; SBC #$E0; JSR $C509 → 查跳转表 (off $116C, 7+1 项, 字节已验证)
+   * 跳转表: $E0→$B1A6 / $E1→$B1E0 / $E2→$B1F3 / $E3→$B218 / $E4→$B21B /
+   *         $E5→$B224 / $E6→$B235 / $FC→$B333
    */
   matchAuxHigh(a: number): void {
-    // $9160: SEC; SBC #$E0 → 索引
-    const idx = a - 0xE0;
-    // 查跳转表 (6路)
-    switch (idx) {
-      case 0: this.event0_91A9(); break;  // $B1E0 → $91A9
-      case 1: this.event1_91E2(); break;  // $B1F3 → $91E2
-      case 2: this.event2_91F5(); break;  // $B218 → $91F5
-      case 3: this.event3_921D(); break;  // $B21B → $921D
-      case 4: this.event4_9226(); break;  // $B224 → $9226
-      case 5: this.event5_9238(); break;  // $B235 → $9238
+    switch (a) {
+      case 0xE0: this.event0(); break;       // $B1A6 精灵批初始化 + 参数处理
+      case 0xE1: this.event1(); break;       // $B1E0 逐字节帧等待
+      case 0xE2: this.event2(); break;       // $B1F3 3字节玩家写入
+      case 0xE3: this.matchInit9349(); break; // $B218 JMP $B349 比赛初始化
+      case 0xE4: this.event4(); break;       // $B21B 精灵索引
+      case 0xE5: this.event5(); break;       // $B224 调色板子分派
+      case 0xE6: this.event6(); break;       // $B235 ram_063F |= $40
+      case 0xFC: this.eventFC(); break;      // $B333 ram_0515 = $80
       default: break;
     }
-    // $915D: JMP $9339 (指针推进)
+    // $B15D: JMP $B339 (指针推进)
     this.advancePointer();
   }
 
@@ -280,27 +297,31 @@ export class MatchSceneService {
   }
 
   // ═══════════════════════════════════════════════════════════
-  // $91A9-$923D: 6路比赛事件处理
+  // $B1A6-$B235: 7+1 路比赛事件处理 (字节已验证)
   // ═══════════════════════════════════════════════════════════
 
   /**
-   * 事件0 $91A9: 读 bank09 数据, JSR $C54E, 协程让出, 清状态, 填 $0557/$0558 区。
+   * 事件0 $B1A6: JSR $C52D (精灵批初始化); LDY $008A; INC; LDA($0088),Y → JSR $C54E;
+   * LDA#$01; JSR $C515; 等 $0516=0; 清 $0011/$0012/$000D/$000E/$05D2;
+   * X=0: $0558,X=$FF; $0557,X=$FF; X+=$15 直到 X=$7E。
    */
-  private event0_91A9(): void {
-    // $91A9: LDY $008A; INC $008A; LDA ($0088),Y; JSR $C54E
+  private event0(): void {
+    // $B1A6: JSR $C52D (精灵批初始化)
+    this.subC52D();
+    // $B1A9: LDY $008A; INC $008A; LDA ($0088),Y; JSR $C54E
     const y = this.rd(0x008A);
     this.wr(0x008A, (y + 1) & 0xFF);
     const a = this.readPtrY(0x0088, 0x0089, y);
     this.subC54E(a);
-    // $91B2: 协程让出; 等 ram_0516=0
+    // $B1B2: LDA #$01; JSR $C515; 等 ram_0516=0
     this.yieldAndWait(0x0516);
-    // $91BC: 清 ram_0011/0012/000D/000E/05D2
+    // $B1BC: 清 ram_0011/0012/000D/000E/05D2
     this.wr(0x0011, 0);
     this.wr(0x0012, 0);
     this.wr(0x000D, 0);
     this.wr(0x000E, 0);
     this.wr(0x05D2, 0);
-    // $91CD-$91DF: 填 $0557/$0558 区 $FF (X=0→$7E, ADC #$15)
+    // $B1CD-$B1DF: X=0→$7E (step $15): $0558,X=$FF; $0557,X=$FF
     let x = 0;
     while (x < 0x7E) {
       this.wr(0x0558 + x, 0xFF);
@@ -310,13 +331,13 @@ export class MatchSceneService {
   }
 
   /**
-   * 事件1 $91E2: 读 bank09 数据, 循环等待 (JSR $C515) A-1 次。
+   * 事件1 $B1E0: 读字节 N; 循环 {LDA#$01; JSR $C515; SEC; SBC #$01; BNE} → 等 N 帧。
    */
-  private event1_91E2(): void {
-    // $91E2: INC $008A; LDA ($0088),Y; PHA
+  private event1(): void {
+    // $B1E0: LDY $008A; INC $008A; LDA ($0088),Y; PHA
     this.wr(0x008A, (this.rd(0x008A) + 1) & 0xFF);
     const a = this.readPtrY(0x0088, 0x0089, this.rd(0x008A));
-    // $91E7-$91F0: 循环 PLA; SEC; SBC #$01; BNE (等 a 帧)
+    // $B1E7-$B1F0: 循环 让出 1 帧; N-1; BNE
     let n = a;
     while (n !== 0) {
       this.yieldAndWait(0x0515);
@@ -325,66 +346,120 @@ export class MatchSceneService {
   }
 
   /**
-   * 事件2 $91F5: 读 bank09 数据 (3字节: X/高/低), 设 $002A/$002B, JSR $C50C, 写 ($0034)。
+   * 事件2 $B1F3: 3 字节 (X/值/阶段号):
+   * LDY $008A; LDA→TAX; INY; LDA→PHA(值); INY; LDA(阶段号); INY; STY $008A;
+   * CMP #$0B; BCS → $002B=X 否则 $002A=X; JSR $C50C; PLA; LDY #$00; STA ($0034),Y。
    */
-  private event2_91F5(): void {
-    // $91F5: LDA ($0088),Y; TAX; INY; LDA; PHA; INY; LDA; INY; STY $008A
+  private event2(): void {
+    // $B1F3: 读 3 字节
     const y0 = this.rd(0x008A);
-    const x = this.readPtrY(0x0088, 0x0089, y0);
-    const hi = this.readPtrY(0x0088, 0x0089, y0 + 1);
-    const lo = this.readPtrY(0x0088, 0x0089, y0 + 2);
-    this.wr(0x008A, (y0 + 3) & 0xFF);
-    // $9202: CMP #$0B; BCS $920C
-    if (lo < 0x0B) {
-      this.wr(0x002A, x);
+    const xVal = this.readPtrY(0x0088, 0x0089, y0);       // TAX
+    const val = this.readPtrY(0x0088, 0x0089, y0 + 1);    // PHA (值)
+    const phase = this.readPtrY(0x0088, 0x0089, y0 + 2);  // 阶段号
+    this.wr(0x008A, (y0 + 3) & 0xFF);                     // STY $008A
+    // $B1FE: CMP #$0B; BCS → $002B=X 否则 $002A=X
+    if (phase >= 0x0B) {
+      this.wr(0x002B, xVal);
     } else {
-      this.wr(0x002B, x);
+      this.wr(0x002A, xVal);
     }
-    // $920F: JSR $C50C; PLA; LDY #$00; STA ($0034),Y; RTS
+    // $B20F: JSR $C50C (查玩家数据指针 → $0034/$0035)
     this.subC50C();
-    this._store.set('ram_0034_val', hi);  // 写 ($0034),Y=0
+    // $B212: PLA; LDY #$00; STA ($0034),Y — 写值到玩家数据
+    this.wr(this.rdPtr(0x0034, 0x0035), val);
   }
 
   /**
-   * 事件3 $921D: 读 bank09 数据 → ram_008B (精灵索引)。
+   * 事件4 $B21B: INC $008A; LDA ($0088),Y; STA $008B (精灵索引)。
    */
-  private event3_921D(): void {
-    // $921D: INC $008A; LDA ($0088),Y; STA $008B; RTS
+  private event4(): void {
+    // $B21B: LDY $008A; INC $008A; LDA ($0088),Y; STA $008B; RTS
     this.wr(0x008A, (this.rd(0x008A) + 1) & 0xFF);
     const a = this.readPtrY(0x0088, 0x0089, this.rd(0x008A));
     this.wr(0x008B, a);
   }
 
   /**
-   * 事件4 $9226: 读 bank09 数据 → JSR $C509 (查表)。
+   * 事件5 $B224: INC $008A; LDA ($0088),Y; JSR $C509 → 调色板子分派 (内嵌表 4 项):
+   *   0 → $B23E: $0472=$0F; JMP $B2F7 (填 $046F 每 4 字节 $0F)
+   *   1 → $B246: $0472=$30; $046F→$0408 (0x20B); JSR $B310 整理; 等 $30 帧; 渐显
+   *   2 → $B2A6: 渐隐
+   *   3 → $B2DB: 渐显
    */
-  private event4_9226(): void {
-    // $9226: INC $008A; LDA ($0088),Y; JSR $C509
+  private event5(): void {
+    // $B224: INC $008A; LDA ($0088),Y
     this.wr(0x008A, (this.rd(0x008A) + 1) & 0xFF);
     const a = this.readPtrY(0x0088, 0x0089, this.rd(0x008A));
-    this.subC509(a);
+    // $B22A: JSR $C509 — 去CPU化: 直接按参数分派
+    switch (a & 0xff) {
+      case 0: this.subB23E(); break;   // $0472=$0F + 填 $0F
+      case 1: this.subB246(); break;   // 复制 + 整理 + 渐显
+      case 2: this.sub92A8(); break;   // 渐隐 (原 $B2A6)
+      case 3: this.sub92DD(); break;   // 渐显 (原 $B2DB)
+      default: break;
+    }
   }
 
   /**
-   * 事件5 $9238: ORA #$40 → ram_063F (设 bit6)。
+   * 事件6 $B235: LDA $063F; ORA #$40; STA $063F (切 $90AF 精灵连续模式)。
    */
-  private event5_9238(): void {
-    // $9238: ORA #$40; STA $063F; RTS
+  private event6(): void {
+    // $B235: ORA #$40; STA $063F; RTS
     this.wr(0x063F, this.rd(0x063F) | 0x40);
+  }
+
+  /**
+   * $FC 事件 $B333: LDA #$80; STA $0515; RTS (等精灵批完成标志)。
+   */
+  private eventFC(): void {
+    // $B333: ram_0515 = $80
+    this.wr(0x0515, 0x80);
+  }
+
+  /**
+   * $B23E: LDA #$0F; STA $0472; JMP $B2F7 (填 $046F 每 4 字节 $0F, 然后刷新+让出)。
+   */
+  private subB23E(): void {
+    this.wr(0x0472, 0x0F);
+    this.sub92F7(0x0F);
+  }
+
+  /**
+   * $B246: LDA #$30; STA $0472; $046F→$0408 (0x20B); JSR $B310 整理;
+   * LDA #$30; JSR $C515 (等 $30 帧); 渐显序列 (step $20→$10→$00, 每步 5 帧)。
+   */
+  private subB246(): void {
+    this.wr(0x0472, 0x30);
+    for (let i = 0; i < 0x20; i++) this.wr(0x0408 + i, this.rd(0x046F + i));
+    this.sub9310();
+    this.yieldCount(0x30);
+    // 渐显序列: step = $20, $10, $00 (PHA; 等 5 帧; 逐字节整理 $0408→$046F)
+    let step = 0x20;
+    while ((step & 0x80) === 0) {
+      this.yieldAndWait2();
+      this.wr(0x003A, step);
+      for (let x = 0; x < 0x20; x++) {
+        const v = this.rd(0x0408 + x);
+        const hi = v & 0xF0;
+        if (hi >= step) continue;
+        const lo = v & 0x0F;
+        let nv;
+        if (lo === 0x0F) {
+          nv = (lo | step) === 0x0F ? 0x0F : (lo | step);
+        } else {
+          nv = lo | step;
+        }
+        if (nv === 0) nv = 0x0F;
+        this.wr(0x046F + x, nv & 0xFF);
+      }
+      this.subC533();
+      step = (step - 0x10) & 0xFF;
+    }
   }
 
   // ═══════════════════════════════════════════════════════════
   // $9240-$930F: 调色板/计分板辅助
   // ═══════════════════════════════════════════════════════════
-
-  /**
-   * $9240: 设 ram_0472=$0F, JMP $B2F7。
-   * $B2F7 = $92F7: 填 $046F 区 (X=0, STA $046F,X; INX×4; CPX #$20; BNE)
-   */
-  sub9240(): void {
-    this.wr(0x0472, 0x0F);
-    this.sub92F7(0x30);
-  }
 
   /**
    * $92A8-$92DA: 渐隐调色板循环。
@@ -498,9 +573,9 @@ export class MatchSceneService {
     this.subC530(0x00, 0x16);
     // $9382: JSR $C533
     this.subC533();
-    // $9388: 读 $B402 表 → $0494-$0497 (4字节)
-    for (let i = 3; i >= 0; i--) {
-      this.wr(0x0494 + i, this.readBank19Data(0xB402 - 0x8000 + i));
+    // $9388: 读 $B402 表 (MATCH_CTRL_B402) → $0494-$0497 (4字节)
+    for (let i = 0; i < 4; i++) {
+      this.wr(0x0494 + i, MATCH_CTRL_B402[i] ?? 0);
     }
     // $9393: ram_0490=$7C, ram_0491=$7E
     this.wr(0x0490, 0x7C);
@@ -608,19 +683,19 @@ export class MatchSceneService {
     return this._system.subC524(a);
   }
 
-  /** $C54E 子程 — 调 GameSystemService.subC54E */
+  /** $C54E 子程 — 调 GameSystemService.subC54E ($CBB0: 设精灵批等待标志) */
   private subC54E(a: number): void {
     this._system.subC54E(a);
   }
 
-  /** $C50C 查表 — 调 GameSystemService.subC50C */
-  private subC50C(): void {
-    this._system.subC50C();
+  /** $C52D 精灵批初始化 — 调 GameSystemService.subC52D ($CC46) */
+  private subC52D(): void {
+    this._system.subC52D();
   }
 
-  /** $C509 查表 — 调 GameSystemService.subC509 */
-  private subC509(a: number): void {
-    this._system.subC509(a);
+  /** $C50C 查表 — 调 GameSystemService.subC50C (比赛阶段→RAM玩家指针) */
+  private subC50C(): void {
+    this._system.subC50C();
   }
 
   /** $C533 NT 刷新 — 调 GameSystemService.subC533 */
@@ -628,7 +703,7 @@ export class MatchSceneService {
     this._system.subC533();
   }
 
-  /** $C530 NT 填充 — 调 GameSystemService.subC530 */
+  /** $C530 调色板拷贝 — 调 GameSystemService.subC530 ($CC02: $FBCC+A*12 → $046F+X) */
   private subC530(x: number, a: number): void {
     this._system.subC530(x, a);
   }
@@ -648,12 +723,6 @@ export class MatchSceneService {
   private subB3CB(): void {
     // $93CB-$93D7: 循环 ram_008A += $60, 协程让出
     // 由 matchInit9349 的循环体覆盖, 此处 no-op
-  }
-
-  /** 读 bank19 内部数据 (metatile/tile 数据区) */
-  private readBank19Data(off: number): number {
-    const data = this._store.get<readonly number[]>('bank19_data') ?? [];
-    return data[off] ?? 0;
   }
 
   /** 比赛帧推进 (由 bank26 比赛核心引擎调用) */

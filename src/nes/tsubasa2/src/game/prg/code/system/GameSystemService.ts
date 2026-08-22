@@ -595,6 +595,11 @@ export class GameSystemService {
     return this._hw ? this._hw.subC524(a) : a;
   }
 
+  /** $C52D 精灵批初始化 — 转发 bank30 */
+  subC52D(): void {
+    this._hw?.subC52D();
+  }
+
   /** $C530 NT 填充 — 转发 bank30 */
   subC530(x: number, a: number): void {
     this._hw?.subC530(x, a);
