@@ -112,8 +112,8 @@ export class MatchSceneService {
       this.wr(0x008A, (y + 1) & 0xFF);
       this.matchAuxHigh(a);
     } else {
-      // $903D: JSR $9043; JMP $902D
-      this.matchAuxLow(a);
+      // $903D: JSR $9043; JMP $902D (低字节子程自行读流, 不传 a)
+      this.matchAuxLow();
     }
   }
 
@@ -125,11 +125,11 @@ export class MatchSceneService {
    * $9043 低字节子程 (A < $E0): 精灵属性/坐标设置。
    * 检查 ram_063F bit6, bit6=1 走 $90AF, bit6=0 走 $904B。
    */
-  matchAuxLow(a: number): void {
+  matchAuxLow(): void {
     // $9043: BIT $063F; BVC $904B
     if ((this.rd(0x063F) & 0x40) !== 0) {
-      // $9048: JMP $90AF (bit6=1)
-      this.spriteSetup90AF(a);
+      // $9048: JMP $90AF (bit6=1); 入口字节由 $90AF 自行重读 (LDY $008A; LDA ($0088),Y)
+      this.spriteSetup90AF();
       return;
     }
     // $904B: JSR $C515 (协程让出); 等 ram_0515=0
@@ -147,10 +147,11 @@ export class MatchSceneService {
     // $906F: ram_008B (精灵索引) 算坐标
     const idx = this.rd(0x008B);
     // $9071: AND #$07; ORA #$88; LSR; ROR $003A; LSR; ROR $003A; STA $04A7/$04CA
+    // LSR 把 v 的低位经 carry 移入 $003A; ROR 是右移 (carry→bit7, bit0→carry)
     let v = (idx & 0x07) | 0x88;
     let n = this.rd(0x003A);
-    n = ((n << 1) | (v & 1)) & 0xFF; v >>= 1;
-    n = ((n << 1) | (v & 1)) & 0xFF; v >>= 1;
+    n = ((n >> 1) | ((v & 1) << 7)) & 0xFF; v >>= 1;
+    n = ((n >> 1) | ((v & 1) << 7)) & 0xFF; v >>= 1;
     this.wr(0x04A7, v);
     this.wr(0x04CA, v);
     this.wr(0x003A, n);
@@ -186,54 +187,65 @@ export class MatchSceneService {
   }
 
   /**
-   * $90AF-$9159: bit6=1 的精灵设置分支。
-   * $90AF: LDY $008A; LDA ($0088),Y; CMP #$E0; BCC $90B8; RTS
-   * $90B8: INC $008A; PHA; 协程让出; 清 $04AD/$04A5; 算坐标; 填精灵; 循环8次
+   * $90AF-$9124: bit6=1 的精灵连续模式。
+   * 循环 (每帧处理一个精灵):
+   *   $90AF: LDY $008A; LDA ($0088),Y; CMP #$E0; BCC $90B8; RTS (≥$E0 结束整段)
+   *   $90B8: INC $008A; PHA; LDA #$01; JSR $C515 (协程让出, 等 $0515=0)
+   *   $90C5: $0515=1; 清 $04AD/$003A/$04A5/$04A9
+   *   $90D8: $008B 算坐标 (LSR/ROR 链) → $04A7/$04AB/$04A6/$04AA
+   *   $90FB: PLA; JSR $C524 → $04AC; STY $04A8; $0515=$80
+   *   $910A-$911B: cnt=0,2,4,6 循环调 sub9127($B127) + 协程让出
+   *   $911D: $008B += 8; $9124: JMP $B0AF (回到 $90AF 循环)
    */
-  private spriteSetup90AF(aInit: number): void {
-    // $90AF: 读下一字节
-    let a = aInit;
-    if (a >= 0xE0) return;  // $90B7: RTS
-    // $90B8: INC $008A
-    this.wr(0x008A, (this.rd(0x008A) + 1) & 0xFF);
-    // $90BA: PHA (保存 a)
-    // $90BB: 协程让出; 等 ram_0515=0
-    this.yieldAndWait(0x0515);
-    // $90C5: ram_0515=1
-    this.wr(0x0515, 0x01);
-    // $90CA-$90D5: X=0; STX $04AD; STX $003A; INX; STX $04A5; STX $04A9
-    let x = 0;
-    this.wr(0x04AD, 0);
-    this.wr(0x003A, 0);
-    x = 1;
-    this.wr(0x04A5, x);
-    this.wr(0x04A9, x);
-    // $90D8: ram_008B 算坐标 (同 $906F 逻辑)
-    const idx = this.rd(0x008B);
-    let v = (idx & 0x07) | 0x88;
-    let n = this.rd(0x003A);
-    n = ((n << 1) | (v & 1)) & 0xFF; v >>= 1;
-    n = ((n << 1) | (v & 1)) & 0xFF; v >>= 1;
-    this.wr(0x04A7, v);
-    this.wr(0x04AB, v);
-    // $90EA: ram_008B LSR×3; CLC; ADC $003A; STA $04A6; CLC; ADC #$20; STA $04AA
-    const base = (idx >> 3) + n;
-    this.wr(0x04A6, base & 0xFF);
-    this.wr(0x04AA, (base + 0x20) & 0xFF);
-    // $90FB: PLA (恢复 a); JSR $C524; STA $04AC; STY $04A8
-    const va = this.transformCoord(a);
-    this.wr(0x04AC, va);
-    this.wr(0x04A8, this.rd(0x008A));
-    // $9105: ram_0515=$80
-    this.wr(0x0515, 0x80);
-    // $910A-$911B: 循环 8 次调 $B127 (JSR $9127 的子程)
-    for (let i = 0; i < 8; i++) {
-      this.sub9127(i);
-      this.yieldAndWait(0x0516);
+  private spriteSetup90AF(): void {
+    while (true) {
+      // $90AF: LDY $008A; LDA ($0088),Y — 读取当前流索引下的精灵字节
+      const y = this.rd(0x008A);
+      const a = this.readPtrY(0x0088, 0x0089, y);
+      // $90B3: CMP #$E0; BCC $90B8; RTS (≥$E0 结束整段精灵)
+      if (a >= 0xE0) return;   // $90B7: RTS
+      // $90B8: INC $008A
+      this.wr(0x008A, (y + 1) & 0xFF);
+      // $90BA: PHA (a); $90BB: LDA #$01; JSR $C515; $90C0-$90C3: 等 $0515=0
+      this.yieldAndWait(0x0515);
+      // $90C5: LDA #$01; STA $0515
+      this.wr(0x0515, 0x01);
+      // $90CA: LDX #$00; STX $04AD; STX $003A; INX; STX $04A5; STX $04A9
+      this.wr(0x04AD, 0);
+      this.wr(0x003A, 0);
+      this.wr(0x04A5, 1);
+      this.wr(0x04A9, 1);
+      // $90D8: LDA $008B; AND #$07; ORA #$88; LSR; ROR $003A; LSR; ROR $003A
+      // (LSR 低位经 carry 移入 $003A; ROR 是右移)
+      const idx = this.rd(0x008B);
+      let v = (idx & 0x07) | 0x88;
+      let n = this.rd(0x003A);
+      n = ((n >> 1) | ((v & 1) << 7)) & 0xFF; v >>= 1;
+      n = ((n >> 1) | ((v & 1) << 7)) & 0xFF; v >>= 1;
+      this.wr(0x04A7, v);
+      this.wr(0x04AB, v);
+      this.wr(0x003A, n);
+      // $90EA: LDA $008B; LSR×3; CLC; ADC $003A; STA $04A6; CLC; ADC #$20; STA $04AA
+      const base = (idx >> 3) + n;
+      this.wr(0x04A6, base & 0xFF);
+      this.wr(0x04AA, (base + 0x20) & 0xFF);
+      // $90FB: PLA; JSR $C524; STA $04AC; STY $04A8 (Y 仍为 $90AF 读取的流索引)
+      const va = this.transformCoord(a);
+      this.wr(0x04AC, va);
+      this.wr(0x04A8, y);
+      // $9105: LDA #$80; STA $0515
+      this.wr(0x0515, 0x80);
+      // $910A-$911B: cnt=0,2,4,6 循环调 sub9127 + 协程让出
+      let cnt = 0;
+      do {
+        this.sub9127(cnt);         // $910D: JSR $B127 ($9127)
+        this.yieldAndWait(0x0515); // $9110: LDA #$01; JSR $C515
+        cnt = (cnt + 2) & 0xFF;    // $9117: CLC; ADC #$02
+      } while (cnt !== 0x08);      // $9119-$911B: CMP #$08; BNE $910C
+      // $911D: LDA $008B; CLC; ADC #$08; STA $008B
+      this.wr(0x008B, (this.rd(0x008B) + 8) & 0xFF);
+      // $9124: JMP $B0AF (回到 $90AF 循环)
     }
-    // $911D: ram_008B += 8
-    this.wr(0x008B, (this.rd(0x008B) + 8) & 0xFF);
-    // $9124: JMP $90AF (循环)
   }
 
   /**
@@ -242,13 +254,20 @@ export class MatchSceneService {
    * LDA $008B; AND #$F8; CLC; ADC $003A; STA $02FB; STA $02FF
    */
   private sub9127(offset: number): void {
-    void offset;
+    // $9127: STA $003A (精灵行偏移写入 $003A)
+    this.wr(0x003A, offset & 0xFF);
+    // $9129: LDA #$01; STA $02F9; STA $02FD
+    this.wr(0x02F9, 0x01);
+    this.wr(0x02FD, 0x01);
+    // $9131: LDA #$00; STA $02FA; STA $02FE
+    this.wr(0x02FA, 0x00);
+    this.wr(0x02FE, 0x00);
     const idx = this.rd(0x008B);
-    // $9139: AND #$07; ASL×4; CLC; ADC #$7C
+    // $9139: AND #$07; ASL×4; CLC; ADC #$7C; STA $02F8; ADC #$08; STA $02FC
     const lo = ((idx & 0x07) << 4) + 0x7C;
     this.wr(0x02F8, lo & 0xFF);
     this.wr(0x02FC, (lo + 0x08) & 0xFF);
-    // $914C: AND #$F8; CLC; ADC $003A
+    // $914C: AND #$F8; CLC; ADC $003A; STA $02FB; STA $02FF
     const hi = (idx & 0xF8) + this.rd(0x003A);
     this.wr(0x02FB, hi & 0xFF);
     this.wr(0x02FF, hi & 0xFF);
@@ -334,10 +353,11 @@ export class MatchSceneService {
    * 事件1 $B1E0: 读字节 N; 循环 {LDA#$01; JSR $C515; SEC; SBC #$01; BNE} → 等 N 帧。
    */
   private event1(): void {
-    // $B1E0: LDY $008A; INC $008A; LDA ($0088),Y; PHA
-    this.wr(0x008A, (this.rd(0x008A) + 1) & 0xFF);
-    const a = this.readPtrY(0x0088, 0x0089, this.rd(0x008A));
-    // $B1E7-$B1F0: 循环 让出 1 帧; N-1; BNE
+    // $B1E0: LDY $008A; INC $008A; LDA ($0088),Y; PHA (读旧索引下的 N)
+    const y = this.rd(0x008A);
+    this.wr(0x008A, (y + 1) & 0xFF);
+    const a = this.readPtrY(0x0088, 0x0089, y);
+    // $B1E7-$B1F0: 循环 让出 1 帧; N-1; BNE (等 N 帧)
     let n = a;
     while (n !== 0) {
       this.yieldAndWait(0x0515);
@@ -374,8 +394,9 @@ export class MatchSceneService {
    */
   private event4(): void {
     // $B21B: LDY $008A; INC $008A; LDA ($0088),Y; STA $008B; RTS
-    this.wr(0x008A, (this.rd(0x008A) + 1) & 0xFF);
-    const a = this.readPtrY(0x0088, 0x0089, this.rd(0x008A));
+    const y = this.rd(0x008A);
+    this.wr(0x008A, (y + 1) & 0xFF);
+    const a = this.readPtrY(0x0088, 0x0089, y);
     this.wr(0x008B, a);
   }
 
@@ -387,9 +408,10 @@ export class MatchSceneService {
    *   3 → $B2DB: 渐显
    */
   private event5(): void {
-    // $B224: INC $008A; LDA ($0088),Y
-    this.wr(0x008A, (this.rd(0x008A) + 1) & 0xFF);
-    const a = this.readPtrY(0x0088, 0x0089, this.rd(0x008A));
+    // $B224: LDY $008A; INC $008A; LDA ($0088),Y (读旧索引下的调色板指令)
+    const y = this.rd(0x008A);
+    this.wr(0x008A, (y + 1) & 0xFF);
+    const a = this.readPtrY(0x0088, 0x0089, y);
     // $B22A: JSR $C509 — 去CPU化: 直接按参数分派
     switch (a & 0xff) {
       case 0: this.subB23E(); break;   // $0472=$0F + 填 $0F
@@ -463,27 +485,27 @@ export class MatchSceneService {
 
   /**
    * $92A8-$92DA: 渐隐调色板循环。
-   * PHA; LDA #$02; JSR $C515; PLA; STA $003A;
-   * 循环 X=0→$1F: AND #$03; 读 $046F,X; 改色; 写回;
-   * JSR $C533; SEC; SBC #$10; BPL 循环
+   *   $92A8: PHA (step); $92A9: LDA #$02; JSR $C515 (协程让出)
+   *   $92AE: PLA; STA $003A (step → $003A)
+   *   $92B1: X=0→$1F: TXA; AND #$03; BEQ $92C8 (仅处理 X&3 != 0)
+   *          LDA $046F,X; AND #$0F; ORA $003A; LDY $003A; BNE $92C5 (step!=0 存)
+   *          LDA #$0F (step==0 存 $0F); STA $046F,X
+   *   $92CD: JSR $C533; $92D3: step-$10; $92D8: BPL $92A8 (循环)
    */
   sub92A8(): void {
     let step = 0x30;
     while ((step & 0x80) === 0) {
-      this.yieldAndWait2();
-      this.wr(0x003A, step);
-      for (let x = 0; x < 0x20; x++) {
-        if ((x & 0x03) === 0) {
-          const v = this.rd(0x046F + x);
-          let nv = v & 0x0F;
-          nv |= step;
-          if (nv === 0) nv = 0x0F;
-          this.wr(0x046F + x, nv);
-        }
+      this.yieldAndWait2();            // $92A9: LDA #$02; JSR $C515
+      this.wr(0x003A, step);           // $92AE: STA $003A
+      for (let x = 0; x < 0x20; x++) { // $92B1-$92CB
+        if ((x & 0x03) === 0) continue; // $92B6: BEQ $92C8 (跳过 X&3==0)
+        let nv = (this.rd(0x046F + x) & 0x0F) | step; // $92B8-$92BD
+        if (step === 0) nv = 0x0F;      // $92C3: step==0 → $0F
+        this.wr(0x046F + x, nv);        // $92C5: STA $046F,X
       }
-      this.subC533();
-      step = (step - 0x10) & 0xFF;
-    }
+      this.subC533();                  // $92CD
+      step = (step - 0x10) & 0xFF;     // $92D3-$92D6
+    }                                   // $92D8: BPL $92A8
   }
 
   /**
@@ -592,33 +614,50 @@ export class MatchSceneService {
     this.subC533();
     // $93C2: 协程让出 (A=$60)
     this.yieldCount(0x60);
-    // $93C7: ram_008A=0
-    this.wr(0x008A, 0);
-    // $93CB-$93D7: 循环 ram_008A += $60, 协程让出
+    // 连续动画循环 ($93CB-$93FF, 由协程让出驱动跨帧推进)
+    this.matchInitLoop();
+  }
+
+  /**
+   * $93CB-$93FF: 比赛初始化连续循环。
+   *   $93C7: $008A=0; $93CB: 让出1帧; $93D0: $008A += $60; $93D7: BCC $93CB (累加到进位)
+   *   $93D9: DEC $054F; $93DC: DEC $004A; $93DE: BEQ $93FA (为0 → 终止让出循环)
+   *   $93E0-$93EE: $004A==$14→$0470=$06; $004A==$08→$0470=$16; 否则回 $93CB
+   *   $93F1: JSR $C533; $93F7: JMP $B3CB (回到 $93CB)
+   *   $93FA-$93FF: 终态 (让出1帧; JMP $B3FA)
+   */
+  private matchInitLoop(): void {
     while (true) {
-      this.yieldAndWait(0x0515);
-      const v = (this.rd(0x008A) + 0x60) & 0xFF;
-      this.wr(0x008A, v);
-      if (v === 0) break;
+      // $93C7: LDA #$00; STA $008A
+      this.wr(0x008A, 0);
+      // $93CB-$93D7: 累加 $60 直到进位
+      let sum;
+      do {
+        this.yieldAndWait(0x0515);   // $93CB: LDA #$01; JSR $C515
+        sum = this.rd(0x008A) + 0x60; // $93D0-$93D5: ADC #$60
+        this.wr(0x008A, sum & 0xFF);
+      } while (sum <= 0xFF);           // $93D7: BCC $93CB (无进位则循环)
+      // $93D9: DEC $054F; $93DC: DEC $004A
+      this.wr(0x054F, (this.rd(0x054F) - 1) & 0xFF);
+      this.wr(0x004A, (this.rd(0x004A) - 1) & 0xFF);
+      // $93DE: BEQ $93FA (为0 → 终态)
+      if (this.rd(0x004A) === 0) {
+        // $93FA: LDA #$01; JSR $C515; JMP $B3FA (终态让出循环, H5 由 update 驱动)
+        this.yieldAndWait(0x0515);
+        this.subB3FA();
+        return;
+      }
+      // $93E0-$93EE: 选择 $0470 并判断是否刷新
+      if (this.rd(0x004A) === 0x14) {
+        this.wr(0x0470, 0x06);       // $93EE: STX $0470 (X=$06)
+      } else if (this.rd(0x004A) === 0x08) {
+        this.wr(0x0470, 0x16);       // $93EE: STX $0470 (X=$16)
+      } else {
+        continue;                     // $93EA: CMP #$08; BNE $93CB (回内层循环)
+      }
+      // $93F1: JSR $C533; $93F7: JMP $B3CB (回到 $93CB)
+      this.subC533();
     }
-    // $93D9: DEC $054F; DEC $004A; BEQ $93FA
-    this.wr(0x054F, (this.rd(0x054F) - 1) & 0xFF);
-    this.wr(0x004A, (this.rd(0x004A) - 1) & 0xFF);
-    if (this.rd(0x004A) === 0) {
-      // $93FA: 协程让出; JMP $B3FA
-      this.yieldAndWait(0x0515);
-      this.subB3FA();
-      return;
-    }
-    // $93E0: 设 ram_0470 (CMP #$14→X=$06, CMP #$08→X=$16)
-    const v = this.rd(0x004A);
-    let x = 0x06;
-    if (v === 0x14) x = 0x06;
-    else if (v === 0x08) x = 0x16;
-    this.wr(0x0470, x);
-    // $93F1: JSR $C533; JMP $B3CB
-    this.subC533();
-    this.subB3CB();
   }
 
   // ═══════════════════════════════════════════════════════════
@@ -719,129 +758,11 @@ export class MatchSceneService {
     // 循环 (H5 版由 update() 每帧推进, 不死循环)
   }
 
-  /** $B3CB = $93CB: 比赛续行 (JMP $B3CB = 循环回比赛初始化) */
-  private subB3CB(): void {
-    // $93CB-$93D7: 循环 ram_008A += $60, 协程让出
-    // 由 matchInit9349 的循环体覆盖, 此处 no-op
-  }
-
-  // ════════════════════════════════════════════════════════════
-  // $90AF-$9160: 精灵渲染 + OAM 写入
-  // ════════════════════════════════════════════════════════════
-
-  /**
-   * $90AF: 精灵渲染 (读脚本流, 设 OAM 精灵属性)。
-   * asm $90AF-$9124:
-   *   LDY $008A; LDA ($0088),Y; CMP #$E0; BCC $90B8; RTS (≥$E0 返回)
-   *   $90B8: INC $008A; PHA; LDA #$01; JSR $C515 (协程让出)
-   *   $90C0: LDA $0515; BNE $90BB (等待 $0515=0)
-   *   $90C5: LDA #$01; STA $0515; LDX #$00; STX $04AD; STX $003A
-   *   INX; STX $04A5; STX $04A9
-   *   LDA $008B; AND #$07; ORA #$88; LSR; ROR $003A; LSR; ROR $003A
-   *   STA $04A7; STA $04AB
-   *   LDA $008B; LSR×3; CLC; ADC $003A; STA $04A6; CLC; ADC #$20; STA $04AA
-   *   PLA; JSR $C524; STA $04AC; STY $04A8
-   *   LDA #$80; STA $0515
-   *   LDA #$00; PHA; JSR $B127; LDA #$01; JSR $C515; PLA; CLC; ADC #$02
-   *   CMP #$08; BNE $910C (循环 4 次)
-   *   LDA $008B; CLC; ADC #$08; STA $008B; JMP $B0AF
-   */
-  private sub90AF(): void {
-    const y = this.rd(0x008A);
-    const ptr = this.rdPtr(0x0088, 0x0089);
-    const a = this.readMemByte(ptr + y);
-    if (a >= 0xE0) return;
-    this.wr(0x008A, (y + 1) & 0xFF);
-    // PHA; LDA #$01; JSR $C515 (协程让出)
-    this._system.coroutineYield(1);
-    // 等待 $0515=0
-    while (this.rd(0x0515) !== 0) {
-      this._system.coroutineYield(1);
-    }
-    this.wr(0x0515, 0x01);
-    // LDX #$00; STX $04AD; STX $003A; INX; STX $04A5; STX $04A9
-    this.wr(0x04AD, 0);
-    this.wr(0x003A, 0);
-    this.wr(0x04A5, 1);
-    this.wr(0x04A9, 1);
-    // LDA $008B; AND #$07; ORA #$88; LSR; ROR $003A; LSR; ROR $003A
-    const v8B = this.rd(0x008B);
-    let tmp = (v8B & 0x07) | 0x88;
-    let a3 = this.rd(0x003A);
-    a3 = ((a3 >> 1) | ((tmp & 1) << 7)) & 0xFF;
-    tmp = tmp >> 1;
-    a3 = ((a3 >> 1) | ((tmp & 1) << 7)) & 0xFF;
-    tmp = tmp >> 1;
-    this.wr(0x04A7, tmp & 0xFF);
-    this.wr(0x04AB, tmp & 0xFF);
-    // LDA $008B; LSR×3; CLC; ADC $003A; STA $04A6
-    const idx = (v8B >> 3) + a3;
-    this.wr(0x04A6, idx & 0xFF);
-    this.wr(0x04AA, (idx + 0x20) & 0xFF);
-    // PLA; JSR $C524; STA $04AC; STY $04A8
-    this._system.subC524(a);
-    this.wr(0x04AC, a & 0xFF);
-    this.wr(0x04A8, y & 0xFF);
-    this.wr(0x0515, 0x80);
-    // 循环 4 次: PHA; JSR $B127; JSR $C515; PLA; ADC #$02; CMP #$08
-    let cnt = 0;
-    while (cnt !== 0x08) {
-      this._system.coroutineYield(1);
-      cnt = (cnt + 2) & 0xFF;
-    }
-    this.wr(0x008B, (this.rd(0x008B) + 8) & 0xFF);
-  }
-
-  /**
-   * $9127: 精灵位置设置 (设 $02F8-$02FE OAM 区)。
-   * asm $9127-$9160:
-   *   STA $003A; LDA #$01; STA $02F9; STA $02FD
-   *   LDA #$00; STA $02FA; STA $02FE
-   *   LDA $008B; AND #$07; ASL×4; CLC; ADC #$7C; STA $02F8; ADC #$08; STA $02FC
-   *   LDA $008B; LSR×3; CLC; ADC $003A; STA $02FB; CLC; ADC #$20; STA $02FF
-   *   LDA #$01; JSR $C515; LDA $0515; BNE; RTS
-   */
-  private sub9127(a: number): void {
-    this.wr(0x003A, a & 0xFF);
-    this.wr(0x02F9, 0x01);
-    this.wr(0x02FD, 0x01);
-    this.wr(0x02FA, 0x00);
-    this.wr(0x02FE, 0x00);
-    const v8B = this.rd(0x008B);
-    const off = ((v8B & 0x07) << 4) + 0x7C;
-    this.wr(0x02F8, off & 0xFF);
-    this.wr(0x02FC, (off + 8) & 0xFF);
-    const idx = (v8B >> 3) + this.rd(0x003A);
-    this.wr(0x02FB, idx & 0xFF);
-    this.wr(0x02FF, (idx + 0x20) & 0xFF);
-    // LDA #$01; JSR $C515; 等待 $0515=0; RTS
-    this._system.coroutineYield(1);
-  }
-
   // ════════════════════════════════════════════════════════════
   // $9160-$9334 补充: 事件分派辅助 + .byte 编码区域
+  // 事件分派入口 $915A (matchAuxHigh) 已用 switch 直接分派, 不再走 $C509 跳转表。
+  // $B127 (sub9127) 为精灵位置子程, 已由 spriteSetup90AF 的循环调用。
   // ════════════════════════════════════════════════════════════
-
-  /** $9160: 事件分派辅助 (SEC; SBC #$E0; JSR $C509 查跳转表) */
-  private sub9160(a: number): void {
-    const idx = (a - 0xE0) & 0xFF;
-    this._system.subC509(idx);
-  }
-
-  /** $9186: JSR $C52D (精灵批初始化) */
-  private sub9186(): void { this.subC52D(); }
-
-  /** $9218: JMP $B349 → matchInit9349 (event3 入口) */
-  private sub9218(): void { this.matchInit9349(); }
-
-  /** $9246: subB246 内部 (.byte 编码区域, 已由 subB246 覆盖) */
-  private sub9246(): void { this.subB246(); }
-
-  /** $9310a: sub9310 内部 (.byte 编码区域, 已由 sub9310 覆盖) */
-  private sub9310a(): void { this.sub9310(); }
-
-  /** $9330: sub9335 前驱 (LDA #$80, 已由 sub9335 覆盖) */
-  private sub9330(): void { this.sub9335(); }
 
   /** 比赛帧推进 (由 bank26 比赛核心引擎调用) */
   update(frame: number): void {
