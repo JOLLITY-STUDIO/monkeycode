@@ -76,11 +76,12 @@ export class HardwareInitService {
     this.wr(0x0469, 0x00);
     this.wr(0x0469, 0x00);
     // $C6B8: CLI — 省略
-    // $C6B9-$C6BB: LDA #$00 (场景 0 = BOOT); JMP $CEFE → 场景重置辅助
+    // tsnes trace 实测: 开场第一个画面 ram_00ED = 2 (TECMO Theater 开场动画)
+    // bank00 协程调度器 ($9F0F) 从栈弹出 $ED=2, 驱动 bank7 场景渲染 + bank0/bank5 辅助
     // 先执行 preMainLoopInit (asm $821D: 含 JSR $AA06 场景/调色板装载 + JSR $98A0 ntClear + JSR $9B7F oamClear)
     // 否则场景数据不装载, 画面空白
     this._scene.preMainLoopInit();
-    this.resetScene(0);
+    this.resetScene(2);
     console.log(
       `[HardwareInitService] init() done. nt0=${this.countNt()} ram_00ED=${this.rd(0x00ED)}` +
         ` ram_004A=${this.rd(0x004A)} ram_0538=${this.rd(0x0538)}`,
