@@ -32,6 +32,7 @@ import {
   getSceneData as getBank07SceneData,
   SCENE_PTR_TABLE,
 } from '../../data/tables/bank07-scenes-metatile';
+import { PALETTE_BG_06, PALETTE_SPR_06 } from '../../data/scene/textscript/scripts-bank-06';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {
@@ -287,33 +288,25 @@ export class GameSystemService {
   // ════════════════════════════════════════════════
   // $9AB8 paletteLoadBG — 从 bank06 读 BG 调色板到 $062A
   // $9ADA paletteLoadSPR — 从 bank06 读 SPR 调色板到 $063A
+  // 调色板数据已从 bank06 提取为 PALETTE_BG_06 / PALETTE_SPR_06, 直接 import 读取。
   // ════════════════════════════════════════════════
   paletteLoadBG(): void {
-    // $9AB8: $00E7=0; $0048 <<4 进 $00E7 (指针 = $B000 + $0048*16)
-    let hi = 0;
-    let a = (this.rd(0x0048) << 4) & 0xff;
-    hi |= (this.rd(0x0048) >> 4) & 0x0f;
-    hi = (hi + 0xb0) & 0xff;
-    // $9AF9-$9B05: 16 字节 → $062A
-    this.paletteCopy(a, hi, 0x062A, 0x10);
+    // $9AB8: 索引 = $0048; 每组 16 字节; 从 PALETTE_BG_06[索引*16 .. +16] → $062A
+    const idx = this.rd(0x0048);
+    this.paletteCopy16(PALETTE_BG_06, idx, 0x062A);
   }
 
   paletteLoadSPR(): void {
-    let hi = 0;
-    let a = (this.rd(0x0049) << 4) & 0xff;
-    hi |= (this.rd(0x0049) >> 4) & 0x0f;
-    hi = (hi + 0xb3) & 0xff;
-    this.paletteCopy(a, hi, 0x063A, 0x10);
+    // $9ADA: 索引 = $0049; 每组 16 字节; 从 PALETTE_SPR_06[索引*16 .. +16] → $063A
+    const idx = this.rd(0x0049);
+    this.paletteCopy16(PALETTE_SPR_06, idx, 0x063A);
   }
 
-  /** 从 bank06 调色板数据区复制 16 字节到指定 RAM 区 (数据由 bank06 侧提供) */
-  private paletteCopy(srcLo: number, srcHi: number, dst: number, len: number): void {
-    const src = (srcHi << 8) | srcLo;
-    // 调色板源数据来自 bank06 ($B000/$B300), 由 bank06 数据文件提供。
-    // 这里通过 DataStore 的声明式调色板缓存读取。
-    const tbl = this._store.get<readonly number[]>(`paletteBank_${srcHi.toString(16)}`) ?? [];
-    for (let i = 0; i < len; i++) {
-      this.wr(dst + i, tbl[(srcLo + i) & 0xff] ?? 0);
+  /** 从调色板表复制 16 字节到指定 RAM 区 (索引 × 16 = 组偏移) */
+  private paletteCopy16(table: readonly number[], idx: number, dst: number): void {
+    const off = (idx * 16) & 0xff;
+    for (let i = 0; i < 0x10; i++) {
+      this.wr(dst + i, table[off + i] ?? 0);
     }
   }
 
