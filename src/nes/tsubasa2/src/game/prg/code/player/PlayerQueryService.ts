@@ -431,8 +431,13 @@ export class PlayerQueryService {
     const teamId = this._store.read('ram_0026');
     const x = (teamId << 1) & 0xFF;
     // $8F7D: LDA $BA4C,X; STA $00E6; LDA $BA4D,X; STA $00E7
-    // (查 $BA4C 表设数据指针 $00E6/$00E7)
-    void x;
+    // 查 PLAYER_STAT_TABLE_16BIT (原 $BA4C, 16bit LE) 设数据指针
+    const statIdx = x >> 1;  // X 是字节偏移, 表项索引 = X/2
+    const ptr = statIdx < PLAYER_STAT_TABLE_16BIT.length
+      ? PLAYER_STAT_TABLE_16BIT[statIdx]
+      : 0;
+    this._store.write('ram_00E6', ptr & 0xFF);
+    this._store.write('ram_00E7', (ptr >> 8) & 0xFF);
     // $8F87: JMP $AF9E (跳到 entry5 内部继续)
   }
 
@@ -449,16 +454,40 @@ export class PlayerQueryService {
     const teamId = this._store.read('ram_0026');
     const x = (teamId << 1) & 0xFF;
     // $8F8E: LDA $BA4C,X; STA $00E6; LDA $BA4D,X; LSR; ROR $00E6; LSR; ROR $00E6; STA $00E7
-    // (16位指针 ÷4 → $00E6/$00E7)
-    void x;
-    // $8FA0: LDX #$00; 循环 8 次: 读 $0454+X, 加 $00E6, 写回
-    for (let i = 0; i < 4; i++) {
-      const addr = 0x0454 + i * 2;
-      const lo = this._store.read(`ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`);
-      const hi = this._store.read(`ram_${(addr + 1).toString(16).toUpperCase().padStart(4, '0')}`);
-      // CLC; ADC $00E6 → 加偏移 (stub: 偏移=0)
-      this._store.write(`ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`, lo);
-      void hi;
+    // 查 PLAYER_STAT_TABLE_16BIT (原 $BA4C) 取 16bit 指针, 再 ÷4
+    const statIdx = x >> 1;
+    const ptr = statIdx < PLAYER_STAT_TABLE_16BIT.length
+      ? PLAYER_STAT_TABLE_16BIT[statIdx]
+      : 0;
+    let lo = ptr & 0xFF;
+    let hi = (ptr >> 8) & 0xFF;
+    // LSR hi; ROR lo; LSR hi; ROR lo (16位 ÷4)
+    for (let i = 0; i < 2; i++) {
+      lo = ((lo >> 1) | ((hi & 1) << 7)) & 0xFF;
+      hi = hi >> 1;
+    }
+    this._store.write('ram_00E6', lo);
+    this._store.write('ram_00E7', hi);
+    // $8FA0: LDX #$00; 循环: LDA $0454,X; CLC; ADC $00E6; STA $0454,X;
+    //   LDA $0455,X; ADC $00E7; STA $0455,X; BCC $8FBB;
+    //   LDA #$FF; STA $0454,X; STA $0455,X (溢出设 $FF)
+    //   $8FBB: INX; INX; CPX #$16; BCC $8FA0; RTS
+    // 共 11 次 (X=0,2,...,$14)
+    for (let xi = 0; xi < 0x16; xi += 2) {
+      const addrLo = 0x0454 + xi;
+      const addrHi = 0x0455 + xi;
+      const curLo = this._store.read(`ram_${addrLo.toString(16).toUpperCase().padStart(4, '0')}`);
+      const curHi = this._store.read(`ram_${addrHi.toString(16).toUpperCase().padStart(4, '0')}`);
+      const sumLo = curLo + lo;
+      const sumHi = curHi + hi + (sumLo > 0xFF ? 1 : 0);
+      if (sumHi > 0xFF) {
+        // 溢出设 $FF
+        this._store.write(`ram_${addrLo.toString(16).toUpperCase().padStart(4, '0')}`, 0xFF);
+        this._store.write(`ram_${addrHi.toString(16).toUpperCase().padStart(4, '0')}`, 0xFF);
+      } else {
+        this._store.write(`ram_${addrLo.toString(16).toUpperCase().padStart(4, '0')}`, sumLo & 0xFF);
+        this._store.write(`ram_${addrHi.toString(16).toUpperCase().padStart(4, '0')}`, sumHi & 0xFF);
+      }
     }
   }
 
@@ -1266,21 +1295,36 @@ export class PlayerQueryService {
   protected sub8F91(): void {
     let e6 = this._store.read('ram_00E6');
     // LDA $BA4D,X; LSR; ROR $00E6; LSR; ROR $00E6; STA $00E7 (16位÷4)
-    const hi = 0; // ROM stub
+    // X 来自 entry7 的 teamId<<1, 查 PLAYER_STAT_TABLE_16BIT 高字节
+    const teamId = this._store.read('ram_0026');
+    const statIdx = (teamId << 1) >> 1;
+    const ptr = statIdx < PLAYER_STAT_TABLE_16BIT.length
+      ? PLAYER_STAT_TABLE_16BIT[statIdx]
+      : 0;
+    let lo = ptr & 0xFF;
+    let hi = (ptr >> 8) & 0xFF;
+    // LSR hi; ROR lo; LSR hi; ROR lo (16位 ÷4)
     for (let i = 0; i < 2; i++) {
-      e6 = ((e6 >> 1) | ((hi & 1) << 7)) & 0xFF;
+      lo = ((lo >> 1) | ((hi & 1) << 7)) & 0xFF;
+      hi = hi >> 1;
     }
+    e6 = lo;
     this._store.write('ram_00E6', e6);
     this._store.write('ram_00E7', hi);
     // 循环 11 次 (X=0,2,4,...,$14)
     for (let x = 0; x < 0x16; x += 2) {
-      const lo = this._store.read(`ram_0454`); // stub: 实际按 X 索引
-      const sum = lo + e6;
-      if (sum > 0xFF) {
-        this._store.write(`ram_0454`, 0xFF);
-        this._store.write(`ram_0455`, 0xFF);
+      const addrLo = 0x0454 + x;
+      const addrHi = 0x0455 + x;
+      const curLo = this._store.read(`ram_${addrLo.toString(16).toUpperCase().padStart(4, '0')}`);
+      const curHi = this._store.read(`ram_${addrHi.toString(16).toUpperCase().padStart(4, '0')}`);
+      const sumLo = curLo + e6;
+      const sumHi = curHi + hi + (sumLo > 0xFF ? 1 : 0);
+      if (sumHi > 0xFF) {
+        this._store.write(`ram_${addrLo.toString(16).toUpperCase().padStart(4, '0')}`, 0xFF);
+        this._store.write(`ram_${addrHi.toString(16).toUpperCase().padStart(4, '0')}`, 0xFF);
       } else {
-        this._store.write(`ram_0454`, sum & 0xFF);
+        this._store.write(`ram_${addrLo.toString(16).toUpperCase().padStart(4, '0')}`, sumLo & 0xFF);
+        this._store.write(`ram_${addrHi.toString(16).toUpperCase().padStart(4, '0')}`, sumHi & 0xFF);
       }
     }
   }
@@ -1309,15 +1353,41 @@ export class PlayerQueryService {
     const teamId = this._store.read('ram_0026');
     const y = (teamId << 1) & 0xFF;
     // LDA $BA4D,Y; STA $00ED; LDA $BA4C,Y; ROR $00ED; LSR; ROR $00ED; LSR (÷4)
-    let ed = 0; // stub
+    // 查 PLAYER_STAT_TABLE_16BIT (原 $BA4C) 取 16bit, 再 ÷4
+    const statIdx = y >> 1;
+    const ptr = statIdx < PLAYER_STAT_TABLE_16BIT.length
+      ? PLAYER_STAT_TABLE_16BIT[statIdx]
+      : 0;
+    let edLo = ptr & 0xFF;
+    let edHi = (ptr >> 8) & 0xFF;
+    // ROR $00ED; LSR hi; ROR lo; LSR hi (16位 ÷4)
+    for (let i = 0; i < 2; i++) {
+      edLo = ((edLo >> 1) | ((edHi & 1) << 7)) & 0xFF;
+      edHi = edHi >> 1;
+    }
+    let ed = edLo;
     // JSR $9DEE
     // ASL $00EC; ROL $00ED ×2 (×4)
     for (let i = 0; i < 2; i++) {
       ed = ((ed << 1) | (ec >> 7)) & 0xFF;
     }
+    this._store.write('ram_00ED', ed);
     // LDA $00EB; AND #$0F; ASL; TAX; LDA $0454,X; CLC; ADC $00ED; STA $0454,X
     const idx = (eb & 0x0F) << 1;
-    void idx; void x; void y;
+    const addrLo = 0x0454 + idx;
+    const addrHi = 0x0455 + idx;
+    const curLo = this._store.read(`ram_${addrLo.toString(16).toUpperCase().padStart(4, '0')}`);
+    const curHi = this._store.read(`ram_${addrHi.toString(16).toUpperCase().padStart(4, '0')}`);
+    const sumLo = curLo + ed;
+    const sumHi = curHi + (sumLo > 0xFF ? 1 : 0);
+    if (sumHi > 0xFF) {
+      this._store.write(`ram_${addrLo.toString(16).toUpperCase().padStart(4, '0')}`, 0xFF);
+      this._store.write(`ram_${addrHi.toString(16).toUpperCase().padStart(4, '0')}`, 0xFF);
+    } else {
+      this._store.write(`ram_${addrLo.toString(16).toUpperCase().padStart(4, '0')}`, sumLo & 0xFF);
+      this._store.write(`ram_${addrHi.toString(16).toUpperCase().padStart(4, '0')}`, sumHi & 0xFF);
+    }
+    void x;
   }
 
   /**
