@@ -48,6 +48,15 @@
  */
 import { DataStore } from '../../data/store/DataStore';
 import type { GameSystemService } from '../system/GameSystemService';
+import {
+  TBL_818E, TBL_8199, TBL_8206, TBL_824C, TBL_82C0, TBL_8528,
+  TBL_8604, TBL_86AF, TBL_86B5, TBL_86C0, TBL_86F1, TBL_8716,
+  TBL_87BD, TBL_87C3, TBL_87CD, TBL_88DD, TBL_8900, TBL_8956,
+  TBL_8A9D, TBL_8B9E, TBL_8BBE, TBL_8C3B, TBL_8C84, TBL_8D9D,
+  TBL_8E1B, TBL_9460, TBL_9554, TBL_959E, TBL_9E4E, TBL_BAB2,
+  DATA_LINEUP_834A, DATA_FPTR_8E2B, DATA_FORM_9474, DATA_ATTR_95D6,
+  DATA_9FCE, DATA_AE86,
+} from '../../data/tables/bank28-tables';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {
@@ -118,22 +127,132 @@ export class MatchConfigService {
   }
 
   // ════════════════════════════════════════════════
-  // $803A: 球员数据查询
-  // asm: PHA; JSR $C50C; LDY #$00; LDA ($0034),Y; ...
-  //   查 RAM 玩家数据指针, 读球员数据, 算属性索引
-  //   涉及 $818E/$8199 偏移表, $AE86/$9FCE 属性基址
+  // $8039/$803A: 球员数据查询 (属性查表)
+  // asm $8039-$818D (已按 ROM 原始字节逐指令核对, 含 $813F 特殊路径)
+  //   入口 A=属性请求值(球员id/$0441/$0442/$05FB^$0B), X=位置索引(调用点查表值)
+  //   $803A: JSR $C50C → $0034/$0035 = 球员数据指针 (C=ASL进位=(phase^$0B)bit7)
+  //   $003E: LDA ($0034),Y; ≠0 → 直接用 RAM 值; =0 → 查 $818E 偏移表取 $0038 属性
+  //   ≥$23 扩展路径: 用 playerData[1]/[2] 覆盖属性值, -$23
+  //   ×4 (或 ×12) + $8199 基址 → $0032/$0033 = 属性表指针
+  //   特殊 id {0,$0B,$1E,$1F} → $AE86(×8) GK 属性表
+  //   普通 id → $9FCE(×12) 属性表; X≥$1F → $AFAE+base[1]×12 指针表
   // ════════════════════════════════════════════════
-  playerDataQuery(playerId: number): number {
+  playerDataQuery(playerId: number, posX: number = 0): number {
+    const x = posX & 0xFF;
+    // $803A: JSR $C50C (读 $05FB 设 $0034/$0035; 返回时 C = ASL 进位)
     this._system.subC50C();
-    const ptr = this.rdPtr(0x0034, 0x0035);
-    const data = this.readMemByte(ptr);
-    if (data === 0) {
-      // 查 $818E 偏移表
-      const off = this.readMemByte(0x818E + ((playerId - 0x0B) & 0xFF));
-      const attrPtr = this.rdPtr(0x0038, 0x0039);
-      return this.readMemByte(attrPtr + off);
+    const phase = this.rd(0x05FB);
+    const cC50C = ((phase ^ 0x0B) & 0x80) !== 0;
+    const ptr34 = this.rdPtr(0x0034, 0x0035);
+    // $803B/$803E: LDY #$00; LDA ($0034),Y
+    let a = this.readIndirect(ptr34, 0);
+    // $8040: BNE $8050 — RAM 值非 0 直接进入, C 为 $C50C 遗留
+    let carryGe23 = cC50C;
+    if (a === 0) {
+      // $8042-$804D: A = playerId-$0B; Y=$818E[Y]; A=($0038),Y (属性)
+      const y = this.readMemByte(0x818E + ((playerId - 0x0B) & 0xFF));
+      a = this.readIndirect(this.rdPtr(0x0038, 0x0039), y);
+      // $804E: CMP #$23 → C = (A >= $23)
+      carryGe23 = a >= 0x23;
+      // $8050: PHP
+      // $8052: BCC $8064 — A < $23 跳过扩展
+      if (!carryGe23) {
+        // 直接到 $8064
+      } else {
+        // $8053-$8061: p1≥0 用属性, 否则用 p2; SBC #$23 (C=1)
+        const p1 = this.readIndirect(ptr34, 1);
+        if ((p1 & 0x80) !== 0) {
+          a = this.readIndirect(ptr34, 2);
+        }
+        a = (a - 0x23) & 0xFF;
+      }
+    } else if (carryGe23) {
+      // d0 ≠ 0 且 C=1: $8053-$8061 (p1 负数 → p2; SBC #$23)
+      const p1 = this.readIndirect(ptr34, 1);
+      if ((p1 & 0x80) !== 0) {
+        a = this.readIndirect(ptr34, 2);
+      }
+      a = (a - 0x23) & 0xFF;
     }
-    return data;
+    // $8064-$808D: (A×4 或 A×12) + $8199 偏移 (Y=0 → $95D6; Y=2 → $9662)
+    const base16 = (((a * 4) * (carryGe23 ? 3 : 1)) + (carryGe23 ? 0x9662 : 0x95D6)) & 0xFFFF;
+    this.wrPtr(0x0032, 0x0033, base16);
+    // $8090: PLA → A = playerId (栈平衡, H5 无共享栈, 省略)
+    // $8092: CPX #$1F; BCC $809A — X ≥ $1F → $813F 指针表路径
+    if (x >= 0x1F) { return this.sub813F(playerId, x, base16); }
+    // $809A-$80A6: 特殊 id 判定 (0/$0B/$1E/$1F → Z=1)
+    const special = playerId === 0 || playerId === 0x0B || playerId === 0x1E || playerId === 0x1F;
+    // $80A8: LDY #$00; LDA ($0032),Y; STY $0033; PLP
+    const base0 = this.readIndirect(base16, 0);
+    // $80AF: PLP → Z; $80B0: BNE $80D1
+    if (!special) {
+      // $80D1-$80F3: base0×12 + $9FCE 基址 (普通球员属性表)
+      const ptr = (0x9FCE + base0 * 12) & 0xFFFF;
+      this.wrPtr(0x0032, 0x0033, ptr);
+      // $80F6/$80F7: TXA; TAY → Y=X; $80F9: TXA; $80FA: BEQ $8113
+      return this.readAttrTail(ptr, x);
+    }
+    // $80B0-$80C1 (special): base0×8 + $AE86 基址 (GK 属性表)
+    const ptr = (0xAE86 + base0 * 8) & 0xFFFF;
+    this.wrPtr(0x0032, 0x0033, ptr);
+    // $80C3-$80CB: Y = X==0 ? 0 : X-$17; $80CC: LDA ($0032),Y; JMP $80F9
+    const y = x === 0 ? 0 : (x - 0x17) & 0xFF;
+    return this.readAttrTail(ptr, x, y);
+  }
+
+  /**
+   * $80F9 公共尾 (普通路径 Y=X; special 路径 Y=presetY):
+   *   X≠0: val = 表[Y] + p3×2, 上限 $BF → $0032 = val
+   *   X==0: val = 表[0] + p3, 上限 $5F; 经 ($0032)=$0E ($0033)=$9F/$A0
+   *     读 RAM $069F+val 16bit 表 → ($0032,$0033)
+   */
+  private readAttrTail(ptr: number, x: number, presetY?: number): number {
+    const y = presetY ?? x;
+    const base = this.readIndirect(ptr, y);
+    if (x === 0) {
+      // $8113: val = 表[0] + p3, 上限 $5F
+      const p3 = this.readIndirect(this.rdPtr(0x0034, 0x0035), 3);
+      let val = (base + p3) & 0xFF;
+      if (val > 0x5F) val = 0x5F;
+      // $8125: LDY #$9F; ASL; BCC $812B; INY → $0033=$9F/$A0; $0032=$0E
+      this.wr(0x0033, 0x9F + ((val >> 7) & 1));
+      this.wr(0x0032, 0x0E);
+      // $8131-$813C: 指针 $0E9F+val → RAM 镜像 $069F+val, 读 16bit
+      const ra = (0x0E9F + val) & 0x07FF;
+      const v16 = this.readMemByte(ra) | (this.readMemByte((ra + 1) & 0x07FF) << 8);
+      this.wrPtr(0x0032, 0x0033, v16);
+      return v16 & 0xFF;
+    }
+    // $80FC-$8107: val = 表[Y] + p3×2 (16bit 语义含 ASL 进位)
+    const p3 = this.readIndirect(this.rdPtr(0x0034, 0x0035), 3);
+    let val = (base + p3 * 2) & 0xFF;
+    // $810A-$8110: 上限 $BF → $0032
+    if (val > 0xBF) val = 0xBF;
+    this.wr(0x0032, val);
+    return val;
+  }
+
+  /** $813F: X ≥ $1F 特殊路径 — base[1]×12 + $AFAE 指针表, 返回 16bit 指针 */
+  private sub813F(playerId: number, x: number, base16: number): number {
+    // $813F: CPX #$25; BCS $817E (X ≥ $25 → 表直读)
+    if (x >= 0x25) {
+      // $817E: TXA; SEC; SBC #$23; TAY; LDA ($0032),Y; STA $0032; LDA #$00; STA $0033
+      const y = (x - 0x23) & 0xFF;
+      const v = this.readIndirect(base16, y);
+      this.wrPtr(0x0032, 0x0033, v);
+      return v;
+    }
+    // $8143-$8169: ptr = $AFAE + base[1]×12
+    const b1 = this.readIndirect(base16, 1);
+    const ptr = (0xAFAE + b1 * 12) & 0xFFFF;
+    // $816B-$817B: Y = (X-$1F)*2; ($0032,$0033) = 指针表 16bit 项
+    const y = ((x - 0x1F) * 2) & 0xFF;
+    const lo = this.readIndirect(ptr, y);
+    const hiB = this.readIndirect(ptr, (y + 1) & 0xFF);
+    const p = (hiB << 8) | lo;
+    this.wrPtr(0x0032, 0x0033, p);
+    void playerId;
+    return p;
   }
 
   // ════════════════════════════════════════════════

@@ -45,4 +45,4 @@ console.log('check 834A head:', dump(28, 0x034A, 4));
 console.log('check 8E2B head:', dump(28, 0x0E2B, 4));
 console.log('check 95D6 head:', dump(28, 0x15D6, 4));
 console.log('check 9FCE head:', dump(28, 0x1FCE, 4));
-console.log('check AE86 head:', dump(29, 0x2E86, 4));
+console.log('check AE86 head:', dump(29, 0x0E86, 4));

@@ -11,6 +11,5 @@ const walk = (d) => {
     }
   }
 };
-walk('src/game/prg');
-walk('src/game/index.ts');
+walk('src/game');
 console.log(hits.join('\n'));
