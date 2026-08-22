@@ -122,7 +122,9 @@ export class HardwareInitService {
   // ════════════════════════════════════════════════
   bootScene(sceneId: number): void {
     // $C401-$C40C: PPU CTRL/MASK
-    this.wr(0x0020, 0x08);
+    // tsnes trace 实测: 开场后 $0020=$88 (bit7=NMI + bit3=sprite PT=$1000)
+    // $0021=$1E (BG+SPR 可见 + 无剪裁)
+    this.wr(0x0020, 0x88);
     this.wr(0x0021, 0x1e);
     // $C40F-$C411: bank 基址
     this.wr(0x0022, 0x00);

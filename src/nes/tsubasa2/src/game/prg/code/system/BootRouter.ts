@@ -166,6 +166,10 @@ export class BootRouter {
     this.wr(0x00ED, i);
     switch (i) {
       case NmiCallbackIndex.CALLBACK_00_PASSWORD_INIT:
+      case NmiCallbackIndex.CALLBACK_02_AUX_9B91:
+        // ram_00ED=2 = BOOT 开场 (tsnes trace 实测开场第一个画面 $ED=2)。
+        // 之前 resetScene(2) 走 default → _initScene(2) 空实现 → BOOT 背景从不渲染
+        // → nt0=0 黑屏。case 2 与 case 0 都挂 _initBoot (BOOT 开场初始化 + 背景渲染)。
         this._initBoot();
         break;
       case NmiCallbackIndex.CALLBACK_23_PASSWORD_CHECK:
@@ -198,15 +202,16 @@ export class BootRouter {
     this.wr(0x0091, 2);
     // BOOT 开场背景: SCENE_0x0A (bank07) + bank08 metatile + bank06 调色板
     // 走真实 ROM 数据链路, 不再使用模拟器 dump 快照 (boot-scene.ts 已删)
+    // _initBoot 会被 update 每帧重入 (ram_00ED=2 每帧 resetEntry), 背景只渲染一次
     if (!this._bootBgRendered) {
       this._bgRenderer.render();
       this._bootBgRendered = true;
+      console.log(
+        `[BootRouter] _initBoot BOOT bg rendered. ram_00ED=${this.rd(0x00ED)}` +
+          ` ram_004A=${this.rd(0x004A)} ram_0538=${this.rd(0x0538)}` +
+          ` ram_0020=${this.rd(0x0020)} ram_0021=${this.rd(0x0021)}`,
+      );
     }
-    console.log(
-      `[BootRouter] _initBoot done. ram_00ED=${this.rd(0x00ED)}` +
-        ` ram_004A=${this.rd(0x004A)} ram_0538=${this.rd(0x0538)}` +
-        ` ram_0020=${this.rd(0x0020)} ram_0021=${this.rd(0x0021)}`,
-    );
   }
 
   /** 通用回调处理 (其余索引由 §6 callbackNN 方法覆盖) */
