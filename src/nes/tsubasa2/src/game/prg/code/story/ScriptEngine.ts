@@ -26,6 +26,8 @@ function ramKey(addr: number): string {
 
 export class ScriptEngine {
   protected _store: DataStore;
+  /** GameSystemService 引用 (调色板加载/tableLoad 等委托 system) */
+  protected _system: import('../system/GameSystemService').GameSystemService | null = null;
   /** PPU buffer 写入位置指针 (原 asm $0000 in $9B28 context, H5 用类成员避免与协程槽冲突) */
   protected _bufWritePos = 0;
 
@@ -40,6 +42,11 @@ export class ScriptEngine {
 
   constructor(store: DataStore) {
     this._store = store;
+  }
+
+  /** 注入 GameSystemService (调色板加载/tableLoad 委托) */
+  setSystem(sys: import('../system/GameSystemService').GameSystemService): void {
+    this._system = sys;
   }
 
   /** 装载脚本 id (原 $8464 scriptLoader) */
@@ -147,29 +154,19 @@ export class ScriptEngine {
 
   /** 写字符 tile (原 $88CA) */
   private writeCharTiles(vramHi: number, pos: number, tiles: readonly number[]): void {
-    // 分配 PPU buffer (原 $9B28: LDX $0000 作为写入位置)
-    // H5: 用 _bufWritePos 类成员, 避免与协程槽 $0000 冲突
-    // ram_0628==0 表示上一帧 buffer 已被 nmiRender 消费完, 重置写入位置
-    if (this._store.read('ram_0628') === 0) {
-      this._bufWritePos = 0;
-    }
-    const bufX = this._bufWritePos;
-    // 写 buffer: [count, addrLo, addrHi, tile×count] 格式 (nmiRender 消费)
-    // count = tiles.length | 0x80 (bit7=1 表示 NT 写入模式, nmiRender 用 ctrl & 0x3F)
-    this._store.write(ramKey(0x05e8 + bufX), tiles.length | 0x80);
-    // addrLo/addrHi = VRAM 地址 (vramHi<<8 | pos)
-    this._store.write(ramKey(0x05e9 + bufX), pos & 0xff);
-    this._store.write(ramKey(0x05ea + bufX), vramHi & 0xff);
-    // tile 数据
+    // 分配 PPU buffer (原 $9B28 ppuBufAlloc: A=$82 控制字节, X=长度, Y=目标地址)
+    // H5: 委托 GameSystemService.ppuBufAlloc, 用 ram_0628 作为统一写入位置
+    if (!this._system) return;
+    const dst = (vramHi << 8) | (pos & 0xff);
+    // ctrl=0x82 (bit7=1 NT模式 + count=2), len=tiles.length, dst=VRAM地址
+    const x = this._system.ppuBufAlloc(0x82, tiles.length, dst);
+    // 写 tile 数据到 buffer (ppuBufAlloc 已写 ctrl+addrLo+addrHi, 返回数据区起始 x)
     for (let i = 0; i < tiles.length; i++) {
-      this._store.write(ramKey(0x05eb + bufX + i), tiles[i]);
+      this._system.writePpuBuf(x + i, tiles[i]);
     }
-    // 推进写入位置: count(1) + addrLo(1) + addrHi(1) + tiles.length
-    this._bufWritePos = (bufX + 3 + tiles.length) & 0xff;
-    // 写 0 终止符 (nmiRender 消费 buffer 时遇到 0 break)
-    this._store.write(ramKey(0x05e8 + this._bufWritePos), 0);
-    // 设 NT buffer 更新标志 (nmiRender 检查 ram_0628 非 0 才处理)
-    this._store.write('ram_0628', 0x01);
+    // 结束 buffer (写终止符)
+    this._system.ppuBufEnd(x + tiles.length);
+    // 设 NT buffer 更新标志 (nmiRender 检查 ram_0628 非 0 才处理 — ppuBufEnd 已设 ram_0628)
   }
 
   /** 行换行处理 (原 $895D) */
@@ -440,10 +437,16 @@ export class ScriptEngine {
     this.callExternal(a, b);
   }
 
-  /** $F9 $8813: $005B 位操作 */
+  /** $F9 $8813: $005B 位操作 (读 1 字节操作数, bit7 决定 set/clear bit2) */
   private opFlagBit(): void {
     this.advancePtr(1);
-    this._store.write('ram_005B', this._store.read('ram_005B') | 0x04);
+    const a = this.readByteAdvance();
+    // $8813: BMI $8814 (bit7=1 → AND #$FB 清 bit2), else $881B (ORA #$04 设 bit2)
+    if ((a & 0x80) !== 0) {
+      this._store.write('ram_005B', this._store.read('ram_005B') & 0xFB);
+    } else {
+      this._store.write('ram_005B', this._store.read('ram_005B') | 0x04);
+    }
   }
 
   /** $FA $881A: sceneLoad */
@@ -527,10 +530,24 @@ export class ScriptEngine {
   private fadeOut(): void { /* 由 system 完成 */ }
   private initHelper(): void { /* 由 system 完成 */ }
   private ntClear(): void { /* 由 system 完成 */ }
-  private mainLoopInit2(): void { /* 由 system 完成 */ }
-  private mainInitParam(_bg: number, _spr: number): void { /* 由 system 完成 */ }
-  private mainInitParamBgOnly(_bg: number): void { /* 由 system 完成 */ }
-  private mainInitParamSprOnly(_spr: number): void { /* 由 system 完成 */ }
+  private mainLoopInit2(): void {
+    // 委托 GameSystemService.sub9A35 (paletteLoadBG + paletteLoadSPR + 置满)
+    this._system?.sub9A35();
+  }
+  private mainInitParam(bg: number, spr: number): void {
+    // 设 ram_0048 (BG idx) / ram_0049 (SPR idx) 后调 mainLoopInit2
+    this._store.write('ram_0048', bg & 0xff);
+    this._store.write('ram_0049', spr & 0xff);
+    this._system?.sub9A35();
+  }
+  private mainInitParamBgOnly(bg: number): void {
+    this._store.write('ram_0048', bg & 0xff);
+    this._system?.paletteLoadBG();
+  }
+  private mainInitParamSprOnly(spr: number): void {
+    this._store.write('ram_0049', spr & 0xff);
+    this._system?.paletteLoadSPR();
+  }
   private animateSprites(): void { /* 精灵动画 */ }
   private fillText(): void { /* 文本填充 */ }
   private clearTextRegion(): void { /* 清文本区 */ }

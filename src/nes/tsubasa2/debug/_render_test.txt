@@ -1,0 +1,6 @@
+frame 30: nt0=10 ppuBuf=0 bgVis=1 sprVis=1
+frame 60: nt0=36 ppuBuf=0 bgVis=1 sprVis=1
+frame 90: nt0=60 ppuBuf=0 bgVis=1 sprVis=1
+frame 120: nt0=74 ppuBuf=0 bgVis=1 sprVis=1
+frame 150: nt0=88 ppuBuf=0 bgVis=1 sprVis=1
+done

@@ -1,0 +1,27 @@
+=== boot ===
+ram_00ED=0 ram_0026=0 nt0=0
+=== after 90 frames ===
+ram_00ED=0 ram_0026=0 nt0=60
+DataStore nt0 nonZero=60
+(10,18)tile=1p=0 (11,18)tile=8dp=0 (13,18)tile=1p=0 (14,18)tile=1p=0 (15,18)tile=6ep=0 (17,18)tile=1ap=0 (18,18)tile=cp=0 (19,18)tile=29p=0 (20,18)tile=2fp=0 (21,18)tile=79p=0 (23,18)tile=94p=0 (24,18)tile=67p=0 (25,18)tile=94p=0 (26,18)tile=69p=0 (27,18)tile=94p=0 (28,18)tile=7dp=0 (29,18)tile=69p=0 (30,18)tile=2dp=0 (31,18)tile=22p=0 (0,19)tile=94p=0 (1,19)tile=cp=0 (2,19)tile=94p=0 (3,19)tile=2ep=0 (4,19)tile=16p=0 (5,19)tile=1ep=0 (6,19)tile=2ep=0 (7,19)tile=65p=0 (8,19)tile=7dp=0 (9,19)tile=4dp=0 (11,19)tile=47p=0 (12,19)tile=70p=0 (13,19)tile=95p=0 (14,19)tile=53p=0 (15,19)tile=6ep=0 (16,19)tile=5p=0 (17,19)tile=5p=0 (18,19)tile=94p=0 (19,19)tile=27p=0 (21,19)tile=12p=0 (22,19)tile=94p=0 (23,19)tile=bp=0 (24,19)tile=8p=0 (25,19)tile=2ep=0 (26,19)tile=94p=0 (27,19)tile=6p=0 (27,27)tile=94p=0 (28,27)tile=68p=0 (29,27)tile=94p=0 (30,27)tile=69p=0 (31,27)tile=94p=0 (1,28)tile=11p=0 (2,28)tile=31p=0 (3,28)tile=3p=0 (4,28)tile=5p=0 (5,28)tile=3p=0 (6,28)tile=14p=0 (7,28)tile=2fp=0 (8,28)tile=95p=0 (9,28)tile=94p=0 (10,28)tile=79p=0
+PPU vramMem NT0 ($2000-$23BF) nonZero=60
+$2000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+$2010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+$2020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+$2030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+PPU palette RAM ($3F00-$3F1F):
+$3F00: 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d
+$3F10: 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d 0d
+palTable.curTable first 16: 525252 b40000 a00000 b1003d 740069 00005b 00005f 001840 002f10 084a08 006700 124200 6d2800 000000 000000 000000
+top tiles: $94 $1 $5 $2e $69
+ptTile[$94] initialized=1 opaque=0,0,0,0,0,0,0,0 nonZeroPix=4
+ptTile[$1] initialized=1 opaque=0,0,0,0,0,0,0,0 nonZeroPix=26
+ptTile[$5] initialized=1 opaque=0,0,0,0,0,0,0,0 nonZeroPix=25
+ptTile[$2e] initialized=1 opaque=0,0,0,0,0,0,0,0 nonZeroPix=15
+ptTile[$69] initialized=1 opaque=0,0,0,0,0,0,0,0 nonZeroPix=17
+ppu.buffer nonZero=0 / 61440
+scrollX=0 scrollY=0
+ram_0020=8 ram_0021=30
+f_bgVisibility=1 f_spVisibility=1
+bg_pt=undefined spr_pt=undefined
+ppu.ctrl1=undefined ctrl2=undefined

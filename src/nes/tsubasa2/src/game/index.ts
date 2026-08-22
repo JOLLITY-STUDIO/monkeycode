@@ -248,19 +248,21 @@ export class Tsubasa2 {
     if (nes.papu) {
       writeApuToPapu(this.store, nes.papu);
     }
+    // H5 翻译版不跑 CPU (游戏逻辑由 interrupts.nmi + sys.update 驱动),
+    // 直接调 PPU 渲染方法把 VRAM 画到 pixel buffer:
+    //   startFrame → renderFramePartially(0,240) → endFrame (→ ui.writeFrame)
+    const ppu: any = nes.ppu;
     try {
-      nes.frame();
+      ppu.startFrame();
+      ppu.renderFramePartially(0, 240);
+      ppu.endFrame();
     } catch (e) {
-      console.error('nes.frame() error at frame ' + this._frame + ': ' + (e as Error).message);
+      console.error('PPU render error at frame ' + this._frame + ': ' + (e as Error).message);
       throw e;
     }
-    // NES.frame() 走 endScanline 循环, 不触发 VBlank set/endFrame (原由 advanceDots 触发);
-    // 组合根补一次 startVBlank → endFrame → ui.writeFrame (onFrame 回调 → Canvas)
-    nes.ppu.startVBlank();
     this._frame++;
     // 调试日志: 每 30 帧输出渲染数据摘要 (黑屏排查用, 微信开发者工具控制台可观察)
     if (this._frame % 30 === 0) {
-      const ppu: any = nes.ppu;
       const buf = ppu.buffer as Uint32Array;
       let nz = 0;
       for (let i = 0; i < buf.length; i++) if (buf[i] !== 0) nz++;

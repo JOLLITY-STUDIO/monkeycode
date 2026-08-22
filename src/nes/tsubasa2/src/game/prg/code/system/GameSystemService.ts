@@ -98,6 +98,7 @@ export class GameSystemService {
   constructor(store: DataStore) {
     this._store = store;
     this._scriptEngine = new ScriptEngine(store);
+    this._scriptEngine.setSystem(this);
     // 注册协程工厂 (callbackIdx → 工厂, 替代 asm $0101+Y 回调指针表)
     // 索引 0 = $9148 场景初始化 (sub9148 主体)
     // 索引 1 = $801E 首次运行 (wait-vblank + 清状态 + 场景装载初始化 + 输入驱动)
