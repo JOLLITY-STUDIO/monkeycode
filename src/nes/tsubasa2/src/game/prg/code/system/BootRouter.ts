@@ -200,18 +200,10 @@ export class BootRouter {
     this.wr(0x004B, 0);
     this.wr(0x008F, 2);
     this.wr(0x0091, 2);
-    // BOOT 开场背景: SCENE_0x0A (bank07) + bank08 metatile + bank06 调色板
-    // 走真实 ROM 数据链路, 不再使用模拟器 dump 快照 (boot-scene.ts 已删)
-    // _initBoot 会被 update 每帧重入 (ram_00ED=2 每帧 resetEntry), 背景只渲染一次
-    if (!this._bootBgRendered) {
-      this._bgRenderer.render();
-      this._bootBgRendered = true;
-      console.log(
-        `[BootRouter] _initBoot BOOT bg rendered. ram_00ED=${this.rd(0x00ED)}` +
-          ` ram_004A=${this.rd(0x004A)} ram_0538=${this.rd(0x0538)}` +
-          ` ram_0020=${this.rd(0x0020)} ram_0021=${this.rd(0x0021)}`,
-      );
-    }
+    // tsnes trace 实测: 开场 NT0 几乎全零 (仅 25 个 TECMO 文字 tile),
+    // 由 NMI 渲染主程 $05E8 buffer 循环写入, 不需要 BootBackgroundRenderer 预填充。
+    // BootBackgroundRenderer 用 SCENE_0x0A + bank08 metatile 填了 672 个错误 tile, 已移除。
+    // 调色板也由 NMI 渲染主程 $05E8 buffer 写入 ($3F00-$3F1F), 不需要预填充。
   }
 
   /** 通用回调处理 (其余索引由 §6 callbackNN 方法覆盖) */
