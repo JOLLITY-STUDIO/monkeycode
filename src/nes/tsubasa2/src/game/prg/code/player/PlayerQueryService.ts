@@ -531,5 +531,6 @@ export class PlayerQueryService {
     }
     this._store.write('ram_00EA', ea);
   }
+}
 
 export default PlayerQueryService;
