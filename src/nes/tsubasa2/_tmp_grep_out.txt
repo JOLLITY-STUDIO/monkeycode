@@ -1,0 +1,17 @@
+code_data.s:263: JSR $CDE2                  ; $D91A
+code_data.s:390: JSR $CDE2                  ; $DA31
+code_data.s:729: JSR $CDE2                  ; $DD66
+code_data.s:917: JSR $CDE2                  ; $DF3E
+code_main.s:201: JMP $CDE2                  ; $C539
+code_main.s:1020: PLA                        ; $CCDE
+code_sub.s:54: TAX                        ; $CDE0
+code_sub.s:55: RTS                        ; $CDE1
+code_sub.s:57: SEC                        ; $CDE3
+code_sub.s:58: SBC #$30                   ; $CDE4
+code_sub.s:59: BCC $CE05                  ; $CDE6
+code_sub.s:60: CMP #$A0                   ; $CDE8
+code_sub.s:61: BCS $CE05                  ; $CDEA
+code_sub.s:62: LSR                        ; $CDEC
+code_sub.s:63: LSR                        ; $CDED
+code_sub.s:64: LSR                        ; $CDEE
+code_sub.s:65: TAX                        ; $CDEF

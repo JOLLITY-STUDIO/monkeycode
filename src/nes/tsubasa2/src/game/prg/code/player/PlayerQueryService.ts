@@ -15,7 +15,7 @@
  *   entry9 $A39B 球队数据初始化
  *
  * 数值显示链路: ROM 编码值 → LOOKUP_16BIT 查表 → 真实数值
- * → $8C55 循环除10 (16bit除法) → 余数+0x33=tile_id → 写 ram_04A8 PPU Buffer。
+ * → $8C55 循环除10 (16bit除法) → 余数+0x33=tile_id → 写 ram_04A8 PPU Buffer。bank01 不只是查球员，它负责整个"球员数据查询+数值显示+阵容菜单"界面。
  */
 import { DataStore } from '../../data/store/DataStore';
 import {

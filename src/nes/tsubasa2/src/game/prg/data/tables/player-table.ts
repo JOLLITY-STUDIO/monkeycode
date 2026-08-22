@@ -53,13 +53,43 @@ export const PLAYER_STAT_TABLE_16BIT: number[] = [
 
 /**
  * 球员真实能力查表 (8bit 编码 → 能力值, 原 ROM 0x39E5E 能力表)。
- * TODO: 待从 bank01 asm 对应段确认边界后填充。
- * 编码值 → 真实数值, 用于数值显示链路能力部分。
+ * 64 项 (编码 0-63), 值从 0x08 递增到 0x2D (8-45)。
+ * 编码 0-31 = 低空能力 (Shot/Pass/Dribble/Block/Tackle/Intercept 等),
+ * 编码 32-63 = 高空能力 (同字段, 高空版本)。
+ * 数值显示链路: ROM 编码值 → 查此表 → 真实数值 → $8C55 循环除10 → tile。
+ *
+ * 由 ROM dump (docs/roms/Captain Tsubasa II - Super Striker (Japan).nes 0x39E5E) 提取:
+ *   08 08 08 09 09 09 09 0A 0A 0A 0B 0B 0B 0C 0C 0C
+ *   0D 0D 0D 0E 0E 0E 0F 0F 10 10 11 11 11 12 12 13
+ *   14 14 15 15 16 16 17 18 18 19 1A 1A 1B 1C 1D 1D
+ *   1E 1F 20 21 22 23 24 25 26 27 28 29 2A 2B 2C 2D
  */
-export const ABILITY_TABLE_8BIT: number[] = [];
+export const ABILITY_TABLE_8BIT: number[] = [
+  0x08, 0x08, 0x08, 0x09, 0x09, 0x09, 0x09, 0x0A, // 0-7
+  0x0A, 0x0A, 0x0B, 0x0B, 0x0B, 0x0C, 0x0C, 0x0C, // 8-15
+  0x0D, 0x0D, 0x0D, 0x0E, 0x0E, 0x0E, 0x0F, 0x0F, // 16-23
+  0x10, 0x10, 0x11, 0x11, 0x11, 0x12, 0x12, 0x13, // 24-31 (低空能力编码尾)
+  0x14, 0x14, 0x15, 0x15, 0x16, 0x16, 0x17, 0x18, // 32-39
+  0x18, 0x19, 0x1A, 0x1A, 0x1B, 0x1C, 0x1D, 0x1D, // 40-47
+  0x1E, 0x1F, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, // 48-55
+  0x26, 0x27, 0x28, 0x29, 0x2A, 0x2B, 0x2C, 0x2D, // 56-63 (高空能力编码尾)
+];
 
 /**
- * 球员 ID → 名称 tile 指针表 (原 CPU $BDA8, 2byte LE 指针数组)。
- * TODO: 待提取。
+ * 球员 ID → 名称 tile 指针表 (原 CPU $BDA8, 34 项 2byte LE 指针数组)。
+ * 每项指向 bank01 内 ($BDxx-$BFxx 区) 的球员名称 tile 数据。
+ * 指针值 = bank01 $A000 窗口内的地址 (运行时 $BDF2 等)。
+ *
+ * 由 ROM dump (bank01 $BDA8, PRG+header 0x3DB8) 提取:
+ *   F2 BD F9 BD 00 BE 09 BE 11 BE 1A BE 21 BE 29 BE
+ *   30 BE 37 BE 3F BE 48 BE 4F BE 59 BE 5F BE 66 BE
+ *   6D BE 74 BE 7D BE 84 BE ...
+ * 项 34 起值变为 $4B00/$CD6E (非连续指针, 属其他数据), 故表长 = 34 项。
  */
-export const PLAYER_NAME_PTR_TABLE: number[] = [];
+export const PLAYER_NAME_PTR_TABLE: number[] = [
+  0xBDF2, 0xBDF9, 0xBE00, 0xBE09, 0xBE11, 0xBE1A, 0xBE21, 0xBE29, // 0-7
+  0xBE30, 0xBE37, 0xBE3F, 0xBE48, 0xBE4F, 0xBE59, 0xBE5F, 0xBE66, // 8-15
+  0xBE6D, 0xBE74, 0xBE7D, 0xBE84, 0xBE8A, 0xBE91, 0xBE97, 0xBE9F, // 16-23
+  0xBEA7, 0xBEAE, 0xBEB7, 0xBEC0, 0xBECA, 0xBED2, 0xBEDA, 0xBEE2, // 24-31
+  0xBEEA, 0xBEF2, // 32-33 (表尾, 项 34 起为其他数据)
+];
