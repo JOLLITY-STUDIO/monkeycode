@@ -18,6 +18,7 @@ const ntLines = [];
 const palLines = [];
 const regLines = [];
 const oamLines = [];
+const audioLines = [];
 
 let frameCount = 0;
 
@@ -28,6 +29,7 @@ nes.tracer.start(nes, {
   trackPalette: true,
   trackPPURegs: true,
   trackOAM: true,
+  trackAudio: true,
   maxLines: 5000000,
   callback: (line) => {
     const prefix = 'F' + frameCount + ' ';
@@ -36,6 +38,7 @@ nes.tracer.start(nes, {
     else if (line.includes('[PAL_')) palLines.push(prefix + line);
     else if (line.includes('[PPU_REG]')) regLines.push(prefix + line);
     else if (line.includes('[OAM]')) oamLines.push(prefix + line);
+    else if (line.includes('[AUDIO]')) audioLines.push(prefix + line);
   },
 });
 
@@ -54,6 +57,7 @@ fs.writeFileSync(path.join(outDir, 'nt-full.log'), ntLines.join('\n') + '\n');
 fs.writeFileSync(path.join(outDir, 'palette-full.log'), palLines.join('\n') + '\n');
 fs.writeFileSync(path.join(outDir, 'ppu_regs-full.log'), regLines.join('\n') + '\n');
 fs.writeFileSync(path.join(outDir, 'oam-full.log'), oamLines.join('\n') + '\n');
+fs.writeFileSync(path.join(outDir, 'audio-full.log'), audioLines.join('\n') + '\n');
 
 console.log('\n=== Trace 完成 ===');
 console.log('总帧数: ' + FRAME_COUNT);
@@ -62,3 +66,4 @@ console.log('NT: ' + ntLines.length + ' 行');
 console.log('Palette: ' + palLines.length + ' 行');
 console.log('PPU Regs: ' + regLines.length + ' 行');
 console.log('OAM: ' + oamLines.length + ' 行');
+console.log('Audio: ' + audioLines.length + ' 行');
