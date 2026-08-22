@@ -62,8 +62,29 @@ export class GameSystemService {
   protected _textLineLen = 0;    // $0054
   protected _lineCount = 0;      // $0055
 
+  // ════════════════════════════════════════════════
+  // 协程调度器 ($9EED-$9FFF)
+  // 协程槽结构 ($0000+X, X=1/5/9/13/17/21, 每槽 4 字节):
+  //   [0]: 计数器 (递减到 0 = 就绪)
+  //   [1]: 栈指针 (H5: 回调索引)
+  //   [2]: R6 bank 号
+  //   [3]: R7 bank 号
+  // H5 替代: 用回调函数表 (_coroutines) 替代 6502 栈+RTS
+  // ════════════════════════════════════════════════
+
+  /** 协程回调表: 索引 → 回调函数 (替代 $0101+Y 回调指针) */
+  protected _coroutines: Array<(() => void) | null> = [];
+  /** 协程上下文: $E6-$ED (8字节, 替代 6502 栈压栈/弹栈) */
+  protected _coroutineCtx: Array<{ e6: number; e7: number; e8: number; e9: number; ea: number; eb: number; ec: number; ed: number; y: number; x: number }> = [];
+  /** 当前协程槽索引 (对应 $0000 存的 X 值) */
+  protected _currentSlot = 0;
+  /** 协程让出时的等待帧数 (对应 $0019) */
+  protected _yieldWait = 0;
+
   constructor(store: DataStore) {
     this._store = store;
+    // 注册协程回调 (索引 0 = $9148 场景初始化)
+    this._coroutines[0] = () => this.sub9148();
   }
 
   /** 注入 bank30 (HardwareInitService) 引用, 供 $C5xx 派发表转发 */
@@ -558,24 +579,334 @@ export class GameSystemService {
     this.scheduleStep();
   }
 
-    /** $9EEF-$9FFF 调度器单步 */
+    /** $9EEF-$9FFF 调度器单步 (协程调度器主循环) */
   private scheduleStep(): void {
-    // 调度器任务槽遍历 ($0000+X 计数器, X=0,4,8,...)
-    for (let x = 0; x < 0x19; x += 4) {
-      const c = this.rd(0x0000 + x);
+    // $9EED: LDX #$01; 遍历协程槽 (X=1,5,9,13,17,21)
+    for (let slot = 1; slot < 0x19; slot += 4) {
+      const c = this.rd(0x0000 + slot);
+      // $9EF1: BEQ $9EFB (空槽跳过)
       if (c === 0) continue;
+      // $9EF3: CMP #$FF; BEQ $9F52 (特殊值: 轻量恢复)
       if (c === 0xff) {
-        this.wr(0x0000 + x, 0);
-        continue;
+        this._resumeCoroutine(slot, true);
+        return;
       }
-      this.wr(0x0000 + x, c - 1);
+      // $9EF7: DEC $0000,X; BEQ $9F0F (递减, =0 就绪)
+      this.wr(0x0000 + slot, c - 1);
       if (c - 1 === 0) {
-        this.wr(0x0000, x);
-        this.wr(0x0001, 0);
-        // 执行就绪协程 (回调挂在 $0002+X bank / $0101+Y)
-        // 由外部通过协程注入; 翻译版 no-op 记录
+        this._resumeCoroutine(slot, false);
+        return;
       }
     }
+    // $9F04: LDA $001B; BPL $9F04 (等 VBlank)
+    // H5: 帧循环自动驱动, 不需要忙等
+    // $9F08: AND #$7F; STA $001B (清帧完成标志)
+    if ((this.rd(0x001B) & 0x80) !== 0) {
+      this.wr(0x001B, this.rd(0x001B) & 0x7f);
+    }
+  }
+
+  /**
+   * $9F0F/$9F52: 恢复协程上下文并执行
+   * @param slot 协程槽基址 ($0000+X)
+   * @param light true=$9F52 轻量恢复 (不恢复 E6-ED), false=$9F0F 完整恢复
+   */
+  private _resumeCoroutine(slot: number, light: boolean): void {
+    // $9F0F: STX $0000 (存当前槽)
+    this._currentSlot = slot;
+    // $9F11-$9F1E: 切 R7 bank (槽[3] → $0025 → $8001)
+    const r7bank = this.rd(0x0003 + slot);
+    this.wr(0x0025, r7bank);
+    // $9F21-$9F2E: 切 R6 bank (槽[2] → $0024 → $8001)
+    const r6bank = this.rd(0x0002 + slot);
+    this.wr(0x0024, r6bank);
+    // $9F31-$9F34: 恢复栈指针 (槽[1]) — H5: 回调索引
+    const callbackIdx = this.rd(0x0001 + slot);
+    if (!light) {
+      // $9F35-$9F50: PLA 恢复 $E6-$ED, Y, X
+      // H5: 从 _coroutineCtx 恢复
+      const ctx = this._coroutineCtx[slot];
+      if (ctx) {
+        this.wr(0x00E6, ctx.e6);
+        this.wr(0x00E7, ctx.e7);
+        this.wr(0x00E8, ctx.e8);
+        this.wr(0x00E9, ctx.e9);
+        this.wr(0x00EA, ctx.ea);
+        this.wr(0x00EB, ctx.eb);
+        this.wr(0x00EC, ctx.ec);
+        this.wr(0x00ED, ctx.ed);
+      }
+    }
+    // $9F51: RTS → 跳到协程代码 — H5: 调用回调
+    const cb = this._coroutines[callbackIdx];
+    if (cb) {
+      cb();
+    }
+  }
+
+  /**
+   * $9FA8: 协程让出 (yield)
+   * asm: 存 A→$0019; 压栈 X/Y/$ED-$E6; 存栈指针/R6/R7 到槽; 设计数器; JMP $9EFB
+   * H5: 保存上下文到 _coroutineCtx, 设计数器, 返回到调度循环
+   * @param a 让出参数 (1=等1帧, $FF=特殊等1帧, 0=等$FE帧)
+   */
+  private _coroutineYieldImpl(a: number): void {
+    const slot = this._currentSlot;
+    // $9FA8: STA $0019 (存让出参数)
+    this._yieldWait = a;
+    // $9FAA-$9FC5: 压栈 X/Y/$ED/$EC/$EB/$EA/$E9/$E8/$E7/$E6
+    // H5: 存到 _coroutineCtx
+    this._coroutineCtx[slot] = {
+      e6: this.rd(0x00E6), e7: this.rd(0x00E7),
+      e8: this.rd(0x00E8), e9: this.rd(0x00E9),
+      ea: this.rd(0x00EA), eb: this.rd(0x00EB),
+      ec: this.rd(0x00EC), ed: this.rd(0x00ED),
+      y: 0, x: 0,
+    };
+    // $9FC6-$9FCA: TSX; TXA; LDX $0000; STA $0001,X (存栈指针到槽[1])
+    // H5: 栈指针 = 回调索引 (不变, 下次恢复时还用同一个回调)
+    // $9FCC-$9FD4: 存 $0024 (R6) → 槽[2], $0025 (R7) → 槽[3]
+    this.wr(0x0002 + slot, this.rd(0x0024));
+    this.wr(0x0003 + slot, this.rd(0x0025));
+    // $9FD6-$9FE0: 设计数器
+    // LDA $0019; BEQ $9FDE (a=0 → 设 $FE); CMP #$FF; BNE $9FE0 (a≠$FF → 设 a); LDA #$FE
+    let count = a;
+    if (a === 0) count = 0xfe;
+    else if (a === 0xff) count = 0xfe;
+    this.wr(0x0000 + slot, count & 0xff);
+    // $9FE2: JMP $9EFB (回调度循环) — H5: 返回, 由帧循环驱动
+  }
+
+  /**
+   * $9F69: 注册协程
+   * @param slot 协程槽基址 ($0000+X)
+   * @param r6bank R6 bank 号
+   * @param callbackIdx 回调索引 (对应 $0101+Y)
+   * @param ctx 初始上下文 ($E6-$ED)
+   */
+  registerCoroutine(slot: number, r6bank: number, callbackIdx: number, ctx?: Partial<{ e6: number; e7: number; e8: number; e9: number; ea: number; eb: number; ec: number; ed: number; y: number; x: number }>): void {
+    // $9F69: STA $0002,X (存 R6 bank 到槽[2])
+    this.wr(0x0002 + slot, r6bank);
+    // $9F6B-$9F77: DEY×2; 存回调指针到 $0101+Y; STY $0001,X (存 Y 到槽[1])
+    this.wr(0x0001 + slot, callbackIdx);
+    // $9F79: LDA #$FF; STA $0000,X (设计数器=$FF → 下一帧立即就绪)
+    this.wr(0x0000 + slot, 0xff);
+    // 存初始上下文
+    if (ctx) {
+      this._coroutineCtx[slot] = {
+        e6: ctx.e6 ?? 0, e7: ctx.e7 ?? 0,
+        e8: ctx.e8 ?? 0, e9: ctx.e9 ?? 0,
+        ea: ctx.ea ?? 0, eb: ctx.eb ?? 0,
+        ec: ctx.ec ?? 0, ed: ctx.ed ?? 0,
+        y: ctx.y ?? 0, x: ctx.x ?? 0,
+      };
+    }
+  }
+
+  /**
+   * $9F7E: 清协程槽
+   * @param slot 协程槽基址
+   */
+  clearCoroutine(slot: number): void {
+    this.wr(0x0000 + slot, 0);
+    this.wr(0x0001 + slot, 0);
+  }
+
+  /**
+   * $9F89: 检查协程槽状态
+   * @returns 0=空, 1=忙, 2=就绪
+   */
+  checkCoroutine(slot: number): number {
+    if (this.rd(0x0001 + slot) === 0) return 0;
+    if (this.rd(0x0000 + slot) !== 0) return 1;
+    // $9F91: LDA #$01; STA $0000,X (设就绪)
+    this.wr(0x0000 + slot, 1);
+    return 2;
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // $9148: 场景初始化协程 (开场回调索引 0)
+  // asm $9148-$9200: 读场景数据流 ($0094),Y, 按数据类型分派
+  //   <$80: JMP $94C1 (NT buffer 写入循环)
+  //   ≥$80: TAX → 查表设精灵位置/属性 ($974A/$975B)
+  // ════════════════════════════════════════════════════════════
+
+  /** $9148: 场景初始化协程回调 */
+  private sub9148(): void {
+    // $9148: LDA #$68; STA $0094; LDA #$05; STA $0095 (指针 = $0568)
+    this.wr(0x0094, 0x68);
+    this.wr(0x0095, 0x05);
+    // $9150: LDA #$04; STA $0096 (计数器 = 4)
+    this.wr(0x0096, 0x04);
+    // $9154: LDY #$00; LDA ($0094),Y (读第一个字节)
+    let y = 0;
+    const ptr94 = this.rdPtr(0x0094, 0x0095);
+    let a = this.rdMemByte(ptr94 + y);
+    // $9158: BMI $915D (≥$80 → 精灵设置)
+    if ((a & 0x80) !== 0) {
+      // $915D: TAX; LDY #$04; JSR $974A (读场景数据[4])
+      const x = a;
+      this.sub974A(0x04);
+      // $9163: LDY #$06; JSR $974A (读场景数据[6])
+      this.sub974A(0x06);
+      // $9168: TXA; AND #$10; BNE $91A6 (bit4 → $91A6)
+      if ((x & 0x10) !== 0) {
+        this.sub91A6(x);
+      } else if ((x & 0x20) !== 0) {
+        // $9175: LDX #$04; LDY #$0A; JSR $975B
+        this.sub975B(0x04, 0x0A);
+        // $917C: LDA $009A; STA $00E6
+        this.wr(0x00E6, this.rd(0x009A));
+        // $9180: LDY #$04; JSR $974A
+        this.sub974A(0x04);
+        // $9185: LDA $009A; SEC; SBC $00E6; STA $00E6
+        this.wr(0x00E6, (this.rd(0x009A) - this.rd(0x00E6)) & 0xFF);
+        // $918C: LDX #$06; LDY #$0E; JSR $975B
+        this.sub975B(0x06, 0x0E);
+        // $9193: LDA $009C; STA $00E8
+        this.wr(0x00E8, this.rd(0x009C));
+        // $9197: LDY #$06; JSR $974A
+        this.sub974A(0x06);
+        // $919C: LDA $009C; SEC; SBC $00E8; STA $00E8
+        this.wr(0x00E8, (this.rd(0x009C) - this.rd(0x00E8)) & 0xFF);
+        // JMP $91B4
+        this.sub91B4();
+      } else {
+        // $9172: JMP $91F3
+        this.sub91F3();
+      }
+    } else {
+      // $915A: JMP $94C1 (NT 写入循环)
+      this.sub94C1(a);
+    }
+  }
+
+  /** $974A: 读场景数据 ($0094),Y → $009A/$009B */
+  private sub974A(y: number): void {
+    const ptr = this.rdPtr(0x0094, 0x0095);
+    this.wr(0x009A, this.rdMemByte(ptr + y));
+    this.wr(0x009B, this.rdMemByte(ptr + y + 1));
+  }
+
+  /** $975B: 读场景数据 ($0094),Y → $009C/$009D */
+  private sub975B(_x: number, y: number): void {
+    const ptr = this.rdPtr(0x0094, 0x0095);
+    this.wr(0x009C, this.rdMemByte(ptr + y));
+    this.wr(0x009D, this.rdMemByte(ptr + y + 1));
+  }
+
+  /** $91A6: 精灵位置设置 (bit4 路径) */
+  private sub91A6(_x: number): void {
+    // $91A6: LDA #$00; SEC; SBC $0046; STA $00E6
+    this.wr(0x00E6, (0 - this.rd(0x0046)) & 0xFF);
+    // $91AD: LDA #$00; SEC; SBC $0047; STA $00E8
+    this.wr(0x00E8, (0 - this.rd(0x0047)) & 0xFF);
+    // $91B4: 精灵数据循环
+    this.sub91B4();
+  }
+
+  /** $91B4: 精灵数据循环 (读 ($0094),Y 写 $0468 区) */
+  private sub91B4(): void {
+    const ptr = this.rdPtr(0x0094, 0x0095);
+    let y = 0x10;
+    // $91B6: LDA ($0094),Y; TAX; INY; LDA ($0094),Y; LSR×2; TAY
+    let a = this.rdMemByte(ptr + y);
+    let x = a;
+    y++;
+    let y2 = this.rdMemByte(ptr + y) >> 2;
+    // $91BF: 循环
+    while (y2 !== 0) {
+      // LDA $00E6; CLC; ADC $0468,X; STA $0468,X
+      this.wr(0x0468 + x, (this.rd(0x00E6) + this.rd(0x0468 + x)) & 0xFF);
+      // ROR; EOR $00E6; BPL $91D5
+      const ror = ((this.rd(0x0468 + x) >> 7) | (this.rd(0x00E6) << 1)) & 0xFF;
+      if (((ror ^ this.rd(0x00E6)) & 0x80) !== 0) {
+        this.wr(0x046A + x, this.rd(0x046A + x) ^ 0x08);
+      }
+      // $91D5: LDA $00E8; CLC; ADC $046B,X; STA $046B,X
+      this.wr(0x046B + x, (this.rd(0x00E8) + this.rd(0x046B + x)) & 0xFF);
+      const ror2 = ((this.rd(0x046B + x) >> 7) | (this.rd(0x00E8) << 1)) & 0xFF;
+      if (((ror2 ^ this.rd(0x00E8)) & 0x80) !== 0) {
+        this.wr(0x046A + x, this.rd(0x046A + x) ^ 0x04);
+      }
+      // $91EB: TXA; CLC; ADC #$04; TAX; DEY; BNE $91BF
+      x = (x + 4) & 0xFF;
+      y2--;
+    }
+    // $91F3: JMP $91F3 (后续处理)
+    this.sub91F3();
+  }
+
+  /** $91F3: 场景数据后续处理 */
+  private sub91F3(): void {
+    // $91F3: LDY #$01; LDA ($0094),Y; SEC; SBC #$01; STA ($0094),Y
+    const ptr = this.rdPtr(0x0094, 0x0095);
+    let v = this.rdMemByte(ptr + 1);
+    v = (v - 1) & 0xFF;
+    this.wrMemByte(ptr + 1, v);
+    // $91FC: BEQ $9201 (计数器=0 → 下一场景段)
+    if (v === 0) {
+      // $9201: LDY #$00; LDA ($0094),Y; AND #$01; CLC; ADC #$09; TAX
+      const a = this.rdMemByte(ptr) & 0x01;
+      const x = (a + 0x09) & 0xFF;
+      // 后续: 读下一场景段地址, 调 $94C1 或让出
+      void x;
+      // 让出协程 (等下一帧)
+      this.coroutineYield(1);
+    } else {
+      // $91FE: JMP $94C1 (继续 NT 写入)
+      this.sub94C1(0);
+    }
+  }
+
+  /** $94C1: NT buffer 写入循环 (读场景数据写 $05E8 PPU buffer) */
+  private sub94C1(a: number): void {
+    // $94C1: LDA $0094; CLC; ADC #$20; STA $0094 (指针 += $20)
+    let lo = this.rd(0x0094);
+    let hi = this.rd(0x0095);
+    lo = (lo + 0x20) & 0xFF;
+    if (lo < 0x20) hi = (hi + 1) & 0xFF;
+    this.wr(0x0094, lo);
+    this.wr(0x0095, hi);
+    // 读场景数据, 写 $05E8 buffer
+    // 每条: [count, addrLo, addrHi, tile×count]
+    // 简化: 读 ($0094),Y 数据流, 转成 PPU buffer 条目
+    let y = 0;
+    let off = 0;
+    while (true) {
+      const ptr = this.rdPtr(0x0094, 0x0095);
+      const count = this.rdMemByte(ptr + y);
+      y++;
+      if (count === 0) break; // 结束
+      const addrLo = this.rdMemByte(ptr + y); y++;
+      const addrHi = this.rdMemByte(ptr + y); y++;
+      // 写 $05E8 buffer: [count, addrLo, addrHi, tile×count]
+      this.wr(0x05E8 + off, count); off++;
+      this.wr(0x05E9 + off, addrLo); off++;
+      this.wr(0x05EA + off, addrHi); off++;
+      for (let i = 0; i < count; i++) {
+        const tile = this.rdMemByte(ptr + y); y++;
+        this.wr(0x05EB + off, tile); off++;
+      }
+    }
+    // 结束标记
+    this.wr(0x05E8 + off, 0);
+    // 设 NT buffer 更新标志
+    this.wr(0x0628, 0x80);
+    // 让出协程 (等 NMI 渲染消费 buffer)
+    void a;
+    this.coroutineYield(1);
+  }
+
+  /** 读 RAM 字节 (addr < 0x0800) */
+  private rdMemByte(addr: number): number {
+    if (addr < 0x0800) return this.rd(addr);
+    return 0;
+  }
+
+  /** 写 RAM 字节 */
+  private wrMemByte(addr: number, val: number): void {
+    if (addr < 0x0800) this.wr(addr, val);
   }
 
   // ════════════════════════════════════════════════════════════
@@ -584,9 +915,9 @@ export class GameSystemService {
   // (this._system.subC5xx) 兼容, 避免改动 6 个 match service 构造函数。
   // ════════════════════════════════════════════════════════════
 
-  /** $C515 协程让出 — 转发 bank30 */
+  /** $C515 协程让出 — 转发到协程调度器实现 */
   coroutineYield(a: number = 1): void {
-    this._hw?.coroutineYield(a);
+    this._coroutineYieldImpl(a);
   }
 
   /** $C50C 比赛阶段→RAM指针查表 — 转发 bank30 */

@@ -103,6 +103,11 @@ class HardwareInitService {
         // $C41D-$C41E: TYA (场景 id); JMP $A200 → bank0 场景引导
         // 翻译版: bank0 = GameSystemService, 场景引导 = BootRouter.resetEntry
         this._scene.resetEntry(sceneId);
+        // $A200: 注册开场协程 (协程槽 1, R6=bank0, 回调=$9148 场景初始化)
+        // 协程调度器 ($9EED) 每帧检查槽 1, 就绪后调用 $9148 读场景数据写 $05E8 buffer
+        this._system.registerCoroutine(1, 0x00, 0, {
+            e6: 0, e7: 0, e8: 0, e9: 0, ea: 0, eb: 0, ec: 0, ed: sceneId & 0xff,
+        });
     }
     // ════════════════════════════════════════════════
     // $CB35 清双名称表 + PPU 寄存器
