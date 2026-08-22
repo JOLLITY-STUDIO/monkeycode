@@ -201,6 +201,7 @@ class Tracer {
             stopped: false,
             ppuAddrLatch: 0,
             ppuAddr: 0,
+            _mmc3Reg: 0,
         };
     }
     /** 停止 trace, 关闭文件流 */
@@ -265,7 +266,7 @@ class Tracer {
      * @param val 写入值
      */
     traceWrite(addr, val) {
-        var _a, _b, _c;
+        var _a, _b, _c, _d, _e, _f, _g;
         const ctx = this.ctx;
         if (!ctx || ctx.stopped)
             return;
@@ -391,6 +392,65 @@ class Tracer {
             };
             const name = (_c = names[addr]) !== null && _c !== void 0 ? _c : 'UNKNOWN';
             this.emit(formatHwWrite(ctx, 'AUDIO', addr, val, name));
+            return;
+        }
+        // ── MMC3 bank 切换 ($8000-$8001 PRG + $A000-$A001 CHR/PRG-RAM) ──
+        // $8000: 写寄存器选择 (bit0-2: 寄存器号, bit6: PRG mode, bit7: CHR mode)
+        // $8001: 写寄存器值 (PRG bank / CHR bank)
+        // $A000: CHR bank 选择 / NT 镜像
+        // $A001: PRG-RAM 控制
+        if (ctx.opts.trackMMC3 && (addr === 0x8000 || addr === 0x8001 || addr === 0xA000 || addr === 0xA001)) {
+            if (this.checkMaxLines())
+                return;
+            ctx.count++;
+            ctx.lines++;
+            const cpu = ctx.cpu;
+            const instrPC = (_d = cpu._instrPC) !== null && _d !== void 0 ? _d : 0;
+            const mesenBank = getMesenBank(cpu, ctx.nes, instrPC);
+            const pcStr = '$' + mesenBank.toString(16).toUpperCase().padStart(2, '0') + ':' +
+                instrPC.toString(16).toUpperCase().padStart(4, '0');
+            if (addr === 0x8000) {
+                // $8000: 选寄存器号 + CHR/PRG mode
+                const reg = val & 0x07;
+                const chrMode = (val >> 7) & 1;
+                const prgMode = (val >> 6) & 1;
+                const regNames = ['R0:CHR_A0', 'R1:CHR_A1', 'R2:CHR_A2', 'R3:CHR_A3',
+                    'R4:CHR_B0', 'R5:CHR_B1', 'R6:PRG_8000', 'R7:PRG_A000'];
+                const extra = `select ${(_e = regNames[reg]) !== null && _e !== void 0 ? _e : 'R' + reg} chrMode=${chrMode} prgMode=${prgMode}`;
+                this.emit(`[MMC3] i${ctx.count} ${pcStr} STA $8000 = #$${val.toString(16).toUpperCase().padStart(2, '0')} ${extra}`);
+                ctx._mmc3Reg = reg; // 记住当前选的寄存器
+            }
+            else if (addr === 0x8001) {
+                // $8001: 写寄存器值
+                const reg = (_f = ctx._mmc3Reg) !== null && _f !== void 0 ? _f : 0;
+                const regNames = ['CHR_A0', 'CHR_A1', 'CHR_A2', 'CHR_A3', 'CHR_B0', 'CHR_B1', 'PRG_8000', 'PRG_A000'];
+                const regName = (_g = regNames[reg]) !== null && _g !== void 0 ? _g : 'R' + reg;
+                let extra = `${regName}=#$${val.toString(16).toUpperCase().padStart(2, '0')}`;
+                // 解释 PRG bank 值
+                if (reg === 6) {
+                    const block8k = val & 0x3f;
+                    extra += ` → $8000窗口=8KB块${block8k} (16KB bank ${Math.floor(block8k / 2)})`;
+                }
+                else if (reg === 7) {
+                    const block8k = val & 0x3f;
+                    extra += ` → $A000窗口=8KB块${block8k} (16KB bank ${Math.floor(block8k / 2)})`;
+                }
+                else {
+                    extra += ` → CHR bank ${val & 0x3f}`;
+                }
+                this.emit(`[MMC3] i${ctx.count} ${pcStr} STA $8001 = #$${val.toString(16).toUpperCase().padStart(2, '0')} ${extra}`);
+            }
+            else if (addr === 0xA000) {
+                // $A000: NT 镜像模式
+                const mirror = (val & 1) === 0 ? 'vertical' : 'horizontal';
+                this.emit(`[MMC3] i${ctx.count} ${pcStr} STA $A000 = #$${val.toString(16).toUpperCase().padStart(2, '0')} NT mirror=${mirror}`);
+            }
+            else if (addr === 0xA001) {
+                // $A001: PRG-RAM 控制
+                const ramEnable = (val & 0x80) !== 0;
+                const ramProtect = (val & 0x40) !== 0;
+                this.emit(`[MMC3] i${ctx.count} ${pcStr} STA $A001 = #$${val.toString(16).toUpperCase().padStart(2, '0')} PRG-RAM enable=${ramEnable} protect=${ramProtect}`);
+            }
             return;
         }
     }
