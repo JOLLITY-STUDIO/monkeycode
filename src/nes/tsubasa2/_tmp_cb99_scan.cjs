@@ -1,16 +1,20 @@
-// 临时: 绝对精确 dump bank30 $CB93-$CBAE, 每字节带 ROM 偏移, 人工核对指令边界
+// 临时: dump bank11 $8310-$8400 (表项目标区域) 验证 sub8327/sub83E7 等是否为代码入口
 const fs = require('fs');
 const rom = fs.readFileSync('docs/roms/Captain Tsubasa II - Super Striker (Japan).nes');
 const prgOff = 0x10;
-const bankIdx = 30;
-const base = 0xC000;
-for (let addr = 0xCB93; addr <= 0xCBAE; addr++) {
-  const off = prgOff + bankIdx * 0x2000 + (addr - base);
-  console.log(`$${addr.toString(16)} (rom+0x${off.toString(16)}): ${rom[off].toString(16).padStart(2, '0')}`);
+function dumpRange(bankIdx, start, len) {
+  const out = [];
+  for (let i = 0; i < len; i++) {
+    const off = prgOff + bankIdx * 0x2000 + (start + i - 0x8000);
+    out.push(rom[off].toString(16).padStart(2, '0'));
+  }
+  console.log(`bank${bankIdx} $${start.toString(16)}: ${out.join(' ')}`);
 }
-// 也验证 $C509 JMP
-console.log('--- $C509-$C50B:');
-for (let addr = 0xC509; addr <= 0xC50B; addr++) {
-  const off = prgOff + 30 * 0x2000 + (addr - 0xC000);
-  console.log(`$${addr.toString(16)}: ${rom[off].toString(16).padStart(2, '0')}`);
-}
+dumpRange(11, 0x8310, 48);   // $8327 前
+dumpRange(11, 0x83E0, 32);   // $83E7 前
+dumpRange(11, 0x83F8, 16);   // $83FF
+dumpRange(11, 0x8350, 32);   // $8358
+dumpRange(11, 0x8370, 16);   // $8377
+dumpRange(11, 0x835C, 12);   // $8364
+dumpRange(11, 0x83CC, 12);   // $83D2
+dumpRange(11, 0x83E8, 12);   // $83EE

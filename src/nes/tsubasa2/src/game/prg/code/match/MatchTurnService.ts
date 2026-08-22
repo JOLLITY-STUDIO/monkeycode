@@ -292,9 +292,9 @@ export class MatchTurnService {
   //   跳转表 9 项: $8327/$83E7/$83FF/$8358/$8377/$8364/$83D2/$83E7/$83EE
   // ════════════════════════════════════════════════
   private sub81A7(a: number): void {
-    const idx = this._system.subC509(a);
+    // 原 6502: JSR $C509 (A=cmd, $CB99 采样内联跳转表), cmd N → 表项 N
     const table = [0x8327, 0x83E7, 0x83FF, 0x8358, 0x8377, 0x8364, 0x83D2, 0x83E7, 0x83EE];
-    const target = table[idx & 0xFF] ?? 0x8327;
+    const target = table[a & 0xFF] ?? 0x8327;
     switch (target) {
       case 0x8327: this.sub8327(); break;
       case 0x83E7: this.sub83E7(); break;
@@ -316,8 +316,9 @@ export class MatchTurnService {
   // ════════════════════════════════════════════════
   private sub81BC(a: number): void {
     this.wr(0x0525, 0);
-    const idx = this._system.subC509(a & 0x0F);
-    switch (idx & 0x03) {
+    // 原 6502: AND #$0F; JSR $C509 (cmd = a&0x0F, 4 路)
+    const cmd = a & 0x0F;
+    switch (cmd & 0x03) {
       case 0: this.sub81CC(); break;
       case 1: this.sub8276(); break;
       case 2: this.sub824D(); break;

@@ -182,12 +182,12 @@ export class MatchAuxService {
   // ════════════════════════════════════════════════
   private sub8084(a: number): void {
     const cmd = (a - 0xF0) & 0xFF;
-    const idx = this._system.subC509(cmd);
+    // 原 6502: SEC; SBC #$F0; JSR $C509 (cmd N → 表项 N)
     const table = [
       0x80A2, 0x80AA, 0x802B, 0x8138, 0x8142,
       0x83AE, 0x83BD, 0x816F, 0x817C, 0x8195, 0x81A8,
     ];
-    const target = table[idx & 0xFF] ?? 0x80A2;
+    const target = table[cmd] ?? 0x80A2;
     switch (target) {
       case 0x80A2: this.sub80A2(); break;  // 命令0: 结束计时
       case 0x80AA: this.sub80AA(); break;  // 命令1: 精灵组设置
@@ -436,8 +436,8 @@ export class MatchAuxService {
       return;
     }
     const cmd = (data - 0xF0) & 0xFF;
-    const idx = this._system.subC509(cmd);
-    void idx;
+    // JSR $C509 (cmd=命令号) 分派, 目标子程待翻译
+    void cmd;
   }
 
   /** $83D9: 计分板更新 */
@@ -483,8 +483,8 @@ export class MatchAuxService {
   /** $8438: 计分板命令分派 */
   private sub8438(data: number): void {
     const cmd = (data - 0xF0) & 0xFF;
-    const idx = this._system.subC509(cmd);
-    void idx;
+    // JSR $C509 (cmd=命令号) 分派, 目标子程待翻译
+    void cmd;
   }
 
   /** $8624: 精灵渲染 — 遍历精灵组写 OAM */

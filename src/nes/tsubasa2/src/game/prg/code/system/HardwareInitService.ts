@@ -188,28 +188,6 @@ export class HardwareInitService {
   }
 
   /**
-   * $C509 → $CB99: 内联跳转表分发器 (compute-and-jump)。
-   * asm $CB99: ASL A (索引×2); TAY; PLA→$0036; PLA→$0037 (弹出 JSR 返回地址=跳转表起始);
-   *   INY; LDA ($0036),Y → 目标地址低字节; PHA; INY; LDA ($0036),Y → 高字节;
-   *   STA $0037; PLA→$0036; JMP ($0036) (间接跳转)。
-   * 原 6502: JSR $CB99 返回地址指向 PRG ROM 中紧跟的内联跳转表, 按 A 索引选目标。
-   * H5 翻译: TS 无调用返回地址概念, 用 $0036/$0037 作 RAM 指针读 16 位目标返回。
-   * 调用者需在 RAM 中预置跳转表 (等效 asm 内联数据)。
-   */
-  subC509(a: number): number {
-    const idx = (a << 1) & 0xFF;
-    const ptrLo = this.rd(0x0036);
-    const ptrHi = this.rd(0x0037);
-    const tableAddr = ((ptrHi << 8) | ptrLo) & 0xFFFF;
-    const lo = this._store.read(tableAddr + idx + 1) & 0xFF;
-    const hi = this._store.read(tableAddr + idx + 2) & 0xFF;
-    const target = (hi << 8) | lo;
-    this.wr(0x0036, lo);
-    this.wr(0x0037, hi);
-    return target;
-  }
-
-  /**
    * $C50C → $CD7C: 比赛阶段→RAM玩家数据指针查表。
    * asm $CD77: LDA $05FB; EOR #$0B; ASL; TAY; LDA $CD89,Y; STA $0034; LDA $CD8A,Y; STA $0035。
    * $CD89 表 32 项 16 位指针, 全在 $0300-$042C (RAM 玩家数据区)。

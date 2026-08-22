@@ -580,11 +580,6 @@ export class GameSystemService {
     this._hw?.coroutineYield(a);
   }
 
-  /** $C509 通用查表 — 转发 bank30 */
-  subC509(a: number): number {
-    return this._hw ? this._hw.subC509(a) : a;
-  }
-
   /** $C50C 比赛阶段→RAM指针查表 — 转发 bank30 */
   subC50C(): void {
     this._hw?.subC50C();

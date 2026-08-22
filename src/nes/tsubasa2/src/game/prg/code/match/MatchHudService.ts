@@ -168,11 +168,10 @@ export class MatchHudService {
       this.wr(0x05E9, (this.rd(0x05E9) - 1) & 0xFF);
       return;
     }
-    // $8062: 查命令索引
+    // $8062: LDA $05E4; JSR $C509 — 跳转表 4 项: $806E/$82F2/$82AC/$E505
+    // H5: 子模式分派 ($82F2/$82AC/$E505) 待翻译, 当前主流程直接读脚本字节
     const cmdIdx = this.rd(0x05E4);
-    const dispatched = this._system.subC509(cmdIdx);
-    // 跳转表 4 项: $806E/$82F2/$82AC/$E505
-    void dispatched;
+    void cmdIdx;
     // $8071: INC $05E5; 读脚本字节
     this.wr(0x05E5, (this.rd(0x05E5) + 1) & 0xFF);
     const ptr = this.rdPtr(0x005F, 0x0060);
@@ -195,9 +194,9 @@ export class MatchHudService {
   // ════════════════════════════════════════════════
   private sub8087(a: number): void {
     const cmd = a & 0x0F;
-    const idx = this._system.subC509(cmd);
+    // 原 6502: AND #$0F; JSR $C509 (cmd N → 表项 N)
     const table = [0x8098, 0x80A0, 0x80B5, 0x80B8, 0x80CB, 0x81FD];
-    const target = table[idx & 0xFF] ?? 0x8098;
+    const target = table[cmd] ?? 0x8098;
     switch (target) {
       case 0x8098: this.sub8098(); break;  // 命令0: 结束渲染
       case 0x80A0: this.sub80A0(); break;  // 命令1
@@ -264,9 +263,93 @@ export class MatchHudService {
     this.wr(0x05E5, 0);
   }
 
-  /** $80EA: 子表查找 (被 $80CB 调用) */
+  /**
+   * $80EA: 子表索引分派 (被 $80CB 调用, 返回 X)。
+   * asm $80EA: JSR $C509; 跳转表 $80ED 8 项:
+   *   $80FD/$8106/$810E/$811E/$8122/$8138/$81CE/$81E4
+   * 各目标子程计算 X (精灵组/属性索引) 后 RTS, 调用方 TXA 取 X。
+   */
   private sub80EA(a: number): number {
-    return this._system.subC509(a) & 0xFF;
+    const cmd = a & 0xFF;
+    switch (cmd) {
+      // $80FD: LDX #$00; BIT $043C; BPL→RTS; INX → X = ($043C bit7) ? 1 : 0
+      case 0:
+        return (this.rd(0x043C) & 0x80) !== 0 ? 1 : 0;
+      // $8106: LDX $05FB; BEQ→RTS; LDX #$01 → X = ($05FB==0) ? 0 : 1
+      case 1:
+        return this.rd(0x05FB) === 0 ? 0 : 1;
+      // $810E: X=$0600; ==0→3; DEX; X>=3→2, 否则保留 X-1
+      case 2: {
+        const v = this.rd(0x0600);
+        if (v === 0) return 3;
+        const d = (v - 1) & 0xFF;
+        return d < 3 ? d : 2;
+      }
+      // $811E: LDX $0629; RTS
+      case 3:
+        return this.rd(0x0629);
+      // $8122: X=0; A=$0026; 查表 $8131 (05 0B 0F 15 16 1A 21), 首个表项 >= A
+      case 4: {
+        const a26 = this.rd(0x0026);
+        const TABLE_8131 = [0x05, 0x0B, 0x0F, 0x15, 0x16, 0x1A, 0x21];
+        let x = 0;
+        while (x < TABLE_8131.length && a26 > TABLE_8131[x]) x++;
+        return x;
+      }
+      // $8138: LDA $0027; JSR $C509 (5 项: $8147/$8156/$8147/$8156/$8156)
+      case 5: {
+        const a27 = this.rd(0x0027);
+        const a28 = this.rd(0x0028);
+        const a29 = this.rd(0x0029);
+        if (a27 === 0 || a27 === 2) {
+          // $8147: X=2; A=$0028; CMP $0029 → 相等2 / 小于1 / 大于0
+          if (a28 === a29) return 2;
+          return a28 < a29 ? 1 : 0;
+        }
+        // $8156: Y=$0026; LDA $81AC,Y → $0049
+        const y = this.rd(0x0026);
+        const v49 = this.readMemByte(0x81AC + y);
+        this.wr(0x0049, v49);
+        if (a28 !== a29) {
+          if (a28 < a29) {
+            // $818D: X=$0A; $0027==4 → $0B
+            return a27 === 4 ? 0x0B : 0x0A;
+          }
+          // $8197: X = ($0049&7)+3; X==3 && $0027==3 → $09
+          let x = ((v49 & 0x07) + 3) & 0xFF;
+          if (x === 3 && a27 === 3) x = 9;
+          return x;
+        }
+        // $8165: X=$0D; $0027==1 → $817E
+        if (a27 === 1) {
+          // $817E: X=$0C; BIT $0049; BMI→$0C; INX→$0D; BIT $0049; BVC→$0D; INX→$0E
+          if ((v49 & 0x80) !== 0) return 0x0C;
+          return (v49 & 0x40) !== 0 ? 0x0E : 0x0D;
+        }
+        // $816E: BIT $0049; BVC $8174 (bit6 清) → $002B==$23 ? $0F : $0D; 否则 $0E
+        if ((v49 & 0x40) === 0) {
+          return this.rd(0x002B) === 0x23 ? 0x0F : 0x0D;
+        }
+        return 0x0E;
+      }
+      // $81CE: A=$0616>>1; X: >=6→3 / >=5→2 / >=1→1 / 0
+      case 6: {
+        const v = (this.rd(0x0616) >> 1) & 0xFF;
+        if (v >= 6) return 3;
+        if (v >= 5) return 2;
+        return v >= 1 ? 1 : 0;
+      }
+      // $81E4: A=$05FB^$0B; JSR $C50C; A=($0034)[7]; >=$36→2 / >=$19→1 / 0
+      case 7: {
+        this._system.subC50C();
+        const ptr = this.rdPtr(0x0034, 0x0035);
+        const a = this.readMemByte(ptr + 7);
+        if (a >= 0x36) return 2;
+        return a >= 0x19 ? 1 : 0;
+      }
+      default:
+        return 0;
+    }
   }
 
   /**

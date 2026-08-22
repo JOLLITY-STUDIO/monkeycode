@@ -220,8 +220,13 @@ export class MatchConfigService {
     if (v0 === v1 && v0 === 0) { this.wr(0x0430, 0); return; }
     if (v0 !== v1) { this.wr(0x0048, v0); this.wr(0x0049, v1); }
     this.wr(0x0430, 0);
-    this.wr(0x0046, this._system.subC509(pid) & 0xFF);
-    // $8C4A-$8C7C: 遍历属性表
+    // $8C31: LDA $0430 (slot); $8C38: JSR $C509; 表 $8C3B: $8C46/$8D41/$8D4E/$8D55
+    //   cmd0 → $8C46: 跳过 LDA#$00;STA$0046 ($0046 保留原值) 直接进主循环
+    //   cmd1/2/3 → $8D41/$8D4E/$8D55 (其他阵型处理, TODO)
+    if (slot !== 0) {
+      void slot;
+    }
+    // $8C46 起: LDY $0046; 主循环 ($0046 保留)
     let ai = this.rd(0x0046);
     for (let i = 0; i < 64; i++) {
       const ab = this.readIndirect(this.rdPtr(0x0048, 0x0049), ai);
@@ -264,7 +269,8 @@ export class MatchConfigService {
     if (v0 === v1 && v0 === 0) { this.wr(0x0430, 0); return; }
     if (v0 !== v1) { this.wr(0x0048, v0); this.wr(0x0049, v1); }
     this.wr(0x0430, 0);
-    this._system.subC509(fid);
+    // JSR $C509 (cmd=fid 原值) 分派 — 目标子程待翻译
+    void fid;
   }
 
   /** $8DA6 路径 (A=0 或 A=$0B): 获取指针, 比较两字节 */
@@ -288,9 +294,9 @@ export class MatchConfigService {
     this.wr(0x0049, this.readMemByte(0x8E1C + x));
   }
 
-  /** $8C7F: 属性调整 — LDA $0047; SEC; SBC #$03; JSR $C509 */
+  /** $8C7F: 属性调整 — LDA $0047; SEC; SBC #$03; JSR $C509 (表 $8C84 32 项, 待翻译) */
   private sub8C7F(): void {
-    this._system.subC509((this.rd(0x0047) - 3) & 0xFF);
+    void ((this.rd(0x0047) - 3) & 0xFF);
   }
 
   /** $863F: 阵型子程 — STA $0442; JSR $8A62; 查阵型表 */
@@ -391,8 +397,8 @@ export class MatchConfigService {
     // STA $043D; LDA #$00; STA $043E
     this.wr(0x043D, c);
     this.wr(0x043E, 0x00);
-    // LDA $003F; JSR $C509
-    this._system.subC509(this.rd(0x003F));
+    // LDA $003F; JSR $C509 — 分派待翻译
+    void this.rd(0x003F);
   }
 
   /**
@@ -545,8 +551,8 @@ export class MatchConfigService {
       // JSR $8B0B; STA $043B; LDA #$00; STA $043C
       this.wr(0x043B, c);
       this.wr(0x043C, 0x00);
-      // LDA $003F; JSR $C509
-      this._system.subC509(this.rd(0x003F));
+      // LDA $003F; JSR $C509 — 分派待翻译
+      void this.rd(0x003F);
       // JMP $8A3F — 后续处理 (stub)
     }
   }
@@ -561,8 +567,8 @@ export class MatchConfigService {
     // JSR $8B0B; STA $043B; LDA #$00; STA $043C
     this.wr(0x043B, c);
     this.wr(0x043C, 0x00);
-    // LDA $003F; JSR $C509
-    this._system.subC509(this.rd(0x003F));
+    // LDA $003F; JSR $C509 — 分派待翻译
+    void this.rd(0x003F);
   }
 
   // ════════════════════════════════════════════════

@@ -124,10 +124,9 @@ export class MatchEngineService {
     this.sub9085();
     // $80ED: JSR $C606 (协程让出)
     this._system.coroutineYield(1);
-    // $80F0: LDA $043B; JSR $C509 (查表 → 跳转表分派)
-    const phase = this.rd(0x043B);
-    this._system.subC509(phase);
+    // $80F0: LDA $043B; JSR $C509 (查表 → 跳转表分派, cmd=比赛阶段)
     // 跳转表 $80FE: $8070/$8118/$811E/$8120/$8170 (5路比赛阶段分派)
+    const phase = this.rd(0x043B);
     this.phaseDispatch(phase);
   }
 
@@ -284,9 +283,9 @@ export class MatchEngineService {
   /** $88A8: 行动选择 — 查 $0612 分派, 读球员速度 */
   private sub88A8(): void {
     this._system.subC54E(0x0B);
-    const idx = this._system.subC509(this.rd(0x0612));
+    // $88B0: LDA $0612; JSR $C509 (cmd=行动类型, 6 路)
     const table = [0x8169, 0x819C, 0x88BB, 0x88D5, 0x8BC8, 0x8B20];
-    const target = table[idx & 0xFF] ?? 0x8169;
+    const target = table[this.rd(0x0612)] ?? 0x8169;
     switch (target) {
       case 0x8169: this.sub8169(); break;
       case 0x819C: this.sub819C(); break;
@@ -684,9 +683,9 @@ export class MatchEngineService {
       this.sub8E33();
     }
     this._system.subC54E(0);
-    const idx = this._system.subC509(this.rd(0x0612));
+    // $8154 后: LDA $0612; JSR $C509 (cmd=行动类型, 6 路)
     const table = [0x8169, 0x819C, 0x81BC, 0x81D1, 0x81EA, 0x8BBA];
-    const target = table[idx & 0xFF] ?? 0x8169;
+    const target = table[this.rd(0x0612)] ?? 0x8169;
     switch (target) {
       case 0x8169: this.sub8169(); break;
       case 0x819C: this.sub819C(); break;
