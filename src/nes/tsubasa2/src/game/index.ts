@@ -21,6 +21,7 @@ import { BootRouter } from './prg/code/system/BootRouter';
 import { InterruptService } from './prg/code/system/InterruptService';
 import { HardwareInitService } from './prg/code/system/HardwareInitService';
 import { SkillService } from './prg/code/skill/SkillService';
+import { AudioService } from './prg/code/audio/AudioService';
 import type { PaletteTable, NameTableEntry } from '../core/nes-ram';
 
 // 小程序编译器对 `export *` re-export 支持有限, 改为先 import 再 export (与 src/index.ts 一致)
@@ -167,6 +168,17 @@ export function writeStoreToPpu(store: DataStore, ppu: any): void {
   writeBootChrPatterns(ppu);
 }
 
+/** 直写 APU: DataStore apu_XXXX → tsnes PAPU writeReg */
+export function writeApuToPapu(store: DataStore, papu: any): void {
+  for (let addr = 0x4000; addr <= 0x4017; addr++) {
+    const key = `apu_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+    const val = store.read(key);
+    if (val !== undefined && val >= 0) {
+      papu.writeReg(addr, val & 0xff);
+    }
+  }
+}
+
 // ═══════════════════════════════════════════════════════════
 // Tsubasa2 — 组合根 (主类)
 // ═══════════════════════════════════════════════════════════
@@ -177,6 +189,7 @@ export class Tsubasa2 {
   readonly skill: SkillService;
   readonly interrupts: InterruptService;
   readonly hardware: HardwareInitService;
+  readonly audio: AudioService;
 
   /** 帧计数 (NMI 帧号) */
   protected _frame = 0;
@@ -187,6 +200,7 @@ export class Tsubasa2 {
     this.router = new BootRouter(this.store);
     this.skill = new SkillService(this.store, this.system);
     this.interrupts = new InterruptService(this.store, this.system);
+    this.audio = new AudioService(this.store);
     this.hardware = new HardwareInitService(this.store, this.system, this.router, this.skill);
     // 注入 bank30 引用到 GameSystemService, 供 $C5xx 派发表转发
     this.system.setHardwareInit(this.hardware);
@@ -212,7 +226,13 @@ export class Tsubasa2 {
   /** 每帧: NMI 推进游戏逻辑 → 直写 PPU 渲染内存 → PPU 扫描线渲染 */
   frame(nes: NES): void {
     this.interrupts.nmi(this._frame);
+    // AudioService 每帧推进 (bank12 音频引擎 update: 读 $0700 请求队列, 写 $4000-$400F APU 寄存器)
+    this.audio.update();
     writeStoreToPpu(this.store, nes.ppu);
+    // APU 同步: DataStore apu_XXXX → tsnes PAPU writeReg
+    if (nes.papu) {
+      writeApuToPapu(this.store, nes.papu);
+    }
     nes.frame();
     // NES.frame() 走 endScanline 循环, 不触发 VBlank set/endFrame (原由 advanceDots 触发);
     // 组合根补一次 startVBlank → endFrame → ui.writeFrame (onFrame 回调 → Canvas)

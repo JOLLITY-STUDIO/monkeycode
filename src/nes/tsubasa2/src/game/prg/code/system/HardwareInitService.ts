@@ -64,7 +64,10 @@ export class HardwareInitService {
     // $C67A-$C682: 再次设 PPU 寄存器
     this.wr(0x0020, 0x08);
     this.wr(0x0021, 0x06);
-    // $C685-$C68C: APU 初始化 (STA $4010 / STA $4017) — 由音频引擎接管, 省略
+    // $C685-$C68C: APU 初始化 (tsnes trace: F2 STA $4010=$00 DMC_FREQ, STA $4017=$40 APU_FRAME)
+    // 写到 apu_XXXX key (AudioService.wrApu 格式), writeApuToPapu 每帧同步到 tsnes PAPU
+    this._store.write('apu_4010', 0x00); // DMC_FREQ = 0 (禁用 DPCM)
+    this._store.write('apu_4017', 0x40); // APU_FRAME = $40 (5步模式, 禁用 IRQ)
     // $C68F-$C69E: PPU 地址复位 ($2006 ×16) — 帧合成器管理, 省略
     // $C6A0: LDA #$00; STA $0022 — bank 基址
     this.wr(0x0022, 0x00);
@@ -76,12 +79,17 @@ export class HardwareInitService {
     this.wr(0x0469, 0x00);
     this.wr(0x0469, 0x00);
     // $C6B8: CLI — 省略
-    // tsnes trace 实测: 开场第一个画面 ram_00ED = 2 (TECMO Theater 开场动画)
-    // bank00 协程调度器 ($9F0F) 从栈弹出 $ED=2, 驱动 bank7 场景渲染 + bank0/bank5 辅助
+    // asm 首场景确认 (tsnes trace + asm 双向验证):
+    //   $C6B9: LDA #$00; JMP $CEFE — A=0 被 PHA 压栈 (场景 id)
+    //   $CEFE: PHA; 清 $0469; JSR $CB8B; JSR $CB35; PLA; JMP $C400
+    //   $C400: TYA; JMP $A200 — RAM 清零循环 ($C667-$C678) 后 Y=0
+    //   → 首个场景 id 恒为 $00, 非 $02 (旧注释"trace 实测 $ED=2"为误判)。
+    // trace 实测序列: frame3 $ED=$00 → frame5 $ED=$07 → frame7 起 $ED=$00 稳定。
+    // bank00 协程调度器 ($9F0F) 从协程槽恢复 $ED, 驱动 bank7 场景渲染 + bank0/bank5 辅助。
     // 先执行 preMainLoopInit (asm $821D: 含 JSR $AA06 场景/调色板装载 + JSR $98A0 ntClear + JSR $9B7F oamClear)
     // 否则场景数据不装载, 画面空白
     this._scene.preMainLoopInit();
-    this.resetScene(2);
+    this.resetScene(0);
     console.log(
       `[HardwareInitService] init() done. nt0=${this.countNt()} ram_00ED=${this.rd(0x00ED)}` +
         ` ram_004A=${this.rd(0x004A)} ram_0538=${this.rd(0x0538)}`,
@@ -132,14 +140,17 @@ export class HardwareInitService {
     this.wr(0x0024, 0x00);
     // $C418-$C41A: LDX #$02; JSR $C4B9 → ram_0025=bank2 ($A000 窗口, MMC3 省略)
     this.wr(0x0025, 0x02);
-    // $C41D-$C41E: TYA (场景 id); JMP $A200 → bank0 场景引导
-    // 翻译版: bank0 = GameSystemService, 场景引导 = BootRouter.resetEntry
+    // $C41D-$C41E: TYA (场景 id); JMP $A200 → bank2 场景引导
+    // 翻译版: bank2 = BootRouter.resetEntry (preMainLoopInit 场景/调色板装载)
     this._scene.resetEntry(sceneId);
-    // $A200: 注册开场协程 (协程槽 1, R6=bank0, 回调=$9148 场景初始化)
-    // 协程调度器 ($9EED) 每帧检查槽 1, 就绪后调用 $9148 读场景数据写 $05E8 buffer
-    this._system.registerCoroutine(1, 0x00, 0, {
-      e6: 0, e7: 0, e8: 0, e9: 0, ea: 0, eb: 0, ec: 0, ed: sceneId & 0xff,
-    });
+    // bank2 $A200 场景引导后, bank0 主状态机注册开场协程:
+    //   slot $01 → bank0 $801E (wait-vblank + 清状态 + 场景装载初始化 + 输入驱动)
+    //   slot $15 → bank0 $82EC (场景数据装载器: ram_004C 经 bank6 $B800 指针表驱动
+    //                         装载 BG 调色板动画 / SPR 精灵数据)
+    // slot $11 → $9147 (场景数据消费协程) 由 $9085 装载器末尾自行注册, 此处不重复。
+    const ctx = { e6: 0, e7: 0, e8: 0, e9: 0, ea: 0, eb: 0, ec: 0, ed: sceneId & 0xff, y: 0, x: 0 };
+    this._system.registerCoroutine(0x01, 0x00, 1, ctx); // $801E (callback idx 1)
+    this._system.registerCoroutine(0x15, 0x00, 2, ctx); // $82EC (callback idx 2)
   }
 
   // ════════════════════════════════════════════════

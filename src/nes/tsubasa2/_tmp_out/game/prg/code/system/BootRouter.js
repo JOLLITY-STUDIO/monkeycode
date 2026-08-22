@@ -165,12 +165,7 @@ class BootRouter {
         // NT/调色板数据由协程调度器 ($9F0F) 驱动场景脚本代码填充 $05E8 buffer,
         // nmiRender 消费 $05E8 buffer 写入 PPU。
     }
-    // tsnes trace 实测: 开场 NT0 几乎全零 (仅 25 个 TECMO 文字 tile),
-    // 由 NMI 渲染主程 $05E8 buffer 循环写入, 不需要 BootBackgroundRenderer 预填充。
-    // BootBackgroundRenderer 用 SCENE_0x0A + bank08 metatile 填了 672 个错误 tile, 已移除。
-    // 调色板也由 NMI 渲染主程 $05E8 buffer 写入 ($3F00-$3F1F), 不需要预填充。
-    // NT/调色板数据由协程调度器 ($9F0F) 驱动场景脚本代码填充 $05E8 buffer,
-    // nmiRender 消费 $05E8 buffer 写入 PPU。
+    /** 通用回调处理 (其余索引由 §6 callbackNN 方法覆盖) */
     _initScene(_index) {
         // 各 NMI 回调由 §6 callbackNN 方法覆盖
     }

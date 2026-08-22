@@ -119,6 +119,10 @@ export class InterruptService {
   // 翻译版: 帧驱动把输入掩码写入 DataStore KV 'input_mask' (bit0=A,1=B,2=SEL,3=START,4=UP,5=DOWN,6=LEFT,7=RIGHT)
   // ════════════════════════════════════════════════
   protected _readInput(): void {
+    // $C982: LDA #$01; STA $4016 (strobe on); LDA #$00; STA $4016 (strobe off)
+    this.wr(0x4016, 0x01);
+    this.wr(0x4016, 0x00);
+    // 逐位读 $4016 → ram_001C (当前按下)
     const mask = (this._store.get<number>('input_mask') ?? 0) & 0xff;
     this.wr(0x001c, mask);
     this.wr(0x001e, mask & ~this._prevInput & 0xff);

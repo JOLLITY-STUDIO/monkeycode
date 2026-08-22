@@ -36,7 +36,10 @@ class HardwareInitService {
         // $C67A-$C682: 再次设 PPU 寄存器
         this.wr(0x0020, 0x08);
         this.wr(0x0021, 0x06);
-        // $C685-$C68C: APU 初始化 (STA $4010 / STA $4017) — 由音频引擎接管, 省略
+        // $C685-$C68C: APU 初始化 (tsnes trace: F2 STA $4010=$00 DMC_FREQ, STA $4017=$40 APU_FRAME)
+        // 写到 apu_XXXX key (AudioService.wrApu 格式), writeApuToPapu 每帧同步到 tsnes PAPU
+        this._store.write('apu_4010', 0x00); // DMC_FREQ = 0 (禁用 DPCM)
+        this._store.write('apu_4017', 0x40); // APU_FRAME = $40 (5步模式, 禁用 IRQ)
         // $C68F-$C69E: PPU 地址复位 ($2006 ×16) — 帧合成器管理, 省略
         // $C6A0: LDA #$00; STA $0022 — bank 基址
         this.wr(0x0022, 0x00);

@@ -206,6 +206,9 @@ export class BootRouter {
     // 调色板也由 NMI 渲染主程 $05E8 buffer 写入 ($3F00-$3F1F), 不需要预填充。
     // NT/调色板数据由协程调度器 ($9F0F) 驱动场景脚本代码填充 $05E8 buffer,
     // nmiRender 消费 $05E8 buffer 写入 PPU。
+  }
+
+  /** 通用回调处理 (其余索引由 §6 callbackNN 方法覆盖) */
   protected _initScene(_index: number): void {
     // 各 NMI 回调由 §6 callbackNN 方法覆盖
   }

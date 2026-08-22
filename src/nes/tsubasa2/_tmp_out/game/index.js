@@ -8,11 +8,13 @@ exports.writeOam = writeOam;
 exports.writeScroll = writeScroll;
 exports.writeBootChrPatterns = writeBootChrPatterns;
 exports.writeStoreToPpu = writeStoreToPpu;
+exports.writeApuToPapu = writeApuToPapu;
 const GameSystemService_1 = require("./prg/code/system/GameSystemService");
 const BootRouter_1 = require("./prg/code/system/BootRouter");
 const InterruptService_1 = require("./prg/code/system/InterruptService");
 const HardwareInitService_1 = require("./prg/code/system/HardwareInitService");
 const SkillService_1 = require("./prg/code/skill/SkillService");
+const AudioService_1 = require("./prg/code/audio/AudioService");
 // 小程序编译器对 `export *` re-export 支持有限, 改为先 import 再 export (与 src/index.ts 一致)
 const header_1 = require("./header");
 Object.defineProperty(exports, "HEADER", { enumerable: true, get: function () { return header_1.HEADER; } });
@@ -150,6 +152,16 @@ function writeStoreToPpu(store, ppu) {
     writeScroll(store, ppu);
     writeBootChrPatterns(ppu);
 }
+/** 直写 APU: DataStore apu_XXXX → tsnes PAPU writeReg */
+function writeApuToPapu(store, papu) {
+    for (let addr = 0x4000; addr <= 0x4017; addr++) {
+        const key = `apu_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
+        const val = store.read(key);
+        if (val !== undefined && val >= 0) {
+            papu.writeReg(addr, val & 0xff);
+        }
+    }
+}
 // ═══════════════════════════════════════════════════════════
 // Tsubasa2 — 组合根 (主类)
 // ═══════════════════════════════════════════════════════════
@@ -162,6 +174,7 @@ class Tsubasa2 {
         this.router = new BootRouter_1.BootRouter(this.store);
         this.skill = new SkillService_1.SkillService(this.store, this.system);
         this.interrupts = new InterruptService_1.InterruptService(this.store, this.system);
+        this.audio = new AudioService_1.AudioService(this.store);
         this.hardware = new HardwareInitService_1.HardwareInitService(this.store, this.system, this.router, this.skill);
         // 注入 bank30 引用到 GameSystemService, 供 $C5xx 派发表转发
         this.system.setHardwareInit(this.hardware);
@@ -183,7 +196,13 @@ class Tsubasa2 {
     /** 每帧: NMI 推进游戏逻辑 → 直写 PPU 渲染内存 → PPU 扫描线渲染 */
     frame(nes) {
         this.interrupts.nmi(this._frame);
+        // AudioService 每帧推进 (bank12 音频引擎 update: 读 $0700 请求队列, 写 $4000-$400F APU 寄存器)
+        this.audio.update();
         writeStoreToPpu(this.store, nes.ppu);
+        // APU 同步: DataStore apu_XXXX → tsnes PAPU writeReg
+        if (nes.papu) {
+            writeApuToPapu(this.store, nes.papu);
+        }
         nes.frame();
         // NES.frame() 走 endScanline 循环, 不触发 VBlank set/endFrame (原由 advanceDots 触发);
         // 组合根补一次 startVBlank → endFrame → ui.writeFrame (onFrame 回调 → Canvas)

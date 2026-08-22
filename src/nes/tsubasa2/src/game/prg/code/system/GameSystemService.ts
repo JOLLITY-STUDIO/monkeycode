@@ -42,6 +42,15 @@ import {
   SCENE_PTR_TABLE,
 } from '../../data/tables/bank07-scenes-metatile';
 import { PALETTE_BG_06, PALETTE_SPR_06 } from '../../data/tables/bank06-palette';
+import { TEXT_BUFFER_TEMPLATE_978B } from '../../data/tables/bank00-tables';
+import {
+  BANK9_SCENE_PTR_TABLE,
+  BANK10_SCENE_PTR_TABLE,
+  BANK6_B800_PAL_ANIM_TABLE,
+  BANK6_B800_STREAMS,
+} from '../../data/scene/scene-loader-tables';
+import { BANK09_RAW } from '../../data/scene/bank09-raw';
+import { BANK10_RAW } from '../../data/scene/bank10-raw';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {
@@ -83,8 +92,15 @@ export class GameSystemService {
 
   constructor(store: DataStore) {
     this._store = store;
-    // 注册协程回调 (索引 0 = $9148 场景初始化)
+    // 注册协程回调 (callbackIdx → 回调, 替代 asm $0101+Y 回调指针表)
+    // 索引 0 = $9148 场景初始化 (sub9148 主体)
+    // 索引 1 = $801E 首次运行 (wait-vblank + 清状态 + 场景装载初始化 + 输入驱动)
+    // 索引 2 = $82EC 场景数据装载器 (ram_004C → bank6 $B800 调色板动画/精灵流)
+    // 索引 3 = $9147 场景数据消费协程前缀 (让出一帧后进入 sub9148)
     this._coroutines[0] = () => this.sub9148();
+    this._coroutines[1] = () => this.sub801E();
+    this._coroutines[2] = () => this.sub82EC();
+    this._coroutines[3] = () => this.sub9147();
   }
 
   /** 注入 bank30 (HardwareInitService) 引用, 供 $C5xx 派发表转发 */
@@ -722,6 +738,308 @@ export class GameSystemService {
     // $9F91: LDA #$01; STA $0000,X (设就绪)
     this.wr(0x0000 + slot, 1);
     return 2;
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // $801E: 首次运行协程 (bootScene slot $01 注册, callback idx 1)
+  // asm $801F-$80D1: wait-vblank → 脚本装载 → 清状态 → bit0 分支:
+  //   bit0=0: ntAttrClear + 等2帧 + initHelper + ntClear + $8297 场景装载
+  //           + sceneLoad(0x17) + $890C + oamCopy + $9A35
+  //   公共:  tableLoad + 输入驱动循环 (选场景)
+  // ════════════════════════════════════════════════════════════
+
+  /** $801E: 首次运行协程回调 */
+  private sub801E(): void {
+    // $801F: JSR $9BA0 waitVBlank (fadeOut + ntClear + initHelper)
+    this.waitVBlank();
+    // $8022: LDA #$00; JSR $8464 — 脚本装载
+    // TODO: $8464 完整装载 (bank5 $A0C0 数据 → $004D/$004E + 注册 $84C5 脚本回调)
+    this.wrPtr(0x004D, 0x004E, 0);
+    // $8027: LDA #$01; JSR $9FA8 — 让出一帧
+    this.coroutineYield(1);
+    // $802C: 轮询 $001E bit4 (vblank 帧完成)
+    if ((this.rd(0x001E) & 0x10) === 0) {
+      this.coroutineYield(1);
+      return;
+    }
+    // $8032-$8046: 清零页 $0005/6/9/A/11/12/D/E/4C/5B
+    this.wr(0x0005, 0);
+    this.wr(0x0006, 0);
+    this.wr(0x0009, 0);
+    this.wr(0x000A, 0);
+    this.wr(0x0011, 0);
+    this.wr(0x0012, 0);
+    this.wr(0x000D, 0);
+    this.wr(0x000E, 0);
+    this.wr(0x004C, 0);
+    this.wr(0x005B, 0);
+    // $8048: LDA #$01; STA $0700
+    this.wr(0x0700, 1);
+    // $804D: LDA $001B; AND #$01; BNE $807A
+    if ((this.rd(0x001B) & 0x01) !== 0) {
+      this.sub807A();
+      return;
+    }
+    // $8053: JSR $9B11 ntAttrClear
+    this.ntAttrClear();
+    // $8056: LDA #$02; JSR $9FA8 (让出 2 帧)
+    this.coroutineYield(2);
+    // $805B: JSR $9B7F initHelper
+    this.initHelper();
+    // $805E: JSR $98A0 ntClear
+    this.ntClear();
+    // $8061: LDA #$0D; JSR $8297 (设 $004D=$00E5 → JSR $9085 装载场景数据)
+    this.sub8297(0x0D);
+    // $8066: LDA #$00; STA $007B
+    this.wr(0x007B, 0);
+    // $806A: LDA #$17; JSR $8AF7 sceneLoad(0x17)
+    this.sceneLoad(0x17);
+    // $806F: LDA #$30; JSR $890C (全部精灵 Y += $30)
+    this.sub890C(0x30);
+    // $8074: JSR $88FB oamCopy ($046A,X ^= $20)
+    this.sub88FB();
+    // $8077: JSR $9A35 (mainLoopInit2: paletteLoadBG + paletteLoadSPR + 置满)
+    this.sub9A35();
+    // $807A 公共: 输入驱动循环
+    this.sub807A();
+  }
+
+  /** $807A: 公共输入驱动循环 (选场景/切换) */
+  private sub807A(): void {
+    // $807A: LDA #$00; JSR $8920 tableLoad(0)
+    this.tableLoad(0);
+    // $807F: $0090=0; $0091=2
+    this.wr(0x0090, 0);
+    this.wr(0x0091, 2);
+    // $8087: $001B &= $FE (清 bit0)
+    this.wr(0x001B, this.rd(0x001B) & 0xfe);
+    // $808D: $00ED = $0A
+    this.wr(0x00ED, 0x0a);
+    this.sub8091();
+  }
+
+  /** $8091: 场景选择循环 (标题菜单: 输入切换 $00ED 场景位) */
+  private sub8091(): void {
+    // $8091: VRAM = $2200+$00ED; ppuFill($7F, addr, 1, 1)
+    const ed = this.rd(0x00ED);
+    this.wr(0x00E6, ed);
+    this.wr(0x00E7, 0x22);
+    this.ppuFill(0x7f, 0x2200 + ed, 1, 1);
+    // $80A7: LDA $001E; AND #$3C — 轮询输入位 (bit2-5)
+    const inp = this.rd(0x001E) & 0x3c;
+    if (inp !== 0) {
+      // $80AD: ASL; ASL; BMI $80BC — bit5 → 切换场景位 ($00ED ^= $40)
+      let v = (inp << 2) & 0xff;
+      if ((v & 0x80) !== 0) {
+        this.wr(0x00ED, this.rd(0x00ED) ^ 0x40);
+      }
+      // TODO: $80B1/$80B4/$80D4 确认选择分支 (进入所选场景)
+    }
+    // 让出 1 帧, 下帧调度继续轮询 (原版 $80A2: LDA #$01; JSR $9FA8 循环)
+    this.coroutineYield(1);
+  }
+
+  /**
+   * $8297: 装载场景数据 (A → $00E7 段类型; $00E6=1 段数; $004D=$00E5; JSR $9085)
+   * asm: STA $00E7; LDA #$01; STA $00E6; LDA #$E5; STA $004D; LDA #$00; STA $004E;
+   *      JSR $9085; RTS
+   */
+  sub8297(a: number): void {
+    this.wr(0x00E7, a);
+    this.wr(0x00E6, 1);
+    this.wr(0x004D, 0xe5);
+    this.wr(0x004E, 0);
+    this.sub9085();
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // $82ED: 场景数据装载器协程 (bootScene slot $15 注册, callback idx 2)
+  // asm $82ED-$8387: 轮询 $004C bit7 → bank6 $B800 指针表 → 数据流:
+  //   首字节 <$80 → BG 调色板动画 (写 $062A RAM 调色板 + paletteSetFull)
+  //   首字节 ≥$80 → SPR 精灵数据 (写 $008E+X)
+  // ════════════════════════════════════════════════════════════
+
+  /** $82EC: 场景数据装载器协程回调 */
+  private sub82EC(): void {
+    // $82ED: JSR $838A (切 bank2 → JSR $A215 → 切回 bank6) — 去CPU化省略
+    // $82F0: LDA $004C; BPL $82ED — 轮询 $004C bit7 (动画装载请求)
+    const c = this.rd(0x004C);
+    if ((c & 0x80) === 0) {
+      // 无请求: 让出 1 帧继续轮询 (原版死循环等 $004C 被外部设置)
+      this.coroutineYield(1);
+      return;
+    }
+    // $82F4: ASL; TAX → $B800,X 表项 → $00EC/$00ED 数据流地址
+    const idx = c & 0x7f;
+    const stream = BANK6_B800_STREAMS[idx] ?? [];
+    if (stream.length === 0) {
+      this.wr(0x004C, 0);
+      this.coroutineYield(1);
+      return;
+    }
+    // $8300: LDY #$00; LDA ($00EC),Y; BMI $8355 — 首字节 ≥$80 → SPR 路径
+    if ((stream[0] & 0x80) === 0) {
+      this.palAnimBg(stream);
+    } else {
+      this.palAnimSpr(stream);
+    }
+    // $8383: LDA #$00; STA $004C; JMP $82ED (清请求, 重新轮询)
+    this.wr(0x004C, 0);
+    this.coroutineYield(1);
+  }
+
+  /** $8306-$8380 BG 路径: 调色板动画流 → $062A RAM 调色板 */
+  private palAnimBg(stream: readonly number[]): void {
+    // 数据流结构: [首字节=调色板偏移] (count,R,G,B...)* $FE 帧分隔 $FF 结束
+    let x = stream[0] & 0xff; // $00E9 = 首字节 (调色板起始偏移)
+    let y = 1;
+    while (y < stream.length) {
+      const b = stream[y];
+      if (b === 0xff) break; // $FF 结束
+      if (b === 0xfe) {
+        // $FE 帧分隔 → 置满调色板渐显 (原版 $8344: JSR $9A43)
+        this.paletteSetFull();
+        y++;
+        continue;
+      }
+      // $8318: $00EA = count (颜色字节数); 写 $062A+X
+      const cnt = b & 0xff;
+      y++;
+      for (let i = 0; i < cnt && y < stream.length; i++) {
+        const v = stream[y];
+        y++;
+        // $8326: STA $062A,X (0 跳过: $8324 BEQ $8329)
+        if (v !== 0) this.wr(0x062A + x + i, v);
+      }
+      x += cnt;
+    }
+    // 让 PPU buffer 消费调色板
+    this.paletteWriteAll();
+  }
+
+  /** $8355-$8380 SPR 路径: 精灵数据流 → $008E+X */
+  private palAnimSpr(stream: readonly number[]): void {
+    // 数据流结构: [首字节&1=精灵索引] (tile,帧数)* $FE 帧分隔 $FF 结束
+    const base = stream[0] & 0x01; // $00E9 = 首字节 & 1 (精灵组)
+    let y = 1;
+    while (y < stream.length) {
+      const b = stream[y];
+      if (b === 0xff) break;
+      if (b === 0xfe) {
+        y++;
+        continue;
+      }
+      // $836B: STA $008E,X — 写精灵 tile
+      this.wr(0x008E + base, b);
+      y++;
+      // $836E: LDA ($00EC),Y; STA $00EA — 动画帧数
+      // TODO: 帧数驱动动画切换 (原版 $8375-$837E 每帧切 bank 推进)
+      if (y < stream.length) {
+        y++; // 跳过帧数字节 (简化: 立即切换)
+      }
+    }
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // $9085: 场景数据装载器 (由 $8297 调用; 末尾注册 $9147 到 slot $11)
+  // asm $9085-$9142: 清 $0468-$0567 → 段循环: 段类型 <$6D → bank9 /
+  //   ≥$6D → bank10 (idx-=$6D) → $A000+idx*2 指针表 → 数据流地址 →
+  //   复制 32B $978B 模板到 buffer + buffer[0]|=(bank-9) + buffer[2..3]=指针+1
+  // ════════════════════════════════════════════════════════════
+
+  /** $9085: 场景数据装载器 */
+  sub9085(): void {
+    // $9085-$908D: 清 $0468-$0567
+    for (let i = 0; i < 0x100; i++) this.wr(0x0468 + i, 0);
+    // $908F: $0097=0
+    this.wr(0x0097, 0);
+    // $9093: LDY #$01; LDA ($004D),Y; STA $00EC — 段数
+    const segPtr = this.rdPtr(0x004D, 0x004E);
+    const segCount = this.rdMemByte(segPtr + 1) & 0xff;
+    // $9099: $004D += 2
+    let ptr = (segPtr + 2) & 0xffff;
+    // $90A6: $0094/$0095 = $0568 (buffer 指针)
+    this.wr(0x0094, 0x68);
+    this.wr(0x0095, 0x05);
+    let bufPtr = 0x0568;
+    // $90AE 段循环
+    for (let s = 0; s < segCount; s++) {
+      // $90B0: LDX $0025; STX $00ED (保存当前 bank)
+      this.wr(0x00ED, this.rd(0x0025));
+      // $90B2: LDY #$00; LDA ($004D),Y — 段类型字节
+      const typeByte = this.rdMemByte(ptr) & 0xff;
+      // $90B7: LDX #$09; CMP #$6D; BCC $90C2; SEC SBC #$6D; INX → bank9/10
+      let bank = 9;
+      let idx = typeByte;
+      if (typeByte >= 0x6d) {
+        idx = typeByte - 0x6d;
+        bank = 10;
+      }
+      // $90C5: $A000 + idx*2 指针表 → 16位 LE 数据流地址
+      const table = bank === 9 ? BANK9_SCENE_PTR_TABLE : BANK10_SCENE_PTR_TABLE;
+      const dataPtr = table[idx] ?? 0;
+      // $90E4: 复制 32B 模板 $978B 到 buffer
+      for (let i = 0; i < 0x20; i++) this.wr(bufPtr + i, TEXT_BUFFER_TEMPLATE_978B[i]);
+      // $90F0: buffer[0] |= (bank - 9)
+      this.wr(bufPtr, this.rd(bufPtr) | ((bank - 9) & 0xff));
+      // $90FB: $0049 = 数据流[0] (调色板索引)
+      const raw = bank === 9 ? BANK09_RAW : BANK10_RAW;
+      const off = dataPtr - 0xa000;
+      this.wr(0x0049, off >= 0 && off < raw.length ? raw[off] : 0);
+      // $9101: 数据指针+1 → buffer[2..3]
+      const p1 = (dataPtr + 1) & 0xffff;
+      this.wr(bufPtr + 2, p1 & 0xff);
+      this.wr(bufPtr + 3, (p1 >> 8) & 0xff);
+      // $9117: 段指针+1; $911D: buffer += $20
+      ptr = (ptr + 1) & 0xffff;
+      bufPtr += 0x20;
+    }
+    this.wrPtr(0x004D, 0x004E, ptr);
+    // $9131: LDX #$11; 回调指针 $9147; LDY #$C8; LDA #$00; JSR $9F69
+    this.registerCoroutine(0x11, 0x00, 3, {
+      e6: 0, e7: 0, e8: 0, e9: 0, ea: 0, eb: 0, ec: 0, ed: this.rd(0x00ED),
+      y: 0xc8, x: 0,
+    });
+    // $9142: RTS
+  }
+
+  /** $9147: 场景数据消费协程前缀 (slot $11 回调, 让出一帧后进入 sub9148) */
+  private _sub9147Armed = false;
+  private sub9147(): void {
+    // $9147: .byte $A9,$01 (LDA #$01); JSR $9FA8 (让出一帧); RTS
+    // 下一帧调度恢复后从 $9148 继续 (sub9148 场景初始化)
+    if (!this._sub9147Armed) {
+      this._sub9147Armed = true;
+      this.coroutineYield(1);
+      return;
+    }
+    this._sub9147Armed = false;
+    this.sub9148();
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // 共享渲染辅助 ($88FB/$890C/$9A35, 被 sub801E 使用)
+  // ════════════════════════════════════════════════════════════
+
+  /** $88FB: oamCopy — 所有精灵属性 $046A,X ^= $20 (X 步长 4) */
+  sub88FB(): void {
+    for (let x = 0; x < 0x100; x += 4) {
+      this.wr(0x046A + x, this.rd(0x046A + x) ^ 0x20);
+    }
+  }
+
+  /** $890C: 所有精灵 $0468,X += A (X 步长 4, 整体平移) */
+  sub890C(a: number): void {
+    for (let x = 0; x < 0x100; x += 4) {
+      this.wr(0x0468 + x, (this.rd(0x0468 + x) + a) & 0xff);
+    }
+  }
+
+  /** $9A35: mainLoopInit2 — paletteLoadBG + paletteLoadSPR + 置满 (用当前 $0048/$0049) */
+  sub9A35(): void {
+    this.paletteLoadBG();
+    this.paletteLoadSPR();
+    this.paletteSetFull();
   }
 
   // ════════════════════════════════════════════════════════════

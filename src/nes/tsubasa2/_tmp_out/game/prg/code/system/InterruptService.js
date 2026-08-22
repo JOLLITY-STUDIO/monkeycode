@@ -94,6 +94,10 @@ class InterruptService {
     // ════════════════════════════════════════════════
     _readInput() {
         var _a;
+        // $C982: LDA #$01; STA $4016 (strobe on); LDA #$00; STA $4016 (strobe off)
+        this.wr(0x4016, 0x01);
+        this.wr(0x4016, 0x00);
+        // 逐位读 $4016 → ram_001C (当前按下)
         const mask = ((_a = this._store.get('input_mask')) !== null && _a !== void 0 ? _a : 0) & 0xff;
         this.wr(0x001c, mask);
         this.wr(0x001e, mask & ~this._prevInput & 0xff);
