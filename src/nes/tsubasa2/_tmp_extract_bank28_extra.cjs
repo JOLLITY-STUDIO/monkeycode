@@ -15,7 +15,7 @@ const T = [
   ['DATA_FORM_9474', 28, 0x1474, 0x162, '阵型数据区 ($9474-$95D5, 覆盖 $9474/$9500/$955E/$95B2 等指针目标) — $819D/$8224/$828F 经 TBL_9460/9554/959E 读'],
   ['DATA_ATTR_95D6', 28, 0x15D6, 0x878, '属性数据 ($95D6-$9E4D) — sub803A 基址 $95D6/$9662 + ($0032),Y'],
   ['DATA_9FCE', 28, 0x1FCE, 0x32, '属性尾表 ($9FCE-$9FFF) — sub803A A==1F 基址 $9FCE + $9FF0 调色板尾'],
-  ['DATA_AE86', 29, 0x2E86, 0x17A, 'bank29 属性数据 ($AE86-$AFFF) — sub803A A==0/$0B/$1E 基址 $AE86'],
+  ['DATA_AE86', 29, 0x0E86, 0x17A, 'bank29 属性数据 ($AE86-$AFFF, bank内偏移$E86) — sub803A A==0/$0B/$1E 基址 $AE86; 物理ROM=0x3AE96=GK能力值区'],
 ];
 let path = 'src/game/prg/data/tables/bank28-tables.ts';
 let src = fs.readFileSync(path, 'utf8');
