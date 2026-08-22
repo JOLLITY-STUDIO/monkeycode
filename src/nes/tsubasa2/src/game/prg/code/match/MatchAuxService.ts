@@ -571,6 +571,170 @@ export class MatchAuxService {
   }
 
   // ════════════════════════════════════════════════
+  // $81EC-$82E9: $81BA 子命令分派后的处理逻辑
+  // ════════════════════════════════════════════════
+
+  /**
+   * $81EC: 球员数据查询 (由 $81BA 子命令分派调用)。
+   * asm $81EC-$81F4:
+   *   LDA $0442; STA $003A; JSR $C50C; JSR $826A; LDY #$00
+   *   LDA ($0034),Y; BEQ $8201; JSR $8282; LDX #$00; BEQ $8213
+   *   $8201: LDA $002B; SEC; SBC #$03; LDX #$02
+   *   LDY $003A; BEQ $8211; CPY #$0B; BNE $8213; LDX #$04
+   *   $8211: STA $003A
+   *   $8213: LDY #$00; STY $003B; TAY; ASL; ROL $003B; ASL; ROL $003B
+   *   ADC $003A; STA $003A; LDA #$00; ADC $003B; STA $003B
+   *   CLC; LDA $003A; ADC $8264,X; STA $003A; LDA $003B; ADC $8265,X; STA $003B
+   *   LDY #$00; LDA ($003A),Y; INY; PHA
+   *   循环 16 次: TXA; AND #$03; 分支 ($8253/$8258/$825A)
+   *   PLA; RTS
+   */
+  private sub81EC(): void {
+    const a0442 = this.rd(0x0442);
+    this.wr(0x003A, a0442 & 0xFF);
+    this._system.subC50C();
+    this.sub826A();
+    // LDY #$00; LDA ($0034),Y
+    const d0 = this.rdInd(0x0034, 0);
+    let x: number;
+    if (d0 === 0) {
+      // $8201: LDA $002B; SEC; SBC #$03; LDX #$02
+      let a = (this.rd(0x002B) - 3) & 0xFF;
+      x = 2;
+      const y3a = this.rd(0x003A);
+      if (y3a === 0) {
+        // LDX #$04
+        x = 4;
+      } else if (y3a !== 0x0B) {
+        // BNE $8213 (X 不变)
+      }
+      this.wr(0x003A, a & 0xFF);
+    } else {
+      // JSR $8282; LDX #$00
+      x = this.sub8282(d0);
+    }
+    // $8213: 算地址 ($003A << 4 + $8264+X)
+    this.wr(0x003B, 0);
+    let lo = this.rd(0x003A);
+    let hi = 0;
+    // ASL×4 (×16)
+    for (let i = 0; i < 4; i++) {
+      hi = ((hi << 1) | (lo >> 7)) & 0xFF;
+      lo = (lo << 1) & 0xFF;
+    }
+    lo = (lo + this.rd(0x003A)) & 0xFF;
+    hi = (hi + 0) & 0xFF;
+    this.wr(0x003A, lo);
+    this.wr(0x003B, hi);
+    // ADC $8264,X / $8265,X
+    const TABLE_8264 = [0x0C, 0xB8, 0xC7, 0xB6, 0x67, 0xB7];
+    const offLo = TABLE_8264[x & 0x07] ?? 0;
+    const offHi = TABLE_8264[(x + 1) & 0x07] ?? 0;
+    const addrLo = (this.rd(0x003A) + offLo) & 0xFF;
+    const addrHi = (this.rd(0x003B) + offHi) & 0xFF;
+    this.wr(0x003A, addrLo);
+    this.wr(0x003B, addrHi);
+  }
+
+  /**
+   * $826A: 球员 ID → 精灵索引查表。
+   * asm: LDY #$00; LDA ($0034),Y; PHP; TAX; LDA $88F0,X; PLP
+   *   BNE $827E; LDX $003A; CPX #$0B; BNE $827E; LDA #$04; STA $0546
+   *   $827E: RTS
+   */
+  private sub826A(): void {
+    const d0 = this.rdInd(0x0034, 0);
+    const spriteIdx = 0; // ROM $88F0,X stub
+    if (d0 === 0) {
+      const x3a = this.rd(0x003A);
+      if (x3a === 0x0B) {
+        this.wr(0x0546, 0x04);
+      }
+    }
+  }
+
+  /**
+   * $8282: 球员状态判断 (返回 X = 状态类型)。
+   * asm: LDX #$01; STA $003B; CMP #$01; BEQ $8296
+   *   LDX #$00; CMP #$0F; BCC $8296; CMP #$17; BCS $8296; LDX #$02
+   *   $8296: TXA; JSR $C509; 跳转表
+   */
+  private sub8282(a: number): number {
+    let x = 1;
+    this.wr(0x003B, a & 0xFF);
+    if (a === 1) {
+      // BEQ $8296
+    } else {
+      x = 0;
+      if (a < 0x0F) {
+        // BCC $8296
+      } else if (a >= 0x17) {
+        // BCS $8296
+      } else {
+        x = 2;
+      }
+    }
+    // TXA; JSR $C509
+    this._system.subC509(x);
+    return x;
+  }
+
+  /**
+   * $82A0: 队伍 0 标志检查。
+   * asm: LDA #$01; LDX $002A; BEQ $82AC; LDA #$76; RTS
+   *   $82AC: LDA #$00; RTS
+   */
+  private sub82A0(): number {
+    if (this.rd(0x002A) === 0) return 0;
+    return 0x76;
+  }
+
+  /**
+   * $82A4: 队伍 1 标志检查。
+   * asm: LDA #$00; LDX $002A; CPX #$01; BEQ $82B8; LDA #$68
+   *   $82B8: CLC; ADC $003B; RTS
+   */
+  private sub82A4(): number {
+    let a = 0;
+    if (this.rd(0x002A) !== 1) a = 0x68;
+    return (a + this.rd(0x003B)) & 0xFF;
+  }
+
+  /**
+   * $82BC: 计时数据读取 + 地址计算 (查 $82F6 表)。
+   * asm: LDY #$02; LDA ($004C),Y; BPL $82C5; JSR $8316
+   *   LDX #$00; STX $003B; ASL; ROL $003B ×4 (×16)
+   *   ADC #$CF; STA $003A; LDA $003B; ADC #$BA; STA $003B
+   *   LDA $82F6,X; BPL $82E9
+   */
+  private sub82BC(): void {
+    const ptr = this.rdPtr(0x004C, 0x004D);
+    let a = this.readMemByte(ptr + 2);
+    if ((a & 0x80) !== 0) {
+      this.sub8316(a);
+    }
+    this.wr(0x003B, 0);
+    let lo = a;
+    let hi = 0;
+    // ASL×4 (×16)
+    for (let i = 0; i < 4; i++) {
+      hi = ((hi << 1) | (lo >> 7)) & 0xFF;
+      lo = (lo << 1) & 0xFF;
+    }
+    lo = (lo + 0xCF) & 0xFF;
+    hi = (hi + 0xBA) & 0xFF;
+    this.wr(0x003A, lo);
+    this.wr(0x003B, hi);
+    // LDA $82F6,X (查表, stub)
+  }
+
+  /** $8316: 子命令扩展 (由 $82BC 调用) */
+  private sub8316(a: number): void {
+    // AND #$7F; JSR $C509 等
+    this._system.subC509(a & 0x7F);
+  }
+
+  // ════════════════════════════════════════════════
   // 间接读写辅助
   // ════════════════════════════════════════════════
   protected wrInd(ptrLo: number, offset: number, val: number): void {

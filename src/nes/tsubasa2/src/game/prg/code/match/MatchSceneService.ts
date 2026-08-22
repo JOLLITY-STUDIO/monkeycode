@@ -725,6 +725,124 @@ export class MatchSceneService {
     // 由 matchInit9349 的循环体覆盖, 此处 no-op
   }
 
+  // ════════════════════════════════════════════════════════════
+  // $90AF-$9160: 精灵渲染 + OAM 写入
+  // ════════════════════════════════════════════════════════════
+
+  /**
+   * $90AF: 精灵渲染 (读脚本流, 设 OAM 精灵属性)。
+   * asm $90AF-$9124:
+   *   LDY $008A; LDA ($0088),Y; CMP #$E0; BCC $90B8; RTS (≥$E0 返回)
+   *   $90B8: INC $008A; PHA; LDA #$01; JSR $C515 (协程让出)
+   *   $90C0: LDA $0515; BNE $90BB (等待 $0515=0)
+   *   $90C5: LDA #$01; STA $0515; LDX #$00; STX $04AD; STX $003A
+   *   INX; STX $04A5; STX $04A9
+   *   LDA $008B; AND #$07; ORA #$88; LSR; ROR $003A; LSR; ROR $003A
+   *   STA $04A7; STA $04AB
+   *   LDA $008B; LSR×3; CLC; ADC $003A; STA $04A6; CLC; ADC #$20; STA $04AA
+   *   PLA; JSR $C524; STA $04AC; STY $04A8
+   *   LDA #$80; STA $0515
+   *   LDA #$00; PHA; JSR $B127; LDA #$01; JSR $C515; PLA; CLC; ADC #$02
+   *   CMP #$08; BNE $910C (循环 4 次)
+   *   LDA $008B; CLC; ADC #$08; STA $008B; JMP $B0AF
+   */
+  private sub90AF(): void {
+    const y = this.rd(0x008A);
+    const ptr = this.rdPtr(0x0088, 0x0089);
+    const a = this.readMemByte(ptr + y);
+    if (a >= 0xE0) return;
+    this.wr(0x008A, (y + 1) & 0xFF);
+    // PHA; LDA #$01; JSR $C515 (协程让出)
+    this._system.coroutineYield(1);
+    // 等待 $0515=0
+    while (this.rd(0x0515) !== 0) {
+      this._system.coroutineYield(1);
+    }
+    this.wr(0x0515, 0x01);
+    // LDX #$00; STX $04AD; STX $003A; INX; STX $04A5; STX $04A9
+    this.wr(0x04AD, 0);
+    this.wr(0x003A, 0);
+    this.wr(0x04A5, 1);
+    this.wr(0x04A9, 1);
+    // LDA $008B; AND #$07; ORA #$88; LSR; ROR $003A; LSR; ROR $003A
+    const v8B = this.rd(0x008B);
+    let tmp = (v8B & 0x07) | 0x88;
+    let a3 = this.rd(0x003A);
+    a3 = ((a3 >> 1) | ((tmp & 1) << 7)) & 0xFF;
+    tmp = tmp >> 1;
+    a3 = ((a3 >> 1) | ((tmp & 1) << 7)) & 0xFF;
+    tmp = tmp >> 1;
+    this.wr(0x04A7, tmp & 0xFF);
+    this.wr(0x04AB, tmp & 0xFF);
+    // LDA $008B; LSR×3; CLC; ADC $003A; STA $04A6
+    const idx = (v8B >> 3) + a3;
+    this.wr(0x04A6, idx & 0xFF);
+    this.wr(0x04AA, (idx + 0x20) & 0xFF);
+    // PLA; JSR $C524; STA $04AC; STY $04A8
+    this._system.subC524(a);
+    this.wr(0x04AC, a & 0xFF);
+    this.wr(0x04A8, y & 0xFF);
+    this.wr(0x0515, 0x80);
+    // 循环 4 次: PHA; JSR $B127; JSR $C515; PLA; ADC #$02; CMP #$08
+    let cnt = 0;
+    while (cnt !== 0x08) {
+      this._system.coroutineYield(1);
+      cnt = (cnt + 2) & 0xFF;
+    }
+    this.wr(0x008B, (this.rd(0x008B) + 8) & 0xFF);
+  }
+
+  /**
+   * $9127: 精灵位置设置 (设 $02F8-$02FE OAM 区)。
+   * asm $9127-$9160:
+   *   STA $003A; LDA #$01; STA $02F9; STA $02FD
+   *   LDA #$00; STA $02FA; STA $02FE
+   *   LDA $008B; AND #$07; ASL×4; CLC; ADC #$7C; STA $02F8; ADC #$08; STA $02FC
+   *   LDA $008B; LSR×3; CLC; ADC $003A; STA $02FB; CLC; ADC #$20; STA $02FF
+   *   LDA #$01; JSR $C515; LDA $0515; BNE; RTS
+   */
+  private sub9127(a: number): void {
+    this.wr(0x003A, a & 0xFF);
+    this.wr(0x02F9, 0x01);
+    this.wr(0x02FD, 0x01);
+    this.wr(0x02FA, 0x00);
+    this.wr(0x02FE, 0x00);
+    const v8B = this.rd(0x008B);
+    const off = ((v8B & 0x07) << 4) + 0x7C;
+    this.wr(0x02F8, off & 0xFF);
+    this.wr(0x02FC, (off + 8) & 0xFF);
+    const idx = (v8B >> 3) + this.rd(0x003A);
+    this.wr(0x02FB, idx & 0xFF);
+    this.wr(0x02FF, (idx + 0x20) & 0xFF);
+    // LDA #$01; JSR $C515; 等待 $0515=0; RTS
+    this._system.coroutineYield(1);
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // $9160-$9334 补充: 事件分派辅助 + .byte 编码区域
+  // ════════════════════════════════════════════════════════════
+
+  /** $9160: 事件分派辅助 (SEC; SBC #$E0; JSR $C509 查跳转表) */
+  private sub9160(a: number): void {
+    const idx = (a - 0xE0) & 0xFF;
+    this._system.subC509(idx);
+  }
+
+  /** $9186: JSR $C52D (精灵批初始化) */
+  private sub9186(): void { this.subC52D(); }
+
+  /** $9218: JMP $B349 → matchInit9349 (event3 入口) */
+  private sub9218(): void { this.matchInit9349(); }
+
+  /** $9246: subB246 内部 (.byte 编码区域, 已由 subB246 覆盖) */
+  private sub9246(): void { this.subB246(); }
+
+  /** $9310a: sub9310 内部 (.byte 编码区域, 已由 sub9310 覆盖) */
+  private sub9310a(): void { this.sub9310(); }
+
+  /** $9330: sub9335 前驱 (LDA #$80, 已由 sub9335 覆盖) */
+  private sub9330(): void { this.sub9335(); }
+
   /** 比赛帧推进 (由 bank26 比赛核心引擎调用) */
   update(frame: number): void {
     void frame;
