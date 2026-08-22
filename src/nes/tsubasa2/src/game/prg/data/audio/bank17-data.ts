@@ -1,10 +1,14 @@
 /**
- * bank17 — DPCM 采样数据 (纯数据 bank)
+ * bank17 — 纯数据 bank (用途待确认)
  * @bank 17 ($8000-$9FFF, MMC3 R6 可切)
  *
  * 从 asm/bank17/{data_tables,data_maps,data_tail}.s 的 .byte 段提取。
  * 共 8192 字节。
- * 消费方式: NES 硬件通过 $4012 地址直接读 (不走 CPU bank 切换)
+ *
+ * 注意: 之前误标为 "DPCM 采样数据", 但 bank12 代码未直接引用 bank17。
+ * 数据格式 (高频字节 0x40/0x51/0x49/0x60) 与 bank13-15 (BGM 乐谱) 不同。
+ * bank18 已确认是比赛精灵 pattern 数据 (match-pattern-table.ts 已提取)。
+ * bank17 可能是另一组 pattern/动画数据, 待确认消费方。
  */
 
 /**
