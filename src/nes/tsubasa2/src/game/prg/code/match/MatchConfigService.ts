@@ -137,20 +137,203 @@ export class MatchConfigService {
   }
 
   // ════════════════════════════════════════════════
-  // 跳转表入口目标 stub
+  // 跳转表入口目标 — 已翻译
   // ════════════════════════════════════════════════
 
-  /** $8B22: 队伍数据加载 */
-  private sub8B22(): void { /* TODO: 翻译 $8B22 队伍数据加载 */ }
+  /**
+   * $8B22: 队伍数据加载
+   * asm $8B22-$8B93: 循环 $0B→$15 清零球员数据; 查 $BAB2 表得队伍
+   * 数据指针; 读阵型/球员数; 循环配置球员数据; 调整 $0446
+   */
+  private sub8B22(): void {
+    // $8B22-$8B37: 循环清零球员数据 ($0B→$15)
+    for (let a = 0x0B; a < 0x16; a++) {
+      this._system.subC50C(); // 读 $05FB 设 $0034/$0035
+      const pp = this.rdPtr(0x0034, 0x0035);
+      this.writeIndirect(pp, 0, 0);
+      this.writeIndirect(pp, 1, 0);
+    }
+    // $8B39-$8B49: 队伍数据指针
+    const ti = ((this.rd(0x002B) - 3) & 0xFF) << 1;
+    const lo = this.readMemByte(0xBAB2 + ti);
+    const hi = this.readMemByte(0xBAB3 + ti);
+    this.wrPtr(0x0038, 0x0039, (hi << 8) | lo);
+    // $8B4D-$8B5A: 读[0] 低4位→$002E, 高4位→$002F
+    const tp = this.rdPtr(0x0038, 0x0039);
+    const b0 = this.readIndirect(tp, 0);
+    this.wr(0x002E, b0 & 0x0F);
+    this.wr(0x002F, (b0 >> 4) & 0x0F);
+    // $8B5D-$8B7B: 循环读队伍数据 (Y=9 起)
+    this.wr(0x003A, 9);
+    for (let i = 0; i < 64; i++) {
+      const y = this.rd(0x003A);
+      const val = this.readIndirect(tp, y);
+      if (val === 0x0F) break; // 结束标记
+      this._system.subC50C();
+      const pd = this.readIndirect(tp, (y + 1) & 0xFF);
+      this.wr(0x003A, (y + 2) & 0xFF);
+      this.writeIndirect(this.rdPtr(0x0034, 0x0035), 0, pd);
+    }
+    // $8B7E-$8B93: 调整 $0446
+    let dx = this.rd(0x0446);
+    if (dx !== 0x05) {
+      dx = 0;
+      if (this.rd(0x0384) === 0x26) dx = 2;
+    }
+    this.wr(0x0446, dx);
+  }
 
-  /** $8609: 阵型数据加载 */
-  private sub8609(): void { /* TODO: 翻译 $8609 阵型数据加载 */ }
+  /**
+   * $8609: 阵型数据加载
+   * asm $8609-$863E: 检查 $05FB; =0 则遍历 $0600 项阵型列表
+   */
+  private sub8609(): void {
+    if (this.rd(0x05FB) !== 0) { this.sub875D(); return; }
+    const cnt = this.rd(0x0600);
+    if (cnt === 0) return;
+    for (let x = 0; x < cnt; x++) {
+      this._system.coroutineYield(1);
+      this.sub863F(this.rd(0x0601 + x));
+      this.wr(0x060B + x, this.rd(0x043D));
+      this.wr(0x0606 + x, this.rd(0x043E));
+    }
+  }
 
-  /** $8C06: 等级/属性设置 */
-  private sub8C06(): void { /* TODO: 翻译 $8C06 等级/属性设置 */ }
+  /**
+   * $8C06: 等级/属性设置
+   * asm $8C06-$8C7E: 入口 A=$0441, X=$043B;
+   * 检查阵型类型/队伍侧; 调 $8DC9 获取指针;
+   * 读两字节判断; 遍历属性表
+   */
+  private sub8C06(): void {
+    const pid = this.rd(0x0441);
+    const side = this.rd(0x043B);
+    if (this.rd(0x044E) !== 0 && side >= 2) {
+      this.wr(0x0430, 0); return;
+    }
+    this.sub8DC9(pid, side);
+    const slot = this.rd(0x0430);
+    const y = (slot << 1) & 0xFF;
+    const p = this.rdPtr(0x0048, 0x0049);
+    const v0 = this.readIndirect(p, y);
+    const v1 = this.readIndirect(p, (y + 1) & 0xFF);
+    if (v0 === v1 && v0 === 0) { this.wr(0x0430, 0); return; }
+    if (v0 !== v1) { this.wr(0x0048, v0); this.wr(0x0049, v1); }
+    this.wr(0x0430, 0);
+    this.wr(0x0046, this._system.subC509(pid) & 0xFF);
+    // $8C4A-$8C7C: 遍历属性表
+    let ai = this.rd(0x0046);
+    for (let i = 0; i < 64; i++) {
+      const ab = this.readIndirect(this.rdPtr(0x0048, 0x0049), ai);
+      this.wr(0x0047, (ab >> 2) & 0x3F);
+      const st = ab & 0x03;
+      if (st === 0x03) return;
+      if (st !== this.rd(0x044E)) this.sub8C7F();
+      ai = (ai + 1) & 0xFF;
+      this.wr(0x0046, ai);
+      const ck = this.rd(0x0047);
+      if (ck === 0x08 || ck === 0x09 || ck === 0x0A ||
+          ck === 0x11 || ck === 0x13) {
+        ai = (ai + 1) & 0xFF;
+        this.wr(0x0046, ai);
+      }
+    }
+  }
 
-  /** $8D58: OAM/精灵配置 */
-  private sub8D58(): void { /* TODO: 翻译 $8D58 OAM/精灵配置 */ }
+  /**
+   * $8D58: OAM/精灵配置
+   * asm $8D58-$8DC8: 入口 A=$0442, X=$043D;
+   * A=0/$0B→$8DA6 路径; 否则按队伍侧/阵型类型分支
+   */
+  private sub8D58(): void {
+    const fid = this.rd(0x0442);
+    const side = this.rd(0x043D);
+    if (fid === 0 || fid === 0x0B) {
+      this.sub8DA6Path(fid, side); return;
+    }
+    if (side >= 3) { this.wr(0x0430, 0); return; }
+    if (this.rd(0x044E) !== 0 && side !== 2) {
+      this.wr(0x0430, 0); return;
+    }
+    this.sub8DC9(fid, side);
+    const slot = this.rd(0x0430);
+    const y = (((slot + 4) & 0xFF) << 1) & 0xFF;
+    const p = this.rdPtr(0x0048, 0x0049);
+    const v0 = this.readIndirect(p, y);
+    const v1 = this.readIndirect(p, (y + 1) & 0xFF);
+    if (v0 === v1 && v0 === 0) { this.wr(0x0430, 0); return; }
+    if (v0 !== v1) { this.wr(0x0048, v0); this.wr(0x0049, v1); }
+    this.wr(0x0430, 0);
+    this._system.subC509(fid);
+  }
+
+  /** $8DA6 路径 (A=0 或 A=$0B): 获取指针, 比较两字节 */
+  private sub8DA6Path(fid: number, side: number): void {
+    this.sub8DC9(fid, side);
+    const p = this.rdPtr(0x0048, 0x0049);
+    const v0 = this.readIndirect(p, 0);
+    const v1 = this.readIndirect(p, 1);
+    if (v0 === v1 && v0 === 0) { this.wr(0x0430, 0); return; }
+    this.wr(0x0431, v0); this.wr(0x0430, 1);
+  }
+
+  /** $8DC9: 获取阵型数据指针 (公共子程) */
+  private sub8DC9(pid: number, side: number): void {
+    this.wr(0x0430, side);
+    this.wr(0x0047, pid);
+    this._system.subC50C();
+    const pd = this.readIndirect(this.rdPtr(0x0034, 0x0035), 0);
+    const x = (pd << 1) & 0xFF;
+    this.wr(0x0048, this.readMemByte(0x8E1B + x));
+    this.wr(0x0049, this.readMemByte(0x8E1C + x));
+  }
+
+  /** $8C7F: 属性调整 — LDA $0047; SEC; SBC #$03; JSR $C509 */
+  private sub8C7F(): void {
+    this._system.subC509((this.rd(0x0047) - 3) & 0xFF);
+  }
+
+  /** $863F: 阵型子程 — STA $0442; JSR $8A62; 查阵型表 */
+  private sub863F(fid: number): void {
+    this.wr(0x0442, fid);
+    this.sub8A62();
+    this.wr(0x003C, 0);
+    if (fid === 0x0B) { this.sub85B5(); return; }
+    const y = this.rd(0x0621);
+    const v = this.readMemByte(0x86B5 + y);
+    this.wr(0x003C, v);
+    if (v === 0) { this.sub8663(); }
+    else { this.sub8AB3(); this.sub868E(); }
+  }
+
+  /** $875D: $05FB≠0 路径 */
+  private sub875D(): void { /* TODO: 翻译 $875D 阵型其他处理 */ }
+
+  /** $8A62: 查球员属性指针 (入口部分) */
+  private sub8A62(): void {
+    this._system.subC50C();
+    const ptr = this.rdPtr(0x0034, 0x0035);
+    if (this.readIndirect(ptr, 0) !== 0) return;
+    // $8A6C-$8AA7: 查 $8A9D 属性角色表 (需入口 A, 省略)
+  }
+
+  /** $863F 内部子程 stub */
+  private sub85B5(): void { /* TODO: 翻译 $85B5 阵型特殊路径 */ }
+  private sub8663(): void { /* TODO: 翻译 $8663 位置属性计算 */ }
+  private sub8AB3(): void { /* TODO: 翻译 $8AB3 阵型属性设置 */ }
+  private sub868E(): void { /* TODO: 翻译 $868E 阵型后续处理 */ }
+
+  // ════════════════════════════════════════════════
+  // 间接读写辅助 (RAM 间接寻址)
+  // ════════════════════════════════════════════════
+  private readIndirect(ptr: number, offset: number): number {
+    const addr = (ptr + offset) & 0xFFFF;
+    return this.readMemByte(addr);
+  }
+  private writeIndirect(ptr: number, offset: number, v: number): void {
+    const addr = (ptr + offset) & 0xFFFF;
+    if (addr < 0x0800) { this.wr(addr, v & 0xFF); }
+  }
 
   // ════════════════════════════════════════════════
   // 内存读取辅助
