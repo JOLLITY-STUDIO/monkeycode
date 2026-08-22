@@ -1094,7 +1094,7 @@ export class MatchAuxService {
   /** $8477: 计分板命令 4 — 保存回跳指针 (LDY $0040; 读 2 字节 → $003C+13/+14) */
   private sub8477(): void {
     // $8477: LDY $0040; LDA ($003E),Y; PHA; INY; STY $0040; TYA; LDX $003F; CLC; ADC $003E; BCC $8488; INX
-    const y = this.rd(0x0040);
+    let y = this.rd(0x0040);
     const hi = this.rdInd(0x003E, y);
     y++;
     this.wr(0x0040, y);
@@ -1444,9 +1444,10 @@ export class MatchAuxService {
   private sub881D(): void {
     // $881D: LDY $0640; BNE $8834 (帧计数)
     const x = this.rd(0x003B);
+    let f: number;
     if (this.rd(0x0640) === 0) {
       // $8822: LDY $0641; INY; CPY #$03; BNE $882C; LDY #$00; STY $0641
-      let f = (this.rd(0x0641) + 1) & 0xFF;
+      f = (this.rd(0x0641) + 1) & 0xFF;
       if (f >= 3) f = 0;
       this.wr(0x0641, f);
       // $882F: LDA #$04; STA $0640
@@ -1473,6 +1474,15 @@ export class MatchAuxService {
     // $8854: LDA $885B,Y; DEC $0640; RTS (读 tile)
     this.wr(0x0201 + x, TABLE_885B[y & 0x0F] ?? 0);
     this.wr(0x0640, (this.rd(0x0640) - 1) & 0xFF);
+  }
+
+  /**
+   * $86F2: 特殊精灵 tile 计算 (sp < 0x0B 时调用)
+   * TODO: 真实实现 — asm bank22 $86F2, 读 $0201/$0202 数据返回特殊 tile
+   */
+  private sub86F2(sp: number): number {
+    void sp;
+    return 0;
   }
 
   /** $8861: 特殊精灵显示 (LDA $002C; ...) */

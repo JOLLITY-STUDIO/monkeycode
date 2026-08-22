@@ -36,6 +36,10 @@ export class MatchEngineService {
   protected wr(addr: number, v: number): void {
     this._store.write(ramKey(addr), v);
   }
+  /** 读 16 位指针 (小端 lo + (hi << 8)) */
+  protected rdPtr(lo: number, hi: number): number {
+    return this.rd(lo) | (this.rd(hi) << 8);
+  }
 
   // ════════════════════════════════════════════════════════════
   // $8000-$803C 跳转表 (12项 JMP, 各比赛子程入口)

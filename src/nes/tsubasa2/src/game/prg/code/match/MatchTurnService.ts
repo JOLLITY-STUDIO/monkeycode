@@ -340,13 +340,6 @@ export class MatchTurnService {
   //   $84CF: JSR $84F4; STX $05DE; STY $05DF; RTS (写精灵坐标)
   //   $84D8: JSR $84F4; ... (带翻转的精灵坐标)
   // ════════════════════════════════════════════════
-  private sub84A1(): void {
-    // 精灵组写入: 读 $004B 索引, 写 $0020 标志 + $046B
-    // 详细实现依赖 $84F4 坐标变换子程
-    // TODO: 翻译 $84F4 精灵坐标变换 (读 $05CB/$05DE/$05DF)
-    void 0;
-  }
-
   // ════════════════════════════════════════════════
   // $85C2: 写 NT 列 (滚动用)
   // asm: 读数据 + NT 地址, 写一列 tile
@@ -357,26 +350,6 @@ export class MatchTurnService {
     // TODO: 翻译 $85C2
   }
 
-  // ════════════════════════════════════════════════
-  // $86D3: 精灵组描述符解析
-  // asm: PHA; AND #$03; TAX; PLA; PHA; LSR; LSR; TAY
-  //   LDA $8B42,Y; BMI $86E7; LSR; LSR; JMP $86DF
-  //   $86E7: AND #$03; STA $05CA; PLA; RTS
-  // ════════════════════════════════════════════════
-  private sub86D3(a: number): void {
-    const x = a & 0x03;
-    const y = a >> 2;
-    // $8B42 表查 (bank11 data_tables)
-    const tbl = this.readMemByte(0x8B42 + y);
-    let result: number;
-    if ((tbl & 0x80) !== 0) {
-      result = tbl & 0x03;
-      this.wr(0x05CA, result);
-    } else {
-      result = tbl >> 2;
-    }
-    void x; void result;
-  }
 
   // ════════════════════════════════════════════════
   // 命令分派目标 — 已翻译 ($81A7 跳转表)

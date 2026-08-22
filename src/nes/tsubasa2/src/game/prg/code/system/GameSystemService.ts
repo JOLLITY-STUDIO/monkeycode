@@ -51,7 +51,7 @@ import {
 } from '../../data/scene/scene-loader-tables';
 import { BANK09_RAW } from '../../data/scene/bank09-raw';
 import { BANK10_RAW } from '../../data/scene/bank10-raw';
-import { ScriptEngine } from '../../story/ScriptEngine';
+import { ScriptEngine } from '../story/ScriptEngine';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {
@@ -1248,6 +1248,33 @@ export class GameSystemService {
     this._hw?.subC50C();
   }
 
+  /**
+   * $C509 比赛阶段→RAM指针查表 (带 A 参数)
+   * TODO: 真实实现 — bank30 $C509, 读 ram_00ED×2 查指针表返回 RAM 玩家数据指针
+   * @returns 查表索引 (stub 返回 0)
+   */
+  subC509(a: number): number {
+    void a;
+    this._hw?.subC50C();
+    return 0;
+  }
+
+  /**
+   * $C527 数值→图案转换入口 (via $C524)
+   * TODO: 真实实现 — bank30 $C527, 调 $CE08 把数值转成图案字节写 NT buffer
+   */
+  subC527(a: number): number {
+    return this._hw ? this._hw.subC524(a) : a;
+  }
+
+  /**
+   * $C53C 数值→图案转换 (via $C527)
+   * TODO: 真实实现 — bank30 $C53C
+   */
+  subC53C(): void {
+    // 简化: 转发 subC527, 不带参数
+  }
+
   /** $C524 坐标变换 — 转发 bank30 */
   subC524(a: number): number {
     return this._hw ? this._hw.subC524(a) : a;
@@ -1271,6 +1298,33 @@ export class GameSystemService {
   /** $C54E 读数据+设精灵 — 转发 bank30 */
   subC54E(a: number): void {
     this._hw?.subC54E(a);
+  }
+
+  // ════════════════════════════════════════════════════════════
+  // 脚本 VM ($8464 装载 / $84C5 主回调)
+  // 真实实现由 ScriptEngine 负责, 这里只做协程注册与回调
+  // ════════════════════════════════════════════════════════════
+
+  /**
+   * $8464 脚本装载
+   * asm: LDX #$05; LDA #scriptId; JSR $9FA8 (注册协程到 slot $05, 回调=$84C5)
+   * H5: 把 sub84C5 注册到 slot 5, 并让 ScriptEngine 开始执行该脚本
+   */
+  private loadScript8464(scriptId: number): void {
+    // 注册 sub84C5 到协程槽 5 (替代 asm slot $05)
+    this._coroutines[5] = () => this.sub84C5();
+    // ScriptEngine 加载脚本 (设置 _scriptPtr/_scriptBank)
+    this._scriptEngine.loadScript(scriptId);
+  }
+
+  /**
+   * $84C5 脚本 VM 回调 (协程 slot 5)
+   * asm: 每帧执行一条脚本指令, 让出协程
+   * H5: 调 ScriptEngine.step() 推进一条指令, 再让出
+   */
+  private sub84C5(): void {
+    this._scriptEngine.step();
+    this.coroutineYield(1);
   }
 }
 

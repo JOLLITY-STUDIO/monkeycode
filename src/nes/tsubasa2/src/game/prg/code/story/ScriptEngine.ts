@@ -78,7 +78,7 @@ export class ScriptEngine {
   }
 
   /** 分派一步 (原 $84E7) */
-  private step(): void {
+  step(): void {
     const code = this.readScriptByte();
     // $84E7 CMP #$D8
     if (code < 0xd8) {

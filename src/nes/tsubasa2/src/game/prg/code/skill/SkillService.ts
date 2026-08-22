@@ -295,6 +295,15 @@ export class SkillService {
   }
 
   /**
+   * $8812: 脚本调用 (压栈 $051A/$051B, 跳新指针)。
+   * TODO: 翻译 $8812 — asm bank24 $8812, 与 $881B 类似但偏移不同
+   */
+  protected sub8812(): void {
+    // stub: 转发 sub881B (结构相似)
+    this.sub881B();
+  }
+
+  /**
    * $881B: 脚本调用 (压栈 $051A/$051B, 跳新指针)。
    * asm: LDX $0522; LDA $003A; TAY; CLC; ADC #$02; ADC $005D;
    *   STA $051A,X; LDA $005E; ADC #$00; STA $051B,X; INX; INX; STX $0522;
@@ -523,7 +532,7 @@ export class SkillService {
   /** $83C5: LDA $0441; JSR $8207; CMP #$1C/$48 */
   protected sub83C5(): void {
     this.sub8207(this.rd(0x0441));
-    const a = 0; // stub
+    const a: number = 0; // stub
     if (a === 0x1C || a === 0x48) {
       // INX
     }
@@ -567,7 +576,7 @@ export class SkillService {
     const a = this.rd(0x05FB) ^ 0x0B;
     this.sub8207(a);
     let x = 2;
-    const v = 0; // stub
+    const v: number = 0; // stub
     if (v === 0x74 || v === 0x22 || v === 0x39 || v === 0x4C) {
       x = (x - 1) & 0xFF;
     } else {
