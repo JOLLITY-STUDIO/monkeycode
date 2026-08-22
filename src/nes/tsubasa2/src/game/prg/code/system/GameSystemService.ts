@@ -51,6 +51,7 @@ import {
 } from '../../data/scene/scene-loader-tables';
 import { BANK09_RAW } from '../../data/scene/bank09-raw';
 import { BANK10_RAW } from '../../data/scene/bank10-raw';
+import { ScriptEngine } from '../../story/ScriptEngine';
 
 /** 4 位大写十六进制 RAM 键 */
 function ramKey(addr: number): string {
@@ -89,18 +90,23 @@ export class GameSystemService {
   protected _currentSlot = 0;
   /** 协程让出时的等待帧数 (对应 $0019) */
   protected _yieldWait = 0;
+  /** 脚本引擎 (等价 $84C5 脚本 VM 回调, 由 slot $05 协程驱动) */
+  protected _scriptEngine: ScriptEngine;
 
   constructor(store: DataStore) {
     this._store = store;
+    this._scriptEngine = new ScriptEngine(store);
     // 注册协程回调 (callbackIdx → 回调, 替代 asm $0101+Y 回调指针表)
     // 索引 0 = $9148 场景初始化 (sub9148 主体)
     // 索引 1 = $801E 首次运行 (wait-vblank + 清状态 + 场景装载初始化 + 输入驱动)
     // 索引 2 = $82EC 场景数据装载器 (ram_004C → bank6 $B800 调色板动画/精灵流)
     // 索引 3 = $9147 场景数据消费协程前缀 (让出一帧后进入 sub9148)
+    // 索引 4 = $84C5 脚本 VM 回调 ($8464 装载时注册到 slot $05)
     this._coroutines[0] = () => this.sub9148();
     this._coroutines[1] = () => this.sub801E();
     this._coroutines[2] = () => this.sub82EC();
     this._coroutines[3] = () => this.sub9147();
+    this._coroutines[4] = () => this.sub84C5();
   }
 
   /** 注入 bank30 (HardwareInitService) 引用, 供 $C5xx 派发表转发 */
@@ -752,9 +758,8 @@ export class GameSystemService {
   private sub801E(): void {
     // $801F: JSR $9BA0 waitVBlank (fadeOut + ntClear + initHelper)
     this.waitVBlank();
-    // $8022: LDA #$00; JSR $8464 — 脚本装载
-    // TODO: $8464 完整装载 (bank5 $A0C0 数据 → $004D/$004E + 注册 $84C5 脚本回调)
-    this.wrPtr(0x004D, 0x004E, 0);
+    // $8022: LDA #$00; JSR $8464 — 脚本装载 (id=0, 注册 $84C5 协程到 slot $05)
+    this.loadScript8464(0);
     // $8027: LDA #$01; JSR $9FA8 — 让出一帧
     this.coroutineYield(1);
     // $802C: 轮询 $001E bit4 (vblank 帧完成)
