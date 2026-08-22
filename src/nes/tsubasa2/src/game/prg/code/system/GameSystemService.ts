@@ -82,8 +82,10 @@ export class GameSystemService {
   // H5 替代: 用回调函数表 (_coroutines) 替代 6502 栈+RTS
   // ════════════════════════════════════════════════
 
-  /** 协程回调表: 索引 → 回调函数 (替代 $0101+Y 回调指针) */
-  protected _coroutines: Array<(() => void) | null> = [];
+  /** 协程工厂表: 索引 → 工厂函数 (返回新 generator, 替代 $0101+Y 回调指针) */
+  protected _coroutines: Array<(() => Generator<void>) | null> = [];
+  /** 活跃 generator 实例表: 槽位 → 正在执行的 generator */
+  protected _coroutineGens: Array<Generator<void> | null> = [];
   /** 协程上下文: $E6-$ED (8字节, 替代 6502 栈压栈/弹栈) */
   protected _coroutineCtx: Array<{ e6: number; e7: number; e8: number; e9: number; ea: number; eb: number; ec: number; ed: number; y: number; x: number }> = [];
   /** 当前协程槽索引 (对应 $0000 存的 X 值) */
@@ -96,17 +98,17 @@ export class GameSystemService {
   constructor(store: DataStore) {
     this._store = store;
     this._scriptEngine = new ScriptEngine(store);
-    // 注册协程回调 (callbackIdx → 回调, 替代 asm $0101+Y 回调指针表)
+    // 注册协程工厂 (callbackIdx → 工厂, 替代 asm $0101+Y 回调指针表)
     // 索引 0 = $9148 场景初始化 (sub9148 主体)
     // 索引 1 = $801E 首次运行 (wait-vblank + 清状态 + 场景装载初始化 + 输入驱动)
     // 索引 2 = $82EC 场景数据装载器 (ram_004C → bank6 $B800 调色板动画/精灵流)
     // 索引 3 = $9147 场景数据消费协程前缀 (让出一帧后进入 sub9148)
     // 索引 4 = $84C5 脚本 VM 回调 ($8464 装载时注册到 slot $05)
-    this._coroutines[0] = () => this.sub9148();
-    this._coroutines[1] = () => this.sub801E();
-    this._coroutines[2] = () => this.sub82EC();
-    this._coroutines[3] = () => this.sub9147();
-    this._coroutines[4] = () => this.sub84C5();
+    this._coroutines[0] = () => this.sub9148Gen();
+    this._coroutines[1] = () => this.sub801EGen();
+    this._coroutines[2] = () => this.sub82ECGen();
+    this._coroutines[3] = () => this.sub9147Gen();
+    this._coroutines[4] = () => this.sub84C5Gen();
   }
 
   /** 注入 bank30 (HardwareInitService) 引用, 供 $C5xx 派发表转发 */
@@ -630,6 +632,7 @@ export class GameSystemService {
 
   /**
    * $9F0F/$9F52: 恢复协程上下文并执行
+   * H5 generator 版: 恢复上下文 → 调 gen.next() 推进 generator
    * @param slot 协程槽基址 ($0000+X)
    * @param light true=$9F52 轻量恢复 (不恢复 E6-ED), false=$9F0F 完整恢复
    */
@@ -659,34 +662,31 @@ export class GameSystemService {
         this.wr(0x00ED, ctx.ed);
       }
     }
-    // $9F51: RTS → 跳到协程代码 — H5: 调用回调
-    const cb = this._coroutines[callbackIdx];
-    if (cb) {
-      cb();
+    // $9F51: RTS → 跳到协程代码 — H5: 调 gen.next()
+    let gen = this._coroutineGens[slot];
+    if (!gen) {
+      // 首次恢复: 用回调索引创建 generator 实例
+      const factory = this._coroutines[callbackIdx];
+      if (!factory) return;
+      gen = factory();
+      this._coroutineGens[slot] = gen;
     }
+    // 推进 generator (从上次 yield 处继续, 或首次执行)
+    gen.next();
   }
 
   /**
    * $9FA8: 协程让出 (yield)
    * asm: 存 A→$0019; 压栈 X/Y/$ED-$E6; 存栈指针/R6/R7 到槽; 设计数器; JMP $9EFB
-   * H5: 保存上下文到 _coroutineCtx, 设计数器, 返回到调度循环
+   * H5 generator 版: 只设 RAM 计数器, 由 generator yield 真正挂起
+   * ctx 恢复由 generator 自带状态, 不需 _coroutineCtx
    * @param a 让出参数 (1=等1帧, $FF=特殊等1帧, 0=等$FE帧)
+   * @returns generator yield 值 (undefined, 仅为语法)
    */
   private _coroutineYieldImpl(a: number): void {
     const slot = this._currentSlot;
     // $9FA8: STA $0019 (存让出参数)
     this._yieldWait = a;
-    // $9FAA-$9FC5: 压栈 X/Y/$ED/$EC/$EB/$EA/$E9/$E8/$E7/$E6
-    // H5: 存到 _coroutineCtx
-    this._coroutineCtx[slot] = {
-      e6: this.rd(0x00E6), e7: this.rd(0x00E7),
-      e8: this.rd(0x00E8), e9: this.rd(0x00E9),
-      ea: this.rd(0x00EA), eb: this.rd(0x00EB),
-      ec: this.rd(0x00EC), ed: this.rd(0x00ED),
-      y: 0, x: 0,
-    };
-    // $9FC6-$9FCA: TSX; TXA; LDX $0000; STA $0001,X (存栈指针到槽[1])
-    // H5: 栈指针 = 回调索引 (不变, 下次恢复时还用同一个回调)
     // $9FCC-$9FD4: 存 $0024 (R6) → 槽[2], $0025 (R7) → 槽[3]
     this.wr(0x0002 + slot, this.rd(0x0024));
     this.wr(0x0003 + slot, this.rd(0x0025));
@@ -696,7 +696,7 @@ export class GameSystemService {
     if (a === 0) count = 0xfe;
     else if (a === 0xff) count = 0xfe;
     this.wr(0x0000 + slot, count & 0xff);
-    // $9FE2: JMP $9EFB (回调度循环) — H5: 返回, 由帧循环驱动
+    // $9FE2: JMP $9EFB (回调度循环) — H5: 返回到 gen.next(), generator 自动挂起
   }
 
   /**
@@ -713,6 +713,8 @@ export class GameSystemService {
     this.wr(0x0001 + slot, callbackIdx);
     // $9F79: LDA #$FF; STA $0000,X (设计数器=$FF → 下一帧立即就绪)
     this.wr(0x0000 + slot, 0xff);
+    // 清旧 generator 实例 (下次恢复时重建)
+    this._coroutineGens[slot] = null;
     // 存初始上下文
     if (ctx) {
       this._coroutineCtx[slot] = {
@@ -754,17 +756,17 @@ export class GameSystemService {
   //   公共:  tableLoad + 输入驱动循环 (选场景)
   // ════════════════════════════════════════════════════════════
 
-  /** $801E: 首次运行协程回调 */
-  private sub801E(): void {
+  /** $801E: 首次运行协程回调 (generator 版, 真正挂起/恢复) */
+  private *sub801EGen(): Generator<void> {
     // $801F: JSR $9BA0 waitVBlank (fadeOut + ntClear + initHelper)
     this.waitVBlank();
     // $8022: LDA #$00; JSR $8464 — 脚本装载 (id=0, 注册 $84C5 协程到 slot $05)
     this.loadScript8464(0);
     // $8027: LDA #$01; JSR $9FA8 — 让出一帧
-    this.coroutineYield(1);
+    yield this.coroutineYield(1);
     // $802C: 轮询 $001E bit4 (vblank 帧完成)
     if ((this.rd(0x001E) & 0x10) === 0) {
-      this.coroutineYield(1);
+      yield this.coroutineYield(1);
       return;
     }
     // $8032-$8046: 清零页 $0005/6/9/A/11/12/D/E/4C/5B
@@ -788,7 +790,7 @@ export class GameSystemService {
     // $8053: JSR $9B11 ntAttrClear
     this.ntAttrClear();
     // $8056: LDA #$02; JSR $9FA8 (让出 2 帧)
-    this.coroutineYield(2);
+    yield this.coroutineYield(2);
     // $805B: JSR $9B7F initHelper
     this.initHelper();
     // $805E: JSR $98A0 ntClear
@@ -864,14 +866,14 @@ export class GameSystemService {
   //   首字节 ≥$80 → SPR 精灵数据 (写 $008E+X)
   // ════════════════════════════════════════════════════════════
 
-  /** $82EC: 场景数据装载器协程回调 */
-  private sub82EC(): void {
+  /** $82EC: 场景数据装载器协程回调 (generator 版) */
+  private *sub82ECGen(): Generator<void> {
     // $82ED: JSR $838A (切 bank2 → JSR $A215 → 切回 bank6) — 去CPU化省略
     // $82F0: LDA $004C; BPL $82ED — 轮询 $004C bit7 (动画装载请求)
     const c = this.rd(0x004C);
     if ((c & 0x80) === 0) {
       // 无请求: 让出 1 帧继续轮询 (原版死循环等 $004C 被外部设置)
-      this.coroutineYield(1);
+      yield this.coroutineYield(1);
       return;
     }
     // $82F4: ASL; TAX → $B800,X 表项 → $00EC/$00ED 数据流地址
@@ -879,7 +881,7 @@ export class GameSystemService {
     const stream = BANK6_B800_STREAMS[idx] ?? [];
     if (stream.length === 0) {
       this.wr(0x004C, 0);
-      this.coroutineYield(1);
+      yield this.coroutineYield(1);
       return;
     }
     // $8300: LDY #$00; LDA ($00EC),Y; BMI $8355 — 首字节 ≥$80 → SPR 路径
@@ -890,7 +892,7 @@ export class GameSystemService {
     }
     // $8383: LDA #$00; STA $004C; JMP $82ED (清请求, 重新轮询)
     this.wr(0x004C, 0);
-    this.coroutineYield(1);
+    yield this.coroutineYield(1);
   }
 
   /** $8306-$8380 BG 路径: 调色板动画流 → $062A RAM 调色板 */
@@ -1008,18 +1010,18 @@ export class GameSystemService {
     // $9142: RTS
   }
 
-  /** $9147: 场景数据消费协程前缀 (slot $11 回调, 让出一帧后进入 sub9148) */
+  /** $9147: 场景数据消费协程前缀 (slot $11 回调, 让出一帧后进入 sub9148) (generator 版) */
   private _sub9147Armed = false;
-  private sub9147(): void {
+  private *sub9147Gen(): Generator<void> {
     // $9147: .byte $A9,$01 (LDA #$01); JSR $9FA8 (让出一帧); RTS
     // 下一帧调度恢复后从 $9148 继续 (sub9148 场景初始化)
     if (!this._sub9147Armed) {
       this._sub9147Armed = true;
-      this.coroutineYield(1);
+      yield this.coroutineYield(1);
       return;
     }
     this._sub9147Armed = false;
-    this.sub9148();
+    yield* this.sub9148Gen();
   }
 
   // ════════════════════════════════════════════════════════════
@@ -1054,8 +1056,8 @@ export class GameSystemService {
   //   ≥$80: TAX → 查表设精灵位置/属性 ($974A/$975B)
   // ════════════════════════════════════════════════════════════
 
-  /** $9148: 场景初始化协程回调 */
-  private sub9148(): void {
+  /** $9148: 场景初始化协程回调 (generator 版) */
+  private *sub9148Gen(): Generator<void> {
     // $9148: LDA #$68; STA $0094; LDA #$05; STA $0095 (指针 = $0568)
     this.wr(0x0094, 0x68);
     this.wr(0x0095, 0x05);
@@ -1074,7 +1076,7 @@ export class GameSystemService {
       this.sub974A(0x06);
       // $9168: TXA; AND #$10; BNE $91A6 (bit4 → $91A6)
       if ((x & 0x10) !== 0) {
-        this.sub91A6(x);
+        yield* this.sub91A6Gen(x);
       } else if ((x & 0x20) !== 0) {
         // $9175: LDX #$04; LDY #$0A; JSR $975B
         this.sub975B(0x04, 0x0A);
@@ -1093,14 +1095,14 @@ export class GameSystemService {
         // $919C: LDA $009C; SEC; SBC $00E8; STA $00E8
         this.wr(0x00E8, (this.rd(0x009C) - this.rd(0x00E8)) & 0xFF);
         // JMP $91B4
-        this.sub91B4();
+        yield* this.sub91B4Gen();
       } else {
         // $9172: JMP $91F3
-        this.sub91F3();
+        yield* this.sub91F3Gen();
       }
     } else {
       // $915A: JMP $94C1 (NT 写入循环)
-      this.sub94C1(a);
+      yield* this.sub94C1Gen(a);
     }
   }
 
@@ -1118,18 +1120,18 @@ export class GameSystemService {
     this.wr(0x009D, this.rdMemByte(ptr + y + 1));
   }
 
-  /** $91A6: 精灵位置设置 (bit4 路径) */
-  private sub91A6(_x: number): void {
+  /** $91A6: 精灵位置设置 (bit4 路径) (generator 版) */
+  private *sub91A6Gen(_x: number): Generator<void> {
     // $91A6: LDA #$00; SEC; SBC $0046; STA $00E6
     this.wr(0x00E6, (0 - this.rd(0x0046)) & 0xFF);
     // $91AD: LDA #$00; SEC; SBC $0047; STA $00E8
     this.wr(0x00E8, (0 - this.rd(0x0047)) & 0xFF);
     // $91B4: 精灵数据循环
-    this.sub91B4();
+    yield* this.sub91B4Gen();
   }
 
-  /** $91B4: 精灵数据循环 (读 ($0094),Y 写 $0468 区) */
-  private sub91B4(): void {
+  /** $91B4: 精灵数据循环 (读 ($0094),Y 写 $0468 区) (generator 版) */
+  private *sub91B4Gen(): Generator<void> {
     const ptr = this.rdPtr(0x0094, 0x0095);
     let y = 0x10;
     // $91B6: LDA ($0094),Y; TAX; INY; LDA ($0094),Y; LSR×2; TAY
@@ -1157,11 +1159,11 @@ export class GameSystemService {
       y2--;
     }
     // $91F3: JMP $91F3 (后续处理)
-    this.sub91F3();
+    yield* this.sub91F3Gen();
   }
 
-  /** $91F3: 场景数据后续处理 */
-  private sub91F3(): void {
+  /** $91F3: 场景数据后续处理 (generator 版) */
+  private *sub91F3Gen(): Generator<void> {
     // $91F3: LDY #$01; LDA ($0094),Y; SEC; SBC #$01; STA ($0094),Y
     const ptr = this.rdPtr(0x0094, 0x0095);
     let v = this.rdMemByte(ptr + 1);
@@ -1175,15 +1177,15 @@ export class GameSystemService {
       // 后续: 读下一场景段地址, 调 $94C1 或让出
       void x;
       // 让出协程 (等下一帧)
-      this.coroutineYield(1);
+      yield this.coroutineYield(1);
     } else {
       // $91FE: JMP $94C1 (继续 NT 写入)
-      this.sub94C1(0);
+      yield* this.sub94C1Gen(0);
     }
   }
 
-  /** $94C1: NT buffer 写入循环 (读场景数据写 $05E8 PPU buffer) */
-  private sub94C1(a: number): void {
+  /** $94C1: NT buffer 写入循环 (读场景数据写 $05E8 PPU buffer) (generator 版) */
+  private *sub94C1Gen(a: number): Generator<void> {
     // $94C1: LDA $0094; CLC; ADC #$20; STA $0094 (指针 += $20)
     let lo = this.rd(0x0094);
     let hi = this.rd(0x0095);
@@ -1218,7 +1220,7 @@ export class GameSystemService {
     this.wr(0x0628, 0x80);
     // 让出协程 (等 NMI 渲染消费 buffer)
     void a;
-    this.coroutineYield(1);
+    yield this.coroutineYield(1);
   }
 
   /** 读 RAM 字节 (addr < 0x0800) */
@@ -1307,24 +1309,48 @@ export class GameSystemService {
 
   /**
    * $8464 脚本装载
-   * asm: LDX #$05; LDA #scriptId; JSR $9FA8 (注册协程到 slot $05, 回调=$84C5)
-   * H5: 把 sub84C5 注册到 slot 5, 并让 ScriptEngine 开始执行该脚本
+   * asm: LDX #$05; LDA #$C5; STA $0000,X; LDA #$84; STA $0001,X; LDY #$50; LDA #$00; JSR $9F69
+   * H5: ScriptLoader.load 装载脚本 (设 $004D/$004E 指针 + $0056 bank) + 注册 slot $05 协程 (回调工厂 idx 4 = sub84C5Gen)
    */
   private loadScript8464(scriptId: number): void {
-    // 注册 sub84C5 到协程槽 5 (替代 asm slot $05)
-    this._coroutines[5] = () => this.sub84C5();
-    // ScriptEngine 加载脚本 (设置 _scriptPtr/_scriptBank)
+    // $8464-$8492 装载主体 (查 $8AEC 脚本表 → 指针 $004D/$004E) 由 ScriptEngine.loadScript 完成
     this._scriptEngine.loadScript(scriptId);
+    // $8494-$84A2: 注册 slot $05 协程, 回调=$84C5 (H5: 工厂索引 4), R6 bank=0, LDY=$50
+    this.registerCoroutine(0x05, 0x00, 4, {
+      e6: this.rd(0x00E6), e7: this.rd(0x00E7),
+      e8: this.rd(0x00E8), e9: this.rd(0x00E9),
+      ea: this.rd(0x00EA), eb: this.rd(0x00EB),
+      ec: this.rd(0x00EC), ed: this.rd(0x00ED),
+      y: 0x50, x: 0,
+    });
   }
 
   /**
-   * $84C5 脚本 VM 回调 (协程 slot 5)
-   * asm: 每帧执行一条脚本指令, 让出协程
-   * H5: 调 ScriptEngine.step() 推进一条指令, 再让出
+   * $84C5 脚本 VM 回调 (协程 slot $05)
+   * asm: $84C6 切脚本 bank; $84CB-$84E5 文本位置重置; $84E7 分派循环读脚本流 ($004D),Y;
+   *      字符/等待/行编辑/长指令处理均 JMP $8879 (推进指针后回 $84E7 继续), 等待指令经 $9FA8 让出。
+   * H5: generator 首次执行文本位置重置, 之后每帧 ScriptEngine.update() 推进一条指令, yield 让出一帧;
+   *      脚本指针 $004D/$004E 与文本位置 $0051-$0055 由 generator 状态天然跨帧保持。
    */
-  private sub84C5(): void {
-    this._scriptEngine.step();
-    this.coroutineYield(1);
+  private *sub84C5Gen(): Generator<void> {
+    // $84C6-$84C9: LDX $0056; JSR $C4B9 — 切脚本 bank (H5 无 bank 切换, 省略并注释)
+    // $84CB-$84CD: LDA #$08; STA $0055 — 行长度 8
+    this.wr(0x0055, 8);
+    // $84CF-$84D5: LDA #$49; STA $004F; LDA #$22; STA $0050 — VRAM 基址 $2249
+    this.wr(0x004F, 0x49);
+    this.wr(0x0050, 0x22);
+    // $84D7-$84DD: $0051=$004F; $0054=$004F&$1F (列位置)
+    this.wr(0x0051, this.rd(0x004F));
+    this.wr(0x0054, this.rd(0x004F) & 0x1f);
+    // $84DF-$84E5: $0052=$0050; $0053=$0051 (VRAM 地址高/低字节)
+    this.wr(0x0052, this.rd(0x0050));
+    this.wr(0x0053, this.rd(0x0051));
+    // $84E7-$84E9 分派循环: LDA ($004D),Y → 分派 (ScriptEngine.update 内部推进指针并写文本)
+    while (true) {
+      this._scriptEngine.update(0);
+      // $9FA8 让出一帧 (每帧一条指令节奏; 等待指令内部已处理额外等待帧)
+      yield this.coroutineYield(1);
+    }
   }
 }
 

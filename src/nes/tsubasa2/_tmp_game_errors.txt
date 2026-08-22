@@ -1,0 +1,56 @@
+﻿
+tsubasa2\_tmp_tsc_out.t
+xt:1470:tsubasa2/src/ga
+me/prg/code/system/Game
+SystemService.ts(107,49
+): error TS2683: 'this'
+ implicitly has type 'a
+ny' because it does not
+ have a type annotation
+.
+tsubasa2\_tmp_tsc_out.t
+xt:1471:tsubasa2/src/ga
+me/prg/code/system/Game
+SystemService.ts(108,49
+): error TS2683: 'this'
+ implicitly has type 'a
+ny' because it does not
+ have a type annotation
+.
+tsubasa2\_tmp_tsc_out.t
+xt:1472:tsubasa2/src/ga
+me/prg/code/system/Game
+SystemService.ts(109,49
+): error TS2683: 'this'
+ implicitly has type 'a
+ny' because it does not
+ have a type annotation
+.
+tsubasa2\_tmp_tsc_out.t
+xt:1473:tsubasa2/src/ga
+me/prg/code/system/Game
+SystemService.ts(110,49
+): error TS2683: 'this'
+ implicitly has type 'a
+ny' because it does not
+ have a type annotation
+.
+tsubasa2\_tmp_tsc_out.t
+xt:1474:tsubasa2/src/ga
+me/prg/code/system/Game
+SystemService.ts(111,49
+): error TS2683: 'this'
+ implicitly has type 'a
+ny' because it does not
+ have a type annotation
+.
+tsubasa2\_tmp_tsc_out.t
+xt:1475:tsubasa2/src/ga
+me/prg/code/system/Game
+SystemService.ts(1317,3
+8): error TS2339: Prope
+rty 'sub84C5' does not 
+exist on type 'GameSyst
+emService'.
+
+
