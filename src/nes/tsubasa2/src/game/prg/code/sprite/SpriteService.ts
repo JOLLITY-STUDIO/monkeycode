@@ -2,6 +2,20 @@
  * SpriteService — 精灵模板解码器 (bank22)
  * @bank 22 ($8000-$9FFF, MMC3 R6/R7 可切)
  *
+ * ⚠ 注意: 本 Service 不是全局唯一的 OAM 写入入口!
+ *   NES 天使之翼2 有多个 bank 直接写 OAM ($0200):
+ *     - bank11 MatchTurnService.sub8525 — 滚动精灵组 (球场滚动时写 OAM)
+ *     - bank19 MatchSceneService.sub90AF/sub9127 — 场景精灵 (比赛画面精灵初始化)
+ *     - bank20 MatchAuxService.sub8624 — 比赛辅助精灵 (计时器/计分板)
+ *     - bank24 MatchHudService — HUD 精灵 (比分/时钟/体力条直接写 OAM)
+ *     - bank26 MatchEngineService.sub987B — 精灵缓冲初始化
+ *   本 Service (bank22) 只负责其中"模板驱动"的部分:
+ *     从精灵描述符 ($003C) 查模板指针表, 解码模板流, 批量写 OAM。
+ *     主要用于球员/必杀技特效等复杂多帧精灵组的生成。
+ *
+ * 消费方: bank00 协程调度器 ($9F0F) 间接切换到 bank22 执行。
+ *   bank 号存在 $0002+X (R6) / $0003+X (R7) 表, 运行时动态设值。
+ *
  * 职责: 读精灵描述符 ($003C) → 查模板指针表 → 解码模板流 → 写 OAM ($0200)。
  *
  * asm 结构 (code_main.s $8003-$81D1, 共 252 个代码地址):

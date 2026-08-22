@@ -10,7 +10,7 @@ const dump = (o, l) => {
   return a.join(', ');
 };
 const s = fs.readFileSync('src/game/prg/data/tables/bank28-tables.ts', 'utf8');
-const m = s.match(/export const DATA_AE86: readonly number\[\] = \[([\s\S]*?)\n\];/);
+const m = s.match(/export const DATA_AE86: readonly number\[\] = \[([\s\S]*?)\];/);
 if (!m) { console.log('no match'); process.exit(1); }
 const arr = m[1].replace(/\s/g, '').split(',').filter((x) => x.length);
 console.log('table len =', arr.length, 'expected = 0x17A = 378');
