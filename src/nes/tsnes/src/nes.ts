@@ -5,6 +5,7 @@ import PPU from "./ppu/index";
 import PAPU from "./papu/index";
 import GameGenie from "./gamegenie";
 import ROM from "./rom";
+import { Tracer, type TraceOptions } from "./debug/tracer";
 
 export type ControllerId = 1 | 2;
 
@@ -45,6 +46,8 @@ class NES {
   rom!: ROM;
   lastFpsTime: number | null;
   crashed: boolean;
+  /** CPU 指令级 trace (可选, 默认关闭) */
+  tracer: Tracer;
 
   constructor(opts: NESOptions) {
     this.opts = {
@@ -82,6 +85,8 @@ class NES {
 
     this.lastFpsTime = null;
     this.crashed = false;
+
+    this.tracer = new Tracer();
 
     this.ui.updateStatus("Ready to load a ROM.");
   }
@@ -198,6 +203,30 @@ class NES {
     this.fpsFrameCount = 0;
     this.lastFpsTime = now;
     return fps;
+  }
+
+  /**
+   * 启用 CPU 指令级 trace (类似 Mesen trace 功能)
+   *
+   * 用法:
+   *   nes.enableTrace({ outputFile: 'trace.log', maxLines: 10000 });
+   *   nes.frame();  // 执行的指令会被记录
+   *   nes.disableTrace();
+   *
+   * 过滤选项:
+   *   - addressRange: 只记录 [start, end) 范围内的 PC
+   *   - bankFilter: 只记录指定 16KB bank (Mesen 编号, 0-15)
+   *   - maxLines: 最多记录多少行
+   *   - callback: 每行回调 (不写文件)
+   */
+  enableTrace(opts: TraceOptions = {}): Tracer {
+    this.tracer.start(this, opts);
+    return this.tracer;
+  }
+
+  /** 停止 trace, 关闭文件流 */
+  disableTrace(): void {
+    this.tracer.stop();
   }
 
   reloadROM(): void {

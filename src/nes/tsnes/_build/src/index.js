@@ -12,5 +12,5 @@ const gamegenie_1 = __importDefault(require("./gamegenie"));
 exports.GameGenie = gamegenie_1.default;
 const nes_1 = __importDefault(require("./nes"));
 exports.NES = nes_1.default;
-const tracer_1 = require("./debug/tracer");
+const tracer_1 = require("../debug/tracer");
 Object.defineProperty(exports, "Tracer", { enumerable: true, get: function () { return tracer_1.Tracer; } });

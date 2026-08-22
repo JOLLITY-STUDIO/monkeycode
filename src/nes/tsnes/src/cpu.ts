@@ -555,6 +555,15 @@ class CPU {
     let cycleAdd = 0;
     let addrMode = opinfo.mode;
 
+    // Tracer: 按需记录指令 (类似 Mesen trace)
+    if (this.nes.tracer && this.nes.tracer.active) {
+      const opbytes: number[] = [opcode];
+      for (let bi = 1; bi < opinfo.size; bi++) {
+        opbytes.push(this.loadFromCartridge(this._instrPC + bi));
+      }
+      this.nes.tracer.trace(this._instrPC, opcode, opinfo, opbytes);
+    }
+
     let opaddr = this.REG_PC;
     this.REG_PC = (this.REG_PC + opinfo.size) & 0xffff;
 
@@ -1568,6 +1577,10 @@ class CPU {
   }
 
   write(addr: number, val: number): void {
+    // Tracer: 硬件寄存器写入跟踪 (可选)
+    if (this.nes.tracer && this.nes.tracer.active) {
+      this.nes.tracer.traceWrite(addr, val);
+    }
     if (addr >= 0x2000 && addr < 0x4000) {
       this.instrBusCycles++;
       this.dataBus = val;

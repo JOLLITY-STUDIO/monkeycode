@@ -1436,10 +1436,6 @@ class CPU {
         }
     }
     write(addr, val) {
-        // Tracer: 硬件寄存器写入跟踪 (可选)
-        if (this.nes.tracer && this.nes.tracer.active) {
-            this.nes.tracer.traceWrite(addr, val);
-        }
         if (addr >= 0x2000 && addr < 0x4000) {
             this.instrBusCycles++;
             this.dataBus = val;

@@ -9,7 +9,7 @@ const index_1 = __importDefault(require("./ppu/index"));
 const index_2 = __importDefault(require("./papu/index"));
 const gamegenie_1 = __importDefault(require("./gamegenie"));
 const rom_1 = __importDefault(require("./rom"));
-const tracer_1 = require("./debug/tracer");
+const tracer_1 = require("../debug/tracer");
 class NES {
     constructor(opts) {
         var _a;
