@@ -57,12 +57,13 @@ export class AudioService {
   update(): void {
     // 消费请求队列
     this.consumeQueue();
-    // 帧推进 (两阶段)
+    // 帧推进阶段1 (通道 tick + 音符推进 + APU 写)
     this.wrPtr(0x00F0, 0x00F1, 0x0727);
     this.wr(0x00F2, 0x00);
     this.wr(0x00F3, 0x08);
     this.phase1Loop();
-    this.phase2Loop();
+    // 阶段2 (sub816E APU 写) 暂时跳过 — phase1Loop 中的 writeChannelApu 已处理
+    // this.phase2Loop();
     // 全局静音
     if (this.rd(0x07E9) !== 0) this.wrApu(APU_STATUS, 0x00);
   }
@@ -195,6 +196,8 @@ export class AudioService {
         this.wr(0x0707 + x, noteCnt);
         if (noteCnt === 0) {
           this.sub83CB();  // 音符结束，读下一个
+          // sub83CB 设置了频率，立即写 APU
+          this.writeChannelApu(x >> 2);  // x/4 = 通道号
         }
         // DEC $0709,X (包络计数器)
         const x2 = this.rd(0x00F2);
@@ -211,6 +214,34 @@ export class AudioService {
       this.wrPtr(0x00F0, 0x00F1, (f0 + 0x10) & 0xFFFF);
       this.wr(0x00F2, (this.rd(0x00F2) + 4) & 0xFF);
       this.wr(0x00F3, (this.rd(0x00F3) - 1) & 0xFF);
+    }
+  }
+
+  /** 直接写通道 APU 寄存器（频率+控制） */
+  private writeChannelApu(ch: number): void {
+    const chBase = 0x0727 + ch * 0x10;
+    const apuBase = CHANNEL_APU_BASE[ch] ?? APU_PULSE1_CTRL;
+    const ctrl = this.rd(chBase + 6);
+    const freqLo = this.rd(chBase + 7);
+    const freqHi = this.rd(chBase + 8) & 0x7F;  // 去掉 bit7 标志
+    const volume = this.rd(chBase + 5) & 0x0F;
+
+    if (ch === 0 || ch === 1) {
+      // Pulse1/Pulse2
+      this.wrApu(apuBase, 0x30 | volume);  // 50%占空 + 固定音量
+      this.wrApu(apuBase + 1, 0x08);       // 清除扫描
+      this.wrApu(apuBase + 2, freqLo);     // 频率低
+      this.wrApu(apuBase + 3, freqHi | 0x08);  // 频率高 + 长度计数器
+    } else if (ch === 2) {
+      // Triangle
+      this.wrApu(0x4008, 0x80 | volume);
+      this.wrApu(0x400A, freqLo);
+      this.wrApu(0x400B, freqHi | 0x80);
+    } else if (ch === 3) {
+      // Noise
+      this.wrApu(0x400C, 0x30 | volume);
+      this.wrApu(0x400E, freqLo & 0x0F);
+      this.wrApu(0x400F, 0x08);
     }
   }
 

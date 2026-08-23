@@ -1,16 +1,19 @@
 <!-- 天使之翼2 游戏页：256×240 Canvas（fitInParent 自适应）+ 虚拟手柄 -->
 <view class="page">
-  <!-- 画布容器：flex 居中，MpScreen.fitInParent 自动等比适配 -->
+  <!-- 画布容器：flex 居中，fitInParent 自动等比适配
+       ★ fit 尺寸绑到外层 .canvas-box（普通 view），canvas 节点自身不随 setData 变化，
+         避免 canvas 2d 节点因 style 变化被重建导致黑屏 -->
   <view id="gameContainer" class="screen-wrap">
-    <canvas
-      id="gameCanvas"
-      type="2d"
-      class="game-canvas"
-      style="width: {{canvasW}}px; height: {{canvasH}}px;"
-      bindtouchstart="onCanvasTouchStart"
-      bindtouchend="onCanvasTouchEnd"
-      bindtouchcancel="onCanvasTouchEnd"
-    ></canvas>
+    <view class="canvas-box" style="width: {{canvasW}}px; height: {{canvasH}}px;">
+      <canvas
+        id="gameCanvas"
+        type="2d"
+        class="game-canvas"
+        bindtouchstart="onCanvasTouchStart"
+        bindtouchend="onCanvasTouchEnd"
+        bindtouchcancel="onCanvasTouchEnd"
+      ></canvas>
+    </view>
   </view>
 
   <!-- 虚拟手柄（触摸映射 core Controller 按键位） -->

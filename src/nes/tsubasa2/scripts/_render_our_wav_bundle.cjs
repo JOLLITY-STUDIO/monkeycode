@@ -41328,7 +41328,6 @@ var AudioService = class {
     this.wr(242, 0);
     this.wr(243, 8);
     this.phase1Loop();
-    this.phase2Loop();
     if (this.rd(2025) !== 0) this.wrApu(APU_STATUS, 0);
   }
   playBgm(bgmId) {
@@ -41447,6 +41446,7 @@ var AudioService = class {
         this.wr(1799 + x, noteCnt);
         if (noteCnt === 0) {
           this.sub83CB();
+          this.writeChannelApu(x >> 2);
         }
         const x2 = this.rd(242);
         const envCnt = this.rd(1801 + x2) - 1 & 255;
@@ -41460,6 +41460,29 @@ var AudioService = class {
       this.wrPtr(240, 241, f0 + 16 & 65535);
       this.wr(242, this.rd(242) + 4 & 255);
       this.wr(243, this.rd(243) - 1 & 255);
+    }
+  }
+  /** 直接写通道 APU 寄存器（频率+控制） */
+  writeChannelApu(ch2) {
+    const chBase = 1831 + ch2 * 16;
+    const apuBase = CHANNEL_APU_BASE[ch2] ?? APU_PULSE1_CTRL;
+    const ctrl = this.rd(chBase + 6);
+    const freqLo = this.rd(chBase + 7);
+    const freqHi = this.rd(chBase + 8) & 127;
+    const volume = this.rd(chBase + 5) & 15;
+    if (ch2 === 0 || ch2 === 1) {
+      this.wrApu(apuBase, 48 | volume);
+      this.wrApu(apuBase + 1, 8);
+      this.wrApu(apuBase + 2, freqLo);
+      this.wrApu(apuBase + 3, freqHi | 8);
+    } else if (ch2 === 2) {
+      this.wrApu(16392, 128 | volume);
+      this.wrApu(16394, freqLo);
+      this.wrApu(16395, freqHi | 128);
+    } else if (ch2 === 3) {
+      this.wrApu(16396, 48 | volume);
+      this.wrApu(16398, freqLo & 15);
+      this.wrApu(16399, 8);
     }
   }
   // ════════════════════════════════════════════════════════════
@@ -41541,28 +41564,20 @@ var AudioService = class {
       ctrl = ctrl | 48;
     }
     this.wrApu(apuBase, ctrl);
-    const sweepFlag = this.rd(paramPtr + 5) & 16;
-    if (sweepFlag === 0) {
+    this.wrApu(apuBase + 1, 8);
+    const flag8 = this.rd(paramPtr + 8);
+    if ((flag8 & 128) !== 0) {
+      this.wr(paramPtr + 8, flag8 & 127);
+      const freqLo = this.rd(paramPtr + 7);
+      this.wrApu(apuBase + 2, freqLo);
+      const freqHi = this.rd(paramPtr + 8) | 24;
       const fb = this.rd(251);
-      this.wr(2020 + fb, 8);
-      this.wrApu(apuBase + 1, 8);
-    } else {
-      const flag8 = this.rd(paramPtr + 8);
-      if ((flag8 & 128) !== 0) {
-        this.wr(paramPtr + 8, flag8 & 127);
-        const freqLo = this.rd(paramPtr + 7);
-        this.wrApu(apuBase + 2, freqLo);
-        let freqHi = this.rd(paramPtr + 8) | 24;
-        const fb = this.rd(251);
-        if (fb !== 0 && fb !== 1) {
-          const cached = this.rd(2016 + fb);
-          if (freqHi === cached) return;
-        }
-        this.wrApu(apuBase + 3, freqHi);
-        this.wr(2016 + this.rd(251), freqHi);
-        const e4 = this.rd(2020 + this.rd(251));
-        if (e4 === 0) this.wr(2016 + this.rd(251), 0);
+      if (fb !== 0 && fb !== 1) {
+        const cached = this.rd(2016 + fb);
+        if (freqHi === cached) return;
       }
+      this.wrApu(apuBase + 3, freqHi);
+      this.wr(2016 + this.rd(251), freqHi);
     }
   }
   // ════════════════════════════════════════════════════════════

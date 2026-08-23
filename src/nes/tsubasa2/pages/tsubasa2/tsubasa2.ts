@@ -47,13 +47,25 @@ Page({
   },
 
   onReady() {
+    this._initCanvas(0);
+  },
+
+  /** 初始化画布（node 未就绪时自动重试） */
+  _initCanvas(retry: number) {
     const query = wx.createSelectorQuery().in(this);
     query.select('#gameContainer').boundingClientRect();
     query.select('#gameCanvas').fields({ node: true, size: true });
     query.exec((res: any[]) => {
       const containerRect = res[0];
       const canvas = res[1] && res[1].node;
-      if (!canvas) return;
+      console.log('[tsubasa] initCanvas retry=' + retry, {
+        container: containerRect && { w: containerRect.width, h: containerRect.height },
+        canvas: canvas ? 'ok' : 'null',
+      });
+      if (!canvas) {
+        if (retry < 5) setTimeout(() => this._initCanvas(retry + 1), 150);
+        return;
+      }
       this.canvas = canvas;
       this.screen = new MpScreen(canvas, {
         getContainerSize: () =>
@@ -61,14 +73,33 @@ Page({
             width: (containerRect && containerRect.width) || 0,
             height: (containerRect && containerRect.height) || 0,
           }),
-        onResize: (w: number, h: number) => this.setData({ canvasW: w, canvasH: h }),
+        onResize: (w: number, h: number) => {
+          console.log('[tsubasa] canvas fit', w, h);
+          this.setData({ canvasW: w, canvasH: h });
+        },
         onTouchStart: (_x: number, _y: number) => {
           // 画布触摸映射到 256×240（参考 browser zapper 接口，暂不消费）
         },
       });
       this.screen.fitInParent();
+      if (this.rafId) {
+        this._cancelRaf(this.rafId);
+        this.rafId = 0;
+      }
       this._startLoop();
     });
+  },
+
+  /** canvas rAF 不可用时降级 setTimeout（约 60fps） */
+  _raf(cb: any): any {
+    const c = this.canvas;
+    return c && c.requestAnimationFrame ? c.requestAnimationFrame(cb) : setTimeout(cb, 16);
+  },
+
+  _cancelRaf(id: any) {
+    const c = this.canvas;
+    if (c && c.cancelAnimationFrame) c.cancelAnimationFrame(id);
+    else clearTimeout(id);
   },
 
   _startLoop() {
@@ -83,10 +114,11 @@ Page({
       this.frameCount++;
       if (this.frameCount % 60 === 0) {
         this.setData({ frame: this.frameCount });
+        console.log('[tsubasa] frame=' + this.frameCount);
       }
-      this.rafId = this.canvas.requestAnimationFrame(loop);
+      this.rafId = this._raf(loop);
     };
-    this.rafId = this.canvas.requestAnimationFrame(loop);
+    this.rafId = this._raf(loop);
   },
 
   /** 画布触摸（WXML 绑定 → MpScreen 坐标映射 → onTouchStart 回调） */
@@ -116,8 +148,10 @@ Page({
   },
 
   onHide() {
-    if (this.rafId && this.canvas) this.canvas.cancelAnimationFrame(this.rafId);
-    this.rafId = 0;
+    if (this.rafId) {
+      this._cancelRaf(this.rafId);
+      this.rafId = 0;
+    }
   },
 
   onShow() {
@@ -128,8 +162,10 @@ Page({
   },
 
   onUnload() {
-    if (this.rafId && this.canvas) this.canvas.cancelAnimationFrame(this.rafId);
-    this.rafId = 0;
+    if (this.rafId) {
+      this._cancelRaf(this.rafId);
+      this.rafId = 0;
+    }
     this.screen?.destroy();
     this.runtime = null;
     this.game = null;
