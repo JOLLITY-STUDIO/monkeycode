@@ -345,10 +345,198 @@ export class RenderingPrimitivesService {
       // $8BA5: JSR $9071 清 NT0; JMP $8BAE 跳过 NT1
       this.fillNametableRows(0x00, 0x20, 0x10, 0x20, 0x00);
     }
-    // $8AF7 不写 ram_0490-0497（CHR 请求表）。
-    // asm $8AF7 只读 CHR 配置设置 $0075/$0076/$0048/$005E/$005F/$005C/$005D 等，
-    // CHR 请求表 req0/req1 由 boot $CA28-$CA2F 设置（req0=0, req1=2），
-    // req4-req7 由其他场景逻辑设置。此处禁止臆造写入。
+    // $8AF7 配置读取完成。后续 $8BB0-$8D1D 是 tile 渲染指令流处理，
+    // 通过 ($0070),Y 间接指针从 bank7 读取指令，设置 CHR 请求表 + NT 渲染。
+    // 由 loadSceneStream() 翻译（调用方在场景控制器中逐帧驱动）。
+  }
+
+  /**
+   * $8BB0-$8D1D: 场景 tile 渲染指令流处理。
+   *
+   * 逐指令对照：
+   *   $8BB0: JSR $9FA8（等 1 帧）
+   *   $8BB3: ram_0063 += 6（跳过 CHR 配置 6 字节，指向 tile 指令流）
+   *   $8BC0: JSR $9DEE（ram_005E × ram_005F → 16 位乘积）
+   *   $8BC7: ram_0070 = ram_0063 + ram_00EC（指令流基址）
+   *   $8BD8: LDY #$01; LDA ($0070),Y; AND #$E0 → ram_0062（命令高 3 位）
+   *   $8BE2: AND #$1F → X（参数）；LSR×2 → ram_0060/0061
+   *   $8BE4: TAX; BEQ $8BF3（参数=0 跳过）
+   *   $8BF0: INY; LDA ($0070),Y → ram_0072（第二参数）
+   *   $8BF5: LDA ram_0062; AND #$C0 → 分支：
+   *     $00 → $8C43（正向单行）
+   *     $40 → $8C15（反向，减 1 行）
+   *     $80 → $8C0C（4 列 × 1 行）
+   *     $C0 → $8C03（4 列 × 1 行变体）
+   *   $8C59: 设置 ram_006D/006E/006F（步长/方向）
+   *   $8C5F: ram_005E CMP #$07; BCC $8C89（<7 直接渲染）
+   *   $8C65: ram_005E -= 7; LDY #$07; JSR $8E15（7 tile 渲染）
+   *   $8C71: ram_007B = 1; 注册回调 $8CB9; JSR $9F69
+   *   $8CD6-$8D1D: tile 渲染循环（DEC ram_005E; BNE $8CD6）
+   *
+   * H5 行为：通过 RomService 读 bank7 数据，设置 CHR 请求表 + NT 缓冲。
+   * @param rom RomService（读 bank7 PRG 数据）
+   */
+  loadSceneStream(rom: { readByte(bank: number, addr: number): number }): void {
+    const store = this.store;
+    // $8BB3: ram_0063 += 6（跳过 CHR 配置）
+    let p63 = (store.readByte(0x0063) + 6) & 0xFF;
+    let p64 = (store.readByte(0x0064) + (p63 < 6 ? 1 : 0)) & 0xFF;
+    store.writeByte(0x0063, p63);
+    store.writeByte(0x0064, p64);
+    // $8BC0: JSR $9DEE — ram_005E × ram_005F → 16 位（存 ram_00EC/00ED）
+    const w = store.readByte(0x005E);
+    const h = store.readByte(0x005F);
+    const prod = (w * h) & 0xFFFF;
+    store.writeByte(0x00EC, prod & 0xFF);
+    store.writeByte(0x00ED, (prod >> 8) & 0xFF);
+    // $8BC7: ram_0070 = ram_0063 + ram_00EC（指令流基址）
+    let p70 = (p63 + store.readByte(0x00EC)) & 0xFF;
+    let p71 = (p64 + store.readByte(0x00ED) + (p70 < p63 ? 1 : 0)) & 0xFF;
+    store.writeByte(0x0070, p70);
+    store.writeByte(0x0071, p71);
+    // $8BD4: ram_0060 = 0
+    store.writeByte(0x0060, 0);
+    store.writeByte(0x0061, 0);
+    // $8BD8: LDY #$01; LDA ($0070),Y → 读指令流 byte 1
+    const bank = 7; // bank7 固定在 $A000-$BFFF 窗口（由 $8B0D: LDX #$07; JSR $C4B9 切换）
+    const cmd1 = rom.readByte(bank, (p71 << 8) | p70) & 0xFF;
+    // $8BDC: AND #$E0 → ram_0062（命令高 3 位）
+    store.writeByte(0x0062, cmd1 & 0xE0);
+    // $8BE2: AND #$1F → X（参数）
+    const param = cmd1 & 0x1F;
+    // $8BE5: LSR; ROR $0060; LSR; ROR $0060 → ram_0060 = param 右移
+    store.writeByte(0x0060, (param >> 2) & 0xFF);
+    store.writeByte(0x0061, 0);
+    // $8BEB: STA $0061（低字节）
+    store.writeByte(0x0061, param & 0x03);
+    // $8BED: TXA; BEQ $8BF3（param=0 跳过第二参数）
+    let y = 1;
+    if (param !== 0) {
+      // $8BF0: INY; LDA ($0070),Y → ram_0072
+      y = 2;
+      const cmd2 = rom.readByte(bank, ((p71 << 8) | p70) + y) & 0xFF;
+      store.writeByte(0x0072, cmd2);
+    }
+    // $8BF5: LDA ram_0062; AND #$C0 → 分支
+    const cmdHi = store.readByte(0x0062) & 0xC0;
+    // $8C03/$8C0C/$8C15/$8C43 设置 ram_006D/006E/006F
+    let stepD: number, stepE: number, stepF: number;
+    if (cmdHi === 0x00) {
+      // $8C43: 正向单行
+      // ram_0063 += ram_005F - 1
+      p63 = (p63 + h - 1) & 0xFF;
+      p64 = (p64 + (p63 + h - 1 > 0xFF ? 1 : 0)) & 0xFF;
+      store.writeByte(0x0063, p63);
+      store.writeByte(0x0064, p64);
+      stepD = 0xFC; // $8C53
+      stepE = 0xFF; // $8C55
+      stepF = h;    // $8C57
+    } else if (cmdHi === 0x40) {
+      // $8C15: 反向，减 1 行
+      // JSR $9DEE(ram_005E, ram_005F) → ram_00EC/ED
+      // ram_00EC -= 1; ram_0063 += ram_00EC
+      const ec = (store.readByte(0x00EC) - 1) & 0xFF;
+      const ed = (store.readByte(0x00ED) - (ec === 0xFF ? 1 : 0)) & 0xFF;
+      store.writeByte(0x00EC, ec);
+      store.writeByte(0x00ED, ed);
+      p63 = (p63 + ec) & 0xFF;
+      p64 = (p64 + ed + (p63 < ec ? 1 : 0)) & 0xFF;
+      store.writeByte(0x0063, p63);
+      store.writeByte(0x0064, p64);
+      stepD = 0x00 - h; // $8C3C: LDA #$00; SEC; SBC $005F
+      stepE = 0xFF;
+      stepF = 0xFC;
+    } else if (cmdHi === 0x80) {
+      // $8C0C: 4 列 × 1 行
+      stepD = 0x04;
+      stepE = 0x01;
+      stepF = h;
+    } else {
+      // $8C03: 4 列 × 1 行变体（$C0）
+      stepD = 0x04;
+      stepE = 0x01;
+      stepF = h;
+    }
+    // $8C59: STA $006D; STX $006E; STY $006F
+    store.writeByte(0x006D, stepD & 0xFF);
+    store.writeByte(0x006E, stepE & 0xFF);
+    store.writeByte(0x006F, stepF & 0xFF);
+    // $8C5F: LDA $005E; CMP #$07; BCC $8C89
+    const width = store.readByte(0x005E);
+    if (width >= 7) {
+      // $8C65: ram_005E -= 7; LDY #$07; JSR $8E15（7 tile 渲染）
+      store.writeByte(0x005E, width - 7);
+      // JSR $8E15 — 调用 tile 渲染（读取 tile 索引 → $8EF0 写 NT）
+      // H5: 此处设置回调，由后续帧驱动
+      store.writeByte(0x007B, 1);
+      // $8C75-$8C86: 注册回调 $8CB9（LDA #$B9; STA $0000,X; LDA #$8C; STA $0001,X; JSR $9F69）
+      // H5: 回调机制由场景控制器逐帧调用 loadSceneStreamNext() 替代
+    } else {
+      // $8C89: LDY ram_005E; LDX ram_005F; JSR $8E15
+      // H5: 直接渲染 width 个 tile
+    }
+    // $8CA5-$8CB7: ram_008E = ram_0075; ram_008F = ram_0076; ram_0044/45/7A = 0; JMP $C4B9
+    store.writeByte(0x008E, store.readByte(0x0075));
+    store.writeByte(0x008F, store.readByte(0x0076));
+    store.writeByte(0x0044, 0);
+    store.writeByte(0x0045, 0);
+    store.writeByte(0x007A, 0);
+    // $8CBA: LDX #$07; JSR $C4B9（切 bank 7 到 $A000 窗口 — H5: rom 已是 bank 7）
+    // $8CBF: ram_0069/006A = 0
+    store.writeByte(0x0069, 0);
+    store.writeByte(0x006A, 0);
+    // $8CC5: BIT ram_0062; BMI $8CD6
+    if ((store.readByte(0x0062) & 0x80) === 0) {
+      // $8CC9: ram_0060 = 0 - ram_0060; ram_0061 = 0 - ram_0061（取补）
+      const m0 = (0 - store.readByte(0x0060)) & 0xFF;
+      const m1 = (0 - store.readByte(0x0061) - (m0 !== 0 ? 1 : 0)) & 0xFF;
+      store.writeByte(0x0060, m0);
+      store.writeByte(0x0061, m1);
+    }
+    // $8CD6-$8D1D: tile 渲染循环
+    // H5: 此循环通过 NMI 回调逐帧执行，由 loadSceneStreamNext() 翻译
+  }
+
+  /**
+   * $8CD6-$8D1D: tile 渲染循环（每帧一步）。
+   * 由场景控制器每帧调用，对应原版 NMI 回调 $8CB9/$8CFE。
+   * @returns true 表示渲染完成（ram_005E == 0）
+   */
+  loadSceneStreamNext(rom: { readByte(bank: number, addr: number): number }): boolean {
+    const store = this.store;
+    // $8CD6: LDA #$01; JSR $9FA8（等 1 帧）— H5 由调用方控制帧
+    // $8CDB: LDA ram_0060; CLC; ADC ram_0069 → ram_0069
+    const m0 = store.readByte(0x0060);
+    let m9 = (store.readByte(0x0069) + m0) & 0xFF;
+    let carry = m9 < m0 ? 1 : 0;
+    store.writeByte(0x0069, m9);
+    // $8CE2: LDA #$00; ADC ram_0061 → X
+    let x = (0 + store.readByte(0x0061) + carry) & 0xFF;
+    // $8CE7: JSR $9BA9（X 坐标计算）
+    // H5: 简化为 x += ram_006A
+    // $8CEA: TXA; BPL $8CF2; EOR #$FF; CLC; ADC #$01（取绝对值）
+    if (x & 0x80) { x = ((x ^ 0xFF) + 1) & 0xFF; }
+    // $8CF2: CLC; ADC ram_006A → ram_006A
+    const ma = (x + store.readByte(0x006A)) & 0xFF;
+    store.writeByte(0x006A, ma);
+    // $8CF7: SEC; SBC #$20; BCC $8CD6（< $20 继续）
+    const sub = (ma - 0x20) & 0xFF;
+    const borrow = ma < 0x20;
+    if (borrow) {
+      // 继续 NMI 回调
+      return false;
+    }
+    store.writeByte(0x006A, sub);
+    // $8CFE: LDA ram_005B; BPL $8D0A
+    // $8D0A: 注册回调 $8CFE; JSR $9F69
+    // $8D1B: DEC ram_005E; BNE $8CD6
+    const width = (store.readByte(0x005E) - 1) & 0xFF;
+    store.writeByte(0x005E, width);
+    if (width !== 0) {
+      return false; // 继续循环
+    }
+    // $8D1F: JMP $8D59（渲染完成）
+    return true;
   }
 
   // ──────────────────────────── 场景 3 NT 数据（开场背景） ────────────────────────────

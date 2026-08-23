@@ -184,18 +184,8 @@ export const OPENING_CHR_CONFIGS: readonly (readonly number[])[] = [
   /* 0x1f @$a4d6 */ [0x3c, 0x3e, 0x00, 0x04, 0x08, 0x00],
 ];
 
-/**
- * CHR 请求表（ram_0490-0497）由 boot $CA28-$CA2F 设置：
- *   $CA28: LDA #$00; STA $0490  ; req0 = 0
- *   $CA2D: LDA #$02; STA $0491  ; req1 = 2
- * req2-req7 在 boot 时未设置（保持清零或由其他场景逻辑设置）。
- * NMI $C9E9 读取此表装载 MMC3 CHR bank。
- * tsnes 300 帧实测 chrBanks = [0,1,2,3,252,113,82,83]，
- *   其中 slot0-3 由 req0=0/req1=2 生成（cmd0/cmd1 双 bank），
- *   slot4-7 (252,113,82,83) 由场景运行中其他代码写入 req4-req7。
- */
-export const OPENING_CHR_CMD = 0x00; // ram_0022：命令基址 0，chrSel 0
-export const OPENING_CHR_REQUEST: readonly number[] = [0, 2]; // boot 仅设置 req0/req1
+// CHR 请求表由 $8BB0-$8D1D tile 渲染指令流动态写入，不使用硬编码值。
+// 详见 RenderingPrimitivesService.loadSceneStream()。
 
 /** 场景 3 的 tile 数据（6 列 × 8 行 = 48 字节，按行优先） */
 export const OPENING_SCENE3_TILES: readonly number[] = [

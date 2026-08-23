@@ -1,18 +1,12 @@
 const fs = require('fs');
 const rom = fs.readFileSync('docs/roms/Captain Tsubasa II - Super Striker (Japan).nes');
-const hdr = 16;
-function fileB0(addr) { return hdr + (addr & 0x1fff); }
-function fileB2(addr) { return 0x4010 + (addr & 0x1fff); }
-function dump(f, addr, len) {
+const BASE = 0x4010;
+function bytes(addr, len) {
   const out = [];
-  for (let i = 0; i < len; i += 16) {
-    const bytes = [];
-    for (let j = 0; j < 16 && i + j < len; j++) bytes.push(rom[f(addr + i + j)].toString(16).padStart(2, '0'));
-    out.push('$' + (addr + i).toString(16).padStart(4, '0').toUpperCase() + ': ' + bytes.join(' '));
-  }
-  return out.join('\n');
+  for (let i = 0; i < len; i++) out.push(rom[BASE + ((addr + i) & 0x1fff)].toString(16).padStart(2, '0'));
+  return out;
 }
-console.log('=== bank00 $8976-$89D0 (NT attr load) ===');
-console.log(dump(fileB0, 0x8976, 0x5a));
-console.log('=== bank02 $A82F-$A88A (sprite load) ===');
-console.log(dump(fileB2, 0xa82f, 0x5b));
+// $A677-$A776
+console.log('T677=' + JSON.stringify(bytes(0xa677, 256)));
+// $A67B-$A77A
+console.log('T67B=' + JSON.stringify(bytes(0xa67b, 256)));
