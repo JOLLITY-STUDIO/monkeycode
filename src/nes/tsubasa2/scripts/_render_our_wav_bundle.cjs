@@ -41417,70 +41417,88 @@ var AudioService = class {
   // ════════════════════════════════════════════════════════════════
   // BGM 命令流解析（$83CB）
   //
-  // 从通道状态块 offset 0-1 读取数据指针，解析数据流：
-  //   字节 < $80 → 音符时值（AND #$3F 查 $8725 表）
-  //   字节 $80-$AF → 音符（AND #$3F 时值 + 下一个字节音名 → 查 $870D 频率表）
-  //   字节 $B0-$DF → 速度（跳过）
-  //   字节 >= $E0 → 命令（$84C9 分发，AND #$1F 查 $84DA 跳转表）
+  // 严格翻译 asm code_sub.s $83CB-$84A6：
+  //   $83CB: offset 5 &= $CF（清除包络标志）
+  //   $83D3: 读 offset 0-1 → 数据指针 $00F4/$00F5
+  //   $83DF: 从数据流读字节（Y=偏移）
+  //     字节 < $80（BPL $8404）→ 音名，跳 $8404
+  //     字节 >= $E0 → 命令（$84C9 分发）
+  //     字节 $B0-$DF → 速度（INY 跳过参数，继续循环）
+  //     字节 $80-$AF → 时值（AND #$3F 查 $8725 → 设置 tick，继续循环）
+  //   $8404: 音名处理
+  //     INY; 更新 offset 0-1 = 数据指针 + 偏移
+  //     音名低4位 → 查 $870D 频率表
+  //     音名高4位 → 八度（频率右移）
+  //     transpose 加减 → offset 6-7 = 频率
+  //     音名 $0C → 休止符
   // ════════════════════════════════════════════════════════════════
   executeCommandStream(ch) {
     const chBase = CH_STATE_BASE + ch * 16;
     const counterBase = CH_COUNTER_BASE + ch * 4;
+    this.store.writeByte(chBase + 5, this.store.readByte(chBase + 5) & 207);
     let dataPtr = this.store.readU16(chBase);
     if (dataPtr === 0) return;
-    const volCtrl = this.store.readByte(chBase + 5);
-    this.store.writeByte(chBase + 5, volCtrl & 207);
-    let noteIdx = 0;
-    for (let safety = 0; safety < 256; safety++) {
-      const dataByte = AudioRom.readBgmData(dataPtr + noteIdx);
-      if (dataByte === 0) {
-        noteIdx++;
-        continue;
-      }
+    let y = 0;
+    for (let safety = 0; safety < 512; safety++) {
+      const dataByte = AudioRom.readBgmData(dataPtr + y);
       if (dataByte < 128) {
-        this.store.writeU16(chBase, dataPtr + noteIdx);
-        noteIdx = 0;
-        break;
+        y++;
+        const newPtr = dataPtr + y;
+        this.store.writeU16(chBase, newPtr & 65535);
+        const ch1 = ch + 1;
+        const noteName = dataByte & 15;
+        if (noteName === 12) {
+          this.store.writeByte(chBase + 5, this.store.readByte(chBase + 5) | 32);
+          return;
+        }
+        let freqLo = readFreqTable(noteName) & 255;
+        let freqHi = readFreqTable(noteName) >> 8 & 255;
+        const octave = dataByte >> 4 & 15;
+        for (let i = 0; i < octave; i++) {
+          const carry = freqHi & 1;
+          freqHi = freqHi >> 1 & 127;
+          freqLo = (freqLo >> 1 | carry << 7) & 255;
+        }
+        const transposeFlag = this.store.readByte(2036 + ch);
+        const transposeVal = this.store.readByte(1959 + ch);
+        let finalFreqLo, finalFreqHi;
+        if (transposeFlag !== 0) {
+          let result = freqLo - transposeVal;
+          if (result < 0) {
+            finalFreqLo = result & 255;
+            finalFreqHi = freqHi - 1 & 255;
+          } else {
+            finalFreqLo = result & 255;
+            finalFreqHi = freqHi;
+          }
+        } else {
+          let result = freqLo + transposeVal;
+          finalFreqLo = result & 255;
+          finalFreqHi = freqHi + (result > 255 ? 1 : 0) & 255;
+        }
+        this.store.writeByte(chBase + 6, finalFreqLo);
+        this.store.writeByte(1975 + ch, finalFreqLo);
+        this.store.writeByte(chBase + 7, finalFreqHi | 128);
+        this.store.writeByte(1983 + ch, finalFreqHi);
+        return;
       }
       if (dataByte >= 224) {
-        noteIdx++;
+        y++;
         const cmdIdx = dataByte & 31;
         const cmdAddr = readCommandAddr(cmdIdx);
-        noteIdx = this.executeCommand(ch, cmdAddr, dataPtr, noteIdx);
+        y = this.executeCommand(ch, cmdAddr, dataPtr, y);
         continue;
       }
       if (dataByte >= 176) {
-        noteIdx++;
+        y++;
         continue;
       }
       const durIdx = dataByte & 63;
       const tick = readDurationTable(durIdx);
       this.store.writeByte(counterBase, tick);
       this.store.writeByte(counterBase + 1, tick);
-      noteIdx++;
-      const nextByte = AudioRom.readBgmData(dataPtr + noteIdx);
-      noteIdx++;
-      const noteName = nextByte & 15;
-      if (noteName === 12) {
-        this.store.writeByte(chBase + 5, this.store.readByte(chBase + 5) | 32);
-      } else if (noteName < 12) {
-        let freq = readFreqTable(noteName);
-        const octave = nextByte >> 4 & 15;
-        for (let i = 0; i < octave; i++) {
-          freq = freq >> 1 & 32767;
-        }
-        const transpose = this.store.readByte(1959 + ch);
-        const finalFreq = freq + transpose & 65535;
-        this.store.writeByte(chBase + 6, finalFreq & 255);
-        this.store.writeByte(chBase + 7, finalFreq >> 8 & 255);
-        this.store.writeByte(1975 + ch, finalFreq & 255);
-        this.store.writeByte(1983 + ch, finalFreq >> 8 & 255);
-      }
-      this.store.writeU16(chBase, dataPtr + noteIdx);
-      break;
-    }
-    if (this.store.readByte(counterBase + 2) === 0) {
-      this.store.writeByte(counterBase + 2, 1);
+      y++;
+      continue;
     }
   }
   // ════════════════════════════════════════════════════════════════

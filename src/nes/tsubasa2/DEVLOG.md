@@ -44,10 +44,27 @@
 ## 下一步
 
 - V0.2：bank01 球员数据表 + PlayerQueryService 真实翻译；bank30 清 NT（$CB35）/OAM 隐藏（$CB8B）对照实现。
-- V0.3-C2：TitleSceneController 真实翻译。注意场景 1（$A55A）实为数学工具（`$00EC>>2` 取补 → RTS 返回 3），
-  真正的标题画面可能在跳转表 13-23（$A650-$A7FA 长场景）或由场景 2/3 前置装载后进入，需进一步对照确认。
-- V0.3-C3：输入映射 + 24 场景完整分发（当前 0-23 已建枚举，仅 0/1/2/3/4 注册控制器）。
+- V0.3-C3：场景 15（$A651 NT 缓冲写入长场景）/16（精灵放置）/19/22/23 逐一翻译，覆盖 SceneTable 的 stub。
 - V0.4：Story 场景 + ScriptEngine 脚本 VM 翻译（bank18/19 剧情数据提取）。
+
+## 2026-08-23（V0.3-C2 场景表重构）
+
+- [C2 落地] 按用户要求重构：**场景按 ID 组织，不按业务语义命名**（删除 opening/title/password/result/story 语义命名）：
+  - 新建 `code/scene/SceneTable.ts`：24 项场景条目（jumpAddr/entryAddr/behavior），行为全部逐指令对照
+    `bank02/code_sub.s` + `code_data.s` 确认，不臆测语义。关键确认：
+    - 场景 1（$A55A）是数学工具（$00EC>>2 取补 → 返回 3），**不是标题**。
+    - 场景 2（$A57C）JSR $9B91 清精灵扩展表 → 返回 2；场景 3（$A582）清 NT0/NT1 → 返回 2；
+      场景 4（$A5A3）JSR $9B7F 隐藏 OAM → 返回 2；场景 5/6 为 $0009 延迟/标志工具；场景 7-13 为
+      单指令/装载工具（$99=$FF、ram_001B bit6、$8895 CHR + $8920 场景数据）；场景 14 为 NT 属性+调色板+精灵；
+      场景 15（$A651）为 NT 缓冲写入长场景（$AA97 表 → $05E8）；场景 16（$A69D）精灵放置；
+      场景 17/21 为 $8895 CHR 装载；场景 18/19/20/22 为精灵等待/闪烁/装载；场景 23 数值显示。
+  - `OpeningSceneController` → `Scene0Controller`（按 ID 命名，实现保留）；删除 Title/Password/Result/Story 四个
+    语义命名 stub（其行为已被场景表确认覆盖）。
+  - `BootRouter` 改为场景表驱动：注册场景 0 真实控制器，其余 1-23 自动走默认 stub（留在当前场景），
+    待逐个覆盖。
+  - `code/index.ts` / `game/index.ts` 导出与组装同步更新。
+  - 验证：`npx tsc --noEmit` 零错误；无头运行 900 帧 scene 0→2 流转正常（frame≈480），
+    ram_001B bit0 置位/清除时序正确。
 
 ## 2026-08-23（V0.3-C1）
 

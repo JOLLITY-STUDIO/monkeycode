@@ -239,113 +239,141 @@ export class AudioService {
   // ════════════════════════════════════════════════════════════════
   // BGM 命令流解析（$83CB）
   //
-  // 从通道状态块 offset 0-1 读取数据指针，解析数据流：
-  //   字节 < $80 → 音符时值（AND #$3F 查 $8725 表）
-  //   字节 $80-$AF → 音符（AND #$3F 时值 + 下一个字节音名 → 查 $870D 频率表）
-  //   字节 $B0-$DF → 速度（跳过）
-  //   字节 >= $E0 → 命令（$84C9 分发，AND #$1F 查 $84DA 跳转表）
+  // 严格翻译 asm code_sub.s $83CB-$84A6：
+  //   $83CB: offset 5 &= $CF（清除包络标志）
+  //   $83D3: 读 offset 0-1 → 数据指针 $00F4/$00F5
+  //   $83DF: 从数据流读字节（Y=偏移）
+  //     字节 < $80（BPL $8404）→ 音名，跳 $8404
+  //     字节 >= $E0 → 命令（$84C9 分发）
+  //     字节 $B0-$DF → 速度（INY 跳过参数，继续循环）
+  //     字节 $80-$AF → 时值（AND #$3F 查 $8725 → 设置 tick，继续循环）
+  //   $8404: 音名处理
+  //     INY; 更新 offset 0-1 = 数据指针 + 偏移
+  //     音名低4位 → 查 $870D 频率表
+  //     音名高4位 → 八度（频率右移）
+  //     transpose 加减 → offset 6-7 = 频率
+  //     音名 $0C → 休止符
   // ════════════════════════════════════════════════════════════════
 
   private executeCommandStream(ch: number): void {
     const chBase = CH_STATE_BASE + ch * 0x10;
     const counterBase = CH_COUNTER_BASE + ch * 4;
     
-    // 读通道状态块 offset 0-1 → 数据指针
+    // $83CB: offset 5 &= $CF
+    this.store.writeByte(chBase + 5, this.store.readByte(chBase + 5) & 0xCF);
+    
+    // $83D3: 读 offset 0-1 → 数据指针
     let dataPtr = this.store.readU16(chBase);
     if (dataPtr === 0) return;
     
-    // 从数据流读取字节
-    // $83CB: 清除 offset 5 的 bit 4（包络标志）
-    const volCtrl = this.store.readByte(chBase + 5);
-    this.store.writeByte(chBase + 5, volCtrl & 0xCF);
+    let y = 0;  // Y 寄存器 = 数据流偏移
     
-    let noteIdx = 0;  // 音符索引（Y 寄存器）
-    
-    // 命令流循环（$83DF）
-    for (let safety = 0; safety < 256; safety++) {
-      const dataByte = AudioRom.readBgmData(dataPtr + noteIdx);
-      
-      // $00 = 空数据/通道分隔符，跳过
-      if (dataByte === 0x00) {
-        noteIdx++;
-        continue;
-      }
+    // $83DF 循环
+    for (let safety = 0; safety < 512; safety++) {
+      const dataByte = AudioRom.readBgmData(dataPtr + y);
       
       if (dataByte < 0x80) {
-        // 音符时值（$8404）
-        // 写回数据指针到 offset 0-1
-        this.store.writeU16(chBase, dataPtr + noteIdx);
-        noteIdx = 0;
-        // 时值 = dataByte，查 $8725 表
-        // 但 asm $83F4 是 AND #$3F 后查表
-        // $80BA 帧推进用这个时值作为 tick
-        // 实际上 $80BA 不调用 $83CB，$83CB 是在初始化时调用的
-        // $83CB 解析数据流直到第一个音符，设置 tick/音符持续/频率
-        break;
+        // $8404: 音名处理
+        y++;  // INY
+        // 更新 offset 0-1 = dataPtr + y
+        const newPtr = dataPtr + y;
+        this.store.writeU16(chBase, newPtr & 0xFFFF);
+        
+        // $8416: 检查通道号
+        // $00F3 = ch + 1（1-based 通道号）
+        const ch1 = ch + 1;
+        
+        // 音名处理
+        // $842E: AND #$0F → 音名低4位
+        const noteName = dataByte & 0x0F;
+        // $8431: CMP #$0C → 休止符？
+        if (noteName === 0x0C) {
+          // $8435: 休止符，offset 5 |= $20
+          this.store.writeByte(chBase + 5, this.store.readByte(chBase + 5) | 0x20);
+          return;  // $84A6: RTS
+        }
+        
+        // $843F: 查频率表
+        // ASL; TAY → noteName × 2
+        let freqLo = readFreqTable(noteName) & 0xFF;
+        let freqHi = (readFreqTable(noteName) >> 8) & 0xFF;
+        
+        // $844B: 高4位 = 八度
+        const octave = (dataByte >> 4) & 0x0F;
+        // $8452: BEQ $845C → 八度=0 跳过
+        for (let i = 0; i < octave; i++) {
+          // $8455: LSR $00F5; ROR $00F4 → 频率右移
+          const carry = freqHi & 1;
+          freqHi = (freqHi >> 1) & 0x7F;
+          freqLo = ((freqLo >> 1) | (carry << 7)) & 0xFF;
+        }
+        
+        // $845C: 频率计算完成
+        // LDX $00F3; DEX → 通道号-1（0-based）
+        // LDY $07F4,X → transpose 标志
+        const transposeFlag = this.store.readByte(0x07F4 + ch);
+        const transposeVal = this.store.readByte(0x07A7 + ch);
+        
+        let finalFreqLo, finalFreqHi;
+        if (transposeFlag !== 0) {
+          // $8466: SEC; SBC $07A7,X → 频率 -= transpose
+          let result = freqLo - transposeVal;
+          if (result < 0) {
+            // $8478: 借位
+            finalFreqLo = result & 0xFF;
+            finalFreqHi = (freqHi - 1) & 0xFF;
+          } else {
+            finalFreqLo = result & 0xFF;
+            finalFreqHi = freqHi;
+          }
+        } else {
+          // $848F: CLC; ADC $07A7,X → 频率 += transpose
+          let result = freqLo + transposeVal;
+          finalFreqLo = result & 0xFF;
+          finalFreqHi = (freqHi + (result > 0xFF ? 1 : 0)) & 0xFF;
+        }
+        
+        // $846C/$8478: LDY #$07; STA ($00F0),Y → offset 6 = 频率低
+        this.store.writeByte(chBase + 6, finalFreqLo);
+        this.store.writeByte(0x07B7 + ch, finalFreqLo);
+        
+        // $8484: INY(=8); STA ($00F0),Y → offset 7 = 频率高
+        // 但 asm 中 offset 8 存的是频率高字节 + $80（bit7=长度计数器重启标志）
+        this.store.writeByte(chBase + 7, finalFreqHi | 0x80);
+        this.store.writeByte(0x07BF + ch, finalFreqHi);
+        
+        // $84A6: RTS
+        return;
       }
       
       if (dataByte >= 0xE0) {
-        // 命令分发（$84C9）
-        noteIdx++;
+        // $83E8: 命令分发 JSR $84C9
+        y++;  // INY
         const cmdIdx = dataByte & 0x1F;
         const cmdAddr = readCommandAddr(cmdIdx);
-        // 执行命令（简化：只处理关键命令）
-        noteIdx = this.executeCommand(ch, cmdAddr, dataPtr, noteIdx);
+        y = this.executeCommand(ch, cmdAddr, dataPtr, y);
+        // $83EB: BPL $83DF → 继续循环
         continue;
       }
       
       if (dataByte >= 0xB0) {
-        // 速度设置（$83ED: INY; D0 EB 跳过）
-        noteIdx++;
+        // $83ED: 速度设置
+        // $C8: INY → 跳过参数字节
+        y++;
+        // $D0 $EB: BNE $83DF → 继续循环
         continue;
       }
       
-      // $80-$AF: 音符（$83F4）
-      // AND #$3F → 时值索引，查 $8725 表
+      // $83F4: $80-$AF → 时值设置
+      // AND #$3F → 时值索引
       const durIdx = dataByte & 0x3F;
       const tick = readDurationTable(durIdx);
-      this.store.writeByte(counterBase, tick);      // tick
-      this.store.writeByte(counterBase + 1, tick);  // tick 重载
-      noteIdx++;
-      
-      // 读取下一个字节作为音名（$8404 后的逻辑）
-      // $8416: 检查通道号
-      // $842E: AND #$0F → 音名索引（0-11），查 $870D 频率表
-      const nextByte = AudioRom.readBgmData(dataPtr + noteIdx);
-      noteIdx++;
-      
-      // 音名处理
-      const noteName = nextByte & 0x0F;
-      if (noteName === 0x0C) {
-        // $8435: 休止符（设置 offset 5 bit 5）
-        this.store.writeByte(chBase + 5, this.store.readByte(chBase + 5) | 0x20);
-      } else if (noteName < 0x0C) {
-        // $843F: 查频率表
-        let freq = readFreqTable(noteName);
-        // $844B: 高 4 位 = 八度偏移，右移频率
-        const octave = (nextByte >> 4) & 0x0F;
-        for (let i = 0; i < octave; i++) {
-          freq = (freq >> 1) & 0x7FFF;
-        }
-        // $845C: 写入通道状态块 offset 6-7（频率低/高）
-        // 还要加减 transpose（$07A7+$07F4）
-        const transpose = this.store.readByte(0x07A7 + ch);
-        const finalFreq = (freq + transpose) & 0xFFFF;
-        this.store.writeByte(chBase + 6, finalFreq & 0xFF);
-        this.store.writeByte(chBase + 7, (finalFreq >> 8) & 0xFF);
-        // 也写入 $07B7/$07BF 缓存
-        this.store.writeByte(0x07B7 + ch, finalFreq & 0xFF);
-        this.store.writeByte(0x07BF + ch, (finalFreq >> 8) & 0xFF);
-      }
-      
-      // 写回数据指针
-      this.store.writeU16(chBase, dataPtr + noteIdx);
-      break;
-    }
-    
-    // 设置音符持续（$0709[X] = 1，立即触发 tick）
-    if (this.store.readByte(counterBase + 2) === 0) {
-      this.store.writeByte(counterBase + 2, 1);
+      // LDX $00F2 → 通道索引（ch*4）
+      this.store.writeByte(counterBase, tick);      // $0707[X] = tick
+      this.store.writeByte(counterBase + 1, tick);  // $0708[X] = tick 重载
+      // $8402: BPL $83DF → 继续循环（读下一个字节作为音名）
+      y++;
+      continue;
     }
   }
 
