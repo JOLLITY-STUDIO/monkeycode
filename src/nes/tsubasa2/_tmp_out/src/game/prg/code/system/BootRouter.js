@@ -22,6 +22,10 @@ const NES_NTSC_RGB = [
 /**
  * NMI 回调索引 (对应 NMI_CALLBACK_TABLE 的 24 项入口)。
  *
+ * G37 确认 (tsnes disasm dump bank0): NMI_CALLBACK_TABLE 表本身在 bank2 ($A491),
+ * 但表里的 24 个入口地址 ($A4C0-$A7FA) 指向 bank0 的代码 (运行时 $A000 窗口映射 bank0)。
+ * 之前误认为入口在 bank2, 实际 bank2 偏移 $24C0 处是数据区 (反汇编出非法指令 LAX/SHA)。
+ *
  * 这些是 NMI 每帧按 ram_00ED 索引调用的子程, 不是游戏场景:
  *   - 渲染/NT 填充/OAM 清空/精灵属性设置
  *   - 阵容数据装载到 RAM
@@ -30,59 +34,57 @@ const NES_NTSC_RGB = [
  *
  * 游戏场景 (标题/会议/比赛/结果) 由脚本引擎 OpSceneLoad (0xFA) 驱动,
  * 走 bank00 sceneLoad → 主循环调度, 与此表无关。
- *
- * 分发表存储的是"目标-1" (PHA/PHA/RTS 跳转, RTS 弹出后 +1), 实际执行 = 表值+1。
  */
 var NmiCallbackIndex;
 (function (NmiCallbackIndex) {
-    /** idx 0 → 表值 $A4C0, 实际执行 $84C1: 密码界面初始化 (清屏+48 假名网格滚动+sceneLoad(0x17)) */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_00_PASSWORD_INIT"] = 0] = "CALLBACK_00_PASSWORD_INIT";
-    /** idx 1 → 表值 $A559, 实际执行 $855A: 角度计算 (ram_00EC>>2 → ram_0060/61, ram_0062 bit7=0 取补) */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_01_ANGLE_CALC"] = 1] = "CALLBACK_01_ANGLE_CALC";
-    /** idx 2 → 表值 $A57B, 实际执行 $857C: 辅助子程 (JSR $9B91) */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_02_AUX_9B91"] = 2] = "CALLBACK_02_AUX_9B91";
-    /** idx 3 → 表值 $A581, 实际执行 $8582: 双 NT 区填充 ($2000 0x10 行 + $2400 0x20 行, JSR $98EA) */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_03_NT_FILL"] = 3] = "CALLBACK_03_NT_FILL";
-    /** idx 4 → 表值 $A5A2, 实际执行 $85A3: OAM 清空 (JSR $9B7F) */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_04_OAM_CLEAR"] = 4] = "CALLBACK_04_OAM_CLEAR";
-    /** idx 5 → 表值 $A5A8, 实际执行 $85A9: 精灵辅助 (LDX #$09; JSR $9F96) */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_05_SPRITE_9F96"] = 5] = "CALLBACK_05_SPRITE_9F96";
-    /** idx 6 → 表值 $A5B0, 实际执行 $85B1: 精灵辅助 (LDX #$09; JSR $9F89) */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_06_SPRITE_9F89"] = 6] = "CALLBACK_06_SPRITE_9F89";
-    /** idx 7 → 表值 $A5B8, 实际执行 $85B9: 标志置位 (ram_0099 = $FF) */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_07_FLAG_0099"] = 7] = "CALLBACK_07_FLAG_0099";
-    /** idx 8 → 表值 $A5BF, 实际执行 $85C0: 切 PRG bank0 (MMC3) + ram_001B 清 bit6 */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_08_BIT6_CLEAR"] = 8] = "CALLBACK_08_BIT6_CLEAR";
-    /** idx 9 → 表值 $A5CD, 实际执行 $85CE: 切 PRG bank1 (MMC3) + ram_001B 置 bit6 */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_09_BIT6_SET"] = 9] = "CALLBACK_09_BIT6_SET";
-    /** idx 10 → 表值 $A5DB, 实际执行 $85DC: 阵容装载 0x00 + 帧绘制 5 */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_10_ROSTER_LOAD0"] = 10] = "CALLBACK_10_ROSTER_LOAD0";
-    /** idx 11 → 表值 $A5E8, 实际执行 $85E9: 阵容装载 0x10 + 帧绘制 6 (ram_000D 分支) */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_11_ROSTER_LOAD10"] = 11] = "CALLBACK_11_ROSTER_LOAD10";
-    /** idx 12 → 表值 $A602, 实际执行 $8603: 阵容装载 0x30 + 帧绘制 8 (ram_000D 分支) */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_12_ROSTER_LOAD30"] = 12] = "CALLBACK_12_ROSTER_LOAD30";
-    /** idx 13 → 表值 $A61C, 实际执行 $861D: 阵容装载 0x20 + 帧绘制 7 */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_13_ROSTER_LOAD20"] = 13] = "CALLBACK_13_ROSTER_LOAD20";
-    /** idx 14 → 表值 $A629, 实际执行 $862A: 精灵/滚动辅助 */
+    /** idx 0 → $A4C0 (bank0): TYA; LDX $ED; JMP $C4B9 (切 bank=ram_00ED) + 脚本装载初始化 (LDA#$08 STA$55 等) */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_00_SCRIPT_LOAD_INIT"] = 0] = "CALLBACK_00_SCRIPT_LOAD_INIT";
+    /** idx 1 → $A559 (bank0): 数据区/跳转表 (非可执行代码, 反汇编为非法指令) */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_01_DATA_TABLE"] = 1] = "CALLBACK_01_DATA_TABLE";
+    /** idx 2 → $A57B (bank0): LDA#$02; JMP $8879 — 推进脚本指针 2 字节 */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_02_ADVANCE_PTR_2"] = 2] = "CALLBACK_02_ADVANCE_PTR_2";
+    /** idx 3 → $A581 (bank0): JSR $9FA8 (让出1帧); JSR $997E (paletteWriteAll) — 调色板刷新 */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_03_PALETTE_REFRESH"] = 3] = "CALLBACK_03_PALETTE_REFRESH";
+    /** idx 4 → $A5A2 (bank0): LDA#$00 STA$E6; LDA#$20 STA$E7; LDY#$10; LDX#$20; JSR $98E8 — NT 填充 $2000 */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_04_NT_FILL"] = 4] = "CALLBACK_04_NT_FILL";
+    /** idx 5 → $A5A8 (bank0): NT 填充续 ($2400 区) */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_05_NT_FILL_2400"] = 5] = "CALLBACK_05_NT_FILL_2400";
+    /** idx 6 → $A5B0 (bank0): NT 填充续 ($2800 区) */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_06_NT_FILL_2800"] = 6] = "CALLBACK_06_NT_FILL_2800";
+    /** idx 7 → $A5B8 (bank0): NT 填充续 ($2C00 区) */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_07_NT_FILL_2C00"] = 7] = "CALLBACK_07_NT_FILL_2C00";
+    /** idx 8 → $A5BF (bank0): 标志/调色板辅助 */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_08_FLAG_AUX"] = 8] = "CALLBACK_08_FLAG_AUX";
+    /** idx 9 → $A5CD (bank0): 标志/调色板辅助 */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_09_FLAG_AUX2"] = 9] = "CALLBACK_09_FLAG_AUX2";
+    /** idx 10 → $A5DB (bank0): 阵容装载 + 帧绘制 */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_10_ROSTER_LOAD"] = 10] = "CALLBACK_10_ROSTER_LOAD";
+    /** idx 11 → $A5E8 (bank0): 阵容装载 + 帧绘制 */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_11_ROSTER_LOAD2"] = 11] = "CALLBACK_11_ROSTER_LOAD2";
+    /** idx 12 → $A602 (bank0): 阵容装载 + 帧绘制 */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_12_ROSTER_LOAD3"] = 12] = "CALLBACK_12_ROSTER_LOAD3";
+    /** idx 13 → $A61C (bank0): 阵容装载 + 帧绘制 */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_13_ROSTER_LOAD4"] = 13] = "CALLBACK_13_ROSTER_LOAD4";
+    /** idx 14 → $A629 (bank0): 精灵/滚动辅助 */
     NmiCallbackIndex[NmiCallbackIndex["CALLBACK_14_SPRITE_SCROLL"] = 14] = "CALLBACK_14_SPRITE_SCROLL";
-    /** idx 15 → 表值 $A650, 实际执行 $8651: 密码续关数据装载 ($AA97 表) */
+    /** idx 15 → $A650 (bank0): 密码续关数据装载 ($AA97 表) */
     NmiCallbackIndex[NmiCallbackIndex["CALLBACK_15_CONTINUE_LOAD"] = 15] = "CALLBACK_15_CONTINUE_LOAD";
-    /** idx 16 → 表值 $A69C, 实际执行 $869D: 比赛阵容装载 (ram_04E5 分支) */
+    /** idx 16 → $A69C (bank0): 比赛阵容装载 (ram_04E5 分支) */
     NmiCallbackIndex[NmiCallbackIndex["CALLBACK_16_MATCH_ROSTER"] = 16] = "CALLBACK_16_MATCH_ROSTER";
-    /** idx 17 → 表值 $A77A, 实际执行 $877B: 阵容装载 0x80 */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_17_ROSTER_LOAD80"] = 17] = "CALLBACK_17_ROSTER_LOAD80";
-    /** idx 18 → 表值 $A782, 实际执行 $8783: 等待 + OAM 拷贝 $88FB */
+    /** idx 17 → $A77A (bank0): JSR $8895 — 调 $8895 子程 (待完整 dump 确认) */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_17_SUB_8895"] = 17] = "CALLBACK_17_SUB_8895";
+    /** idx 18 → $A782 (bank0): 等待 + OAM 拷贝 */
     NmiCallbackIndex[NmiCallbackIndex["CALLBACK_18_WAIT_OAM_COPY"] = 18] = "CALLBACK_18_WAIT_OAM_COPY";
-    /** idx 19 → 表值 $A78D, 实际执行 $878E: 精灵属性置 bit3 + 转密码续关装载 */
+    /** idx 19 → $A78D (bank0): 精灵属性置 bit3 */
     NmiCallbackIndex[NmiCallbackIndex["CALLBACK_19_SPRITE_ATTR_BIT3"] = 19] = "CALLBACK_19_SPRITE_ATTR_BIT3";
-    /** idx 20 → 表值 $A7BD, 实际执行 $87BE: 等待 + 精灵属性设置 */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_20_SPRITE_ATTR"] = 20] = "CALLBACK_20_SPRITE_ATTR";
-    /** idx 21 → 表值 $A7CE, 实际执行 $87CF: 阵容装载 0x81 */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_21_ROSTER_LOAD81"] = 21] = "CALLBACK_21_ROSTER_LOAD81";
-    /** idx 22 → 表值 $A7D6, 实际执行 $87D7: 精灵属性置 bit2 128 帧循环 */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_22_SPRITE_ATTR_BIT2"] = 22] = "CALLBACK_22_SPRITE_ATTR_BIT2";
-    /** idx 23 (0x17) → 表值 $A7FA, 实际执行 $87FB: 密码校验/续关解码 */
-    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_23_PASSWORD_CHECK"] = 23] = "CALLBACK_23_PASSWORD_CHECK";
+    /** idx 20 → $A7BD (bank0): CMP #$FF; BEQ; ORA #$80; TAX; STX $4C — 读脚本字节写 $004C (场景请求) */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_20_SCRIPT_BYTE_TO_004C"] = 20] = "CALLBACK_20_SCRIPT_BYTE_TO_004C";
+    /** idx 21 → $A7CE (bank0): INY; LDA ($4D),Y; JSR $9FA8 — 读脚本字节让出 1 帧 */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_21_SCRIPT_READ_YIELD"] = 21] = "CALLBACK_21_SCRIPT_READ_YIELD";
+    /** idx 22 → $A7D6 (bank0): JMP $8879 — 推进指针 (单字节) */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_22_ADVANCE_PTR_1"] = 22] = "CALLBACK_22_ADVANCE_PTR_1";
+    /** idx 23 → $A7FA (bank0): EOR $ED85; INY; LDA ($4D),Y; STA $EC; LDX#$02; JSR $C4B9 — 切 bank2 + 读脚本 */
+    NmiCallbackIndex[NmiCallbackIndex["CALLBACK_23_SCRIPT_SWITCH_BANK2"] = 23] = "CALLBACK_23_SCRIPT_SWITCH_BANK2";
 })(NmiCallbackIndex || (exports.NmiCallbackIndex = NmiCallbackIndex = {}));
 /** @deprecated 旧名 TaskIndex, 等价于 NmiCallbackIndex */
 exports.TaskIndex = NmiCallbackIndex;
@@ -124,14 +126,14 @@ class BootRouter {
         const i = index & 0xff;
         this.wr(0x00ED, i);
         switch (i) {
-            case NmiCallbackIndex.CALLBACK_00_PASSWORD_INIT:
-            case NmiCallbackIndex.CALLBACK_02_AUX_9B91:
+            case NmiCallbackIndex.CALLBACK_00_SCRIPT_LOAD_INIT:
+            case NmiCallbackIndex.CALLBACK_02_ADVANCE_PTR_2:
                 // ram_00ED=2 = BOOT 开场 (tsnes trace 实测开场第一个画面 $ED=2)。
                 // 之前 resetScene(2) 走 default → _initScene(2) 空实现 → BOOT 背景从不渲染
                 // → nt0=0 黑屏。case 2 与 case 0 都挂 _initBoot (BOOT 开场初始化 + 背景渲染)。
                 this._initBoot();
                 break;
-            case NmiCallbackIndex.CALLBACK_23_PASSWORD_CHECK:
+            case NmiCallbackIndex.CALLBACK_23_SCRIPT_SWITCH_BANK2:
                 this._password.render();
                 break;
             default:

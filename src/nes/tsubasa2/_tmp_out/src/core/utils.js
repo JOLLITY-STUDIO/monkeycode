@@ -1,6 +1,7 @@
 "use strict";
 // 从 jsnes (d:/studio/github/monkeycode/src/nes/tools/jsnes/src/utils.js) 复制
 // tsnes 是 jsnes 的 TS 版, 此文件补全遗漏的 utils 模块
+// @ts-nocheck — tsnes 移植代码, JS 风格未声明字段, 保持与模拟器 1:1, 不做类型检查
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.copyArrayElements = copyArrayElements;
 exports.copyArray = copyArray;

@@ -36,6 +36,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+// @ts-nocheck — tsnes 移植代码, JS 风格未声明字段, 保持与模拟器 1:1, 不做类型检查
 const tile_js_1 = __importDefault(require("../tile.js"));
 const utils_js_1 = require("../utils.js");
 const nametable_js_1 = __importDefault(require("./nametable.js"));

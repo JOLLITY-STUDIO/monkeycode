@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 // Debug logging, enabled via localStorage.jsnes_debug = 1
+// @ts-nocheck — tsnes 移植代码, JS 风格未声明字段, 保持与模拟器 1:1, 不做类型检查
 let debugEnabled = false;
 try {
     debugEnabled = !!localStorage.getItem("jsnes_debug");

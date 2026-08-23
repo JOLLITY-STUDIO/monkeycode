@@ -9,10 +9,16 @@
  * 命名规范: 旧名 password-table.ts → 新名 bank02-tables.ts (与 bank00-tables.ts 风格一致)。
  */
 /**
- * NMI_CALLBACK_TABLE — NMI 每帧回调地址表 (asm $A491)
+ * NMI_CALLBACK_TABLE — NMI 每帧回调地址表 (asm $A491, bank2)
  * $8484 分发器: LDA ram_00ED; ASL; TAX; 取本表低/高字节压栈后 RTS 跳转。
  * 24 个 16 位入口地址 (小端字), 索引 = ram_00ED。
+ *
+ * G37 确认 (tsnes disasm dump): 表本身在 bank2 ($A491),
+ * 但表里的地址 $A4C0-$A7FA 指向 bank0 代码 (运行时 $A000 窗口映射 bank0 时执行)。
+ * bank2 偏移 $24C0 处是数据区 (反汇编出非法指令), 实际代码在 bank0 偏移 $24C0。
+ *
  * 每帧 NMI 按 ram_00ED 索引调用对应子程 (渲染/数据装载/精灵操作), 不是游戏场景。
+ * 入口语义详见 BootRouter.NmiCallbackIndex 枚举注释。
  */
 export declare const NMI_CALLBACK_TABLE: readonly [42176, 42329, 42363, 42369, 42402, 42408, 42416, 42424, 42431, 42445, 42459, 42472, 42498, 42524, 42537, 42576, 42652, 42874, 42882, 42893, 42941, 42958, 42966, 43002];
 /** @deprecated 旧名, 等价于 NMI_CALLBACK_TABLE */

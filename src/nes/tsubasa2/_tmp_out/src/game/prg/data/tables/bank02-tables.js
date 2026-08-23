@@ -12,10 +12,16 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Bank02Tables = exports.PASSWORD_LEVEL_ADJ_TABLE = exports.SPRITE_OFFSET_TABLE = exports.SPRITE_POS_TABLE = exports.PASSWORD_POS_INC_HI = exports.PASSWORD_POS_INC_LO = exports.PASSWORD_POS_INC_TABLE = exports.PASSWORD_CONTINUE_TABLE = exports.PASSWORD_SPRITE_DATA = exports.PASSWORD_GRID_TILES = exports.PASSWORD_KANA_CHARS = exports.ROSTER_ATTR_TABLE = exports.ROSTER_TABLE = exports.PASSWORD_DISPATCH_TABLE = exports.NMI_CALLBACK_TABLE = void 0;
 /**
- * NMI_CALLBACK_TABLE — NMI 每帧回调地址表 (asm $A491)
+ * NMI_CALLBACK_TABLE — NMI 每帧回调地址表 (asm $A491, bank2)
  * $8484 分发器: LDA ram_00ED; ASL; TAX; 取本表低/高字节压栈后 RTS 跳转。
  * 24 个 16 位入口地址 (小端字), 索引 = ram_00ED。
+ *
+ * G37 确认 (tsnes disasm dump): 表本身在 bank2 ($A491),
+ * 但表里的地址 $A4C0-$A7FA 指向 bank0 代码 (运行时 $A000 窗口映射 bank0 时执行)。
+ * bank2 偏移 $24C0 处是数据区 (反汇编出非法指令), 实际代码在 bank0 偏移 $24C0。
+ *
  * 每帧 NMI 按 ram_00ED 索引调用对应子程 (渲染/数据装载/精灵操作), 不是游戏场景。
+ * 入口语义详见 BootRouter.NmiCallbackIndex 枚举注释。
  */
 exports.NMI_CALLBACK_TABLE = [
     0xa4c0, 0xa559, 0xa57b, 0xa581, 0xa5a2, 0xa5a8, 0xa5b0, 0xa5b8,

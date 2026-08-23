@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BUTTON_RIGHT = exports.BUTTON_LEFT = exports.BUTTON_DOWN = exports.BUTTON_UP = exports.BUTTON_START = exports.BUTTON_SELECT = exports.BUTTON_B = exports.BUTTON_A = exports.BrowserMini = exports.NT_ROWS = exports.NT_COLS = exports.TILE_PX = exports.NES_HEIGHT = exports.NES_WIDTH = exports.createRamStore = exports.RamStore = exports.NES = exports.GameGenie = exports.Controller = exports.Browser = void 0;
+// @ts-nocheck — tsnes 移植代码, JS 风格未声明字段, 保持与模拟器 1:1, 不做类型检查
 const index_1 = __importDefault(require("./browser/index"));
 exports.Browser = index_1.default;
 const controller_1 = __importDefault(require("./controller"));

@@ -1,23 +1,39 @@
 const fs = require('fs');
-const path = require('path');
-const root = 'src/game';
-function walk(d) {
-  let files = [];
-  for (const f of fs.readdirSync(d)) {
-    const p = path.join(d, f);
-    const s = fs.statSync(p);
-    if (s.isDirectory()) files = files.concat(walk(p));
-    else if (/\.ts$/.test(f)) files.push(p);
-  }
-  return files;
+const root = 'd:/studio/github/monkeycode/src/nes/tsubasa2';
+const c = fs.readFileSync(root + '/src/game/prg/code/system/GameSystemService.ts', 'utf8');
+const lines = c.split('\n');
+// 找 rdMemByte / rdPtr / wrPtr / sub974A / sub975B 定义位置
+const keys = ['rdMemByte', 'rdPtr', 'wrPtr', 'sub974A', 'sub975B', 'sub94C1', 'sub978B', 'TEXT_BUFFER_TEMPLATE_978B'];
+for (const k of keys) {
+  lines.forEach((l, i) => { if (l.includes(k)) console.log((i + 1) + ': ' + l.trim()); });
 }
-for (const f of walk(root)) {
-  const c = fs.readFileSync(f, 'utf8');
-  if (c.includes('TEXT_BUFFER_TEMPLATE_978B')) {
-    const lines = c.split('\n');
-    lines.forEach((l, i) => {
-      if (l.includes('TEXT_BUFFER_TEMPLATE_978B')) console.log(`${f}:${i + 1}: ${l.trim()}`);
-    });
+console.log('=== rdMemByte implementation ===');
+const m = c.indexOf('rdMemByte(');
+// 打印 rdMemByte 方法定义 (通常 private rdMemByte(addr: number): number {...})
+for (let i = 0; i < lines.length; i++) {
+  if (/rdMemByte\s*\(/.test(lines[i]) && /private|public|protected|=>/.test(lines[i])) {
+    let j = i;
+    let depth = 0;
+    let out = [];
+    for (; j < lines.length; j++) {
+      out.push((j + 1) + ': ' + lines[j]);
+      depth += (lines[j].match(/{/g) || []).length - (lines[j].match(/}/g) || []).length;
+      if (depth <= 0 && j > i) break;
+    }
+    console.log(out.join('\n'));
+    break;
   }
 }
-console.log('done');
+console.log('=== rdPtr implementation ===');
+for (let i = 0; i < lines.length; i++) {
+  if (/rdPtr\s*\(/.test(lines[i]) && /private|public|protected|=>/.test(lines[i])) {
+    let j = i, depth = 0, out = [];
+    for (; j < lines.length; j++) {
+      out.push((j + 1) + ': ' + lines[j]);
+      depth += (lines[j].match(/{/g) || []).length - (lines[j].match(/}/g) || []).length;
+      if (depth <= 0 && j > i) break;
+    }
+    console.log(out.join('\n'));
+    break;
+  }
+}
