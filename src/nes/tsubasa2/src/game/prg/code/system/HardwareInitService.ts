@@ -17,7 +17,6 @@
 import type { DataStore } from '../../data/store/DataStore';
 import { RAM_INIT_TABLE, OAM_HIDE_VALUE } from '../../data/tables/ram-init-table';
 import { loadPalette } from '../../data/tables/palette-table';
-import { OPENING_CHR_CMD, OPENING_CHR_REQUEST } from '../../data/scene/opening-data';
 
 /** $C766 表：boot 时复制到 $05EB（8 字节） */
 const BOOT_05EB_TABLE: ReadonlyArray<number> = [0x13, 0x07, 0x19, 0x00, 0x00, 0xaf, 0x2e, 0xfd];
@@ -77,11 +76,11 @@ export class HardwareInitService {
     const ctrl = store.readByte(0x0020) | 0x80;
     store.writeByte(0x0020, ctrl);
     store.writeByte(0x0019, ctrl);
-    // 开场 CHR 请求表（$C9E9 装载；ground truth = 模拟器探针 chrBanks [0,1,2,3,252,113,82,83]）
-    store.writeByte(0x0022, OPENING_CHR_CMD);
-    for (let i = 0; i < OPENING_CHR_REQUEST.length; i++) {
-      store.writeByte(0x0490 + i, OPENING_CHR_REQUEST[i]);
-    }
+    // asm $CA28: LDA #$00; STA $0490  ; req0 = 0
+    // asm $CA2D: LDA #$02; STA $0491  ; req1 = 2
+    store.writeByte(0x0022, 0x00); // ram_0022: cmd 基址 0, chrSel 0
+    store.writeByte(0x0490, 0x00); // req0 = 0
+    store.writeByte(0x0491, 0x02); // req1 = 2
     // 帧计数归零
     store.frame = 0;
   }

@@ -1,10 +1,8 @@
 const fs = require('fs');
-const pat = /\$9693|\$9735|\$974A|\$975B|\$978B|\$98E8|\$9B28|\$9B5E|\$9F69|\$9FA8|\$978B/;
-for (const f of ['code_render.s', 'code_scene.s', 'code_sub.s', 'code_util.s', 'code_main.s', 'data_tail.s']) {
-  const p = 'src/asm/bank00/' + f;
-  const t = fs.readFileSync(p, 'utf8');
-  const lines = t.split(/\r?\n/);
-  const hits = lines.map((l, i) => ({ l, i })).filter(o => pat.test(o.l));
-  if (hits.length) console.log('== ' + f + ' ==');
-  for (const h of hits) console.log((h.i + 1) + ': ' + h.l.trim());
+const re = /8A97|8C6D|8C71|8AB1|AADF|AA97|AA47|AA75|AC6D|AC71|8AA7|8A14|88D2/;
+for (const f of ['code_sub.s', 'code_data.s', 'data_tables.s', '_full.s']) {
+  const lines = fs.readFileSync('src/asm/bank02/' + f, 'utf8').split(/\r?\n/);
+  lines.forEach((l, i) => {
+    if (re.test(l)) console.log(f + ':' + (i + 1) + ': ' + l.trim());
+  });
 }
