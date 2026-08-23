@@ -1,5 +1,5 @@
 const fs = require('fs');
-const pat = /\$9693|\$9735|\$974A|\$975B|\$978B|\$98E8|\$9B28|\$9B5E|\$9F69|\$9FA8|\$978B/;
+const pat = /\$9BA9|\$9BCA|\$9EFB|\$9F7E/;
 for (const f of ['code_render.s', 'code_scene.s', 'code_sub.s', 'code_util.s', 'code_main.s', 'data_tail.s']) {
   const p = 'src/asm/bank00/' + f;
   const t = fs.readFileSync(p, 'utf8');

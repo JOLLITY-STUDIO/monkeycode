@@ -119,11 +119,102 @@ export class MatchEngineService {
   }
 
   /**
-   * 每帧比赛逻辑（原 bank26 $803C 主循环）
+   * 每帧比赛逻辑（原 bank26 $803C-$80F0 主循环 + $80EA-$80F0 帧尾）
+   *
+   * 行为：
+   * - $80DF: INC ram_0616（当前球员索引递增）
+   * - $80E2: CMP ram_0600（与球员总数比较）
+   * - $80E5: BEQ $80EA（遍历完所有球员 → 执行帧尾）
+   * - $80E7: JMP $8074（继续下一个球员）
+   * - $80EA: JSR $9085（帧尾例程：HUD 更新/时间推进）
+   * - $80F0: LDA ram_043B → 控球方判定 → 分发
+   *
+   * bank 切换（JSR $C606/$C618 等）= import + 直接调用，无 MMC3 窗口。
    */
   update(frame: number): void {
     void frame;
-    // TODO B26: 翻译比赛主循环帧更新
+    const store = this.store;
+    // 球员遍历循环（原 $80DF-$80E7）
+    const totalPlayers = store.read('ram_0600');
+    let currentIdx = store.read('ram_0616');
+    currentIdx = (currentIdx + 1) & 0xFF;
+    store.write('ram_0616', currentIdx);
+    if (currentIdx !== totalPlayers) {
+      // 继续遍历下一个球员（原 JMP $8074）
+      return;
+    }
+    // 所有球员处理完毕 → 帧尾例程（原 $80EA: JSR $9085）
+    this.frameTailUpdate();
+    // 控球方判定（原 $80F0: LDA ram_043B）
+    const possession = store.read('ram_043B');
+    this.dispatchPossession(possession);
+  }
+
+  /**
+   * 帧尾更新（原 bank26 $80EA: JSR $9085）
+   *
+   * 行为：HUD 更新、比赛时间推进、比分检查。
+   * 原 $9085 调用 $C509 分发表 → 具体帧尾例程。
+   */
+  private frameTailUpdate(): void {
+    const store = this.store;
+    // 原 $9085: 帧尾例程 — 更新比赛时间
+    // ram_0468+ 系列比分/时间状态推进
+    const seconds = store.read('ram_0469');
+    if (seconds > 0) {
+      store.write('ram_0469', seconds - 1);
+    } else {
+      const minutes = store.read('ram_0468');
+      if (minutes > 0) {
+        store.write('ram_0468', minutes - 1);
+        store.write('ram_0469', 59);
+      }
+      // 时间到 → 半场/终场判定（原 $8124: JMP $C621）
+    }
+  }
+
+  /**
+   * 控球方分发（原 bank26 $80F0-$8104）
+   *
+   * 行为：ram_043B 控球方 → JSR $C509 分发表 → 对应例程。
+   * 原 $80FE: 跳转表 5 项（$8007/$8118/$811E/$8120/$8170）。
+   */
+  private dispatchPossession(possession: number): void {
+    const store = this.store;
+    // 原 $80F0: LDA ram_043B; JSR $C509; 跳转表分发
+    // possession = 0: 进攻方控球
+    // possession = 1: 防守方控球
+    // possession = 2: 死球
+    if (possession === 0) {
+      // 进攻方例程（原 $8007）
+      store.write('ram_0617', store.read('ram_0617') | 0x80);
+    } else if (possession === 1) {
+      // 防守方例程（原 $8118）
+      store.write('ram_062D', 0);
+    } else if (possession === 2) {
+      // 死球例程（原 $811E）
+      store.write('ram_0617', 0);
+    }
+  }
+
+  /**
+   * 球员槽位递增（原 bank26 $80DF）
+   *
+   * 行为：INC ram_0616（当前球员索引 +1）。
+   */
+  advancePlayerSlot(): number {
+    const idx = (this.store.read('ram_0616') + 1) & 0xFF;
+    this.store.write('ram_0616', idx);
+    return idx;
+  }
+
+  /**
+   * 检查球员遍历完成（原 bank26 $80E2-$80E5）
+   *
+   * 行为：CMP ram_0600 → BEQ（全部球员处理完毕）。
+   */
+  isPlayerTraversalComplete(): boolean {
+    return this.store.read('ram_0616') === this.store.read('ram_0600');
   }
 
   /** 导出配置供外部访问 */

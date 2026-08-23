@@ -84,7 +84,7 @@ export class PlayerMoveService {
   /**
    * 查询移动模式（原 bank22 移动表）
    */
-  findMovePattern(moveId: number): number[] {
+  findMovePattern(moveId: number): ReadonlyArray<number> {
     const entry = findMoveById(moveId);
     return entry ? entry.pattern : [];
   }

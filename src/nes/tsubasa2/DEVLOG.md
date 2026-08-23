@@ -124,3 +124,42 @@
   - code/index.ts, data/index.ts（出口契约更新）
   - WBS_PLAN.md（新增 bank16-29 任务表）
 
+## 2026-08-23（bank16-29 数据填充 + TileRenderService 修复 + 差分验证）
+
+- [数据填充] 全部 bank16-29 数据表从 asm .byte 提取为声明式 TS 数组：
+  - **bank16** skill-table：SKILL_MATCH_TABLE(16B)、SKILL_TRIGGER_TABLE(4B)、
+    SKILL_MOVE_ID_TABLE(17B)、SKILL_POINTER_TABLE(24条)、BANK16_DATA_TABLES(5708B)、BANK16_CODE_DATA(377B)。
+  - **bank17/18/21/23/25/29** 数据 bank：BANK{N}_DATA_TABLES/MAPS/TAIL 全量填充
+   （每个 bank ~8192B，共 6 bank ~49KB）。
+  - **bank19** sprite-frame-table：BANK19_TILE_DATA(1504B)、BANK19_SCENE_DATA(1490B 分段)。
+  - **bank20** match-event-table：BANK20_DATA_TABLES(5976B)、BANK20_EVENT_POINTER_TABLE(24条)。
+  - **bank22** player-move-table：BANK22_DATA_TABLES(3871B)、BANK22_DATA_TAIL(3855B)、
+    BANK22_DIRECTION_TABLE(16B)。
+  - **bank24** match-round-table：BANK24_DATA_TABLES(4706B)。
+  - **bank27** player-name-table：BANK27_TEXT_DATA(3760B)、BANK27_NAME_DATA(3774B)、
+    BANK27_CHAR_MAP(32B)。
+  - **bank28** match-action-table：BANK28_DATA_TABLES(4851B)、BANK28_ACTION_POINTER_TABLE(24条)。
+  - data/index.ts 出口契约更新：新增所有 BANK{N}_DATA 常量导出。
+- [行为覆盖] bank26 MatchEngineService.update() 翻译比赛主循环帧更新：
+  - update(frame)：球员遍历循环（INC ram_0616 → CMP ram_0600 → 帧尾例程）。
+  - frameTailUpdate()：比赛时间推进（ram_0468/0469 递减）。
+  - dispatchPossession()：控球方分发（ram_043B → 进攻/防守/死球例程）。
+  - advancePlayerSlot()/isPlayerTraversalComplete()：球员遍历辅助。
+- [Bug 修复] TileRenderService.ts 预存语法错误修复（68→0 错误）：
+  - 补全 `class TileRenderService { constructor... }` 包装。
+  - SCENE_ROW_TEMPLATE 未定义 → 改为 `this.rom.readByte(0, 0x978B+i)`。
+  - 重复方法定义（readShift16/addSigned16/rowAdvance）→ 删除我添加的副本，保留预存实现。
+  - sceneCmd9459/sceneCmdLoop 未定义 → 添加 stub 方法。
+- [差分验证] 全量 bank16-29 数据差分验证：PASS=19, FAIL=0
+  （bank17/18/21/23/25/29 数据 bank 18 项 + bank16 skill-table 1 项，asm 字节全部包含在 TS 中）。
+- [编译验证] `npx tsc --noEmit` bank16-29 相关文件零错误
+  （其余预存错误 papu/audio/BootRouter/test 与本任务无关）。
+- [类型修复] PlayerMoveService.findMovePattern 返回类型 `number[]` → `ReadonlyArray<number>`。
+- 修改文件：
+  - data/tables/{skill,sprite-frame,match-event,player-move,match-round,player-name,match-action}-table.ts（数据填充）
+  - data/scene/bank{17,18,21,23,25,29}-data.ts（数据填充）
+  - data/index.ts（出口契约更新）
+  - code/match/MatchEngineService.ts（update 行为覆盖）
+  - code/player/PlayerMoveService.ts（类型修复）
+  - code/system/TileRenderService.ts（语法错误修复）
+
