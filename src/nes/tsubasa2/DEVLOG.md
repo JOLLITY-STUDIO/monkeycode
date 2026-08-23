@@ -1,0 +1,48 @@
+# 开发日志（DEVLOG）
+
+> 记录卡点、问题修复、翻译进度。格式：`- [日期] 任务ID：内容 | 修改文件 | 编译结果`
+
+## 2026-08-23
+
+- [A1] 迭代方案落地：WBS_PLAN.md 编写完成（V0.1-V0.7 版本规划 + A-G 任务表）。
+- [A2] 开始构建 `src/game/prg` 全量骨架（新命名规范 v2，Java/Spring 风格）。
+  - 发现：`src/game/index.ts`、`prg/code/index.ts` 引用了大量不存在的 Service（旧命名 Bank00Service 等），
+    以及 `src/core/nes-ram`、`src/game/rom.ts` 缺失 → 全部需要重建。
+  - 决定：按 v2 命名规范重建（`GameSystemService`/`BootRouter`/`HardwareInitService`/`InterruptService` 等）。
+- [A4] Boot 链路分析（bank30/bank02/bank00 asm）：
+  - Reset `$C64E`：PPU/APU 初始化、RAM $0000-$07FF 清零、ram_0020=$08/ram_0021=$06、
+    `JSR $CB35`（清 NT0/NT1）、`JSR $CB8B`（OAM 全 $F8 隐藏）、`LDA #$00; JMP $CEFE`。
+  - `$CEFE`：关 IRQ、隐藏 OAM、清 NT、关 NMI → `JMP $C400` → 设置 PPU + 切 bank → `JMP $A200`（bank2 场景入口）。
+  - NMI `$C76E`：`ram_001B` bit6 决定走主 NMI（$C775：OAM DMA、$0498 渲染缓冲、调色板、滚动、CHR bank）或
+    游戏逻辑 NMI（$C421：切 bank 调用帧更新）。
+  - Bank02 `$8000`：NMI 渲染子程（$05E8 缓冲格式：`count|0x80, addrHi, addrLo, tile...`，0 终止），
+    滚动（ram_0079/007A/007B/0044）、手柄读取（$4016/$4017 → ram_001B~001E）。
+- [A5] 页面创建计划：小程序 `pages/index`（canvas 渲染 + touch 输入）、HTML 测试台 `index.html` + `test/main.ts`。
+- [A2/A3 落地] V0.1 骨架完成（新命名规范 v2）：
+  - `src/game/prg/`：`code/`（system/scene/story/player/team/match/skill/sprite/audio 全部 Service stub）
+    + `data/`（store/DataStore、tables/ 全表 stub）+ `index.ts` 出口契约重写。
+  - `src/game/index.ts`：Tsubasa2 组合根（DataStore → InputService → BootRouter + 各场景注册 → InterruptService）。
+  - `src/game/runtime/`：`GameRuntime.ts`（PpuRenderTarget/FrameTarget 结构契约）+ `HeadlessRuntime.ts`
+    （无头 PPU 运行平台：core PPU + Mapper4 初始 CHR 装载 + 控制器，不跑 CPU）。
+- [A3 关键修复] 无头渲染链路：
+  - `HeadlessRuntime` 补 `setMirroring(HORIZONTAL_MIRRORING)`（此前未调用 → `ntable1` 未初始化 → `renderBgScanline` 崩溃）。
+  - `Tsubasa2.frame()` 从 `NES` 类改为结构化 `FrameTarget` 契约（controllers + ppu），外部即插即用。
+  - core PPU 数据成员（buffer/spriteMem/reg*）在构造器内赋值，不在类类型中 → 以 `PpuRenderTarget` 结构性类型 + cast 适配。
+- [A5 落地] 页面创建：
+  - 小程序 `pages/tsubasa2/tsubasa2.{ts,wxml,wxss,json}`：256×240 type=2d Canvas + 虚拟手柄（触摸 → setButton）。
+  - HTML 测试台 `test/main.ts`：键盘/鼠标手柄、冒烟/集成/输入/性能/边界测试、截图、报告导出。
+  - `typings/wx.d.ts`：小程序全局类型最小集（Page/App/wx）。
+- [A6 验证] boot 冒烟（esbuild 打包 + node 无头运行）：
+  - `BOOT_SMOKE scene=0 ctrl=8 mask=1e oam0=f8 f5_nmi=1 bufNonZero=53760` →
+    Reset 链路 / 场景调度(Opening) / NMI 标志 / CHR+镜像渲染全部工作（全屏深灰 = NTSC 调色板索引 0 正常行为）。
+  - `npx tsc --noEmit` 零错误。
+
+## 已知问题 / BUG
+
+- 无遗留问题（进行中任务见 WBS_PLAN.md）。
+
+## 下一步
+
+- V0.2：bank01 球员数据表 + PlayerQueryService 真实翻译；bank30 清 NT（$CB35）/OAM 隐藏（$CB8B）对照实现。
+- V0.3：Opening/Title/Password 场景真实翻译（对照 $A4C0/$A559/$A57B）；bank02 $A491 场景表 4-23 补齐。
+- V0.4：Story 场景 + ScriptEngine 脚本 VM 翻译（bank18/19 剧情数据提取）。

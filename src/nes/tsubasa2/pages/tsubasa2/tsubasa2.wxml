@@ -1,0 +1,24 @@
+<!-- 天使之翼2 游戏页：256×240 Canvas + 虚拟手柄 -->
+<view class="page">
+  <canvas id="gameCanvas" type="2d" class="game-canvas"></canvas>
+
+  <!-- 虚拟手柄（触摸映射 core Controller 按键位） -->
+  <view class="pad">
+    <view class="pad-dpad">
+      <view class="pad-key dp" data-key="UP" bindtouchstart="onPadDown" bindtouchend="onPadUp" bindtouchcancel="onPadUp">▲</view>
+      <view class="pad-key dp" data-key="DOWN" bindtouchstart="onPadDown" bindtouchend="onPadUp" bindtouchcancel="onPadUp">▼</view>
+      <view class="pad-key dp" data-key="LEFT" bindtouchstart="onPadDown" bindtouchend="onPadUp" bindtouchcancel="onPadUp">◀</view>
+      <view class="pad-key dp" data-key="RIGHT" bindtouchstart="onPadDown" bindtouchend="onPadUp" bindtouchcancel="onPadUp">▶</view>
+    </view>
+    <view class="pad-sep"></view>
+    <view class="pad-ab">
+      <view class="pad-key" data-key="SELECT" bindtouchstart="onPadDown" bindtouchend="onPadUp" bindtouchcancel="onPadUp">SEL</view>
+      <view class="pad-key" data-key="START" bindtouchstart="onPadDown" bindtouchend="onPadUp" bindtouchcancel="onPadUp">START</view>
+    </view>
+    <view class="pad-sep"></view>
+    <view class="pad-ab">
+      <view class="pad-key" data-key="B" bindtouchstart="onPadDown" bindtouchend="onPadUp" bindtouchcancel="onPadUp">B</view>
+      <view class="pad-key primary" data-key="A" bindtouchstart="onPadDown" bindtouchend="onPadUp" bindtouchcancel="onPadUp">A</view>
+    </view>
+  </view>
+</view>

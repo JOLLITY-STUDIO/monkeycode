@@ -1,0 +1,71 @@
+/* 天使之翼2 游戏页样式 */
+.page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #0f0f23;
+  overflow: hidden;
+}
+
+/* 游戏画面：3x 放大（256×240 → 768×720），居中 */
+.game-canvas {
+  flex: 1 1 auto;
+  min-height: 0;
+  width: 100%;
+  image-rendering: pixelated;
+}
+
+/* 虚拟手柄区 */
+.pad {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24rpx;
+  padding: 24rpx 0 40rpx;
+  background: #1a1a2e;
+  border-top: 2rpx solid #2a2a4a;
+}
+
+.pad-dpad,
+.pad-ab {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.pad-key {
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 16rpx;
+  background: #2a2a4a;
+  border: 2rpx solid #3a3a5e;
+  color: #e6edf3;
+  font-size: 28rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.pad-key.primary {
+  background: #1f6feb;
+  border-color: #388bfd;
+}
+
+.pad-key:active {
+  background: #388bfd;
+  color: #fff;
+}
+
+.pad-key.dp {
+  font-size: 36rpx;
+}
+
+.pad-sep {
+  width: 2rpx;
+  height: 72rpx;
+  background: #2a2a4a;
+}

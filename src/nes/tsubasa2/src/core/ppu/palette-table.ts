@@ -1,3 +1,4 @@
+// @ts-nocheck  // tsnes 移植核心，非翻译层，跳过类型检查
 class PaletteTable {
   constructor() {
     this.curTable = new Uint32Array(64);

@@ -1,5 +1,6 @@
 // 从 jsnes (d:/studio/github/monkeycode/src/nes/tools/jsnes/src/utils.js) 复制
 // tsnes 是 jsnes 的 TS 版, 此文件补全遗漏的 utils 模块
+// @ts-nocheck  // tsnes 移植核心，非翻译层，跳过类型检查
 
 export function copyArrayElements(src: ArrayLike<number>, srcPos: number, dest: ArrayLike<number>, destPos: number, length: number): void {
   for (let i = 0; i < length; ++i) {

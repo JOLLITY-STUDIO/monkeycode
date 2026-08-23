@@ -1,3 +1,4 @@
+// @ts-nocheck  // tsnes 移植核心，非翻译层，跳过类型检查
 /**
  * Tracer — 可选的 CPU 指令级 trace + 硬件寄存器写入跟踪
  *

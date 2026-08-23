@@ -1,37 +1,11 @@
 /**
- * prg/index.ts 鈥?缈昏瘧灞傚嚭鍙ｅ绾? *
- * code/ = 涓氬姟閫昏緫 (Service, 鎸変笟鍔″煙鍒嗗寘)
- * data/ = 鏁版嵁妯″瀷 (Table, ORM 椋庢牸)
+ * prg/index.ts — 翻译层出口契约
  *
- * 鍛藉悕瑙勮寖 v2 (Java/Spring 椋庢牸): 寮冪敤 bankXX 鍓嶇紑, 瑙?.codebuddy/rules/鏂版灦鏋勫懡鍚嶈鑼?mdc
+ * code/ = 业务逻辑（Service，按业务域分包）
+ * data/ = 数据模型（Table，ORM 风格）
+ *
+ * 命名规范 v2（Java/Spring 风格）：禁止 bankXX 前缀。
+ * 外部只能通过 src/game/index.ts（组合根）访问。
  */
-// 灏忕▼搴忕紪璇戝櫒瀵?`export *` re-export 鏀寔鏈夐檺, 鏀逛负鍏?import 鍐?export (涓?src/index.ts 涓�鑷?
-import {
-  Bank00Service, Bank02Service, NmiCallbackIndex, HardwareInitService,
-  InterruptService, TitleSceneController,
-  PasswordCallbackHandler, ResultSceneController,
-  BootBackgroundRenderer,
-  ScriptEngine, ScriptOpcodes, ScriptLoader, CharMap,
-  PlayerQueryService, TeamRosterService,
-  MatchEngineService, MatchTurnService, MatchAuxService, MatchHudService, MatchConfigService,
-  SkillService, SpriteService, SpriteAnimationService, AudioService,
-  NMI_CALLBACK_TABLE, PASSWORD_DISPATCH_TABLE,
-  WAIT_FRAME_TABLE, initScriptOpcodes, SE_POINTER_TABLE, BGM_DATA_MAP,
-  PrgBankService, PrgWindow,
-} from './code/index';
-import { DataStore } from './data/store/DataStore';
-
-export {
-  Bank00Service, Bank02Service, NmiCallbackIndex, HardwareInitService,
-  InterruptService, TitleSceneController,
-  PasswordCallbackHandler, ResultSceneController,
-  BootBackgroundRenderer,
-  ScriptEngine, ScriptOpcodes, ScriptLoader, CharMap,
-  PlayerQueryService, TeamRosterService,
-  MatchEngineService, MatchTurnService, MatchAuxService, MatchHudService, MatchConfigService,
-  SkillService, SpriteService, SpriteAnimationService, AudioService,
-  NMI_CALLBACK_TABLE, PASSWORD_DISPATCH_TABLE,
-  WAIT_FRAME_TABLE, initScriptOpcodes, SE_POINTER_TABLE, BGM_DATA_MAP,
-  PrgBankService, PrgWindow,
-  DataStore,
-};
+export * from './code/index';
+export * from './data/index';
