@@ -1,4 +1,5 @@
-=== TS H5 版本 300 帧 CHR 验证 ===
+﻿[tsubasa] WebAudio 锟斤拷锟斤拷锟矫ｏ拷锟斤拷频锟斤拷锟斤拷
+=== TS H5 鐗堟湰 300 甯?CHR 楠岃瘉 ===
 frame | ram_0490-0497 (req)                        | ram_0022 | ram_00ED | ram_001B | ram_0048
 ------+--------------------------------------------+----------+----------+----------+----------
     1 | [0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00] | $00     |        0 | $80     | $00
@@ -9,19 +10,24 @@ frame | ram_0490-0497 (req)                        | ram_0022 | ram_00ED | ram_0
     9 | [0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00] | $00     |        0 | $80     | $00
    10 | [0x00, 0x02, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00] | $00     |        0 | $80     | $00
    50 | [0x22, 0x02, 0x00, 0x00, 0x22, 0x00, 0x00, 0x00] | $00     |        0 | $80     | $00
+[Tsubasa2] frame=60 scene=0 ram_001B=80 ram_0628=0 bufNonZero=53760
   100 | [0x30, 0x02, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00] | $00     |        0 | $80     | $01
+[Tsubasa2] frame=120 scene=0 ram_001B=80 ram_0628=0 bufNonZero=53760
   150 | [0x30, 0x02, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00] | $00     |        0 | $80     | $01
+[Tsubasa2] frame=180 scene=0 ram_001B=80 ram_0628=0 bufNonZero=53760
   200 | [0x30, 0x02, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00] | $00     |        0 | $80     | $01
+[Tsubasa2] frame=240 scene=0 ram_001B=80 ram_0628=0 bufNonZero=53760
   250 | [0x30, 0x02, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00] | $00     |        0 | $80     | $01
+[Tsubasa2] frame=300 scene=0 ram_001B=80 ram_0628=0 bufNonZero=53760
   300 | [0x30, 0x02, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00] | $00     |        0 | $80     | $01
 
-=== 最终状态 (frame 300) ===
+=== 鏈€缁堢姸鎬?(frame 300) ===
 ram_0490-0497: [0x30, 0x02, 0x00, 0x00, 0x30, 0x00, 0x00, 0x00]
 ram_00ED: 0
 ram_001B: $80
 ram_0048: $1
 
-=== 差分验证（对比 tsnes）===
+=== 宸垎楠岃瘉锛堝姣?tsnes锛?==
   req0: FAIL (expected=0x58, actual=0x30)
   req1: FAIL (expected=0x58, actual=0x2)
   req2: PASS (0x0)
@@ -30,4 +36,6 @@ ram_0048: $1
   req5: FAIL (expected=0xE5, actual=0x0)
   req6: FAIL (expected=0x1, actual=0x0)
   req7: FAIL (expected=0x50, actual=0x0)
-差分结果: PASS=1, FAIL=7
+宸垎缁撴灉: PASS=1, FAIL=7
+
+Output: d:\studio\github\monkeycode\src\nes\tsubasa2\debug\verify_ts_chr.txt

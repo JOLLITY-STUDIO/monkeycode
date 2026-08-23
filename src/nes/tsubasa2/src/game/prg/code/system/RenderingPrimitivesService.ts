@@ -325,6 +325,11 @@ export class RenderingPrimitivesService {
     store.writeByte(0x005d, (v >> 8) & 0xff);
     store.writeByte(0x008e, cfg[0]);
     store.writeByte(0x008f, cfg[1]);
+    // $8B1C-$8B39: 通过 sceneId×2 查 CHR 指针表设置 ram_0063/0064
+    // ram_0063/0064 = CHR 指针表[configId]（CPU 地址，指向 bank7 的 CHR 配置）
+    const ptr = OPENING_CHR_POINTER_TABLE[configId & 0x1f] ?? OPENING_CHR_POINTER_TABLE[0];
+    store.writeByte(0x0063, ptr & 0xFF);
+    store.writeByte(0x0064, (ptr >> 8) & 0xFF);
     // $8B81-$8B85: LDA $005D; AND #$0C; BNE $8B93 — 基址不在属性区才调整
     if ((store.readByte(0x005d) & 0x0c) === 0) {
       // $8B87-$8B91: LDA $007B; ASL×2; EOR $005B; AND #$04; ORA $005D; STA $005D
@@ -378,39 +383,48 @@ export class RenderingPrimitivesService {
    */
   loadSceneStream(rom: { readByte(bank: number, addr: number): number }): void {
     const store = this.store;
-    // $8BB3: ram_0063 += 6（跳过 CHR 配置）
-    let p63 = (store.readByte(0x0063) + 6) & 0xFF;
-    let p64 = (store.readByte(0x0064) + (p63 < 6 ? 1 : 0)) & 0xFF;
+    const bank = 7;
+    // $8BB3: ram_0063 += 6（16 位，跳过 CHR 配置 6 字节）
+    let p63 = store.readByte(0x0063);
+    let p64 = store.readByte(0x0064);
+    const sum63 = p63 + 6;
+    p63 = sum63 & 0xFF;
+    if (sum63 > 0xFF) p64 = (p64 + 1) & 0xFF;
     store.writeByte(0x0063, p63);
     store.writeByte(0x0064, p64);
-    // $8BC0: JSR $9DEE — ram_005E × ram_005F → 16 位（存 ram_00EC/00ED）
+    // $8BC0: LDA $005E; LDX $005F; JSR $9DEE → ram_00EC:00ED = width * height
     const w = store.readByte(0x005E);
     const h = store.readByte(0x005F);
     const prod = (w * h) & 0xFFFF;
     store.writeByte(0x00EC, prod & 0xFF);
     store.writeByte(0x00ED, (prod >> 8) & 0xFF);
-    // $8BC7: ram_0070 = ram_0063 + ram_00EC（指令流基址）
-    let p70 = (p63 + store.readByte(0x00EC)) & 0xFF;
-    let p71 = (p64 + store.readByte(0x00ED) + (p70 < p63 ? 1 : 0)) & 0xFF;
+    // $8BC7: ram_0070 = ram_0063 + ram_00EC（16 位）
+    const ec = store.readByte(0x00EC);
+    const ed = store.readByte(0x00ED);
+    const sum70 = p63 + ec;
+    let p70 = sum70 & 0xFF;
+    let p71 = (p64 + ed + (sum70 > 0xFF ? 1 : 0)) & 0xFF;
     store.writeByte(0x0070, p70);
     store.writeByte(0x0071, p71);
-    // $8BD4: ram_0060 = 0
+    // $8BD4: ram_0060 = 0; ram_0061 = 0
     store.writeByte(0x0060, 0);
     store.writeByte(0x0061, 0);
-    // $8BD8: LDY #$01; LDA ($0070),Y → 读指令流 byte 1
-    const bank = 7; // bank7 固定在 $A000-$BFFF 窗口（由 $8B0D: LDX #$07; JSR $C4B9 切换）
-    const cmd1 = rom.readByte(bank, (p71 << 8) | p70) & 0xFF;
-    // $8BDC: AND #$E0 → ram_0062（命令高 3 位）
-    store.writeByte(0x0062, cmd1 & 0xE0);
-    // $8BE2: AND #$1F → X（参数）
-    const param = cmd1 & 0x1F;
-    // $8BE5: LSR; ROR $0060; LSR; ROR $0060 → ram_0060 = param 右移
-    store.writeByte(0x0060, (param >> 2) & 0xFF);
-    store.writeByte(0x0061, 0);
-    // $8BEB: STA $0061（低字节）
-    store.writeByte(0x0061, param & 0x03);
-    // $8BED: TXA; BEQ $8BF3（param=0 跳过第二参数）
+    // $8BD8: LDY #$01; LDA ($0070),Y → 读指令流 byte[1]
     let y = 1;
+    const cmd1 = rom.readByte(bank, ((p71 << 8) | p70) + y) & 0xFF;
+    // $8BDC: AND #$E0 → ram_0062
+    store.writeByte(0x0062, cmd1 & 0xE0);
+    // $8BE2: AND #$1F → X = param
+    const param = cmd1 & 0x1F;
+    // $8BE5-$8BE9: LSR; ROR $0060; LSR; ROR $0060 → ram_0060 = param 的 bit0/bit1 移到位7/6
+    let a = param;
+    let r60 = 0;
+    const c1 = a & 1; a >>= 1; r60 = (c1 << 7) | (r60 >> 1);
+    const c2 = a & 1; a >>= 1; r60 = (c2 << 7) | (r60 >> 1);
+    store.writeByte(0x0060, r60 & 0xFF);
+    // $8BEB: STA $0061 → ram_0061 = A（移位 2 次后的 param = param >> 2）
+    store.writeByte(0x0061, a & 0xFF);
+    // $8BED: TXA; BEQ $8BF3（param=0 跳过第二参数）
     if (param !== 0) {
       // $8BF0: INY; LDA ($0070),Y → ram_0072
       y = 2;
@@ -419,82 +433,65 @@ export class RenderingPrimitivesService {
     }
     // $8BF5: LDA ram_0062; AND #$C0 → 分支
     const cmdHi = store.readByte(0x0062) & 0xC0;
-    // $8C03/$8C0C/$8C15/$8C43 设置 ram_006D/006E/006F
     let stepD: number, stepE: number, stepF: number;
     if (cmdHi === 0x00) {
-      // $8C43: 正向单行
-      // ram_0063 += ram_005F - 1
-      p63 = (p63 + h - 1) & 0xFF;
-      p64 = (p64 + (p63 + h - 1 > 0xFF ? 1 : 0)) & 0xFF;
+      // $8C43: 正向单行 — ram_0063 += ram_005F - 1
+      const add = h - 1;
+      const s = p63 + add;
+      p63 = s & 0xFF;
+      if (s > 0xFF) p64 = (p64 + 1) & 0xFF;
       store.writeByte(0x0063, p63);
       store.writeByte(0x0064, p64);
-      stepD = 0xFC; // $8C53
-      stepE = 0xFF; // $8C55
-      stepF = h;    // $8C57
+      stepD = 0xFC; stepE = 0xFF; stepF = h;
     } else if (cmdHi === 0x40) {
-      // $8C15: 反向，减 1 行
-      // JSR $9DEE(ram_005E, ram_005F) → ram_00EC/ED
-      // ram_00EC -= 1; ram_0063 += ram_00EC
-      const ec = (store.readByte(0x00EC) - 1) & 0xFF;
-      const ed = (store.readByte(0x00ED) - (ec === 0xFF ? 1 : 0)) & 0xFF;
-      store.writeByte(0x00EC, ec);
-      store.writeByte(0x00ED, ed);
-      p63 = (p63 + ec) & 0xFF;
-      p64 = (p64 + ed + (p63 < ec ? 1 : 0)) & 0xFF;
+      // $8C15: 反向减 1 行
+      const ec2 = (ec - 1) & 0xFF;
+      const ed2 = (ed - (ec2 === 0xFF ? 1 : 0)) & 0xFF;
+      store.writeByte(0x00EC, ec2);
+      store.writeByte(0x00ED, ed2);
+      const s = p63 + ec2;
+      p63 = s & 0xFF;
+      p64 = (p64 + ed2 + (s > 0xFF ? 1 : 0)) & 0xFF;
       store.writeByte(0x0063, p63);
       store.writeByte(0x0064, p64);
-      stepD = 0x00 - h; // $8C3C: LDA #$00; SEC; SBC $005F
-      stepE = 0xFF;
-      stepF = 0xFC;
+      stepD = (0x100 - h) & 0xFF; stepE = 0xFF; stepF = 0xFC;
     } else if (cmdHi === 0x80) {
-      // $8C0C: 4 列 × 1 行
-      stepD = 0x04;
-      stepE = 0x01;
-      stepF = h;
+      stepD = 0x04; stepE = 0x01; stepF = h;
     } else {
-      // $8C03: 4 列 × 1 行变体（$C0）
-      stepD = 0x04;
-      stepE = 0x01;
-      stepF = h;
+      stepD = 0x04; stepE = 0x01; stepF = h;
     }
-    // $8C59: STA $006D; STX $006E; STY $006F
+    // $8C59: STX $006D... 实际是 .byte $85,$6D = STA $006D; STX $006E; STY $006F
+    // 但 asm $8C59 是 .byte $85,$6D 然后 $8C5B: STX $006E; $8C5D: STY $006F
+    // A=stepD, X=stepE, Y=stepF
     store.writeByte(0x006D, stepD & 0xFF);
     store.writeByte(0x006E, stepE & 0xFF);
     store.writeByte(0x006F, stepF & 0xFF);
     // $8C5F: LDA $005E; CMP #$07; BCC $8C89
     const width = store.readByte(0x005E);
     if (width >= 7) {
-      // $8C65: ram_005E -= 7; LDY #$07; JSR $8E15（7 tile 渲染）
+      // $8C65: ram_005E -= 7; LDY #$07; JSR $8E15（7 tile 渲染 + 回调）
       store.writeByte(0x005E, width - 7);
-      // JSR $8E15 — 调用 tile 渲染（读取 tile 索引 → $8EF0 写 NT）
-      // H5: 此处设置回调，由后续帧驱动
       store.writeByte(0x007B, 1);
-      // $8C75-$8C86: 注册回调 $8CB9（LDA #$B9; STA $0000,X; LDA #$8C; STA $0001,X; JSR $9F69）
-      // H5: 回调机制由场景控制器逐帧调用 loadSceneStreamNext() 替代
-    } else {
-      // $8C89: LDY ram_005E; LDX ram_005F; JSR $8E15
-      // H5: 直接渲染 width 个 tile
     }
-    // $8CA5-$8CB7: ram_008E = ram_0075; ram_008F = ram_0076; ram_0044/45/7A = 0; JMP $C4B9
+    // $8CA5: ram_008E = ram_0075; ram_008F = ram_0076
     store.writeByte(0x008E, store.readByte(0x0075));
     store.writeByte(0x008F, store.readByte(0x0076));
+    // $8CAF: ram_0044/45/7A = 0
     store.writeByte(0x0044, 0);
     store.writeByte(0x0045, 0);
     store.writeByte(0x007A, 0);
-    // $8CBA: LDX #$07; JSR $C4B9（切 bank 7 到 $A000 窗口 — H5: rom 已是 bank 7）
     // $8CBF: ram_0069/006A = 0
     store.writeByte(0x0069, 0);
     store.writeByte(0x006A, 0);
-    // $8CC5: BIT ram_0062; BMI $8CD6
+    // $8CC5: BIT ram_0062; BMI $8CD6（bit7 置位跳过取补）
     if ((store.readByte(0x0062) & 0x80) === 0) {
-      // $8CC9: ram_0060 = 0 - ram_0060; ram_0061 = 0 - ram_0061（取补）
-      const m0 = (0 - store.readByte(0x0060)) & 0xFF;
-      const m1 = (0 - store.readByte(0x0061) - (m0 !== 0 ? 1 : 0)) & 0xFF;
-      store.writeByte(0x0060, m0);
-      store.writeByte(0x0061, m1);
+      // $8CC9: ram_0060 = 0 - ram_0060; ram_0061 = 0 - ram_0061（16 位取补）
+      const m0 = store.readByte(0x0060);
+      const m1 = store.readByte(0x0061);
+      const neg = (0x10000 - (m1 << 8 | m0)) & 0xFFFF;
+      store.writeByte(0x0060, neg & 0xFF);
+      store.writeByte(0x0061, (neg >> 8) & 0xFF);
     }
-    // $8CD6-$8D1D: tile 渲染循环
-    // H5: 此循环通过 NMI 回调逐帧执行，由 loadSceneStreamNext() 翻译
   }
 
   /**

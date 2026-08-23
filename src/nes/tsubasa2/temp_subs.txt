@@ -1,0 +1,515 @@
+﻿===== sub $9B91 @line 1326 =====
+    LDA #$00                   ; $9B91
+    STA $0568                  ; $9B93
+    STA $0588                  ; $9B96
+    STA $05A8                  ; $9B99
+    STA $05C8                  ; $9B9C
+    RTS                        ; $9B9F
+    JSR $99F0                  ; $9BA0
+    JSR $98A0                  ; $9BA3
+    JMP $9B7F                  ; $9BA6
+    STA $0046                  ; $9BA9
+    TAY                        ; $9BAB
+    BMI $9BBC                  ; $9BAC
+    CLC                        ; $9BAE
+    ADC $0044                  ; $9BAF
+    CMP #$F0                   ; $9BB1
+    BCC $9BB9                  ; $9BB3
+    ADC #$0F                   ; $9BB5
+    INC $0045                  ; $9BB7
+    STA $0044                  ; $9BB9
+    RTS                        ; $9BBB
+    CLC                        ; $9BBC
+    ADC $0044                  ; $9BBD
+    CMP #$F0                   ; $9BBF
+    BCC $9BC7                  ; $9BC1
+    SBC #$10                   ; $9BC3
+    DEC $0045                  ; $9BC5
+    STA $0044                  ; $9BC7
+    RTS                        ; $9BC9
+    STA $0047                  ; $9BCA
+    PHA                        ; $9BCC
+    CLC                        ; $9BCD
+    ADC $007A                  ; $9BCE
+===== sub $9F89 @line 1833 =====
+    LDA $0001,X                ; $9F89
+    BEQ $9F95                  ; $9F8B
+    LDA $0000,X                ; $9F8D
+    BNE $9F95                  ; $9F8F
+    LDA #$01                   ; $9F91
+    STA $0000,X                ; $9F93
+    RTS                        ; $9F95
+    LDA $0000,X                ; $9F96
+    CMP #$FF                   ; $9F98
+    BNE $9FA1                  ; $9F9A
+    LDA #$01                   ; $9F9C
+    JSR $9FA8                  ; $9F9E
+    LDA #$00                   ; $9FA1
+    STA $0000,X                ; $9FA3
+    RTS                        ; $9FA5
+    .byte $A9,$00
+    STA $0019                  ; $9FA8
+    TXA                        ; $9FAA
+    PHA                        ; $9FAB
+    TYA                        ; $9FAC
+    PHA                        ; $9FAD
+    LDA $00ED                  ; $9FAE
+    PHA                        ; $9FB0
+    LDA $00EC                  ; $9FB1
+    PHA                        ; $9FB3
+    LDA $00EB                  ; $9FB4
+    PHA                        ; $9FB6
+    LDA $00EA                  ; $9FB7
+    PHA                        ; $9FB9
+    LDA $00E9                  ; $9FBA
+    PHA                        ; $9FBC
+    LDA $00E8                  ; $9FBD
+===== sub $9F96 @line 1840 =====
+    LDA $0000,X                ; $9F96
+    CMP #$FF                   ; $9F98
+    BNE $9FA1                  ; $9F9A
+    LDA #$01                   ; $9F9C
+    JSR $9FA8                  ; $9F9E
+    LDA #$00                   ; $9FA1
+    STA $0000,X                ; $9FA3
+    RTS                        ; $9FA5
+    .byte $A9,$00
+    STA $0019                  ; $9FA8
+    TXA                        ; $9FAA
+    PHA                        ; $9FAB
+    TYA                        ; $9FAC
+    PHA                        ; $9FAD
+    LDA $00ED                  ; $9FAE
+    PHA                        ; $9FB0
+    LDA $00EC                  ; $9FB1
+    PHA                        ; $9FB3
+    LDA $00EB                  ; $9FB4
+    PHA                        ; $9FB6
+    LDA $00EA                  ; $9FB7
+    PHA                        ; $9FB9
+    LDA $00E9                  ; $9FBA
+    PHA                        ; $9FBC
+    LDA $00E8                  ; $9FBD
+    PHA                        ; $9FBF
+    LDA $00E7                  ; $9FC0
+    PHA                        ; $9FC2
+    LDA $00E6                  ; $9FC3
+    PHA                        ; $9FC5
+    TSX                        ; $9FC6
+    TXA                        ; $9FC7
+===== sub $9E7C @line 1724 =====
+    STA $00ED                  ; $9E7C
+    LDA #$0A                   ; $9E7E
+    STA $00EC                  ; $9E80
+    JSR $9E36                  ; $9E82
+    LDA $00EA                  ; $9E85
+    STA $00EB                  ; $9E87
+    JSR $9E36                  ; $9E89
+    LDA $00EA                  ; $9E8C
+    ASL                        ; $9E8E
+    ASL                        ; $9E8F
+    ASL                        ; $9E90
+    ASL                        ; $9E91
+    ORA $00EB                  ; $9E92
+    STA $00EB                  ; $9E94
+    JSR $9E36                  ; $9E96
+    LDA $00EA                  ; $9E99
+    STA $00ED                  ; $9E9B
+    LDA $00EB                  ; $9E9D
+    STA $00EC                  ; $9E9F
+    RTS                        ; $9EA1
+    .byte $0F,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+    .byte $0F,$00,$00,$00,$00,$00,$10,$10,$20,$20,$30,$30,$20,$20,$10,$10
+    .byte $0F,$00,$00,$00,$10,$10,$10,$20,$20,$20,$30,$30,$30,$20,$20,$20
+    .byte $0F,$00,$10,$10,$10,$20,$20,$30,$30,$30,$30,$30,$30,$30,$30,$30
+    .byte $00,$00,$00,$00,$10,$00,$00,$00,$F0,$00,$00,$A2,$01
+    LDA $0000,X                ; $9EEF
+    BEQ $9EFB                  ; $9EF1
+    CMP #$FF                   ; $9EF3
+    BEQ $9F52                  ; $9EF5
+    DEC $0000,X                ; $9EF7
+    BEQ $9F0F                  ; $9EF9
+    .byte $8A
+===== sub $9E36 @line 1684 =====
+    LDA #$00                   ; $9E36
+    STA $00EA                  ; $9E38
+    LDX #$08                   ; $9E3A
+    ASL $00ED                  ; $9E3C
+    ROL $00EA                  ; $9E3E
+    LDA $00EA                  ; $9E40
+    SEC                        ; $9E42
+    SBC $00EC                  ; $9E43
+    BCC $9E4B                  ; $9E45
+    STA $00EA                  ; $9E47
+    INC $00ED                  ; $9E49
+    DEX                        ; $9E4B
+    BNE $9E3C                  ; $9E4C
+    RTS                        ; $9E4E
+    LDA #$0A                   ; $9E4F
+    STA $00EA                  ; $9E51
+    LDA #$00                   ; $9E53
+    STA $00EB                  ; $9E55
+    LDA #$03                   ; $9E57
+    STA $00E6                  ; $9E59
+    JSR $9E0C                  ; $9E5B
+    LDA $00E8                  ; $9E5E
+    STA $00E7                  ; $9E60
+    JSR $9E0C                  ; $9E62
+    LDA $00E8                  ; $9E65
+    ASL                        ; $9E67
+    ASL                        ; $9E68
+    ASL                        ; $9E69
+    ASL                        ; $9E6A
+    ORA $00E7                  ; $9E6B
+    PHA                        ; $9E6D
+    DEC $00E6                  ; $9E6E
+===== sub $9FA8 @line 1849 =====
+    STA $0019                  ; $9FA8
+    TXA                        ; $9FAA
+    PHA                        ; $9FAB
+    TYA                        ; $9FAC
+    PHA                        ; $9FAD
+    LDA $00ED                  ; $9FAE
+    PHA                        ; $9FB0
+    LDA $00EC                  ; $9FB1
+    PHA                        ; $9FB3
+    LDA $00EB                  ; $9FB4
+    PHA                        ; $9FB6
+    LDA $00EA                  ; $9FB7
+    PHA                        ; $9FB9
+    LDA $00E9                  ; $9FBA
+    PHA                        ; $9FBC
+    LDA $00E8                  ; $9FBD
+    PHA                        ; $9FBF
+    LDA $00E7                  ; $9FC0
+    PHA                        ; $9FC2
+    LDA $00E6                  ; $9FC3
+    PHA                        ; $9FC5
+    TSX                        ; $9FC6
+    TXA                        ; $9FC7
+    LDX $0000                  ; $9FC8
+    STA $0001,X                ; $9FCA
+    LDA a: $0024               ; $9FCC
+    STA $0002,X                ; $9FCF
+    LDA a: $0025               ; $9FD1
+    STA $0003,X                ; $9FD4
+    LDA $0019                  ; $9FD6
+    BEQ $9FDE                  ; $9FD8
+    CMP #$FF                   ; $9FDA
+===== sub $88CA @line undefined =====
+NOT FOUND
+===== sub $9B28 @line undefined =====
+NOT FOUND
+===== sub $9B5E @line undefined =====
+NOT FOUND
+===== sub $9B7F @line undefined =====
+NOT FOUND
+===== sub $9F69 @line 1817 =====
+    STA $0002,X                ; $9F69
+    DEY                        ; $9F6B
+    DEY                        ; $9F6C
+    LDA $0000,X                ; $9F6D
+    STA $0101,Y                ; $9F6F
+    LDA $0001,X                ; $9F72
+    STA $0102,Y                ; $9F74
+    STY $0001,X                ; $9F77
+    LDA #$FF                   ; $9F79
+    STA $0000,X                ; $9F7B
+    RTS                        ; $9F7D
+    .byte $A9,$00
+    LDX $0000                  ; $9F80
+    STA $0000,X                ; $9F82
+    STA $0001,X                ; $9F84
+    JMP $9EFB                  ; $9F86
+    LDA $0001,X                ; $9F89
+    BEQ $9F95                  ; $9F8B
+    LDA $0000,X                ; $9F8D
+    BNE $9F95                  ; $9F8F
+    LDA #$01                   ; $9F91
+    STA $0000,X                ; $9F93
+    RTS                        ; $9F95
+    LDA $0000,X                ; $9F96
+    CMP #$FF                   ; $9F98
+    BNE $9FA1                  ; $9F9A
+    LDA #$01                   ; $9F9C
+    JSR $9FA8                  ; $9F9E
+    LDA #$00                   ; $9FA1
+    STA $0000,X                ; $9FA3
+    RTS                        ; $9FA5
+    .byte $A9,$00
+===== main $8895 @line 861 =====
+    STA $0057                  ; $8895
+    LDX #$0D                   ; $8897
+    LDA #$A8                   ; $8899
+    STA $0000,X                ; $889B
+    LDA #$88                   ; $889D
+    STA $0001,X                ; $889F
+    LDY #$A0                   ; $88A1
+    LDA #$00                   ; $88A3
+    JSR $9F69                  ; $88A5
+    RTS                        ; $88A8
+    LDX #$02                   ; $88A9
+    JSR $C4B9                  ; $88AB
+    JMP $A206                  ; $88AE
+    LDA $0054                  ; $88B1
+    EOR #$FF                   ; $88B3
+    CLC                        ; $88B5
+    ADC #$1F                   ; $88B6
+    TAX                        ; $88B8
+    LDY #$08                   ; $88B9
+    LDA $004F                  ; $88BB
+    AND #$E0                   ; $88BD
+    ORA $0054                  ; $88BF
+    STA $00E6                  ; $88C1
+    LDA $0050                  ; $88C3
+    STA $00E7                  ; $88C5
+    JMP $98E8                  ; $88C7
+    PHA                        ; $88CA
+    LDA #$82                   ; $88CB
+    JSR $9B28                  ; $88CD
+    PLA                        ; $88D0
+    CMP #$A0                   ; $88D1
+    BCC $88ED                  ; $88D3
+===== main $8920 @line 935 =====
+    LDX #$13                   ; $8920
+    JSR $9DEE                  ; $8922
+    LDA $00EC                  ; $8925
+    CLC                        ; $8927
+    ADC #$00                   ; $8928
+    STA $00EC                  ; $892A
+    LDA $00ED                  ; $892C
+    ADC #$BF                   ; $892E
+    STA $00ED                  ; $8930
+    LDA $0025                  ; $8932
+    STA $00EA                  ; $8934
+    LDX #$06                   ; $8936
+    JSR $C4B9                  ; $8938
+    LDA $0078                  ; $893B
+    BNE $893B                  ; $893D
+    LDY #$00                   ; $893F
+    LDA ($00EC),Y              ; $8941
+    STA a: $0079               ; $8943
+    LDA #$00                   ; $8946
+    STA a: $007A               ; $8948
+    INY                        ; $894B
+    LDX #$12                   ; $894C
+    LDA ($00EC),Y              ; $894E
+    STA $007B,Y                ; $8950
+    INY                        ; $8953
+    DEX                        ; $8954
+    BNE $894E                  ; $8955
+    LDX $00EA                  ; $8957
+    JSR $C4B9                  ; $8959
+    RTS                        ; $895C
+    TAX                        ; $895D
+    LDA $0099                  ; $895E
+===== main $8976 @line 980 =====
+    LDA $004D                  ; $8976
+    STA $00EA                  ; $8978
+    LDA $004E                  ; $897A
+    STA $00EB                  ; $897C
+    LDA #$02                   ; $897E
+    STA $00E6                  ; $8980
+    STX $00E7                  ; $8982
+    STY $00E8                  ; $8984
+    LDA #$E5                   ; $8986
+    STA $004D                  ; $8988
+    LDA #$00                   ; $898A
+    STA $004E                  ; $898C
+    JSR $9085                  ; $898E
+    LDA $00EA                  ; $8991
+    STA $004D                  ; $8993
+    LDA $00EB                  ; $8995
+    STA $004E                  ; $8997
+    RTS                        ; $8999
+    LDA $0099                  ; $899A
+    AND #$80                   ; $899C
+    ORA #$40                   ; $899E
+    STA $0099                  ; $89A0
+    RTS                        ; $89A2
+    LDY #$FC                   ; $89A3
+    LDA $88D2,Y                ; $89A5
+    STA $0468,Y                ; $89A8
+    INY                        ; $89AB
+    BNE $89A5                  ; $89AC
+    LDX #$F8                   ; $89AE
+    LDY #$00                   ; $89B0
+    .byte $A9,$01
+    JSR $9FA8                  ; $89B4
+===== main $88FB @line 913 =====
+    LDX #$00                   ; $88FB
+    LDA $046A,X                ; $88FD
+    EOR #$20                   ; $8900
+    STA $046A,X                ; $8902
+    INX                        ; $8905
+    INX                        ; $8906
+    INX                        ; $8907
+    INX                        ; $8908
+    BNE $88FD                  ; $8909
+    RTS                        ; $890B
+    STA $00ED                  ; $890C
+    LDX #$00                   ; $890E
+    LDA $0468,X                ; $8910
+    CLC                        ; $8913
+    ADC $00ED                  ; $8914
+    STA $0468,X                ; $8916
+    INX                        ; $8919
+    INX                        ; $891A
+    INX                        ; $891B
+    INX                        ; $891C
+    BNE $8910                  ; $891D
+    RTS                        ; $891F
+    LDX #$13                   ; $8920
+    JSR $9DEE                  ; $8922
+    LDA $00EC                  ; $8925
+    CLC                        ; $8927
+    ADC #$00                   ; $8928
+    STA $00EC                  ; $892A
+    LDA $00ED                  ; $892C
+    ADC #$BF                   ; $892E
+    STA $00ED                  ; $8930
+    LDA $0025                  ; $8932
+===== main $890C @line 923 =====
+    STA $00ED                  ; $890C
+    LDX #$00                   ; $890E
+    LDA $0468,X                ; $8910
+    CLC                        ; $8913
+    ADC $00ED                  ; $8914
+    STA $0468,X                ; $8916
+    INX                        ; $8919
+    INX                        ; $891A
+    INX                        ; $891B
+    INX                        ; $891C
+    BNE $8910                  ; $891D
+    RTS                        ; $891F
+    LDX #$13                   ; $8920
+    JSR $9DEE                  ; $8922
+    LDA $00EC                  ; $8925
+    CLC                        ; $8927
+    ADC #$00                   ; $8928
+    STA $00EC                  ; $892A
+    LDA $00ED                  ; $892C
+    ADC #$BF                   ; $892E
+    STA $00ED                  ; $8930
+    LDA $0025                  ; $8932
+    STA $00EA                  ; $8934
+    LDX #$06                   ; $8936
+    JSR $C4B9                  ; $8938
+    LDA $0078                  ; $893B
+    BNE $893B                  ; $893D
+    LDY #$00                   ; $893F
+    LDA ($00EC),Y              ; $8941
+    STA a: $0079               ; $8943
+    LDA #$00                   ; $8946
+    STA a: $007A               ; $8948
+===== main $98EA @line undefined =====
+NOT FOUND
+===== main $98E8 @line undefined =====
+NOT FOUND
+===== main $9A0D @line undefined =====
+NOT FOUND
+===== main $9A35 @line undefined =====
+NOT FOUND
+===== main $9A71 @line undefined =====
+NOT FOUND
+===== main $99F0 @line undefined =====
+NOT FOUND
+===== main $8AF7 @line undefined =====
+NOT FOUND
+===== util $9B91 @line 608 =====
+    LDA #$00                   ; $9B91
+    STA $0568                  ; $9B93
+    STA $0588                  ; $9B96
+    STA $05A8                  ; $9B99
+    STA $05C8                  ; $9B9C
+    RTS                        ; $9B9F
+    JSR $99F0                  ; $9BA0
+    JSR $98A0                  ; $9BA3
+    JMP $9B7F                  ; $9BA6
+    STA $0046                  ; $9BA9
+    TAY                        ; $9BAB
+    BMI $9BBC                  ; $9BAC
+    CLC                        ; $9BAE
+    ADC $0044                  ; $9BAF
+    CMP #$F0                   ; $9BB1
+    BCC $9BB9                  ; $9BB3
+    ADC #$0F                   ; $9BB5
+    INC $0045                  ; $9BB7
+    STA $0044                  ; $9BB9
+    RTS                        ; $9BBB
+    CLC                        ; $9BBC
+    ADC $0044                  ; $9BBD
+    CMP #$F0                   ; $9BBF
+    BCC $9BC7                  ; $9BC1
+    SBC #$10                   ; $9BC3
+    DEC $0045                  ; $9BC5
+    STA $0044                  ; $9BC7
+    RTS                        ; $9BC9
+    STA $0047                  ; $9BCA
+    PHA                        ; $9BCC
+    CLC                        ; $9BCD
+    ADC $007A                  ; $9BCE
+===== util $9E7C @line 1006 =====
+    STA $00ED                  ; $9E7C
+    LDA #$0A                   ; $9E7E
+    STA $00EC                  ; $9E80
+    JSR $9E36                  ; $9E82
+    LDA $00EA                  ; $9E85
+    STA $00EB                  ; $9E87
+    JSR $9E36                  ; $9E89
+    LDA $00EA                  ; $9E8C
+    ASL                        ; $9E8E
+    ASL                        ; $9E8F
+    ASL                        ; $9E90
+    ASL                        ; $9E91
+    ORA $00EB                  ; $9E92
+    STA $00EB                  ; $9E94
+    JSR $9E36                  ; $9E96
+    LDA $00EA                  ; $9E99
+    STA $00ED                  ; $9E9B
+    LDA $00EB                  ; $9E9D
+    STA $00EC                  ; $9E9F
+    RTS                        ; $9EA1
+    .byte $0F,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+    .byte $0F,$00,$00,$00,$00,$00,$10,$10,$20,$20,$30,$30,$20,$20,$10,$10
+    .byte $0F,$00,$00,$00,$10,$10,$10,$20,$20,$20,$30,$30,$30,$20,$20,$20
+    .byte $0F,$00,$10,$10,$10,$20,$20,$30,$30,$30,$30,$30,$30,$30,$30,$30
+    .byte $00,$00,$00,$00,$10,$00,$00,$00,$F0,$00,$00,$A2,$01
+
+===== util $9E36 @line 966 =====
+    LDA #$00                   ; $9E36
+    STA $00EA                  ; $9E38
+    LDX #$08                   ; $9E3A
+    ASL $00ED                  ; $9E3C
+    ROL $00EA                  ; $9E3E
+    LDA $00EA                  ; $9E40
+    SEC                        ; $9E42
+    SBC $00EC                  ; $9E43
+    BCC $9E4B                  ; $9E45
+    STA $00EA                  ; $9E47
+    INC $00ED                  ; $9E49
+    DEX                        ; $9E4B
+    BNE $9E3C                  ; $9E4C
+    RTS                        ; $9E4E
+    LDA #$0A                   ; $9E4F
+    STA $00EA                  ; $9E51
+    LDA #$00                   ; $9E53
+    STA $00EB                  ; $9E55
+    LDA #$03                   ; $9E57
+    STA $00E6                  ; $9E59
+    JSR $9E0C                  ; $9E5B
+    LDA $00E8                  ; $9E5E
+    STA $00E7                  ; $9E60
+    JSR $9E0C                  ; $9E62
+    LDA $00E8                  ; $9E65
+    ASL                        ; $9E67
+    ASL                        ; $9E68
+    ASL                        ; $9E69
+    ASL                        ; $9E6A
+    ORA $00E7                  ; $9E6B
+    PHA                        ; $9E6D
+    DEC $00E6                  ; $9E6E
+===== util $9F89 @line undefined =====
+NOT FOUND
+===== util $9F96 @line undefined =====
+NOT FOUND

@@ -128,6 +128,8 @@ export class Tsubasa2 {
 
     // 音频注入（场景 BGM/SE 播放）
     scene0.attachAudio(this.audio);
+    // ROM 注入（$8BB0 tile 指令流读取）
+    scene0.attachRom(this.rom);
 
     // 路由：场景表驱动注册（未翻译场景自动走默认 stub）
     this.router = new BootRouter(this.store, scene0);
