@@ -22,8 +22,9 @@ export class PasswordSceneController extends SceneController {
     // TODO V0.3: 翻译 $A57B 密码场景（字符表 / 输入缓冲 / 校验）
   }
 
-  onUpdate(frame: number): void {
+  onUpdate(frame: number): number | undefined {
     // TODO V0.3: 密码输入
     void frame;
+    return undefined;
   }
 }

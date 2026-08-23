@@ -31,9 +31,10 @@ export class TitleSceneController extends SceneController {
     this.audio?.playBgm(0x02);
   }
 
-  onUpdate(frame: number): void {
+  onUpdate(frame: number): number | undefined {
     // TODO V0.3: 标题菜单输入（Start 新游戏 / 密码 / 继续）
     void frame;
+    return undefined;
   }
 
   onRender(): void {

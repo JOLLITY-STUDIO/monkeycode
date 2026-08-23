@@ -41275,50 +41275,45 @@ var AudioRom = class _AudioRom {
 };
 
 // src/game/prg/code/audio/AudioService.ts
-var QUEUE_SLOT_BGM = 0;
-var QUEUE_SLOT_SE_START = 1;
-var QUEUE_SLOT_SE_END = 5;
-var QUEUE_LEN = 6;
-var REQ_THRESHOLD_SE1 = 50;
-var REQ_SE_STOP_ALL = 49;
-var REQ_SE_MAX = 114;
-var CH_PULSE1 = 1;
-var CH_NOISE = 8;
-var APU_ENABLE_ALL = 15;
-var APU_ENABLE_WITH_DPCM = 31;
-var APU_DISABLE_ALL = 0;
-var DPCM_SAMPLES = [
-  { freq: 15, addr: 0, len: 12 },
-  // 采样 A ($8698)
-  { freq: 15, addr: 3, len: 32 },
-  // 采样 B ($86B7)
-  { freq: 15, addr: 11, len: 19 }
-  // 采样 C ($86D6)
-];
 var RAM_QUEUE_BASE = 1792;
 var RAM_CHANNEL_ACTIVE = 1798;
 var RAM_BGM_BANK = 2044;
 var RAM_DPCM_FLAG = 2024;
 var RAM_MUTE_FLAG = 2025;
+var CH_STATE_BASE = 1831;
+var CH_COUNTER_BASE = 1799;
+var CH_NOISE = 8;
+var APU_ENABLE_ALL = 15;
+var APU_ENABLE_WITH_DPCM = 31;
+var APU_DISABLE_ALL = 0;
+var REQ_THRESHOLD_SE = 50;
+var REQ_SE_STOP_ALL = 49;
+var REQ_SE_MAX = 114;
+var DPCM_SAMPLES = [
+  { freq: 15, addr: 0, len: 12 },
+  { freq: 15, addr: 3, len: 32 },
+  { freq: 15, addr: 11, len: 19 }
+];
+function readFreqTable(idx) {
+  return AudioRom.readBank12U16(34573 + idx * 2);
+}
+function readDurationTable(idx) {
+  return AudioRom.readBank12Byte(34597 + idx);
+}
+function readCommandAddr(cmdIdx) {
+  return AudioRom.readBank12U16(34010 + cmdIdx * 2);
+}
 var AudioService = class {
   constructor(store) {
     this.store = store;
-    /** APU 输出目标（默认空实现，由外部注入 WebAudioApuTarget 等） */
     this.apu = new NullApuTarget();
   }
-  /** 注入 APU 输出目标 */
   attachApu(apu) {
     this.apu = apu;
   }
-  // ────────────────────────────────────────────────────────────────────────────
+  // ════════════════════════════════════════════════════════════════
   // 公共 API
-  // ────────────────────────────────────────────────────────────────────────────
-  /**
-   * 每帧推进音频引擎（对应 $80BA）
-   *
-   * 流程：BGM 通道 tick → SE 通道频率更新 → 全局静音检查
-   * 由 InterruptService.nmi() 每帧调用
-   */
+  // ════════════════════════════════════════════════════════════════
   update() {
     this.consumeQueue();
     this.bgmTick();
@@ -41327,53 +41322,29 @@ var AudioService = class {
       this.apu.writeRegister(16405, APU_DISABLE_ALL);
     }
   }
-  /**
-   * 请求播放 BGM（写入 $0700 槽 0）
-   * @param bgmId BGM 编号（0x00-0x31）
-   */
   playBgm(bgmId) {
-    this.store.writeByte(RAM_QUEUE_BASE + QUEUE_SLOT_BGM, bgmId & 255);
+    this.store.writeByte(RAM_QUEUE_BASE, bgmId & 255);
   }
-  /**
-   * 请求播放 SE（写入 $0700 槽 1-5，找第一个空槽）
-   * @param seId SE 编号（0x32-0x71）
-   */
   playSe(seId) {
-    for (let slot = QUEUE_SLOT_SE_START; slot <= QUEUE_SLOT_SE_END; slot++) {
+    for (let slot = 1; slot <= 5; slot++) {
       if (this.store.readByte(RAM_QUEUE_BASE + slot) === 0) {
         this.store.writeByte(RAM_QUEUE_BASE + slot, seId & 255);
         return;
       }
     }
-    this.store.writeByte(RAM_QUEUE_BASE + QUEUE_SLOT_SE_END, seId & 255);
+    this.store.writeByte(RAM_QUEUE_BASE + 5, seId & 255);
   }
-  /**
-   * 停止所有音频（对应 $851A + SE 队列中的 $31 处理）
-   *
-   * 清空请求队列 + 静音所有通道
-   */
   stopAll() {
-    for (let i = 0; i < QUEUE_LEN; i++) {
-      this.store.writeByte(RAM_QUEUE_BASE + i, 0);
-    }
+    for (let i = 0; i < 6; i++) this.store.writeByte(RAM_QUEUE_BASE + i, 0);
     this.stopAllSeChannels();
     this.apu.writeRegister(16405, APU_DISABLE_ALL);
     this.store.writeByte(RAM_CHANNEL_ACTIVE, 0);
   }
-  /**
-   * 停止指定 SE 通道（对应 $8654）
-   * @param channel 通道号 0-3
-   */
   stopSeChannel(channel) {
     const mask = ~(1 << channel) & 255;
-    const active = this.store.readByte(RAM_CHANNEL_ACTIVE);
-    this.store.writeByte(RAM_CHANNEL_ACTIVE, active & mask);
+    this.store.writeByte(RAM_CHANNEL_ACTIVE, this.store.readByte(RAM_CHANNEL_ACTIVE) & mask);
     this.apu.writeRegister(16384 + channel * 4, 48);
   }
-  /**
-   * 触发 DPCM 采样（对应 $8698/$86B7/$86D6）
-   * @param sample 0=A, 1=B, 2=C
-   */
   playDpcm(sample) {
     if (this.store.readByte(RAM_DPCM_FLAG) !== 0) return;
     const s = DPCM_SAMPLES[sample];
@@ -41383,21 +41354,16 @@ var AudioService = class {
     this.apu.writeRegister(16403, s.len);
     this.store.writeByte(RAM_DPCM_FLAG, 128);
   }
-  // ────────────────────────────────────────────────────────────────────────────
-  // 内部：请求队列消费（$8000 + $8061）
-  // ────────────────────────────────────────────────────────────────────────────
-  /**
-   * 消费请求队列（原版 $8000 入口）
-   *
-   * 扫描 6 个槽位，根据请求 ID 选择对应 bank 并触发 BGM/SE
-   */
+  // ════════════════════════════════════════════════════════════════
+  // 请求队列消费（$8000 + $8061）
+  // ════════════════════════════════════════════════════════════════
   consumeQueue() {
-    const bgmReq = this.store.readByte(RAM_QUEUE_BASE + QUEUE_SLOT_BGM);
-    if (bgmReq !== 0 && bgmReq < REQ_THRESHOLD_SE1) {
+    const bgmReq = this.store.readByte(RAM_QUEUE_BASE);
+    if (bgmReq !== 0 && bgmReq < REQ_THRESHOLD_SE) {
       this.startBgm(bgmReq);
-      this.store.writeByte(RAM_QUEUE_BASE + QUEUE_SLOT_BGM, 0);
+      this.store.writeByte(RAM_QUEUE_BASE, 0);
     }
-    for (let slot = QUEUE_SLOT_SE_START; slot <= QUEUE_SLOT_SE_END; slot++) {
+    for (let slot = 1; slot <= 5; slot++) {
       const seReq = this.store.readByte(RAM_QUEUE_BASE + slot);
       if (seReq === 0) continue;
       if (seReq >= REQ_SE_MAX) {
@@ -41413,145 +41379,243 @@ var AudioService = class {
       this.store.writeByte(RAM_QUEUE_BASE + slot, 0);
     }
   }
-  /**
-   * 启动 BGM（原版 $8000 BGM 分支 → bankswitch → 通道初始化）
-   *
-   * 从 BGM 指针表读取数据起始地址，解析头部，初始化通道状态块 $0727+
-   * @param bgmId BGM 编号（0x00-0x31）
-   */
+  // ════════════════════════════════════════════════════════════════
+  // BGM 启动（$8000 BGM 分支 → bankswitch → 通道初始化）
+  // ════════════════════════════════════════════════════════════════
   startBgm(bgmId) {
     this.store.writeByte(RAM_BGM_BANK, bgmId);
     this.store.writeByte(RAM_CHANNEL_ACTIVE, 0);
     const dataAddr = AudioRom.readBgmPointer(bgmId);
     if (dataAddr === 0) return;
-    this.store.writeU16(1831, dataAddr);
-    this.store.writeU16(1833, dataAddr);
-    this.store.writeByte(1835, 0);
-    this.store.writeByte(1836, 15);
-    this.store.writeByte(1799, 1);
-    this.store.writeByte(1800, 1);
-    this.store.writeByte(1801, 0);
-    this.store.writeByte(RAM_CHANNEL_ACTIVE, CH_PULSE1);
+    let activeMask = 0;
+    for (let ch = 0; ch < 4; ch++) {
+      const chBase = CH_STATE_BASE + ch * 16;
+      let chDataAddr = dataAddr;
+      if (ch > 0) {
+        chDataAddr = AudioRom.readBgmData(dataAddr + ch * 2);
+        chDataAddr |= AudioRom.readBgmData(dataAddr + ch * 2 + 1) << 8;
+        if (chDataAddr < 32768 || chDataAddr > 49151) chDataAddr = 0;
+      }
+      if (chDataAddr === 0) continue;
+      this.store.writeU16(chBase, chDataAddr);
+      this.store.writeU16(chBase + 2, chDataAddr);
+      this.store.writeByte(chBase + 4, 0);
+      this.store.writeByte(chBase + 5, 15);
+      this.store.writeByte(chBase + 6, 0);
+      this.store.writeByte(chBase + 7, 0);
+      const counterBase = CH_COUNTER_BASE + ch * 4;
+      this.store.writeByte(counterBase, 1);
+      this.store.writeByte(counterBase + 1, 1);
+      this.store.writeByte(counterBase + 2, 0);
+      this.store.writeByte(counterBase + 3, 0);
+      this.executeCommandStream(ch);
+      activeMask |= 1 << ch;
+    }
+    this.store.writeByte(RAM_CHANNEL_ACTIVE, activeMask);
     this.apu.writeRegister(16405, APU_ENABLE_ALL);
-    this.apu.writeRegister(16384, 63);
   }
-  /**
-   * 启动 SE（原版 $8349）
-   *
-   * V0.6: 从 SE 指针表读取数据起始地址，标记通道活跃
-   * @param seId SE 编号（0x32-0x71）
-   * @param slot 队列槽位（0-5）
-   */
-  startSe(seId, slot) {
-    void slot;
-    const seIndex = seId - 1;
-    if (seIndex < 0 || seIndex >= 100) return;
-    const active = this.store.readByte(RAM_CHANNEL_ACTIVE);
-    this.store.writeByte(RAM_CHANNEL_ACTIVE, active | CH_NOISE);
-    this.apu.writeRegister(16405, APU_ENABLE_ALL);
+  // ════════════════════════════════════════════════════════════════
+  // BGM 命令流解析（$83CB）
+  //
+  // 从通道状态块 offset 0-1 读取数据指针，解析数据流：
+  //   字节 < $80 → 音符时值（AND #$3F 查 $8725 表）
+  //   字节 $80-$AF → 音符（AND #$3F 时值 + 下一个字节音名 → 查 $870D 频率表）
+  //   字节 $B0-$DF → 速度（跳过）
+  //   字节 >= $E0 → 命令（$84C9 分发，AND #$1F 查 $84DA 跳转表）
+  // ════════════════════════════════════════════════════════════════
+  executeCommandStream(ch) {
+    const chBase = CH_STATE_BASE + ch * 16;
+    const counterBase = CH_COUNTER_BASE + ch * 4;
+    let dataPtr = this.store.readU16(chBase);
+    if (dataPtr === 0) return;
+    const volCtrl = this.store.readByte(chBase + 5);
+    this.store.writeByte(chBase + 5, volCtrl & 207);
+    let noteIdx = 0;
+    for (let safety = 0; safety < 256; safety++) {
+      const dataByte = AudioRom.readBgmData(dataPtr + noteIdx);
+      if (dataByte === 0) {
+        noteIdx++;
+        continue;
+      }
+      if (dataByte < 128) {
+        this.store.writeU16(chBase, dataPtr + noteIdx);
+        noteIdx = 0;
+        break;
+      }
+      if (dataByte >= 224) {
+        noteIdx++;
+        const cmdIdx = dataByte & 31;
+        const cmdAddr = readCommandAddr(cmdIdx);
+        noteIdx = this.executeCommand(ch, cmdAddr, dataPtr, noteIdx);
+        continue;
+      }
+      if (dataByte >= 176) {
+        noteIdx++;
+        continue;
+      }
+      const durIdx = dataByte & 63;
+      const tick = readDurationTable(durIdx);
+      this.store.writeByte(counterBase, tick);
+      this.store.writeByte(counterBase + 1, tick);
+      noteIdx++;
+      const nextByte = AudioRom.readBgmData(dataPtr + noteIdx);
+      noteIdx++;
+      const noteName = nextByte & 15;
+      if (noteName === 12) {
+        this.store.writeByte(chBase + 5, this.store.readByte(chBase + 5) | 32);
+      } else if (noteName < 12) {
+        let freq = readFreqTable(noteName);
+        const octave = nextByte >> 4 & 15;
+        for (let i = 0; i < octave; i++) {
+          freq = freq >> 1 & 32767;
+        }
+        const transpose = this.store.readByte(1959 + ch);
+        const finalFreq = freq + transpose & 65535;
+        this.store.writeByte(chBase + 6, finalFreq & 255);
+        this.store.writeByte(chBase + 7, finalFreq >> 8 & 255);
+        this.store.writeByte(1975 + ch, finalFreq & 255);
+        this.store.writeByte(1983 + ch, finalFreq >> 8 & 255);
+      }
+      this.store.writeU16(chBase, dataPtr + noteIdx);
+      break;
+    }
+    if (this.store.readByte(counterBase + 2) === 0) {
+      this.store.writeByte(counterBase + 2, 1);
+    }
   }
-  // ────────────────────────────────────────────────────────────────────────────
-  // 内部：帧推进（$80BA）
-  // ────────────────────────────────────────────────────────────────────────────
-  /**
-   * BGM 通道 tick（原版 $80BA-$811B）
-   *
-   * 遍历 4 个 APU 通道，递减 tick 计数器，推进音符，写 APU 寄存器
-   */
+  // ════════════════════════════════════════════════════════════════
+  // 命令执行（$84C9 分发 → $84DA 跳转表 32 命令）
+  // ════════════════════════════════════════════════════════════════
+  executeCommand(ch, cmdAddr, dataPtr, noteIdx) {
+    const chBase = CH_STATE_BASE + ch * 16;
+    if (cmdAddr === 34116) {
+      const songNo = AudioRom.readBgmData(dataPtr + noteIdx);
+      noteIdx++;
+      const tablePtr = AudioRom.readBank12U16(34644 + songNo * 2);
+      this.store.writeU16(chBase + 2, tablePtr);
+      return noteIdx;
+    }
+    if (cmdAddr === 34074) {
+      this.stopAll();
+      return noteIdx;
+    }
+    if (cmdAddr === 34567) {
+      return noteIdx;
+    }
+    if (cmdAddr === 34369) {
+      const vol = AudioRom.readBgmData(dataPtr + noteIdx);
+      noteIdx++;
+      const oldVol = this.store.readByte(chBase + 5);
+      this.store.writeByte(chBase + 5, oldVol & 63 | vol & 192);
+      return noteIdx;
+    }
+    if (cmdAddr === 34416) {
+      const transpose = AudioRom.readBgmData(dataPtr + noteIdx);
+      noteIdx++;
+      this.store.writeByte(2036 + ch, transpose >> 7 & 1);
+      this.store.writeByte(1959 + ch, transpose >> 1 & 127);
+      return noteIdx;
+    }
+    if (cmdAddr === 34433) {
+      const mode = AudioRom.readBgmData(dataPtr + noteIdx);
+      noteIdx++;
+      this.store.writeByte(1967 + ch, mode);
+      this.store.writeByte(1991 + ch, 0);
+      return noteIdx;
+    }
+    if (cmdAddr === 34448) {
+      this.store.writeByte(1967 + ch, 0);
+      return noteIdx;
+    }
+    if (cmdAddr === 34457) {
+      this.playDpcm(0);
+      return noteIdx;
+    }
+    if (cmdAddr === 34488) {
+      this.playDpcm(1);
+      return noteIdx;
+    }
+    if (cmdAddr === 34518) {
+      this.playDpcm(2);
+      return noteIdx;
+    }
+    return noteIdx;
+  }
+  // ════════════════════════════════════════════════════════════════
+  // BGM 帧推进（$80BA-$811B）
+  // ════════════════════════════════════════════════════════════════
   bgmTick() {
     const active = this.store.readByte(RAM_CHANNEL_ACTIVE);
     if (active === 0) return;
     for (let ch = 0; ch < 4; ch++) {
-      const chMask = 1 << ch;
-      if ((active & chMask) === 0) continue;
-      const chBase = 1831 + ch * 16;
-      const tickAddr = 1799 + ch * 4;
-      const durAddr = 1801 + ch * 4;
-      const pitchAddr = 1802 + ch * 4;
-      let tick = this.store.readByte(tickAddr);
+      if ((active & 1 << ch) === 0) continue;
+      const chBase = CH_STATE_BASE + ch * 16;
+      const counterBase = CH_COUNTER_BASE + ch * 4;
+      let tick = this.store.readByte(counterBase);
       if (tick > 0) {
         tick--;
-        this.store.writeByte(tickAddr, tick);
+        this.store.writeByte(counterBase, tick);
       }
       if (tick !== 0) continue;
-      this.store.writeByte(tickAddr, this.store.readByte(tickAddr + 1));
-      let dur = this.store.readByte(durAddr);
+      this.store.writeByte(counterBase, this.store.readByte(counterBase + 1));
+      let dur = this.store.readByte(counterBase + 2);
       if (dur > 0) {
         dur--;
-        this.store.writeByte(durAddr, dur);
+        this.store.writeByte(counterBase + 2, dur);
       }
       if (dur === 0) {
-        const noteTablePtr = this.store.readU16(chBase + 2);
-        let noteIdx = this.store.readByte(chBase + 4);
-        const noteByte0 = AudioRom.readBgmData(noteTablePtr + noteIdx);
-        const noteByte1 = AudioRom.readBgmData(noteTablePtr + noteIdx + 1);
-        if (noteByte0 === 255) {
-          noteIdx = 0;
-          this.store.writeByte(chBase + 4, 0);
-          const d0 = AudioRom.readBgmData(noteTablePtr);
-          const d1 = AudioRom.readBgmData(noteTablePtr + 1);
-          this.store.writeByte(durAddr, d0);
-          this.store.writeByte(pitchAddr, d1);
-        } else {
-          this.store.writeByte(durAddr, noteByte0);
-          this.store.writeByte(pitchAddr, noteByte1);
-          this.store.writeByte(chBase + 4, noteIdx + 2);
-        }
+        this.executeCommandStream(ch);
       }
       this.channelOutput(ch);
     }
   }
-  /**
-   * 通道输出（原版 $81DB）
-   *
-   * 把当前音符的音高值转换为 APU 频率，写 APU 寄存器
-   *
-   * asm $81DB 逻辑：
-   *   1. 读通道状态块 offset 5（音量/包络控制）
-   *   2. 计算实际频率：$070A[X]（音高）- 包络偏移 | 音量高4位 → offset 6
-   *   3. offset 7 = 频率高字节（从音符表或命令流设置）
-   *   4. 写 APU：$4000+ch*4 = 控制，$4002+ch*4 = offset 6（频率低），$4003+ch*4 = offset 7|长度（频率高）
-   */
+  // ════════════════════════════════════════════════════════════════
+  // 通道输出（$81DB-$81DA）
+  //
+  // 读通道状态块 offset 5（音量）、offset 6-7（频率），写 APU 寄存器
+  // ════════════════════════════════════════════════════════════════
   channelOutput(ch) {
-    const chBase = 1831 + ch * 16;
-    const pitchAddr = 1802 + ch * 4;
-    const pitch = this.store.readByte(pitchAddr);
-    if (pitch === 0) return;
-    const noteIdx = pitch & 15;
-    if (noteIdx > 11) return;
-    const freq = AudioRom.readNoteFreq(noteIdx);
-    if (freq === 0) return;
-    const freqLo = freq & 255;
-    const freqHi = freq >> 8 & 7;
+    const chBase = CH_STATE_BASE + ch * 16;
+    const freqLo = this.store.readByte(chBase + 6);
+    const freqHi = this.store.readByte(chBase + 7);
     const volCtrl = this.store.readByte(chBase + 5);
     const volume = volCtrl & 15;
-    if (ch === 0) {
-      this.apu.writeRegister(16384, 48 | volume);
-      this.apu.writeRegister(16386, freqLo);
-      this.apu.writeRegister(16387, freqHi | 8);
-    } else if (ch === 1) {
-      this.apu.writeRegister(16388, 48 | volume);
-      this.apu.writeRegister(16390, freqLo);
-      this.apu.writeRegister(16391, freqHi | 8);
+    if (freqLo === 0 && freqHi === 0) return;
+    const regBase = 16384 + ch * 4;
+    if (ch === 0 || ch === 1) {
+      this.apu.writeRegister(regBase, 48 | volume);
+      this.apu.writeRegister(regBase + 2, freqLo);
+      this.apu.writeRegister(regBase + 3, freqHi | 8);
     } else if (ch === 2) {
-      this.apu.writeRegister(16392, 128 | volume);
-      this.apu.writeRegister(16394, freqLo);
-      this.apu.writeRegister(16395, freqHi | 128);
+      this.apu.writeRegister(regBase, 128 | volume);
+      this.apu.writeRegister(regBase + 2, freqLo);
+      this.apu.writeRegister(regBase + 3, freqHi | 128);
+    } else if (ch === 3) {
+      this.apu.writeRegister(regBase, 48 | volume);
+      this.apu.writeRegister(regBase + 2, freqLo & 15);
     }
   }
-  /**
-   * SE 通道频率更新（原版 $811D-$8161）
-   */
+  // ════════════════════════════════════════════════════════════════
+  // SE 通道频率更新（$811D-$8161）
+  // ════════════════════════════════════════════════════════════════
   seTick() {
   }
-  // ────────────────────────────────────────────────────────────────────────────
-  // 内部：停止 SE
-  // ────────────────────────────────────────────────────────────────────────────
-  /**
-   * 停止所有 SE 通道（原版 $8070：写静音包络到 $07CF-$07DE）
-   *
-   * 写 $19 到包络控制字节，$0A 到音量初始值
-   */
+  // ════════════════════════════════════════════════════════════════
+  // SE 启动（$8349）
+  // ════════════════════════════════════════════════════════════════
+  startSe(seId, slot) {
+    void slot;
+    const seIndex = seId - 1;
+    if (seIndex < 0 || seIndex >= 100) return;
+    const seDataAddr = AudioRom.readSePointer(seIndex);
+    if (seDataAddr === 0) return;
+    const active = this.store.readByte(RAM_CHANNEL_ACTIVE);
+    this.store.writeByte(RAM_CHANNEL_ACTIVE, active | CH_NOISE);
+    this.apu.writeRegister(16405, APU_ENABLE_ALL);
+  }
+  // ════════════════════════════════════════════════════════════════
+  // 停止 SE
+  // ════════════════════════════════════════════════════════════════
   stopAllSeChannels() {
     const ENV_STOP = 25;
     const VOL_STOP = 10;

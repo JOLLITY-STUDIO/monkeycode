@@ -114,6 +114,10 @@ export class Tsubasa2 {
     void spriteAnim;
     this.audio = new AudioService(this.store);
 
+    // 音频注入（场景 BGM/SE 播放）
+    opening.attachAudio(this.audio);
+    title.attachAudio(this.audio);
+
     // 路由：注册全部场景
     this.router = new BootRouter(this.store, opening);
     this.router.register(title);

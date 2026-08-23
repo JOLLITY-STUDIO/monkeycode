@@ -19,8 +19,12 @@ export abstract class SceneController {
   /** 进入场景（原版 JMP $A200 场景入口语义） */
   abstract onEnter(): void;
 
-  /** 每帧游戏逻辑（原版场景 update 语义） */
-  abstract onUpdate(frame: number): void;
+  /**
+   * 每帧游戏逻辑（原版场景 update 语义）。
+   * @returns 下一场景号（对应原版场景代码末尾 `LDA #next; RTS` 的返回值）；
+   *          undefined 表示留在当前场景。
+   */
+  abstract onUpdate(frame: number): number | undefined;
 
   /** 每帧渲染（原版场景 render 语义；写入 $05E8/$0498/OAM/调色板缓冲） */
   onRender(): void {

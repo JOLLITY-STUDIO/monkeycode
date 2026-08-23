@@ -15,6 +15,7 @@ import {
   OPENING_FADE_TABLE,
   OPENING_CHR_CONFIGS,
   OPENING_SCENE3_TILES,
+  OPENING_TILE_PATTERNS,
   type ChrConfig,
 } from '../../data/scene/opening-data';
 
@@ -209,8 +210,140 @@ export class RenderingPrimitivesService {
     }
   }
 
-  // TODO: $9A35/$997A/$99D1 调色板载体
-  // TODO: $9A0D/$99F0 渐隐/渐显循环
-  // TODO: $8920 场景装载
-  // TODO: $8AF7 CHR 配置读取（H5 简化版）
+  // ──────────────────────────── 渐显 / 渐隐（单步，配合场景状态机） ────────────────────────────
+
+  /**
+   * 对应原始 $9A0D（仅 BG 渐隐一步）：
+   *   LDA $004A; BEQ RTS; DEC $004A; JSR $9A71; wait 1 帧; JMP $9A0D
+   * fade=$0F 最亮 → fade=0 最暗（黑）。
+   * @returns true 表示 $004A 已为 0（循环结束）
+   */
+  fadeBgStep(): boolean {
+    const store = this.store;
+    const a = store.readByte(0x004a) & 0x0f;
+    if (a === 0) return true;
+    store.writeByte(0x004a, a - 1);
+    this.fadeWrite();
+    return false;
+  }
+
+  /**
+   * 对应原始 $99F0（BG+SPR 渐隐一步）：
+   *   LDA $004A; ORA $004B; BEQ RTS; DEC $004A; LDA $004B; BEQ skip; DEC $004B;
+   *   JSR $9A71; wait 1 帧; JMP $99F0
+   * @returns true 表示 $004A|$004B == 0（循环结束）
+   */
+  fadeOutStep(): boolean {
+    const store = this.store;
+    const a = store.readByte(0x004a) & 0x0f;
+    const b = store.readByte(0x004b) & 0x0f;
+    if ((a | b) === 0) return true;
+    if (a !== 0) store.writeByte(0x004a, a - 1);
+    if (b !== 0) store.writeByte(0x004b, b - 1);
+    this.fadeWrite();
+    return false;
+  }
+
+  // ──────────────────────────── $9A35 调色板装载 + 满渐显 ────────────────────────────
+
+  /**
+   * 对应原始 $9A35：装载 BG/SPR 调色板并设置 fade=$0F 后写满亮调色板。
+   * 原版 A=$0048（BG 组）、X=$0049（SPR 组）；H5 直接参数化。
+   */
+  loadPalettesAndFade(bgIndex: number, sprIndex: number): void {
+    const store = this.store;
+    this.loadBgPalette(bgIndex); // $9AB8
+    this.loadSprPalette(sprIndex); // $9ADA
+    store.writeByte(0x004a, 0x0f); // LDA #$0F; STA $004A
+    store.writeByte(0x004b, 0x0f); // STA $004B
+    this.fadeWrite(); // JMP $9A71
+  }
+
+  // ──────────────────────────── $8920 场景数据装载 ────────────────────────────
+
+  /**
+   * 对应原始 $8920：场景号 × 19 → 基址 $BF00 → 拷贝 19 字节。
+   * [0]→ram_0079（滚动标志），[1..18]→ram_007C..ram_008D；ram_007A=0。
+   * MMC3 切 bank（JSR $C4B9）在 H5 中省略。
+   */
+  loadSceneData(sceneId: number): void {
+    const entry = OPENING_SCENE_TABLE[sceneId & 0x0f] ?? OPENING_SCENE_TABLE[0];
+    const store = this.store;
+    store.writeByte(0x0079, entry.scrollFlag);
+    store.writeByte(0x007a, 0);
+    for (let i = 0; i < 0x12; i++) {
+      store.writeByte(0x007c + i, entry.data[i] ?? 0);
+    }
+  }
+
+  // ──────────────────────────── $8AF7 CHR 配置读取（配置副作用） ────────────────────────────
+
+  /**
+   * 对应原始 $8AF7（配置部分）：
+   * - 清零 $0009/$000A/$000D/$000E；$005B bit7 清除
+   * - $0075/$0076 = cfg[0]/[1]（起始 tile/参数）
+   * - $0048 = cfg[2] & 0x3F（BG 调色板索引）
+   * - $005B bit7 = cfg[2] bit6（翻转标志）
+   * - $005E/$005F = cfg[3]/[4]（宽/高）
+   * - $005C/$005D = cfg[5] 编码的 nametable 基址（ASL/ROL ×4 展开）
+   * - $008E/$008F = cfg[0]/[1]（后续 $0090/$0091 的源）
+   * tile→NT 展开（$8B93+）由场景渲染单独处理。
+   */
+  loadChrConfig(configId: number): void {
+    const store = this.store;
+    const cfg = OPENING_CHR_CONFIGS[configId & 0x1f] ?? OPENING_CHR_CONFIGS[0];
+    store.writeByte(0x0009, 0);
+    store.writeByte(0x000a, 0);
+    store.writeByte(0x000d, 0);
+    store.writeByte(0x000e, 0);
+    store.writeByte(0x005b, store.readByte(0x005b) & 0x7f);
+    store.writeByte(0x0075, cfg[0]);
+    store.writeByte(0x0076, cfg[1]);
+    store.writeByte(0x0048, cfg[2] & 0x3f);
+    // $8B4F: LSR $005B; ROL; ROL $005B → $005B bit7 = cfg[2] bit6
+    const flip = (cfg[2] >> 6) & 1;
+    store.writeByte(0x005b, (store.readByte(0x005b) & 0x7f) | (flip << 7));
+    store.writeByte(0x005e, cfg[3]);
+    store.writeByte(0x005f, cfg[4]);
+    // $8B5F-$8B7F: $005C/$005D = (($02 << 8) | (cfg[5] & $F8)) << 2 → 16bit
+    let v = ((0x02 << 8) | (cfg[5] & 0xf8)) << 2;
+    // $8B71-$8B7D: c |= (cfg[5] & $07); 再 <<2
+    v = ((v & 0xff00) | ((v & 0xff) | (cfg[5] & 0x07))) << 2;
+    store.writeByte(0x005c, v & 0xff);
+    store.writeByte(0x005d, (v >> 8) & 0xff);
+    store.writeByte(0x008e, cfg[0]);
+    store.writeByte(0x008f, cfg[1]);
+  }
+
+  // ──────────────────────────── 场景 3 NT 数据（开场背景） ────────────────────────────
+
+  /**
+   * 场景 3 开场背景：OPENING_SCENE3_TILES（6×8 pattern）每个 pattern 按
+   * OPENING_TILE_PATTERNS 展开为 4×4 tile（[1..16]，0xFF=跳过），共 24×32 tiles。
+   * 从 $2000 起逐行写入 $05E8 渲染缓冲（renderCommit 消费后写 PPU）。
+   * @param fromRow 起始行（0-31）
+   * @param rows    本次写入行数
+   */
+  queueScene3NametableRows(fromRow: number, rows: number): void {
+    const store = this.store;
+    for (let r = 0; r < rows; r++) {
+      const row = fromRow + r;
+      if (row >= 32) break;
+      const line: number[] = new Array(32).fill(0);
+      for (let c = 0; c < 6; c++) {
+        const patIdx = OPENING_SCENE3_TILES[Math.floor(row / 4) * 6 + c] ?? 0;
+        const pattern = OPENING_TILE_PATTERNS[patIdx] ?? OPENING_TILE_PATTERNS[0];
+        const pr = row % 4;
+        for (let pc = 0; pc < 4; pc++) {
+          const v = pattern[1 + pr * 4 + pc];
+          if (v !== 0xff) line[c * 4 + pc] = v;
+        }
+      }
+      const addr = 0x2000 + row * 32;
+      let pos = this.ntBufferEntry(0x20, addr & 0xff, (addr >> 8) & 0xff);
+      for (const b of line) this.ntBufferDataByte(pos++, b);
+      this.ntBufferEnd(pos);
+    }
+    void store;
+  }
 }

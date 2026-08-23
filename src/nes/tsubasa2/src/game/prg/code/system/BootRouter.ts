@@ -8,19 +8,42 @@
  *   $A200: 场景初始化入口（Reset → $CEFE → $C400 → JMP $A200）
  *   $A491: 场景入口跳转表（24 项：$A4C0/$A559/$A57B/...）
  *
- * 场景号：0-23（跳转表长度 24），V0.1 只实现 0=Opening，其余注册 stub。
+ * 场景号：0-23（跳转表长度 24）。跳转表存的是「目标地址-1」（RTS+1 机制），
+ * 例如场景 0 表值 $A4C0 → 实际入口 $A4C1。
+ *
+ * 场景返回流转：场景代码末尾 `LDA #nextScene; RTS` 把下一场景号放 A 返回，
+ * 分发调用者再 `STA $00ED` 存回，循环重新分发。H5 中由 onUpdate 返回值表达。
  */
 import type { DataStore } from '../../data/store/DataStore';
 import type { SceneController } from '../scene/SceneController';
 import type { OpeningSceneController } from '../scene/OpeningSceneController';
 
-/** 场景号枚举（0-23，跳转表 $A491 顺序；名称在 V0.3 逐一对照确认） */
+/** 场景号枚举（0-23，跳转表 $A491 顺序；名称 V0.3 起逐一对照确认） */
 export const enum SceneId {
-  Opening = 0,  // 开场（boot 入口场景）
-  Title = 1,    // TODO V0.3: 对照 $A559 确认
-  Password = 2, // TODO V0.3: 对照 $A57B 确认
-  Result = 3,   // TODO V0.3: 对照 $A581 确认
-  // TODO V0.2: 从 $A491 跳转表补齐 4-23 全部场景
+  Opening = 0,   // 开场（boot 入口场景）→ $A4C0/$A4C1
+  Scene1 = 1,    // $A559/$A55A（数学工具：$00EC>>2 取补，返回 3）
+  Scene2 = 2,    // $A57B/$A57C（清 sprite 扩展表，返回 2）
+  Scene3 = 3,    // $A581/$A582（清 NT0/NT1，返回 2）
+  Scene4 = 4,    // $A5A2/$A5A3
+  Scene5 = 5,    // $A5A8/$A5A9
+  Scene6 = 6,    // $A5B0/$A5B1
+  Scene7 = 7,    // $A5B8/$A5B9
+  Scene8 = 8,    // $A5BF/$A5C0
+  Scene9 = 9,    // $A5CD/$A5CE
+  Scene10 = 10,  // $A5DB/$A5DC
+  Scene11 = 11,  // $A5E8/$A5E9
+  Scene12 = 12,  // $A602/$A603
+  Scene13 = 13,  // $A61C/$A61D
+  Scene14 = 14,  // $A629/$A62A
+  Scene15 = 15,  // $A650/$A651
+  Scene16 = 16,  // $A69C/$A69D
+  Scene17 = 17,  // $A77A/$A77B
+  Scene18 = 18,  // $A782/$A783
+  Scene19 = 19,  // $A78D/$A78E
+  Scene20 = 20,  // $A7BD/$A7BE
+  Scene21 = 21,  // $A7CE/$A7CF
+  Scene22 = 22,  // $A7D6/$A7D7
+  Scene23 = 23,  // $A7FA/$A7FB
 }
 
 export class BootRouter {
@@ -37,7 +60,6 @@ export class BootRouter {
     readonly store: DataStore,
     readonly opening: OpeningSceneController,
   ) {
-    // 注册全部场景（V0.1 仅 Opening 真实实现，其余为 stub 场景）
     this.register(opening);
   }
 
@@ -48,20 +70,35 @@ export class BootRouter {
 
   /**
    * 切换场景（$CEFE/$C400/$A200 语义）：
-   * 关 IRQ → 隐藏 OAM → 清 NT → PPU CTRL/MASK → 场景入口
+   * $CEFE：关 IRQ → 隐藏 OAM → 清 NT
+   * $C400：PPU CTRL=$08 / MASK=$1E / bank 基址=0
+   * $A200：场景入口（设置 $00ED → 场景初始化）
    * @param sceneId 场景号（0-23）
    */
   changeScene(sceneId: number): void {
+    const store = this.store;
+    // $CEFE 前序：关 IRQ 计数器 / 隐藏 OAM / 清 NT（ram 视图）
+    store.writeByte(0x0469, 0x00); // IRQ 计数器清零
+    for (let i = 0x200; i < 0x300; i++) store.writeByte(i, 0xf8); // OAM 全隐藏
+    for (let addr = 0x2000; addr <= 0x23ff; addr++) store.writeByte(addr, 0); // NT+属性表
+    // $C400：PPU CTRL/MASK/bank 基址
+    store.writeByte(0x0020, 0x08); // PPU CTRL: NMI on / 精灵 8x8 / BG 表 0
+    store.writeByte(0x0021, 0x1e); // PPU MASK: BG+SPR 可见
+    store.writeByte(0x0022, 0x00); // MMC3 bank 基址 = 0（H5 无实际语义，兼容保留）
+    // $A200：场景号存回 ram_00ED 并分发
     this.currentSceneId = sceneId;
-    this.store.writeByte(0x00ed, sceneId);
+    store.writeByte(0x00ed, sceneId);
     const next = this.scenes.get(sceneId) ?? null;
     this.current = next;
     next?.onEnter();
   }
 
-  /** 每帧更新（NMI 游戏逻辑路径 $C421 语义） */
+  /** 每帧更新（NMI 游戏逻辑路径 $C421 语义）；处理场景返回的下一个场景号 */
   update(frame: number): void {
-    this.current?.onUpdate(frame);
+    const next = this.current?.onUpdate(frame);
+    if (next !== undefined) {
+      this.changeScene(next);
+    }
   }
 
   /** 每帧渲染（主渲染路径 $C775 语义，由 InterruptService 在 renderCommit 前调用） */

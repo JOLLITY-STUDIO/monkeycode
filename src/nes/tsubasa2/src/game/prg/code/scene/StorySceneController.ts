@@ -20,9 +20,10 @@ export class StorySceneController extends SceneController {
     // TODO V0.4: 装载剧情脚本并进入播放
   }
 
-  onUpdate(frame: number): void {
+  onUpdate(frame: number): number | undefined {
     // TODO V0.4: 剧情文本打字 / 等待 / 选项
     void frame;
+    return undefined;
   }
 
   onRender(): void {

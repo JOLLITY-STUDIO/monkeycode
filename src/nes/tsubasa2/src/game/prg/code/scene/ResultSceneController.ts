@@ -22,8 +22,9 @@ export class ResultSceneController extends SceneController {
     // TODO V0.5: 翻译 $A581 结果场景（比分 / 评价 / 奖励）
   }
 
-  onUpdate(frame: number): void {
+  onUpdate(frame: number): number | undefined {
     // TODO V0.5: 结果流转
     void frame;
+    return undefined;
   }
 }
