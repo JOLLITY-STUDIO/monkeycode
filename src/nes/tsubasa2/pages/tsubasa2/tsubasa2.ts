@@ -1,13 +1,16 @@
 /**
  * 天使之翼2 — 微信小程序游戏页（H5 引擎即插即用）
  *
- * 渲染：256×240 Canvas（type=2d），每帧把 PPU 帧缓冲写入 ImageData
+ * 渲染：参考 src/core/browser/screen.ts → 小程序版 MpScreen（256×240 Canvas type=2d）
+ *   - setBuffer/writeBuffer 提交 PPU 帧缓冲
+ *   - fitInParent 自动等比适配父容器（onResize → setData 内联 style）
  * 输入：虚拟手柄（触摸）→ HeadlessRuntime.setButton → core Controller
  * 循环：canvas.requestAnimationFrame 驱动 runtime.frame(game)
  */
 import { Tsubasa2 } from '../../src/game/index';
 import { HeadlessRuntime } from '../../src/game/runtime/HeadlessRuntime';
 import Controller from '../../src/core/controller';
+import MpScreen from '../../src/core/mp/screen';
 
 /** data-key → core Controller 按键位（Controller.BUTTON_*） */
 const KEY_MAP: Record<string, number> = {
@@ -25,10 +28,13 @@ Page({
   data: {
     frame: 0,
     status: '初始化中…',
+    canvasW: 256,
+    canvasH: 240,
   },
 
   runtime: null as HeadlessRuntime | null,
   game: null as Tsubasa2 | null,
+  screen: null as MpScreen | null,
   canvas: null as any,
   rafId: 0,
   frameCount: 0,
@@ -41,39 +47,39 @@ Page({
   },
 
   onReady() {
-    // 获取 2d Canvas 节点
     const query = wx.createSelectorQuery().in(this);
-    query
-      .select('#gameCanvas')
-      .fields({ node: true, size: true })
-      .exec((res: any[]) => {
-        const canvas = res[0].node;
-        this.canvas = canvas;
-        const ctx = canvas.getContext('2d');
-        canvas.width = 256;
-        canvas.height = 240;
-        const imageData = ctx.createImageData(256, 240);
-        this._startLoop(ctx, imageData);
+    query.select('#gameContainer').boundingClientRect();
+    query.select('#gameCanvas').fields({ node: true, size: true });
+    query.exec((res: any[]) => {
+      const containerRect = res[0];
+      const canvas = res[1] && res[1].node;
+      if (!canvas) return;
+      this.canvas = canvas;
+      this.screen = new MpScreen(canvas, {
+        getContainerSize: () =>
+          Promise.resolve({
+            width: (containerRect && containerRect.width) || 0,
+            height: (containerRect && containerRect.height) || 0,
+          }),
+        onResize: (w: number, h: number) => this.setData({ canvasW: w, canvasH: h }),
+        onTouchStart: (_x: number, _y: number) => {
+          // 画布触摸映射到 256×240（参考 browser zapper 接口，暂不消费）
+        },
       });
+      this.screen.fitInParent();
+      this._startLoop();
+    });
   },
 
-  _startLoop(ctx: any, imageData: any) {
+  _startLoop() {
     const runtime = this.runtime!;
     const game = this.game!;
+    const screen = this.screen!;
     const loop = () => {
       game.frame(runtime);
-      // PPU 帧缓冲（Uint32 0xRRGGBB）→ ImageData RGBA
-      const buf = runtime.ppu.buffer as Uint32Array;
-      const data = imageData.data as Uint8ClampedArray;
-      for (let i = 0, n = buf.length; i < n; i++) {
-        const v = buf[i];
-        const o = i * 4;
-        data[o] = (v >>> 16) & 0xff;
-        data[o + 1] = (v >>> 8) & 0xff;
-        data[o + 2] = v & 0xff;
-        data[o + 3] = 0xff;
-      }
-      ctx.putImageData(imageData, 0, 0);
+      // PPU 帧缓冲 → MpScreen（0x00RRGGBB → 全 alpha RGBA）
+      screen.setBuffer(runtime.ppu.buffer as Uint32Array);
+      screen.writeBuffer();
       this.frameCount++;
       if (this.frameCount % 60 === 0) {
         this.setData({ frame: this.frameCount });
@@ -95,6 +101,11 @@ Page({
     if (idx !== undefined) this.runtime?.setButton(1, idx, false);
   },
 
+  /** 窗口尺寸变化时重新适配画布 */
+  onResize() {
+    this.screen?.fitInParent();
+  },
+
   onHide() {
     if (this.rafId && this.canvas) this.canvas.cancelAnimationFrame(this.rafId);
     this.rafId = 0;
@@ -102,18 +113,18 @@ Page({
 
   onShow() {
     // 重新进入时恢复循环（canvas 已就绪则重启）
-    if (this.canvas && !this.rafId && this.game && this.runtime) {
-      const ctx = this.canvas.getContext('2d');
-      const imageData = ctx.createImageData(256, 240);
-      this._startLoop(ctx, imageData);
+    if (this.canvas && !this.rafId && this.screen) {
+      this._startLoop();
     }
   },
 
   onUnload() {
     if (this.rafId && this.canvas) this.canvas.cancelAnimationFrame(this.rafId);
     this.rafId = 0;
+    this.screen?.destroy();
     this.runtime = null;
     this.game = null;
+    this.screen = null;
     this.canvas = null;
   },
 });

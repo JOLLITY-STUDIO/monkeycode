@@ -1,6 +1,14 @@
-<!-- 天使之翼2 游戏页：256×240 Canvas + 虚拟手柄 -->
+<!-- 天使之翼2 游戏页：256×240 Canvas（fitInParent 自适应）+ 虚拟手柄 -->
 <view class="page">
-  <canvas id="gameCanvas" type="2d" class="game-canvas"></canvas>
+  <!-- 画布容器：flex 居中，MpScreen.fitInParent 自动等比适配 -->
+  <view id="gameContainer" class="screen-wrap">
+    <canvas
+      id="gameCanvas"
+      type="2d"
+      class="game-canvas"
+      style="width: {{canvasW}}px; height: {{canvasH}}px;"
+    ></canvas>
+  </view>
 
   <!-- 虚拟手柄（触摸映射 core Controller 按键位） -->
   <view class="pad">

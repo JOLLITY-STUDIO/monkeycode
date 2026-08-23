@@ -77,10 +77,18 @@
                                            "value":  "node_modules",
                                            "type":  "folder"
                                        },
-                                       {
-                                           "value":  "src/core/browser",
-                                           "type":  "folder"
-                                       },
+                                                          {
+                                          "value":  "src/core/browser",
+                                          "type":  "folder"
+                                      },
+                                      {
+                                          "value":  "src-bak",
+                                          "type":  "folder"
+                                      },
+                                      {
+                                          "value":  "src-old",
+                                          "type":  "folder"
+                                      },
                                        {
                                            "value":  "test",
                                            "type":  "folder"

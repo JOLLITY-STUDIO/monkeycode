@@ -8,12 +8,21 @@
   overflow: hidden;
 }
 
-/* 游戏画面：3x 放大（256×240 → 768×720），居中 */
-.game-canvas {
+/* 画布容器：flex 居中，尺寸由 MpScreen.fitInParent 内联 style 决定 */
+.screen-wrap {
   flex: 1 1 auto;
   min-height: 0;
-  width: 100%;
-  image-rendering: pixelated;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: #000;
+}
+
+/* 游戏画面：256×240 等比放大（宽高由 fitInParent 动态计算） */
+.game-canvas {
+  display: block;
+  background: #000;
 }
 
 /* 虚拟手柄区 */
