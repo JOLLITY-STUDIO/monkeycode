@@ -491,18 +491,13 @@ class ScriptEngine {
         this.sceneLoad(a);
         this.advancePtr(0);
     }
-    /** $FB $8830: 清文本 buffer + sub9085 场景数据装载 + 继续 */
+    /** $FB $8830: 清文本 buffer + 继续 */
     opClearBuf() {
         this.clearTextBuffer();
         this.advancePtr(1);
-        // $8831: JSR $9085 — 场景数据装载 (注册 sub9148 协程消费 $0568 场景数据写 NT+OAM)
-        // sub8297 会覆盖 ram_004D (段数据指针), 需要保存/恢复脚本指针
-        const savedPtr = this.scriptPtr;
-        const savedBank = this._store.read('ram_0056');
-        this._system?.sub8297(0x0D);
-        // 恢复脚本指针 (sub9085 末尾设 ram_004D 为段末尾, 覆盖了脚本指针)
-        this.scriptPtr = savedPtr;
-        this._store.write('ram_0056', savedBank);
+        // $8831: JSR $9085 — 场景数据装载 (TODO: sub9085 的场景数据复制逻辑不完整,
+        // 当前用 TEXT_BUFFER_TEMPLATE_978B 模板填充 $0568 而非从 BANK09_RAW 读真实数据,
+        // 暂时跳过避免破坏脚本指针 ram_004D)
     }
     /** $FC $8836: 等待 + 文本 VRAM 前进 */
     opVramAdvance() {

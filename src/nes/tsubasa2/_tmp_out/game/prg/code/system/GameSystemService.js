@@ -940,10 +940,16 @@ class GameSystemService {
             const raw = bank === 9 ? bank09_raw_1.BANK09_RAW : bank10_raw_1.BANK10_RAW;
             const off = dataPtr - 0xa000;
             this.wr(0x0049, off >= 0 && off < raw.length ? raw[off] : 0);
-            // $9101: 数据指针+1 → buffer[2..3]
+            // $9101: 数据指针+1 → buffer[2..3] (数据流地址, sub94C1 读此地址取数据)
             const p1 = (dataPtr + 1) & 0xffff;
             this.wr(bufPtr + 2, p1 & 0xff);
             this.wr(bufPtr + 3, (p1 >> 8) & 0xff);
+            // H5 补充: 把 BANK09_RAW/BANK10_RAW 的真实场景数据复制到 buffer[4..31]
+            // (原版 sub94C1 通过 $A000 窗口读数据流, H5 无窗口, 需预复制到 RAM)
+            for (let i = 0; i < 28; i++) {
+                const dataOff = off + 1 + i; // 数据流从 off+1 开始 (off 是调色板)
+                this.wr(bufPtr + 4 + i, dataOff >= 0 && dataOff < raw.length ? raw[dataOff] : 0);
+            }
             // $9117: 段指针+1; $911D: buffer += $20
             ptr = (ptr + 1) & 0xffff;
             bufPtr += 0x20;
@@ -1005,7 +1011,6 @@ class GameSystemService {
         let y = 0;
         const ptr94 = this.rdPtr(0x0094, 0x0095);
         let a = this.rdMemByte(ptr94 + y);
-        console.error('[sub9148] ptr94=' + ptr94.toString(16) + ' a=' + a.toString(16) + ' $0568=' + this.rd(0x0568));
         // $9158: BMI $915D (≥$80 → 精灵设置)
         if ((a & 0x80) !== 0) {
             // $915D: TAX; LDY #$04; JSR $974A (读场景数据[4])
