@@ -45,8 +45,9 @@ export class RenderingPrimitivesService {
   ntBufferEntry(count: number, addrLo: number, addrHi: number): number {
     const store = this.store;
     const pos = store.readByte(0x0628) & 0xff;
-    if (pos + 3 + (count & 0x7f) > 0x3d) {
-      // 容量不足：原版会等待 NMI 消费；H5 直接丢弃（理论上不应发生）
+    // 原版 $9B37-$9B3F: AND #$3F; CLC; ADC $0628; CMP #$3D; BCS $9B2E（等 NMI 消费后重试）
+    if (pos + (count & 0x3f) >= 0x3d) {
+      // 容量不足：原版 busy-wait 等 NMI 消费；H5 由调用方分帧写入保证不触发。
       return pos;
     }
     store.writeByte(0x05e8 + pos, count & 0xff);
@@ -178,7 +179,8 @@ export class RenderingPrimitivesService {
 
   /**
    * 对应原始 $98A0: 关闭 NMI/MASK，整屏清 0，再恢复 MASK/NMI。
-   * H5 语义：将 NT $2000-$23FF 与属性表 $23C0-$23FF 清零；CTRL/MASK 直接写 ram。
+   * 原版 $98B2-$98C8: PPU 地址 $2000 起，LDY #$08 × 256 字节 = 8 页
+   * （$2000-$27FF，NT0+NT1 整 2 个 nametable + 属性区）；H5 语义清同一范围。
    */
   clearNametable(): void {
     const store = this.store;
@@ -186,8 +188,8 @@ export class RenderingPrimitivesService {
     store.writeByte(0x0020, store.readByte(0x0020) & 0x7f);
     // 关显示 MASK（bit3/4 clear）
     store.writeByte(0x0021, store.readByte(0x0021) & 0xe7);
-    // 清 NT + 属性表（$2000-$23FF）
-    for (let addr = 0x2000; addr <= 0x23ff; addr++) {
+    // 清 NT + 属性表（$2000-$27FF，8 页 × 256）
+    for (let addr = 0x2000; addr <= 0x27ff; addr++) {
       store.writeByte(addr, 0);
     }
     // 恢复 MASK
@@ -281,15 +283,19 @@ export class RenderingPrimitivesService {
   // ──────────────────────────── $8AF7 CHR 配置读取（配置副作用） ────────────────────────────
 
   /**
-   * 对应原始 $8AF7（配置部分）：
+   * 对应原始 $8AF7（配置部分，逐指令对照 code_scene.s $8AF7-$8BB0）：
    * - 清零 $0009/$000A/$000D/$000E；$005B bit7 清除
+   * - $0077 = $0025（$8B09-$8B0B）
+   * - 清属性缓冲 $064A-$0651（$8B12-$8B1A: LDY #$F8; STA $0552,Y 循环）
    * - $0075/$0076 = cfg[0]/[1]（起始 tile/参数）
    * - $0048 = cfg[2] & 0x3F（BG 调色板索引）
    * - $005B bit7 = cfg[2] bit6（翻转标志）
    * - $005E/$005F = cfg[3]/[4]（宽/高）
    * - $005C/$005D = cfg[5] 编码的 nametable 基址（ASL/ROL ×4 展开）
    * - $008E/$008F = cfg[0]/[1]（后续 $0090/$0091 的源）
-   * tile→NT 展开（$8B93+）由场景渲染单独处理。
+   * - $8B81-$8B91: $005D & $0C == 0 时按 $007B/$005B 调整 $005D
+   * - $8B93-$8BAE: width≥9 → 清 NT0；否则 $005D bit2 → 清 NT1，否则清 NT0
+   * tile→NT 展开（$8BB0+）由场景渲染单独处理（H5: queueScene3NametableRows）。
    */
   loadChrConfig(configId: number): void {
     const store = this.store;
@@ -299,6 +305,12 @@ export class RenderingPrimitivesService {
     store.writeByte(0x000d, 0);
     store.writeByte(0x000e, 0);
     store.writeByte(0x005b, store.readByte(0x005b) & 0x7f);
+    // $8B09: LDA $0025; STA $0077
+    store.writeByte(0x0077, store.readByte(0x0025));
+    // $8B12-$8B1A: 清 $064A-$0651（LDY #$F8; STA $0552,Y; INY; BNE 循环）
+    for (let i = 0; i < 8; i++) {
+      store.writeByte(0x064a + i, 0);
+    }
     store.writeByte(0x0075, cfg[0]);
     store.writeByte(0x0076, cfg[1]);
     store.writeByte(0x0048, cfg[2] & 0x3f);
@@ -315,6 +327,26 @@ export class RenderingPrimitivesService {
     store.writeByte(0x005d, (v >> 8) & 0xff);
     store.writeByte(0x008e, cfg[0]);
     store.writeByte(0x008f, cfg[1]);
+    // $8B81-$8B85: LDA $005D; AND #$0C; BNE $8B93 — 基址不在属性区才调整
+    if ((store.readByte(0x005d) & 0x0c) === 0) {
+      // $8B87-$8B91: LDA $007B; ASL×2; EOR $005B; AND #$04; ORA $005D; STA $005D
+      const adj = ((((store.readByte(0x007b) << 2) & 0xff) ^ store.readByte(0x005b)) & 0x04);
+      store.writeByte(0x005d, (store.readByte(0x005d) | adj) & 0xff);
+    }
+    // $8B93-$8BAE: 清屏分支（$9071 清 NT0 / $9076 清 NT1，各 16 行×32 列）
+    const width = store.readByte(0x005e);
+    if (width >= 0x09) {
+      // $8B99: JSR $9071; JMP $8BAB 之后… 原版 $8B9C JMP $8BAB 会执行 $9076？
+      //   核对：$8B9C: JMP $8BAB; $8BAB: JSR $9076 → width≥9 清 NT0+NT1
+      this.fillNametableRows(0x00, 0x20, 0x10, 0x20, 0x00); // $9071: NT0
+      this.fillNametableRows(0x00, 0x24, 0x10, 0x20, 0x00); // $9076: NT1
+    } else if ((store.readByte(0x005d) & 0x04) !== 0) {
+      // $8BA3: BNE $8BAB → JSR $9076 清 NT1
+      this.fillNametableRows(0x00, 0x24, 0x10, 0x20, 0x00);
+    } else {
+      // $8BA5: JSR $9071 清 NT0; JMP $8BAE 跳过 NT1
+      this.fillNametableRows(0x00, 0x20, 0x10, 0x20, 0x00);
+    }
     // $8AF7 CHR 装载部分：写入 CHR 请求表（ram_0022 + ram_0490-$0497），
     // 由 NMI $C9E9 装载到 MMC3。当前只有开场（配置 0x17）完成 ground truth 对照；
     // 其余配置待对应场景翻译后按真实映射扩展（禁止猜测）。

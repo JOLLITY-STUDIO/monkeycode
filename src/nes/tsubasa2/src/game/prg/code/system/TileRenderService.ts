@@ -224,19 +224,30 @@ renderTile(tileIndex: number): void {
 }
 
   /**
-   * $9071: 清 NT0（$2000 起 $0400）。
-   * TODO: 逐指令覆盖实现。
+   * $9071/$9076: 清 NT0/NT1（逐指令对照 code_render.s $9071-$9082 → $98E8）。
+   *   $9071: LDA #$20; JMP $9078（NT0）
+   *   $9076: LDA #$24; $9078: STA $00E7; LDA #$00; STA $00E6; LDY #$10; LDX #$20;
+   *   $9082: JMP $98E8（填充 A=0，行=0x10，列=0x20 → 16 行 × 32 列 = $0400）
    */
   clearNt0(): void {
-    void this.store;
+    this.fillArea(0x20);
   }
 
-  /**
-   * $9076: 清 NT1（$2400 起 $0400）。
-   * TODO: 逐指令覆盖实现。
-   */
+  /** $9076: 清 NT1（同上，NT 高字节 $24） */
   clearNt1(): void {
-    void this.store;
+    this.fillArea(0x24);
+  }
+
+  /** $9078+$98E8: 以 0 填充 NT 页前 16 行 × 32 列 */
+  private fillArea(ntHi: number): void {
+    const store = this.store;
+    let addr = (ntHi & 0xff) << 8; // $2000 / $2400
+    for (let r = 0; r < 0x10; r++) {
+      for (let c = 0; c < 0x20; c++) {
+        store.writeByte((addr + c) & 0x3fff, 0);
+      }
+      addr = (addr + 0x20) & 0x3fff;
+    }
   }
 
   /**

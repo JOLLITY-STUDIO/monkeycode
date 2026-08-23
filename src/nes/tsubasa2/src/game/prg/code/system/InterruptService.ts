@@ -153,9 +153,29 @@ export class InterruptService {
     this.flushPalette(ppu);
   }
 
-  /** $C78B/$8000: OAM DMA（$0200-$02FF → PPU spriteMem） */
+  /**
+   * $C78B/$8000: OAM DMA（$0200-$02FF → PPU spriteMem）
+   *
+   * 前置同步（bank02 $88CE-$88FD：OAM shadow → DMA 缓冲）：
+   * 原版 NMI 在 $2003/$4014 DMA 前，精灵数据先由 shadow $0468（bank00 精灵
+   * 构建/漂移/翻转操作区）同步到 $0200 缓冲，DMA 只认 $0200。
+   * $88D5: LDX $0468,Y（X 坐标）→ $88D8: LDA $046A,Y（属性）
+   * $88DB: AND #$0C; BEQ $88E1 — 属性 bit2/3 非零 → X=$F8（隐藏到屏幕外）
+   * $88E2-$88F4: X/Y/属性/图案 → $0200..$0203（64 精灵，Y+=4 循环）
+   */
   private oamDma(ppu: PpuTarget): void {
-    const oam = this.store.oamBuffer;
+    const store = this.store;
+    const oam = store.oamBuffer;
+    // $88CE-$88FD: $0468 → $0200 同步（bank 切换 JSR $9FA8 省略）
+    for (let y = 0; y < 0x100; y += 4) {
+      let x = store.readByte(0x0468 + y);
+      const attr = store.readByte(0x046a + y);
+      if ((attr & 0x0c) !== 0) x = 0xf8; // 隐藏：X=$F8（屏幕右侧外）
+      oam[y] = x; // $0200+Y = X
+      oam[y + 1] = store.readByte(0x0469 + y); // Y
+      oam[y + 2] = attr; // 属性
+      oam[y + 3] = store.readByte(0x046b + y); // 图案
+    }
     for (let i = 0; i < 0x100; i++) ppu.spriteMem[i] = oam[i];
   }
 
@@ -208,23 +228,48 @@ export class InterruptService {
     ppu.regV = (sy >> 5) & 1;
   }
 
-  /** $C7CD-$C7E3 + $C9C5: IRQ 向量 bank（H5 省略）+ 帧计数器更新 */
+  /**
+   * $C7CD-$C7E3 + $C9C5: IRQ 向量 bank（H5 省略）+ 帧计数器更新。
+   * 逐指令对照 asm/bank30/code_main.s $C9C5-$C9E8：
+   *   LDX $00E1; LDA $0300,X; ADC $0700,X; ROL $00E2; EOR #$FF;
+   *   ROL $00E2; ADC $00E2; STA $00E2; SBC $0780,X; ADC $00E1;
+   *   STA $00E3; INC $00E1; RTS
+   * 注意：ROL 的 C 来自前一步 ADC 进位；STA $00E2 存的是 ADC 结果（A），
+   * 不是 ROL 后的 e2（原实现两处错误：进位恒 0、$00E2 写入错误值）。
+   */
   private frameCounters(): void {
     const store = this.store;
     // $C7CD-$C7E1: LDX $008E; STX $008C; STX $008D + MMC3 IRQ 写（H5 省略）
-    // $C9C5: 帧计数/随机抖动
+    // $C9C5 入口 C=0（前序 LDA 类指令不影响 C）
+    let c = 0;
     const e1 = store.readByte(0x00e1);
-    let a = (store.readByte(0x0300 + e1) + store.readByte(0x0700 + e1)) & 0xff;
-    const c1 = a > 0xff ? 1 : 0;
-    let e2 = ((store.readByte(0x00e2) << 1) | c1) & 0xff;
+    // LDA $0300,X; ADC $0700,X
+    let sum = store.readByte(0x0300 + e1) + store.readByte(0x0700 + e1) + c;
+    let a = sum & 0xff;
+    c = sum > 0xff ? 1 : 0;
+    // ROL $00E2（C=ADC 进位；C←旧 bit7）
+    let e2 = store.readByte(0x00e2);
+    const cRol1 = (e2 >> 7) & 1;
+    e2 = ((e2 << 1) | c) & 0xff;
+    // EOR #$FF（不影响 C）
     a ^= 0xff;
-    const c2 = (e2 >> 7) & 1;
-    e2 = ((e2 << 1) | c2) & 0xff;
-    a = (a + e2) & 0xff;
-    store.writeByte(0x00e2, e2);
-    let s = (a - store.readByte(0x0780 + e1)) & 0xff;
-    s = (s + e1) & 0xff;
-    store.writeByte(0x00e3, s);
+    // ROL $00E2（C=cRol1；C←新 bit7）
+    const cRol2 = (e2 >> 7) & 1;
+    e2 = ((e2 << 1) | cRol1) & 0xff;
+    // ADC $00E2; STA $00E2（$00E2 = A = 加法结果）
+    sum = a + e2 + cRol2;
+    a = sum & 0xff;
+    c = sum > 0xff ? 1 : 0;
+    store.writeByte(0x00e2, a);
+    // SBC $0780,X（A -= M + !C）
+    let s = a - store.readByte(0x0780 + e1) - (1 - c);
+    a = s & 0xff;
+    c = s >= 0 ? 1 : 0;
+    // ADC $00E1; STA $00E3
+    sum = a + e1 + c;
+    a = sum & 0xff;
+    store.writeByte(0x00e3, a);
+    // INC $00E1
     store.writeByte(0x00e1, (e1 + 1) & 0xff);
   }
 

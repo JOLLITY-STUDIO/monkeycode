@@ -101,18 +101,19 @@ export class Scene0Controller extends SceneController {
         this.prim.loadChrConfig(0x17);
         store.writeByte(0x0044, 0x68);
         this.prim.loadSceneData(3);
-        // 场景 3 NT 数据分帧写入（每帧 4 行，32 行共 8 帧）
+        // 场景 3 NT 数据分帧写入（每帧 1 行 = 3+32 字节 ≤ $05E8 缓冲 64 字节，
+        // 避免原版等 NMI 消费的 busy-wait 在 H5 静默丢数据；32 行共 32 帧）
         this.ntRow = 0;
-        this.prim.queueScene3NametableRows(0, 4);
-        this.ntRow = 4;
+        this.prim.queueScene3NametableRows(0, 1);
+        this.ntRow = 1;
         this.phase = Scene0Phase.LoadScene3Nt;
         return undefined;
       }
 
       case Scene0Phase.LoadScene3Nt: {
         if (this.ntRow < 32) {
-          this.prim.queueScene3NametableRows(this.ntRow, 4);
-          this.ntRow += 4;
+          this.prim.queueScene3NametableRows(this.ntRow, 1);
+          this.ntRow += 1;
           return undefined;
         }
         // $84EC-$84F2: $008E→$0090, $008F→$0091
