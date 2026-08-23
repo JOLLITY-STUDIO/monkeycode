@@ -1,30 +1,4 @@
 "use strict";
-var __create = Object.create;
-var __defProp = Object.defineProperty;
-var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
-var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
-var __hasOwnProp = Object.prototype.hasOwnProperty;
-var __copyProps = (to, from, except, desc) => {
-  if (from && typeof from === "object" || typeof from === "function") {
-    for (let key of __getOwnPropNames(from))
-      if (!__hasOwnProp.call(to, key) && key !== except)
-        __defProp(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc(from, key)) || desc.enumerable });
-  }
-  return to;
-};
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
-
-// scripts/render_our_wav.ts
-var fs = __toESM(require("fs"));
-var path = __toESM(require("path"));
 
 // src/core/utils.ts
 function fromJSON(obj, state) {
@@ -84,8 +58,8 @@ var ChannelDM = class _ChannelDM {
       "lastFetchedByte"
     ];
   }
-  constructor(papu) {
-    this.papu = papu;
+  constructor(papu2) {
+    this.papu = papu2;
     this.isEnabled = false;
     this.hasSample = false;
     this.irqGenerated = false;
@@ -217,8 +191,8 @@ var channel_dm_default = ChannelDM;
 
 // src/core/papu/channel-noise.ts
 var ChannelNoise = class {
-  constructor(papu) {
-    this.papu = papu;
+  constructor(papu2) {
+    this.papu = papu2;
     this.progTimerCount = 0;
     this.progTimerMax = 0;
     this.isEnabled = false;
@@ -339,8 +313,8 @@ var channel_noise_default = ChannelNoise;
 
 // src/core/papu/channel-square.ts
 var ChannelSquare = class {
-  constructor(papu, square1) {
-    this.papu = papu;
+  constructor(papu2, square1) {
+    this.papu = papu2;
     this.dutyLookup = [
       0,
       1,
@@ -576,8 +550,8 @@ var channel_square_default = ChannelSquare;
 
 // src/core/papu/channel-triangle.ts
 var ChannelTriangle = class {
-  constructor(papu) {
-    this.papu = papu;
+  constructor(papu2) {
+    this.papu = papu2;
     this.progTimerCount = 0;
     this.progTimerMax = 0;
     this.triangleCounter = 0;
@@ -695,8 +669,8 @@ var FRAME_STEPS_5 = [7457, 14913, 22371, 29829, 37281];
 var FRAME_PERIOD_4 = 29830;
 var FRAME_PERIOD_5 = 37282;
 var PAPU = class {
-  constructor(nes) {
-    this.nes = nes;
+  constructor(nes2) {
+    this.nes = nes2;
     this.square1 = new channel_square_default(this, true);
     this.square2 = new channel_square_default(this, false);
     this.triangle = new channel_triangle_default(this);
@@ -42663,13 +42637,13 @@ function readCmd(idx) {
   return AudioRom.readBank12U16(34010 + idx * 2);
 }
 var AudioService = class {
-  constructor(store) {
+  constructor(store2) {
     this.papu = null;
-    this.store = store;
+    this.store = store2;
   }
   /** 注入 PAPU 实例 */
-  attachPapu(papu) {
-    this.papu = papu;
+  attachPapu(papu2) {
+    this.papu = papu2;
   }
   // RAM 辅助
   rd(addr) {
@@ -42900,6 +42874,9 @@ var AudioService = class {
       }
       const freqLo = this.rd(chBase + 7);
       const freqHi = this.rd(chBase + 8) & 7;
+      if (ch === 4 && freqLo !== 0) {
+        console.error(`[APU] ch=${ch} apuBase=$${apuBase.toString(16)} freqLo=$${freqLo.toString(16)} freqHi=$${freqHi.toString(16)} sweep=${sweepEnabled} chBase=$${chBase.toString(16)}`);
+      }
       this.wrApu(apuBase + 2, freqLo);
       this.wrApu(apuBase + 3, freqHi | 24);
     }
@@ -43130,82 +43107,42 @@ var AudioService = class {
   }
 };
 
-// scripts/render_our_wav.ts
-function writeWav(samples, sampleRate, outPath) {
-  const buf = Buffer.alloc(44 + samples.length * 2);
-  buf.write("RIFF", 0);
-  buf.writeUInt32LE(36 + samples.length * 2, 4);
-  buf.write("WAVE", 8);
-  buf.write("fmt ", 12);
-  buf.writeUInt32LE(16, 16);
-  buf.writeUInt16LE(1, 20);
-  buf.writeUInt16LE(1, 22);
-  buf.writeUInt32LE(sampleRate, 24);
-  buf.writeUInt32LE(sampleRate * 2, 28);
-  buf.writeUInt16LE(2, 32);
-  buf.writeUInt16LE(16, 34);
-  buf.write("data", 36);
-  buf.writeUInt32LE(samples.length * 2, 40);
-  for (let i = 0; i < samples.length; i++) {
-    const v = Math.max(-32768, Math.min(32767, Math.round(samples[i] * 32767)));
-    buf.writeInt16LE(v, 44 + i * 2);
-  }
-  fs.writeFileSync(outPath, buf);
-}
-function renderSong(songIdx2, durationSec) {
-  const sampleRate = 44100;
-  const songId2 = SONG_REQUEST_IDS[songIdx2];
-  const samples = [];
-  const nes = {
-    opts: {
-      sampleRate,
-      onAudioSample: (l, r) => samples.push((l + r) / 2)
-    }
-  };
-  const papu = new papu_default(nes);
-  const store = new DataStore();
-  store.reset();
-  const audio = new AudioService(store);
-  audio.attachPapu(papu);
-  if (songId2 < 50) {
-    audio.playBgm(songId2);
-  } else {
-    audio.playSe(songId2);
-  }
-  const totalFrames = Math.ceil(durationSec * 60);
-  for (let f = 0; f < totalFrames; f++) {
-    audio.update();
-  }
-  return samples;
-}
-var songIdx = parseInt(process.argv[2] || "41") - 1;
-var songId = SONG_REQUEST_IDS[songIdx];
-var duration = parseInt(process.argv[3] || (songId < 50 ? "60" : "5"));
-var all = process.argv[4] === "all";
-var outDir = path.join(__dirname, "..", "output");
-fs.mkdirSync(outDir, { recursive: true });
-if (all) {
-  for (let i = 0; i < SONG_COUNT; i++) {
-    const id = SONG_REQUEST_IDS[i];
-    const dur = id < 50 ? 60 : 5;
-    const outFile = path.join(outDir, `our-song-${String(i + 1).padStart(3, "0")}.wav`);
-    if (fs.existsSync(outFile)) {
-      console.log(`\u8DF3\u8FC7 ${i + 1}`);
-      continue;
-    }
-    console.log(`[${i + 1}/${SONG_COUNT}] ID $${id.toString(16)} ${dur}\u79D2...`);
-    try {
-      const samples = renderSong(i, dur);
-      writeWav(samples, 44100, outFile);
-      console.log(`  ${samples.length} \u91C7\u6837`);
-    } catch (e) {
-      console.error(`  \u5931\u8D25: ${e.message}`);
+// scripts/_debug_frames.ts
+var apuWrites = [];
+var nes = {
+  opts: {
+    sampleRate: 44100,
+    onAudioSample: (l, r) => {
     }
   }
-} else {
-  console.log(`\u6E32\u67D3\u7B2C ${songIdx + 1} \u9996 (ID $${songId.toString(16)}, ${duration}\u79D2)...`);
-  const samples = renderSong(songIdx, duration);
-  const outFile = path.join(outDir, `our-song-${String(songIdx + 1).padStart(3, "0")}.wav`);
-  writeWav(samples, 44100, outFile);
-  console.log(`\u5B8C\u6210: ${outFile} (${samples.length} \u91C7\u6837, ${(samples.length / 44100).toFixed(1)}\u79D2)`);
+};
+var papu = new papu_default(nes);
+var store = new DataStore();
+store.reset();
+var audio = new AudioService(store);
+audio.attachPapu(papu);
+var songId = SONG_REQUEST_IDS[40];
+audio.playBgm(songId);
+var origWriteReg = papu.writeReg.bind(papu);
+papu.writeReg = (addr, val) => {
+  apuWrites.push({ addr, val, frame: -1 });
+  origWriteReg(addr, val);
+};
+for (let f = 0; f < 60; f++) {
+  const beforeCount = apuWrites.length;
+  audio.update();
+  const newWrites = apuWrites.slice(beforeCount);
+  const ch4 = 1895;
+  const mask = store.readByte(1798);
+  const durLo = store.readByte(1799 + 4 * 4);
+  const durHi = store.readByte(1800 + 4 * 4);
+  const ptr = store.readByte(ch4 + 1) << 8 | store.readByte(ch4);
+  const freqLo = store.readByte(ch4 + 7);
+  const freqHi = store.readByte(ch4 + 8);
+  process.stdout.write(`\u5E27${f}: mask=${mask.toString(16)} dur=${durLo}/${durHi} ptr=$${ptr.toString(16)} freq=$${freqLo.toString(16)},$${freqHi.toString(16)} APU\u5199=${newWrites.length}
+`);
+  if (newWrites.length > 0) {
+    process.stdout.write(`  \u5199: ${newWrites.slice(0, 8).map((w) => "$" + w.addr.toString(16) + "=" + w.val.toString(16)).join(" ")}
+`);
+  }
 }

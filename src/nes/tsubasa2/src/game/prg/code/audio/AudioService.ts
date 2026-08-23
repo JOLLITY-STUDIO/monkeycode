@@ -132,30 +132,23 @@ export class AudioService {
     this.wr(0x07FC, bgmGroup);
 
     // 从 BGM 指针表读取数据起始地址
-    const dataAddr = AudioRom.readBgmPointer(bgmId);
+    // BGM 指针表 @ $8798，索引 0-28 对应 BGM ID 0x03-0x30
+    const bgmIndex = bgmId - 0x03;
+    const dataAddr = AudioRom.readBgmPointer(bgmIndex);
     if (dataAddr === 0) return;
 
-    // 解析 BGM 头部：[chNum, trackLo, trackHi] × N
-    // chNum >= 0x80 或 $FF = 头部结束
-    let pos = 0;
-    // 跳过 $FF 前缀
-    if (AudioRom.readBgmData(dataAddr + pos) === 0xFF) pos++;
-
-    for (let i = 0; i < 8 && pos + 2 < 0x4000; i++) {
-      const chNum = AudioRom.readBgmData(dataAddr + pos);
-      if (chNum >= 0x80) break; // 头部结束
-
-      const trackLo = AudioRom.readBgmData(dataAddr + pos + 1);
-      const trackHi = AudioRom.readBgmData(dataAddr + pos + 2);
-      pos += 3;
-
-      const trackAddr = trackLo | (trackHi << 8);
-      if (trackAddr < 0x8000 || trackAddr > 0xBFFF) continue;
-
-      // 通道映射：chNum 0-3 → 内部 ch 4-7
-      const internalCh = chNum >= 4 ? chNum : chNum + 4;
-      this.initChannel(internalCh, trackAddr);
+    // BGM 数据直接是通道 0(Pulse1) 的乐谱流
+    // 跳过前导 $00（数据分隔符）
+    let startPos = 0;
+    for (let i = 0; i < 64; i++) {
+      const b = AudioRom.readBgmData(dataAddr + i);
+      if (b >= 0x80) { startPos = i; break; }
     }
+    const streamAddr = dataAddr + startPos;
+
+    // 只初始化通道 4（Pulse1，对应内部通道号 4）
+    // 其他通道由命令流中的 $E0 命令设置
+    this.initChannel(4, streamAddr);
 
     this.wrApu(APU_STATUS, 0x0F);
   }
@@ -188,8 +181,9 @@ export class AudioService {
     for (let i = 0; i < ch; i++) bit = (bit << 1) & 0xFF;
     this.wr(0x0706, this.rd(0x0706) | bit);
 
-    // 立即触发音序器
-    this.wr(counterBase, 0); // durLo=0 → 触发 sub83CB
+    // 立即触发音序器（durLo=1 → 第一帧 dl=(1-1)=0 → 触发 sub83CB）
+    this.wr(counterBase, 1); // durLo=1
+    this.wr(counterBase + 1, 1); // durHi=1
   }
 
   // ════════════════════════════════════════════════════
@@ -252,23 +246,12 @@ export class AudioService {
   // ════════════════════════════════════════════════════
 
   private phase1(): void {
-    let mask = this.rd(0x0706);
+    const mask = this.rd(0x0706);
     for (let ch = 0; ch < NUM_CH; ch++) {
       const chBit = 1 << ch;
-      if (!(mask & chBit)) {
-        mask = (mask >> 1) | (mask & 0x80);
-        this.wr(0x0706, mask);
-        // 推进指针
-        this.wrPtr(0x00F0, 0x00F1, (this.rdPtr(0x00F0, 0x00F1) + 0x10) & 0xFFFF);
-        this.wr(0x00F2, (this.rd(0x00F2) + 4) & 0xFF);
-        this.wr(0x00F3, (this.rd(0x00F3) - 1) & 0xFF);
-        continue;
-      }
-      // 通道活跃
-      mask = (mask >> 1) | 0x80;
-      this.wr(0x0706, mask);
+      if (!(mask & chBit)) continue;
 
-      const x = ch * 4; // $00F2 = ch * 4
+      const x = ch * 4;
       // DEC durLo
       let dl = (this.rd(0x0707 + x) - 1) & 0xFF;
       this.wr(0x0707 + x, dl);
@@ -279,16 +262,10 @@ export class AudioService {
       let dh = (this.rd(0x0708 + x) - 1) & 0xFF;
       this.wr(0x0708 + x, dh);
       if (dh === 0) {
-        // 重载 durHi
         this.wr(0x0708 + x, this.rd(0x0707 + x) || 1);
       }
       // 音高计算
       this.sub81DB(ch);
-
-      // 推进指针
-      this.wrPtr(0x00F0, 0x00F1, (this.rdPtr(0x00F0, 0x00F1) + 0x10) & 0xFFFF);
-      this.wr(0x00F2, (this.rd(0x00F2) + 4) & 0xFF);
-      this.wr(0x00F3, (this.rd(0x00F3) - 1) & 0xFF);
     }
   }
 
@@ -332,15 +309,14 @@ export class AudioService {
       this.wrApu(apuBase + 1, 0x08);
     }
 
-    // 频率写入
+    // 频率写入（sweep 禁用时直接写，sweep 使能时检查 freqHi bit7）
     if (!sweepEnabled || (this.rd(chBase + 8) & 0x80) !== 0) {
-      // 清 freqHi bit7
       if (sweepEnabled) {
         this.wr(chBase + 8, this.rd(chBase + 8) & 0x7F);
       }
       const freqLo = this.rd(chBase + 7);
-      this.wrApu(apuBase + 2, freqLo);
       const freqHi = this.rd(chBase + 8) & 0x07;
+      this.wrApu(apuBase + 2, freqLo);
       this.wrApu(apuBase + 3, freqHi | 0x18);
     }
   }
