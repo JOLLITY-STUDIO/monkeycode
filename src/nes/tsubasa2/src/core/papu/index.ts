@@ -1,4 +1,3 @@
-// @ts-nocheck — tsnes 移植代码, JS 风格未声明字段, 保持与模拟器 1:1, 不做类型检查
 import { fromJSON, toJSON } from "../utils.js";
 import ChannelDM from "./channel-dm.js";
 import ChannelNoise from "./channel-noise.js";
@@ -23,7 +22,7 @@ const FRAME_PERIOD_4 = 29830; // Total CPU cycles for 4-step sequence
 const FRAME_PERIOD_5 = 37282; // Total CPU cycles for 5-step sequence
 
 class PAPU {
-  constructor(nes = null) {
+  constructor(nes) {
     this.nes = nes;
 
     this.square1 = new ChannelSquare(this, true);
@@ -231,7 +230,7 @@ class PAPU {
   // frameCounterAlreadyAdvanced is the number of frame counter cycles already
   // advanced mid-instruction by APU catch-up (advanceFrameCounter). This is
   // subtracted from the frame counter portion only, not from channel timers.
-  clockFrameCounter(nCycles, frameCounterAlreadyAdvanced = 0) {
+  clockFrameCounter(nCycles, frameCounterAlreadyAdvanced) {
     let frameCounterCycles = nCycles - (frameCounterAlreadyAdvanced || 0);
 
     // Process deferred frame IRQ clear and update APU cycle parity for

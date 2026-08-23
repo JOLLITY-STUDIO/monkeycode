@@ -7,7 +7,7 @@
  */
 // 小程序编译器�?`export *` re-export 支持有限, 改为�?import �?export (�?src/index.ts 一�?
 import {
-  Bank00Service, BootRouter, NmiCallbackIndex, HardwareInitService,
+  Bank00Service, Bank02Service, NmiCallbackIndex, HardwareInitService,
   InterruptService, TitleSceneController,
   PasswordCallbackHandler, ResultSceneController,
   BootBackgroundRenderer,
@@ -22,7 +22,7 @@ import {
 import { DataStore } from './data/store/DataStore';
 
 export {
-  Bank00Service, BootRouter, NmiCallbackIndex, HardwareInitService,
+  Bank00Service, Bank02Service, NmiCallbackIndex, HardwareInitService,
   InterruptService, TitleSceneController,
   PasswordCallbackHandler, ResultSceneController,
   BootBackgroundRenderer,

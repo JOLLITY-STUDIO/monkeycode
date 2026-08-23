@@ -13,7 +13,7 @@
 import type NES from '../core/nes';
 
 import { Bank00Service } from './prg/code/system/Bank00Service';
-import { BootRouter } from './prg/code/system/BootRouter';
+import { Bank02Service } from './prg/code/system/Bank02Service';
 import { InterruptService } from './prg/code/system/InterruptService';
 import { HardwareInitService } from './prg/code/system/HardwareInitService';
 import { PrgBankService } from './prg/code/system/PrgBankService';
@@ -221,7 +221,7 @@ export function writeApuToPapu(store: DataStore, papu: any): void {
 // ══════════════════════════════════════════════════════════�?export class Tsubasa2 {
   readonly store: DataStore;
   readonly system: Bank00Service;
-  readonly router: BootRouter;
+  readonly router: Bank02Service;
   readonly skill: SkillService;
   readonly interrupts: InterruptService;
   readonly hardware: HardwareInitService;
@@ -236,7 +236,7 @@ export function writeApuToPapu(store: DataStore, papu: any): void {
     this.store = new DataStore();
     this.prgBank = new PrgBankService(this.store);
     this.system = new Bank00Service(this.store);
-    this.router = new BootRouter(this.store);
+    this.router = new Bank02Service(this.store);
     this.skill = new SkillService(this.store, this.system);
     this.interrupts = new InterruptService(this.store, this.system);
     this.audio = new AudioService(this.store);

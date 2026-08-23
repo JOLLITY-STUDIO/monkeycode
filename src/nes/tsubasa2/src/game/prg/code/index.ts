@@ -3,7 +3,7 @@
  * 按业务域分包: system / scene / story / player / team / match / skill / sprite / audio
  */
 export { Bank00Service } from './system/Bank00Service';
-export { BootRouter, NmiCallbackIndex } from './system/BootRouter';
+export { Bank02Service, NmiCallbackIndex } from './system/Bank02Service';
 export { HardwareInitService } from './system/HardwareInitService';
 export { InterruptService, type BankConfig } from './system/InterruptService';
 export { PrgBankService, PrgWindow } from './system/PrgBankService';

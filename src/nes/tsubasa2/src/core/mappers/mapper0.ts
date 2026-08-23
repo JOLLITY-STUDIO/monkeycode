@@ -431,15 +431,6 @@ class Mapper0 {
     const rom = this.nes.rom.rom;
     const count = this.nes.rom.romCount;
 
-    // 去 CPU 化: PRG 已翻译为 TS Service 类 (rom.tsPrg), 不存原始指令字节。
-    // 此情况下 rom[] 数组元素为 undefined, 无需也无法拷贝到 cpu.mem (无 CPU 执行)。
-    // 仅维护 prgBankMap (在 Mapper4.executeCommand 里单独维护) 即可,
-    // H5 主板通过 ServiceLoader 按 bank 索引调度对应 TS Service。
-    const bank16kIdx = Math.floor(bank8k / 2) % count;
-    if (!rom[bank16kIdx]) {
-      return;
-    }
-
     // 自动识别 bank 单位：8KB bank 直接用；16KB bank 拆半取
     if (rom[0] && rom[0].length === 8192) {
       // 每个 bank 就是 8KB，直接索引

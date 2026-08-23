@@ -1,16 +1,16 @@
-// @ts-nocheck — tsnes 移植代码, JS 风格未声明字段, 保持与模拟器 1:1, 不做类型检查
+import CPU from "./cpu";
 import Controller from "./controller";
 import type { ButtonKey } from "./controller";
 import PPU from "./ppu/index";
 import PAPU from "./papu/index";
 import GameGenie from "./gamegenie";
 import ROM from "./rom";
-import type { CpuBus } from "./cpu-bus";
+import { Tracer, type TraceOptions } from "./debug/tracer";
 
 export type ControllerId = 1 | 2;
 
 export interface EmulatorData {
-  bus: CpuBus;
+  cpu: any;
   mmap: any;
   ppu: any;
   papu: any;
@@ -23,32 +23,10 @@ export interface NESOptions {
   onBatteryRamWrite?: (address: number, value: number) => void;
   emulateSound?: boolean;
   sampleRate?: number;
-  /**
-   * 去 CPU 化: 外部注入的内存/中断总线。
-   * 替代原 cpuFactory + CPU 实例。
-   * 若未提供, 构造一个最小默认 bus (64KB 零内存 + 空 IRQ/halt)。
-   */
-  bus?: CpuBus;
-}
-
-/**
- * 默认 CpuBus 实现 (无 CPU 指令循环, 仅内存 + 空操作中断)。
- * 适用于 H5 主板外部驱动 PPU 帧的场景。
- */
-function createDefaultBus(): CpuBus {
-  return {
-    mem: new Uint8Array(0x10000),
-    dataBus: 0,
-    instrBusCycles: 0,
-    _cpuCycleBase: 0,
-    apuCatchupCycles: 0,
-    cyclesToHalt: 0,
-    nmiRaised: false,
-    nmiRaisedAtCycle: 0,
-    nmiDotsRemainingInStep: 0,
-    requestIrq(_type: number): void {},
-    haltCycles(_n: number): void {},
-  };
+  /** 可选：自定义 CPU 工厂 (用于注入 TsubasaCpu 等替代实现) */
+  cpuFactory?: (nes: any) => CPU;
+  /** PC 进入非 ROM 区域时是否输出调试日志 (默认关闭，仅调试时需要) */
+  debugNonROM?: boolean;
 }
 
 class NES {
@@ -57,12 +35,7 @@ class NES {
     writeFrame: (buffer: Uint32Array) => void;
     updateStatus: (status: string) => void;
   };
-  /**
-   * 去 CPU 化后的内存/中断总线。
-   * PPU/PAPU/mapper 仍通过 `this.nes.cpu` 别名 getter 访问此对象,
-   * 保持向下兼容, 但 NES 类自身不再 import CPU 类型。
-   */
-  bus: CpuBus;
+  cpu: CPU;
   ppu: any;
   papu: any;
   gameGenie: GameGenie;
@@ -73,6 +46,8 @@ class NES {
   rom!: ROM;
   lastFpsTime: number | null;
   crashed: boolean;
+  /** CPU 指令级 trace (可选, 默认关闭) */
+  tracer: Tracer;
 
   constructor(opts: NESOptions) {
     this.opts = {
@@ -91,12 +66,14 @@ class NES {
       writeFrame: this.opts.onFrame!,
       updateStatus: this.opts.onStatusUpdate!,
     };
-    this.bus = this.opts.bus ?? createDefaultBus();
+    this.cpu = (this.opts as NESOptions).cpuFactory
+      ? (this.opts as NESOptions).cpuFactory!(this)
+      : new CPU(this);
+    this.cpu.debugNonROM = this.opts.debugNonROM ?? false;
     this.ppu = new PPU(this);
     this.papu = new PAPU(this);
     this.gameGenie = new GameGenie();
-    // GameGenie 通常会调 cpu._updateCartridgeLoader; 去 CPU 化后此项无操作
-    // (GameGenie 影响 PRG 替换, H5 走 DataStore 直接读写, 不依赖此回调)
+    this.gameGenie.onChange = () => this.cpu._updateCartridgeLoader();
     this.mmap = null;
     this.controllers = {
       1: new Controller(),
@@ -109,21 +86,17 @@ class NES {
     this.lastFpsTime = null;
     this.crashed = false;
 
-    this.ui.updateStatus("Ready to load a ROM.");
-  }
+    this.tracer = new Tracer();
 
-  /**
-   * 兼容旧代码的 `nes.cpu` 访问 — 返回 bus。
-   * PPU/PAPU/mapper 内部仍用 `this.nes.cpu.mem` / `this.nes.cpu.requestIrq` 等,
-   * 此 getter 让那些引用透明地落到 bus 上, 无需逐个改 PPU/PAPU。
-   */
-  get cpu(): CpuBus {
-    return this.bus;
+    this.ui.updateStatus("Ready to load a ROM.");
   }
 
   // Resets the system
   reset(): void {
-    // 不再 new CPU; bus 保持 (外部注入的 bus 状态在 reset 后保留, 仅清 PPU/PAPU)
+    this.cpu = (this.opts as NESOptions).cpuFactory
+      ? (this.opts as NESOptions).cpuFactory!(this)
+      : new CPU(this);
+    this.cpu.debugNonROM = this.opts.debugNonROM ?? false;
     this.ppu = new PPU(this);
     this.papu = new PAPU(this);
 
@@ -137,20 +110,9 @@ class NES {
     this.crashed = false;
   }
 
-  /**
-   * 去 CPU 化的帧循环。
-   *
-   * 原始 jsnes: `for(;;) { cpu.emulate(); ppu 边沿; if(ppu.frameEnded) break; }`
-   * 去 CPU 化后: NES 本身不跑 CPU 指令, 由外部驱动 (H5 Tsubasa2 主板的
-   * InterruptService.nmi → Bank00Service.mainLoop 推进游戏逻辑, PpuSync.syncAll
-   * 同步 PPU 寄存器/NT/OAM/调色板)。
-   *
-   * 此处仅完成"PPU 一帧的扫描线渲染": startFrame → 扫描线推进 → endFrame,
-   * 供 Browser/H5 调用方在不跑 CPU 的情况下仍能产出图像帧。
-   *
-   * 若调用方仍需 CPU 指令循环 (例如纯模拟器场景), 应自行在外部循环调
-   * `nes.bus` 相关指令驱动, 不再由 NES.frame 承担。
-   */
+  // The frame loop. PPU is advanced inline after every CPU bus operation
+  // (in cpu.load/write/push/pull). APU is clocked in bulk after each
+  // instruction for compatibility with its sample timing logic.
   frame = (): void => {
     if (this.crashed) {
       throw new Error(
@@ -160,18 +122,45 @@ class NES {
     this.controllers[1].clock();
     this.controllers[2].clock();
     this.ppu.startFrame();
-
-    // 去 CPU 化: 不再 cpu.emulate() 指令循环。
-    // 直接驱动 PPU 一帧的扫描线 (262 行 × 341 dots 简化为按扫描线推进)。
-    // PPU.endScanline 内部会在 VBlank 置位 frameEnded。
-    // 注: 此处假定 PPU 已由外部 (PpuSync/InterruptService) 灌入正确寄存器/NT/OAM。
+    let cycles: number;
+    const cpu = this.cpu;
+    const ppu = this.ppu;
+    const papu = this.papu;
     try {
-      // 262 扫描线 (0-260), 每条 endScanline 推进 PPU 状态机
-      for (let sl = 0; sl < 262; sl++) {
-        this.ppu.endScanline();
-        if (this.ppu.frameEnded) {
-          this.ppu.frameEnded = false;
-          break;
+      for (;;) {
+        if (cpu.cyclesToHalt === 0) {
+          // Execute a CPU instruction. PPU advancement happens inline
+          // inside the bus operations (load/write/push/pull).
+          cycles = cpu.emulate();
+
+          // Clock APU with the full cycle count. The frame counter portion
+          // subtracts any cycles already advanced by APU catch-up.
+          if (this.opts.emulateSound) {
+            papu.clockFrameCounter(cycles, cpu.apuCatchupCycles);
+          }
+          cpu.apuCatchupCycles = 0;
+
+          // Check if VBlank fired during inline PPU stepping.
+          if (ppu.frameEnded) {
+            ppu.frameEnded = false;
+            break;
+          }
+        } else {
+          // DMA halt cycles: step PPU per cycle. APU is clocked in bulk.
+          let chunk = Math.min(cpu.cyclesToHalt, 8);
+          for (let i = 0; i < chunk; i++) {
+            ppu.advanceDots(3);
+          }
+          if (this.opts.emulateSound) {
+            papu.clockFrameCounter(chunk);
+          }
+          cpu.cyclesToHalt -= chunk;
+          cpu._cpuCycleBase += chunk;
+
+          if (ppu.frameEnded) {
+            ppu.frameEnded = false;
+            break;
+          }
         }
       }
     } catch (e) {
@@ -216,26 +205,37 @@ class NES {
     return fps;
   }
 
+  /**
+   * 启用 CPU 指令级 trace (类似 Mesen trace 功能)
+   *
+   * 用法:
+   *   nes.enableTrace({ outputFile: 'trace.log', maxLines: 10000 });
+   *   nes.frame();  // 执行的指令会被记录
+   *   nes.disableTrace();
+   *
+   * 过滤选项:
+   *   - addressRange: 只记录 [start, end) 范围内的 PC
+   *   - bankFilter: 只记录指定 16KB bank (Mesen 编号, 0-15)
+   *   - maxLines: 最多记录多少行
+   *   - callback: 每行回调 (不写文件)
+   */
+  enableTrace(opts: TraceOptions = {}): Tracer {
+    this.tracer.start(this, opts);
+    return this.tracer;
+  }
+
+  /** 停止 trace, 关闭文件流 */
+  disableTrace(): void {
+    this.tracer.stop();
+  }
+
   reloadROM(): void {
     if (this.romData !== null) {
       this.loadROM(this.romData);
     }
   }
 
-  // 直接加载 TS 形式 ROM (header + 翻译 bank 类 + CHR 字节)。
-  // romDef 来自 game/index.ts 的 ROM 定义 (header/prg/chr)。
-  loadTsROM(romDef: { header: Uint8Array; prg: unknown; chr: Uint8Array }): void {
-    this.rom = new ROM(this);
-    this.rom.loadTs(romDef);
-
-    this.reset();
-    this.mmap = this.rom.createMapper();
-    this.mmap.loadROM();
-    this.ppu.setMirroring(this.rom.getMirroringType());
-    this.romData = null;
-  }
-
-  // Loads a ROM file into the bus and PPU.
+  // Loads a ROM file into the CPU and PPU.
   // The ROM file is validated first.
   loadROM(data: Uint8Array | string | ArrayBuffer): void {
     // Load ROM file:
@@ -252,7 +252,7 @@ class NES {
   // Adjust audio sample timing for a non-standard host frame rate. At the
   // default 60fps each frame() produces ~800 samples at 48kHz. If the host
   // calls frame() less often (e.g. 30fps), the sample timer must fire more
-  // frequently per cycle so each frame still fills the audio buffer.
+  // frequently per CPU cycle so each frame still fills the audio buffer.
   setFramerate(rate: number): void {
     this.papu.setFrameRate(rate);
   }
@@ -260,8 +260,7 @@ class NES {
   toJSON(): EmulatorData {
     return {
       // romData: this.romData,
-      // 去 CPU 化: 序列化 bus 的内存与中断状态 (而非 CPU 内部寄存器)
-      bus: this.bus,
+      cpu: this.cpu.toJSON(),
       mmap: this.mmap.toJSON(),
       ppu: this.ppu.toJSON(),
       papu: this.papu.toJSON(),
@@ -275,10 +274,7 @@ class NES {
   fromJSON(s: any): void {
     this.reset();
     // this.romData = s.romData;
-    // 去 CPU 化: 恢复 bus (外部应注入实现了 CpuBus 的对象)
-    if (s.bus) {
-      this.bus = s.bus;
-    }
+    this.cpu.fromJSON(s.cpu);
     this.mmap.fromJSON(s.mmap);
     this.ppu.fromJSON(s.ppu);
     this.papu.fromJSON(s.papu);

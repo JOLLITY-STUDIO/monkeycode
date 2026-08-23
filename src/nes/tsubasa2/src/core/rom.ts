@@ -15,8 +15,6 @@ class ROM {
 
   nes: any;
   valid: boolean;
-  /** 翻译后的 PRG bank 类 (TS 数据, 无需指令字节) */
-  tsPrg: unknown = null;
   header!: Uint8Array;
   mirroring!: number;
   batteryRam!: boolean;
@@ -130,81 +128,6 @@ class ROM {
           : (data as string).charCodeAt(offset + j) & 0xff;
       }
       offset += 4096;
-    }
-
-    // Create VROM tiles:
-    this.vromTile = new Array(this.vromCount) as Tile[][];
-    for (i = 0; i < this.vromCount; i++) {
-      this.vromTile[i] = new Array(256) as Tile[];
-      for (j = 0; j < 256; j++) {
-        this.vromTile[i][j] = new Tile();
-      }
-    }
-
-    // Convert CHR-ROM banks to tiles:
-    let tileIndex: number;
-    let leftOver: number;
-    for (v = 0; v < this.vromCount; v++) {
-      for (i = 0; i < 4096; i++) {
-        tileIndex = i >> 4;
-        leftOver = i % 16;
-        if (leftOver < 8) {
-          this.vromTile[v][tileIndex].setScanline(
-            leftOver,
-            this.vrom[v][i],
-            this.vrom[v][i + 8],
-          );
-        } else {
-          this.vromTile[v][tileIndex].setScanline(
-            leftOver - 8,
-            this.vrom[v][i - 8],
-            this.vrom[v][i],
-          );
-        }
-      }
-    }
-
-    this.valid = true;
-  }
-
-  /**
-   * 直接加载 src/game/index.ts 导出的 ROM 定义。
-   * romDef = { header: iNES 16B, prg: 翻译 bank 类, chr: 原始 128KB 字节 }。
-   * PRG 已翻译为高级语言 (tsPrg), 无 CPU 解析, 不需要指令字节;
-   * CHR 仍为原始字节, 用于 PPU 渲染 tile。
-   */
-  loadTs(romDef: { header: Uint8Array; prg: unknown; chr: Uint8Array }): void {
-    let i: number, j: number, v: number;
-    const header = romDef.header;
-    const prg = romDef.prg;
-    const chr = romDef.chr;
-
-    this.header = new Uint8Array(16);
-    this.header.set(header.subarray(0, 16));
-
-    this.mirroring = (this.header[6] & 1) !== 0 ? 1 : 0;
-    this.batteryRam = (this.header[6] & 2) !== 0;
-    this.trainer = (this.header[6] & 4) !== 0;
-    this.fourScreen = (this.header[6] & 8) !== 0;
-    this.isNES2 = (this.header[7] & 0x0c) === 0x08;
-
-    if (this.isNES2) {
-      this._loadNES2Header();
-    } else {
-      this._loadINES1Header();
-    }
-
-    // PRG: 已翻译为 TS bank 类, 仅保存引用 (无 CPU 不执行指令字节)
-    this.tsPrg = prg;
-    this.rom = new Array(this.romCount) as Uint8Array[];
-
-    // CHR: 从连续字节切分 4KB banks
-    this.vrom = new Array(this.vromCount) as Uint8Array[];
-    for (i = 0; i < this.vromCount; i++) {
-      this.vrom[i] = new Uint8Array(4096);
-      for (j = 0; j < 4096; j++) {
-        this.vrom[i][j] = chr[i * 4096 + j] ?? 0xff;
-      }
     }
 
     // Create VROM tiles:

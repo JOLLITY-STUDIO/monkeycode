@@ -1,13 +1,7 @@
-// @ts-nocheck — tsnes 移植代码, JS 风格未声明字段, 保持与模拟器 1:1, 不做类型检查
 import Tile from "../tile.js";
 import { fromJSON, toJSON } from "../utils.js";
 import NameTable from "./nametable.js";
 import PaletteTable from "./palette-table.js";
-import { VramStore } from "./vram-store.js";
-import { OamStore } from "./oam-store.js";
-import { ScrollStore } from "./scroll-store.js";
-import { ScrollCounters } from "./scroll-counters.js";
-import * as bit from "../bitfield.js";
 
 class PPU {
   // Status flags:
@@ -25,24 +19,24 @@ class PPU {
 
     let i;
 
-    // ── Redis KV Store 风格存储 ─────────────────────────────────────
-    // VRAM (vramMem + vramAddress/vramTmpAddress/f_addrInc/缓冲读取)
-    this.vramStore = new VramStore();
-    // OAM / SPR-RAM (spriteMem + sramAddress)
-    this.oamStore = new OamStore();
-    // 滚动寄存器 (regFV/regV/regH/regVT/regHT/regFH/regS)
-    this.scrollStore = new ScrollStore();
-    // 渲染滚动计数器 (cntFV/cntV/cntH/cntVT/cntHT)
-    this.counters = new ScrollCounters();
+    // Memory (Uint8Array is zero-initialized)
+    this.vramMem = new Uint8Array(0x8000);
+    this.spriteMem = new Uint8Array(0x100);
 
-    // VRAM/Scroll Hi/Lo latch (firstWrite): 首个 $2005/$2006 写为高字节
-    this.firstWrite = true;
+    // VRAM I/O:
+    this.vramAddress = null;
+    this.vramTmpAddress = null;
+    this.vramBufferedReadValue = 0;
+    this.firstWrite = true; // VRAM/Scroll Hi/Lo latch
     // PPU has its own internal I/O bus. All PPU register writes update this
     // latch. Reading write-only registers ($2000,$2001,$2003,$2005,$2006)
     // returns this value. $2002 uses bits 4-0 from this latch.
     // On real hardware the latch decays to 0 per-bit after ~600ms.
     this.openBusLatch = 0;
     this.openBusDecayFrames = 0;
+
+    // SPR-RAM I/O:
+    this.sramAddress = 0; // 8-bit only.
 
     this.currentMirroring = -1;
     // NMI edge detection state. On real hardware, /NMI is level-sensitive but
@@ -61,12 +55,11 @@ class PPU {
     this.scanlineAlreadyRendered = null;
 
     // Control Flags Register 1:
-    // (f_nmiOnVblank/f_spriteSize/f_bgPatternTable/f_spPatternTable/
-    //  f_nTblAddress 保留为 PPU 级控制字段; f_addrInc 由 vramStore 承载)
     this.f_nmiOnVblank = 0; // NMI on VBlank. 0=disable, 1=enable
     this.f_spriteSize = 0; // Sprite size. 0=8x8, 1=8x16
     this.f_bgPatternTable = 0; // Background Pattern Table address. 0=0x0000,1=0x1000
     this.f_spPatternTable = 0; // Sprite Pattern Table address. 0=0x0000,1=0x1000
+    this.f_addrInc = 0; // PPU Address Increment. 0=1,1=32
     this.f_nTblAddress = 0; // Name Table Address. 0=0x2000,1=0x2400,2=0x2800,3=0x2C00
 
     // Control Flags Register 2:
@@ -77,9 +70,21 @@ class PPU {
     this.f_bgClipping = 0; // Background clipping. 0=BG invisible in left 8-pixel column, 1=No clipping
     this.f_dispType = 0; // Display type. 0=color, 1=monochrome
 
-    // Counters (cntFV/cntV/cntH/cntVT/cntHT) 由 this.counters (ScrollCounters) 承载。
-    // Scroll 寄存器 (regFV/regV/regH/regVT/regHT/regFH/regS) 由
-    // this.scrollStore (ScrollStore) 承载。
+    // Counters:
+    this.cntFV = 0;
+    this.cntV = 0;
+    this.cntH = 0;
+    this.cntVT = 0;
+    this.cntHT = 0;
+
+    // Registers:
+    this.regFV = 0;
+    this.regV = 0;
+    this.regH = 0;
+    this.regVT = 0;
+    this.regHT = 0;
+    this.regFH = 0;
+    this.regS = 0;
 
     // These are temporary variables used in rendering and sound procedures.
     // Their states outside of those procedures can be ignored.
@@ -171,50 +176,6 @@ class PPU {
 
     this.updateControlReg1(0);
     this.updateControlReg2(0);
-  }
-
-  // ── 外部调试工具兼容 getter ───────────────────────────────────────
-  // 调试面板 (debug-panel/nametable-viewer/palette-viewer 等) 直接读取
-  // vramMem / regS / regH / regHT / regFH / regV / regVT / regFV。
-  // 内部状态已迁入 Store, 这里仅暴露只读视图, 不改写内部逻辑。
-
-  /** VRAM 底层字节数组 (只读视图, 供调试工具读取) */
-  get vramMem(): Uint8Array {
-    return this.vramStore.dataView;
-  }
-
-  /** OAM / SPR-RAM 底层字节数组 (只读视图) */
-  get spriteMem(): Uint8Array {
-    return this.oamStore.dataView;
-  }
-
-  /** 背景 pattern table 选择 (regS) */
-  get regS(): number {
-    return this.scrollStore.get("bg_pt");
-  }
-  /** 水平 nametable 位 (regH) */
-  get regH(): number {
-    return this.scrollStore.get("h_nt");
-  }
-  /** 水平 tile 粗 X (regHT) */
-  get regHT(): number {
-    return this.scrollStore.get("h_tile");
-  }
-  /** 水平 fine offset (regFH) */
-  get regFH(): number {
-    return this.scrollStore.get("h_fine");
-  }
-  /** 垂直 nametable 位 (regV) */
-  get regV(): number {
-    return this.scrollStore.get("v_nt");
-  }
-  /** 垂直 tile 粗 Y (regVT) */
-  get regVT(): number {
-    return this.scrollStore.get("v_tile");
-  }
-  /** 垂直 fine offset (regFV) */
-  get regFV(): number {
-    return this.scrollStore.get("v_fine");
   }
 
   // Sets Nametable mirroring.
@@ -475,14 +436,12 @@ class PPU {
         this.performOAMCorruption();
 
         if (this.f_bgVisibility === 1 || this.f_spVisibility === 1) {
-          // Update counters (cnt ← reg):
-          this.counters.copyFromReg({
-            vFine: this.scrollStore.get("v_fine"),
-            vNt: this.scrollStore.get("v_nt"),
-            hNt: this.scrollStore.get("h_nt"),
-            vTile: this.scrollStore.get("v_tile"),
-            hTile: this.scrollStore.get("h_tile"),
-          });
+          // Update counters:
+          this.cntFV = this.regFV;
+          this.cntV = this.regV;
+          this.cntH = this.regH;
+          this.cntVT = this.regVT;
+          this.cntHT = this.regHT;
 
           // On real hardware, the PPU runs a unified rendering pipeline
           // whenever either BG or sprites is enabled. BG tile fetches and
@@ -522,7 +481,7 @@ class PPU {
           this.scanlineSprite0[1] = this.sprite0InSecondary ? 1 : 0;
 
           // OAMADDR is reset to 0 during sprite tile loading (cycles 257-320).
-          this.oamStore.resetAddr();
+          this.sramAddress = 0;
         }
 
         if (this.f_bgVisibility === 1 && this.f_spVisibility === 1) {
@@ -586,8 +545,8 @@ class PPU {
           if (this.f_bgVisibility === 1 || this.f_spVisibility === 1) {
             if (!this.scanlineAlreadyRendered) {
               // update scroll:
-              this.counters.tileH = this.scrollStore.get("h_tile");
-              this.counters.ntH = this.scrollStore.get("h_nt");
+              this.cntHT = this.regHT;
+              this.cntH = this.regH;
               this.renderBgScanline(true, bufferScan);
             }
             this.scanlineAlreadyRendered = false;
@@ -718,10 +677,10 @@ class PPU {
         this.sprY[0] < 240
       ) {
         for (i = 0; i < 256; i++) {
-          buffer[this.sprY[0] * 256 + i] = 0xff5555;
+          buffer[(this.sprY[0] << 8) + i] = 0xff5555;
         }
         for (i = 0; i < 240; i++) {
-          buffer[i * 256 + this.sprX[0]] = 0xff5555;
+          buffer[(i << 8) + this.sprX[0]] = 0xff5555;
         }
       }
       // Hit position:
@@ -732,10 +691,10 @@ class PPU {
         this.spr0HitY < 240
       ) {
         for (i = 0; i < 256; i++) {
-          buffer[this.spr0HitY * 256 + i] = 0x55ff55;
+          buffer[(this.spr0HitY << 8) + i] = 0x55ff55;
         }
         for (i = 0; i < 240; i++) {
-          buffer[i * 256 + this.spr0HitX] = 0x55ff55;
+          buffer[(i << 8) + this.spr0HitX] = 0x55ff55;
         }
       }
     }
@@ -750,19 +709,19 @@ class PPU {
     ) {
       // Clip left 8-pixels column:
       for (y = 0; y < 240; y++) {
-        buffer.fill(0, y * 256, (y * 256) + 8);
+        buffer.fill(0, y << 8, (y << 8) + 8);
       }
     }
 
     if (this.clipToTvSize) {
       // Clip right 8-pixels column too:
       for (y = 0; y < 240; y++) {
-        buffer.fill(0, (y * 256) + 248, (y * 256) + 256);
+        buffer.fill(0, (y << 8) + 248, (y << 8) + 256);
       }
 
       // Clip top and bottom 8 pixels:
-      buffer.fill(0, 0, 8 * 256);
-      buffer.fill(0, 232 * 256, 240 * 256);
+      buffer.fill(0, 0, 8 << 8);
+      buffer.fill(0, 232 << 8, 240 << 8);
     }
 
     this.nes.ui.writeFrame(buffer);
@@ -771,15 +730,16 @@ class PPU {
   updateControlReg1(value) {
     this.triggerRendering();
 
-    this.f_nmiOnVblank = bit.get(value, 7);
-    this.f_spriteSize = bit.get(value, 5);
-    this.f_bgPatternTable = bit.get(value, 4);
-    this.f_spPatternTable = bit.get(value, 3);
-    this.vramStore.addrIncrement = bit.get(value, 2);
-    this.f_nTblAddress = bit.lowBits(value, 2);
+    this.f_nmiOnVblank = (value >> 7) & 1;
+    this.f_spriteSize = (value >> 5) & 1;
+    this.f_bgPatternTable = (value >> 4) & 1;
+    this.f_spPatternTable = (value >> 3) & 1;
+    this.f_addrInc = (value >> 2) & 1;
+    this.f_nTblAddress = value & 3;
 
-    // regV/regH/regS (nametable 基址位 + 背景 pattern table) → ScrollStore
-    this.scrollStore.applyControlReg1(value);
+    this.regV = (value >> 1) & 1;
+    this.regH = value & 1;
+    this.regS = (value >> 4) & 1;
 
     // Writing $2000 can toggle NMI enable while VBlank is active. If NMI is
     // enabled during VBlank, a rising edge fires NMI. If disabled, a pending
@@ -813,7 +773,7 @@ class PPU {
   // nmiPending (promoted from a previous instruction) is never cleared.
   // See https://www.nesdev.org/wiki/NMI
   _updateNmiOutput() {
-    let vblank = bit.bit7(this.nes.cpu.mem[0x2002]);
+    let vblank = (this.nes.cpu.mem[0x2002] & 0x80) !== 0;
     let newOutput = this.f_nmiOnVblank !== 0 && vblank;
     if (newOutput && !this.nmiOutput) {
       // Rising edge: set nmiRaised. At the end of the current instruction,
@@ -843,12 +803,12 @@ class PPU {
   updateControlReg2(value) {
     this.triggerRendering();
 
-    this.f_color = bit.bits(value, 5, 3);
-    this.f_spVisibility = bit.get(value, 4);
-    this.f_bgVisibility = bit.get(value, 3);
-    this.f_spClipping = bit.get(value, 2);
-    this.f_bgClipping = bit.get(value, 1);
-    this.f_dispType = bit.get(value, 0);
+    this.f_color = (value >> 5) & 7;
+    this.f_spVisibility = (value >> 4) & 1;
+    this.f_bgVisibility = (value >> 3) & 1;
+    this.f_spClipping = (value >> 2) & 1;
+    this.f_bgClipping = (value >> 1) & 1;
+    this.f_dispType = value & 1;
 
     // When both BG and sprite rendering become enabled mid-scanline,
     // re-check sprite 0 hit. The unified PPU pipeline populates BG shift
@@ -877,7 +837,7 @@ class PPU {
   }
 
   setStatusFlag(flag, value) {
-    let n = Math.pow(2, flag);
+    let n = 1 << flag;
     this.nes.cpu.mem[0x2002] =
       (this.nes.cpu.mem[0x2002] & (255 - n)) | (value ? n : 0);
   }
@@ -914,7 +874,7 @@ class PPU {
     this._updateNmiOutput();
 
     // Only bits 7-5 come from the status register; bits 4-0 are open bus.
-    tmp = (tmp & 0xe0) | bit.lowBits(this.openBusLatch, 5);
+    tmp = (tmp & 0xe0) | (this.openBusLatch & 0x1f);
     this.openBusLatch = tmp;
     this.openBusDecayFrames = 36; // ~600ms at 60fps
 
@@ -925,7 +885,7 @@ class PPU {
   // CPU Register $2003:
   // Write the SPR-RAM address that is used for sramWrite (Register 0x2004 in CPU memory map)
   writeSRAMAddress(address) {
-    this.oamStore.addr = address; // OAMADDR = sramAddress
+    this.sramAddress = address;
   }
 
   // CPU Register $2004 (R):
@@ -957,8 +917,8 @@ class PPU {
         // by returning OAM[OAMADDR] since OAMADDR tracks the evaluation
         // read pointer during this phase.
         // Bits 2-4 of attribute bytes (byte 2 of each entry) always read as 0.
-        let val = this.oamStore.get(this.oamStore.addr);
-        if (this.oamStore.byteOffset === 2) {
+        let val = this.spriteMem[this.sramAddress];
+        if ((this.sramAddress & 3) === 2) {
           val &= 0xe3;
         }
         return val;
@@ -973,8 +933,8 @@ class PPU {
 
     // Normal read during VBlank or rendering disabled.
     // Bits 2-4 of attribute byte are unimplemented, always read as 0.
-    let value = this.oamStore.get(this.oamStore.addr);
-    if (this.oamStore.byteOffset === 2) {
+    let value = this.spriteMem[this.sramAddress];
+    if ((this.sramAddress & 3) === 2) {
       value &= 0xe3;
     }
     return value;
@@ -993,13 +953,13 @@ class PPU {
       // incremented by 4 and ANDed with $FC, matching the hardware's
       // internal evaluation counter behavior.
       // See https://www.nesdev.org/wiki/PPU_registers#OAMDATA
-      this.oamStore.addrIncDuringRender();
+      this.sramAddress = (this.sramAddress + 4) & 0xfc;
     } else {
       // Normal write during VBlank or rendering disabled
-      const oamAddr = this.oamStore.addr;
-      this.oamStore.set(oamAddr, value);
-      this.spriteRamWriteUpdate(oamAddr, value);
-      this.oamStore.addr = bit.wrap8(oamAddr + 1);
+      this.spriteMem[this.sramAddress] = value;
+      this.spriteRamWriteUpdate(this.sramAddress, value);
+      this.sramAddress++;
+      this.sramAddress %= 0x100;
     }
   }
 
@@ -1012,12 +972,12 @@ class PPU {
 
     if (this.firstWrite) {
       // First write, horizontal scroll:
-      this.scrollStore.set("h_tile", bit.bits(value, 3, 5)); // regHT
-      this.scrollStore.set("h_fine", bit.lowBits(value, 3)); // regFH
+      this.regHT = (value >> 3) & 31;
+      this.regFH = value & 7;
     } else {
       // Second write, vertical scroll:
-      this.scrollStore.set("v_fine", bit.lowBits(value, 3)); // regFV
-      this.scrollStore.set("v_tile", bit.bits(value, 3, 5)); // regVT
+      this.regFV = value & 7;
+      this.regVT = (value >> 3) & 31;
     }
     this.firstWrite = !this.firstWrite;
   }
@@ -1027,30 +987,21 @@ class PPU {
   // The first write sets the high byte, the second the low byte.
   writeVRAMAddress(address) {
     if (this.firstWrite) {
-      this.scrollStore.set("v_fine", bit.bits(address, 4, 2)); // regFV
-      this.scrollStore.set("v_nt", bit.get(address, 3)); // regV
-      this.scrollStore.set("h_nt", bit.get(address, 2)); // regH
-      this.scrollStore.set(
-        "v_tile",
-        (this.scrollStore.get("v_tile") & 7) | (bit.lowBits(address, 2) << 3),
-      ); // regVT hi
+      this.regFV = (address >> 4) & 3;
+      this.regV = (address >> 3) & 1;
+      this.regH = (address >> 2) & 1;
+      this.regVT = (this.regVT & 7) | ((address & 3) << 3);
     } else {
       this.triggerRendering();
 
-      this.scrollStore.set(
-        "v_tile",
-        (this.scrollStore.get("v_tile") & 24) | bit.bits(address, 5, 3),
-      ); // regVT lo
-      this.scrollStore.set("h_tile", bit.lowBits(address, 5)); // regHT
+      this.regVT = (this.regVT & 24) | ((address >> 5) & 7);
+      this.regHT = address & 31;
 
-      // cnt ← reg
-      this.counters.copyFromReg({
-        vFine: this.scrollStore.get("v_fine"),
-        vNt: this.scrollStore.get("v_nt"),
-        hNt: this.scrollStore.get("h_nt"),
-        vTile: this.scrollStore.get("v_tile"),
-        hTile: this.scrollStore.get("h_tile"),
-      });
+      this.cntFV = this.regFV;
+      this.cntV = this.regV;
+      this.cntH = this.regH;
+      this.cntVT = this.regVT;
+      this.cntHT = this.regHT;
 
       this.checkSprite0(this.scanline + 1 - 21);
     }
@@ -1059,8 +1010,8 @@ class PPU {
 
     // Invoke mapper latch:
     this.cntsToAddress();
-    if (this.vramStore.addr < 0x2000) {
-      this.nes.mmap.latchAccess(this.vramStore.addr);
+    if (this.vramAddress < 0x2000) {
+      this.nes.mmap.latchAccess(this.vramAddress);
     }
   }
 
@@ -1073,23 +1024,19 @@ class PPU {
     this.regsToAddress();
 
     // If address is in range 0x0000-0x3EFF, return buffered values:
-    if (this.vramStore.addr <= 0x3eff) {
-      tmp = this.vramStore.bufferedReadValue;
+    if (this.vramAddress <= 0x3eff) {
+      tmp = this.vramBufferedReadValue;
 
       // Update buffered value:
-      if (this.vramStore.addr < 0x2000) {
-        this.vramStore.bufferedReadValue = this.vramStore.get(
-          this.vramStore.addr,
-        );
+      if (this.vramAddress < 0x2000) {
+        this.vramBufferedReadValue = this.vramMem[this.vramAddress];
       } else {
-        this.vramStore.bufferedReadValue = this.mirroredLoad(
-          this.vramStore.addr,
-        );
+        this.vramBufferedReadValue = this.mirroredLoad(this.vramAddress);
       }
 
       // Mapper latch access:
-      if (this.vramStore.addr < 0x2000) {
-        this.nes.mmap.latchAccess(this.vramStore.addr);
+      if (this.vramAddress < 0x2000) {
+        this.nes.mmap.latchAccess(this.vramAddress);
       }
 
       this._incrementVramAddress();
@@ -1107,18 +1054,14 @@ class PPU {
     // Backdrop mirrors: $3F10/$3F14/$3F18/$3F1C → $3F00/$3F04/$3F08/$3F0C.
     // Values are 6-bit; upper 2 bits come from the PPU open bus latch.
     // See https://www.nesdev.org/wiki/PPU_palettes
-    let palIdx = bit.lowBits(this.vramStore.addr, 5);
+    let palIdx = this.vramAddress & 0x1f;
     if ((palIdx & 0x13) === 0x10) {
       palIdx &= 0x0f; // backdrop mirror
     }
-    tmp =
-      bit.lowBits(this.vramStore.get(0x3f00 + palIdx), 6) |
-      (this.openBusLatch & 0xc0);
+    tmp = (this.vramMem[0x3f00 + palIdx] & 0x3f) | (this.openBusLatch & 0xc0);
 
     // Update buffer with nametable data behind the palette
-    this.vramStore.bufferedReadValue = this.mirroredLoad(
-      this.vramStore.addr & 0x2FFF,
-    );
+    this.vramBufferedReadValue = this.mirroredLoad(this.vramAddress & 0x2fff);
 
     this._incrementVramAddress();
 
@@ -1135,20 +1078,20 @@ class PPU {
     this.cntsToAddress();
     this.regsToAddress();
 
-    if (this.vramStore.addr >= 0x2000) {
+    if (this.vramAddress >= 0x2000) {
       // Mirroring is used.
-      this.mirroredWrite(this.vramStore.addr, value);
+      this.mirroredWrite(this.vramAddress, value);
     } else {
       // Pattern table ($0000-$1FFF): writable if CHR RAM is mapped here.
       // The mapper decides — most mappers allow writes only when there's no
       // CHR ROM at all, but some (e.g. TQROM/mapper 119) have both CHR ROM
       // and CHR RAM and allow writes to CHR RAM-mapped regions.
-      if (this.nes.mmap.canWriteChr(this.vramStore.addr)) {
-        this.writeMem(this.vramStore.addr, value);
+      if (this.nes.mmap.canWriteChr(this.vramAddress)) {
+        this.writeMem(this.vramAddress, value);
       }
 
       // Invoke mapper latch:
-      this.nes.mmap.latchAccess(this.vramStore.addr);
+      this.nes.mmap.latchAccess(this.vramAddress);
     }
 
     this._incrementVramAddress();
@@ -1166,8 +1109,8 @@ class PPU {
     let data;
     for (let i = 0; i < 256; i++) {
       data = this.nes.cpu.mem[baseAddress + i];
-      let oamAddr = bit.wrap8(this.oamStore.addr + i);
-      this.oamStore.set(oamAddr, data);
+      let oamAddr = (this.sramAddress + i) & 0xff;
+      this.spriteMem[oamAddr] = data;
       this.spriteRamWriteUpdate(oamAddr, data);
     }
 
@@ -1183,9 +1126,17 @@ class PPU {
     cpu.haltCycles(cycles);
   }
 
-  // Updates the scroll registers from a new VRAM address (t 寄存器 → reg)。
+  // Updates the scroll registers from a new VRAM address.
   regsFromAddress() {
-    this.scrollStore.fromAddress(this.vramStore.tmpAddr);
+    let address = (this.vramTmpAddress >> 8) & 0xff;
+    this.regFV = (address >> 4) & 7;
+    this.regV = (address >> 3) & 1;
+    this.regH = (address >> 2) & 1;
+    this.regVT = (this.regVT & 7) | ((address & 3) << 3);
+
+    address = this.vramTmpAddress & 0xff;
+    this.regVT = (this.regVT & 24) | ((address >> 5) & 7);
+    this.regHT = address & 31;
   }
 
   // Increments the VRAM address after a $2007 read or write. During active
@@ -1202,32 +1153,100 @@ class PPU {
     // jsnes scanlines 20-260 = NES pre-render + visible scanlines
     let onRenderingScanline = this.scanline >= 20 && this.scanline <= 260;
 
-    this.vramStore.incrementAddr({ renderingEnabled, onRenderingScanline });
+    if (renderingEnabled && onRenderingScanline) {
+      // Coarse X increment (with horizontal nametable toggle on overflow)
+      if ((this.vramAddress & 0x001f) === 31) {
+        this.vramAddress &= ~0x001f; // coarse X = 0
+        this.vramAddress ^= 0x0400; // toggle horizontal nametable
+      } else {
+        this.vramAddress += 1;
+      }
+
+      // Y increment: fine Y first, then coarse Y on overflow
+      if ((this.vramAddress & 0x7000) !== 0x7000) {
+        this.vramAddress += 0x1000; // fine Y += 1
+      } else {
+        this.vramAddress &= ~0x7000; // fine Y = 0
+        let coarseY = (this.vramAddress >> 5) & 0x1f;
+        if (coarseY === 29) {
+          coarseY = 0;
+          this.vramAddress ^= 0x0800; // toggle vertical nametable
+        } else if (coarseY === 31) {
+          coarseY = 0; // wrap without nametable toggle
+        } else {
+          coarseY += 1;
+        }
+        this.vramAddress = (this.vramAddress & ~0x03e0) | (coarseY << 5);
+      }
+    } else {
+      // Normal linear increment outside rendering
+      this.vramAddress += this.f_addrInc === 1 ? 32 : 1;
+    }
   }
 
-  // Updates the scroll registers from a new VRAM address (v 寄存器 → cnt)。
+  // Updates the scroll registers from a new VRAM address.
   cntsFromAddress() {
-    this.counters.fromAddress(this.vramStore.addr);
+    let address = (this.vramAddress >> 8) & 0xff;
+    this.cntFV = (address >> 4) & 3;
+    this.cntV = (address >> 3) & 1;
+    this.cntH = (address >> 2) & 1;
+    this.cntVT = (this.cntVT & 7) | ((address & 3) << 3);
+
+    address = this.vramAddress & 0xff;
+    this.cntVT = (this.cntVT & 24) | ((address >> 5) & 7);
+    this.cntHT = address & 31;
   }
 
-  // reg → t 寄存器 (vramTmpAddress)。
   regsToAddress() {
-    this.vramStore.tmpAddr = this.scrollStore.toAddress();
+    let b1 = (this.regFV & 7) << 4;
+    b1 |= (this.regV & 1) << 3;
+    b1 |= (this.regH & 1) << 2;
+    b1 |= (this.regVT >> 3) & 3;
+
+    let b2 = (this.regVT & 7) << 5;
+    b2 |= this.regHT & 31;
+
+    this.vramTmpAddress = ((b1 << 8) | b2) & 0x7fff;
   }
 
-  // cnt → v 寄存器 (vramAddress)。
   cntsToAddress() {
-    this.vramStore.addr = this.counters.toAddress();
+    let b1 = (this.cntFV & 7) << 4;
+    b1 |= (this.cntV & 1) << 3;
+    b1 |= (this.cntH & 1) << 2;
+    b1 |= (this.cntVT >> 3) & 3;
+
+    let b2 = (this.cntVT & 7) << 5;
+    b2 |= this.cntHT & 31;
+
+    this.vramAddress = ((b1 << 8) | b2) & 0x7fff;
   }
 
   incTileCounter(count) {
-    this.counters.advanceTiles(count);
+    for (let i = count; i !== 0; i--) {
+      this.cntHT++;
+      if (this.cntHT === 32) {
+        this.cntHT = 0;
+        this.cntVT++;
+        if (this.cntVT >= 30) {
+          this.cntH++;
+          if (this.cntH === 2) {
+            this.cntH = 0;
+            this.cntV++;
+            if (this.cntV === 2) {
+              this.cntV = 0;
+              this.cntFV++;
+              this.cntFV &= 0x7;
+            }
+          }
+        }
+      }
+    }
   }
 
   // Reads from memory, taking into account
   // mirroring/mapping of address ranges.
   mirroredLoad(address) {
-    return this.vramStore.get(this.vramMirrorTable[address]);
+    return this.vramMem[this.vramMirrorTable[address]];
   }
 
   // Writes to memory, taking into account
@@ -1289,8 +1308,8 @@ class PPU {
     }
 
     if (this.f_bgVisibility === 1) {
-      let si = startScan * 256;
-      let ei = (startScan + scanCount) * 256;
+      let si = startScan << 8;
+      let ei = (startScan + scanCount) << 8;
       if (ei > 0xf000) {
         ei = 0xf000;
       }
@@ -1316,26 +1335,21 @@ class PPU {
   }
 
   renderBgScanline(bgbuffer, scan) {
-    const ss = this.scrollStore;
-    const cnt = this.counters;
-    const regS = ss.get("bg_pt");
-    const regFH = ss.get("h_fine");
-
-    let baseTile = regS === 0 ? 0 : 256;
+    let baseTile = this.regS === 0 ? 0 : 256;
     // Base address for pattern table fetches (used for mapper latch triggers).
     // On real hardware, the PPU puts this address on its bus when fetching tile
     // data, and mappers like MMC2 monitor these fetches.
-    let baseAddr = regS === 0 ? 0x0000 : 0x1000;
-    let destIndex = scan * 256 - regFH;
+    let baseAddr = this.regS === 0 ? 0x0000 : 0x1000;
+    let destIndex = (scan << 8) - this.regFH;
 
-    this.curNt = this.ntable1[cnt.ntV + cnt.ntV + cnt.ntH];
+    this.curNt = this.ntable1[this.cntV + this.cntV + this.cntH];
 
-    cnt.tileH = ss.get("h_tile"); // cntHT = regHT
-    cnt.ntH = ss.get("h_nt"); // cntH = regH
-    this.curNt = this.ntable1[cnt.ntV + cnt.ntV + cnt.ntH];
+    this.cntHT = this.regHT;
+    this.cntH = this.regH;
+    this.curNt = this.ntable1[this.cntV + this.cntV + this.cntH];
 
-    if (scan < 240 && scan - cnt.fineV >= 0) {
-      let tscanoffset = cnt.fineV * 8;
+    if (scan < 240 && scan - this.cntFV >= 0) {
+      let tscanoffset = this.cntFV << 3;
       let scantile = this.scantile;
       let attrib = this.attrib;
       let ptTile = this.ptTile;
@@ -1371,8 +1385,8 @@ class PPU {
           // Look up nametable tile index (needed for both rendering and mapper
           // latch access even when tile data is cached).
           let tileIndex = nameTable[this.curNt].getTileIndex(
-            cnt.tileH,
-            cnt.tileV,
+            this.cntHT,
+            this.cntVT,
           );
 
           // Fetch tile & attrib data:
@@ -1391,7 +1405,7 @@ class PPU {
               continue;
             }
             tpix = t.pix;
-            att = nameTable[this.curNt].getAttrib(cnt.tileH, cnt.tileV);
+            att = nameTable[this.curNt].getAttrib(this.cntHT, this.cntVT);
 
             // MMC5 ExRAM mode 1: per-tile CHR bank and attribute override.
             // Each ExRAM byte provides a 4KB CHR bank (bits 5-0) and palette
@@ -1401,8 +1415,8 @@ class PPU {
               let override = mmap.getBgTileData(
                 baseTile,
                 tileIndex,
-                cnt.tileH,
-                cnt.tileV,
+                this.cntHT,
+                this.cntVT,
               );
               if (override) {
                 t = override.tile;
@@ -1417,14 +1431,14 @@ class PPU {
 
           // Render tile scanline:
           let sx = 0;
-          let x = tile * 8 - regFH;
+          let x = (tile << 3) - this.regFH;
 
           if (x > -8) {
             if (x < 0) {
               destIndex -= x;
               sx = -x;
             }
-            if (t.opaque[cnt.fineV]) {
+            if (t.opaque[this.cntFV]) {
               for (; sx < 8; sx++) {
                 targetBuffer[destIndex] =
                   imgPalette[tpix[tscanoffset + sx] + att];
@@ -1451,15 +1465,15 @@ class PPU {
           // bank (correct, since we already read from ptTile above) and
           // subsequent tiles will use the new bank.
           // See https://www.nesdev.org/wiki/MMC2
-          mmap.latchAccess(baseAddr + tileIndex * 16 + cnt.fineV + 8);
+          mmap.latchAccess(baseAddr + tileIndex * 16 + this.cntFV + 8);
         }
 
         // Increase Horizontal Tile Counter:
-        if (++cnt.tileH === 32) {
-          cnt.tileH = 0;
-          cnt.ntH++;
-          cnt.ntH %= 2;
-          this.curNt = this.ntable1[cnt.ntV * 2 + cnt.ntH];
+        if (++this.cntHT === 32) {
+          this.cntHT = 0;
+          this.cntH++;
+          this.cntH %= 2;
+          this.curNt = this.ntable1[(this.cntV << 1) + this.cntH];
         }
       }
       this._inRendering = false;
@@ -1470,17 +1484,17 @@ class PPU {
     }
 
     // update vertical scroll:
-    cnt.fineV++;
-    if (cnt.fineV === 8) {
-      cnt.fineV = 0;
-      cnt.tileV++;
-      if (cnt.tileV === 30) {
-        cnt.tileV = 0;
-        cnt.ntV++;
-        cnt.ntV %= 2;
-        this.curNt = this.ntable1[cnt.ntV * 2 + cnt.ntH];
-      } else if (cnt.tileV === 32) {
-        cnt.tileV = 0;
+    this.cntFV++;
+    if (this.cntFV === 8) {
+      this.cntFV = 0;
+      this.cntVT++;
+      if (this.cntVT === 30) {
+        this.cntVT = 0;
+        this.cntV++;
+        this.cntV %= 2;
+        this.curNt = this.ntable1[(this.cntV << 1) + this.cntH];
+      } else if (this.cntVT === 32) {
+        this.cntVT = 0;
       }
 
       // Invalidate fetched data:
@@ -1497,13 +1511,15 @@ class PPU {
     let renderingEnabled =
       this.f_spVisibility === 1 || this.f_bgVisibility === 1;
     if (!renderingEnabled) return;
-    if (!this.oamStore.isAddrNonZero()) return;
+    if (this.sramAddress === 0) return;
 
-    // OAM corruption: 把 (OAMADDR & $F8) 起的 8 字节复制到 OAM[0..7]
-    this.oamStore.corruptToStart();
+    let srcBase = this.sramAddress & 0xf8;
+    for (let i = 0; i < 8; i++) {
+      this.spriteMem[i] = this.spriteMem[(srcBase + i) & 0xff];
+    }
     // Update unpacked sprite data for the corrupted entries
     for (let i = 0; i < 8; i++) {
-      this.spriteRamWriteUpdate(i, this.oamStore.get(i));
+      this.spriteRamWriteUpdate(i, this.spriteMem[i]);
     }
   }
 
@@ -1549,8 +1565,8 @@ class PPU {
     // for hit detection and priority. A misaligned OAMADDR (not divisible
     // by 4) causes m to start at a non-zero value, reading the wrong byte
     // types as Y coordinates.
-    let startN = this.oamStore.spriteIndex;
-    let startM = this.oamStore.byteOffset;
+    let startN = (this.sramAddress >> 2) & 0x3f;
+    let startM = this.sramAddress & 0x03;
     let overflowM = 0; // m counter for overflow bug (separate from startM)
 
     let n = startN;
@@ -1576,7 +1592,7 @@ class PPU {
       }
       firstSprite = false;
 
-      let yByte = this.oamStore.get(bit.wrap8(n * 4 + m));
+      let yByte = this.spriteMem[(n * 4 + m) & 0xff];
 
       // Check if sprite is in range for the target buffer row.
       // On real hardware the comparison is NES_scanline >= Y && < Y + height.
@@ -1591,7 +1607,7 @@ class PPU {
           // by bytes from the next entry, matching hardware behavior.
           for (let b = 0; b < 4; b++) {
             this.scanlineSecondaryOAM[oamBase + secondaryIndex + b] =
-              this.oamStore.get(bit.wrap8(n * 4 + m + b));
+              this.spriteMem[(n * 4 + m + b) & 0xff];
           }
           // The first sprite in evaluation order (at OAMADDR/4) is the one
           // that triggers sprite 0 hit, regardless of its OAM index.
@@ -1617,10 +1633,10 @@ class PPU {
         // attributes, and X coordinates as if they were Y coordinates.
         // This produces both false positives and false negatives for overflow.
         // See https://www.nesdev.org/wiki/PPU_sprite_evaluation
-        overflowM = bit.lowBits(overflowM + 1, 2);
+        overflowM = (overflowM + 1) & 0x03;
       }
 
-      n = bit.lowBits(n + 1, 6);
+      n = (n + 1) & 0x3f;
       evaluated++;
     } while (n !== 0);
 
@@ -1641,7 +1657,7 @@ class PPU {
 
     // OAMADDR is set to 0 during sprite tile loading (cycles 257-320).
     // On real hardware this happens at the start of HBlank.
-    this.oamStore.resetAddr();
+    this.sramAddress = 0;
   }
 
   // Render sprites for a range of scanlines using per-scanline secondary OAM
@@ -1675,10 +1691,10 @@ class PPU {
         let sprAttr = this.scanlineSecondaryOAM[oamBase + i * 4 + 2];
         let sprX = this.scanlineSecondaryOAM[oamBase + i * 4 + 3];
 
-        let vertFlip = bit.get(sprAttr, 7);
-        let horiFlip = bit.get(sprAttr, 6);
-        let priority = bit.get(sprAttr, 5);
-        let palAdd = bit.lowBits(sprAttr, 2) * 4;
+        let vertFlip = (sprAttr >> 7) & 1;
+        let horiFlip = (sprAttr >> 6) & 1;
+        let priority = (sprAttr >> 5) & 1;
+        let palAdd = (sprAttr & 3) << 2;
 
         if (priority !== bgPri) continue;
         if (this.f_spriteSize === 0) {
@@ -1712,9 +1728,9 @@ class PPU {
         } else {
           // 8x16 sprites: tile index bit 0 selects pattern table ($0000/$1000),
           // top tile is (index & $FE), bottom tile is (index & $FE) + 1.
-          let sprBaseAddr = bit.bit0(sprTile) ? 0x1000 : 0x0000;
-          let topTileNum = sprTile & 0xFE;
-          let top = bit.bit0(sprTile) ? topTileNum - 1 + 256 : topTileNum;
+          let sprBaseAddr = (sprTile & 1) !== 0 ? 0x1000 : 0x0000;
+          let topTileNum = sprTile & 0xfe;
+          let top = (sprTile & 1) !== 0 ? topTileNum - 1 + 256 : topTileNum;
 
           let dy = sprY + 1;
           let fineY = scan - dy;
@@ -1779,8 +1795,8 @@ class PPU {
     let x = this.scanlineSecondaryOAM[oamBase + 3];
     let y = sprY + 1; // +1 because sprite Y in OAM is display line - 1
 
-    let vertFlip = bit.get(sprAttr, 7);
-    let horiFlip = bit.get(sprAttr, 6);
+    let vertFlip = (sprAttr >> 7) & 1;
+    let horiFlip = (sprAttr >> 6) & 1;
 
     // Sprite 0 hit has additional conditions beyond pixel overlap:
     // - No hit at x=255 (hardware doesn't check the last pixel)
@@ -1815,11 +1831,11 @@ class PPU {
 
         if (toffset < 8) {
           t = mmap.getSpritePatternTile(
-            sprTile + (vertFlip ? 1 : 0) + (bit.bit0(sprTile) ? 255 : 0),
+            sprTile + (vertFlip ? 1 : 0) + ((sprTile & 1) !== 0 ? 255 : 0),
           );
         } else {
           t = mmap.getSpritePatternTile(
-            sprTile + (vertFlip ? 0 : 1) + (bit.bit0(sprTile) ? 255 : 0),
+            sprTile + (vertFlip ? 0 : 1) + ((sprTile & 1) !== 0 ? 255 : 0),
           );
           toffset = vertFlip ? 15 - toffset : toffset - 8;
         }
@@ -1889,8 +1905,8 @@ class PPU {
     let sprX = this.scanlineSecondaryOAM[oamBase + 3];
     let y = sprY + 1; // +1 because sprite Y in OAM is display line - 1
 
-    let vertFlip = bit.get(sprAttr, 7);
-    let horiFlip = bit.get(sprAttr, 6);
+    let vertFlip = (sprAttr >> 7) & 1;
+    let horiFlip = (sprAttr >> 6) & 1;
     let leftClip = this.f_spClipping === 0 || this.f_bgClipping === 0;
 
     // Check if sprite 0 overlaps the next scanline.
@@ -1912,7 +1928,7 @@ class PPU {
       toffset = sprRow * 8;
     } else {
       // 8x16 sprites: tile index bit 0 selects pattern table.
-      let patternBase = bit.bit0(sprTile) ? 256 : 0;
+      let patternBase = (sprTile & 1) !== 0 ? 256 : 0;
       let baseTileIdx = sprTile & ~1;
       if (sprRow < 8) {
         sprTileObj =
@@ -1928,13 +1944,10 @@ class PPU {
 
     // BG vertical position: cntFV/cntVT/cntV have already been advanced to
     // the next row by renderBgScanline's scroll update.
-    let bgFineY = this.counters.fineV;
-    let bgCoarseY = this.counters.tileV;
-    let bgNtV = this.counters.ntV;
-    let baseBgTile = this.scrollStore.get("bg_pt") === 0 ? 0 : 256;
-    const regFH = this.scrollStore.get("h_fine");
-    const regHT = this.scrollStore.get("h_tile");
-    const regH = this.scrollStore.get("h_nt");
+    let bgFineY = this.cntFV;
+    let bgCoarseY = this.cntVT;
+    let bgNtV = this.cntV;
+    let baseBgTile = this.regS === 0 ? 0 : 256;
 
     // Check each sprite pixel against the BG tile at that position.
     for (let px = 0; px < 8; px++) {
@@ -1949,22 +1962,22 @@ class PPU {
       // Compute which BG tile covers this screen X using the horizontal
       // scroll registers (regHT/regH are reloaded at the start of each
       // visible scanline on real hardware).
-      let tileOffset = Math.floor((screenX + regFH) / 8);
-      let absCol = regHT + tileOffset;
-      let bgNtH = regH;
+      let tileOffset = (screenX + this.regFH) >> 3;
+      let absCol = this.regHT + tileOffset;
+      let bgNtH = this.regH;
       if (absCol >= 32) {
         absCol -= 32;
         bgNtH ^= 1; // toggle horizontal nametable
       }
 
       // Look up the BG tile from the nametable.
-      let ntIdx = this.ntable1[bgNtV * 2 + bgNtH];
+      let ntIdx = this.ntable1[(bgNtV << 1) + bgNtH];
       let bgTileIndex = this.nameTable[ntIdx].getTileIndex(absCol, bgCoarseY);
       let bgTile = this.ptTile[baseBgTile + bgTileIndex];
       if (!bgTile) continue;
 
       // Check BG pixel non-transparent at (fineX, fineY).
-      let bgPixelX = bit.lowBits(screenX + regFH, 3);
+      let bgPixelX = (screenX + this.regFH) & 7;
       if (bgTile.pix[bgFineY * 8 + bgPixelX] !== 0) {
         // Hit found! Store in NES scanline coordinates for step() matching.
         // step() compares scanline - 21 against spr0HitY, where
@@ -1981,11 +1994,11 @@ class PPU {
   // update internally buffered data
   // appropriately.
   writeMem(address, value) {
-    this.vramStore.set(address, value); // vramMem[address] = value
+    this.vramMem[address] = value;
 
     // Update internally buffered data:
     if (address < 0x2000) {
-      this.vramStore.set(address, value); // vramMem[address] = value
+      this.vramMem[address] = value;
       this.patternWrite(address, value);
     } else if (address >= 0x2000 && address < 0x23c0) {
       this.nameTableWrite(this.ntable1[0], address - 0x2000, value);
@@ -2016,22 +2029,22 @@ class PPU {
     for (i = 0; i < 16; i++) {
       if (this.f_dispType === 0) {
         this.imgPalette[i] = this.palTable.getEntry(
-          bit.lowBits(this.vramStore.get(0x3f00 + i), 6),
+          this.vramMem[0x3f00 + i] & 63,
         );
       } else {
         this.imgPalette[i] = this.palTable.getEntry(
-          bit.bits(this.vramStore.get(0x3f00 + i), 4, 2),
+          this.vramMem[0x3f00 + i] & 0x30,
         );
       }
     }
     for (i = 0; i < 16; i++) {
       if (this.f_dispType === 0) {
         this.sprPalette[i] = this.palTable.getEntry(
-          bit.lowBits(this.vramStore.get(0x3f10 + i), 6),
+          this.vramMem[0x3f10 + i] & 63,
         );
       } else {
         this.sprPalette[i] = this.palTable.getEntry(
-          bit.bits(this.vramStore.get(0x3f10 + i), 4, 2),
+          this.vramMem[0x3f10 + i] & 0x30,
         );
       }
     }
@@ -2041,18 +2054,18 @@ class PPU {
   // table buffers with this new byte.
   // In vNES, there is a version of this with 4 arguments which isn't used.
   patternWrite(address, value) {
-    let tileIndex = Math.floor(address / 16);
+    let tileIndex = address >> 4;
     let leftOver = address & 15;
     if (leftOver < 8) {
       this.ptTile[tileIndex].setScanline(
         leftOver,
         value,
-        this.vramStore.get(address + 8),
+        this.vramMem[address + 8],
       );
     } else {
       this.ptTile[tileIndex].setScanline(
         leftOver - 8,
-        this.vramStore.get(address - 8),
+        this.vramMem[address - 8],
         value,
       );
     }
@@ -2084,7 +2097,7 @@ class PPU {
   // Updates the internally buffered sprite
   // data with this new byte of info.
   spriteRamWriteUpdate(address, value) {
-    let tIndex = Math.floor(address / 4);
+    let tIndex = address >> 2;
 
     if (tIndex === 0) {
       let bufferScan = this.scanline + 1 - 21;
@@ -2102,10 +2115,10 @@ class PPU {
         break;
       case 2:
         // Attributes
-        this.vertFlip[tIndex] = bit.get(value, 7);
-        this.horiFlip[tIndex] = bit.get(value, 6);
-        this.bgPriority[tIndex] = bit.get(value, 5);
-        this.sprCol[tIndex] = bit.lowBits(value, 2) * 4;
+        this.vertFlip[tIndex] = (value >> 7) & 1;
+        this.horiFlip[tIndex] = (value >> 6) & 1;
+        this.bgPriority[tIndex] = (value >> 5) & 1;
+        this.sprCol[tIndex] = (value & 3) << 2;
         break;
       case 3:
         // X coordinate
@@ -2116,18 +2129,12 @@ class PPU {
 
   isPixelWhite(x, y) {
     this.triggerRendering();
-    return this.nes.ppu.buffer[(y * 256) + x] === 0xffffff;
+    return this.nes.ppu.buffer[(y << 8) + x] === 0xffffff;
   }
 
   toJSON() {
     let i;
     let state = toJSON(this);
-
-    // Redis KV Store 状态序列化:
-    state.vramStore = this.vramStore.toJSON();
-    state.oamStore = this.oamStore.toJSON();
-    state.scrollStore = this.scrollStore.toJSON();
-    state.counters = this.counters.toJSON();
 
     state.nameTable = [];
     for (i = 0; i < this.nameTable.length; i++) {
@@ -2147,12 +2154,6 @@ class PPU {
 
     fromJSON(this, state);
 
-    // 恢复 Redis KV Store 状态:
-    this.vramStore.fromJSON(state.vramStore);
-    this.oamStore.fromJSON(state.oamStore);
-    this.scrollStore.fromJSON(state.scrollStore);
-    this.counters.fromJSON(state.counters);
-
     for (i = 0; i < this.nameTable.length; i++) {
       this.nameTable[i].fromJSON(state.nameTable[i]);
     }
@@ -2161,21 +2162,39 @@ class PPU {
       this.ptTile[i].fromJSON(state.ptTile[i]);
     }
 
-    // Sprite data (从 OAM Store 重建解包数据):
-    for (i = 0; i < this.oamStore.length; i++) {
-      this.spriteRamWriteUpdate(i, this.oamStore.get(i));
+    // Sprite data:
+    for (i = 0; i < this.spriteMem.length; i++) {
+      this.spriteRamWriteUpdate(i, this.spriteMem[i]);
     }
   }
 
   static JSON_PROPERTIES = [
-    // 注: vramMem/spriteMem/cnt*/reg*/vramAddress/vramTmpAddress/
-    //     f_addrInc/vramBufferedReadValue/sramAddress 已由 vramStore/
-    //     oamStore/scrollStore/counters 承载, 在 toJSON/fromJSON 手动处理。
+    // Memory
+    "vramMem",
+    "spriteMem",
+    // Counters
+    "cntFV",
+    "cntV",
+    "cntH",
+    "cntVT",
+    "cntHT",
+    // Registers
+    "regFV",
+    "regV",
+    "regH",
+    "regVT",
+    "regHT",
+    "regFH",
+    "regS",
+    // VRAM addr
+    "vramAddress",
+    "vramTmpAddress",
     // Control/Status registers
     "f_nmiOnVblank",
     "f_spriteSize",
     "f_bgPatternTable",
     "f_spPatternTable",
+    "f_addrInc",
     "f_nTblAddress",
     "f_color",
     "f_spVisibility",
@@ -2184,6 +2203,7 @@ class PPU {
     "f_bgClipping",
     "f_dispType",
     // VRAM I/O
+    "vramBufferedReadValue",
     "firstWrite",
     "openBusLatch",
     "openBusDecayFrames",
@@ -2191,7 +2211,9 @@ class PPU {
     "currentMirroring",
     "vramMirrorTable",
     "ntable1",
-    // Sprites. Most sprite data is rebuilt from OAM Store
+    // SPR-RAM I/O
+    "sramAddress",
+    // Sprites. Most sprite data is rebuilt from spriteMem
     "hitSpr0",
     // Secondary OAM: persistent hardware state (not cleared on pre-render)
     "secondaryOAM",
