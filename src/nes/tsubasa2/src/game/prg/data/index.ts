@@ -11,6 +11,7 @@ export {
   RAM_INIT_TABLE, OAM_HIDE_VALUE, GAME_RAM_CLEAR_TABLE,
 } from './tables/ram-init-table';
 export { PALETTE_FADE_MAX, fadePalette } from './tables/palette-fade-table';
+export { PALETTE_TABLE, loadPalette } from './tables/palette-table';
 export { PLAYER_TABLE, findPlayerById, findPlayersByTeam } from './tables/player-table';
 export { TEAM_TABLE, findTeamById } from './tables/team-table';
 export type { TeamEntry } from './tables/team-table';
@@ -28,3 +29,9 @@ export {
   NOTE_FREQ_TABLE_ADDR,
   AudioRom,
 } from './audio/audio-rom';
+
+// rom (PRG 数据总线)
+export {
+  PRG_BANK_SIZE, PRG_BANK_COUNT, PRG_BANKS, NES_PRG_ROM,
+} from './rom/index';
+export { RomService } from './rom/RomService';

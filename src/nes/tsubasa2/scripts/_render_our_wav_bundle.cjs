@@ -1351,13 +1351,50 @@ var DataStore = class _DataStore {
   constructor() {
     /** 工作 RAM $0000-$07FF（含 OAM 缓冲 $0200、NMI 缓冲 $0498/$05E8） */
     this.ram = new Uint8Array(2048);
+    /** VRAM 暂存 $2000-$3FFF（无写透目标时的挂起写；attach 后 flush） */
+    this.vram = new Uint8Array(8192);
+    /** VRAM 脏标记（$2000-$3FFF 相对偏移位图） */
+    this.vramDirty = new Uint32Array(8192 / 32);
+    /** VRAM 写透目标（由运行时 attach，见 setVramTarget） */
+    this.vramTarget = null;
     /** 帧计数（NMI 帧号） */
     this.frame = 0;
   }
   /** 全部清零（等价 6502 Reset 的 RAM 清零循环） */
   reset() {
     this.ram.fill(0);
+    this.vram.fill(0);
+    this.vramDirty.fill(0);
     this.frame = 0;
+  }
+  /**
+   * 附加 VRAM 写透目标（PPU）。
+   * 此前无目标期间的挂起写（$2000-$3FFF）一次性 flush 到目标。
+   */
+  setVramTarget(target) {
+    if (this.vramTarget === target) return;
+    if (target) this.flushVram(target);
+    this.vramTarget = target;
+  }
+  /**
+   * 将暂存的 VRAM 脏字节写透到目标并清脏。
+   * 由渲染管线在每帧 renderCommit 调用（$2006/$2007 直写语义）。
+   */
+  flushVram(target) {
+    const t = target ?? this.vramTarget;
+    if (!t) return;
+    for (let i = 0; i < this.vramDirty.length; i++) {
+      const word = this.vramDirty[i];
+      if (word === 0) continue;
+      const base = i * 32;
+      for (let b = 0; b < 32; b++) {
+        if (word & 1 << b) {
+          const addr = 8192 + base + b;
+          t.writeMem(addr & 16383, this.vram[base + b]);
+        }
+      }
+      this.vramDirty[i] = 0;
+    }
   }
   // ──────────────────────────── 8-bit 读写 ────────────────────────────
   /** 读一个字节。key 形如 'ram_0601'；也兼容 'ram_FFFF' 之外的上层传参 */
@@ -1377,10 +1414,29 @@ var DataStore = class _DataStore {
     if (addr < 0 || addr >= 2048) return 0;
     return this.ram[addr] & 255;
   }
-  /** 写一个字节（直接地址，内部用） */
+  /** 写一个字节（直接地址，内部用）。$2000-$3FFF 走 VRAM 写透。 */
   writeByte(addr, value) {
-    if (addr < 0 || addr >= 2048) return;
+    if (addr < 0) return;
+    if (addr >= 8192 && addr < 16384) {
+      this.vramWrite(addr, value);
+      return;
+    }
+    if (addr >= 2048) return;
     this.ram[addr] = value & 255;
+  }
+  /**
+   * VRAM 写透：$2000-$3FFF（NT/属性表 $23C0-$23FF/调色板 $3F00-$3F1F）。
+   * 有目标 → 立即写 PPU（原版 $2006/$2007 直写语义）；
+   * 无目标 → 暂存脏区，attach/flush 时补写。
+   */
+  vramWrite(addr, value) {
+    if (addr < 8192 || addr >= 16384) return;
+    const off = addr - 8192 & 8191;
+    this.vram[off] = value & 255;
+    this.vramDirty[off >> 5] |= 1 << (off & 31);
+    if (this.vramTarget) {
+      this.vramTarget.writeMem(addr & 16383, value & 255);
+    }
   }
   // ──────────────────────────── 16-bit 读写 ────────────────────────────
   /** 读 16-bit 小端（低字节在前，与 6502 一致） */
@@ -42647,7 +42703,6 @@ var AudioService = class {
       while (remaining > 0) {
         const n = remaining > 7 ? 7 : remaining;
         this.papu.clockFrameCounter(n, 0);
-        this.papu.extraCycles = 0;
         remaining -= n;
       }
     }

@@ -38,8 +38,13 @@ import {
   SpriteService,
   SpriteAnimationService,
   AudioService,
+  RomService,
 } from './prg/index';
 import type { FrameTarget } from './runtime/GameRuntime';
+
+// PAPU（完整 NES APU 模拟器）
+// @ts-ignore — tsnes 移植代码，松散类型
+import PAPU from '../core/papu/index';
 
 export { HEADER, CONFIG, Mirroring };
 export { NES_CHR_ROM, CHR_BANKS, CHR_BANK_SIZE, CHR_BANK_COUNT };
@@ -62,9 +67,18 @@ export class Tsubasa2 {
   readonly hardware: HardwareInitService;
   readonly skill: SkillService;
   readonly audio: AudioService;
+  readonly rom: RomService;
 
   /** 帧计数（NMI 帧号） */
   protected _frame = 0;
+  /** PAPU 实例（NES APU 模拟器） */
+  protected _papu: any = null;
+  /** WebAudio 上下文（小程序 wx.createWebAudioContext） */
+  protected _webAudio: any = null;
+  /** 音频采样缓冲 */
+  protected _audioSamples: number[] = [];
+  /** 采样写入位置 */
+  protected _sampleOffset = 0;
 
   constructor() {
     this.store = new DataStore();
@@ -98,6 +112,9 @@ export class Tsubasa2 {
     void playerQuery;
     void teamRoster;
 
+    // PRG ROM 流读取器（$C8FB 渲染队列 bank 定位）
+    this.rom = new RomService();
+
     // 精灵 / 技能 / 音频
     this.skill = new SkillService(this.store);
     const sprite = new SpriteService(this.store);
@@ -105,6 +122,9 @@ export class Tsubasa2 {
     void sprite;
     void spriteAnim;
     this.audio = new AudioService(this.store);
+
+    // 音频输出：创建 PAPU + WebAudio（小程序 wx.createWebAudioContext）
+    this._initAudio();
 
     // 音频注入（场景 BGM/SE 播放）
     scene0.attachAudio(this.audio);
@@ -116,7 +136,69 @@ export class Tsubasa2 {
     this.hardware = new HardwareInitService(this.store);
     this.interrupts = new InterruptService(this.store, this.input);
     this.interrupts.attachRouter(this.router);
+    this.interrupts.attachStreamReader(this.rom);
     void matchEngine;
+  }
+
+  /**
+   * 初始化音频：创建 PAPU + WebAudio 输出
+   *
+   * 小程序用 wx.createWebAudioContext() 创建 WebAudio API。
+   * PAPU 的 onAudioSample 回调把采样推入缓冲，
+   * 每帧用 ScriptProcessorNode 或 AudioWorklet 播放。
+   */
+  protected _initAudio(): void {
+    try {
+      // 创建 WebAudio 上下文
+      const wac: any = (typeof wx !== 'undefined' && wx.createWebAudioContext)
+        ? wx.createWebAudioContext()
+        : (typeof AudioContext !== 'undefined' ? new AudioContext() : null);
+      if (!wac) {
+        console.log('[tsubasa] WebAudio 不可用，音频静音');
+        return;
+      }
+      this._webAudio = wac;
+
+      // 创建 PAPU（nes 适配对象）
+      const nes = {
+        opts: {
+          sampleRate: 44100,
+          onAudioSample: (l: number, r: number) => {
+            this._audioSamples.push((l + r) / 2);
+          },
+        },
+      };
+      this._papu = new PAPU(nes);
+
+      // 注入到 AudioService
+      this.audio.attachPapu(this._papu);
+
+      // 创建 ScriptProcessorNode 用于实时播放
+      // 缓冲区 4096 采样，单声道
+      const sampleRate = 44100;
+      const processor = wac.createScriptProcessor(4096, 0, 1);
+      const buffer = new Float32Array(4096);
+      processor.onaudioprocess = (e: any) => {
+        const out = e.outputBuffer.getChannelData(0);
+        const n = Math.min(this._audioSamples.length - this._sampleOffset, out.length);
+        for (let i = 0; i < n; i++) {
+          out[i] = this._audioSamples[this._sampleOffset + i];
+        }
+        // 填充剩余为静音
+        for (let i = n; i < out.length; i++) out[i] = 0;
+        this._sampleOffset += n;
+        // 清理已消费的采样
+        if (this._sampleOffset > 44100) {
+          this._audioSamples = this._audioSamples.slice(this._sampleOffset);
+          this._sampleOffset = 0;
+        }
+      };
+      processor.connect(wac.destination);
+
+      console.log('[tsubasa] 音频初始化完成: PAPU + WebAudio');
+    } catch (e) {
+      console.log('[tsubasa] 音频初始化失败:', (e as Error).message);
+    }
   }
 
   /**
@@ -135,11 +217,15 @@ export class Tsubasa2 {
    */
   frame(target: FrameTarget): void {
     const store = this.store;
+    // 0. 注入 VRAM 写透目标（$2006/$2007 直写语义；目标可每帧变化）
+    store.setVramTarget(target.ppu);
     // 1. 注入控制器状态（core Controller.state: 0x41=按下 0x40=松开）
     this.input.setControllerState(1, target.controllers[1].state);
     this.input.setControllerState(2, target.controllers[2].state);
     // 2. NMI 语义：读手柄 → 场景逻辑推进 → ram_001B bit7
     this.interrupts.nmi(this._frame);
+    // 2.5 bank30 $CA97 主循环任务调度 tick
+    this.hardware.tick();
     // 3. 音频引擎推进（bank12 语义）
     this.audio.update();
     // 4. 渲染提交（$C775 + bank02 $8000 语义）

@@ -5,14 +5,15 @@
  *
  * 对应原始地址：
  *   $C76E: NMI 入口 — ram_001B bit6 决定走游戏逻辑路径（$C421）或主渲染路径（$C775）
- *   $C775: 主渲染 NMI — OAM DMA / $0498 渲染缓冲队列 / 调色板 / 滚动 / MASK / CHR bank
- *   $8000: bank02 NMI 渲染子程 — $05E8 渲染缓冲 / 滚动 / 手柄读取 / 帧计数
- *   $C9E9: CHR bank 配置（MMC3）
+ *   $C775: 主渲染 NMI — 关 NMI / OAM DMA / $C8FB 队列 / $3F00 清基址 / $C7B7 滚动 / MASK / $C9E9 CHR / $C9C5 / $C982 手柄
+ *   $8000: bank02 NMI 渲染子程 — OAM DMA / $05E8 缓冲 / $3F00 基址 / $8062 滚动 / $80AF CHR / $80D7 手柄 / 帧计数
+ *   $C8FB: $0498 渲染队列消费（3 字节条目 [bank, ptrLo, ptrHi]，LIFO，RLE 流）
+ *   $C951: $0515 第二渲染队列消费（$04A5 RLE 数据块）
+ *   $C9E9: CHR bank 请求表装载（MMC3）
  *
- * H5 语义：外层每帧调用 nmi()；本服务负责
- *   1. 手柄读取（bank02 语义）
- *   2. 场景帧更新（游戏逻辑，经由 BootRouter）
- *   3. 渲染提交：$05E8 缓冲 / $0498 队列 / OAM / 调色板 / 滚动 / CTRL/MASK
+ * H5 语义：外层每帧调用 nmi()（手柄读取 + 场景逻辑），然后 renderCommit(ppu) 按
+ * 原始 NMI 顺序提交渲染：OAM DMA → $0498 队列 → $0515 队列 → $05E8 缓冲 →
+ * 滚动（bank02 $8062）→ CTRL/MASK → CHR。所有 MMC3 PRG 寄存器写省略（数据已 import）。
  */
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from './InputService';
@@ -36,9 +37,19 @@ export interface PpuTarget {
   loadChrBank?(slot: number, bank1k: number): void;
 }
 
+/**
+ * PRG ROM 流读取器（$C8FB 队列 RLE 流的 bank 定位）。
+ * 由运行时注入（实现读 32×8KB PRG 数据表）；未注入时队列仅消费计数不渲染。
+ */
+export interface RomStreamReader {
+  /** 读 PRG (bank, addr) 处字节；addr 为 CPU 地址 $8000-$FFFF（offset = addr & $1FFF） */
+  readByte(bank: number, addr: number): number;
+}
+
 export class InterruptService {
   private router: BootRouter | null = null;
   private audio: AudioService | null = null;
+  private streamReader: RomStreamReader | null = null;
 
   /** 已应用 CHR 槽位缓存（$C9E9 每帧重放，仅装载变化槽位） */
   private readonly chrSlots: number[] = new Array(8).fill(-1);
@@ -58,6 +69,11 @@ export class InterruptService {
     this.audio = audio;
   }
 
+  /** 注入 PRG ROM 流读取器（$C8FB 队列 bank 解析） */
+  attachStreamReader(reader: RomStreamReader): void {
+    this.streamReader = reader;
+  }
+
   /**
    * 每帧 NMI（$C76E 语义）
    * @param frame 帧号
@@ -69,56 +85,164 @@ export class InterruptService {
     this.input.readControllers();
     // 2. 音频引擎帧推进（bank12 $80BA 语义）
     this.audio?.update();
-    // 3. 场景帧更新（游戏逻辑；v0.1 场景为 stub）
+    // 3. 场景帧更新（游戏逻辑）
     this.router?.update(frame);
     // 4. 主渲染路径标志（$C775: ram_001B bit7 置位）
     store.writeByte(0x001b, store.readByte(0x001b) | 0x80);
   }
 
   /**
-   * 渲染提交（$C775 + bank02 $8000 语义）：
-   * CTRL/MASK → 滚动 → $05E8 缓冲 → $0498 队列 → OAM → 调色板
+   * 渲染提交（$C775 + bank02 $8000 语义），顺序逐指令对照：
+   *   1. 关 NMI（$C77A）→ OAM DMA（$C78B）
+   *   2. $0498 渲染队列（$C8FB）+ $0515 第二队列（$C951）
+   *   3. $3F00 基址复位（$C79F，H5 无操作——调色板走缓冲/直接写）
+   *   4. $C7B7 滚动（$004A+$0538 / $004B）
+   *   5. MASK（$C7C5）+ $C9E9 CHR + $C9C5 帧计数 + $C982 手柄（H5 手柄已读）
+   *   6. bank02 $8000: OAM DMA / $05E8 缓冲 / $3F00 基址 / $8062 滚动 / $80AF CHR
+   *   7. 恢复 NMI（$C810: $0020 |= $80）
    */
   renderCommit(ppu: PpuTarget): void {
     const store = this.store;
-    // PPU CTRL/MASK
-    ppu.updateControlReg1(store.readByte(0x0020));
-    ppu.updateControlReg2(store.readByte(0x0021));
-    // 滚动：X = ram_004A + ram_0538（$C7B7 语义），Y = ram_004B
+    // 0. 游戏逻辑期的 VRAM 直写（$2006/$2007 语义）先落地
+    store.flushVram(ppu);
+
+    // 1. $C77A: 关 NMI（$2000 bit7 clear）并应用
+    const ctrlOff = store.readByte(0x0020) & 0x7f;
+    store.writeByte(0x0020, ctrlOff);
+    ppu.updateControlReg1(ctrlOff);
+
+    // $C78B: OAM DMA（$0200 → spriteMem）
+    this.oamDma(ppu);
+
+    // 2. $C8FB: $0498 渲染队列（LIFO，每帧消费队尾一项）
+    this.flushRenderQueue(ppu);
+    // $C951: $0515 第二渲染队列（$04A5 RLE 块）
+    this.flushSecondQueue(ppu);
+
+    // 3. $C79F: $3F00 基址复位（H5 调色板由缓冲条目 + flushPalette 直接写，跳过）
+
+    // 4. $C7B7: 主滚动（X=$004A+$0538, Y=$004B）
+    this.applyScrollC7B7(ppu);
+
+    // 5. $C7C5: MASK
+    ppu.updateControlReg2(store.readByte(0x0021) & 0xff);
+
+    // $C9E9: CHR bank 请求表
+    this.applyChrRequest(ppu);
+    // $C7CD-$C7E3: IRQ 向量 bank（H5 省略）+ $C9C5 帧计数更新
+    this.frameCounters();
+
+    // 6. bank02 $8000 续段
+    //   OAM DMA（$8000，与 $C78B 重复——原始如此，H5 幂等）
+    this.oamDma(ppu);
+    //   $05E8 渲染缓冲（$8019-$804A）
+    this.flushNtBuffer(ppu);
+    //   $8062 滚动路径（$0079/$007A/$007B/$0044/$0045 → CTRL/滚动）——最终生效
+    this.applyScrollBank02(ppu);
+    //   $80AF: CHR $009E-$00A1 → MMC3 cmd 2-5
+    this.applyChrFrom009e(ppu);
+    //   $80D7 手柄读取（H5 已在 nmi() 完成，跳过）
+
+    // 7. $C810: 恢复 NMI（$0020 |= $80），$0019 同步
+    const ctrlOn = store.readByte(0x0020) | 0x80;
+    store.writeByte(0x0020, ctrlOn & 0xff);
+    store.writeByte(0x0019, ctrlOn & 0xff);
+    ppu.updateControlReg1(ctrlOn & 0xff);
+
+    // 调色板兜底：ram_062A/063A → $3F00/$3F10（$05E8 缓冲已含 fadeWrite 条目；此步保证一致）
+    this.flushPalette(ppu);
+  }
+
+  /** $C78B/$8000: OAM DMA（$0200-$02FF → PPU spriteMem） */
+  private oamDma(ppu: PpuTarget): void {
+    const oam = this.store.oamBuffer;
+    for (let i = 0; i < 0x100; i++) ppu.spriteMem[i] = oam[i];
+  }
+
+  /** $C7B7: 滚动（X=$004A+$0538, Y=$004B） */
+  private applyScrollC7B7(ppu: PpuTarget): void {
+    const store = this.store;
     const sx = (store.readByte(0x004a) + store.readByte(0x0538)) & 0xff;
     const sy = store.readByte(0x004b) & 0xff;
+    this.setScroll(ppu, sx, sy);
+  }
+
+  /**
+   * bank02 $8062-$8090 滚动路径（最终生效）：
+   *   $8062: LDA $0079; BPL $8073 — bit7 置位走文本滚动路径（$A091，本会话仅占位）
+   *   $8073: LSR $0020 ×2 → ROL($0045 bit0) → ROL($007B bit0) → STA $2000
+   *   $8086: LDA $007A; STA $2005   （滚动 X）
+   *   $808B: LDX $0044; DEX; STX $2005（滚动 Y = $0044-1）
+   */
+  private applyScrollBank02(ppu: PpuTarget): void {
+    const store = this.store;
+    const s79 = store.readByte(0x0079) & 0xff;
+    if ((s79 & 0x80) !== 0) {
+      // 文本滚动路径（$8066-$806C: LDA $007B; STA $2006; LDA $007A; STA $2006; JMP $A091）
+      // H5：设置 VRAM 地址基址（无后续 $2007 直写上下文，仅同步 ram 视图）
+      return;
+    }
+    // $8073: LSR $0020 ×2
+    let ctrl = (store.readByte(0x0020) >> 2) & 0xff;
+    store.writeByte(0x0020, ctrl);
+    // $8077: LDA $0045; LSR; ROL $0020
+    ctrl = ((ctrl << 1) | (store.readByte(0x0045) & 1)) & 0xff;
+    store.writeByte(0x0020, ctrl);
+    // $807C: LDA $007B; LSR; ROL $0020
+    ctrl = ((ctrl << 1) | (store.readByte(0x007b) & 1)) & 0xff;
+    store.writeByte(0x0020, ctrl);
+    ppu.updateControlReg1(ctrl);
+    // $8086-$808E: 滚动 X=$007A, Y=$0044-1
+    const sx = store.readByte(0x007a) & 0xff;
+    const sy = (store.readByte(0x0044) - 1) & 0xff;
+    this.setScroll(ppu, sx, sy);
+  }
+
+  /** 滚动值 → PPU 滚动寄存器（$2005 语义分解） */
+  private setScroll(ppu: PpuTarget, sx: number, sy: number): void {
     ppu.regHT = (sx >> 3) & 31;
     ppu.regFH = sx & 7;
     ppu.regH = (sx >> 5) & 1;
     ppu.regVT = (sy >> 3) & 31;
     ppu.regFV = sy & 7;
     ppu.regV = (sy >> 5) & 1;
-    // CHR bank 请求表（$C9E9 语义：ram_0022 + ram_0490-$0497 → MMC3 8 slot）
-    this.applyChrRequest(ppu);
-    // $05E8 渲染缓冲（bank02 $8019 语义）：[count, addrLo, addrHi, data×count...]，0 终止
-    // count bit7=1 时 CTRL 列增量（+32），否则行增量（+1）
-    this.flushNtBuffer(ppu);
-    // $0498 延迟缓冲队列（$C8FB 语义）
-    this.flushRenderQueue(ppu);
-    // OAM $0200 → spriteMem（$C78B OAM DMA 语义）
-    const oam = store.oamBuffer;
-    for (let i = 0; i < 0x100; i++) ppu.spriteMem[i] = oam[i];
-    // 调色板：ram_062A（BG）/ ram_063A（SPR）→ PPU $3F00/$3F10
-    this.flushPalette(ppu);
+  }
+
+  /** $C7CD-$C7E3 + $C9C5: IRQ 向量 bank（H5 省略）+ 帧计数器更新 */
+  private frameCounters(): void {
+    const store = this.store;
+    // $C7CD-$C7E1: LDX $008E; STX $008C; STX $008D + MMC3 IRQ 写（H5 省略）
+    // $C9C5: 帧计数/随机抖动
+    const e1 = store.readByte(0x00e1);
+    let a = (store.readByte(0x0300 + e1) + store.readByte(0x0700 + e1)) & 0xff;
+    const c1 = a > 0xff ? 1 : 0;
+    let e2 = ((store.readByte(0x00e2) << 1) | c1) & 0xff;
+    a ^= 0xff;
+    const c2 = (e2 >> 7) & 1;
+    e2 = ((e2 << 1) | c2) & 0xff;
+    a = (a + e2) & 0xff;
+    store.writeByte(0x00e2, e2);
+    let s = (a - store.readByte(0x0780 + e1)) & 0xff;
+    s = (s + e1) & 0xff;
+    store.writeByte(0x00e3, s);
+    store.writeByte(0x00e1, (e1 + 1) & 0xff);
   }
 
   /**
-   * $05E8 渲染缓冲消费（bank02 $801D-$804A）。
+   * $05E8 渲染缓冲消费（bank02 $8019-$804A）。
    * 条目格式：byte0=count（非 0），byte1=addrLo，byte2=addrHi，之后 count 字节数据。
-   * count bit7=0 时 PPU 地址每次 +1（行模式），bit7=1 时每次 +32（列模式）。
-   * byte0=0 表示结束。
+   * count bit7=1 时 PPU 地址每次 +32（列模式，count &= $3F），否则 +1（行模式）。
+   * byte0=0 表示结束；$0629 bit6（忙标志）置位时本帧跳过（原版 $800F BVS）。
    */
   private flushNtBuffer(ppu: PpuTarget): void {
-    const buf = this.store.ntRenderBuffer;
+    const store = this.store;
+    if (store.readByte(0x0628) === 0) return;
+    if ((store.readByte(0x0629) & 0x40) !== 0) return; // 忙标志：写入未完成
+    const buf = store.ntRenderBuffer;
     let x = 0;
     while (x + 3 <= 0x40) {
       const b0 = buf[x] & 0xff;
-      if (b0 === 0) break; // $9B5E 结束标记
+      if (b0 === 0) break;
       const vertical = (b0 & 0x80) !== 0;
       const count = vertical ? (b0 & 0x3f) : b0;
       const addr = (buf[x + 2] << 8) | buf[x + 1];
@@ -129,16 +253,81 @@ export class InterruptService {
       x += 3 + count;
     }
     // 缓冲消费后清零（原版 NMI 末尾 STA $0628=0 语义）
-    this.store.writeByte(0x0628, 0);
+    store.writeByte(0x0628, 0);
   }
 
-  /** $0498 渲染缓冲队列（$C8FB）：每项 3 字节 [bank|0x80, ptrLo, ptrHi] */
-  private flushRenderQueue(_ppu: PpuTarget): void {
+  /**
+   * $C8FB $0498 渲染队列消费：
+   *   计数>0 → DEC；index=(count-1)*3；条目 [bank][ptrLo][ptrHi]。
+   *   ptrHi bit7 置位 → MMC3 PRG bank 切换（H5 省略，流数据按 bank 定位）。
+   *   流格式：RLE 块 [count][addrLo][addrHi][data×count]，0 终止。
+   *   每帧消费队尾一项（LIFO），一项的流全部渲染完才返回。
+   */
+  private flushRenderQueue(ppu: PpuTarget): void {
     const store = this.store;
     const count = store.readByte(0x0498);
     if (count === 0) return;
-    // TODO V0.2/V0.3: 完整翻译 $C8FB 数据流（渲染命令流解析）
-    store.writeByte(0x0498, 0);
+    store.writeByte(0x0498, (count - 1) & 0xff); // DEC $0498
+    const idx = (count - 1) * 3;
+    const bank = store.readByte(0x0499 + idx); // TAY
+    const lo = store.readByte(0x049a + idx);   // $0077
+    const hi = store.readByte(0x049b + idx);   // $0078
+    const ptr = (hi << 8) | lo;                // 流指针（CPU 地址）
+    // $C919: BPL $C92C — hi bit7 置位时原版先做 MMC3 PRG 切换（H5 省略）
+    let p = ptr;
+    for (;;) {
+      const b0 = this.readStreamByte(bank, p);
+      if (b0 === 0) break; // $C930: BEQ $C950 结束
+      const aLo = this.readStreamByte(bank, p + 1);
+      const aHi = this.readStreamByte(bank, p + 2);
+      p += 3;
+      const addr = (aHi << 8) | aLo;
+      for (let i = 0; i < b0; i++) {
+        ppu.writeMem(addr & 0x3fff, this.readStreamByte(bank, p + i));
+      }
+      p += b0;
+    }
+  }
+
+  /**
+   * $C92E LDA ($0077),Y — CPU 内存读取（流可能指向 RAM 或 PRG）。
+   *   $0000-$07FF: 工作 RAM（如 $046C 调色板流 → 直写 $3F00）
+   *   $6000-$7FFF: 存档 SRAM（H5 无，返回 0）
+   *   $8000-$FFFF: PRG ROM（按 bank + addr&$1FFF 定位）
+   */
+  private readStreamByte(bank: number, addr: number): number {
+    if (addr >= 0x8000) {
+      return this.streamReader ? this.streamReader.readByte(bank, addr) : 0;
+    }
+    if (addr < 0x2000) {
+      return this.store.readByte(addr & 0x7ff);
+    }
+    return 0; // PPU 寄存器/未映射区不作为流
+  }
+
+  /**
+   * $C951 $0515 第二渲染队列消费：
+   *   $0515 bit7 置位（待消费）→ 清标志；$04A5 起 RLE 块
+   *   [count][addrLo][addrHi][data×count]，0 终止。
+   */
+  private flushSecondQueue(ppu: PpuTarget): void {
+    const store = this.store;
+    const flag = store.readByte(0x0515);
+    if ((flag & 0x80) === 0) return; // BPL $C981
+    store.writeByte(0x0515, 0);      // LDX #$00; STX $0515
+    let x = 0;
+    for (;;) {
+      const cnt = store.readByte(0x04a5 + x);
+      if (cnt === 0) break;          // BEQ $C981
+      const aLo = store.readByte(0x04a5 + x + 1);
+      const aHi = store.readByte(0x04a5 + x + 2);
+      x += 3;
+      const addr = (aHi << 8) | aLo;
+      for (let i = 0; i < cnt; i++) {
+        ppu.writeMem(addr & 0x3fff, store.readByte(0x04a5 + x + i));
+      }
+      x += cnt;
+    }
   }
 
   /** 调色板：ram_062A+16（BG）→ $3F00；ram_063A+16（SPR）→ $3F10 */
@@ -172,6 +361,19 @@ export class InterruptService {
       this.mmc3ChrWrite(ppu, y | base, chrSel, store.readByte(0x0490 + x));
       x++;
     }
+  }
+
+  /**
+   * bank02 $80AF: MMC3 cmd 2-5 ← $009E-$00A1（不并入 $0022，chrSel=0 → slots 4-7）。
+   * 原版 $8000=#$02/#$03/#$04/#$05，$8001=$009E/$009F/$00A0/$00A1。
+   */
+  private applyChrFrom009e(ppu: PpuTarget): void {
+    if (!ppu.loadChrBank) return;
+    const store = this.store;
+    this.mmc3ChrWrite(ppu, 2, 0, store.readByte(0x009e));
+    this.mmc3ChrWrite(ppu, 3, 0, store.readByte(0x009f));
+    this.mmc3ChrWrite(ppu, 4, 0, store.readByte(0x00a0));
+    this.mmc3ChrWrite(ppu, 5, 0, store.readByte(0x00a1));
   }
 
   /** MMC3 $8000/$8001 CHR 写解码（Mapper4.executeCommand 语义；cmd 6/7=PRG 无语义） */
