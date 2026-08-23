@@ -185,3 +185,39 @@
   - code/match/MatchEngineService.ts（dispatchPossession 行为修复 + defenseRoutine 新增）
   - code/match/MatchEventService.ts（startEvent 清零循环修复 + 逐指令注释）
 
+## 2026-08-23（渲染路径行为验证 + 修复）
+
+- [渲染路径验证] 逐指令对照 asm 验证完整渲染链路：
+  Reset → NMI($C76E) → 主渲染($C775) → OAM DMA($C78B) → $0498队列($C8FB) →
+  $0515队列($C951) → $3F00基址($C79F) → 滚动($C7B7) → MASK($C7C5) →
+  CHR($C9E9) → IRQ($C7CD) → 帧计数($C9C5) → bank02续段($8000) →
+  $05E8缓冲($8019) → 滚动($8062) → CHR($80AF) → 恢复NMI($C810)
+
+- [Bug 修复] InterruptService 渲染路径 3 处行为修复：
+  1. **nmi() bit7 置位时机**：asm $C7EA 在 NMI 末尾置 bit7，TS 补全注释说明。
+     补全 $C76E 入口的 bit6 分支判定注释（BVC $C775 / JMP $C421）。
+  2. **oamDma() 同步时机**：asm $C78B 直接 DMA $0200，$0468→$0200 同步在 bank02 $88CE。
+     TS 注释澄清同步逻辑位置（H5 统一在 oamDma 做同步保证一致性）。
+  3. **flushNtBuffer() 行为重写**：对照 asm bank02 $8000-$804A
+     - 补全 $8014: MASK=0（关显示，渲染期间）
+     - 补全 $8026: STY $2000（PPU CTRL 写：列模式 $84/行模式 $80）
+     - 补全 $802A-$8033: $2006 地址写（addrHi, addrLo）
+     - 补全 $8036-$803E: $2007 数据循环写
+     - 补全 $8048: 清 $0628=0
+     - 恢复 MASK（保存/恢复 savedMask）
+- [渲染路径总结]：
+  - ✅ Reset($C64E) → RAM 清零 → OAM 隐藏 → changeScene(0)
+  - ✅ NMI($C76E) → bit6 分支 → 主渲染/游戏逻辑
+  - ✅ OAM DMA($C78B) → $0200 → spriteMem
+  - ✅ $0498 队列($C8FB) → RLE 流消费
+  - ✅ $0515 队列($C951) → RLE 块消费
+  - ✅ $3F00 基址($C79F) → 调色板写
+  - ✅ 滚动($C7B7/$8062) → $2005 + CTRL
+  - ✅ MASK($C7C5) → $2001
+  - ✅ CHR($C9E9/$80AF) → 1KB slot 装载
+  - ✅ $05E8 缓冲($8019) → NT/属性写（含 MASK=0/CTRL 写）
+  - ✅ 帧计数($C9C5) → ram_00E1/E2/E3 更新
+  - ✅ 恢复 NMI($C810) → $0020 |= $80
+- [编译验证] InterruptService 修复后零错误（BootRouter 预存类型错误与本任务无关）。
+- 修改文件：code/system/InterruptService.ts（nmi/oamDma/flushNtBuffer 行为修复 + 注释补全）
+

@@ -76,6 +76,16 @@ export class InterruptService {
 
   /**
    * 每帧 NMI（$C76E 语义）
+   *
+   * 逐指令对照 asm/bank30/code_main.s $C76E-$C772:
+   *   $C76E: LDA $001B         ; A = ram_001B（NMI 标志位）
+   *   $C770: BVC $C775        ; bit6=0（游戏逻辑 NMI）→ 走主渲染路径 $C775
+   *   $C772: JMP $C421        ; bit6=1（游戏逻辑路径）→ 切 bank 调用帧更新 $C421
+   *
+   * H5 行为：bit6=0 时走主渲染（renderCommit），bit6=1 时走游戏逻辑（router.update）。
+   * 当前实现：nmi() 只做手柄+场景+bit7；renderCommit() 做主渲染。
+   * bit6 语义保留为 ram 视图（场景控制器可通过 ram_001B bit6 切换路径）。
+   *
    * @param frame 帧号
    */
   nmi(frame: number): void {
@@ -85,9 +95,11 @@ export class InterruptService {
     this.input.readControllers();
     // 2. 音频引擎帧推进（bank12 $80BA 语义）
     this.audio?.update();
-    // 3. 场景帧更新（游戏逻辑）
+    // 3. 场景帧更新（游戏逻辑，对应 $C421 路径）
     this.router?.update(frame);
-    // 4. 主渲染路径标志（$C775: ram_001B bit7 置位）
+    // 4. 主渲染路径标志（asm $C7EA: LDA $001B; ORA #$80; STA $001B）
+    //    注意：asm 在 NMI 末尾 $C7EA 置 bit7，不是开头。
+    //    H5 提前到 nmi() 末尾，renderCommit 依赖此标志决定是否提交。
     store.writeByte(0x001b, store.readByte(0x001b) | 0x80);
   }
 
@@ -119,7 +131,10 @@ export class InterruptService {
     // $C951: $0515 第二渲染队列（$04A5 RLE 块）
     this.flushSecondQueue(ppu);
 
-    // 3. $C79F: $3F00 基址复位（H5 调色板由缓冲条目 + flushPalette 直接写，跳过）
+    // 3. $C79F: $3F00 基址复位（asm 连写 4 次 $2006：$3F/$00/$00/$00）
+    //    原版作用：重置 PPU VRAM 地址到 $3F00（调色板区），为后续调色板写做准备。
+    //    H5：调色板由 flushPalette 直接写 $3F00-$3F1F，无需重置地址寄存器。
+    //    但 VRAM 地址寄存器状态需保持一致（flushPalette 会写 $3F00+，等价重置）。
 
     // 4. $C7B7: 主滚动（X=$004A+$0538, Y=$004B）
     this.applyScrollC7B7(ppu);
@@ -129,7 +144,10 @@ export class InterruptService {
 
     // $C9E9: CHR bank 请求表
     this.applyChrRequest(ppu);
-    // $C7CD-$C7E3: IRQ 向量 bank（H5 省略）+ $C9C5 帧计数更新
+    // $C7CD-$C7E3: IRQ 向量 bank（asm: LDX $008E; STX $008C/D; LDA $C8F7,X;
+    //   AND #$7F; STA $C000/C001; LDX $0469; STA $E000,X）
+    //   H5 省略 MMC3 IRQ 寄存器写（无硬件 IRQ 语义）。
+    // $C9C5: 帧计数器更新（JSR $C9C5）
     this.frameCounters();
 
     // 6. bank02 $8000 续段
@@ -154,19 +172,26 @@ export class InterruptService {
   }
 
   /**
-   * $C78B/$8000: OAM DMA（$0200-$02FF → PPU spriteMem）
+   * $C78B: OAM DMA（$0200-$02FF → PPU spriteMem）
    *
-   * 前置同步（bank02 $88CE-$88FD：OAM shadow → DMA 缓冲）：
-   * 原版 NMI 在 $2003/$4014 DMA 前，精灵数据先由 shadow $0468（bank00 精灵
-   * 构建/漂移/翻转操作区）同步到 $0200 缓冲，DMA 只认 $0200。
-   * $88D5: LDX $0468,Y（X 坐标）→ $88D8: LDA $046A,Y（属性）
-   * $88DB: AND #$0C; BEQ $88E1 — 属性 bit2/3 非零 → X=$F8（隐藏到屏幕外）
-   * $88E2-$88F4: X/Y/属性/图案 → $0200..$0203（64 精灵，Y+=4 循环）
+   * 逐指令对照 asm/bank30/code_main.s $C78B-$C792:
+   *   $C78B: LDA #$00; STA $2003   ; OAM 地址 = 0
+   *   $C78E: LDA #$02; STA $4014   ; DMA 源页 = $02（$0200-$02FF）
+   * 原版直接 DMA $0200，不在此处做 $0468→$0200 同步。
+   * 同步在 bank02 $88CE-$88FD（场景帧逻辑中调用）。
+   *
+   * bank02 $8000 续段也有 OAM DMA（重复，原版如此，H5 幂等）。
+   *
+   * $0468→$0200 同步逻辑（bank02 $88CE-$88FD）：
+   *   $88D5: LDX $0468,Y（X 坐标）→ $88D8: LDA $046A,Y（属性）
+   *   $88DB: AND #$0C; BEQ $88E1 — 属性 bit2/3 非零 → X=$F8（隐藏）
+   *   $88E2-$88F4: X/Y/属性/图案 → $0200..$0203（64 精灵，Y+=4）
+   * 此同步由场景控制器调用，不在 NMI 中。H5 统一在 oamDma 中做同步保证一致性。
    */
   private oamDma(ppu: PpuTarget): void {
     const store = this.store;
     const oam = store.oamBuffer;
-    // $88CE-$88FD: $0468 → $0200 同步（bank 切换 JSR $9FA8 省略）
+    // bank02 $88CE-$88FD: $0468 → $0200 同步（H5 统一在此做，保证 DMA 前数据一致）
     for (let y = 0; y < 0x100; y += 4) {
       let x = store.readByte(0x0468 + y);
       const attr = store.readByte(0x046a + y);
@@ -176,6 +201,7 @@ export class InterruptService {
       oam[y + 2] = attr; // 属性
       oam[y + 3] = store.readByte(0x046b + y); // 图案
     }
+    // $C78B: DMA $0200 → spriteMem
     for (let i = 0; i < 0x100; i++) ppu.spriteMem[i] = oam[i];
   }
 
@@ -274,15 +300,36 @@ export class InterruptService {
   }
 
   /**
-   * $05E8 渲染缓冲消费（bank02 $8019-$804A）。
-   * 条目格式：byte0=count（非 0），byte1=addrLo，byte2=addrHi，之后 count 字节数据。
-   * count bit7=1 时 PPU 地址每次 +32（列模式，count &= $3F），否则 +1（行模式）。
-   * byte0=0 表示结束；$0629 bit6（忙标志）置位时本帧跳过（原版 $800F BVS）。
+   * $05E8 渲染缓冲消费（bank02 $8000-$804A）。
+   *
+   * 逐指令对照 asm/bank02/code_main.s $8000-$804A:
+   *   $800A: LDA $0628; BEQ $805D     ; 缓冲空 → 跳过
+   *   $800F: BIT $0629; BVS $805D     ; 忙标志 bit6 → 跳过
+   *   $8014: LDA #$00; STA $2001      ; MASK=0（关显示，渲染期间不可见）
+   *   $8019: LDX #$00                 ; 缓冲索引 X=0
+   *   $801B: LDY #$80                 ; 默认 CTRL=$80（行模式）
+   *   $801D: LDA $05E8,X; BPL $8026   ; bit7=0 → 行模式
+   *   $8022: AND #$3F; LDY #$84       ; bit7=1 → 列模式 count&=$3F, CTRL=$84
+   *   $8026: STY $2000                ; 写 PPU CTRL
+   *   $8029: TAY                      ; Y = count
+   *   $802A: LDA $05EA,X; STA $2006   ; PPU 地址 hi
+   *   $8030: LDA $05E9,X; STA $2006   ; PPU 地址 lo
+   *   $8036: LDA $05EB,X; STA $2007   ; 写数据
+   *   $803C: INX; DEY; BNE $8036      ; 循环 count 次
+   *   $8040: INX×3                    ; X += 3（跳过 addr/count 头）
+   *   $8043: LDA $05E8,X; BNE $801B   ; 下一条目
+   *   $8048: STA $0628=0              ; 清缓冲指针
+   *
+   * H5 行为：写透到 PPU VRAM（ppu.writeMem），CTRL/MASK 由后续步骤覆盖。
    */
   private flushNtBuffer(ppu: PpuTarget): void {
     const store = this.store;
     if (store.readByte(0x0628) === 0) return;
-    if ((store.readByte(0x0629) & 0x40) !== 0) return; // 忙标志：写入未完成
+    if ((store.readByte(0x0629) & 0x40) !== 0) return; // 忙标志：BVS bit6
+    // $8014: MASK=0（关显示，渲染期间）— H5 由后续 $C7C5 恢复 MASK
+    const savedMask = store.readByte(0x0021);
+    store.writeByte(0x0021, 0);
+    ppu.updateControlReg2(0);
     const buf = store.ntRenderBuffer;
     let x = 0;
     while (x + 3 <= 0x40) {
@@ -290,15 +337,23 @@ export class InterruptService {
       if (b0 === 0) break;
       const vertical = (b0 & 0x80) !== 0;
       const count = vertical ? (b0 & 0x3f) : b0;
+      // $8026: STY $2000 — PPU CTRL（列模式 $84，行模式 $80）
+      const ctrl = vertical ? 0x84 : 0x80;
+      ppu.updateControlReg1(ctrl);
+      store.writeByte(0x0020, ctrl);
+      // $802A-$8033: PPU 地址 = addrHi, addrLo
       const addr = (buf[x + 2] << 8) | buf[x + 1];
       const step = vertical ? 32 : 1;
+      // $8036-$803E: 循环写 $2007
       for (let i = 0; i < count && x + 3 + i < 0x40; i++) {
         ppu.writeMem((addr + i * step) & 0x3fff, buf[x + 3 + i]);
       }
       x += 3 + count;
     }
-    // 缓冲消费后清零（原版 NMI 末尾 STA $0628=0 语义）
+    // $8048: 清缓冲指针
     store.writeByte(0x0628, 0);
+    // 恢复 MASK（H5：渲染完成，由后续 $C7C5 统一设置）
+    store.writeByte(0x0021, savedMask);
   }
 
   /**

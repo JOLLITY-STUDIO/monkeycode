@@ -522,12 +522,291 @@ export class TileRenderService {
   }
 
   /**
-   * $94D8: 精灵构建。
-   * 精灵数据流 → OAM $0468（Y/X/属性/图案），含翻转与相对坐标。
-   * TODO: 逐指令覆盖实现（$95E5 跳转表）。
+   * $94D8: 精灵构建（逐指令对照 code_render.s $94D8-$9684 + code_sub.s $9684-$9734）。
+   * 精灵数据流（$00E6 指向，当前场景 bank）→ OAM $0468（X/图案/属性/Y）：
+   *   4 字节头 [计数|$80, 起始 OAM, 基 X, 基 Y] → $009E/$009F/$00A0/$00A1；$00E6 += 4
+   *   $0098 = [($0094)+$10]（当前 OAM 指针，行位 bit3 未置位时先写 $0097 基线）
+   *   主循环命令（$9515）：
+   *     <$80 绝对 OAM 写入（命令字节=属性，bits2-5=X 偏移）
+   *     $80-$9F 相对增量（$00EA/$00EB X 累加器 += $009A/$009B，$00E6 += 1）
+   *     $A0-$BF 绝对增量（$00E8/$00E9 Y 累加器 += $009C/$009D，$00E6 += 1）
+   *     $C0-$CF 相对 Y 命令（写 OAM Y/X/属性/图案，$00E6 += 3）
+   *     $D0+ 子命令（$9684：SEC SBC #$F8; ASL; TAX → $9693 跳转表，RTS+1）
+   *       $F8/$F9/$FA/$FC 精灵槽推入（$96A4，压入 $00E6+3 指针，落穿 $96C7 指针重载）
+   *       $FB 指针重载（$96C7：$00E6 = ($00E6)+1 处 16 位）
+   *       $FD 精灵槽弹出（$96D6）
+   *       $FE/$FF OAM 清屏/基线调整（$96F2，同时是 buildSprite 出口：RTS $9734）
+   * @param bank 当前场景 PRG bank（9 或 10）
    */
-  buildSprite(): void {
-    void this.store;
+  buildSprite(bank: number): void {
+    const store = this.store;
+    const rom = this.rom;
+    // $94D8-$94EE: 4 字节头 → $009E/$009F/$00A0/$00A1
+    let ptr = store.readU16(0x00e6);
+    store.writeByte(0x009e, rom.readByte(bank, ptr) | 0x80);
+    store.writeByte(0x009f, rom.readByte(bank, (ptr + 1) & 0xffff));
+    store.writeByte(0x00a0, rom.readByte(bank, (ptr + 2) & 0xffff));
+    store.writeByte(0x00a1, rom.readByte(bank, (ptr + 3) & 0xffff));
+    // $94F0-$94FB: $00E6 += 4
+    ptr = (ptr + 4) & 0xffff;
+    store.writeU16(0x00e6, ptr);
+    // $94FD-$950D: [$0094] bit3 未置位 → [$0094+$10] = $0097；$0098 = [$0094+$10]
+    const ntPtr = store.readU16(0x0094);
+    if ((store.readByte(ntPtr) & 0x08) === 0) {
+      store.writeByte(ntPtr + 0x10, store.readByte(0x0097));
+    }
+    store.writeByte(0x0098, store.readByte(ntPtr + 0x10));
+    // $950F-$9513: $00E8/$00E9 = 0（Y 累加器清零）
+    store.writeByte(0x00e8, 0);
+    store.writeByte(0x00e9, 0);
+    // 主循环 $9515
+    for (;;) {
+      const sp = store.readU16(0x00e6);
+      const cmd = rom.readByte(bank, sp);
+      if ((cmd & 0x80) === 0) {
+        // 绝对 OAM 写入（$951B-$9586）
+        const ox = store.readByte(0x0098);
+        const v = (cmd & 0x3c) << 2; // $951D: AND #$3C; ASL; ASL
+        let hi: number;
+        let xl: number;
+        let carry: number;
+        if ((v & 0x80) === 0) {
+          // $9523: LSR; CLC; ADC $009A → X 坐标低字节
+          const lo = (v >> 1) + store.readByte(0x009a);
+          carry = lo > 0xff ? 1 : 0;
+          xl = lo & 0xff;
+          store.writeByte(0x0468 + ox, xl);
+          store.writeByte(0x00ea, xl);
+          // $952C: LDA #$00; ADC $009B
+          hi = (store.readByte(0x009b) + carry) & 0xff;
+        } else {
+          // $9533: SEC; ROR; CLC; ADC $009A
+          const a = ((v >> 1) | 0x80) & 0xff;
+          const lo = a + store.readByte(0x009a);
+          carry = lo > 0xff ? 1 : 0;
+          xl = lo & 0xff;
+          store.writeByte(0x0468 + ox, xl);
+          store.writeByte(0x00ea, xl);
+          // $953D: LDA #$00; SBC $009B（借位 = 1-carry）
+          hi = (0x00 - store.readByte(0x009b) - (1 - carry)) & 0xff;
+        }
+        // $9541: AND #$01; STA $00EB
+        let ec = (hi & 1) << 1; // $9545: ASL; $9546: STA $00EC
+        // $9548: OAM Y = $00E8
+        store.writeByte(0x046b + ox, store.readByte(0x00e8));
+        // $954D-$9555: $00EC = (($00E9 & 1) | $00EC) << 2
+        ec = (((store.readByte(0x00e9) & 1) | ec) << 2) & 0xff;
+        // $9557-$9569: 属性 = $00EC | (attr^行位)&$40 | attr&3
+        const attr = rom.readByte(bank, sp);
+        ec |= (attr ^ store.readByte(ntPtr)) & 0x40;
+        ec |= attr & 0x03;
+        store.writeByte(0x046a + ox, ec & 0xff);
+        // $956C-$956F: 图案 = ($00E6)+1
+        store.writeByte(0x0469 + ox, rom.readByte(bank, (sp + 1) & 0xffff));
+        // $9572: $0098 += 4；$9579: $00E6 += 2
+        store.writeByte(0x0098, (ox + 4) & 0xff);
+        store.writeU16(0x00e6, (sp + 2) & 0xffff);
+        continue;
+      }
+      if (cmd < 0xa0) {
+        // 相对 X 增量（$9589-$95AC）：$00EA/$00EB += $009A/$009B，$00E6 += 1
+        const d = (cmd << 3) & 0xff;
+        const xh = (d & 0x80) !== 0 ? 0xff : 0x00; // $9594 BPL / DEX
+        const lo = store.readByte(0x009a) + d;
+        const c = lo > 0xff ? 1 : 0;
+        store.writeByte(0x00ea, lo & 0xff);
+        store.writeByte(0x00eb, (store.readByte(0x009b) + xh + c) & 0xff);
+        store.writeU16(0x00e6, (sp + 1) & 0xffff);
+        continue;
+      }
+      if (cmd < 0xc0) {
+        // 绝对 Y 增量（$95AF-$95E2）：行位 bit7 置位则取反；$00E8/$00E9 += $009C/$009D
+        const neg = (store.readByte(ntPtr) & 0x80) !== 0;
+        const xv = neg ? (0x00 - cmd) & 0xff : cmd;
+        const d = (xv << 3) & 0xff;
+        const yh = (d & 0x80) !== 0 ? 0xff : 0x00;
+        const lo = store.readByte(0x009c) + d;
+        const c = lo > 0xff ? 1 : 0;
+        store.writeByte(0x00e8, lo & 0xff);
+        store.writeByte(0x00e9, (store.readByte(0x009d) + yh + c) & 0xff);
+        store.writeU16(0x00e6, (sp + 1) & 0xffff);
+        continue;
+      }
+      if (cmd < 0xd0) {
+        // 相对 Y 命令（$95EC-$9681）：写 OAM Y/X/属性/图案
+        const ox = store.readByte(0x0098);
+        let xv = cmd;
+        if ((store.readByte(ntPtr) & 0x80) !== 0) {
+          xv = (0x00 - cmd) & 0xff; // $95F4: EOR #$FF; CLC; ADC #$01
+        }
+        let dLow: number;
+        let yHigh: number;
+        if ((xv & 0x08) !== 0) {
+          dLow = (xv | 0xf0) & 0xff; // $9608-$960B
+          yHigh = 0xff;
+        } else {
+          dLow = xv & 0x07; // $9600-$9603
+          yHigh = 0x00;
+        }
+        // $960D-$9612: OAM Y = $00E8 + dLow
+        const ypos = dLow + store.readByte(0x00e8);
+        const cy = ypos > 0xff ? 1 : 0;
+        store.writeByte(0x046b + ox, ypos & 0xff);
+        // $9615-$961A: $00EC = ($00E9 + yHigh + cy) & 1
+        let ec = (store.readByte(0x00e9) + yHigh + cy) & 1;
+        // $961C-$9624: 图案属性 bits2-5 → X 偏移
+        const attr = rom.readByte(bank, (sp + 1) & 0xffff);
+        const t = (attr & 0x3c) >> 2;
+        let xHi: number;
+        if ((t & 0x08) !== 0) {
+          // $9637-$963E: X = $00EA + t + $F0（负向）
+          const lo = (t + 0xf0) & 0xff;
+          const lo2 = lo + store.readByte(0x00ea);
+          const c = lo2 > 0xff ? 1 : 0;
+          store.writeByte(0x0468 + ox, lo2 & 0xff);
+          // $9641-$9643: LDA $00EB; SBC #$00 → $00EB - 1 + c
+          xHi = (store.readByte(0x00eb) - 1 + c) & 0xff;
+        } else {
+          // $9629-$962D: X = $00EA + t（正向）
+          const lo2 = t + store.readByte(0x00ea);
+          const c = lo2 > 0xff ? 1 : 0;
+          store.writeByte(0x0468 + ox, lo2 & 0xff);
+          // $9630: LDA $00EB; ADC #$00
+          xHi = (store.readByte(0x00eb) + c) & 0xff;
+        }
+        // $9645-$964C: $00EC = ((xHi&1)<<1 | $00EC) << 2
+        ec = ((((xHi & 1) << 1) | ec) << 2) & 0xff;
+        // $964E-$9664: 属性合并
+        ec |= (attr ^ store.readByte(ntPtr)) & 0x40;
+        ec |= attr & 0x03;
+        store.writeByte(0x046a + ox, ec & 0xff);
+        // $9667-$966A: 图案 = ($00E6)+2
+        store.writeByte(0x0469 + ox, rom.readByte(bank, (sp + 2) & 0xffff));
+        // $966D: $0098 += 4；$9674: $00E6 += 3
+        store.writeByte(0x0098, (ox + 4) & 0xff);
+        store.writeU16(0x00e6, (sp + 3) & 0xffff);
+        continue;
+      }
+      // 子命令（$95E9: JMP $9684）——$D0-$FF
+      const k = (cmd - 0xf8) & 0xff;
+      if (k <= 7) {
+        switch (k) {
+          case 0:
+          case 1:
+          case 2:
+          case 4:
+          case 5:
+            // $F8/$F9/$FA/$FC → 精灵槽推入（$96A4，$FA 经 RTS+1 落 $96A5 同为 LDY #$13）
+            this.spriteSlotPush(bank);
+            break;
+          case 3:
+            // $FB → 指针重载（$96C7）
+            this.spritePtrReload(bank);
+            break;
+          case 6:
+            // $FD → 精灵槽弹出（$96D6）
+            this.spriteSlotPop();
+            break;
+          default:
+            // $FE/$FF → OAM 清屏/基线（$96F2），同时退出 buildSprite
+            this.spriteOamClear();
+            return;
+        }
+      }
+      // 越界 k>7（$D0-$F7）：原版 RTS 跳入 ROM 代码区（未定义行为），H5 跳过命令字节
+      store.writeU16(0x00e6, (sp + 1) & 0xffff);
+    }
+  }
+
+  /**
+   * $96A4: 精灵槽推入（code_sub.s $96A4-$96C6）。
+   * [$0094]+$13 槽计数（≥4 原版自循环死锁）；指针 $00E6+3 存入 [$0094]+$18+2*count；
+   * 完成后落穿 $96C7 指针重载（原版无跳转，顺序执行）。
+   */
+  private spriteSlotPush(bank: number): void {
+    const store = this.store;
+    const ptr = store.readU16(0x0094);
+    const count = store.readByte(ptr + 0x13);
+    if (count >= 4) return; // 原版 BCS 自循环；游戏数据不会触发
+    store.writeByte(ptr + 0x13, (count + 1) & 0xff);
+    const p = store.readU16(0x00e6);
+    const saved = (p + 3) & 0xffff;
+    store.writeByte(ptr + 0x18 + count * 2, saved & 0xff);
+    store.writeByte(ptr + 0x18 + count * 2 + 1, (saved >> 8) & 0xff);
+    // 落穿 $96C7
+    this.spritePtrReload(bank);
+  }
+
+  /**
+   * $96C7: 精灵指针重载（code_sub.s $96C7-$96D3）。
+   * $00E6 = ($00E6)+1 处 16 位指针（跳过当前命令字节），JMP $9515。
+   */
+  private spritePtrReload(bank: number): void {
+    const store = this.store;
+    const p = store.readU16(0x00e6);
+    store.writeByte(0x00e6, this.rom.readByte(bank, (p + 1) & 0xffff));
+    store.writeByte(0x00e7, this.rom.readByte(bank, (p + 2) & 0xffff));
+  }
+
+  /**
+   * $96D6: 精灵槽弹出（code_sub.s $96D6-$96EF）。
+   * 槽计数递减，[$0094]+$18+2*(count-1) 恢复 $00E6/$00E7，JMP $9515。
+   */
+  private spriteSlotPop(): void {
+    const store = this.store;
+    const ptr = store.readU16(0x0094);
+    const count = store.readByte(ptr + 0x13);
+    if (count === 0) return; // 原版 BEQ 自循环；游戏数据不会触发
+    const nc = (count - 1) & 0xff;
+    store.writeByte(ptr + 0x13, nc);
+    store.writeByte(0x00e6, store.readByte(ptr + 0x18 + nc * 2));
+    store.writeByte(0x00e7, store.readByte(ptr + 0x18 + nc * 2 + 1));
+  }
+
+  /**
+   * $96F2: OAM 清屏/基线调整（code_sub.s $96F2-$9734）。
+   * 行位 bit3 未置位 → 置位 + $9727 基线；已置位 → 按 $0098 与 [$0094+$10]+[$0094+$11]
+   * 的差值用 Y=$F8 隐藏精灵或更新基线。$9734 RTS = buildSprite 出口。
+   */
+  private spriteOamClear(): void {
+    const store = this.store;
+    const ptr = store.readU16(0x0094);
+    if ((store.readByte(ptr) & 0x08) === 0) {
+      store.writeByte(ptr, store.readByte(ptr) | 0x08); // $96FA-$96FE
+      this.spriteOamBaseline(); // $9700: JMP $9727
+      return;
+    }
+    // $9703-$970D: sum = [$0094+$10] + [$0094+$11]; diff = sum - $0098
+    const sum = (store.readByte(ptr + 0x10) + store.readByte(ptr + 0x11)) & 0xff;
+    const cur = store.readByte(0x0098);
+    const diff = (sum - cur) & 0xff;
+    if (diff === 0) return; // $970E: BEQ $9734
+    if (sum < cur) {
+      // $9710: BCC $9727
+      this.spriteOamBaseline();
+      return;
+    }
+    // $9712-$9722: 用 Y=$F8 隐藏 (diff>>2) 个精灵
+    let n = diff >> 2;
+    let x = cur;
+    while (n > 0) {
+      store.writeByte(0x0468 + x, 0xf8);
+      x = (x + 4) & 0xff;
+      n--;
+    }
+    // $9724: JMP $9734 → RTS
+  }
+
+  /**
+   * $9727: OAM 基线调整（code_sub.s $9727-$9734）。
+   * [$0094+$11] = $0098 - [$0094+$10]；$0097 = $0098；RTS。
+   */
+  private spriteOamBaseline(): void {
+    const store = this.store;
+    const ptr = store.readU16(0x0094);
+    const cur = store.readByte(0x0098);
+    store.writeByte(ptr + 0x11, (cur - store.readByte(ptr + 0x10)) & 0xff);
+    store.writeByte(0x0097, cur);
   }
 
   /**
