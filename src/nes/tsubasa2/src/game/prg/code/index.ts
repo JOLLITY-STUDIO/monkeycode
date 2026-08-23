@@ -28,20 +28,33 @@ export { CharMap } from './story/CharMap';
 // player / team
 export { PlayerQueryService } from './player/PlayerQueryService';
 export type { PlayerProfile } from './player/PlayerQueryService';
+export { PlayerMoveService } from './player/PlayerMoveService';
+export type { PlayerMoveRequest, PlayerMoveResult } from './player/PlayerMoveService';
+export { PlayerNameService } from './player/PlayerNameService';
+export type { PlayerName } from './player/PlayerNameService';
 export { TeamRosterService } from './team/TeamRosterService';
 
 // match
 export { MatchEngineService } from './match/MatchEngineService';
-export type { MatchState } from './match/MatchEngineService';
+export type { MatchState, PlayerSlot } from './match/MatchEngineService';
 export { MatchTurnService } from './match/MatchTurnService';
 export { MatchAuxService } from './match/MatchAuxService';
 export { MatchHudService } from './match/MatchHudService';
 export { MatchConfigService } from './match/MatchConfigService';
+export { MatchEventService, MatchEventType } from './match/MatchEventService';
+export type { MatchEventRequest, MatchEventResult } from './match/MatchEventService';
+export { MatchRoundService, MatchRoundType } from './match/MatchRoundService';
+export type { MatchRoundRequest, MatchRoundResult } from './match/MatchRoundService';
+export { MatchActionService, MatchActionType } from './match/MatchActionService';
+export type { MatchActionRequest, MatchActionResult } from './match/MatchActionService';
 
 // skill / sprite / audio
 export { SkillService } from './skill/SkillService';
+export type { SkillTriggerRequest, SkillActionResult } from './skill/SkillService';
 export { SpriteService } from './sprite/SpriteService';
 export { SpriteAnimationService } from './sprite/SpriteAnimationService';
+export { SpriteFrameService } from './sprite/SpriteFrameService';
+export type { SpriteFrame } from './sprite/SpriteFrameService';
 export { AudioService } from './audio/AudioService';
 export { ApuTarget, LogApuTarget, NullApuTarget } from './audio/ApuTarget';
 export { WebAudioApuTarget } from './audio/WebAudioApuTarget';

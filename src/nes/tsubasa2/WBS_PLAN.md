@@ -7,6 +7,15 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 > 原则：**不编造**。数据从 asm 提取为声明式 TS 表；逻辑逐指令对照 asm 翻译为高级语言；
 > 不出现地址、不出现 6502 指令、不出现 MMC3 bank 切换；渲染/音频/界面流转全部是原始游戏真实行为。
 
+## 翻译本质（行为语义，不是操作模拟）
+
+- **翻译的是行为，不是要一样的操作**。6502 指令序列只是"怎么做"，我们只保留"做了什么"。
+- bank 切换（`JSR $C4B9`/`STA $8000`）的行为语义 = **执行另一个模块的某个功能 / 读取该模块的数据**。
+  高级语言里就是 `import` + 直接函数调用、直接查表，**根本不存在"整个 bank 加载/切换"概念**。
+- 禁止为模拟 bank 而写 `bankSwitch/mmc3Map/readMem/setPrgBank` 之类的"硬件窗口"机制；
+  翻译产物只有：Service 方法调用（行为）+ Table 具名查询（数据）+ DataStore 运行时 KV（状态）。
+- CHR 图形数据是唯一保留"图片资源/表"粒度的数据，与 bank 机制无关。
+
 ## 命名规范（v2，已生效）
 
 - 文件名 = 类名，PascalCase 语义化，禁止 `bankXX` 前缀。
@@ -110,6 +119,32 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 | F7 | V0.6.1 | DPCM 采样回放 | code/audio/ApuPcmRenderer.ts | ⬜ |
 | F8 | V0.6.1 | 渲染 105 首 WAV 差分验证 | output/*.wav | ⬜ |
 | G1 | V0.7 | 全链路 + 优化 + 真机 | — | ⬜ |
+
+---
+
+## bank16-29 翻译任务表（行为语义去 CPU 化）
+
+> 任务范围：bank16-29，按 asm `_full.s` 逐 bank 翻译为 Service（行为）+ Table（数据）。
+> 原则：bank 切换 = import + 直接调用；禁止 `bankSwitch/mmc3Map/readMem/setPrgBank`。
+> 分类：**Code bank**（含 code_main.s：16/19/20/22/24/26/27/28）→ Service + 数据表；
+> **Data bank**（仅 data_tables/maps/tail.s：17/18/21/23/25/29）→ 声明式数据表。
+
+| ID | Bank | 类型 | 任务 | 产出 | 状态 |
+|----|------|------|------|------|------|
+| H1 | 16 | Code | 必杀技/技能判定 Service + 技能数据表 | code/skill/SkillService.ts(覆盖), data/tables/skill-table.ts | ⬜ |
+| H2 | 17 | Data | 脚本段/NT 数据表（data_maps+tables+tail） | data/scene/bank17-data.ts | ⬜ |
+| H3 | 18 | Data | NT 地图数据表 | data/scene/bank18-data.ts | ⬜ |
+| H4 | 19 | Code | 精灵/比赛场景数据 Service + 精灵帧表 | code/sprite/SpriteFrameService.ts, data/tables/sprite-frame-table.ts | ⬜ |
+| H5 | 20 | Code | 比赛事件 Service（射门/传球/必杀动画）+ 事件数据表 | code/match/MatchEventService.ts, data/tables/match-event-table.ts | ⬜ |
+| H6 | 21 | Data | NT 地图数据表 | data/scene/bank21-data.ts | ⬜ |
+| H7 | 22 | Code | 球员移动/AI Service + 移动数据表 | code/player/PlayerMoveService.ts, data/tables/player-move-table.ts | ⬜ |
+| H8 | 23 | Data | NT 地图数据表 | data/scene/bank23-data.ts | ⬜ |
+| H9 | 24 | Code | 比赛回合/战术 Service + 回合数据表 | code/match/MatchRoundService.ts, data/tables/match-round-table.ts | ⬜ |
+| H10 | 25 | Data | NT 地图数据表 | data/scene/bank25-data.ts | ⬜ |
+| H11 | 26 | Code | 比赛主引擎 Service（核心状态机）+ 比赛配置表 | code/match/MatchEngineService.ts(覆盖), data/tables/match-config-table.ts(覆盖) | ⬜ |
+| H12 | 27 | Code | 球员名字/文本 Service + 名字数据表 | code/player/PlayerNameService.ts, data/tables/player-name-table.ts | ⬜ |
+| H13 | 28 | Code | 比赛动作/指令 Service + 动作数据表 | code/match/MatchActionService.ts, data/tables/match-action-table.ts | ⬜ |
+| H14 | 29 | Data | NT 地图数据表 | data/scene/bank29-data.ts | ⬜ |
 
 ---
 

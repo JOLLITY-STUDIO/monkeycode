@@ -82,3 +82,45 @@
 - 修改文件：src/game/prg/code/scene/{SceneController,OpeningSceneController,Title,Password,Result,Story}*.ts、
   src/game/prg/code/system/{BootRouter,RenderingPrimitivesService}.ts、src/game/index.ts、WBS_PLAN.md。
 - 编译：`npx tsc --noEmit` 零错误；lint 零错误。
+
+## 2026-08-23（bank16-29 翻译）
+
+- [H1-H14] bank16-29 全量 stub + 行为翻译（去 CPU 化）：
+  - **bank16**（Code）：SkillService 覆盖 — 必杀技/技能判定（loadSkillSequence/parseSkillSegment/checkSkillTrigger/findSkillActionId）+ skill-table 覆盖（SKILL_POINTER_TABLE/SKILL_MOVE_ID_TABLE/SKILL_TRIGGER_TABLE）。
+  - **bank17/18/21/23/25/29**（Data）：纯数据 bank stub — data/scene/bank{17,18,21,23,25,29}-data.ts
+    （BANK17_DATA_TABLES/MAPS/TAIL 声明式数组契约，待逐段 .byte 提取）。
+  - **bank19**（Code）：SpriteFrameService 新建 — 精灵帧/比赛场景数据（loadSpriteFrame/parseSpriteSegment/loadSceneTiles）
+    + sprite-frame-table（BANK19_SPRITE_FRAMES/TILE_DATA/SCENE_DATA）。
+  - **bank20**（Code）：MatchEventService 新建 — 比赛事件（startEvent/updateEvent/parseEventSegment/resolveEventFlag）
+    + match-event-table（BANK20_EVENT_TABLE/POINTER_TABLE）。
+  - **bank22**（Code）：PlayerMoveService 新建 — 球员移动/AI（computeMove/parseMoveSegment/processDirection/findMovePattern）
+    + player-move-table（BANK22_MOVE_TABLE/DIRECTION_TABLE）。
+  - **bank24**（Code）：MatchRoundService 新建 — 比赛回合/战术（startRound/updateRound/parseRoundSegment/resolveRoundFlag）
+    + match-round-table（BANK24_ROUND_TABLE/POINTER_TABLE）。
+  - **bank26**（Code）：MatchEngineService 覆盖 — 比赛主引擎（startMatch/loadPlayerSlots/getPlayerSlot/loadPlayerData/swapPlayers）
+    + match-config-table 覆盖（MATCH_CONFIG_TABLE/durationMinutes）。
+  - **bank27**（Code）：PlayerNameService 新建 — 球员名字/文本（getPlayerName/parseNameSegment/loadNameAddress/getTextSegment）
+    + player-name-table（BANK27_NAME_TABLE/TEXT_TABLE/CHAR_MAP/NAME_ADDR_TABLE）。
+  - **bank28**（Code）：MatchActionService 新建 — 比赛动作/指令（executeAction/findActionPointer/parseActionParam/computeActionAddr/resolveActionType）
+    + match-action-table（BANK28_ACTION_TABLE/POINTER_TABLE）。
+  - code/index.ts 出口契约更新：新增 7 个 Service 导出 + 类型导出。
+  - data/index.ts 出口契约更新：新增 7 套数据表 + 6 个数据 bank 导出。
+- 翻译原则遵守：
+  - bank 切换语义 = import + 直接调用，无 bankSwitch/mmc3Map/readMem/setPrgBank。
+  - 数据从 asm .byte 提取为声明式 TS 表（具名字段），禁止 PRG_BANK_XX[addr] 索引。
+  - RAM 访问统一走 DataStore（KV 风格 store.read/write）。
+  - 先 stub 保留 TODO，再逐段覆盖（避免一次性写入卡死）。
+- 编译验证：`npx tsc --noEmit` 仅 `TileRenderService.ts` 预存语法错误（与本任务无关），
+  bank16-29 新增文件零错误。
+- 修改文件：
+  - code/skill/SkillService.ts（覆盖）
+  - code/sprite/SpriteFrameService.ts（新建）
+  - code/match/MatchEventService.ts, MatchRoundService.ts, MatchActionService.ts（新建）
+  - code/match/MatchEngineService.ts（覆盖）
+  - code/player/PlayerMoveService.ts, PlayerNameService.ts（新建）
+  - data/tables/skill-table.ts（覆盖）, match-config-table.ts（覆盖）
+  - data/tables/{sprite-frame,match-event,player-move,match-round,player-name,match-action}-table.ts（新建）
+  - data/scene/bank{17,18,21,23,25,29}-data.ts（新建）
+  - code/index.ts, data/index.ts（出口契约更新）
+  - WBS_PLAN.md（新增 bank16-29 任务表）
+
