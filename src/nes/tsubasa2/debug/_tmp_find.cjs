@@ -1,15 +1,18 @@
 const fs = require('fs');
 const root = 'd:/studio/github/monkeycode/src/nes/tsubasa2';
-const c = fs.readFileSync(root + '/src/game/prg/code/system/GameSystemService.ts', 'utf8');
+const p = root + '/src/game/prg/code/system/Bank00Service.ts';
+const c = fs.readFileSync(p, 'utf8');
 const lines = c.split('\n');
-// 找 004D / 004E 写入点
-lines.forEach((l, i) => {
-  if (/0x004[DdEe]/.test(l) && /wr|rd|Ptr/.test(l)) console.log((i + 1) + ': ' + l.trim());
-});
-console.log('===== 004D 上下文 (sceneLoad 区) =====');
-// 找 sceneLoad 方法
-for (let i = 0; i < lines.length; i++) {
-  if (/sub8B09|sceneLoad|sub82EC|sub8297/.test(lines[i]) && /private|public/.test(lines[i])) {
-    console.log((i + 1) + ': ' + lines[i].trim());
-  }
+console.log('total lines:', lines.length);
+for (const k of ['sub94D8', 'sub9735', 'sub94AE', 'sub9459', 'sub92E5', 'sub9143', 'sub9201', 'BANK09_RAW', 'BANK10_RAW']) {
+  lines.forEach((l, i) => { if (l.includes(k)) console.log((i + 1) + ': ' + l.trim()); });
 }
+console.log('===== $92E5 跳转表 =====');
+const rom = fs.readFileSync(root + '/docs/roms/Captain Tsubasa II - Super Striker (Japan).nes');
+const base = 16 + 0 * 0x2000 + (0x92E5 - 0x8000);
+const bytes = [];
+for (let i = 0; i < 32; i++) bytes.push(rom[base + i]);
+console.log('bytes:', bytes.map(b => b.toString(16).padStart(2, '0')).join(' '));
+const table = [];
+for (let i = 0; i < 15; i++) table.push((rom[base + i * 2 + 1] << 8) | rom[base + i * 2]);
+console.log('table:', table.map(a => '$' + a.toString(16).toUpperCase()).join(' '));
