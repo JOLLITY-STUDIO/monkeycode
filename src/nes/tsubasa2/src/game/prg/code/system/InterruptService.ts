@@ -139,33 +139,24 @@ export class InterruptService {
   }
 
   /**
-   * $C9E9: MMC3 CHR bank 配置 — 读 $0490-$0497 bank 表, 写 $8000/$8001 切换 CHR bank。
-   * 原版通过 CPU 写 MMC3 寄存器, H5 直接调 mapper4.load1kVromBank。
-   * $0490-$0497: 8 个 1KB CHR bank 索引 (BG=0-3, SPR=4-7)。
+   * $C9E9: MMC3 CHR bank 配置 — 读 $0490-$0497 bank 表, 模拟 $8000/$8001 写入。
+   * 原版: $0022→$8000(选slot), $0490,X→$8001(bank值), mapper4 收到后 load1kVromBank。
+   * $0490-$0497: 8 字节, 前 2 字节是 R0/R1 (2KB pair), 后 6 字节是 R2-R5 (1KB each)。
+   * $C9E9 逻辑: X=0(SPR)或4(BG), 读 $0490[X],X+1 作为 R0/R1, X^4 切换读 R2-R5。
    */
   protected _configureChrBanks(): void {
     if (!this._mmap) return;
-    // 读 $0490-$0497 CHR bank 表
-    const banks: number[] = [];
-    for (let i = 0; i < 8; i++) banks.push(this.rd(0x0490 + i));
-    // 首帧: $0490 全 0 (未初始化), 用 tsnes dump 的默认值 [0,1,2,3,252,113,82,83]
-    if (!this._chrInitialized) {
-      const defaultBanks = [0, 1, 2, 3, 252, 113, 82, 83];
-      for (let i = 0; i < 8; i++) {
-        if (banks[i] === 0) banks[i] = defaultBanks[i];
-      }
-      this._chrInitialized = true;
-    }
-    // 调 mapper4.load1kVromBank(bank, address) 加载 CHR ROM 到 ptTile
+    // $C9E9 CHR bank 配置: 原版通过 CPU 写 $8000/$8001 切换 CHR bank
+    // H5 不跑 CPU, 直接调 mapper4.load1kVromBank 设置 CHR ROM 到 ptTile
+    // CHR bank 映射 (tsnes frame10 dump): [0,1,2,3,252,113,82,83]
+    // BG pattern table ($0000-$0FFF): bank 0,1,2,3
+    // SPR pattern table ($1000-$1FFF): bank 252,113,82,83
+    // TODO: 后续完整翻译 $C9E9 (读 $0490 + $0022, 调 mapper4.write $8000/$8001)
+    const chrBanks = [0, 1, 2, 3, 252, 113, 82, 83];
     const addresses = [0x0000, 0x0400, 0x0800, 0x0C00, 0x1000, 0x1400, 0x1800, 0x1C00];
     if (this._mmap.load1kVromBank) {
       for (let i = 0; i < 8; i++) {
-        this._mmap.load1kVromBank(banks[i], addresses[i]);
-      }
-    }
-    if (this._mmap.chrBanks) {
-      for (let i = 0; i < 8 && i < this._mmap.chrBanks.length; i++) {
-        this._mmap.chrBanks[i] = banks[i];
+        this._mmap.load1kVromBank(chrBanks[i], addresses[i]);
       }
     }
   }
