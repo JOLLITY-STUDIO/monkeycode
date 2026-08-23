@@ -181,8 +181,8 @@ export class MatchEngineService {
    *   $80F3: JSR $C509           ; 跳转表分发
    *   $80FE: .byte $FE,$80,$07,$81,$18,$81,$1E,$81,$20,$70,$81
    *         跳转表 5 项（lo,hi 对）：$80FE/$8107/$8118/$811E/$8120
-   *   → possession=0: JMP $80FE（继续主循环）
-   *   → possession=1: JMP $8107（LDA #$0A; JSR $C54B; JSR $8170）
+   *   → possession=0: JMP $80FE（JSR $C606; LDA $043B → 继续主循环）
+   *   → possession=1: JMP $8107（JSR $C61E; LDA #$0A; JSR $C54B; JSR $8170）
    *   → possession=2: JMP $8118（LDX #$50; TXS; JMP $C60F）
    *   → possession=3: JMP $811E（JSR $8170; LDX #$50; TXS; JMP $C621）
    *   → possession=4: JMP $8120（JSR $90DD; LDA #$00; STA $0617; JMP $80ED）
@@ -191,17 +191,18 @@ export class MatchEngineService {
     const store = this.store;
     switch (possession) {
       case 0:
-        // $80FE: 继续主循环（无副作用）
+        // $80FE: JSR $C606（bank 切换=import 调用）; LDA $043B → 继续主循环
+        // 行为：调用 $C606 后继续（H5: bank 切换省略）
         break;
       case 1:
-        // $8107-$8115: LDA #$0A; JSR $C54B; JSR $8170; LDX #$50; TXS; JMP $C612
-        // 行为：设置 ram_0612 = $0A → 调用 $8170（防守例程）
+        // $8107-$8115: JSR $C61E; LDA #$0A; JSR $C54B; JSR $8170; LDX #$50; TXS; JMP $C612
+        // 行为：JSR $C61E（bank 切换）→ ram_0612=$0A → JSR $C54B → 调用 $8170（防守例程）
         store.write('ram_0612', 0x0A);
         this.defenseRoutine();
         break;
       case 2:
         // $8118-$811B: LDX #$50; TXS; JMP $C60F
-        // 行为：重置栈指针 → 切 bank（JSR $C60F = import 调用）
+        // 行为：重置栈指针 → 切 bank（JSR $C60F = import 调用，省略）
         break;
       case 3:
         // $811E-$8124: JSR $8170; LDX #$50; TXS; JMP $C621
