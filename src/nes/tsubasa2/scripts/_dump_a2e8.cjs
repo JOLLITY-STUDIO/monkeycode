@@ -1,11 +1,9 @@
 // 临时：dump bank02 $A2E8-$A470（$8895 NMI 回调路径）与 $A773 数据区
 const fs = require('fs');
-const rom = fs.readFileSync('docs/roms/tecmo/strippeddata.nes');
-// 文件偏移 = 0x4010 + (cpuAddr & 0x1fff)；bank02 在 PRG 索引 1（CPU $A000-$BFFF）
-const HEADER = 0x10;
+const rom = fs.readFileSync('docs/roms/Captain Tsubasa II - Super Striker (Japan).nes');
+const BASE = 0x4010;
 function rd(cpuAddr) {
-  const off = HEADER + 0x2000 + (cpuAddr & 0x1fff);
-  return rom[off];
+  return rom[BASE + (cpuAddr & 0x1fff)];
 }
 function dump(start, end, label) {
   console.log('=== ' + label + ' $' + start.toString(16).toUpperCase() + '-$' + end.toString(16).toUpperCase() + ' ===');

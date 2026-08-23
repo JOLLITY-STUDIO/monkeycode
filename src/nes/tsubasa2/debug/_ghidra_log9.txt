@@ -1,0 +1,62 @@
+﻿analyzeHea
+dless.bat 
+: WARNING:
+ JAVA_HOME
+ environme
+nt specifi
+es unsuppo
+rted java 
+version: D
+:\dev\jdk-
+21.0.12+8
+所在位置 行:1 字
+符: 115
++ ... dles
+s.bat"; & 
+$ghidra "D
+:\studio\g
+ithub\monk
+eycode\src
+\nes\tsuba
+sa2\d ...
++         
+        ~~
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~~~~~~
+~~~~~
+    + Cat 
+   egory  
+  Info    
+          
+    :     
+NotS    pe
+cif    ied
+:     (WAR
+N    ING: 
+    JAVA_ 
+   H...v  
+  \jdk-   
+ 21.0.    
+12+8:    S
+trin    g)
+ []    , R
+em    oteE
+x    cepti
+    on
+    + Ful 
+   lyQua  
+  lifie   
+ dErro    
+rId :     
+Nati    ve
+Com    man
+dE    rror
+ 
+******************************************************************
+JDK 21+ (64-bit) could not be found and must be manually chosen!
+******************************************************************
+Enter path to JDK home directory (ENTER for dialog): 
+^C

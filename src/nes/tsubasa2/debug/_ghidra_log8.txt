@@ -1,0 +1,165 @@
+﻿INFO  Using log config file: jar:file:/D:/studio/games/tools/ghidra_12.1.2_PUBLIC_20260605/ghidra_12.1.2_PUBLIC/Ghidra/Framework/Generic/lib/Generic.jar!/generic.log4j.xml (LoggingInitialization)  
+INFO  Using log file: C:\Users\yangyp\AppData\Roaming\ghidra\ghidra_12.1.2_PUBLIC\application.log (LoggingInitialization)  
+INFO  Loading user preferences: C:\Users\yangyp\AppData\Roaming\ghidra\ghidra_12.1.2_PUBLIC\preferences (Preferences)  
+INFO  Loading previous preferences: C:\Users\yangyp\.ghidra\.ghidra_11.0.1_PUBLIC\preferences (Preferences)  
+INFO  Searching for classes... (ClassSearcher)  
+INFO  Class search complete (2351 ms) (ClassSearcher)  
+INFO  Initializing SSL Context (DefaultSSLContextInitializer)  
+INFO  Initializing Random Number Generator... (SecureRandomFactory)  
+INFO  Random Number Generator initialization complete: SHA1PRNG (SecureRandomFactory)  
+INFO  Trust manager disabled, cacerts have not been set (DefaultTrustManagerFactory)  
+INFO  Headless startup complete (9363 ms) (AnalyzeHeadless)  
+INFO  Class searcher loaded 59 extension points (20 false positives) (ClassSearcher)  
+INFO  HEADLESS Script Paths:
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\VersionTracking\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Debug\Debugger-rmi-trace\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Processors\8051\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\Base\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\MicrosoftCodeAnalyzer\ghidra_scripts
+    D:\studio\github\monkeycode\src\nes\tsubasa2\scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Processors\PIC\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\FunctionID\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Processors\DATA\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\PDB\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\Decompiler\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\DecompilerDependent\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Debug\Debugger\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\FileFormats\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\SwiftDemangler\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\SystemEmulation\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\WildcardAssembler\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\BytePatterns\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\BSim\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\GnuDemangler\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Features\PyGhidra\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Processors\Atmel\ghidra_scripts
+    D:\studio\games\tools\ghidra_12.1.2_PUBLIC_20260605\ghidra_12.1.2_PUBLIC\Ghidra\Processors\JVM\ghidra_scripts (HeadlessAnalyzer)  
+INFO  HEADLESS: execution starts (HeadlessAnalyzer)  
+INFO  Creating project: D:\studio\github\monkeycode\src\nes\tsubasa2\debug\ghidra_nes\tsubasa2 (HeadlessAnalyzer)  
+INFO  Creating project: D:\studio\github\monkeycode\src\nes\tsubasa2\debug\ghidra_nes\tsubasa2 (DefaultProject)  
+INFO  REPORT: Processing input files:  (HeadlessAnalyzer)  
+INFO       project: D:\studio\github\monkeycode\src\nes\tsubasa2\debug\ghidra_nes\tsubasa2 (HeadlessAnalyzer)  
+INFO  IMPORTING: file:///D:/studio/github/monkeycode/src/nes/tsubasa2/src/asm/dist/tsubasa2.nes (HeadlessAnalyzer)  
+INFO  PRG ROM size: 262144 bytes, 32 banks of size 8192 bytes (NesRom)  
+INFO  CHR ROM size: 131072 bytes, possible bank sizes: [2048, 1024] (NesRom)  
+INFO  Using Loader: NES ROM (ProgramLoader)  
+INFO  Using Language/Compiler: 6502:LE:16:default:default (ProgramLoader)  
+INFO  Using Library Search Path: [., C:\Windows\SysWOW64, D:\dev\jdk-21.0.12+8\bin, C:\Windows\Sun\Java\bin, C:\Windows\system32, C:\Windows, C:\Windows\System32\Wbem, C:\Windows\System32\WindowsPowerShell\v1.0\, C:\Windows\System32\OpenSSH\, d:\dev\ffmpeg\bin, d:\Pro, d:\Users\yangyp\AppData\Roaming\nvm, C:\Program Files\GitHub CLI\, D:\nvm4m\nodejs, C:\Program Files (x86)\NVIDIA Corporation\PhysX\Common, C:\Program Files\NVIDIA Corporation\NVIDIA NvDLISR, D:\Program Files\TortoiseGit\bin, d:\dev\寰俊web寮€鍙戣€呭伐鍏? d:\dev\Git\cmd, C:\Program Files\dotnet\, D:\dev\Python314\Scripts\, D:\dev\Python314\, d:\Programs\Trae CN\bin, d:\Users\yangyp\AppData\Local\Programs\Trae\bin, d:\Users\yangyp\AppData\Local\Microsoft\WindowsApps, d:\Users\yangyp\AppData\Local\Programs\Microsoft VS Code\bin, d:\Users\yangyp\AppData\Local\Programs\CodeBuddy CN\bin, d:\Users\yangyp\AppData\Local\GitHubDesktop\bin, D:\Program Files\nodejs] (ProgramLoader)  
+INFO  PRG ROM size: 262144 bytes, 32 banks of size 8192 bytes (NesRom)  
+INFO  CHR ROM size: 131072 bytes, possible bank sizes: [2048, 1024] (NesRom)  
+INFO  Created mapper: MMC3Mapper for mapper number: 4 (NesMapper)  
+INFO  Setting PRG bank count: 32 (NesMapper)  
+INFO  Skipping CHR ROM mapping (NesMapper)  
+INFO  Last bank name: PRG31 prgBankCount: 32 (NesMapper)  
+INFO  Last bank base address: e000 (NesMapper)  
+INFO  Returning last bank name: PRG31 (NesMapper)  
+INFO  Vector: IRQ addr PRG31::FFFE factory returned address: PRG31::fffe (NesMapper)  
+INFO  Vector: IRQ all addrs: [fffe, PRG00::fffe, PRG01::fffe, PRG02::fffe, PRG03::fffe, PRG04::fffe, PRG05::fffe, PRG06::fffe, PRG07::fffe, PRG08::fffe, PRG09::fffe, PRG10::fffe, PRG11::fffe, PRG12::fffe, PRG13::fffe, PRG14::fffe, PRG15::fffe, PRG16::fffe, PRG17::fffe, PRG18::fffe, PRG19::fffe, PRG20::fffe, PRG21::fffe, PRG22::fffe, PRG23::fffe, PRG24::fffe, PRG25::fffe, PRG26::fffe, PRG27::fffe, PRG28::fffe, PRG29::fffe, PRG30::fffe, PRG31::fffe] (NesMapper)  
+INFO  Vector: IRQ factory returned address: PRG31::fffe (NesMapper)  
+INFO  Vector: IRQ value: c506 (NesMapper)  
+INFO  Last bank name: PRG31 prgBankCount: 32 (NesMapper)  
+INFO  Last bank base address: e000 (NesMapper)  
+INFO  Returning last bank name: PRG31 (NesMapper)  
+INFO  Vector: IRQ value address: PRG31::c506 (NesMapper)  
+INFO  Last bank name: PRG31 prgBankCount: 32 (NesMapper)  
+INFO  Last bank base address: e000 (NesMapper)  
+INFO  Returning last bank name: PRG31 (NesMapper)  
+INFO  Vector: NMI addr PRG31::FFFA factory returned address: PRG31::fffa (NesMapper)  
+INFO  Vector: NMI all addrs: [fffa, PRG00::fffa, PRG01::fffa, PRG02::fffa, PRG03::fffa, PRG04::fffa, PRG05::fffa, PRG06::fffa, PRG07::fffa, PRG08::fffa, PRG09::fffa, PRG10::fffa, PRG11::fffa, PRG12::fffa, PRG13::fffa, PRG14::fffa, PRG15::fffa, PRG16::fffa, PRG17::fffa, PRG18::fffa, PRG19::fffa, PRG20::fffa, PRG21::fffa, PRG22::fffa, PRG23::fffa, PRG24::fffa, PRG25::fffa, PRG26::fffa, PRG27::fffa, PRG28::fffa, PRG29::fffa, PRG30::fffa, PRG31::fffa] (NesMapper)  
+INFO  Vector: NMI factory returned address: PRG31::fffa (NesMapper)  
+INFO  Vector: NMI value: c500 (NesMapper)  
+INFO  Last bank name: PRG31 prgBankCount: 32 (NesMapper)  
+INFO  Last bank base address: e000 (NesMapper)  
+INFO  Returning last bank name: PRG31 (NesMapper)  
+INFO  Vector: NMI value address: PRG31::c500 (NesMapper)  
+INFO  Last bank name: PRG31 prgBankCount: 32 (NesMapper)  
+INFO  Last bank base address: e000 (NesMapper)  
+INFO  Returning last bank name: PRG31 (NesMapper)  
+INFO  Vector: RES addr PRG31::FFFC factory returned address: PRG31::fffc (NesMapper)  
+INFO  Vector: RES all addrs: [fffc, PRG00::fffc, PRG01::fffc, PRG02::fffc, PRG03::fffc, PRG04::fffc, PRG05::fffc, PRG06::fffc, PRG07::fffc, PRG08::fffc, PRG09::fffc, PRG10::fffc, PRG11::fffc, PRG12::fffc, PRG13::fffc, PRG14::fffc, PRG15::fffc, PRG16::fffc, PRG17::fffc, PRG18::fffc, PRG19::fffc, PRG20::fffc, PRG21::fffc, PRG22::fffc, PRG23::fffc, PRG24::fffc, PRG25::fffc, PRG26::fffc, PRG27::fffc, PRG28::fffc, PRG29::fffc, PRG30::fffc, PRG31::fffc] (NesMapper)  
+INFO  Vector: RES factory returned address: PRG31::fffc (NesMapper)  
+INFO  Vector: RES value: fff0 (NesMapper)  
+INFO  Last bank name: PRG31 prgBankCount: 32 (NesMapper)  
+INFO  Last bank base address: e000 (NesMapper)  
+INFO  Returning last bank name: PRG31 (NesMapper)  
+INFO  Vector: RES value address: PRG31::fff0 (NesMapper)  
+INFO  IMPORTING: Loaded 0 additional files (HeadlessAnalyzer)  
+INFO  ANALYZING all memory and code: file:///D:/studio/github/monkeycode/src/nes/tsubasa2/src/asm/dist/tsubasa2.nes (HeadlessAnalyzer)  
+INFO  Packed database cache: C:\Users\yangyp\AppData\Local\ghidra\packed-db-cache (PackedDatabaseCache)  
+INFO  Applied data type archive: generic_clib (ApplyDataArchiveAnalyzer)  
+INFO  -----------------------------------------------------
+    ASCII Strings                              1.056 secs
+    Apply Data Archives                        2.840 secs
+    Create Function                            0.001 secs
+    Demangler GNU                              0.097 secs
+    Disassemble Entry Points                   0.072 secs
+    Embedded Media                             0.062 secs
+    External Entry References                  0.001 secs
+    Function ID                                0.272 secs
+-----------------------------------------------------
+     Total Time   4 secs
+-----------------------------------------------------
+ (AutoAnalysisManager)  
+INFO  REPORT: Analysis succeeded for file: file:///D:/studio/github/monkeycode/src/nes/tsubasa2/src/asm/dist/tsubasa2.nes (HeadlessAnalyzer)  
+INFO  REPORT: Execute script: _ghidra_decompile_java.java  (HeadlessAnalyzer)  
+INFO  SCRIPT: D:\studio\github\monkeycode\src\nes\tsubasa2\scripts\_ghidra_decompile_java.java (HeadlessAnalyzer)  
+INFO  _ghidra_decompile_java.java> === Memory Blocks === (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   RAM: 0000 - 07ff (size=2048) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   RAM_MIRROR_1: 0800 - 0fff (size=2048) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   RAM_MIRROR_2: 1000 - 17ff (size=2048) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   RAM_MIRROR_3: 1800 - 1fff (size=2048) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PPU: 2000 - 2007 (size=8) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PPU_MIRROR_1: 2008 - 200f (size=8) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PPU_MIRROR_2: 2010 - 201f (size=16) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PPU_MIRROR_3: 2020 - 203f (size=32) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PPU_MIRROR_4: 2040 - 207f (size=64) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PPU_MIRROR_5: 2080 - 20ff (size=128) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PPU_MIRROR_6: 2100 - 21ff (size=256) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PPU_MIRROR_7: 2200 - 23ff (size=512) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PPU_MIRROR_8: 2400 - 27ff (size=1024) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PPU_MIRROR_9: 2800 - 2fff (size=2048) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PPU_MIRROR_10: 3000 - 3fff (size=4096) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   APU_IO: 4000 - 4017 (size=24) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   SRAM: 6000 - 7fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG_ROM: 8000 - ffff (size=32768) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG00: PRG00::8000 - PRG00::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG01: PRG01::8000 - PRG01::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG02: PRG02::8000 - PRG02::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG03: PRG03::8000 - PRG03::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG04: PRG04::8000 - PRG04::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG05: PRG05::8000 - PRG05::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG06: PRG06::8000 - PRG06::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG07: PRG07::8000 - PRG07::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG08: PRG08::8000 - PRG08::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG09: PRG09::8000 - PRG09::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG10: PRG10::8000 - PRG10::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG11: PRG11::8000 - PRG11::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG12: PRG12::8000 - PRG12::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG13: PRG13::8000 - PRG13::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG14: PRG14::8000 - PRG14::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG15: PRG15::8000 - PRG15::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG16: PRG16::8000 - PRG16::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG17: PRG17::8000 - PRG17::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG18: PRG18::8000 - PRG18::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG19: PRG19::8000 - PRG19::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG20: PRG20::8000 - PRG20::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG21: PRG21::8000 - PRG21::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG22: PRG22::8000 - PRG22::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG23: PRG23::8000 - PRG23::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG24: PRG24::8000 - PRG24::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG25: PRG25::8000 - PRG25::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG26: PRG26::8000 - PRG26::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG27: PRG27::8000 - PRG27::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG28: PRG28::8000 - PRG28::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG29: PRG29::8000 - PRG29::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG30: PRG30::8000 - PRG30::9fff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java>   PRG31: PRG31::e000 - PRG31::ffff (size=8192) (GhidraScript)  
+INFO  _ghidra_decompile_java.java> Default address space: RAM: (GhidraScript)  
+INFO  _ghidra_decompile_java.java> Cannot read 0x8000: Attempted to read from uninitialized block (GhidraScript)  
+INFO  _ghidra_decompile_java.java> Created 0 functions from JSR targets (GhidraScript)  
+INFO  _ghidra_decompile_java.java> Decompiled 0 functions to D:\studio\github\monkeycode\src\nes\tsubasa2\debug\ghidra_decompiled.c (GhidraScript)  
+INFO  ANALYZING changes made by post scripts: file:///D:/studio/github/monkeycode/src/nes/tsubasa2/src/asm/dist/tsubasa2.nes (HeadlessAnalyzer)  
+INFO  REPORT: Post-analysis succeeded for file: file:///D:/studio/github/monkeycode/src/nes/tsubasa2/src/asm/dist/tsubasa2.nes (HeadlessAnalyzer)  
+INFO  /tsubasa2.nes: file created (yangyp) (LocalFileSystem)  
+INFO  REPORT: Save succeeded for: /tsubasa2.nes (tsubasa2:/tsubasa2.nes) (HeadlessAnalyzer)  
+INFO  REPORT: Import succeeded (HeadlessAnalyzer)  

@@ -1,0 +1,72 @@
+﻿b00main L495: JMP $8879                  ; $8501
+b00main L507: JMP $8879                  ; $8519
+b00main L521: JMP $8879                  ; $8534
+b00main L538: JMP $8879                  ; $857D
+b00main L543: JMP $8879                  ; $858A
+b00main L568: JMP $8879                  ; $85C1
+b00main L580: JMP $8879                  ; $85DF
+b00main L584: JMP $8879                  ; $85E9
+b00main L595: JMP $8879                  ; $8601
+b00main L604: JMP $8879                  ; $8615
+b00main L613: JMP $8879                  ; $8629
+b00main L650: JMP $8879                  ; $8675
+b00main L655: JMP $8879                  ; $867F
+b00main L680: JMP $8879                  ; $86B5
+b00main L694: JMP $8879                  ; $86E3
+b00main L697: JMP $8879                  ; $86EB
+b00main L700: JMP $8879                  ; $86F3
+b00main L712: JMP $8879                  ; $8710
+b00main L726: JMP $8879                  ; $8731
+b00main L768: JMP $8879                  ; $87C8
+b00main L774: JMP $8879                  ; $87D6
+b00main L786: JMP $8879                  ; $87F5
+b00main L800: JMP $8879                  ; $8811
+b00main L813: JMP $8879                  ; $882E
+b02sub L33: JMP $A2F8                  ; $8335
+b02sub L124: ASL                        ; $8486
+b02sub L128: LDA $A491,X                ; $848C
+--- 9F9E ctx ---
+    JSR $9FA8                  ; $9F9E
+    LDA #$00                   ; $9FA1
+    STA $0000,X                ; $9FA3
+    RTS                        ; $9FA5
+    .byte $A9,$00
+    STA $0019                  ; $9FA8
+    TXA                        ; $9FAA
+    PHA                        ; $9FAB
+    TYA                        ; $9FAC
+    PHA                        ; $9FAD
+    LDA $00ED                  ; $9FAE
+    PHA                        ; $9FB0
+    LDA $00EC                  ; $9FB1
+    PHA                        ; $9FB3
+    LDA $00EB                  ; $9FB4
+    PHA                        ; $9FB6
+    LDA $00EA                  ; $9FB7
+    PHA                        ; $9FB9
+    LDA $00E9                  ; $9FBA
+    PHA                        ; $9FBC
+    LDA $00E8                  ; $9FBD
+    PHA                        ; $9FBF
+    LDA $00E7                  ; $9FC0
+    PHA                        ; $9FC2
+    LDA $00E6                  ; $9FC3
+    PHA                        ; $9FC5
+    TSX                        ; $9FC6
+    TXA                        ; $9FC7
+    LDX $0000                  ; $9FC8
+    STA $0001,X                ; $9FCA
+    LDA a: $0024               ; $9FCC
+    STA $0002,X                ; $9FCF
+    LDA a: $0025               ; $9FD1
+    STA $0003,X                ; $9FD4
+    LDA $0019                  ; $9FD6
+    BEQ $9FDE                  ; $9FD8
+    CMP #$FF                   ; $9FDA
+    BNE $9FE0                  ; $9FDC
+    LDA #$FE                   ; $9FDE
+    STA $0000,X                ; $9FE0
+    JMP $9EFB                  ; $9FE2
+    .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+    .byte $FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF,$FF
+
