@@ -44,5 +44,24 @@
 ## 下一步
 
 - V0.2：bank01 球员数据表 + PlayerQueryService 真实翻译；bank30 清 NT（$CB35）/OAM 隐藏（$CB8B）对照实现。
-- V0.3：Opening/Title/Password 场景真实翻译（对照 $A4C0/$A559/$A57B）；bank02 $A491 场景表 4-23 补齐。
+- V0.3-C2：TitleSceneController 真实翻译。注意场景 1（$A55A）实为数学工具（`$00EC>>2` 取补 → RTS 返回 3），
+  真正的标题画面可能在跳转表 13-23（$A650-$A7FA 长场景）或由场景 2/3 前置装载后进入，需进一步对照确认。
+- V0.3-C3：输入映射 + 24 场景完整分发（当前 0-23 已建枚举，仅 0/1/2/3/4 注册控制器）。
 - V0.4：Story 场景 + ScriptEngine 脚本 VM 翻译（bank18/19 剧情数据提取）。
+
+## 2026-08-23（V0.3-C1）
+
+- [C1 落地] OpeningSceneController 开场场景 0 真实翻译（对照 bank02/code_sub.s $84C1-$8559）：
+  - `SceneController.onUpdate` 契约改为返回 `number | undefined`（对应原版场景末尾 `LDA #next; RTS` 的下一个场景号）。
+  - `BootRouter`：SceneId 补齐 24 项跳转表（$A491：$A4C0/$A559/$A57B/$A581/.../$A7FA）；changeScene 补 $CEFE/$C400 前置
+    （关 IRQ / 隐藏 OAM / 清 NT / PPU CTRL=$08 / MASK=$1E）；update 处理 onUpdate 返回值自动换场景。
+  - `RenderingPrimitivesService` 补齐原语：`fadeBgStep`($9A0D)、`fadeOutStep`($99F0)、`loadPalettesAndFade`($9A35)、
+    `loadSceneData`($8920)、`loadChrConfig`($8AF7 配置副作用)、`queueScene3NametableRows`（场景 3 背景 24×32 tiles 逐行写 $05E8）。
+  - OpeningSceneController 状态机：渐显 → 等 16 帧 → 0x30 次 OAM 下漂 → 场景 3 NT 装载 → 等 4 帧 → 调色板+精灵翻转 →
+    滚动循环（INC $79; DEC $7C×2; $44-=2 until <3）→ ram_001B bit0 置位 → 等 240+60 帧 → 清 bit0 → 渐隐 →
+    隐藏 OAM → 清 NT → $23C0 填 $55 → 场景 1 数据 → `LDA #$02; RTS`。
+  - 无头验证（900 帧）：scene 0→2 于 frame≈480 流转完成；ram_001B bit0 时序正确（$81 于等待期→$80 清除）；
+    ram_0044 $68→$02（滚动结束）；ram_0048=$01（$8AF7 装载）；画面有渲染像素。
+- 修改文件：src/game/prg/code/scene/{SceneController,OpeningSceneController,Title,Password,Result,Story}*.ts、
+  src/game/prg/code/system/{BootRouter,RenderingPrimitivesService}.ts、src/game/index.ts、WBS_PLAN.md。
+- 编译：`npx tsc --noEmit` 零错误；lint 零错误。

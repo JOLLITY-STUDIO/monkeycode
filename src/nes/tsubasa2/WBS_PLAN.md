@@ -94,7 +94,7 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 | B1 | V0.2 | 调色板/字符集/文本脚本表 | data/tables/* | ⬜ |
 | B2 | V0.2 | 球员/队伍/技能/比赛配置表 | data/tables/* | ⬜ |
 | B3 | V0.2 | SE/BGM 指针表 + 地图 NT 数据 | data/tables/*, data/scene/* | ⬜ |
-| C1 | V0.3 | OpeningSceneController 真实渲染 | code/scene/OpeningSceneController.ts | ⬜ |
+| C1 | V0.3 | OpeningSceneController 真实渲染 | code/scene/OpeningSceneController.ts | ✅ |
 | C2 | V0.3 | TitleSceneController + 菜单 | code/scene/TitleSceneController.ts | ⬜ |
 | C3 | V0.3 | 输入映射 + 场景流转 | system/BootRouter.ts | ⬜ |
 | D1 | V0.4 | ScriptEngine opcode 全集 | code/story/ScriptEngine.ts | ⬜ |
