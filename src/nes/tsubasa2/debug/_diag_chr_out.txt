@@ -1,5 +1,5 @@
 pixrendered>0xff: 335
-pixrendered!=65: 335
+pixrendered!=65: 391
 bgbuffer samples: [36939]=0x525252 [36963]=0x525252 [36990]=0x525252 [36994]=0x525252 [37002]=0x525252
 pix[36939]=321 (0x141)
 pix[36963]=321 (0x141)

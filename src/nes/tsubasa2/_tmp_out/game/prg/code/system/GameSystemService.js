@@ -197,29 +197,37 @@ class GameSystemService {
     ppuBufAlloc(ctrl, len, dst) {
         // $9B29 BIT $0629; BVC → 若忙则等一帧重试
         // 翻译版: 忙时轮询 (语义上由帧循环保证非忙)
-        let x = this.rd(0x0628);
-        while ((this.rd(0x0629) & 0x40) !== 0) {
-            // $9B2E-$9B34: 等帧后重试
-            this.waitCounter();
+        // H5: 限制最大重试次数避免无限递归 (buffer 满时强制清空)
+        for (let retry = 0; retry < 16; retry++) {
+            let x = this.rd(0x0628);
+            // 忙标志检查 (ram_0629 bit6)
+            if ((this.rd(0x0629) & 0x40) !== 0) {
+                this.waitCounter();
+                continue;
+            }
+            // $9B37: A = (A & 0x3F) + $0628; if >= 0x3D 等帧重试
+            const c = (ctrl & 0x3f) + this.rd(0x0628);
+            if (c >= 0x3d) {
+                // buffer 满: 强制清空 ram_0628 (等 nmiRender 消费)
+                // H5: 直接清 ram_0628=0 避免无限递归 (原版等帧, H5 帧循环保证)
+                this.wr(0x0628, 0);
+                this.wr(0x0629, 0);
+                continue;
+            }
+            // $9B42: $0629 |= (A | 0x40)
+            this.wr(0x0629, ((ctrl & 0x3f) | 0x40) & 0xff);
             x = this.rd(0x0628);
+            // $9B47-$9B57: $05EA+X = X-reg(源高), $05E9+X = Y(源低), $05E8+X = A(控制)
+            this.writePpuBuf(x, ctrl & 0x3f);
+            this.writePpuBuf(x + 1, dst & 0xff);
+            this.writePpuBuf(x + 2, (dst >> 8) & 0xff);
+            this.wr(0x0629, (this.rd(0x0629) & 0xbf) & 0xff);
+            x = (x + 3) & 0xff;
+            this.wr(0x0628, x);
+            return x;
         }
-        // $9B37: A = (A & 0x3F) + $0628; if >= 0x3D 等帧重试
-        const c = (ctrl & 0x3f) + this.rd(0x0628);
-        if (c >= 0x3d) {
-            this.waitCounter();
-            return this.ppuBufAlloc(ctrl, len, dst);
-        }
-        // $9B42: $0629 |= (A | 0x40)
-        this.wr(0x0629, ((ctrl & 0x3f) | 0x40) & 0xff);
-        x = this.rd(0x0628);
-        // $9B47-$9B57: $05EA+X = X-reg(源高), $05E9+X = Y(源低), $05E8+X = A(控制)
-        this.writePpuBuf(x, ctrl & 0x3f);
-        this.writePpuBuf(x + 1, dst & 0xff);
-        this.writePpuBuf(x + 2, (dst >> 8) & 0xff);
-        this.wr(0x0629, (this.rd(0x0629) & 0xbf) & 0xff);
-        x = (x + 3) & 0xff;
-        this.wr(0x0628, x);
-        return x;
+        // 重试耗尽: 返回当前 ram_0628 (不分配, 避免崩溃)
+        return this.rd(0x0628);
     }
     /** $9B5E ppuBufEnd — 结束 PPU buffer (写终止符) */
     ppuBufEnd(x) {
