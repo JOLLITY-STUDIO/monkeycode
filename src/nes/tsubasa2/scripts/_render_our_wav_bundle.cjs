@@ -22,6 +22,1330 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
+// scripts/render_our_wav.ts
+var fs = __toESM(require("fs"));
+var path = __toESM(require("path"));
+
+// src/core/utils.ts
+function fromJSON(obj, state) {
+  const props = obj.constructor.JSON_PROPERTIES;
+  for (let i = 0; i < props.length; i++) {
+    const prop = props[i];
+    const current = obj[prop];
+    const value = state[prop];
+    if (ArrayBuffer.isView(current) && Array.isArray(value)) {
+      current.set(value);
+    } else {
+      obj[prop] = value;
+    }
+  }
+}
+function toJSON(obj) {
+  const state = {};
+  const props = obj.constructor.JSON_PROPERTIES;
+  for (let i = 0; i < props.length; i++) {
+    const prop = props[i];
+    const value = obj[prop];
+    state[prop] = ArrayBuffer.isView(value) ? Array.from(value) : value;
+  }
+  return state;
+}
+
+// src/core/papu/channel-dm.ts
+var ChannelDM = class _ChannelDM {
+  static {
+    this.MODE_NORMAL = 0;
+  }
+  static {
+    this.MODE_LOOP = 1;
+  }
+  static {
+    this.MODE_IRQ = 2;
+  }
+  static {
+    this.JSON_PROPERTIES = [
+      "isEnabled",
+      "hasSample",
+      "irqGenerated",
+      "playMode",
+      "dmaFrequency",
+      "dmaCounter",
+      "deltaCounter",
+      "playStartAddress",
+      "playAddress",
+      "playLength",
+      "playLengthCounter",
+      "shiftCounter",
+      "reg4012",
+      "reg4013",
+      "sample",
+      "dacLsb",
+      "data",
+      "lastFetchedByte"
+    ];
+  }
+  constructor(papu) {
+    this.papu = papu;
+    this.isEnabled = false;
+    this.hasSample = false;
+    this.irqGenerated = false;
+    this.playMode = _ChannelDM.MODE_NORMAL;
+    this.dmaFrequency = 0;
+    this.dmaCounter = 0;
+    this.deltaCounter = 0;
+    this.playStartAddress = 0;
+    this.playAddress = 0;
+    this.playLength = 0;
+    this.playLengthCounter = 0;
+    this.sample = 0;
+    this.dacLsb = 0;
+    this.shiftCounter = 0;
+    this.reg4012 = 0;
+    this.reg4013 = 0;
+    this.data = 0;
+    this.lastFetchedByte = 0;
+  }
+  clockDmc() {
+    if (this.hasSample) {
+      if ((this.data & 1) === 0) {
+        if (this.deltaCounter > 0) {
+          this.deltaCounter--;
+        }
+      } else {
+        if (this.deltaCounter < 63) {
+          this.deltaCounter++;
+        }
+      }
+      this.sample = this.isEnabled ? (this.deltaCounter << 1) + this.dacLsb : 0;
+      this.data >>= 1;
+    }
+    this.dmaCounter--;
+    if (this.dmaCounter <= 0) {
+      this.hasSample = false;
+      this.endOfSample();
+      this.dmaCounter = 8;
+    }
+    if (this.irqGenerated) {
+      this.papu.nes.cpu.requestIrq(this.papu.nes.cpu.IRQ_NORMAL);
+    }
+  }
+  endOfSample() {
+    if (this.playLengthCounter === 0 && this.playMode === _ChannelDM.MODE_LOOP) {
+      this.playAddress = this.playStartAddress;
+      this.playLengthCounter = this.playLength;
+    }
+    if (this.playLengthCounter > 0) {
+      this.nextSample();
+      if (this.playLengthCounter === 0) {
+        if (this.playMode === _ChannelDM.MODE_IRQ) {
+          this.irqGenerated = true;
+        }
+      }
+    }
+  }
+  nextSample() {
+    this.data = this.papu.nes.mmap.load(this.playAddress);
+    this.lastFetchedByte = this.data;
+    this.papu.nes.cpu.haltCycles(4);
+    this.playLengthCounter--;
+    this.playAddress++;
+    if (this.playAddress > 65535) {
+      this.playAddress = 32768;
+    }
+    this.hasSample = true;
+  }
+  writeReg(address, value) {
+    if (address === 16400) {
+      if (value >> 6 === 0) {
+        this.playMode = _ChannelDM.MODE_NORMAL;
+      } else if ((value >> 6 & 1) === 1) {
+        this.playMode = _ChannelDM.MODE_LOOP;
+      } else if (value >> 6 === 2) {
+        this.playMode = _ChannelDM.MODE_IRQ;
+      }
+      if ((value & 128) === 0) {
+        this.irqGenerated = false;
+      }
+      this.dmaFrequency = this.papu.getDmcFrequency(value & 15);
+    } else if (address === 16401) {
+      this.deltaCounter = value >> 1 & 63;
+      this.dacLsb = value & 1;
+      this.sample = (this.deltaCounter << 1) + this.dacLsb;
+    } else if (address === 16402) {
+      this.playStartAddress = value << 6 | 49152;
+      this.reg4012 = value;
+    } else if (address === 16403) {
+      this.playLength = (value << 4) + 1;
+      this.reg4013 = value;
+    } else if (address === 16405) {
+      this.irqGenerated = false;
+      if ((value >> 4 & 1) === 0) {
+        this.playLengthCounter = 0;
+      } else {
+        if (this.playLengthCounter === 0) {
+          this.playAddress = this.playStartAddress;
+          this.playLengthCounter = this.playLength;
+          if (!this.hasSample && this.playLengthCounter > 0) {
+            this.nextSample();
+            this.dmaCounter = 8;
+            this.shiftCounter = this.dmaFrequency;
+            if (this.playLengthCounter === 0 && this.playMode === _ChannelDM.MODE_IRQ) {
+              this.irqGenerated = true;
+            }
+          }
+        }
+      }
+    }
+  }
+  setEnabled(value) {
+    this.isEnabled = value;
+  }
+  getLengthStatus() {
+    return this.playLengthCounter === 0 || !this.isEnabled ? 0 : 1;
+  }
+  getIrqStatus() {
+    return this.irqGenerated ? 1 : 0;
+  }
+  toJSON() {
+    return toJSON(this);
+  }
+  fromJSON(s) {
+    fromJSON(this, s);
+  }
+};
+var channel_dm_default = ChannelDM;
+
+// src/core/papu/channel-noise.ts
+var ChannelNoise = class {
+  constructor(papu) {
+    this.papu = papu;
+    this.progTimerCount = 0;
+    this.progTimerMax = 0;
+    this.isEnabled = false;
+    this.lengthCounter = 0;
+    this.lengthCounterEnable = false;
+    this.envDecayDisable = false;
+    this.envDecayLoopEnable = false;
+    this.envReset = false;
+    this.shiftNow = false;
+    this.envDecayRate = 0;
+    this.envDecayCounter = 0;
+    this.envVolume = 0;
+    this.masterVolume = 0;
+    this.shiftReg = 1;
+    this.randomBit = 0;
+    this.randomMode = 0;
+    this.sampleValue = 0;
+    this.tmp = 0;
+    this.accValue = 0;
+    this.accCount = 1;
+  }
+  clockLengthCounter() {
+    if (this.lengthCounterEnable && this.lengthCounter > 0) {
+      this.lengthCounter--;
+      if (this.lengthCounter === 0) {
+        this.updateSampleValue();
+      }
+    }
+  }
+  clockEnvDecay() {
+    if (this.envReset) {
+      this.envReset = false;
+      this.envDecayCounter = this.envDecayRate + 1;
+      this.envVolume = 15;
+    } else if (--this.envDecayCounter <= 0) {
+      this.envDecayCounter = this.envDecayRate + 1;
+      if (this.envVolume > 0) {
+        this.envVolume--;
+      } else {
+        this.envVolume = this.envDecayLoopEnable ? 15 : 0;
+      }
+    }
+    if (this.envDecayDisable) {
+      this.masterVolume = this.envDecayRate;
+    } else {
+      this.masterVolume = this.envVolume;
+    }
+    this.updateSampleValue();
+  }
+  updateSampleValue() {
+    if (this.isEnabled && this.lengthCounter > 0) {
+      this.sampleValue = this.randomBit * this.masterVolume;
+    }
+  }
+  writeReg(address, value) {
+    if (address === 16396) {
+      this.envDecayDisable = (value & 16) !== 0;
+      this.envDecayRate = value & 15;
+      this.envDecayLoopEnable = (value & 32) !== 0;
+      this.lengthCounterEnable = (value & 32) === 0;
+      if (this.envDecayDisable) {
+        this.masterVolume = this.envDecayRate;
+      } else {
+        this.masterVolume = this.envVolume;
+      }
+    } else if (address === 16398) {
+      this.progTimerMax = this.papu.getNoiseWaveLength(value & 15);
+      this.randomMode = value >> 7;
+    } else if (address === 16399) {
+      if (this.isEnabled) {
+        this.lengthCounter = this.papu.getLengthMax(value & 248);
+      }
+      this.envReset = true;
+    }
+  }
+  setEnabled(value) {
+    this.isEnabled = value;
+    if (!value) {
+      this.lengthCounter = 0;
+    }
+    this.updateSampleValue();
+  }
+  getLengthStatus() {
+    return this.lengthCounter === 0 || !this.isEnabled ? 0 : 1;
+  }
+  toJSON() {
+    return toJSON(this);
+  }
+  fromJSON(s) {
+    fromJSON(this, s);
+  }
+  static {
+    this.JSON_PROPERTIES = [
+      "isEnabled",
+      "envDecayDisable",
+      "envDecayLoopEnable",
+      "lengthCounterEnable",
+      "envReset",
+      "shiftNow",
+      "lengthCounter",
+      "progTimerCount",
+      "progTimerMax",
+      "envDecayRate",
+      "envDecayCounter",
+      "envVolume",
+      "masterVolume",
+      "shiftReg",
+      "randomBit",
+      "randomMode",
+      "sampleValue",
+      "accValue",
+      "accCount",
+      "tmp"
+    ];
+  }
+};
+var channel_noise_default = ChannelNoise;
+
+// src/core/papu/channel-square.ts
+var ChannelSquare = class {
+  constructor(papu, square1) {
+    this.papu = papu;
+    this.dutyLookup = [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      1,
+      1,
+      1,
+      1
+    ];
+    this.impLookup = [
+      1,
+      -1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      -1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      -1,
+      0,
+      0,
+      0,
+      -1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+    ];
+    this.sqr1 = square1;
+    this.progTimerCount = 0;
+    this.progTimerMax = 0;
+    this.lengthCounter = 0;
+    this.squareCounter = 0;
+    this.sweepCounter = 0;
+    this.sweepCounterMax = 0;
+    this.sweepMode = 0;
+    this.sweepShiftAmount = 0;
+    this.envDecayRate = 0;
+    this.envDecayCounter = 0;
+    this.envVolume = 0;
+    this.masterVolume = 0;
+    this.dutyMode = 0;
+    this.vol = 0;
+    this.isEnabled = false;
+    this.lengthCounterEnable = false;
+    this.sweepActive = false;
+    this.sweepCarry = false;
+    this.envDecayDisable = false;
+    this.envDecayLoopEnable = false;
+    this.envReset = false;
+    this.updateSweepPeriod = false;
+    this.sweepResult = 0;
+    this.sampleValue = 0;
+  }
+  clockLengthCounter() {
+    if (this.lengthCounterEnable && this.lengthCounter > 0) {
+      this.lengthCounter--;
+      if (this.lengthCounter === 0) {
+        this.updateSampleValue();
+      }
+    }
+  }
+  clockEnvDecay() {
+    if (this.envReset) {
+      this.envReset = false;
+      this.envDecayCounter = this.envDecayRate + 1;
+      this.envVolume = 15;
+    } else if (--this.envDecayCounter <= 0) {
+      this.envDecayCounter = this.envDecayRate + 1;
+      if (this.envVolume > 0) {
+        this.envVolume--;
+      } else {
+        this.envVolume = this.envDecayLoopEnable ? 15 : 0;
+      }
+    }
+    if (this.envDecayDisable) {
+      this.masterVolume = this.envDecayRate;
+    } else {
+      this.masterVolume = this.envVolume;
+    }
+    this.updateSampleValue();
+  }
+  clockSweep() {
+    if (--this.sweepCounter <= 0) {
+      this.sweepCounter = this.sweepCounterMax + 1;
+      if (this.sweepActive && this.sweepShiftAmount > 0 && this.progTimerMax > 7) {
+        this.sweepCarry = false;
+        if (this.sweepMode === 0) {
+          this.progTimerMax += this.progTimerMax >> this.sweepShiftAmount;
+          if (this.progTimerMax > 2047) {
+            this.progTimerMax = 4095;
+            this.sweepCarry = true;
+          }
+        } else {
+          this.progTimerMax = this.progTimerMax - ((this.progTimerMax >> this.sweepShiftAmount) + (this.sqr1 ? 1 : 0));
+        }
+      }
+    }
+    if (this.updateSweepPeriod) {
+      this.updateSweepPeriod = false;
+      this.sweepCounter = this.sweepCounterMax + 1;
+    }
+  }
+  updateSampleValue() {
+    if (this.isEnabled && this.lengthCounter > 0 && this.progTimerMax > 7) {
+      if (this.sweepMode === 0 && this.progTimerMax + (this.progTimerMax >> this.sweepShiftAmount) > 2047) {
+        this.sampleValue = 0;
+      } else {
+        this.sampleValue = this.masterVolume * this.dutyLookup[(this.dutyMode << 3) + this.squareCounter];
+      }
+    } else {
+      this.sampleValue = 0;
+    }
+  }
+  writeReg(address, value) {
+    let addrAdd = this.sqr1 ? 0 : 4;
+    if (address === 16384 + addrAdd) {
+      this.envDecayDisable = (value & 16) !== 0;
+      this.envDecayRate = value & 15;
+      this.envDecayLoopEnable = (value & 32) !== 0;
+      this.dutyMode = value >> 6 & 3;
+      this.lengthCounterEnable = (value & 32) === 0;
+      if (this.envDecayDisable) {
+        this.masterVolume = this.envDecayRate;
+      } else {
+        this.masterVolume = this.envVolume;
+      }
+      this.updateSampleValue();
+    } else if (address === 16385 + addrAdd) {
+      this.sweepActive = (value & 128) !== 0;
+      this.sweepCounterMax = value >> 4 & 7;
+      this.sweepMode = value >> 3 & 1;
+      this.sweepShiftAmount = value & 7;
+      this.updateSweepPeriod = true;
+    } else if (address === 16386 + addrAdd) {
+      this.progTimerMax &= 1792;
+      this.progTimerMax |= value;
+    } else if (address === 16387 + addrAdd) {
+      this.progTimerMax &= 255;
+      this.progTimerMax |= (value & 7) << 8;
+      if (this.isEnabled) {
+        this.lengthCounter = this.papu.getLengthMax(value & 248);
+      }
+      this.envReset = true;
+    }
+  }
+  setEnabled(value) {
+    this.isEnabled = value;
+    if (!value) {
+      this.lengthCounter = 0;
+    }
+    this.updateSampleValue();
+  }
+  getLengthStatus() {
+    return this.lengthCounter === 0 || !this.isEnabled ? 0 : 1;
+  }
+  toJSON() {
+    return toJSON(this);
+  }
+  fromJSON(s) {
+    fromJSON(this, s);
+  }
+  static {
+    this.JSON_PROPERTIES = [
+      "isEnabled",
+      "lengthCounterEnable",
+      "sweepActive",
+      "envDecayDisable",
+      "envDecayLoopEnable",
+      "envReset",
+      "sweepCarry",
+      "updateSweepPeriod",
+      "progTimerCount",
+      "progTimerMax",
+      "lengthCounter",
+      "squareCounter",
+      "sweepCounter",
+      "sweepCounterMax",
+      "sweepMode",
+      "sweepShiftAmount",
+      "envDecayRate",
+      "envDecayCounter",
+      "envVolume",
+      "masterVolume",
+      "dutyMode",
+      "sweepResult",
+      "sampleValue",
+      "vol"
+    ];
+  }
+};
+var channel_square_default = ChannelSquare;
+
+// src/core/papu/channel-triangle.ts
+var ChannelTriangle = class {
+  constructor(papu) {
+    this.papu = papu;
+    this.progTimerCount = 0;
+    this.progTimerMax = 0;
+    this.triangleCounter = 0;
+    this.isEnabled = false;
+    this.sampleCondition = false;
+    this.lengthCounter = 0;
+    this.lengthCounterEnable = false;
+    this.linearCounter = 0;
+    this.lcLoadValue = 0;
+    this.lcHalt = true;
+    this.lcControl = false;
+    this.tmp = 0;
+    this.sampleValue = 15;
+  }
+  clockLengthCounter() {
+    if (this.lengthCounterEnable && this.lengthCounter > 0) {
+      this.lengthCounter--;
+      if (this.lengthCounter === 0) {
+        this.updateSampleCondition();
+      }
+    }
+  }
+  clockLinearCounter() {
+    if (this.lcHalt) {
+      this.linearCounter = this.lcLoadValue;
+      this.updateSampleCondition();
+    } else if (this.linearCounter > 0) {
+      this.linearCounter--;
+      this.updateSampleCondition();
+    }
+    if (!this.lcControl) {
+      this.lcHalt = false;
+    }
+  }
+  getLengthStatus() {
+    return this.lengthCounter === 0 || !this.isEnabled ? 0 : 1;
+  }
+  // eslint-disable-next-line no-unused-vars
+  readReg(address) {
+    return 0;
+  }
+  writeReg(address, value) {
+    if (address === 16392) {
+      this.lcControl = (value & 128) !== 0;
+      this.lcLoadValue = value & 127;
+      this.lengthCounterEnable = !this.lcControl;
+    } else if (address === 16394) {
+      this.progTimerMax &= 1792;
+      this.progTimerMax |= value;
+    } else if (address === 16395) {
+      this.progTimerMax &= 255;
+      this.progTimerMax |= (value & 7) << 8;
+      if (this.isEnabled) {
+        this.lengthCounter = this.papu.getLengthMax(value & 248);
+      }
+      this.lcHalt = true;
+    }
+    this.updateSampleCondition();
+  }
+  clockProgrammableTimer(nCycles) {
+    if (this.progTimerMax > 0) {
+      this.progTimerCount += nCycles;
+      while (this.progTimerMax > 0 && this.progTimerCount >= this.progTimerMax) {
+        this.progTimerCount -= this.progTimerMax;
+        if (this.isEnabled && this.lengthCounter > 0 && this.linearCounter > 0) {
+          this.clockTriangleGenerator();
+        }
+      }
+    }
+  }
+  clockTriangleGenerator() {
+    this.triangleCounter++;
+    this.triangleCounter &= 31;
+  }
+  setEnabled(value) {
+    this.isEnabled = value;
+    if (!value) {
+      this.lengthCounter = 0;
+    }
+    this.updateSampleCondition();
+  }
+  updateSampleCondition() {
+    this.sampleCondition = this.isEnabled && this.progTimerMax > 7 && this.linearCounter > 0 && this.lengthCounter > 0;
+  }
+  toJSON() {
+    return toJSON(this);
+  }
+  fromJSON(s) {
+    fromJSON(this, s);
+  }
+  static {
+    this.JSON_PROPERTIES = [
+      "isEnabled",
+      "sampleCondition",
+      "lengthCounterEnable",
+      "lcHalt",
+      "lcControl",
+      "progTimerCount",
+      "progTimerMax",
+      "triangleCounter",
+      "lengthCounter",
+      "linearCounter",
+      "lcLoadValue",
+      "sampleValue",
+      "tmp"
+    ];
+  }
+};
+var channel_triangle_default = ChannelTriangle;
+
+// src/core/papu/index.ts
+var CPU_FREQ_NTSC = 17897725e-1;
+var FRAME_STEPS_4 = [7457, 14913, 22371, 29828, 29829];
+var FRAME_STEPS_5 = [7457, 14913, 22371, 29829, 37281];
+var FRAME_PERIOD_4 = 29830;
+var FRAME_PERIOD_5 = 37282;
+var PAPU = class {
+  constructor(nes) {
+    this.nes = nes;
+    this.square1 = new channel_square_default(this, true);
+    this.square2 = new channel_square_default(this, false);
+    this.triangle = new channel_triangle_default(this);
+    this.noise = new channel_noise_default(this);
+    this.dmc = new channel_dm_default(this);
+    this.startedPlaying = false;
+    this.recordOutput = false;
+    this.triValue = 0;
+    this.prevSampleL = 0;
+    this.prevSampleR = 0;
+    this.smpAccumL = 0;
+    this.smpAccumR = 0;
+    this.dacRange = 0;
+    this.dcValue = 0;
+    this.masterVolume = 256;
+    this.panning = [80, 170, 100, 150, 128];
+    this.setPanning(this.panning);
+    this.initLengthLookup();
+    this.initDmcFrequencyLookup();
+    this.initNoiseWavelengthLookup();
+    this.initDACtables();
+    for (let i = 0; i < 20; i++) {
+      if (i === 16) {
+        this.writeReg(16400, 16);
+      } else {
+        this.writeReg(16384 + i, 0);
+      }
+    }
+    this.sampleRate = this.nes.opts.sampleRate;
+    this.sampleTimerMax = Math.floor(
+      1024 * CPU_FREQ_NTSC / this.sampleRate
+    );
+    this.sampleTimer = 0;
+    this.updateChannelEnable(0);
+    this.frameCycleCounter = 0;
+    this.frameStep = 0;
+    this.countSequence = 0;
+    this.sampleCount = 0;
+    this.frameIrqEnabled = false;
+    this.frameIrqActive = false;
+    this.frameIrqClearPending = false;
+    this.apuCycleParity = 0;
+    this.accCount = 0;
+    this.smpSquare1 = 0;
+    this.smpSquare2 = 0;
+    this.smpTriangle = 0;
+    this.smpDmc = 0;
+    this.channelEnableValue = 255;
+    this.extraCycles = 0;
+    this.maxSample = -5e5;
+    this.minSample = 5e5;
+  }
+  // eslint-disable-next-line no-unused-vars
+  readReg(address) {
+    let tmp = 0;
+    tmp |= this.square1.getLengthStatus();
+    tmp |= this.square2.getLengthStatus() << 1;
+    tmp |= this.triangle.getLengthStatus() << 2;
+    tmp |= this.noise.getLengthStatus() << 3;
+    tmp |= this.dmc.getLengthStatus() << 4;
+    tmp |= this.nes.cpu.dataBus & 32;
+    tmp |= (this.frameIrqActive ? 1 : 0) << 6;
+    tmp |= this.dmc.getIrqStatus() << 7;
+    if (this.frameIrqActive) {
+      this.frameIrqClearPending = true;
+    }
+    return tmp & 255;
+  }
+  writeReg(address, value) {
+    if (address >= 16384 && address < 16388) {
+      this.square1.writeReg(address, value);
+    } else if (address >= 16388 && address < 16392) {
+      this.square2.writeReg(address, value);
+    } else if (address >= 16392 && address < 16396) {
+      this.triangle.writeReg(address, value);
+    } else if (address >= 16396 && address <= 16399) {
+      this.noise.writeReg(address, value);
+    } else if (address === 16400) {
+      this.dmc.writeReg(address, value);
+    } else if (address === 16401) {
+      this.dmc.writeReg(address, value);
+    } else if (address === 16402) {
+      this.dmc.writeReg(address, value);
+    } else if (address === 16403) {
+      this.dmc.writeReg(address, value);
+    } else if (address === 16405) {
+      this.updateChannelEnable(value);
+      this.dmc.writeReg(address, value);
+    } else if (address === 16407) {
+      this.countSequence = value >> 7 & 1;
+      let cpu = this.nes.cpu;
+      let pendingCycles = cpu.instrBusCycles + 1 - cpu.apuCatchupCycles;
+      let writeParity = this.apuCycleParity + pendingCycles & 1;
+      this.frameCycleCounter = -7 + writeParity;
+      this.frameStep = 0;
+      if (value & 64) {
+        this.frameIrqEnabled = false;
+        this.frameIrqActive = false;
+        this.frameIrqClearPending = false;
+      } else {
+        this.frameIrqEnabled = true;
+      }
+      if (this.countSequence === 1) {
+        this.clockQuarterFrame();
+        this.clockHalfFrame();
+      }
+    }
+  }
+  // Updates channel enable status.
+  // This is done on writes to the
+  // channel enable register (0x4015),
+  // and when the user enables/disables channels
+  // in the GUI.
+  updateChannelEnable(value) {
+    this.channelEnableValue = value & 65535;
+    this.square1.setEnabled((value & 1) !== 0);
+    this.square2.setEnabled((value & 2) !== 0);
+    this.triangle.setEnabled((value & 4) !== 0);
+    this.noise.setEnabled((value & 8) !== 0);
+    this.dmc.setEnabled((value & 16) !== 0);
+  }
+  // Clocks all APU channel timers and the frame counter by nCycles CPU cycles.
+  // Called once per instruction from the frame loop with the total cycle count.
+  // frameCounterAlreadyAdvanced is the number of frame counter cycles already
+  // advanced mid-instruction by APU catch-up (advanceFrameCounter). This is
+  // subtracted from the frame counter portion only, not from channel timers.
+  clockFrameCounter(nCycles, frameCounterAlreadyAdvanced) {
+    let frameCounterCycles = nCycles - (frameCounterAlreadyAdvanced || 0);
+    this.processFrameIrqClear(frameCounterCycles);
+    this.apuCycleParity = this.apuCycleParity + frameCounterCycles & 1;
+    nCycles += this.extraCycles;
+    let maxCycles = this.sampleTimerMax - this.sampleTimer;
+    if (nCycles << 10 > maxCycles) {
+      this.extraCycles = (nCycles << 10) - maxCycles >> 10;
+      nCycles -= this.extraCycles;
+    } else {
+      this.extraCycles = 0;
+    }
+    let dmc = this.dmc;
+    let triangle = this.triangle;
+    let square1 = this.square1;
+    let square2 = this.square2;
+    let noise = this.noise;
+    if (dmc.isEnabled) {
+      dmc.shiftCounter -= nCycles << 3;
+      while (dmc.shiftCounter <= 0 && dmc.dmaFrequency > 0) {
+        dmc.shiftCounter += dmc.dmaFrequency;
+        dmc.clockDmc();
+      }
+    }
+    if (triangle.progTimerMax > 0) {
+      triangle.progTimerCount -= nCycles;
+      while (triangle.progTimerCount <= 0) {
+        triangle.progTimerCount += triangle.progTimerMax + 1;
+        if (triangle.linearCounter > 0 && triangle.lengthCounter > 0) {
+          triangle.triangleCounter++;
+          triangle.triangleCounter &= 31;
+          if (triangle.isEnabled) {
+            if (triangle.triangleCounter >= 16) {
+              triangle.sampleValue = triangle.triangleCounter & 15;
+            } else {
+              triangle.sampleValue = 15 - (triangle.triangleCounter & 15);
+            }
+            triangle.sampleValue <<= 4;
+          }
+        }
+      }
+    }
+    square1.progTimerCount -= nCycles;
+    if (square1.progTimerCount <= 0) {
+      square1.progTimerCount += square1.progTimerMax + 1 << 1;
+      square1.squareCounter++;
+      square1.squareCounter &= 7;
+      square1.updateSampleValue();
+    }
+    square2.progTimerCount -= nCycles;
+    if (square2.progTimerCount <= 0) {
+      square2.progTimerCount += square2.progTimerMax + 1 << 1;
+      square2.squareCounter++;
+      square2.squareCounter &= 7;
+      square2.updateSampleValue();
+    }
+    let acc_c = nCycles;
+    if (noise.progTimerCount - acc_c > 0) {
+      noise.progTimerCount -= acc_c;
+      noise.accCount += acc_c;
+      noise.accValue += acc_c * noise.sampleValue;
+    } else {
+      while (acc_c-- > 0) {
+        if (--noise.progTimerCount <= 0 && noise.progTimerMax > 0) {
+          noise.shiftReg <<= 1;
+          noise.tmp = (noise.shiftReg << (noise.randomMode === 0 ? 1 : 6) ^ noise.shiftReg) & 32768;
+          if (noise.tmp !== 0) {
+            noise.shiftReg |= 1;
+            noise.randomBit = 0;
+            noise.sampleValue = 0;
+          } else {
+            noise.randomBit = 1;
+            if (noise.isEnabled && noise.lengthCounter > 0) {
+              noise.sampleValue = noise.masterVolume;
+            } else {
+              noise.sampleValue = 0;
+            }
+          }
+          noise.progTimerCount += noise.progTimerMax;
+        }
+        noise.accValue += noise.sampleValue;
+        noise.accCount++;
+      }
+    }
+    if (this.frameIrqEnabled && this.frameIrqActive) {
+      this.nes.cpu.requestIrq(this.nes.cpu.IRQ_NORMAL);
+    }
+    this._advanceFrameSteps(frameCounterCycles);
+    this.accSample(nCycles);
+    this.sampleTimer += nCycles << 10;
+    if (this.sampleTimer >= this.sampleTimerMax) {
+      this.sample();
+      this.sampleTimer -= this.sampleTimerMax;
+    }
+  }
+  // Process the deferred frame IRQ flag clear. On real hardware, reading
+  // $4015 schedules the clear for the next APU "get" cycle (which happens
+  // every 2 CPU cycles). If the current APU phase is "put" (parity 0),
+  // the next "get" is 1 cycle away. If "get" (parity 1), it's 2 cycles
+  // away. This must be called BEFORE updating apuCycleParity for the
+  // current advance, so it sees the parity at the start of the period.
+  // See https://www.nesdev.org/wiki/APU_Frame_Counter
+  processFrameIrqClear(nCycles) {
+    if (!this.frameIrqClearPending || nCycles <= 0) return;
+    let cyclesToNextGet = (this.apuCycleParity & 1) === 0 ? 1 : 2;
+    if (nCycles >= cyclesToNextGet) {
+      this.frameIrqActive = false;
+      this.frameIrqClearPending = false;
+    }
+  }
+  // Advance only the frame counter steps without clocking channel timers,
+  // DMC, or audio sampling. Used by CPU APU catch-up to update frame counter
+  // state (length counters, envelopes) before $4015 reads, without disturbing
+  // DMC DMA timing or audio generation.
+  advanceFrameCounter(nCycles) {
+    this.processFrameIrqClear(nCycles);
+    this.apuCycleParity = this.apuCycleParity + nCycles & 1;
+    this._advanceFrameSteps(nCycles);
+  }
+  // Advance frame counter steps and handle period wrap. Shared by both
+  // clockFrameCounter (full APU tick) and advanceFrameCounter (catch-up only).
+  // The step loop and period wrap are separated: steps fire when the counter
+  // reaches each step's cycle position, and the period wrap only occurs when
+  // the counter reaches the full period length (not immediately after the
+  // last step). This matters because in 4-step mode, the last step fires at
+  // 29829 but the period wrap (and 3rd IRQ assertion) occurs at 29830.
+  // See https://www.nesdev.org/wiki/APU_Frame_Counter
+  _advanceFrameSteps(frameCounterCycles) {
+    this.frameCycleCounter += frameCounterCycles;
+    let steps = this.countSequence === 0 ? FRAME_STEPS_4 : FRAME_STEPS_5;
+    let period = this.countSequence === 0 ? FRAME_PERIOD_4 : FRAME_PERIOD_5;
+    for (; ; ) {
+      if (this.frameStep < steps.length && this.frameCycleCounter >= steps[this.frameStep]) {
+        this.fireFrameStep(this.frameStep);
+        this.frameStep++;
+      } else if (this.frameStep >= steps.length && this.frameCycleCounter >= period) {
+        this.frameStep = 0;
+        this.frameCycleCounter -= period;
+        if (this.countSequence === 0) {
+          this.frameIrqActive = this.frameIrqEnabled;
+          this.frameIrqClearPending = false;
+        }
+      } else {
+        break;
+      }
+    }
+  }
+  accSample(cycles) {
+    if (this.triangle.sampleCondition) {
+      this.triValue = Math.floor(
+        (this.triangle.progTimerCount << 4) / (this.triangle.progTimerMax + 1)
+      );
+      if (this.triValue > 16) {
+        this.triValue = 16;
+      }
+      if (this.triangle.triangleCounter >= 16) {
+        this.triValue = 16 - this.triValue;
+      }
+      this.triValue += this.triangle.sampleValue;
+    }
+    if (cycles === 2) {
+      this.smpTriangle += this.triValue << 1;
+      this.smpDmc += this.dmc.sample << 1;
+      this.smpSquare1 += this.square1.sampleValue << 1;
+      this.smpSquare2 += this.square2.sampleValue << 1;
+      this.accCount += 2;
+    } else if (cycles === 4) {
+      this.smpTriangle += this.triValue << 2;
+      this.smpDmc += this.dmc.sample << 2;
+      this.smpSquare1 += this.square1.sampleValue << 2;
+      this.smpSquare2 += this.square2.sampleValue << 2;
+      this.accCount += 4;
+    } else {
+      this.smpTriangle += cycles * this.triValue;
+      this.smpDmc += cycles * this.dmc.sample;
+      this.smpSquare1 += cycles * this.square1.sampleValue;
+      this.smpSquare2 += cycles * this.square2.sampleValue;
+      this.accCount += cycles;
+    }
+  }
+  // Fire a frame counter step. Each step clocks different APU units depending
+  // on the mode and step number.
+  // See https://www.nesdev.org/wiki/APU_Frame_Counter
+  fireFrameStep(step) {
+    if (this.countSequence === 0) {
+      switch (step) {
+        case 0:
+          this.clockQuarterFrame();
+          break;
+        case 1:
+          this.clockQuarterFrame();
+          this.clockHalfFrame();
+          break;
+        case 2:
+          this.clockQuarterFrame();
+          break;
+        case 3:
+          this.frameIrqActive = true;
+          this.frameIrqClearPending = false;
+          break;
+        case 4:
+          this.clockQuarterFrame();
+          this.clockHalfFrame();
+          this.frameIrqActive = true;
+          this.frameIrqClearPending = false;
+          break;
+      }
+    } else {
+      switch (step) {
+        case 0:
+          this.clockQuarterFrame();
+          break;
+        case 1:
+          this.clockQuarterFrame();
+          this.clockHalfFrame();
+          break;
+        case 2:
+          this.clockQuarterFrame();
+          break;
+        case 3:
+          break;
+        case 4:
+          this.clockQuarterFrame();
+          this.clockHalfFrame();
+          break;
+      }
+    }
+  }
+  // Quarter frame: clock envelopes and triangle linear counter (~240Hz)
+  clockQuarterFrame() {
+    this.square1.clockEnvDecay();
+    this.square2.clockEnvDecay();
+    this.noise.clockEnvDecay();
+    this.triangle.clockLinearCounter();
+  }
+  // Half frame: clock length counters and sweep units (~120Hz)
+  clockHalfFrame() {
+    this.triangle.clockLengthCounter();
+    this.square1.clockLengthCounter();
+    this.square2.clockLengthCounter();
+    this.noise.clockLengthCounter();
+    this.square1.clockSweep();
+    this.square2.clockSweep();
+  }
+  // Samples the channels, mixes the output together, then writes to buffer.
+  sample() {
+    let sq_index, tnd_index;
+    if (this.accCount > 0) {
+      this.smpSquare1 <<= 4;
+      this.smpSquare1 = Math.floor(this.smpSquare1 / this.accCount);
+      this.smpSquare2 <<= 4;
+      this.smpSquare2 = Math.floor(this.smpSquare2 / this.accCount);
+      this.smpTriangle = Math.floor(this.smpTriangle / this.accCount);
+      this.smpDmc <<= 4;
+      this.smpDmc = Math.floor(this.smpDmc / this.accCount);
+      this.accCount = 0;
+    } else {
+      this.smpSquare1 = this.square1.sampleValue << 4;
+      this.smpSquare2 = this.square2.sampleValue << 4;
+      this.smpTriangle = this.triangle.sampleValue;
+      this.smpDmc = this.dmc.sample << 4;
+    }
+    let smpNoise = Math.floor((this.noise.accValue << 4) / this.noise.accCount);
+    this.noise.accValue = smpNoise >> 4;
+    this.noise.accCount = 1;
+    sq_index = this.smpSquare1 * this.stereoPosLSquare1 + this.smpSquare2 * this.stereoPosLSquare2 >> 8;
+    tnd_index = 3 * this.smpTriangle * this.stereoPosLTriangle + (smpNoise << 1) * this.stereoPosLNoise + this.smpDmc * this.stereoPosLDMC >> 8;
+    if (sq_index >= this.square_table.length) {
+      sq_index = this.square_table.length - 1;
+    }
+    if (tnd_index >= this.tnd_table.length) {
+      tnd_index = this.tnd_table.length - 1;
+    }
+    let sampleValueL = this.square_table[sq_index] + this.tnd_table[tnd_index] - this.dcValue;
+    sq_index = this.smpSquare1 * this.stereoPosRSquare1 + this.smpSquare2 * this.stereoPosRSquare2 >> 8;
+    tnd_index = 3 * this.smpTriangle * this.stereoPosRTriangle + (smpNoise << 1) * this.stereoPosRNoise + this.smpDmc * this.stereoPosRDMC >> 8;
+    if (sq_index >= this.square_table.length) {
+      sq_index = this.square_table.length - 1;
+    }
+    if (tnd_index >= this.tnd_table.length) {
+      tnd_index = this.tnd_table.length - 1;
+    }
+    let sampleValueR = this.square_table[sq_index] + this.tnd_table[tnd_index] - this.dcValue;
+    let smpDiffL = sampleValueL - this.prevSampleL;
+    this.prevSampleL += smpDiffL;
+    this.smpAccumL += smpDiffL - (this.smpAccumL >> 10);
+    sampleValueL = this.smpAccumL;
+    let smpDiffR = sampleValueR - this.prevSampleR;
+    this.prevSampleR += smpDiffR;
+    this.smpAccumR += smpDiffR - (this.smpAccumR >> 10);
+    sampleValueR = this.smpAccumR;
+    if (sampleValueL > this.maxSample) {
+      this.maxSample = sampleValueL;
+    }
+    if (sampleValueL < this.minSample) {
+      this.minSample = sampleValueL;
+    }
+    if (this.nes.opts.onAudioSample) {
+      this.nes.opts.onAudioSample(sampleValueL / 32768, sampleValueR / 32768);
+    }
+    this.smpSquare1 = 0;
+    this.smpSquare2 = 0;
+    this.smpTriangle = 0;
+    this.smpDmc = 0;
+  }
+  getLengthMax(value) {
+    return this.lengthLookup[value >> 3];
+  }
+  getDmcFrequency(value) {
+    if (value >= 0 && value < 16) {
+      return this.dmcFreqLookup[value];
+    }
+    return 0;
+  }
+  getNoiseWaveLength(value) {
+    if (value >= 0 && value < 16) {
+      return this.noiseWavelengthLookup[value];
+    }
+    return 0;
+  }
+  // Recalculate the sample timer for a non-standard host frame rate.
+  // At 60fps the timer fires once per (CPU_FREQ / sampleRate) cycles. If the
+  // host calls frame() at a different rate, scale proportionally so the total
+  // audio output per second stays constant.
+  setFrameRate(rate) {
+    this.sampleTimerMax = Math.floor(
+      1024 * CPU_FREQ_NTSC * rate / (this.sampleRate * 60)
+    );
+  }
+  setPanning(pos) {
+    for (let i = 0; i < 5; i++) {
+      this.panning[i] = pos[i];
+    }
+    this.updateStereoPos();
+  }
+  setMasterVolume(value) {
+    if (value < 0) {
+      value = 0;
+    }
+    if (value > 256) {
+      value = 256;
+    }
+    this.masterVolume = value;
+    this.updateStereoPos();
+  }
+  updateStereoPos() {
+    this.stereoPosLSquare1 = this.panning[0] * this.masterVolume >> 8;
+    this.stereoPosLSquare2 = this.panning[1] * this.masterVolume >> 8;
+    this.stereoPosLTriangle = this.panning[2] * this.masterVolume >> 8;
+    this.stereoPosLNoise = this.panning[3] * this.masterVolume >> 8;
+    this.stereoPosLDMC = this.panning[4] * this.masterVolume >> 8;
+    this.stereoPosRSquare1 = this.masterVolume - this.stereoPosLSquare1;
+    this.stereoPosRSquare2 = this.masterVolume - this.stereoPosLSquare2;
+    this.stereoPosRTriangle = this.masterVolume - this.stereoPosLTriangle;
+    this.stereoPosRNoise = this.masterVolume - this.stereoPosLNoise;
+    this.stereoPosRDMC = this.masterVolume - this.stereoPosLDMC;
+  }
+  initLengthLookup() {
+    this.lengthLookup = [
+      10,
+      254,
+      20,
+      2,
+      40,
+      4,
+      80,
+      6,
+      160,
+      8,
+      60,
+      10,
+      14,
+      12,
+      26,
+      14,
+      12,
+      16,
+      24,
+      18,
+      48,
+      20,
+      96,
+      22,
+      192,
+      24,
+      72,
+      26,
+      16,
+      28,
+      32,
+      30
+    ];
+  }
+  initDmcFrequencyLookup() {
+    this.dmcFreqLookup = new Array(16);
+    this.dmcFreqLookup[0] = 3424;
+    this.dmcFreqLookup[1] = 3040;
+    this.dmcFreqLookup[2] = 2720;
+    this.dmcFreqLookup[3] = 2560;
+    this.dmcFreqLookup[4] = 2288;
+    this.dmcFreqLookup[5] = 2032;
+    this.dmcFreqLookup[6] = 1808;
+    this.dmcFreqLookup[7] = 1712;
+    this.dmcFreqLookup[8] = 1520;
+    this.dmcFreqLookup[9] = 1280;
+    this.dmcFreqLookup[10] = 1136;
+    this.dmcFreqLookup[11] = 1024;
+    this.dmcFreqLookup[12] = 848;
+    this.dmcFreqLookup[13] = 672;
+    this.dmcFreqLookup[14] = 576;
+    this.dmcFreqLookup[15] = 432;
+  }
+  initNoiseWavelengthLookup() {
+    this.noiseWavelengthLookup = new Array(16);
+    this.noiseWavelengthLookup[0] = 4;
+    this.noiseWavelengthLookup[1] = 8;
+    this.noiseWavelengthLookup[2] = 16;
+    this.noiseWavelengthLookup[3] = 32;
+    this.noiseWavelengthLookup[4] = 64;
+    this.noiseWavelengthLookup[5] = 96;
+    this.noiseWavelengthLookup[6] = 128;
+    this.noiseWavelengthLookup[7] = 160;
+    this.noiseWavelengthLookup[8] = 202;
+    this.noiseWavelengthLookup[9] = 254;
+    this.noiseWavelengthLookup[10] = 380;
+    this.noiseWavelengthLookup[11] = 508;
+    this.noiseWavelengthLookup[12] = 762;
+    this.noiseWavelengthLookup[13] = 1016;
+    this.noiseWavelengthLookup[14] = 2034;
+    this.noiseWavelengthLookup[15] = 4068;
+  }
+  initDACtables() {
+    let value, ival, i;
+    let max_sqr = 0;
+    let max_tnd = 0;
+    this.square_table = new Array(32 * 16);
+    this.tnd_table = new Array(204 * 16);
+    for (i = 0; i < 32 * 16; i++) {
+      value = 95.52 / (8128 / (i / 16) + 100);
+      value *= 0.98411;
+      value *= 5e4;
+      ival = Math.floor(value);
+      this.square_table[i] = ival;
+      if (ival > max_sqr) {
+        max_sqr = ival;
+      }
+    }
+    for (i = 0; i < 204 * 16; i++) {
+      value = 163.67 / (24329 / (i / 16) + 100);
+      value *= 0.98411;
+      value *= 5e4;
+      ival = Math.floor(value);
+      this.tnd_table[i] = ival;
+      if (ival > max_tnd) {
+        max_tnd = ival;
+      }
+    }
+    this.dacRange = max_sqr + max_tnd;
+    this.dcValue = this.dacRange / 2;
+  }
+  toJSON() {
+    let obj = toJSON(this);
+    obj.dmc = this.dmc.toJSON();
+    obj.noise = this.noise.toJSON();
+    obj.square1 = this.square1.toJSON();
+    obj.square2 = this.square2.toJSON();
+    obj.triangle = this.triangle.toJSON();
+    return obj;
+  }
+  fromJSON(s) {
+    fromJSON(this, s);
+    this.dmc.fromJSON(s.dmc);
+    this.noise.fromJSON(s.noise);
+    this.square1.fromJSON(s.square1);
+    this.square2.fromJSON(s.square2);
+    this.triangle.fromJSON(s.triangle);
+  }
+  static {
+    this.JSON_PROPERTIES = [
+      "channelEnableValue",
+      "sampleRate",
+      "frameIrqEnabled",
+      "frameIrqActive",
+      "frameIrqClearPending",
+      "apuCycleParity",
+      "startedPlaying",
+      "recordOutput",
+      "frameCycleCounter",
+      "frameStep",
+      "countSequence",
+      "sampleTimer",
+      "sampleTimerMax",
+      "sampleCount",
+      "triValue",
+      "smpSquare1",
+      "smpSquare2",
+      "smpTriangle",
+      "smpDmc",
+      "accCount",
+      "prevSampleL",
+      "prevSampleR",
+      "smpAccumL",
+      "smpAccumR",
+      "masterVolume",
+      "stereoPosLSquare1",
+      "stereoPosLSquare2",
+      "stereoPosLTriangle",
+      "stereoPosLNoise",
+      "stereoPosLDMC",
+      "stereoPosRSquare1",
+      "stereoPosRSquare2",
+      "stereoPosRTriangle",
+      "stereoPosRNoise",
+      "stereoPosRDMC",
+      "extraCycles",
+      "maxSample",
+      "minSample",
+      "panning"
+    ];
+  }
+};
+var papu_default = PAPU;
+
 // src/game/prg/data/store/DataStore.ts
 var DataStore = class _DataStore {
   constructor() {
@@ -94,12 +1418,6 @@ var DataStore = class _DataStore {
    */
   get ntRenderBuffer() {
     return this.ram.subarray(1512, 1576);
-  }
-};
-
-// src/game/prg/code/audio/ApuTarget.ts
-var NullApuTarget = class {
-  writeRegister(_addr, _value) {
   }
 };
 
@@ -41275,16 +42593,10 @@ var AudioRom = class _AudioRom {
 };
 
 // src/game/prg/code/audio/AudioService.ts
-var APU_PULSE1_CTRL = 16384;
-var APU_PULSE2_CTRL = 16388;
-var APU_NOISE_CTRL = 16396;
 var APU_STATUS = 16405;
-var CHANNEL_APU_BASE = [
-  APU_PULSE1_CTRL,
-  APU_PULSE2_CTRL,
-  APU_NOISE_CTRL,
-  APU_NOISE_CTRL
-];
+var CH_STATE_BASE = 1831;
+var CH_COUNTER_BASE = 1799;
+var NUM_CH = 8;
 function readFreq(idx) {
   return AudioRom.readBank12U16(34573 + idx * 2);
 }
@@ -41296,13 +42608,14 @@ function readCmd(idx) {
 }
 var AudioService = class {
   constructor(store) {
-    this.apu = new NullApuTarget();
+    this.papu = null;
     this.store = store;
   }
-  attachApu(apu) {
-    this.apu = apu;
+  /** 注入 PAPU 实例 */
+  attachPapu(papu) {
+    this.papu = papu;
   }
-  // RAM 读写辅助
+  // RAM 辅助
   rd(addr) {
     return this.store.readByte(addr);
   }
@@ -41317,17 +42630,26 @@ var AudioService = class {
     this.wr(hi, v >> 8 & 255);
   }
   wrApu(addr, v) {
-    this.apu.writeRegister(addr, v & 255);
+    this.papu?.writeReg(addr, v & 255);
   }
-  // ════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════
   // 公共 API
-  // ════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════
   update() {
     this.consumeQueue();
-    this.wrPtr(240, 241, 1831);
+    this.wrPtr(240, 241, CH_STATE_BASE);
     this.wr(242, 0);
-    this.wr(243, 8);
-    this.phase1Loop();
+    this.wr(243, NUM_CH);
+    this.phase1();
+    this.phase2();
+    if (this.papu) {
+      let remaining = 29830;
+      while (remaining > 0) {
+        const n = remaining < 32 ? remaining : 32;
+        this.papu.clockFrameCounter(n);
+        remaining -= n;
+      }
+    }
     if (this.rd(2025) !== 0) this.wrApu(APU_STATUS, 0);
   }
   playBgm(bgmId) {
@@ -41343,23 +42665,13 @@ var AudioService = class {
     this.wr(1797, seId & 255);
   }
   stopAll() {
-    this.wr(2034, 0);
     for (let i = 0; i < 6; i++) this.wr(1792 + i, 0);
     this.wrApu(APU_STATUS, 0);
     this.wr(1798, 0);
   }
-  playDpcm(sample) {
-    if (this.rd(2024) !== 0) return;
-    const s = [{ f: 15, a: 0, l: 12 }, { f: 15, a: 3, l: 32 }, { f: 15, a: 11, l: 19 }][sample];
-    this.wrApu(APU_STATUS, 31);
-    this.wrApu(16400, s.f);
-    this.wrApu(16402, s.a);
-    this.wrApu(16403, s.l);
-    this.wr(2024, 128);
-  }
-  // ════════════════════════════════════════════════════════════
-  // 请求队列消费 ($8000 + $8061)
-  // ════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════
+  // 请求队列消费
+  // ════════════════════════════════════════════════════
   consumeQueue() {
     const bgmReq = this.rd(1792);
     if (bgmReq !== 0 && bgmReq < 50) {
@@ -41378,355 +42690,382 @@ var AudioService = class {
         this.wr(1792 + slot, 0);
         continue;
       }
-      this.startSe(seReq, slot);
+      this.startSe(seReq);
       this.wr(1792 + slot, 0);
     }
   }
-  // ════════════════════════════════════════════════════════════
-  // BGM 启动 (原版 $8000 → bankswitch → $8349 通道初始化)
-  // ════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════
+  // BGM 启动 — 解析头部，初始化各通道
+  // ════════════════════════════════════════════════════
   startBgm(bgmId) {
-    let bgmGroup;
-    if (bgmId < 50) bgmGroup = 7;
-    else if (bgmId < 68) bgmGroup = 13;
+    this.wr(1798, 0);
+    let bgmGroup = 7;
+    if (bgmId >= 50 && bgmId < 68) bgmGroup = 13;
     else if (bgmId < 81) bgmGroup = 14;
     else if (bgmId < 92) bgmGroup = 15;
-    else bgmGroup = 7;
     this.wr(2044, bgmGroup);
     const dataAddr = AudioRom.readBgmPointer(bgmId);
     if (dataAddr === 0) return;
-    let offset = 0;
-    for (let i = 0; i < 64; i++) {
-      const b = AudioRom.readBgmData(dataAddr + i);
-      if (b >= 128) {
-        offset = i;
-        break;
-      }
+    let pos = 0;
+    if (AudioRom.readBgmData(dataAddr + pos) === 255) pos++;
+    for (let i = 0; i < 8 && pos + 2 < 16384; i++) {
+      const chNum = AudioRom.readBgmData(dataAddr + pos);
+      if (chNum >= 128) break;
+      const trackLo = AudioRom.readBgmData(dataAddr + pos + 1);
+      const trackHi = AudioRom.readBgmData(dataAddr + pos + 2);
+      pos += 3;
+      const trackAddr = trackLo | trackHi << 8;
+      if (trackAddr < 32768 || trackAddr > 49151) continue;
+      const internalCh = chNum >= 4 ? chNum : chNum + 4;
+      this.initChannel(internalCh, trackAddr);
     }
-    const streamAddr = dataAddr + offset;
-    const chBase = 1831;
-    this.wrPtr(chBase, chBase + 1, streamAddr);
-    this.wrPtr(chBase + 2, chBase + 3, streamAddr);
-    this.wr(chBase + 4, 0);
-    this.wr(chBase + 5, 15);
-    this.wr(chBase + 6, 0);
-    this.wr(chBase + 7, 0);
-    this.wr(chBase + 8, 0);
-    this.wr(1799, 1);
-    this.wr(1800, 1);
-    this.wr(1801, 0);
-    this.wr(1802, 0);
-    this.wr(1798, 1);
-    this.sub83CB();
     this.wrApu(APU_STATUS, 15);
-    this.wrApu(APU_PULSE1_CTRL, 63);
   }
-  // ════════════════════════════════════════════════════════════
-  // SE 启动 ($8349)
-  // ════════════════════════════════════════════════════════════
-  startSe(seId, slot) {
-    void slot;
+  /** 初始化单个通道 */
+  initChannel(ch, trackAddr) {
+    const chBase = CH_STATE_BASE + ch * 16;
+    const counterBase = CH_COUNTER_BASE + ch * 4;
+    this.wrPtr(chBase, chBase + 1, trackAddr);
+    this.wrPtr(chBase + 2, chBase + 3, trackAddr);
+    this.wr(chBase + 4, 0);
+    const pm = ch & 3;
+    this.wr(chBase + 5, pm === 1 ? 128 : pm === 2 ? 15 : 0);
+    this.wr(chBase + 6, 48);
+    this.wr(chBase + 7, 0);
+    this.wr(chBase + 8, 128);
+    this.wr(chBase + 9, 15);
+    this.wr(counterBase, 1);
+    this.wr(counterBase + 1, 1);
+    this.wr(counterBase + 2, 1);
+    this.wr(counterBase + 3, 0);
+    let bit = 1;
+    for (let i = 0; i < ch; i++) bit = bit << 1 & 255;
+    this.wr(1798, this.rd(1798) | bit);
+    this.wr(counterBase, 0);
+  }
+  // ════════════════════════════════════════════════════
+  // SE 启动
+  // ════════════════════════════════════════════════════
+  startSe(seId) {
     const seIndex = seId - 1;
     if (seIndex < 0 || seIndex >= 100) return;
     const seDataAddr = AudioRom.readSePointer(seIndex);
     if (seDataAddr === 0) return;
-    this.wr(1798, this.rd(1798) | 8);
+    let pos = 0;
+    let seBank = 13;
+    if (seId >= 68 && seId < 81) seBank = 14;
+    else if (seId >= 81) seBank = 15;
+    const readSeByte = (addr) => {
+      if (addr >= 32768 && addr <= 40959) {
+        const bankData = seBank === 13 ? AudioRom.readBank12Byte : null;
+        return AudioRom.readBank12Byte(addr);
+      }
+      return AudioRom.readBank12Byte(addr);
+    };
+    const firstByte = readSeByte(seDataAddr);
+    if (firstByte & 128) {
+      this.wrApu(APU_STATUS, 15);
+      return;
+    }
+    let offset = 0;
+    for (let i = 0; i < 8 && offset + 2 < 16384; i++) {
+      const chNum = readSeByte(seDataAddr + offset);
+      if (chNum >= 128) break;
+      const trackLo = readSeByte(seDataAddr + offset + 1);
+      const trackHi = readSeByte(seDataAddr + offset + 2);
+      offset += 3;
+      const trackAddr = trackLo | trackHi << 8;
+      if (trackAddr < 32768 || trackAddr > 49151) continue;
+      const internalCh = chNum >= 4 ? chNum : chNum + 4;
+      this.initChannel(internalCh, trackAddr);
+    }
     this.wrApu(APU_STATUS, 15);
   }
-  // ════════════════════════════════════════════════════════════
-  // 帧推进阶段1 ($80CA-$811B): 8 通道 tick
-  // ════════════════════════════════════════════════════════════
-  phase1Loop() {
-    while (this.rd(243) > 0) {
-      const enable = this.rd(1798);
-      if ((enable & 1) !== 0) {
-        this.wr(1798, enable | 128);
-        const x = this.rd(242);
-        const noteCnt = this.rd(1799 + x) - 1 & 255;
-        this.wr(1799 + x, noteCnt);
-        if (noteCnt === 0) {
-          this.sub83CB();
-          this.writeChannelApu(x >> 2);
-        }
-        const x2 = this.rd(242);
-        const envCnt = this.rd(1801 + x2) - 1 & 255;
-        this.wr(1801 + x2, envCnt);
-        if (envCnt === 0) {
-          this.reloadEnvelope(x2);
-        }
-        this.sub81DB();
+  // ════════════════════════════════════════════════════
+  // Phase 1: 8 通道 tick（$80CA-$811B）
+  // ════════════════════════════════════════════════════
+  phase1() {
+    let mask = this.rd(1798);
+    for (let ch = 0; ch < NUM_CH; ch++) {
+      const chBit = 1 << ch;
+      if (!(mask & chBit)) {
+        mask = mask >> 1 | mask & 128;
+        this.wr(1798, mask);
+        this.wrPtr(240, 241, this.rdPtr(240, 241) + 16 & 65535);
+        this.wr(242, this.rd(242) + 4 & 255);
+        this.wr(243, this.rd(243) - 1 & 255);
+        continue;
       }
-      const f0 = this.rdPtr(240, 241);
-      this.wrPtr(240, 241, f0 + 16 & 65535);
+      mask = mask >> 1 | 128;
+      this.wr(1798, mask);
+      const x = ch * 4;
+      let dl = this.rd(1799 + x) - 1 & 255;
+      this.wr(1799 + x, dl);
+      if (dl === 0) {
+        this.sub83CB(ch);
+      }
+      let dh = this.rd(1800 + x) - 1 & 255;
+      this.wr(1800 + x, dh);
+      if (dh === 0) {
+        this.wr(1800 + x, this.rd(1799 + x) || 1);
+      }
+      this.sub81DB(ch);
+      this.wrPtr(240, 241, this.rdPtr(240, 241) + 16 & 65535);
       this.wr(242, this.rd(242) + 4 & 255);
       this.wr(243, this.rd(243) - 1 & 255);
     }
   }
-  /** 直接写通道 APU 寄存器（频率+控制） */
-  writeChannelApu(ch2) {
-    const chBase = 1831 + ch2 * 16;
-    const apuBase = CHANNEL_APU_BASE[ch2] ?? APU_PULSE1_CTRL;
-    const ctrl = this.rd(chBase + 6);
-    const freqLo = this.rd(chBase + 7);
-    const freqHi = this.rd(chBase + 8) & 127;
-    const volume = this.rd(chBase + 5) & 15;
-    if (ch2 === 0 || ch2 === 1) {
-      this.wrApu(apuBase, 48 | volume);
-      this.wrApu(apuBase + 1, 8);
-      this.wrApu(apuBase + 2, freqLo);
-      this.wrApu(apuBase + 3, freqHi | 8);
-    } else if (ch2 === 2) {
-      this.wrApu(16392, 128 | volume);
-      this.wrApu(16394, freqLo);
-      this.wrApu(16395, freqHi | 128);
-    } else if (ch2 === 3) {
-      this.wrApu(16396, 48 | volume);
-      this.wrApu(16398, freqLo & 15);
-      this.wrApu(16399, 8);
+  // ════════════════════════════════════════════════════
+  // Phase 2: APU 寄存器写入（$8129-$8161）
+  // ════════════════════════════════════════════════════
+  phase2() {
+    const groups = [
+      { g: 3, mask: 17, chLow: 0, chHigh: 4 },
+      // SQ1
+      { g: 2, mask: 34, chLow: 1, chHigh: 5 },
+      // SQ2
+      { g: 1, mask: 68, chLow: 2, chHigh: 6 },
+      // TRI
+      { g: 0, mask: 136, chLow: 3, chHigh: 7 }
+      // NOISE
+    ];
+    const chMask = this.rd(1798);
+    for (const slot of groups) {
+      if (!(chMask & slot.mask)) continue;
+      const ch = chMask & 1 << slot.chLow ? slot.chLow : slot.chHigh;
+      this.writeApuReg(ch, slot.g);
     }
   }
-  // ════════════════════════════════════════════════════════════
-  // 帧推进阶段2 ($811D-$8162): 8 通道 APU 写
-  // ════════════════════════════════════════════════════════════
-  phase2Loop() {
-    this.wrPtr(240, 241, 1831);
-    this.wr(252, 39);
-    this.wr(253, 7);
-    this.wr(242, 3);
-    this.wr(243, 17);
-    while (true) {
-      const f3 = this.rd(243);
-      const mask = f3 & 15;
-      if (mask !== 0) {
-        const f0 = this.rdPtr(240, 241);
-        this.wrPtr(240, 241, f0 + 64 & 65535);
-        this.sub816E();
-      }
-      const fc = this.rdPtr(252, 253);
-      this.wrPtr(252, 253, fc + 16 & 65535);
-      this.wrPtr(240, 241, this.rdPtr(252, 253));
-      this.wr(243, this.rd(243) << 1 & 255);
-      const f2 = this.rd(242) - 1 & 255;
-      this.wr(242, f2);
-      if ((f2 & 128) !== 0) break;
-    }
-  }
-  // ════════════════════════════════════════════════════════════
-  // $81DB: 音高计算 (包络衰减 + 频率偏移)
-  // ════════════════════════════════════════════════════════════
-  sub81DB() {
-    const paramPtr = this.rdPtr(240, 241);
-    const p5 = this.rd(paramPtr + 5);
-    let f6 = p5 & 240;
-    let f7;
-    if ((p5 & 32) !== 0) {
-      f7 = 15;
+  /** $816E: 写 APU 寄存器 */
+  writeApuReg(ch, group) {
+    const chBase = CH_STATE_BASE + ch * 16;
+    const isTri = group === 1;
+    const apuBase = 16384 + (group ^ 3) * 4;
+    const volByte = isTri ? this.rd(chBase + 5) : this.rd(chBase + 6);
+    if (isTri) {
+      this.wrApu(apuBase, volByte & 15 | 128);
     } else {
-      f7 = p5 & 15;
-      const f3 = this.rd(243);
-      const y = f3 - 1 & 255;
-      const decay = this.rd(1999 + y);
+      this.wrApu(apuBase, volByte | 48);
+    }
+    const sweepEnabled = (this.rd(chBase + 5) & 16) !== 0;
+    if (!sweepEnabled) {
+      this.wrApu(apuBase + 1, 8);
+    }
+    if (!sweepEnabled || (this.rd(chBase + 8) & 128) !== 0) {
+      if (sweepEnabled) {
+        this.wr(chBase + 8, this.rd(chBase + 8) & 127);
+      }
+      const freqLo = this.rd(chBase + 7);
+      this.wrApu(apuBase + 2, freqLo);
+      const freqHi = this.rd(chBase + 8) & 7;
+      this.wrApu(apuBase + 3, freqHi | 24);
+    }
+  }
+  // ════════════════════════════════════════════════════
+  // $81DB: 音高计算（包络衰减 + 频率偏移）
+  // ════════════════════════════════════════════════════
+  sub81DB(ch) {
+    const chBase = CH_STATE_BASE + ch * 16;
+    const volCtrl = this.rd(chBase + 5);
+    const hiNib = volCtrl & 240;
+    let vol;
+    if (hiNib & 32) {
+      vol = 15;
+    } else {
+      vol = volCtrl & 15;
+      const decayIdx = ch;
+      const decay = this.rd(1999 + decayIdx);
       if (decay !== 0) {
         const newDecay = decay - 1 & 255;
-        this.wr(1999 + y, newDecay);
+        this.wr(1999 + decayIdx, newDecay);
         if (newDecay === 0) {
-          f7 = f7 + 1 & 255;
-          if (f7 >= 15) {
-            f7 = 0;
-            this.wr(2007 + y, 0);
-            this.wr(2024, 128);
-          }
+          vol = vol + 1 & 255;
+          if (vol > 15) vol = 15;
         }
       }
     }
-    const combined = f7 | f6;
-    this.wr(paramPtr + 5, combined);
-    f7 = combined & 15;
-    const x = this.rd(242);
-    let a = this.rd(1802 + x);
-    a = a - f7 & 255;
-    if ((a & 128) !== 0) a = 0;
-    a = a | f6;
-    this.wr(paramPtr + 6, a);
+    const noteDur = this.rd(1801 + ch * 4);
+    let finalVol = noteDur - vol;
+    if (finalVol < 0) finalVol = 0;
+    finalVol |= hiNib;
+    this.wr(chBase + 6, finalVol);
   }
-  // ════════════════════════════════════════════════════════════
-  // $816E: APU 寄存器写入
-  // ════════════════════════════════════════════════════════════
-  sub816E() {
-    const ch2 = this.rd(242);
-    const apuBase = CHANNEL_APU_BASE[(3 ^ ch2) & 3];
-    const paramPtr = this.rdPtr(240, 241);
-    let ctrl = this.rd(paramPtr + 6);
-    this.wr(251, ch2);
-    if (ch2 === 1) {
-      ctrl = ctrl & 15 | 128;
-    } else {
-      ctrl = ctrl | 48;
-    }
-    this.wrApu(apuBase, ctrl);
-    this.wrApu(apuBase + 1, 8);
-    const flag8 = this.rd(paramPtr + 8);
-    if ((flag8 & 128) !== 0) {
-      this.wr(paramPtr + 8, flag8 & 127);
-      const freqLo = this.rd(paramPtr + 7);
-      this.wrApu(apuBase + 2, freqLo);
-      const freqHi = this.rd(paramPtr + 8) | 24;
-      const fb = this.rd(251);
-      if (fb !== 0 && fb !== 1) {
-        const cached = this.rd(2016 + fb);
-        if (freqHi === cached) return;
-      }
-      this.wrApu(apuBase + 3, freqHi);
-      this.wr(2016 + this.rd(251), freqHi);
-    }
-  }
-  // ════════════════════════════════════════════════════════════
-  // $83CB: 命令流解析 (音符结束时调用)
-  // ════════════════════════════════════════════════════════════
-  sub83CB() {
-    const paramPtr = this.rdPtr(240, 241);
-    this.wr(paramPtr + 5, this.rd(paramPtr + 5) & 207);
-    const dataPtr = this.rdPtr(paramPtr, paramPtr + 1);
+  // ════════════════════════════════════════════════════
+  // $83CB: 命令流解析
+  // ════════════════════════════════════════════════════
+  sub83CB(ch) {
+    const chBase = CH_STATE_BASE + ch * 16;
+    const counterBase = CH_COUNTER_BASE + ch * 4;
+    this.wr(chBase + 5, this.rd(chBase + 5) & 207);
+    let dataPtr = this.rdPtr(chBase, chBase + 1);
     if (dataPtr === 0) return;
     let y = 0;
     for (let safety = 0; safety < 512; safety++) {
-      const dataByte = AudioRom.readBgmData(dataPtr + y);
-      if (dataByte < 128) {
+      const b = AudioRom.readBgmData(dataPtr + y);
+      if (b < 128) {
         y++;
-        this.wrPtr(paramPtr, paramPtr + 1, dataPtr + y & 65535);
-        const noteName = dataByte & 15;
-        if (noteName === 12) {
-          this.wr(paramPtr + 5, this.rd(paramPtr + 5) | 32);
+        this.wrPtr(chBase, chBase + 1, dataPtr + y & 65535);
+        if (ch === 3 || ch === 7) {
+          if (b === 16) {
+            this.wr(chBase + 5, this.rd(chBase + 5) | 32);
+          } else {
+            this.wr(chBase + 7, b);
+            this.wr(chBase + 8, 128);
+          }
+          this.wr(2036 + ch, 0);
+          this.wr(1800 + ch * 4, 1);
           return;
         }
-        let freq = readFreq(noteName);
-        let freqLo = freq & 255;
-        let freqHi = freq >> 8 & 255;
-        const octave = dataByte >> 4 & 15;
-        for (let i = 0; i < octave; i++) {
-          const carry = freqHi & 1;
-          freqHi = freqHi >> 1 & 127;
-          freqLo = (freqLo >> 1 | carry << 7) & 255;
+        const semitone = b & 15;
+        if (semitone >= 12) {
+          this.wr(chBase + 5, this.rd(chBase + 5) | 32);
+          this.wr(2036 + ch, 0);
+          this.wr(1800 + ch * 4, 1);
+          return;
         }
-        const ch2 = this.rd(242) >> 2;
-        const transposeFlag = this.rd(2036 + ch2);
-        const transposeVal = this.rd(1959 + ch2);
-        let finalLo, finalHi;
-        if (transposeFlag !== 0) {
-          let r = freqLo - transposeVal;
+        let period = readFreq(semitone);
+        let fLo = period & 255;
+        let fHi = period >> 8 & 7;
+        const octave = b >> 4 & 15;
+        for (let o = 0; o < octave; o++) {
+          const carry = fHi & 1;
+          fHi = fHi >> 1 & 7;
+          fLo = (fLo >> 1 | carry << 7) & 255;
+        }
+        if (fLo < 2 && fHi === 0) fLo = 2;
+        const portamentoVal = this.rd(2036 + ch);
+        const portamentoScratch = this.rd(1959 + ch);
+        if (portamentoVal !== 0) {
+          let r = fLo - portamentoScratch;
           if (r < 0) {
-            finalLo = r & 255;
-            finalHi = freqHi - 1 & 255;
+            fLo = r & 255;
+            fHi = fHi - 1 & 7;
           } else {
-            finalLo = r & 255;
-            finalHi = freqHi;
+            fLo = r & 255;
           }
         } else {
-          let r = freqLo + transposeVal;
-          finalLo = r & 255;
-          finalHi = freqHi + (r > 255 ? 1 : 0) & 255;
+          let r = fLo + portamentoScratch;
+          fLo = r & 255;
+          fHi = fHi + (r > 255 ? 1 : 0) & 7;
         }
-        this.wr(paramPtr + 7, finalLo);
-        this.wr(1975 + ch2, finalLo);
-        this.wr(paramPtr + 8, finalHi | 128);
-        this.wr(1983 + ch2, finalHi);
-        this.wr(1802 + this.rd(242), finalLo);
+        fHi |= 128;
+        this.wr(chBase + 7, fLo);
+        this.wr(chBase + 8, fHi);
+        this.wr(1975 + ch, fLo);
+        this.wr(1983 + ch, fHi);
+        this.wr(2036 + ch, 0);
+        this.wr(1800 + ch * 4, 1);
         return;
       }
-      if (dataByte >= 224) {
+      if (b >= 224) {
         y++;
-        const cmdIdx = dataByte & 31;
+        const cmdIdx = b & 31;
         const cmdAddr = readCmd(cmdIdx);
-        y = this.executeCommand(ch >> 2, cmdAddr, dataPtr, y);
+        y = this.execCmd(ch, chBase, dataPtr, y, cmdAddr);
         continue;
       }
-      if (dataByte >= 176) {
+      if (b >= 176) {
         y++;
         continue;
       }
-      const durIdx = dataByte & 63;
+      const durIdx = b & 63;
       const tick = readDur(durIdx);
-      const x = this.rd(242);
-      this.wr(1799 + x, tick);
-      this.wr(1800 + x, tick);
+      this.wr(1799 + ch * 4, tick);
+      this.wr(1800 + ch * 4, tick);
       y++;
       continue;
     }
   }
-  // ════════════════════════════════════════════════════════════
-  // 命令执行 ($84C9 分发)
-  // ════════════════════════════════════════════════════════════
-  executeCommand(ch2, cmdAddr, dataPtr, y) {
-    const paramPtr = this.rdPtr(240, 241);
-    if (cmdAddr === 34116) {
-      const songNo = AudioRom.readBgmData(dataPtr + y);
+  // ════════════════════════════════════════════════════
+  // 命令执行
+  // ════════════════════════════════════════════════════
+  execCmd(ch, chBase, dataPtr, y, cmdAddr) {
+    const readByte = () => {
+      const b = AudioRom.readBgmData(dataPtr + y);
+      return b;
+    };
+    const advance = () => {
+      const b = readByte();
       y++;
-      const tablePtr = AudioRom.readBank12U16(34644 + songNo * 2);
-      this.wrPtr(paramPtr + 2, paramPtr + 3, tablePtr);
-      return y;
+      return b;
+    };
+    switch (cmdAddr) {
+      case 34116: {
+        const idx = advance();
+        this.wr(chBase + 4, idx);
+        this.wr(chBase + 5, this.rd(chBase + 5) | 128);
+        return y;
+      }
+      case 34567:
+        return y;
+      // NOP
+      case 34369: {
+        const param = advance();
+        this.wr(chBase + 5, this.rd(chBase + 5) & 240 | param & 15);
+        return y;
+      }
+      case 34416: {
+        const param = advance();
+        if (!(param & 128)) this.wr(2036 + ch, param << 1 & 255);
+        this.wr(1959 + ch, param);
+        return y;
+      }
+      case 34433: {
+        const param = advance();
+        this.wr(1967 + ch, param);
+        this.wr(1991 + ch, 0);
+        return y;
+      }
+      case 34448: {
+        this.wr(1967 + ch, 0);
+        return y;
+      }
+      case 34074: {
+        this.stopAll();
+        return y;
+      }
+      case 34457: {
+        this.playDpcm(0);
+        return y;
+      }
+      case 34488: {
+        this.playDpcm(1);
+        return y;
+      }
+      case 34518: {
+        this.playDpcm(2);
+        return y;
+      }
+      case 34550: {
+        const decay = advance();
+        this.wr(1999 + ch, decay);
+        this.wr(2007 + ch, decay);
+        return y;
+      }
+      case 34389: {
+        this.wrPtr(chBase, chBase + 1, this.rdPtr(chBase + 2, chBase + 3));
+        this.wr(chBase + 4, 0);
+        return y;
+      }
+      default:
+        return y;
     }
-    if (cmdAddr === 34074) {
-      this.stopAll();
-      return y;
-    }
-    if (cmdAddr === 34567) {
-      return y;
-    }
-    if (cmdAddr === 34369) {
-      const vol = AudioRom.readBgmData(dataPtr + y);
-      y++;
-      this.wr(paramPtr + 5, this.rd(paramPtr + 5) & 63 | vol & 192);
-      return y;
-    }
-    if (cmdAddr === 34416) {
-      const t = AudioRom.readBgmData(dataPtr + y);
-      y++;
-      this.wr(2036 + ch2, t >> 7 & 1);
-      this.wr(1959 + ch2, t >> 1 & 127);
-      return y;
-    }
-    if (cmdAddr === 34433) {
-      const m = AudioRom.readBgmData(dataPtr + y);
-      y++;
-      this.wr(1967 + ch2, m);
-      this.wr(1991 + ch2, 0);
-      return y;
-    }
-    if (cmdAddr === 34448) {
-      this.wr(1967 + ch2, 0);
-      return y;
-    }
-    if (cmdAddr === 34457) {
-      this.playDpcm(0);
-      return y;
-    }
-    if (cmdAddr === 34488) {
-      this.playDpcm(1);
-      return y;
-    }
-    if (cmdAddr === 34518) {
-      this.playDpcm(2);
-      return y;
-    }
-    return y;
   }
-  // ════════════════════════════════════════════════════════════
-  // 包络重载
-  // ════════════════════════════════════════════════════════════
-  reloadEnvelope(x) {
-    const paramPtr = this.rdPtr(240, 241);
-    const envPtrLo = this.rd(paramPtr + 2);
-    const envPtrHi = this.rd(paramPtr + 3);
-    const envOff = this.rd(paramPtr + 4);
-    this.wr(paramPtr + 4, envOff + 2 & 255);
-    const envPtr = envPtrHi << 8 | envPtrLo;
-    const envVal = AudioRom.readBgmData(envPtr + envOff);
-    this.wr(1801 + x, envVal);
-    this.wr(1802 + x, AudioRom.readBgmData(envPtr + envOff + 1));
+  // ════════════════════════════════════════════════════
+  // DPCM
+  // ════════════════════════════════════════════════════
+  playDpcm(sample) {
+    const params = [{ a: 0, l: 12 }, { a: 3, l: 32 }, { a: 11, l: 19 }];
+    const s = params[sample];
+    this.wrApu(APU_STATUS, 15);
+    this.wrApu(16400, 15);
+    this.wrApu(16402, s.a);
+    this.wrApu(16403, s.l);
+    this.wrApu(APU_STATUS, 31);
   }
-  // ════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════
   // 停止 SE
-  // ════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════
   stopAllSe() {
     const ENV_STOP = 25, VOL_STOP = 10;
     for (const a of [2e3, 2004, 2008, 2012]) this.wr(a, VOL_STOP);
@@ -41748,185 +43087,7 @@ var AudioService = class {
   }
 };
 
-// src/game/prg/code/audio/ApuPcmRenderer.ts
-var CYCLES_PER_FRAME = 29780;
-var SAMPLE_RATE = 44100;
-var DUTY_TABLE = [
-  [0, 1, 0, 0, 0, 0, 0, 0],
-  // 12.5%
-  [0, 1, 1, 0, 0, 0, 0, 0],
-  // 25%
-  [0, 1, 1, 1, 1, 0, 0, 0],
-  // 50%
-  [1, 0, 0, 1, 1, 1, 1, 1]
-  // 25% negated
-];
-var NOISE_PERIOD_TABLE = [
-  4,
-  8,
-  16,
-  32,
-  64,
-  96,
-  128,
-  160,
-  202,
-  254,
-  380,
-  508,
-  762,
-  1016,
-  2034,
-  4068
-];
-var ApuPcmRendererImpl = class {
-  constructor() {
-    this.pulse1 = this.createPulse();
-    this.pulse2 = this.createPulse();
-    this.triangle = { enabled: false, freq: 0, phase: 0, linearCounter: 0 };
-    this.noise = { enabled: false, volume: 0, envelopeMode: false, period: 0, shiftRegister: 1, timer: 0 };
-    this.statusReg = 0;
-  }
-  createPulse() {
-    return {
-      enabled: false,
-      duty: 0,
-      volume: 0,
-      envelopeMode: false,
-      freq: 0,
-      phase: 0,
-      sweepEnabled: false,
-      sweepNegate: false,
-      sweepShift: 0,
-      sweepPeriod: 0,
-      sweepTimer: 0
-    };
-  }
-  writeRegister(addr, value) {
-    switch (addr) {
-      case 16384:
-        this.writePulseCtrl(this.pulse1, value);
-        break;
-      case 16385:
-        this.writePulseSweep(this.pulse1, value);
-        break;
-      case 16386:
-        this.pulse1.freq = this.pulse1.freq & 65280 | value;
-        break;
-      case 16387:
-        this.pulse1.freq = this.pulse1.freq & 255 | (value & 7) << 8;
-        break;
-      case 16388:
-        this.writePulseCtrl(this.pulse2, value);
-        break;
-      case 16389:
-        this.writePulseSweep(this.pulse2, value);
-        break;
-      case 16390:
-        this.pulse2.freq = this.pulse2.freq & 65280 | value;
-        break;
-      case 16391:
-        this.pulse2.freq = this.pulse2.freq & 255 | (value & 7) << 8;
-        break;
-      case 16392:
-        this.triangle.linearCounter = value & 127;
-        this.triangle.enabled = (value & 128) !== 0;
-        break;
-      case 16394:
-        this.triangle.freq = this.triangle.freq & 65280 | value;
-        break;
-      case 16395:
-        this.triangle.freq = this.triangle.freq & 255 | (value & 7) << 8;
-        break;
-      case 16396:
-        this.noise.volume = value & 15;
-        this.noise.envelopeMode = (value & 16) !== 0;
-        break;
-      case 16398:
-        this.noise.period = value & 15;
-        break;
-      case 16399:
-        break;
-      // 长度计数器（暂不实现）
-      case 16405:
-        this.statusReg = value;
-        this.pulse1.enabled = (value & 1) !== 0;
-        this.pulse2.enabled = (value & 2) !== 0;
-        this.triangle.enabled = (value & 4) !== 0;
-        this.noise.enabled = (value & 8) !== 0;
-        break;
-    }
-  }
-  writePulseCtrl(ch2, value) {
-    ch2.duty = value >> 6 & 3;
-    ch2.envelopeMode = (value & 16) !== 0;
-    ch2.volume = value & 15;
-  }
-  writePulseSweep(ch2, value) {
-    ch2.sweepEnabled = (value & 128) !== 0;
-    ch2.sweepPeriod = value >> 4 & 7;
-    ch2.sweepNegate = (value & 8) !== 0;
-    ch2.sweepShift = value & 7;
-  }
-  renderFrame() {
-    const samples = new Float32Array(Math.floor(SAMPLE_RATE / 60));
-    const cyclesPerSample = CYCLES_PER_FRAME / samples.length;
-    let cycleAccum = 0;
-    for (let s = 0; s < samples.length; s++) {
-      const cycles = Math.floor(cycleAccum + cyclesPerSample) - Math.floor(cycleAccum);
-      cycleAccum += cyclesPerSample;
-      let sum = 0;
-      if (this.pulse1.enabled && this.pulse1.freq > 0) {
-        sum += this.renderPulse(this.pulse1, cycles);
-      }
-      if (this.pulse2.enabled && this.pulse2.freq > 0) {
-        sum += this.renderPulse(this.pulse2, cycles);
-      }
-      if (this.triangle.enabled && this.triangle.freq > 0) {
-        sum += this.renderTriangle(cycles) * 0.5;
-      }
-      if (this.noise.enabled) {
-        sum += this.renderNoise(cycles) * 0.3;
-      }
-      samples[s] = Math.max(-1, Math.min(1, sum));
-    }
-    return samples;
-  }
-  renderPulse(ch2, cycles) {
-    if (ch2.freq === 0) return 0;
-    const period = 16 * (ch2.freq + 1);
-    ch2.phase += cycles / period * 8;
-    ch2.phase %= 8;
-    const wave = DUTY_TABLE[ch2.duty][Math.floor(ch2.phase)];
-    const vol = ch2.envelopeMode ? ch2.volume / 15 : ch2.volume / 15;
-    return wave * vol * 0.3;
-  }
-  renderTriangle(cycles) {
-    const period = 32 * (this.triangle.freq + 1);
-    this.triangle.phase += cycles / period * 32;
-    this.triangle.phase %= 32;
-    const step = Math.floor(this.triangle.phase);
-    if (step < 16) return step / 15;
-    return (31 - step) / 15;
-  }
-  renderNoise(cycles) {
-    const period = NOISE_PERIOD_TABLE[this.noise.period] || 8;
-    this.noise.timer += cycles;
-    let sample = 0;
-    while (this.noise.timer >= period) {
-      this.noise.timer -= period;
-      const bit = this.noise.shiftRegister & 1 ^ this.noise.shiftRegister >> 6 & 1;
-      this.noise.shiftRegister = this.noise.shiftRegister >> 1 | bit << 14;
-    }
-    const vol = this.noise.envelopeMode ? this.noise.volume / 15 : this.noise.volume / 15;
-    sample = this.noise.shiftRegister & 1 ? vol : -vol;
-    return sample;
-  }
-};
-
 // scripts/render_our_wav.ts
-var fs = __toESM(require("fs"));
-var path = __toESM(require("path"));
 function writeWav(samples, sampleRate, outPath) {
   const buf = Buffer.alloc(44 + samples.length * 2);
   buf.write("RIFF", 0);
@@ -41949,26 +43110,28 @@ function writeWav(samples, sampleRate, outPath) {
   fs.writeFileSync(outPath, buf);
 }
 function renderSong(songIdx2, durationSec) {
+  const sampleRate = 44100;
+  const songId2 = SONG_REQUEST_IDS[songIdx2];
+  const samples = [];
+  const nes = {
+    opts: {
+      sampleRate,
+      onAudioSample: (l, r) => samples.push((l + r) / 2)
+    }
+  };
+  const papu = new papu_default(nes);
   const store = new DataStore();
   store.reset();
   const audio = new AudioService(store);
-  const renderer = new ApuPcmRendererImpl();
-  audio.attachApu(renderer);
-  const songId2 = SONG_REQUEST_IDS[songIdx2];
-  console.log(`  \u66F2\u76EE ${songIdx2 + 1}: \u8BF7\u6C42 ID $${songId2.toString(16)}`);
+  audio.attachPapu(papu);
   if (songId2 < 50) {
     audio.playBgm(songId2);
   } else {
     audio.playSe(songId2);
   }
   const totalFrames = Math.ceil(durationSec * 60);
-  const samples = [];
   for (let f = 0; f < totalFrames; f++) {
     audio.update();
-    const frameSamples = renderer.renderFrame();
-    for (let i = 0; i < frameSamples.length; i++) {
-      samples.push(frameSamples[i]);
-    }
   }
   return samples;
 }
@@ -41987,21 +43150,16 @@ if (all) {
       console.log(`\u8DF3\u8FC7 ${i + 1}`);
       continue;
     }
-    console.log(`[${i + 1}/${SONG_COUNT}] \u6E32\u67D3\u4E2D (ID $${id.toString(16)}, ${dur}\u79D2)...`);
+    console.log(`[${i + 1}/${SONG_COUNT}] ID $${id.toString(16)} ${dur}\u79D2...`);
     try {
       const samples = renderSong(i, dur);
       writeWav(samples, 44100, outFile);
-      console.log(`  \u5B8C\u6210: ${samples.length} \u91C7\u6837`);
+      console.log(`  ${samples.length} \u91C7\u6837`);
     } catch (e) {
       console.error(`  \u5931\u8D25: ${e.message}`);
     }
   }
-  console.log("\u5168\u90E8\u5B8C\u6210");
 } else {
-  if (songIdx < 0 || songIdx >= SONG_COUNT) {
-    console.error("\u66F2\u76EE\u53F7\u8D85\u51FA\u8303\u56F4 (1-105)");
-    process.exit(1);
-  }
   console.log(`\u6E32\u67D3\u7B2C ${songIdx + 1} \u9996 (ID $${songId.toString(16)}, ${duration}\u79D2)...`);
   const samples = renderSong(songIdx, duration);
   const outFile = path.join(outDir, `our-song-${String(songIdx + 1).padStart(3, "0")}.wav`);

@@ -21,16 +21,23 @@ import { CHR_BANKS } from '../chr/index';
 import type { GameRuntime, PpuRenderTarget } from './GameRuntime';
 import type { Tsubasa2 } from '../index';
 
-/** MMC3 初始 CHR bank 配置（bank30 INIT_CHR，$C9E9 语义；V0.3 对照 asm 复核） */
+/**
+ * MMC3 初始 CHR bank 配置（bank30 INIT_CHR，$C9E9 语义）。
+ *
+ * Ground truth（core 模拟器探针 scripts/_probe_orig2_out.txt，帧 10+）：
+ *   原始 MMC3 chrBanks = [0,1,2,3,252,113,82,83]
+ *   即 BG 表 $0000 = 1KB bank 0,1,2,3（CHR bank 0 前半）；SPR 表 $1000 = 252,113,82,83。
+ * 此前硬编码 BG=4,5,6,7（CHR bank 0 后半）导致开场画面撕裂，已修正。
+ */
 const INIT_CHR_BANKS: ReadonlyArray<{ bank1k: number; addr: number }> = [
-  { bank1k: 4, addr: 0x0000 }, // BG 表 0, tile 0x00-0x3F
-  { bank1k: 5, addr: 0x0400 }, // BG 表 0, tile 0x40-0x7F
-  { bank1k: 6, addr: 0x0800 }, // BG 表 0, tile 0x80-0xBF
-  { bank1k: 7, addr: 0x0c00 }, // BG 表 0, tile 0xC0-0xFF
-  { bank1k: 14, addr: 0x1000 }, // SPR 表 1, tile 0x00-0x3F
-  { bank1k: 10, addr: 0x1400 }, // SPR 表 1, tile 0x40-0x7F
-  { bank1k: 14, addr: 0x1800 }, // SPR 表 1, tile 0x80-0xBF
-  { bank1k: 10, addr: 0x1c00 }, // SPR 表 1, tile 0xC0-0xFF
+  { bank1k: 0, addr: 0x0000 }, // BG 表 0, tile 0x00-0x3F
+  { bank1k: 1, addr: 0x0400 }, // BG 表 0, tile 0x40-0x7F
+  { bank1k: 2, addr: 0x0800 }, // BG 表 0, tile 0x80-0xBF
+  { bank1k: 3, addr: 0x0c00 }, // BG 表 0, tile 0xC0-0xFF
+  { bank1k: 252, addr: 0x1000 }, // SPR 表 1, tile 0x00-0x3F
+  { bank1k: 113, addr: 0x1400 }, // SPR 表 1, tile 0x40-0x7F
+  { bank1k: 82, addr: 0x1800 }, // SPR 表 1, tile 0x80-0xBF
+  { bank1k: 83, addr: 0x1c00 }, // SPR 表 1, tile 0xC0-0xFF
 ];
 
 /** 从 CHR_BANKS（16×8KB）构建核心 ROM 的 vrom（32×4KB）与 vromTile */
@@ -112,6 +119,10 @@ export class HeadlessRuntime implements GameRuntime {
     nes.ppu = ppu;
     this.mapper = new Mapper4(nes);
     nes.mmap = this.mapper;
+    // PpuTarget.loadChrBank 实现（InterruptService $C9E9 请求表装载 → Mapper4）
+    (ppu as any).loadChrBank = (slot: number, bank1k: number) => {
+      this.mapper.load1kVromBank(bank1k & 0xff, (slot & 7) * 0x400);
+    };
     // 初始 CHR 装载（真实渲染基础）
     this.loadInitChr();
   }

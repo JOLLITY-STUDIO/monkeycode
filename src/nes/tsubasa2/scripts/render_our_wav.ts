@@ -1,10 +1,12 @@
-// 用 AudioService + ApuPcmRenderer 渲染 WAV
-import { DataStore } from '../src/game/prg/data/store/DataStore';
-import { AudioService } from '../src/game/prg/code/audio/AudioService';
-import { AudioRom, SONG_COUNT, SONG_REQUEST_IDS } from '../src/game/prg/data/audio/audio-rom';
-import { ApuPcmRendererImpl } from '../src/game/prg/code/audio/ApuPcmRenderer';
+// 用 AudioService + PAPU 渲染 WAV
 import * as fs from 'fs';
 import * as path from 'path';
+
+// @ts-ignore — PAPU 是 tsnes 移植代码
+import PAPU from '../src/core/papu/index';
+import { DataStore } from '../src/game/prg/data/store/DataStore';
+import { AudioService } from '../src/game/prg/code/audio/AudioService';
+import { SONG_REQUEST_IDS, SONG_COUNT } from '../src/game/prg/data/audio/audio-rom';
 
 function writeWav(samples: number[], sampleRate: number, outPath: string): void {
   const buf = Buffer.alloc(44 + samples.length * 2);
@@ -13,8 +15,8 @@ function writeWav(samples: number[], sampleRate: number, outPath: string): void 
   buf.write('WAVE', 8);
   buf.write('fmt ', 12);
   buf.writeUInt32LE(16, 16);
-  buf.writeUInt16LE(1, 20);  // PCM
-  buf.writeUInt16LE(1, 22);  // mono
+  buf.writeUInt16LE(1, 20);
+  buf.writeUInt16LE(1, 22);
   buf.writeUInt32LE(sampleRate, 24);
   buf.writeUInt32LE(sampleRate * 2, 28);
   buf.writeUInt16LE(2, 32);
@@ -28,69 +30,65 @@ function writeWav(samples: number[], sampleRate: number, outPath: string): void 
   fs.writeFileSync(outPath, buf);
 }
 
-// 渲染单首
 function renderSong(songIdx: number, durationSec: number): number[] {
+  const sampleRate = 44100;
+  const songId = SONG_REQUEST_IDS[songIdx];
+
+  const samples: number[] = [];
+  const nes: any = {
+    opts: {
+      sampleRate,
+      onAudioSample: (l: number, r: number) => samples.push((l + r) / 2),
+    },
+  };
+  const papu = new PAPU(nes);
+
   const store = new DataStore();
   store.reset();
   const audio = new AudioService(store);
-  const renderer = new ApuPcmRendererImpl();
-  // AudioService 写 APU 寄存器 → renderer 合成
-  audio.attachApu(renderer);
+  audio.attachPapu(papu as any);
 
-  const songId = SONG_REQUEST_IDS[songIdx];
-  console.log(`  曲目 ${songIdx + 1}: 请求 ID $${songId.toString(16)}`);
-
-  // 写请求队列触发 BGM/SE
+  // 触发 BGM/SE
   if (songId < 0x32) {
     audio.playBgm(songId);
   } else {
     audio.playSe(songId);
   }
 
-  // 跑帧循环
+  // 跑帧
   const totalFrames = Math.ceil(durationSec * 60);
-  const samples: number[] = [];
   for (let f = 0; f < totalFrames; f++) {
     audio.update();
-    const frameSamples = renderer.renderFrame();
-    for (let i = 0; i < frameSamples.length; i++) {
-      samples.push(frameSamples[i]);
-    }
   }
+
   return samples;
 }
 
 // 主函数
-const songIdx = parseInt(process.argv[2] || '41') - 1;  // 默认第 41 首（第一首 BGM）
+const songIdx = parseInt(process.argv[2] || '41') - 1;
 const songId = SONG_REQUEST_IDS[songIdx];
-const duration = parseInt(process.argv[3] || (songId < 0x32 ? '60' : '5'));  // BGM 60秒, SE 5秒
+const duration = parseInt(process.argv[3] || (songId < 0x32 ? '60' : '5'));
 const all = process.argv[4] === 'all';
 
 const outDir = path.join(__dirname, '..', 'output');
 fs.mkdirSync(outDir, { recursive: true });
 
 if (all) {
-  // 渲染全部 105 首
   for (let i = 0; i < SONG_COUNT; i++) {
     const id = SONG_REQUEST_IDS[i];
-    const dur = id < 0x32 ? 60 : 5;  // BGM 60秒, SE 5秒
+    const dur = id < 0x32 ? 60 : 5;
     const outFile = path.join(outDir, `our-song-${String(i + 1).padStart(3, '0')}.wav`);
     if (fs.existsSync(outFile)) { console.log(`跳过 ${i + 1}`); continue; }
-    console.log(`[${i + 1}/${SONG_COUNT}] 渲染中 (ID $${id.toString(16)}, ${dur}秒)...`);
+    console.log(`[${i + 1}/${SONG_COUNT}] ID $${id.toString(16)} ${dur}秒...`);
     try {
       const samples = renderSong(i, dur);
       writeWav(samples, 44100, outFile);
-      console.log(`  完成: ${samples.length} 采样`);
+      console.log(`  ${samples.length} 采样`);
     } catch (e) {
       console.error(`  失败: ${(e as Error).message}`);
     }
   }
-  console.log('全部完成');
 } else {
-  if (songIdx < 0 || songIdx >= SONG_COUNT) {
-    console.error('曲目号超出范围 (1-105)');
-    process.exit(1);
-  }
   console.log(`渲染第 ${songIdx + 1} 首 (ID $${songId.toString(16)}, ${duration}秒)...`);
   const samples = renderSong(songIdx, duration);
   const outFile = path.join(outDir, `our-song-${String(songIdx + 1).padStart(3, '0')}.wav`);

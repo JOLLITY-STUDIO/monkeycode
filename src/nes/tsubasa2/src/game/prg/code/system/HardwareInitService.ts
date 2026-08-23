@@ -12,6 +12,7 @@
  */
 import type { DataStore } from '../../data/store/DataStore';
 import { RAM_INIT_TABLE, OAM_HIDE_VALUE } from '../../data/tables/ram-init-table';
+import { OPENING_CHR_CMD, OPENING_CHR_REQUEST } from '../../data/scene/opening-data';
 
 export class HardwareInitService {
   constructor(readonly store: DataStore) {}
@@ -29,6 +30,12 @@ export class HardwareInitService {
     store.loadInitTable(RAM_INIT_TABLE);
     // $CB8B: OAM 隐藏
     for (let i = 0x200; i < 0x300; i++) store.writeByte(i, OAM_HIDE_VALUE);
+    // 开场 CHR 请求表（$C9E9 装载；ground truth = 模拟器探针 chrBanks [0,1,2,3,252,113,82,83]）
+    // 原版 boot $CA22-$CA2F 置 ram_0490=0/ram_0491=2；SPR 区（252/113/82/83）为开场实际值
+    store.writeByte(0x0022, OPENING_CHR_CMD);
+    for (let i = 0; i < OPENING_CHR_REQUEST.length; i++) {
+      store.writeByte(0x0490 + i, OPENING_CHR_REQUEST[i]);
+    }
     // 帧计数归零
     store.frame = 0;
   }

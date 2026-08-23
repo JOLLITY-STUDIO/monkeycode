@@ -184,6 +184,21 @@ export const OPENING_CHR_CONFIGS: readonly (readonly number[])[] = [
   /* 0x1f @$a4d6 */ [0x3c, 0x3e, 0x00, 0x04, 0x08, 0x00],
 ];
 
+/**
+ * 开场 CHR 请求表（ram_0022 + ram_0490-$0497，由 NMI $C9E9 装载到 MMC3）。
+ *
+ * Ground truth（core 模拟器探针 scripts/_probe_orig2_out.txt，帧 10+）：
+ *   原始 MMC3 chrBanks = [0,1,2,3,252,113,82,83]
+ *   BG 表 $0000（f_bgPatternTable=0）/ SPR 表 $1000（f_spPatternTable=1）
+ *
+ * $C9E9 解码（cmd 基址 0、chrSel 0）逆推请求表：
+ *   slot0/1 = req0, req0+1 → 0,1  （原版 boot $CA2A STA $0490=0）
+ *   slot2/3 = req1, req1+1 → 2,3  （原版 boot $CA2F STA $0491=2）
+ *   slot4..7 = req4..req7 → 252,113,82,83（探针原值）
+ */
+export const OPENING_CHR_CMD = 0x00; // ram_0022：命令基址 0，chrSel 0
+export const OPENING_CHR_REQUEST: readonly number[] = [0, 2, 0, 0, 252, 113, 82, 83];
+
 /** 场景 3 的 tile 数据（6 列 × 8 行 = 48 字节，按行优先） */
 export const OPENING_SCENE3_TILES: readonly number[] = [
   0x00, 0x04, 0x05, 0x06, 0x07, 0x08,

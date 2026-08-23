@@ -40,6 +40,9 @@ export class InterruptService {
   private router: BootRouter | null = null;
   private audio: AudioService | null = null;
 
+  /** 已应用 CHR 槽位缓存（$C9E9 每帧重放，仅装载变化槽位） */
+  private readonly chrSlots: number[] = new Array(8).fill(-1);
+
   constructor(
     readonly store: DataStore,
     readonly input: InputService,
@@ -90,6 +93,8 @@ export class InterruptService {
     ppu.regVT = (sy >> 3) & 31;
     ppu.regFV = sy & 7;
     ppu.regV = (sy >> 5) & 1;
+    // CHR bank 请求表（$C9E9 语义：ram_0022 + ram_0490-$0497 → MMC3 8 slot）
+    this.applyChrRequest(ppu);
     // $05E8 渲染缓冲（bank02 $8019 语义）：[count, addrLo, addrHi, data×count...]，0 终止
     // count bit7=1 时 CTRL 列增量（+32），否则行增量（+1）
     this.flushNtBuffer(ppu);
@@ -145,5 +150,55 @@ export class InterruptService {
     for (let i = 0; i < 0x10; i++) {
       ppu.writeMem(0x3f10 + i, store.readByte(0x063a + i));
     }
+  }
+
+  /**
+   * $C9E9 CHR bank 请求表装载（MMC3，逐指令对照 asm/bank30/code_main.s $C9E9-$CA21）。
+   * 由 ram_0022（命令基址 + chrSel）+ ram_0490-$0497（8 字节请求表）解码为 8 个 1KB slot。
+   */
+  private applyChrRequest(ppu: PpuTarget): void {
+    if (!ppu.loadChrBank) return;
+    const store = this.store;
+    const base = store.readByte(0x0022);
+    const cmdBase = base & 7;
+    const chrSel = (base >> 7) & 1;
+    let x = chrSel !== 0 ? 4 : 0;
+    // $C9F1: $8000=cmd, $8001=ram_0490+X；$8000=cmd|1, $8001=ram_0491+X
+    this.mmc3ChrWrite(ppu, cmdBase, chrSel, store.readByte(0x0490 + x));
+    this.mmc3ChrWrite(ppu, cmdBase | 1, chrSel, store.readByte(0x0491 + x));
+    x ^= 4;
+    // $CA0F: for Y=2..5: $8000=Y|ram_0022, $8001=ram_0490+X++
+    for (let y = 2; y <= 5; y++) {
+      this.mmc3ChrWrite(ppu, y | base, chrSel, store.readByte(0x0490 + x));
+      x++;
+    }
+  }
+
+  /** MMC3 $8000/$8001 CHR 写解码（Mapper4.executeCommand 语义；cmd 6/7=PRG 无语义） */
+  private mmc3ChrWrite(ppu: PpuTarget, cmd: number, chrSel: number, arg: number): void {
+    const bank = arg & 0xff;
+    switch (cmd & 7) {
+      case 0:
+        if (chrSel === 0) { this.loadChrSlot(ppu, 0, bank); this.loadChrSlot(ppu, 1, bank + 1); }
+        else { this.loadChrSlot(ppu, 4, bank); this.loadChrSlot(ppu, 5, bank + 1); }
+        break;
+      case 1:
+        if (chrSel === 0) { this.loadChrSlot(ppu, 2, bank); this.loadChrSlot(ppu, 3, bank + 1); }
+        else { this.loadChrSlot(ppu, 6, bank); this.loadChrSlot(ppu, 7, bank + 1); }
+        break;
+      case 2: this.loadChrSlot(ppu, chrSel === 0 ? 4 : 0, bank); break;
+      case 3: this.loadChrSlot(ppu, chrSel === 0 ? 5 : 1, bank); break;
+      case 4: this.loadChrSlot(ppu, chrSel === 0 ? 6 : 2, bank); break;
+      case 5: this.loadChrSlot(ppu, chrSel === 0 ? 7 : 3, bank); break;
+      default: break; // cmd 6/7 = PRG ROM page，H5 无语义
+    }
+  }
+
+  /** 装载单个 1KB CHR slot（值未变化时跳过，避免每帧重复拷贝） */
+  private loadChrSlot(ppu: PpuTarget, slot: number, bank1k: number): void {
+    const b = bank1k & 0xff;
+    if (this.chrSlots[slot] === b) return;
+    this.chrSlots[slot] = b;
+    ppu.loadChrBank!(slot, b);
   }
 }

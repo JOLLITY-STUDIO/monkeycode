@@ -1,0 +1,546 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.AudioService = void 0;
+const audio_rom_1 = require("../../data/audio/audio-rom");
+// APU 寄存器
+const APU_STATUS = 0x4015;
+// 通道状态块基址（$0727，每通道 16 字节）
+const CH_STATE_BASE = 0x0727;
+// 计数器基址（$0707，每通道 4 字节）
+const CH_COUNTER_BASE = 0x0707;
+// 通道数
+const NUM_CH = 8;
+// $870D 频率表
+function readFreq(idx) { return audio_rom_1.AudioRom.readBank12U16(0x870D + idx * 2); }
+// $8725 时值表
+function readDur(idx) { return audio_rom_1.AudioRom.readBank12Byte(0x8725 + idx); }
+// $84DA 命令跳转表
+function readCmd(idx) { return audio_rom_1.AudioRom.readBank12U16(0x84DA + idx * 2); }
+class AudioService {
+    constructor(store) {
+        this.papu = null;
+        this.store = store;
+    }
+    /** 注入 PAPU 实例 */
+    attachPapu(papu) { this.papu = papu; }
+    // RAM 辅助
+    rd(addr) { return this.store.readByte(addr); }
+    wr(addr, v) { this.store.writeByte(addr, v & 0xFF); }
+    rdPtr(lo, hi) { return (this.rd(hi) << 8) | this.rd(lo); }
+    wrPtr(lo, hi, v) { this.wr(lo, v & 0xFF); this.wr(hi, (v >> 8) & 0xFF); }
+    wrApu(addr, v) { this.papu?.writeReg(addr, v & 0xFF); }
+    // ════════════════════════════════════════════════════
+    // 公共 API
+    // ════════════════════════════════════════════════════
+    update() {
+        this.consumeQueue();
+        // Phase 1: 8 通道 tick
+        this.wrPtr(0x00F0, 0x00F1, CH_STATE_BASE);
+        this.wr(0x00F2, 0);
+        this.wr(0x00F3, NUM_CH);
+        this.phase1();
+        // Phase 2: APU 寄存器写入
+        this.phase2();
+        // PAPU 帧推进（生成采样）
+        if (this.papu) {
+            let remaining = 29830; // CYCLES_PER_FRAME
+            while (remaining > 0) {
+                const n = remaining < 32 ? remaining : 32;
+                this.papu.clockFrameCounter(n);
+                remaining -= n;
+            }
+        }
+        // 全局静音
+        if (this.rd(0x07E9) !== 0)
+            this.wrApu(APU_STATUS, 0);
+    }
+    playBgm(bgmId) { this.wr(0x0700, bgmId & 0xFF); }
+    playSe(seId) {
+        for (let s = 1; s <= 5; s++) {
+            if (this.rd(0x0700 + s) === 0) {
+                this.wr(0x0700 + s, seId & 0xFF);
+                return;
+            }
+        }
+        this.wr(0x0705, seId & 0xFF);
+    }
+    stopAll() {
+        for (let i = 0; i < 6; i++)
+            this.wr(0x0700 + i, 0);
+        this.wrApu(APU_STATUS, 0);
+        this.wr(0x0706, 0);
+    }
+    // ════════════════════════════════════════════════════
+    // 请求队列消费
+    // ════════════════════════════════════════════════════
+    consumeQueue() {
+        const bgmReq = this.rd(0x0700);
+        if (bgmReq !== 0 && bgmReq < 0x32) {
+            this.startBgm(bgmReq);
+            this.wr(0x0700, 0);
+        }
+        for (let slot = 1; slot <= 5; slot++) {
+            const seReq = this.rd(0x0700 + slot);
+            if (seReq === 0)
+                continue;
+            if (seReq >= 0x72) {
+                this.wr(0x0700 + slot, 0);
+                continue;
+            }
+            if (seReq === 0x31) {
+                this.stopAllSe();
+                this.wr(0x0700 + slot, 0);
+                continue;
+            }
+            this.startSe(seReq);
+            this.wr(0x0700 + slot, 0);
+        }
+    }
+    // ════════════════════════════════════════════════════
+    // BGM 启动 — 解析头部，初始化各通道
+    // ════════════════════════════════════════════════════
+    startBgm(bgmId) {
+        this.wr(0x0706, 0); // 清通道使能
+        // 写 $07FC（BGM bank 组索引）
+        let bgmGroup = 0x07;
+        if (bgmId >= 0x32 && bgmId < 0x44)
+            bgmGroup = 0x0D;
+        else if (bgmId < 0x51)
+            bgmGroup = 0x0E;
+        else if (bgmId < 0x5C)
+            bgmGroup = 0x0F;
+        this.wr(0x07FC, bgmGroup);
+        // 从 BGM 指针表读取数据起始地址
+        const dataAddr = audio_rom_1.AudioRom.readBgmPointer(bgmId);
+        if (dataAddr === 0)
+            return;
+        // 解析 BGM 头部：[chNum, trackLo, trackHi] × N
+        // chNum >= 0x80 或 $FF = 头部结束
+        let pos = 0;
+        // 跳过 $FF 前缀
+        if (audio_rom_1.AudioRom.readBgmData(dataAddr + pos) === 0xFF)
+            pos++;
+        for (let i = 0; i < 8 && pos + 2 < 0x4000; i++) {
+            const chNum = audio_rom_1.AudioRom.readBgmData(dataAddr + pos);
+            if (chNum >= 0x80)
+                break; // 头部结束
+            const trackLo = audio_rom_1.AudioRom.readBgmData(dataAddr + pos + 1);
+            const trackHi = audio_rom_1.AudioRom.readBgmData(dataAddr + pos + 2);
+            pos += 3;
+            const trackAddr = trackLo | (trackHi << 8);
+            if (trackAddr < 0x8000 || trackAddr > 0xBFFF)
+                continue;
+            // 通道映射：chNum 0-3 → 内部 ch 4-7
+            const internalCh = chNum >= 4 ? chNum : chNum + 4;
+            this.initChannel(internalCh, trackAddr);
+        }
+        this.wrApu(APU_STATUS, 0x0F);
+    }
+    /** 初始化单个通道 */
+    initChannel(ch, trackAddr) {
+        const chBase = CH_STATE_BASE + ch * 0x10;
+        const counterBase = CH_COUNTER_BASE + ch * 4;
+        // 通道状态块
+        this.wrPtr(chBase, chBase + 1, trackAddr); // offset 0-1: 数据指针
+        this.wrPtr(chBase + 2, chBase + 3, trackAddr); // offset 2-3: 音符表指针
+        this.wr(chBase + 4, 0); // offset 4: 索引
+        // volCtrl: ch5(Pulse2)=0x80, ch6(Triangle)=0x0F, 其他=0x00
+        const pm = ch & 3;
+        this.wr(chBase + 5, pm === 1 ? 0x80 : pm === 2 ? 0x0F : 0x00);
+        this.wr(chBase + 6, 0x30); // apuVol
+        this.wr(chBase + 7, 0); // freqLo
+        this.wr(chBase + 8, 0x80); // freqHi (bit7=标志)
+        this.wr(chBase + 9, 0x0F); // stkPtr
+        // 计数器
+        this.wr(counterBase, 1); // durLo = 1
+        this.wr(counterBase + 1, 1); // durHi = 1
+        this.wr(counterBase + 2, 1); // noteDur
+        this.wr(counterBase + 3, 0); // nextDurHi
+        // 通道使能位
+        let bit = 1;
+        for (let i = 0; i < ch; i++)
+            bit = (bit << 1) & 0xFF;
+        this.wr(0x0706, this.rd(0x0706) | bit);
+        // 立即触发音序器
+        this.wr(counterBase, 0); // durLo=0 → 触发 sub83CB
+    }
+    // ════════════════════════════════════════════════════
+    // SE 启动
+    // ════════════════════════════════════════════════════
+    startSe(seId) {
+        const seIndex = seId - 1;
+        if (seIndex < 0 || seIndex >= 100)
+            return;
+        // SE 指针表 @ $8BDA
+        const seDataAddr = audio_rom_1.AudioRom.readSePointer(seIndex);
+        if (seDataAddr === 0)
+            return;
+        // SE 数据在 bank13/14/15（根据 seId 范围选择 bank）
+        // 解析 SE 头部（与 BGM 相同格式）
+        let pos = 0;
+        // SE 数据用 AudioRom.readByte 自动 bankswitch
+        // 但 SE bank 取决于 seId：
+        //   $32-$43 → bank13, $44-$50 → bank14, $51-$5B → bank15
+        let seBank = 13;
+        if (seId >= 0x44 && seId < 0x51)
+            seBank = 14;
+        else if (seId >= 0x51)
+            seBank = 15;
+        // 读 SE 数据（切换到对应 bank）
+        const readSeByte = (addr) => {
+            if (addr >= 0x8000 && addr <= 0x9FFF) {
+                // bank7(bank12), bank13, bank14, bank15 之一
+                const bankData = seBank === 13 ? audio_rom_1.AudioRom.readBank12Byte : null; // 简化
+                return audio_rom_1.AudioRom.readBank12Byte(addr); // TODO: 需要按 seBank 切换
+            }
+            return audio_rom_1.AudioRom.readBank12Byte(addr);
+        };
+        const firstByte = readSeByte(seDataAddr);
+        if (firstByte & 0x80) {
+            this.wrApu(APU_STATUS, 0x0F);
+            return;
+        }
+        // 解析通道头部
+        let offset = 0;
+        for (let i = 0; i < 8 && offset + 2 < 0x4000; i++) {
+            const chNum = readSeByte(seDataAddr + offset);
+            if (chNum >= 0x80)
+                break;
+            const trackLo = readSeByte(seDataAddr + offset + 1);
+            const trackHi = readSeByte(seDataAddr + offset + 2);
+            offset += 3;
+            const trackAddr = trackLo | (trackHi << 8);
+            if (trackAddr < 0x8000 || trackAddr > 0xBFFF)
+                continue;
+            const internalCh = chNum >= 4 ? chNum : chNum + 4;
+            this.initChannel(internalCh, trackAddr);
+        }
+        this.wrApu(APU_STATUS, 0x0F);
+    }
+    // ════════════════════════════════════════════════════
+    // Phase 1: 8 通道 tick（$80CA-$811B）
+    // ════════════════════════════════════════════════════
+    phase1() {
+        let mask = this.rd(0x0706);
+        for (let ch = 0; ch < NUM_CH; ch++) {
+            const chBit = 1 << ch;
+            if (!(mask & chBit)) {
+                mask = (mask >> 1) | (mask & 0x80);
+                this.wr(0x0706, mask);
+                // 推进指针
+                this.wrPtr(0x00F0, 0x00F1, (this.rdPtr(0x00F0, 0x00F1) + 0x10) & 0xFFFF);
+                this.wr(0x00F2, (this.rd(0x00F2) + 4) & 0xFF);
+                this.wr(0x00F3, (this.rd(0x00F3) - 1) & 0xFF);
+                continue;
+            }
+            // 通道活跃
+            mask = (mask >> 1) | 0x80;
+            this.wr(0x0706, mask);
+            const x = ch * 4; // $00F2 = ch * 4
+            // DEC durLo
+            let dl = (this.rd(0x0707 + x) - 1) & 0xFF;
+            this.wr(0x0707 + x, dl);
+            if (dl === 0) {
+                this.sub83CB(ch);
+            }
+            // DEC durHi
+            let dh = (this.rd(0x0708 + x) - 1) & 0xFF;
+            this.wr(0x0708 + x, dh);
+            if (dh === 0) {
+                // 重载 durHi
+                this.wr(0x0708 + x, this.rd(0x0707 + x) || 1);
+            }
+            // 音高计算
+            this.sub81DB(ch);
+            // 推进指针
+            this.wrPtr(0x00F0, 0x00F1, (this.rdPtr(0x00F0, 0x00F1) + 0x10) & 0xFFFF);
+            this.wr(0x00F2, (this.rd(0x00F2) + 4) & 0xFF);
+            this.wr(0x00F3, (this.rd(0x00F3) - 1) & 0xFF);
+        }
+    }
+    // ════════════════════════════════════════════════════
+    // Phase 2: APU 寄存器写入（$8129-$8161）
+    // ════════════════════════════════════════════════════
+    phase2() {
+        // 4 组 APU 写入
+        const groups = [
+            { g: 3, mask: 0x11, chLow: 0, chHigh: 4 }, // SQ1
+            { g: 2, mask: 0x22, chLow: 1, chHigh: 5 }, // SQ2
+            { g: 1, mask: 0x44, chLow: 2, chHigh: 6 }, // TRI
+            { g: 0, mask: 0x88, chLow: 3, chHigh: 7 }, // NOISE
+        ];
+        const chMask = this.rd(0x0706);
+        for (const slot of groups) {
+            if (!(chMask & slot.mask))
+                continue;
+            const ch = (chMask & (1 << slot.chLow)) ? slot.chLow : slot.chHigh;
+            this.writeApuReg(ch, slot.g);
+        }
+    }
+    /** $816E: 写 APU 寄存器 */
+    writeApuReg(ch, group) {
+        const chBase = CH_STATE_BASE + ch * 0x10;
+        const isTri = group === 1;
+        // APU 基址: group 3→$4000(SQ1), 2→$4004(SQ2), 1→$4008(TRI), 0→$400C(NOISE)
+        const apuBase = 0x4000 + (group ^ 3) * 4;
+        const volByte = isTri ? this.rd(chBase + 5) : this.rd(chBase + 6);
+        if (isTri) {
+            this.wrApu(apuBase, (volByte & 0x0F) | 0x80);
+        }
+        else {
+            this.wrApu(apuBase, volByte | 0x30);
+        }
+        // sweep 检查
+        const sweepEnabled = (this.rd(chBase + 5) & 0x10) !== 0;
+        if (!sweepEnabled) {
+            this.wrApu(apuBase + 1, 0x08);
+        }
+        // 频率写入
+        if (!sweepEnabled || (this.rd(chBase + 8) & 0x80) !== 0) {
+            // 清 freqHi bit7
+            if (sweepEnabled) {
+                this.wr(chBase + 8, this.rd(chBase + 8) & 0x7F);
+            }
+            const freqLo = this.rd(chBase + 7);
+            this.wrApu(apuBase + 2, freqLo);
+            const freqHi = this.rd(chBase + 8) & 0x07;
+            this.wrApu(apuBase + 3, freqHi | 0x18);
+        }
+    }
+    // ════════════════════════════════════════════════════
+    // $81DB: 音高计算（包络衰减 + 频率偏移）
+    // ════════════════════════════════════════════════════
+    sub81DB(ch) {
+        const chBase = CH_STATE_BASE + ch * 0x10;
+        const volCtrl = this.rd(chBase + 5);
+        const hiNib = volCtrl & 0xF0;
+        let vol;
+        if (hiNib & 0x20) {
+            vol = 0x0F; // 振动标志
+        }
+        else {
+            vol = volCtrl & 0x0F;
+            // 包络衰减
+            const decayIdx = ch; // 简化
+            const decay = this.rd(0x07CF + decayIdx);
+            if (decay !== 0) {
+                const newDecay = (decay - 1) & 0xFF;
+                this.wr(0x07CF + decayIdx, newDecay);
+                if (newDecay === 0) {
+                    vol = (vol + 1) & 0xFF;
+                    if (vol > 0x0F)
+                        vol = 0x0F;
+                }
+            }
+        }
+        // 频率偏移
+        const noteDur = this.rd(0x0709 + ch * 4); // nextDurHi
+        let finalVol = noteDur - vol;
+        if (finalVol < 0)
+            finalVol = 0;
+        finalVol |= hiNib;
+        this.wr(chBase + 6, finalVol);
+    }
+    // ════════════════════════════════════════════════════
+    // $83CB: 命令流解析
+    // ════════════════════════════════════════════════════
+    sub83CB(ch) {
+        const chBase = CH_STATE_BASE + ch * 0x10;
+        const counterBase = CH_COUNTER_BASE + ch * 4;
+        // 清 offset 5 bit4+5
+        this.wr(chBase + 5, this.rd(chBase + 5) & 0xCF);
+        // 读 offset 0-1 → 数据指针
+        let dataPtr = this.rdPtr(chBase, chBase + 1);
+        if (dataPtr === 0)
+            return;
+        let y = 0;
+        for (let safety = 0; safety < 512; safety++) {
+            const b = audio_rom_1.AudioRom.readBgmData(dataPtr + y);
+            if (b < 0x80) {
+                // $8404: 音名处理
+                y++;
+                // 更新数据指针
+                this.wrPtr(chBase, chBase + 1, (dataPtr + y) & 0xFFFF);
+                // 直通通道（ch 3=NOISE, ch 7=NOISE）
+                if (ch === 3 || ch === 7) {
+                    if (b === 0x10) {
+                        this.wr(chBase + 5, this.rd(chBase + 5) | 0x20); // 休止
+                    }
+                    else {
+                        this.wr(chBase + 7, b); // 直接作频率低字节
+                        this.wr(chBase + 8, 0x80);
+                    }
+                    this.wr(0x07F4 + ch, 0);
+                    this.wr(0x0708 + ch * 4, 1);
+                    return;
+                }
+                // 半音通道
+                const semitone = b & 0x0F;
+                if (semitone >= 0x0C) {
+                    // 休止符
+                    this.wr(chBase + 5, this.rd(chBase + 5) | 0x20);
+                    this.wr(0x07F4 + ch, 0);
+                    this.wr(0x0708 + ch * 4, 1);
+                    return;
+                }
+                // 查频率表
+                let period = readFreq(semitone);
+                let fLo = period & 0xFF;
+                let fHi = (period >> 8) & 0x07;
+                // 八度右移
+                const octave = (b >> 4) & 0x0F;
+                for (let o = 0; o < octave; o++) {
+                    const carry = fHi & 1;
+                    fHi = (fHi >> 1) & 0x07;
+                    fLo = ((fLo >> 1) | (carry << 7)) & 0xFF;
+                }
+                if (fLo < 2 && fHi === 0)
+                    fLo = 2;
+                // transpose
+                const portamentoVal = this.rd(0x07F4 + ch);
+                const portamentoScratch = this.rd(0x07A7 + ch);
+                if (portamentoVal !== 0) {
+                    // 减法
+                    let r = fLo - portamentoScratch;
+                    if (r < 0) {
+                        fLo = r & 0xFF;
+                        fHi = (fHi - 1) & 0x07;
+                    }
+                    else {
+                        fLo = r & 0xFF;
+                    }
+                }
+                else {
+                    // 加法
+                    let r = fLo + portamentoScratch;
+                    fLo = r & 0xFF;
+                    fHi = (fHi + (r > 0xFF ? 1 : 0)) & 0x07;
+                }
+                fHi |= 0x80; // bit7 = 频率更新标志
+                // 写入通道状态块
+                this.wr(chBase + 7, fLo); // freqLo
+                this.wr(chBase + 8, fHi); // freqHi
+                this.wr(0x07B7 + ch, fLo);
+                this.wr(0x07BF + ch, fHi);
+                // 清 portamentoVal
+                this.wr(0x07F4 + ch, 0);
+                this.wr(0x0708 + ch * 4, 1); // durHi = 1
+                return;
+            }
+            if (b >= 0xE0) {
+                // 命令分发
+                y++;
+                const cmdIdx = b & 0x1F;
+                const cmdAddr = readCmd(cmdIdx);
+                y = this.execCmd(ch, chBase, dataPtr, y, cmdAddr);
+                continue;
+            }
+            if (b >= 0xB0) {
+                // 速度，跳过参数
+                y++;
+                continue;
+            }
+            // $80-$AF: 时值
+            const durIdx = b & 0x3F;
+            const tick = readDur(durIdx);
+            this.wr(0x0707 + ch * 4, tick);
+            this.wr(0x0708 + ch * 4, tick);
+            y++;
+            continue;
+        }
+    }
+    // ════════════════════════════════════════════════════
+    // 命令执行
+    // ════════════════════════════════════════════════════
+    execCmd(ch, chBase, dataPtr, y, cmdAddr) {
+        const readByte = () => {
+            const b = audio_rom_1.AudioRom.readBgmData(dataPtr + y);
+            return b;
+        };
+        const advance = () => { const b = readByte(); y++; return b; };
+        switch (cmdAddr) {
+            case 0x8544: { // $E0: 设置音符表指针
+                const idx = advance();
+                this.wr(chBase + 4, idx); // timingLo
+                this.wr(chBase + 5, this.rd(chBase + 5) | 0x80); // timingHi = $FF 标志
+                return y;
+            }
+            case 0x8707: return y; // NOP
+            case 0x8641: { // $E2: 设置音量
+                const param = advance();
+                this.wr(chBase + 5, (this.rd(chBase + 5) & 0xF0) | (param & 0x0F));
+                return y;
+            }
+            case 0x8670: { // $E5: 设置 portamento
+                const param = advance();
+                if (!(param & 0x80))
+                    this.wr(0x07F4 + ch, (param << 1) & 0xFF);
+                this.wr(0x07A7 + ch, param);
+                return y;
+            }
+            case 0x8681: { // $ED: 设置通道类型
+                const param = advance();
+                this.wr(0x07AF + ch, param);
+                this.wr(0x07C7 + ch, 0);
+                return y;
+            }
+            case 0x8690: { // $EF: 清除通道类型
+                this.wr(0x07AF + ch, 0);
+                return y;
+            }
+            case 0x851A: { // $F2: 停止
+                this.stopAll();
+                return y;
+            }
+            case 0x8699: {
+                this.playDpcm(0);
+                return y;
+            }
+            case 0x86B8: {
+                this.playDpcm(1);
+                return y;
+            }
+            case 0x86D6: {
+                this.playDpcm(2);
+                return y;
+            }
+            case 0x86F6: { // $FE: 设置 volDecay
+                const decay = advance();
+                this.wr(0x07CF + ch, decay);
+                this.wr(0x07D7 + ch, decay);
+                return y;
+            }
+            case 0x8655: { // $FF: 停止通道 / 循环
+                // 回到起点
+                this.wrPtr(chBase, chBase + 1, this.rdPtr(chBase + 2, chBase + 3));
+                this.wr(chBase + 4, 0);
+                return y;
+            }
+            default: return y; // 未实现命令
+        }
+    }
+    // ════════════════════════════════════════════════════
+    // DPCM
+    // ════════════════════════════════════════════════════
+    playDpcm(sample) {
+        const params = [{ a: 0x00, l: 0x0C }, { a: 0x03, l: 0x20 }, { a: 0x0B, l: 0x13 }];
+        const s = params[sample];
+        this.wrApu(APU_STATUS, 0x0F);
+        this.wrApu(0x4010, 0x0F);
+        this.wrApu(0x4012, s.a);
+        this.wrApu(0x4013, s.l);
+        this.wrApu(APU_STATUS, 0x1F);
+    }
+    // ════════════════════════════════════════════════════
+    // 停止 SE
+    // ════════════════════════════════════════════════════
+    stopAllSe() {
+        const ENV_STOP = 0x19, VOL_STOP = 0x0A;
+        for (const a of [0x07D0, 0x07D4, 0x07D8, 0x07DC])
+            this.wr(a, VOL_STOP);
+        for (const a of [0x07CF, 0x07D1, 0x07D2, 0x07D3, 0x07D5, 0x07D6, 0x07D7,
+            0x07D9, 0x07DA, 0x07DB, 0x07DD, 0x07DE, 0x07DF])
+            this.wr(a, ENV_STOP);
+    }
+}
+exports.AudioService = AudioService;
