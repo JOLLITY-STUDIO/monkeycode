@@ -185,19 +185,17 @@ export const OPENING_CHR_CONFIGS: readonly (readonly number[])[] = [
 ];
 
 /**
- * 开场 CHR 请求表（ram_0022 + ram_0490-$0497，由 NMI $C9E9 装载到 MMC3）。
- *
- * Ground truth（core 模拟器探针 scripts/_probe_orig2_out.txt，帧 10+）：
- *   原始 MMC3 chrBanks = [0,1,2,3,252,113,82,83]
- *   BG 表 $0000（f_bgPatternTable=0）/ SPR 表 $1000（f_spPatternTable=1）
- *
- * $C9E9 解码（cmd 基址 0、chrSel 0）逆推请求表：
- *   slot0/1 = req0, req0+1 → 0,1  （原版 boot $CA2A STA $0490=0）
- *   slot2/3 = req1, req1+1 → 2,3  （原版 boot $CA2F STA $0491=2）
- *   slot4..7 = req4..req7 → 252,113,82,83（探针原值）
+ * CHR 请求表（ram_0490-0497）由 boot $CA28-$CA2F 设置：
+ *   $CA28: LDA #$00; STA $0490  ; req0 = 0
+ *   $CA2D: LDA #$02; STA $0491  ; req1 = 2
+ * req2-req7 在 boot 时未设置（保持清零或由其他场景逻辑设置）。
+ * NMI $C9E9 读取此表装载 MMC3 CHR bank。
+ * tsnes 300 帧实测 chrBanks = [0,1,2,3,252,113,82,83]，
+ *   其中 slot0-3 由 req0=0/req1=2 生成（cmd0/cmd1 双 bank），
+ *   slot4-7 (252,113,82,83) 由场景运行中其他代码写入 req4-req7。
  */
 export const OPENING_CHR_CMD = 0x00; // ram_0022：命令基址 0，chrSel 0
-export const OPENING_CHR_REQUEST: readonly number[] = [0, 2, 0, 0, 252, 113, 82, 83];
+export const OPENING_CHR_REQUEST: readonly number[] = [0, 2]; // boot 仅设置 req0/req1
 
 /** 场景 3 的 tile 数据（6 列 × 8 行 = 48 字节，按行优先） */
 export const OPENING_SCENE3_TILES: readonly number[] = [

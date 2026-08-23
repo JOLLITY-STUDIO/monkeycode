@@ -14,8 +14,6 @@ import {
   OPENING_CHR_POINTER_TABLE,
   OPENING_FADE_TABLE,
   OPENING_CHR_CONFIGS,
-  OPENING_CHR_CMD,
-  OPENING_CHR_REQUEST,
   OPENING_SCENE3_TILES,
   OPENING_TILE_PATTERNS,
   type ChrConfig,
@@ -347,13 +345,10 @@ export class RenderingPrimitivesService {
       // $8BA5: JSR $9071 清 NT0; JMP $8BAE 跳过 NT1
       this.fillNametableRows(0x00, 0x20, 0x10, 0x20, 0x00);
     }
-    // $8AF7 CHR 装载部分：写入 CHR 请求表（ram_0022 + ram_0490-$0497），
-    // 由 NMI $C9E9 装载到 MMC3。当前只有开场（配置 0x17）完成 ground truth 对照；
-    // 其余配置待对应场景翻译后按真实映射扩展（禁止猜测）。
-    store.writeByte(0x0022, OPENING_CHR_CMD);
-    for (let i = 0; i < OPENING_CHR_REQUEST.length; i++) {
-      store.writeByte(0x0490 + i, OPENING_CHR_REQUEST[i]);
-    }
+    // $8AF7 不写 ram_0490-0497（CHR 请求表）。
+    // asm $8AF7 只读 CHR 配置设置 $0075/$0076/$0048/$005E/$005F/$005C/$005D 等，
+    // CHR 请求表 req0/req1 由 boot $CA28-$CA2F 设置（req0=0, req1=2），
+    // req4-req7 由其他场景逻辑设置。此处禁止臆造写入。
   }
 
   // ──────────────────────────── 场景 3 NT 数据（开场背景） ────────────────────────────
