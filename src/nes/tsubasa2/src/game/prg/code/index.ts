@@ -1,8 +1,8 @@
 /**
- * prg/code/index.ts — 业务逻辑层 (Service) 聚合出口
+ * prg/code/index.ts �?业务逻辑�?(Service) 聚合出口
  * 按业务域分包: system / scene / story / player / team / match / skill / sprite / audio
  */
-export { GameSystemService } from './system/GameSystemService';
+export { Bank00Service } from './system/Bank00Service';
 export { BootRouter, NmiCallbackIndex } from './system/BootRouter';
 export { HardwareInitService } from './system/HardwareInitService';
 export { InterruptService, type BankConfig } from './system/InterruptService';

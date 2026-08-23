@@ -1,39 +1,33 @@
 /**
- * HardwareInitService — 硬件初始化 (RESET 后第一件事)
+ * HardwareInitService �?硬件初始�?(RESET 后第一件事)
  * @bank 30 ($C000-$DFFF 固定窗口)
  *
- * 职责: RESET 向量链 ($FFF0→$C503→$C64E 主初始化)、场景重置辅助 $CEFE、
- * bank 窗口配置 + 场景引导 $C400、精灵区清理 $CF1F、名称表清理 $CB35/$CB5C、
- * OAM 全离屏填充 $CB8B。
- *
- * 翻译版不写 MMC3/PPU/APU 寄存器 (帧合成器按 DataStore 消费), 直接初始化
- * RAM 默认值并驱动 BootRouter 进入 BOOT 场景。
- *
- * 命名规范: 旧名 Bank30Service → 新名 HardwareInitService。
- */
+ * 职责: RESET 向量�?($FFF0�?C503�?C64E 主初始化)、场景重置辅�?$CEFE�? * bank 窗口配置 + 场景引导 $C400、精灵区清理 $CF1F、名称表清理 $CB35/$CB5C�? * OAM 全离屏填�?$CB8B�? *
+ * 翻译版不�?MMC3/PPU/APU 寄存�?(帧合成器�?DataStore 消费), 直接初始�? * RAM 默认值并驱动 BootRouter 进入 BOOT 场景�? *
+ * 命名规范: 旧名 Bank30Service �?新名 HardwareInitService�? */
 import { DataStore } from '../../data/store/DataStore';
-import type { GameSystemService } from './GameSystemService';
+import type { Bank00Service } from './Bank00Service';
 import { TSNES_FRAME10_OAM_0200, TSNES_FRAME10_PALETTE_062A } from '../../data/tables/tsnes-frame10-dump';
 import type { BootRouter } from './BootRouter';
 import type { SkillService } from '../skill/SkillService';
 import { getPaletteByteFBCC } from '../../data/tables/bank30-tables';
 
-/** 4 位大写十六进制 RAM 键 */
+/** 4 位大写十六进�?RAM �?*/
 function ramKey(addr: number): string {
   return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
 }
 
 export class HardwareInitService {
   protected _store: DataStore;
-  protected _system: GameSystemService;
+  protected _system: Bank00Service;
   protected _scene: BootRouter;
   protected _skill: SkillService;
-  /** PrgBankService 引用 — 初始 bank 配置 ($C4B2/$C4B9), 组合根注入 */
+  /** PrgBankService 引用 �?初始 bank 配置 ($C4B2/$C4B9), 组合根注�?*/
   protected _pb: import('./PrgBankService').default | null = null;
 
   constructor(
     store: DataStore,
-    system: GameSystemService,
+    system: Bank00Service,
     scene: BootRouter,
     skill: SkillService,
   ) {
@@ -43,12 +37,12 @@ export class HardwareInitService {
     this._skill = skill;
   }
 
-  /** 注入 PrgBankService (初始 bank 配置), 组合根注入 */
+  /** 注入 PrgBankService (初始 bank 配置), 组合根注�?*/
   setPrgBank(pb: import('./PrgBankService').default): void {
     this._pb = pb;
   }
 
-  // ── 零页读/写辅助 ──
+  // ── 零页�?写辅�?──
   protected rd(addr: number): number {
     return this._store.read(ramKey(addr));
   }
@@ -57,45 +51,37 @@ export class HardwareInitService {
   }
 
   // ════════════════════════════════════════════════
-  // $C64E RESET 主初始化链
-  // 对应原始 $FFF0: LDA #$00; STA $8000 (选 bank0 进 $8000 窗口) → JMP $C503
+  // $C64E RESET 主初始化�?  // 对应原始 $FFF0: LDA #$00; STA $8000 (�?bank0 �?$8000 窗口) �?JMP $C503
   // $C503: JMP $C64E
   // ════════════════════════════════════════════════
   init(): void {
-    // $C64E: LDA #$08; STA $2000 — PPU CTRL (NMI 关, 8×8 精灵) → ram_0020
+    // $C64E: LDA #$08; STA $2000 �?PPU CTRL (NMI �? 8×8 精灵) �?ram_0020
     this.wr(0x0020, 0x08);
-    // $C653-$C657: SEI / CLD / LDX #$FF / TXS — 无 CPU 指令, 省略
-    // $C658-$C660: 等待 2 个 vblank — 帧驱动, 省略
-    // $C662-$C664: LDA #$C0; STA $A001 (MMC3 PRG-RAM 写保护) — 省略并注释
-    this._store.mem.fill(0, 0, 0x0800);
+    // $C653-$C657: SEI / CLD / LDX #$FF / TXS �?�?CPU 指令, 省略
+    // $C658-$C660: 等待 2 �?vblank �?帧驱�? 省略
+    // $C662-$C664: LDA #$C0; STA $A001 (MMC3 PRG-RAM 写保�? �?省略并注�?    this._store.mem.fill(0, 0, 0x0800);
     this._store.zp.fill(0);
-    // $C67A-$C682: 再次设 PPU 寄存器
-    this.wr(0x0020, 0x08);
+    // $C67A-$C682: 再次�?PPU 寄存�?    this.wr(0x0020, 0x08);
     this.wr(0x0021, 0x06);
-    // $C685-$C68C: APU 初始化 (tsnes trace: F2 STA $4010=$00 DMC_FREQ, STA $4017=$40 APU_FRAME)
-    // 写到 apu_XXXX key (AudioService.wrApu 格式), writeApuToPapu 每帧同步到 tsnes PAPU
+    // $C685-$C68C: APU 初始�?(tsnes trace: F2 STA $4010=$00 DMC_FREQ, STA $4017=$40 APU_FRAME)
+    // 写到 apu_XXXX key (AudioService.wrApu 格式), writeApuToPapu 每帧同步�?tsnes PAPU
     this._store.write('apu_4010', 0x00); // DMC_FREQ = 0 (禁用 DPCM)
-    this._store.write('apu_4017', 0x40); // APU_FRAME = $40 (5步模式, 禁用 IRQ)
-    // $C68F-$C69E: PPU 地址复位 ($2006 ×16) — 帧合成器管理, 省略
-    // $C6A0: LDA #$00; STA $0022 — bank 基址
+    this._store.write('apu_4017', 0x40); // APU_FRAME = $40 (5步模�? 禁用 IRQ)
+    // $C68F-$C69E: PPU 地址复位 ($2006 ×16) �?帧合成器管理, 省略
+    // $C6A0: LDA #$00; STA $0022 �?bank 基址
     this.wr(0x0022, 0x00);
-    // $C6A5: JSR $CB35 — 清双名称表 + PPU 寄存器
-    this.clearNameTables();
-    // $C6A8: JSR $CB8B — OAM 全离屏填充
-    this.fillOamOffscreen();
-    // $C6AB-$C6B5: bank 状态清零 (STA $0469 ×2 / STA $E000)
+    // $C6A5: JSR $CB35 �?清双名称�?+ PPU 寄存�?    this.clearNameTables();
+    // $C6A8: JSR $CB8B �?OAM 全离屏填�?    this.fillOamOffscreen();
+    // $C6AB-$C6B5: bank 状态清�?(STA $0469 ×2 / STA $E000)
     this.wr(0x0469, 0x00);
     this.wr(0x0469, 0x00);
-    // $C6B8: CLI — 省略
-    // asm 首场景确认 (tsnes trace + asm 双向验证):
-    //   $C6B9: LDA #$00; JMP $CEFE — A=0 被 PHA 压栈 (场景 id)
-    //   $CEFE: PHA; 清 $0469; JSR $CB8B; JSR $CB35; PLA; JMP $C400
-    //   $C400: TYA; JMP $A200 — RAM 清零循环 ($C667-$C678) 后 Y=0
-    //   → 首个场景 id 恒为 $00, 非 $02 (旧注释"trace 实测 $ED=2"为误判)。
-    // trace 实测序列: frame3 $ED=$00 → frame5 $ED=$07 → frame7 起 $ED=$00 稳定。
-    // bank00 协程调度器 ($9F0F) 从协程槽恢复 $ED, 驱动 bank7 场景渲染 + bank0/bank5 辅助。
-    // 先执行 preMainLoopInit (asm $821D: 含 JSR $AA06 场景/调色板装载 + JSR $98A0 ntClear + JSR $9B7F oamClear)
-    // 否则场景数据不装载, 画面空白
+    // $C6B8: CLI �?省略
+    // asm 首场景确�?(tsnes trace + asm 双向验证):
+    //   $C6B9: LDA #$00; JMP $CEFE �?A=0 �?PHA 压栈 (场景 id)
+    //   $CEFE: PHA; �?$0469; JSR $CB8B; JSR $CB35; PLA; JMP $C400
+    //   $C400: TYA; JMP $A200 �?RAM 清零循环 ($C667-$C678) �?Y=0
+    //   �?首个场景 id 恒为 $00, �?$02 (旧注�?trace 实测 $ED=2"为误�?�?    // trace 实测序列: frame3 $ED=$00 �?frame5 $ED=$07 �?frame7 �?$ED=$00 稳定�?    // bank00 协程调度�?($9F0F) 从协程槽恢复 $ED, 驱动 bank7 场景渲染 + bank0/bank5 辅助�?    // 先执�?preMainLoopInit (asm $821D: �?JSR $AA06 场景/调色板装�?+ JSR $98A0 ntClear + JSR $9B7F oamClear)
+    // 否则场景数据不装�? 画面空白
     this._scene.preMainLoopInit();
     this.resetScene(0);
     console.log(
@@ -104,7 +90,7 @@ export class HardwareInitService {
     );
   }
 
-  /** 统计 NT0 非零 tile 数 (调试用) */
+  /** 统计 NT0 非零 tile �?(调试�? */
   protected countNt(): number {
     let n = 0;
     for (let y = 0; y < 30; y++) {
@@ -118,7 +104,7 @@ export class HardwareInitService {
 
   // ════════════════════════════════════════════════
   // $CEFE 场景重置辅助 (软复位到指定场景)
-  // 对应: PHA; 清 $0469/$E000; JSR $CB8B; JSR $CB35; 清 PPU CTRL NMI;
+  // 对应: PHA; �?$0469/$E000; JSR $CB8B; JSR $CB35; �?PPU CTRL NMI;
   //       PLA (场景 id); JMP $C400
   // ════════════════════════════════════════════════
   resetScene(sceneId: number): void {
@@ -133,51 +119,49 @@ export class HardwareInitService {
 
   // ════════════════════════════════════════════════
   // $C400 bank 窗口配置 + 场景引导
-  // 对应: PPU 寄存器; LDX #$00; JSR $C4B2 (bank0→$8000 窗口);
-  //       LDX #$02; JSR $C4B9 (bank2→$A000 窗口); TYA; JMP $A200
+  // 对应: PPU 寄存�? LDX #$00; JSR $C4B2 (bank0�?8000 窗口);
+  //       LDX #$02; JSR $C4B9 (bank2�?A000 窗口); TYA; JMP $A200
   // ════════════════════════════════════════════════
   bootScene(sceneId: number): void {
     // $C401-$C40C: PPU CTRL/MASK
     // tsnes trace 实测: 开场后 $0020=$88 (bit7=NMI + bit3=sprite PT=$1000)
-    // $0021=$1E (BG+SPR 可见 + 无剪裁)
+    // $0021=$1E (BG+SPR 可见 + 无剪�?
     this.wr(0x0020, 0x88);
     this.wr(0x0021, 0x1e);
     // $C40F-$C411: bank 基址
     this.wr(0x0022, 0x00);
-    // $C413-$C415: LDX #$00; JSR $C4B2 → ram_0024=bank0 ($8000 窗口, R6)
-    // H5: 通过 PrgBankService 真正切 R6=0 (调 mapper.write $8000/$8001)
+    // $C413-$C415: LDX #$00; JSR $C4B2 �?ram_0024=bank0 ($8000 窗口, R6)
+    // H5: 通过 PrgBankService 真正�?R6=0 (�?mapper.write $8000/$8001)
     if (this._pb) {
       this._pb.switchR6(0x00);
     } else {
       this.wr(0x0024, 0x00);
     }
-    // $C418-$C41A: LDX #$02; JSR $C4B9 → ram_0025=bank2 ($A000 窗口, R7)
-    // H5: 通过 PrgBankService 真正切 R7=2 (调 mapper.write $8000/$8001)
+    // $C418-$C41A: LDX #$02; JSR $C4B9 �?ram_0025=bank2 ($A000 窗口, R7)
+    // H5: 通过 PrgBankService 真正�?R7=2 (�?mapper.write $8000/$8001)
     if (this._pb) {
       this._pb.switchR7(0x02);
     } else {
       this.wr(0x0025, 0x02);
     }
-    // $C41D-$C41E: TYA (场景 id); JMP $A200 → bank2 场景引导
-    // 翻译版: bank2 = BootRouter.resetEntry (preMainLoopInit 场景/调色板装载)
+    // $C41D-$C41E: TYA (场景 id); JMP $A200 �?bank2 场景引导
+    // 翻译�? bank2 = BootRouter.resetEntry (preMainLoopInit 场景/调色板装�?
     this._scene.resetEntry(sceneId);
-    // bank2 $A200 场景引导后, bank0 主状态机注册开场协程:
-    //   slot $01 → bank0 $801E (wait-vblank + 清状态 + 场景装载初始化 + 输入驱动)
-    //   slot $15 → bank0 $82EC (场景数据装载器: ram_004C 经 bank6 $B800 指针表驱动
-    //                         装载 BG 调色板动画 / SPR 精灵数据)
-    // slot $11 → $9147 (场景数据消费协程) 由 $9085 装载器末尾自行注册, 此处不重复。
-    // 预加载默认调色板 (idx=0) 到 ram_062A, 避免脚本 opPalette 执行前调色板全黑
+    // bank2 $A200 场景引导�? bank0 主状态机注册开场协�?
+    //   slot $01 �?bank0 $801E (wait-vblank + 清状�?+ 场景装载初始�?+ 输入驱动)
+    //   slot $15 �?bank0 $82EC (场景数据装载�? ram_004C �?bank6 $B800 指针表驱�?    //                         装载 BG 调色板动�?/ SPR 精灵数据)
+    // slot $11 �?$9147 (场景数据消费协程) �?$9085 装载器末尾自行注�? 此处不重复�?    // 预加载默认调色板 (idx=0) �?ram_062A, 避免脚本 opPalette 执行前调色板全黑
     this.wr(0x0048, 0);
     this.wr(0x0049, 0);
     this._system.paletteLoadBG();
     this._system.paletteLoadSPR();
     this._system.paletteSetFull();
-    // 注入 tsnes frame10 dump 的 OAM 精灵数据到影子 OAM ($0468, NMI copyToHw 复制到 $0200)
-    // TODO: 后续由 sub9085/sub9148 完整翻译后自动生成, 当前用 dump 数据过渡
+    // 注入 tsnes frame10 dump �?OAM 精灵数据到影�?OAM ($0468, NMI copyToHw 复制�?$0200)
+    // TODO: 后续�?sub9085/sub9148 完整翻译后自动生�? 当前�?dump 数据过渡
     for (let i = 0; i < TSNES_FRAME10_OAM_0200.length && i < 0x100; i++) {
       this.wr(0x0468 + i, TSNES_FRAME10_OAM_0200[i]);
     }
-    // 注入 tsnes frame10 dump 的调色板数据 (确保 PPU imgPalette/sprPalette 有正确颜色)
+    // 注入 tsnes frame10 dump 的调色板数据 (确保 PPU imgPalette/sprPalette 有正确颜�?
     for (let i = 0; i < TSNES_FRAME10_PALETTE_062A.length; i++) {
       this.wr(0x062A + i, TSNES_FRAME10_PALETTE_062A[i]);
     }
@@ -187,16 +171,15 @@ export class HardwareInitService {
   }
 
   // ════════════════════════════════════════════════
-  // $CB35 清双名称表 + PPU 寄存器
-  // ════════════════════════════════════════════════
+  // $CB35 清双名称�?+ PPU 寄存�?  // ════════════════════════════════════════════════
   clearNameTables(): void {
     // $CB35: LDA $0020; AND #$7F; STA $0020; STA $2000
     this.wr(0x0020, this.rd(0x0020) & 0x7f);
-    // $CB3E: LDA #$06; STA $2001 — 帧合成器侧, 省略
-    // $CB43/$CB48: LDA #$20 / #$24; JSR $CB5C — 清 NT0/NT1
+    // $CB3E: LDA #$06; STA $2001 �?帧合成器�? 省略
+    // $CB43/$CB48: LDA #$20 / #$24; JSR $CB5C �?�?NT0/NT1
     this.clearOneNameTable(0x2000);
     this.clearOneNameTable(0x2400);
-    // $CB4D-$CB58: ppuMask=0x1E; LDA $0020; ORA #$80 → NMI 开
+    // $CB4D-$CB58: ppuMask=0x1E; LDA $0020; ORA #$80 �?NMI 开
     this.wr(0x0020, this.rd(0x0020) | 0x80);
   }
 
@@ -211,25 +194,19 @@ export class HardwareInitService {
         });
       }
     }
-    // $CB82-$CB87: STA $2005 ×2 → 回卷 0,0
+    // $CB82-$CB87: STA $2005 ×2 �?回卷 0,0
     this._store.scrollX = 0;
     this._store.scrollY = 0;
   }
 
   // ════════════════════════════════════════════════
-  // $CB8B OAM 全离屏填充
-  // 对应: LDY #$00; LDA #$F8; 循环 STA $0200,Y (INY×4) → $0200-$02FF = $F8
+  // $CB8B OAM 全离屏填�?  // 对应: LDY #$00; LDA #$F8; 循环 STA $0200,Y (INY×4) �?$0200-$02FF = $F8
   // ════════════════════════════════════════════════
   fillOamOffscreen(): void {
-    // $CB8B: LDY #$00; LDA #$F8; STA $0200,Y; INY×4; BNE $CB8F → 只填 $0200-$02FF 硬件 OAM。
-    // 注意: 原版从不碰 $0468-$0567 影子区 (那是 $9B7F oamClear 的职责, 且场景代码随后归零 $0538)。
-    // 之前误加 clearAll(0xf8) 会把 $0538(滚动偏移) 污染为 $F8 → scrollX=$004A+$0538=248 → 黑屏。
-    this._store.oamShadow.clearHw(0xf8); // $0200 硬件 OAM 全离屏
-  }
+    // $CB8B: LDY #$00; LDA #$F8; STA $0200,Y; INY×4; BNE $CB8F �?只填 $0200-$02FF 硬件 OAM�?    // 注意: 原版从不�?$0468-$0567 影子�?(那是 $9B7F oamClear 的职�? 且场景代码随后归�?$0538)�?    // 之前误加 clearAll(0xf8) 会把 $0538(滚动偏移) 污染�?$F8 �?scrollX=$004A+$0538=248 �?黑屏�?    this._store.oamShadow.clearHw(0xf8); // $0200 硬件 OAM 全离�?  }
 
   // ════════════════════════════════════════════════
-  // $CF1F 精灵区清理
-  // 对应: 指针 $003A/$003B=$0468; 清 $0468-$05FF (2 页) + $0600-$0696;
+  // $CF1F 精灵区清�?  // 对应: 指针 $003A/$003B=$0468; �?$0468-$05FF (2 �? + $0600-$0696;
   //       零页 $003A-$00DE 清零
   // ════════════════════════════════════════════════
   clearSpriteRam(): void {
@@ -238,35 +215,27 @@ export class HardwareInitService {
   }
 
   // ════════════════════════════════════════════════════════════
-  // bank30 $C500-$C54E 派发表 (通用工具函数, 被所有 bank 调用)
-  // 原 asm bank30 $C500 起 JMP 派发表:
-  //   $C509→$CB99 / $C50C→$CD7C / $C515→$CB0F / $C524→$CBC2
-  //   $C530→$CC02 / $C533→$CCD2 / $C54E→$CBB0
+  // bank30 $C500-$C54E 派发�?(通用工具函数, 被所�?bank 调用)
+  // �?asm bank30 $C500 �?JMP 派发�?
+  //   $C509�?CB99 / $C50C�?CD7C / $C515�?CB0F / $C524�?CBC2
+  //   $C530�?CC02 / $C533�?CCD2 / $C54E�?CBB0
   // ════════════════════════════════════════════════════════════
 
   /**
-   * $C515 → $CB0F: 协程让出核心。
-   * asm: LDA #$00; STA $007F; 保存 X/Y; LDX $0000 (协程槽);
-   *   存 bank24/25/标志/栈指针 到协程槽; JMP $CAA5 (调度器)。
-   * H5 版: 不做真正协程切换, 用帧计数模拟 (标记等待, 下一帧推进)。
-   * @param a 让出参数 (1=等1帧, 2=等2帧, $60=等96帧等)
+   * $C515 �?$CB0F: 协程让出核心�?   * asm: LDA #$00; STA $007F; 保存 X/Y; LDX $0000 (协程�?;
+   *   �?bank24/25/标志/栈指�?到协程槽; JMP $CAA5 (调度�?�?   * H5 �? 不做真正协程切换, 用帧计数模拟 (标记等待, 下一帧推�?�?   * @param a 让出参数 (1=�?�? 2=�?�? $60=�?6帧等)
    */
   coroutineYield(a: number = 1): void {
     void a;
-    // H5 版 no-op: 协程让出由 GameSystemService.update() 帧推进控制
-    // 实际 asm 保存协程上下文到 $0000+ 槽, 切换到下一协程
+    // H5 �?no-op: 协程让出�?Bank00Service.update() 帧推进控�?    // 实际 asm 保存协程上下文到 $0000+ �? 切换到下一协程
   }
 
   /**
-   * $C50C → $CD7C: 比赛阶段→RAM玩家数据指针查表。
-   * asm $CD77: LDA $05FB; EOR #$0B; ASL; TAY; LDA $CD89,Y; STA $0034; LDA $CD8A,Y; STA $0035。
-   * $CD89 表 32 项 16 位指针, 全在 $0300-$042C (RAM 玩家数据区)。
-   * 已查证: 索引 = (比赛阶段 ^ $0B) << 1。
-   */
+   * $C50C �?$CD7C: 比赛阶段→RAM玩家数据指针查表�?   * asm $CD77: LDA $05FB; EOR #$0B; ASL; TAY; LDA $CD89,Y; STA $0034; LDA $CD8A,Y; STA $0035�?   * $CD89 �?32 �?16 位指�? 全在 $0300-$042C (RAM 玩家数据�?�?   * 已查�? 索引 = (比赛阶段 ^ $0B) << 1�?   */
   subC50C(): void {
     const phase = this.rd(0x05FB);
     const idx = ((phase ^ 0x0B) << 1) & 0xFF;
-    // $CD89 表 (bank30 内, 32 项 16 位指针)
+    // $CD89 �?(bank30 �? 32 �?16 位指�?
     const table = RAM_PTR_TABLE_CD89;
     const ptr = table[idx] ?? 0;
     this.wr(0x0034, ptr & 0xFF);
@@ -274,53 +243,48 @@ export class HardwareInitService {
   }
 
   /**
-   * $C524 → $CBC2: 坐标变换 (A 输入 → A 输出, Y 为分段标志)。
-   * asm $CBC2: 分段比较 $A0/$C8/$1F/$B4, 移位/加减换算精灵坐标。
-   * 字节已验证 (bank30 off $BC2): 逐指令翻译, 无 stub。
-   */
+   * $C524 �?$CBC2: 坐标变换 (A 输入 �?A 输出, Y 为分段标�?�?   * asm $CBC2: 分段比较 $A0/$C8/$1F/$B4, 移位/加减换算精灵坐标�?   * 字节已验�?(bank30 off $BC2): 逐指令翻�? �?stub�?   */
   subC524(a: number): number {
-    // $BC4: CMP #$A0; BCC $BF0 → A < $A0 原样返回 (Y=0)
+    // $BC4: CMP #$A0; BCC $BF0 �?A < $A0 原样返回 (Y=0)
     if (a < 0xa0) return a & 0xff;
     if (a < 0xc8) {
       // $BCA: BCC $BDA (Y=$94): CMP #$B4; PHP
       const carryB4 = a >= 0xb4;                 // CMP #$B4 (PHP 保存)
-      // $BDF: BCS 跳过 SBC #$14 (A≥$B4 时减 $14)
+      // $BDF: BCS 跳过 SBC #$14 (A�?B4 时减 $14)
       let v = carryB4 ? (a - 0x14) & 0xff : a;
       // $BE1: SEC; SBC #$9A
       v = (v - 0x9a) & 0xff;
-      // $BE4: CMP #$15; BCC 跳过 ADC #$04 (A≥$15 时 +$04+进位1)
+      // $BE4: CMP #$15; BCC 跳过 ADC #$04 (A�?15 �?+$04+进位1)
       if (v >= 0x15) v = (v + 0x05) & 0xff;
-      // $BEA: PLP; BCC $BF0 (原 carry=0 → 返回); CLC; ADC #$40
+      // $BEA: PLP; BCC $BF0 (�?carry=0 �?返回); CLC; ADC #$40
       if (carryB4) v = (v + 0x40) & 0xff;
       return v & 0xff;                           // Y=$94
     }
     // $BCE: Y=$95; SBC #$AE (C=1); CMP #$1F; BCC $BF0
     let v = (a - 0xae) & 0xff;
     if (v < 0x1f) return v & 0xff;               // Y=$95
-    // $BD6: SBC #$05 (C=1); BCS $BED (恒成立); CLC; ADC #$40
+    // $BD6: SBC #$05 (C=1); BCS $BED (恒成�?; CLC; ADC #$40
     v = (v - 0x05) & 0xff;
     return (v + 0x40) & 0xff;
   }
 
   /**
-   * $C530 → $CC02: 调色板表拷贝 (NOT NT fill)。
-   * asm $CC02 (bank30 off $C02, 字节已验证):
-   *   源指针 $65/$66 = $FBCC + A*12 (A*8 高字节进位 + ADC #$CC/#$FB);
-   *   16 次循环写 $046F+X: X&3==0 写 $0F (透明), 否则 LDA($65),Y (Y 回绕 256→$0F);
-   *   结束 $046C=0x20 (下一精灵批计数基址)。
-   * @param x 目标 $046F 偏移 (0x10=背景组 / 0x00=精灵组)
-   * @param a 源调色板组索引 ($15/$16 由 matchInit9349 传入)
+   * $C530 �?$CC02: 调色板表拷贝 (NOT NT fill)�?   * asm $CC02 (bank30 off $C02, 字节已验�?:
+   *   源指�?$65/$66 = $FBCC + A*12 (A*8 高字节进�?+ ADC #$CC/#$FB);
+   *   16 次循环写 $046F+X: X&3==0 �?$0F (透明), 否则 LDA($65),Y (Y 回绕 256�?0F);
+   *   结束 $046C=0x20 (下一精灵批计数基址)�?   * @param x 目标 $046F 偏移 (0x10=背景�?/ 0x00=精灵�?
+   * @param a 源调色板组索�?($15/$16 �?matchInit9349 传入)
    */
   subC530(x: number, a: number): void {
     let y = 0;
     for (let i = 0; i < 16; i++) {
       const xx = (x + i) & 0xff;
       if ((xx & 3) === 0) {
-        this.wr(0x046f + xx, 0x0f);              // X&3==0 → 透明
+        this.wr(0x046f + xx, 0x0f);              // X&3==0 �?透明
       } else {
         let v = getPaletteByteFBCC(a, y);        // LDA ($0065),Y
         y++;
-        if (y === 0) v = 0x0f;                   // Y 回绕 256 → 强制 $0F
+        if (y === 0) v = 0x0f;                   // Y 回绕 256 �?强制 $0F
         this.wr(0x046f + xx, v);
       }
     }
@@ -328,48 +292,40 @@ export class HardwareInitService {
   }
 
   /**
-   * $C52D → $CC46: 精灵批初始化。
-   * asm (bank30 off $C46, 字节已验证): 清 $05F4; PHA #$06; 让出; 等 $0515=0;
-   *   $0515=1; 清 $04A5-$04F4 (0x50B); $04A5/$04C0=$18; $04A6=$20;
-   *   PLA(#$06)|#$08 → LSR/ROR $04A6 ×2 → $04A7/$04C2=$23, $04C1=$A8;
-   *   $0515=$80。消费方: bank19 event0 ($B1A6)。
-   */
+   * $C52D �?$CC46: 精灵批初始化�?   * asm (bank30 off $C46, 字节已验�?: �?$05F4; PHA #$06; 让出; �?$0515=0;
+   *   $0515=1; �?$04A5-$04F4 (0x50B); $04A5/$04C0=$18; $04A6=$20;
+   *   PLA(#$06)|#$08 �?LSR/ROR $04A6 ×2 �?$04A7/$04C2=$23, $04C1=$A8;
+   *   $0515=$80。消费方: bank19 event0 ($B1A6)�?   */
   subC52D(): void {
     this.wr(0x05f4, 0x00);
     this.coroutineYield(1);                      // LDA #$01; JSR $CB0F
-    // (H5: 等 $0515=0 由帧循环保证)
+    // (H5: �?$0515=0 由帧循环保证)
     this.wr(0x0515, 0x01);
-    for (let i = 0; i < 0x50; i++) this.wr(0x04a5 + i, 0);  // 清 $04A5-$04F4
+    for (let i = 0; i < 0x50; i++) this.wr(0x04a5 + i, 0);  // �?$04A5-$04F4
     this.wr(0x04a5, 0x18);
     this.wr(0x04c0, 0x18);
     this.wr(0x04a6, 0x20);
-    let a = (0x06 | 0x08);                       // PLA; ORA #$08 → $0E
-    a >>= 1;                                     // LSR → $07 (C=0)
-    this.wr(0x04a6, this.rd(0x04a6) >> 1);       // ROR $04A6 (C=0→bit7) → $10
-    a >>= 1;                                     // LSR → $03 (C=1)
-    this.wr(0x04a6, (this.rd(0x04a6) >> 1) | 0x80);  // ROR $04A6 (C=1→bit7) → $88
-    a |= 0x20;                                   // ORA #$20 → $23
+    let a = (0x06 | 0x08);                       // PLA; ORA #$08 �?$0E
+    a >>= 1;                                     // LSR �?$07 (C=0)
+    this.wr(0x04a6, this.rd(0x04a6) >> 1);       // ROR $04A6 (C=0→bit7) �?$10
+    a >>= 1;                                     // LSR �?$03 (C=1)
+    this.wr(0x04a6, (this.rd(0x04a6) >> 1) | 0x80);  // ROR $04A6 (C=1→bit7) �?$88
+    a |= 0x20;                                   // ORA #$20 �?$23
     this.wr(0x04a7, a);
     this.wr(0x04c2, a);
-    this.wr(0x04c1, (this.rd(0x04a6) + 0x20) & 0xff);  // $04A6+$20 → $A8
+    this.wr(0x04c1, (this.rd(0x04a6) + 0x20) & 0xff);  // $04A6+$20 �?$A8
     this.wr(0x0515, 0x80);
   }
 
   /**
-   * $C533 → $CCD2: NT 刷新 (PPU buffer → PPU VRAM)。
-   * asm $CCD2: 读 $05E8 buffer, 写 $2006/$2007。
-   * H5 版: no-op (帧合成器直接从 DataStore 读 NT)。
-   */
+   * $C533 �?$CCD2: NT 刷新 (PPU buffer �?PPU VRAM)�?   * asm $CCD2: �?$05E8 buffer, �?$2006/$2007�?   * H5 �? no-op (帧合成器直接�?DataStore �?NT)�?   */
   subC533(): void {
-    // H5 版: NT 刷新由 writeStoreToPpu (组合根) 每帧做, 此处 no-op
+    // H5 �? NT 刷新�?writeStoreToPpu (组合�? 每帧�? 此处 no-op
   }
 
   /**
-   * $C54E → $CBB0: 设精灵批等待标志。
-   * asm (bank30 off $BB0, 字节已验证): STA $0518; LDA #$80; STA $0516;
-   *   LDA #$00; STA $0005; LDA #$00; JSR $CB0F (让出)。
-   * 消费方: bank19 event0 ($B1A6) — 参数为精灵批索引。
-   */
+   * $C54E �?$CBB0: 设精灵批等待标志�?   * asm (bank30 off $BB0, 字节已验�?: STA $0518; LDA #$80; STA $0516;
+   *   LDA #$00; STA $0005; LDA #$00; JSR $CB0F (让出)�?   * 消费�? bank19 event0 ($B1A6) �?参数为精灵批索引�?   */
   subC54E(a: number): void {
     this.wr(0x0518, a & 0xff);
     this.wr(0x0516, 0x80);
@@ -378,7 +334,7 @@ export class HardwareInitService {
   }
 }
 
-/** $CD89 指针表 (bank30, 32 项 16 位 RAM 玩家数据指针) */
+/** $CD89 指针�?(bank30, 32 �?16 �?RAM 玩家数据指针) */
 const RAM_PTR_TABLE_CD89: readonly number[] = [
   0x0300, 0x030C, 0x0318, 0x0324, 0x0330, 0x033C, 0x0348, 0x0354,
   0x0360, 0x036C, 0x0378, 0x0384, 0x0390, 0x039C, 0x03A8, 0x03B4,

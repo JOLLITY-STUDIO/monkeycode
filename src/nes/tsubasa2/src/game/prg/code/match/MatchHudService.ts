@@ -1,83 +1,78 @@
 /**
- * MatchHudService — bank24 比赛 HUD 文本流渲染 + 精灵加载 ($8000-$9FFF, 运行时 $A000-$BFFF)
+ * MatchHudService �?bank24 比赛 HUD 文本流渲�?+ 精灵加载 ($8000-$9FFF, 运行�?$A000-$BFFF)
  * @bank 24
  *
- * 职责: 比赛 HUD (比分/时钟/体力条) 文本流渲染。
- *
- * 入口 (跳转表 $8000-$800D):
- *   $8000 → JMP $800F: 主 HUD 渲染循环
- *   $8003 → JMP $86F8: HUD 初始化
- *   $8006 → JMP $8779: 比分显示
- *   $8009 → JMP $87E6: 时钟显示
- *   $800C → JMP $8851: 体力条显示
- *
- * $800F 主渲染循环:
- *   $8010: BIT $063F; BPL $8017 (检查渲染开启)
- *   $8014: JMP $C512 (关闭则返回)
- *   $8017: LDA #$20; STA $005F; LDA #$92; STA $0060 (指针=$9220 HUD 脚本表)
+ * 职责: 比赛 HUD (比分/时钟/体力�? 文本流渲染�? *
+ * 入口 (跳转�?$8000-$800D):
+ *   $8000 �?JMP $800F: �?HUD 渲染循环
+ *   $8003 �?JMP $86F8: HUD 初始�? *   $8006 �?JMP $8779: 比分显示
+ *   $8009 �?JMP $87E6: 时钟显示
+ *   $800C �?JMP $8851: 体力条显�? *
+ * $800F 主渲染循�?
+ *   $8010: BIT $063F; BPL $8017 (检查渲染开�?
+ *   $8014: JMP $C512 (关闭则返�?
+ *   $8017: LDA #$20; STA $005F; LDA #$92; STA $0060 (指针=$9220 HUD 脚本�?
  *   $801F: LDA $05EA; ASL; BCC $8027; INC $0060 (×2 查表, 进位加高字节)
  *   $8027: TAY; LDA ($005F),Y; TAX; INY; LDA ($005F),Y; STA $0060; STX $005F
- *     (查指针表得 HUD 脚本入口 → $005F/$0060)
- *   $8032: 清 $05E9/$05E5/$05E4/$05F4 (渲染状态)
- *   $8040: LDA #$01; STA $05E3 (设激活)
- *   $8045: LDA #$01; JSR $C515 (协程让出 1 帧)
+ *     (查指针表�?HUD 脚本入口 �?$005F/$0060)
+ *   $8032: �?$05E9/$05E5/$05E4/$05F4 (渲染状�?
+ *   $8040: LDA #$01; STA $05E3 (设激�?
+ *   $8045: LDA #$01; JSR $C515 (协程让出 1 �?
  *   $804A: JSR $8053 (渲染分派)
- *   $804D: JSR $C560 (帧结束)
+ *   $804D: JSR $C560 (帧结�?
  *   $8050: JMP $8045 (循环)
  *
  * $8053 渲染分派:
- *   $8053: LDA $05E3; BNE $8059 (激活?)
- *   $8058: RTS (未激活返回)
+ *   $8053: LDA $05E3; BNE $8059 (激�?)
+ *   $8058: RTS (未激活返�?
  *   $8059: LDA $05E9; BEQ $8062 (延迟计数)
  *   $805E: DEC $05E9; RTS (递减延迟)
- *   $8062: LDA $05E4; JSR $C509 (查命令索引)
- *   $8068: 跳转表 4 项: $806E/$82F2/$82AC/$E505
- *   $8071: INC $05E5; LDA ($005F),Y (读脚本字节)
- *   $8076: CMP #$F0; BCC $8080 (< $F0 = 延迟值)
- *   $807A: JSR $8087 (≥ $F0 = 命令分派)
+ *   $8062: LDA $05E4; JSR $C509 (查命令索�?
+ *   $8068: 跳转�?4 �? $806E/$82F2/$82AC/$E505
+ *   $8071: INC $05E5; LDA ($005F),Y (读脚本字�?
+ *   $8076: CMP #$F0; BCC $8080 (< $F0 = 延迟�?
+ *   $807A: JSR $8087 (�?$F0 = 命令分派)
  *   $807D: JMP $806E (继续)
- *   $8080: STA $05E9 (存延迟); INC $05E4; RTS
+ *   $8080: STA $05E9 (存延�?; INC $05E4; RTS
  *
- * $8087 命令分派 (查 $808B 跳转表):
- *   AND #$0F; JSR $C509; 跳转表 6 项:
+ * $8087 命令分派 (�?$808B 跳转�?:
+ *   AND #$0F; JSR $C509; 跳转�?6 �?
  *   $8098/$80A0/$80B5/$80B8/$80CB/$81FD
  *
  * RAM 关键:
  *   $005F/$0060: HUD 脚本指针
- *   $05E3: 激活标志
- *   $05E4: 命令索引
+ *   $05E3: 激活标�? *   $05E4: 命令索引
  *   $05E5: 字节计数
  *   $05E9: 延迟计数
- *   $05EA: HUD 索引 (查 $9220 表)
- *   $063F: 渲染开启标志 (bit7)
+ *   $05EA: HUD 索引 (�?$9220 �?
+ *   $063F: 渲染开启标�?(bit7)
  *
- * 命名规范: 旧名 Bank24HudService → 新名 MatchHudService。
- */
+ * 命名规范: 旧名 Bank24HudService �?新名 MatchHudService�? */
 import { DataStore } from '../../data/store/DataStore';
-import type { GameSystemService } from '../system/GameSystemService';
+import type { Bank00Service } from '../system/Bank00Service';
 
-/** 4 位大写十六进制 RAM 键 */
+/** 4 位大写十六进�?RAM �?*/
 function ramKey(addr: number): string {
   return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
 }
 
 export class MatchHudService {
   protected _store: DataStore;
-  protected _system: GameSystemService;
-  /** 跨子程进位标志 (对应 6502 carry, 由 sub8513/sub8534 传递) */
+  protected _system: Bank00Service;
+  /** 跨子程进位标�?(对应 6502 carry, �?sub8513/sub8534 传�? */
   protected _carry = false;
-  /** 6502 A 寄存器 (跨子程传递) */
+  /** 6502 A 寄存�?(跨子程传�? */
   protected _ra = 0;
-  /** 6502 X 寄存器 (跨子程传递) */
+  /** 6502 X 寄存�?(跨子程传�? */
   protected _rx = 0;
-  /** 6502 Y 寄存器 (跨子程传递) */
+  /** 6502 Y 寄存�?(跨子程传�? */
   protected _ry = 0;
   /** 6502 Z 标志 (sub8C9F 返回) */
   protected _rz = 0;
-  /** HUD 脚本流中止标志 (对应 asm 中 PLA PLA RTS 弹出返回地址的行为) */
+  /** HUD 脚本流中止标�?(对应 asm �?PLA PLA RTS 弹出返回地址的行�? */
   protected _hudStop = false;
 
-  constructor(store: DataStore, system: GameSystemService) {
+  constructor(store: DataStore, system: Bank00Service) {
     this._store = store;
     this._system = system;
   }
@@ -97,22 +92,22 @@ export class MatchHudService {
   }
 
   // ════════════════════════════════════════════════
-  // 跳转表入口 (bank24 头 $8000-$800D)
+  // 跳转表入�?(bank24 �?$8000-$800D)
   // ════════════════════════════════════════════════
 
-  /** $8000 → $800F: 主 HUD 渲染循环 */
+  /** $8000 �?$800F: �?HUD 渲染循环 */
   hudRenderLoop(): void { this.sub800F(); }
 
-  /** $8003 → $86F8: HUD 初始化 */
+  /** $8003 �?$86F8: HUD 初始�?*/
   hudInit(): void { this.sub86F8(); }
 
-  /** $8006 → $8779: 比分显示 */
+  /** $8006 �?$8779: 比分显示 */
   scoreDisplay(): void { this.sub8779(); }
 
-  /** $8009 → $87E6: 时钟显示 */
+  /** $8009 �?$87E6: 时钟显示 */
   clockDisplay(): void { this.sub87E6(); }
 
-  /** $800C → $8851: 体力条显示 */
+  /** $800C �?$8851: 体力条显�?*/
   staminaBarDisplay(): void { this.sub8851(); }
 
   // ════════════════════════════════════════════════
@@ -124,18 +119,17 @@ export class MatchHudService {
   }
 
   // ════════════════════════════════════════════════
-  // $800F 主 HUD 渲染循环
+  // $800F �?HUD 渲染循环
   // asm $800F-$8050:
-  //   检查渲染开启 → 查 $9220 HUD 脚本表得入口 → 清状态 →
-  //   协程让出 → 渲染分派 → 帧结束 → 循环
+  //   检查渲染开�?�?�?$9220 HUD 脚本表得入口 �?清状�?�?  //   协程让出 �?渲染分派 �?帧结�?�?循环
   // ════════════════════════════════════════════════
   private sub800F(): void {
-    // $8010: BIT $063F; BPL $8017 (检查渲染开启)
+    // $8010: BIT $063F; BPL $8017 (检查渲染开�?
     if ((this.rd(0x063F) & 0x80) === 0) {
-      // $8014: JMP $C512 (关闭则返回)
+      // $8014: JMP $C512 (关闭则返�?
       return;
     }
-    // $8017: 指针 = $9220 (HUD 脚本表)
+    // $8017: 指针 = $9220 (HUD 脚本�?
     this.wr(0x005F, 0x20);
     this.wr(0x0060, 0x92);
     // $801F: LDA $05EA; ASL (×2 查表)
@@ -144,54 +138,46 @@ export class MatchHudService {
     if ((idx & 0x80) !== 0) {
       this.wr(0x0060, (this.rd(0x0060) + 1) & 0xFF);
     }
-    // $8027: 查指针表得入口
-    const ptr = this.rdPtr(0x005F, 0x0060);
+    // $8027: 查指针表得入�?    const ptr = this.rdPtr(0x005F, 0x0060);
     const lo = this.readMemByte(ptr + off);
     const hi = this.readMemByte(ptr + off + 1);
     this.wrPtr(0x005F, 0x0060, (hi << 8) | lo);
-    // $8032: 清渲染状态
-    this.wr(0x05E9, 0);
+    // $8032: 清渲染状�?    this.wr(0x05E9, 0);
     this.wr(0x05E5, 0);
     this.wr(0x05E4, 0);
     this.wr(0x05F4, 0);
-    // $8040: 设激活
-    this.wr(0x05E3, 0x01);
+    // $8040: 设激�?    this.wr(0x05E3, 0x01);
     // $8045-$8050: 循环
     while (this.rd(0x05E3) !== 0) {
-      // $8045: 协程让出 1 帧
-      this._system.coroutineYield(1);
+      // $8045: 协程让出 1 �?      this._system.coroutineYield(1);
       // $804A: 渲染分派
       this.sub8053();
-      // $804D: JSR $C560 (帧结束 — H5 no-op)
+      // $804D: JSR $C560 (帧结�?�?H5 no-op)
     }
   }
 
   // ════════════════════════════════════════════════
   // $8053 渲染分派
   // asm $8053-$8086:
-  //   检查激活 → 递减延迟 → 查命令索引 → 读脚本字节 →
-  //   < $F0 = 延迟值, ≥ $F0 = 命令分派
+  //   检查激�?�?递减延迟 �?查命令索�?�?读脚本字�?�?  //   < $F0 = 延迟�? �?$F0 = 命令分派
   // ════════════════════════════════════════════════
   private sub8053(): void {
-    // $8053: 激活检查
-    if (this.rd(0x05E3) === 0) return;
+    // $8053: 激活检�?    if (this.rd(0x05E3) === 0) return;
     // $8059: 延迟计数
     if (this.rd(0x05E9) !== 0) {
       this.wr(0x05E9, (this.rd(0x05E9) - 1) & 0xFF);
       return;
     }
-    // $8062: LDA $05E4; JSR $C509 — 跳转表 4 项: $806E/$82F2/$82AC/$E505
-    // H5: 子模式分派 ($82F2/$82AC/$E505) 待翻译, 当前主流程直接读脚本字节
+    // $8062: LDA $05E4; JSR $C509 �?跳转�?4 �? $806E/$82F2/$82AC/$E505
+    // H5: 子模式分�?($82F2/$82AC/$E505) 待翻�? 当前主流程直接读脚本字节
     const cmdIdx = this.rd(0x05E4);
     void cmdIdx;
-    // $8071: INC $05E5; 读脚本字节
-    this.wr(0x05E5, (this.rd(0x05E5) + 1) & 0xFF);
+    // $8071: INC $05E5; 读脚本字�?    this.wr(0x05E5, (this.rd(0x05E5) + 1) & 0xFF);
     const ptr = this.rdPtr(0x005F, 0x0060);
     const y = this.rd(0x05E5);
     const data = this.readMemByte(ptr + y);
     if (data < 0xF0) {
-      // $8080: 延迟值
-      this.wr(0x05E9, data);
+      // $8080: 延迟�?      this.wr(0x05E9, data);
       this.wr(0x05E4, (this.rd(0x05E4) + 1) & 0xFF);
     } else {
       // $807A: 命令分派
@@ -200,13 +186,12 @@ export class MatchHudService {
   }
 
   // ════════════════════════════════════════════════
-  // $8087 命令分派 (查 $808B 跳转表)
-  // asm: AND #$0F; JSR $C509; 跳转表 6 项
-  //   $8098/$80A0/$80B5/$80B8/$80CB/$81FD
+  // $8087 命令分派 (�?$808B 跳转�?
+  // asm: AND #$0F; JSR $C509; 跳转�?6 �?  //   $8098/$80A0/$80B5/$80B8/$80CB/$81FD
   // ════════════════════════════════════════════════
   private sub8087(a: number): void {
     const cmd = a & 0x0F;
-    // 原 6502: AND #$0F; JSR $C509 (cmd N → 表项 N)
+    // �?6502: AND #$0F; JSR $C509 (cmd N �?表项 N)
     const table = [0x8098, 0x80A0, 0x80B5, 0x80B8, 0x80CB, 0x81FD];
     const target = table[cmd] ?? 0x8098;
     switch (target) {
@@ -223,14 +208,14 @@ export class MatchHudService {
   // HUD 命令 stub
   // ════════════════════════════════════════════════
 
-  /** $8098: 命令0 — 结束渲染 (清 $05E3) */
+  /** $8098: 命令0 �?结束渲染 (�?$05E3) */
   private sub8098(): void {
     this.wr(0x05E3, 0);
   }
 
   /**
-   * $80A0: 命令1 — 等待帧循环 (轮询 $001C bit7)
-   * asm: LDA #$01; JSR $C515; LDA $001C; BPL $80A0; 清 $05E9; INC $05E4; PLA PLA RTS
+   * $80A0: 命令1 �?等待帧循�?(轮询 $001C bit7)
+   * asm: LDA #$01; JSR $C515; LDA $001C; BPL $80A0; �?$05E9; INC $05E4; PLA PLA RTS
    */
   private sub80A0(): void {
     while ((this.rd(0x001C) & 0x80) === 0) {
@@ -240,14 +225,14 @@ export class MatchHudService {
     this.wr(0x05E4, (this.rd(0x05E4) + 1) & 0xFF);
   }
 
-  /** $80B5: 命令2 — 尾调用 $C52D */
+  /** $80B5: 命令2 �?尾调�?$C52D */
   private sub80B5(): void {
     this._system.subC52D();
   }
 
   /**
-   * $80B8: 命令3 — 指针跳转 (从脚本流读 2 字节指针)
-   * asm: LDY $05E5; LDA ($005F),Y; TAX; INY; LDA ($005F),Y; STA $0060; STX $005F; 清 $05E5
+   * $80B8: 命令3 �?指针跳转 (从脚本流�?2 字节指针)
+   * asm: LDY $05E5; LDA ($005F),Y; TAX; INY; LDA ($005F),Y; STA $0060; STX $005F; �?$05E5
    */
   private sub80B8(): void {
     const y = this.rd(0x05E5);
@@ -259,9 +244,9 @@ export class MatchHudService {
   }
 
   /**
-   * $80CB: 命令4 — 子表跳转 (查 $80EA 子表后跳转)
+   * $80CB: 命令4 �?子表跳转 (�?$80EA 子表后跳�?
    * asm: LDY $05E5; LDA ($005F),Y; JSR $80EA; TXA; ASL; SEC; ADC $05E5; TAY;
-   *   读 2 字节指针; 设新指针; 清 $05E5
+   *   �?2 字节指针; 设新指针; �?$05E5
    */
   private sub80CB(): void {
     const y0 = this.rd(0x05E5);
@@ -276,21 +261,19 @@ export class MatchHudService {
   }
 
   /**
-   * $80EA: 子表索引分派 (被 $80CB 调用, 返回 X)。
-   * asm $80EA: JSR $C509; 跳转表 $80ED 8 项:
+   * $80EA: 子表索引分派 (�?$80CB 调用, 返回 X)�?   * asm $80EA: JSR $C509; 跳转�?$80ED 8 �?
    *   $80FD/$8106/$810E/$811E/$8122/$8138/$81CE/$81E4
-   * 各目标子程计算 X (精灵组/属性索引) 后 RTS, 调用方 TXA 取 X。
-   */
+   * 各目标子程计�?X (精灵�?属性索�? �?RTS, 调用�?TXA �?X�?   */
   private sub80EA(a: number): number {
     const cmd = a & 0xFF;
     switch (cmd) {
-      // $80FD: LDX #$00; BIT $043C; BPL→RTS; INX → X = ($043C bit7) ? 1 : 0
+      // $80FD: LDX #$00; BIT $043C; BPL→RTS; INX �?X = ($043C bit7) ? 1 : 0
       case 0:
         return (this.rd(0x043C) & 0x80) !== 0 ? 1 : 0;
-      // $8106: LDX $05FB; BEQ→RTS; LDX #$01 → X = ($05FB==0) ? 0 : 1
+      // $8106: LDX $05FB; BEQ→RTS; LDX #$01 �?X = ($05FB==0) ? 0 : 1
       case 1:
         return this.rd(0x05FB) === 0 ? 0 : 1;
-      // $810E: X=$0600; ==0→3; DEX; X>=3→2, 否则保留 X-1
+      // $810E: X=$0600; ==0�?; DEX; X>=3�?, 否则保留 X-1
       case 2: {
         const v = this.rd(0x0600);
         if (v === 0) return 3;
@@ -308,50 +291,50 @@ export class MatchHudService {
         while (x < TABLE_8131.length && a26 > TABLE_8131[x]) x++;
         return x;
       }
-      // $8138: LDA $0027; JSR $C509 (5 项: $8147/$8156/$8147/$8156/$8156)
+      // $8138: LDA $0027; JSR $C509 (5 �? $8147/$8156/$8147/$8156/$8156)
       case 5: {
         const a27 = this.rd(0x0027);
         const a28 = this.rd(0x0028);
         const a29 = this.rd(0x0029);
         if (a27 === 0 || a27 === 2) {
-          // $8147: X=2; A=$0028; CMP $0029 → 相等2 / 小于1 / 大于0
+          // $8147: X=2; A=$0028; CMP $0029 �?相等2 / 小于1 / 大于0
           if (a28 === a29) return 2;
           return a28 < a29 ? 1 : 0;
         }
-        // $8156: Y=$0026; LDA $81AC,Y → $0049
+        // $8156: Y=$0026; LDA $81AC,Y �?$0049
         const y = this.rd(0x0026);
         const v49 = this.readMemByte(0x81AC + y);
         this.wr(0x0049, v49);
         if (a28 !== a29) {
           if (a28 < a29) {
-            // $818D: X=$0A; $0027==4 → $0B
+            // $818D: X=$0A; $0027==4 �?$0B
             return a27 === 4 ? 0x0B : 0x0A;
           }
-          // $8197: X = ($0049&7)+3; X==3 && $0027==3 → $09
+          // $8197: X = ($0049&7)+3; X==3 && $0027==3 �?$09
           let x = ((v49 & 0x07) + 3) & 0xFF;
           if (x === 3 && a27 === 3) x = 9;
           return x;
         }
-        // $8165: X=$0D; $0027==1 → $817E
+        // $8165: X=$0D; $0027==1 �?$817E
         if (a27 === 1) {
-          // $817E: X=$0C; BIT $0049; BMI→$0C; INX→$0D; BIT $0049; BVC→$0D; INX→$0E
+          // $817E: X=$0C; BIT $0049; BMI�?0C; INX�?0D; BIT $0049; BVC�?0D; INX�?0E
           if ((v49 & 0x80) !== 0) return 0x0C;
           return (v49 & 0x40) !== 0 ? 0x0E : 0x0D;
         }
-        // $816E: BIT $0049; BVC $8174 (bit6 清) → $002B==$23 ? $0F : $0D; 否则 $0E
+        // $816E: BIT $0049; BVC $8174 (bit6 �? �?$002B==$23 ? $0F : $0D; 否则 $0E
         if ((v49 & 0x40) === 0) {
           return this.rd(0x002B) === 0x23 ? 0x0F : 0x0D;
         }
         return 0x0E;
       }
-      // $81CE: A=$0616>>1; X: >=6→3 / >=5→2 / >=1→1 / 0
+      // $81CE: A=$0616>>1; X: >=6�? / >=5�? / >=1�? / 0
       case 6: {
         const v = (this.rd(0x0616) >> 1) & 0xFF;
         if (v >= 6) return 3;
         if (v >= 5) return 2;
         return v >= 1 ? 1 : 0;
       }
-      // $81E4: A=$05FB^$0B; JSR $C50C; A=($0034)[7]; >=$36→2 / >=$19→1 / 0
+      // $81E4: A=$05FB^$0B; JSR $C50C; A=($0034)[7]; >=$36�? / >=$19�? / 0
       case 7: {
         this._system.subC50C();
         const ptr = this.rdPtr(0x0034, 0x0035);
@@ -365,8 +348,7 @@ export class MatchHudService {
   }
 
   /**
-   * $81FD: 命令5 — NT 填充 + 读延迟
-   * asm: JSR $C52D; LDA #$0D; STA $05F3; LDA #$80; STA $05F4;
+   * $81FD: 命令5 �?NT 填充 + 读延�?   * asm: JSR $C52D; LDA #$0D; STA $05F3; LDA #$80; STA $05F4;
    *   LDY $05E5; LDA ($005F),Y; STA $05E9; INC $05E5; PLA PLA RTS
    */
   private sub81FD(): void {
@@ -381,13 +363,11 @@ export class MatchHudService {
   }
 
   // ════════════════════════════════════════════════
-  // 跳转表入口目标 — 已翻译
-  // ════════════════════════════════════════════════
+  // 跳转表入口目�?�?已翻�?  // ════════════════════════════════════════════════
 
   /**
-   * $86F8: HUD 初始化 — 读 $0532 标志, 查 $AD6E 指针表,
-   *   处理精灵属性数据流 ($046F 区), 调 $C533 NT 刷新。
-   */
+   * $86F8: HUD 初始�?�?�?$0532 标志, �?$AD6E 指针�?
+   *   处理精灵属性数据流 ($046F �?, �?$C533 NT 刷新�?   */
   private sub86F8(): void {
     const flag = this.rd(0x0532);
     if (flag === 0) return;
@@ -407,7 +387,7 @@ export class MatchHudService {
     this.hudInitProcess();
   }
 
-  /** $8723-$8776: HUD 初始化数据处理循环 */
+  /** $8723-$8776: HUD 初始化数据处理循�?*/
   private hudInitProcess(): void {
     let y = 0;
     while (true) {
@@ -450,9 +430,8 @@ export class MatchHudService {
   }
 
   /**
-   * $8779: 比分显示 — 读 $0534 标志, 查 $AD1C 指针表,
-   *   处理比分数据 ($0490/$0491 VRAM 地址)。
-   */
+   * $8779: 比分显示 �?�?$0534 标志, �?$AD1C 指针�?
+   *   处理比分数据 ($0490/$0491 VRAM 地址)�?   */
   private sub8779(): void {
     const flag = this.rd(0x0534);
     if (flag === 0) return;
@@ -507,9 +486,8 @@ export class MatchHudService {
   }
 
   /**
-   * $87E6: 时钟显示 — 读 $0536 标志, 查 $AD54 指针表,
-   *   处理时钟数据 ($0538 值)。
-   */
+   * $87E6: 时钟显示 �?�?$0536 标志, �?$AD54 指针�?
+   *   处理时钟数据 ($0538 �?�?   */
   private sub87E6(): void {
     const flag = this.rd(0x0536);
     if (flag === 0) {
@@ -568,8 +546,7 @@ export class MatchHudService {
   }
 
   /**
-   * $8851: 体力条显示 — 查 $B3CF/$B3BD 表, 渲染体力条精灵。
-   */
+   * $8851: 体力条显�?�?�?$B3CF/$B3BD �? 渲染体力条精灵�?   */
   private sub8851(): void {
     const param = this.rd(0x05C7);
     let y = param & 0xFF;
@@ -602,7 +579,7 @@ export class MatchHudService {
     this.sub88B9((tileW2 + 3) & 0xFF);
   }
 
-  /** $88B9: 体力条精灵渲染子程 */
+  /** $88B9: 体力条精灵渲染子�?*/
   private sub88B9(x: number): number {
     this.wr(0x0045, 0xFF);
     const ptr50 = this.rdPtr(0x0050, 0x0051);
@@ -637,19 +614,19 @@ export class MatchHudService {
   }
 
   // ════════════════════════════════════════════════
-  // $82F2: NT 填充循环 (协程让出 + 清 $04A5 区 + 读脚本流)
+  // $82F2: NT 填充循环 (协程让出 + �?$04A5 �?+ 读脚本流)
   // ════════════════════════════════════════════════
   private sub82F2(): void {
-    // $82F2: LDA #$01; JSR $C515 (协程让出 1 帧)
+    // $82F2: LDA #$01; JSR $C515 (协程让出 1 �?
     this._system.coroutineYield(1);
-    // $82F7: LDA $0515; BNE $82F2 (等 $0515==0)
+    // $82F7: LDA $0515; BNE $82F2 (�?$0515==0)
     while (this.rd(0x0515) !== 0) { this._system.coroutineYield(1); }
     // $82FC: LDA #$01; STA $0515
     this.wr(0x0515, 0x01);
     // $8301: LDA $05E6; ASL; CLC; ADC #$06; TAY; INY
     let y = (((this.rd(0x05E6) << 1) & 0xFF) + 6) & 0xFF;
     y = (y + 1) & 0xFF;
-    // $830A: LDX #$00; 循环 TXA→$04A5,X; INX; DEY; BPL
+    // $830A: LDX #$00; 循环 TXA�?04A5,X; INX; DEY; BPL
     let x = 0;
     do {
       this.wr(0x04A5 + x, x & 0xFF);
@@ -679,8 +656,7 @@ export class MatchHudService {
     this.wr(0x04A7 + xx, (v2 + carry) & 0xFF);
     // $8342: LDA #$00; STA $003B
     this.wr(0x003B, 0);
-    // $8346: 循环读脚本字节分派
-    this._hudStop = false;
+    // $8346: 循环读脚本字节分�?    this._hudStop = false;
     while (!this._hudStop) {
       const ptr5f = this.rdPtr(0x005F, 0x0060);
       const yy = this.rd(0x05E5);
@@ -695,7 +671,7 @@ export class MatchHudService {
   }
 
   // ════════════════════════════════════════════════
-  // $835E: 命令分派 (SEC; SBC #$E0; 查 32 项跳转表)
+  // $835E: 命令分派 (SEC; SBC #$E0; �?32 项跳转表)
   // ════════════════════════════════════════════════
   private sub835E(a: number): void {
     const cmd = (a - 0xE0) & 0xFF;
@@ -716,7 +692,7 @@ export class MatchHudService {
       case 13: this.hE13_84CE(); break; // $84CE
       case 14: this.hE14_84D6(); break; // $84D6
       case 15: this.hE15_84DC(); break; // $84DC
-      case 16: this.hE15_84DC(); break; // $84DC (同15)
+      case 16: this.hE15_84DC(); break; // $84DC (�?5)
       case 17: this.hE17_84E6(); break; // $84E6
       case 18: this.hE18_84EC(); break; // $84EC
       case 19: this.hE19_84FB(); break; // $84FB
@@ -735,7 +711,7 @@ export class MatchHudService {
     }
   }
 
-  /** $83A4: cmd0 — 球员状态查表 (查 $83BF 表) */
+  /** $83A4: cmd0 �?球员状态查�?(�?$83BF �? */
   private hE0(): void {
     const b3b = this.rd(0x043B);
     const x = (b3b === 1 && (this.rd(0x0628) & 0x80) !== 0) ? 0x0A : b3b;
@@ -743,14 +719,14 @@ export class MatchHudService {
     this.sub863C(v);
   }
 
-  /** $83CA: cmd1 — 球员方向查表 (查 $83DC 表) */
+  /** $83CA: cmd1 �?球员方向查表 (�?$83DC �? */
   private hE1(): void {
     const x = this.rd(0x043D) & 0x1F;
     const v = ((this.rd(0x043E) & 0x7F) + this.readRomByte(0x83DC + x)) & 0xFF;
     this.sub863C(v);
   }
 
-  /** $83E2: cmd2 — 球员状态条件写入 (复杂分支) */
+  /** $83E2: cmd2 �?球员状态条件写�?(复杂分支) */
   private hE2(): void {
     const c3c = this.rd(0x043C);
     if ((c3c & 0x80) === 0) { this.hE2_8413(); return; }
@@ -775,7 +751,7 @@ export class MatchHudService {
     this.sub863C(v);
   }
 
-  /** $8443: cmd3 — 球员方向条件写入 */
+  /** $8443: cmd3 �?球员方向条件写入 */
   private hE3(): void {
     if ((this.rd(0x043E) & 0x80) !== 0) {
       const x = this.rd(0x043D);
@@ -786,16 +762,16 @@ export class MatchHudService {
     this.sub863C(this.readRomByte(0x83DC + x));
   }
 
-  /** $8467: cmd4 — 球员1名字写入 */
+  /** $8467: cmd4 �?球员1名字写入 */
   private hE4_4467(): void { this.sub8653(this.rd(0x0441)); }
 
-  /** $846D: cmd5 — 比赛阶段EOR写入 */
+  /** $846D: cmd5 �?比赛阶段EOR写入 */
   private hE5_846D(): void {
     const a = this.rd(0x05FB) ^ 0x0B;
     this.sub8478(a);
   }
 
-  /** $8475: cmd6 — 比赛阶段+队伍写入 */
+  /** $8475: cmd6 �?比赛阶段+队伍写入 */
   private hE6_8475(): void {
     let a = this.rd(0x05FB);
     const t2a = this.rd(0x002A);
@@ -803,7 +779,7 @@ export class MatchHudService {
     this.sub8478(a);
   }
 
-  /** $8478: 通用 — 队伍分数+0x76 写入 */
+  /** $8478: 通用 �?队伍分数+0x76 写入 */
   private sub8478(a: number): void {
     let y = a;
     if (y !== 0) {
@@ -813,22 +789,22 @@ export class MatchHudService {
     this.sub863C((y + 0x76) & 0xFF);
   }
 
-  /** $848D: cmd7 — $0600 数字写入 */
+  /** $848D: cmd7 �?$0600 数字写入 */
   private hE7_848D(): void { this.sub86B2(this.rd(0x0600)); }
 
-  /** $8493: cmd8 — $0601 数字写入 */
+  /** $8493: cmd8 �?$0601 数字写入 */
   private hE8_8493(): void { this.sub86B2(this.rd(0x0601)); }
 
-  /** $8499: cmd9 — $0602 名字写入 */
+  /** $8499: cmd9 �?$0602 名字写入 */
   private hE9_8499(): void { this.sub8653(this.rd(0x0602)); }
 
-  /** $849F: cmd10 — $0603 名字写入 */
+  /** $849F: cmd10 �?$0603 名字写入 */
   private hE10_849F(): void { this.sub8653(this.rd(0x0603)); }
 
-  /** $84A5: cmd11 — $05FC 名字写入 */
+  /** $84A5: cmd11 �?$05FC 名字写入 */
   private hE11_84A5(): void { this.sub8653(this.rd(0x05FC)); }
 
-  /** $84AB: cmd12 — $043D 查 $84C7 表写入 */
+  /** $84AB: cmd12 �?$043D �?$84C7 表写�?*/
   private hE12_84AB(): void {
     const x = this.rd(0x043D);
     const a = this.readRomByte(0x84C7 + x);
@@ -837,45 +813,45 @@ export class MatchHudService {
     this.sub863C(this.readRomByte(0x84C7 + this.rd(0x043D)));
   }
 
-  /** $84CE: cmd13 — 比赛阶段EOR名字写入 */
+  /** $84CE: cmd13 �?比赛阶段EOR名字写入 */
   private hE13_84CE(): void { this.sub8653(this.rd(0x05FB) ^ 0x0B); }
 
-  /** $84D6: cmd14 — $0442 名字写入 */
+  /** $84D6: cmd14 �?$0442 名字写入 */
   private hE14_84D6(): void { this.sub8653(this.rd(0x0442)); }
 
-  /** $84DC: cmd15/16 — $0616 右移+0x34 数字写入 */
+  /** $84DC: cmd15/16 �?$0616 右移+0x34 数字写入 */
   private hE15_84DC(): void {
     const a = ((this.rd(0x0616) >> 1) + 0x34) & 0xFF;
     this.sub8629(a);
   }
 
-  /** $84E6: cmd17 — $002A+0x76 (检查$24) */
+  /** $84E6: cmd17 �?$002A+0x76 (检�?24) */
   private hE17_84E6(): void {
     let a = this.rd(0x002A);
     if (a === 0x24) a = 0x23;
     this.sub863C((a + 0x76) & 0xFF);
   }
 
-  /** $84EC: cmd18 — $002B+0x76 (检查$24) */
+  /** $84EC: cmd18 �?$002B+0x76 (检�?24) */
   private hE18_84EC(): void {
     let a = this.rd(0x002B);
     if (a === 0x24) a = 0x23;
     this.sub863C((a + 0x76) & 0xFF);
   }
 
-  /** $84FB: cmd19 — 球员1查 $852C 表后调 $8534 */
+  /** $84FB: cmd19 �?球员1�?$852C 表后�?$8534 */
   private hE19_84FB(): void {
     this.sub8513(this.rd(0x0441));
     this.sub8534(this.rd(0x0442));
   }
 
-  /** $8507: cmd20 — 球员2查 $852C 表后调 $8534 */
+  /** $8507: cmd20 �?球员2�?$852C 表后�?$8534 */
   private hE20_8507(): void {
     this.sub8513(this.rd(0x0442));
     this.sub8534(this.rd(0x0441));
   }
 
-  /** $85BB: cmd23 — 重复写 0x7C tile (N 次) */
+  /** $85BB: cmd23 �?重复�?0x7C tile (N �? */
   private hE23_85BB(): void {
     const y = this.rd(0x05E5);
     this.wr(0x05E5, (y + 1) & 0xFF);
@@ -887,7 +863,7 @@ export class MatchHudService {
     }
   }
 
-  /** $85D6: cmd28 — 中止脚本流 (PLA PLA RTS) */
+  /** $85D6: cmd28 �?中止脚本�?(PLA PLA RTS) */
   private hE28_85D6(): void {
     this.wr(0x0515, 0x80);
     if (this.rd(0x05E7) === this.rd(0x05E8)) {
@@ -901,7 +877,7 @@ export class MatchHudService {
     this._hudStop = true;
   }
 
-  /** $85FE: cmd30 — 等待帧 (循环到 $05E3 bit7 置位) */
+  /** $85FE: cmd30 �?等待�?(循环�?$05E3 bit7 置位) */
   private hE30_85FE(): void {
     this.wr(0x0515, 0x80);
     this.wr(0x05E3, this.rd(0x05E3) & 0xBF);
@@ -912,14 +888,14 @@ export class MatchHudService {
     this.wr(0x05E3, this.rd(0x05E3) & 0xBF);
   }
 
-  /** $8621: cmd31 — 停止 HUD (LDA #$00; STA $05E3; PLA PLA RTS) */
+  /** $8621: cmd31 �?停止 HUD (LDA #$00; STA $05E3; PLA PLA RTS) */
   private hE31_8621(): void {
     this.wr(0x05E3, 0);
     this._hudStop = true;
   }
 
   // ════════════════════════════════════════════════
-  // $8629-$86F7: NT 写入 + 字符串/球员名/数字辅助
+  // $8629-$86F7: NT 写入 + 字符�?球员�?数字辅助
   // ════════════════════════════════════════════════
 
   /** $8629: NT 写入 (LDX $003A; STA $04A8,X; LDX $003B; TYA; STA $04A8,X; INC $003A/$003B) */
@@ -932,7 +908,7 @@ export class MatchHudService {
     this.wr(0x003B, (xb + 1) & 0xFF);
   }
 
-  /** $863C: 字符串写入 (JSR $C53C 设 $0030; 循环读 ($0030),Y 写 NT) */
+  /** $863C: 字符串写�?(JSR $C53C �?$0030; 循环�?($0030),Y �?NT) */
   private sub863C(a: number): void {
     this._ra = a;
     this._fixedC53C();
@@ -949,7 +925,7 @@ export class MatchHudService {
     }
   }
 
-  /** $8653: 球员名写入 (STA $003D; JSR $C50C; 读 ($0034),Y; BEQ→查 $8686 表) */
+  /** $8653: 球员名写�?(STA $003D; JSR $C50C; �?($0034),Y; BEQ→查 $8686 �? */
   private sub8653(a: number): void {
     this.wr(0x003D, a & 0xFF);
     this._system.subC50C();
@@ -976,16 +952,15 @@ export class MatchHudService {
     this.sub8629((a + 0x33) & 0xFF);
   }
 
-  /** $C53C: 设 $0030/$0031 = $05EE (名字缓冲) — H5 port */
+  /** $C53C: �?$0030/$0031 = $05EE (名字缓冲) �?H5 port */
   private _fixedC53C(): void {
     this.wrPtr(0x0030, 0x0031, 0x05EE);
   }
 
   // ════════════════════════════════════════════════
-  // $8513/$8534: 球员 ID 查 $852C 表 + 字符串写入
-  // ════════════════════════════════════════════════
+  // $8513/$8534: 球员 ID �?$852C �?+ 字符串写�?  // ════════════════════════════════════════════════
 
-  /** $8513: 球员 ID 查 $852C 表 (8项), 返回 carry + $003D */
+  /** $8513: 球员 ID �?$852C �?(8�?, 返回 carry + $003D */
   private sub8513(a: number): void {
     this._ra = a;
     this._system.subC50C();
@@ -1001,7 +976,7 @@ export class MatchHudService {
     this._carry = false;
   }
 
-  /** $8534: 球员名查 $8589 指针表 + 字符串写入 */
+  /** $8534: 球员名查 $8589 指针�?+ 字符串写�?*/
   private sub8534(a: number): void {
     this._ra = a;
     this._system.subC50C();
@@ -1040,7 +1015,7 @@ export class MatchHudService {
   // $8914-$8D9D: 体力条精灵组渲染 + 命令分派
   // ════════════════════════════════════════════════
 
-  /** $8918: 体力条精灵组渲染 (查 $8D9E/$8D9F/$8DA0 表写 $04A8) */
+  /** $8918: 体力条精灵组渲染 (�?$8D9E/$8D9F/$8DA0 表写 $04A8) */
   private sub8918(): void {
     const ptr50 = this.rdPtr(0x0050, 0x0051);
     this.wr(0x003B, (this.readMemByte(ptr50 + 6) - 2) & 0xFF);
@@ -1057,7 +1032,7 @@ export class MatchHudService {
     this.wr(0x04A8 + y, this.readRomByte(0x8DA0 + x));
   }
 
-  /** $8949: 精灵属性循环 (读 ($0050),Y 分派 $8986) */
+  /** $8949: 精灵属性循�?(�?($0050),Y 分派 $8986) */
   private sub8949(): void {
     const ptr50 = this.rdPtr(0x0050, 0x0051);
     let y = 8;
@@ -1088,7 +1063,7 @@ export class MatchHudService {
     this.sub8949End();
   }
 
-  /** $8976: 精灵属性循环结束 */
+  /** $8976: 精灵属性循环结�?*/
   private sub8949End(): void {
     this.wr(0x0515, 0x80);
     const old = this.rd(0x05C5);
@@ -1097,7 +1072,7 @@ export class MatchHudService {
     this._rz = (old === total) ? 0 : 1;
   }
 
-  /** $8986: 精灵属性数据读取 (读 ($0050),Y 设 $003D/$003E/$003F; 循环 ($003E),Y) */
+  /** $8986: 精灵属性数据读�?(�?($0050),Y �?$003D/$003E/$003F; 循环 ($003E),Y) */
   private sub8986(y0: number): void {
     let y = (y0 + 1) & 0xFF;
     const ptr50 = this.rdPtr(0x0050, 0x0051);
@@ -1121,7 +1096,7 @@ export class MatchHudService {
     }
   }
 
-  /** $89B4: 命令分派 (SEC; SBC #$E0; 查 ~60 项跳转表) */
+  /** $89B4: 命令分派 (SEC; SBC #$E0; �?~60 项跳转表) */
   private sub89B4(a: number): void {
     const cmd = (a - 0xE0) & 0xFF;
     const table = [
@@ -1487,7 +1462,7 @@ export class MatchHudService {
     this._rz = (this.rd(0x003D) !== 0) ? 1 : 0;
   }
 
-  /** $8CA5: 球员名条件写入 (读 ($003E),Y; BNE→查表; BEQ→$C50C+$8C55) */
+  /** $8CA5: 球员名条件写�?(�?($003E),Y; BNE→查�? BEQ�?C50C+$8C55) */
   private sub8CA5(): void {
     const ptr3e = this.rdPtr(0x003E, 0x003F);
     const v = this.readMemByte(ptr3e + this.rd(0x0040));
@@ -1514,7 +1489,7 @@ export class MatchHudService {
     this.sub8C55();
   }
 
-  /** $8CDC: 球员名查 $8D04 表写入 (JSR $C50C; 读 ($0034),Y; BNE→$8D6C) */
+  /** $8CDC: 球员名查 $8D04 表写�?(JSR $C50C; �?($0034),Y; BNE�?8D6C) */
   private sub8CDC(): void {
     this._system.subC50C();
     const ptr34 = this.rdPtr(0x0034, 0x0035);
@@ -1530,7 +1505,7 @@ export class MatchHudService {
     this.sub8D6C();
   }
 
-  /** $8D1A: 球员名写入 (JSR $C50C; 读 ($0034),Y; BNE→$8D6C; 查 $8D40 表) */
+  /** $8D1A: 球员名写�?(JSR $C50C; �?($0034),Y; BNE�?8D6C; �?$8D40 �? */
   private sub8D1A(a: number): void {
     this._ra = a;
     this._system.subC50C();
@@ -1548,7 +1523,7 @@ export class MatchHudService {
     this.sub8D6C();
   }
 
-  /** $8D6C: 字符串写入循环 (JSR $C53C; 读 ($0030),Y; CMP #$E0; BCS→exit; JSR $C524; JSR $8C9F; INY) */
+  /** $8D6C: 字符串写入循�?(JSR $C53C; �?($0030),Y; CMP #$E0; BCS→exit; JSR $C524; JSR $8C9F; INY) */
   private sub8D6C(): void {
     this._fixedC53C();
     let y = 0;
@@ -1578,7 +1553,7 @@ export class MatchHudService {
     }
   }
 
-  /** $C51E: 16位除法 ($006F/$0070 ÷ $0071, 商→$006F/$0070, 余数→$0072) — H5 port */
+  /** $C51E: 16位除�?($006F/$0070 ÷ $0071, 商→$006F/$0070, 余数�?0072) �?H5 port */
   private _fixedC51E(): void {
     let lo = this.rd(0x006F);
     let hi = this.rd(0x0070);
@@ -1601,7 +1576,7 @@ export class MatchHudService {
     return this.readRomByte(addr);
   }
 
-  /** 读 bank24 ROM 数据字节 (通过 DataStore KV 'bank24_rom') */
+  /** �?bank24 ROM 数据字节 (通过 DataStore KV 'bank24_rom') */
   private readRomByte(addr: number): number {
     const rom = this._store.get<Uint8Array | readonly number[]>('bank24_rom');
     if (rom) {

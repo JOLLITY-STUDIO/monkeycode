@@ -1,16 +1,12 @@
 /**
- * scene-loader-tables — 场景数据装载器指针表 ($9085 消费)
- * @bank 09 / 10 (+ bank6 $B800 调色板动画表, $82ED 装载器消费)
+ * scene-loader-tables �?场景数据装载器指针表 ($9085 消费)
+ * @bank 09 / 10 (+ bank6 $B800 调色板动画表, $82ED 装载器消�?
  *
- * 来源: 从 ROM 提取 (PRG 偏移 = 16 + bank*0x2000), 与 asm data_tables.s 对照。
- * 每项 16 位 LE 指针 = 运行时 $A000 窗口地址; 指针不在 $A000-$BFFF 则表结束。
- *
- * 消费方:
- *   - $9085 场景数据装载器 (GameSystemService.sub9085): 段字节 < $6D → bank9 表,
- *     ≥ $6D → (byte-$6D) → bank10 表; 查表得数据流地址 → 复制 $978B 模板到 $0568 buffer。
- *   - $82ED 装载器 (GameSystemService.sub82EC): ram_004C ASL 索引 bank6 $B800 表,
- *     数据流 = BG 调色板动画 ($FE 帧分隔 / $FF 结束)。
- */
+ * 来源: �?ROM 提取 (PRG 偏移 = 16 + bank*0x2000), �?asm data_tables.s 对照�? * 每项 16 �?LE 指针 = 运行�?$A000 窗口地址; 指针不在 $A000-$BFFF 则表结束�? *
+ * 消费�?
+ *   - $9085 场景数据装载�?(Bank00Service.sub9085): 段字�?< $6D �?bank9 �?
+ *     �?$6D �?(byte-$6D) �?bank10 �? 查表得数据流地址 �?复制 $978B 模板�?$0568 buffer�? *   - $82ED 装载�?(Bank00Service.sub82EC): ram_004C ASL 索引 bank6 $B800 �?
+ *     数据�?= BG 调色板动�?($FE 帧分�?/ $FF 结束)�? */
 export const BANK9_SCENE_PTR_TABLE: readonly number[] = [
   0xA0DA, 0xA167, 0xA1F1, 0xA201, 0xA218, 0xA223, 0xA231, 0xA23B, 0xA251, 0xA25C, 0xA266, 0xA270,
   0xA287, 0xA28E, 0xA295, 0xA29C, 0xA2A3, 0xA2AD, 0xA2B8, 0xA2C3, 0xA2CD, 0xA2DA, 0xA2E1, 0xA2EB,
@@ -35,13 +31,13 @@ export const BANK10_SCENE_PTR_TABLE: readonly number[] = [
   0xA757, 0xA765, 0xA784, 0xA79E, 0xA7D8, 0xA7ED, 0xA7FA, 0xA811, 0xA818, 0xA81F, 0xA82B,
 ];
 
-/** bank6 $B800 — BG 调色板动画流指针表 (21 项, idx = ram_004C) */
+/** bank6 $B800 �?BG 调色板动画流指针�?(21 �? idx = ram_004C) */
 export const BANK6_B800_PAL_ANIM_TABLE: readonly number[] = [
   0xB82A, 0xB838, 0xB84A, 0xB884, 0xB892, 0xB8C4, 0xB8DE, 0xB918, 0xB936, 0xB958, 0xB97A, 0xB9B4,
   0xBA22, 0xBA2C, 0xBA36, 0xBA44, 0xBA96, 0xBA52, 0xBA96, 0xBA96, 0xBA5C,
 ];
 
-/** bank6 $B800 — 调色板动画数据流 (idx = ram_004C, $82ED 装载器消费, $FE=帧分隔 $FF=结束) */
+/** bank6 $B800 �?调色板动画数据流 (idx = ram_004C, $82ED 装载器消�? $FE=帧分�?$FF=结束) */
 export const BANK6_B800_STREAMS: readonly (readonly number[])[] = [
   // [0] ptr=0xB82A (90B)
   [

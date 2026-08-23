@@ -1,33 +1,25 @@
 /**
- * SkillService — 必杀技/特殊动作脚本引擎 (bank16)
+ * SkillService �?必杀技/特殊动作脚本引擎 (bank16)
  * @bank 16 ($8000-$9FFF, MMC3 R6 可切)
  *
- * 职责: 必杀技脚本解析+执行 + 球员必杀技查询。
- *   读 $005D/$005E 脚本指针, 逐字节解析指令, 分派到事件处理子程。
- *
+ * 职责: 必杀技脚本解析+执行 + 球员必杀技查询�? *   �?$005D/$005E 脚本指针, 逐字节解析指�? 分派到事件处理子程�? *
  * asm 结构:
- *   code_main.s $8000-$8335: 脚本指针查询 + 指令解析主循环 + 事件分派
+ *   code_main.s $8000-$8335: 脚本指针查询 + 指令解析主循�?+ 事件分派
  *   code_sub.s  $833C-$8676: 球员选择/方向/动画辅助子程
- *   code_data.s $8677-$89BE: 事件处理子程 + 数据表
- *   data_tables.s $89BF+:     必杀技指针表 + 角色必杀表
- *
+ *   code_data.s $8677-$89BE: 事件处理子程 + 数据�? *   data_tables.s $89BF+:     必杀技指针�?+ 角色必杀�? *
  * RAM 布局:
  *   $005D/$005E: 脚本数据指针 (16bit)
  *   $003A: 脚本读取偏移 Y
- *   $0516: 脚本状态标志 (bit0=文本, bit1=等待, bit2=继续, bit3=初始化, bit6=新事件)
+ *   $0516: 脚本状态标�?(bit0=文本, bit1=等待, bit2=继续, bit3=初始�? bit6=新事�?
  *   $0518: 脚本索引
- *   $0522: 脚本栈指针
- *   $0523-$0524: 事件参数1/2
+ *   $0522: 脚本栈指�? *   $0523-$0524: 事件参数1/2
  *   $0528-$0529: 事件参数3/4
  *   $052A: 当前事件 ID
- *   $052B-$0531: 事件状态
- *   $0441/$0442: 球员1/2 索引
- *   $0443: 事件计数器
- *   $0612: 动作类型
- *   $0616: 球员计数器
- */
+ *   $052B-$0531: 事件状�? *   $0441/$0442: 球员1/2 索引
+ *   $0443: 事件计数�? *   $0612: 动作类型
+ *   $0616: 球员计数�? */
 import { DataStore } from '../../data/store/DataStore';
-import { GameSystemService } from '../system/GameSystemService';
+import { Bank00Service } from '../system/Bank00Service';
 import { getCharacterSkills, getMovePtr } from '../../data/tables/skill-table';
 
 /** 必杀技定义记录 */
@@ -38,9 +30,9 @@ export interface MoveDefinition {
 
 export class SkillService {
   protected _store: DataStore;
-  protected _system: GameSystemService;
+  protected _system: Bank00Service;
 
-  constructor(store: DataStore, system: GameSystemService) {
+  constructor(store: DataStore, system: Bank00Service) {
     this._store = store;
     this._system = system;
   }
@@ -63,7 +55,7 @@ export class SkillService {
   }
 
   // ════════════════════════════════════════════════════════════
-  // 必杀技查询 (数据层, 已有)
+  // 必杀技查询 (数据�? 已有)
   // ════════════════════════════════════════════════════════════
 
   getMove(moveId: number): Readonly<MoveDefinition> {
@@ -76,12 +68,10 @@ export class SkillService {
   }
 
   // ════════════════════════════════════════════════════════════
-  // $8000-$8020: 脚本指针跳转表查询
-  // ════════════════════════════════════════════════════════════
+  // $8000-$8020: 脚本指针跳转表查�?  // ════════════════════════════════════════════════════════════
 
   /**
-   * $8000: 主入口 — 查 $BF89+X 指针表, 设脚本指针。
-   * asm: LDX #$89; LDA $0518; ASL; TAY; BCC $8010; INX
+   * $8000: 主入�?�?�?$BF89+X 指针�? 设脚本指针�?   * asm: LDX #$89; LDA $0518; ASL; TAY; BCC $8010; INX
    *   LDA #$BF; STA $005D; STX $005E; LDA ($005D),Y; TAX; INY;
    *   LDA ($005D),Y; STA $005E; STX $005D; RTS
    */
@@ -92,19 +82,18 @@ export class SkillService {
     if (idx >= 0x80) x = (x + 1) & 0xFF;
     this.wr(0x005D, 0xBF);
     this.wr(0x005E, x);
-    // 查 $BF89+X 指针表 (bank16 ROM, stub)
+    // �?$BF89+X 指针�?(bank16 ROM, stub)
     const ptr = this.rdPtr(0x005D, 0x005E);
     void ptr;
   }
 
   /**
-   * $8021: 脚本执行入口。
-   * asm: LDA $0517; STA $052A; LDA $0516; AND #$FB; STA $0516;
+   * $8021: 脚本执行入口�?   * asm: LDA $0517; STA $052A; LDA $0516; AND #$FB; STA $0516;
    *   LDA #$00; STA $052B/$052D/$052C/$0530/$003A
    *   $803F: LDY $003A; INC $003A; LDA ($005D),Y; CMP #$F0; BCC $804F
    *   JSR $80A9 (指令分派); JMP $803F
    *   $804F: STA $0523; LDA $0516; ORA #$40; AND #$EF; STA $0516
-   *   读参数2/3/4 (JSR $8991/$899C/$89A7); 算新指针; 调 $C50F
+   *   读参�?/3/4 (JSR $8991/$899C/$89A7); 算新指针; �?$C50F
    */
   execute(): void {
     this.wr(0x052A, this.rd(0x0517));
@@ -133,7 +122,7 @@ export class SkillService {
       // $804F: STA $0523 (事件ID)
       this.wr(0x0523, opcode);
       this.wr(0x0516, (this.rd(0x0516) | 0x40) & 0xEF);
-      // 读参数2/3/4
+      // 读参�?/3/4
       y = this.rd(0x003A);
       this.wr(0x003A, (y + 1) & 0xFF);
       const p2 = 0; // stub
@@ -162,9 +151,8 @@ export class SkillService {
   }
 
   /**
-   * $80A9: 指令分派 (SEC; SBC #$F0; JSR $C509; 查跳转表)。
-   * asm: SEC; SBC #$F0; JSR $C509
-   *   跳转表 $80AF: $80D4/$80D4/$80F4/$8105/$87E0/$87E6/$87EC/$87F5
+   * $80A9: 指令分派 (SEC; SBC #$F0; JSR $C509; 查跳转表)�?   * asm: SEC; SBC #$F0; JSR $C509
+   *   跳转�?$80AF: $80D4/$80D4/$80F4/$8105/$87E0/$87E6/$87EC/$87F5
    *     $87FF/$8809/$8812/$881B/$8853/$8858/$885F/$8866/$886A
    */
   protected sub80A9(opcode: number): void {
@@ -196,12 +184,10 @@ export class SkillService {
   }
 
   // ════════════════════════════════════════════════════════════
-  // $80A9 跳转表目标子程
-  // ════════════════════════════════════════════════════════════
+  // $80A9 跳转表目标子�?  // ════════════════════════════════════════════════════════════
 
   /**
-   * $80D4: 初始化事件 (设 $052A=0, $0516 bit3, 清 $0522)。
-   * asm: LDA #$00; STA $052A; LDA #$08; BIT $0516; BNE $80E6;
+   * $80D4: 初始化事�?(�?$052A=0, $0516 bit3, �?$0522)�?   * asm: LDA #$00; STA $052A; LDA #$08; BIT $0516; BNE $80E6;
    *   ORA $0516; STA $0516; LDX #$05; JSR $C51B
    *   $80E6: LDA #$00; STA $0522; LDA $0021; AND #$1E; STA $0021; PLA; PLA; RTS
    */
@@ -216,8 +202,7 @@ export class SkillService {
   }
 
   /**
-   * $80F4: 读指针+跳转 (查 $005D+Y 指针表)。
-   * asm: LDY $003A; LDA ($005D),Y; TAX; INY; LDA ($005D),Y;
+   * $80F4: 读指�?跳转 (�?$005D+Y 指针�?�?   * asm: LDY $003A; LDA ($005D),Y; TAX; INY; LDA ($005D),Y;
    *   STA $005E; STX $005D; LDA #$00; STA $003A; RTS
    */
   protected sub80F4(): void {
@@ -227,8 +212,7 @@ export class SkillService {
   }
 
   /**
-   * $8105: 条件跳转 (读偏移, JSR $816E 分派, 跳转)。
-   * asm: LDY $003A; LDA ($005D),Y; PHA; JSR $816E; PLA; BPL $812F
+   * $8105: 条件跳转 (读偏�? JSR $816E 分派, 跳转)�?   * asm: LDY $003A; LDA ($005D),Y; PHA; JSR $816E; PLA; BPL $812F
    *   TXA; SEC; ADC $003A; CLC; ADC $005D; STA $005D; BCC $811D; INC $005E
    *   LDY #$00; LDA ($005D),Y; CLC; ADC $005D; STA $005D; BCC $812A; INC $005E
    *   LDA #$00; STA $003A; RTS
@@ -245,24 +229,22 @@ export class SkillService {
   }
 
   /**
-   * $816E: 条件判断 (AND #$7F; JSR $C509; 查跳转表)。
-   * asm: AND #$7F; JSR $C509
-   *   跳转表 $8172: 大量子程 (条件检查: 球员位置/方向/比分/时间等)
+   * $816E: 条件判断 (AND #$7F; JSR $C509; 查跳转表)�?   * asm: AND #$7F; JSR $C509
+   *   跳转�?$8172: 大量子程 (条件检�? 球员位置/方向/比分/时间�?
    */
   protected sub816E(): number {
     const cond = 0; // stub
     const idx = this._system.subC509(cond & 0x7F);
-    // 跳转表 ~60 项, 各条件检查子程
-    void idx;
+    // 跳转�?~60 �? 各条件检查子�?    void idx;
     return 0;
   }
 
-  /** $87E0: 设 $052A = $40 */
+  /** $87E0: �?$052A = $40 */
   protected sub87E0(): void {
     this.wr(0x052A, 0x40);
   }
 
-  /** $87E6: 设 $052A = $00 */
+  /** $87E6: �?$052A = $00 */
   protected sub87E6(): void {
     this.wr(0x052A, 0x00);
   }
@@ -272,21 +254,21 @@ export class SkillService {
     this.wr(0x052A, this.rd(0x052A) ^ 0x40);
   }
 
-  /** $87F5: 读 $005D+Y → $052B (参数1) */
+  /** $87F5: �?$005D+Y �?$052B (参数1) */
   protected sub87F5(): void {
     const y = this.rd(0x003A);
     this.wr(0x003A, (y + 1) & 0xFF);
     this.wr(0x052B, 0); // stub
   }
 
-  /** $87FF: 读 $005D+Y → $052C (参数2) */
+  /** $87FF: �?$005D+Y �?$052C (参数2) */
   protected sub87FF(): void {
     const y = this.rd(0x003A);
     this.wr(0x003A, (y + 1) & 0xFF);
     this.wr(0x052C, 0); // stub
   }
 
-  /** $8809: 读 $005D+Y → $0530/$0531 (16bit 参数) */
+  /** $8809: �?$005D+Y �?$0530/$0531 (16bit 参数) */
   protected sub8809(): void {
     this.wr(0x0530, 0); // stub
     this.wr(0x0531, 0);
@@ -295,17 +277,14 @@ export class SkillService {
   }
 
   /**
-   * $8812: 脚本调用 (压栈 $051A/$051B, 跳新指针)。
-   * TODO: 翻译 $8812 — asm bank24 $8812, 与 $881B 类似但偏移不同
-   */
+   * $8812: 脚本调用 (压栈 $051A/$051B, 跳新指针)�?   * TODO: 翻译 $8812 �?asm bank24 $8812, �?$881B 类似但偏移不�?   */
   protected sub8812(): void {
     // stub: 转发 sub881B (结构相似)
     this.sub881B();
   }
 
   /**
-   * $881B: 脚本调用 (压栈 $051A/$051B, 跳新指针)。
-   * asm: LDX $0522; LDA $003A; TAY; CLC; ADC #$02; ADC $005D;
+   * $881B: 脚本调用 (压栈 $051A/$051B, 跳新指针)�?   * asm: LDX $0522; LDA $003A; TAY; CLC; ADC #$02; ADC $005D;
    *   STA $051A,X; LDA $005E; ADC #$00; STA $051B,X; INX; INX; STX $0522;
    *   JMP $80F6
    */
@@ -322,8 +301,7 @@ export class SkillService {
   }
 
   /**
-   * $8836: 脚本返回 (弹栈 $051A/$051B)。
-   * asm: LDX $0522; DEX; DEX; STX $0522; BPL $8844; JMP $80CF
+   * $8836: 脚本返回 (弹栈 $051A/$051B)�?   * asm: LDX $0522; DEX; DEX; STX $0522; BPL $8844; JMP $80CF
    *   $8844: LDA $051A,X; STA $005D; LDA $051B,X; STA $005E; LDA #$00; STA $003A; RTS
    */
   protected sub8853(): void {
@@ -338,14 +316,14 @@ export class SkillService {
     this.wr(0x003A, 0);
   }
 
-  /** $8858: 读 $005D+Y → $052D */
+  /** $8858: �?$005D+Y �?$052D */
   protected sub8858(): void {
     const y = this.rd(0x003A);
     this.wr(0x003A, (y + 1) & 0xFF);
     this.wr(0x052D, 0); // stub
   }
 
-  /** $885F: 读 $005D+Y → JSR $886A → STX $052A */
+  /** $885F: �?$005D+Y �?JSR $886A �?STX $052A */
   protected sub885F(): void {
     const y = this.rd(0x003A);
     this.wr(0x003A, (y + 1) & 0xFF);
@@ -354,8 +332,7 @@ export class SkillService {
   }
 
   /**
-   * $886A: 事件查表 (JSR $C509; 查跳转表)。
-   * asm: JSR $C509; 跳转表 $886A: $8877/$88AA/$88B5/$88BF/$88D9
+   * $886A: 事件查表 (JSR $C509; 查跳转表)�?   * asm: JSR $C509; 跳转�?$886A: $8877/$88AA/$88B5/$88BF/$88D9
    */
   protected sub886A(): number {
     const idx = this._system.subC509(0);
@@ -372,8 +349,7 @@ export class SkillService {
   }
 
   /**
-   * $8877: 球员位置检查 (查球员数据, 算方向)。
-   * asm: LDA #$00; STA $003B; LDA $0441; JSR $C50C;
+   * $8877: 球员位置检�?(查球员数�? 算方�?�?   * asm: LDA #$00; STA $003B; LDA $0441; JSR $C50C;
    *   LDA $0638; JSR $C536; TYA; LDY #$08; SEC; SBC ($0034),Y; BCS $8891; INC $003B
    *   TXA; LDY #$06; SEC; SBC ($0034),Y; BCS $889D; INC $003B; INC $003B
    *   LDX #$40; LDA $003B; BEQ $88A9; CMP #$03; BEQ $88A9; LDX #$00; RTS
@@ -381,31 +357,29 @@ export class SkillService {
   protected sub8877(): number {
     this.wr(0x003B, 0);
     // LDA $0441; JSR $C50C; LDA $0638; JSR $C536
-    // 算方向偏移
-    const b = this.rd(0x003B);
+    // 算方向偏�?    const b = this.rd(0x003B);
     if (b === 0 || b === 3) return 0x40;
     return 0;
   }
 
-  /** $88AA: 球员计数器检查 (LDA $0616; LSR; BCC; LDX #$40) */
+  /** $88AA: 球员计数器检�?(LDA $0616; LSR; BCC; LDX #$40) */
   protected sub88AA(): number {
     if ((this.rd(0x0616) & 1) !== 0) return 0x40;
     return 0;
   }
 
-  /** $88B5: 比赛阶段检查 (LDA $05FB; BEQ; LDX #$40) */
+  /** $88B5: 比赛阶段检�?(LDA $05FB; BEQ; LDX #$40) */
   protected sub88B5(): number {
     if (this.rd(0x05FB) !== 0) return 0x40;
     return 0;
   }
 
   /**
-   * $88BF: 球员 Y 坐标检查。
-   * asm: LDA $0441; JSR $C50C; LDY #$08; LDA ($0034),Y;
+   * $88BF: 球员 Y 坐标检查�?   * asm: LDA $0441; JSR $C50C; LDY #$08; LDA ($0034),Y;
    *   LDX $05FB; BEQ $88D0; EOR #$FF; LDX #$00; CMP #$80; BCS $88D8; LDX #$40
    */
   protected sub88BF(): number {
-    // JSR $C50C; 读球员 Y 坐标
+    // JSR $C50C; 读球�?Y 坐标
     const phase = this.rd(0x05FB);
     let a = 0; // stub: 球员 Y 坐标
     if (phase !== 0) a = a ^ 0xFF;
@@ -413,13 +387,13 @@ export class SkillService {
     return 0x40;
   }
 
-  /** $88D9: $062C 方向检查 (BIT $062C; BPL; LDX #$40) */
+  /** $88D9: $062C 方向检�?(BIT $062C; BPL; LDX #$40) */
   protected sub88D9(): number {
     if ((this.rd(0x062C) & 0x80) !== 0) return 0x40;
     return 0;
   }
 
-  /** $88E5: 读 $005D+Y → $0539 */
+  /** $88E5: �?$005D+Y �?$0539 */
   protected sub8866(): void {
     const y = this.rd(0x003A);
     this.wr(0x003A, (y + 1) & 0xFF);
@@ -455,7 +429,7 @@ export class SkillService {
   // code_sub.s $833C-$8676: 球员选择/方向/动画辅助
   // ════════════════════════════════════════════════════════════
 
-  /** $833C: INC $0616 (球员计数器+1) */
+  /** $833C: INC $0616 (球员计数�?1) */
   protected sub833C(): void {
     this.wr(0x0616, (this.rd(0x0616) + 1) & 0xFF);
   }
@@ -491,8 +465,7 @@ export class SkillService {
   }
 
   /**
-   * $8370: 球员方向检查。
-   * asm: LDX #$00; LDA $043B; CMP #$01; BEQ $837B; JSR $8677; INX; RTS
+   * $8370: 球员方向检查�?   * asm: LDX #$00; LDA $043B; CMP #$01; BEQ $837B; JSR $8677; INX; RTS
    */
   protected sub8370(): number {
     let x = 0;
@@ -616,8 +589,7 @@ export class SkillService {
   }
 
   /**
-   * $8457: 比分检查 (LDA $002B; CMP #$22; 比分差判断)。
-   * asm: LDX #$00; LDA $002B; CMP #$22; BNE $847D;
+   * $8457: 比分检�?(LDA $002B; CMP #$22; 比分差判�?�?   * asm: LDX #$00; LDA $002B; CMP #$22; BNE $847D;
    *   LDY #$00; LDA $0028; SEC; SBC $0029; BCC $847A; BEQ $847A;
    *   LDY #$80; LDA #$CA; STA $03FE; LDA $05FB; BNE $847A; INX;
    *   STY $03FD; RTS
@@ -636,21 +608,19 @@ export class SkillService {
   }
 
   /**
-   * $847D: 球员1必杀检查 (LDA $0442; JSR $8207; 查 $86F4 表)。
-   * asm: LDA $0442; JSR $8207; TAY; LDX $86F4,Y; BEQ $8497;
+   * $847D: 球员1必杀检�?(LDA $0442; JSR $8207; �?$86F4 �?�?   * asm: LDA $0442; JSR $8207; TAY; LDX $86F4,Y; BEQ $8497;
    *   LDA $0441; JSR $8207; TAY; LDX $86F4,Y; JSR $8211
    */
   protected sub847D(): void {
     this.sub8207(this.rd(0x0442));
-    // 查 $86F4 表
-    const v1 = 0; // stub
+    // �?$86F4 �?    const v1 = 0; // stub
     if (v1 !== 0) {
       this.sub8207(this.rd(0x0441));
       this.sub8211(0);
     }
   }
 
-  /** $8497: 球员2必杀检查 (与 $847D 对称) */
+  /** $8497: 球员2必杀检�?(�?$847D 对称) */
   protected sub8497(): void {
     this.sub8207(this.rd(0x0441));
     const v1 = 0; // stub
@@ -660,7 +630,7 @@ export class SkillService {
     }
   }
 
-  /** $84B1: LDX #$00; BIT $043E; BPL; 球员方向检查 */
+  /** $84B1: LDX #$00; BIT $043E; BPL; 球员方向检�?*/
   protected sub84B1(): void {
     if ((this.rd(0x043E) & 0x80) !== 0) {
       this.sub8207(this.rd(0x0442));
@@ -669,24 +639,21 @@ export class SkillService {
   }
 
   /**
-   * $84C7: 球员数据读取 (LDA $0441; LDX $05FB; JSR $C50C; 读球员数据)。
-   * asm: LDA $0441; LDX $05FB; BEQ $84D2; LDA $0442
+   * $84C7: 球员数据读取 (LDA $0441; LDX $05FB; JSR $C50C; 读球员数�?�?   * asm: LDA $0441; LDX $05FB; BEQ $84D2; LDA $0442
    *   JSR $C50C; LDX #$00; LDY #$01; LDA ($0034),Y; SEC; SBC #$64; ...
    */
   protected sub84C7(): void {
     let a = this.rd(0x0441);
     if (this.rd(0x05FB) !== 0) a = this.rd(0x0442);
     this._system.subC50C();
-    // 读球员数据[1], 减 $64, 检查条件
-  }
+    // 读球员数据[1], �?$64, 检查条�?  }
 
   // ════════════════════════════════════════════════════════════
   // $8207/$8211: 球员数据查询辅助
   // ════════════════════════════════════════════════════════════
 
   /**
-   * $8207: 读球员数据[0] (JSR $C50C; LDY #$00; LDA ($0034),Y)。
-   * @param playerId 球员 ID
+   * $8207: 读球员数据[0] (JSR $C50C; LDY #$00; LDA ($0034),Y)�?   * @param playerId 球员 ID
    * @returns 球员数据[0]
    */
   protected sub8207(playerId: number): number {
@@ -696,8 +663,7 @@ export class SkillService {
   }
 
   /**
-   * $8211: 球员方向设置 (BEQ $821B; 设 $0516 bit2)。
-   * @param dir 方向
+   * $8211: 球员方向设置 (BEQ $821B; �?$0516 bit2)�?   * @param dir 方向
    */
   protected sub8211(dir: number): void {
     if (dir === 0) {
@@ -706,12 +672,10 @@ export class SkillService {
   }
 
   // ════════════════════════════════════════════════════════════
-  // $8138-$816D: 方向差计算
-  // ════════════════════════════════════════════════════════════
+  // $8138-$816D: 方向差计�?  // ════════════════════════════════════════════════════════════
 
   /**
-   * $8138: 方向差计算 (AND #$FC; LSR; 比较球门方向)。
-   * asm: AND #$FC; BEQ $814D; LSR; STA $003B;
+   * $8138: 方向差计�?(AND #$FC; LSR; 比较球门方向)�?   * asm: AND #$FC; BEQ $814D; LSR; STA $003B;
    *   LDA $00E2; CMP $003B; BCC $814B; SBC $003B; JMP $8142;
    *   ADC $003B; LDX #$00; RTS
    */
@@ -729,24 +693,22 @@ export class SkillService {
   }
 
   /**
-   * $8150: 球员距离计算 (JSR $C50C; 读球员数据; 减偏移)。
-   * asm: JSR $C50C; LDY #$01; LDA ($0034),Y; SEC; SBC #$40; TAX;
+   * $8150: 球员距离计算 (JSR $C50C; 读球员数�? 减偏�?�?   * asm: JSR $C50C; LDY #$01; LDA ($0034),Y; SEC; SBC #$40; TAX;
    *   INY; LDA ($0034),Y; SBC #$00; BPL $8165; LDX #$00; TXA;
    *   STA ($0034),Y; DEY; TXA; STA ($0034),Y; LDX #$01; RTS
    */
   protected sub8150(playerId: number): number {
     this._system.subC50C();
-    // 读球员数据[1], 减 $40
+    // 读球员数据[1], �?$40
     return 1; // stub
   }
 
   // ════════════════════════════════════════════════════════════
-  // $82BC-$8335: 事件计数器 + 距离判断
+  // $82BC-$8335: 事件计数�?+ 距离判断
   // ════════════════════════════════════════════════════════════
 
   /**
-   * $82BC: 事件距离判断 (LDA $0443; CMP #$06; BEQ; 查 $062C 方向)。
-   * asm: LDA $0443; CMP #$06; BEQ $82DA;
+   * $82BC: 事件距离判断 (LDA $0443; CMP #$06; BEQ; �?$062C 方向)�?   * asm: LDA $0443; CMP #$06; BEQ $82DA;
    *   LDA $062C; BPL $82CB; EOR #$FF; CLC; ADC #$01; CMP #$40; BCC $82D3;
    *   EOR #$FF; AND #$3F; CMP #$20; BCC $82DA; INC $0443
    *   $82DA: LDA $0443; ASL; ASL; ADC $0443; TAY; LDX #$00;
@@ -767,7 +729,7 @@ export class SkillService {
         }
       }
     }
-    // 查 $8308 表 (距离判断)
+    // �?$8308 �?(距离判断)
     const newCnt = this.rd(0x0443);
     const y = (newCnt << 2) + newCnt;
     const e3 = this.rd(0x00E3);
@@ -776,17 +738,17 @@ export class SkillService {
     return 0;
   }
 
-  /** $82FB: JSR $C509; 查 $8308 表 (距离阈值) */
+  /** $82FB: JSR $C509; �?$8308 �?(距离阈�? */
   protected sub82FB(): void {
     this._system.subC509(0);
   }
 
-  /** $8330: LDA #$02; STA $0612 (设动作类型=2) */
+  /** $8330: LDA #$02; STA $0612 (设动作类�?2) */
   protected sub8330(): void {
     this.wr(0x0612, 0x02);
   }
 
-  /** $8336: LDA #$02; STA $0612 (设动作类型=2) */
+  /** $8336: LDA #$02; STA $0612 (设动作类�?2) */
   protected sub8336(): void {
     this.wr(0x0612, 0x02);
   }
@@ -796,8 +758,7 @@ export class SkillService {
   // ════════════════════════════════════════════════════════════
 
   /**
-   * $8677: 球员1方向检查 (LDX #$00; LDA $0444; JSR $8138)。
-   * asm: LDX #$00; LDA $0444; JSR $8138; CMP #$80; BCC $8689;
+   * $8677: 球员1方向检�?(LDX #$00; LDA $0444; JSR $8138)�?   * asm: LDX #$00; LDA $0444; JSR $8138; CMP #$80; BCC $8689;
    *   LDA $0442; JSR $8150; RTS
    */
   protected sub8677(): void {
@@ -808,8 +769,7 @@ export class SkillService {
   }
 
   /**
-   * $8689: 球员ID查表 (LDA $0441; JSR $8207; 查 $86A6 表)。
-   * asm: LDA $0441; JSR $8207; LDY #$00; CMP $86A6,Y; BEQ $869D;
+   * $8689: 球员ID查表 (LDA $0441; JSR $8207; �?$86A6 �?�?   * asm: LDA $0441; JSR $8207; LDY #$00; CMP $86A6,Y; BEQ $869D;
    *   INY; INY; CPY #$0E; BNE $8692; LDX $86A7,Y; LDA #$01; JSR $8211
    */
   protected sub8689(): void {
@@ -835,7 +795,7 @@ export class SkillService {
     return 4;
   }
 
-  /** $86CE: 球员ID查表2 (LDA $0441; JSR $8207; 查 $86E3 表, 17 项) */
+  /** $86CE: 球员ID查表2 (LDA $0441; JSR $8207; �?$86E3 �? 17 �? */
   protected sub86CE(): void {
     const id = this.sub8207(this.rd(0x0441));
     const table = [0x01, 0x11, 0x1A, 0x41, 0x36, 0x1F, 0x38, 0x17, 0x18, 0x46, 0x47, 0x30, 0x31, 0x60, 0x5E, 0x58, 0x57];
@@ -849,9 +809,8 @@ export class SkillService {
   }
 
   /**
-   * $88F0: 参数扩展 (JSR $C509; 查跳转表)。
-   * asm: LDY $003A; LDA ($005D),Y; JSR $C509
-   *   跳转表 $88F0: $88FC/$890D/$893D/$8942
+   * $88F0: 参数扩展 (JSR $C509; 查跳转表)�?   * asm: LDY $003A; LDA ($005D),Y; JSR $C509
+   *   跳转�?$88F0: $88FC/$890D/$893D/$8942
    */
   protected sub88F0(): void {
     const idx = this._system.subC509(0);
@@ -865,15 +824,13 @@ export class SkillService {
     }
   }
 
-  /** $88FC: 球员数据[0] 检查 (LDA $0441; JSR $C50C; 读[0]; CMP #$60) */
+  /** $88FC: 球员数据[0] 检�?(LDA $0441; JSR $C50C; 读[0]; CMP #$60) */
   protected sub88FC(): void {
     this._system.subC50C();
-    // 读球员数据[0], 循环检查
-  }
+    // 读球员数据[0], 循环检�?  }
 
   /**
-   * $890D: 比赛阶段+球员检查 (LDA $05FB; BNE; 球员数据循环)。
-   * asm: LDA $05FB; BNE $898E; LDA #$01; PHA; JSR $C50C;
+   * $890D: 比赛阶段+球员检�?(LDA $05FB; BNE; 球员数据循环)�?   * asm: LDA $05FB; BNE $898E; LDA #$01; PHA; JSR $C50C;
    *   LDY #$00; LDA ($0034),Y; TAY; LDX #$00; PLA; CPY #$1A; BEQ $8964;
    *   CLC; ADC #$01; CMP #$0B; BNE $894C; BEQ $898E;
    *   $8964: LDA $043C; CMP #$03; BCC $898E; BIT $0449; BMI $898E;
@@ -902,7 +859,7 @@ export class SkillService {
     // JMP $812F (条件跳转)
   }
 
-  /** $8942: LDA $05FB; BNE; 球员检查 (与 $890D 类似) */
+  /** $8942: LDA $05FB; BNE; 球员检�?(�?$890D 类似) */
   protected sub8942(): void {
     this.sub890D();
   }

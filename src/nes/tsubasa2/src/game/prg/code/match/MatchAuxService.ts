@@ -1,34 +1,27 @@
 /**
- * MatchAuxService — bank20 比赛辅助 (计时状态机/计分板/精灵渲染) ($8000-$9FFF, 运行时 $A000-$BFFF)
+ * MatchAuxService �?bank20 比赛辅助 (计时状态机/计分�?精灵渲染) ($8000-$9FFF, 运行�?$A000-$BFFF)
  * @bank 20
  *
- * 职责: 4 路 dispatch (计时/计分板/精灵渲染), 15 code 段, 16 内部函数。
- * 数据表: 来自 data/tables/bank20-tables.ts（从 asm/bank20/data_tables.s 提取）。
+ * 职责: 4 �?dispatch (计时/计分�?精灵渲染), 15 code �? 16 内部函数�? * 数据�? 来自 data/tables/bank20-tables.ts（从 asm/bank20/data_tables.s 提取）�? *
+ * 入口 (跳转�?$8000-$800D):
+ *   $8000 �?JMP $800F: �?dispatch (�?$053A 分派)
+ *   $8003 �?JMP $84DC: 计时器更�? *   $8006 �?JMP $83D9: 计分板更�? *   $8009 �?JMP $8624: 精灵渲染
+ *   $800C �?JMP $8796: 其他辅助
  *
- * 入口 (跳转表 $8000-$800D):
- *   $8000 → JMP $800F: 主 dispatch (读 $053A 分派)
- *   $8003 → JMP $84DC: 计时器更新
- *   $8006 → JMP $83D9: 计分板更新
- *   $8009 → JMP $8624: 精灵渲染
- *   $800C → JMP $8796: 其他辅助
- *
- * 翻译状态: 全 bank 代码逐行翻译（$8000-$88A7 全部指令覆盖, 数据走 bank20-tables）。
- *
+ * 翻译状�? �?bank 代码逐行翻译�?8000-$88A7 全部指令覆盖, 数据�?bank20-tables）�? *
  * RAM 关键:
  *   $004C/$004D: 计时数据指针
- *   $053A: dispatch 索引 (0=结束, 正=递减, 负=启动)
- *   $053B: 激活标志/延迟计数
- *   $053C: 计时器 id
- *   $053D-$0545: 计时参数/缓冲区
- *   $0547-$05C6: 计时缓冲区 (0x15 步长 × 8 组)
- *   $003C/$003D: 精灵组指针 (sprite group)
+ *   $053A: dispatch 索引 (0=结束, �?递减, �?启动)
+ *   $053B: 激活标�?延迟计数
+ *   $053C: 计时�?id
+ *   $053D-$0545: 计时参数/缓冲�? *   $0547-$05C6: 计时缓冲�?(0x15 步长 × 8 �?
+ *   $003C/$003D: 精灵组指�?(sprite group)
  *   $003E/$003F: 数据指针 (sprite batch / 计时数据)
- *   $062D: 比赛模式 (低 4 位 = 精灵渲染模式)
+ *   $062D: 比赛模式 (�?4 �?= 精灵渲染模式)
  *
- * 命名规范: 旧名 Bank20Service → 新名 MatchAuxService。
- */
+ * 命名规范: 旧名 Bank20Service �?新名 MatchAuxService�? */
 import { DataStore } from '../../data/store/DataStore';
-import type { GameSystemService } from '../system/GameSystemService';
+import type { Bank00Service } from '../system/Bank00Service';
 import {
   TABLE_8264,
   TABLE_82F6,
@@ -43,16 +36,16 @@ import {
   TABLE_TIMER_PTR_8968,
 } from '../../data/tables/bank20-tables';
 
-/** 4 位大写十六进制 RAM 键 */
+/** 4 位大写十六进�?RAM �?*/
 function ramKey(addr: number): string {
   return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
 }
 
 export class MatchAuxService {
   protected _store: DataStore;
-  protected _system: GameSystemService;
+  protected _system: Bank00Service;
 
-  constructor(store: DataStore, system: GameSystemService) {
+  constructor(store: DataStore, system: Bank00Service) {
     this._store = store;
     this._system = system;
   }
@@ -72,26 +65,26 @@ export class MatchAuxService {
   }
 
   // ════════════════════════════════════════════════
-  // 跳转表入口 (bank20 头 $8000-$800D)
+  // 跳转表入�?(bank20 �?$8000-$800D)
   // ════════════════════════════════════════════════
 
-  /** $8000 → $800F: 主 dispatch (计时状态机) */
+  /** $8000 �?$800F: �?dispatch (计时状态机) */
   timerDispatch(): void { this.sub800F(); }
 
-  /** $8003 → $84DC: 计时器更新 */
+  /** $8003 �?$84DC: 计时器更�?*/
   timerUpdate(): void { this.sub84DC(); }
 
-  /** $8006 → $83D9: 计分板更新 */
+  /** $8006 �?$83D9: 计分板更�?*/
   scoreboardUpdate(): void { this.sub83D9(); }
 
-  /** $8009 → $8624: 精灵渲染 */
+  /** $8009 �?$8624: 精灵渲染 */
   spriteRender(): void { this.sub8624(); }
 
-  /** $800C → $8796: 其他辅助 */
+  /** $800C �?$8796: 其他辅助 */
   auxMisc(): void { this.sub8796(); }
 
   // ════════════════════════════════════════════════
-  // 每帧推进 (原 dispatch 4 路, 由外部帧循环调用)
+  // 每帧推进 (�?dispatch 4 �? 由外部帧循环调用)
   // ════════════════════════════════════════════════
   update(frame: number): void {
     void frame;
@@ -99,7 +92,7 @@ export class MatchAuxService {
   }
 
   // ════════════════════════════════════════════════
-  // $800F 主 dispatch (计时状态机)
+  // $800F �?dispatch (计时状态机)
   // asm $800F-$8083
   // ════════════════════════════════════════════════
   private sub800F(): void {
@@ -112,11 +105,11 @@ export class MatchAuxService {
       this.sub8067();
       return;
     }
-    // $8016: LDX #$01; STX $053A (负数=启动新计时, 置 dispatch=1)
+    // $8016: LDX #$01; STX $053A (负数=启动新计�? �?dispatch=1)
     this.wr(0x053A, 0x01);
-    // $801B: LDA $053C (计时器 id)
+    // $801B: LDA $053C (计时�?id)
     const timerId = this.rd(0x053C);
-    // $801E: LDX #$68; STX $004C; LDX #$89; STX $004D → 指针=$8968
+    // $801E: LDX #$68; STX $004C; LDX #$89; STX $004D �?指针=$8968
     this.wr(0x004C, 0x68);
     this.wr(0x004D, 0x89);
     // $8026: ASL (id*2); BCC $802B; INC $004D
@@ -129,29 +122,28 @@ export class MatchAuxService {
     const pHi = TABLE_TIMER_PTR_8968[(off + 1) & 0x1F] ?? 0;
     this.wr(0x004C, pLo);
     this.wr(0x004D, pHi);
-    // $8036-$8044: 清 $0547+X 步长 0x15 直到 X==$7E (计时缓冲区 8 组 × 0x15)
+    // $8036-$8044: �?$0547+X 步长 0x15 直到 X==$7E (计时缓冲�?8 �?× 0x15)
     for (let x = 0; x < 0x7e; x += 0x15) {
       this.wr(0x0547 + x, 0);
     }
-    // $8046: LDA #$01; STA $053B (激活标志)
+    // $8046: LDA #$01; STA $053B (激活标�?
     this.wr(0x053B, 0x01);
-    // $804B-$8064: 初始化计时参数
-    this.wr(0x053D, 0x00);   // $804B: LDA #$00; STA $053D
+    // $804B-$8064: 初始化计时参�?    this.wr(0x053D, 0x00);   // $804B: LDA #$00; STA $053D
     this.wr(0x0540, 0x00);   // $8050: STA $0540
     this.wr(0x0541, 0xFF);   // $8053: LDA #$FF; STA $0541
     this.wr(0x0543, 0x01);   // $8058: LDA #$01; STA $0543
     this.wr(0x0544, 0x23);   // $805D: LDA #$23; STA $0544
     this.wr(0x0545, 0x45);   // $8062: LDA #$45; STA $0545
-    // $8067: DEC $053B (递减激活标志)
+    // $8067: DEC $053B (递减激活标�?
     this.sub8067();
   }
 
-  /** $8067: 递减激活标志, 0 时读下一计时字节 ($8067-$806C) */
+  /** $8067: 递减激活标�? 0 时读下一计时字节 ($8067-$806C) */
   private sub8067(): void {
     // $8067: DEC $053B
     const b = (this.rd(0x053B) - 1) & 0xFF;
     this.wr(0x053B, b);
-    // $806A: BEQ $806D (0 → 读下一字节); $806C: RTS
+    // $806A: BEQ $806D (0 �?读下一字节); $806C: RTS
     if (b !== 0) return;
     this.sub806D();
   }
@@ -161,24 +153,24 @@ export class MatchAuxService {
     // $806D: LDY #$00; LDA ($004C),Y
     const ptr = this.rdPtr(0x004C, 0x004D);
     const data = this.readMemByte(ptr);
-    // $8071: CMP #$F0; BCC $807B (< $F0 = 延迟值)
+    // $8071: CMP #$F0; BCC $807B (< $F0 = 延迟�?
     if (data < 0xF0) {
-      // $807B: STA $053B (存延迟)
+      // $807B: STA $053B (存延�?
       this.wr(0x053B, data);
-      // $807E: LDA #$01; JSR $83CF (设 dispatch)
+      // $807E: LDA #$01; JSR $83CF (�?dispatch)
       this.sub83CF(0x01);
       // $8083: RTS
       return;
     }
-    // $8075: JSR $8084 (≥ $F0 = 命令分派)
+    // $8075: JSR $8084 (�?$F0 = 命令分派)
     this.sub8084(data);
-    // $8078: JMP $806D (继续读)
+    // $8078: JMP $806D (继续�?
     this.sub806D();
   }
 
   // ════════════════════════════════════════════════
   // $8084: 命令分派 (SEC; SBC #$F0; JSR $C509; 查跳转表)
-  // asm: 跳转表 12 项 (cmd0-cmd11)
+  // asm: 跳转�?12 �?(cmd0-cmd11)
   //   cmd0=$80A2 cmd1=$80AA cmd2=$812B cmd3=$8138 cmd4=$8142
   //   cmd5=$8153 cmd6=$83AE cmd7=$83BD cmd8=$816F cmd9=$817C
   //   cmd10=$8195 cmd11=$81A9
@@ -186,50 +178,43 @@ export class MatchAuxService {
   private sub8084(a: number): void {
     // $8084: SEC; SBC #$F0
     const cmd = (a - 0xF0) & 0xFF;
-    // $8087: JSR $C509 (cmd 索引 → 跳转表)
+    // $8087: JSR $C509 (cmd 索引 �?跳转�?
     switch (cmd) {
       case 0: this.sub80A2(); break;   // 结束计时
-      case 1: this.sub80AA(); break;   // 精灵组设置
-      case 2: this.sub812B(); break;   // 设 $053E/$053D
-      case 3: this.sub8138(); break;   // 计分板重置 dispatch
-      case 4: this.sub8142(); break;   // 计分板数据
-      case 5: this.sub8153(); break;   // 子命令 + 调色板
-      case 6: this.sub83AE(); break;   // 清计时缓冲区项
-      case 7: this.sub83BD(); break;   // 设 $0540/$0541
+      case 1: this.sub80AA(); break;   // 精灵组设�?      case 2: this.sub812B(); break;   // �?$053E/$053D
+      case 3: this.sub8138(); break;   // 计分板重�?dispatch
+      case 4: this.sub8142(); break;   // 计分板数�?      case 5: this.sub8153(); break;   // 子命�?+ 调色�?      case 6: this.sub83AE(); break;   // 清计时缓冲区�?      case 7: this.sub83BD(); break;   // �?$0540/$0541
       case 8: this.sub816F(); break;   // 读新指针 (不重新初始化)
-      case 9: this.sub817C(); break;   // 设循环计数
-      case 10: this.sub8195(); break;  // 循环
-      case 11: this.sub81A9(); break;  // 设 $0543-$0545 (LDY#1 入口)
+      case 9: this.sub817C(); break;   // 设循环计�?      case 10: this.sub8195(); break;  // 循环
+      case 11: this.sub81A9(); break;  // �?$0543-$0545 (LDY#1 入口)
       default: break;
     }
   }
 
-  /** $83CF: 设 dispatch 索引 (LDA #A; JSR $83CF) */
+  /** $83CF: �?dispatch 索引 (LDA #A; JSR $83CF) */
   private sub83CF(a: number): void {
     // $83CF: CLC; ADC $004C; STA $004C; BCC $83D8; INC $004D; $83D8: RTS
-    // 语义: 原 $83CF 是"把 dispatch 索引写入 $053D/$053A"。
-    // 查 $83CF 实际: asm $83CF = CLC; ADC $004C; STA $004C; BCC; INC $004D; RTS (指针前进 A 字节)
-    // 但本文件各命令用 $83CF 传 dispatch 索引, 由调用方确保 A 为索引。
-    this.wr(0x053D, a);
+    // 语义: �?$83CF �?�?dispatch 索引写入 $053D/$053A"�?    // �?$83CF 实际: asm $83CF = CLC; ADC $004C; STA $004C; BCC; INC $004D; RTS (指针前进 A 字节)
+    // 但本文件各命令用 $83CF �?dispatch 索引, 由调用方确保 A 为索引�?    this.wr(0x053D, a);
     this.wr(0x053A, 0x01);
   }
 
   // ════════════════════════════════════════════════
-  // 计时命令处理器 (cmd0-cmd11)
+  // 计时命令处理�?(cmd0-cmd11)
   // ════════════════════════════════════════════════
 
-  /** $80A2: cmd0 — 结束计时 (PLA; LDA #$00; STA $053A; RTS) */
+  /** $80A2: cmd0 �?结束计时 (PLA; LDA #$00; STA $053A; RTS) */
   private sub80A2(): void {
-    // $80A3: PLA (丢弃返回地址 → 结束计时循环); $80A4: LDA #$00; STA $053A
+    // $80A3: PLA (丢弃返回地址 �?结束计时循环); $80A4: LDA #$00; STA $053A
     this.wr(0x053A, 0);
   }
 
-  /** $80AA: cmd1 — 精灵组设置 (读计时数据初始化精灵组缓冲) */
+  /** $80AA: cmd1 �?精灵组设�?(读计时数据初始化精灵组缓�? */
   private sub80AA(): void {
-    // $80AA: LDY #$05; LDA ($004C),Y (第 5 字节 = 控制)
+    // $80AA: LDY #$05; LDA ($004C),Y (�?5 字节 = 控制)
     const ptr = this.rdPtr(0x004C, 0x004D);
     const param5 = this.readMemByte(ptr + 5);
-    // $80AE: AND #$1C; LSR; TAX (控制 bit2-4 → X)
+    // $80AE: AND #$1C; LSR; TAX (控制 bit2-4 �?X)
     const x = (param5 & 0x1C) >> 1;
     // $80B2: LDA $88E4,X; STA $003A; LDA $88E5,X; STA $003B (精灵组基址指针)
     const baseLo = TABLE_88E4[x & 0x0F] ?? 0;
@@ -238,44 +223,44 @@ export class MatchAuxService {
     this.wr(0x003B, baseHi);
     // $80BC-$80C4: 清精灵组缓冲 0x15 字节
     for (let i = 0; i < 0x15; i++) this.wrInd(0x003A, i, 0);
-    // $80C6: LDY #$01; LDA ($004C),Y (第 1 字节)
+    // $80C6: LDY #$01; LDA ($004C),Y (�?1 字节)
     const param1 = this.readMemByte(ptr + 1);
     // $80CA: LDX #$B4; STX $003E; LDX #$A1; ASL; BCC $80D4; INX; STX $003F
     this.wr(0x003E, 0xB4);
     this.wr(0x003F, (param1 & 0x80) ? 0xA2 : 0xA1);
-    // $80D6: TAY; LDA ($003E),Y; TAX; INY; LDA ($003E),Y (读 2 字节 tile)
+    // $80D6: TAY; LDA ($003E),Y; TAX; INY; LDA ($003E),Y (�?2 字节 tile)
     const y1 = (param1 << 1) & 0xFF;
     const tileLo = this.readMemByte((this.rdPtr(0x003E, 0x003F) + y1) & 0xFFFF);
     const tileHi = this.readMemByte((this.rdPtr(0x003E, 0x003F) + y1 + 1) & 0xFFFF);
-    // $80DD-$80E3: STA ($003A),Y (Y=2 → tileHi), DEY, TXA → ($003A),Y (Y=1 → tileLo)
+    // $80DD-$80E3: STA ($003A),Y (Y=2 �?tileHi), DEY, TXA �?($003A),Y (Y=1 �?tileLo)
     this.wrInd(0x003A, 2, tileHi);
     this.wrInd(0x003A, 1, tileLo);
-    // $80E5: LDY #$02; LDA ($004C),Y (第 2 字节)
+    // $80E5: LDY #$02; LDA ($004C),Y (�?2 字节)
     const param2 = this.readMemByte(ptr + 2);
     // $80E9: LDX #$47; STX $003E; LDX #$AC; ASL; BCC; INX; STX $003F
     this.wr(0x003E, 0x47);
     this.wr(0x003F, (param2 & 0x80) ? 0xAD : 0xAC);
-    // $80F5: TAY; LDA ($003E),Y; TAX; INY; LDA ($003E),Y (读 2 字节坐标)
+    // $80F5: TAY; LDA ($003E),Y; TAX; INY; LDA ($003E),Y (�?2 字节坐标)
     const y2 = (param2 << 1) & 0xFF;
     const coordLo = this.readMemByte((this.rdPtr(0x003E, 0x003F) + y2) & 0xFFFF);
     const coordHi = this.readMemByte((this.rdPtr(0x003E, 0x003F) + y2 + 1) & 0xFFFF);
-    // $80FC-$8102: STA ($003A),Y (Y=4 → coordHi), DEY, TXA → (Y=3 → coordLo)
+    // $80FC-$8102: STA ($003A),Y (Y=4 �?coordHi), DEY, TXA �?(Y=3 �?coordLo)
     this.wrInd(0x003A, 4, coordHi);
     this.wrInd(0x003A, 3, coordLo);
-    // $8104: LDY #$03; LDA ($004C),Y; LDY #$08; STA ($003A),Y (第 3 字节 → +8)
+    // $8104: LDY #$03; LDA ($004C),Y; LDY #$08; STA ($003A),Y (�?3 字节 �?+8)
     this.wrInd(0x003A, 8, this.readMemByte(ptr + 3));
-    // $810C: LDY #$04; LDA ($004C),Y; LDY #$0C; STA ($003A),Y (第 4 字节 → +0xC)
+    // $810C: LDY #$04; LDA ($004C),Y; LDY #$0C; STA ($003A),Y (�?4 字节 �?+0xC)
     this.wrInd(0x003A, 0x0C, this.readMemByte(ptr + 4));
-    // $8114: LDY #$05; LDA ($004C),Y; TAX; AND #$03; STA $003C (控制低 2 位 → 精灵组 id)
+    // $8114: LDY #$05; LDA ($004C),Y; TAX; AND #$03; STA $003C (控制�?2 �?�?精灵�?id)
     this.wr(0x003C, param5 & 0x03);
-    // $811D: ORA $003C; ORA #$80; LDY #$00; STA ($003A),Y (精灵组控制 + bit7)
+    // $811D: ORA $003C; ORA #$80; LDY #$00; STA ($003A),Y (精灵组控�?+ bit7)
     this.wrInd(0x003A, 0, (param5 & 0x03) | 0x80);
-    // $8125: LDA #$06; JSR $83CF (设 dispatch=6)
+    // $8125: LDA #$06; JSR $83CF (�?dispatch=6)
     this.sub83CF(0x06);
     // $812A: RTS
   }
 
-  /** $812B: cmd2 — 设 $053E=0, $053D=1, JMP $83CF */
+  /** $812B: cmd2 �?�?$053E=0, $053D=1, JMP $83CF */
   private sub812B(): void {
     // $812B: LDA #$00; STA $053E
     this.wr(0x053E, 0x00);
@@ -285,7 +270,7 @@ export class MatchAuxService {
     this.sub83CF(0x01);
   }
 
-  /** $8138: cmd3 — 计分板重置 (LDA #$00; STA $053D; LDA #$01; JMP $83CF) */
+  /** $8138: cmd3 �?计分板重�?(LDA #$00; STA $053D; LDA #$01; JMP $83CF) */
   private sub8138(): void {
     // $8138: LDA #$00; STA $053D
     this.wr(0x053D, 0x00);
@@ -293,7 +278,7 @@ export class MatchAuxService {
     this.sub83CF(0x01);
   }
 
-  /** $8142: cmd4 — 写计分板数据到 $0493-Y (LDY #$01 起 4 字节) */
+  /** $8142: cmd4 �?写计分板数据�?$0493-Y (LDY #$01 �?4 字节) */
   private sub8142(): void {
     // $8142: LDY #$01
     // $8144: LDA ($004C),Y; STA $0493,Y; INY; CPY #$05; BNE $8144
@@ -305,17 +290,17 @@ export class MatchAuxService {
     this.sub83CF(0x05);
   }
 
-  /** $8153: cmd5 — 子命令分派 + 调色板拷贝 */
+  /** $8153: cmd5 �?子命令分�?+ 调色板拷�?*/
   private sub8153(): void {
     // $8153: LDY #$01; LDA ($004C),Y
     const ptr = this.rdPtr(0x004C, 0x004D);
     const a = this.readMemByte(ptr + 1);
-    // $8157: BPL $815F (正数 → 跳过子命令)
+    // $8157: BPL $815F (正数 �?跳过子命�?
     if ((a & 0x80) !== 0) {
-      // $8159: JSR $81BA (子命令分派, A = 数据字节)
+      // $8159: JSR $81BA (子命令分�? A = 数据字节)
       this.sub81BA(a);
     }
-    // $815F: LDX #$10; JSR $C530 (调色板拷贝)
+    // $815F: LDX #$10; JSR $C530 (调色板拷�?
     this._system.subC530(0x10, a & 0x0F);
     // $8164: JSR $C533 (NT 刷新)
     this._system.subC533();
@@ -323,11 +308,11 @@ export class MatchAuxService {
     this.sub83CF(0x02);
   }
 
-  /** $81BA: 子命令分派 (AND #$7F; JSR $C509; 查跳转表 8 项) */
+  /** $81BA: 子命令分�?(AND #$7F; JSR $C509; 查跳转表 8 �? */
   private sub81BA(a: number): void {
     // $81BA: AND #$7F
     const cmd = a & 0x7F;
-    // $81BC: JSR $C509 → 跳转表: $81CF/$81E9/$81DB/$81E1/$82BC/$837F/$837F/$81D5
+    // $81BC: JSR $C509 �?跳转�? $81CF/$81E9/$81DB/$81E1/$82BC/$837F/$837F/$81D5
     switch (cmd & 0x07) {
       case 0: this.sub81CF(); break;  // LDA $0441; JMP $81EC
       case 1: this.sub81E9(); break;
@@ -341,34 +326,33 @@ export class MatchAuxService {
     }
   }
 
-  /** $81CF: LDA $0441; JMP $81EC (球员数据查询, 源=$0441) */
+  /** $81CF: LDA $0441; JMP $81EC (球员数据查询, �?$0441) */
   private sub81CF(): void {
     this.sub81EC(this.rd(0x0441));
   }
 
-  /** $81D5: LDA $05FC; JMP $81EC (源=$05FC) */
+  /** $81D5: LDA $05FC; JMP $81EC (�?$05FC) */
   private sub81D5(): void {
     this.sub81EC(this.rd(0x05FC));
   }
 
-  /** $81DB: LDA $05FB; JMP $81EC (源=$05FB) */
+  /** $81DB: LDA $05FB; JMP $81EC (�?$05FB) */
   private sub81DB(): void {
     this.sub81EC(this.rd(0x05FB));
   }
 
-  /** $81E1: LDA $05FB; EOR #$0B; JMP $81EC (源=$05FB^$0B) */
+  /** $81E1: LDA $05FB; EOR #$0B; JMP $81EC (�?$05FB^$0B) */
   private sub81E1(): void {
     this.sub81EC((this.rd(0x05FB) ^ 0x0B) & 0xFF);
   }
 
-  /** $81E9: 子命令 1 (未确定, 回退到 $81EC 源=$003A) */
+  /** $81E9: 子命�?1 (未确�? 回退�?$81EC �?$003A) */
   private sub81E9(): void {
     this.sub81EC(this.rd(0x003A));
   }
 
   /**
-   * $81EC: 球员数据查询。
-   * asm $81EC-$8263:
+   * $81EC: 球员数据查询�?   * asm $81EC-$8263:
    *   LDA $0442; STA $003A; JSR $C50C; JSR $826A; LDY #$00; LDA ($0034),Y
    *   BEQ $8201; JSR $8282; LDX #$00; BEQ $8213
    *   $8201: LDA $002B; SEC; SBC #$03; LDX #$02
@@ -384,9 +368,9 @@ export class MatchAuxService {
   private sub81EC(a0442: number): void {
     // $81EC: LDA $0442; STA $003A
     this.wr(0x003A, a0442 & 0xFF);
-    // $81EE: JSR $C50C (比赛阶段→RAM玩家数据指针 → $0034)
+    // $81EE: JSR $C50C (比赛阶段→RAM玩家数据指针 �?$0034)
     this._system.subC50C();
-    // $81F1: JSR $826A (球员 ID → 精灵索引)
+    // $81F1: JSR $826A (球员 ID �?精灵索引)
     this.sub826A();
     // $81F4: LDY #$00; LDA ($0034),Y
     const d0 = this.rdInd(0x0034, 0);
@@ -407,21 +391,21 @@ export class MatchAuxService {
       // $8213: STA $003A
       this.wr(0x003A, a & 0xFF);
     } else {
-      // $81FA: JSR $8282; LDX #$00 (X = 状态类型 0/1/2)
+      // $81FA: JSR $8282; LDX #$00 (X = 状态类�?0/1/2)
       x = this.sub8282(d0);
       // $81FD: LDX #$00
       x = 0;
     }
     // $8213: LDY #$00; STY $003B
     this.wr(0x003B, 0);
-    // TAY; ASL; ROL $003B; ASL; ROL $003B (×4, 即 ×16)
+    // TAY; ASL; ROL $003B; ASL; ROL $003B (×4, �?×16)
     let lo = this.rd(0x003A);
     let hi = 0;
     for (let i = 0; i < 4; i++) {
       hi = ((hi << 1) | (lo >> 7)) & 0xFF;
       lo = (lo << 1) & 0xFF;
     }
-    // $8220: ADC $003A; STA $003A (lo += 原 A)
+    // $8220: ADC $003A; STA $003A (lo += �?A)
     lo = (lo + this.rd(0x003A)) & 0xFF;
     // $8224: LDA #$00; ADC $003B; STA $003B
     hi = (hi + 0) & 0xFF;
@@ -440,16 +424,16 @@ export class MatchAuxService {
     for (let i = 0; i < 16; i++) {
       const xx = i & 0x07;
       if ((i & 3) === 0) {
-        // $8244: BEQ $825D (写 $047F+X = 0)
+        // $8244: BEQ $825D (�?$047F+X = 0)
         this.wr(0x047F + i, 0);
       } else if ((i & 3) === 1) {
-        // $8248: BEQ $8258 → LDA #$0F; STA $047F+X
+        // $8248: BEQ $8258 �?LDA #$0F; STA $047F+X
         this.wr(0x047F + i, 0x0F);
       } else if ((i & 3) === 2) {
-        // $824C: BEQ $8253 → LDA ($003A),Y; INY; STA $047F+X
+        // $824C: BEQ $8253 �?LDA ($003A),Y; INY; STA $047F+X
         this.wr(0x047F + i, this.readMemByte((this.rdPtr(0x003A, 0x003B) + 1) & 0xFFFF));
       } else {
-        // $824E-$8250: PLA; PHA; (X&3==3 → 用 first)
+        // $824E-$8250: PLA; PHA; (X&3==3 �?�?first)
         this.wr(0x047F + i, first);
       }
     }
@@ -457,8 +441,7 @@ export class MatchAuxService {
   }
 
   /**
-   * $826A: 球员 ID → 精灵索引查表。
-   * asm: LDY #$00; LDA ($0034),Y; PHP; TAX; LDA $88F0,X; PLP
+   * $826A: 球员 ID �?精灵索引查表�?   * asm: LDY #$00; LDA ($0034),Y; PHP; TAX; LDA $88F0,X; PLP
    *   BNE $827E; LDX $003A; CPX #$0B; BNE $827E; LDA #$04; STA $0546
    *   $827E: RTS
    */
@@ -467,7 +450,7 @@ export class MatchAuxService {
     const d0 = this.rdInd(0x0034, 0);
     // $826E: PHP; TAX; LDA $88F0,X; PLP (查表)
     const spriteIdx = TABLE_88F0[d0 & 0x0F] ?? 0;
-    // $8274: BNE $827E (查表结果非 0 → 直接返回)
+    // $8274: BNE $827E (查表结果�?0 �?直接返回)
     if (spriteIdx !== 0) return;
     // $8276: LDX $003A; CPX #$0B; BNE $827E
     if (this.rd(0x003A) === 0x0B) {
@@ -478,11 +461,10 @@ export class MatchAuxService {
   }
 
   /**
-   * $8282: 球员状态判断 (返回 X = 状态类型)。
-   * asm: LDX #$01; STA $003B; CMP #$01; BEQ $8296
+   * $8282: 球员状态判�?(返回 X = 状态类�?�?   * asm: LDX #$01; STA $003B; CMP #$01; BEQ $8296
    *   LDX #$00; CMP #$0F; BCC $8296; CMP #$17; BCS $8296; LDX #$02
-   *   $8296: TXA; JSR $C509; 跳转表 [$82A0/$82A3/$82AD]
-   * 返回: X = 0/1/2 (状态类型)
+   *   $8296: TXA; JSR $C509; 跳转�?[$82A0/$82A3/$82AD]
+   * 返回: X = 0/1/2 (状态类�?
    */
   private sub8282(a: number): number {
     // $8282: LDX #$01; STA $003B; CMP #$01; BEQ $8296
@@ -501,25 +483,25 @@ export class MatchAuxService {
         }
       }
     }
-    // $8296: TXA; JSR $C509 → 分派到 $82A0/$82A3/$82AD
-    // 返回 X = 状态类型 (由调用方 sub81EC 用于选表)
+    // $8296: TXA; JSR $C509 �?分派�?$82A0/$82A3/$82AD
+    // 返回 X = 状态类�?(由调用方 sub81EC 用于选表)
     return x;
   }
 
-  /** $82A0: 状态类型 0 处理器 (队伍标志检查, 返回队伍索引) */
+  /** $82A0: 状态类�?0 处理�?(队伍标志检�? 返回队伍索引) */
   private sub82A0(): number {
-    // $82A0: LDA #$01; LDX $002A; BEQ $82AC (队伍0 → 返回 1); LDA #$76
+    // $82A0: LDA #$01; LDX $002A; BEQ $82AC (队伍0 �?返回 1); LDA #$76
     if (this.rd(0x002A) === 0) return 1;
     return 0x76;
   }
 
-  /** $82A3: 状态类型 1 处理器 (LDX $002A; 判断后返回) */
+  /** $82A3: 状态类�?1 处理�?(LDX $002A; 判断后返�? */
   private sub82A3(): number {
     // $82A3: LDX $002A (跳入共享代码)
     return this.sub82A0();
   }
 
-  /** $82AD: 状态类型 2 处理器 (队伍标志检查 + $003B 偏移) */
+  /** $82AD: 状态类�?2 处理�?(队伍标志检�?+ $003B 偏移) */
   private sub82AD(): number {
     // $82AD: LDA #$00; LDX $002A; CPX #$01; BEQ $82B8
     let a = 0;
@@ -532,8 +514,7 @@ export class MatchAuxService {
   }
 
   /**
-   * $82BC: 计时数据读取 + 地址计算 (查 $82F6 表)。
-   * asm: LDY #$02; LDA ($004C),Y; BPL $82C5; JSR $8316
+   * $82BC: 计时数据读取 + 地址计算 (�?$82F6 �?�?   * asm: LDY #$02; LDA ($004C),Y; BPL $82C5; JSR $8316
    *   LDX #$00; STX $003B; ASL; ROL $003B ×4 (×16)
    *   ADC #$CF; STA $003A; LDA $003B; ADC #$BA; STA $003B
    *   LDA $82F6,X; BPL $82E9
@@ -542,7 +523,7 @@ export class MatchAuxService {
     // $82BC: LDY #$02; LDA ($004C),Y
     const ptr = this.rdPtr(0x004C, 0x004D);
     let a = this.readMemByte(ptr + 2);
-    // $82C0: BPL $82C5 (负数 → 子命令扩展)
+    // $82C0: BPL $82C5 (负数 �?子命令扩�?
     if ((a & 0x80) !== 0) {
       this.sub8316(a);
     }
@@ -565,7 +546,7 @@ export class MatchAuxService {
     const t = TABLE_82F6[0] ?? 0;
     if ((t & 0x80) === 0) return;
     // $82E4: AND #$7F; TAY; LDA ($003A),Y; STA $046F,X ...
-    // 负值处理: 读表并写入 $046F (循环 0x20 次)
+    // 负值处�? 读表并写�?$046F (循环 0x20 �?
     this.sub82E4();
   }
 
@@ -581,11 +562,11 @@ export class MatchAuxService {
     this.sub83CF(0x01);
   }
 
-  /** $8316: 子命令扩展 (AND #$7F; JSR $C509; 查跳转表 8 项) */
+  /** $8316: 子命令扩�?(AND #$7F; JSR $C509; 查跳转表 8 �? */
   private sub8316(a: number): void {
     // $8316: AND #$7F
     const cmd = a & 0x7F;
-    // $8318: JSR $C509 → 跳转表: $832B/$8335/$8342/$8347/$8361/$8365/$836A/$837B
+    // $8318: JSR $C509 �?跳转�? $832B/$8335/$8342/$8347/$8361/$8365/$836A/$837B
     switch (cmd & 0x07) {
       case 0: this.sub832B(); break;
       case 1: this.sub8335(); break;
@@ -614,7 +595,7 @@ export class MatchAuxService {
 
   /** $8342: LDA #$05; JMP $8337 */
   private sub8342(): number {
-    return this.sub8335() + 2; // LDA #$05 → 回 $8337 (LDX $002A; CPX#1; CLC; ADC#1)
+    return this.sub8335() + 2; // LDA #$05 �?�?$8337 (LDX $002A; CPX#1; CLC; ADC#1)
   }
 
   /** $8347: CLC; PHP; LDA #$2E; LDX $002B; CPX #$12; BEQ $835D; ... */
@@ -658,7 +639,7 @@ export class MatchAuxService {
     return this.sub836A() + 1;
   }
 
-  /** $8348 带 carry=1 入口 (用于 $8361) */
+  /** $8348 �?carry=1 入口 (用于 $8361) */
   private sub8348C(): number {
     let a = 0x2E;
     if (this.rd(0x002B) === 0x12) return (a + 1) & 0xFF;
@@ -668,10 +649,10 @@ export class MatchAuxService {
     return (a + 1) & 0xFF;
   }
 
-  /** $837F: 子命令 5/6 处理器 (队伍/计分板 tile 写入) */
+  /** $837F: 子命�?5/6 处理�?(队伍/计分�?tile 写入) */
   private sub837F(): void {
     // $837F: LDX #$00
-    // $8381: LDA $05FB; BEQ $8387; INX (若 $05FB!=0 则 X=1)
+    // $8381: LDA $05FB; BEQ $8387; INX (�?$05FB!=0 �?X=1)
     let x = 0;
     if (this.rd(0x05FB) !== 0) x = 1;
     // $8387: LDA $002A,X; ASL; TAY
@@ -682,13 +663,13 @@ export class MatchAuxService {
     for (let i = 0; i < 8; i++) {
       this.wr(0x047F + i, TABLE_83A6[i] ?? 0);
     }
-    // $8399: LDA $BA87,Y; STA $0481; LDA $BA88,Y; STA $0482 (从 ROM 指针表)
+    // $8399: LDA $BA87,Y; STA $0481; LDA $BA88,Y; STA $0482 (�?ROM 指针�?
     this.wr(0x0481, this.readMemByte(0xBA87 + y));
     this.wr(0x0482, this.readMemByte(0xBA88 + y));
     // $83A5: RTS
   }
 
-  /** $83AE: cmd6 — 清计时缓冲区项 (LDY #$01; LDA ($004C),Y; TAX; LDA #$00; STA $0547,X) */
+  /** $83AE: cmd6 �?清计时缓冲区�?(LDY #$01; LDA ($004C),Y; TAX; LDA #$00; STA $0547,X) */
   private sub83AE(): void {
     const ptr = this.rdPtr(0x004C, 0x004D);
     const x = this.readMemByte(ptr + 1);
@@ -698,7 +679,7 @@ export class MatchAuxService {
     this.sub83CF(0x02);
   }
 
-  /** $83BD: cmd7 — 设 $0540/$0541 (LDY #$01 起 2 字节) */
+  /** $83BD: cmd7 �?�?$0540/$0541 (LDY #$01 �?2 字节) */
   private sub83BD(): void {
     const ptr = this.rdPtr(0x004C, 0x004D);
     // $83BF: LDA ($004C),Y; STA $0540; INY; LDA ($004C),Y; STA $0541
@@ -708,7 +689,7 @@ export class MatchAuxService {
     this.sub83CF(0x03);
   }
 
-  /** $816F: cmd8 — 读新指针 (LDY #$01; LDA ($004C),Y; TAX; INY; LDA ($004C),Y; STX $004C; STA $004D) */
+  /** $816F: cmd8 �?读新指针 (LDY #$01; LDA ($004C),Y; TAX; INY; LDA ($004C),Y; STX $004C; STA $004D) */
   private sub816F(): void {
     const ptr = this.rdPtr(0x004C, 0x004D);
     // $8171: LDA ($004C),Y; TAX; INY; LDA ($004C),Y
@@ -719,7 +700,7 @@ export class MatchAuxService {
     // $817B: RTS
   }
 
-  /** $817C: cmd9 — 设循环计数 (LDY #$01; LDA ($004C),Y; STA $0542; 计算回跳指针 → $004E/$004F) */
+  /** $817C: cmd9 �?设循环计�?(LDY #$01; LDA ($004C),Y; STA $0542; 计算回跳指针 �?$004E/$004F) */
   private sub817C(): void {
     const ptr = this.rdPtr(0x004C, 0x004D);
     // $817E: LDA ($004C),Y; STA $0542
@@ -730,12 +711,12 @@ export class MatchAuxService {
     this.sub83CF(0x02);
   }
 
-  /** $8195: cmd10 — 循环 (LDA #$01; DEC $0542; BEQ 前进; 否则回跳) */
+  /** $8195: cmd10 �?循环 (LDA #$01; DEC $0542; BEQ 前进; 否则回跳) */
   private sub8195(): void {
     // $8196: LDA #$01; DEC $0542
     const count = (this.rd(0x0542) - 1) & 0xFF;
     this.wr(0x0542, count);
-    // $819A: BEQ $81A6 (0 → 前进)
+    // $819A: BEQ $81A6 (0 �?前进)
     if (count === 0) {
       // $81A6: LDA #$00; JMP $83CF
       this.sub83CF(0x00);
@@ -747,7 +728,7 @@ export class MatchAuxService {
     this.sub83CF(0x00);
   }
 
-  /** $81A9: cmd11 — 设 $0543-$0545 (LDY #$01 起 3 字节) */
+  /** $81A9: cmd11 �?�?$0543-$0545 (LDY #$01 �?3 字节) */
   private sub81A9(): void {
     // $81A9: LDY #$01
     const ptr = this.rdPtr(0x004C, 0x004D);
@@ -760,10 +741,10 @@ export class MatchAuxService {
   }
 
   // ════════════════════════════════════════════════
-  // $84DC: 计时器更新 (code_sub.s)
+  // $84DC: 计时器更�?(code_sub.s)
   // ════════════════════════════════════════════════
   private sub84DC(): void {
-    // $84DC: LDY #$11; LDA ($003C),Y (精灵组[$11] 计数器)
+    // $84DC: LDY #$11; LDA ($003C),Y (精灵组[$11] 计数�?
     const cnt = this.rdInd(0x003C, 0x11);
     if (cnt === 0) {
       this.sub84EF();
@@ -778,7 +759,7 @@ export class MatchAuxService {
     }
   }
 
-  /** $84EF: 精灵组计数为 0 → 读数据初始化新精灵批 */
+  /** $84EF: 精灵组计数为 0 �?读数据初始化新精灵批 */
   private sub84EF(): void {
     // $84EF: STA $0040 (计数=0)
     this.wr(0x0040, 0);
@@ -795,7 +776,7 @@ export class MatchAuxService {
     }
     // $850F: LDY #$00; LDA ($003C),Y; AND #$EF; STA ($003C),Y
     this.wrInd(0x003C, 0, ctrl & 0xEF);
-    // $8517: JSR $857A (读数据命令)
+    // $8517: JSR $857A (读数据命�?
     this.sub857A();
     // $851A: LDA $0040; LDY #$01; CLC; ADC $003E; STA ($003C),Y; INY; LDA $003F; ADC #$00; STA ($003C),Y
     const newOff = (this.rd(0x003E) + this.rd(0x0040)) & 0xFF;
@@ -835,7 +816,7 @@ export class MatchAuxService {
     this.wr(0x0042, b42 >> 1);
     acc = (acc | this.rd(0x0041)) & 0xFF;
     this.wrInd(0x003C, 0, acc);
-    // $855C: AND #$10; BEQ $8579 (bit4 未设 → 返回)
+    // $855C: AND #$10; BEQ $8579 (bit4 未设 �?返回)
     if (acc & 0x10) {
       // $8560: LDY #$01; LDA ($003C),Y; STA $003E; INY; LDA ($003C),Y; STA $003F
       this.wr(0x003E, this.rdInd(0x003C, 1));
@@ -848,15 +829,15 @@ export class MatchAuxService {
     // $8579: RTS
   }
 
-  /** $857A: 读数据命令 (读数据字节并分派命令) */
+  /** $857A: 读数据命�?(读数据字节并分派命令) */
   private sub857A(): void {
     // $857A: LDY $0040; INC $0040; LDA ($003E),Y
     const y = this.rd(0x0040);
     this.wr(0x0040, (y + 1) & 0xFF);
     const data = this.rdInd(0x003E, y);
-    // $857E: JSR $C509 → 跳转表: $85A0/$85A9/$85D5/$85E1/$858D
+    // $857E: JSR $C509 �?跳转�? $85A0/$85A9/$85D5/$85E1/$858D
     if (data < 0xF0) {
-      // $85A0: LDY #$11; STA ($003C),Y (延迟值)
+      // $85A0: LDY #$11; STA ($003C),Y (延迟�?
       this.wrInd(0x003C, 0x11, data);
       return;
     }
@@ -871,7 +852,7 @@ export class MatchAuxService {
     }
   }
 
-  /** $858D: 命令 4 — 读新数据指针 */
+  /** $858D: 命令 4 �?读新数据指针 */
   private sub858D(): void {
     // $858D: LDY $0040; LDA ($003E),Y; TAX; INY; LDA ($003E),Y; STA $003F; STX $003E; LDA #$00; STA $0040; JMP $857A
     const y = this.rd(0x0040);
@@ -882,16 +863,16 @@ export class MatchAuxService {
     this.sub857A();
   }
 
-  /** $85A0: 命令 0 — 停止精灵组 ($003C,$11 = $FF) */
+  /** $85A0: 命令 0 �?停止精灵�?($003C,$11 = $FF) */
   private sub85A0(): void {
     // $85A0: LDY #$11; LDA #$FF; STA ($003C),Y; PLA; PLA; RTS
     this.wrInd(0x003C, 0x11, 0xFF);
-    // 返回两层 (结束当前精灵批处理)
+    // 返回两层 (结束当前精灵批处�?
   }
 
-  /** $85A9: 命令 1 — 设精灵组坐标/属性 (JSR $85E7; 读 2 组坐标) */
+  /** $85A9: 命令 1 �?设精灵组坐标/属�?(JSR $85E7; �?2 组坐�? */
   private sub85A9(): void {
-    // $85A9: JSR $85E7 (读 $0040 数据到 $003C,$11)
+    // $85A9: JSR $85E7 (�?$0040 数据�?$003C,$11)
     this.sub85E7();
     // $85AC: LDY $0040; LDA ($003E),Y; TAX; INY; LDA ($003E),Y; INY; STY $0040
     let y = this.rd(0x0040);
@@ -916,7 +897,7 @@ export class MatchAuxService {
     // $85D4: RTS
   }
 
-  /** $85D5: 命令 2 — 置精灵组 bit4 (JSR $85E7; LDY #$00; LDA ($003C),Y; ORA #$10; STA ($003C),Y) */
+  /** $85D5: 命令 2 �?置精灵组 bit4 (JSR $85E7; LDY #$00; LDA ($003C),Y; ORA #$10; STA ($003C),Y) */
   private sub85D5(): void {
     // $85D5: JSR $85E7
     this.sub85E7();
@@ -926,16 +907,16 @@ export class MatchAuxService {
     // $85E0: RTS
   }
 
-  /** $85E1: 命令 3 — 停止并置 bit4 (JSR $85A9; JMP $85D8) */
+  /** $85E1: 命令 3 �?停止并置 bit4 (JSR $85A9; JMP $85D8) */
   private sub85E1(): void {
     // $85E1: JSR $85A9
     this.sub85A9();
-    // $85E4: JMP $85D8 (置 bit4)
+    // $85E4: JMP $85D8 (�?bit4)
     const ctrl = this.rdInd(0x003C, 0);
     this.wrInd(0x003C, 0, ctrl | 0x10);
   }
 
-  /** $85E7: 读 $0040 数据到 $003C,$11 (LDY $0040; LDA ($003E),Y; LDY #$11; STA ($003C),Y; INC $0040) */
+  /** $85E7: �?$0040 数据�?$003C,$11 (LDY $0040; LDA ($003E),Y; LDY #$11; STA ($003C),Y; INC $0040) */
   private sub85E7(): void {
     const y = this.rd(0x0040);
     const v = this.rdInd(0x003E, y);
@@ -951,7 +932,7 @@ export class MatchAuxService {
     const sumLo = lo + addLo;
     this.wrInd(0x003C, yOff + 1, sumLo & 0xFF);
     let carry = sumLo > 0xFF ? 1 : 0;
-    // $85FA: INY; LDA ($003C),Y; BPL $8601; DEC $0042,X (高位符号 → 减)
+    // $85FA: INY; LDA ($003C),Y; BPL $8601; DEC $0042,X (高位符号 �?�?
     let hi = this.rdInd(0x003C, yOff + 2);
     if (hi & 0x80) {
       this.wr(0x0042 + xIdx, (this.rd(0x0042 + xIdx) - 1) & 0xFF);
@@ -966,9 +947,9 @@ export class MatchAuxService {
     // $860C: RTS
   }
 
-  /** $860D: 坐标累加 (从 $003E 指针, X = 目标偏移, Y = 源偏移) */
+  /** $860D: 坐标累加 (�?$003E 指针, X = 目标偏移, Y = 源偏�? */
   private sub860D(xOff: number, yOff: number): void {
-    // $860D: LDA ($003E),Y; PHA; DEY; LDA ($003E),Y; PHA; TXA; TAY (读 2 字节源, Y = X)
+    // $860D: LDA ($003E),Y; PHA; DEY; LDA ($003E),Y; PHA; TXA; TAY (�?2 字节�? Y = X)
     const hi = this.rdInd(0x003E, yOff);
     const lo = this.rdInd(0x003E, yOff - 1);
     // $8616: PLA; CLC; ADC ($003C),Y; STA ($003C),Y (X 低位累加)
@@ -982,7 +963,7 @@ export class MatchAuxService {
   }
 
   // ════════════════════════════════════════════════
-  // $83D9: 计分板更新 (code_sub.s)
+  // $83D9: 计分板更�?(code_sub.s)
   // ════════════════════════════════════════════════
   private sub83D9(): void {
     // $83D9: LDY #$10; LDA ($003C),Y
@@ -998,7 +979,7 @@ export class MatchAuxService {
     }
   }
 
-  /** $83E9: 计分板计数为 0 → 读数据 */
+  /** $83E9: 计分板计数为 0 �?读数�?*/
   private sub83E9(): void {
     // $83E9: LDY #$00; LDA ($003C),Y; AND #$9F; STA ($003C),Y
     const ctrl = this.rdInd(0x003C, 0);
@@ -1015,7 +996,7 @@ export class MatchAuxService {
     this.sub8409Loop();
   }
 
-  /** $8409: 计分板数据循环 */
+  /** $8409: 计分板数据循�?*/
   private sub8409Loop(): void {
     while (true) {
       // $8409: LDY $0040; INC $0040; LDA ($003E),Y
@@ -1041,37 +1022,37 @@ export class MatchAuxService {
     }
   }
 
-  /** $8438: 计分板命令分派 (SEC; SBC #$F0; JSR $C509; 跳转表 9 项) */
+  /** $8438: 计分板命令分�?(SEC; SBC #$F0; JSR $C509; 跳转�?9 �? */
   private sub8438(data: number): void {
     // $8438: SEC; SBC #$F0
     const cmd = (data - 0xF0) & 0xFF;
-    // $843B: JSR $C509 → $8450/$8459/$845D/$8466/$8477/$8496/$84B3/$84C7/$84D2
+    // $843B: JSR $C509 �?$8450/$8459/$845D/$8466/$8477/$8496/$84B3/$84C7/$84D2
     switch (cmd) {
       case 0: this.sub8450(); break;  // 停止
-      case 1: this.sub8459(); break;  // 置 bit5
-      case 2: this.sub845D(); break;  // 置 bit6
+      case 1: this.sub8459(); break;  // �?bit5
+      case 2: this.sub845D(); break;  // �?bit6
       case 3: this.sub8466(); break;  // 读新指针
       case 4: this.sub8477(); break;  // 保存回跳
       case 5: this.sub8496(); break;  // 循环/回跳
-      case 6: this.sub84B3(); break;  // 设 +13/+14
+      case 6: this.sub84B3(); break;  // �?+13/+14
       case 7: this.sub84C7(); break;  // 停止 (JMP $8450)
-      case 8: this.sub84D2(); break;  // 读 $0040 数据 → $0546
+      case 8: this.sub84D2(); break;  // �?$0040 数据 �?$0546
       default: break;
     }
   }
 
-  /** $8450: 计分板命令 0 — 停止 (LDY #$10; LDA #$FF; STA ($003C),Y; PLA; PLA; RTS) */
+  /** $8450: 计分板命�?0 �?停止 (LDY #$10; LDA #$FF; STA ($003C),Y; PLA; PLA; RTS) */
   private sub8450(): void {
     this.wrInd(0x003C, 0x10, 0xFF);
-    // 返回两层 (结束计分板处理)
+    // 返回两层 (结束计分板处�?
   }
 
-  /** $8459: 计分板命令 1 — 置 bit5 (LDA #$20; BNE $845F) */
+  /** $8459: 计分板命�?1 �?�?bit5 (LDA #$20; BNE $845F) */
   private sub8459(): void {
     this.sub845F(0x20);
   }
 
-  /** $845D: 计分板命令 2 — 置 bit6 (LDA #$40) */
+  /** $845D: 计分板命�?2 �?�?bit6 (LDA #$40) */
   private sub845D(): void {
     this.sub845F(0x40);
   }
@@ -1082,7 +1063,7 @@ export class MatchAuxService {
     this.wrInd(0x003C, 0, ctrl | mask);
   }
 
-  /** $8466: 计分板命令 3 — 读新指针 (LDY $0040; LDA ($003E),Y; TAX; INY; LDA ($003E),Y; STA $003F; STX $003E; LDA #$00; STA $0040) */
+  /** $8466: 计分板命�?3 �?读新指针 (LDY $0040; LDA ($003E),Y; TAX; INY; LDA ($003E),Y; STA $003F; STX $003E; LDA #$00; STA $0040) */
   private sub8466(): void {
     const y = this.rd(0x0040);
     const lo = this.rdInd(0x003E, y);
@@ -1091,7 +1072,7 @@ export class MatchAuxService {
     this.wr(0x0040, 0);
   }
 
-  /** $8477: 计分板命令 4 — 保存回跳指针 (LDY $0040; 读 2 字节 → $003C+13/+14) */
+  /** $8477: 计分板命�?4 �?保存回跳指针 (LDY $0040; �?2 字节 �?$003C+13/+14) */
   private sub8477(): void {
     // $8477: LDY $0040; LDA ($003E),Y; PHA; INY; STY $0040; TYA; LDX $003F; CLC; ADC $003E; BCC $8488; INX
     let y = this.rd(0x0040);
@@ -1109,9 +1090,9 @@ export class MatchAuxService {
     // $8495: RTS
   }
 
-  /** $8496: 计分板命令 5 — 循环/回跳 */
+  /** $8496: 计分板命�?5 �?循环/回跳 */
   private sub8496(): void {
-    // $8496: LDY #$0D; LDA ($003C),Y; SEC; SBC #$01; BNE $84A0; RTS (计数=0 → 返回)
+    // $8496: LDY #$0D; LDA ($003C),Y; SEC; SBC #$01; BNE $84A0; RTS (计数=0 �?返回)
     const cnt = (this.rdInd(0x003C, 0x0D) - 1) & 0xFF;
     if (cnt === 0) return;
     // $84A0: STA ($003C),Y
@@ -1122,7 +1103,7 @@ export class MatchAuxService {
     this.wr(0x0040, 0);
   }
 
-  /** $84B3: 计分板命令 6 — 设 +13/+14 指针 (LDY $0040; 读 2 字节 → $003C+13/+14) */
+  /** $84B3: 计分板命�?6 �?�?+13/+14 指针 (LDY $0040; �?2 字节 �?$003C+13/+14) */
   private sub84B3(): void {
     // $84B3: LDY $0040; LDA ($003E),Y; TAX; INY; LDA ($003E),Y; INY; STY $0040
     const y = this.rd(0x0040);
@@ -1134,7 +1115,7 @@ export class MatchAuxService {
     this.wrInd(0x003C, 0x13, lo);
   }
 
-  /** $84C7: 计分板命令 7 — 停止 (LDY $0040; LDA ($003E),Y; LDY #$12; STA ($003C),Y; JMP $8450) */
+  /** $84C7: 计分板命�?7 �?停止 (LDY $0040; LDA ($003E),Y; LDY #$12; STA ($003C),Y; JMP $8450) */
   private sub84C7(): void {
     // $84C9: LDA ($003E),Y; LDY #$12; STA ($003C),Y
     const y = this.rd(0x0040);
@@ -1143,7 +1124,7 @@ export class MatchAuxService {
     this.wrInd(0x003C, 0x10, 0xFF);
   }
 
-  /** $84D2: 计分板命令 8 — 读 $0040 数据 → $0546 */
+  /** $84D2: 计分板命�?8 �?�?$0040 数据 �?$0546 */
   private sub84D2(): void {
     // $84D2: LDY $0040; INC $0040; LDA ($003E),Y; STA $0546
     const y = this.rd(0x0040);
@@ -1170,31 +1151,29 @@ export class MatchAuxService {
     this.sub8637();
   }
 
-  /** $8637: 精灵渲染主循环 */
+  /** $8637: 精灵渲染主循�?*/
   private sub8637(): void {
     while (true) {
-      // $8637: LDA $0046; BNE $863E (第 0 个精灵 → $86CF)
+      // $8637: LDA $0046; BNE $863E (�?0 个精�?�?$86CF)
       const sp = this.rd(0x0046);
       if (sp === 0) {
         this.sub86CF();
         return;
       }
-      // $863E: CMP #$0B; BNE $8645 (第 $0B 个 → $86CF)
+      // $863E: CMP #$0B; BNE $8645 (�?$0B �?�?$86CF)
       if (sp === 0x0B) {
         this.sub86CF();
         return;
       }
       // $8645: JSR $86DB (精灵数据查询); BCS $864D
       if (this.sub86DB(sp)) {
-        // $864D: 渲染该精灵
-        this.sub864D();
+        // $864D: 渲染该精�?        this.sub864D();
       } else {
         // $864A: JMP $86CF
         this.sub86CF();
         return;
       }
-      // 递增 $0046 并检查结束
-      const n = (this.rd(0x0046) + 1) & 0xFF;
+      // 递增 $0046 并检查结�?      const n = (this.rd(0x0046) + 1) & 0xFF;
       this.wr(0x0046, n);
       if (n === 0x16) {
         // $86DA: RTS
@@ -1203,7 +1182,7 @@ export class MatchAuxService {
     }
   }
 
-  /** $864D: 渲染单个精灵 (写 OAM) */
+  /** $864D: 渲染单个精灵 (�?OAM) */
   private sub864D(): void {
     // $864D: LDX $003B (OAM 索引)
     const x = this.rd(0x003B);
@@ -1222,7 +1201,7 @@ export class MatchAuxService {
     if (sprY >= 0xAC) sprY = 0xAC;
     // $867E: PHA; LDA $062D; AND #$0F; TAY; PLA; CLC; ADC $88DF,Y; STA $0200,X
     this.wr(0x0200 + x, (sprY + (TABLE_88DF[offIdx] ?? 0)) & 0xFF);
-    // $868D: LDA #$03; STA $0202,X (属性)
+    // $868D: LDA #$03; STA $0202,X (属�?
     this.wr(0x0202 + x, 0x03);
     // $8692: BIT $0615; BPL $86A8
     let tile: number;
@@ -1252,7 +1231,7 @@ export class MatchAuxService {
     }
   }
 
-  /** $86CF: 结束一个精灵的渲染 (INC $0046; 检查 $16) */
+  /** $86CF: 结束一个精灵的渲染 (INC $0046; 检�?$16) */
   private sub86CF(): void {
     const n = (this.rd(0x0046) + 1) & 0xFF;
     this.wr(0x0046, n);
@@ -1272,10 +1251,9 @@ export class MatchAuxService {
 
   /** $86DB: 精灵数据查询 (JSR $C50C; 渲染模式分派; 返回 carry = 是否渲染) */
   private sub86DB(sp: number): boolean {
-    // $86DB: JSR $C50C (比赛阶段→玩家数据指针)
+    // $86DB: JSR $C50C (比赛阶段→玩家数据指�?
     this._system.subC50C();
-    // $86DE: LDA $062D; AND #$0F; JSR $C509 → 跳转表
-    const mode = this.rd(0x062D) & 0x0F;
+    // $86DE: LDA $062D; AND #$0F; JSR $C509 �?跳转�?    const mode = this.rd(0x062D) & 0x0F;
     switch (mode & 0x07) {
       case 0:
       case 1:
@@ -1286,20 +1264,20 @@ export class MatchAuxService {
     }
   }
 
-  /** $871D: 渲染模式 0/1/4 — 返回 SEC (渲染) */
+  /** $871D: 渲染模式 0/1/4 �?返回 SEC (渲染) */
   private sub871D(sp: number): boolean {
     void sp;
     // $871D: SEC; RTS
     return true;
   }
 
-  /** $871F: 渲染模式 2 — 玩家筛选 */
+  /** $871F: 渲染模式 2 �?玩家筛�?*/
   private sub871F(sp: number): boolean {
     // $871F: LDA $0046; CMP #$0B; BCS $8739
     if (sp >= 0x0B) return false; // SEC
     // $8725: CMP $0441; BEQ $8739
     if (sp === this.rd(0x0441)) return false;
-    // $872A: LDX $0430; BEQ $8737 (无列表 → CLC)
+    // $872A: LDX $0430; BEQ $8737 (无列�?�?CLC)
     let x = this.rd(0x0430);
     if (x === 0) return true; // CLC
     // $872F: CMP $0430,X; BEQ $8739; DEX; BNE $872F
@@ -1311,7 +1289,7 @@ export class MatchAuxService {
     return true;
   }
 
-  /** $873B: 渲染模式 3 — 玩家筛选 (用 $0600 列表) */
+  /** $873B: 渲染模式 3 �?玩家筛�?(�?$0600 列表) */
   private sub873B(sp: number): boolean {
     // $873B: LDA $0046; CMP $0441; BEQ $8751
     if (sp === this.rd(0x0441)) return true; // CLC
@@ -1332,7 +1310,7 @@ export class MatchAuxService {
     const mode = this.rd(0x062D) & 0x0F;
     switch (mode & 0x07) {
       case 0:
-      case 4: break;                       // $8767: RTS (空)
+      case 4: break;                       // $8767: RTS (�?
       case 1: this.sub8768(); break;       // 读取坐标
       case 2: this.sub8771(); break;
       case 3: this.sub8784(); break;       // 坐标计算
@@ -1347,7 +1325,7 @@ export class MatchAuxService {
     this.sub87E7();
   }
 
-  /** $8771: LDA $05FC; JSR $C50C; 读取坐标 → 设置精灵 */
+  /** $8771: LDA $05FC; JSR $C50C; 读取坐标 �?设置精灵 */
   private sub8771(): void {
     // $8774: JSR $C50C
     this._system.subC50C();
@@ -1364,11 +1342,11 @@ export class MatchAuxService {
     this.sub87E7(ax, ay);
   }
 
-  /** $87A7: 坐标计算循环 (X 轴) */
+  /** $87A7: 坐标计算循环 (X �? */
   private sub87A7(len: number): number {
     // $87A7: STA $003E (循环计数)
     this.wr(0x003E, len);
-    // $87A9: LDA $062C; JSR $C545; STX $003C; STY $003D (读取坐标基)
+    // $87A9: LDA $062C; JSR $C545; STX $003C; STY $003D (读取坐标�?
     const base = this.subC545(this.rd(0x062C));
     this.wr(0x003C, base & 0xFF);
     this.wr(0x003D, (base >> 8) & 0xFF);
@@ -1391,7 +1369,7 @@ export class MatchAuxService {
     return y;
   }
 
-  /** $87C7: 坐标计算循环 (Y 轴) */
+  /** $87C7: 坐标计算循环 (Y �? */
   private sub87C7(len: number): number {
     this.wr(0x003E, len);
     const base = this.subC542(this.rd(0x062C));
@@ -1415,7 +1393,7 @@ export class MatchAuxService {
 
   /** $87E7: 设置精灵 (TXA; CLC; ADC #$FD; ...) */
   private sub87E7(xIn?: number, yIn?: number): void {
-    // $87E7: TXA (取 X); CLC; ADC #$FD; LDX $003B; STA $0203,X
+    // $87E7: TXA (�?X); CLC; ADC #$FD; LDX $003B; STA $0203,X
     const sx = (xIn ?? 0) + 0xFD & 0xFF;
     const xo = this.rd(0x003B);
     this.wr(0x0203 + xo, sx);
@@ -1442,7 +1420,7 @@ export class MatchAuxService {
 
   /** $881D: 当前控制精灵渲染 */
   private sub881D(): void {
-    // $881D: LDY $0640; BNE $8834 (帧计数)
+    // $881D: LDY $0640; BNE $8834 (帧计�?
     const x = this.rd(0x003B);
     let f: number;
     if (this.rd(0x0640) === 0) {
@@ -1469,16 +1447,16 @@ export class MatchAuxService {
     if ((this.rd(0x0637) & 0x80) === 0) {
       mask = (mask ^ 0x80) & 0xFF;
     }
-    // $884E: ORA $0202,X; STA $0202,X (合并属性)
+    // $884E: ORA $0202,X; STA $0202,X (合并属�?
     this.wr(0x0202 + x, (this.rd(0x0202 + x) | mask) & 0xFF);
-    // $8854: LDA $885B,Y; DEC $0640; RTS (读 tile)
+    // $8854: LDA $885B,Y; DEC $0640; RTS (�?tile)
     this.wr(0x0201 + x, TABLE_885B[y & 0x0F] ?? 0);
     this.wr(0x0640, (this.rd(0x0640) - 1) & 0xFF);
   }
 
   /**
-   * $86F2: 特殊精灵 tile 计算 (sp < 0x0B 时调用)
-   * TODO: 真实实现 — asm bank22 $86F2, 读 $0201/$0202 数据返回特殊 tile
+   * $86F2: 特殊精灵 tile 计算 (sp < 0x0B 时调�?
+   * TODO: 真实实现 �?asm bank22 $86F2, �?$0201/$0202 数据返回特殊 tile
    */
   private sub86F2(sp: number): number {
     void sp;
@@ -1517,14 +1495,14 @@ export class MatchAuxService {
       if (i >= 0x0A) break;
       // y 更新到新 OAM 位置
       const y2 = this.rd(0x003B);
-      // (循环内 tile 查表用 i, 但 $8870 用 $0046 索引 $88D0, 需同步)
+      // (循环�?tile 查表�?i, �?$8870 �?$0046 索引 $88D0, 需同步)
       this.wr(0x0046, i);
     }
     // $88A7: RTS
   }
 
   // ════════════════════════════════════════════════
-  // $8796: 其他辅助 (设 $0635/$0637 坐标偏移)
+  // $8796: 其他辅助 (�?$0635/$0637 坐标偏移)
   // ════════════════════════════════════════════════
   private sub8796(): void {
     // $8796: LDA #$10; JSR $87A7; STA $0635
@@ -1538,19 +1516,19 @@ export class MatchAuxService {
   // bank30 $C536/$C542/$C545 转发 (坐标换算辅助)
   // ════════════════════════════════════════════════
 
-  /** $C545: 读坐标 → 返回 (baseLo | baseHi<<8) */
+  /** $C545: 读坐�?�?返回 (baseLo | baseHi<<8) */
   private subC545(a: number): number {
     return this._system.subC524(a);
   }
 
-  /** $C542: 读坐标 → 返回 */
+  /** $C542: 读坐�?�?返回 */
   private subC542(a: number): number {
     return this._system.subC524(a);
   }
 
   /** $C536: 精灵坐标换算 (转发) */
   private subC536(): void {
-    // H5 版: 坐标换算由帧合成器处理, no-op
+    // H5 �? 坐标换算由帧合成器处�? no-op
   }
 
   // ════════════════════════════════════════════════
@@ -1566,7 +1544,7 @@ export class MatchAuxService {
   }
 
   // ════════════════════════════════════════════════
-  // 内存读取辅助 (RAM 或 ROM 表)
+  // 内存读取辅助 (RAM �?ROM �?
   // ════════════════════════════════════════════════
   private readMemByte(addr: number): number {
     if (addr < 0x0800) {
@@ -1575,7 +1553,7 @@ export class MatchAuxService {
     return this.readRomByte(addr);
   }
 
-  /** 读 bank20 ROM 数据字节 (通过 DataStore KV 'bank20_rom'; 未注册时回退表) */
+  /** �?bank20 ROM 数据字节 (通过 DataStore KV 'bank20_rom'; 未注册时回退�? */
   private readRomByte(addr: number): number {
     const rom = this._store.get<Uint8Array | readonly number[]>('bank20_rom');
     if (rom) {
@@ -1583,11 +1561,11 @@ export class MatchAuxService {
       if (off >= 0 && off < rom.length) return rom[off];
       return 0;
     }
-    // 未注册 bank20_rom 时, 从本模块表回退
+    // 未注�?bank20_rom �? 从本模块表回退
     return this.readTableFallback(addr);
   }
 
-  /** 未注册 ROM 时, 从 bank20-tables 结构化表回退 */
+  /** 未注�?ROM �? �?bank20-tables 结构化表回退 */
   private readTableFallback(addr: number): number {
     switch (addr) {
       case 0x8264: case 0x8265: case 0x8266: case 0x8267: case 0x8268: case 0x8269:

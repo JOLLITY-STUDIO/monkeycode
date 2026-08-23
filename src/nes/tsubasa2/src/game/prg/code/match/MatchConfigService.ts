@@ -1,53 +1,49 @@
 /**
- * MatchConfigService — bank28 比赛对阵/阵型/等级配置 ($8000-$9FFF, 运行时 $A000-$BFFF)
+ * MatchConfigService �?bank28 比赛对阵/阵型/等级配置 ($8000-$9FFF, 运行�?$A000-$BFFF)
  * @bank 28
  *
- * 职责: 比赛配置表 (对阵/阵型/等级/OAM), $8528 队伍表, $8A9D 属性角色表。
+ * 职责: 比赛配置�?(对阵/阵型/等级/OAM), $8528 队伍�? $8A9D 属性角色表�? *
+ * 入口 (跳转�?$8000-$800D):
+ *   $8000 �?JMP $802D: 主配置查�?(比赛索引 �?配置数据)
+ *   $8003 �?JMP $8B22: 队伍数据加载
+ *   $8006 �?JMP $8609: 阵型数据加载
+ *   $8009 �?JMP $8C06: 等级/属性设�? *   $800C �?JMP $8D58: OAM/精灵配置
+ *   $8013-$8024: 内部跳转�?(8 项子程入�?
  *
- * 入口 (跳转表 $8000-$800D):
- *   $8000 → JMP $802D: 主配置查询 (比赛索引 → 配置数据)
- *   $8003 → JMP $8B22: 队伍数据加载
- *   $8006 → JMP $8609: 阵型数据加载
- *   $8009 → JMP $8C06: 等级/属性设置
- *   $800C → JMP $8D58: OAM/精灵配置
- *   $8013-$8024: 内部跳转表 (8 项子程入口)
- *
- * $802D 主配置查询:
- *   $802E: LDA $9E4E,Y (查 $9E4E 队伍索引表)
+ * $802D 主配置查�?
+ *   $802E: LDA $9E4E,Y (�?$9E4E 队伍索引�?
  *   $8030: STA $0032; LDA #$00; STA $0033 (指针=$0032/$0033)
  *   $8039: RTS
  *
  * $803A 球员数据查询:
- *   $803A: PHA; JSR $C50C (查 RAM 玩家数据指针)
- *   $803E: LDY #$00; LDA ($0034),Y (读球员数据)
- *   $8042: BNE $8050 (非0则继续)
+ *   $803A: PHA; JSR $C50C (�?RAM 玩家数据指针)
+ *   $803E: LDY #$00; LDA ($0034),Y (读球员数�?
+ *   $8042: BNE $8050 (�?则继�?
  *   $8044-$804D: PLA; PHA; SEC; SBC #$0B; TAY; LDA $818E,Y; TAY
- *     (查 $818E 偏移表)
- *   $804E: LDA ($0038),Y (读属性)
- *   $8050: CMP #$23; PHP (比较 $23=属性阈值)
- *   $8053: BCC $8064 (< $23 直接用)
- *   $8055-$8062: ≥ $23 查扩展属性 (读 $0034+1/+2)
- *   $8064-$8090: 算属性索引 (×4 + $8199 偏移表)
+ *     (�?$818E 偏移�?
+ *   $804E: LDA ($0038),Y (读属�?
+ *   $8050: CMP #$23; PHP (比较 $23=属性阈�?
+ *   $8053: BCC $8064 (< $23 直接�?
+ *   $8055-$8062: �?$23 查扩展属�?(�?$0034+1/+2)
+ *   $8064-$8090: 算属性索�?(×4 + $8199 偏移�?
  *   $8092: PLA; CPX #$1F; BCC $809A (< $1F 继续)
- *   $8097: JMP $813F (≥ $1F 特殊处理)
+ *   $8097: JMP $813F (�?$1F 特殊处理)
  *
  * RAM 关键:
  *   $0032/$0033: 配置数据指针
- *   $0034/$0035: 球员数据指针 (由 $C50C 设置)
- *   $0038/$0039: 属性数据指针
- *
- * 数据表:
+ *   $0034/$0035: 球员数据指针 (�?$C50C 设置)
+ *   $0038/$0039: 属性数据指�? *
+ * 数据�?
  *   $818E: 球员属性偏移表
  *   $8199: 属性索引偏移表
- *   $8528: 队伍表 (对阵/阵型)
+ *   $8528: 队伍�?(对阵/阵型)
  *   $8A9D: 属性角色表
- *   $9E4E: 队伍索引表 (比赛索引 → 队伍)
+ *   $9E4E: 队伍索引�?(比赛索引 �?队伍)
  *   $9FCE: 属性数据基址 ($AE86/$9FCE)
  *
- * 命名规范: 旧名 Bank28MatchService → 新名 MatchConfigService。
- */
+ * 命名规范: 旧名 Bank28MatchService �?新名 MatchConfigService�? */
 import { DataStore } from '../../data/store/DataStore';
-import type { GameSystemService } from '../system/GameSystemService';
+import type { Bank00Service } from '../system/Bank00Service';
 import {
   TBL_818E, TBL_8199, TBL_8206, TBL_824C, TBL_82C0, TBL_8528,
   TBL_8604, TBL_86AF, TBL_86B5, TBL_86C0, TBL_86F1, TBL_8716,
@@ -58,16 +54,16 @@ import {
   DATA_9FCE, DATA_AE86,
 } from '../../data/tables/bank28-tables';
 
-/** 4 位大写十六进制 RAM 键 */
+/** 4 位大写十六进�?RAM �?*/
 function ramKey(addr: number): string {
   return `ram_${addr.toString(16).toUpperCase().padStart(4, '0')}`;
 }
 
 export class MatchConfigService {
   protected _store: DataStore;
-  protected _system: GameSystemService;
+  protected _system: Bank00Service;
 
-  constructor(store: DataStore, system: GameSystemService) {
+  constructor(store: DataStore, system: Bank00Service) {
     this._store = store;
     this._system = system;
   }
@@ -87,38 +83,37 @@ export class MatchConfigService {
   }
 
   // ════════════════════════════════════════════════
-  // 跳转表入口 (bank28 头 $8000-$800D)
+  // 跳转表入�?(bank28 �?$8000-$800D)
   // ════════════════════════════════════════════════
 
-  /** $8000 → $802D: 主配置查询 (比赛索引 → 队伍索引 → 配置指针) */
+  /** $8000 �?$802D: 主配置查�?(比赛索引 �?队伍索引 �?配置指针) */
   configQuery(matchIndex: number): void { this.sub802D(matchIndex); }
 
-  /** $8003 → $8B22: 队伍数据加载 */
+  /** $8003 �?$8B22: 队伍数据加载 */
   teamDataLoad(): void { this.sub8B22(); }
 
-  /** $8006 → $8609: 阵型数据加载 */
+  /** $8006 �?$8609: 阵型数据加载 */
   formationLoad(): void { this.sub8609(); }
 
-  /** $8009 → $8C06: 等级/属性设置 */
+  /** $8009 �?$8C06: 等级/属性设�?*/
   levelStatsSet(): void { this.sub8C06(); }
 
-  /** $800C → $8D58: OAM/精灵配置 */
+  /** $800C �?$8D58: OAM/精灵配置 */
   oamConfig(): void { this.sub8D58(); }
 
   // ════════════════════════════════════════════════
-  // 读取比赛配置 (原 readMatchConfig)
+  // 读取比赛配置 (�?readMatchConfig)
   // ════════════════════════════════════════════════
   getConfig(matchIndex: number): Readonly<Record<string, number>> {
-    // 查 $9E4E 队伍索引表得队伍 id, 返回配置
+    // �?$9E4E 队伍索引表得队伍 id, 返回配置
     this.sub802D(matchIndex);
     const teamId = this.rd(0x0032);
     return { teamId, matchIndex };
   }
 
   // ════════════════════════════════════════════════
-  // $802D: 主配置查询
-  // asm: LDA $9E4E,Y; STA $0032; LDA #$00; STA $0033; RTS
-  // 查 $9E4E 队伍索引表 (Y=比赛索引), 结果存 $0032/$0033
+  // $802D: 主配置查�?  // asm: LDA $9E4E,Y; STA $0032; LDA #$00; STA $0033; RTS
+  // �?$9E4E 队伍索引�?(Y=比赛索引), 结果�?$0032/$0033
   // ════════════════════════════════════════════════
   private sub802D(matchIndex: number): void {
     const teamId = this.readMemByte(0x9E4E + matchIndex);
@@ -127,32 +122,30 @@ export class MatchConfigService {
   }
 
   // ════════════════════════════════════════════════
-  // $8039/$803A: 球员数据查询 (属性查表)
-  // asm $8039-$818D (已按 ROM 原始字节逐指令核对, 含 $813F 特殊路径)
-  //   入口 A=属性请求值(球员id/$0441/$0442/$05FB^$0B), X=位置索引(调用点查表值)
-  //   $803A: JSR $C50C → $0034/$0035 = 球员数据指针 (C=ASL进位=(phase^$0B)bit7)
-  //   $003E: LDA ($0034),Y; ≠0 → 直接用 RAM 值; =0 → 查 $818E 偏移表取 $0038 属性
-  //   ≥$23 扩展路径: 用 playerData[1]/[2] 覆盖属性值, -$23
-  //   ×4 (或 ×12) + $8199 基址 → $0032/$0033 = 属性表指针
-  //   特殊 id {0,$0B,$1E,$1F} → $AE86(×8) GK 属性表
-  //   普通 id → $9FCE(×12) 属性表; X≥$1F → $AFAE+base[1]×12 指针表
-  // ════════════════════════════════════════════════
+  // $8039/$803A: 球员数据查询 (属性查�?
+  // asm $8039-$818D (已按 ROM 原始字节逐指令核�? �?$813F 特殊路径)
+  //   入口 A=属性请求�?球员id/$0441/$0442/$05FB^$0B), X=位置索引(调用点查表�?
+  //   $803A: JSR $C50C �?$0034/$0035 = 球员数据指针 (C=ASL进位=(phase^$0B)bit7)
+  //   $003E: LDA ($0034),Y; �? �?直接�?RAM �? =0 �?�?$818E 偏移表取 $0038 属�?  //   �?23 扩展路径: �?playerData[1]/[2] 覆盖属性�? -$23
+  //   ×4 (�?×12) + $8199 基址 �?$0032/$0033 = 属性表指针
+  //   特殊 id {0,$0B,$1E,$1F} �?$AE86(×8) GK 属性表
+  //   普�?id �?$9FCE(×12) 属性表; X�?1F �?$AFAE+base[1]×12 指针�?  // ════════════════════════════════════════════════
   playerDataQuery(playerId: number, posX: number = 0): number {
     const x = posX & 0xFF;
-    // $803A: JSR $C50C (读 $05FB 设 $0034/$0035 球员数据指针)
+    // $803A: JSR $C50C (�?$05FB �?$0034/$0035 球员数据指针)
     this._system.subC50C();
     const ptr34 = this.rdPtr(0x0034, 0x0035);
-    // $803B/$803E: LDY #$00; LDA ($0034),Y — 球员 RAM 数据[0]
+    // $803B/$803E: LDY #$00; LDA ($0034),Y �?球员 RAM 数据[0]
     let a = this.readIndirect(ptr34, 0);
     if (a === 0) {
-      // $8042-$804D: A = playerId-$0B; Y=$818E[Y]; A=($0038),Y (属性)
+      // $8042-$804D: A = playerId-$0B; Y=$818E[Y]; A=($0038),Y (属�?
       const y = this.readMemByte(0x818E + ((playerId - 0x0B) & 0xFF));
       a = this.readIndirect(this.rdPtr(0x0038, 0x0039), y);
     }
-    // $8050: CMP #$23 → C = (A >= $23) (PHP/PLP 保存, 用于 ×12 扩展)
+    // $8050: CMP #$23 �?C = (A >= $23) (PHP/PLP 保存, 用于 ×12 扩展)
     const carryGe23 = a >= 0x23;
     if (carryGe23) {
-      // $8053-$8061: p1≥0 用 p1, 否则用 p2; SBC #$23 (C=1 保持)
+      // $8053-$8061: p1�? �?p1, 否则�?p2; SBC #$23 (C=1 保持)
       const p1 = this.readIndirect(ptr34, 1);
       if ((p1 & 0x80) === 0) {
         a = p1;
@@ -161,20 +154,19 @@ export class MatchConfigService {
       }
       a = (a - 0x23) & 0xFF;
     }
-    // $8064-$808D: base16 = (A×4 或 A×12) + $8199 表基址 (Y=0 → $95D6; Y=2 → $9662)
+    // $8064-$808D: base16 = (A×4 �?A×12) + $8199 表基址 (Y=0 �?$95D6; Y=2 �?$9662)
     const base16 = (((a * 4) * (carryGe23 ? 3 : 1)) + (carryGe23 ? 0x9662 : 0x95D6)) & 0xFFFF;
     this.wrPtr(0x0032, 0x0033, base16);
-    // $8092: CPX #$1F; BCC $809A — X ≥ $1F → $813F 指针表路径
-    if (x >= 0x1F) { return this.sub813F(playerId, x, base16); }
-    // $809B-$80A6: 特殊 id 判定 (0/$0B/$1E/$1F → Z=1)
+    // $8092: CPX #$1F; BCC $809A �?X �?$1F �?$813F 指针表路�?    if (x >= 0x1F) { return this.sub813F(playerId, x, base16); }
+    // $809B-$80A6: 特殊 id 判定 (0/$0B/$1E/$1F �?Z=1)
     const special = playerId === 0 || playerId === 0x0B || playerId === 0x1E || playerId === 0x1F;
-    // $80A8: LDY #$00; LDA ($0032),Y; STY $0033 — base0 = base16[0]
+    // $80A8: LDY #$00; LDA ($0032),Y; STY $0033 �?base0 = base16[0]
     const base0 = this.readIndirect(base16, 0);
     if (!special) {
-      // $80D1-$80F3 (非 special): ptr = $9FCE + base0×24 (3×ASL/ROL 后第 4 次 ASL 加 ×8 = ×24)
+      // $80D1-$80F3 (�?special): ptr = $9FCE + base0×24 (3×ASL/ROL 后第 4 �?ASL �?×8 = ×24)
       const ptr = (0x9FCE + base0 * 24) & 0xFFFF;
       this.wrPtr(0x0032, 0x0033, ptr);
-      // $80F5-$80F9: TXA; TAY; TXA; BEQ $8113 (X==0 → 尾路径)
+      // $80F5-$80F9: TXA; TAY; TXA; BEQ $8113 (X==0 �?尾路�?
       return this.readAttrTail(ptr, x);
     }
     // $80B0-$80C1 (special): ptr = $AE86 + base0×8 (GK 属性表)
@@ -186,10 +178,10 @@ export class MatchConfigService {
   }
 
   /**
-   * $80F9 公共尾 (普通路径 Y=X; special 路径 Y=presetY):
-   *   X≠0: val = 表[Y] + p3×2, 上限 $BF → $0032 = val
-   *   X==0: val = 表[0] + p3, 上限 $5F; 经 ($0032)=$0E ($0033)=$9F/$A0
-   *     读 RAM $069F+val 16bit 表 → ($0032,$0033)
+   * $80F9 公共�?(普通路�?Y=X; special 路径 Y=presetY):
+   *   X�?: val = 表[Y] + p3×2, 上限 $BF �?$0032 = val
+   *   X==0: val = 表[0] + p3, 上限 $5F; �?($0032)=$0E ($0033)=$9F/$A0
+   *     �?RAM $069F+val 16bit �?�?($0032,$0033)
    */
   private readAttrTail(ptr: number, x: number, presetY?: number): number {
     const y = presetY ?? x;
@@ -199,10 +191,10 @@ export class MatchConfigService {
       const p3 = this.readIndirect(this.rdPtr(0x0034, 0x0035), 3);
       let val = (base + p3) & 0xFF;
       if (val > 0x5F) val = 0x5F;
-      // $8125: LDY #$9F; ASL; BCC $812B; INY → $0033=$9F/$A0; $0032=$0E
+      // $8125: LDY #$9F; ASL; BCC $812B; INY �?$0033=$9F/$A0; $0032=$0E
       this.wr(0x0033, 0x9F + ((val >> 7) & 1));
       this.wr(0x0032, 0x0E);
-      // $8131-$813C: 指针 $0E9F+val → RAM 镜像 $069F+val, 读 16bit
+      // $8131-$813C: 指针 $0E9F+val �?RAM 镜像 $069F+val, �?16bit
       const ra = (0x0E9F + val) & 0x07FF;
       const v16 = this.readMemByte(ra) | (this.readMemByte((ra + 1) & 0x07FF) << 8);
       this.wrPtr(0x0032, 0x0033, v16);
@@ -211,29 +203,25 @@ export class MatchConfigService {
     // $80FC-$8107: val = 表[Y] + p3×2 (ASL 进位 = p3 bit7)
     const p3 = this.readIndirect(this.rdPtr(0x0034, 0x0035), 3);
     let val = (base + ((p3 << 1) & 0xFF) + ((p3 >> 7) & 1)) & 0xFF;
-    // $810A-$8110: 上限 $BF → $0032 (CPY #$C0; BCC → 保持; ≥$C0 → $BF)
+    // $810A-$8110: 上限 $BF �?$0032 (CPY #$C0; BCC �?保持; �?C0 �?$BF)
     if (val >= 0xC0) val = 0xBF;
     this.wr(0x0032, val);
     return val;
   }
 
   /**
-   * $8ADE-$8B09: 属性索引计算。
-   * asm (ROM 字节精确对位, 反汇编器 $8ADE 有 1 字节错位):
-   *   $8ADE: STA $003E      — 入口 A(表值) 存 $003E
-   *   $8AE0: LDA $003C; STA $003F — $003F = $003C (调用前值)
-   *   $8AE4: TYA; CLC; ADC $003C; TAY — Y = Y + $003C
-   *   $8AE9: LDA ($003A),Y — v = 指针 $003A 读
-   *   $8AEB-$8AF9: 4× (ASL; ROL $003D) — v×16 (16bit)
+   * $8ADE-$8B09: 属性索引计算�?   * asm (ROM 字节精确对位, 反汇编器 $8ADE �?1 字节错位):
+   *   $8ADE: STA $003E      �?入口 A(表�? �?$003E
+   *   $8AE0: LDA $003C; STA $003F �?$003F = $003C (调用前�?
+   *   $8AE4: TYA; CLC; ADC $003C; TAY �?Y = Y + $003C
+   *   $8AE9: LDA ($003A),Y �?v = 指针 $003A �?   *   $8AEB-$8AF9: 4× (ASL; ROL $003D) �?v×16 (16bit)
    *   $8AFB: STA $003C; $8AFD: LDX $003D
-   *   $8AFF: ASL; ROL $003D — v×32 (16bit)
-   *   ADC $003C; STA $003C — 低字节 = ×32低 + ×16低 + C
-   *   TXA; ADC $003D; TAX — 高字节 = ×16高 + ×32高 + carry
-   *   → 结果: $003C/$003D = v×48 (16bit), 返回 X = 高字节
-   * @param y 入口 Y 索引
-   * @param aIn 入口 A 表值 (存 $003E)
-   * @returns X = 16bit 结果高字节
-   */
+   *   $8AFF: ASL; ROL $003D �?v×32 (16bit)
+   *   ADC $003C; STA $003C �?低字�?= ×32�?+ ×16�?+ C
+   *   TXA; ADC $003D; TAX �?高字�?= ×16�?+ ×32�?+ carry
+   *   �?结果: $003C/$003D = v×48 (16bit), 返回 X = 高字�?   * @param y 入口 Y 索引
+   * @param aIn 入口 A 表�?(�?$003E)
+   * @returns X = 16bit 结果高字�?   */
   private sub8ADE(y: number, aIn: number): number {
     this.wr(0x003E, aIn & 0xFF);              // $8ADE: STA $003E
     this.wr(0x003F, this.rd(0x003C));         // $8AE0-$8AE2: $003F = $003C
@@ -245,12 +233,12 @@ export class MatchConfigService {
       v = (v << 1) & 0xFF;
       d3d = ((d3d << 1) | c) & 0xFF;
     }
-    this.wr(0x003C, v);                       // $8AFB: STA $003C (×16 低)
-    const x = d3d;                             // $8AFD: LDX $003D (×16 高)
+    this.wr(0x003C, v);                       // $8AFB: STA $003C (×16 �?
+    const x = d3d;                             // $8AFD: LDX $003D (×16 �?
     const c2 = (v >> 7) & 1;                   // $8AFF: ASL
     v = (v << 1) & 0xFF;
-    d3d = ((d3d << 1) | c2) & 0xFF;            // ROL $003D (×32 高)
-    const sum = v + this.rd(0x003C);           // ADC $003C: ×32低 + ×16低 + C
+    d3d = ((d3d << 1) | c2) & 0xFF;            // ROL $003D (×32 �?
+    const sum = v + this.rd(0x003C);           // ADC $003C: ×32�?+ ×16�?+ C
     v = sum & 0xFF;
     this.wr(0x003C, v);                       // STA $003C
     const hi = (x + d3d + (sum > 0xFF ? 1 : 0)) & 0xFF; // TXA; ADC $003D; TAX
@@ -258,24 +246,22 @@ export class MatchConfigService {
   }
 
   /**
-   * $8B0B-$8B1F: 读 ($003C),Y 取属性位。
-   * asm:
-   *   $8B0A: LDA $00E2; AND #$07; LSR — C = bit0
-   *   $8B10: PHP (压 C); CLC; ADC $003E; TAY
-   *   $8B15: LDA ($003C),Y; PLP; BCS $8B1F — C=1 原样返回
-   *   $8B19-$8B1E: LSR×4; AND #$0F — C=0 取高 4 位
-   */
+   * $8B0B-$8B1F: �?($003C),Y 取属性位�?   * asm:
+   *   $8B0A: LDA $00E2; AND #$07; LSR �?C = bit0
+   *   $8B10: PHP (�?C); CLC; ADC $003E; TAY
+   *   $8B15: LDA ($003C),Y; PLP; BCS $8B1F �?C=1 原样返回
+   *   $8B19-$8B1E: LSR×4; AND #$0F �?C=0 取高 4 �?   */
   private sub8B0B(): number {
     const e2 = this.rd(0x00E2);
-    const carry = e2 & 0x01;                   // LSR 移出的 bit0
+    const carry = e2 & 0x01;                   // LSR 移出�?bit0
     const y = (((e2 & 0x07) >> 1) + this.rd(0x003E)) & 0xFF;
     const v = this.readIndirect(this.rdPtr(0x003C, 0x003D), y);
     return carry === 1 ? v : (v >> 4) & 0x0F;
   }
 
   /**
-   * $8732-$8743: sub868E 收尾 — LDA $0442; LDX $043D; JSR $8D58;
-   * $0430≠0 → $043E = $0431
+   * $8732-$8743: sub868E 收尾 �?LDA $0442; LDX $043D; JSR $8D58;
+   * $0430�? �?$043E = $0431
    */
   private sub8732(): void {
     this.sub8D58();
@@ -284,7 +270,7 @@ export class MatchConfigService {
     }
   }
 
-  /** $86BA (cmd0 分派): LDA $043D; JSR $C509 → 表 $86C0 */
+  /** $86BA (cmd0 分派): LDA $043D; JSR $C509 �?�?$86C0 */
   private sub86BA(): void {
     const cmd = this.rd(0x043D);
     switch (cmd) {
@@ -295,7 +281,7 @@ export class MatchConfigService {
     }
   }
 
-  /** $86EB (cmd1 分派): LDA $043D; JSR $C509 → 表 $86EE */
+  /** $86EB (cmd1 分派): LDA $043D; JSR $C509 �?�?$86EE */
   private sub86EB(): void {
     const cmd = this.rd(0x043D);
     switch (cmd) {
@@ -306,7 +292,7 @@ export class MatchConfigService {
     }
   }
 
-  /** $8710 (cmd2 分派): LDA $043D; JSR $C509 → 表 $8713 */
+  /** $8710 (cmd2 分派): LDA $043D; JSR $C509 �?�?$8713 */
   private sub8710(): void {
     const cmd = this.rd(0x043D);
     switch (cmd) {
@@ -317,9 +303,9 @@ export class MatchConfigService {
     }
   }
 
-  /** $813F: X ≥ $1F 特殊路径 — base[1]×12 + $AFAE 指针表, 返回 16bit 指针 */
+  /** $813F: X �?$1F 特殊路径 �?base[1]×12 + $AFAE 指针�? 返回 16bit 指针 */
   private sub813F(playerId: number, x: number, base16: number): number {
-    // $813F: CPX #$25; BCS $817E (X ≥ $25 → 表直读)
+    // $813F: CPX #$25; BCS $817E (X �?$25 �?表直�?
     if (x >= 0x25) {
       // $817E: TXA; SEC; SBC #$23; TAY; LDA ($0032),Y; STA $0032; LDA #$00; STA $0033
       const y = (x - 0x23) & 0xFF;
@@ -330,8 +316,7 @@ export class MatchConfigService {
     // $8143-$8169: ptr = $AFAE + base[1]×12
     const b1 = this.readIndirect(base16, 1);
     const ptr = (0xAFAE + b1 * 12) & 0xFFFF;
-    // $816B-$817B: Y = (X-$1F)*2; ($0032,$0033) = 指针表 16bit 项
-    const y = ((x - 0x1F) * 2) & 0xFF;
+    // $816B-$817B: Y = (X-$1F)*2; ($0032,$0033) = 指针�?16bit �?    const y = ((x - 0x1F) * 2) & 0xFF;
     const lo = this.readIndirect(ptr, y);
     const hiB = this.readIndirect(ptr, (y + 1) & 0xFF);
     const p = (hiB << 8) | lo;
@@ -341,18 +326,17 @@ export class MatchConfigService {
   }
 
   // ════════════════════════════════════════════════
-  // 跳转表入口目标 — 已翻译
-  // ════════════════════════════════════════════════
+  // 跳转表入口目�?�?已翻�?  // ════════════════════════════════════════════════
 
   /**
    * $8B22: 队伍数据加载
-   * asm $8B22-$8B93: 循环 $0B→$15 清零球员数据; 查 $BAB2 表得队伍
-   * 数据指针; 读阵型/球员数; 循环配置球员数据; 调整 $0446
+   * asm $8B22-$8B93: 循环 $0B�?15 清零球员数据; �?$BAB2 表得队伍
+   * 数据指针; 读阵�?球员�? 循环配置球员数据; 调整 $0446
    */
   private sub8B22(): void {
-    // $8B22-$8B37: 循环清零球员数据 ($0B→$15)
+    // $8B22-$8B37: 循环清零球员数据 ($0B�?15)
     for (let a = 0x0B; a < 0x16; a++) {
-      this._system.subC50C(); // 读 $05FB 设 $0034/$0035
+      this._system.subC50C(); // �?$05FB �?$0034/$0035
       const pp = this.rdPtr(0x0034, 0x0035);
       this.writeIndirect(pp, 0, 0);
       this.writeIndirect(pp, 1, 0);
@@ -362,12 +346,12 @@ export class MatchConfigService {
     const lo = this.readMemByte(0xBAB2 + ti);
     const hi = this.readMemByte(0xBAB3 + ti);
     this.wrPtr(0x0038, 0x0039, (hi << 8) | lo);
-    // $8B4D-$8B5A: 读[0] 低4位→$002E, 高4位→$002F
+    // $8B4D-$8B5A: 读[0] �?位→$002E, �?位→$002F
     const tp = this.rdPtr(0x0038, 0x0039);
     const b0 = this.readIndirect(tp, 0);
     this.wr(0x002E, b0 & 0x0F);
     this.wr(0x002F, (b0 >> 4) & 0x0F);
-    // $8B5D-$8B7B: 循环读队伍数据 (Y=9 起)
+    // $8B5D-$8B7B: 循环读队伍数�?(Y=9 �?
     this.wr(0x003A, 9);
     for (let i = 0; i < 64; i++) {
       const y = this.rd(0x003A);
@@ -389,8 +373,7 @@ export class MatchConfigService {
 
   /**
    * $8609: 阵型数据加载
-   * asm $8609-$863E: 检查 $05FB; =0 则遍历 $0600 项阵型列表
-   */
+   * asm $8609-$863E: 检�?$05FB; =0 则遍�?$0600 项阵型列�?   */
   private sub8609(): void {
     if (this.rd(0x05FB) !== 0) { this.sub875D(); return; }
     const cnt = this.rd(0x0600);
@@ -404,9 +387,8 @@ export class MatchConfigService {
   }
 
   /**
-   * $8C06: 等级/属性设置
-   * asm $8C06-$8C7E: 入口 A=$0441, X=$043B;
-   * 检查阵型类型/队伍侧; 调 $8DC9 获取指针;
+   * $8C06: 等级/属性设�?   * asm $8C06-$8C7E: 入口 A=$0441, X=$043B;
+   * 检查阵型类�?队伍�? �?$8DC9 获取指针;
    * 读两字节判断; 遍历属性表
    */
   private sub8C06(): void {
@@ -424,13 +406,13 @@ export class MatchConfigService {
     if (v0 === v1 && v0 === 0) { this.wr(0x0430, 0); return; }
     if (v0 !== v1) { this.wr(0x0048, v0); this.wr(0x0049, v1); }
     this.wr(0x0430, 0);
-    // $8C31: LDA $0430 (slot); $8C38: JSR $C509; 表 $8C3B: $8C46/$8D41/$8D4E/$8D55
-    //   cmd0 → $8C46: 跳过 LDA#$00;STA$0046 ($0046 保留原值) 直接进主循环
-    //   cmd1/2/3 → $8D41/$8D4E/$8D55 (其他阵型处理, TODO)
+    // $8C31: LDA $0430 (slot); $8C38: JSR $C509; �?$8C3B: $8C46/$8D41/$8D4E/$8D55
+    //   cmd0 �?$8C46: 跳过 LDA#$00;STA$0046 ($0046 保留原�? 直接进主循环
+    //   cmd1/2/3 �?$8D41/$8D4E/$8D55 (其他阵型处理, TODO)
     if (slot !== 0) {
       void slot;
     }
-    // $8C46 起: LDY $0046; 主循环 ($0046 保留)
+    // $8C46 �? LDY $0046; 主循�?($0046 保留)
     let ai = this.rd(0x0046);
     for (let i = 0; i < 64; i++) {
       const ab = this.readIndirect(this.rdPtr(0x0048, 0x0049), ai);
@@ -452,7 +434,7 @@ export class MatchConfigService {
   /**
    * $8D58: OAM/精灵配置
    * asm $8D58-$8DC8: 入口 A=$0442, X=$043D;
-   * A=0/$0B→$8DA6 路径; 否则按队伍侧/阵型类型分支
+   * A=0/$0B�?8DA6 路径; 否则按队伍侧/阵型类型分支
    */
   private sub8D58(): void {
     const fid = this.rd(0x0442);
@@ -473,11 +455,10 @@ export class MatchConfigService {
     if (v0 === v1 && v0 === 0) { this.wr(0x0430, 0); return; }
     if (v0 !== v1) { this.wr(0x0048, v0); this.wr(0x0049, v1); }
     this.wr(0x0430, 0);
-    // JSR $C509 (cmd=fid 原值) 分派 — 目标子程待翻译
-    void fid;
+    // JSR $C509 (cmd=fid 原�? 分派 �?目标子程待翻�?    void fid;
   }
 
-  /** $8DA6 路径 (A=0 或 A=$0B): 获取指针, 比较两字节 */
+  /** $8DA6 路径 (A=0 �?A=$0B): 获取指针, 比较两字�?*/
   private sub8DA6Path(fid: number, side: number): void {
     this.sub8DC9(fid, side);
     const p = this.rdPtr(0x0048, 0x0049);
@@ -498,12 +479,12 @@ export class MatchConfigService {
     this.wr(0x0049, this.readMemByte(0x8E1C + x));
   }
 
-  /** $8C7F: 属性调整 — LDA $0047; SEC; SBC #$03; JSR $C509 (表 $8C84 32 项, 待翻译) */
+  /** $8C7F: 属性调�?�?LDA $0047; SEC; SBC #$03; JSR $C509 (�?$8C84 32 �? 待翻�? */
   private sub8C7F(): void {
     void ((this.rd(0x0047) - 3) & 0xFF);
   }
 
-  /** $863F: 阵型子程 — STA $0442; JSR $8A62; 查阵型表 */
+  /** $863F: 阵型子程 �?STA $0442; JSR $8A62; 查阵型表 */
   private sub863F(fid: number): void {
     this.wr(0x0442, fid);
     this.sub8A62();
@@ -517,20 +498,18 @@ export class MatchConfigService {
   }
 
   /**
-   * $8A62: 查球员属性指针 (入口部分)。
-   * asm $8A62-$8AA7: JSR $C50C; 读球员数据[0]; ≠0 则查 $8A9D 表算属性索引。
-   */
+   * $8A62: 查球员属性指�?(入口部分)�?   * asm $8A62-$8AA7: JSR $C50C; 读球员数据[0]; �? 则查 $8A9D 表算属性索引�?   */
   private sub8A62(): void {
     this._system.subC50C();
     const ptr = this.rdPtr(0x0034, 0x0035);
     const d0 = this.readIndirect(ptr, 0);
     if (d0 === 0) return;
-    // $8A6C: 查 $8A9D 属性角色表
+    // $8A6C: �?$8A9D 属性角色表
     const x = this.rd(0x0441) & 0xFF;
     const y = this.readMemByte(0x8A9D + x);
     const teamPtr = this.rdPtr(0x0038, 0x0039);
     const attrVal = this.readIndirect(teamPtr, y);
-    // 算属性索引 (SBC #$23; ASL×2; ADC)
+    // 算属性索�?(SBC #$23; ASL×2; ADC)
     let a = (attrVal - 0x23) & 0xFF;
     let lo = a, hi = 0;
     for (let i = 0; i < 2; i++) {
@@ -544,16 +523,15 @@ export class MatchConfigService {
   }
 
   /**
-   * $8663: 位置属性计算 (v===0 路径)。
-   * asm $8663-$868D:
+   * $8663: 位置属性计�?(v===0 路径)�?   * asm $8663-$868D:
    *   LDA $0635; EOR #$FF; TAX (X = ~$0635)
-   *   LDA #$14; CPX #$A0; BCS $868E (≥$A0 → $868E)
-   *   LDA #$10; CPX #$60; BCS $868E (≥$60 → $868E)
+   *   LDA #$14; CPX #$A0; BCS $868E (�?A0 �?$868E)
+   *   LDA #$10; CPX #$60; BCS $868E (�?60 �?$868E)
    *   LDA $0637; BPL $867C; EOR #$FF; TAY (Y = ~$0637 if neg)
    *   JSR $C539 (角度计算)
    *   LDX #$00; CMP $8BBE,X; BEQ $868B; INX; INX; BNE (查表)
-   *   LDA $8BBF,X (取结果)
-   *   → fall through $868E
+   *   LDA $8BBF,X (取结�?
+   *   �?fall through $868E
    */
   private sub8663(): void {
     // $8663: LDA $0635; EOR #$FF; TAX (X = ~$0635)
@@ -565,28 +543,26 @@ export class MatchConfigService {
     // $8675: LDA $0637; BPL $867C; EOR #$FF; TAY
     let y = this.rd(0x0637);
     if ((y & 0x80) !== 0) y = (y ^ 0xFF) & 0xFF;
-    // $867D: JSR $C539 (角度计算 — bank30, stub)
+    // $867D: JSR $C539 (角度计算 �?bank30, stub)
     // $8680: LDX #$00; CMP $8BBE,X; BEQ $868B; INX; INX; BNE (查表)
     let xi = 0;
-    const cmpVal = 0; // $C539 返回值 stub
+    const cmpVal = 0; // $C539 返回�?stub
     while (xi < 0x100) {
       if (cmpVal === this.readMemByte(0x8BBE + xi)) break;
       xi = (xi + 2) & 0xFF;
       if (xi === 0) break;
     }
-    // $868B: LDA $8BBF,X → fall through $868E (LDY #$07; JSR $8ADE)
+    // $868B: LDA $8BBF,X �?fall through $868E (LDY #$07; JSR $8ADE)
     this.sub868E(this.readMemByte(0x8BBF + xi));
   }
 
   /**
-   * $868E: 阵型后续处理 — 入口是 $868E: LDY #$07 指令 (非 JSR 目标)。
-   * asm $868E-$86B0:
-   *   $868E: LDY #$07; $8690: JSR $8ADE  — sub8ADE(7, a), 返回 X=16bit 结果高字节
-   *   $8693: CLC; LDA $003C; ADC #$AE; STA $003C
-   *   $869A: TXA; ADC #$B8; STA $003D   — X 来自 sub8ADE 返回 (非调用方)
+   * $868E: 阵型后续处理 �?入口�?$868E: LDY #$07 指令 (�?JSR 目标)�?   * asm $868E-$86B0:
+   *   $868E: LDY #$07; $8690: JSR $8ADE  �?sub8ADE(7, a), 返回 X=16bit 结果高字�?   *   $8693: CLC; LDA $003C; ADC #$AE; STA $003C
+   *   $869A: TXA; ADC #$B8; STA $003D   �?X 来自 sub8ADE 返回 (非调用方)
    *   $869F: JSR $8B0B; STA $043D; LDA #$00; STA $043E
    *   $86AA: LDA $003F; JSR $C509
-   * @param a 入口 A (来自 $8AB3 返回值 / $8BBF 表值 / #$14 / #$10)
+   * @param a 入口 A (来自 $8AB3 返回�?/ $8BBF 表�?/ #$14 / #$10)
    */
   private sub868E(a: number): void {
     const xHi = this.sub8ADE(7, a);              // $868E: LDY #$07; $8690: JSR $8ADE
@@ -595,33 +571,28 @@ export class MatchConfigService {
     this.wr(0x003D, (xHi + 0xB8) & 0xFF);        // $869A-$869D: TXA; ADC #$B8
     this.wr(0x043D, this.sub8B0B());             // $869F-$86A2: JSR $8B0B; STA $043D
     this.wr(0x043E, 0x00);                        // $86A5-$86A7: LDA #$00; STA $043E
-    void this.rd(0x003F);                         // $86AA-$86AC: LDA $003F; JSR $C509 分派待翻译
-  }
+    void this.rd(0x003F);                         // $86AA-$86AC: LDA $003F; JSR $C509 分派待翻�?  }
 
   /**
-   * $8AB3: 阵型属性设置 (查 $8B9E 表)。
-   * asm (ROM 字节精确对位, 参考反汇编器错位 1 字节: $8ADD 是 RTS 非 STA $003E):
+   * $8AB3: 阵型属性设�?(�?$8B9E �?�?   * asm (ROM 字节精确对位, 参考反汇编器错�?1 字节: $8ADD �?RTS �?STA $003E):
    *   LDA $0635; BPL $8ABA; EOR #$FF; TAX (X = ~$0635 if neg)
    *   LDA $0637; BPL $8AC2; EOR #$FF; TAY (Y = ~$0637 if neg)
    *   JSR $C539 (角度计算)
    *   LDX #$00; CMP $8B9E,X; BEQ $8AD1; INX; INX; BNE (查表)
-   *   $8AD1: LDA $8B9F,X     — A = 表值
-   *   $8AD4: LDX $003C; $8AD6: CPX #$01; $8AD8: BEQ $8ADD
-   *   $8ADD: RTS             — X==$01 → A 原样返回 (BEQ 直达 RTS)
-   *   $8ADA: CLC; $8ADB: ADC #$0C; RTS — X!=$01 → A+$0C 返回
-   * 两条路径均 RTS 返回 A, 本子程不写 $003E。
-   * $8ADE: STA $003E 是独立子程入口; 本子程返回的 A 被调用方
-   * 用作 JSR $8ADE 的 aIn (sub868E/sub879C 内部 STA $003E)。
-   * @returns A 值 ($8BBF,X 表值 或 +$0C)
+   *   $8AD1: LDA $8B9F,X     �?A = 表�?   *   $8AD4: LDX $003C; $8AD6: CPX #$01; $8AD8: BEQ $8ADD
+   *   $8ADD: RTS             �?X==$01 �?A 原样返回 (BEQ 直达 RTS)
+   *   $8ADA: CLC; $8ADB: ADC #$0C; RTS �?X!=$01 �?A+$0C 返回
+   * 两条路径�?RTS 返回 A, 本子程不�?$003E�?   * $8ADE: STA $003E 是独立子程入�? 本子程返回的 A 被调用方
+   * 用作 JSR $8ADE �?aIn (sub868E/sub879C 内部 STA $003E)�?   * @returns A �?($8BBF,X 表�?�?+$0C)
    */
   private sub8AB3(): number {
     let x = this.rd(0x0635);
     if ((x & 0x80) !== 0) x = (x ^ 0xFF) & 0xFF;
     let y = this.rd(0x0637);
     if ((y & 0x80) !== 0) y = (y ^ 0xFF) & 0xFF;
-    // JSR $C539 (角度计算 — bank30, stub)
+    // JSR $C539 (角度计算 �?bank30, stub)
     const cmpVal = 0; // stub
-    // 查 $8B9E 表 (2 字节步长)
+    // �?$8B9E �?(2 字节步长)
     let xi = 0;
     while (xi < 0x100) {
       if (cmpVal === this.readMemByte(0x8B9E + xi)) break;
@@ -629,7 +600,7 @@ export class MatchConfigService {
       if (xi === 0) break;
     }
     const a = this.readMemByte(0x8B9F + xi);   // $8AD1: LDA $8B9F,X
-    // $8AD4: LDX $003C; $8AD6: CPX #$01; $8AD8: BEQ $8ADD (RTS — A 原样)
+    // $8AD4: LDX $003C; $8AD6: CPX #$01; $8AD8: BEQ $8ADD (RTS �?A 原样)
     if (this.rd(0x003C) === 0x01) {
       return a;
     }
@@ -638,9 +609,7 @@ export class MatchConfigService {
   }
 
   /**
-   * $85B5: 阵型特殊路径 (fid===$0B)。
-   * asm $85B5-$8603: 与 $863F 类似但用 $8604 表代替 $86B5。
-   *   LDA #$00; STA $003D
+   * $85B5: 阵型特殊路径 (fid===$0B)�?   * asm $85B5-$8603: �?$863F 类似但用 $8604 表代�?$86B5�?   *   LDA #$00; STA $003D
    *   LDX $0621; LDY $8604,X; TYA; ASL; ASL; STA $003E
    *   INY×4; LDA ($003A),Y; ASL; ROL $003D; ASL; ROL $003D; STA $003C
    *   LDX $003D; ASL; ROL $003D; ADC $003C; STA $003C; TXA; ADC $003D; TAX
@@ -689,9 +658,7 @@ export class MatchConfigService {
   }
 
   /**
-   * $875D: $05FB≠0 路径 (阵型其他处理)。
-   * asm $875D-$87EC: 与 sub863F 结构相同但用 $87C3 表代替 $86B5。
-   *   LDA $0441; JSR $8A62
+   * $875D: $05FB�? 路径 (阵型其他处理)�?   * asm $875D-$87EC: �?sub863F 结构相同但用 $87C3 表代�?$86B5�?   *   LDA $0441; JSR $8A62
    *   LDY $0621; LDA $87C3,Y; STA $003C; BEQ $8773
    *   JSR $8AB3; JMP $879C
    *   $8773: LDA #$14; LDX $0635; CPX #$A0; BCS $879C
@@ -722,7 +689,7 @@ export class MatchConfigService {
       // $8782: LDY $0637; BPL $878B; TYA; EOR #$FF; TAY
       let y = this.rd(0x0637);
       if ((y & 0x80) !== 0) y = (y ^ 0xFF) & 0xFF;
-      // $878B: JSR $C539 (角度计算 — bank30, stub)
+      // $878B: JSR $C539 (角度计算 �?bank30, stub)
       // $878E: LDX #$00; CMP $8BBE,X; BEQ $8799; INX; INX; BNE (查表)
       const cmpVal = 0; // stub
       let xi = 0;
@@ -731,21 +698,19 @@ export class MatchConfigService {
         xi = (xi + 2) & 0xFF;
         if (xi === 0) break;
       }
-      // $8799: LDA $8BBF,X → $879C: LDY #$04; JSR $8ADE
+      // $8799: LDA $8BBF,X �?$879C: LDY #$04; JSR $8ADE
       this.sub879C(this.readMemByte(0x8BBF + xi));
-      // $87EC: JMP $8A3F — 后续处理 (stub)
+      // $87EC: JMP $8A3F �?后续处理 (stub)
     }
   }
 
   /**
-   * $879C: $875D 的 $8AB3 后续路径 — 入口是 $879C: LDY #$04 指令。
-   * asm $879C-$87BA (与 $868E 同构, Y=4, 偏移 $2E/$B1):
-   *   $879C: LDY #$04; $879E: JSR $8ADE  — sub8ADE(4, a), 返回 X=16bit 结果高字节
-   *   $87A1: CLC; LDA $003C; ADC #$2E; STA $003C
-   *   $87A8: TXA; ADC #$B1; STA $003D   — X 来自 sub8ADE 返回
+   * $879C: $875D �?$8AB3 后续路径 �?入口�?$879C: LDY #$04 指令�?   * asm $879C-$87BA (�?$868E 同构, Y=4, 偏移 $2E/$B1):
+   *   $879C: LDY #$04; $879E: JSR $8ADE  �?sub8ADE(4, a), 返回 X=16bit 结果高字�?   *   $87A1: CLC; LDA $003C; ADC #$2E; STA $003C
+   *   $87A8: TXA; ADC #$B1; STA $003D   �?X 来自 sub8ADE 返回
    *   $87AD: JSR $8B0B; STA $043B; LDA #$00; STA $043C
    *   $87B8: LDA $003F; JSR $C509
-   * @param a 入口 A (来自 $8AB3 返回值 / $8BBF 表值 / #$14 / #$10)
+   * @param a 入口 A (来自 $8AB3 返回�?/ $8BBF 表�?/ #$14 / #$10)
    */
   private sub879C(a: number): void {
     const xHi = this.sub8ADE(4, a);              // $879C: LDY #$04; $879E: JSR $8ADE
@@ -754,8 +719,7 @@ export class MatchConfigService {
     this.wr(0x003D, (xHi + 0xB1) & 0xFF);        // $87A8-$87AB: TXA; ADC #$B1
     this.wr(0x043B, this.sub8B0B());             // $87AD-$87B0: JSR $8B0B; STA $043B
     this.wr(0x043C, 0x00);                        // $87B3-$87B5: LDA #$00; STA $043C
-    void this.rd(0x003F);                         // $87B8-$87BA: LDA $003F; JSR $C509 分派待翻译
-  }
+    void this.rd(0x003F);                         // $87B8-$87BA: LDA $003F; JSR $C509 分派待翻�?  }
 
   // ════════════════════════════════════════════════
   // 间接读写辅助 (RAM 间接寻址)
@@ -772,7 +736,7 @@ export class MatchConfigService {
   // ════════════════════════════════════════════════
   // 内存读取辅助
   // ════════════════════════════════════════════════
-  /** ROM 数据表映射: addr 落在表范围内 → 读具名表 (重叠区具体表优先) */
+  /** ROM 数据表映�? addr 落在表范围内 �?读具名表 (重叠区具体表优先) */
   private static readonly ROM_TABLES: ReadonlyArray<{ base: number; data: readonly number[] }> = [
     // $8000-$9FFF 窗口 (bank28)
     { base: 0x818E, data: TBL_818E },

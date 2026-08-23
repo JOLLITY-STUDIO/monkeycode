@@ -1,62 +1,50 @@
 /**
- * SpriteService — 精灵模板解码器 (bank22)
+ * SpriteService �?精灵模板解码�?(bank22)
  * @bank 22 ($8000-$9FFF, MMC3 R6/R7 可切)
  *
- * ⚠ 注意: 本 Service 不是全局唯一的 OAM 写入入口!
- *   NES 天使之翼2 有多个 bank 直接写 OAM ($0200):
- *     - bank11 MatchTurnService.sub8525 — 滚动精灵组 (球场滚动时写 OAM)
- *     - bank19 MatchSceneService.sub90AF/sub9127 — 场景精灵 (比赛画面精灵初始化)
- *     - bank20 MatchAuxService.sub8624 — 比赛辅助精灵 (计时器/计分板)
- *     - bank24 MatchHudService — HUD 精灵 (比分/时钟/体力条直接写 OAM)
- *     - bank26 MatchEngineService.sub987B — 精灵缓冲初始化
- *   本 Service (bank22) 只负责其中"模板驱动"的部分:
- *     从精灵描述符 ($003C) 查模板指针表, 解码模板流, 批量写 OAM。
- *     主要用于球员/必杀技特效等复杂多帧精灵组的生成。
- *
- * 消费方: bank00 协程调度器 ($9F0F) 间接切换到 bank22 执行。
- *   bank 号存在 $0002+X (R6) / $0003+X (R7) 表, 运行时动态设值。
- *
- * 职责: 读精灵描述符 ($003C) → 查模板指针表 → 解码模板流 → 写 OAM ($0200)。
- *
- * asm 结构 (code_main.s $8003-$81D1, 共 252 个代码地址):
- *   $8003: 主入口 (JMP $8003)
- *   $8005-$8098: 坐标变换 (读描述符, 算位移, 查模板指针)
+ * �?注意: �?Service 不是全局唯一�?OAM 写入入口!
+ *   NES 天使之翼2 有多�?bank 直接�?OAM ($0200):
+ *     - bank11 MatchTurnService.sub8525 �?滚动精灵�?(球场滚动时写 OAM)
+ *     - bank19 MatchSceneService.sub90AF/sub9127 �?场景精灵 (比赛画面精灵初始�?
+ *     - bank20 MatchAuxService.sub8624 �?比赛辅助精灵 (计时�?计分�?
+ *     - bank24 MatchHudService �?HUD 精灵 (比分/时钟/体力条直接写 OAM)
+ *     - bank26 MatchEngineService.sub987B �?精灵缓冲初始�? *   �?Service (bank22) 只负责其�?模板驱动"的部�?
+ *     从精灵描述符 ($003C) 查模板指针表, 解码模板�? 批量�?OAM�? *     主要用于球员/必杀技特效等复杂多帧精灵组的生成�? *
+ * 消费�? bank00 协程调度�?($9F0F) 间接切换�?bank22 执行�? *   bank 号存�?$0002+X (R6) / $0003+X (R7) �? 运行时动态设值�? *
+ * 职责: 读精灵描述符 ($003C) �?查模板指针表 �?解码模板�?�?�?OAM ($0200)�? *
+ * asm 结构 (code_main.s $8003-$81D1, �?252 个代码地址):
+ *   $8003: 主入�?(JMP $8003)
+ *   $8005-$8098: 坐标变换 (读描述符, 算位�? 查模板指�?
  *   $8098: JSR $8187 (方向偏移计算)
- *   $809B-$8108: 模板流解码循环 (按类型分派: 0=$80C0, 非0=$80AD/$80B3)
- *   $80C0-$8160: 精灵写入 OAM (Y位移+X位移+tile+属性)
- *   $8164-$8184: 子模板跳转 (读新指针)
+ *   $809B-$8108: 模板流解码循�?(按类型分�? 0=$80C0, �?=$80AD/$80B3)
+ *   $80C0-$8160: 精灵写入 OAM (Y位移+X位移+tile+属�?
+ *   $8164-$8184: 子模板跳�?(读新指针)
  *   $8187-$81D1: 方向偏移计算 (bit6/bit5 翻转)
  *
  * RAM 关键:
- *   $003C/$003D: 精灵描述符指针
- *   $003E/$003F: 精灵基准 X 坐标 (16bit)
+ *   $003C/$003D: 精灵描述符指�? *   $003E/$003F: 精灵基准 X 坐标 (16bit)
  *   $0040/$0041: 精灵基准 Y 坐标 (16bit)
- *   $0042/$0043: 模板流指针
- *   $0044: 模板流偏移 Y
- *   $0045: 精灵计数器
- *   $0046: Y 坐标计算结果
+ *   $0042/$0043: 模板流指�? *   $0044: 模板流偏�?Y
+ *   $0045: 精灵计数�? *   $0046: Y 坐标计算结果
  *   $0047: X 坐标计算结果
  *   $0048: OAM 精灵计数
- *   $0049: 方向标志 (bit6=X翻转, bit5=Y翻转, bit0-1=属性)
+ *   $0049: 方向标志 (bit6=X翻转, bit5=Y翻转, bit0-1=属�?
  *   $003B: OAM 写入偏移
  *   $0517: 全局方向标志
  *   $0538: 滚动偏移
  *   $0540/$0541: Y 坐标裁剪范围
  *
- * 数据表 (sprite-table.ts):
- *   DISP_81D2 (40B): Y 位移表
- *   DISP_81FA (64B): X 位移表
- *   TEMPLATE_PTR_8280 (47×2B): 模板指针表
- */
+ * 数据�?(sprite-table.ts):
+ *   DISP_81D2 (40B): Y 位移�? *   DISP_81FA (64B): X 位移�? *   TEMPLATE_PTR_8280 (47×2B): 模板指针�? */
 import { DataStore } from '../../data/store/DataStore';
-import { GameSystemService } from '../system/GameSystemService';
+import { Bank00Service } from '../system/Bank00Service';
 import { DISP_81D2, DISP_81FA, TEMPLATE_PTR_8280 } from '../../data/tables/sprite-table';
 
 export class SpriteService {
   protected _store: DataStore;
-  protected _system: GameSystemService;
+  protected _system: Bank00Service;
 
-  constructor(store: DataStore, system: GameSystemService) {
+  constructor(store: DataStore, system: Bank00Service) {
     this._store = store;
     this._system = system;
   }
@@ -79,14 +67,12 @@ export class SpriteService {
   }
 
   // ════════════════════════════════════════════════════════════
-  // $8003: 主入口 — 精灵模板解码
-  // asm $8005-$8098: 读描述符, 算坐标变换, 查模板指针
-  // ════════════════════════════════════════════════════════════
+  // $8003: 主入�?�?精灵模板解码
+  // asm $8005-$8098: 读描述符, 算坐标变�? 查模板指�?  // ════════════════════════════════════════════════════════════
 
   /**
-   * $8003: 主入口。
-   * asm $8005: LDY #$00; STY $003F; STY $0041
-   *   LDA ($003C),Y; LSR; ROL $003F; LSR; ROL $0041 (提取 bit6/bit7 → $003F/$0041)
+   * $8003: 主入口�?   * asm $8005: LDY #$00; STY $003F; STY $0041
+   *   LDA ($003C),Y; LSR; ROL $003F; LSR; ROL $0041 (提取 bit6/bit7 �?$003F/$0041)
    *   LDA ($003C),Y; AND #$60; ASL; EOR $0517; STA $0049 (方向标志)
    *   LDY #$08; LDA ($003C),Y; SEC; SBC #$80; TAX (X = 描述符[8] - $80)
    *   LDA $003F; SBC #$00; TAY (Y = $003F - carry)
@@ -104,9 +90,9 @@ export class SpriteService {
    *   STA $0040; LDA $0041; SBC #$00; STA $0041 (存基准Y)
    *   LDA #$80; STA $0042; LDA #$82; STA $0043 (模板指针表基址 $8280)
    *   LDY #$12; LDA ($003C),Y; ASL; BCC; INC $0043 (读描述符[18], ×2查表)
-   *   TAY; LDA ($0042),Y; TAX; INY; LDA ($0042),Y; STA $0043; STX $0042 (查模板指针)
+   *   TAY; LDA ($0042),Y; TAX; INY; LDA ($0042),Y; STA $0043; STX $0042 (查模板指�?
    *   JSR $8187 (方向偏移计算)
-   *   LDY #$00; STY $0044 (模板流偏移=0)
+   *   LDY #$00; STY $0044 (模板流偏�?0)
    */
   spawn(groupId: number): void {
     void groupId;
@@ -169,7 +155,7 @@ export class SpriteService {
     // $8074: STA $0040; LDA $0041; SBC #$00; STA $0041
     this.wr(0x0040, yBase & 0xFF);
     this.wr(0x0041, (this.rd(0x0041) - 0) & 0xFF);
-    // $807C: LDA #$80; STA $0042; LDA #$82; STA $0043 (模板指针表 $8280)
+    // $807C: LDA #$80; STA $0042; LDA #$82; STA $0043 (模板指针�?$8280)
     this.wr(0x0042, 0x80);
     this.wr(0x0043, 0x82);
     // $8084: LDY #$12; LDA ($003C),Y; ASL; BCC; INC $0043
@@ -185,17 +171,14 @@ export class SpriteService {
     this.sub8187();
     // $809B: LDY #$00; STY $0044
     this.wr(0x0044, 0);
-    // $809F: 模板流解码循环
-    this._decodeLoop();
+    // $809F: 模板流解码循�?    this._decodeLoop();
   }
 
   /**
-   * $809F: 模板流解码循环。
-   * asm: LDY $0044; LDA ($0042),Y; AND #$07; BNE $80AD
-   *   =0: JSR $80C0 (Y位移组); JMP $809F
-   *   ≠0: JSR $80B3 (X位移组); JMP $809F
-   *   循环直到模板流结束
-   */
+   * $809F: 模板流解码循环�?   * asm: LDY $0044; LDA ($0042),Y; AND #$07; BNE $80AD
+   *   =0: JSR $80C0 (Y位移�?; JMP $809F
+   *   �?: JSR $80B3 (X位移�?; JMP $809F
+   *   循环直到模板流结�?   */
   private _decodeLoop(): void {
     while (true) {
       // $809F: .byte $A4,$44 = LDY $0044
@@ -203,19 +186,18 @@ export class SpriteService {
       const tplPtr = this.rdPtr(0x0042, 0x0043);
       const cmd = this.readMem(tplPtr + y) & 0x07;
       if (cmd === 0) {
-        // $80A7: JSR $80C0 (Y 位移组)
+        // $80A7: JSR $80C0 (Y 位移�?
         if (!this.sub80C0()) break;
       } else {
-        // $80AD: JSR $80B3 (X 位移组)
+        // $80AD: JSR $80B3 (X 位移�?
         if (!this.sub80B3()) break;
       }
     }
   }
 
   /**
-   * $80B3: X 位移组命令分派。
-   * asm: INC $0044; JSR $C509
-   *   跳转表 $80B5: $8100/$8164/$8175
+   * $80B3: X 位移组命令分派�?   * asm: INC $0044; JSR $C509
+   *   跳转�?$80B5: $8100/$8164/$8175
    * @returns false = 结束循环
    */
   private sub80B3(): boolean {
@@ -225,8 +207,7 @@ export class SpriteService {
     const cmd = this.readMem(tplPtr + y);
     // JSR $C509 分派 (cmd 0/1/2+)
     if (cmd === 0) {
-      // $8164: 子模板跳转
-      this.sub8164();
+      // $8164: 子模板跳�?      this.sub8164();
       return true;
     } else {
       // $8175: 精灵计数扩展
@@ -236,21 +217,19 @@ export class SpriteService {
   }
 
   /**
-   * $80C0: Y 位移组 — 读模板流, 写 OAM 精灵。
-   * asm $80C0-$8160:
+   * $80C0: Y 位移�?�?读模板流, �?OAM 精灵�?   * asm $80C0-$8160:
    *   LDY $0044; LDA ($0042),Y; AND #$38; LSR×3; STA $0045 (精灵计数)
-   *   INY; LDA ($0042),Y; TAX; LDA $81D2,X (查 Y 位移表)
+   *   INY; LDA ($0042),Y; TAX; LDA $81D2,X (�?Y 位移�?
    *   BIT $0049; BPL; EOR #$FF; CLC; ADC #$01 (方向翻转)
    *   CLC; ADC $0040; STA $0046 (Y坐标 = 位移 + 基准Y)
-   *   TXA; ADC $0041; BNE $80FD (超出范围→跳过)
-   *   CMP $0540; BCC; CMP $0541; BEQ/BCS (裁剪检查)
-   *   循环: INY; LDA ($0042),Y; LSR×2; TAX; LDA $81FA,X (查 X 位移表)
+   *   TXA; ADC $0041; BNE $80FD (超出范围→跳�?
+   *   CMP $0540; BCC; CMP $0541; BEQ/BCS (裁剪检�?
+   *   循环: INY; LDA ($0042),Y; LSR×2; TAX; LDA $81FA,X (�?X 位移�?
    *   方向翻转; CLC; ADC $003E; STA $0047 (X坐标)
-   *   写 OAM: $0200+X = Y, $0203+X = X, $0202+X = 属性, $0201+X = tile
+   *   �?OAM: $0200+X = Y, $0203+X = X, $0202+X = 属�? $0201+X = tile
    *   INX×4; STX $003B; INC $0048; INY; DEC $0045; BPL (循环)
    *   STY $0044; RTS
-   * @returns false = 模板流结束
-   */
+   * @returns false = 模板流结�?   */
   private sub80C0(): boolean {
     let y = this.rd(0x0044);
     const tplPtr = this.rdPtr(0x0042, 0x0043);
@@ -276,7 +255,7 @@ export class SpriteService {
     if (yHi !== 0) {
       // $80EC: LDA $0046; CMP $0540; BCC $80FD; CMP $0541; BEQ $8109; BCS $80FD
       if (yCoord >= this.rd(0x0540) && yCoord <= this.rd(0x0541)) {
-        // $8109: 继续写 OAM
+        // $8109: 继续�?OAM
       } else {
         // $80FD: 跳过 (INY; LDA #$F8; INY; INY; DEC $0045; BPL)
         y = (y + 1) & 0xFF;
@@ -288,8 +267,7 @@ export class SpriteService {
     }
     // $8109: .byte $C8 (INY)
     y = (y + 1) & 0xFF;
-    // 循环写精灵
-    let cntLeft = this.rd(0x0045);
+    // 循环写精�?    let cntLeft = this.rd(0x0045);
     while (cntLeft >= 0) {
       // $810A: LDA ($0042),Y; LSR; LSR; TAX; LDA $81FA,X
       const xRaw = this.readMem(tplPtr + y);
@@ -304,7 +282,7 @@ export class SpriteService {
       // $8122: CLC; ADC $003E; STA $0047
       const xCoord = (xDisp + this.rd(0x003E)) & 0xFF;
       this.wr(0x0047, xCoord);
-      // $8127: TXA; ADC $003F; BEQ $8136 (超出范围→隐藏)
+      // $8127: TXA; ADC $003F; BEQ $8136 (超出范围→隐�?
       const xHi = (xSign2 + this.rd(0x003F)) & 0xFF;
       const oamOff = this.rd(0x003B);
       if (xHi !== 0) {
@@ -317,7 +295,7 @@ export class SpriteService {
         this.wr(0x0200 + oamOff, this.rd(0x0046));
         // $813D: LDA $0047; STA $0203,X (X坐标)
         this.wr(0x0203 + oamOff, this.rd(0x0047));
-        // $8142: LDA ($0042),Y; AND #$03; ORA $0049; STA $0202,X (属性)
+        // $8142: LDA ($0042),Y; AND #$03; ORA $0049; STA $0202,X (属�?
         const attr = (this.readMem(tplPtr + y) & 0x03) | this.rd(0x0049);
         this.wr(0x0202 + oamOff, attr);
         // $814B: INY; LDA ($0042),Y; STA $0201,X (tile)
@@ -339,8 +317,7 @@ export class SpriteService {
   }
 
   /**
-   * $8164: 子模板跳转 (读新指针, 重置偏移)。
-   * asm: PLA; RTS (返回到调用方)
+   * $8164: 子模板跳�?(读新指针, 重置偏移)�?   * asm: PLA; RTS (返回到调用方)
    *   .byte $A4,$44 = LDY $0044
    *   LDA ($0042),Y; TAX; INY; LDA ($0042),Y; STA $0043; STX $0042
    *   LDA #$00; STA $0044; RTS
@@ -356,8 +333,7 @@ export class SpriteService {
   }
 
   /**
-   * $8175: 精灵计数扩展。
-   * asm: LDA $0546; CMP #$0C; BCC $817E; SBC #$0C
+   * $8175: 精灵计数扩展�?   * asm: LDA $0546; CMP #$0C; BCC $817E; SBC #$0C
    *   ASL; CLC; ADC $0044; STA $0044; JMP $8164
    */
   private sub8175(): void {
@@ -369,13 +345,12 @@ export class SpriteService {
   }
 
   /**
-   * $8187: 方向偏移计算 (bit6/bit5 翻转 + 描述符[0]/[19]/[20] 偏移)。
-   * asm $8187-$81D1:
+   * $8187: 方向偏移计算 (bit6/bit5 翻转 + 描述符[0]/[19]/[20] 偏移)�?   * asm $8187-$81D1:
    *   LDY #$00; LDA ($003C),Y; EOR $0517; AND #$40; PHP (bit6 方向)
-   *   LDY #$13; LDA ($003C),Y; BEQ $81B1 (描述符[19]=0 跳)
+   *   LDY #$13; LDA ($003C),Y; BEQ $81B1 (描述符[19]=0 �?
    *   LDX #$00; PLP; PHP; BEQ $81A2; EOR #$FF; CLC; ADC #$01 (翻转)
    *   PHA; PLA; BPL; DEX; CLC; ADC $003E; STA $003E; TXA; ADC $003F; STA $003F
-   *   $81B1: INY; LDA ($003C),Y; BEQ $81D0 (描述符[20]=0 跳)
+   *   $81B1: INY; LDA ($003C),Y; BEQ $81D0 (描述符[20]=0 �?
    *   LDX #$00; PLP; PHP; BPL $81C1; EOR #$FF; CLC; ADC #$01 (翻转)
    *   CLC; ADC $0040; STA $0040; TXA; ADC $0041; STA $0041
    *   PLP; RTS
@@ -421,7 +396,7 @@ export class SpriteService {
     if (addr < 0x0800) {
       return this.rd(addr);
     }
-    // ROM 区: bank22 数据 (通过 TEMPLATE_PTR_8280 等表间接访问)
+    // ROM �? bank22 数据 (通过 TEMPLATE_PTR_8280 等表间接访问)
     return 0;
   }
 }

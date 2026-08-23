@@ -1,14 +1,5 @@
 const fs = require('fs');
 const root = 'd:/studio/github/monkeycode/src/nes/tsubasa2';
-// 在 asm/bank00 下找含 "; $9148" 的文件
-for (const f of fs.readdirSync(root + '/asm/bank00')) {
-  if (!f.endsWith('.s')) continue;
-  const c = fs.readFileSync(root + '/asm/bank00/' + f, 'utf8');
-  if (c.includes('; $9148') || c.includes('; $94C1')) {
-    console.log('HIT: ' + f);
-  }
-}
-// 也全 asm 找
 function walk(d) {
   let fs2 = [];
   for (const f of fs.readdirSync(d)) {
@@ -19,7 +10,10 @@ function walk(d) {
   }
   return fs2;
 }
+const addrs = ['9201', '9200', '9210', '9220', '9230', '9240', '9250', '9260', '9270', '9280', '9290', '92A0', '92B0', '92C0', '92D0', '92E0', '92F0', '9300', '9310', '9320', '9330', '9340', '9350', '9360', '9370', '9380', '9390', '93A0', '93B0', '93C0', '93D0', '93E0', '93F0', '9400', '9410', '9420', '9430', '9440', '9450', '9460', '9470', '947F', '94C1', '978B', '91F3'];
 for (const p of walk(root + '/asm')) {
   const c = fs.readFileSync(p, 'utf8');
-  if (c.includes('; $9148')) console.log('ASM: ' + p);
+  for (const a of addrs) {
+    if (c.includes('; $' + a)) { console.log('$' + a + ' → ' + p); break; }
+  }
 }
