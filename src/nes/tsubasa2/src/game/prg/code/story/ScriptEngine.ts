@@ -477,7 +477,9 @@ export class ScriptEngine {
   private opClearBuf(): void {
     this.clearTextBuffer();
     this.advancePtr(1);
-    // 不递归调 step (会导致栈溢出), 让外层 update 帧循环驱动下一条
+    // $8831: JSR $9085 — 场景数据装载 (TODO: sub9085 的场景数据复制逻辑不完整,
+    // 当前用 TEXT_BUFFER_TEMPLATE_978B 模板填充 $0568 而非从 BANK09_RAW 读真实数据,
+    // 暂时跳过避免破坏脚本指针 ram_004D)
   }
 
   /** $FC $8836: 等待 + 文本 VRAM 前进 */
@@ -540,12 +542,12 @@ export class ScriptEngine {
 
   // ── 外部委托 (由 system/其它域提供) ──
 
-  private tableLoad(_a: number): void { /* 由 system 完成 */ }
-  private fadeIn(): void { /* 由 system 完成 */ }
-  private fadeInSpr(): void { /* 由 system 完成 */ }
-  private fadeOut(): void { /* 由 system 完成 */ }
-  private initHelper(): void { /* 由 system 完成 */ }
-  private ntClear(): void { /* 由 system 完成 */ }
+  private tableLoad(a: number): void { this._system?.tableLoad(a); }
+  private fadeIn(): void { this._system?.fadeIn(); }
+  private fadeInSpr(): void { this._system?.fadeInSpr(); }
+  private fadeOut(): void { this._system?.fadeOut(); }
+  private initHelper(): void { this._system?.initHelper(); }
+  private ntClear(): void { this._system?.ntClear(); }
   private mainLoopInit2(): void {
     // 委托 GameSystemService.sub9A35 (paletteLoadBG + paletteLoadSPR + 置满)
     this._system?.sub9A35();
@@ -569,7 +571,9 @@ export class ScriptEngine {
   private clearTextRegion(): void { /* 清文本区 */ }
   private clearTextBuffer(): void { /* 清文本 buffer */ }
   private callExternal(_a: number, _b: number): void { /* bank02 外部调用 */ }
-  private sceneLoad(_a: number): void { /* 由 system 完成 */ }
+  private sceneLoad(a: number): void {
+    this._system?.sceneLoad(a);
+  }
 
   /** 帧等待 (原 JSR $9FA8 语义) */
   private waitCounter(frames = 1): void {

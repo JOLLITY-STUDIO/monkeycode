@@ -491,11 +491,18 @@ class ScriptEngine {
         this.sceneLoad(a);
         this.advancePtr(0);
     }
-    /** $FB $8830: 清文本 buffer + 继续 */
+    /** $FB $8830: 清文本 buffer + sub9085 场景数据装载 + 继续 */
     opClearBuf() {
         this.clearTextBuffer();
         this.advancePtr(1);
-        // 不递归调 step (会导致栈溢出), 让外层 update 帧循环驱动下一条
+        // $8831: JSR $9085 — 场景数据装载 (注册 sub9148 协程消费 $0568 场景数据写 NT+OAM)
+        // sub8297 会覆盖 ram_004D (段数据指针), 需要保存/恢复脚本指针
+        const savedPtr = this.scriptPtr;
+        const savedBank = this._store.read('ram_0056');
+        this._system?.sub8297(0x0D);
+        // 恢复脚本指针 (sub9085 末尾设 ram_004D 为段末尾, 覆盖了脚本指针)
+        this.scriptPtr = savedPtr;
+        this._store.write('ram_0056', savedBank);
     }
     /** $FC $8836: 等待 + 文本 VRAM 前进 */
     opVramAdvance() {
@@ -550,12 +557,12 @@ class ScriptEngine {
         this.advancePtr(0);
     }
     // ── 外部委托 (由 system/其它域提供) ──
-    tableLoad(_a) { }
-    fadeIn() { }
-    fadeInSpr() { }
-    fadeOut() { }
-    initHelper() { }
-    ntClear() { }
+    tableLoad(a) { this._system?.tableLoad(a); }
+    fadeIn() { this._system?.fadeIn(); }
+    fadeInSpr() { this._system?.fadeInSpr(); }
+    fadeOut() { this._system?.fadeOut(); }
+    initHelper() { this._system?.initHelper(); }
+    ntClear() { this._system?.ntClear(); }
     mainLoopInit2() {
         // 委托 GameSystemService.sub9A35 (paletteLoadBG + paletteLoadSPR + 置满)
         this._system?.sub9A35();
@@ -579,7 +586,9 @@ class ScriptEngine {
     clearTextRegion() { }
     clearTextBuffer() { }
     callExternal(_a, _b) { }
-    sceneLoad(_a) { }
+    sceneLoad(a) {
+        this._system?.sceneLoad(a);
+    }
     /** 帧等待 (原 JSR $9FA8 语义) */
     waitCounter(frames = 1) {
         // 翻译版: 每帧一步, 帧间同步由外部调度保证

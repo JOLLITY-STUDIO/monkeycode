@@ -368,40 +368,53 @@ class GameSystemService {
     // ════════════════════════════════════════════════
     // $99F0 fadeOut — 调色板渐隐 (递减 $004A/$004B)
     // ════════════════════════════════════════════════
+    /**
+     * 渐隐单步 (由脚本引擎每帧驱动): ram_004A/004B 各 -1 → paletteWriteAll。
+     * 每帧一步, 避免同步循环写爆 PPU buffer (0x3D 容量限制)。
+     * @returns true = 已全部归 0 (渐隐完成)
+     */
+    fadeStepOut() {
+        const a = this.rd(0x004A);
+        const b = this.rd(0x004B);
+        if ((a | b) === 0)
+            return true;
+        if (a !== 0)
+            this.wr(0x004A, a - 1);
+        if (this.rd(0x004B) !== 0)
+            this.wr(0x004B, this.rd(0x004B) - 1);
+        this.paletteWriteAll();
+        return false;
+    }
+    /** @deprecated 同步循环会写爆 PPU buffer, 用 fadeStepOut 由帧循环驱动 */
     fadeOut() {
-        // $99F0-$9A0C 循环
-        while (true) {
-            const a = this.rd(0x004A);
-            const b = this.rd(0x004B);
-            if ((a | b) === 0)
-                break;
-            if (a !== 0)
-                this.wr(0x004A, a - 1);
-            if (this.rd(0x004B) !== 0)
-                this.wr(0x004B, this.rd(0x004B) - 1);
-            this.paletteWriteAll();
+        while (!this.fadeStepOut())
             this.waitCounter();
-        }
     }
     // ════════════════════════════════════════════════
     // $997A fadeIn — 调色板渐显 (递增加载调色板至满)
     // ════════════════════════════════════════════════
+    /**
+     * 渐显单步 (由脚本引擎每帧驱动): ram_004A/004B 各 +1 → paletteWriteAll。
+     * @returns true = 已满 (渐显完成)
+     */
+    fadeStepIn() {
+        const a = this.rd(0x004A);
+        const b = this.rd(0x004B);
+        if (a >= 0x0f && b >= 0x0f)
+            return true;
+        if (a < 0x0f)
+            this.wr(0x004A, a + 1);
+        if (this.rd(0x004B) < 0x0f)
+            this.wr(0x004B, this.rd(0x004B) + 1);
+        this.paletteWriteAll();
+        return false;
+    }
+    /** @deprecated 同步循环会写爆 PPU buffer, 用 fadeStepIn 由帧循环驱动 */
     fadeIn() {
         this.paletteLoadBG();
         this.paletteLoadSPR();
-        // $998C-$99AB 循环递增
-        while (true) {
-            const a = this.rd(0x004A);
-            const b = this.rd(0x004B);
-            if (a < 0x0f)
-                this.wr(0x004A, a + 1);
-            if (this.rd(0x004B) < 0x0f)
-                this.wr(0x004B, this.rd(0x004B) + 1);
-            this.paletteWriteAll();
+        while (!this.fadeStepIn())
             this.waitCounter();
-            if (this.rd(0x004A) + this.rd(0x004B) >= 0x1e)
-                break;
-        }
     }
     // ════════════════════════════════════════════════
     // $99D1 fadeInSpr — 仅 SPR 渐显
@@ -992,6 +1005,7 @@ class GameSystemService {
         let y = 0;
         const ptr94 = this.rdPtr(0x0094, 0x0095);
         let a = this.rdMemByte(ptr94 + y);
+        console.error('[sub9148] ptr94=' + ptr94.toString(16) + ' a=' + a.toString(16) + ' $0568=' + this.rd(0x0568));
         // $9158: BMI $915D (≥$80 → 精灵设置)
         if ((a & 0x80) !== 0) {
             // $915D: TAX; LDY #$04; JSR $974A (读场景数据[4])
