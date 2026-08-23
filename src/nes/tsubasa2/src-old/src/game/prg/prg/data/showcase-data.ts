@@ -1,0 +1,482 @@
+/**
+ * Bank31 $E9DA 演出 NT 块表 — 自动生成 (scripts/gen-showcase-data.cjs)
+ *
+ * $E93D 解包语义 (反汇编确认):
+ *   A = $D6DE[ram_043B] 演出类型码 → Y=A<<1 查 $E9DA 指针表 (块索引 = 类型码)
+ *   X = 坐标进位: ram_003E=(X&3)<<6, ram_003F=X>>2 ($D67C 调用 X=0)
+ *   block = [xLo, xHi, attr, tiles...]; attr bit0-1=行数, bit2-7=每行 tile 数
+ *   NT 名表地址 = xHi<<8 | xLo (行间 +0x20); 0x00 合法 tile, 0xFE 行终止补 0
+ *   类型码 bit7 置位 → 整块画空 (13 帧闪烁, $D65F 链 ORA #$80)
+ * 消费方 $C951 把组写到 PPU $2006/$2007 → NT 名表渲染 (非 OAM 精灵)
+ */
+
+/** 演出 NT 块 */
+export interface ShowcaseSpriteBlock {
+  /** PRG 地址 ($E9DA 表指向) */
+  addr: number;
+  /** NT 名表地址低字节 (xLo) */
+  xLo: number;
+  /** NT 名表地址高字节 (xHi) */
+  xHi: number;
+  /** 行数 (垂直 tile 数) */
+  rows: number;
+  /** 每行 tile 数 (水平) */
+  perRow: number;
+  /** 每行 tile 索引 (0x00 是合法 tile, 画空白) */
+  tiles: number[][];
+}
+
+/** 带像素坐标的展示块 (getShowcaseBlock 从 NT 名表地址派生) */
+export interface ShowcaseBlockView extends ShowcaseSpriteBlock {
+  /** 左上角像素 X (tileX * 8) */
+  x: number;
+  /** 左上角像素 Y (tileY * 8) */
+  y: number;
+}
+
+/** $E9DA 指针表 (33 项, CPU $E000 窗口, 索引 = 类型码 0x00-0x20) */
+export const SHOWCASE_SPRITE_PTRS: readonly number[] = [
+  59932,
+  59945,
+  59956,
+  59965,
+  59974,
+  59985,
+  59993,
+  60001,
+  60010,
+  60019,
+  60028,
+  60039,
+  60052,
+  60063,
+  60076,
+  60087,
+  60100,
+  60110,
+  60123,
+  60134,
+  60143,
+  60152,
+  60161,
+  60173,
+  60183,
+  60198,
+  60211,
+  60222,
+  60236,
+  60254,
+  60263,
+  60274,
+  60283,
+];
+
+/** 演出 NT 块表 (33 项) */
+export const SHOWCASE_SPRITE_BLOCKS: readonly ShowcaseSpriteBlock[] = [
+  {
+    addr: 0xEA1C,
+    xLo: 0xAC,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x94, 0x00, 0x94, 0x00, 0x00],
+      [0x54, 0x68, 0x5C, 0x69, 0x00],
+    ],
+  },
+  {
+    addr: 0xEA29,
+    xLo: 0xAC,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x95, 0x00, 0x00, 0x00],
+      [0x00, 0x5A, 0x4D, 0x00, 0x00],
+    ],
+  },
+  {
+    addr: 0xEA34,
+    xLo: 0xAC,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x4C, 0x71, 0x7D, 0x54, 0x00],
+    ],
+  },
+  {
+    addr: 0xEA3D,
+    xLo: 0xAC,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x6C, 0x6E, 0x3F, 0x52, 0x7D],
+    ],
+  },
+  {
+    addr: 0xEA46,
+    xLo: 0xAC,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 4,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x95],
+      [0x54, 0x67, 0x6F, 0x5C],
+    ],
+  },
+  {
+    addr: 0xEA51,
+    xLo: 0xAC,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 4,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00],
+      [0x00, 0x4D, 0x69, 0x7D],
+    ],
+  },
+  {
+    addr: 0xEA59,
+    xLo: 0xAC,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 4,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00],
+      [0x48, 0x68, 0x41, 0x7D],
+    ],
+  },
+  {
+    addr: 0xEA61,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x00, 0x50, 0x6F, 0x48, 0x69],
+    ],
+  },
+  {
+    addr: 0xEA6A,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x00, 0x4D, 0x46, 0x42, 0x50],
+    ],
+  },
+  {
+    addr: 0xEA73,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x00, 0x46, 0x60, 0x4F, 0x68],
+    ],
+  },
+  {
+    addr: 0xEA7C,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x95, 0x00, 0x00, 0x00],
+      [0x00, 0x5A, 0x6C, 0x7D, 0x50],
+    ],
+  },
+  {
+    addr: 0xEA87,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x94, 0x00],
+      [0x00, 0x50, 0x42, 0x46, 0x7D],
+    ],
+  },
+  {
+    addr: 0xEA94,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x94, 0x00, 0x00, 0x00],
+      [0x00, 0x5C, 0x6B, 0x6F, 0x48],
+    ],
+  },
+  {
+    addr: 0xEA9F,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x94],
+      [0x00, 0x4D, 0x46, 0x42, 0x5C],
+    ],
+  },
+  {
+    addr: 0xEAAC,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x94, 0x00, 0x00, 0x00],
+      [0x00, 0x06, 0x2E, 0x22, 0x2E],
+    ],
+  },
+  {
+    addr: 0xEAB7,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x95, 0x00, 0x00, 0x94],
+      [0x00, 0x5A, 0x6C, 0x7D, 0x5C],
+    ],
+  },
+  {
+    addr: 0xEAC4,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x95, 0x00, 0x00, 0x00, 0x00],
+      [0x5A, 0x4D, 0x46, 0x6F, 0x54],
+    ],
+  },
+  {
+    addr: 0xEACE,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x95],
+      [0x00, 0x4D, 0x46, 0x42, 0x5A],
+    ],
+  },
+  {
+    addr: 0xEADB,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x94, 0x00, 0x00, 0x00],
+      [0x03, 0x0A, 0x06, 0x15, 0x02],
+    ],
+  },
+  {
+    addr: 0xEAE6,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x00, 0x5C, 0x76, 0x6B, 0x7D],
+    ],
+  },
+  {
+    addr: 0xEAEF,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x00, 0x0E, 0x28, 0x01, 0x03],
+    ],
+  },
+  {
+    addr: 0xEAF8,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x00, 0x48, 0x68, 0x41, 0x7D],
+    ],
+  },
+  {
+    addr: 0xEB01,
+    xLo: 0xAB,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 6,
+    tiles: [
+      [0x00, 0x95, 0x00, 0x00, 0x00, 0x00],
+      [0x00, 0x5A, 0x6E, 0x51, 0x00, 0x00],
+    ],
+  },
+  {
+    addr: 0xEB0D,
+    xLo: 0xAB,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 6,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x00, 0x47, 0x70, 0x6F, 0x51, 0x00],
+    ],
+  },
+  {
+    addr: 0xEB17,
+    xLo: 0xAB,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 6,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00, 0x94],
+      [0x0B, 0x2E, 0x06, 0x08, 0x14, 0x1B],
+    ],
+  },
+  {
+    addr: 0xEB26,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x94, 0x94, 0x00],
+      [0x00, 0x14, 0x1B, 0x10, 0x0D],
+    ],
+  },
+  {
+    addr: 0xEB33,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x94, 0x00, 0x00, 0x00],
+      [0x20, 0x06, 0x1F, 0x04, 0x29],
+    ],
+  },
+  {
+    addr: 0xEB3E,
+    xLo: 0xAB,
+    xHi: 0x22,
+    rows: 3,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x4C, 0x71, 0x7D, 0x54, 0x16],
+      [0x0F, 0x15, 0x04, 0x29, 0x00],
+    ],
+  },
+  {
+    addr: 0xEB4C,
+    xLo: 0xAB,
+    xHi: 0x22,
+    rows: 3,
+    perRow: 5,
+    tiles: [
+      [0x94, 0x00, 0x94, 0x00, 0x00],
+      [0x54, 0x68, 0x5C, 0x69, 0x16],
+      [0x0F, 0x15, 0x04, 0x29, 0x00],
+    ],
+  },
+  {
+    addr: 0xEB5E,
+    xLo: 0x6E,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x7D, 0x7D, 0x7D, 0x7D, 0x7D],
+    ],
+  },
+  {
+    addr: 0xEB67,
+    xLo: 0xAA,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x94, 0x00, 0x00, 0x00],
+      [0x1B, 0x10, 0x28, 0x4D, 0x60],
+    ],
+  },
+  {
+    addr: 0xEB72,
+    xLo: 0xAA,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x00, 0x00, 0x00, 0x00],
+      [0x0C, 0x32, 0x03, 0x22, 0x2E],
+    ],
+  },
+  {
+    addr: 0xEB7B,
+    xLo: 0xAA,
+    xHi: 0x22,
+    rows: 2,
+    perRow: 5,
+    tiles: [
+      [0x00, 0x94, 0x00, 0x00, 0x00],
+      [0x20, 0x07, 0x4D, 0x60, 0x00],
+    ],
+  },
+];
+
+/**
+ * $D6DE 演出类型表 (Bank30): ram_043B → 类型码
+ * 索引: 0-6 → 普通演出, 7-9 → 特写类 (0x1E/0x1F/0x20)
+ */
+export const SHOWCASE_D6DE: readonly number[] = [
+  0x02, 0x01, 0x00, 0x03, 0x04, 0x05, 0x06, 0x1e, 0x1f, 0x20,
+];
+
+/**
+ * 类型码 → NT 块索引 (对应 $E93D: Y=类型码<<1 查 $E9DA)。
+ * 位 7 为闪烁标志 (ORA #$80, $D672), 剥掉后索引 0x00-0x20。
+ */
+export function showcaseBlockIndexByType(type: number): number {
+  return (type & 0x7f) & 0xff;
+}
+
+/** 类型码 bit7 = 闪烁 (整块画空, 对应 $E93D 中 ram_003A bit7 → 跳过数据读取) */
+export function showcaseTypeIsFlash(type: number): boolean {
+  return (type & 0x80) !== 0;
+}
+
+/**
+ * NT 名表地址 → (tileX, tileY) (NT0: 低 5 位=列, 高 5 位=行)。
+ * $C951 消费方写 PPU $2006 地址即此语义。
+ */
+export function ntAddrToTile(addr: number): { tileX: number; tileY: number } {
+  return { tileX: addr & 0x1f, tileY: (addr >> 5) & 0x1f };
+}
+
+/**
+ * ram_043B → 演出 NT 块 (走 $D6DE 类型码 → $E9DA 表)。
+ * 块索引 = 类型码 (非 ram_043B, 非 类型>>2) — 反汇编 $E93D 确认。
+ */
+export function getShowcaseBlock(ram043B: number): ShowcaseBlockView {
+  const type = SHOWCASE_D6DE[ram043B & 0x3f] ?? 0;
+  const idx = showcaseBlockIndexByType(type);
+  const blk = SHOWCASE_SPRITE_BLOCKS[idx] ?? SHOWCASE_SPRITE_BLOCKS[0];
+  const { tileX, tileY } = ntAddrToTile((blk.xHi << 8) | blk.xLo);
+  return { ...blk, x: tileX * 8, y: tileY * 8 };
+}

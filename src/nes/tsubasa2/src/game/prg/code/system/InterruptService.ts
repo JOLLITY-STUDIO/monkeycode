@@ -28,6 +28,12 @@ export interface PpuTarget {
   /** 滚动寄存器（可直接写） */
   regHT: number; regFH: number; regH: number;
   regV: number; regVT: number; regFV: number;
+  /**
+   * 装载 CHR 1KB bank 到 pattern table 指定 slot（MMC3 $8000/$8001 语义，原版 $C9E9）。
+   * slot: 0-7 → PPU 地址 slot*$0400（$0000/$0400/.../$1C00）。
+   * 由 runtime 实现（映射到 Mapper4.load1kVromBank）；未提供时跳过动态装载。
+   */
+  loadChrBank?(slot: number, bank1k: number): void;
 }
 
 export class InterruptService {

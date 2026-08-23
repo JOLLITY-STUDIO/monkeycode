@@ -1,0 +1,12 @@
+code_main.s 51: JSR $8AF7                  ; $806C
+code_main.s 810: JSR $8AF7                  ; $8824
+code_scene.s 11: STA $00ED                  ; $8AF7
+code_scene.s 61: LSR $005B                  ; $8B4F
+code_scene.s 90: BNE $8B93                  ; $8B85
+code_scene.s 98: LDA $005E                  ; $8B93
+_full.s 57: JSR $8AF7                  ; $806C
+_full.s 816: JSR $8AF7                  ; $8824
+_full.s 1139: STA $00ED                  ; $8AF7
+_full.s 1189: LSR $005B                  ; $8B4F
+_full.s 1218: BNE $8B93                  ; $8B85
+_full.s 1226: LDA $005E                  ; $8B93

@@ -1,0 +1,15 @@
+=== MMC3 chrBanks (8 × 1KB slot) ===
+0, 1, 2, 3, 252, 113, 82, 83
+=== Mapper4 internal (command/prgSelect/chrSelect) ===
+command=7 prgSel=0 chrSel=0
+=== ram $0490-$0497 (CHR bank 请求表) ===
+88, 88, 0, 80, 88, 229, 1, 80
+=== pattern table vramMem[0..0x7FF] (BG 前 2KB) 非零统计 ===
+nonzero=1784
+vramMem[0..63]: 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,16,126,16,30,51,85,73,50,16,126,16,30,51,85,73,50,0,66,65,65,65,65,72,48,0,66,65,65,65,65,72,48,28,0,30,33,1,1,2,12,28,0,30,33,1,1,2,12
+=== NT0 tile[0..63] ===
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+=== PPU 控制寄存器 ===
+f_bgPatternTable=0 f_spPatternTable=1 f_nTblAddress=0
+f_bgVisibility=1 f_spVisibility=1
+buffer nonzero=1509
