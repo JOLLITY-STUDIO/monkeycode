@@ -9,10 +9,16 @@ function ramKey(addr) {
 }
 class HardwareInitService {
     constructor(store, system, scene, skill) {
+        /** PrgBankService 引用 — 初始 bank 配置 ($C4B2/$C4B9), 组合根注入 */
+        this._pb = null;
         this._store = store;
         this._system = system;
         this._scene = scene;
         this._skill = skill;
+    }
+    /** 注入 PrgBankService (初始 bank 配置), 组合根注入 */
+    setPrgBank(pb) {
+        this._pb = pb;
     }
     // ── 零页读/写辅助 ──
     rd(addr) {
@@ -105,10 +111,22 @@ class HardwareInitService {
         this.wr(0x0021, 0x1e);
         // $C40F-$C411: bank 基址
         this.wr(0x0022, 0x00);
-        // $C413-$C415: LDX #$00; JSR $C4B2 → ram_0024=bank0 ($8000 窗口, MMC3 省略)
-        this.wr(0x0024, 0x00);
-        // $C418-$C41A: LDX #$02; JSR $C4B9 → ram_0025=bank2 ($A000 窗口, MMC3 省略)
-        this.wr(0x0025, 0x02);
+        // $C413-$C415: LDX #$00; JSR $C4B2 → ram_0024=bank0 ($8000 窗口, R6)
+        // H5: 通过 PrgBankService 真正切 R6=0 (调 mapper.write $8000/$8001)
+        if (this._pb) {
+            this._pb.switchR6(0x00);
+        }
+        else {
+            this.wr(0x0024, 0x00);
+        }
+        // $C418-$C41A: LDX #$02; JSR $C4B9 → ram_0025=bank2 ($A000 窗口, R7)
+        // H5: 通过 PrgBankService 真正切 R7=2 (调 mapper.write $8000/$8001)
+        if (this._pb) {
+            this._pb.switchR7(0x02);
+        }
+        else {
+            this.wr(0x0025, 0x02);
+        }
         // $C41D-$C41E: TYA (场景 id); JMP $A200 → bank2 场景引导
         // 翻译版: bank2 = BootRouter.resetEntry (preMainLoopInit 场景/调色板装载)
         this._scene.resetEntry(sceneId);

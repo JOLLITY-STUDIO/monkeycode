@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BGM_DATA_MAP = exports.SE_POINTER_TABLE = exports.AudioService = exports.SpriteAnimationService = exports.SpriteService = exports.SkillService = exports.MatchSceneService = exports.MatchConfigService = exports.MatchHudService = exports.MatchAuxService = exports.MatchTurnService = exports.MatchEngineService = exports.TeamRosterService = exports.PlayerQueryService = exports.decodeChar = exports.CharMap = exports.getScriptData = exports.ScriptLoader = exports.initScriptOpcodes = exports.WAIT_FRAME_TABLE = exports.ScriptOpcodes = exports.ScriptEngine = exports.ResultSceneController = exports.PASSWORD_DISPATCH_TABLE = exports.NMI_CALLBACK_TABLE = exports.BootBackgroundRenderer = exports.PasswordCallbackHandler = exports.TitleSceneController = exports.InterruptService = exports.HardwareInitService = exports.NmiCallbackIndex = exports.BootRouter = exports.GameSystemService = void 0;
+exports.BGM_DATA_MAP = exports.SE_POINTER_TABLE = exports.AudioService = exports.SpriteAnimationService = exports.SpriteService = exports.SkillService = exports.MatchSceneService = exports.MatchConfigService = exports.MatchHudService = exports.MatchAuxService = exports.MatchTurnService = exports.MatchEngineService = exports.TeamRosterService = exports.PlayerQueryService = exports.decodeChar = exports.CharMap = exports.getScriptData = exports.ScriptLoader = exports.initScriptOpcodes = exports.WAIT_FRAME_TABLE = exports.ScriptOpcodes = exports.ScriptEngine = exports.ResultSceneController = exports.PASSWORD_DISPATCH_TABLE = exports.NMI_CALLBACK_TABLE = exports.BootBackgroundRenderer = exports.PasswordCallbackHandler = exports.TitleSceneController = exports.PrgBankService = exports.InterruptService = exports.HardwareInitService = exports.NmiCallbackIndex = exports.BootRouter = exports.GameSystemService = void 0;
 /**
  * prg/code/index.ts — 业务逻辑层 (Service) 聚合出口
  * 按业务域分包: system / scene / story / player / team / match / skill / sprite / audio
@@ -14,6 +14,8 @@ var HardwareInitService_1 = require("./system/HardwareInitService");
 Object.defineProperty(exports, "HardwareInitService", { enumerable: true, get: function () { return HardwareInitService_1.HardwareInitService; } });
 var InterruptService_1 = require("./system/InterruptService");
 Object.defineProperty(exports, "InterruptService", { enumerable: true, get: function () { return InterruptService_1.InterruptService; } });
+var PrgBankService_1 = require("./system/PrgBankService");
+Object.defineProperty(exports, "PrgBankService", { enumerable: true, get: function () { return PrgBankService_1.PrgBankService; } });
 var TitleSceneController_1 = require("./scene/TitleSceneController");
 Object.defineProperty(exports, "TitleSceneController", { enumerable: true, get: function () { return TitleSceneController_1.TitleSceneController; } });
 var PasswordCallbackHandler_1 = require("./scene/PasswordCallbackHandler");

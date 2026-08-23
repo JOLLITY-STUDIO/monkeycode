@@ -13,6 +13,7 @@ const GameSystemService_1 = require("./prg/code/system/GameSystemService");
 const BootRouter_1 = require("./prg/code/system/BootRouter");
 const InterruptService_1 = require("./prg/code/system/InterruptService");
 const HardwareInitService_1 = require("./prg/code/system/HardwareInitService");
+const PrgBankService_1 = require("./prg/code/system/PrgBankService");
 const SkillService_1 = require("./prg/code/skill/SkillService");
 const AudioService_1 = require("./prg/code/audio/AudioService");
 // 小程序编译器对 `export *` re-export 支持有限, 改为先 import 再 export (与 src/index.ts 一致)
@@ -229,6 +230,7 @@ class Tsubasa2 {
         /** 每帧: NMI 推进游戏逻辑 → 直写 PPU 渲染内存 → PPU 扫描线渲染 */
         this._mapperInjected = false;
         this.store = new DataStore_1.DataStore();
+        this.prgBank = new PrgBankService_1.PrgBankService(this.store);
         this.system = new GameSystemService_1.GameSystemService(this.store);
         this.router = new BootRouter_1.BootRouter(this.store);
         this.skill = new SkillService_1.SkillService(this.store, this.system);
@@ -237,6 +239,10 @@ class Tsubasa2 {
         this.hardware = new HardwareInitService_1.HardwareInitService(this.store, this.system, this.router, this.skill);
         // 注入 bank30 引用到 GameSystemService, 供 $C5xx 派发表转发
         this.system.setHardwareInit(this.hardware);
+        // 注入 PrgBankService 到 GameSystemService, 供 $C4B9 bank 切换真正生效
+        this.system.setPrgBank(this.prgBank);
+        // 注入 PrgBankService 到 HardwareInitService, 供初始 bank 配置 ($C4B2/$C4B9)
+        this.hardware.setPrgBank(this.prgBank);
         // 注入 bank02 NMI 渲染执行器到 InterruptService, 每帧 NMI 回放 $05E8 PPU buffer
         this.interrupts.attachRouter(this.router);
     }
@@ -253,9 +259,10 @@ class Tsubasa2 {
             ` scrollY=${this.store.scrollY} ram_00ED=${this.store.read('ram_00ED')}`);
     }
     frame(nes) {
-        // 首帧: 注入 MMC3 mapper 到 InterruptService (CHR bank 切换 $C9E9)
+        // 首帧: 注入 MMC3 mapper 到 InterruptService (CHR bank 切换 $C9E9) + PrgBankService (PRG bank 切换 $C4B9)
         if (!this._mapperInjected) {
             this.interrupts.attachMapper(nes.mmap);
+            this.prgBank.attachMapper(nes.mmap);
             this._mapperInjected = true;
         }
         this.interrupts.nmi(this._frame);

@@ -145,8 +145,11 @@ class ScriptEngine {
         if (!this._system)
             return;
         const dst = (vramHi << 8) | (pos & 0xff);
-        // ctrl=0x82 (bit7=1 NT模式 + count=2), len=tiles.length, dst=VRAM地址
-        const x = this._system.ppuBufAlloc(0x82, tiles.length, dst);
+        // ctrl = 0x80 | tiles.length (bit7=1 NT模式 + count=tiles.length)
+        // 原版 $88CA: 假名 1 tile → A=$81, 汉字 2 tiles → A=$82, count 必须与 tile 数一致,
+        // 否则 nmiRender 消费 buffer 时多读/少读 tile 导致文字错位/乱码。
+        const ctrl = 0x80 | (tiles.length & 0x3f);
+        const x = this._system.ppuBufAlloc(ctrl, tiles.length, dst);
         // 写 tile 数据到 buffer (ppuBufAlloc 已写 ctrl+addrLo+addrHi, 返回数据区起始 x)
         for (let i = 0; i < tiles.length; i++) {
             this._system.writePpuBuf(x + i, tiles[i]);

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataStore = exports.BGM_DATA_MAP = exports.SE_POINTER_TABLE = exports.initScriptOpcodes = exports.WAIT_FRAME_TABLE = exports.PASSWORD_DISPATCH_TABLE = exports.NMI_CALLBACK_TABLE = exports.AudioService = exports.SpriteAnimationService = exports.SpriteService = exports.SkillService = exports.MatchConfigService = exports.MatchHudService = exports.MatchAuxService = exports.MatchTurnService = exports.MatchEngineService = exports.TeamRosterService = exports.PlayerQueryService = exports.CharMap = exports.ScriptLoader = exports.ScriptOpcodes = exports.ScriptEngine = exports.BootBackgroundRenderer = exports.ResultSceneController = exports.PasswordCallbackHandler = exports.TitleSceneController = exports.InterruptService = exports.HardwareInitService = exports.NmiCallbackIndex = exports.BootRouter = exports.GameSystemService = void 0;
+exports.DataStore = exports.PrgBankService = exports.BGM_DATA_MAP = exports.SE_POINTER_TABLE = exports.initScriptOpcodes = exports.WAIT_FRAME_TABLE = exports.PASSWORD_DISPATCH_TABLE = exports.NMI_CALLBACK_TABLE = exports.AudioService = exports.SpriteAnimationService = exports.SpriteService = exports.SkillService = exports.MatchConfigService = exports.MatchHudService = exports.MatchAuxService = exports.MatchTurnService = exports.MatchEngineService = exports.TeamRosterService = exports.PlayerQueryService = exports.CharMap = exports.ScriptLoader = exports.ScriptOpcodes = exports.ScriptEngine = exports.BootBackgroundRenderer = exports.ResultSceneController = exports.PasswordCallbackHandler = exports.TitleSceneController = exports.InterruptService = exports.HardwareInitService = exports.NmiCallbackIndex = exports.BootRouter = exports.GameSystemService = void 0;
 /**
  * prg/index.ts — 翻译层出口契约
  *
@@ -41,5 +41,6 @@ Object.defineProperty(exports, "WAIT_FRAME_TABLE", { enumerable: true, get: func
 Object.defineProperty(exports, "initScriptOpcodes", { enumerable: true, get: function () { return index_1.initScriptOpcodes; } });
 Object.defineProperty(exports, "SE_POINTER_TABLE", { enumerable: true, get: function () { return index_1.SE_POINTER_TABLE; } });
 Object.defineProperty(exports, "BGM_DATA_MAP", { enumerable: true, get: function () { return index_1.BGM_DATA_MAP; } });
+Object.defineProperty(exports, "PrgBankService", { enumerable: true, get: function () { return index_1.PrgBankService; } });
 const DataStore_1 = require("./data/store/DataStore");
 Object.defineProperty(exports, "DataStore", { enumerable: true, get: function () { return DataStore_1.DataStore; } });

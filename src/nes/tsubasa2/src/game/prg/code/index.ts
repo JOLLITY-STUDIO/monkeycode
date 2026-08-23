@@ -6,6 +6,7 @@ export { GameSystemService } from './system/GameSystemService';
 export { BootRouter, NmiCallbackIndex } from './system/BootRouter';
 export { HardwareInitService } from './system/HardwareInitService';
 export { InterruptService, type BankConfig } from './system/InterruptService';
+export { PrgBankService, PrgWindow } from './system/PrgBankService';
 
 export { TitleSceneController } from './scene/TitleSceneController';
 export { PasswordCallbackHandler } from './scene/PasswordCallbackHandler';

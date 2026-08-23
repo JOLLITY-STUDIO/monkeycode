@@ -17,6 +17,8 @@ class GameSystemService {
     constructor(store) {
         /** bank30 (HardwareInitService) 引用 — 用于 $C5xx 派发表转发 */
         this._hw = null;
+        /** PrgBankService 引用 — MMC3 PRG bank 切换 ($C4B9 H5 等价), 组合根注入 */
+        this._pb = null;
         // 脚本状态缓存 (对应零页 $004D/$004E 等, 由 ScriptEngine 共享)
         this._scriptPtr = 0; // $004D/$004E
         this._scriptBank = 0; // $0056
@@ -64,6 +66,10 @@ class GameSystemService {
     /** 注入 bank30 (HardwareInitService) 引用, 供 $C5xx 派发表转发 */
     setHardwareInit(hw) {
         this._hw = hw;
+    }
+    /** 注入 PrgBankService (MMC3 PRG bank 切换), 组合根注入 */
+    setPrgBank(pb) {
+        this._pb = pb;
     }
     // ════════════════════════════════════════════════
     // 零页读/写辅助
@@ -361,10 +367,50 @@ class GameSystemService {
         this.paletteWriteAll();
     }
     // ════════════════════════════════════════════════
-    // $9B07 bankSwitch — 已移除 (原 JSR $C4B9 切 PRG bank)
-    // 去CPU化: H5 直接 import 各 bank 数据, 无需切 bank.
-    // 原 ram_0025 (当前 bank 号) / ram_00E9 (bankSwitch 复用) 语义已废弃.
+    // $9B07 bankSwitch — 切 R7 bank (原 JSR $C4B9)
+    // 原版: LDA bank; STA $0025; JSR $C4B9 → 写 $8000(07)/$8001(bank) → MMC3 切 R7
+    // H5: 委托 PrgBankService.switchR7 (直接调 mapper.write, 不跑 CPU 指令)
     // ════════════════════════════════════════════════
+    /**
+     * 切 R7 bank ($A000 窗口). 原版 $9B07 + $C4B9 语义。
+     * @param bank 8KB bank 索引 (0-31)
+     */
+    bankSwitchR7(bank) {
+        if (this._pb) {
+            this._pb.switchR7(bank);
+        }
+        else {
+            // Fallback (mapper 未挂接): 仅写 RAM, 保持旧行为
+            this.wr(0x0025, bank & 0xff);
+        }
+    }
+    /**
+     * 切 R6 bank ($8000 窗口). 原版 JSR $C4B9 with cmd 6 语义。
+     * @param bank 8KB bank 索引 (0-31)
+     */
+    bankSwitchR6(bank) {
+        if (this._pb) {
+            this._pb.switchR6(bank);
+        }
+        else {
+            this.wr(0x0024, bank & 0xff);
+        }
+    }
+    /**
+     * 查当前 R7 bank ($A000 窗口映射的 bank 索引)
+     * 用于 service 层读 PRG 数据时按 prgBankMap 动态取 bank。
+     */
+    currentR7Bank() {
+        if (this._pb)
+            return this._pb.currentR7;
+        return this.rd(0x0025) & 0xff;
+    }
+    /** 查当前 R6 bank ($8000 窗口映射的 bank 索引) */
+    currentR6Bank() {
+        if (this._pb)
+            return this._pb.currentR6;
+        return this.rd(0x0024) & 0xff;
+    }
     // ════════════════════════════════════════════════
     // $99F0 fadeOut — 调色板渐隐 (递减 $004A/$004B)
     // ════════════════════════════════════════════════
@@ -490,7 +536,10 @@ class GameSystemService {
         this.wr(0x000D, 0);
         this.wr(0x000E, 0);
         this.wr(0x005B, this.rd(0x005B) & 0x7f);
-        // $8B09-$8B0F: 切 bank07 读场景数据 — 去CPU化: H5 直接 import bank07 数据, 无需切 bank
+        // $8B09-$8B0F: 切 bank07 读场景数据 — H5: 通过 PrgBankService 切 R7=7
+        //   (原版 JSR $C4B9 切 bank7 到 $A000 窗口, 读完切回)
+        const prevR7 = this.currentR7Bank();
+        this.bankSwitchR7(7);
         // $8B12-$8B1A: 清 $0552-$063F
         for (let i = 0; i < 0xEE; i++)
             this.wr(0x0552 + i, 0);
@@ -499,7 +548,8 @@ class GameSystemService {
         if (sceneData) {
             this.applySceneData(sceneData);
         }
-        // $8CB7: 切回场景 bank — 去CPU化: 无需切回, H5 数据始终可见
+        // $8CB7: 切回场景 bank — H5: 恢复原 R7 bank
+        this.bankSwitchR7(prevR7);
     }
     /**
      * 从 bank07 场景表读场景数据 (原 asm $8B1C-$8B6B)。
@@ -590,12 +640,22 @@ class GameSystemService {
     _resumeCoroutine(slot, light) {
         // $9F0F: STX $0000 (存当前槽)
         this._currentSlot = slot;
-        // $9F11-$9F1E: 切 R7 bank (槽[3] → $0025 → $8001)
+        // $9F11-$9F1E: 切 R7 bank (槽[3] → $0025 → $8001) — H5: 真正调 MMC3 mapper
         const r7bank = this.rd(0x0003 + slot);
-        this.wr(0x0025, r7bank);
-        // $9F21-$9F2E: 切 R6 bank (槽[2] → $0024 → $8001)
+        if (this._pb) {
+            this._pb.switchR7(r7bank);
+        }
+        else {
+            this.wr(0x0025, r7bank);
+        }
+        // $9F21-$9F2E: 切 R6 bank (槽[2] → $0024 → $8001) — H5: 真正调 MMC3 mapper
         const r6bank = this.rd(0x0002 + slot);
-        this.wr(0x0024, r6bank);
+        if (this._pb) {
+            this._pb.switchR6(r6bank);
+        }
+        else {
+            this.wr(0x0024, r6bank);
+        }
         // $9F31-$9F34: 恢复栈指针 (槽[1]) — H5: 回调索引
         const callbackIdx = this.rd(0x0001 + slot);
         if (!light) {
@@ -638,6 +698,19 @@ class GameSystemService {
         const slot = this._currentSlot;
         // $9FA8: STA $0019 (存让出参数)
         this._yieldWait = a;
+        // $9FAA-$9FC5: 压栈 X, Y, $ED-$E6 (原版 6502 硬件栈) — H5 保存到 _coroutineCtx,
+        // 与 $9F0F 完整恢复 (PLA 弹栈还原 $E6-$ED) 严格对应。
+        // 修复: 此前只存 R6/R7, 恢复时用注册时的初始 ctx 覆盖 $E6-$ED,
+        //       导致协程内对 $00ED 的写入 (sceneLoad/opExternal/sub9085) 全部被回滚 (ed=0 恒定)。
+        const ctx = this._coroutineCtx[slot] ?? (this._coroutineCtx[slot] = { e6: 0, e7: 0, e8: 0, e9: 0, ea: 0, eb: 0, ec: 0, ed: 0, y: 0, x: 0 });
+        ctx.ed = this.rd(0x00ED);
+        ctx.ec = this.rd(0x00EC);
+        ctx.eb = this.rd(0x00EB);
+        ctx.ea = this.rd(0x00EA);
+        ctx.e9 = this.rd(0x00E9);
+        ctx.e8 = this.rd(0x00E8);
+        ctx.e7 = this.rd(0x00E7);
+        ctx.e6 = this.rd(0x00E6);
         // $9FCC-$9FD4: 存 $0024 (R6) → 槽[2], $0025 (R7) → 槽[3]
         this.wr(0x0002 + slot, this.rd(0x0024));
         this.wr(0x0003 + slot, this.rd(0x0025));
@@ -813,7 +886,9 @@ class GameSystemService {
     // ════════════════════════════════════════════════════════════
     /** $82EC: 场景数据装载器协程回调 (generator 版) */
     *sub82ECGen() {
-        // $82ED: JSR $838A (切 bank2 → JSR $A215 → 切回 bank6) — 去CPU化省略
+        // $82ED: JSR $838A (切 bank2 → JSR $A215 → 切回 bank6)
+        // H5: $A215 逻辑尚未完整翻译, bank 切换待 $A215 翻译后接入 PrgBankService
+        // TODO: 翻译 $A215 后, 此处加 this.bankSwitchR7(2) / 调用 / this.bankSwitchR7(6)
         // $82F0: LDA $004C; BPL $82ED — 轮询 $004C bit7 (动画装载请求)
         const c = this.rd(0x004C);
         if ((c & 0x80) === 0) {
@@ -1244,7 +1319,9 @@ class GameSystemService {
      *      脚本指针 $004D/$004E 与文本位置 $0051-$0055 由 generator 状态天然跨帧保持。
      */
     *sub84C5Gen() {
-        // $84C6-$84C9: LDX $0056; JSR $C4B9 — 切脚本 bank (H5 无 bank 切换, 省略并注释)
+        // $84C6-$84C9: LDX $0056; JSR $C4B9 — 切脚本 bank (ram_0056) 到 R7 窗口
+        // H5: 通过 PrgBankService 切 R7 = ram_0056 (脚本所在 bank)
+        this.bankSwitchR7(this.rd(0x0056));
         // $84CB-$84CD: LDA #$08; STA $0055 — 行长度 8
         this.wr(0x0055, 8);
         // $84CF-$84D5: LDA #$49; STA $004F; LDA #$22; STA $0050 — VRAM 基址 $2249

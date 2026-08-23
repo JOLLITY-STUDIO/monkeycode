@@ -18,6 +18,7 @@ import {
   SkillService, SpriteService, SpriteAnimationService, AudioService,
   NMI_CALLBACK_TABLE, PASSWORD_DISPATCH_TABLE,
   WAIT_FRAME_TABLE, initScriptOpcodes, SE_POINTER_TABLE, BGM_DATA_MAP,
+  PrgBankService, PrgWindow,
 } from './code/index';
 import { DataStore } from './data/store/DataStore';
 
@@ -32,5 +33,6 @@ export {
   SkillService, SpriteService, SpriteAnimationService, AudioService,
   NMI_CALLBACK_TABLE, PASSWORD_DISPATCH_TABLE,
   WAIT_FRAME_TABLE, initScriptOpcodes, SE_POINTER_TABLE, BGM_DATA_MAP,
+  PrgBankService, PrgWindow,
   DataStore,
 };
