@@ -197,26 +197,23 @@ export class AudioService {
     let activeMask = 0;
     for (let ch = 0; ch < 4; ch++) {
       const chBase = CH_STATE_BASE + ch * 0x10;
-      // 从 BGM 数据头部读取各通道数据指针
-      // 头部格式：[ch0_ptr_lo, ch0_ptr_hi, ch1_ptr_lo, ch1_ptr_hi, ...]
-      // 但实际格式需要从 BGM 数据本身解析
-      // 简化：通道 0 用 dataAddr，其他通道从头部读取
-      let chDataAddr = dataAddr;
-      if (ch > 0) {
-        // 从头部读取通道 ch 的数据指针
-        chDataAddr = AudioRom.readBgmData(dataAddr + ch * 2);
-        chDataAddr |= AudioRom.readBgmData(dataAddr + ch * 2 + 1) << 8;
-        if (chDataAddr < 0x8000 || chDataAddr > 0xBFFF) chDataAddr = 0;
+      
+      // BGM 数据头部：前 N 字节是 $00（通道分隔/配置），跳过到第一个 >= $80 的字节
+      // 原版数据流格式：[时值 $80+][音名 <$80] 交替
+      let dataOffset = 0;
+      for (let i = 0; i < 64; i++) {
+        const b = AudioRom.readBgmData(dataAddr + i);
+        if (b >= 0x80) { dataOffset = i; break; }
       }
-      if (chDataAddr === 0) continue;
+      const chDataAddr = dataAddr + dataOffset;
       
       // 初始化通道状态块
-      this.store.writeU16(chBase, chDataAddr);       // offset 0-1: 数据指针
-      this.store.writeU16(chBase + 2, chDataAddr);   // offset 2-3: 音符表指针
-      this.store.writeByte(chBase + 4, 0);            // offset 4: 音符索引
-      this.store.writeByte(chBase + 5, 0x0F);         // offset 5: 音量
-      this.store.writeByte(chBase + 6, 0);            // offset 6: 频率低
-      this.store.writeByte(chBase + 7, 0);            // offset 7: 频率高
+      this.store.writeU16(chBase, chDataAddr);      // offset 0-1: 数据流指针
+      this.store.writeU16(chBase + 2, chDataAddr);  // offset 2-3: 音符表指针
+      this.store.writeByte(chBase + 4, 0);           // offset 4: 音符索引
+      this.store.writeByte(chBase + 5, 0x0F);        // offset 5: 音量
+      this.store.writeByte(chBase + 6, 0);           // offset 6: 频率低
+      this.store.writeByte(chBase + 7, 0);           // offset 7: 频率高
       
       // tick 计数器
       const counterBase = CH_COUNTER_BASE + ch * 4;
@@ -226,7 +223,6 @@ export class AudioService {
       this.store.writeByte(counterBase + 3, 0); // 音高 = 0
       
       // 执行命令流预处理（$83CB）
-      // 这会解析 BGM 数据流，设置 tick/音符持续/频率等
       this.executeCommandStream(ch);
       
       activeMask |= (1 << ch);

@@ -41390,13 +41390,15 @@ var AudioService = class {
     let activeMask = 0;
     for (let ch = 0; ch < 4; ch++) {
       const chBase = CH_STATE_BASE + ch * 16;
-      let chDataAddr = dataAddr;
-      if (ch > 0) {
-        chDataAddr = AudioRom.readBgmData(dataAddr + ch * 2);
-        chDataAddr |= AudioRom.readBgmData(dataAddr + ch * 2 + 1) << 8;
-        if (chDataAddr < 32768 || chDataAddr > 49151) chDataAddr = 0;
+      let dataOffset = 0;
+      for (let i = 0; i < 64; i++) {
+        const b = AudioRom.readBgmData(dataAddr + i);
+        if (b >= 128) {
+          dataOffset = i;
+          break;
+        }
       }
-      if (chDataAddr === 0) continue;
+      const chDataAddr = dataAddr + dataOffset;
       this.store.writeU16(chBase, chDataAddr);
       this.store.writeU16(chBase + 2, chDataAddr);
       this.store.writeByte(chBase + 4, 0);
