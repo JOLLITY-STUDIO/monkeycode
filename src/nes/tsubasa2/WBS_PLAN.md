@@ -62,7 +62,17 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 ### V0.6 — 音频引擎
 - `AudioService`：$0700 音频请求队列 → APU 寄存器写，BGM/SE 真实播放。
 - 验收：开场 BGM、标题 SE、比赛音效与原始一致。
-- 状态：✅ 请求队列消费 + APU 寄存器写框架 + DPCM 触发完成；BGM/SE 乐谱数据流完整解析（vibrato/arpeggio/包络）保留 TODO V0.6+（需逐字节对照 asm code_main.s $80BA-$86F5 翻译）。
+- 状态：✅ 请求队列消费 + startBgm(指针表+通道初始化) + bgmTick(音符推进+APU写) + channelOutput(音高→频率) + ApuPcmRenderer(Pulse/Triangle/Noise 合成) + 翻译版 WAV 渲染已出声；⚠️ 频率计算需修正(波形单一值) + BGM 命令流($84DA 32命令) + SE启动($8349) + vibrato/arpeggio + 包络 待完善。
+
+### V0.6.1 — 音频引擎完善
+- F2: BGM 命令流解析（$83CB/$84DA 跳转表 32 命令：音符/音量/速度/包络/跳转/循环）
+- F3: SE 启动逻辑（$8349：SE 指针表 + 通道分配 + 数据流解析）
+- F4: 音符频率表索引修正（pitch → $8754 表正确偏移，当前波形单一值）
+- F5: 包络/衰减（$07CF-$07DE 通道包络递推）
+- F6: Vibrato（$8269 跳转表 10 模式）+ Arpeggio（$82E4 跳转表 8 模式）
+- F7: DPCM 采样回放（$8698/$86B7/$86D6 三组采样）
+- F8: 渲染 105 首 WAV 到 output/ 与模拟器版对比差分
+- 验收：翻译版 WAV 与模拟器版 WAV 听感一致，频率/节奏/音色匹配
 
 ### V0.7 — 全链路 + 优化
 - 全链路串通（boot→开场→标题→剧情→比赛→终场→密码选关）。
@@ -92,6 +102,13 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 | E1 | V0.5 | 比赛引擎核心 | code/match/* | ⬜ |
 | E2 | V0.5 | 必杀技 + 精灵渲染 | code/skill, code/sprite | ⬜ |
 | F1 | V0.6 | 音频请求队列 → APU | code/audio/AudioService.ts | ✅ |
+| F2 | V0.6.1 | BGM 命令流解析（$84DA 32命令） | code/audio/AudioService.ts | ⬜ |
+| F3 | V0.6.1 | SE 启动逻辑（$8349） | code/audio/AudioService.ts | ⬜ |
+| F4 | V0.6.1 | 音符频率表索引修正 | code/audio/AudioService.ts | ⬜ |
+| F5 | V0.6.1 | 包络/衰减递推 | code/audio/AudioService.ts | ⬜ |
+| F6 | V0.6.1 | Vibrato + Arpeggio | code/audio/AudioService.ts | ⬜ |
+| F7 | V0.6.1 | DPCM 采样回放 | code/audio/ApuPcmRenderer.ts | ⬜ |
+| F8 | V0.6.1 | 渲染 105 首 WAV 差分验证 | output/*.wav | ⬜ |
 | G1 | V0.7 | 全链路 + 优化 + 真机 | — | ⬜ |
 
 ---

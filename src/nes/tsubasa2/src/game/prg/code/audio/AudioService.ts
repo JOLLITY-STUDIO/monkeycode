@@ -399,38 +399,53 @@ export class AudioService {
    * 通道输出（原版 $81DB）
    *
    * 把当前音符的音高值转换为 APU 频率，写 APU 寄存器
+   *
+   * asm $81DB 逻辑：
+   *   1. 读通道状态块 offset 5（音量/包络控制）
+   *   2. 计算实际频率：$070A[X]（音高）- 包络偏移 | 音量高4位 → offset 6
+   *   3. offset 7 = 频率高字节（从音符表或命令流设置）
+   *   4. 写 APU：$4000+ch*4 = 控制，$4002+ch*4 = offset 6（频率低），$4003+ch*4 = offset 7|长度（频率高）
    */
   private channelOutput(ch: number): void {
-    const pitchAddr = 0x070A + ch * 4;
+    const chBase = 0x0727 + ch * 0x10;  // 通道状态块基址
+    const pitchAddr = 0x070A + ch * 4;  // $070A[X] 音高值
     const pitch = this.store.readByte(pitchAddr);
     if (pitch === 0) return;
     
-    // 音高值 → APU 频率
-    // 原版用 $8754 音符频率表（音名索引 → 频率 16-bit）
-    // pitch 低 6 位 = 音名索引
-    const noteIdx = pitch & 0x3F;
+    // 简化：音高值直接作为 APU 频率低字节
+    // 完整实现需要包络计算（$07CF 递推）+ offset 7 高字节
+    // 当前：用音高值查频率表 $870D（12 半音）
+    // 但音高值范围 0-0x7F，频率表只有 12 条
+    // asm 中音高值通过 $83CB 命令流预处理，不是直接索引
+    // 
+    // 临时方案：音高值低 4 位作为音名索引（0-11），查 $870D 表
+    const noteIdx = pitch & 0x0F;
+    if (noteIdx > 11) return;
     const freq = AudioRom.readNoteFreq(noteIdx);
     if (freq === 0) return;
     
-    // 写 APU 频率寄存器
-    // 通道 0/1 = Pulse1/Pulse2: $4002/$4003 或 $4006/$4007
-    // 通道 2 = Triangle: $400A/$400B
-    // 通道 3 = Noise: $400E（只有高字节）
     const freqLo = freq & 0xFF;
     const freqHi = (freq >> 8) & 0x07;
     
+    // 读音量（offset 5）
+    const volCtrl = this.store.readByte(chBase + 5);
+    const volume = volCtrl & 0x0F;
+    
     if (ch === 0) {
-      // Pulse1
+      // Pulse1: $4000=控制, $4002=频率低, $4003=频率高+长度
+      this.apu.writeRegister(0x4000, 0x30 | volume);  // bit5-6=50%占空, vol
       this.apu.writeRegister(0x4002, freqLo);
-      this.apu.writeRegister(0x4003, freqHi | 0x08);  // bit3=长度计数器重启
+      this.apu.writeRegister(0x4003, freqHi | 0x08);
     } else if (ch === 1) {
-      // Pulse2
+      // Pulse2: $4004/$4006/$4007
+      this.apu.writeRegister(0x4004, 0x30 | volume);
       this.apu.writeRegister(0x4006, freqLo);
       this.apu.writeRegister(0x4007, freqHi | 0x08);
     } else if (ch === 2) {
-      // Triangle
+      // Triangle: $4008/$400A/$400B
+      this.apu.writeRegister(0x4008, 0x80 | volume);
       this.apu.writeRegister(0x400A, freqLo);
-      this.apu.writeRegister(0x400B, freqHi | 0x80);  // bit7=线性计数器重启
+      this.apu.writeRegister(0x400B, freqHi | 0x80);
     }
   }
 

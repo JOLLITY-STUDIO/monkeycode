@@ -41505,23 +41505,36 @@ var AudioService = class {
    * 通道输出（原版 $81DB）
    *
    * 把当前音符的音高值转换为 APU 频率，写 APU 寄存器
+   *
+   * asm $81DB 逻辑：
+   *   1. 读通道状态块 offset 5（音量/包络控制）
+   *   2. 计算实际频率：$070A[X]（音高）- 包络偏移 | 音量高4位 → offset 6
+   *   3. offset 7 = 频率高字节（从音符表或命令流设置）
+   *   4. 写 APU：$4000+ch*4 = 控制，$4002+ch*4 = offset 6（频率低），$4003+ch*4 = offset 7|长度（频率高）
    */
   channelOutput(ch) {
+    const chBase = 1831 + ch * 16;
     const pitchAddr = 1802 + ch * 4;
     const pitch = this.store.readByte(pitchAddr);
     if (pitch === 0) return;
-    const noteIdx = pitch & 63;
+    const noteIdx = pitch & 15;
+    if (noteIdx > 11) return;
     const freq = AudioRom.readNoteFreq(noteIdx);
     if (freq === 0) return;
     const freqLo = freq & 255;
     const freqHi = freq >> 8 & 7;
+    const volCtrl = this.store.readByte(chBase + 5);
+    const volume = volCtrl & 15;
     if (ch === 0) {
+      this.apu.writeRegister(16384, 48 | volume);
       this.apu.writeRegister(16386, freqLo);
       this.apu.writeRegister(16387, freqHi | 8);
     } else if (ch === 1) {
+      this.apu.writeRegister(16388, 48 | volume);
       this.apu.writeRegister(16390, freqLo);
       this.apu.writeRegister(16391, freqHi | 8);
     } else if (ch === 2) {
+      this.apu.writeRegister(16392, 128 | volume);
       this.apu.writeRegister(16394, freqLo);
       this.apu.writeRegister(16395, freqHi | 128);
     }
