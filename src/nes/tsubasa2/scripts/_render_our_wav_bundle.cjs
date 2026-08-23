@@ -41275,220 +41275,354 @@ var AudioRom = class _AudioRom {
 };
 
 // src/game/prg/code/audio/AudioService.ts
-var RAM_QUEUE_BASE = 1792;
-var RAM_CHANNEL_ACTIVE = 1798;
-var RAM_BGM_BANK = 2044;
-var RAM_DPCM_FLAG = 2024;
-var RAM_MUTE_FLAG = 2025;
-var CH_STATE_BASE = 1831;
-var CH_COUNTER_BASE = 1799;
-var CH_NOISE = 8;
-var APU_ENABLE_ALL = 15;
-var APU_ENABLE_WITH_DPCM = 31;
-var APU_DISABLE_ALL = 0;
-var REQ_THRESHOLD_SE = 50;
-var REQ_SE_STOP_ALL = 49;
-var REQ_SE_MAX = 114;
-var DPCM_SAMPLES = [
-  { freq: 15, addr: 0, len: 12 },
-  { freq: 15, addr: 3, len: 32 },
-  { freq: 15, addr: 11, len: 19 }
+var APU_PULSE1_CTRL = 16384;
+var APU_PULSE2_CTRL = 16388;
+var APU_NOISE_CTRL = 16396;
+var APU_STATUS = 16405;
+var CHANNEL_APU_BASE = [
+  APU_PULSE1_CTRL,
+  APU_PULSE2_CTRL,
+  APU_NOISE_CTRL,
+  APU_NOISE_CTRL
 ];
-function readFreqTable(idx) {
+function readFreq(idx) {
   return AudioRom.readBank12U16(34573 + idx * 2);
 }
-function readDurationTable(idx) {
+function readDur(idx) {
   return AudioRom.readBank12Byte(34597 + idx);
 }
-function readCommandAddr(cmdIdx) {
-  return AudioRom.readBank12U16(34010 + cmdIdx * 2);
+function readCmd(idx) {
+  return AudioRom.readBank12U16(34010 + idx * 2);
 }
 var AudioService = class {
   constructor(store) {
-    this.store = store;
     this.apu = new NullApuTarget();
+    this.store = store;
   }
   attachApu(apu) {
     this.apu = apu;
   }
-  // ════════════════════════════════════════════════════════════════
+  // RAM 读写辅助
+  rd(addr) {
+    return this.store.readByte(addr);
+  }
+  wr(addr, v) {
+    this.store.writeByte(addr, v & 255);
+  }
+  rdPtr(lo, hi) {
+    return this.rd(hi) << 8 | this.rd(lo);
+  }
+  wrPtr(lo, hi, v) {
+    this.wr(lo, v & 255);
+    this.wr(hi, v >> 8 & 255);
+  }
+  wrApu(addr, v) {
+    this.apu.writeRegister(addr, v & 255);
+  }
+  // ════════════════════════════════════════════════════════════
   // 公共 API
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════
   update() {
     this.consumeQueue();
-    this.bgmTick();
-    this.seTick();
-    if (this.store.readByte(RAM_MUTE_FLAG) !== 0) {
-      this.apu.writeRegister(16405, APU_DISABLE_ALL);
-    }
+    this.wrPtr(240, 241, 1831);
+    this.wr(242, 0);
+    this.wr(243, 8);
+    this.phase1Loop();
+    this.phase2Loop();
+    if (this.rd(2025) !== 0) this.wrApu(APU_STATUS, 0);
   }
   playBgm(bgmId) {
-    this.store.writeByte(RAM_QUEUE_BASE, bgmId & 255);
+    this.wr(1792, bgmId & 255);
   }
   playSe(seId) {
-    for (let slot = 1; slot <= 5; slot++) {
-      if (this.store.readByte(RAM_QUEUE_BASE + slot) === 0) {
-        this.store.writeByte(RAM_QUEUE_BASE + slot, seId & 255);
+    for (let s = 1; s <= 5; s++) {
+      if (this.rd(1792 + s) === 0) {
+        this.wr(1792 + s, seId & 255);
         return;
       }
     }
-    this.store.writeByte(RAM_QUEUE_BASE + 5, seId & 255);
+    this.wr(1797, seId & 255);
   }
   stopAll() {
-    for (let i = 0; i < 6; i++) this.store.writeByte(RAM_QUEUE_BASE + i, 0);
-    this.stopAllSeChannels();
-    this.apu.writeRegister(16405, APU_DISABLE_ALL);
-    this.store.writeByte(RAM_CHANNEL_ACTIVE, 0);
-  }
-  stopSeChannel(channel) {
-    const mask = ~(1 << channel) & 255;
-    this.store.writeByte(RAM_CHANNEL_ACTIVE, this.store.readByte(RAM_CHANNEL_ACTIVE) & mask);
-    this.apu.writeRegister(16384 + channel * 4, 48);
+    this.wr(2034, 0);
+    for (let i = 0; i < 6; i++) this.wr(1792 + i, 0);
+    this.wrApu(APU_STATUS, 0);
+    this.wr(1798, 0);
   }
   playDpcm(sample) {
-    if (this.store.readByte(RAM_DPCM_FLAG) !== 0) return;
-    const s = DPCM_SAMPLES[sample];
-    this.apu.writeRegister(16405, APU_ENABLE_WITH_DPCM);
-    this.apu.writeRegister(16400, s.freq);
-    this.apu.writeRegister(16402, s.addr);
-    this.apu.writeRegister(16403, s.len);
-    this.store.writeByte(RAM_DPCM_FLAG, 128);
+    if (this.rd(2024) !== 0) return;
+    const s = [{ f: 15, a: 0, l: 12 }, { f: 15, a: 3, l: 32 }, { f: 15, a: 11, l: 19 }][sample];
+    this.wrApu(APU_STATUS, 31);
+    this.wrApu(16400, s.f);
+    this.wrApu(16402, s.a);
+    this.wrApu(16403, s.l);
+    this.wr(2024, 128);
   }
-  // ════════════════════════════════════════════════════════════════
-  // 请求队列消费（$8000 + $8061）
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════
+  // 请求队列消费 ($8000 + $8061)
+  // ════════════════════════════════════════════════════════════
   consumeQueue() {
-    const bgmReq = this.store.readByte(RAM_QUEUE_BASE);
-    if (bgmReq !== 0 && bgmReq < REQ_THRESHOLD_SE) {
+    const bgmReq = this.rd(1792);
+    if (bgmReq !== 0 && bgmReq < 50) {
       this.startBgm(bgmReq);
-      this.store.writeByte(RAM_QUEUE_BASE, 0);
+      this.wr(1792, 0);
     }
     for (let slot = 1; slot <= 5; slot++) {
-      const seReq = this.store.readByte(RAM_QUEUE_BASE + slot);
+      const seReq = this.rd(1792 + slot);
       if (seReq === 0) continue;
-      if (seReq >= REQ_SE_MAX) {
-        this.store.writeByte(RAM_QUEUE_BASE + slot, 0);
+      if (seReq >= 114) {
+        this.wr(1792 + slot, 0);
         continue;
       }
-      if (seReq === REQ_SE_STOP_ALL) {
-        this.stopAllSeChannels();
-        this.store.writeByte(RAM_QUEUE_BASE + slot, 0);
+      if (seReq === 49) {
+        this.stopAllSe();
+        this.wr(1792 + slot, 0);
         continue;
       }
       this.startSe(seReq, slot);
-      this.store.writeByte(RAM_QUEUE_BASE + slot, 0);
+      this.wr(1792 + slot, 0);
     }
   }
-  // ════════════════════════════════════════════════════════════════
-  // BGM 启动（$8000 BGM 分支 → bankswitch → 通道初始化）
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════
+  // BGM 启动 (原版 $8000 → bankswitch → $8349 通道初始化)
+  // ════════════════════════════════════════════════════════════
   startBgm(bgmId) {
-    this.store.writeByte(RAM_BGM_BANK, bgmId);
-    this.store.writeByte(RAM_CHANNEL_ACTIVE, 0);
+    let bgmGroup;
+    if (bgmId < 50) bgmGroup = 7;
+    else if (bgmId < 68) bgmGroup = 13;
+    else if (bgmId < 81) bgmGroup = 14;
+    else if (bgmId < 92) bgmGroup = 15;
+    else bgmGroup = 7;
+    this.wr(2044, bgmGroup);
     const dataAddr = AudioRom.readBgmPointer(bgmId);
     if (dataAddr === 0) return;
-    let activeMask = 0;
-    for (let ch = 0; ch < 4; ch++) {
-      const chBase = CH_STATE_BASE + ch * 16;
-      let dataOffset = 0;
-      for (let i = 0; i < 64; i++) {
-        const b = AudioRom.readBgmData(dataAddr + i);
-        if (b >= 128) {
-          dataOffset = i;
-          break;
+    let offset = 0;
+    for (let i = 0; i < 64; i++) {
+      const b = AudioRom.readBgmData(dataAddr + i);
+      if (b >= 128) {
+        offset = i;
+        break;
+      }
+    }
+    const streamAddr = dataAddr + offset;
+    const chBase = 1831;
+    this.wrPtr(chBase, chBase + 1, streamAddr);
+    this.wrPtr(chBase + 2, chBase + 3, streamAddr);
+    this.wr(chBase + 4, 0);
+    this.wr(chBase + 5, 15);
+    this.wr(chBase + 6, 0);
+    this.wr(chBase + 7, 0);
+    this.wr(chBase + 8, 0);
+    this.wr(1799, 1);
+    this.wr(1800, 1);
+    this.wr(1801, 0);
+    this.wr(1802, 0);
+    this.wr(1798, 1);
+    this.sub83CB();
+    this.wrApu(APU_STATUS, 15);
+    this.wrApu(APU_PULSE1_CTRL, 63);
+  }
+  // ════════════════════════════════════════════════════════════
+  // SE 启动 ($8349)
+  // ════════════════════════════════════════════════════════════
+  startSe(seId, slot) {
+    void slot;
+    const seIndex = seId - 1;
+    if (seIndex < 0 || seIndex >= 100) return;
+    const seDataAddr = AudioRom.readSePointer(seIndex);
+    if (seDataAddr === 0) return;
+    this.wr(1798, this.rd(1798) | 8);
+    this.wrApu(APU_STATUS, 15);
+  }
+  // ════════════════════════════════════════════════════════════
+  // 帧推进阶段1 ($80CA-$811B): 8 通道 tick
+  // ════════════════════════════════════════════════════════════
+  phase1Loop() {
+    while (this.rd(243) > 0) {
+      const enable = this.rd(1798);
+      if ((enable & 1) !== 0) {
+        this.wr(1798, enable | 128);
+        const x = this.rd(242);
+        const noteCnt = this.rd(1799 + x) - 1 & 255;
+        this.wr(1799 + x, noteCnt);
+        if (noteCnt === 0) {
+          this.sub83CB();
+        }
+        const x2 = this.rd(242);
+        const envCnt = this.rd(1801 + x2) - 1 & 255;
+        this.wr(1801 + x2, envCnt);
+        if (envCnt === 0) {
+          this.reloadEnvelope(x2);
+        }
+        this.sub81DB();
+      }
+      const f0 = this.rdPtr(240, 241);
+      this.wrPtr(240, 241, f0 + 16 & 65535);
+      this.wr(242, this.rd(242) + 4 & 255);
+      this.wr(243, this.rd(243) - 1 & 255);
+    }
+  }
+  // ════════════════════════════════════════════════════════════
+  // 帧推进阶段2 ($811D-$8162): 8 通道 APU 写
+  // ════════════════════════════════════════════════════════════
+  phase2Loop() {
+    this.wrPtr(240, 241, 1831);
+    this.wr(252, 39);
+    this.wr(253, 7);
+    this.wr(242, 3);
+    this.wr(243, 17);
+    while (true) {
+      const f3 = this.rd(243);
+      const mask = f3 & 15;
+      if (mask !== 0) {
+        const f0 = this.rdPtr(240, 241);
+        this.wrPtr(240, 241, f0 + 64 & 65535);
+        this.sub816E();
+      }
+      const fc = this.rdPtr(252, 253);
+      this.wrPtr(252, 253, fc + 16 & 65535);
+      this.wrPtr(240, 241, this.rdPtr(252, 253));
+      this.wr(243, this.rd(243) << 1 & 255);
+      const f2 = this.rd(242) - 1 & 255;
+      this.wr(242, f2);
+      if ((f2 & 128) !== 0) break;
+    }
+  }
+  // ════════════════════════════════════════════════════════════
+  // $81DB: 音高计算 (包络衰减 + 频率偏移)
+  // ════════════════════════════════════════════════════════════
+  sub81DB() {
+    const paramPtr = this.rdPtr(240, 241);
+    const p5 = this.rd(paramPtr + 5);
+    let f6 = p5 & 240;
+    let f7;
+    if ((p5 & 32) !== 0) {
+      f7 = 15;
+    } else {
+      f7 = p5 & 15;
+      const f3 = this.rd(243);
+      const y = f3 - 1 & 255;
+      const decay = this.rd(1999 + y);
+      if (decay !== 0) {
+        const newDecay = decay - 1 & 255;
+        this.wr(1999 + y, newDecay);
+        if (newDecay === 0) {
+          f7 = f7 + 1 & 255;
+          if (f7 >= 15) {
+            f7 = 0;
+            this.wr(2007 + y, 0);
+            this.wr(2024, 128);
+          }
         }
       }
-      const chDataAddr = dataAddr + dataOffset;
-      this.store.writeU16(chBase, chDataAddr);
-      this.store.writeU16(chBase + 2, chDataAddr);
-      this.store.writeByte(chBase + 4, 0);
-      this.store.writeByte(chBase + 5, 15);
-      this.store.writeByte(chBase + 6, 0);
-      this.store.writeByte(chBase + 7, 0);
-      const counterBase = CH_COUNTER_BASE + ch * 4;
-      this.store.writeByte(counterBase, 1);
-      this.store.writeByte(counterBase + 1, 1);
-      this.store.writeByte(counterBase + 2, 0);
-      this.store.writeByte(counterBase + 3, 0);
-      this.executeCommandStream(ch);
-      activeMask |= 1 << ch;
     }
-    this.store.writeByte(RAM_CHANNEL_ACTIVE, activeMask);
-    this.apu.writeRegister(16405, APU_ENABLE_ALL);
+    const combined = f7 | f6;
+    this.wr(paramPtr + 5, combined);
+    f7 = combined & 15;
+    const x = this.rd(242);
+    let a = this.rd(1802 + x);
+    a = a - f7 & 255;
+    if ((a & 128) !== 0) a = 0;
+    a = a | f6;
+    this.wr(paramPtr + 6, a);
   }
-  // ════════════════════════════════════════════════════════════════
-  // BGM 命令流解析（$83CB）
-  //
-  // 严格翻译 asm code_sub.s $83CB-$84A6：
-  //   $83CB: offset 5 &= $CF（清除包络标志）
-  //   $83D3: 读 offset 0-1 → 数据指针 $00F4/$00F5
-  //   $83DF: 从数据流读字节（Y=偏移）
-  //     字节 < $80（BPL $8404）→ 音名，跳 $8404
-  //     字节 >= $E0 → 命令（$84C9 分发）
-  //     字节 $B0-$DF → 速度（INY 跳过参数，继续循环）
-  //     字节 $80-$AF → 时值（AND #$3F 查 $8725 → 设置 tick，继续循环）
-  //   $8404: 音名处理
-  //     INY; 更新 offset 0-1 = 数据指针 + 偏移
-  //     音名低4位 → 查 $870D 频率表
-  //     音名高4位 → 八度（频率右移）
-  //     transpose 加减 → offset 6-7 = 频率
-  //     音名 $0C → 休止符
-  // ════════════════════════════════════════════════════════════════
-  executeCommandStream(ch) {
-    const chBase = CH_STATE_BASE + ch * 16;
-    const counterBase = CH_COUNTER_BASE + ch * 4;
-    this.store.writeByte(chBase + 5, this.store.readByte(chBase + 5) & 207);
-    let dataPtr = this.store.readU16(chBase);
+  // ════════════════════════════════════════════════════════════
+  // $816E: APU 寄存器写入
+  // ════════════════════════════════════════════════════════════
+  sub816E() {
+    const ch2 = this.rd(242);
+    const apuBase = CHANNEL_APU_BASE[(3 ^ ch2) & 3];
+    const paramPtr = this.rdPtr(240, 241);
+    let ctrl = this.rd(paramPtr + 6);
+    this.wr(251, ch2);
+    if (ch2 === 1) {
+      ctrl = ctrl & 15 | 128;
+    } else {
+      ctrl = ctrl | 48;
+    }
+    this.wrApu(apuBase, ctrl);
+    const sweepFlag = this.rd(paramPtr + 5) & 16;
+    if (sweepFlag === 0) {
+      const fb = this.rd(251);
+      this.wr(2020 + fb, 8);
+      this.wrApu(apuBase + 1, 8);
+    } else {
+      const flag8 = this.rd(paramPtr + 8);
+      if ((flag8 & 128) !== 0) {
+        this.wr(paramPtr + 8, flag8 & 127);
+        const freqLo = this.rd(paramPtr + 7);
+        this.wrApu(apuBase + 2, freqLo);
+        let freqHi = this.rd(paramPtr + 8) | 24;
+        const fb = this.rd(251);
+        if (fb !== 0 && fb !== 1) {
+          const cached = this.rd(2016 + fb);
+          if (freqHi === cached) return;
+        }
+        this.wrApu(apuBase + 3, freqHi);
+        this.wr(2016 + this.rd(251), freqHi);
+        const e4 = this.rd(2020 + this.rd(251));
+        if (e4 === 0) this.wr(2016 + this.rd(251), 0);
+      }
+    }
+  }
+  // ════════════════════════════════════════════════════════════
+  // $83CB: 命令流解析 (音符结束时调用)
+  // ════════════════════════════════════════════════════════════
+  sub83CB() {
+    const paramPtr = this.rdPtr(240, 241);
+    this.wr(paramPtr + 5, this.rd(paramPtr + 5) & 207);
+    const dataPtr = this.rdPtr(paramPtr, paramPtr + 1);
     if (dataPtr === 0) return;
     let y = 0;
     for (let safety = 0; safety < 512; safety++) {
       const dataByte = AudioRom.readBgmData(dataPtr + y);
       if (dataByte < 128) {
         y++;
-        const newPtr = dataPtr + y;
-        this.store.writeU16(chBase, newPtr & 65535);
-        const ch1 = ch + 1;
+        this.wrPtr(paramPtr, paramPtr + 1, dataPtr + y & 65535);
         const noteName = dataByte & 15;
         if (noteName === 12) {
-          this.store.writeByte(chBase + 5, this.store.readByte(chBase + 5) | 32);
+          this.wr(paramPtr + 5, this.rd(paramPtr + 5) | 32);
           return;
         }
-        let freqLo = readFreqTable(noteName) & 255;
-        let freqHi = readFreqTable(noteName) >> 8 & 255;
+        let freq = readFreq(noteName);
+        let freqLo = freq & 255;
+        let freqHi = freq >> 8 & 255;
         const octave = dataByte >> 4 & 15;
         for (let i = 0; i < octave; i++) {
           const carry = freqHi & 1;
           freqHi = freqHi >> 1 & 127;
           freqLo = (freqLo >> 1 | carry << 7) & 255;
         }
-        const transposeFlag = this.store.readByte(2036 + ch);
-        const transposeVal = this.store.readByte(1959 + ch);
-        let finalFreqLo, finalFreqHi;
+        const ch2 = this.rd(242) >> 2;
+        const transposeFlag = this.rd(2036 + ch2);
+        const transposeVal = this.rd(1959 + ch2);
+        let finalLo, finalHi;
         if (transposeFlag !== 0) {
-          let result = freqLo - transposeVal;
-          if (result < 0) {
-            finalFreqLo = result & 255;
-            finalFreqHi = freqHi - 1 & 255;
+          let r = freqLo - transposeVal;
+          if (r < 0) {
+            finalLo = r & 255;
+            finalHi = freqHi - 1 & 255;
           } else {
-            finalFreqLo = result & 255;
-            finalFreqHi = freqHi;
+            finalLo = r & 255;
+            finalHi = freqHi;
           }
         } else {
-          let result = freqLo + transposeVal;
-          finalFreqLo = result & 255;
-          finalFreqHi = freqHi + (result > 255 ? 1 : 0) & 255;
+          let r = freqLo + transposeVal;
+          finalLo = r & 255;
+          finalHi = freqHi + (r > 255 ? 1 : 0) & 255;
         }
-        this.store.writeByte(chBase + 6, finalFreqLo);
-        this.store.writeByte(1975 + ch, finalFreqLo);
-        this.store.writeByte(chBase + 7, finalFreqHi | 128);
-        this.store.writeByte(1983 + ch, finalFreqHi);
+        this.wr(paramPtr + 7, finalLo);
+        this.wr(1975 + ch2, finalLo);
+        this.wr(paramPtr + 8, finalHi | 128);
+        this.wr(1983 + ch2, finalHi);
+        this.wr(1802 + this.rd(242), finalLo);
         return;
       }
       if (dataByte >= 224) {
         y++;
         const cmdIdx = dataByte & 31;
-        const cmdAddr = readCommandAddr(cmdIdx);
-        y = this.executeCommand(ch, cmdAddr, dataPtr, y);
+        const cmdAddr = readCmd(cmdIdx);
+        y = this.executeCommand(ch >> 2, cmdAddr, dataPtr, y);
         continue;
       }
       if (dataByte >= 176) {
@@ -41496,151 +41630,92 @@ var AudioService = class {
         continue;
       }
       const durIdx = dataByte & 63;
-      const tick = readDurationTable(durIdx);
-      this.store.writeByte(counterBase, tick);
-      this.store.writeByte(counterBase + 1, tick);
+      const tick = readDur(durIdx);
+      const x = this.rd(242);
+      this.wr(1799 + x, tick);
+      this.wr(1800 + x, tick);
       y++;
       continue;
     }
   }
-  // ════════════════════════════════════════════════════════════════
-  // 命令执行（$84C9 分发 → $84DA 跳转表 32 命令）
-  // ════════════════════════════════════════════════════════════════
-  executeCommand(ch, cmdAddr, dataPtr, noteIdx) {
-    const chBase = CH_STATE_BASE + ch * 16;
+  // ════════════════════════════════════════════════════════════
+  // 命令执行 ($84C9 分发)
+  // ════════════════════════════════════════════════════════════
+  executeCommand(ch2, cmdAddr, dataPtr, y) {
+    const paramPtr = this.rdPtr(240, 241);
     if (cmdAddr === 34116) {
-      const songNo = AudioRom.readBgmData(dataPtr + noteIdx);
-      noteIdx++;
+      const songNo = AudioRom.readBgmData(dataPtr + y);
+      y++;
       const tablePtr = AudioRom.readBank12U16(34644 + songNo * 2);
-      this.store.writeU16(chBase + 2, tablePtr);
-      return noteIdx;
+      this.wrPtr(paramPtr + 2, paramPtr + 3, tablePtr);
+      return y;
     }
     if (cmdAddr === 34074) {
       this.stopAll();
-      return noteIdx;
+      return y;
     }
     if (cmdAddr === 34567) {
-      return noteIdx;
+      return y;
     }
     if (cmdAddr === 34369) {
-      const vol = AudioRom.readBgmData(dataPtr + noteIdx);
-      noteIdx++;
-      const oldVol = this.store.readByte(chBase + 5);
-      this.store.writeByte(chBase + 5, oldVol & 63 | vol & 192);
-      return noteIdx;
+      const vol = AudioRom.readBgmData(dataPtr + y);
+      y++;
+      this.wr(paramPtr + 5, this.rd(paramPtr + 5) & 63 | vol & 192);
+      return y;
     }
     if (cmdAddr === 34416) {
-      const transpose = AudioRom.readBgmData(dataPtr + noteIdx);
-      noteIdx++;
-      this.store.writeByte(2036 + ch, transpose >> 7 & 1);
-      this.store.writeByte(1959 + ch, transpose >> 1 & 127);
-      return noteIdx;
+      const t = AudioRom.readBgmData(dataPtr + y);
+      y++;
+      this.wr(2036 + ch2, t >> 7 & 1);
+      this.wr(1959 + ch2, t >> 1 & 127);
+      return y;
     }
     if (cmdAddr === 34433) {
-      const mode = AudioRom.readBgmData(dataPtr + noteIdx);
-      noteIdx++;
-      this.store.writeByte(1967 + ch, mode);
-      this.store.writeByte(1991 + ch, 0);
-      return noteIdx;
+      const m = AudioRom.readBgmData(dataPtr + y);
+      y++;
+      this.wr(1967 + ch2, m);
+      this.wr(1991 + ch2, 0);
+      return y;
     }
     if (cmdAddr === 34448) {
-      this.store.writeByte(1967 + ch, 0);
-      return noteIdx;
+      this.wr(1967 + ch2, 0);
+      return y;
     }
     if (cmdAddr === 34457) {
       this.playDpcm(0);
-      return noteIdx;
+      return y;
     }
     if (cmdAddr === 34488) {
       this.playDpcm(1);
-      return noteIdx;
+      return y;
     }
     if (cmdAddr === 34518) {
       this.playDpcm(2);
-      return noteIdx;
+      return y;
     }
-    return noteIdx;
+    return y;
   }
-  // ════════════════════════════════════════════════════════════════
-  // BGM 帧推进（$80BA-$811B）
-  // ════════════════════════════════════════════════════════════════
-  bgmTick() {
-    const active = this.store.readByte(RAM_CHANNEL_ACTIVE);
-    if (active === 0) return;
-    for (let ch = 0; ch < 4; ch++) {
-      if ((active & 1 << ch) === 0) continue;
-      const chBase = CH_STATE_BASE + ch * 16;
-      const counterBase = CH_COUNTER_BASE + ch * 4;
-      let tick = this.store.readByte(counterBase);
-      if (tick > 0) {
-        tick--;
-        this.store.writeByte(counterBase, tick);
-      }
-      if (tick !== 0) continue;
-      this.store.writeByte(counterBase, this.store.readByte(counterBase + 1));
-      let dur = this.store.readByte(counterBase + 2);
-      if (dur > 0) {
-        dur--;
-        this.store.writeByte(counterBase + 2, dur);
-      }
-      if (dur === 0) {
-        this.executeCommandStream(ch);
-      }
-      this.channelOutput(ch);
-    }
+  // ════════════════════════════════════════════════════════════
+  // 包络重载
+  // ════════════════════════════════════════════════════════════
+  reloadEnvelope(x) {
+    const paramPtr = this.rdPtr(240, 241);
+    const envPtrLo = this.rd(paramPtr + 2);
+    const envPtrHi = this.rd(paramPtr + 3);
+    const envOff = this.rd(paramPtr + 4);
+    this.wr(paramPtr + 4, envOff + 2 & 255);
+    const envPtr = envPtrHi << 8 | envPtrLo;
+    const envVal = AudioRom.readBgmData(envPtr + envOff);
+    this.wr(1801 + x, envVal);
+    this.wr(1802 + x, AudioRom.readBgmData(envPtr + envOff + 1));
   }
-  // ════════════════════════════════════════════════════════════════
-  // 通道输出（$81DB-$81DA）
-  //
-  // 读通道状态块 offset 5（音量）、offset 6-7（频率），写 APU 寄存器
-  // ════════════════════════════════════════════════════════════════
-  channelOutput(ch) {
-    const chBase = CH_STATE_BASE + ch * 16;
-    const freqLo = this.store.readByte(chBase + 6);
-    const freqHi = this.store.readByte(chBase + 7);
-    const volCtrl = this.store.readByte(chBase + 5);
-    const volume = volCtrl & 15;
-    if (freqLo === 0 && freqHi === 0) return;
-    const regBase = 16384 + ch * 4;
-    if (ch === 0 || ch === 1) {
-      this.apu.writeRegister(regBase, 48 | volume);
-      this.apu.writeRegister(regBase + 2, freqLo);
-      this.apu.writeRegister(regBase + 3, freqHi | 8);
-    } else if (ch === 2) {
-      this.apu.writeRegister(regBase, 128 | volume);
-      this.apu.writeRegister(regBase + 2, freqLo);
-      this.apu.writeRegister(regBase + 3, freqHi | 128);
-    } else if (ch === 3) {
-      this.apu.writeRegister(regBase, 48 | volume);
-      this.apu.writeRegister(regBase + 2, freqLo & 15);
-    }
-  }
-  // ════════════════════════════════════════════════════════════════
-  // SE 通道频率更新（$811D-$8161）
-  // ════════════════════════════════════════════════════════════════
-  seTick() {
-  }
-  // ════════════════════════════════════════════════════════════════
-  // SE 启动（$8349）
-  // ════════════════════════════════════════════════════════════════
-  startSe(seId, slot) {
-    void slot;
-    const seIndex = seId - 1;
-    if (seIndex < 0 || seIndex >= 100) return;
-    const seDataAddr = AudioRom.readSePointer(seIndex);
-    if (seDataAddr === 0) return;
-    const active = this.store.readByte(RAM_CHANNEL_ACTIVE);
-    this.store.writeByte(RAM_CHANNEL_ACTIVE, active | CH_NOISE);
-    this.apu.writeRegister(16405, APU_ENABLE_ALL);
-  }
-  // ════════════════════════════════════════════════════════════════
+  // ════════════════════════════════════════════════════════════
   // 停止 SE
-  // ════════════════════════════════════════════════════════════════
-  stopAllSeChannels() {
-    const ENV_STOP = 25;
-    const VOL_STOP = 10;
-    const volAddrs = [2e3, 2004, 2008, 2012];
-    const envAddrs = [
+  // ════════════════════════════════════════════════════════════
+  stopAllSe() {
+    const ENV_STOP = 25, VOL_STOP = 10;
+    for (const a of [2e3, 2004, 2008, 2012]) this.wr(a, VOL_STOP);
+    for (const a of [
       1999,
       2001,
       2002,
@@ -41654,9 +41729,7 @@ var AudioService = class {
       2013,
       2014,
       2015
-    ];
-    for (const a of volAddrs) this.store.writeByte(a, VOL_STOP);
-    for (const a of envAddrs) this.store.writeByte(a, ENV_STOP);
+    ]) this.wr(a, ENV_STOP);
   }
 };
 
@@ -41769,16 +41842,16 @@ var ApuPcmRendererImpl = class {
         break;
     }
   }
-  writePulseCtrl(ch, value) {
-    ch.duty = value >> 6 & 3;
-    ch.envelopeMode = (value & 16) !== 0;
-    ch.volume = value & 15;
+  writePulseCtrl(ch2, value) {
+    ch2.duty = value >> 6 & 3;
+    ch2.envelopeMode = (value & 16) !== 0;
+    ch2.volume = value & 15;
   }
-  writePulseSweep(ch, value) {
-    ch.sweepEnabled = (value & 128) !== 0;
-    ch.sweepPeriod = value >> 4 & 7;
-    ch.sweepNegate = (value & 8) !== 0;
-    ch.sweepShift = value & 7;
+  writePulseSweep(ch2, value) {
+    ch2.sweepEnabled = (value & 128) !== 0;
+    ch2.sweepPeriod = value >> 4 & 7;
+    ch2.sweepNegate = (value & 8) !== 0;
+    ch2.sweepShift = value & 7;
   }
   renderFrame() {
     const samples = new Float32Array(Math.floor(SAMPLE_RATE / 60));
@@ -41804,13 +41877,13 @@ var ApuPcmRendererImpl = class {
     }
     return samples;
   }
-  renderPulse(ch, cycles) {
-    if (ch.freq === 0) return 0;
-    const period = 16 * (ch.freq + 1);
-    ch.phase += cycles / period * 8;
-    ch.phase %= 8;
-    const wave = DUTY_TABLE[ch.duty][Math.floor(ch.phase)];
-    const vol = ch.envelopeMode ? ch.volume / 15 : ch.volume / 15;
+  renderPulse(ch2, cycles) {
+    if (ch2.freq === 0) return 0;
+    const period = 16 * (ch2.freq + 1);
+    ch2.phase += cycles / period * 8;
+    ch2.phase %= 8;
+    const wave = DUTY_TABLE[ch2.duty][Math.floor(ch2.phase)];
+    const vol = ch2.envelopeMode ? ch2.volume / 15 : ch2.volume / 15;
     return wave * vol * 0.3;
   }
   renderTriangle(cycles) {
