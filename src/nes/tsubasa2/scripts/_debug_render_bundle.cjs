@@ -41543,28 +41543,20 @@ var AudioService = class {
       ctrl = ctrl | 48;
     }
     this.wrApu(apuBase, ctrl);
-    const sweepFlag = this.rd(paramPtr + 5) & 16;
-    if (sweepFlag === 0) {
+    this.wrApu(apuBase + 1, 8);
+    const flag8 = this.rd(paramPtr + 8);
+    if ((flag8 & 128) !== 0) {
+      this.wr(paramPtr + 8, flag8 & 127);
+      const freqLo = this.rd(paramPtr + 7);
+      this.wrApu(apuBase + 2, freqLo);
+      const freqHi = this.rd(paramPtr + 8) | 24;
       const fb = this.rd(251);
-      this.wr(2020 + fb, 8);
-      this.wrApu(apuBase + 1, 8);
-    } else {
-      const flag8 = this.rd(paramPtr + 8);
-      if ((flag8 & 128) !== 0) {
-        this.wr(paramPtr + 8, flag8 & 127);
-        const freqLo = this.rd(paramPtr + 7);
-        this.wrApu(apuBase + 2, freqLo);
-        let freqHi = this.rd(paramPtr + 8) | 24;
-        const fb = this.rd(251);
-        if (fb !== 0 && fb !== 1) {
-          const cached = this.rd(2016 + fb);
-          if (freqHi === cached) return;
-        }
-        this.wrApu(apuBase + 3, freqHi);
-        this.wr(2016 + this.rd(251), freqHi);
-        const e4 = this.rd(2020 + this.rd(251));
-        if (e4 === 0) this.wr(2016 + this.rd(251), 0);
+      if (fb !== 0 && fb !== 1) {
+        const cached = this.rd(2016 + fb);
+        if (freqHi === cached) return;
       }
+      this.wrApu(apuBase + 3, freqHi);
+      this.wr(2016 + this.rd(251), freqHi);
     }
   }
   // ════════════════════════════════════════════════════════════

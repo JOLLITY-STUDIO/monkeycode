@@ -7,6 +7,9 @@
       type="2d"
       class="game-canvas"
       style="width: {{canvasW}}px; height: {{canvasH}}px;"
+      bindtouchstart="onCanvasTouchStart"
+      bindtouchend="onCanvasTouchEnd"
+      bindtouchcancel="onCanvasTouchEnd"
     ></canvas>
   </view>
 

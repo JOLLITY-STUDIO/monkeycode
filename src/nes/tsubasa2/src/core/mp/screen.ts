@@ -38,7 +38,6 @@ export default class MpScreen {
   private _onResize?: (width: number, height: number) => void;
   private _fitWidth = SCREEN_WIDTH;
   private _fitHeight = SCREEN_HEIGHT;
-  private _touchHandlers: Array<{ type: string; handler: (e: any) => void }> = [];
 
   constructor(canvas: any, options: MpScreenOptions = {}) {
     this.canvas = canvas;
@@ -64,8 +63,6 @@ export default class MpScreen {
     for (let i = 0; i < this.buf32.length; ++i) {
       this.buf32[i] = 0xff000000;
     }
-
-    this._bindTouch();
   }
 
   /** 写入一帧像素（0x00RRGGBB → 0xFFRRGGBB，全 alpha） */
@@ -115,6 +112,22 @@ export default class MpScreen {
     if (this._onResize) this._onResize(w, h);
   };
 
+  /**
+   * 触摸开始（由 WXML bindtouchstart 转发）
+   * 小程序 canvas 节点在逻辑层不支持 addEventListener，
+   * 触摸事件必须绑定在 WXML 上，由页面调用本方法。
+   */
+  handleTouchStart(e: any): void {
+    if (!this.onTouchStart) return;
+    const { x, y } = this._mapTouch(e);
+    this.onTouchStart(x, y);
+  }
+
+  /** 触摸结束/取消（由 WXML bindtouchend/bindtouchcancel 转发） */
+  handleTouchEnd(): void {
+    if (this.onTouchEnd) this.onTouchEnd();
+  }
+
   /** 触摸 → 256×240 游戏坐标 */
   private _mapTouch(e: any): { x: number; y: number } {
     const t = e && e.touches && e.touches[0];
@@ -129,29 +142,7 @@ export default class MpScreen {
     };
   }
 
-  private _bindTouch(): void {
-    const onStart = (e: any) => {
-      if (!this.onTouchStart) return;
-      const { x, y } = this._mapTouch(e);
-      this.onTouchStart(x, y);
-    };
-    const onEnd = () => {
-      if (this.onTouchEnd) this.onTouchEnd();
-    };
-    this._touchHandlers = [
-      { type: 'touchstart', handler: onStart },
-      { type: 'touchend', handler: onEnd },
-      { type: 'touchcancel', handler: onEnd },
-    ];
-    for (const h of this._touchHandlers) {
-      this.canvas.addEventListener(h.type, h.handler);
-    }
-  }
-
   destroy(): void {
-    for (const h of this._touchHandlers) {
-      this.canvas.removeEventListener(h.type, h.handler);
-    }
-    this._touchHandlers = [];
+    // 触摸事件由 WXML 绑定，无需在节点上解绑
   }
 }

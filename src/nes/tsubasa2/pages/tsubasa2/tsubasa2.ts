@@ -89,6 +89,15 @@ Page({
     this.rafId = this.canvas.requestAnimationFrame(loop);
   },
 
+  /** 画布触摸（WXML 绑定 → MpScreen 坐标映射 → onTouchStart 回调） */
+  onCanvasTouchStart(e: any) {
+    this.screen?.handleTouchStart(e);
+  },
+
+  onCanvasTouchEnd() {
+    this.screen?.handleTouchEnd();
+  },
+
   onPadDown(e: any) {
     const key: string = e.currentTarget.dataset.key;
     const idx = KEY_MAP[key];

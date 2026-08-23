@@ -297,29 +297,25 @@ export class AudioService {
       ctrl = ctrl | 0x30;
     }
     this.wrApu(apuBase, ctrl);
-    // 扫描标志
-    const sweepFlag = this.rd(paramPtr + 5) & 0x10;
-    if (sweepFlag === 0) {
+    // 扫描寄存器（清除扫描）
+    this.wrApu(apuBase + 1, 0x08);
+    // 频率写入：检查 offset 8 的 bit7（频率更新标志）
+    const flag8 = this.rd(paramPtr + 8);
+    if ((flag8 & 0x80) !== 0) {
+      // 清 bit7
+      this.wr(paramPtr + 8, flag8 & 0x7F);
+      // 写频率低字节
+      const freqLo = this.rd(paramPtr + 7);
+      this.wrApu(apuBase + 2, freqLo);
+      // 写频率高字节 + 长度计数器
+      const freqHi = this.rd(paramPtr + 8) | 0x18;
       const fb = this.rd(0x00FB);
-      this.wr(0x07E4 + fb, 0x08);
-      this.wrApu(apuBase + 1, 0x08);
-    } else {
-      const flag8 = this.rd(paramPtr + 8);
-      if ((flag8 & 0x80) !== 0) {
-        this.wr(paramPtr + 8, flag8 & 0x7F);
-        const freqLo = this.rd(paramPtr + 7);
-        this.wrApu(apuBase + 2, freqLo);
-        let freqHi = this.rd(paramPtr + 8) | 0x18;
-        const fb = this.rd(0x00FB);
-        if (fb !== 0 && fb !== 1) {
-          const cached = this.rd(0x07E0 + fb);
-          if (freqHi === cached) return;
-        }
-        this.wrApu(apuBase + 3, freqHi);
-        this.wr(0x07E0 + this.rd(0x00FB), freqHi);
-        const e4 = this.rd(0x07E4 + this.rd(0x00FB));
-        if (e4 === 0) this.wr(0x07E0 + this.rd(0x00FB), 0);
+      if (fb !== 0 && fb !== 1) {
+        const cached = this.rd(0x07E0 + fb);
+        if (freqHi === cached) return;
       }
+      this.wrApu(apuBase + 3, freqHi);
+      this.wr(0x07E0 + this.rd(0x00FB), freqHi);
     }
   }
 
