@@ -222,7 +222,7 @@ export class AudioService {
         continue;
       }
       // SE 请求：根据阈值选择 bank（TS 中 bank 概念省略，直接启动 SE）
-      // bank 选择仅影响数据来源，所有数据已在 Bank12Rom 中
+      // bank 选择仅影响数据来源，所有数据已在 AudioRom 中
       this.startSe(seReq, slot);
       this.store.writeByte(RAM_QUEUE_BASE + slot, 0);
     }
@@ -241,7 +241,7 @@ export class AudioService {
     // 启用 Pulse1/Pulse2/Triangle（BGM 通常用 3 通道）
     this.store.writeByte(RAM_CHANNEL_ACTIVE, CH_PULSE1 | CH_PULSE2 | CH_TRIANGLE);
     this.apu.writeRegister(0x4015, APU_ENABLE_ALL);
-    // TODO: 从 Bank12Rom.readBgmPointer(bgmId) 读取 BGM 数据流起始地址，
+    // TODO: 从 AudioRom.readBgmPointer(bgmId) 读取 BGM 数据流起始地址，
     //       解析头部（通道配置 + 各通道数据指针），初始化通道状态块 $0727+
   }
 
@@ -283,7 +283,7 @@ export class AudioService {
     const active = this.store.readByte(RAM_CHANNEL_ACTIVE);
     this.store.writeByte(RAM_CHANNEL_ACTIVE, active | CH_NOISE);
     this.apu.writeRegister(0x4015, APU_ENABLE_ALL);
-    // TODO: 从 Bank12Rom.readSePointer(seIndex) 读取 SE 数据起始地址，
+    // TODO: 从 AudioRom.readSePointer(seIndex) 读取 SE 数据起始地址，
     //       解析 SE 数据流（通道配置 + 音符序列），初始化 SE 通道状态
   }
 

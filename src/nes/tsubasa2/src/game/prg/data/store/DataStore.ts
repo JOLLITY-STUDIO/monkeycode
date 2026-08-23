@@ -91,8 +91,11 @@ export class DataStore {
     return this.ram.subarray(0x200, 0x300);
   }
 
-  /** NMI 渲染缓冲 $05E8-$05FF 视图 */
+  /**
+   * NMI 渲染缓冲 $05E8-$0627 视图（共 64 字节）。
+   * 原版 $9B28 使用容量上限为 $0628（指针），忙标志 $0629，终止标 0。
+   */
   get ntRenderBuffer(): Uint8Array {
-    return this.ram.subarray(0x5e8, 0x600);
+    return this.ram.subarray(0x5e8, 0x628);
   }
 }

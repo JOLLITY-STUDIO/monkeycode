@@ -84,7 +84,8 @@ export class InterruptService {
     ppu.regVT = (sy >> 3) & 31;
     ppu.regFV = sy & 7;
     ppu.regV = (sy >> 5) & 1;
-    // $05E8 渲染缓冲（bank02 $8019 语义）：[count|0x80, addrLo, addrHi, data×count...]，0 终止
+    // $05E8 渲染缓冲（bank02 $8019 语义）：[count, addrLo, addrHi, data×count...]，0 终止
+    // count bit7=1 时 CTRL 列增量（+32），否则行增量（+1）
     this.flushNtBuffer(ppu);
     // $0498 延迟缓冲队列（$C8FB 语义）
     this.flushRenderQueue(ppu);
@@ -95,17 +96,24 @@ export class InterruptService {
     this.flushPalette(ppu);
   }
 
-  /** $05E8 渲染缓冲：entries [count|0x80, addrLo, addrHi, data...]，byte0=0 结束 */
+  /**
+   * $05E8 渲染缓冲消费（bank02 $801D-$804A）。
+   * 条目格式：byte0=count（非 0），byte1=addrLo，byte2=addrHi，之后 count 字节数据。
+   * count bit7=0 时 PPU 地址每次 +1（行模式），bit7=1 时每次 +32（列模式）。
+   * byte0=0 表示结束。
+   */
   private flushNtBuffer(ppu: PpuTarget): void {
     const buf = this.store.ntRenderBuffer;
     let x = 0;
-    while (x + 3 <= 0x18) {
+    while (x + 3 <= 0x40) {
       const b0 = buf[x] & 0xff;
-      if ((b0 & 0x80) === 0) break; // 结束标记
-      const count = b0 & 0x3f;
+      if (b0 === 0) break; // $9B5E 结束标记
+      const vertical = (b0 & 0x80) !== 0;
+      const count = vertical ? (b0 & 0x3f) : b0;
       const addr = (buf[x + 2] << 8) | buf[x + 1];
-      for (let i = 0; i < count && x + 3 + i < 0x18; i++) {
-        ppu.writeMem(addr + i, buf[x + 3 + i]);
+      const step = vertical ? 32 : 1;
+      for (let i = 0; i < count && x + 3 + i < 0x40; i++) {
+        ppu.writeMem((addr + i * step) & 0x3fff, buf[x + 3 + i]);
       }
       x += 3 + count;
     }

@@ -11,7 +11,7 @@
 import { DataStore } from '../src/game/prg/data/store/DataStore';
 import { AudioService } from '../src/game/prg/code/audio/AudioService';
 import { LogApuTarget } from '../src/game/prg/code/audio/ApuTarget';
-import { Bank12Rom } from '../src/game/prg/data/audio/bank12-rom';
+import { AudioRom } from '../src/game/prg/data/audio/audio-rom';
 
 function assert(cond: boolean, msg: string): void {
   if (!cond) { console.error('FAIL:', msg); process.exit(1); }
@@ -71,15 +71,26 @@ assert(hasDpcm4012, 'playDpcm(0) 写 $4012=0x00');
 assert(hasDpcm4013, 'playDpcm(0) 写 $4013=0x0C');
 assert(store.readByte(0x07E8) === 0x80, 'playDpcm 设置 DPCM 标志 $07E8=0x80');
 
-// === 测试 5: Bank12Rom 数据访问 ===
-const bgm0 = Bank12Rom.readBgmPointer(0);
-assert(bgm0 === 0x8892, 'Bank12Rom.readBgmPointer(0) = $8892');
-const se0 = Bank12Rom.readSePointer(0);
-assert(se0 === 0x8E42, 'Bank12Rom.readSePointer(0) = $8E42');
-const dur0 = Bank12Rom.readNoteDuration(0);
-assert(dur0 === 0x00, 'Bank12Rom.readNoteDuration(0) = $00');
-const dur1 = Bank12Rom.readNoteDuration(1);
-assert(dur1 === 0x01, 'Bank12Rom.readNoteDuration(1) = $01');
+// === 测试 5: AudioRom 数据访问 ===
+const bgm0 = AudioRom.readBgmPointer(0);
+assert(bgm0 === 0x8892, 'AudioRom.readBgmPointer(0) = $8892');
+const se0 = AudioRom.readSePointer(0);
+assert(se0 === 0x8E42, 'AudioRom.readSePointer(0) = $8E42');
+const dur0 = AudioRom.readNoteDuration(0);
+assert(dur0 === 0x00, 'AudioRom.readNoteDuration(0) = $00');
+const dur1 = AudioRom.readNoteDuration(1);
+assert(dur1 === 0x01, 'AudioRom.readNoteDuration(1) = $01');
+const songId1 = AudioRom.readSongRequestId(1);
+assert(songId1 === 0x32, 'AudioRom.readSongRequestId(1) = $32 (第一首 SE)');
+const songId41 = AudioRom.readSongRequestId(41);
+assert(songId41 === 0x03, 'AudioRom.readSongRequestId(41) = $03 (第一首 BGM)');
+const songId105 = AudioRom.readSongRequestId(105);
+assert(songId105 === 0x6f, 'AudioRom.readSongRequestId(105) = $6F (最后一首)');
+// 验证 BGM 数据在 bank7（不是 bank12）
+const bgmDataBank7 = AudioRom.readBgmData(0x8892);
+const bgmDataBank12 = AudioRom.readBank12Byte(0x8892);
+assert(bgmDataBank7 !== bgmDataBank12, 'BGM 数据 bank7 ≠ bank12（bankswitch 验证）');
+assert(bgmDataBank7 === 0x2c, 'BGM[0] 数据 bank7[0x892] = $2C（真实 BGM 乐谱）');
 
 console.log('\n=== 全部测试通过 ===');
 console.log('APU 日志摘要:', apu.summary());
