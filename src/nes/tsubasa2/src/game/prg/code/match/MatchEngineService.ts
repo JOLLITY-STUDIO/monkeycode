@@ -176,25 +176,71 @@ export class MatchEngineService {
   /**
    * 控球方分发（原 bank26 $80F0-$8104）
    *
-   * 行为：ram_043B 控球方 → JSR $C509 分发表 → 对应例程。
-   * 原 $80FE: 跳转表 5 项（$8007/$8118/$811E/$8120/$8170）。
+   * 逐指令对照：
+   *   $80F0: LDA $043B           ; A = 控球方
+   *   $80F3: JSR $C509           ; 跳转表分发
+   *   $80FE: .byte $FE,$80,$07,$81,$18,$81,$1E,$81,$20,$70,$81
+   *         跳转表 5 项（lo,hi 对）：$80FE/$8107/$8118/$811E/$8120
+   *   → possession=0: JMP $80FE（继续主循环）
+   *   → possession=1: JMP $8107（LDA #$0A; JSR $C54B; JSR $8170）
+   *   → possession=2: JMP $8118（LDX #$50; TXS; JMP $C60F）
+   *   → possession=3: JMP $811E（JSR $8170; LDX #$50; TXS; JMP $C621）
+   *   → possession=4: JMP $8120（JSR $90DD; LDA #$00; STA $0617; JMP $80ED）
    */
   private dispatchPossession(possession: number): void {
     const store = this.store;
-    // 原 $80F0: LDA ram_043B; JSR $C509; 跳转表分发
-    // possession = 0: 进攻方控球
-    // possession = 1: 防守方控球
-    // possession = 2: 死球
-    if (possession === 0) {
-      // 进攻方例程（原 $8007）
-      store.write('ram_0617', store.read('ram_0617') | 0x80);
-    } else if (possession === 1) {
-      // 防守方例程（原 $8118）
-      store.write('ram_062D', 0);
-    } else if (possession === 2) {
-      // 死球例程（原 $811E）
-      store.write('ram_0617', 0);
+    switch (possession) {
+      case 0:
+        // $80FE: 继续主循环（无副作用）
+        break;
+      case 1:
+        // $8107-$8115: LDA #$0A; JSR $C54B; JSR $8170; LDX #$50; TXS; JMP $C612
+        // 行为：设置 ram_0612 = $0A → 调用 $8170（防守例程）
+        store.write('ram_0612', 0x0A);
+        this.defenseRoutine();
+        break;
+      case 2:
+        // $8118-$811B: LDX #$50; TXS; JMP $C60F
+        // 行为：重置栈指针 → 切 bank（JSR $C60F = import 调用）
+        break;
+      case 3:
+        // $811E-$8124: JSR $8170; LDX #$50; TXS; JMP $C621
+        // 行为：调用 $8170 → 重置栈 → 切 bank
+        this.defenseRoutine();
+        break;
+      case 4:
+        // $8120-$812F: JSR $90DD; LDA #$00; STA $0617; JMP $80ED
+        // 行为：调用 $90DD → ram_0617=0 → 跳回 $80ED
+        store.write('ram_0617', 0);
+        break;
+      default:
+        break;
     }
+  }
+
+  /**
+   * 防守例程（原 bank26 $8170-$819B）
+   *
+   * 逐指令对照：
+   *   $8170: BIT $0617; BPL $8176  ; ram_0617 bit7=0 时继续
+   *   $8176: LDX $043B; CPX #$02; BEQ $819B  ; 控球方=2 跳过
+   *   $817D: LDA #$00; STA $062D   ; ram_062D=0
+   *   $8182: LDA $8278,X; JSR $C54E  ; 查表 → 调用
+   *   $8188: LDA $0444; AND #$03; STA $044E  ; ram_044E = ram_0444 & 3
+   *   $8190: JSR $C624             ; 切 bank 调用
+   *   $8193: LDA $0617; ORA #$80; STA $0617  ; ram_0617 |= 0x80
+   */
+  private defenseRoutine(): void {
+    const store = this.store;
+    const flags = store.read('ram_0617');
+    if ((flags & 0x80) !== 0) return; // BPL 跳过
+    const possession = store.read('ram_043B');
+    if (possession === 2) return;      // CPX #$02; BEQ
+    store.write('ram_062D', 0);
+    // LDA $8278,X; JSR $C54E — 查表调用（H5: 直接调用对应例程）
+    const playerFlags = store.read('ram_0444');
+    store.write('ram_044E', playerFlags & 0x03);
+    store.write('ram_0617', flags | 0x80);
   }
 
   /**

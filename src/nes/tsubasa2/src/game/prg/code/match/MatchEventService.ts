@@ -46,13 +46,36 @@ export class MatchEventService {
   /**
    * 启动比赛事件（原 bank20 $8010-$8067）
    *
+   * 逐指令对照：
+   *   $8010: LDA $053A; BEQ $8083; BPL $8067  ; ram_053A=0 时直接返回
+   *   $8016: LDX #$01; STX $053A              ; ram_053A=1
+   *   $801B: LDA $053C                          ; A = ram_053C
+   *   $801E: LDX #$68; STX $004C              ; ram_004C=$68
+   *   $8022: LDX #$89; STX $004D              ; ram_004D=$89
+   *   $8026: ASL; BCC $802B; INC $004D        ; A<<=1, C=1时 ram_004D++
+   *   $802B: TAY; LDA ($004C),Y; TAX; INY; LDA ($004C),Y  ; 查指针表
+   *   $8032: STX $004C; STA $004D              ; ram_004C/004D = 指针
+   *   $8036: LDX #$00; LDA #$00; STA $0547,X  ; 清零 ram_0547+ 步长0x15
+   *   $803D: TXA; CLC; ADC #$15; TAX; CMP #$7E; BNE $8038  ; 循环到 X>=0x7E
+   *   $8046: LDA #$01; STA $053B              ; ram_053B=1
+   *   $804B: LDA #$00; STA $053D; STA $0540   ; ram_053D=0, ram_0540=0
+   *   $8053: LDA #$FF; STA $0541              ; ram_0541=$FF
+   *   $8058: LDA #$01; STA $0543              ; ram_0543=1
+   *   $805D: LDA #$23; STA $0544              ; ram_0544=$23
+   *   $8062: LDA #$45; STA $0545              ; ram_0545=$45
+   *   $8067: DEC $053B; BEQ $806D; RTS         ; ram_053B-- 到 0 继续
+   *
    * 行为：ram_053A 事件类型 → 设置 ram_053B 计数器 → 装载事件参数。
-   * 事件通过 BANK20_EVENT_TABLE 查询，不读 CPU 地址。
    */
   startEvent(req: MatchEventRequest): MatchEventResult {
     const entry = findEventById(req.eventId);
     this.store.write('ram_053A', req.type);
     this.store.write('ram_053B', 1);
+    // 清零 ram_0547+ 系列（步长 0x15，到 X >= 0x7E）
+    // 原 $8036-$8044: LDX #$00; LDA #$00; STA $0547,X; TXA; CLC; ADC #$15; TAX; CMP #$7E; BNE
+    for (let x = 0; x < 0x7E; x += 0x15) {
+      this.store.write(`ram_0547_${x}`, 0);
+    }
     this.store.write('ram_053D', 0);
     this.store.write('ram_0540', 0);
     this.store.write('ram_0541', 0xFF);

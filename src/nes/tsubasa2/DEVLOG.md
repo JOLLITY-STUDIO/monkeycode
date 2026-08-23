@@ -163,3 +163,25 @@
   - code/player/PlayerMoveService.ts（类型修复）
   - code/system/TileRenderService.ts（语法错误修复）
 
+## 2026-08-23（bank16-29 行为验证 + 修复）
+
+- [行为验证] 逐方法对照 asm 指令序列验证 bank16-29 Service 行为：
+  - **bank16 SkillService.loadSkillSequence**：对照 asm `$8003-$8020`
+    `LDA $0518; ASL; TAY; BCC; INX; LDA #$BF; STA $005D; STX $005E; LDA ($005D),Y`
+    → 修复 hiBit 逻辑（ASL 后 BCC=bit7=0 时不+1），补全逐指令注释。
+  - **bank26 MatchEngineService.dispatchPossession**：对照 asm `$80F0-$8104`
+    `LDA $043B; JSR $C509; 跳转表 $80FE: 5项 $80FE/$8107/$8118/$811E/$8120`
+    → 修复 possession 映射（0=继续/1=防守/2=切bank/3=防守+切bank/4=死球），
+    新增 defenseRoutine() 对照 $8170-$819B（BIT/CMP/STA/ORA 系列）。
+  - **bank20 MatchEventService.startEvent**：对照 asm `$8010-$8067`
+    `LDX #$00; LDA #$00; STA $0547,X; TXA; CLC; ADC #$15; TAX; CMP #$7E; BNE`
+    → 修复 ram_0547+ 清零循环（步长 0x15，到 X>=0x7E），补全逐指令注释。
+  - **bank24 MatchRoundService.startRound**：对照 asm `$8017-$8050` — 行为一致（ram_05E3/E4/E5/E9/F4 初始化）。
+  - **bank28 MatchActionService.findActionPointer**：对照 asm `$8030-$8039`
+    `LDA $9E4E,Y; STA $0032; LDA #$00; STA $0033` — 行为一致（查 BANK28_ACTION_POINTER_TABLE）。
+- [编译验证] 修复后 `npx tsc --noEmit` bank16-29 所有 Service 文件零错误。
+- 修改文件：
+  - code/skill/SkillService.ts（loadSkillSequence 行为修复 + 逐指令注释）
+  - code/match/MatchEngineService.ts（dispatchPossession 行为修复 + defenseRoutine 新增）
+  - code/match/MatchEventService.ts（startEvent 清零循环修复 + 逐指令注释）
+

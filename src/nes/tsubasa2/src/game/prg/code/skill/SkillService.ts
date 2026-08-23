@@ -41,18 +41,36 @@ export class SkillService {
   constructor(readonly store: DataStore) {}
 
   /**
-   * 加载技能动作序列（原 bank16 $8000-$8020）
+   * 加载技能动作序列（原 bank16 $8003-$8020）
    *
-   * 行为：根据 selector（ram_0518）查指针表 → 设置 ram_052A 为序列基址。
+   * 逐指令对照：
+   *   $8003: LDA $0518        ; A = selector
+   *   $800B: ASL              ; A <<= 1（C = bit7）
+   *   $800C: TAY              ; Y = A<<1
+   *   $800D: BCC $8010        ; if C=0 (selector bit7=0) skip INX
+   *   $800F: INX              ; X++ (X 初始 $89 → 高字节 $8A)
+   *   $8010: LDA #$BF         ; A = $BF（指针表基址低字节）
+   *   $8012: STA $005D        ; ram_005D = $BF
+   *   $8014: STX $005E        ; ram_005E = X ($89 或 $8A)
+   *   $8016: LDA ($005D),Y    ; A = [ram_005D+Y]（指针表项 lo）
+   *   $8018: TAX              ; X = lo
+   *   $8019: INY              ; Y++
+   *   $801A: LDA ($005D),Y    ; A = [ram_005D+Y]（指针表项 hi）
+   *   $801C: STA $005E         ; ram_005E = hi
+   *   $801E: STX $005D         ; ram_005D = lo
+   *   $8020: RTS               ; 返回（ram_005D/005E = 动作序列地址）
+   *
+   * 行为：selector 查 SKILL_POINTER_TABLE → 设置 ram_052A 为序列基址。
    * 指针表通过 SKILL_POINTER_TABLE 查询，不读 CPU 地址。
    */
   loadSkillSequence(selector: number): number {
-    // 原 $8003-$8020：LDA $0518; ASL; TAY; 查指针表
-    const idx = selector & 0x7F;
-    const hiBit = (selector >> 7) & 1;
+    // 原 $8003-$8020：LDA $0518; ASL; TAY; BCC; INX; 查指针表
+    const idx = (selector << 1) & 0xFE; // ASL; TAY → Y = selector << 1
+    const hiBit = (selector >> 7) & 1;   // BCC 判 bit7
     const entry = SKILL_POINTER_TABLE[idx >>> 1];
     if (!entry) return 0;
-    const base = hiBit ? ((entry.hi << 8) | entry.lo) : entry.lo;
+    // 指针表项：lo, hi → 16 位地址（原 ram_005D=lo, ram_005E=hi）
+    const base = (entry.hi << 8) | entry.lo;
     this.store.write('ram_052A', base);
     this.store.write('ram_0516', this.store.read('ram_0516') & 0xFB);
     return base;

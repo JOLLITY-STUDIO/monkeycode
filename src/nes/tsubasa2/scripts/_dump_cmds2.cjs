@@ -23,17 +23,17 @@ for (const [lo, hi] of ranges) {
   console.log('');
 }
 
-// grep sceneStreamNext callers without shell grep
+// grep loadSceneStream / TileRenderService / sceneStreamNext callers
 const root = path.join(__dirname, '..', 'src');
-function walk(dir, out) {
-  for (const f of fs.readdirSync(dir, { withFileTypes: true })) {
-    const p = path.join(dir, f.name);
+function walk(d, out) {
+  for (const f of fs.readdirSync(d, { withFileTypes: true })) {
+    const p = path.join(d, f.name);
     if (f.isDirectory()) walk(p, out);
     else if (f.name.endsWith('.ts')) {
       try {
         const c = fs.readFileSync(p, 'utf8');
-        if (c.includes('sceneStreamNext')) out.push(p);
-      } catch {}
+        if (c.includes('loadSceneStream') || c.includes('sceneStreamNext')) out.push(p);
+      } catch (e) {}
     }
   }
 }
