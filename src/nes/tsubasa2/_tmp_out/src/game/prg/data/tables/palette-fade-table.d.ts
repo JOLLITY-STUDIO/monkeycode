@@ -1,0 +1,18 @@
+/** NES 调色板渐显查找表 (ROM bank0 $9EA2, 64 字节)
+ *
+ * 原版 $9A7E paletteWriteAll 逻辑:
+ *   X = (pal & 0x30) + fade
+ *   base = table[X]
+ *   result = (base | (pal & 0x0F)) & 0x3F
+ *
+ * fade=15 满渐显时 result = pal (原值)
+ * fade=0 全暗时 result = 0x0F (黑)
+ */
+export declare const PALETTE_FADE_TABLE: readonly number[];
+/**
+ * 计算渐显后的 NES 调色板索引 (原版 $9A7E + $9AA2 语义)
+ * @param pal 原 NES 调色板索引 (ram_062A 值, 0-0x3F)
+ * @param fade 渐显值 (ram_004A/004B, 0-15)
+ * @returns 渐显后 NES 索引 (0-0x3F)
+ */
+export declare function fadePalette(pal: number, fade: number): number;
