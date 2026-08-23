@@ -505,13 +505,16 @@ export class TileRenderService {
       }
       // $9201-$921F: bank = 9 + ([$0094]&1); $0092 = [($0094)+2]; bit1 → $9459
       const bank = 9 + (store.readByte(ntPtr) & 1);
-      const cmdPtr = store.readU16(ntPtr + 2);
+      let cmdPtr = store.readU16(ntPtr + 2);
       if ((store.readByte(ntPtr) & 2) !== 0) {
-        if (this.sceneCmd9459(bank, cmdPtr)) {
+        // $9221: JMP $9459（bit1 置位分支；返回 advance=false 时 cmdPtr 已更新需继续 $9224）
+        const r = this.sceneCmd9459(bank, cmdPtr);
+        if (r.advance) {
           if (this.rowAdvance(rows)) return;
           rows--;
+          continue;
         }
-        continue;
+        cmdPtr = r.cmdPtr;
       }
       // $9224 命令循环（返回 true = 已行推进/帧结束）
       if (this.sceneCmdLoop(bank, cmdPtr)) {
@@ -810,26 +813,257 @@ export class TileRenderService {
   }
 
   /**
-   * $9459: 场景命令处理（bit1 置位分支）。
-   * TODO: 逐指令覆盖实现。
-   * @returns true 表示已行推进
+   * $9459: 场景命令 bit1 分支（逐指令对照 code_render.s $9459-$948C）。
+   * $0099 bit6 置位（V 标志）→ 精灵构建：$00E6/$00E7 = cmdPtr[Y..Y+1]（Y = (($0099&1)<<1)|1，即 1 或 3）；
+   *   buildSprite 后若 $0099 == $FE → [$0094] &= ~$02，cmdPtr += 5，回 $9224 主循环（advance=false）；
+   *   否则 $0099 &= ~$40（V 清除）。
+   * 最后 [$0094+1] = 1，JMP $94C1 行推进（advance=true）。
+   * @returns advance=true 行推进；false 表示 cmdPtr 已更新需继续 $9224 主循环
    */
-  private sceneCmd9459(bank: number, cmdPtr: number): boolean {
-    void bank;
-    void cmdPtr;
-    void this.store;
-    return false;
+  private sceneCmd9459(bank: number, cmdPtr: number): { advance: boolean; cmdPtr: number } {
+    const store = this.store;
+    const ntPtr = store.readU16(0x0094);
+    // $9459: BIT $0099; BVC $947A
+    if ((store.readByte(0x0099) & 0x40) !== 0) {
+      // $945D-$946B: Y = (($0099&1)<<1)|1; $00E6/$00E7 = cmdPtr[Y..Y+1]
+      const y = ((store.readByte(0x0099) & 1) << 1) | 1;
+      store.writeByte(0x00e6, this.rom.readByte(bank, (cmdPtr + y) & 0xffff));
+      store.writeByte(0x00e7, this.rom.readByte(bank, (cmdPtr + y + 1) & 0xffff));
+      // $946D: JSR $94D8
+      this.buildSprite(bank);
+      // $9470-$9474: CMP #$FE; BEQ $9482
+      if (store.readByte(0x0099) === 0xfe) {
+        // $9482-$9488: [$0094] &= ~$02
+        store.writeByte(ntPtr, store.readByte(ntPtr) & 0xfd);
+        // $948A: LDA #$05; JMP $94AE → cmdPtr += 5; JMP $9224
+        return { advance: false, cmdPtr: (cmdPtr + 5) & 0xffff };
+      }
+      // $9476-$9478: $0099 &= ~$40
+      store.writeByte(0x0099, store.readByte(0x0099) & 0xbf);
+    }
+    // $947A-$947D: [$0094+1] = 1
+    store.writeByte(ntPtr + 1, 1);
+    // $947F: JMP $94C1（行推进）
+    return { advance: true, cmdPtr };
   }
 
   /**
-   * $9224: 场景命令循环（跳转表 16 项分发）。
-   * TODO: 逐指令覆盖实现。
-   * @returns true 表示已行推进/帧结束
+   * $93A7: 精灵增量配置（$F7 命令，逐指令对照 code_render.s $93A7-$9427）。
+   * v1 = cmdPtr[1]：
+   *   [$0094+9] = v1>>5（bit2 置位 → |= $F8 符号扩展为负）
+   *   [$0094+8] = bit2 置位 ? $80 : (v1>>4 & 1)<<7（ROR 进位来自第 5 次 LSR）
+   *   [$0094+$0A] = bit2 置位 ? -cmdPtr[2] : cmdPtr[2]
+   *   [$0094+$0D] = (v1&$0F)>>1（bit2 置位 → |= $F8）
+   *   [$0094+$0C] = bit2 置位 ? $80 : (v1&1)<<7（ROR 进位来自末次 LSR）
+   *   [$0094+$0E] = bit2 置位 ? -cmdPtr[3] : cmdPtr[3]
+   *   [$0094+$0B] = 0; [$0094+$0F] = 0; [$0094] |= $20
+   */
+  private sceneVelConfig(bank: number, cmdPtr: number): void {
+    const store = this.store;
+    const ntPtr = store.readU16(0x0094);
+    const v1 = this.rom.readByte(bank, (cmdPtr + 1) & 0xffff);
+    // X 增量高位/低位（$93A7-$93DC）
+    const x5 = (v1 >> 5) & 0x07;
+    store.writeByte(ntPtr + 9, x5); // $93B0-$93B2
+    if ((x5 & 4) !== 0) {
+      store.writeByte(ntPtr + 9, x5 | 0xf8); // $93C7-$93CB
+      store.writeByte(ntPtr + 8, 0x80); // $93CD-$93D1（ROR C=1）
+      store.writeByte(ntPtr + 0x0a, (0x00 - this.rom.readByte(bank, (cmdPtr + 2) & 0xffff)) & 0xff); // $93D3-$93DC
+    } else {
+      store.writeByte(ntPtr + 8, ((v1 >> 4) & 1) << 7); // $93B8-$93BA（ROR C = v1 bit4）
+      store.writeByte(ntPtr + 0x0a, this.rom.readByte(bank, (cmdPtr + 2) & 0xffff)); // $93BC-$93C2
+    }
+    // Y 增量高位/低位（$93DE-$9411）
+    const y5 = ((v1 & 0x0f) >> 1) & 0x07;
+    store.writeByte(ntPtr + 0x0d, y5); // $93E5-$93E7
+    if ((y5 & 4) !== 0) {
+      store.writeByte(ntPtr + 0x0d, y5 | 0xf8); // $93FC-$9400
+      store.writeByte(ntPtr + 0x0c, 0x80); // $9402-$9406（ROR C=1）
+      store.writeByte(ntPtr + 0x0e, (0x00 - this.rom.readByte(bank, (cmdPtr + 3) & 0xffff)) & 0xff); // $9408-$9411
+    } else {
+      store.writeByte(ntPtr + 0x0c, (v1 & 1) << 7); // $93ED-$93EF（ROR C = v1 bit0）
+      store.writeByte(ntPtr + 0x0e, this.rom.readByte(bank, (cmdPtr + 3) & 0xffff)); // $93F1-$93F7
+    }
+    // $9413-$9423: [$0094+$0B] = 0; [$0094+$0F] = 0; [$0094] |= $20
+    store.writeByte(ntPtr + 0x0b, 0);
+    store.writeByte(ntPtr + 0x0f, 0);
+    store.writeByte(ntPtr, store.readByte(ntPtr) | 0x20);
+  }
+
+  /**
+   * $9224: 场景命令循环（逐指令对照 code_render.s $9224-$94BB，含 $92E5 跳转表）。
+   * 命令流（$0092/$0093 指向当前 bank 数据）循环处理：
+   *   <$80: [$0094+1] = cmd<<1; [$0094+2/+3] = cmdPtr+1; 行推进
+   *   $80-$9F: buildSprite（流指针 = ((cmd+$20)<<8)|[cmdPtr+1]）; cmdPtr += 2
+   *   $A0-$BF: cmdPtr = (cmd<<8)|[cmdPtr+1]
+   *   $C0-$DF: 槽推入（$9268）：保存 cmdPtr+2 到 [$0094+$18+2*count]，cmdPtr = ((cmd-$20)<<8)|[cmdPtr+1]
+   *   $E0-$EF: 循环槽推入（$92A0）：[$0094+$14+count] = cmd-$E0，保存 cmdPtr+1，cmdPtr += 1
+   *   $F0-$FF: $92E5 跳转表（RTS+1 语义，目标 = 表项+1）：
+   *     $F0 循环回跳（$9305）：递减 [$0094+count+$13]，未耗尽 → cmdPtr = [$0094+$16+2*count]；
+   *        耗尽 → 槽计数-1，cmdPtr += 1
+   *     $F1 X 增量 = [cmdPtr+1], Y 增量 = [cmdPtr+2]; cmdPtr += 3
+   *     $F2 X 增量 = 常量 $4F; cmdPtr += 2
+   *     $F3 Y 增量 = [cmdPtr+1]; cmdPtr += 2
+   *     $F4 [$0094+1] = [cmdPtr+1]; cmdPtr += 2; [$0094+2/+3] = cmdPtr; 行推进
+   *     $F5 [$0094] |= $40; cmdPtr += 1
+   *     $F6 [$0094] &= ~$40; cmdPtr += 1
+   *     $F7 精灵增量配置（$93A7）; cmdPtr += 4
+   *     $F8 $0049 = [cmdPtr+1]; cmdPtr += 2
+   *     $F9 [$0094] |= $10; cmdPtr += 1
+   *     $FA [$0094] |= $02; $0099 = $C0; [$0094+2/+3] = cmdPtr; 落穿 $9459
+   *     $FB/$FC/$FD 原版 JMP $948F 自循环死锁（游戏数据不使用）；H5 直接停止
+   *     $FE 槽弹出（$9492）：槽计数-1，cmdPtr = [$0094+$18+2*(count-1)]
+   *     $FF [$0094] = 0; 行推进
+   * @returns true 表示已行推进（$94C1）
    */
   private sceneCmdLoop(bank: number, cmdPtr: number): boolean {
-    void bank;
-    void cmdPtr;
-    void this.store;
-    return false;
+    const store = this.store;
+    const rom = this.rom;
+    for (;;) {
+      const ntPtr = store.readU16(0x0094);
+      const cmd = rom.readByte(bank, cmdPtr);
+      if ((cmd & 0x80) === 0) {
+        // $922A-$923E: [$0094+1] = cmd<<1; [$0094+2/+3] = cmdPtr+1; JMP $94C1
+        store.writeByte(ntPtr + 1, (cmd << 1) & 0xff);
+        const p = (cmdPtr + 1) & 0xffff;
+        store.writeByte(ntPtr + 2, p & 0xff);
+        store.writeByte(ntPtr + 3, (p >> 8) & 0xff);
+        return true;
+      }
+      if (cmd < 0xa0) {
+        // $9241-$9255: buildSprite（$00E7 = cmd+$20, $00E6 = [cmdPtr+1]）; cmdPtr += 2
+        store.writeByte(0x00e7, (cmd + 0x20) & 0xff);
+        store.writeByte(0x00e6, rom.readByte(bank, (cmdPtr + 1) & 0xffff));
+        this.buildSprite(bank);
+        cmdPtr = (cmdPtr + 2) & 0xffff;
+        continue;
+      }
+      if (cmd < 0xc0) {
+        // $9258-$9265: cmdPtr = (cmd<<8)|[cmdPtr+1]
+        cmdPtr = ((cmd << 8) | rom.readByte(bank, (cmdPtr + 1) & 0xffff)) & 0xffff;
+        continue;
+      }
+      if (cmd < 0xe0) {
+        // $9268-$929C: 槽推入（原版 CMP #$03 BCS 自循环）
+        const count = store.readByte(ntPtr + 0x13);
+        if (count >= 3) return true;
+        store.writeByte(ntPtr + 0x13, (count + 1) & 0xff);
+        const saved = (cmdPtr + 2) & 0xffff;
+        store.writeByte(ntPtr + 0x18 + count * 2, saved & 0xff);
+        store.writeByte(ntPtr + 0x18 + count * 2 + 1, (saved >> 8) & 0xff);
+        cmdPtr = (((cmd - 0x20) << 8) | rom.readByte(bank, (cmdPtr + 1) & 0xffff)) & 0xffff;
+        continue;
+      }
+      if (cmd < 0xf0) {
+        // $92A0-$92D4: 循环槽推入（原版 CMP #$04 BCS 自循环）
+        const count = store.readByte(ntPtr + 0x13);
+        if (count >= 4) return true;
+        store.writeByte(ntPtr + 0x13, (count + 1) & 0xff);
+        store.writeByte(ntPtr + 0x14 + count, cmd - 0xe0); // [$0094+$13+count+1] = cmd-$E0
+        store.writeByte(ntPtr + 0x18 + count * 2, (cmdPtr + 1) & 0xff);
+        store.writeByte(ntPtr + 0x18 + count * 2 + 1, ((cmdPtr + 1) >> 8) & 0xff);
+        cmdPtr = (cmdPtr + 1) & 0xffff;
+        continue;
+      }
+      // $F0-$FF: $92D7 跳转表分发（目标 = 表项+1）
+      switch (cmd - 0xf0) {
+        case 0: {
+          // $F0 → $9305 循环回跳（原版 BEQ $9309 自循环）
+          const count = store.readByte(ntPtr + 0x13);
+          if (count === 0) return true;
+          const idx = ntPtr + 0x13 + count;
+          const val = (store.readByte(idx) - 1) & 0xff;
+          store.writeByte(idx, val);
+          if (val !== 0) {
+            // $9319-$9326: cmdPtr = [$0094+$16+2*count]
+            cmdPtr = store.readByte(ntPtr + 0x16 + count * 2) |
+              (store.readByte(ntPtr + 0x16 + count * 2 + 1) << 8);
+            continue;
+          }
+          // $932B-$9336: 槽计数-1; cmdPtr += 1
+          store.writeByte(ntPtr + 0x13, (count - 1) & 0xff);
+          cmdPtr = (cmdPtr + 1) & 0xffff;
+          continue;
+        }
+        case 1:
+          // $F1 → $9339: X 增量 = [cmdPtr+1], Y 增量 = [cmdPtr+2]; cmdPtr += 3
+          this.writeShift16(4, rom.readByte(bank, (cmdPtr + 1) & 0xffff));
+          this.writeShift16(6, rom.readByte(bank, (cmdPtr + 2) & 0xffff));
+          cmdPtr = (cmdPtr + 3) & 0xffff;
+          continue;
+        case 2:
+          // $F2 → $9350: X 增量 = 常量 $4F（跳转表低字节复用）；cmdPtr += 2
+          this.writeShift16(4, 0x4f);
+          cmdPtr = (cmdPtr + 2) & 0xffff;
+          continue;
+        case 3:
+          // $F3 → $935E: Y 增量 = [cmdPtr+1]; cmdPtr += 2
+          this.writeShift16(6, rom.readByte(bank, (cmdPtr + 1) & 0xffff));
+          cmdPtr = (cmdPtr + 2) & 0xffff;
+          continue;
+        case 4:
+          // $F4 → $936C: [$0094+1] = [cmdPtr+1]; cmdPtr += 2; [$0094+2/+3] = cmdPtr; 行推进
+          store.writeByte(ntPtr + 1, rom.readByte(bank, (cmdPtr + 1) & 0xffff));
+          cmdPtr = (cmdPtr + 2) & 0xffff;
+          store.writeByte(ntPtr + 2, cmdPtr & 0xff);
+          store.writeByte(ntPtr + 3, (cmdPtr >> 8) & 0xff);
+          return true;
+        case 5:
+          // $F5 → $938D: [$0094] |= $40; cmdPtr += 1
+          store.writeByte(ntPtr, store.readByte(ntPtr) | 0x40);
+          cmdPtr = (cmdPtr + 1) & 0xffff;
+          continue;
+        case 6:
+          // $F6 → $939A: [$0094] &= ~$40; cmdPtr += 1
+          store.writeByte(ntPtr, store.readByte(ntPtr) & 0xbf);
+          cmdPtr = (cmdPtr + 1) & 0xffff;
+          continue;
+        case 7:
+          // $F7 → $93A7: 精灵增量配置; cmdPtr += 4
+          this.sceneVelConfig(bank, cmdPtr);
+          cmdPtr = (cmdPtr + 4) & 0xffff;
+          continue;
+        case 8:
+          // $F8 → $942A: $0049 = [cmdPtr+1]; cmdPtr += 2
+          store.writeByte(0x0049, rom.readByte(bank, (cmdPtr + 1) & 0xffff));
+          cmdPtr = (cmdPtr + 2) & 0xffff;
+          continue;
+        case 9:
+          // $F9 → $9435: [$0094] |= $10; cmdPtr += 1
+          store.writeByte(ntPtr, store.readByte(ntPtr) | 0x10);
+          cmdPtr = (cmdPtr + 1) & 0xffff;
+          continue;
+        case 10: {
+          // $FA → $9442: [$0094] |= $02; $0099 = $C0; [$0094+2/+3] = cmdPtr; 落穿 $9459
+          store.writeByte(ntPtr, store.readByte(ntPtr) | 0x02);
+          store.writeByte(0x0099, 0xc0);
+          store.writeByte(ntPtr + 2, cmdPtr & 0xff);
+          store.writeByte(ntPtr + 3, (cmdPtr >> 8) & 0xff);
+          const r = this.sceneCmd9459(bank, cmdPtr);
+          if (r.advance) return true;
+          cmdPtr = r.cmdPtr;
+          continue;
+        }
+        case 11:
+        case 12:
+        case 13:
+          // $FB/$FC/$FD → 原版 JMP $948F 自循环死锁；H5 直接停止
+          return true;
+        case 14: {
+          // $FE → $9492 槽弹出（原版 BEQ 自循环）: 计数-1，cmdPtr = [$0094+$18+2*(count-1)]
+          const count = store.readByte(ntPtr + 0x13);
+          if (count === 0) return true;
+          const nc = (count - 1) & 0xff;
+          store.writeByte(ntPtr + 0x13, nc);
+          cmdPtr = store.readByte(ntPtr + 0x18 + nc * 2) |
+            (store.readByte(ntPtr + 0x18 + nc * 2 + 1) << 8);
+          continue;
+        }
+        default:
+          // $FF → $94BC: [$0094] = 0; 落穿 $94C1 行推进
+          store.writeByte(ntPtr, 0);
+          return true;
+      }
+    }
   }
 }
