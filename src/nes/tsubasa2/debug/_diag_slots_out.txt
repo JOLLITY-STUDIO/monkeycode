@@ -1,0 +1,9 @@
+frame 2: slots[1:c=1 cb=1 5:c=1 cb=4 9:c=0 cb=40 d:c=0 cb=0 11:c=0 cb=0 15:c=0 cb=2] 062A_nz=32 buf_3f00=0 004C=0 0056=3
+frame 5: slots[1:c=1 cb=1 5:c=1 cb=4 9:c=0 cb=40 d:c=0 cb=0 11:c=0 cb=0 15:c=0 cb=2] 062A_nz=32 buf_3f00=0 004C=0 0056=3
+frame 10: slots[1:c=1 cb=1 5:c=1 cb=4 9:c=0 cb=40 d:c=0 cb=0 11:c=0 cb=0 15:c=0 cb=2] 062A_nz=32 buf_3f00=0 004C=80 0056=3
+frame 20: slots[1:c=1 cb=1 5:c=1 cb=4 9:c=0 cb=40 d:c=0 cb=0 11:c=0 cb=0 15:c=0 cb=2] 062A_nz=32 buf_3f00=0 004C=80 0056=3
+frame 40: slots[1:c=1 cb=1 5:c=1 cb=4 9:c=0 cb=40 d:c=0 cb=0 11:c=0 cb=0 15:c=0 cb=2] 062A_nz=32 buf_3f00=0 004C=80 0056=3
+frame 80: slots[1:c=1 cb=1 5:c=1 cb=4 9:c=0 cb=40 d:c=0 cb=0 11:c=0 cb=0 15:c=0 cb=2] 062A_nz=32 buf_3f00=0 004C=80 0056=3
+frame 150: slots[1:c=1 cb=1 5:c=1 cb=4 9:c=0 cb=40 d:c=0 cb=0 11:c=0 cb=0 15:c=0 cb=2] 062A_nz=32 buf_3f00=0 004C=80 0056=3
+final 062A: 0f 1a 18 30 0f 36 25 30 0f 21 31 30 0f 2b 10 30 0f 0f 0f 36 0f 0f 16 36 0f 0f 30 36 0f 0f 30 36
+final paletteTable bg0: 000000 00ab00 006a5b ffffff

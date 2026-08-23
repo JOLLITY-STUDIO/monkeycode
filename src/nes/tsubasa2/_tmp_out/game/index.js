@@ -92,11 +92,38 @@ function writeNameTable(ppu, base, nt) {
     }
 }
 /**
- * 直写调色板 — palWriteAll 语义 (注释要求的实现):
- * DataStore.paletteTable (RGB) → NTSC 索引 → ppu.writeMem($3F00-$3F1F)。
- * writeMem 在 $3F00 区触发 updatePalettes() → imgPalette/sprPalette。
+ * 直写调色板 — palWriteAll 语义:
+ * 优先用 ram_062A (NES 索引, paletteLoadBG/paletteLoadSPR 写入) 直写 PPU $3F00。
+ * 若 ram_062A 全 0 (调色板未装载), 用 paletteTable (RGB) fallback。
  */
-function writePalettes(ppu, paletteTable) {
+function writePalettes(store, ppu, paletteTable) {
+    // 检查 ram_062A 是否有调色板数据 (paletteLoadBG/paletteLoadSPR 写入)
+    let ramPalNonZero = false;
+    for (let i = 0; i < 0x20; i++) {
+        const key = 'ram_0' + (0x62A + i).toString(16).toUpperCase().padStart(3, '0');
+        if ((store.read(key) & 0x3f) !== 0) {
+            ramPalNonZero = true;
+            break;
+        }
+    }
+    if (ramPalNonZero) {
+        // 用 ram_062A 的 NES 索引直写 PPU $3F00-$3F1F
+        // 渐显偏移: BG 用 ram_004A, SPR 用 ram_004B (原版 $9A7E 语义)
+        const fadeBg = store.read('ram_004A') & 0x0f;
+        const fadeSpr = store.read('ram_004B') & 0x0f;
+        for (let i = 0; i < 0x10; i++) {
+            const key = 'ram_0' + (0x62A + i).toString(16).toUpperCase().padStart(3, '0');
+            const v = (store.read(key) & 0x0f) | fadeBg;
+            ppu.writeMem(0x3f00 + i, v & 0x3f);
+        }
+        for (let i = 0; i < 0x10; i++) {
+            const key = 'ram_0' + (0x63A + i).toString(16).toUpperCase().padStart(3, '0');
+            const v = (store.read(key) & 0x0f) | fadeSpr;
+            ppu.writeMem(0x3f10 + i, v & 0x3f);
+        }
+        return;
+    }
+    // Fallback: paletteTable (RGB) → NTSC 索引
     const cur = ppu.palTable.curTable;
     const bg = paletteTable.bgPalettes;
     const spr = paletteTable.sprPalettes;
@@ -156,7 +183,7 @@ function writeStoreToPpu(store, ppu) {
     // 若把 nt1 写到 $2400, 空 nt1 会清掉刚填充的 NT0 → 黑屏。
     // 正确目标: $2800 (物理 NT B, ntable1[2]=1 → nameTable[1])。
     writeNameTable(ppu, 0x2800, store.nt1);
-    writePalettes(ppu, store.paletteTable);
+    writePalettes(store, ppu, store.paletteTable);
     writeOam(store, ppu);
     writeScroll(store, ppu);
     writeBootChrPatterns(ppu);
@@ -224,6 +251,10 @@ class Tsubasa2 {
         const ppu = nes.ppu;
         try {
             ppu.startFrame();
+            // H5 不跑 CPU, 用 advanceDots 推进 PPU 一整帧 (262 scanlines × 341 dots)
+            // advanceDots 内部每 341 dots 调 endScanline, endScanline 调 renderBgScanline 渲染 bgbuffer
+            ppu.advanceDots(262 * 341);
+            // renderFramePartially 把 bgbuffer 复制到 buffer (检查 pixrendered > 0xff)
             ppu.renderFramePartially(0, 240);
             ppu.endFrame();
         }

@@ -30,6 +30,8 @@ export class ScriptEngine {
   protected _system: import('../system/GameSystemService').GameSystemService | null = null;
   /** PPU buffer 写入位置指针 (原 asm $0000 in $9B28 context, H5 用类成员避免与协程槽冲突) */
   protected _bufWritePos = 0;
+  /** 让帧标志 — 等待类指令 (waitFrame/fadeIn/fadeOut/waitAnim/spriteFlip) 置位, update 返回 true */
+  protected _yieldFrame = false;
 
   /** 脚本流指针 (ram_004D/004E) */
   protected get scriptPtr(): number {
@@ -77,15 +79,25 @@ export class ScriptEngine {
   }
 
   /**
-   * 每帧推进脚本 (原脚本分派器)。
-   * 每帧执行一步 (一字符/一指令), 遇等待则暂停至下帧。
+   * 每帧推进脚本 (原脚本分派器 $84E7)。
+   * 普通指令同帧连续执行, 遇等待类指令 (waitFrame/fadeIn/fadeOut/waitAnim 等) 返回 true 让帧。
    * 用 ram_0056 (脚本 bank) 判断是否已装载 (ScriptLoader.load 设 ptr=0 是合法值, 不能用 ptr===0 判断)。
+   *
+   * @returns true = 本帧需让出 (等待类指令已执行, 下帧继续), false = 可同帧继续执行
    */
-  update(frame: number): void {
+  update(frame: number): boolean {
     void frame;
     // ram_0056 = 脚本 bank, 0 表示未装载
-    if (this._store.read('ram_0056') === 0) return;
-    this.step();
+    if (this._store.read('ram_0056') === 0) return true;
+    // 普通指令同帧连续执行, 直到遇到等待类指令 (置位 _yieldFrame) 才让帧
+    let guard = 0;
+    do {
+      this.step();
+      guard++;
+    } while (!this._yieldFrame && guard < 4096);
+    const yieldFrame = this._yieldFrame;
+    this._yieldFrame = false;
+    return yieldFrame;
   }
 
   /** 分派一步 (原 $84E7) */
@@ -177,6 +189,8 @@ export class ScriptEngine {
       this.waitCounter();
       n--;
     }
+    // 原版换行等待让帧
+    this._yieldFrame = true;
   }
 
   /** 等待帧指令 0xD8-0xDF (原 $8504 分支) */
@@ -187,6 +201,8 @@ export class ScriptEngine {
     this.setSpriteFlag();
     // 等待 frames 帧
     for (let i = 0; i < frames; i++) this.waitCounter();
+    // 原版 $8514 JSR $9FA8 让帧 — 等待指令让帧
+    this._yieldFrame = true;
     this.advancePtr(1);
   }
 

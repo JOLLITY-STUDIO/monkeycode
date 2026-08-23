@@ -1,0 +1,14 @@
+pixrendered>0xff: 335
+pixrendered!=65: 335
+bgbuffer samples: [36939]=0x525252 [36963]=0x525252 [36990]=0x525252 [36994]=0x525252 [37002]=0x525252
+pix[36939]=321 (0x141)
+pix[36963]=321 (0x141)
+pix[36990]=321 (0x141)
+pix[36994]=321 (0x141)
+pix[37002]=321 (0x141)
+after manual renderFramePartially: buffer nonZero=335
+cntV=1 cntH=0 curNt=1 ntable1=0,0,1,1
+ppu.nameTable[0] nonZero tiles=23
+ppu.nameTable[1] nonZero tiles=0
+ppu.nameTable[2] nonZero tiles=0
+ppu.nameTable[3] nonZero tiles=0

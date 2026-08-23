@@ -148,6 +148,12 @@ export class HardwareInitService {
     //   slot $15 → bank0 $82EC (场景数据装载器: ram_004C 经 bank6 $B800 指针表驱动
     //                         装载 BG 调色板动画 / SPR 精灵数据)
     // slot $11 → $9147 (场景数据消费协程) 由 $9085 装载器末尾自行注册, 此处不重复。
+    // 预加载默认调色板 (idx=0) 到 ram_062A, 避免脚本 opPalette 执行前调色板全黑
+    this.wr(0x0048, 0);
+    this.wr(0x0049, 0);
+    this._system.paletteLoadBG();
+    this._system.paletteLoadSPR();
+    this._system.paletteSetFull();
     const ctx = { e6: 0, e7: 0, e8: 0, e9: 0, ea: 0, eb: 0, ec: 0, ed: sceneId & 0xff, y: 0, x: 0 };
     this._system.registerCoroutine(0x01, 0x00, 1, ctx); // $801E (callback idx 1)
     this._system.registerCoroutine(0x15, 0x00, 2, ctx); // $82EC (callback idx 2)
