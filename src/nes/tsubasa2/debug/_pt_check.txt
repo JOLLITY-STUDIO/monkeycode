@@ -1,8 +1,0 @@
-pt0 entries=512 nonEmpty=0
-pt1 entries=null nonEmpty=0
-pt0[0] keys: pix,initialized,opaque
-pt0[0].pix len=64 sample=0,0,0,0,0,0,0,0
-ram_0020=8 ram_0021=30
-f_bg=1 f_sp=1
-f_bgPatternTable=0 f_spPatternTable=1
-palette nonZero=0

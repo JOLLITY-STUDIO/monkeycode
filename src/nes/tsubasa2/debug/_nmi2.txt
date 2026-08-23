@@ -1,8 +1,0 @@
-﻿28: ; palette, experience tables, $FF padding to $FFEF.
-29: .include "data_scripts.s"
-30: 
-31: ; --- VECTORS: $FFF0-$FFFF RESET + IRQ ---
-32: ; RESET=$FFF0 (LDA #$00; STA $8000; JMP $C503)
-33: ; NMI=$C5F0, IRQ=$C506 (at $FFFA-$FFFF)
-34: .include "vectors.s"
-35: 

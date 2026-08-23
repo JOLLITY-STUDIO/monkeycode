@@ -1,3 +1,0 @@
-[HardwareInitService] init() done. nt0=0 ram_00ED=0 ram_004A=0 ram_0538=0
-[Tsubasa2] boot() done. nt0=0 nt1=0 scrollX=0 scrollY=0 ram_00ED=0
-[Tsubasa2] frame=30 nt0=34 nt1=0 bgVis=1 sprVis=1 bufNonZero=0 scrollX=0 scrollY=0 ram_0538=0
