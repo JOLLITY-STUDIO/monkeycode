@@ -995,24 +995,28 @@ export class GameSystemService {
   /**
    * $838A: 切 bank2 调 $A215 再切回 bank6 (纯 bank 切换辅助子程)
    * asm: LDX #$02; JSR $C4B9 (切 R7=bank2); JSR $A215; LDX #$06; JSR $C4B9 (切回 R7=bank6); RTS
-   * H5: 通过 PrgBankService 切 R7, $A215 本体待 tsnes trace 补全后翻译
-   * $A215 = JMP $A8CE (bank2 偏移 $0215), $A8CE 反汇编缺失 (被误标数据)
-   * 调用上下文: 场景数据装载协程 $82ED 每帧调用, 极可能是 NMI buffer 提交/调色板同步
+   * H5: 通过 PrgBankService 切 R7, $A215 本体 = JMP $A8CE (bank2 精灵 OAM 刷新)
    */
   private sub838A(): void {
     const prevR7 = this.currentR7Bank();
     this.bankSwitchR7(2);
-    // TODO: 翻译 $A215 ($A8CE) 本体 — bank2 子程, 反汇编缺失
-    // 可能语义: NMI buffer 提交 / 调色板同步 / 场景数据预处理
-    // 待 tsnes disasm 工具 dump bank2 $A8CE 运行时反汇编后补全
-    this.subA215_stub();
+    // $A215 = JMP $A8CE: 精灵 OAM 刷新 (影子 $0468 → 硬件 $0200, attr bit2-3≠0 → Y=$F8 隐藏)
+    // tsnes disasm dump bank2 $A8CE 运行时反汇编确认:
+    //   $A8CE: LDA #$01; JSR $9FA8 (协程让出1帧, H5 由外层 generator yield 处理)
+    //   $A8D3-$A8FB: LDY#0; 循环 LDX$0468,Y; LDA$046A,Y; AND#$0C; BEQ→用原Y / LDX#$F8; 
+    //                TXA; STA$0200,Y; 复制 tile/attr/X; INY×4; BNE循环 (64精灵)
+    //   $A8FD: RTS
+    // 语义等价 ShadowOam.copyToHw() (nes-ram.ts:441, 注释 "对应 NES sub_88CE attr bit2-3≠0→Y=$F8")
+    // H5: $9FA8 让出由 sub82ECGen 协程的 coroutineYield 处理, 此处只做 OAM 刷新
+    this._store.oamShadow.copyToHw();
     this.bankSwitchR7(prevR7);
   }
 
-  /** $A215 ($A8CE) stub — bank2 子程, 反汇编缺失, 待翻译 */
+  /** $A215 ($A8CE) — 精灵 OAM 刷新 (影子 $0468 → 硬件 $0200, attr bit2-3≠0 隐藏)
+   *  tsnes disasm dump 确认, 语义等价 ShadowOam.copyToHw() */
   private subA215_stub(): void {
-    // 占位: bank2 $A8CE 的实现未知
-    // 从 $82ED 调用上下文推测是 NMI/调色板相关辅助函数
+    // 已内联到 sub838A (调用 copyToHw), 保留方法签名供未来扩展
+    this._store.oamShadow.copyToHw();
   }
 
   /** $8306-$8380 BG 路径: 调色板动画流 → $062A RAM 调色板 */
