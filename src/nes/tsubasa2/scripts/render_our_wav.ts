@@ -62,7 +62,8 @@ function renderSong(songIdx: number, durationSec: number): number[] {
 
 // 主函数
 const songIdx = parseInt(process.argv[2] || '41') - 1;  // 默认第 41 首（第一首 BGM）
-const duration = parseInt(process.argv[3] || '10');
+const songId = SONG_REQUEST_IDS[songIdx];
+const duration = parseInt(process.argv[3] || (songId < 0x32 ? '60' : '5'));  // BGM 60秒, SE 5秒
 const all = process.argv[4] === 'all';
 
 const outDir = path.join(__dirname, '..', 'output');
@@ -71,11 +72,13 @@ fs.mkdirSync(outDir, { recursive: true });
 if (all) {
   // 渲染全部 105 首
   for (let i = 0; i < SONG_COUNT; i++) {
+    const id = SONG_REQUEST_IDS[i];
+    const dur = id < 0x32 ? 60 : 5;  // BGM 60秒, SE 5秒
     const outFile = path.join(outDir, `our-song-${String(i + 1).padStart(3, '0')}.wav`);
     if (fs.existsSync(outFile)) { console.log(`跳过 ${i + 1}`); continue; }
-    console.log(`[${i + 1}/${SONG_COUNT}] 渲染中...`);
+    console.log(`[${i + 1}/${SONG_COUNT}] 渲染中 (ID $${id.toString(16)}, ${dur}秒)...`);
     try {
-      const samples = renderSong(i, duration);
+      const samples = renderSong(i, dur);
       writeWav(samples, 44100, outFile);
       console.log(`  完成: ${samples.length} 采样`);
     } catch (e) {
@@ -88,7 +91,7 @@ if (all) {
     console.error('曲目号超出范围 (1-105)');
     process.exit(1);
   }
-  console.log(`渲染第 ${songIdx + 1} 首 (${duration}秒)...`);
+  console.log(`渲染第 ${songIdx + 1} 首 (ID $${songId.toString(16)}, ${duration}秒)...`);
   const samples = renderSong(songIdx, duration);
   const outFile = path.join(outDir, `our-song-${String(songIdx + 1).padStart(3, '0')}.wav`);
   writeWav(samples, 44100, outFile);

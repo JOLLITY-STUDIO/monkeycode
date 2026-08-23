@@ -23,11 +23,7 @@ import {
   HardwareInitService,
   InterruptService,
   InputService,
-  OpeningSceneController,
-  TitleSceneController,
-  PasswordSceneController,
-  ResultSceneController,
-  StorySceneController,
+  Scene0Controller,
   ScriptEngine,
   ScriptLoader,
   CharMap,
@@ -75,12 +71,8 @@ export class Tsubasa2 {
     this.input = new InputService(this.store);
     this.system = new GameSystemService(this.store);
 
-    // 场景控制器
-    const opening = new OpeningSceneController(this.store, this.input);
-    const title = new TitleSceneController(this.store, this.input);
-    const password = new PasswordSceneController(this.store, this.input);
-    const result = new ResultSceneController(this.store, this.input);
-    const story = new StorySceneController(this.store, this.input);
+    // 场景控制器（按场景 ID 组织；场景表 SceneTable 管理 24 项行为）
+    const scene0 = new Scene0Controller(this.store, this.input);
 
     // 剧情脚本（V0.4 接入）
     const scriptLoader = new ScriptLoader(this.store);
@@ -115,15 +107,10 @@ export class Tsubasa2 {
     this.audio = new AudioService(this.store);
 
     // 音频注入（场景 BGM/SE 播放）
-    opening.attachAudio(this.audio);
-    title.attachAudio(this.audio);
+    scene0.attachAudio(this.audio);
 
-    // 路由：注册全部场景
-    this.router = new BootRouter(this.store, opening);
-    this.router.register(title);
-    this.router.register(password);
-    this.router.register(result);
-    this.router.register(story);
+    // 路由：场景表驱动注册（未翻译场景自动走默认 stub）
+    this.router = new BootRouter(this.store, scene0);
 
     // 硬件初始化 + 中断管线
     this.hardware = new HardwareInitService(this.store);
@@ -138,8 +125,8 @@ export class Tsubasa2 {
   boot(): void {
     this._frame = 0;
     this.hardware.reset();
-    // 场景调度：场景号 0 = 开场（原版 Reset 末尾 LDA #$00; JMP $CEFE）
-    this.router.changeScene(SceneId.Opening);
+    // 场景调度：场景号 0（原版 Reset 末尾 LDA #$00; JMP $CEFE）
+    this.router.changeScene(SceneId.Scene0);
   }
 
   /**

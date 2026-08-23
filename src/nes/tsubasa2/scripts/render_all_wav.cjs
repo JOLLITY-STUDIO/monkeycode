@@ -28,12 +28,14 @@ function writeWav(samples, sampleRate, outPath) {
 const outDir = path.join(__dirname, '..', 'output');
 fs.mkdirSync(outDir, { recursive: true });
 
-const duration = 10; // 每首 10 秒
-const totalFrames = Math.ceil(duration * 60);
 const sampleRate = 44100;
+// BGM(曲41-86, ID<$32)循环播放 → 60秒；SE(其余)短音效 → 5秒
+function getDuration(songId) { return songId < 0x32 ? 60 : 5; }
 
 for (let songIdx = 0; songIdx < SONG_IDS.length; songIdx++) {
   const songId = SONG_IDS[songIdx];
+  const duration = getDuration(songId);
+  const totalFrames = Math.ceil(duration * 60);
   const outFile = path.join(outDir, `song-${String(songIdx + 1).padStart(3, '0')}.wav`);
   if (fs.existsSync(outFile)) { console.log(`跳过 ${songIdx + 1}`); continue; }
 

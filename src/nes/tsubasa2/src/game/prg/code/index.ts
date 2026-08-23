@@ -11,13 +11,11 @@ export { InterruptService } from './system/InterruptService';
 export type { PpuTarget } from './system/InterruptService';
 export { InputService, Button } from './system/InputService';
 
-// scene
+// scene（按场景 ID 组织：场景表 + 控制器）
 export { SceneController } from './scene/SceneController';
-export { OpeningSceneController } from './scene/OpeningSceneController';
-export { TitleSceneController } from './scene/TitleSceneController';
-export { PasswordSceneController } from './scene/PasswordSceneController';
-export { ResultSceneController } from './scene/ResultSceneController';
-export { StorySceneController } from './scene/StorySceneController';
+export { Scene0Controller } from './scene/Scene0Controller';
+export { SCENE_TABLE, getSceneEntry } from './scene/SceneTable';
+export type { SceneEntry } from './scene/SceneTable';
 
 // story
 export { ScriptEngine } from './story/ScriptEngine';

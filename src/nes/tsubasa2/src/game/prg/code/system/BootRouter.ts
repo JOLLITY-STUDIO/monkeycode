@@ -1,49 +1,59 @@
 /**
- * BootRouter — 场景路由（原 bank02 场景分发 + NMI 回调索引）
+ * BootRouter — 场景路由（原 bank02 场景分发 $8486 + 跳转表 $A491）
  *
  * @bank 02 ($8000-$AFFF)
  *
  * 对应原始地址：
- *   $8486: 场景入口跳转（ASL; TAX; LDA $A491,X 跳转表，24 项）
+ *   $8486: 场景入口跳转（ASL; TAX; LDA $A492,X 跳转表，24 项）
  *   $A200: 场景初始化入口（Reset → $CEFE → $C400 → JMP $A200）
- *   $A491: 场景入口跳转表（24 项：$A4C0/$A559/$A57B/...）
+ *   $A491: 场景入口跳转表（24 项，见 SceneTable）
  *
- * 场景号：0-23（跳转表长度 24）。跳转表存的是「目标地址-1」（RTS+1 机制），
- * 例如场景 0 表值 $A4C0 → 实际入口 $A4C1。
- *
- * 场景返回流转：场景代码末尾 `LDA #nextScene; RTS` 把下一场景号放 A 返回，
- * 分发调用者再 `STA $00ED` 存回，循环重新分发。H5 中由 onUpdate 返回值表达。
+ * 组织原则：以场景 ID 为键，通过场景表（SceneTable）分发；不按业务语义命名。
+ * 场景 0-23 全部登记在场景表中，未翻译场景使用默认 stub（留在当前场景）。
  */
 import type { DataStore } from '../../data/store/DataStore';
 import type { SceneController } from '../scene/SceneController';
-import type { OpeningSceneController } from '../scene/OpeningSceneController';
+import { Scene0Controller } from '../scene/Scene0Controller';
 
-/** 场景号枚举（0-23，跳转表 $A491 顺序；名称 V0.3 起逐一对照确认） */
+/** 场景号枚举（0-23，跳转表 $A491 顺序） */
 export const enum SceneId {
-  Opening = 0,   // 开场（boot 入口场景）→ $A4C0/$A4C1
-  Scene1 = 1,    // $A559/$A55A（数学工具：$00EC>>2 取补，返回 3）
-  Scene2 = 2,    // $A57B/$A57C（清 sprite 扩展表，返回 2）
-  Scene3 = 3,    // $A581/$A582（清 NT0/NT1，返回 2）
-  Scene4 = 4,    // $A5A2/$A5A3
-  Scene5 = 5,    // $A5A8/$A5A9
-  Scene6 = 6,    // $A5B0/$A5B1
-  Scene7 = 7,    // $A5B8/$A5B9
-  Scene8 = 8,    // $A5BF/$A5C0
-  Scene9 = 9,    // $A5CD/$A5CE
-  Scene10 = 10,  // $A5DB/$A5DC
-  Scene11 = 11,  // $A5E8/$A5E9
-  Scene12 = 12,  // $A602/$A603
-  Scene13 = 13,  // $A61C/$A61D
-  Scene14 = 14,  // $A629/$A62A
-  Scene15 = 15,  // $A650/$A651
-  Scene16 = 16,  // $A69C/$A69D
-  Scene17 = 17,  // $A77A/$A77B
-  Scene18 = 18,  // $A782/$A783
-  Scene19 = 19,  // $A78D/$A78E
-  Scene20 = 20,  // $A7BD/$A7BE
-  Scene21 = 21,  // $A7CE/$A7CF
-  Scene22 = 22,  // $A7D6/$A7D7
-  Scene23 = 23,  // $A7FA/$A7FB
+  Scene0 = 0,   // $A4C0/$A4C1（boot 入口）
+  Scene1 = 1,   // $A559/$A55A
+  Scene2 = 2,   // $A57B/$A57C
+  Scene3 = 3,   // $A581/$A582
+  Scene4 = 4,   // $A5A2/$A5A3
+  Scene5 = 5,   // $A5A8/$A5A9
+  Scene6 = 6,   // $A5B0/$A5B1
+  Scene7 = 7,   // $A5B8/$A5B9
+  Scene8 = 8,   // $A5BF/$A5C0
+  Scene9 = 9,   // $A5CD/$A5CE
+  Scene10 = 10, // $A5DB/$A5DC
+  Scene11 = 11, // $A5E8/$A5E9
+  Scene12 = 12, // $A602/$A603
+  Scene13 = 13, // $A61C/$A61D
+  Scene14 = 14, // $A629/$A62A
+  Scene15 = 15, // $A650/$A651
+  Scene16 = 16, // $A69C/$A69D
+  Scene17 = 17, // $A77A/$A77B
+  Scene18 = 18, // $A782/$A783
+  Scene19 = 19, // $A78D/$A78E
+  Scene20 = 20, // $A7BD/$A7BE
+  Scene21 = 21, // $A7CE/$A7CF
+  Scene22 = 22, // $A7D6/$A7D7
+  Scene23 = 23, // $A7FA/$A7FB
+}
+
+/** 未翻译场景的默认 stub（不流转，留在当前场景） */
+class SceneStubController implements SceneController {
+  readonly sceneId: number;
+  constructor(sceneId: number) {
+    this.sceneId = sceneId;
+  }
+  onEnter(): void {}
+  onUpdate(_frame: number): number | undefined {
+    return undefined;
+  }
+  onRender(): void {}
 }
 
 export class BootRouter {
@@ -51,21 +61,30 @@ export class BootRouter {
   private readonly scenes: Map<number, SceneController> = new Map();
 
   /** 当前场景号（ram_00ED 语义：原版存当前场景） */
-  private currentSceneId = SceneId.Opening;
+  private currentSceneId = SceneId.Scene0;
 
   /** 当前场景控制器 */
   private current: SceneController | null = null;
 
   constructor(
     readonly store: DataStore,
-    readonly opening: OpeningSceneController,
+    scene0?: Scene0Controller,
   ) {
-    this.register(opening);
+    // 场景 0 已翻译：注册真实控制器；其余场景未翻译时走默认 stub
+    this.register(scene0 ?? new SceneStubController(SceneId.Scene0));
+    for (let id = 1; id <= 23; id++) {
+      this.scenes.set(id, new SceneStubController(id));
+    }
   }
 
-  /** 注册场景控制器 */
+  /** 注册/覆盖场景控制器 */
   register(controller: SceneController): void {
     this.scenes.set(controller.sceneId, controller);
+  }
+
+  /** 获取场景控制器（未注册返回 stub） */
+  getController(sceneId: number): SceneController {
+    return this.scenes.get(sceneId) ?? new SceneStubController(sceneId);
   }
 
   /**
@@ -88,7 +107,7 @@ export class BootRouter {
     // $A200：场景号存回 ram_00ED 并分发
     this.currentSceneId = sceneId;
     store.writeByte(0x00ed, sceneId);
-    const next = this.scenes.get(sceneId) ?? null;
+    const next = this.getController(sceneId);
     this.current = next;
     next?.onEnter();
   }

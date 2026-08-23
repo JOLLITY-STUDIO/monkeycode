@@ -41846,12 +41846,12 @@ function renderSong(songIdx2, durationSec) {
   const audio = new AudioService(store);
   const renderer = new ApuPcmRendererImpl();
   audio.attachApu(renderer);
-  const songId = SONG_REQUEST_IDS[songIdx2];
-  console.log(`  \u66F2\u76EE ${songIdx2 + 1}: \u8BF7\u6C42 ID $${songId.toString(16)}`);
-  if (songId < 50) {
-    audio.playBgm(songId);
+  const songId2 = SONG_REQUEST_IDS[songIdx2];
+  console.log(`  \u66F2\u76EE ${songIdx2 + 1}: \u8BF7\u6C42 ID $${songId2.toString(16)}`);
+  if (songId2 < 50) {
+    audio.playBgm(songId2);
   } else {
-    audio.playSe(songId);
+    audio.playSe(songId2);
   }
   const totalFrames = Math.ceil(durationSec * 60);
   const samples = [];
@@ -41865,20 +41865,23 @@ function renderSong(songIdx2, durationSec) {
   return samples;
 }
 var songIdx = parseInt(process.argv[2] || "41") - 1;
-var duration = parseInt(process.argv[3] || "10");
+var songId = SONG_REQUEST_IDS[songIdx];
+var duration = parseInt(process.argv[3] || (songId < 50 ? "60" : "5"));
 var all = process.argv[4] === "all";
 var outDir = path.join(__dirname, "..", "output");
 fs.mkdirSync(outDir, { recursive: true });
 if (all) {
   for (let i = 0; i < SONG_COUNT; i++) {
+    const id = SONG_REQUEST_IDS[i];
+    const dur = id < 50 ? 60 : 5;
     const outFile = path.join(outDir, `our-song-${String(i + 1).padStart(3, "0")}.wav`);
     if (fs.existsSync(outFile)) {
       console.log(`\u8DF3\u8FC7 ${i + 1}`);
       continue;
     }
-    console.log(`[${i + 1}/${SONG_COUNT}] \u6E32\u67D3\u4E2D...`);
+    console.log(`[${i + 1}/${SONG_COUNT}] \u6E32\u67D3\u4E2D (ID $${id.toString(16)}, ${dur}\u79D2)...`);
     try {
-      const samples = renderSong(i, duration);
+      const samples = renderSong(i, dur);
       writeWav(samples, 44100, outFile);
       console.log(`  \u5B8C\u6210: ${samples.length} \u91C7\u6837`);
     } catch (e) {
@@ -41891,7 +41894,7 @@ if (all) {
     console.error("\u66F2\u76EE\u53F7\u8D85\u51FA\u8303\u56F4 (1-105)");
     process.exit(1);
   }
-  console.log(`\u6E32\u67D3\u7B2C ${songIdx + 1} \u9996 (${duration}\u79D2)...`);
+  console.log(`\u6E32\u67D3\u7B2C ${songIdx + 1} \u9996 (ID $${songId.toString(16)}, ${duration}\u79D2)...`);
   const samples = renderSong(songIdx, duration);
   const outFile = path.join(outDir, `our-song-${String(songIdx + 1).padStart(3, "0")}.wav`);
   writeWav(samples, 44100, outFile);

@@ -88,7 +88,8 @@ function renderSong(songIdx, durationSec) {
 
 // 渲染指定曲目
 const songIdx = parseInt(process.argv[2] || '41') - 1; // 默认第 41 首（第一首 BGM, ID=0x03）
-const duration = parseInt(process.argv[3] || '10'); // 默认 10 秒
+const songId = SONG_IDS[songIdx];
+const duration = parseInt(process.argv[3] || (songId < 0x32 ? '60' : '5')); // BGM 默认 60 秒, SE 默认 5 秒
 
 if (songIdx < 0 || songIdx >= SONG_IDS.length) {
   console.error('曲目号超出范围 (1-105)');
