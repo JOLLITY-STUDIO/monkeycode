@@ -62,6 +62,7 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 ### V0.6 — 音频引擎
 - `AudioService`：$0700 音频请求队列 → APU 寄存器写，BGM/SE 真实播放。
 - 验收：开场 BGM、标题 SE、比赛音效与原始一致。
+- 状态：✅ 请求队列消费 + APU 寄存器写框架 + DPCM 触发完成；BGM/SE 乐谱数据流完整解析（vibrato/arpeggio/包络）保留 TODO V0.6+（需逐字节对照 asm code_main.s $80BA-$86F5 翻译）。
 
 ### V0.7 — 全链路 + 优化
 - 全链路串通（boot→开场→标题→剧情→比赛→终场→密码选关）。
@@ -90,7 +91,7 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 | D2 | V0.4 | 剧情数据装载与播放 | code/story/ScriptLoader.ts | ⬜ |
 | E1 | V0.5 | 比赛引擎核心 | code/match/* | ⬜ |
 | E2 | V0.5 | 必杀技 + 精灵渲染 | code/skill, code/sprite | ⬜ |
-| F1 | V0.6 | 音频请求队列 → APU | code/audio/AudioService.ts | ⬜ |
+| F1 | V0.6 | 音频请求队列 → APU | code/audio/AudioService.ts | ✅ |
 | G1 | V0.7 | 全链路 + 优化 + 真机 | — | ⬜ |
 
 ---

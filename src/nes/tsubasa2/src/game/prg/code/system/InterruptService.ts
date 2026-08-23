@@ -17,6 +17,7 @@
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from './InputService';
 import type { BootRouter } from './BootRouter';
+import type { AudioService } from '../audio/AudioService';
 
 /** 渲染目标抽象（H5 下由 core PPU 实现；测试可注入假目标） */
 export interface PpuTarget {
@@ -31,6 +32,7 @@ export interface PpuTarget {
 
 export class InterruptService {
   private router: BootRouter | null = null;
+  private audio: AudioService | null = null;
 
   constructor(
     readonly store: DataStore,
@@ -42,6 +44,11 @@ export class InterruptService {
     this.router = router;
   }
 
+  /** 注入音频服务（每帧推进音频引擎） */
+  attachAudio(audio: AudioService): void {
+    this.audio = audio;
+  }
+
   /**
    * 每帧 NMI（$C76E 语义）
    * @param frame 帧号
@@ -51,9 +58,11 @@ export class InterruptService {
     store.frame = frame;
     // 1. 手柄读取（bank02 $80D7 语义）
     this.input.readControllers();
-    // 2. 场景帧更新（游戏逻辑；v0.1 场景为 stub）
+    // 2. 音频引擎帧推进（bank12 $80BA 语义）
+    this.audio?.update();
+    // 3. 场景帧更新（游戏逻辑；v0.1 场景为 stub）
     this.router?.update(frame);
-    // 3. 主渲染路径标志（$C775: ram_001B bit7 置位）
+    // 4. 主渲染路径标志（$C775: ram_001B bit7 置位）
     store.writeByte(0x001b, store.readByte(0x001b) | 0x80);
   }
 

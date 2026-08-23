@@ -18,3 +18,13 @@ export { SKILL_TABLE, findSkillByMoveId, findSkillsByPlayer } from './tables/ski
 export { DEFAULT_MATCH_CONFIG, getMatchConfig } from './tables/match-config-table';
 export type { MatchConfigEntry } from './tables/match-config-table';
 export { LEVEL_UP_TABLE, findLevelByExp } from './tables/levelup-table';
+
+// audio
+export {
+  BANK12_BYTES, BANK12_BASE_ADDR,
+  SE_POINTER_TABLE_ADDR, SE_POINTER_TABLE_LEN,
+  BGM_POINTER_TABLE_ADDR, BGM_POINTER_TABLE_LEN,
+  NOTE_DURATION_TABLE_ADDR, NOTE_DURATION_TABLE_LEN,
+  NOTE_FREQ_TABLE_ADDR,
+  Bank12Rom,
+} from './audio/bank12-rom';

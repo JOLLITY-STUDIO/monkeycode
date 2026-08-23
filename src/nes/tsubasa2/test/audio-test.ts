@@ -1,0 +1,85 @@
+/**
+ * test/audio-test.ts — AudioService 请求队列消费 + APU 寄存器写验证
+ *
+ * 验证点：
+ *   1. playBgm(0x10) → $0700[0] = 0x10，update 后消费，LogApuTarget 收到 $4015 写
+ *   2. playSe(0x32) → $0700[1] = 0x32，update 后消费
+ *   3. playSe(0x31) → 停止所有 SE（写静音包络到 $07CF-$07DE）
+ *   4. stopAll() → 清空队列 + $4015=0
+ *   5. playDpcm(0) → $4010/$4012/$4013 写
+ */
+import { DataStore } from '../src/game/prg/data/store/DataStore';
+import { AudioService } from '../src/game/prg/code/audio/AudioService';
+import { LogApuTarget } from '../src/game/prg/code/audio/ApuTarget';
+import { Bank12Rom } from '../src/game/prg/data/audio/bank12-rom';
+
+function assert(cond: boolean, msg: string): void {
+  if (!cond) { console.error('FAIL:', msg); process.exit(1); }
+  console.log('PASS:', msg);
+}
+
+const store = new DataStore();
+store.reset();
+const audio = new AudioService(store);
+const apu = new LogApuTarget();
+audio.attachApu(apu);
+
+// === 测试 1: playBgm ===
+audio.playBgm(0x10);
+assert(store.readByte(0x0700) === 0x10, 'playBgm 写入 $0700[0]');
+
+apu.setFrame(0);
+audio.update();
+assert(store.readByte(0x0700) === 0, 'update 后 BGM 请求被消费');
+assert(store.readByte(0x07FC) === 0x10, 'BGM bank 影子 $07FC 已设置');
+assert(store.readByte(0x0706) === 0x07, 'BGM 启用 Pulse1+Pulse2+Triangle ($0706=0x07)');
+// 应该有 $4015 写（启用 APU）
+const has4015 = apu.logs.some(l => l.addr === 0x4015 && l.value === 0x0F);
+assert(has4015, 'BGM 启动写 $4015=0x0F 启用 APU 通道');
+apu.clear();
+
+// === 测试 2: playSe ===
+audio.playSe(0x32);
+assert(store.readByte(0x0701) === 0x32, 'playSe 写入 $0700[1]');
+
+apu.setFrame(1);
+audio.update();
+assert(store.readByte(0x0701) === 0, 'update 后 SE 请求被消费');
+// SE 启动应标记 Noise 通道活跃
+assert((store.readByte(0x0706) & 0x08) !== 0, 'SE 启动标记 Noise 通道活跃');
+
+// === 测试 3: stopAll ===
+audio.stopAll();
+assert(store.readByte(0x0700) === 0, 'stopAll 清空 $0700[0]');
+assert(store.readByte(0x0701) === 0, 'stopAll 清空 $0700[1]');
+assert(store.readByte(0x0706) === 0, 'stopAll 清空通道活跃位');
+// 检查静音包络
+assert(store.readByte(0x07D0) === 0x0A, 'stopAll 写 $07D0=0x0A (音量)');
+assert(store.readByte(0x07CF) === 0x19, 'stopAll 写 $07CF=0x19 (包络)');
+// 应该有 $4015=0 写
+const has4015Off = apu.logs.some(l => l.addr === 0x4015 && l.value === 0x00);
+assert(has4015Off, 'stopAll 写 $4015=0x00 关闭 APU');
+apu.clear();
+
+// === 测试 4: playDpcm ===
+audio.playDpcm(0);
+const hasDpcm4010 = apu.logs.some(l => l.addr === 0x4010 && l.value === 0x0F);
+const hasDpcm4012 = apu.logs.some(l => l.addr === 0x4012 && l.value === 0x00);
+const hasDpcm4013 = apu.logs.some(l => l.addr === 0x4013 && l.value === 0x0C);
+assert(hasDpcm4010, 'playDpcm(0) 写 $4010=0x0F');
+assert(hasDpcm4012, 'playDpcm(0) 写 $4012=0x00');
+assert(hasDpcm4013, 'playDpcm(0) 写 $4013=0x0C');
+assert(store.readByte(0x07E8) === 0x80, 'playDpcm 设置 DPCM 标志 $07E8=0x80');
+
+// === 测试 5: Bank12Rom 数据访问 ===
+const bgm0 = Bank12Rom.readBgmPointer(0);
+assert(bgm0 === 0x8892, 'Bank12Rom.readBgmPointer(0) = $8892');
+const se0 = Bank12Rom.readSePointer(0);
+assert(se0 === 0x8E42, 'Bank12Rom.readSePointer(0) = $8E42');
+const dur0 = Bank12Rom.readNoteDuration(0);
+assert(dur0 === 0x00, 'Bank12Rom.readNoteDuration(0) = $00');
+const dur1 = Bank12Rom.readNoteDuration(1);
+assert(dur1 === 0x01, 'Bank12Rom.readNoteDuration(1) = $01');
+
+console.log('\n=== 全部测试通过 ===');
+console.log('APU 日志摘要:', apu.summary());

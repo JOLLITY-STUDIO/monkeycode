@@ -45,3 +45,5 @@ export { SkillService } from './skill/SkillService';
 export { SpriteService } from './sprite/SpriteService';
 export { SpriteAnimationService } from './sprite/SpriteAnimationService';
 export { AudioService } from './audio/AudioService';
+export { ApuTarget, LogApuTarget, NullApuTarget } from './audio/ApuTarget';
+export { WebAudioApuTarget } from './audio/WebAudioApuTarget';

@@ -11,16 +11,25 @@
 import { SceneController } from './SceneController';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
+import type { AudioService } from '../audio/AudioService';
 
 export class OpeningSceneController extends SceneController {
   readonly sceneId = 0;
+  private audio: AudioService | null = null;
 
   constructor(store: DataStore, input: InputService) {
     super(store, input);
   }
 
+  /** 注入音频服务（开场 BGM 播放） */
+  attachAudio(audio: AudioService): void {
+    this.audio = audio;
+  }
+
   onEnter(): void {
     // TODO V0.3: 翻译 $A4C0 开场序列（调色板 / NT / OAM / 文本）
+    // V0.6: 播放开场 BGM（BGM 编号待对照 asm 确认，暂用 0x01）
+    this.audio?.playBgm(0x01);
   }
 
   onUpdate(frame: number): void {
