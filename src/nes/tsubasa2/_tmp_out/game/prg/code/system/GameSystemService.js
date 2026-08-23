@@ -1007,49 +1007,50 @@ class GameSystemService {
         this.wr(0x0095, 0x05);
         // $9150: LDA #$04; STA $0096 (计数器 = 4)
         this.wr(0x0096, 0x04);
-        // $9154: LDY #$00; LDA ($0094),Y (读第一个字节)
-        let y = 0;
-        const ptr94 = this.rdPtr(0x0094, 0x0095);
-        let a = this.rdMemByte(ptr94 + y);
-        // $9158: BMI $915D (≥$80 → 精灵设置)
-        if ((a & 0x80) !== 0) {
-            // $915D: TAX; LDY #$04; JSR $974A (读场景数据[4])
-            const x = a;
-            this.sub974A(0x04);
-            // $9163: LDY #$06; JSR $974A (读场景数据[6])
-            this.sub974A(0x06);
-            // $9168: TXA; AND #$10; BNE $91A6 (bit4 → $91A6)
-            if ((x & 0x10) !== 0) {
-                yield* this.sub91A6Gen(x);
-            }
-            else if ((x & 0x20) !== 0) {
-                // $9175: LDX #$04; LDY #$0A; JSR $975B
-                this.sub975B(0x04, 0x0A);
-                // $917C: LDA $009A; STA $00E6
-                this.wr(0x00E6, this.rd(0x009A));
-                // $9180: LDY #$04; JSR $974A
+        // $9154 循环: 读 ($0094),Y 首字节, 按类型分派
+        while (this.rd(0x0096) > 0) {
+            const ptr94 = this.rdPtr(0x0094, 0x0095);
+            const a = this.rdMemByte(ptr94);
+            // $9158: BMI $915D (≥$80 → 精灵设置)
+            if ((a & 0x80) !== 0) {
+                // $915D: TAX; LDY #$04; JSR $974A (读场景数据[4])
+                const x = a;
                 this.sub974A(0x04);
-                // $9185: LDA $009A; SEC; SBC $00E6; STA $00E6
-                this.wr(0x00E6, (this.rd(0x009A) - this.rd(0x00E6)) & 0xFF);
-                // $918C: LDX #$06; LDY #$0E; JSR $975B
-                this.sub975B(0x06, 0x0E);
-                // $9193: LDA $009C; STA $00E8
-                this.wr(0x00E8, this.rd(0x009C));
-                // $9197: LDY #$06; JSR $974A
+                // $9163: LDY #$06; JSR $974A (读场景数据[6])
                 this.sub974A(0x06);
-                // $919C: LDA $009C; SEC; SBC $00E8; STA $00E8
-                this.wr(0x00E8, (this.rd(0x009C) - this.rd(0x00E8)) & 0xFF);
-                // JMP $91B4
-                yield* this.sub91B4Gen();
+                // $9168: TXA; AND #$10; BNE $91A6 (bit4 → $91A6)
+                if ((x & 0x10) !== 0) {
+                    yield* this.sub91A6Gen(x);
+                }
+                else if ((x & 0x20) !== 0) {
+                    // $9175: LDX #$04; LDY #$0A; JSR $975B
+                    this.sub975B(0x04, 0x0A);
+                    // $917C: LDA $009A; STA $00E6
+                    this.wr(0x00E6, this.rd(0x009A));
+                    // $9180: LDY #$04; JSR $974A
+                    this.sub974A(0x04);
+                    // $9185: LDA $009A; SEC; SBC $00E6; STA $00E6
+                    this.wr(0x00E6, (this.rd(0x009A) - this.rd(0x00E6)) & 0xFF);
+                    // $918C: LDX #$06; LDY #$0E; JSR $975B
+                    this.sub975B(0x06, 0x0E);
+                    // $9193: LDA $009C; STA $00E8
+                    this.wr(0x00E8, this.rd(0x009C));
+                    // $9197: LDY #$06; JSR $974A
+                    this.sub974A(0x06);
+                    // $919C: LDA $009C; SEC; SBC $00E8; STA $00E8
+                    this.wr(0x00E8, (this.rd(0x009C) - this.rd(0x00E8)) & 0xFF);
+                    // JMP $91B4
+                    yield* this.sub91B4Gen();
+                }
+                else {
+                    // $9172: JMP $91F3
+                    yield* this.sub91F3Gen();
+                }
             }
             else {
-                // $9172: JMP $91F3
-                yield* this.sub91F3Gen();
+                // $915A: JMP $94C1 (NT 写入循环)
+                yield* this.sub94C1Gen(a);
             }
-        }
-        else {
-            // $915A: JMP $94C1 (NT 写入循环)
-            yield* this.sub94C1Gen(a);
         }
     }
     /** $974A: 读场景数据 ($0094),Y → $009A/$009B */
@@ -1126,9 +1127,12 @@ class GameSystemService {
             yield* this.sub94C1Gen(0);
         }
     }
-    /** $94C1: NT buffer 写入循环 (读场景数据写 $05E8 PPU buffer) (generator 版) */
-    *sub94C1Gen(a) {
-        // $94C1: LDA $0094; CLC; ADC #$20; STA $0094 (指针 += $20)
+    /** $94C1: 推进场景段指针 + 递减计数器 (generator 版) */
+    *sub94C1Gen(_a) {
+        // $94BC: 清当前段 buffer[0]=0 (标记已消费)
+        const ptr94 = this.rdPtr(0x0094, 0x0095);
+        this.wrMemByte(ptr94, 0);
+        // $94C3: $0094 += 0x20 (推进到下一段)
         let lo = this.rd(0x0094);
         let hi = this.rd(0x0095);
         lo = (lo + 0x20) & 0xFF;
@@ -1136,41 +1140,11 @@ class GameSystemService {
             hi = (hi + 1) & 0xFF;
         this.wr(0x0094, lo);
         this.wr(0x0095, hi);
-        // 读场景数据, 写 $05E8 buffer
-        // 每条: [count, addrLo, addrHi, tile×count]
-        // 简化: 读 ($0094),Y 数据流, 转成 PPU buffer 条目
-        let y = 0;
-        let off = 0;
-        while (true) {
-            const ptr = this.rdPtr(0x0094, 0x0095);
-            const count = this.rdMemByte(ptr + y);
-            y++;
-            if (count === 0)
-                break; // 结束
-            const addrLo = this.rdMemByte(ptr + y);
-            y++;
-            const addrHi = this.rdMemByte(ptr + y);
-            y++;
-            // 写 $05E8 buffer: [count, addrLo, addrHi, tile×count]
-            this.wr(0x05E8 + off, count);
-            off++;
-            this.wr(0x05E9 + off, addrLo);
-            off++;
-            this.wr(0x05EA + off, addrHi);
-            off++;
-            for (let i = 0; i < count; i++) {
-                const tile = this.rdMemByte(ptr + y);
-                y++;
-                this.wr(0x05EB + off, tile);
-                off++;
-            }
-        }
-        // 结束标记
-        this.wr(0x05E8 + off, 0);
-        // 设 NT buffer 更新标志
-        this.wr(0x0628, 0x80);
-        // 让出协程 (等 NMI 渲染消费 buffer)
-        void a;
+        // $94CE: DEC $0096 (递减段计数器)
+        this.wr(0x0096, (this.rd(0x0096) - 1) & 0xFF);
+        // $94D0: BEQ $94D5 (=0 → 结束, 不回循环)
+        // $94D2: JMP $9154 (≠0 → 回 sub9148 读下一段, 由 while 循环处理)
+        // 让出一帧 (原版 $9154 前有 JSR $9FA8 等帧)
         yield this.coroutineYield(1);
     }
     /** 读 RAM 字节 (addr < 0x0800) */

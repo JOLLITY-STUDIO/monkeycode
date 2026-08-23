@@ -1,0 +1,10 @@
+f1 ram_00ED=0xFF nt0=0 nt1=0
+f3 ram_00ED=0x0 nt0=0 nt1=0
+f5 ram_00ED=0x7 nt0=0 nt1=0
+f7 ram_00ED=0x0 nt0=32 nt1=0
+f378 ram_00ED=0xB8 nt0=578 nt1=480
+f1063 ram_00ED=0xBA nt0=512 nt1=0
+f1744 ram_00ED=0xB8 nt0=578 nt1=0
+f5392 ram_00ED=0xBA nt0=512 nt1=0
+maxNT0=658 maxNT1=480
+totalFrames=6000
