@@ -75,12 +75,16 @@ export class AudioService {
     this.phase1();
     // Phase 2: APU 寄存器写入
     this.phase2();
-    // PAPU 帧推进（生成采样）
+    // PAPU 帧推进（每周期调用，模拟 CPU 指令级时钟）
     if (this.papu) {
-      let remaining = 29830; // CYCLES_PER_FRAME
+      // extraCycles 机制要求小批量调用
+      // 用 7 周期块（平均 CPU 指令长度），29830/7 ≈ 4261 次
+      let remaining = 29830;
       while (remaining > 0) {
-        const n = remaining < 32 ? remaining : 32;
-        this.papu.clockFrameCounter(n);
+        const n = remaining > 7 ? 7 : remaining;
+        this.papu.clockFrameCounter(n, 0);
+        // 清 extraCycles，避免累积导致周期丢失
+        (this.papu as any).extraCycles = 0;
         remaining -= n;
       }
     }

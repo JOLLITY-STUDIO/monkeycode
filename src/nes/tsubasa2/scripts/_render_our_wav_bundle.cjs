@@ -42645,8 +42645,9 @@ var AudioService = class {
     if (this.papu) {
       let remaining = 29830;
       while (remaining > 0) {
-        const n = remaining < 32 ? remaining : 32;
-        this.papu.clockFrameCounter(n);
+        const n = remaining > 7 ? 7 : remaining;
+        this.papu.clockFrameCounter(n, 0);
+        this.papu.extraCycles = 0;
         remaining -= n;
       }
     }
