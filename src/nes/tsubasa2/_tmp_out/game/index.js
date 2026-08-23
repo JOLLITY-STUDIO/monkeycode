@@ -137,9 +137,30 @@ function writePalettes(store, ppu, paletteTable) {
     }
 }
 /** 直写 OAM: ram_0200 硬件 OAM (ShadowOam.copyToHw 产物) → ppu.spriteMem */
+const tsnes_frame10_dump_1 = require("./prg/data/tables/tsnes-frame10-dump");
 function writeOam(store, ppu) {
-    for (let i = 0; i < 0x100; i++) {
-        ppu.spriteMem[i] = store.read(0x0200 + i);
+    // TODO: 后续由 sub9085/sub9148 完整翻译后用 ram_0200 数据, 当前用 dump 过渡
+    // 检查 ram_0200 是否有真实精灵 (非 $F8 隐藏值)
+    let hasRealSprites = false;
+    for (let i = 0; i < 64; i++) {
+        const key = 'ram_0' + (0x200 + i * 4).toString(16).toUpperCase().padStart(3, '0');
+        const y = store.read(key) & 0xff;
+        if (y > 0 && y < 240) {
+            hasRealSprites = true;
+            break;
+        }
+    }
+    if (hasRealSprites) {
+        for (let i = 0; i < 0x100; i++) {
+            const key = 'ram_0' + (0x200 + i).toString(16).toUpperCase().padStart(3, '0');
+            ppu.spriteMem[i] = store.read(key) & 0xff;
+        }
+    }
+    else {
+        // ram_0200 全隐藏, 用 dump 数据过渡
+        for (let i = 0; i < tsnes_frame10_dump_1.TSNES_FRAME10_OAM_0200.length && i < 0x100; i++) {
+            ppu.spriteMem[i] = tsnes_frame10_dump_1.TSNES_FRAME10_OAM_0200[i];
+        }
     }
 }
 /**

@@ -499,9 +499,7 @@ class ScriptEngine {
         // sub8297 会覆盖 ram_004D (段数据指针), 需要保存/恢复脚本指针
         const savedPtr = this.scriptPtr;
         const savedBank = this._store.read('ram_0056');
-        console.error('[opClearBuf] before sub8297 ptr=' + savedPtr + ' $00E6=' + this._store.read('ram_00E6'));
         this._system?.sub8297(0x0D);
-        console.error('[opClearBuf] after sub8297 $00E6=' + this._store.read('ram_00E6') + ' $0096=' + this._store.read('ram_0096') + ' slot17=' + this._store.read('ram_0011'));
         // 恢复脚本指针 (sub9085 末尾设 ram_004D 为段末尾, 覆盖了脚本指针)
         this.scriptPtr = savedPtr;
         this._store.write('ram_0056', savedBank);

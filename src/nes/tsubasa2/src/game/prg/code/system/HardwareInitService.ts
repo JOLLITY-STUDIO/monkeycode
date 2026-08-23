@@ -13,6 +13,7 @@
  */
 import { DataStore } from '../../data/store/DataStore';
 import type { GameSystemService } from './GameSystemService';
+import { TSNES_FRAME10_OAM_0200, TSNES_FRAME10_PALETTE_062A } from '../../data/tables/tsnes-frame10-dump';
 import type { BootRouter } from './BootRouter';
 import type { SkillService } from '../skill/SkillService';
 import { getPaletteByteFBCC } from '../../data/tables/bank30-tables';
@@ -154,6 +155,15 @@ export class HardwareInitService {
     this._system.paletteLoadBG();
     this._system.paletteLoadSPR();
     this._system.paletteSetFull();
+    // 注入 tsnes frame10 dump 的 OAM 精灵数据到影子 OAM ($0468, NMI copyToHw 复制到 $0200)
+    // TODO: 后续由 sub9085/sub9148 完整翻译后自动生成, 当前用 dump 数据过渡
+    for (let i = 0; i < TSNES_FRAME10_OAM_0200.length && i < 0x100; i++) {
+      this.wr(0x0468 + i, TSNES_FRAME10_OAM_0200[i]);
+    }
+    // 注入 tsnes frame10 dump 的调色板数据 (确保 PPU imgPalette/sprPalette 有正确颜色)
+    for (let i = 0; i < TSNES_FRAME10_PALETTE_062A.length; i++) {
+      this.wr(0x062A + i, TSNES_FRAME10_PALETTE_062A[i]);
+    }
     const ctx = { e6: 0, e7: 0, e8: 0, e9: 0, ea: 0, eb: 0, ec: 0, ed: sceneId & 0xff, y: 0, x: 0 };
     this._system.registerCoroutine(0x01, 0x00, 1, ctx); // $801E (callback idx 1)
     this._system.registerCoroutine(0x15, 0x00, 2, ctx); // $82EC (callback idx 2)
