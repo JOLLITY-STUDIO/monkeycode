@@ -41,6 +41,7 @@
 import type { DataStore } from '../../data/store/DataStore';
 import type { ApuTarget } from './ApuTarget';
 import { NullApuTarget } from './ApuTarget';
+import { AudioRom } from '../../data/audio/audio-rom';
 
 /** 请求队列槽位（$0700-$0705） */
 const QUEUE_SLOT_BGM = 0;       // 槽 0 = BGM 请求
@@ -229,20 +230,50 @@ export class AudioService {
   }
 
   /**
-   * 启动 BGM（原版 $8000 BGM 分支 + $84DA 命令流）
+   * 启动 BGM（原版 $8000 BGM 分支 → bankswitch → 通道初始化）
    *
-   * V0.6: 设置通道活跃位 + 启用 APU 通道 + 启动 BGM 数据流解析
+   * 从 BGM 指针表读取数据起始地址，解析头部，初始化通道状态块 $0727+
    * @param bgmId BGM 编号（0x00-0x31）
    */
   private startBgm(bgmId: number): void {
-    // TODO V0.6+: 完整翻译 $84DA BGM 数据流命令解析
-    // 当前：设置 BGM bank 影子 + 启用 APU 通道 + 标记通道活跃
     this.store.writeByte(RAM_BGM_BANK, bgmId);
-    // 启用 Pulse1/Pulse2/Triangle（BGM 通常用 3 通道）
-    this.store.writeByte(RAM_CHANNEL_ACTIVE, CH_PULSE1 | CH_PULSE2 | CH_TRIANGLE);
+    this.store.writeByte(RAM_CHANNEL_ACTIVE, 0);
+    // 从 BGM 指针表读取数据起始地址
+    // BGM 指针表 @ $8798，bgmId 直接作为索引（0-28）
+    const dataAddr = AudioRom.readBgmPointer(bgmId);
+    if (dataAddr === 0) return;
+    // 切换到 BGM 数据 bank（bank7）读取数据
+    // BGM 数据头部格式（从 asm $83CB/$83E1 命令流推断）：
+    //   byte 0: 通道配置（bit7=终止, 低3位=通道数）
+    //   byte 1-N: 各通道数据指针或直接音符序列
+    //
+    // 简化实现：BGM 数据直接作为通道 0(Pulse1) 的音符序列
+    // 每条 2 字节：[dur, pitch]
+    // $FF = 结束标记
+    // 完整实现需要翻译 $83CB 命令流（$84DA 跳转表 32 个命令）
+    
+    // 初始化通道 0 状态块 $0727（每通道 16 字节）
+    // offset 0-1: 数据指针（乐谱地址）
+    // offset 2-3: 音符表指针（与乐谱相同）
+    // offset 4: 当前音符索引（0）
+    // offset 5: 音量（$0F = 最大）
+    // offset 6-7: APU 频率值（由音符计算）
+    this.store.writeU16(0x0727, dataAddr);       // offset 0-1: 数据指针
+    this.store.writeU16(0x0729, dataAddr);       // offset 2-3: 音符表指针
+    this.store.writeByte(0x072B, 0);              // offset 4: 音符索引
+    this.store.writeByte(0x072C, 0x0F);           // offset 5: 音量
+    
+    // 通道 0 tick 计数器（$0707[0]）= 1（立即触发第一个音符）
+    this.store.writeByte(0x0707, 1);
+    this.store.writeByte(0x0708, 1);              // tick 重载值
+    // 通道 0 音符持续计数器（$0709[0]）= 0（立即读取第一个音符）
+    this.store.writeByte(0x0709, 0);
+    
+    // 启用 Pulse1 通道
+    this.store.writeByte(RAM_CHANNEL_ACTIVE, CH_PULSE1);
     this.apu.writeRegister(0x4015, APU_ENABLE_ALL);
-    // TODO: 从 AudioRom.readBgmPointer(bgmId) 读取 BGM 数据流起始地址，
-    //       解析头部（通道配置 + 各通道数据指针），初始化通道状态块 $0727+
+    // 初始化 Pulse1 控制寄存器（音量 $0F，占空比 50%）
+    this.apu.writeRegister(0x4000, 0x3F);  // bit6=1(50%占空), bit4=0(固定音量), vol=$0F
   }
 
   /**
@@ -294,20 +325,113 @@ export class AudioService {
   /**
    * BGM 通道 tick（原版 $80BA-$811B）
    *
-   * 遍历 4 个 APU 通道，递减 tick 计数器，推进音符
+   * 遍历 4 个 APU 通道，递减 tick 计数器，推进音符，写 APU 寄存器
    */
   private bgmTick(): void {
-    // TODO V0.6+: 完整翻译 $80BA-$86F5 BGM 引擎
-    // 当前框架：遍历活跃通道，写 APU 寄存器占位
     const active = this.store.readByte(RAM_CHANNEL_ACTIVE);
     if (active === 0) return;
-    // 通道状态块基址 $0727，每通道 16 字节，步进 4（索引）
-    // 通道 0-3 分别对应 Pulse1/Pulse2/Triangle/Noise
-    // 完整实现需要：
-    //   1. 递减 $0707[X] tick 计数器
-    //   2. tick 归零时推进音符（读取音符表 $8725/$8754）
-    //   3. 调用 channelOutput 写 APU 寄存器（$81DB）
-    //   4. 处理 vibrato（$8269 跳转表）/ arpeggio（$82E4 跳转表）
+    
+    // 遍历 4 通道（通道状态块 $0727+，每通道 16 字节，步进 $10）
+    // 通道索引 $00F2 = 0, 4, 8, 12（对应 $0707[0], $0707[4], ...）
+    // 但原版 $00F3=8 循环 8 次，实际 4 通道 × 步进4 = 只处理 4 个
+    for (let ch = 0; ch < 4; ch++) {
+      const chMask = 1 << ch;
+      if ((active & chMask) === 0) continue;
+      
+      const chBase = 0x0727 + ch * 0x10;  // 通道状态块基址
+      const tickAddr = 0x0707 + ch * 4;   // $0707[X] tick 计数器
+      const durAddr = 0x0709 + ch * 4;    // $0709[X] 音符持续
+      const pitchAddr = 0x070A + ch * 4;  // $070A[X] 音高值
+      
+      // 1. 递减 tick 计数器
+      let tick = this.store.readByte(tickAddr);
+      if (tick > 0) {
+        tick--;
+        this.store.writeByte(tickAddr, tick);
+      }
+      if (tick !== 0) continue;
+      
+      // tick 归零，重载 tick
+      this.store.writeByte(tickAddr, this.store.readByte(tickAddr + 1));
+      
+      // 2. 递减音符持续计数器
+      let dur = this.store.readByte(durAddr);
+      if (dur > 0) {
+        dur--;
+        this.store.writeByte(durAddr, dur);
+      }
+      
+      if (dur === 0) {
+        // 音符结束，读取下一个音符
+        // 从通道状态块 offset 2-3 读取音符表指针
+        const noteTablePtr = this.store.readU16(chBase + 2);
+        // offset 4 读取当前音符索引
+        let noteIdx = this.store.readByte(chBase + 4);
+        
+        // 从音符表读取 2 字节：[dur, pitch]
+        // 切换到 BGM 数据 bank 读取
+        const noteByte0 = AudioRom.readBgmData(noteTablePtr + noteIdx);
+        const noteByte1 = AudioRom.readBgmData(noteTablePtr + noteIdx + 1);
+        
+        // $FF = 结束标记 → 回到开头
+        if (noteByte0 === 0xFF) {
+          noteIdx = 0;
+          this.store.writeByte(chBase + 4, 0);
+          const d0 = AudioRom.readBgmData(noteTablePtr);
+          const d1 = AudioRom.readBgmData(noteTablePtr + 1);
+          this.store.writeByte(durAddr, d0);
+          this.store.writeByte(pitchAddr, d1);
+        } else {
+          // 更新音符持续和音高
+          this.store.writeByte(durAddr, noteByte0);
+          this.store.writeByte(pitchAddr, noteByte1);
+          // 推进音符索引
+          this.store.writeByte(chBase + 4, noteIdx + 2);
+        }
+      }
+      
+      // 3. 通道输出（写 APU 寄存器）
+      this.channelOutput(ch);
+    }
+  }
+
+  /**
+   * 通道输出（原版 $81DB）
+   *
+   * 把当前音符的音高值转换为 APU 频率，写 APU 寄存器
+   */
+  private channelOutput(ch: number): void {
+    const pitchAddr = 0x070A + ch * 4;
+    const pitch = this.store.readByte(pitchAddr);
+    if (pitch === 0) return;
+    
+    // 音高值 → APU 频率
+    // 原版用 $8754 音符频率表（音名索引 → 频率 16-bit）
+    // pitch 低 6 位 = 音名索引
+    const noteIdx = pitch & 0x3F;
+    const freq = AudioRom.readNoteFreq(noteIdx);
+    if (freq === 0) return;
+    
+    // 写 APU 频率寄存器
+    // 通道 0/1 = Pulse1/Pulse2: $4002/$4003 或 $4006/$4007
+    // 通道 2 = Triangle: $400A/$400B
+    // 通道 3 = Noise: $400E（只有高字节）
+    const freqLo = freq & 0xFF;
+    const freqHi = (freq >> 8) & 0x07;
+    
+    if (ch === 0) {
+      // Pulse1
+      this.apu.writeRegister(0x4002, freqLo);
+      this.apu.writeRegister(0x4003, freqHi | 0x08);  // bit3=长度计数器重启
+    } else if (ch === 1) {
+      // Pulse2
+      this.apu.writeRegister(0x4006, freqLo);
+      this.apu.writeRegister(0x4007, freqHi | 0x08);
+    } else if (ch === 2) {
+      // Triangle
+      this.apu.writeRegister(0x400A, freqLo);
+      this.apu.writeRegister(0x400B, freqHi | 0x80);  // bit7=线性计数器重启
+    }
   }
 
   /**

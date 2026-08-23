@@ -47,3 +47,5 @@ export { SpriteAnimationService } from './sprite/SpriteAnimationService';
 export { AudioService } from './audio/AudioService';
 export { ApuTarget, LogApuTarget, NullApuTarget } from './audio/ApuTarget';
 export { WebAudioApuTarget } from './audio/WebAudioApuTarget';
+export { ApuPcmRendererImpl } from './audio/ApuPcmRenderer';
+export type { ApuPcmRenderer } from './audio/ApuPcmRenderer';
