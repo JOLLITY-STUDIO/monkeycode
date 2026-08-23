@@ -227,7 +227,7 @@ class Tsubasa2 {
         /** 帧计数 (NMI 帧号) */
         this._frame = 0;
         /** 每帧: NMI 推进游戏逻辑 → 直写 PPU 渲染内存 → PPU 扫描线渲染 */
-        this._chrInitialized = false;
+        this._mapperInjected = false;
         this.store = new DataStore_1.DataStore();
         this.system = new GameSystemService_1.GameSystemService(this.store);
         this.router = new BootRouter_1.BootRouter(this.store);
@@ -253,24 +253,10 @@ class Tsubasa2 {
             ` scrollY=${this.store.scrollY} ram_00ED=${this.store.read('ram_00ED')}`);
     }
     frame(nes) {
-        // 首帧: 设置 MMC3 CHR bank (原版由 CPU 写 $8000/$8001 切换, H5 不跑 CPU 需手动设)
-        // chrBanks=[0,1,2,3,252,113,82,83] (tsnes frame10 dump: BG=0-3, SPR=252,113,82,83)
-        if (!this._chrInitialized && nes.mmap) {
-            const mmap = nes.mmap;
-            // mapper4 的 8 个 1KB CHR bank: [0,1,2,3,252,113,82,83]
-            // load1kVromBank(bank, address) 把 CHR ROM bank 加载到 ptTile 的指定偏移
-            const chrBanks = [0, 1, 2, 3, 252, 113, 82, 83];
-            const addresses = [0x0000, 0x0400, 0x0800, 0x0C00, 0x1000, 0x1400, 0x1800, 0x1C00];
-            if (mmap.load1kVromBank) {
-                for (let i = 0; i < 8; i++) {
-                    mmap.load1kVromBank(chrBanks[i], addresses[i]);
-                }
-            }
-            if (mmap.chrBanks) {
-                for (let i = 0; i < 8 && i < mmap.chrBanks.length; i++)
-                    mmap.chrBanks[i] = chrBanks[i];
-            }
-            this._chrInitialized = true;
+        // 首帧: 注入 MMC3 mapper 到 InterruptService (CHR bank 切换 $C9E9)
+        if (!this._mapperInjected) {
+            this.interrupts.attachMapper(nes.mmap);
+            this._mapperInjected = true;
         }
         this.interrupts.nmi(this._frame);
         // AudioService 每帧推进 (bank12 音频引擎 update: 读 $0700 请求队列, 写 $4000-$400F APU 寄存器)

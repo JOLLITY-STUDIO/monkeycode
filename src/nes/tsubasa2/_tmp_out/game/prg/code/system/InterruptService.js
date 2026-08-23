@@ -10,6 +10,9 @@ class InterruptService {
         this._system = null;
         /** bank02 NMI 渲染执行器 (BootRouter.nmiRender, $8000-$8137) — 组合根注入 */
         this._router = null;
+        /** MMC3 mapper 引用 (CHR bank 切换 $C9E9, 组合根注入) */
+        this._mmap = null;
+        this._chrInitialized = false;
         /** 上一帧输入掩码 (用于计算按下沿 ram_001E) */
         this._prevInput = 0;
         this._store = store;
@@ -22,6 +25,10 @@ class InterruptService {
     /** 挂接 bank02 NMI 渲染执行器 (组合根注入) */
     attachRouter(router) {
         this._router = router;
+    }
+    /** 挂接 MMC3 mapper (CHR bank 切换 $C9E9, 组合根注入) */
+    attachMapper(mmap) {
+        this._mmap = mmap;
     }
     rd(addr) {
         return this._store.read(ramKey(addr));
@@ -54,7 +61,8 @@ class InterruptService {
         // $C7B7-$C7C2: 回卷: X = $004A + $0538; Y = $004B
         this._store.scrollX = (this.rd(0x004a) + this.rd(0x0538)) & 0xff;
         this._store.scrollY = this.rd(0x004b) & 0xff;
-        // $C7CA: JSR $C9E9 — MMC3 精灵 bank 配置, 省略并注释
+        // $C7CA: JSR $C9E9 — MMC3 CHR bank 配置 (读 $0490-$0497 bank 表写 $8000/$8001)
+        this._configureChrBanks();
         // $C7E4: JSR $C9C5 — 数值换算辅助, 翻译版由 PlayerQueryService 提供, 省略
         // $C7E7: JSR $C982 — 读取控制器 → ram_001C / 按下沿 ram_001E
         this._readInput();
@@ -100,6 +108,40 @@ class InterruptService {
         this.wr(0x001c, mask);
         this.wr(0x001e, mask & ~this._prevInput & 0xff);
         this._prevInput = mask;
+    }
+    /**
+     * $C9E9: MMC3 CHR bank 配置 — 读 $0490-$0497 bank 表, 写 $8000/$8001 切换 CHR bank。
+     * 原版通过 CPU 写 MMC3 寄存器, H5 直接调 mapper4.load1kVromBank。
+     * $0490-$0497: 8 个 1KB CHR bank 索引 (BG=0-3, SPR=4-7)。
+     */
+    _configureChrBanks() {
+        if (!this._mmap)
+            return;
+        // 读 $0490-$0497 CHR bank 表
+        const banks = [];
+        for (let i = 0; i < 8; i++)
+            banks.push(this.rd(0x0490 + i));
+        // 首帧: $0490 全 0 (未初始化), 用 tsnes dump 的默认值 [0,1,2,3,252,113,82,83]
+        if (!this._chrInitialized) {
+            const defaultBanks = [0, 1, 2, 3, 252, 113, 82, 83];
+            for (let i = 0; i < 8; i++) {
+                if (banks[i] === 0)
+                    banks[i] = defaultBanks[i];
+            }
+            this._chrInitialized = true;
+        }
+        // 调 mapper4.load1kVromBank(bank, address) 加载 CHR ROM 到 ptTile
+        const addresses = [0x0000, 0x0400, 0x0800, 0x0C00, 0x1000, 0x1400, 0x1800, 0x1C00];
+        if (this._mmap.load1kVromBank) {
+            for (let i = 0; i < 8; i++) {
+                this._mmap.load1kVromBank(banks[i], addresses[i]);
+            }
+        }
+        if (this._mmap.chrBanks) {
+            for (let i = 0; i < 8 && i < this._mmap.chrBanks.length; i++) {
+                this._mmap.chrBanks[i] = banks[i];
+            }
+        }
     }
 }
 exports.InterruptService = InterruptService;
