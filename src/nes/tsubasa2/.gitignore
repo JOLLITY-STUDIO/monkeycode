@@ -1,0 +1,21 @@
+# 编译产物
+node_modules/
+dist/
+out/
+temp_out/
+temp_out2/
+temp_out_run.txt
+tsc_out*.txt
+tsc_check.txt
+tsc_real.txt
+
+# 临时脚本输出
+scripts/_*_out.txt
+scripts/_probe*.txt
+
+# 测试报告
+*.test-report.html
+
+# 系统文件
+.DS_Store
+Thumbs.db
