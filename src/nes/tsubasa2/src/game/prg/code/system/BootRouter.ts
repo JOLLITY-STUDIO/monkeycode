@@ -366,15 +366,14 @@ export class BootRouter {
     //   LDY #$08; 循环 8 位: LDA $4015,X; LSR; ROL $003F; AND #$01; ORA $003F; STA $003F; DEY; BNE
     //   CMP $0041; BEQ $8107; DEC $0040; BNE $80DF (重试)
     //   $8107: LDA $001B,X; EOR $003F; AND $003F; STA $001D,X; LDA $003F; STA $001B,X; DEX; BNE $80DD
-    // 翻译版: 手柄由 Controller 驱动, 此处读 DataStore 缓存 (由 InterruptService 写入)
-    for (let ctrl = 2; ctrl >= 1; ctrl--) {
-      const prev = this.rd(0x001B + ctrl);
-      // 从 DataStore 读取手柄状态 (InterruptService 每帧写入 controller_1/controller_2)
-      const cur = this._store.read(`controller_${ctrl}` as any) ?? 0;
-      const diff = (prev ^ cur) & cur;
-      this.wr(0x001D + ctrl, diff & 0xff);
-      this.wr(0x001B + ctrl, cur & 0xff);
-    }
+    // 翻译版: H5 只有一个输入源 DataStore KV 'input_mask' (bit0=A,1=B,2=SEL,3=START,
+    //   4=UP,5=DOWN,6=LEFT,7=RIGHT), 已由 InterruptService._readInput ($C982 翻译)
+    //   维护 ram_001C (joypad1 状态) 与 ram_001E (joypad1 按下沿)。
+    //   原版此处是对硬件手柄的第二次读取 (边沿 = 两次读取之间的新按), 但 H5 单输入源
+    //   二次计算恒为 0, 且旧实现读从未写入的 controller_1 键把 $001E 每帧清零,
+    //   导致 sub801E ($802C 等 UP 按下沿) 永远等不到输入 → 开场无法推进。
+    //   故此处不再重复写 $001C/$001E/$001D/$001F (无第二手柄输入源)。
+    void 0;
 
     // ── $8116-$8137: ram_00E1/E2/E3 累加 + ram_003A 递增 ──
     // CLC; LDA $00E1; ADC #$83; STA $00E1

@@ -964,8 +964,8 @@ export class GameSystemService {
   /** $82EC: 场景数据装载器协程回调 (generator 版) */
   private *sub82ECGen(): Generator<void> {
     // $82ED: JSR $838A (切 bank2 → JSR $A215 → 切回 bank6)
-    // H5: $A215 逻辑尚未完整翻译, bank 切换待 $A215 翻译后接入 PrgBankService
-    // TODO: 翻译 $A215 后, 此处加 this.bankSwitchR7(2) / 调用 / this.bankSwitchR7(6)
+    // H5: 通过 PrgBankService 切 bank2, 调 $A215 (待翻译), 切回 bank6
+    this.sub838A();
     // $82F0: LDA $004C; BPL $82ED — 轮询 $004C bit7 (动画装载请求)
     const c = this.rd(0x004C);
     if ((c & 0x80) === 0) {
@@ -992,6 +992,29 @@ export class GameSystemService {
     yield this.coroutineYield(1);
   }
 
+  /**
+   * $838A: 切 bank2 调 $A215 再切回 bank6 (纯 bank 切换辅助子程)
+   * asm: LDX #$02; JSR $C4B9 (切 R7=bank2); JSR $A215; LDX #$06; JSR $C4B9 (切回 R7=bank6); RTS
+   * H5: 通过 PrgBankService 切 R7, $A215 本体待 tsnes trace 补全后翻译
+   * $A215 = JMP $A8CE (bank2 偏移 $0215), $A8CE 反汇编缺失 (被误标数据)
+   * 调用上下文: 场景数据装载协程 $82ED 每帧调用, 极可能是 NMI buffer 提交/调色板同步
+   */
+  private sub838A(): void {
+    const prevR7 = this.currentR7Bank();
+    this.bankSwitchR7(2);
+    // TODO: 翻译 $A215 ($A8CE) 本体 — bank2 子程, 反汇编缺失
+    // 可能语义: NMI buffer 提交 / 调色板同步 / 场景数据预处理
+    // 待 tsnes disasm 工具 dump bank2 $A8CE 运行时反汇编后补全
+    this.subA215_stub();
+    this.bankSwitchR7(prevR7);
+  }
+
+  /** $A215 ($A8CE) stub — bank2 子程, 反汇编缺失, 待翻译 */
+  private subA215_stub(): void {
+    // 占位: bank2 $A8CE 的实现未知
+    // 从 $82ED 调用上下文推测是 NMI/调色板相关辅助函数
+  }
+
   /** $8306-$8380 BG 路径: 调色板动画流 → $062A RAM 调色板 */
   private palAnimBg(stream: readonly number[]): void {
     // 数据流结构: [首字节=调色板偏移] (count,R,G,B...)* $FE 帧分隔 $FF 结束
@@ -1003,6 +1026,8 @@ export class GameSystemService {
       if (b === 0xfe) {
         // $FE 帧分隔 → 置满调色板渐显 (原版 $8344: JSR $9A43)
         this.paletteSetFull();
+        // $8347: JSR $838A (切 bank2 调 $A215, NMI buffer 提交)
+        this.sub838A();
         y++;
         continue;
       }
@@ -1016,6 +1041,11 @@ export class GameSystemService {
         if (v !== 0) this.wr(0x062A + x + i, v);
       }
       x += cnt;
+      // $8330-$833A: ram_0628 + 0x20 ≥ $3D → JSR $838A (切 bank2 调 $A215)
+      // H5: 每段颜色组处理后调 sub838A (NMI buffer 提交, 让调色板写入生效)
+      if ((this.rd(0x0628) + 0x20) >= 0x3d) {
+        this.sub838A();
+      }
     }
     // 让 PPU buffer 消费调色板
     this.paletteWriteAll();
@@ -1041,6 +1071,8 @@ export class GameSystemService {
       if (y < stream.length) {
         y++; // 跳过帧数字节 (简化: 立即切换)
       }
+      // $8375: JSR $838A (切 bank2 调 $A215, NMI buffer 提交)
+      this.sub838A();
     }
   }
 
