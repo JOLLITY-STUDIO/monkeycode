@@ -277,7 +277,7 @@ export class AudioService {
     // 为安全起见，索引 = seId - 1，超出表长则忽略
     void slot;
     const seIndex = seId - 1;
-    if (seIndex < 0 || seIndex >= 60) return;  // SE 表共 60 条（索引 0-59）
+    if (seIndex < 0 || seIndex >= 100) return;  // SE 表共 100 条（索引 0-99）
     // TODO V0.6+: 完整翻译 $8349 SE 数据流解析
     // 当前：标记 Noise 通道活跃（SE 通常用 Noise 通道做音效）
     const active = this.store.readByte(RAM_CHANNEL_ACTIVE);

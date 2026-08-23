@@ -1038,13 +1038,17 @@ export const BANK12_BYTES: Readonly<Uint8Array> = new Uint8Array([
 
 // ──────────── 命名偏移常量（CPU 地址，经 ROM 特征搜索验证） ────────────
 export const BANK12_BASE_ADDR = 0x8000;
+// 完整音频指针表（42 首 BGM+SE 混合，经 CDL 验证为 ROM 原始数据）
+// NSF rip 标准用此表，曲目 1-13=SE, 14-33=BGM, 34-42=其他音乐
+export const SONG_TABLE_ADDR = 0x877e;
+export const SONG_COUNT = 42;
 // SE 指针表（每条 2 字节小端，SE ID → 数据起始 CPU 地址）
 // 经 ROM 特征搜索：code_sub.s $8354 处 LDA $8BDA,Y 引用
 export const SE_POINTER_TABLE_ADDR = 0x8bda;
-export const SE_POINTER_TABLE_LEN = 60;
-// BGM 指针表（每条 2 字节小端，BGM ID → 数据起始 CPU 地址）
+export const SE_POINTER_TABLE_LEN = 100;
+// BGM 指针表（$877E 表的 BGM 子集，从索引 13 开始）
 export const BGM_POINTER_TABLE_ADDR = 0x8798;
-export const BGM_POINTER_TABLE_LEN = 15;
+export const BGM_POINTER_TABLE_LEN = 29;
 // 音符时值查找表（索引 → tick 数，42 条 1 字节）
 export const NOTE_DURATION_TABLE_ADDR = 0x8725;
 export const NOTE_DURATION_TABLE_LEN = 42;
@@ -1062,6 +1066,10 @@ export class Bank12Rom {
   /** 读 16-bit 小端（CPU 地址 → 数值） */
   static readU16(cpuAddr: number): number {
     return Bank12Rom.readByte(cpuAddr) | (Bank12Rom.readByte(cpuAddr + 1) << 8);
+  }
+  /** 读取完整 42 首表指针（曲目号 0-41 → 数据起始 CPU 地址） */
+  static readSongPointer(songId: number): number {
+    return Bank12Rom.readU16(SONG_TABLE_ADDR + songId * 2);
   }
   /** 读 SE 指针（SE ID → 数据起始 CPU 地址） */
   static readSePointer(seId: number): number {
