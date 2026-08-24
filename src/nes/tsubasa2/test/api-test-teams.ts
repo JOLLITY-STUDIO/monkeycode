@@ -16,6 +16,27 @@ function getPlayerDisplayName(pid: number): string {
   return p?.name ?? '?';
 }
 
+/** 合并 team-table (TEAM_TABLE) + team-roster (TEAMS_FULL) 的所有队 ID */
+function listAllTeamIds(): number[] {
+  const ids = new Set<number>();
+  for (const t of TEAM_TABLE_EXTRACTED as any[]) ids.add(t.id);
+  for (const r of TEAM_ROSTER_TABLE as any[]) ids.add(r.id);
+  return [...ids].sort((a, b) => a - b);
+}
+
+/** 同时挂到多种 global, 适配 file:// / wechat / node / vite */
+function exposeGlobal(key: string, value: any): void {
+  if (typeof globalThis !== 'undefined') {
+    try { (globalThis as any)[key] = value; } catch (e) { /* ignore */ }
+  }
+  if (typeof window !== 'undefined') { try { (window as any)[key] = value; } catch (e) { /* ignore */ } }
+  if (typeof self !== 'undefined') { try { (self as any)[key] = value; } catch (e) { /* ignore */ } }
+}
+exposeGlobal('listAllTeamIds', listAllTeamIds);
+exposeGlobal('buildAllTeamsTable', buildAllTeamsTable);
+exposeGlobal('buildRosterTable', buildRosterTable);
+exposeGlobal('API_ALL_TEAMS_TEXT', API_ALL_TEAMS_TEXT);
+
 // Node: 文本版简洁输出
 function API_ALL_TEAMS_TEXT(): string {
   const ids = listAllTeamIds();

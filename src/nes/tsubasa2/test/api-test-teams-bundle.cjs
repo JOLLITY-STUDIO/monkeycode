@@ -85,6 +85,7 @@
 
   // src/game/prg/data/tables/team-table.ts
   var TEAM_TABLE2 = TEAM_TABLE;
+  var TEAMS_FULL = TEAM_ROSTER_TABLE;
   function findTeamById(id) {
     for (const t of TEAM_TABLE2) {
       if (t.id === (id & 255)) return t;
@@ -7660,6 +7661,36 @@
   };
 
   // test/api-test-teams.ts
+  function listAllTeamIds() {
+    const ids = /* @__PURE__ */ new Set();
+    for (const t of TEAM_TABLE2) ids.add(t.id);
+    for (const r of TEAMS_FULL) ids.add(r.id);
+    return [...ids].sort((a, b) => a - b);
+  }
+  function exposeGlobal(key, value) {
+    if (typeof globalThis !== "undefined") {
+      try {
+        globalThis[key] = value;
+      } catch (e) {
+      }
+    }
+    if (typeof window !== "undefined") {
+      try {
+        window[key] = value;
+      } catch (e) {
+      }
+    }
+    if (typeof self !== "undefined") {
+      try {
+        self[key] = value;
+      } catch (e) {
+      }
+    }
+  }
+  exposeGlobal("listAllTeamIds", listAllTeamIds);
+  exposeGlobal("buildAllTeamsTable", buildAllTeamsTable);
+  exposeGlobal("buildRosterTable", buildRosterTable);
+  exposeGlobal("API_ALL_TEAMS_TEXT", API_ALL_TEAMS_TEXT);
   function API_ALL_TEAMS_TEXT() {
     var _a, _b, _c, _d, _e, _f, _g;
     const ids = listAllTeamIds();
