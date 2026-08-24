@@ -72,3 +72,7 @@ export { ApuTarget, LogApuTarget, NullApuTarget } from './audio/ApuTarget';
 export { WebAudioApuTarget } from './audio/WebAudioApuTarget';
 export { ApuPcmRendererImpl } from './audio/ApuPcmRenderer';
 export type { ApuPcmRenderer } from './audio/ApuPcmRenderer';
+
+// ui（V1.0+ 具象化层：消费已翻译数据，输出渲染视图）
+export { LevelUpUiService } from './ui/LevelUpUiService';
+export type { LevelUpInput, LevelUpView } from './ui/LevelUpUiService';

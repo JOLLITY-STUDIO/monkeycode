@@ -122,6 +122,33 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 
 ---
 
+## 第二阶段 V1.0+ — UI 具象化（消费已翻译数据）
+
+> 目标：将已提取的数据表（LEVEL_UP_TABLE/PLAYER_TABLE/TEAM_TABLE/MATCH_CONFIG_TABLE 等）
+> 具象化为 UI Service + 页面渲染组件，外部页面可直接调用具名 API。
+>
+> 原则：
+>   - 禁止再写 `BANK_XX[addr-0xC000]` 索引；只通过 `data/tables/*` 访问
+>   - UI Service 只读 DataStore + 具名 Table 查询；不改 RAM（除非模拟按键交互）
+>   - 每个 Service 提供 drawXxx() 文本输出接口（NT 缓冲）+ 状态机 onEnter/onUpdate/onExit
+
+|| ID | 版本 | 任务 | 产出 | 状态 |
+|----|------|------|------|------|
+| U1 | V1.0 | LevelUp 界面（赛后能力展示） | code/ui/LevelUpUiService.ts | ⬜ |
+| U2 | V1.0 | MatchResult 界面（终场比分/XP） | code/ui/MatchResultUiService.ts | ⬜ |
+| U3 | V1.0 | Title 主菜单 | code/ui/TitleMenuUiService.ts | ⬜ |
+| U4 | V1.0 | TeamSelect 队伍选择 | code/ui/TeamSelectUiService.ts | ⬜ |
+| U5 | V1.0 | PlayerProfile 球员信息卡 | code/ui/PlayerProfileUiService.ts | ⬜ |
+| U6 | V1.0 | StaminaBar 体力条组件 | code/ui/StaminaBarComponent.ts | ⬜ |
+| U7 | V1.0 | PasswordMenu 密码选关 | code/ui/PasswordMenuUiService.ts | ⬜ |
+| U8 | V1.0 | TournamentBracket 赛程图 | code/ui/TournamentBracketUiService.ts | ⬜ |
+| U9 | V1.0 | StoryScene 剧情对话面板 | code/ui/StoryPanelUiService.ts | ⬜ |
+| U10 | V1.0 | SkillHelp 必杀技说明面板 | code/ui/SkillHelpUiService.ts | ⬜ |
+| U11 | V1.1 | Savedata 存档读写界面 | code/ui/SaveDataUiService.ts | ⬜ |
+| U12 | V1.1 | Settings 设置面板 | code/ui/SettingsUiService.ts | ⬜ |
+
+---
+
 ## bank16-29 翻译任务表（行为语义去 CPU 化）
 
 > 任务范围：bank16-29，按 asm `_full.s` 逐 bank 翻译为 Service（行为）+ Table（数据）。

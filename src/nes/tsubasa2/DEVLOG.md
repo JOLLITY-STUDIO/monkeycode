@@ -4,6 +4,19 @@
 
 ## 2026-08-24
 
+- [第二阶段 V1.0+ UI 具象化 启动]
+  - **WBS 新增段落**：12 项 UI 具象化任务 (U1-U12)
+    - U1 LevelUp 界面 / U2 MatchResult / U3 Title / U4 TeamSelect
+    - U5 PlayerProfile / U6 StaminaBar / U7 PasswordMenu
+    - U8 TournamentBracket / U9 StoryPanel / U10 SkillHelp
+    - U11 Savedata / U12 Settings
+  - **U1 LevelUpUiService** 首个具象化实现：
+    - 消费 `LEVEL_UP_TABLE` (findLevelByExp/findLevelById) — 升级阈值/能力上限/体力
+    - 输入 LevelUpInput { playerId, exp, stats[6], stamina }
+    - 输出 LevelUpView { level, nextLevel, expToNext, abilityMax, staminaRaw, header }
+    - 状态机 step=0→1→2→3 → 分阶段写 NT 缓冲 (drawHeader/drawStatsBars/drawStaminaBar)
+    - 当前：基础查询+视图对象真实可用，TODO V1.0 待补 NT/OAM 写入细节
+  - code/index.ts 出口契约：新增 LevelUpUiService + LevelUpInput/LevelUpView 类型导出
 - [E1 推进] MatchAuxService + MatchHudService + MatchConfigService V0.5 真实实现：
   - **MatchAuxService** handleDeadBall/detectRestart/handleSubstitution
     → 越界检测（X≤1/≥254 → 角球/球门球；Y≤1/≥238 → 界外球）
