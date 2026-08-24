@@ -1649,7 +1649,11 @@
     const team = findTeamById(teamId);
     if (!team) return `Team 0x${teamId.toString(16).padStart(2, "0")} NOT FOUND`;
     const roster = findRosterById2(teamId);
-    const ids = (_a = roster == null ? void 0 : roster.players) != null ? _a : [];
+    const SENTINELS = /* @__PURE__ */ new Set([0, 207, 160, 121]);
+    const rawIds = (_a = roster == null ? void 0 : roster.players) != null ? _a : [];
+    const seen = /* @__PURE__ */ new Set();
+    const ids = rawIds.filter((id) => !SENTINELS.has(id) && !seen.has(id) && seen.add(id));
+    const sentinelCount = rawIds.length - ids.length;
     const lines = [];
     lines.push(header(`GET /api/team/0x${teamId.toString(16).padStart(2, "0").toUpperCase()}/roster \u2014 ${(_b = team.name) != null ? _b : "?"}`));
     lines.push(sep2);
@@ -1657,7 +1661,7 @@
     lines.push(` Type      : ${(_d = roster == null ? void 0 : roster.type) != null ? _d : "cpu"}`);
     lines.push(` Formation : ${(_e = roster == null ? void 0 : roster.formation) != null ? _e : "?"}`);
     lines.push(` Tactic    : ${(_f = roster == null ? void 0 : roster.tactic) != null ? _f : "?"}`);
-    lines.push(` Roster    : ${ids.length} players`);
+    lines.push(` Roster    : ${rawIds.length} slot (${ids.length} real, ${sentinelCount} sentinel)`);
     lines.push(sep2);
     lines.push(row(
       { s: "#", w: 3 },
