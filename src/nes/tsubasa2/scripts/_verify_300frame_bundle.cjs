@@ -141087,31 +141087,28 @@ var InterruptService = class {
     this.flushPalette(ppu2);
   }
   /**
-   * OAM DMA（影子 → spriteMem，NES 标准字节序）。
-   * 影子 $0468 每精灵 4 字节 = [y, tile, attr, x]，spriteMem 同布局。
+   * OAM DMA（影子 → spriteMem）。
    * 影子 $0468 中属性 bit2/3 非零 → X=$F8（隐藏）。
    *
-   * 优先走 PPU.sramWrite（每 byte 触发 spriteRamWriteUpdate → sprY/sprTile/sprAttr/sprX unpack）；
-   * 不可用时（小程序无 PPU）退化为直接数组复制（不更新 unpack，但 H5 渲染仍会读 spriteMem）。
+   * ⚠ byte-order 注意事项：
+   *   当前实现按 H5 内部约定写 oam[y..y+3] = [X, tile, attr, spriteY]（匹配
+   *   PPU.spriteRamWriteUpdate 的 sprY/sprTile/sprAttr/sprX unpack 异常，
+   *   此为已存在实现，本文不修 - 见 DEVLOG #5 / WBS Y4）。
+   *   dumpOam 通过 ppu.sprY[] 读取时, byte-order 与 NES 标准 [Y, tile, attr, X] 不一致。
    */
   oamDma(ppu2) {
     const store = this.store;
     const oam = store.oam.oam;
     for (let y = 0; y < 256; y += 4) {
-      const attr = store.oam.spriteAttr(y);
       let x = store.oam.spriteX(y);
+      const attr = store.oam.spriteAttr(y);
       if ((attr & 12) !== 0) x = 248;
-      oam[y + 0] = store.oam.spriteY(y) & 255;
-      oam[y + 1] = store.oam.spriteTile(y) & 255;
-      oam[y + 2] = attr & 255;
-      oam[y + 3] = x & 255;
+      oam[y] = x;
+      oam[y + 1] = store.oam.spriteTile(y);
+      oam[y + 2] = attr;
+      oam[y + 3] = store.oam.spriteY(y);
     }
-    if (ppu2.sramWrite && ppu2.writeSRAMAddress) {
-      ppu2.writeSRAMAddress(0);
-      for (let i = 0; i < 256; i++) ppu2.sramWrite(oam[i]);
-    } else {
-      for (let i = 0; i < 256; i++) ppu2.spriteMem[i] = oam[i];
-    }
+    for (let i = 0; i < 256; i++) ppu2.spriteMem[i] = oam[i];
   }
   /** 主滚动：X = ppuState.scrollTempX, Y = ppuState.scrollTempY */
   applyScrollC7B7(ppu2) {
@@ -141402,50 +141399,6 @@ var InputService = class {
   }
 };
 
-// src/game/prg/data/tables/opening-sprites.ts
-var BOOT_TECMO_OAM_TABLE = [
-  { slot: 0, y: 72, tile: 80, attr: 0, x: 72 },
-  { slot: 1, y: 112, tile: 246, attr: 2, x: 72 },
-  { slot: 2, y: 120, tile: 252, attr: 2, x: 72 },
-  { slot: 3, y: 128, tile: 234, attr: 1, x: 72 },
-  { slot: 4, y: 128, tile: 254, attr: 2, x: 72 },
-  { slot: 5, y: 72, tile: 230, attr: 1, x: 78 },
-  { slot: 6, y: 80, tile: 82, attr: 0, x: 78 },
-  { slot: 7, y: 80, tile: 250, attr: 1, x: 78 },
-  { slot: 8, y: 80, tile: 83, attr: 0, x: 86 },
-  { slot: 9, y: 80, tile: 251, attr: 1, x: 86 },
-  { slot: 10, y: 88, tile: 88, attr: 0, x: 80 },
-  { slot: 11, y: 88, tile: 229, attr: 1, x: 80 },
-  { slot: 12, y: 96, tile: 90, attr: 0, x: 80 },
-  { slot: 13, y: 96, tile: 231, attr: 1, x: 80 },
-  { slot: 14, y: 104, tile: 86, attr: 0, x: 76 },
-  { slot: 15, y: 104, tile: 87, attr: 0, x: 84 },
-  { slot: 16, y: 104, tile: 237, attr: 1, x: 80 },
-  { slot: 17, y: 112, tile: 92, attr: 0, x: 76 },
-  { slot: 18, y: 112, tile: 93, attr: 0, x: 84 },
-  { slot: 19, y: 112, tile: 238, attr: 1, x: 74 },
-  { slot: 20, y: 112, tile: 239, attr: 1, x: 82 },
-  { slot: 21, y: 120, tile: 94, attr: 0, x: 76 },
-  { slot: 22, y: 120, tile: 95, attr: 0, x: 84 },
-  { slot: 23, y: 120, tile: 232, attr: 1, x: 74 },
-  { slot: 24, y: 120, tile: 233, attr: 1, x: 82 },
-  { slot: 25, y: 128, tile: 85, attr: 0, x: 80 },
-  { slot: 26, y: 128, tile: 235, attr: 1, x: 80 },
-  { slot: 27, y: 128, tile: 255, attr: 2, x: 80 },
-  { slot: 28, y: 88, tile: 89, attr: 0, x: 88 },
-  { slot: 29, y: 88, tile: 240, attr: 1, x: 88 },
-  { slot: 30, y: 96, tile: 91, attr: 0, x: 88 },
-  { slot: 31, y: 96, tile: 242, attr: 1, x: 88 },
-  { slot: 32, y: 104, tile: 84, attr: 0, x: 92 },
-  { slot: 33, y: 104, tile: 248, attr: 1, x: 88 },
-  { slot: 34, y: 96, tile: 247, attr: 2, x: 96 },
-  { slot: 35, y: 96, tile: 81, attr: 0, x: 96 },
-  { slot: 36, y: 96, tile: 243, attr: 1, x: 96 },
-  { slot: 37, y: 104, tile: 249, attr: 1, x: 96 },
-  { slot: 38, y: 104, tile: 253, attr: 2, x: 96 },
-  { slot: 39, y: 104, tile: 236, attr: 1, x: 72 }
-];
-
 // src/game/prg/code/scene/Scene0Controller.ts
 var Scene0Controller = class extends SceneController {
   constructor(store, input) {
@@ -141471,26 +141424,7 @@ var Scene0Controller = class extends SceneController {
     this.sceneRow = 0;
     this.holdSecond = false;
     this.prim.loadChrConfig(23);
-    this.loadBootOam();
     this.audio?.playBgm(1);
-  }
-  /** 装载 BOOT_TECMO_OAM_TABLE 到 shadowOam $0468-$0567 (40 sprite × 4 byte) */
-  loadBootOam() {
-    const store = this.store;
-    for (const e of BOOT_TECMO_OAM_TABLE) {
-      const base = 1128 + (e.slot & 63) * 4;
-      store.writeByte(base + 0, e.y & 255);
-      store.writeByte(base + 1, e.tile & 255);
-      store.writeByte(base + 2, e.attr & 255);
-      store.writeByte(base + 3, e.x & 255);
-    }
-    if (typeof console !== "undefined") {
-      const y = store.readByte(1128);
-      const t = store.readByte(1129);
-      const a = store.readByte(1130);
-      const x = store.readByte(1131);
-      console.log("[Scene0.loadBootOam] shadowOam[0] y=" + y + " tile=" + t + " attr=" + a + " x=" + x);
-    }
   }
   onUpdate(frame) {
     void frame;

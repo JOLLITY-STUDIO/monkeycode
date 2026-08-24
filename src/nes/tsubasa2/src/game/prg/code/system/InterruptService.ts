@@ -30,13 +30,6 @@ export interface PpuTarget {
    * 由 runtime 实现（声明式 slot map；未提供时跳过动态装载）。
    */
   loadChrBank?(slot: number, bank1k: number): void;
-  /**
-   * 设置 PPU SPR-RAM 地址（$2003 写入）。H5 通过 sramWrite 把 shadow OAM → spriteMem，
-   * 触发 PPU.spriteRamWriteUpdate → 维护 sprY/sprX 等 unpacked 状态。
-   */
-  writeSRAMAddress?(address: number): void;
-  /** PPU SPR-RAM 写入（$2004）。每次写入会触发 spriteRamWriteUpdate。 */
-  sramWrite?(value: number): void;
 }
 
 /** PPU 帧缓冲（8 个 1KB slot 的 bank1k 索引） */
@@ -131,31 +124,28 @@ export class InterruptService {
   }
 
   /**
-   * OAM DMA（影子 → spriteMem，NES 标准字节序）。
-   * 影子 $0468 每精灵 4 字节 = [y, tile, attr, x]，spriteMem 同布局。
+   * OAM DMA（影子 → spriteMem）。
    * 影子 $0468 中属性 bit2/3 非零 → X=$F8（隐藏）。
    *
-   * 优先走 PPU.sramWrite（每 byte 触发 spriteRamWriteUpdate → sprY/sprTile/sprAttr/sprX unpack）；
-   * 不可用时（小程序无 PPU）退化为直接数组复制（不更新 unpack，但 H5 渲染仍会读 spriteMem）。
+   * ⚠ byte-order 注意事项：
+   *   当前实现按 H5 内部约定写 oam[y..y+3] = [X, tile, attr, spriteY]（匹配
+   *   PPU.spriteRamWriteUpdate 的 sprY/sprTile/sprAttr/sprX unpack 异常，
+   *   此为已存在实现，本文不修 - 见 DEVLOG #5 / WBS Y4）。
+   *   dumpOam 通过 ppu.sprY[] 读取时, byte-order 与 NES 标准 [Y, tile, attr, X] 不一致。
    */
   private oamDma(ppu: PpuTarget): void {
     const store = this.store;
     const oam = store.oam.oam;
     for (let y = 0; y < 0x100; y += 4) {
-      const attr = store.oam.spriteAttr(y);
       let x = store.oam.spriteX(y);
+      const attr = store.oam.spriteAttr(y);
       if ((attr & 0x0c) !== 0) x = 0xf8;
-      oam[y + 0] = store.oam.spriteY(y) & 0xff;
-      oam[y + 1] = store.oam.spriteTile(y) & 0xff;
-      oam[y + 2] = attr & 0xff;
-      oam[y + 3] = x & 0xff;
+      oam[y] = x;
+      oam[y + 1] = store.oam.spriteTile(y);
+      oam[y + 2] = attr;
+      oam[y + 3] = store.oam.spriteY(y);
     }
-    if (ppu.sramWrite && ppu.writeSRAMAddress) {
-      ppu.writeSRAMAddress(0);
-      for (let i = 0; i < 0x100; i++) ppu.sramWrite(oam[i]);
-    } else {
-      for (let i = 0; i < 0x100; i++) ppu.spriteMem[i] = oam[i];
-    }
+    for (let i = 0; i < 0x100; i++) ppu.spriteMem[i] = oam[i];
   }
 
   /** 主滚动：X = ppuState.scrollTempX, Y = ppuState.scrollTempY */

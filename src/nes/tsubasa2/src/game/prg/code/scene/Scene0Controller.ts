@@ -17,7 +17,6 @@ import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
-import { BOOT_TECMO_OAM_TABLE } from '../../data/tables/opening-sprites';
 
 /** 场景 0 状态机阶段 */
 enum Scene0Phase {
@@ -65,32 +64,11 @@ export class Scene0Controller extends SceneController {
     //   跟 ROM 实际 frame 30 (Tecmo Title) 差 PT ~0% / screen ~12%
     this.prim.loadChrConfig(0x17);
 
-    // BUG #4 fix: 立即装载 title screen sprite 到 shadowOam $0468-$0567。
-    //  ROM 实际行为是 boot task $21CA + $1DD1 + $85EB 在前 30 帧内运行此 OAM 装载。
-    //  H5 暂用 BOOT_TECMO_OAM_TABLE (emulator-observed) 占位, frame 30 OAM 一致率目标 80%+
-    this.loadBootOam();
-
+    // NOTE - BUG #4:  boot OAM init (Tecmo logo 23 sprite) 需要翻译 PRG $21CA/$1DD1/$85EB
+    //   三个 boot routine。先前在 onEnter 加 loadBootOam() 占位后, frame 30 OAM 一致率
+    //   从 35.9% 落到 7.8% (因 H5 oamDrift 给所有 64 sprite 每帧 +1 Y, 而 EMU Tecmo sprite
+    //   不漂)。保留 BOOT_TECMO_OAM_TABLE 文件/WBS L1-L3 待办, onEnter 这里暂不装载。
     this.audio?.playBgm(0x01);
-  }
-
-  /** 装载 BOOT_TECMO_OAM_TABLE 到 shadowOam $0468-$0567 (40 sprite × 4 byte) */
-  private loadBootOam(): void {
-    const store = this.store;
-    for (const e of BOOT_TECMO_OAM_TABLE) {
-      const base = 0x0468 + (e.slot & 0x3f) * 4;
-      store.writeByte(base + 0, e.y & 0xff);
-      store.writeByte(base + 1, e.tile & 0xff);
-      store.writeByte(base + 2, e.attr & 0xff);
-      store.writeByte(base + 3, e.x & 0xff);
-    }
-    // DEBUG: confirm first sprite written to shadow OAM
-    if (typeof console !== 'undefined') {
-      const y = store.readByte(0x0468);
-      const t = store.readByte(0x0469);
-      const a = store.readByte(0x046a);
-      const x = store.readByte(0x046b);
-      console.log('[Scene0.loadBootOam] shadowOam[0] y=' + y + ' tile=' + t + ' attr=' + a + ' x=' + x);
-    }
   }
 
   onUpdate(frame: number): number | undefined {

@@ -54,30 +54,34 @@
   按 `chrSel` 切 4 slot
 - **状态**：已修（BUG #2 修后已可被触发，验证已充分）
 
-#### BUG #4 - OAM 35.9%：boot 时未装载 title screen 精灵（未修）
+#### BUG #4 - OAM 35.9%：boot 时未装载 title screen 精灵（已识别/未修）
 - **现象（_oam_diff.cjs 输出 frame 30）**：
   - EMU 有 41 个活跃 sprite（idx 0-40 = tile/y/x/attr 全非 0）
-  - H5 全 64 sprite 全 0（EMU 隐含的 `y=0/x=0/tile=0` 也计数成"零化"部分能 match）
-  - `same(4B)=23/64, sameY=24, sameTile=24, sameAttr=40, sameX=23`
-  - 前 23 sprite（idx 0-22）在 EMU 有数据、H5 全 0：
-    - tile indices: 80-95（普通字符）+ 229-255（阴影/重叠字符）
-    - y=72-128, x=72-96（屏幕中部）
-    - attr bit0=0/1/2 → pal 0/4/8（3 个 palette group）
-    - 推断：ROM boot 时把"Tecmo" logo 文字装到 OAM buffer $0200-$025F
-- **根因**：
-  - H5 `hardware.reset()` 只调 `store.writeByte(0x0200..0x2ff, 0xf8)`（隐藏）
-  - boot tasks 翻译未含 fn 回调：
-    ```
-    registerTask(0, 0x28, 0x21, 0xca);  // PRG $21CA = ?
-    registerTask(1, 0x50, 0x1d, 0xd1);  // PRG $1DD1 = ?
-    registerTask(2, 0x78, 0x85, 0xeb);  // PRG $85EB = ?
-    ```
-  - 这三个任务被 tick 分发但 fn=null → 仅倒计时，啥都没干
-- **修复方向**：
-  - 翻译 $21CA / $1DD1 / $85EB 三个 boot routine → `prim.bootOamInit()` 类似 Service
-  - 在 `hardware.reset()` 末尾或 `onEnter()` 调用
-  - 或：直接 dump ROM 中 OAM init 字节填充 → 声明式表
-- **状态**：未修（WBS 待办分解）
+  - H5 全 64 sprite 全 0
+  - `same(4B)=23/64 = 35.9%`（全部为 EMU 中 y=0/tile=0/attr=0/x=0 的 idx 40-63 hidden 部分）
+- **EMU frame 30 前 23 sprite 详细数据**：
+  ```
+  i=0  y=72,  t=80,  a=0, x=72
+  i=1  y=112, t=246, a=2, x=72
+  i=2  y=120, t=252, a=2, x=72
+  ...
+  i=22 y=120, t=95,  a=0, x=84
+  ```
+  tile 80-95=字符 + 229-255=重叠/阴影；attr 0/1/2=palette group 0/4/8；y=72-128, x=72-96
+- **H5 已尝试 fix 但未保留**：
+  - 加了 `src/game/prg/data/tables/opening-sprites.ts` (BOOT_TECMO_OAM_TABLE)
+  - 在 Scene0Controller.onEnter() 调用 loadBootOam() 写 $0468-$0567
+  - 经验证, H5 frame 30 OAM same 从 23/64 (35.9%) **反而掉到 5/64 (7.8%)**
+  - 原因: H5 oamDrift(1) 给 64 sprite 每帧 +1 Y (14 帧后 Y 偏 +14),
+    而 EMU Tecmo 是不漂 sprite; 我们加载 y=72 时, frame 30 = y=86 ≠ EMU y=72
+- **根因（确认）**：
+  - ROM 在 boot 前 30 帧内通过 boot task `$21CA/$1DD1/$85EB` 填充 OAM buffer
+  - 这些 routine 在 H5 `hardware.reset()` 末尾未翻译 (fn=null)
+  - ROM oamDrift 范围可能有限制（只漂 player sprite 0-15，不漂 logo sprite 16+)
+- **修复方向**（WBS L1-L3）：
+  - 翻译 PRG $21CA/$1DD1/$85EB 三个 boot routine
+  - 或暂用 emulator-observed 表 + 修改 H5 oamDrift 范围限制
+- **状态**：未修，data/tables/opening-sprites.ts 已保存供参考
 
 #### BUG #5 - frame-end banks 与 EMU 不一致（mid-frame CHR switch 未翻译）
 - **现象**：EMU PT `chr-switches.json` 显示每帧有 5+ 组不同 banks（H5 只 1 组）
