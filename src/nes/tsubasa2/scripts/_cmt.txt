@@ -1,6 +1,0 @@
-feat(test): api-test 增至 6 视图 (球员/详情/球队/等级/比赛/技能)
-
-- renderMatchConfig: 比赛配置 + 全部 20 场对阵列表
-- renderSkills: 球员技能 + 威力条
-- 6 视图 Canvas 网格 2x3 布局
-- 14 项数据完整性断言
