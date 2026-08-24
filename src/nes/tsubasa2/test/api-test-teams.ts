@@ -6,6 +6,7 @@
  */
 import { TEAM_TABLE as TEAM_TABLE_EXTRACTED, TEAMS_FULL as TEAM_ROSTER_TABLE, findTeamById, findRosterById } from '../src/game/prg/data/tables/team-table';
 import { findPlayerById } from '../src/game/prg/data/tables/player-table';
+import { PLAYER_NAMES_JP } from '../src/game/prg/data/tables/player-names-jp';
 
 function listAllTeamIds(): number[] {
   const ids = new Set<number>();
@@ -67,20 +68,21 @@ function buildRosterTable(teamId: number): string {
   rows.push(`<h2>${teamName} <span class="id">0x${teamId.toString(16).padStart(2,'0').toUpperCase()}</span></h2>`);
   rows.push(`<div class="meta">Type: ${roster?.type ?? 'cpu'} · Formation: ${roster?.formation ?? '-'} · Tactic: ${roster?.tactic ?? '-'} · ${roster?.players?.length ?? 0} players</div>`);
   rows.push('<table class="roster"><thead><tr>');
-  rows.push('<th>#</th><th>ID</th><th>Name</th><th>POS</th><th>SHOT</th><th>PASS</th><th>DRB</th><th>BLK</th><th>TKL</th><th>ITC</th><th>STM</th>');
+  rows.push('<th>#</th><th>ID</th><th>Name (EN)</th><th>名前 (JA)</th><th>名稱 (ZH)</th><th>POS</th><th>SHOT</th><th>PASS</th><th>DRB</th><th>BLK</th><th>TKL</th><th>ITC</th><th>STM</th>');
   rows.push('</tr></thead><tbody>');
   const players = roster?.players ?? [];
   players.forEach((pid: number, i: number) => {
     const p: any = findPlayerById(pid);
     const pos = p ? ((p.position ?? 0) === 1 ? 'GK' : 'FW') : '-';
+    const np = PLAYER_NAMES_JP[pid];
     rows.push(`<tr><td>${i + 1}</td><td class="id">0x${pid.toString(16).padStart(2,'0').toUpperCase()}</td>`);
     if (p) {
-      rows.push(`<td>${p.name ?? '?'}</td>`);
+      rows.push(`<td>${p.name ?? '?'}</td><td>${np?.ja ?? '?'}</td><td>${np?.zh ?? '?'}</td>`);
       rows.push(`<td class="pos-${pos.toLowerCase()}">${pos}</td>`);
       rows.push(`<td>${p.shot ?? 0}</td><td>${p.pass ?? 0}</td><td>${p.dribble ?? 0}</td>`);
       rows.push(`<td>${p.block ?? 0}</td><td>${p.tackle ?? 0}</td><td>${p.intercept ?? 0}</td><td>${p.stamina ?? 0}</td>`);
     } else {
-      rows.push(`<td>???</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`);
+      rows.push(`<td>???</td><td>???</td><td>???</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`);
     }
     rows.push('</tr>');
   });

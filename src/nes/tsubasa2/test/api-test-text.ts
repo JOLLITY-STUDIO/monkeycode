@@ -11,6 +11,7 @@ import { findLevelByExp, findLevelById, LEVEL_UP_TABLE } from '../src/game/prg/d
 import { findTeamById, findTeamNameById, findRosterById, TEAMS_FULL } from '../src/game/prg/data/tables/team-table';
 import { findSkillByMoveId, findSkillsByPlayer, SKILL_TABLE } from '../src/game/prg/data/tables/skill-table';
 import { getMatchConfig, MATCH_CONFIG_TABLE } from '../src/game/prg/data/tables/match-config-table';
+import { PLAYER_NAMES_JP } from '../src/game/prg/data/tables/player-names-jp';
 
 // ─────────────────────────── 文本表格工具 ───────────────────────────
 
@@ -41,10 +42,10 @@ function header(title: string): string {
 
 function API_PLAYERS(): string {
   const lines: string[] = [];
-  lines.push(header('GET /api/players — 全部 45 明星'));
+  lines.push(header('GET /api/players — 全部 45 明星 (EN/JA/ZH 三语)'));
   lines.push(row(
     { s: 'ID', w: 6 },
-    { s: 'NAME', w: 14 },
+    { s: 'NAME (en/ja/zh)', w: 28 },
     { s: 'STM', w: 4, a: 'right' },
     { s: 'SHOT', w: 4, a: 'right' },
     { s: 'PASS', w: 4, a: 'right' },
@@ -61,11 +62,12 @@ function API_PLAYERS(): string {
     if (!p) continue;
     totalCount++;
     const id = p.id ?? 0;
-    const name = p.name ?? '?';
+    const np = PLAYER_NAMES_JP[id];
+    const nameTrilingual = np ? `${np.en}/${np.ja}/${np.zh}` : (p.name ?? '?');
     const pos = (p.position ?? 0) === 1 ? 'GK' : 'FW';
     lines.push(row(
       { s: '0x' + id.toString(16).padStart(2, '0').toUpperCase(), w: 6 },
-      { s: name, w: 14 },
+      { s: nameTrilingual, w: 28 },
       { s: (p.stamina ?? 0).toString(), w: 4, a: 'right' },
       { s: (p.shot ?? 0).toString(), w: 4, a: 'right' },
       { s: (p.pass ?? 0).toString(), w: 4, a: 'right' },
@@ -89,10 +91,16 @@ function API_PLAYER_DETAIL(id: number): string {
   const pid = p.id ?? 0;
   const club = p.club ?? 0;
   const pos = (p.position ?? 0) === 1 ? 'GK' : 'FW';
-  lines.push(header(`GET /api/player/0x${pid.toString(16).padStart(2, '0').toUpperCase()} — ${p.name ?? '?'} 档案`));
+  const np = PLAYER_NAMES_JP[pid];
+  const nameStr = np ? `${np.en} / ${np.ja} / ${np.zh}` : (p.name ?? '?');
+  lines.push(header(`GET /api/player/0x${pid.toString(16).padStart(2, '0').toUpperCase()} — ${nameStr} 档案`));
   lines.push(sep2);
   lines.push(` ID       = 0x${pid.toString(16).padStart(2, '0').toUpperCase()}`);
-  lines.push(` Name     = ${p.name ?? '?'}`);
+  lines.push(` Name(EN) = ${p.name ?? '?'}`);
+  if (np) {
+    lines.push(` Name(JA) = ${np.ja}`);
+    lines.push(` Name(ZH) = ${np.zh}`);
+  }
   lines.push(` Position = ${pos}    Club = ${club}`);
   lines.push(sep2);
   lines.push(' 7 ABILITY BARS (ROM 0x39fde + idx*24):');

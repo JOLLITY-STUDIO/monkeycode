@@ -7617,6 +7617,132 @@
     return DEFAULT_MATCH_CONFIG;
   }
 
+  // src/game/prg/data/tables/player-names-jp.ts
+  var PLAYER_NAMES_JP = {
+    // ────────────────────── 明星 0x01-0x2D (圣保罗/南葛/亚洲杯) ──────────────────────
+    1: { en: "Tsubasa", ja: "\u5927\u7A7A \u7FFC", zh: "\u5927\u7A7A\u7FFC" },
+    2: { en: "Lennart", ja: "\u30EC\u30CA\u30FC\u30C8", zh: "\u96F7\u7D0D\u6258", gk: true },
+    3: { en: "Lima", ja: "\u30EA\u30DE", zh: "\u5229\u99AC" },
+    4: { en: "Marini", ja: "\u30DE\u30EA\u30FC\u30CB", zh: "\u99AC\u91CC\u5C3C" },
+    5: { en: "Amaral", ja: "\u30A2\u30DE\u30E9\u30A6", zh: "\u963F\u99AC\u62C9\u723E" },
+    6: { en: "Dottil", ja: "\u30C9\u30A5\u30C8\u30FC\u30EB", zh: "\u675C\u6258\u723E" },
+    7: { en: "Battista", ja: "\u30D0\u30C1\u30B9\u30BF", zh: "\u5DF4\u8482\u65AF\u5854" },
+    8: { en: "Tahamata", ja: "\u30BF\u30CF\u30DE\u30BF", zh: "\u5854\u54C8\u99AC\u5854" },
+    9: { en: "Babinton", ja: "\u30D0\u30D3\u30F3\u30C8\u30F3", zh: "\u5DF4\u8CD3\u9813" },
+    10: { en: "Gil", ja: "\u30B8\u30EB", zh: "\u5409\u723E" },
+    11: { en: "Platton", ja: "\u30D7\u30E9\u30C8\u30F3", zh: "\u666E\u62C9\u9813" },
+    12: { en: "Urabe", ja: "\u6D66\u8FBA \u53CD\u6B21", zh: "\u6D66\u908A\u53CD\u6B21" },
+    13: { en: "Kishida", ja: "\u5CB8\u7530 \u731B", zh: "\u5CB8\u7530\u731B" },
+    14: { en: "Nakayama", ja: "\u4E2D\u5C71 \u653F\u4EBA", zh: "\u4E2D\u5C71\u653F\u4EBA" },
+    15: { en: "Morisaki", ja: "\u68EE\u5D0E \u6709\u4E09", zh: "\u68EE\u5D0E\u6709\u4E09", gk: true },
+    16: { en: "Takasugu", ja: "\u9AD8\u6749 \u771F\u543E", zh: "\u9AD8\u6749\u771F\u543E" },
+    17: { en: "Misaki", ja: "\u5CAC \u592A\u90CE", zh: "\u5CAC\u592A\u90CE" },
+    18: { en: "Izawa", ja: "\u4E95\u6CA2 \u5B88", zh: "\u4E95\u6FA4\u5B88" },
+    19: { en: "Taki", ja: "\u6EDD \u4E00", zh: "\u7027\u4E00" },
+    20: { en: "Ishizaki", ja: "\u77F3\u5D0E \u4E86", zh: "\u77F3\u5D0E\u4E86" },
+    21: { en: "Nitta", ja: "\u65B0\u7530 \u77AC", zh: "\u65B0\u7530\u77AC" },
+    22: { en: "Kisugi", ja: "\u6765\u751F \u54F2\u5175", zh: "\u4F86\u751F\u54F2\u5175" },
+    23: { en: "Masao", ja: "\u7ACB\u82B1 \u653F\u592B", zh: "\u7ACB\u82B1\u653F\u592B" },
+    24: { en: "Kazuo", ja: "\u7ACB\u82B1 \u548C\u592B", zh: "\u7ACB\u82B1\u548C\u592B" },
+    25: { en: "Sano", ja: "\u4F50\u91CE \u6E80", zh: "\u4F50\u91CE\u6EFF" },
+    26: { en: "Hyuga", ja: "\u65E5\u5411 \u5C0F\u6B21\u90CE", zh: "\u65E5\u5411\u5C0F\u6B21\u90CE" },
+    27: { en: "Souta", ja: "\u65E9\u7530 \u8AA0", zh: "\u65E9\u7530\u8AA0" },
+    28: { en: "Jitou", ja: "\u6B21\u85E4 \u6D0B", zh: "\u6B21\u85E4\u6D0B" },
+    29: { en: "Matsuyama", ja: "\u677E\u5C71 \u5149", zh: "\u677E\u5C71\u5149" },
+    30: { en: "Sorimachi", ja: "\u53CD\u753A \u4E00\u6A39", zh: "\u53CD\u753A\u4E00\u6A39" },
+    31: { en: "Sawada", ja: "\u6CA2\u7530 \u30BF\u30B1\u30B7", zh: "\u6FA4\u7530\u6B66\u5FD7" },
+    32: { en: "Misugi", ja: "\u4E09\u6749 \u6DF3", zh: "\u4E09\u6749\u6DF3" },
+    33: { en: "Wakabayashi", ja: "\u82E5\u6797 \u6E90\u4E09", zh: "\u82E5\u6797\u6E90\u4E09", gk: true },
+    34: { en: "Wakashimazu", ja: "\u82E5\u5CF6\u6D25 \u5065", zh: "\u82E5\u5CF6\u6D25\u5065", gk: true },
+    35: { en: "Satilst", ja: "\u30B5\u30C8\u30EB\u30B9\u30C6\u30AE", zh: "\u85A9\u6258\u65AF\u6CF0\u5409" },
+    36: { en: "Riverio", ja: "\u30EA\u30D9\u30EA\u30AA", zh: "\u91CC\u7DAD\u91CC\u5967" },
+    37: { en: "DaSilva", ja: "\u30C0\u30FB\u30B7\u30EB\u30D0", zh: "\u9054\u5E2D\u723E\u74E6" },
+    38: { en: "Meon", ja: "\u30E1\u30AA\u30F3", zh: "\u6885\u6602", gk: true },
+    39: { en: "Toninho", ja: "\u30C8\u30CB\u30FC\u30CB\u30E7", zh: "\u6258\u5C3C\u7D10" },
+    40: { en: "Nei", ja: "\u30CD\u30A4", zh: "\u5167\u4F0A" },
+    41: { en: "Zagalo", ja: "\u30B6\u30AC\u30ED", zh: "\u624E\u52A0\u6D1B" },
+    42: { en: "Dircil", ja: "\u30C7\u30A3\u30EB\u30BB\u30A6", zh: "\u8FEA\u723E\u4FEE" },
+    43: { en: "Carlos", ja: "\u30AB\u30EB\u30ED\u30B9\u30FB\u30B5\u30F3\u30BF\u30FC\u30CA", zh: "\u5361\u6D1B\u65AF\u30FB\u5C71\u5854\u62FF" },
+    44: { en: "Santamaria", ja: "\u30B5\u30F3\u30BF\u30DE\u30EA\u30A2", zh: "\u8056\u99AC\u5229\u4E9E" },
+    45: { en: "Jethrio", ja: "\u30B8\u30A7\u30C3\u30C8\u30EA\u30AA", zh: "\u5091\u7279\u91CC\u5967" },
+    // ────────────────────── 圣保罗候补 0x2E-0x3F (são paulo subs) ──────────────────────
+    46: { en: "Jitou", ja: "\u6B21\u85E4 \u6D0B", zh: "\u6B21\u85E4\u6D0B" },
+    47: { en: "Sano", ja: "\u4F50\u91CE \u6E80", zh: "\u4F50\u91CE\u6EFF" },
+    48: { en: "Masao", ja: "\u7ACB\u82B1 \u653F\u592B", zh: "\u7ACB\u82B1\u653F\u592B" },
+    49: { en: "Kazuo", ja: "\u7ACB\u82B1 \u548C\u592B", zh: "\u7ACB\u82B1\u548C\u592B" },
+    50: { en: "Souta", ja: "\u65E9\u7530 \u8AA0", zh: "\u65E9\u7530\u8AA0" },
+    51: { en: "Nakanishi", ja: "\u4E2D\u897F \u592A\u4E00", zh: "\u4E2D\u897F\u592A\u4E00", gk: true },
+    52: { en: "Misugi", ja: "\u4E09\u6749 \u6DF3", zh: "\u4E09\u6749\u6DF3" },
+    53: { en: "Matsuyama", ja: "\u677E\u5C71 \u5149", zh: "\u677E\u5C71\u5149" },
+    54: { en: "Hyuga", ja: "\u65E5\u5411 \u5C0F\u6B21\u90CE", zh: "\u65E5\u5411\u5C0F\u6B21\u90CE" },
+    55: { en: "Sorimachi", ja: "\u53CD\u753A \u4E00\u6A39", zh: "\u53CD\u753A\u4E00\u6A39" },
+    56: { en: "Sawada", ja: "\u6CA2\u7530 \u30BF\u30B1\u30B7", zh: "\u6FA4\u7530\u6B66\u5FD7" },
+    57: { en: "Wakashimazu", ja: "\u82E5\u5CF6\u6D25 \u5065", zh: "\u82E5\u5CF6\u6D25\u5065", gk: true },
+    58: { en: "Rampion", ja: "\u30E9\u30F3\u30D4\u30AA\u30F3", zh: "\u862D\u76AE\u7FC1" },
+    59: { en: "Victor", ja: "\u30D3\u30AF\u30C8\u30EA\u30FC\u30CE", zh: "\u7DAD\u514B\u591A\u5229\u8AFE" },
+    60: { en: "DaSilva", ja: "\u30C0\u30FB\u30B7\u30EB\u30D0", zh: "\u9054\u5E2D\u723E\u74E6" },
+    61: { en: "Kapilman", ja: "\u30AB\u30DA\u30ED\u30DE\u30F3", zh: "\u5361\u57F9\u723E\u66FC" },
+    62: { en: "Kaltz", ja: "\u30D8\u30EB\u30DE\u30F3\u30FB\u30AB\u30EB\u30C4", zh: "\u8D6B\u723E\u66FC\u30FB\u5361\u723E\u8332" },
+    63: { en: "Metzer", ja: "\u30E1\u30C3\u30C4\u30A1", zh: "\u6885\u67E5" },
+    // ────────────────────── 球队升级版 0x40-0x4C (level-up forms) ──────────────────────
+    64: { en: "Wakabayashi", ja: "\u82E5\u6797 \u6E90\u4E09", zh: "\u82E5\u6797\u6E90\u4E09", gk: true },
+    65: { en: "Hyuga", ja: "\u65E5\u5411 \u5C0F\u6B21\u90CE", zh: "\u65E5\u5411\u5C0F\u6B21\u90CE" },
+    66: { en: "Nitta", ja: "\u65B0\u7530 \u77AC", zh: "\u65B0\u7530\u77AC" },
+    67: { en: "Sano", ja: "\u4F50\u91CE \u6EFF", zh: "\u4F50\u91CE\u6EFF" },
+    68: { en: "Misaki", ja: "\u5CAC \u592A\u90CE", zh: "\u5CAC\u592A\u90CE" },
+    69: { en: "Misugi", ja: "\u4E09\u6749 \u6DF3", zh: "\u4E09\u6749\u6DF3" },
+    70: { en: "Masao", ja: "\u7ACB\u82B1 \u653F\u592B", zh: "\u7ACB\u82B1\u653F\u592B" },
+    71: { en: "Kazuo", ja: "\u7ACB\u82B1 \u548C\u592B", zh: "\u7ACB\u82B1\u548C\u592B" },
+    72: { en: "Jitou", ja: "\u6B21\u85E4 \u6D0B", zh: "\u6B21\u85E4\u6D0B" },
+    73: { en: "Ishzaki", ja: "\u77F3\u5D0E \u4E86", zh: "\u77F3\u5D0E\u4E86" },
+    74: { en: "Souta", ja: "\u65E9\u7530 \u8AA0", zh: "\u65E9\u7530\u8AA0" },
+    75: { en: "Matsuyama", ja: "\u677E\u5C71 \u5149", zh: "\u677E\u5C71\u5149" },
+    76: { en: "Wakashimazu", ja: "\u82E5\u5CF6\u6D25 \u5065", zh: "\u82E5\u5CF6\u6D25\u5065", gk: true },
+    // ────────────────────── 亚洲杯 0x4D-0x5F ──────────────────────
+    77: { en: "LiHan", ja: "\u674E \u90A6\u6F22", zh: "\u674E\u90A6\u6F22" },
+    78: { en: "LiBa", ja: "\u674E \u90A6\u7ADC", zh: "\u674E\u90A6\u9F8D" },
+    79: { en: "Sya", ja: "\u8ECA \u4EC1\u5929", zh: "\u8ECA\u4EC1\u5929" },
+    80: { en: "Kim", ja: "\u91D1 \u73FE\u4EE3", zh: "\u91D1\u73FE\u4EE3" },
+    81: { en: "Mach", ja: "\u30DE\u30C3\u30CF", zh: "\u99AC\u8D6B" },
+    82: { en: "Jaich", ja: "\u30B8\u30E3\u30A4\u30C1", zh: "\u8CC8\u4F0A\u5947", gk: true },
+    83: { en: "Lorima", ja: "\u30ED\u30EA\u30DE\u30FC", zh: "\u7F85\u5229\u99AC" },
+    84: { en: "Robson", ja: "\u30ED\u30DC\u30BD\u30F3", zh: "\u7F85\u8CD3\u905C" },
+    85: { en: "Belaef", ja: "\u30D9\u30E9\u30A8\u30D5", zh: "\u8C9D\u62C9\u8036\u592B" },
+    86: { en: "Lashin", ja: "\u30E9\u30B7\u30F3", zh: "\u62C9\u8F9B", gk: true },
+    87: { en: "Napoleon", ja: "\u30EB\u30A4\u30FB\u30CA\u30DD\u30EC\u30AA\u30F3", zh: "\u8DEF\u6613\u30FB\u62FF\u7834\u5D19" },
+    88: { en: "Pierr", ja: "\u30A8\u30EB\u30FB\u30B7\u30C9\u30FB\u30D4\u30A8\u30FC\u30EB", zh: "\u827E\u723E\u30FB\u897F\u591A\u30FB\u76AE\u57C3\u723E" },
+    89: { en: "Espera", ja: "\u30A8\u30B9\u30D1\u30C0", zh: "\u57C3\u65AF\u5E15\u9054" },
+    90: { en: "Rampion", ja: "\u30E9\u30F3\u30D4\u30AA\u30F3", zh: "\u862D\u76AE\u7FC1" },
+    91: { en: "Hernandez", ja: "\u30B8\u30CE\u30FB\u30D8\u30EB\u30CA\u30F3\u30C7\u30B9", zh: "\u72C4\u8AFE\u30FB\u8D6B\u5357\u5FB7\u8332", gk: true },
+    92: { en: "Islas", ja: "\u30A4\u30B9\u30E9\u30B9", zh: "\u4F0A\u65AF\u62C9\u65AF" },
+    93: { en: "Ribla", ja: "\u30EA\u30D9\u30E9", zh: "\u91CC\u8C9D\u62C9" },
+    94: { en: "Pascal", ja: "\u30A2\u30E9\u30F3\u30FB\u30D1\u30B9\u30AB\u30EB", zh: "\u963F\u862D\u30FB\u5E15\u65AF\u5361" },
+    95: { en: "Satilst", ja: "\u30B5\u30C8\u30EB\u30B9\u30C6\u30AE", zh: "\u85A9\u6258\u65AF\u6CF0\u5409" },
+    // ────────────────────── 世界杯 0x60-0x75 ──────────────────────
+    96: { en: "Dias", ja: "\u30D5\u30A1\u30F3\u30FB\u30C7\u30A3\u30A2\u30B9", zh: "\u80E1\u5B89\u30FB\u8FEA\u4E9E\u65AF" },
+    97: { en: "Babinton", ja: "\u30D0\u30D3\u30F3\u30C8\u30F3", zh: "\u5DF4\u8CD3\u9813" },
+    98: { en: "Galvin", ja: "\u30AC\u30EB\u30D0\u30F3", zh: "\u52A0\u723E\u842C" },
+    99: { en: "Schneider", ja: "\u30AB\u30FC\u30EB\u30FB\u30CF\u30A4\u30F3\u30C4\u30FB\u30B7\u30E5\u30CA\u30A4\u30C0\u30FC", zh: "\u5361\u723E\u30FB\u6D77\u56E0\u8328\u30FB\u65BD\u5948\u5FB7" },
+    100: { en: "Margis", ja: "\u30DE\u30FC\u30AC\u30B9", zh: "\u99AC\u52A0\u65AF" },
+    101: { en: "Kaltz", ja: "\u30D8\u30EB\u30DE\u30F3\u30FB\u30AB\u30EB\u30C4", zh: "\u8D6B\u723E\u66FC\u30FB\u5361\u723E\u8332" },
+    102: { en: "Metzer", ja: "\u30E1\u30C3\u30C4\u30A1", zh: "\u6885\u67E5" },
+    103: { en: "Schister", ja: "\u30D5\u30E9\u30F3\u30C4\u30FB\u30B7\u30A7\u30B9\u30BF\u30FC", zh: "\u5F17\u6717\u8328\u30FB\u5E2D\u65AF\u7279" },
+    104: { en: "Kapilman", ja: "\u30AB\u30DA\u30ED\u30DE\u30F3", zh: "\u5361\u57F9\u723E\u66FC" },
+    105: { en: "Muller", ja: "\u30C7\u30E5\u30FC\u30BF\u30FC\u30FB\u30DF\u30E5\u30FC\u30E9\u30FC", zh: "\u8FEA\u7279\u30FB\u7A46\u52D2", gk: true },
+    106: { en: "Carlos", ja: "\u30AB\u30EB\u30ED\u30B9\u30FB\u30B5\u30F3\u30BF\u30FC\u30CA", zh: "\u5361\u6D1B\u65AF\u30FB\u5C71\u5854\u62FF" },
+    107: { en: "Zagalo", ja: "\u30B6\u30AC\u30ED", zh: "\u624E\u52A0\u6D1B" },
+    108: { en: "Riverio", ja: "\u30EA\u30D9\u30EA\u30AA", zh: "\u91CC\u7DAD\u91CC\u5967" },
+    109: { en: "Nei", ja: "\u30CD\u30A4", zh: "\u5167\u4F0A" },
+    110: { en: "Santamaria", ja: "\u30B5\u30F3\u30BF\u30DE\u30EA\u30A2", zh: "\u8056\u99AC\u5229\u4E9E" },
+    111: { en: "Toninho", ja: "\u30C8\u30CB\u30FC\u30CB\u30E7", zh: "\u6258\u5C3C\u7D10" },
+    112: { en: "Dottil", ja: "\u30C9\u30A5\u30C8\u30FC\u30EB", zh: "\u675C\u6258\u723E" },
+    113: { en: "Amaral", ja: "\u30A2\u30DE\u30E9\u30A6", zh: "\u963F\u99AC\u62C9\u723E" },
+    114: { en: "Dircil", ja: "\u30C7\u30A3\u30EB\u30BB\u30A6", zh: "\u8FEA\u723E\u4FEE" },
+    115: { en: "Jethrio", ja: "\u30B8\u30A7\u30C3\u30C8\u30EA\u30AA", zh: "\u5091\u7279\u91CC\u5967" },
+    116: { en: "Gertise", ja: "\u30B2\u30EB\u30C6\u30A3\u30B9", zh: "\u5091\u723E\u8482\u65AF", gk: true },
+    117: { en: "Coimbra", ja: "\u30B3\u30A4\u30F3\u30D6\u30E9", zh: "\u8F9B\u5DF4\u62C9" }
+  };
+
   // test/api-test-text.ts
   var W = 100;
   var sep = "=".repeat(W);
@@ -7643,10 +7769,10 @@
   function API_PLAYERS() {
     var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
     const lines = [];
-    lines.push(header("GET /api/players \u2014 \u5168\u90E8 45 \u660E\u661F"));
+    lines.push(header("GET /api/players \u2014 \u5168\u90E8 45 \u660E\u661F (EN/JA/ZH \u4E09\u8BED)"));
     lines.push(row(
       { s: "ID", w: 6 },
-      { s: "NAME", w: 14 },
+      { s: "NAME (en/ja/zh)", w: 28 },
       { s: "STM", w: 4, a: "right" },
       { s: "SHOT", w: 4, a: "right" },
       { s: "PASS", w: 4, a: "right" },
@@ -7663,11 +7789,12 @@
       if (!p) continue;
       totalCount++;
       const id = (_a = p.id) != null ? _a : 0;
-      const name = (_b = p.name) != null ? _b : "?";
+      const np = PLAYER_NAMES_JP[id];
+      const nameTrilingual = np ? `${np.en}/${np.ja}/${np.zh}` : (_b = p.name) != null ? _b : "?";
       const pos = ((_c = p.position) != null ? _c : 0) === 1 ? "GK" : "FW";
       lines.push(row(
         { s: "0x" + id.toString(16).padStart(2, "0").toUpperCase(), w: 6 },
-        { s: name, w: 14 },
+        { s: nameTrilingual, w: 28 },
         { s: ((_d = p.stamina) != null ? _d : 0).toString(), w: 4, a: "right" },
         { s: ((_e = p.shot) != null ? _e : 0).toString(), w: 4, a: "right" },
         { s: ((_f = p.pass) != null ? _f : 0).toString(), w: 4, a: "right" },
@@ -7691,10 +7818,16 @@
     const pid = (_a = p.id) != null ? _a : 0;
     const club = (_b = p.club) != null ? _b : 0;
     const pos = ((_c = p.position) != null ? _c : 0) === 1 ? "GK" : "FW";
-    lines.push(header(`GET /api/player/0x${pid.toString(16).padStart(2, "0").toUpperCase()} \u2014 ${(_d = p.name) != null ? _d : "?"} \u6863\u6848`));
+    const np = PLAYER_NAMES_JP[pid];
+    const nameStr = np ? `${np.en} / ${np.ja} / ${np.zh}` : (_d = p.name) != null ? _d : "?";
+    lines.push(header(`GET /api/player/0x${pid.toString(16).padStart(2, "0").toUpperCase()} \u2014 ${nameStr} \u6863\u6848`));
     lines.push(sep2);
     lines.push(` ID       = 0x${pid.toString(16).padStart(2, "0").toUpperCase()}`);
-    lines.push(` Name     = ${(_e = p.name) != null ? _e : "?"}`);
+    lines.push(` Name(EN) = ${(_e = p.name) != null ? _e : "?"}`);
+    if (np) {
+      lines.push(` Name(JA) = ${np.ja}`);
+      lines.push(` Name(ZH) = ${np.zh}`);
+    }
     lines.push(` Position = ${pos}    Club = ${club}`);
     lines.push(sep2);
     lines.push(" 7 ABILITY BARS (ROM 0x39fde + idx*24):");
