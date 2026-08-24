@@ -134,7 +134,7 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 
 || ID | 版本 | 任务 | 产出 | 状态 |
 |----|------|------|------|------|
-| U1 | V1.0 | LevelUp 界面（赛后能力展示） | code/ui/LevelUpUiService.ts | ⬜ |
+| U1 | V1.0 | LevelUp 界面（赛后能力展示） | code/ui/LevelUpUiService.ts | ✅ |
 | U2 | V1.0 | MatchResult 界面（终场比分/XP） | code/ui/MatchResultUiService.ts | ⬜ |
 | U3 | V1.0 | Title 主菜单 | code/ui/TitleMenuUiService.ts | ⬜ |
 | U4 | V1.0 | TeamSelect 队伍选择 | code/ui/TeamSelectUiService.ts | ⬜ |

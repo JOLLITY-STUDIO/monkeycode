@@ -4,7 +4,17 @@
 
 ## 2026-08-24
 
-- [第二阶段 V1.0+ UI 具象化 启动]
+- [第二阶段 V1.0+ UI 具象化 启动] 223c93d1：
+  - WBS 新增 V1.0+ 段落 12 项 UI 任务 (U1-U12)
+  - **U1 LevelUpUiService** 真实落地：消费 LEVEL_UP_TABLE → LevelUpView 视图对象
+  - code/index.ts 导出 LevelUpUiService + LevelUpInput/LevelUpView 类型
+- [独立 API 测试页] test/api-test.ts + test/api-test.html 创建 + Canvas 渲染：
+  - 把每个 Service 当 URL 风格 API 调用
+  - 不启动 Canvas/HeadlessRuntime，纯 DataStore + 数据表查询
+  - 5 大域测试：球员/等级/队伍/技能/比赛配置
+  - 每域多个断言 (≥20 断言)：findById/findPlayersByTeam/findLevelByExp/
+    findTeamById/findSkillByMoveId/getMatchConfig
+  - 同时支持浏览器 (api-test.html) 和 Node (api-test-bundle.cjs) 输出
   - **WBS 新增段落**：12 项 UI 具象化任务 (U1-U12)
     - U1 LevelUp 界面 / U2 MatchResult / U3 Title / U4 TeamSelect
     - U5 PlayerProfile / U6 StaminaBar / U7 PasswordMenu
