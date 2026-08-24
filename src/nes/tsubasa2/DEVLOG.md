@@ -4,6 +4,13 @@
 
 ## 2026-08-24
 
+- [E1 推进] MatchAuxService + MatchHudService + MatchConfigService V0.5 真实实现：
+  - **MatchAuxService** handleDeadBall/detectRestart/handleSubstitution
+    → 越界检测（X≤1/≥254 → 角球/球门球；Y≤1/≥238 → 界外球）
+  - **MatchHudService** refresh/setTimer/setScore/drawStaminaBar/getTimer/getScore
+    → BCD 转换 + OAM HUD 写入 [y,tile,attr,x] 4 字节格式（ram_0200+）
+  - **MatchConfigService** getConfig/halfLength/maxSubstitutions/injuryTime/
+    totalMinutes/getTournament/hasExtraTime → 查 MATCH_CONFIG_TABLE 真表
 - [E2 推进 + B-series 标记] 20c5168e：
   - **SpriteService** putSprite/putSpriteByFrame/hideSprite/hideAll/
     setSpriteFrame → OAM 4 字节 [y,tile,attr,x] 写入影子缓冲

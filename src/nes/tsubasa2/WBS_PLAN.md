@@ -108,7 +108,7 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 | C3 | V0.3 | 场景 15+ 长场景翻译（NT 缓冲/精灵） | code/scene/Scene15Controller.ts 等 | ✅ |
 | D1 | V0.4 | ScriptEngine opcode 全集 | code/story/ScriptEngine.ts | ✅ |
 | D2 | V0.4 | 剧情数据装载与播放 | code/story/ScriptLoader.ts | ✅ |
-| E1 | V0.5 | 比赛引擎核心 | code/match/* | ⬜ |
+| E1 | V0.5 | 比赛引擎核心 | code/match/* | 🔄 |
 | E2 | V0.5 | 必杀技 + 精灵渲染 | code/skill, code/sprite | 🔄 |
 | F1 | V0.6 | 音频请求队列 → APU | code/audio/AudioService.ts | ✅ |
 | F2 | V0.6.1 | BGM 命令流解析（$84DA 32命令） | code/audio/AudioService.ts | ⬜ |
