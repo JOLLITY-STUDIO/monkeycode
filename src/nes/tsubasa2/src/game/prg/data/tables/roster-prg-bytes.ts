@@ -92,19 +92,18 @@
  *   const players = CPU_ROSTER_PRG_BYTES[idx];   // team[1] BrazilCor bytes
  */
 
-/** CPU 队 (16-bit team ID → PRG base offset & stride) 元数据 */
-export interface RosterPrgSource {
-  /** PRG 文件 offset (iNES header 16 bytes 已扣) */
-  readonly prgOffset: number;
-  /** 每队字节数 (11 ID + 可选战术字节) */
-  readonly stride: number;
-  /** 是否经 doc anchor 验证 (true = PRG 字节对应 doc 标的人名) */
-  readonly anchorVerified: boolean;
-  /** 源 asm 段 (如果有) / PRG region 描述 */
-  readonly source: string;
-}
-
-/** CPU 队 roster data — 队 ID → 11 球员 ID 数组 */
+/**
+ * CPU 对手 23 队 11 ID byte 数组。
+ *
+ * **PRG 来源**: bank 29 (R7 = 29), PRG index 0x3BB0A..0x3BD0B (CPU $BB0A..$BD0B),
+ * stride 22 sequential bytes/team (11 ID + 11 padding)。
+ * **不是从 asm 翻译**,是 PRG 物理 dump,经 doc anchor 交叉验证 (Cor Pos10=0x24
+ * Riverio, Pos9=0x23 Satilst, Gre Pos1=0x26 Meon GK, Pos9=0x25 DaSilva 全部命中 ✓)。
+ * 队 ID 0x84..0xAF = 关 1-32, 0xB0=关33 Brazil Final 1st Half,
+ * 0xB1=关33 Brazil Final 2nd Half w/ Coinbra 0x75 swap。
+ *
+ * IDE 鼠标悬停 `import { CPU_ROSTER_PRG_BYTES } from './roster-prg-bytes'` 即看到此说明。
+ */
 export const CPU_ROSTER_PRG_BYTES: Readonly<Record<number, ReadonlyArray<number>>> = {
   // ─────────── Brazil League (6 队, 关 1-6) ───────────
   // PRG base 0x3BAFE, stride 12 字节/队 (11 ID + 1 战术字节)
@@ -152,7 +151,15 @@ export const CPU_ROSTER_PRG_BYTES: Readonly<Record<number, ReadonlyArray<number>
   0xB1: [0x6A, 0x6B, 0x75, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73, 0x74],
 };
 
-/** Player team (玩家控制 4 队) 11 ID — 从 PRG 0x4A47~0x4A75 提取 */
+/**
+ * Player team 11 ID byte 数组 (玩家控制 4 队)。
+ *
+ * **PRG 来源**: bank 2 (R7 = 2), PRG index 0x4A47..0x4A75 (CPU $AA47..$AA75),
+ * stride 11 sequential bytes/team (无战术字节)。SaoPaulo/Nankatsu/AsianCup/BenchReserve
+ * 11 ID 数组来自真 ROM PRG 物理 dump,不是 asm 翻译。
+ *
+ * IDE 鼠标悬停 `import { PLAYER_ROSTER_PRG_BYTES } from './roster-prg-bytes'` 即看到此说明。
+ */
 export const PLAYER_ROSTER_PRG_BYTES: Readonly<Record<number, ReadonlyArray<number>>> = {
   0x80: [0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x01, 0x0B], // SaoPaulo
   0x81: [0x0F, 0x0D, 0x0E, 0x14, 0x10, 0x0C, 0x13, 0x12, 0x15, 0x11, 0x16], // Nankatsu
