@@ -25,56 +25,87 @@ type ChrSlotMap = ReadonlyArray<{ slot: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7; bank1k: n
 
 /**
  * 初始 CHR 装载（替代原 INIT_CHR_BANKS 表）
- * 按 PPU 地址直接分配：BG $0000 = bank 0,1,2,3 / SPR $1000 = bank 252,113,82,83
- */
+ * 按 PPU 地址直接分配（每个 1KB slot = 64 tile）：
+ *   BG $0000 = bank1k 0..3 / SPR $1000 = bank1k 124..127
+ *
+ * 实际游戏通过 InterruptService.applyChrRequest / applyChrFrom009e 会动态重写这些。
+ * 这里的 bank1k 编号取模 128（CHR ROM 总大小 = 128KB = 16 bank × 8KB），\n * 越界值（如原 252/113/82/83）会被取模映射到 ROM 实际范围内。\n */
 const CHR_SLOT_MAP: ChrSlotMap = [
   { slot: 0, bank1k: 0 },     // BG $0000, tile 0x00-0x3F
   { slot: 1, bank1k: 1 },     // BG $0400, tile 0x40-0x7F
   { slot: 2, bank1k: 2 },     // BG $0800, tile 0x80-0xBF
   { slot: 3, bank1k: 3 },     // BG $0C00, tile 0xC0-0xFF
-  { slot: 4, bank1k: 252 },   // SPR $1000, tile 0x00-0x3F
-  { slot: 5, bank1k: 113 },   // SPR $1400, tile 0x40-0x7F
-  { slot: 6, bank1k: 82 },    // SPR $1800, tile 0x80-0xBF
-  { slot: 7, bank1k: 83 },    // SPR $1C00, tile 0xC0-0xFF
+  { slot: 4, bank1k: 124 },   // SPR $1000, tile 0x00-0x3F
+  { slot: 5, bank1k: 125 },   // SPR $1400, tile 0x40-0x7F
+  { slot: 6, bank1k: 126 },   // SPR $1800, tile 0x80-0xBF
+  { slot: 7, bank1k: 127 },   // SPR $1C00, tile 0xC0-0xFF
 ];
 
-/** 从 CHR_BANKS（16×8KB）构建核心 ROM 的 vrom（32×4KB）与 vromTile */
-function buildChrRom(): { vrom: Uint8Array[]; vromTile: Tile[][]; vromCount: number } {
+/** 从 CHR_BANKS（16×8KB）构建核心 ROM 的 vrom（32×4KB）与 vromTilesByBank1k（256 slot × 64 tile） */
+function buildChrRom(): { vrom: Uint8Array[]; vromTilesByBank1k: Tile[][]; vromCount: number } {
   const vrom: Uint8Array[] = [];
-  const vromTile: Tile[][] = [];
+  /** 256 个 1KB slot，每个 64 tile（按原版 bank1k 编号 0-255 直查） */
+  const vromTilesByBank1k: Tile[][] = [];
+  for (let slot = 0; slot < 256; slot++) {
+    const arr: Tile[] = [];
+    for (let t = 0; t < 64; t++) arr.push(new Tile());
+    vromTilesByBank1k.push(arr);
+  }
+
+  /**
+   * 把 bank8k 内 byte 区间 [offset, offset+length) 解码为 tile 写入 vromTilesByBank1k。
+   * 每个 tile 16 byte：前 8 byte = plane0（行 0-7），后 8 byte = plane1（行 0-7）。
+   * 1KB slot 装 64 tile；8KB bank 装 8 个连续 bank1k。
+   */
+  const feed = (
+    bank8k: readonly number[],
+    bankBase8k: number,    // bank8k 在全局 bank1k 编号空间的起始偏移（按 1KB 为单位）
+    subOffset: number,     // bank8k 内的字节偏移（0..8192）
+    length: number,
+  ) => {
+    // 每 16 字节一个 tile（plane0 = 前 8 byte，plane1 = 后 8 byte）
+    for (let i = 0; i < length; i += 16) {
+      const absPos = subOffset + i;                // bank8k 内 tile 起始字节
+      const slot = bankBase8k + (absPos >> 10);    // (absPos/1024) → bank1k 编号
+      const tileInSlot = ((absPos & 0x3ff) >> 4) & 0x3f; // (absPos%1024)/16 → 64 tile 索引
+      const t = vromTilesByBank1k[slot][tileInSlot];
+      // 一次写入整个 tile 的 8 行（plane0[i] + plane1[i] 对应行 i）
+      t.initialized = true;
+      for (let row = 0; row < 8; row++) {
+        t.setScanline(row, bank8k[absPos + row], bank8k[absPos + row + 8]);
+      }
+    }
+  };
+
   for (let b = 0; b < 16; b++) {
     const bank8k = CHR_BANKS[b];
+    // 8KB → 2 × 4KB vrom（保留给 core ROM）
     for (let half = 0; half < 2; half++) {
       const start = half * 4096;
       const bank4k = new Uint8Array(4096);
       for (let i = 0; i < 4096; i++) bank4k[i] = bank8k[start + i] ?? 0xff;
       vrom.push(bank4k);
-      const tiles: Tile[] = [];
-      for (let t = 0; t < 256; t++) tiles.push(new Tile());
-      for (let i = 0; i < 4096; i++) {
-        const tileIndex = i >> 4;
-        const leftOver = i % 16;
-        if (leftOver < 8) {
-          tiles[tileIndex].setScanline(leftOver, bank4k[i], bank4k[i + 8]);
-        } else {
-          tiles[tileIndex].setScanline(leftOver - 8, bank4k[i - 8], bank4k[i]);
-        }
-      }
-      vromTile.push(tiles);
     }
+    // 8KB → 8 × 1KB，按 bank1k 全局编号排列（bank b 的起始 bank1k = b * 8）
+    const bankBase8k = b * 8;
+    feed(bank8k, bankBase8k, 0, 8192);
   }
-  return { vrom, vromTile, vromCount: 32 };
+
+  return { vrom, vromTilesByBank1k, vromCount: 32 };
 }
 
 export class HeadlessRuntime implements GameRuntime {
   readonly ppu: PpuRenderTarget;
   readonly controllers: { 1: Controller; 2: Controller };
+  /** bank1k → 256 个 Tile（供 loadChrSlot 直接写入 ppu.ptTile） */
+  private readonly vromTilesByBank1k: Tile[][] = [];
   /** 当前装载到 PPU 8 slot 的 bank1k（用于变更检测） */
   private readonly chrSlots: number[] = new Array(8).fill(-1);
 
   constructor() {
     this.controllers = { 1: new Controller(), 2: new Controller() };
     const chr = buildChrRom();
+    this.vromTilesByBank1k = chr.vromTilesByBank1k;
     const nes: any = {
       rom: {
         HORIZONTAL_MIRRORING: 1,
@@ -117,14 +148,26 @@ export class HeadlessRuntime implements GameRuntime {
     this.loadInitialChr();
   }
 
-  /** 装载单个 1KB CHR slot（声明式，无切换语义；变更检测） */
+  /** 装载单个 1KB CHR slot（声明式，无切换语义；直接写入 ppu.ptTile[slot*64 + tileIdx]） */
   private loadChrSlot(slot: number, bank1k: number): void {
     const s = slot & 7;
-    const b = bank1k & 0xff;
+    // bank1k 取模 128（CHR ROM 0..127 bank1k，越界映射到尾部）
+    const b = (bank1k & 0xff) % 128;
     if (this.chrSlots[s] === b) return;
     this.chrSlots[s] = b;
-    // 不再走 Mapper4，直接调用 PPU 的 vrom 装载（如果有公开 API）
-    // 此处为声明式追踪，具体 PPU 装载由 core PPU 内部处理
+    const ppu = this.ppu as any;
+    if (!ppu.ptTile) return;
+    const tiles = this.vromTilesByBank1k[b];
+    if (!tiles) return;
+    const baseTileIdx = s * 64;
+    for (let i = 0; i < 64; i++) {
+      const dst = ppu.ptTile[baseTileIdx + i];
+      const src = tiles[i];
+      if (!dst || !src) continue;
+      dst.initialized = true;
+      dst.opaque.set(src.opaque);
+      dst.pix.set(src.pix);
+    }
   }
 
   /** 初始 CHR 装载（按 CHR_SLOT_MAP 声明） */
