@@ -40,11 +40,10 @@
       color: #888;
       font-size: 11px;
     }
+    /* 内部 2x 渲染，不再用 CSS 缩放避免模糊 */
     canvas {
       width: 512px;
       height: 480px;
-      image-rendering: pixelated;
-      image-rendering: crisp-edges;
       background: #000;
       border: 1px solid #333;
       display: block;
@@ -59,32 +58,32 @@
     <div class="panel">
       <h2>1. 球员列表 — GET /api/players</h2>
       <p>PLAYER_TABLE 全部 45 明星（ID+NAME+STM+PAS+SH+DRB）</p>
-      <canvas id="canvas-list" width="256" height="240"></canvas>
+      <canvas id="canvas-list" width="512" height="480"></canvas>
     </div>
     <div class="panel">
       <h2>2. Tsubasa 档案 — GET /api/player/0x01</h2>
       <p>23 字段档案 + 6 能力条 + 体力条 + 技能数</p>
-      <canvas id="canvas-detail" width="256" height="240"></canvas>
+      <canvas id="canvas-detail" width="512" height="480"></canvas>
     </div>
     <div class="panel">
       <h2>3. Sao Paulo 名单 — GET /api/team/0x80/roster</h2>
       <p>11 人名单 + POS (GK/FW) + 体力</p>
-      <canvas id="canvas-team" width="256" height="240"></canvas>
+      <canvas id="canvas-team" width="512" height="480"></canvas>
     </div>
     <div class="panel">
       <h2>4. 等级升级 — GET /api/level?exp=5000</h2>
       <p>findLevelByExp 等级 + 6 项 growth + 下一级经验</p>
-      <canvas id="canvas-levelup" width="256" height="240"></canvas>
+      <canvas id="canvas-levelup" width="512" height="480"></canvas>
     </div>
     <div class="panel">
       <h2>5. 比赛配置 — GET /api/match/config?home=0x80&away=0x85</h2>
       <p>半时/换人/补时/加时/赛事 + 全部 20 场对阵</p>
-      <canvas id="canvas-match" width="256" height="240"></canvas>
+      <canvas id="canvas-match" width="512" height="480"></canvas>
     </div>
     <div class="panel">
       <h2>6. 技能列表 — GET /api/player/0x01/skills</h2>
       <p>findSkillsByPlayer 必杀技 ID + 名字 + 威力条</p>
-      <canvas id="canvas-skills" width="256" height="240"></canvas>
+      <canvas id="canvas-skills" width="512" height="480"></canvas>
     </div>
   </div>
   <script src="api-test-bundle.cjs"></script>

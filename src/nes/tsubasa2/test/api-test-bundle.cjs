@@ -2230,15 +2230,15 @@
     ctx.font = `${size}px "Consolas", "Menlo", "Courier New", monospace`;
     ctx.textBaseline = "top";
   }
-  function drawText(ctx, text, x, y, scale, color) {
-    setFont(ctx, 8 * scale);
+  function drawText(ctx, text, x, y, size, color) {
+    setFont(ctx, size);
     ctx.fillStyle = color;
     ctx.fillText(text, x, y);
   }
-  function drawTextBG(ctx, text, x, y, scale, fg, bg) {
-    setFont(ctx, 8 * scale);
+  function drawTextBG(ctx, text, x, y, size, fg, bg) {
+    setFont(ctx, size);
     const w = ctx.measureText(text).width;
-    const h = 8 * scale;
+    const h = size;
     ctx.fillStyle = bg;
     ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
     ctx.fillStyle = fg;

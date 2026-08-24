@@ -1,12 +1,6 @@
 /**
  * 天使之翼2 独立 API 测试页（api-test.html 入口）
- *
- * 把每个 Service 当 URL 风格 API 端点独立调用 + Canvas 渲染。
- * 不启动 HeadlessRuntime（不跑游戏逻辑），只查询数据表 + 渲染到 NES 256×240 画布。
- *
- * 跑法：
- *   - 浏览器打开 test/api-test.html → 4 个 Canvas 视图
- *   - Node: tsc 编译后 require api-test-bundle.cjs
+ * SCALE=2: 内部 512x480 渲染，避免 CSS 缩放模糊
  */
 import { DataStore } from '../src/game/prg/data/store/DataStore';
 import { PlayerQueryService } from '../src/game/prg/code/player/PlayerQueryService';
@@ -64,20 +58,32 @@ function setFont(ctx: CanvasRenderingContext2D, size: number): void {
   ctx.textBaseline = 'top';
 }
 
-function drawText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, scale: number, color: string): void {
-  setFont(ctx, 8 * scale);
+/** 文本：直接坐标，size 是像素（不分 SCALE） */
+function drawText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, size: number, color: string): void {
+  setFont(ctx, size);
   ctx.fillStyle = color;
   ctx.fillText(text, x, y);
 }
 
-function drawTextBG(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, scale: number, fg: string, bg: string): void {
-  setFont(ctx, 8 * scale);
+function drawTextBG(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, size: number, fg: string, bg: string): void {
+  setFont(ctx, size);
   const w = ctx.measureText(text).width;
-  const h = 8 * scale;
+  const h = size;
   ctx.fillStyle = bg;
   ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
   ctx.fillStyle = fg;
   ctx.fillText(text, x, y);
+}
+
+/** fillRect 简化调用 */
+function fillRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string): void {
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, w, h);
+}
+
+function strokeRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string): void {
+  ctx.strokeStyle = color;
+  ctx.strokeRect(x, y, w, h);
 }
 
 // ─────────────────────────── 初始化 ───────────────────────────
