@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>天使之翼2 — 球队浏览器</title>
+  <style>
+    body {
+      font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+      background: #0a0a1a;
+      color: #e0e0e0;
+      padding: 12px;
+      margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    h1 { color: #4fc3f7; font-size: 18px; margin: 0 0 8px 0; }
+    p.hint { color: #888; font-size: 12px; margin: 0 0 12px 0; }
+    .layout {
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 12px;
+      height: calc(100vh - 70px);
+    }
+    .left, .right {
+      background: #050510;
+      border: 1px solid #333;
+      border-radius: 4px;
+      padding: 12px 14px;
+      overflow: auto;
+    }
+    .right { white-space: pre; }
+    .line { color: #e0e0e0; padding: 1px 0; white-space: pre; }
+    .line.clickable { cursor: pointer; padding: 2px 6px; border-radius: 3px; }
+    .line.clickable:hover { background: #1a1a3a; color: #ffd54f; }
+    .line.selected { background: #2a3a6a; color: #fff; }
+    .header { color: #4fc3f7; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>天使之翼2 — 球队浏览器</h1>
+  <p class="hint">左侧:全部队伍 (player/cpu) · 点击队名查看 11 人阵容 + 属性</p>
+  <div class="layout">
+    <div class="left">
+      <pre id="team-list"></pre>
+    </div>
+    <div class="right">
+      <pre id="team-detail">点击左侧任意球队查看阵容 + 全部 7 项属性 ...</pre>
+    </div>
+  </div>
+  <script src="api-test-teams-bundle.cjs"></script>
+</body>
+</html>

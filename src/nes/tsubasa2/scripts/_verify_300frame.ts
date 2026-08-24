@@ -354,6 +354,9 @@ function writePpuTrace(frameN: number): void {
 
   // PT
   const pt = renderPtSheet();
+  const dt: number[] = [];
+  for (let i = 0; i < 16; i++) { const t = ppu.ptTile[i]; let nz = 0; if (t && t.pix) for (const p of t.pix) if (p !== 0) nz++; dt.push(nz); }
+  console.log(`[dbg] f${frameN} ptTile[0..15] nz:`, dt.join(','));
   fs.writeFileSync(path.join(dir, 'pt.json'), JSON.stringify(pt.json));
   fs.writeFileSync(path.join(dir, 'pt-sheet.png'),
     encodePng(128, 128, rgbaFromU32(pt.png, 128, 128)));
