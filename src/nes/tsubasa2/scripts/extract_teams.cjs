@@ -11,10 +11,23 @@
  *   - World Cup 队 (16)                 ROM 0x03BC0A+       (队员 ID)
  *   - 阵型/战术 ROM 0x3bac2 (1 byte 高 4 位战术 + 低 4 位阵型)
  *
+ * Stride 确认（实测）:
+ *   每队 12 字节（11 队员 + 1 战术/阵型字节）。
+ *   实测扫描 0x03BB1A-0x03BCEE 确认：
+ *     Brazil League (5 队)   =  0x03BB1A-0x03BB55   (60 bytes)
+ *     Japan HS (6 队)        =  0x03BB62-0x03BBA9   (72 bytes)
+ *     Japan Cup (4 队)       =  0x03BBAA-0x03BBD9   (48 bytes)
+ *     World Cup (16 队)      =  0x03BBDA-0x03BC99   (192 bytes)
+ *     总计 31 队 × 12 bytes = 372 bytes
+ *
+ *   注：0x03BB56-0x03BB61 区域含 12 字节过渡区（含 0x21 Wakabayashi 等 +
+ *   0x8A/0x8B/0x8C 占位），可能为 Brazil 第 6 队或 Sao Paulo 玩家队副本。
+ *   此区域跳过不分配队伍（保留原始字节）。
+ *
  * 输出：src/game/prg/data/tables/team-roster.ts
  *   每条 TeamRosterEntry 具象化：id, name, formation(11), players[11+]
  *
- * 用法：cd scripts && node extract_teams.cjs > ../src/game/prg/data/tables/team-roster.ts
+ * 用法：node scripts/extract_teams.cjs
  */
 const fs = require('fs');
 const path = require('path');
