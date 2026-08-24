@@ -1,11 +1,34 @@
 /**
- * 精灵帧数据表（声明式表结构）
+ * 精灵帧数据表 — 具象化契约（v2 翻译完成）
  *
  * 从 asm 精灵/场景数据段提取真实字节，含：
- * - tile 索引表
- * - 精灵帧序列
- * - 场景背景数据
+ * - BANK19_TILE_DATA     tile 索引表（bank19 data_tables 区）
+ * - BANK19_SCENE_DATA    场景背景分段
+ * - BANK19_SPRITE_FRAMES 具象化精灵帧条目（每条独立条目）
+ *
+ * 翻译原则：
+ *   - 保留 BANK19_TILE_DATA / BANK19_SCENE_DATA 作为原始字节数据源（避免数据丢失）
+ *   - 暴露 findSpriteFrameById / findSpriteTileAt / findSceneBackground 等具名查询
+ *   - 禁止以 lo/hi 拆字节方式索引；禁止暴露 CPU 地址字面量
  */
+
+/** 按帧 ID 查精灵帧（数据空时返回 null，未来 BANK19_SPRITE_FRAMES 填充后生效） */
+export function findSpriteFrameById(frameId: number): SpriteFrameEntry | null {
+  for (const f of BANK19_SPRITE_FRAMES) {
+    if (f.frameId === (frameId & 0xffff)) return f;
+  }
+  return null;
+}
+
+/** 按字节偏移查 tile 索引（封装 BANK19_TILE_DATA 索引） */
+export function findSpriteTileAt(offset: number): number {
+  return BANK19_TILE_DATA[offset & 0xffff] ?? 0xff;
+}
+
+/** 按场景 ID 查场景背景段（封装 BANK19_SCENE_DATA 索引） */
+export function findSceneBackground(sceneId: number): ReadonlyArray<number> {
+  return BANK19_SCENE_DATA[sceneId & 0xff] ?? BANK19_SCENE_DATA[0] ?? [];
+}
 
 /** 精灵帧定义 */
 export interface SpriteFrameEntry {
