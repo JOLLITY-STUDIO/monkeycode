@@ -1,7 +1,7 @@
 /**
- * bank25 数据 — 原 bank25 纯数据 bank（$8000-$9FFF, 8KB）
+ * bank25 数据 — 场景背景 NT 数据（8KB）
  *
- * 数据从 asm/bank25/*.s 的 .byte 提取为声明式 TS 数组。
+ * 数据从 asm .byte 提取为声明式 TS 数组。
  * 禁止 PRG_BANK_25[addr] 索引。
  */
 

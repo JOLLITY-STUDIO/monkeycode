@@ -1,7 +1,7 @@
 /**
- * 升级数据表 — 原 bank01 升级成长曲线（声明式表结构）
+ * 升级数据表（声明式表结构）
  *
- * V0.2 从 asm 提取（ram_0454+idx*2 经验/升级关联）。当前为空表（契约占位）。
+ * V0.2 从 asm 提取。当前为空表（契约占位）。
  */
 export interface LevelUpEntry {
   readonly level: number;

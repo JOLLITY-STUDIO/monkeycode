@@ -1,0 +1,96 @@
+/**
+ * SongCatalog — 具象化音频数据模型（替代 audio-rom.ts 的字节访问 API）
+ *
+ * 翻译原则（v2）：
+ *   - 禁止 AudioRom.readBank12Byte(addr) / readSePointer(idx) / readBank12U16(addr)
+ *     这类"按地址读 NES ROM 字节"的 API
+ *   - 禁止 SONG_REQUEST_IDS / BGM_POINTER_TABLE_ADDR 这种"ROM 字节表头"
+ *   - 音频数据是具名条目：每首 BGM/SE 是一段声明式字节流；频率/时值/命令是具名常量数组
+ *   - 数据"内容格式"具象：NoteToken / DurationToken / SpeedToken / CommandToken 类型化
+ *
+ * 历史：原 audio-rom.ts 把 bank12 250KB 字节 + readBank12Byte/U16/readSePointer/readTrackData
+ *       + BGM_POINTER_TABLE_ADDR/SE_POINTER_TABLE_ADDR 等当数据 API。Bank 切换靠 MMC3 R6/R7
+ *       寄存器在运行时改窗口，H5 已无此语义。SongCatalog 直接按请求 ID 索引到具名条目。
+ *
+ * 入口：
+ *   - lookupSong(requestId) → SongRecord | null
+ *   - FREQUENCY_TABLE[idx] → 16-bit APU period (12 entries)
+ *   - DURATION_TABLE[idx]  → tick count (64 entries)
+ *   - COMMAND_TABLE[idx]   → command handler opcode
+ */
+
+import type { AudioToken } from './AudioTokens';
+
+/** 音频通道类型（原版通道号 → APU 通道） */
+export type ChannelKind = 'pulse1' | 'pulse2' | 'triangle' | 'noise' | 'pulse1Dup' | 'pulse2Dup' | 'triangleDup' | 'noiseDup';
+
+/** 单个通道的音轨（声明式字节流） */
+export interface ChannelTrack {
+  /** NES 通道号（4=Pulse1, 5=Pulse2, 6=Triangle, 7=Noise，H5 内部再加 4 得 ch 4-7） */
+  readonly channel: ChannelKind;
+  /** 通道音轨字节流（命令流：note/duration/speed/command tokens） */
+  readonly track: ReadonlyArray<AudioToken>;
+}
+
+/** 单首曲目条目（具象化字节 + 元数据） */
+export interface SongRecord {
+  /** 请求 ID（playBgm/playSe 入参） */
+  readonly requestId: number;
+  /** 首字节标志（>=0x80 表示仅使能通道） */
+  readonly headerFlag: number;
+  /** 通道音轨列表（head 终止：channelNum >= 0x80） */
+  readonly channels: ReadonlyArray<ChannelTrack>;
+  /** 分类标签（调试用） */
+  readonly kind: 'bgm' | 'se';
+}
+
+// ════════════════════════════════════════════════════
+// 频率表（原 $870D 起 12 项 × 2 字节 LE：APU period）
+// APU 频率 = NES_CPU / (16 * (period + 1))
+// 半音表：低 4 位 = 半音索引（0=C, 1=C#, 2=D, ... 11=B），高 4 位 = 八度右移次数
+// ════════════════════════════════════════════════════
+
+/** 频率表（12 项 × 16-bit APU period） */
+export const FREQUENCY_TABLE: ReadonlyArray<number> = [
+  0x07F1, 0x0772, 0x06FA, 0x0688, 0x061D, 0x05B7, 0x0557, 0x04FC,
+  0x04A6, 0x0454, 0x0407, 0x03BE,
+];
+
+/** 时值表（64 项 = tick 数） */
+export const DURATION_TABLE: ReadonlyArray<number> = [
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x01, 0x01, 0x01, 0x01, 0x02, 0x02, 0x03, 0x03,
+  0x04, 0x04, 0x05, 0x05, 0x06, 0x07, 0x08, 0x09,
+  0x0A, 0x0B, 0x0C, 0x0E, 0x10, 0x12, 0x14, 0x16,
+  0x18, 0x1B, 0x1E, 0x21, 0x24, 0x28, 0x2C, 0x30,
+  0x34, 0x39, 0x3E, 0x43, 0x49, 0x4F, 0x55, 0x5C,
+  0x63, 0x6A, 0x72, 0x7A, 0x83, 0x8C, 0x95, 0x9F,
+  0xA9, 0xB4, 0xBF, 0xCB, 0xD7, 0xE4, 0xF2, 0xFF,
+];
+
+/** 命令表（32 项 × 16-bit：命令分发地址） */
+export const COMMAND_TABLE: ReadonlyArray<number> = [
+  0x8544, 0x8707, 0x8641, 0x8670, 0x8681, 0x8690, 0x851A, 0x8699,
+  0x86B8, 0x86D6, 0x86F6, 0x8655, 0x8707, 0x8707, 0x8707, 0x8707,
+  0x8707, 0x8707, 0x8707, 0x8707, 0x8707, 0x8707, 0x8707, 0x8707,
+  0x8707, 0x8707, 0x8707, 0x8707, 0x8707, 0x8707, 0x8707, 0x8707,
+];
+
+/**
+ * 查表：requestId → SongRecord（具名查找）
+ *
+ * 注：完整 105 首曲目录需从 bank7-15 提取。此处声明类型 + 提供请求 ID 解析工具，
+ *     业务实现从 BANK12_BYTES/BANK13_BYTES 等原 ROM 字节提取为 SongRecord[] 后填充 SONGS 表。
+ *
+ * 当前实现策略：
+ *   1. 类型契约已声明（SongRecord / ChannelTrack / AudioToken）
+ *   2. 命令/频率/时值三个常量表已具象化（FREQUENCY_TABLE / DURATION_TABLE / COMMAND_TABLE）
+ *   3. SONGS 字典由具体提取脚本在编译期填充（详见 prg/data/audio/song-extract.ts）
+ *   4. lookupSong(requestId) 直接 O(1) 查表，无地址算术
+ */
+export const SONGS: ReadonlyMap<number, SongRecord> = new Map();
+
+/** 查表：requestId → SongRecord（null = 未注册） */
+export function lookupSong(requestId: number): SongRecord | null {
+  return SONGS.get(requestId & 0xFF) ?? null;
+}

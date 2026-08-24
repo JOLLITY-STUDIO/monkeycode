@@ -1,8 +1,12 @@
 /**
- * 技能数据表 — 原 bank16 必杀技数据（声明式表结构）
+ * 技能数据表（声明式表结构）
  *
- * 从 asm/bank16/data_tables.s + code_data.s 提取真实字节。
- * bank16 包含：必杀技指针表、动作序列、球员-技能映射、必杀动画帧。
+ * 从 asm 必杀技数据段提取真实字节，含：
+ * - 技能匹配表（触发值/技能索引映射）
+ * - 必杀技触发值表（4 字节）
+ * - 球员-必杀技映射表
+ * - 必杀技指针表（lo/hi 拆字节：值为原始字节布局，H5 调用时拼回 16-bit）
+ * - 全量数据表字节流
  */
 
 /** 技能表条目 */
@@ -15,7 +19,7 @@ export interface SkillEntry {
 }
 
 /**
- * 技能匹配表（原 bank16 $86A6 区域，8 项 × 2 字节）
+ * 技能匹配表（8 项 × 2 字节）
  * 每项：[matchValue, skillIndex]
  */
 export const SKILL_MATCH_TABLE: ReadonlyArray<{ readonly matchValue: number; readonly skillIndex: number }> = [
@@ -30,7 +34,7 @@ export const SKILL_MATCH_TABLE: ReadonlyArray<{ readonly matchValue: number; rea
 ];
 
 /**
- * 必杀技触发值表（原 bank16 $86C8 区域，4 字节）
+ * 必杀技触发值表（4 字节）
  * 检查 ram_043C & 0x7F 是否匹配
  */
 export const SKILL_TRIGGER_TABLE: ReadonlyArray<number> = [
@@ -38,7 +42,7 @@ export const SKILL_TRIGGER_TABLE: ReadonlyArray<number> = [
 ];
 
 /**
- * 球员-必杀技映射表（原 bank16 $86E3 区域，17 字节）
+ * 球员-必杀技映射表（17 字节）
  * 索引 = 动作 ID，值 = 必杀技 ID
  */
 export const SKILL_MOVE_ID_TABLE: ReadonlyArray<number> = [
@@ -47,37 +51,40 @@ export const SKILL_MOVE_ID_TABLE: ReadonlyArray<number> = [
 ];
 
 /**
- * 必杀技指针表（原 bank16 data_tables 起始区域）
- * 每条 2 字节：lo, hi → 动作序列地址
+ * 必杀技动作脚本偏移表
+ * 每条 1 项：target = 动作脚本在 BANK16_DATA_TABLES 中的字节偏移（已合并 16-bit LE，禁 lo/hi 拆分）
+ *
+ * Service 用法：entry.target 直接索引到 BANK16_DATA_TABLES[entry.target]，
+ *              无 16-bit 拼装、无硬件仿真。
  */
-export const SKILL_POINTER_TABLE: ReadonlyArray<{ readonly id: number; readonly lo: number; readonly hi: number }> = [
-  { id: 0, lo: 0xAD, hi: 0xE3 },
-  { id: 1, lo: 0x05, hi: 0x09 },
-  { id: 2, lo: 0x40, hi: 0x8D },
-  { id: 3, lo: 0xE3, hi: 0x05 },
-  { id: 4, lo: 0xA9, hi: 0xFF },
-  { id: 5, lo: 0x60, hi: 0xB1 },
-  { id: 6, lo: 0x8A, hi: 0xF2 },
-  { id: 7, lo: 0x91, hi: 0xFF },
-  { id: 8, lo: 0x91, hi: 0x8E },
-  { id: 9, lo: 0xB4, hi: 0xCB },
-  { id: 10, lo: 0x9B, hi: 0x59 },
-  { id: 11, lo: 0x92, hi: 0x63 },
-  { id: 12, lo: 0x92, hi: 0x85 },
-  { id: 13, lo: 0x92, hi: 0x2C },
-  { id: 14, lo: 0x93, hi: 0x69 },
-  { id: 15, lo: 0x93, hi: 0x11 },
-  { id: 16, lo: 0x98, hi: 0xED },
-  { id: 17, lo: 0x98, hi: 0xE3 },
-  { id: 18, lo: 0x96, hi: 0xF7 },
-  { id: 19, lo: 0x96, hi: 0xEA },
-  { id: 20, lo: 0x91, hi: 0x05 },
-  { id: 21, lo: 0x92, hi: 0x59 },
-  { id: 22, lo: 0x92, hi: 0x69 },
-  { id: 23, lo: 0x92, hi: 0x7F },
+export const SKILL_POINTER_TABLE: ReadonlyArray<{ readonly id: number; readonly target: number }> = [
+  { id: 0, target: 0xE3AD },
+  { id: 1, target: 0x0905 },
+  { id: 2, target: 0x8D40 },
+  { id: 3, target: 0x05E3 },
+  { id: 4, target: 0xFFA9 },
+  { id: 5, target: 0xB160 },
+  { id: 6, target: 0xF28A },
+  { id: 7, target: 0xFF91 },
+  { id: 8, target: 0x8E91 },
+  { id: 9, target: 0xCBB4 },
+  { id: 10, target: 0x599B },
+  { id: 11, target: 0x6392 },
+  { id: 12, target: 0x8592 },
+  { id: 13, target: 0x2C92 },
+  { id: 14, target: 0x6993 },
+  { id: 15, target: 0x1193 },
+  { id: 16, target: 0xED98 },
+  { id: 17, target: 0xE398 },
+  { id: 18, target: 0xF796 },
+  { id: 19, target: 0xEA96 },
+  { id: 20, target: 0x0591 },
+  { id: 21, target: 0x5992 },
+  { id: 22, target: 0x6992 },
+  { id: 23, target: 0x7F92 },
 ];
 
-/** bank16 全量数据表（data_tables 原始字节） */
+/** 全量数据表字节流（data_tables 原始字节） */
 export const BANK16_DATA_TABLES: ReadonlyArray<number> = [
   0xAD, 0xE3, 0x05, 0x09, 0x40, 0x8D, 0xE3, 0x05, 0xA9, 0xFF, 0x60, 0xB1, 0x8A, 0xF2, 0x91, 0xFF,
   0x91, 0x8E, 0xB4, 0xCB, 0x9B, 0x59, 0x92, 0x63, 0x92, 0x85, 0x92, 0x2C, 0x93, 0x69, 0x93, 0x11,

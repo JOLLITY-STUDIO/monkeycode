@@ -52,10 +52,10 @@ export class HardwareInitService {
     store.loadInitTable(RAM_INIT_TABLE);
     for (let i = 0x200; i < 0x300; i++) store.writeByte(i, OAM_HIDE_VALUE);
     this.clearGameRam();
-    store.writeByte(0x001b, 0x00);
+    store.scene.flags = 0x00;
     store.writeByte(0x063f, 0x00);
-    store.writeByte(0x0020, 0x08);
-    store.writeByte(0x0021, 0x1e);
+    store.ppuState.ctrl = 0x08;
+    store.ppuState.mask = 0x1e;
     store.writeByte(0x046c, 0x20);
     store.writeByte(0x046d, 0x00);
     store.writeByte(0x046e, 0x3f);
@@ -68,10 +68,10 @@ export class HardwareInitService {
     this.registerTask(0, 0x28, 0x21, 0xca);
     this.registerTask(1, 0x50, 0x1d, 0xd1);
     this.registerTask(2, 0x78, 0x85, 0xeb);
-    const ctrl = store.readByte(0x0020) | 0x80;
-    store.writeByte(0x0020, ctrl);
+    const ctrl = store.ppuState.ctrl | 0x80;
+    store.ppuState.ctrl = ctrl;
     store.writeByte(0x0019, ctrl);
-    store.writeByte(0x0022, 0x00);
+    store.ppuState.chrSelBase = 0x00;
     store.writeByte(0x0490, 0x00);
     store.writeByte(0x0491, 0x02);
     store.frame = 0;
@@ -142,9 +142,9 @@ export class HardwareInitService {
     store.writeByte(0x0469, 0x00);
     for (let i = 0x200; i < 0x300; i++) store.writeByte(i, OAM_HIDE_VALUE);
     this.clearNameTables();
-    store.writeByte(0x0020, 0x08);
-    store.writeByte(0x0021, 0x1e);
-    store.writeByte(0x0022, 0x00);
+    store.ppuState.ctrl = 0x08;
+    store.ppuState.mask = 0x1e;
+    store.ppuState.chrSelBase = 0x00;
     void sceneId;
   }
 

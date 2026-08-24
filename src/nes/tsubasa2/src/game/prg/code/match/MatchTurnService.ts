@@ -1,7 +1,5 @@
 /**
- * MatchTurnService — 比赛回合（原 bank11 回合逻辑）
- *
- * @bank 11（比赛回合）
+ * MatchTurnService — 比赛回合
  *
  * V0.1 stub：契约签名；真实实现在 V0.5 覆盖。
  */

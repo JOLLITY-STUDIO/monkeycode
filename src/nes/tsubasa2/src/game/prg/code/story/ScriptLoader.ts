@@ -1,7 +1,5 @@
 /**
- * ScriptLoader — 剧情脚本数据装载（原 bank00 脚本 loader）
- *
- * @bank 00 / 18 / 19
+ * ScriptLoader — 剧情脚本数据装载
  *
  * V0.1 stub：数据表（data/scene/scripts-*.ts）在 V0.2 从 asm 提取后装载。
  */

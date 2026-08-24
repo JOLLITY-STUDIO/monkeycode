@@ -1,8 +1,9 @@
 /**
- * BootRouter — 场景路由
+ * BootRouter — 场景路由（用具名视图）
  *
- * 以场景 ID 为键，通过场景表（SceneTable）分发；不按业务语义命名。
- * 场景 0-23 全部登记在场景表中，未翻译场景使用默认 stub（留在当前场景）。
+ * 翻译原则（v2）：
+ *   - scene.currentSceneId 具名视图（替代 readByte(0x00ed) / writeByte(0x00ed, ...)）
+ *   - ppuState.ctrl / ppuState.mask 具名视图（替代寄存器字面量）
  */
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from './InputService';
@@ -11,7 +12,7 @@ import { Scene0Controller } from '../scene/Scene0Controller';
 
 /** 场景号枚举（0-23） */
 export const enum SceneId {
-  Scene0 = 0,   // 开场序列
+  Scene0 = 0,
   Scene1 = 1,
   Scene2 = 2,
   Scene3 = 3,
@@ -37,7 +38,7 @@ export const enum SceneId {
   Scene23 = 23,
 }
 
-/** 未翻译场景的默认 stub（不流转，留在当前场景） */
+/** 未翻译场景的默认 stub */
 class SceneStubController extends SceneController {
   readonly sceneId: number;
   constructor(store: DataStore, input: InputService, sceneId: number) {
@@ -54,10 +55,7 @@ export class BootRouter {
   /** 场景控制器注册表（sceneId → controller） */
   private readonly scenes: Map<number, SceneController> = new Map();
 
-  /** 当前场景号 */
   private currentSceneId = SceneId.Scene0;
-
-  /** 当前场景控制器 */
   private current: SceneController | null = null;
 
   constructor(
@@ -65,7 +63,6 @@ export class BootRouter {
     readonly input: InputService,
     scene0?: Scene0Controller,
   ) {
-    // 场景 0 已翻译：注册真实控制器；其余场景未翻译时走默认 stub
     this.register(scene0 ?? new SceneStubController(this.store, this.input, SceneId.Scene0));
     for (let id = 1; id <= 23; id++) {
       this.scenes.set(id, new SceneStubController(this.store, this.input, id));
@@ -85,25 +82,22 @@ export class BootRouter {
   /**
    * 切换场景：
    * - 前序：关 IRQ 计数器 / 隐藏 OAM / 清 NT
-   * - PPU CTRL/MASK/bank 基址初始化
-   * - 场景号存回 ram_00ED 并分发
+   * - PPU CTRL/MASK 初始化
+   * - scene.currentSceneId 具名写回并分发
    */
   changeScene(sceneId: number): void {
     const store = this.store;
-    // 前序：关 IRQ 计数器 / 隐藏 OAM / 清 NT
     store.writeByte(0x0469, 0x00);
     for (let i = 0x200; i < 0x300; i++) store.writeByte(i, 0xf8);
     for (let addr = 0x2000; addr <= 0x23ff; addr++) store.writeByte(addr, 0);
-    // PPU CTRL/MASK/bank 基址
-    store.writeByte(0x0020, 0x08); // PPU CTRL: NMI on / 精灵 8x8 / BG 表 0
-    store.writeByte(0x0021, 0x1e); // PPU MASK: BG+SPR 可见
-    store.writeByte(0x0022, 0x00); // bank 基址 = 0（H5 无实际切换语义，兼容保留）
-    // 场景号存回 ram_00ED 并分发
+    store.ppuState.ctrl = 0x08; // PPU CTRL: NMI on / 精灵 8x8 / BG 表 0
+    store.ppuState.mask = 0x1e; // PPU MASK: BG+SPR 可见
+    store.ppuState.chrSelBase = 0x00;
     this.currentSceneId = sceneId;
-    store.writeByte(0x00ed, sceneId);
-    const next = this.getController(sceneId);
-    this.current = next;
-    next?.onEnter();
+    store.scene.currentSceneId = sceneId;
+    const controller = this.getController(sceneId);
+    this.current = controller;
+    controller?.onEnter();
   }
 
   /** 每帧更新；处理场景返回的下一个场景号 */

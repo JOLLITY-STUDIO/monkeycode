@@ -1,13 +1,11 @@
 /**
- * PlayerQueryService — 球员数据查询（原 bank01 数据查询）
- *
- * @bank 01（球员能力/状态数据）
+ * PlayerQueryService — 球员数据查询
  *
  * V0.1 stub：契约签名；真实数据表（data/tables/player-table.ts）在 V0.2 从 asm 提取。
  */
 import type { DataStore } from '../../data/store/DataStore';
 
-/** 球员基础档案（声明式表结构，字段对应 asm 字节布局，V0.2 定稿） */
+/** 球员基础档案（声明式表结构，字段对应为业务字段，V0.2 定稿） */
 export interface PlayerProfile {
   readonly id: number;
   readonly name: string;

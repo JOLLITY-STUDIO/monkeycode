@@ -56,6 +56,7 @@ export { SpriteAnimationService } from './sprite/SpriteAnimationService';
 export { SpriteFrameService } from './sprite/SpriteFrameService';
 export type { SpriteFrame } from './sprite/SpriteFrameService';
 export { AudioService } from './audio/AudioService';
+export type { Papu } from './audio/AudioService';
 export { ApuTarget, LogApuTarget, NullApuTarget } from './audio/ApuTarget';
 export { WebAudioApuTarget } from './audio/WebAudioApuTarget';
 export { ApuPcmRendererImpl } from './audio/ApuPcmRenderer';

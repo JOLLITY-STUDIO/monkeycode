@@ -1,8 +1,10 @@
 /**
- * 球员移动数据表 — 原 bank22 移动/AI 数据（声明式表结构）
+ * 球员移动数据表（声明式表结构）
  *
- * 从 asm/bank22/data_tables.s + data_tail.s 提取真实字节。
- * bank22 含：移动指针表、方向表、移动模式。
+ * 从 asm 移动/AI 数据段提取真实字节，含：
+ * - 移动指针表
+ * - 方向表
+ * - 移动模式
  */
 
 /** 移动表条目 */
@@ -13,12 +15,12 @@ export interface PlayerMoveEntry {
   readonly duration: number;
 }
 
-/** bank22 data_tables（移动指针表） */
+/** 移动指针表（data_tables 原始字节） */
 export const BANK22_MOVE_TABLE: ReadonlyArray<PlayerMoveEntry> = [
   // TODO: 从 BANK22_DATA_TABLES 解析移动模式条目
 ];
 
-/** bank22 全量数据表 */
+/** 全量数据表（data_tables 原始字节） */
 export const BANK22_DATA_TABLES: ReadonlyArray<number> = [
   0xE0, 0xE8, 0xF0, 0xF8, 0x00, 0x08, 0x10, 0x18, 0x20, 0x28, 0x0E, 0xE5, 0xED, 0xE4, 0x25, 0xDF,
   0xDC, 0xE7, 0xEF, 0x21, 0x1E, 0x26, 0x30, 0x38, 0xF4, 0xFC, 0x04, 0x0C, 0xEC, 0xF6, 0xD8, 0xEA,

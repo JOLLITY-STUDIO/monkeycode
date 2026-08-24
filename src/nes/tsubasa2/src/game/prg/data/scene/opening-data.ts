@@ -1,18 +1,18 @@
 /**
- * Opening 开场数据表（声明式，来源：bank06/bank07/bank00 的 .byte 数据区）
+ * Opening 开场数据表（声明式，来源：场景装载/调色板/CHR 配置/渐显查找的 .byte 数据区）
  *
- * 地址对照：
- *   bank06 场景表  CPU $BF00（$8920 场景装载，19 字节/项 × 16 项）
- *   bank06 BG 调色板 CPU $B000（$9AB8 读取，16 组 × 16 字节）
- *   bank06 SPR 调色板 CPU $B300（$9ADA 读取，16 组 × 16 字节）
- *   bank07 CHR 指针表 CPU $A000（$8AF7 读取，16-bit 指针 × 32 项）
- *   bank00 渐显查找表 CPU $9EA2（$9AA2 读取，64 字节）
+ * 数据布局：
+ *   场景表（场景装载，19 字节/项 × 16 项）
+ *   BG 调色板（16 组 × 16 字节）
+ *   SPR 调色板（16 组 × 16 字节）
+ *   CHR 指针表（16-bit 指针 × 32 项）
+ *   渐显查找表（64 字节）
  */
 
-/** $8AF7 读取的 6 字节 CHR 配置：[0,1]=param, [2]=bgPalIdx+flag, [3]=宽, [4]=高, [5]=nametable 基址编码 */
+/** 6 字节 CHR 配置：[0,1]=param, [2]=bgPalIdx+flag, [3]=宽, [4]=高, [5]=nametable 基址编码 */
 export type ChrConfig = readonly [number, number, number, number, number, number];
 
-/** 场景数据项：$0079=文本滚动标志；$007C..$008D=滚动计数器等（$8920 拷贝目标） */
+/** 场景数据项：文本滚动标志 + 滚动计数器等（场景装载拷贝目标） */
 export interface OpeningSceneEntry {
   /** 场景号 0-15 */
   readonly id: number;
@@ -23,8 +23,8 @@ export interface OpeningSceneEntry {
 }
 
 /**
- * bank06 场景表（CPU $BF00）。
- * 原版 $8920：$00EC = $BF00 + 场景号*19；[0]→ram_0079，[1..18]→ram_007C..ram_008D。
+ * 场景表（19 字节/项）。
+ * 场景装载：[0]→ram_0079，[1..18]→ram_007C..ram_008D。
  */
 export const OPENING_SCENE_TABLE: readonly OpeningSceneEntry[] = [
   { id: 0, scrollFlag: 0x00, data: [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00] },

@@ -1,15 +1,19 @@
 /**
- * 比赛事件数据表 — 原 bank20 事件数据（声明式表结构）
+ * 比赛事件数据表（声明式表结构）
  *
- * 从 asm/bank20/data_tables.s 提取真实字节。
- * bank20 含：事件指针表（$88E4）、事件参数表、动作序列。
+ * 从 asm 事件数据段提取真实字节，含：
+ * - 事件指针表（lo/hi 拆字节：值为原始字节布局）
+ * - 事件参数表
+ * - 动作序列
  */
 
-/** 事件指针表条目 */
+/**
+ * 事件动作脚本偏移条目
+ * target = 事件动作脚本在 BANK20_DATA_TABLES 中的字节偏移（已合并 16-bit LE，禁 lo/hi 拆分）
+ */
 export interface MatchEventPointer {
   readonly eventId: number;
-  readonly lo: number;
-  readonly hi: number;
+  readonly target: number;
 }
 
 /** 事件表条目 */
@@ -20,7 +24,7 @@ export interface MatchEventEntry {
   readonly duration: number;
 }
 
-/** bank20 全量数据表 */
+/** 全量数据表（data_tables 原始字节） */
 export const BANK20_DATA_TABLES: ReadonlyArray<number> = [
   0x30, 0x3A, 0x35, 0x25, 0x52, 0x7A, 0x58, 0x75, 0x55, 0x70, 0x20, 0x2A, 0x25, 0x15, 0x51, 0x59,
   0x46, 0x77, 0x44, 0x73, 0x20, 0x2A, 0x25, 0x43, 0x51, 0x59, 0x47, 0x77, 0x55, 0x73, 0x20, 0x2A,

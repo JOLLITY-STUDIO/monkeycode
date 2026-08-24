@@ -1,15 +1,19 @@
 /**
- * 比赛动作数据表 — 原 bank28 动作/指令数据（声明式表结构）
+ * 比赛动作数据表（声明式表结构）
  *
- * 从 asm/bank28/data_tables.s 提取真实字节。
- * bank28 含：动作指针表（$9E4E）、动作参数表（$818E/$8199）、动作类型表。
+ * 从 asm 动作/指令数据段提取真实字节，含：
+ * - 动作指针表（lo/hi 拆字节：值为原始字节布局）
+ * - 动作参数表
+ * - 动作类型表
  */
 
-/** 动作指针表条目 */
+/**
+ * 动作脚本偏移条目
+ * target = 动作脚本在 BANK28_DATA_TABLES 中的字节偏移（已合并 16-bit LE，禁 lo/hi 拆分）
+ */
 export interface MatchActionPointer {
   readonly actionId: number;
-  readonly lo: number;
-  readonly hi: number;
+  readonly target: number;
 }
 
 /** 动作表条目 */
@@ -20,7 +24,7 @@ export interface MatchActionEntry {
   readonly offset: number;
 }
 
-/** bank28 全量数据表 */
+/** 全量数据表（data_tables 原始字节） */
 export const BANK28_DATA_TABLES: ReadonlyArray<number> = [
   0x07, 0x8F, 0x17, 0x8F, 0x07, 0x8F, 0x07, 0x8F, 0x07, 0x8F, 0x07, 0x8F, 0x07, 0x8F, 0x07, 0x8F,
   0x07, 0x8F, 0x07, 0x8F, 0x07, 0x8F, 0x07, 0x8F, 0x07, 0x8F, 0x07, 0x8F, 0x07, 0x8F, 0x07, 0x8F,

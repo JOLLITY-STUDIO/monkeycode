@@ -1,14 +1,13 @@
 /**
- * PlayerMoveService — 球员移动/AI（原 bank22）
+ * PlayerMoveService — 球员移动/AI
  *
  * 行为翻译（去 CPU 化）：
- * - bank22 $8000 入口：球员移动计算（坐标变换/方向/速度）
- * - $8003+：球员位置更新（ram_003C 间接指针 → 坐标运算）
- * - $8164+：移动序列解析（ram_0042/Y 间接寻址）
- * - $8187+：方向标志处理（ram_0517 位域 → EOR $40）
- * - $81B1+：移动参数装载（坐标偏移/目标）
+ * - 计算球员移动：方向标志 → 方向运算 → 更新坐标
+ * - 解析移动序列段：间接读取移动数据
+ * - 处理方向标志：ram_0517 位域 → 翻转/方向判定
+ * - 查询移动模式：findMoveById → pattern
  *
- * bank 切换语义 = import PlayerMoveService + 直接调用，无 MMC3 窗口模拟。
+ * bank 切换 = import PlayerMoveService + 直接调用，无 MMC3 窗口模拟。
  */
 import type { DataStore } from '../../data/store/DataStore';
 import { BANK22_MOVE_TABLE, BANK22_DIRECTION_TABLE, findMoveById } from '../../data/tables/player-move-table';
@@ -34,9 +33,7 @@ export class PlayerMoveService {
   constructor(readonly store: DataStore) {}
 
   /**
-   * 计算球员移动（原 bank22 $8003-$8163）
-   *
-   * 行为：ram_003C/Y 读取球员坐标 → 方向运算 → 更新坐标。
+   * 计算球员移动：方向标志 → 方向运算 → 更新坐标。
    * ram_0517 位域控制翻转/方向。
    */
   computeMove(req: PlayerMoveRequest): PlayerMoveResult {
@@ -58,11 +55,7 @@ export class PlayerMoveService {
     };
   }
 
-  /**
-   * 解析移动序列段（原 bank22 $8164-$8184）
-   *
-   * 行为：ram_0042/Y 间接读取移动数据。
-   */
+  /** 解析移动序列段：间接读取移动数据 */
   parseMoveSegment(): number {
     const y = this.store.read('ram_0044');
     const ptr = this.store.read('ram_0042');
@@ -71,19 +64,13 @@ export class PlayerMoveService {
     return value;
   }
 
-  /**
-   * 处理方向标志（原 bank22 $8187-$81B1）
-   *
-   * 行为：ram_003C/Y 读取方向 → EOR ram_0517 → AND #$40。
-   */
+  /** 处理方向标志：ram_0517 位域 → 翻转/方向判定 */
   processDirection(): boolean {
     const directionFlag = this.store.read('ram_0517');
     return (directionFlag & 0x40) !== 0;
   }
 
-  /**
-   * 查询移动模式（原 bank22 移动表）
-   */
+  /** 查询移动模式：findMoveById → pattern */
   findMovePattern(moveId: number): ReadonlyArray<number> {
     const entry = findMoveById(moveId);
     return entry ? entry.pattern : [];

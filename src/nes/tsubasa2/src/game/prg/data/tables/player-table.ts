@@ -1,7 +1,7 @@
 /**
- * 球员数据表 — 原 bank01 球员数据（声明式表结构）
+ * 球员数据表（声明式表结构）
  *
- * V0.2 从 asm/bank01/*.s 的 .byte 数据提取为具名记录，禁止臆造。
+ * V0.2 从 asm 球员数据段提取为具名记录，禁止臆造。
  * 当前为空表（契约占位）。
  */
 import type { PlayerProfile } from '../../code/player/PlayerQueryService';

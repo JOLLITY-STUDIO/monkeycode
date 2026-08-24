@@ -1,10 +1,10 @@
 /**
- * 球员名字数据表 — 原 bank27 名字/文本数据（声明式表结构）
+ * 球员名字数据表（声明式表结构）
  *
- * 从 asm/bank27/data_tables.s + data_tail.s 提取真实字节。
- * bank27 起始：大量文本编码（$B6/$A0/$CC 等字符）。
- * bank27 $8104+：文本解析器（ram_062A → $A1DC 索引表 → 查表）。
- * bank27 $814D+：名字段装载（$A6AE 表）。
+ * 从 asm 名字/文本数据段提取真实字节，含：
+ * - 文本编码数据
+ * - 文本解析器索引表
+ * - 名字段装载表
  */
 
 /** 名字表条目 */
@@ -15,7 +15,7 @@ export interface PlayerNameEntry {
   readonly teamId: number;
 }
 
-/** bank27 data_tables（文本编码数据） */
+/** 文本编码数据（data_tables 原始字节） */
 export const BANK27_TEXT_DATA: ReadonlyArray<number> = [
   0xAE, 0xA2, 0xCB, 0xA2, 0xE8, 0xA2, 0xFD, 0xA2, 0x1A, 0xA3, 0x3F, 0xA3, 0x5E, 0xA3, 0x6B, 0xA3,
   0x72, 0xA3, 0x77, 0xA3, 0x92, 0xA3, 0xCB, 0xA3, 0xF4, 0xA3, 0x25, 0xA4, 0x05, 0x00, 0x05, 0x01,

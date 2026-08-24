@@ -6,12 +6,12 @@
  *
  * 每帧流程（真实游戏行为）：
  *   1. InputService 注入 core 控制器状态
- *   2. InterruptService.nmi(frame) — NMI 语义：读手柄 → 场景逻辑推进
- *   3. AudioService.update() — bank12 音频引擎推进
- *   4. InterruptService.renderCommit(ppu) — 渲染提交：CTRL/MASK/滚动/$05E8 缓冲/OAM/调色板
+ *   2. InterruptService.nmi(frame) — 语义：读手柄 → 场景逻辑推进
+ *   3. AudioService.update() — 音频引擎推进
+ *   4. InterruptService.renderCommit(ppu) — 渲染提交：CTRL/MASK/滚动/渲染缓冲/OAM/调色板
  *   5. PPU 扫描线渲染（startFrame → advanceDots → renderFramePartially → endFrame）
  *
- * 无 CPU、无 MMC3 bank 切换、无 6502 指令：全部为高级语言直接翻译。
+ * 翻译原则：全部为高级语言直接翻译，无 CPU、无 bank 切换仿真。
  */
 import { HEADER, CONFIG, Mirroring } from './header';
 import { NES_CHR_ROM, CHR_BANKS, CHR_BANK_SIZE, CHR_BANK_COUNT } from './chr/index';

@@ -1,7 +1,5 @@
 /**
- * SpriteAnimationService — 精灵动画（原 bank27 精灵动画）
- *
- * @bank 27（精灵动画帧）
+ * SpriteAnimationService — 精灵动画
  *
  * V0.1 stub：契约签名；真实实现在 V0.5 覆盖。
  */

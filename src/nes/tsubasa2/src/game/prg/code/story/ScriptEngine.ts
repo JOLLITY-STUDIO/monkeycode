@@ -1,9 +1,5 @@
 /**
- * ScriptEngine — 剧情脚本执行引擎（原 bank00 脚本 VM）
- *
- * @bank 00 ($8000 脚本 VM) / 18 / 19（剧情数据）
- *
- * 对应原始地址：$9xxx 脚本解释器（逐 opcode 执行，push/pop 栈帧）。
+ * ScriptEngine — 剧情脚本执行引擎
  *
  * V0.1 stub：契约签名；opcode 全集在 V0.4 覆盖。
  */

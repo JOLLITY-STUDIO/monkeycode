@@ -2,18 +2,18 @@
  * WebAudioApuTarget — 用 WebAudio API 合成 NES APU 音频
  *
  * 对接 AudioService 的 APU 寄存器写，合成 4 个通道：
- *   - Pulse1/Pulse2: OscillatorNode（square 波）+ GainNode（音量/包络）
+ *   - Pulse1/Pulse2: OscillatorNode（square 波）+ GainNode（音量/包）
  *   - Triangle: OscillatorNode（triangle 波）+ GainNode
  *   - Noise: 白噪声 BufferSource + 滤波器
  *   - DPCM: 预录制采样回放（V0.6 暂用静音，需提取 PCM 数据）
  *
  * 使用方式：
  *   const apu = new WebAudioApuTarget();
- *   await apu.init();  // 用户交互后调用（浏览器音频策略限制）
+ *   await apu.init();
  *   audioService.attachApu(apu);
  *
- * 注意：微信小程序环境无 AudioContext，需用 wx.createInnerAudioContext 替代
- *       本实现面向 HTML 测试台（index.html）
+ * 注：微信小程序环境无 AudioContext，需用 wx.createInnerAudioContext 替代
+ *    本实现面向 HTML 测试台（index.html）。
  */
 import type { ApuTarget } from './ApuTarget';
 
@@ -53,7 +53,7 @@ export class WebAudioApuTarget implements ApuTarget {
     }
     this.ctx = new Ctor();
     this.masterGain = this.ctx.createGain();
-    this.masterGain.gain.value = 0.1; // 总音量（避免过大）
+    this.masterGain.gain.value = 0.1;
     this.masterGain.connect(this.ctx.destination);
 
     // Pulse1
@@ -88,7 +88,7 @@ export class WebAudioApuTarget implements ApuTarget {
 
   private createNoiseSource(): AudioBufferSourceNode {
     const ctx = this.ctx!;
-    const bufferSize = ctx.sampleRate * 0.5; // 0.5s 白噪声
+    const bufferSize = ctx.sampleRate * 0.5;
     const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
     const data = buffer.getChannelData(0);
     for (let i = 0; i < bufferSize; i++) {
@@ -126,12 +126,11 @@ export class WebAudioApuTarget implements ApuTarget {
 
   private writePulseControl(ch: PulseChannel | null, value: number): void {
     if (!ch) return;
-    // bit 0-3: 音量/包络；bit 4: 包络标志；bit 5-6: 占空比；bit 7: 长度计数器
     const vol = (value & 0x0F) / 15;
     ch.volume = vol;
     ch.duty = (value >> 6) & 0x03;
+    // bit 0-3 音量/包；bit 4 包络标志；bit 5-6 占空比；bit 7 长度计数器
     if (value & 0x10) {
-      // 使用包络（简化：固定音量）
       ch.gain.gain.value = vol;
     } else {
       ch.gain.gain.value = vol;
@@ -165,7 +164,7 @@ export class WebAudioApuTarget implements ApuTarget {
     if (!this.triangle) return;
     // Triangle 通道：bit 0-7 控制音量/长度
     const vol = (value & 0x7F) / 127;
-    this.triangle.gain.gain.value = vol * 0.5; // Triangle 音量较低
+    this.triangle.gain.gain.value = vol * 0.5;
   }
 
   private writeNoiseControl(value: number): void {

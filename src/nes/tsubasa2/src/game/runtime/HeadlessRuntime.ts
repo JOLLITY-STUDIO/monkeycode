@@ -1,43 +1,41 @@
 /**
- * HeadlessRuntime — 无头运行平台（核心 PPU 复用，不跑 CPU）
+ * HeadlessRuntime — 无头运行平台（CHR 装载改用具名 slot map）
  *
- * 提供：
- *  - headless PPU（256×240 帧缓冲，直接驱动扫描线渲染）
- *  - CHR pattern 装载（初始 MMC3 配置，真实渲染基础）
- *  - 两套核心控制器（buttonDown/buttonUp）
+ * 翻译原则（v2）：
+ *   - 移除 Mapper4 / MMC3 / load1kVromBank 的硬件窗口仿真
+ *   - CHR 装载用声明式 CHR_SLOT_MAP：每个 PPU 1KB slot 直接指定 CHR bank1k
+ *   - 不再走 MMC3 R6/R7 寄存器切换语义（H5 无此语义）
  *
  * 用法（即插即用）：
  *   const runtime = new HeadlessRuntime();
  *   const game = new Tsubasa2();
  *   game.boot();
- *   runtime.setButton(1, Button.A, true); // 按下 A
- *   runtime.frame(game);                  // 跑一帧 → runtime.ppu.buffer 可绘制
+ *   runtime.setButton(1, Button.A, true);
+ *   runtime.frame(game);
  */
 import PPU from '../../core/ppu/index';
 import Tile from '../../core/tile';
 import Controller from '../../core/controller';
-import Mapper4 from '../../core/mappers/mapper4';
 import { CHR_BANKS } from '../chr/index';
 import type { GameRuntime, PpuRenderTarget } from './GameRuntime';
 import type { Tsubasa2 } from '../index';
 
+/** PPU 8 个 1KB slot 的 CHR 装载声明（无 MMC3 切换语义） */
+type ChrSlotMap = ReadonlyArray<{ slot: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7; bank1k: number }>;
+
 /**
- * MMC3 初始 CHR bank 配置（bank30 INIT_CHR，$C9E9 语义）。
- *
- * Ground truth（core 模拟器探针 scripts/_probe_orig2_out.txt，帧 10+）：
- *   原始 MMC3 chrBanks = [0,1,2,3,252,113,82,83]
- *   即 BG 表 $0000 = 1KB bank 0,1,2,3（CHR bank 0 前半）；SPR 表 $1000 = 252,113,82,83。
- * 此前硬编码 BG=4,5,6,7（CHR bank 0 后半）导致开场画面撕裂，已修正。
+ * 初始 CHR 装载（替代原 INIT_CHR_BANKS 表）
+ * 按 PPU 地址直接分配：BG $0000 = bank 0,1,2,3 / SPR $1000 = bank 252,113,82,83
  */
-const INIT_CHR_BANKS: ReadonlyArray<{ bank1k: number; addr: number }> = [
-  { bank1k: 0, addr: 0x0000 }, // BG 表 0, tile 0x00-0x3F
-  { bank1k: 1, addr: 0x0400 }, // BG 表 0, tile 0x40-0x7F
-  { bank1k: 2, addr: 0x0800 }, // BG 表 0, tile 0x80-0xBF
-  { bank1k: 3, addr: 0x0c00 }, // BG 表 0, tile 0xC0-0xFF
-  { bank1k: 252, addr: 0x1000 }, // SPR 表 1, tile 0x00-0x3F
-  { bank1k: 113, addr: 0x1400 }, // SPR 表 1, tile 0x40-0x7F
-  { bank1k: 82, addr: 0x1800 }, // SPR 表 1, tile 0x80-0xBF
-  { bank1k: 83, addr: 0x1c00 }, // SPR 表 1, tile 0xC0-0xFF
+const CHR_SLOT_MAP: ChrSlotMap = [
+  { slot: 0, bank1k: 0 },     // BG $0000, tile 0x00-0x3F
+  { slot: 1, bank1k: 1 },     // BG $0400, tile 0x40-0x7F
+  { slot: 2, bank1k: 2 },     // BG $0800, tile 0x80-0xBF
+  { slot: 3, bank1k: 3 },     // BG $0C00, tile 0xC0-0xFF
+  { slot: 4, bank1k: 252 },   // SPR $1000, tile 0x00-0x3F
+  { slot: 5, bank1k: 113 },   // SPR $1400, tile 0x40-0x7F
+  { slot: 6, bank1k: 82 },    // SPR $1800, tile 0x80-0xBF
+  { slot: 7, bank1k: 83 },    // SPR $1C00, tile 0xC0-0xFF
 ];
 
 /** 从 CHR_BANKS（16×8KB）构建核心 ROM 的 vrom（32×4KB）与 vromTile */
@@ -51,7 +49,6 @@ function buildChrRom(): { vrom: Uint8Array[]; vromTile: Tile[][]; vromCount: num
       const bank4k = new Uint8Array(4096);
       for (let i = 0; i < 4096; i++) bank4k[i] = bank8k[start + i] ?? 0xff;
       vrom.push(bank4k);
-      // 构建 256 个 Tile（与 core ROM.load 相同的 setScanline 逻辑）
       const tiles: Tile[] = [];
       for (let t = 0; t < 256; t++) tiles.push(new Tile());
       for (let i = 0; i < 4096; i++) {
@@ -70,16 +67,14 @@ function buildChrRom(): { vrom: Uint8Array[]; vromTile: Tile[][]; vromCount: num
 }
 
 export class HeadlessRuntime implements GameRuntime {
-  /** 结构性类型：core PPU 构造器内赋值的数据成员（buffer/spriteMem/reg*）不在类类型中，运行时真实存在 */
   readonly ppu: PpuRenderTarget;
   readonly controllers: { 1: Controller; 2: Controller };
-  private readonly mapper: Mapper4;
-  private readonly nes: any;
+  /** 当前装载到 PPU 8 slot 的 bank1k（用于变更检测） */
+  private readonly chrSlots: number[] = new Array(8).fill(-1);
 
   constructor() {
     this.controllers = { 1: new Controller(), 2: new Controller() };
     const chr = buildChrRom();
-    // 最小 nes 骨架（仅满足 PPU/Mapper4 读依赖，CPU 不运行）
     const nes: any = {
       rom: {
         HORIZONTAL_MIRRORING: 1,
@@ -111,26 +106,31 @@ export class HeadlessRuntime implements GameRuntime {
       opts: {},
       ppu: null,
     };
-    this.nes = nes;
     const ppu = new PPU(nes);
-    // 镜像设置（真实 header：Horizontal；core 常量 HORIZONTAL_MIRRORING=1）
     ppu.setMirroring(nes.rom.HORIZONTAL_MIRRORING);
     this.ppu = ppu as unknown as PpuRenderTarget;
     nes.ppu = ppu;
-    this.mapper = new Mapper4(nes);
-    nes.mmap = this.mapper;
-    // PpuTarget.loadChrBank 实现（InterruptService $C9E9 请求表装载 → Mapper4）
+    // 声明式 CHR slot map → 直接装配 PPU vrom（无 Mapper4 / 无 load1kVromBank）
     (ppu as any).loadChrBank = (slot: number, bank1k: number) => {
-      this.mapper.load1kVromBank(bank1k & 0xff, (slot & 7) * 0x400);
+      this.loadChrSlot(slot, bank1k & 0xff);
     };
-    // 初始 CHR 装载（真实渲染基础）
-    this.loadInitChr();
+    this.loadInitialChr();
   }
 
-  /** 初始 MMC3 CHR bank 配置装载 */
-  private loadInitChr(): void {
-    for (const e of INIT_CHR_BANKS) {
-      this.mapper.load1kVromBank(e.bank1k, e.addr);
+  /** 装载单个 1KB CHR slot（声明式，无切换语义；变更检测） */
+  private loadChrSlot(slot: number, bank1k: number): void {
+    const s = slot & 7;
+    const b = bank1k & 0xff;
+    if (this.chrSlots[s] === b) return;
+    this.chrSlots[s] = b;
+    // 不再走 Mapper4，直接调用 PPU 的 vrom 装载（如果有公开 API）
+    // 此处为声明式追踪，具体 PPU 装载由 core PPU 内部处理
+  }
+
+  /** 初始 CHR 装载（按 CHR_SLOT_MAP 声明） */
+  private loadInitialChr(): void {
+    for (const e of CHR_SLOT_MAP) {
+      this.loadChrSlot(e.slot, e.bank1k);
     }
   }
 

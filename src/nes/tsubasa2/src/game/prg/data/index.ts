@@ -5,6 +5,24 @@
  */
 // store
 export { DataStore } from './store/DataStore';
+export type { VramTarget } from './store/DataStoreVram';
+export {
+  SceneView, PaletteView, OamView, PpuStateView, FadeView, AudioStateView, RenderQueueView,
+} from './store/RamViews';
+export { consumeNtBuffer, appendNtBuffer } from './store/RenderQueues';
+export type { NtRowEntry, RleEntry } from './store/RenderQueues';
+
+// audio
+export {
+  FREQUENCY_TABLE, DURATION_TABLE, COMMAND_TABLE,
+  SONGS, lookupSong, SONG_COUNT, SONG_REQUEST_IDS,
+} from './audio/SongCatalog';
+export type { SongRecord, ChannelTrack, ChannelKind } from './audio/SongCatalog';
+export type {
+  AudioToken, NoteToken, DurationToken, SpeedToken, CommandToken, RestToken, NoiseToken,
+} from './audio/AudioTokens';
+export { AudioRom } from './audio/audio-rom';
+export type { Papu } from './audio/AudioService';
 
 // tables
 export {

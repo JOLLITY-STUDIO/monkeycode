@@ -1,7 +1,5 @@
 /**
- * TeamRosterService — 队伍名单（原 bank29 阵容数据）
- *
- * @bank 29（队伍名单/阵型）
+ * TeamRosterService — 队伍名单/阵型
  *
  * V0.1 stub：契约签名；真实数据表（data/tables/team-table.ts）在 V0.2 从 asm 提取。
  */

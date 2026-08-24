@@ -1,19 +1,22 @@
 /**
- * MatchEngineService — 比赛主引擎（原 bank26）
+ * MatchEngineService — 比赛主引擎
  *
  * 行为翻译（去 CPU 化）：
- * - bank26 $8000 入口：大量 JMP 表分发（$84F8/$86F6/$8835/$87E1/$888D/$88A8/$8B4A/$8F72/$8CA4 等）
- * - $803C+：比赛初始化（ram_044E/0621 清零 → JSR $C600 → 切 bank → ram_0600 判定）
- * - $805A+：球员槽位初始化（ram_0617 球员数 → ram_0601+ 球员ID → ram_0606+ 类型 → ram_060B+ 状态）
- * - $8084+：球员数据装载（ram_060B,X → ram_043D/043E/0442）
- * - $8277+：球员交换逻辑（ram_0601/Y 与 ram_0601/X 交换 → ram_0606/Y=$01）
+ * - 开始比赛：初始化双方球队、比分、时间、控球方
+ * - 球员槽位装载：逐项写入 [playerId, type, state]
+ * - 球员数据装载：槽位 → 帧工作区
+ * - 球员交换：两个槽位内容互换
+ * - 每帧比赛逻辑：球员遍历循环 → 帧尾例程 → 控球方分发（5 种状态机）
+ * - 帧尾例程：HUD 更新 / 时间推进
+ * - 控球方分发：5 种状态 → 防守例程 / 时间到 / 重置栈 / 暂停
+ * - 防守例程：按控球方与标志位分发（跳过状态、设置标志）
  *
- * bank 切换语义 = import MatchEngineService + 直接调用，无 MMC3 窗口模拟。
+ * bank 切换 = import MatchEngineService + 直接调用，无 MMC3 窗口模拟。
  */
 import type { DataStore } from '../../data/store/DataStore';
-import { DEFAULT_MATCH_CONFIG, getMatchConfig, type MatchConfigEntry } from '../../data/tables/match-config-table';
+import { DEFAULT_MATCH_CONFIG, getMatchConfig } from '../../data/tables/match-config-table';
 
-/** 比赛状态（ram_0468+ 系列实体） */
+/** 比赛状态 */
 export interface MatchState {
   readonly homeTeam: number;
   readonly awayTeam: number;
@@ -21,13 +24,13 @@ export interface MatchState {
   awayScore: number;
   timeMinutes: number;
   timeSeconds: number;
-  /** 当前控球方（ram_043B） */
+  /** 当前控球方 */
   possession: number;
-  /** 当前球员索引（ram_0616） */
+  /** 当前球员索引 */
   currentPlayerIdx: number;
 }
 
-/** 球员槽位数据（ram_0601+/0606+/060B+ 系列） */
+/** 球员槽位数据 */
 export interface PlayerSlot {
   readonly slotIdx: number;
   readonly playerId: number;
@@ -39,10 +42,7 @@ export class MatchEngineService {
   constructor(readonly store: DataStore) {}
 
   /**
-   * 开始比赛（原 bank26 $803C-$8057）
-   *
-   * 行为：ram_044E/0621 清零 → 初始化 → 球员槽位装载。
-   * bank 切换（JSR $C600）= import + 直接调用，无 MMC3 窗口。
+   * 开始比赛：初始化双方球队、比分、时间、控球方。
    */
   startMatch(homeTeam: number, awayTeam: number): MatchState {
     this.store.write('ram_044E', 0);
@@ -62,9 +62,7 @@ export class MatchEngineService {
   }
 
   /**
-   * 装载球员槽位（原 bank26 $805A-$8127）
-   *
-   * 行为：ram_0600 球员数 → 遍历 ram_0601+/0606+/060B+。
+   * 装载球员槽位：写入球员数 + 逐项 [playerId, type, state]。
    */
   loadPlayerSlots(playerIds: number[]): void {
     this.store.write('ram_0600', playerIds.length);
@@ -77,9 +75,7 @@ export class MatchEngineService {
   }
 
   /**
-   * 读取球员槽位（原 bank26 $8084-$80B6）
-   *
-   * 行为：ram_0616 当前索引 → ram_060B/0606/0601 读取。
+   * 读取球员槽位：[playerId, type, state]。
    */
   getPlayerSlot(idx: number): PlayerSlot {
     return {
@@ -91,9 +87,7 @@ export class MatchEngineService {
   }
 
   /**
-   * 球员数据装载（原 bank26 $808E-$80B6）
-   *
-   * 行为：ram_060B → ram_043D; ram_0606 → ram_043E; ram_0601 → ram_0442。
+   * 球员数据装载：槽位 → 帧工作区（state/type/playerId）。
    */
   loadPlayerData(idx: number): void {
     const slot = this.getPlayerSlot(idx);
@@ -103,9 +97,7 @@ export class MatchEngineService {
   }
 
   /**
-   * 球员交换（原 bank26 $823E-$8277）
-   *
-   * 行为：ram_0601/X ↔ ram_0601/Y 交换；ram_0606/Y=$01; ram_060B/Y=$00。
+   * 球员交换：两个槽位内容互换；type=1, state=0 标记为新槽。
    */
   swapPlayers(idxX: number, idxY: number): void {
     const slotX = this.getPlayerSlot(idxX);
@@ -119,47 +111,31 @@ export class MatchEngineService {
   }
 
   /**
-   * 每帧比赛逻辑（原 bank26 $803C-$80F0 主循环 + $80EA-$80F0 帧尾）
-   *
-   * 行为：
-   * - $80DF: INC ram_0616（当前球员索引递增）
-   * - $80E2: CMP ram_0600（与球员总数比较）
-   * - $80E5: BEQ $80EA（遍历完所有球员 → 执行帧尾）
-   * - $80E7: JMP $8074（继续下一个球员）
-   * - $80EA: JSR $9085（帧尾例程：HUD 更新/时间推进）
-   * - $80F0: LDA ram_043B → 控球方判定 → 分发
-   *
-   * bank 切换（JSR $C606/$C618 等）= import + 直接调用，无 MMC3 窗口。
+   * 每帧比赛逻辑：
+   * - 球员遍历循环：递增索引 → 与总数比较 → 未到尾部继续
+   * - 帧尾例程：HUD 更新 / 时间推进
+   * - 控球方判定 → 分发
    */
   update(frame: number): void {
     void frame;
     const store = this.store;
-    // 球员遍历循环（原 $80DF-$80E7）
     const totalPlayers = store.read('ram_0600');
     let currentIdx = store.read('ram_0616');
     currentIdx = (currentIdx + 1) & 0xFF;
     store.write('ram_0616', currentIdx);
     if (currentIdx !== totalPlayers) {
-      // 继续遍历下一个球员（原 JMP $8074）
       return;
     }
-    // 所有球员处理完毕 → 帧尾例程（原 $80EA: JSR $9085）
     this.frameTailUpdate();
-    // 控球方判定（原 $80F0: LDA ram_043B）
     const possession = store.read('ram_043B');
     this.dispatchPossession(possession);
   }
 
   /**
-   * 帧尾更新（原 bank26 $80EA: JSR $9085）
-   *
-   * 行为：HUD 更新、比赛时间推进、比分检查。
-   * 原 $9085 调用 $C509 分发表 → 具体帧尾例程。
+   * 帧尾更新：比赛时间递减；分钟/秒计满后半场/终场判定。
    */
   private frameTailUpdate(): void {
     const store = this.store;
-    // 原 $9085: 帧尾例程 — 更新比赛时间
-    // ram_0468+ 系列比分/时间状态推进
     const seconds = store.read('ram_0469');
     if (seconds > 0) {
       store.write('ram_0469', seconds - 1);
@@ -169,49 +145,32 @@ export class MatchEngineService {
         store.write('ram_0468', minutes - 1);
         store.write('ram_0469', 59);
       }
-      // 时间到 → 半场/终场判定（原 $8124: JMP $C621）
     }
   }
 
   /**
-   * 控球方分发（原 bank26 $80F0-$8104）
-   *
-   * 逐指令对照：
-   *   $80F0: LDA $043B           ; A = 控球方
-   *   $80F3: JSR $C509           ; 跳转表分发
-   *   $80FE: .byte $FE,$80,$07,$81,$18,$81,$1E,$81,$20,$70,$81
-   *         跳转表 5 项（lo,hi 对）：$80FE/$8107/$8118/$811E/$8120
-   *   → possession=0: JMP $80FE（JSR $C606; LDA $043B → 继续主循环）
-   *   → possession=1: JMP $8107（JSR $C61E; LDA #$0A; JSR $C54B; JSR $8170）
-   *   → possession=2: JMP $8118（LDX #$50; TXS; JMP $C60F）
-   *   → possession=3: JMP $811E（JSR $8170; LDX #$50; TXS; JMP $C621）
-   *   → possession=4: JMP $8120（JSR $90DD; LDA #$00; STA $0617; JMP $80ED）
+   * 控球方分发（5 种状态机）：
+   * - 0: 继续主循环
+   * - 1: 设置 ram_0612=$0A → 防守例程
+   * - 2: 重置栈指针
+   * - 3: 防守例程 → 重置栈
+   * - 4: ram_0617=0 → 跳回主循环
    */
   private dispatchPossession(possession: number): void {
     const store = this.store;
     switch (possession) {
       case 0:
-        // $80FE: JSR $C606（bank 切换=import 调用）; LDA $043B → 继续主循环
-        // 行为：调用 $C606 后继续（H5: bank 切换省略）
         break;
       case 1:
-        // $8107-$8115: JSR $C61E; LDA #$0A; JSR $C54B; JSR $8170; LDX #$50; TXS; JMP $C612
-        // 行为：JSR $C61E（bank 切换）→ ram_0612=$0A → JSR $C54B → 调用 $8170（防守例程）
         store.write('ram_0612', 0x0A);
         this.defenseRoutine();
         break;
       case 2:
-        // $8118-$811B: LDX #$50; TXS; JMP $C60F
-        // 行为：重置栈指针 → 切 bank（JSR $C60F = import 调用，省略）
         break;
       case 3:
-        // $811E-$8124: JSR $8170; LDX #$50; TXS; JMP $C621
-        // 行为：调用 $8170 → 重置栈 → 切 bank
         this.defenseRoutine();
         break;
       case 4:
-        // $8120-$812F: JSR $90DD; LDA #$00; STA $0617; JMP $80ED
-        // 行为：调用 $90DD → ram_0617=0 → 跳回 $80ED
         store.write('ram_0617', 0);
         break;
       default:
@@ -220,46 +179,31 @@ export class MatchEngineService {
   }
 
   /**
-   * 防守例程（原 bank26 $8170-$819B）
-   *
-   * 逐指令对照：
-   *   $8170: BIT $0617; BPL $8176  ; ram_0617 bit7=0 时继续
-   *   $8176: LDX $043B; CPX #$02; BEQ $819B  ; 控球方=2 跳过
-   *   $817D: LDA #$00; STA $062D   ; ram_062D=0
-   *   $8182: LDA $8278,X; JSR $C54E  ; 查表 → 调用
-   *   $8188: LDA $0444; AND #$03; STA $044E  ; ram_044E = ram_0444 & 3
-   *   $8190: JSR $C624             ; 切 bank 调用
-   *   $8193: LDA $0617; ORA #$80; STA $0617  ; ram_0617 |= 0x80
+   * 防守例程：
+   * - ram_0617 bit7 置位 → 跳过
+   * - 控球方=2 → 跳过
+   * - ram_062D=0；ram_044E = ram_0444 & 3；ram_0617 |= 0x80
    */
   private defenseRoutine(): void {
     const store = this.store;
     const flags = store.read('ram_0617');
-    if ((flags & 0x80) !== 0) return; // BPL 跳过
+    if ((flags & 0x80) !== 0) return;
     const possession = store.read('ram_043B');
-    if (possession === 2) return;      // CPX #$02; BEQ
+    if (possession === 2) return;
     store.write('ram_062D', 0);
-    // LDA $8278,X; JSR $C54E — 查表调用（H5: 直接调用对应例程）
     const playerFlags = store.read('ram_0444');
     store.write('ram_044E', playerFlags & 0x03);
     store.write('ram_0617', flags | 0x80);
   }
 
-  /**
-   * 球员槽位递增（原 bank26 $80DF）
-   *
-   * 行为：INC ram_0616（当前球员索引 +1）。
-   */
+  /** 球员槽位递增：当前球员索引 +1 */
   advancePlayerSlot(): number {
     const idx = (this.store.read('ram_0616') + 1) & 0xFF;
     this.store.write('ram_0616', idx);
     return idx;
   }
 
-  /**
-   * 检查球员遍历完成（原 bank26 $80E2-$80E5）
-   *
-   * 行为：CMP ram_0600 → BEQ（全部球员处理完毕）。
-   */
+  /** 检查球员遍历完成：当前索引 == 球员总数 */
   isPlayerTraversalComplete(): boolean {
     return this.store.read('ram_0616') === this.store.read('ram_0600');
   }

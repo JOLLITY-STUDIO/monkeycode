@@ -128,15 +128,15 @@ export class ApuPcmRendererImpl implements ApuPcmRenderer {
   renderFrame(): Float32Array {
     const samples = new Float32Array(Math.floor(SAMPLE_RATE / 60));
     const cyclesPerSample = CYCLES_PER_FRAME / samples.length;
-    
+
     let cycleAccum = 0;
     for (let s = 0; s < samples.length; s++) {
       // 每个采样对应 cyclesPerSample 个 CPU 周期
       const cycles = Math.floor(cycleAccum + cyclesPerSample) - Math.floor(cycleAccum);
       cycleAccum += cyclesPerSample;
-      
+
       let sum = 0;
-      
+
       // Pulse1
       if (this.pulse1.enabled && this.pulse1.freq > 0) {
         sum += this.renderPulse(this.pulse1, cycles);
@@ -147,13 +147,13 @@ export class ApuPcmRendererImpl implements ApuPcmRenderer {
       }
       // Triangle
       if (this.triangle.enabled && this.triangle.freq > 0) {
-        sum += this.renderTriangle(cycles) * 0.5; // Triangle 音量较低
+        sum += this.renderTriangle(cycles) * 0.5;
       }
       // Noise
       if (this.noise.enabled) {
         sum += this.renderNoise(cycles) * 0.3;
       }
-      
+
       samples[s] = Math.max(-1, Math.min(1, sum));
     }
     return samples;
@@ -161,7 +161,7 @@ export class ApuPcmRendererImpl implements ApuPcmRenderer {
 
   private renderPulse(ch: PulseChannel, cycles: number): number {
     if (ch.freq === 0) return 0;
-    const period = 16 * (ch.freq + 1); // CPU 周期/波形周期
+    const period = 16 * (ch.freq + 1);
     ch.phase += cycles / period * 8;
     ch.phase %= 8;
     const wave = DUTY_TABLE[ch.duty][Math.floor(ch.phase)];

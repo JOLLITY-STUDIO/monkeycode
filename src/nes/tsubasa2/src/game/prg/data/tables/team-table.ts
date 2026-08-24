@@ -1,7 +1,7 @@
 /**
- * 队伍数据表 — 原 bank29 队伍名单（声明式表结构）
+ * 队伍数据表（声明式表结构）
  *
- * V0.2 从 asm/bank29/*.s 的 .byte 数据提取。当前为空表（契约占位）。
+ * V0.2 从 asm 队伍名单段提取。当前为空表（契约占位）。
  */
 export interface TeamEntry {
   readonly id: number;

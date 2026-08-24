@@ -1,7 +1,7 @@
 /**
- * bank21 数据 — 原 bank21 纯数据 bank（$8000-$9FFF, 8KB）
+ * bank21 数据 — 场景背景 NT 数据（8KB）
  *
- * 数据从 asm/bank21/*.s 的 .byte 提取为声明式 TS 数组。
+ * 数据从 asm .byte 提取为声明式 TS 数组。
  * 禁止 PRG_BANK_21[addr] 索引。
  */
 

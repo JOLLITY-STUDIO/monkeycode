@@ -1,12 +1,7 @@
 /**
- * CharMap — 字符集映射（原 bank00 char-map 表）
+ * CharMap — 字符集映射（ASCII/日文假名/汉字两套表）
  *
- * @bank 00（字符映射）
- *
- * 职责：脚本字节 → 字形 tile 号（含 ASCII/日文假名/汉字两套表）。
- * 数据在 V0.2 从 asm/bank00 字符表提取（声明式 Map）。
- *
- * V0.1 stub：契约签名。
+ * V0.1 stub：契约签名；数据在 V0.2 从 asm 字符表提取（声明式 Map）。
  */
 export class CharMap {
   /** 字符 → tile 号映射（V0.2 从 asm 提取填充） */

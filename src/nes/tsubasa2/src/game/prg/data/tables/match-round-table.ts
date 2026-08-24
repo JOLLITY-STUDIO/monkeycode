@@ -1,16 +1,20 @@
 /**
- * 比赛回合数据表 — 原 bank24 回合/战术数据（声明式表结构）
+ * 比赛回合数据表（声明式表结构）
  *
- * 从 asm/bank24/data_tables.s 提取真实字节。
- * bank24 含：回合指针表（$86B8）、回合参数表、战术数据。
+ * 从 asm 回合/战术数据段提取真实字节，含：
+ * - 回合指针表（lo/hi 拆字节：值为原始字节布局）
+ * - 回合参数表
+ * - 战术数据
  */
 
-/** 回合指针表条目 */
+/**
+ * 回合动作脚本偏移条目
+ * target = 回合动作脚本在 BANK24_DATA_TABLES 中的字节偏移（已合并 16-bit LE，禁 lo/hi 拆分）
+ */
 export interface MatchRoundPointer {
   readonly typeId: number;
   readonly paramId: number;
-  readonly lo: number;
-  readonly hi: number;
+  readonly target: number;
 }
 
 /** 回合表条目 */
@@ -21,7 +25,7 @@ export interface MatchRoundEntry {
   readonly duration: number;
 }
 
-/** bank24 全量数据表 */
+/** 全量数据表（data_tables 原始字节） */
 export const BANK24_DATA_TABLES: ReadonlyArray<number> = [
   0x9C, 0xA8, 0x9D, 0xAA, 0x00, 0xAB, 0x9E, 0xA9, 0x9F, 0x88, 0x89, 0x90, 0x8A, 0x00, 0x8A, 0x8E,
   0x89, 0x93, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xE4, 0xE5, 0xF0, 0xE6, 0x00,

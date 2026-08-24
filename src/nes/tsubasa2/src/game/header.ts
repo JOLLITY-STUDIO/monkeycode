@@ -1,24 +1,21 @@
 /**
- * 真实 iNES 头信息 — Captain Tsubasa II: Super Striker (Japan)
+ * 天游戏 2 — 翻译层头契约（业务语义，无硬件窗口概念）
  *
- *   prg16k=16  chr8k=16  mapper=4 (MMC3)  mirroring=0 (Horizontal)
+ * iNES header 字节保留作为版本标识（解包需要），但 H5 已无 MMC3 / bank 切换语义：
+ *   - 数据全部声明式表（SceneTable / SongCatalog / SkillTable 等）
+ *   - 状态通过具名视图访问（store.scene / store.palette / store.audioState ...）
+ *   - bank 编号、CHR/PRG 切换粒度、MMC3 寄存器 → 全部省略
  *
- * NES 2.0 (byte7=0x08 → (byte7&0x0c)===0x08)：byte9=0 不走 exponent 扩展，编码与 iNES 1.0 兼容
- *
- * 注：本项目不重放模拟器，仅以常量形式保留 ROM 元信息（供外部校验/文档参考）。
- * 运行时通过 HeadlessRuntime 直接装载 CHR_BANKS，PPU 配置由 PpuTarget 接口驱动。
+ * 渲染参数（Mirroring）保留作为业务配置项。
  */
+
 export const HEADER = new Uint8Array([
-  0x4e, 0x45, 0x53, 0x1a, // "NES\x1a"
-  0x10,                   // PRG ROM: 16 × 16KB = 256KB
-  0x10,                   // CHR ROM: 16 × 8KB = 128KB
-  0x40,                   // mapper 4 (MMC3) | mirroring Horizontal(0)
+  0x4e, 0x45, 0x53, 0x1a, // "NES\x1a"（仅作版本标识）
+  0x10,                   // PRG: 256KB
+  0x10,                   // CHR: 128KB
+  0x40,                   // mapper 4 | Horizontal mirroring
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 ]);
-
-// ═══════════════════════════════════════════
-// 渲染参数：NameTable 拼接方式（保留）
-// ═══════════════════════════════════════════
 
 export enum Mirroring {
   Horizontal = 0, // NT0 左 / NT1 右 (64×30 水平世界)

@@ -1,7 +1,5 @@
 /**
- * MatchConfigService — 比赛配置（原 bank28 比赛配置）
- *
- * @bank 28（比赛配置/规则）
+ * MatchConfigService — 比赛配置
  *
  * V0.1 stub：契约签名；配置数据表（data/tables/match-config-table.ts）在 V0.2 提取。
  */
