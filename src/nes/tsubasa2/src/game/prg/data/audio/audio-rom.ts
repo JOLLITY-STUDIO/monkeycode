@@ -13,9 +13,14 @@
 
 import { FREQUENCY_TABLE, DURATION_TABLE, COMMAND_TABLE } from './SongCatalog';
 
-/** 16-bit APU period 查询（替代旧 readBank12U16(0x870D + idx*2)） */
+/**
+ * 16-bit APU period 查询（替代旧 readBank12U16(0x870D + idx*2)）
+ *
+ * semitone 是 0-11（C..B，1 八度 = 12 半音），octave 由调用方 shift 处理。
+ * 原 ROM 频率表 12 项（idx 0-11），边界用 `& 0x0b`（=11）掩码。
+ */
 export function getApePeriod(idx: number): number {
-  return FREQUENCY_TABLE[idx & 0x0f] ?? 0;
+  return FREQUENCY_TABLE[idx & 0x0b] ?? 0;
 }
 
 /** tick 时值查询（替代旧 readBank12Byte(0x8725 + idx)） */
