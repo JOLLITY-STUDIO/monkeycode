@@ -1,18 +1,21 @@
 /**
- * player-stats.ts — 球员档案具象化表（从真 ROM 提取）
+ * player-stats.ts — 球员档案具象化表（从真 ROM 全字段提取）
  *
- * 数据源：
- *   - 能力值 (24 字节)         ROM 0x39fde + idx*24
- *   - GK 能力值 (8 字节)       ROM 0x3ae96 + idx*8
- *   - 颜色 (明星)              ROM 0x2b821 + idx*5
- *   - 头型 (PlayModList 18)    ROM 0x28901 + idx
+ * 数据源（docs/rom-data-locations.md §1-§3）：
+ *   - 能力值 23 字节（7 base + 8 low + 8 high）  ROM 0x39fde + idx*24
+ *   - GK 8 字节能力                              ROM 0x3ae96 + idx*8
+ *   - 头型 18 模板                                ROM 0x28901 + idx
+ *   - 颜色（明星/杂鱼）                            ROM 0x2b821/0x2b6d7 + idx*5
  *
  * 重生脚本：scripts/extract_players.cjs
  * 用法：cd scripts && node extract_players.cjs > ../src/game/prg/data/tables/player-stats.ts
  */
 
-import type { PlayerProfile } from '../../code/player/PlayerQueryService';
+import type { PlayerProfile, PlayerGkEntry } from '../../code/player/PlayerQueryService';
 
+export type { PlayerGkEntry } from '../../code/player/PlayerQueryService';
+
+/** 球员颜色条目（皮肤/头发/上衣/短裤） */
 export interface PlayerColorEntry {
   readonly skin: number;
   readonly hair: number;
@@ -20,62 +23,198 @@ export interface PlayerColorEntry {
   readonly shorts: number;
 }
 
-export interface PlayerGkEntry {
-  readonly stamina: number;
-  readonly pass: number;
-  readonly catching: number;
-  readonly punching: number;
-  readonly vsShot: number;
-  readonly vsDribble: number;
-}
-
-/** 球员档案表（明星 0x01-0x2D 共 45 项，杂鱼不在此表） */
+/** 球员档案表（明星 0x01-0x2D 共 45 项，杂鱼不在此表）— 23 字段全捕获 */
 export const PLAYER_TABLE: ReadonlyArray<PlayerProfile> = [
-  { id: 0x1, name: 'Tsubasa', club: 1, position: 0, shot:12, dribble:14, pass:23, tackle:16, speed:0, stamina:21 },
-  { id: 0x2, name: 'Lennart', club: 1, position: 1, shot:0, dribble:0, pass:10, tackle:0, speed:0, stamina:0 },
-  { id: 0x3, name: 'Lima', club: 1, position: 0, shot:2, dribble:2, pass:7, tackle:4, speed:0, stamina:1 },
-  { id: 0x4, name: 'Marini', club: 1, position: 0, shot:0, dribble:2, pass:3, tackle:4, speed:0, stamina:0 },
-  { id: 0x5, name: 'Amaral', club: 1, position: 0, shot:4, dribble:2, pass:8, tackle:4, speed:0, stamina:5 },
-  { id: 0x6, name: 'Dottil', club: 1, position: 0, shot:1, dribble:2, pass:6, tackle:4, speed:0, stamina:2 },
-  { id: 0x7, name: 'Battista', club: 1, position: 0, shot:9, dribble:5, pass:14, tackle:7, speed:0, stamina:15 },
-  { id: 0x8, name: 'Tahamata', club: 1, position: 0, shot:10, dribble:16, pass:13, tackle:18, speed:0, stamina:14 },
-  { id: 0x9, name: 'Babinton', club: 1, position: 0, shot:2, dribble:7, pass:5, tackle:9, speed:0, stamina:4 },
-  { id: 0xA, name: 'Gil', club: 1, position: 0, shot:0, dribble:4, pass:2, tackle:6, speed:0, stamina:0 },
-  { id: 0xB, name: 'Platton', club: 1, position: 0, shot:0, dribble:2, pass:1, tackle:4, speed:0, stamina:0 },
-  { id: 0xC, name: 'Urabe', club: 1, position: 0, shot:0, dribble:6, pass:8, tackle:8, speed:0, stamina:1 },
-  { id: 0xD, name: 'Kishida', club: 1, position: 0, shot:8, dribble:11, pass:15, tackle:13, speed:0, stamina:11 },
-  { id: 0xE, name: 'Nakayama', club: 1, position: 0, shot:0, dribble:9, pass:2, tackle:11, speed:0, stamina:0 },
-  { id: 0xF, name: 'Morisaki', club: 1, position: 1, shot:0, dribble:0, pass:25, tackle:0, speed:0, stamina:0 },
-  { id: 0x10, name: 'Takasugu', club: 1, position: 0, shot:7, dribble:2, pass:11, tackle:4, speed:0, stamina:3 },
-  { id: 0x11, name: 'Misaki', club: 1, position: 0, shot:8, dribble:16, pass:15, tackle:18, speed:0, stamina:5 },
-  { id: 0x12, name: 'Izawa', club: 1, position: 0, shot:4, dribble:8, pass:7, tackle:12, speed:0, stamina:2 },
-  { id: 0x13, name: 'Taki', club: 1, position: 0, shot:2, dribble:13, pass:8, tackle:17, speed:0, stamina:1 },
-  { id: 0x14, name: 'Ishizaki', club: 1, position: 0, shot:11, dribble:13, pass:17, tackle:15, speed:0, stamina:7 },
-  { id: 0x15, name: 'Nitta', club: 1, position: 0, shot:1, dribble:2, pass:4, tackle:4, speed:0, stamina:2 },
-  { id: 0x16, name: 'Kisugi', club: 2, position: 0, shot:6, dribble:2, pass:10, tackle:4, speed:0, stamina:7 },
-  { id: 0x17, name: 'Masao', club: 2, position: 0, shot:19, dribble:27, pass:32, tackle:14, speed:0, stamina:28 },
-  { id: 0x18, name: 'Kazuo', club: 2, position: 0, shot:0, dribble:0, pass:1, tackle:0, speed:0, stamina:0 },
-  { id: 0x19, name: 'Sano', club: 2, position: 0, shot:0, dribble:0, pass:1, tackle:0, speed:0, stamina:0 },
-  { id: 0x1A, name: 'Hyuga', club: 2, position: 0, shot:1, dribble:1, pass:4, tackle:0, speed:0, stamina:4 },
-  { id: 0x1B, name: 'Souta', club: 2, position: 0, shot:1, dribble:1, pass:4, tackle:0, speed:0, stamina:4 },
-  { id: 0x1C, name: 'Jitou', club: 2, position: 0, shot:9, dribble:2, pass:10, tackle:0, speed:0, stamina:9 },
-  { id: 0x1D, name: 'Matsuyama', club: 2, position: 0, shot:9, dribble:2, pass:8, tackle:0, speed:0, stamina:7 },
-  { id: 0x1E, name: 'Sorimachi', club: 2, position: 0, shot:4, dribble:3, pass:5, tackle:2, speed:0, stamina:5 },
-  { id: 0x1F, name: 'Sawada', club: 2, position: 0, shot:4, dribble:2, pass:5, tackle:2, speed:0, stamina:5 },
-  { id: 0x20, name: 'Misugi', club: 3, position: 0, shot:14, dribble:12, pass:23, tackle:14, speed:0, stamina:14 },
-  { id: 0x21, name: 'Wakabayashi', club: 3, position: 1, shot:0, dribble:0, pass:50, tackle:0, speed:0, stamina:0 },
-  { id: 0x22, name: 'Wakashimazu', club: 3, position: 1, shot:0, dribble:0, pass:50, tackle:0, speed:0, stamina:0 },
-  { id: 0x23, name: 'Satilst', club: 3, position: 0, shot:17, dribble:14, pass:25, tackle:15, speed:0, stamina:17 },
-  { id: 0x24, name: 'Riverio', club: 3, position: 0, shot:14, dribble:14, pass:25, tackle:15, speed:0, stamina:17 },
-  { id: 0x25, name: 'DaSilva', club: 3, position: 0, shot:17, dribble:4, pass:6, tackle:5, speed:0, stamina:9 },
-  { id: 0x26, name: 'Meon', club: 3, position: 1, shot:0, dribble:0, pass:3, tackle:0, speed:0, stamina:160 },
-  { id: 0x27, name: 'Toninho', club: 3, position: 0, shot:17, dribble:12, pass:23, tackle:12, speed:0, stamina:17 },
-  { id: 0x28, name: 'Nei', club: 3, position: 0, shot:17, dribble:16, pass:23, tackle:14, speed:0, stamina:17 },
-  { id: 0x29, name: 'Zagalo', club: 3, position: 0, shot:17, dribble:4, pass:11, tackle:4, speed:0, stamina:9 },
-  { id: 0x2A, name: 'Dircil', club: 3, position: 0, shot:17, dribble:4, pass:21, tackle:4, speed:0, stamina:9 },
-  { id: 0x2B, name: 'Carlos', club: 3, position: 0, shot:19, dribble:14, pass:30, tackle:14, speed:0, stamina:19 },
-  { id: 0x2C, name: 'Santamaria', club: 3, position: 0, shot:19, dribble:14, pass:30, tackle:14, speed:0, stamina:19 },
-  { id: 0x2D, name: 'Jethrio', club: 3, position: 0, shot:19, dribble:14, pass:30, tackle:14, speed:0, stamina:19 },
+  { id: 0x1, name: 'Tsubasa', club: 1, position: 0,
+    stamina: 21, shot: 12, pass: 23, dribble: 14, block: 12, tackle: 16, intercept: 14,
+    lowShot: 0, lowPass: 32, lowTrap: 14, lowLet: 21, lowCtrlClr: 24, lowUnctrl: 9, lowChal: 15, lowIntc: 15,
+    highShot: 17, highPass: 21, highTrap: 12, highLet: 23, highCtrlClr: 12, highUnctrl: 11, highChal: 15, highIntc: 14 },
+  { id: 0x2, name: 'Lennart', club: 1, position: 1,
+    stamina: 0, pass: 10, catching: 4, punching: 4,
+    vsShot: 0, vsDribble: 0, lowRush: 8, highClaim: 8,
+    shot: 0, dribble: 0, block: 0, tackle: 0, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 0, lowLet: 0, lowCtrlClr: 0, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 0, highPass: 0, highTrap: 0, highLet: 0, highCtrlClr: 0, highUnctrl: 0, highChal: 0, highIntc: 0 },
+  { id: 0x3, name: 'Lima', club: 1, position: 0,
+    stamina: 1, shot: 2, pass: 7, dribble: 2, block: 1, tackle: 4, intercept: 1,
+    lowShot: 0, lowPass: 2, lowTrap: 5, lowLet: 0, lowCtrlClr: 1, lowUnctrl: 0, lowChal: 1, lowIntc: 0,
+    highShot: 8, highPass: 0, highTrap: 0, highLet: 3, highCtrlClr: 2, highUnctrl: 1, highChal: 4, highIntc: 1 },
+  { id: 0x4, name: 'Marini', club: 1, position: 0,
+    stamina: 0, shot: 0, pass: 3, dribble: 2, block: 1, tackle: 4, intercept: 1,
+    lowShot: 0, lowPass: 1, lowTrap: 2, lowLet: 5, lowCtrlClr: 6, lowUnctrl: 0, lowChal: 0, lowIntc: 1,
+    highShot: 5, highPass: 5, highTrap: 4, highLet: 8, highCtrlClr: 2, highUnctrl: 1, highChal: 4, highIntc: 1 },
+  { id: 0x5, name: 'Amaral', club: 1, position: 0,
+    stamina: 5, shot: 4, pass: 8, dribble: 2, block: 1, tackle: 4, intercept: 1,
+    lowShot: 0, lowPass: 0, lowTrap: 1, lowLet: 2, lowCtrlClr: 3, lowUnctrl: 0, lowChal: 1, lowIntc: 0,
+    highShot: 3, highPass: 2, highTrap: 1, highLet: 6, highCtrlClr: 2, highUnctrl: 1, highChal: 4, highIntc: 1 },
+  { id: 0x6, name: 'Dottil', club: 1, position: 0,
+    stamina: 2, shot: 1, pass: 6, dribble: 2, block: 1, tackle: 4, intercept: 1,
+    lowShot: 0, lowPass: 0, lowTrap: 6, lowLet: 15, lowCtrlClr: 13, lowUnctrl: 4, lowChal: 4, lowIntc: 3,
+    highShot: 7, highPass: 15, highTrap: 8, highLet: 14, highCtrlClr: 5, highUnctrl: 3, highChal: 7, highIntc: 9 },
+  { id: 0x7, name: 'Battista', club: 1, position: 0,
+    stamina: 15, shot: 9, pass: 14, dribble: 5, block: 3, tackle: 7, intercept: 9,
+    lowShot: 0, lowPass: 0, lowTrap: 3, lowLet: 4, lowCtrlClr: 4, lowUnctrl: 6, lowChal: 8, lowIntc: 7,
+    highShot: 4, highPass: 4, highTrap: 2, highLet: 5, highCtrlClr: 7, highUnctrl: 5, highChal: 9, highIntc: 6 },
+  { id: 0x8, name: 'Tahamata', club: 1, position: 0,
+    stamina: 14, shot: 10, pass: 13, dribble: 16, block: 14, tackle: 18, intercept: 12,
+    lowShot: 0, lowPass: 0, lowTrap: 3, lowLet: 4, lowCtrlClr: 4, lowUnctrl: 6, lowChal: 10, lowIntc: 5,
+    highShot: 12, highPass: 13, highTrap: 9, highLet: 12, highCtrlClr: 15, highUnctrl: 13, highChal: 17, highIntc: 11 },
+  { id: 0x9, name: 'Babinton', club: 1, position: 0,
+    stamina: 4, shot: 2, pass: 5, dribble: 7, block: 5, tackle: 9, intercept: 4,
+    lowShot: 0, lowPass: 0, lowTrap: 2, lowLet: 0, lowCtrlClr: 0, lowUnctrl: 2, lowChal: 6, lowIntc: 0,
+    highShot: 4, highPass: 0, highTrap: 0, highLet: 2, highCtrlClr: 4, highUnctrl: 2, highChal: 6, highIntc: 1 },
+  { id: 0xA, name: 'Gil', club: 1, position: 0,
+    stamina: 0, shot: 0, pass: 2, dribble: 4, block: 2, tackle: 6, intercept: 1,
+    lowShot: 0, lowPass: 0, lowTrap: 0, lowLet: 0, lowCtrlClr: 0, lowUnctrl: 0, lowChal: 1, lowIntc: 1,
+    highShot: 1, highPass: 0, highTrap: 0, highLet: 1, highCtrlClr: 2, highUnctrl: 1, highChal: 4, highIntc: 0 },
+  { id: 0xB, name: 'Platton', club: 1, position: 0,
+    stamina: 0, shot: 0, pass: 1, dribble: 2, block: 1, tackle: 4, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 2, lowLet: 0, lowCtrlClr: 0, lowUnctrl: 3, lowChal: 5, lowIntc: 3,
+    highShot: 4, highPass: 0, highTrap: 0, highLet: 2, highCtrlClr: 5, highUnctrl: 3, highChal: 7, highIntc: 2 },
+  { id: 0xC, name: 'Urabe', club: 1, position: 0,
+    stamina: 1, shot: 0, pass: 8, dribble: 6, block: 4, tackle: 8, intercept: 3,
+    lowShot: 0, lowPass: 2, lowTrap: 4, lowLet: 3, lowCtrlClr: 2, lowUnctrl: 0, lowChal: 0, lowIntc: 4,
+    highShot: 6, highPass: 3, highTrap: 0, highLet: 5, highCtrlClr: 2, highUnctrl: 1, highChal: 4, highIntc: 1 },
+  { id: 0xD, name: 'Kishida', club: 1, position: 0,
+    stamina: 11, shot: 8, pass: 15, dribble: 11, block: 9, tackle: 13, intercept: 8,
+    lowShot: 0, lowPass: 20, lowTrap: 3, lowLet: 0, lowCtrlClr: 0, lowUnctrl: 8, lowChal: 7, lowIntc: 1,
+    highShot: 5, highPass: 0, highTrap: 0, highLet: 2, highCtrlClr: 9, highUnctrl: 7, highChal: 11, highIntc: 2 },
+  { id: 0xE, name: 'Nakayama', club: 1, position: 0,
+    stamina: 0, shot: 0, pass: 2, dribble: 9, block: 7, tackle: 11, intercept: 2,
+    lowShot: 0, lowPass: 32, lowTrap: 5, lowLet: 2, lowCtrlClr: 7, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 7, highPass: 2, highTrap: 5, highLet: 9, highCtrlClr: 2, highUnctrl: 1, highChal: 4, highIntc: 0 },
+  { id: 0xF, name: 'Morisaki', club: 1, position: 1,
+    stamina: 20, pass: 15, catching: 27, punching: 38,
+    vsShot: 19, vsDribble: 19, lowRush: 22, highClaim: 23,
+    shot: 0, dribble: 0, block: 0, tackle: 0, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 0, lowLet: 0, lowCtrlClr: 0, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 0, highPass: 0, highTrap: 0, highLet: 0, highCtrlClr: 0, highUnctrl: 0, highChal: 0, highIntc: 0 },
+  { id: 0x10, name: 'Takasugu', club: 1, position: 0,
+    stamina: 3, shot: 7, pass: 11, dribble: 2, block: 1, tackle: 4, intercept: 0,
+    lowShot: 0, lowPass: 40, lowTrap: 15, lowLet: 5, lowCtrlClr: 8, lowUnctrl: 14, lowChal: 16, lowIntc: 1,
+    highShot: 18, highPass: 5, highTrap: 8, highLet: 15, highCtrlClr: 16, highUnctrl: 14, highChal: 18, highIntc: 0 },
+  { id: 0x11, name: 'Misaki', club: 1, position: 0,
+    stamina: 5, shot: 8, pass: 15, dribble: 16, block: 14, tackle: 18, intercept: 0,
+    lowShot: 0, lowPass: 32, lowTrap: 7, lowLet: 2, lowCtrlClr: 6, lowUnctrl: 3, lowChal: 13, lowIntc: 1,
+    highShot: 10, highPass: 2, highTrap: 4, highLet: 7, highCtrlClr: 8, highUnctrl: 10, highChal: 12, highIntc: 0 },
+  { id: 0x12, name: 'Izawa', club: 1, position: 0,
+    stamina: 2, shot: 4, pass: 7, dribble: 8, block: 10, tackle: 12, intercept: 0,
+    lowShot: 0, lowPass: 30, lowTrap: 7, lowLet: 1, lowCtrlClr: 5, lowUnctrl: 15, lowChal: 9, lowIntc: 1,
+    highShot: 9, highPass: 1, highTrap: 2, highLet: 6, highCtrlClr: 11, highUnctrl: 9, highChal: 14, highIntc: 0 },
+  { id: 0x13, name: 'Taki', club: 1, position: 0,
+    stamina: 1, shot: 2, pass: 8, dribble: 13, block: 12, tackle: 17, intercept: 0,
+    lowShot: 0, lowPass: 33, lowTrap: 10, lowLet: 7, lowCtrlClr: 15, lowUnctrl: 11, lowChal: 14, lowIntc: 13,
+    highShot: 13, highPass: 7, highTrap: 10, highLet: 17, highCtrlClr: 13, highUnctrl: 11, highChal: 15, highIntc: 13 },
+  { id: 0x14, name: 'Ishizaki', club: 1, position: 0,
+    stamina: 7, shot: 11, pass: 17, dribble: 13, block: 11, tackle: 15, intercept: 13,
+    lowShot: 0, lowPass: 0, lowTrap: 4, lowLet: 2, lowCtrlClr: 2, lowUnctrl: 1, lowChal: 0, lowIntc: 0,
+    highShot: 7, highPass: 2, highTrap: 1, highLet: 4, highCtrlClr: 2, highUnctrl: 1, highChal: 4, highIntc: 1 },
+  { id: 0x15, name: 'Nitta', club: 1, position: 0,
+    stamina: 2, shot: 1, pass: 4, dribble: 2, block: 1, tackle: 4, intercept: 1,
+    lowShot: 0, lowPass: 0, lowTrap: 1, lowLet: 7, lowCtrlClr: 10, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 3, highPass: 7, highTrap: 6, highLet: 10, highCtrlClr: 2, highUnctrl: 1, highChal: 4, highIntc: 1 },
+  { id: 0x16, name: 'Kisugi', club: 2, position: 0,
+    stamina: 7, shot: 6, pass: 10, dribble: 2, block: 1, tackle: 4, intercept: 1,
+    lowShot: 0, lowPass: 28, lowTrap: 21, lowLet: 28, lowCtrlClr: 31, lowUnctrl: 13, lowChal: 28, lowIntc: 31,
+    highShot: 24, highPass: 28, highTrap: 19, highLet: 32, highCtrlClr: 27, highUnctrl: 25, highChal: 14, highIntc: 30 },
+  { id: 0x17, name: 'Masao', club: 2, position: 0,
+    stamina: 28, shot: 19, pass: 32, dribble: 27, block: 25, tackle: 14, intercept: 30,
+    lowShot: 0, lowPass: 0, lowTrap: 0, lowLet: 5, lowCtrlClr: 3, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 2, highPass: 0, highTrap: 0, highLet: 1, highCtrlClr: 0, highUnctrl: 0, highChal: 0, highIntc: 0 },
+  { id: 0x18, name: 'Kazuo', club: 2, position: 0,
+    stamina: 0, shot: 0, pass: 1, dribble: 0, block: 0, tackle: 0, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 0, lowLet: 5, lowCtrlClr: 3, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 2, highPass: 0, highTrap: 0, highLet: 1, highCtrlClr: 0, highUnctrl: 0, highChal: 0, highIntc: 0 },
+  { id: 0x19, name: 'Sano', club: 2, position: 0,
+    stamina: 0, shot: 0, pass: 1, dribble: 0, block: 0, tackle: 0, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 4, lowLet: 7, lowCtrlClr: 5, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 7, highPass: 4, highTrap: 1, highLet: 4, highCtrlClr: 1, highUnctrl: 0, highChal: 0, highIntc: 0 },
+  { id: 0x1A, name: 'Hyuga', club: 2, position: 0,
+    stamina: 4, shot: 1, pass: 4, dribble: 1, block: 0, tackle: 0, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 4, lowLet: 9, lowCtrlClr: 7, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 7, highPass: 4, highTrap: 1, highLet: 4, highCtrlClr: 1, highUnctrl: 0, highChal: 0, highIntc: 0 },
+  { id: 0x1B, name: 'Souta', club: 2, position: 0,
+    stamina: 4, shot: 1, pass: 4, dribble: 1, block: 0, tackle: 0, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 7, lowLet: 19, lowCtrlClr: 17, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 9, highPass: 1, highTrap: 1, highLet: 4, highCtrlClr: 2, highUnctrl: 2, highChal: 0, highIntc: 0 },
+  { id: 0x1C, name: 'Jitou', club: 2, position: 0,
+    stamina: 9, shot: 9, pass: 10, dribble: 2, block: 2, tackle: 0, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 9, lowLet: 16, lowCtrlClr: 20, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 9, highPass: 7, highTrap: 9, highLet: 8, highCtrlClr: 2, highUnctrl: 2, highChal: 0, highIntc: 0 },
+  { id: 0x1D, name: 'Matsuyama', club: 2, position: 0,
+    stamina: 7, shot: 9, pass: 8, dribble: 2, block: 2, tackle: 0, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 7, lowLet: 13, lowCtrlClr: 16, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 9, highPass: 5, highTrap: 4, highLet: 5, highCtrlClr: 3, highUnctrl: 0, highChal: 2, highIntc: 1 },
+  { id: 0x1E, name: 'Sorimachi', club: 2, position: 0,
+    stamina: 5, shot: 4, pass: 5, dribble: 3, block: 0, tackle: 2, intercept: 1,
+    lowShot: 0, lowPass: 0, lowTrap: 7, lowLet: 16, lowCtrlClr: 20, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 9, highPass: 5, highTrap: 4, highLet: 5, highCtrlClr: 2, highUnctrl: 0, highChal: 2, highIntc: 1 },
+  { id: 0x1F, name: 'Sawada', club: 2, position: 0,
+    stamina: 5, shot: 4, pass: 5, dribble: 2, block: 0, tackle: 2, intercept: 1,
+    lowShot: 0, lowPass: 0, lowTrap: 16, lowLet: 18, lowCtrlClr: 22, lowUnctrl: 8, lowChal: 8, lowIntc: 8,
+    highShot: 18, highPass: 14, highTrap: 14, highLet: 23, highCtrlClr: 12, highUnctrl: 10, highChal: 14, highIntc: 11 },
+  { id: 0x20, name: 'Misugi', club: 3, position: 0,
+    stamina: 14, shot: 14, pass: 23, dribble: 12, block: 10, tackle: 14, intercept: 11,
+    lowShot: 0, lowPass: 0, lowTrap: 15, lowLet: 17, lowCtrlClr: 21, lowUnctrl: 4, lowChal: 4, lowIntc: 4,
+    highShot: 17, highPass: 7, highTrap: 15, highLet: 6, highCtrlClr: 3, highUnctrl: 4, highChal: 5, highIntc: 5 },
+  { id: 0x21, name: 'Wakabayashi', club: 3, position: 1,
+    stamina: 28, pass: 20, catching: 43, punching: 46,
+    vsShot: 26, vsDribble: 26, lowRush: 38, highClaim: 43,
+    shot: 0, dribble: 0, block: 0, tackle: 0, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 0, lowLet: 0, lowCtrlClr: 0, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 0, highPass: 0, highTrap: 0, highLet: 0, highCtrlClr: 0, highUnctrl: 0, highChal: 0, highIntc: 0 },
+  { id: 0x22, name: 'Wakashimazu', club: 3, position: 1,
+    stamina: 0, pass: 10, catching: 8, punching: 8,
+    vsShot: 2, vsDribble: 2, lowRush: 8, highClaim: 8,
+    shot: 0, dribble: 0, block: 0, tackle: 0, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 0, lowLet: 0, lowCtrlClr: 0, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 0, highPass: 0, highTrap: 0, highLet: 0, highCtrlClr: 0, highUnctrl: 0, highChal: 0, highIntc: 0 },
+  { id: 0x23, name: 'Satilst', club: 3, position: 0,
+    stamina: 17, shot: 17, pass: 25, dribble: 14, block: 13, tackle: 15, intercept: 15,
+    lowShot: 0, lowPass: 0, lowTrap: 13, lowLet: 25, lowCtrlClr: 24, lowUnctrl: 9, lowChal: 17, lowIntc: 9,
+    highShot: 27, highPass: 17, highTrap: 17, highLet: 25, highCtrlClr: 14, highUnctrl: 13, highChal: 15, highIntc: 15 },
+  { id: 0x24, name: 'Riverio', club: 3, position: 0,
+    stamina: 17, shot: 14, pass: 25, dribble: 14, block: 13, tackle: 15, intercept: 15,
+    lowShot: 0, lowPass: 0, lowTrap: 16, lowLet: 21, lowCtrlClr: 25, lowUnctrl: 6, lowChal: 6, lowIntc: 5,
+    highShot: 18, highPass: 9, highTrap: 17, highLet: 6, highCtrlClr: 4, highUnctrl: 3, highChal: 5, highIntc: 4 },
+  { id: 0x25, name: 'DaSilva', club: 3, position: 0,
+    stamina: 9, shot: 17, pass: 6, dribble: 4, block: 3, tackle: 5, intercept: 4,
+    lowShot: 0, lowPass: 0, lowTrap: 16, lowLet: 21, lowCtrlClr: 25, lowUnctrl: 6, lowChal: 6, lowIntc: 5,
+    highShot: 18, highPass: 9, highTrap: 17, highLet: 6, highCtrlClr: 4, highUnctrl: 3, highChal: 4, highIntc: 4 },
+  { id: 0x26, name: 'Meon', club: 3, position: 1,
+    stamina: 0, pass: 10, catching: 20, punching: 20,
+    vsShot: 55, vsDribble: 55, lowRush: 45, highClaim: 45,
+    shot: 0, dribble: 0, block: 0, tackle: 0, intercept: 0,
+    lowShot: 0, lowPass: 0, lowTrap: 0, lowLet: 0, lowCtrlClr: 0, lowUnctrl: 0, lowChal: 0, lowIntc: 0,
+    highShot: 0, highPass: 0, highTrap: 0, highLet: 0, highCtrlClr: 0, highUnctrl: 0, highChal: 0, highIntc: 0 },
+  { id: 0x27, name: 'Toninho', club: 3, position: 0,
+    stamina: 17, shot: 17, pass: 23, dribble: 12, block: 11, tackle: 12, intercept: 12,
+    lowShot: 0, lowPass: 0, lowTrap: 14, lowLet: 25, lowCtrlClr: 16, lowUnctrl: 0, lowChal: 0, lowIntc: 10,
+    highShot: 24, highPass: 17, highTrap: 17, highLet: 23, highCtrlClr: 14, highUnctrl: 13, highChal: 14, highIntc: 12 },
+  { id: 0x28, name: 'Nei', club: 3, position: 0,
+    stamina: 17, shot: 17, pass: 23, dribble: 16, block: 15, tackle: 14, intercept: 12,
+    lowShot: 0, lowPass: 0, lowTrap: 19, lowLet: 21, lowCtrlClr: 26, lowUnctrl: 10, lowChal: 10, lowIntc: 7,
+    highShot: 21, highPass: 9, highTrap: 17, highLet: 11, highCtrlClr: 4, highUnctrl: 3, highChal: 4, highIntc: 4 },
+  { id: 0x29, name: 'Zagalo', club: 3, position: 0,
+    stamina: 9, shot: 17, pass: 11, dribble: 4, block: 3, tackle: 4, intercept: 4,
+    lowShot: 0, lowPass: 0, lowTrap: 19, lowLet: 21, lowCtrlClr: 26, lowUnctrl: 10, lowChal: 10, lowIntc: 7,
+    highShot: 21, highPass: 9, highTrap: 17, highLet: 21, highCtrlClr: 4, highUnctrl: 3, highChal: 4, highIntc: 4 },
+  { id: 0x2A, name: 'Dircil', club: 3, position: 0,
+    stamina: 9, shot: 17, pass: 21, dribble: 4, block: 3, tackle: 4, intercept: 4,
+    lowShot: 0, lowPass: 0, lowTrap: 20, lowLet: 36, lowCtrlClr: 24, lowUnctrl: 11, lowChal: 24, lowIntc: 11,
+    highShot: 33, highPass: 19, highTrap: 19, highLet: 30, highCtrlClr: 14, highUnctrl: 13, highChal: 14, highIntc: 14 },
+  { id: 0x2B, name: 'Carlos', club: 3, position: 0,
+    stamina: 19, shot: 19, pass: 30, dribble: 14, block: 13, tackle: 14, intercept: 14,
+    lowShot: 0, lowPass: 0, lowTrap: 19, lowLet: 27, lowCtrlClr: 27, lowUnctrl: 11, lowChal: 19, lowIntc: 11,
+    highShot: 31, highPass: 19, highTrap: 19, highLet: 30, highCtrlClr: 14, highUnctrl: 13, highChal: 14, highIntc: 15 },
+  { id: 0x2C, name: 'Santamaria', club: 3, position: 0,
+    stamina: 19, shot: 19, pass: 30, dribble: 14, block: 13, tackle: 14, intercept: 15,
+    lowShot: 0, lowPass: 0, lowTrap: 19, lowLet: 27, lowCtrlClr: 25, lowUnctrl: 17, lowChal: 19, lowIntc: 21,
+    highShot: 27, highPass: 19, highTrap: 19, highLet: 30, highCtrlClr: 14, highUnctrl: 13, highChal: 14, highIntc: 14 },
+  { id: 0x2D, name: 'Jethrio', club: 3, position: 0,
+    stamina: 19, shot: 19, pass: 30, dribble: 14, block: 13, tackle: 14, intercept: 14,
+    lowShot: 0, lowPass: 0, lowTrap: 15, lowLet: 25, lowCtrlClr: 29, lowUnctrl: 10, lowChal: 10, lowIntc: 5,
+    highShot: 17, highPass: 13, highTrap: 21, highLet: 15, highCtrlClr: 8, highUnctrl: 7, highChal: 8, highIntc: 8 },
 ];
 
 /** 球员颜色（明星 ROM 0x2b821 + idx*5） */
@@ -127,13 +266,13 @@ export const PLAYER_COLOR_TABLE: ReadonlyArray<PlayerColorEntry & { readonly id:
   { id: 0x2D, skin: 0x0f, hair: 0x19, shirt: 0x30, shorts: 0x30 },
 ];
 
-/** GK 能力值（ROM 0x3ae96 + idx*8） */
+/** GK 能力值（ROM 0x3ae96 + gkIdx*8）按 GK 表索引顺序映射 5 名 GK */
 export const GK_STATS_TABLE: ReadonlyArray<PlayerGkEntry & { readonly id: number }> = [
-  { id: 0x2, stamina: 0, pass: 10, catching: 4, punching: 4, vsShot: 0, vsDribble: 0 }, // Lennart
-  { id: 0xF, stamina: 0, pass: 25, catching: 44, punching: 44, vsShot: 30, vsDribble: 30 }, // Morisaki
-  { id: 0x21, stamina: 0, pass: 50, catching: 94, punching: 102, vsShot: 93, vsDribble: 93 }, // Wakabayashi
-  { id: 0x22, stamina: 0, pass: 50, catching: 82, punching: 108, vsShot: 101, vsDribble: 101 }, // Wakashimazu
-  { id: 0x26, stamina: 160, pass: 3, catching: 144, punching: 3, vsShot: 96, vsDribble: 4 }, // Meon
+  { id: 0xF, stamina: 20, pass: 15, catching: 27, punching: 38, vsShot: 19, vsDribble: 19, lowRush: 22, highClaim: 23 }, // Morisaki (GK[0])
+  { id: 0x21, stamina: 28, pass: 20, catching: 43, punching: 46, vsShot: 26, vsDribble: 26, lowRush: 38, highClaim: 43 }, // Wakabayashi (GK[1])
+  { id: 0x2, stamina: 0, pass: 10, catching: 4, punching: 4, vsShot: 0, vsDribble: 0, lowRush: 8, highClaim: 8 }, // Lennart (GK[2])
+  { id: 0x22, stamina: 0, pass: 10, catching: 8, punching: 8, vsShot: 2, vsDribble: 2, lowRush: 8, highClaim: 8 }, // Wakashimazu (GK[3])
+  { id: 0x26, stamina: 0, pass: 10, catching: 20, punching: 20, vsShot: 55, vsDribble: 55, lowRush: 45, highClaim: 45 }, // Meon (GK[4])
 ];
 
 /** 球员头型（ROM 0x28901 + idx，18 个模板） */
