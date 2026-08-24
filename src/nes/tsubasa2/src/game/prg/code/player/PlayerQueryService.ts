@@ -13,7 +13,7 @@ import {
   PLAYER_TABLE,
   findPlayerById,
 } from '../../data/tables/player-table';
-import { TEAM_ROSTER_TABLE } from '../../data/tables/team-table';
+import { TEAMS_FULL as TEAM_ROSTER_TABLE } from '../../data/tables/team-table';
 
 /**
  * 球员档案（声明式表结构，字段与 ROM 0x39fde 的 24 字节结构一一对应）

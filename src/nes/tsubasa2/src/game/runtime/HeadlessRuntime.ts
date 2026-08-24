@@ -106,6 +106,16 @@ export class HeadlessRuntime implements GameRuntime {
     this.controllers = { 1: new Controller(), 2: new Controller() };
     const chr = buildChrRom();
     this.vromTilesByBank1k = chr.vromTilesByBank1k;
+    /** 无头 mapper stub（PPU endScanline / latchAccess / getSpritePatternTile 等需要 no-op 实现） */
+    const mmapStub = {
+      clockIrqCounter: () => {},
+      latchAccess: (_addr: number) => {},
+      canWriteChr: (_addr: number) => false,
+      onSpriteRender: () => {},
+      onBgRender: () => {},
+      getSpritePatternTile: (_isSprite8x8: boolean, _table: number, _tile: number) => 0,
+      getBgPatternTile: (_table: number, _tile: number) => 0,
+    };
     const nes: any = {
       rom: {
         HORIZONTAL_MIRRORING: 1,
@@ -131,7 +141,7 @@ export class HeadlessRuntime implements GameRuntime {
         nmiDotsRemainingInStep: 0,
         requestIrq: () => {},
       },
-      mmap: null,
+      mmap: mmapStub,
       ui: { writeFrame: () => {}, updateStatus: () => {} },
       controllers: this.controllers,
       opts: {},
