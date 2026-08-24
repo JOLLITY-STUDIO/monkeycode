@@ -2,53 +2,83 @@
 (() => {
   // src/game/prg/data/tables/team-roster.ts
   var TEAM_ROSTER_TABLE = [
-    { id: 128, name: "SaoPaulo", type: "player", players: [2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 11], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 129, name: "Nankatsu", type: "player", players: [15, 13, 14, 20, 16, 12, 19, 18, 21, 17, 22], subs: [], formation: "4-4-2", tactic: "Normal" },
-    { id: 130, name: "AsianCup", type: "player", players: [34, 27, 28, 20, 29, 23, 24, 17, 26, 1, 21], subs: [25, 31, 16, 18, 19, 22, 30, 32, 33, 15, 1, 0], formation: "Brazil", tactic: "Counter" },
-    { id: 133, name: "Corinthians", type: "cpu", players: [38, 15, 32, 0, 126, 127, 128, 128, 176, 31, 30], subs: [], formation: "Form9", tactic: "Normal" },
-    { id: 134, name: "Gremio", type: "cpu", players: [39, 11, 40, 15, 33, 0, 129, 130, 131, 131, 145], subs: [], formation: "Form15", tactic: "Pressing" },
-    { id: 135, name: "Palmeiras", type: "cpu", players: [29, 9, 41, 4, 42, 15, 3, 0, 132, 133, 134], subs: [], formation: "Form6", tactic: "Tact8" },
-    { id: 136, name: "Santos", type: "cpu", players: [96, 30, 31, 10, 43, 6, 44, 2, 45, 15, 0], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 137, name: "Flamengo", type: "cpu", players: [135, 136, 137, 137, 145, 31, 29, 4, 46, 9, 47], subs: [], formation: "Form15", tactic: "Normal" },
-    { id: 138, name: "Kunimi", type: "cpu", players: [49, 15, 1, 0, 118, 141, 141, 142, 64, 30, 30], subs: [], formation: "Form4", tactic: "Normal" },
-    { id: 139, name: "Akita", type: "cpu", players: [50, 1, 51, 15, 2, 0, 143, 144, 145, 145, 112], subs: [], formation: "Form15", tactic: "Pressing" },
-    { id: 140, name: "Tatsunami", type: "cpu", players: [28, 15, 0, 0, 146, 147, 148, 148, 112, 31, 31], subs: [], formation: "Form10", tactic: "Normal" },
-    { id: 141, name: "Musashi", type: "cpu", players: [53, 15, 3, 0, 118, 149, 150, 150, 96, 31, 30], subs: [], formation: "Form9", tactic: "Normal" },
-    { id: 142, name: "Furano", type: "cpu", players: [54, 10, 55, 6, 56, 1, 57, 15, 32, 0, 151], subs: [], formation: "Form8", tactic: "Tact9" },
-    { id: 143, name: "Toho", type: "cpu", players: [153, 153, 160, 31, 30, 9, 58, 15, 1, 0, 154], subs: [], formation: "Form11", tactic: "Tact9" },
-    { id: 144, name: "AsRome", type: "cpu", players: [3, 0, 118, 157, 158, 158, 112, 30, 30, 7, 61], subs: [], formation: "Form10", tactic: "Normal" },
-    { id: 145, name: "Uruguay", type: "cpu", players: [62, 6, 63, 1, 64, 15, 1, 0, 118, 119, 120], subs: [], formation: "Form9", tactic: "Tact7" },
-    { id: 146, name: "Hamburg", type: "cpu", players: [48, 31, 27, 9, 65, 11, 66, 6, 67, 10, 68], subs: [], formation: "Form8", tactic: "Normal" },
-    { id: 147, name: "Japan", type: "cpu", players: [70, 7, 71, 2, 72, 4, 73, 3, 74, 5, 75], subs: [], formation: "4-4-2", tactic: "Normal" },
-    { id: 160, name: "WorldCup_00", type: "cpu", players: [168, 169, 170, 170, 160, 0, 0, 15, 19, 0, 171], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 161, name: "WorldCup_01", type: "cpu", players: [173, 173, 160, 31, 31, 15, 0, 0, 174, 175, 176], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 162, name: "WorldCup_02", type: "cpu", players: [112, 31, 28, 9, 79, 10, 80, 15, 35, 0, 177], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 163, name: "WorldCup_03", type: "cpu", players: [178, 178, 160, 31, 31, 15, 33, 0, 118, 179, 180], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 164, name: "WorldCup_04", type: "cpu", players: [160, 31, 31, 11, 81, 1, 82, 15, 0, 0, 181], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 165, name: "WorldCup_05", type: "cpu", players: [183, 183, 161, 31, 29, 9, 83, 4, 84, 15, 18], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 166, name: "WorldCup_06", type: "cpu", players: [118, 184, 185, 185, 160, 31, 30, 9, 85, 1, 86], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 167, name: "WorldCup_07", type: "cpu", players: [17, 0, 186, 187, 188, 188, 112, 31, 30, 9, 87], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 168, name: "WorldCup_08", type: "cpu", players: [88, 15, 32, 0, 189, 190, 191, 191, 112, 31, 28], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 169, name: "WorldCup_09", type: "cpu", players: [89, 15, 33, 0, 118, 192, 193, 193, 160, 31, 30], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 170, name: "WorldCup_10", type: "cpu", players: [90, 1, 91, 15, 16, 0, 194, 195, 196, 196, 113], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 171, name: "WorldCup_11", type: "cpu", players: [29, 9, 92, 4, 93, 15, 2, 0, 197, 198, 198], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 172, name: "WorldCup_12", type: "cpu", players: [176, 31, 26, 11, 94, 9, 95, 10, 96, 8, 97], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 173, name: "WorldCup_13", type: "cpu", players: [98, 15, 2, 0, 118, 199, 199, 199, 112, 30, 31], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 174, name: "WorldCup_14", type: "cpu", players: [99, 9, 100, 8, 101, 5, 102, 10, 103, 7, 104], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 175, name: "WorldCup_15", type: "cpu", players: [105, 15, 3, 0, 118, 119, 120, 121, 97, 30, 40], subs: [], formation: "4-3-3", tactic: "Normal" }
+    // ─────────── 玩家队 (4 个, 真实 ID 从 PRG 0x4A47-0x4A75) ───────────
+    { id: 128, name: "SaoPaulo", type: "player", players: [2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 11], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [] },
+    { id: 129, name: "Nankatsu", type: "player", players: [15, 13, 14, 20, 16, 12, 19, 18, 21, 17, 22], subs: [], formation: "4-4-2", tactic: "Normal", encounterLevels: [] },
+    { id: 130, name: "AsianCup", type: "player", players: [34, 27, 28, 20, 29, 23, 24, 17, 26, 1, 21], subs: [25, 31, 16, 18, 19, 22, 30, 32, 33, 15, 1, 0], formation: "Brazil", tactic: "Counter", encounterLevels: [] },
+    { id: 131, name: "BenchReserve", type: "bench", players: [33, 20, 23, 16, 11, 24, 5, 6, 9, 2, 12], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [] },
+    // ─────────── 巴西联赛 (6 队 × 12 bytes, PRG 0x3BB0A; 关 1-6) ───────────
+    // 全部落在 PRG bank 14 ($0E)。剧情顺序 = PRG 顺序 (stride 12):
+    //   Fluminense (关1) → Corinthians (关2) → Gremio (关3) → Palmeiras (关4) → Santos (关5) → Flamengo (关6 循环)
+    // 修正: 密码选关.MD §一.巴西联赛篇 第1关 = 弗卢米嫩塞, 不是 Flamengo
+    // 修正: doc 漏列 Fluminense (0x84), 实际是 Brazil League 第 1 关
+    { id: 132, name: "Fluminense", type: "cpu", players: [36, 9, 35, 15, 33, 0, 118, 124, 125, 125, 160], subs: [], formation: "Form8", tactic: "Normal", encounterLevels: [1] },
+    { id: 133, name: "Corinthians", type: "cpu", players: [38, 15, 32, 0, 126, 127, 128, 128, 176, 31, 30], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [2] },
+    { id: 134, name: "Gremio", type: "cpu", players: [39, 11, 40, 15, 33, 0, 129, 130, 131, 131, 145], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [3] },
+    { id: 135, name: "Palmeiras", type: "cpu", players: [29, 9, 41, 4, 42, 15, 3, 0, 132, 133, 134], subs: [], formation: "Form6", tactic: "Tact8", encounterLevels: [4] },
+    { id: 136, name: "Santos", type: "cpu", players: [96, 30, 31, 10, 43, 6, 44, 2, 45, 15, 0], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [5] },
+    // 修正: Flamengo 仅关 6 (关 1 是 Fluminense, 不是 Flamengo)
+    { id: 137, name: "Flamengo", type: "cpu", players: [135, 136, 137, 137, 145, 31, 29, 4, 46, 9, 47], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [6] },
+    // ─────────── 日本高中 (6 队 × 12 bytes, PRG 0x3BB62; 关 7-12) ───────────
+    { id: 138, name: "Kunimi", type: "cpu", players: [49, 15, 1, 0, 118, 141, 141, 142, 64, 30, 30], subs: [], formation: "Form4", tactic: "Normal", encounterLevels: [7] },
+    { id: 139, name: "Akita", type: "cpu", players: [50, 1, 51, 15, 2, 0, 143, 144, 145, 145, 112], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [8] },
+    { id: 140, name: "Tatsunami", type: "cpu", players: [28, 15, 0, 0, 146, 147, 148, 148, 112, 31, 31], subs: [], formation: "Form10", tactic: "Normal", encounterLevels: [9] },
+    { id: 141, name: "Musashi", type: "cpu", players: [53, 15, 3, 0, 118, 149, 150, 150, 96, 31, 30], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [10] },
+    { id: 142, name: "Furano", type: "cpu", players: [54, 10, 55, 6, 56, 1, 57, 15, 32, 0, 151], subs: [], formation: "Form8", tactic: "Tact9", encounterLevels: [11] },
+    { id: 143, name: "Toho", type: "cpu", players: [153, 153, 160, 31, 30, 9, 58, 15, 1, 0, 154], subs: [], formation: "Form11", tactic: "Tact9", encounterLevels: [12] },
+    // ─────────── 日本杯 (4 队 × 12 bytes, PRG 0x3BBB4; 关 13-16) ───────────
+    { id: 144, name: "AsRome", type: "cpu", players: [3, 0, 118, 157, 158, 158, 112, 30, 30, 7, 61], subs: [], formation: "Form10", tactic: "Normal", encounterLevels: [13] },
+    { id: 145, name: "Uruguay", type: "cpu", players: [62, 6, 63, 1, 64, 15, 1, 0, 118, 119, 120], subs: [], formation: "Form9", tactic: "Tact7", encounterLevels: [14] },
+    { id: 146, name: "Hamburg", type: "cpu", players: [48, 31, 27, 9, 65, 11, 66, 6, 67, 10, 68], subs: [], formation: "Form8", tactic: "Normal", encounterLevels: [15] },
+    { id: 147, name: "Japan", type: "cpu", players: [70, 7, 71, 2, 72, 4, 73, 3, 74, 5, 75], subs: [], formation: "4-4-2", tactic: "Normal", encounterLevels: [16] },
+    // ─────────── 亚预赛 (6 队, 剧情关 17-22) ───────────
+    // (数据从 doc 推断, doc 列出队伍名但未给具体 PRG offset; 暂用 WorldCup ID 占位)
+    { id: 162, name: "Syria", type: "cpu", players: [112, 31, 28, 9, 79, 10, 80, 15, 35, 0, 177], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [17] },
+    { id: 163, name: "China", type: "cpu", players: [178, 178, 160, 31, 31, 15, 33, 0, 118, 179, 180], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [18] },
+    { id: 164, name: "Iran", type: "cpu", players: [160, 31, 31, 11, 81, 1, 82, 15, 0, 0, 181], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [19] },
+    { id: 165, name: "NorthKorea", type: "cpu", players: [183, 183, 161, 31, 29, 9, 83, 4, 84, 15, 18], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [20] },
+    { id: 166, name: "SaudiArabia", type: "cpu", players: [118, 184, 185, 185, 160, 31, 30, 9, 85, 1, 86], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [21] },
+    { id: 167, name: "Korea", type: "cpu", players: [17, 0, 186, 187, 188, 188, 112, 31, 30, 9, 87], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [22] },
+    // ─────────── 世青赛小组 + 淘汰 (8 + 3 = 11 队, 关 23-33) ───────────
+    { id: 160, name: "Vasco", type: "cpu", players: [168, 169, 170, 170, 160, 0, 0, 15, 19, 0, 171], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [23] },
+    { id: 161, name: "Poland", type: "cpu", players: [173, 173, 160, 31, 31, 15, 0, 0, 174, 175, 176], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [24] },
+    { id: 168, name: "England", type: "cpu", players: [88, 15, 32, 0, 189, 190, 191, 191, 112, 31, 28], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [25] },
+    { id: 169, name: "SovietUnion", type: "cpu", players: [89, 15, 33, 0, 118, 192, 193, 193, 160, 31, 30], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [26] },
+    { id: 170, name: "France", type: "cpu", players: [90, 1, 91, 15, 16, 0, 194, 195, 196, 196, 113], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [27] },
+    { id: 171, name: "Mexico", type: "cpu", players: [29, 9, 92, 4, 93, 15, 2, 0, 197, 198, 198], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [28] },
+    { id: 172, name: "Italy", type: "cpu", players: [176, 31, 26, 11, 94, 9, 95, 10, 96, 8, 97], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [29] },
+    { id: 173, name: "Netherlands", type: "cpu", players: [98, 15, 2, 0, 118, 199, 199, 199, 112, 30, 31], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [30] },
+    { id: 174, name: "Argentina", type: "cpu", players: [99, 9, 100, 8, 101, 5, 102, 10, 103, 7, 104], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [31] },
+    // 关 32 西德 0xAF + 关 33 巴西青年 0xB0 拆开 (数据源自 doc 文件 offset 0x3BCC2/0x3BCDA, stride 2)
+    // 西德 doc 仅给 7 IDs (GK + 6 hint); 其余 4 个待反汇编 PRG 区间补全
+    { id: 175, name: "WestGermany", type: "cpu", players: [105, 15, 3, 0, 118, 119, 120, 121, 97, 30, 40], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [32] },
+    // 关 33 巴西青年决赛 (BrazilYouth)
+    // 默认阵容 = 1st Half @ PRG 0x3BCDA + stride 2
+    // altLineups[0] = 2nd Half (Coinbra 替换 Pos3) @ PRG 0x3DBEC = 0x75
+    // 触发条件: 密码选关.MD §七"决赛巴西队10号库因布拉上半场就在队中"
+    //   ねききみげ ひひびわじ じくとうし じぜび  (Coinbra 上半场首发 super-password)
+    {
+      id: 176,
+      name: "BrazilYouth",
+      type: "cpu",
+      players: [106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116],
+      subs: [],
+      formation: "4-3-3",
+      tactic: "Normal",
+      encounterLevels: [33],
+      altLineups: [
+        // 超级密码阵容: Pos3 (GK? or FW?) 替换为 Coinbra 0x75
+        [106, 107, 117, 109, 110, 111, 112, 113, 114, 115, 116]
+      ]
+    }
   ];
-  var TEAM_TABLE = TEAM_ROSTER_TABLE.map((t) => ({
-    id: t.id,
-    name: t.name,
-    formation: t.players.slice(0, 11),
-    players: [...t.players, ...t.subs]
-  }));
   function findRosterById(id) {
     for (const t of TEAM_ROSTER_TABLE) {
       if (t.id === (id & 255)) return t;
     }
     return null;
   }
+  var TEAM_TABLE = TEAM_ROSTER_TABLE;
 
   // src/game/prg/data/tables/team-table.ts
   var TEAM_TABLE2 = TEAM_TABLE;
@@ -7655,42 +7685,45 @@
     return lines.join("\n");
   }
   function buildAllTeamsTable() {
-    var _a, _b, _c, _d, _e, _f, _g;
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     const ids = listAllTeamIds();
     const rows = [];
     rows.push('<table class="teams"><thead><tr>');
-    rows.push("<th>ID</th><th>Name</th><th>Type</th><th>Formation</th><th>Tactic</th><th>N</th>");
+    rows.push("<th>ID</th><th>Name</th><th>Encounter Lv</th><th>Type</th><th>Formation</th><th>Tactic</th><th>N</th>");
     rows.push("</tr></thead><tbody>");
     for (const id of ids) {
       const team = findTeamById(id);
       const roster = findRosterById2(id);
+      const encounterLv = ((_a = roster == null ? void 0 : roster.encounterLevels) != null ? _a : []).length === 0 ? '<span class="meta">-</span>' : roster.encounterLevels.map((lv) => `Lv${lv}`).join(", ");
       rows.push(`<tr data-team-id="${id}">`);
       rows.push(`<td class="id">0x${id.toString(16).padStart(2, "0").toUpperCase()}</td>`);
-      rows.push(`<td>${(_b = (_a = team == null ? void 0 : team.name) != null ? _a : roster == null ? void 0 : roster.name) != null ? _b : "?"}</td>`);
-      rows.push(`<td>${(_c = roster == null ? void 0 : roster.type) != null ? _c : "cpu"}</td>`);
-      rows.push(`<td>${(_d = roster == null ? void 0 : roster.formation) != null ? _d : "-"}</td>`);
-      rows.push(`<td>${(_e = roster == null ? void 0 : roster.tactic) != null ? _e : "-"}</td>`);
-      rows.push(`<td>${(_g = (_f = roster == null ? void 0 : roster.players) == null ? void 0 : _f.length) != null ? _g : 0}</td>`);
+      rows.push(`<td>${(_c = (_b = team == null ? void 0 : team.name) != null ? _b : roster == null ? void 0 : roster.name) != null ? _c : "?"}</td>`);
+      rows.push(`<td class="enc">${encounterLv}</td>`);
+      rows.push(`<td>${(_d = roster == null ? void 0 : roster.type) != null ? _d : "cpu"}</td>`);
+      rows.push(`<td>${(_e = roster == null ? void 0 : roster.formation) != null ? _e : "-"}</td>`);
+      rows.push(`<td>${(_f = roster == null ? void 0 : roster.tactic) != null ? _f : "-"}</td>`);
+      rows.push(`<td>${(_h = (_g = roster == null ? void 0 : roster.players) == null ? void 0 : _g.length) != null ? _h : 0}</td>`);
       rows.push(`</tr>`);
     }
     rows.push("</tbody></table>");
     return rows.join("");
   }
   function buildRosterTable(teamId) {
-    var _a, _b, _c, _d, _e, _f, _g, _h;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i;
     const team = findTeamById(teamId);
     const roster = findRosterById2(teamId);
     if (!team && !roster) return `<div class="err">Team 0x${teamId.toString(16).padStart(2, "0").toUpperCase()} NOT FOUND</div>`;
     const teamName = ((_b = (_a = team == null ? void 0 : team.name) != null ? _a : roster == null ? void 0 : roster.name) != null ? _b : "?").toUpperCase();
+    const encounterLv = ((_c = roster == null ? void 0 : roster.encounterLevels) != null ? _c : []).map((lv) => `Lv${lv}`).join(", ");
     const rows = [];
     rows.push(`<h2>${teamName} <span class="id">0x${teamId.toString(16).padStart(2, "0").toUpperCase()}</span></h2>`);
-    rows.push(`<div class="meta">Type: ${(_c = roster == null ? void 0 : roster.type) != null ? _c : "cpu"} \xB7 Formation: ${(_d = roster == null ? void 0 : roster.formation) != null ? _d : "-"} \xB7 Tactic: ${(_e = roster == null ? void 0 : roster.tactic) != null ? _e : "-"} \xB7 ${(_g = (_f = roster == null ? void 0 : roster.players) == null ? void 0 : _f.length) != null ? _g : 0} players</div>`);
+    rows.push(`<div class="meta">Appears at: <b>${encounterLv}</b> \xB7 Type: ${(_d = roster == null ? void 0 : roster.type) != null ? _d : "cpu"} \xB7 Formation: ${(_e = roster == null ? void 0 : roster.formation) != null ? _e : "-"} \xB7 Tactic: ${(_f = roster == null ? void 0 : roster.tactic) != null ? _f : "-"} \xB7 ${(_h = (_g = roster == null ? void 0 : roster.players) == null ? void 0 : _g.length) != null ? _h : 0} players</div>`);
     rows.push('<table class="roster"><thead><tr>');
     rows.push("<th>#</th><th>ID</th><th>Name (EN)</th><th>\u540D\u524D (JA)</th><th>\u540D\u7A31 (ZH)</th><th>POS</th><th>SHOT</th><th>PASS</th><th>DRB</th><th>BLK</th><th>TKL</th><th>ITC</th><th>STM</th>");
     rows.push("</tr></thead><tbody>");
-    const players = (_h = roster == null ? void 0 : roster.players) != null ? _h : [];
+    const players = (_i = roster == null ? void 0 : roster.players) != null ? _i : [];
     players.forEach((pid, i) => {
-      var _a2, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i, _j, _k;
+      var _a2, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j, _k;
       const p = findPlayerById(pid);
       const pos = p ? ((_a2 = p.position) != null ? _a2 : 0) === 1 ? "GK" : "FW" : "-";
       const np = PLAYER_NAMES_JP[pid];
@@ -7699,7 +7732,7 @@
         rows.push(`<td>${(_b2 = p.name) != null ? _b2 : "?"}</td><td>${(_c2 = np == null ? void 0 : np.ja) != null ? _c2 : "?"}</td><td>${(_d2 = np == null ? void 0 : np.zh) != null ? _d2 : "?"}</td>`);
         rows.push(`<td class="pos-${pos.toLowerCase()}">${pos}</td>`);
         rows.push(`<td>${(_e2 = p.shot) != null ? _e2 : 0}</td><td>${(_f2 = p.pass) != null ? _f2 : 0}</td><td>${(_g2 = p.dribble) != null ? _g2 : 0}</td>`);
-        rows.push(`<td>${(_h2 = p.block) != null ? _h2 : 0}</td><td>${(_i = p.tackle) != null ? _i : 0}</td><td>${(_j = p.intercept) != null ? _j : 0}</td><td>${(_k = p.stamina) != null ? _k : 0}</td>`);
+        rows.push(`<td>${(_h2 = p.block) != null ? _h2 : 0}</td><td>${(_i2 = p.tackle) != null ? _i2 : 0}</td><td>${(_j = p.intercept) != null ? _j : 0}</td><td>${(_k = p.stamina) != null ? _k : 0}</td>`);
       } else {
         rows.push(`<td>???</td><td>???</td><td>???</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`);
       }

@@ -39,7 +39,7 @@
 export interface TeamRosterEntry {
   readonly id: number;
   readonly name: string;
-  readonly type: 'player' | 'cpu';
+  readonly type: 'player' | 'cpu' | 'bench';
   readonly players: ReadonlyArray<number>;
   readonly subs: ReadonlyArray<number>;
   readonly formation: string;
@@ -71,7 +71,7 @@ export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
 
   { id: 0x82, name: 'AsianCup',     type: 'player', players: [0x22, 0x1B, 0x1C, 0x14, 0x1D, 0x17, 0x18, 0x11, 0x1A, 0x01, 0x15], subs: [0x19, 0x1F, 0x10, 0x12, 0x13, 0x16, 0x1E, 0x20, 0x21, 0x0F, 0x01, 0x00], formation: 'Brazil', tactic: 'Counter',   encounterLevels: [], },
 
-  { id: 0x83, name: 'Exhibition',   type: 'cpu',    players: [0x21, 0x14, 0x17, 0x10, 0x0B, 0x18, 0x05, 0x06, 0x09, 0x02, 0x0C], subs: [],                                                                                 formation: '4-3-3', tactic: 'Normal',   encounterLevels: [], },
+  { id: 0x83, name: 'BenchReserve', type: 'bench',  players: [0x21, 0x14, 0x17, 0x10, 0x0B, 0x18, 0x05, 0x06, 0x09, 0x02, 0x0C], subs: [],                                                                                 formation: '4-3-3', tactic: 'Normal',   encounterLevels: [],  },
 
   // ─────────── 巴西联赛 (6 队 × 12 bytes, PRG 0x3BB0A; 关 1-6) ───────────
   // 全部落在 PRG bank 14 ($0E)。剧情顺序 = PRG 顺序 (stride 12):
