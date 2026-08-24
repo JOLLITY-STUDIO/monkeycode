@@ -7612,17 +7612,20 @@
     const detailEl = document.getElementById("team-detail");
     if (listEl) {
       const ids = listAllTeamIds();
-      listEl.innerHTML = API_ALL_TEAMS().split("\n").map((line) => `<div class="line">${line.replace(/ /g, "&nbsp;")}</div>`).join("");
-      listEl.querySelectorAll("div.line").forEach((div, idx) => {
-        if (idx < 2) return;
-        const id = ids[idx - 2];
-        if (id == null) return;
+      const lines = API_ALL_TEAMS().split("\n");
+      listEl.innerHTML = lines.map((line) => `<div class="line">${line.replace(/ /g, "&nbsp;")}</div>`).join("");
+      listEl.querySelectorAll("div.line").forEach((div) => {
+        const text = div.textContent || "";
+        const m = text.match(/^0x([0-9A-Fa-f]{2})\b/);
+        if (!m) return;
+        const id = parseInt(m[1], 16);
+        if (!ids.includes(id)) return;
         const el = div;
         el.classList.add("clickable");
         el.dataset.teamId = id.toString();
         el.onclick = () => {
           if (detailEl) detailEl.innerHTML = API_TEAM_DETAIL(id).split("\n").map((l) => `<div class="line">${l.replace(/ /g, "&nbsp;")}</div>`).join("");
-          listEl.querySelectorAll("div.line").forEach((d) => d.classList.remove("selected"));
+          listEl.querySelectorAll("div.line.selected").forEach((d) => d.classList.remove("selected"));
           el.classList.add("selected");
         };
       });

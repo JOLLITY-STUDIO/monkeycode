@@ -128,15 +128,17 @@ if (typeof document !== 'undefined') {
   const detailEl = document.getElementById('team-detail');
   if (listEl) {
     const ids = listAllTeamIds();
-    listEl.innerHTML = API_ALL_TEAMS()
-      .split('\n')
+    const lines = API_ALL_TEAMS().split('\n');
+    listEl.innerHTML = lines
       .map(line => `<div class="line">${line.replace(/ /g, '&nbsp;')}</div>`)
       .join('');
-    // 让每行 team ID 可点击
-    listEl.querySelectorAll('div.line').forEach((div, idx) => {
-      if (idx < 2) return; // 跳过 header
-      const id = ids[idx - 2];
-      if (id == null) return;
+    // 仅 "0xNN  ..." 开头的行才是 team 行,绑定点击
+    listEl.querySelectorAll('div.line').forEach((div) => {
+      const text = div.textContent || '';
+      const m = text.match(/^0x([0-9A-Fa-f]{2})\b/);
+      if (!m) return; // 非 team 行
+      const id = parseInt(m[1], 16);
+      if (!ids.includes(id)) return;
       const el = div as HTMLDivElement;
       el.classList.add('clickable');
       el.dataset.teamId = id.toString();
@@ -145,7 +147,7 @@ if (typeof document !== 'undefined') {
           .split('\n')
           .map(l => `<div class="line">${l.replace(/ /g, '&nbsp;')}</div>`)
           .join('');
-        listEl.querySelectorAll('div.line').forEach(d => d.classList.remove('selected'));
+        listEl.querySelectorAll('div.line.selected').forEach(d => d.classList.remove('selected'));
         el.classList.add('selected');
       };
     });
