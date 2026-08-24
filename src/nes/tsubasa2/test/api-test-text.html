@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>天使之翼2 — 文本 API 测试台（无 Canvas）</title>
+  <style>
+    body {
+      font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
+      background: #0a0a1a;
+      color: #e0e0e0;
+      margin: 0;
+      padding: 16px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+    h1 { color: #4fc3f7; font-size: 16px; margin: 0 0 8px 0; }
+    p { color: #888; font-size: 12px; margin: 0 0 12px 0; }
+    .summary {
+      padding: 8px 12px;
+      background: #1a1a2a;
+      border-left: 4px solid #4fc3f7;
+      margin: 12px 0;
+      font-size: 13px;
+      font-weight: bold;
+    }
+    pre {
+      background: #050510;
+      color: #e0e0e0;
+      padding: 16px;
+      border: 1px solid #333;
+      border-radius: 4px;
+      white-space: pre;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.4;
+      letter-spacing: 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>天使之翼2 — 文本 API 测试台（纯文本，无 Canvas）</h1>
+  <p>每个 Service 当 URL 风格端点；纯文本表格输出，浏览器直接看清晰可读。</p>
+  <div class="summary" id="summary">运行中...</div>
+  <pre id="output"></pre>
+  <script src="api-test-text-bundle.cjs"></script>
+</body>
+</html>
