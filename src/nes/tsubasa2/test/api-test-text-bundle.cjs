@@ -1676,7 +1676,22 @@
     ids.forEach((pid, i) => {
       var _a2, _b2, _c2, _d2, _e2, _f2, _g, _h, _i;
       const p = findPlayerById(pid);
-      if (!p) return;
+      if (!p) {
+        lines.push(row(
+          { s: (i + 1).toString(), w: 3 },
+          { s: "0x" + pid.toString(16).padStart(2, "0").toUpperCase(), w: 6 },
+          { s: "???", w: 14 },
+          { s: "-", w: 4 },
+          { s: "-", w: 4, a: "right" },
+          { s: "-", w: 4, a: "right" },
+          { s: "-", w: 4, a: "right" },
+          { s: "-", w: 4, a: "right" },
+          { s: "-", w: 4, a: "right" },
+          { s: "-", w: 4, a: "right" },
+          { s: "-", w: 4, a: "right" }
+        ));
+        return;
+      }
       const pos = ((_a2 = p.position) != null ? _a2 : 0) === 1 ? "GK" : "FW";
       lines.push(row(
         { s: (i + 1).toString(), w: 3 },

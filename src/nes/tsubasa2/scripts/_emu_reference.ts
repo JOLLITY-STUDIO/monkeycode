@@ -174,8 +174,8 @@ for (const target of FRAMES) {
   }
   fs.writeFileSync(path.join(frameDir, 'pt.json'), JSON.stringify(ptJson));
 
-  // 4) Nametables — 用 PPU 内部 NT 字节 + 当前 ptTile 重建（不走 bgbuffer，避免时序不一致）
-  const ntRgba = renderAllNameTablesNoBg(ppu, rom);
+  // 4) Nametables — 按每行 scanline 当时的 banks 取 PT 重建（不用 bgbuffer 也不用最终 PT 缓存）
+  const ntRgba = renderAllNameTablesNoBg(ppu, rom, switches);
   for (let i = 0; i < 4; i++) {
     fs.writeFileSync(path.join(frameDir, `nt${i}.png`), encodePng(256, 240, rgbaFromData(ntRgba[i], 256, 240)));
   }
@@ -236,12 +236,44 @@ for (const target of FRAMES) {
 
 console.log(`[emu-ref] done. PNG/JSON at ${OUT_DIR}`);
 
-// ── 自实现 NT renderer：直接用 PPU 内部 nameTable[i] + ptTile + imgPalette，
-//    不走 bgbuffer（避免跟 screen buffer 时序错位）
-function renderAllNameTablesNoBg(ppu: any, rom: any): Uint32Array[] {
+// ── 自实现 NT renderer：按每条 scanline 选当时的 PT 视图（用 chrSwitchLog 重建）
+//    不走 bgbuffer，且不是用最终 PT 缓存，而是按 ty (scanline / 8) 选对应的 slotBanks
+function renderAllNameTablesNoBg(ppu: any, rom: any, switches: any[]): Uint32Array[] {
   const W = 256, H = 240, COLS = 32, ROWS = 30;
-  const bgTableBase = ppu.regS === 0 ? 0 : 256;
   const pal = ppu.imgPalette;
+  const vromTile: any = rom && rom.vromTile;
+  // 重建每 scanline 的 slot banks
+  const initialBanks = new Uint8Array(8);
+  // 尝试用当前 mmap.chrBanks 作为 initial；找不到就用 0
+  if (rom && rom.chrBanks) {
+    for (let i = 0; i < 8; i++) initialBanks[i] = rom.chrBanks[i] | 0;
+  }
+  const mapByScan = buildChrBankMapByScanline(switches, initialBanks);
+  // 缓存：scanline → slotBanks
+  const scanBankCache: Uint8Array[] = new Array(240);
+  for (let y = 0; y < 240; y++) {
+    // 找 y 之前最近的 scanline 切换，沿用 bank map
+    let best: Uint8Array = initialBanks;
+    for (const [sc, banks] of mapByScan) {
+      if (sc <= y) best = banks; else break;
+    }
+    scanBankCache[y] = best;
+  }
+  // 取 tile helper：按当前 y 用 slotBanks[slot] 查 vromTile
+  const bgTableBase = ppu.regS === 0 ? 0 : 256;
+  const fetchTile = (tileIdx: number, yScan: number): Uint8Array | null => {
+    const slot = bgTableBase === 0 ? (tileIdx >> 6) : (4 + (tileIdx >> 6));
+    const localIdx = tileIdx & 63;
+    const slotBanks = scanBankCache[yScan] || initialBanks;
+    const bank1k = slotBanks[slot];
+    if (bank1k == null) return null;
+    const bank4k = (bank1k / 4) | 0;
+    const off = (bank1k % 4) * 64 + localIdx;
+    if (!vromTile || !vromTile[bank4k]) return null;
+    const t = vromTile[bank4k][off];
+    return (t && t.pix) ? t.pix : null;
+  };
+
   const out: Uint32Array[] = [];
   for (let ntIdx = 0; ntIdx < 4; ntIdx++) {
     const buf = new Uint32Array(W * H);
@@ -251,8 +283,9 @@ function renderAllNameTablesNoBg(ppu: any, rom: any): Uint32Array[] {
       for (let tx = 0; tx < COLS; tx++) {
         const tileIdx = nt.tile[ty * COLS + tx] | 0;
         const attrVal = nt.attrib[ty * COLS + tx] | 0;
-        const pt = ppu.ptTile[bgTableBase + tileIdx];
-        const pix = pt && pt.pix ? pt.pix : null;
+        // NT 内部的 y 坐标（不受滚动影响）= ty * 8
+        const yScan = ty * 8;
+        const pix = fetchTile(tileIdx, yScan);
         const baseX = tx * 8, baseY = ty * 8;
         if (pix) {
           for (let py = 0; py < 8; py++) {
@@ -263,7 +296,6 @@ function renderAllNameTablesNoBg(ppu: any, rom: any): Uint32Array[] {
             }
           }
         } else {
-          // 无 tile 数据：填背景色
           for (let py = 0; py < 8; py++) {
             for (let px = 0; px < 8; px++) {
               buf[(baseY + py) * W + baseX + px] = pal[0];

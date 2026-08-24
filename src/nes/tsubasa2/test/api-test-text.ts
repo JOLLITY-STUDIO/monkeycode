@@ -160,7 +160,22 @@ function API_TEAM(teamId: number): string {
   lines.push(sep2);
   ids.forEach((pid, i) => {
     const p: any = findPlayerById(pid);
-    if (!p) return;
+    if (!p) {
+      lines.push(row(
+        { s: (i + 1).toString(), w: 3 },
+        { s: '0x' + pid.toString(16).padStart(2, '0').toUpperCase(), w: 6 },
+        { s: '???', w: 14 },
+        { s: '-', w: 4 },
+        { s: '-', w: 4, a: 'right' },
+        { s: '-', w: 4, a: 'right' },
+        { s: '-', w: 4, a: 'right' },
+        { s: '-', w: 4, a: 'right' },
+        { s: '-', w: 4, a: 'right' },
+        { s: '-', w: 4, a: 'right' },
+        { s: '-', w: 4, a: 'right' },
+      ));
+      return;
+    }
     const pos = (p.position ?? 0) === 1 ? 'GK' : 'FW';
     lines.push(row(
       { s: (i + 1).toString(), w: 3 },

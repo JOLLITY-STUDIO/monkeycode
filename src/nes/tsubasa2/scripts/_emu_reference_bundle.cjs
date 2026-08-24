@@ -39,6 +39,7 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 var pattern_table_viewer_exports = {};
 __export(pattern_table_viewer_exports, {
   buildChrBankMapByScanline: () => buildChrBankMapByScanline,
+  buildFinalChrBankMap: () => buildFinalChrBankMap,
   drainChrSwitchLog: () => drainChrSwitchLog,
   generatePTDataText: () => generatePTDataText,
   getChrSwitchesInRange: () => getChrSwitchesInRange,
@@ -108,6 +109,13 @@ function drainChrSwitchLog() {
 }
 function getChrSwitchesInRange(scanStart, scanEnd) {
   return chrSwitchLog.filter((r) => r.scanline >= scanStart && r.scanline < scanEnd);
+}
+function buildFinalChrBankMap(switches, initialBanks) {
+  const banks = new Uint8Array(initialBanks);
+  for (const r of switches) {
+    banks[r.slot] = r.bank1k & 255;
+  }
+  return banks;
 }
 function buildChrBankMapByScanline(switches, initialBanks) {
   const out = /* @__PURE__ */ new Map();
@@ -8485,7 +8493,7 @@ for (const target of FRAMES) {
     ptJson.push({ idx: i, plane0, plane1 });
   }
   fs2.writeFileSync(path.join(frameDir, "pt.json"), JSON.stringify(ptJson));
-  const ntRgba = renderAllNameTablesNoBg(ppu, rom);
+  const ntRgba = renderAllNameTablesNoBg(ppu, rom, switches);
   for (let i = 0; i < 4; i++) {
     fs2.writeFileSync(path.join(frameDir, `nt${i}.png`), encodePng(256, 240, rgbaFromData(ntRgba[i], 256, 240)));
   }
@@ -8534,10 +8542,37 @@ for (const target of FRAMES) {
   console.log(`[emu-ref] frame=${String(target).padStart(3)}  PT[0..7]=[${chrMap.join(",")}]  PRG@8000=${prgMap[32768]}`);
 }
 console.log(`[emu-ref] done. PNG/JSON at ${OUT_DIR}`);
-function renderAllNameTablesNoBg(ppu2, rom2) {
+function renderAllNameTablesNoBg(ppu2, rom2, switches) {
   const W = 256, H = 240, COLS = 32, ROWS = 30;
-  const bgTableBase = ppu2.regS === 0 ? 0 : 256;
   const pal = ppu2.imgPalette;
+  const vromTile = rom2 && rom2.vromTile;
+  const initialBanks = new Uint8Array(8);
+  if (rom2 && rom2.chrBanks) {
+    for (let i = 0; i < 8; i++) initialBanks[i] = rom2.chrBanks[i] | 0;
+  }
+  const mapByScan = buildChrBankMapByScanline(switches, initialBanks);
+  const scanBankCache = new Array(240);
+  for (let y = 0; y < 240; y++) {
+    let best = initialBanks;
+    for (const [sc, banks] of mapByScan) {
+      if (sc <= y) best = banks;
+      else break;
+    }
+    scanBankCache[y] = best;
+  }
+  const bgTableBase = ppu2.regS === 0 ? 0 : 256;
+  const fetchTile = (tileIdx, yScan) => {
+    const slot = bgTableBase === 0 ? tileIdx >> 6 : 4 + (tileIdx >> 6);
+    const localIdx = tileIdx & 63;
+    const slotBanks = scanBankCache[yScan] || initialBanks;
+    const bank1k = slotBanks[slot];
+    if (bank1k == null) return null;
+    const bank4k = bank1k / 4 | 0;
+    const off = bank1k % 4 * 64 + localIdx;
+    if (!vromTile || !vromTile[bank4k]) return null;
+    const t = vromTile[bank4k][off];
+    return t && t.pix ? t.pix : null;
+  };
   const out = [];
   for (let ntIdx = 0; ntIdx < 4; ntIdx++) {
     const buf = new Uint32Array(W * H);
@@ -8550,8 +8585,8 @@ function renderAllNameTablesNoBg(ppu2, rom2) {
       for (let tx = 0; tx < COLS; tx++) {
         const tileIdx = nt.tile[ty * COLS + tx] | 0;
         const attrVal = nt.attrib[ty * COLS + tx] | 0;
-        const pt = ppu2.ptTile[bgTableBase + tileIdx];
-        const pix = pt && pt.pix ? pt.pix : null;
+        const yScan = ty * 8;
+        const pix = fetchTile(tileIdx, yScan);
         const baseX = tx * 8, baseY = ty * 8;
         if (pix) {
           for (let py = 0; py < 8; py++) {
