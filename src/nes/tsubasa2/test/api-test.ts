@@ -1,30 +1,22 @@
 /**
  * 天使之翼2 独立 API 测试页（api-test.html 入口）
  *
- * 目标：把每个 Service 当 URL 风格 API 端点独立调用 + Canvas 渲染。
+ * 把每个 Service 当 URL 风格 API 端点独立调用 + Canvas 渲染。
  * 不启动 HeadlessRuntime（不跑游戏逻辑），只查询数据表 + 渲染到 NES 256×240 画布。
  *
  * 跑法：
- *   - 浏览器打开 test/api-test.html → 4 个 Tab（球员列表 / 单个球员 / 球队 / 等级升级）
+ *   - 浏览器打开 test/api-test.html → 4 个 Canvas 视图
  *   - Node: tsc 编译后 require api-test-bundle.cjs
  */
 import { DataStore } from '../src/game/prg/data/store/DataStore';
 import { PlayerQueryService } from '../src/game/prg/code/player/PlayerQueryService';
-import {
-  findPlayerById, findPlayersByTeam, findPlayerNameById, PLAYER_TABLE,
-} from '../src/game/prg/data/tables/player-table';
-import {
-  findLevelByExp, findLevelById, LEVEL_UP_TABLE,
-} from '../src/game/prg/data/tables/levelup-table';
-import {
-  findTeamById, findTeamNameById, findRosterById, TEAMS_FULL,
-} from '../src/game/prg/data/tables/team-table';
-import {
-  findSkillByMoveId, findSkillsByPlayer, SKILL_TABLE,
-} from '../src/game/prg/data/tables/skill-table';
+import { findPlayerById, findPlayersByTeam, findPlayerNameById, PLAYER_TABLE } from '../src/game/prg/data/tables/player-table';
+import { findLevelByExp, findLevelById, LEVEL_UP_TABLE } from '../src/game/prg/data/tables/levelup-table';
+import { findTeamById, findTeamNameById, findRosterById, TEAMS_FULL } from '../src/game/prg/data/tables/team-table';
+import { findSkillByMoveId, findSkillsByPlayer, SKILL_TABLE } from '../src/game/prg/data/tables/skill-table';
 import { getMatchConfig, MATCH_CONFIG_TABLE } from '../src/game/prg/data/tables/match-config-table';
 
-// ─────────────────────────── NES 调色板（标准 NES 64 色） ───────────────────────────
+// ─────────────────────────── NES 调色板 ───────────────────────────
 
 const NES_PALETTE: ReadonlyArray<readonly [number, number, number]> = [
   [0x54, 0x54, 0x54], [0x00, 0x1E, 0x74], [0x08, 0x10, 0x90], [0x30, 0x00, 0x88],
@@ -49,7 +41,20 @@ const C = (idx: number): string => {
   return `rgb(${r},${g},${b})`;
 };
 
-// NES 字体（简化 5×7 ASCII 字符表）
+// 调色板便捷
+const BG_DARK = C(0x00);
+const PANEL_BG = C(0x0F);
+const TEXT_BRIGHT = C(0x30);
+const TEXT_DIM = C(0x2C);
+const ACCENT_BLUE = C(0x21);
+const ACCENT_RED = C(0x16);
+const ACCENT_GREEN = C(0x1A);
+const BAR_FILL = C(0x28);
+const BAR_BG = C(0x0F);
+
+// ─────────────────────────── 大号字体 (3x5 像素, 紧凑) ───────────────────────────
+
+// 用 5x7 字体但 scale=3 = 15x21 像素每字符，更清晰
 const FONT_W = 5;
 const FONT_H = 7;
 const FONT: Record<string, number[]> = {
@@ -75,6 +80,10 @@ const FONT: Record<string, number[]> = {
   '.': [0x00, 0x40, 0x40, 0x00, 0x00], '-': [0x08, 0x08, 0x08, 0x08, 0x08],
   '/': [0x20, 0x10, 0x08, 0x04, 0x02], '(': [0x00, 0x1C, 0x22, 0x41, 0x00],
   ')': [0x00, 0x41, 0x22, 0x1C, 0x00], '#': [0x14, 0x7F, 0x14, 0x7F, 0x14],
+  '!': [0x00, 0x00, 0x5F, 0x00, 0x00], '+': [0x08, 0x08, 0x3E, 0x08, 0x08],
+  '*': [0x08, 0x2A, 0x1C, 0x2A, 0x08], '?': [0x02, 0x01, 0x51, 0x09, 0x06],
+  '<': [0x08, 0x14, 0x22, 0x41, 0x00], '>': [0x00, 0x41, 0x22, 0x14, 0x08],
+  '=': [0x14, 0x14, 0x14, 0x14, 0x14], ',': [0x00, 0x50, 0x30, 0x00, 0x00],
 };
 function drawChar(ctx: CanvasRenderingContext2D, ch: string, x: number, y: number, scale: number, color: string): void {
   const bits = FONT[ch.toUpperCase()] || FONT[' '];
@@ -95,6 +104,13 @@ function drawText(ctx: CanvasRenderingContext2D, text: string, x: number, y: num
     cursor += (FONT_W + 1) * scale;
   }
 }
+function drawTextBG(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, scale: number, fg: string, bg: string): void {
+  const w = text.length * (FONT_W + 1) * scale - scale;
+  const h = FONT_H * scale;
+  ctx.fillStyle = bg;
+  ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
+  drawText(ctx, text, x, y, scale, fg);
+}
 
 // ─────────────────────────── 初始化 ───────────────────────────
 
@@ -107,222 +123,302 @@ function assert(name: string, cond: boolean): void {
   if (cond) pass++; else fail++;
 }
 
-// ─────────────────────────── 视图 1: 球员列表（PLAYER_TABLE） ───────────────────────────
+// ─────────────────────────── 视图 1: 球员列表 ───────────────────────────
 
 export function renderPlayerList(ctx: CanvasRenderingContext2D): void {
-  // 背景
-  ctx.fillStyle = C(0x20);  // 浅灰
+  // 黑色背景
+  ctx.fillStyle = BG_DARK;
   ctx.fillRect(0, 0, 256, 240);
+
+  // 顶部面板（黄色）
+  ctx.fillStyle = C(0x08);
+  ctx.fillRect(0, 0, 256, 28);
 
   // 标题
-  drawText(ctx, 'PLAYER LIST', 60, 8, 1, C(0x30));
-  drawText(ctx, 'ID NAME         STM SH PAS DRB', 8, 24, 1, C(0x21));
-  // 列表（每行 11px，25 行）
-  for (let i = 0; i < Math.min(25, PLAYER_TABLE.length); i++) {
+  drawText(ctx, 'PLAYER LIST', 76, 10, 2, TEXT_BRIGHT);
+
+  // 副标题
+  drawText(ctx, 'ID  NAME       STM PAS SH DRB', 8, 36, 1, TEXT_DIM);
+
+  // 分隔线
+  ctx.fillStyle = TEXT_DIM;
+  ctx.fillRect(8, 46, 240, 1);
+
+  // 列表（每行 8 像素）
+  for (let i = 0; i < Math.min(20, PLAYER_TABLE.length); i++) {
     const p = PLAYER_TABLE[i];
-    const y = 36 + i * 8;
-    drawText(ctx, `${p.id.toString(16).padStart(2, '0')}`, 8, y, 1, C(0x30));
-    drawText(ctx, p.name.substring(0, 9).padEnd(9, ' '), 32, y, 1, C(0x2C));
-    drawText(ctx, p.stamina.toString().padStart(3, ' '), 112, y, 1, C(0x28));
-    drawText(ctx, p.shot.toString().padStart(2, ' '), 144, y, 1, C(0x28));
-    drawText(ctx, p.pass.toString().padStart(2, ' '), 168, y, 1, C(0x28));
-    drawText(ctx, p.dribble.toString().padStart(2, ' '), 192, y, 1, C(0x28));
+    const y = 50 + i * 9;
+    const idStr = p.id.toString(16).padStart(2, '0').toUpperCase();
+    drawText(ctx, idStr, 8, y, 1, ACCENT_GREEN);
+    drawText(ctx, p.name.substring(0, 9).padEnd(9, ' '), 32, y, 1, TEXT_BRIGHT);
+    drawText(ctx, p.stamina.toString().padStart(2, ' '), 100, y, 1, ACCENT_RED);
+    drawText(ctx, p.pass.toString().padStart(2, ' '), 132, y, 1, ACCENT_BLUE);
+    drawText(ctx, p.shot.toString().padStart(2, ' '), 164, y, 1, ACCENT_BLUE);
+    drawText(ctx, p.dribble.toString().padStart(2, ' '), 196, y, 1, ACCENT_BLUE);
   }
+
   // 底部信息
-  drawText(ctx, `TOTAL: ${PLAYER_TABLE.length}`, 8, 220, 1, C(0x30));
-  drawText(ctx, `TEAMS: ${TEAMS_FULL.length}`, 152, 220, 1, C(0x30));
+  ctx.fillStyle = C(0x08);
+  ctx.fillRect(0, 220, 256, 20);
+  drawText(ctx, `TOTAL:${PLAYER_TABLE.length} PLAYERS`, 8, 226, 1, TEXT_BRIGHT);
+  drawText(ctx, `TEAMS:${TEAMS_FULL.length}`, 168, 226, 1, TEXT_DIM);
 }
 
-// ─────────────────────────── 视图 2: 单个球员（findPlayerById 0x01 = Tsubasa） ───────────────────────────
+// ─────────────────────────── 视图 2: 单个球员 ───────────────────────────
 
 export function renderPlayerDetail(ctx: CanvasRenderingContext2D): void {
-  ctx.fillStyle = C(0x12);  // 深蓝
+  ctx.fillStyle = BG_DARK;
   ctx.fillRect(0, 0, 256, 240);
 
-  // 头部：球员卡
+  // 头部（蓝色）
+  ctx.fillStyle = C(0x11);
+  ctx.fillRect(0, 0, 256, 36);
+  drawText(ctx, 'ID:01  TSUBASA', 8, 6, 1, TEXT_DIM);
+  drawText(ctx, 'FWD', 200, 6, 1, ACCENT_GREEN);
+
   const p = findPlayerById(0x01);
   if (!p) return;
+  // 大名字
+  drawText(ctx, p.name.toUpperCase(), 16, 16, 2, TEXT_BRIGHT);
 
-  drawText(ctx, 'PLAYER PROFILE', 60, 8, 1, C(0x30));
-  drawText(ctx, `ID:0x${p.id.toString(16).padStart(2, '0').toUpperCase()}`, 8, 24, 1, C(0x30));
-  drawText(ctx, p.name.toUpperCase(), 96, 24, 2, C(0x30));
-  drawText(ctx, `CLUB:${p.club}  POS:${p.position === 1 ? 'GK' : 'FW'}`, 8, 48, 1, C(0x2C));
-
-  // 能力条（6 项）
+  // 6 项能力条（每行 14 像素高）
   const stats = [
     { name: 'SHOT', v: p.shot }, { name: 'DRIB', v: p.dribble },
     { name: 'PASS', v: p.pass }, { name: 'TACK', v: p.tackle },
-    { name: 'BLK', v: p.block }, { name: 'INT', v: p.intercept },
+    { name: 'BLOC', v: p.block }, { name: 'INT ', v: p.intercept },
   ];
   for (let i = 0; i < stats.length; i++) {
-    const y = 72 + i * 16;
+    const y = 48 + i * 18;
     const s = stats[i];
-    drawText(ctx, s.name, 8, y, 1, C(0x30));
-    // 进度条 (16 tile 宽)
+    drawText(ctx, s.name, 8, y, 1, TEXT_BRIGHT);
+    // 进度条（最大 25）
     const max = 30;
-    const fill = Math.min(16, Math.round((s.v / max) * 16));
-    for (let j = 0; j < 16; j++) {
-      ctx.fillStyle = j < fill ? C(0x2A) : C(0x00);
-      ctx.fillRect(48 + j * 6, y, 5, 7);
-    }
-    drawText(ctx, s.v.toString().padStart(2, ' '), 152, y, 1, C(0x30));
+    const fill = Math.min(15, Math.round((s.v / max) * 15));
+    // 背景条
+    ctx.fillStyle = BAR_BG;
+    ctx.fillRect(56, y, 15 * 8, 8);
+    // 填充
+    ctx.fillStyle = s.v >= 20 ? ACCENT_RED : s.v >= 10 ? ACCENT_BLUE : BAR_FILL;
+    ctx.fillRect(56, y, fill * 8, 8);
+    // 边框
+    ctx.strokeStyle = TEXT_DIM;
+    ctx.strokeRect(56, y, 15 * 8, 8);
+    // 数字
+    drawText(ctx, s.v.toString().padStart(2, '0'), 184, y, 1, TEXT_BRIGHT);
   }
+
   // 体力条（大）
-  drawText(ctx, 'STAM', 8, 180, 1, C(0x30));
-  const stamFill = Math.min(16, Math.round((p.stamina / 30) * 16));
-  for (let j = 0; j < 16; j++) {
-    ctx.fillStyle = j < stamFill ? C(0x16) : C(0x00);
-    ctx.fillRect(48 + j * 6, 180, 5, 7);
-  }
-  drawText(ctx, p.stamina.toString().padStart(2, ' '), 152, 180, 1, C(0x30));
-  drawText(ctx, `SKILLS:${findSkillsByPlayer(p.id).length}`, 8, 200, 1, C(0x2C));
-  drawText(ctx, 'API:GET /api/player/0x01', 8, 220, 1, C(0x27));
+  const yStam = 162;
+  drawText(ctx, 'STAM', 8, yStam, 1, TEXT_BRIGHT);
+  const stamFill = Math.min(15, Math.round((p.stamina / 30) * 15));
+  ctx.fillStyle = BAR_BG;
+  ctx.fillRect(56, yStam, 15 * 8, 8);
+  ctx.fillStyle = ACCENT_RED;
+  ctx.fillRect(56, yStam, stamFill * 8, 8);
+  ctx.strokeStyle = TEXT_DIM;
+  ctx.strokeRect(56, yStam, 15 * 8, 8);
+  drawText(ctx, p.stamina.toString().padStart(2, '0'), 184, yStam, 1, TEXT_BRIGHT);
+
+  // 技能数
+  const skillCount = findSkillsByPlayer(p.id).length;
+  drawTextBG(ctx, `SKILLS:${skillCount}`, 8, 184, 1, ACCENT_RED, C(0x10));
+
+  // 底部 API 标签
+  drawTextBG(ctx, 'API: /api/player/0x01', 8, 220, 1, TEXT_BRIGHT, C(0x11));
 }
 
-// ─────────────────────────── 视图 3: 球队列表 + 单队名单 ───────────────────────────
+// ─────────────────────────── 视图 3: 球队名单 ───────────────────────────
 
 export function renderTeamView(ctx: CanvasRenderingContext2D): void {
-  ctx.fillStyle = C(0x14);  // 紫红
+  ctx.fillStyle = BG_DARK;
   ctx.fillRect(0, 0, 256, 240);
-  drawText(ctx, 'TEAM ROSTER', 76, 8, 1, C(0x30));
+
+  // 头部（绿色）
+  ctx.fillStyle = C(0x1A);
+  ctx.fillRect(0, 0, 256, 32);
+  drawText(ctx, 'TEAM 0x80', 8, 6, 1, TEXT_BRIGHT);
+  drawText(ctx, 'SAO PAULO', 80, 8, 2, TEXT_BRIGHT);
+
   const team = findTeamById(0x80);
   if (!team) return;
-  drawText(ctx, `TEAM:0x80 ${team.name.toUpperCase()}`, 8, 24, 1, C(0x30));
   const roster = findRosterById(0x80);
-  for (let i = 0; i < Math.min(11, roster.length); i++) {
+  // 表头
+  drawText(ctx, 'ID  NAME      POS STM', 8, 42, 1, TEXT_DIM);
+  ctx.fillStyle = TEXT_DIM;
+  ctx.fillRect(8, 52, 240, 1);
+
+  for (let i = 0; i < Math.min(15, roster.length); i++) {
     const pid = roster[i];
     const player = findPlayerById(pid);
     if (!player) continue;
-    const y = 40 + i * 14;
-    drawText(ctx, `0x${pid.toString(16).padStart(2, '0').toUpperCase()}`, 8, y, 1, C(0x30));
-    drawText(ctx, player.name.substring(0, 10).padEnd(10, ' '), 40, y, 1, C(0x2C));
-    drawText(ctx, `S:${player.stamina.toString().padStart(2, ' ')}`, 144, y, 1, C(0x28));
-    drawText(ctx, `P:${player.position === 1 ? 'GK' : 'FW'}`, 184, y, 1, C(0x2C));
+    const y = 56 + i * 10;
+    const idStr = pid.toString(16).padStart(2, '0').toUpperCase();
+    drawText(ctx, idStr, 8, y, 1, ACCENT_GREEN);
+    drawText(ctx, player.name.substring(0, 10).padEnd(10, ' '), 32, y, 1, TEXT_BRIGHT);
+    drawText(ctx, player.position === 1 ? 'GK' : 'FW', 112, y, 1, ACCENT_BLUE);
+    drawText(ctx, player.stamina.toString().padStart(2, ' '), 140, y, 1, ACCENT_RED);
   }
-  drawText(ctx, `TOTAL:${roster.length}`, 8, 220, 1, C(0x30));
-  drawText(ctx, `ALL TEAMS:${TEAMS_FULL.length}`, 144, 220, 1, C(0x30));
+
+  // 底部
+  ctx.fillStyle = C(0x1A);
+  ctx.fillRect(0, 220, 256, 20);
+  drawText(ctx, `ROSTER:${roster.length}`, 8, 226, 1, TEXT_BRIGHT);
+  drawText(ctx, `ALL TEAMS:${TEAMS_FULL.length}`, 140, 226, 1, TEXT_BRIGHT);
 }
 
-// ─────────────────────────── 视图 4: 等级升级（findLevelByExp） ───────────────────────────
+// ─────────────────────────── 视图 4: 等级升级 ───────────────────────────
 
 export function renderLevelUp(ctx: CanvasRenderingContext2D): void {
-  ctx.fillStyle = C(0x00);  // 黑
+  ctx.fillStyle = BG_DARK;
   ctx.fillRect(0, 0, 256, 240);
-  drawText(ctx, 'LEVEL UP', 88, 8, 1, C(0x30));
-  // 当前 exp = 5000
+
+  // 头部（红色）
+  ctx.fillStyle = C(0x16);
+  ctx.fillRect(0, 0, 256, 36);
+  drawText(ctx, 'LEVEL UP', 88, 8, 2, TEXT_BRIGHT);
+
   const exp = 5000;
   const lv = findLevelByExp(exp);
   const entry = findLevelById(lv);
   const nextLv = lv < 30 ? findLevelById(lv + 1) : null;
-  drawText(ctx, `EXP:${exp}  LV:${lv}`, 8, 28, 1, C(0x2C));
+
+  // 等级信息
+  drawText(ctx, `EXP:${exp}  LV:${lv}`, 8, 44, 1, TEXT_BRIGHT);
   if (entry) {
-    drawText(ctx, `EXP REQ:${entry.expRequired}`, 8, 44, 1, C(0x30));
-    drawText(ctx, `STAM RAW:${entry.staminaRaw}`, 8, 56, 1, C(0x30));
-    drawText(ctx, `ABL MAX:${entry.abilityMax}`, 8, 68, 1, C(0x30));
+    drawText(ctx, `REQ:${entry.expRequired}`, 120, 44, 1, TEXT_DIM);
   }
-  // 6 项能力进度条（growth）
+
+  // 6 项 growth
   if (entry) {
-    const labels = ['SHOT', 'DRIB', 'PASS', 'TACK', 'SPD', 'CTRL'];
+    const labels = ['SHOT', 'DRIB', 'PASS', 'TACK', 'SPD ', 'CTRL'];
     for (let i = 0; i < 6; i++) {
-      const y = 88 + i * 14;
+      const y = 56 + i * 14;
       const v = entry.growth[i] || 0;
-      drawText(ctx, labels[i], 8, y, 1, C(0x30));
-      const fill = Math.min(16, Math.round((v / 30) * 16));
-      for (let j = 0; j < 16; j++) {
-        ctx.fillStyle = j < fill ? C(0x2A) : C(0x20);
-        ctx.fillRect(48 + j * 6, y, 5, 7);
-      }
-      drawText(ctx, v.toString().padStart(2, ' '), 152, y, 1, C(0x30));
+      drawText(ctx, labels[i], 8, y, 1, TEXT_BRIGHT);
+      const fill = Math.min(20, Math.round((v / 30) * 20));
+      ctx.fillStyle = BAR_BG;
+      ctx.fillRect(48, y, 20 * 5, 9);
+      ctx.fillStyle = v >= 20 ? ACCENT_RED : v >= 10 ? ACCENT_BLUE : BAR_FILL;
+      ctx.fillRect(48, y, fill * 5, 9);
+      ctx.strokeStyle = TEXT_DIM;
+      ctx.strokeRect(48, y, 20 * 5, 9);
+      drawText(ctx, v.toString().padStart(2, '0'), 156, y, 1, TEXT_BRIGHT);
     }
   }
+
   // 下一级
   if (nextLv) {
-    drawText(ctx, `NEXT LV:${nextLv.level}`, 8, 184, 1, C(0x2C));
-    drawText(ctx, `EXP TO NEXT:${nextLv.expRequired - exp}`, 8, 200, 1, C(0x2C));
+    ctx.fillStyle = C(0x11);
+    ctx.fillRect(0, 152, 256, 26);
+    drawText(ctx, `NEXT LV:${nextLv.level}`, 8, 158, 1, TEXT_BRIGHT);
+    drawText(ctx, `EXP NEED:${nextLv.expRequired - exp}`, 96, 158, 1, ACCENT_RED);
   } else {
-    drawText(ctx, 'MAX LEVEL REACHED', 8, 184, 1, C(0x16));
+    drawText(ctx, 'MAX LEVEL', 8, 160, 1, ACCENT_RED);
   }
-  drawText(ctx, 'API:GET /api/level?exp=5000', 8, 220, 1, C(0x27));
+
+  // 底部
+  drawTextBG(ctx, 'API: /api/level?exp=5000', 8, 220, 1, TEXT_BRIGHT, C(0x11));
 }
 
-// ─────────────────────────── 视图 5: 比赛配置 (getMatchConfig) ───────────────────────────
+// ─────────────────────────── 视图 5: 比赛配置 ───────────────────────────
 
 export function renderMatchConfig(ctx: CanvasRenderingContext2D): void {
-  ctx.fillStyle = C(0x10);  // 深绿
+  ctx.fillStyle = BG_DARK;
   ctx.fillRect(0, 0, 256, 240);
-  drawText(ctx, 'MATCH CONFIG', 70, 8, 1, C(0x30));
-  // 查 Sao Paulo vs Corinthians
-  const cfg = getMatchConfig(0x80, 0x85);
-  drawText(ctx, 'SAO PAULO vs CORINTHIANS', 8, 28, 1, C(0x30));
-  drawText(ctx, `HALF:${cfg.halfLength}MIN`, 8, 48, 1, C(0x2C));
-  drawText(ctx, `MAXSUB:${cfg.maxSubstitutions}`, 8, 60, 1, C(0x2C));
-  drawText(ctx, `INJTIME:${cfg.injuryTime}MIN`, 8, 72, 1, C(0x2C));
-  drawText(ctx, `TOTAL:${cfg.durationMinutes}MIN`, 8, 84, 1, C(0x2C));
-  drawText(ctx, `EXTRA:${cfg.extraTime ? 'YES' : 'NO'}`, 8, 96, 1, C(0x2C));
-  drawText(ctx, `TYPE:${cfg.tournament.toUpperCase()}`, 8, 108, 1, C(0x2C));
+  // 头部
+  ctx.fillStyle = C(0x1A);
+  ctx.fillRect(0, 0, 256, 32);
+  drawText(ctx, 'MATCH CONFIG', 56, 8, 2, TEXT_BRIGHT);
 
-  // 全部配置列表（部分）
-  drawText(ctx, 'ALL CONFIGS:', 8, 132, 1, C(0x30));
-  for (let i = 0; i < Math.min(7, MATCH_CONFIG_TABLE.length); i++) {
+  // 当前配置
+  const cfg = getMatchConfig(0x80, 0x85);
+  drawTextBG(ctx, 'SAO PAULO  VS  CORINTH', 8, 40, 1, TEXT_BRIGHT, C(0x08));
+  drawText(ctx, 'HALF', 8, 56, 1, TEXT_DIM);
+  drawText(ctx, `${cfg.halfLength} MIN`, 56, 56, 1, ACCENT_RED);
+  drawText(ctx, 'SUB', 8, 70, 1, TEXT_DIM);
+  drawText(ctx, `${cfg.maxSubstitutions}`, 56, 70, 1, ACCENT_RED);
+  drawText(ctx, 'INJTIME', 8, 84, 1, TEXT_DIM);
+  drawText(ctx, `${cfg.injuryTime} MIN`, 80, 84, 1, ACCENT_RED);
+  drawText(ctx, 'TOTAL', 8, 98, 1, TEXT_DIM);
+  drawText(ctx, `${cfg.durationMinutes} MIN`, 64, 98, 1, ACCENT_RED);
+  drawText(ctx, 'EXTRA', 8, 112, 1, TEXT_DIM);
+  drawText(ctx, cfg.extraTime ? 'YES' : 'NO', 64, 112, 1, cfg.extraTime ? ACCENT_RED : TEXT_DIM);
+  drawText(ctx, 'TYPE', 8, 126, 1, TEXT_DIM);
+  drawText(ctx, cfg.tournament.toUpperCase(), 56, 126, 1, ACCENT_GREEN);
+
+  // 全部配置
+  drawText(ctx, 'ALL CONFIGURATIONS:', 8, 148, 1, TEXT_BRIGHT);
+  ctx.fillStyle = TEXT_DIM;
+  ctx.fillRect(8, 158, 240, 1);
+  for (let i = 0; i < Math.min(6, MATCH_CONFIG_TABLE.length); i++) {
     const c = MATCH_CONFIG_TABLE[i];
-    const y = 144 + i * 10;
-    drawText(ctx, `${c.tournament.substring(0, 4).toUpperCase()}`, 8, y, 1, C(0x2C));
-    drawText(ctx, `${c.halfLength}M`, 64, y, 1, C(0x28));
-    drawText(ctx, c.extraTime ? '+ET' : '   ', 96, y, 1, C(0x2C));
-    drawText(ctx, `H:0x${c.homeTeam.toString(16).padStart(2, '0').toUpperCase()}`, 128, y, 1, C(0x30));
-    drawText(ctx, `A:0x${c.awayTeam.toString(16).padStart(2, '0').toUpperCase()}`, 184, y, 1, C(0x30));
+    const y = 162 + i * 9;
+    drawText(ctx, c.tournament.substring(0, 6).toUpperCase(), 8, y, 1, ACCENT_GREEN);
+    drawText(ctx, `${c.halfLength}M`, 80, y, 1, TEXT_DIM);
+    drawText(ctx, c.extraTime ? '+ET' : '   ', 112, y, 1, TEXT_DIM);
+    drawText(ctx, `0x${c.homeTeam.toString(16).padStart(2, '0').toUpperCase()}`, 136, y, 1, ACCENT_BLUE);
+    drawText(ctx, 'VS', 168, y, 1, TEXT_DIM);
+    drawText(ctx, `0x${c.awayTeam.toString(16).padStart(2, '0').toUpperCase()}`, 184, y, 1, ACCENT_BLUE);
   }
-  drawText(ctx, `TOTAL:${MATCH_CONFIG_TABLE.length} MATCHES`, 8, 220, 1, C(0x30));
+  // 底部
+  drawTextBG(ctx, `TOTAL: ${MATCH_CONFIG_TABLE.length} MATCHES`, 8, 220, 1, TEXT_BRIGHT, C(0x1A));
 }
 
-// ─────────────────────────── 视图 6: 技能列表 (findSkillsByPlayer) ───────────────────────────
+// ─────────────────────────── 视图 6: 技能列表 ───────────────────────────
 
 export function renderSkills(ctx: CanvasRenderingContext2D): void {
-  ctx.fillStyle = C(0x16);  // 浅黄
+  ctx.fillStyle = BG_DARK;
   ctx.fillRect(0, 0, 256, 240);
-  drawText(ctx, 'SKILL LIST', 86, 8, 1, C(0x30));
+  // 头部
+  ctx.fillStyle = C(0x18);
+  ctx.fillRect(0, 0, 256, 36);
+  drawText(ctx, 'SKILLS', 92, 8, 2, TEXT_BRIGHT);
+
   const skillIds = findSkillsByPlayer(0x01);
-  drawText(ctx, `PLAYER:0x01 TSUBASA`, 8, 28, 1, C(0x30));
-  drawText(ctx, `SKILL COUNT:${skillIds.length}`, 8, 44, 1, C(0x2C));
-  for (let i = 0; i < Math.min(8, skillIds.length); i++) {
+  drawText(ctx, 'PLAYER 0x01 TSUBASA', 8, 22, 1, ACCENT_GREEN);
+  drawText(ctx, `COUNT:${skillIds.length}`, 184, 22, 1, TEXT_DIM);
+
+  // 技能列表
+  drawText(ctx, 'ID  NAME        POW', 8, 44, 1, TEXT_DIM);
+  ctx.fillStyle = TEXT_DIM;
+  ctx.fillRect(8, 54, 240, 1);
+
+  for (let i = 0; i < Math.min(13, skillIds.length); i++) {
     const sid = skillIds[i];
     const sk = findSkillByMoveId(sid);
-    const y = 60 + i * 18;
-    drawText(ctx, `0x${sid.toString(16).padStart(2, '0').toUpperCase()}`, 8, y, 1, C(0x30));
-    drawText(ctx, (sk?.name ?? '???').substring(0, 12).padEnd(12, ' '), 40, y, 1, C(0x2C));
-    // 威力条
+    const y = 60 + i * 12;
+    const idStr = sid.toString(16).padStart(2, '0').toUpperCase();
+    drawText(ctx, idStr, 8, y, 1, ACCENT_RED);
+    drawText(ctx, (sk?.name ?? '???').substring(0, 12).padEnd(12, ' '), 32, y, 1, TEXT_BRIGHT);
     const power = (sk?.power ?? 0) & 0xff;
     const fill = Math.min(8, Math.round((power / 30) * 8));
-    for (let j = 0; j < 8; j++) {
-      ctx.fillStyle = j < fill ? C(0x12) : C(0x20);
-      ctx.fillRect(120 + j * 4, y, 3, 7);
-    }
-    drawText(ctx, power.toString().padStart(2, '0'), 160, y, 1, C(0x30));
+    ctx.fillStyle = BAR_BG;
+    ctx.fillRect(120, y, 8 * 6, 8);
+    ctx.fillStyle = power >= 20 ? ACCENT_RED : ACCENT_BLUE;
+    ctx.fillRect(120, y, fill * 6, 8);
+    drawText(ctx, power.toString().padStart(2, '0'), 180, y, 1, TEXT_BRIGHT);
   }
-  drawText(ctx, `ALL SKILLS:${SKILL_TABLE.length}`, 8, 220, 1, C(0x30));
+
+  // 底部
+  drawTextBG(ctx, `ALL SKILLS: ${SKILL_TABLE.length}`, 8, 220, 1, TEXT_BRIGHT, C(0x18));
 }
 
-// ─────────────────────────── 跑全部断言（数据完整性） ───────────────────────────
+// ─────────────────────────── 跑全部断言 ───────────────────────────
 
 function runAllAssertions(): { pass: number; fail: number } {
-  // 球员
   assert('Tsubasa found', findPlayerById(0x01)?.name === 'Tsubasa');
   assert('Wakabayashi GK', findPlayerById(0x21)?.position === 1);
-  assert('Sao Paulo 11+ players', findPlayersByTeam(0x80).length >= 11);
-  assert('PLAYER_TABLE ≥40', PLAYER_TABLE.length >= 40);
-  // 等级
-  assert('5000 exp → lv5', findLevelByExp(5000) === 5);
+  assert('Sao Paulo 11 players', findPlayersByTeam(0x80).length === 11);
+  assert('PLAYER_TABLE >= 40', PLAYER_TABLE.length >= 40);
+  assert('5000 exp -> lv5', findLevelByExp(5000) === 5);
   assert('lv30 max', findLevelById(30)?.expRequired === 6940);
-  // 队伍
   assert('Sao Paulo team', findTeamById(0x80)?.name === 'SaoPaulo');
-  assert('TEAMS_FULL ≥20', TEAMS_FULL.length >= 20);
-  // 技能
-  assert('Tsubasa ≥1 skill', findSkillsByPlayer(0x01).length >= 1);
-  assert('SKILL_TABLE ≥10', SKILL_TABLE.length >= 10);
-  // 比赛
+  assert('TEAMS_FULL >= 20', TEAMS_FULL.length >= 20);
+  assert('Tsubasa >= 1 skill', findSkillsByPlayer(0x01).length >= 1);
+  assert('SKILL_TABLE >= 10', SKILL_TABLE.length >= 10);
   const cfg = getMatchConfig(0x80, 0x85);
   assert('Sao Paulo 5min', cfg.halfLength === 5);
-  assert('MATCH_CONFIG ≥20', MATCH_CONFIG_TABLE.length >= 20);
+  assert('MATCH_CONFIG >= 20', MATCH_CONFIG_TABLE.length >= 20);
   return { pass, fail };
 }
 
@@ -331,7 +427,6 @@ function runAllAssertions(): { pass: number; fail: number } {
 const stats = runAllAssertions();
 
 if (typeof document !== 'undefined') {
-  // 浏览器：渲染 4 个视图到 4 个 canvas
   const canvases: Record<string, HTMLCanvasElement | null> = {
     list: document.getElementById('canvas-list') as HTMLCanvasElement | null,
     detail: document.getElementById('canvas-detail') as HTMLCanvasElement | null,
