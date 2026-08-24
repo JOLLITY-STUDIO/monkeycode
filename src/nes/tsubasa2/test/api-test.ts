@@ -245,6 +245,63 @@ export function renderLevelUp(ctx: CanvasRenderingContext2D): void {
   drawText(ctx, 'API:GET /api/level?exp=5000', 8, 220, 1, C(0x27));
 }
 
+// ─────────────────────────── 视图 5: 比赛配置 (getMatchConfig) ───────────────────────────
+
+export function renderMatchConfig(ctx: CanvasRenderingContext2D): void {
+  ctx.fillStyle = C(0x10);  // 深绿
+  ctx.fillRect(0, 0, 256, 240);
+  drawText(ctx, 'MATCH CONFIG', 70, 8, 1, C(0x30));
+  // 查 Sao Paulo vs Corinthians
+  const cfg = getMatchConfig(0x80, 0x85);
+  drawText(ctx, 'SAO PAULO vs CORINTHIANS', 8, 28, 1, C(0x30));
+  drawText(ctx, `HALF:${cfg.halfLength}MIN`, 8, 48, 1, C(0x2C));
+  drawText(ctx, `MAXSUB:${cfg.maxSubstitutions}`, 8, 60, 1, C(0x2C));
+  drawText(ctx, `INJTIME:${cfg.injuryTime}MIN`, 8, 72, 1, C(0x2C));
+  drawText(ctx, `TOTAL:${cfg.durationMinutes}MIN`, 8, 84, 1, C(0x2C));
+  drawText(ctx, `EXTRA:${cfg.extraTime ? 'YES' : 'NO'}`, 8, 96, 1, C(0x2C));
+  drawText(ctx, `TYPE:${cfg.tournament.toUpperCase()}`, 8, 108, 1, C(0x2C));
+
+  // 全部配置列表（部分）
+  drawText(ctx, 'ALL CONFIGS:', 8, 132, 1, C(0x30));
+  for (let i = 0; i < Math.min(7, MATCH_CONFIG_TABLE.length); i++) {
+    const c = MATCH_CONFIG_TABLE[i];
+    const y = 144 + i * 10;
+    drawText(ctx, `${c.tournament.substring(0, 4).toUpperCase()}`, 8, y, 1, C(0x2C));
+    drawText(ctx, `${c.halfLength}M`, 64, y, 1, C(0x28));
+    drawText(ctx, c.extraTime ? '+ET' : '   ', 96, y, 1, C(0x2C));
+    drawText(ctx, `H:0x${c.homeTeam.toString(16).padStart(2, '0').toUpperCase()}`, 128, y, 1, C(0x30));
+    drawText(ctx, `A:0x${c.awayTeam.toString(16).padStart(2, '0').toUpperCase()}`, 184, y, 1, C(0x30));
+  }
+  drawText(ctx, `TOTAL:${MATCH_CONFIG_TABLE.length} MATCHES`, 8, 220, 1, C(0x30));
+}
+
+// ─────────────────────────── 视图 6: 技能列表 (findSkillsByPlayer) ───────────────────────────
+
+export function renderSkills(ctx: CanvasRenderingContext2D): void {
+  ctx.fillStyle = C(0x16);  // 浅黄
+  ctx.fillRect(0, 0, 256, 240);
+  drawText(ctx, 'SKILL LIST', 86, 8, 1, C(0x30));
+  const skillIds = findSkillsByPlayer(0x01);
+  drawText(ctx, `PLAYER:0x01 TSUBASA`, 8, 28, 1, C(0x30));
+  drawText(ctx, `SKILL COUNT:${skillIds.length}`, 8, 44, 1, C(0x2C));
+  for (let i = 0; i < Math.min(8, skillIds.length); i++) {
+    const sid = skillIds[i];
+    const sk = findSkillByMoveId(sid);
+    const y = 60 + i * 18;
+    drawText(ctx, `0x${sid.toString(16).padStart(2, '0').toUpperCase()}`, 8, y, 1, C(0x30));
+    drawText(ctx, (sk?.name ?? '???').substring(0, 12).padEnd(12, ' '), 40, y, 1, C(0x2C));
+    // 威力条
+    const power = (sk?.power ?? 0) & 0xff;
+    const fill = Math.min(8, Math.round((power / 30) * 8));
+    for (let j = 0; j < 8; j++) {
+      ctx.fillStyle = j < fill ? C(0x12) : C(0x20);
+      ctx.fillRect(120 + j * 4, y, 3, 7);
+    }
+    drawText(ctx, power.toString().padStart(2, '0'), 160, y, 1, C(0x30));
+  }
+  drawText(ctx, `ALL SKILLS:${SKILL_TABLE.length}`, 8, 220, 1, C(0x30));
+}
+
 // ─────────────────────────── 跑全部断言（数据完整性） ───────────────────────────
 
 function runAllAssertions(): { pass: number; fail: number } {
@@ -261,9 +318,11 @@ function runAllAssertions(): { pass: number; fail: number } {
   assert('TEAMS_FULL ≥20', TEAMS_FULL.length >= 20);
   // 技能
   assert('Tsubasa ≥1 skill', findSkillsByPlayer(0x01).length >= 1);
+  assert('SKILL_TABLE ≥10', SKILL_TABLE.length >= 10);
   // 比赛
   const cfg = getMatchConfig(0x80, 0x85);
   assert('Sao Paulo 5min', cfg.halfLength === 5);
+  assert('MATCH_CONFIG ≥20', MATCH_CONFIG_TABLE.length >= 20);
   return { pass, fail };
 }
 
@@ -278,11 +337,15 @@ if (typeof document !== 'undefined') {
     detail: document.getElementById('canvas-detail') as HTMLCanvasElement | null,
     team: document.getElementById('canvas-team') as HTMLCanvasElement | null,
     levelup: document.getElementById('canvas-levelup') as HTMLCanvasElement | null,
+    match: document.getElementById('canvas-match') as HTMLCanvasElement | null,
+    skills: document.getElementById('canvas-skills') as HTMLCanvasElement | null,
   };
   if (canvases.list) renderPlayerList(canvases.list.getContext('2d')!);
   if (canvases.detail) renderPlayerDetail(canvases.detail.getContext('2d')!);
   if (canvases.team) renderTeamView(canvases.team.getContext('2d')!);
   if (canvases.levelup) renderLevelUp(canvases.levelup.getContext('2d')!);
+  if (canvases.match) renderMatchConfig(canvases.match.getContext('2d')!);
+  if (canvases.skills) renderSkills(canvases.skills.getContext('2d')!);
   const summary = document.getElementById('summary');
   if (summary) {
     summary.textContent = `通过 ${stats.pass} / 失败 ${stats.fail}`;
