@@ -386,36 +386,57 @@ Character Digits,
 20,Misugi（三杉 淳 / 三杉淳）
 21,Wakabayashi {GK}（若林 源三 / 若林源三）
 22,Wakashimazu {GK}（若島津 健 / 若島津健）
+
+
+
 23,Satilst（サトルステギ / 薩托斯泰吉）
 24,Riverio（リベリオ / 里維里奧）
+
 25,Da Silva（ダ・シルバ / 達席爾瓦）
 26,Meon {GK}（メオン / 梅昂）
+
 27,Toninho（トニーニョ / 托尼紐）
 28,Nei（ネイ / 內伊）
+
 29,Zagalo（ザガロ / 扎加洛）
 2A,Dircil（ディルセウ / 迪爾修）
+
 2B,Carlos（カルロス・サンターナ / 卡洛斯・山塔拿）
 2C,Santamaria（サンタマリア / 聖馬利亞）
 2D,Jethrio（ジェットリオ / 傑特里奧）
+
+//南葛时期
+
 2E,Jitou（次藤 洋 / 次藤洋）
 2F,Sano（佐野 満 / 佐野滿）
+
 30,Masao（立花 政夫 / 立花政夫）
 31,Kazuo（立花 和夫 / 立花和夫）
+
 32,Souta（早田 誠 / 早田誠）
 33,Nakanishi {GK}（中西 太一 / 中西太一）
+
 34,Misugi（三杉 淳 / 三杉淳）
+
 35,Matsuyama（松山 光 / 松山光）
+
 36,Hyuga（日向 小次郎 / 日向小次郎）
 37,Sorimachi（反町 一樹 / 反町一樹）
 38,Sawada（沢田 タケシ / 澤田武志）
 39,Wakashimazu {GK}（若島津 健 / 若島津健）
+
 3A,Rampion（ランピオン / 蘭皮翁）
+
 3B,Victor（ビクトリーノ / 維克多利諾）
 3C,Da Silva（ダ・シルバ / 達席爾瓦）
+
 3D,Kapilman（カペロマン / 卡培爾曼）
 3E,Kaltz（ヘルマン・カルツ / 赫爾曼・卡爾茲）
 3F,Metzer（メッツァ / 梅查）
 40,WakaBayashi {GK}（若林 源三 / 若林源三）
+
+//全日本？
+
 41,Hyuga（日向 小次郎 / 日向小次郎）
 42,Nitta（新田 瞬 / 新田瞬）
 43,Sano（佐野 滿 / 佐野滿）
@@ -428,10 +449,13 @@ Character Digits,
 4A,Souta（早田 誠 / 早田誠）
 4B,Matsuyama（松山 光 / 松山光）
 4C,Wakashimazu {GK}（若島津 健 / 若島津健）
+
 4D,LiHan（李 邦漢 / 李邦漢）
 4E,Li Ba（李 邦竜 / 李邦龍）
+
 4F,Sya（車 仁天 / 車仁天）
 50,Kim（金 現代 / 金現代）
+
 51,Mach（マッハ / 馬赫）
 52,Jaich {GK}（ジャイチ / 賈伊奇）
 53,Lorima（ロリマー / 羅利馬）
@@ -865,7 +889,7 @@ $AA73
 
 CPU Team Edit:
 --------------
-
+有人物id的范围：03BB1A - 03BCEE
 Brazil League,
 
 --------------
@@ -878,14 +902,16 @@ Brazil League,
 Corinthians,
 -----------
 
-10,03BB1A
+10,03BB1A 
+24,Riverio（リベリオ / 里維里奧）
 09,03BB1C
+23,Satilst（サトルステギ / 薩托斯泰吉）
 
 Gremio,
 -------
 
-09,03BB28
-01,03BB2A
+09,03BB28 对应：25,Da Silva（ダ・シルバ / 達席爾瓦）
+01,03BB2A 对应：26,Meon {GK}（メオン / 梅昂）
 
 Palmeiras,
 ----------
@@ -1036,9 +1062,11 @@ Mexico,
 
 Italy,
 ------
+09,03BC92  
+01,03BC94 
 
-09,03BC92
-01,03BC94
+
+
 
 Holland,
 --------

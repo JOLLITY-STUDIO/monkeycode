@@ -8,11 +8,12 @@ import { TEAM_TABLE as TEAM_TABLE_EXTRACTED, TEAMS_FULL as TEAM_ROSTER_TABLE, fi
 import { findPlayerById } from '../src/game/prg/data/tables/player-table';
 import { PLAYER_NAMES_JP } from '../src/game/prg/data/tables/player-names-jp';
 
-function listAllTeamIds(): number[] {
-  const ids = new Set<number>();
-  for (const r of TEAM_ROSTER_TABLE) ids.add(r.id);
-  for (const t of TEAM_TABLE_EXTRACTED) ids.add(t.id);
-  return [...ids].sort((a, b) => a - b);
+/** 优先从 PLAYER_NAMES_JP 取真实姓名, fallback 到 player-table 占位符 */
+function getPlayerDisplayName(pid: number): string {
+  const np = PLAYER_NAMES_JP[pid];
+  if (np) return np.en;
+  const p = findPlayerById(pid) as any;
+  return p?.name ?? '?';
 }
 
 // Node: 文本版简洁输出
@@ -80,12 +81,17 @@ function buildRosterTable(teamId: number): string {
     const p: any = findPlayerById(pid);
     const pos = p ? ((p.position ?? 0) === 1 ? 'GK' : 'FW') : '-';
     const np = PLAYER_NAMES_JP[pid];
+    const enName = np?.en ?? p?.name ?? '???';
     rows.push(`<tr><td>${i + 1}</td><td class="id">0x${pid.toString(16).padStart(2,'0').toUpperCase()}</td>`);
-    if (p) {
-      rows.push(`<td>${p.name ?? '?'}</td><td>${np?.ja ?? '?'}</td><td>${np?.zh ?? '?'}</td>`);
+    if (p || np) {
+      rows.push(`<td>${enName}</td><td>${np?.ja ?? '?'}</td><td>${np?.zh ?? '?'}</td>`);
       rows.push(`<td class="pos-${pos.toLowerCase()}">${pos}</td>`);
-      rows.push(`<td>${p.shot ?? 0}</td><td>${p.pass ?? 0}</td><td>${p.dribble ?? 0}</td>`);
-      rows.push(`<td>${p.block ?? 0}</td><td>${p.tackle ?? 0}</td><td>${p.intercept ?? 0}</td><td>${p.stamina ?? 0}</td>`);
+      if (p) {
+        rows.push(`<td>${p.shot ?? 0}</td><td>${p.pass ?? 0}</td><td>${p.dribble ?? 0}</td>`);
+        rows.push(`<td>${p.block ?? 0}</td><td>${p.tackle ?? 0}</td><td>${p.intercept ?? 0}</td><td>${p.stamina ?? 0}</td>`);
+      } else {
+        rows.push(`<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`);
+      }
     } else {
       rows.push(`<td>???</td><td>???</td><td>???</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`);
     }

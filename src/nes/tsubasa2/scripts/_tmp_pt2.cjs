@@ -1,0 +1,12 @@
+const fs = require('fs');
+const d = fs.readFileSync('src/game/prg/data/tables/player-table.ts', 'utf8');
+const re = /id:\s*0x([0-9A-Fa-f]{2})/g;
+let m;
+const ids = new Set();
+while ((m = re.exec(d)) !== null) ids.add(parseInt(m[1], 16));
+const arr = [...ids].sort((a, b) => a - b);
+console.log('player-table.ts ID count:', arr.length);
+console.log('min: 0x' + arr[0].toString(16).padStart(2, '0').toUpperCase());
+console.log('max: 0x' + arr[arr.length - 1].toString(16).padStart(2, '0').toUpperCase());
+console.log('first 10:', arr.slice(0, 10).map(x => '0x' + x.toString(16).padStart(2, '0').toUpperCase()).join(' '));
+console.log('last 5:', arr.slice(-5).map(x => '0x' + x.toString(16).padStart(2, '0').toUpperCase()).join(' '));

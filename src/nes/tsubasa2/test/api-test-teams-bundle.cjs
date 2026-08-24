@@ -7,18 +7,21 @@
     { id: 129, name: "Nankatsu", type: "player", players: [15, 13, 14, 20, 16, 12, 19, 18, 21, 17, 22], subs: [], formation: "4-4-2", tactic: "Normal", encounterLevels: [] },
     { id: 130, name: "AsianCup", type: "player", players: [34, 27, 28, 20, 29, 23, 24, 17, 26, 1, 21], subs: [25, 31, 16, 18, 19, 22, 30, 32, 33, 15, 1, 0], formation: "Brazil", tactic: "Counter", encounterLevels: [] },
     { id: 131, name: "BenchReserve", type: "bench", players: [33, 20, 23, 16, 11, 24, 5, 6, 9, 2, 12], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [] },
-    // ─────────── 巴西联赛 (6 队 × 12 bytes, PRG 0x3BB0A; 关 1-6) ───────────
-    // 全部落在 PRG bank 14 ($0E)。剧情顺序 = PRG 顺序 (stride 12):
-    //   Fluminense (关1) → Corinthians (关2) → Gremio (关3) → Palmeiras (关4) → Santos (关5) → Flamengo (关6 循环)
-    // 修正: 密码选关.MD §一.巴西联赛篇 第1关 = 弗卢米嫩塞, 不是 Flamengo
-    // 修正: doc 漏列 Fluminense (0x84), 实际是 Brazil League 第 1 关
-    { id: 132, name: "Fluminense", type: "cpu", players: [36, 9, 35, 15, 33, 0, 118, 124, 125, 125, 160], subs: [], formation: "Form8", tactic: "Normal", encounterLevels: [1] },
-    { id: 133, name: "Corinthians", type: "cpu", players: [38, 15, 32, 0, 126, 127, 128, 128, 176, 31, 30], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [2] },
-    { id: 134, name: "Gremio", type: "cpu", players: [39, 11, 40, 15, 33, 0, 129, 130, 131, 131, 145], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [3] },
-    { id: 135, name: "Palmeiras", type: "cpu", players: [29, 9, 41, 4, 42, 15, 3, 0, 132, 133, 134], subs: [], formation: "Form6", tactic: "Tact8", encounterLevels: [4] },
-    { id: 136, name: "Santos", type: "cpu", players: [96, 30, 31, 10, 43, 6, 44, 2, 45, 15, 0], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [5] },
-    // 修正: Flamengo 仅关 6 (关 1 是 Fluminense, 不是 Flamengo)
-    { id: 137, name: "Flamengo", type: "cpu", players: [135, 136, 137, 137, 145, 31, 29, 4, 46, 9, 47], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [6] },
+    // ─────────── 巴西联赛 (6 队 × 22 PRG bytes stride 2, base PRG 0x3BAEE; 关 1-6) ───────────
+    // PRG bank 14 ($0E)。每队 11 ID stride 2 (22 bytes), 用 PRG 真实 byte 提取:
+    //   Fluminense (关1) base PRG 0x3BAEE: [0x94 0xA8 0xC0 0xE0 0x00 0x76 0x77 0xA0 0x1F 0x03 0x79]
+    //   Corinthians (关2) base PRG 0x3BB04: [0x7A 0xA0 0x1E 0x24 0x23 0x21 0x76 0x7D 0xA0 0x1E 0x25]
+    //   Gremio (关3) base PRG 0x3BB1A:    [0x26 0x20 0x7E 0x80 0xB0 0x1E 0x27 0x28 0x21 0x81 0x83]
+    //   Palmeiras (关4) base PRG 0x3BB30: [0x91 0x1D 0x29 0x2A 0x03 0x84 0x86 0x60 0x1F 0x2B 0x2C]
+    //   Santos (关5) base PRG 0x3BB46:    [0x2D 0x00 0x87 0x89 0x91 0x1D 0x2E 0x2F 0x21 0x8A 0x8C]
+    //   Flamengo (关6) base PRG 0x3BB5C: [0xA0 0x1E 0x30 0x31 0x01 0x76 0x8D 0x40 0x1E 0x32 0x33]
+    // 验证 (Node.js): PRG[base+i*2] for i in 0..10.
+    { id: 132, name: "Fluminense", type: "cpu", players: [148, 168, 192, 224, 0, 118, 119, 160, 31, 3, 121], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [1] },
+    { id: 133, name: "Corinthians", type: "cpu", players: [122, 160, 30, 36, 35, 33, 118, 125, 160, 30, 37], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [2] },
+    { id: 134, name: "Gremio", type: "cpu", players: [38, 32, 126, 128, 176, 30, 39, 40, 33, 129, 131], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [3] },
+    { id: 135, name: "Palmeiras", type: "cpu", players: [145, 29, 41, 42, 3, 132, 134, 96, 31, 43, 44], subs: [], formation: "Form6", tactic: "Tact8", encounterLevels: [4] },
+    { id: 136, name: "Santos", type: "cpu", players: [45, 0, 135, 137, 145, 29, 46, 47, 33, 138, 140], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [5] },
+    { id: 137, name: "Flamengo", type: "cpu", players: [160, 30, 48, 49, 1, 118, 141, 64, 30, 50, 51], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [6] },
     // ─────────── 日本高中 (6 队 × 12 bytes, PRG 0x3BB62; 关 7-12) ───────────
     { id: 138, name: "Kunimi", type: "cpu", players: [49, 15, 1, 0, 118, 141, 141, 142, 64, 30, 30], subs: [], formation: "Form4", tactic: "Normal", encounterLevels: [7] },
     { id: 139, name: "Akita", type: "cpu", players: [50, 1, 51, 15, 2, 0, 143, 144, 145, 145, 112], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [8] },
@@ -82,7 +85,6 @@
 
   // src/game/prg/data/tables/team-table.ts
   var TEAM_TABLE2 = TEAM_TABLE;
-  var TEAMS_FULL = TEAM_ROSTER_TABLE;
   function findTeamById(id) {
     for (const t of TEAM_TABLE2) {
       if (t.id === (id & 255)) return t;
@@ -7658,12 +7660,6 @@
   };
 
   // test/api-test-teams.ts
-  function listAllTeamIds() {
-    const ids = /* @__PURE__ */ new Set();
-    for (const r of TEAMS_FULL) ids.add(r.id);
-    for (const t of TEAM_TABLE2) ids.add(t.id);
-    return [...ids].sort((a, b) => a - b);
-  }
   function API_ALL_TEAMS_TEXT() {
     var _a, _b, _c, _d, _e, _f, _g;
     const ids = listAllTeamIds();
@@ -7723,16 +7719,21 @@
     rows.push("</tr></thead><tbody>");
     const players = (_i = roster == null ? void 0 : roster.players) != null ? _i : [];
     players.forEach((pid, i) => {
-      var _a2, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j, _k;
+      var _a2, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2, _j, _k, _l;
       const p = findPlayerById(pid);
       const pos = p ? ((_a2 = p.position) != null ? _a2 : 0) === 1 ? "GK" : "FW" : "-";
       const np = PLAYER_NAMES_JP[pid];
+      const enName = (_c2 = (_b2 = np == null ? void 0 : np.en) != null ? _b2 : p == null ? void 0 : p.name) != null ? _c2 : "???";
       rows.push(`<tr><td>${i + 1}</td><td class="id">0x${pid.toString(16).padStart(2, "0").toUpperCase()}</td>`);
-      if (p) {
-        rows.push(`<td>${(_b2 = p.name) != null ? _b2 : "?"}</td><td>${(_c2 = np == null ? void 0 : np.ja) != null ? _c2 : "?"}</td><td>${(_d2 = np == null ? void 0 : np.zh) != null ? _d2 : "?"}</td>`);
+      if (p || np) {
+        rows.push(`<td>${enName}</td><td>${(_d2 = np == null ? void 0 : np.ja) != null ? _d2 : "?"}</td><td>${(_e2 = np == null ? void 0 : np.zh) != null ? _e2 : "?"}</td>`);
         rows.push(`<td class="pos-${pos.toLowerCase()}">${pos}</td>`);
-        rows.push(`<td>${(_e2 = p.shot) != null ? _e2 : 0}</td><td>${(_f2 = p.pass) != null ? _f2 : 0}</td><td>${(_g2 = p.dribble) != null ? _g2 : 0}</td>`);
-        rows.push(`<td>${(_h2 = p.block) != null ? _h2 : 0}</td><td>${(_i2 = p.tackle) != null ? _i2 : 0}</td><td>${(_j = p.intercept) != null ? _j : 0}</td><td>${(_k = p.stamina) != null ? _k : 0}</td>`);
+        if (p) {
+          rows.push(`<td>${(_f2 = p.shot) != null ? _f2 : 0}</td><td>${(_g2 = p.pass) != null ? _g2 : 0}</td><td>${(_h2 = p.dribble) != null ? _h2 : 0}</td>`);
+          rows.push(`<td>${(_i2 = p.block) != null ? _i2 : 0}</td><td>${(_j = p.tackle) != null ? _j : 0}</td><td>${(_k = p.intercept) != null ? _k : 0}</td><td>${(_l = p.stamina) != null ? _l : 0}</td>`);
+        } else {
+          rows.push(`<td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`);
+        }
       } else {
         rows.push(`<td>???</td><td>???</td><td>???</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`);
       }

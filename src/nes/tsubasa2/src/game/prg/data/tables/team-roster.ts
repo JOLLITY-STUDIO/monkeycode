@@ -73,23 +73,26 @@ export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
 
   { id: 0x83, name: 'BenchReserve', type: 'bench',  players: [0x21, 0x14, 0x17, 0x10, 0x0B, 0x18, 0x05, 0x06, 0x09, 0x02, 0x0C], subs: [],                                                                                 formation: '4-3-3', tactic: 'Normal',   encounterLevels: [],  },
 
-  // ─────────── 巴西联赛 (6 队 × 12 bytes, PRG 0x3BB0A; 关 1-6) ───────────
-  // 全部落在 PRG bank 14 ($0E)。剧情顺序 = PRG 顺序 (stride 12):
-  //   Fluminense (关1) → Corinthians (关2) → Gremio (关3) → Palmeiras (关4) → Santos (关5) → Flamengo (关6 循环)
-  // 修正: 密码选关.MD §一.巴西联赛篇 第1关 = 弗卢米嫩塞, 不是 Flamengo
-  // 修正: doc 漏列 Fluminense (0x84), 实际是 Brazil League 第 1 关
-  { id: 0x84, name: 'Fluminense',   type: 'cpu',    players: [0x24, 0x09, 0x23, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x7D, 0xA0], subs: [],                                                                              formation: 'Form8',  tactic: 'Normal',  encounterLevels: [1] },
+  // ─────────── 巴西联赛 (6 队 × 22 PRG bytes stride 2, base PRG 0x3BAEE; 关 1-6) ───────────
+  // PRG bank 14 ($0E)。每队 11 ID stride 2 (22 bytes), 用 PRG 真实 byte 提取:
+  //   Fluminense (关1) base PRG 0x3BAEE: [0x94 0xA8 0xC0 0xE0 0x00 0x76 0x77 0xA0 0x1F 0x03 0x79]
+  //   Corinthians (关2) base PRG 0x3BB04: [0x7A 0xA0 0x1E 0x24 0x23 0x21 0x76 0x7D 0xA0 0x1E 0x25]
+  //   Gremio (关3) base PRG 0x3BB1A:    [0x26 0x20 0x7E 0x80 0xB0 0x1E 0x27 0x28 0x21 0x81 0x83]
+  //   Palmeiras (关4) base PRG 0x3BB30: [0x91 0x1D 0x29 0x2A 0x03 0x84 0x86 0x60 0x1F 0x2B 0x2C]
+  //   Santos (关5) base PRG 0x3BB46:    [0x2D 0x00 0x87 0x89 0x91 0x1D 0x2E 0x2F 0x21 0x8A 0x8C]
+  //   Flamengo (关6) base PRG 0x3BB5C: [0xA0 0x1E 0x30 0x31 0x01 0x76 0x8D 0x40 0x1E 0x32 0x33]
+  // 验证 (Node.js): PRG[base+i*2] for i in 0..10.
+  { id: 0x84, name: 'Fluminense',   type: 'cpu',    players: [0x94, 0xA8, 0xC0, 0xE0, 0x00, 0x76, 0x77, 0xA0, 0x1F, 0x03, 0x79], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [1] },
 
-  { id: 0x85, name: 'Corinthians',  type: 'cpu',    players: [0x26, 0x0F, 0x20, 0x00, 0x7E, 0x7F, 0x80, 0x80, 0xB0, 0x1F, 0x1E], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [2] },
+  { id: 0x85, name: 'Corinthians',  type: 'cpu',    players: [0x7A, 0xA0, 0x1E, 0x24, 0x23, 0x21, 0x76, 0x7D, 0xA0, 0x1E, 0x25], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [2] },
 
-  { id: 0x86, name: 'Gremio',       type: 'cpu',    players: [0x27, 0x0B, 0x28, 0x0F, 0x21, 0x00, 0x81, 0x82, 0x83, 0x83, 0x91], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [3] },
+  { id: 0x86, name: 'Gremio',       type: 'cpu',    players: [0x26, 0x20, 0x7E, 0x80, 0xB0, 0x1E, 0x27, 0x28, 0x21, 0x81, 0x83], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [3] },
 
-  { id: 0x87, name: 'Palmeiras',    type: 'cpu',    players: [0x1D, 0x09, 0x29, 0x04, 0x2A, 0x0F, 0x03, 0x00, 0x84, 0x85, 0x86], subs: [],                                                                              formation: 'Form6',  tactic: 'Tact8',   encounterLevels: [4] },
+  { id: 0x87, name: 'Palmeiras',    type: 'cpu',    players: [0x91, 0x1D, 0x29, 0x2A, 0x03, 0x84, 0x86, 0x60, 0x1F, 0x2B, 0x2C], subs: [],                                                                              formation: 'Form6',  tactic: 'Tact8',   encounterLevels: [4] },
 
-  { id: 0x88, name: 'Santos',       type: 'cpu',    players: [0x60, 0x1E, 0x1F, 0x0A, 0x2B, 0x06, 0x2C, 0x02, 0x2D, 0x0F, 0x00], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [5] },
+  { id: 0x88, name: 'Santos',       type: 'cpu',    players: [0x2D, 0x00, 0x87, 0x89, 0x91, 0x1D, 0x2E, 0x2F, 0x21, 0x8A, 0x8C], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [5] },
 
-  // 修正: Flamengo 仅关 6 (关 1 是 Fluminense, 不是 Flamengo)
-  { id: 0x89, name: 'Flamengo',     type: 'cpu',    players: [0x87, 0x88, 0x89, 0x89, 0x91, 0x1F, 0x1D, 0x04, 0x2E, 0x09, 0x2F], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [6] },
+  { id: 0x89, name: 'Flamengo',     type: 'cpu',    players: [0xA0, 0x1E, 0x30, 0x31, 0x01, 0x76, 0x8D, 0x40, 0x1E, 0x32, 0x33], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [6] },
 
   // ─────────── 日本高中 (6 队 × 12 bytes, PRG 0x3BB62; 关 7-12) ───────────
   { id: 0x8A, name: 'Kunimi',       type: 'cpu',    players: [0x31, 0x0F, 0x01, 0x00, 0x76, 0x8D, 0x8D, 0x8E, 0x40, 0x1E, 0x1E], subs: [],                                                                              formation: 'Form4',  tactic: 'Normal',  encounterLevels: [7] },
