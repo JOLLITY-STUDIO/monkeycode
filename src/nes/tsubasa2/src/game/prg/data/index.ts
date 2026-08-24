@@ -8,6 +8,7 @@ export { DataStore } from './store/DataStore';
 export type { VramTarget } from './store/DataStoreVram';
 export {
   SceneView, PaletteView, OamView, PpuStateView, FadeView, AudioStateView, RenderQueueView,
+  MatchRoundView, MatchEventView, PlayerMoveView, PlayerNameView,
 } from './store/RamViews';
 export { consumeNtBuffer, appendNtBuffer } from './store/RenderQueues';
 export type { NtRowEntry, RleEntry } from './store/RenderQueues';

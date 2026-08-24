@@ -50,19 +50,20 @@ export class MatchEventService {
    */
   startEvent(req: MatchEventRequest): MatchEventResult {
     const entry = findEventById(req.eventId);
-    this.store.write('ram_053A', req.type);
-    this.store.write('ram_053B', 1);
+    const evt = this.store.matchEvent;
+    evt.typeId = req.type & 0xff;
+    evt.counter = 1;
     for (let x = 0; x < 0x7E; x += 0x15) {
-      this.store.write(`ram_0547_${x}`, 0);
+      this.store.writeByte(0x0547 + x, 0);
     }
-    this.store.write('ram_053D', 0);
-    this.store.write('ram_0540', 0);
-    this.store.write('ram_0541', 0xFF);
-    this.store.write('ram_0543', 1);
-    this.store.write('ram_0544', 0x23);
-    this.store.write('ram_0545', 0x45);
-    this.store.write('ram_0547', req.targetX & 0xFF);
-    this.store.write('ram_0548', req.targetY & 0xFF);
+    evt.phase = 0;
+    evt.flag0 = 0;
+    evt.flag1 = 0xFF;
+    evt.counter3 = 1;
+    evt.paramLo = 0x23;
+    evt.paramHi = 0x45;
+    evt.targetX = req.targetX & 0xFF;
+    evt.targetY = req.targetY & 0xFF;
     return {
       eventId: req.eventId,
       success: true,
@@ -72,9 +73,9 @@ export class MatchEventService {
 
   /** 事件状态机更新：计数器递减 → 0 时读取下一段 */
   updateEvent(): boolean {
-    const counter = this.store.read('ram_053B');
-    if (counter > 0) {
-      this.store.write('ram_053B', counter - 1);
+    const evt = this.store.matchEvent;
+    if (evt.counter > 0) {
+      evt.counter = (evt.counter - 1) & 0xff;
       return true;
     }
     return false;
@@ -82,13 +83,13 @@ export class MatchEventService {
 
   /** 解析事件段：$F0+ 扩展标记 → 标记分发 */
   parseEventSegment(): number | null {
-    const ptr = this.store.read('ram_004C');
-    const y = this.store.read('ram_004D');
-    const value = this.store.read(`ram_${ptr}_${y}`);
+    const ptr = this.store.readByte(0x004c);
+    const y = this.store.readByte(0x004d);
+    const value = this.store.readByte((ptr + y) & 0xff);
     if (value >= 0xF0) {
       return value - 0xF0;
     }
-    this.store.write('ram_053B', value);
+    this.store.matchEvent.counter = value;
     return value;
   }
 

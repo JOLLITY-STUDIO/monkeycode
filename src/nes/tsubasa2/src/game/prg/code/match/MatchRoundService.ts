@@ -1,27 +1,21 @@
 /**
  * MatchRoundService — 比赛回合/战术
  *
- * 行为翻译（去 CPU 化）：
- * - 启动回合：初始化回合状态机（活跃/序列/计数器/类型）
+ * 行为翻译（去 CPU 化 + 具名视图）：
+ * - 启动回合：初始化回合状态机（活跃/序列/计数器/类型）→ 用 store.matchRound 视图
  * - 回合状态机更新：活跃 → 计数器递减 → 0 时装载下一段
  * - 解析回合段：从指针读取回合数据，$F0+ 扩展标记 → 标记分发
  * - 回合标记解析：AND #$0F → 标记分发
  * - 查询回合参数：BANK24_ROUND_POINTER_TABLE 查表
- *
- * bank 切换 = import MatchRoundService + 直接调用，无 MMC3 窗口模拟。
  */
 import type { DataStore } from '../../data/store/DataStore';
 import { BANK24_ROUND_TABLE, BANK24_ROUND_POINTER_TABLE, findRoundById } from '../../data/tables/match-round-table';
 
 /** 回合类型 */
 export enum MatchRoundType {
-  /** 开球 */
   KICKOFF = 0,
-  /** 进攻 */
   OFFENSE = 1,
-  /** 防守 */
   DEFENSE = 2,
-  /** 死球 */
   DEAD_BALL = 3,
 }
 
@@ -43,15 +37,15 @@ export class MatchRoundService {
 
   /**
    * 启动比赛回合：初始化回合状态机（活跃/序列/计数器）。
-   * 回合通过 BANK24_ROUND_TABLE 查询。
    */
   startRound(req: MatchRoundRequest): MatchRoundResult {
     const entry = findRoundById(req.roundId);
-    this.store.write('ram_05E3', 1);
-    this.store.write('ram_05E4', 0);
-    this.store.write('ram_05E5', 0);
-    this.store.write('ram_05E9', 0);
-    this.store.write('ram_05F4', 0);
+    const round = this.store.matchRound;
+    round.active = 1;
+    round.sequence = 0;
+    round.typeId = req.type & 0xff;
+    round.counter = 0;
+    round.paramId = 0;
     return {
       roundId: req.roundId,
       active: true,
@@ -63,15 +57,13 @@ export class MatchRoundService {
    * 回合状态机更新：活跃 → 计数器递减 → 0 时装载下一段。
    */
   updateRound(): boolean {
-    const active = this.store.read('ram_05E3');
-    if (active === 0) return false;
-    const counter = this.store.read('ram_05E9');
-    if (counter > 0) {
-      this.store.write('ram_05E9', counter - 1);
+    const round = this.store.matchRound;
+    if (round.active === 0) return false;
+    if (round.counter > 0) {
+      round.counter = (round.counter - 1) & 0xff;
       return true;
     }
-    const seq = this.store.read('ram_05E4') + 1;
-    this.store.write('ram_05E4', seq);
+    round.sequence = (round.sequence + 1) & 0xff;
     return true;
   }
 
@@ -79,13 +71,14 @@ export class MatchRoundService {
    * 解析回合段：从指针读取回合数据，$F0+ 扩展标记 → 标记分发。
    */
   parseRoundSegment(): number | null {
-    const y = this.store.read('ram_05E5');
-    const ptr = this.store.read('ram_005F');
-    const value = this.store.read(`ram_${ptr}_${y}`);
+    const round = this.store.matchRound;
+    const y = round.segmentCursor;
+    const ptr = this.store.readByte(0x005f);
+    const value = this.store.readByte((ptr + y) & 0xff);
     if (value >= 0xF0) {
       return value & 0x0F;
     }
-    this.store.write('ram_05E9', value);
+    round.counter = value;
     return value;
   }
 

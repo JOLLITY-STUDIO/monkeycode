@@ -20,13 +20,62 @@ import { loadPalette } from '../../data/tables/palette-table';
 /** boot 时复制到 $05EB（8 字节） */
 const BOOT_05EB_TABLE: ReadonlyArray<number> = [0x13, 0x07, 0x19, 0x00, 0x00, 0xaf, 0x2e, 0xfd];
 
-/** 球员数据指针表（32 项，16bit LE，覆盖 $0300-$042C 区间） */
-const PLAYER_PTR_TABLE: ReadonlyArray<number> = [
-  0x0300, 0x030c, 0x0318, 0x0324, 0x0330, 0x033c, 0x0348, 0x0354,
-  0x0360, 0x036c, 0x0378, 0x0384, 0x0390, 0x039c, 0x03a8, 0x03b4,
-  0x03c0, 0x03cc, 0x03d8, 0x03e4, 0x03f0, 0x03fc, 0x0408, 0x040c,
-  0x0410, 0x0414, 0x0418, 0x041c, 0x0420, 0x0424, 0x0428, 0x042c,
+/** 球员数据槽（声明式具名表，替代原 PLAYER_PTR_TABLE 数字数组） */
+export interface PlayerSlotEntry {
+  /** 球员 ID（0-$15 共 22 项；ID 22+ 为预留/共享区） */
+  readonly playerId: number;
+  /** 数据基址（每球员 12 字节结构，[base+6]=X, [base+8]=Y） */
+  readonly baseAddr: number;
+}
+
+/**
+ * 球员数据槽表（32 项，$0300-$042C 区间）
+ * 原 PLAYER_PTR_TABLE 为 16-bit LE 数字数组，查找逻辑（ID → RAM 基址）反推。
+ * 具象化后：每项带 playerId，Service 直接 find(playerId).baseAddr。
+ */
+export const PLAYER_SLOTS: ReadonlyArray<PlayerSlotEntry> = [
+  { playerId: 0, baseAddr: 0x0300 },
+  { playerId: 1, baseAddr: 0x030c },
+  { playerId: 2, baseAddr: 0x0318 },
+  { playerId: 3, baseAddr: 0x0324 },
+  { playerId: 4, baseAddr: 0x0330 },
+  { playerId: 5, baseAddr: 0x033c },
+  { playerId: 6, baseAddr: 0x0348 },
+  { playerId: 7, baseAddr: 0x0354 },
+  { playerId: 8, baseAddr: 0x0360 },
+  { playerId: 9, baseAddr: 0x036c },
+  { playerId: 10, baseAddr: 0x0378 },
+  { playerId: 11, baseAddr: 0x0384 },
+  { playerId: 12, baseAddr: 0x0390 },
+  { playerId: 13, baseAddr: 0x039c },
+  { playerId: 14, baseAddr: 0x03a8 },
+  { playerId: 15, baseAddr: 0x03b4 },
+  { playerId: 16, baseAddr: 0x03c0 },
+  { playerId: 17, baseAddr: 0x03cc },
+  { playerId: 18, baseAddr: 0x03d8 },
+  { playerId: 19, baseAddr: 0x03e4 },
+  { playerId: 20, baseAddr: 0x03f0 },
+  { playerId: 21, baseAddr: 0x03fc },
+  { playerId: 22, baseAddr: 0x0408 },
+  { playerId: 23, baseAddr: 0x040c },
+  { playerId: 24, baseAddr: 0x0410 },
+  { playerId: 25, baseAddr: 0x0414 },
+  { playerId: 26, baseAddr: 0x0418 },
+  { playerId: 27, baseAddr: 0x041c },
+  { playerId: 28, baseAddr: 0x0420 },
+  { playerId: 29, baseAddr: 0x0424 },
+  { playerId: 30, baseAddr: 0x0428 },
+  { playerId: 31, baseAddr: 0x042c },
 ];
+
+/** 默认基址（球员 ID 未注册时 fallback） */
+const DEFAULT_PLAYER_BASE = 0x0300;
+
+/** 按 ID 查球员数据基址（具名查询，替代原 idx 算术） */
+function getPlayerBase(playerId: number): number {
+  const entry = PLAYER_SLOTS.find(s => s.playerId === (playerId & 0x1f));
+  return entry?.baseAddr ?? DEFAULT_PLAYER_BASE;
+}
 
 export class HardwareInitService {
   constructor(readonly store: DataStore) {}
@@ -233,7 +282,7 @@ export class HardwareInitService {
   resolvePlayerPointer(): number {
     const store = this.store;
     const a = ((store.readByte(0x05fb) ^ 0x0b) << 1) & 0xff;
-    const ptr = PLAYER_PTR_TABLE[a >> 1] ?? 0;
+    const ptr = getPlayerBase(a >> 1);
     store.writeByte(0x0034, ptr & 0xff);
     store.writeByte(0x0035, (ptr >> 8) & 0xff);
     return ptr;
@@ -281,28 +330,27 @@ export class HardwareInitService {
 
   /**
    * 清空球员数据（ID 0-$15，共 22 项）：
-   *   逐项查 PLAYER_PTR_TABLE → [ptr+$0A]=0；
-   *   ID==0 或 ID==$0B 时额外 [ptr+$07]=0。
+   *   逐项查 PLAYER_SLOTS → [baseAddr+$0A]=0；
+   *   ID==0 或 ID==$0B 时额外 [baseAddr+$07]=0。
    */
   clearAllPlayers(): void {
     const store = this.store;
     for (let id = 0; id < 0x16; id++) {
-      const ptr = PLAYER_PTR_TABLE[id] ?? 0x0300;
-      store.writeByte(ptr + 0x0a, 0x00);
+      const base = getPlayerBase(id);
+      store.writeByte(base + 0x0a, 0x00);
       if (id === 0 || id === 0x0b) {
-        store.writeByte(ptr + 0x07, 0x00);
+        store.writeByte(base + 0x07, 0x00);
       }
     }
   }
 
   /**
-   * 按 ID 查球员数据指针（PLAYER_PTR_TABLE，16bit LE）。
+   * 按 ID 查球员数据基址（PLAYER_SLOTS 具名查询）。
    * 结果写入 $0034/$0035（原版间接指针视图），并返回。
    */
   resolvePlayerPointerById(id: number): number {
     const store = this.store;
-    const idx = ((id & 0xff) << 1) & 0xfe;
-    const ptr = PLAYER_PTR_TABLE[idx >> 1] ?? 0x0300;
+    const ptr = getPlayerBase(id & 0xff);
     store.writeByte(0x0034, ptr & 0xff);
     store.writeByte(0x0035, (ptr >> 8) & 0xff);
     return ptr;

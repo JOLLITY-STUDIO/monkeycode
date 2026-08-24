@@ -219,3 +219,119 @@ export class RenderQueueView {
   /** NT 渲染缓冲（$05E8-$0627，共 64 字节） */
   get ntBuffer(): Uint8Array { return this.s.ram.subarray(0x05e8, 0x0628); }
 }
+
+/**
+ * 比赛回合视图（$05E3-$05FF 区间业务状态）
+ *
+ * 业务字段（替代 'ram_05E3' / 'ram_05E4' / 'ram_05E5' / 'ram_05E9' / 'ram_05F4' 字符串键）：
+ * - active：是否进行中（$05E3）
+ * - sequence：段序号（$05E4）
+ * - counter：段内倒计时（$05E9）
+ * - typeId：类型 ID（$05E5）
+ * - paramId：参数 ID（$05F4）
+ * - nextEventId（$0600+，扩展位）
+ */
+export class MatchRoundView {
+  constructor(private readonly s: DataStore) {}
+
+  get active(): number { return this.s.readByte(0x05e3); }
+  set active(v: number) { this.s.writeByte(0x05e3, v & 0xff); }
+
+  get sequence(): number { return this.s.readByte(0x05e4); }
+  set sequence(v: number) { this.s.writeByte(0x05e4, v & 0xff); }
+
+  get typeId(): number { return this.s.readByte(0x05e5); }
+  set typeId(v: number) { this.s.writeByte(0x05e5, v & 0xff); }
+
+  get counter(): number { return this.s.readByte(0x05e9); }
+  set counter(v: number) { this.s.writeByte(0x05e9, v & 0xff); }
+
+  get paramId(): number { return this.s.readByte(0x05f4); }
+  set paramId(v: number) { this.s.writeByte(0x05f4, v & 0xff); }
+}
+
+/**
+ * 比赛事件视图（$053A-$055E 区间业务状态）
+ *
+ * 业务字段（替代 'ram_053A' / 'ram_053B' / 'ram_053D' / 'ram_0540' / 'ram_0541' 等字符串键）：
+ */
+export class MatchEventView {
+  constructor(private readonly s: DataStore) {}
+
+  get typeId(): number { return this.s.readByte(0x053a); }
+  set typeId(v: number) { this.s.writeByte(0x053a, v & 0xff); }
+
+  get counter(): number { return this.s.readByte(0x053b); }
+  set counter(v: number) { this.s.writeByte(0x053b, v & 0xff); }
+
+  get phase(): number { return this.s.readByte(0x053d); }
+  set phase(v: number) { this.s.writeByte(0x053d, v & 0xff); }
+
+  get flag0(): number { return this.s.readByte(0x0540); }
+  set flag0(v: number) { this.s.writeByte(0x0540, v & 0xff); }
+
+  get flag1(): number { return this.s.readByte(0x0541); }
+  set flag1(v: number) { this.s.writeByte(0x0541, v & 0xff); }
+
+  get counter3(): number { return this.s.readByte(0x0543); }
+  set counter3(v: number) { this.s.writeByte(0x0543, v & 0xff); }
+
+  get paramLo(): number { return this.s.readByte(0x0544); }
+  set paramLo(v: number) { this.s.writeByte(0x0544, v & 0xff); }
+
+  get paramHi(): number { return this.s.readByte(0x0545); }
+  set paramHi(v: number) { this.s.writeByte(0x0545, v & 0xff); }
+
+  get targetX(): number { return this.s.readByte(0x0547); }
+  set targetX(v: number) { this.s.writeByte(0x0547, v & 0xff); }
+
+  get targetY(): number { return this.s.readByte(0x0548); }
+  set targetY(v: number) { this.s.writeByte(0x0548, v & 0xff); }
+}
+
+/**
+ * 球员移动视图（$003E-$0044 / $0517 区间业务状态）
+ *
+ * 业务字段（替代 'ram_003E' / 'ram_003F' / 'ram_0042' / 'ram_0044' / 'ram_0517' 字符串键）：
+ * - flipX：方向翻转（$0517 bit6）
+ * - directionFlag：方向位域（$0517）
+ * - curX / curY：当前坐标（$003E/$003F）
+ * - segmentPtr / segmentCursor：段指针与游标（$0042/$0044）
+ */
+export class PlayerMoveView {
+  constructor(private readonly s: DataStore) {}
+
+  get directionFlag(): number { return this.s.readByte(0x0517); }
+  set directionFlag(v: number) { this.s.writeByte(0x0517, v & 0xff); }
+
+  get flipX(): boolean { return (this.directionFlag & 0x40) !== 0; }
+
+  get curX(): number { return this.s.readByte(0x003e); }
+  set curX(v: number) { this.s.writeByte(0x003e, v & 0xff); }
+
+  get curY(): number { return this.s.readByte(0x003f); }
+  set curY(v: number) { this.s.writeByte(0x003f, v & 0xff); }
+
+  get segmentPtr(): number { return this.s.readByte(0x0042); }
+  set segmentPtr(v: number) { this.s.writeByte(0x0042, v & 0xff); }
+
+  get segmentCursor(): number { return this.s.readByte(0x0044); }
+  set segmentCursor(v: number) { this.s.writeByte(0x0044, v & 0xff); }
+}
+
+/**
+ * 球员名字视图（$062A / $002C 区间业务状态）
+ *
+ * 业务字段（替代 'ram_062A' / 'ram_002C' 字符串键）：
+ * - segmentIndex：名字段索引（$062A & 0x7F）
+ * - charIndex：字符字符位（$002C）
+ */
+export class PlayerNameView {
+  constructor(private readonly s: DataStore) {}
+
+  get segmentIndex(): number { return this.s.readByte(0x062a) & 0x7f; }
+  set segmentIndex(v: number) { this.s.writeByte(0x062a, v & 0x7f); }
+
+  get charIndex(): number { return this.s.readByte(0x002c); }
+  set charIndex(v: number) { this.s.writeByte(0x002c, v & 0xff); }
+}

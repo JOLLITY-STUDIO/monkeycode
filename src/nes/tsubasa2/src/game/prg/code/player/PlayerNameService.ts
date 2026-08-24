@@ -1,13 +1,11 @@
 /**
  * PlayerNameService — 球员名字/文本
  *
- * 行为翻译（去 CPU 化）：
+ * 行为翻译（去 CPU 化 + 具名视图）：
  * - 查询球员名字：findNameByPlayerId → PlayerName
- * - 解析名字段：ram_062A & 0x7F → 索引
- * - 装载名字地址：ram_002C/X → ASL → 表查询
+ * - 解析名字段：store.playerName.segmentIndex → 索引（×4 = 字节偏移）
+ * - 装载名字地址：store.playerName.charIndex → 查表
  * - 查询文本段：BANK27_TEXT_TABLE 查表
- *
- * bank 切换 = import PlayerNameService + 直接调用，无 MMC3 窗口模拟。
  */
 import type { DataStore } from '../../data/store/DataStore';
 import { BANK27_NAME_TABLE, BANK27_TEXT_TABLE, findNameByPlayerId } from '../../data/tables/player-name-table';
@@ -36,16 +34,15 @@ export class PlayerNameService {
   }
 
   /**
-   * 解析名字段：ram_062A & 0x7F → 索引
+   * 解析名字段：store.playerName.segmentIndex → 字节偏移
    * @returns 4 字节偏移
    */
   parseNameSegment(): number {
-    const idx = this.store.read('ram_062A') & 0x7F;
-    return idx * 4;
+    return this.store.playerName.segmentIndex * 4;
   }
 
   /**
-   * 装载名字地址：ram_002C/X → ASL → 表查询
+   * 装载名字地址：store.playerName.charIndex → 查表
    */
   loadNameAddress(charIdx: number): number {
     void charIdx;

@@ -16,7 +16,7 @@
 import type { VramTarget } from './DataStoreVram';
 
 /** 命名空间视图（具象化 RAM 用途，替代 ram_XXXX 字面量） */
-import { SceneView, PaletteView, OamView, PpuStateView, FadeView, AudioStateView, RenderQueueView } from './RamViews';
+import { SceneView, PaletteView, OamView, PpuStateView, FadeView, AudioStateView, RenderQueueView, MatchRoundView, MatchEventView, PlayerMoveView, PlayerNameView } from './RamViews';
 
 export class DataStore {
   /** 工作 RAM $0000-$07FF（含 OAM 缓冲 $0200、NMI 缓冲 $0498/$05E8） */
@@ -42,6 +42,10 @@ export class DataStore {
   readonly fade: FadeView;
   readonly audioState: AudioStateView;
   readonly renderQueue: RenderQueueView;
+  readonly matchRound: MatchRoundView;
+  readonly matchEvent: MatchEventView;
+  readonly playerMove: PlayerMoveView;
+  readonly playerName: PlayerNameView;
 
   constructor() {
     this.scene = new SceneView(this);
@@ -51,6 +55,10 @@ export class DataStore {
     this.fade = new FadeView(this);
     this.audioState = new AudioStateView(this);
     this.renderQueue = new RenderQueueView(this);
+    this.matchRound = new MatchRoundView(this);
+    this.matchEvent = new MatchEventView(this);
+    this.playerMove = new PlayerMoveView(this);
+    this.playerName = new PlayerNameView(this);
   }
 
   /** 全部清零（等价 Reset 的 RAM 清零循环） */
