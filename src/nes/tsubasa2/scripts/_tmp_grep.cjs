@@ -1,24 +1,17 @@
+// 临时：查 audio-rom.ts 关键定义 + 反汇编 bank12 $8090-$8110 分发段
 const fs = require('fs');
-const path = require('path');
-const root = process.argv[2];
-const pattern = new RegExp(process.argv[3], 'i');
-function walk(dir, out = []) {
-  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    const p = path.join(dir, e.name);
-    if (e.isDirectory()) walk(p, out);
-    else if (/\.(s|ts|md)$/.test(e.name)) out.push(p);
+const f = 'd:/studio/github/monkeycode/src/nes/tsubasa2/src/game/prg/data/audio/audio-rom.ts';
+const t = fs.readFileSync(f, 'utf8');
+const lines = t.split('\n');
+lines.forEach((l, i) => {
+  if (/SONG_REQUEST_IDS|SONG_COUNT|BGM_POINTER_TABLE|readBgmPointer|readBgmData|readSePointer|readBank12U16|readBank12Byte/.test(l)) {
+    console.log((i + 1) + ': ' + l.trim());
   }
-  return out;
-}
-const files = walk(root);
-for (const f of files) {
-  const lines = fs.readFileSync(f, 'utf8').split('\n');
-  for (let i = 0; i < lines.length; i++) {
-    if (pattern.test(lines[i])) {
-      const s = Math.max(0, i - 3);
-      const e = Math.min(lines.length - 1, i + 3);
-      console.log(`==== ${f}:${i + 1} ====`);
-      for (let j = s; j <= e; j++) console.log(`${j + 1}: ${lines[j]}`);
-    }
-  }
+});
+
+// 找 SONG_REQUEST_IDS 的完整数组（定义行往后 60 行）
+const idx = lines.findIndex((l) => /SONG_REQUEST_IDS\s*[:=]/.test(l));
+if (idx >= 0) {
+  console.log('\n--- SONG_REQUEST_IDS 定义 ---');
+  for (let i = idx; i < Math.min(idx + 40, lines.length); i++) console.log((i + 1) + ': ' + lines[i]);
 }

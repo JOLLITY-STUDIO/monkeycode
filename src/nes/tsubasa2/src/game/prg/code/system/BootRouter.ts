@@ -12,7 +12,8 @@
  * 场景 0-23 全部登记在场景表中，未翻译场景使用默认 stub（留在当前场景）。
  */
 import type { DataStore } from '../../data/store/DataStore';
-import type { SceneController } from '../scene/SceneController';
+import type { InputService } from './InputService';
+import { SceneController } from '../scene/SceneController';
 import { Scene0Controller } from '../scene/Scene0Controller';
 
 /** 场景号枚举（0-23，跳转表 $A491 顺序） */
@@ -44,16 +45,16 @@ export const enum SceneId {
 }
 
 /** 未翻译场景的默认 stub（不流转，留在当前场景） */
-class SceneStubController implements SceneController {
+class SceneStubController extends SceneController {
   readonly sceneId: number;
-  constructor(sceneId: number) {
+  constructor(store: DataStore, input: InputService, sceneId: number) {
+    super(store, input);
     this.sceneId = sceneId;
   }
   onEnter(): void {}
   onUpdate(_frame: number): number | undefined {
     return undefined;
   }
-  onRender(): void {}
 }
 
 export class BootRouter {
@@ -68,12 +69,13 @@ export class BootRouter {
 
   constructor(
     readonly store: DataStore,
+    readonly input: InputService,
     scene0?: Scene0Controller,
   ) {
     // 场景 0 已翻译：注册真实控制器；其余场景未翻译时走默认 stub
-    this.register(scene0 ?? new SceneStubController(SceneId.Scene0));
+    this.register(scene0 ?? new SceneStubController(this.store, this.input, SceneId.Scene0));
     for (let id = 1; id <= 23; id++) {
-      this.scenes.set(id, new SceneStubController(id));
+      this.scenes.set(id, new SceneStubController(this.store, this.input, id));
     }
   }
 
@@ -84,7 +86,7 @@ export class BootRouter {
 
   /** 获取场景控制器（未注册返回 stub） */
   getController(sceneId: number): SceneController {
-    return this.scenes.get(sceneId) ?? new SceneStubController(sceneId);
+    return this.scenes.get(sceneId) ?? new SceneStubController(this.store, this.input, sceneId);
   }
 
   /**

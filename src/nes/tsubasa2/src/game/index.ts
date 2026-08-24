@@ -38,7 +38,6 @@ import {
   SpriteService,
   SpriteAnimationService,
   AudioService,
-  RomService,
 } from './prg/index';
 import type { FrameTarget } from './runtime/GameRuntime';
 
@@ -67,7 +66,6 @@ export class Tsubasa2 {
   readonly hardware: HardwareInitService;
   readonly skill: SkillService;
   readonly audio: AudioService;
-  readonly rom: RomService;
 
   /** 帧计数（NMI 帧号） */
   protected _frame = 0;
@@ -112,9 +110,6 @@ export class Tsubasa2 {
     void playerQuery;
     void teamRoster;
 
-    // PRG ROM 流读取器（$C8FB 渲染队列 bank 定位）
-    this.rom = new RomService();
-
     // 精灵 / 技能 / 音频
     this.skill = new SkillService(this.store);
     const sprite = new SpriteService(this.store);
@@ -128,17 +123,14 @@ export class Tsubasa2 {
 
     // 音频注入（场景 BGM/SE 播放）
     scene0.attachAudio(this.audio);
-    // ROM 注入（$8BB0 tile 指令流读取）
-    scene0.attachRom(this.rom);
 
     // 路由：场景表驱动注册（未翻译场景自动走默认 stub）
-    this.router = new BootRouter(this.store, scene0);
+    this.router = new BootRouter(this.store, this.input, scene0);
 
     // 硬件初始化 + 中断管线
     this.hardware = new HardwareInitService(this.store);
     this.interrupts = new InterruptService(this.store, this.input);
     this.interrupts.attachRouter(this.router);
-    this.interrupts.attachStreamReader(this.rom);
     void matchEngine;
   }
 

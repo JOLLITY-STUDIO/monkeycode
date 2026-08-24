@@ -20,7 +20,6 @@ import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
-import type { RomService } from '../../data/rom/RomService';
 
 /** 场景 0 状态机阶段（对应原版 $A4C1-$A559 的时序步骤） */
 enum Scene0Phase {
@@ -46,14 +45,15 @@ export class Scene0Controller extends SceneController {
   readonly sceneId = 0;
   private readonly prim: RenderingPrimitivesService;
   private audio: AudioService | null = null;
-  private rom: RomService | null = null;
 
   private phase = Scene0Phase.FadeInAndWait16;
   private counter = 0;
   /** $84C9 的 LDY #$30 循环计数 */
   private driftY = 0;
-  /** $8CD6-$8D1D tile 渲染循环是否完成 */
+  /** 场景 3 NT 行写入完成（32 行写满） */
   private streamDone = false;
+  /** 场景 3 NT 当前写入行（queueScene3NametableRows 分帧逐行） */
+  private sceneRow = 0;
   /** 240 帧等待已完成、进入 60 帧等待（$8520-$8527） */
   private holdSecond = false;
 
@@ -67,16 +67,12 @@ export class Scene0Controller extends SceneController {
     this.audio = audio;
   }
 
-  /** 注入 RomService（$8BB0 tile 指令流读取） */
-  attachRom(rom: RomService): void {
-    this.rom = rom;
-  }
-
   onEnter(): void {
     this.phase = Scene0Phase.FadeInAndWait16;
     this.counter = 0x10; // LDA #$10; JSR $9FA8（等 16 帧）
     this.driftY = 0;
     this.streamDone = false;
+    this.sceneRow = 0;
     this.holdSecond = false;
     // BGM（V0.6 已实现请求队列；编号对照待确认，暂用 0x01）
     this.audio?.playBgm(0x01);
@@ -108,19 +104,20 @@ export class Scene0Controller extends SceneController {
         this.prim.loadChrConfig(0x17);
         store.writeByte(0x0044, 0x68);
         this.prim.loadSceneData(3);
-        // $8BB0-$8D1D: tile 渲染指令流（读取 bank7 数据，设置 CHR 请求表 + NT）
-        if (this.rom) {
-          this.prim.loadSceneStream(this.rom);
-          this.streamDone = false;
-        }
+        // $8BB0-$8D1D: tile 渲染指令流（数据已提取为 OPENING_SCENE3_TILES/
+        // OPENING_TILE_PATTERNS，H5 在 LoadScene3Nt 阶段按行写 $05E8 缓冲）
+        this.sceneRow = 0;
+        this.streamDone = false;
         this.phase = Scene0Phase.LoadScene3Nt;
         return undefined;
       }
 
       case Scene0Phase.LoadScene3Nt: {
-        // $8CD6-$8D1D: tile 渲染循环（每帧一步）
-        if (!this.streamDone && this.rom) {
-          this.streamDone = this.prim.loadSceneStreamNext(this.rom);
+        // $8CD6-$8D1D: tile 渲染循环（每帧一行；$05E8 缓冲容量 64 字节限制）
+        if (!this.streamDone) {
+          this.prim.queueScene3NametableRows(this.sceneRow, 1);
+          this.sceneRow++;
+          if (this.sceneRow >= 32) this.streamDone = true;
           return undefined;
         }
         // $84EC-$84F2: $008E→$0090, $008F→$0091

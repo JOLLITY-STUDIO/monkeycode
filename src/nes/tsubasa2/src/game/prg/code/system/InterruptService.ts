@@ -37,19 +37,9 @@ export interface PpuTarget {
   loadChrBank?(slot: number, bank1k: number): void;
 }
 
-/**
- * PRG ROM 流读取器（$C8FB 队列 RLE 流的 bank 定位）。
- * 由运行时注入（实现读 32×8KB PRG 数据表）；未注入时队列仅消费计数不渲染。
- */
-export interface RomStreamReader {
-  /** 读 PRG (bank, addr) 处字节；addr 为 CPU 地址 $8000-$FFFF（offset = addr & $1FFF） */
-  readByte(bank: number, addr: number): number;
-}
-
 export class InterruptService {
   private router: BootRouter | null = null;
   private audio: AudioService | null = null;
-  private streamReader: RomStreamReader | null = null;
 
   /** 已应用 CHR 槽位缓存（$C9E9 每帧重放，仅装载变化槽位） */
   private readonly chrSlots: number[] = new Array(8).fill(-1);
@@ -67,11 +57,6 @@ export class InterruptService {
   /** 注入音频服务（每帧推进音频引擎） */
   attachAudio(audio: AudioService): void {
     this.audio = audio;
-  }
-
-  /** 注入 PRG ROM 流读取器（$C8FB 队列 bank 解析） */
-  attachStreamReader(reader: RomStreamReader): void {
-    this.streamReader = reader;
   }
 
   /**
@@ -359,8 +344,10 @@ export class InterruptService {
   /**
    * $C8FB $0498 渲染队列消费：
    *   计数>0 → DEC；index=(count-1)*3；条目 [bank][ptrLo][ptrHi]。
-   *   ptrHi bit7 置位 → MMC3 PRG bank 切换（H5 省略，流数据按 bank 定位）。
+   *   ptrHi bit7 置位 → MMC3 PRG bank 切换（H5 省略）。
    *   流格式：RLE 块 [count][addrLo][addrHi][data×count]，0 终止。
+   *   流数据仅指向工作 RAM（如 $046C 调色板流）；PRG 流数据已全部提取为
+   *   声明式表，不再有 ROM 字节读取路径（readStreamByte 仅读 RAM）。
    *   每帧消费队尾一项（LIFO），一项的流全部渲染完才返回。
    */
   private flushRenderQueue(ppu: PpuTarget): void {
@@ -374,6 +361,7 @@ export class InterruptService {
     const hi = store.readByte(0x049b + idx);   // $0078
     const ptr = (hi << 8) | lo;                // 流指针（CPU 地址）
     // $C919: BPL $C92C — hi bit7 置位时原版先做 MMC3 PRG 切换（H5 省略）
+    void bank;
     let p = ptr;
     for (;;) {
       const b0 = this.readStreamByte(bank, p);
@@ -390,15 +378,12 @@ export class InterruptService {
   }
 
   /**
-   * $C92E LDA ($0077),Y — CPU 内存读取（流可能指向 RAM 或 PRG）。
+   * $C92E LDA ($0077),Y — CPU 内存读取（流仅指向工作 RAM）。
    *   $0000-$07FF: 工作 RAM（如 $046C 调色板流 → 直写 $3F00）
-   *   $6000-$7FFF: 存档 SRAM（H5 无，返回 0）
-   *   $8000-$FFFF: PRG ROM（按 bank + addr&$1FFF 定位）
+   *   $8000-$FFFF: PRG ROM 已全部提取为声明式表（禁止 ROM 字节读取），返回 0。
    */
   private readStreamByte(bank: number, addr: number): number {
-    if (addr >= 0x8000) {
-      return this.streamReader ? this.streamReader.readByte(bank, addr) : 0;
-    }
+    void bank;
     if (addr < 0x2000) {
       return this.store.readByte(addr & 0x7ff);
     }

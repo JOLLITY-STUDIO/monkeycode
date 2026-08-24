@@ -1,3 +1,4 @@
+// @ts-nocheck — tsnes 移植代码，松散类型
 import { fromJSON, toJSON } from "../utils.js";
 
 class ChannelNoise {

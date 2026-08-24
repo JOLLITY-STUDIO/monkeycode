@@ -22,7 +22,7 @@ import { AudioRom, SONG_REQUEST_IDS, SONG_COUNT } from '../../data/audio/audio-r
 // PAPU 类型（松散类型，因为 papu 是 tsnes 移植代码）
 export interface Papu {
   writeReg(addr: number, value: number): void;
-  clockFrameCounter(nCycles: number): void;
+  clockFrameCounter(nCycles: number, frameCounterAlreadyAdvanced?: number): void;
   sampleTimer: number;
   sampleTimerMax: number;
   nes: { opts: { onAudioSample?: (l: number, r: number) => void } };

@@ -1,2 +1,0 @@
-﻿Output: d:\studio\github\monkeycode\src\nes\tsubasa2\debug\trace_f9_0490.txt
-Changes: 15

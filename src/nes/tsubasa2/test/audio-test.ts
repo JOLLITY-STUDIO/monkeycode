@@ -13,6 +13,9 @@ import { AudioService } from '../src/game/prg/code/audio/AudioService';
 import { LogApuTarget } from '../src/game/prg/code/audio/ApuTarget';
 import { AudioRom } from '../src/game/prg/data/audio/audio-rom';
 
+// node 运行环境（tsconfig lib 不含 node 类型，测试脚本声明）
+declare const process: { exit(code?: number): never };
+
 function assert(cond: boolean, msg: string): void {
   if (!cond) { console.error('FAIL:', msg); process.exit(1); }
   console.log('PASS:', msg);
@@ -22,7 +25,15 @@ const store = new DataStore();
 store.reset();
 const audio = new AudioService(store);
 const apu = new LogApuTarget();
-audio.attachApu(apu);
+// LogApuTarget 是 ApuTarget（writeRegister）；AudioService 对接 Papu（writeReg）
+// 用适配器桥接，保持测试只验证寄存器写日志
+audio.attachPapu({
+  writeReg: (addr: number, v: number) => apu.writeRegister(addr, v),
+  clockFrameCounter: () => {},
+  sampleTimer: 0,
+  sampleTimerMax: 0,
+  nes: { opts: {} },
+});
 
 // === 测试 1: playBgm ===
 audio.playBgm(0x10);

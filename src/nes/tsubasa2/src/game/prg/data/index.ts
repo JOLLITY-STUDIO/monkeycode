@@ -76,9 +76,3 @@ export {
   NOTE_FREQ_TABLE_ADDR,
   AudioRom,
 } from './audio/audio-rom';
-
-// rom (PRG 数据总线)
-export {
-  PRG_BANK_SIZE, PRG_BANK_COUNT, PRG_BANKS, NES_PRG_ROM,
-} from './rom/index';
-export { RomService } from './rom/RomService';

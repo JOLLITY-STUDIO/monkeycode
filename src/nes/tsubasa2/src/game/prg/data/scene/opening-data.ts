@@ -185,7 +185,7 @@ export const OPENING_CHR_CONFIGS: readonly (readonly number[])[] = [
 ];
 
 // CHR 请求表由 $8BB0-$8D1D tile 渲染指令流动态写入，不使用硬编码值。
-// 详见 RenderingPrimitivesService.loadSceneStream()。
+// 场景 3 的 NT 行数据由 RenderingPrimitivesService.queueScene3NametableRows() 消费。
 
 /** 场景 3 的 tile 数据（6 列 × 8 行 = 48 字节，按行优先） */
 export const OPENING_SCENE3_TILES: readonly number[] = [

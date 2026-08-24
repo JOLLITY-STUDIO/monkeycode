@@ -106,8 +106,8 @@ export class HardwareInitService {
    * $CCD2: $0498 渲染队列入队。
    * 条目 3 字节 [bank, ptrLo, ptrHi]，指向 RLE 流（$C8FB 消费）。
    * 流头：[count][addrLo][addrHi][data×count]，0 终止。
-   * @param bank PRG bank 号
-   * @param ptr 流起始 CPU 地址（$0000-$FFFF；RAM 区读 store，PRG 区读 RomService）
+   * @param bank PRG bank 号（H5 已无 PRG 流读取，仅保留 RAM 视图）
+   * @param ptr 流起始 CPU 地址（RAM 区读 store）
    */
   queueRenderEntry(bank: number, ptr: number): void {
     const store = this.store;
@@ -308,43 +308,6 @@ export class HardwareInitService {
       col--; // DEX（回到 $CDFD）
       if (col < 0) return a & 0xff; // BMI $CE07
     }
-  }
-
-  /**
-   * $CE2D: MMC3 PRG bank 写（$8000=cmd6/$8001=$0024、cmd7/$8001=$0025）。
-   * H5：PRG 数据已 import，硬件寄存器省略，仅同步 $0023 RAM 视图。
-   */
-  setPrgBank(bank6: number, bank7: number): void {
-    const store = this.store;
-    store.writeByte(0x0024, bank6 & 0xff);
-    store.writeByte(0x0025, bank7 & 0xff);
-    store.writeByte(0x0023, (store.readByte(0x0022) | 0x06) & 0xff);
-  }
-
-  /**
-   * $CE08: 带 A 参数调用另一 bank（$CE2D 切 bank → JSR $8000 → 恢复）。
-   * H5：通过 bank 回调注册表分发（banks 已 import，无硬件切换）。
-   */
-  callBankWithA(bankHi: number, bankLo: number, a: number): void {
-    const fn = this.bankEntries.get((bankHi << 8) | bankLo);
-    if (fn) fn(a);
-  }
-
-  /** bank 入口回调注册表（$CE08/$CF72 分发目标） */
-  private readonly bankEntries = new Map<number, (a: number) => void>();
-
-  /** 注册 bank 入口回调（对应原版 $8000 入口） */
-  registerBankEntry(bankId: number, fn: (a: number) => void): void {
-    this.bankEntries.set(bankId, fn);
-  }
-
-  /**
-   * $CF72: 调用 bank1A/$801E（$CE2D 切 bank → JSR $802A → 恢复）。
-   * H5：bank 回调注册表分发。
-   */
-  callBank1A(a: number): void {
-    const fn = this.bankEntries.get(0x1a00);
-    if (fn) fn(a);
   }
 
   /**
