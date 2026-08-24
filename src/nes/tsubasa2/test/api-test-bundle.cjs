@@ -2288,7 +2288,7 @@
     for (let row = 0; row < FONT_H; row++) {
       const line = bits[row] || 0;
       for (let col = 0; col < FONT_W; col++) {
-        if (line & 1 << FONT_W - 1 - col) {
+        if (line & 1 << col) {
           ctx.fillRect(x + col * scale, y + row * scale, scale, scale);
         }
       }

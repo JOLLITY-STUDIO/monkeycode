@@ -91,7 +91,8 @@ function drawChar(ctx: CanvasRenderingContext2D, ch: string, x: number, y: numbe
   for (let row = 0; row < FONT_H; row++) {
     const line = bits[row] || 0;
     for (let col = 0; col < FONT_W; col++) {
-      if (line & (1 << (FONT_W - 1 - col))) {
+      // NES 风格：bit 0 = 最左像素，bit N-1 = 最右像素
+      if (line & (1 << col)) {
         ctx.fillRect(x + col * scale, y + row * scale, scale, scale);
       }
     }
