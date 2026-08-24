@@ -2,9 +2,9 @@
 (() => {
   // src/game/prg/data/tables/team-roster.ts
   var TEAM_ROSTER_TABLE = [
-    { id: 128, name: "SaoPaulo", type: "player", players: [207, 160, 0, 44, 16, 11, 42, 31, 12, 16, 121], subs: [], formation: "4-3-3", tactic: "Normal" },
-    { id: 129, name: "Nankatsu", type: "player", players: [237, 98, 219, 5, 34, 173, 20, 3, 0, 14, 6], subs: [], formation: "4-4-2", tactic: "Normal" },
-    { id: 130, name: "AsianCup", type: "player", players: [85, 110, 195, 125, 108, 110, 252, 237, 98, 168, 46], subs: [22, 30, 46, 101, 125, 77, 121, 121, 252, 223, 234, 237], formation: "Brazil", tactic: "Counter" },
+    { id: 128, name: "SaoPaulo", type: "player", players: [2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 11], subs: [], formation: "4-3-3", tactic: "Normal" },
+    { id: 129, name: "Nankatsu", type: "player", players: [15, 13, 14, 20, 16, 12, 19, 18, 21, 17, 22], subs: [], formation: "4-4-2", tactic: "Normal" },
+    { id: 130, name: "AsianCup", type: "player", players: [34, 27, 28, 20, 29, 23, 24, 17, 26, 1, 21], subs: [25, 31, 16, 18, 19, 22, 30, 32, 33, 15, 1, 0], formation: "Brazil", tactic: "Counter" },
     { id: 133, name: "Corinthians", type: "cpu", players: [38, 15, 32, 0, 126, 127, 128, 128, 176, 31, 30], subs: [], formation: "Form9", tactic: "Normal" },
     { id: 134, name: "Gremio", type: "cpu", players: [39, 11, 40, 15, 33, 0, 129, 130, 131, 131, 145], subs: [], formation: "Form15", tactic: "Pressing" },
     { id: 135, name: "Palmeiras", type: "cpu", players: [29, 9, 41, 4, 42, 15, 3, 0, 132, 133, 134], subs: [], formation: "Form6", tactic: "Tact8" },

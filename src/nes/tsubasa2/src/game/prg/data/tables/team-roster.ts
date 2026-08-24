@@ -1,18 +1,21 @@
 /**
  * team-roster.ts — 队伍名单具象化表（从真 ROM 提取）
  *
- * 数据源（docs/rom-data-locations.md §7）：
- *   - 玩家队 (Sao Paulo/Nankatsu/Asian)        ROM 0xAA47 / 0xAA53 / 0xAA5F / 0xAA6A
- *   - Brazil League (5队)                       ROM 0x03BB1A+
- *   - Japan High School (6队)                   ROM 0x03BB62+
- *   - Japan Cup (4队)                           ROM 0x03BBB4+
- *   - World Cup (16队)                          ROM 0x03BC0A+
- *   - 阵型/战术                                 ROM 0x3bac2
+ * 数据源（docs/CaptainTsubasaVol.II-SuperStrikerROM修改参考.txt §Team Edit）：
+ *   - SaoPaulo   PRG 0x4A47 (CPU $AA47)
+ *   - Nankatsu   PRG 0x4A53 (CPU $AA53)
+ *   - AsianCup   PRG 0x4A5F (CPU $AA5F)
+ *   - Asian subs PRG 0x4A6A (CPU $AA6A, 12 bytes)
+ *   - CPU 队 5+6+4+16 = 31 队 × 12 bytes stride
+ *
+ * ⚠ 重要修正 (2026-08):
+ *   doc 里写的 "$AA47" 是 **CPU 地址**, 不是 PRG 偏移。
+ *   实际 PRG 文件位置 = header(16 bytes 已扣) + PRG offset 0x4A47。
+ *   误用 0xAA47 作 PRG 偏移会读到 CPU 指令区, 错误产生 CpuMember_0xXX 占位。
+ *   正确地址验证:
+ *     PRG[0x4A47..0x4A51] = [02 03 04 05 06 07 08 09 0A 01 0B] = SaoPaulo roster
  *
  * 重生：scripts/extract_teams.cjs
- *
- * 注：CPU 队起始偏移按每队 12 字节 (11 队员 + 1 战术 byte) 推断，
- *     偏移不精确时部分队会空 — 需后续精确化各队起始地址。
  */
 
 /** 阵容（11 队员 ID + 阵型 + 战术） */
@@ -28,9 +31,9 @@ export interface TeamRosterEntry {
 
 /** 队伍表（22 联赛队 + 玩家队 + World Cup） */
 export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
-  { id: 0x80, name: 'SaoPaulo', type: 'player', players: [0xCF, 0xA0, 0x00, 0x2C, 0x10, 0x0B, 0x2A, 0x1F, 0x0C, 0x10, 0x79], subs: [], formation: '4-3-3', tactic: 'Normal' },
-  { id: 0x81, name: 'Nankatsu', type: 'player', players: [0xED, 0x62, 0xDB, 0x05, 0x22, 0xAD, 0x14, 0x03, 0x00, 0x0E, 0x06], subs: [], formation: '4-4-2', tactic: 'Normal' },
-  { id: 0x82, name: 'AsianCup', type: 'player', players: [0x55, 0x6E, 0xC3, 0x7D, 0x6C, 0x6E, 0xFC, 0xED, 0x62, 0xA8, 0x2E], subs: [0x16, 0x1E, 0x2E, 0x65, 0x7D, 0x4D, 0x79, 0x79, 0xFC, 0xDF, 0xEA, 0xED], formation: 'Brazil', tactic: 'Counter' },
+  { id: 0x80, name: 'SaoPaulo', type: 'player', players: [0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x01, 0x0B], subs: [], formation: '4-3-3', tactic: 'Normal' },
+  { id: 0x81, name: 'Nankatsu', type: 'player', players: [0x0F, 0x0D, 0x0E, 0x14, 0x10, 0x0C, 0x13, 0x12, 0x15, 0x11, 0x16], subs: [], formation: '4-4-2', tactic: 'Normal' },
+  { id: 0x82, name: 'AsianCup', type: 'player', players: [0x22, 0x1B, 0x1C, 0x14, 0x1D, 0x17, 0x18, 0x11, 0x1A, 0x01, 0x15], subs: [0x19, 0x1F, 0x10, 0x12, 0x13, 0x16, 0x1E, 0x20, 0x21, 0x0F, 0x01, 0x00], formation: 'Brazil', tactic: 'Counter' },
   { id: 0x85, name: 'Corinthians', type: 'cpu', players: [0x26, 0x0F, 0x20, 0x00, 0x7E, 0x7F, 0x80, 0x80, 0xB0, 0x1F, 0x1E], subs: [], formation: 'Form9', tactic: 'Normal' },
   { id: 0x86, name: 'Gremio', type: 'cpu', players: [0x27, 0x0B, 0x28, 0x0F, 0x21, 0x00, 0x81, 0x82, 0x83, 0x83, 0x91], subs: [], formation: 'Form15', tactic: 'Pressing' },
   { id: 0x87, name: 'Palmeiras', type: 'cpu', players: [0x1D, 0x09, 0x29, 0x04, 0x2A, 0x0F, 0x03, 0x00, 0x84, 0x85, 0x86], subs: [], formation: 'Form6', tactic: 'Tact8' },

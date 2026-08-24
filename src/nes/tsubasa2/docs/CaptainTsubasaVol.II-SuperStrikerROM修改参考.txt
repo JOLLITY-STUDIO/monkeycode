@@ -554,19 +554,59 @@ rom addresses
 Sao Paulo Matches:
 ------------------
 
+rom地址 hex editor goto address change to rom address，
+
+SaoPaulo 真值（按日文版 UI 顺序）:
+ROM PRG offset 0x4A47 (CPU $AA47)  11 bytes:
+ 02 03 04 05 06 07 08 09 0A 01 0B
+ └─┬─┘ └─┬─┘ └─┬─┘ └─┬─┘ └─┬─┘ └─┬─┘ └─┬─┘ └─┬─┘ └─┬─┘ └─┬─┘
+  GK  2   3   4   5   6   7   8   9  10  11
+     │
+     └─ Player ID (0x01-0x75 范围内 doc 已收录)
+
 GK,
 ---
+CPU 地址 $AA47 = 文件偏移 004A57 = PRG offset 0x4A47
+注意: doc "$AA47" 是 CPU 地址, 不是 PRG 偏移.
+本 ROM iNES header 16 字节 + 16x16K PRG banks
+验证: PRG[0x4A47..0x4A51] = 02 03 04 05 06 07 08 09 0A 01 0B ✓
 
-$AA47
-004A57 
+CPU $AA47  → file 0x004A57 → PRG 0x4A47  (Lennart GK)
+CPU $AA48  → file 0x004A58 → PRG 0x4A48  (Lima)
+CPU $AA49  → file 0x004A59 → PRG 0x4A49  (Marini)
+CPU $AA4A  → file 0x004A5A → PRG 0x4A4A  (Amaral)
+CPU $AA4B  → file 0x004A5B → PRG 0x4A4B  (Dottil)
+CPU $AA4C  → file 0x004A5C → PRG 0x4A4C  (Battista) ★
+CPU $AA4D  → file 0x004A5D → PRG 0x4A4D  (Tahamata)
+CPU $AA4E  → file 0x004A5E → PRG 0x4A4E  (Babinton)
+CPU $AA4F  → file 0x004A5F → PRG 0x4A4F  (Gil)
+CPU $AA50  → file 0x004A60 → PRG 0x4A50  (Tsubasa) ★
+CPU $AA51  → file 0x004A61 → PRG 0x4A51  (Platton)
+
+== 全 4 个 player team 真实 roster ==
+PRG[0x4A47..0x4A51] = SaoPaulo  [02 03 04 05 06 07 08 09 0A 01 0B]
+PRG[0x4A53..0x4A5D] = Nankatsu  [0F 0D 0E 14 10 0C 13 12 15 11 16]
+PRG[0x4A5F..0x4A69] = AsianCup  [22 1B 1C 14 1D 17 18 11 1A 01 15]
+PRG[0x4A6A..0x4A75] = Asian subs [19 1F 10 12 13 16 1E 20 21 0F 01 00] (12 bytes)
+
+== 重要修正 ==
+** 用 "$AA47" 作为 PRG ROM 偏移是错的 **
+正确 PRG 文件位置:
+  rom_addr    (= CPU $AA47 - CPU header base $8000) ?? 不
+  实际 doc 文本 "004A57" 提示: file offset 0x004A57 = PRG 0x4A47
+  → 直接读 PRG[0x4A47..0x4A51] 就是 SaoPaulo roster
+
+⚠ 之前错误尝试:
+  PRG[0xAA47..0xAA51] = CF A0 00 2C 10 0B 2A 1F 0C 10 79
+  这数据是错的. 真实地址应该是 PRG[0x4A47..0x4A51].
+
+🔧 验证方法 (Node.js):
+  const rom = fs.readFileSync('...nes');
+  const prg = rom.slice(16);  // skip 16-byte iNES header
+  console.log(prg.slice(0x4A47, 0x4A52));
+  // → Uint8Array [2,3,4,5,6,7,8,9,10,1,11]  ✓ 圣保罗真值
 
 Player 2,
----------
-
-$AA48
-004A58
-
-Player 3,
 ---------
 
 $AA49
