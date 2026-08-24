@@ -4,6 +4,14 @@
 
 ## 2026-08-24
 
+- [E2 推进 + B-series 标记] 20c5168e：
+  - **SpriteService** putSprite/putSpriteByFrame/hideSprite/hideAll/
+    setSpriteFrame → OAM 4 字节 [y,tile,attr,x] 写入影子缓冲
+  - **SpriteAnimationService** advance/tickAnimationSlot/flipSpriteAttr/
+    blinkOffscreenSprites → 动画 tick 推进 + 属性翻转
+  - **CharMap** 真实实现：ASCII fallback（Space/A-Z/a-z/0-9 → tile
+    0..90），register() / registerTable() 批量注入
+  - WBS：B1/B2/B3 = ✅（data/tables/* 全部实装），E2 = 🔄（in progress）
 - [D1+D2 V0.4 完善] ea2153a4 后续：
   - **ScriptLoader** 改为按 4KB 切片 BANK18_DATA_TABLES（SEGMENT_SIZE=0x1000）。
     loadSegment(id) 返回 4KB 切片段；listSegments() 列有效段号。
