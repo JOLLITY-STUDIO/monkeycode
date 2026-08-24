@@ -58,6 +58,11 @@ export class Scene0Controller extends SceneController {
     this.streamDone = false;
     this.sceneRow = 0;
     this.holdSecond = false;
+    // BUG #2 fix: 立即装载 title screen CHR 配置, 使 applyChrRequest 切 bank 时
+    //   BG $0000 = bank1k 124-127, SPR $1000 = bank1k 126-129
+    // 否则 frame 30 H5 仍按默认 [0,1,2,3,124,125,126,127] 渲染,
+    //   跟 ROM 实际 frame 30 (Tecmo Title) 差 PT ~0% / screen ~12%
+    this.prim.loadChrConfig(0x17);
     this.audio?.playBgm(0x01);
   }
 

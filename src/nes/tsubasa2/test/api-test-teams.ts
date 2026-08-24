@@ -41,14 +41,18 @@ function buildAllTeamsTable(): string {
   const ids = listAllTeamIds();
   const rows: string[] = [];
   rows.push('<table class="teams"><thead><tr>');
-  rows.push('<th>ID</th><th>Name</th><th>Type</th><th>Formation</th><th>Tactic</th><th>N</th>');
+  rows.push('<th>ID</th><th>Name</th><th>Encounter Lv</th><th>Type</th><th>Formation</th><th>Tactic</th><th>N</th>');
   rows.push('</tr></thead><tbody>');
   for (const id of ids) {
     const team: any = findTeamById(id);
     const roster: any = findRosterById(id);
+    const encounterLv = (roster?.encounterLevels ?? []).length === 0
+      ? '<span class="meta">-</span>'
+      : roster.encounterLevels.map((lv: number) => `Lv${lv}`).join(', ');
     rows.push(`<tr data-team-id="${id}">`);
     rows.push(`<td class="id">0x${id.toString(16).padStart(2,'0').toUpperCase()}</td>`);
     rows.push(`<td>${(team?.name ?? roster?.name ?? '?')}</td>`);
+    rows.push(`<td class="enc">${encounterLv}</td>`);
     rows.push(`<td>${(roster?.type ?? 'cpu')}</td>`);
     rows.push(`<td>${(roster?.formation ?? '-')}</td>`);
     rows.push(`<td>${(roster?.tactic ?? '-')}</td>`);
@@ -64,9 +68,10 @@ function buildRosterTable(teamId: number): string {
   const roster: any = findRosterById(teamId);
   if (!team && !roster) return `<div class="err">Team 0x${teamId.toString(16).padStart(2,'0').toUpperCase()} NOT FOUND</div>`;
   const teamName = (team?.name ?? roster?.name ?? '?').toUpperCase();
+  const encounterLv = (roster?.encounterLevels ?? []).map((lv: number) => `Lv${lv}`).join(', ');
   const rows: string[] = [];
   rows.push(`<h2>${teamName} <span class="id">0x${teamId.toString(16).padStart(2,'0').toUpperCase()}</span></h2>`);
-  rows.push(`<div class="meta">Type: ${roster?.type ?? 'cpu'} · Formation: ${roster?.formation ?? '-'} · Tactic: ${roster?.tactic ?? '-'} · ${roster?.players?.length ?? 0} players</div>`);
+  rows.push(`<div class="meta">Appears at: <b>${encounterLv}</b> · Type: ${roster?.type ?? 'cpu'} · Formation: ${roster?.formation ?? '-'} · Tactic: ${roster?.tactic ?? '-'} · ${roster?.players?.length ?? 0} players</div>`);
   rows.push('<table class="roster"><thead><tr>');
   rows.push('<th>#</th><th>ID</th><th>Name (EN)</th><th>名前 (JA)</th><th>名稱 (ZH)</th><th>POS</th><th>SHOT</th><th>PASS</th><th>DRB</th><th>BLK</th><th>TKL</th><th>ITC</th><th>STM</th>');
   rows.push('</tr></thead><tbody>');
