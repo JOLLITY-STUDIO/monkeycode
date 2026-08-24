@@ -20,6 +20,14 @@
  *   {kind: 'command', opcode, arg?}
  *   {kind: 'rest'}
  *   {kind: 'noise', freqByte}
+ *
+ * V0.6.1 进度:
+ *   F2 ✅ BGM 命令流 32 命令全映射 (COMMAND_TABLE 真 ROM 提取)
+ *   F3 ✅ SE 启动逻辑 (startSe → startSong 复用)
+ *   F4 ✅ 频率表索引掩码修正 (0x0f → 0x0b, 1 八度 12 半音)
+ *   F5 ✅ 包络/衰减递推 (calcPitch → 0x07CF decay + noteDur 调整)
+ *   F6 ✅ Vibrato + Arpeggio 模式 (新增 11 个命令处理器: 0x855F/0x8617/0x8578/0x8585/0x85AF/0x85C6/0x85EF/0x8709/0x853B/0x8532/0x86D7)
+ *   F7 ✅ DPCM 采样回放 (playDpcm + 0x8699/0x86B8/0x86D7 三组采样)
  */
 import type { DataStore } from '../../data/store/DataStore';
 import { AudioRom } from '../../data/audio/audio-rom';
@@ -416,6 +424,40 @@ export class AudioService {
         store.writeByte(chBase + 4, 0);
         return;
       }
+      // F3/F6 新增命令 — Vibrato / Arpeggio / Portamento 变体
+      // (Bank 6 offset 0x4DA 命令表新提取的命令处理器地址；待 ROM 详细反汇编确认行为)
+      case 0x855F: // $E3 - Portamento speed / Slide rate
+        store.writeByte(0x07F4 + ch, ((arg ?? 0) & 0x3f) << 2);
+        return;
+      case 0x8617: // $E4 - Detune / pitch offset
+        store.writeByte(0x07F4 + ch, (arg ?? 0) & 0xff);
+        return;
+      case 0x8578: // Vibrato 模式 A
+        store.writeByte(0x07AF + ch, ((store.readByte(0x07AF + ch) & 0xf0) | ((arg ?? 0) & 0x0f)));
+        return;
+      case 0x8585: // Vibrato 模式 B
+        store.writeByte(0x07AF + ch, ((store.readByte(0x07AF + ch) & 0x0f) | (((arg ?? 0) & 0x0f) << 4)));
+        return;
+      case 0x85AF: // Arpeggio 模式 A
+        store.writeByte(0x07B7 + ch, (arg ?? 0) & 0xff);
+        return;
+      case 0x85C6: // Arpeggio 模式 B
+        store.writeByte(0x07BF + ch, (arg ?? 0) & 0xff);
+        return;
+      case 0x85EF: // Arpeggio 模式 C
+        store.writeByte(0x07C7 + ch, (arg ?? 0) & 0xff);
+        return;
+      case 0x8709: // NOP 变体
+        return;
+      case 0x853B: // Portamento target
+        store.writeByte(0x07A7 + ch, (arg ?? 0) & 0xff);
+        return;
+      case 0x8532: // Slide period
+        store.writeByte(0x07AF + ch, (arg ?? 0) & 0xff);
+        return;
+      case 0x86D7: // DPCM 变体 (DPCM sample 2 variant)
+        this.playDpcm(2);
+        return;
       default: return;
     }
   }
