@@ -74,27 +74,27 @@ export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
   { id: 0x83, name: 'BenchReserve', type: 'bench',  players: [0x21, 0x14, 0x17, 0x10, 0x0B, 0x18, 0x05, 0x06, 0x09, 0x02, 0x0C], subs: [],                                                                                 formation: '4-3-3', tactic: 'Normal',   encounterLevels: [],  },
 
   // ─────────── 巴西联赛 (6 队, 关 1-6) ───────────
-  // ⚠ 2026-08-24 修正: 之前用 random PRG base + stride 提取的字节是错位的 (含 CpuMember_0x7E 占位)
-  // ✅ 现在只填 doc 验证过的明星 (位置确定), 其他位置用真实球员 ID (0x00-0x40 范围, 都有名字)
-  //    来源: docs/CaptainTsubasaVol.II-SuperStrikerROM修改参考.txt Brazil League 段
-  //
-  // Fluminense (关1) — doc 未标明星, 11 ID 暂用真实 fw 兜底 (待 bank02 反汇编补全)
-  { id: 0x84, name: 'Fluminense',   type: 'cpu',    players: [0x24, 0x09, 0x23, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x7D, 0xA0], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [1] },
+  // 来源: ROM 文件偏移 0x3BB0E (PRG index 0x3BAFE), stride 12 字节/队 (11 ID + 1 战术字节)
+  // 验证: 4 doc anchors (Cor Pos10=0x24=Riverio, Cor Pos9=0x23=Satilst,
+  //              Gre Pos1=0x26=Meon GK, Gre Pos9=0x25=DaSilva) 全部命中 ✓
+  // 注: byte 顺序 ≠ 场上 GK→FW 顺序, byte 0 → CPU Player 1 (RAM $0384), 阵型决定 GK 位置
+  // Florianópolis (Brazil 第1关, Flu) —— PRG byte data extracted
+  { id: 0x84, name: 'Fluminense',   type: 'cpu',    players: [0x1F, 0x0F, 0x03, 0x00, 0x79, 0x7A, 0x7A, 0x7B, 0xA0, 0x1E, 0x1E], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [1] },
 
-  // Corinthians (关2) — doc: Pos10=Riverio 0x24, Pos9=Satilst 0x23 (hex values)
-  { id: 0x85, name: 'Corinthians',  type: 'cpu',    players: [0x24, 0x23, 0x09, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x24, 0x23], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [2] },
+  // Corinthians (Brazil 第2关) —— PRG byte data (含 Riverio + Satilst 明星 anchor ✓)
+  { id: 0x85, name: 'Corinthians',  type: 'cpu',    players: [0x24, 0x09, 0x23, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x7D, 0xA0], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [2] },
 
-  // Gremio (关3) — doc: Pos1=Meon GK 0x26, Pos9=Da Silva 0x25
-  { id: 0x86, name: 'Gremio',       type: 'cpu',    players: [0x26, 0x20, 0x09, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x25, 0x26], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [3] },
+  // Gremio (Brazil 第3关) —— PRG byte data (含 Meon GK + DaSilva 明星 anchor ✓)
+  { id: 0x86, name: 'Gremio',       type: 'cpu',    players: [0x1E, 0x09, 0x25, 0x01, 0x26, 0x0F, 0x20, 0x00, 0x7E, 0x7F, 0x80], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [3] },
 
-  // Palmeiras (关4) — doc: Pos9=?, Pos11=? (无 ID 标号)
-  { id: 0x87, name: 'Palmeiras',    type: 'cpu',    players: [0x1D, 0x29, 0x09, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x60, 0x1E], subs: [],                                                                              formation: 'Form6',  tactic: 'Tact8',   encounterLevels: [4] },
+  // Palmeiras (Brazil 第4关)
+  { id: 0x87, name: 'Palmeiras',    type: 'cpu',    players: [0xB0, 0x1F, 0x1E, 0x09, 0x27, 0x0B, 0x28, 0x0F, 0x21, 0x00, 0x81], subs: [],                                                                              formation: 'Form6',  tactic: 'Tact8',   encounterLevels: [4] },
 
-  // Santos (关5) — doc: Pos9=?, Pos4=?
-  { id: 0x88, name: 'Santos',       type: 'cpu',    players: [0x60, 0x1E, 0x09, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x1F, 0x2B], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [5] },
+  // Santos (Brazil 第5关)
+  { id: 0x88, name: 'Santos',       type: 'cpu',    players: [0x83, 0x83, 0x91, 0x1F, 0x1D, 0x09, 0x29, 0x04, 0x2A, 0x0F, 0x03], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [5] },
 
-  // Flamengo (关6) — doc: Pos10=?, Pos6=?, Pos2=?
-  { id: 0x89, name: 'Flamengo',     type: 'cpu',    players: [0x87, 0x88, 0x09, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x89, 0x91], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [6] },
+  // Flamengo (Brazil 第6关)
+  { id: 0x89, name: 'Flamengo',     type: 'cpu',    players: [0x84, 0x85, 0x86, 0x86, 0x60, 0x1E, 0x1F, 0x0A, 0x2B, 0x06, 0x2C], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [6] },
 
   // ─────────── 日本高中 (6 队 × 12 bytes, PRG 0x3BB62; 关 7-12) ───────────
   { id: 0x8A, name: 'Kunimi',       type: 'cpu',    players: [0x31, 0x0F, 0x01, 0x00, 0x76, 0x8D, 0x8D, 0x8E, 0x40, 0x1E, 0x1E], subs: [],                                                                              formation: 'Form4',  tactic: 'Normal',  encounterLevels: [7] },

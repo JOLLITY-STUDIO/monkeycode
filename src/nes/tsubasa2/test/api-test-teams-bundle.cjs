@@ -8,22 +8,22 @@
     { id: 130, name: "AsianCup", type: "player", players: [34, 27, 28, 20, 29, 23, 24, 17, 26, 1, 21], subs: [25, 31, 16, 18, 19, 22, 30, 32, 33, 15, 1, 0], formation: "Brazil", tactic: "Counter", encounterLevels: [] },
     { id: 131, name: "BenchReserve", type: "bench", players: [33, 20, 23, 16, 11, 24, 5, 6, 9, 2, 12], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [] },
     // ─────────── 巴西联赛 (6 队, 关 1-6) ───────────
-    // ⚠ 2026-08-24 修正: 之前用 random PRG base + stride 提取的字节是错位的 (含 CpuMember_0x7E 占位)
-    // ✅ 现在只填 doc 验证过的明星 (位置确定), 其他位置用真实球员 ID (0x00-0x40 范围, 都有名字)
-    //    来源: docs/CaptainTsubasaVol.II-SuperStrikerROM修改参考.txt Brazil League 段
-    //
-    // Fluminense (关1) — doc 未标明星, 11 ID 暂用真实 fw 兜底 (待 bank02 反汇编补全)
-    { id: 132, name: "Fluminense", type: "cpu", players: [36, 9, 35, 15, 33, 0, 118, 124, 125, 125, 160], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [1] },
-    // Corinthians (关2) — doc: Pos10=Riverio 0x24, Pos9=Satilst 0x23 (hex values)
-    { id: 133, name: "Corinthians", type: "cpu", players: [36, 35, 9, 15, 33, 0, 118, 124, 125, 36, 35], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [2] },
-    // Gremio (关3) — doc: Pos1=Meon GK 0x26, Pos9=Da Silva 0x25
-    { id: 134, name: "Gremio", type: "cpu", players: [38, 32, 9, 15, 33, 0, 118, 124, 125, 37, 38], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [3] },
-    // Palmeiras (关4) — doc: Pos9=?, Pos11=? (无 ID 标号)
-    { id: 135, name: "Palmeiras", type: "cpu", players: [29, 41, 9, 15, 33, 0, 118, 124, 125, 96, 30], subs: [], formation: "Form6", tactic: "Tact8", encounterLevels: [4] },
-    // Santos (关5) — doc: Pos9=?, Pos4=?
-    { id: 136, name: "Santos", type: "cpu", players: [96, 30, 9, 15, 33, 0, 118, 124, 125, 31, 43], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [5] },
-    // Flamengo (关6) — doc: Pos10=?, Pos6=?, Pos2=?
-    { id: 137, name: "Flamengo", type: "cpu", players: [135, 136, 9, 15, 33, 0, 118, 124, 125, 137, 145], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [6] },
+    // 来源: ROM 文件偏移 0x3BB0E (PRG index 0x3BAFE), stride 12 字节/队 (11 ID + 1 战术字节)
+    // 验证: 4 doc anchors (Cor Pos10=0x24=Riverio, Cor Pos9=0x23=Satilst,
+    //              Gre Pos1=0x26=Meon GK, Gre Pos9=0x25=DaSilva) 全部命中 ✓
+    // 注: byte 顺序 ≠ 场上 GK→FW 顺序, byte 0 → CPU Player 1 (RAM $0384), 阵型决定 GK 位置
+    // Florianópolis (Brazil 第1关, Flu) —— PRG byte data extracted
+    { id: 132, name: "Fluminense", type: "cpu", players: [31, 15, 3, 0, 121, 122, 122, 123, 160, 30, 30], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [1] },
+    // Corinthians (Brazil 第2关) —— PRG byte data (含 Riverio + Satilst 明星 anchor ✓)
+    { id: 133, name: "Corinthians", type: "cpu", players: [36, 9, 35, 15, 33, 0, 118, 124, 125, 125, 160], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [2] },
+    // Gremio (Brazil 第3关) —— PRG byte data (含 Meon GK + DaSilva 明星 anchor ✓)
+    { id: 134, name: "Gremio", type: "cpu", players: [30, 9, 37, 1, 38, 15, 32, 0, 126, 127, 128], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [3] },
+    // Palmeiras (Brazil 第4关)
+    { id: 135, name: "Palmeiras", type: "cpu", players: [176, 31, 30, 9, 39, 11, 40, 15, 33, 0, 129], subs: [], formation: "Form6", tactic: "Tact8", encounterLevels: [4] },
+    // Santos (Brazil 第5关)
+    { id: 136, name: "Santos", type: "cpu", players: [131, 131, 145, 31, 29, 9, 41, 4, 42, 15, 3], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [5] },
+    // Flamengo (Brazil 第6关)
+    { id: 137, name: "Flamengo", type: "cpu", players: [132, 133, 134, 134, 96, 30, 31, 10, 43, 6, 44], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [6] },
     // ─────────── 日本高中 (6 队 × 12 bytes, PRG 0x3BB62; 关 7-12) ───────────
     { id: 138, name: "Kunimi", type: "cpu", players: [49, 15, 1, 0, 118, 141, 141, 142, 64, 30, 30], subs: [], formation: "Form4", tactic: "Normal", encounterLevels: [7] },
     { id: 139, name: "Akita", type: "cpu", players: [50, 1, 51, 15, 2, 0, 143, 144, 145, 145, 112], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [8] },
