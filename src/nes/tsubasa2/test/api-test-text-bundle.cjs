@@ -1556,37 +1556,37 @@
     lines.push(header("GET /api/players \u2014 \u5168\u90E8 45 \u660E\u661F"));
     lines.push(row(
       { s: "ID", w: 6 },
-      { s: "NAME", w: 16 },
-      { s: "STM", w: 5, a: "right" },
-      { s: "PAS", w: 5, a: "right" },
-      { s: "SH", w: 5, a: "right" },
-      { s: "DRB", w: 5, a: "right" },
-      { s: "SP", w: 5, a: "right" },
-      { s: "TC", w: 5, a: "right" },
-      { s: "PO", w: 5, a: "right" },
-      { s: "TEAM", w: 14 },
-      { s: "POS", w: 5 }
+      { s: "NAME", w: 14 },
+      { s: "STM", w: 4, a: "right" },
+      { s: "SHOT", w: 4, a: "right" },
+      { s: "PASS", w: 4, a: "right" },
+      { s: "DRB", w: 4, a: "right" },
+      { s: "BLK", w: 4, a: "right" },
+      { s: "TKL", w: 4, a: "right" },
+      { s: "ITC", w: 4, a: "right" },
+      { s: "CLUB", w: 5, a: "right" },
+      { s: "POS", w: 4 }
     ));
     lines.push(sep2);
     let totalCount = 0;
     for (const p of PLAYER_TABLE2) {
       if (!p) continue;
       totalCount++;
-      const team = (_a = findTeamNameById(p.teamId)) != null ? _a : "?";
-      const id = (_b = p.id) != null ? _b : 0;
-      const name = (_c = p.name) != null ? _c : "?";
+      const id = (_a = p.id) != null ? _a : 0;
+      const name = (_b = p.name) != null ? _b : "?";
+      const pos = ((_c = p.position) != null ? _c : 0) === 1 ? "GK" : "FW";
       lines.push(row(
         { s: "0x" + id.toString(16).padStart(2, "0").toUpperCase(), w: 6 },
-        { s: name, w: 16 },
-        { s: ((_d = p.stamina) != null ? _d : 0).toString(), w: 5, a: "right" },
-        { s: ((_e = p.passing) != null ? _e : 0).toString(), w: 5, a: "right" },
-        { s: ((_f = p.shoot) != null ? _f : 0).toString(), w: 5, a: "right" },
-        { s: ((_g = p.dribble) != null ? _g : 0).toString(), w: 5, a: "right" },
-        { s: ((_h = p.speed) != null ? _h : 0).toString(), w: 5, a: "right" },
-        { s: ((_i = p.technique) != null ? _i : 0).toString(), w: 5, a: "right" },
-        { s: ((_j = p.power) != null ? _j : 0).toString(), w: 5, a: "right" },
-        { s: team, w: 14 },
-        { s: (_k = p.position) != null ? _k : "?", w: 5 }
+        { s: name, w: 14 },
+        { s: ((_d = p.stamina) != null ? _d : 0).toString(), w: 4, a: "right" },
+        { s: ((_e = p.shot) != null ? _e : 0).toString(), w: 4, a: "right" },
+        { s: ((_f = p.pass) != null ? _f : 0).toString(), w: 4, a: "right" },
+        { s: ((_g = p.dribble) != null ? _g : 0).toString(), w: 4, a: "right" },
+        { s: ((_h = p.block) != null ? _h : 0).toString(), w: 4, a: "right" },
+        { s: ((_i = p.tackle) != null ? _i : 0).toString(), w: 4, a: "right" },
+        { s: ((_j = p.intercept) != null ? _j : 0).toString(), w: 4, a: "right" },
+        { s: ((_k = p.club) != null ? _k : 0).toString(), w: 5, a: "right" },
+        { s: pos, w: 4 }
       ));
     }
     lines.push(sep2);
@@ -1594,35 +1594,46 @@
     return lines.join("\n");
   }
   function API_PLAYER_DETAIL(id) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l, _m, _n, _o;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k, _l;
     const p = findPlayerById(id);
     if (!p) return `Player 0x${id.toString(16).padStart(2, "0")} NOT FOUND`;
     const lines = [];
     const pid = (_a = p.id) != null ? _a : 0;
-    const teamName = (_c = findTeamNameById((_b = p.teamId) != null ? _b : 0)) != null ? _c : "?";
-    const teamIdHex = ((_d = p.teamId) != null ? _d : 0).toString(16).padStart(2, "0").toUpperCase();
-    lines.push(header(`GET /api/player/0x${pid.toString(16).padStart(2, "0").toUpperCase()} \u2014 ${(_e = p.name) != null ? _e : "?"} \u6863\u6848`));
+    const club = (_b = p.club) != null ? _b : 0;
+    const pos = ((_c = p.position) != null ? _c : 0) === 1 ? "GK" : "FW";
+    lines.push(header(`GET /api/player/0x${pid.toString(16).padStart(2, "0").toUpperCase()} \u2014 ${(_d = p.name) != null ? _d : "?"} \u6863\u6848`));
     lines.push(sep2);
     lines.push(` ID       = 0x${pid.toString(16).padStart(2, "0").toUpperCase()}`);
-    lines.push(` Name     = ${(_f = p.name) != null ? _f : "?"}`);
-    lines.push(` Position = ${(_g = p.position) != null ? _g : "?"}    Team = ${teamName} (0x${teamIdHex})`);
-    lines.push(` Number   = #${(_h = p.number) != null ? _h : "?"}`);
+    lines.push(` Name     = ${(_e = p.name) != null ? _e : "?"}`);
+    lines.push(` Position = ${pos}    Club = ${club}`);
     lines.push(sep2);
-    lines.push(" 6 ABILITY BARS:");
-    const max = 31;
+    lines.push(" 7 ABILITY BARS (ROM 0x39fde + idx*24):");
+    const max = 23;
     function bar(v) {
       const n = Math.min(max, Math.max(0, v));
       return "[" + "#".repeat(n) + ".".repeat(max - n) + "] " + v.toString().padStart(2, "0");
     }
-    const sho = (_i = p.shoot) != null ? _i : 0, pas = (_j = p.passing) != null ? _j : 0, dri = (_k = p.dribble) != null ? _k : 0;
-    const spd = (_l = p.speed) != null ? _l : 0, tec = (_m = p.technique) != null ? _m : 0, pwr = (_n = p.power) != null ? _n : 0, sta = (_o = p.stamina) != null ? _o : 0;
-    lines.push(`   SHOT    : ${bar(sho)}`);
-    lines.push(`   PASS    : ${bar(pas)}`);
-    lines.push(`   DRIBBLE : ${bar(dri)}`);
-    lines.push(`   SPEED   : ${bar(spd)}`);
-    lines.push(`   TECHNIC : ${bar(tec)}`);
-    lines.push(`   POWER   : ${bar(pwr)}`);
-    lines.push(`   STAMINA : ${bar(sta)}`);
+    lines.push(`   STAMINA  : ${bar((_f = p.stamina) != null ? _f : 0)}`);
+    lines.push(`   SHOT     : ${bar((_g = p.shot) != null ? _g : 0)}`);
+    lines.push(`   PASS     : ${bar((_h = p.pass) != null ? _h : 0)}`);
+    lines.push(`   DRIBBLE  : ${bar((_i = p.dribble) != null ? _i : 0)}`);
+    lines.push(`   BLOCK    : ${bar((_j = p.block) != null ? _j : 0)}`);
+    lines.push(`   TACKLE   : ${bar((_k = p.tackle) != null ? _k : 0)}`);
+    lines.push(`   INTERCEPT: ${bar((_l = p.intercept) != null ? _l : 0)}`);
+    lines.push(sep2);
+    lines.push(" LOW/HIGH ALTITUDE (low +8 / high +8):");
+    const lows = ["lowShot", "lowPass", "lowTrap", "lowLet", "lowCtrlClr", "lowUnctrl", "lowChal", "lowIntc"];
+    lows.forEach((k) => {
+      var _a2;
+      const v = (_a2 = p[k]) != null ? _a2 : 0;
+      lines.push(`   ${k.padEnd(10, " ")}: ${v.toString().padStart(2, "0")}`);
+    });
+    const highs = ["highShot", "highPass", "highTrap", "highLet", "highCtrlClr", "highUnctrl", "highChal", "highIntc"];
+    highs.forEach((k) => {
+      var _a2;
+      const v = (_a2 = p[k]) != null ? _a2 : 0;
+      lines.push(`   ${k.padEnd(10, " ")}: ${v.toString().padStart(2, "0")}`);
+    });
     lines.push(sep2);
     const skills = findSkillsByPlayer(id);
     lines.push(` SKILLS  : ${skills.length}`);
@@ -1651,33 +1662,34 @@
     lines.push(row(
       { s: "#", w: 3 },
       { s: "ID", w: 6 },
-      { s: "NAME", w: 16 },
-      { s: "POS", w: 5 },
-      { s: "SH", w: 3, a: "right" },
-      { s: "PA", w: 3, a: "right" },
-      { s: "DR", w: 3, a: "right" },
-      { s: "SP", w: 3, a: "right" },
-      { s: "TC", w: 3, a: "right" },
-      { s: "PO", w: 3, a: "right" },
-      { s: "ST", w: 3, a: "right" }
+      { s: "NAME", w: 14 },
+      { s: "POS", w: 4 },
+      { s: "SHOT", w: 4, a: "right" },
+      { s: "PASS", w: 4, a: "right" },
+      { s: "DRB", w: 4, a: "right" },
+      { s: "BLK", w: 4, a: "right" },
+      { s: "TKL", w: 4, a: "right" },
+      { s: "ITC", w: 4, a: "right" },
+      { s: "STM", w: 4, a: "right" }
     ));
     lines.push(sep2);
     ids.forEach((pid, i) => {
       var _a2, _b2, _c2, _d2, _e2, _f2, _g, _h, _i;
       const p = findPlayerById(pid);
       if (!p) return;
+      const pos = ((_a2 = p.position) != null ? _a2 : 0) === 1 ? "GK" : "FW";
       lines.push(row(
         { s: (i + 1).toString(), w: 3 },
         { s: "0x" + pid.toString(16).padStart(2, "0").toUpperCase(), w: 6 },
-        { s: (_a2 = p.name) != null ? _a2 : "?", w: 16 },
-        { s: (_b2 = p.position) != null ? _b2 : "?", w: 5 },
-        { s: ((_c2 = p.shoot) != null ? _c2 : 0).toString(), w: 3, a: "right" },
-        { s: ((_d2 = p.passing) != null ? _d2 : 0).toString(), w: 3, a: "right" },
-        { s: ((_e2 = p.dribble) != null ? _e2 : 0).toString(), w: 3, a: "right" },
-        { s: ((_f2 = p.speed) != null ? _f2 : 0).toString(), w: 3, a: "right" },
-        { s: ((_g = p.technique) != null ? _g : 0).toString(), w: 3, a: "right" },
-        { s: ((_h = p.power) != null ? _h : 0).toString(), w: 3, a: "right" },
-        { s: ((_i = p.stamina) != null ? _i : 0).toString(), w: 3, a: "right" }
+        { s: (_b2 = p.name) != null ? _b2 : "?", w: 14 },
+        { s: pos, w: 4 },
+        { s: ((_c2 = p.shot) != null ? _c2 : 0).toString(), w: 4, a: "right" },
+        { s: ((_d2 = p.pass) != null ? _d2 : 0).toString(), w: 4, a: "right" },
+        { s: ((_e2 = p.dribble) != null ? _e2 : 0).toString(), w: 4, a: "right" },
+        { s: ((_f2 = p.block) != null ? _f2 : 0).toString(), w: 4, a: "right" },
+        { s: ((_g = p.tackle) != null ? _g : 0).toString(), w: 4, a: "right" },
+        { s: ((_h = p.intercept) != null ? _h : 0).toString(), w: 4, a: "right" },
+        { s: ((_i = p.stamina) != null ? _i : 0).toString(), w: 4, a: "right" }
       ));
     });
     return lines.join("\n");

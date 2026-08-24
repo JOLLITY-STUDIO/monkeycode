@@ -44,37 +44,37 @@ function API_PLAYERS(): string {
   lines.push(header('GET /api/players — 全部 45 明星'));
   lines.push(row(
     { s: 'ID', w: 6 },
-    { s: 'NAME', w: 16 },
-    { s: 'STM', w: 5, a: 'right' },
-    { s: 'PAS', w: 5, a: 'right' },
-    { s: 'SH', w: 5, a: 'right' },
-    { s: 'DRB', w: 5, a: 'right' },
-    { s: 'SP', w: 5, a: 'right' },
-    { s: 'TC', w: 5, a: 'right' },
-    { s: 'PO', w: 5, a: 'right' },
-    { s: 'TEAM', w: 14 },
-    { s: 'POS', w: 5 },
+    { s: 'NAME', w: 14 },
+    { s: 'STM', w: 4, a: 'right' },
+    { s: 'SHOT', w: 4, a: 'right' },
+    { s: 'PASS', w: 4, a: 'right' },
+    { s: 'DRB', w: 4, a: 'right' },
+    { s: 'BLK', w: 4, a: 'right' },
+    { s: 'TKL', w: 4, a: 'right' },
+    { s: 'ITC', w: 4, a: 'right' },
+    { s: 'CLUB', w: 5, a: 'right' },
+    { s: 'POS', w: 4 },
   ));
   lines.push(sep2);
   let totalCount = 0;
   for (const p of PLAYER_TABLE) {
     if (!p) continue;
     totalCount++;
-    const team = findTeamNameById(p.teamId) ?? '?';
     const id = p.id ?? 0;
     const name = p.name ?? '?';
+    const pos = (p.position ?? 0) === 1 ? 'GK' : 'FW';
     lines.push(row(
       { s: '0x' + id.toString(16).padStart(2, '0').toUpperCase(), w: 6 },
-      { s: name, w: 16 },
-      { s: (p.stamina ?? 0).toString(), w: 5, a: 'right' },
-      { s: (p.passing ?? 0).toString(), w: 5, a: 'right' },
-      { s: (p.shoot ?? 0).toString(), w: 5, a: 'right' },
-      { s: (p.dribble ?? 0).toString(), w: 5, a: 'right' },
-      { s: (p.speed ?? 0).toString(), w: 5, a: 'right' },
-      { s: (p.technique ?? 0).toString(), w: 5, a: 'right' },
-      { s: (p.power ?? 0).toString(), w: 5, a: 'right' },
-      { s: team, w: 14 },
-      { s: p.position ?? '?', w: 5 },
+      { s: name, w: 14 },
+      { s: (p.stamina ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.shot ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.pass ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.dribble ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.block ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.tackle ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.intercept ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.club ?? 0).toString(), w: 5, a: 'right' },
+      { s: pos, w: 4 },
     ));
   }
   lines.push(sep2);
@@ -83,34 +83,43 @@ function API_PLAYERS(): string {
 }
 
 function API_PLAYER_DETAIL(id: number): string {
-  const p = findPlayerById(id);
+  const p: any = findPlayerById(id);
   if (!p) return `Player 0x${id.toString(16).padStart(2, '0')} NOT FOUND`;
   const lines: string[] = [];
   const pid = p.id ?? 0;
-  const teamName = findTeamNameById(p.teamId ?? 0) ?? '?';
-  const teamIdHex = (p.teamId ?? 0).toString(16).padStart(2, '0').toUpperCase();
+  const club = p.club ?? 0;
+  const pos = (p.position ?? 0) === 1 ? 'GK' : 'FW';
   lines.push(header(`GET /api/player/0x${pid.toString(16).padStart(2, '0').toUpperCase()} — ${p.name ?? '?'} 档案`));
   lines.push(sep2);
   lines.push(` ID       = 0x${pid.toString(16).padStart(2, '0').toUpperCase()}`);
   lines.push(` Name     = ${p.name ?? '?'}`);
-  lines.push(` Position = ${p.position ?? '?'}    Team = ${teamName} (0x${teamIdHex})`);
-  lines.push(` Number   = #${p.number ?? '?'}`);
+  lines.push(` Position = ${pos}    Club = ${club}`);
   lines.push(sep2);
-  lines.push(' 6 ABILITY BARS:');
-  const max = 31;
+  lines.push(' 7 ABILITY BARS (ROM 0x39fde + idx*24):');
+  const max = 23;
   function bar(v: number): string {
     const n = Math.min(max, Math.max(0, v));
     return '[' + '#'.repeat(n) + '.'.repeat(max - n) + '] ' + v.toString().padStart(2, '0');
   }
-  const sho = p.shoot ?? 0, pas = p.passing ?? 0, dri = p.dribble ?? 0;
-  const spd = p.speed ?? 0, tec = p.technique ?? 0, pwr = p.power ?? 0, sta = p.stamina ?? 0;
-  lines.push(`   SHOT    : ${bar(sho)}`);
-  lines.push(`   PASS    : ${bar(pas)}`);
-  lines.push(`   DRIBBLE : ${bar(dri)}`);
-  lines.push(`   SPEED   : ${bar(spd)}`);
-  lines.push(`   TECHNIC : ${bar(tec)}`);
-  lines.push(`   POWER   : ${bar(pwr)}`);
-  lines.push(`   STAMINA : ${bar(sta)}`);
+  lines.push(`   STAMINA  : ${bar(p.stamina ?? 0)}`);
+  lines.push(`   SHOT     : ${bar(p.shot ?? 0)}`);
+  lines.push(`   PASS     : ${bar(p.pass ?? 0)}`);
+  lines.push(`   DRIBBLE  : ${bar(p.dribble ?? 0)}`);
+  lines.push(`   BLOCK    : ${bar(p.block ?? 0)}`);
+  lines.push(`   TACKLE   : ${bar(p.tackle ?? 0)}`);
+  lines.push(`   INTERCEPT: ${bar(p.intercept ?? 0)}`);
+  lines.push(sep2);
+  lines.push(' LOW/HIGH ALTITUDE (low +8 / high +8):');
+  const lows = ['lowShot', 'lowPass', 'lowTrap', 'lowLet', 'lowCtrlClr', 'lowUnctrl', 'lowChal', 'lowIntc'];
+  lows.forEach(k => {
+    const v = p[k] ?? 0;
+    lines.push(`   ${k.padEnd(10, ' ')}: ${v.toString().padStart(2, '0')}`);
+  });
+  const highs = ['highShot', 'highPass', 'highTrap', 'highLet', 'highCtrlClr', 'highUnctrl', 'highChal', 'highIntc'];
+  highs.forEach(k => {
+    const v = p[k] ?? 0;
+    lines.push(`   ${k.padEnd(10, ' ')}: ${v.toString().padStart(2, '0')}`);
+  });
   lines.push(sep2);
   const skills = findSkillsByPlayer(id);
   lines.push(` SKILLS  : ${skills.length}`);
@@ -138,32 +147,33 @@ function API_TEAM(teamId: number): string {
   lines.push(row(
     { s: '#', w: 3 },
     { s: 'ID', w: 6 },
-    { s: 'NAME', w: 16 },
-    { s: 'POS', w: 5 },
-    { s: 'SH', w: 3, a: 'right' },
-    { s: 'PA', w: 3, a: 'right' },
-    { s: 'DR', w: 3, a: 'right' },
-    { s: 'SP', w: 3, a: 'right' },
-    { s: 'TC', w: 3, a: 'right' },
-    { s: 'PO', w: 3, a: 'right' },
-    { s: 'ST', w: 3, a: 'right' },
+    { s: 'NAME', w: 14 },
+    { s: 'POS', w: 4 },
+    { s: 'SHOT', w: 4, a: 'right' },
+    { s: 'PASS', w: 4, a: 'right' },
+    { s: 'DRB', w: 4, a: 'right' },
+    { s: 'BLK', w: 4, a: 'right' },
+    { s: 'TKL', w: 4, a: 'right' },
+    { s: 'ITC', w: 4, a: 'right' },
+    { s: 'STM', w: 4, a: 'right' },
   ));
   lines.push(sep2);
   ids.forEach((pid, i) => {
-    const p = findPlayerById(pid);
+    const p: any = findPlayerById(pid);
     if (!p) return;
+    const pos = (p.position ?? 0) === 1 ? 'GK' : 'FW';
     lines.push(row(
       { s: (i + 1).toString(), w: 3 },
       { s: '0x' + pid.toString(16).padStart(2, '0').toUpperCase(), w: 6 },
-      { s: p.name ?? '?', w: 16 },
-      { s: p.position ?? '?', w: 5 },
-      { s: (p.shoot ?? 0).toString(), w: 3, a: 'right' },
-      { s: (p.passing ?? 0).toString(), w: 3, a: 'right' },
-      { s: (p.dribble ?? 0).toString(), w: 3, a: 'right' },
-      { s: (p.speed ?? 0).toString(), w: 3, a: 'right' },
-      { s: (p.technique ?? 0).toString(), w: 3, a: 'right' },
-      { s: (p.power ?? 0).toString(), w: 3, a: 'right' },
-      { s: (p.stamina ?? 0).toString(), w: 3, a: 'right' },
+      { s: p.name ?? '?', w: 14 },
+      { s: pos, w: 4 },
+      { s: (p.shot ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.pass ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.dribble ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.block ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.tackle ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.intercept ?? 0).toString(), w: 4, a: 'right' },
+      { s: (p.stamina ?? 0).toString(), w: 4, a: 'right' },
     ));
   });
   return lines.join('\n');
