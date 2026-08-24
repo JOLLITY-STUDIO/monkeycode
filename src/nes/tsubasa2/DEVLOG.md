@@ -4,6 +4,15 @@
 
 ## 2026-08-24
 
+- [D1+D2 V0.4 落地] ScriptEngine + ScriptLoader + ScriptOpcodes 剧情脚本引擎 stub：
+  - **ScriptOpcodes**：定义 enum 与 handler 签名；classifyOpcode(op)
+    完全对应 asm `CMP #$6D / BCC 直接 / SEC SBC #$6D 间接` 的双模式调度。
+  - **ScriptEngine**：单 VM step()，handler 返回 `false` 表示本帧到此；
+    `waitFrames > 0` / `waitingInput` 走帧等待。与 bank00 $90B0-$94FF 多 slot 调度器语义一致。
+  - **ScriptLoader**：默认段表 6 段（opening/opening_into/pre_match/...）从
+    BANK18_DATA_TABLES 头部按 offset+length 截取；scanSegmentBoundaries()
+    全表扫描 $0D/$0D/$0D/$0D 终止符生成段表（待 V0.4 全量覆盖）。
+  - 编译：story 子模块零错误（其他预存错误与本任务无关）。
 - [PlayerProfile 23 字段扩展] PlayerProfile 从 7 字段扩展为 23 字段（7 base + 8 low + 8 high），
   完全对齐 ROM 0x39fde 的 24 字节结构（字节 0x17 留空）。
   - 7 base:  stamina/shot/pass/dribble/block/tackle/intercept
