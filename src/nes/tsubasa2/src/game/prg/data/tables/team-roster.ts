@@ -15,6 +15,14 @@
  * World Cup 区共 11 队 (8+3), 实际只上场 11 个, 但库因布拉 (Coinbra) 需超密码
  * 才能上半场首发 (参见 密码选关.MD §七.特殊密码)。
  *
+ * ⚠ 2026-08-24 修正:
+ *   关 32 WestGermany 0xAF = `encounterLevels: [32]` (仅 1 关)
+ *   关 33 BrazilYouth 0xB0 = `encounterLevels: [33]` (独立队伍)
+ *   doc 的 Brazil 决赛 roster 是 stride-2 11 字节数组:
+ *     - 1st Half (默认)  @ PRG 0x3BCDA + stride 2 = [0x6A 0x6B 0x6C 0x6D 0x6E 0x6F 0x70 0x71 0x72 0x73 0x74]
+ *     - 2nd Half (Coinbra 替换 0x6C) @ PRG 0x3DBEC = 0x75
+ *   altLineups 字段保存变阵数据 (含 Coinbra 0x75)。
+ *
  * ⚠ 重要修正 (2026-08):
  *   doc 里写的 "$AA47" 是 **CPU 地址**, 不是 PRG 偏移。
  *   实际 PRG 文件位置 = header(16 bytes 已扣) + PRG offset 0x4A47。
@@ -38,6 +46,8 @@ export interface TeamRosterEntry {
   readonly tactic: string;
   /** 剧情关号 (1-33); 数组表示同一队可能出现在多个关 */
   readonly encounterLevels: ReadonlyArray<number>;
+  /** 备用阵容 (变阵/替换, 含 Coinbra 超级密码阵容等); 不触发主 encounterLevels */
+  readonly altLineups?: ReadonlyArray<ReadonlyArray<number>>;
 }
 
 /** 战术字节解码 (高 4 位 = formation, 低 4 位 = tactic) */
@@ -63,9 +73,12 @@ export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
 
   { id: 0x83, name: 'Exhibition',   type: 'cpu',    players: [0x21, 0x14, 0x17, 0x10, 0x0B, 0x18, 0x05, 0x06, 0x09, 0x02, 0x0C], subs: [],                                                                                 formation: '4-3-3', tactic: 'Normal',   encounterLevels: [], },
 
-  // ─────────── 巴西联赛 (5 队 × 12 bytes, PRG 0x3BB1A; 关 1-6) ───────────
-  // 剧情顺序: Flamengo (关1) → Corinthians (关2) → Gremio (关3) → Palmeiras (关4) → Santos (关5) → Flamengo (关6 循环)
-  { id: 0x89, name: 'Flamengo',     type: 'cpu',    players: [0x87, 0x88, 0x89, 0x89, 0x91, 0x1F, 0x1D, 0x04, 0x2E, 0x09, 0x2F], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [1, 6] },
+  // ─────────── 巴西联赛 (6 队 × 12 bytes, PRG 0x3BB0A; 关 1-6) ───────────
+  // 全部落在 PRG bank 14 ($0E)。剧情顺序 = PRG 顺序 (stride 12):
+  //   Fluminense (关1) → Corinthians (关2) → Gremio (关3) → Palmeiras (关4) → Santos (关5) → Flamengo (关6 循环)
+  // 修正: 密码选关.MD §一.巴西联赛篇 第1关 = 弗卢米嫩塞, 不是 Flamengo
+  // 修正: doc 漏列 Fluminense (0x84), 实际是 Brazil League 第 1 关
+  { id: 0x84, name: 'Fluminense',   type: 'cpu',    players: [0x24, 0x09, 0x23, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x7D, 0xA0], subs: [],                                                                              formation: 'Form8',  tactic: 'Normal',  encounterLevels: [1] },
 
   { id: 0x85, name: 'Corinthians',  type: 'cpu',    players: [0x26, 0x0F, 0x20, 0x00, 0x7E, 0x7F, 0x80, 0x80, 0xB0, 0x1F, 0x1E], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [2] },
 
@@ -74,6 +87,9 @@ export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
   { id: 0x87, name: 'Palmeiras',    type: 'cpu',    players: [0x1D, 0x09, 0x29, 0x04, 0x2A, 0x0F, 0x03, 0x00, 0x84, 0x85, 0x86], subs: [],                                                                              formation: 'Form6',  tactic: 'Tact8',   encounterLevels: [4] },
 
   { id: 0x88, name: 'Santos',       type: 'cpu',    players: [0x60, 0x1E, 0x1F, 0x0A, 0x2B, 0x06, 0x2C, 0x02, 0x2D, 0x0F, 0x00], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [5] },
+
+  // 修正: Flamengo 仅关 6 (关 1 是 Fluminense, 不是 Flamengo)
+  { id: 0x89, name: 'Flamengo',     type: 'cpu',    players: [0x87, 0x88, 0x89, 0x89, 0x91, 0x1F, 0x1D, 0x04, 0x2E, 0x09, 0x2F], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [6] },
 
   // ─────────── 日本高中 (6 队 × 12 bytes, PRG 0x3BB62; 关 7-12) ───────────
   { id: 0x8A, name: 'Kunimi',       type: 'cpu',    players: [0x31, 0x0F, 0x01, 0x00, 0x76, 0x8D, 0x8D, 0x8E, 0x40, 0x1E, 0x1E], subs: [],                                                                              formation: 'Form4',  tactic: 'Normal',  encounterLevels: [7] },
@@ -130,8 +146,23 @@ export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
 
   { id: 0xAE, name: 'Argentina',    type: 'cpu',    players: [0x63, 0x09, 0x64, 0x08, 0x65, 0x05, 0x66, 0x0A, 0x67, 0x07, 0x68], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [31] },
 
-  // 关 32 = 西德 (WestGermany), 关 33 = 巴西青年决赛, 共用 0xAF slot (实际游戏中是不同阵)
-  { id: 0xAF, name: 'WestGermany',  type: 'cpu',    players: [0x69, 0x0F, 0x03, 0x00, 0x76, 0x77, 0x78, 0x79, 0x61, 0x1E, 0x28], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [32, 33] },
+  // 关 32 西德 0xAF + 关 33 巴西青年 0xB0 拆开 (数据源自 doc 文件 offset 0x3BCC2/0x3BCDA, stride 2)
+  // 西德 doc 仅给 7 IDs (GK + 6 hint); 其余 4 个待反汇编 PRG 区间补全
+  { id: 0xAF, name: 'WestGermany',  type: 'cpu',    players: [0x69, 0x0F, 0x03, 0x00, 0x76, 0x77, 0x78, 0x79, 0x61, 0x1E, 0x28], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [32] },
+
+  // 关 33 巴西青年决赛 (BrazilYouth)
+  // 默认阵容 = 1st Half @ PRG 0x3BCDA + stride 2
+  // altLineups[0] = 2nd Half (Coinbra 替换 Pos3) @ PRG 0x3DBEC = 0x75
+  // 触发条件: 密码选关.MD §七"决赛巴西队10号库因布拉上半场就在队中"
+  //   ねききみげ ひひびわじ じくとうし じぜび  (Coinbra 上半场首发 super-password)
+  { id: 0xB0, name: 'BrazilYouth',  type: 'cpu',    players: [0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73, 0x74], subs: [],
+    formation: '4-3-3',  tactic: 'Normal',
+    encounterLevels: [33],
+    altLineups: [
+      // 超级密码阵容: Pos3 (GK? or FW?) 替换为 Coinbra 0x75
+      [0x6A, 0x6B, 0x75, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73, 0x74],
+    ],
+  },
 ];
 
 /** 按 ID 找队伍 */
@@ -149,3 +180,6 @@ export function findByEncounterLevel(level: number): TeamRosterEntry | null {
   }
   return null;
 }
+
+/** 兼容 team-table.ts 的别名 (TEAM_TABLE = TEAM_ROSTER_TABLE) */
+export const TEAM_TABLE = TEAM_ROSTER_TABLE as ReadonlyArray<TeamRosterEntry>;

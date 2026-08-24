@@ -183,3 +183,38 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 4. 只动自己负责的业务域。
 5. 提交：`git add . && git commit -m "..." && git push`。
 6. 卡点/已知 BUG 记录到 `DEVLOG.md`，不遗留。
+---
+
+## 璋冭瘯瀵规瘮绾犻敊 WBS锛堝熀浜?_emu_diff + _emu_reference 閲忓寲锛?
+> 宸ュ叿锛歚scripts/_emu_reference.{ts,cjs}` + `scripts/_emu_diff.cjs` + `scripts/_oam_diff.cjs`
+> 杈撳嚭锛歚output/ppu-trace/frame-NNN/*` (H5) vs `output/emu-reference/frame-NNN/*` (TS-NES 璺?ROM)
+> 褰撳墠宸紓锛坒rame 30锛夛細
+>   - PT 0% (鍥?BUG #5 mid-frame CHR switch 鏈炕璇?
+>   - OAM 35.9% (鍥?BUG #4 boot OAM init 鏈炕璇?
+>   - Screen 12.5% (鍙椾笂闈袱涓奖鍝?
+
+| ID | 浠诲姟 | 浜у嚭 | 鐘舵€?|
+|----|------|------|------|
+| Y0 | 閲忓寲瀵规瘮宸ュ叿锛圥T/OAM/Palette/PT-by-scanline锛?| `_emu_reference.*` `_emu_diff.cjs` `_oam_diff.cjs` | 鉁?|
+| Y1 | 鎷嗚В PPU chrSwitchLog + scanline-grouped PT viewer | `pattern-table-viewer.ts` | 鉁?|
+| Y2 | BUG #1 fix锛歝hr-bank-*.ts 瀛楄妭鏁拌ˉ鍏紙8192锛?| `_chr_refetch.cjs` 16 files | 鉁?|
+| Y3 | BUG #2 fix锛歋cene0 boot 鍗虫椂璋?loadChrConfig(0x17) | `Scene0Controller.ts` | 鉁?|
+| Y4 | BUG #3 fix锛歛pplyChrRequest 鏀硅 `$0075/$0076` | `InterruptService.ts` | 鉁?|
+| Y5 | **BUG #4 fix**锛氱炕璇?PRG `$21CA`+`$1DD1`+`$85EB`锛坆oot OAM锛?| `SpriteService.bootOamInit()` | 猬?|
+| Y6 | **BUG #5 fix**锛氱炕璇?PRG `$8BAB`+ 寰幆鍒?bank stream | `InterruptService.midFrameChrSwitch()` | 猬?|
+| Y7 | _emu_diff.cjs palette `p.sp` 寮傚父 + nt.json dump 缂哄け | `_emu_diff.cjs` `_emu_reference.ts` | 猬?|
+| Y8 | 鍥炲綊锛歠rame 30 PT-by-scanline sc=6 pt-pix 鈮?50% | `_emu_diff.cjs` 杈撳嚭 | 猬?|
+| Y9 | _ram_dump.ts 鍔?dump OAM 瀛楄妭锛?0200-$0230锛変究浜庢牳瀵?| `_ram_dump.ts` | 猬?|
+
+---
+
+## bank0-15 boot/mid-frame 缈昏瘧浠诲姟琛?
+| ID | Bank | 浠诲姟 | 浜у嚭 | 鐘舵€?|
+|----|------|------|------|------|
+| L1 | PRG $21CA | 0x28 浠诲姟锛歍ecmo logo 23 sprite | `SpriteService.bootOamInit()` | 猬?|
+| L2 | PRG $1DD1 | 0x50 浠诲姟锛氳皟鑹叉澘棰勮杞?| `AudioService.loadTecmoBgmPalette()` | 猬?|
+| L3 | PRG $85EB | 0x78 浠诲姟锛氳 NT3 閮ㄥ垎 tile | NT 闃熷垪娉ㄥ叆 | 猬?|
+| L4 | PRG $8BAB+ | mid-frame CHR switch 寰幆 ($005E/$005F stream) | `InterruptService.midFrameChrSwitch()` | 猬?|
+| L5 | PRG $8BAB+ | mid-frame 瑙﹀彂鏃舵満锛氭瘡 scanline per | per-scanline chrWrite | 猬?|
+| L6 | PRG $8BAB+ | applyChrFrom009e 鎵╁睍 cmd 0/1/6/7 | `InterruptService.applyChrFrom009e` | 猬?|
+

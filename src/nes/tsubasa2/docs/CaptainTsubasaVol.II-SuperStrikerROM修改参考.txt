@@ -867,7 +867,13 @@ CPU Team Edit:
 --------------
 
 Brazil League,
+
 --------------
+
+Flamengo,
+-----------
+
+第一关没明星
 
 Corinthians,
 -----------
