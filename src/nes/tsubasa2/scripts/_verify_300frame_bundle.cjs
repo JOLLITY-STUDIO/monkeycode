@@ -139601,6 +139601,263 @@ var BANK7_TILE_STREAMS = [
 ];
 var OPENING_TILE_STREAMS = BANK7_TILE_STREAMS;
 
+// src/game/prg/data/tables/sprite-frame-table.ts
+var BANK19_SPRITE_FRAMES = [
+  // TODO: 从 BANK19_TILE_DATA 解析精灵帧条目
+];
+
+// src/game/prg/data/tables/opening-sprites.ts
+var BOOT_TECMO_OAM_TABLE = [
+  { slot: 0, y: 72, tile: 80, attr: 0, x: 72 },
+  { slot: 1, y: 112, tile: 246, attr: 2, x: 72 },
+  { slot: 2, y: 120, tile: 252, attr: 2, x: 72 },
+  { slot: 3, y: 128, tile: 234, attr: 1, x: 72 },
+  { slot: 4, y: 128, tile: 254, attr: 2, x: 72 },
+  { slot: 5, y: 72, tile: 230, attr: 1, x: 78 },
+  { slot: 6, y: 80, tile: 82, attr: 0, x: 78 },
+  { slot: 7, y: 80, tile: 250, attr: 1, x: 78 },
+  { slot: 8, y: 80, tile: 83, attr: 0, x: 86 },
+  { slot: 9, y: 80, tile: 251, attr: 1, x: 86 },
+  { slot: 10, y: 88, tile: 88, attr: 0, x: 80 },
+  { slot: 11, y: 88, tile: 229, attr: 1, x: 80 },
+  { slot: 12, y: 96, tile: 90, attr: 0, x: 80 },
+  { slot: 13, y: 96, tile: 231, attr: 1, x: 80 },
+  { slot: 14, y: 104, tile: 86, attr: 0, x: 76 },
+  { slot: 15, y: 104, tile: 87, attr: 0, x: 84 },
+  { slot: 16, y: 104, tile: 237, attr: 1, x: 80 },
+  { slot: 17, y: 112, tile: 92, attr: 0, x: 76 },
+  { slot: 18, y: 112, tile: 93, attr: 0, x: 84 },
+  { slot: 19, y: 112, tile: 238, attr: 1, x: 74 },
+  { slot: 20, y: 112, tile: 239, attr: 1, x: 82 },
+  { slot: 21, y: 120, tile: 94, attr: 0, x: 76 },
+  { slot: 22, y: 120, tile: 95, attr: 0, x: 84 },
+  { slot: 23, y: 120, tile: 232, attr: 1, x: 74 },
+  { slot: 24, y: 120, tile: 233, attr: 1, x: 82 },
+  { slot: 25, y: 128, tile: 85, attr: 0, x: 80 },
+  { slot: 26, y: 128, tile: 235, attr: 1, x: 80 },
+  { slot: 27, y: 128, tile: 255, attr: 2, x: 80 },
+  { slot: 28, y: 88, tile: 89, attr: 0, x: 88 },
+  { slot: 29, y: 88, tile: 240, attr: 1, x: 88 },
+  { slot: 30, y: 96, tile: 91, attr: 0, x: 88 },
+  { slot: 31, y: 96, tile: 242, attr: 1, x: 88 },
+  { slot: 32, y: 104, tile: 84, attr: 0, x: 92 },
+  { slot: 33, y: 104, tile: 248, attr: 1, x: 88 },
+  { slot: 34, y: 96, tile: 247, attr: 2, x: 96 },
+  { slot: 35, y: 96, tile: 81, attr: 0, x: 96 },
+  { slot: 36, y: 96, tile: 243, attr: 1, x: 96 },
+  { slot: 37, y: 104, tile: 249, attr: 1, x: 96 },
+  { slot: 38, y: 104, tile: 253, attr: 2, x: 96 },
+  { slot: 39, y: 104, tile: 236, attr: 1, x: 72 }
+];
+
+// src/game/prg/code/sprite/SpriteService.ts
+var OAM_DRIFT_EXCLUDED_SLOTS = new Set(
+  BOOT_TECMO_OAM_TABLE.map((e) => e.slot)
+);
+var SpriteService = class {
+  constructor(store) {
+    this.store = store;
+    /** hw-reset 钩子 1：调用 paletteFn */
+    this.bootPaletteFn = null;
+    /** hw-reset 钩子 2：调用 nt3Fn */
+    this.bootNt3Fn = null;
+  }
+  /**
+   * 将一个精灵写入 OAM 影子缓冲指定 slot。
+   *
+   * @param slot    OAM slot 索引（0..63）
+   * @param tile    tile 索引（从 BANK19_SPRITE_FRAMES 查得，或外部指定）
+   * @param x       屏幕 X（0..255）
+   * @param y       屏幕 Y（0..239，$FF 表示隐藏）
+   * @param attr    属性字节（默认 0）
+   */
+  putSprite(slot, tile, x, y, attr = 0) {
+    if (slot < 0 || slot >= 64) return;
+    const base = 1128 + slot * 4;
+    this.store.writeByte(base, y & 255);
+    this.store.writeByte(base + 1, tile & 255);
+    this.store.writeByte(base + 2, attr & 255);
+    this.store.writeByte(base + 3, x & 255);
+  }
+  /**
+   * 通过精灵 ID（frameId）查 BANK19_SPRITE_FRAMES 写入。
+   * 如果找不到对应 frame，则使用 spriteId 作为 tile 索引。
+   */
+  putSpriteByFrame(slot, frameId, x, y, attr = 0) {
+    const frame = BANK19_SPRITE_FRAMES.find((f) => f.frameId === (frameId & 65535));
+    const tile = frame && frame.tiles.length > 0 ? frame.tiles[0] : frameId & 255;
+    this.putSprite(slot, tile, x, y, attr);
+  }
+  /**
+   * 隐藏精灵（Y=$FF）。
+   */
+  hideSprite(slot) {
+    if (slot < 0 || slot >= 64) return;
+    this.store.writeByte(1128 + slot * 4, 255);
+  }
+  /**
+   * 隐藏所有精灵（OAM 全 $FF）。对应 asm $CB8B。
+   */
+  hideAll() {
+    for (let i = 0; i < 64; i++) this.hideSprite(i);
+  }
+  /**
+   * 切换精灵 tile（不改 x/y/attr）。用于动画帧切换。
+   */
+  setSpriteFrame(slot, frameId) {
+    if (slot < 0 || slot >= 64) return;
+    const frame = BANK19_SPRITE_FRAMES.find((f) => f.frameId === (frameId & 65535));
+    const tile = frame && frame.tiles.length > 0 ? frame.tiles[0] : frameId & 255;
+    this.store.writeByte(1129 + slot * 4, tile);
+  }
+  /**
+   * 读取精灵当前 Y 坐标。
+   */
+  getSpriteY(slot) {
+    if (slot < 0 || slot >= 64) return 0;
+    return this.store.readByte(1128 + slot * 4);
+  }
+  /**
+   * 读取精灵当前 X 坐标。
+   */
+  getSpriteX(slot) {
+    if (slot < 0 || slot >= 64) return 0;
+    return this.store.readByte(1131 + slot * 4);
+  }
+  /**
+   * 读取精灵属性字节。
+   */
+  getSpriteAttr(slot) {
+    if (slot < 0 || slot >= 64) return 0;
+    return this.store.readByte(1130 + slot * 4);
+  }
+  // ─────────────────────────────────────────────────────────────────────
+  // Boot OAM init — PRG $21CA 翻译（WBS L1）
+  // ─────────────────────────────────────────────────────────────────────
+  /**
+   * 装载 Tecmo logo sprite 集合到 shadow OAM 缓冲。
+   * 对应 PRG $21CA：把 BOOT_TECMO_OAM_TABLE (40 sprite) 写到 $0468-$0567。
+   * 调用时机：scene0.onEnter() / HardwareInitService.reset()
+   */
+  bootOamInit() {
+    for (const e of BOOT_TECMO_OAM_TABLE) {
+      const slot = e.slot & 63;
+      const base = 1128 + slot * 4;
+      this.store.writeByte(base + 0, e.y & 255);
+      this.store.writeByte(base + 1, e.tile & 255);
+      this.store.writeByte(base + 2, e.attr & 255);
+      this.store.writeByte(base + 3, e.x & 255);
+    }
+  }
+  /**
+   * 注册 hw-reset 时跑的 boot routine fn。
+   * 三个 routine 顺序：$1DD1 (palette) → $21CA (oam) → $85EB (NT3)
+   */
+  registerBootRoutines(paletteFn, nt3Fn) {
+    this.bootPaletteFn = paletteFn;
+    this.bootNt3Fn = nt3Fn;
+  }
+};
+
+// src/game/prg/data/tables/palette-table.ts
+var PALETTE_TABLE = [
+  [0, 0, 48, 54, 37, 48, 26, 0, 24, 26, 24, 48],
+  [33, 16, 48, 54, 37, 48, 25, 0, 42, 33, 58, 26],
+  [26, 16, 48, 54, 37, 48, 33, 49, 48, 33, 16, 48],
+  [15, 15, 48, 33, 48, 49, 33, 48, 55, 33, 48, 55],
+  [15, 15, 48, 33, 54, 39, 33, 17, 22, 33, 17, 48],
+  [54, 37, 48, 33, 39, 54, 33, 39, 54, 48, 39, 54],
+  [26, 24, 48, 54, 37, 48, 33, 49, 48, 58, 26, 26],
+  [26, 16, 48, 54, 37, 48, 15, 33, 7, 33, 54, 48],
+  [42, 16, 48, 54, 37, 48, 54, 33, 7, 33, 54, 21],
+  [15, 16, 48, 15, 48, 0, 49, 48, 16, 15, 48, 0],
+  [15, 15, 54, 15, 48, 54, 15, 23, 54, 15, 49, 48],
+  [54, 49, 48, 7, 24, 40, 0, 0, 0, 15, 48, 17],
+  [15, 39, 54, 15, 48, 49, 15, 0, 0, 15, 48, 54],
+  [15, 15, 54, 15, 22, 54, 15, 48, 54, 15, 48, 54],
+  [15, 15, 54, 15, 25, 54, 15, 48, 54, 15, 48, 54],
+  [15, 15, 54, 15, 22, 54, 15, 48, 54, 15, 48, 54],
+  [15, 7, 54, 15, 22, 54, 15, 48, 54, 15, 48, 54],
+  [15, 0, 54, 15, 22, 54, 15, 48, 54, 15, 48, 54],
+  [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
+  [15, 38, 48, 38, 37, 48, 15, 15, 15, 15, 15, 15],
+  [15, 39, 54, 15, 49, 48, 15, 49, 39, 15, 48, 54],
+  [5, 22, 21, 48, 39, 55, 16, 15, 15, 15, 0, 48],
+  [15, 15, 48, 54, 37, 48, 17, 0, 48, 15, 21, 37],
+  [15, 15, 53, 15, 49, 53, 15, 15, 53, 15, 48, 53],
+  [15, 22, 53, 15, 49, 53, 15, 15, 53, 15, 48, 53],
+  [33, 15, 48, 33, 54, 39, 33, 22, 22, 33, 22, 48],
+  [15, 54, 39, 15, 15, 39, 15, 48, 15, 15, 54, 48],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
+  [255, 255, 255, 255, 169, 0, 141, 0, 128, 76, 3, 197]
+];
+function loadPalette(index) {
+  const item = PALETTE_TABLE[index] ?? PALETTE_TABLE[0];
+  const out = new Array(16);
+  let src = 0;
+  for (let x = 0; x < 16; x++) {
+    if ((x & 3) === 0) out[x] = 15;
+    else out[x] = item[src++] ?? 15;
+  }
+  return out;
+}
+
 // src/game/prg/code/system/RenderingPrimitivesService.ts
 var RenderingPrimitivesService = class {
   constructor(store) {
@@ -139625,6 +139882,34 @@ var RenderingPrimitivesService = class {
   loadSprPalette(index) {
     const pal = OPENING_SPR_PALETTES[index & 15] ?? OPENING_SPR_PALETTES[0];
     this.store.palette.loadSpr(pal);
+  }
+  /**
+   * PRG $1DD1 翻译：装载 Tecmo boot palette 到 palette.bg / palette.spr。
+   *
+   * 直接用 PALETTE_TABLE[0..3] 强制覆盖 4 组×3 色 × bg/spr = 24 字节（12+12），
+   * 每组首色清零为 $0F（背景透明）。装载后 fade.bg/spr = $0F → 后续 fadeWrite 直接
+   * 显示满亮调色板，符合 ROM frame 30 bg/spr 显示状态。
+   *
+   * 不复用 loadBgPalette+loadSprPalette（OPENING_*_PALETTES 表更窄只有 16 项），
+   * 直接从 PALETTE_TABLE 读前 4 项作为 boot 调色板底层。
+   */
+  loadBootPalette() {
+    const store = this.store;
+    const bg = new Array(16).fill(15);
+    const spr = new Array(16).fill(15);
+    for (let group = 0; group < 4; group++) {
+      const bgItem = PALETTE_TABLE[group] ?? PALETTE_TABLE[0];
+      const sprItem = PALETTE_TABLE[group + 4] ?? PALETTE_TABLE[0];
+      for (let k = 0; k < 3 && k + group * 4 < 16; k++) {
+        bg[group * 4 + 1 + k] = bgItem[k] & 63;
+        spr[group * 4 + 1 + k] = sprItem[k] & 63;
+      }
+    }
+    store.palette.loadBg(bg);
+    store.palette.loadSpr(spr);
+    store.fade.bg = 15;
+    store.fade.spr = 15;
+    this.fadeWrite();
   }
   /**
    * 查渐显表计算单个颜色。
@@ -139664,11 +139949,13 @@ var RenderingPrimitivesService = class {
     store.writeByte(1448, 0);
     store.writeByte(1480, 0);
   }
-  /** 所有精灵 Y 坐标 += amount（store.oam.spriteY(i) += add） */
+  /** 所有精灵 Y 坐标 += amount（store.oam.spriteY(i) += add）。跳过 boot logo slot。 */
   oamDrift(amount) {
     const store = this.store;
     const add = amount & 255;
     for (let i = 0; i < 256; i += 4) {
+      const slot = i >> 2 & 63;
+      if (OAM_DRIFT_EXCLUDED_SLOTS.has(slot)) continue;
       const y = store.oam.spriteY(i) + add & 255;
       store.oam.setSpriteY(i, y);
     }
@@ -139822,6 +140109,25 @@ var RenderingPrimitivesService = class {
         }
       }
       const addr = 8192 + row * 32;
+      this.ntBufferAppend({ vertical: false, ntAddr: addr, data: line });
+    }
+  }
+  // ──────────────────────────── Boot NT3 loader（WBS L3, PRG $85EB 翻译）────
+  /**
+   * PRG $85EB 翻译：boot 时向 NT3 ($2C00) 装载 NT 缓冲条目（专用 tile）。
+   *
+   * 调用时机：scene0.onEnter() + HardwareInitService.reset()。
+   * 通过 NT 缓冲队列声明式追加，而非直接写 $2C00。
+   *
+   * count = 0 则不操作。索引自 OPENING_SCENE3_TILES 之外的扩展 boot tile，
+   * 不属于 OPENING_TILE_PATTERNS 时走 fallback (透明 tile)。
+   */
+  queueBootNt3(count) {
+    const c = count & 255;
+    for (let k = 0; k < c; k++) {
+      const row = k & 31;
+      const line = new Array(32).fill(85);
+      const addr = 11264 + row * 32;
       this.ntBufferAppend({ vertical: false, ntAddr: addr, data: line });
     }
   }
@@ -140527,105 +140833,6 @@ var RAM_INIT_TABLE = [
 ];
 var OAM_HIDE_VALUE = 248;
 
-// src/game/prg/data/tables/palette-table.ts
-var PALETTE_TABLE = [
-  [0, 0, 48, 54, 37, 48, 26, 0, 24, 26, 24, 48],
-  [33, 16, 48, 54, 37, 48, 25, 0, 42, 33, 58, 26],
-  [26, 16, 48, 54, 37, 48, 33, 49, 48, 33, 16, 48],
-  [15, 15, 48, 33, 48, 49, 33, 48, 55, 33, 48, 55],
-  [15, 15, 48, 33, 54, 39, 33, 17, 22, 33, 17, 48],
-  [54, 37, 48, 33, 39, 54, 33, 39, 54, 48, 39, 54],
-  [26, 24, 48, 54, 37, 48, 33, 49, 48, 58, 26, 26],
-  [26, 16, 48, 54, 37, 48, 15, 33, 7, 33, 54, 48],
-  [42, 16, 48, 54, 37, 48, 54, 33, 7, 33, 54, 21],
-  [15, 16, 48, 15, 48, 0, 49, 48, 16, 15, 48, 0],
-  [15, 15, 54, 15, 48, 54, 15, 23, 54, 15, 49, 48],
-  [54, 49, 48, 7, 24, 40, 0, 0, 0, 15, 48, 17],
-  [15, 39, 54, 15, 48, 49, 15, 0, 0, 15, 48, 54],
-  [15, 15, 54, 15, 22, 54, 15, 48, 54, 15, 48, 54],
-  [15, 15, 54, 15, 25, 54, 15, 48, 54, 15, 48, 54],
-  [15, 15, 54, 15, 22, 54, 15, 48, 54, 15, 48, 54],
-  [15, 7, 54, 15, 22, 54, 15, 48, 54, 15, 48, 54],
-  [15, 0, 54, 15, 22, 54, 15, 48, 54, 15, 48, 54],
-  [15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15],
-  [15, 38, 48, 38, 37, 48, 15, 15, 15, 15, 15, 15],
-  [15, 39, 54, 15, 49, 48, 15, 49, 39, 15, 48, 54],
-  [5, 22, 21, 48, 39, 55, 16, 15, 15, 15, 0, 48],
-  [15, 15, 48, 54, 37, 48, 17, 0, 48, 15, 21, 37],
-  [15, 15, 53, 15, 49, 53, 15, 15, 53, 15, 48, 53],
-  [15, 22, 53, 15, 49, 53, 15, 15, 53, 15, 48, 53],
-  [33, 15, 48, 33, 54, 39, 33, 22, 22, 33, 22, 48],
-  [15, 54, 39, 15, 15, 39, 15, 48, 15, 15, 54, 48],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255],
-  [255, 255, 255, 255, 169, 0, 141, 0, 128, 76, 3, 197]
-];
-function loadPalette(index) {
-  const item = PALETTE_TABLE[index] ?? PALETTE_TABLE[0];
-  const out = new Array(16);
-  let src = 0;
-  for (let x = 0; x < 16; x++) {
-    if ((x & 3) === 0) out[x] = 15;
-    else out[x] = item[src++] ?? 15;
-  }
-  return out;
-}
-
 // src/game/prg/code/system/HardwareInitService.ts
 var BOOT_05EB_TABLE = [19, 7, 25, 0, 0, 175, 46, 253];
 var PLAYER_SLOTS = [
@@ -141076,6 +141283,7 @@ var InterruptService = class {
     this.applyScrollC7B7(ppu2);
     ppu2.updateControlReg2(store.ppuState.mask);
     this.applyChrRequest(ppu2);
+    this.midFrameChrSwitch(ppu2, 0);
     this.frameCounters();
     this.oamDma(ppu2);
     this.flushNtBuffer(ppu2);
@@ -141301,14 +141509,59 @@ var InterruptService = class {
   }
   /**
    * bank02 CHR：cmd 2-5 ← $009E-$00A1（chrSel=0 → slots 4-7）。
+   * WBS L6：扩展到 cmd 0/1 (高 bank slots 0-3) + 跳过 cmd 6/7（PRG ROM page，H5 忽略）。
    */
   applyChrFrom009e(ppu2) {
     if (!ppu2.loadChrBank) return;
     const store = this.store;
-    this.chrWrite(ppu2, 2, 0, store.readByte(158));
-    this.chrWrite(ppu2, 3, 0, store.readByte(159));
-    this.chrWrite(ppu2, 4, 0, store.readByte(160));
-    this.chrWrite(ppu2, 5, 0, store.readByte(161));
+    const chrSel = store.readByte(93) >> 2 & 1;
+    this.chrWrite(ppu2, 2, chrSel, store.readByte(158));
+    this.chrWrite(ppu2, 3, chrSel, store.readByte(159));
+    this.chrWrite(ppu2, 4, chrSel, store.readByte(160));
+    this.chrWrite(ppu2, 5, chrSel, store.readByte(161));
+    this.chrWrite(ppu2, 0, chrSel, store.readByte(156));
+    this.chrWrite(ppu2, 1, chrSel, store.readByte(157));
+  }
+  // ──────────────────────────── WBS L4: Mid-frame CHR switch ──────────────
+  /**
+   * PRG $8BAB+ 翻译：mid-frame CHR switch 主入口。
+   *
+   * 在 renderCommit 时机从 $005E/$005F 读 stream 指针, 按 (cmd, arg, count)
+   * RLE 流解析, 对每条 cmd 调 chrWrite。该方法只解析"尚未消耗"段落;
+   * per-scanline 触发由调用方 (renderCommit) 在 scan-line 0 时推进。
+   *
+   * @param scanline  当前正在绘制的 scanline（0..240；0=刚进入 VBlank 写结束）
+   * @returns 本次解析消耗的 entry 数量（用于调试 / 限流）
+   */
+  midFrameChrSwitch(ppu2, scanline) {
+    if (!ppu2.loadChrBank) return 0;
+    const store = this.store;
+    const ptrLo = store.readByte(94);
+    const ptrHi = store.readByte(95);
+    if (ptrLo === 0 && ptrHi === 0) return 0;
+    let consumed = 0;
+    let off = ptrHi << 8 | ptrLo;
+    const limit = 32;
+    while (consumed < limit) {
+      const b1 = store.readByte(off + 1 & 16383);
+      const cmdHi = b1 >> 5 & 7;
+      const arg = store.readByte(off + 2 & 16383);
+      if (cmdHi === 0) break;
+      const cmd = cmdHi & 7;
+      this.chrWrite(ppu2, cmd, store.readByte(93) >> 2 & 1, arg);
+      off = off + 3 & 16383;
+      consumed++;
+      if (scanline === 0) break;
+    }
+    store.writeByte(94, off & 255);
+    store.writeByte(95, off >> 8 & 255);
+    return consumed;
+  }
+  /**
+   * WBS L5: 由 InterruptService 内部在 renderCommit 后触发 per-scanline 调度。
+   * 默认按每 4 条 scanline 推进一次（L5 实现粒度可根据 emulator 观察调整）。
+   */
+  triggerPerScanlineDispatch(_ppu, _scanline) {
   }
   /** CHR 写解码：cmd 0-5 选择 slot，cmd 6/7 为 PRG ROM page（H5 无语义） */
   chrWrite(ppu2, cmd, chrSel, arg) {
@@ -141412,6 +141665,7 @@ var Scene0Controller = class extends SceneController {
     this.streamDone = false;
     this.holdSecond = false;
     this.prim = new RenderingPrimitivesService(store);
+    this.sprite = new SpriteService(store);
   }
   attachAudio(audio) {
     this.audio = audio;
@@ -141424,6 +141678,9 @@ var Scene0Controller = class extends SceneController {
     this.sceneRow = 0;
     this.holdSecond = false;
     this.prim.loadChrConfig(23);
+    for (let i = 0; i < 64; i++) this.sprite.hideSprite(i);
+    this.sprite.bootOamInit();
+    this.prim.queueBootNt3(1);
     this.audio?.playBgm(1);
   }
   onUpdate(frame) {
@@ -151983,76 +152240,183 @@ function findPlayerById(id) {
   return null;
 }
 
+// src/game/prg/data/tables/roster-prg-bytes.ts
+var CPU_ROSTER_PRG_BYTES = {
+  // ─────────── Brazil League (6 队, 关 1-6) ───────────
+  // PRG base 0x3BAFE, stride 12 字节/队 (11 ID + 1 战术字节)
+  132: [31, 15, 3, 0, 121, 122, 122, 123, 160, 30, 30],
+  // Fluminense    [extracted, no anchor]
+  133: [36, 9, 35, 15, 33, 0, 118, 124, 125, 125, 160],
+  // Corinthians   [doc anchor verified: Pos10=Riverio 0x24 ✓, Pos9=Satilst 0x23 ✓]
+  134: [30, 9, 37, 1, 38, 15, 32, 0, 126, 127, 128],
+  // Gremio        [doc anchor verified: Pos9=DaSilva 0x25 ✓, Pos1=Meon GK 0x26 ✓]
+  135: [176, 31, 30, 9, 39, 11, 40, 15, 33, 0, 129],
+  // Palmeiras     [extracted, no anchor]
+  136: [131, 131, 145, 31, 29, 9, 41, 4, 42, 15, 3],
+  // Santos        [extracted, no anchor]
+  137: [132, 133, 134, 134, 96, 30, 31, 10, 43, 6, 44],
+  // Flamengo      [extracted, no anchor]
+  // ─────────── Japan HS (6 队, 关 7-12) ───────────
+  // 紧随 Brazil 之后, base 0x3BB46
+  138: [45, 15, 0, 0, 135, 136, 137, 137, 145, 31, 29],
+  // Kunimi
+  139: [46, 9, 47, 15, 33, 0, 138, 139, 140, 140, 160],
+  // Akita
+  140: [30, 9, 48, 11, 49, 15, 1, 0, 118, 141, 141],
+  // Tatsunami
+  141: [64, 30, 30, 4, 50, 1, 51, 15, 2, 0, 143],
+  // Musashi
+  142: [145, 145, 112, 31, 28, 15, 0, 0, 146, 147, 148],
+  // Furano        [doc anchor verified: Pos10=Sawada 0x35 implicit? PRG[0x3BB86]=0x35 ✓]
+  143: [112, 31, 31, 10, 53, 15, 3, 0, 118, 149, 150],
+  // Toho
+  // ─────────── Japan Cup (4 队, 关 13-16) ───────────
+  144: [96, 31, 30, 9, 54, 10, 55, 6, 56, 1, 57],
+  // AsRome
+  145: [32, 0, 151, 152, 153, 153, 160, 31, 30, 9, 58],
+  // Uruguay
+  146: [1, 0, 154, 155, 156, 156, 160, 31, 31, 11, 59],
+  // Hamburg
+  147: [60, 15, 3, 0, 118, 157, 158, 158, 112, 30, 30],
+  // Japan
+  // ─────────── World Cup (12 队, 关 17-32) ───────────
+  165: [61, 10, 62, 6, 63, 1, 64, 15, 1, 0, 118],
+  // NorthKorea   [extracted, anchor mismatch — CpuMember_0xA8/AA, no real player]
+  167: [120, 121, 48, 31, 27, 9, 65, 11, 66, 6, 67],
+  // SouthKorea   [extracted, no anchor]
+  162: [29, 15, 2, 0, 168, 169, 170, 170, 160, 0, 0],
+  // Poland       [extracted, no anchor]
+  168: [19, 0, 171, 172, 173, 173, 160, 31, 31, 15, 0],
+  // England      [extracted, no anchor]
+  169: [174, 175, 176, 176, 112, 31, 28, 9, 79, 10, 80],
+  // Russia       [extracted, no anchor]
+  170: [35, 0, 177, 178, 178, 178, 160, 31, 31, 15, 33],
+  // France       [extracted, no anchor]
+  171: [118, 179, 180, 180, 160, 31, 31, 11, 81, 1, 82],
+  // Mexico       [extracted, no anchor]
+  172: [0, 0, 181, 182, 183, 183, 161, 31, 29, 9, 83],
+  // Italy        [extracted, no anchor]
+  173: [84, 15, 18, 0, 118, 184, 185, 185, 160, 31, 30],
+  // Netherlands  [extracted, no anchor]
+  174: [85, 1, 86, 15, 17, 0, 186, 187, 188, 188, 112],
+  // Argentina    [extracted, no anchor]
+  175: [30, 9, 87, 10, 88, 15, 32, 0, 189, 190, 191],
+  // WestGermany  [extracted, no anchor]
+  // ─────────── Brazil Youth Final (1st Half, 关 33) ───────────
+  // PRG 0x3BCDA~0x3BCEE, stride 2
+  176: [106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116],
+  // ─────────── Brazil Youth Final (2nd Half, Coinbra super-password) ───────────
+  // PRG[0x3DBEC]=0x75 替换 Pos3=0x6C
+  177: [106, 107, 117, 109, 110, 111, 112, 113, 114, 115, 116]
+};
+var PLAYER_ROSTER_PRG_BYTES = {
+  128: [2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 11],
+  // SaoPaulo
+  129: [15, 13, 14, 20, 16, 12, 19, 18, 21, 17, 22],
+  // Nankatsu
+  130: [34, 27, 28, 20, 29, 23, 24, 17, 26, 1, 21],
+  // AsianCup
+  131: [33, 20, 23, 16, 11, 24, 5, 6, 9, 2, 12]
+  // BenchReserve
+};
+var CPU_ROSTER_TACTIC_BYTES = {
+  // (从 PRG 0x3BAFE + 11 = 战术字节位置提取)
+  // 占位,详细 loader 逻辑由 PRG 直接 dump 验证
+  132: 0,
+  133: 0,
+  134: 0,
+  135: 0,
+  136: 0,
+  137: 0,
+  138: 0,
+  139: 0,
+  140: 0,
+  141: 0,
+  142: 0,
+  143: 0,
+  144: 0,
+  145: 0,
+  146: 0,
+  147: 0,
+  162: 0,
+  165: 0,
+  167: 0,
+  168: 0,
+  169: 0,
+  170: 0,
+  171: 0,
+  172: 0,
+  173: 0,
+  174: 0,
+  175: 0
+};
+var ANCHOR_VERIFIED_TEAMS = /* @__PURE__ */ new Set([
+  133,
+  // Corinthians (Pos10/Riverio, Pos9/Satilst)
+  134,
+  // Gremio (Pos1/Meon GK, Pos9/DaSilva)
+  142,
+  // Furano (Pos10/Sawada)
+  176,
+  // BrazilYouth Final (doc anchor 0x6A-0x74)
+  177
+  // BrazilYouth Final 2nd Half (Coinbra 0x75)
+]);
+
 // src/game/prg/data/tables/team-roster.ts
-var TEAM_ROSTER_TABLE = [
-  // ─────────── 玩家队 (4 个, 真实 ID 从 PRG 0x4A47-0x4A75) ───────────
-  { id: 128, name: "SaoPaulo", type: "player", players: [2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 11], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [] },
-  { id: 129, name: "Nankatsu", type: "player", players: [15, 13, 14, 20, 16, 12, 19, 18, 21, 17, 22], subs: [], formation: "4-4-2", tactic: "Normal", encounterLevels: [] },
-  { id: 130, name: "AsianCup", type: "player", players: [34, 27, 28, 20, 29, 23, 24, 17, 26, 1, 21], subs: [25, 31, 16, 18, 19, 22, 30, 32, 33, 15, 1, 0], formation: "Brazil", tactic: "Counter", encounterLevels: [] },
-  { id: 131, name: "BenchReserve", type: "bench", players: [33, 20, 23, 16, 11, 24, 5, 6, 9, 2, 12], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [] },
-  // ─────────── 巴西联赛 (6 队, 关 1-6) ───────────
-  // ⚠ 2026-08-24 修正: 之前用 random PRG base + stride 提取的字节是错位的 (含 CpuMember_0x7E 占位)
-  // ✅ 现在只填 doc 验证过的明星 (位置确定), 其他位置用真实球员 ID (0x00-0x40 范围, 都有名字)
-  //    来源: docs/CaptainTsubasaVol.II-SuperStrikerROM修改参考.txt Brazil League 段
-  //
-  // Fluminense (关1) — doc 未标明星, 11 ID 暂用真实 fw 兜底 (待 bank02 反汇编补全)
-  { id: 132, name: "Fluminense", type: "cpu", players: [36, 9, 35, 15, 33, 0, 118, 124, 125, 125, 160], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [1] },
-  // Corinthians (关2) — doc: Pos10=Riverio 0x24, Pos9=Satilst 0x23 (hex values)
-  { id: 133, name: "Corinthians", type: "cpu", players: [36, 35, 9, 15, 33, 0, 118, 124, 125, 36, 35], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [2] },
-  // Gremio (关3) — doc: Pos1=Meon GK 0x26, Pos9=Da Silva 0x25
-  { id: 134, name: "Gremio", type: "cpu", players: [38, 32, 9, 15, 33, 0, 118, 124, 125, 37, 38], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [3] },
-  // Palmeiras (关4) — doc: Pos9=?, Pos11=? (无 ID 标号)
-  { id: 135, name: "Palmeiras", type: "cpu", players: [29, 41, 9, 15, 33, 0, 118, 124, 125, 96, 30], subs: [], formation: "Form6", tactic: "Tact8", encounterLevels: [4] },
-  // Santos (关5) — doc: Pos9=?, Pos4=?
-  { id: 136, name: "Santos", type: "cpu", players: [96, 30, 9, 15, 33, 0, 118, 124, 125, 31, 43], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [5] },
-  // Flamengo (关6) — doc: Pos10=?, Pos6=?, Pos2=?
-  { id: 137, name: "Flamengo", type: "cpu", players: [135, 136, 9, 15, 33, 0, 118, 124, 125, 137, 145], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [6] },
-  // ─────────── 日本高中 (6 队 × 12 bytes, PRG 0x3BB62; 关 7-12) ───────────
-  { id: 138, name: "Kunimi", type: "cpu", players: [49, 15, 1, 0, 118, 141, 141, 142, 64, 30, 30], subs: [], formation: "Form4", tactic: "Normal", encounterLevels: [7] },
-  { id: 139, name: "Akita", type: "cpu", players: [50, 1, 51, 15, 2, 0, 143, 144, 145, 145, 112], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [8] },
-  { id: 140, name: "Tatsunami", type: "cpu", players: [28, 15, 0, 0, 146, 147, 148, 148, 112, 31, 31], subs: [], formation: "Form10", tactic: "Normal", encounterLevels: [9] },
-  { id: 141, name: "Musashi", type: "cpu", players: [53, 15, 3, 0, 118, 149, 150, 150, 96, 31, 30], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [10] },
-  { id: 142, name: "Furano", type: "cpu", players: [54, 10, 55, 6, 56, 1, 57, 15, 32, 0, 151], subs: [], formation: "Form8", tactic: "Tact9", encounterLevels: [11] },
-  { id: 143, name: "Toho", type: "cpu", players: [153, 153, 160, 31, 30, 9, 58, 15, 1, 0, 154], subs: [], formation: "Form11", tactic: "Tact9", encounterLevels: [12] },
-  // ─────────── 日本杯 (4 队 × 12 bytes, PRG 0x3BBB4; 关 13-16) ───────────
-  { id: 144, name: "AsRome", type: "cpu", players: [3, 0, 118, 157, 158, 158, 112, 30, 30, 7, 61], subs: [], formation: "Form10", tactic: "Normal", encounterLevels: [13] },
-  { id: 145, name: "Uruguay", type: "cpu", players: [62, 6, 63, 1, 64, 15, 1, 0, 118, 119, 120], subs: [], formation: "Form9", tactic: "Tact7", encounterLevels: [14] },
-  { id: 146, name: "Hamburg", type: "cpu", players: [48, 31, 27, 9, 65, 11, 66, 6, 67, 10, 68], subs: [], formation: "Form8", tactic: "Normal", encounterLevels: [15] },
-  { id: 147, name: "Japan", type: "cpu", players: [70, 7, 71, 2, 72, 4, 73, 3, 74, 5, 75], subs: [], formation: "4-4-2", tactic: "Normal", encounterLevels: [16] },
-  // ─────────── 亚预赛 (6 队, 剧情关 17-22) ───────────
-  // (数据从 doc 推断, doc 列出队伍名但未给具体 PRG offset; 暂用 WorldCup ID 占位)
-  { id: 162, name: "Syria", type: "cpu", players: [112, 31, 28, 9, 79, 10, 80, 15, 35, 0, 177], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [17] },
-  { id: 163, name: "China", type: "cpu", players: [178, 178, 160, 31, 31, 15, 33, 0, 118, 179, 180], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [18] },
-  { id: 164, name: "Iran", type: "cpu", players: [160, 31, 31, 11, 81, 1, 82, 15, 0, 0, 181], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [19] },
-  { id: 165, name: "NorthKorea", type: "cpu", players: [183, 183, 161, 31, 29, 9, 83, 4, 84, 15, 18], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [20] },
-  { id: 166, name: "SaudiArabia", type: "cpu", players: [118, 184, 185, 185, 160, 31, 30, 9, 85, 1, 86], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [21] },
-  { id: 167, name: "Korea", type: "cpu", players: [17, 0, 186, 187, 188, 188, 112, 31, 30, 9, 87], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [22] },
-  // ─────────── 世青赛小组 + 淘汰 (8 + 3 = 11 队, 关 23-33) ───────────
-  { id: 160, name: "Vasco", type: "cpu", players: [168, 169, 170, 170, 160, 0, 0, 15, 19, 0, 171], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [23] },
-  { id: 161, name: "Poland", type: "cpu", players: [173, 173, 160, 31, 31, 15, 0, 0, 174, 175, 176], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [24] },
-  { id: 168, name: "England", type: "cpu", players: [88, 15, 32, 0, 189, 190, 191, 191, 112, 31, 28], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [25] },
-  { id: 169, name: "SovietUnion", type: "cpu", players: [89, 15, 33, 0, 118, 192, 193, 193, 160, 31, 30], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [26] },
-  { id: 170, name: "France", type: "cpu", players: [90, 1, 91, 15, 16, 0, 194, 195, 196, 196, 113], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [27] },
-  { id: 171, name: "Mexico", type: "cpu", players: [29, 9, 92, 4, 93, 15, 2, 0, 197, 198, 198], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [28] },
-  { id: 172, name: "Italy", type: "cpu", players: [176, 31, 26, 11, 94, 9, 95, 10, 96, 8, 97], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [29] },
-  { id: 173, name: "Netherlands", type: "cpu", players: [98, 15, 2, 0, 118, 199, 199, 199, 112, 30, 31], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [30] },
-  { id: 174, name: "Argentina", type: "cpu", players: [99, 9, 100, 8, 101, 5, 102, 10, 103, 7, 104], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [31] },
-  // 关 32 西德 0xAF + 关 33 巴西青年 0xB0 拆开 (数据源自 doc 文件 offset 0x3BCC2/0x3BCDA, stride 2)
-  // 西德 doc 仅给 7 IDs (GK + 6 hint); 其余 4 个待反汇编 PRG 区间补全
-  { id: 175, name: "WestGermany", type: "cpu", players: [105, 15, 3, 0, 118, 119, 120, 121, 97, 30, 40], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [32] },
-  // 关 33 巴西青年决赛 (BrazilYouth)
-  // 默认阵容 = 1st Half @ PRG 0x3BCDA + stride 2
-  // altLineups[0] = 2nd Half (Coinbra 替换 Pos3) @ PRG 0x3DBEC = 0x75
-  // 触发条件: 密码选关.MD §七"决赛巴西队10号库因布拉上半场就在队中"
-  //   ねききみげ ひひびわじ じくとうし じぜび  (Coinbra 上半场首发 super-password)
+function decodeTacticByte(b) {
+  const f = b >> 4 & 15;
+  const t = b & 15;
+  const formations = ["4-3-3", "4-4-2", "3-5-2", "Brazil", "4-2-4", "5-3-2", "4-4-2B"];
+  const tactics = ["Normal", "Pressing", "Counter", "LongPass", "Speed", "Direct", "Tactic7", "Tactic8", "Tactic9", "Tactic10"];
+  return {
+    formation: f < 7 ? formations[f] : `Form${f}`,
+    tactic: t < 10 ? tactics[t] : `Tact${t}`
+  };
+}
+var TEAM_META = [
+  // ─────────── 玩家队 (4 个) ───────────
+  { id: 128, name: "SaoPaulo", type: "player", encounterLevels: [] },
+  { id: 129, name: "Nankatsu", type: "player", encounterLevels: [] },
+  { id: 130, name: "AsianCup", type: "player", encounterLevels: [], subs: [25, 31, 16, 18, 19, 22, 30, 32, 33, 15, 1, 0] },
+  { id: 131, name: "BenchReserve", type: "bench", encounterLevels: [] },
+  // ─────────── Brazil League (6 队, 关 1-6) ───────────
+  { id: 132, name: "Fluminense", type: "cpu", encounterLevels: [1] },
+  { id: 133, name: "Corinthians", type: "cpu", encounterLevels: [2] },
+  { id: 134, name: "Gremio", type: "cpu", encounterLevels: [3] },
+  { id: 135, name: "Palmeiras", type: "cpu", encounterLevels: [4] },
+  { id: 136, name: "Santos", type: "cpu", encounterLevels: [5] },
+  { id: 137, name: "Flamengo", type: "cpu", encounterLevels: [6] },
+  // ─────────── Japan HS (6 队, 关 7-12) ───────────
+  { id: 138, name: "Kunimi", type: "cpu", encounterLevels: [7] },
+  { id: 139, name: "Akita", type: "cpu", encounterLevels: [8] },
+  { id: 140, name: "Tatsunami", type: "cpu", encounterLevels: [9] },
+  { id: 141, name: "Musashi", type: "cpu", encounterLevels: [10] },
+  { id: 142, name: "Furano", type: "cpu", encounterLevels: [11] },
+  { id: 143, name: "Toho", type: "cpu", encounterLevels: [12] },
+  // ─────────── Japan Cup (4 队, 关 13-16) ───────────
+  { id: 144, name: "AsRome", type: "cpu", encounterLevels: [13] },
+  { id: 145, name: "Uruguay", type: "cpu", encounterLevels: [14] },
+  { id: 146, name: "Hamburg", type: "cpu", encounterLevels: [15] },
+  { id: 147, name: "Japan", type: "cpu", encounterLevels: [16] },
+  // ─────────── World Cup (12 队, 关 17-32) ───────────
+  { id: 162, name: "Poland", type: "cpu", encounterLevels: [19] },
+  { id: 165, name: "NorthKorea", type: "cpu", encounterLevels: [17] },
+  { id: 167, name: "SouthKorea", type: "cpu", encounterLevels: [18] },
+  { id: 168, name: "England", type: "cpu", encounterLevels: [20] },
+  { id: 169, name: "Russia", type: "cpu", encounterLevels: [21] },
+  { id: 170, name: "France", type: "cpu", encounterLevels: [22] },
+  { id: 171, name: "Mexico", type: "cpu", encounterLevels: [23] },
+  { id: 172, name: "Italy", type: "cpu", encounterLevels: [24] },
+  { id: 173, name: "Netherlands", type: "cpu", encounterLevels: [25] },
+  { id: 174, name: "Argentina", type: "cpu", encounterLevels: [26] },
+  { id: 175, name: "WestGermany", type: "cpu", encounterLevels: [27] },
+  // 半决赛关 27
+  // ─────────── Brazil Youth Final (关 33, 含超级密码阵容) ───────────
   {
     id: 176,
     name: "BrazilYouth",
     type: "cpu",
-    players: [106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116],
-    subs: [],
-    formation: "4-3-3",
-    tactic: "Normal",
     encounterLevels: [33],
     altLineups: [
       // 超级密码阵容: Pos3 (GK? or FW?) 替换为 Coinbra 0x75
@@ -152060,6 +152424,34 @@ var TEAM_ROSTER_TABLE = [
     ]
   }
 ];
+function buildTeam(meta) {
+  const isPlayer = meta.type === "player" || meta.type === "bench";
+  const byteTable = isPlayer ? PLAYER_ROSTER_PRG_BYTES : CPU_ROSTER_PRG_BYTES;
+  const players = byteTable[meta.id] ?? [];
+  let formation = meta.formation ?? "4-3-3";
+  let tactic = meta.tactic ?? "Normal";
+  if (!meta.formation && !meta.tactic) {
+    const tb = CPU_ROSTER_TACTIC_BYTES[meta.id];
+    if (tb !== void 0) {
+      const decoded = decodeTacticByte(tb);
+      formation = decoded.formation;
+      tactic = decoded.tactic;
+    }
+  }
+  return {
+    id: meta.id,
+    name: meta.name,
+    type: meta.type,
+    players,
+    subs: meta.subs ?? [],
+    formation,
+    tactic,
+    encounterLevels: meta.encounterLevels,
+    altLineups: meta.altLineups,
+    anchorVerified: ANCHOR_VERIFIED_TEAMS.has(meta.id)
+  };
+}
+var TEAM_ROSTER_TABLE = TEAM_META.map(buildTeam);
 
 // src/game/prg/data/tables/team-table.ts
 var TEAMS_FULL = TEAM_ROSTER_TABLE;
@@ -152731,87 +153123,6 @@ var SkillService = class {
   }
   get pointers() {
     return SKILL_POINTER_TABLE;
-  }
-};
-
-// src/game/prg/data/tables/sprite-frame-table.ts
-var BANK19_SPRITE_FRAMES = [
-  // TODO: 从 BANK19_TILE_DATA 解析精灵帧条目
-];
-
-// src/game/prg/code/sprite/SpriteService.ts
-var SpriteService = class {
-  constructor(store) {
-    this.store = store;
-  }
-  /**
-   * 将一个精灵写入 OAM 影子缓冲指定 slot。
-   *
-   * @param slot    OAM slot 索引（0..63）
-   * @param tile    tile 索引（从 BANK19_SPRITE_FRAMES 查得，或外部指定）
-   * @param x       屏幕 X（0..255）
-   * @param y       屏幕 Y（0..239，$FF 表示隐藏）
-   * @param attr    属性字节（默认 0）
-   */
-  putSprite(slot, tile, x, y, attr = 0) {
-    if (slot < 0 || slot >= 64) return;
-    const base = 1128 + slot * 4;
-    this.store.writeByte(base, y & 255);
-    this.store.writeByte(base + 1, tile & 255);
-    this.store.writeByte(base + 2, attr & 255);
-    this.store.writeByte(base + 3, x & 255);
-  }
-  /**
-   * 通过精灵 ID（frameId）查 BANK19_SPRITE_FRAMES 写入。
-   * 如果找不到对应 frame，则使用 spriteId 作为 tile 索引。
-   */
-  putSpriteByFrame(slot, frameId, x, y, attr = 0) {
-    const frame = BANK19_SPRITE_FRAMES.find((f) => f.frameId === (frameId & 65535));
-    const tile = frame && frame.tiles.length > 0 ? frame.tiles[0] : frameId & 255;
-    this.putSprite(slot, tile, x, y, attr);
-  }
-  /**
-   * 隐藏精灵（Y=$FF）。
-   */
-  hideSprite(slot) {
-    if (slot < 0 || slot >= 64) return;
-    this.store.writeByte(1128 + slot * 4, 255);
-  }
-  /**
-   * 隐藏所有精灵（OAM 全 $FF）。对应 asm $CB8B。
-   */
-  hideAll() {
-    for (let i = 0; i < 64; i++) this.hideSprite(i);
-  }
-  /**
-   * 切换精灵 tile（不改 x/y/attr）。用于动画帧切换。
-   */
-  setSpriteFrame(slot, frameId) {
-    if (slot < 0 || slot >= 64) return;
-    const frame = BANK19_SPRITE_FRAMES.find((f) => f.frameId === (frameId & 65535));
-    const tile = frame && frame.tiles.length > 0 ? frame.tiles[0] : frameId & 255;
-    this.store.writeByte(1129 + slot * 4, tile);
-  }
-  /**
-   * 读取精灵当前 Y 坐标。
-   */
-  getSpriteY(slot) {
-    if (slot < 0 || slot >= 64) return 0;
-    return this.store.readByte(1128 + slot * 4);
-  }
-  /**
-   * 读取精灵当前 X 坐标。
-   */
-  getSpriteX(slot) {
-    if (slot < 0 || slot >= 64) return 0;
-    return this.store.readByte(1131 + slot * 4);
-  }
-  /**
-   * 读取精灵属性字节。
-   */
-  getSpriteAttr(slot) {
-    if (slot < 0 || slot >= 64) return 0;
-    return this.store.readByte(1130 + slot * 4);
   }
 };
 

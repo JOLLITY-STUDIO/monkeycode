@@ -17,6 +17,7 @@ import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
+import { SpriteService } from '../sprite/SpriteService';
 
 /** 场景 0 状态机阶段 */
 enum Scene0Phase {
@@ -33,6 +34,7 @@ enum Scene0Phase {
 export class Scene0Controller extends SceneController {
   readonly sceneId = 0;
   private readonly prim: RenderingPrimitivesService;
+  private readonly sprite: SpriteService;
   private audio: AudioService | null = null;
 
   private phase = Scene0Phase.FadeInAndWait16;
@@ -45,6 +47,7 @@ export class Scene0Controller extends SceneController {
   constructor(store: DataStore, input: InputService) {
     super(store, input);
     this.prim = new RenderingPrimitivesService(store);
+    this.sprite = new SpriteService(store);
   }
 
   attachAudio(audio: AudioService): void {
@@ -58,16 +61,20 @@ export class Scene0Controller extends SceneController {
     this.streamDone = false;
     this.sceneRow = 0;
     this.holdSecond = false;
+
     // BUG #2 fix: 立即装载 title screen CHR 配置, 使 applyChrRequest 切 bank 时
     //   BG $0000 = bank1k 124-127, SPR $1000 = bank1k 126-129
     // 否则 frame 30 H5 仍按默认 [0,1,2,3,124,125,126,127] 渲染,
     //   跟 ROM 实际 frame 30 (Tecmo Title) 差 PT ~0% / screen ~12%
     this.prim.loadChrConfig(0x17);
 
-    // NOTE - BUG #4:  boot OAM init (Tecmo logo 23 sprite) 需要翻译 PRG $21CA/$1DD1/$85EB
-    //   三个 boot routine。先前在 onEnter 加 loadBootOam() 占位后, frame 30 OAM 一致率
-    //   从 35.9% 落到 7.8% (因 H5 oamDrift 给所有 64 sprite 每帧 +1 Y, 而 EMU Tecmo sprite
-    //   不漂)。保留 BOOT_TECMO_OAM_TABLE 文件/WBS L1-L3 待办, onEnter 这里暂不装载。
+    // WBS L1 (PRG $21CA 翻译)：装载 Tecmo logo 40 sprite 到 shadow OAM。
+    //   - bootOamInit() 写 BOOT_TECMO_OAM_TABLE → $0468-$0567
+    //   - 这些 slot 已被 OAM_DRIFT_EXCLUDED_SLOTS 排除, oamDrift 不会漂
+    //   - 调用前先清零 64 sprite 缓冲, 防止 hidden 值残留
+    for (let i = 0; i < 64; i++) this.sprite.hideSprite(i);
+    this.sprite.bootOamInit();
+
     this.audio?.playBgm(0x01);
   }
 

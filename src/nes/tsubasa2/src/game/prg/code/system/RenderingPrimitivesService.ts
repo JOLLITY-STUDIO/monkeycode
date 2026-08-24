@@ -20,6 +20,8 @@ import {
   OPENING_TILE_PATTERNS,
 } from '../../data/scene/opening-data';
 import { OPENING_TILE_STREAMS } from '../../data/scene/bank7-streams';
+import { OAM_DRIFT_EXCLUDED_SLOTS } from '../sprite/SpriteService';
+import { PALETTE_TABLE } from '../../data/tables/palette-table';
 
 export class RenderingPrimitivesService {
   constructor(private readonly store: DataStore) {}
@@ -49,6 +51,36 @@ export class RenderingPrimitivesService {
   loadSprPalette(index: number): void {
     const pal = OPENING_SPR_PALETTES[index & 0x0f] ?? OPENING_SPR_PALETTES[0];
     this.store.palette.loadSpr(pal);
+  }
+
+  /**
+   * PRG $1DD1 翻译：装载 Tecmo boot palette 到 palette.bg / palette.spr。
+   *
+   * 直接用 PALETTE_TABLE[0..3] 强制覆盖 4 组×3 色 × bg/spr = 24 字节（12+12），
+   * 每组首色清零为 $0F（背景透明）。装载后 fade.bg/spr = $0F → 后续 fadeWrite 直接
+   * 显示满亮调色板，符合 ROM frame 30 bg/spr 显示状态。
+   *
+   * 不复用 loadBgPalette+loadSprPalette（OPENING_*_PALETTES 表更窄只有 16 项），
+   * 直接从 PALETTE_TABLE 读前 4 项作为 boot 调色板底层。
+   */
+  loadBootPalette(): void {
+    const store = this.store;
+    const bg = new Array<number>(16).fill(0x0f);
+    const spr = new Array<number>(16).fill(0x0f);
+    for (let group = 0; group < 4; group++) {
+      // 4 个 group × 4 组：bg 用 PALETTE_TABLE[0..3]，spr 用 PALETTE_TABLE[4..7]
+      const bgItem = PALETTE_TABLE[group] ?? PALETTE_TABLE[0];
+      const sprItem = PALETTE_TABLE[group + 4] ?? PALETTE_TABLE[0];
+      for (let k = 0; k < 3 && k + group * 4 < 16; k++) {
+        bg[group * 4 + 1 + k] = bgItem[k] & 0x3f;
+        spr[group * 4 + 1 + k] = sprItem[k] & 0x3f;
+      }
+    }
+    store.palette.loadBg(bg);
+    store.palette.loadSpr(spr);
+    store.fade.bg = 0x0f;
+    store.fade.spr = 0x0f;
+    this.fadeWrite();
   }
 
   /**
@@ -93,11 +125,13 @@ export class RenderingPrimitivesService {
     store.writeByte(0x05c8, 0);
   }
 
-  /** 所有精灵 Y 坐标 += amount（store.oam.spriteY(i) += add） */
+  /** 所有精灵 Y 坐标 += amount（store.oam.spriteY(i) += add）。跳过 boot logo slot。 */
   oamDrift(amount: number): void {
     const store = this.store;
     const add = amount & 0xff;
     for (let i = 0; i < 0x100; i += 4) {
+      const slot = (i >> 2) & 0x3f;
+      if (OAM_DRIFT_EXCLUDED_SLOTS.has(slot)) continue;
       const y = (store.oam.spriteY(i) + add) & 0xff;
       store.oam.setSpriteY(i, y);
     }
@@ -266,6 +300,27 @@ export class RenderingPrimitivesService {
         }
       }
       const addr = 0x2000 + row * 32;
+      this.ntBufferAppend({ vertical: false, ntAddr: addr, data: line });
+    }
+  }
+
+  // ──────────────────────────── Boot NT3 loader（WBS L3, PRG $85EB 翻译）────
+
+  /**
+   * PRG $85EB 翻译：boot 时向 NT3 ($2C00) 装载 NT 缓冲条目（专用 tile）。
+   *
+   * 调用时机：scene0.onEnter() + HardwareInitService.reset()。
+   * 通过 NT 缓冲队列声明式追加，而非直接写 $2C00。
+   *
+   * count = 0 则不操作。索引自 OPENING_SCENE3_TILES 之外的扩展 boot tile，
+   * 不属于 OPENING_TILE_PATTERNS 时走 fallback (透明 tile)。
+   */
+  queueBootNt3(count: number): void {
+    const c = count & 0xff;
+    for (let k = 0; k < c; k++) {
+      const row = k & 0x1f;
+      const line: number[] = new Array(32).fill(0x55);
+      const addr = 0x2c00 + row * 32;
       this.ntBufferAppend({ vertical: false, ntAddr: addr, data: line });
     }
   }

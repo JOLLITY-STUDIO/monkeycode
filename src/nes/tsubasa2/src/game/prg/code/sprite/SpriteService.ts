@@ -22,6 +22,18 @@
  */
 import type { DataStore } from '../../data/store/DataStore';
 import { BANK19_SPRITE_FRAMES } from '../../data/tables/sprite-frame-table';
+import { BOOT_TECMO_OAM_TABLE } from '../../data/tables/opening-sprites';
+
+/**
+ * PRG $21CA 翻译（boot OAM init）：在 scene0 onEnter 时调用一次。
+ * 写 Tecmo logo 40 sprite 到 shadowOam $0468-$0567 (NES 标准 [y,tile,attr,x])。
+ * 不参与 oamDrift（在 RenderingPrimitivesService.oamDrift 检查 excludedSlots 跳过）。
+ *
+ * 行为等价于 ROM 任务 $21CA 装载 OAM 缓冲；H5 直接用 BOOT_TECMO_OAM_TABLE 占位。
+ */
+export const OAM_DRIFT_EXCLUDED_SLOTS: ReadonlySet<number> = new Set(
+  BOOT_TECMO_OAM_TABLE.map((e) => e.slot),
+);
 
 export class SpriteService {
   constructor(readonly store: DataStore) {}
@@ -106,4 +118,37 @@ export class SpriteService {
     if (slot < 0 || slot >= 64) return 0;
     return this.store.readByte(0x046a + slot * 4);
   }
+
+  // ─────────────────────────────────────────────────────────────────────
+  // Boot OAM init — PRG $21CA 翻译（WBS L1）
+  // ─────────────────────────────────────────────────────────────────────
+
+  /**
+   * 装载 Tecmo logo sprite 集合到 shadow OAM 缓冲。
+   * 对应 PRG $21CA：把 BOOT_TECMO_OAM_TABLE (40 sprite) 写到 $0468-$0567。
+   * 调用时机：scene0.onEnter() / HardwareInitService.reset()
+   */
+  bootOamInit(): void {
+    for (const e of BOOT_TECMO_OAM_TABLE) {
+      const slot = e.slot & 0x3f;
+      const base = 0x0468 + slot * 4;
+      this.store.writeByte(base + 0, e.y & 0xff);
+      this.store.writeByte(base + 1, e.tile & 0xff);
+      this.store.writeByte(base + 2, e.attr & 0xff);
+      this.store.writeByte(base + 3, e.x & 0xff);
+    }
+  }
+
+  /**
+   * 注册 hw-reset 时跑的 boot routine fn。
+   * 三个 routine 顺序：$1DD1 (palette) → $21CA (oam) → $85EB (NT3)
+   */
+  registerBootRoutines(paletteFn: () => void, nt3Fn: () => void): void {
+    this.bootPaletteFn = paletteFn;
+    this.bootNt3Fn = nt3Fn;
+  }
+  /** hw-reset 钩子 1：调用 paletteFn */
+  bootPaletteFn: (() => void) | null = null;
+  /** hw-reset 钩子 2：调用 nt3Fn */
+  bootNt3Fn: (() => void) | null = null;
 }

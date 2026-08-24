@@ -1,39 +1,32 @@
 /**
- * team-roster.ts — 队伍名单具象化表（从真 ROM 提取）
+ * team-roster.ts — 队伍名单 (合并 meta + PRG byte data)
  *
- * 数据源（docs/CaptainTsubasaVol.II-SuperStrikerROM修改参考.txt §Team Edit
- *         docs/网络游戏资料/密码选关.MD）：
- *   - 玩家队 (PRG 0x4A47-0x4A75)
- *   - 巴西联赛 5 队 @ PRG 0x3BB1A (但剧情打 6 关, Flamengo 关 1 + 关 6 循环)
- *   - 日本高中 6 队 @ PRG 0x3BB62 (剧情关 7-12)
- *   - 日本杯 4 队 @ PRG 0x3BBB4 (剧情关 13-16)
- *   - 亚预赛 6 队 (剧情关 17-22): 叙利亚/中国/伊朗/北朝鲜/沙特/韩国
- *   - 世青赛小组 8 队 (剧情关 23-30): 瓦斯科/波兰/英格兰/苏联/法兰西/墨西哥/意大利/荷兰
- *   - 世青赛淘汰赛 3 队 (剧情关 31-33): 阿根廷/西德/巴西 (含超级密码库因布拉)
+ * @bank 02 ($8000-$9FFF) — 由 src/asm/bank02/code_data.s 与 asm/PRG 数据表整合
  *
- * 总 33 关 = 6 + 6 + 4 + 6 + 8 + 3 关卡。
- * World Cup 区共 11 队 (8+3), 实际只上场 11 个, 但库因布拉 (Coinbra) 需超密码
- * 才能上半场首发 (参见 密码选关.MD §七.特殊密码)。
+ * 数据源拆解:
+ *   - `roster-prg-bytes.ts`: PRG 物理提取的 11 ID byte (具象化数据)
+ *   - 本文件: 队名/formation/tactic/encounterLevels (人为解读,游戏设计层)
  *
- * ⚠ 2026-08-24 修正:
- *   关 32 WestGermany 0xAF = `encounterLevels: [32]` (仅 1 关)
- *   关 33 BrazilYouth 0xB0 = `encounterLevels: [33]` (独立队伍)
- *   doc 的 Brazil 决赛 roster 是 stride-2 11 字节数组:
- *     - 1st Half (默认)  @ PRG 0x3BCDA + stride 2 = [0x6A 0x6B 0x6C 0x6D 0x6E 0x6F 0x70 0x71 0x72 0x73 0x74]
- *     - 2nd Half (Coinbra 替换 0x6C) @ PRG 0x3DBEC = 0x75
- *   altLineups 字段保存变阵数据 (含 Coinbra 0x75)。
+ * 之前 commit 23f13855/91a31304/e42d042a/a33bfc86 等手填 byte,已重构为
+ * 引用 roster-prg-bytes.ts 的常量数组。后续如果 anchor 修正 byte,只改一处。
  *
- * ⚠ 重要修正 (2026-08):
- *   doc 里写的 "$AA47" 是 **CPU 地址**, 不是 PRG 偏移。
- *   实际 PRG 文件位置 = header(16 bytes 已扣) + PRG offset 0x4A47。
- *
- * 验证 (Node.js):
- *   const prg = fs.readFileSync('docs/roms/Captain Tsubasa II - Super Striker (Japan).nes').slice(16);
- *   console.log([...prg.slice(0x4A47, 0x4A52)].map(x=>x.toString(16).padStart(2,'0').toUpperCase()).join(' '));
- *   // → "02 03 04 05 06 07 08 09 0A 01 0B"  ✓ SaoPaulo 真 11 人
- *
- * 重生：scripts/extract_teams.cjs
+ * ⚠ 重要 (2026-08-25):
+ *   - bank02/_full.s 没有完整 CPU roster .byte 表 (只有 execution-flow 反汇编)
+ *   - bank02/data_tables.s 388 行,主要是 NT/字体编码 + $FF 填充,无 roster 表
+ *   - 32 队 11 ID byte data 只存在于 PRG 二进制,asm 源不可读
+ *   - 4 doc anchor (Cor Pos9=0x23 / Pos10=0x24 / Gre Pos1=0x26 / Pos9=0x25 /
+ *     Furano Pos10=0x35) 全部命中 ✓, stride 12 模型在 Brazil League 段适用
+ *   - World Cup 段 doc anchor 不与 stride-12 模型一致 — 推测这些队伍本来
+ *     是 CpuMember_xx 占位球员 (PRG 0xA6-0xAA 范围),需要反汇编 loader routine
+ *     才能验证。
  */
+
+import {
+  CPU_ROSTER_PRG_BYTES,
+  PLAYER_ROSTER_PRG_BYTES,
+  CPU_ROSTER_TACTIC_BYTES,
+  ANCHOR_VERIFIED_TEAMS,
+} from './roster-prg-bytes';
 
 /** 阵容（11 球员 ID + 阵型 + 战术 + 替补 ID + 关号） */
 export interface TeamRosterEntry {
@@ -46,11 +39,13 @@ export interface TeamRosterEntry {
   readonly tactic: string;
   /** 剧情关号 (1-33); 数组表示同一队可能出现在多个关 */
   readonly encounterLevels: ReadonlyArray<number>;
-  /** 备用阵容 (变阵/替换, 含 Coinbra 超级密码阵容等); 不触发主 encounterLevels */
+  /** 备用阵容 (变阵/替换, 含 Coinbra 超级密码阵容等) */
   readonly altLineups?: ReadonlyArray<ReadonlyArray<number>>;
+  /** 那些 PRG byte 经 doc anchor 交叉验证 (true = 真实可靠) */
+  readonly anchorVerified: boolean;
 }
 
-/** 战术字节解码 (高 4 位 = formation, 低 4 位 = tactic) */
+/** 把 12 字节中第 12 字节 (= 战术) 解码成 formation/tactic */
 function decodeTacticByte(b: number): { formation: string; tactic: string } {
   const f = (b >> 4) & 0x0f;
   const t = b & 0x0f;
@@ -62,100 +57,68 @@ function decodeTacticByte(b: number): { formation: string; tactic: string } {
   };
 }
 
-/** 队伍表 (4 player + 5 Brazil + 6 Japan HS + 4 Japan Cup + 6 Asia + 11 World Cup = 36 队) */
-export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
-  // ─────────── 玩家队 (4 个, 真实 ID 从 PRG 0x4A47-0x4A75) ───────────
-  { id: 0x80, name: 'SaoPaulo',     type: 'player', players: [0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x01, 0x0B], subs: [],                                                                                 formation: '4-3-3', tactic: 'Normal',   encounterLevels: [],  },
+/** meta 配置 (队名/formation/tactic/encounterLevels/替补) */
+interface TeamMeta {
+  readonly id: number;
+  readonly name: string;
+  readonly type: 'player' | 'cpu' | 'bench';
+  readonly encounterLevels: ReadonlyArray<number>;
+  readonly formation?: string;
+  readonly tactic?: string;
+  readonly subs?: ReadonlyArray<number>;
+  readonly altLineups?: ReadonlyArray<ReadonlyArray<number>>;
+}
 
-  { id: 0x81, name: 'Nankatsu',     type: 'player', players: [0x0F, 0x0D, 0x0E, 0x14, 0x10, 0x0C, 0x13, 0x12, 0x15, 0x11, 0x16], subs: [],                                                                                 formation: '4-4-2', tactic: 'Normal',   encounterLevels: [],  },
+/** meta 表 — 来源: docs/CaptainTsubasaVol.II-SuperStrikerROM修改参考.txt +
+ *              docs/网络游戏资料/密码选关.MD
+ */
+const TEAM_META: ReadonlyArray<TeamMeta> = [
+  // ─────────── 玩家队 (4 个) ───────────
+  { id: 0x80, name: 'SaoPaulo',     type: 'player', encounterLevels: [] },
+  { id: 0x81, name: 'Nankatsu',     type: 'player', encounterLevels: [] },
+  { id: 0x82, name: 'AsianCup',     type: 'player', encounterLevels: [], subs: [0x19, 0x1F, 0x10, 0x12, 0x13, 0x16, 0x1E, 0x20, 0x21, 0x0F, 0x01, 0x00] },
+  { id: 0x83, name: 'BenchReserve', type: 'bench',  encounterLevels: [] },
 
-  { id: 0x82, name: 'AsianCup',     type: 'player', players: [0x22, 0x1B, 0x1C, 0x14, 0x1D, 0x17, 0x18, 0x11, 0x1A, 0x01, 0x15], subs: [0x19, 0x1F, 0x10, 0x12, 0x13, 0x16, 0x1E, 0x20, 0x21, 0x0F, 0x01, 0x00], formation: 'Brazil', tactic: 'Counter',   encounterLevels: [], },
+  // ─────────── Brazil League (6 队, 关 1-6) ───────────
+  { id: 0x84, name: 'Fluminense',   type: 'cpu',    encounterLevels: [1] },
+  { id: 0x85, name: 'Corinthians',  type: 'cpu',    encounterLevels: [2] },
+  { id: 0x86, name: 'Gremio',       type: 'cpu',    encounterLevels: [3] },
+  { id: 0x87, name: 'Palmeiras',    type: 'cpu',    encounterLevels: [4] },
+  { id: 0x88, name: 'Santos',       type: 'cpu',    encounterLevels: [5] },
+  { id: 0x89, name: 'Flamengo',     type: 'cpu',    encounterLevels: [6] },
 
-  { id: 0x83, name: 'BenchReserve', type: 'bench',  players: [0x21, 0x14, 0x17, 0x10, 0x0B, 0x18, 0x05, 0x06, 0x09, 0x02, 0x0C], subs: [],                                                                                 formation: '4-3-3', tactic: 'Normal',   encounterLevels: [],  },
+  // ─────────── Japan HS (6 队, 关 7-12) ───────────
+  { id: 0x8A, name: 'Kunimi',       type: 'cpu',    encounterLevels: [7] },
+  { id: 0x8B, name: 'Akita',        type: 'cpu',    encounterLevels: [8] },
+  { id: 0x8C, name: 'Tatsunami',    type: 'cpu',    encounterLevels: [9] },
+  { id: 0x8D, name: 'Musashi',      type: 'cpu',    encounterLevels: [10] },
+  { id: 0x8E, name: 'Furano',       type: 'cpu',    encounterLevels: [11] },
+  { id: 0x8F, name: 'Toho',         type: 'cpu',    encounterLevels: [12] },
 
-  // ─────────── 巴西联赛 (6 队, 关 1-6) ───────────
-  // 来源: ROM 文件偏移 0x3BB0E (PRG index 0x3BAFE), stride 12 字节/队 (11 ID + 1 战术字节)
-  // 验证: 4 doc anchors (Cor Pos10=0x24=Riverio, Cor Pos9=0x23=Satilst,
-  //              Gre Pos1=0x26=Meon GK, Gre Pos9=0x25=DaSilva) 全部命中 ✓
-  // 注: byte 顺序 ≠ 场上 GK→FW 顺序, byte 0 → CPU Player 1 (RAM $0384), 阵型决定 GK 位置
-  // Florianópolis (Brazil 第1关, Flu) —— PRG byte data extracted
-  { id: 0x84, name: 'Fluminense',   type: 'cpu',    players: [0x1F, 0x0F, 0x03, 0x00, 0x79, 0x7A, 0x7A, 0x7B, 0xA0, 0x1E, 0x1E], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [1] },
+  // ─────────── Japan Cup (4 队, 关 13-16) ───────────
+  { id: 0x90, name: 'AsRome',       type: 'cpu',    encounterLevels: [13] },
+  { id: 0x91, name: 'Uruguay',      type: 'cpu',    encounterLevels: [14] },
+  { id: 0x92, name: 'Hamburg',      type: 'cpu',    encounterLevels: [15] },
+  { id: 0x93, name: 'Japan',        type: 'cpu',    encounterLevels: [16] },
 
-  // Corinthians (Brazil 第2关) —— PRG byte data (含 Riverio + Satilst 明星 anchor ✓)
-  { id: 0x85, name: 'Corinthians',  type: 'cpu',    players: [0x24, 0x09, 0x23, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x7D, 0xA0], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [2] },
+  // ─────────── World Cup (12 队, 关 17-32) ───────────
+  { id: 0xA2, name: 'Poland',       type: 'cpu',    encounterLevels: [19] },
+  { id: 0xA5, name: 'NorthKorea',   type: 'cpu',    encounterLevels: [17] },
+  { id: 0xA7, name: 'SouthKorea',   type: 'cpu',    encounterLevels: [18] },
+  { id: 0xA8, name: 'England',      type: 'cpu',    encounterLevels: [20] },
+  { id: 0xA9, name: 'Russia',       type: 'cpu',    encounterLevels: [21] },
+  { id: 0xAA, name: 'France',       type: 'cpu',    encounterLevels: [22] },
+  { id: 0xAB, name: 'Mexico',       type: 'cpu',    encounterLevels: [23] },
+  { id: 0xAC, name: 'Italy',        type: 'cpu',    encounterLevels: [24] },
+  { id: 0xAD, name: 'Netherlands',  type: 'cpu',    encounterLevels: [25] },
+  { id: 0xAE, name: 'Argentina',    type: 'cpu',    encounterLevels: [26] },
+  { id: 0xAF, name: 'WestGermany',  type: 'cpu',    encounterLevels: [27] }, // 半决赛关 27
 
-  // Gremio (Brazil 第3关) —— PRG byte data (含 Meon GK + DaSilva 明星 anchor ✓)
-  { id: 0x86, name: 'Gremio',       type: 'cpu',    players: [0x1E, 0x09, 0x25, 0x01, 0x26, 0x0F, 0x20, 0x00, 0x7E, 0x7F, 0x80], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [3] },
-
-  // Palmeiras (Brazil 第4关)
-  { id: 0x87, name: 'Palmeiras',    type: 'cpu',    players: [0xB0, 0x1F, 0x1E, 0x09, 0x27, 0x0B, 0x28, 0x0F, 0x21, 0x00, 0x81], subs: [],                                                                              formation: 'Form6',  tactic: 'Tact8',   encounterLevels: [4] },
-
-  // Santos (Brazil 第5关)
-  { id: 0x88, name: 'Santos',       type: 'cpu',    players: [0x83, 0x83, 0x91, 0x1F, 0x1D, 0x09, 0x29, 0x04, 0x2A, 0x0F, 0x03], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [5] },
-
-  // Flamengo (Brazil 第6关)
-  { id: 0x89, name: 'Flamengo',     type: 'cpu',    players: [0x84, 0x85, 0x86, 0x86, 0x60, 0x1E, 0x1F, 0x0A, 0x2B, 0x06, 0x2C], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [6] },
-
-  // ─────────── 日本高中 (6 队, 关 7-12) ───────────
-  // PRG byte data @ base 0x3BAFE + 7*12 = 0x3BB52 (Kunimi), stride 12
-  // 验证 anchor: Furano Pos10 PRG 0x3BB86 = 0x35 (Sawada) ✓ (Kunimi 等未 anchor-verify, byte 顺序)
-  // byte 0 = CPU Player 1 (装载到 RAM $0384 + i*12, 见 docs §4)
-  { id: 0x8A, name: 'Kunimi',       type: 'cpu',    players: [0x2D, 0x0F, 0x00, 0x00, 0x87, 0x88, 0x89, 0x89, 0x91, 0x1F, 0x1D], subs: [],                                                                              formation: 'Form4', tactic: 'Normal',  encounterLevels: [7] },
-
-  { id: 0x8B, name: 'Akita',        type: 'cpu',    players: [0x2E, 0x09, 0x2F, 0x0F, 0x21, 0x00, 0x8A, 0x8B, 0x8C, 0x8C, 0xA0], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [8] },
-
-  { id: 0x8C, name: 'Tatsunami',    type: 'cpu',    players: [0x1E, 0x09, 0x30, 0x0B, 0x31, 0x0F, 0x01, 0x00, 0x76, 0x8D, 0x8D], subs: [],                                                                              formation: 'Form14', tactic: 'Pressing', encounterLevels: [9] },
-
-  { id: 0x8D, name: 'Musashi',      type: 'cpu',    players: [0x40, 0x1E, 0x1E, 0x04, 0x32, 0x01, 0x33, 0x0F, 0x02, 0x00, 0x8F], subs: [],                                                                              formation: 'Form0',  tactic: 'Tact9',   encounterLevels: [10] },
-
-  { id: 0x8E, name: 'Furano',       type: 'cpu',    players: [0x91, 0x91, 0x70, 0x1F, 0x1C, 0x0F, 0x00, 0x00, 0x92, 0x93, 0x94], subs: [],                                                                              formation: 'Form4',  tactic: 'Tact9',   encounterLevels: [11] },
-
-  { id: 0x8F, name: 'Toho',         type: 'cpu',    players: [0x70, 0x1F, 0x1F, 0x0A, 0x35, 0x0F, 0x03, 0x00, 0x76, 0x95, 0x96], subs: [],                                                                              formation: 'Form6',  tactic: 'Tact9',   encounterLevels: [12] },
-
-  // ─────────── 日本杯 (4 队, 关 13-16) ───────────
-  { id: 0x90, name: 'AsRome',       type: 'cpu',    players: [0x60, 0x1F, 0x1E, 0x09, 0x36, 0x0A, 0x37, 0x06, 0x38, 0x01, 0x39], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [13] },
-
-  { id: 0x91, name: 'Uruguay',      type: 'cpu',    players: [0x20, 0x00, 0x97, 0x98, 0x99, 0x99, 0xA0, 0x1F, 0x1E, 0x09, 0x3A], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [14] },
-
-  { id: 0x92, name: 'Hamburg',      type: 'cpu',    players: [0x01, 0x00, 0x9A, 0x9B, 0x9C, 0x9C, 0xA0, 0x1F, 0x1F, 0x0B, 0x3B], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [15] },
-
-  { id: 0x93, name: 'Japan',        type: 'cpu',    players: [0x3C, 0x0F, 0x03, 0x00, 0x76, 0x9D, 0x9E, 0x9E, 0x70, 0x1E, 0x1E], subs: [],                                                                              formation: 'Form7',  tactic: 'Normal',  encounterLevels: [16] },
-
-  // ─────────── World Cup prelim + semi + finals ───────────
-  // PRG byte data stride 12 model (anchor not verified for these regions)
-  // Names per doc §7: NS / SK / Poland / England / Russia / France / Mexico / Italy / Holland / Argentina / WestGermany / Brazil Final
-  { id: 0xA5, name: 'NorthKorea',   type: 'cpu',    players: [0x3D, 0x0A, 0x3E, 0x06, 0x3F, 0x01, 0x40, 0x0F, 0x01, 0x00, 0x76], subs: [],                                                                              formation: 'Form7',  tactic: 'Tact7',   encounterLevels: [17] },
-
-  { id: 0xA7, name: 'SouthKorea',   type: 'cpu',    players: [0x78, 0x79, 0x30, 0x1F, 0x1B, 0x09, 0x41, 0x0B, 0x42, 0x06, 0x43], subs: [],                                                                              formation: 'Form10', tactic: 'Normal',  encounterLevels: [18] },
-
-  { id: 0xA2, name: 'Poland',        type: 'cpu',    players: [0x1D, 0x0F, 0x02, 0x00, 0xA8, 0xA9, 0xAA, 0xAA, 0xA0, 0x00, 0x00], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [19] },
-
-  { id: 0xA8, name: 'England',      type: 'cpu',    players: [0x13, 0x00, 0xAB, 0xAC, 0xAD, 0xAD, 0xA0, 0x1F, 0x1F, 0x0F, 0x00], subs: [],                                                                              formation: 'Form0',  tactic: 'Normal',  encounterLevels: [20] },
-
-  { id: 0xA9, name: 'Russia',       type: 'cpu',    players: [0xAE, 0xAF, 0xB0, 0xB0, 0x70, 0x1F, 0x1C, 0x09, 0x4F, 0x0A, 0x50], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [21] },
-
-  { id: 0xAA, name: 'France',       type: 'cpu',    players: [0x23, 0x00, 0xB1, 0xB2, 0xB2, 0xB2, 0xA0, 0x1F, 0x1F, 0x0F, 0x21], subs: [],                                                                              formation: 'Form0',  tactic: 'Normal',  encounterLevels: [22] },
-
-  { id: 0xAB, name: 'Mexico',       type: 'cpu',    players: [0x76, 0xB3, 0xB4, 0xB4, 0xA0, 0x1F, 0x1F, 0x0B, 0x51, 0x01, 0x52], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [23] },
-
-  { id: 0xAC, name: 'Italy',        type: 'cpu',    players: [0x00, 0x00, 0xB5, 0xB6, 0xB7, 0xB7, 0xA1, 0x1F, 0x1D, 0x09, 0x53], subs: [],                                                                              formation: 'Form4',  tactic: 'Normal',  encounterLevels: [24] },
-
-  { id: 0xAD, name: 'Netherlands',  type: 'cpu',    players: [0x54, 0x0F, 0x12, 0x00, 0x76, 0xB8, 0xB9, 0xB9, 0xA0, 0x1F, 0x1E], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [25] },
-
-  { id: 0xAE, name: 'Argentina',    type: 'cpu',    players: [0x55, 0x01, 0x56, 0x0F, 0x11, 0x00, 0xBA, 0xBB, 0xBC, 0xBC, 0x70], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [26] },
-
-  // 关 27: 半决赛 West Germany, 关 28-29: 巴西决赛 (1st Half + 2nd Half with Coinbra super-password)
-  { id: 0xAF, name: 'WestGermany',  type: 'cpu',    players: [0x1E, 0x09, 0x57, 0x0A, 0x58, 0x0F, 0x20, 0x00, 0xBD, 0xBE, 0xBF], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [27] },
-
-  { id: 0xA6, name: 'BrazilYouth1', type: 'cpu',    players: [0x70, 0x1F, 0x1C, 0x0A, 0x59, 0x0F, 0x21, 0x00, 0x76, 0xC0, 0xC1], subs: [],                                                                              formation: 'Form1',  tactic: 'Tact12',  encounterLevels: [28] },
-
-  // 关 33 巴西青年决赛 (BrazilYouth)
-  // 默认阵容 = 1st Half @ PRG 0x3BCDA + stride 2
-  // altLineups[0] = 2nd Half (Coinbra 替换 Pos3) @ PRG 0x3DBEC = 0x75
-  // 触发条件: 密码选关.MD §七"决赛巴西队10号库因布拉上半场就在队中"
-  //   ねききみげ ひひびわじ じくとうし じぜび  (Coinbra 上半场首发 super-password)
-  { id: 0xB0, name: 'BrazilYouth',  type: 'cpu',    players: [0x6A, 0x6B, 0x6C, 0x6D, 0x6E, 0x6F, 0x70, 0x71, 0x72, 0x73, 0x74], subs: [],
-    formation: '4-3-3',  tactic: 'Normal',
+  // ─────────── Brazil Youth Final (关 33, 含超级密码阵容) ───────────
+  {
+    id: 0xB0,
+    name: 'BrazilYouth',
+    type: 'cpu',
     encounterLevels: [33],
     altLineups: [
       // 超级密码阵容: Pos3 (GK? or FW?) 替换为 Coinbra 0x75
@@ -163,6 +126,39 @@ export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
     ],
   },
 ];
+
+/**
+ * 把 meta + PRG bytes 合并成完整 TeamRosterEntry
+ */
+function buildTeam(meta: TeamMeta): TeamRosterEntry {
+  const isPlayer = meta.type === 'player' || meta.type === 'bench';
+  const byteTable = isPlayer ? PLAYER_ROSTER_PRG_BYTES : CPU_ROSTER_PRG_BYTES;
+  const players = byteTable[meta.id] ?? [];
+  let formation = meta.formation ?? '4-3-3';
+  let tactic = meta.tactic ?? 'Normal';
+  if (!meta.formation && !meta.tactic) {
+    const tb = CPU_ROSTER_TACTIC_BYTES[meta.id];
+    if (tb !== undefined) {
+      const decoded = decodeTacticByte(tb);
+      formation = decoded.formation;
+      tactic = decoded.tactic;
+    }
+  }
+  return {
+    id: meta.id,
+    name: meta.name,
+    type: meta.type,
+    players,
+    subs: meta.subs ?? [],
+    formation,
+    tactic,
+    encounterLevels: meta.encounterLevels,
+    altLineups: meta.altLineups,
+    anchorVerified: ANCHOR_VERIFIED_TEAMS.has(meta.id),
+  };
+}
+
+export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = TEAM_META.map(buildTeam);
 
 /** 按 ID 找队伍 */
 export function findRosterById(id: number): TeamRosterEntry | null {
@@ -180,5 +176,5 @@ export function findByEncounterLevel(level: number): TeamRosterEntry | null {
   return null;
 }
 
-/** 兼容 team-table.ts 的别名 (TEAM_TABLE = TEAM_ROSTER_TABLE) */
+/** 兼容 team-table.ts 的别名 */
 export const TEAM_TABLE = TEAM_ROSTER_TABLE as ReadonlyArray<TeamRosterEntry>;

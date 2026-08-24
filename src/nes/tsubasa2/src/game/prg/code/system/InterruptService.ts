@@ -106,6 +106,9 @@ export class InterruptService {
     // 6. MASK + CHR + 帧计数器
     ppu.updateControlReg2(store.ppuState.mask);
     this.applyChrRequest(ppu);
+    // WBS L4+L5: mid-frame CHR switch — 按 $005E/$005F stream 解析 cmd 序列,
+    //   在 VBlank 后期 (scanline 0..16) 一次性推进, 模拟 ROM 多次切 bank 行为
+    this.midFrameChrSwitch(ppu, 0);
     this.frameCounters();
 
     // 7. 续段
@@ -349,14 +352,74 @@ export class InterruptService {
 
   /**
    * bank02 CHR：cmd 2-5 ← $009E-$00A1（chrSel=0 → slots 4-7）。
+   * WBS L6：扩展到 cmd 0/1 (高 bank slots 0-3) + 跳过 cmd 6/7（PRG ROM page，H5 忽略）。
    */
   private applyChrFrom009e(ppu: PpuTarget): void {
     if (!ppu.loadChrBank) return;
     const store = this.store;
-    this.chrWrite(ppu, 2, 0, store.readByte(0x009e));
-    this.chrWrite(ppu, 3, 0, store.readByte(0x009f));
-    this.chrWrite(ppu, 4, 0, store.readByte(0x00a0));
-    this.chrWrite(ppu, 5, 0, store.readByte(0x00a1));
+    const chrSel = (store.readByte(0x005d) >> 2) & 1;
+    // cmd 2-5 (slot-pair 0/1 / 2/3 — bg→高 bank 区域)
+    this.chrWrite(ppu, 2, chrSel, store.readByte(0x009e));
+    this.chrWrite(ppu, 3, chrSel, store.readByte(0x009f));
+    this.chrWrite(ppu, 4, chrSel, store.readByte(0x00a0));
+    this.chrWrite(ppu, 5, chrSel, store.readByte(0x00a1));
+    // WBS L6: 补 cmd 0/1 (banks slots 0/2 - 之前的覆盖范围未含)
+    this.chrWrite(ppu, 0, chrSel, store.readByte(0x009c));
+    this.chrWrite(ppu, 1, chrSel, store.readByte(0x009d));
+    // cmd 6/7 = PRG ROM page select（H5 无 PRG bank 模拟 - 不处理）
+  }
+
+  // ──────────────────────────── WBS L4: Mid-frame CHR switch ──────────────
+
+  /**
+   * PRG $8BAB+ 翻译：mid-frame CHR switch 主入口。
+   *
+   * 在 renderCommit 时机从 $005E/$005F 读 stream 指针, 按 (cmd, arg, count)
+   * RLE 流解析, 对每条 cmd 调 chrWrite。该方法只解析"尚未消耗"段落;
+   * per-scanline 触发由调用方 (renderCommit) 在 scan-line 0 时推进。
+   *
+   * @param scanline  当前正在绘制的 scanline（0..240；0=刚进入 VBlank 写结束）
+   * @returns 本次解析消耗的 entry 数量（用于调试 / 限流）
+   */
+  midFrameChrSwitch(ppu: PpuTarget, scanline: number): number {
+    if (!ppu.loadChrBank) return 0;
+    const store = this.store;
+    const ptrLo = store.readByte(0x005e);
+    const ptrHi = store.readByte(0x005f);
+    if (ptrLo === 0 && ptrHi === 0) return 0;
+
+    let consumed = 0;
+    let off = (ptrHi << 8) | ptrLo;
+    // 进度指针：每帧从 $0063/$0064 reset 为 base,
+    //   这里我们以 $005E/$005F 作为 origin, 扫描直到 entry 不再适用当前 scanline
+    const limit = 32; // 防失控: 单次最多解 32 个 RLE entry
+    while (consumed < limit) {
+      // RLE entry: byte[0]=next byte（终止? 0=结束), byte[1]=(cmdHi<<5 | argHi), byte[2]=arg lo
+      const b1 = store.readByte((off + 1) & 0x3fff);
+      const cmdHi = (b1 >> 5) & 0x07;
+      const arg = store.readByte((off + 2) & 0x3fff);
+      // cmdHi 0=终止？
+      if (cmdHi === 0) break;
+      const cmd = cmdHi & 0x07;
+      this.chrWrite(ppu, cmd, (store.readByte(0x005d) >> 2) & 1, arg);
+      off = (off + 3) & 0x3fff;
+      consumed++;
+      // 仅在指定 scanline 之前完成 → 跳过余下 → 等下一次调用
+      if (scanline === 0) break;
+    }
+    // H5 简化：不在此修改 $005E/$005F；调用方 (renderCommit) 自管回退
+    store.writeByte(0x005e, off & 0xff);
+    store.writeByte(0x005f, (off >> 8) & 0xff);
+    return consumed;
+  }
+
+  /**
+   * WBS L5: 由 InterruptService 内部在 renderCommit 后触发 per-scanline 调度。
+   * 默认按每 4 条 scanline 推进一次（L5 实现粒度可根据 emulator 观察调整）。
+   */
+  private triggerPerScanlineDispatch(_ppu: PpuTarget, _scanline: number): void {
+    // 留作占位：H5 当前默认关闭 per-scanline, 改在 renderCommit 末尾一次性跑
+    // midFrameChrSwitch(ppu, 0)；按 emulator 量化逐步加细 (L5 后续 WBS)。
   }
 
   /** CHR 写解码：cmd 0-5 选择 slot，cmd 6/7 为 PRG ROM page（H5 无语义） */
