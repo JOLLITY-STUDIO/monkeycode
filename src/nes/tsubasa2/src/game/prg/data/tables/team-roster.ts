@@ -81,11 +81,11 @@ export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
   // Fluminense (关1) — doc 未标明星, 11 ID 暂用真实 fw 兜底 (待 bank02 反汇编补全)
   { id: 0x84, name: 'Fluminense',   type: 'cpu',    players: [0x24, 0x09, 0x23, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x7D, 0xA0], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [1] },
 
-  // Corinthians (关2) — doc: Pos10=Riverio 0x18, Pos9=Satilst 0x17
-  { id: 0x85, name: 'Corinthians',  type: 'cpu',    players: [0x24, 0x23, 0x09, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x18, 0x17], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [2] },
+  // Corinthians (关2) — doc: Pos10=Riverio 0x24, Pos9=Satilst 0x23 (hex values)
+  { id: 0x85, name: 'Corinthians',  type: 'cpu',    players: [0x24, 0x23, 0x09, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x24, 0x23], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [2] },
 
-  // Gremio (关3) — doc: Pos1=Meon GK 0x1A, Pos9=Da Silva 0x19
-  { id: 0x86, name: 'Gremio',       type: 'cpu',    players: [0x1A, 0x20, 0x09, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x19, 0x26], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [3] },
+  // Gremio (关3) — doc: Pos1=Meon GK 0x26, Pos9=Da Silva 0x25
+  { id: 0x86, name: 'Gremio',       type: 'cpu',    players: [0x26, 0x20, 0x09, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x25, 0x26], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [3] },
 
   // Palmeiras (关4) — doc: Pos9=?, Pos11=? (无 ID 标号)
   { id: 0x87, name: 'Palmeiras',    type: 'cpu',    players: [0x1D, 0x29, 0x09, 0x0F, 0x21, 0x00, 0x76, 0x7C, 0x7D, 0x60, 0x1E], subs: [],                                                                              formation: 'Form6',  tactic: 'Tact8',   encounterLevels: [4] },

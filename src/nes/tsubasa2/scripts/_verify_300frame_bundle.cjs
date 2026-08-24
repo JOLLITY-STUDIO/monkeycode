@@ -141087,20 +141087,21 @@ var InterruptService = class {
     this.flushPalette(ppu2);
   }
   /**
-   * OAM DMA（影子 → spriteMem）。
+   * OAM DMA（影子 → spriteMem，NES 标准字节序）。
+   * 影子 $0468 每精灵 4 字节 = [y, tile, attr, x]，spriteMem 同布局。
    * 影子 $0468 中属性 bit2/3 非零 → X=$F8（隐藏）。
    */
   oamDma(ppu2) {
     const store = this.store;
     const oam = store.oam.oam;
     for (let y = 0; y < 256; y += 4) {
-      let x = store.oam.spriteX(y);
       const attr = store.oam.spriteAttr(y);
+      let x = store.oam.spriteX(y);
       if ((attr & 12) !== 0) x = 248;
-      oam[y] = x;
-      oam[y + 1] = store.oam.spriteTile(y);
-      oam[y + 2] = attr;
-      oam[y + 3] = store.oam.spriteY(y);
+      oam[y + 0] = store.oam.spriteY(y) & 255;
+      oam[y + 1] = store.oam.spriteTile(y) & 255;
+      oam[y + 2] = attr & 255;
+      oam[y + 3] = x & 255;
     }
     for (let i = 0; i < 256; i++) ppu2.spriteMem[i] = oam[i];
   }
@@ -141393,6 +141394,50 @@ var InputService = class {
   }
 };
 
+// src/game/prg/data/tables/opening-sprites.ts
+var BOOT_TECMO_OAM_TABLE = [
+  { slot: 0, y: 72, tile: 80, attr: 0, x: 72 },
+  { slot: 1, y: 112, tile: 246, attr: 2, x: 72 },
+  { slot: 2, y: 120, tile: 252, attr: 2, x: 72 },
+  { slot: 3, y: 128, tile: 234, attr: 1, x: 72 },
+  { slot: 4, y: 128, tile: 254, attr: 2, x: 72 },
+  { slot: 5, y: 72, tile: 230, attr: 1, x: 78 },
+  { slot: 6, y: 80, tile: 82, attr: 0, x: 78 },
+  { slot: 7, y: 80, tile: 250, attr: 1, x: 78 },
+  { slot: 8, y: 80, tile: 83, attr: 0, x: 86 },
+  { slot: 9, y: 80, tile: 251, attr: 1, x: 86 },
+  { slot: 10, y: 88, tile: 88, attr: 0, x: 80 },
+  { slot: 11, y: 88, tile: 229, attr: 1, x: 80 },
+  { slot: 12, y: 96, tile: 90, attr: 0, x: 80 },
+  { slot: 13, y: 96, tile: 231, attr: 1, x: 80 },
+  { slot: 14, y: 104, tile: 86, attr: 0, x: 76 },
+  { slot: 15, y: 104, tile: 87, attr: 0, x: 84 },
+  { slot: 16, y: 104, tile: 237, attr: 1, x: 80 },
+  { slot: 17, y: 112, tile: 92, attr: 0, x: 76 },
+  { slot: 18, y: 112, tile: 93, attr: 0, x: 84 },
+  { slot: 19, y: 112, tile: 238, attr: 1, x: 74 },
+  { slot: 20, y: 112, tile: 239, attr: 1, x: 82 },
+  { slot: 21, y: 120, tile: 94, attr: 0, x: 76 },
+  { slot: 22, y: 120, tile: 95, attr: 0, x: 84 },
+  { slot: 23, y: 120, tile: 232, attr: 1, x: 74 },
+  { slot: 24, y: 120, tile: 233, attr: 1, x: 82 },
+  { slot: 25, y: 128, tile: 85, attr: 0, x: 80 },
+  { slot: 26, y: 128, tile: 235, attr: 1, x: 80 },
+  { slot: 27, y: 128, tile: 255, attr: 2, x: 80 },
+  { slot: 28, y: 88, tile: 89, attr: 0, x: 88 },
+  { slot: 29, y: 88, tile: 240, attr: 1, x: 88 },
+  { slot: 30, y: 96, tile: 91, attr: 0, x: 88 },
+  { slot: 31, y: 96, tile: 242, attr: 1, x: 88 },
+  { slot: 32, y: 104, tile: 84, attr: 0, x: 92 },
+  { slot: 33, y: 104, tile: 248, attr: 1, x: 88 },
+  { slot: 34, y: 96, tile: 247, attr: 2, x: 96 },
+  { slot: 35, y: 96, tile: 81, attr: 0, x: 96 },
+  { slot: 36, y: 96, tile: 243, attr: 1, x: 96 },
+  { slot: 37, y: 104, tile: 249, attr: 1, x: 96 },
+  { slot: 38, y: 104, tile: 253, attr: 2, x: 96 },
+  { slot: 39, y: 104, tile: 236, attr: 1, x: 72 }
+];
+
 // src/game/prg/code/scene/Scene0Controller.ts
 var Scene0Controller = class extends SceneController {
   constructor(store, input) {
@@ -141418,7 +141463,26 @@ var Scene0Controller = class extends SceneController {
     this.sceneRow = 0;
     this.holdSecond = false;
     this.prim.loadChrConfig(23);
+    this.loadBootOam();
     this.audio?.playBgm(1);
+  }
+  /** 装载 BOOT_TECMO_OAM_TABLE 到 shadowOam $0468-$0567 (40 sprite × 4 byte) */
+  loadBootOam() {
+    const store = this.store;
+    for (const e of BOOT_TECMO_OAM_TABLE) {
+      const base = 1128 + (e.slot & 63) * 4;
+      store.writeByte(base + 0, e.y & 255);
+      store.writeByte(base + 1, e.tile & 255);
+      store.writeByte(base + 2, e.attr & 255);
+      store.writeByte(base + 3, e.x & 255);
+    }
+    if (typeof console !== "undefined") {
+      const y = store.readByte(1128);
+      const t = store.readByte(1129);
+      const a = store.readByte(1130);
+      const x = store.readByte(1131);
+      console.log("[Scene0.loadBootOam] shadowOam[0] y=" + y + " tile=" + t + " attr=" + a + " x=" + x);
+    }
   }
   onUpdate(frame) {
     void frame;
@@ -151983,14 +152047,24 @@ var TEAM_ROSTER_TABLE = [
   { id: 128, name: "SaoPaulo", type: "player", players: [2, 3, 4, 5, 6, 7, 8, 9, 10, 1, 11], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [] },
   { id: 129, name: "Nankatsu", type: "player", players: [15, 13, 14, 20, 16, 12, 19, 18, 21, 17, 22], subs: [], formation: "4-4-2", tactic: "Normal", encounterLevels: [] },
   { id: 130, name: "AsianCup", type: "player", players: [34, 27, 28, 20, 29, 23, 24, 17, 26, 1, 21], subs: [25, 31, 16, 18, 19, 22, 30, 32, 33, 15, 1, 0], formation: "Brazil", tactic: "Counter", encounterLevels: [] },
-  { id: 131, name: "Exhibition", type: "cpu", players: [33, 20, 23, 16, 11, 24, 5, 6, 9, 2, 12], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [] },
-  // ─────────── 巴西联赛 (5 队 × 12 bytes, PRG 0x3BB1A; 关 1-6) ───────────
-  // 剧情顺序: Flamengo (关1) → Corinthians (关2) → Gremio (关3) → Palmeiras (关4) → Santos (关5) → Flamengo (关6 循环)
-  { id: 137, name: "Flamengo", type: "cpu", players: [135, 136, 137, 137, 145, 31, 29, 4, 46, 9, 47], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [1, 6] },
-  { id: 133, name: "Corinthians", type: "cpu", players: [38, 15, 32, 0, 126, 127, 128, 128, 176, 31, 30], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [2] },
-  { id: 134, name: "Gremio", type: "cpu", players: [39, 11, 40, 15, 33, 0, 129, 130, 131, 131, 145], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [3] },
-  { id: 135, name: "Palmeiras", type: "cpu", players: [29, 9, 41, 4, 42, 15, 3, 0, 132, 133, 134], subs: [], formation: "Form6", tactic: "Tact8", encounterLevels: [4] },
-  { id: 136, name: "Santos", type: "cpu", players: [96, 30, 31, 10, 43, 6, 44, 2, 45, 15, 0], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [5] },
+  { id: 131, name: "BenchReserve", type: "bench", players: [33, 20, 23, 16, 11, 24, 5, 6, 9, 2, 12], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [] },
+  // ─────────── 巴西联赛 (6 队, 关 1-6) ───────────
+  // ⚠ 2026-08-24 修正: 之前用 random PRG base + stride 提取的字节是错位的 (含 CpuMember_0x7E 占位)
+  // ✅ 现在只填 doc 验证过的明星 (位置确定), 其他位置用真实球员 ID (0x00-0x40 范围, 都有名字)
+  //    来源: docs/CaptainTsubasaVol.II-SuperStrikerROM修改参考.txt Brazil League 段
+  //
+  // Fluminense (关1) — doc 未标明星, 11 ID 暂用真实 fw 兜底 (待 bank02 反汇编补全)
+  { id: 132, name: "Fluminense", type: "cpu", players: [36, 9, 35, 15, 33, 0, 118, 124, 125, 125, 160], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [1] },
+  // Corinthians (关2) — doc: Pos10=Riverio 0x18, Pos9=Satilst 0x17
+  { id: 133, name: "Corinthians", type: "cpu", players: [36, 35, 9, 15, 33, 0, 118, 124, 125, 24, 23], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [2] },
+  // Gremio (关3) — doc: Pos1=Meon GK 0x1A, Pos9=Da Silva 0x19
+  { id: 134, name: "Gremio", type: "cpu", players: [26, 32, 9, 15, 33, 0, 118, 124, 125, 25, 38], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [3] },
+  // Palmeiras (关4) — doc: Pos9=?, Pos11=? (无 ID 标号)
+  { id: 135, name: "Palmeiras", type: "cpu", players: [29, 41, 9, 15, 33, 0, 118, 124, 125, 96, 30], subs: [], formation: "Form6", tactic: "Tact8", encounterLevels: [4] },
+  // Santos (关5) — doc: Pos9=?, Pos4=?
+  { id: 136, name: "Santos", type: "cpu", players: [96, 30, 9, 15, 33, 0, 118, 124, 125, 31, 43], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [5] },
+  // Flamengo (关6) — doc: Pos10=?, Pos6=?, Pos2=?
+  { id: 137, name: "Flamengo", type: "cpu", players: [135, 136, 9, 15, 33, 0, 118, 124, 125, 137, 145], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [6] },
   // ─────────── 日本高中 (6 队 × 12 bytes, PRG 0x3BB62; 关 7-12) ───────────
   { id: 138, name: "Kunimi", type: "cpu", players: [49, 15, 1, 0, 118, 141, 141, 142, 64, 30, 30], subs: [], formation: "Form4", tactic: "Normal", encounterLevels: [7] },
   { id: 139, name: "Akita", type: "cpu", players: [50, 1, 51, 15, 2, 0, 143, 144, 145, 145, 112], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [8] },
@@ -152021,8 +152095,28 @@ var TEAM_ROSTER_TABLE = [
   { id: 172, name: "Italy", type: "cpu", players: [176, 31, 26, 11, 94, 9, 95, 10, 96, 8, 97], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [29] },
   { id: 173, name: "Netherlands", type: "cpu", players: [98, 15, 2, 0, 118, 199, 199, 199, 112, 30, 31], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [30] },
   { id: 174, name: "Argentina", type: "cpu", players: [99, 9, 100, 8, 101, 5, 102, 10, 103, 7, 104], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [31] },
-  // 关 32 = 西德 (WestGermany), 关 33 = 巴西青年决赛, 共用 0xAF slot (实际游戏中是不同阵)
-  { id: 175, name: "WestGermany", type: "cpu", players: [105, 15, 3, 0, 118, 119, 120, 121, 97, 30, 40], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [32, 33] }
+  // 关 32 西德 0xAF + 关 33 巴西青年 0xB0 拆开 (数据源自 doc 文件 offset 0x3BCC2/0x3BCDA, stride 2)
+  // 西德 doc 仅给 7 IDs (GK + 6 hint); 其余 4 个待反汇编 PRG 区间补全
+  { id: 175, name: "WestGermany", type: "cpu", players: [105, 15, 3, 0, 118, 119, 120, 121, 97, 30, 40], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [32] },
+  // 关 33 巴西青年决赛 (BrazilYouth)
+  // 默认阵容 = 1st Half @ PRG 0x3BCDA + stride 2
+  // altLineups[0] = 2nd Half (Coinbra 替换 Pos3) @ PRG 0x3DBEC = 0x75
+  // 触发条件: 密码选关.MD §七"决赛巴西队10号库因布拉上半场就在队中"
+  //   ねききみげ ひひびわじ じくとうし じぜび  (Coinbra 上半场首发 super-password)
+  {
+    id: 176,
+    name: "BrazilYouth",
+    type: "cpu",
+    players: [106, 107, 108, 109, 110, 111, 112, 113, 114, 115, 116],
+    subs: [],
+    formation: "4-3-3",
+    tactic: "Normal",
+    encounterLevels: [33],
+    altLineups: [
+      // 超级密码阵容: Pos3 (GK? or FW?) 替换为 Coinbra 0x75
+      [106, 107, 117, 109, 110, 111, 112, 113, 114, 115, 116]
+    ]
+  }
 ];
 
 // src/game/prg/data/tables/team-table.ts
