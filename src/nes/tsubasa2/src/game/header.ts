@@ -1,16 +1,12 @@
 /**
- * 真实 iNES header — Captain Tsubasa II: Super Striker (Japan)
+ * 真实 iNES 头信息 — Captain Tsubasa II: Super Striker (Japan)
  *
  *   prg16k=16  chr8k=16  mapper=4 (MMC3)  mirroring=0 (Horizontal)
  *
  * NES 2.0 (byte7=0x08 → (byte7&0x0c)===0x08)：byte9=0 不走 exponent 扩展，编码与 iNES 1.0 兼容
  *
- * ⚠️ bank 编号体系换算（防混淆）：
- *   MMC3 切换粒度 = 8KB → 项目 asm/bank00-31、CDL、PRG 数据均按 8KB 块
- *   Mesen/fceux trace 的 bank 前缀 = 16KB bank 编号 (iNES 单位)
- *   Mesen bank N ↔ 8KB 块 2N 和 2N+1
- *   例: trace "$06:818C STA $4000,X" = 16KB bank 6 = 物理 0x18000 = 8KB 块 12/13 (音频引擎)
- *       trace "$0F:C496"            = 16KB bank 15 = 物理 0x3C000 = 8KB 块 30/31 (切 bank 例程)
+ * 注：本项目不重放模拟器，仅以常量形式保留 ROM 元信息（供外部校验/文档参考）。
+ * 运行时通过 HeadlessRuntime 直接装载 CHR_BANKS，PPU 配置由 PpuTarget 接口驱动。
  */
 export const HEADER = new Uint8Array([
   0x4e, 0x45, 0x53, 0x1a, // "NES\x1a"
@@ -21,7 +17,7 @@ export const HEADER = new Uint8Array([
 ]);
 
 // ═══════════════════════════════════════════
-// NameTable 拼接方式 (渲染参数, 保留)
+// 渲染参数：NameTable 拼接方式（保留）
 // ═══════════════════════════════════════════
 
 export enum Mirroring {

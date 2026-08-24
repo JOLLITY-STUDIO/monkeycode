@@ -1,10 +1,18 @@
 /**
- * RenderingPrimitivesService — bank00 渲染原语集合
+ * RenderingPrimitivesService — 渲染原语集合
  *
- * @bank 00 ($9B28/$9A71/$9AB8/$8920/$8AF7/$98EA/...)
+ * 行为翻译（去 CPU 化）：
+ * - NT 渲染缓冲写入/结束/数据追加（[$05E8] 64 字节容量）
+ * - BG/SPR 调色板装载
+ * - 渐显/渐隐（单步，配合场景状态机）
+ * - OAM 隐藏/Y 漂移/属性翻转
+ * - 清屏/填充
+ * - 场景数据装载（[$0079] 标志 + 18 字节）
+ * - CHR 配置读取（配置副作用 + tile 网格展开）
+ * - 场景 3 NT 数据按行写入渲染缓冲
  *
- * 将原版直接写 PPU 寄存器 / MMC3 切 bank 的行为，转写为操作 DataStore
- * 中的 ram 与 $05E8 渲染缓冲。所有 MMC3 寄存器写已省略（按 workspace 规则注释）。
+ * 所有数据通过 OPENING_* 声明式表（opening-data.ts / bank7-streams）查询，
+ * 无 bank 切换寄存器写。
  */
 import type { DataStore } from '../../data/store/DataStore';
 import {
@@ -23,20 +31,18 @@ import { OPENING_TILE_STREAMS } from '../../data/scene/bank7-streams';
 export class RenderingPrimitivesService {
   constructor(private readonly store: DataStore) {}
 
-  // ──────────────────────────── $9DEE 8bit × 8bit 乘法 ────────────────────────────
+  // ──────────────────────────── 8bit × 8bit 乘法 ────────────────────────────
 
-  /**
-   * 对应原始 $9DEE: $00EC:$00ED = A * X（无符号 16-bit 结果）。
-   */
+  /** 无符号 8bit × 8bit → 16bit 乘法（返回 A * X） */
   multiplyU8(a: number, x: number): number {
     return ((a & 0xff) * (x & 0xff)) & 0xffff;
   }
 
-  // ──────────────────────────── $05E8 NT 渲染缓冲 ────────────────────────────
+  // ──────────────────────────── NT 渲染缓冲 ────────────────────────────
 
   /**
-   * 对应原始 $9B28: 在 $05E8 缓冲写入一个条目。
-   * @param count  字节数（≤ 0x3F，bit7 由调用方控制；普通行模式 bit7=0）
+   * 在 [$05E8] 缓冲写入一个条目：[count, addrLo, addrHi, ...data]。
+   * @param count  字节数（≤ 0x3F；bit7 由调用方控制；普通行模式 bit7=0）
    * @param addrLo 目标地址低字节
    * @param addrHi 目标地址高字节
    * @returns 当前写入位置 x（下一条数据应写入 $05E8+x）
@@ -44,15 +50,14 @@ export class RenderingPrimitivesService {
   ntBufferEntry(count: number, addrLo: number, addrHi: number): number {
     const store = this.store;
     const pos = store.readByte(0x0628) & 0xff;
-    // 原版 $9B37-$9B3F: AND #$3F; CLC; ADC $0628; CMP #$3D; BCS $9B2E（等 NMI 消费后重试）
     if (pos + (count & 0x3f) >= 0x3d) {
-      // 容量不足：原版 busy-wait 等 NMI 消费；H5 由调用方分帧写入保证不触发。
+      // 容量不足：调用方分帧写入保证不触发 busy-wait
       return pos;
     }
     store.writeByte(0x05e8 + pos, count & 0xff);
     store.writeByte(0x05e9 + pos, addrLo & 0xff);
     store.writeByte(0x05ea + pos, addrHi & 0xff);
-    store.writeByte(0x0629, (count & 0xff) | 0x40); // 忙标志（H5 中仅用于语义兼容）
+    store.writeByte(0x0629, (count & 0xff) | 0x40);
     return pos + 3;
   }
 
@@ -62,7 +67,7 @@ export class RenderingPrimitivesService {
   }
 
   /**
-   * 对应原始 $9B5E: 结束当前 $05E8 条目并更新指针。
+   * 结束当前 [$05E8] 条目并更新指针。
    * @param pos 下一个空闲位置
    */
   ntBufferEnd(pos: number): void {
@@ -82,10 +87,7 @@ export class RenderingPrimitivesService {
 
   // ──────────────────────────── 调色板原语 ────────────────────────────
 
-  /**
-   * 对应原始 $9AB8: BG 调色板装载。
-   * $B000 + index*16 → ram_062A（16 字节）。
-   */
+  /** BG 调色板装载（index → 16 字节 → ram_062A） */
   loadBgPalette(index: number): void {
     const pal = OPENING_BG_PALETTES[index & 0x0f] ?? OPENING_BG_PALETTES[0];
     for (let i = 0; i < 0x10; i++) {
@@ -93,10 +95,7 @@ export class RenderingPrimitivesService {
     }
   }
 
-  /**
-   * 对应原始 $9ADA: SPR 调色板装载。
-   * $B300 + index*16 → ram_063A（16 字节）。
-   */
+  /** SPR 调色板装载（index → 16 字节 → ram_063A） */
   loadSprPalette(index: number): void {
     const pal = OPENING_SPR_PALETTES[index & 0x0f] ?? OPENING_SPR_PALETTES[0];
     for (let i = 0; i < 0x10; i++) {
@@ -105,8 +104,8 @@ export class RenderingPrimitivesService {
   }
 
   /**
-   * 对应原始 $9AA2: 查渐显表计算单个颜色。
-   * new = $9EA2[(pal & $30) + fade] | (pal & $0F)
+   * 查渐显表计算单个颜色。
+   * new = OPENING_FADE_TABLE[(pal & $30) + fade] | (pal & $0F)
    */
   fadeLookup(pal: number, fade: number): number {
     const idx = ((pal & 0x30) + (fade & 0x0f)) & 0x3f;
@@ -114,14 +113,14 @@ export class RenderingPrimitivesService {
   }
 
   /**
-   * 对应原始 $9A71: 将 ram_062A/063A 按当前 $004A/$004B 渐显后写入 $05E8 缓冲（$3F00）。
+   * 将 ram_062A/063A 按当前 fade 渐显后写入渲染缓冲（$3F00）。
    * @returns 新的缓冲位置 pos
    */
   fadeWrite(): number {
     const store = this.store;
     const fadeA = store.readByte(0x004a) & 0x0f;
     const fadeB = store.readByte(0x004b) & 0x0f;
-    let pos = this.ntBufferEntry(0x20, 0x00, 0x3f); // 32 字节 → $3F00
+    let pos = this.ntBufferEntry(0x20, 0x00, 0x3f);
     for (let i = 0; i < 0x10; i++) {
       const pal = store.readByte(0x062a + i);
       this.ntBufferDataByte(pos++, this.fadeLookup(pal, fadeA));
@@ -136,9 +135,7 @@ export class RenderingPrimitivesService {
 
   // ──────────────────────────── OAM 原语 ────────────────────────────
 
-  /**
-   * 对应原始 $9B7F: 隐藏全部影子 OAM（$0468/$0200 写 $F8，并清零扩展表）。
-   */
+  /** 隐藏全部影子 OAM（$0468/$0200 写 $F8，并清零扩展表） */
   hideOam(): void {
     const store = this.store;
     for (let i = 0; i < 0x100; i += 4) {
@@ -151,9 +148,7 @@ export class RenderingPrimitivesService {
     store.writeByte(0x05c8, 0);
   }
 
-  /**
-   * 对应原始 $890C: 所有精灵 Y 坐标 += amount（$0468+4i）。
-   */
+  /** 所有精灵 Y 坐标 += amount（$0468+4i） */
   oamDrift(amount: number): void {
     const store = this.store;
     const add = amount & 0xff;
@@ -163,9 +158,7 @@ export class RenderingPrimitivesService {
     }
   }
 
-  /**
-   * 对应原始 $88FB: 所有精灵属性 ^= $20（水平翻转位）。
-   */
+  /** 所有精灵属性 ^= $20（水平翻转位） */
   oamFlipAttrs(): void {
     const store = this.store;
     for (let i = 0; i < 0x100; i += 4) {
@@ -177,29 +170,23 @@ export class RenderingPrimitivesService {
   // ──────────────────────────── 清屏 / 填充 ────────────────────────────
 
   /**
-   * 对应原始 $98A0: 关闭 NMI/MASK，整屏清 0，再恢复 MASK/NMI。
-   * 原版 $98B2-$98C8: PPU 地址 $2000 起，LDY #$08 × 256 字节 = 8 页
-   * （$2000-$27FF，NT0+NT1 整 2 个 nametable + 属性区）；H5 语义清同一范围。
+   * 关闭 NMI/MASK，整屏清 0，再恢复 MASK/NMI。
+   * 清 NT + 属性表（$2000-$27FF，NT0+NT1）。
    */
   clearNametable(): void {
     const store = this.store;
-    // 关 NMI（bit7 clear）
     store.writeByte(0x0020, store.readByte(0x0020) & 0x7f);
-    // 关显示 MASK（bit3/4 clear）
     store.writeByte(0x0021, store.readByte(0x0021) & 0xe7);
-    // 清 NT + 属性表（$2000-$27FF，8 页 × 256）
     for (let addr = 0x2000; addr <= 0x27ff; addr++) {
       store.writeByte(addr, 0);
     }
-    // 恢复 MASK
     store.writeByte(0x0021, store.readByte(0x0021) | 0x18);
-    // 恢复 NMI
     store.writeByte(0x0020, store.readByte(0x0020) | 0x80);
   }
 
   /**
-   * 对应原始 $98EA: 填充 Y 行 × X 列（每行 32 字节）的 NT/ATTR 区域。
-   * 直接写入 DataStore（原版 fade=0 时直接写 PPU；H5 统一走 ram 视图）。
+   * 填充 Y 行 × X 列（每行 32 字节）的 NT/ATTR 区域。
+   * 直接写入 DataStore。
    */
   fillNametableRows(addrLo: number, addrHi: number, rows: number, cols: number, value: number): void {
     const store = this.store;
@@ -216,10 +203,9 @@ export class RenderingPrimitivesService {
   // ──────────────────────────── 渐显 / 渐隐（单步，配合场景状态机） ────────────────────────────
 
   /**
-   * 对应原始 $9A0D（仅 BG 渐隐一步）：
-   *   LDA $004A; BEQ RTS; DEC $004A; JSR $9A71; wait 1 帧; JMP $9A0D
+   * BG 渐隐一步：DEC fadeA → 写满亮调色板 → 等 1 帧。
    * fade=$0F 最亮 → fade=0 最暗（黑）。
-   * @returns true 表示 $004A 已为 0（循环结束）
+   * @returns true 表示 fadeA 已为 0（循环结束）
    */
   fadeBgStep(): boolean {
     const store = this.store;
@@ -231,10 +217,8 @@ export class RenderingPrimitivesService {
   }
 
   /**
-   * 对应原始 $99F0（BG+SPR 渐隐一步）：
-   *   LDA $004A; ORA $004B; BEQ RTS; DEC $004A; LDA $004B; BEQ skip; DEC $004B;
-   *   JSR $9A71; wait 1 帧; JMP $99F0
-   * @returns true 表示 $004A|$004B == 0（循环结束）
+   * BG+SPR 渐隐一步：DEC fadeA/fadeB → 写满亮调色板 → 等 1 帧。
+   * @returns true 表示 fadeA|fadeB == 0（循环结束）
    */
   fadeOutStep(): boolean {
     const store = this.store;
@@ -247,27 +231,27 @@ export class RenderingPrimitivesService {
     return false;
   }
 
-  // ──────────────────────────── $9A35 调色板装载 + 满渐显 ────────────────────────────
+  // ──────────────────────────── 调色板装载 + 满渐显 ────────────────────────────
 
   /**
-   * 对应原始 $9A35：装载 BG/SPR 调色板并设置 fade=$0F 后写满亮调色板。
-   * 原版 A=$0048（BG 组）、X=$0049（SPR 组）；H5 直接参数化。
+   * 装载 BG/SPR 调色板并设置 fade=$0F 后写满亮调色板。
+   * @param bgIndex BG 组索引
+   * @param sprIndex SPR 组索引
    */
   loadPalettesAndFade(bgIndex: number, sprIndex: number): void {
     const store = this.store;
-    this.loadBgPalette(bgIndex); // $9AB8
-    this.loadSprPalette(sprIndex); // $9ADA
-    store.writeByte(0x004a, 0x0f); // LDA #$0F; STA $004A
-    store.writeByte(0x004b, 0x0f); // STA $004B
-    this.fadeWrite(); // JMP $9A71
+    this.loadBgPalette(bgIndex);
+    this.loadSprPalette(sprIndex);
+    store.writeByte(0x004a, 0x0f);
+    store.writeByte(0x004b, 0x0f);
+    this.fadeWrite();
   }
 
-  // ──────────────────────────── $8920 场景数据装载 ────────────────────────────
+  // ──────────────────────────── 场景数据装载 ────────────────────────────
 
   /**
-   * 对应原始 $8920：场景号 × 19 → 基址 $BF00 → 拷贝 19 字节。
+   * 场景号 × 19 → 基表 → 拷贝 19 字节。
    * [0]→ram_0079（滚动标志），[1..18]→ram_007C..ram_008D；ram_007A=0。
-   * MMC3 切 bank（JSR $C4B9）在 H5 中省略。
    */
   loadSceneData(sceneId: number): void {
     const entry = OPENING_SCENE_TABLE[sceneId & 0x0f] ?? OPENING_SCENE_TABLE[0];
@@ -279,22 +263,22 @@ export class RenderingPrimitivesService {
     }
   }
 
-  // ──────────────────────────── $8AF7 CHR 配置读取（配置副作用） ────────────────────────────
+  // ──────────────────────────── CHR 配置读取（配置副作用） ────────────────────────────
 
   /**
-   * 对应原始 $8AF7（配置部分，逐指令对照 code_scene.s $8AF7-$8BB0）：
+   * 读取 CHR 配置（按 configId）：
    * - 清零 $0009/$000A/$000D/$000E；$005B bit7 清除
-   * - $0077 = $0025（$8B09-$8B0B）
-   * - 清属性缓冲 $064A-$0651（$8B12-$8B1A: LDY #$F8; STA $0552,Y 循环）
+   * - $0077 = $0025（数据段选择）
+   * - 清属性缓冲 $064A-$0651
    * - $0075/$0076 = cfg[0]/[1]（起始 tile/参数）
    * - $0048 = cfg[2] & 0x3F（BG 调色板索引）
    * - $005B bit7 = cfg[2] bit6（翻转标志）
    * - $005E/$005F = cfg[3]/[4]（宽/高）
-   * - $005C/$005D = cfg[5] 编码的 nametable 基址（ASL/ROL ×4 展开）
-   * - $008E/$008F = cfg[0]/[1]（后续 $0090/$0091 的源）
-   * - $8B81-$8B91: $005D & $0C == 0 时按 $007B/$005B 调整 $005D
-   * - $8B93-$8BAE: width≥9 → 清 NT0；否则 $005D bit2 → 清 NT1，否则清 NT0
-   * tile→NT 展开（$8BB0+）由场景渲染单独处理（H5: queueScene3NametableRows）。
+   * - $005C/$005D = cfg[5] 编码的 nametable 基址
+   * - $008E/$008F = cfg[0]/[1]
+   * - ram_0063/0064 = CHR 指针表[configId]（指向 CHR 配置块）
+   * - 清屏分支（width≥9 清 NT0+NT1；否则按 $005D bit2 清 NT1/NT0）
+   * tile→NT 展开由场景渲染单独处理（queueScene3NametableRows）。
    */
   loadChrConfig(configId: number): void {
     const store = this.store;
@@ -304,63 +288,47 @@ export class RenderingPrimitivesService {
     store.writeByte(0x000d, 0);
     store.writeByte(0x000e, 0);
     store.writeByte(0x005b, store.readByte(0x005b) & 0x7f);
-    // $8B09: LDA $0025; STA $0077
     store.writeByte(0x0077, store.readByte(0x0025));
-    // $8B12-$8B1A: 清 $064A-$0651（LDY #$F8; STA $0552,Y; INY; BNE 循环）
     for (let i = 0; i < 8; i++) {
       store.writeByte(0x064a + i, 0);
     }
     store.writeByte(0x0075, cfg[0]);
     store.writeByte(0x0076, cfg[1]);
     store.writeByte(0x0048, cfg[2] & 0x3f);
-    // $8B4F: LSR $005B; ROL; ROL $005B → $005B bit7 = cfg[2] bit6
     const flip = (cfg[2] >> 6) & 1;
     store.writeByte(0x005b, (store.readByte(0x005b) & 0x7f) | (flip << 7));
     store.writeByte(0x005e, cfg[3]);
     store.writeByte(0x005f, cfg[4]);
-    // $8B5F-$8B7F: $005C/$005D = (($02 << 8) | (cfg[5] & $F8)) << 2 → 16bit
     let v = ((0x02 << 8) | (cfg[5] & 0xf8)) << 2;
-    // $8B71-$8B7D: c |= (cfg[5] & $07); 再 <<2
     v = ((v & 0xff00) | ((v & 0xff) | (cfg[5] & 0x07))) << 2;
     store.writeByte(0x005c, v & 0xff);
     store.writeByte(0x005d, (v >> 8) & 0xff);
     store.writeByte(0x008e, cfg[0]);
     store.writeByte(0x008f, cfg[1]);
-    // $8B1C-$8B39: 通过 sceneId×2 查 CHR 指针表设置 ram_0063/0064
-    // ram_0063/0064 = CHR 指针表[configId]（CPU 地址，指向 bank7 的 CHR 配置）
     const ptr = OPENING_CHR_POINTER_TABLE[configId & 0x1f] ?? OPENING_CHR_POINTER_TABLE[0];
     store.writeByte(0x0063, ptr & 0xFF);
     store.writeByte(0x0064, (ptr >> 8) & 0xFF);
-    // $8B81-$8B85: LDA $005D; AND #$0C; BNE $8B93 — 基址不在属性区才调整
     if ((store.readByte(0x005d) & 0x0c) === 0) {
-      // $8B87-$8B91: LDA $007B; ASL×2; EOR $005B; AND #$04; ORA $005D; STA $005D
       const adj = ((((store.readByte(0x007b) << 2) & 0xff) ^ store.readByte(0x005b)) & 0x04);
       store.writeByte(0x005d, (store.readByte(0x005d) | adj) & 0xff);
     }
-    // $8B93-$8BAE: 清屏分支（$9071 清 NT0 / $9076 清 NT1，各 16 行×32 列）
     const width = store.readByte(0x005e);
     if (width >= 0x09) {
-      // $8B99: JSR $9071; JMP $8BAB 之后… 原版 $8B9C JMP $8BAB 会执行 $9076？
-      //   核对：$8B9C: JMP $8BAB; $8BAB: JSR $9076 → width≥9 清 NT0+NT1
-      this.fillNametableRows(0x00, 0x20, 0x10, 0x20, 0x00); // $9071: NT0
-      this.fillNametableRows(0x00, 0x24, 0x10, 0x20, 0x00); // $9076: NT1
+      this.fillNametableRows(0x00, 0x20, 0x10, 0x20, 0x00);
+      this.fillNametableRows(0x00, 0x24, 0x10, 0x20, 0x00);
     } else if ((store.readByte(0x005d) & 0x04) !== 0) {
-      // $8BA3: BNE $8BAB → JSR $9076 清 NT1
       this.fillNametableRows(0x00, 0x24, 0x10, 0x20, 0x00);
     } else {
-      // $8BA5: JSR $9071 清 NT0; JMP $8BAE 跳过 NT1
       this.fillNametableRows(0x00, 0x20, 0x10, 0x20, 0x00);
     }
-    // $8AF7 配置读取完成。$8BB0 起是 tile 渲染指令流处理：直接查 OPENING_TILE_STREAMS
-    // （bank7 拆细数据，不读 ROM），取首命令 → $0062=cmd, $0072=行参（镜像 $8BB0-$8BC0）。
+    // tile 渲染指令流已提取为 OPENING_TILE_STREAMS（不读 ROM）
     const stream = OPENING_TILE_STREAMS[configId & 0x1f] ?? [];
     const cmd = stream.length > 1 ? stream[1] : 0;
     const param = (cmd & 0x1f) !== 0 && stream.length > 2 ? stream[2] : 0;
     store.writeByte(0x0062, cmd);
     store.writeByte(0x0072, param);
-    // 场景 3 的 tile 网格已提取为 OPENING_SCENE3_TILES/OPENING_TILE_PATTERNS；
-    // cfg 0x17 流 = [0x00,0xA0]（等0帧 + cmd $A0：bit5=1 最后一条, bit7-6=10 正向整幅），
-    // 由 queueScene3NametableRows 按行写入 $05E8 渲染缓冲（场景控制器逐帧驱动）。
+    // 场景 3 的 tile 网格已提取为 OPENING_SCENE3_TILES/OPENING_TILE_PATTERNS，
+    // 由 queueScene3NametableRows 按行写入渲染缓冲（场景控制器逐帧驱动）。
   }
 
   // ──────────────────────────── 场景 3 NT 数据（开场背景） ────────────────────────────
@@ -368,7 +336,7 @@ export class RenderingPrimitivesService {
   /**
    * 场景 3 开场背景：OPENING_SCENE3_TILES（6×8 pattern）每个 pattern 按
    * OPENING_TILE_PATTERNS 展开为 4×4 tile（[1..16]，0xFF=跳过），共 24×32 tiles。
-   * 从 $2000 起逐行写入 $05E8 渲染缓冲（renderCommit 消费后写 PPU）。
+   * 从 $2000 起逐行写入渲染缓冲（renderCommit 消费后写 PPU）。
    * @param fromRow 起始行（0-31）
    * @param rows    本次写入行数
    */

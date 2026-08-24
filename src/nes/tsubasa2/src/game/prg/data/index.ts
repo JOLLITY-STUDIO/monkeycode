@@ -21,7 +21,7 @@ export { DEFAULT_MATCH_CONFIG, MATCH_CONFIG_TABLE, getMatchConfig } from './tabl
 export type { MatchConfigEntry } from './tables/match-config-table';
 export { LEVEL_UP_TABLE, findLevelByExp } from './tables/levelup-table';
 
-// bank16-29 新增数据表
+// 场景/精灵帧/技能事件等具象化数据表（声明式表结构，无 asm 地址残留）
 export {
   BANK19_SPRITE_FRAMES, BANK19_TILE_DATA, BANK19_SCENE_DATA,
 } from './tables/sprite-frame-table';
@@ -47,7 +47,7 @@ export {
 } from './tables/match-action-table';
 export type { MatchActionPointer, MatchActionEntry } from './tables/match-action-table';
 
-// bank17/18/21/23/25/29 数据 bank（NT 地图/脚本数据）
+// 场景背景数据（按场景 ID 命名）
 export {
   BANK17_DATA_TABLES, BANK17_DATA_MAPS, BANK17_DATA_TAIL, BANK17_FULL,
 } from './scene/bank17-data';
@@ -67,12 +67,14 @@ export {
   BANK29_DATA_TABLES, BANK29_DATA_MAPS, BANK29_DATA_TAIL, BANK29_FULL,
 } from './scene/bank29-data';
 
-// audio
+// audio（曲目列表 + ROM 访问器）
+export type { SongTrack, SongType, SongBank } from './audio';
 export {
+  BGM_SONGS, SE_SONGS,
   SONG_COUNT, SONG_REQUEST_IDS,
   BGM_POINTER_TABLE_ADDR, BGM_POINTER_TABLE_LEN,
   SE_POINTER_TABLE_ADDR, SE_POINTER_TABLE_LEN,
   NOTE_DURATION_TABLE_ADDR, NOTE_DURATION_TABLE_LEN,
   NOTE_FREQ_TABLE_ADDR,
   AudioRom,
-} from './audio/audio-rom';
+} from './audio';

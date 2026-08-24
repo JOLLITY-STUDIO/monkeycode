@@ -1,0 +1,18 @@
+/**
+ * BGM-11 — 曲目条目（requestId 0x11）
+ *
+ * 类型：背景乐（可循环）
+ * 数据 bank：12（引擎固定区）
+ * 数据起始：$8FBB
+ * NSF 曲目 #55
+ */
+import type { SongTrack } from '../song-track';
+
+export const BGM_11: SongTrack = {
+  songNo: 55,
+  requestId: 0x11,
+  type: 'BGM',
+  bank: 12,
+  cpuAddr: 0x8FBB,
+  name: '',
+};

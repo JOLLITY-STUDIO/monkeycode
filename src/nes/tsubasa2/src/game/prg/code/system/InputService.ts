@@ -1,12 +1,7 @@
 /**
- * InputService — 手柄输入读取（原 bank02 $80D7-$8115）
+ * InputService — 手柄输入读取
  *
- * 对应原始地址：
- *   $80D7-$8104: 读取 $4016/$4017（控制器 1/2），8 bit 移位到 $003F
- *   $8107-$8114: pressed = cur & ~prev → ram_001D/001F；cur → ram_001C/001E
- *   $8117-$8135: 帧计数器累加、ram_001B bit7 置位
- *
- * RAM 布局（与 asm 一致）：
+ * 数据结构：
  *   ram_001C = 控制器1 当前状态   ram_001E = 控制器1 按下沿
  *   ram_001D = 控制器2 当前状态   ram_001F = 控制器2 按下沿
  *
@@ -42,23 +37,21 @@ export class InputService {
   }
 
   /**
-   * $80D7-$8115: 读取两控制器 → 更新 ram_001C/001D（当前）/ ram_001E/001F（按下沿）
-   * 按下沿 = 当前 & ~上一帧（与 6502 `EOR; AND` 等价）
+   * 读取两控制器 → 更新 ram_001C/001D（当前）/ ram_001E/001F（按下沿）
+   * 按下沿 = 当前 & ~上一帧
    */
   readControllers(): void {
     const store = this.store;
-    // X=2 → 控制器2；X=1 → 控制器1
     for (let x = 2; x >= 1; x--) {
       const idx = x - 1;
       const state = this.rawState[idx];
       let cur = 0;
       for (let i = 0; i < 8; i++) {
-        // state[i] 0x41=按下 → bit
         if (state[i] === 0x41) cur |= 1 << i;
       }
       const prev = store.readByte(0x001a + x); // 001C(1)/001D(2)
-      store.writeByte(0x001c + x, cur); // cur → 001C/001D
-      store.writeByte(0x001e + x, cur & ~prev); // pressed → 001E/001F
+      store.writeByte(0x001c + x, cur);
+      store.writeByte(0x001e + x, cur & ~prev);
     }
   }
 
