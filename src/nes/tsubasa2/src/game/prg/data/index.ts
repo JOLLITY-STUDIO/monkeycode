@@ -108,6 +108,9 @@ export {
 } from './scene/bank7';
 
 // audio（曲目列表 + ROM 访问器）
+// 注意：AudioRom 已在上面 line 25 通过 './audio/audio-rom' 导出，
+//       这里不再重复 export，避免双重 export 在 WX 小程序 bundle 时报
+//       "Cannot redefine property: AudioRom" 的运行时错误。
 export type { SongTrack, SongType, SongBank } from './audio';
 export {
   BGM_SONGS, SE_SONGS,
@@ -116,5 +119,4 @@ export {
   SE_POINTER_TABLE_ADDR, SE_POINTER_TABLE_LEN,
   NOTE_DURATION_TABLE_ADDR, NOTE_DURATION_TABLE_LEN,
   NOTE_FREQ_TABLE_ADDR,
-  AudioRom,
 } from './audio';
