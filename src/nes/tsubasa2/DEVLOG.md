@@ -2,6 +2,30 @@
 
 > 记录卡点、问题修复、翻译进度。格式：`- [日期] 任务ID：内容 | 修改文件 | 编译结果`
 
+## 2026-08-24
+
+- [PlayerProfile 23 字段扩展] PlayerProfile 从 7 字段扩展为 23 字段（7 base + 8 low + 8 high），
+  完全对齐 ROM 0x39fde 的 24 字节结构（字节 0x17 留空）。
+  - 7 base:  stamina/shot/pass/dribble/block/tackle/intercept
+  - 8 low:   shot/pass/trap/letThrough/ctrlClear/unctrlClear/ballChal/intercept
+  - 8 high:  同上
+  - GK (position=1) 用 8 字节 GK 表字段 (stamina/pass/catching/punching/vsShot/
+    vsDribble/lowRush/highClaim)，其余字段填 0。
+- [GK 表顺序修正] ROM 0x3ae96 实测为 8 项 × 8 字节顺序表，非按球员 ID 索引。
+  extract_players.cjs 修正为按 gkIdx 0..4 顺序读取，GK_ORDER = [0x0F, 0x21, 0x02,
+  0x22, 0x26]（Morisaki/Wakabayashi/Lennart/Wakashimazu/Meon）。Wakabayashi
+  实测 GK[1]: stamina=28, catching=43, vsShot=26（最强 GK，值合理）。
+- [PlayerQueryService 真数据接入] findById / findTeamRoster / findIdByName 现已接
+  PLAYER_TABLE 和 TEAM_ROSTER_TABLE 真数据，TODO V0.2 stub 已清除。
+- [重生脚本改进] extract_players.cjs 由 stdout pipe 改为 fs.writeFileSync 直接写，
+  解决 PowerShell UTF-8 编码乱码问题。
+- 修改文件：
+  - src/game/prg/code/player/PlayerQueryService.ts（23 字段 + 真数据接入）
+  - scripts/extract_players.cjs（GK 顺序索引 + UTF-8 直接写文件）
+  - src/game/prg/data/tables/player-stats.ts（重生）
+- 编译：`npx tsc --noEmit` 零错误。
+- 提交：b7f745cf `feat(prg/data): PlayerProfile 23 字段全捕获 + PlayerQueryService 真数据接入`
+
 ## 2026-08-23
 
 - [A1] 迭代方案落地：WBS_PLAN.md 编写完成（V0.1-V0.7 版本规划 + A-G 任务表）。
