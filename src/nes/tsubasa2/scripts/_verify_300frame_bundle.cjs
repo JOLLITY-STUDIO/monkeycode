@@ -141090,6 +141090,9 @@ var InterruptService = class {
    * OAM DMA（影子 → spriteMem，NES 标准字节序）。
    * 影子 $0468 每精灵 4 字节 = [y, tile, attr, x]，spriteMem 同布局。
    * 影子 $0468 中属性 bit2/3 非零 → X=$F8（隐藏）。
+   *
+   * 优先走 PPU.sramWrite（每 byte 触发 spriteRamWriteUpdate → sprY/sprTile/sprAttr/sprX unpack）；
+   * 不可用时（小程序无 PPU）退化为直接数组复制（不更新 unpack，但 H5 渲染仍会读 spriteMem）。
    */
   oamDma(ppu2) {
     const store = this.store;
@@ -141103,7 +141106,12 @@ var InterruptService = class {
       oam[y + 2] = attr & 255;
       oam[y + 3] = x & 255;
     }
-    for (let i = 0; i < 256; i++) ppu2.spriteMem[i] = oam[i];
+    if (ppu2.sramWrite && ppu2.writeSRAMAddress) {
+      ppu2.writeSRAMAddress(0);
+      for (let i = 0; i < 256; i++) ppu2.sramWrite(oam[i]);
+    } else {
+      for (let i = 0; i < 256; i++) ppu2.spriteMem[i] = oam[i];
+    }
   }
   /** 主滚动：X = ppuState.scrollTempX, Y = ppuState.scrollTempY */
   applyScrollC7B7(ppu2) {
@@ -152055,10 +152063,10 @@ var TEAM_ROSTER_TABLE = [
   //
   // Fluminense (关1) — doc 未标明星, 11 ID 暂用真实 fw 兜底 (待 bank02 反汇编补全)
   { id: 132, name: "Fluminense", type: "cpu", players: [36, 9, 35, 15, 33, 0, 118, 124, 125, 125, 160], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [1] },
-  // Corinthians (关2) — doc: Pos10=Riverio 0x18, Pos9=Satilst 0x17
-  { id: 133, name: "Corinthians", type: "cpu", players: [36, 35, 9, 15, 33, 0, 118, 124, 125, 24, 23], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [2] },
-  // Gremio (关3) — doc: Pos1=Meon GK 0x1A, Pos9=Da Silva 0x19
-  { id: 134, name: "Gremio", type: "cpu", players: [26, 32, 9, 15, 33, 0, 118, 124, 125, 25, 38], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [3] },
+  // Corinthians (关2) — doc: Pos10=Riverio 0x24, Pos9=Satilst 0x23 (hex values)
+  { id: 133, name: "Corinthians", type: "cpu", players: [36, 35, 9, 15, 33, 0, 118, 124, 125, 36, 35], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [2] },
+  // Gremio (关3) — doc: Pos1=Meon GK 0x26, Pos9=Da Silva 0x25
+  { id: 134, name: "Gremio", type: "cpu", players: [38, 32, 9, 15, 33, 0, 118, 124, 125, 37, 38], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [3] },
   // Palmeiras (关4) — doc: Pos9=?, Pos11=? (无 ID 标号)
   { id: 135, name: "Palmeiras", type: "cpu", players: [29, 41, 9, 15, 33, 0, 118, 124, 125, 96, 30], subs: [], formation: "Form6", tactic: "Tact8", encounterLevels: [4] },
   // Santos (关5) — doc: Pos9=?, Pos4=?
