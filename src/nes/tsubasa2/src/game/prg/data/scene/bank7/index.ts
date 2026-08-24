@@ -6,7 +6,7 @@
  *   $A0D4-$BFFF  106 个 CHR config + tile streams（configs/*.ts + streams.ts）
  */
 export { BANK7_CHR_POINTERS } from './pointer-table';
-export { BANK7_CHR_CONFIGS } from './configs';
+export { BANK7_CHR_CONFIGS } from './configs/index';
 export {
   BANK7_TILE_STREAMS, OPENING_TILE_STREAMS,
 } from './streams';

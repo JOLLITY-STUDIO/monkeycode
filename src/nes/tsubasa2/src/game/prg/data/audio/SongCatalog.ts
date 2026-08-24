@@ -20,8 +20,8 @@
  */
 
 import type { AudioToken } from './AudioTokens';
-import { BGM_SONGS } from './bgm';
-import { SE_SONGS } from './se';
+import { BGM_SONGS } from './bgm/index';
+import { SE_SONGS } from './se/index';
 import type { SongTrack } from './song-track';
 
 /** 音频通道类型（原版通道号 → APU 通道） */

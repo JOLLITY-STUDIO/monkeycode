@@ -10,8 +10,8 @@
  *       占位 -1 兜底，已在 audio-rom.ts 清理。新版 SONG_COUNT 由 SongCatalog 聚合。
  */
 export type { SongTrack, SongType, SongBank } from './song-track';
-export { BGM_SONGS } from './bgm';
-export { SE_SONGS } from './se';
+export { BGM_SONGS } from './bgm/index';
+export { SE_SONGS } from './se/index';
 export { SONG_COUNT } from './SongCatalog';
 export { AudioRom } from './audio-rom';
 export {

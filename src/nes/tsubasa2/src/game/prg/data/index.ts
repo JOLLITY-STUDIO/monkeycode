@@ -25,8 +25,8 @@ export type {
 } from './audio/AudioTokens';
 export { AudioRom } from './audio/audio-rom';
 export type { Papu } from './audio/AudioService';
-export type { SongTrack, SongType, SongBank } from './audio';
-export { BGM_SONGS, SE_SONGS } from './audio';
+export type { SongTrack, SongType, SongBank } from './audio/index';
+export { BGM_SONGS, SE_SONGS } from './audio/index';
 
 // tables
 export {

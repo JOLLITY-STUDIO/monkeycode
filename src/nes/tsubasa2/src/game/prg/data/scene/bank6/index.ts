@@ -9,7 +9,7 @@
  *   $B800-$BE7B  次级 NT/tile/pointer 数据段（sec-01..sec-04）
  *   $BF00-$BFFF  场景表 16 × 19（BANK6_SCENE_TABLE）
  */
-export { BANK6_SCRIPTS } from './scripts';
+export { BANK6_SCRIPTS } from './scripts/index';
 export { BANK6_BG_PALETTES } from './bg-palette';
 export { BANK6_SPR_PALETTES } from './spr-palette';
 export { BANK6_SCENE_TABLE } from './scene-table';
