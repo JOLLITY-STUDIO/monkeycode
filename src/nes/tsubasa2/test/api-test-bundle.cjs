@@ -2226,87 +2226,23 @@
   var ACCENT_GREEN = C(26);
   var BAR_FILL = C(40);
   var BAR_BG = C(15);
-  var FONT_W = 5;
-  var FONT_H = 7;
-  var FONT = {
-    "A": [126, 17, 17, 17, 126],
-    "B": [127, 73, 73, 73, 54],
-    "C": [62, 65, 65, 65, 34],
-    "D": [127, 65, 65, 34, 28],
-    "E": [127, 73, 73, 73, 65],
-    "F": [127, 9, 9, 9, 1],
-    "G": [62, 65, 73, 73, 122],
-    "H": [127, 8, 8, 8, 127],
-    "I": [0, 65, 127, 65, 0],
-    "J": [32, 64, 64, 64, 63],
-    "K": [127, 8, 20, 34, 65],
-    "L": [127, 64, 64, 64, 64],
-    "M": [127, 2, 12, 2, 127],
-    "N": [127, 4, 8, 16, 127],
-    "O": [62, 65, 65, 65, 62],
-    "P": [127, 9, 9, 9, 6],
-    "Q": [62, 65, 81, 33, 94],
-    "R": [127, 9, 25, 41, 70],
-    "S": [70, 73, 73, 73, 49],
-    "T": [1, 1, 127, 1, 1],
-    "U": [63, 64, 64, 64, 63],
-    "V": [31, 32, 64, 32, 31],
-    "W": [63, 64, 56, 64, 63],
-    "X": [99, 20, 8, 20, 99],
-    "Y": [7, 8, 112, 8, 7],
-    "Z": [97, 81, 73, 69, 67],
-    "0": [62, 81, 73, 69, 62],
-    "1": [0, 66, 127, 64, 0],
-    "2": [66, 97, 81, 73, 70],
-    "3": [33, 65, 69, 75, 49],
-    "4": [24, 20, 18, 127, 16],
-    "5": [39, 69, 69, 69, 57],
-    "6": [60, 74, 73, 73, 48],
-    "7": [1, 113, 9, 5, 3],
-    "8": [54, 73, 73, 73, 54],
-    "9": [6, 73, 73, 41, 30],
-    " ": [0, 0, 0, 0, 0],
-    ":": [0, 54, 54, 0, 0],
-    ".": [0, 64, 64, 0, 0],
-    "-": [8, 8, 8, 8, 8],
-    "/": [32, 16, 8, 4, 2],
-    "(": [0, 28, 34, 65, 0],
-    ")": [0, 65, 34, 28, 0],
-    "#": [20, 127, 20, 127, 20],
-    "!": [0, 0, 95, 0, 0],
-    "+": [8, 8, 62, 8, 8],
-    "*": [8, 42, 28, 42, 8],
-    "?": [2, 1, 81, 9, 6],
-    "<": [8, 20, 34, 65, 0],
-    ">": [0, 65, 34, 20, 8],
-    "=": [20, 20, 20, 20, 20],
-    ",": [0, 80, 48, 0, 0]
-  };
-  function drawChar(ctx, ch, x, y, scale, color) {
-    const bits = FONT[ch.toUpperCase()] || FONT[" "];
-    ctx.fillStyle = color;
-    for (let row = 0; row < FONT_H; row++) {
-      const line = bits[row] || 0;
-      for (let col = 0; col < FONT_W; col++) {
-        if (line & 1 << col) {
-          ctx.fillRect(x + col * scale, y + row * scale, scale, scale);
-        }
-      }
-    }
+  function setFont(ctx, size) {
+    ctx.font = `${size}px "Consolas", "Menlo", "Courier New", monospace`;
+    ctx.textBaseline = "top";
   }
   function drawText(ctx, text, x, y, scale, color) {
-    let cursor = x;
-    for (const ch of text) {
-      drawChar(ctx, ch, cursor, y, scale, color);
-      cursor += (FONT_W + 1) * scale;
-    }
+    setFont(ctx, 8 * scale);
+    ctx.fillStyle = color;
+    ctx.fillText(text, x, y);
   }
   function drawTextBG(ctx, text, x, y, scale, fg, bg) {
-    const w = text.length * (FONT_W + 1) * scale - scale;
-    const h = FONT_H * scale;
+    setFont(ctx, 8 * scale);
+    const w = ctx.measureText(text).width;
+    const h = 8 * scale;
     ctx.fillStyle = bg;
     ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
-    drawText(ctx, text, x, y, scale, fg);
+    ctx.fillStyle = fg;
+    ctx.fillText(text, x, y);
   }
   var store = new DataStore();
   var playerSvc = new PlayerQueryService(store);
