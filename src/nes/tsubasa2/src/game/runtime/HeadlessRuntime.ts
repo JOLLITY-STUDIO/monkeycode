@@ -1,4 +1,4 @@
-/**
+﻿/**
  * HeadlessRuntime — 无头运行平台（CHR 装载改用具名 slot map）
  *
  * 翻译原则（v2）：
@@ -131,6 +131,8 @@ export class HeadlessRuntime implements GameRuntime {
         batteryRam: null,
         valid: true,
         rom: [] as Uint8Array[],
+        // 暴露给 pattern-table-viewer 的 vromTile 源（按 1KB bank1k 索引）
+        vromTile: chr.vromTilesByBank1k,
       },
       cpu: {
         mem: new Uint8Array(0x10000),
@@ -178,6 +180,12 @@ export class HeadlessRuntime implements GameRuntime {
       dst.opaque.set(src.opaque);
       dst.pix.set(src.pix);
     }
+    // 记账：跟 mapper4 走同样的 pushChrSwitch，方便按 scanline 重建 PT 视图
+    // H5 不跑 PPU cycle，ppu.scanline 由 renderFramePartially 推进
+    try {
+      const { pushChrSwitch } = require('../../core/debug/pattern-table-viewer');
+      pushChrSwitch({ scanline: (ppu.scanline | 0), slot: s, bank1k: b });
+    } catch (_) { /* viewer 未加载，忽略 */ }
   }
 
   /** 初始 CHR 装载（按 CHR_SLOT_MAP 声明） */

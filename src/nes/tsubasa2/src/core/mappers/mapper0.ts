@@ -386,6 +386,13 @@ class Mapper0 {
       return;
     }
     this.nes.ppu.triggerRendering();
+    // 记账：把本次 [scanline, slot, bank1k] 推到 viewer 的切换日志
+    try {
+      // 动态 require 避免循环依赖
+      const { pushChrSwitch } = require('../debug/pattern-table-viewer');
+      const slot = (address >> 10) & 7;
+      pushChrSwitch({ scanline: this.nes.ppu.scanline, slot, bank1k: bank1k & 0xff });
+    } catch (_) { /* viewer 未加载或无 ppu，忽略 */ }
 
     let bank4k = Math.floor(bank1k / 4) % this.nes.rom.vromCount;
     let bankoffset = (bank1k % 4) * 1024;

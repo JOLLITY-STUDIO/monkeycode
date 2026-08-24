@@ -5,6 +5,18 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __esm = (fn, res, err) => function __init() {
+  if (err) throw err[0];
+  try {
+    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  } catch (e) {
+    throw err = [e], e;
+  }
+};
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -21,6 +33,243 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/core/debug/pattern-table-viewer.ts
+var pattern_table_viewer_exports = {};
+__export(pattern_table_viewer_exports, {
+  buildChrBankMapByScanline: () => buildChrBankMapByScanline,
+  drainChrSwitchLog: () => drainChrSwitchLog,
+  generatePTDataText: () => generatePTDataText,
+  getChrSwitchesInRange: () => getChrSwitchesInRange,
+  pushChrSwitch: () => pushChrSwitch,
+  renderBothPatternTables: () => renderBothPatternTables,
+  renderBothPatternTablesAtScanline: () => renderBothPatternTablesAtScanline,
+  renderPatternTable: () => renderPatternTable,
+  renderPatternTableAtScanline: () => renderPatternTableAtScanline
+});
+function drawBankBorders(buf, tableIdx) {
+  for (let slot = 1; slot < 4; slot++) {
+    const y = slot * 32;
+    const color = BANK_BORDER_COLORS[(tableIdx * 4 + slot - 1) % BANK_BORDER_COLORS.length];
+    for (let x = 0; x < 128; x++) {
+      buf[y * 128 + x] = color;
+    }
+  }
+}
+function renderPatternTable(nes2, tableIdx, paletteOffset = 0, paletteSrc) {
+  const ppu2 = nes2.ppu;
+  const baseTile = tableIdx * 256;
+  const buf = new Uint32Array(128 * 128);
+  const pal = paletteSrc || ppu2.imgPalette;
+  const offset = paletteOffset * 4;
+  const backdrop = pal[0];
+  for (let ty = 0; ty < 16; ty++) {
+    for (let tx = 0; tx < 16; tx++) {
+      const tileIdx = baseTile + ty * 16 + tx;
+      const ptTile = ppu2.ptTile[tileIdx];
+      const baseX = tx * 8;
+      const baseY = ty * 8;
+      if (ptTile && ptTile.pix) {
+        const pix = ptTile.pix;
+        for (let py = 0; py < 8; py++) {
+          for (let px = 0; px < 8; px++) {
+            const colIdx = pix[py * 8 + px];
+            buf[(baseY + py) * 128 + (baseX + px)] = colIdx === 0 ? backdrop : pal[colIdx + offset] ?? backdrop;
+          }
+        }
+      } else {
+        for (let py = 0; py < 8; py++) {
+          for (let px = 0; px < 8; px++) {
+            buf[(baseY + py) * 128 + (baseX + px)] = 4282664004;
+          }
+        }
+      }
+    }
+  }
+  drawBankBorders(buf, tableIdx);
+  return { data: buf, width: 128, height: 128 };
+}
+function renderBothPatternTables(nes2, paletteOffset = 0, palT0, palT1) {
+  return {
+    table0: renderPatternTable(nes2, 0, paletteOffset, palT0),
+    table1: renderPatternTable(nes2, 1, paletteOffset, palT1),
+    bgTable: nes2.ppu.f_bgPatternTable ? 1 : 0,
+    spTable: nes2.ppu.f_spPatternTable ? 1 : 0
+  };
+}
+function pushChrSwitch(rec) {
+  chrSwitchLog.push(rec);
+}
+function drainChrSwitchLog() {
+  const out = chrSwitchLog.slice();
+  chrSwitchLog.length = 0;
+  return out;
+}
+function getChrSwitchesInRange(scanStart, scanEnd) {
+  return chrSwitchLog.filter((r) => r.scanline >= scanStart && r.scanline < scanEnd);
+}
+function buildChrBankMapByScanline(switches, initialBanks) {
+  const out = /* @__PURE__ */ new Map();
+  let banks = new Uint8Array(initialBanks);
+  let curScan = -1;
+  for (const r of switches) {
+    if (r.scanline !== curScan) {
+      if (curScan >= 0) out.set(curScan, new Uint8Array(banks));
+      curScan = r.scanline;
+    }
+    banks[r.slot] = r.bank1k & 255;
+  }
+  if (curScan >= 0) out.set(curScan, new Uint8Array(banks));
+  return out;
+}
+function renderPatternTableAtScanline(nes2, tableIdx, slotBanks, paletteOffset = 0) {
+  const ppu2 = nes2.ppu;
+  const buf = new Uint32Array(128 * 128);
+  const pal = ppu2.imgPalette;
+  const offset = paletteOffset * 4;
+  const backdrop = pal[0];
+  const vromTile = nes2.rom && nes2.rom.vromTile;
+  const slotBase = tableIdx * 4;
+  for (let ty = 0; ty < 16; ty++) {
+    for (let tx = 0; tx < 16; tx++) {
+      const slot = slotBase + (ty >> 2);
+      const tileInSlot = (ty & 3) * 16 + tx;
+      const bank1k = slotBanks[slot];
+      const baseX = tx * 8, baseY = ty * 8;
+      let tile = null;
+      if (vromTile && bank1k != null) {
+        const bank4k = bank1k / 4 | 0;
+        const offIn4k = bank1k % 4 * 64 + tileInSlot;
+        tile = vromTile[bank4k] ? vromTile[bank4k][offIn4k] : null;
+      }
+      if (tile && tile.pix) {
+        const pix = tile.pix;
+        for (let py = 0; py < 8; py++) {
+          for (let px = 0; px < 8; px++) {
+            const ci = pix[py * 8 + px];
+            buf[(baseY + py) * 128 + (baseX + px)] = ci === 0 ? backdrop : pal[ci + offset] ?? backdrop;
+          }
+        }
+      } else {
+        for (let py = 0; py < 8; py++) {
+          for (let px = 0; px < 8; px++) {
+            buf[(baseY + py) * 128 + (baseX + px)] = 4282664004;
+          }
+        }
+      }
+    }
+  }
+  drawBankBorders(buf, tableIdx);
+  return { data: buf, width: 128, height: 128 };
+}
+function renderBothPatternTablesAtScanline(nes2, slotBanks, paletteOffset = 0) {
+  return {
+    table0: renderPatternTableAtScanline(nes2, 0, slotBanks, paletteOffset),
+    table1: renderPatternTableAtScanline(nes2, 1, slotBanks, paletteOffset),
+    bgTable: nes2.ppu.f_bgPatternTable ? 1 : 0,
+    spTable: nes2.ppu.f_spPatternTable ? 1 : 0
+  };
+}
+function generatePTDataText(nes2, frameCount) {
+  const ppu2 = nes2.ppu;
+  if (!ppu2) return "";
+  const mapper = nes2.mmap;
+  const isMmc1 = mapper && typeof mapper.vromSwitchingSize === "number";
+  const chrBanks = mapper && mapper.chrBanks ? Array.from(mapper.chrBanks) : null;
+  const lines = [];
+  const COL_HEADER = "Row ";
+  const spTable = ppu2.f_spPatternTable ? 1 : 0;
+  const spAddr = spTable === 0 ? "$0000" : "$1000";
+  const bgAddr = ppu2.regS === 0 ? "$0000" : "$1000";
+  lines.push(`\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550`);
+  lines.push(`Frame: #${frameCount ?? "?"}  |  Pattern Tables  (BG PT=${bgAddr}  SP PT=${spAddr})`);
+  if (isMmc1) {
+    const modeStr = mapper.vromSwitchingSize === 0 ? "8KB" : "4KB";
+    lines.push(`MMC1 CHR: ${modeStr} mode  (vromSwitchingSize=${mapper.vromSwitchingSize})`);
+    lines.push(`  Table0 ($0000-$0FFF) \u2192 4KB CHR bank #${String(mapper.chrBank4k_0000 ?? "?").padStart(2)}  [Reg 1: $0000]`);
+    lines.push(`  Table1 ($1000-$1FFF) \u2192 4KB CHR bank #${String(mapper.chrBank4k_1000 ?? "?").padStart(2)}  [Reg 2: $1000]`);
+  } else if (chrBanks) {
+    lines.push(`CHR 1KB bank mapping:`);
+    lines.push(`  Table0 ($0000): B0=#${String(chrBanks[0]).padStart(2)}  B1=#${String(chrBanks[1]).padStart(2)}  B2=#${String(chrBanks[2]).padStart(2)}  B3=#${String(chrBanks[3]).padStart(2)}`);
+    lines.push(`  Table1 ($1000): B4=#${String(chrBanks[4]).padStart(2)}  B5=#${String(chrBanks[5]).padStart(2)}  B6=#${String(chrBanks[6]).padStart(2)}  B7=#${String(chrBanks[7]).padStart(2)}`);
+  } else {
+    lines.push(`CHR banks: (no mapper info available)`);
+  }
+  lines.push(`\u56FE\u4F8B: \u2588=\u6709\u5185\u5BB9  \u2591=\u7A00\u758F  \xB7=\u5168\u900F\u660E  !=\u65E0CHR  \u683C\u5F0F: bank:offset  \u8FB9\u754C\u8272: \u7EA2/\u7EFF/\u84DD/\u91D1=4\u4E2A1KB slot\u5206\u754C`);
+  lines.push(`\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550`);
+  lines.push("");
+  const BANK_BORDER_LABELS_DESK = ["\u25B2 B0", "\u25B2 B1", "\u25B2 B2"];
+  const BANK_BORDER_LABELS_TBL1 = ["\u25B2 B4", "\u25B2 B5", "\u25B2 B6"];
+  const SEP_WIDTH = 81;
+  for (let tableIdx = 0; tableIdx < 2; tableIdx++) {
+    const addr = tableIdx === 0 ? "$0000" : "$1000";
+    const role = tableIdx === spTable ? "SP" : "BG";
+    const borderLabels = tableIdx === 0 ? BANK_BORDER_LABELS_DESK : BANK_BORDER_LABELS_TBL1;
+    const slotBase = tableIdx * 4;
+    const labels = [];
+    for (let ty = 0; ty <= 16; ty++) {
+      if (ty === 4) labels.push(borderLabels[0]);
+      else if (ty === 8) labels.push(borderLabels[1]);
+      else if (ty === 12) labels.push(borderLabels[2]);
+      else if (ty === 0 || ty === 16) labels.push("\u2500".repeat(SEP_WIDTH));
+      else labels.push("");
+    }
+    lines.push(`\u2500\u2500 Table ${tableIdx} (${addr}, ${role})  slots=${slotBase}~${slotBase + 3} \u2500\u2500`);
+    let header = COL_HEADER;
+    for (let tx = 0; tx < 16; tx++) {
+      header += "  " + tx.toString(16).toUpperCase().padStart(3, " ");
+    }
+    lines.push(header);
+    for (let ty = 0; ty < 16; ty++) {
+      if (labels[ty]) lines.push(`     ${labels[ty]}`);
+      const slot = Math.floor(ty / 4);
+      const bankId = chrBanks ? chrBanks[slotBase + slot] : null;
+      const bankStr = bankId != null ? bankId.toString(16).toUpperCase().padStart(2, "0") : "??";
+      const row = [];
+      for (let tx = 0; tx < 16; tx++) {
+        const tileIdx = tableIdx * 256 + ty * 16 + tx;
+        const ptTile = ppu2.ptTile[tileIdx];
+        const offset = ty % 4 * 16 + tx;
+        const offStr = offset.toString(16).toUpperCase().padStart(2, "0");
+        let chrStatus;
+        if (!ptTile || !ptTile.pix) {
+          chrStatus = "!";
+        } else {
+          let nonZero = 0;
+          for (let i = 0; i < 64; i++) {
+            if (ptTile.pix[i] !== 0) nonZero++;
+          }
+          if (nonZero === 0) chrStatus = "\xB7";
+          else if (nonZero < 32) chrStatus = "\u2591";
+          else chrStatus = "\u2588";
+        }
+        row.push(bankStr + ":" + offStr + chrStatus);
+      }
+      lines.push(ty.toString().padStart(3, " ") + " " + row.join(""));
+    }
+    lines.push("");
+    lines.push("");
+  }
+  return lines.join("\n");
+}
+var BANK_BORDER_COLORS, chrSwitchLog;
+var init_pattern_table_viewer = __esm({
+  "src/core/debug/pattern-table-viewer.ts"() {
+    "use strict";
+    BANK_BORDER_COLORS = [
+      4294918208,
+      // slot0/4: 红
+      4282449728,
+      // slot1/5: 绿
+      4282401023,
+      // slot2/6: 蓝
+      4294953984
+      // slot3/7: 金
+    ];
+    chrSwitchLog = [];
+  }
+});
 
 // scripts/_emu_reference.ts
 var fs2 = __toESM(require("fs"));
@@ -5196,6 +5445,12 @@ var Mapper0 = class {
       return;
     }
     this.nes.ppu.triggerRendering();
+    try {
+      const { pushChrSwitch: pushChrSwitch2 } = (init_pattern_table_viewer(), __toCommonJS(pattern_table_viewer_exports));
+      const slot = address >> 10 & 7;
+      pushChrSwitch2({ scanline: this.nes.ppu.scanline, slot, bank1k: bank1k & 255 });
+    } catch (_) {
+    }
     let bank4k = Math.floor(bank1k / 4) % this.nes.rom.vromCount;
     let bankoffset = bank1k % 4 * 1024;
     copyArrayElements(
@@ -8085,210 +8340,8 @@ try {
 } catch {
 }
 
-// src/core/debug/pattern-table-viewer.ts
-var BANK_BORDER_COLORS = [
-  4294918208,
-  // slot0/4: 红
-  4282449728,
-  // slot1/5: 绿
-  4282401023,
-  // slot2/6: 蓝
-  4294953984
-  // slot3/7: 金
-];
-function drawBankBorders(buf, tableIdx) {
-  for (let slot = 1; slot < 4; slot++) {
-    const y = slot * 32;
-    const color = BANK_BORDER_COLORS[(tableIdx * 4 + slot - 1) % BANK_BORDER_COLORS.length];
-    for (let x = 0; x < 128; x++) {
-      buf[y * 128 + x] = color;
-    }
-  }
-}
-function renderPatternTable(nes2, tableIdx, paletteOffset = 0, paletteSrc) {
-  const ppu2 = nes2.ppu;
-  const baseTile = tableIdx * 256;
-  const buf = new Uint32Array(128 * 128);
-  const pal = paletteSrc || ppu2.imgPalette;
-  const offset = paletteOffset * 4;
-  const backdrop = pal[0];
-  for (let ty = 0; ty < 16; ty++) {
-    for (let tx = 0; tx < 16; tx++) {
-      const tileIdx = baseTile + ty * 16 + tx;
-      const ptTile = ppu2.ptTile[tileIdx];
-      const baseX = tx * 8;
-      const baseY = ty * 8;
-      if (ptTile && ptTile.pix) {
-        const pix = ptTile.pix;
-        for (let py = 0; py < 8; py++) {
-          for (let px = 0; px < 8; px++) {
-            const colIdx = pix[py * 8 + px];
-            buf[(baseY + py) * 128 + (baseX + px)] = colIdx === 0 ? backdrop : pal[colIdx + offset] ?? backdrop;
-          }
-        }
-      } else {
-        for (let py = 0; py < 8; py++) {
-          for (let px = 0; px < 8; px++) {
-            buf[(baseY + py) * 128 + (baseX + px)] = 4282664004;
-          }
-        }
-      }
-    }
-  }
-  drawBankBorders(buf, tableIdx);
-  return { data: buf, width: 128, height: 128 };
-}
-function renderBothPatternTables(nes2, paletteOffset = 0, palT0, palT1) {
-  return {
-    table0: renderPatternTable(nes2, 0, paletteOffset, palT0),
-    table1: renderPatternTable(nes2, 1, paletteOffset, palT1),
-    bgTable: nes2.ppu.f_bgPatternTable ? 1 : 0,
-    spTable: nes2.ppu.f_spPatternTable ? 1 : 0
-  };
-}
-
-// src/core/debug/nametable-viewer.ts
-var SCROLL_LINE_COLOR = 4278255615;
-var MISSING_TILE_COLOR1 = 4294902015;
-var MISSING_TILE_COLOR2 = 4278190080;
-function renderNameTable(nes2, ntIndex, scrollX, scrollY) {
-  const ppu2 = nes2.ppu;
-  const nt = ppu2.nameTable[ntIndex];
-  const w = 32, h = 30;
-  const buf = new Uint32Array(256 * 240);
-  const bgTableBase = ppu2.regS === 0 ? 0 : 256;
-  const backdropColor = ppu2.imgPalette[0];
-  const pal = ppu2.imgPalette;
-  const bgBuf = ppu2.bgbuffer;
-  const scanBanks = ppu2.chrScanlineBanks;
-  const vromTile = nes2.rom && nes2.rom.vromTile;
-  const fetchFromBank = (slot, localIdx, scanlineY) => {
-    if (!vromTile || !scanBanks) return null;
-    const bankMap = scanBanks[scanlineY];
-    if (!bankMap) return null;
-    const bank1k = bankMap[slot];
-    if (bank1k == null) return null;
-    const bank4k = bank1k / 4 | 0;
-    const offset = bank1k % 4 * 64 + localIdx;
-    return vromTile[bank4k] ? vromTile[bank4k][offset] : null;
-  };
-  for (let ty = 0; ty < h; ty++) {
-    for (let tx = 0; tx < w; tx++) {
-      const baseX = tx * 8;
-      const baseY = ty * 8;
-      const tileIdx = nt.tile[ty * w + tx];
-      const attrVal = nt.attrib[ty * w + tx];
-      if (bgBuf) {
-        const worldX = ntIndex % 2 * 256 + baseX;
-        const worldY = Math.floor(ntIndex / 2) * 240 + baseY;
-        const screenX = worldX - scrollX;
-        const screenY = worldY - scrollY;
-        if (screenX >= 0 && screenX + 8 <= 256 && screenY >= 0 && screenY + 8 <= 240) {
-          const ptSlot = bgTableBase + tileIdx;
-          const ptData2 = ppu2.ptTile[ptSlot];
-          const pix = ptData2 && ptData2.pix ? ptData2.pix : null;
-          for (let py = 0; py < 8; py++) {
-            const srcRow = (screenY + py) * 256;
-            const dstRow = (baseY + py) * 256;
-            for (let px = 0; px < 8; px++) {
-              if (pix && pix[py * 8 + px] === 0) {
-                buf[dstRow + baseX + px] = backdropColor;
-              } else {
-                buf[dstRow + baseX + px] = bgBuf[srcRow + screenX + px];
-              }
-            }
-          }
-          continue;
-        }
-      }
-      const slot = bgTableBase === 0 ? tileIdx >> 6 : 4 + (tileIdx >> 6);
-      const localIdx = tileIdx & 63;
-      const ptData = fetchFromBank(slot, localIdx, baseY) || ppu2.ptTile[bgTableBase + tileIdx];
-      if (ptData && ptData.pix) {
-        const pix = ptData.pix;
-        for (let py = 0; py < 8; py++) {
-          for (let px = 0; px < 8; px++) {
-            const colIdx = pix[py * 8 + px];
-            if (colIdx === 0) {
-              buf[(baseY + py) * 256 + (baseX + px)] = backdropColor;
-            } else {
-              buf[(baseY + py) * 256 + (baseX + px)] = pal[colIdx + attrVal] ?? backdropColor;
-            }
-          }
-        }
-      } else {
-        for (let py = 0; py < 8; py++) {
-          for (let px = 0; px < 8; px++) {
-            const isMagenta = (py >> 1) + (px >> 1) & 1;
-            buf[(baseY + py) * 256 + (baseX + px)] = isMagenta ? MISSING_TILE_COLOR1 : MISSING_TILE_COLOR2;
-          }
-        }
-      }
-    }
-  }
-  return { data: buf, width: 256, height: 240 };
-}
-function renderAllNameTables(nes2) {
-  const ppu2 = nes2.ppu;
-  const scrolls = Array.isArray(ppu2.scrollWrites) ? ppu2.scrollWrites.slice() : [];
-  let fromScrollWrite = false;
-  let scrollX;
-  let scrollY;
-  if (scrolls.length > 0) {
-    const last = scrolls[scrolls.length - 1];
-    scrollX = last.x;
-    scrollY = last.y;
-    fromScrollWrite = true;
-  } else if (typeof ppu2.lastScrollWriteX === "number" && typeof ppu2.lastScrollWriteY === "number") {
-    scrollX = ppu2.lastScrollWriteX;
-    scrollY = ppu2.lastScrollWriteY;
-    fromScrollWrite = true;
-  } else {
-    scrollX = (ppu2.regH ? 256 : 0) + ((ppu2.regHT & 31) << 3 | ppu2.regFH & 7);
-    scrollY = (ppu2.regV ? 240 : 0) + ((ppu2.regVT & 31) << 3 | ppu2.regFV & 7);
-  }
-  const rawScrollX = scrollX;
-  const rawScrollY = scrollY;
-  const drawScrollLine = (frame, sx, sy) => {
-    if (sy < 240) {
-      for (let x = 0; x < 256; x++) {
-        if ((x & 3) === 0) frame.data[sy * 256 + x] = SCROLL_LINE_COLOR;
-      }
-    }
-    if (sx < 256) {
-      for (let y = 0; y < 240; y++) {
-        if ((y & 3) === 0) frame.data[y * 256 + sx] = SCROLL_LINE_COLOR;
-      }
-    }
-  };
-  const ntFrames = [
-    renderNameTable(nes2, 0, scrollX, scrollY),
-    renderNameTable(nes2, 1, scrollX, scrollY),
-    renderNameTable(nes2, 2, scrollX, scrollY),
-    renderNameTable(nes2, 3, scrollX, scrollY)
-  ];
-  const map0 = ppu2.ntable1[0];
-  const map1 = ppu2.ntable1[1];
-  const draws = scrolls.length > 0 ? scrolls : [{ x: scrollX, y: scrollY, scanline: -1, source: fromScrollWrite ? "$2005" : "reg" }];
-  for (const s of draws) {
-    drawScrollLine(ntFrames[map0], s.x & 255, s.y & 239);
-    if ((s.x & 256) !== 0) {
-      drawScrollLine(ntFrames[map1], s.x + 256 & 255, s.y & 239);
-    }
-  }
-  return {
-    nt: ntFrames,
-    mapping: [ppu2.ntable1[0], ppu2.ntable1[1], ppu2.ntable1[2], ppu2.ntable1[3]],
-    scrollX,
-    scrollY,
-    rawScrollX,
-    rawScrollY,
-    fromScrollWrite,
-    scrolls
-  };
-}
-
 // scripts/_emu_reference.ts
+init_pattern_table_viewer();
 var ROM_PATH = path.join(__dirname, "..", "docs", "roms", "Captain Tsubasa II - Super Striker (Japan).nes");
 var OUT_DIR = path.join(__dirname, "..", "output", "emu-reference");
 var FRAMES = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
@@ -8370,11 +8423,46 @@ for (const target of FRAMES) {
     nes.frame();
     total++;
   }
-  if (typeof ppu.renderFramePartially === "function") {
+  const origBg = ppu.f_bgVisibility;
+  const origSp = ppu.f_spVisibility;
+  if (typeof ppu.startFrame === "function") {
+    ppu.startFrame();
+    ppu.advanceDots(262 * 341);
     ppu.renderFramePartially(0, 240);
+    ppu.endFrame();
   }
+  if (mmap && Array.isArray(mmap.chrBanks) && typeof mmap.load1kVromBank === "function") {
+    for (let slot = 0; slot < 8; slot++) {
+      mmap.load1kVromBank(mmap.chrBanks[slot], slot * 1024);
+    }
+  }
+  const switches = drainChrSwitchLog();
+  const chrMapByScan = buildChrBankMapByScanline(switches, mmap.chrBanks);
   const frameDir = path.join(OUT_DIR, `frame-${String(target).padStart(3, "0")}`);
   fs2.mkdirSync(frameDir, { recursive: true });
+  fs2.writeFileSync(
+    path.join(frameDir, "chr-switches.json"),
+    JSON.stringify({
+      frame: target,
+      bankMapByScanline: Array.from(chrMapByScan.entries()).map(([scan, banks]) => ({
+        scanline: scan,
+        banks: Array.from(banks)
+      })),
+      rawLog: switches
+    }, null, 2)
+  );
+  for (const [scan, slotBanks] of chrMapByScan) {
+    const pt2 = renderBothPatternTablesAtScanline(nes, slotBanks, 0);
+    const ptRgba2 = rgbaFromData(
+      new Uint32Array([...pt2.table0.data, ...pt2.table1.data]),
+      pt2.table0.width * 2,
+      pt2.table0.height
+    );
+    fs2.writeFileSync(
+      path.join(frameDir, `pt-sheet-scan${String(scan).padStart(3, "0")}.png`),
+      encodePng(pt2.table0.width * 2, pt2.table0.height, ptRgba2)
+    );
+  }
   fs2.writeFileSync(path.join(frameDir, "screen.png"), encodePng(256, 240, bufToRgba(ppu.buffer)));
   const pt = renderBothPatternTables(nes, 0);
   const ptW = pt.table0.width;
@@ -8397,11 +8485,10 @@ for (const target of FRAMES) {
     ptJson.push({ idx: i, plane0, plane1 });
   }
   fs2.writeFileSync(path.join(frameDir, "pt.json"), JSON.stringify(ptJson));
-  const nt = renderAllNameTables(nes);
-  fs2.writeFileSync(path.join(frameDir, "nt0.png"), encodePng(256, 240, rgbaFromData(nt.nt[0].data, 256, 240)));
-  fs2.writeFileSync(path.join(frameDir, "nt1.png"), encodePng(256, 240, rgbaFromData(nt.nt[1].data, 256, 240)));
-  fs2.writeFileSync(path.join(frameDir, "nt2.png"), encodePng(256, 240, rgbaFromData(nt.nt[2].data, 256, 240)));
-  fs2.writeFileSync(path.join(frameDir, "nt3.png"), encodePng(256, 240, rgbaFromData(nt.nt[3].data, 256, 240)));
+  const ntRgba = renderAllNameTablesNoBg(ppu, rom);
+  for (let i = 0; i < 4; i++) {
+    fs2.writeFileSync(path.join(frameDir, `nt${i}.png`), encodePng(256, 240, rgbaFromData(ntRgba[i], 256, 240)));
+  }
   const ntJson = [];
   for (let i = 0; i < 4; i++) {
     const t = ppu.nameTable[i];
@@ -8426,6 +8513,8 @@ for (const target of FRAMES) {
   fs2.writeFileSync(path.join(frameDir, "oam.json"), JSON.stringify(oamJson));
   const oamImg = renderOamSheet(oamJson, ppu);
   fs2.writeFileSync(path.join(frameDir, "oam.png"), encodePng(oamImg.w, oamImg.h, oamImg.rgba));
+  const oamComp = renderOamComposite(oamJson, ppu);
+  fs2.writeFileSync(path.join(frameDir, "oam-composite.png"), encodePng(256, 240, oamComp));
   const palBg = Array.from(ppu.vramMem.slice(16128, 16144));
   const palSp = Array.from(ppu.vramMem.slice(16144, 16160));
   fs2.writeFileSync(path.join(frameDir, "palette.json"), JSON.stringify({ bg: palBg, sp: palSp }));
@@ -8445,6 +8534,45 @@ for (const target of FRAMES) {
   console.log(`[emu-ref] frame=${String(target).padStart(3)}  PT[0..7]=[${chrMap.join(",")}]  PRG@8000=${prgMap[32768]}`);
 }
 console.log(`[emu-ref] done. PNG/JSON at ${OUT_DIR}`);
+function renderAllNameTablesNoBg(ppu2, rom2) {
+  const W = 256, H = 240, COLS = 32, ROWS = 30;
+  const bgTableBase = ppu2.regS === 0 ? 0 : 256;
+  const pal = ppu2.imgPalette;
+  const out = [];
+  for (let ntIdx = 0; ntIdx < 4; ntIdx++) {
+    const buf = new Uint32Array(W * H);
+    const nt = ppu2.nameTable[ntIdx];
+    if (!nt) {
+      out.push(buf);
+      continue;
+    }
+    for (let ty = 0; ty < ROWS; ty++) {
+      for (let tx = 0; tx < COLS; tx++) {
+        const tileIdx = nt.tile[ty * COLS + tx] | 0;
+        const attrVal = nt.attrib[ty * COLS + tx] | 0;
+        const pt = ppu2.ptTile[bgTableBase + tileIdx];
+        const pix = pt && pt.pix ? pt.pix : null;
+        const baseX = tx * 8, baseY = ty * 8;
+        if (pix) {
+          for (let py = 0; py < 8; py++) {
+            for (let px = 0; px < 8; px++) {
+              const ci = pix[py * 8 + px];
+              buf[(baseY + py) * W + baseX + px] = ci === 0 ? pal[0] : pal[ci + attrVal] ?? pal[0];
+            }
+          }
+        } else {
+          for (let py = 0; py < 8; py++) {
+            for (let px = 0; px < 8; px++) {
+              buf[(baseY + py) * W + baseX + px] = pal[0];
+            }
+          }
+        }
+      }
+    }
+    out.push(buf);
+  }
+  return out;
+}
 function renderOamSheet(oamJson, ppu2) {
   const cellW = 9, cellH = 9;
   const cols = 8, rows = 8;
@@ -8495,6 +8623,55 @@ function renderOamSheet(oamJson, ppu2) {
     }
   }
   return { w, h, rgba };
+}
+function renderOamComposite(oamJson, ppu2) {
+  const W = 256, H = 240;
+  const rgba = Buffer.alloc(W * H * 4);
+  const fillBg = (x, y) => {
+    const off = (y * W + x) * 4;
+    const isM = (y >> 1) + (x >> 1) & 1;
+    const v = isM ? 4281335856 : 4278190080;
+    rgba[off] = v >>> 16 & 255;
+    rgba[off + 1] = v >>> 8 & 255;
+    rgba[off + 2] = v & 255;
+    rgba[off + 3] = 255;
+  };
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) fillBg(x, y);
+  const baseIdx = ppu2.f_spPatternTable ? 256 : 0;
+  for (let i = 0; i < oamJson.length; i++) {
+    const o = oamJson[i];
+    if (o.y >= 239) continue;
+    const attr = o.attr;
+    const flipH = attr & 64 ? 1 : 0;
+    const flipV = attr & 128 ? 1 : 0;
+    const palHi = (attr & 3) << 2;
+    const ptT = ppu2.ptTile[baseIdx + o.tile];
+    const pix = ptT && ptT.pix ? ptT.pix : null;
+    if (!pix) continue;
+    const sy0 = o.y + 1;
+    for (let py = 0; py < 8; py++) {
+      const dy = sy0 + py;
+      if (dy < 0 || dy >= H) continue;
+      for (let px = 0; px < 8; px++) {
+        const dx = o.x + px;
+        if (dx < 0 || dx >= W) continue;
+        const sx = flipH ? 7 - px : px;
+        const sy = flipV ? 7 - py : py;
+        const idx = pix[sy * 8 + sx];
+        if (idx === 0) continue;
+        const color = ppu2.sprPalette ? ppu2.sprPalette[palHi + idx] ?? 4278190080 : 4278190080;
+        const r = color >>> 16 & 255;
+        const g = color >>> 8 & 255;
+        const b = color & 255;
+        const off = (dy * W + dx) * 4;
+        rgba[off] = r;
+        rgba[off + 1] = g;
+        rgba[off + 2] = b;
+        rgba[off + 3] = 255;
+      }
+    }
+  }
+  return rgba;
 }
 function renderPaletteSheet(palBg, palSp, ppu2) {
   const pal = ppu2.palTable;

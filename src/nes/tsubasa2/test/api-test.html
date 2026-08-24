@@ -2,90 +2,47 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <title>天使之翼2 — API + Canvas 渲染测试台</title>
+  <title>天使之翼2 — 文本 API 测试台（无 Canvas）</title>
   <style>
     body {
-      font-family: 'Consolas', 'Monaco', monospace;
+      font-family: 'Consolas', 'Menlo', 'Courier New', monospace;
       background: #0a0a1a;
-      color: #c0c0c0;
-      padding: 20px;
+      color: #e0e0e0;
+      padding: 16px;
       margin: 0;
+      font-size: 13px;
+      line-height: 1.4;
     }
-    h1 { color: #4fc3f7; margin: 0 0 8px 0; font-size: 18px; }
+    h1 { color: #4fc3f7; font-size: 18px; margin: 0 0 8px 0; }
+    p.hint { color: #888; font-size: 12px; margin: 0 0 16px 0; }
     .summary {
       padding: 10px 16px;
       background: #1a1a2a;
       border-left: 4px solid #4fc3f7;
-      margin: 12px 0;
+      margin: 12px 0 20px 0;
       font-size: 14px;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 20px;
-    }
-    .panel {
-      background: #1a1a2a;
-      border-radius: 4px;
-      padding: 12px;
-    }
-    .panel h2 {
-      margin: 0 0 8px 0;
-      color: #4fc3f7;
-      font-size: 13px;
       font-weight: bold;
     }
-    .panel p {
-      margin: 0 0 8px 0;
-      color: #888;
-      font-size: 11px;
-    }
-    /* 内部 2x 渲染，不再用 CSS 缩放避免模糊 */
-    canvas {
-      width: 512px;
-      height: 480px;
-      background: #000;
+    pre {
+      background: #050510;
+      color: #e0e0e0;
+      padding: 16px 20px;
       border: 1px solid #333;
-      display: block;
+      border-radius: 4px;
+      white-space: pre;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.45;
+      letter-spacing: 0;
+      tab-size: 4;
     }
   </style>
 </head>
 <body>
-  <h1>天使之翼2 — API + Canvas 渲染测试台</h1>
-  <p>每个 Service 当 URL 风格端点；不启动 HeadlessRuntime（不跑游戏逻辑），只查表 + Canvas 渲染到 NES 256×240。</p>
+  <h1>天使之翼2 — 文本 API 测试台</h1>
+  <p class="hint">每个 Service 当 URL 风格端点；纯文本表格输出，无 Canvas，浏览器原生等宽字体清晰显示。</p>
   <div class="summary" id="summary">运行中...</div>
-  <div class="grid">
-    <div class="panel">
-      <h2>1. 球员列表 — GET /api/players</h2>
-      <p>PLAYER_TABLE 全部 45 明星（ID+NAME+STM+PAS+SH+DRB）</p>
-      <canvas id="canvas-list" width="512" height="480"></canvas>
-    </div>
-    <div class="panel">
-      <h2>2. Tsubasa 档案 — GET /api/player/0x01</h2>
-      <p>23 字段档案 + 6 能力条 + 体力条 + 技能数</p>
-      <canvas id="canvas-detail" width="512" height="480"></canvas>
-    </div>
-    <div class="panel">
-      <h2>3. Sao Paulo 名单 — GET /api/team/0x80/roster</h2>
-      <p>11 人名单 + POS (GK/FW) + 体力</p>
-      <canvas id="canvas-team" width="512" height="480"></canvas>
-    </div>
-    <div class="panel">
-      <h2>4. 等级升级 — GET /api/level?exp=5000</h2>
-      <p>findLevelByExp 等级 + 6 项 growth + 下一级经验</p>
-      <canvas id="canvas-levelup" width="512" height="480"></canvas>
-    </div>
-    <div class="panel">
-      <h2>5. 比赛配置 — GET /api/match/config?home=0x80&away=0x85</h2>
-      <p>半时/换人/补时/加时/赛事 + 全部 20 场对阵</p>
-      <canvas id="canvas-match" width="512" height="480"></canvas>
-    </div>
-    <div class="panel">
-      <h2>6. 技能列表 — GET /api/player/0x01/skills</h2>
-      <p>findSkillsByPlayer 必杀技 ID + 名字 + 威力条</p>
-      <canvas id="canvas-skills" width="512" height="480"></canvas>
-    </div>
-  </div>
-  <script src="api-test-bundle.cjs"></script>
+  <pre id="output"></pre>
+  <script src="api-test-text-bundle.cjs"></script>
 </body>
 </html>

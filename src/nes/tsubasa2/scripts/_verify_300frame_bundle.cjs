@@ -5,6 +5,18 @@ var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
 var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
+var __esm = (fn, res, err) => function __init() {
+  if (err) throw err[0];
+  try {
+    return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+  } catch (e) {
+    throw err = [e], e;
+  }
+};
+var __export = (target, all) => {
+  for (var name in all)
+    __defProp(target, name, { get: all[name], enumerable: true });
+};
 var __copyProps = (to, from, except, desc) => {
   if (from && typeof from === "object" || typeof from === "function") {
     for (let key of __getOwnPropNames(from))
@@ -21,6 +33,251 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
   mod
 ));
+var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
+
+// src/core/debug/pattern-table-viewer.ts
+var pattern_table_viewer_exports = {};
+__export(pattern_table_viewer_exports, {
+  buildChrBankMapByScanline: () => buildChrBankMapByScanline,
+  buildFinalChrBankMap: () => buildFinalChrBankMap,
+  drainChrSwitchLog: () => drainChrSwitchLog,
+  generatePTDataText: () => generatePTDataText,
+  getChrSwitchesInRange: () => getChrSwitchesInRange,
+  pushChrSwitch: () => pushChrSwitch,
+  renderBothPatternTables: () => renderBothPatternTables,
+  renderBothPatternTablesAtScanline: () => renderBothPatternTablesAtScanline,
+  renderPatternTable: () => renderPatternTable,
+  renderPatternTableAtScanline: () => renderPatternTableAtScanline
+});
+function drawBankBorders(buf, tableIdx) {
+  for (let slot = 1; slot < 4; slot++) {
+    const y = slot * 32;
+    const color = BANK_BORDER_COLORS[(tableIdx * 4 + slot - 1) % BANK_BORDER_COLORS.length];
+    for (let x = 0; x < 128; x++) {
+      buf[y * 128 + x] = color;
+    }
+  }
+}
+function renderPatternTable(nes, tableIdx, paletteOffset = 0, paletteSrc) {
+  const ppu2 = nes.ppu;
+  const baseTile = tableIdx * 256;
+  const buf = new Uint32Array(128 * 128);
+  const pal = paletteSrc || ppu2.imgPalette;
+  const offset = paletteOffset * 4;
+  const backdrop = pal[0];
+  for (let ty = 0; ty < 16; ty++) {
+    for (let tx = 0; tx < 16; tx++) {
+      const tileIdx = baseTile + ty * 16 + tx;
+      const ptTile = ppu2.ptTile[tileIdx];
+      const baseX = tx * 8;
+      const baseY = ty * 8;
+      if (ptTile && ptTile.pix) {
+        const pix = ptTile.pix;
+        for (let py = 0; py < 8; py++) {
+          for (let px = 0; px < 8; px++) {
+            const colIdx = pix[py * 8 + px];
+            buf[(baseY + py) * 128 + (baseX + px)] = colIdx === 0 ? backdrop : pal[colIdx + offset] ?? backdrop;
+          }
+        }
+      } else {
+        for (let py = 0; py < 8; py++) {
+          for (let px = 0; px < 8; px++) {
+            buf[(baseY + py) * 128 + (baseX + px)] = 4282664004;
+          }
+        }
+      }
+    }
+  }
+  drawBankBorders(buf, tableIdx);
+  return { data: buf, width: 128, height: 128 };
+}
+function renderBothPatternTables(nes, paletteOffset = 0, palT0, palT1) {
+  return {
+    table0: renderPatternTable(nes, 0, paletteOffset, palT0),
+    table1: renderPatternTable(nes, 1, paletteOffset, palT1),
+    bgTable: nes.ppu.f_bgPatternTable ? 1 : 0,
+    spTable: nes.ppu.f_spPatternTable ? 1 : 0
+  };
+}
+function pushChrSwitch(rec) {
+  chrSwitchLog.push(rec);
+}
+function drainChrSwitchLog() {
+  const out = chrSwitchLog.slice();
+  chrSwitchLog.length = 0;
+  return out;
+}
+function getChrSwitchesInRange(scanStart, scanEnd) {
+  return chrSwitchLog.filter((r) => r.scanline >= scanStart && r.scanline < scanEnd);
+}
+function buildFinalChrBankMap(switches, initialBanks) {
+  const banks = new Uint8Array(initialBanks);
+  for (const r of switches) {
+    banks[r.slot] = r.bank1k & 255;
+  }
+  return banks;
+}
+function buildChrBankMapByScanline(switches, initialBanks) {
+  const out = /* @__PURE__ */ new Map();
+  let banks = new Uint8Array(initialBanks);
+  let curScan = -1;
+  for (const r of switches) {
+    if (r.scanline !== curScan) {
+      if (curScan >= 0) out.set(curScan, new Uint8Array(banks));
+      curScan = r.scanline;
+    }
+    banks[r.slot] = r.bank1k & 255;
+  }
+  if (curScan >= 0) out.set(curScan, new Uint8Array(banks));
+  return out;
+}
+function renderPatternTableAtScanline(nes, tableIdx, slotBanks, paletteOffset = 0) {
+  const ppu2 = nes.ppu;
+  const buf = new Uint32Array(128 * 128);
+  const pal = ppu2.imgPalette;
+  const offset = paletteOffset * 4;
+  const backdrop = pal[0];
+  const vromTile = nes.rom && nes.rom.vromTile;
+  const slotBase = tableIdx * 4;
+  for (let ty = 0; ty < 16; ty++) {
+    for (let tx = 0; tx < 16; tx++) {
+      const slot = slotBase + (ty >> 2);
+      const tileInSlot = (ty & 3) * 16 + tx;
+      const bank1k = slotBanks[slot];
+      const baseX = tx * 8, baseY = ty * 8;
+      let tile = null;
+      if (vromTile && bank1k != null) {
+        const bank4k = bank1k / 4 | 0;
+        const offIn4k = bank1k % 4 * 64 + tileInSlot;
+        tile = vromTile[bank4k] ? vromTile[bank4k][offIn4k] : null;
+      }
+      if (tile && tile.pix) {
+        const pix = tile.pix;
+        for (let py = 0; py < 8; py++) {
+          for (let px = 0; px < 8; px++) {
+            const ci = pix[py * 8 + px];
+            buf[(baseY + py) * 128 + (baseX + px)] = ci === 0 ? backdrop : pal[ci + offset] ?? backdrop;
+          }
+        }
+      } else {
+        for (let py = 0; py < 8; py++) {
+          for (let px = 0; px < 8; px++) {
+            buf[(baseY + py) * 128 + (baseX + px)] = 4282664004;
+          }
+        }
+      }
+    }
+  }
+  drawBankBorders(buf, tableIdx);
+  return { data: buf, width: 128, height: 128 };
+}
+function renderBothPatternTablesAtScanline(nes, slotBanks, paletteOffset = 0) {
+  return {
+    table0: renderPatternTableAtScanline(nes, 0, slotBanks, paletteOffset),
+    table1: renderPatternTableAtScanline(nes, 1, slotBanks, paletteOffset),
+    bgTable: nes.ppu.f_bgPatternTable ? 1 : 0,
+    spTable: nes.ppu.f_spPatternTable ? 1 : 0
+  };
+}
+function generatePTDataText(nes, frameCount) {
+  const ppu2 = nes.ppu;
+  if (!ppu2) return "";
+  const mapper = nes.mmap;
+  const isMmc1 = mapper && typeof mapper.vromSwitchingSize === "number";
+  const chrBanks = mapper && mapper.chrBanks ? Array.from(mapper.chrBanks) : null;
+  const lines = [];
+  const COL_HEADER = "Row ";
+  const spTable = ppu2.f_spPatternTable ? 1 : 0;
+  const spAddr = spTable === 0 ? "$0000" : "$1000";
+  const bgAddr = ppu2.regS === 0 ? "$0000" : "$1000";
+  lines.push(`\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550`);
+  lines.push(`Frame: #${frameCount ?? "?"}  |  Pattern Tables  (BG PT=${bgAddr}  SP PT=${spAddr})`);
+  if (isMmc1) {
+    const modeStr = mapper.vromSwitchingSize === 0 ? "8KB" : "4KB";
+    lines.push(`MMC1 CHR: ${modeStr} mode  (vromSwitchingSize=${mapper.vromSwitchingSize})`);
+    lines.push(`  Table0 ($0000-$0FFF) \u2192 4KB CHR bank #${String(mapper.chrBank4k_0000 ?? "?").padStart(2)}  [Reg 1: $0000]`);
+    lines.push(`  Table1 ($1000-$1FFF) \u2192 4KB CHR bank #${String(mapper.chrBank4k_1000 ?? "?").padStart(2)}  [Reg 2: $1000]`);
+  } else if (chrBanks) {
+    lines.push(`CHR 1KB bank mapping:`);
+    lines.push(`  Table0 ($0000): B0=#${String(chrBanks[0]).padStart(2)}  B1=#${String(chrBanks[1]).padStart(2)}  B2=#${String(chrBanks[2]).padStart(2)}  B3=#${String(chrBanks[3]).padStart(2)}`);
+    lines.push(`  Table1 ($1000): B4=#${String(chrBanks[4]).padStart(2)}  B5=#${String(chrBanks[5]).padStart(2)}  B6=#${String(chrBanks[6]).padStart(2)}  B7=#${String(chrBanks[7]).padStart(2)}`);
+  } else {
+    lines.push(`CHR banks: (no mapper info available)`);
+  }
+  lines.push(`\u56FE\u4F8B: \u2588=\u6709\u5185\u5BB9  \u2591=\u7A00\u758F  \xB7=\u5168\u900F\u660E  !=\u65E0CHR  \u683C\u5F0F: bank:offset  \u8FB9\u754C\u8272: \u7EA2/\u7EFF/\u84DD/\u91D1=4\u4E2A1KB slot\u5206\u754C`);
+  lines.push(`\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550`);
+  lines.push("");
+  const BANK_BORDER_LABELS_DESK = ["\u25B2 B0", "\u25B2 B1", "\u25B2 B2"];
+  const BANK_BORDER_LABELS_TBL1 = ["\u25B2 B4", "\u25B2 B5", "\u25B2 B6"];
+  const SEP_WIDTH = 81;
+  for (let tableIdx = 0; tableIdx < 2; tableIdx++) {
+    const addr = tableIdx === 0 ? "$0000" : "$1000";
+    const role = tableIdx === spTable ? "SP" : "BG";
+    const borderLabels = tableIdx === 0 ? BANK_BORDER_LABELS_DESK : BANK_BORDER_LABELS_TBL1;
+    const slotBase = tableIdx * 4;
+    const labels = [];
+    for (let ty = 0; ty <= 16; ty++) {
+      if (ty === 4) labels.push(borderLabels[0]);
+      else if (ty === 8) labels.push(borderLabels[1]);
+      else if (ty === 12) labels.push(borderLabels[2]);
+      else if (ty === 0 || ty === 16) labels.push("\u2500".repeat(SEP_WIDTH));
+      else labels.push("");
+    }
+    lines.push(`\u2500\u2500 Table ${tableIdx} (${addr}, ${role})  slots=${slotBase}~${slotBase + 3} \u2500\u2500`);
+    let header = COL_HEADER;
+    for (let tx = 0; tx < 16; tx++) {
+      header += "  " + tx.toString(16).toUpperCase().padStart(3, " ");
+    }
+    lines.push(header);
+    for (let ty = 0; ty < 16; ty++) {
+      if (labels[ty]) lines.push(`     ${labels[ty]}`);
+      const slot = Math.floor(ty / 4);
+      const bankId = chrBanks ? chrBanks[slotBase + slot] : null;
+      const bankStr = bankId != null ? bankId.toString(16).toUpperCase().padStart(2, "0") : "??";
+      const row = [];
+      for (let tx = 0; tx < 16; tx++) {
+        const tileIdx = tableIdx * 256 + ty * 16 + tx;
+        const ptTile = ppu2.ptTile[tileIdx];
+        const offset = ty % 4 * 16 + tx;
+        const offStr = offset.toString(16).toUpperCase().padStart(2, "0");
+        let chrStatus;
+        if (!ptTile || !ptTile.pix) {
+          chrStatus = "!";
+        } else {
+          let nonZero = 0;
+          for (let i = 0; i < 64; i++) {
+            if (ptTile.pix[i] !== 0) nonZero++;
+          }
+          if (nonZero === 0) chrStatus = "\xB7";
+          else if (nonZero < 32) chrStatus = "\u2591";
+          else chrStatus = "\u2588";
+        }
+        row.push(bankStr + ":" + offStr + chrStatus);
+      }
+      lines.push(ty.toString().padStart(3, " ") + " " + row.join(""));
+    }
+    lines.push("");
+    lines.push("");
+  }
+  return lines.join("\n");
+}
+var BANK_BORDER_COLORS, chrSwitchLog;
+var init_pattern_table_viewer = __esm({
+  "src/core/debug/pattern-table-viewer.ts"() {
+    "use strict";
+    BANK_BORDER_COLORS = [
+      4294918208,
+      // slot0/4: 红
+      4282449728,
+      // slot1/5: 绿
+      4282401023,
+      // slot2/6: 蓝
+      4294953984
+      // slot3/7: 金
+    ];
+    chrSwitchLog = [];
+  }
+});
 
 // scripts/_verify_300frame.ts
 var fs = __toESM(require("fs"));
@@ -152506,7 +152763,9 @@ var HeadlessRuntime = class {
         romCount: 16,
         batteryRam: null,
         valid: true,
-        rom: []
+        rom: [],
+        // 暴露给 pattern-table-viewer 的 vromTile 源（按 1KB bank1k 索引）
+        vromTile: chr.vromTilesByBank1k
       },
       cpu: {
         mem: new Uint8Array(65536),
@@ -152553,6 +152812,11 @@ var HeadlessRuntime = class {
       dst.initialized = true;
       dst.opaque.set(src.opaque);
       dst.pix.set(src.pix);
+    }
+    try {
+      const { pushChrSwitch: pushChrSwitch2 } = (init_pattern_table_viewer(), __toCommonJS(pattern_table_viewer_exports));
+      pushChrSwitch2({ scanline: ppu2.scanline | 0, slot: s, bank1k: b });
+    } catch (_) {
     }
   }
   /** 初始 CHR 装载（按 CHR_SLOT_MAP 声明） */
@@ -152882,6 +153146,52 @@ function writePpuTrace(frameN) {
     path.join(dir, "pt-sheet.png"),
     encodePng(128, 128, rgbaFromU32(pt.png, 128, 128))
   );
+  const {
+    renderBothPatternTablesAtScanline: renderBothPatternTablesAtScanline2,
+    drainChrSwitchLog: drainChrSwitchLog2,
+    buildChrBankMapByScanline: buildChrBankMapByScanline2,
+    buildFinalChrBankMap: buildFinalChrBankMap2
+  } = (init_pattern_table_viewer(), __toCommonJS(pattern_table_viewer_exports));
+  const switches = drainChrSwitchLog2();
+  const initialBanks = new Uint8Array([0, 1, 2, 3, 124, 125, 126, 127]);
+  const mapByScan = buildChrBankMapByScanline2(switches, initialBanks);
+  const nesForViewer = {
+    ppu,
+    rom: {
+      vromTile: runtime.vromTilesByBank1k ? runtime.vromTilesByBank1k : game.runtime?.vromTilesByBank1k ? game.runtime.vromTilesByBank1k : []
+    }
+  };
+  fs.writeFileSync(path.join(dir, "chr-switches.json"), JSON.stringify({
+    frame: frameN,
+    bankMapByScanline: Array.from(mapByScan.entries()).map(([scan, banks]) => ({
+      scanline: scan,
+      banks: Array.from(banks)
+    })),
+    rawLog: switches
+  }, null, 2));
+  for (const [scan, slotBanks] of mapByScan) {
+    const ptAt = renderBothPatternTablesAtScanline2(nesForViewer, slotBanks, 0);
+    const w = ptAt.table0.width * 2, h = ptAt.table0.height;
+    const rgba = new Uint32Array(w * h);
+    rgba.set(ptAt.table0.data, 0);
+    rgba.set(ptAt.table1.data, w * h / 2);
+    fs.writeFileSync(
+      path.join(dir, `pt-sheet-scan${String(scan).padStart(3, "0")}.png`),
+      encodePng(w, h, rgbaFromU32(rgba, w, h))
+    );
+  }
+  const finalBanks = buildFinalChrBankMap2(switches, initialBanks);
+  const ptFinal = renderBothPatternTablesAtScanline2(nesForViewer, finalBanks, 0);
+  {
+    const w = ptFinal.table0.width * 2, h = ptFinal.table0.height;
+    const rgba = new Uint32Array(w * h);
+    rgba.set(ptFinal.table0.data, 0);
+    rgba.set(ptFinal.table1.data, w * h / 2);
+    fs.writeFileSync(
+      path.join(dir, "pt-sheet-final.png"),
+      encodePng(w, h, rgbaFromU32(rgba, w, h))
+    );
+  }
   const pal = renderPaletteSwatch();
   fs.writeFileSync(path.join(dir, "palette.json"), JSON.stringify(pal.json));
   fs.writeFileSync(

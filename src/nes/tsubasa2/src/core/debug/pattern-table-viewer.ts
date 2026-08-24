@@ -127,6 +127,143 @@ export function renderBothPatternTables(
   };
 }
 
+// ════════════════════════════════════════════════════════════════════
+// 按 scanline 的 PT 视图（CHR bank 切换是 scanline 级别，MMC3 等 mapper）
+// ════════════════════════════════════════════════════════════════════
+
+/** 一次 CHR bank 切换记录 */
+export interface ChrSwitchRecord {
+  scanline: number;
+  slot: number;     // 0-7
+  bank1k: number;
+}
+
+/** 全局 CHR 切换日志（dump 工具写入，viewer 只读） */
+const chrSwitchLog: ChrSwitchRecord[] = [];
+
+/** 推入一条切换记录（由 mapper 在 load1kVromBank 时调用） */
+export function pushChrSwitch(rec: ChrSwitchRecord): void {
+  chrSwitchLog.push(rec);
+}
+
+/** 取并清空切换日志（dump 工具用） */
+export function drainChrSwitchLog(): ChrSwitchRecord[] {
+  const out = chrSwitchLog.slice();
+  chrSwitchLog.length = 0;
+  return out;
+}
+
+/** 按 scanline 范围取切换日志（不消费） */
+export function getChrSwitchesInRange(scanStart: number, scanEnd: number): ChrSwitchRecord[] {
+  return chrSwitchLog.filter(r => r.scanline >= scanStart && r.scanline < scanEnd);
+}
+
+/** 把所有 switches 重放成"最终 banks"（忽略 scanline 分组），用于 H5 不区分 scanline 的场景 */
+export function buildFinalChrBankMap(
+  switches: ChrSwitchRecord[],
+  initialBanks: Uint8Array,
+): Uint8Array {
+  const banks = new Uint8Array(initialBanks);
+  for (const r of switches) {
+    banks[r.slot] = r.bank1k & 0xff;
+  }
+  return banks;
+}
+
+/**
+ * 把 [scanStart, scanEnd) 的 chrSwitchLog 重放成"每条 scanline 用的 8 个 1KB slot bank1k"表
+ * 返回：Map<scanline, Uint8Array(8)>
+ * 初始值 = 上一 scanline 的 bank map（最后切换沿用）
+ */
+export function buildChrBankMapByScanline(
+  switches: ChrSwitchRecord[],
+  initialBanks: Uint8Array,
+): Map<number, Uint8Array> {
+  const out = new Map<number, Uint8Array>();
+  let banks = new Uint8Array(initialBanks);
+  let curScan = -1;
+  for (const r of switches) {
+    if (r.scanline !== curScan) {
+      if (curScan >= 0) out.set(curScan, new Uint8Array(banks));
+      curScan = r.scanline;
+    }
+    banks[r.slot] = r.bank1k & 0xff;
+  }
+  if (curScan >= 0) out.set(curScan, new Uint8Array(banks));
+  return out;
+}
+
+/**
+ * 渲染指定 scanline 的 PT 视图（用该 scanline 激活的 8 个 1KB slot，从 ROM vromTile 取）
+ * 跟 renderPatternTable 输出尺寸/格式一致，但 tile 数据来自 ROM 而非 ppu.ptTile 缓存
+ *
+ * @param nes         NES 实例
+ * @param tableIdx    0 或 1（对应 $0000/$1000）
+ * @param slotBanks   8 个 1KB slot 的 bank1k 编号（slot 0-7）
+ * @param paletteOffset 同 renderPatternTable
+ */
+export function renderPatternTableAtScanline(
+  nes: NES,
+  tableIdx: 0 | 1,
+  slotBanks: Uint8Array,
+  paletteOffset: number = 0,
+): PatternTableFrame {
+  const ppu = nes.ppu;
+  const buf = new Uint32Array(128 * 128);
+  const pal = ppu.imgPalette;
+  const offset = paletteOffset * 4;
+  const backdrop = pal[0];
+  const vromTile: any = (nes as any).rom && (nes as any).rom.vromTile;
+  const slotBase = tableIdx * 4;  // table0 用 slot 0-3，table1 用 slot 4-7
+
+  for (let ty = 0; ty < 16; ty++) {
+    for (let tx = 0; tx < 16; tx++) {
+      const slot = slotBase + (ty >> 2);   // ty / 4 决定 slot
+      const tileInSlot = ((ty & 3) * 16) + tx;
+      const bank1k = slotBanks[slot];
+      const baseX = tx * 8, baseY = ty * 8;
+      let tile: any = null;
+      if (vromTile && bank1k != null) {
+        const bank4k = (bank1k / 4) | 0;
+        const offIn4k = (bank1k % 4) * 64 + tileInSlot;
+        tile = vromTile[bank4k] ? vromTile[bank4k][offIn4k] : null;
+      }
+      if (tile && tile.pix) {
+        const pix = tile.pix;
+        for (let py = 0; py < 8; py++) {
+          for (let px = 0; px < 8; px++) {
+            const ci = pix[py * 8 + px];
+            buf[(baseY + py) * 128 + (baseX + px)] =
+              ci === 0 ? backdrop : (pal[ci + offset] ?? backdrop);
+          }
+        }
+      } else {
+        for (let py = 0; py < 8; py++) {
+          for (let px = 0; px < 8; px++) {
+            buf[(baseY + py) * 128 + (baseX + px)] = 0xff_444444;
+          }
+        }
+      }
+    }
+  }
+  drawBankBorders(buf, tableIdx);
+  return { data: buf, width: 128, height: 128 };
+}
+
+/** 渲染指定 scanline 的双 PT 视图（table0+table1 横排 256×128） */
+export function renderBothPatternTablesAtScanline(
+  nes: NES,
+  slotBanks: Uint8Array,
+  paletteOffset: number = 0,
+): PatternTableResult {
+  return {
+    table0: renderPatternTableAtScanline(nes, 0, slotBanks, paletteOffset),
+    table1: renderPatternTableAtScanline(nes, 1, slotBanks, paletteOffset),
+    bgTable: (nes.ppu.f_bgPatternTable ? 1 : 0) as (0 | 1),
+    spTable: (nes.ppu.f_spPatternTable ? 1 : 0) as (0 | 1),
+  };
+}
+
 /**
  * 生成 PT 数据文本：
  * - 两个 Pattern Table (16×16 tiles) 的 CHR 内容状态 + CHR bank 映射

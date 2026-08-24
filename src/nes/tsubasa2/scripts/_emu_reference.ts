@@ -14,8 +14,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import * as zlib from 'zlib';
 import { NES } from '../src/core';
-import { renderBothPatternTables } from '../src/core/debug/pattern-table-viewer';
-import { renderAllNameTables } from '../src/core/debug/nametable-viewer';
+import {
+  renderBothPatternTables,
+  renderBothPatternTablesAtScanline,
+  drainChrSwitchLog,
+  buildChrBankMapByScanline,
+} from '../src/core/debug/pattern-table-viewer';
 
 // ── 路径常量 ──
 const ROM_PATH = path.join(__dirname, '..', 'docs', 'roms', 'Captain Tsubasa II - Super Striker (Japan).nes');
@@ -98,17 +102,54 @@ for (const target of FRAMES) {
     nes.frame();
     total++;
   }
-  // 触发一次完整渲染（让 bgbuffer 刷新，否则 NT viewer 拿不到扫描线像素）
-  if (typeof ppu.renderFramePartially === 'function') {
+  // 模拟 H5 _verify_300frame.ts 的 renderTriple 抓取时机:
+  // 跑完 game.frame() 后强制重跑 PPU 整帧渲染(startFrame+262scanline+endFrame)
+  // 保证 NT/OAM/PT 都处于"显示完成"状态,而不是停在某条 CPU 指令中间
+  const origBg = ppu.f_bgVisibility;
+  const origSp = ppu.f_spVisibility;
+  if (typeof ppu.startFrame === 'function') {
+    ppu.startFrame();
+    ppu.advanceDots(262 * 341);
     ppu.renderFramePartially(0, 240);
+    ppu.endFrame();
   }
+  // 强制 reload 全部 8 个 1KB CHR slot 到 ptTile（避免某 slot 没被当前帧渲染导致残留旧 tile）
+  if (mmap && Array.isArray(mmap.chrBanks) && typeof mmap.load1kVromBank === 'function') {
+    for (let slot = 0; slot < 8; slot++) {
+      mmap.load1kVromBank(mmap.chrBanks[slot], slot * 0x400);
+    }
+  }
+  // 按 scanline 分组 dump 多个 PT sheet：每组 = 该 scanline 用的 8 个 1KB slot
+  const switches = drainChrSwitchLog();
+  const chrMapByScan = buildChrBankMapByScanline(switches, mmap.chrBanks);
   const frameDir = path.join(OUT_DIR, `frame-${String(target).padStart(3, '0')}`);
   fs.mkdirSync(frameDir, { recursive: true });
+  fs.writeFileSync(
+    path.join(frameDir, 'chr-switches.json'),
+    JSON.stringify({
+      frame: target,
+      bankMapByScanline: Array.from(chrMapByScan.entries()).map(([scan, banks]) => ({
+        scanline: scan, banks: Array.from(banks),
+      })),
+      rawLog: switches,
+    }, null, 2)
+  );
+  for (const [scan, slotBanks] of chrMapByScan) {
+    const pt = renderBothPatternTablesAtScanline(nes, slotBanks, 0);
+    const ptRgba = rgbaFromData(
+      new Uint32Array([...pt.table0.data, ...pt.table1.data]),
+      pt.table0.width * 2, pt.table0.height,
+    );
+    fs.writeFileSync(
+      path.join(frameDir, `pt-sheet-scan${String(scan).padStart(3, '0')}.png`),
+      encodePng(pt.table0.width * 2, pt.table0.height, ptRgba),
+    );
+  }
 
   // 1) Screen (PPU buffer)
   fs.writeFileSync(path.join(frameDir, 'screen.png'), encodePng(256, 240, bufToRgba(ppu.buffer)));
 
-  // 2) Pattern Table sheet (256×128：table0+table1 横排)
+  // 2) Pattern Table sheet (256×128：table0+table1 横排，按 ptTile 当前缓存 = 最后一次 load1kVromBank 状态)
   const pt = renderBothPatternTables(nes, 0);
   const ptW = pt.table0.width;
   const ptH = pt.table0.height;
@@ -133,12 +174,11 @@ for (const target of FRAMES) {
   }
   fs.writeFileSync(path.join(frameDir, 'pt.json'), JSON.stringify(ptJson));
 
-  // 4) Nametables
-  const nt = renderAllNameTables(nes);
-  fs.writeFileSync(path.join(frameDir, 'nt0.png'), encodePng(256, 240, rgbaFromData(nt.nt[0].data, 256, 240)));
-  fs.writeFileSync(path.join(frameDir, 'nt1.png'), encodePng(256, 240, rgbaFromData(nt.nt[1].data, 256, 240)));
-  fs.writeFileSync(path.join(frameDir, 'nt2.png'), encodePng(256, 240, rgbaFromData(nt.nt[2].data, 256, 240)));
-  fs.writeFileSync(path.join(frameDir, 'nt3.png'), encodePng(256, 240, rgbaFromData(nt.nt[3].data, 256, 240)));
+  // 4) Nametables — 用 PPU 内部 NT 字节 + 当前 ptTile 重建（不走 bgbuffer，避免时序不一致）
+  const ntRgba = renderAllNameTablesNoBg(ppu, rom);
+  for (let i = 0; i < 4; i++) {
+    fs.writeFileSync(path.join(frameDir, `nt${i}.png`), encodePng(256, 240, rgbaFromData(ntRgba[i], 256, 240)));
+  }
   const ntJson: any[] = [];
   for (let i = 0; i < 4; i++) {
     const t = ppu.nameTable[i];
@@ -166,6 +206,9 @@ for (const target of FRAMES) {
   // 独立 OAM PNG：4×16 网格 (64 sprite, 每 sprite 8×8 tile preview + 7 间隔)
   const oamImg = renderOamSheet(oamJson, ppu);
   fs.writeFileSync(path.join(frameDir, 'oam.png'), encodePng(oamImg.w, oamImg.h, oamImg.rgba));
+  // 组合后的 OAM 图：按 y/x 把 64 sprite 摆到 256×240 画布上（sprite-only layer）
+  const oamComp = renderOamComposite(oamJson, ppu);
+  fs.writeFileSync(path.join(frameDir, 'oam-composite.png'), encodePng(256, 240, oamComp));
 
   // 6) Palette (32 colors: 16 BG + 16 SPR)
   const palBg = Array.from(ppu.vramMem.slice(0x3F00, 0x3F10));
@@ -192,6 +235,47 @@ for (const target of FRAMES) {
 }
 
 console.log(`[emu-ref] done. PNG/JSON at ${OUT_DIR}`);
+
+// ── 自实现 NT renderer：直接用 PPU 内部 nameTable[i] + ptTile + imgPalette，
+//    不走 bgbuffer（避免跟 screen buffer 时序错位）
+function renderAllNameTablesNoBg(ppu: any, rom: any): Uint32Array[] {
+  const W = 256, H = 240, COLS = 32, ROWS = 30;
+  const bgTableBase = ppu.regS === 0 ? 0 : 256;
+  const pal = ppu.imgPalette;
+  const out: Uint32Array[] = [];
+  for (let ntIdx = 0; ntIdx < 4; ntIdx++) {
+    const buf = new Uint32Array(W * H);
+    const nt = ppu.nameTable[ntIdx];
+    if (!nt) { out.push(buf); continue; }
+    for (let ty = 0; ty < ROWS; ty++) {
+      for (let tx = 0; tx < COLS; tx++) {
+        const tileIdx = nt.tile[ty * COLS + tx] | 0;
+        const attrVal = nt.attrib[ty * COLS + tx] | 0;
+        const pt = ppu.ptTile[bgTableBase + tileIdx];
+        const pix = pt && pt.pix ? pt.pix : null;
+        const baseX = tx * 8, baseY = ty * 8;
+        if (pix) {
+          for (let py = 0; py < 8; py++) {
+            for (let px = 0; px < 8; px++) {
+              const ci = pix[py * 8 + px];
+              buf[(baseY + py) * W + baseX + px] =
+                ci === 0 ? pal[0] : (pal[ci + attrVal] ?? pal[0]);
+            }
+          }
+        } else {
+          // 无 tile 数据：填背景色
+          for (let py = 0; py < 8; py++) {
+            for (let px = 0; px < 8; px++) {
+              buf[(baseY + py) * W + baseX + px] = pal[0];
+            }
+          }
+        }
+      }
+    }
+    out.push(buf);
+  }
+  return out;
+}
 
 // ── OAM sheet: 64 sprite, 每 sprite 8x8 tile, 网格 8 列 ──
 function renderOamSheet(oamJson: any[], ppu: any): { w: number; h: number; rgba: Buffer } {
@@ -238,6 +322,59 @@ function renderOamSheet(oamJson: any[], ppu: any): { w: number; h: number; rgba:
     }
   }
   return { w, h, rgba };
+}
+
+// ── OAM composite: 按 y/x 把 64 sprite 摆到 256×240 画布上（sprite-only layer）
+//    与 screen 同步：透明像素用紫色棋盘标识（参照 PPU viewer 习惯）
+function renderOamComposite(oamJson: any[], ppu: any): Buffer {
+  const W = 256, H = 240;
+  const rgba = Buffer.alloc(W * H * 4);
+  // 透明像素用紫色棋盘（跟 nametable viewer 的品红棋盘一致）
+  const fillBg = (x: number, y: number) => {
+    const off = (y * W + x) * 4;
+    const isM = ((y >> 1) + (x >> 1)) & 1;
+    const v = isM ? 0xff_30_00_30 : 0xff_00_00_00;
+    rgba[off] = (v >>> 16) & 0xff;
+    rgba[off + 1] = (v >>> 8) & 0xff;
+    rgba[off + 2] = v & 0xff;
+    rgba[off + 3] = 0xff;
+  };
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) fillBg(x, y);
+
+  const baseIdx = ppu.f_spPatternTable ? 256 : 0;
+  for (let i = 0; i < oamJson.length; i++) {
+    const o = oamJson[i];
+    if (o.y >= 0xef) continue;            // 隐藏 sprite (y >= 0xEF)
+    const attr = o.attr;
+    const flipH = (attr & 0x40) ? 1 : 0;
+    const flipV = (attr & 0x80) ? 1 : 0;
+    const palHi = (attr & 0x03) << 2;
+    const ptT = ppu.ptTile[baseIdx + o.tile];
+    const pix = ptT && ptT.pix ? ptT.pix : null;
+    if (!pix) continue;
+    // NES PPU 内部坐标：y/x 已经是 -1 基线（y=0 → scanline -1，y=0xFF → 隐藏）
+    // 屏幕上 y+1, x 为可见坐标
+    const sy0 = o.y + 1;
+    for (let py = 0; py < 8; py++) {
+      const dy = sy0 + py;
+      if (dy < 0 || dy >= H) continue;
+      for (let px = 0; px < 8; px++) {
+        const dx = o.x + px;
+        if (dx < 0 || dx >= W) continue;
+        const sx = flipH ? 7 - px : px;
+        const sy = flipV ? 7 - py : py;
+        const idx = pix[sy * 8 + sx];
+        if (idx === 0) continue;
+        const color = ppu.sprPalette ? (ppu.sprPalette[palHi + idx] ?? 0xff000000) : 0xff000000;
+        const r = (color >>> 16) & 0xff;
+        const g = (color >>> 8) & 0xff;
+        const b = color & 0xff;
+        const off = (dy * W + dx) * 4;
+        rgba[off] = r; rgba[off + 1] = g; rgba[off + 2] = b; rgba[off + 3] = 0xff;
+      }
+    }
+  }
+  return rgba;
 }
 
 // ── Palette sheet: 32 色 (16 BG + 16 SPR), 8 列 4 行 ──

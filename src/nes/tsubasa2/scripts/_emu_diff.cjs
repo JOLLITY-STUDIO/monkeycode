@@ -213,7 +213,47 @@ for (const f of FRAMES) {
     lines.push(`  Screen:  error: ${e.message}`);
   }
 
+  // 6) Scanline 级 PT 视图对比
+  try {
+    const emuSw = JSON.parse(fs.readFileSync(path.join(emuDir, 'chr-switches.json'), 'utf8'));
+    const h5Sw  = JSON.parse(fs.readFileSync(path.join(h5Dir,  'chr-switches.json'), 'utf8'));
+    const emuMap = new Map(emuSw.bankMapByScanline.map(s => [s.scanline, s.banks]));
+    const h5Map  = new Map(h5Sw.bankMapByScanline.map(s  => [s.scanline, s.banks]));
+    const emuScans = Array.from(emuMap.keys()).sort((a, b) => a - b);
+    let ptMatch = 0, ptMiss = 0;
+    lines.push(`  PT-by-scanline (emu=${emuScans.length} sheets, h5=${h5Map.size} sheets):`);
+    for (const sc of emuScans) {
+      const eBanks = emuMap.get(sc);
+      let h5Scan = sc;
+      if (!h5Map.has(h5Scan)) {
+        let bestDist = Infinity;
+        for (const s of h5Map.keys()) {
+          const d = Math.abs(s - sc);
+          if (d < bestDist) { bestDist = d; h5Scan = s; }
+        }
+      }
+      const hBanks = h5Map.get(h5Scan) || [];
+      const emuPt = decodePngOrNull(path.join(emuDir, `pt-sheet-scan${String(sc).padStart(3, '0')}.png`));
+      const h5Pt  = decodePngOrNull(path.join(h5Dir,  `pt-sheet-scan${String(h5Scan).padStart(3, '0')}.png`));
+      const banksSame = (eBanks.join(',') === hBanks.join(',')) ? '✓' : '✗';
+      let pixSame = '-';
+      if (emuPt && h5Pt) {
+        const c = compareRgba(emuPt, h5Pt);
+        pixSame = `${(c.ratio * 100).toFixed(1)}%`;
+        if (c.ratio > 0.99) ptMatch++; else ptMiss++;
+      } else { ptMiss++; }
+      lines.push(`    sc=${String(sc).padStart(3)} emu=[${eBanks.join(',')}]  h5-sc${String(h5Scan).padStart(3)}=[${hBanks.join(',')}]  banks=${banksSame}  pt-pix=${pixSame}`);
+    }
+    lines.push(`  PT-by-scanline match: ${ptMatch}, miss: ${ptMiss}`);
+  } catch (e) {
+    lines.push(`  PT-by-scanline:  error: ${e.message}`);
+  }
+
   lines.push('');
+}
+
+function decodePngOrNull(p) {
+  try { return decodePng(fs.readFileSync(p)); } catch (_) { return null; }
 }
 
 const reportPath = path.join(EMU, 'diff-report.txt');

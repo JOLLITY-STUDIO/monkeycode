@@ -358,6 +358,58 @@ function writePpuTrace(frameN: number): void {
   fs.writeFileSync(path.join(dir, 'pt-sheet.png'),
     encodePng(128, 128, rgbaFromU32(pt.png, 128, 128)));
 
+  // 按 scanline 重建 PT 视图（跟 emulator 同粒度）
+  // 1) 取 H5 路径记录的所有 CHR slot 切换，按 scanline 分组
+  // 2) 每组用一组 8 个 bank1k 渲染双 PT sheet
+  // 3) 同时输出 chr-switches.json 标 scanline 用的 8 slot
+  const {
+    renderBothPatternTablesAtScanline,
+    drainChrSwitchLog,
+    buildChrBankMapByScanline,
+    buildFinalChrBankMap,
+  } = require('../src/core/debug/pattern-table-viewer');
+  const switches = drainChrSwitchLog();
+  // H5 初始 banks: 从 CHR_SLOT_MAP 读（HeadlessRuntime 默认）
+  const initialBanks = new Uint8Array([0, 1, 2, 3, 124, 125, 126, 127]);
+  const mapByScan = buildChrBankMapByScanline(switches, initialBanks);
+  const nesForViewer: any = {
+    ppu,
+    rom: {
+      vromTile: (runtime as any).vromTilesByBank1k
+        ? ((runtime as any).vromTilesByBank1k as any)
+        : (game as any).runtime?.vromTilesByBank1k
+          ? (game as any).runtime.vromTilesByBank1k
+          : [],
+    },
+  };
+  fs.writeFileSync(path.join(dir, 'chr-switches.json'), JSON.stringify({
+    frame: frameN,
+    bankMapByScanline: Array.from(mapByScan.entries()).map(([scan, banks]) => ({
+      scanline: scan, banks: Array.from(banks),
+    })),
+    rawLog: switches,
+  }, null, 2));
+  for (const [scan, slotBanks] of mapByScan) {
+    const ptAt = renderBothPatternTablesAtScanline(nesForViewer, slotBanks, 0);
+    const w = ptAt.table0.width * 2, h = ptAt.table0.height;
+    const rgba = new Uint32Array(w * h);
+    rgba.set(ptAt.table0.data, 0);
+    rgba.set(ptAt.table1.data, w * h / 2);
+    fs.writeFileSync(path.join(dir, `pt-sheet-scan${String(scan).padStart(3, '0')}.png`),
+      encodePng(w, h, rgbaFromU32(rgba, w, h)));
+  }
+  // 终态 PT（H5 不区分 scanline，聚合 switches 成"最终 banks"视图）
+  const finalBanks = buildFinalChrBankMap(switches, initialBanks);
+  const ptFinal = renderBothPatternTablesAtScanline(nesForViewer, finalBanks, 0);
+  {
+    const w = ptFinal.table0.width * 2, h = ptFinal.table0.height;
+    const rgba = new Uint32Array(w * h);
+    rgba.set(ptFinal.table0.data, 0);
+    rgba.set(ptFinal.table1.data, w * h / 2);
+    fs.writeFileSync(path.join(dir, 'pt-sheet-final.png'),
+      encodePng(w, h, rgbaFromU32(rgba, w, h)));
+  }
+
   // Palette
   const pal = renderPaletteSwatch();
   fs.writeFileSync(path.join(dir, 'palette.json'), JSON.stringify(pal.json));
