@@ -16,6 +16,17 @@ export { SceneController } from './scene/SceneController';
 export { Scene0Controller } from './scene/Scene0Controller';
 export { SCENE_TABLE, getSceneEntry } from './scene/SceneTable';
 export type { SceneEntry } from './scene/SceneTable';
+export {
+  Scene1Controller, Scene2Controller, Scene3Controller, Scene4Controller,
+  Scene5Controller, Scene6Controller, Scene7Controller, Scene8Controller,
+  Scene9Controller, Scene10Controller, Scene11Controller, Scene12Controller,
+  Scene13Controller,
+} from './scene/SceneUtilitiesControllers';
+export {
+  Scene14Controller, Scene15Controller, Scene16Controller, Scene17Controller,
+  Scene18Controller, Scene19Controller, Scene20Controller, Scene21Controller,
+  Scene22Controller, Scene23Controller,
+} from './scene/Scene14to23Controllers';
 
 // story
 export { ScriptEngine } from './story/ScriptEngine';

@@ -9,6 +9,17 @@ import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from './InputService';
 import { SceneController } from '../scene/SceneController';
 import { Scene0Controller } from '../scene/Scene0Controller';
+import {
+  Scene1Controller, Scene2Controller, Scene3Controller, Scene4Controller,
+  Scene5Controller, Scene6Controller, Scene7Controller, Scene8Controller,
+  Scene9Controller, Scene10Controller, Scene11Controller, Scene12Controller,
+  Scene13Controller,
+} from '../scene/SceneUtilitiesControllers';
+import {
+  Scene14Controller, Scene15Controller, Scene16Controller, Scene17Controller,
+  Scene18Controller, Scene19Controller, Scene20Controller, Scene21Controller,
+  Scene22Controller, Scene23Controller,
+} from '../scene/Scene14to23Controllers';
 
 /** 场景号枚举（0-23） */
 export const enum SceneId {
@@ -64,9 +75,29 @@ export class BootRouter {
     scene0?: Scene0Controller,
   ) {
     this.register(scene0 ?? new SceneStubController(this.store, this.input, SceneId.Scene0));
-    for (let id = 1; id <= 23; id++) {
-      this.scenes.set(id, new SceneStubController(this.store, this.input, id));
-    }
+    this.register(new Scene1Controller(this.store, this.input));
+    this.register(new Scene2Controller(this.store, this.input));
+    this.register(new Scene3Controller(this.store, this.input));
+    this.register(new Scene4Controller(this.store, this.input));
+    this.register(new Scene5Controller(this.store, this.input));
+    this.register(new Scene6Controller(this.store, this.input));
+    this.register(new Scene7Controller(this.store, this.input));
+    this.register(new Scene8Controller(this.store, this.input));
+    this.register(new Scene9Controller(this.store, this.input));
+    this.register(new Scene10Controller(this.store, this.input));
+    this.register(new Scene11Controller(this.store, this.input));
+    this.register(new Scene12Controller(this.store, this.input));
+    this.register(new Scene13Controller(this.store, this.input));
+    this.register(new Scene14Controller(this.store, this.input));
+    this.register(new Scene15Controller(this.store, this.input));
+    this.register(new Scene16Controller(this.store, this.input));
+    this.register(new Scene17Controller(this.store, this.input));
+    this.register(new Scene18Controller(this.store, this.input));
+    this.register(new Scene19Controller(this.store, this.input));
+    this.register(new Scene20Controller(this.store, this.input));
+    this.register(new Scene21Controller(this.store, this.input));
+    this.register(new Scene22Controller(this.store, this.input));
+    this.register(new Scene23Controller(this.store, this.input));
   }
 
   /** 注册/覆盖场景控制器 */
