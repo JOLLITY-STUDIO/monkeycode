@@ -2226,23 +2226,24 @@
   var ACCENT_GREEN = C(26);
   var BAR_FILL = C(40);
   var BAR_BG = C(15);
+  var SCALE = 3;
   function setFont(ctx, size) {
     ctx.font = `${size}px "Consolas", "Menlo", "Courier New", monospace`;
     ctx.textBaseline = "top";
   }
   function drawText(ctx, text, x, y, size, color) {
-    setFont(ctx, size);
+    setFont(ctx, size * SCALE);
     ctx.fillStyle = color;
-    ctx.fillText(text, x, y);
+    ctx.fillText(text, x * SCALE, y * SCALE);
   }
   function drawTextBG(ctx, text, x, y, size, fg, bg) {
-    setFont(ctx, size);
+    setFont(ctx, size * SCALE);
     const w = ctx.measureText(text).width;
-    const h = size;
+    const h = size * SCALE;
     ctx.fillStyle = bg;
-    ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
+    ctx.fillRect(x * SCALE - 1, y * SCALE - 1, w + 2, h + 2);
     ctx.fillStyle = fg;
-    ctx.fillText(text, x, y);
+    ctx.fillText(text, x * SCALE, y * SCALE);
   }
   var store = new DataStore();
   var playerSvc = new PlayerQueryService(store);
@@ -2254,9 +2255,9 @@
   }
   function renderPlayerList(ctx) {
     ctx.fillStyle = BG_DARK;
-    ctx.fillRect(0, 0, 256, 240);
+    ctx.fillRect(0, 0, 768, 720);
     ctx.fillStyle = C(8);
-    ctx.fillRect(0, 0, 256, 28);
+    ctx.fillRect(0, 0, 768, 28 * 3);
     drawText(ctx, "PLAYER LIST", 76, 10, 2, TEXT_BRIGHT);
     drawText(ctx, "ID  NAME       STM PAS SH DRB", 8, 36, 1, TEXT_DIM);
     ctx.fillStyle = TEXT_DIM;

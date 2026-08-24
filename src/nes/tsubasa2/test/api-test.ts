@@ -53,37 +53,42 @@ const BAR_BG = C(0x0F);
 const CHAR_W = 6;  // 8px 字体下每字符约 6 像素宽
 const CHAR_H = 8;  // 8px 行高
 
+// ─────────────────────────── 字体：ctx.fillText 系统等宽字体 ───────────────────────────
+
+// SCALE=3: 内部画布 768x720 (NES 256x240 放大 3 倍)
+// 字体直接用 24-32px (8*3, 16*3 等)，无需 CSS 缩放避免模糊
+
+const SCALE = 3;
+
 function setFont(ctx: CanvasRenderingContext2D, size: number): void {
   ctx.font = `${size}px "Consolas", "Menlo", "Courier New", monospace`;
   ctx.textBaseline = 'top';
 }
 
-/** 文本：直接坐标，size 是像素（不分 SCALE） */
 function drawText(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, size: number, color: string): void {
-  setFont(ctx, size);
+  setFont(ctx, size * SCALE);
   ctx.fillStyle = color;
-  ctx.fillText(text, x, y);
+  ctx.fillText(text, x * SCALE, y * SCALE);
 }
 
 function drawTextBG(ctx: CanvasRenderingContext2D, text: string, x: number, y: number, size: number, fg: string, bg: string): void {
-  setFont(ctx, size);
+  setFont(ctx, size * SCALE);
   const w = ctx.measureText(text).width;
-  const h = size;
+  const h = size * SCALE;
   ctx.fillStyle = bg;
-  ctx.fillRect(x - 1, y - 1, w + 2, h + 2);
+  ctx.fillRect(x * SCALE - 1, y * SCALE - 1, w + 2, h + 2);
   ctx.fillStyle = fg;
-  ctx.fillText(text, x, y);
+  ctx.fillText(text, x * SCALE, y * SCALE);
 }
 
-/** fillRect 简化调用 */
 function fillRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string): void {
   ctx.fillStyle = color;
-  ctx.fillRect(x, y, w, h);
+  ctx.fillRect(x * SCALE, y * SCALE, w * SCALE, h * SCALE);
 }
 
 function strokeRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, color: string): void {
   ctx.strokeStyle = color;
-  ctx.strokeRect(x, y, w, h);
+  ctx.strokeRect(x * SCALE, y * SCALE, w * SCALE, h * SCALE);
 }
 
 // ─────────────────────────── 初始化 ───────────────────────────
@@ -100,13 +105,13 @@ function assert(name: string, cond: boolean): void {
 // ─────────────────────────── 视图 1: 球员列表 ───────────────────────────
 
 export function renderPlayerList(ctx: CanvasRenderingContext2D): void {
-  // 黑色背景
+  // 黑色背景（768x720 内部画布）
   ctx.fillStyle = BG_DARK;
-  ctx.fillRect(0, 0, 256, 240);
+  ctx.fillRect(0, 0, 768, 720);
 
   // 顶部面板（黄色）
   ctx.fillStyle = C(0x08);
-  ctx.fillRect(0, 0, 256, 28);
+  ctx.fillRect(0, 0, 768, 28 * 3);
 
   // 标题
   drawText(ctx, 'PLAYER LIST', 76, 10, 2, TEXT_BRIGHT);
