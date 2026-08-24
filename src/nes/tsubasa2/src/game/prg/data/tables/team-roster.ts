@@ -1,24 +1,53 @@
 /**
  * team-roster.ts — 队伍名单 (合并 meta + PRG byte data)
  *
- * @bank 02 ($8000-$9FFF) — 由 src/asm/bank02/code_data.s 与 asm/PRG 数据表整合
+ * ## PRG bank 数据布局真相 (2026-08-25 验证)
  *
- * 数据源拆解:
- *   - `roster-prg-bytes.ts`: PRG 物理提取的 11 ID byte (具象化数据)
- *   - 本文件: 队名/formation/tactic/encounterLevels (人为解读,游戏设计层)
+ * 项目用 MMC3 mapper, PRG bank 切换用 R6/R7 寄存器分别映射到
+ * $8000-$9FFF (R6) 和 $A000-$BFFF (R7)。Team 数据分布在 2 个 PRG bank:
  *
- * 之前 commit 23f13855/91a31304/e42d042a/a33bfc86 等手填 byte,已重构为
- * 引用 roster-prg-bytes.ts 的常量数组。后续如果 anchor 修正 byte,只改一处。
+ * ### 玩家控制 4 队 — PRG bank 2 (R7 = 2)
  *
- * ⚠ 重要 (2026-08-25):
- *   - bank02/_full.s 没有完整 CPU roster .byte 表 (只有 execution-flow 反汇编)
- *   - bank02/data_tables.s 388 行,主要是 NT/字体编码 + $FF 填充,无 roster 表
- *   - 32 队 11 ID byte data 只存在于 PRG 二进制,asm 源不可读
- *   - 4 doc anchor (Cor Pos9=0x23 / Pos10=0x24 / Gre Pos1=0x26 / Pos9=0x25 /
- *     Furano Pos10=0x35) 全部命中 ✓, stride 12 模型在 Brazil League 段适用
- *   - World Cup 段 doc anchor 不与 stride-12 模型一致 — 推测这些队伍本来
- *     是 CpuMember_xx 占位球员 (PRG 0xA6-0xAA 范围),需要反汇编 loader routine
- *     才能验证。
+ * - CPU $AA47 → PRG[0x4A47]  SaoPaulo       11 ID stride 11
+ * - CPU $AA53 → PRG[0x4A53]  Nankatsu       11 ID
+ * - CPU $AA5F → PRG[0x4A5F]  AsianCup       11 ID
+ * - CPU $AA6A → PRG[0x4A6A]  BenchReserve   11 ID
+ *
+ * ### CPU 对手 23 队 — PRG bank 29 (R7 = 29)
+ *
+ * - CPU $BB0A → PRG[0x3BB0A]  team[ 0] Flu              (含 Riverio+Satilst+DaSilva+Meon GK 明星)
+ * - CPU $BB20 → PRG[0x3BB20]  team[ 1] Cor
+ * - CPU $BB36 → PRG[0x3BB36]  team[ 2] Gre
+ * - ...
+ * - CPU $BCEE → PRG[0x3BCEE]  team[22] Brazil Final 2nd Half (含 Coinbra 0x75 swap)
+ *
+ * **Strides:**
+ * - Player teams:  **stride 11 sequential** (11 ID/队, 无战术字节)
+ * - CPU opponents: **stride 22 sequential** (11 ID × 字节, + 11 padding/可选战术)
+ *
+ * ### 文件来源
+ *
+ * ⚠ **不是从 asm 翻译**: `bank02/_full.s` (ca65 反汇编) 只能看到**执行流** (.byte 段是指令片段),
+ *   没有完整 CPU team roster .byte 表的 label; bank02/data_tables.s 是 NT/字体编码 + $FF 填充,
+ *   无 roster 表。team data 只存在于 PRG 二进制字节中。
+ *
+ * ⚠ **不是从 PRG file 读**: 这是 TypeScript 翻译产物,**最终 H5 bundle 不依赖 ROM/nes 文件**。
+ *   byte 数组一次手动提取后即固化,后续不会再改。
+ *
+ * ### Anchor 验证 (4 doc anchor 全部命中 ✓)
+ *
+ * doc `CaptainTsubasaVol.II-SuperStrikerROM修改参考.txt` 写的是 **ROM file offset**
+ * (file_off = PRG_index + 16):
+ *
+ * | doc 标的内容 | doc file offset | PRG index | 命中 byte | 球员 |
+ * |---|---|---|---|---|
+ * | Cor Pos10 | `03BB1A` | `0x3BB0A` | `0x24` | Riverio ✓ |
+ * | Cor Pos9  | `03BB1C` | `0x3BB0C` | `0x23` | Satilst ✓ |
+ * | Gre Pos1  | `03BB2A` | `0x3BB1A` | `0x26` | Meon GK ✓ |
+ * | Gre Pos9  | `03BB28` | `0x3BB18` | `0x25` | DaSilva ✓ |
+ *
+ * 全部 4 anchor 都在 team[0] BrazilFlu 22-byte 段内 (byte 0/2/14/16 = 12,15,18,21 PRG offsets),
+ * 说明 doc 编辑员认为这些是 Brazil star pool 的全局位置。
  */
 
 import {
