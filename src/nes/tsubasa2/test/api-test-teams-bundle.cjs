@@ -7502,131 +7502,99 @@
   }
 
   // test/api-test-teams.ts
-  var W = 80;
-  var sep = "=".repeat(W);
-  var sep2 = "-".repeat(W);
-  function pad(s, w, align = "left") {
-    const ss = s == null ? "" : String(s);
-    const len = [...ss].length;
-    if (len >= w) return ss.slice(0, w);
-    const fill = " ".repeat(w - len);
-    return align === "left" ? ss + fill : fill + ss;
-  }
-  function row(...cols) {
-    return "| " + cols.map((c) => {
-      var _a;
-      return pad(String((_a = c.s) != null ? _a : ""), c.w, c.a || "left");
-    }).join(" | ") + " |";
-  }
   function listAllTeamIds() {
     const ids = /* @__PURE__ */ new Set();
     for (const r of TEAMS_FULL) ids.add(r.id);
     for (const t of TEAM_TABLE2) ids.add(t.id);
     return [...ids].sort((a, b) => a - b);
   }
-  function summarizeTeam(teamId) {
+  function API_ALL_TEAMS_TEXT() {
     var _a, _b, _c, _d, _e, _f, _g;
-    const team = findTeamById(teamId);
-    const roster = findRosterById2(teamId);
-    if (!team && !roster) return `0x${teamId.toString(16).padStart(2, "0").toUpperCase()}  ??? (no data)`;
-    const name = ((_b = (_a = team == null ? void 0 : team.name) != null ? _a : roster == null ? void 0 : roster.name) != null ? _b : "?").padEnd(11);
-    const type = ((_c = roster == null ? void 0 : roster.type) != null ? _c : "cpu").padEnd(7);
-    const formation = ((_d = roster == null ? void 0 : roster.formation) != null ? _d : "-").padEnd(7);
-    const tactic = ((_e = roster == null ? void 0 : roster.tactic) != null ? _e : "-").padEnd(8);
-    const players = (_g = (_f = roster == null ? void 0 : roster.players) == null ? void 0 : _f.length) != null ? _g : 0;
-    return `0x${teamId.toString(16).padStart(2, "0").toUpperCase()}  ${name}  ${type}  ${formation}  ${tactic}  ${players}p`;
-  }
-  function API_ALL_TEAMS() {
-    const lines = [];
-    lines.push(sep);
-    lines.push("  GET /api/teams \u2014 ALL TEAMS (player + cpu)");
-    lines.push(sep);
-    lines.push(`  ${"ID".padEnd(6)}  ${"NAME".padEnd(11)}  ${"TYPE".padEnd(7)}  ${"FORMA".padEnd(7)}  ${"TACTIC".padEnd(8)}  ${"N"}`);
-    lines.push(sep2);
     const ids = listAllTeamIds();
+    const lines = [];
+    lines.push("ID     NAME            TYPE     FORMATION  TACTIC    N");
+    lines.push("---------------------------------------------------------------");
     for (const id of ids) {
-      lines.push("  " + summarizeTeam(id));
+      const team = findTeamById(id);
+      const roster = findRosterById2(id);
+      const name = ((_b = (_a = team == null ? void 0 : team.name) != null ? _a : roster == null ? void 0 : roster.name) != null ? _b : "?").padEnd(14);
+      const type = ((_c = roster == null ? void 0 : roster.type) != null ? _c : "cpu").padEnd(8);
+      const formation = ((_d = roster == null ? void 0 : roster.formation) != null ? _d : "-").padEnd(10);
+      const tactic = ((_e = roster == null ? void 0 : roster.tactic) != null ? _e : "-").padEnd(9);
+      const n = ((_g = (_f = roster == null ? void 0 : roster.players) == null ? void 0 : _f.length) != null ? _g : 0) + "p";
+      lines.push(`0x${id.toString(16).padStart(2, "0").toUpperCase()}  ${name} ${type} ${formation} ${tactic} ${n}`);
     }
-    lines.push(sep);
-    lines.push(` TOTAL: ${ids.length} teams`);
+    lines.push("---------------------------------------------------------------");
+    lines.push(`TOTAL: ${ids.length} teams`);
     return lines.join("\n");
   }
-  function API_TEAM_DETAIL(teamId) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _i, _j, _k;
+  function buildAllTeamsTable() {
+    var _a, _b, _c, _d, _e, _f, _g;
+    const ids = listAllTeamIds();
+    const rows = [];
+    rows.push('<table class="teams"><thead><tr>');
+    rows.push("<th>ID</th><th>Name</th><th>Type</th><th>Formation</th><th>Tactic</th><th>N</th>");
+    rows.push("</tr></thead><tbody>");
+    for (const id of ids) {
+      const team = findTeamById(id);
+      const roster = findRosterById2(id);
+      rows.push(`<tr data-team-id="${id}">`);
+      rows.push(`<td class="id">0x${id.toString(16).padStart(2, "0").toUpperCase()}</td>`);
+      rows.push(`<td>${(_b = (_a = team == null ? void 0 : team.name) != null ? _a : roster == null ? void 0 : roster.name) != null ? _b : "?"}</td>`);
+      rows.push(`<td>${(_c = roster == null ? void 0 : roster.type) != null ? _c : "cpu"}</td>`);
+      rows.push(`<td>${(_d = roster == null ? void 0 : roster.formation) != null ? _d : "-"}</td>`);
+      rows.push(`<td>${(_e = roster == null ? void 0 : roster.tactic) != null ? _e : "-"}</td>`);
+      rows.push(`<td>${(_g = (_f = roster == null ? void 0 : roster.players) == null ? void 0 : _f.length) != null ? _g : 0}</td>`);
+      rows.push(`</tr>`);
+    }
+    rows.push("</tbody></table>");
+    return rows.join("");
+  }
+  function buildRosterTable(teamId) {
+    var _a, _b, _c, _d, _e, _f, _g, _h;
     const team = findTeamById(teamId);
     const roster = findRosterById2(teamId);
-    const lines = [];
+    if (!team && !roster) return `<div class="err">Team 0x${teamId.toString(16).padStart(2, "0").toUpperCase()} NOT FOUND</div>`;
     const teamName = ((_b = (_a = team == null ? void 0 : team.name) != null ? _a : roster == null ? void 0 : roster.name) != null ? _b : "?").toUpperCase();
-    lines.push(sep);
-    lines.push(`  GET /api/team/0x${teamId.toString(16).padStart(2, "0").toUpperCase()}/roster \u2014 ${teamName}`);
-    lines.push(sep);
-    lines.push(` Team       : ${(_d = (_c = team == null ? void 0 : team.name) != null ? _c : roster == null ? void 0 : roster.name) != null ? _d : "?"}`);
-    lines.push(` Type       : ${(_e = roster == null ? void 0 : roster.type) != null ? _e : "cpu"}`);
-    lines.push(` Formation  : ${(_f = roster == null ? void 0 : roster.formation) != null ? _f : "-"}`);
-    lines.push(` Tactic     : ${(_g = roster == null ? void 0 : roster.tactic) != null ? _g : "-"}`);
-    lines.push(` Roster     : ${(_i = (_h = roster == null ? void 0 : roster.players) == null ? void 0 : _h.length) != null ? _i : 0} players`);
-    if ((_j = roster == null ? void 0 : roster.subs) == null ? void 0 : _j.length) {
-      lines.push(` Subs       : ${roster.subs.length}`);
-    }
-    lines.push(sep2);
-    lines.push(row(
-      { s: "#", w: 3 },
-      { s: "ID", w: 6 },
-      { s: "NAME", w: 14 },
-      { s: "POS", w: 4 },
-      { s: "SHOT", w: 5, a: "right" },
-      { s: "PASS", w: 5, a: "right" },
-      { s: "DRB", w: 5, a: "right" },
-      { s: "BLK", w: 5, a: "right" },
-      { s: "TKL", w: 5, a: "right" },
-      { s: "ITC", w: 5, a: "right" },
-      { s: "STM", w: 5, a: "right" }
-    ));
-    lines.push(sep2);
-    const players = (_k = roster == null ? void 0 : roster.players) != null ? _k : [];
+    const rows = [];
+    rows.push(`<h2>${teamName} <span class="id">0x${teamId.toString(16).padStart(2, "0").toUpperCase()}</span></h2>`);
+    rows.push(`<div class="meta">Type: ${(_c = roster == null ? void 0 : roster.type) != null ? _c : "cpu"} \xB7 Formation: ${(_d = roster == null ? void 0 : roster.formation) != null ? _d : "-"} \xB7 Tactic: ${(_e = roster == null ? void 0 : roster.tactic) != null ? _e : "-"} \xB7 ${(_g = (_f = roster == null ? void 0 : roster.players) == null ? void 0 : _f.length) != null ? _g : 0} players</div>`);
+    rows.push('<table class="roster"><thead><tr>');
+    rows.push("<th>#</th><th>ID</th><th>Name</th><th>POS</th><th>SHOT</th><th>PASS</th><th>DRB</th><th>BLK</th><th>TKL</th><th>ITC</th><th>STM</th>");
+    rows.push("</tr></thead><tbody>");
+    const players = (_h = roster == null ? void 0 : roster.players) != null ? _h : [];
     players.forEach((pid, i) => {
-      var _a2, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i2;
+      var _a2, _b2, _c2, _d2, _e2, _f2, _g2, _h2, _i;
       const p = findPlayerById(pid);
       const pos = p ? ((_a2 = p.position) != null ? _a2 : 0) === 1 ? "GK" : "FW" : "-";
-      lines.push(row(
-        { s: (i + 1).toString(), w: 3 },
-        { s: "0x" + pid.toString(16).padStart(2, "0").toUpperCase(), w: 6 },
-        { s: (_b2 = p == null ? void 0 : p.name) != null ? _b2 : "???", w: 14 },
-        { s: pos, w: 4 },
-        { s: p ? ((_c2 = p.shot) != null ? _c2 : 0).toString() : "-", w: 5, a: "right" },
-        { s: p ? ((_d2 = p.pass) != null ? _d2 : 0).toString() : "-", w: 5, a: "right" },
-        { s: p ? ((_e2 = p.dribble) != null ? _e2 : 0).toString() : "-", w: 5, a: "right" },
-        { s: p ? ((_f2 = p.block) != null ? _f2 : 0).toString() : "-", w: 5, a: "right" },
-        { s: p ? ((_g2 = p.tackle) != null ? _g2 : 0).toString() : "-", w: 5, a: "right" },
-        { s: p ? ((_h2 = p.intercept) != null ? _h2 : 0).toString() : "-", w: 5, a: "right" },
-        { s: p ? ((_i2 = p.stamina) != null ? _i2 : 0).toString() : "-", w: 5, a: "right" }
-      ));
+      rows.push(`<tr><td>${i + 1}</td><td class="id">0x${pid.toString(16).padStart(2, "0").toUpperCase()}</td>`);
+      if (p) {
+        rows.push(`<td>${(_b2 = p.name) != null ? _b2 : "?"}</td>`);
+        rows.push(`<td class="pos-${pos.toLowerCase()}">${pos}</td>`);
+        rows.push(`<td>${(_c2 = p.shot) != null ? _c2 : 0}</td><td>${(_d2 = p.pass) != null ? _d2 : 0}</td><td>${(_e2 = p.dribble) != null ? _e2 : 0}</td>`);
+        rows.push(`<td>${(_f2 = p.block) != null ? _f2 : 0}</td><td>${(_g2 = p.tackle) != null ? _g2 : 0}</td><td>${(_h2 = p.intercept) != null ? _h2 : 0}</td><td>${(_i = p.stamina) != null ? _i : 0}</td>`);
+      } else {
+        rows.push(`<td>???</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>`);
+      }
+      rows.push("</tr>");
     });
-    return lines.join("\n");
+    rows.push("</tbody></table>");
+    return rows.join("");
   }
   if (typeof process !== "undefined" && process.stdout) {
-    console.log(API_ALL_TEAMS());
+    console.log(API_ALL_TEAMS_TEXT());
   }
   if (typeof document !== "undefined") {
     const listEl = document.getElementById("team-list");
     const detailEl = document.getElementById("team-detail");
     if (listEl) {
-      const ids = listAllTeamIds();
-      const lines = API_ALL_TEAMS().split("\n");
-      listEl.innerHTML = lines.map((line) => `<div class="line">${line.replace(/ /g, "&nbsp;")}</div>`).join("");
-      listEl.querySelectorAll("div.line").forEach((div) => {
-        const text = div.textContent || "";
-        const m = text.match(/^0x([0-9A-Fa-f]{2})\b/);
-        if (!m) return;
-        const id = parseInt(m[1], 16);
-        if (!ids.includes(id)) return;
-        const el = div;
-        el.classList.add("clickable");
-        el.dataset.teamId = id.toString();
-        el.onclick = () => {
-          if (detailEl) detailEl.innerHTML = API_TEAM_DETAIL(id).split("\n").map((l) => `<div class="line">${l.replace(/ /g, "&nbsp;")}</div>`).join("");
-          listEl.querySelectorAll("div.line.selected").forEach((d) => d.classList.remove("selected"));
-          el.classList.add("selected");
+      listEl.innerHTML = buildAllTeamsTable();
+      listEl.querySelectorAll("tr[data-team-id]").forEach((tr) => {
+        const id = parseInt(tr.dataset.teamId || "0", 10);
+        tr.onclick = () => {
+          if (detailEl) detailEl.innerHTML = buildRosterTable(id);
+          listEl.querySelectorAll("tr.selected").forEach((r) => r.classList.remove("selected"));
+          tr.classList.add("selected");
         };
       });
     }

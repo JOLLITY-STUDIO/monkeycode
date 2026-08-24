@@ -1,9 +1,7 @@
 "use strict";
-var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __esm = (fn, res, err) => function __init() {
   if (err) throw err[0];
@@ -25,14 +23,6 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/core/debug/pattern-table-viewer.ts
@@ -59,16 +49,16 @@ function drawBankBorders(buf, tableIdx) {
   }
 }
 function renderPatternTable(nes, tableIdx, paletteOffset = 0, paletteSrc) {
-  const ppu2 = nes.ppu;
+  const ppu = nes.ppu;
   const baseTile = tableIdx * 256;
   const buf = new Uint32Array(128 * 128);
-  const pal = paletteSrc || ppu2.imgPalette;
+  const pal = paletteSrc || ppu.imgPalette;
   const offset = paletteOffset * 4;
   const backdrop = pal[0];
   for (let ty = 0; ty < 16; ty++) {
     for (let tx = 0; tx < 16; tx++) {
       const tileIdx = baseTile + ty * 16 + tx;
-      const ptTile = ppu2.ptTile[tileIdx];
+      const ptTile = ppu.ptTile[tileIdx];
       const baseX = tx * 8;
       const baseY = ty * 8;
       if (ptTile && ptTile.pix) {
@@ -132,9 +122,9 @@ function buildChrBankMapByScanline(switches, initialBanks) {
   return out;
 }
 function renderPatternTableAtScanline(nes, tableIdx, slotBanks, paletteOffset = 0) {
-  const ppu2 = nes.ppu;
+  const ppu = nes.ppu;
   const buf = new Uint32Array(128 * 128);
-  const pal = ppu2.imgPalette;
+  const pal = ppu.imgPalette;
   const offset = paletteOffset * 4;
   const backdrop = pal[0];
   const vromTile = nes.rom && nes.rom.vromTile;
@@ -180,16 +170,16 @@ function renderBothPatternTablesAtScanline(nes, slotBanks, paletteOffset = 0) {
   };
 }
 function generatePTDataText(nes, frameCount) {
-  const ppu2 = nes.ppu;
-  if (!ppu2) return "";
+  const ppu = nes.ppu;
+  if (!ppu) return "";
   const mapper = nes.mmap;
   const isMmc1 = mapper && typeof mapper.vromSwitchingSize === "number";
   const chrBanks = mapper && mapper.chrBanks ? Array.from(mapper.chrBanks) : null;
   const lines = [];
   const COL_HEADER = "Row ";
-  const spTable = ppu2.f_spPatternTable ? 1 : 0;
+  const spTable = ppu.f_spPatternTable ? 1 : 0;
   const spAddr = spTable === 0 ? "$0000" : "$1000";
-  const bgAddr = ppu2.regS === 0 ? "$0000" : "$1000";
+  const bgAddr = ppu.regS === 0 ? "$0000" : "$1000";
   lines.push(`\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550\u2550`);
   lines.push(`Frame: #${frameCount ?? "?"}  |  Pattern Tables  (BG PT=${bgAddr}  SP PT=${spAddr})`);
   if (isMmc1) {
@@ -237,7 +227,7 @@ function generatePTDataText(nes, frameCount) {
       const row = [];
       for (let tx = 0; tx < 16; tx++) {
         const tileIdx = tableIdx * 256 + ty * 16 + tx;
-        const ptTile = ppu2.ptTile[tileIdx];
+        const ptTile = ppu.ptTile[tileIdx];
         const offset = ty % 4 * 16 + tx;
         const offStr = offset.toString(16).toUpperCase().padStart(2, "0");
         let chrStatus;
@@ -278,11 +268,6 @@ var init_pattern_table_viewer = __esm({
     chrSwitchLog = [];
   }
 });
-
-// scripts/_verify_300frame.ts
-var fs = __toESM(require("fs"));
-var path = __toESM(require("path"));
-var zlib = __toESM(require("zlib"));
 
 // src/game/header.ts
 var HEADER = new Uint8Array([
@@ -139603,8 +139588,8 @@ var OPENING_TILE_STREAMS = BANK7_TILE_STREAMS;
 
 // src/game/prg/code/system/RenderingPrimitivesService.ts
 var RenderingPrimitivesService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   // ──────────────────────────── 8bit × 8bit 乘法 ────────────────────────────
   multiplyU8(a, x) {
@@ -139638,71 +139623,71 @@ var RenderingPrimitivesService = class {
    * 将 palette.bg / palette.spr 按当前 fade 渐显后写入 NT 缓冲。
    */
   fadeWrite() {
-    const store = this.store;
-    const fadeA = store.fade.bg;
-    const fadeB = store.fade.spr;
+    const store2 = this.store;
+    const fadeA = store2.fade.bg;
+    const fadeB = store2.fade.spr;
     const data = [];
     for (let i = 0; i < 16; i++) {
-      data.push(this.fadeLookup(store.palette.bg[i], fadeA));
+      data.push(this.fadeLookup(store2.palette.bg[i], fadeA));
     }
     for (let i = 0; i < 16; i++) {
-      data.push(this.fadeLookup(store.palette.spr[i], fadeB));
+      data.push(this.fadeLookup(store2.palette.spr[i], fadeB));
     }
     this.ntBufferAppend({ vertical: false, ntAddr: 16128, data });
   }
   // ──────────────────────────── OAM 原语 ────────────────────────────
   /** 隐藏全部影子 OAM（store.oam.shaderOam / oam 写 $F8，并清零扩展表） */
   hideOam() {
-    const store = this.store;
-    const shadow = store.oam.shadowOam;
+    const store2 = this.store;
+    const shadow = store2.oam.shadowOam;
     for (let i = 0; i < 256; i += 4) {
       shadow[i] = 248;
-      store.writeByte(512 + i, 248);
+      store2.writeByte(512 + i, 248);
     }
-    store.writeByte(1384, 0);
-    store.writeByte(1416, 0);
-    store.writeByte(1448, 0);
-    store.writeByte(1480, 0);
+    store2.writeByte(1384, 0);
+    store2.writeByte(1416, 0);
+    store2.writeByte(1448, 0);
+    store2.writeByte(1480, 0);
   }
   /** 所有精灵 Y 坐标 += amount（store.oam.spriteY(i) += add） */
   oamDrift(amount) {
-    const store = this.store;
+    const store2 = this.store;
     const add = amount & 255;
     for (let i = 0; i < 256; i += 4) {
-      const y = store.oam.spriteY(i) + add & 255;
-      store.oam.setSpriteY(i, y);
+      const y = store2.oam.spriteY(i) + add & 255;
+      store2.oam.setSpriteY(i, y);
     }
   }
   /** 所有精灵属性 ^= $20（水平翻转位） */
   oamFlipAttrs() {
-    const store = this.store;
+    const store2 = this.store;
     for (let i = 0; i < 256; i += 4) {
-      const attr = store.oam.spriteAttr(i) ^ 32;
-      store.oam.setSpriteAttr(i, attr);
+      const attr = store2.oam.spriteAttr(i) ^ 32;
+      store2.oam.setSpriteAttr(i, attr);
     }
   }
   // ──────────────────────────── 清屏 / 填充 ────────────────────────────
   /** 关闭 NMI/MASK，整屏清 0，再恢复。NT + 属性表（$2000-$27FF） */
   clearNametable() {
-    const store = this.store;
-    store.ppuState.ctrl = store.ppuState.ctrl & 127;
-    store.ppuState.mask = store.ppuState.mask & 231;
+    const store2 = this.store;
+    store2.ppuState.ctrl = store2.ppuState.ctrl & 127;
+    store2.ppuState.mask = store2.ppuState.mask & 231;
     for (let addr = 8192; addr <= 10239; addr++) {
-      store.writeByte(addr, 0);
+      store2.writeByte(addr, 0);
     }
-    store.ppuState.mask = store.ppuState.mask | 24;
-    store.ppuState.ctrl = store.ppuState.ctrl | 128;
+    store2.ppuState.mask = store2.ppuState.mask | 24;
+    store2.ppuState.ctrl = store2.ppuState.ctrl | 128;
   }
   /**
    * 填充 Y 行 × X 列（每行 32 字节）的 NT/ATTR 区域。
    */
   fillNametableRows(addrLo, addrHi, rows, cols, value) {
-    const store = this.store;
+    const store2 = this.store;
     let addr = (addrHi & 255) << 8 | addrLo & 255;
     const v = value & 255;
     for (let r = 0; r < (rows & 255); r++) {
       for (let c = 0; c < (cols & 255); c++) {
-        store.writeByte(addr + c & 16383, v);
+        store2.writeByte(addr + c & 16383, v);
       }
       addr = addr + 32 & 16383;
     }
@@ -139710,32 +139695,32 @@ var RenderingPrimitivesService = class {
   // ──────────────────────────── 渐显 / 渐隐（单步） ────────────────────────────
   /** BG 渐隐一步：DEC fade.bg → 写满亮调色板 → 等 1 帧 */
   fadeBgStep() {
-    const store = this.store;
-    const a = store.fade.bg;
+    const store2 = this.store;
+    const a = store2.fade.bg;
     if (a === 0) return true;
-    store.fade.bg = a - 1;
+    store2.fade.bg = a - 1;
     this.fadeWrite();
     return false;
   }
   /** BG+SPR 渐隐一步：DEC fade.bg/fade.spr → 写满亮调色板 → 等 1 帧 */
   fadeOutStep() {
-    const store = this.store;
-    const a = store.fade.bg;
-    const b = store.fade.spr;
+    const store2 = this.store;
+    const a = store2.fade.bg;
+    const b = store2.fade.spr;
     if ((a | b) === 0) return true;
-    if (a !== 0) store.fade.bg = a - 1;
-    if (b !== 0) store.fade.spr = b - 1;
+    if (a !== 0) store2.fade.bg = a - 1;
+    if (b !== 0) store2.fade.spr = b - 1;
     this.fadeWrite();
     return false;
   }
   // ──────────────────────────── 调色板装载 + 满渐显 ────────────────────────────
   /** 装载 BG/SPR 调色板并设置 fade.bg = fade.spr = $0F 后写满亮调色板 */
   loadPalettesAndFade(bgIndex, sprIndex) {
-    const store = this.store;
+    const store2 = this.store;
     this.loadBgPalette(bgIndex);
     this.loadSprPalette(sprIndex);
-    store.fade.bg = 15;
-    store.fade.spr = 15;
+    store2.fade.bg = 15;
+    store2.fade.spr = 15;
     this.fadeWrite();
   }
   // ──────────────────────────── 场景数据装载 ────────────────────────────
@@ -139745,11 +139730,11 @@ var RenderingPrimitivesService = class {
    */
   loadSceneData(sceneId) {
     const entry = OPENING_SCENE_TABLE[sceneId & 15] ?? OPENING_SCENE_TABLE[0];
-    const store = this.store;
-    store.scene.scrollFlag = entry.scrollFlag;
-    store.writeByte(122, 0);
+    const store2 = this.store;
+    store2.scene.scrollFlag = entry.scrollFlag;
+    store2.writeByte(122, 0);
     for (let i = 0; i < 18; i++) {
-      store.writeByte(124 + i, entry.data[i] ?? 0);
+      store2.writeByte(124 + i, entry.data[i] ?? 0);
     }
   }
   // ──────────────────────────── CHR 配置读取 ────────────────────────────
@@ -139757,42 +139742,42 @@ var RenderingPrimitivesService = class {
    * 读取 CHR 配置（按 configId）
    */
   loadChrConfig(configId) {
-    const store = this.store;
+    const store2 = this.store;
     const cfg = OPENING_CHR_CONFIGS[configId & 31] ?? OPENING_CHR_CONFIGS[0];
-    store.writeByte(9, 0);
-    store.writeByte(10, 0);
-    store.writeByte(13, 0);
-    store.writeByte(14, 0);
-    store.writeByte(91, store.readByte(91) & 127);
-    store.writeByte(119, store.readByte(37));
+    store2.writeByte(9, 0);
+    store2.writeByte(10, 0);
+    store2.writeByte(13, 0);
+    store2.writeByte(14, 0);
+    store2.writeByte(91, store2.readByte(91) & 127);
+    store2.writeByte(119, store2.readByte(37));
     for (let i = 0; i < 8; i++) {
-      store.writeByte(1610 + i, 0);
+      store2.writeByte(1610 + i, 0);
     }
-    store.writeByte(117, cfg[0]);
-    store.writeByte(118, cfg[1]);
-    store.writeByte(72, cfg[2] & 63);
+    store2.writeByte(117, cfg[0]);
+    store2.writeByte(118, cfg[1]);
+    store2.writeByte(72, cfg[2] & 63);
     const flip = cfg[2] >> 6 & 1;
-    store.writeByte(91, store.readByte(91) & 127 | flip << 7);
-    store.writeByte(94, cfg[3]);
-    store.writeByte(95, cfg[4]);
+    store2.writeByte(91, store2.readByte(91) & 127 | flip << 7);
+    store2.writeByte(94, cfg[3]);
+    store2.writeByte(95, cfg[4]);
     let v = (2 << 8 | cfg[5] & 248) << 2;
     v = (v & 65280 | (v & 255 | cfg[5] & 7)) << 2;
-    store.writeByte(92, v & 255);
-    store.writeByte(93, v >> 8 & 255);
-    store.writeByte(142, cfg[0]);
-    store.writeByte(143, cfg[1]);
+    store2.writeByte(92, v & 255);
+    store2.writeByte(93, v >> 8 & 255);
+    store2.writeByte(142, cfg[0]);
+    store2.writeByte(143, cfg[1]);
     const ptr = OPENING_CHR_POINTER_TABLE[configId & 31] ?? OPENING_CHR_POINTER_TABLE[0];
-    store.writeByte(99, ptr & 255);
-    store.writeByte(100, ptr >> 8 & 255);
-    if ((store.readByte(93) & 12) === 0) {
-      const adj = (store.readByte(123) << 2 & 255 ^ store.readByte(91)) & 4;
-      store.writeByte(93, (store.readByte(93) | adj) & 255);
+    store2.writeByte(99, ptr & 255);
+    store2.writeByte(100, ptr >> 8 & 255);
+    if ((store2.readByte(93) & 12) === 0) {
+      const adj = (store2.readByte(123) << 2 & 255 ^ store2.readByte(91)) & 4;
+      store2.writeByte(93, (store2.readByte(93) | adj) & 255);
     }
-    const width = store.readByte(94);
+    const width = store2.readByte(94);
     if (width >= 9) {
       this.fillNametableRows(0, 32, 16, 32, 0);
       this.fillNametableRows(0, 36, 16, 32, 0);
-    } else if ((store.readByte(93) & 4) !== 0) {
+    } else if ((store2.readByte(93) & 4) !== 0) {
       this.fillNametableRows(0, 36, 16, 32, 0);
     } else {
       this.fillNametableRows(0, 32, 16, 32, 0);
@@ -139800,8 +139785,8 @@ var RenderingPrimitivesService = class {
     const stream = OPENING_TILE_STREAMS[configId & 31] ?? [];
     const cmd = stream.length > 1 ? stream[1] : 0;
     const param = (cmd & 31) !== 0 && stream.length > 2 ? stream[2] : 0;
-    store.writeByte(98, cmd);
-    store.writeByte(114, param);
+    store2.writeByte(98, cmd);
+    store2.writeByte(114, param);
   }
   // ──────────────────────────── 场景 3 NT 数据 ────────────────────────────
   /**
@@ -139832,10 +139817,10 @@ var SCENE_LOAD_UP_BOUND = [16, 4, 32, 5, 96, 6, 255];
 var SCENE_LOAD_SUB = [0, 3, 16, 4, 32, 5, 96, 6, 255];
 var SCENE_LOAD_PARAM = [3, 16, 4, 32, 5, 96, 6, 255];
 var GameSystemService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
     this.router = null;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   /** 注入场景路由 */
   attachRouter(router) {
@@ -139851,20 +139836,20 @@ var GameSystemService = class {
    * - 场景号写回 ram_00ED 并路由到对应场景控制器
    */
   sceneLoad(sceneId) {
-    const store = this.store;
+    const store2 = this.store;
     const s = sceneId & 255;
     let y = 1;
     while (y < SCENE_LOAD_UP_BOUND.length && s >= SCENE_LOAD_UP_BOUND[y]) y++;
     const a = s - SCENE_LOAD_SUB[y] & 255;
-    store.writeByte(77, a << 1 & 255);
-    store.writeByte(78, 160 + (a << 1 >> 8) & 255);
-    store.writeByte(86, SCENE_LOAD_PARAM[y] ?? 0);
-    store.writeByte(237, store.readByte(37));
-    store.writeByte(1618, 0);
-    store.writeByte(230, 224);
-    store.writeByte(231, 35);
+    store2.writeByte(77, a << 1 & 255);
+    store2.writeByte(78, 160 + (a << 1 >> 8) & 255);
+    store2.writeByte(86, SCENE_LOAD_PARAM[y] ?? 0);
+    store2.writeByte(237, store2.readByte(37));
+    store2.writeByte(1618, 0);
+    store2.writeByte(230, 224);
+    store2.writeByte(231, 35);
     this.prim.fillNametableRows(224, 35, 1, 32, 85);
-    store.writeByte(237, s);
+    store2.writeByte(237, s);
     this.router?.changeScene(s);
   }
   /**
@@ -139876,20 +139861,20 @@ var GameSystemService = class {
    * 帧驱动由外层循环承担。
    */
   update(frame, router) {
-    const store = this.store;
-    store.frame = frame;
-    const mode = store.readByte(39) & 7;
+    const store2 = this.store;
+    store2.frame = frame;
+    const mode = store2.readByte(39) & 7;
     if (mode === 0) {
-      const step = store.readByte(38);
-      if (step >= store.readByte(228)) {
-        store.writeByte(228, step);
+      const step = store2.readByte(38);
+      if (step >= store2.readByte(228)) {
+        store2.writeByte(228, step);
         this.sceneLoad(step);
       }
       return;
     }
     if (mode === 1 || mode === 3) {
-      const t = store.readByte(40);
-      const limit = store.readByte(41);
+      const t = store2.readByte(40);
+      const limit = store2.readByte(41);
       if (t > limit) {
         this.mainLoopStep();
       }
@@ -139899,18 +139884,18 @@ var GameSystemService = class {
       this.mainLoopStep();
       return;
     }
-    if (store.readByte(40) !== store.readByte(41)) {
+    if (store2.readByte(40) !== store2.readByte(41)) {
       this.sceneLoad(96);
       this.prim.fadeOutStep();
     }
-    store.writeByte(39, 0);
+    store2.writeByte(39, 0);
   }
   /** 场景步进：$0026++ → $0027=0 → 装载场景 */
   mainLoopStep() {
-    const store = this.store;
-    const step = store.readByte(38) + 1 & 255;
-    store.writeByte(38, step);
-    store.writeByte(39, 0);
+    const store2 = this.store;
+    const step = store2.readByte(38) + 1 & 255;
+    store2.writeByte(38, step);
+    store2.writeByte(39, 0);
     this.sceneLoad(step);
   }
   /**
@@ -139937,8 +139922,8 @@ var GameSystemService = class {
 
 // src/game/prg/code/scene/SceneController.ts
 var SceneController = class {
-  constructor(store, input) {
-    this.store = store;
+  constructor(store2, input) {
+    this.store = store2;
     this.input = input;
   }
   /** 每帧渲染（写入渲染缓冲/调色板） */
@@ -139949,10 +139934,10 @@ var SceneController = class {
 // src/game/prg/code/scene/SceneUtilitiesControllers.ts
 var NEXT = 2;
 var Scene1Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
+  constructor(store2, input) {
+    super(store2, input);
     this.sceneId = 1;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
   }
@@ -139967,9 +139952,9 @@ var Scene2Controller = class extends SceneController {
     this.sceneId = 2;
   }
   onEnter() {
-    const store = this.store;
+    const store2 = this.store;
     for (const addr of [1384, 1416, 1448, 1480]) {
-      store.writeByte(addr, 0);
+      store2.writeByte(addr, 0);
     }
   }
   onUpdate(_frame) {
@@ -139982,9 +139967,9 @@ var Scene3Controller = class extends SceneController {
     this.sceneId = 3;
   }
   onEnter() {
-    const store = this.store;
+    const store2 = this.store;
     for (let addr = 8192; addr <= 11263; addr++) {
-      store.writeByte(addr, 0);
+      store2.writeByte(addr, 0);
     }
   }
   onUpdate(_frame) {
@@ -139997,9 +139982,9 @@ var Scene4Controller = class extends SceneController {
     this.sceneId = 4;
   }
   onEnter() {
-    const store = this.store;
+    const store2 = this.store;
     for (let addr = 512; addr <= 767; addr++) {
-      store.writeByte(addr, 248);
+      store2.writeByte(addr, 248);
     }
   }
   onUpdate(_frame) {
@@ -140065,10 +140050,10 @@ var Scene9Controller = class extends SceneController {
   }
 };
 var Scene10Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
+  constructor(store2, input) {
+    super(store2, input);
     this.sceneId = 10;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
     this.prim.loadChrConfig(0);
@@ -140079,16 +140064,16 @@ var Scene10Controller = class extends SceneController {
   }
 };
 var Scene11Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
+  constructor(store2, input) {
+    super(store2, input);
     this.sceneId = 11;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
-    const store = this.store;
-    if (store.readByte(13) !== 0) {
-      store.writeByte(13, 0);
-      store.writeByte(14, 0);
+    const store2 = this.store;
+    if (store2.readByte(13) !== 0) {
+      store2.writeByte(13, 0);
+      store2.writeByte(14, 0);
     } else {
       this.prim.loadChrConfig(0);
       this.prim.loadSceneData(6);
@@ -140099,16 +140084,16 @@ var Scene11Controller = class extends SceneController {
   }
 };
 var Scene12Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
+  constructor(store2, input) {
+    super(store2, input);
     this.sceneId = 12;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
-    const store = this.store;
-    if (store.readByte(13) !== 0) {
-      store.writeByte(13, 0);
-      store.writeByte(14, 0);
+    const store2 = this.store;
+    if (store2.readByte(13) !== 0) {
+      store2.writeByte(13, 0);
+      store2.writeByte(14, 0);
     } else {
       this.prim.loadChrConfig(0);
       this.prim.loadSceneData(8);
@@ -140119,10 +140104,10 @@ var Scene12Controller = class extends SceneController {
   }
 };
 var Scene13Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
+  constructor(store2, input) {
+    super(store2, input);
     this.sceneId = 13;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
     this.prim.loadChrConfig(0);
@@ -140136,38 +140121,38 @@ var Scene13Controller = class extends SceneController {
 // src/game/prg/code/scene/Scene14to23Controllers.ts
 var NEXT2 = 2;
 var Scene14Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
+  constructor(store2, input) {
+    super(store2, input);
     this.sceneId = 14;
     this.step = 0;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
     this.step = 0;
   }
   onUpdate(_frame) {
-    const store = this.store;
+    const store2 = this.store;
     switch (this.step) {
       case 0: {
         for (let addr = 9216; addr <= 11263; addr++) {
-          store.writeByte(addr, 85);
+          store2.writeByte(addr, 85);
         }
         this.step = 1;
         return void 0;
       }
       case 1: {
-        this.prim.loadPalettesAndFade(4, store.readByte(37) & 15);
+        this.prim.loadPalettesAndFade(4, store2.readByte(37) & 15);
         this.step = 2;
         return void 0;
       }
       case 2: {
-        store.writeByte(27, store.readByte(27) & 127);
-        store.writeByte(76, 130);
+        store2.writeByte(27, store2.readByte(27) & 127);
+        store2.writeByte(76, 130);
         this.step = 3;
         return void 0;
       }
       case 3: {
-        store.writeByte(1384, 0);
+        store2.writeByte(1384, 0);
         return NEXT2;
       }
       default:
@@ -140176,14 +140161,14 @@ var Scene14Controller = class extends SceneController {
   }
 };
 var Scene15Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
+  constructor(store2, input) {
+    super(store2, input);
     this.sceneId = 15;
     /** 流指针：当前位置（$05E8 缓冲消费游标） */
     this.cursor = 0;
     /** 等帧计数 */
     this.waitFrames = 0;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
     this.cursor = 0;
@@ -140194,33 +140179,33 @@ var Scene15Controller = class extends SceneController {
       this.waitFrames--;
       return void 0;
     }
-    const store = this.store;
+    const store2 = this.store;
     const bufAddr = 1512;
-    const count = store.readByte(bufAddr);
+    const count = store2.readByte(bufAddr);
     if (count === 0) {
       return NEXT2;
     }
     if ((count & 128) !== 0) {
       const rep = count & 127;
-      const addrHi = store.readByte(bufAddr + 1);
-      const addrLo = store.readByte(bufAddr + 2);
-      const tile = store.readByte(bufAddr + 3);
+      const addrHi = store2.readByte(bufAddr + 1);
+      const addrLo = store2.readByte(bufAddr + 2);
+      const tile = store2.readByte(bufAddr + 3);
       const ntAddr = (addrHi & 63) << 8 | addrLo;
       const data = [];
       for (let i = 0; i < rep; i++) data.push(tile);
       this.prim.ntBufferAppend({ vertical: false, ntAddr, data });
-      store.writeByte(bufAddr, 0);
+      store2.writeByte(bufAddr, 0);
       this.waitFrames = 1;
       return void 0;
     } else {
       const len = count;
-      const addrHi = store.readByte(bufAddr + 1);
-      const addrLo = store.readByte(bufAddr + 2);
+      const addrHi = store2.readByte(bufAddr + 1);
+      const addrLo = store2.readByte(bufAddr + 2);
       const ntAddr = (addrHi & 63) << 8 | addrLo;
       const data = [];
-      for (let i = 0; i < len; i++) data.push(store.readByte(bufAddr + 3 + i));
+      for (let i = 0; i < len; i++) data.push(store2.readByte(bufAddr + 3 + i));
       this.prim.ntBufferAppend({ vertical: false, ntAddr, data });
-      store.writeByte(bufAddr, 0);
+      store2.writeByte(bufAddr, 0);
       return void 0;
     }
   }
@@ -140231,25 +140216,25 @@ var Scene16Controller = class extends SceneController {
     this.sceneId = 16;
   }
   onEnter() {
-    const store = this.store;
-    if ((store.readByte(91) & 64) !== 0) {
+    const store2 = this.store;
+    if ((store2.readByte(91) & 64) !== 0) {
       for (let i = 0; i < 64; i++) {
-        const palByte = store.readByte(576 + i);
-        store.writeByte(515 + i * 4, palByte & 3);
+        const palByte = store2.readByte(576 + i);
+        store2.writeByte(515 + i * 4, palByte & 3);
       }
     }
     let addr = 672;
     while (addr < 1024) {
-      const y = store.readByte(addr);
+      const y = store2.readByte(addr);
       if (y === 255) break;
-      const tile = store.readByte(addr + 1);
-      const attr = store.readByte(addr + 2);
-      const x = store.readByte(addr + 3);
+      const tile = store2.readByte(addr + 1);
+      const attr = store2.readByte(addr + 2);
+      const x = store2.readByte(addr + 3);
       const slot = (addr - 672) * 4;
-      store.writeByte(512 + slot, y);
-      store.writeByte(513 + slot, tile);
-      store.writeByte(514 + slot, attr);
-      store.writeByte(515 + slot, x);
+      store2.writeByte(512 + slot, y);
+      store2.writeByte(513 + slot, tile);
+      store2.writeByte(514 + slot, attr);
+      store2.writeByte(515 + slot, x);
       addr += 4;
     }
   }
@@ -140258,10 +140243,10 @@ var Scene16Controller = class extends SceneController {
   }
 };
 var Scene17Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
+  constructor(store2, input) {
+    super(store2, input);
     this.sceneId = 17;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
     this.prim.loadChrConfig(0);
@@ -140271,11 +140256,11 @@ var Scene17Controller = class extends SceneController {
   }
 };
 var Scene18Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
+  constructor(store2, input) {
+    super(store2, input);
     this.sceneId = 18;
     this.wait = 0;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
     this.wait = 2;
@@ -140303,7 +140288,7 @@ var Scene19Controller = class extends SceneController {
     this.cleared = false;
   }
   onUpdate(_frame) {
-    const store = this.store;
+    const store2 = this.store;
     if (this.wait > 0) {
       this.wait--;
       return void 0;
@@ -140311,7 +140296,7 @@ var Scene19Controller = class extends SceneController {
     if (this.iter >= 64) {
       if (!this.cleared) {
         for (const addr of [1384, 1416, 1448, 1480]) {
-          store.writeByte(addr, 0);
+          store2.writeByte(addr, 0);
         }
         this.cleared = true;
         this.wait = 1;
@@ -140321,10 +140306,10 @@ var Scene19Controller = class extends SceneController {
     }
     if (this.iter > 0) {
       for (let i = 0; i < 256; i += 4) {
-        const y = store.readByte(512 + i);
+        const y = store2.readByte(512 + i);
         if (y >= 240) {
-          const attr = store.readByte(514 + i);
-          store.writeByte(514 + i, attr | 8);
+          const attr = store2.readByte(514 + i);
+          store2.writeByte(514 + i, attr | 8);
         }
       }
     }
@@ -140352,10 +140337,10 @@ var Scene20Controller = class extends SceneController {
   }
 };
 var Scene21Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
+  constructor(store2, input) {
+    super(store2, input);
     this.sceneId = 21;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
     this.prim.loadChrConfig(0);
@@ -140383,12 +140368,12 @@ var Scene22Controller = class extends SceneController {
     if (this.iter >= 128) {
       return NEXT2;
     }
-    const store = this.store;
+    const store2 = this.store;
     for (let i = 0; i < 256; i += 4) {
-      const y = store.readByte(512 + i);
+      const y = store2.readByte(512 + i);
       if (y >= 240) {
-        const attr = store.readByte(514 + i);
-        store.writeByte(514 + i, attr | 4);
+        const attr = store2.readByte(514 + i);
+        store2.writeByte(514 + i, attr | 4);
       }
     }
     this.iter++;
@@ -140410,22 +140395,22 @@ var Scene23Controller = class extends SceneController {
       this.wait--;
       return void 0;
     }
-    const store = this.store;
-    const lo = store.readByte(1128);
-    const hi = store.readByte(1129);
+    const store2 = this.store;
+    const lo = store2.readByte(1128);
+    const hi = store2.readByte(1129);
     const value = hi << 8 | lo;
     const hiNib = value >> 4 & 15;
     const loNib = value & 15;
-    store.writeByte(513, hiNib);
-    store.writeByte(517, loNib);
+    store2.writeByte(513, hiNib);
+    store2.writeByte(517, loNib);
     return NEXT2;
   }
 };
 
 // src/game/prg/code/system/BootRouter.ts
 var SceneStubController = class extends SceneController {
-  constructor(store, input, sceneId) {
-    super(store, input);
+  constructor(store2, input, sceneId) {
+    super(store2, input);
     this.sceneId = sceneId;
   }
   onEnter() {
@@ -140435,8 +140420,8 @@ var SceneStubController = class extends SceneController {
   }
 };
 var BootRouter = class {
-  constructor(store, input, scene0) {
-    this.store = store;
+  constructor(store2, input, scene0) {
+    this.store = store2;
     this.input = input;
     /** 场景控制器注册表（sceneId → controller） */
     this.scenes = /* @__PURE__ */ new Map();
@@ -140482,15 +140467,15 @@ var BootRouter = class {
    * - scene.currentSceneId 具名写回并分发
    */
   changeScene(sceneId) {
-    const store = this.store;
-    store.writeByte(1129, 0);
-    for (let i = 512; i < 768; i++) store.writeByte(i, 248);
-    for (let addr = 8192; addr <= 9215; addr++) store.writeByte(addr, 0);
-    store.ppuState.ctrl = 8;
-    store.ppuState.mask = 30;
-    store.ppuState.chrSelBase = 0;
+    const store2 = this.store;
+    store2.writeByte(1129, 0);
+    for (let i = 512; i < 768; i++) store2.writeByte(i, 248);
+    for (let addr = 8192; addr <= 9215; addr++) store2.writeByte(addr, 0);
+    store2.ppuState.ctrl = 8;
+    store2.ppuState.mask = 30;
+    store2.ppuState.chrSelBase = 0;
     this.currentSceneId = sceneId;
-    store.scene.currentSceneId = sceneId;
+    store2.scene.currentSceneId = sceneId;
     const controller = this.getController(sceneId);
     this.current = controller;
     controller?.onEnter();
@@ -140668,8 +140653,8 @@ function getPlayerBase(playerId) {
   return entry?.baseAddr ?? DEFAULT_PLAYER_BASE;
 }
 var HardwareInitService = class _HardwareInitService {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
     /** H5 任务回调表（原 CPU 栈跳转 → 函数调用）；未注册回调的槽只做 RAM 状态推进 */
     this.taskCallbacks = new Array(7).fill(null);
     /** 最近触发槽（$CB0F 挂起目标） */
@@ -140691,34 +140676,34 @@ var HardwareInitService = class _HardwareInitService {
    * 12. 帧计数归零
    */
   reset() {
-    const store = this.store;
-    store.reset();
-    store.loadInitTable(RAM_INIT_TABLE);
-    for (let i = 512; i < 768; i++) store.writeByte(i, OAM_HIDE_VALUE);
+    const store2 = this.store;
+    store2.reset();
+    store2.loadInitTable(RAM_INIT_TABLE);
+    for (let i = 512; i < 768; i++) store2.writeByte(i, OAM_HIDE_VALUE);
     this.clearGameRam();
-    store.scene.flags = 0;
-    store.writeByte(1599, 0);
-    store.ppuState.ctrl = 8;
-    store.ppuState.mask = 30;
-    store.writeByte(1132, 32);
-    store.writeByte(1133, 0);
-    store.writeByte(1134, 63);
+    store2.scene.flags = 0;
+    store2.writeByte(1599, 0);
+    store2.ppuState.ctrl = 8;
+    store2.ppuState.mask = 30;
+    store2.writeByte(1132, 32);
+    store2.writeByte(1133, 0);
+    store2.writeByte(1134, 63);
     this.loadPaletteAt(0, 18);
     this.loadPaletteAt(16, 18);
     this.queueRenderEntry(0, 1132);
     for (let i = 0; i < BOOT_05EB_TABLE.length; i++) {
-      store.writeByte(1515 + i, BOOT_05EB_TABLE[i]);
+      store2.writeByte(1515 + i, BOOT_05EB_TABLE[i]);
     }
     this.registerTask(0, 40, 33, 202);
     this.registerTask(1, 80, 29, 209);
     this.registerTask(2, 120, 133, 235);
-    const ctrl = store.ppuState.ctrl | 128;
-    store.ppuState.ctrl = ctrl;
-    store.writeByte(25, ctrl);
-    store.ppuState.chrSelBase = 0;
-    store.writeByte(1168, 0);
-    store.writeByte(1169, 2);
-    store.frame = 0;
+    const ctrl = store2.ppuState.ctrl | 128;
+    store2.ppuState.ctrl = ctrl;
+    store2.writeByte(25, ctrl);
+    store2.ppuState.chrSelBase = 0;
+    store2.writeByte(1168, 0);
+    store2.writeByte(1169, 2);
+    store2.frame = 0;
   }
   /**
    * 调色板装载：index → 16 字节 → $046F+x。
@@ -140727,12 +140712,12 @@ var HardwareInitService = class _HardwareInitService {
    * @param index 调色板表索引
    */
   loadPaletteAt(x, index) {
-    const store = this.store;
+    const store2 = this.store;
     const item = loadPalette(index & 255);
     for (let i = 0; i < 16; i++) {
-      store.writeByte(1135 + x + i, item[i]);
+      store2.writeByte(1135 + x + i, item[i]);
     }
-    store.writeByte(1132, 32);
+    store2.writeByte(1132, 32);
   }
   /**
    * $0498 渲染队列入队。
@@ -140742,20 +140727,20 @@ var HardwareInitService = class _HardwareInitService {
    * @param ptr 流起始 CPU 地址（RAM 区读 store）
    */
   queueRenderEntry(bank, ptr) {
-    const store = this.store;
-    const count = store.readByte(1176);
+    const store2 = this.store;
+    const count = store2.readByte(1176);
     if (count >= 84) return;
-    store.writeByte(1177 + count * 3, bank & 255);
-    store.writeByte(1178 + count * 3, ptr & 255);
-    store.writeByte(1179 + count * 3, ptr >> 8 & 255);
-    store.writeByte(1176, count + 1 & 255);
+    store2.writeByte(1177 + count * 3, bank & 255);
+    store2.writeByte(1178 + count * 3, ptr & 255);
+    store2.writeByte(1179 + count * 3, ptr >> 8 & 255);
+    store2.writeByte(1176, count + 1 & 255);
   }
   /** 游戏 RAM 大块清零（$0468-$05FF / $0668-$06FE / $003A-$00DE） */
   clearGameRam() {
-    const store = this.store;
-    for (let a = 1128; a <= 1535; a++) store.writeByte(a, 0);
-    for (let a = 1640; a <= 1790; a++) store.writeByte(a, 0);
-    for (let a = 58; a <= 222; a++) store.writeByte(a, 0);
+    const store2 = this.store;
+    for (let a = 1128; a <= 1535; a++) store2.writeByte(a, 0);
+    for (let a = 1640; a <= 1790; a++) store2.writeByte(a, 0);
+    for (let a = 58; a <= 222; a++) store2.writeByte(a, 0);
   }
   /**
    * 清空 NameTable 0/1（$2000 与 $2400 起各 0x04C0 字节 + 64 属性）。
@@ -140767,22 +140752,22 @@ var HardwareInitService = class _HardwareInitService {
   }
   /** 清单个 NT（基址高字节 0x20/0x24） */
   clearOneNameTable(hi) {
-    const store = this.store;
+    const store2 = this.store;
     const base = hi << 8;
-    for (let i = 0; i < 1216; i++) store.writeByte(base + i, 0);
-    for (let i = 0; i < 64; i++) store.writeByte(base + 1216 + i, 0);
+    for (let i = 0; i < 1216; i++) store2.writeByte(base + i, 0);
+    for (let i = 0; i < 64; i++) store2.writeByte(base + 1216 + i, 0);
   }
   /**
    * 场景切换前序：关 IRQ / 隐藏 OAM / 清 NT / PPU CTRL+MASK / bank 基址=0
    */
   prepareScene(sceneId) {
-    const store = this.store;
-    store.writeByte(1129, 0);
-    for (let i = 512; i < 768; i++) store.writeByte(i, OAM_HIDE_VALUE);
+    const store2 = this.store;
+    store2.writeByte(1129, 0);
+    for (let i = 512; i < 768; i++) store2.writeByte(i, OAM_HIDE_VALUE);
     this.clearNameTables();
-    store.ppuState.ctrl = 8;
-    store.ppuState.mask = 30;
-    store.ppuState.chrSelBase = 0;
+    store2.ppuState.ctrl = 8;
+    store2.ppuState.mask = 30;
+    store2.ppuState.chrSelBase = 0;
     void sceneId;
   }
   static {
@@ -140798,27 +140783,27 @@ var HardwareInitService = class _HardwareInitService {
    * H5 由 BootRouter 每帧调用。
    */
   tick() {
-    const store = this.store;
+    const store2 = this.store;
     const slots = _HardwareInitService.TASK_SLOTS;
     for (let i = 0; i < slots.length; i++) {
       const x = slots[i];
-      const st = store.readByte(x);
+      const st = store2.readByte(x);
       if (st === 0) continue;
       if (st === 255) {
         this.dispatchTask(i, x);
         continue;
       }
       const n = st - 1 & 255;
-      store.writeByte(x, n);
+      store2.writeByte(x, n);
       if (n !== 0) continue;
       this.dispatchTask(i, x);
     }
   }
   /** 槽触发 → 执行 H5 回调（原 RTS 弹栈跳入口） */
   dispatchTask(i, x) {
-    const store = this.store;
+    const store2 = this.store;
     const fn = this.taskCallbacks[i];
-    store.writeByte(x, 0);
+    store2.writeByte(x, 0);
     this.lastFiredSlot = i;
     if (fn) fn();
   }
@@ -140826,21 +140811,21 @@ var HardwareInitService = class _HardwareInitService {
    * 触发任务（槽 sp≠0 且状态==0 → 状态=1，下一帧执行）。
    */
   triggerTask(slotIndex) {
-    const store = this.store;
+    const store2 = this.store;
     const x = _HardwareInitService.TASK_SLOTS[slotIndex] ?? 1;
-    if (store.readByte(x + 1) === 0) return;
-    if (store.readByte(x) !== 0) return;
-    store.writeByte(x, 1);
+    if (store2.readByte(x + 1) === 0) return;
+    if (store2.readByte(x) !== 0) return;
+    store2.writeByte(x, 1);
   }
   /**
    * 音频请求入队（$0700 起 5 槽，空槽写入 A）。
    * 消费方：AudioService。
    */
   requestAudio(a) {
-    const store = this.store;
+    const store2 = this.store;
     for (let x = 0; x < 5; x++) {
-      if (store.readByte(1792 + x) === 0) {
-        store.writeByte(1792 + x, a & 255);
+      if (store2.readByte(1792 + x) === 0) {
+        store2.writeByte(1792 + x, a & 255);
         return;
       }
     }
@@ -140850,10 +140835,10 @@ var HardwareInitService = class _HardwareInitService {
    * 消费方：AudioService。
    */
   playSe(seId) {
-    const store = this.store;
-    store.writeByte(1304, seId);
-    store.writeByte(1302, 128);
-    store.writeByte(5, 0);
+    const store2 = this.store;
+    store2.writeByte(1304, seId);
+    store2.writeByte(1302, 128);
+    store2.writeByte(5, 0);
   }
   /**
    * 球员数据指针查表。
@@ -140861,11 +140846,11 @@ var HardwareInitService = class _HardwareInitService {
    * 结果写入 $0034/$0035（原版间接指针视图），并返回。
    */
   resolvePlayerPointer() {
-    const store = this.store;
-    const a = (store.readByte(1531) ^ 11) << 1 & 255;
+    const store2 = this.store;
+    const a = (store2.readByte(1531) ^ 11) << 1 & 255;
     const ptr = getPlayerBase(a >> 1);
-    store.writeByte(52, ptr & 255);
-    store.writeByte(53, ptr >> 8 & 255);
+    store2.writeByte(52, ptr & 255);
+    store2.writeByte(53, ptr >> 8 & 255);
     return ptr;
   }
   /**
@@ -140912,12 +140897,12 @@ var HardwareInitService = class _HardwareInitService {
    *   ID==0 或 ID==$0B 时额外 [baseAddr+$07]=0。
    */
   clearAllPlayers() {
-    const store = this.store;
+    const store2 = this.store;
     for (let id = 0; id < 22; id++) {
       const base = getPlayerBase(id);
-      store.writeByte(base + 10, 0);
+      store2.writeByte(base + 10, 0);
       if (id === 0 || id === 11) {
-        store.writeByte(base + 7, 0);
+        store2.writeByte(base + 7, 0);
       }
     }
   }
@@ -140926,10 +140911,10 @@ var HardwareInitService = class _HardwareInitService {
    * 结果写入 $0034/$0035（原版间接指针视图），并返回。
    */
   resolvePlayerPointerById(id) {
-    const store = this.store;
+    const store2 = this.store;
     const ptr = getPlayerBase(id & 255);
-    store.writeByte(52, ptr & 255);
-    store.writeByte(53, ptr >> 8 & 255);
+    store2.writeByte(52, ptr & 255);
+    store2.writeByte(53, ptr >> 8 & 255);
     return ptr;
   }
   /**
@@ -140938,11 +140923,11 @@ var HardwareInitService = class _HardwareInitService {
    * 与 $0635/$0637 差值的绝对值均 < $0047（半径）→ 碰撞（返回 true）。
    */
   checkPlayerCollision(ptr) {
-    const store = this.store;
-    const dx = Math.abs((store.readByte(ptr + 6) & 255) - store.readByte(1589));
-    if (dx >= store.readByte(71)) return false;
-    const dy = Math.abs((store.readByte(ptr + 8) & 255) - store.readByte(1591));
-    if (dy >= store.readByte(71)) return false;
+    const store2 = this.store;
+    const dx = Math.abs((store2.readByte(ptr + 6) & 255) - store2.readByte(1589));
+    if (dx >= store2.readByte(71)) return false;
+    const dy = Math.abs((store2.readByte(ptr + 8) & 255) - store2.readByte(1591));
+    if (dy >= store2.readByte(71)) return false;
     return true;
   }
   /**
@@ -140950,10 +140935,10 @@ var HardwareInitService = class _HardwareInitService {
    * 逐位 ROR 移位累加（ROR $0068 → ROR $0067 → 进位入累加器高位）。
    */
   mult16() {
-    const store = this.store;
-    let lo = store.readByte(104);
-    let hi = store.readByte(103);
-    const m = store.readByte(105) | store.readByte(106) << 8;
+    const store2 = this.store;
+    let lo = store2.readByte(104);
+    let hi = store2.readByte(103);
+    const m = store2.readByte(105) | store2.readByte(106) << 8;
     let acc = 0;
     for (let i = 0; i < 16; i++) {
       const bit = lo & 1;
@@ -140967,19 +140952,19 @@ var HardwareInitService = class _HardwareInitService {
       }
       acc = (acc >>> 1 | carry << 31) & 4294967295;
     }
-    store.writeByte(107, acc & 255);
-    store.writeByte(108, acc >>> 8 & 255);
-    store.writeByte(109, acc >>> 16 & 255);
-    store.writeByte(110, acc >>> 24 & 255);
+    store2.writeByte(107, acc & 255);
+    store2.writeByte(108, acc >>> 8 & 255);
+    store2.writeByte(109, acc >>> 16 & 255);
+    store2.writeByte(110, acc >>> 24 & 255);
   }
   /**
    * 16bit ÷ 16bit（$006F/$0070 ÷ $0071/$0074 → 商 $006F/$0070、余 $0072/$0073）。
    * 恢复除除：每次迭代余数左移并入被除后最高位，够减则减并置商位。
    */
   div16() {
-    const store = this.store;
-    let q = store.readByte(111) | store.readByte(112) << 8;
-    const d = store.readByte(113) | store.readByte(116) << 8;
+    const store2 = this.store;
+    let q = store2.readByte(111) | store2.readByte(112) << 8;
+    const d = store2.readByte(113) | store2.readByte(116) << 8;
     let r = 0;
     for (let i = 0; i < 16; i++) {
       const bit = q >>> 15 & 1;
@@ -140990,10 +140975,10 @@ var HardwareInitService = class _HardwareInitService {
         q |= 1;
       }
     }
-    store.writeByte(111, q & 255);
-    store.writeByte(112, q >>> 8 & 255);
-    store.writeByte(114, r & 255);
-    store.writeByte(115, r >>> 8 & 255);
+    store2.writeByte(111, q & 255);
+    store2.writeByte(112, q >>> 8 & 255);
+    store2.writeByte(114, r & 255);
+    store2.writeByte(115, r >>> 8 & 255);
   }
   /**
    * 注册任务（H5 回调版）：
@@ -141002,11 +140987,11 @@ var HardwareInitService = class _HardwareInitService {
    * - 注册 H5 回调（原 CPU 入口对应函数）
    */
   registerTask(slotIndex, sp, entryHi, entryLo, fn) {
-    const store = this.store;
+    const store2 = this.store;
     const x = _HardwareInitService.TASK_SLOTS[slotIndex] ?? 1;
-    store.writeByte(257 + sp, entryHi);
-    store.writeByte(258 + sp, entryLo);
-    store.writeByte(x, 255);
+    store2.writeByte(257 + sp, entryHi);
+    store2.writeByte(258 + sp, entryLo);
+    store2.writeByte(x, 255);
     if (fn) this.taskCallbacks[slotIndex] = fn;
   }
   /**
@@ -141014,16 +140999,16 @@ var HardwareInitService = class _HardwareInitService {
    * 0 = 下一帧恢复。
    */
   suspendTask(countdown) {
-    const store = this.store;
+    const store2 = this.store;
     const x = _HardwareInitService.TASK_SLOTS[this.lastFiredSlot] ?? 1;
-    store.writeByte(x, countdown & 255);
+    store2.writeByte(x, countdown & 255);
   }
 };
 
 // src/game/prg/code/system/InterruptService.ts
 var InterruptService = class {
-  constructor(store, input) {
-    this.store = store;
+  constructor(store2, input) {
+    this.store = store2;
     this.input = input;
     this.router = null;
     this.audio = null;
@@ -141046,12 +141031,12 @@ var InterruptService = class {
    * 4. 主渲染路径标志置位
    */
   nmi(frame) {
-    const store = this.store;
-    store.frame = frame;
+    const store2 = this.store;
+    store2.frame = frame;
     this.input.readControllers();
     this.audio?.update();
     this.router?.update(frame);
-    store.scene.flags |= 128;
+    store2.scene.flags |= 128;
   }
   /**
    * 渲染提交：
@@ -141064,52 +141049,52 @@ var InterruptService = class {
    * 7. 续段
    * 8. 恢复 NMI + 调色板兜底
    */
-  renderCommit(ppu2) {
-    const store = this.store;
-    store.flushVram(ppu2);
-    const ctrlOff = store.ppuState.ctrl & 127;
-    store.ppuState.ctrl = ctrlOff;
-    ppu2.updateControlReg1(ctrlOff);
-    this.oamDma(ppu2);
-    this.flushRenderQueue(ppu2);
-    this.flushSecondQueue(ppu2);
-    this.applyScrollC7B7(ppu2);
-    ppu2.updateControlReg2(store.ppuState.mask);
-    this.applyChrRequest(ppu2);
+  renderCommit(ppu) {
+    const store2 = this.store;
+    store2.flushVram(ppu);
+    const ctrlOff = store2.ppuState.ctrl & 127;
+    store2.ppuState.ctrl = ctrlOff;
+    ppu.updateControlReg1(ctrlOff);
+    this.oamDma(ppu);
+    this.flushRenderQueue(ppu);
+    this.flushSecondQueue(ppu);
+    this.applyScrollC7B7(ppu);
+    ppu.updateControlReg2(store2.ppuState.mask);
+    this.applyChrRequest(ppu);
     this.frameCounters();
-    this.oamDma(ppu2);
-    this.flushNtBuffer(ppu2);
-    this.applyScrollBank02(ppu2);
-    this.applyChrFrom009e(ppu2);
-    const ctrlOn = store.ppuState.ctrl | 128;
-    store.ppuState.ctrl = ctrlOn;
-    ppu2.updateControlReg1(ctrlOn);
-    this.flushPalette(ppu2);
+    this.oamDma(ppu);
+    this.flushNtBuffer(ppu);
+    this.applyScrollBank02(ppu);
+    this.applyChrFrom009e(ppu);
+    const ctrlOn = store2.ppuState.ctrl | 128;
+    store2.ppuState.ctrl = ctrlOn;
+    ppu.updateControlReg1(ctrlOn);
+    this.flushPalette(ppu);
   }
   /**
    * OAM DMA（影子 → spriteMem）。
    * 影子 $0468 中属性 bit2/3 非零 → X=$F8（隐藏）。
    */
-  oamDma(ppu2) {
-    const store = this.store;
-    const oam = store.oam.oam;
+  oamDma(ppu) {
+    const store2 = this.store;
+    const oam = store2.oam.oam;
     for (let y = 0; y < 256; y += 4) {
-      let x = store.oam.spriteX(y);
-      const attr = store.oam.spriteAttr(y);
+      let x = store2.oam.spriteX(y);
+      const attr = store2.oam.spriteAttr(y);
       if ((attr & 12) !== 0) x = 248;
       oam[y] = x;
-      oam[y + 1] = store.oam.spriteTile(y);
+      oam[y + 1] = store2.oam.spriteTile(y);
       oam[y + 2] = attr;
-      oam[y + 3] = store.oam.spriteY(y);
+      oam[y + 3] = store2.oam.spriteY(y);
     }
-    for (let i = 0; i < 256; i++) ppu2.spriteMem[i] = oam[i];
+    for (let i = 0; i < 256; i++) ppu.spriteMem[i] = oam[i];
   }
   /** 主滚动：X = ppuState.scrollTempX, Y = ppuState.scrollTempY */
-  applyScrollC7B7(ppu2) {
-    const store = this.store;
-    const sx = store.ppuState.scrollTempX & 255;
-    const sy = store.ppuState.scrollTempY & 255;
-    this.setScroll(ppu2, sx, sy);
+  applyScrollC7B7(ppu) {
+    const store2 = this.store;
+    const sx = store2.ppuState.scrollTempX & 255;
+    const sy = store2.ppuState.scrollTempY & 255;
+    this.setScroll(ppu, sx, sy);
   }
   /**
    * 滚动路径（最终生效）：
@@ -141117,39 +141102,39 @@ var InterruptService = class {
    * - 否则：CTRL bit2 ← $0045 bit0 ← $007B bit0 → PPU CTRL
    * - X=scene.scrollX, Y=scene.scrollY-1
    */
-  applyScrollBank02(ppu2) {
-    const store = this.store;
-    const scrollFlag = store.scene.scrollFlag;
+  applyScrollBank02(ppu) {
+    const store2 = this.store;
+    const scrollFlag = store2.scene.scrollFlag;
     if ((scrollFlag & 128) !== 0) return;
-    let ctrl = store.ppuState.ctrl >> 2 & 255;
-    store.ppuState.ctrl = ctrl;
-    ctrl = (ctrl << 1 | store.readByte(69) & 1) & 255;
-    store.ppuState.ctrl = ctrl;
-    ctrl = (ctrl << 1 | store.readByte(123) & 1) & 255;
-    store.ppuState.ctrl = ctrl;
-    ppu2.updateControlReg1(ctrl);
-    const sx = store.scene.scrollX & 255;
-    const sy = store.scene.scrollY - 1 & 255;
-    this.setScroll(ppu2, sx, sy);
+    let ctrl = store2.ppuState.ctrl >> 2 & 255;
+    store2.ppuState.ctrl = ctrl;
+    ctrl = (ctrl << 1 | store2.readByte(69) & 1) & 255;
+    store2.ppuState.ctrl = ctrl;
+    ctrl = (ctrl << 1 | store2.readByte(123) & 1) & 255;
+    store2.ppuState.ctrl = ctrl;
+    ppu.updateControlReg1(ctrl);
+    const sx = store2.scene.scrollX & 255;
+    const sy = store2.scene.scrollY - 1 & 255;
+    this.setScroll(ppu, sx, sy);
   }
   /** 滚动值 → PPU 滚动寄存器 */
-  setScroll(ppu2, sx, sy) {
-    ppu2.regHT = sx >> 3 & 31;
-    ppu2.regFH = sx & 7;
-    ppu2.regH = sx >> 5 & 1;
-    ppu2.regVT = sy >> 3 & 31;
-    ppu2.regFV = sy & 7;
-    ppu2.regV = sy >> 5 & 1;
+  setScroll(ppu, sx, sy) {
+    ppu.regHT = sx >> 3 & 31;
+    ppu.regFH = sx & 7;
+    ppu.regH = sx >> 5 & 1;
+    ppu.regVT = sy >> 3 & 31;
+    ppu.regFV = sy & 7;
+    ppu.regV = sy >> 5 & 1;
   }
   /** 帧计数器更新（具名视图访问） */
   frameCounters() {
-    const store = this.store;
+    const store2 = this.store;
     let c = 0;
-    const e1 = store.readByte(225);
-    let sum = store.readByte(768 + e1) + store.readByte(1792 + e1) + c;
+    const e1 = store2.readByte(225);
+    let sum = store2.readByte(768 + e1) + store2.readByte(1792 + e1) + c;
     let a = sum & 255;
     c = sum > 255 ? 1 : 0;
-    let e2 = store.readByte(226);
+    let e2 = store2.readByte(226);
     const cRol1 = e2 >> 7 & 1;
     e2 = (e2 << 1 | c) & 255;
     a ^= 255;
@@ -141158,46 +141143,46 @@ var InterruptService = class {
     sum = a + e2 + cRol2;
     a = sum & 255;
     c = sum > 255 ? 1 : 0;
-    store.writeByte(226, a);
-    let s = a - store.readByte(1920 + e1) - (1 - c);
+    store2.writeByte(226, a);
+    let s = a - store2.readByte(1920 + e1) - (1 - c);
     a = s & 255;
     c = s >= 0 ? 1 : 0;
     sum = a + e1 + c;
     a = sum & 255;
-    store.writeByte(227, a);
-    store.writeByte(225, e1 + 1 & 255);
+    store2.writeByte(227, a);
+    store2.writeByte(225, e1 + 1 & 255);
   }
   /**
    * NT 渲染缓冲消费（类型化 RenderQueues.consumeNtBuffer）
    * 渲染期间临时 MASK=0，完成后由后续 MASK 步骤恢复。
    */
-  flushNtBuffer(ppu2) {
-    const store = this.store;
-    if (store.renderQueue.ntBufferBusy) return;
-    const entries = consumeNtBuffer(store.renderQueue);
+  flushNtBuffer(ppu) {
+    const store2 = this.store;
+    if (store2.renderQueue.ntBufferBusy) return;
+    const entries = consumeNtBuffer(store2.renderQueue);
     if (entries.length === 0) return;
-    const savedMask = store.ppuState.mask;
-    store.ppuState.mask = 0;
-    ppu2.updateControlReg2(0);
+    const savedMask = store2.ppuState.mask;
+    store2.ppuState.mask = 0;
+    ppu.updateControlReg2(0);
     for (const entry of entries) {
       const ctrl = entry.vertical ? 132 : 128;
-      ppu2.updateControlReg1(ctrl);
-      store.ppuState.ctrl = ctrl;
+      ppu.updateControlReg1(ctrl);
+      store2.ppuState.ctrl = ctrl;
       for (let i = 0; i < entry.data.length; i++) {
         const step = entry.vertical ? 32 : 1;
-        ppu2.writeMem(entry.ntAddr + i * step & 16383, entry.data[i]);
+        ppu.writeMem(entry.ntAddr + i * step & 16383, entry.data[i]);
       }
     }
-    store.renderQueue.setNtBufferPos(0);
-    store.ppuState.mask = savedMask;
+    store2.renderQueue.setNtBufferPos(0);
+    store2.ppuState.mask = savedMask;
   }
   /**
    * 第一渲染队列消费（LIFO，每帧消费队尾一项）
    * 流格式：RLE 块 [count][addrLo][addrHi][data×count]，0 终止
    */
-  flushRenderQueue(ppu2) {
-    const store = this.store;
-    const rq = store.renderQueue;
+  flushRenderQueue(ppu) {
+    const store2 = this.store;
+    const rq = store2.renderQueue;
     const count = rq.queue1Count;
     if (count === 0) return;
     rq.setQueue1Count(count - 1 & 255);
@@ -141212,7 +141197,7 @@ var InterruptService = class {
       p += 3;
       const addr = aHi << 8 | aLo;
       for (let i = 0; i < b0; i++) {
-        ppu2.writeMem(addr & 16383, this.readStreamByte(p + i));
+        ppu.writeMem(addr & 16383, this.readStreamByte(p + i));
       }
       p += b0;
     }
@@ -141229,32 +141214,32 @@ var InterruptService = class {
    * 第二渲染队列消费：
    * - renderQueue.queue2Pending 置位（待消费）→ 清标志；$04A5 起 RLE 块
    */
-  flushSecondQueue(ppu2) {
-    const store = this.store;
-    const rq = store.renderQueue;
+  flushSecondQueue(ppu) {
+    const store2 = this.store;
+    const rq = store2.renderQueue;
     if (!rq.queue2Pending) return;
     rq.setQueue2Pending(false);
     let x = 0;
     for (; ; ) {
-      const cnt = store.readByte(1189 + x);
+      const cnt = store2.readByte(1189 + x);
       if (cnt === 0) break;
-      const aLo = store.readByte(1189 + x + 1);
-      const aHi = store.readByte(1189 + x + 2);
+      const aLo = store2.readByte(1189 + x + 1);
+      const aHi = store2.readByte(1189 + x + 2);
       x += 3;
       const addr = aHi << 8 | aLo;
       for (let i = 0; i < cnt; i++) {
-        ppu2.writeMem(addr & 16383, store.readByte(1189 + x + i));
+        ppu.writeMem(addr & 16383, store2.readByte(1189 + x + i));
       }
       x += cnt;
     }
   }
   /** 调色板：palette.bg → $3F00；palette.spr → $3F10 */
-  flushPalette(ppu2) {
-    const store = this.store;
-    const bg = store.palette.bg;
-    const spr = store.palette.spr;
-    for (let i = 0; i < 16; i++) ppu2.writeMem(16128 + i, bg[i]);
-    for (let i = 0; i < 16; i++) ppu2.writeMem(16144 + i, spr[i]);
+  flushPalette(ppu) {
+    const store2 = this.store;
+    const bg = store2.palette.bg;
+    const spr = store2.palette.spr;
+    for (let i = 0; i < 16; i++) ppu.writeMem(16128 + i, bg[i]);
+    for (let i = 0; i < 16; i++) ppu.writeMem(16144 + i, spr[i]);
   }
   /**
    * CHR 装载（基于 loadChrConfig 写入的 6 字节 cfg → 8 slot bank1k 推算）：
@@ -141267,94 +141252,94 @@ var InterruptService = class {
    *     此处只用 cfg 字节做"单次声明式"装载（每帧调一次）。
    *     后续若需要 mid-frame 切换，需翻译 ROM $8BAB 之后那段循环。
    */
-  applyChrRequest(ppu2) {
-    if (!ppu2.loadChrBank) return;
-    const store = this.store;
-    const bg = store.readByte(117) & 255;
-    const spr = store.readByte(118) & 255;
-    const chrSel = store.readByte(93) >> 2 & 1;
+  applyChrRequest(ppu) {
+    if (!ppu.loadChrBank) return;
+    const store2 = this.store;
+    const bg = store2.readByte(117) & 255;
+    const spr = store2.readByte(118) & 255;
+    const chrSel = store2.readByte(93) >> 2 & 1;
     if (chrSel === 0) {
-      this.loadChrSlot(ppu2, 0, bg);
-      this.loadChrSlot(ppu2, 1, bg + 1);
-      this.loadChrSlot(ppu2, 2, bg + 2);
-      this.loadChrSlot(ppu2, 3, bg + 3);
-      this.loadChrSlot(ppu2, 4, spr);
-      this.loadChrSlot(ppu2, 5, spr + 1);
-      this.loadChrSlot(ppu2, 6, spr + 2);
-      this.loadChrSlot(ppu2, 7, spr + 3);
+      this.loadChrSlot(ppu, 0, bg);
+      this.loadChrSlot(ppu, 1, bg + 1);
+      this.loadChrSlot(ppu, 2, bg + 2);
+      this.loadChrSlot(ppu, 3, bg + 3);
+      this.loadChrSlot(ppu, 4, spr);
+      this.loadChrSlot(ppu, 5, spr + 1);
+      this.loadChrSlot(ppu, 6, spr + 2);
+      this.loadChrSlot(ppu, 7, spr + 3);
     } else {
-      this.loadChrSlot(ppu2, 4, bg);
-      this.loadChrSlot(ppu2, 5, bg + 1);
-      this.loadChrSlot(ppu2, 6, bg + 2);
-      this.loadChrSlot(ppu2, 7, bg + 3);
-      this.loadChrSlot(ppu2, 0, spr);
-      this.loadChrSlot(ppu2, 1, spr + 1);
-      this.loadChrSlot(ppu2, 2, spr + 2);
-      this.loadChrSlot(ppu2, 3, spr + 3);
+      this.loadChrSlot(ppu, 4, bg);
+      this.loadChrSlot(ppu, 5, bg + 1);
+      this.loadChrSlot(ppu, 6, bg + 2);
+      this.loadChrSlot(ppu, 7, bg + 3);
+      this.loadChrSlot(ppu, 0, spr);
+      this.loadChrSlot(ppu, 1, spr + 1);
+      this.loadChrSlot(ppu, 2, spr + 2);
+      this.loadChrSlot(ppu, 3, spr + 3);
     }
   }
   /**
    * bank02 CHR：cmd 2-5 ← $009E-$00A1（chrSel=0 → slots 4-7）。
    */
-  applyChrFrom009e(ppu2) {
-    if (!ppu2.loadChrBank) return;
-    const store = this.store;
-    this.chrWrite(ppu2, 2, 0, store.readByte(158));
-    this.chrWrite(ppu2, 3, 0, store.readByte(159));
-    this.chrWrite(ppu2, 4, 0, store.readByte(160));
-    this.chrWrite(ppu2, 5, 0, store.readByte(161));
+  applyChrFrom009e(ppu) {
+    if (!ppu.loadChrBank) return;
+    const store2 = this.store;
+    this.chrWrite(ppu, 2, 0, store2.readByte(158));
+    this.chrWrite(ppu, 3, 0, store2.readByte(159));
+    this.chrWrite(ppu, 4, 0, store2.readByte(160));
+    this.chrWrite(ppu, 5, 0, store2.readByte(161));
   }
   /** CHR 写解码：cmd 0-5 选择 slot，cmd 6/7 为 PRG ROM page（H5 无语义） */
-  chrWrite(ppu2, cmd, chrSel, arg) {
+  chrWrite(ppu, cmd, chrSel, arg) {
     const bank = arg & 255;
     switch (cmd & 7) {
       case 0:
         if (chrSel === 0) {
-          this.loadChrSlot(ppu2, 0, bank);
-          this.loadChrSlot(ppu2, 1, bank + 1);
+          this.loadChrSlot(ppu, 0, bank);
+          this.loadChrSlot(ppu, 1, bank + 1);
         } else {
-          this.loadChrSlot(ppu2, 4, bank);
-          this.loadChrSlot(ppu2, 5, bank + 1);
+          this.loadChrSlot(ppu, 4, bank);
+          this.loadChrSlot(ppu, 5, bank + 1);
         }
         break;
       case 1:
         if (chrSel === 0) {
-          this.loadChrSlot(ppu2, 2, bank);
-          this.loadChrSlot(ppu2, 3, bank + 1);
+          this.loadChrSlot(ppu, 2, bank);
+          this.loadChrSlot(ppu, 3, bank + 1);
         } else {
-          this.loadChrSlot(ppu2, 6, bank);
-          this.loadChrSlot(ppu2, 7, bank + 1);
+          this.loadChrSlot(ppu, 6, bank);
+          this.loadChrSlot(ppu, 7, bank + 1);
         }
         break;
       case 2:
-        this.loadChrSlot(ppu2, chrSel === 0 ? 4 : 0, bank);
+        this.loadChrSlot(ppu, chrSel === 0 ? 4 : 0, bank);
         break;
       case 3:
-        this.loadChrSlot(ppu2, chrSel === 0 ? 5 : 1, bank);
+        this.loadChrSlot(ppu, chrSel === 0 ? 5 : 1, bank);
         break;
       case 4:
-        this.loadChrSlot(ppu2, chrSel === 0 ? 6 : 2, bank);
+        this.loadChrSlot(ppu, chrSel === 0 ? 6 : 2, bank);
         break;
       case 5:
-        this.loadChrSlot(ppu2, chrSel === 0 ? 7 : 3, bank);
+        this.loadChrSlot(ppu, chrSel === 0 ? 7 : 3, bank);
         break;
       default:
         break;
     }
   }
   /** 装载单个 1KB CHR slot（值未变化时跳过） */
-  loadChrSlot(ppu2, slot, bank1k) {
+  loadChrSlot(ppu, slot, bank1k) {
     const b = bank1k & 255;
     if (this.chrSlots[slot] === b) return;
     this.chrSlots[slot] = b;
-    ppu2.loadChrBank(slot, b);
+    ppu.loadChrBank(slot, b);
   }
 };
 
 // src/game/prg/code/system/InputService.ts
 var InputService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
     /** 外部注入的控制器状态（P1/P2，与 core/controller 一致：state[] 每键 0x40=松开/0x41=按下） */
     this.rawState = [
       [64, 64, 64, 64, 64, 64, 64, 64],
@@ -141370,7 +141355,7 @@ var InputService = class {
    * 按下沿 = 当前 & ~上一帧
    */
   readControllers() {
-    const store = this.store;
+    const store2 = this.store;
     for (let x = 2; x >= 1; x--) {
       const idx = x - 1;
       const state = this.rawState[idx];
@@ -141378,9 +141363,9 @@ var InputService = class {
       for (let i = 0; i < 8; i++) {
         if (state[i] === 65) cur |= 1 << i;
       }
-      const prev = store.readByte(26 + x);
-      store.writeByte(28 + x, cur);
-      store.writeByte(30 + x, cur & ~prev);
+      const prev = store2.readByte(26 + x);
+      store2.writeByte(28 + x, cur);
+      store2.writeByte(30 + x, cur & ~prev);
     }
   }
   /** 语义化查询：控制器 n（1/2）某键是否按下 */
@@ -141395,8 +141380,8 @@ var InputService = class {
 
 // src/game/prg/code/scene/Scene0Controller.ts
 var Scene0Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
+  constructor(store2, input) {
+    super(store2, input);
     this.sceneId = 0;
     this.audio = null;
     this.phase = 0 /* FadeInAndWait16 */;
@@ -141405,7 +141390,7 @@ var Scene0Controller = class extends SceneController {
     this.sceneRow = 0;
     this.streamDone = false;
     this.holdSecond = false;
-    this.prim = new RenderingPrimitivesService(store);
+    this.prim = new RenderingPrimitivesService(store2);
   }
   attachAudio(audio) {
     this.audio = audio;
@@ -141421,7 +141406,7 @@ var Scene0Controller = class extends SceneController {
   }
   onUpdate(frame) {
     void frame;
-    const store = this.store;
+    const store2 = this.store;
     switch (this.phase) {
       case 0 /* FadeInAndWait16 */: {
         if (!this.prim.fadeBgStep()) return void 0;
@@ -141433,10 +141418,10 @@ var Scene0Controller = class extends SceneController {
       case 1 /* OamDrift */: {
         this.prim.oamDrift(1);
         if (--this.driftY > 0) return void 0;
-        store.writeByte(91, 0);
-        store.writeByte(123, 0);
+        store2.writeByte(91, 0);
+        store2.writeByte(123, 0);
         this.prim.loadChrConfig(23);
-        store.writeByte(68, 104);
+        store2.writeByte(68, 104);
         this.prim.loadSceneData(3);
         this.sceneRow = 0;
         this.streamDone = false;
@@ -141450,15 +141435,15 @@ var Scene0Controller = class extends SceneController {
           if (this.sceneRow >= 32) this.streamDone = true;
           return void 0;
         }
-        store.writeByte(144, store.readByte(142));
-        store.writeByte(145, store.readByte(143));
+        store2.writeByte(144, store2.readByte(142));
+        store2.writeByte(145, store2.readByte(143));
         this.counter = 4;
         this.phase = 3 /* Wait4 */;
         return void 0;
       }
       case 3 /* Wait4 */: {
         if (--this.counter > 0) return void 0;
-        this.prim.loadPalettesAndFade(4, store.readByte(37) & 15);
+        this.prim.loadPalettesAndFade(4, store2.readByte(37) & 15);
         this.prim.oamFlipAttrs();
         this.counter = 1;
         this.phase = 4 /* Scroll */;
@@ -141466,20 +141451,20 @@ var Scene0Controller = class extends SceneController {
       }
       case 4 /* Scroll */: {
         if (--this.counter > 0) return void 0;
-        const v79 = store.readByte(121) + 1 & 255;
-        store.writeByte(121, v79);
-        let c = store.readByte(124) - 1 & 255;
-        store.writeByte(124, c);
-        c = store.readByte(124) - 1 & 255;
-        store.writeByte(124, c);
-        const v44 = store.readByte(68) - 2 & 255;
-        store.writeByte(68, v44);
+        const v79 = store2.readByte(121) + 1 & 255;
+        store2.writeByte(121, v79);
+        let c = store2.readByte(124) - 1 & 255;
+        store2.writeByte(124, c);
+        c = store2.readByte(124) - 1 & 255;
+        store2.writeByte(124, c);
+        const v44 = store2.readByte(68) - 2 & 255;
+        store2.writeByte(68, v44);
         if (v44 >= 3) {
           this.counter = 1;
           return void 0;
         }
         this.prim.loadSceneData(0);
-        store.writeByte(27, store.readByte(27) | 1);
+        store2.writeByte(27, store2.readByte(27) | 1);
         this.counter = 240;
         this.phase = 5 /* Hold */;
         return void 0;
@@ -141491,9 +141476,9 @@ var Scene0Controller = class extends SceneController {
           this.counter = 60;
           return void 0;
         }
-        store.writeByte(27, store.readByte(27) & 254);
-        store.writeByte(144, 0);
-        store.writeByte(145, 2);
+        store2.writeByte(27, store2.readByte(27) & 254);
+        store2.writeByte(144, 0);
+        store2.writeByte(145, 2);
         this.phase = 6 /* FadeOut */;
         return void 0;
       }
@@ -141625,8 +141610,8 @@ function getHandler(opcode) {
 
 // src/game/prg/code/story/ScriptEngine.ts
 var ScriptEngine = class {
-  constructor(store, loader, indirect = null) {
-    this.store = store;
+  constructor(store2, loader, indirect = null) {
+    this.store = store2;
     this.loader = loader;
     this.indirect = indirect;
   }
@@ -144472,8 +144457,8 @@ var SEGMENT_BYTES = (() => {
   return out;
 })();
 var ScriptLoader = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   /** 按段 ID 装载（V0.4 已实现：返回 BANK18 切分段） */
   loadSegment(scriptId) {
@@ -152025,8 +152010,8 @@ var TEAMS_FULL = TEAM_ROSTER_TABLE;
 
 // src/game/prg/code/player/PlayerQueryService.ts
 var PlayerQueryService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   /** 按球员 ID 查询档案 */
   findById(playerId) {
@@ -152055,8 +152040,8 @@ var PlayerQueryService = class {
 
 // src/game/prg/code/team/TeamRosterService.ts
 var TeamRosterService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   /** 取队伍阵型（V0.2 数据表接入后实现） */
   getFormation(teamId) {
@@ -152117,8 +152102,8 @@ function getMatchConfig(homeTeam = 0, awayTeam = 0) {
 
 // src/game/prg/code/match/MatchEngineService.ts
 var MatchEngineService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   /**
    * 开始比赛：初始化双方球队、比分、时间、控球方。
@@ -152192,31 +152177,31 @@ var MatchEngineService = class {
    */
   update(frame) {
     void frame;
-    const store = this.store;
-    const totalPlayers = store.read("ram_0600");
-    let currentIdx = store.read("ram_0616");
+    const store2 = this.store;
+    const totalPlayers = store2.read("ram_0600");
+    let currentIdx = store2.read("ram_0616");
     currentIdx = currentIdx + 1 & 255;
-    store.write("ram_0616", currentIdx);
+    store2.write("ram_0616", currentIdx);
     if (currentIdx !== totalPlayers) {
       return;
     }
     this.frameTailUpdate();
-    const possession = store.read("ram_043B");
+    const possession = store2.read("ram_043B");
     this.dispatchPossession(possession);
   }
   /**
    * 帧尾更新：比赛时间递减；分钟/秒计满后半场/终场判定。
    */
   frameTailUpdate() {
-    const store = this.store;
-    const seconds = store.read("ram_0469");
+    const store2 = this.store;
+    const seconds = store2.read("ram_0469");
     if (seconds > 0) {
-      store.write("ram_0469", seconds - 1);
+      store2.write("ram_0469", seconds - 1);
     } else {
-      const minutes = store.read("ram_0468");
+      const minutes = store2.read("ram_0468");
       if (minutes > 0) {
-        store.write("ram_0468", minutes - 1);
-        store.write("ram_0469", 59);
+        store2.write("ram_0468", minutes - 1);
+        store2.write("ram_0469", 59);
       }
     }
   }
@@ -152229,12 +152214,12 @@ var MatchEngineService = class {
    * - 4: ram_0617=0 → 跳回主循环
    */
   dispatchPossession(possession) {
-    const store = this.store;
+    const store2 = this.store;
     switch (possession) {
       case 0:
         break;
       case 1:
-        store.write("ram_0612", 10);
+        store2.write("ram_0612", 10);
         this.defenseRoutine();
         break;
       case 2:
@@ -152243,7 +152228,7 @@ var MatchEngineService = class {
         this.defenseRoutine();
         break;
       case 4:
-        store.write("ram_0617", 0);
+        store2.write("ram_0617", 0);
         break;
       default:
         break;
@@ -152256,15 +152241,15 @@ var MatchEngineService = class {
    * - ram_062D=0；ram_044E = ram_0444 & 3；ram_0617 |= 0x80
    */
   defenseRoutine() {
-    const store = this.store;
-    const flags = store.read("ram_0617");
+    const store2 = this.store;
+    const flags = store2.read("ram_0617");
     if ((flags & 128) !== 0) return;
-    const possession = store.read("ram_043B");
+    const possession = store2.read("ram_043B");
     if (possession === 2) return;
-    store.write("ram_062D", 0);
-    const playerFlags = store.read("ram_0444");
-    store.write("ram_044E", playerFlags & 3);
-    store.write("ram_0617", flags | 128);
+    store2.write("ram_062D", 0);
+    const playerFlags = store2.read("ram_0444");
+    store2.write("ram_044E", playerFlags & 3);
+    store2.write("ram_0617", flags | 128);
   }
   /** 球员槽位递增：当前球员索引 +1 */
   advancePlayerSlot() {
@@ -152284,8 +152269,8 @@ var MatchEngineService = class {
 
 // src/game/prg/code/match/MatchTurnService.ts
 var MatchTurnService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   /**
    * 推进一个回合（传球/带球/射门/铲球，V0.5 实现）
@@ -152322,8 +152307,8 @@ var MatchTurnService = class {
 
 // src/game/prg/code/match/MatchAuxService.ts
 var MatchAuxService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   /**
    * 处理死球/界外事件（V0.5 实现）
@@ -152392,8 +152377,8 @@ var MatchAuxService = class {
 
 // src/game/prg/code/match/MatchHudService.ts
 var MatchHudService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   /**
    * 刷新 HUD 到渲染缓冲（每帧调用）
@@ -152486,8 +152471,8 @@ var MatchHudService = class {
 
 // src/game/prg/code/match/MatchConfigService.ts
 var MatchConfigService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   /** 取比赛配置（按双方队 ID 查表） */
   getConfig(homeTeam, awayTeam) {
@@ -152595,8 +152580,8 @@ function findSkillsByPlayer(playerId) {
 
 // src/game/prg/code/skill/SkillService.ts
 var SkillService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   /**
    * 加载技能动作序列：selector 查 SKILL_POINTER_TABLE → 返回动作脚本字节偏移。
@@ -152617,41 +152602,41 @@ var SkillService = class {
    * $F0+ 为扩展标记 → 调用对应处理例程后继续循环。
    */
   parseSkillSegment() {
-    const store = this.store;
-    store.write("ram_052A", store.read("ram_0517"));
-    store.write("ram_0516", store.read("ram_0516") & ~4);
-    store.write("ram_052B", 0);
-    store.write("ram_052D", 0);
-    store.write("ram_052C", 0);
-    store.write("ram_0530", 0);
-    store.write("ram_003A", 0);
-    let cursor = store.read("ram_003A");
+    const store2 = this.store;
+    store2.write("ram_052A", store2.read("ram_0517"));
+    store2.write("ram_0516", store2.read("ram_0516") & ~4);
+    store2.write("ram_052B", 0);
+    store2.write("ram_052D", 0);
+    store2.write("ram_052C", 0);
+    store2.write("ram_0530", 0);
+    store2.write("ram_003A", 0);
+    let cursor = store2.read("ram_003A");
     const readSeqByte = () => {
-      store.write("ram_003A", cursor + 1);
+      store2.write("ram_003A", cursor + 1);
       cursor++;
-      const ptrLo2 = store.read("ram_005D");
-      return store.read(`ram_seq_${ptrLo2 + cursor - 1}`);
+      const ptrLo2 = store2.read("ram_005D");
+      return store2.read(`ram_seq_${ptrLo2 + cursor - 1}`);
     };
     const actionType = readSeqByte();
     if (actionType >= 240) {
       return null;
     }
-    store.write("ram_0523", actionType);
-    store.write("ram_0516", (store.read("ram_0516") | 64) & ~16);
+    store2.write("ram_0523", actionType);
+    store2.write("ram_0516", (store2.read("ram_0516") | 64) & ~16);
     const targetX = readSeqByte();
     if (targetX >= 240) return null;
-    store.write("ram_0524", targetX);
+    store2.write("ram_0524", targetX);
     const targetY = readSeqByte();
     if (targetY >= 240) return null;
-    store.write("ram_0528", targetY);
+    store2.write("ram_0528", targetY);
     const param = readSeqByte();
     if (param >= 240) return null;
-    store.write("ram_0529", param);
-    const ptrLo = store.read("ram_005D");
+    store2.write("ram_0529", param);
+    const ptrLo = store2.read("ram_005D");
     const newPtr = ptrLo + cursor & 255;
-    store.write("ram_005D", newPtr);
+    store2.write("ram_005D", newPtr);
     if (ptrLo + cursor > 255) {
-      store.write("ram_005E", store.read("ram_005E") + 1 & 255);
+      store2.write("ram_005E", store2.read("ram_005E") + 1 & 255);
     }
     return { actionType, targetX, targetY, param };
   }
@@ -152700,8 +152685,8 @@ var BANK19_SPRITE_FRAMES = [
 
 // src/game/prg/code/sprite/SpriteService.ts
 var SpriteService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   /**
    * 将一个精灵写入 OAM 影子缓冲指定 slot。
@@ -152777,8 +152762,8 @@ var SpriteService = class {
 // src/game/prg/code/sprite/SpriteAnimationService.ts
 var ANIM_TICK_BASE = 1132;
 var SpriteAnimationService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
   }
   /**
    * 推进所有精灵动画帧。
@@ -154232,13 +154217,13 @@ var APU_GROUPS = [
   // NOISE
 ];
 var AudioService = class {
-  constructor(store) {
+  constructor(store2) {
     this.papu = null;
     /** 当前播放曲目（用于 token 流迭代） */
     this.currentSong = null;
     /** 每通道当前 token 流 + cursor */
     this.trackCursors = /* @__PURE__ */ new Map();
-    this.store = store;
+    this.store = store2;
   }
   /** 注入 PAPU 实例 */
   attachPapu(papu) {
@@ -154363,26 +154348,26 @@ var AudioService = class {
   initChannel(ch, track) {
     const chBase = CH_STATE_BASE + ch * 16;
     const counterBase = CH_COUNTER_BASE + ch * 4;
-    const store = this.store;
-    store.writeU16(chBase, track.track.length);
-    store.writeU16(chBase + 2, 0);
-    store.writeByte(chBase + 4, 0);
+    const store2 = this.store;
+    store2.writeU16(chBase, track.track.length);
+    store2.writeU16(chBase + 2, 0);
+    store2.writeByte(chBase + 4, 0);
     const pm = ch & 3;
-    store.writeByte(chBase + 5, pm === 1 ? 128 : pm === 2 ? 15 : 0);
-    store.writeByte(chBase + 6, 48);
-    store.writeByte(chBase + 7, 0);
-    store.writeByte(chBase + 8, 128);
-    store.writeByte(chBase + 9, 15);
-    store.writeByte(counterBase, 1);
-    store.writeByte(counterBase + 1, 1);
-    store.writeByte(counterBase + 2, 1);
-    store.writeByte(counterBase + 3, 0);
+    store2.writeByte(chBase + 5, pm === 1 ? 128 : pm === 2 ? 15 : 0);
+    store2.writeByte(chBase + 6, 48);
+    store2.writeByte(chBase + 7, 0);
+    store2.writeByte(chBase + 8, 128);
+    store2.writeByte(chBase + 9, 15);
+    store2.writeByte(counterBase, 1);
+    store2.writeByte(counterBase + 1, 1);
+    store2.writeByte(counterBase + 2, 1);
+    store2.writeByte(counterBase + 3, 0);
     let bit = 1;
     for (let i = 0; i < ch; i++) bit = bit << 1 & 255;
     this.store.audioState.channelMask |= bit;
     this.trackCursors.set(ch, 0);
-    store.writeByte(counterBase, 1);
-    store.writeByte(counterBase + 1, 1);
+    store2.writeByte(counterBase, 1);
+    store2.writeByte(counterBase + 1, 1);
   }
   // ════════════════════════════════════════════════════
   // Phase 1: 8 通道 tick
@@ -154421,26 +154406,26 @@ var AudioService = class {
     if (cursor >= track.track.length) return;
     const token = track.track[cursor];
     this.trackCursors.set(ch, cursor + 1);
-    const store = this.store;
+    const store2 = this.store;
     const chBase = CH_STATE_BASE + ch * 16;
     const counterBase = CH_COUNTER_BASE + ch * 4;
     switch (token.kind) {
       case "note": {
         if (ch === 3 || ch === 7) {
           if (token.semitone === 16) {
-            store.writeByte(chBase + 5, store.readByte(chBase + 5) | 32);
+            store2.writeByte(chBase + 5, store2.readByte(chBase + 5) | 32);
           } else {
-            store.writeByte(chBase + 7, token.semitone);
-            store.writeByte(chBase + 8, 128);
+            store2.writeByte(chBase + 7, token.semitone);
+            store2.writeByte(chBase + 8, 128);
           }
-          store.writeByte(2036 + ch, 0);
-          store.writeByte(counterBase + 1, 1);
+          store2.writeByte(2036 + ch, 0);
+          store2.writeByte(counterBase + 1, 1);
           return;
         }
         if (token.semitone >= 12) {
-          store.writeByte(chBase + 5, store.readByte(chBase + 5) | 32);
-          store.writeByte(2036 + ch, 0);
-          store.writeByte(counterBase + 1, 1);
+          store2.writeByte(chBase + 5, store2.readByte(chBase + 5) | 32);
+          store2.writeByte(2036 + ch, 0);
+          store2.writeByte(counterBase + 1, 1);
           return;
         }
         let period = AudioRom.frequency(token.semitone);
@@ -154453,29 +154438,29 @@ var AudioService = class {
         }
         if (fLo < 2 && fHi === 0) fLo = 2;
         fHi |= 128;
-        store.writeByte(chBase + 7, fLo);
-        store.writeByte(chBase + 8, fHi);
-        store.writeByte(1975 + ch, fLo);
-        store.writeByte(1983 + ch, fHi);
-        store.writeByte(2036 + ch, 0);
-        store.writeByte(counterBase + 1, 1);
+        store2.writeByte(chBase + 7, fLo);
+        store2.writeByte(chBase + 8, fHi);
+        store2.writeByte(1975 + ch, fLo);
+        store2.writeByte(1983 + ch, fHi);
+        store2.writeByte(2036 + ch, 0);
+        store2.writeByte(counterBase + 1, 1);
         return;
       }
       case "duration": {
-        store.writeByte(counterBase, token.ticks);
-        store.writeByte(counterBase + 1, token.ticks);
+        store2.writeByte(counterBase, token.ticks);
+        store2.writeByte(counterBase + 1, token.ticks);
         return;
       }
       case "speed": {
         return;
       }
       case "rest": {
-        store.writeByte(chBase + 5, store.readByte(chBase + 5) | 32);
+        store2.writeByte(chBase + 5, store2.readByte(chBase + 5) | 32);
         return;
       }
       case "noise": {
-        store.writeByte(chBase + 7, token.freqByte);
-        store.writeByte(chBase + 8, 128);
+        store2.writeByte(chBase + 7, token.freqByte);
+        store2.writeByte(chBase + 8, 128);
         return;
       }
       case "command": {
@@ -154486,34 +154471,34 @@ var AudioService = class {
   }
   /** 命令执行（保留原 opcode → 行为映射的语义） */
   execCmd(ch, chBase, opcode, arg) {
-    const store = this.store;
+    const store2 = this.store;
     const counterBase = CH_COUNTER_BASE + ch * 4;
     const opAddr = AudioRom.command(opcode);
     switch (opAddr) {
       case 34116: {
-        store.writeByte(chBase + 4, arg ?? 0);
-        store.writeByte(chBase + 5, store.readByte(chBase + 5) | 128);
+        store2.writeByte(chBase + 4, arg ?? 0);
+        store2.writeByte(chBase + 5, store2.readByte(chBase + 5) | 128);
         return;
       }
       case 34369: {
         const p = arg ?? 0;
-        store.writeByte(chBase + 5, store.readByte(chBase + 5) & 240 | p & 15);
+        store2.writeByte(chBase + 5, store2.readByte(chBase + 5) & 240 | p & 15);
         return;
       }
       case 34416: {
         const p = arg ?? 0;
-        if (!(p & 128)) store.writeByte(2036 + ch, p << 1 & 255);
-        store.writeByte(1959 + ch, p);
+        if (!(p & 128)) store2.writeByte(2036 + ch, p << 1 & 255);
+        store2.writeByte(1959 + ch, p);
         return;
       }
       case 34433: {
         const p = arg ?? 0;
-        store.writeByte(1967 + ch, p);
-        store.writeByte(1991 + ch, 0);
+        store2.writeByte(1967 + ch, p);
+        store2.writeByte(1991 + ch, 0);
         return;
       }
       case 34448: {
-        store.writeByte(1967 + ch, 0);
+        store2.writeByte(1967 + ch, 0);
         return;
       }
       case 34074: {
@@ -154531,45 +154516,45 @@ var AudioService = class {
         return;
       case 34550: {
         const decay = arg ?? 0;
-        store.writeByte(1999 + ch, decay);
-        store.writeByte(2007 + ch, decay);
+        store2.writeByte(1999 + ch, decay);
+        store2.writeByte(2007 + ch, decay);
         return;
       }
       case 34389: {
         this.trackCursors.set(ch, 0);
-        store.writeByte(chBase + 4, 0);
+        store2.writeByte(chBase + 4, 0);
         return;
       }
       // F3/F6 新增命令 — Vibrato / Arpeggio / Portamento 变体
       // (Bank 6 offset 0x4DA 命令表新提取的命令处理器地址；待 ROM 详细反汇编确认行为)
       case 34143:
-        store.writeByte(2036 + ch, ((arg ?? 0) & 63) << 2);
+        store2.writeByte(2036 + ch, ((arg ?? 0) & 63) << 2);
         return;
       case 34327:
-        store.writeByte(2036 + ch, (arg ?? 0) & 255);
+        store2.writeByte(2036 + ch, (arg ?? 0) & 255);
         return;
       case 34168:
-        store.writeByte(1967 + ch, store.readByte(1967 + ch) & 240 | (arg ?? 0) & 15);
+        store2.writeByte(1967 + ch, store2.readByte(1967 + ch) & 240 | (arg ?? 0) & 15);
         return;
       case 34181:
-        store.writeByte(1967 + ch, store.readByte(1967 + ch) & 15 | ((arg ?? 0) & 15) << 4);
+        store2.writeByte(1967 + ch, store2.readByte(1967 + ch) & 15 | ((arg ?? 0) & 15) << 4);
         return;
       case 34223:
-        store.writeByte(1975 + ch, (arg ?? 0) & 255);
+        store2.writeByte(1975 + ch, (arg ?? 0) & 255);
         return;
       case 34246:
-        store.writeByte(1983 + ch, (arg ?? 0) & 255);
+        store2.writeByte(1983 + ch, (arg ?? 0) & 255);
         return;
       case 34287:
-        store.writeByte(1991 + ch, (arg ?? 0) & 255);
+        store2.writeByte(1991 + ch, (arg ?? 0) & 255);
         return;
       case 34569:
         return;
       case 34107:
-        store.writeByte(1959 + ch, (arg ?? 0) & 255);
+        store2.writeByte(1959 + ch, (arg ?? 0) & 255);
         return;
       case 34098:
-        store.writeByte(1967 + ch, (arg ?? 0) & 255);
+        store2.writeByte(1967 + ch, (arg ?? 0) & 255);
         return;
       case 34519:
         this.playDpcm(2);
@@ -154594,23 +154579,23 @@ var AudioService = class {
     const chBase = CH_STATE_BASE + ch * 16;
     const isTri = group === 1;
     const apuBase = 16384 + (group ^ 3) * 4;
-    const store = this.store;
-    const volByte = isTri ? store.readByte(chBase + 5) : store.readByte(chBase + 6);
+    const store2 = this.store;
+    const volByte = isTri ? store2.readByte(chBase + 5) : store2.readByte(chBase + 6);
     if (isTri) {
       this.papu?.writeReg(apuBase, volByte & 15 | 128);
     } else {
       this.papu?.writeReg(apuBase, volByte | 48);
     }
-    const sweepEnabled = (store.readByte(chBase + 5) & 16) !== 0;
+    const sweepEnabled = (store2.readByte(chBase + 5) & 16) !== 0;
     if (!sweepEnabled) {
       this.papu?.writeReg(apuBase + 1, 8);
     }
-    if (!sweepEnabled || (store.readByte(chBase + 8) & 128) !== 0) {
+    if (!sweepEnabled || (store2.readByte(chBase + 8) & 128) !== 0) {
       if (sweepEnabled) {
-        store.writeByte(chBase + 8, store.readByte(chBase + 8) & 127);
+        store2.writeByte(chBase + 8, store2.readByte(chBase + 8) & 127);
       }
-      const freqLo = store.readByte(chBase + 7);
-      const freqHi = store.readByte(chBase + 8) & 7;
+      const freqLo = store2.readByte(chBase + 7);
+      const freqHi = store2.readByte(chBase + 8) & 7;
       this.papu?.writeReg(apuBase + 2, freqLo);
       this.papu?.writeReg(apuBase + 3, freqHi | 24);
     }
@@ -154620,29 +154605,29 @@ var AudioService = class {
   // ════════════════════════════════════════════════════
   calcPitch(ch) {
     const chBase = CH_STATE_BASE + ch * 16;
-    const store = this.store;
-    const volCtrl = store.readByte(chBase + 5);
+    const store2 = this.store;
+    const volCtrl = store2.readByte(chBase + 5);
     const hiNib = volCtrl & 240;
     let vol;
     if (hiNib & 32) {
       vol = 15;
     } else {
       vol = volCtrl & 15;
-      const decay = store.readByte(1999 + ch);
+      const decay = store2.readByte(1999 + ch);
       if (decay !== 0) {
         const newDecay = decay - 1 & 255;
-        store.writeByte(1999 + ch, newDecay);
+        store2.writeByte(1999 + ch, newDecay);
         if (newDecay === 0) {
           vol = vol + 1 & 255;
           if (vol > 15) vol = 15;
         }
       }
     }
-    const noteDur = store.readByte(1801 + ch * 4);
+    const noteDur = store2.readByte(1801 + ch * 4);
     let finalVol = noteDur - vol;
     if (finalVol < 0) finalVol = 0;
     finalVol |= hiNib;
-    store.writeByte(chBase + 6, finalVol);
+    store2.writeByte(chBase + 6, finalVol);
   }
   // ════════════════════════════════════════════════════
   // DPCM
@@ -154735,8 +154720,8 @@ function findLevelById(level) {
 // src/game/prg/code/ui/LevelUpUiService.ts
 var STAT_NAMES = ["SHOT", "DRIBBLE", "PASS", "TACKLE", "SPEED", "CONTROL"];
 var LevelUpUiService = class {
-  constructor(store) {
-    this.store = store;
+  constructor(store2) {
+    this.store = store2;
     /** UI 内部状态机：enter→draw→exit */
     this.step = 0;
     /** 帧计数（用于动画定时） */
@@ -156829,8 +156814,8 @@ var Tsubasa2 = class {
    * @param target �ṹ������ƽ̨��������״̬ + PPU ��ȾĿ�ꣻcore NES �� HeadlessRuntime ���ɣ�
    */
   frame(target) {
-    const store = this.store;
-    store.setVramTarget(target.ppu);
+    const store2 = this.store;
+    store2.setVramTarget(target.ppu);
     this.input.setControllerState(1, target.controllers[1].state);
     this.input.setControllerState(2, target.controllers[2].state);
     this.interrupts.nmi(this._frame);
@@ -156842,23 +156827,23 @@ var Tsubasa2 = class {
       console.error("renderCommit error at frame " + this._frame + ": " + e.message);
       throw e;
     }
-    const ppu2 = target.ppu;
+    const ppu = target.ppu;
     try {
-      ppu2.startFrame();
-      ppu2.advanceDots(262 * 341);
-      ppu2.renderFramePartially(0, 240);
-      ppu2.endFrame();
+      ppu.startFrame();
+      ppu.advanceDots(262 * 341);
+      ppu.renderFramePartially(0, 240);
+      ppu.endFrame();
     } catch (e) {
       console.error("PPU render error at frame " + this._frame + ": " + e.message);
       throw e;
     }
     this._frame++;
     if (this._frame % 60 === 0) {
-      const buf = ppu2.buffer;
+      const buf = ppu.buffer;
       let nz = 0;
       for (let i = 0; i < buf.length; i++) if (buf[i] !== 0) nz++;
       console.log(
-        `[Tsubasa2] frame=${this._frame} scene=${store.readByte(237)} ram_001B=${store.readByte(27).toString(16)} ram_0628=${store.readByte(1576).toString(16)} bufNonZero=${nz}`
+        `[Tsubasa2] frame=${this._frame} scene=${store2.readByte(237)} ram_001B=${store2.readByte(27).toString(16)} ram_0628=${store2.readByte(1576).toString(16)} bufNonZero=${nz}`
       );
     }
   }
@@ -158892,11 +158877,11 @@ var HeadlessRuntime = class {
       opts: {},
       ppu: null
     };
-    const ppu2 = new ppu_default(nes);
-    ppu2.setMirroring(nes.rom.HORIZONTAL_MIRRORING);
-    this.ppu = ppu2;
-    nes.ppu = ppu2;
-    ppu2.loadChrBank = (slot, bank1k) => {
+    const ppu = new ppu_default(nes);
+    ppu.setMirroring(nes.rom.HORIZONTAL_MIRRORING);
+    this.ppu = ppu;
+    nes.ppu = ppu;
+    ppu.loadChrBank = (slot, bank1k) => {
       this.loadChrSlot(slot, bank1k & 255);
     };
     this.loadInitialChr();
@@ -158907,13 +158892,13 @@ var HeadlessRuntime = class {
     const b = (bank1k & 255) % 128;
     if (this.chrSlots[s] === b) return;
     this.chrSlots[s] = b;
-    const ppu2 = this.ppu;
-    if (!ppu2.ptTile) return;
+    const ppu = this.ppu;
+    if (!ppu.ptTile) return;
     const tiles = this.vromTilesByBank1k[b];
     if (!tiles) return;
     const baseTileIdx = s * 64;
     for (let i = 0; i < 64; i++) {
-      const dst = ppu2.ptTile[baseTileIdx + i];
+      const dst = ppu.ptTile[baseTileIdx + i];
       const src = tiles[i];
       if (!dst || !src) continue;
       dst.initialized = true;
@@ -158922,7 +158907,7 @@ var HeadlessRuntime = class {
     }
     try {
       const { pushChrSwitch: pushChrSwitch2 } = (init_pattern_table_viewer(), __toCommonJS(pattern_table_viewer_exports));
-      pushChrSwitch2({ scanline: ppu2.scanline | 0, slot: s, bank1k: b });
+      pushChrSwitch2({ scanline: ppu.scanline | 0, slot: s, bank1k: b });
     } catch (_) {
     }
   }
@@ -158944,404 +158929,29 @@ var HeadlessRuntime = class {
   }
 };
 
-// scripts/_verify_300frame.ts
-var FRAMES_LIST = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
+// scripts/_ram_dump.ts
 var runtime = new HeadlessRuntime();
 var game = new Tsubasa2();
 game.boot();
-var ppu = runtime.ppu;
-var CRC_TABLE = (() => {
-  const t = new Array(256);
-  for (let n = 0; n < 256; n++) {
-    let c = n;
-    for (let k = 0; k < 8; k++) c = c & 1 ? 3988292384 ^ c >>> 1 : c >>> 1;
-    t[n] = c >>> 0;
-  }
-  return t;
-})();
-function crc32(d) {
-  let c = 4294967295;
-  for (let i = 0; i < d.length; i++) c = CRC_TABLE[(c ^ d[i]) & 255] ^ c >>> 8;
-  return (c ^ 4294967295) >>> 0;
+var FRAMES = 30;
+for (let i = 0; i < FRAMES; i++) {
+  game.frame(runtime);
 }
-function makeChunk(t, d) {
-  const lb = Buffer.alloc(4);
-  lb.writeUInt32BE(d.length, 0);
-  const tb = Buffer.from(t, "ascii");
-  const cb = Buffer.alloc(4);
-  cb.writeUInt32BE(crc32(Buffer.concat([tb, d])), 0);
-  return Buffer.concat([lb, tb, d, cb]);
-}
-function encodePng(w, h, rgba) {
-  const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(w, 0);
-  ihdr.writeUInt32BE(h, 4);
-  ihdr.writeUInt8(8, 8);
-  ihdr.writeUInt8(6, 9);
-  const row = w * 4;
-  const raw = Buffer.alloc((row + 1) * h);
-  for (let y = 0; y < h; y++) {
-    raw[y * (row + 1)] = 0;
-    rgba.copy(raw, y * (row + 1) + 1, y * row, (y + 1) * row);
-  }
-  return Buffer.concat([
-    sig,
-    makeChunk("IHDR", ihdr),
-    makeChunk("IDAT", zlib.deflateSync(raw, { level: 9 })),
-    makeChunk("IEND", Buffer.alloc(0))
-  ]);
-}
-function rgbaFromU32(buf, w, h) {
-  const rgba = Buffer.alloc(w * h * 4);
-  for (let i = 0; i < w * h; i++) {
-    const v = buf[i] >>> 0;
-    rgba[i * 4 + 0] = v >>> 16 & 255;
-    rgba[i * 4 + 1] = v >>> 8 & 255;
-    rgba[i * 4 + 2] = v & 255;
-    rgba[i * 4 + 3] = 255;
-  }
-  return rgba;
-}
-function rgbaFromU32Direct(buf, w, h) {
-  return rgbaFromU32(buf, w, h);
-}
-function blitTile(dst, dstW, dstH, tile, dx, dy, pal, palAdd) {
-  const t = ppu.ptTile[tile];
-  if (!t || !t.pix) {
-    for (let py = 0; py < 8; py++) {
-      const yy = dy + py;
-      if (yy < 0 || yy >= dstH) continue;
-      for (let px = 0; px < 8; px++) {
-        const xx = dx + px;
-        if (xx < 0 || xx >= dstW) continue;
-        dst[yy * dstW + xx] = 4280427042;
-      }
-    }
-    return;
-  }
-  for (let py = 0; py < 8; py++) {
-    const yy = dy + py;
-    if (yy < 0 || yy >= dstH) continue;
-    for (let px = 0; px < 8; px++) {
-      const xx = dx + px;
-      if (xx < 0 || xx >= dstW) continue;
-      const c = t.pix[py * 8 + px];
-      dst[yy * dstW + xx] = c === 0 ? pal[0] ?? 0 : pal[c + palAdd] ?? pal[0] ?? 0;
-    }
-  }
-}
-function dumpOam() {
-  const json = [];
-  for (let i = 0; i < 64; i++) {
-    json.push({
-      idx: i,
-      y: ppu.sprY[i],
-      tile: ppu.sprTile[i],
-      attr: ppu.sprCol[i] | (ppu.vertFlip[i] ? 128 : 0) | (ppu.horiFlip[i] ? 64 : 0) | (ppu.bgPriority[i] ? 32 : 0),
-      x: ppu.sprX[i]
-    });
-  }
-  const W2 = 128, H2 = 128;
-  const out = new Uint32Array(W2 * H2);
-  out.fill(4280295464);
-  for (let i = 0; i < 64; i++) {
-    const sprTile = ppu.sprTile[i];
-    const tableOff = ppu.f_spPatternTable << 8;
-    const globalTile = sprTile + tableOff;
-    const palAdd = ppu.sprCol[i] & 28;
-    const flipH = ppu.horiFlip[i] === 1;
-    const flipV = ppu.vertFlip[i] === 1;
-    const t = ppu.ptTile[globalTile];
-    const cx = i % 8 * 16;
-    const cy = Math.floor(i / 8) * 16;
-    if (!t || !t.pix) {
-      for (let py = 0; py < 16; py++) {
-        for (let px = 0; px < 16; px++) {
-          const isX = py + px & 1;
-          out[(cy + py) * W2 + (cx + px)] = isX ? 4287103112 : 4278190080;
-        }
-      }
-      continue;
-    }
-    for (let py = 0; py < 8; py++) {
-      for (let px = 0; px < 8; px++) {
-        const srcPy = flipV ? 7 - py : py;
-        const srcPx = flipH ? 7 - px : px;
-        const c = t.pix[srcPy * 8 + srcPx];
-        const color = c === 0 ? 0 : ppu.sprPalette[c + palAdd] ?? 0;
-        out[(cy + py * 2) * W2 + (cx + px * 2)] = color;
-        out[(cy + py * 2) * W2 + (cx + px * 2 + 1)] = color;
-        out[(cy + py * 2 + 1) * W2 + (cx + px * 2)] = color;
-        out[(cy + py * 2 + 1) * W2 + (cx + px * 2 + 1)] = color;
-      }
-    }
-  }
-  return { json, png: out };
-}
-function renderNt(ntIdx) {
-  const nt = ppu.nameTable[ntIdx];
-  const w = 32, h = 30;
-  const W2 = 256, H2 = 240;
-  const out = new Uint32Array(W2 * H2);
-  const grid = [];
-  const attr = [];
-  const bgTableBase = ppu.regS === 0 ? 0 : 256;
-  for (let ty = 0; ty < h; ty++) {
-    for (let tx = 0; tx < w; tx++) {
-      const tIdx = nt.tile[ty * w + tx] & 255;
-      const a = nt.attrib[ty * w + tx] & 255;
-      grid.push(tIdx);
-      attr.push(a);
-      const palAdd = (a & 192) === 192 ? 12 : (a & 48) === 48 ? 8 : (a & 12) === 12 ? 4 : 0;
-      blitTile(out, W2, H2, bgTableBase + tIdx, tx * 8, ty * 8, ppu.imgPalette, palAdd);
-    }
-  }
-  return {
-    json: { tiles: grid, attr },
-    png: out
-  };
-}
-function renderPtSheet() {
-  const TILE = 8;
-  const TILES_PER_ROW = 16;
-  const PT_W = TILE * TILES_PER_ROW;
-  const PT_H = TILE * 16;
-  const W2 = PT_W, H2 = PT_H;
-  const out = new Uint32Array(W2 * H2);
-  const tiles = [];
-  for (let tableIdx = 0; tableIdx < 2; tableIdx++) {
-    for (let row = 0; row < 16; row++) {
-      const tilesRow = [];
-      for (let col = 0; col < 16; col++) {
-        const tIdx = tableIdx * 256 + row * 16 + col;
-        const dx = col * TILE;
-        const dy = row * TILE;
-        blitTile(out, W2, H2, tIdx, dx, dy, ppu.imgPalette, 0);
-        const t = ppu.ptTile[tIdx];
-        const plane0 = [];
-        const plane1 = [];
-        if (t && t.pix) {
-          for (let py = 0; py < 8; py++) {
-            let b0 = 0, b1 = 0;
-            for (let px = 0; px < 8; px++) {
-              const c = t.pix[py * 8 + px];
-              if (c & 1) b0 |= 1 << 7 - px;
-              if (c & 2) b1 |= 1 << 7 - px;
-            }
-            plane0.push(b0);
-            plane1.push(b1);
-          }
-        }
-        tilesRow.push(tIdx);
-        if (!tiles[tIdx]) tiles[tIdx] = [...plane0, ...plane1];
-      }
-    }
-  }
-  return {
-    json: { tiles: tiles.filter(Boolean) },
-    png: out
-  };
-}
-function renderPaletteSwatch() {
-  const BLOCK = 16;
-  const W2 = 32 * BLOCK;
-  const H2 = 2 * BLOCK;
-  const out = new Uint32Array(W2 * H2);
-  out.fill(4279900718);
-  for (let i = 0; i < 16; i++) {
-    out.fill(ppu.imgPalette[i], i * BLOCK, (i + 1) * BLOCK);
-    for (let py = 0; py < BLOCK; py++) {
-      for (let px = 0; px < BLOCK; px++) {
-        out[BLOCK * W2 + i * BLOCK + py * W2 + px] = ppu.sprPalette[i];
-      }
-    }
-  }
-  const imgRaw = [];
-  const sprRaw = [];
-  for (let i = 0; i < 16; i++) {
-    imgRaw.push(ppu.vramMem[16128 + i] & 63);
-    sprRaw.push(ppu.vramMem[16144 + i] & 63);
-  }
-  return {
-    json: { bg: imgRaw, spr: sprRaw },
-    png: out
-  };
-}
-var W = 256;
-var H = 240;
-var outDir = path.join(__dirname, "..", "output");
-var traceDir = path.join(outDir, "ppu-trace");
-fs.mkdirSync(traceDir, { recursive: true });
-var origBg = ppu.f_bgVisibility;
-var origSp = ppu.f_spVisibility;
-var snapshots = [];
-function writeVerifyTriple(frameN) {
-  const compNz = (() => {
-    let n = 0;
-    for (const v of ppu.buffer) if (v !== 0) n++;
-    return n;
-  })();
-  fs.writeFileSync(
-    path.join(outDir, `verify-frame${frameN}-composite.png`),
-    encodePng(W, H, rgbaFromU32(ppu.buffer, W, H))
-  );
-  ppu.buffer.fill(0);
-  ppu.f_spVisibility = 0;
-  ppu.f_bgVisibility = 1;
-  ppu.startFrame();
-  ppu.advanceDots(262 * 341);
-  ppu.renderFramePartially(0, 240);
-  ppu.endFrame();
-  const bgNz = (() => {
-    let n = 0;
-    for (const v of ppu.buffer) if (v !== 0) n++;
-    return n;
-  })();
-  fs.writeFileSync(
-    path.join(outDir, `verify-frame${frameN}-bg.png`),
-    encodePng(W, H, rgbaFromU32(ppu.buffer, W, H))
-  );
-  ppu.buffer.fill(0);
-  ppu.f_spVisibility = 1;
-  ppu.f_bgVisibility = 0;
-  ppu.startFrame();
-  ppu.advanceDots(262 * 341);
-  ppu.renderFramePartially(0, 240);
-  ppu.endFrame();
-  const sprNz = (() => {
-    let n = 0;
-    for (const v of ppu.buffer) if (v !== 0) n++;
-    return n;
-  })();
-  fs.writeFileSync(
-    path.join(outDir, `verify-frame${frameN}-spr.png`),
-    encodePng(W, H, rgbaFromU32(ppu.buffer, W, H))
-  );
-  console.log(
-    `[verify] frame=${String(frameN).padStart(3)} | composite=${String(compNz).padStart(5)} | bg=${String(bgNz).padStart(5)} | spr=${String(sprNz).padStart(5)}`
-  );
-}
-function writePpuTrace(frameN) {
-  const dir = path.join(traceDir, `frame-${String(frameN).padStart(3, "0")}`);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(
-    path.join(dir, "screen.png"),
-    encodePng(W, H, rgbaFromU32Direct(ppu.buffer, W, H))
-  );
-  const oam = dumpOam();
-  fs.writeFileSync(path.join(dir, "oam.json"), JSON.stringify(oam.json, null, 0));
-  fs.writeFileSync(
-    path.join(dir, "oam.png"),
-    encodePng(128, 128, rgbaFromU32(oam.png, 128, 128))
-  );
-  const nt0 = renderNt(0);
-  fs.writeFileSync(path.join(dir, "nt0.json"), JSON.stringify(nt0.json, null, 0));
-  fs.writeFileSync(
-    path.join(dir, "nt0.png"),
-    encodePng(W, H, rgbaFromU32(nt0.png, W, H))
-  );
-  const nt1 = renderNt(1);
-  fs.writeFileSync(path.join(dir, "nt1.json"), JSON.stringify(nt1.json, null, 0));
-  fs.writeFileSync(
-    path.join(dir, "nt1.png"),
-    encodePng(W, H, rgbaFromU32(nt1.png, W, H))
-  );
-  const pt = renderPtSheet();
-  const dt = [];
-  for (let i = 0; i < 16; i++) {
-    const t = ppu.ptTile[i];
-    let nz = 0;
-    if (t && t.pix) {
-      for (const p of t.pix) if (p !== 0) nz++;
-    }
-    dt.push(nz);
-  }
-  console.log(`[dbg] f${frameN} ptTile[0..15] nz:`, dt.join(","));
-  fs.writeFileSync(path.join(dir, "pt.json"), JSON.stringify(pt.json));
-  fs.writeFileSync(
-    path.join(dir, "pt-sheet.png"),
-    encodePng(128, 128, rgbaFromU32(pt.png, 128, 128))
-  );
-  const {
-    renderBothPatternTablesAtScanline: renderBothPatternTablesAtScanline2,
-    drainChrSwitchLog: drainChrSwitchLog2,
-    buildChrBankMapByScanline: buildChrBankMapByScanline2,
-    buildFinalChrBankMap: buildFinalChrBankMap2
-  } = (init_pattern_table_viewer(), __toCommonJS(pattern_table_viewer_exports));
-  const switches = drainChrSwitchLog2();
-  const initialBanks = new Uint8Array([0, 1, 2, 3, 124, 125, 126, 127]);
-  const mapByScan = buildChrBankMapByScanline2(switches, initialBanks);
-  const nesForViewer = {
-    ppu,
-    rom: {
-      vromTile: runtime.vromTilesByBank1k ? runtime.vromTilesByBank1k : game.runtime?.vromTilesByBank1k ? game.runtime.vromTilesByBank1k : []
-    }
-  };
-  fs.writeFileSync(path.join(dir, "chr-switches.json"), JSON.stringify({
-    frame: frameN,
-    bankMapByScanline: Array.from(mapByScan.entries()).map(([scan, banks]) => ({
-      scanline: scan,
-      banks: Array.from(banks)
-    })),
-    rawLog: switches
-  }, null, 2));
-  for (const [scan, slotBanks] of mapByScan) {
-    const ptAt = renderBothPatternTablesAtScanline2(nesForViewer, slotBanks, 0);
-    const w = ptAt.table0.width * 2, h = ptAt.table0.height;
-    const rgba = new Uint32Array(w * h);
-    rgba.set(ptAt.table0.data, 0);
-    rgba.set(ptAt.table1.data, w * h / 2);
-    fs.writeFileSync(
-      path.join(dir, `pt-sheet-scan${String(scan).padStart(3, "0")}.png`),
-      encodePng(w, h, rgbaFromU32(rgba, w, h))
-    );
-  }
-  const finalBanks = buildFinalChrBankMap2(switches, initialBanks);
-  const ptFinal = renderBothPatternTablesAtScanline2(nesForViewer, finalBanks, 0);
-  {
-    const w = ptFinal.table0.width * 2, h = ptFinal.table0.height;
-    const rgba = new Uint32Array(w * h);
-    rgba.set(ptFinal.table0.data, 0);
-    rgba.set(ptFinal.table1.data, w * h / 2);
-    fs.writeFileSync(
-      path.join(dir, "pt-sheet-final.png"),
-      encodePng(w, h, rgbaFromU32(rgba, w, h))
-    );
-  }
-  const pal = renderPaletteSwatch();
-  fs.writeFileSync(path.join(dir, "palette.json"), JSON.stringify(pal.json));
-  fs.writeFileSync(
-    path.join(dir, "palette.png"),
-    encodePng(32 * 16, 32, rgbaFromU32(pal.png, 32 * 16, 32))
-  );
-  const store = game.store;
-  snapshots.push({
-    frame: frameN,
-    scene: store.readByte(237),
-    ram001B: store.readByte(27),
-    ram0628: store.readByte(1576),
-    ram0044: store.readByte(68)
-  });
-}
-var total = 0;
-for (const target of FRAMES_LIST) {
-  while (total < target) {
-    game.frame(runtime);
-    total++;
-  }
-  writeVerifyTriple(target);
-  writePpuTrace(target);
-}
-fs.writeFileSync(
-  path.join(traceDir, "final-screen.png"),
-  encodePng(W, H, rgbaFromU32(ppu.buffer, W, H))
+var store = game.store;
+var dump = (a) => a.map((b) => "0x" + b.toString(16).padStart(2, "0")).join(" ");
+console.log("=== frame 30 RAM dump ===");
+console.log("$0022 (chrSelBase): 0x" + store.readByte(34).toString(16).padStart(2, "0"));
+console.log("$0048:             0x" + store.readByte(72).toString(16).padStart(2, "0"));
+console.log("$005B:             0x" + store.readByte(91).toString(16).padStart(2, "0"));
+console.log("$005C:             0x" + store.readByte(92).toString(16).padStart(2, "0"));
+console.log("$005D:             0x" + store.readByte(93).toString(16).padStart(2, "0"));
+console.log("$005E:             0x" + store.readByte(94).toString(16).padStart(2, "0"));
+console.log("$005F:             0x" + store.readByte(95).toString(16).padStart(2, "0"));
+console.log("$0075:             0x" + store.readByte(117).toString(16).padStart(2, "0"));
+console.log("$0076:             0x" + store.readByte(118).toString(16).padStart(2, "0"));
+console.log("$0077:             0x" + store.readByte(119).toString(16).padStart(2, "0"));
+console.log("$007A:             0x" + store.readByte(122).toString(16).padStart(2, "0"));
+console.log(
+  "$007C-$008D (scene3 tbl):",
+  dump([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17].map((i) => store.readByte(124 + i)))
 );
-fs.writeFileSync(
-  path.join(traceDir, "snapshots.json"),
-  JSON.stringify(snapshots, null, 2)
-);
-ppu.f_bgVisibility = origBg;
-ppu.f_spVisibility = origSp;
-console.log(`[verify] done. PNGs at output/verify-frame{N}-{composite|bg|spr}.png`);
-console.log(`[verify]      + output/ppu-trace/frame-NNN/{screen,oam,nt0,nt1,pt-sheet,palette}.png + .json`);
