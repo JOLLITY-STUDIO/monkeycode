@@ -34,9 +34,13 @@ export {
 } from './tables/ram-init-table';
 export { PALETTE_FADE_MAX, fadePalette } from './tables/palette-fade-table';
 export { PALETTE_TABLE, loadPalette } from './tables/palette-table';
-export { PLAYER_TABLE, findPlayerById, findPlayersByTeam } from './tables/player-table';
-export { TEAM_TABLE, findTeamById } from './tables/team-table';
-export type { TeamEntry } from './tables/team-table';
+export {
+  PLAYER_TABLE, findPlayerById, findPlayersByTeam, findPlayerNameById,
+  PLAYER_COLOR, GK_STATS, PLAYER_HAIR, NAMED_PLAYER_COLOR,
+} from './tables/player-table';
+export type { PlayerColorEntry, PlayerGkEntry } from './tables/player-table';
+export { TEAM_TABLE, findTeamById, findTeamNameById, findRosterById, TEAMS_FULL } from './tables/team-table';
+export type { TeamEntry, TeamRosterEntry } from './tables/team-table';
 export {
   SKILL_TABLE, SKILL_POINTER_TABLE, SKILL_MATCH_TABLE, SKILL_MOVE_ID_TABLE, SKILL_TRIGGER_TABLE,
   BANK16_DATA_TABLES, BANK16_CODE_DATA, findSkillByMoveId, findSkillsByPlayer,
@@ -46,7 +50,8 @@ export {
   DEFAULT_MATCH_CONFIG, MATCH_CONFIG_TABLE, getMatchConfig,
 } from './tables/match-config-table';
 export type { MatchConfigEntry } from './tables/match-config-table';
-export { LEVEL_UP_TABLE, findLevelByExp } from './tables/levelup-table';
+export { LEVEL_UP_TABLE, findLevelByExp, findLevelById } from './tables/levelup-table';
+export type { LevelUpStatEntry } from './tables/levelup-data';
 
 // 场景/精灵帧/技能事件等具象化数据表
 export {

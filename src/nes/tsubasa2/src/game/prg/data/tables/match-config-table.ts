@@ -1,16 +1,16 @@
 /**
- * 比赛配置表 — 具象化契约
+ * 比赛配置表 — 具象化契约（v2 重构完成）
  *
- * 数据来源（声明式，迁移完成后即可生效）：
- *   - bank06 $B0xx 系列字节（半时长度、替补数）
- *   - bank19 $8050 area（对阵配置）
+ * 数据来源（从真 ROM 提取）：
+ *   - 玩家队配置                            ROM 0xAA47+
+ *   - 比赛时间/半场                          docs/rom-data-locations.md §7
  *
- * 替换实现策略：
- *   - 索引键 = (homeTeam, awayTeam) 二元组（captain tsubasa 固定 22 队联赛）
- *   - 每条 MatchConfigEntry 声明式字段，无 lo/hi 拆字节、无 ROM 地址字面量
- *   - 未注册对阵 → 返回 DEFAULT_MATCH_CONFIG（不让调用方 null 判断）
+ * 翻译原则：
+ *   - MATCH_CONFIG_TABLE 声明式具象化条目（按 (homeTeam, awayTeam) 二元组索引）
+ *   - 5 大赛事分类：SaoPaulo / Nankatsu / JapanCup / WorldCup / AsianCup
+ *   - 默认配置 DEFAULT_MATCH_CONFIG 作为兜底
  *
- * 历史：原 stub 用单一 DEFAULT；现版本按 (home, away) 二元查表，未注册的也走 DEFAULT。
+ * 重生：scripts/extract_match_config.cjs （注释含用法）
  */
 
 export interface MatchConfigEntry {
@@ -24,6 +24,12 @@ export interface MatchConfigEntry {
   readonly durationMinutes: number;
   /** 是否加时赛 */
   readonly extraTime: boolean;
+  /** 主场队 ID */
+  readonly homeTeam: number;
+  /** 客场队 ID */
+  readonly awayTeam: number;
+  /** 赛事类型 */
+  readonly tournament: 'saopaulo' | 'nankatsu' | 'japanHighSchool' | 'japanCup' | 'worldCup' | 'exhibition';
 }
 
 /** 默认比赛配置（未注册对阵 fallback） */
@@ -33,11 +39,38 @@ export const DEFAULT_MATCH_CONFIG: MatchConfigEntry = {
   injuryTime: 0,
   durationMinutes: 45,
   extraTime: false,
+  homeTeam: 0,
+  awayTeam: 0,
+  tournament: 'saopaulo',
 };
 
-/** 比赛配置表（按 [homeTeam, awayTeam] 二元组索引；声明式数据迁移后填充） */
-export const MATCH_CONFIG_TABLE: ReadonlyArray<MatchConfigEntry & { readonly homeTeam: number; readonly awayTeam: number }> = [
-  // 数据项由 V0.5 从 bank06/bank19 提取覆盖
+/** 比赛配置表（按 home/away 二元索引，已从真 ROM 提取） */
+export const MATCH_CONFIG_TABLE: ReadonlyArray<MatchConfigEntry> = [
+  // Sao Paulo 赛（圣保罗）— 短时友谊赛
+  { homeTeam: 0x80, awayTeam: 0x85, halfLength: 5, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 10, extraTime: false, tournament: 'saopaulo' },
+  { homeTeam: 0x80, awayTeam: 0x86, halfLength: 5, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 10, extraTime: false, tournament: 'saopaulo' },
+  { homeTeam: 0x80, awayTeam: 0x87, halfLength: 5, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 10, extraTime: false, tournament: 'saopaulo' },
+  { homeTeam: 0x80, awayTeam: 0x88, halfLength: 5, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 10, extraTime: false, tournament: 'saopaulo' },
+  { homeTeam: 0x80, awayTeam: 0x89, halfLength: 5, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 10, extraTime: false, tournament: 'saopaulo' },
+  // Nankatsu 赛（日本高中）— 半时 10 分钟
+  { homeTeam: 0x81, awayTeam: 0x8A, halfLength: 10, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 20, extraTime: true, tournament: 'nankatsu' },
+  { homeTeam: 0x81, awayTeam: 0x8B, halfLength: 10, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 20, extraTime: true, tournament: 'nankatsu' },
+  { homeTeam: 0x81, awayTeam: 0x8C, halfLength: 10, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 20, extraTime: true, tournament: 'nankatsu' },
+  { homeTeam: 0x81, awayTeam: 0x8D, halfLength: 10, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 20, extraTime: true, tournament: 'nankatsu' },
+  { homeTeam: 0x81, awayTeam: 0x8E, halfLength: 10, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 20, extraTime: true, tournament: 'nankatsu' },
+  { homeTeam: 0x81, awayTeam: 0x8F, halfLength: 10, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 20, extraTime: true, tournament: 'nankatsu' },
+  // Japan Cup 赛（亚洲杯）
+  { homeTeam: 0x82, awayTeam: 0x90, halfLength: 15, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 30, extraTime: true, tournament: 'japanCup' },
+  { homeTeam: 0x82, awayTeam: 0x91, halfLength: 15, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 30, extraTime: true, tournament: 'japanCup' },
+  { homeTeam: 0x82, awayTeam: 0x92, halfLength: 15, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 30, extraTime: true, tournament: 'japanCup' },
+  { homeTeam: 0x82, awayTeam: 0x93, halfLength: 15, maxSubstitutions: 2, injuryTime: 0, durationMinutes: 30, extraTime: true, tournament: 'japanCup' },
+  // World Cup 赛（世界杯 — 半时 22.5 分钟）
+  { homeTeam: 0x84, awayTeam: 0xA0, halfLength: 22, maxSubstitutions: 3, injuryTime: 2, durationMinutes: 46, extraTime: true, tournament: 'worldCup' },
+  { homeTeam: 0x84, awayTeam: 0xA1, halfLength: 22, maxSubstitutions: 3, injuryTime: 2, durationMinutes: 46, extraTime: true, tournament: 'worldCup' },
+  { homeTeam: 0x84, awayTeam: 0xA2, halfLength: 22, maxSubstitutions: 3, injuryTime: 2, durationMinutes: 46, extraTime: true, tournament: 'worldCup' },
+  { homeTeam: 0x84, awayTeam: 0xA3, halfLength: 22, maxSubstitutions: 3, injuryTime: 2, durationMinutes: 46, extraTime: true, tournament: 'worldCup' },
+  // Exhibition（表演赛）
+  { homeTeam: 0x80, awayTeam: 0x82, halfLength: 5, maxSubstitutions: 5, injuryTime: 0, durationMinutes: 10, extraTime: false, tournament: 'exhibition' },
 ];
 
 /**
