@@ -1,17 +1,20 @@
 /**
  * test/audio-test.ts — AudioService 请求队列消费 + APU 寄存器写验证
  *
- * 验证点：
+ * 验证点（v2：核心 a/b/c/d + 新增 Song/Command/Duration 查表）：
  *   1. playBgm(0x10) → $0700[0] = 0x10，update 后消费，LogApuTarget 收到 $4015 写
  *   2. playSe(0x32) → $0700[1] = 0x32，update 后消费
  *   3. playSe(0x31) → 停止所有 SE（写静音包络到 $07CF-$07DE）
  *   4. stopAll() → 清空队列 + $4015=0
  *   5. playDpcm(0) → $4010/$4012/$4013 写
+ *   6. AudioRom 查表（frequency/duration/command 替代旧的 readBank12Byte 路径）
+ *   7. SongCatalog SONGS 查表入口
  */
 import { DataStore } from '../src/game/prg/data/store/DataStore';
 import { AudioService } from '../src/game/prg/code/audio/AudioService';
 import { LogApuTarget } from '../src/game/prg/code/audio/ApuTarget';
-import { AudioRom } from '../src/game/prg/data/audio/audio-rom';
+import { AudioRom, SONG_REQUEST_IDS } from '../src/game/prg/data/audio/audio-rom';
+import { lookupSong } from '../src/game/prg/data/audio/SongCatalog';
 
 // node 运行环境（tsconfig lib 不含 node 类型，测试脚本声明）
 declare const process: { exit(code?: number): never };
@@ -82,26 +85,23 @@ assert(hasDpcm4012, 'playDpcm(0) 写 $4012=0x00');
 assert(hasDpcm4013, 'playDpcm(0) 写 $4013=0x0C');
 assert(store.readByte(0x07E8) === 0x80, 'playDpcm 设置 DPCM 标志 $07E8=0x80');
 
-// === 测试 5: AudioRom 数据访问 ===
-const bgm0 = AudioRom.readBgmPointer(0);
-assert(bgm0 === 0x8892, 'AudioRom.readBgmPointer(0) = $8892');
-const se0 = AudioRom.readSePointer(0);
-assert(se0 === 0x8E42, 'AudioRom.readSePointer(0) = $8E42');
-const dur0 = AudioRom.readNoteDuration(0);
-assert(dur0 === 0x00, 'AudioRom.readNoteDuration(0) = $00');
-const dur1 = AudioRom.readNoteDuration(1);
-assert(dur1 === 0x01, 'AudioRom.readNoteDuration(1) = $01');
-const songId1 = AudioRom.readSongRequestId(1);
-assert(songId1 === 0x32, 'AudioRom.readSongRequestId(1) = $32 (第一首 SE)');
-const songId41 = AudioRom.readSongRequestId(41);
-assert(songId41 === 0x03, 'AudioRom.readSongRequestId(41) = $03 (第一首 BGM)');
-const songId105 = AudioRom.readSongRequestId(105);
-assert(songId105 === 0x6f, 'AudioRom.readSongRequestId(105) = $6F (最后一首)');
-// 验证 BGM 数据在 bank7（不是 bank12）
-const bgmDataBank7 = AudioRom.readBgmData(0x8892);
-const bgmDataBank12 = AudioRom.readBank12Byte(0x8892);
-assert(bgmDataBank7 !== bgmDataBank12, 'BGM 数据 bank7 ≠ bank12（bankswitch 验证）');
-assert(bgmDataBank7 === 0x2c, 'BGM[0] 数据 bank7[0x892] = $2C（真实 BGM 乐谱）');
+// === 测试 5: AudioRom 查表（v2 替代旧的 readBank12Byte） ===
+const freq0 = AudioRom.frequency(0);
+assert(freq0 === 0x07F1, 'AudioRom.frequency(0) = 0x07F1（C5 频率）');
+const dur0 = AudioRom.duration(0);
+assert(dur0 === 0x00, 'AudioRom.duration(0) = 0x00');
+const dur8 = AudioRom.duration(8);
+assert(dur8 === 0x01, 'AudioRom.duration(8) = 0x01');
+const cmd0 = AudioRom.command(0);
+assert(cmd0 === 0x8544, 'AudioRom.command(0) = 0x8544');
+
+// === 测试 6: SONG_REQUEST_IDS 与 SongCatalog 入口 ===
+assert(SONG_REQUEST_IDS.SE_LOW === 0x32, 'SONG_REQUEST_IDS.SE_LOW = 0x32');
+assert(SONG_REQUEST_IDS.BGM_LOW === 0x03, 'SONG_REQUEST_IDS.BGM_LOW = 0x03');
+assert(SONG_REQUEST_IDS.SE_EXT_HIGH === 0x6F, 'SONG_REQUEST_IDS.SE_EXT_HIGH = 0x6F');
+// SONGS map 当前为空（完整 105 首填充留给后续提取），lookupSong 应返回 null
+assert(lookupSong(0x10) === null, 'lookupSong(0x10) 当前未注册（SONGS 等待提取脚本填充）');
+assert(lookupSong(0x99) === null, 'lookupSong(0x99) 当前未注册');
 
 console.log('\n=== 全部测试通过 ===');
 console.log('APU 日志摘要:', apu.summary());

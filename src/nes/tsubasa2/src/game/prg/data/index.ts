@@ -86,6 +86,27 @@ export {
   BANK29_DATA_TABLES, BANK29_DATA_MAPS, BANK29_DATA_TAIL, BANK29_FULL,
 } from './scene/bank29-data';
 
+// bank06 拆解（声明式分文件：scripts / palettes / scene-table / 次级区段）
+export {
+  BANK6_SCRIPTS,
+  BANK6_BG_PALETTES,
+  BANK6_SPR_PALETTES,
+  BANK6_SCENE_TABLE,
+  BANK6_SEC_01_NT_TILES, BANK6_SEC_01_NT_TILES_OFFSET, BANK6_SEC_01_NT_TILES_CPU_BASE,
+  BANK6_SEC_02_NT_TILES, BANK6_SEC_02_NT_TILES_OFFSET, BANK6_SEC_02_NT_TILES_CPU_BASE,
+  BANK6_SEC_03_PTR_BLK, BANK6_SEC_03_PTR_BLK_OFFSET, BANK6_SEC_03_PTR_BLK_CPU_BASE,
+  BANK6_SEC_04_TILE_BLK, BANK6_SEC_04_TILE_BLK_OFFSET, BANK6_SEC_04_TILE_BLK_CPU_BASE,
+} from './scene/bank6';
+export type { OpeningSceneEntry } from './scene/bank6';
+
+// bank07 拆解（106 项 CHR configs，每个独立文件）
+export {
+  BANK7_CHR_POINTERS,
+  BANK7_CHR_CONFIGS,
+  BANK7_TILE_STREAMS,
+  OPENING_TILE_STREAMS,
+} from './scene/bank7';
+
 // audio（曲目列表 + ROM 访问器）
 export type { SongTrack, SongType, SongBank } from './audio';
 export {
