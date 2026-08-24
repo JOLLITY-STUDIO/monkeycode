@@ -96,27 +96,30 @@ export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
   // Flamengo (Brazil 第6关)
   { id: 0x89, name: 'Flamengo',     type: 'cpu',    players: [0x84, 0x85, 0x86, 0x86, 0x60, 0x1E, 0x1F, 0x0A, 0x2B, 0x06, 0x2C], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [6] },
 
-  // ─────────── 日本高中 (6 队 × 12 bytes, PRG 0x3BB62; 关 7-12) ───────────
-  { id: 0x8A, name: 'Kunimi',       type: 'cpu',    players: [0x31, 0x0F, 0x01, 0x00, 0x76, 0x8D, 0x8D, 0x8E, 0x40, 0x1E, 0x1E], subs: [],                                                                              formation: 'Form4',  tactic: 'Normal',  encounterLevels: [7] },
+  // ─────────── 日本高中 (6 队, 关 7-12) ───────────
+  // PRG byte data @ base 0x3BAFE + 7*12 = 0x3BB52 (Kunimi), stride 12
+  // 验证 anchor: Furano Pos10 PRG 0x3BB86 = 0x35 (Sawada) ✓ (Kunimi 等未 anchor-verify, byte 顺序)
+  // byte 0 = CPU Player 1 (装载到 RAM $0384 + i*12, 见 docs §4)
+  { id: 0x8A, name: 'Kunimi',       type: 'cpu',    players: [0x2D, 0x0F, 0x00, 0x00, 0x87, 0x88, 0x89, 0x89, 0x91, 0x1F, 0x1D], subs: [],                                                                              formation: 'Form4', tactic: 'Normal',  encounterLevels: [7] },
 
-  { id: 0x8B, name: 'Akita',        type: 'cpu',    players: [0x32, 0x01, 0x33, 0x0F, 0x02, 0x00, 0x8F, 0x90, 0x91, 0x91, 0x70], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [8] },
+  { id: 0x8B, name: 'Akita',        type: 'cpu',    players: [0x2E, 0x09, 0x2F, 0x0F, 0x21, 0x00, 0x8A, 0x8B, 0x8C, 0x8C, 0xA0], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [8] },
 
-  { id: 0x8C, name: 'Tatsunami',    type: 'cpu',    players: [0x1C, 0x0F, 0x00, 0x00, 0x92, 0x93, 0x94, 0x94, 0x70, 0x1F, 0x1F], subs: [],                                                                              formation: 'Form10', tactic: 'Normal',  encounterLevels: [9] },
+  { id: 0x8C, name: 'Tatsunami',    type: 'cpu',    players: [0x1E, 0x09, 0x30, 0x0B, 0x31, 0x0F, 0x01, 0x00, 0x76, 0x8D, 0x8D], subs: [],                                                                              formation: 'Form14', tactic: 'Pressing', encounterLevels: [9] },
 
-  { id: 0x8D, name: 'Musashi',      type: 'cpu',    players: [0x35, 0x0F, 0x03, 0x00, 0x76, 0x95, 0x96, 0x96, 0x60, 0x1F, 0x1E], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [10] },
+  { id: 0x8D, name: 'Musashi',      type: 'cpu',    players: [0x40, 0x1E, 0x1E, 0x04, 0x32, 0x01, 0x33, 0x0F, 0x02, 0x00, 0x8F], subs: [],                                                                              formation: 'Form0',  tactic: 'Tact9',   encounterLevels: [10] },
 
-  { id: 0x8E, name: 'Furano',       type: 'cpu',    players: [0x36, 0x0A, 0x37, 0x06, 0x38, 0x01, 0x39, 0x0F, 0x20, 0x00, 0x97], subs: [],                                                                              formation: 'Form8',  tactic: 'Tact9',   encounterLevels: [11] },
+  { id: 0x8E, name: 'Furano',       type: 'cpu',    players: [0x91, 0x91, 0x70, 0x1F, 0x1C, 0x0F, 0x00, 0x00, 0x92, 0x93, 0x94], subs: [],                                                                              formation: 'Form4',  tactic: 'Tact9',   encounterLevels: [11] },
 
-  { id: 0x8F, name: 'Toho',         type: 'cpu',    players: [0x99, 0x99, 0xA0, 0x1F, 0x1E, 0x09, 0x3A, 0x0F, 0x01, 0x00, 0x9A], subs: [],                                                                              formation: 'Form11', tactic: 'Tact9',   encounterLevels: [12] },
+  { id: 0x8F, name: 'Toho',         type: 'cpu',    players: [0x70, 0x1F, 0x1F, 0x0A, 0x35, 0x0F, 0x03, 0x00, 0x76, 0x95, 0x96], subs: [],                                                                              formation: 'Form6',  tactic: 'Tact9',   encounterLevels: [12] },
 
-  // ─────────── 日本杯 (4 队 × 12 bytes, PRG 0x3BBB4; 关 13-16) ───────────
-  { id: 0x90, name: 'AsRome',       type: 'cpu',    players: [0x03, 0x00, 0x76, 0x9D, 0x9E, 0x9E, 0x70, 0x1E, 0x1E, 0x07, 0x3D], subs: [],                                                                              formation: 'Form10', tactic: 'Normal',  encounterLevels: [13] },
+  // ─────────── 日本杯 (4 队, 关 13-16) ───────────
+  { id: 0x90, name: 'AsRome',       type: 'cpu',    players: [0x60, 0x1F, 0x1E, 0x09, 0x36, 0x0A, 0x37, 0x06, 0x38, 0x01, 0x39], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [13] },
 
-  { id: 0x91, name: 'Uruguay',      type: 'cpu',    players: [0x3E, 0x06, 0x3F, 0x01, 0x40, 0x0F, 0x01, 0x00, 0x76, 0x77, 0x78], subs: [],                                                                              formation: 'Form9',  tactic: 'Tact7',   encounterLevels: [14] },
+  { id: 0x91, name: 'Uruguay',      type: 'cpu',    players: [0x20, 0x00, 0x97, 0x98, 0x99, 0x99, 0xA0, 0x1F, 0x1E, 0x09, 0x3A], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [14] },
 
-  { id: 0x92, name: 'Hamburg',      type: 'cpu',    players: [0x30, 0x1F, 0x1B, 0x09, 0x41, 0x0B, 0x42, 0x06, 0x43, 0x0A, 0x44], subs: [],                                                                              formation: 'Form8',  tactic: 'Normal',  encounterLevels: [15] },
+  { id: 0x92, name: 'Hamburg',      type: 'cpu',    players: [0x01, 0x00, 0x9A, 0x9B, 0x9C, 0x9C, 0xA0, 0x1F, 0x1F, 0x0B, 0x3B], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [15] },
 
-  { id: 0x93, name: 'Japan',        type: 'cpu',    players: [0x46, 0x07, 0x47, 0x02, 0x48, 0x04, 0x49, 0x03, 0x4A, 0x05, 0x4B], subs: [],                                                                              formation: '4-4-2',  tactic: 'Normal',  encounterLevels: [16] },
+  { id: 0x93, name: 'Japan',        type: 'cpu',    players: [0x3C, 0x0F, 0x03, 0x00, 0x76, 0x9D, 0x9E, 0x9E, 0x70, 0x1E, 0x1E], subs: [],                                                                              formation: 'Form7',  tactic: 'Normal',  encounterLevels: [16] },
 
   // ─────────── 亚预赛 (6 队, 剧情关 17-22) ───────────
   // (数据从 doc 推断, doc 列出队伍名但未给具体 PRG offset; 暂用 WorldCup ID 占位)

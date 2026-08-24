@@ -24,18 +24,21 @@
     { id: 136, name: "Santos", type: "cpu", players: [131, 131, 145, 31, 29, 9, 41, 4, 42, 15, 3], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [5] },
     // Flamengo (Brazil 第6关)
     { id: 137, name: "Flamengo", type: "cpu", players: [132, 133, 134, 134, 96, 30, 31, 10, 43, 6, 44], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [6] },
-    // ─────────── 日本高中 (6 队 × 12 bytes, PRG 0x3BB62; 关 7-12) ───────────
-    { id: 138, name: "Kunimi", type: "cpu", players: [49, 15, 1, 0, 118, 141, 141, 142, 64, 30, 30], subs: [], formation: "Form4", tactic: "Normal", encounterLevels: [7] },
-    { id: 139, name: "Akita", type: "cpu", players: [50, 1, 51, 15, 2, 0, 143, 144, 145, 145, 112], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [8] },
-    { id: 140, name: "Tatsunami", type: "cpu", players: [28, 15, 0, 0, 146, 147, 148, 148, 112, 31, 31], subs: [], formation: "Form10", tactic: "Normal", encounterLevels: [9] },
-    { id: 141, name: "Musashi", type: "cpu", players: [53, 15, 3, 0, 118, 149, 150, 150, 96, 31, 30], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [10] },
-    { id: 142, name: "Furano", type: "cpu", players: [54, 10, 55, 6, 56, 1, 57, 15, 32, 0, 151], subs: [], formation: "Form8", tactic: "Tact9", encounterLevels: [11] },
-    { id: 143, name: "Toho", type: "cpu", players: [153, 153, 160, 31, 30, 9, 58, 15, 1, 0, 154], subs: [], formation: "Form11", tactic: "Tact9", encounterLevels: [12] },
-    // ─────────── 日本杯 (4 队 × 12 bytes, PRG 0x3BBB4; 关 13-16) ───────────
-    { id: 144, name: "AsRome", type: "cpu", players: [3, 0, 118, 157, 158, 158, 112, 30, 30, 7, 61], subs: [], formation: "Form10", tactic: "Normal", encounterLevels: [13] },
-    { id: 145, name: "Uruguay", type: "cpu", players: [62, 6, 63, 1, 64, 15, 1, 0, 118, 119, 120], subs: [], formation: "Form9", tactic: "Tact7", encounterLevels: [14] },
-    { id: 146, name: "Hamburg", type: "cpu", players: [48, 31, 27, 9, 65, 11, 66, 6, 67, 10, 68], subs: [], formation: "Form8", tactic: "Normal", encounterLevels: [15] },
-    { id: 147, name: "Japan", type: "cpu", players: [70, 7, 71, 2, 72, 4, 73, 3, 74, 5, 75], subs: [], formation: "4-4-2", tactic: "Normal", encounterLevels: [16] },
+    // ─────────── 日本高中 (6 队, 关 7-12) ───────────
+    // PRG byte data @ base 0x3BAFE + 7*12 = 0x3BB52 (Kunimi), stride 12
+    // 验证 anchor: Furano Pos10 PRG 0x3BB86 = 0x35 (Sawada) ✓ (Kunimi 等未 anchor-verify, byte 顺序)
+    // byte 0 = CPU Player 1 (装载到 RAM $0384 + i*12, 见 docs §4)
+    { id: 138, name: "Kunimi", type: "cpu", players: [45, 15, 0, 0, 135, 136, 137, 137, 145, 31, 29], subs: [], formation: "Form4", tactic: "Normal", encounterLevels: [7] },
+    { id: 139, name: "Akita", type: "cpu", players: [46, 9, 47, 15, 33, 0, 138, 139, 140, 140, 160], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [8] },
+    { id: 140, name: "Tatsunami", type: "cpu", players: [30, 9, 48, 11, 49, 15, 1, 0, 118, 141, 141], subs: [], formation: "Form14", tactic: "Pressing", encounterLevels: [9] },
+    { id: 141, name: "Musashi", type: "cpu", players: [64, 30, 30, 4, 50, 1, 51, 15, 2, 0, 143], subs: [], formation: "Form0", tactic: "Tact9", encounterLevels: [10] },
+    { id: 142, name: "Furano", type: "cpu", players: [145, 145, 112, 31, 28, 15, 0, 0, 146, 147, 148], subs: [], formation: "Form4", tactic: "Tact9", encounterLevels: [11] },
+    { id: 143, name: "Toho", type: "cpu", players: [112, 31, 31, 10, 53, 15, 3, 0, 118, 149, 150], subs: [], formation: "Form6", tactic: "Tact9", encounterLevels: [12] },
+    // ─────────── 日本杯 (4 队, 关 13-16) ───────────
+    { id: 144, name: "AsRome", type: "cpu", players: [96, 31, 30, 9, 54, 10, 55, 6, 56, 1, 57], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [13] },
+    { id: 145, name: "Uruguay", type: "cpu", players: [32, 0, 151, 152, 153, 153, 160, 31, 30, 9, 58], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [14] },
+    { id: 146, name: "Hamburg", type: "cpu", players: [1, 0, 154, 155, 156, 156, 160, 31, 31, 11, 59], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [15] },
+    { id: 147, name: "Japan", type: "cpu", players: [60, 15, 3, 0, 118, 157, 158, 158, 112, 30, 30], subs: [], formation: "Form7", tactic: "Normal", encounterLevels: [16] },
     // ─────────── 亚预赛 (6 队, 剧情关 17-22) ───────────
     // (数据从 doc 推断, doc 列出队伍名但未给具体 PRG offset; 暂用 WorldCup ID 占位)
     { id: 162, name: "Syria", type: "cpu", players: [112, 31, 28, 9, 79, 10, 80, 15, 35, 0, 177], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [17] },
