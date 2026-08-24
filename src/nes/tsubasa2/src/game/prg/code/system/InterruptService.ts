@@ -304,23 +304,40 @@ export class InterruptService {
   }
 
   /**
-   * CHR 装载（基于 chrSelBase + queue1 request）：
-   * - chrSelBase bit0-2 cmd base；bit7 chrSel
-   * - 装载 8 个 1KB slot 到 PPU pattern table
+   * CHR 装载（基于 loadChrConfig 写入的 6 字节 cfg → 8 slot bank1k 推算）：
+   * - $0075 (cfg[0]) = BG 区域 slot 0 bank1k 起始（slot 0-3 连续 4 个）
+   * - $0076 (cfg[1]) = SPR 区域 slot 4 bank1k 起始（slot 4-7 连续 4 个）
+   * - 其他 4 字节 cfg[2..5] 是参数（flip/width/offset），不直接映射 bank
+   * - chrSel 由 $005D bit 2 决定（切高位 4-7 还是低位 0-3）
+   *
+   * 注：ROM 真实行为是 VBlank 期间多次切 bank（frame 30 切 276 次），
+   *     此处只用 cfg 字节做"单次声明式"装载（每帧调一次）。
+   *     后续若需要 mid-frame 切换，需翻译 ROM $8BAB 之后那段循环。
    */
   private applyChrRequest(ppu: PpuTarget): void {
     if (!ppu.loadChrBank) return;
     const store = this.store;
-    const base = store.ppuState.chrSelBase;
-    const cmdBase = base & 7;
-    const chrSel = (base >> 7) & 1;
-    let x = chrSel !== 0 ? 4 : 0;
-    this.chrWrite(ppu, cmdBase, chrSel, store.readByte(0x0490 + x));
-    this.chrWrite(ppu, cmdBase | 1, chrSel, store.readByte(0x0491 + x));
-    x ^= 4;
-    for (let y = 2; y <= 5; y++) {
-      this.chrWrite(ppu, y | base, chrSel, store.readByte(0x0490 + x));
-      x++;
+    const bg = store.readByte(0x0075) & 0xff;
+    const spr = store.readByte(0x0076) & 0xff;
+    const chrSel = (store.readByte(0x005d) >> 2) & 1;
+    if (chrSel === 0) {
+      this.loadChrSlot(ppu, 0, bg);
+      this.loadChrSlot(ppu, 1, bg + 1);
+      this.loadChrSlot(ppu, 2, bg + 2);
+      this.loadChrSlot(ppu, 3, bg + 3);
+      this.loadChrSlot(ppu, 4, spr);
+      this.loadChrSlot(ppu, 5, spr + 1);
+      this.loadChrSlot(ppu, 6, spr + 2);
+      this.loadChrSlot(ppu, 7, spr + 3);
+    } else {
+      this.loadChrSlot(ppu, 4, bg);
+      this.loadChrSlot(ppu, 5, bg + 1);
+      this.loadChrSlot(ppu, 6, bg + 2);
+      this.loadChrSlot(ppu, 7, bg + 3);
+      this.loadChrSlot(ppu, 0, spr);
+      this.loadChrSlot(ppu, 1, spr + 1);
+      this.loadChrSlot(ppu, 2, spr + 2);
+      this.loadChrSlot(ppu, 3, spr + 3);
     }
   }
 

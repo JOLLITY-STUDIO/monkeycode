@@ -134,12 +134,8 @@ function API_TEAM(teamId: number): string {
   const team: any = findTeamById(teamId);
   if (!team) return `Team 0x${teamId.toString(16).padStart(2, '0')} NOT FOUND`;
   const roster = findRosterById(teamId);
-  // 过滤 sentinel ID (0x00/0xCF/0xA0/0x79 = 占位/GK空位/CPU通用)
-  const SENTINELS = new Set([0x00, 0xCF, 0xA0, 0x79]);
-  const rawIds = roster?.players ?? [];
-  const seen = new Set<number>();
-  const ids = rawIds.filter(id => !SENTINELS.has(id) && !seen.has(id) && seen.add(id));
-  const sentinelCount = rawIds.length - ids.length;
+  const ids = roster?.players ?? [];
+  const rawIds = ids;
   const lines: string[] = [];
   lines.push(header(`GET /api/team/0x${teamId.toString(16).padStart(2, '0').toUpperCase()}/roster — ${team.name ?? '?'}`));
   lines.push(sep2);
@@ -147,7 +143,7 @@ function API_TEAM(teamId: number): string {
   lines.push(` Type      : ${roster?.type ?? 'cpu'}`);
   lines.push(` Formation : ${roster?.formation ?? '?'}`);
   lines.push(` Tactic    : ${roster?.tactic ?? '?'}`);
-  lines.push(` Roster    : ${rawIds.length} slot (${ids.length} real, ${sentinelCount} sentinel)`);
+  lines.push(` Roster    : ${rawIds.length} players`);
   lines.push(sep2);
   lines.push(row(
     { s: '#', w: 3 },
