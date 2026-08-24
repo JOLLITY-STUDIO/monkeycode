@@ -1,11 +1,10 @@
 /**
  * bank12-rom.ts — bank12 原始字节（音频引擎 + BGM/SE 数据）
  *
- * @bank 12（PRG bank 12, ROM offset 0x18000, 16KB）
- * CPU 映射：$8000-$BFFF（MMC3 R6 切换 8KB 窗口 $8000-$9FFF）
+ * @bank 12（PRG bank 12, ROM offset 0x18000, 16KB，$8000-$BFFF）
  *
  * 数据源：从 ROM 真实字节提取，地址经特征搜索验证
- * 访问规则：禁止裸 BANK12_BYTES[addr] 索引，必须通过 Bank12Rom 命名访问器
+ * 访问规则：禁止裸 BANK12_BYTES[addr] 索引，必须通过 AudioRom 命名访问器
  */
 
 // bank12 原始字节（$8000-$BFFF 共 16KB）

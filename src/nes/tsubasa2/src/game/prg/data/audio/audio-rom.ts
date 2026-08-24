@@ -1,18 +1,15 @@
 /**
  * audio-rom.ts — 音频 ROM 数据层（bank 7/12/13/14/15）
  *
- * 原版 $8000 bankswitch 映射（MMC3 R6/R7）：
- *   BGM 播放 (req < $32):  $8000-$9FFF = bank 7  (BGM 乐谱数据)
- *                          $A000-$BFFF = bank 13 (引擎代码 + SE 数据)
- *   SE 播放 (req $32-$43): $8000-$9FFF = bank 13 (SE 数据 1)
- *   SE 播放 (req $44-$50): $8000-$9FFF = bank 14 (SE 数据 2)
- *   SE 播放 (req $51-$5B): $8000-$9FFF = bank 15 (SE 数据 3)
+ * 数据结构（无 bankswitch，直接按归属查表）：
+ *   bank 12 = 音频引擎数据（$8000-$9FFF：引擎代码 + 指针表 + 部分乐曲，如开场 BGM $8E42）
+ *   bank 7  = BGM 乐谱数据（29 首 BGM，$A000-$BFFF 窗口）
+ *   bank 13 = SE 数据 1（req ID $32-$43）
+ *   bank 14 = SE 数据 2（req ID $44-$50）
+ *   bank 15 = SE 数据 3（req ID $51-$6F）
  *
- * bank 12 = 音频引擎代码（$8000 入口 + $80BA 帧推进 + 数据表）
- * bank 7  = BGM 乐谱数据（29 首 BGM）
- * bank 13 = 引擎代码后 8KB + SE 数据（$A000-$BFFF 区域）
- * bank 14 = SE 数据 2
- * bank 15 = SE 数据 3
+ * 曲目数据字节定位：地址 $8000-$9FFF → bank12 固定；地址 $A000-$BFFF → 乐曲所在 bank。
+ * （原版由 MMC3 R6/R7 寄存器在运行时切换，高级语言中改为显式传 bank 参数直查。）
  *
  * 105 首音频（经参考 NSF $C420 表验证）：
  *   曲 1-40:  SE (req ID 0x32-0x5A)
@@ -2632,51 +2629,39 @@ export const NOTE_DURATION_TABLE_LEN = 42;
 // 音符频率表 @ $870D
 export const NOTE_FREQ_TABLE_ADDR = 0x870d;
 
-/** AudioRom — 多 bank 音频数据访问器
+/** AudioRom — 音频 ROM 数据访问器
  *
- * 模拟 MMC3 bankswitch：根据 CPU 地址区域选择对应 bank 数据
- *   $8000-$9FFF → 可切换（BGM 时 = bank7, SE 时 = bank13/14/15, 默认 = bank12）
- *   $A000-$BFFF → 固定 bank13
+ * 无 bankswitch 状态：$8000-$9FFF 固定为引擎 bank12，$A000-$BFFF 由调用方显式指定乐曲 bank
+ *   BGM → bank 7；SE → bank 13/14/15
  */
 export class AudioRom {
-  /** 当前 $8000-$9FFF 映射的 bank（默认 12 = 引擎代码） */
-  private static currentBank: 7 | 12 | 13 | 14 | 15 = 12;
-
-  /** 切换 $8000-$9FFF 映射的 bank（模拟 MMC3 R6 写） */
-  static switchBank(bank: 7 | 12 | 13 | 14 | 15): void {
-    AudioRom.currentBank = bank;
-  }
-
-  /** 获取当前 $8000-$9FFF 的 bank 数据 */
-  private static get activeBank(): Readonly<Uint8Array> {
-    switch (AudioRom.currentBank) {
+  /** 乐曲 bank 数据表映射 */
+  static bankData(bank: 7 | 13 | 14 | 15): Readonly<Uint8Array> {
+    switch (bank) {
       case 7:  return BANK7_BYTES;
-      case 12: return BANK12_BYTES;
       case 13: return BANK13_BYTES;
       case 14: return BANK14_BYTES;
       case 15: return BANK15_BYTES;
     }
   }
 
-  /** 读一个字节（CPU 地址 → 字节，自动 bankswitch） */
-  static readByte(cpuAddr: number): number {
+  /** 读曲目数据字节（$8000-$9FFF=bank12 固定，$A000-$BFFF=bank 参数指定的乐曲 bank） */
+  static readTrackData(cpuAddr: number, bank: 7 | 13 | 14 | 15): number {
     if (cpuAddr >= 0x8000 && cpuAddr <= 0x9FFF) {
-      const off = cpuAddr - 0x8000;
-      return AudioRom.activeBank[off];
+      return BANK12_BYTES[cpuAddr - 0x8000];
     }
     if (cpuAddr >= 0xA000 && cpuAddr <= 0xBFFF) {
-      const off = cpuAddr - 0xA000;
-      return BANK13_BYTES[off];
+      return AudioRom.bankData(bank)[cpuAddr - 0xA000];
     }
     return 0;
   }
 
-  /** 读 16-bit 小端 */
-  static readU16(cpuAddr: number): number {
-    return AudioRom.readByte(cpuAddr) | (AudioRom.readByte(cpuAddr + 1) << 8);
+  /** 读曲目数据 16-bit 小端 */
+  static readTrackU16(cpuAddr: number, bank: 7 | 13 | 14 | 15): number {
+    return AudioRom.readTrackData(cpuAddr, bank) | (AudioRom.readTrackData(cpuAddr + 1, bank) << 8);
   }
 
-  /** 读 bank12 字节（引擎代码/指针表，不随 bankswitch 变化） */
+  /** 读 bank12 字节（引擎代码/指针表，固定 bank12） */
   static readBank12Byte(cpuAddr: number): number {
     const off = cpuAddr - BANK12_BASE_ADDR;
     if (off < 0 || off >= BANK12_BYTES.length) return 0;
@@ -2697,21 +2682,6 @@ export class AudioRom {
   /** 读 BGM 指针（BGM ID 0-28 → 数据起始 CPU 地址，从 bank12 指针表读） */
   static readBgmPointer(bgmId: number): number {
     return AudioRom.readBank12U16(BGM_POINTER_TABLE_ADDR + bgmId * 2);
-  }
-
-  /** 读 BGM 数据字节（自动切换到 bank7）
-   *  @param cpuAddr BGM 数据 CPU 地址（$8000-$9FFF → bank7, $A000-$BFFF → bank13）
-   */
-  static readBgmData(cpuAddr: number): number {
-    if (cpuAddr >= 0x8000 && cpuAddr <= 0x9FFF) {
-      const off = cpuAddr - 0x8000;
-      return BANK7_BYTES[off];
-    }
-    if (cpuAddr >= 0xA000 && cpuAddr <= 0xBFFF) {
-      const off = cpuAddr - 0xA000;
-      return BANK13_BYTES[off];
-    }
-    return 0;
   }
 
   /** 读 SE 指针（SE ID 0-99 → 数据起始 CPU 地址，从 bank12 指针表读） */

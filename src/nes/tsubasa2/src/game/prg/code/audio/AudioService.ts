@@ -17,7 +17,7 @@
  *   字节 >= $E0 → 命令（$84C9 分发 32 命令）
  */
 import type { DataStore } from '../../data/store/DataStore';
-import { AudioRom, SONG_REQUEST_IDS, SONG_COUNT } from '../../data/audio/audio-rom';
+import { AudioRom } from '../../data/audio/audio-rom';
 
 // PAPU 类型（松散类型，因为 papu 是 tsnes 移植代码）
 export interface Papu {
@@ -49,6 +49,8 @@ function readCmd(idx: number): number { return AudioRom.readBank12U16(0x84DA + i
 export class AudioService {
   private papu: Papu | null = null;
   protected store: DataStore;
+  /** 当前播放曲目所在 bank（BGM=7, SE=13/14/15；替代原版 MMC3 R7 切换状态） */
+  private trackBank: 7 | 13 | 14 | 15 = 7;
 
   constructor(store: DataStore) { this.store = store; }
 
@@ -122,34 +124,39 @@ export class AudioService {
   // ════════════════════════════════════════════════════
 
   private startBgm(bgmId: number): void {
-    this.wr(0x0706, 0); // 清通道使能
+    this.wr(0x0706, 0); // 清通道使能（BGM 重新开始）
+    // BGM 乐谱数据位于 bank7（原版首循环 $8009-$8011 写入 R7=7 映射 $A000-$BFFF）
+    this.trackBank = 7;
+    // $8349 统一分发（BGM/SE 同例程）：主表 $8BDA[req-1] → 解析通道头
+    this.startSong(bgmId);
+  }
 
-    // 写 $07FC（BGM bank 组索引）
-    let bgmGroup = 0x07;
-    if (bgmId >= 0x32 && bgmId < 0x44) bgmGroup = 0x0D;
-    else if (bgmId < 0x51) bgmGroup = 0x0E;
-    else if (bgmId < 0x5C) bgmGroup = 0x0F;
-    this.wr(0x07FC, bgmGroup);
-
-    // 从 BGM 指针表读取数据起始地址
-    // BGM 指针表 @ $8798，索引 0-28 对应 BGM ID 0x03-0x30
-    const bgmIndex = bgmId - 0x03;
-    const dataAddr = AudioRom.readBgmPointer(bgmIndex);
-    if (dataAddr === 0) return;
-
-    // BGM 数据直接是通道 0(Pulse1) 的乐谱流
-    // 跳过前导 $00（数据分隔符）
-    let startPos = 0;
-    for (let i = 0; i < 64; i++) {
-      const b = AudioRom.readBgmData(dataAddr + i);
-      if (b >= 0x80) { startPos = i; break; }
+  /**
+   * 对应原始 $8349：统一歌曲启动例程（BGM/SE 共用）。
+   * 主表 $8BDA[requestId-1]（bank12 固定）→ 歌曲数据；
+   * 解析通道头 [chNum, trackLo, trackHi]，chNum>=0x80 结束（$8360-$8362）。
+   * 确认：request 0x01（开场）→ $8E42（bank12，8 通道头，轨道均 $8E5A）。
+   */
+  private startSong(requestId: number): void {
+    const songAddr = AudioRom.readSePointer(requestId - 1); // $8BDA 主表
+    if (songAddr === 0) return;
+    // $8362: BPL — 首字节 bit7=1 → 仅使能通道后返回
+    if ((AudioRom.readTrackData(songAddr, this.trackBank) & 0x80) !== 0) {
+      this.wrApu(APU_STATUS, 0x0F);
+      return;
     }
-    const streamAddr = dataAddr + startPos;
-
-    // 只初始化通道 4（Pulse1，对应内部通道号 4）
-    // 其他通道由命令流中的 $E0 命令设置
-    this.initChannel(4, streamAddr);
-
+    // 逐条解析通道头（initChannel 内部 OR 累积通道使能位 $0706）
+    for (let offset = 0; offset + 2 < 0x4000;) {
+      const chNum = AudioRom.readTrackData(songAddr + offset, this.trackBank);
+      if (chNum >= 0x80) break;
+      const trackLo = AudioRom.readTrackData(songAddr + offset + 1, this.trackBank);
+      const trackHi = AudioRom.readTrackData(songAddr + offset + 2, this.trackBank);
+      offset += 3;
+      const trackAddr = trackLo | (trackHi << 8);
+      if (trackAddr < 0x8000 || trackAddr > 0xBFFF) continue;
+      const internalCh = chNum >= 4 ? chNum : chNum + 4;
+      this.initChannel(internalCh, trackAddr);
+    }
     this.wrApu(APU_STATUS, 0x0F);
   }
 
@@ -191,54 +198,13 @@ export class AudioService {
   // ════════════════════════════════════════════════════
 
   private startSe(seId: number): void {
-    const seIndex = seId - 1;
-    if (seIndex < 0 || seIndex >= 100) return;
-
-    // SE 指针表 @ $8BDA
-    const seDataAddr = AudioRom.readSePointer(seIndex);
-    if (seDataAddr === 0) return;
-
-    // SE 数据在 bank13/14/15（根据 seId 范围选择 bank）
-    // 解析 SE 头部（与 BGM 相同格式）
-    let pos = 0;
-    // SE 数据用 AudioRom.readByte 自动 bankswitch
-    // 但 SE bank 取决于 seId：
-    //   $32-$43 → bank13, $44-$50 → bank14, $51-$5B → bank15
-    let seBank: 13 | 14 | 15 = 13;
+    // SE 数据按请求范围分属 bank13/14/15（原版 $8017-$8052 首循环按范围写 R7）
+    let seBank: 7 | 13 | 14 | 15 = 13;
     if (seId >= 0x44 && seId < 0x51) seBank = 14;
     else if (seId >= 0x51) seBank = 15;
-
-    // 读 SE 数据（切换到对应 bank）
-    const readSeByte = (addr: number): number => {
-      if (addr >= 0x8000 && addr <= 0x9FFF) {
-        // bank7(bank12), bank13, bank14, bank15 之一
-        const bankData = seBank === 13 ? AudioRom.readBank12Byte : null; // 简化
-        return AudioRom.readBank12Byte(addr); // TODO: 需要按 seBank 切换
-      }
-      return AudioRom.readBank12Byte(addr);
-    };
-
-    const firstByte = readSeByte(seDataAddr);
-    if (firstByte & 0x80) {
-      this.wrApu(APU_STATUS, 0x0F);
-      return;
-    }
-
-    // 解析通道头部
-    let offset = 0;
-    for (let i = 0; i < 8 && offset + 2 < 0x4000; i++) {
-      const chNum = readSeByte(seDataAddr + offset);
-      if (chNum >= 0x80) break;
-      const trackLo = readSeByte(seDataAddr + offset + 1);
-      const trackHi = readSeByte(seDataAddr + offset + 2);
-      offset += 3;
-      const trackAddr = trackLo | (trackHi << 8);
-      if (trackAddr < 0x8000 || trackAddr > 0xBFFF) continue;
-      const internalCh = chNum >= 4 ? chNum : chNum + 4;
-      this.initChannel(internalCh, trackAddr);
-    }
-
-    this.wrApu(APU_STATUS, 0x0F);
+    this.trackBank = seBank;
+    // $8349 统一分发（与 BGM 同例程）：主表 $8BDA[req-1] → 解析通道头
+    this.startSong(seId);
   }
 
   // ════════════════════════════════════════════════════
@@ -373,7 +339,7 @@ export class AudioService {
 
     let y = 0;
     for (let safety = 0; safety < 512; safety++) {
-      const b = AudioRom.readBgmData(dataPtr + y);
+      const b = AudioRom.readTrackData(dataPtr + y, this.trackBank);
 
       if (b < 0x80) {
         // $8404: 音名处理
@@ -477,7 +443,7 @@ export class AudioService {
 
   private execCmd(ch: number, chBase: number, dataPtr: number, y: number, cmdAddr: number): number {
     const readByte = (): number => {
-      const b = AudioRom.readBgmData(dataPtr + y);
+      const b = AudioRom.readTrackData(dataPtr + y, this.trackBank);
       return b;
     };
     const advance = (): number => { const b = readByte(); y++; return b; };

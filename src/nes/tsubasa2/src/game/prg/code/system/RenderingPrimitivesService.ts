@@ -18,6 +18,7 @@ import {
   OPENING_TILE_PATTERNS,
   type ChrConfig,
 } from '../../data/scene/opening-data';
+import { OPENING_TILE_STREAMS } from '../../data/scene/bank7-streams';
 
 export class RenderingPrimitivesService {
   constructor(private readonly store: DataStore) {}
@@ -350,8 +351,15 @@ export class RenderingPrimitivesService {
       // $8BA5: JSR $9071 清 NT0; JMP $8BAE 跳过 NT1
       this.fillNametableRows(0x00, 0x20, 0x10, 0x20, 0x00);
     }
-    // $8AF7 配置读取完成。后续 $8BB0-$8D1D 是 tile 渲染指令流处理；
-    // 场景 3 的 tile 数据已提取为 OPENING_SCENE3_TILES/OPENING_TILE_PATTERNS，
+    // $8AF7 配置读取完成。$8BB0 起是 tile 渲染指令流处理：直接查 OPENING_TILE_STREAMS
+    // （bank7 拆细数据，不读 ROM），取首命令 → $0062=cmd, $0072=行参（镜像 $8BB0-$8BC0）。
+    const stream = OPENING_TILE_STREAMS[configId & 0x1f] ?? [];
+    const cmd = stream.length > 1 ? stream[1] : 0;
+    const param = (cmd & 0x1f) !== 0 && stream.length > 2 ? stream[2] : 0;
+    store.writeByte(0x0062, cmd);
+    store.writeByte(0x0072, param);
+    // 场景 3 的 tile 网格已提取为 OPENING_SCENE3_TILES/OPENING_TILE_PATTERNS；
+    // cfg 0x17 流 = [0x00,0xA0]（等0帧 + cmd $A0：bit5=1 最后一条, bit7-6=10 正向整幅），
     // 由 queueScene3NametableRows 按行写入 $05E8 渲染缓冲（场景控制器逐帧驱动）。
   }
 

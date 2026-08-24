@@ -74,7 +74,8 @@ export class Scene0Controller extends SceneController {
     this.streamDone = false;
     this.sceneRow = 0;
     this.holdSecond = false;
-    // BGM（V0.6 已实现请求队列；编号对照待确认，暂用 0x01）
+    // BGM 0x01（已确认：原版主循环 LDA #$01; STA $0700；分发 $8349 查主表
+    // $8BDA[0] → $8E42（bank12 8 通道歌曲头，轨道均 $8E5A）= 开场 BGM）
     this.audio?.playBgm(0x01);
   }
 
