@@ -20,6 +20,9 @@
  */
 
 import type { AudioToken } from './AudioTokens';
+import { BGM_SONGS } from './bgm';
+import { SE_SONGS } from './se';
+import type { SongTrack } from './song-track';
 
 /** 音频通道类型（原版通道号 → APU 通道） */
 export type ChannelKind = 'pulse1' | 'pulse2' | 'triangle' | 'noise' | 'pulse1Dup' | 'pulse2Dup' | 'triangleDup' | 'noiseDup';
@@ -36,8 +39,12 @@ export interface ChannelTrack {
 export interface SongRecord {
   /** 请求 ID（playBgm/playSe 入参） */
   readonly requestId: number;
-  /** 首字节标志（>=0x80 表示仅使能通道） */
-  readonly headerFlag: number;
+  /** 标题（来自 BGM 元数据，SE 留空） */
+  readonly name: string;
+  /** 数据 bank（12/13/14/15） */
+  readonly bank: number;
+  /** 起始 CPU 地址 */
+  readonly cpuAddr: number;
   /** 通道音轨列表（head 终止：channelNum >= 0x80） */
   readonly channels: ReadonlyArray<ChannelTrack>;
   /** 分类标签（调试用） */
@@ -76,19 +83,43 @@ export const COMMAND_TABLE: ReadonlyArray<number> = [
   0x8707, 0x8707, 0x8707, 0x8707, 0x8707, 0x8707, 0x8707, 0x8707,
 ];
 
+/* 占位通道轨：H5 当前不解析 NES 字节流做实时播放，用元数据即可路由到 PAPU */
+function pseudoChannels(): ReadonlyArray<ChannelTrack> {
+  return [
+    { channel: 'pulse1', track: [] },
+    { channel: 'pulse2', track: [] },
+    { channel: 'triangle', track: [] },
+    { channel: 'noise', track: [] },
+  ];
+}
+
+/** 由 BGM_SONGS（48 首）+ SE_SONGS（59 首）聚合而来的声明式查找表 */
+function buildSongs(): ReadonlyMap<number, SongRecord> {
+  const out = new Map<number, SongRecord>();
+  const put = (s: SongTrack) => {
+    if (out.has(s.requestId)) return;
+    out.set(s.requestId, {
+      requestId: s.requestId,
+      name: s.name ?? '',
+      bank: s.bank as unknown as number,
+      cpuAddr: s.cpuAddr,
+      channels: pseudoChannels(),
+      kind: s.type === 'BGM' ? 'bgm' : 'se',
+    });
+  };
+  for (const s of BGM_SONGS) put(s);
+  for (const s of SE_SONGS) put(s);
+  return out;
+}
+
 /**
  * 查表：requestId → SongRecord（具名查找）
- *
- * 注：完整 105 首曲目录需从 bank7-15 提取。此处声明类型 + 提供请求 ID 解析工具，
- *     业务实现从 BANK12_BYTES/BANK13_BYTES 等原 ROM 字节提取为 SongRecord[] 后填充 SONGS 表。
- *
- * 当前实现策略：
- *   1. 类型契约已声明（SongRecord / ChannelTrack / AudioToken）
- *   2. 命令/频率/时值三个常量表已具象化（FREQUENCY_TABLE / DURATION_TABLE / COMMAND_TABLE）
- *   3. SONGS 字典由具体提取脚本在编译期填充（详见 prg/data/audio/song-extract.ts）
- *   4. lookupSong(requestId) 直接 O(1) 查表，无地址算术
+ * 数据源：audio/bgm/* + audio/se/* 元数据；运行时由 AudioService 接到 PAPU
  */
-export const SONGS: ReadonlyMap<number, SongRecord> = new Map();
+export const SONGS: ReadonlyMap<number, SongRecord> = buildSongs();
+
+/** BGM 数量 */
+export const SONG_COUNT = BGM_SONGS.length + SE_SONGS.length;
 
 /** 查表：requestId → SongRecord（null = 未注册） */
 export function lookupSong(requestId: number): SongRecord | null {

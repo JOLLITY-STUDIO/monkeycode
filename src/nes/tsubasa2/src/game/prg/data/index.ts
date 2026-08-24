@@ -14,9 +14,13 @@ export { consumeNtBuffer, appendNtBuffer } from './store/RenderQueues';
 export type { NtRowEntry, RleEntry } from './store/RenderQueues';
 
 // audio
+// Note: SONG_COUNT / SONG_REQUEST_IDS / *POINTER_TABLE_ADDR 不在 SongCatalog，
+//       它在 './audio' 的 audio-rom.ts 中已通过 line 115-121 的 re-export 提供。
+//       这里只导出 SongCatalog 真正定义的具名条目，避免 WX 小程序 bundle 时
+//       'Cannot redefine property: SONG_COUNT' 的运行时错误。
 export {
   FREQUENCY_TABLE, DURATION_TABLE, COMMAND_TABLE,
-  SONGS, lookupSong, SONG_COUNT, SONG_REQUEST_IDS,
+  SONGS, lookupSong,
 } from './audio/SongCatalog';
 export type { SongRecord, ChannelTrack, ChannelKind } from './audio/SongCatalog';
 export type {
