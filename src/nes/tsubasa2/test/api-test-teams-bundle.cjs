@@ -39,27 +39,22 @@
     { id: 145, name: "Uruguay", type: "cpu", players: [32, 0, 151, 152, 153, 153, 160, 31, 30, 9, 58], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [14] },
     { id: 146, name: "Hamburg", type: "cpu", players: [1, 0, 154, 155, 156, 156, 160, 31, 31, 11, 59], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [15] },
     { id: 147, name: "Japan", type: "cpu", players: [60, 15, 3, 0, 118, 157, 158, 158, 112, 30, 30], subs: [], formation: "Form7", tactic: "Normal", encounterLevels: [16] },
-    // ─────────── 亚预赛 (6 队, 剧情关 17-22) ───────────
-    // (数据从 doc 推断, doc 列出队伍名但未给具体 PRG offset; 暂用 WorldCup ID 占位)
-    { id: 162, name: "Syria", type: "cpu", players: [112, 31, 28, 9, 79, 10, 80, 15, 35, 0, 177], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [17] },
-    { id: 163, name: "China", type: "cpu", players: [178, 178, 160, 31, 31, 15, 33, 0, 118, 179, 180], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [18] },
-    { id: 164, name: "Iran", type: "cpu", players: [160, 31, 31, 11, 81, 1, 82, 15, 0, 0, 181], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [19] },
-    { id: 165, name: "NorthKorea", type: "cpu", players: [183, 183, 161, 31, 29, 9, 83, 4, 84, 15, 18], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [20] },
-    { id: 166, name: "SaudiArabia", type: "cpu", players: [118, 184, 185, 185, 160, 31, 30, 9, 85, 1, 86], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [21] },
-    { id: 167, name: "Korea", type: "cpu", players: [17, 0, 186, 187, 188, 188, 112, 31, 30, 9, 87], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [22] },
-    // ─────────── 世青赛小组 + 淘汰 (8 + 3 = 11 队, 关 23-33) ───────────
-    { id: 160, name: "Vasco", type: "cpu", players: [168, 169, 170, 170, 160, 0, 0, 15, 19, 0, 171], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [23] },
-    { id: 161, name: "Poland", type: "cpu", players: [173, 173, 160, 31, 31, 15, 0, 0, 174, 175, 176], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [24] },
-    { id: 168, name: "England", type: "cpu", players: [88, 15, 32, 0, 189, 190, 191, 191, 112, 31, 28], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [25] },
-    { id: 169, name: "SovietUnion", type: "cpu", players: [89, 15, 33, 0, 118, 192, 193, 193, 160, 31, 30], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [26] },
-    { id: 170, name: "France", type: "cpu", players: [90, 1, 91, 15, 16, 0, 194, 195, 196, 196, 113], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [27] },
-    { id: 171, name: "Mexico", type: "cpu", players: [29, 9, 92, 4, 93, 15, 2, 0, 197, 198, 198], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [28] },
-    { id: 172, name: "Italy", type: "cpu", players: [176, 31, 26, 11, 94, 9, 95, 10, 96, 8, 97], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [29] },
-    { id: 173, name: "Netherlands", type: "cpu", players: [98, 15, 2, 0, 118, 199, 199, 199, 112, 30, 31], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [30] },
-    { id: 174, name: "Argentina", type: "cpu", players: [99, 9, 100, 8, 101, 5, 102, 10, 103, 7, 104], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [31] },
-    // 关 32 西德 0xAF + 关 33 巴西青年 0xB0 拆开 (数据源自 doc 文件 offset 0x3BCC2/0x3BCDA, stride 2)
-    // 西德 doc 仅给 7 IDs (GK + 6 hint); 其余 4 个待反汇编 PRG 区间补全
-    { id: 175, name: "WestGermany", type: "cpu", players: [105, 15, 3, 0, 118, 119, 120, 121, 97, 30, 40], subs: [], formation: "4-3-3", tactic: "Normal", encounterLevels: [32] },
+    // ─────────── World Cup prelim + semi + finals ───────────
+    // PRG byte data stride 12 model (anchor not verified for these regions)
+    // Names per doc §7: NS / SK / Poland / England / Russia / France / Mexico / Italy / Holland / Argentina / WestGermany / Brazil Final
+    { id: 165, name: "NorthKorea", type: "cpu", players: [61, 10, 62, 6, 63, 1, 64, 15, 1, 0, 118], subs: [], formation: "Form7", tactic: "Tact7", encounterLevels: [17] },
+    { id: 167, name: "SouthKorea", type: "cpu", players: [120, 121, 48, 31, 27, 9, 65, 11, 66, 6, 67], subs: [], formation: "Form10", tactic: "Normal", encounterLevels: [18] },
+    { id: 162, name: "Poland", type: "cpu", players: [29, 15, 2, 0, 168, 169, 170, 170, 160, 0, 0], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [19] },
+    { id: 168, name: "England", type: "cpu", players: [19, 0, 171, 172, 173, 173, 160, 31, 31, 15, 0], subs: [], formation: "Form0", tactic: "Normal", encounterLevels: [20] },
+    { id: 169, name: "Russia", type: "cpu", players: [174, 175, 176, 176, 112, 31, 28, 9, 79, 10, 80], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [21] },
+    { id: 170, name: "France", type: "cpu", players: [35, 0, 177, 178, 178, 178, 160, 31, 31, 15, 33], subs: [], formation: "Form0", tactic: "Normal", encounterLevels: [22] },
+    { id: 171, name: "Mexico", type: "cpu", players: [118, 179, 180, 180, 160, 31, 31, 11, 81, 1, 82], subs: [], formation: "Form15", tactic: "Normal", encounterLevels: [23] },
+    { id: 172, name: "Italy", type: "cpu", players: [0, 0, 181, 182, 183, 183, 161, 31, 29, 9, 83], subs: [], formation: "Form4", tactic: "Normal", encounterLevels: [24] },
+    { id: 173, name: "Netherlands", type: "cpu", players: [84, 15, 18, 0, 118, 184, 185, 185, 160, 31, 30], subs: [], formation: "Form9", tactic: "Normal", encounterLevels: [25] },
+    { id: 174, name: "Argentina", type: "cpu", players: [85, 1, 86, 15, 17, 0, 186, 187, 188, 188, 112], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [26] },
+    // 关 27: 半决赛 West Germany, 关 28-29: 巴西决赛 (1st Half + 2nd Half with Coinbra super-password)
+    { id: 175, name: "WestGermany", type: "cpu", players: [30, 9, 87, 10, 88, 15, 32, 0, 189, 190, 191], subs: [], formation: "Form15", tactic: "Pressing", encounterLevels: [27] },
+    { id: 166, name: "BrazilYouth1", type: "cpu", players: [112, 31, 28, 10, 89, 15, 33, 0, 118, 192, 193], subs: [], formation: "Form1", tactic: "Tact12", encounterLevels: [28] },
     // 关 33 巴西青年决赛 (BrazilYouth)
     // 默认阵容 = 1st Half @ PRG 0x3BCDA + stride 2
     // altLineups[0] = 2nd Half (Coinbra 替换 Pos3) @ PRG 0x3DBEC = 0x75

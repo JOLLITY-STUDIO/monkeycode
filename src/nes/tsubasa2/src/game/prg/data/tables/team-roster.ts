@@ -121,42 +121,33 @@ export const TEAM_ROSTER_TABLE: ReadonlyArray<TeamRosterEntry> = [
 
   { id: 0x93, name: 'Japan',        type: 'cpu',    players: [0x3C, 0x0F, 0x03, 0x00, 0x76, 0x9D, 0x9E, 0x9E, 0x70, 0x1E, 0x1E], subs: [],                                                                              formation: 'Form7',  tactic: 'Normal',  encounterLevels: [16] },
 
-  // ─────────── 亚预赛 (6 队, 剧情关 17-22) ───────────
-  // (数据从 doc 推断, doc 列出队伍名但未给具体 PRG offset; 暂用 WorldCup ID 占位)
-  { id: 0xA2, name: 'Syria',        type: 'cpu',    players: [0x70, 0x1F, 0x1C, 0x09, 0x4F, 0x0A, 0x50, 0x0F, 0x23, 0x00, 0xB1], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [17] },
+  // ─────────── World Cup prelim + semi + finals ───────────
+  // PRG byte data stride 12 model (anchor not verified for these regions)
+  // Names per doc §7: NS / SK / Poland / England / Russia / France / Mexico / Italy / Holland / Argentina / WestGermany / Brazil Final
+  { id: 0xA5, name: 'NorthKorea',   type: 'cpu',    players: [0x3D, 0x0A, 0x3E, 0x06, 0x3F, 0x01, 0x40, 0x0F, 0x01, 0x00, 0x76], subs: [],                                                                              formation: 'Form7',  tactic: 'Tact7',   encounterLevels: [17] },
 
-  { id: 0xA3, name: 'China',        type: 'cpu',    players: [0xB2, 0xB2, 0xA0, 0x1F, 0x1F, 0x0F, 0x21, 0x00, 0x76, 0xB3, 0xB4], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [18] },
+  { id: 0xA7, name: 'SouthKorea',   type: 'cpu',    players: [0x78, 0x79, 0x30, 0x1F, 0x1B, 0x09, 0x41, 0x0B, 0x42, 0x06, 0x43], subs: [],                                                                              formation: 'Form10', tactic: 'Normal',  encounterLevels: [18] },
 
-  { id: 0xA4, name: 'Iran',         type: 'cpu',    players: [0xA0, 0x1F, 0x1F, 0x0B, 0x51, 0x01, 0x52, 0x0F, 0x00, 0x00, 0xB5], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [19] },
+  { id: 0xA2, name: 'Poland',        type: 'cpu',    players: [0x1D, 0x0F, 0x02, 0x00, 0xA8, 0xA9, 0xAA, 0xAA, 0xA0, 0x00, 0x00], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [19] },
 
-  { id: 0xA5, name: 'NorthKorea',   type: 'cpu',    players: [0xB7, 0xB7, 0xA1, 0x1F, 0x1D, 0x09, 0x53, 0x04, 0x54, 0x0F, 0x12], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [20] },
+  { id: 0xA8, name: 'England',      type: 'cpu',    players: [0x13, 0x00, 0xAB, 0xAC, 0xAD, 0xAD, 0xA0, 0x1F, 0x1F, 0x0F, 0x00], subs: [],                                                                              formation: 'Form0',  tactic: 'Normal',  encounterLevels: [20] },
 
-  { id: 0xA6, name: 'SaudiArabia',  type: 'cpu',    players: [0x76, 0xB8, 0xB9, 0xB9, 0xA0, 0x1F, 0x1E, 0x09, 0x55, 0x01, 0x56], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [21] },
+  { id: 0xA9, name: 'Russia',       type: 'cpu',    players: [0xAE, 0xAF, 0xB0, 0xB0, 0x70, 0x1F, 0x1C, 0x09, 0x4F, 0x0A, 0x50], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [21] },
 
-  { id: 0xA7, name: 'Korea',        type: 'cpu',    players: [0x11, 0x00, 0xBA, 0xBB, 0xBC, 0xBC, 0x70, 0x1F, 0x1E, 0x09, 0x57], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [22] },
+  { id: 0xAA, name: 'France',       type: 'cpu',    players: [0x23, 0x00, 0xB1, 0xB2, 0xB2, 0xB2, 0xA0, 0x1F, 0x1F, 0x0F, 0x21], subs: [],                                                                              formation: 'Form0',  tactic: 'Normal',  encounterLevels: [22] },
 
-  // ─────────── 世青赛小组 + 淘汰 (8 + 3 = 11 队, 关 23-33) ───────────
-  { id: 0xA0, name: 'Vasco',        type: 'cpu',    players: [0xA8, 0xA9, 0xAA, 0xAA, 0xA0, 0x00, 0x00, 0x0F, 0x13, 0x00, 0xAB], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [23] },
+  { id: 0xAB, name: 'Mexico',       type: 'cpu',    players: [0x76, 0xB3, 0xB4, 0xB4, 0xA0, 0x1F, 0x1F, 0x0B, 0x51, 0x01, 0x52], subs: [],                                                                              formation: 'Form15', tactic: 'Normal',  encounterLevels: [23] },
 
-  { id: 0xA1, name: 'Poland',       type: 'cpu',    players: [0xAD, 0xAD, 0xA0, 0x1F, 0x1F, 0x0F, 0x00, 0x00, 0xAE, 0xAF, 0xB0], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [24] },
+  { id: 0xAC, name: 'Italy',        type: 'cpu',    players: [0x00, 0x00, 0xB5, 0xB6, 0xB7, 0xB7, 0xA1, 0x1F, 0x1D, 0x09, 0x53], subs: [],                                                                              formation: 'Form4',  tactic: 'Normal',  encounterLevels: [24] },
 
-  { id: 0xA8, name: 'England',      type: 'cpu',    players: [0x58, 0x0F, 0x20, 0x00, 0xBD, 0xBE, 0xBF, 0xBF, 0x70, 0x1F, 0x1C], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [25] },
+  { id: 0xAD, name: 'Netherlands',  type: 'cpu',    players: [0x54, 0x0F, 0x12, 0x00, 0x76, 0xB8, 0xB9, 0xB9, 0xA0, 0x1F, 0x1E], subs: [],                                                                              formation: 'Form9',  tactic: 'Normal',  encounterLevels: [25] },
 
-  { id: 0xA9, name: 'SovietUnion',  type: 'cpu',    players: [0x59, 0x0F, 0x21, 0x00, 0x76, 0xC0, 0xC1, 0xC1, 0xA0, 0x1F, 0x1E], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [26] },
+  { id: 0xAE, name: 'Argentina',    type: 'cpu',    players: [0x55, 0x01, 0x56, 0x0F, 0x11, 0x00, 0xBA, 0xBB, 0xBC, 0xBC, 0x70], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [26] },
 
-  { id: 0xAA, name: 'France',       type: 'cpu',    players: [0x5A, 0x01, 0x5B, 0x0F, 0x10, 0x00, 0xC2, 0xC3, 0xC4, 0xC4, 0x71], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [27] },
+  // 关 27: 半决赛 West Germany, 关 28-29: 巴西决赛 (1st Half + 2nd Half with Coinbra super-password)
+  { id: 0xAF, name: 'WestGermany',  type: 'cpu',    players: [0x1E, 0x09, 0x57, 0x0A, 0x58, 0x0F, 0x20, 0x00, 0xBD, 0xBE, 0xBF], subs: [],                                                                              formation: 'Form15', tactic: 'Pressing', encounterLevels: [27] },
 
-  { id: 0xAB, name: 'Mexico',       type: 'cpu',    players: [0x1D, 0x09, 0x5C, 0x04, 0x5D, 0x0F, 0x02, 0x00, 0xC5, 0xC6, 0xC6], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [28] },
-
-  { id: 0xAC, name: 'Italy',        type: 'cpu',    players: [0xB0, 0x1F, 0x1A, 0x0B, 0x5E, 0x09, 0x5F, 0x0A, 0x60, 0x08, 0x61], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [29] },
-
-  { id: 0xAD, name: 'Netherlands',  type: 'cpu',    players: [0x62, 0x0F, 0x02, 0x00, 0x76, 0xC7, 0xC7, 0xC7, 0x70, 0x1E, 0x1F], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [30] },
-
-  { id: 0xAE, name: 'Argentina',    type: 'cpu',    players: [0x63, 0x09, 0x64, 0x08, 0x65, 0x05, 0x66, 0x0A, 0x67, 0x07, 0x68], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [31] },
-
-  // 关 32 西德 0xAF + 关 33 巴西青年 0xB0 拆开 (数据源自 doc 文件 offset 0x3BCC2/0x3BCDA, stride 2)
-  // 西德 doc 仅给 7 IDs (GK + 6 hint); 其余 4 个待反汇编 PRG 区间补全
-  { id: 0xAF, name: 'WestGermany',  type: 'cpu',    players: [0x69, 0x0F, 0x03, 0x00, 0x76, 0x77, 0x78, 0x79, 0x61, 0x1E, 0x28], subs: [],                                                                              formation: '4-3-3',  tactic: 'Normal',  encounterLevels: [32] },
+  { id: 0xA6, name: 'BrazilYouth1', type: 'cpu',    players: [0x70, 0x1F, 0x1C, 0x0A, 0x59, 0x0F, 0x21, 0x00, 0x76, 0xC0, 0xC1], subs: [],                                                                              formation: 'Form1',  tactic: 'Tact12',  encounterLevels: [28] },
 
   // 关 33 巴西青年决赛 (BrazilYouth)
   // 默认阵容 = 1st Half @ PRG 0x3BCDA + stride 2
