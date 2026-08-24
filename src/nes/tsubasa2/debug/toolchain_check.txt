@@ -1,0 +1,3 @@
+﻿dotnet(C:\Users\yangyp\AppData\Local\Microsoft\dotnet\dotnet.exe) exists: False
+gcc found: 
+winget winlibs: 

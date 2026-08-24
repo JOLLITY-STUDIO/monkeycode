@@ -1,0 +1,147 @@
+===== 9B28 @line undefined =====
+
+NF
+
+===== 9B5E @line undefined =====
+
+NF
+
+===== 9B91 @line 1326 =====
+
+    LDA #$00                   ; $9B91
+    STA $0568                  ; $9B93
+    STA $0588                  ; $9B96
+    STA $05A8                  ; $9B99
+    STA $05C8                  ; $9B9C
+    RTS                        ; $9B9F
+    JSR $99F0                  ; $9BA0
+    JSR $98A0                  ; $9BA3
+    JMP $9B7F                  ; $9BA6
+    STA $0046                  ; $9BA9
+    TAY                        ; $9BAB
+    BMI $9BBC                  ; $9BAC
+    CLC                        ; $9BAE
+    ADC $0044                  ; $9BAF
+    CMP #$F0                   ; $9BB1
+    BCC $9BB9                  ; $9BB3
+
+===== 8976 @line undefined =====
+
+NF
+
+===== 9E7C @line 1724 =====
+
+    STA $00ED                  ; $9E7C
+    LDA #$0A                   ; $9E7E
+    STA $00EC                  ; $9E80
+    JSR $9E36                  ; $9E82
+    LDA $00EA                  ; $9E85
+    STA $00EB                  ; $9E87
+    JSR $9E36                  ; $9E89
+    LDA $00EA                  ; $9E8C
+    ASL                        ; $9E8E
+    ASL                        ; $9E8F
+    ASL                        ; $9E90
+    ASL                        ; $9E91
+    ORA $00EB                  ; $9E92
+    STA $00EB                  ; $9E94
+    JSR $9E36                  ; $9E96
+    LDA $00EA                  ; $9E99
+    STA $00ED                  ; $9E9B
+    LDA $00EB                  ; $9E9D
+    STA $00EC                  ; $9E9F
+    RTS                        ; $9EA1
+    .byte $0F,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00,$00
+    .byte $0F,$00,$00,$00,$00,$00,$10,$10,$20,$20,$30,$30,$20,$20,$10,$10
+    .byte $0F,$00,$00,$00,$10,$10,$10,$20,$20,$20,$30,$30,$30,$20,$20,$20
+    .byte $0F,$00,$10,$10,$10,$20,$20,$30,$30,$30,$30,$30,$30,$30,$30,$30
+    .byte $00,$00,$00,$00,$10,$00,$00,$00,$F0,$00,$00,$A2,$01
+    LDA $0000,X                ; $9EEF
+    BEQ $9EFB                  ; $9EF1
+    CMP #$FF                   ; $9EF3
+    BEQ $9F52                  ; $9EF5
+    DEC $0000,X                ; $9EF7
+
+===== 9E36 @line 1684 =====
+
+    LDA #$00                   ; $9E36
+    STA $00EA                  ; $9E38
+    LDX #$08                   ; $9E3A
+    ASL $00ED                  ; $9E3C
+    ROL $00EA                  ; $9E3E
+    LDA $00EA                  ; $9E40
+    SEC                        ; $9E42
+    SBC $00EC                  ; $9E43
+    BCC $9E4B                  ; $9E45
+    STA $00EA                  ; $9E47
+    INC $00ED                  ; $9E49
+    DEX                        ; $9E4B
+    BNE $9E3C                  ; $9E4C
+    RTS                        ; $9E4E
+    LDA #$0A                   ; $9E4F
+    STA $00EA                  ; $9E51
+    LDA #$00                   ; $9E53
+    STA $00EB                  ; $9E55
+    LDA #$03                   ; $9E57
+    STA $00E6                  ; $9E59
+
+===== 88CA @line undefined =====
+
+NF
+
+===== 8895 @line undefined =====
+
+NF
+
+===== 8920 @line undefined =====
+
+NF
+
+===== 9F96 @line 1840 =====
+
+    LDA $0000,X                ; $9F96
+    CMP #$FF                   ; $9F98
+    BNE $9FA1                  ; $9F9A
+    LDA #$01                   ; $9F9C
+    JSR $9FA8                  ; $9F9E
+    LDA #$00                   ; $9FA1
+    STA $0000,X                ; $9FA3
+    RTS                        ; $9FA5
+    .byte $A9,$00
+    STA $0019                  ; $9FA8
+    TXA                        ; $9FAA
+    PHA                        ; $9FAB
+    TYA                        ; $9FAC
+    PHA                        ; $9FAD
+
+===== 9F89 @line 1833 =====
+
+    LDA $0001,X                ; $9F89
+    BEQ $9F95                  ; $9F8B
+    LDA $0000,X                ; $9F8D
+    BNE $9F95                  ; $9F8F
+    LDA #$01                   ; $9F91
+    STA $0000,X                ; $9F93
+    RTS                        ; $9F95
+    LDA $0000,X                ; $9F96
+    CMP #$FF                   ; $9F98
+    BNE $9FA1                  ; $9F9A
+    LDA #$01                   ; $9F9C
+    JSR $9FA8                  ; $9F9E
+    LDA #$00                   ; $9FA1
+    STA $0000,X                ; $9FA3
+
+===== 9FA8 @line 1849 =====
+
+    STA $0019                  ; $9FA8
+    TXA                        ; $9FAA
+    PHA                        ; $9FAB
+    TYA                        ; $9FAC
+    PHA                        ; $9FAD
+    LDA $00ED                  ; $9FAE
+    PHA                        ; $9FB0
+    LDA $00EC                  ; $9FB1
+    PHA                        ; $9FB3
+    LDA $00EB                  ; $9FB4
+    PHA                        ; $9FB6
+    LDA $00EA                  ; $9FB7
