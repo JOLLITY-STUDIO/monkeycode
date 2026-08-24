@@ -105,7 +105,7 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 | B3 | V0.2 | SE/BGM 指针表 + 地图 NT 数据 | data/tables/*, data/scene/* | ⬜ |
 | C1 | V0.3 | 场景 0 真实渲染（按 ID 组织） | code/scene/Scene0Controller.ts | ✅ |
 | C2 | V0.3 | 场景表 24 项行为确认 + 按 ID 分发 | code/scene/SceneTable.ts, system/BootRouter.ts | ✅ |
-| C3 | V0.3 | 场景 15+ 长场景翻译（NT 缓冲/精灵） | code/scene/Scene15Controller.ts 等 | ⬜ |
+| C3 | V0.3 | 场景 15+ 长场景翻译（NT 缓冲/精灵） | code/scene/Scene15Controller.ts 等 | ✅ |
 | D1 | V0.4 | ScriptEngine opcode 全集 | code/story/ScriptEngine.ts | ✅ |
 | D2 | V0.4 | 剧情数据装载与播放 | code/story/ScriptLoader.ts | ✅ |
 | E1 | V0.5 | 比赛引擎核心 | code/match/* | ⬜ |

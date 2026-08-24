@@ -4,6 +4,16 @@
 
 ## 2026-08-24
 
+- [D1+D2 V0.4 完善] ea2153a4 后续：
+  - **ScriptLoader** 改为按 4KB 切片 BANK18_DATA_TABLES（SEGMENT_SIZE=0x1000）。
+    loadSegment(id) 返回 4KB 切片段；listSegments() 列有效段号。
+  - **ScriptOpcodes** OPCODE_HANDLERS 全 15 个内置 handler 实装：
+    TextChar/WaitFrames/WaitInput/Jump/Branch/Call/Return/SetPalette/
+    LoadSprite/PlayBgm/PlaySe/WaitVBlank/EndSegment/JumpSegment/EndScript。
+  - **ScriptRuntime** 接口注入式：readRam/writeRam/charMap/playBgm/playSe/
+    loadSprite/setPalette。setScriptRuntime() 全局注册一次。
+  - **extract_teams.cjs** stride 12-byte 实测注释（Brazil 5/Hs 6/Cup 4/WC 16 = 31 队）。
+  - 编译：npx tsc --noEmit 零错误。
 - [D1+D2 V0.4 落地] ScriptEngine + ScriptLoader + ScriptOpcodes 剧情脚本引擎 stub：
   - **ScriptOpcodes**：定义 enum 与 handler 签名；classifyOpcode(op)
     完全对应 asm `CMP #$6D / BCC 直接 / SEC SBC #$6D 间接` 的双模式调度。
