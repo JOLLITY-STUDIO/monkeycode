@@ -51,20 +51,26 @@ const TEAM_NAMES = {
   0x93: 'Japan',
 };
 
+/**
+ * 字节布局（每队 1 字节 = 高4位战术 + 低4位阵型，docs §7）：
+ *   低 4 位（formation 阵型）:
+ *     0=4-3-3, 1=4-4-2, 2=3-5-2, 3=Brazilian
+ *     4-15 = 扩展/未知阵型（ROM 实际数据）
+ *   高 4 位（tactic 战术）:
+ *     0=Normal, 1=Pressing, 2=Counter, 3=Offside
+ *     4-15 = 扩展/未知战术（ROM 实际数据）
+ */
 const FORMATION_NAMES = {
   0: '4-3-3',
   1: '4-4-2',
   2: '3-5-2',
-  3: 'Brazil',         // 巴西阵型
+  3: 'Brazil',
 };
 const TACTIC_NAMES = {
-  0: '4-3-3-Normal',
-  1: '4-4-2-Normal',
-  2: '3-5-2-Normal',
-  3: 'Brazil-Normal',
-  4: 'Pressing',
-  5: 'Counter',
-  6: 'Offside',
+  0: 'Normal',
+  1: 'Pressing',
+  2: 'Counter',
+  3: 'Offside',
 };
 
 // ───── 玩家队 Sao Paulo / Nankatsu / Asian / Exhibition / World Cup ─────
@@ -79,7 +85,9 @@ function readFormationTactic(addr) {
   const b = prg[addr] ?? 0;
   const tactic = (b >> 4) & 0x0f;
   const form = b & 0x0f;
-  return { formation: FORMATION_NAMES[form] || `Unknown(${form})`, tactic: TACTIC_NAMES[tactic] || `Unknown(${tactic})` };
+  const formName = FORMATION_NAMES[form] ?? `Form${form}`;
+  const tactName = TACTIC_NAMES[tactic] ?? `Tact${tactic}`;
+  return { formation: formName, tactic: tactName };
 }
 
 const teams = [];
@@ -235,4 +243,6 @@ lines.push('  return null;');
 lines.push('}');
 lines.push('');
 
-process.stdout.write(lines.join('\n') + '\n');
+const OUT_FILE = path.join(__dirname, '..', 'src', 'game', 'prg', 'data', 'tables', 'team-roster.ts');
+fs.writeFileSync(OUT_FILE, lines.join('\n') + '\n', { encoding: 'utf8' });
+console.error(`[extract_teams] wrote ${teams.length} teams to ${OUT_FILE}`);
