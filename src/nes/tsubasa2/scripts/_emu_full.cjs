@@ -279,7 +279,7 @@ var init_pattern_table_viewer = __esm({
   }
 });
 
-// _emu_reference.ts
+// _emu_full.ts
 var fs2 = __toESM(require("fs"));
 var path = __toESM(require("path"));
 var zlib = __toESM(require("zlib"));
@@ -2433,13 +2433,13 @@ var PPU = class {
   // dotsRemaining is the number of dots left in the current advanceDots()
   // call (including the VBlank dot), used for NMI delay calculation.
   // 0 means VBlank fires at the boundary between steps.
-  _fireVblankSet(cpu, dotsRemaining) {
+  _fireVblankSet(cpu2, dotsRemaining) {
     this.vblankPending = false;
     if (!this.nmiSuppressed) {
       this.setStatusFlag(this.STATUS_VBLANK, true);
       this._updateNmiOutput();
-      if (cpu.nmiRaised) {
-        cpu.nmiDotsRemainingInStep = dotsRemaining;
+      if (cpu2.nmiRaised) {
+        cpu2.nmiDotsRemainingInStep = dotsRemaining;
       }
     }
     this.nmiSuppressed = false;
@@ -2452,10 +2452,10 @@ var PPU = class {
   // (~2/3 through the bus cycle), so we only promote nmiRaised to nmiPending
   // when φ2 has had time to sample the rising edge — i.e., on the last dot.
   // See https://www.nesdev.org/wiki/NMI
-  _fireVblankClear(cpu, isLastDot) {
-    if (cpu.nmiRaised && isLastDot) {
-      cpu.nmiPending = true;
-      cpu.nmiRaised = false;
+  _fireVblankClear(cpu2, isLastDot) {
+    if (cpu2.nmiRaised && isLastDot) {
+      cpu2.nmiPending = true;
+      cpu2.nmiRaised = false;
     }
     this.setStatusFlag(this.STATUS_VBLANK, false);
     this.setStatusFlag(this.STATUS_SPRITE0HIT, false);
@@ -2477,15 +2477,15 @@ var PPU = class {
       this.curX = finalCurX;
       return;
     }
-    let cpu = this.nes.cpu;
+    let cpu2 = this.nes.cpu;
     for (let i = 0; i < dots; i++) {
       if (this.scanline === 0 && this.curX === 1 && this.vblankPending) {
-        this._fireVblankSet(cpu, dots - i);
+        this._fireVblankSet(cpu2, dots - i);
         this.curX++;
         continue;
       }
       if (this.scanline === 20 && this.curX === 1) {
-        this._fireVblankClear(cpu, i === dots - 1);
+        this._fireVblankClear(cpu2, i === dots - 1);
       }
       if (this.curX === this.spr0HitX && this.f_bgVisibility === 1 && this.f_spVisibility === 1 && this.scanline - 21 === this.spr0HitY) {
         this.setStatusFlag(this.STATUS_SPRITE0HIT, true);
@@ -2497,10 +2497,10 @@ var PPU = class {
       }
     }
     if (this.scanline === 0 && this.curX === 1 && this.vblankPending) {
-      this._fireVblankSet(cpu, 0);
+      this._fireVblankSet(cpu2, 0);
     }
     if (this.scanline === 20 && this.curX === 1) {
-      this._fireVblankClear(cpu, true);
+      this._fireVblankClear(cpu2, true);
     }
   }
   endScanline() {
@@ -2900,10 +2900,10 @@ var PPU = class {
       this.spriteMem[oamAddr] = data;
       this.spriteRamWriteUpdate(oamAddr, data);
     }
-    let cpu = this.nes.cpu;
-    let currentCycle = cpu._cpuCycleBase + cpu.instrBusCycles;
+    let cpu2 = this.nes.cpu;
+    let currentCycle = cpu2._cpuCycleBase + cpu2.instrBusCycles;
     let cycles = currentCycle % 2 === 0 ? 514 : 513;
-    cpu.haltCycles(cycles);
+    cpu2.haltCycles(cycles);
   }
   // Updates the scroll registers from a new VRAM address.
   regsFromAddress() {
@@ -4476,8 +4476,8 @@ var PAPU = class {
       this.dmc.writeReg(address, value);
     } else if (address === 16407) {
       this.countSequence = value >> 7 & 1;
-      let cpu = this.nes.cpu;
-      let pendingCycles = cpu.instrBusCycles + 1 - cpu.apuCatchupCycles;
+      let cpu2 = this.nes.cpu;
+      let pendingCycles = cpu2.instrBusCycles + 1 - cpu2.apuCatchupCycles;
       let writeParity = this.apuCycleParity + pendingCycles & 1;
       this.frameCycleCounter = -7 + writeParity;
       this.frameStep = 0;
@@ -5250,14 +5250,14 @@ var Mapper0 = class {
         }
         break;
     }
-    let cpu = this.nes.cpu;
-    if (cpu._dmcFetchCycles > 0 && cpu._dmcFetchCycles === cpu.instrBusCycles + 1) {
+    let cpu2 = this.nes.cpu;
+    if (cpu2._dmcFetchCycles > 0 && cpu2._dmcFetchCycles === cpu2.instrBusCycles + 1) {
       let dmc = this.nes.papu.dmc;
       if (dmc && dmc.isEnabled) {
         return dmc.lastFetchedByte;
       }
     }
-    return cpu.dataBus;
+    return cpu2.dataBus;
   }
   regWrite(address, value) {
     if (address >= 8192 && address <= 16383) {
@@ -5295,8 +5295,8 @@ var Mapper0 = class {
         this.nes.papu.writeReg(address, value);
         break;
       case 16406: {
-        let cpu = this.nes.cpu;
-        let currentCycle = cpu._cpuCycleBase + cpu.instrBusCycles;
+        let cpu2 = this.nes.cpu;
+        let currentCycle = cpu2._cpuCycleBase + cpu2.instrBusCycles;
         if (currentCycle - this.joypadLastWriteCycle > 1) {
           let prevBit = this.joypadLastWrite & 1;
           if (prevBit !== this.joypadOutputBit0) {
@@ -7757,7 +7757,7 @@ function formatFlags(status) {
   const c = status & 1 ? "C" : "c";
   return n + v + u + b + d + i + z + c;
 }
-function getMesenBank(cpu, nes2, addr) {
+function getMesenBank(cpu2, nes2, addr) {
   if (addr < 32768) return 0;
   const mmap2 = nes2.mmap;
   if (!mmap2 || !mmap2.prgBankMap) return 0;
@@ -7774,13 +7774,13 @@ function getMesenBank(cpu, nes2, addr) {
   return Math.floor(block8k / 2);
 }
 function formatInstruction(ctx, instrPC, opcode, opinfo, opbytes) {
-  const cpu = ctx.cpu;
-  const a = cpu.REG_ACC & 255;
-  const x = cpu.REG_X & 255;
-  const y = cpu.REG_Y & 255;
-  const s = cpu.REG_SP & 255;
-  const status = cpu.getStatus();
-  const mesenBank = getMesenBank(cpu, ctx.nes, instrPC);
+  const cpu2 = ctx.cpu;
+  const a = cpu2.REG_ACC & 255;
+  const x = cpu2.REG_X & 255;
+  const y = cpu2.REG_Y & 255;
+  const s = cpu2.REG_SP & 255;
+  const status = cpu2.getStatus();
+  const mesenBank = getMesenBank(cpu2, ctx.nes, instrPC);
   const bytesStr = opbytes.map((b) => b.toString(16).toUpperCase().padStart(2, "0")).join(" ");
   const insName = INS_NAMES[opinfo.ins] ?? "???";
   let operandStr = "";
@@ -7796,9 +7796,9 @@ function formatInstruction(ctx, instrPC, opcode, opinfo, opbytes) {
   return `i${ctx.count}  $${mesenBank.toString(16).toUpperCase().padStart(2, "0")}:` + instrPC.toString(16).toUpperCase().padStart(4, "0") + ": " + bytesStr.padEnd(8, " ") + " " + insName + " " + operandStr + " A:" + a.toString(16).toUpperCase().padStart(2, "0") + " X:" + x.toString(16).toUpperCase().padStart(2, "0") + " Y:" + y.toString(16).toUpperCase().padStart(2, "0") + " S:" + s.toString(16).toUpperCase().padStart(2, "0") + " P:" + formatFlags(status);
 }
 function formatHwWrite(ctx, category, addr, val, extra) {
-  const cpu = ctx.cpu;
-  const instrPC = cpu._instrPC ?? 0;
-  const mesenBank = getMesenBank(cpu, ctx.nes, instrPC);
+  const cpu2 = ctx.cpu;
+  const instrPC = cpu2._instrPC ?? 0;
+  const mesenBank = getMesenBank(cpu2, ctx.nes, instrPC);
   const pcStr = `$${mesenBank.toString(16).toUpperCase().padStart(2, "0")}:` + instrPC.toString(16).toUpperCase().padStart(4, "0");
   const addrStr = "$" + addr.toString(16).toUpperCase().padStart(4, "0");
   const valStr = "#$" + (val & 255).toString(16).toUpperCase().padStart(2, "0");
@@ -7825,13 +7825,13 @@ var Tracer = class {
   }
   /** 启动 trace */
   start(nes2, opts = {}) {
-    const cpu = nes2.cpu;
+    const cpu2 = nes2.cpu;
     let stream = null;
     if (opts.outputFile) {
       stream = fs.createWriteStream(opts.outputFile, { flags: "w" });
     }
     this.ctx = {
-      cpu,
+      cpu: cpu2,
       nes: nes2,
       count: 0,
       lines: 0,
@@ -8042,9 +8042,9 @@ var Tracer = class {
       if (this.checkMaxLines()) return;
       ctx.count++;
       ctx.lines++;
-      const cpu = ctx.cpu;
-      const instrPC = cpu._instrPC ?? 0;
-      const mesenBank = getMesenBank(cpu, ctx.nes, instrPC);
+      const cpu2 = ctx.cpu;
+      const instrPC = cpu2._instrPC ?? 0;
+      const mesenBank = getMesenBank(cpu2, ctx.nes, instrPC);
       const pcStr = "$" + mesenBank.toString(16).toUpperCase().padStart(2, "0") + ":" + instrPC.toString(16).toUpperCase().padStart(4, "0");
       if (addr === 32768) {
         const reg = val & 7;
@@ -8107,31 +8107,31 @@ var NES = class {
       this.controllers[2].clock();
       this.ppu.startFrame();
       let cycles;
-      const cpu = this.cpu;
+      const cpu2 = this.cpu;
       const ppu2 = this.ppu;
       const papu = this.papu;
       try {
         for (; ; ) {
-          if (cpu.cyclesToHalt === 0) {
-            cycles = cpu.emulate();
+          if (cpu2.cyclesToHalt === 0) {
+            cycles = cpu2.emulate();
             if (this.opts.emulateSound) {
-              papu.clockFrameCounter(cycles, cpu.apuCatchupCycles);
+              papu.clockFrameCounter(cycles, cpu2.apuCatchupCycles);
             }
-            cpu.apuCatchupCycles = 0;
+            cpu2.apuCatchupCycles = 0;
             if (ppu2.frameEnded) {
               ppu2.frameEnded = false;
               break;
             }
           } else {
-            let chunk = Math.min(cpu.cyclesToHalt, 8);
+            let chunk = Math.min(cpu2.cyclesToHalt, 8);
             for (let i = 0; i < chunk; i++) {
               ppu2.advanceDots(3);
             }
             if (this.opts.emulateSound) {
               papu.clockFrameCounter(chunk);
             }
-            cpu.cyclesToHalt -= chunk;
-            cpu._cpuCycleBase += chunk;
+            cpu2.cyclesToHalt -= chunk;
+            cpu2._cpuCycleBase += chunk;
             if (ppu2.frameEnded) {
               ppu2.frameEnded = false;
               break;
@@ -8349,11 +8349,12 @@ try {
 } catch {
 }
 
-// _emu_reference.ts
+// _emu_full.ts
 init_pattern_table_viewer();
 var ROM_PATH = path.join(__dirname, "..", "docs", "roms", "Captain Tsubasa II - Super Striker (Japan).nes");
-var OUT_DIR = path.join(__dirname, "..", "output", "emu-reference");
-var FRAMES = [1, 5, 9, 13, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
+var OUT_DIR = path.join(__dirname, "..", "output", "emu-full");
+var TOTAL_FRAMES = 4332;
+var SAMPLE_RATE = 44100;
 var CRC_TABLE = (() => {
   const t = new Array(256);
   for (let n = 0; n < 256; n++) {
@@ -8389,19 +8390,14 @@ function encodePng(w, h, rgba) {
     raw[y * (row + 1)] = 0;
     rgba.copy(raw, y * (row + 1) + 1, y * row, (y + 1) * row);
   }
-  return Buffer.concat([
-    sig,
-    makeChunk("IHDR", ihdr),
-    makeChunk("IDAT", zlib.deflateSync(raw, { level: 9 })),
-    makeChunk("IEND", Buffer.alloc(0))
-  ]);
+  return Buffer.concat([sig, makeChunk("IHDR", ihdr), makeChunk("IDAT", zlib.deflateSync(raw, { level: 1 })), makeChunk("IEND", Buffer.alloc(0))]);
 }
 function bufToRgba(buf) {
   const w = 256, h = 240;
   const rgba = Buffer.alloc(w * h * 4);
   for (let i = 0; i < w * h; i++) {
     const v = buf[i];
-    rgba[i * 4 + 0] = v >>> 16 & 255;
+    rgba[i * 4] = v >>> 16 & 255;
     rgba[i * 4 + 1] = v >>> 8 & 255;
     rgba[i * 4 + 2] = v & 255;
     rgba[i * 4 + 3] = 255;
@@ -8412,53 +8408,107 @@ function rgbaFromData(data, w, h) {
   const rgba = Buffer.alloc(w * h * 4);
   for (let i = 0; i < w * h; i++) {
     const v = data[i];
-    rgba[i * 4 + 0] = v >>> 16 & 255;
+    rgba[i * 4] = v >>> 16 & 255;
     rgba[i * 4 + 1] = v >>> 8 & 255;
     rgba[i * 4 + 2] = v & 255;
     rgba[i * 4 + 3] = 255;
   }
   return rgba;
 }
+function writeWav(filePath, samples, rate, channels) {
+  const numSamples = samples.length / channels;
+  const dataLen = numSamples * channels * 2;
+  const buf = Buffer.alloc(44 + dataLen);
+  let off = 0;
+  buf.write("RIFF", off);
+  off += 4;
+  buf.writeUInt32LE(36 + dataLen, off);
+  off += 4;
+  buf.write("WAVE", off);
+  off += 4;
+  buf.write("fmt ", off);
+  off += 4;
+  buf.writeUInt32LE(16, off);
+  off += 4;
+  buf.writeUInt16LE(1, off);
+  off += 2;
+  buf.writeUInt16LE(channels, off);
+  off += 2;
+  buf.writeUInt32LE(rate, off);
+  off += 4;
+  buf.writeUInt32LE(rate * channels * 2, off);
+  off += 4;
+  buf.writeUInt16LE(channels * 2, off);
+  off += 2;
+  buf.writeUInt16LE(16, off);
+  off += 2;
+  buf.write("data", off);
+  off += 4;
+  buf.writeUInt32LE(dataLen, off);
+  off += 4;
+  for (let i = 0; i < samples.length; i++) {
+    const s = Math.max(-1, Math.min(1, samples[i]));
+    const v = s < 0 ? s * 32768 : s * 32767;
+    buf.writeInt16LE(v | 0, off);
+    off += 2;
+  }
+  fs2.writeFileSync(filePath, buf);
+}
+var apuWrites = [];
+var audioSamplesL = [];
+var audioSamplesR = [];
+var samplesPerFrame = [];
+var apuWritesPerFrame = [];
 var romBytes = fs2.readFileSync(ROM_PATH);
-var nes = new nes_default({ emulateSound: false });
+var nes = new nes_default({
+  emulateSound: true,
+  sampleRate: SAMPLE_RATE,
+  onAudioSample: (l, _n, r) => {
+    if (samplesPerFrame.length > 0) samplesPerFrame[samplesPerFrame.length - 1]++;
+    audioSamplesL.push(l);
+    audioSamplesR.push(r);
+  }
+});
 nes.loadROM(romBytes);
 var ppu = nes.ppu;
 var mmap = nes.mmap;
+var cpu = nes.cpu;
 var rom = nes.rom;
-console.log(`[emu-ref] mapper=${rom.mapperType}  prg=${rom.romCount}\xD716KB  chr=${rom.vromCount}\xD74KB`);
-var total = 0;
-for (const target of FRAMES) {
-  while (total < target) {
-    nes.frame();
-    total++;
+console.log(`[emu-full] mapper=${rom.mapperType} PRG=${rom.romCount} CHR=${rom.vromCount} frames=${TOTAL_FRAMES}`);
+var currentFrameForHook = 0;
+var proto = papu_default.prototype;
+var origWriteReg = proto.writeReg;
+proto.writeReg = function(addr, value) {
+  if (addr >= 16384 && addr <= 16407) {
+    if (apuWritesPerFrame.length > 0) apuWritesPerFrame[apuWritesPerFrame.length - 1]++;
+    apuWrites.push({ frame: currentFrameForHook, reg: addr, value });
   }
-  const origBg = ppu.f_bgVisibility;
-  const origSp = ppu.f_spVisibility;
-  if (typeof ppu.startFrame === "function") {
-    ppu.startFrame();
-    ppu.advanceDots(262 * 341);
-    ppu.renderFramePartially(0, 240);
-    ppu.endFrame();
-  }
+  return origWriteReg.call(this, addr, value);
+};
+fs2.mkdirSync(OUT_DIR, { recursive: true });
+var t0 = Date.now();
+for (let f = 1; f <= TOTAL_FRAMES; f++) {
+  currentFrameForHook = f;
+  samplesPerFrame.push(0);
+  apuWritesPerFrame.push(0);
+  nes.frame();
   if (mmap && Array.isArray(mmap.chrBanks) && typeof mmap.load1kVromBank === "function") {
-    for (let slot = 0; slot < 8; slot++) {
-      mmap.load1kVromBank(mmap.chrBanks[slot], slot * 1024);
-    }
+    for (let slot = 0; slot < 8; slot++) mmap.load1kVromBank(mmap.chrBanks[slot], slot * 1024);
   }
   const switches = drainChrSwitchLog();
   const chrMapByScan = buildChrBankMapByScanline(switches, mmap.chrBanks);
-  const frameDir = path.join(OUT_DIR, `frame-${String(target).padStart(3, "0")}`);
+  const frameDir = path.join(OUT_DIR, "frame-" + String(f).padStart(4, "0"));
   fs2.mkdirSync(frameDir, { recursive: true });
   fs2.writeFileSync(
     path.join(frameDir, "chr-switches.json"),
     JSON.stringify({
-      frame: target,
+      frame: f,
       bankMapByScanline: Array.from(chrMapByScan.entries()).map(([scan, banks]) => ({
         scanline: scan,
         banks: Array.from(banks)
       })),
       rawLog: switches
-    }, null, 2)
+    })
   );
   for (const [scan, slotBanks] of chrMapByScan) {
     const pt2 = renderBothPatternTablesAtScanline(nes, slotBanks, 0);
@@ -8501,56 +8551,86 @@ for (const target of FRAMES) {
   const ntJson = [];
   for (let i = 0; i < 4; i++) {
     const t = ppu.nameTable[i];
-    ntJson.push({
-      idx: i,
-      tile: Array.from(t.tile),
-      attrib: Array.from(t.attrib)
-    });
+    ntJson.push({ idx: i, tile: Array.from(t.tile), attrib: Array.from(t.attrib) });
   }
   fs2.writeFileSync(path.join(frameDir, "nt.json"), JSON.stringify(ntJson));
   const oamArr = Array.from(ppu.spriteMem);
   const oamJson = [];
   for (let i = 0; i < 64; i++) {
-    oamJson.push({
-      idx: i,
-      y: oamArr[i * 4 + 0],
-      tile: oamArr[i * 4 + 1],
-      attr: oamArr[i * 4 + 2],
-      x: oamArr[i * 4 + 3]
-    });
+    oamJson.push({ idx: i, y: oamArr[i * 4], tile: oamArr[i * 4 + 1], attr: oamArr[i * 4 + 2], x: oamArr[i * 4 + 3] });
   }
   fs2.writeFileSync(path.join(frameDir, "oam.json"), JSON.stringify(oamJson));
   const oamImg = renderOamSheet(oamJson, ppu);
   fs2.writeFileSync(path.join(frameDir, "oam.png"), encodePng(oamImg.w, oamImg.h, oamImg.rgba));
   const oamComp = renderOamComposite(oamJson, ppu);
   fs2.writeFileSync(path.join(frameDir, "oam-composite.png"), encodePng(256, 240, oamComp));
+  const oamStripped = renderOamStripped(oamJson, ppu);
+  if (oamStripped) {
+    fs2.writeFileSync(path.join(frameDir, "oam-stripped.png"), encodePng(oamStripped.w, oamStripped.h, oamStripped.rgba));
+  }
   const palBg = Array.from(ppu.vramMem.slice(16128, 16144));
   const palSp = Array.from(ppu.vramMem.slice(16144, 16160));
-  fs2.writeFileSync(path.join(frameDir, "palette.json"), JSON.stringify({ bg: palBg, sp: palSp }));
+  fs2.writeFileSync(path.join(frameDir, "palette.json"), JSON.stringify({ bg: palBg, spr: palSp }));
   const palImg = renderPaletteSheet(palBg, palSp, ppu);
   fs2.writeFileSync(path.join(frameDir, "palette.png"), encodePng(palImg.w, palImg.h, palImg.rgba));
   const chrMap = mmap.chrBanks ? Array.from(mmap.chrBanks) : [];
   const prgMap = mmap.prgBankMap || {};
   fs2.writeFileSync(path.join(frameDir, "state.json"), JSON.stringify({
-    frame: total,
-    pc: nes.cpu ? nes.cpu.REG_PC >>> 0 || nes.cpu.pc & 65535 : 0,
+    frame: f,
+    pc: cpu.REG_PC >>> 0,
     nTblAddress: ppu.f_nTblAddress,
     bgTable: ppu.f_bgPatternTable,
     spTable: ppu.f_spPatternTable,
     chrBanks: chrMap,
-    prgBankMap: prgMap
+    prgBankMap: prgMap,
+    apuWritesThisFrame: apuWritesPerFrame[f - 1],
+    audioSamplesThisFrame: samplesPerFrame[f - 1]
   }, null, 2));
-  console.log(`[emu-ref] frame=${String(target).padStart(3)}  PT[0..7]=[${chrMap.join(",")}]  PRG@8000=${prgMap[32768]}`);
+  if (f % 200 === 0 || f === 1 || f === TOTAL_FRAMES) {
+    const elapsed2 = (Date.now() - t0) / 1e3;
+    const fps = f / elapsed2;
+    const eta = (TOTAL_FRAMES - f) / fps;
+    console.log(`  f${f}/${TOTAL_FRAMES}  fps=${fps.toFixed(1)}  eta=${eta.toFixed(0)}s  audio=${audioSamplesL.length}  apuWrites=${apuWrites.length}`);
+  }
 }
-console.log(`[emu-ref] done. PNG/JSON at ${OUT_DIR}`);
+var apuDir = path.join(OUT_DIR, "apu");
+fs2.mkdirSync(apuDir, { recursive: true });
+var stereo = new Float32Array(audioSamplesL.length * 2);
+for (let i = 0; i < audioSamplesL.length; i++) {
+  stereo[i * 2] = audioSamplesL[i];
+  stereo[i * 2 + 1] = audioSamplesR[i];
+}
+writeWav(path.join(apuDir, "audio.wav"), stereo, SAMPLE_RATE, 2);
+var regTraceLog = apuWrites.map(
+  (w, idx) => `f${String(w.frame).padStart(4, "0")} #${String(idx + 1).padStart(5, "0")} $${w.reg.toString(16).padStart(4, "0").toUpperCase()} = #$${w.value.toString(16).padStart(2, "0").toUpperCase()}`
+).join("\n");
+fs2.writeFileSync(path.join(apuDir, "register-writes.log"), regTraceLog);
+var apuSummaryMap = /* @__PURE__ */ new Map();
+for (const w of apuWrites) {
+  if (!apuSummaryMap.has(w.frame)) apuSummaryMap.set(w.frame, { frame: w.frame, sq1: 0, sq2: 0, tri: 0, noise: 0, dmc: 0, ctrl: 0, total: 0 });
+  const s = apuSummaryMap.get(w.frame);
+  s.total++;
+  if (w.reg >= 16384 && w.reg < 16388) s.sq1++;
+  else if (w.reg >= 16388 && w.reg < 16392) s.sq2++;
+  else if (w.reg >= 16392 && w.reg < 16396) s.tri++;
+  else if (w.reg >= 16396 && w.reg <= 16399) s.noise++;
+  else if (w.reg >= 16400 && w.reg <= 16403) s.dmc++;
+  else if (w.reg === 16405 || w.reg === 16407) s.ctrl++;
+}
+var apuSummary = Array.from(apuSummaryMap.values()).sort((a, b) => a.frame - b.frame);
+fs2.writeFileSync(path.join(apuDir, "summary.json"), JSON.stringify(apuSummary));
+var samplesPerFrameOut = samplesPerFrame.map((c, i) => ({ frame: i + 1, samples: c }));
+fs2.writeFileSync(path.join(apuDir, "samples-per-frame.json"), JSON.stringify(samplesPerFrameOut));
+var elapsed = (Date.now() - t0) / 1e3;
+console.log(`[emu-full] done in ${elapsed.toFixed(1)}s`);
+console.log(`  audio samples=${audioSamplesL.length} (${(audioSamplesL.length / SAMPLE_RATE).toFixed(2)}s)`);
+console.log(`  apu writes=${apuWrites.length} (${apuSummary.length} frames with writes)`);
 function renderAllNameTablesNoBg(ppu2, rom2, switches) {
   const W = 256, H = 240, COLS = 32, ROWS = 30;
   const pal = ppu2.imgPalette;
   const vromTile = rom2 && rom2.vromTile;
   const initialBanks = new Uint8Array(8);
-  if (rom2 && rom2.chrBanks) {
-    for (let i = 0; i < 8; i++) initialBanks[i] = rom2.chrBanks[i] | 0;
-  }
+  if (rom2 && rom2.chrBanks) for (let i = 0; i < 8; i++) initialBanks[i] = rom2.chrBanks[i] | 0;
   const mapByScan = buildChrBankMapByScanline(switches, initialBanks);
   const scanBankCache = new Array(240);
   for (let y = 0; y < 240; y++) {
@@ -8597,11 +8677,7 @@ function renderAllNameTablesNoBg(ppu2, rom2, switches) {
             }
           }
         } else {
-          for (let py = 0; py < 8; py++) {
-            for (let px = 0; px < 8; px++) {
-              buf[(baseY + py) * W + baseX + px] = pal[0];
-            }
-          }
+          for (let py = 0; py < 8; py++) for (let px = 0; px < 8; px++) buf[(baseY + py) * W + baseX + px] = pal[0];
         }
       }
     }
@@ -8632,9 +8708,7 @@ function renderOamSheet(oamJson, ppu2) {
         const sy = flipV ? 7 - py : py;
         const idx = pix ? pix[sy * 8 + sx] : 0;
         const color = idx === 0 ? 4280295456 : ppu2.imgPalette[palHi + idx] ?? 4280295456;
-        const r = color >>> 16 & 255;
-        const g = color >>> 8 & 255;
-        const b = color & 255;
+        const r = color >>> 16 & 255, g = color >>> 8 & 255, b = color & 255;
         const off = ((cy + py) * w + cx + px) * 4;
         rgba[off] = r;
         rgba[off + 1] = g;
@@ -8696,9 +8770,7 @@ function renderOamComposite(oamJson, ppu2) {
         const idx = pix[sy * 8 + sx];
         if (idx === 0) continue;
         const color = ppu2.sprPalette ? ppu2.sprPalette[palHi + idx] ?? 4278190080 : 4278190080;
-        const r = color >>> 16 & 255;
-        const g = color >>> 8 & 255;
-        const b = color & 255;
+        const r = color >>> 16 & 255, g = color >>> 8 & 255, b = color & 255;
         const off = (dy * W + dx) * 4;
         rgba[off] = r;
         rgba[off + 1] = g;
@@ -8708,6 +8780,60 @@ function renderOamComposite(oamJson, ppu2) {
     }
   }
   return rgba;
+}
+function renderOamStripped(oamJson, ppu2) {
+  const baseIdx = ppu2.f_spPatternTable ? 256 : 0;
+  let minX = 256, maxX = -1, minY = 240, maxY = -1;
+  const refs = [];
+  for (let i = 0; i < oamJson.length; i++) {
+    const o = oamJson[i];
+    if (!o || o.y >= 239) continue;
+    const sx0 = o.x;
+    const sy0 = o.y + 1;
+    refs.push({ o, sx0, sy0 });
+    if (sx0 < minX) minX = sx0;
+    if (sx0 + 8 > maxX) maxX = sx0 + 8;
+    if (sy0 < minY) minY = sy0;
+    if (sy0 + 8 > maxY) maxY = sy0 + 8;
+  }
+  if (refs.length === 0) return null;
+  const ox = -minX;
+  const oy = -minY;
+  const W = maxX - minX;
+  const H = maxY - minY;
+  const rgba = Buffer.alloc(W * H * 4);
+  for (const r of refs) {
+    const o = r.o;
+    const attr = o.attr;
+    const flipH = attr & 64 ? 1 : 0;
+    const flipV = attr & 128 ? 1 : 0;
+    const palHi = (attr & 3) << 2;
+    const ptT = ppu2.ptTile[baseIdx + o.tile];
+    const pix = ptT && ptT.pix ? ptT.pix : null;
+    if (!pix) continue;
+    const dx0 = r.sx0 + ox;
+    const dy0 = r.sy0 + oy;
+    for (let py = 0; py < 8; py++) {
+      const dy = dy0 + py;
+      if (dy < 0 || dy >= H) continue;
+      for (let px = 0; px < 8; px++) {
+        const dx = dx0 + px;
+        if (dx < 0 || dx >= W) continue;
+        const sx = flipH ? 7 - px : px;
+        const sy = flipV ? 7 - py : py;
+        const idx = pix[sy * 8 + sx];
+        if (idx === 0) continue;
+        const color = ppu2.sprPalette ? ppu2.sprPalette[palHi + idx] ?? 4278190080 : 4278190080;
+        const r2 = color >>> 16 & 255, g = color >>> 8 & 255, b = color & 255;
+        const off = (dy * W + dx) * 4;
+        rgba[off] = r2;
+        rgba[off + 1] = g;
+        rgba[off + 2] = b;
+        rgba[off + 3] = 255;
+      }
+    }
+  }
+  return { w: W, h: H, rgba, minX, minY };
 }
 function renderPaletteSheet(palBg, palSp, ppu2) {
   const pal = ppu2.palTable;
@@ -8719,9 +8845,7 @@ function renderPaletteSheet(palBg, palSp, ppu2) {
   for (let i = 0; i < 32; i++) {
     const idx = all[i] & 63;
     const entry = pal.getEntry ? pal.getEntry(idx) : 4278190080;
-    const r = entry >>> 16 & 255;
-    const g = entry >>> 8 & 255;
-    const b = entry & 255;
+    const r = entry >>> 16 & 255, g = entry >>> 8 & 255, b = entry & 255;
     const cx = i % cols * cellW;
     const cy = Math.floor(i / cols) * cellH;
     for (let py = 0; py < cellH; py++) {

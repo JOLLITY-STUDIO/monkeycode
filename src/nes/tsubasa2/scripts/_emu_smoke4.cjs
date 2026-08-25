@@ -279,10 +279,9 @@ var init_pattern_table_viewer = __esm({
   }
 });
 
-// _emu_reference.ts
+// _emu_smoke4.ts
 var fs2 = __toESM(require("fs"));
 var path = __toESM(require("path"));
-var zlib = __toESM(require("zlib"));
 
 // ../src/core/utils.ts
 function copyArrayElements(src, srcPos, dest, destPos, length) {
@@ -5496,15 +5495,15 @@ var Mapper0 = class {
     }
   }
   load8kRomBank(bank8k, address) {
-    const rom2 = this.nes.rom.rom;
+    const rom = this.nes.rom.rom;
     const count = this.nes.rom.romCount;
-    if (rom2[0] && rom2[0].length === 8192) {
+    if (rom[0] && rom[0].length === 8192) {
       const idx = bank8k % count;
-      copyArrayElements(rom2[idx], 0, this.nes.cpu.mem, address, 8192);
+      copyArrayElements(rom[idx], 0, this.nes.cpu.mem, address, 8192);
     } else {
       const bank16k = Math.floor(bank8k / 2) % count;
       const offset = bank8k % 2 * 8192;
-      copyArrayElements(rom2[bank16k], offset, this.nes.cpu.mem, address, 8192);
+      copyArrayElements(rom[bank16k], offset, this.nes.cpu.mem, address, 8192);
     }
   }
   canWriteChr(_address) {
@@ -8349,390 +8348,42 @@ try {
 } catch {
 }
 
-// _emu_reference.ts
-init_pattern_table_viewer();
+// _emu_smoke4.ts
 var ROM_PATH = path.join(__dirname, "..", "docs", "roms", "Captain Tsubasa II - Super Striker (Japan).nes");
-var OUT_DIR = path.join(__dirname, "..", "output", "emu-reference");
-var FRAMES = [1, 5, 9, 13, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
-var CRC_TABLE = (() => {
-  const t = new Array(256);
-  for (let n = 0; n < 256; n++) {
-    let c = n;
-    for (let k = 0; k < 8; k++) c = c & 1 ? 3988292384 ^ c >>> 1 : c >>> 1;
-    t[n] = c >>> 0;
+var audioSamplesL = [];
+var samplesPerFrame = [];
+var nes = new nes_default({
+  emulateSound: true,
+  sampleRate: 44100,
+  onAudioSample: (l, r) => {
+    if (samplesPerFrame.length > 0) samplesPerFrame[samplesPerFrame.length - 1]++;
+    audioSamplesL.push(l);
   }
-  return t;
-})();
-function crc32(d) {
-  let c = 4294967295;
-  for (let i = 0; i < d.length; i++) c = CRC_TABLE[(c ^ d[i]) & 255] ^ c >>> 8;
-  return (c ^ 4294967295) >>> 0;
-}
-function makeChunk(t, d) {
-  const lb = Buffer.alloc(4);
-  lb.writeUInt32BE(d.length, 0);
-  const tb = Buffer.from(t, "ascii");
-  const cb = Buffer.alloc(4);
-  cb.writeUInt32BE(crc32(Buffer.concat([tb, d])), 0);
-  return Buffer.concat([lb, tb, d, cb]);
-}
-function encodePng(w, h, rgba) {
-  const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(w, 0);
-  ihdr.writeUInt32BE(h, 4);
-  ihdr.writeUInt8(8, 8);
-  ihdr.writeUInt8(6, 9);
-  const row = w * 4;
-  const raw = Buffer.alloc((row + 1) * h);
-  for (let y = 0; y < h; y++) {
-    raw[y * (row + 1)] = 0;
-    rgba.copy(raw, y * (row + 1) + 1, y * row, (y + 1) * row);
-  }
-  return Buffer.concat([
-    sig,
-    makeChunk("IHDR", ihdr),
-    makeChunk("IDAT", zlib.deflateSync(raw, { level: 9 })),
-    makeChunk("IEND", Buffer.alloc(0))
-  ]);
-}
-function bufToRgba(buf) {
-  const w = 256, h = 240;
-  const rgba = Buffer.alloc(w * h * 4);
-  for (let i = 0; i < w * h; i++) {
-    const v = buf[i];
-    rgba[i * 4 + 0] = v >>> 16 & 255;
-    rgba[i * 4 + 1] = v >>> 8 & 255;
-    rgba[i * 4 + 2] = v & 255;
-    rgba[i * 4 + 3] = 255;
-  }
-  return rgba;
-}
-function rgbaFromData(data, w, h) {
-  const rgba = Buffer.alloc(w * h * 4);
-  for (let i = 0; i < w * h; i++) {
-    const v = data[i];
-    rgba[i * 4 + 0] = v >>> 16 & 255;
-    rgba[i * 4 + 1] = v >>> 8 & 255;
-    rgba[i * 4 + 2] = v & 255;
-    rgba[i * 4 + 3] = 255;
-  }
-  return rgba;
-}
-var romBytes = fs2.readFileSync(ROM_PATH);
-var nes = new nes_default({ emulateSound: false });
-nes.loadROM(romBytes);
+});
+nes.loadROM(fs2.readFileSync(ROM_PATH));
+var proto = papu_default.prototype;
+var origWriteReg = proto.writeReg;
+proto.writeReg = function(addr, value) {
+  return origWriteReg.call(this, addr, value);
+};
+console.log("[smoke4] test 100 frames with ppu.startFrame() per frame");
 var ppu = nes.ppu;
 var mmap = nes.mmap;
-var rom = nes.rom;
-console.log(`[emu-ref] mapper=${rom.mapperType}  prg=${rom.romCount}\xD716KB  chr=${rom.vromCount}\xD74KB`);
-var total = 0;
-for (const target of FRAMES) {
-  while (total < target) {
-    nes.frame();
-    total++;
-  }
-  const origBg = ppu.f_bgVisibility;
-  const origSp = ppu.f_spVisibility;
-  if (typeof ppu.startFrame === "function") {
-    ppu.startFrame();
-    ppu.advanceDots(262 * 341);
-    ppu.renderFramePartially(0, 240);
-    ppu.endFrame();
-  }
+for (let f = 1; f <= 100; f++) {
+  samplesPerFrame.push(0);
+  nes.frame();
+  ppu.startFrame();
+  ppu.advanceDots(262 * 341);
+  ppu.renderFramePartially(0, 240);
+  ppu.endFrame();
   if (mmap && Array.isArray(mmap.chrBanks) && typeof mmap.load1kVromBank === "function") {
     for (let slot = 0; slot < 8; slot++) {
       mmap.load1kVromBank(mmap.chrBanks[slot], slot * 1024);
     }
   }
-  const switches = drainChrSwitchLog();
-  const chrMapByScan = buildChrBankMapByScanline(switches, mmap.chrBanks);
-  const frameDir = path.join(OUT_DIR, `frame-${String(target).padStart(3, "0")}`);
-  fs2.mkdirSync(frameDir, { recursive: true });
-  fs2.writeFileSync(
-    path.join(frameDir, "chr-switches.json"),
-    JSON.stringify({
-      frame: target,
-      bankMapByScanline: Array.from(chrMapByScan.entries()).map(([scan, banks]) => ({
-        scanline: scan,
-        banks: Array.from(banks)
-      })),
-      rawLog: switches
-    }, null, 2)
-  );
-  for (const [scan, slotBanks] of chrMapByScan) {
-    const pt2 = renderBothPatternTablesAtScanline(nes, slotBanks, 0);
-    const ptRgba2 = rgbaFromData(
-      new Uint32Array([...pt2.table0.data, ...pt2.table1.data]),
-      pt2.table0.width * 2,
-      pt2.table0.height
-    );
-    fs2.writeFileSync(
-      path.join(frameDir, `pt-sheet-scan${String(scan).padStart(3, "0")}.png`),
-      encodePng(pt2.table0.width * 2, pt2.table0.height, ptRgba2)
-    );
+  if (f % 10 === 0 || f === 1) {
+    const cpu = nes.cpu;
+    console.log("  f" + f + " pc=$" + (cpu.REG_PC >>> 0).toString(16) + " chr=[" + Array.from(mmap.chrBanks).join(",") + "] audio=" + samplesPerFrame[f - 1]);
   }
-  fs2.writeFileSync(path.join(frameDir, "screen.png"), encodePng(256, 240, bufToRgba(ppu.buffer)));
-  const pt = renderBothPatternTables(nes, 0);
-  const ptW = pt.table0.width;
-  const ptH = pt.table0.height;
-  const ptRgba = rgbaFromData(new Uint32Array([...pt.table0.data, ...pt.table1.data]), ptW * 2, ptH);
-  fs2.writeFileSync(path.join(frameDir, "pt-sheet.png"), encodePng(ptW * 2, ptH, ptRgba));
-  const ptJson = [];
-  for (let i = 0; i < 512; i++) {
-    const t = ppu.ptTile[i];
-    const pix = t && t.pix ? Array.from(t.pix) : new Array(64).fill(0);
-    const plane0 = new Array(8).fill(0);
-    const plane1 = new Array(8).fill(0);
-    for (let row = 0; row < 8; row++) {
-      for (let col = 0; col < 8; col++) {
-        const idx = pix[row * 8 + col];
-        if (idx & 1) plane0[row] |= 1 << 7 - col;
-        if (idx & 2) plane1[row] |= 1 << 7 - col;
-      }
-    }
-    ptJson.push({ idx: i, plane0, plane1 });
-  }
-  fs2.writeFileSync(path.join(frameDir, "pt.json"), JSON.stringify(ptJson));
-  const ntRgba = renderAllNameTablesNoBg(ppu, rom, switches);
-  for (let i = 0; i < 4; i++) {
-    fs2.writeFileSync(path.join(frameDir, `nt${i}.png`), encodePng(256, 240, rgbaFromData(ntRgba[i], 256, 240)));
-  }
-  const ntJson = [];
-  for (let i = 0; i < 4; i++) {
-    const t = ppu.nameTable[i];
-    ntJson.push({
-      idx: i,
-      tile: Array.from(t.tile),
-      attrib: Array.from(t.attrib)
-    });
-  }
-  fs2.writeFileSync(path.join(frameDir, "nt.json"), JSON.stringify(ntJson));
-  const oamArr = Array.from(ppu.spriteMem);
-  const oamJson = [];
-  for (let i = 0; i < 64; i++) {
-    oamJson.push({
-      idx: i,
-      y: oamArr[i * 4 + 0],
-      tile: oamArr[i * 4 + 1],
-      attr: oamArr[i * 4 + 2],
-      x: oamArr[i * 4 + 3]
-    });
-  }
-  fs2.writeFileSync(path.join(frameDir, "oam.json"), JSON.stringify(oamJson));
-  const oamImg = renderOamSheet(oamJson, ppu);
-  fs2.writeFileSync(path.join(frameDir, "oam.png"), encodePng(oamImg.w, oamImg.h, oamImg.rgba));
-  const oamComp = renderOamComposite(oamJson, ppu);
-  fs2.writeFileSync(path.join(frameDir, "oam-composite.png"), encodePng(256, 240, oamComp));
-  const palBg = Array.from(ppu.vramMem.slice(16128, 16144));
-  const palSp = Array.from(ppu.vramMem.slice(16144, 16160));
-  fs2.writeFileSync(path.join(frameDir, "palette.json"), JSON.stringify({ bg: palBg, sp: palSp }));
-  const palImg = renderPaletteSheet(palBg, palSp, ppu);
-  fs2.writeFileSync(path.join(frameDir, "palette.png"), encodePng(palImg.w, palImg.h, palImg.rgba));
-  const chrMap = mmap.chrBanks ? Array.from(mmap.chrBanks) : [];
-  const prgMap = mmap.prgBankMap || {};
-  fs2.writeFileSync(path.join(frameDir, "state.json"), JSON.stringify({
-    frame: total,
-    pc: nes.cpu ? nes.cpu.REG_PC >>> 0 || nes.cpu.pc & 65535 : 0,
-    nTblAddress: ppu.f_nTblAddress,
-    bgTable: ppu.f_bgPatternTable,
-    spTable: ppu.f_spPatternTable,
-    chrBanks: chrMap,
-    prgBankMap: prgMap
-  }, null, 2));
-  console.log(`[emu-ref] frame=${String(target).padStart(3)}  PT[0..7]=[${chrMap.join(",")}]  PRG@8000=${prgMap[32768]}`);
 }
-console.log(`[emu-ref] done. PNG/JSON at ${OUT_DIR}`);
-function renderAllNameTablesNoBg(ppu2, rom2, switches) {
-  const W = 256, H = 240, COLS = 32, ROWS = 30;
-  const pal = ppu2.imgPalette;
-  const vromTile = rom2 && rom2.vromTile;
-  const initialBanks = new Uint8Array(8);
-  if (rom2 && rom2.chrBanks) {
-    for (let i = 0; i < 8; i++) initialBanks[i] = rom2.chrBanks[i] | 0;
-  }
-  const mapByScan = buildChrBankMapByScanline(switches, initialBanks);
-  const scanBankCache = new Array(240);
-  for (let y = 0; y < 240; y++) {
-    let best = initialBanks;
-    for (const [sc, banks] of mapByScan) {
-      if (sc <= y) best = banks;
-      else break;
-    }
-    scanBankCache[y] = best;
-  }
-  const bgTableBase = ppu2.regS === 0 ? 0 : 256;
-  const fetchTile = (tileIdx, yScan) => {
-    const slot = bgTableBase === 0 ? tileIdx >> 6 : 4 + (tileIdx >> 6);
-    const localIdx = tileIdx & 63;
-    const slotBanks = scanBankCache[yScan] || initialBanks;
-    const bank1k = slotBanks[slot];
-    if (bank1k == null) return null;
-    const bank4k = bank1k / 4 | 0;
-    const off = bank1k % 4 * 64 + localIdx;
-    if (!vromTile || !vromTile[bank4k]) return null;
-    const t = vromTile[bank4k][off];
-    return t && t.pix ? t.pix : null;
-  };
-  const out = [];
-  for (let ntIdx = 0; ntIdx < 4; ntIdx++) {
-    const buf = new Uint32Array(W * H);
-    const nt = ppu2.nameTable[ntIdx];
-    if (!nt) {
-      out.push(buf);
-      continue;
-    }
-    for (let ty = 0; ty < ROWS; ty++) {
-      for (let tx = 0; tx < COLS; tx++) {
-        const tileIdx = nt.tile[ty * COLS + tx] | 0;
-        const attrVal = nt.attrib[ty * COLS + tx] | 0;
-        const yScan = ty * 8;
-        const pix = fetchTile(tileIdx, yScan);
-        const baseX = tx * 8, baseY = ty * 8;
-        if (pix) {
-          for (let py = 0; py < 8; py++) {
-            for (let px = 0; px < 8; px++) {
-              const ci = pix[py * 8 + px];
-              buf[(baseY + py) * W + baseX + px] = ci === 0 ? pal[0] : pal[ci + attrVal] ?? pal[0];
-            }
-          }
-        } else {
-          for (let py = 0; py < 8; py++) {
-            for (let px = 0; px < 8; px++) {
-              buf[(baseY + py) * W + baseX + px] = pal[0];
-            }
-          }
-        }
-      }
-    }
-    out.push(buf);
-  }
-  return out;
-}
-function renderOamSheet(oamJson, ppu2) {
-  const cellW = 9, cellH = 9;
-  const cols = 8, rows = 8;
-  const w = cols * cellW, h = rows * cellH;
-  const rgba = Buffer.alloc(w * h * 4);
-  for (let i = 0; i < oamJson.length; i++) {
-    const o = oamJson[i];
-    const tile = o.tile;
-    const attr = o.attr;
-    const flipH = attr & 64 ? 1 : 0;
-    const flipV = attr & 128 ? 1 : 0;
-    const palHi = (attr & 3) << 2;
-    const baseIdx = ppu2.f_spPatternTable ? 256 : 0;
-    const ptT = ppu2.ptTile[baseIdx + tile];
-    const pix = ptT && ptT.pix ? ptT.pix : null;
-    const cx = i % cols * cellW;
-    const cy = Math.floor(i / cols) * cellH;
-    for (let py = 0; py < 8; py++) {
-      for (let px = 0; px < 8; px++) {
-        const sx = flipH ? 7 - px : px;
-        const sy = flipV ? 7 - py : py;
-        const idx = pix ? pix[sy * 8 + sx] : 0;
-        const color = idx === 0 ? 4280295456 : ppu2.imgPalette[palHi + idx] ?? 4280295456;
-        const r = color >>> 16 & 255;
-        const g = color >>> 8 & 255;
-        const b = color & 255;
-        const off = ((cy + py) * w + cx + px) * 4;
-        rgba[off] = r;
-        rgba[off + 1] = g;
-        rgba[off + 2] = b;
-        rgba[off + 3] = 255;
-      }
-      const sepOff = ((cy + py) * w + cx + 8) * 4;
-      rgba[sepOff] = 4278190080;
-      rgba[sepOff + 1] = 0;
-      rgba[sepOff + 2] = 0;
-      rgba[sepOff + 3] = 255;
-    }
-    const hSepY = cy + 8;
-    if (hSepY < h) {
-      for (let px = 0; px < cellW; px++) {
-        const off = (hSepY * w + cx + px) * 4;
-        rgba[off] = 0;
-        rgba[off + 1] = 0;
-        rgba[off + 2] = 0;
-        rgba[off + 3] = 255;
-      }
-    }
-  }
-  return { w, h, rgba };
-}
-function renderOamComposite(oamJson, ppu2) {
-  const W = 256, H = 240;
-  const rgba = Buffer.alloc(W * H * 4);
-  const fillBg = (x, y) => {
-    const off = (y * W + x) * 4;
-    const isM = (y >> 1) + (x >> 1) & 1;
-    const v = isM ? 4281335856 : 4278190080;
-    rgba[off] = v >>> 16 & 255;
-    rgba[off + 1] = v >>> 8 & 255;
-    rgba[off + 2] = v & 255;
-    rgba[off + 3] = 255;
-  };
-  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) fillBg(x, y);
-  const baseIdx = ppu2.f_spPatternTable ? 256 : 0;
-  for (let i = 0; i < oamJson.length; i++) {
-    const o = oamJson[i];
-    if (o.y >= 239) continue;
-    const attr = o.attr;
-    const flipH = attr & 64 ? 1 : 0;
-    const flipV = attr & 128 ? 1 : 0;
-    const palHi = (attr & 3) << 2;
-    const ptT = ppu2.ptTile[baseIdx + o.tile];
-    const pix = ptT && ptT.pix ? ptT.pix : null;
-    if (!pix) continue;
-    const sy0 = o.y + 1;
-    for (let py = 0; py < 8; py++) {
-      const dy = sy0 + py;
-      if (dy < 0 || dy >= H) continue;
-      for (let px = 0; px < 8; px++) {
-        const dx = o.x + px;
-        if (dx < 0 || dx >= W) continue;
-        const sx = flipH ? 7 - px : px;
-        const sy = flipV ? 7 - py : py;
-        const idx = pix[sy * 8 + sx];
-        if (idx === 0) continue;
-        const color = ppu2.sprPalette ? ppu2.sprPalette[palHi + idx] ?? 4278190080 : 4278190080;
-        const r = color >>> 16 & 255;
-        const g = color >>> 8 & 255;
-        const b = color & 255;
-        const off = (dy * W + dx) * 4;
-        rgba[off] = r;
-        rgba[off + 1] = g;
-        rgba[off + 2] = b;
-        rgba[off + 3] = 255;
-      }
-    }
-  }
-  return rgba;
-}
-function renderPaletteSheet(palBg, palSp, ppu2) {
-  const pal = ppu2.palTable;
-  const cellW = 16, cellH = 16;
-  const cols = 8, rows = 4;
-  const w = cols * cellW, h = rows * cellH;
-  const rgba = Buffer.alloc(w * h * 4);
-  const all = [...palBg, ...palSp];
-  for (let i = 0; i < 32; i++) {
-    const idx = all[i] & 63;
-    const entry = pal.getEntry ? pal.getEntry(idx) : 4278190080;
-    const r = entry >>> 16 & 255;
-    const g = entry >>> 8 & 255;
-    const b = entry & 255;
-    const cx = i % cols * cellW;
-    const cy = Math.floor(i / cols) * cellH;
-    for (let py = 0; py < cellH; py++) {
-      for (let px = 0; px < cellW; px++) {
-        const off = ((cy + py) * w + cx + px) * 4;
-        rgba[off] = r;
-        rgba[off + 1] = g;
-        rgba[off + 2] = b;
-        rgba[off + 3] = 255;
-      }
-    }
-  }
-  return { w, h, rgba };
-}
+console.log("[smoke4] done. total audio=" + audioSamplesL.length + " avg=" + (audioSamplesL.length / 100).toFixed(1));

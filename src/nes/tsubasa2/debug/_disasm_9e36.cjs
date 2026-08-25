@@ -1,9 +1,7 @@
-// 反汇编 bank2 $A484-$A855（派发器 + 24 场景 + 辅助例程），完整操作码表
 const fs = require('fs');
 const rom = fs.readFileSync('docs/roms/Captain Tsubasa II - Super Striker (Japan).nes');
 const prg = rom.slice(16);
-// $8000-$9FFF = bank0 (R6=0, PRG 偏移 cpu-0x8000)；$A000-$BFFF = bank2 (R7=2, PRG 偏移 cpu-0xA000+0x4000)
-const b2 = (cpu) => (cpu < 0xa000 ? cpu - 0x8000 : cpu - 0xa000 + 0x4000);
+const b0 = (cpu) => cpu - 0x8000;
 const ops = new Map([
   [0xa9, 'LDA #$'], [0xa5, 'LDA $'], [0x85, 'STA $'], [0x86, 'STX $'], [0x84, 'STY $'],
   [0x8d, 'STA abs$'], [0xad, 'LDA abs$'], [0xae, 'LDX abs$'], [0xa6, 'LDX $'], [0xa2, 'LDX #$'],
@@ -21,12 +19,11 @@ const ops = new Map([
   [0xb5, 'LDA $,X'], [0x95, 'STA $,X'], [0xd9, 'CMP abs,Y$'], [0x79, 'ADC abs,Y$'],
   [0x75, 'ADC $,X'], [0x7d, 'ADC abs,X$'], [0xf9, 'SBC abs,Y$'], [0xdd, 'CMP abs,X$'],
   [0xd5, 'CMP $,X'], [0xf5, 'SBC $,X'], [0xec, 'CPX abs$'], [0xcc, 'CPY abs$'],
-  [0x7a, '???'], [0x7b, '???'],
 ]);
 function disasm(cpuStart, len) {
   let p = cpuStart; const end = cpuStart + len; const out = [];
   while (p < end) {
-    const i = b2(p); const b = prg[i]; const op = ops.get(b);
+    const i = b0(p); const b = prg[i]; const op = ops.get(b);
     if (op === undefined) { out.push('$' + p.toString(16).toUpperCase() + ' .byte $' + b.toString(16).padStart(2, '0')); p++; continue; }
     const imm = [0xa9, 0xa0, 0xa2, 0x09, 0x29, 0x49, 0x69, 0xe9, 0xc9, 0xc0, 0xe0];
     if (imm.includes(b)) {
@@ -46,28 +43,6 @@ function disasm(cpuStart, len) {
   }
   return out.join('\n');
 }
-const REGIONS = [
-  [0xa484, 0x40, 'dispatcher $A484 + vector table'],
-  [0xa4c1, 0x99, 'scene0 $A4C1'],
-  [0xa55a, 0x22, 'scene1 $A55A'],
-  [0xa57c, 0x06, 'scene2 $A57C'],
-  [0xa582, 0x21, 'scene3 $A582'],
-  [0xa5a3, 0x06, 'scene4 $A5A3'],
-  [0xa5a9, 0x08, 'scene5 $A5A9'],
-  [0xa5b1, 0x08, 'scene6 $A5B1'],
-  [0xa5b9, 0x07, 'scene7 $A5B9'],
-  [0xa5c0, 0x0e, 'scene8 $A5C0'],
-  [0xa5ce, 0x0e, 'scene9 $A5CE'],
-  [0xa5dc, 0x0d, 'scene10 $A5DC'],
-  [0xa5e9, 0x1a, 'scene11 $A5E9'],
-  [0xa603, 0x1a, 'scene12 $A603'],
-  [0xa61d, 0x0d, 'scene13 $A61D'],
-  [0xa855, 0x19, 'scene-entry A $A855'],
-  [0xa86e, 0x42, 'scene-entry B roster $A86E'],
-  [0xa8ce, 0x30, 'oam dma $A8CE'],
-  [0xa8fe, 0x20, 'scene enter $A8FE'],
-];
-for (const [start, len, label] of REGIONS) {
-  console.log('\n===== ' + label + ' =====');
-  console.log(disasm(start, len));
-}
+console.log(disasm(0x9e36, 0x46));
+console.log('\nraw $9E36-$9E7B:', JSON.stringify(Array.from(prg.slice(b0(0x9e36), b0(0x9e7b)))));
+console.log('\nraw $AADF (scene $57 table) 0x40B:', JSON.stringify(Array.from(prg.slice(0x4adf, 0x4adf + 0x10))));

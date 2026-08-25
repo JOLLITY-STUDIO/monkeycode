@@ -1,9 +1,8 @@
-// 分段 dump：bank0 例程后半 + scene0/1/23 精确反汇编
+// 反汇编 bank0 $87D9-$8890（脚本指针前进逻辑 $8879 + 场景分发主循环入口）
 const fs = require('fs');
 const rom = fs.readFileSync('docs/roms/Captain Tsubasa II - Super Striker (Japan).nes');
 const prg = rom.slice(16);
 const b0 = (cpu) => cpu - 0x8000;
-const b2 = (cpu) => (cpu < 0xa000 ? cpu - 0x8000 : cpu - 0xa000 + 0x4000);
 
 const ops = new Map();
 '00:BRK 01:ORA(X) 05:ORA zp 06:ASL zp 08:PHP 09:ORA # 0A:ASL A 0D:ORA abs 0E:ASL abs 10:BPL 11:ORA(Y) 15:ORA zp,X 16:ASL zp,X 18:CLC 19:ORA abs,Y 1D:ORA abs,X 20:JSR 21:AND(X) 24:BIT zp 25:AND zp 26:ROL zp 28:PLP 29:AND # 2A:ROL A 2C:BIT abs 2D:AND abs 2E:ROL abs 30:BMI 31:AND(Y) 35:AND zp,X 36:ROL zp,X 38:SEC 39:AND abs,Y 3D:AND abs,X 40:RTI 41:EOR(X) 45:EOR zp 46:LSR zp 48:PHA 49:EOR # 4A:LSR A 4C:JMP 4D:EOR abs 4E:LSR abs 50:BVC 51:EOR(Y) 55:EOR zp,X 56:LSR zp,X 58:CLI 59:EOR abs,Y 5D:EOR abs,X 60:RTS 61:ADC(X) 65:ADC zp 66:ROR zp 68:PLA 69:ADC # 6A:ROR A 6C:JMP() 6D:ADC abs 6E:ROR abs 70:BVS 71:ADC(Y) 75:ADC zp,X 76:ROR zp,X 78:SEI 79:ADC abs,Y 7D:ADC abs,X 81:STA(X) 84:STY zp 85:STA zp 86:STX zp 88:DEY 8A:TXA 8C:STY abs 8D:STA abs 8E:STX abs 90:BCC 91:STA(Y) 94:STY zp,X 95:STA zp,X 96:STX zp,Y 98:TYA 99:STA abs,Y 9A:TXS 9D:STA abs,X A0:LDY # A1:LDA(X) A2:LDX # A4:LDY zp A5:LDA zp A6:LDX zp A8:TAY A9:LDA # AA:TAX AC:LDY abs AD:LDA abs AE:LDX abs B0:BCS B1:LDA(Y) B4:LDY zp,X B5:LDA zp,X B6:LDX zp,Y B8:CLV B9:LDA abs,Y BA:TSX BC:LDY abs,X BD:LDA abs,X BE:LDX abs,Y C0:CPY # C1:CMP(X) C4:CPY zp C5:CMP zp C6:DEC zp C8:INY C9:CMP # CA:DEX CC:CPY abs CD:CMP abs CE:DEC abs D0:BNE D1:CMP(Y) D5:CMP zp,X D6:DEC zp,X D8:CLD D9:CMP abs,Y DD:CMP abs,X DE:DEC abs,X E0:CPX # E1:SBC(X) E4:CPX zp E5:SBC zp E6:INC zp E8:INX E9:SBC # EA:NOP EC:CPX abs ED:SBC abs EE:INC abs F0:BEQ F1:SBC(Y) F5:SBC zp,X F6:INC zp,X F8:SED F9:SBC abs,Y FD:SBC abs,X FE:INC abs,X'.split(/\s+/).reduce((m, s) => { const p = s.split(':'); m.set(parseInt(p[0], 16), p[1]); return m; }, ops);
@@ -12,8 +11,7 @@ const lens = new Map([[0x00,1],[0x01,2],[0x05,2],[0x06,2],[0x08,1],[0x09,2],[0x0
 function disasm(cpuStart, cpuEnd, bankFn, label) {
   console.log(`\n===== ${label} $${cpuStart.toString(16).toUpperCase()} =====`);
   let pc = cpuStart;
-  let guard = 0;
-  while (pc <= cpuEnd && guard++ < 300) {
+  while (pc <= cpuEnd) {
     const off = bankFn(pc);
     if (off < 0 || off >= prg.length) break;
     const op = prg[off];
@@ -33,5 +31,4 @@ function disasm(cpuStart, cpuEnd, bankFn, label) {
   }
 }
 
-// scene0 完整 $A4C1-$A55A
-disasm(0xA4C1, 0xA55A, b2, 'bank2 scene0 $A4C1-$A559');
+disasm(0x87D0, 0x8890, b0, 'bank0 $87D0-$8890');
