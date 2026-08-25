@@ -1,0 +1,13 @@
+const fs = require('fs');
+const p = JSON.parse(fs.readFileSync('output/ppu-trace/frame-013/palette.json', 'utf8'));
+console.log('palBg', JSON.stringify(p.bg));
+console.log('palSp', JSON.stringify(p.spr));
+const nt = JSON.parse(fs.readFileSync('output/ppu-trace/frame-013/nt0.json', 'utf8'));
+let nz = 0;
+nt.tiles.forEach((t) => { if (t !== 0) nz++; });
+console.log('nt0 nz', nz);
+const oam = JSON.parse(fs.readFileSync('output/ppu-trace/frame-013/oam.json', 'utf8'));
+const vis = oam.filter((s) => s.y !== 0 && s.y !== 255 && s.y !== 248);
+console.log('oam visible', vis.length);
+const st = JSON.parse(fs.readFileSync('output/ppu-trace/frame-013/state.json', 'utf8'));
+console.log('state', JSON.stringify(st));

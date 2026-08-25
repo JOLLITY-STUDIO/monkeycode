@@ -208,9 +208,8 @@ export class Tsubasa2 {
   boot(target?: FrameTarget): void {
     this._frame = 0;
     this.hardware.reset();
-    // 立即装载 Tecmo logo OAM 40 sprite → shadowOam ($0468-$04C7)
-    // 否则 Scene0Controller.onEnter() 内的 bootOamInit 比真实 ROM 晚 ~30 帧
-    this.sprite.bootOamInit();
+    // 注意：Tecmo logo OAM 不在 boot 装载——emu f1-f9 OAM 空、f11 才出现 40 sprite，
+    // 由 Scene0Controller.f11 同帧调用 RenderingPrimitivesService.loadScene0Oam()。
     // 场景调度：场景号 0（原版 Reset 末尾 LDA #$00; JMP $CEFE）
     this.router.changeScene(SceneId.Scene0);
 

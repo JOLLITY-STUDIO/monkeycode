@@ -1,9 +1,7 @@
 "use strict";
-var __create = Object.create;
 var __defProp = Object.defineProperty;
 var __getOwnPropDesc = Object.getOwnPropertyDescriptor;
 var __getOwnPropNames = Object.getOwnPropertyNames;
-var __getProtoOf = Object.getPrototypeOf;
 var __hasOwnProp = Object.prototype.hasOwnProperty;
 var __esm = (fn, res, err) => function __init() {
   if (err) throw err[0];
@@ -25,14 +23,6 @@ var __copyProps = (to, from, except, desc) => {
   }
   return to;
 };
-var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__getProtoOf(mod)) : {}, __copyProps(
-  // If the importer is in node compatibility mode or this is not an ESM
-  // file that has been converted to a CommonJS file using a Babel-
-  // compatible transform (i.e. "__esModule" has not been set), then set
-  // "default" to the CommonJS "module.exports" for node compatibility.
-  isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: true }) : target,
-  mod
-));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
 // src/core/debug/pattern-table-viewer.ts
@@ -278,11 +268,6 @@ var init_pattern_table_viewer = __esm({
     chrSwitchLog = [];
   }
 });
-
-// scripts/_verify_300frame.ts
-var fs = __toESM(require("fs"));
-var path = __toESM(require("path"));
-var zlib = __toESM(require("zlib"));
 
 // src/game/header.ts
 var HEADER = new Uint8Array([
@@ -143106,7 +143091,6 @@ var InterruptService = class {
     }
     store.renderQueue.setNtBufferPos(0);
     store.ppuState.mask = savedMask;
-    ppu2.updateControlReg2(savedMask);
   }
   /**
    * 第一渲染队列消费（LIFO，每帧消费队尾一项）
@@ -161168,440 +161152,39 @@ var HeadlessRuntime = class {
   }
 };
 
-// scripts/_verify_300frame.ts
-var FRAMES_LIST = [1, 5, 9, 13, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
+// debug/_trace_oam.ts
 var runtime = new HeadlessRuntime();
 var game = new Tsubasa2();
 game.boot(runtime);
 var ppu = runtime.ppu;
-var CRC_TABLE = (() => {
-  const t = new Array(256);
-  for (let n = 0; n < 256; n++) {
-    let c = n;
-    for (let k = 0; k < 8; k++) c = c & 1 ? 3988292384 ^ c >>> 1 : c >>> 1;
-    t[n] = c >>> 0;
-  }
-  return t;
-})();
-function crc32(d) {
-  let c = 4294967295;
-  for (let i = 0; i < d.length; i++) c = CRC_TABLE[(c ^ d[i]) & 255] ^ c >>> 8;
-  return (c ^ 4294967295) >>> 0;
-}
-function makeChunk(t, d) {
-  const lb = Buffer.alloc(4);
-  lb.writeUInt32BE(d.length, 0);
-  const tb = Buffer.from(t, "ascii");
-  const cb = Buffer.alloc(4);
-  cb.writeUInt32BE(crc32(Buffer.concat([tb, d])), 0);
-  return Buffer.concat([lb, tb, d, cb]);
-}
-function encodePng(w, h, rgba) {
-  const sig = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
-  const ihdr = Buffer.alloc(13);
-  ihdr.writeUInt32BE(w, 0);
-  ihdr.writeUInt32BE(h, 4);
-  ihdr.writeUInt8(8, 8);
-  ihdr.writeUInt8(6, 9);
-  const row = w * 4;
-  const raw = Buffer.alloc((row + 1) * h);
-  for (let y = 0; y < h; y++) {
-    raw[y * (row + 1)] = 0;
-    rgba.copy(raw, y * (row + 1) + 1, y * row, (y + 1) * row);
-  }
-  return Buffer.concat([
-    sig,
-    makeChunk("IHDR", ihdr),
-    makeChunk("IDAT", zlib.deflateSync(raw, { level: 9 })),
-    makeChunk("IEND", Buffer.alloc(0))
-  ]);
-}
-function rgbaFromU32(buf, w, h) {
-  const rgba = Buffer.alloc(w * h * 4);
-  for (let i = 0; i < w * h; i++) {
-    const v = buf[i] >>> 0;
-    rgba[i * 4 + 0] = v >>> 16 & 255;
-    rgba[i * 4 + 1] = v >>> 8 & 255;
-    rgba[i * 4 + 2] = v & 255;
-    rgba[i * 4 + 3] = 255;
-  }
-  return rgba;
-}
-function rgbaFromU32Direct(buf, w, h) {
-  return rgbaFromU32(buf, w, h);
-}
-function blitTile(dst, dstW, dstH, tile, dx, dy, pal, palAdd) {
-  const t = ppu.ptTile[tile];
-  if (!t || !t.pix) {
-    for (let py = 0; py < 8; py++) {
-      const yy = dy + py;
-      if (yy < 0 || yy >= dstH) continue;
-      for (let px = 0; px < 8; px++) {
-        const xx = dx + px;
-        if (xx < 0 || xx >= dstW) continue;
-        dst[yy * dstW + xx] = 4280427042;
-      }
+for (let f = 1; f <= 13; f++) {
+  game.frame(runtime);
+  if (f === 1 || f === 9 || f === 10 || f === 11 || f === 13) {
+    const store = game.store;
+    const shadow = store.shadowOam;
+    const oamArr = store.oam.oam;
+    let vis = 0;
+    for (let s = 0; s < 40; s++) {
+      const y = shadow[s * 4];
+      if (y !== 0 && y !== 248) vis++;
     }
-    return;
-  }
-  for (let py = 0; py < 8; py++) {
-    const yy = dy + py;
-    if (yy < 0 || yy >= dstH) continue;
-    for (let px = 0; px < 8; px++) {
-      const xx = dx + px;
-      if (xx < 0 || xx >= dstW) continue;
-      const c = t.pix[py * 8 + px];
-      dst[yy * dstW + xx] = c === 0 ? pal[0] ?? 0 : pal[c + palAdd] ?? pal[0] ?? 0;
-    }
-  }
-}
-function dumpOam() {
-  const json = [];
-  for (let i = 0; i < 64; i++) {
-    json.push({
-      idx: i,
-      y: ppu.sprY[i],
-      tile: ppu.sprTile[i],
-      attr: ppu.sprCol[i] | (ppu.vertFlip[i] ? 128 : 0) | (ppu.horiFlip[i] ? 64 : 0) | (ppu.bgPriority[i] ? 32 : 0),
-      x: ppu.sprX[i]
-    });
-  }
-  const W2 = 128, H2 = 128;
-  const out = new Uint32Array(W2 * H2);
-  out.fill(4280295464);
-  for (let i = 0; i < 64; i++) {
-    const sprTile = ppu.sprTile[i];
-    const tableOff = ppu.f_spPatternTable << 8;
-    const globalTile = sprTile + tableOff;
-    const palAdd = ppu.sprCol[i] & 28;
-    const flipH = ppu.horiFlip[i] === 1;
-    const flipV = ppu.vertFlip[i] === 1;
-    const t = ppu.ptTile[globalTile];
-    const cx = i % 8 * 16;
-    const cy = Math.floor(i / 8) * 16;
-    if (!t || !t.pix) {
-      for (let py = 0; py < 16; py++) {
-        for (let px = 0; px < 16; px++) {
-          const isX = py + px & 1;
-          out[(cy + py) * W2 + (cx + px)] = isX ? 4287103112 : 4278190080;
+    console.log(`--- frame ${f} visible=${vis} ---`);
+    if (f === 1 || f === 13) {
+      const rows = [];
+      for (let s = 0; s < 40; s++) {
+        const y = shadow[s * 4], t = shadow[s * 4 + 1], a = shadow[s * 4 + 2], x = shadow[s * 4 + 3];
+        if (y !== 0 && y !== 248) {
+          const py = ppu.sprY[s], pt = ppu.sprTile[s], pc = ppu.sprCol[s], px = ppu.sprX[s];
+          rows.push(`s${s}:shadow(${y},${t},${a},${x}) ppu(${py},${pt},${pc},${px})`);
         }
       }
-      continue;
-    }
-    for (let py = 0; py < 8; py++) {
-      for (let px = 0; px < 8; px++) {
-        const srcPy = flipV ? 7 - py : py;
-        const srcPx = flipH ? 7 - px : px;
-        const c = t.pix[srcPy * 8 + srcPx];
-        const color = c === 0 ? 0 : ppu.sprPalette[c + palAdd] ?? 0;
-        out[(cy + py * 2) * W2 + (cx + px * 2)] = color;
-        out[(cy + py * 2) * W2 + (cx + px * 2 + 1)] = color;
-        out[(cy + py * 2 + 1) * W2 + (cx + px * 2)] = color;
-        out[(cy + py * 2 + 1) * W2 + (cx + px * 2 + 1)] = color;
+      console.log(rows.join("\n"));
+      let same = true;
+      for (let i = 0; i < 256; i++) if (oamArr[i] !== shadow[i]) {
+        same = false;
+        break;
       }
+      console.log("oam==shadow:", same);
     }
   }
-  return { json, png: out };
 }
-function renderNt(ntIdx) {
-  const nt = ppu.nameTable[ntIdx];
-  const w = 32, h = 30;
-  const W2 = 256, H2 = 240;
-  const out = new Uint32Array(W2 * H2);
-  const grid = [];
-  const attr = [];
-  const bgTableBase = ppu.regS === 0 ? 0 : 256;
-  for (let ty = 0; ty < h; ty++) {
-    for (let tx = 0; tx < w; tx++) {
-      const tIdx = nt.tile[ty * w + tx] & 255;
-      const a = nt.attrib[ty * w + tx] & 255;
-      grid.push(tIdx);
-      attr.push(a);
-      const palAdd = (a & 192) === 192 ? 12 : (a & 48) === 48 ? 8 : (a & 12) === 12 ? 4 : 0;
-      blitTile(out, W2, H2, bgTableBase + tIdx, tx * 8, ty * 8, ppu.imgPalette, palAdd);
-    }
-  }
-  return {
-    json: { tiles: grid, attr },
-    png: out
-  };
-}
-function renderPtSheet() {
-  const TILE = 8;
-  const TILES_PER_ROW = 16;
-  const PT_W = TILE * TILES_PER_ROW;
-  const PT_H = TILE * 16;
-  const W2 = PT_W, H2 = PT_H;
-  const out = new Uint32Array(W2 * H2);
-  const tiles = [];
-  for (let tableIdx = 0; tableIdx < 2; tableIdx++) {
-    for (let row = 0; row < 16; row++) {
-      const tilesRow = [];
-      for (let col = 0; col < 16; col++) {
-        const tIdx = tableIdx * 256 + row * 16 + col;
-        const dx = col * TILE;
-        const dy = row * TILE;
-        blitTile(out, W2, H2, tIdx, dx, dy, ppu.imgPalette, 0);
-        const t = ppu.ptTile[tIdx];
-        const plane0 = [];
-        const plane1 = [];
-        if (t && t.pix) {
-          for (let py = 0; py < 8; py++) {
-            let b0 = 0, b1 = 0;
-            for (let px = 0; px < 8; px++) {
-              const c = t.pix[py * 8 + px];
-              if (c & 1) b0 |= 1 << 7 - px;
-              if (c & 2) b1 |= 1 << 7 - px;
-            }
-            plane0.push(b0);
-            plane1.push(b1);
-          }
-        }
-        tilesRow.push(tIdx);
-        if (!tiles[tIdx]) tiles[tIdx] = [...plane0, ...plane1];
-      }
-    }
-  }
-  return {
-    json: { tiles: tiles.filter(Boolean) },
-    png: out
-  };
-}
-function renderPaletteSwatch() {
-  const BLOCK = 16;
-  const W2 = 32 * BLOCK;
-  const H2 = 2 * BLOCK;
-  const out = new Uint32Array(W2 * H2);
-  out.fill(4279900718);
-  for (let i = 0; i < 16; i++) {
-    out.fill(ppu.imgPalette[i], i * BLOCK, (i + 1) * BLOCK);
-    for (let py = 0; py < BLOCK; py++) {
-      for (let px = 0; px < BLOCK; px++) {
-        out[BLOCK * W2 + i * BLOCK + py * W2 + px] = ppu.sprPalette[i];
-      }
-    }
-  }
-  const imgRaw = [];
-  const sprRaw = [];
-  for (let i = 0; i < 16; i++) {
-    imgRaw.push(ppu.vramMem[16128 + i] & 63);
-    sprRaw.push(ppu.vramMem[16144 + i] & 63);
-  }
-  return {
-    json: { bg: imgRaw, spr: sprRaw },
-    png: out
-  };
-}
-var W = 256;
-var H = 240;
-var outDir = path.join(__dirname, "..", "output");
-var traceDir = path.join(outDir, "ppu-trace");
-fs.mkdirSync(traceDir, { recursive: true });
-var origBg = ppu.f_bgVisibility;
-var origSp = ppu.f_spVisibility;
-var snapshots = [];
-function writeVerifyTriple(frameN) {
-  const compNz = (() => {
-    let n = 0;
-    for (const v of ppu.buffer) if (v !== 0) n++;
-    return n;
-  })();
-  fs.writeFileSync(
-    path.join(outDir, `verify-frame${frameN}-composite.png`),
-    encodePng(W, H, rgbaFromU32(ppu.buffer, W, H))
-  );
-  ppu.buffer.fill(0);
-  ppu.f_spVisibility = 0;
-  ppu.f_bgVisibility = 1;
-  ppu.startFrame();
-  ppu.advanceDots(262 * 341);
-  ppu.renderFramePartially(0, 240);
-  ppu.endFrame();
-  const bgNz = (() => {
-    let n = 0;
-    for (const v of ppu.buffer) if (v !== 0) n++;
-    return n;
-  })();
-  fs.writeFileSync(
-    path.join(outDir, `verify-frame${frameN}-bg.png`),
-    encodePng(W, H, rgbaFromU32(ppu.buffer, W, H))
-  );
-  ppu.buffer.fill(0);
-  ppu.f_spVisibility = 1;
-  ppu.f_bgVisibility = 0;
-  ppu.startFrame();
-  ppu.advanceDots(262 * 341);
-  ppu.renderFramePartially(0, 240);
-  ppu.endFrame();
-  const sprNz = (() => {
-    let n = 0;
-    for (const v of ppu.buffer) if (v !== 0) n++;
-    return n;
-  })();
-  fs.writeFileSync(
-    path.join(outDir, `verify-frame${frameN}-spr.png`),
-    encodePng(W, H, rgbaFromU32(ppu.buffer, W, H))
-  );
-  console.log(
-    `[verify] frame=${String(frameN).padStart(3)} | composite=${String(compNz).padStart(5)} | bg=${String(bgNz).padStart(5)} | spr=${String(sprNz).padStart(5)}`
-  );
-}
-function writePpuTrace(frameN) {
-  const dir = path.join(traceDir, `frame-${String(frameN).padStart(3, "0")}`);
-  fs.mkdirSync(dir, { recursive: true });
-  fs.writeFileSync(
-    path.join(dir, "screen.png"),
-    encodePng(W, H, rgbaFromU32Direct(ppu.buffer, W, H))
-  );
-  const oam = dumpOam();
-  fs.writeFileSync(path.join(dir, "oam.json"), JSON.stringify(oam.json, null, 0));
-  fs.writeFileSync(
-    path.join(dir, "oam.png"),
-    encodePng(128, 128, rgbaFromU32(oam.png, 128, 128))
-  );
-  const nt0 = renderNt(0);
-  fs.writeFileSync(path.join(dir, "nt0.json"), JSON.stringify(nt0.json, null, 0));
-  fs.writeFileSync(
-    path.join(dir, "nt0.png"),
-    encodePng(W, H, rgbaFromU32(nt0.png, W, H))
-  );
-  const nt1 = renderNt(1);
-  fs.writeFileSync(path.join(dir, "nt1.json"), JSON.stringify(nt1.json, null, 0));
-  fs.writeFileSync(
-    path.join(dir, "nt1.png"),
-    encodePng(W, H, rgbaFromU32(nt1.png, W, H))
-  );
-  const pt = renderPtSheet();
-  const dt = [];
-  for (let i = 0; i < 16; i++) {
-    const t = ppu.ptTile[i];
-    let nz = 0;
-    if (t && t.pix) {
-      for (const p of t.pix) if (p !== 0) nz++;
-    }
-    dt.push(nz);
-  }
-  console.log(`[dbg] f${frameN} ptTile[0..15] nz:`, dt.join(","));
-  fs.writeFileSync(path.join(dir, "pt.json"), JSON.stringify(pt.json));
-  fs.writeFileSync(
-    path.join(dir, "pt-sheet.png"),
-    encodePng(128, 128, rgbaFromU32(pt.png, 128, 128))
-  );
-  const {
-    renderBothPatternTablesAtScanline: renderBothPatternTablesAtScanline2,
-    drainChrSwitchLog: drainChrSwitchLog2,
-    buildChrBankMapByScanline: buildChrBankMapByScanline2,
-    buildFinalChrBankMap: buildFinalChrBankMap2
-  } = (init_pattern_table_viewer(), __toCommonJS(pattern_table_viewer_exports));
-  const switches = drainChrSwitchLog2();
-  const initialBanks = new Uint8Array([0, 1, 2, 3, 124, 125, 126, 127]);
-  const mapByScan = buildChrBankMapByScanline2(switches, initialBanks);
-  const nesForViewer = {
-    ppu,
-    rom: {
-      vromTile: runtime.vromTilesByBank1k ? runtime.vromTilesByBank1k : game.runtime?.vromTilesByBank1k ? game.runtime.vromTilesByBank1k : []
-    }
-  };
-  fs.writeFileSync(path.join(dir, "chr-switches.json"), JSON.stringify({
-    frame: frameN,
-    bankMapByScanline: Array.from(mapByScan.entries()).map(([scan, banks]) => ({
-      scanline: scan,
-      banks: Array.from(banks)
-    })),
-    rawLog: switches
-  }, null, 2));
-  for (const [scan, slotBanks] of mapByScan) {
-    const ptAt = renderBothPatternTablesAtScanline2(nesForViewer, slotBanks, 0);
-    const w = ptAt.table0.width * 2, h = ptAt.table0.height;
-    const rgba = new Uint32Array(w * h);
-    rgba.set(ptAt.table0.data, 0);
-    rgba.set(ptAt.table1.data, w * h / 2);
-    fs.writeFileSync(
-      path.join(dir, `pt-sheet-scan${String(scan).padStart(3, "0")}.png`),
-      encodePng(w, h, rgbaFromU32(rgba, w, h))
-    );
-  }
-  const finalBanks = buildFinalChrBankMap2(switches, initialBanks);
-  const ptFinal = renderBothPatternTablesAtScanline2(nesForViewer, finalBanks, 0);
-  {
-    const w = ptFinal.table0.width * 2, h = ptFinal.table0.height;
-    const rgba = new Uint32Array(w * h);
-    rgba.set(ptFinal.table0.data, 0);
-    rgba.set(ptFinal.table1.data, w * h / 2);
-    fs.writeFileSync(
-      path.join(dir, "pt-sheet-final.png"),
-      encodePng(w, h, rgbaFromU32(rgba, w, h))
-    );
-  }
-  const pal = renderPaletteSwatch();
-  fs.writeFileSync(path.join(dir, "palette.json"), JSON.stringify(pal.json));
-  fs.writeFileSync(
-    path.join(dir, "palette.png"),
-    encodePng(32 * 16, 32, rgbaFromU32(pal.png, 32 * 16, 32))
-  );
-  const store = game.store;
-  snapshots.push({
-    frame: frameN,
-    scene: store.readByte(237),
-    ram001B: store.readByte(27),
-    ram0628: store.readByte(1576),
-    ram0044: store.readByte(68)
-  });
-  const runtimeAny = runtime;
-  const chrSlots = runtimeAny.chrSlots && Array.from(runtimeAny.chrSlots) || [];
-  const nes = game;
-  const state = {
-    frame: frameN,
-    pc: 0,
-    // TS-NES 没有真实 PC 跟踪; 留 0
-    chrSlots,
-    prgBankMap: {},
-    bgTable: ppu.f_bgPatternTable ?? 0,
-    spTable: ppu.f_spPatternTable ?? 0,
-    ram_001B: store.readByte(27),
-    ram_0628: store.readByte(1576),
-    ram_0044: store.readByte(68),
-    ram_0076: store.readByte(118),
-    ram_0075: store.readByte(117),
-    ram_00ed: store.readByte(237),
-    oamVisible: oam.json.filter((s) => s.y !== 0 && s.y !== 255).length,
-    oamTotal: 64,
-    ptNonEmpty: (() => {
-      let nz = 0;
-      for (let i = 0; i < 512; i++) {
-        const t = ppu.ptTile[i];
-        if (t && t.pix) {
-          for (const p of t.pix) {
-            if (p !== 0) {
-              nz++;
-              break;
-            }
-          }
-        }
-      }
-      return nz;
-    })()
-  };
-  fs.writeFileSync(path.join(dir, "state.json"), JSON.stringify(state, null, 2));
-}
-var total = 0;
-for (const target of FRAMES_LIST) {
-  while (total < target) {
-    game.frame(runtime);
-    total++;
-  }
-  writeVerifyTriple(target);
-  writePpuTrace(target);
-}
-fs.writeFileSync(
-  path.join(traceDir, "final-screen.png"),
-  encodePng(W, H, rgbaFromU32(ppu.buffer, W, H))
-);
-fs.writeFileSync(
-  path.join(traceDir, "snapshots.json"),
-  JSON.stringify(snapshots, null, 2)
-);
-ppu.f_bgVisibility = origBg;
-ppu.f_spVisibility = origSp;
-console.log(`[verify] done. PNGs at output/verify-frame{N}-{composite|bg|spr}.png`);
-console.log(`[verify]      + output/ppu-trace/frame-NNN/{screen,oam,nt0,nt1,pt-sheet,palette}.png + .json`);

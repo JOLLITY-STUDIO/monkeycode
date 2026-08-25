@@ -15,6 +15,7 @@ import type { BootRouter } from './BootRouter';
 import type { AudioService } from '../audio/AudioService';
 import { consumeNtBuffer } from '../../data/store/RenderQueues';
 import { SCENE_END_BANK_TABLE } from '../../data/tables/scene-end-bank-table';
+import { OPENING_FADE_TABLE } from '../../data/scene/opening-data';
 
 /** 渲染目标抽象 */
 export interface PpuTarget {
@@ -143,16 +144,20 @@ export class InterruptService {
   private oamDma(ppu: PpuTarget): void {
     const store = this.store;
     const oam = store.oam.oam;
-    for (let y = 0; y < 0x100; y += 4) {
-      const yPos = store.oam.spriteY(y);
-      const xPos = store.oam.spriteX(y);
-      const attr = store.oam.spriteAttr(y);
+    // ⚠ 循环必须用 sprite 索引（0-63），不能用字节偏移！
+    //   OamView.spriteY(s) 内部 = shadowOam[s*4]，传字节偏移(0,4,8..)会 *16 错位
+    //   （旧 bug：ppu sprite i 读到 shadow 字节 i*16 的内容，40 sprite 只剩 10 正确）
+    for (let s = 0; s < 64; s++) {
+      const base = s * 4;
+      const yPos = store.oam.spriteY(s);
+      const xPos = store.oam.spriteX(s);
+      const attr = store.oam.spriteAttr(s);
       // NES 标准: Y >= 0xEF → 隐藏 (Y 自动 offscreen). X 字段不动.
       void yPos;
-      oam[y] = yPos;                                  // NES byte 0 = Y
-      oam[y + 1] = store.oam.spriteTile(y);           // NES byte 1 = tile
-      oam[y + 2] = attr;                              // NES byte 2 = attr
-      oam[y + 3] = xPos;                              // NES byte 3 = X
+      oam[base] = yPos;                                // NES byte 0 = Y
+      oam[base + 1] = store.oam.spriteTile(s);         // NES byte 1 = tile
+      oam[base + 2] = attr;                            // NES byte 2 = attr
+      oam[base + 3] = xPos;                            // NES byte 3 = X
     }
     const updateFn = (ppu as any).spriteRamWriteUpdate;
     for (let i = 0; i < 0x100; i++) {
@@ -251,6 +256,11 @@ export class InterruptService {
     }
     store.renderQueue.setNtBufferPos(0);
     store.ppuState.mask = savedMask;
+    // ⚠ 必须同步恢复 PPU 内部 mask（updateControlReg2 才更新 f_bgVisibility/
+    //   f_spVisibility）。只恢复 store 状态会让渲染永久禁用——
+    //   实测 f9-f25 消费 NT/palette 缓冲后 bgVis/spVis=0 → composite 黑屏，
+    //   f30 无 NT 消费才意外恢复（旧 bug）。
+    ppu.updateControlReg2(savedMask);
   }
 
   /**
@@ -313,13 +323,30 @@ export class InterruptService {
     }
   }
 
-  /** 调色板：palette.bg → $3F00；palette.spr → $3F10 */
+  /**
+   * 调色板：palette.bg → $3F00；palette.spr → $3F10。
+   *
+   * 渐显/渐隐处理：写前经 fadeLookup（对应 $998C-$99AD 的 fadeWrite 语义）。
+   *   ROM 每帧写调色板都带 fade 计算，H5 必须一致——否则 fadeWrite 通过 NT 缓冲
+   *   写的渐显值会被 step 8 无条件覆盖为"未渐显的满亮值"，黑屏 fade-in 失效
+   *   （模拟器 f13 palBg=[15,6,0,16,...] 是 fade=3 渐显值，不是满亮值）。
+   */
   private flushPalette(ppu: PpuTarget): void {
     const store = this.store;
-    const bg = store.palette.bg;
-    const spr = store.palette.spr;
-    for (let i = 0; i < 0x10; i++) ppu.writeMem(0x3f00 + i, bg[i]);
-    for (let i = 0; i < 0x10; i++) ppu.writeMem(0x3f10 + i, spr[i]);
+    const fadeA = store.fade.bg & 0xff;
+    const fadeB = store.fade.spr & 0xff;
+    for (let i = 0; i < 0x10; i++) ppu.writeMem(0x3f00 + i, this.fadeLookup(store.palette.bg[i], fadeA));
+    for (let i = 0; i < 0x10; i++) ppu.writeMem(0x3f10 + i, this.fadeLookup(store.palette.spr[i], fadeB));
+  }
+
+  /**
+   * 渐显表查色（与 RenderingPrimitivesService.fadeLookup 同语义，emu dump 反推）：
+   *   fade = 0 → 全黑 $0F；fade >= 1 → OPENING_FADE_TABLE[(pal & $30) + (fade - 1)] | (pal & $0F)
+   */
+  private fadeLookup(pal: number, fade: number): number {
+    if ((fade & 0xff) === 0) return 0x0f;
+    const idx = ((pal & 0x30) + ((fade - 1) & 0x0f)) & 0x3f;
+    return (OPENING_FADE_TABLE[idx] | (pal & 0x0f)) & 0x3f;
   }
 
   /**

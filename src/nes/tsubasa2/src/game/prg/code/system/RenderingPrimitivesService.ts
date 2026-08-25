@@ -22,6 +22,7 @@ import {
 } from '../../data/scene/opening-data';
 import { OPENING_TILE_STREAMS } from '../../data/scene/bank7-streams';
 import { OAM_DRIFT_EXCLUDED_SLOTS } from '../sprite/SpriteService';
+import { BOOT_TECMO_OAM_TABLE } from '../../data/tables/opening-sprites';
 import { PALETTE_TABLE, loadPalette } from '../../data/tables/palette-table';
 
 export class RenderingPrimitivesService {
@@ -117,6 +118,22 @@ export class RenderingPrimitivesService {
 
   // ──────────────────────────── OAM 原语 ────────────────────────────
 
+  /**
+   * 装载 Tecmo logo 40 sprite 到 shadowOam（模拟器 f11 实证：NT 完整 + fade=1 同帧出现）。
+   * 数据源 BOOT_TECMO_OAM_TABLE（slot 不参与 oamDrift）。
+   * 不能放 boot()——emu f1-f9 OAM 为空（y=0），f11 才装载 40 sprite。
+   */
+  loadScene0Oam(): void {
+    const buf = this.store.oam.shadowOam;
+    for (const e of BOOT_TECMO_OAM_TABLE) {
+      const base = (e.slot & 0x3f) * 4;
+      buf[base + 0] = e.y & 0xff;
+      buf[base + 1] = e.tile & 0xff;
+      buf[base + 2] = e.attr & 0xff;
+      buf[base + 3] = e.x & 0xff;
+    }
+  }
+
   /** 隐藏全部影子 OAM（store.oam.shaderOam / oam 写 $F8，并清零扩展表） */
   hideOam(): void {
     const store = this.store;
@@ -131,24 +148,26 @@ export class RenderingPrimitivesService {
     store.writeByte(0x05c8, 0);
   }
 
-  /** 所有精灵 Y 坐标 += amount（store.oam.spriteY(i) += add）。跳过 boot logo slot。 */
+  /**
+   * 所有精灵 Y 坐标 += amount（store.oam.spriteY(slot) += add）。跳过 boot logo slot。
+   * ⚠ slot 必须是 sprite 索引（0-63），不能用字节偏移（spriteY 内部 = shadowOam[slot*4]）。
+   */
   oamDrift(amount: number): void {
     const store = this.store;
     const add = amount & 0xff;
-    for (let i = 0; i < 0x100; i += 4) {
-      const slot = (i >> 2) & 0x3f;
+    for (let slot = 0; slot < 64; slot++) {
       if (OAM_DRIFT_EXCLUDED_SLOTS.has(slot)) continue;
-      const y = (store.oam.spriteY(i) + add) & 0xff;
-      store.oam.setSpriteY(i, y);
+      const y = (store.oam.spriteY(slot) + add) & 0xff;
+      store.oam.setSpriteY(slot, y);
     }
   }
 
-  /** 所有精灵属性 ^= $20（水平翻转位） */
+  /** 所有精灵属性 ^= $20（水平翻转位）。slot 为 sprite 索引。 */
   oamFlipAttrs(): void {
     const store = this.store;
-    for (let i = 0; i < 0x100; i += 4) {
-      const attr = store.oam.spriteAttr(i) ^ 0x20;
-      store.oam.setSpriteAttr(i, attr);
+    for (let slot = 0; slot < 64; slot++) {
+      const attr = store.oam.spriteAttr(slot) ^ 0x20;
+      store.oam.setSpriteAttr(slot, attr);
     }
   }
 

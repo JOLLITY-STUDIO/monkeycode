@@ -1,0 +1,36 @@
+﻿[tsubasa] WebAudio 锟斤拷锟斤拷锟矫ｏ拷锟斤拷频锟斤拷锟斤拷
+[verify] frame=  1 | composite=    0 | bg=    0 | spr=    0
+[dbg] f1 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[verify] frame=  5 | composite=    0 | bg=    0 | spr=    0
+[dbg] f5 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[verify] frame=  9 | composite=    0 | bg=    0 | spr=    0
+[dbg] f9 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[verify] frame= 13 | composite= 1838 | bg=  839 | spr=  999
+[dbg] f13 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[verify] frame= 30 | composite= 1838 | bg=  839 | spr=  999
+[dbg] f30 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[Tsubasa2] frame=60 scene=0 ram_001B=80 ram_0628=0 bufNonZero=1838
+[verify] frame= 60 | composite= 1838 | bg=  839 | spr=  999
+[dbg] f60 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[verify] frame= 90 | composite= 1838 | bg=  839 | spr=  999
+[dbg] f90 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[Tsubasa2] frame=120 scene=0 ram_001B=80 ram_0628=0 bufNonZero=1838
+[verify] frame=120 | composite= 1838 | bg=  839 | spr=  999
+[dbg] f120 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[verify] frame=150 | composite= 1838 | bg=  839 | spr=  999
+[dbg] f150 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[Tsubasa2] frame=180 scene=0 ram_001B=80 ram_0628=0 bufNonZero=1838
+[verify] frame=180 | composite= 1838 | bg=  839 | spr=  999
+[dbg] f180 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[verify] frame=210 | composite= 1838 | bg=  839 | spr=  999
+[dbg] f210 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[Tsubasa2] frame=240 scene=0 ram_001B=80 ram_0628=0 bufNonZero=1838
+[verify] frame=240 | composite= 1838 | bg=  839 | spr=  999
+[dbg] f240 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[verify] frame=270 | composite= 1838 | bg=  839 | spr=  999
+[dbg] f270 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[Tsubasa2] frame=300 scene=0 ram_001B=80 ram_0628=0 bufNonZero=1838
+[verify] frame=300 | composite= 1838 | bg=  839 | spr=  999
+[dbg] f300 ptTile[0..15] nz: 0,64,40,46,54,36,47,48,39,44,48,36,46,31,52,50
+[verify] done. PNGs at output/verify-frame{N}-{composite|bg|spr}.png
+[verify]      + output/ppu-trace/frame-NNN/{screen,oam,nt0,nt1,pt-sheet,palette}.png + .json

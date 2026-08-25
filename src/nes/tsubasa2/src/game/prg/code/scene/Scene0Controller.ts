@@ -94,6 +94,11 @@ export class Scene0Controller extends SceneController {
           return undefined;
         }
         // f11+：每帧 fade +1（对应 $998C-$99AD），f13 可见、f25 满亮
+        if (this.fadeStep === 2) {
+          // f11：fade 0→1 同帧装载 Tecmo logo 40 sprite
+          //（emu f1-f9 OAM 空，f11 才出现 40 sprite；不能放 boot()）
+          this.prim.loadScene0Oam();
+        }
         if (this.prim.fadeInStep()) {
           // fade 均到 15 → 静止显示（f25-f339）
           this.phase = Scene0Phase.Hold;
