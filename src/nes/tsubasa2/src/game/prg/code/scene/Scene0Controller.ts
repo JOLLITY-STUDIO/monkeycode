@@ -69,8 +69,8 @@ export class Scene0Controller extends SceneController {
     this.prim.loadChrConfig(0x17);
     // 装载 Tecmo logo 40 sprite 到 shadow OAM
     for (let i = 0; i < 64; i++) this.sprite.hideSprite(i);
-    this.sprite.bootOamInit();
-    // 装载 boot 调色板
+    // NOTE: sprite.bootOamInit() 已在 Tsubasa2.boot() 完成 (PRG $21CA 在 reset 时机执行)
+    // 装载 boot 调色板 (PRG $1DD1 在 reset 时机执行, 但 scene0 需要调 fadeBgStep 之前完成)
     this.prim.loadBootPalette();
 
     this.audio?.playBgm(0x01);

@@ -1,0 +1,58 @@
+src/core/mappers/mapper0.ts(392,33): error TS2580: Cannot find name 'require'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+src/game/prg/code/audio/AudioService.ts(210,10): error TS18048: 'song.headerFlag' is possibly 'undefined'.
+src/game/prg/data/tables/player-stats.ts(34,5): error TS2561: Object literal may only specify known properties, but 'vsShot' does not exist in type 'PlayerProfile'. Did you mean to write 'shot'?
+src/game/prg/data/tables/player-stats.ts(88,5): error TS2561: Object literal may only specify known properties, but 'vsShot' does not exist in type 'PlayerProfile'. Did you mean to write 'shot'?
+src/game/prg/data/tables/player-stats.ts(162,5): error TS2561: Object literal may only specify known properties, but 'vsShot' does not exist in type 'PlayerProfile'. Did you mean to write 'shot'?
+src/game/prg/data/tables/player-stats.ts(168,5): error TS2561: Object literal may only specify known properties, but 'vsShot' does not exist in type 'PlayerProfile'. Did you mean to write 'shot'?
+src/game/prg/data/tables/player-stats.ts(186,5): error TS2561: Object literal may only specify known properties, but 'vsShot' does not exist in type 'PlayerProfile'. Did you mean to write 'shot'?
+src/game/prg/data/tables/sprite-frame-table.ts(346,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(347,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(348,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(349,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(350,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(351,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(352,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(353,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(354,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(355,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(356,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(357,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(358,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(359,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(360,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(361,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(362,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(363,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(364,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(365,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(366,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(367,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(368,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(369,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(370,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(371,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(372,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(373,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(374,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(375,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(376,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(377,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(378,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(379,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(380,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(381,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(382,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(383,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(384,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/prg/data/tables/sprite-frame-table.ts(385,3): error TS2739: Type '{ frameId: number; tiles: number[]; }' is missing the following properties from type 'SpriteFrameEntry': palette, flipX, flipY
+src/game/runtime/HeadlessRuntime.ts(160,21): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/game/runtime/HeadlessRuntime.ts(160,38): error TS18048: 'index' is possibly 'undefined'.
+src/game/runtime/HeadlessRuntime.ts(164,21): error TS2339: Property 'ptTile' does not exist on type 'PPU'.
+src/game/runtime/HeadlessRuntime.ts(198,33): error TS2580: Cannot find name 'require'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test-teams.ts(125,12): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test-teams.ts(125,39): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test-text.ts(326,35): error TS2531: Object is possibly 'null'.
+test/api-test-text.ts(326,56): error TS2339: Property 'length' does not exist on type 'TeamRosterEntry'.
+test/api-test-text.ts(329,38): error TS2339: Property 'level' does not exist on type 'number'.
+test/api-test-text.ts(367,12): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test-text.ts(367,39): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.

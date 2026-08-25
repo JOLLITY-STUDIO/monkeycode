@@ -1,0 +1,16 @@
+total lines: 27754
+distinct banks: 11
+bank distribution (top 32):
+  $0f (15): 15076
+  $06 (6): 5344
+  $0b (11): 3253
+  $0e (14): 2092
+  $0a (10): 1683
+  $0d (13): 196
+  $08 (8): 43
+  $05 (5): 28
+  $0c (12): 19
+  $00 (0): 14
+  $01 (1): 6
+
+ROM not found, skipped byte verification.

@@ -131507,7 +131507,7 @@ function consumeNtBuffer(view) {
     const count = vertical ? b0 & 63 : b0;
     if (x + 3 + count > pos) break;
     const addr = buf[x + 2] << 8 | buf[x + 1];
-    const data = buf.subarray(x + 3, x + 3 + count);
+    const data = Array.from(buf.subarray(x + 3, x + 3 + count));
     out.push({ vertical, ntAddr: addr & 16383, data });
     x += 3 + count;
   }
@@ -139603,7 +139603,46 @@ var OPENING_TILE_STREAMS = BANK7_TILE_STREAMS;
 
 // src/game/prg/data/tables/sprite-frame-table.ts
 var BANK19_SPRITE_FRAMES = [
-  // TODO: 从 BANK19_TILE_DATA 解析精灵帧条目
+  { frameId: 0, tiles: [9, 110, 33, 40, 41, 44, 45, 56, 55, 57, 60, 61, 9, 142, 33, 42, 43, 46, 47, 58, 42, 59, 62, 63, 0] },
+  { frameId: 1, tiles: [92, 70, 105, 107, 77, 63, 75, 110, 80, 125, 85] },
+  { frameId: 2, tiles: [93, 72, 103, 67, 193, 116, 69, 63, 98, 69, 110, 20, 9] },
+  { frameId: 3, tiles: [86, 2, 12, 165, 7, 0, 40, 50, 3] },
+  { frameId: 4, tiles: [89, 166, 20, 3, 0, 27, 43, 12] },
+  { frameId: 5, tiles: [90, 16, 17, 175, 21, 0, 31, 11, 5, 6, 167, 5] },
+  { frameId: 6, tiles: [87, 15, 3, 170, 0, 31, 10, 20] },
+  { frameId: 7, tiles: [85, 32, 13, 161, 0, 166, 49, 46] },
+  { frameId: 8, tiles: [84, 31, 18, 36, 31, 0, 27, 6, 41, 21, 9] },
+  { frameId: 9, tiles: [88, 22, 47, 16, 0, 12, 49, 46] },
+  { frameId: 10, tiles: [100, 103, 99, 110, 63, 196, 72, 84, 104, 125, 89] },
+  { frameId: 11, tiles: [94, 93, 105, 95, 110, 63, 70, 105, 82] },
+  { frameId: 12, tiles: [95, 68, 105, 63, 76, 194, 63, 206, 68, 125, 105] },
+  { frameId: 13, tiles: [96, 105, 66, 63, 85, 209, 106, 69, 110] },
+  { frameId: 14, tiles: [97, 92, 115, 110, 63, 193, 116, 65, 77] },
+  { frameId: 15, tiles: [98, 65, 103, 110, 63, 205, 77, 70, 105] },
+  { frameId: 16, tiles: [99, 70, 125, 105, 63, 90, 66, 110, 82, 63, 76, 113, 85, 66, 190, 125] },
+  { frameId: 17, tiles: [101, 65, 105, 82, 125, 105, 63, 65, 110, 81, 88, 77, 63, 74, 66, 110, 197, 103] },
+  { frameId: 18, tiles: [81, 32, 11, 7, 0, 16, 43, 3] },
+  { frameId: 19, tiles: [91, 44, 6, 12, 31, 172, 0, 9, 46] },
+  { frameId: 20, tiles: [82, 27, 49, 3, 160, 0, 10, 166, 43, 3] },
+  { frameId: 21, tiles: [83, 44, 6, 175, 36, 12, 0, 163, 46, 169, 3, 1, 9] },
+  { frameId: 22, tiles: [80, 5, 5, 169, 39, 0, 18, 175, 11, 88, 9] },
+  { frameId: 23, tiles: [102, 77, 80, 111, 92, 230, 1, 9] },
+  { frameId: 24, tiles: [105, 193, 116, 106, 72, 80, 125, 92, 115, 66, 80, 125, 5, 20, 32, 21, 20] },
+  { frameId: 25, tiles: [120, 66, 110, 183, 125, 97, 0, 207, 107, 182, 103, 97, 38, 47, 17, 46, 50, 20] },
+  { frameId: 26, tiles: [107, 65, 67, 84, 183, 125, 97, 0, 207, 107, 182, 103, 97, 65, 71, 91, 74, 20, 20] },
+  { frameId: 27, tiles: [108, 207, 103, 110, 85, 125, 1, 6, 2, 7, 18, 24, 1, 9] },
+  { frameId: 28, tiles: [109, 65, 67, 84, 183, 125, 97, 193, 116, 106, 72, 80, 125, 3, 31, 48, 9] },
+  { frameId: 29, tiles: [110, 65, 86, 98, 125, 76, 114, 110, 193, 116, 106, 72, 80, 125, 22, 44, 6, 31, 41, 57, 11] },
+  { frameId: 30, tiles: [111, 96, 113, 125, 186, 111, 72, 36, 31, 11, 46, 98, 80, 105, 37, 3, 7, 31, 37, 12, 9] },
+  { frameId: 31, tiles: [112, 77, 207, 103, 66, 84, 65, 72, 76, 114, 110, 77, 125, 205, 125, 164, 46, 16, 8, 46, 0, 11, 53, 20] },
+  { frameId: 32, tiles: [113, 195, 111, 72, 108, 125, 72, 31, 125, 12, 1, 46, 46, 20] },
+  { frameId: 33, tiles: [114, 182, 103, 92, 116, 111, 72, 81, 125, 97, 0, 52, 73, 125, 85, 205, 125, 74, 76, 110, 206, 107, 68, 125, 77, 1, 9] },
+  { frameId: 34, tiles: [106, 182, 103, 92, 116, 111, 72, 81, 125, 97, 0, 53, 33, 39, 11, 7, 167, 3, 28, 37, 28, 37, 33, 11] },
+  { frameId: 35, tiles: [115, 193, 125, 80, 108, 125, 72, 11, 20, 3, 170, 2, 10, 46, 36, 29, 32, 54, 9, 0, 20, 15, 11] },
+  { frameId: 36, tiles: [116, 193, 195, 111, 182, 81, 125, 92, 7, 7, 50, 3, 36, 0, 166, 49, 3, 178, 4, 17, 9] },
+  { frameId: 37, tiles: [117, 65, 67, 84, 183, 125, 97, 65, 194, 195, 66, 185, 125, 11, 8, 39, 165, 7, 68, 9] },
+  { frameId: 38, tiles: [118, 205, 111, 73, 125, 186, 193, 185, 66, 110, 63, 95, 86, 113, 65, 105, 35, 46, 174, 68, 74, 205, 110, 81, 114, 16, 6, 17, 48, 46] },
+  { frameId: 39, tiles: [119, 69, 104, 186, 85, 105, 16, 6, 26, 12, 0, 38, 3, 2, 17] }
 ];
 
 // src/game/prg/data/tables/opening-sprites.ts
@@ -139673,11 +139712,12 @@ var SpriteService = class {
    */
   putSprite(slot, tile, x, y, attr = 0) {
     if (slot < 0 || slot >= 64) return;
-    const base = 1128 + slot * 4;
-    this.store.writeByte(base, y & 255);
-    this.store.writeByte(base + 1, tile & 255);
-    this.store.writeByte(base + 2, attr & 255);
-    this.store.writeByte(base + 3, x & 255);
+    const base = slot * 4;
+    const buf = this.store.shadowOam;
+    buf[base + 0] = y & 255;
+    buf[base + 1] = tile & 255;
+    buf[base + 2] = attr & 255;
+    buf[base + 3] = x & 255;
   }
   /**
    * 通过精灵 ID（frameId）查 BANK19_SPRITE_FRAMES 写入。
@@ -139689,14 +139729,15 @@ var SpriteService = class {
     this.putSprite(slot, tile, x, y, attr);
   }
   /**
-   * 隐藏精灵（Y=$FF）。
+   * 隐藏精灵（Y=$FF）。写到 store.shadowOam（独立 buffer），不踩 RAM。
    */
   hideSprite(slot) {
     if (slot < 0 || slot >= 64) return;
-    this.store.writeByte(1128 + slot * 4, 255);
+    this.store.shadowOam[slot * 4] = 255;
   }
   /**
    * 隐藏所有精灵（OAM 全 $FF）。对应 asm $CB8B。
+   * 直接清 store.shadowOam（独立 Uint8Array(256)），不走 RAM 写。
    */
   hideAll() {
     for (let i = 0; i < 64; i++) this.hideSprite(i);
@@ -139708,28 +139749,28 @@ var SpriteService = class {
     if (slot < 0 || slot >= 64) return;
     const frame = BANK19_SPRITE_FRAMES.find((f) => f.frameId === (frameId & 65535));
     const tile = frame && frame.tiles.length > 0 ? frame.tiles[0] : frameId & 255;
-    this.store.writeByte(1129 + slot * 4, tile);
+    this.store.shadowOam[slot * 4 + 1] = tile & 255;
   }
   /**
    * 读取精灵当前 Y 坐标。
    */
   getSpriteY(slot) {
     if (slot < 0 || slot >= 64) return 0;
-    return this.store.readByte(1128 + slot * 4);
+    return this.store.shadowOam[slot * 4 + 0];
   }
   /**
    * 读取精灵当前 X 坐标。
    */
   getSpriteX(slot) {
     if (slot < 0 || slot >= 64) return 0;
-    return this.store.readByte(1131 + slot * 4);
+    return this.store.shadowOam[slot * 4 + 3];
   }
   /**
    * 读取精灵属性字节。
    */
   getSpriteAttr(slot) {
     if (slot < 0 || slot >= 64) return 0;
-    return this.store.readByte(1130 + slot * 4);
+    return this.store.shadowOam[slot * 4 + 2];
   }
   // ─────────────────────────────────────────────────────────────────────
   // Boot OAM init — PRG $21CA 翻译（WBS L1）
@@ -139742,11 +139783,12 @@ var SpriteService = class {
   bootOamInit() {
     for (const e of BOOT_TECMO_OAM_TABLE) {
       const slot = e.slot & 63;
-      const base = 1128 + slot * 4;
-      this.store.writeByte(base + 0, e.y & 255);
-      this.store.writeByte(base + 1, e.tile & 255);
-      this.store.writeByte(base + 2, e.attr & 255);
-      this.store.writeByte(base + 3, e.x & 255);
+      const base = slot * 4;
+      const buf = this.store.shadowOam;
+      buf[base + 0] = e.y & 255;
+      buf[base + 1] = e.tile & 255;
+      buf[base + 2] = e.attr & 255;
+      buf[base + 3] = e.x & 255;
     }
   }
   /**
@@ -140220,14 +140262,13 @@ var GameSystemService = class {
     this.sceneLoad(step);
   }
   /**
-   * 写一个渲染缓冲条目：[count, addrLo, addrHi, data×count...]，由 NMI 渲染管线消费。
+   * 写一个渲染缓冲条目：data → NT[addr]，由 NMI 渲染管线消费。
+   * (count 截断保留 6-bit 兼容原版写入格式)
    */
   queueNtWrite(addr, data) {
     const n = data.length & 63;
     if (n === 0) return;
-    let pos = this.prim.ntBufferEntry(n, addr & 255, addr >> 8 & 255);
-    pos = this.prim.ntBufferAppend(pos, data);
-    this.prim.ntBufferEnd(pos);
+    this.prim.ntBufferAppend({ vertical: false, ntAddr: addr, data });
   }
   /**
    * 等待 N 帧（原版 $9FA8 挂起语义）。
@@ -140804,7 +140845,7 @@ var BootRouter = class {
   /** 每帧更新；处理场景返回的下一个场景号 */
   update(frame) {
     const next = this.current?.onUpdate(frame);
-    if (next !== void 0) {
+    if (next !== void 0 && next !== this.currentSceneId) {
       this.changeScene(next);
     }
   }
@@ -141719,7 +141760,7 @@ var Scene0Controller = class extends SceneController {
     this.holdSecond = false;
     this.prim.loadChrConfig(23);
     for (let i = 0; i < 64; i++) this.sprite.hideSprite(i);
-    this.sprite.bootOamInit();
+    this.prim.loadBootPalette();
     this.audio?.playBgm(1);
   }
   onUpdate(frame) {
@@ -141736,17 +141777,18 @@ var Scene0Controller = class extends SceneController {
       case 1 /* OamDrift */: {
         this.prim.oamDrift(1);
         if (--this.driftY > 0) return void 0;
-        store.writeByte(91, 0);
+        store.scene.scrollFlag = 64;
+        store.scene.scrollY = 0;
         store.writeByte(123, 0);
+        store.writeByte(91, 1);
         this.prim.loadChrConfig(23);
-        store.writeByte(68, 104);
-        this.prim.loadSceneData(3);
+        this.prim.loadSceneData(1);
         this.sceneRow = 0;
         this.streamDone = false;
-        this.phase = 2 /* LoadScene3Nt */;
+        this.phase = 2 /* LoadLogoNt */;
         return void 0;
       }
-      case 2 /* LoadScene3Nt */: {
+      case 2 /* LoadLogoNt */: {
         if (!this.streamDone) {
           this.prim.queueScene3NametableRows(this.sceneRow, 1);
           this.sceneRow++;
@@ -141763,50 +141805,31 @@ var Scene0Controller = class extends SceneController {
         if (--this.counter > 0) return void 0;
         this.prim.loadPalettesAndFade(4, store.readByte(37) & 15);
         this.prim.oamFlipAttrs();
-        this.counter = 1;
-        this.phase = 4 /* Scroll */;
+        this.counter = 216;
+        this.phase = 4 /* Hold */;
         return void 0;
       }
-      case 4 /* Scroll */: {
-        if (--this.counter > 0) return void 0;
-        const v79 = store.readByte(121) + 1 & 255;
-        store.writeByte(121, v79);
-        let c = store.readByte(124) - 1 & 255;
-        store.writeByte(124, c);
-        c = store.readByte(124) - 1 & 255;
-        store.writeByte(124, c);
-        const v44 = store.readByte(68) - 2 & 255;
-        store.writeByte(68, v44);
-        if (v44 >= 3) {
-          this.counter = 1;
-          return void 0;
-        }
-        this.prim.loadSceneData(0);
-        store.writeByte(27, store.readByte(27) | 1);
-        this.counter = 240;
-        this.phase = 5 /* Hold */;
-        return void 0;
-      }
-      case 5 /* Hold */: {
+      case 4 /* Hold */: {
         if (--this.counter > 0) return void 0;
         if (!this.holdSecond) {
           this.holdSecond = true;
           this.counter = 60;
           return void 0;
         }
-        store.writeByte(27, store.readByte(27) & 254);
-        store.writeByte(144, 0);
-        store.writeByte(145, 2);
-        this.phase = 6 /* FadeOut */;
+        store.writeByte(91, 0);
+        this.phase = 5 /* FadeOut */;
         return void 0;
       }
-      case 6 /* FadeOut */: {
+      case 5 /* FadeOut */: {
         if (!this.prim.fadeOutStep()) return void 0;
         this.prim.hideOam();
         this.prim.clearNametable();
         this.prim.fillNametableRows(192, 35, 2, 32, 85);
-        this.prim.loadSceneData(1);
-        this.phase = 7 /* Done */;
+        this.prim.loadSceneData(0);
+        store.writeByte(27, store.readByte(27) & 254);
+        store.writeByte(144, 0);
+        store.writeByte(145, 2);
+        this.phase = 6 /* Done */;
         return 2;
       }
       default:
@@ -152269,6 +152292,73 @@ var PLAYER_TABLE = [
     highIntc: 29
   }
 ];
+var PLAYER_COLOR_TABLE = [
+  { id: 1, skin: 15, hair: 48, shirt: 48, shorts: 48 },
+  { id: 2, skin: 55, hair: 48, shirt: 48, shorts: 48 },
+  { id: 3, skin: 55, hair: 48, shirt: 48, shorts: 48 },
+  { id: 4, skin: 15, hair: 48, shirt: 48, shorts: 48 },
+  { id: 5, skin: 22, hair: 48, shirt: 48, shorts: 48 },
+  { id: 6, skin: 38, hair: 48, shirt: 48, shorts: 48 },
+  { id: 7, skin: 16, hair: 48, shirt: 48, shorts: 48 },
+  { id: 8, skin: 15, hair: 48, shirt: 17, shorts: 48 },
+  { id: 9, skin: 15, hair: 48, shirt: 17, shorts: 48 },
+  { id: 10, skin: 15, hair: 48, shirt: 17, shorts: 48 },
+  { id: 11, skin: 15, hair: 48, shirt: 0, shorts: 48 },
+  { id: 12, skin: 15, hair: 48, shirt: 17, shorts: 48 },
+  { id: 13, skin: 23, hair: 48, shirt: 17, shorts: 48 },
+  { id: 14, skin: 15, hair: 48, shirt: 17, shorts: 48 },
+  { id: 15, skin: 7, hair: 48, shirt: 17, shorts: 48 },
+  { id: 16, skin: 15, hair: 48, shirt: 17, shorts: 48 },
+  { id: 17, skin: 15, hair: 48, shirt: 17, shorts: 48 },
+  { id: 18, skin: 0, hair: 48, shirt: 17, shorts: 48 },
+  { id: 19, skin: 15, hair: 22, shirt: 48, shorts: 48 },
+  { id: 20, skin: 15, hair: 22, shirt: 48, shorts: 48 },
+  { id: 21, skin: 7, hair: 22, shirt: 48, shorts: 48 },
+  { id: 22, skin: 15, hair: 22, shirt: 48, shorts: 48 },
+  { id: 23, skin: 7, hair: 22, shirt: 48, shorts: 48 },
+  { id: 24, skin: 0, hair: 22, shirt: 48, shorts: 48 },
+  { id: 25, skin: 0, hair: 22, shirt: 48, shorts: 48 },
+  { id: 26, skin: 15, hair: 22, shirt: 48, shorts: 48 },
+  { id: 27, skin: 15, hair: 22, shirt: 48, shorts: 48 },
+  { id: 28, skin: 21, hair: 22, shirt: 48, shorts: 48 },
+  { id: 29, skin: 48, hair: 48, shirt: 17, shorts: 48 },
+  { id: 30, skin: 15, hair: 48, shirt: 17, shorts: 48 },
+  { id: 31, skin: 0, hair: 20, shirt: 48, shorts: 48 },
+  { id: 32, skin: 0, hair: 20, shirt: 48, shorts: 48 },
+  { id: 33, skin: 22, hair: 44, shirt: 22, shorts: 48 },
+  { id: 34, skin: 17, hair: 48, shirt: 34, shorts: 48 },
+  { id: 35, skin: 0, hair: 41, shirt: 48, shorts: 48 },
+  { id: 36, skin: 0, hair: 41, shirt: 48, shorts: 48 },
+  { id: 37, skin: 55, hair: 0, shirt: 48, shorts: 48 },
+  { id: 38, skin: 37, hair: 0, shirt: 48, shorts: 48 },
+  { id: 39, skin: 39, hair: 22, shirt: 0, shorts: 48 },
+  { id: 40, skin: 55, hair: 22, shirt: 0, shorts: 48 },
+  { id: 41, skin: 0, hair: 22, shirt: 0, shorts: 48 },
+  { id: 42, skin: 0, hair: 17, shirt: 55, shorts: 48 },
+  { id: 43, skin: 7, hair: 17, shirt: 55, shorts: 48 },
+  { id: 44, skin: 15, hair: 25, shirt: 48, shorts: 48 },
+  { id: 45, skin: 15, hair: 25, shirt: 48, shorts: 48 }
+];
+var PLAYER_HAIR_TABLE = [
+  2,
+  1,
+  3,
+  6,
+  11,
+  5,
+  3,
+  3,
+  1,
+  7,
+  4,
+  4,
+  2,
+  2,
+  4,
+  2,
+  12,
+  14
+];
 
 // src/game/prg/data/tables/player-table.ts
 var PLAYER_TABLE2 = PLAYER_TABLE;
@@ -152524,6 +152614,33 @@ var PlayerQueryService = class {
     return null;
   }
 };
+
+// src/game/prg/data/tables/player-tile-table.ts
+var HAIR_TEMPLATES = PLAYER_HAIR_TABLE;
+var COLOR_BY_ID = /* @__PURE__ */ new Map();
+for (const c of PLAYER_COLOR_TABLE) COLOR_BY_ID.set(c.id, c);
+function shirtToPaletteGroup(shirt) {
+  return shirt >> 4 & 7;
+}
+function hairTemplateIdFor(playerIndex) {
+  return HAIR_TEMPLATES[playerIndex % HAIR_TEMPLATES.length] ?? 0;
+}
+function bodyBaseTileFor(playerIndex) {
+  const frame = BANK19_SPRITE_FRAMES[playerIndex % BANK19_SPRITE_FRAMES.length];
+  return frame?.tiles[0] ?? 9;
+}
+var PLAYER_TILE_TABLE = PLAYER_TABLE.map((p, i) => {
+  const color = COLOR_BY_ID.get(p.id);
+  const paletteGroup = color ? shirtToPaletteGroup(color.shirt) : i & 7;
+  return {
+    playerId: p.id,
+    hairTemplateId: hairTemplateIdFor(i),
+    bodyBaseTileIdx: bodyBaseTileFor(i),
+    paletteSetId: paletteGroup,
+    animTileBase: bodyBaseTileFor(i)
+    // 4 帧 cycle 与 body 共享基础
+  };
+});
 
 // src/game/prg/code/team/TeamRosterService.ts
 var TeamRosterService = class {
@@ -153189,7 +153306,7 @@ var SpriteAnimationService = class {
    */
   tickAnimationSlot(slot, maxFrames) {
     if (slot < 0 || slot >= 64) return 0;
-    const base = 1128 + slot * 4;
+    const base = slot * 4;
     const attr = this.store.readByte(base + 2) & 255;
     const tick = attr & 15;
     const next = tick + 1 & 15;
@@ -153208,7 +153325,7 @@ var SpriteAnimationService = class {
    */
   flipSpriteAttr(slot, bitMask) {
     if (slot < 0 || slot >= 64) return;
-    const base = 1128 + slot * 4;
+    const base = slot * 4;
     const attr = this.store.readByte(base + 2) & 255;
     this.store.writeByte(base + 2, (attr ^ bitMask & 255) & 255);
   }
@@ -153217,7 +153334,7 @@ var SpriteAnimationService = class {
    */
   orSpriteAttr(slot, bitMask) {
     if (slot < 0 || slot >= 64) return;
-    const base = 1128 + slot * 4;
+    const base = slot * 4;
     const attr = this.store.readByte(base + 2) & 255;
     this.store.writeByte(base + 2, (attr | bitMask & 255) & 255);
   }
@@ -153226,7 +153343,7 @@ var SpriteAnimationService = class {
    */
   andSpriteAttr(slot, bitMask) {
     if (slot < 0 || slot >= 64) return;
-    const base = 1128 + slot * 4;
+    const base = slot * 4;
     const attr = this.store.readByte(base + 2) & 255;
     this.store.writeByte(base + 2, attr & bitMask & 255);
   }
@@ -153236,7 +153353,7 @@ var SpriteAnimationService = class {
    */
   blinkOffscreenSprites() {
     for (let i = 0; i < 64; i++) {
-      const y = this.store.readByte(1128 + i * 4) & 255;
+      const y = this.store.shadowOam[i * 4 + 0] & 255;
       if (y >= 240) {
         this.flipSpriteAttr(i, 8);
       }
@@ -155281,41 +155398,41 @@ var OamView = class {
   constructor(s) {
     this.s = s;
   }
-  /** 64 个精灵（每精灵 4 字节） */
+  /** 64 个精灵（每精灵 4 字节 = 256 字节总） */
   get shadowOam() {
-    return this.s.ram.subarray(1128, 1384);
+    return this.s.shadowOam;
   }
-  /** 实际 OAM 缓冲（$0200-$02FF） */
+  /** 实际 OAM 缓冲（$0200-$02FF，写入即生效到硬件） */
   get oam() {
     return this.s.oamBuffer;
   }
-  /** 第 i 个精灵的 Y 坐标（$0468+i*4） */
+  /** 第 i 个精灵的 Y 坐标 */
   spriteY(i) {
-    return this.s.readByte(1128 + i * 4);
+    return this.s.shadowOam[i * 4 + 0];
   }
   setSpriteY(i, v) {
-    this.s.writeByte(1128 + i * 4, v & 255);
+    this.s.shadowOam[i * 4 + 0] = v & 255;
   }
-  /** 第 i 个精灵的属性字节（$046A+i*4） */
+  /** 第 i 个精灵的属性字节 */
   spriteAttr(i) {
-    return this.s.readByte(1130 + i * 4);
+    return this.s.shadowOam[i * 4 + 2];
   }
   setSpriteAttr(i, v) {
-    this.s.writeByte(1130 + i * 4, v & 255);
+    this.s.shadowOam[i * 4 + 2] = v & 255;
   }
-  /** 第 i 个精灵的 X 坐标（$046B+i*4） */
+  /** 第 i 个精灵的 X 坐标 */
   spriteX(i) {
-    return this.s.readByte(1131 + i * 4);
+    return this.s.shadowOam[i * 4 + 3];
   }
   setSpriteX(i, v) {
-    this.s.writeByte(1131 + i * 4, v & 255);
+    this.s.shadowOam[i * 4 + 3] = v & 255;
   }
-  /** 第 i 个精灵的 tile 索引（$0469+i*4） */
+  /** 第 i 个精灵的 tile 索引 */
   spriteTile(i) {
-    return this.s.readByte(1129 + i * 4);
+    return this.s.shadowOam[i * 4 + 1];
   }
   setSpriteTile(i, v) {
-    this.s.writeByte(1129 + i * 4, v & 255);
+    this.s.shadowOam[i * 4 + 1] = v & 255;
   }
 };
 var PpuStateView = class {
@@ -155528,6 +155645,13 @@ var MatchRoundView = class {
   set paramId(v) {
     this.s.writeByte(1524, v & 255);
   }
+  /** 回合段解析游标（ram_05EF：$005F 指针下的段偏移） */
+  get segmentCursor() {
+    return this.s.readByte(1519);
+  }
+  set segmentCursor(v) {
+    this.s.writeByte(1519, v & 255);
+  }
 };
 var MatchEventView = class {
   constructor(s) {
@@ -155655,6 +155779,14 @@ var DataStore = class _DataStore {
   constructor() {
     /** 工作 RAM $0000-$07FF（含 OAM 缓冲 $0200、NMI 缓冲 $0498/$05E8） */
     this.ram = new Uint8Array(2048);
+    /**
+     * Shadow OAM 独立缓冲区（64 精灵 × 4 字节 = 256 字节）。
+     * 不放到 DataStore.ram 里，因为 $0468-$0567 是其他 ROM 数据区间
+     *   （render queue1 $0498 / NMI buffer $05E8 等），会冲突。
+     * 单独 Uint8Array 后所有 OAM 操作走这里，再由 InterruptService.oamDma
+     *   推到 PPU spriteMem。
+     */
+    this.shadowOam = new Uint8Array(256);
     /** VRAM 暂存 $2000-$3FFF（无写透目标时的挂起写；attach 后 flush） */
     this.vram = new Uint8Array(8192);
     /** VRAM 脏标记（$2000-$3FFF 相对偏移位图） */
@@ -157148,6 +157280,7 @@ var Tsubasa2 = class {
     void teamRoster;
     this.skill = new SkillService(this.store);
     const sprite = new SpriteService(this.store);
+    this.sprite = sprite;
     const spriteAnim = new SpriteAnimationService(this.store);
     void sprite;
     void spriteAnim;
@@ -157213,6 +157346,7 @@ var Tsubasa2 = class {
   boot() {
     this._frame = 0;
     this.hardware.reset();
+    this.sprite.bootOamInit();
     this.router.changeScene(0 /* Scene0 */);
   }
   /**
@@ -158753,6 +158887,7 @@ var PPU = class {
   // Checks for non-transparent sprite pixel overlapping non-transparent BG pixel,
   // excluding x=255 and left-clipped pixels (x=0..7 when leftClip is true).
   _checkSpr0Pixels(tile, toffset, startX, horiFlip, scan, leftClip) {
+    if (!tile || !tile.pix) return false;
     let bufferIndex = scan * 256 + startX;
     for (let px = 0; px < 8; px++) {
       let tileIdx = horiFlip ? 7 - px : px;
@@ -159234,19 +159369,6 @@ var HeadlessRuntime = class {
     this.controllers = { 1: new controller_default(), 2: new controller_default() };
     const chr = buildChrRom();
     this.vromTilesByBank1k = chr.vromTilesByBank1k;
-    const mmapStub = {
-      clockIrqCounter: () => {
-      },
-      latchAccess: (_addr) => {
-      },
-      canWriteChr: (_addr) => false,
-      onSpriteRender: () => {
-      },
-      onBgRender: () => {
-      },
-      getSpritePatternTile: (_isSprite8x8, _table, _tile) => 0,
-      getBgPatternTile: (_table, _tile) => 0
-    };
     const nes = {
       rom: {
         HORIZONTAL_MIRRORING: 1,
@@ -159275,7 +159397,8 @@ var HeadlessRuntime = class {
         requestIrq: () => {
         }
       },
-      mmap: mmapStub,
+      mmap: null,
+      // 后续注入（需先有 ppu 引用）
       ui: { writeFrame: () => {
       }, updateStatus: () => {
       } },
@@ -159287,6 +159410,27 @@ var HeadlessRuntime = class {
     ppu2.setMirroring(nes.rom.HORIZONTAL_MIRRORING);
     this.ppu = ppu2;
     nes.ppu = ppu2;
+    const mmapStub = {
+      clockIrqCounter: () => {
+      },
+      latchAccess: (_addr) => {
+      },
+      canWriteChr: (_addr) => false,
+      onSpriteRender: () => {
+      },
+      onBgRender: () => {
+      },
+      // PPU checkSprite0 调用签名：(index) — 8x8/8x16 都只传 1 个最终 tile index
+      getSpritePatternTile: (_isSprite8x8OrIndex, _table, _tile) => {
+        const index = typeof _isSprite8x8OrIndex === "number" ? _isSprite8x8OrIndex : _tile;
+        return ppu2.ptTile[index | 0];
+      },
+      // 8x16 模式偶尔也通过 (table, tile) 取 — ptTile 编号制已统一 0..511
+      getBgPatternTile: (_table, tile) => {
+        return ppu2.ptTile[tile | 0];
+      }
+    };
+    nes.mmap = mmapStub;
     ppu2.loadChrBank = (slot, bank1k) => {
       this.loadChrSlot(slot, bank1k & 255);
     };
@@ -159336,7 +159480,7 @@ var HeadlessRuntime = class {
 };
 
 // scripts/_verify_300frame.ts
-var FRAMES_LIST = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
+var FRAMES_LIST = [1, 5, 9, 13, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
 var runtime = new HeadlessRuntime();
 var game = new Tsubasa2();
 game.boot();

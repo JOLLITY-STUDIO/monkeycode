@@ -66,6 +66,7 @@ export class Tsubasa2 {
   readonly hardware: HardwareInitService;
   readonly skill: SkillService;
   readonly audio: AudioService;
+  readonly sprite: SpriteService;
 
   /** 帧计数（NMI 帧号） */
   protected _frame = 0;
@@ -113,6 +114,7 @@ export class Tsubasa2 {
     // 精灵 / 技能 / 音频
     this.skill = new SkillService(this.store);
     const sprite = new SpriteService(this.store);
+    this.sprite = sprite;
     const spriteAnim = new SpriteAnimationService(this.store);
     void sprite;
     void spriteAnim;
@@ -201,6 +203,9 @@ export class Tsubasa2 {
   boot(): void {
     this._frame = 0;
     this.hardware.reset();
+    // 立即装载 Tecmo logo OAM 40 sprite → shadowOam ($0468-$04C7)
+    // 否则 Scene0Controller.onEnter() 内的 bootOamInit 比真实 ROM 晚 ~30 帧
+    this.sprite.bootOamInit();
     // 场景调度：场景号 0（原版 Reset 末尾 LDA #$00; JMP $CEFE）
     this.router.changeScene(SceneId.Scene0);
   }

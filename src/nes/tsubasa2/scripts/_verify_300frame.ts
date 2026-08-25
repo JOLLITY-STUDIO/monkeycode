@@ -27,7 +27,7 @@ import * as zlib from 'zlib';
 import { Tsubasa2 } from '../src/game/index';
 import { HeadlessRuntime } from '../src/game/runtime/HeadlessRuntime';
 
-const FRAMES_LIST = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
+const FRAMES_LIST = [1, 5, 9, 13, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
 const runtime = new HeadlessRuntime();
 const game = new Tsubasa2();
 game.boot();
