@@ -134,11 +134,12 @@ export class SpriteService {
   bootOamInit(): void {
     for (const e of BOOT_TECMO_OAM_TABLE) {
       const slot = e.slot & 0x3f;
-      const base = 0x0468 + slot * 4;
-      this.store.writeByte(base + 0, e.y & 0xff);
-      this.store.writeByte(base + 1, e.tile & 0xff);
-      this.store.writeByte(base + 2, e.attr & 0xff);
-      this.store.writeByte(base + 3, e.x & 0xff);
+      const base = slot * 4;
+      const buf = this.store.shadowOam;
+      buf[base + 0] = e.y & 0xff;
+      buf[base + 1] = e.tile & 0xff;
+      buf[base + 2] = e.attr & 0xff;
+      buf[base + 3] = e.x & 0xff;
     }
   }
 

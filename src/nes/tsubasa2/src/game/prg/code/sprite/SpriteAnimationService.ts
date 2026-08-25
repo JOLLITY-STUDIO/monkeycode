@@ -48,7 +48,7 @@ export class SpriteAnimationService {
     if (slot < 0 || slot >= 64) return 0;
     // 借用 $0468+slot*4+attr 高 4 位作为 tick 缓存（避免额外 RAM）
     // 简化：直接读 attr 字节低 4 位作为 tick
-    const base = 0x0468 + slot * 4;
+    const base = slot * 4;
     const attr = this.store.readByte(base + 2) & 0xff;
     const tick = attr & 0x0f;
     const next = (tick + 1) & 0x0f;
@@ -68,7 +68,7 @@ export class SpriteAnimationService {
    */
   flipSpriteAttr(slot: number, bitMask: number): void {
     if (slot < 0 || slot >= 64) return;
-    const base = 0x0468 + slot * 4;
+    const base = slot * 4;
     const attr = this.store.readByte(base + 2) & 0xff;
     this.store.writeByte(base + 2, (attr ^ (bitMask & 0xff)) & 0xff);
   }
@@ -78,7 +78,7 @@ export class SpriteAnimationService {
    */
   orSpriteAttr(slot: number, bitMask: number): void {
     if (slot < 0 || slot >= 64) return;
-    const base = 0x0468 + slot * 4;
+    const base = slot * 4;
     const attr = this.store.readByte(base + 2) & 0xff;
     this.store.writeByte(base + 2, (attr | (bitMask & 0xff)) & 0xff);
   }
@@ -88,7 +88,7 @@ export class SpriteAnimationService {
    */
   andSpriteAttr(slot: number, bitMask: number): void {
     if (slot < 0 || slot >= 64) return;
-    const base = 0x0468 + slot * 4;
+    const base = slot * 4;
     const attr = this.store.readByte(base + 2) & 0xff;
     this.store.writeByte(base + 2, (attr & bitMask) & 0xff);
   }
@@ -99,7 +99,7 @@ export class SpriteAnimationService {
    */
   blinkOffscreenSprites(): void {
     for (let i = 0; i < 64; i++) {
-      const y = this.store.readByte(0x0468 + i * 4) & 0xff;
+      const y = this.store.shadowOam[i * 4 + 0] & 0xff;
       if (y >= 240) {
         this.flipSpriteAttr(i, 0x08);
       }

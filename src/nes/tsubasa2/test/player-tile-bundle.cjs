@@ -138994,8 +138994,9 @@ var colorHex = (idx) => {
   const [r, g, b] = NES_PALETTE[idx & 63];
   return `rgb(${r},${g},${b})`;
 };
+var SPRITE_PATTERN_BASE = 4096;
 function getTileByte(tileIndex, byteOffset) {
-  const chrOffset = (tileIndex & 1023) * 16 + (byteOffset & 15);
+  const chrOffset = SPRITE_PATTERN_BASE + (tileIndex & 1023) * 16 + (byteOffset & 15) & 8191;
   return NES_CHR_ROM[chrOffset] ?? 0;
 }
 function renderTilesGrid(tileIndices, palette, cols, scale = 4) {
@@ -139139,14 +139140,15 @@ function selectPlayer(id) {
   const swatches = pal.map(
     (c) => `<span class="swatch" style="background:${colorHex(c)}"></span><span class="hex">0x${c.toString(16).padStart(2, "0")}</span>`
   ).join(" &nbsp; ");
-  const headTileBase = 128 + (tile.hairTemplateId & 15) * 4;
+  const headTileBase = 256 + (tile.hairTemplateId & 15) * 4;
   const headTiles = [headTileBase, headTileBase + 1, headTileBase + 2, headTileBase + 3];
-  const headCanvas = renderTilesGrid(headTiles, pal, 2, 5);
+  const headCanvas = renderTilesGrid(headTiles, pal, 2, 8);
   const bodyTiles = frame?.tiles ?? [tile.bodyBaseTileIdx];
-  const bodyCanvas = renderTilesGrid(bodyTiles, pal, 8, 3);
+  const bodyCols = 4;
+  const bodyCanvas = renderTilesGrid(bodyTiles, pal, bodyCols, 4);
   const animCanvases = resolved.animFrames.map((f, i) => {
-    const c = renderTilesGrid(f, pal, 8, 2);
-    return `<div style="display:inline-block;margin:2px"><div style="color:#888;font-size:10px">F${i}</div>${c.outerHTML}</div>`;
+    const c = renderTilesGrid(f, pal, 4, 3);
+    return `<div style="display:inline-block;margin:4px;text-align:center"><div style="color:#888;font-size:10px">F${i} (${f.length} tile)</div>${c.outerHTML}</div>`;
   }).join("");
   detailPane.innerHTML = `
     <div class="detail-row"><span class="k">ID</span><span class="v"><span class="id">0x${id.toString(16).padStart(2, "0")}</span></span></div>

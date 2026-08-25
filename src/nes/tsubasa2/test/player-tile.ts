@@ -41,10 +41,13 @@ const colorHex = (idx: number): string => {
 
 // ───────────────────── 渲染: tile 字节 → canvas 像素 ─────────────────────
 // NES tile: 16 字节 = 8 行 × 2 bit plane (plane0 在前 8 字节, plane1 在后 8 字节)
-// sprite pattern table 默认 $0000 (PPUCTRL bit3=0), 即 tile 0 = CHR offset 0
+// sprite pattern table 基址可由 PPUCTRL ($2000) bit3 切换:
+//   bit3=0 → 基址 $0000 (常用于 BG); bit3=1 → 基址 $1000 (常用于 sprite)
+// 天使之翼2 的 sprite 通常落在 $1000-$1FFF 区段; 此处默认试 $1000
+const SPRITE_PATTERN_BASE = 0x1000;
 function getTileByte(tileIndex: number, byteOffset: number): number {
-  // sprite pattern table 基址 = 0x0000, 16 字节/tile
-  const chrOffset = (tileIndex & 0x3ff) * 16 + (byteOffset & 0x0f);
+  // sprite pattern table 基址 + tile 偏移 (每 tile 16 字节), 限制在 8KB CHR bank 内
+  const chrOffset = (SPRITE_PATTERN_BASE + ((tileIndex & 0x3ff) * 16) + (byteOffset & 0x0f)) & 0x1FFF;
   return NES_CHR_ROM[chrOffset] ?? 0;
 }
 
@@ -265,19 +268,20 @@ function selectPlayer(id: number): void {
     `<span class="swatch" style="background:${colorHex(c)}"></span><span class="hex">0x${c.toString(16).padStart(2, '0')}</span>`
   ).join(' &nbsp; ');
 
-  // 渲染 head tiles (4 个 8x8 tile 拼 16x16) - 头型 4 tile
-  const headTileBase = 0x80 + (tile.hairTemplateId & 0x0f) * 4;
+  // 渲染 head tiles (4 个 8x8 tile 拼 16x16) - 头型 4 tile (注: hair 实际 base 在 sprite 数据内, 这里尝试常见 base)
+  const headTileBase = 0x100 + (tile.hairTemplateId & 0x0f) * 4;
   const headTiles = [headTileBase, headTileBase + 1, headTileBase + 2, headTileBase + 3];
-  const headCanvas = renderTilesGrid(headTiles, pal, 2, 5);
+  const headCanvas = renderTilesGrid(headTiles, pal, 2, 8);
 
-  // 渲染 body 帧 (BANK19_SPRITE_FRAMES 全部 tile)
+  // 渲染 body 帧: 4 列多行, 这样立绘显示为完整人物轮廓 (32px 宽 × N 行)
   const bodyTiles = frame?.tiles ?? [tile.bodyBaseTileIdx];
-  const bodyCanvas = renderTilesGrid(bodyTiles, pal, 8, 3);
+  const bodyCols = 4;
+  const bodyCanvas = renderTilesGrid(bodyTiles, pal, bodyCols, 4);
 
-  // 4 帧走位动画
+  // 4 帧走位动画: 各动画帧用 2D 排布
   const animCanvases = resolved.animFrames.map((f, i) => {
-    const c = renderTilesGrid(f, pal, 8, 2);
-    return `<div style="display:inline-block;margin:2px"><div style="color:#888;font-size:10px">F${i}</div>${c.outerHTML}</div>`;
+    const c = renderTilesGrid(f, pal, 4, 3);
+    return `<div style="display:inline-block;margin:4px;text-align:center"><div style="color:#888;font-size:10px">F${i} (${f.length} tile)</div>${c.outerHTML}</div>`;
   }).join('');
 
   detailPane.innerHTML = `
