@@ -213,6 +213,11 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
   fs.writeFileSync(path.join(frameDir, 'oam.png'), encodePng(oamImg.w, oamImg.h, oamImg.rgba));
   const oamComp = renderOamComposite(oamJson, ppu);
   fs.writeFileSync(path.join(frameDir, 'oam-composite.png'), encodePng(256, 240, oamComp));
+  // 每个 OAM slot 一张独立 8x8 PNG (alpha=0 透明 + sprite 像素 + 1px 半透明 magenta bounding box)
+  const oamSprites = renderOamSprites(oamJson, ppu);
+  for (let i = 0; i < oamSprites.length; i++) {
+    fs.writeFileSync(path.join(frameDir, `oam-sprite-${String(i).padStart(2, '0')}.png`), encodePng(8, 8, oamSprites[i]));
+  }
 
   // (6) palette.json + palette.png
   const palBg = Array.from(ppu.vramMem.slice(0x3F00, 0x3F10));
@@ -422,6 +427,53 @@ function renderOamComposite(oamJson: any[], ppu: any): Buffer {
     }
   }
   return rgba;
+}
+
+// oam-sprites: 输出 64 张独立 PNG (8x8 sprite, alpha=0 bg, 1px 半透明 magenta bounding box)
+// 空 sprite (y>=0xef) 也输出 8x8 全透明 PNG (供调试完整 OAM layout 用)
+function renderOamSprites(oamJson: any[], ppu: any): Buffer[] {
+  const N = 64;
+  const W = 8, H = 8;
+  const out: Buffer[] = [];
+  const baseIdx = ppu.f_spPatternTable ? 256 : 0;
+  for (let i = 0; i < N; i++) {
+    const rgba = Buffer.alloc(W * H * 4); // 全 alpha=0
+    const o = oamJson[i];
+    if (o && o.y < 0xef) {
+      const attr = o.attr;
+      const flipH = (attr & 0x40) ? 1 : 0;
+      const flipV = (attr & 0x80) ? 1 : 0;
+      const palHi = (attr & 0x03) << 2;
+      const ptT = ppu.ptTile[baseIdx + o.tile];
+      const pix = ptT && ptT.pix ? ptT.pix : null;
+      if (pix) {
+        // 1px bounding box
+        for (let x = 0; x < W; x++) {
+          rgba[(0 * W + x) * 4] = 0xff; rgba[(0 * W + x) * 4 + 1] = 0; rgba[(0 * W + x) * 4 + 2] = 0xff; rgba[(0 * W + x) * 4 + 3] = 0x40;
+          rgba[((H - 1) * W + x) * 4] = 0xff; rgba[((H - 1) * W + x) * 4 + 1] = 0; rgba[((H - 1) * W + x) * 4 + 2] = 0xff; rgba[((H - 1) * W + x) * 4 + 3] = 0x40;
+        }
+        for (let y = 0; y < H; y++) {
+          rgba[(y * W + 0) * 4] = 0xff; rgba[(y * W + 0) * 4 + 1] = 0; rgba[(y * W + 0) * 4 + 2] = 0xff; rgba[(y * W + 0) * 4 + 3] = 0x40;
+          rgba[(y * W + (W - 1)) * 4] = 0xff; rgba[(y * W + (W - 1)) * 4 + 1] = 0; rgba[(y * W + (W - 1)) * 4 + 2] = 0xff; rgba[(y * W + (W - 1)) * 4 + 3] = 0x40;
+        }
+        // sprite pixel
+        for (let py = 0; py < 8; py++) {
+          for (let px = 0; px < 8; px++) {
+            const sx = flipH ? 7 - px : px;
+            const sy = flipV ? 7 - py : py;
+            const idx = pix[sy * 8 + sx];
+            if (idx === 0) continue;
+            const color = ppu.sprPalette ? (ppu.sprPalette[palHi + idx] ?? 0xff000000) : 0xff000000;
+            const r = (color >>> 16) & 0xff, g = (color >>> 8) & 0xff, b = color & 0xff;
+            const off = (py * 8 + px) * 4;
+            rgba[off] = r; rgba[off + 1] = g; rgba[off + 2] = b; rgba[off + 3] = 0xff;
+          }
+        }
+      }
+    }
+    out.push(rgba);
+  }
+  return out;
 }
 
 function renderPaletteSheet(palBg: number[], palSp: number[], ppu: any): { w: number; h: number; rgba: Buffer } {
