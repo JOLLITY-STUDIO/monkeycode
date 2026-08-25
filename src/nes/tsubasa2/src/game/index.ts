@@ -224,7 +224,7 @@ export class Tsubasa2 {
     this.audio.update();
     // 4. ‰÷»æÃ·Ωª£®$C775 + bank02 $8000 ”Ô“Â£©
     try {
-      this.interrupts.renderCommit(target.ppu);
+      this.interrupts.renderCommit(target.ppu, this._frame);
     } catch (e) {
       console.error('renderCommit error at frame ' + this._frame + ': ' + (e as Error).message);
       throw e;

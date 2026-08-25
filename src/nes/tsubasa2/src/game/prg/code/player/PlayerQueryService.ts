@@ -60,6 +60,10 @@ export interface PlayerProfile {
   readonly highUnctrl: number;
   readonly highChal: number;
   readonly highIntc: number;
+  /** GK 扑救 (position=1 时有值,FW/MF 时缺省 0) */
+  readonly catching?: number;
+  /** GK 击球 (position=1 时有值,FW/MF 时缺省 0) */
+  readonly punching?: number;
 }
 
 /** GK 能力值条目（ROM 0x3ae96 + idx*8） */

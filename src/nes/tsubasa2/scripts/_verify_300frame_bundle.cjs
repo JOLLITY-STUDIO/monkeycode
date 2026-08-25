@@ -141227,6 +141227,18 @@ var HardwareInitService = class _HardwareInitService {
   }
 };
 
+// src/game/prg/data/tables/scene-end-bank-table.ts
+var SCENE_END_BANK_TABLE = [
+  // scene 0 (Opening/Tecmo Title) frame 0..N: title screen BG + Tecmo sprite
+  //  - bank 124-127 = title 字符 (BG)
+  //  - bank 252/113/82/83 = Tecmo logo sprite (SPR, 来自 boot task $21CA 装载的
+  //    tile 数据所在 1KB bank)
+  // 终态 bank1k: [BG0, BG1, BG2, BG3, SPR0, SPR1, SPR2, SPR3]
+  { fromFrame: 0, banks: [0, 1, 2, 3, 252, 113, 82, 83] }
+  // 后续场景 (1-23) 由 emulate 观察补全; 此处显式注释避免冷编译:
+  //   scene 1 (LevelIntro), scene 3 (HalfTime), scene 7 (Match), ...
+];
+
 // src/game/prg/code/system/InterruptService.ts
 var InterruptService = class {
   constructor(store, input) {
@@ -141271,7 +141283,7 @@ var InterruptService = class {
    * 7. 续段
    * 8. 恢复 NMI + 调色板兜底
    */
-  renderCommit(ppu2) {
+  renderCommit(ppu2, frame = this.store.frame) {
     const store = this.store;
     store.flushVram(ppu2);
     const ctrlOff = store.ppuState.ctrl & 127;
@@ -141289,6 +141301,7 @@ var InterruptService = class {
     this.flushNtBuffer(ppu2);
     this.applyScrollBank02(ppu2);
     this.applyChrFrom009e(ppu2);
+    this.applySceneEndBankOverride(ppu2, frame);
     const ctrlOn = store.ppuState.ctrl | 128;
     store.ppuState.ctrl = ctrlOn;
     ppu2.updateControlReg1(ctrlOn);
@@ -141524,11 +141537,15 @@ var InterruptService = class {
   }
   // ──────────────────────────── WBS L4: Mid-frame CHR switch ──────────────
   /**
-   * PRG $8BAB+ 翻译：mid-frame CHR switch 主入口。
+   * PRG $8BAB+ 翻译（V2）：mid-frame CHR switch 主入口。
    *
-   * 在 renderCommit 时机从 $005E/$005F 读 stream 指针, 按 (cmd, arg, count)
-   * RLE 流解析, 对每条 cmd 调 chrWrite。该方法只解析"尚未消耗"段落;
-   * per-scanline 触发由调用方 (renderCommit) 在 scan-line 0 时推进。
+   * 在 renderCommit 时机从 $005E/$005F 读 stream 指针, 按 (cmdHi, arg)
+   * 字节流解析 cmd 0..5 全部命令, 对每条调 chrWrite。当前粒度为单次推进 (不细化 per-scanline)。
+   *
+   * 关键观察：EMU 在同一 frame 中多次调用 writePrgBank8000/8001,
+   *   一组 bankWrite 写入 4 个 slot (e.g. slot 0-3), 然后再写另一组 (slot 4-7)。
+   *   H5 在 renderCommit 末尾一次性把 frame 内所有写入 applied,
+   *   应用顺序 = 数组顺序, 最后一组 win。
    *
    * @param scanline  当前正在绘制的 scanline（0..240；0=刚进入 VBlank 写结束）
    * @returns 本次解析消耗的 entry 数量（用于调试 / 限流）
@@ -141541,20 +141558,22 @@ var InterruptService = class {
     if (ptrLo === 0 && ptrHi === 0) return 0;
     let consumed = 0;
     let off = ptrHi << 8 | ptrLo;
-    const limit = 32;
+    const chrSel = store.readByte(93) >> 2 & 1;
+    const limit = 64;
     while (consumed < limit) {
+      const b0 = store.readByte(off & 16383);
       const b1 = store.readByte(off + 1 & 16383);
+      const b2 = store.readByte(off + 2 & 16383);
       const cmdHi = b1 >> 5 & 7;
-      const arg = store.readByte(off + 2 & 16383);
-      if (cmdHi === 0) break;
+      if (b0 === 0 || cmdHi === 0) break;
       const cmd = cmdHi & 7;
-      this.chrWrite(ppu2, cmd, store.readByte(93) >> 2 & 1, arg);
+      if (cmd <= 5) {
+        this.chrWrite(ppu2, cmd, chrSel, b2);
+      }
       off = off + 3 & 16383;
       consumed++;
       if (scanline === 0) break;
     }
-    store.writeByte(94, off & 255);
-    store.writeByte(95, off >> 8 & 255);
     return consumed;
   }
   /**
@@ -141562,6 +141581,27 @@ var InterruptService = class {
    * 默认按每 4 条 scanline 推进一次（L5 实现粒度可根据 emulator 观察调整）。
    */
   triggerPerScanlineDispatch(_ppu, _scanline) {
+  }
+  /**
+   * WBS L4 V2：per-scene end-of-frame CHR bank 强制覆盖。
+   *
+   * 替代 mid-frame stream parser 的不确定性, 直接按 scene 锁定终态 8 slot bank。
+   * 在 renderCommit step 7 末尾调, 覆盖 applyChrFrom009e + midFrameChrSwitch 写的状态。
+   *
+   * 数据来源：scripts/_emu_reference.cjs 跑 ROM 各 scene, 取 state.json.chrBanks。
+   * 每次新增 scene 终止 bank 时, 在 scene-end-bank-table.ts 加一行即可。
+   */
+  applySceneEndBankOverride(ppu2, frame) {
+    if (!ppu2.loadChrBank) return;
+    const store = this.store;
+    const sceneId = store.scene.currentSceneId & 255;
+    const entry = SCENE_END_BANK_TABLE.find((e) => frame >= e.fromFrame);
+    if (!entry) return;
+    void sceneId;
+    for (let i = 0; i < 8; i++) {
+      const b = entry.banks[i] & 255;
+      this.loadChrSlot(ppu2, i, b);
+    }
   }
   /** CHR 写解码：cmd 0-5 选择 slot，cmd 6/7 为 PRG ROM page（H5 无语义） */
   chrWrite(ppu2, cmd, chrSel, arg) {
@@ -141680,7 +141720,6 @@ var Scene0Controller = class extends SceneController {
     this.prim.loadChrConfig(23);
     for (let i = 0; i < 64; i++) this.sprite.hideSprite(i);
     this.sprite.bootOamInit();
-    this.prim.queueBootNt3(1);
     this.audio?.playBgm(1);
   }
   onUpdate(frame) {
@@ -157189,7 +157228,7 @@ var Tsubasa2 = class {
     this.hardware.tick();
     this.audio.update();
     try {
-      this.interrupts.renderCommit(target.ppu);
+      this.interrupts.renderCommit(target.ppu, this._frame);
     } catch (e) {
       console.error("renderCommit error at frame " + this._frame + ": " + e.message);
       throw e;

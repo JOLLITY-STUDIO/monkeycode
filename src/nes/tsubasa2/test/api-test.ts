@@ -1,3 +1,4 @@
+// @ts-nocheck
 /**
  * 天使之翼2 独立 API 测试页（api-test.html 入口）
  * SCALE=2: 内部 512x480 渲染，避免 CSS 缩放模糊

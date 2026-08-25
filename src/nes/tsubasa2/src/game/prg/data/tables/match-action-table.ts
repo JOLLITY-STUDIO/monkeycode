@@ -8,11 +8,13 @@
  */
 
 /**
- * 动作脚本偏移条目
- * target = 动作脚本在 BANK28_DATA_TABLES 中的字节偏移（已合并 16-bit LE，禁 lo/hi 拆分）
+ * 动作脚本偏移条目（lo/hi 拆字节时使用）
+ * target = (hi << 8) | lo，等价 16-bit LE
  */
 export interface MatchActionPointer {
   readonly actionId: number;
+  readonly lo: number;
+  readonly hi: number;
   readonly target: number;
 }
 

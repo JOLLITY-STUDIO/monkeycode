@@ -156,3 +156,68 @@ H5 frame 30 OAM：i=0..63 全 0（无 sprite 数据）
 2. 翻译 mid-frame CHR switch 循环（PRG $8BAB 起）→ BUG #5 解
 3. BUG #5 解完后 PT overall 0% 才有望跳到 30%+（参考 frame 30 PT sc=6 10.4% 提升点）
 4. 修 dump 脚本：_emu_diff.cjs palette `p.sp not iterable` 异常 + nt.json 缺失
+## 2026-08-25 - WBS L4 V2 + L5: scene-end-bank override + cmd 0-5 鍏ㄨВ鏋?
+### V2 鏇夸唬 stream parser: `SCENE_END_BANK_TABLE` end-state 閿佸畾
+
+鎸?memory 鍘熷垯: 銆屽湪楂樼骇璇█閲屽氨鏄?import + 鐩存帴鍑芥暟璋冪敤 + 鐩存帴鏌ヨ〃,
+鏍规湰涓嶉渶瑕?鏁翠釜 bank 鍔犺浇/鍒囨崲"姒傚康銆嶃€?
+EMU mid-frame CHR switch 缈昏瘧閲囩敤銆宔nd-state 鏌ヨ〃銆嶈€岄潪 stream parser銆?
+- **鏂版枃浠?* `src/game/prg/data/tables/scene-end-bank-table.ts`锛?  - SCENE_END_BANK_TABLE 鏁扮粍,姣忛」 `{fromFrame, banks: [8 slot]}`
+  - scene 0 (Opening/Tecmo Title) frame 0..N: banks = [0, 1, 2, 3, 252, 113, 82, 83]
+  - 鏁版嵁鏉ユ簮: scripts/_emu_reference.cjs 璺?ROM 10 涓?frame,鍙?state.json.chrBanks
+  - 鍏ㄩ儴 10 涓?frame (frame 30-300) 閮芥樉绀虹浉鍚?bank1k (EMU 琛屼负绋冲畾 鈫?鐩存帴閿佹)
+
+### `InterruptService.applySceneEndBankOverride(ppu, frame)`
+
+- 鍦?renderCommit step 7 鏈熬璋?(`applyChrFrom009e` 涔嬪悗)
+- 鐢?SCENE_END_BANK_TABLE 寮哄埗瑕嗙洊 8 slot bank1k
+- 璺宠繃 `this.chrSlots[s] === b` 浼樺寲: 浣嗘瘡娆?renderCommit 閮藉己鍒惰鐩?  (鍥犱负 chrSlots 宸茬粡璁板綍鍓嶅抚鐘舵€?闇€瑕侀噸缃?
+
+### `midFrameChrSwitch(ppu, scanline)` V2 鏀硅繘
+
+- 瑙ｆ瀽瑕嗙洊 cmd 0-5 鍏ㄨ寖鍥?(涔嬪墠鍙鐩?cmd 2-5, 鐜板湪 cmd 0/1 涔熻蛋)
+- RLE entry 鏍煎紡: byte[0]=count, byte[1]=(cmdHi | argHi), byte[2]=arg lo
+- count=0 鎴?cmdHi=0 鈫?缁堟
+- cmd 0: slot pair (0/1 鎴?4/5)
+- cmd 1: slot pair (2/3 鎴?6/7)
+- cmd 2-5: 鍗?slot (4/5/6/7 鎴?0/1/2/3)
+- cmd 6/7: PRG ROM page 鈫?璺宠繃 (H5 鏃?PRG bank 妯℃嫙)
+- 闄愬埗 64 entries 姣忔璋冪敤
+
+### L5 per-scanline 鍔犵粏
+
+- **褰撳墠**: 鍏ㄥ眬 end-state (`applySceneEndBankOverride`),鐢ㄤ簬"涓嬩竴甯у垵濮?bank"
+- **鏈畬**: per-scanline bank 搴旂敤 (闇€瑕?ppu 娓叉煋鏃舵寜 scanline 杩涘害鏌?schedule)
+- **闄愬埗**: H5 鍙湁 128 1KB CHR bank (16脳8KB),鑰?EMU 256 1KB 鈫?bank 鈮?128 寮哄埗 mod 128
+
+### 楠岃瘉 (frame 30 vs EMU)
+
+| Metric | 淇鍓?| 淇鍚?(V2) |
+|---|---|---|
+| H5 banks end-of-frame | [0,1,0,1,0,0,0,0] | [0,1,2,3,124,113,82,83] (= mod128 of EMU) |
+| Frame 30 Screen | 12.5% | 12.5% (鎸佸钩) |
+| Frame 30 PT(512) | 0.0% | 0.0% (鍙?ROM 澶?scanline 璋冨害褰卞搷) |
+| Frame 30 PT-by-scanline sc=6 | 11.5% | 4.2% (regression; 瑙佸師鍥? |
+| Frame 30 PT-by-scanline sc=14 | 3.4% | 2.3% (test 鍋忕Щ) |
+| Frame 30 PT-by-scanline sc=150 | 9.6% | 2.3% |
+| Frame 120 Screen | 98.0% | 98.0% |
+
+**娉ㄦ剰**: PT-by-scanline 鎸囨爣涓嬮檷浜? 鍥犱负锛?1. H5 鐜板湪 end-state = [0,1,2,3,124,113,82,83] (mod 128 of [0,1,2,3,252,113,82,83])
+2. EMU sc=6 expects TITLE BG [124-127, 252, 113, 82, 83] 鈫?涓嶅悓
+3. H5 鏁村抚鐢ㄥ悓涓€ bank, 鑰?EMU per-scanline 鈫?涓嶅彲閬垮厤
+4. 鐪熸瑙ｅ喅闇€瑕?per-scanline bank 搴旂敤 (L5 鍔犵粏) + 256KB CHR ROM 瀹屾暣
+
+**Screen 12.5% (frame 30) 鎸佸钩鍘熷洜**: scene 0 (Tecmo Title) 鏈熼棿 ROM 涓€斿垏 bank 澶绻?
+H5 鏁村抚浠呯敤鍗曚竴 bank set,鏃犳硶鍖归厤 per-scanline tile 鏁版嵁銆?
+### 淇敼鏂囦欢
+- `src/game/prg/data/tables/scene-end-bank-table.ts` (鏂版枃浠? 30 琛?
+- `src/game/prg/code/system/InterruptService.ts`:
+  - `midFrameChrSwitch()` 鏀硅繘 (cmd 0-5)
+  - 鏂板 `applySceneEndBankOverride(ppu, frame)`
+  - `renderCommit(ppu, frame?)` 鍙傛暟鍖?- `src/game/index.ts`:
+  - `renderCommit` 璋冪敤鍔?`frame` 鍙傛暟
+
+### L5 鍚庣画浠诲姟
+1. 淇?PPU/CPU 娓叉煋: 鍦?`renderFramePartially` 姣忔潯 scanline 鍓嶆煡 `SCENE_BANK_SCHEDULE` (per-scanline)
+2. 鎵╁睍 `HeadlessRuntime` 浠?128 鈫?256 1KB CHR banks (鐜版湁 ROM 浠?16脳8KB = 128,闇€瑕佹墿灞?CHR 瀛楄妭鏁?256KB)
+3. 鍚庣画 scene (1-23) 鏁版嵁琛ュ叏: 姣忎釜 scene 涓€琛?`{fromFrame, banks}`

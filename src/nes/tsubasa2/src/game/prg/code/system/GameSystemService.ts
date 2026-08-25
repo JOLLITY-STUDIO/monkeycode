@@ -113,14 +113,13 @@ export class GameSystemService {
   }
 
   /**
-   * 写一个渲染缓冲条目：[count, addrLo, addrHi, data×count...]，由 NMI 渲染管线消费。
+   * 写一个渲染缓冲条目：data → NT[addr]，由 NMI 渲染管线消费。
+   * (count 截断保留 6-bit 兼容原版写入格式)
    */
   queueNtWrite(addr: number, data: ReadonlyArray<number>): void {
     const n = data.length & 0x3f;
     if (n === 0) return;
-    let pos = this.prim.ntBufferEntry(n, addr & 0xff, (addr >> 8) & 0xff);
-    pos = this.prim.ntBufferAppend(pos, data);
-    this.prim.ntBufferEnd(pos);
+    this.prim.ntBufferAppend({ vertical: false, ntAddr: addr, data });
   }
 
   /**

@@ -248,6 +248,10 @@ export class MatchRoundView {
 
   get paramId(): number { return this.s.readByte(0x05f4); }
   set paramId(v: number) { this.s.writeByte(0x05f4, v & 0xff); }
+
+  /** 回合段解析游标（ram_05EF：$005F 指针下的段偏移） */
+  get segmentCursor(): number { return this.s.readByte(0x05ef); }
+  set segmentCursor(v: number) { this.s.writeByte(0x05ef, v & 0xff); }
 }
 
 /**

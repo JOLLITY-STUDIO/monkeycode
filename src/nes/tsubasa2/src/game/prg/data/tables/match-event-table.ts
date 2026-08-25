@@ -8,11 +8,13 @@
  */
 
 /**
- * 事件动作脚本偏移条目
- * target = 事件动作脚本在 BANK20_DATA_TABLES 中的字节偏移（已合并 16-bit LE，禁 lo/hi 拆分）
+ * 事件动作脚本偏移条目（lo/hi 拆字节时使用）
+ * target = (hi << 8) | lo，等价 16-bit LE
  */
 export interface MatchEventPointer {
   readonly eventId: number;
+  readonly lo: number;
+  readonly hi: number;
   readonly target: number;
 }
 
@@ -407,30 +409,30 @@ export const BANK20_DATA_TABLES: ReadonlyArray<number> = [
  * 从 data_tables 中提取（偏移 0x8E4-0x800=0xE4）
  */
 export const BANK20_EVENT_POINTER_TABLE: ReadonlyArray<MatchEventPointer> = [
-  { eventId: 0, lo: 0x94, hi: 0x8C },
-  { eventId: 1, lo: 0xA2, hi: 0x8C },
-  { eventId: 2, lo: 0xB9, hi: 0x8C },
-  { eventId: 3, lo: 0xD0, hi: 0x8C },
-  { eventId: 4, lo: 0xDE, hi: 0x8C },
-  { eventId: 5, lo: 0xEC, hi: 0x8C },
-  { eventId: 6, lo: 0x09, hi: 0x8D },
-  { eventId: 7, lo: 0x1F, hi: 0x8D },
-  { eventId: 8, lo: 0x52, hi: 0x8D },
-  { eventId: 9, lo: 0x60, hi: 0x8D },
-  { eventId: 10, lo: 0x89, hi: 0x8D },
-  { eventId: 11, lo: 0x97, hi: 0x8D },
-  { eventId: 12, lo: 0xA5, hi: 0x8D },
-  { eventId: 13, lo: 0xB3, hi: 0x8D },
-  { eventId: 14, lo: 0xC1, hi: 0x8D },
-  { eventId: 15, lo: 0xCF, hi: 0x8D },
-  { eventId: 16, lo: 0x05, hi: 0x8E },
-  { eventId: 17, lo: 0x1B, hi: 0x8E },
-  { eventId: 18, lo: 0x32, hi: 0x8E },
-  { eventId: 19, lo: 0x5B, hi: 0x8E },
-  { eventId: 20, lo: 0x7A, hi: 0x8E },
-  { eventId: 21, lo: 0x8E, hi: 0x8E },
-  { eventId: 22, lo: 0xC6, hi: 0x8E },
-  { eventId: 23, lo: 0xE5, hi: 0x8E },
+  { eventId: 0, lo: 0x94, hi: 0x8C, target: 0x8C94 },
+  { eventId: 1, lo: 0xA2, hi: 0x8C, target: 0x8CA2 },
+  { eventId: 2, lo: 0xB9, hi: 0x8C, target: 0x8CB9 },
+  { eventId: 3, lo: 0xD0, hi: 0x8C, target: 0x8CD0 },
+  { eventId: 4, lo: 0xDE, hi: 0x8C, target: 0x8CDE },
+  { eventId: 5, lo: 0xEC, hi: 0x8C, target: 0x8CEC },
+  { eventId: 6, lo: 0x09, hi: 0x8D, target: 0x8D09 },
+  { eventId: 7, lo: 0x1F, hi: 0x8D, target: 0x8D1F },
+  { eventId: 8, lo: 0x52, hi: 0x8D, target: 0x8D52 },
+  { eventId: 9, lo: 0x60, hi: 0x8D, target: 0x8D60 },
+  { eventId: 10, lo: 0x89, hi: 0x8D, target: 0x8D89 },
+  { eventId: 11, lo: 0x97, hi: 0x8D, target: 0x8D97 },
+  { eventId: 12, lo: 0xA5, hi: 0x8D, target: 0x8DA5 },
+  { eventId: 13, lo: 0xB3, hi: 0x8D, target: 0x8DB3 },
+  { eventId: 14, lo: 0xC1, hi: 0x8D, target: 0x8DC1 },
+  { eventId: 15, lo: 0xCF, hi: 0x8D, target: 0x8DCF },
+  { eventId: 16, lo: 0x05, hi: 0x8E, target: 0x8E05 },
+  { eventId: 17, lo: 0x1B, hi: 0x8E, target: 0x8E1B },
+  { eventId: 18, lo: 0x32, hi: 0x8E, target: 0x8E32 },
+  { eventId: 19, lo: 0x5B, hi: 0x8E, target: 0x8E5B },
+  { eventId: 20, lo: 0x7A, hi: 0x8E, target: 0x8E7A },
+  { eventId: 21, lo: 0x8E, hi: 0x8E, target: 0x8E8E },
+  { eventId: 22, lo: 0xC6, hi: 0x8E, target: 0x8EC6 },
+  { eventId: 23, lo: 0xE5, hi: 0x8E, target: 0x8EE5 },
 ];
 
 /** 事件参数表（待结构化解析） */

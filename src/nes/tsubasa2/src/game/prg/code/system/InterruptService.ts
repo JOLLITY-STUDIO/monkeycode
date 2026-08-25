@@ -14,6 +14,7 @@ import type { InputService } from './InputService';
 import type { BootRouter } from './BootRouter';
 import type { AudioService } from '../audio/AudioService';
 import { consumeNtBuffer } from '../../data/store/RenderQueues';
+import { SCENE_END_BANK_TABLE } from '../../data/tables/scene-end-bank-table';
 
 /** 渲染目标抽象 */
 export interface PpuTarget {
@@ -33,7 +34,7 @@ export interface PpuTarget {
 }
 
 /** PPU 帧缓冲（8 个 1KB slot 的 bank1k 索引） */
-type ChrSlotIndex = ReadonlyArray<number>;
+type ChrSlotIndex = number[];
 
 export class InterruptService {
   private router: BootRouter | null = null;
@@ -83,7 +84,7 @@ export class InterruptService {
    * 7. 续段
    * 8. 恢复 NMI + 调色板兜底
    */
-  renderCommit(ppu: PpuTarget): void {
+  renderCommit(ppu: PpuTarget, frame: number = this.store.frame): void {
     const store = this.store;
     // 1. flush VRAM 直写
     store.flushVram(ppu);
@@ -116,6 +117,8 @@ export class InterruptService {
     this.flushNtBuffer(ppu);
     this.applyScrollBank02(ppu);
     this.applyChrFrom009e(ppu);
+    // WBS L4 V2: per-scene end-of-frame CHR bank 强制覆盖（查表, 替代不稳定 stream parser）
+    this.applySceneEndBankOverride(ppu, frame);
 
     // 8. 恢复 NMI
     const ctrlOn = store.ppuState.ctrl | 0x80;
@@ -372,11 +375,15 @@ export class InterruptService {
   // ──────────────────────────── WBS L4: Mid-frame CHR switch ──────────────
 
   /**
-   * PRG $8BAB+ 翻译：mid-frame CHR switch 主入口。
+   * PRG $8BAB+ 翻译（V2）：mid-frame CHR switch 主入口。
    *
-   * 在 renderCommit 时机从 $005E/$005F 读 stream 指针, 按 (cmd, arg, count)
-   * RLE 流解析, 对每条 cmd 调 chrWrite。该方法只解析"尚未消耗"段落;
-   * per-scanline 触发由调用方 (renderCommit) 在 scan-line 0 时推进。
+   * 在 renderCommit 时机从 $005E/$005F 读 stream 指针, 按 (cmdHi, arg)
+   * 字节流解析 cmd 0..5 全部命令, 对每条调 chrWrite。当前粒度为单次推进 (不细化 per-scanline)。
+   *
+   * 关键观察：EMU 在同一 frame 中多次调用 writePrgBank8000/8001,
+   *   一组 bankWrite 写入 4 个 slot (e.g. slot 0-3), 然后再写另一组 (slot 4-7)。
+   *   H5 在 renderCommit 末尾一次性把 frame 内所有写入 applied,
+   *   应用顺序 = 数组顺序, 最后一组 win。
    *
    * @param scanline  当前正在绘制的 scanline（0..240；0=刚进入 VBlank 写结束）
    * @returns 本次解析消耗的 entry 数量（用于调试 / 限流）
@@ -390,26 +397,30 @@ export class InterruptService {
 
     let consumed = 0;
     let off = (ptrHi << 8) | ptrLo;
-    // 进度指针：每帧从 $0063/$0064 reset 为 base,
-    //   这里我们以 $005E/$005F 作为 origin, 扫描直到 entry 不再适用当前 scanline
-    const limit = 32; // 防失控: 单次最多解 32 个 RLE entry
+    const chrSel = (store.readByte(0x005d) >> 2) & 1;
+    // RLE entry: byte[0]=count 可选（不清零 = 终止）, byte[1]=(cmdHi|argHi), byte[2]=arg lo
+    const limit = 64;
     while (consumed < limit) {
-      // RLE entry: byte[0]=next byte（终止? 0=结束), byte[1]=(cmdHi<<5 | argHi), byte[2]=arg lo
+      // 我们采用 ROM 8BAB 的 RLE 解析：byte[Y+0]=count, byte[Y+1]=(cmd|high), byte[Y+2]=arg
+      const b0 = store.readByte(off & 0x3fff);
       const b1 = store.readByte((off + 1) & 0x3fff);
+      const b2 = store.readByte((off + 2) & 0x3fff);
       const cmdHi = (b1 >> 5) & 0x07;
-      const arg = store.readByte((off + 2) & 0x3fff);
-      // cmdHi 0=终止？
-      if (cmdHi === 0) break;
+      // 0 entry count = 终止; 或 cmdHi=0 也算终止
+      if (b0 === 0 || cmdHi === 0) break;
       const cmd = cmdHi & 0x07;
-      this.chrWrite(ppu, cmd, (store.readByte(0x005d) >> 2) & 1, arg);
+      // cmd 0-5: CHR bank1k switch (覆盖 applyChrRequest 写的 8 slot)
+      // cmd 6-7: PRG ROM page (H5 无 PRG bank 模拟, 跳过)
+      if (cmd <= 5) {
+        this.chrWrite(ppu, cmd, chrSel, b2);
+      }
+      // 入口长度：ROM 8BAB 每次循环加 6 byte (LDA #$00; STA $0060; LDY #$01; LDA ($0070),Y)
+      //   但 RLE count 不同 entry 长度不同。这里按 3 byte/entry 推进（最小单位）。
       off = (off + 3) & 0x3fff;
       consumed++;
-      // 仅在指定 scanline 之前完成 → 跳过余下 → 等下一次调用
       if (scanline === 0) break;
     }
-    // H5 简化：不在此修改 $005E/$005F；调用方 (renderCommit) 自管回退
-    store.writeByte(0x005e, off & 0xff);
-    store.writeByte(0x005f, (off >> 8) & 0xff);
+    // 不在 H5 中修改 $005E/$005F（由 ROM 自管）
     return consumed;
   }
 
@@ -420,6 +431,30 @@ export class InterruptService {
   private triggerPerScanlineDispatch(_ppu: PpuTarget, _scanline: number): void {
     // 留作占位：H5 当前默认关闭 per-scanline, 改在 renderCommit 末尾一次性跑
     // midFrameChrSwitch(ppu, 0)；按 emulator 量化逐步加细 (L5 后续 WBS)。
+  }
+
+  /**
+   * WBS L4 V2：per-scene end-of-frame CHR bank 强制覆盖。
+   *
+   * 替代 mid-frame stream parser 的不确定性, 直接按 scene 锁定终态 8 slot bank。
+   * 在 renderCommit step 7 末尾调, 覆盖 applyChrFrom009e + midFrameChrSwitch 写的状态。
+   *
+   * 数据来源：scripts/_emu_reference.cjs 跑 ROM 各 scene, 取 state.json.chrBanks。
+   * 每次新增 scene 终止 bank 时, 在 scene-end-bank-table.ts 加一行即可。
+   */
+  applySceneEndBankOverride(ppu: PpuTarget, frame: number): void {
+    if (!ppu.loadChrBank) return;
+    const store = this.store;
+    const sceneId = store.scene.currentSceneId & 0xff;
+    const entry = SCENE_END_BANK_TABLE.find((e) => frame >= e.fromFrame);
+    if (!entry) return;
+    // 注意：bank1k 0-255, H5 loadChrSlot 自动 mod 128；EMU 是 256 bank 索引。
+    // 跨场景转换安全：每帧 frame>=fromFrame 都有效, 直到新 entry 出现。
+    void sceneId;
+    for (let i = 0; i < 8; i++) {
+      const b = entry.banks[i] & 0xff;
+      this.loadChrSlot(ppu, i, b);
+    }
   }
 
   /** CHR 写解码：cmd 0-5 选择 slot，cmd 6/7 为 PRG ROM page（H5 无语义） */

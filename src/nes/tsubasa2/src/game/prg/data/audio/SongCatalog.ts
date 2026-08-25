@@ -49,6 +49,8 @@ export interface SongRecord {
   readonly channels: ReadonlyArray<ChannelTrack>;
   /** 分类标签（调试用） */
   readonly kind: 'bgm' | 'se';
+  /** header 标志字节 (>=0x80 表示仅启用通道后返回) */
+  readonly headerFlag?: number;
 }
 
 // ════════════════════════════════════════════════════

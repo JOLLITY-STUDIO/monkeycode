@@ -24,7 +24,6 @@ export type {
   AudioToken, NoteToken, DurationToken, SpeedToken, CommandToken, RestToken, NoiseToken,
 } from './audio/AudioTokens';
 export { AudioRom } from './audio/audio-rom';
-export type { Papu } from './audio/AudioService';
 export type { SongTrack, SongType, SongBank } from './audio/index';
 export { BGM_SONGS, SE_SONGS } from './audio/index';
 
@@ -40,7 +39,7 @@ export {
 } from './tables/player-table';
 export type { PlayerColorEntry, PlayerGkEntry } from './tables/player-table';
 export { TEAM_TABLE, findTeamById, findTeamNameById, findRosterById, TEAMS_FULL } from './tables/team-table';
-export type { TeamEntry, TeamRosterEntry } from './tables/team-table';
+export type { TeamRosterEntry } from './tables/team-table';
 export {
   SKILL_TABLE, SKILL_POINTER_TABLE, SKILL_MATCH_TABLE, SKILL_MOVE_ID_TABLE, SKILL_TRIGGER_TABLE,
   BANK16_DATA_TABLES, BANK16_CODE_DATA, findSkillByMoveId, findSkillsByPlayer,
@@ -98,13 +97,13 @@ export {
   BANK6_SEC_02_NT_TILES, BANK6_SEC_02_NT_TILES_OFFSET, BANK6_SEC_02_NT_TILES_CPU_BASE,
   BANK6_SEC_03_PTR_BLK, BANK6_SEC_03_PTR_BLK_OFFSET, BANK6_SEC_03_PTR_BLK_CPU_BASE,
   BANK6_SEC_04_TILE_BLK, BANK6_SEC_04_TILE_BLK_OFFSET, BANK6_SEC_04_TILE_BLK_CPU_BASE,
-} from './scene/bank6';
-export type { OpeningSceneEntry } from './scene/bank6';
+} from './scene/bank6/index';
+export type { OpeningSceneEntry } from './scene/bank6/index';
 
 // bank07 拆解
 export {
   BANK7_CHR_POINTERS, BANK7_CHR_CONFIGS, BANK7_TILE_STREAMS, OPENING_TILE_STREAMS,
-} from './scene/bank7';
+} from './scene/bank7/index';
 
 // 多语言球员名表 (日文/中文/英文, 来自原版 ROM 修改参考文档)
 

@@ -68,9 +68,11 @@ export class MatchActionService {
   findActionPointer(actionId: number): number {
     const entry = BANK28_ACTION_POINTER_TABLE.find(p => p.actionId === actionId);
     if (!entry) return 0;
-    this.store.write('ram_0032', entry.lo);
-    this.store.write('ram_0033', entry.hi);
-    return (entry.hi << 8) | entry.lo;
+    const lo = entry.lo ?? (entry.target & 0xff);
+    const hi = entry.hi ?? ((entry.target >> 8) & 0xff);
+    this.store.write('ram_0032', lo);
+    this.store.write('ram_0033', hi);
+    return (hi << 8) | lo;
   }
 
   /**

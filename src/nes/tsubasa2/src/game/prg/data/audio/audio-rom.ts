@@ -33,6 +33,15 @@ export function getCommandHandler(idx: number): number {
   return COMMAND_TABLE[idx & 0x1f] ?? 0;
 }
 
+/** 旧 BGM/SE request ID 范围常量 (测试残留兼容) */
+export const SONG_REQUEST_IDS = {
+  BGM_LOW: 0x03,
+  BGM_HIGH: 0x32,
+  SE_LOW: 0x32,
+  SE_HIGH: 0x6F,
+  SE_EXT_HIGH: 0x6F,
+} as const;
+
 /* 兼容旧引用：AudioRom 类（具名方法，不再返回 -1 占位） */
 export class AudioRom {
   static frequency(idx: number): number { return getApePeriod(idx); }

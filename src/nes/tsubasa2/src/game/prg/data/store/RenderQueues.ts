@@ -48,7 +48,7 @@ export function consumeNtBuffer(view: RenderQueueView): NtRowEntry[] {
     const count = vertical ? (b0 & 0x3f) : b0;
     if (x + 3 + count > pos) break;
     const addr = (buf[x + 2] << 8) | buf[x + 1];
-    const data = buf.subarray(x + 3, x + 3 + count);
+    const data = Array.from(buf.subarray(x + 3, x + 3 + count));
     out.push({ vertical, ntAddr: addr & 0x3fff, data });
     x += 3 + count;
   }
