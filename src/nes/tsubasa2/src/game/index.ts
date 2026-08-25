@@ -199,8 +199,13 @@ export class Tsubasa2 {
 
   /**
    * 启动：RESET（$C64E）→ RAM 初始化 → OAM 隐藏 → 场景调度（$CEFE/$C400 → $A200 场景 0）
+   *
+   * @param target 可选 FrameTarget — 提供时立即:
+   *   1. 装载 boot 期 CHR bank 终态到 PPU ptTile (WBS_FRAME13 F6)
+   *   2. 装载 boot palette + Tecmo logo OAM 到 PPU 寄存器 (F4+F5)
+   *   否则只跑游戏逻辑初始化 (外部用 lazy runtime 模式)
    */
-  boot(): void {
+  boot(target?: FrameTarget): void {
     this._frame = 0;
     this.hardware.reset();
     // 立即装载 Tecmo logo OAM 40 sprite → shadowOam ($0468-$04C7)
@@ -208,6 +213,17 @@ export class Tsubasa2 {
     this.sprite.bootOamInit();
     // 场景调度：场景号 0（原版 Reset 末尾 LDA #$00; JMP $CEFE）
     this.router.changeScene(SceneId.Scene0);
+
+    // WBS_FRAME13 F4+F5+F6: 若有 target, 立即把 boot 状态 prime 到 PPU
+    if (target) {
+      // F6: CHR bank 终态装载 (frame 0)
+      const runtimeAny = target as unknown as { bootInitialChrBanks?: () => void };
+      if (typeof runtimeAny.bootInitialChrBanks === 'function') {
+        runtimeAny.bootInitialChrBanks();
+      }
+      // F4+F5: 调色板 + shadow OAM 推到 PPU
+      this.interrupts.primeBootState(target.ppu);
+    }
   }
 
   /**

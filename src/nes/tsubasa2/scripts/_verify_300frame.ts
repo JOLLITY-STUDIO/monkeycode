@@ -30,7 +30,8 @@ import { HeadlessRuntime } from '../src/game/runtime/HeadlessRuntime';
 const FRAMES_LIST = [1, 5, 9, 13, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
 const runtime = new HeadlessRuntime();
 const game = new Tsubasa2();
-game.boot();
+// WBS_FRAME13 F4/F5/F6: 把 boot 与 runtime 串联 → 让 boot 立即触发 primeBootState
+game.boot(runtime);
 
 const ppu: any = runtime.ppu;
 const nes: any = { ppu };
@@ -428,6 +429,35 @@ function writePpuTrace(frameN: number): void {
     ram0628: store.readByte(0x0628),
     ram0044: store.readByte(0x0044),
   });
+  // WBS_FRAME13 F2: state.json 落地 (pc/chipSlots/prgBankMap/bgTable/spTable/RAM 关键)
+  const runtimeAny = runtime as any;
+  const chrSlots = (runtimeAny.chrSlots && Array.from(runtimeAny.chrSlots)) || [];
+  const nes = (game as any);
+  const state = {
+    frame: frameN,
+    pc: 0,                                 // TS-NES 没有真实 PC 跟踪; 留 0
+    chrSlots,
+    prgBankMap: {},
+    bgTable: ppu.f_bgPatternTable ?? 0,
+    spTable: ppu.f_spPatternTable ?? 0,
+    ram_001B: store.readByte(0x001b),
+    ram_0628: store.readByte(0x0628),
+    ram_0044: store.readByte(0x0044),
+    ram_0076: store.readByte(0x0076),
+    ram_0075: store.readByte(0x0075),
+    ram_00ed: store.readByte(0x00ed),
+    oamVisible: oam.json.filter((s: any) => s.y !== 0 && s.y !== 0xff).length,
+    oamTotal: 64,
+    ptNonEmpty: (() => {
+      let nz = 0;
+      for (let i = 0; i < 512; i++) {
+        const t = ppu.ptTile[i];
+        if (t && t.pix) { for (const p of t.pix) { if (p !== 0) { nz++; break; } } }
+      }
+      return nz;
+    })(),
+  };
+  fs.writeFileSync(path.join(dir, 'state.json'), JSON.stringify(state, null, 2));
 }
 
 let total = 0;

@@ -214,6 +214,24 @@ export class HeadlessRuntime implements GameRuntime {
     else c.buttonUp(button as 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7);
   }
 
+  /**
+   * Boot 期 CHR bank 立即装载（WBS_FRAME13 F6）。
+   *
+   * 在 frame=0 时, PPU ptTile 还没有任何非零 tile 数据。
+   * BUG #005 已经修过 SCENE_END_BANK_TABLE,
+   * 但 `HeadlessRuntime.loadChrSlot()` 仅在 `renderCommit()` 链路被触发, 而 frame 0
+   * 还没到 renderCommit → ppu.ptTile 全 0.
+   *
+   * 修法: 让外部 (Tsubasa2.boot(runtime)) 直接调本方法, 把 frame=0 的 8 slot 立即推 PPU.
+   * 真值 (emu frame 1-13): banks = [0,1,2,3,252,113,82,83].
+   */
+  bootInitialChrBanks(): void {
+    const bootSlots = [0, 1, 2, 3, 252, 113, 82, 83];
+    for (let s = 0; s < 8; s++) {
+      this.loadChrSlot(s, bootSlots[s]);
+    }
+  }
+
   /** 跑一帧（游戏逻辑 + PPU 扫描线渲染），渲染结果在 ppu.buffer */
   frame(game: Tsubasa2): void {
     game.frame(this);

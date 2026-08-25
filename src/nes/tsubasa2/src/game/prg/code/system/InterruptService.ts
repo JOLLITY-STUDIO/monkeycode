@@ -131,27 +131,34 @@ export class InterruptService {
 
   /**
    * OAM DMA（影子 → spriteMem）。
-   * 影子 $0468 中属性 bit2/3 非零 → X=$F8（隐藏）。
    *
-   * ⚠ byte-order 注意事项：
-   *   当前实现按 H5 内部约定写 oam[y..y+3] = [X, tile, attr, spriteY]（匹配
-   *   PPU.spriteRamWriteUpdate 的 sprY/sprTile/sprAttr/sprX unpack 异常，
-   *   此为已存在实现，本文不修 - 见 DEVLOG #5 / WBS Y4）。
-   *   dumpOam 通过 ppu.sprY[] 读取时, byte-order 与 NES 标准 [Y, tile, attr, X] 不一致。
+   * Byte order: NES 标准 [Y, tile, attr, X] (PPU.spriteRamWriteUpdate 按此解)。
+   * 之前的 [X, tile, attr, Y] 是反了, 现在修正.
+   *
+   * ⚠ attr mask 检查：
+   *   原来 `(attr & 0x0c) !== 0 → X=0xF8` 是错的（0x0c 是 palette group 位），
+   *   实际 NES 隐藏条件是 Y >= 0xEF；attr bit 不参与 X 隐藏。
+   *   emu-reference frame 30 OAM idx 1-24 都是 attr=2 但 x 正常 → 验证此 mask 错。
    */
   private oamDma(ppu: PpuTarget): void {
     const store = this.store;
     const oam = store.oam.oam;
     for (let y = 0; y < 0x100; y += 4) {
-      let x = store.oam.spriteX(y);
+      const yPos = store.oam.spriteY(y);
+      const xPos = store.oam.spriteX(y);
       const attr = store.oam.spriteAttr(y);
-      if ((attr & 0x0c) !== 0) x = 0xf8;
-      oam[y] = x;
-      oam[y + 1] = store.oam.spriteTile(y);
-      oam[y + 2] = attr;
-      oam[y + 3] = store.oam.spriteY(y);
+      // NES 标准: Y >= 0xEF → 隐藏 (Y 自动 offscreen). X 字段不动.
+      void yPos;
+      oam[y] = yPos;                                  // NES byte 0 = Y
+      oam[y + 1] = store.oam.spriteTile(y);           // NES byte 1 = tile
+      oam[y + 2] = attr;                              // NES byte 2 = attr
+      oam[y + 3] = xPos;                              // NES byte 3 = X
     }
-    for (let i = 0; i < 0x100; i++) ppu.spriteMem[i] = oam[i];
+    const updateFn = (ppu as any).spriteRamWriteUpdate;
+    for (let i = 0; i < 0x100; i++) {
+      ppu.spriteMem[i] = oam[i];
+      if (typeof updateFn === 'function') updateFn.call(ppu, i, oam[i]);
+    }
   }
 
   /** 主滚动：X = ppuState.scrollTempX, Y = ppuState.scrollTempY */
@@ -313,6 +320,30 @@ export class InterruptService {
     const spr = store.palette.spr;
     for (let i = 0; i < 0x10; i++) ppu.writeMem(0x3f00 + i, bg[i]);
     for (let i = 0; i < 0x10; i++) ppu.writeMem(0x3f10 + i, spr[i]);
+  }
+
+  /**
+   * Boot 期 primeBootState — WBS_FRAME13 F4 + F5
+   *
+   * 把 boot 时已经计算好的 shadow OAM 与 调色板强制推到 PPU, 不等 renderCommit.
+   * 替代方案: 等 frame 1 renderCommit 自然跑 (但 OAM DMA boot 顺序与 sprite count == 0
+   * 时机冲突 — frame 1 早期 PPU 仍 0).
+   *
+   * ⚠ OAM 写入必须逐字节调 spriteRamWriteUpdate(), 让 PPU 同步 unpack sprY/sprTile/sprCol/sprX;
+   * 直接写 spriteMem 不会触发 unpack (PPU dumpOam/sprY 仍 0).
+   *
+   * @param ppu PPU 渲染目标
+   */
+  primeBootState(ppu: PpuTarget): void {
+    // 1. 调色板立即推 PPU palette RAM ($3F00-$3F1F)
+    this.flushPalette(ppu);
+    // 2. OAM 立即推 PPU spriteMem + 触发 unpack
+    const oam = this.store.oam.oam;
+    const updateFn = (ppu as any).spriteRamWriteUpdate;
+    for (let i = 0; i < 0x100; i++) {
+      ppu.spriteMem[i] = oam[i];
+      if (typeof updateFn === 'function') updateFn.call(ppu, i, oam[i]);
+    }
   }
 
   /**

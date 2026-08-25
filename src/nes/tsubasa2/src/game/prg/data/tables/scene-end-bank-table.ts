@@ -26,21 +26,21 @@ export interface SceneBankEntry {
 
 /**
  * Scene-end CHR bank table — scene 0 frame 范围 (Tecmo Title → map3 NT)
- * 数据来源: emu-reference/frame-{030,060,300}/chr-switches.json (最后一行 scanline banks)
- *   frame 030  sc=6  banks=[124,125,126,127,252,113,82,83]  (boot 终态)
- *   frame 060  sc=150 banks=[0,1,2,3,252,113,82,83]         (LoadScene3Nt 后切回 BG default)
- *   frame 300  sc=11 banks=[124,125,126,127,252,113,82,83]  (Hold 终态)
+ * 数据来源: emu-reference/frame-{013,030,060,300}/chr-switches.json (最后一行 scanline banks)
+ *   frame 013  banks=[0,1,2,3,252,113,82,83]            (boot 终态 — emu真实)
+ *   frame 030  sc=150 banks=[0,1,2,3,252,113,82,83]
+ *   frame 060  sc=150 banks=[0,1,2,3,252,113,82,83]
+ *   frame 300  sc=11  banks=[124,125,126,127,252,113,82,83] (Hold)
  *
- * 之前单一 entry 错误值 [0,1,2,3,252,113,82,83] 来自 PT1 早期推断,
- *  导致 H5 frame 1-300 全程 slot 0-3 = 0,1,2,3 而不是 emu 的真实切换序列。
+ * 历史 BUG: v1 用 `[124,125,126,127,252,113,82,83]` 给 H5 frame 0-300 全程覆盖 — 这跟
+ *   emu frame 1-13 真值 [0,1,2,3,252,113,82,83] 不符。修正:
+ *   - frame 0..299: BG default 0-3, SPR 252/113/82/83 (Tecmo logo sprite layer)
+ *   - frame 300+:    再切回 124-127 (Hold stage 显示 Tecmo 字符)
  */
 export const SCENE_END_BANK_TABLE: ReadonlyArray<SceneBankEntry> = [
-  // frame 0..29: boot 阶段, BG slot 0-3 = 124-127 (Tecmo title 字符)
-  { fromFrame: 0, banks: [124, 125, 126, 127, 252, 113, 82, 83] },
-  // frame 30..299: LoadScene3Nt (BG $046F) 切回 default; SPR slots 不变
-  // 注: 实际 frame 30 emu 终态是 [124,...] 但 mid-scene 切到 [0,1,2,3,...]
-  { fromFrame: 45, banks: [0, 1, 2, 3, 252, 113, 82, 83] },
-  // frame 300: Hold 之后又切回 [124-127...] (emu-reference sc=11)
+  // frame 0..299: BG default + Tecmo logo SPR 层
+  { fromFrame: 0,   banks: [0, 1, 2, 3, 252, 113, 82, 83] },
+  // frame 300+: Hold 切回 Tecmo 字符 BG
   { fromFrame: 300, banks: [124, 125, 126, 127, 252, 113, 82, 83] },
   // 后续场景 (1-23) 由 emulate 观察补全; 此处显式注释避免冷编译:
   //   scene 1 (LevelIntro), scene 3 (HalfTime), scene 7 (Match), ...

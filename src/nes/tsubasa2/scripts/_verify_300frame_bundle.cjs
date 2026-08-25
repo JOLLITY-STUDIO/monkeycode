@@ -141270,12 +141270,9 @@ var HardwareInitService = class _HardwareInitService {
 
 // src/game/prg/data/tables/scene-end-bank-table.ts
 var SCENE_END_BANK_TABLE = [
-  // frame 0..29: boot 阶段, BG slot 0-3 = 124-127 (Tecmo title 字符)
-  { fromFrame: 0, banks: [124, 125, 126, 127, 252, 113, 82, 83] },
-  // frame 30..299: LoadScene3Nt (BG $046F) 切回 default; SPR slots 不变
-  // 注: 实际 frame 30 emu 终态是 [124,...] 但 mid-scene 切到 [0,1,2,3,...]
-  { fromFrame: 45, banks: [0, 1, 2, 3, 252, 113, 82, 83] },
-  // frame 300: Hold 之后又切回 [124-127...] (emu-reference sc=11)
+  // frame 0..299: BG default + Tecmo logo SPR 层
+  { fromFrame: 0, banks: [0, 1, 2, 3, 252, 113, 82, 83] },
+  // frame 300+: Hold 切回 Tecmo 字符 BG
   { fromFrame: 300, banks: [124, 125, 126, 127, 252, 113, 82, 83] }
   // 后续场景 (1-23) 由 emulate 观察补全; 此处显式注释避免冷编译:
   //   scene 1 (LevelIntro), scene 3 (HalfTime), scene 7 (Match), ...
@@ -141351,27 +141348,33 @@ var InterruptService = class {
   }
   /**
    * OAM DMA（影子 → spriteMem）。
-   * 影子 $0468 中属性 bit2/3 非零 → X=$F8（隐藏）。
    *
-   * ⚠ byte-order 注意事项：
-   *   当前实现按 H5 内部约定写 oam[y..y+3] = [X, tile, attr, spriteY]（匹配
-   *   PPU.spriteRamWriteUpdate 的 sprY/sprTile/sprAttr/sprX unpack 异常，
-   *   此为已存在实现，本文不修 - 见 DEVLOG #5 / WBS Y4）。
-   *   dumpOam 通过 ppu.sprY[] 读取时, byte-order 与 NES 标准 [Y, tile, attr, X] 不一致。
+   * Byte order: NES 标准 [Y, tile, attr, X] (PPU.spriteRamWriteUpdate 按此解)。
+   * 之前的 [X, tile, attr, Y] 是反了, 现在修正.
+   *
+   * ⚠ attr mask 检查：
+   *   原来 `(attr & 0x0c) !== 0 → X=0xF8` 是错的（0x0c 是 palette group 位），
+   *   实际 NES 隐藏条件是 Y >= 0xEF；attr bit 不参与 X 隐藏。
+   *   emu-reference frame 30 OAM idx 1-24 都是 attr=2 但 x 正常 → 验证此 mask 错。
    */
   oamDma(ppu2) {
     const store = this.store;
     const oam = store.oam.oam;
     for (let y = 0; y < 256; y += 4) {
-      let x = store.oam.spriteX(y);
+      const yPos = store.oam.spriteY(y);
+      const xPos = store.oam.spriteX(y);
       const attr = store.oam.spriteAttr(y);
-      if ((attr & 12) !== 0) x = 248;
-      oam[y] = x;
+      void yPos;
+      oam[y] = yPos;
       oam[y + 1] = store.oam.spriteTile(y);
       oam[y + 2] = attr;
-      oam[y + 3] = store.oam.spriteY(y);
+      oam[y + 3] = xPos;
     }
-    for (let i = 0; i < 256; i++) ppu2.spriteMem[i] = oam[i];
+    const updateFn = ppu2.spriteRamWriteUpdate;
+    for (let i = 0; i < 256; i++) {
+      ppu2.spriteMem[i] = oam[i];
+      if (typeof updateFn === "function") updateFn.call(ppu2, i, oam[i]);
+    }
   }
   /** 主滚动：X = ppuState.scrollTempX, Y = ppuState.scrollTempY */
   applyScrollC7B7(ppu2) {
@@ -141524,6 +141527,27 @@ var InterruptService = class {
     const spr = store.palette.spr;
     for (let i = 0; i < 16; i++) ppu2.writeMem(16128 + i, bg[i]);
     for (let i = 0; i < 16; i++) ppu2.writeMem(16144 + i, spr[i]);
+  }
+  /**
+   * Boot 期 primeBootState — WBS_FRAME13 F4 + F5
+   *
+   * 把 boot 时已经计算好的 shadow OAM 与 调色板强制推到 PPU, 不等 renderCommit.
+   * 替代方案: 等 frame 1 renderCommit 自然跑 (但 OAM DMA boot 顺序与 sprite count == 0
+   * 时机冲突 — frame 1 早期 PPU 仍 0).
+   *
+   * ⚠ OAM 写入必须逐字节调 spriteRamWriteUpdate(), 让 PPU 同步 unpack sprY/sprTile/sprCol/sprX;
+   * 直接写 spriteMem 不会触发 unpack (PPU dumpOam/sprY 仍 0).
+   *
+   * @param ppu PPU 渲染目标
+   */
+  primeBootState(ppu2) {
+    this.flushPalette(ppu2);
+    const oam = this.store.oam.oam;
+    const updateFn = ppu2.spriteRamWriteUpdate;
+    for (let i = 0; i < 256; i++) {
+      ppu2.spriteMem[i] = oam[i];
+      if (typeof updateFn === "function") updateFn.call(ppu2, i, oam[i]);
+    }
   }
   /**
    * CHR 装载（基于 loadChrConfig 写入的 6 字节 cfg → 8 slot bank1k 推算）：
@@ -141760,7 +141784,6 @@ var Scene0Controller = class extends SceneController {
     this.sceneRow = 0;
     this.holdSecond = false;
     this.prim.loadChrConfig(23);
-    for (let i = 0; i < 64; i++) this.sprite.hideSprite(i);
     this.prim.loadBootPalette();
     this.audio?.playBgm(1);
   }
@@ -157343,12 +157366,24 @@ var Tsubasa2 = class {
   }
   /**
    * ������RESET��$C64E���� RAM ��ʼ�� �� OAM ���� �� �������ȣ�$CEFE/$C400 �� $A200 ���� 0��
+   *
+   * @param target ��ѡ FrameTarget �� �ṩʱ����:
+   *   1. װ�� boot �� CHR bank ��̬�� PPU ptTile (WBS_FRAME13 F6)
+   *   2. װ�� boot palette + Tecmo logo OAM �� PPU �Ĵ��� (F4+F5)
+   *   ����ֻ����Ϸ�߼���ʼ�� (�ⲿ�� lazy runtime ģʽ)
    */
-  boot() {
+  boot(target) {
     this._frame = 0;
     this.hardware.reset();
     this.sprite.bootOamInit();
     this.router.changeScene(0 /* Scene0 */);
+    if (target) {
+      const runtimeAny = target;
+      if (typeof runtimeAny.bootInitialChrBanks === "function") {
+        runtimeAny.bootInitialChrBanks();
+      }
+      this.interrupts.primeBootState(target.ppu);
+    }
   }
   /**
    * ÿ֡��NMI ��Ϸ�߼� �� ��Ⱦ�ύ �� PPU ɨ������Ⱦ
@@ -159474,6 +159509,23 @@ var HeadlessRuntime = class {
     if (down) c.buttonDown(button);
     else c.buttonUp(button);
   }
+  /**
+   * Boot 期 CHR bank 立即装载（WBS_FRAME13 F6）。
+   *
+   * 在 frame=0 时, PPU ptTile 还没有任何非零 tile 数据。
+   * BUG #005 已经修过 SCENE_END_BANK_TABLE,
+   * 但 `HeadlessRuntime.loadChrSlot()` 仅在 `renderCommit()` 链路被触发, 而 frame 0
+   * 还没到 renderCommit → ppu.ptTile 全 0.
+   *
+   * 修法: 让外部 (Tsubasa2.boot(runtime)) 直接调本方法, 把 frame=0 的 8 slot 立即推 PPU.
+   * 真值 (emu frame 1-13): banks = [0,1,2,3,252,113,82,83].
+   */
+  bootInitialChrBanks() {
+    const bootSlots = [0, 1, 2, 3, 252, 113, 82, 83];
+    for (let s = 0; s < 8; s++) {
+      this.loadChrSlot(s, bootSlots[s]);
+    }
+  }
   /** 跑一帧（游戏逻辑 + PPU 扫描线渲染），渲染结果在 ppu.buffer */
   frame(game2) {
     game2.frame(this);
@@ -159484,7 +159536,7 @@ var HeadlessRuntime = class {
 var FRAMES_LIST = [1, 5, 9, 13, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
 var runtime = new HeadlessRuntime();
 var game = new Tsubasa2();
-game.boot();
+game.boot(runtime);
 var ppu = runtime.ppu;
 var CRC_TABLE = (() => {
   const t = new Array(256);
@@ -159859,6 +159911,42 @@ function writePpuTrace(frameN) {
     ram0628: store.readByte(1576),
     ram0044: store.readByte(68)
   });
+  const runtimeAny = runtime;
+  const chrSlots = runtimeAny.chrSlots && Array.from(runtimeAny.chrSlots) || [];
+  const nes = game;
+  const state = {
+    frame: frameN,
+    pc: 0,
+    // TS-NES 没有真实 PC 跟踪; 留 0
+    chrSlots,
+    prgBankMap: {},
+    bgTable: ppu.f_bgPatternTable ?? 0,
+    spTable: ppu.f_spPatternTable ?? 0,
+    ram_001B: store.readByte(27),
+    ram_0628: store.readByte(1576),
+    ram_0044: store.readByte(68),
+    ram_0076: store.readByte(118),
+    ram_0075: store.readByte(117),
+    ram_00ed: store.readByte(237),
+    oamVisible: oam.json.filter((s) => s.y !== 0 && s.y !== 255).length,
+    oamTotal: 64,
+    ptNonEmpty: (() => {
+      let nz = 0;
+      for (let i = 0; i < 512; i++) {
+        const t = ppu.ptTile[i];
+        if (t && t.pix) {
+          for (const p of t.pix) {
+            if (p !== 0) {
+              nz++;
+              break;
+            }
+          }
+        }
+      }
+      return nz;
+    })()
+  };
+  fs.writeFileSync(path.join(dir, "state.json"), JSON.stringify(state, null, 2));
 }
 var total = 0;
 for (const target of FRAMES_LIST) {

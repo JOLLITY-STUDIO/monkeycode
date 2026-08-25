@@ -67,8 +67,8 @@ export class Scene0Controller extends SceneController {
 
     // 装载 Tecmo logo CHR 配置
     this.prim.loadChrConfig(0x17);
-    // 装载 Tecmo logo 40 sprite 到 shadow OAM
-    for (let i = 0; i < 64; i++) this.sprite.hideSprite(i);
+    // WBS_FRAME13 F4: sprite.bootOamInit() 已由 Tsubasa2.boot() 写过 Tecmo logo 40 sprite,
+    //   onEnter 再 hide 会覆盖. 不在这里调 hideAll (boot 阶段已隐 24+ sprite).
     // NOTE: sprite.bootOamInit() 已在 Tsubasa2.boot() 完成 (PRG $21CA 在 reset 时机执行)
     // 装载 boot 调色板 (PRG $1DD1 在 reset 时机执行, 但 scene0 需要调 fadeBgStep 之前完成)
     this.prim.loadBootPalette();
