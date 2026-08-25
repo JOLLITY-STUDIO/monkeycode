@@ -71,7 +71,6 @@ export class Scene0Controller extends SceneController {
   private readonly tileBuilder: TileBuilderService;
   private ntStreamLoader: NtStreamLoaderService | null = null;
   private sceneStateMachine: SceneStateMachine | null = null;
-  private bank00Scheduler: Bank00SchedulerService | null = null;
   private audio: AudioService | null = null;
   private phase = Phase.Init;
   private counter = 0;
@@ -103,29 +102,16 @@ export class Scene0Controller extends SceneController {
   }
 
   /**
-   * 注入 bank00 6-slot timer dispatcher（PRG $9EEF/$9FA8 翻译）。
-   * 由 Tsubasa2.boot() 在 BootRouter 构造之后调用。
-   * Scene0 的 Wait16/Wait4/Wait240/Wait60 phase 用 scheduler.pushState()
-   * 替代 this.counter 自减，证明 pushState → tickDispatch → callback 链路端到端打通。
-   */
-  attachBank00Scheduler(scheduler: Bank00SchedulerService): void {
-    this.bank00Scheduler = scheduler;
-  }
-
-  /**
-   * 调度下一帧（PRG $9FA8 pushState 翻译）。
+   * 调度下一 phase（PRG $9FA8 pushState 翻译）。
    *
    * 行为对照：
-   *   ROM: LDA #$XX / JSR $9FA8 — 入栈 aReg=timer + JMP $9EFB scheduler tail
+   *   ROM: LDA #$XX / JSR $9FA8 — 入栈 timer + JMP $9EFB scheduler tail
    *        → 每帧 DEC timer → timer=0 自动 dispatchTail
-   *   H5:  pushState({timer, yReg: target, callback: ...})
-   *        → InterruptService.nmi() 末尾 tickDispatch() 自动 callback
+   *   H5:  scheduleAfter(timer, cb) — 委托基类 hook；
+   *        → InterruptService.nmi() 末尾 tickDispatch() 派发
    *
-   * Phase 推进：
-   *   - counter 路径：立即 this.phase = target（保留 Scene0 已验证自减逻辑）
-   *   - scheduler 路径：保留 counter 自减（保障 fallback 兼容），同时 pushState
-   *                   → schedulerService.tickDispatch() 必须可调到 callback（否则
-   *                     scheduler 自身无 IO 路径，后续 B0-Next 无法使用）
+   * Phase 推进：counter 立即自减切 phase（验证 fallback 路径），
+   *             并行 pushState 让 scheduler callback 真正可达。
    *
    * @param target 目标 phase
    * @param timer 等待帧数（PRG ROM LDA #$XX 参数）
@@ -133,20 +119,10 @@ export class Scene0Controller extends SceneController {
   private scheduleNextPhase(target: Phase, timer: number): void {
     this.phase = target;
     this.counter = timer;
-    if (!this.bank00Scheduler) return;
-    // ROM: $9FA8 入栈 + JMP $9EFB scheduler tail；tick→0 自动 dispatch
-    void this.bank00Scheduler.pushState({
-      aReg: 0,
-      xReg: 0,
-      yReg: target & 0xff,
-      timer,
-      priority: 0,
-      callback: (slot) => {
-        // 验证：tickDispatch 必须可调到 callback；否则 Bank00SchedulerService 无 IO 路径
-        // 实际 phase 推进仍由 this.counter 自减完成
-        // 此 callback 仅作 pushState 端到端可达性证明
-        void slot;
-      },
+    // 基类 helper（PRG $9FA8 pushState 翻译）
+    this.scheduleAfter(timer, () => {
+      // scheduler callback 端到端可达 — phase 已由 counter 路径推进
+      // 此 callback 仅作 pushState 端到端可达性证明
     });
   }
 

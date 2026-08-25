@@ -155,10 +155,13 @@ export class Tsubasa2 {
     // （PRG $8AF7 scene handler loader + $82ED NT stream loader）
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachNtStreamLoader(this.ntStreamLoader);
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachSceneStateMachine(this.sceneStateMachine);
-    // bank00 6-slot scheduler 注入 Scene0（PRG $9FA8 pushState 翻译）
-    // 让 Scene0 的 Wait16/Wait4/Wait240/Wait60 用 scheduler.pushState 派发，
-    // 验证 pushState → tickDispatch → callback 端到端可达性
-    (this.router.getController(SceneId.Scene0) as Scene0Controller).attachBank00Scheduler(this.bank00Scheduler);
+
+    // 注入 bank00 scheduler 到所有 Scene0-23（PRG $9FA8 pushState 翻译）
+    // 替代各 Scene 自己写的 this.wait/counter 自减模式
+    for (let id = 0; id <= 23; id++) {
+      const ctrl = this.router.getController(id);
+      ctrl.attachScheduler(this.bank00Scheduler);
+    }
 
     // 硬件初始化 + 中断管线
     this.hardware = new HardwareInitService(this.store);

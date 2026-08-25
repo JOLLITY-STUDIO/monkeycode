@@ -1,5 +1,7 @@
 /**
  * Scene22Controller — 场景 22 循环 0x80 次 {等1帧; 屏外精灵 attr |= $04}
+ *
+ * 等 1 帧用基类 scheduleAfter(1, cb) 替代 this.wait-- 模式（PRG $9FA8 翻译）。
  */
 import { SceneController } from './SceneController';
 
@@ -8,16 +10,13 @@ const NEXT = 0x02;
 export class Scene22Controller extends SceneController {
   readonly sceneId = 22;
   private iter = 0;
-  private wait = 0;
+  private ready = true;
   onEnter(): void {
     this.iter = 0;
-    this.wait = 0;
+    this.ready = true;
   }
   onUpdate(_frame: number): number | undefined {
-    if (this.wait > 0) {
-      this.wait--;
-      return undefined;
-    }
+    if (!this.ready) return undefined;
     if (this.iter >= 0x80) return NEXT;
     const store = this.store;
     for (let i = 0; i < 0x100; i += 4) {
@@ -28,7 +27,8 @@ export class Scene22Controller extends SceneController {
       }
     }
     this.iter++;
-    this.wait = 1;
+    this.ready = false;
+    this.scheduleAfter(1, () => { this.ready = true; });
     return undefined;
   }
 }

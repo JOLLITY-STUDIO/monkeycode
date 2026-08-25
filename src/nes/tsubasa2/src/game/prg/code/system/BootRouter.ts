@@ -83,57 +83,70 @@ export class BootRouter {
   }
 
   /**
-   * 自动注册 5 entry dispatcher actions（替代原 GameSystemService.update() 中
-   * 硬编码 if-else mode 0/1/2/3/4 dispatch）。
+   * 自动注册 5 entry dispatcher actions（PRG $800D-$8014 翻译）。
    *
-   * 每条 action 调对应的 PRG 段语义抽象方法：
-   *   mode 0: 步进场景（$0026 >= $00E4 时调 sceneLoad）
-   *   mode 1/3: 计时比较（$0028 vs $0029）后 mainLoopStep
-   *   mode 2: mainLoopStep
-   *   mode 4: 装载 + fadeOut（清除 $0027）
+   * 每条 action 调对应的 PRG 段语义抽象方法（替代原 GameSystemService.update() 中
+   * 硬编码 if-else mode 0/1/2/3/4 dispatch 的 stub）：
+   *
+   *   mode 0: 步进场景 — $0026 += 1（不对 Scene 做自动切换；让 Scene controller 自己决定 next）
+   *   mode 1: 计时比较 — $0028 > $0029 → mainLoopStep
+   *   mode 2: 立即 mainLoopStep（无条件推进）
+   *   mode 3: 计时比较 — $0028 > $0029 → mainLoopStep（与 mode 1 同形）
+   *   mode 4: 计时比较 + fade 装载 cfg 0x60 + 清 $0027 mode=0
    *
    * 在 update() 末尾按当前 $0027 派发。
+   * PRG $0027 字节语义：mode 0=standby, 1/3=timer-wait, 2=advance, 4=fade
    */
   private autoRegisterDispatchActions(): void {
     const store = this.store;
-    // mode 0 — 步进场景
+    // mode 0 — 步进 frame counter；不自动切场景，让 Scene controller 自管
     this.mainRouter.registerDispatchAction(0 as StatusMode, () => {
-      const step = store.readByte(0x0026);
-      if (step >= store.readByte(0x00e4)) {
-        store.writeByte(0x00e4, step);
-        // sceneLoad 已由 PpuTransferService.loadCfgBlock 承接（compose 在调用方）
-      }
+      // $0026 step counter +1；不动 $0027（保持 mode 0 standby）
+      const step = (store.readByte(0x0026) + 1) & 0xff;
+      store.writeByte(0x0026, step);
+      // 错位自检：若 $0026 跨越 $00E4 cap，则需要 scene 切换；
+      // 当前 stub 模式：仅写 $0026 让 Scene controller 据此推进
     });
-    // mode 1 / mode 3 — 计时比较后 mainLoopStep
+    // mode 1 — 计时比较 ($0028 > $0029) → mainLoopStep
     this.mainRouter.registerDispatchAction(1 as StatusMode, () => {
       if (store.readByte(0x0028) > store.readByte(0x0029)) {
         this.mainLoopStep();
       }
     });
+    // mode 2 — 立即 mainLoopStep
+    this.mainRouter.registerDispatchAction(2 as StatusMode, () => {
+      this.mainLoopStep();
+    });
+    // mode 3 — 计时比较 + mainLoopStep（与 mode 1 等价）
     this.mainRouter.registerDispatchAction(3 as StatusMode, () => {
       if (store.readByte(0x0028) > store.readByte(0x0029)) {
         this.mainLoopStep();
       }
     });
-    // mode 2 — mainLoopStep（无前置条件）
-    this.mainRouter.registerDispatchAction(2 as StatusMode, () => {
-      this.mainLoopStep();
-    });
-    // mode 4 — 计时比较 + 装载 0x60 + fadeOut
+    // mode 4 — 计时比较 + 装载 fade cfg 0x60 + 清 $0027
     this.mainRouter.registerDispatchAction(4 as StatusMode, () => {
-      if (store.readByte(0x0028) !== store.readByte(0x0029)) {
-        // 装载 0x60 + fadeOut 流程由 fadeIn/fadeOut subsystem 承接
-        // 此处仅清 $0027 mode（ROM 行为）
+      const a = store.readByte(0x0028);
+      const b = store.readByte(0x0029);
+      if (a !== b) {
+        // 装载 fade out cfg 0x60（PRG $8464 多 bank cfg 装载）
+        // cfg=0x60 → 解析不命中（超出已声明 cfg 表），fallback 不写
+        // ROM 实际 = fade out 路径触发；H5 暂用 PpuTransferService 占位
+        this.ppuTransfer?.loadCfgBlock(0x60);
       }
+      // 清 mode → 让下一帧从 mode 0 重新开始
       store.writeByte(0x0027, 0);
     });
   }
 
   /**
    * 主循环步进（PRG $8267 JMP $C57B = $0026++ / $0027=0 翻译）。
-   * 由 mode 1/2/3 action 调用。
+   * 由 mode 1/2/3 action 调用；外部亦可主动调。
+   *
+   * 副作用：
+   *   - $0026 (step counter) += 1
+   *   - $0027 (status mode) = 0  → 下一帧从 mode 0 重新派发
    */
-  private mainLoopStep(): void {
+  mainLoopStep(): void {
     const store = this.store;
     const step = (store.readByte(0x0026) + 1) & 0xff;
     store.writeByte(0x0026, step);
