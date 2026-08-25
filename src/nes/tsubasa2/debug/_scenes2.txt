@@ -1,0 +1,799 @@
+
+===== scene0 $A4C1 (120 bytes) =====
+$a4c1 JSR $9a0d
+$a4c4 LDA # #$10
+$a4c6 JSR $9fa8
+$a4c9 LDY # #$30
+$a4cb LDA # #$01
+$a4cd JSR $9fa8
+$a4d0 LDA # #$01
+$a4d2 JSR $890c
+$a4d5 DEY
+$a4d6 BNE -> $a4cb
+$a4d8 LDA # #$00
+$a4da STA z #$5b
+$a4dc STA z #$7b
+$a4de LDA # #$17
+$a4e0 JSR $8af7
+$a4e3 LDA # #$68
+$a4e5 STA z #$44
+$a4e7 LDA # #$03
+$a4e9 JSR $8920
+$a4ec LDA z #$8e
+$a4ee STA z #$90
+$a4f0 LDA z #$8f
+$a4f2 STA z #$91
+$a4f4 LDA # #$04
+$a4f6 JSR $9fa8
+$a4f9 JSR $9a35
+$a4fc JSR $88fb
+$a4ff LDA # #$01
+$a501 JSR $9fa8
+$a504 INC z #$79
+$a506 DEC z #$7c
+$a508 DEC z #$7c
+$a50a LDA z #$44
+$a50c SEC
+$a50d SBC # #$02
+$a50f STA z #$44
+$a511 CMP # #$03
+$a513 BCS -> $a4ff
+$a515 LDA # #$00
+$a517 JSR $8920
+$a51a LDA z #$1b
+$a51c ORA # #$01
+$a51e STA z #$1b
+$a520 LDA # #$f0
+$a522 JSR $9fa8
+$a525 LDA # #$3c
+$a527 JSR $9fa8
+$a52a LDA z #$1b
+$a52c AND # #$fe
+$a52e STA z #$1b
+$a530 LDA # #$00
+$a532 STA z #$90
+$a534 LDA # #$02
+$a536 STA z #$91
+$a538 JSR $99f0
+$a53b JSR $9b7f
+$a53e JSR $98a0
+$a541 LDA # #$c0
+$a543 STA z #$e6
+$a545 LDA # #$23
+$a547 STA z #$e7
+$a549 LDY # #$02
+$a54b LDX # #$20
+$a54d LDA # #$55
+$a54f JSR $98ea
+$a552 LDA # #$01
+$a554 JSR $8920
+$a557 LDA # #$02
+$a559 RTS
+$a55a LDA # #$00
+$a55c STA z #$60
+$a55e LDA z #$ec
+$a560 LSR
+$a561 ??
+$a562 RTS
+$a563 LSR
+$a564 ??
+$a565 RTS
+$a566 STA z #$61
+$a568 BIT z #$62
+$a56a BMI -> $a579
+$a56c LDA # #$00
+$a56e SEC
+$a56f SBC z #$60
+$a571 STA z #$60
+$a573 LDA # #$00
+$a575 SBC z #$61
+$a577 STA z #$61
+$a579 LDA # #$03
+$a57b RTS
+$a57c JSR $9b91
+$a57f LDA # #$02
+$a581 RTS
+$a582 LDA # #$00
+$a584 STA z #$e6
+$a586 LDA # #$20
+$a588 STA z #$e7
+$a58a LDY # #$10
+$a58c LDX # #$20
+$a58e JSR $98e8
+$a591 LDA # #$00
+$a593 STA z #$e6
+$a595 LDA # #$24
+$a597 STA z #$e7
+$a599 LDY # #$20
+$a59b LDX # #$20
+$a59d JSR $98e8
+$a5a0 LDA # #$02
+$a5a2 RTS
+$a5a3 JSR $9b7f
+$a5a6 LDA # #$02
+$a5a8 RTS
+$a5a9 LDX # #$09
+$a5ab JSR $9f96
+$a5ae LDA # #$02
+$a5b0 RTS
+$a5b1 LDX # #$09
+$a5b3 JSR $9f89
+$a5b6 LDA # #$02
+$a5b8 RTS
+
+===== scene1 $A55A (34 bytes) =====
+$a55a LDA # #$00
+$a55c STA z #$60
+$a55e LDA z #$ec
+$a560 LSR
+$a561 ??
+$a562 RTS
+$a563 LSR
+$a564 ??
+$a565 RTS
+$a566 STA z #$61
+$a568 BIT z #$62
+$a56a BMI -> $a579
+$a56c LDA # #$00
+$a56e SEC
+$a56f SBC z #$60
+$a571 STA z #$60
+$a573 LDA # #$00
+$a575 SBC z #$61
+$a577 STA z #$61
+$a579 LDA # #$03
+$a57b RTS
+$a57c JSR $9b91
+$a57f LDA # #$02
+$a581 RTS
+$a582 LDA # #$00
+$a584 STA z #$e6
+$a586 LDA # #$20
+$a588 STA z #$e7
+$a58a LDY # #$10
+$a58c LDX # #$20
+$a58e JSR $98e8
+$a591 LDA # #$00
+$a593 STA z #$e6
+$a595 LDA # #$24
+
+===== scene2 $A57C (6 bytes) =====
+$a57c JSR $9b91
+$a57f LDA # #$02
+$a581 RTS
+$a582 LDA # #$00
+$a584 STA z #$e6
+$a586 LDA # #$20
+
+===== scene3 $A582 (33 bytes) =====
+$a582 LDA # #$00
+$a584 STA z #$e6
+$a586 LDA # #$20
+$a588 STA z #$e7
+$a58a LDY # #$10
+$a58c LDX # #$20
+$a58e JSR $98e8
+$a591 LDA # #$00
+$a593 STA z #$e6
+$a595 LDA # #$24
+$a597 STA z #$e7
+$a599 LDY # #$20
+$a59b LDX # #$20
+$a59d JSR $98e8
+$a5a0 LDA # #$02
+$a5a2 RTS
+$a5a3 JSR $9b7f
+$a5a6 LDA # #$02
+$a5a8 RTS
+$a5a9 LDX # #$09
+$a5ab JSR $9f96
+$a5ae LDA # #$02
+$a5b0 RTS
+$a5b1 LDX # #$09
+$a5b3 JSR $9f89
+$a5b6 LDA # #$02
+$a5b8 RTS
+$a5b9 LDA # #$ff
+$a5bb STA z #$99
+$a5bd LDA # #$02
+$a5bf RTS
+$a5c0 LDA # #$00
+$a5c2 STA abs $a000
+
+===== scene4 $A5A3 (6 bytes) =====
+$a5a3 JSR $9b7f
+$a5a6 LDA # #$02
+$a5a8 RTS
+$a5a9 LDX # #$09
+$a5ab JSR $9f96
+$a5ae LDA # #$02
+
+===== scene5 $A5A9 (8 bytes) =====
+$a5a9 LDX # #$09
+$a5ab JSR $9f96
+$a5ae LDA # #$02
+$a5b0 RTS
+$a5b1 LDX # #$09
+$a5b3 JSR $9f89
+$a5b6 LDA # #$02
+$a5b8 RTS
+
+===== scene6 $A5B1 (8 bytes) =====
+$a5b1 LDX # #$09
+$a5b3 JSR $9f89
+$a5b6 LDA # #$02
+$a5b8 RTS
+$a5b9 LDA # #$ff
+$a5bb STA z #$99
+$a5bd LDA # #$02
+$a5bf RTS
+
+===== scene7 $A5B9 (7 bytes) =====
+$a5b9 LDA # #$ff
+$a5bb STA z #$99
+$a5bd LDA # #$02
+$a5bf RTS
+$a5c0 LDA # #$00
+$a5c2 STA abs $a000
+$a5c5 LDA z #$1b
+
+===== scene8 $A5C0 (14 bytes) =====
+$a5c0 LDA # #$00
+$a5c2 STA abs $a000
+$a5c5 LDA z #$1b
+$a5c7 AND # #$bf
+$a5c9 STA z #$1b
+$a5cb LDA # #$02
+$a5cd RTS
+$a5ce LDA # #$01
+$a5d0 STA abs $a000
+$a5d3 LDA z #$1b
+$a5d5 ORA # #$40
+$a5d7 STA z #$1b
+$a5d9 LDA # #$02
+$a5db RTS
+
+===== scene9 $A5CE (14 bytes) =====
+$a5ce LDA # #$01
+$a5d0 STA abs $a000
+$a5d3 LDA z #$1b
+$a5d5 ORA # #$40
+$a5d7 STA z #$1b
+$a5d9 LDA # #$02
+$a5db RTS
+$a5dc LDA # #$00
+$a5de JSR $8895
+$a5e1 LDA # #$05
+$a5e3 JSR $8920
+$a5e6 LDA # #$02
+$a5e8 RTS
+$a5e9 LDA z #$0d
+
+===== scene10 $A5DC (13 bytes) =====
+$a5dc LDA # #$00
+$a5de JSR $8895
+$a5e1 LDA # #$05
+$a5e3 JSR $8920
+$a5e6 LDA # #$02
+$a5e8 RTS
+$a5e9 LDA z #$0d
+$a5eb BNE -> $a5fa
+$a5ed LDA # #$10
+$a5ef JSR $8895
+$a5f2 LDA # #$06
+$a5f4 JSR $8920
+$a5f7 LDA # #$02
+
+===== scene11 $A5E9 (26 bytes) =====
+$a5e9 LDA z #$0d
+$a5eb BNE -> $a5fa
+$a5ed LDA # #$10
+$a5ef JSR $8895
+$a5f2 LDA # #$06
+$a5f4 JSR $8920
+$a5f7 LDA # #$02
+$a5f9 RTS
+$a5fa LDA # #$00
+$a5fc STA z #$0d
+$a5fe STA z #$0e
+$a600 LDA # #$02
+$a602 RTS
+$a603 LDA z #$0d
+$a605 BNE -> $a614
+$a607 LDA # #$30
+$a609 JSR $8895
+$a60c LDA # #$08
+$a60e JSR $8920
+$a611 LDA # #$02
+$a613 RTS
+$a614 LDA # #$00
+$a616 STA z #$0d
+$a618 STA z #$0e
+$a61a LDA # #$02
+$a61c RTS
+
+===== scene12 $A603 (26 bytes) =====
+$a603 LDA z #$0d
+$a605 BNE -> $a614
+$a607 LDA # #$30
+$a609 JSR $8895
+$a60c LDA # #$08
+$a60e JSR $8920
+$a611 LDA # #$02
+$a613 RTS
+$a614 LDA # #$00
+$a616 STA z #$0d
+$a618 STA z #$0e
+$a61a LDA # #$02
+$a61c RTS
+$a61d LDA # #$20
+$a61f JSR $8895
+$a622 LDA # #$07
+$a624 JSR $8920
+$a627 LDA # #$02
+$a629 RTS
+$a62a LDX # #$bd
+$a62c LDY # #$23
+$a62e JSR $8976
+$a631 JSR $9a35
+$a634 LDA # #$01
+$a636 JSR $9fa8
+$a639 LDA abs $058f
+
+===== scene13 $A61D (13 bytes) =====
+$a61d LDA # #$20
+$a61f JSR $8895
+$a622 LDA # #$07
+$a624 JSR $8920
+$a627 LDA # #$02
+$a629 RTS
+$a62a LDX # #$bd
+$a62c LDY # #$23
+$a62e JSR $8976
+$a631 JSR $9a35
+$a634 LDA # #$01
+$a636 JSR $9fa8
+$a639 LDA abs $058f
+
+===== scene14 $A62A (39 bytes) =====
+$a62a LDX # #$bd
+$a62c LDY # #$23
+$a62e JSR $8976
+$a631 JSR $9a35
+$a634 LDA # #$01
+$a636 JSR $9fa8
+$a639 LDA abs $058f
+$a63c AND # #$7f
+$a63e STA abs $058f
+$a641 LDA # #$82
+$a643 STA z #$4c
+$a645 LDY # #$28
+$a647 LDX # #$20
+$a649 LDA # #$c8
+$a64b JSR $a82f
+$a64e LDA # #$02
+$a650 RTS
+$a651 LDA # #$00
+$a653 STA z #$ed
+$a655 ??
+$a656 ??
+$a657 LDA abs,Y $aa97
+$a65a STA z #$ea
+$a65c AND # #$7f
+$a65e STA z #$eb
+$a660 LDA z #$7b
+$a662 AND # #$01
+$a664 ASL
+$a665 ASL
+$a666 ORA z #$eb
+$a668 TAX
+$a669 INY
+$a66a LDA abs,Y $aa97
+$a66d STA z #$eb
+$a66f INY
+$a670 LDA abs,Y $aa97
+$a673 INY
+$a674 STY z #$ed
+$a676 ??
+
+===== scene15 $A651 (76 bytes) =====
+$a651 LDA # #$00
+$a653 STA z #$ed
+$a655 ??
+$a656 ??
+$a657 LDA abs,Y $aa97
+$a65a STA z #$ea
+$a65c AND # #$7f
+$a65e STA z #$eb
+$a660 LDA z #$7b
+$a662 AND # #$01
+$a664 ASL
+$a665 ASL
+$a666 ORA z #$eb
+$a668 TAX
+$a669 INY
+$a66a LDA abs,Y $aa97
+$a66d STA z #$eb
+$a66f INY
+$a670 LDA abs,Y $aa97
+$a673 INY
+$a674 STY z #$ed
+$a676 ??
+$a677 ??
+$a678 JSR $9b28
+$a67b AND # #$7f
+$a67d STA z #$eb
+$a67f LDA # #$00
+$a681 STA abs,X $05e8
+$a684 INX
+$a685 DEC z #$eb
+$a687 BNE -> $a681
+$a689 JSR $9b5e
+$a68c BIT z #$ea
+$a68e BMI -> $a69a
+$a690 ??
+$a691 ??
+$a692 LDA # #$02
+$a694 JSR $9fa8
+$a697 JMP $a655
+$a69a LDA # #$02
+$a69c RTS
+$a69d LDA abs $04e5
+$a6a0 CMP # #$ff
+$a6a2 BEQ -> $a6d4
+$a6a4 JSR $a767
+$a6a7 LDY # #$80
+$a6a9 LDA # #$00
+$a6ab STA z #$ea
+$a6ad LDX # #$2f
+$a6af LDA # #$ff
+$a6b1 STA z #$ed
+$a6b3 LDA # #$fe
+$a6b5 STA z #$ec
+$a6b7 LDA # #$07
+$a6b9 STA z #$eb
+$a6bb LDA # #$f7
+$a6bd JSR $a72c
+$a6c0 LDY # #$d8
+$a6c2 LDX # #$30
+$a6c4 LDA # #$01
+$a6c6 STA z #$ed
+$a6c8 LDA # #$ff
+$a6ca STA z #$ec
+$a6cc LDA # #$fc
+$a6ce JSR $a72c
+$a6d1 LDA # #$02
+$a6d3 RTS
+$a6d4 JSR $a767
+$a6d7 LDY # #$80
+$a6d9 LDX # #$2f
+$a6db LDA # #$02
+$a6dd STA z #$ea
+$a6df LDA # #$ff
+$a6e1 STA z #$ed
+$a6e3 LDA # #$fe
+$a6e5 STA z #$ec
+
+===== scene16 $A69D (120 bytes) =====
+$a69d LDA abs $04e5
+$a6a0 CMP # #$ff
+$a6a2 BEQ -> $a6d4
+$a6a4 JSR $a767
+$a6a7 LDY # #$80
+$a6a9 LDA # #$00
+$a6ab STA z #$ea
+$a6ad LDX # #$2f
+$a6af LDA # #$ff
+$a6b1 STA z #$ed
+$a6b3 LDA # #$fe
+$a6b5 STA z #$ec
+$a6b7 LDA # #$07
+$a6b9 STA z #$eb
+$a6bb LDA # #$f7
+$a6bd JSR $a72c
+$a6c0 LDY # #$d8
+$a6c2 LDX # #$30
+$a6c4 LDA # #$01
+$a6c6 STA z #$ed
+$a6c8 LDA # #$ff
+$a6ca STA z #$ec
+$a6cc LDA # #$fc
+$a6ce JSR $a72c
+$a6d1 LDA # #$02
+$a6d3 RTS
+$a6d4 JSR $a767
+$a6d7 LDY # #$80
+$a6d9 LDX # #$2f
+$a6db LDA # #$02
+$a6dd STA z #$ea
+$a6df LDA # #$ff
+$a6e1 STA z #$ed
+$a6e3 LDA # #$fe
+$a6e5 STA z #$ec
+$a6e7 LDA # #$07
+$a6e9 STA z #$eb
+$a6eb LDA # #$f7
+$a6ed JSR $a72c
+$a6f0 LDX # #$08
+$a6f2 LDA # #$fe
+$a6f4 JSR $a72c
+$a6f7 LDY # #$fc
+$a6f9 LDA abs,Y $a67b
+$a6fc STA abs,Y $0460
+$a6ff INY
+$a700 BNE -> $a6f9
+$a702 LDY # #$b8
+$a704 LDX # #$1c
+$a706 LDA # #$02
+$a708 STA z #$ed
+$a70a LDA # #$ff
+$a70c STA z #$ec
+$a70e LDA # #$03
+$a710 STA z #$eb
+$a712 LDA # #$f6
+$a714 JSR $a72c
+$a717 LDY # #$d8
+$a719 LDA abs,Y $046a
+$a71c ORA # #$02
+$a71e STA abs,Y $046a
+$a721 INY
+$a722 INY
+$a723 INY
+$a724 INY
+$a725 CPY # #$f0
+$a727 BCC -> $a719
+$a729 LDA # #$02
+$a72b RTS
+$a72c STA z #$e9
+$a72e LDA abs $04e4
+$a731 CLC
+$a732 ADC z #$ed
+$a734 STA abs $04e4
+$a737 LDA abs $04e7
+$a73a CLC
+$a73b ADC z #$ec
+$a73d STA abs $04e7
+$a740 AND z #$eb
+$a742 BNE -> $a75e
+$a744 LDA abs $04e4
+$a747 STA abs,Y $0468
+$a74a LDA z #$e9
+$a74c STA abs,Y $0469
+$a74f LDA z #$ea
+$a751 STA abs,Y $046a
+$a754 LDA abs $04e7
+$a757 STA abs,Y $046b
+$a75a INY
+$a75b INY
+$a75c INY
+$a75d INY
+$a75e LDA # #$01
+$a760 JSR $9fa8
+$a763 DEX
+$a764 BNE -> $a72e
+$a766 RTS
+$a767 LDY # #$fc
+$a769 LDA abs,Y $a677
+$a76c STA abs,Y $03e8
+$a76f INY
+$a770 BNE -> $a769
+$a772 RTS
+$a773 ??
+$a774 ??
+$a775 ??
+$a776 ??
+$a777 ??
+$a778 INC z,X #$02
+$a77a ??
+$a77b LDA # #$80
+$a77d JSR $8895
+$a780 LDA # #$02
+$a782 RTS
+$a783 LDA # #$02
+$a785 JSR $9fa8
+$a788 JSR $88fb
+$a78b LDA # #$02
+$a78d RTS
+$a78e LDY # #$40
+
+===== scene17 $A77B (8 bytes) =====
+$a77b LDA # #$80
+$a77d JSR $8895
+$a780 LDA # #$02
+$a782 RTS
+$a783 LDA # #$02
+$a785 JSR $9fa8
+$a788 JSR $88fb
+$a78b LDA # #$02
+
+===== scene18 $A783 (11 bytes) =====
+$a783 LDA # #$02
+$a785 JSR $9fa8
+$a788 JSR $88fb
+$a78b LDA # #$02
+$a78d RTS
+$a78e LDY # #$40
+$a790 LDA # #$01
+$a792 JSR $9fa8
+$a795 LDX # #$20
+$a797 LDA abs,X $0468
+$a79a BPL -> $a7a4
+
+===== scene19 $A78E (48 bytes) =====
+$a78e LDY # #$40
+$a790 LDA # #$01
+$a792 JSR $9fa8
+$a795 LDX # #$20
+$a797 LDA abs,X $0468
+$a79a BPL -> $a7a4
+$a79c LDA abs,X $046a
+$a79f ORA # #$08
+$a7a1 STA abs,X $046a
+$a7a4 INX
+$a7a5 INX
+$a7a6 INX
+$a7a7 INX
+$a7a8 CPX # #$c4
+$a7aa BNE -> $a797
+$a7ac DEY
+$a7ad BNE -> $a790
+$a7af JSR $9b91
+$a7b2 LDA # #$01
+$a7b4 JSR $9fa8
+$a7b7 LDA z #$09
+$a7b9 BNE -> $a7b2
+$a7bb JMP $a651
+$a7be LDA # #$01
+$a7c0 JSR $9fa8
+$a7c3 LDY # #$28
+$a7c5 LDX # #$64
+$a7c7 LDA # #$b0
+$a7c9 JSR $a82f
+$a7cc LDA # #$02
+$a7ce RTS
+$a7cf LDA # #$81
+$a7d1 JSR $8895
+$a7d4 LDA # #$02
+$a7d6 RTS
+$a7d7 LDY # #$80
+$a7d9 LDA # #$01
+$a7db JSR $9fa8
+$a7de LDX # #$20
+$a7e0 LDA abs,X $0468
+$a7e3 BPL -> $a7ed
+$a7e5 LDA abs,X $046a
+$a7e8 ORA # #$04
+$a7ea STA abs,X $046a
+$a7ed INX
+$a7ee INX
+$a7ef INX
+$a7f0 INX
+
+===== scene20 $A7BE (17 bytes) =====
+$a7be LDA # #$01
+$a7c0 JSR $9fa8
+$a7c3 LDY # #$28
+$a7c5 LDX # #$64
+$a7c7 LDA # #$b0
+$a7c9 JSR $a82f
+$a7cc LDA # #$02
+$a7ce RTS
+$a7cf LDA # #$81
+$a7d1 JSR $8895
+$a7d4 LDA # #$02
+$a7d6 RTS
+$a7d7 LDY # #$80
+$a7d9 LDA # #$01
+$a7db JSR $9fa8
+$a7de LDX # #$20
+$a7e0 LDA abs,X $0468
+
+===== scene21 $A7CF (8 bytes) =====
+$a7cf LDA # #$81
+$a7d1 JSR $8895
+$a7d4 LDA # #$02
+$a7d6 RTS
+$a7d7 LDY # #$80
+$a7d9 LDA # #$01
+$a7db JSR $9fa8
+$a7de LDX # #$20
+
+===== scene22 $A7D7 (36 bytes) =====
+$a7d7 LDY # #$80
+$a7d9 LDA # #$01
+$a7db JSR $9fa8
+$a7de LDX # #$20
+$a7e0 LDA abs,X $0468
+$a7e3 BPL -> $a7ed
+$a7e5 LDA abs,X $046a
+$a7e8 ORA # #$04
+$a7ea STA abs,X $046a
+$a7ed INX
+$a7ee INX
+$a7ef INX
+$a7f0 INX
+$a7f1 CPX # #$c4
+$a7f3 BNE -> $a7e0
+$a7f5 DEY
+$a7f6 BNE -> $a7d9
+$a7f8 LDA # #$02
+$a7fa RTS
+$a7fb LDA z #$28
+$a7fd JSR $9e7c
+$a800 LDA z #$ec
+$a802 AND # #$f0
+$a804 BEQ -> $a817
+$a806 JSR $ac6d
+$a809 LDX z #$52
+$a80b ??
+$a80c ??
+$a80d JSR $88ca
+$a810 INC z #$53
+$a812 LDA # #$06
+$a814 JSR $9fa8
+$a817 LDA z #$ec
+$a819 AND # #$0f
+$a81b JSR $ac71
+$a81e LDX z #$52
+
+===== scene23 $A7FB (60 bytes) =====
+$a7fb LDA z #$28
+$a7fd JSR $9e7c
+$a800 LDA z #$ec
+$a802 AND # #$f0
+$a804 BEQ -> $a817
+$a806 JSR $ac6d
+$a809 LDX z #$52
+$a80b ??
+$a80c ??
+$a80d JSR $88ca
+$a810 INC z #$53
+$a812 LDA # #$06
+$a814 JSR $9fa8
+$a817 LDA z #$ec
+$a819 AND # #$0f
+$a81b JSR $ac71
+$a81e LDX z #$52
+$a820 ??
+$a821 ??
+$a822 JSR $88ca
+$a825 INC z #$53
+$a827 LDA # #$06
+$a829 JSR $9fa8
+$a82c LDA # #$02
+$a82e RTS
+$a82f STA z #$ec
+$a831 STX z #$ed
+$a833 LDA # #$01
+$a835 JSR $9fa8
+$a838 LDX z #$ed
+$a83a LDA abs,X $0468
+$a83d CMP # #$82
+$a83f BCS -> $a849
+$a841 LDA abs,X $046a
+$a844 AND # #$f3
+$a846 STA abs,X $046a
+$a849 INX
+$a84a INX
+$a84b INX
+$a84c INX
+$a84d ??
+$a84e CPX abs $e9d0
+$a851 DEY
+$a852 BNE -> $a833
+$a854 RTS
+$a855 LDA z #$e4
+$a857 CMP z #$26
+$a859 BCS -> $a8a8
+$a85b LDA z #$26
+$a85d BEQ -> $a87c
+$a85f CMP # #$06
+$a861 BEQ -> $a884
+$a863 CMP # #$0c
+$a865 BEQ -> $a87c
+$a867 CMP # #$10
+$a869 BEQ -> $a88c
+$a86b JMP $a8a8
+$a86e LDA z #$26
+$a870 CMP # #$06
+$a872 BCC -> $a87c

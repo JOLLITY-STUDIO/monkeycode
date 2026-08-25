@@ -1,18 +1,15 @@
+// 临时 grep 工具：node debug/_grep.cjs <pattern> <file...>
 const fs = require('fs');
 const path = require('path');
-const dir = process.argv[2];
-const pat = new RegExp(process.argv[3] || 'OPENING_CHR_CONFIGS');
-function walk(d) {
-  for (const e of fs.readdirSync(d, { withFileTypes: true })) {
-    if (e.name === 'node_modules' || e.name === 'dist') continue;
-    const p = path.join(d, e.name);
-    if (e.isDirectory()) walk(p);
-    else if (/\.ts$/.test(e.name)) {
-      const s = fs.readFileSync(p, 'utf8');
-      s.split('\n').forEach((ln, i) => {
-        if (pat.test(ln)) console.log(`${p}:${i + 1}: ${ln.trim()}`);
-      });
-    }
-  }
+const args = process.argv.slice(2);
+const pattern = args[0];
+const files = args.slice(1);
+const re = new RegExp(pattern, 'i');
+for (const f of files) {
+  const abs = path.resolve(f);
+  if (!fs.existsSync(abs)) { console.log('MISSING', abs); continue; }
+  const lines = fs.readFileSync(abs, 'utf8').split(/\r?\n/);
+  lines.forEach((ln, i) => {
+    if (re.test(ln)) console.log(`${f}:${i + 1}: ${ln.trim()}`);
+  });
 }
-walk(path.resolve(dir));

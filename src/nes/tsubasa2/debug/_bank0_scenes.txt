@@ -1,0 +1,600 @@
+
+===== bank0 scene0 $8575 (11 bytes) =====
+$8575 INY
+$8576 LDA (z),Y #$4d
+$8578 JSR $8920
+$857b LDA # #$02
+$857d JMP $8879
+$8580 LDA # #$02
+$8582 JSR $9fa8
+$8585 JSR $997e
+$8588 LDA # #$01
+$858a JMP $8879
+$858d JSR $99f0
+
+===== bank0 scene1 $8580 (13 bytes) =====
+$8580 LDA # #$02
+$8582 JSR $9fa8
+$8585 JSR $997e
+$8588 LDA # #$01
+$858a JMP $8879
+$858d JSR $99f0
+$8590 JSR $9b7f
+$8593 LDA # #$00
+$8595 STA z #$e6
+$8597 LDA # #$20
+$8599 STA z #$e7
+$859b LDY # #$10
+$859d LDX # #$20
+
+===== bank0 scene2 $858D (40 bytes) =====
+$858d JSR $99f0
+$8590 JSR $9b7f
+$8593 LDA # #$00
+$8595 STA z #$e6
+$8597 LDA # #$20
+$8599 STA z #$e7
+$859b LDY # #$10
+$859d LDX # #$20
+$859f JSR $98e8
+$85a2 LDA # #$00
+$85a4 STA z #$e6
+$85a6 LDA # #$24
+$85a8 STA z #$e7
+$85aa LDY # #$20
+$85ac LDX # #$20
+$85ae JSR $98e8
+$85b1 LDA # #$00
+$85b3 STA z #$4c
+$85b5 STA z #$7b
+$85b7 STA z #$4c
+$85b9 LDA # #$00
+$85bb STA z #$0d
+$85bd STA z #$0e
+$85bf LDA # #$01
+$85c1 JMP $8879
+$85c4 JSR $899a
+$85c7 JSR $89a3
+$85ca JSR $88b1
+$85cd LDA # #$01
+$85cf JMP $8887
+$85d2 LDY # #$01
+$85d4 LDA (z),Y #$4d
+$85d6 CMP # #$ff
+$85d8 BEQ -> $85e2
+$85da JSR $89d2
+$85dd LDA # #$02
+$85df JMP $8879
+$85e2 LDA # #$00
+$85e4 STA abs $0652
+$85e7 LDA # #$02
+
+===== bank0 scene3 $85C4 (14 bytes) =====
+$85c4 JSR $899a
+$85c7 JSR $89a3
+$85ca JSR $88b1
+$85cd LDA # #$01
+$85cf JMP $8887
+$85d2 LDY # #$01
+$85d4 LDA (z),Y #$4d
+$85d6 CMP # #$ff
+$85d8 BEQ -> $85e2
+$85da JSR $89d2
+$85dd LDA # #$02
+$85df JMP $8879
+$85e2 LDA # #$00
+$85e4 STA abs $0652
+
+===== bank0 scene4 $85D2 (26 bytes) =====
+$85d2 LDY # #$01
+$85d4 LDA (z),Y #$4d
+$85d6 CMP # #$ff
+$85d8 BEQ -> $85e2
+$85da JSR $89d2
+$85dd LDA # #$02
+$85df JMP $8879
+$85e2 LDA # #$00
+$85e4 STA abs $0652
+$85e7 LDA # #$02
+$85e9 JMP $8879
+$85ec LDX # #$00
+$85ee LDA abs,X $0700
+$85f1 BEQ -> $85f8
+$85f3 INX
+$85f4 CPX # #$05
+$85f6 BNE -> $85ee
+$85f8 LDY # #$01
+$85fa LDA (z),Y #$4d
+$85fc STA abs,X $0700
+$85ff LDA # #$02
+$8601 JMP $8879
+$8604 LDA # #$21
+$8606 STA z #$e6
+$8608 LDA # #$22
+$860a STA z #$e7
+
+===== bank0 scene5 $85EC (24 bytes) =====
+$85ec LDX # #$00
+$85ee LDA abs,X $0700
+$85f1 BEQ -> $85f8
+$85f3 INX
+$85f4 CPX # #$05
+$85f6 BNE -> $85ee
+$85f8 LDY # #$01
+$85fa LDA (z),Y #$4d
+$85fc STA abs,X $0700
+$85ff LDA # #$02
+$8601 JMP $8879
+$8604 LDA # #$21
+$8606 STA z #$e6
+$8608 LDA # #$22
+$860a STA z #$e7
+$860c LDY # #$0b
+$860e LDX # #$1e
+$8610 JSR $98e8
+$8613 LDA # #$01
+$8615 JMP $8879
+$8618 LDA # #$02
+$861a JSR $9fa8
+$861d LDA z #$99
+$861f AND # #$80
+
+===== bank0 scene6 $8604 (20 bytes) =====
+$8604 LDA # #$21
+$8606 STA z #$e6
+$8608 LDA # #$22
+$860a STA z #$e7
+$860c LDY # #$0b
+$860e LDX # #$1e
+$8610 JSR $98e8
+$8613 LDA # #$01
+$8615 JMP $8879
+$8618 LDA # #$02
+$861a JSR $9fa8
+$861d LDA z #$99
+$861f AND # #$80
+$8621 ??
+$8622 ??
+$8623 ORA # #$40
+$8625 STA z #$99
+$8627 LDA # #$01
+$8629 JMP $8879
+$862c INY
+
+===== bank0 scene7 $8618 (20 bytes) =====
+$8618 LDA # #$02
+$861a JSR $9fa8
+$861d LDA z #$99
+$861f AND # #$80
+$8621 ??
+$8622 ??
+$8623 ORA # #$40
+$8625 STA z #$99
+$8627 LDA # #$01
+$8629 JMP $8879
+$862c INY
+$862d LDA (z),Y #$4d
+$862f STA z #$4f
+$8631 STA z #$51
+$8633 INY
+$8634 LDA (z),Y #$4d
+$8636 STA z #$50
+$8638 STA z #$52
+$863a LDA z #$4d
+$863c CLC
+
+===== bank0 scene8 $862C (30 bytes) =====
+$862c INY
+$862d LDA (z),Y #$4d
+$862f STA z #$4f
+$8631 STA z #$51
+$8633 INY
+$8634 LDA (z),Y #$4d
+$8636 STA z #$50
+$8638 STA z #$52
+$863a LDA z #$4d
+$863c CLC
+$863d ADC # #$03
+$863f STA z #$4d
+$8641 LDA z #$4e
+$8643 ADC # #$00
+$8645 STA z #$4e
+$8647 JMP $84e3
+$864a LDA # #$21
+$864c STA z #$e6
+$864e LDA # #$22
+$8650 STA z #$e7
+$8652 LDY # #$0b
+$8654 LDX # #$1e
+$8656 JSR $98e8
+$8659 LDY # #$01
+$865b LDA (z),Y #$4d
+$865d ASL
+$865e TAY
+$865f LDX # #$06
+$8661 JSR $c4b9
+$8664 ??
+
+===== bank0 scene9 $864A (40 bytes) =====
+$864a LDA # #$21
+$864c STA z #$e6
+$864e LDA # #$22
+$8650 STA z #$e7
+$8652 LDY # #$0b
+$8654 LDX # #$1e
+$8656 JSR $98e8
+$8659 LDY # #$01
+$865b LDA (z),Y #$4d
+$865d ASL
+$865e TAY
+$865f LDX # #$06
+$8661 JSR $c4b9
+$8664 ??
+$8665 EOR (z,X) #$bb
+$8667 LDA abs,Y $bb40
+$866a TAY
+$866b JSR $97b6
+$866e LDX z #$56
+$8670 JSR $c4b9
+$8673 LDA # #$02
+$8675 JMP $8879
+$8678 INY
+$8679 LDA (z),Y #$4d
+$867b STA z #$55
+$867d LDA # #$02
+$867f JMP $8879
+$8682 INY
+$8683 LDA (z),Y #$4d
+$8685 BNE -> $868f
+$8687 JSR $9a35
+$868a LDY # #$02
+$868c JMP $86b4
+$868f CMP # #$ff
+$8691 BEQ -> $86a7
+$8693 BMI -> $869d
+$8695 JSR $9a4c
+$8698 LDY # #$02
+$869a JMP $86b4
+$869d AND # #$7f
+
+===== bank0 scene10 $8678 (10 bytes) =====
+$8678 INY
+$8679 LDA (z),Y #$4d
+$867b STA z #$55
+$867d LDA # #$02
+$867f JMP $8879
+$8682 INY
+$8683 LDA (z),Y #$4d
+$8685 BNE -> $868f
+$8687 JSR $9a35
+$868a LDY # #$02
+
+===== bank0 scene11 $8682 (40 bytes) =====
+$8682 INY
+$8683 LDA (z),Y #$4d
+$8685 BNE -> $868f
+$8687 JSR $9a35
+$868a LDY # #$02
+$868c JMP $86b4
+$868f CMP # #$ff
+$8691 BEQ -> $86a7
+$8693 BMI -> $869d
+$8695 JSR $9a4c
+$8698 LDY # #$02
+$869a JMP $86b4
+$869d AND # #$7f
+$869f JSR $9a60
+$86a2 LDY # #$02
+$86a4 JMP $86b4
+$86a7 LDY # #$03
+$86a9 LDA (z),Y #$4d
+$86ab TAX
+$86ac DEY
+$86ad LDA (z),Y #$4d
+$86af JSR $9a31
+$86b2 LDY # #$04
+$86b4 TYA
+$86b5 JMP $8879
+$86b8 INY
+$86b9 LDA (z),Y #$4d
+$86bb ASL
+$86bc TAX
+$86bd LDA abs,X $86c7
+$86c0 PHA
+$86c1 LDA abs,X $86c6
+$86c4 PHA
+$86c5 RTS
+$86c6 ??
+$86c7 STX z #$dd
+$86c9 STX z #$e5
+$86cb STX z #$ed
+$86cd STX z #$f5
+$86cf STX z #$12
+
+===== bank0 scene12 $86B8 (40 bytes) =====
+$86b8 INY
+$86b9 LDA (z),Y #$4d
+$86bb ASL
+$86bc TAX
+$86bd LDA abs,X $86c7
+$86c0 PHA
+$86c1 LDA abs,X $86c6
+$86c4 PHA
+$86c5 RTS
+$86c6 ??
+$86c7 STX z #$dd
+$86c9 STX z #$e5
+$86cb STX z #$ed
+$86cd STX z #$f5
+$86cf STX z #$12
+$86d1 ??
+$86d2 ??
+$86d3 ??
+$86d4 ??
+$86d5 ??
+$86d6 JSR $99b0
+$86d9 LDA # #$02
+$86db JMP $8879
+$86de JSR $99d1
+$86e1 LDA # #$02
+$86e3 JMP $8879
+$86e6 JSR $9a0d
+$86e9 LDA # #$02
+$86eb JMP $8879
+$86ee JSR $9a1f
+$86f1 LDA # #$02
+$86f3 JMP $8879
+$86f6 LDA # #$04
+$86f8 STA z #$ed
+$86fa LDX z #$ed
+$86fc LDA abs,X $87b3
+$86ff STA abs $0631
+$8702 JSR $9a71
+$8705 LDA # #$04
+$8707 JSR $9fa8
+
+===== bank0 scene13 $87B8 (19 bytes) =====
+$87b8 INY
+$87b9 LDX # #$00
+$87bb LDA (z),Y #$4d
+$87bd CMP # #$ff
+$87bf BEQ -> $87c4
+$87c1 ORA # #$80
+$87c3 TAX
+$87c4 STX z #$4c
+$87c6 LDA # #$02
+$87c8 JMP $8879
+$87cb JSR $899a
+$87ce INY
+$87cf LDA (z),Y #$4d
+$87d1 JSR $9fa8
+$87d4 LDA # #$02
+$87d6 JMP $8879
+$87d9 LDA z #$09
+$87db BEQ -> $87e5
+$87dd LDA # #$01
+
+===== bank0 scene14 $87CB (14 bytes) =====
+$87cb JSR $899a
+$87ce INY
+$87cf LDA (z),Y #$4d
+$87d1 JSR $9fa8
+$87d4 LDA # #$02
+$87d6 JMP $8879
+$87d9 LDA z #$09
+$87db BEQ -> $87e5
+$87dd LDA # #$01
+$87df JSR $9fa8
+$87e2 JMP $87d9
+$87e5 LDA z #$7b
+$87e7 ??
+$87e8 ORA (z,X) #$85
+
+===== bank0 scene15 $87D9 (31 bytes) =====
+$87d9 LDA z #$09
+$87db BEQ -> $87e5
+$87dd LDA # #$01
+$87df JSR $9fa8
+$87e2 JMP $87d9
+$87e5 LDA z #$7b
+$87e7 ??
+$87e8 ORA (z,X) #$85
+$87ea ??
+$87eb LDA # #$00
+$87ed STA z #$7a
+$87ef STA z #$44
+$87f1 STA z #$45
+$87f3 LDA # #$01
+$87f5 JMP $8879
+$87f8 INY
+$87f9 LDA (z),Y #$4d
+$87fb STA z #$ed
+$87fd INY
+$87fe LDA (z),Y #$4d
+$8800 STA z #$ec
+$8802 LDX # #$02
+$8804 JSR $c4b9
+$8807 JSR $a212
+$880a TAY
+$880b LDX z #$56
+$880d JSR $c4b9
+$8810 TYA
+$8811 JMP $8879
+$8814 LDA z #$5b
+$8816 AND # #$fb
+
+===== bank0 scene16 $87F8 (28 bytes) =====
+$87f8 INY
+$87f9 LDA (z),Y #$4d
+$87fb STA z #$ed
+$87fd INY
+$87fe LDA (z),Y #$4d
+$8800 STA z #$ec
+$8802 LDX # #$02
+$8804 JSR $c4b9
+$8807 JSR $a212
+$880a TAY
+$880b LDX z #$56
+$880d JSR $c4b9
+$8810 TYA
+$8811 JMP $8879
+$8814 LDA z #$5b
+$8816 AND # #$fb
+$8818 JMP $881f
+$881b LDA z #$5b
+$881d ORA # #$04
+$881f STA z #$5b
+$8821 INY
+$8822 LDA (z),Y #$4d
+$8824 JSR $8af7
+$8827 LDX z #$56
+$8829 JSR $c4b9
+$882c LDA # #$02
+$882e JMP $8879
+$8831 JSR $9085
+
+===== bank0 scene17 $8814 (7 bytes) =====
+$8814 LDA z #$5b
+$8816 AND # #$fb
+$8818 JMP $881f
+$881b LDA z #$5b
+$881d ORA # #$04
+$881f STA z #$5b
+$8821 INY
+
+===== bank0 scene18 $881B (22 bytes) =====
+$881b LDA z #$5b
+$881d ORA # #$04
+$881f STA z #$5b
+$8821 INY
+$8822 LDA (z),Y #$4d
+$8824 JSR $8af7
+$8827 LDX z #$56
+$8829 JSR $c4b9
+$882c LDA # #$02
+$882e JMP $8879
+$8831 JSR $9085
+$8834 JMP $84e7
+$8837 JSR $899a
+$883a LDA # #$04
+$883c JSR $9fa8
+$883f LDA z #$51
+$8841 CLC
+$8842 ADC # #$40
+$8844 STA z #$51
+$8846 LDA z #$52
+$8848 ADC # #$00
+$884a STA z #$52
+
+===== bank0 scene19 $8831 (6 bytes) =====
+$8831 JSR $9085
+$8834 JMP $84e7
+$8837 JSR $899a
+$883a LDA # #$04
+$883c JSR $9fa8
+$883f LDA z #$51
+
+===== bank0 scene20 $8837 (30 bytes) =====
+$8837 JSR $899a
+$883a LDA # #$04
+$883c JSR $9fa8
+$883f LDA z #$51
+$8841 CLC
+$8842 ADC # #$40
+$8844 STA z #$51
+$8846 LDA z #$52
+$8848 ADC # #$00
+$884a STA z #$52
+$884c INC z #$4d
+$884e BNE -> $8852
+$8850 INC z #$4e
+$8852 JMP $84e3
+$8855 JSR $88b1
+$8858 LDA # #$04
+$885a JSR $9fa8
+$885d LDA # #$01
+$885f JMP $8887
+$8862 INY
+$8863 LDA (z),Y #$4d
+$8865 TAX
+$8866 INY
+$8867 LDA (z),Y #$4d
+$8869 STA z #$4e
+$886b STX z #$4d
+$886d JMP $84e7
+$8870 LDA # #$00
+$8872 STA z #$4d
+$8874 STA z #$4e
+
+===== bank0 scene21 $8855 (13 bytes) =====
+$8855 JSR $88b1
+$8858 LDA # #$04
+$885a JSR $9fa8
+$885d LDA # #$01
+$885f JMP $8887
+$8862 INY
+$8863 LDA (z),Y #$4d
+$8865 TAX
+$8866 INY
+$8867 LDA (z),Y #$4d
+$8869 STA z #$4e
+$886b STX z #$4d
+$886d JMP $84e7
+
+===== bank0 scene22 $8862 (14 bytes) =====
+$8862 INY
+$8863 LDA (z),Y #$4d
+$8865 TAX
+$8866 INY
+$8867 LDA (z),Y #$4d
+$8869 STA z #$4e
+$886b STX z #$4d
+$886d JMP $84e7
+$8870 LDA # #$00
+$8872 STA z #$4d
+$8874 STA z #$4e
+$8876 JMP $9f7e
+$8879 CLC
+$887a ADC z #$4d
+
+===== bank0 scene23 $8870 (40 bytes) =====
+$8870 LDA # #$00
+$8872 STA z #$4d
+$8874 STA z #$4e
+$8876 JMP $9f7e
+$8879 CLC
+$887a ADC z #$4d
+$887c STA z #$4d
+$887e LDA z #$4e
+$8880 ADC # #$00
+$8882 STA z #$4e
+$8884 JMP $84e7
+$8887 CLC
+$8888 ADC z #$4d
+$888a STA z #$4d
+$888c LDA z #$4e
+$888e ADC # #$00
+$8890 STA z #$4e
+$8892 JMP $84d7
+$8895 STA z #$57
+$8897 LDX # #$0d
+$8899 LDA # #$a8
+$889b STA z,X #$00
+$889d LDA # #$88
+$889f STA z,X #$01
+$88a1 LDY # #$a0
+$88a3 LDA # #$00
+$88a5 JSR $9f69
+$88a8 RTS
+$88a9 LDX # #$02
+$88ab JSR $c4b9
+$88ae JMP $a206
+$88b1 LDA z #$54
+$88b3 ??
+$88b4 ??
+$88b5 CLC
+$88b6 ADC # #$1f
+$88b8 TAX
+$88b9 LDY # #$08
+$88bb LDA z #$4f
+$88bd AND # #$e0

@@ -1,0 +1,19 @@
+debug: opening-all.log 全 log 扫描 — 完整 boot timeline 揭晓
+- 全 log (99772 行) 完整覆盖 frame 1-f??
+- f8: PPUMASK #$06 (BG enable) — 显示开启 (修正: 不是 f4337)
+- f10: 首次 PPU data write ($2007 × 5)
+- f270: 首次 OAM DMA + 切 R5=2 + JSR $A000 (Scene0 init 触发)
+- 全 log $3Fxx palette write = 0 (ROM 用 PPUADDR+$2007 批量写)
+- OAM DMA 总 49 次 (分布在 48+1 帧)
+- CHR swap 总 708 次 (之前 374+ log 只看到 144 次)
+- R7=2 切换发生在 f1 之前 (boot init 在 bank2 跑)
+- f6/f9/f10 PC 都精准命中 bank2[$00xx] byte 序列
+
+工具:
+- _scan_full_open.cjs 全 log 统计
+- _scan_opening_all.cjs 全场扫描 + 首次发生位置
+- _f8_zoom.cjs f8 trace zoom
+- _boot_timeline.cjs 渲染事件 timeline
+- _f270_full.cjs f270 切 bank+进 Scene0 详细
+- _f9_dump.cjs PC byte 命中验证 (证实 f9 PC=$A0F1→bank2)
+- _f1_10.cjs f1-f10 PC 分布

@@ -1,51 +1,64 @@
-// 一次性分析：274-275 帧新场景 trace
+// 分析 opening 日志：检测帧号/周期号连续性，判断是否多次运行拼接
 const fs = require('fs');
-const path = require('path');
-const DIR = path.join(__dirname, '..', 'docs', 'roms', 'aftertecmo');
+const p = 'docs/roms/opening-all/openning-4097清屏-到循环重新4343出现tecmo又.log';
+const s = fs.readFileSync(p, 'utf8');
+const lines = s.split(/\r?\n/).filter(l => l.trim().length > 0);
+console.log('总行数', lines.length);
 
-function analyze(file, maxFrames) {
-  const lines = fs.readFileSync(path.join(DIR, file), 'utf8').split('\n');
-  const frames = {};
-  for (const line of lines) {
-    const m = line.match(/^f(\d+)\s+c(\d+)\s+i(\d+)\s+A:([0-9A-F]{2}) X:([0-9A-F]{2}) Y:([0-9A-F]{2}) S:([0-9A-F]{2}) P:(\w+)\s+\$(\d{2}):([0-9A-F]{4}):\s+(.+)$/);
-    if (!m) continue;
-    const f = parseInt(m[1]);
-    if (maxFrames && f > maxFrames) break;
-    if (!frames[f]) frames[f] = [];
-    const addr = m[10], op = m[11];
-    frames[f].push({ addr, op, line });
+const rows = [];
+for (const l of lines) {
+  const m = l.match(/^f(\d+)\s+c(\d+)\s+i(\d+)\s+(.+?)\s+\$(..):([0-9A-F]{4}):/i);
+  if (m) rows.push({ frame: +m[1], cycle: +m[2], instr: +m[3], bank: m[5], addr: m[6], text: m[4] });
+}
+console.log('可解析行', rows.length);
+
+// 找周期/帧回退点（多次运行拼接的标志）
+let breaks = [];
+for (let i = 1; i < rows.length; i++) {
+  const prev = rows[i - 1], cur = rows[i];
+  if (cur.cycle < prev.cycle || cur.frame < prev.frame || cur.instr < prev.instr) {
+    breaks.push({ at: i, prevFrame: prev.frame, prevCycle: prev.cycle, curFrame: cur.frame, curCycle: cur.cycle });
   }
-  return frames;
+}
+console.log('回退断点数', breaks.length);
+for (const b of breaks.slice(0, 30)) {
+  console.log(`  断点@行${b.at}: f${b.prevFrame}(c${b.prevCycle}) → f${b.curFrame}(c${b.curCycle})`);
 }
 
-// 只抓 PPU/关键寄存器写
-function ppuOps(frames) {
-  const out = {};
-  for (const f in frames) {
-    const ops = [];
-    for (const e of frames[f]) {
-      // $2000-$2007, $4014, 关键 RAM
-      if (/STA|STX|STY/.test(e.op) && /\$20[0-7]:|\$4014:|\$2007/.test(e.line)) {
-        ops.push(e.line.trim());
-      }
-      if (e.addr === '2000' || e.addr === '2001' || e.addr === '2005' || e.addr === '2006' || e.addr === '2007' || e.addr === '4014') {
-        ops.push(e.line.trim());
-      }
-    }
-    out[f] = ops;
+// 每段的帧范围
+const segs = [];
+let segStart = 0;
+for (let i = 1; i <= rows.length; i++) {
+  if (i === rows.length || rows[i].cycle < rows[i - 1].cycle) {
+    segs.push({ from: segStart, to: i - 1, f0: rows[segStart].frame, f1: rows[i - 1].frame, c0: rows[segStart].cycle, c1: rows[i - 1].cycle, n: i - segStart });
+    segStart = i;
   }
-  return out;
+}
+console.log('运行段数', segs.length);
+segs.forEach((s2, i) => console.log(`  段${i}: 行${s2.from}-${s2.to} f${s2.f0}-f${s2.f1} c${s2.c0}-c${s2.c1} 行数${s2.n}`));
+
+// 各帧出现的次数（同一帧在多段出现 = 重复运行）
+const frameCount = {};
+for (const r of rows) frameCount[r.frame] = (frameCount[r.frame] || 0) + 1;
+const dupFrames = Object.entries(frameCount).filter(([f, n]) => n > 1);
+console.log('重复出现的帧数', dupFrames.length, '示例', dupFrames.slice(0, 10));
+
+// 关键帧：4097 清屏 / 4343 tecmo 处的内容
+const KEY = [4097, 4343];
+for (const k of KEY) {
+  const hit = rows.filter(r => r.frame === k);
+  console.log(`帧${k} 行数`, hit.length);
+  if (hit.length) {
+    const first = hit[0], last = hit[hit.length - 1];
+    console.log(`  首: c${first.cycle} bank${first.bank} $${first.addr} ${first.text}`);
+    console.log(`  尾: c${last.cycle} bank${last.bank} $${last.addr} ${last.text}`);
+  }
 }
 
-const frames274_275 = analyze('tsubasa-when-show274-275.log', 275);
-console.log('274-275 log frames:', Object.keys(frames274_275).join(','));
-for (const f of Object.keys(frames274_275)) {
-  console.log(`\n===== frame ${f}: ${frames274_275[f].length} instr =====`);
-  const ops = ppuOps({ [f]: frames274_275[f] })[f];
-  if (ops.length) {
-    console.log(ops.slice(0, 80).join('\n'));
-    if (ops.length > 80) console.log('... (+' + (ops.length - 80) + ' more)');
-  } else {
-    console.log('(no PPU reg write matched)');
-  }
+// 相邻帧覆盖：看 4097 附近与 4343 附近分别在做什么（抽样）
+for (const k of [4090, 4097, 4100, 4330, 4340, 4343, 4350]) {
+  const hit = rows.filter(r => r.frame === k);
+  if (!hit.length) continue;
+  const first = hit[0];
+  console.log(`f${k} c${first.cycle} bank${first.bank} $${first.addr} ${first.text}`);
 }

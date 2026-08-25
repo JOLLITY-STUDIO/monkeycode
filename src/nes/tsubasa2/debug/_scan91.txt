@@ -1,0 +1,14 @@
+PRG idx 0x000085 bank 0 runtime $8085 op $85
+PRG idx 0x0009f7 bank 0 runtime $89f7 op $85
+PRG idx 0x002134 bank 1 runtime $8134 op $85
+PRG idx 0x002d59 bank 1 runtime $8d59 op $85
+PRG idx 0x004268 bank 2 runtime $8268 op $85
+PRG idx 0x0044f2 bank 2 runtime $84f2 op $85
+PRG idx 0x004536 bank 2 runtime $8536 op $85
+PRG idx 0x01821d bank 12 runtime $821d op $05
+PRG idx 0x01c217 bank 14 runtime $8217 op $25
+PRG idx 0x024b27 bank 18 runtime $8b27 op $85
+PRG idx 0x0289ea bank 20 runtime $89ea op $a5
+PRG idx 0x02f220 bank 23 runtime $9220 op $45
+PRG idx 0x0345cd bank 26 runtime $85cd op $05
+PRG idx 0x0350d2 bank 26 runtime $90d2 op $05
