@@ -8298,25 +8298,46 @@ async function main() {
   const nes = new nes_default({ emulateSound: false });
   nes.loadROM(fs2.readFileSync(romPath));
   const cpu = nes.cpu;
-  const origWrite = cpu.write.bind(cpu);
+  const origLoad = cpu.load.bind(cpu);
   let curFrame = -1;
-  const writes = [];
-  cpu.write = (addr, value) => {
-    const a = addr & 8199;
-    if (a === 8192 || a === 8197) {
-      writes.push({ a: a === 8192 ? "CTRL" : "SCRL", v: value });
+  const frameAddrs = /* @__PURE__ */ new Map();
+  cpu.load = (addr) => {
+    if (addr >= 32768) {
+      let s = frameAddrs.get(curFrame);
+      if (!s) {
+        s = /* @__PURE__ */ new Set();
+        frameAddrs.set(curFrame, s);
+      }
+      if (s.size < 6e4) s.add(addr);
     }
-    return origWrite(addr, value);
+    return origLoad(addr);
   };
-  const rd = (ad) => cpu.mem[ad & 2047];
   for (let f = 0; f < 620; f++) {
     curFrame = f;
-    writes.length = 0;
     nes.frame();
-    const w = writes.slice(-10);
-    console.log(
-      `f${String(f).padStart(3)} scene=${String(rd(237)).padStart(2)} r44=${String(rd(68)).padStart(3)} r45=${String(rd(69)).padStart(3)} r46=${String(rd(70)).padStart(3)} r47=${String(rd(71)).padStart(3)} r79=${String(rd(121)).padStart(3)} r7a=${String(rd(122)).padStart(3)} r7b=${String(rd(123)).padStart(3)} r7c=${String(rd(124)).padStart(3)} r1b=${rd(27).toString(16).padStart(2)} r5b=${rd(91).toString(16).padStart(2)} r628=${rd(1576)} w=[${w.map((x) => x.a + "=" + x.v.toString(16)).join(",")}]`
-    );
+  }
+  const phases = [
+    { name: "A:f0-f5 reset", f0: 0, f1: 5 },
+    { name: "B:f6-f375 scene0", f0: 6, f1: 375 },
+    { name: "C:f376-f619 scroll", f0: 376, f1: 619 }
+  ];
+  const phaseAddrs = phases.map((p) => ({ name: p.name, set: /* @__PURE__ */ new Set() }));
+  for (let f = 0; f < 620; f++) {
+    for (let i = 0; i < phases.length; i++) {
+      if (f >= phases[i].f0 && f <= phases[i].f1) {
+        for (const a of frameAddrs.get(f) || []) phaseAddrs[i].set.add(a);
+      }
+    }
+  }
+  for (let i = 0; i < phases.length; i++) {
+    const a = phaseAddrs[i].set;
+    const a000 = [...a].filter((x) => x >= 40960 && x <= 49151).sort((x, y) => x - y);
+    const c000 = [...a].filter((x) => x >= 49152 && x <= 57343).sort((x, y) => x - y);
+    console.log("=== " + phases[i].name + "  $A000-$BFFF addrs (" + a000.length + ") ===");
+    console.log(a000.map((x) => "$" + x.toString(16)).join(" "));
+    console.log("  $C000-$DFFF addrs (" + c000.length + "):");
+    console.log(c000.map((x) => "$" + x.toString(16)).join(" "));
+    console.log();
   }
 }
 main().catch((e) => {

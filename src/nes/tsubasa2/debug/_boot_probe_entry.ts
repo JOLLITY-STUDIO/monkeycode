@@ -8,47 +8,47 @@ async function main() {
   nes.loadROM(fs.readFileSync(romPath));
 
   const cpu = nes.cpu;
-  const origWrite = cpu.write.bind(cpu);
+  const origLoad = cpu.load.bind(cpu);
   let curFrame = -1;
-  const writes: { a: string; v: number }[] = [];
-  cpu.write = (addr: number, value: number) => {
-    const a = addr & 0x2007;
-    if (a === 0x2000 || a === 0x2005) {
-      writes.push({ a: a === 0x2000 ? 'CTRL' : 'SCRL', v: value });
+  // 只收集每帧前 60000 次 PRG 读，避免内存爆炸
+  const frameAddrs: Map<number, Set<number>> = new Map();
+  cpu.load = (addr: number) => {
+    if (addr >= 0x8000) {
+      let s = frameAddrs.get(curFrame);
+      if (!s) { s = new Set(); frameAddrs.set(curFrame, s); }
+      if (s.size < 60000) s.add(addr);
     }
-    return origWrite(addr, value);
+    return origLoad(addr);
   };
 
-  const rd = (ad: number) => cpu.mem[ad & 0x7ff];
-  const snap = () => ({
-    scene: rd(0x00ed), r44: rd(0x0044), r45: rd(0x0045), r46: rd(0x0046), r47: rd(0x0047),
-    r79: rd(0x0079), r7a: rd(0x007a), r7b: rd(0x007b), r7c: rd(0x007c),
-    r1b: rd(0x001b), r5b: rd(0x005b), r628: rd(0x0628),
-  });
-
-  const out: string[] = [];
-  let prev: ReturnType<typeof snap> | null = null;
   for (let f = 0; f < 620; f++) {
     curFrame = f;
-    writes.length = 0;
     nes.frame();
-    const s = snap();
-    const w = writes.slice(-8).map((x) => x.a + '=' + x.v.toString(16)).join(',');
-    if (!prev) {
-      out.push(`f${f} ${JSON.stringify(s)} w=[${w}]`);
-      prev = s;
-      continue;
-    }
-    const ch: string[] = [];
-    for (const k of Object.keys(s) as (keyof typeof s)[]) {
-      if (s[k] !== prev[k]) ch.push(`${k}:${prev[k]}->${s[k]}`);
-    }
-    // 每 32 帧记录一行（用于观察 scroll 阶段），变化帧都记录
-    if (ch.length) out.push(`f${f} CHG ${ch.join(' ')} w=[${w}]`);
-    else if (f % 16 === 0) out.push(`f${f} ${JSON.stringify(s)} w=[${w}]`);
-    prev = s;
   }
-  fs.writeFileSync(path.resolve(__dirname, '_probe_analysis.txt'), out.join('\n'), 'utf8');
-  console.log('written', out.length, 'lines -> debug/_probe_analysis.txt');
+
+  const phases: { name: string; f0: number; f1: number }[] = [
+    { name: 'A:f0-f5 reset', f0: 0, f1: 5 },
+    { name: 'B:f6-f375 scene0', f0: 6, f1: 375 },
+    { name: 'C:f376-f619 scroll', f0: 376, f1: 619 },
+  ];
+  const phaseAddrs: { name: string; set: Set<number> }[] = phases.map((p) => ({ name: p.name, set: new Set<number>() }));
+  for (let f = 0; f < 620; f++) {
+    for (let i = 0; i < phases.length; i++) {
+      if (f >= phases[i].f0 && f <= phases[i].f1) {
+        for (const a of frameAddrs.get(f) || []) phaseAddrs[i].set.add(a);
+      }
+    }
+  }
+
+  for (let i = 0; i < phases.length; i++) {
+    const a = phaseAddrs[i].set;
+    const a000 = [...a].filter((x) => x >= 0xa000 && x <= 0xbfff).sort((x, y) => x - y);
+    const c000 = [...a].filter((x) => x >= 0xc000 && x <= 0xdfff).sort((x, y) => x - y);
+    console.log('=== ' + phases[i].name + '  $A000-$BFFF addrs (' + a000.length + ') ===');
+    console.log(a000.map((x) => '$' + x.toString(16)).join(' '));
+    console.log('  $C000-$DFFF addrs (' + c000.length + '):');
+    console.log(c000.map((x) => '$' + x.toString(16)).join(' '));
+    console.log();
+  }
 }
 main().catch((e) => { console.error(e.stack || e); process.exit(1); });
