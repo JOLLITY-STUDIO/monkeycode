@@ -1,16 +1,20 @@
 /**
- * Scene0Controller — 场景 0（开场序列）
+ * Scene0Controller — 场景 0（Tecmo logo）
  *
- * 行为（用具名视图访问，禁止 readByte(0xXXXX) 当业务 API）：
- *   1. FadeInAndWait16: fadeBgStep → 等 16 帧
- *   2. OamDrift: 0x30 次 {等 1 帧; oamDrift +1}
- *   3. LoadScene3Nt: 按行写入 NT（场景 3 开场背景）
- *   4. Wait4: 等 4 帧 → 调色板装载
- *   5. Scroll: 滚动循环
- *   6. Hold: 240 + 60 帧等待
- *   7. FadeOut: 渐隐 → 清 NT → 填属性 → 场景 1 → 返回下一场景号 2
+ * 真实 ROM 行为（已通过 boot probe 验证，PRG bank 2 映射到 $A000）：
+ *   - 对应 bank02 code_main.s $8000-$8214（CPU $A000-$A214）的每帧例程
+ *     + 重置入口 $821D-$82AC 的场景 0 初始化
+ *   - 关键结论：场景 0 没有 scroll。$2005 从 f6 到 f375 保持 (0, 0xFF)。
+ *   - 滚动发生在 f382+，属于下一场景（ROM scene $B8），不在场景 0。
+ *   - 时间线：f2-f6 初始化，f7-f25 NT 流加载 logo，f26-f339 静止显示，
+ *            f340-f376 渐隐，f377 切换场景。
  *
- * H5 中同步阻塞的 waitFrames 转为状态机逐帧推进。
+ * 数据来源：
+ *   - OPENING_SCENE_TABLE[1]：r79=0x40 / r7c=0x80（场景 0 稳态滚动参数）
+ *   - bootOamInit / BOOT_TECMO_OAM_TABLE：Tecmo logo 40 精灵
+ *   - loadBootPalette：boot 调色板
+ *
+ * 禁止：bankSwitch / readByte(addr) 裸访问。全部走具名视图/Table。
  */
 import { SceneController } from './SceneController';
 import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
@@ -23,12 +27,11 @@ import { SpriteService } from '../sprite/SpriteService';
 enum Scene0Phase {
   FadeInAndWait16 = 0,
   OamDrift = 1,
-  LoadScene3Nt = 2,
+  LoadLogoNt = 2,
   Wait4 = 3,
-  Scroll = 4,
-  Hold = 5,
-  FadeOut = 6,
-  Done = 7,
+  Hold = 4,
+  FadeOut = 5,
+  Done = 6,
 }
 
 export class Scene0Controller extends SceneController {
@@ -62,24 +65,12 @@ export class Scene0Controller extends SceneController {
     this.sceneRow = 0;
     this.holdSecond = false;
 
-    // BUG #2 fix: 立即装载 title screen CHR 配置, 使 applyChrRequest 切 bank 时
-    //   BG $0000 = bank1k 124-127, SPR $1000 = bank1k 126-129
-    // 否则 frame 30 H5 仍按默认 [0,1,2,3,124,125,126,127] 渲染,
-    //   跟 ROM 实际 frame 30 (Tecmo Title) 差 PT ~0% / screen ~12%
+    // 装载 Tecmo logo CHR 配置
     this.prim.loadChrConfig(0x17);
-
-    // WBS L1 (PRG $21CA 翻译)：装载 Tecmo logo 40 sprite 到 shadow OAM。
-    //   - bootOamInit() 写 BOOT_TECMO_OAM_TABLE → $0468-$0567
-    //   - 这些 slot 已被 OAM_DRIFT_EXCLUDED_SLOTS 排除, oamDrift 不会漂
-    //   - 调用前先清零 64 sprite 缓冲, 防止 hidden 值残留
+    // 装载 Tecmo logo 40 sprite 到 shadow OAM
     for (let i = 0; i < 64; i++) this.sprite.hideSprite(i);
     this.sprite.bootOamInit();
-
-    // WBS L1 (PRG $1DD1 翻译)：Tecmo boot 调色板
-    //   - boot 任务 $1DD1 调用 loadBootPalette() 把 PALETTE_TABLE[0..7] 写入 palette
-    //   - 不写这一步 → palette 残留 0 → palette[0] = $00 = #7C7C7C (灰)
-    //   → frame 60 整个 NT 0 区域显示灰色 (Tecmo logo 在灰底)
-    //   - 修复后 BG palette[0] = $0F = 黑, 跟 reference emulator frame 60 一致
+    // 装载 boot 调色板
     this.prim.loadBootPalette();
 
     this.audio?.playBgm(0x01);
@@ -100,18 +91,20 @@ export class Scene0Controller extends SceneController {
       case Scene0Phase.OamDrift: {
         this.prim.oamDrift(1);
         if (--this.driftY > 0) return undefined;
-        store.writeByte(0x005b, 0);
+        // 进入场景 0 稳态（对应 ROM f6）：r79=0x40 / r7c=0x80 / r44=0 / r5b=1
+        store.scene.scrollFlag = 0x40;
+        store.scene.scrollY = 0;
         store.writeByte(0x007b, 0);
+        store.writeByte(0x005b, 1);
         this.prim.loadChrConfig(0x17);
-        store.writeByte(0x0044, 0x68);
-        this.prim.loadSceneData(3);
+        this.prim.loadSceneData(1); // OPENING_SCENE_TABLE[1]
         this.sceneRow = 0;
         this.streamDone = false;
-        this.phase = Scene0Phase.LoadScene3Nt;
+        this.phase = Scene0Phase.LoadLogoNt;
         return undefined;
       }
 
-      case Scene0Phase.LoadScene3Nt: {
+      case Scene0Phase.LoadLogoNt: {
         if (!this.streamDone) {
           this.prim.queueScene3NametableRows(this.sceneRow, 1);
           this.sceneRow++;
@@ -129,28 +122,7 @@ export class Scene0Controller extends SceneController {
         if (--this.counter > 0) return undefined;
         this.prim.loadPalettesAndFade(0x04, store.readByte(0x0025) & 0x0f);
         this.prim.oamFlipAttrs();
-        this.counter = 1;
-        this.phase = Scene0Phase.Scroll;
-        return undefined;
-      }
-
-      case Scene0Phase.Scroll: {
-        if (--this.counter > 0) return undefined;
-        const v79 = (store.readByte(0x0079) + 1) & 0xff;
-        store.writeByte(0x0079, v79);
-        let c = (store.readByte(0x007c) - 1) & 0xff;
-        store.writeByte(0x007c, c);
-        c = (store.readByte(0x007c) - 1) & 0xff;
-        store.writeByte(0x007c, c);
-        const v44 = (store.readByte(0x0044) - 2) & 0xff;
-        store.writeByte(0x0044, v44);
-        if (v44 >= 3) {
-          this.counter = 1;
-          return undefined;
-        }
-        this.prim.loadSceneData(0);
-        store.writeByte(0x001b, store.readByte(0x001b) | 0x01);
-        this.counter = 0xf0;
+        this.counter = 0xd8; // 216f hold，总时长接近 ROM 的 ~370f
         this.phase = Scene0Phase.Hold;
         return undefined;
       }
@@ -162,9 +134,8 @@ export class Scene0Controller extends SceneController {
           this.counter = 0x3c;
           return undefined;
         }
-        store.writeByte(0x001b, store.readByte(0x001b) & 0xfe);
-        store.writeByte(0x0090, 0);
-        store.writeByte(0x0091, 2);
+        // ROM f340：r5b=1→0，渐隐开始
+        store.writeByte(0x005b, 0);
         this.phase = Scene0Phase.FadeOut;
         return undefined;
       }
@@ -174,7 +145,10 @@ export class Scene0Controller extends SceneController {
         this.prim.hideOam();
         this.prim.clearNametable();
         this.prim.fillNametableRows(0xc0, 0x23, 0x02, 0x20, 0x55);
-        this.prim.loadSceneData(1);
+        this.prim.loadSceneData(0); // 清理滚动参数
+        store.writeByte(0x001b, store.readByte(0x001b) & 0xfe);
+        store.writeByte(0x0090, 0);
+        store.writeByte(0x0091, 2);
         this.phase = Scene0Phase.Done;
         return 0x02;
       }

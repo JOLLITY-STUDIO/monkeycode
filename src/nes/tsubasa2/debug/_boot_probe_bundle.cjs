@@ -8298,45 +8298,46 @@ async function main() {
   const nes = new nes_default({ emulateSound: false });
   nes.loadROM(fs2.readFileSync(romPath));
   const cpu = nes.cpu;
-  const origLoad = cpu.load.bind(cpu);
+  const origEmulate = cpu.emulate.bind(cpu);
   let curFrame = -1;
-  const frameAddrs = /* @__PURE__ */ new Map();
-  cpu.load = (addr) => {
-    if (addr >= 32768) {
-      let s = frameAddrs.get(curFrame);
+  const framePcs = /* @__PURE__ */ new Map();
+  cpu.emulate = () => {
+    const pc = cpu._instrPC;
+    if (pc >= 32768) {
+      let s = framePcs.get(curFrame);
       if (!s) {
         s = /* @__PURE__ */ new Set();
-        frameAddrs.set(curFrame, s);
+        framePcs.set(curFrame, s);
       }
-      if (s.size < 6e4) s.add(addr);
+      if (s.size < 8e4) s.add(pc);
     }
-    return origLoad(addr);
+    return origEmulate();
   };
   for (let f = 0; f < 620; f++) {
     curFrame = f;
     nes.frame();
   }
   const phases = [
-    { name: "A:f0-f5 reset", f0: 0, f1: 5 },
     { name: "B:f6-f375 scene0", f0: 6, f1: 375 },
     { name: "C:f376-f619 scroll", f0: 376, f1: 619 }
   ];
-  const phaseAddrs = phases.map((p) => ({ name: p.name, set: /* @__PURE__ */ new Set() }));
+  const phasePcs = phases.map((p) => ({ name: p.name, set: /* @__PURE__ */ new Set() }));
   for (let f = 0; f < 620; f++) {
     for (let i = 0; i < phases.length; i++) {
       if (f >= phases[i].f0 && f <= phases[i].f1) {
-        for (const a of frameAddrs.get(f) || []) phaseAddrs[i].set.add(a);
+        for (const pc of framePcs.get(f) || []) phasePcs[i].set.add(pc);
       }
     }
   }
   for (let i = 0; i < phases.length; i++) {
-    const a = phaseAddrs[i].set;
-    const a000 = [...a].filter((x) => x >= 40960 && x <= 49151).sort((x, y) => x - y);
-    const c000 = [...a].filter((x) => x >= 49152 && x <= 57343).sort((x, y) => x - y);
-    console.log("=== " + phases[i].name + "  $A000-$BFFF addrs (" + a000.length + ") ===");
-    console.log(a000.map((x) => "$" + x.toString(16)).join(" "));
-    console.log("  $C000-$DFFF addrs (" + c000.length + "):");
-    console.log(c000.map((x) => "$" + x.toString(16)).join(" "));
+    const pcs = phasePcs[i].set;
+    const a000 = [...pcs].filter((x) => x >= 40960 && x <= 49151).sort((x, y) => x - y);
+    const c000 = [...pcs].filter((x) => x >= 49152 && x <= 57343).sort((x, y) => x - y);
+    const e000 = [...pcs].filter((x) => x >= 57344 && x <= 65535).sort((x, y) => x - y);
+    console.log("=== " + phases[i].name + "  code pcs:");
+    console.log("  $A000-$BFFF (" + a000.length + "): " + a000.map((x) => "$" + x.toString(16)).join(" "));
+    console.log("  $C000-$DFFF (" + c000.length + "): " + c000.map((x) => "$" + x.toString(16)).join(" "));
+    console.log("  $E000-$FFFF (" + e000.length + "): " + e000.map((x) => "$" + x.toString(16)).join(" "));
     console.log();
   }
 }
