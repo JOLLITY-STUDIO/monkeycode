@@ -84,8 +84,7 @@ export class Tsubasa2 {
     this.input = new InputService(this.store);
     this.system = new GameSystemService(this.store);
 
-    // 场景控制器（按场景 ID 组织；场景表 SceneTable 管理 24 项行为）
-    const scene0 = new Scene0Controller(this.store, this.input);
+    // 场景控制器（BootRouter 自动统一 register Scene0-23）
 
     // 剧情脚本（V0.4 接入）
     const scriptLoader = new ScriptLoader(this.store);
@@ -123,11 +122,11 @@ export class Tsubasa2 {
     // 音频输出：创建 PAPU + WebAudio（小程序 wx.createWebAudioContext）
     this._initAudio();
 
-    // 音频注入（场景 BGM/SE 播放）
-    scene0.attachAudio(this.audio);
+    // 路由：场景表驱动注册 Scene0-23（构造器循环 register）
+    this.router = new BootRouter(this.store, this.input);
 
-    // 路由：场景表驱动注册（未翻译场景自动走默认 stub）
-    this.router = new BootRouter(this.store, this.input, scene0);
+    // 音频注入（场景 0 BGM/SE 播放 — BootRouter 默认已注册 Scene0Controller 实例）
+    (this.router.getController(SceneId.Scene0) as Scene0Controller).attachAudio(this.audio);
 
     // 硬件初始化 + 中断管线
     this.hardware = new HardwareInitService(this.store);
