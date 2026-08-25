@@ -75,6 +75,13 @@ export class Scene0Controller extends SceneController {
     for (let i = 0; i < 64; i++) this.sprite.hideSprite(i);
     this.sprite.bootOamInit();
 
+    // WBS L1 (PRG $1DD1 翻译)：Tecmo boot 调色板
+    //   - boot 任务 $1DD1 调用 loadBootPalette() 把 PALETTE_TABLE[0..7] 写入 palette
+    //   - 不写这一步 → palette 残留 0 → palette[0] = $00 = #7C7C7C (灰)
+    //   → frame 60 整个 NT 0 区域显示灰色 (Tecmo logo 在灰底)
+    //   - 修复后 BG palette[0] = $0F = 黑, 跟 reference emulator frame 60 一致
+    this.prim.loadBootPalette();
+
     this.audio?.playBgm(0x01);
   }
 

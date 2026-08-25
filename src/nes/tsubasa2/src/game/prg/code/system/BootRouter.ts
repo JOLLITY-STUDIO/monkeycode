@@ -134,9 +134,11 @@ export class BootRouter {
   /** 每帧更新；处理场景返回的下一个场景号 */
   update(frame: number): void {
     const next = this.current?.onUpdate(frame);
-    if (next !== undefined) {
+    if (next !== undefined && next !== this.currentSceneId) {
       this.changeScene(next);
-    }
+     }
+    // 同一 scene 重复进入 (scene 2 等"占位 do-nothing"场景) 不触发 onEnter
+    // 否则每帧 clearNametable + hideOam → 黑屏
   }
 
   /** 每帧渲染（主渲染路径） */

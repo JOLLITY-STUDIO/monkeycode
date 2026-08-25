@@ -27,6 +27,8 @@ export interface PlayerTilesResolved {
   readonly hairTemplateId: number;
   /** 身体基础 tile 索引 (CHR 索引) */
   readonly bodyBaseTileIdx: number;
+  /** NES sprite palette 组 0..7 */
+  readonly paletteSetId: number;
   /** 完整 tile 序列 (head + body + 衣袖等) */
   readonly tileSequence: ReadonlyArray<number>;
   /** NES sprite attr 字节 (palette + flipX + priority) */
@@ -79,6 +81,7 @@ export class PlayerTileService {
       playerName: player.name,
       hairTemplateId: tileEntry.hairTemplateId,
       bodyBaseTileIdx: tileEntry.bodyBaseTileIdx,
+      paletteSetId: tileEntry.paletteSetId,
       tileSequence,
       spriteAttr: attr,
       palette: paletteForGroup(tileEntry.paletteSetId),

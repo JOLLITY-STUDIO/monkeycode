@@ -1057,6 +1057,11 @@ export const PLAYER_TABLE: ReadonlyArray<PlayerProfile> = [
     highShot: 45, highPass: 41, highTrap: 41, highLet: 41, highCtrlClr: 45, highUnctrl: 33, highChal: 36, highIntc: 29 },
 ];
 
+/** 球员 ID → 档案具名查询（替代 PRG $0BAC ram 指针 + 间接查表） */
+export function findPlayerById(id: number): PlayerProfile | undefined {
+  return PLAYER_TABLE.find((p) => p.id === (id & 0xff));
+}
+
 /** 球员颜色（明星 ROM 0x2b821 + idx*5） */
 export const PLAYER_COLOR_TABLE: ReadonlyArray<PlayerColorEntry & { readonly id: number }> = [
   { id: 0x1, skin: 0x0f, hair: 0x30, shirt: 0x30, shorts: 0x30 },
