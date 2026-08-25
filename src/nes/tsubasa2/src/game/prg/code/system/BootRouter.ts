@@ -21,31 +21,23 @@ import {
 
 /** 场景号枚举（0-23） */
 export const enum SceneId {
-  Scene0 = 0,
-  Scene1 = 1,
-  Scene2 = 2,
-  Scene3 = 3,
-  Scene4 = 4,
-  Scene5 = 5,
-  Scene6 = 6,
-  Scene7 = 7,
-  Scene8 = 8,
-  Scene9 = 9,
-  Scene10 = 10,
-  Scene11 = 11,
-  Scene12 = 12,
-  Scene13 = 13,
-  Scene14 = 14,
-  Scene15 = 15,
-  Scene16 = 16,
-  Scene17 = 17,
-  Scene18 = 18,
-  Scene19 = 19,
-  Scene20 = 20,
-  Scene21 = 21,
-  Scene22 = 22,
-  Scene23 = 23,
+  Scene0 = 0, Scene1 = 1, Scene2 = 2, Scene3 = 3, Scene4 = 4, Scene5 = 5,
+  Scene6 = 6, Scene7 = 7, Scene8 = 8, Scene9 = 9, Scene10 = 10, Scene11 = 11,
+  Scene12 = 12, Scene13 = 13, Scene14 = 14, Scene15 = 15, Scene16 = 16,
+  Scene17 = 17, Scene18 = 18, Scene19 = 19, Scene20 = 20, Scene21 = 21,
+  Scene22 = 22, Scene23 = 23,
 }
+
+/** Scene1-23 控制器类列表（顺序对应 sceneId），用于自动 register */
+const SCENE_CONTROLLERS: ReadonlyArray<new (store: DataStore, input: InputService) => SceneController> = [
+  Scene1Controller, Scene2Controller, Scene3Controller, Scene4Controller,
+  Scene5Controller, Scene6Controller, Scene7Controller, Scene8Controller,
+  Scene9Controller, Scene10Controller, Scene11Controller, Scene12Controller,
+  Scene13Controller,
+  Scene14Controller, Scene15Controller, Scene16Controller, Scene17Controller,
+  Scene18Controller, Scene19Controller, Scene20Controller, Scene21Controller,
+  Scene22Controller, Scene23Controller,
+];
 
 export class BootRouter {
   /** 场景控制器注册表（sceneId → controller） */
@@ -60,29 +52,9 @@ export class BootRouter {
     scene0: Scene0Controller,
   ) {
     this.register(scene0);
-    this.register(new Scene1Controller(this.store, this.input));
-    this.register(new Scene2Controller(this.store, this.input));
-    this.register(new Scene3Controller(this.store, this.input));
-    this.register(new Scene4Controller(this.store, this.input));
-    this.register(new Scene5Controller(this.store, this.input));
-    this.register(new Scene6Controller(this.store, this.input));
-    this.register(new Scene7Controller(this.store, this.input));
-    this.register(new Scene8Controller(this.store, this.input));
-    this.register(new Scene9Controller(this.store, this.input));
-    this.register(new Scene10Controller(this.store, this.input));
-    this.register(new Scene11Controller(this.store, this.input));
-    this.register(new Scene12Controller(this.store, this.input));
-    this.register(new Scene13Controller(this.store, this.input));
-    this.register(new Scene14Controller(this.store, this.input));
-    this.register(new Scene15Controller(this.store, this.input));
-    this.register(new Scene16Controller(this.store, this.input));
-    this.register(new Scene17Controller(this.store, this.input));
-    this.register(new Scene18Controller(this.store, this.input));
-    this.register(new Scene19Controller(this.store, this.input));
-    this.register(new Scene20Controller(this.store, this.input));
-    this.register(new Scene21Controller(this.store, this.input));
-    this.register(new Scene22Controller(this.store, this.input));
-    this.register(new Scene23Controller(this.store, this.input));
+    for (const Ctor of SCENE_CONTROLLERS) {
+      this.register(new Ctor(store, input));
+    }
   }
 
   /** 注册/覆盖场景控制器 */
