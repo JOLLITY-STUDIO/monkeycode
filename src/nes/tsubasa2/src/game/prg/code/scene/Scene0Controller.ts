@@ -1,5 +1,35 @@
 /**
- * Scene0Controller — 场景 0（Tecmo logo）
+ * Scene0Controller — 场景 0（Tecmo logo 开场）
+ *
+ * ⚠️ 翻译模型（v3 fused-merged 等价物）：
+ *   当前 H5 Scene0Controller 是 ROM 真实调度流程的"功能等价融合版"，不是 1-to-1 翻译。
+ *
+ *   ROM 真实流程（SceneTable behavior 字段 + Scene 1-13 真翻译记录）：
+ *     Scene0Controller onEnter() 仅设 phase=InitBlack
+ *     → 在 InitBlack 等待 8 帧后 dispatch 回 Scene0 主循环（fade-in/hold/fade-out）
+ *     → Scene0 fade-out 完毕后 return 2 → dispatcher 跳 Scene1(math) → Scene3 但返回 Scene2 → Scene3(清NT) →
+ *        Scene4(hideOAM) → Scene5/6 → Scene7($0099=$FF) → Scene8/9($001B 位) →
+ *        Scene10/11/12/13(CHR + scene data 5/6/7/8) → Scene14(真正主游戏)
+ *
+ *   当前 H5 Scene0 fused 等价物做了什么：
+ *     onEnter() 一次性做完了 Scene1-13 链调的所有 utility：
+ *       - loadChrConfig(0x17) = Scene10/11/12/13 CHR config
+ *       - loadScene0Palettes() = Scene14 palette 装载
+ *       - loadSceneData(1) = Scene10/11/12/13 scene data
+ *       - hideOam() = Scene4 hide OAM
+ *       - playBgm(0x01) = main bgm init
+ *     然后 Scene0 自己跑完整 fade-in → hold → fade-out（这是 ROM 主循环部分，**这部分真翻译**）
+ *
+ *   差异：
+ *     - 启动期 Scene1-13 没真被 dispatcher 调度（fused 进 Scene0 onEnter）
+ *     - counter=314 magic number 来源不明（ROM 用 Scene1-13 链调决定 hold 时长）
+ *     - 但**最终渲染结果 100% 等价**（已跟 emu 验证）
+ *
+ *   后续修法（Phase 2）：
+ *     1. Scene0 onEnter() 不做 utility，仅 phase=InitBlack
+ *     2. Scene0 在 fade-out 完成后 return 1（dispatch 回 Scene1 链）
+ *     3. Scene1-13 已翻译（SceneUtilitiesControllers.ts）
+ *     4. Scene13 returns NEXT → dispatcher 跳 Scene14
  *
  * 真实 ROM 行为（模拟器 f1-f30 逐帧 dump 实证，emu-reference 验证）：
  *   - f1-f8  初始化/黑屏（palette 全 0x0F，NT0 空，OAM 隐藏）
