@@ -26,22 +26,28 @@ export interface SceneBankEntry {
 
 /**
  * Scene-end CHR bank table — scene 0 frame 范围 (Tecmo Title → map3 NT)
- * 数据来源: emu-reference/frame-{013,030,060,300}/chr-switches.json (最后一行 scanline banks)
- *   frame 013  banks=[0,1,2,3,252,113,82,83]            (boot 终态 — emu真实)
- *   frame 030  sc=150 banks=[0,1,2,3,252,113,82,83]
- *   frame 060  sc=150 banks=[0,1,2,3,252,113,82,83]
- *   frame 300  sc=11  banks=[124,125,126,127,252,113,82,83] (Hold)
+ * 数据来源: emu-reference/frame-{013,030,060,300}/chr-switches.json (mid-frame bank switch)
  *
- * 历史 BUG: v1 用 `[124,125,126,127,252,113,82,83]` 给 H5 frame 0-300 全程覆盖 — 这跟
- *   emu frame 1-13 真值 [0,1,2,3,252,113,82,83] 不符。修正:
- *   - frame 0..299: BG default 0-3, SPR 252/113/82/83 (Tecmo logo sprite layer)
- *   - frame 300+:    再切回 124-127 (Hold stage 显示 Tecmo 字符)
+ * emu 真实 mid-frame bank switch 时序:
+ *   - frame 30/60/90/120/150: sc=6 用 [124-127,252,113,82,83] (上半 NT 用 font tile)
+ *                              sc=150 切 [0-3,252,113,82,83]  (下半 NT 用 data tile)
+ *
+ * 历史 BUG: v1 用 `[0,1,2,3,252,113,82,83]` 给 H5 frame 0-300 全程覆盖 — 这跟
+ *   emu frame 30 sc=6 真值 [124,125,126,127,252,113,82,83] 不符 → NT row 0-13
+ *   字体渲染错。修正:
+ *   - frame 0-340: BG slot 0-3 = [124,125,126,127] (font tile bank — 上半 NT)
+ *                slot 4-7 = [252,113,82,83] (Tecmo logo SPR layer)
+ *   - frame 340+: 切 [0,1,2,3] (data tile bank — 下半 NT / 渐隐后切换)
+ *
+ * ⚠ H5 当前架构 rasterize 用单 PT sheet, 不能 per-scanline 切 bank;
+ *   此处选 BG=124-127 (覆盖 emu sc=6 一致, 即 font tile 字体对) 优于 0-3。
+ *   后续升级到 per-scanline rasterizer 后再加 [0,1,2,3,252,113,82,83] sheet。
  */
 export const SCENE_END_BANK_TABLE: ReadonlyArray<SceneBankEntry> = [
-  // frame 0..299: BG default + Tecmo logo SPR 层
-  { fromFrame: 0,   banks: [0, 1, 2, 3, 252, 113, 82, 83] },
-  // frame 300+: Hold 切回 Tecmo 字符 BG
-  { fromFrame: 300, banks: [124, 125, 126, 127, 252, 113, 82, 83] },
+  // frame 0..340: BG font tile (124-127) + Tecmo logo SPR 层 (252/113/82/83)
+  { fromFrame: 0,   banks: [124, 125, 126, 127, 252, 113, 82, 83] },
+  // frame 340+: 切 data tile (0-3) — Hold 结束渐隐后下一场景 BG
+  { fromFrame: 340, banks: [0, 1, 2, 3, 252, 113, 82, 83] },
   // 后续场景 (1-23) 由 emulate 观察补全; 此处显式注释避免冷编译:
   //   scene 1 (LevelIntro), scene 3 (HalfTime), scene 7 (Match), ...
 ];

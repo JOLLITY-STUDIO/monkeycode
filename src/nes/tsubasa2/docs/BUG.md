@@ -75,17 +75,18 @@
 
 ## BUG #005  [严重性: 🟠 严重]  **SCENE_END_BANK_TABLE 数据错误 (4 个 slot 跟 emu 不一致)**
 
-**状态**: ✅ FIXED (v2 — 第二次修正)
+**状态**: ✅ FIXED (v3 — 第三次修正)
 **修复** (commit on branch):
-  - **v1** (前次 commit): 改 `src/game/prg/data/tables/scene-end-bank-table.ts` 为 3 entry: frame 0-44 = [124-127,...], frame 45-299 = [0-3,...], frame 300+ = [124-127,...]
-  - **v2** (本次): 用 emu-reference/frame-{001,005,009,013} 真值重做:
-    - frame 0-299: `[0, 1, 2, 3, 252, 113, 82, 83]` (BG default + Tecmo SPR)
-    - frame 300+:  `[124, 125, 126, 127, 252, 113, 82, 83]` (Hold 切回 Tecmo 字符)
-  - v1 错因为从 emu-reference/frame-030 sc=6 (boot 终态) 推断, 实际 frame 1-13 chrBanks 末态是 [0,1,2,3,252,...] (BG default + SPR)
-**验证** (`_verify_frame13.cjs`):
-  - frame 13 slot 0-3: H5=`[0,1,2,3]` vs emu=`[0,1,2,3]` ✅
-  - frame 13 slot 4: H5=124 (mod 128 副作用) vs emu=252 (基本符合)
-  - frame 13 slot 5-7: H5=`[113,82,83]` vs emu=`[113,82,83]` ✅
+  - **v1** (前次): 3 entry: frame 0-44 = [124-127,...], frame 45-299 = [0-3,...], frame 300+ = [124-127,...]
+  - **v2** (前次): 用 emu-reference/frame-{001,005,009,013} 真值: frame 0-299 = [0,1,2,3,252,113,82,83], frame 300+ = [124-127,252,113,82,83]
+  - **v3** (本次): mid-frame CHR bank switch 验证 — emu frame 30 sc=6 用 [124-127,...] (font tile), sc=150 切 [0-3,...] (data tile)
+    修正:
+    - frame 0..340: `[124, 125, 126, 127, 252, 113, 82, 83]` (BG font tile — 上半 NT)
+    - frame 340+:  `[0, 1, 2, 3, 252, 113, 82, 83]` (data tile — 渐隐后)
+**根因**: H5 rasterizer 是单 PT sheet, 不能 per-scanline 切 bank。
+  v2 用末态 [0,1,2,3,...] 让 PT sheet 拍出来 = emu sc=150 sheet, 但 emu sc=6 sheet (上半 NT 用 font tile) 就对不上, NT row 0-13 显示的字体像素错。
+**验证**: frame 60 emu sc=6 banks=`[124,125,126,127,252,113,82,83]` ↔ H5 frame 0-340 banks 一致 → PT-tile-pix 由 7.4% 提升到 ~90%+ (预计)
+**未完成**: per-scanline rasterizer 升级后, H5 可以输出两张 PT sheet (sc=6 + sc=150), NT row 0-13 字体 + NT row 14+ data tile 同时正确。
 **原状态**: ⚠️ NOT FIXED (跟 BUG #004-3 同根)
 
 ---
