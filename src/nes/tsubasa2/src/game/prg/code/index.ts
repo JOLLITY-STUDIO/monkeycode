@@ -11,6 +11,19 @@ export { InterruptService } from './system/InterruptService';
 export type { PpuTarget } from './system/InterruptService';
 export { InputService, Button } from './system/InputService';
 
+// bank00 翻译服务 (BANK00_ANALYSIS.md §9.2 落地清单)
+export { Bank00SchedulerService } from './system/Bank00SchedulerService';
+export type { SchedulerSlot, SchedulerCallback } from './system/Bank00SchedulerService';
+export { PpuTransferService } from './system/PpuTransferService';
+export type { SceneLoadCfg } from './system/PpuTransferService';
+export { MainRouterService } from './system/MainRouterService';
+export type { StatusMode, DispatchAction } from './system/MainRouterService';
+export { NtStreamLoaderService } from './system/NtStreamLoaderService';
+export type { NtStreamEntry, ByteCodeOp } from './system/NtStreamLoaderService';
+export { SceneStateMachine } from './system/SceneStateMachine';
+export type { SceneState, SceneEntryParse } from './system/SceneStateMachine';
+export { TileBuilderService } from './system/TileBuilderService';
+
 // scene（按场景 ID 组织：场景表 + 控制器）
 export { SceneController } from './scene/SceneController';
 export { Scene0Controller } from './scene/Scene0Controller';
