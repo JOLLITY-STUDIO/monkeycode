@@ -43,6 +43,8 @@ export { PlayerMoveService } from './player/PlayerMoveService';
 export type { PlayerMoveRequest, PlayerMoveResult } from './player/PlayerMoveService';
 export { PlayerNameService } from './player/PlayerNameService';
 export type { PlayerName } from './player/PlayerNameService';
+export { PlayerTileService } from './player/PlayerTileService';
+export type { PlayerTilesResolved } from './player/PlayerTileService';
 export { TeamRosterService } from './team/TeamRosterService';
 
 // match

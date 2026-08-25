@@ -38,6 +38,10 @@ export {
   PLAYER_COLOR, GK_STATS, PLAYER_HAIR, NAMED_PLAYER_COLOR,
 } from './tables/player-table';
 export type { PlayerColorEntry, PlayerGkEntry } from './tables/player-table';
+export {
+  PLAYER_TILE_TABLE, findPlayerTilesById,
+} from './tables/player-tile-table';
+export type { PlayerTileEntry } from './tables/player-tile-table';
 export { TEAM_TABLE, findTeamById, findTeamNameById, findRosterById, TEAMS_FULL } from './tables/team-table';
 export type { TeamRosterEntry } from './tables/team-table';
 export {
