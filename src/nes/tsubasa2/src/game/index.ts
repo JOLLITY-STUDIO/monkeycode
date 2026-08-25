@@ -144,6 +144,10 @@ export class Tsubasa2 {
     // 路由：场景表驱动注册 Scene0-23（构造器循环 register）
     this.router = new BootRouter(this.store, this.input);
 
+    // 注入 bank00 PRG $8464 cfg loader 到 BootRouter，
+    // changeScene() 自动装 cfg（替代 GameSystemService.sceneLoad 硬编码 stub 表）
+    this.router.attachPpuTransfer(this.ppuTransfer);
+
     // 音频注入（场景 0 BGM/SE 播放 — BootRouter 默认已注册 Scene0Controller 实例）
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachAudio(this.audio);
 
@@ -151,6 +155,10 @@ export class Tsubasa2 {
     // （PRG $8AF7 scene handler loader + $82ED NT stream loader）
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachNtStreamLoader(this.ntStreamLoader);
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachSceneStateMachine(this.sceneStateMachine);
+    // bank00 6-slot scheduler 注入 Scene0（PRG $9FA8 pushState 翻译）
+    // 让 Scene0 的 Wait16/Wait4/Wait240/Wait60 用 scheduler.pushState 派发，
+    // 验证 pushState → tickDispatch → callback 端到端可达性
+    (this.router.getController(SceneId.Scene0) as Scene0Controller).attachBank00Scheduler(this.bank00Scheduler);
 
     // 硬件初始化 + 中断管线
     this.hardware = new HardwareInitService(this.store);

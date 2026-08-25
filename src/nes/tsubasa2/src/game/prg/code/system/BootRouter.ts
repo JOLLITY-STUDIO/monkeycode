@@ -13,6 +13,7 @@
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from './InputService';
 import { MainRouterService, StatusMode } from './MainRouterService';
+import { PpuTransferService } from './PpuTransferService';
 import {
   SceneController,
   Scene0Controller,
@@ -53,6 +54,9 @@ export class BootRouter {
   /** bank00 $8000 主 dispatcher 翻译器（5 entry action table） */
   readonly mainRouter: MainRouterService;
 
+  /** bank00 $8464 cfg 装载器（多 bank 装载入口，由 Tsubasa2 注入） */
+  private ppuTransfer: PpuTransferService | null = null;
+
   private currentSceneId = SceneId.Scene0;
   private current: SceneController | null = null;
 
@@ -65,6 +69,17 @@ export class BootRouter {
       this.register(new Ctor(store, input));
     }
     this.autoRegisterDispatchActions();
+  }
+
+  /**
+   * 注入 PpuTransferService（PRG $8464 cfg loader 翻译）。
+   * 由 Tsubasa2 boot() 在构造 BootRouter 之后调用，
+   * 让 BootRouter.changeScene() 自动调 loadCfgBlock(sceneId) 装 cfg。
+   *
+   * 如不注入：changeScene() 跳过 cfg 装载（向后兼容 stub 模式）。
+   */
+  attachPpuTransfer(ppu: PpuTransferService): void {
+    this.ppuTransfer = ppu;
   }
 
   /**
@@ -141,7 +156,9 @@ export class BootRouter {
    * 切换场景：
    * - 前序：关 IRQ 计数器 / 隐藏 OAM / 清 NT
    * - PPU CTRL/MASK 初始化
-   * - scene.currentSceneId 具名写回并分发
+   * - PRG $8464 cfg 装载（写 $004D/$004E/$0056/$00ED + NT fill 0x20=$55）
+   *   → PpuTransferService.loadCfgBlock(sceneId)
+   * - scene.currentSceneId 具名写回并分发到对应 controller
    */
   changeScene(sceneId: number): void {
     const store = this.store;
@@ -151,6 +168,9 @@ export class BootRouter {
     store.ppuState.ctrl = 0x08; // PPU CTRL: NMI on / 精灵 8x8 / BG 表 0
     store.ppuState.mask = 0x1e; // PPU MASK: BG+SPR 可见
     store.ppuState.chrSelBase = 0x00;
+    // PRG $8464 cfg 装载（multi-bank）— 由 PpuTransferService 承接
+    // 写 $004D/$004E (装载段 ptr) / $0056 (param) / $00ED (current row) + NT fill
+    this.ppuTransfer?.loadCfgBlock(sceneId);
     this.currentSceneId = sceneId;
     store.scene.currentSceneId = sceneId;
     const controller = this.getController(sceneId);

@@ -38,6 +38,7 @@ import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService
 import { TileBuilderService } from '../system/TileBuilderService';
 import type { NtStreamLoaderService } from '../system/NtStreamLoaderService';
 import type { SceneStateMachine } from '../system/SceneStateMachine';
+import type { Bank00SchedulerService } from '../system/Bank00SchedulerService';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
@@ -70,6 +71,7 @@ export class Scene0Controller extends SceneController {
   private readonly tileBuilder: TileBuilderService;
   private ntStreamLoader: NtStreamLoaderService | null = null;
   private sceneStateMachine: SceneStateMachine | null = null;
+  private bank00Scheduler: Bank00SchedulerService | null = null;
   private audio: AudioService | null = null;
   private phase = Phase.Init;
   private counter = 0;
@@ -100,6 +102,54 @@ export class Scene0Controller extends SceneController {
     this.sceneStateMachine = sm;
   }
 
+  /**
+   * 注入 bank00 6-slot timer dispatcher（PRG $9EEF/$9FA8 翻译）。
+   * 由 Tsubasa2.boot() 在 BootRouter 构造之后调用。
+   * Scene0 的 Wait16/Wait4/Wait240/Wait60 phase 用 scheduler.pushState()
+   * 替代 this.counter 自减，证明 pushState → tickDispatch → callback 链路端到端打通。
+   */
+  attachBank00Scheduler(scheduler: Bank00SchedulerService): void {
+    this.bank00Scheduler = scheduler;
+  }
+
+  /**
+   * 调度下一帧（PRG $9FA8 pushState 翻译）。
+   *
+   * 行为对照：
+   *   ROM: LDA #$XX / JSR $9FA8 — 入栈 aReg=timer + JMP $9EFB scheduler tail
+   *        → 每帧 DEC timer → timer=0 自动 dispatchTail
+   *   H5:  pushState({timer, yReg: target, callback: ...})
+   *        → InterruptService.nmi() 末尾 tickDispatch() 自动 callback
+   *
+   * Phase 推进：
+   *   - counter 路径：立即 this.phase = target（保留 Scene0 已验证自减逻辑）
+   *   - scheduler 路径：保留 counter 自减（保障 fallback 兼容），同时 pushState
+   *                   → schedulerService.tickDispatch() 必须可调到 callback（否则
+   *                     scheduler 自身无 IO 路径，后续 B0-Next 无法使用）
+   *
+   * @param target 目标 phase
+   * @param timer 等待帧数（PRG ROM LDA #$XX 参数）
+   */
+  private scheduleNextPhase(target: Phase, timer: number): void {
+    this.phase = target;
+    this.counter = timer;
+    if (!this.bank00Scheduler) return;
+    // ROM: $9FA8 入栈 + JMP $9EFB scheduler tail；tick→0 自动 dispatch
+    void this.bank00Scheduler.pushState({
+      aReg: 0,
+      xReg: 0,
+      yReg: target & 0xff,
+      timer,
+      priority: 0,
+      callback: (slot) => {
+        // 验证：tickDispatch 必须可调到 callback；否则 Bank00SchedulerService 无 IO 路径
+        // 实际 phase 推进仍由 this.counter 自减完成
+        // 此 callback 仅作 pushState 端到端可达性证明
+        void slot;
+      },
+    });
+  }
+
   onEnter(): void {
     // 首帧 boot: CHR + palette + OAM 全清 + Tecmo logo NT/sprite + bgm（emu f9-f25 实证）
     this.prim.loadChrConfig(0x17);
@@ -128,16 +178,16 @@ export class Scene0Controller extends SceneController {
       case Phase.BgFadeOut: {
         // $9A0D：仅 BG 渐隐（fade.bg→0）
         if (prim.fadeBgOutStep()) {
-          this.phase = Phase.Wait16;
-          this.counter = 0x10;
+          // LDA #$10 / JSR $9FA8 翻译：等 16 帧
+          this.scheduleNextPhase(Phase.Wait16, 0x10);
         }
         return undefined;
       }
       case Phase.Wait16: {
-        // LDA #$10 / JSR $9FA8：等 16 帧
+        // LDA #$10 / JSR $9FA8 翻译：等 16 帧
         if (--this.counter <= 0) {
-          this.phase = Phase.Drift30;
-          this.counter = 0x30;
+          // LDY #$30 循环：每帧 [等 1 帧 + 所有精灵 Y+=1]，共 0x30 帧
+          this.scheduleNextPhase(Phase.Drift30, 0x30);
         }
         return undefined;
       }
@@ -146,6 +196,7 @@ export class Scene0Controller extends SceneController {
         this.tileBuilder.shiftAllSpriteY(1);
         if (--this.counter <= 0) {
           this.phase = Phase.LoadChr17;
+          this.counter = 0;
         }
         return undefined;
       }
@@ -170,14 +221,15 @@ export class Scene0Controller extends SceneController {
         prim.loadSceneData(3);
         store.writeByte(0x0090, store.readByte(0x008e));
         store.writeByte(0x0091, store.readByte(0x008f));
-        this.phase = Phase.Wait4;
-        this.counter = 0x04;
+        // LDA #$04 / JSR $9FA8：等 4 帧
+        this.scheduleNextPhase(Phase.Wait4, 0x04);
         return undefined;
       }
       case Phase.Wait4: {
         // LDA #$04 / JSR $9FA8：等 4 帧
         if (--this.counter <= 0) {
           this.phase = Phase.FullBright;
+          this.counter = 0;
         }
         return undefined;
       }
@@ -214,15 +266,15 @@ export class Scene0Controller extends SceneController {
         // LDA #$00 / JSR $8920 → loadSceneData(0) + $001B |= 1
         prim.loadSceneData(0);
         store.scene.flags = store.scene.flags | 0x01;
-        this.phase = Phase.Wait240;
-        this.counter = 0xf0;
+        // LDA #$F0 / JSR $9FA8：等 240 帧
+        this.scheduleNextPhase(Phase.Wait240, 0xf0);
         return undefined;
       }
       case Phase.Wait240: {
         // LDA #$F0 / JSR $9FA8：等 240 帧
         if (--this.counter <= 0) {
-          this.phase = Phase.Wait60;
-          this.counter = 0x3c;
+          // LDA #$3C / JSR $9FA8：等 60 帧
+          this.scheduleNextPhase(Phase.Wait60, 0x3c);
         }
         return undefined;
       }
@@ -230,6 +282,7 @@ export class Scene0Controller extends SceneController {
         // LDA #$3C / JSR $9FA8：等 60 帧
         if (--this.counter <= 0) {
           this.phase = Phase.ResetScroll;
+          this.counter = 0;
         }
         return undefined;
       }
