@@ -22,6 +22,15 @@ export class DataStore {
   /** 工作 RAM $0000-$07FF（含 OAM 缓冲 $0200、NMI 缓冲 $0498/$05E8） */
   readonly ram: Uint8Array = new Uint8Array(0x800);
 
+  /**
+   * Shadow OAM 独立缓冲区（64 精灵 × 4 字节 = 256 字节）。
+   * 不放到 DataStore.ram 里，因为 $0468-$0567 是其他 ROM 数据区间
+   *   （render queue1 $0498 / NMI buffer $05E8 等），会冲突。
+   * 单独 Uint8Array 后所有 OAM 操作走这里，再由 InterruptService.oamDma
+   *   推到 PPU spriteMem。
+   */
+  readonly shadowOam: Uint8Array = new Uint8Array(0x100);
+
   /** VRAM 暂存 $2000-$3FFF（无写透目标时的挂起写；attach 后 flush） */
   private readonly vram: Uint8Array = new Uint8Array(0x2000);
 

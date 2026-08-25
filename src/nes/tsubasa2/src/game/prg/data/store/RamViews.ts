@@ -69,31 +69,37 @@ export class PaletteView {
   }
 }
 
-/** 精灵 OAM 视图（影子 OAM $0468-$0567，每精灵 4 字节 [y, tile, attr, x]） */
+/** 精灵 OAM 视图（影子 OAM，64 精灵 × 4 字节 [y, tile, attr, x]）。
+ *
+ * shadow OAM 不放到 DataStore.ram，因为 $0468-$0567 段会被
+ *   render queue1 ($0498) / NMI buffer ($05E8) 等冲突踩掉。
+ * 独立 DataStore.shadowOam: Uint8Array(256) 后所有写都走这里，
+ *   oamDma 再推到 PPU spriteMem。
+ */
 export class OamView {
   constructor(private readonly s: DataStore) {}
 
-  /** 64 个精灵（每精灵 4 字节） */
-  get shadowOam(): Uint8Array { return this.s.ram.subarray(0x0468, 0x0568); }
+  /** 64 个精灵（每精灵 4 字节 = 256 字节总） */
+  get shadowOam(): Uint8Array { return this.s.shadowOam; }
 
-  /** 实际 OAM 缓冲（$0200-$02FF） */
+  /** 实际 OAM 缓冲（$0200-$02FF，写入即生效到硬件） */
   get oam(): Uint8Array { return this.s.oamBuffer; }
 
-  /** 第 i 个精灵的 Y 坐标（$0468+i*4） */
-  spriteY(i: number): number { return this.s.readByte(0x0468 + i * 4); }
-  setSpriteY(i: number, v: number) { this.s.writeByte(0x0468 + i * 4, v & 0xff); }
+  /** 第 i 个精灵的 Y 坐标 */
+  spriteY(i: number): number { return this.s.shadowOam[i * 4 + 0]; }
+  setSpriteY(i: number, v: number) { this.s.shadowOam[i * 4 + 0] = v & 0xff; }
 
-  /** 第 i 个精灵的属性字节（$046A+i*4） */
-  spriteAttr(i: number): number { return this.s.readByte(0x046a + i * 4); }
-  setSpriteAttr(i: number, v: number) { this.s.writeByte(0x046a + i * 4, v & 0xff); }
+  /** 第 i 个精灵的属性字节 */
+  spriteAttr(i: number): number { return this.s.shadowOam[i * 4 + 2]; }
+  setSpriteAttr(i: number, v: number) { this.s.shadowOam[i * 4 + 2] = v & 0xff; }
 
-  /** 第 i 个精灵的 X 坐标（$046B+i*4） */
-  spriteX(i: number): number { return this.s.readByte(0x046b + i * 4); }
-  setSpriteX(i: number, v: number) { this.s.writeByte(0x046b + i * 4, v & 0xff); }
+  /** 第 i 个精灵的 X 坐标 */
+  spriteX(i: number): number { return this.s.shadowOam[i * 4 + 3]; }
+  setSpriteX(i: number, v: number) { this.s.shadowOam[i * 4 + 3] = v & 0xff; }
 
-  /** 第 i 个精灵的 tile 索引（$0469+i*4） */
-  spriteTile(i: number): number { return this.s.readByte(0x0469 + i * 4); }
-  setSpriteTile(i: number, v: number) { this.s.writeByte(0x0469 + i * 4, v & 0xff); }
+  /** 第 i 个精灵的 tile 索引 */
+  spriteTile(i: number): number { return this.s.shadowOam[i * 4 + 1]; }
+  setSpriteTile(i: number, v: number) { this.s.shadowOam[i * 4 + 1] = v & 0xff; }
 }
 
 /** PPU 状态视图（CTRL/MASK/bank 基址/滚动暂存） */

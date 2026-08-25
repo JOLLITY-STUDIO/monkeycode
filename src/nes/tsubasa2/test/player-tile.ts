@@ -291,13 +291,13 @@ function selectPlayer(id: number): void {
     <div class="detail-row"><span class="k">颜色 (明星)</span><span class="v">skin=<span class="hex">0x${(color?.skin ?? 0).toString(16).padStart(2, '0')}</span> hair=<span class="hex">0x${(color?.hair ?? 0).toString(16).padStart(2, '0')}</span> shirt=<span class="hex">0x${(color?.shirt ?? 0).toString(16).padStart(2, '0')}</span> shorts=<span class="hex">0x${(color?.shorts ?? 0).toString(16).padStart(2, '0')}</span></span></div>
 
     <div class="section-title">头型渲染 (PLAYER_HAIR_TABLE[${id - 1}] = 0x${tile.hairTemplateId.toString(16).padStart(2, '0')}, 4 tile)</div>
-    <div class="render-box">${headCanvas.outerHTML}</div>
+    <div class="render-box" id="renderHead"></div>
 
     <div class="section-title">身体帧渲染 (BANK19_SPRITE_FRAMES[0x${(id % BANK19_SPRITE_FRAMES.length).toString(16).padStart(2, '0')}], ${bodyTiles.length} tile)</div>
-    <div class="render-box">${bodyCanvas.outerHTML}</div>
+    <div class="render-box" id="renderBody"></div>
 
     <div class="section-title">4 帧走位动画</div>
-    <div class="render-box">${animCanvases}</div>
+    <div class="render-box" id="renderAnim"></div>
 
     <div class="section-title">完整 tile 序列 (${resolved.tileSequence.length} tiles)</div>
     <div class="tile-list">${resolved.tileSequence.map((t) => {
@@ -308,8 +308,24 @@ function selectPlayer(id: number): void {
     <div class="section-title">帧 byte 字节流 (data)</div>
     <div class="byte-flow">${(frame?.tiles ?? []).map(t => t.toString(16).padStart(2, '0').toUpperCase()).join(' ')}</div>
 
-    <div class="render-note">来源: NES_CHR_ROM[${CHR_BANK_COUNT}×${CHR_BANK_SIZE}B = ${(CHR_BANK_COUNT * CHR_BANK_SIZE / 1024).toFixed(0)}KB], sprite pattern table @ \$0000</div>
+    <div class="render-note">来源: NES_CHR_ROM[${CHR_BANK_COUNT}×${CHR_BANK_SIZE}B = ${(CHR_BANK_COUNT * CHR_BANK_SIZE / 1024).toFixed(0)}KB], sprite pattern table @ $0000</div>
   `;
+
+  // canvas 用 appendChild 注入 (innerHTML 字符串化的 canvas 会丢绘制数据)
+  document.getElementById('renderHead')!.appendChild(headCanvas);
+  document.getElementById('renderBody')!.appendChild(bodyCanvas);
+  const animHost = document.getElementById('renderAnim')!;
+  resolved.animFrames.forEach((f, i) => {
+    const c = renderTilesGrid(f, pal, 8, 2);
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:inline-block;margin:2px;text-align:center';
+    const lbl = document.createElement('div');
+    lbl.style.cssText = 'color:#888;font-size:10px';
+    lbl.textContent = 'F' + i;
+    wrap.appendChild(lbl);
+    wrap.appendChild(c);
+    animHost.appendChild(wrap);
+  });
 }
 
 searchInput.addEventListener('input', renderTable);

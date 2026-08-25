@@ -139159,13 +139159,13 @@ function selectPlayer(id) {
     <div class="detail-row"><span class="k">\u989C\u8272 (\u660E\u661F)</span><span class="v">skin=<span class="hex">0x${(color?.skin ?? 0).toString(16).padStart(2, "0")}</span> hair=<span class="hex">0x${(color?.hair ?? 0).toString(16).padStart(2, "0")}</span> shirt=<span class="hex">0x${(color?.shirt ?? 0).toString(16).padStart(2, "0")}</span> shorts=<span class="hex">0x${(color?.shorts ?? 0).toString(16).padStart(2, "0")}</span></span></div>
 
     <div class="section-title">\u5934\u578B\u6E32\u67D3 (PLAYER_HAIR_TABLE[${id - 1}] = 0x${tile.hairTemplateId.toString(16).padStart(2, "0")}, 4 tile)</div>
-    <div class="render-box">${headCanvas.outerHTML}</div>
+    <div class="render-box" id="renderHead"></div>
 
     <div class="section-title">\u8EAB\u4F53\u5E27\u6E32\u67D3 (BANK19_SPRITE_FRAMES[0x${(id % BANK19_SPRITE_FRAMES.length).toString(16).padStart(2, "0")}], ${bodyTiles.length} tile)</div>
-    <div class="render-box">${bodyCanvas.outerHTML}</div>
+    <div class="render-box" id="renderBody"></div>
 
     <div class="section-title">4 \u5E27\u8D70\u4F4D\u52A8\u753B</div>
-    <div class="render-box">${animCanvases}</div>
+    <div class="render-box" id="renderAnim"></div>
 
     <div class="section-title">\u5B8C\u6574 tile \u5E8F\u5217 (${resolved.tileSequence.length} tiles)</div>
     <div class="tile-list">${resolved.tileSequence.map((t) => {
@@ -139178,6 +139178,20 @@ function selectPlayer(id) {
 
     <div class="render-note">\u6765\u6E90: NES_CHR_ROM[${CHR_BANK_COUNT}\xD7${CHR_BANK_SIZE}B = ${(CHR_BANK_COUNT * CHR_BANK_SIZE / 1024).toFixed(0)}KB], sprite pattern table @ $0000</div>
   `;
+  document.getElementById("renderHead").appendChild(headCanvas);
+  document.getElementById("renderBody").appendChild(bodyCanvas);
+  const animHost = document.getElementById("renderAnim");
+  resolved.animFrames.forEach((f, i) => {
+    const c = renderTilesGrid(f, pal, 8, 2);
+    const wrap = document.createElement("div");
+    wrap.style.cssText = "display:inline-block;margin:2px;text-align:center";
+    const lbl = document.createElement("div");
+    lbl.style.cssText = "color:#888;font-size:10px";
+    lbl.textContent = "F" + i;
+    wrap.appendChild(lbl);
+    wrap.appendChild(c);
+    animHost.appendChild(wrap);
+  });
 }
 searchInput.addEventListener("input", renderTable);
 posFilter.addEventListener("change", renderTable);

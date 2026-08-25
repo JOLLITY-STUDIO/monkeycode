@@ -49,11 +49,13 @@ export class SpriteService {
    */
   putSprite(slot: number, tile: number, x: number, y: number, attr: number = 0): void {
     if (slot < 0 || slot >= 64) return;
-    const base = 0x0468 + slot * 4;
-    this.store.writeByte(base, y & 0xff);
-    this.store.writeByte(base + 1, tile & 0xff);
-    this.store.writeByte(base + 2, attr & 0xff);
-    this.store.writeByte(base + 3, x & 0xff);
+    // 写到 shadowOam（独立 256-byte buffer），不踩 RAM
+    const base = slot * 4;
+    const buf = this.store.shadowOam;
+    buf[base + 0] = y & 0xff;
+    buf[base + 1] = tile & 0xff;
+    buf[base + 2] = attr & 0xff;
+    buf[base + 3] = x & 0xff;
   }
 
   /**
@@ -69,15 +71,16 @@ export class SpriteService {
   }
 
   /**
-   * 隐藏精灵（Y=$FF）。
+   * 隐藏精灵（Y=$FF）。写到 store.shadowOam（独立 buffer），不踩 RAM。
    */
   hideSprite(slot: number): void {
     if (slot < 0 || slot >= 64) return;
-    this.store.writeByte(0x0468 + slot * 4, 0xff);
+    this.store.shadowOam[slot * 4] = 0xff;
   }
 
   /**
    * 隐藏所有精灵（OAM 全 $FF）。对应 asm $CB8B。
+   * 直接清 store.shadowOam（独立 Uint8Array(256)），不走 RAM 写。
    */
   hideAll(): void {
     for (let i = 0; i < 64; i++) this.hideSprite(i);
@@ -92,7 +95,7 @@ export class SpriteService {
     const tile = frame && frame.tiles.length > 0
       ? frame.tiles[0]
       : (frameId & 0xff);
-    this.store.writeByte(0x0469 + slot * 4, tile);
+    this.store.shadowOam[slot * 4 + 1] = tile & 0xff;
   }
 
   /**
@@ -100,7 +103,7 @@ export class SpriteService {
    */
   getSpriteY(slot: number): number {
     if (slot < 0 || slot >= 64) return 0;
-    return this.store.readByte(0x0468 + slot * 4);
+    return this.store.shadowOam[slot * 4 + 0];
   }
 
   /**
@@ -108,7 +111,7 @@ export class SpriteService {
    */
   getSpriteX(slot: number): number {
     if (slot < 0 || slot >= 64) return 0;
-    return this.store.readByte(0x046b + slot * 4);
+    return this.store.shadowOam[slot * 4 + 3];
   }
 
   /**
@@ -116,7 +119,7 @@ export class SpriteService {
    */
   getSpriteAttr(slot: number): number {
     if (slot < 0 || slot >= 64) return 0;
-    return this.store.readByte(0x046a + slot * 4);
+    return this.store.shadowOam[slot * 4 + 2];
   }
 
   // ─────────────────────────────────────────────────────────────────────
