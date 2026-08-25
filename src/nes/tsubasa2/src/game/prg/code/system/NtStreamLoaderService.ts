@@ -51,7 +51,7 @@ export type ByteCodeOp = number;
 export class NtStreamLoaderService {
   constructor(
     readonly store: DataStore,
-    private readonly ppu: PpuTransferService,
+    private readonly ppu: PpuTransferService | null = null,
   ) {}
 
   // ──────────────────────── $82ED NT stream loader ────────────────────────
@@ -72,6 +72,7 @@ export class NtStreamLoaderService {
    * @returns 解析出的 entry 数组（空表示无数据）
    */
   parseSceneStream(cfgId: number): NtStreamEntry[] {
+    if (!this.ppu) return [];
     // 先解析 cfg (复用 PpuTransferService)
     const cfg = this.ppu.resolveSceneCfg(cfgId);
     if (!cfg) return [];
@@ -171,6 +172,7 @@ export class NtStreamLoaderService {
    * @returns 写入总数
    */
   applyEntries(entries: ReadonlyArray<NtStreamEntry>): number {
+    if (!this.ppu) return 0;
     let total = 0;
     for (const e of entries) {
       this.ppu.writePpuBuffer(e.ptrLo, e.ptrHi, e.count);

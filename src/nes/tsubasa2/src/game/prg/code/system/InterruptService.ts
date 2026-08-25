@@ -13,6 +13,7 @@ import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from './InputService';
 import type { BootRouter } from './BootRouter';
 import type { AudioService } from '../audio/AudioService';
+import type { Bank00SchedulerService } from './Bank00SchedulerService';
 import { consumeNtBuffer } from '../../data/store/RenderQueues';
 import { SCENE_END_BANK_TABLE } from '../../data/tables/scene-end-bank-table';
 import { OPENING_FADE_TABLE } from '../../data/scene/opening-data';
@@ -40,6 +41,7 @@ type ChrSlotIndex = number[];
 export class InterruptService {
   private router: BootRouter | null = null;
   private audio: AudioService | null = null;
+  private scheduler: Bank00SchedulerService | null = null;
   /** CHR 8 slot 已装载 bank1k 缓存（变更检测） */
   private readonly chrSlots: ChrSlotIndex = new Array(8).fill(-1);
 
@@ -59,11 +61,21 @@ export class InterruptService {
   }
 
   /**
+   * 注入 bank00 6-slot dispatcher（PRG $9085 scheduler tick entry 翻译）。
+   * 在 nmi() 末尾调 scheduler.tickDispatch()，自动派发所有 timer→0 的 slot。
+   * 由 Tsubasa2 组合根在 boot() 时接线。
+   */
+  attachScheduler(scheduler: Bank00SchedulerService): void {
+    this.scheduler = scheduler;
+  }
+
+  /**
    * 每帧 NMI：
    * 1. 手柄读取
    * 2. 音频引擎帧推进
    * 3. 场景帧更新（游戏逻辑路径）
-   * 4. 主渲染路径标志置位
+   * 4. bank00 scheduler tick（PRG $9085 翻译入口）
+   * 5. 主渲染路径标志置位
    */
   nmi(frame: number): void {
     const store = this.store;
@@ -71,6 +83,9 @@ export class InterruptService {
     this.input.readControllers();
     this.audio?.update();
     this.router?.update(frame);
+    // bank00 dispatcher tick — 自动派发所有 timer→0 的 slot callback
+    // （替代 ROM 每帧 NMI handler 期间调 bank0 $9085 scheduler dispatch 的副作用）
+    this.scheduler?.tickDispatch();
     store.scene.flags |= 0x80;
   }
 

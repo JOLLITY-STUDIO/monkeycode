@@ -35,6 +35,7 @@
  */
 import { SceneController } from './SceneController';
 import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
+import { TileBuilderService } from '../system/TileBuilderService';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
@@ -64,6 +65,7 @@ const enum Phase {
 export class Scene0Controller extends SceneController {
   readonly sceneId = 0;
   private readonly prim: RenderingPrimitivesService;
+  private readonly tileBuilder: TileBuilderService;
   private audio: AudioService | null = null;
   private phase = Phase.Init;
   private counter = 0;
@@ -71,6 +73,7 @@ export class Scene0Controller extends SceneController {
   constructor(store: DataStore, input: InputService) {
     super(store, input);
     this.prim = new RenderingPrimitivesService(store);
+    this.tileBuilder = new TileBuilderService(store, null /* ppu wired at boot */);
   }
 
   attachAudio(audio: AudioService): void {
@@ -119,8 +122,8 @@ export class Scene0Controller extends SceneController {
         return undefined;
       }
       case Phase.Drift30: {
-        // LDY #$30 循环：每帧 所有精灵 Y += 1（$890C），共 0x30 帧
-        prim.oamDrift(1);
+        // LDY #$30 循环：每帧 所有精灵 Y += 1（PRG $890C 翻译），共 0x30 帧
+        this.tileBuilder.shiftAllSpriteY(1);
         if (--this.counter <= 0) {
           this.phase = Phase.LoadChr17;
         }
@@ -162,8 +165,8 @@ export class Scene0Controller extends SceneController {
         return undefined;
       }
       case Phase.FlipAttr: {
-        // $88FB：所有精灵 attr ^= $20（水平翻转）
-        prim.oamFlipAttrs();
+        // PRG $88FB 翻译：所有精灵 attr ^= $20（水平翻转）
+        this.tileBuilder.flipAllSpritePalettes();
         this.phase = Phase.Scroll51;
         return undefined;
       }

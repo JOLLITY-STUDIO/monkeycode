@@ -23,6 +23,12 @@ import {
   HardwareInitService,
   InterruptService,
   InputService,
+  Bank00SchedulerService,
+  PpuTransferService,
+  MainRouterService,
+  NtStreamLoaderService,
+  SceneStateMachine,
+  TileBuilderService,
   Scene0Controller,
   ScriptEngine,
   ScriptLoader,
@@ -67,6 +73,13 @@ export class Tsubasa2 {
   readonly skill: SkillService;
   readonly audio: AudioService;
   readonly sprite: SpriteService;
+  // bank00 6 个新 Service（组合根实例化）
+  readonly bank00Scheduler: Bank00SchedulerService;
+  readonly ppuTransfer: PpuTransferService;
+  readonly mainRouter: MainRouterService;
+  readonly ntStreamLoader: NtStreamLoaderService;
+  readonly sceneStateMachine: SceneStateMachine;
+  readonly tileBuilder: TileBuilderService;
 
   /** 帧计数（NMI 帧号） */
   protected _frame = 0;
@@ -83,6 +96,21 @@ export class Tsubasa2 {
     this.store = new DataStore();
     this.input = new InputService(this.store);
     this.system = new GameSystemService(this.store);
+
+    // bank00 翻译服务（组合根实例化，stub 阶段）
+    // PRG $9EEF-$9FA8 scheduler tail / $9FA8 push trampoline / $9085 tick entry
+    this.bank00Scheduler = new Bank00SchedulerService(this.store);
+    // PRG $8464 cfg loader（多 bank 装载） — 注意 PpuTransferService 需要 PPU target，
+    // 此时 target 还未 attach（boot() 时按需 attach），可选 null
+    this.ppuTransfer = new PpuTransferService(this.store, null);
+    // PRG $8000 dispatcher table / $801F Start button spin / $8053 boot logo
+    this.mainRouter = new MainRouterService(this.store);
+    // PRG $82ED NT stream loader
+    this.ntStreamLoader = new NtStreamLoaderService(this.store, this.ppuTransfer);
+    // PRG $8AF7 scene handler loader + $8E15 NT copy/tile decoder
+    this.sceneStateMachine = new SceneStateMachine(this.store, this.ppuTransfer);
+    // PRG $88CA-$8AB2 tile constructor + $88FB/$890C/$89A3 oam 操作
+    this.tileBuilder = new TileBuilderService(this.store, this.ppuTransfer);
 
     // 场景控制器（BootRouter 自动统一 register Scene0-23）
 
@@ -132,6 +160,9 @@ export class Tsubasa2 {
     this.hardware = new HardwareInitService(this.store);
     this.interrupts = new InterruptService(this.store, this.input);
     this.interrupts.attachRouter(this.router);
+    // 注入 bank00 scheduler 到 InterruptService，nmi() 末尾自动调 tickDispatch()
+    // （PRG $9085 scheduler tick entry 翻译入口）
+    this.interrupts.attachScheduler(this.bank00Scheduler);
     void matchEngine;
   }
 

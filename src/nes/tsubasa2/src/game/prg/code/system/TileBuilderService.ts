@@ -53,7 +53,7 @@ const OAM_DEFAULT_TEMPLATE: ReadonlyArray<number> = (() => {
 export class TileBuilderService {
   constructor(
     readonly store: DataStore,
-    private readonly ppu: PpuTransferService,
+    private readonly ppu: PpuTransferService | null = null,
   ) {}
 
   // ──────────────────────── $88CA tile constructor (char path) ────────────────────────
@@ -81,6 +81,7 @@ export class TileBuilderService {
    * @returns 是否成功 commit
    */
   buildCharTile(tileIdx: number): boolean {
+    if (!this.ppu) return false;
     const t = tileIdx & 0xff;
     if (t < 0xa0) {
       // NT lo byte path: 4-byte entry = [tile][0x00][x_lo][x_hi]
@@ -114,6 +115,7 @@ export class TileBuilderService {
    * @returns 是否成功 commit
    */
   buildTile4(bytes: ReadonlyArray<number>): boolean {
+    if (!this.ppu) return false;
     if (bytes.length < 4) return false;
     this.ppu.commitSprite4(bytes);
     this.ppu.finalizeBufferWrite();

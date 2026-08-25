@@ -98,7 +98,7 @@ export class SceneStateMachine {
 
   constructor(
     readonly store: DataStore,
-    private readonly ppu: PpuTransferService,
+    private readonly ppu: PpuTransferService | null = null,
   ) {}
 
   // ──────────────────────── $8AF7 scene handler loader ────────────────────────
@@ -118,6 +118,7 @@ export class SceneStateMachine {
    * H5 语义：解析 cfg idx → 装载 scene state → 返回结构化结果
    */
   loadHandler(cfgId: number): SceneState | null {
+    if (!this.ppu) return null;
     const cfg = this.ppu.resolveSceneCfg(cfgId);
     if (!cfg) return null;
     // 清场字段
@@ -227,6 +228,7 @@ export class SceneStateMachine {
    * H5 语义：解析 4-byte NT entry → 落 NT
    */
   decodeAndCopyNT(entries: ReadonlyArray<SceneEntryParse>): void {
+    if (!this.ppu) return;
     for (const e of entries) {
       // 等价于 PRG $8E15 inner loop + $8EF0 render inner
       // 占位：实际 NT write 走 PpuTransferService

@@ -9,23 +9,18 @@
  *
  * 帧驱动由外层循环承担（Tsubasa2.frame → InterruptService.nmi → BootRouter.update）；
  * 此处保留 $0027 模式机与 RAM 状态推进语义。
+ *
+ * 注：场景 cfg 表已委托给 PpuTransferService.resolveSceneCfg()（PRG $8464 翻译）。
+ *     本类只保留 mode 0/1/2/3/4 主循环推进 + 帧挂起抽象。
  */
 import type { DataStore } from '../../data/store/DataStore';
 import type { BootRouter } from './BootRouter';
 import { RenderingPrimitivesService } from './RenderingPrimitivesService';
-
-/**
- * 场景装载分段表：
- * - SCENE_LOAD_UP_BOUND：上界表，扫描到大于等于 s 的位置
- * - SCENE_LOAD_SUB：减法表，与上界表配对计算偏移
- * - SCENE_LOAD_PARAM：参数表（数据段参数）
- */
-const SCENE_LOAD_UP_BOUND = [0x10, 0x04, 0x20, 0x05, 0x60, 0x06, 0xff];
-const SCENE_LOAD_SUB = [0x00, 0x03, 0x10, 0x04, 0x20, 0x05, 0x60, 0x06, 0xff];
-const SCENE_LOAD_PARAM = [0x03, 0x10, 0x04, 0x20, 0x05, 0x60, 0x06, 0xff];
+import { PpuTransferService } from './PpuTransferService';
 
 export class GameSystemService {
   private readonly prim: RenderingPrimitivesService;
+  private ppuTransfer: PpuTransferService | null = null;
   private router: BootRouter | null = null;
 
   constructor(readonly store: DataStore) {
@@ -38,30 +33,20 @@ export class GameSystemService {
   }
 
   /**
-   * 场景装载入口：
-   * - Y=1 起扫描上界表 → $004D/$004E = (A - sub[Y])<<1 + $A0xx（场景数据段指针）
-   * - $0056 = param[Y]（数据段参数）
-   * - $00ED = $0025（数据段选择；H5 保留 RAM 视图）
-   * - $0652 = 0
-   * - $00E6/$00E7 = $23E0 → fillNametableRows(1 行, $55)
-   * - 场景号写回 ram_00ED 并路由到对应场景控制器
+   * 场景装载入口。
+   *
+   * 已委托给 PpuTransferService.loadCfgBlock(sceneId)（PRG $8464 翻译），
+   * 写所有 cfg 字段到 DataStore: $004D/$004E/$0056/$00ED/$0652/$00E6/$00E7 + NT fill。
+   * 然后调度到对应 scene controller。
    */
   sceneLoad(sceneId: number): void {
-    const store = this.store;
-    const s = sceneId & 0xff;
-    let y = 1;
-    while (y < SCENE_LOAD_UP_BOUND.length && s >= SCENE_LOAD_UP_BOUND[y]) y++;
-    const a = (s - SCENE_LOAD_SUB[y]) & 0xff;
-    store.writeByte(0x004d, (a << 1) & 0xff);
-    store.writeByte(0x004e, (0xa0 + ((a << 1) >> 8)) & 0xff);
-    store.writeByte(0x0056, SCENE_LOAD_PARAM[y] ?? 0);
-    store.writeByte(0x00ed, store.readByte(0x0025));
-    store.writeByte(0x0652, 0);
-    store.writeByte(0x00e6, 0xe0);
-    store.writeByte(0x00e7, 0x23);
-    this.prim.fillNametableRows(0xe0, 0x23, 0x01, 0x20, 0x55);
-    store.writeByte(0x00ed, s);
-    this.router?.changeScene(s);
+    // 委托给 PpuTransferService 处理 cfg 表查找（PRG $8464 翻译）
+    // GameSystemService 自身持有 PpuTransferService 实例以保持 push-down 行为一致
+    if (!this.ppuTransfer) {
+      this.ppuTransfer = new PpuTransferService(this.store, null);
+    }
+    this.ppuTransfer.loadCfgBlock(sceneId);
+    this.router?.changeScene(sceneId);
   }
 
   /**

@@ -160,29 +160,6 @@ export class RenderingPrimitivesService {
     store.writeByte(0x05c8, 0);
   }
 
-  /**
-   * 所有精灵 Y 坐标 += amount（store.oam.spriteY(slot) += add）。
-   * 对应 bank00 $890C：遍历全部 64 sprite（$0468 起，4 字节步长），无排除。
-   * ⚠ slot 必须是 sprite 索引（0-63），不能用字节偏移（spriteY 内部 = shadowOam[slot*4]）。
-   */
-  oamDrift(amount: number): void {
-    const store = this.store;
-    const add = amount & 0xff;
-    for (let slot = 0; slot < 64; slot++) {
-      const y = (store.oam.spriteY(slot) + add) & 0xff;
-      store.oam.setSpriteY(slot, y);
-    }
-  }
-
-  /** 所有精灵属性 ^= $20（水平翻转位）。slot 为 sprite 索引。 */
-  oamFlipAttrs(): void {
-    const store = this.store;
-    for (let slot = 0; slot < 64; slot++) {
-      const attr = store.oam.spriteAttr(slot) ^ 0x20;
-      store.oam.setSpriteAttr(slot, attr);
-    }
-  }
-
   // ──────────────────────────── 清屏 / 填充 ────────────────────────────
 
   /** 关闭 NMI/MASK，整屏清 0，再恢复。NT + 属性表（$2000-$27FF） */
