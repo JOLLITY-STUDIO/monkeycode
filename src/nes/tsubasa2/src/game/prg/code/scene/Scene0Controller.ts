@@ -160,16 +160,18 @@ export class Scene0Controller extends SceneController {
 
       case Scene0Phase.FadeOut: {
         if (!this.prim.fadeOutStep()) return undefined;
-        this.prim.hideOam();
-        this.prim.clearNametable();
+        // ✅ 已删 fused 重复工作 (2026-08-25) — Scene1-13 真 chain 做这些:
+        //   hideOam         → Scene4 (隐藏全部 OAM $0200-$02FF 填 $F8)
+        //   clearNametable  → Scene3 (清 NT0/NT1 $2000-$2BFF 填 0)
+        //   loadSceneData(0)→ Scene10-13 (装载场景数据 0 是清理版本)
+        // 保留 fillNametableRows / $001B & 0xFE / $0090 / $0091
+        //   这些是 Scene0 自己清"末帧背景"的操作, 对应 ROM 真实 tail work
         this.prim.fillNametableRows(0xc0, 0x23, 0x02, 0x20, 0x55);
-        this.prim.loadSceneData(0); // 清理滚动参数
         store.writeByte(0x001b, store.readByte(0x001b) & 0xfe);
         store.writeByte(0x0090, 0);
         store.writeByte(0x0091, 2);
         this.phase = Scene0Phase.Done;
-        // ✅ Chain 已通 (2026-08-25): return 0x01 → Scene1 → Scene2 → ... → Scene13 → Scene14
-        //    Scene1-13 return values 全部改成 sceneId+1, NEXT=0x02 元凶删掉
+        // ✅ Chain 已通: return 0x01 → Scene1 → Scene2 → ... → Scene13 → Scene14
         return 0x01; // Scene1 (math tool)
       }
 
