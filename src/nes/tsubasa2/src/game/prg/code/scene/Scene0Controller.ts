@@ -118,6 +118,11 @@ export class Scene0Controller extends SceneController {
       case Scene0Phase.Hold: {
         if (--this.counter > 0) return undefined;
         // ROM f340：r5b=1→0，渐隐开始
+        // ⚠️ 反推警告：counter=314 是 H5 估算值（依据注释 f25-f339 = 314 ticks），
+        //   没从 asm 真反推。run emu f338-f376 trace 看到 ROM 在 f338 已开始 fade-out
+        //   (OAM clear + bank switch)，所以 magic number 实际可能偏差 1-2 帧。
+        //   待办: 跑 emu frame 339-343 完整 trace 验证；目前 H5 跑 0-300 帧 97.7%
+        //   Screen 比对通过暗示大致正确。
         store.writeByte(0x005b, 0);
         this.phase = Scene0Phase.FadeOut;
         return undefined;

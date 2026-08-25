@@ -127,6 +127,30 @@ $00:9AB7: 60          RTS
 | fadeInStep (fade=0→1 调色板切换) | $8C56-onwards | 已经基本清楚 — palette.bg view |
 | hold 阶段 296 帧 | 13.log 没跑到 f300 | 跑 emu frame 1-300 全程看 trace |
 
+### 3.2.1 ⚠️ Magic Number 警示：Scene0Controller.Hold `counter = 314`
+
+**当前状态**：H5 `Scene0Controller.ts:111` 写 `this.counter = 314` — 这是**经验估算值**，**没有 asm 反推**。
+
+**估算逻辑**（可能有错）：
+- 注释说 "f25 fade 满亮 → 静止显示至 f339"
+- H5 算法：`if (--counter > 0)` 直到 counter=0 → frame 25 + 314 = f339 进 FadeOut
+- 估算前提：**注释描述"f25-f339"是正确的**
+
+**实证反查**（已部分完成）：
+- f338 trace: ROM 在跑 OAM clear + bank switch ($0F:C4C1) — **此时已在 fade-out 中期**（不是 hold 末段）
+- f344-f376: ROM `DEC $F3 = #$07` 计数器, 是 fade-step **内** counter（不直接代表 hold 时长）
+- f339/340/341 在 ROM trace 中是 gap（dump 不连续）— 不能直接验证
+
+**修复路径**（如果要消除 magic number）：
+
+| 方向 | 工作量 | 描述 |
+|---|---|---|
+| A. 跑 emu frame 339-343 完整 trace | 1-2 小时 | 用 trace dump 拿到 f339-f340 的 6502 PC，验证 ROM 在该帧做什么 |
+| B. 加 r5b 或类似 RAM state check | 30 分钟 | 改 H5：删 counter=314，改成 "等 ROM 自动清 r5b" (pull model 限制) |
+| C. 接受 magic number,加注释警告 | 10 分钟 | 在 `Scene0Controller.ts:111` 加 `// ⚠️ Magic 314 — 估算依据注释 f25-f339` |
+
+**待办**：跑 emu 验证 f339 真实 frame。如果发现 magic number 错（+1/-1 帧），修正为正确值。
+
 ### 3.3 反推工作流（最终目标）
 
 ```
