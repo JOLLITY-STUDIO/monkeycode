@@ -175,6 +175,23 @@ The real boot flow is now clear: Reset($C64E) → $CEFE(场景0) → $C400 → J
 
 ---
 
+## 球员 tile 素材 翻译子任务 (PT1-PT4)
+
+> 范围: 各球员在画面上显示的"人物 tile 素材",从 H5 翻译产物里反推并落地。
+> 现状: `BANK19_TILE_DATA` 已抓到 1200+ 字节原始 stream;`BANK19_SPRITE_FRAMES` 是空数组;
+> `BANK19_SCENE_DATA` 全 $FF 占位;`PLAYER_HAIR_TABLE`/`PLAYER_COLOR_TABLE` 已有 45 明星;
+> 缺 `playerId → (hair/body tile 索引 + palette)` 桥接。
+> 翻译原则: 解析原 stream → 填声明式表 → 桥接表 → 业务服务;禁止猜数据。
+
+|| ID | 父 | 任务 | 产出 | 状态 |
+||----|-----|------|------|------|
+|| PT1 | H4 | 解析 `BANK19_TILE_DATA` 字节流,按 $E0 终止符拆帧,填 `BANK19_SPRITE_FRAMES` (≈ 50 帧, 每帧若干 tile 索引) | `data/tables/sprite-frame-table.ts` (BANK19_SPRITE_FRAMES 落地) | ⬜ |
+|| PT2 | H4 | 新建 `player-tile-table.ts`: `playerId → { hairTemplateId, bodyBaseTileIndex, paletteSetId, animTileBase }`, 与 PLAYER_HAIR_TABLE 桥接 | `data/tables/player-tile-table.ts` | ⬜ |
+|| PT3 | H4 | 新建 `PlayerTileService.findPlayerTiles(playerId)`: 合并 hair+body+color+anim 四个 CHR 索引, 返回最终 tile 序列 + palette | `code/player/PlayerTileService.ts` | ⬜ |
+|| PT4 | PT1-3 | tsc 零错误 + 在 `SpriteService.putSpriteByFrame` 接入 PT3 输出, 提交 + push | commit + push | ⬜ |
+
+---
+
 ## 开发纪律
 
 1. 先写 stub（类声明 + 方法签名 + TODO），保留导出契约，再逐个覆盖实现。

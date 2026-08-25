@@ -1852,6 +1852,9 @@ class PPU {
   // Checks for non-transparent sprite pixel overlapping non-transparent BG pixel,
   // excluding x=255 and left-clipped pixels (x=0..7 when leftClip is true).
   _checkSpr0Pixels(tile, toffset, startX, horiFlip, scan, leftClip) {
+    // 防御：mapper 在 CHR 装载未就绪时可能返回 undefined/null（HeadlessRuntime / 占位 stub）。
+    // 缺失 tile 不参与 sprite-0-hit 检测，直接返回 false，等下一帧再试。
+    if (!tile || !tile.pix) return false;
     let bufferIndex = scan * 256 + startX;
 
     for (let px = 0; px < 8; px++) {

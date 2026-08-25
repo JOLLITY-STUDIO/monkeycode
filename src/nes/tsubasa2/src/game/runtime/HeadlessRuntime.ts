@@ -106,16 +106,7 @@ export class HeadlessRuntime implements GameRuntime {
     this.controllers = { 1: new Controller(), 2: new Controller() };
     const chr = buildChrRom();
     this.vromTilesByBank1k = chr.vromTilesByBank1k;
-    /** 无头 mapper stub（PPU endScanline / latchAccess / getSpritePatternTile 等需要 no-op 实现） */
-    const mmapStub = {
-      clockIrqCounter: () => {},
-      latchAccess: (_addr: number) => {},
-      canWriteChr: (_addr: number) => false,
-      onSpriteRender: () => {},
-      onBgRender: () => {},
-      getSpritePatternTile: (_isSprite8x8: boolean, _table: number, _tile: number) => 0,
-      getBgPatternTile: (_table: number, _tile: number) => 0,
-    };
+    // nes 在 PPU 创建前先把 mmap: null 占位，等 PPU 就位后再装 mapper stub（stub 需要闭包 ppu）
     const nes: any = {
       rom: {
         HORIZONTAL_MIRRORING: 1,
@@ -143,7 +134,7 @@ export class HeadlessRuntime implements GameRuntime {
         nmiDotsRemainingInStep: 0,
         requestIrq: () => {},
       },
-      mmap: mmapStub,
+      mmap: null, // 后续注入（需先有 ppu 引用）
       ui: { writeFrame: () => {}, updateStatus: () => {} },
       controllers: this.controllers,
       opts: {},
@@ -153,6 +144,27 @@ export class HeadlessRuntime implements GameRuntime {
     ppu.setMirroring(nes.rom.HORIZONTAL_MIRRORING);
     this.ppu = ppu as unknown as PpuRenderTarget;
     nes.ppu = ppu;
+
+    // mapper stub — 闭包 ppu，提供 PPU sprite 0 hit 检测需要的真实 Tile
+    // HeadlessRuntime 不模拟 MMC3 的 bank 切换；ppu.ptTile 始终是最新 CHR 视图
+    // （由 loadChrSlot 写入），所以直接按 tile index 取即可
+    const mmapStub: any = {
+      clockIrqCounter: () => {},
+      latchAccess: (_addr: number) => {},
+      canWriteChr: (_addr: number) => false,
+      onSpriteRender: () => {},
+      onBgRender: () => {},
+      // PPU checkSprite0 调用签名：(index) — 8x8/8x16 都只传 1 个最终 tile index
+      getSpritePatternTile: (_isSprite8x8OrIndex: any, _table?: number, _tile?: number) => {
+        const index = typeof _isSprite8x8OrIndex === 'number' ? _isSprite8x8OrIndex : _tile;
+        return (ppu.ptTile as any[])[index | 0];
+      },
+      // 8x16 模式偶尔也通过 (table, tile) 取 — ptTile 编号制已统一 0..511
+      getBgPatternTile: (_table: number, tile: number) => {
+        return (ppu.ptTile as any[])[tile | 0];
+      },
+    };
+    nes.mmap = mmapStub;
     // 声明式 CHR slot map → 直接装配 PPU vrom（无 Mapper4 / 无 load1kVromBank）
     (ppu as any).loadChrBank = (slot: number, bank1k: number) => {
       this.loadChrSlot(slot, bank1k & 0xff);
