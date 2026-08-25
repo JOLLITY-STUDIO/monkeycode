@@ -133,11 +133,14 @@ function blitTile(
 function dumpOam(): { json: any[]; png: Uint32Array } {
   const json: any[] = [];
   for (let i = 0; i < 64; i++) {
+    // BUG OAM attr 修复: 直接读 ppu.spriteMem[i*4+2] 原始字节 (NES attr 格式),
+    //   而不是 ppu.sprCol[i] | flip | priority 拼装
+    //   (ppu.sprCol 是 (raw & 3) << 2 — packed palette group, 不是 raw NES attr)
     json.push({
       idx: i,
       y: ppu.sprY[i],
       tile: ppu.sprTile[i],
-      attr: ppu.sprCol[i] | (ppu.vertFlip[i] ? 0x80 : 0) | (ppu.horiFlip[i] ? 0x40 : 0) | (ppu.bgPriority[i] ? 0x20 : 0),
+      attr: ppu.spriteMem[i * 4 + 2] & 0xff,
       x: ppu.sprX[i],
     });
   }
