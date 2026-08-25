@@ -144,7 +144,6 @@ export class RenderingPrimitivesService {
   hideOam(): void {
     const store = this.store;
     const shadow = store.oam.shadowOam;
-    console.log(`[hideOam] called at frame=${store.frame}`);
     for (let i = 0; i < 64; i++) {
       const base = i * 4;
       shadow[base + 0] = 0xf8;
