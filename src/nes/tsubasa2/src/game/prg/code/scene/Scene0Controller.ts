@@ -168,12 +168,9 @@ export class Scene0Controller extends SceneController {
         store.writeByte(0x0090, 0);
         store.writeByte(0x0091, 2);
         this.phase = Scene0Phase.Done;
-        // ⚠️ CURRENT: return 0x02 = Scene2 id，恰好踩 Scene1-13 chain 死循环
-        //   （Scene2 永不退出，画面定格在 Scene0 末帧）。
-        //   ROM 真实应该 dispatch Scene1-13 链路到达 Scene14，但因 dead-code
-        //   暂时直接跳 Scene14 绕过（Phase 2 再做链调度）。
-        // TODO Phase 2: 改成真 dispatch Scene1 → Scene2 → ... → Scene13 → Scene14。
-        return 0x0e; // Scene14 id (主游戏)
+        // ✅ Chain 已通 (2026-08-25): return 0x01 → Scene1 → Scene2 → ... → Scene13 → Scene14
+        //    Scene1-13 return values 全部改成 sceneId+1, NEXT=0x02 元凶删掉
+        return 0x01; // Scene1 (math tool)
       }
 
       default:
