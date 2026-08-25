@@ -207,7 +207,7 @@ export class AudioService {
    * 不再解析 readBank12U16 / readTrackData 字节流
    */
   private startSong(song: SongRecord): void {
-    if ((song.headerFlag & 0x80) !== 0) {
+    if (((song.headerFlag ?? 0) & 0x80) !== 0) {
       this.papu?.writeReg(APU_STATUS, 0x0F);
       return;
     }

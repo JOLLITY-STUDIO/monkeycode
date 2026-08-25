@@ -20,6 +20,9 @@ import { CHR_BANKS } from '../chr/index';
 import type { GameRuntime, PpuRenderTarget } from './GameRuntime';
 import type { Tsubasa2 } from '../index';
 
+// 动态 require 加载 viewer（tsx/bundler 环境提供；类型声明避免 TS2580）
+declare const require: (id: string) => any;
+
 /** PPU 8 个 1KB slot 的 CHR 装载声明（无 MMC3 切换语义） */
 type ChrSlotMap = ReadonlyArray<{ slot: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7; bank1k: number }>;
 
@@ -156,12 +159,12 @@ export class HeadlessRuntime implements GameRuntime {
       onBgRender: () => {},
       // PPU checkSprite0 调用签名：(index) — 8x8/8x16 都只传 1 个最终 tile index
       getSpritePatternTile: (_isSprite8x8OrIndex: any, _table?: number, _tile?: number) => {
-        const index = typeof _isSprite8x8OrIndex === 'number' ? _isSprite8x8OrIndex : _tile;
-        return (ppu.ptTile as any[])[index | 0];
+        const index = typeof _isSprite8x8OrIndex === 'number' ? _isSprite8x8OrIndex : (_tile ?? 0);
+        return ((ppu as any).ptTile as any[])[index | 0];
       },
       // 8x16 模式偶尔也通过 (table, tile) 取 — ptTile 编号制已统一 0..511
       getBgPatternTile: (_table: number, tile: number) => {
-        return (ppu.ptTile as any[])[tile | 0];
+        return ((ppu as any).ptTile as any[])[tile | 0];
       },
     };
     nes.mmap = mmapStub;

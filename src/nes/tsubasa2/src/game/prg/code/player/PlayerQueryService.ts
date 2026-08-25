@@ -64,6 +64,14 @@ export interface PlayerProfile {
   readonly catching?: number;
   /** GK 击球 (position=1 时有值,FW/MF 时缺省 0) */
   readonly punching?: number;
+  /** GK 对射门站位 (position=1 时有值,FW/MF 时缺省 0) */
+  readonly vsShot?: number;
+  /** GK 对盘带站位 (position=1 时有值,FW/MF 时缺省 0) */
+  readonly vsDribble?: number;
+  /** GK 低空出击 (position=1 时有值,FW/MF 时缺省 0) */
+  readonly lowRush?: number;
+  /** GK 高空接球 (position=1 时有值,FW/MF 时缺省 0) */
+  readonly highClaim?: number;
 }
 
 /** GK 能力值条目（ROM 0x3ae96 + idx*8） */

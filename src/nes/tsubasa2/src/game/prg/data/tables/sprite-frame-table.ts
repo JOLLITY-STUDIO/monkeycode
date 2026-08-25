@@ -135,13 +135,13 @@ export function findSceneBackground(sceneId: number): ReadonlyArray<number> {
   return BANK19_SCENE_DATA[sceneId & 0xff] ?? BANK19_SCENE_DATA[0] ?? [];
 }
 
-/** 精灵帧定义 */
+/** 精灵帧定义（旧 flat-tile stub 仅填 frameId/tiles；palette/flip 为可选） */
 export interface SpriteFrameEntry {
   readonly frameId: number;
   readonly tiles: ReadonlyArray<number>;
-  readonly palette: number;
-  readonly flipX: boolean;
-  readonly flipY: boolean;
+  readonly palette?: number;
+  readonly flipX?: boolean;
+  readonly flipY?: boolean;
 }
 
 /** 精灵 tile 索引数据（data_tables 原始字节） */

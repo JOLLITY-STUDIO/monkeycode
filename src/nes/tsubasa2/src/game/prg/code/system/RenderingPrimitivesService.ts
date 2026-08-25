@@ -21,7 +21,6 @@ import {
   OPENING_TILE_PATTERNS,
 } from '../../data/scene/opening-data';
 import { OPENING_TILE_STREAMS } from '../../data/scene/bank7-streams';
-import { OAM_DRIFT_EXCLUDED_SLOTS } from '../sprite/SpriteService';
 import { BOOT_TECMO_OAM_TABLE } from '../../data/tables/opening-sprites';
 import { PALETTE_TABLE, loadPalette } from '../../data/tables/palette-table';
 
@@ -120,7 +119,7 @@ export class RenderingPrimitivesService {
 
   /**
    * 装载 Tecmo logo 40 sprite 到 shadowOam（模拟器 f11 实证：NT 完整 + fade=1 同帧出现）。
-   * 数据源 BOOT_TECMO_OAM_TABLE（slot 不参与 oamDrift）。
+   * 数据源 BOOT_TECMO_OAM_TABLE。boot 后承接 Scene0 的精灵下漂（$890C 全量遍历）。
    * 不能放 boot()——emu f1-f9 OAM 为空（y=0），f11 才装载 40 sprite。
    */
   loadScene0Oam(): void {
@@ -162,14 +161,14 @@ export class RenderingPrimitivesService {
   }
 
   /**
-   * 所有精灵 Y 坐标 += amount（store.oam.spriteY(slot) += add）。跳过 boot logo slot。
+   * 所有精灵 Y 坐标 += amount（store.oam.spriteY(slot) += add）。
+   * 对应 bank00 $890C：遍历全部 64 sprite（$0468 起，4 字节步长），无排除。
    * ⚠ slot 必须是 sprite 索引（0-63），不能用字节偏移（spriteY 内部 = shadowOam[slot*4]）。
    */
   oamDrift(amount: number): void {
     const store = this.store;
     const add = amount & 0xff;
     for (let slot = 0; slot < 64; slot++) {
-      if (OAM_DRIFT_EXCLUDED_SLOTS.has(slot)) continue;
       const y = (store.oam.spriteY(slot) + add) & 0xff;
       store.oam.setSpriteY(slot, y);
     }
@@ -238,6 +237,19 @@ export class RenderingPrimitivesService {
   }
 
   /**
+   * BG 渐隐一步（bank00 $9A0D：仅 DEC fade.bg → fadeWrite；SPR 不变）。
+   * @returns true = fade.bg 已到 0（BG 渐隐完成）
+   */
+  fadeBgOutStep(): boolean {
+    const store = this.store;
+    const a = store.fade.bg;
+    if (a === 0) return true;
+    store.fade.bg = a - 1;
+    this.fadeWrite();
+    return false;
+  }
+
+  /**
    * BG+SPR 渐显一步（对应 bank00 code_sub.s $998C-$99AD）：
    * INC fade.bg/fade.spr（到 $0F 停）→ fadeWrite 写渐显调色板 → 等 1 帧。
    * @returns true = 已满亮（fade 均到 $0F）
@@ -286,8 +298,10 @@ export class RenderingPrimitivesService {
   // ──────────────────────────── 场景数据装载 ────────────────────────────
 
   /**
-   * 场景号 × 19 → OPENING_SCENE_TABLE → 拷贝 19 字节。
-   * [0]→scene.scrollFlag，[1..18]→场景 18 字节；ram_007A=0。
+   * 场景块装载（bank00 $8920 语义）：block[0]→scene.scrollFlag($0079)，
+   * block[1..18]→$007B..$008C（18 字节），$007A=0。
+   * ⚠ $007B bit0 被 InterruptService.applyScrollBank02 用于 PPU CTRL nametable select，
+   *   必须从 $007B 起写（旧实现写 $007C 起导致 nametable 错乱）。
    */
   loadSceneData(sceneId: number): void {
     const entry = OPENING_SCENE_TABLE[sceneId & 0x0f] ?? OPENING_SCENE_TABLE[0];
@@ -295,7 +309,7 @@ export class RenderingPrimitivesService {
     store.scene.scrollFlag = entry.scrollFlag;
     store.writeByte(0x007a, 0);
     for (let i = 0; i < 0x12; i++) {
-      store.writeByte(0x007c + i, entry.data[i] ?? 0);
+      store.writeByte(0x007b + i, entry.data[i] ?? 0);
     }
   }
 

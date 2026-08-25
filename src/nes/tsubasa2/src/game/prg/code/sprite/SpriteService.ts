@@ -27,14 +27,8 @@ import { BOOT_TECMO_OAM_TABLE } from '../../data/tables/opening-sprites';
 /**
  * PRG $21CA 翻译（boot OAM init）：在 scene0 onEnter 时调用一次。
  * 写 Tecmo logo 40 sprite 到 shadowOam $0468-$0567 (NES 标准 [y,tile,attr,x])。
- * 不参与 oamDrift（在 RenderingPrimitivesService.oamDrift 检查 excludedSlots 跳过）。
- *
  * 行为等价于 ROM 任务 $21CA 装载 OAM 缓冲；H5 直接用 BOOT_TECMO_OAM_TABLE 占位。
  */
-export const OAM_DRIFT_EXCLUDED_SLOTS: ReadonlySet<number> = new Set(
-  BOOT_TECMO_OAM_TABLE.map((e) => e.slot),
-);
-
 export class SpriteService {
   constructor(readonly store: DataStore) {}
 

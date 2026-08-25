@@ -8,6 +8,9 @@ import { TEAM_TABLE as TEAM_TABLE_EXTRACTED, TEAMS_FULL as TEAM_ROSTER_TABLE, fi
 import { findPlayerById } from '../src/game/prg/data/tables/player-table';
 import { PLAYER_NAMES_JP } from '../src/game/prg/data/tables/player-names-jp';
 
+// Node 环境（test bundle 用）；类型声明避免 TS2580
+declare const process: any;
+
 /** 优先从 PLAYER_NAMES_JP 取真实姓名, fallback 到 player-table 占位符 */
 function getPlayerDisplayName(pid: number): string {
   const np = PLAYER_NAMES_JP[pid];

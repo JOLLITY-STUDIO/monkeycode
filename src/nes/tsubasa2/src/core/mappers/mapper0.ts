@@ -1,5 +1,8 @@
 import { copyArrayElements } from "../utils";
 
+// 动态 require 加载 viewer（打包器/tsx 环境提供；类型声明避免 TS2580）
+declare const require: (id: string) => any;
+
 // NROM - the simplest NES cartridge board (NES-NROM-128/NROM-256)
 class Mapper0 {
   static mapperName = "NROM";

@@ -13,6 +13,9 @@ import { findSkillByMoveId, findSkillsByPlayer, SKILL_TABLE } from '../src/game/
 import { getMatchConfig, MATCH_CONFIG_TABLE } from '../src/game/prg/data/tables/match-config-table';
 import { PLAYER_NAMES_JP } from '../src/game/prg/data/tables/player-names-jp';
 
+// Node 环境（test bundle 用）；类型声明避免 TS2580
+declare const process: any;
+
 // ─────────────────────────── 文本表格工具 ───────────────────────────
 
 const W = 100;       // 总宽加大避免换行
@@ -323,10 +326,10 @@ function runAllAssertions(): { pass: number; fail: number; results: string[] } {
   assert('PLAYER_TABLE ≥40 entries', PLAYER_TABLE.length >= 40);
   // 球队
   assert('Team 0x80 = Sao Paulo', findTeamNameById(0x80)?.includes('Sao Paulo') ?? false);
-  assert('Sao Paulo roster ≥11', (findRosterById(0x80).length ?? 0) >= 11);
+  assert('Sao Paulo roster ≥11', (findRosterById(0x80)?.players.length ?? 0) >= 11);
   // 等级
   const lv10 = findLevelByExp(3000);
-  assert('EXP 3000 → Lv ≥ 5', (lv10?.level ?? 0) >= 5);
+  assert('EXP 3000 → Lv ≥ 5', lv10 >= 5);
   assert('LEVEL_UP_TABLE ≥30 levels', LEVEL_UP_TABLE.length >= 30);
   // 技能
   assert('Tsubasa ≥1 skill', findSkillsByPlayer(0x01).length >= 1);

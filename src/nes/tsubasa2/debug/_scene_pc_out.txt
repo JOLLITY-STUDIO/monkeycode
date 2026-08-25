@@ -1,0 +1,12 @@
+bank 分布: {"01":32540,"00":38526,"0F":8621,"06":20084}
+
+dispatch 触发帧 (0):
+  
+
+场景代码执行区间 (6):
+  f3644-f3644  S0-logo (scene 0)
+  f3649-f3649  S0-logo (scene 0)
+  f3651-f3651  S0-logo (scene 0)
+  f3680-f3680  S0-logo (scene 0)
+  f3683-f3683  S0-logo (scene 0)
+  f3684-f3684  S0-logo (scene 0)
