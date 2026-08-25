@@ -7,19 +7,17 @@
  */
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from './InputService';
-import { SceneController } from '../scene/SceneController';
-import { Scene0Controller } from '../scene/Scene0Controller';
 import {
+  SceneController,
+  Scene0Controller,
   Scene1Controller, Scene2Controller, Scene3Controller, Scene4Controller,
   Scene5Controller, Scene6Controller, Scene7Controller, Scene8Controller,
   Scene9Controller, Scene10Controller, Scene11Controller, Scene12Controller,
   Scene13Controller,
-} from '../scene/SceneUtilitiesControllers';
-import {
   Scene14Controller, Scene15Controller, Scene16Controller, Scene17Controller,
   Scene18Controller, Scene19Controller, Scene20Controller, Scene21Controller,
   Scene22Controller, Scene23Controller,
-} from '../scene/Scene14to23Controllers';
+} from '../scene/index';
 
 /** 场景号枚举（0-23） */
 export const enum SceneId {
