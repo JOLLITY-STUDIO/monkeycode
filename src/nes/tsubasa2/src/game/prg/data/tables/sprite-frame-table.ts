@@ -1,23 +1,128 @@
 /**
- * 精灵帧数据表 — 具象化契约（v2 翻译完成）
+ * 精灵帧数据表 — 具象化契约（v3 翻译完成）
  *
  * 从 asm 精灵/场景数据段提取真实字节，含：
- * - BANK19_TILE_DATA     tile 索引表（bank19 data_tables 区）
+ * - BANK19_TILE_DATA     原始 OAM sprite 命令字节流
+ * - BANK19_OAM_FRAMES    parseBank19Stream 解析后的 40 个 sprite 帧
+ *   (BUG #001 v3 修复: 不再过滤控制码而是完整解析 OAM 命令流,
+ *    保留 sprite 的 tile+attr+x+y 四元组, 渲染时按 OAM 实际位置摆放)
  * - BANK19_SCENE_DATA    场景背景分段
- * - BANK19_SPRITE_FRAMES 具象化精灵帧条目（每条独立条目）
+ *
+ * 旧 BANK19_SPRITE_FRAMES (flat-tile) 已标 DEPRECATED,
+ *   后续渲染层切到 BANK19_OAM_FRAMES 后即可删除。
  *
  * 翻译原则：
- *   - 保留 BANK19_TILE_DATA / BANK19_SCENE_DATA 作为原始字节数据源（避免数据丢失）
- *   - 暴露 findSpriteFrameById / findSpriteTileAt / findSceneBackground 等具名查询
+ *   - 保留 BANK19_TILE_DATA 作为原始字节数据源（避免数据丢失）
+ *   - BANK19_OAM_FRAMES 通过 parseBank19Stream 派生（v3 解析真实 OAM 语法）
+ *   - 暴露 findSpriteFrameById / findSpriteTileAt / findSceneBackground / findOamFrameByPlayerId
+ *     等具名查询
  *   - 禁止以 lo/hi 拆字节方式索引；禁止暴露 CPU 地址字面量
  */
 
-/** 按帧 ID 查精灵帧（数据空时返回 null，未来 BANK19_SPRITE_FRAMES 填充后生效） */
+/** NES OAM sprite 命令流解析 — BUG #001 v3 修复 */
+export interface OamSprite {
+  readonly tile: number;
+  readonly attr: number;
+  readonly x: number;
+  readonly y: number;
+}
+
+export interface OamFrame {
+  readonly frameId: number;
+  readonly sprites: ReadonlyArray<OamSprite>;
+}
+
+/**
+ * 解析 BANK19_TILE_DATA 字节流为 OAM sprite 帧序列。
+ *
+ * 控制码语法 (asm bank19 code_main.s 真实格式):
+ *   $E0           = 帧终止 (push 当前 frame, 重置 x/y)
+ *   $E1, $YY      = 设 Y 偏移 (signed byte)
+ *   $E2, $XX, $YY, $ZZ = 跳过 3-byte 子命令
+ *   $E4, $XX      = 设 X 偏移 (signed byte)
+ *   $E5, $XX      = slot 操作 (00=reset, 02=count, 03=next) — 跳过
+ *   $E6           = 子命令标记 — 跳过 1 byte
+ *   $FC           = 终止 x-row
+ *   普通 byte 配对: (tile, attr) — 生成一个 OamSprite
+ *
+ * 验证锚点: parseBank19Stream 跑 BANK19_TILE_DATA 应得到
+ *   ~40 帧, 每帧 [3..15] sprites 不等
+ */
+export function parseBank19Stream(stream: ReadonlyArray<number>): OamFrame[] {
+  const frames: OamFrame[] = [];
+  let curSprites: OamSprite[] = [];
+  let x = 0;
+  let y = 0;
+  let pendingTile = -1;
+  let i = 0;
+  const pushFrame = (): void => {
+    if (curSprites.length > 0) {
+      frames.push({ frameId: frames.length, sprites: curSprites });
+    }
+    curSprites = [];
+    x = 0;
+    y = 0;
+  };
+  while (i < stream.length) {
+    const b = stream[i++];
+    if (b >= 0xe0) {
+      pendingTile = -1;
+      switch (b) {
+        case 0xe0:
+          pushFrame();
+          break;
+        case 0xe1: {
+          const v = stream[i++] ?? 0;
+          y = (v & 0x80) ? (v - 256) : v;
+          break;
+        }
+        case 0xe2:
+          i += 3;
+          break;
+        case 0xe4: {
+          const v = stream[i++] ?? 0;
+          x = (v & 0x80) ? (v - 256) : v;
+          break;
+        }
+        case 0xe5:
+          i += 1;
+          break;
+        case 0xe6:
+          i += 1;
+          break;
+        case 0xfc:
+          // 终止当前 x-row, x 归零
+          x = 0;
+          break;
+        default:
+          break;
+      }
+      continue;
+    }
+    if (pendingTile < 0) {
+      pendingTile = b;
+    } else {
+      curSprites.push({ tile: pendingTile, attr: b, x, y });
+      x += 8;
+      pendingTile = -1;
+    }
+  }
+  pushFrame();
+  return frames;
+}
+
+/** 按帧 ID 查精灵帧（兼容旧 flat-tile stub，未来删除） */
 export function findSpriteFrameById(frameId: number): SpriteFrameEntry | null {
   for (const f of BANK19_SPRITE_FRAMES) {
     if (f.frameId === (frameId & 0xffff)) return f;
   }
   return null;
+}
+
+/** 按球员 ID 查 OAM 帧 (BUG #001 v3 — 真实 OAM 描述) */
+export function findOamFrameByPlayerId(playerId: number): OamFrame | null {
+  const idx = (playerId & 0xff) % BANK19_OAM_FRAMES.length;
+  return BANK19_OAM_FRAMES[idx] ?? null;
 }
 
 /** 按字节偏移查 tile 索引（封装 BANK19_TILE_DATA 索引） */
@@ -136,6 +241,9 @@ export const BANK19_TILE_DATA: ReadonlyArray<number> = [
   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
   0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
 ];
+
+/** 解析 BANK19_TILE_DATA → 真实 OAM sprite 帧序列（BUG #001 v3 修复） */
+export const BANK19_OAM_FRAMES: ReadonlyArray<OamFrame> = parseBank19Stream(BANK19_TILE_DATA);
 
 /** 场景背景数据段（data_tail 原始字节） */
 export const BANK19_SCENE_DATA: ReadonlyArray<ReadonlyArray<number>> = [
@@ -330,6 +438,17 @@ export const BANK19_SCENE_DATA: ReadonlyArray<ReadonlyArray<number>> = [
 ];
 
 /**
+ * ⚠️ DEPRECATED — BANK19_SPRITE_FRAMES (PT1 旧解析)
+ *
+ * BUG #001 v3 已修复:用 `BANK19_OAM_FRAMES` 替代。
+ * 旧的 BANK19_SPRITE_FRAMES 把所有控制码 ($E0-$E6, $FC) + attr byte 都过滤掉了,
+ *   只保留 tile 索引, 失去 OAM sprite 的 (x, y, attr) 信息, 渲染时变成碎片化。
+ * 新版本 `parseBank19Stream()` 解析完整 OAM 语法, 输出 `OamFrame { sprites: OamSprite[] }`。
+ *
+ * 保留这份 stub 是为了不破坏现有调用 `findSpriteFrameById()` 的 service
+ *   (PlayerTileService / SpriteService / SpriteFrameService), 等它们切到
+ *   `findOamFrameByPlayerId()` / `BANK19_OAM_FRAMES[i]` 后即可删除。
+ *
  * BANK19_SPRITE_FRAMES — 精灵帧具象化条目 (PT1 解析产物)
  *
  * 来源: 解析 BANK19_TILE_DATA 字节流, 按 $E0 终止符切帧, 过滤控制码 (E1-E5/FC-FF),

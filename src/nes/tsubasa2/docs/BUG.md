@@ -7,7 +7,10 @@
 
 ## BUG #001  [严重性: 🔴 关键]  **PT1 BANK19_TILE_DATA 解析整体错误**
 
-**现状**: `BANK19_SPRITE_FRAMES` 40 帧 × 589 tile 索引,缺少 OAM sprite 元数据(tile/attr/x/y)
+**现状** → ✅ FIXED:
+  - `src/game/prg/data/tables/sprite-frame-table.ts` 新增 `parseBank19Stream()` + `OamFrame`/`OamSprite` 类型 + `BANK19_OAM_FRAMES` (40 帧真实 OAM 描述)
+  - 旧的 `BANK19_SPRITE_FRAMES` (flat-tile stub) 标 DEPRECATED 保留向后兼容
+  - `test/player-tile.ts` 改用模块级 `BANK19_OAM_FRAMES`,渲染时按 (tile, attr, x, y) 拼接 sprite
 **根因**: BANK19_TILE_DATA 不是纯 tile 索引流,而是 NES OAM sprite 命令序列:
   `$E0` = frame 终止符
   `$E1,$XX` = 设 Y 偏移 (signed)
@@ -15,12 +18,12 @@
   `$E5,$XX` = slot 操作 (00=reset, 02=count=2, 03=next)
   `$FC` = 终止 x-row
   普通 byte 配对 (tile_index, attr_byte)
-**修复路径**:
-  1. 写 `parseBank19Stream()` 按真实 OAM 语法解析 (已 stub 在 `test/player-tile.ts`)
-  2. 输出 `SpriteFrame { sprites: [{tile, attr, x, y}] }`
-  3. 替换 `data/tables/sprite-frame-table.ts` 中错误的 BANK19_SPRITE_FRAMES
-**验证**: 在 `test/player-tile.ts` 用 `Bank19TileData` 跑 parse,实际显示 OAM sprite 应该跟 emu-reference frame-013 OAM 一致
-**状态**: ⚠️ NOT FIXED — player-tile.ts 临时 stub 解析但 `sprite-frame-table.ts` 还没替换
+**修复**:
+  1. ✅ `parseBank19Stream()` 按真实 OAM 语法解析 (v3 落地于 `sprite-frame-table.ts`)
+  2. ✅ 输出 `OamFrame { sprites: [{tile, attr, x, y}] }`
+  3. ⚠️ 替换旧 `BANK19_SPRITE_FRAMES` flat-tile stub (保留 stub 标 DEPRECATED, 等 PlayerTileService/SpriteService 全切到 BANK19_OAM_FRAMES 后删除)
+**验证**: 测试 player-tile.html, 选中球员时 renderOamFrame 用 BANK19_OAM_FRAMES[i] 实际像素绘制应该看到完整的 OAM sprite 人物 (不是碎片), 且 OAM attr 的 (x, y) 与 sprite layout 一致
+**状态**: ✅ FIXED v3 (table.ts) + ⚠️ 后遗症: PlayerTileService / SpriteService 切到新 OamFrame path 后才能删旧 BANK19_SPRITE_FRAMES
 
 ---
 
@@ -125,13 +128,20 @@
 
 ## BUG #009  [严重性: 🟡 一般]  **emu frame 90 NT col=4-6 H5 提前写**
 
-**现状**: frame 90 NT0 col=4-6 H5 写了 tile ($EF, $0E, $0F),emu 还是 0
-**根因**: Scene0Controller LoadScene3Nt phase 阶段推进节奏跟 emu 实际 NMI 时序错位
-**修复路径**:
-  1. 跟 BUG #004 一同修复 — NMI-based phase 推进
-  2. 或抽出 Scene0 时序从 emulator 跑 frame 30/60/90 的真实 PC 序列,跟 H5 Service call log 对应
-**验证**: frame 60/90/120 都跟 emu-reference 一致
-**状态**: ⚠️ DEPENDS-ON #004
+**状态**: ✅ FIXED v3
+**修复**:
+  1. 加 `OPENING_SCENE0_NT_CELLS` 常量 (opening-data.ts) - 25 个 emu 真实写的 cell:
+     - Row 12 col 13-21: [40, 41, 44, 45, 56, 55, 57, 60, 61]  (9 tiles Tecmo logo upper)
+     - Row 13 col 13-21: [42, 43, 46, 47, 58, 42, 59, 62, 63]  (9 tiles Tecmo logo lower)
+     - Row 15 col 14-20: [20, 10, 7, 3, 20, 7, 18]              (7 tiles "© NTV / TECMO")
+  2. 加 `RenderingPrimitivesService.queueScene0NtCells()` (按 row 聚合 + 一次性推 NT buffer)
+  3. Scene0Controller.LoadLogoNt phase 改为: 第一帧调 `queueScene0NtCells()` 一次性写完, streamDone=true
+     (之前是逐行 queueScene3NametableRows 32 帧, 会渲染 OPENING_TILE_PATTERNS 整行 → 覆盖 row 0 等空 cell)
+**根因**: Scene0Controller.LoadLogoNt 旧实现是"32 帧推 32 行 NT",每行按 OPENING_TILE_PATTERNS[patIdx] 渲染 4×4 pattern
+  → 实际 emulator 只在 row 12/13/15 写 25 个 cell, 其他 cell 永远 = 0
+  → emu frame 90 NT0 row 0 col 4-6 = 0, H5 = ($EF, $0E, $0F) — H5 写过头了
+**验证**: BUG #009 fix 仅写 25 个 cell, emu frame 30/60/90/120/150 NT0 row 0 都 = 全 0 ✓
+**原状态**: ⚠️ DEPENDS-ON #004
 
 ---
 

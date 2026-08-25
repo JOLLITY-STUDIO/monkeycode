@@ -17,11 +17,12 @@ import {
   OPENING_FADE_TABLE,
   OPENING_CHR_CONFIGS,
   OPENING_SCENE3_TILES,
+  OPENING_SCENE0_LOGO_ROWS,
   OPENING_TILE_PATTERNS,
 } from '../../data/scene/opening-data';
 import { OPENING_TILE_STREAMS } from '../../data/scene/bank7-streams';
 import { OAM_DRIFT_EXCLUDED_SLOTS } from '../sprite/SpriteService';
-import { PALETTE_TABLE } from '../../data/tables/palette-table';
+import { PALETTE_TABLE, loadPalette } from '../../data/tables/palette-table';
 
 export class RenderingPrimitivesService {
   constructor(private readonly store: DataStore) {}
@@ -84,11 +85,16 @@ export class RenderingPrimitivesService {
   }
 
   /**
-   * 查渐显表计算单个颜色。
-   * new = OPENING_FADE_TABLE[(pal & $30) + fade] | (pal & $0F)
+   * 查渐显表计算单个颜色（模拟器逐帧 dump 反推的 ROM 语义）：
+   *   fade = 0       → 全黑（$0F）
+   *   fade >= 1      → new = OPENING_FADE_TABLE[(pal & $30) + (fade - 1)] | (pal & $0F)
+   *
+   * 关键：ROM 查表前 fade 已 DEC（emu f13 fade=3 → 表 idx = 0x30+2 = 0x32 输出 0x10；
+   *       emu f5/f7/f10/f15 全部与 (fade-1) 查表吻合，H5 之前 fade 直查慢 1 步）。
    */
   fadeLookup(pal: number, fade: number): number {
-    const idx = ((pal & 0x30) + (fade & 0x0f)) & 0x3f;
+    if ((fade & 0xff) === 0) return 0x0f;
+    const idx = ((pal & 0x30) + ((fade - 1) & 0x0f)) & 0x3f;
     return (OPENING_FADE_TABLE[idx] | (pal & 0x0f)) & 0x3f;
   }
 
@@ -199,6 +205,22 @@ export class RenderingPrimitivesService {
     return false;
   }
 
+  /**
+   * BG+SPR 渐显一步（对应 bank00 code_sub.s $998C-$99AD）：
+   * INC fade.bg/fade.spr（到 $0F 停）→ fadeWrite 写渐显调色板 → 等 1 帧。
+   * @returns true = 已满亮（fade 均到 $0F）
+   */
+  fadeInStep(): boolean {
+    const store = this.store;
+    const a = store.fade.bg;
+    const b = store.fade.spr;
+    if (a >= 0x0f && b >= 0x0f) return true;
+    if (a < 0x0f) store.fade.bg = a + 1;
+    if (b < 0x0f) store.fade.spr = b + 1;
+    this.fadeWrite();
+    return false;
+  }
+
   // ──────────────────────────── 调色板装载 + 满渐显 ────────────────────────────
 
   /** 装载 BG/SPR 调色板并设置 fade.bg = fade.spr = $0F 后写满亮调色板 */
@@ -208,6 +230,24 @@ export class RenderingPrimitivesService {
     this.loadSprPalette(sprIndex);
     store.fade.bg = 0x0f;
     store.fade.spr = 0x0f;
+    this.fadeWrite();
+  }
+
+  /**
+   * 场景 0（Tecmo logo）调色板装载（模拟器 f13/f25 逐帧 dump 实证）：
+   *   BG  = OPENING_BG_PALETTES[1]（来自 loadChrConfig(0x17) 的 r48=cfg[2]&0x3f=1）
+   *   SPR = PALETTE_TABLE[21] 经 loadPalette 展开（r49=21）
+   * 装载后 fade.bg/spr = 0 → fadeWrite 写全黑（fade=0 → 0x0F），f1-f9 黑屏。
+   * 之后由 fadeInStep() 每帧 INC（对应 $998C-$99AD）渐显到 f25 满亮。
+   */
+  loadScene0Palettes(): void {
+    const store = this.store;
+    const bg = OPENING_BG_PALETTES[1] ?? OPENING_BG_PALETTES[0];
+    const spr = loadPalette(21);
+    store.palette.loadBg(bg);
+    store.palette.loadSpr(spr);
+    store.fade.bg = 0;
+    store.fade.spr = 0;
     this.fadeWrite();
   }
 
@@ -301,6 +341,23 @@ export class RenderingPrimitivesService {
       }
       const addr = 0x2000 + row * 32;
       this.ntBufferAppend({ vertical: false, ntAddr: addr, data: line });
+    }
+  }
+
+  /**
+   * 场景 0 logo NT 分步加载（对齐模拟器 f9→f11 过程）：
+   *   step=0（f9）: 每行前 step0Len 个 tile（行12/13 前7 + 行15 前2 = 16 tile）
+   *   step=1（f11）: 每行剩余 tile（补齐至完整 25 tile）
+   * 数据源 OPENING_SCENE0_LOGO_ROWS（模拟器 f11+ 稳定态精确行列）。
+   */
+  queueScene0LogoNt(step: number): void {
+    for (const r of OPENING_SCENE0_LOGO_ROWS) {
+      const from = step <= 0 ? 0 : r.step0Len;
+      const to = step <= 0 ? r.step0Len : r.tiles.length;
+      if (from >= to) continue;
+      const data = r.tiles.slice(from, to);
+      const addr = 0x2000 + r.row * 32 + r.col + from;
+      this.ntBufferAppend({ vertical: false, ntAddr: addr, data });
     }
   }
 

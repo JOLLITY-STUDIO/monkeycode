@@ -1,7 +1,7 @@
 /**
  * 球员 tile 素材浏览器 (PT 验证页 + 真实 OAM sprite 渲染)
  *
- * 关键修正 (PT1 v2):
+ * 关键修正 (PT1 v3 — BUG #001 v3 修复):
  *   BANK19_TILE_DATA 不是纯 tile 索引流, 而是 **NES OAM sprite 命令序列**:
  *     $E0 = 帧终止
  *     $E1, X = 设 Y 偏移
@@ -12,13 +12,17 @@
  *
  * 验证 + 渲染:
  *   - PLAYER_TABLE 255 项, 显示 hair/body/palette tile 桥接
- *   - 详情面板用 parseBank19Stream(OAM) + NES_CHR_ROM 真实像素绘制
+ *   - 详情面板用 sprite-frame-table 模块的 BANK19_OAM_FRAMES[i] 真实像素绘制
+ *   - (v3 fix): 解析器从 sprite-frame-table 导入, 不再本地维护
  */
 import { PLAYER_TABLE, findPlayerById, PLAYER_COLOR_TABLE } from '../src/game/prg/data/tables/player-stats';
 import {
   PLAYER_TILE_TABLE, findPlayerTilesById,
 } from '../src/game/prg/data/tables/player-tile-table';
-import { BANK19_TILE_DATA, BANK19_SPRITE_FRAMES, findSpriteFrameById } from '../src/game/prg/data/tables/sprite-frame-table';
+import {
+  BANK19_OAM_FRAMES,
+  type OamFrame,
+} from '../src/game/prg/data/tables/sprite-frame-table';
 import { PlayerTileService } from '../src/game/prg/code/player/PlayerTileService';
 import { NES_CHR_ROM, CHR_BANK_COUNT, CHR_BANK_SIZE } from '../src/game/chr/index';
 
@@ -84,51 +88,8 @@ const colorHex = (idx: number): string => {
   return `rgb(${r},${g},${b})`;
 };
 
-// ───────────── OAM stream 解析器 ─────────────
-interface OamSprite { tile: number; attr: number; x: number; y: number }
-interface OamFrame  { sprites: OamSprite[]; frameId: number }
-
-/**
- * 真实 BANK19_TILE_DATA 解析: OAM sprite 命令序列
- * 控制码: $E0=终止, $E1=$YY=Y偏移, $E4=$XX=X偏移, $E5,$XX=slot操作, $FC=换行
- * 普通 byte 配对 (tile, attr)
- */
-function parseBank19Stream(stream: readonly number[]): OamFrame[] {
-  const frames: OamFrame[] = [];
-  let cur: OamFrame = { sprites: [], frameId: 0 };
-  let x = 0, y = 0;
-  let pendingLow = false;
-  let lastTile = 0;
-  let i = 0;
-  while (i < stream.length) {
-    const b = stream[i++];
-    if (b >= 0xE0) {
-      pendingLow = false;
-      switch (b) {
-        case 0xE0:
-          if (cur.sprites.length > 0) { frames.push(cur); cur = { sprites: [], frameId: frames.length }; }
-          x = 0; y = 0;
-          break;
-        case 0xE1: { const v = stream[i++] ?? 0; y = (v & 0x80) ? (v - 256) : v; break; }
-        case 0xE2: i += 3; break;
-        case 0xE4: { const v = stream[i++] ?? 0; x = (v & 0x80) ? (v - 256) : v; break; }
-        case 0xE5: i++; break; // skip slot op
-        case 0xE6: i += 1; break;
-        case 0xFC: break;
-        default: break;
-      }
-      continue;
-    }
-    if (!pendingLow) { lastTile = b; pendingLow = true; }
-    else { cur.sprites.push({ tile: lastTile, attr: b, x, y }); pendingLow = false; }
-  }
-  if (cur.sprites.length > 0) frames.push(cur);
-  return frames;
-}
-
-// 缓存: 启动时一次解析
-const OAM_FRAMES: OamFrame[] = parseBank19Stream(BANK19_TILE_DATA);
-console.log('[player-tile] OAM frames parsed:', OAM_FRAMES.length, 'total sprites:', OAM_FRAMES.reduce((s, f) => s + f.sprites.length, 0));
+// ───────────── OAM stream 解析器 (v3 fix: 改用 sprite-frame-table 共享模块) ─────────────
+console.log('[player-tile] OAM frames loaded:', BANK19_OAM_FRAMES.length, 'total sprites:', BANK19_OAM_FRAMES.reduce((s, f) => s + f.sprites.length, 0));
 
 /** 渲染 1 个 sprite frame 实际像素 (按 OAM sprite + attr palette) */
 function renderOamFrame(frame: OamFrame, scale: number = 4): HTMLCanvasElement {
@@ -276,8 +237,8 @@ function selectPlayer(id: number): void {
   // 找此球员对应的 OAM frame (按 playerId → frameId)
   // 暂用 playerId 直接索引 OAM frames (BANK19_SPRITE_FRAMES 也是按这个约定)
   let frameIdx = id;
-  if (frameIdx >= OAM_FRAMES.length) frameIdx = 0;
-  const oamFrame = OAM_FRAMES[frameIdx] ?? OAM_FRAMES[0];
+  if (frameIdx >= BANK19_OAM_FRAMES.length) frameIdx = 0;
+  const oamFrame = BANK19_OAM_FRAMES[frameIdx] ?? BANK19_OAM_FRAMES[0];
 
   // 4 个调色板色块 (用 sprite attr 默认 palette 0 来显示)
   const pal = attrPalette(0);

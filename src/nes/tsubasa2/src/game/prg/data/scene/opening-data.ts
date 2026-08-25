@@ -199,6 +199,33 @@ export const OPENING_SCENE3_TILES: readonly number[] = [
   0x1e, 0x1f, 0x20, 0x21, 0x00, 0x00,
 ];
 
+/**
+ * 场景 0 Tecmo logo NT 数据（模拟器逐帧 dump 提取，f11+ 稳定态精确行列）
+ *
+ * 真实 ROM 时序（emu f1-f30 实证）：
+ *   - f9  首次出现 NT0：行12/13 前 7 tile + 行15 前 2 tile = 16 tile，fade=0 全黑
+ *   - f11 NT0 完整 25 tile（本表全量），fade=1
+ *   - f13 fade=3 彩色可见（画面出现）；f25 fade=15 满亮
+ *
+ * 每个 tile 值 = 8-bit nametable tile 索引（BG $0000 CHR bank0，tile 0x00-0x3F）。
+ */
+export interface LogoNtRow {
+  /** NT 行号（0-29） */
+  readonly row: number;
+  /** 起始列（0-31） */
+  readonly col: number;
+  /** step0（f9 首次出现）写入的 tile 数，其余在 step1（f11 完整）补齐 */
+  readonly step0Len: number;
+  /** 该行完整 tile 序列 */
+  readonly tiles: readonly number[];
+}
+
+export const OPENING_SCENE0_LOGO_ROWS: readonly LogoNtRow[] = [
+  { row: 12, col: 13, step0Len: 7, tiles: [0x28, 0x29, 0x2c, 0x2d, 0x38, 0x37, 0x39, 0x3c, 0x3d] },
+  { row: 13, col: 13, step0Len: 7, tiles: [0x2a, 0x2b, 0x2e, 0x2f, 0x3a, 0x2a, 0x3b, 0x3e, 0x3f] },
+  { row: 15, col: 14, step0Len: 2, tiles: [0x14, 0x0a, 0x07, 0x03, 0x14, 0x07, 0x12] },
+];
+
 /** 场景 3 的 17 字节 pattern 表（bank8 $A000+tile*17；[0]=attr, [1..16]=4×4 nametable tile 索引） */
 export const OPENING_TILE_PATTERNS: readonly (readonly number[])[] = [
   /* 0x00 */ [0x12, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x04, 0x04, 0x05, 0x13, 0x16, 0x17],

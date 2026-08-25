@@ -1,18 +1,21 @@
 /**
  * Scene0Controller — 场景 0（Tecmo logo）
  *
- * 真实 ROM 行为（已通过 boot probe 验证，PRG bank 2 映射到 $A000）：
- *   - 对应 bank02 code_main.s $8000-$8214（CPU $A000-$A214）的每帧例程
- *     + 重置入口 $821D-$82AC 的场景 0 初始化
- *   - 关键结论：场景 0 没有 scroll。$2005 从 f6 到 f375 保持 (0, 0xFF)。
- *   - 滚动发生在 f382+，属于下一场景（ROM scene $B8），不在场景 0。
- *   - 时间线：f2-f6 初始化，f7-f25 NT 流加载 logo，f26-f339 静止显示，
- *            f340-f376 渐隐，f377 切换场景。
+ * 真实 ROM 行为（模拟器 f1-f30 逐帧 dump 实证，emu-reference 验证）：
+ *   - f1-f8  初始化/黑屏（palette 全 0x0F，NT0 空，OAM 隐藏）
+ *   - f9     NT0 首次出现（行12/13 前7 + 行15 前2 = 16 tile）+ fade=0 黑
+ *   - f11    NT0 完整 25 tile + fade=1
+ *   - f13    fade=3 彩色可见（画面出现，用户核心验收帧）
+ *   - f25    fade=15 满亮 → 静止显示至 f339
+ *   - f340+  fade-out 渐隐 → f377 切场景
+ *
+ * 时序：InitBlack(8帧) → FadeInNt(f9 NT分2步 + fade每帧+1) → Hold → FadeOut → Done
  *
  * 数据来源：
- *   - OPENING_SCENE_TABLE[1]：r79=0x40 / r7c=0x80（场景 0 稳态滚动参数）
- *   - bootOamInit / BOOT_TECMO_OAM_TABLE：Tecmo logo 40 精灵
- *   - loadBootPalette：boot 调色板
+ *   - loadChrConfig(0x17)：CHR 配置装载，r48=1（BG 调色板组）
+ *   - loadScene0Palettes()：BG=OPENING_BG_PALETTES[1]，SPR=loadPalette(21)
+ *   - queueScene0LogoNt()：OPENING_SCENE0_LOGO_ROWS（模拟器精确 NT 数据）
+ *   - BOOT_TECMO_OAM_TABLE：Tecmo logo 40 精灵（Tsubasa2.boot() 已装载）
  *
  * 禁止：bankSwitch / readByte(addr) 裸访问。全部走具名视图/Table。
  */
@@ -21,36 +24,29 @@ import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
-import { SpriteService } from '../sprite/SpriteService';
 
 /** 场景 0 状态机阶段 */
 enum Scene0Phase {
-  FadeInAndWait16 = 0,
-  OamDrift = 1,
-  LoadLogoNt = 2,
-  Wait4 = 3,
-  Hold = 4,
-  FadeOut = 5,
-  Done = 6,
+  InitBlack = 0, // f1-f8 黑屏初始化
+  FadeInNt = 1,  // f9-f24 NT 加载 + fade 每帧 +1（f13 有画面，f25 满亮）
+  Hold = 2,      // f25-f339 静止显示
+  FadeOut = 3,   // f340+ 渐隐
+  Done = 4,
 }
 
 export class Scene0Controller extends SceneController {
   readonly sceneId = 0;
   private readonly prim: RenderingPrimitivesService;
-  private readonly sprite: SpriteService;
   private audio: AudioService | null = null;
 
-  private phase = Scene0Phase.FadeInAndWait16;
+  private phase = Scene0Phase.InitBlack;
   private counter = 0;
-  private driftY = 0;
-  private sceneRow = 0;
-  private streamDone = false;
-  private holdSecond = false;
+  /** FadeInNt 子步（0-15 = fade 递增进度；step0/step1 写 NT） */
+  private fadeStep = 0;
 
   constructor(store: DataStore, input: InputService) {
     super(store, input);
     this.prim = new RenderingPrimitivesService(store);
-    this.sprite = new SpriteService(store);
   }
 
   attachAudio(audio: AudioService): void {
@@ -58,20 +54,17 @@ export class Scene0Controller extends SceneController {
   }
 
   onEnter(): void {
-    this.phase = Scene0Phase.FadeInAndWait16;
-    this.counter = 0x10;
-    this.driftY = 0;
-    this.streamDone = false;
-    this.sceneRow = 0;
-    this.holdSecond = false;
+    this.phase = Scene0Phase.InitBlack;
+    this.counter = 8; // f1-f8 黑屏
+    this.fadeStep = 0;
 
-    // 装载 Tecmo logo CHR 配置
+    // CHR 配置装载（cfg[2]=0x81 → r48=1，BG 调色板组）
     this.prim.loadChrConfig(0x17);
-    // WBS_FRAME13 F4: sprite.bootOamInit() 已由 Tsubasa2.boot() 写过 Tecmo logo 40 sprite,
-    //   onEnter 再 hide 会覆盖. 不在这里调 hideAll (boot 阶段已隐 24+ sprite).
-    // NOTE: sprite.bootOamInit() 已在 Tsubasa2.boot() 完成 (PRG $21CA 在 reset 时机执行)
-    // 装载 boot 调色板 (PRG $1DD1 在 reset 时机执行, 但 scene0 需要调 fadeBgStep 之前完成)
-    this.prim.loadBootPalette();
+    // 场景 0 调色板（BG=OPENING_BG_PALETTES[1]，SPR=loadPalette(21)），fade=0 写黑
+    this.prim.loadScene0Palettes();
+    // 场景稳态参数（r79=0x40 / r7c=0x80 / r5b=1 mask 使能）
+    this.prim.loadSceneData(1);
+    this.store.writeByte(0x005b, 1);
 
     this.audio?.playBgm(0x01);
   }
@@ -80,60 +73,39 @@ export class Scene0Controller extends SceneController {
     void frame;
     const store = this.store;
     switch (this.phase) {
-      case Scene0Phase.FadeInAndWait16: {
-        if (!this.prim.fadeBgStep()) return undefined;
+      case Scene0Phase.InitBlack: {
+        // f1-f8：黑屏等待（palette 保持 fade=0 全 0x0F）
         if (--this.counter > 0) return undefined;
-        this.driftY = 0x30;
-        this.phase = Scene0Phase.OamDrift;
+        this.phase = Scene0Phase.FadeInNt;
         return undefined;
       }
 
-      case Scene0Phase.OamDrift: {
-        this.prim.oamDrift(1);
-        if (--this.driftY > 0) return undefined;
-        // 进入场景 0 稳态（对应 ROM f6）：r79=0x40 / r7c=0x80 / r44=0 / r5b=1
-        store.scene.scrollFlag = 0x40;
-        store.scene.scrollY = 0;
-        store.writeByte(0x007b, 0);
-        store.writeByte(0x005b, 1);
-        this.prim.loadChrConfig(0x17);
-        this.prim.loadSceneData(1); // OPENING_SCENE_TABLE[1]
-        this.sceneRow = 0;
-        this.streamDone = false;
-        this.phase = Scene0Phase.LoadLogoNt;
-        return undefined;
-      }
-
-      case Scene0Phase.LoadLogoNt: {
-        if (!this.streamDone) {
-          this.prim.queueScene3NametableRows(this.sceneRow, 1);
-          this.sceneRow++;
-          if (this.sceneRow >= 32) this.streamDone = true;
+      case Scene0Phase.FadeInNt: {
+        // f9：NT 首次出现（16 tile，fade 0 黑）
+        if (this.fadeStep === 0) {
+          this.prim.queueScene0LogoNt(0);
+          this.fadeStep = 1;
           return undefined;
         }
-        store.writeByte(0x0090, store.readByte(0x008e));
-        store.writeByte(0x0091, store.readByte(0x008f));
-        this.counter = 4;
-        this.phase = Scene0Phase.Wait4;
-        return undefined;
-      }
-
-      case Scene0Phase.Wait4: {
-        if (--this.counter > 0) return undefined;
-        this.prim.loadPalettesAndFade(0x04, store.readByte(0x0025) & 0x0f);
-        this.prim.oamFlipAttrs();
-        this.counter = 0xd8; // 216f hold，总时长接近 ROM 的 ~370f
-        this.phase = Scene0Phase.Hold;
+        // f10：NT 补齐完整 25 tile，fade 保持 0（模拟器 f11 才 fade=1）
+        if (this.fadeStep === 1) {
+          this.prim.queueScene0LogoNt(1);
+          this.fadeStep = 2;
+          return undefined;
+        }
+        // f11+：每帧 fade +1（对应 $998C-$99AD），f13 可见、f25 满亮
+        if (this.prim.fadeInStep()) {
+          // fade 均到 15 → 静止显示（f25-f339）
+          this.phase = Scene0Phase.Hold;
+          this.counter = 314;
+          return undefined;
+        }
+        this.fadeStep++;
         return undefined;
       }
 
       case Scene0Phase.Hold: {
         if (--this.counter > 0) return undefined;
-        if (!this.holdSecond) {
-          this.holdSecond = true;
-          this.counter = 0x3c;
-          return undefined;
-        }
         // ROM f340：r5b=1→0，渐隐开始
         store.writeByte(0x005b, 0);
         this.phase = Scene0Phase.FadeOut;
