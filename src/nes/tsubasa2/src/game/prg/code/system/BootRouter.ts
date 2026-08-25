@@ -47,19 +47,6 @@ export const enum SceneId {
   Scene23 = 23,
 }
 
-/** 未翻译场景的默认 stub */
-class SceneStubController extends SceneController {
-  readonly sceneId: number;
-  constructor(store: DataStore, input: InputService, sceneId: number) {
-    super(store, input);
-    this.sceneId = sceneId;
-  }
-  onEnter(): void {}
-  onUpdate(_frame: number): number | undefined {
-    return undefined;
-  }
-}
-
 export class BootRouter {
   /** 场景控制器注册表（sceneId → controller） */
   private readonly scenes: Map<number, SceneController> = new Map();
@@ -70,9 +57,9 @@ export class BootRouter {
   constructor(
     readonly store: DataStore,
     readonly input: InputService,
-    scene0?: Scene0Controller,
+    scene0: Scene0Controller,
   ) {
-    this.register(scene0 ?? new SceneStubController(this.store, this.input, SceneId.Scene0));
+    this.register(scene0);
     this.register(new Scene1Controller(this.store, this.input));
     this.register(new Scene2Controller(this.store, this.input));
     this.register(new Scene3Controller(this.store, this.input));
@@ -103,9 +90,11 @@ export class BootRouter {
     this.scenes.set(controller.sceneId, controller);
   }
 
-  /** 获取场景控制器（未注册返回 stub） */
+  /** 获取场景控制器（断言已注册 — Scene0-23 全部从 scene/index.ts 导入） */
   getController(sceneId: number): SceneController {
-    return this.scenes.get(sceneId) ?? new SceneStubController(this.store, this.input, sceneId);
+    const c = this.scenes.get(sceneId);
+    if (!c) throw new Error(`BootRouter.getController: sceneId=${sceneId} 未注册`);
+    return c;
   }
 
   /**
