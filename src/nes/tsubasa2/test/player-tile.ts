@@ -1,11 +1,10 @@
 /**
  * 球员 tile 素材浏览器 (PT1-PT3 验证页入口)
  *
- * 验证:
- *  - PLAYER_TABLE 45 明星 (0x01-0x2D) + 杂鱼 (0x2E-0xFF) 全部加载
- *  - findPlayerTilesById(playerId) 全部返回非 null
- *  - PlayerTileService.findPlayerTiles(playerId) 全部解析出 tileSequence + spriteAttr + palette
- *  - 渲染每球员: hair 模板、body tile、palette 4 色块、完整 tile 序列
+ * 验证 + 渲染:
+ *  - PLAYER_TABLE 255 项全部加载
+ *  - findPlayerTilesById(playerId) / PlayerTileService.findPlayerTiles(playerId) 全部非 null
+ *  - 用 NES_CHR_ROM + NES palette 实际渲染 head/body 8x8 tile 像素到 canvas
  *  - 失败项标红
  */
 import { PLAYER_TABLE, findPlayerById, PLAYER_COLOR_TABLE } from '../src/game/prg/data/tables/player-stats';
@@ -14,8 +13,9 @@ import {
 } from '../src/game/prg/data/tables/player-tile-table';
 import { BANK19_SPRITE_FRAMES, findSpriteFrameById } from '../src/game/prg/data/tables/sprite-frame-table';
 import { PlayerTileService } from '../src/game/prg/code/player/PlayerTileService';
+import { NES_CHR_ROM, CHR_BANK_COUNT, CHR_BANK_SIZE } from '../src/game/chr/index';
 
-// ───────────────────── NES 调色板 (api-test.ts 共享) ─────────────────────
+// ───────────────────── NES 调色板 (NES PPU master palette 64 色) ─────────────────────
 const NES_PALETTE: ReadonlyArray<readonly [number, number, number]> = [
   [0x54, 0x54, 0x54], [0x00, 0x1E, 0x74], [0x08, 0x10, 0x90], [0x30, 0x00, 0x88],
   [0x44, 0x00, 0x64], [0x5C, 0x00, 0x30], [0x54, 0x04, 0x00], [0x3C, 0x18, 0x00],
@@ -38,6 +38,108 @@ const colorHex = (idx: number): string => {
   const [r, g, b] = NES_PALETTE[idx & 0x3f];
   return `rgb(${r},${g},${b})`;
 };
+
+// ───────────────────── 渲染: tile 字节 → canvas 像素 ─────────────────────
+// NES tile: 16 字节 = 8 行 × 2 bit plane (plane0 在前 8 字节, plane1 在后 8 字节)
+// sprite pattern table 默认 $0000 (PPUCTRL bit3=0), 即 tile 0 = CHR offset 0
+function getTileByte(tileIndex: number, byteOffset: number): number {
+  // sprite pattern table 基址 = 0x0000, 16 字节/tile
+  const chrOffset = (tileIndex & 0x3ff) * 16 + (byteOffset & 0x0f);
+  return NES_CHR_ROM[chrOffset] ?? 0;
+}
+
+/** 把单个 8x8 NES tile 画到 canvas, 缩放 scale 倍, palette = 4 个 NES palette 索引 */
+function renderTileToCanvas(
+  canvas: HTMLCanvasElement,
+  tileIndex: number,
+  palette: readonly number[],
+  scale: number = 4,
+  transparent: number = 0,
+): void {
+  const w = 8 * scale;
+  const h = 8 * scale;
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+  ctx.imageSmoothingEnabled = false;
+  ctx.clearRect(0, 0, w, h);
+
+  // 透明色 (palette[transparent]) 用棋盘格背景
+  const transpColor = NES_PALETTE[palette[transparent & 0x03] & 0x3f];
+  for (let y = 0; y < 8; y++) {
+    for (let x = 0; x < 8; x++) {
+      if (((x + y) & 1) === 0) {
+        ctx.fillStyle = `rgba(${transpColor[0]},${transpColor[1]},${transpColor[2]},0.3)`;
+      } else {
+        ctx.fillStyle = `rgba(${transpColor[0]},${transpColor[1]},${transpColor[2]},0.1)`;
+      }
+      ctx.fillRect(x * scale, y * scale, scale, scale);
+    }
+  }
+
+  for (let y = 0; y < 8; y++) {
+    const p0 = getTileByte(tileIndex, y);     // plane 0
+    const p1 = getTileByte(tileIndex, y + 8); // plane 1
+    for (let x = 0; x < 8; x++) {
+      const bit0 = (p0 >> (7 - x)) & 1;
+      const bit1 = (p1 >> (7 - x)) & 1;
+      const colorIdx = bit0 | (bit1 << 1); // 0..3
+      if (colorIdx === 0) continue; // 透明
+      const c = NES_PALETTE[palette[colorIdx] & 0x3f];
+      ctx.fillStyle = `rgb(${c[0]},${c[1]},${c[2]})`;
+      ctx.fillRect(x * scale, y * scale, scale, scale);
+    }
+  }
+}
+
+/** 把多个 tile 拼成 1 张大 canvas (2D 排布) */
+function renderTilesGrid(
+  tileIndices: readonly number[],
+  palette: readonly number[],
+  cols: number,
+  scale: number = 4,
+): HTMLCanvasElement {
+  const rows = Math.ceil(tileIndices.length / cols);
+  const w = cols * 8 * scale;
+  const h = rows * 8 * scale;
+  const canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return canvas;
+  ctx.imageSmoothingEnabled = false;
+  // 棋盘格背景
+  const transpColor = NES_PALETTE[palette[0] & 0x3f];
+  ctx.fillStyle = `rgba(${transpColor[0]},${transpColor[1]},${transpColor[2]},0.15)`;
+  ctx.fillRect(0, 0, w, h);
+  for (let i = 0; i < tileIndices.length; i++) {
+    const t = tileIndices[i];
+    const offX = (i % cols) * 8 * scale;
+    const offY = Math.floor(i / cols) * 8 * scale;
+    for (let y = 0; y < 8; y++) {
+      const p0 = getTileByte(t, y);
+      const p1 = getTileByte(t, y + 8);
+      for (let x = 0; x < 8; x++) {
+        const colorIdx = ((p0 >> (7 - x)) & 1) | (((p1 >> (7 - x)) & 1) << 1);
+        if (colorIdx === 0) continue;
+        const c = NES_PALETTE[palette[colorIdx] & 0x3f];
+        ctx.fillStyle = `rgb(${c[0]},${c[1]},${c[2]})`;
+        ctx.fillRect(offX + x * scale, offY + y * scale, scale, scale);
+      }
+    }
+  }
+  // 画 tile 索引标签
+  ctx.fillStyle = 'rgba(255,255,255,0.7)';
+  ctx.font = `${Math.max(7, scale * 1.5)}px monospace`;
+  ctx.textBaseline = 'top';
+  for (let i = 0; i < tileIndices.length; i++) {
+    const offX = (i % cols) * 8 * scale;
+    const offY = Math.floor(i / cols) * 8 * scale;
+    ctx.fillText('$' + tileIndices[i].toString(16).padStart(2, '0'), offX + 1, offY + 1);
+  }
+  return canvas;
+}
 
 // ───────────────────── 初始化 ─────────────────────
 const $ = (id: string): HTMLElement => document.getElementById(id)!;
@@ -65,7 +167,6 @@ interface PlayerRow {
   errMsg?: string;
 }
 
-// ───────────────────── 验证: 全部球员 ─────────────────────
 function buildAllRows(): PlayerRow[] {
   const rows: PlayerRow[] = [];
   for (const p of PLAYER_TABLE) {
@@ -91,7 +192,6 @@ function buildAllRows(): PlayerRow[] {
   return rows;
 }
 
-// ───────────────────── 渲染列表 ─────────────────────
 function renderTable(): void {
   const q = searchInput.value.trim().toLowerCase();
   const pos = posFilter.value;
@@ -133,7 +233,7 @@ function escapeHtml(s: string): string {
   return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// ───────────────────── 详情面板 ─────────────────────
+// ───────────────────── 详情面板 (含渲染) ─────────────────────
 function selectPlayer(id: number): void {
   selectedId = id;
   renderTable();
@@ -165,24 +265,20 @@ function selectPlayer(id: number): void {
     `<span class="swatch" style="background:${colorHex(c)}"></span><span class="hex">0x${c.toString(16).padStart(2, '0')}</span>`
   ).join(' &nbsp; ');
 
-  // tile 序列
-  const tileCellsHtml = resolved.tileSequence.map((t) => {
-    const isZero = t === 0;
-    return `<div class="tile-cell${isZero ? ' zero' : ''}">${isZero ? '·' : t.toString(16).padStart(2, '0')}</div>`;
-  }).join('');
+  // 渲染 head tiles (4 个 8x8 tile 拼 16x16) - 头型 4 tile
+  const headTileBase = 0x80 + (tile.hairTemplateId & 0x0f) * 4;
+  const headTiles = [headTileBase, headTileBase + 1, headTileBase + 2, headTileBase + 3];
+  const headCanvas = renderTilesGrid(headTiles, pal, 2, 5);
 
-  // 4 帧动画预览
-  const animHtml = resolved.animFrames.map((f, i) => {
-    const cells = f.map((t) => {
-      const isZero = t === 0;
-      return `<div class="tile-cell${isZero ? ' zero' : ''}" style="width:18px;height:18px;font-size:9px">${isZero ? '·' : t.toString(16).padStart(2, '0')}</div>`;
-    }).join('');
-    return `<div style="margin-bottom:4px"><span style="color:#888;font-size:11px">F${i} </span><div class="tile-list" style="display:inline-flex;max-height:none;background:transparent">${cells}</div></div>`;
-  }).join('');
+  // 渲染 body 帧 (BANK19_SPRITE_FRAMES 全部 tile)
+  const bodyTiles = frame?.tiles ?? [tile.bodyBaseTileIdx];
+  const bodyCanvas = renderTilesGrid(bodyTiles, pal, 8, 3);
 
-  const frameTilesHtml = frame?.tiles.map((t) => {
-    return `<div class="tile-cell" style="width:20px;height:20px">${t.toString(16).padStart(2, '0')}</div>`;
-  }).join('') ?? '<span class="err">无 BANK19_SPRITE_FRAMES 匹配</span>';
+  // 4 帧走位动画
+  const animCanvases = resolved.animFrames.map((f, i) => {
+    const c = renderTilesGrid(f, pal, 8, 2);
+    return `<div style="display:inline-block;margin:2px"><div style="color:#888;font-size:10px">F${i}</div>${c.outerHTML}</div>`;
+  }).join('');
 
   detailPane.innerHTML = `
     <div class="detail-row"><span class="k">ID</span><span class="v"><span class="id">0x${id.toString(16).padStart(2, '0')}</span></span></div>
@@ -193,18 +289,32 @@ function selectPlayer(id: number): void {
     <div class="detail-row"><span class="k">调色板 4 色</span><span class="v">${swatches}</span></div>
     <div class="detail-row"><span class="k">Sprite attr</span><span class="v"><span class="hex">0x${attr.toString(16).padStart(2, '0')}</span> (pal=${palBits}, priority=${priority ? 'on' : 'off'}, flipX=${flipX}, flipY=${flipY})</span></div>
     <div class="detail-row"><span class="k">颜色 (明星)</span><span class="v">skin=<span class="hex">0x${(color?.skin ?? 0).toString(16).padStart(2, '0')}</span> hair=<span class="hex">0x${(color?.hair ?? 0).toString(16).padStart(2, '0')}</span> shirt=<span class="hex">0x${(color?.shirt ?? 0).toString(16).padStart(2, '0')}</span> shorts=<span class="hex">0x${(color?.shorts ?? 0).toString(16).padStart(2, '0')}</span></span></div>
-    <div class="detail-row"><span class="k">Frame (BANK19)</span><span class="v">${frame ? `frameId 0x${frame.frameId.toString(16).padStart(2, '0')} (${frame.tiles.length} tiles)` : '无'}</span></div>
-    <div class="detail-row"><span class="k">Frame tiles</span><span class="v"><div class="tile-list">${frameTilesHtml}</div></span></div>
-    <div class="detail-row"><span class="k">完整 tile 序列 (head+body)</span><span class="v"><div class="tile-list">${tileCellsHtml}</div> (共 ${resolved.tileSequence.length} tiles)</span></div>
-    <div class="detail-row"><span class="k">4 帧走位动画</span><span class="v">${animHtml}</span></div>
+
+    <div class="section-title">头型渲染 (PLAYER_HAIR_TABLE[${id - 1}] = 0x${tile.hairTemplateId.toString(16).padStart(2, '0')}, 4 tile)</div>
+    <div class="render-box">${headCanvas.outerHTML}</div>
+
+    <div class="section-title">身体帧渲染 (BANK19_SPRITE_FRAMES[0x${(id % BANK19_SPRITE_FRAMES.length).toString(16).padStart(2, '0')}], ${bodyTiles.length} tile)</div>
+    <div class="render-box">${bodyCanvas.outerHTML}</div>
+
+    <div class="section-title">4 帧走位动画</div>
+    <div class="render-box">${animCanvases}</div>
+
+    <div class="section-title">完整 tile 序列 (${resolved.tileSequence.length} tiles)</div>
+    <div class="tile-list">${resolved.tileSequence.map((t) => {
+      const isZero = t === 0;
+      return `<div class="tile-cell${isZero ? ' zero' : ''}">${isZero ? '·' : t.toString(16).padStart(2, '0')}</div>`;
+    }).join('')}</div>
+
+    <div class="section-title">帧 byte 字节流 (data)</div>
+    <div class="byte-flow">${(frame?.tiles ?? []).map(t => t.toString(16).padStart(2, '0').toUpperCase()).join(' ')}</div>
+
+    <div class="render-note">来源: NES_CHR_ROM[${CHR_BANK_COUNT}×${CHR_BANK_SIZE}B = ${(CHR_BANK_COUNT * CHR_BANK_SIZE / 1024).toFixed(0)}KB], sprite pattern table @ \$0000</div>
   `;
 }
 
-// ───────────────────── 事件 ─────────────────────
 searchInput.addEventListener('input', renderTable);
 posFilter.addEventListener('change', renderTable);
 
-// ───────────────────── 启动 ─────────────────────
 allRows = buildAllRows();
 renderTable();
-selectPlayer(0x01); // 默认 Tsubasa
+selectPlayer(0x01);

@@ -69,11 +69,36 @@
     .ok { color: #3fb950; }
 
     .summary { padding: 6px 10px; background: #0a1a0a; border: 1px solid #238636; border-radius: 3px; margin-bottom: 8px; font-size: 12px; }
+
+    /* ── 渲染区 ── */
+    .section-title {
+      color: #4fc3f7; font-size: 12px; margin: 12px 0 4px 0;
+      padding-bottom: 2px; border-bottom: 1px solid #2a3a6a;
+    }
+    .render-box {
+      padding: 4px; background: #0a0a1a; border: 1px solid #2a2a3a; border-radius: 3px;
+      margin-bottom: 6px; display: block;
+    }
+    .render-box canvas {
+      image-rendering: pixelated; image-rendering: crisp-edges;
+      vertical-align: top; display: block;
+    }
+    .render-box > div {
+      display: inline-block; margin-right: 6px; vertical-align: top;
+    }
+    .byte-flow {
+      font-family: 'Consolas', monospace; font-size: 10px; color: #ffb74d;
+      background: #0a0a1a; padding: 4px 6px; border: 1px solid #2a2a3a; border-radius: 3px;
+      word-break: break-all; line-height: 1.4;
+    }
+    .render-note {
+      color: #666; font-size: 10px; margin-top: 4px; font-style: italic;
+    }
   </style>
 </head>
 <body>
   <h1>天使之翼2 — 球员 tile 素材浏览器 <span class="sub">/ PT1-PT3 验证 (PLAYER_TABLE + PLAYER_HAIR_TABLE + PLAYER_COLOR_TABLE + BANK19_SPRITE_FRAMES)</span></h1>
-  <p class="hint">球员 ID → hair/body/palette 桥接验证 · 渲染 PT2 + PT3 真实产物 · 错误/缺失会标红</p>
+  <p class="hint">球员 ID → hair/body/palette 桥接验证 · 真实 NES_CHR_ROM 8x8 tile 像素渲染 (2bpp 解码) · 错误/缺失会标红</p>
 
   <div class="toolbar">
     <label>搜索 <input id="searchInput" type="text" placeholder="id hex / name / position" style="width:240px"></label>
