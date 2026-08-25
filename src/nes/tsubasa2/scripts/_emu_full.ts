@@ -430,8 +430,8 @@ function renderOamComposite(oamJson: any[], ppu: any): Buffer {
 }
 
 // oam-stripped: 把所有 visible sprite (y<0xef) 按真实 y/x 摆到一张紧凑 PNG 上
-// 自动裁剪到包围盒 (含 1px padding), 透明 bg alpha=0, 不带完整 256x240 大图
-// vs oam-composite: 那里是 256x240 棋盘背景摆 sprite, 这里去掉棋盘 + 紧凑 crop
+// 自动裁剪到 sprite 包围盒 (无 padding), 透明 bg alpha=0, 不带完整 256x240 大图
+// vs oam-composite: 那里是 256x240 棋盘背景摆 sprite, 这里纯透明 + 紧凑 crop
 function renderOamStripped(oamJson: any[], ppu: any): { w: number; h: number; rgba: Buffer; minX: number; minY: number } | null {
   const baseIdx = ppu.f_spPatternTable ? 256 : 0;
   let minX = 256, maxX = -1, minY = 240, maxY = -1;
@@ -449,12 +449,11 @@ function renderOamStripped(oamJson: any[], ppu: any): { w: number; h: number; rg
     if (sy0 + 8 > maxY) maxY = sy0 + 8;
   }
   if (refs.length === 0) return null;
-  const PX = 1;
-  const ox = -(minX - PX);
-  const oy = -(minY - PX);
-  const W = (maxX - minX) + PX * 2;
-  const H = (maxY - minY) + PX * 2;
-  const rgba = Buffer.alloc(W * H * 4);
+  const ox = -minX;
+  const oy = -minY;
+  const W = (maxX - minX);
+  const H = (maxY - minY);
+  const rgba = Buffer.alloc(W * H * 4); // alpha=0 透明
   for (const r of refs) {
     const o = r.o;
     const attr = o.attr;
@@ -463,23 +462,9 @@ function renderOamStripped(oamJson: any[], ppu: any): { w: number; h: number; rg
     const palHi = (attr & 0x03) << 2;
     const ptT = ppu.ptTile[baseIdx + o.tile];
     const pix = ptT && ptT.pix ? ptT.pix : null;
+    if (!pix) continue;
     const dx0 = r.sx0 + ox;
     const dy0 = r.sy0 + oy;
-    const bx0 = Math.max(0, dx0), bx1 = Math.min(W, dx0 + 8);
-    const by0 = Math.max(0, dy0), by1 = Math.min(H, dy0 + 8);
-    for (let x = bx0; x < bx1; x++) {
-      const yo = (by0 * W + x) * 4;
-      rgba[yo] = 0xff; rgba[yo + 1] = 0; rgba[yo + 2] = 0xff; rgba[yo + 3] = 0x60;
-      const y2o = ((by1 - 1) * W + x) * 4;
-      rgba[y2o] = 0xff; rgba[y2o + 1] = 0; rgba[y2o + 2] = 0xff; rgba[y2o + 3] = 0x60;
-    }
-    for (let y = by0; y < by1; y++) {
-      const xo = (y * W + bx0) * 4;
-      rgba[xo] = 0xff; rgba[xo + 1] = 0; rgba[xo + 2] = 0xff; rgba[xo + 3] = 0x60;
-      const x2o = (y * W + (bx1 - 1)) * 4;
-      rgba[x2o] = 0xff; rgba[x2o + 1] = 0; rgba[x2o + 2] = 0xff; rgba[x2o + 3] = 0x60;
-    }
-    if (!pix) continue;
     for (let py = 0; py < 8; py++) {
       const dy = dy0 + py;
       if (dy < 0 || dy >= H) continue;
@@ -497,55 +482,11 @@ function renderOamStripped(oamJson: any[], ppu: any): { w: number; h: number; rg
       }
     }
   }
-  return { w: W, h: H, rgba, minX: minX - PX, minY: minY - PX };
+  return { w: W, h: H, rgba, minX, minY };
 }
 
-// oam-sprites: 输出 64 张独立 PNG (8x8 sprite, alpha=0 bg, 1px 半透明 magenta bounding box)
-// 空 sprite (y>=0xef) 也输出 8x8 全透明 PNG (供调试完整 OAM layout 用)
-function renderOamSprites(oamJson: any[], ppu: any): Buffer[] {
-  const N = 64;
-  const W = 8, H = 8;
-  const out: Buffer[] = [];
-  const baseIdx = ppu.f_spPatternTable ? 256 : 0;
-  for (let i = 0; i < N; i++) {
-    const rgba = Buffer.alloc(W * H * 4); // 全 alpha=0
-    const o = oamJson[i];
-    if (o && o.y < 0xef) {
-      const attr = o.attr;
-      const flipH = (attr & 0x40) ? 1 : 0;
-      const flipV = (attr & 0x80) ? 1 : 0;
-      const palHi = (attr & 0x03) << 2;
-      const ptT = ppu.ptTile[baseIdx + o.tile];
-      const pix = ptT && ptT.pix ? ptT.pix : null;
-      if (pix) {
-        // 1px bounding box
-        for (let x = 0; x < W; x++) {
-          rgba[(0 * W + x) * 4] = 0xff; rgba[(0 * W + x) * 4 + 1] = 0; rgba[(0 * W + x) * 4 + 2] = 0xff; rgba[(0 * W + x) * 4 + 3] = 0x40;
-          rgba[((H - 1) * W + x) * 4] = 0xff; rgba[((H - 1) * W + x) * 4 + 1] = 0; rgba[((H - 1) * W + x) * 4 + 2] = 0xff; rgba[((H - 1) * W + x) * 4 + 3] = 0x40;
-        }
-        for (let y = 0; y < H; y++) {
-          rgba[(y * W + 0) * 4] = 0xff; rgba[(y * W + 0) * 4 + 1] = 0; rgba[(y * W + 0) * 4 + 2] = 0xff; rgba[(y * W + 0) * 4 + 3] = 0x40;
-          rgba[(y * W + (W - 1)) * 4] = 0xff; rgba[(y * W + (W - 1)) * 4 + 1] = 0; rgba[(y * W + (W - 1)) * 4 + 2] = 0xff; rgba[(y * W + (W - 1)) * 4 + 3] = 0x40;
-        }
-        // sprite pixel
-        for (let py = 0; py < 8; py++) {
-          for (let px = 0; px < 8; px++) {
-            const sx = flipH ? 7 - px : px;
-            const sy = flipV ? 7 - py : py;
-            const idx = pix[sy * 8 + sx];
-            if (idx === 0) continue;
-            const color = ppu.sprPalette ? (ppu.sprPalette[palHi + idx] ?? 0xff000000) : 0xff000000;
-            const r = (color >>> 16) & 0xff, g = (color >>> 8) & 0xff, b = color & 0xff;
-            const off = (py * 8 + px) * 4;
-            rgba[off] = r; rgba[off + 1] = g; rgba[off + 2] = b; rgba[off + 3] = 0xff;
-          }
-        }
-      }
-    }
-    out.push(rgba);
-  }
-  return out;
-}
+// oam-sprites: 占位函数 (已删除 tile-by-tile 输出, 用户不需要)
+// (函数体移除)
 
 function renderPaletteSheet(palBg: number[], palSp: number[], ppu: any): { w: number; h: number; rgba: Buffer } {
   const pal: any = ppu.palTable;
