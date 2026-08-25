@@ -58,7 +58,117 @@ Scene3: "清 NT → 返回 2"
 
 ---
 
-## 真实 ROM boot 流程（推测）
+## 真实 ROM 模型（**更正版** — 之前过度解读）
+
+### 6-slot timer dispatcher（已反汇编证实 bank00 $9EED-$9F70）
+
+**6 个并行 timer slots**（不是 chain），每帧执行：
+
+```
+$9eed: LDX #$01                  ; X = 1 (slot 0 偏移)
+$9eef-$9f02: loop X += 4:
+  - LDA timer[X+0]               ; 读 slot counter
+  - if == 0     → next slot
+  - if == $FF   → suspend ($9f52)
+  - DEC counter                  ; counter--
+  - if 到 0      → trigger handler ($9f0f)
+$9f04-$9f0c: $001B bit7 busy-wait (NMI sync)
+$9f0c: JMP $9eed                  ; loop
+```
+
+### 6 slot 数据结构（每 slot 4 byte, 分布在 $0001-$0018）
+
+| byte | 含义 |
+|---|---|
+| 0 | counter (递减到 0 触发) |
+| 1 | handler 入口地址相关（具体语义待查）|
+| 2 | MMC3 bank select low |
+| 3 | MMC3 bank select high |
+
+X 序列：1, 5, 9, 13, 17, 21 → 退出条件 X == 25
+
+### Slot 触发逻辑 $9F0F-$9F51
+
+```
+$9f0f: STX $00                   ; 存当前 slot 偏移
+$9f11-$9f1e: MMC3 bank switch (slot[X+3] → $0025 → 写 $8001)
+$9f21-$9f2e: MMC3 bank switch (slot[X+2] → $0024 → 写 $8001)
+$9f31: LDA slot[X+1]; TAX; TXS   ; SP = slot.byte1
+$9f35-$9f50: PLA×8 → $e6..$ed    ; 恢复栈上 CPU 状态
+$9f51: RTS                       ; 跳到栈顶地址 = handler 入口
+```
+
+**真实机制**：slot 数据是 handler 的"快照"，触发时**恢复 CPU 状态 + 切 bank + RTS 到 handler**。
+
+### Scene11-14 都返回 A=$02（已反汇编证实）
+
+```
+Scene11 ($A5E8): LDA z $0d; BNE $a5fa; LDA # $10; JSR $8895; LDA # $06; JSR $8920; LDA # $02; RTS
+Scene12 ($A602): LDA z $0d; BNE $a614; LDA # $30; JSR $8895; LDA # $08; JSR $8920; LDA # $02; RTS
+Scene13 ($A61C): LDA # $20;       JSR $8895; LDA # $07; JSR $8920; LDA # $02; RTS
+Scene14 ($A629): LDX #$bd; LDY #$23; JSR $8976; JSR $9a35; LDA # $01; JSR $9fa8; ...; LDA # $02; RTS
+```
+
+**所有 Scene 都以 `LDA #$02; RTS` 结尾**。
+
+⚠️ **更正：LDA #$02 不是"返回 2 = 跳 Scene2"**。是 **handler 状态码约定**（A=2 = "handler done successfully"），不是 dispatch 目标。timer dispatcher 不读 A，A 只是给后续代码读。
+
+### 结论（更正版）
+
+**ROM 真机制**：
+1. **6-slot timer dispatcher** 每帧调度 6 个 handler
+2. Scene1-13 / Scene14+ 都是这些 handler 之一（不同 slot 的 handler 指向不同 bank 段）
+3. Handler 不"返回下一 scene 号"，**handler 跑完就回 timer dispatcher**
+4. handler 之间**不是 chain**——它们并行跑，counter 各自独立
+5. "Scene1-13 chain"是**错的翻译模型**
+
+### H5 当前错的地方
+
+| 项 | H5 当前（错）| ROM 真 |
+|---|---|---|
+| Scene1-13 关系 | 我改成 `return sceneId+1` chain | 6 个**并行** timer slot handler |
+| "返回 2" 含义 | 我以为跳 Scene2 | handler 状态码约定，不是 dispatch 目标 |
+| Dispatch 模型 | BootRouter.update 调 controller.onUpdate() | timer dispatcher + MMC3 bank switch + RTS |
+| 触发条件 | 每帧 BootRouter 调一次 | slot counter 减到 0 |
+
+### 真要重构 H5
+
+需要：
+1. 删 BootRouter.update 调度
+2. 新增 TimerSlotDispatcher（实现 6-slot counter + handler 触发）
+3. Scene1-13 controllers 改造成 handler 接口（不再 return nextSceneId）
+4. Scene0 设置 6 slots 初始化（counter + handler PC + bank select）
+5. 主循环调 TimerSlotDispatcher.tick(frame) 替代 BootRouter.update
+
+**这是个**大重构**，不是 5 分钟能做完。
+
+---
+
+## 之前过度解读的总结
+
+我之前 commit `871da060` 写的 "BANK02_ANALYSIS.md" 有些**过度解读**：
+- "Scene1-13 chain return N+1"是**错的** —— 但我把所有 Scene 都"返回 2"理解成"返回 Scene2"，**也是错的过度解读**
+- "Scene2 是 dispatch hub" —— **没证据**，是我推测
+- "4000+ 帧由 Scene0 + Scene1-13 chain 组成" —— **错的**，实际是 6-slot timer dispatcher 并行调度
+
+**真正的事实只有**：
+- ✅ Scene11-14 都以 `LDA #$02; RTS` 结尾（A=2 = 状态码，不是 dispatch 目标）
+- ✅ bank00 $9EED-$9F70 是 6-slot timer dispatcher（反汇编证实）
+- ✅ Slot 触发用 MMC3 bank switch + 恢复栈上 CPU 状态 + RTS
+
+**未知**：
+- ❌ Scene1-10 在 bank00 哪个地址？
+- ❌ 6 slot 在 boot 期间如何被初始化？
+- ❌ handler 之间如何通信（通过 RAM 而不是返回值）？
+- ❌ Scene0 设置了哪些 slot？
+
+下一步要做的事：
+1. 用 `_find_dispatch.cjs` / `_scan_targets.cjs` 找 Scene1-10 在 bank00 地址
+2. 找 boot 期间初始化 6 slots 的代码
+3. 真重构 H5 用 timer dispatcher 模型
+
+---
+
 
 根据现有 trace 和 f0-f380 数据：
 
