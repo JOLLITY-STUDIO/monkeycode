@@ -1,6 +1,20 @@
 /**
  * SceneUtilitiesControllers — 场景 1-13 工具型控制器（批量实现）
  *
+ * ⚠️ 当前状态 (2026-08-25)：这些 controllers 是 **dead code**，未被任何 dispatcher 链路 dispatch。
+ *
+ * 已发现的两层 bug：
+ *   1. NEXT=0x02 这个常量实际上是 Scene2 id，导致 Scene2 (清 sprite ext) 永远停留在自己
+ *      (BootRouter.update 检查 next === currentSceneId 不 changeScene) —— Scene1-13 chain
+ *      跳到 Scene2 后死循环。
+ *   2. Scene0.FadeOut return 0x02 直接跳 Scene2 id 而非 Scene1 id，恰好踩 Bug 1 死循环。
+ *      ROM 真实流程 Scene0 done 应该 dispatch Scene1 (math tool)，但 H5 没做。
+ *
+ * 这些 Scene1-13 controllers 现在仅作 **原 asm 翻译记录**（注释/锚点参考）保留。
+ * 修法（Phase 2）：
+ *   A. 改 NEXT = undefined，让 chain 一直停留在最后那个 scene（待 phase 2）。
+ *   B. 修 Scene0.FadeOut 直接 return Scene14 id=0x0e 跳过 Scene1-13 (Phase 2 已 commit BUG #012)。
+ *
  * 这些场景都是「单操作立即返回下一场景」的简单工具：
  *   Scene 1  数学工具（16bit 取补 → 返回 3）
  *   Scene 2  清精灵扩展表（$0568/$0588/$05A8/$05C8 = 0）→ 返回 2
