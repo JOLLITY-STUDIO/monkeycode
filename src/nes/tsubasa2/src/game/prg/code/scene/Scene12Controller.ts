@@ -1,0 +1,32 @@
+/**
+ * Scene12Controller — 场景 12 同 11，但装载场景数据 8
+ *
+ * 行为：if ($000D != 0) { $000D=0; $000E=0; } else { loadChrConfig(0x30); loadSceneData(8); }
+ * 返回 13
+ */
+import { SceneController } from './SceneController';
+import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
+import type { DataStore } from '../../data/store/DataStore';
+import type { InputService } from '../system/InputService';
+
+export class Scene12Controller extends SceneController {
+  readonly sceneId = 12;
+  private readonly prim: RenderingPrimitivesService;
+  constructor(store: DataStore, input: InputService) {
+    super(store, input);
+    this.prim = new RenderingPrimitivesService(store);
+  }
+  onEnter(): void {
+    const store = this.store;
+    if (store.readByte(0x000d) !== 0) {
+      store.writeByte(0x000d, 0);
+      store.writeByte(0x000e, 0);
+    } else {
+      this.prim.loadChrConfig(0x30);
+      this.prim.loadSceneData(8);
+    }
+  }
+  onUpdate(_frame: number): number | undefined {
+    return 0x0d; // → Scene13
+  }
+}

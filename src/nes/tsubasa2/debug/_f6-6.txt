@@ -1,0 +1,946 @@
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0484 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$84
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0485 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$85
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0486 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$86
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0487 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$87
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0488 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$88
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04A1 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$A1
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04A2 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$A2
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04A3 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$A3
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04A4 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$A4
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04A5 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$A5
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04BE = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$BE
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04BF = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$BF
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04C0 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$C0
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04C1 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$C1
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04C2 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$C2
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04DB = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$DB
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04DC = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$DC
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04DD = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$DD
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04DE = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$DE
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04DF = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$DF
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04F8 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$F8
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04F9 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$F9
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04FA = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$FA
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04FB = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$FB
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $04FC = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$FC
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $050B = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$0B
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $050C = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$0C
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $050D = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$0D
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $050E = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$0E
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $050F = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$0F
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0528 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$28
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0529 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$29
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $052A = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$2A
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $052B = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$2B
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $052C = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$2C
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0545 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$45
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0546 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$46
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0547 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$47
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0548 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$48
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0549 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$49
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0562 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$62
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0563 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$63
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0564 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$64
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0565 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$65
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0566 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$66
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $057F = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$7F
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0580 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$80
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0581 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$81
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0582 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$82
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0583 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$83
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $059C = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$9C
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $059D = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$9D
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $059E = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$9E
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $059F = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$9F
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05A0 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$A0
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05B9 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$B9
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05BA = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$BA
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05BB = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$BB
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05BC = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$BC
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05BD = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$BD
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05D6 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$D6
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05D7 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$D7
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05D8 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$D8
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05D9 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$D9
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05DA = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$DA
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05F3 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$F3
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05F4 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$F4
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05F5 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$F5
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05F6 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$F6
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $05F7 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$F7
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $061E = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$1E
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $061F = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$1F
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0620 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$20
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0621 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$21
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0622 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$22
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $063B = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$3B
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $063C = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$3C
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $063D = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$3D
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $063E = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$3E
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $063F = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$3F
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0658 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$58
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0659 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$59
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $065A = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$5A
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $065B = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$5B
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $065C = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$5C
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0675 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$75
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0676 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$76
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0677 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$77
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0678 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$78
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0679 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$79
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0692 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$92
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0693 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$93
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0694 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$94
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0695 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$95
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $0696 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$96
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06AF = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$AF
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06B0 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$B0
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06B1 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$B1
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06B2 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$B2
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06B3 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$B3
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06CC = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$CC
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06CD = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$CD
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06CE = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$CE
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06CF = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$CF
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06D0 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$D0
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06E9 = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$E9
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06EA = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$EA
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06EB = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$EB
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06EC = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$EC
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC
+f6 $01:AA18 E9 01    SBC #$01
+f6 $01:AA1A D0 EF    BNE $AA0B
+f6 $01:AA0B 48       PHA
+f6 $01:AA0C A9 00    LDA #$00
+f6 $01:AA0E 91 EC    STA ($EC),Y @ $06ED = #$00
+f6 $01:AA10 E6 EC    INC $EC = #$ED
+f6 $01:AA12 D0 02    BNE $AA16
+f6 $01:AA16 68       PLA
+f6 $01:AA17 38       SEC

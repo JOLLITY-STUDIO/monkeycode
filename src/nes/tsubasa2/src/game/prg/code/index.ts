@@ -16,17 +16,29 @@ export { SceneController } from './scene/SceneController';
 export { Scene0Controller } from './scene/Scene0Controller';
 export { SCENE_TABLE, getSceneEntry } from './scene/SceneTable';
 export type { SceneEntry } from './scene/SceneTable';
-export {
-  Scene1Controller, Scene2Controller, Scene3Controller, Scene4Controller,
-  Scene5Controller, Scene6Controller, Scene7Controller, Scene8Controller,
-  Scene9Controller, Scene10Controller, Scene11Controller, Scene12Controller,
-  Scene13Controller,
-} from './scene/SceneUtilitiesControllers';
-export {
-  Scene14Controller, Scene15Controller, Scene16Controller, Scene17Controller,
-  Scene18Controller, Scene19Controller, Scene20Controller, Scene21Controller,
-  Scene22Controller, Scene23Controller,
-} from './scene/Scene14to23Controllers';
+export { Scene1Controller } from './scene/Scene1Controller';
+export { Scene2Controller } from './scene/Scene2Controller';
+export { Scene3Controller } from './scene/Scene3Controller';
+export { Scene4Controller } from './scene/Scene4Controller';
+export { Scene5Controller } from './scene/Scene5Controller';
+export { Scene6Controller } from './scene/Scene6Controller';
+export { Scene7Controller } from './scene/Scene7Controller';
+export { Scene8Controller } from './scene/Scene8Controller';
+export { Scene9Controller } from './scene/Scene9Controller';
+export { Scene10Controller } from './scene/Scene10Controller';
+export { Scene11Controller } from './scene/Scene11Controller';
+export { Scene12Controller } from './scene/Scene12Controller';
+export { Scene13Controller } from './scene/Scene13Controller';
+export { Scene14Controller } from './scene/Scene14Controller';
+export { Scene15Controller } from './scene/Scene15Controller';
+export { Scene16Controller } from './scene/Scene16Controller';
+export { Scene17Controller } from './scene/Scene17Controller';
+export { Scene18Controller } from './scene/Scene18Controller';
+export { Scene19Controller } from './scene/Scene19Controller';
+export { Scene20Controller } from './scene/Scene20Controller';
+export { Scene21Controller } from './scene/Scene21Controller';
+export { Scene22Controller } from './scene/Scene22Controller';
+export { Scene23Controller } from './scene/Scene23Controller';
 
 // story
 export { ScriptEngine } from './story/ScriptEngine';

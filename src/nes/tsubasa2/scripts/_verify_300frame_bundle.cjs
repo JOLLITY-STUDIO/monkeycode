@@ -131617,37 +131617,37 @@ var OPENING_SPR_PALETTES = [
 ];
 var OPENING_CHR_POINTER_TABLE = [
   41172,
-  // 0
+  // 00
   41183,
-  // 1
+  // 01
   41255,
-  // 2
+  // 02
   41279,
-  // 3
+  // 03
   41296,
-  // 4
+  // 04
   41316,
-  // 5
+  // 05
   41332,
-  // 6
+  // 06
   41360,
-  // 7
+  // 07
   41377,
-  // 8
+  // 08
   41417,
-  // 9
+  // 09
   41457,
-  // a
+  // 0a
   41514,
-  // b
+  // 0b
   41531,
-  // c
+  // 0c
   41588,
-  // d
+  // 0d
   41604,
-  // e
+  // 0e
   41620,
-  // f
+  // 0f
   41636,
   // 10
   41660,
@@ -131678,8 +131678,156 @@ var OPENING_CHR_POINTER_TABLE = [
   // 1d
   42166,
   // 1e
-  42198
+  42198,
   // 1f
+  42238,
+  // 20
+  42278,
+  // 21
+  42294,
+  // 22
+  42335,
+  // 23
+  42359,
+  // 24
+  42383,
+  // 25
+  42424,
+  // 26
+  42448,
+  // 27
+  42472,
+  // 28
+  42512,
+  // 29
+  42553,
+  // 2a
+  42610,
+  // 2b
+  42642,
+  // 2c
+  42654,
+  // 2d
+  42695,
+  // 2e
+  42719,
+  // 2f
+  42739,
+  // 30
+  42763,
+  // 31
+  42835,
+  // 32
+  42867,
+  // 33
+  42899,
+  // 34
+  42931,
+  // 35
+  42987,
+  // 36
+  43052,
+  // 37
+  43108,
+  // 38
+  43133,
+  // 39
+  43153,
+  // 3a
+  43177,
+  // 3b
+  43213,
+  // 3c
+  43237,
+  // 3d
+  43261,
+  // 3e
+  43301,
+  // 3f
+  43374,
+  // 40
+  43415,
+  // 41
+  43456,
+  // 42
+  43476,
+  // 43
+  43496,
+  // 44
+  43512,
+  // 45
+  43569,
+  // 46
+  43595,
+  // 47
+  43619,
+  // 48
+  43644,
+  // 49
+  43658,
+  // 4a
+  43682,
+  // 4b
+  43706,
+  // 4c
+  43730,
+  // 4d
+  43754,
+  // 4e
+  44131,
+  // 4f
+  44155,
+  // 50
+  44179,
+  // 51
+  44211,
+  // 52
+  44235,
+  // 53
+  44275,
+  // 54
+  44300,
+  // 55
+  44340,
+  // 56
+  44380,
+  // 57
+  44404,
+  // 58
+  44444,
+  // 59
+  44484,
+  // 5a
+  44524,
+  // 5b
+  44557,
+  // 5c
+  44583,
+  // 5d
+  44599,
+  // 5e
+  44619,
+  // 5f
+  44675,
+  // 60
+  44731,
+  // 61
+  44763,
+  // 62
+  44787,
+  // 63
+  44801,
+  // 64
+  44825,
+  // 65
+  44849,
+  // 66
+  44890,
+  // 67
+  44931,
+  // 68
+  45017
+  // 69
 ];
 var OPENING_FADE_TABLE = [
   15,
@@ -131748,70 +131896,218 @@ var OPENING_FADE_TABLE = [
   48
 ];
 var OPENING_CHR_CONFIGS = [
-  /* 0x00 @$a0d4 */
+  /* 00 @$a0d4 */
   [124, 126, 129, 1, 3, 27],
-  /* 0x01 @$a0df */
+  /* 01 @$a0df */
   [60, 62, 2, 4, 16, 0],
-  /* 0x02 @$a127 */
+  /* 02 @$a127 */
   [92, 94, 6, 2, 8, 16],
-  /* 0x03 @$a13f */
+  /* 03 @$a13f */
   [58, 0, 4, 2, 4, 18],
-  /* 0x04 @$a150 */
+  /* 04 @$a150 */
   [60, 62, 32, 2, 6, 17],
-  /* 0x05 @$a164 */
+  /* 05 @$a164 */
   [58, 0, 4, 2, 4, 18],
-  /* 0x06 @$a174 */
+  /* 06 @$a174 */
   [60, 62, 0, 2, 10, 19],
-  /* 0x07 @$a190 */
+  /* 07 @$a190 */
   [58, 0, 27, 2, 4, 21],
-  /* 0x08 @$a1a1 */
+  /* 08 @$a1a1 */
   [64, 0, 142, 4, 8, 0],
-  /* 0x09 @$a1c9 */
+  /* 09 @$a1c9 */
   [60, 62, 3, 4, 8, 0],
-  /* 0x0a @$a1f1 */
+  /* 0a @$a1f1 */
   [60, 76, 0, 4, 12, 7],
-  /* 0x0b @$a22a */
+  /* 0b @$a22a */
   [56, 58, 5, 2, 4, 21],
-  /* 0x0c @$a23b */
+  /* 0c @$a23b */
   [60, 62, 0, 3, 16, 8],
-  /* 0x0d @$a274 */
+  /* 0d @$a274 */
   [100, 102, 152, 2, 4, 18],
-  /* 0x0e @$a284 */
+  /* 0e @$a284 */
   [100, 102, 153, 2, 4, 18],
-  /* 0x0f @$a294 */
+  /* 0f @$a294 */
   [100, 102, 154, 2, 4, 18],
-  /* 0x10 @$a2a4 */
+  /* 10 @$a2a4 */
   [60, 62, 0, 2, 8, 16],
-  /* 0x11 @$a2bc */
+  /* 11 @$a2bc */
   [60, 62, 0, 2, 8, 16],
-  /* 0x12 @$a2d4 */
+  /* 12 @$a2d4 */
   [60, 62, 0, 2, 8, 16],
-  /* 0x13 @$a2ec */
+  /* 13 @$a2ec */
   [60, 62, 0, 2, 8, 16],
-  /* 0x14 @$a304 */
+  /* 14 @$a304 */
   [124, 126, 129, 2, 8, 16],
-  /* 0x15 @$a31c */
+  /* 15 @$a31c */
   [118, 126, 129, 3, 6, 25],
-  /* 0x16 @$a337 */
+  /* 16 @$a337 */
   [124, 114, 131, 3, 16, 16],
-  /* 0x17 @$a373 */
+  /* 17 @$a373 */
   [124, 126, 129, 6, 8, 8],
-  /* 0x18 @$a3ab */
+  /* 18 @$a3ab */
   [124, 126, 172, 6, 8, 0],
-  /* 0x19 @$a3e3 */
+  /* 19 @$a3e3 */
   [60, 62, 0, 2, 16, 23],
-  /* 0x1a @$a40c */
+  /* 1a @$a40c */
   [60, 62, 0, 2, 16, 16],
-  /* 0x1b @$a435 */
+  /* 1b @$a435 */
   [60, 62, 0, 3, 8, 8],
-  /* 0x1c @$a455 */
+  /* 1c @$a455 */
   [92, 94, 23, 8, 8, 95],
-  /* 0x1d @$a49e */
+  /* 1d @$a49e */
   [60, 62, 17, 2, 8, 16],
-  /* 0x1e @$a4b6 */
+  /* 1e @$a4b6 */
   [60, 62, 0, 3, 8, 8],
-  /* 0x1f @$a4d6 */
-  [60, 62, 0, 4, 8, 0]
+  /* 1f @$a4d6 */
+  [60, 62, 0, 4, 8, 0],
+  /* 20 @$a4fe */
+  [60, 62, 0, 4, 8, 0],
+  /* 21 @$a526 */
+  [96, 98, 7, 2, 4, 18],
+  /* 22 @$a536 */
+  [96, 98, 150, 2, 16, 23],
+  /* 23 @$a55f */
+  [96, 98, 150, 2, 8, 16],
+  /* 24 @$a577 */
+  [104, 106, 128, 2, 8, 16],
+  /* 25 @$a58f */
+  [92, 94, 6, 4, 8, 0],
+  /* 26 @$a5b8 */
+  [60, 102, 7, 2, 8, 16],
+  /* 27 @$a5d0 */
+  [60, 102, 7, 2, 8, 16],
+  /* 28 @$a5e8 */
+  [0, 2, 0, 4, 8, 0],
+  /* 29 @$a610 */
+  [60, 62, 0, 2, 16, 16],
+  /* 2a @$a639 */
+  [60, 62, 0, 3, 16, 8],
+  /* 2b @$a672 */
+  [60, 62, 0, 3, 8, 8],
+  /* 2c @$a692 */
+  [60, 62, 0, 2, 2, 19],
+  /* 2d @$a69e */
+  [60, 62, 0, 2, 16, 16],
+  /* 2e @$a6c7 */
+  [60, 62, 0, 2, 8, 16],
+  /* 2f @$a6df */
+  [60, 98, 9, 2, 6, 17],
+  /* 30 @$a6f3 */
+  [60, 62, 0, 2, 8, 16],
+  /* 31 @$a70b */
+  [92, 94, 10, 4, 16, 0],
+  /* 32 @$a753 */
+  [92, 94, 10, 3, 8, 8],
+  /* 33 @$a773 */
+  [92, 94, 10, 3, 8, 8],
+  /* 34 @$a793 */
+  [92, 94, 10, 3, 8, 8],
+  /* 35 @$a7b3 */
+  [92, 94, 10, 3, 16, 8],
+  /* 36 @$a7eb */
+  [96, 98, 135, 4, 14, 2],
+  /* 37 @$a82c */
+  [60, 62, 0, 3, 16, 8],
+  /* 38 @$a864 */
+  [12, 14, 147, 2, 8, 16],
+  /* 39 @$a87d */
+  [70, 60, 0, 2, 6, 17],
+  /* 3a @$a891 */
+  [60, 44, 29, 2, 8, 16],
+  /* 3b @$a8a9 */
+  [58, 0, 21, 2, 14, 17],
+  /* 3c @$a8cd */
+  [96, 98, 7, 2, 8, 16],
+  /* 3d @$a8e5 */
+  [60, 62, 11, 2, 8, 16],
+  /* 3e @$a8fd */
+  [102, 94, 3, 4, 8, 0],
+  /* 3f @$a925 */
+  [60, 102, 12, 4, 16, 7],
+  /* 40 @$a96e */
+  [60, 76, 0, 4, 8, 7],
+  /* 41 @$a997 */
+  [102, 94, 3, 4, 8, 0],
+  /* 42 @$a9c0 */
+  [108, 110, 13, 2, 6, 17],
+  /* 43 @$a9d4 */
+  [52, 54, 142, 2, 6, 17],
+  /* 44 @$a9e8 */
+  [60, 62, 0, 2, 4, 18],
+  /* 45 @$a9f8 */
+  [92, 94, 34, 3, 16, 8],
+  /* 46 @$aa31 */
+  [68, 70, 16, 3, 6, 9],
+  /* 47 @$aa4b */
+  [68, 70, 16, 2, 8, 16],
+  /* 48 @$aa63 */
+  [92, 94, 6, 2, 8, 16],
+  /* 49 @$aa7c */
+  [60, 106, 11, 2, 3, 21],
+  /* 4a @$aa8a */
+  [60, 106, 0, 2, 8, 16],
+  /* 4b @$aaa2 */
+  [104, 106, 146, 2, 8, 16],
+  /* 4c @$aaba */
+  [68, 70, 16, 2, 8, 16],
+  /* 4d @$aad2 */
+  [96, 98, 150, 2, 8, 16],
+  /* 4e @$aaea */
+  [92, 94, 6, 46, 8, 95],
+  /* 4f @$ac63 */
+  [60, 106, 11, 2, 8, 16],
+  /* 50 @$ac7b */
+  [92, 94, 15, 2, 8, 16],
+  /* 51 @$ac93 */
+  [60, 62, 0, 3, 8, 8],
+  /* 52 @$acb3 */
+  [60, 106, 0, 2, 8, 16],
+  /* 53 @$accb */
+  [60, 102, 12, 4, 8, 0],
+  /* 54 @$acf3 */
+  [60, 106, 0, 2, 8, 16],
+  /* 55 @$ad0c */
+  [92, 94, 6, 4, 8, 0],
+  /* 56 @$ad34 */
+  [60, 76, 0, 4, 8, 0],
+  /* 57 @$ad5c */
+  [60, 106, 11, 2, 8, 16],
+  /* 58 @$ad74 */
+  [92, 94, 23, 4, 8, 0],
+  /* 59 @$ad9c */
+  [60, 76, 0, 4, 8, 7],
+  /* 5a @$adc4 */
+  [60, 62, 0, 4, 8, 0],
+  /* 5b @$adec */
+  [104, 106, 128, 2, 12, 16],
+  /* 5c @$ae0d */
+  [60, 62, 30, 3, 6, 9],
+  /* 5d @$ae27 */
+  [100, 102, 159, 2, 4, 18],
+  /* 5e @$ae37 */
+  [60, 62, 32, 2, 6, 17],
+  /* 5f @$ae4b */
+  [60, 2, 0, 3, 16, 8],
+  /* 60 @$ae83 */
+  [60, 2, 0, 3, 16, 8],
+  /* 61 @$aebb */
+  [60, 2, 0, 3, 8, 8],
+  /* 62 @$aedb */
+  [86, 70, 12, 2, 8, 16],
+  /* 63 @$aef3 */
+  [60, 106, 33, 2, 3, 21],
+  /* 64 @$af01 */
+  [60, 62, 16, 2, 8, 16],
+  /* 65 @$af19 */
+  [60, 62, 7, 2, 8, 16],
+  /* 66 @$af31 */
+  [6, 0, 142, 8, 4, 66],
+  /* 67 @$af5a */
+  [6, 0, 141, 8, 4, 66],
+  /* 68 @$af83 */
+  [6, 0, 143, 8, 4, 66],
+  /* 69 @$afd9 */
+  [86, 70, 16, 2, 8, 16]
 ];
 var OPENING_SCENE3_TILES = [
   0,
@@ -141581,7 +141877,6 @@ var RenderingPrimitivesService = class {
   hideOam() {
     const store = this.store;
     const shadow = store.oam.shadowOam;
-    console.log(`[hideOam] called at frame=${store.frame}`);
     for (let i = 0; i < 64; i++) {
       const base = i * 4;
       shadow[base + 0] = 248;
@@ -141728,7 +142023,7 @@ var RenderingPrimitivesService = class {
    */
   loadChrConfig(configId) {
     const store = this.store;
-    const cfg = OPENING_CHR_CONFIGS[configId & 31] ?? OPENING_CHR_CONFIGS[0];
+    const cfg = OPENING_CHR_CONFIGS[configId] ?? OPENING_CHR_CONFIGS[0];
     store.writeByte(9, 0);
     store.writeByte(10, 0);
     store.writeByte(13, 0);
@@ -141751,7 +142046,7 @@ var RenderingPrimitivesService = class {
     store.writeByte(93, v >> 8 & 255);
     store.writeByte(142, cfg[0]);
     store.writeByte(143, cfg[1]);
-    const ptr = OPENING_CHR_POINTER_TABLE[configId & 31] ?? OPENING_CHR_POINTER_TABLE[0];
+    const ptr = OPENING_CHR_POINTER_TABLE[configId] ?? OPENING_CHR_POINTER_TABLE[0];
     store.writeByte(99, ptr & 255);
     store.writeByte(100, ptr >> 8 & 255);
     if ((store.readByte(93) & 12) === 0) {
@@ -141767,7 +142062,7 @@ var RenderingPrimitivesService = class {
     } else {
       this.fillNametableRows(0, 32, 16, 32, 0);
     }
-    const stream = OPENING_TILE_STREAMS[configId & 31] ?? [];
+    const stream = OPENING_TILE_STREAMS[configId] ?? [];
     const cmd = stream.length > 1 ? stream[1] : 0;
     const param = (cmd & 31) !== 0 && stream.length > 2 ? stream[2] : 0;
     store.writeByte(98, cmd);
@@ -141950,8 +142245,67 @@ var SceneController = class {
   }
 };
 
-// src/game/prg/code/scene/SceneUtilitiesControllers.ts
-var NEXT = 2;
+// src/game/prg/code/scene/Scene0Controller.ts
+var HOLD_FRAMES = 16;
+var Scene0Controller = class extends SceneController {
+  constructor(store, input) {
+    super(store, input);
+    this.sceneId = 0;
+    this.audio = null;
+    this.phase = 0 /* Init */;
+    this.counter = 0;
+    this.prim = new RenderingPrimitivesService(store);
+  }
+  attachAudio(audio) {
+    this.audio = audio;
+  }
+  onEnter() {
+    this.prim.loadChrConfig(23);
+    this.prim.loadScene0Palettes();
+    this.prim.hideOam();
+    this.store.writeByte(91, 1);
+    this.prim.queueScene0LogoNt(0);
+    this.prim.queueScene0LogoNt(1);
+    this.prim.loadScene0Oam();
+    this.audio?.playBgm(1);
+    this.phase = 1 /* FadeIn */;
+    this.counter = 0;
+  }
+  onUpdate(_frame) {
+    const store = this.store;
+    switch (this.phase) {
+      case 1 /* FadeIn */: {
+        if (this.prim.fadeInStep()) {
+          this.phase = 2 /* Hold */;
+          this.counter = HOLD_FRAMES;
+        }
+        return void 0;
+      }
+      case 2 /* Hold */: {
+        this.counter--;
+        if (this.counter <= 0) {
+          this.phase = 3 /* FadeOut */;
+        }
+        return void 0;
+      }
+      case 3 /* FadeOut */: {
+        if (this.prim.fadeOutStep()) {
+          this.prim.clearNametable();
+          this.prim.loadSceneData(1);
+          this.phase = 4 /* Done */;
+          return 1;
+        }
+        return void 0;
+      }
+      default:
+        return 1;
+    }
+  }
+  onRender() {
+  }
+};
+
+// src/game/prg/code/scene/Scene1Controller.ts
 var Scene1Controller = class extends SceneController {
   constructor(store, input) {
     super(store, input);
@@ -141965,6 +142319,8 @@ var Scene1Controller = class extends SceneController {
     return 3;
   }
 };
+
+// src/game/prg/code/scene/Scene2Controller.ts
 var Scene2Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -141977,9 +142333,11 @@ var Scene2Controller = class extends SceneController {
     }
   }
   onUpdate(_frame) {
-    return NEXT;
+    return 2;
   }
 };
+
+// src/game/prg/code/scene/Scene3Controller.ts
 var Scene3Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -141987,29 +142345,31 @@ var Scene3Controller = class extends SceneController {
   }
   onEnter() {
     const store = this.store;
-    for (let addr = 8192; addr <= 11263; addr++) {
+    for (let addr = 8192; addr <= 10239; addr++) {
       store.writeByte(addr, 0);
     }
   }
   onUpdate(_frame) {
-    return NEXT;
+    return 4;
   }
 };
+
+// src/game/prg/code/scene/Scene4Controller.ts
 var Scene4Controller = class extends SceneController {
-  constructor() {
-    super(...arguments);
+  constructor(store, input) {
+    super(store, input);
     this.sceneId = 4;
+    this.prim = new RenderingPrimitivesService(store);
   }
   onEnter() {
-    const store = this.store;
-    for (let addr = 512; addr <= 767; addr++) {
-      store.writeByte(addr, 248);
-    }
+    this.prim.hideOam();
   }
   onUpdate(_frame) {
-    return NEXT;
+    return 5;
   }
 };
+
+// src/game/prg/code/scene/Scene5Controller.ts
 var Scene5Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -142018,9 +142378,16 @@ var Scene5Controller = class extends SceneController {
   onEnter() {
   }
   onUpdate(_frame) {
-    return NEXT;
+    const store = this.store;
+    if (store.readByte(9) === 255) {
+      store.writeByte(9, 0);
+      return void 0;
+    }
+    return 6;
   }
 };
+
+// src/game/prg/code/scene/Scene6Controller.ts
 var Scene6Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -142029,9 +142396,15 @@ var Scene6Controller = class extends SceneController {
   onEnter() {
   }
   onUpdate(_frame) {
-    return NEXT;
+    const store = this.store;
+    if (store.readByte(10) !== 0 && store.readByte(9) === 0) {
+      store.writeByte(9, 1);
+    }
+    return 7;
   }
 };
+
+// src/game/prg/code/scene/Scene7Controller.ts
 var Scene7Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -142041,9 +142414,11 @@ var Scene7Controller = class extends SceneController {
     this.store.writeByte(153, 255);
   }
   onUpdate(_frame) {
-    return NEXT;
+    return 8;
   }
 };
+
+// src/game/prg/code/scene/Scene8Controller.ts
 var Scene8Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -142053,9 +142428,11 @@ var Scene8Controller = class extends SceneController {
     this.store.writeByte(27, this.store.readByte(27) & 191);
   }
   onUpdate(_frame) {
-    return NEXT;
+    return 9;
   }
 };
+
+// src/game/prg/code/scene/Scene9Controller.ts
 var Scene9Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -142065,9 +142442,11 @@ var Scene9Controller = class extends SceneController {
     this.store.writeByte(27, this.store.readByte(27) | 64);
   }
   onUpdate(_frame) {
-    return NEXT;
+    return 10;
   }
 };
+
+// src/game/prg/code/scene/Scene10Controller.ts
 var Scene10Controller = class extends SceneController {
   constructor(store, input) {
     super(store, input);
@@ -142079,9 +142458,11 @@ var Scene10Controller = class extends SceneController {
     this.prim.loadSceneData(5);
   }
   onUpdate(_frame) {
-    return NEXT;
+    return 11;
   }
 };
+
+// src/game/prg/code/scene/Scene11Controller.ts
 var Scene11Controller = class extends SceneController {
   constructor(store, input) {
     super(store, input);
@@ -142094,14 +142475,16 @@ var Scene11Controller = class extends SceneController {
       store.writeByte(13, 0);
       store.writeByte(14, 0);
     } else {
-      this.prim.loadChrConfig(0);
+      this.prim.loadChrConfig(16);
       this.prim.loadSceneData(6);
     }
   }
   onUpdate(_frame) {
-    return NEXT;
+    return 12;
   }
 };
+
+// src/game/prg/code/scene/Scene12Controller.ts
 var Scene12Controller = class extends SceneController {
   constructor(store, input) {
     super(store, input);
@@ -142114,14 +142497,16 @@ var Scene12Controller = class extends SceneController {
       store.writeByte(13, 0);
       store.writeByte(14, 0);
     } else {
-      this.prim.loadChrConfig(0);
+      this.prim.loadChrConfig(48);
       this.prim.loadSceneData(8);
     }
   }
   onUpdate(_frame) {
-    return NEXT;
+    return 13;
   }
 };
+
+// src/game/prg/code/scene/Scene13Controller.ts
 var Scene13Controller = class extends SceneController {
   constructor(store, input) {
     super(store, input);
@@ -142129,16 +142514,16 @@ var Scene13Controller = class extends SceneController {
     this.prim = new RenderingPrimitivesService(store);
   }
   onEnter() {
-    this.prim.loadChrConfig(0);
+    this.prim.loadChrConfig(32);
     this.prim.loadSceneData(7);
   }
   onUpdate(_frame) {
-    return NEXT;
+    return 14;
   }
 };
 
-// src/game/prg/code/scene/Scene14to23Controllers.ts
-var NEXT2 = 2;
+// src/game/prg/code/scene/Scene14Controller.ts
+var NEXT = 2;
 var Scene14Controller = class extends SceneController {
   constructor(store, input) {
     super(store, input);
@@ -142172,20 +142557,21 @@ var Scene14Controller = class extends SceneController {
       }
       case 3: {
         store.writeByte(1384, 0);
-        return NEXT2;
+        return NEXT;
       }
       default:
-        return NEXT2;
+        return NEXT;
     }
   }
 };
+
+// src/game/prg/code/scene/Scene15Controller.ts
+var NEXT2 = 2;
 var Scene15Controller = class extends SceneController {
   constructor(store, input) {
     super(store, input);
     this.sceneId = 15;
-    /** 流指针：当前位置（$05E8 缓冲消费游标） */
     this.cursor = 0;
-    /** 等帧计数 */
     this.waitFrames = 0;
     this.prim = new RenderingPrimitivesService(store);
   }
@@ -142201,9 +142587,7 @@ var Scene15Controller = class extends SceneController {
     const store = this.store;
     const bufAddr = 1512;
     const count = store.readByte(bufAddr);
-    if (count === 0) {
-      return NEXT2;
-    }
+    if (count === 0) return NEXT2;
     if ((count & 128) !== 0) {
       const rep = count & 127;
       const addrHi = store.readByte(bufAddr + 1);
@@ -142229,6 +142613,9 @@ var Scene15Controller = class extends SceneController {
     }
   }
 };
+
+// src/game/prg/code/scene/Scene16Controller.ts
+var NEXT3 = 2;
 var Scene16Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -142258,9 +142645,12 @@ var Scene16Controller = class extends SceneController {
     }
   }
   onUpdate(_frame) {
-    return NEXT2;
+    return NEXT3;
   }
 };
+
+// src/game/prg/code/scene/Scene17Controller.ts
+var NEXT4 = 2;
 var Scene17Controller = class extends SceneController {
   constructor(store, input) {
     super(store, input);
@@ -142271,9 +142661,12 @@ var Scene17Controller = class extends SceneController {
     this.prim.loadChrConfig(0);
   }
   onUpdate(_frame) {
-    return NEXT2;
+    return NEXT4;
   }
 };
+
+// src/game/prg/code/scene/Scene18Controller.ts
+var NEXT5 = 2;
 var Scene18Controller = class extends SceneController {
   constructor(store, input) {
     super(store, input);
@@ -142290,9 +142683,11 @@ var Scene18Controller = class extends SceneController {
       return void 0;
     }
     this.prim.oamFlipAttrs();
-    return NEXT2;
+    return NEXT5;
   }
 };
+
+// src/game/prg/code/scene/Scene19Controller.ts
 var Scene19Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -142337,6 +142732,9 @@ var Scene19Controller = class extends SceneController {
     return void 0;
   }
 };
+
+// src/game/prg/code/scene/Scene20Controller.ts
+var NEXT6 = 2;
 var Scene20Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -142352,9 +142750,12 @@ var Scene20Controller = class extends SceneController {
       return void 0;
     }
     this.store.writeByte(1384, 0);
-    return NEXT2;
+    return NEXT6;
   }
 };
+
+// src/game/prg/code/scene/Scene21Controller.ts
+var NEXT7 = 2;
 var Scene21Controller = class extends SceneController {
   constructor(store, input) {
     super(store, input);
@@ -142365,9 +142766,12 @@ var Scene21Controller = class extends SceneController {
     this.prim.loadChrConfig(0);
   }
   onUpdate(_frame) {
-    return NEXT2;
+    return NEXT7;
   }
 };
+
+// src/game/prg/code/scene/Scene22Controller.ts
+var NEXT8 = 2;
 var Scene22Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -142384,9 +142788,7 @@ var Scene22Controller = class extends SceneController {
       this.wait--;
       return void 0;
     }
-    if (this.iter >= 128) {
-      return NEXT2;
-    }
+    if (this.iter >= 128) return NEXT8;
     const store = this.store;
     for (let i = 0; i < 256; i += 4) {
       const y = store.readByte(512 + i);
@@ -142400,6 +142802,9 @@ var Scene22Controller = class extends SceneController {
     return void 0;
   }
 };
+
+// src/game/prg/code/scene/Scene23Controller.ts
+var NEXT9 = 2;
 var Scene23Controller = class extends SceneController {
   constructor() {
     super(...arguments);
@@ -142422,62 +142827,58 @@ var Scene23Controller = class extends SceneController {
     const loNib = value & 15;
     store.writeByte(513, hiNib);
     store.writeByte(517, loNib);
-    return NEXT2;
+    return NEXT9;
   }
 };
 
 // src/game/prg/code/system/BootRouter.ts
-var SceneStubController = class extends SceneController {
-  constructor(store, input, sceneId) {
-    super(store, input);
-    this.sceneId = sceneId;
-  }
-  onEnter() {
-  }
-  onUpdate(_frame) {
-    return void 0;
-  }
-};
+var SCENE_CONTROLLERS = [
+  Scene0Controller,
+  Scene1Controller,
+  Scene2Controller,
+  Scene3Controller,
+  Scene4Controller,
+  Scene5Controller,
+  Scene6Controller,
+  Scene7Controller,
+  Scene8Controller,
+  Scene9Controller,
+  Scene10Controller,
+  Scene11Controller,
+  Scene12Controller,
+  Scene13Controller,
+  Scene14Controller,
+  Scene15Controller,
+  Scene16Controller,
+  Scene17Controller,
+  Scene18Controller,
+  Scene19Controller,
+  Scene20Controller,
+  Scene21Controller,
+  Scene22Controller,
+  Scene23Controller
+];
 var BootRouter = class {
-  constructor(store, input, scene0) {
+  constructor(store, input) {
     this.store = store;
     this.input = input;
     /** 场景控制器注册表（sceneId → controller） */
     this.scenes = /* @__PURE__ */ new Map();
     this.currentSceneId = 0 /* Scene0 */;
     this.current = null;
-    this.register(scene0 ?? new SceneStubController(this.store, this.input, 0 /* Scene0 */));
-    this.register(new Scene1Controller(this.store, this.input));
-    this.register(new Scene2Controller(this.store, this.input));
-    this.register(new Scene3Controller(this.store, this.input));
-    this.register(new Scene4Controller(this.store, this.input));
-    this.register(new Scene5Controller(this.store, this.input));
-    this.register(new Scene6Controller(this.store, this.input));
-    this.register(new Scene7Controller(this.store, this.input));
-    this.register(new Scene8Controller(this.store, this.input));
-    this.register(new Scene9Controller(this.store, this.input));
-    this.register(new Scene10Controller(this.store, this.input));
-    this.register(new Scene11Controller(this.store, this.input));
-    this.register(new Scene12Controller(this.store, this.input));
-    this.register(new Scene13Controller(this.store, this.input));
-    this.register(new Scene14Controller(this.store, this.input));
-    this.register(new Scene15Controller(this.store, this.input));
-    this.register(new Scene16Controller(this.store, this.input));
-    this.register(new Scene17Controller(this.store, this.input));
-    this.register(new Scene18Controller(this.store, this.input));
-    this.register(new Scene19Controller(this.store, this.input));
-    this.register(new Scene20Controller(this.store, this.input));
-    this.register(new Scene21Controller(this.store, this.input));
-    this.register(new Scene22Controller(this.store, this.input));
-    this.register(new Scene23Controller(this.store, this.input));
+    for (const Ctor of SCENE_CONTROLLERS) {
+      this.register(new Ctor(store, input));
+    }
   }
   /** 注册/覆盖场景控制器 */
   register(controller) {
     this.scenes.set(controller.sceneId, controller);
   }
-  /** 获取场景控制器（未注册返回 stub） */
+  /** 获取场景控制器（断言已注册 — Scene0-23 全部从 scene/index.ts 导入） */
   getController(sceneId) {
-    return this.scenes.get(sceneId) ?? new SceneStubController(this.store, this.input, sceneId);
+    const c = this.scenes.get(sceneId);
+    if (!c) throw new Error(`BootRouter.getController: sceneId=${sceneId} \u672A\u6CE8\u518C`);
+    return c;
   }
   /**
    * 切换场景：
@@ -143432,89 +143833,6 @@ var InputService = class {
   /** 语义化查询：控制器 n 某键本帧按下沿 */
   isPressed(controller, button) {
     return (this.store.readByte(controller === 1 ? 30 : 31) & button) !== 0;
-  }
-};
-
-// src/game/prg/code/scene/Scene0Controller.ts
-var Scene0Controller = class extends SceneController {
-  constructor(store, input) {
-    super(store, input);
-    this.sceneId = 0;
-    this.audio = null;
-    this.phase = 0 /* InitBlack */;
-    this.counter = 0;
-    /** FadeInNt 子步（0-15 = fade 递增进度；step0/step1 写 NT） */
-    this.fadeStep = 0;
-    this.prim = new RenderingPrimitivesService(store);
-  }
-  attachAudio(audio) {
-    this.audio = audio;
-  }
-  onEnter() {
-    this.phase = 0 /* InitBlack */;
-    this.counter = 8;
-    this.fadeStep = 0;
-    this.prim.loadChrConfig(23);
-    this.prim.loadScene0Palettes();
-    this.prim.loadSceneData(1);
-    this.store.writeByte(91, 1);
-    this.prim.hideOam();
-    this.audio?.playBgm(1);
-  }
-  onUpdate(frame) {
-    void frame;
-    const store = this.store;
-    switch (this.phase) {
-      case 0 /* InitBlack */: {
-        if (--this.counter > 0) return void 0;
-        this.phase = 1 /* FadeInNt */;
-        return void 0;
-      }
-      case 1 /* FadeInNt */: {
-        if (this.fadeStep === 0) {
-          this.prim.queueScene0LogoNt(0);
-          this.fadeStep = 1;
-          return void 0;
-        }
-        if (this.fadeStep === 1) {
-          this.prim.queueScene0LogoNt(1);
-          this.fadeStep = 2;
-          return void 0;
-        }
-        if (this.fadeStep === 2) {
-          this.prim.loadScene0Oam();
-        }
-        if (this.prim.fadeInStep()) {
-          this.phase = 2 /* Hold */;
-          this.counter = 314;
-          return void 0;
-        }
-        this.fadeStep++;
-        return void 0;
-      }
-      case 2 /* Hold */: {
-        if (--this.counter > 0) return void 0;
-        store.writeByte(91, 0);
-        this.phase = 3 /* FadeOut */;
-        return void 0;
-      }
-      case 3 /* FadeOut */: {
-        if (!this.prim.fadeOutStep()) return void 0;
-        this.prim.hideOam();
-        this.prim.clearNametable();
-        this.prim.fillNametableRows(192, 35, 2, 32, 85);
-        this.prim.loadSceneData(0);
-        store.writeByte(27, store.readByte(27) & 254);
-        store.writeByte(144, 0);
-        store.writeByte(145, 2);
-        this.phase = 4 /* Done */;
-        return 2;
-      }
-      default:
-        return void 0;
-    }
-  }
-  onRender() {
   }
 };
 
@@ -158937,7 +159255,6 @@ var Tsubasa2 = class {
     this.store = new DataStore();
     this.input = new InputService(this.store);
     this.system = new GameSystemService(this.store);
-    const scene0 = new Scene0Controller(this.store, this.input);
     const scriptLoader = new ScriptLoader(this.store);
     const scriptEngine = new ScriptEngine(this.store, scriptLoader);
     const charMap = new CharMap();
@@ -158964,8 +159281,8 @@ var Tsubasa2 = class {
     void spriteAnim;
     this.audio = new AudioService(this.store);
     this._initAudio();
-    scene0.attachAudio(this.audio);
-    this.router = new BootRouter(this.store, this.input, scene0);
+    this.router = new BootRouter(this.store, this.input);
+    this.router.getController(0 /* Scene0 */).attachAudio(this.audio);
     this.hardware = new HardwareInitService(this.store);
     this.interrupts = new InterruptService(this.store, this.input);
     this.interrupts.attachRouter(this.router);

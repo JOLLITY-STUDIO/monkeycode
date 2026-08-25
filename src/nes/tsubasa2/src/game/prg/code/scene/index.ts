@@ -8,34 +8,30 @@
 // Scene 0 (Tecmo logo 开场)
 export { Scene0Controller } from './Scene0Controller';
 // Scene 1-13 (utility chain)
-export {
-  Scene1Controller,
-  Scene2Controller,
-  Scene3Controller,
-  Scene4Controller,
-  Scene5Controller,
-  Scene6Controller,
-  Scene7Controller,
-  Scene8Controller,
-  Scene9Controller,
-  Scene10Controller,
-  Scene11Controller,
-  Scene12Controller,
-  Scene13Controller,
-} from './SceneUtilitiesControllers';
+export { Scene1Controller } from './Scene1Controller';
+export { Scene2Controller } from './Scene2Controller';
+export { Scene3Controller } from './Scene3Controller';
+export { Scene4Controller } from './Scene4Controller';
+export { Scene5Controller } from './Scene5Controller';
+export { Scene6Controller } from './Scene6Controller';
+export { Scene7Controller } from './Scene7Controller';
+export { Scene8Controller } from './Scene8Controller';
+export { Scene9Controller } from './Scene9Controller';
+export { Scene10Controller } from './Scene10Controller';
+export { Scene11Controller } from './Scene11Controller';
+export { Scene12Controller } from './Scene12Controller';
+export { Scene13Controller } from './Scene13Controller';
 // Scene 14-23 (主游戏)
-export {
-  Scene14Controller,
-  Scene15Controller,
-  Scene16Controller,
-  Scene17Controller,
-  Scene18Controller,
-  Scene19Controller,
-  Scene20Controller,
-  Scene21Controller,
-  Scene22Controller,
-  Scene23Controller,
-} from './Scene14to23Controllers';
+export { Scene14Controller } from './Scene14Controller';
+export { Scene15Controller } from './Scene15Controller';
+export { Scene16Controller } from './Scene16Controller';
+export { Scene17Controller } from './Scene17Controller';
+export { Scene18Controller } from './Scene18Controller';
+export { Scene19Controller } from './Scene19Controller';
+export { Scene20Controller } from './Scene20Controller';
+export { Scene21Controller } from './Scene21Controller';
+export { Scene22Controller } from './Scene22Controller';
+export { Scene23Controller } from './Scene23Controller';
 
 // 场景控制器基类 + 行为表
 export { SceneController } from './SceneController';

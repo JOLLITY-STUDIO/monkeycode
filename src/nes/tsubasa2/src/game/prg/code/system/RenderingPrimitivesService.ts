@@ -306,7 +306,8 @@ export class RenderingPrimitivesService {
    */
   loadChrConfig(configId: number): void {
     const store = this.store;
-    const cfg = OPENING_CHR_CONFIGS[configId & 0x1f] ?? OPENING_CHR_CONFIGS[0];
+    // ROM $8AF7 无 AND #$1F 掩码：configId×2 直读 $A000 指针表（106 项）
+    const cfg = OPENING_CHR_CONFIGS[configId] ?? OPENING_CHR_CONFIGS[0];
     store.writeByte(0x0009, 0);
     store.writeByte(0x000a, 0);
     store.writeByte(0x000d, 0);
@@ -329,7 +330,7 @@ export class RenderingPrimitivesService {
     store.writeByte(0x005d, (v >> 8) & 0xff);
     store.writeByte(0x008e, cfg[0]);
     store.writeByte(0x008f, cfg[1]);
-    const ptr = OPENING_CHR_POINTER_TABLE[configId & 0x1f] ?? OPENING_CHR_POINTER_TABLE[0];
+    const ptr = OPENING_CHR_POINTER_TABLE[configId] ?? OPENING_CHR_POINTER_TABLE[0];
     store.writeByte(0x0063, ptr & 0xFF);
     store.writeByte(0x0064, (ptr >> 8) & 0xFF);
     if ((store.readByte(0x005d) & 0x0c) === 0) {
@@ -345,7 +346,7 @@ export class RenderingPrimitivesService {
     } else {
       this.fillNametableRows(0x00, 0x20, 0x10, 0x20, 0x00);
     }
-    const stream = OPENING_TILE_STREAMS[configId & 0x1f] ?? [];
+    const stream = OPENING_TILE_STREAMS[configId] ?? [];
     const cmd = stream.length > 1 ? stream[1] : 0;
     const param = (cmd & 0x1f) !== 0 && stream.length > 2 ? stream[2] : 0;
     store.writeByte(0x0062, cmd);
