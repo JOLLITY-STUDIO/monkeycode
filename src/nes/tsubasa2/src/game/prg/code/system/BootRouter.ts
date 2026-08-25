@@ -28,8 +28,9 @@ export const enum SceneId {
   Scene22 = 22, Scene23 = 23,
 }
 
-/** Scene1-23 控制器类列表（顺序对应 sceneId），用于自动 register */
+/** Scene0-23 控制器类列表（顺序对应 sceneId），用于自动统一 register */
 const SCENE_CONTROLLERS: ReadonlyArray<new (store: DataStore, input: InputService) => SceneController> = [
+  Scene0Controller,
   Scene1Controller, Scene2Controller, Scene3Controller, Scene4Controller,
   Scene5Controller, Scene6Controller, Scene7Controller, Scene8Controller,
   Scene9Controller, Scene10Controller, Scene11Controller, Scene12Controller,
@@ -49,9 +50,7 @@ export class BootRouter {
   constructor(
     readonly store: DataStore,
     readonly input: InputService,
-    scene0: Scene0Controller,
   ) {
-    this.register(scene0);
     for (const Ctor of SCENE_CONTROLLERS) {
       this.register(new Ctor(store, input));
     }
