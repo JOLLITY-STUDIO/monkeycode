@@ -134,13 +134,27 @@ export class RenderingPrimitivesService {
     }
   }
 
-  /** 隐藏全部影子 OAM（store.oam.shaderOam / oam 写 $F8，并清零扩展表） */
+  /** 隐藏全部影子 OAM（store.oam.shaderOam / oam 写 $F8，并清零扩展表）
+   *
+   * BUG #012: 旧实现只填 y byte 字段 (i += 4 一次跳 4 字节)。
+   * 但 ROM boot DMA 实际写全 256 byte = 0xF8 (emu frame 9 dump 验证
+   *   所有 64 sprite 4 字节都是 0xF8)。改成每 sprite 4 字节都写 0xF8,
+   * 对齐 boot DMA 行为。
+   */
   hideOam(): void {
     const store = this.store;
     const shadow = store.oam.shadowOam;
-    for (let i = 0; i < 0x100; i += 4) {
-      shadow[i] = 0xf8;
-      store.writeByte(0x0200 + i, 0xf8);
+    console.log(`[hideOam] called at frame=${store.frame}`);
+    for (let i = 0; i < 64; i++) {
+      const base = i * 4;
+      shadow[base + 0] = 0xf8;
+      shadow[base + 1] = 0xf8;
+      shadow[base + 2] = 0xf8;
+      shadow[base + 3] = 0xf8;
+      store.writeByte(0x0200 + base + 0, 0xf8);
+      store.writeByte(0x0200 + base + 1, 0xf8);
+      store.writeByte(0x0200 + base + 2, 0xf8);
+      store.writeByte(0x0200 + base + 3, 0xf8);
     }
     store.writeByte(0x0568, 0);
     store.writeByte(0x0588, 0);

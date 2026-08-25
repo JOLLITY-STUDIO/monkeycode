@@ -66,6 +66,12 @@ export class Scene0Controller extends SceneController {
     this.prim.loadSceneData(1);
     this.store.writeByte(0x005b, 1);
 
+    // BUG #012 修复: f1 启动时 ROM 立即 DMA 写 PPU $02 = 0xF8×64 把 sprite 全隐藏
+    //   (emu frame 9 dump 验证 64 sprite 全 (y=248,tile=248,a=248,x=248))
+    //   这是 boot 标准 OAM 清场动作, frame 13 才被 40 sprite 替换。
+    //   不调 → frame 1-12 OAM 显示 PPU 默认未初始化 (全 0xFF) 不对齐 boot 状态。
+    this.prim.hideOam();
+
     this.audio?.playBgm(0x01);
   }
 

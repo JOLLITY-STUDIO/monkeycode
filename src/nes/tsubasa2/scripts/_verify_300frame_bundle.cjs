@@ -141571,13 +141571,27 @@ var RenderingPrimitivesService = class {
       buf[base + 3] = e.x & 255;
     }
   }
-  /** 隐藏全部影子 OAM（store.oam.shaderOam / oam 写 $F8，并清零扩展表） */
+  /** 隐藏全部影子 OAM（store.oam.shaderOam / oam 写 $F8，并清零扩展表）
+   *
+   * BUG #012: 旧实现只填 y byte 字段 (i += 4 一次跳 4 字节)。
+   * 但 ROM boot DMA 实际写全 256 byte = 0xF8 (emu frame 9 dump 验证
+   *   所有 64 sprite 4 字节都是 0xF8)。改成每 sprite 4 字节都写 0xF8,
+   * 对齐 boot DMA 行为。
+   */
   hideOam() {
     const store = this.store;
     const shadow = store.oam.shadowOam;
-    for (let i = 0; i < 256; i += 4) {
-      shadow[i] = 248;
-      store.writeByte(512 + i, 248);
+    console.log(`[hideOam] called at frame=${store.frame}`);
+    for (let i = 0; i < 64; i++) {
+      const base = i * 4;
+      shadow[base + 0] = 248;
+      shadow[base + 1] = 248;
+      shadow[base + 2] = 248;
+      shadow[base + 3] = 248;
+      store.writeByte(512 + base + 0, 248);
+      store.writeByte(512 + base + 1, 248);
+      store.writeByte(512 + base + 2, 248);
+      store.writeByte(512 + base + 3, 248);
     }
     store.writeByte(1384, 0);
     store.writeByte(1416, 0);
@@ -143037,11 +143051,11 @@ var InterruptService = class {
     const store = this.store;
     const scrollFlag = store.scene.scrollFlag;
     if ((scrollFlag & 128) !== 0) return;
-    let ctrl = store.ppuState.ctrl >> 2 & 255;
-    store.ppuState.ctrl = ctrl;
-    ctrl = (ctrl << 1 | store.readByte(69) & 1) & 255;
-    store.ppuState.ctrl = ctrl;
-    ctrl = (ctrl << 1 | store.readByte(123) & 1) & 255;
+    const savedCtrl = store.ppuState.ctrl;
+    const addrInc = savedCtrl >> 2 & 1;
+    const bit1 = store.readByte(69) & 1;
+    const bit0 = store.readByte(123) & 1;
+    const ctrl = savedCtrl & 248 | addrInc << 2 | bit1 << 1 | bit0;
     store.ppuState.ctrl = ctrl;
     ppu2.updateControlReg1(ctrl);
     const sx = store.scene.scrollX & 255;
@@ -143093,12 +143107,12 @@ var InterruptService = class {
     const entries = consumeNtBuffer(store.renderQueue);
     if (entries.length === 0) return;
     const savedMask = store.ppuState.mask;
+    const savedCtrl = store.ppuState.ctrl;
     store.ppuState.mask = 0;
     ppu2.updateControlReg2(0);
     for (const entry of entries) {
-      const ctrl = entry.vertical ? 132 : 128;
-      ppu2.updateControlReg1(ctrl);
-      store.ppuState.ctrl = ctrl;
+      const tmpCtrl = savedCtrl & ~4 | (entry.vertical ? 4 : 0) | 128;
+      ppu2.updateControlReg1(tmpCtrl);
       for (let i = 0; i < entry.data.length; i++) {
         const step = entry.vertical ? 32 : 1;
         ppu2.writeMem(entry.ntAddr + i * step & 16383, entry.data[i]);
@@ -143106,7 +143120,9 @@ var InterruptService = class {
     }
     store.renderQueue.setNtBufferPos(0);
     store.ppuState.mask = savedMask;
+    store.ppuState.ctrl = savedCtrl;
     ppu2.updateControlReg2(savedMask);
+    ppu2.updateControlReg1(savedCtrl | 128);
   }
   /**
    * 第一渲染队列消费（LIFO，每帧消费队尾一项）
@@ -143405,8 +143421,8 @@ var InputService = class {
         if (state[i] === 65) cur |= 1 << i;
       }
       const prev = store.readByte(26 + x);
-      store.writeByte(28 + x, cur);
-      store.writeByte(30 + x, cur & ~prev);
+      store.writeByte(27 + x, cur);
+      store.writeByte(29 + x, cur & ~prev);
     }
   }
   /** 语义化查询：控制器 n（1/2）某键是否按下 */
@@ -143442,6 +143458,7 @@ var Scene0Controller = class extends SceneController {
     this.prim.loadScene0Palettes();
     this.prim.loadSceneData(1);
     this.store.writeByte(91, 1);
+    this.prim.hideOam();
     this.audio?.playBgm(1);
   }
   onUpdate(frame) {
@@ -161262,7 +161279,7 @@ function dumpOam() {
       idx: i,
       y: ppu.sprY[i],
       tile: ppu.sprTile[i],
-      attr: ppu.sprCol[i] | (ppu.vertFlip[i] ? 128 : 0) | (ppu.horiFlip[i] ? 64 : 0) | (ppu.bgPriority[i] ? 32 : 0),
+      attr: ppu.spriteMem[i * 4 + 2] & 255,
       x: ppu.sprX[i]
     });
   }

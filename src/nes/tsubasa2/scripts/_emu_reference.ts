@@ -24,7 +24,7 @@ import {
 // ── 路径常量 ──
 const ROM_PATH = path.join(__dirname, '..', 'docs', 'roms', 'Captain Tsubasa II - Super Striker (Japan).nes');
 const OUT_DIR  = path.join(__dirname, '..', 'output', 'emu-reference');
-const FRAMES   = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
+const FRAMES   = [1, 5, 9, 13, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
 
 // ── PNG 编码器（同 _verify_300frame.ts）──
 const CRC_TABLE: number[] = (() => {

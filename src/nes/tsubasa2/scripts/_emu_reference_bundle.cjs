@@ -3420,6 +3420,7 @@ var PPU = class {
   // Checks for non-transparent sprite pixel overlapping non-transparent BG pixel,
   // excluding x=255 and left-clipped pixels (x=0..7 when leftClip is true).
   _checkSpr0Pixels(tile, toffset, startX, horiFlip, scan, leftClip) {
+    if (!tile || !tile.pix) return false;
     let bufferIndex = scan * 256 + startX;
     for (let px = 0; px < 8; px++) {
       let tileIdx = horiFlip ? 7 - px : px;
@@ -8352,7 +8353,7 @@ try {
 init_pattern_table_viewer();
 var ROM_PATH = path.join(__dirname, "..", "docs", "roms", "Captain Tsubasa II - Super Striker (Japan).nes");
 var OUT_DIR = path.join(__dirname, "..", "output", "emu-reference");
-var FRAMES = [30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
+var FRAMES = [1, 5, 9, 13, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300];
 var CRC_TABLE = (() => {
   const t = new Array(256);
   for (let n = 0; n < 256; n++) {

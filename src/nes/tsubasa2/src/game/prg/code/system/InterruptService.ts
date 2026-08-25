@@ -184,11 +184,13 @@ export class InterruptService {
     const store = this.store;
     const scrollFlag = store.scene.scrollFlag;
     if ((scrollFlag & 0x80) !== 0) return;
-    let ctrl = (store.ppuState.ctrl >> 2) & 0xff;
-    store.ppuState.ctrl = ctrl;
-    ctrl = ((ctrl << 1) | (store.readByte(0x0045) & 1)) & 0xff;
-    store.ppuState.ctrl = ctrl;
-    ctrl = ((ctrl << 1) | (store.readByte(0x007b) & 1)) & 0xff;
+    // 仅更新 CTRL bit0/1（nametable select）与保留 bit2（addrInc）/bit3+（pattern table 等）。
+    // 原实现把 ctrl 右移/左移会清掉 bit3+，导致 spPatternTable 丢失 → sprite 图案错。
+    const savedCtrl = store.ppuState.ctrl;
+    const addrInc = (savedCtrl >> 2) & 1;
+    const bit1 = store.readByte(0x0045) & 1;
+    const bit0 = store.readByte(0x007b) & 1;
+    const ctrl = (savedCtrl & 0xf8) | (addrInc << 2) | (bit1 << 1) | bit0;
     store.ppuState.ctrl = ctrl;
     ppu.updateControlReg1(ctrl);
     const sx = store.scene.scrollX & 0xff;
@@ -243,12 +245,15 @@ export class InterruptService {
     const entries = consumeNtBuffer(store.renderQueue);
     if (entries.length === 0) return;
     const savedMask = store.ppuState.mask;
+    const savedCtrl = store.ppuState.ctrl;        // 保存完整 CTRL（含 spPatternTable/bit3）
     store.ppuState.mask = 0;
     ppu.updateControlReg2(0);
     for (const entry of entries) {
-      const ctrl = entry.vertical ? 0x84 : 0x80;
-      ppu.updateControlReg1(ctrl);
-      store.ppuState.ctrl = ctrl;
+      // NT 写入阶段只需临时切换地址增量模式（bit2）与保持 NMI（bit7），
+      // 不得覆盖 store.ppuState.ctrl —— 否则 spPatternTable/bit3 丢失，
+      // sprite 8x8 模式会从 $0000（BG pattern table）取图案而渲染错误。
+      const tmpCtrl = (savedCtrl & ~0x04) | (entry.vertical ? 0x04 : 0) | 0x80;
+      ppu.updateControlReg1(tmpCtrl);
       for (let i = 0; i < entry.data.length; i++) {
         const step = entry.vertical ? 32 : 1;
         ppu.writeMem((entry.ntAddr + i * step) & 0x3fff, entry.data[i]);
@@ -256,11 +261,10 @@ export class InterruptService {
     }
     store.renderQueue.setNtBufferPos(0);
     store.ppuState.mask = savedMask;
-    // ⚠ 必须同步恢复 PPU 内部 mask（updateControlReg2 才更新 f_bgVisibility/
-    //   f_spVisibility）。只恢复 store 状态会让渲染永久禁用——
-    //   实测 f9-f25 消费 NT/palette 缓冲后 bgVis/spVis=0 → composite 黑屏，
-    //   f30 无 NT 消费才意外恢复（旧 bug）。
+    store.ppuState.ctrl = savedCtrl;
+    // ⚠ 必须同步恢复 PPU 内部状态（只恢复 store 会让渲染永久禁用）
     ppu.updateControlReg2(savedMask);
+    ppu.updateControlReg1(savedCtrl | 0x80);    // renderCommit 第 8 步会再置 NMI
   }
 
   /**

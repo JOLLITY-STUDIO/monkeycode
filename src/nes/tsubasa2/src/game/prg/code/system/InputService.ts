@@ -50,8 +50,11 @@ export class InputService {
         if (state[i] === 0x41) cur |= 1 << i;
       }
       const prev = store.readByte(0x001a + x); // 001C(1)/001D(2)
-      store.writeByte(0x001c + x, cur);
-      store.writeByte(0x001e + x, cur & ~prev);
+      // 控制器1: 当前 $001C / 沿 $001E；控制器2: 当前 $001D / 沿 $001F
+      // ⚠ 旧实现 0x001c+x / 0x001e+x 整体错位 +1：
+      //   x=2 时沿写到 $0020 踩掉 PPU CTRL（bit3 spPatternTable 丢失 → sprite 图案错乱）
+      store.writeByte(0x001b + x, cur);
+      store.writeByte(0x001d + x, cur & ~prev);
     }
   }
 
