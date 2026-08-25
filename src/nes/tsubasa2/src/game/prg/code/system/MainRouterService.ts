@@ -24,6 +24,7 @@
  */
 import type { DataStore } from '../../data/store/DataStore';
 import type { SceneController } from '../scene/SceneController';
+import type { Bank00SchedulerService } from './Bank00SchedulerService';
 
 /**
  * Status mode（PRG $0027 状态字节 0..4 翻译）
@@ -57,6 +58,12 @@ export class MainRouterService {
 
   /** 当前 scene 控制器引用 — 直接 dispatch callback */
   private currentScene: SceneController | null = null;
+
+  /** bank00 scheduler（由 Tsubasa2 boot() 注入；PRG $9FA8 pushState 翻译） */
+  private scheduler: Bank00SchedulerService | null = null;
+
+  /** boot intro 等待帧计数 — 由 mode 0 派发时自检（PRG $9FA8 等帧翻译） */
+  private bootIntroFrameCounter: number = 0;
 
   constructor(readonly store: DataStore) {}
 
@@ -218,5 +225,40 @@ export class MainRouterService {
 
   getCurrentScene(): SceneController | null {
     return this.currentScene;
+  }
+
+  /** 注入 bank00 scheduler（PRG $9FA8 翻译） */
+  attachScheduler(scheduler: Bank00SchedulerService): void {
+    this.scheduler = scheduler;
+  }
+
+  /**
+   * Boot intro 等帧（PRG $9FA8 pushState wait N 帧 — intro mode 0 path）。
+   *
+   * 用 scheduler 派发 timer 帧后 callback，替代 ROM 自减循环。
+   *
+   * @param timer 等待帧数
+   * @param onArrived callback 抵达后执行
+   */
+  waitIntroFrames(timer: number, onArrived: () => void): number {
+    this.bootIntroFrameCounter = timer & 0xff;
+    if (!this.scheduler) {
+      // fallback: 立即调 callback
+      onArrived();
+      return -1;
+    }
+    return this.scheduler.pushState({
+      aReg: 0,
+      xReg: 0,
+      yReg: this.bootIntroFrameCounter,
+      timer: this.bootIntroFrameCounter,
+      priority: 0,
+      callback: () => { this.bootIntroFrameCounter = 0; onArrived(); },
+    });
+  }
+
+  /** Boot intro 等待剩余帧数（debug 视图） */
+  getBootIntroFrameCounter(): number {
+    return this.bootIntroFrameCounter;
   }
 }

@@ -14,6 +14,7 @@ import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from './InputService';
 import { MainRouterService, StatusMode } from './MainRouterService';
 import { PpuTransferService } from './PpuTransferService';
+import type { Bank00SchedulerService } from './Bank00SchedulerService';
 import {
   SceneController,
   Scene0Controller,
@@ -83,6 +84,19 @@ export class BootRouter {
   }
 
   /**
+   * 注入 bank00 scheduler（PRG $9FA8 pushState 翻译）。
+   * 由 Tsubasa2 boot() 调用，让内部 MainRouterService 也能用 scheduler
+   * 推进 boot intro 等帧。
+   */
+  attachBank00Scheduler(scheduler: Bank00SchedulerService): void {
+    // 同时把 scheduler 注入 MainRouterService，让 MainRouterService.waitIntroFrames()
+    // 能 pushState（PRG $9FA8 完整接通）
+    (this.mainRouter as unknown as { scheduler: Bank00SchedulerService }).scheduler = scheduler;
+  }
+
+  private scheduler: Bank00SchedulerService | null = null;
+
+  /**
    * 自动注册 5 entry dispatcher actions（PRG $800D-$8014 翻译）。
    *
    * 每条 action 调对应的 PRG 段语义抽象方法（替代原 GameSystemService.update() 中
@@ -106,6 +120,10 @@ export class BootRouter {
       store.writeByte(0x0026, step);
       // 错位自检：若 $0026 跨越 $00E4 cap，则需要 scene 切换；
       // 当前 stub 模式：仅写 $0026 让 Scene controller 据此推进
+
+      // Boot intro 等帧 path（PRG $9FA8 pushState 翻译）：
+      // 进入 boot intro 时 MainRouterService.waitIntroFrames(timer) 入队；
+      // mode 0 派发时不主动清 counter，让 scheduler tickDispatch 自动推进
     });
     // mode 1 — 计时比较 ($0028 > $0029) → mainLoopStep
     this.mainRouter.registerDispatchAction(1 as StatusMode, () => {

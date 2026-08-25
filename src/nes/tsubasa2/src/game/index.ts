@@ -148,6 +148,10 @@ export class Tsubasa2 {
     // changeScene() 自动装 cfg（替代 GameSystemService.sceneLoad 硬编码 stub 表）
     this.router.attachPpuTransfer(this.ppuTransfer);
 
+    // 注入 bank00 scheduler 到 BootRouter（PRG $9FA8 pushState 翻译）
+    // BootRouter 转发到 MainRouterService.waitIntroFrames() 派发 boot intro 等帧
+    this.router.attachBank00Scheduler(this.bank00Scheduler);
+
     // 音频注入（场景 0 BGM/SE 播放 — BootRouter 默认已注册 Scene0Controller 实例）
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachAudio(this.audio);
 

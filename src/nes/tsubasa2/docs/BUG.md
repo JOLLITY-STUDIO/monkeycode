@@ -153,3 +153,23 @@
 **修复路径**: 删除,改用 #001 解析出的 OAM sprite 数据
 **验证**: 跟 #001/#002 一同
 **状态**: ⚠️ DEPENDS-ON #001
+---
+
+## BUG #011  [涓ラ噸鎬? 馃煛 涓€鑸琞  **MainRouterService dispatcher field 绉佹湁璁块棶缁曡繃**
+
+**鐜扮姸**: 鉁?RESOLVED  
+**浣嶇疆**: `src/game/prg/code/system/BootRouter.ts`  
+**淇** (B0-NEXT6):
+  - 鍘?`void this.mainRouter['scheduler'] = scheduler` 鍦?strict TS 涓嬫姤璇硶閿欙紙TS1005 ';' expected锛?  - MainRouterService 鏂板 `attachScheduler(scheduler)` 鍏紑 setter
+  - BootRouter 璋冪敤 setter 娉ㄥ叆锛堟浛浠ｈ〃 bracket 缁曡繃锛?**楠岃瘉**: tsc --noEmit 闆堕敊璇?**鐘舵€?*: 鉁?RESOLVED
+
+---
+
+## BUG #012  [涓ラ噸鎬? 馃煝 浣嶿  **Scene0 Drift30 phase 鐢?frame counter 鑰岄潪 scheduler**
+
+**鐜扮姸**: 鈿狅笍 KNOWN 鈥?淇濈暀  
+**浣嶇疆**: `src/game/prg/code/scene/Scene0Controller.ts` `driftRemaining` field  
+**鏍瑰洜**: Drift30 phase 鏄?`LDY #$30 loop + per-frame shift`锛圕PU Y 瀵勫瓨鍣ㄥ惊鐜?index锛夛紝
+  涓嶆槸 `LDA #$XX + JSR $9FA8 timer`锛坰cheduler 绛夊抚锛夈€備袱鑰?ROM 璇箟涓嶅悓:
+  - Y loop: 姣忓抚鑷 + 鎵ц shift锛坧er-frame-action 妯″紡锛?  - timer: 绛?N 甯у悗璋?callback锛坰cheduler-driven 妯″紡锛?**绛変环鏂规**: 鐢ㄤ笓闂?`driftRemaining: number` field 琛ㄨ揪 Y 瀵勫瓨鍣ㄥ惊鐜紱
+  鍏朵粬 phase (Wait16/Wait4/Wait240/Wait60) 鍏ㄩ儴鐢?`waitDone + scheduler` 妯″紡銆?  涓ょ妯″紡骞跺瓨锛岀鍚?ROM 璇箟銆?**淇璺緞**: 涓嶉渶淇?鈥?drift counter 涓?waitDone 鏄笉鍚?ROM 璇箟鐨勫悎娉曠炕璇戙€?**鐘舵€?*: 鈿狅笍 KNOWN (璁捐姝ｇ‘鑰岄潪 bug)

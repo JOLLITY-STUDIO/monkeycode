@@ -1641,4 +1641,82 @@ $9FE2: JMP $9EFB (jmp scheduler)
 
 ---
 
+## 附录 C: Phase-2 落地状态 (2026-08-26)
+
+**里程碑**: bank00 反汇编→H5 TypeScript 翻译 phase-2 完成 (commits `2071e338`/`b1045456`/`e8329245`/`1199317d`/`8c79ea73`)
+
+### C.1 已落地 Service 清单
+
+| 服务类 | 对应 PRG | 文件 | 状态 |
+|---|---|---|---|
+| `Bank00SchedulerService` | `$9EEF-$9FA8` (6-slot dispatcher) | `code/system/Bank00SchedulerService.ts` | ✅ stub + 端到端打通 |
+| `PpuTransferService` | `$8464` cfg loader + `$96A1-$98EC` PPU | `code/system/PpuTransferService.ts` | ✅ stub + BootRouter 集成 |
+| `MainRouterService` | `$8000-$8282` dispatcher + boot | `code/system/MainRouterService.ts` | ✅ stub + 5 entry 实装 |
+| `NtStreamLoaderService` | `$82ED-$8381` NT stream parser | `code/system/NtStreamLoaderService.ts` | ✅ stub + Scene0 集成 |
+| `SceneStateMachine` | `$8AF7-$8EEF` scene handler | `code/system/SceneStateMachine.ts` | ✅ stub + Scene0 集成 |
+| `TileBuilderService` | `$88CA-$8AB2` tile constructor | `code/system/TileBuilderService.ts` | ✅ stub + Scene0/18 集成 |
+| `SceneController` 基类 | `$9FA8` pushState 翻译 | `code/scene/SceneController.ts` | ✅ `attachScheduler` + `scheduleAfter` |
+
+### C.2 已删除 dead code
+
+| 文件 | 原因 | commit |
+|---|---|---|
+| `GameSystemService.ts` | 零 caller + BootRouter.dispatchByMode 替代 | `b1045456` |
+| `RenderingPrimitivesService.oamDrift/oamFlipAttrs` | 改用 TileBuilderService | `2071e338` |
+| `GameSystemService.sceneLoad` 硬编码 stub 表 | 委托 PpuTransferService.loadCfgBlock | `b1045456` |
+| `Tsubasa2.system/mainRouter/tileBuilder` 字段 | 下沉到 BootRouter 持有 | `b1045456` |
+| Scene0 手写 `this.counter` (8 处) | 改为 `waitDone` + scheduler | `8c79ea73` |
+
+### C.3 Routine ↔ Service 覆盖矩阵（phase-2 后）
+
+| 计数 | 状态 | PRG 入口 | 说明 |
+|---|---|---|---|
+| **30+** | ✅ 已锚 | `$8000/$9EEF/$9F4F/$9F69/$9FA8/$9085/$9A0D/$9A35/$88CA/$88FB/$890C/$89A3/$8A14/$8A91/$9037/$903D/$907D/$909E/$9B07/$9B11/$9AB8/$9A35/$9B7F/$9ADA/$9BA0/$9B28/$9BF2/$9C4B` 等 | Service + Counter 改造完成 |
+| 4 | 🔄 部分 | `$9FA8 pushState` call paths | 调度器等待 callback 仍保留 fallback |
+| ~30 | ⬜ 未锚 | `$806A/$80A1/$8267/$8290/$82B5-$82EC/$83A8-$845E/$8546 jump table/$86C6 jump table/$88D2/$8920/$8E15-$8EF0/$9691 jump table/$98A0/$98EC/$9B57/$9B7F/$9C06-$9D9E/$9EA2` 等 | 已 stub 或待 P1-P4 翻译 |
+
+### C.4 Scene 接入 scheduler 状态（2026-08-26）
+
+| Scene | counter/wait 模式 | 翻译模式 | status |
+|---|---|---|---|
+| Scene0 | 8 处 counter → waitDone + scheduler + driftRemaining | ✅ | ✅ |
+| Scene15 | wait=1 RLE 项 | `scheduleAfter(1)` | ✅ |
+| Scene18 | wait=2 | `scheduleAfter(2)` | ✅ |
+| Scene19 | iter + wait 循环 0x40 次 | `scheduleAfter(1)` | ✅ |
+| Scene20 | wait=1 | `scheduleAfter(1)` | ✅ |
+| Scene22 | iter + wait 循环 0x80 次 | `scheduleAfter(1)` | ✅ |
+| Scene23 | wait=6 | `scheduleAfter(6)` | ✅ |
+| Scene1-14/16/17/21 | 无 counter/wait（简单 scene） | N/A | ✅（scheduler 字段已注入） |
+
+### C.5 主循环调度链路（落地后）
+
+```
+Tsubasa2.frame(target)
+    ↓
+interrupts.nmi(frame)
+    ├─ input.readControllers()
+    ├─ audio.update()
+    ├─ router.update(frame)
+    │   ├─ Scene0-23.onUpdate()
+    │   │   └─ scheduleAfter(timer, cb) → Bank00SchedulerService.pushState()
+    │   ├─ mainRouter.dispatchByMode($0027)
+    │   │   ├─ mode 0: $0026 += 1 (intro 等帧)
+    │   │   ├─ mode 1/3: timer 比较 → mainLoopStep
+    │   │   ├─ mode 2: 立即 mainLoopStep
+    │   │   └─ mode 4: fade cfg 0x60 + 清 $0027
+    │   └─ (注: changeScene → ppuTransfer.loadCfgBlock(sceneId))
+    └─ bank00Scheduler.tickDispatch()  ← pushState callback 抵达
+```
+
+### C.6 后续路线预告
+
+- **B1-MAIN**: bank02-A 中心场景 (Scene3 → Scene16-23 → match enter) 翻译
+- **B1-AUDIO**: bank14 + bank6 audio engine 翻译
+- **B1-SPRITE**: bank6 sprite/animation + OAM 装载链
+- **B1-MATCH**: bank19 + bank29 match logic (player move / turn / aux)
+- **B1-OPEN**: bank6 opening / logo / title screen 完整逐指令
+
+
+---
+
 > **总结**: bank00 是 captain-tsubasa-2 的 **主 dispatcher + utility + scheduler tail bank**. 装机后 R6=0, 因此常驻. 它包含 6-slot timer dispatcher 的关键 tail (`$9EEF-$9FA8`)、scene 数据装载 (`$8AF7-$8EEF`)、NT stream parser (`$8464-$8879`)、PPU transfer (`$96A1-$9979`)、tile / sprite 渲染 (`$88CA-$968F`)、数学 helpers (`$9DEE-$9EA0`) 和大量数据表 (`$8000-$9EA0` 区间内 13 个). H5 已 anchor 大约 26 个 routine, 还有 47 个待 anchor. 优先落地 `SchedulerService` + `NtStreamLoaderService` + `PpuTransferService` 是 boot 路径的硬要求.
