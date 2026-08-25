@@ -4,7 +4,6 @@
  * 按业务域导出 Service，外部只能通过本文件访问 code 层。
  */
 // system
-export { GameSystemService } from './system/GameSystemService';
 export { BootRouter, SceneId } from './system/BootRouter';
 export { HardwareInitService } from './system/HardwareInitService';
 export { InterruptService } from './system/InterruptService';

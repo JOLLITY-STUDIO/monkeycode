@@ -36,6 +36,8 @@
 import { SceneController } from './SceneController';
 import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
 import { TileBuilderService } from '../system/TileBuilderService';
+import type { NtStreamLoaderService } from '../system/NtStreamLoaderService';
+import type { SceneStateMachine } from '../system/SceneStateMachine';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
@@ -66,6 +68,8 @@ export class Scene0Controller extends SceneController {
   readonly sceneId = 0;
   private readonly prim: RenderingPrimitivesService;
   private readonly tileBuilder: TileBuilderService;
+  private ntStreamLoader: NtStreamLoaderService | null = null;
+  private sceneStateMachine: SceneStateMachine | null = null;
   private audio: AudioService | null = null;
   private phase = Phase.Init;
   private counter = 0;
@@ -78,6 +82,22 @@ export class Scene0Controller extends SceneController {
 
   attachAudio(audio: AudioService): void {
     this.audio = audio;
+  }
+
+  /**
+   * 注入 bank00 NT 流装载器（PRG $82ED 翻译）。
+   * 由 Tsubasa2.boot() 在 BootRouter 构造之后调用。
+   */
+  attachNtStreamLoader(nt: NtStreamLoaderService): void {
+    this.ntStreamLoader = nt;
+  }
+
+  /**
+   * 注入 bank00 scene 状态机（PRG $8AF7 翻译）。
+   * 由 Tsubasa2.boot() 在 BootRouter 构造之后调用。
+   */
+  attachSceneStateMachine(sm: SceneStateMachine): void {
+    this.sceneStateMachine = sm;
   }
 
   onEnter(): void {
@@ -134,6 +154,15 @@ export class Scene0Controller extends SceneController {
         store.writeByte(0x005b, 0);
         store.writeByte(0x007b, 0);
         prim.loadChrConfig(0x17);
+        // PRG $8AF7 翻译 — 由 SceneStateMachine.loadHandler 处理 handler 配置
+        if (this.sceneStateMachine) {
+          this.sceneStateMachine.loadHandler(0x17);
+        }
+        // PRG $82ED 翻译 — 由 NtStreamLoaderService.parseSceneStream 解析 cfg=0x17 的 6-byte entry 流
+        if (this.ntStreamLoader) {
+          const entries = this.ntStreamLoader.parseSceneStream(0x17);
+          this.ntStreamLoader.applyEntries(entries);
+        }
         // $0049 是 ROM loadChrConfig 链（$90FF）的副产品：CHR 指针表项数据首字节。
         // emu 实证 loadChrConfig(0x17) 后 $0049=9 → OPENING_SPR_PALETTES[9]（$9A35 消费）。
         store.writeByte(0x0049, 0x09);

@@ -17,7 +17,6 @@ import { HEADER, CONFIG, Mirroring } from './header';
 import { NES_CHR_ROM, CHR_BANKS, CHR_BANK_SIZE, CHR_BANK_COUNT } from './chr/index';
 import {
   DataStore,
-  GameSystemService,
   BootRouter,
   SceneId,
   HardwareInitService,
@@ -25,10 +24,8 @@ import {
   InputService,
   Bank00SchedulerService,
   PpuTransferService,
-  MainRouterService,
   NtStreamLoaderService,
   SceneStateMachine,
-  TileBuilderService,
   Scene0Controller,
   ScriptEngine,
   ScriptLoader,
@@ -65,7 +62,6 @@ export { DataStore };
  */
 export class Tsubasa2 {
   readonly store: DataStore;
-  readonly system: GameSystemService;
   readonly router: BootRouter;
   readonly interrupts: InterruptService;
   readonly input: InputService;
@@ -74,12 +70,11 @@ export class Tsubasa2 {
   readonly audio: AudioService;
   readonly sprite: SpriteService;
   // bank00 6 个新 Service（组合根实例化）
+  // 注: MainRouterService 由 BootRouter 内部持有（Tsubasa2 不暴露，避免外部滥用）
   readonly bank00Scheduler: Bank00SchedulerService;
   readonly ppuTransfer: PpuTransferService;
-  readonly mainRouter: MainRouterService;
   readonly ntStreamLoader: NtStreamLoaderService;
   readonly sceneStateMachine: SceneStateMachine;
-  readonly tileBuilder: TileBuilderService;
 
   /** 帧计数（NMI 帧号） */
   protected _frame = 0;
@@ -95,24 +90,20 @@ export class Tsubasa2 {
   constructor() {
     this.store = new DataStore();
     this.input = new InputService(this.store);
-    this.system = new GameSystemService(this.store);
 
-    // bank00 翻译服务（组合根实例化，stub 阶段）
+    // bank00 翻译服务（组合根实例化）
     // PRG $9EEF-$9FA8 scheduler tail / $9FA8 push trampoline / $9085 tick entry
     this.bank00Scheduler = new Bank00SchedulerService(this.store);
     // PRG $8464 cfg loader（多 bank 装载） — 注意 PpuTransferService 需要 PPU target，
     // 此时 target 还未 attach（boot() 时按需 attach），可选 null
     this.ppuTransfer = new PpuTransferService(this.store, null);
-    // PRG $8000 dispatcher table / $801F Start button spin / $8053 boot logo
-    this.mainRouter = new MainRouterService(this.store);
     // PRG $82ED NT stream loader
     this.ntStreamLoader = new NtStreamLoaderService(this.store, this.ppuTransfer);
     // PRG $8AF7 scene handler loader + $8E15 NT copy/tile decoder
     this.sceneStateMachine = new SceneStateMachine(this.store, this.ppuTransfer);
-    // PRG $88CA-$8AB2 tile constructor + $88FB/$890C/$89A3 oam 操作
-    this.tileBuilder = new TileBuilderService(this.store, this.ppuTransfer);
+    // 注: TileBuilderService 由 Scene0/Scene18 内部自建（Tsubasa2 不暴露）
 
-    // 场景控制器（BootRouter 自动统一 register Scene0-23）
+    // 场景控制器（BootRouter 自动统一 register Scene0-23；BootRouter 内部持有 MainRouterService）
 
     // 剧情脚本（V0.4 接入）
     const scriptLoader = new ScriptLoader(this.store);
@@ -155,6 +146,11 @@ export class Tsubasa2 {
 
     // 音频注入（场景 0 BGM/SE 播放 — BootRouter 默认已注册 Scene0Controller 实例）
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachAudio(this.audio);
+
+    // bank00 scene state machine + NT stream loader 注入 Scene0
+    // （PRG $8AF7 scene handler loader + $82ED NT stream loader）
+    (this.router.getController(SceneId.Scene0) as Scene0Controller).attachNtStreamLoader(this.ntStreamLoader);
+    (this.router.getController(SceneId.Scene0) as Scene0Controller).attachSceneStateMachine(this.sceneStateMachine);
 
     // 硬件初始化 + 中断管线
     this.hardware = new HardwareInitService(this.store);
