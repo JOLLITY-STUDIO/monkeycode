@@ -13,8 +13,49 @@
 | `docs/roms/tecmo/strippeddataframe13.nes` | 6-13 | NES ROM | f13 状态 ROM |
 | `docs/roms/opening-all/opening-all.log` | 6-4355 | 00,01,06,0F | 全 boot+开场 |
 | `docs/roms/openging-skip-to-title/press-start-to-title.log` | 3302-3375 | 00,01,06 | **NEW**: 按下 START 后跳转（73 帧截取，停在 PPU bulk 写中途） |
-| `docs/roms/openging-skip-to-title/title-kick-off.log` | NEW |  | 标题画面 kickoff（即新 trace） |
-| `docs/roms/openging-skip-to-title/title-kick-off-to-meeting.log` | NEW |  | 标题画面 → 比赛开球（即新 trace） |
+## 2.5 **标题画面 → 比赛开球**链路（`title-kick-off-to-meeting.log` F51316-F62431 实证）
+
+### 2.5.1 trace 元信息
+- **TOTAL**: 201078 lines, **range**: F51316..62431 (4065 帧 ≈ 67s)
+- 覆盖"用户在标题画面按 START → 比赛开球"完整链路
+- **重要发现**: trace 不含 `$2000`/`$2001`/`$0026`/`$0027` 写入（PPU 模式/状态切换在更早 trace 已发生）
+
+### 2.5.2 关键事件表
+
+| Frame | Bank (asm) | PC | 行为 |
+|---|---|---|---|
+| F51316-F51325 | bank00 | `$00:9AA3: BD A2 9E LDA $9EA2,X` | **Capcom logo 重放** OAM unpack（连续 9 帧） |
+| F51334-F51341 | **bank02** | `$01:A039: STA $2007 = #$XX` | **标题 tile 装载 PPU bulk write**（280 次确认，全在 bank02） |
+| F51339 | bank00 | `$00:9051: AND #$20` | **按键状态读取** |
+| F51350-F52418 | bank00+06 | `$9F06/$9ED`/$`6:8002` | 标题 idle（vsync + audio 主循环） |
+| **F52419** | **bank00** | `$00:9F3C-$9FA8` | **scheduler tick 首次调用**（MainRouterService.dispatchByMode 实证触发） |
+| **F52421** | **bank12 audio** | `$06:8241: LDY #$06` | **meeting 启动**（音频 + 场景切换） |
+| F52450-F53500 | bank06 audio | `$06:8119: DEC $F3` | 比赛开场动画（audio timer 主导） |
+
+### 2.5.3 关键发现
+
+1. **`$2007` PPU 写入 280 次，全部 bank02** → 标题 tile 装载 100% bank02 工作（不是 bank00/06/dispatcher 触发）
+2. **`$9FA8` scheduler tick 首次出现在 F52419** → scheduler 是 title→meeting 切换的实际调度器（不是 BootRouter.changeScene）
+3. **`$06:8241` 是 meeting kickoff 启动点**（bank12 audio 在 F52421 触发）
+4. **该 trace 没有 `$2000`/`$2001` 写入** → PPU 模式（$2000=$89 enable）已在更早 press-start trace 中完成
+5. **Capcom logo OAM 装载**在 51316（远晚于 boot）也出现 → 这个 routine (`$9AA3`) 是**复用的 sprite 装载器**，被多种 sprite 场景使用
+
+### 2.5.4 ❌ 校正：用户问"是不是 sceneId=2 触发标题屏幕"
+
+答案明确：**不是**。
+- `SceneTable.ts:33-36` 显示 Scene2 是"清精灵扩展表；返回 2"（**hub 占位 do-nothing**）
+- 所有 scene 14/15/16/18/19/20/22/23 都"返回 2"，因为 Scene2 是 hub
+- 标题屏幕实际触发 = `MainRouterService.dispatchByMode(N)`（PRG `$0027`），具体 mode 待定
+
+### 2.5.5 **修正 H5 实现路径**（已 commit `e19a99e1`）
+
+- ❌ `BootRouter.changeScene(sceneId=2)` 用于标题屏幕 —— 错
+- ❌ `sceneId=2 = 标题屏幕` —— 错（这是 hub）
+- ✅ 标题屏幕触发 = `MainRouterService.dispatchByMode(mode=N)`
+- ✅ 标题 tile 装载实际发生在 **bank02 PPU bulk-write** (`$01:A01B-$A17F`)
+- ✅ title→meeting 调度 = `Bank00SchedulerService.tick` (mode N)
+
+---
 
 ---
 
