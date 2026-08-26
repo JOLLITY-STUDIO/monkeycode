@@ -44,9 +44,8 @@ function garr(blk, k) {
   return '[]';
 }
 
-const nesFrame = parseInt(process.argv[2] || '1960', 10);
-const START = parseInt(process.argv[3] || nesFrame, 10);
-const END = parseInt(process.argv[4] || nesFrame, 10);
+const START = parseInt(process.argv[2] || '1960', 10);
+const END = parseInt(process.argv[3] !== undefined ? process.argv[3] : START, 10);
 for (const blk of out) {
   const f = parseInt(blk.match(/f:(\d+)/)?.[1] || '0');
   if (f >= START && f <= END) {
