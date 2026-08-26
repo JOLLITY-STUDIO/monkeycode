@@ -54,7 +54,7 @@ const TITLE_MENU_ITEMS_Y: ReadonlyArray<number> = [
 /** cursor sprite 显示参数 (复用 shadowOam slot 63,即 mid.oam[63]=[48,0,32,248] placeholder) */
 const TITLE_MENU_CURSOR_OAM_SLOT = 63;
 const TITLE_MENU_CURSOR_X = 88;        // 文字左侧
-const TITLE_MENU_CURSOR_TILE = 0;      // TODO: 待 CHR PNG 确认 cursor ▶ 图块
+const TITLE_MENU_CURSOR_TILE = 0;      // 待 CHR PNG 确认 cursor ▶ 图块 index(原作 cursor 不闪烁 — 单帧静态)
 const TITLE_MENU_CURSOR_ATTR = 0x21;   // palette 1 (spr), no flip
 
 export class TitleMenuSceneController extends SceneController {

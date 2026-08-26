@@ -47,6 +47,8 @@ const STORY_CUP_SCREEN_INDEX = 11;
 export class OpeningSceneController extends SceneController {
   readonly sceneId = OPENING_SCENE_ID;
   private audio: AudioService | null = null;
+  /** H5 内部片头帧计数器（onUpdate 自增；每帧 +1）。 */
+  private h5Frame = 0;
   /** 当前帧 GT 数据 */
   private currentFrame: OpeningFrameEntry | null = null;
   /** 当前帧 CHR per-scanline 计划 */
@@ -56,7 +58,7 @@ export class OpeningSceneController extends SceneController {
   /** 待写入 ppu.nameTable 的属性表变化行 */
   private attrQueue: OpeningFrameNtRow[] = [];
   /** 当前帧 GT scroll 寄存器(供 applyNtToPpu 写入 PPU) */
-  private currentScroll: OpeningFrameScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0 };
+  private currentScroll: OpeningFrameScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0, cv: 0, ch: 0, cvt: 0, cht: 0 };
 
   constructor(store: DataStore, input: InputService) {
     super(store, input);
@@ -67,11 +69,12 @@ export class OpeningSceneController extends SceneController {
   }
 
   onEnter(): void {
+    this.h5Frame = 0;
     this.currentFrame = null;
     this.currentChrPlan = [];
     this.ntQueue = [];
     this.attrQueue = [];
-    this.currentScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0 };
+    this.currentScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0, cv: 0, ch: 0, cvt: 0, cht: 0 };
 
     // PPU 状态:GT 数据表已经包含真实 fade 后的 palette,这里把 fade 固定为满亮,
     // 让 InterruptService.flushPalette 直接输出 palette 原值。
@@ -107,8 +110,8 @@ export class OpeningSceneController extends SceneController {
   }
 
   /** H5 帧 -> NES 绝对帧(GT 时间线基准) */
-  private nesFrameOf(frame: number): number {
-    return frame + H5_FRAME_OFFSET;
+  private nesFrameOf(): number {
+    return this.h5Frame + H5_FRAME_OFFSET;
   }
 
   /**
@@ -117,10 +120,8 @@ export class OpeningSceneController extends SceneController {
    */
   private skipped = false;
 
-  onUpdate(frame: number): number | undefined {
+  onUpdate(_frame: number): number | undefined {
     if (this.skipped) return undefined;
-
-    const nesFrame = this.nesFrameOf(frame);
 
     // === START 按下:跳过开场,跳到 TitleMenuScene(贴 ROM 行为) ===
     // ROM asm 行为(emu press-start-to-title.log 实证):NMI dispatcher 检测 START →
@@ -134,15 +135,38 @@ export class OpeningSceneController extends SceneController {
       return TITLE_MENU_SCENE_ID;
     }
 
-    if (nesFrame >= OPENING_END_NES_FRAME) {
-      // 片头完整播完(含 title 装载/显示),转 Scene2(hub idle)保持最后画面,
-      // 不再走 Scene0 的 BgFadeOut/Drift30 近似逻辑。
-      return 2;
+    // 片头推进(逐帧走 GT 数据)
+    this.h5Frame++;
+
+    if (this.h5Frame >= OPENING_END_NES_FRAME - H5_FRAME_OFFSET) {
+      // === 片头播完但用户没按 START:重新跑 opening ===
+      // 原始 ROM 行为:opening 后无操作保持显示 → 用户按 START → title。
+      // H5 翻译:opening 已播完但 START 未按 → 重置 h5Frame=0,下一帧从 f10 重新播。
+      // (因为 GT 是逐帧表,h5Frame 直接归零即可;内部 NT/OAM/scroll state 由 applyFrameData(f0) 重铺)
+      this.resetForLoop();
+      return undefined;
     }
+
+    const nesFrame = this.nesFrameOf();
     const fr = getOpeningFrame(nesFrame);
     if (!fr) return undefined;
     this.applyFrameData(fr);
     return undefined;
+  }
+
+  /**
+   * 重置 opening 内部状态以便从 f10 重新播(用户未按 START 走 loop)。
+   * 不重置 skipped 标志 — 用户 START 后永远不进 opening。
+   * 不重置 audio / ppuState.ctrl / mask / scrollFlag 等 onEnter 级别一次性设置 — 这些在 onEnter 已经设过,
+   * 不需要每帧重置。
+   */
+  private resetForLoop(): void {
+    this.h5Frame = 0;
+    this.currentFrame = null;
+    this.currentChrPlan = [];
+    this.ntQueue = [];
+    this.attrQueue = [];
+    this.currentScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0, cv: 0, ch: 0, cvt: 0, cht: 0 };
   }
 
   /** 把单帧 GT 数据(palette/OAM/CHR plan/NT/attr/scroll)应用到 store + 控制器内部缓冲 */
@@ -190,6 +214,18 @@ export class OpeningSceneController extends SceneController {
     ppu.regHT = s.ht & 0x1f;
     ppu.regFV = s.fv & 7;
     ppu.regFH = s.fh & 7;
+
+    // 渲染起始计数器(标题上下滚屏/字幕垂直滚动):
+    // ROM 通过 $2006 直写 VRAM 地址在渲染期设置 cnt*,reg* 可能保持 0。
+    // PPU pre-render scanline 每帧会把 cnt*=reg*,因此这里提供 override,
+    // 由 PPU case20 在初始化计数器时优先消费,保证每帧从 GT 的渲染起始位置开画。
+    ppu.renderStartOverride = {
+      cntFV: s.fv & 7,
+      cntV: s.cv & 1,
+      cntH: s.ch & 1,
+      cntVT: s.cvt & 0x1f,
+      cntHT: s.cht & 0x1f,
+    };
 
     // GT 数据的 ni 是逻辑 nametable 号（0-3），必须经 PPU ntable1 映射表转换
     // 为物理 nameTable 索引。水平镜像时 NT1($2400) 与 NT0($2000) 共享物理表 0，

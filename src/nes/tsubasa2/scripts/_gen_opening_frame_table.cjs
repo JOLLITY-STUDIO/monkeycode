@@ -9,7 +9,7 @@
  *   o : OAM diff(仅变化 sprite): [[idx, y, tile, attr, x], ...]
  *   n : NT 变化行 [{ni, r, d[32]}, ...]
  *   a : 属性表变化行 [{ni, r, d[8]}, ...]
- *   s : 渲染用 scroll 寄存器 {v,h,vt,ht,fv,fh}（H5 直接写入 PPU，驱动 nametable 选择）
+ *   s : 渲染用 scroll 寄存器 {v,h,vt,ht,fv,fh} + 渲染计数器 {cv,ch,cvt,cht}（H5 直接写入 PPU，驱动 nametable 选择与滚动）
  *
  * 压缩原则:
  *   - OAM/NT/属性表只存与上一帧的差异
@@ -135,7 +135,10 @@ for (let f = F0; f <= F1; f++) {
   // 本帧终态 CHR 供下一帧顶部使用
   prevChr = (st && Array.isArray(st.chrBanks)) ? st.chrBanks.slice() : chrPlan[chrPlan.length - 1].b.slice();
 
-  // scroll: 取渲染前状态（state.json.scroll 已是 before-frame 语义）
+  // scroll: 取渲染前状态（state.json.scroll 是帧开始/渲染起始语义）。
+  // 重要：除了 reg*（$2000/$2005 写入的寄存器），必须保留 cnt*（渲染计数器）。
+  // ROM 通过 $2006 直写 VRAM 地址在渲染期设置 cnt*（reg* 可能保持 0），
+  // 标题上下滚屏/字幕垂直滚动全靠 cnt* 还原；只存 reg* 会导致滚动丢失。
   const sc = (st && st.scroll) ? st.scroll : {};
   const s = {
     v: sc.regV ?? 0,
@@ -144,6 +147,11 @@ for (let f = F0; f <= F1; f++) {
     ht: sc.regHT ?? 0,
     fv: sc.regFV ?? 0,
     fh: sc.regFH ?? 0,
+    // 渲染计数器（渲染起始位置）；emu state.json 无 cntFV，fineY 由 regFV 承担
+    cv: sc.cntV ?? sc.regV ?? 0,
+    ch: sc.cntH ?? sc.regH ?? 0,
+    cvt: sc.cntVT ?? sc.regVT ?? 0,
+    cht: sc.cntHT ?? sc.regHT ?? 0,
   };
 
   frames.push({
@@ -159,10 +167,10 @@ for (let f = F0; f <= F1; f++) {
 
 // 生成 TypeScript
 const chunks = [];
-chunks.push(`/**\n * OpeningFrameTable — 片头逐帧 Ground Truth\n * 来源:emu-full f${F0}-f${F1}\n * 字段含义:\n *   f: NES 帧号\n *   c: CHR scanline 计划 [{s:scanline, b:[8 bank1k]}]\n *   p: palette {bg,sp} 或 null(与上帧相同)\n *   o: OAM diff [[idx,y,tile,attr,x],...]\n *   n: NT tile 变化行 [{ni,r,d[32]}]\n *   a: 属性表变化行 [{ni,r,d[8]}]\n *   s: 渲染用 scroll 寄存器 {v,h,vt,ht,fv,fh}\n */\n`);
+chunks.push(`/**\n * OpeningFrameTable — 片头逐帧 Ground Truth\n * 来源:emu-full f${F0}-f${F1}\n * 字段含义:\n *   f: NES 帧号\n *   c: CHR scanline 计划 [{s:scanline, b:[8 bank1k]}]\n *   p: palette {bg,sp} 或 null(与上帧相同)\n *   o: OAM diff [[idx,y,tile,attr,x],...]\n *   n: NT tile 变化行 [{ni,r,d[32]}]\n *   a: 属性表变化行 [{ni,r,d[8]}]\n *   s: 渲染用 scroll 寄存器 {v,h,vt,ht,fv,fh} + 渲染计数器 {cv,ch,cvt,cht}\n */\n`);
 chunks.push(`export interface OpeningFrameChr { s: number; b: ReadonlyArray<number>; }\n`);
 chunks.push(`export interface OpeningFrameNtRow { ni: number; r: number; d: ReadonlyArray<number>; }\n`);
-chunks.push(`export interface OpeningFrameScroll { readonly v: number; readonly h: number; readonly vt: number; readonly ht: number; readonly fv: number; readonly fh: number; }\n`);
+chunks.push(`export interface OpeningFrameScroll { readonly v: number; readonly h: number; readonly vt: number; readonly ht: number; readonly fv: number; readonly fh: number; readonly cv: number; readonly ch: number; readonly cvt: number; readonly cht: number; }\n`);
 chunks.push(`export interface OpeningFrameEntry {\n  readonly f: number;\n  readonly c: ReadonlyArray<OpeningFrameChr>;\n  readonly p: { readonly bg: ReadonlyArray<number>; readonly spr: ReadonlyArray<number> } | null;\n  readonly o: ReadonlyArray<ReadonlyArray<number>>;\n  readonly n: ReadonlyArray<OpeningFrameNtRow>;\n  readonly a: ReadonlyArray<OpeningFrameNtRow>;\n  readonly s: OpeningFrameScroll;\n}\n`);
 chunks.push(`export const OPENING_FRAMES: ReadonlyArray<OpeningFrameEntry> = [`);
 
@@ -173,7 +181,7 @@ for (const fr of frames) {
   const ostr = fr.o.map(a => `[${a.join(',')}]`).join(',');
   const nstr = fr.n.map(r => `{ni:${r.ni},r:${r.r},d:[${r.d.join(',')}]}`).join(',');
   const astr = fr.a.map(r => `{ni:${r.ni},r:${r.r},d:[${r.d.join(',')}]}`).join(',');
-  const sstr = `{v:${fr.s.v},h:${fr.s.h},vt:${fr.s.vt},ht:${fr.s.ht},fv:${fr.s.fv},fh:${fr.s.fh}}`;
+  const sstr = `{v:${fr.s.v},h:${fr.s.h},vt:${fr.s.vt},ht:${fr.s.ht},fv:${fr.s.fv},fh:${fr.s.fh},cv:${fr.s.cv},ch:${fr.s.ch},cvt:${fr.s.cvt},cht:${fr.s.cht}}`;
   lines.push(`  {f:${fr.f},c:[${cs}],p:${pstr},o:[${ostr}],n:[${nstr}],a:[${astr}],s:${sstr}}`);
 }
 chunks.push(lines.join(',\n'));
