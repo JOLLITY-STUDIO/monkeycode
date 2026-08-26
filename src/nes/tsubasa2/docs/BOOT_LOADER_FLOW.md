@@ -190,6 +190,73 @@ meetingKickoffModule.run()
 | **#015 (新)** | Bank06 audio 持续 poll 按钮 → title→meeting 是渐进 3-bank 协同 | 已记录 |
 | **#016 (新)** | Capcom logo OAM 装载 routine 在 F51316 重现 → 该 routine 是复用的 sprite loader (被多种 sprite 场景共享) | 已记录 |
 
+### 3.11 opening-all.log 打开动画段（F2510-F4355 = 1845 帧 ≈ 31 秒）
+
+**完整 PC sequence (Bank 跳转)**:
+
+| Frame | Bank (asm) | PC | 阶段 |
+|---|---|---|---|
+| F2510 | **bank02** | `$01:A17F STA $2000 = #$89` | **首次 PPU enable — 标题画面可见** |
+| F2513-F2540 | bank02 | `$01:A0ED-$A0FA` | audio 紧接 PPU 切换 |
+| F2541 | bank06 audio | `$06:8119 DEC $F3` | audio 计时触发 |
+| F2572 | bank06 audio | `$06:824B` | 第二 audio routine |
+| F2635 | bank00 | `$00:9F06 BPL $9F04` | vsync 稳定 |
+| F2667-F2697 | bank02 audio | `$01:A0ED` | audio 主轮询 |
+| F2698 | bank06 audio | `$06:84BA` | audio stream read |
+| **F2732** | **bank00** | **`$00:91A1 STA $E8`** | **第二段 sprite OAM dump** (同 F380 routine) |
+| F2764 | bank00 | `$00:9F2E` | sprite dump 后续 |
+| **F2796** | **bank00** | **`$00:91C8`** | **sprite Y 处理**（DRIFT 进场） |
+| F2827-F2985 | bank02 | `$A036/$A0ED/$A8EE` | sprite/audio/OAM 密集交替 |
+| F2986 | bank00 | `$00:9F04 LDA $1B` | vsync |
+| F3019-F3211 | bank02 | `$A8EE/$A8F1/$A0ED` | **OAM 持续 refetch**（球员走路动画持续更新） |
+| F3243-F3275 | bank02 | `$A8EE/$A0ED` | OAM cycle |
+| F3307 | bank06 audio | `$06:84A3` | audio engine 新指令 |
+| F3503 | bank06 audio | `$06:83DC` | audio stream 写 |
+| F3570 | bank06 audio | `$06:810C CLC` | audio timer 待触发 |
+| F3634 | bank02 | `$01:A0F0 LSR` | audio restart |
+| **F3644** | **bank06 audio** | **`$06:8119 DEC $F3 = #$07`** | **audio timer 触发新 phase**（trace 关键 transition） |
+| F3666-F3998 | bank00 + bank02 + bank06 | `$9F06/$A0ED/$A8EE` | 多 bank 协同刷新 |
+| F3999-F4065 | bank00 | `$9F04/$9F06` | **vsync 长时间停留**（可能动画暂停） |
+| F4099-F4130 | bank02 | `$A0ED/$A0F0` | audio restart |
+| F4162-F4257 | bank00 | `$9F04/$9F06` | vsync |
+| F4257-F4329 | bank06 audio | `$06:8002/$8005` | audio 主例程 |
+| **F4355 (trace 末)** | bank00 | **`$00:9AA8 B9 2A 06 LDA $062A,Y`** | **下次 sprite OAM unpack 开始** (routine `$9AA8`) |
+
+**关键发现**：
+
+1. **F2510 PPU enable** — 标题画面首次可见（`$2000 = #$89` = NMI+BG+Spr+8x8 都开）
+2. **F2510-F2731 是 audio + vsync 初始化过渡**（222 帧 ≈ 3.7s）
+3. **F2732 bank00 sprite setup** — 第二个 sprite OAM dump 加载（与 F380 同 routine `$91A1`）
+4. **F2796 sprite Y-drift 进场** — 标题画面开始动画（block `$91C8` 处理 Y 坐标）
+5. **F2510-F4355 总 1845 帧 ≈ 31s** — 整个 opening animation 时长
+6. **bank02 `$A8EE` OAM refetch 极度频繁** (F3019-F3794) — 表明 sprite 持续更新（球员走路动画）
+7. **F3644 audio timer 触发** — 可能对应"menu cursor blinking"或开场动画中某段音频提示
+8. **F4355 trace 中止于 sprite OAM unpack routine** — 未完整看到 opening 结束
+
+### 3.12 opening-all 段 H5 翻译语义
+
+**禁止机械翻译**：
+- ❌ `if (frame > 2510) scene0.onEnter()` —— 错，PPU enable 是 bank02 工作，不依赖 Scene0
+- ❌ `if (frame > 2796) startDriftY()` —— 错，Drift 是 Y 坐标持续更新，不是硬编码 frame 触发
+
+**正确翻译原则**：
+- ✅ `Bank00MainLoopService.tick()` 每帧调用，包含 `updateSprites()` → 调 `$91C8` 持续更新
+- ✅ `$9AA8-$9AB7 OAM unpack` = `Bank00MainLoopService.unpackSpriteTable()`
+- ✅ `$6:8002 audio stream` = `AudioService.tickSampleStream()` 每帧调
+- ✅ `$0:9F04 vsync wait` = `Bank00MainLoopService.waitVsync($1B flag)`
+
+### 3.13 trace 缺口
+
+**当前证据**：
+- ✅ F6-F4355 (opening-all.log) — 全 boot + opening 完整
+- ✅ F51316-F62431 (title-kick-off-to-meeting.log) — title→meeting 完整
+- ❌ F4355-F51316 期间缺失 — **opening 结束 → title 装载 之间的转换**
+- ❌ F62431+ 缺失 — **meeting 后的比赛进行时**
+
+**建议下一步**：
+1. 跑 F4355-F5300 局部 trace（opening→title 转换）
+2. **或** 跑 F62431-F70000 局部 trace（meeting→match 进行）
+
 ---
 
 ## 4. **START 按下 → 标题画面**链路（press-start-to-title F3302-F3375 实证，73 帧）
