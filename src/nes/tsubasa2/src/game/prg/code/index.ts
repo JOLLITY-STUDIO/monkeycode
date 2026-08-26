@@ -108,5 +108,7 @@ export type { ApuPcmRenderer } from './audio/ApuPcmRenderer';
 // ui（V1.0+ 具象化层：消费已翻译数据，输出渲染视图）
 export { LevelUpUiService } from './ui/LevelUpUiService';
 export type { LevelUpInput, LevelUpView } from './ui/LevelUpUiService';
+// 第一关 meeting 页面 (sceneId=300, Scene14-23 chain 链路终点)
+export { MeetingSceneController, MEETING_SCENE_ID } from './scene/MeetingSceneController';
 export { MatchResultUiService } from './ui/MatchResultUiService';
 export type { MatchResultInput, MatchResultView } from './ui/MatchResultUiService';

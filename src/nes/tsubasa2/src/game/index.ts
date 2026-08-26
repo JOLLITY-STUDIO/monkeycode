@@ -30,6 +30,8 @@ import {
   Scene0Controller,
   ScriptEngine,
   ScriptLoader,
+  MeetingSceneController,
+  MEETING_SCENE_ID,
   CharMap,
   setScriptRuntime,
   PlayerQueryService,
@@ -82,6 +84,8 @@ export class Tsubasa2 {
   readonly ppuTransfer: PpuTransferService;
   readonly ntStreamLoader: NtStreamLoaderService;
   readonly sceneStateMachine: SceneStateMachine;
+  /** 剧情脚本 VM（MeetingScene 链路终点注入用） */
+  readonly scriptEngine: ScriptEngine;
 
   /** 帧计数（NMI 帧号） */
   protected _frame = 0;
@@ -112,11 +116,11 @@ export class Tsubasa2 {
 
     // 场景控制器（BootRouter 自动统一 register Scene0-23；BootRouter 内部持有 MainRouterService）
 
-    // 剧情脚本（V0.4 接入）
+    // 剧情脚本（V0.4 接入）— meeting 第一段剧情
     const scriptLoader = new ScriptLoader(this.store);
     const scriptEngine = new ScriptEngine(this.store, scriptLoader);
     const charMap = new CharMap();
-    void scriptEngine;
+    this.scriptEngine = scriptEngine;
     // CharMap 注入脚本运行时：0x94/0x95 浊音符等映射供 ScriptOpcode.TextChar 使用
     setScriptRuntime({
       charMap,
@@ -174,6 +178,9 @@ export class Tsubasa2 {
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachAudio(this.audio);
     // 片头序列（OpeningScene）音频注入（首屏 tecmo_logo 播 BGM 0x01）
     (this.router.getController(SceneId.Opening) as OpeningSceneController).attachAudio(this.audio);
+
+    // 第一关 meeting 页面（Scene14-23 chain 链路终点）注入 ScriptEngine 跑剧情第一段
+    (this.router.getController(MEETING_SCENE_ID) as MeetingSceneController).attachScriptEngine(this.scriptEngine);
 
     // bank00 scene state machine + NT stream loader 注入 Scene0
     // (PRG $8AF7 scene handler loader + $82ED NT stream loader)
