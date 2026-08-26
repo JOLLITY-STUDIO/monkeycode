@@ -27,18 +27,31 @@
  */
 
 import * as fs from 'fs';
+import { disassemble } from './disasm';
 
-/** 指令名表 (INS_ 常量 → 助记符) */
-const INS_NAMES: string[] = [
-  'ADC', 'AND', 'ASL', 'BCC', 'BCS', 'BEQ', 'BIT', 'BMI', 'BNE', 'BPL',
-  'BRK', 'BVC', 'BVS', 'CLC', 'CLD', 'CLI', 'CLV', 'CMP', 'CPX', 'CPY',
-  'DEC', 'DEX', 'DEY', 'EOR', 'INC', 'INX', 'INY', 'JMP', 'JSR', 'LDA',
-  'LDX', 'LDY', 'LSR', 'NOP', 'ORA', 'PHA', 'PHP', 'PLA', 'PLP', 'ROL',
-  'ROR', 'RTI', 'RTS', 'SBC', 'SEC', 'SED', 'SEI', 'STA', 'STX', 'STY',
-  'TAX', 'TAY', 'TSX', 'TXA', 'TXS', 'TYA', 'ALR', 'ANC', 'ARR', 'AXS',
-  'LAX', 'SAX', 'DCP', 'ISC', 'RLA', 'RRA', 'SLO', 'SRE', 'SKB', 'IGN',
-  '??', 'SHA', 'SHS', 'SHY', 'SHX', 'LAE', 'ANE', 'LXA',
-];
+// ═══ FCEUX trace log 移植 (src/drivers/win/tracer.h LOG_* 位标志) ═══
+// 输出行布局 (LOG_TO_THE_LEFT 时):
+//   f{frame} c{cycles} i{instr} A:.. X:.. Y:.. S:.. P:.. [栈缩进] $bank:pc: bytes disasm {@ EA} {= 值}
+// 参考格式见 docs/roms/opening-all/opening-all.log
+export const LOG_REGISTERS = 1;              // A:X:Y:S 寄存器
+export const LOG_PROCESSOR_STATUS = 2;       // P: 标志位 (NvubdizC)
+export const LOG_NEW_INSTRUCTIONS = 4;       // CDL: 只记录首次执行到的代码 (跳过重复 → "(N lines skipped)")
+export const LOG_NEW_DATA = 8;               // CDL: 只记录首次访问的数据地址
+export const LOG_TO_THE_LEFT = 16;           // 寄存器列放在地址前 (FCEUX 默认)
+export const LOG_FRAMES_COUNT = 32;          // f{frame} 列
+export const LOG_MESSAGES = 64;              // 消息日志 (保留, 未用)
+export const LOG_BREAKPOINTS = 128;          // 断点日志 (保留, 未用)
+export const LOG_CODE_TABBING = 512;         // 按栈深 (0xFF-S)&31 加空格缩进 → 调用嵌套可视化
+export const LOG_CYCLES_COUNT = 1024;        // c{cycles} 列
+export const LOG_INSTRUCTIONS_COUNT = 2048;  // i{instr} 列
+export const LOG_BANK_NUMBER = 4096;         // $bank:pc: 前缀 (PRG 显示 bank, RAM 显示 2 空格)
+// ── tsnes 扩展 (FCEUX 通过 asm.cpp Disassemble 内建) ──
+export const LOG_MEM_DETAIL = 8192;          // @ $EA 和 = #$val (执行前内存值), 仿 FCEUX asm.cpp
+export const LOG_RTS_DECORATION = 16384;     // RTS 时显示 "(from $XXXX)" + 子程序结束分隔线
+
+/** FCEUX 默认 log options (与 FCEUX 窗口默认一致: 寄存器|标志|左对齐|栈缩进) */
+export const FCEUX_DEFAULT_OPTIONS =
+  LOG_REGISTERS | LOG_PROCESSOR_STATUS | LOG_TO_THE_LEFT | LOG_CODE_TABBING;
 
 export interface TraceOptions {
   // ── 输出 ──
@@ -48,6 +61,10 @@ export interface TraceOptions {
   callback?: (line: string) => void;
   /** 最多记录行数 (默认无限制) */
   maxLines?: number;
+  /** 行格式: mesen = i{count} $bank:pc: ... (默认) / fceux = f{frame} c{cycle} i{count} ... (与 FCEUX opening-all.log 同款) */
+  format?: 'mesen' | 'fceux';
+  /** 指令计数起始值 (默认 0; 跨帧续接时用 Tracer.instructionCount) */
+  initialCount?: number;
 
   // ── CPU 指令跟踪 ──
   /** 跟踪 CPU 指令 (默认 true) */
@@ -58,6 +75,13 @@ export interface TraceOptions {
   bankFilter?: number;
   /** 是否记录操作数详情 (默认 true) */
   detailOperand?: boolean;
+
+  // ── FCEUX 移植: trace log 字段开关 (位掩码, 见 LOG_* 常量) ──
+  /**
+   * FCEUX LOG_* 位标志组合, 控制输出哪些列。
+   * format='fceux' 时默认: FRAMES|CYCLES|INSTRUCTIONS|REGISTERS|PROCESSOR_STATUS|BANK_NUMBER|TO_THE_LEFT|MEM_DETAIL|RTS_DECORATION
+   */
+  fceuxLogOptions?: number;
 
   // ── 硬件寄存器写入跟踪 ──
   /** 跟踪 OAM 写入 ($2003/$2004/$4014) */
@@ -97,6 +121,16 @@ interface TraceContext {
   ppuAddr: number;
   /** MMC3 当前选中的寄存器号 ($8000 写入后记住) */
   _mmc3Reg: number;
+  /** FCEUX LOG_* 位标志组合 */
+  fceuxOptions: number;
+  /** CDL code 标记 (物理 PRG key, 见 cdlKey) */
+  cdlCode: Set<number>;
+  /** CDL data 标记 (物理 PRG key) */
+  cdlData: Set<number>;
+  /** CDL 模式累计跳过的行数 */
+  unloggedLines: number;
+  /** trace 开始时的 CPU 总周期 (c 列相对基准) */
+  startCycleBase: number;
 }
 
 /**
@@ -137,7 +171,121 @@ function getMesenBank(cpu: any, nes: any, addr: number): number {
 }
 
 /**
+ * 纯内存读 (无总线副作用, 供 trace 计算 EA/值/CDL):
+ * - RAM ($0000-$1FFF): cpu.mem
+ * - PPU/APU 寄存器区 ($2000-$4017): 纯读路径 (见 readRegisterPeek), 绝对不走 mmap.load
+ * - PRG/其他 (>= $4020): mmap.load 只读路径 (mapper 寄存器读无状态副作用)
+ * FCEUX 对应 GetMem(), 但 trace 只读不改模拟器状态。
+ */
+function readMemRaw(cpu: any, addr: number): number {
+  const a = addr & 0xffff;
+  if (a < 0x2000) return cpu.mem[a & 0x7ff];
+  if (a < 0x4020) return readRegisterPeek(cpu, a);
+  if (cpu.nes && cpu.nes.mmap) return cpu.nes.mmap.load(a) & 0xff;
+  return cpu.mem[a & 0xffff];
+}
+
+/**
+ * PPU/APU 寄存器区 ($2000-$4017) 的纯读 (peek)。
+ *
+ * 为什么不能走 mmap.load (regLoad):
+ *   - $2002 读 → readStatusRegister() → 清 VBlank 标志 + NMI 输出边沿更新 (改模拟状态!)
+ *   - $2004 读 → sramLoad() (渲染中相位相关)
+ *   - $2006/$2007 读 → vramLoad() → _incrementVramAddress() (VRAM 地址自增!)
+ *   - $4016/$4017 读 → joypad 移位 (消费串行位!)
+ * 这些读副作用会让"只是打 trace"改变整个模拟状态, 导致 vblank 轮询等行为分叉。
+ *
+ * 纯读策略 (与 FCEUX trace 用 GetMem peek 一致):
+ *   - $2002: 直接取 cpu.mem[0x2002] 原始状态位 (PPU setStatusFlag 维护), 不清任何标志
+ *   - 其余寄存器: 返回 open bus latch 值 (trace 里 `LDA $XXXX` 的 = 值注解, 精确值不重要,
+ *     关键是模拟状态不被污染; $2000/$2001/$2003/$2005/$2006/$4014 本就是写寄存器,
+ *     读返回 open bus 是硬件正确行为)
+ */
+function readRegisterPeek(cpu: any, a: number): number {
+  if (a === 0x2002) return cpu.mem[0x2002];
+  const ppu = cpu.nes && cpu.nes.ppu;
+  if (ppu && typeof ppu.openBusLatch === 'number') return ppu.openBusLatch;
+  return 0;
+}
+
+/**
+ * 计算指令有效地址 (EA), 参照 FCEUX x6502.h optype 宏 + asm.cpp Disassemble。
+ * 只读计算, 无模拟器副作用。无 EA 的寻址模式 (IMP/ACC/IMM/REL) 返回 null。
+ */
+function resolveEA(cpu: any, mode: number, opbytes: number[]): number | null {
+  const b1 = opbytes[1] ?? 0;
+  const b2 = opbytes[2] ?? 0;
+  const x = cpu.REG_X & 0xff;
+  const y = cpu.REG_Y & 0xff;
+  switch (mode) {
+    case 0: return b1;                                   // ZP
+    case 3: return (b1 | (b2 << 8)) & 0xffff;            // ABS
+    case 6: return (b1 + x) & 0xff;                      // ZP,X
+    case 7: return (b1 + y) & 0xff;                      // ZP,Y
+    case 8: return ((b1 | (b2 << 8)) + x) & 0xffff;      // ABS,X
+    case 9: return ((b1 | (b2 << 8)) + y) & 0xffff;      // ABS,Y
+    case 10: {                                           // (ZP,X) 前变址间接
+      const ptr = (b1 + x) & 0xff;
+      return (readMemRaw(cpu, ptr) | (readMemRaw(cpu, (ptr + 1) & 0xff) << 8)) & 0xffff;
+    }
+    case 11: {                                           // (ZP),Y 后变址间接
+      const base = readMemRaw(cpu, b1) | (readMemRaw(cpu, (b1 + 1) & 0xff) << 8);
+      return (base + y) & 0xffff;
+    }
+    case 12: {                                           // (ABS) JMP 间接
+      const ptr = b1 | (b2 << 8);
+      const hi = (ptr & 0xff00) | (((ptr & 0xff) + 1) & 0xff); // 6502 bug: 高字节跨页不 +1 进位
+      return (readMemRaw(cpu, ptr) | (readMemRaw(cpu, hi) << 8)) & 0xffff;
+    }
+    default: return null;                                // IMP(2)/ACC(4)/IMM(5)/REL(1)
+  }
+}
+
+/**
+ * CDL 物理 key: PRG (>= $8000) 用 8KB 块号<<13 | 块内偏移 (bank 切换无关);
+ * RAM/IO (< $8000) 用 0x80000000|addr 前缀区分。
+ */
+function cdlKey(cpu: any, addr: number): number {
+  if (addr < 0x8000) return 0x80000000 | (addr & 0xffff);
+  const mmap = cpu.nes && cpu.nes.mmap;
+  let block8k: number;
+  if (mmap && mmap.prgBankMap) {
+    if (addr < 0xa000) block8k = mmap.prgBankMap['8000'] ?? 0;
+    else if (addr < 0xc000) block8k = mmap.prgBankMap['A000'] ?? 0;
+    else if (addr < 0xe000) block8k = mmap.prgBankMap['C000'] ?? 30;
+    else block8k = mmap.prgBankMap['E000'] ?? 31;
+  } else {
+    block8k = 0;
+  }
+  return (block8k << 13) | (addr & 0x1fff);
+}
+
+/**
+ * RTS (0x60) 装饰: 读栈上返回地址, 若返回地址-2 处是 JSR (0x20) 则标注调用来源。
+ * 参照 FCEUX tracer.cpp: caller_addr = GetMem((S+1)|0x100) + (GetMem((S+2)|0x100)<<8) - 2
+ */
+function rtsDecoration(ctx: TraceContext, opcode: number): string {
+  if (opcode !== 0x60) return '';
+  const cpu = ctx.cpu;
+  const sp = cpu.REG_SP & 0xff;
+  const ret = readMemRaw(cpu, 0x100 | ((sp + 1) & 0xff)) |
+    (readMemRaw(cpu, 0x100 | ((sp + 2) & 0xff)) << 8);
+  const caller = (ret - 2) & 0xffff;
+  if (readMemRaw(cpu, caller) === 0x20) {
+    const target = readMemRaw(cpu, (caller + 1) & 0xffff) |
+      (readMemRaw(cpu, (caller + 2) & 0xffff) << 8);
+    return ` (from $${target.toString(16).toUpperCase().padStart(4, '0')})`;
+  }
+  return '';
+}
+
+/**
  * 格式化单条指令的 trace 行
+ * mesen: `i{count}  ${bank}:${pc}: {bytes} {mnemonic} {operand} A:.. X:.. Y:.. S:.. P:..`
+ * fceux: 列布局由 fceuxLogOptions (LOG_*) 控制, 与 FCEUX tracer.cpp FCEUD_TraceInstruction 同款。
+ *   默认: f{frame} c{cycle} i{count} A:.. X:.. Y:.. S:.. P:.. [栈缩进] $bank:pc: bytes disasm {@ EA} {= 值}
+ *   例 (与 docs/roms/opening-all/opening-all.log 一致):
+ *     f435 c12930214 i4124119 A:01 X:04 Y:2A S:C8 P:nvUbdizc $00:91D8: 7D 6B 04 ADC $046B,X @ $046F = #$62
  */
 function formatInstruction(
   ctx: TraceContext,
@@ -158,17 +306,96 @@ function formatInstruction(
     .map((b) => b.toString(16).toUpperCase().padStart(2, '0'))
     .join(' ');
 
-  const insName = INS_NAMES[opinfo.ins] ?? '???';
+  // 反汇编文本 (FCEUX asm.cpp Disassemble 同款, 支持全部寻址模式: ZP $XX / IMM #$XX / REL 目标 / 间接等)
+  const disasmBase = disassemble(instrPC, (a: number) => readMemRaw(cpu, a));
+  const mode = opinfo.mode;
 
-  let operandStr = '';
-  if (opinfo.size > 1) {
-    const operandBytes = opbytes.slice(1);
-    if (operandBytes.length === 1) {
-      operandStr = '#$' + operandBytes[0].toString(16).toUpperCase().padStart(2, '0');
-    } else if (operandBytes.length === 2) {
-      const val = operandBytes[0] | (operandBytes[1] << 8);
-      operandStr = '$' + val.toString(16).toUpperCase().padStart(4, '0');
+  if (ctx.opts.format === 'fceux') {
+    const opt = ctx.fceuxOptions;
+    const frame = (cpu.nes && cpu.nes.fpsFrameCount) | 0;
+    // FCEUX: c 列 = 当前总周期 - trace 起始基准 (相对偏移)
+    const cycle = ((cpu._cpuCycleBase ?? 0) - ctx.startCycleBase) >>> 0;
+
+    // 寄存器列 (FCEUX str_axystate + str_procstatus)
+    let regCol = '';
+    if (opt & LOG_REGISTERS) {
+      regCol += ' A:' + a.toString(16).toUpperCase().padStart(2, '0') +
+        ' X:' + x.toString(16).toUpperCase().padStart(2, '0') +
+        ' Y:' + y.toString(16).toUpperCase().padStart(2, '0') +
+        ' S:' + s.toString(16).toUpperCase().padStart(2, '0');
     }
+    if (opt & LOG_PROCESSOR_STATUS) {
+      regCol += ' P:' + formatFlags(status);
+    }
+    if (regCol) regCol += ' ';
+
+    // 反汇编: disasm {@ EA} {= 值} (仿 FCEUX asm.cpp Disassemble)
+    let disasm = disasmBase.text;
+    const wantDetail = (opt & LOG_MEM_DETAIL) !== 0;
+    const isJmpInd = opcode === 0x6c;
+    const isJmp = opinfo.ins === 27;   // JMP
+    const isJsr = opinfo.ins === 28;   // JSR (跳转不读数据, 无 = 值)
+    if (wantDetail && mode !== 2 && mode !== 4 && mode !== 5 && mode !== 1) {
+      const ea = resolveEA(cpu, mode, opbytes);
+      if (ea !== null) {
+        const valStr = '#$' + readMemRaw(cpu, ea).toString(16).toUpperCase().padStart(2, '0');
+        if (isJmpInd) {
+          // JMP ($XXXX): 显示间接目标 (仿 FCEUX "JMP ($XXXX) = $XXXX")
+          const target = readMemRaw(cpu, ea) |
+            (readMemRaw(cpu, (ea & 0xff00) | (((ea & 0xff) + 1) & 0xff)) << 8);
+          disasm += ` = $${target.toString(16).toUpperCase().padStart(4, '0')}`;
+        } else if (!isJmp && !isJsr && (mode === 0 || mode === 3)) {
+          // ZP / ABS: FCEUX 无 @, 直接 `= #$val` (读写指令显示执行前内存值)
+          disasm += ` = ${valStr}`;
+        } else if (!isJmp && !isJsr) {
+          disasm += ` @ $${ea.toString(16).toUpperCase().padStart(4, '0')} = ${valStr}`;
+        }
+      }
+    }
+    // RTS 装饰: (from $XXXX) + 子程序结束分隔线
+    if (opt & LOG_RTS_DECORATION && opcode === 0x60) {
+      disasm += rtsDecoration(ctx, opcode);
+      disasm +=
+        ' -------------------------------------------------------------------------------------------------------------------------';
+    }
+
+    // ── 列布局 (FCEUX FCEUD_TraceInstruction) ──
+    let line = '';
+    if (opt & LOG_FRAMES_COUNT) line += `f${frame}`.padEnd(8);
+    if (opt & LOG_CYCLES_COUNT) line += `c${cycle}`.padEnd(13);
+    if (opt & LOG_INSTRUCTIONS_COUNT) line += `i${ctx.count}`.padEnd(13);
+
+    // LOG_TO_THE_LEFT: 寄存器列放地址前 (仿 FCEUX FCEUD_TraceInstruction)
+    if (opt & LOG_TO_THE_LEFT) {
+      line += regCol;
+    }
+    // 栈缩进 (LOG_CODE_TABBING): (0xFF - S) & 31 空格 → 调用嵌套可视化
+    // 独立于 LEFT 开关 (FCEUX 里 tabbing 在寄存器列之后、地址列之前)
+    if (opt & LOG_CODE_TABBING) {
+      line += ' '.repeat((0xff - s) & 31);
+    } else if (opt & LOG_TO_THE_LEFT) {
+      line += ' ';
+    }
+
+    // 地址列: $bank:pc: (PRG) 或 2 空格 + $pc: (RAM), 仿 FCEUX LOG_BANK_NUMBER
+    if (opt & LOG_BANK_NUMBER) {
+      if (instrPC >= 0x8000) {
+        line += `$${mesenBank.toString(16).toUpperCase().padStart(2, '0')}:` +
+          instrPC.toString(16).toUpperCase().padStart(4, '0') + ': ';
+      } else {
+        line += '  $' + instrPC.toString(16).toUpperCase().padStart(4, '0') + ': ';
+      }
+    } else {
+      line += '$' + instrPC.toString(16).toUpperCase().padStart(4, '0') + ': ';
+    }
+
+    line += bytesStr.padEnd(9, ' ') + disasm;
+
+    // 非 LEFT: 寄存器列放最后
+    if (!(opt & LOG_TO_THE_LEFT)) {
+      line += regCol;
+    }
+    return line;
   }
 
   return (
@@ -176,7 +403,7 @@ function formatInstruction(
     `$${mesenBank.toString(16).toUpperCase().padStart(2, '0')}:` +
     instrPC.toString(16).toUpperCase().padStart(4, '0') + ': ' +
     bytesStr.padEnd(8, ' ') + ' ' +
-    insName + ' ' + operandStr +
+    disasmBase.text +
     ' A:' + a.toString(16).toUpperCase().padStart(2, '0') +
     ' X:' + x.toString(16).toUpperCase().padStart(2, '0') +
     ' Y:' + y.toString(16).toUpperCase().padStart(2, '0') +
@@ -194,7 +421,8 @@ function formatHwWrite(
   extra?: string,
 ): string {
   const cpu = ctx.cpu;
-  const instrPC = cpu._instrPC ?? 0;
+  // REG_PC 惯例 = 操作码地址 - 1, 展示时 +1 才是真实指令地址
+  const instrPC = ((cpu._instrPC ?? 0) + 1) & 0xffff;
   const mesenBank = getMesenBank(cpu, ctx.nes, instrPC);
   const pcStr = `$${mesenBank.toString(16).toUpperCase().padStart(2, '0')}:` +
     instrPC.toString(16).toUpperCase().padStart(4, '0');
@@ -222,6 +450,13 @@ function ntMirrorInfo(addr: number): string {
 
 export class Tracer {
   private ctx: TraceContext | null = null;
+  /** 跨 start/stop 累计的指令计数 (fceux 全量 trace 续接用) */
+  private _persistentCount = 0;
+
+  /** 当前已记录的指令总数 (跨帧累计) */
+  get instructionCount(): number {
+    return this.ctx ? this.ctx.count : this._persistentCount;
+  }
 
   /** 启动 trace */
   start(nes: any, opts: TraceOptions = {}): void {
@@ -230,10 +465,19 @@ export class Tracer {
     if (opts.outputFile) {
       stream = fs.createWriteStream(opts.outputFile, { flags: 'w' });
     }
+    const initialCount = opts.initialCount ?? 0;
+    this._persistentCount = initialCount;
+    // fceux 格式默认开全列 + 内存详情 + RTS 装饰 (与 opening-all.log 同款)
+    const fceuxOptions = opts.fceuxLogOptions ??
+      (opts.format === 'fceux'
+        ? LOG_FRAMES_COUNT | LOG_CYCLES_COUNT | LOG_INSTRUCTIONS_COUNT |
+          LOG_REGISTERS | LOG_PROCESSOR_STATUS | LOG_BANK_NUMBER |
+          LOG_TO_THE_LEFT | LOG_MEM_DETAIL | LOG_RTS_DECORATION
+        : 0);
     this.ctx = {
       cpu,
       nes,
-      count: 0,
+      count: initialCount,
       lines: 0,
       stream,
       opts: {
@@ -245,12 +489,18 @@ export class Tracer {
       ppuAddrLatch: 0,
       ppuAddr: 0,
       _mmc3Reg: 0,
+      fceuxOptions,
+      cdlCode: new Set<number>(),
+      cdlData: new Set<number>(),
+      unloggedLines: 0,
+      startCycleBase: (cpu._cpuCycleBase ?? 0),
     };
   }
 
   /** 停止 trace, 关闭文件流 */
   stop(): void {
     if (this.ctx) {
+      this._persistentCount = this.ctx.count;
       if (this.ctx.stream) {
         this.ctx.stream.end();
       }
@@ -299,6 +549,36 @@ export class Tracer {
     if (ctx.opts.bankFilter !== undefined) {
       const bank = getMesenBank(ctx.cpu, ctx.nes, instrPC);
       if (bank !== ctx.opts.bankFilter) return;
+    }
+
+    // ── FCEUX CDL 模式 (LOG_NEW_INSTRUCTIONS/LOG_NEW_DATA): 只记录首次执行/访问的地址 ──
+    // 参照 FCEUX tracer.cpp: 比较 codecount/datacount, 无变化则跳过并累计 "(N lines skipped)"
+    const cdlOpt = ctx.fceuxOptions & (LOG_NEW_INSTRUCTIONS | LOG_NEW_DATA);
+    if (cdlOpt) {
+      const codeKey = cdlKey(ctx.cpu, instrPC);
+      const isNewCode = !ctx.cdlCode.has(codeKey);
+      let isNewData = false;
+      let dataKey = -1;
+      if (ctx.fceuxOptions & LOG_NEW_DATA) {
+        const ea = resolveEA(ctx.cpu, opinfo.mode, opbytes);
+        if (ea !== null) {
+          dataKey = cdlKey(ctx.cpu, ea);
+          isNewData = !ctx.cdlData.has(dataKey);
+        }
+      }
+      const newSomething =
+        ((ctx.fceuxOptions & LOG_NEW_INSTRUCTIONS) && isNewCode) ||
+        ((ctx.fceuxOptions & LOG_NEW_DATA) && isNewData);
+      if (!newSomething) {
+        ctx.unloggedLines++;
+        return;
+      }
+      if (ctx.fceuxOptions & LOG_NEW_INSTRUCTIONS) ctx.cdlCode.add(codeKey);
+      if (dataKey >= 0 && (ctx.fceuxOptions & LOG_NEW_DATA)) ctx.cdlData.add(dataKey);
+      if (ctx.unloggedLines > 0) {
+        this.emit(`(${ctx.unloggedLines} lines skipped)`);
+        ctx.unloggedLines = 0;
+      }
     }
 
     if (this.checkMaxLines()) return;
@@ -448,7 +728,8 @@ export class Tracer {
       ctx.count++;
       ctx.lines++;
       const cpu = ctx.cpu;
-      const instrPC = cpu._instrPC ?? 0;
+      // REG_PC 惯例 = 操作码地址 - 1
+      const instrPC = ((cpu._instrPC ?? 0) + 1) & 0xffff;
       const mesenBank = getMesenBank(cpu, ctx.nes, instrPC);
       const pcStr = '$' + mesenBank.toString(16).toUpperCase().padStart(2, '0') + ':' +
         instrPC.toString(16).toUpperCase().padStart(4, '0');

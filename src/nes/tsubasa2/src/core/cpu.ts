@@ -556,12 +556,14 @@ class CPU {
     let addrMode = opinfo.mode;
 
     // Tracer: 按需记录指令 (类似 Mesen trace)
+    // 注意: REG_PC 惯例 = 操作码地址 - 1 (见 reset: REG_PC = 0x8000-1),
+    //       所以真实操作码地址 = _instrPC + 1, 操作数字节 = _instrPC + 1 + bi
     if (this.nes.tracer && this.nes.tracer.active) {
       const opbytes: number[] = [opcode];
       for (let bi = 1; bi < opinfo.size; bi++) {
-        opbytes.push(this.loadFromCartridge(this._instrPC + bi));
+        opbytes.push(this.loadFromCartridge(this._instrPC + 1 + bi));
       }
-      this.nes.tracer.trace(this._instrPC, opcode, opinfo, opbytes);
+      this.nes.tracer.trace((this._instrPC + 1) & 0xffff, opcode, opinfo, opbytes);
     }
 
     let opaddr = this.REG_PC;

@@ -1,0 +1,10 @@
+[emu-full] mapper=4 PRG=16 CHR=32 frames=4332
+[emu-full] cpu trace=ON (emu-full.log + frame-NNNN/trace.log)
+  f1/4332  fps=5.6  eta=775s  audio=733  apuWrites=0  instr=8511
+  f200/4332  fps=9.5  eta=434s  audio=146770  apuWrites=2  instr=1900774
+  f400/4332  fps=8.7  eta=452s  audio=293543  apuWrites=1451  instr=3801047
+  f600/4332  fps=7.8  eta=479s  audio=440333  apuWrites=3762  instr=5696317
+  f800/4332  fps=7.3  eta=485s  audio=587123  apuWrites=6074  instr=7591740
+  f1000/4332  fps=7.3  eta=457s  audio=733896  apuWrites=8387  instr=9484505
+  f1200/4332  fps=5.8  eta=536s  audio=880666  apuWrites=10750  instr=11380993
+  f1400/4332  fps=4.4  eta=669s  audio=1027437  apuWrites=13034  instr=13289158

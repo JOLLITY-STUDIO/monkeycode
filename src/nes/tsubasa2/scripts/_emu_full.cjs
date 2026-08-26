@@ -35,7 +35,7 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
 ));
 var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: true }), mod);
 
-// ../src/core/debug/pattern-table-viewer.ts
+// src/core/debug/pattern-table-viewer.ts
 var pattern_table_viewer_exports = {};
 __export(pattern_table_viewer_exports, {
   buildChrBankMapByScanline: () => buildChrBankMapByScanline,
@@ -263,7 +263,7 @@ function generatePTDataText(nes2, frameCount) {
 }
 var BANK_BORDER_COLORS, chrSwitchLog;
 var init_pattern_table_viewer = __esm({
-  "../src/core/debug/pattern-table-viewer.ts"() {
+  "src/core/debug/pattern-table-viewer.ts"() {
     "use strict";
     BANK_BORDER_COLORS = [
       4294918208,
@@ -279,12 +279,12 @@ var init_pattern_table_viewer = __esm({
   }
 });
 
-// _emu_full.ts
+// scripts/_emu_full.ts
 var fs2 = __toESM(require("fs"));
 var path = __toESM(require("path"));
 var zlib = __toESM(require("zlib"));
 
-// ../src/core/utils.ts
+// src/core/utils.ts
 function copyArrayElements(src, srcPos, dest, destPos, length) {
   for (let i = 0; i < length; ++i) {
     dest[destPos + i] = src[srcPos + i];
@@ -314,7 +314,7 @@ function toJSON(obj) {
   return state;
 }
 
-// ../src/core/cpu.ts
+// src/core/cpu.ts
 var ADDR_ZP = 0;
 var ADDR_REL = 1;
 var ADDR_IMP = 2;
@@ -1821,7 +1821,7 @@ var CPU = class _CPU {
 };
 var cpu_default = CPU;
 
-// ../src/core/controller.ts
+// src/core/controller.ts
 var Controller = class _Controller {
   static {
     this.BUTTON_A = 0;
@@ -1922,7 +1922,7 @@ var Controller = class _Controller {
 };
 var controller_default = Controller;
 
-// ../src/core/tile.ts
+// src/core/tile.ts
 var Tile = class {
   constructor() {
     this.pix = new Uint8Array(64);
@@ -2061,7 +2061,7 @@ var Tile = class {
 };
 var tile_default = Tile;
 
-// ../src/core/ppu/nametable.ts
+// src/core/ppu/nametable.ts
 var NameTable = class {
   constructor(width, height, name) {
     this.width = width;
@@ -2109,7 +2109,7 @@ var NameTable = class {
 };
 var nametable_default = NameTable;
 
-// ../src/core/ppu/palette-table.ts
+// src/core/ppu/palette-table.ts
 var PaletteTable = class {
   constructor() {
     this.curTable = new Uint32Array(64);
@@ -2248,7 +2248,7 @@ var PaletteTable = class {
 };
 var palette_table_default = PaletteTable;
 
-// ../src/core/ppu/index.ts
+// src/core/ppu/index.ts
 var PPU = class {
   constructor(nes2) {
     // Status flags:
@@ -3740,7 +3740,7 @@ var PPU = class {
 };
 var ppu_default = PPU;
 
-// ../src/core/papu/channel-dm.ts
+// src/core/papu/channel-dm.ts
 var ChannelDM = class _ChannelDM {
   static {
     this.MODE_NORMAL = 0;
@@ -3904,7 +3904,7 @@ var ChannelDM = class _ChannelDM {
 };
 var channel_dm_default = ChannelDM;
 
-// ../src/core/papu/channel-noise.ts
+// src/core/papu/channel-noise.ts
 var ChannelNoise = class {
   constructor(papu) {
     this.papu = papu;
@@ -4026,7 +4026,7 @@ var ChannelNoise = class {
 };
 var channel_noise_default = ChannelNoise;
 
-// ../src/core/papu/channel-square.ts
+// src/core/papu/channel-square.ts
 var ChannelSquare = class {
   constructor(papu, square1) {
     this.papu = papu;
@@ -4263,7 +4263,7 @@ var ChannelSquare = class {
 };
 var channel_square_default = ChannelSquare;
 
-// ../src/core/papu/channel-triangle.ts
+// src/core/papu/channel-triangle.ts
 var ChannelTriangle = class {
   constructor(papu) {
     this.papu = papu;
@@ -4377,7 +4377,7 @@ var ChannelTriangle = class {
 };
 var channel_triangle_default = ChannelTriangle;
 
-// ../src/core/papu/index.ts
+// src/core/papu/index.ts
 var CPU_FREQ_NTSC = 17897725e-1;
 var FRAME_STEPS_4 = [7457, 14913, 22371, 29828, 29829];
 var FRAME_STEPS_5 = [7457, 14913, 22371, 29829, 37281];
@@ -5035,7 +5035,7 @@ var PAPU = class {
 };
 var papu_default = PAPU;
 
-// ../src/core/gamegenie.ts
+// src/core/gamegenie.ts
 var LETTER_VALUES = "APZLGITYEOXUKSVN";
 function toDigit(letter) {
   return LETTER_VALUES.indexOf(letter);
@@ -5145,7 +5145,7 @@ var GameGenie = class {
 };
 var gamegenie_default = GameGenie;
 
-// ../src/core/mappers/mapper0.ts
+// src/core/mappers/mapper0.ts
 var Mapper0 = class {
   static {
     this.mapperName = "NROM";
@@ -5547,7 +5547,7 @@ var Mapper0 = class {
 };
 var mapper0_default = Mapper0;
 
-// ../src/core/mappers/mapper1.ts
+// src/core/mappers/mapper1.ts
 var Mapper1 = class extends mapper0_default {
   constructor(nes2) {
     super(nes2);
@@ -5729,7 +5729,7 @@ var Mapper1 = class extends mapper0_default {
 };
 var mapper1_default = Mapper1;
 
-// ../src/core/mappers/mapper2.ts
+// src/core/mappers/mapper2.ts
 var Mapper2 = class extends mapper0_default {
   static {
     this.mapperName = "UxROM";
@@ -5757,7 +5757,7 @@ var Mapper2 = class extends mapper0_default {
 };
 var mapper2_default = Mapper2;
 
-// ../src/core/mappers/mapper3.ts
+// src/core/mappers/mapper3.ts
 var Mapper3 = class extends mapper0_default {
   static {
     this.mapperName = "CNROM";
@@ -5776,7 +5776,7 @@ var Mapper3 = class extends mapper0_default {
 };
 var mapper3_default = Mapper3;
 
-// ../src/core/mappers/mapper4.ts
+// src/core/mappers/mapper4.ts
 var Mapper4 = class _Mapper4 extends mapper0_default {
   static {
     this.mapperName = "MMC3";
@@ -6029,7 +6029,7 @@ var Mapper4 = class _Mapper4 extends mapper0_default {
 };
 var mapper4_default = Mapper4;
 
-// ../src/core/mappers/mapper5.ts
+// src/core/mappers/mapper5.ts
 var Mapper5 = class extends mapper0_default {
   static {
     this.mapperName = "MMC5";
@@ -6802,7 +6802,7 @@ var Mapper5 = class extends mapper0_default {
 };
 var mapper5_default = Mapper5;
 
-// ../src/core/mappers/mapper7.ts
+// src/core/mappers/mapper7.ts
 var Mapper7 = class extends mapper0_default {
   static {
     this.mapperName = "AxROM";
@@ -6833,7 +6833,7 @@ var Mapper7 = class extends mapper0_default {
 };
 var mapper7_default = Mapper7;
 
-// ../src/core/mappers/mapper9.ts
+// src/core/mappers/mapper9.ts
 var Mapper9 = class extends mapper0_default {
   static {
     this.mapperName = "MMC2";
@@ -6951,7 +6951,7 @@ var Mapper9 = class extends mapper0_default {
 };
 var mapper9_default = Mapper9;
 
-// ../src/core/mappers/mapper11.ts
+// src/core/mappers/mapper11.ts
 var Mapper11 = class extends mapper0_default {
   static {
     this.mapperName = "Color Dreams";
@@ -6978,7 +6978,7 @@ var Mapper11 = class extends mapper0_default {
 };
 var mapper11_default = Mapper11;
 
-// ../src/core/mappers/mapper34.ts
+// src/core/mappers/mapper34.ts
 var Mapper34 = class extends mapper0_default {
   static {
     this.mapperName = "BNROM";
@@ -6997,7 +6997,7 @@ var Mapper34 = class extends mapper0_default {
 };
 var mapper34_default = Mapper34;
 
-// ../src/core/mappers/mapper38.ts
+// src/core/mappers/mapper38.ts
 var Mapper38 = class extends mapper0_default {
   static {
     this.mapperName = "PCI556";
@@ -7017,7 +7017,7 @@ var Mapper38 = class extends mapper0_default {
 };
 var mapper38_default = Mapper38;
 
-// ../src/core/mappers/mapper66.ts
+// src/core/mappers/mapper66.ts
 var Mapper66 = class extends mapper0_default {
   static {
     this.mapperName = "GxROM";
@@ -7037,7 +7037,7 @@ var Mapper66 = class extends mapper0_default {
 };
 var mapper66_default = Mapper66;
 
-// ../src/core/mappers/mapper71.ts
+// src/core/mappers/mapper71.ts
 var Mapper71 = class extends mapper0_default {
   static {
     this.mapperName = "Camerica";
@@ -7072,7 +7072,7 @@ var Mapper71 = class extends mapper0_default {
 };
 var mapper71_default = Mapper71;
 
-// ../src/core/mappers/mapper79.ts
+// src/core/mappers/mapper79.ts
 var Mapper79 = class extends mapper0_default {
   static {
     this.mapperName = "NINA-03/NINA-06";
@@ -7090,7 +7090,7 @@ var Mapper79 = class extends mapper0_default {
 };
 var mapper79_default = Mapper79;
 
-// ../src/core/mappers/mapper94.ts
+// src/core/mappers/mapper94.ts
 var Mapper94 = class extends mapper0_default {
   static {
     this.mapperName = "UN1ROM";
@@ -7118,7 +7118,7 @@ var Mapper94 = class extends mapper0_default {
 };
 var mapper94_default = Mapper94;
 
-// ../src/core/mappers/mapper118.ts
+// src/core/mappers/mapper118.ts
 var Mapper118 = class extends mapper4_default {
   static {
     this.mapperName = "TxSROM";
@@ -7184,7 +7184,7 @@ var Mapper118 = class extends mapper4_default {
 };
 var mapper118_default = Mapper118;
 
-// ../src/core/mappers/mapper119.ts
+// src/core/mappers/mapper119.ts
 var Mapper119 = class extends mapper4_default {
   static {
     this.mapperName = "TQROM";
@@ -7370,7 +7370,7 @@ var Mapper119 = class extends mapper4_default {
 };
 var mapper119_default = Mapper119;
 
-// ../src/core/mappers/mapper140.ts
+// src/core/mappers/mapper140.ts
 var Mapper140 = class extends mapper0_default {
   static {
     this.mapperName = "Jaleco JF-11/JF-14";
@@ -7390,7 +7390,7 @@ var Mapper140 = class extends mapper0_default {
 };
 var mapper140_default = Mapper140;
 
-// ../src/core/mappers/mapper180.ts
+// src/core/mappers/mapper180.ts
 var Mapper180 = class extends mapper0_default {
   static {
     this.mapperName = "UNROM (Crazy Climber)";
@@ -7418,7 +7418,7 @@ var Mapper180 = class extends mapper0_default {
 };
 var mapper180_default = Mapper180;
 
-// ../src/core/mappers/mapper240.ts
+// src/core/mappers/mapper240.ts
 var Mapper240 = class extends mapper0_default {
   static {
     this.mapperName = "Mapper 240";
@@ -7438,7 +7438,7 @@ var Mapper240 = class extends mapper0_default {
 };
 var mapper240_default = Mapper240;
 
-// ../src/core/mappers/mapper241.ts
+// src/core/mappers/mapper241.ts
 var Mapper241 = class extends mapper0_default {
   static {
     this.mapperName = "BxROM (Mapper 241)";
@@ -7457,7 +7457,7 @@ var Mapper241 = class extends mapper0_default {
 };
 var mapper241_default = Mapper241;
 
-// ../src/core/mappers/index.ts
+// src/core/mappers/index.ts
 var Mappers = {
   0: mapper0_default,
   1: mapper1_default,
@@ -7483,7 +7483,7 @@ var Mappers = {
 };
 var mappers_default = Mappers;
 
-// ../src/core/rom.ts
+// src/core/rom.ts
 var ROM = class _ROM {
   constructor(nes2) {
     // Mirroring types (instance properties so they're accessible via
@@ -7664,7 +7664,7 @@ var ROM = class _ROM {
 };
 var rom_default = ROM;
 
-// ../src/core/debug/tracer.ts
+// src/core/debug/tracer.ts
 var fs = __toESM(require("fs"));
 var INS_NAMES = [
   "ADC",
@@ -7793,6 +7793,11 @@ function formatInstruction(ctx, instrPC, opcode, opinfo, opbytes) {
       operandStr = "$" + val.toString(16).toUpperCase().padStart(4, "0");
     }
   }
+  if (ctx.opts.format === "fceux") {
+    const frame = (cpu2.nes && cpu2.nes.fpsFrameCount) | 0;
+    const cycle = (cpu2._cpuCycleBase ?? 0) + (opinfo.cycles ?? 0) >>> 0;
+    return `f${frame}`.padEnd(8) + `c${cycle}`.padEnd(13) + `i${ctx.count}`.padEnd(12) + " A:" + a.toString(16).toUpperCase().padStart(2, "0") + " X:" + x.toString(16).toUpperCase().padStart(2, "0") + " Y:" + y.toString(16).toUpperCase().padStart(2, "0") + " S:" + s.toString(16).toUpperCase().padStart(2, "0") + " P:" + formatFlags(status) + `  $${mesenBank.toString(16).toUpperCase().padStart(2, "0")}:` + instrPC.toString(16).toUpperCase().padStart(4, "0") + ": " + bytesStr.padEnd(8, " ") + " " + insName + " " + operandStr;
+  }
   return `i${ctx.count}  $${mesenBank.toString(16).toUpperCase().padStart(2, "0")}:` + instrPC.toString(16).toUpperCase().padStart(4, "0") + ": " + bytesStr.padEnd(8, " ") + " " + insName + " " + operandStr + " A:" + a.toString(16).toUpperCase().padStart(2, "0") + " X:" + x.toString(16).toUpperCase().padStart(2, "0") + " Y:" + y.toString(16).toUpperCase().padStart(2, "0") + " S:" + s.toString(16).toUpperCase().padStart(2, "0") + " P:" + formatFlags(status);
 }
 function formatHwWrite(ctx, category, addr, val, extra) {
@@ -7822,6 +7827,12 @@ function ntMirrorInfo(addr) {
 var Tracer = class {
   constructor() {
     this.ctx = null;
+    /** 跨 start/stop 累计的指令计数 (fceux 全量 trace 续接用) */
+    this._persistentCount = 0;
+  }
+  /** 当前已记录的指令总数 (跨帧累计) */
+  get instructionCount() {
+    return this.ctx ? this.ctx.count : this._persistentCount;
   }
   /** 启动 trace */
   start(nes2, opts = {}) {
@@ -7830,10 +7841,12 @@ var Tracer = class {
     if (opts.outputFile) {
       stream = fs.createWriteStream(opts.outputFile, { flags: "w" });
     }
+    const initialCount = opts.initialCount ?? 0;
+    this._persistentCount = initialCount;
     this.ctx = {
       cpu: cpu2,
       nes: nes2,
-      count: 0,
+      count: initialCount,
       lines: 0,
       stream,
       opts: {
@@ -7850,6 +7863,7 @@ var Tracer = class {
   /** 停止 trace, 关闭文件流 */
   stop() {
     if (this.ctx) {
+      this._persistentCount = this.ctx.count;
       if (this.ctx.stream) {
         this.ctx.stream.end();
       }
@@ -8091,7 +8105,7 @@ var Tracer = class {
   }
 };
 
-// ../src/core/nes.ts
+// src/core/nes.ts
 var NES = class {
   constructor(opts) {
     // The frame loop. PPU is advanced inline after every CPU bus operation
@@ -8293,14 +8307,14 @@ var NES = class {
 };
 var nes_default = NES;
 
-// ../src/core/browser/frame-timer.ts
+// src/core/browser/frame-timer.ts
 var debugEnabled = false;
 try {
   debugEnabled = !!localStorage.getItem("jsnes_debug");
 } catch {
 }
 
-// ../src/core/browser/keyboard.ts
+// src/core/browser/keyboard.ts
 var KEYS = {
   88: [1, controller_default.BUTTON_A, "X"],
   // X
@@ -8342,19 +8356,23 @@ var KEYS = {
   // Num-6
 };
 
-// ../src/core/browser/index.ts
+// src/core/browser/index.ts
 var debugEnabled2 = false;
 try {
   debugEnabled2 = !!localStorage.getItem("jsnes_debug");
 } catch {
 }
 
-// _emu_full.ts
+// scripts/_emu_full.ts
 init_pattern_table_viewer();
 var ROM_PATH = path.join(__dirname, "..", "docs", "roms", "Captain Tsubasa II - Super Striker (Japan).nes");
 var OUT_DIR = path.join(__dirname, "..", "output", "emu-full");
-var TOTAL_FRAMES = 4332;
+var TOTAL_FRAMES = (() => {
+  const v = Number(process.env.EMU_FULL_FRAMES);
+  return Number.isFinite(v) && v > 0 ? v : 4332;
+})();
 var SAMPLE_RATE = 44100;
+var TRACE_ENABLED = process.env.EMU_FULL_TRACE !== "0";
 var CRC_TABLE = (() => {
   const t = new Array(256);
   for (let n = 0; n < 256; n++) {
@@ -8459,6 +8477,38 @@ var audioSamplesL = [];
 var audioSamplesR = [];
 var samplesPerFrame = [];
 var apuWritesPerFrame = [];
+var frameTraceLines = null;
+var frameTracePath = "";
+var instrCountThisFrame = 0;
+var totalInstrCount = 0;
+var tracedFrames = 0;
+function beginFrameTrace() {
+  frameTraceLines = [];
+  instrCountThisFrame = 0;
+}
+function setFrameTracePath(p) {
+  frameTracePath = p;
+}
+function flushFrameTrace() {
+  if (frameTraceLines && frameTraceLines.length > 0) {
+    fs2.writeFileSync(frameTracePath, frameTraceLines.join("\n") + "\n");
+  }
+  frameTraceLines = null;
+}
+function startTrace() {
+  nes.enableTrace({
+    format: "fceux",
+    callback: (line) => {
+      instrCountThisFrame++;
+      if (frameTraceLines) frameTraceLines.push(line);
+    }
+  });
+}
+function stopTrace() {
+  flushFrameTrace();
+  nes.disableTrace();
+  console.log(`[emu-full] cpu trace done: frames=${tracedFrames} instructions=${totalInstrCount}`);
+}
 var romBytes = fs2.readFileSync(ROM_PATH);
 var nes = new nes_default({
   emulateSound: true,
@@ -8487,10 +8537,13 @@ proto.writeReg = function(addr, value) {
 };
 fs2.mkdirSync(OUT_DIR, { recursive: true });
 var t0 = Date.now();
+if (TRACE_ENABLED) startTrace();
+console.log(`[emu-full] cpu trace=${TRACE_ENABLED ? "ON" : "OFF"} (emu-full.log + frame-NNNN/trace.log)`);
 for (let f = 1; f <= TOTAL_FRAMES; f++) {
   currentFrameForHook = f;
   samplesPerFrame.push(0);
   apuWritesPerFrame.push(0);
+  if (TRACE_ENABLED) beginFrameTrace();
   nes.frame();
   if (mmap && Array.isArray(mmap.chrBanks) && typeof mmap.load1kVromBank === "function") {
     for (let slot = 0; slot < 8; slot++) mmap.load1kVromBank(mmap.chrBanks[slot], slot * 1024);
@@ -8499,6 +8552,7 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
   const chrMapByScan = buildChrBankMapByScanline(switches, mmap.chrBanks);
   const frameDir = path.join(OUT_DIR, "frame-" + String(f).padStart(4, "0"));
   fs2.mkdirSync(frameDir, { recursive: true });
+  if (TRACE_ENABLED) setFrameTracePath(path.join(frameDir, "trace.log"));
   fs2.writeFileSync(
     path.join(frameDir, "chr-switches.json"),
     JSON.stringify({
@@ -8584,14 +8638,51 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
     chrBanks: chrMap,
     prgBankMap: prgMap,
     apuWritesThisFrame: apuWritesPerFrame[f - 1],
-    audioSamplesThisFrame: samplesPerFrame[f - 1]
+    audioSamplesThisFrame: samplesPerFrame[f - 1],
+    instrCountThisFrame,
+    cycleBaseAfterFrame: cpu._cpuCycleBase ?? 0
   }, null, 2));
+  if (TRACE_ENABLED) {
+    flushFrameTrace();
+    totalInstrCount += instrCountThisFrame;
+    tracedFrames++;
+  }
   if (f % 200 === 0 || f === 1 || f === TOTAL_FRAMES) {
     const elapsed2 = (Date.now() - t0) / 1e3;
     const fps = f / elapsed2;
     const eta = (TOTAL_FRAMES - f) / fps;
-    console.log(`  f${f}/${TOTAL_FRAMES}  fps=${fps.toFixed(1)}  eta=${eta.toFixed(0)}s  audio=${audioSamplesL.length}  apuWrites=${apuWrites.length}`);
+    console.log(`  f${f}/${TOTAL_FRAMES}  fps=${fps.toFixed(1)}  eta=${eta.toFixed(0)}s  audio=${audioSamplesL.length}  apuWrites=${apuWrites.length}  instr=${totalInstrCount}`);
   }
+}
+if (TRACE_ENABLED) stopTrace();
+if (TRACE_ENABLED) {
+  const ALL_PATH = path.join(OUT_DIR, "emu-full-all.log");
+  const frameDirs = fs2.readdirSync(OUT_DIR).filter((d) => /^frame-\d+$/.test(d)).sort();
+  const ws = fs2.createWriteStream(ALL_PATH, { flags: "w" });
+  let allBytes = 0;
+  let allLines = 0;
+  (async () => {
+    let copied = 0;
+    for (const d of frameDirs) {
+      const p = path.join(OUT_DIR, d, "trace.log");
+      if (!fs2.existsSync(p)) continue;
+      await new Promise((resolve, reject) => {
+        const rs = fs2.createReadStream(p);
+        rs.on("data", (c) => {
+          allBytes += c.length;
+          for (let i = 0; i < c.length; i++) if (c[i] === 10) allLines++;
+        });
+        rs.pipe(ws, { end: false });
+        rs.on("end", resolve);
+        rs.on("error", reject);
+      });
+      copied++;
+    }
+    ws.end();
+    ws.on("finish", () => {
+      console.log(`[emu-full] merged ${copied} frame trace logs -> ${ALL_PATH} (${(allBytes / 1048576).toFixed(1)} MB, ${allLines} lines, per-frame logs kept)`);
+    });
+  })().catch((e) => console.error("[emu-full] merge failed:", e));
 }
 var apuDir = path.join(OUT_DIR, "apu");
 fs2.mkdirSync(apuDir, { recursive: true });

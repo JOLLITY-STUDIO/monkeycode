@@ -23,8 +23,15 @@ import {
 
 const ROM_PATH = path.join(__dirname, '..', 'docs', 'roms', 'Captain Tsubasa II - Super Striker (Japan).nes');
 const OUT_DIR  = path.join(__dirname, '..', 'output', 'emu-full');
-const TOTAL_FRAMES = 4332;
+// EMU_FULL_FRAMES 可覆盖帧数 (快速验证/局部 trace)
+const TOTAL_FRAMES = (() => {
+  const v = Number(process.env.EMU_FULL_FRAMES);
+  return Number.isFinite(v) && v > 0 ? v : 4332;
+})();
 const SAMPLE_RATE = 44100;
+// CPU 指令 trace (FCEUX 风格, 与 docs/roms/opening-all/opening-all.log 同款)
+// EMU_FULL_TRACE=0 可关闭 (旧行为, 只 dump 帧状态)
+const TRACE_ENABLED = process.env.EMU_FULL_TRACE !== '0';
 
 // ── PNG 编码器 ──
 const CRC_TABLE: number[] = (() => {
@@ -84,6 +91,37 @@ const audioSamplesR: number[] = [];
 const samplesPerFrame: number[] = [];
 const apuWritesPerFrame: number[] = [];
 
+// ── CPU 指令 trace (FCEUX 风格) 状态 ──
+// 只写每帧 frame-NNNN/trace.log (约 0.8MB/帧), 不写全量实时流 (与最终 all 重复, 省磁盘)。
+let frameTraceLines: string[] | null = null;          // 当前帧行缓冲 → frame-NNNN/trace.log
+let frameTracePath = '';
+let instrCountThisFrame = 0;                          // 当前帧指令数
+let totalInstrCount = 0;                              // 全量指令数
+let tracedFrames = 0;                                 // 已写 trace.log 的帧数
+
+function beginFrameTrace(): void { frameTraceLines = []; instrCountThisFrame = 0; }
+function setFrameTracePath(p: string): void { frameTracePath = p; }
+function flushFrameTrace(): void {
+  if (frameTraceLines && frameTraceLines.length > 0) {
+    fs.writeFileSync(frameTracePath, frameTraceLines.join('\n') + '\n');
+  }
+  frameTraceLines = null;
+}
+function startTrace(): void {
+  nes.enableTrace({
+    format: 'fceux',
+    callback: (line: string) => {
+      instrCountThisFrame++;
+      if (frameTraceLines) frameTraceLines.push(line);
+    },
+  });
+}
+function stopTrace(): void {
+  flushFrameTrace();
+  nes.disableTrace();
+  console.log(`[emu-full] cpu trace done: frames=${tracedFrames} instructions=${totalInstrCount}`);
+}
+
 // ── 主流程 ──
 const romBytes = fs.readFileSync(ROM_PATH);
 const nes = new NES({
@@ -118,11 +156,16 @@ proto.writeReg = function(addr: number, value: number) {
 fs.mkdirSync(OUT_DIR, { recursive: true });
 const t0 = Date.now();
 
+// ── CPU 指令 trace 启动 (FCEUX 格式全量 log) ──
+if (TRACE_ENABLED) startTrace();
+console.log(`[emu-full] cpu trace=${TRACE_ENABLED ? 'ON' : 'OFF'} (emu-full.log + frame-NNNN/trace.log)`);
+
 // ── 4332 帧逐帧 dump ──
 for (let f = 1; f <= TOTAL_FRAMES; f++) {
   currentFrameForHook = f;
   samplesPerFrame.push(0);
   apuWritesPerFrame.push(0);
+  if (TRACE_ENABLED) beginFrameTrace();
   nes.frame();
 
   // 与 _emu_reference.ts 一致: reload 全部 8 个 1KB CHR slot 到 ptTile
@@ -137,7 +180,10 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
   const frameDir = path.join(OUT_DIR, 'frame-' + String(f).padStart(4, '0'));
   fs.mkdirSync(frameDir, { recursive: true });
 
-  // (0) chr-switches.json
+  // (0) 本帧指令 trace (FCEUX 风格)
+  if (TRACE_ENABLED) setFrameTracePath(path.join(frameDir, 'trace.log'));
+
+  // (0.1) chr-switches.json
   fs.writeFileSync(
     path.join(frameDir, 'chr-switches.json'),
     JSON.stringify({
@@ -239,14 +285,57 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
     prgBankMap: prgMap,
     apuWritesThisFrame: apuWritesPerFrame[f - 1],
     audioSamplesThisFrame: samplesPerFrame[f - 1],
+    instrCountThisFrame,
+    cycleBaseAfterFrame: cpu._cpuCycleBase ?? 0,
   }, null, 2));
+
+  // 帧末: 落盘本帧 trace.log
+  if (TRACE_ENABLED) {
+    flushFrameTrace();
+    totalInstrCount += instrCountThisFrame;
+    tracedFrames++;
+  }
 
   if (f % 200 === 0 || f === 1 || f === TOTAL_FRAMES) {
     const elapsed = (Date.now() - t0) / 1000;
     const fps = f / elapsed;
     const eta = (TOTAL_FRAMES - f) / fps;
-    console.log(`  f${f}/${TOTAL_FRAMES}  fps=${fps.toFixed(1)}  eta=${eta.toFixed(0)}s  audio=${audioSamplesL.length}  apuWrites=${apuWrites.length}`);
+    console.log(`  f${f}/${TOTAL_FRAMES}  fps=${fps.toFixed(1)}  eta=${eta.toFixed(0)}s  audio=${audioSamplesL.length}  apuWrites=${apuWrites.length}  instr=${totalInstrCount}`);
   }
+}
+
+// ── CPU 指令 trace 收尾 ──
+if (TRACE_ENABLED) stopTrace();
+
+// ── 跑完拼接: 所有 frame-*/trace.log -> emu-full-all.log (每帧 log 保留不删) ──
+if (TRACE_ENABLED) {
+  const ALL_PATH = path.join(OUT_DIR, 'emu-full-all.log');
+  const frameDirs = fs.readdirSync(OUT_DIR).filter((d) => /^frame-\d+$/.test(d)).sort();
+  const ws = fs.createWriteStream(ALL_PATH, { flags: 'w' });
+  let allBytes = 0;
+  let allLines = 0;
+  (async () => {
+    let copied = 0;
+    for (const d of frameDirs) {
+      const p = path.join(OUT_DIR, d, 'trace.log');
+      if (!fs.existsSync(p)) continue;
+      await new Promise<void>((resolve, reject) => {
+        const rs = fs.createReadStream(p);
+        rs.on('data', (c: Buffer) => {
+          allBytes += c.length;
+          for (let i = 0; i < c.length; i++) if (c[i] === 10) allLines++;
+        });
+        rs.pipe(ws, { end: false });
+        rs.on('end', resolve);
+        rs.on('error', reject);
+      });
+      copied++;
+    }
+    ws.end();
+    ws.on('finish', () => {
+      console.log(`[emu-full] merged ${copied} frame trace logs -> ${ALL_PATH} (${(allBytes / 1048576).toFixed(1)} MB, ${allLines} lines, per-frame logs kept)`);
+    });
+  })().catch((e) => console.error('[emu-full] merge failed:', e));
 }
 
 // ── APU 产出 ──

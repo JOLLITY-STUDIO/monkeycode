@@ -1,0 +1,20 @@
+node:internal/fs/utils:350
+    throw err;
+    ^
+
+Error: ENOENT: no such file or directory, scandir 'D:\studio\github\monkeycode\src\nes\tsubasa2\output\emu-full'
+    at Object.readdirSync (node:fs:1527:3)
+    at Object.<anonymous> (D:\studio\github\monkeycode\src\nes\tsubasa2\scripts\_merge_trace_logs.cjs:9:19)
+    at Module._compile (node:internal/modules/cjs/loader:1256:14)
+    at Module._extensions..js (node:internal/modules/cjs/loader:1310:10)
+    at Module.load (node:internal/modules/cjs/loader:1119:32)
+    at Module._load (node:internal/modules/cjs/loader:960:12)
+    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:81:12)
+    at node:internal/main/run_main_module:23:47 {
+  errno: -4058,
+  syscall: 'scandir',
+  code: 'ENOENT',
+  path: 'D:\\studio\\github\\monkeycode\\src\\nes\\tsubasa2\\output\\emu-full'
+}
+
+Node.js v18.17.0

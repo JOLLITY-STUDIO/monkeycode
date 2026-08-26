@@ -313,6 +313,10 @@ export function disassemble(addr: number, memRead: (addr: number) => number): {
     bytes.push(memRead((addr + i) & 0xffff) & 0xff);
   }
 
+  // hex helper: FCEUX 全部大写 (与 trace 地址列 / opening-all.log 一致)
+  const h2 = (b: number) => (b & 0xff).toString(16).toUpperCase().padStart(2, '0');
+  const h4 = (v: number) => (v & 0xffff).toString(16).toUpperCase().padStart(4, '0');
+
   let operand = '';
   switch (info.mode) {
     case ADDR_IMP:
@@ -321,47 +325,47 @@ export function disassemble(addr: number, memRead: (addr: number) => number): {
       operand = 'A';
       break;
     case ADDR_IMM:
-      operand = `#$${bytes[1].toString(16).padStart(2, '0')}`;
+      operand = `#$${h2(bytes[1])}`;
       break;
     case ADDR_ZP:
-      operand = `$${bytes[1].toString(16).padStart(2, '0')}`;
+      operand = `$${h2(bytes[1])}`;
       break;
     case ADDR_ZPX:
-      operand = `$${bytes[1].toString(16).padStart(2, '0')},X`;
+      operand = `$${h2(bytes[1])},X`;
       break;
     case ADDR_ZPY:
-      operand = `$${bytes[1].toString(16).padStart(2, '0')},Y`;
+      operand = `$${h2(bytes[1])},Y`;
       break;
     case ADDR_ABS: {
       const absAddr = bytes[1] | (bytes[2] << 8);
-      operand = `$${absAddr.toString(16).padStart(4, '0')}`;
+      operand = `$${h4(absAddr)}`;
       break;
     }
     case ADDR_ABSX: {
       const absAddr = bytes[1] | (bytes[2] << 8);
-      operand = `$${absAddr.toString(16).padStart(4, '0')},X`;
+      operand = `$${h4(absAddr)},X`;
       break;
     }
     case ADDR_ABSY: {
       const absAddr = bytes[1] | (bytes[2] << 8);
-      operand = `$${absAddr.toString(16).padStart(4, '0')},Y`;
+      operand = `$${h4(absAddr)},Y`;
       break;
     }
     case ADDR_INDABS: {
       const absAddr = bytes[1] | (bytes[2] << 8);
-      operand = `($${absAddr.toString(16).padStart(4, '0')})`;
+      operand = `($${h4(absAddr)})`;
       break;
     }
     case ADDR_PREIDXIND:
-      operand = `($${bytes[1].toString(16).padStart(2, '0')},X)`;
+      operand = `($${h2(bytes[1])},X)`;
       break;
     case ADDR_POSTIDXIND:
-      operand = `($${bytes[1].toString(16).padStart(2, '0')}),Y`;
+      operand = `($${h2(bytes[1])}),Y`;
       break;
     case ADDR_REL: {
       const relOffset = bytes[1] < 128 ? bytes[1] : bytes[1] - 256;
       const target = (addr + info.size + relOffset) & 0xffff;
-      operand = `$${target.toString(16).padStart(4, '0')}`;
+      operand = `$${h4(target)}`;
       break;
     }
     default:

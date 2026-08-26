@@ -1,0 +1,26 @@
+
+<--- Last few GCs --->
+
+[6836:0000022293858940]   394472 ms: Scavenge (reduce) 2043.9 (2080.3) -> 2043.5 (2080.3) MB, 61.3 / 0.0 ms  (average mu = 0.338, current mu = 0.320) allocation failure; 
+[6836:0000022293858940]   394590 ms: Scavenge (reduce) 2044.2 (2080.3) -> 2043.9 (2080.8) MB, 68.0 / 0.0 ms  (average mu = 0.338, current mu = 0.320) allocation failure; 
+
+
+<--- JS stacktrace --->
+
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+ 1: 00007FF7E39007BF node_api_throw_syntax_error+175823
+ 2: 00007FF7E3885796 EVP_MD_meth_get_input_blocksize+59654
+ 3: 00007FF7E3887480 EVP_MD_meth_get_input_blocksize+67056
+ 4: 00007FF7E432DCC4 v8::Isolate::ReportExternalAllocationLimitReached+116
+ 5: 00007FF7E4319052 v8::Isolate::Exit+674
+ 6: 00007FF7E419AF0C v8::internal::EmbedderStackStateScope::ExplicitScopeForTesting+124
+ 7: 00007FF7E41A81ED v8::internal::Heap::PublishPendingAllocations+1117
+ 8: 00007FF7E41A5277 v8::internal::Heap::PageFlagsAreConsistent+3367
+ 9: 00007FF7E41979A7 v8::internal::Heap::CollectGarbage+2039
+10: 00007FF7E41AE363 v8::internal::HeapAllocator::AllocateRawWithLightRetrySlowPath+2099
+11: 00007FF7E41AEC0D v8::internal::HeapAllocator::AllocateRawWithRetryOrFailSlowPath+93
+12: 00007FF7E41BE3D0 v8::internal::Factory::NewFillerObject+816
+13: 00007FF7E3EAF315 v8::internal::DateCache::Weekday+1349
+14: 00007FF7E43CB1F1 v8::internal::SetupIsolateDelegate::SetupHeap+558193
+15: 00007FF7E43CC1A4 v8::internal::SetupIsolateDelegate::SetupHeap+562212
+16: 00007FF7646D6BDC 
