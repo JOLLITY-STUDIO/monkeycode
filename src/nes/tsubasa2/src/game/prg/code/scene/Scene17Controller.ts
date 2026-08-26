@@ -1,7 +1,8 @@
 /**
  * Scene17Controller — 场景 17 装载 CHR 配置
  *
- * 行为：loadChrConfig(0x00) → 返回 2 (hub)
+ * @bank 02 (CPU $A77A)
+ * 行为：loadChrConfig(0x80) → 返回 2 (hub)（ROM $A77A: LDA #$80; JSR $8AF7）
  */
 import { SceneController } from './SceneController';
 import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
@@ -18,7 +19,7 @@ export class Scene17Controller extends SceneController {
     this.prim = new RenderingPrimitivesService(store);
   }
   onEnter(): void {
-    this.prim.loadChrConfig(0x00);
+    this.prim.loadChrConfig(0x80);
   }
   onUpdate(_frame: number): number | undefined {
     return NEXT;

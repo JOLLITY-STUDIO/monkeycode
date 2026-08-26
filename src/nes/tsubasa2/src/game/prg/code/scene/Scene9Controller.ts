@@ -1,16 +1,24 @@
 /**
- * Scene9Controller — 场景 9 ram_001B 置 bit6
+ * Scene9Controller — 场景 9 ram_001B 置 bit6（bank02 $85CB-$85D6 实证）
  *
- * 行为：$001B |= 0x40 → 返回 10
+ * 行为（PRG $85CB）：STA $A000（MMC3 寄存器写，H5 省略）→ $001B |= $40 → 返回 2 = hub
  */
 import { SceneController } from './SceneController';
+import type { DataStore } from '../../data/store/DataStore';
+import type { InputService } from '../system/InputService';
+
+const NEXT = 0x02;
 
 export class Scene9Controller extends SceneController {
   readonly sceneId = 9;
+  constructor(store: DataStore, input: InputService) {
+    super(store, input);
+  }
   onEnter(): void {
+    // STA $A000 = MMC3 bank select 写，H5 无硬件窗口，省略
     this.store.writeByte(0x001b, this.store.readByte(0x001b) | 0x40);
   }
   onUpdate(_frame: number): number | undefined {
-    return 0x0a; // → Scene10
+    return NEXT;
   }
 }

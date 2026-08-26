@@ -1,32 +1,68 @@
 /**
- * Scene23Controller — 场景 23 数值显示：转 16bit；查表高/低 4 位 → 写 OAM；各等 6 帧
+ * Scene23Controller — 场景 23 数值显示（BCD + nibble→tile + NT 缓冲光标写入）
  *
- * 用基类 scheduleAfter(6, cb) 替代 this.wait-- 模式（PRG $9FA8 pushState 翻译）。
+ * @bank 02 (CPU $A7FA)
+ *
+ * 行为（已对照 ROM 字节级验证）：
+ *   1. $9E7C BCD 打包：输入 $0028 值 → $00EC=(tens<<4)|ones，$00ED=hundreds
+ *   2. 高位（tens）：若 $00EC & $F0 == 0 → 跳过（不写不等待）
+ *      否则 $AC6D nibble→tile（tens）→ $88CA 单 tile 写 NT 缓冲
+ *      （LDX $0052 / LDY $0053 → $88CA → INC $0053 → 等 6 帧）
+ *   3. 低位（ones）：$AC71 nibble→tile → 同样 $88CA 写入 + INC $0053 + 等 6 帧
+ *   4. 完成 → 返回 2 (hub)
+ *
+ * 等 6 帧用基类 scheduleAfter(6) 替代 PRG $9FA8 pushState 模式。
  */
 import { SceneController } from './SceneController';
+import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
+import type { DataStore } from '../../data/store/DataStore';
+import type { InputService } from '../system/InputService';
 
 const NEXT = 0x02;
 
 export class Scene23Controller extends SceneController {
   readonly sceneId = 23;
-  private waitDone = false;
+  private readonly prim: RenderingPrimitivesService;
+  private phase: 'high' | 'low' | 'done' = 'high';
+  private ready = false;
+  constructor(store: DataStore, input: InputService) {
+    super(store, input);
+    this.prim = new RenderingPrimitivesService(store);
+  }
   onEnter(): void {
-    this.waitDone = false;
-    // PRG $9FA8 pushState 翻译：等 6 帧后切到末态
-    this.scheduleAfter(6, () => {
-      this.waitDone = true;
-    });
+    const store = this.store;
+    // $9E7C BCD 打包（A5 28 20 7C 9E）
+    this.prim.bcdConvert(store.readByte(0x0028));
+    this.phase = (store.readByte(0x00ec) & 0xf0) !== 0 ? 'high' : 'low';
+    this.ready = true;
   }
   onUpdate(_frame: number): number | undefined {
-    if (!this.waitDone) return undefined;
+    if (!this.ready) return undefined;
     const store = this.store;
-    const lo = store.readByte(0x0468);
-    const hi = store.readByte(0x0469);
-    const value = (hi << 8) | lo;
-    const hiNib = (value >> 4) & 0x0f;
-    const loNib = value & 0x0f;
-    store.writeByte(0x0201, hiNib);
-    store.writeByte(0x0205, loNib);
+    if (this.phase === 'high') {
+      // 高位（tens）
+      const tile = this.prim.nibbleToTile(store.readByte(0x00ec), true);
+      this.writeDigit(tile);
+      this.phase = 'low';
+      this.ready = false;
+      this.scheduleAfter(6, () => { this.ready = true; });
+      return undefined;
+    }
+    if (this.phase === 'low') {
+      // 低位（ones）
+      const tile = this.prim.nibbleToTile(store.readByte(0x00ec), false);
+      this.writeDigit(tile);
+      this.phase = 'done';
+      this.ready = false;
+      this.scheduleAfter(6, () => { this.ready = true; });
+      return undefined;
+    }
     return NEXT;
+  }
+  /** $88CA 单 tile 写 NT 缓冲 + INC $0053 光标 */
+  private writeDigit(tile: number): void {
+    const store = this.store;
+    this.prim.writeSingleTileToNt(tile, store.readByte(0x0052), store.readByte(0x0053));
+    store.writeByte(0x0053, (store.readByte(0x0053) + 1) & 0xff);
   }
 }

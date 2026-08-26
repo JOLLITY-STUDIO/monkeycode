@@ -1,8 +1,8 @@
 /**
- * Scene12Controller — 场景 12 同 11，但装载场景数据 8
+ * Scene12Controller — 场景 12（bank02 $8603-$861C 实证），同 11 但装载场景数据 8
  *
  * 行为：if ($000D != 0) { $000D=0; $000E=0; } else { loadChrConfig(0x30); loadSceneData(8); }
- * 返回 13
+ * 两分支均返回 2 = hub
  */
 import { SceneController } from './SceneController';
 import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
@@ -27,6 +27,6 @@ export class Scene12Controller extends SceneController {
     }
   }
   onUpdate(_frame: number): number | undefined {
-    return 0x0d; // → Scene13
+    return 0x02; // → hub
   }
 }

@@ -96,6 +96,11 @@ export class BootRouter {
 
   private scheduler: Bank00SchedulerService | null = null;
 
+  // ⚠️ BUG #014 修复悬而未决：
+  //   boot logo 装载归属有争议 — 是 bank00 boot main loop 还是 bank02 dispatch
+  //   处理尚未从 trace log 实证。当前 Scene0.onEnter 保留 stub 等用户确认
+  //   归属后再决定 bootHook 放哪里。
+
   /**
    * 自动注册 5 entry dispatcher actions（PRG $800D-$8014 翻译）。
    *

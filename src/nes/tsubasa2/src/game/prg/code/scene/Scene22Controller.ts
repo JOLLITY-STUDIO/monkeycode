@@ -1,11 +1,21 @@
 /**
- * Scene22Controller — 场景 22 循环 0x80 次 {等1帧; 屏外精灵 attr |= $04}
+ * Scene22Controller — 场景 22 精灵属性置位循环（扩展精灵表 $0468）
  *
- * 等 1 帧用基类 scheduleAfter(1, cb) 替代 this.wait-- 模式（PRG $9FA8 翻译）。
+ * @bank 02 (CPU $A7D6)
+ *
+ * 行为（已对照 ROM 字节级验证）：
+ *   0x80 次外迭代，每次 { 内层 X=$20..$C4 步长 4：
+ *       若 $0468,X (y) 有符号 < 0（bit7=1，屏外）→ $046A,X |= $04；等 1 帧 }
+ *   完成 → 返回 2 (hub)
+ *
+ * 等 1 帧用基类 scheduleAfter(1) 替代 PRG $9FA8 pushState 模式。
  */
 import { SceneController } from './SceneController';
 
 const NEXT = 0x02;
+const OUTER = 0x80;
+const INNER_START = 0x20;
+const INNER_END = 0xc4;
 
 export class Scene22Controller extends SceneController {
   readonly sceneId = 22;
@@ -17,13 +27,13 @@ export class Scene22Controller extends SceneController {
   }
   onUpdate(_frame: number): number | undefined {
     if (!this.ready) return undefined;
-    if (this.iter >= 0x80) return NEXT;
+    if (this.iter >= OUTER) return NEXT;
     const store = this.store;
-    for (let i = 0; i < 0x100; i += 4) {
-      const y = store.readByte(0x0200 + i);
-      if (y >= 0xf0) {
-        const attr = store.readByte(0x0202 + i);
-        store.writeByte(0x0202 + i, attr | 0x04);
+    // 内层：$0468 扩展精灵表，X=$20..$C4 步长 4
+    for (let x = INNER_START; x <= INNER_END; x += 4) {
+      const y = store.readByte(0x0468 + x);
+      if ((y & 0x80) !== 0) {
+        store.writeByte(0x046a + x, store.readByte(0x046a + x) | 0x04);
       }
     }
     this.iter++;

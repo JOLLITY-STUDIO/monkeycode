@@ -1,8 +1,8 @@
 /**
- * Scene11Controller — 场景 11 分支型：若 $000D≠0 清 $000D/$000E；否则装载 CHR 0x10 + 场景数据 6
+ * Scene11Controller — 场景 11 分支型（bank02 $85E9-$85FD 实证）
  *
  * 行为：if ($000D != 0) { $000D=0; $000E=0; } else { loadChrConfig(0x10); loadSceneData(6); }
- * 返回 12
+ * 两分支均返回 2 = hub
  */
 import { SceneController } from './SceneController';
 import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
@@ -27,6 +27,6 @@ export class Scene11Controller extends SceneController {
     }
   }
   onUpdate(_frame: number): number | undefined {
-    return 0x0c; // → Scene12
+    return 0x02; // → hub
   }
 }

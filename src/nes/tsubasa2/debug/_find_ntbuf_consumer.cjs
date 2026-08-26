@@ -1,28 +1,21 @@
-// 在 asm 中找 $05E8 NT 缓冲消费者（NMI）
+/* 临时脚本：在所有 asm 中定位 $05E8 / $0628 缓冲消费者 */
 const fs = require('fs');
 const path = require('path');
-const dir = 'src/asm';
-const out = [];
 function walk(d) {
-  for (const f of fs.readdirSync(d)) {
-    const p = path.join(d, f);
-    if (fs.statSync(p).isDirectory()) walk(p);
-    else if (f.endsWith('.s')) out.push(p);
+  let r = [];
+  for (const e of fs.readdirSync(d)) {
+    const p = path.join(d, e);
+    const st = fs.statSync(p);
+    if (st.isDirectory()) r = r.concat(walk(p));
+    else if (e.endsWith('.s')) r.push(p);
   }
+  return r;
 }
-walk(dir);
-let found = [];
-for (const f of out) {
-  const lines = fs.readFileSync(f, 'utf8').split('\n');
-  for (let i = 0; i < lines.length; i++) {
-    const l = lines[i].toUpperCase();
-    // 找 LDA/LDX/LDY/STA/JSR 涉及 $05E8/$05E9/$05EA 或 0x05E8
-    if (l.includes('05E8') || l.includes('05E9') || l.includes('05EA') || l.includes('05EB')) {
-      if (/LD[AXY]|STA|CMP|BIT|ASL|LSR|ROL|ROR/.test(l)) {
-        found.push(`${f}:${i + 1}: ${lines[i].trim()}`);
-      }
+for (const f of walk('src/asm')) {
+  const s = fs.readFileSync(f, 'utf8').split(/\r?\n/);
+  s.forEach((l, i) => {
+    if (/05E8|0628/.test(l) && /LDA|LDX|CMP|STA|ADC|DEC|INC/.test(l)) {
+      console.log(f + ' ' + (i + 1) + ': ' + l.trim());
     }
-  }
+  });
 }
-console.log('files scanned:', out.length, 'hits:', found.length);
-console.log(found.slice(0, 80).join('\n'));

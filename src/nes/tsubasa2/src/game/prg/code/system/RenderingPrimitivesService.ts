@@ -23,6 +23,7 @@ import {
 import { OPENING_TILE_STREAMS } from '../../data/scene/bank7-streams';
 import { BOOT_TECMO_OAM_TABLE } from '../../data/tables/opening-sprites';
 import { PALETTE_TABLE, loadPalette } from '../../data/tables/palette-table';
+import { SCENE16_A677_BLOB, SCENE16_A67B_BLOB, TILE_MAP_HIGH } from '../../data/tables/scene-bank02-tables';
 
 export class RenderingPrimitivesService {
   constructor(private readonly store: DataStore) {}
@@ -404,5 +405,117 @@ export class RenderingPrimitivesService {
       const addr = 0x2c00 + row * 32;
       this.ntBufferAppend({ vertical: false, ntAddr: addr, data: line });
     }
+  }
+
+  // ──────────────────────────── 场景14+ 原语（bank02 实证） ────────────────────────────
+
+  /**
+   * NT 纹理装载（对应 bank00 $8976 + $9085 流装载器，X=$BD/Y=$23 参数）。
+   *
+   * ROM 行为：从 $E500 流（PRG 末 bank）逐行装载 NT 图案并追加 NT 缓冲。
+   * H5 注：$E500 流为银行切换型 tile 指针流，跨 bank 数据未完全还原；
+   *       以 NT0/NT1 下屏区填充 $55 近似（与既有 Scene14 表现一致），
+   *        后续若还原流数据可替换为声明式表驱动。
+   */
+  loadNtTexture(addrLo: number, addrHi: number): void {
+    void addrLo;
+    void addrHi;
+    const store = this.store;
+    for (let addr = 0x2400; addr <= 0x2bff; addr++) {
+      store.writeByte(addr, 0x55);
+    }
+  }
+
+  /**
+   * $A82F 精灵属性清位（单次外迭代，对应 ROM $882F 内循环体）。
+   * 行为：X 从 start 到 end（步长 4）：若 $0468,X (y) < $82 → $046A,X &= ~$0C。
+   * 调用方需自行按帧节奏驱动（ROM 每外迭代前 LDA #$01; JSR $9FA8 等 1 帧）。
+   */
+  a82fClearSpriteAttrIter(endIdx: number, startIdx: number): void {
+    const store = this.store;
+    const end = endIdx & 0xff;
+    for (let x = startIdx & 0xff; x !== end; x = (x + 4) & 0xff) {
+      if (store.readByte(0x0468 + x) < 0x82) {
+        store.writeByte(0x046a + x, store.readByte(0x046a + x) & 0xf3);
+      }
+    }
+  }
+
+  /**
+   * $A72C 精灵压印（单次迭代，对应 ROM $A72C 内循环体）。
+   * 行为：y 光标 += dy；x 光标 += dx；若 (x & mask) != 0 → 跳过写并保持索引；
+   *       否则在 $0468+spriteIdx 写 [y, tile, attr, x]，索引 += 4。
+   * @returns 下次精灵索引（跳过时不变）
+   */
+  a72cStampSprite(tile: number, spriteIdx: number, attr: number, dx: number, dy: number, mask: number): number {
+    const store = this.store;
+    const y = (store.readByte(0x04e4) + (dy & 0xff)) & 0xff;
+    const x = (store.readByte(0x04e7) + (dx & 0xff)) & 0xff;
+    store.writeByte(0x04e4, y);
+    store.writeByte(0x04e7, x);
+    const idx = spriteIdx & 0xff;
+    if ((x & mask) !== 0) return idx;
+    store.writeByte(0x0468 + idx, y);
+    store.writeByte(0x0469 + idx, tile & 0xff);
+    store.writeByte(0x046a + idx, attr & 0xff);
+    store.writeByte(0x046b + idx, x);
+    return (idx + 4) & 0xff;
+  }
+
+  /**
+   * 场景16 $A767 复制块：SCENE16_A677_BLOB → RAM $03E8（两分支均执行）；
+   * branch=2 追加 SCENE16_A67B_BLOB → RAM $0460。
+   */
+  copyScene16Blobs(branch: 1 | 2): void {
+    const store = this.store;
+    SCENE16_A677_BLOB.forEach((b, i) => store.writeByte(0x03e8 + i, b));
+    if (branch === 2) {
+      SCENE16_A67B_BLOB.forEach((b, i) => store.writeByte(0x0460 + i, b));
+    }
+  }
+
+  /**
+   * $88CA 单 tile 写入 NT 缓冲（对应 ROM $88CA）。
+   * 参数：tile（A）、addrHi（X=$0052）、addrLo（Y=$0053）。
+   * tile < $A0 → 直接项 data=[0x00, tile]；≥ $A0 → 映射项 [0x94/0x95, TILE_MAP_HIGH[tile-$A0]]。
+   */
+  writeSingleTileToNt(tile: number, addrHi: number, addrLo: number): void {
+    const ntAddr = (((addrHi & 0xff) << 8) | (addrLo & 0xff)) & 0x3fff;
+    const t = tile & 0xff;
+    if (t < 0xa0) {
+      this.ntBufferAppend({ vertical: false, ntAddr, data: [0x00, t] });
+      return;
+    }
+    const highCtrl = t >= 0xc8 ? 0x95 : 0x94;
+    const mapped = TILE_MAP_HIGH[(t - 0xa0) & 0xff] ?? 0x00;
+    this.ntBufferAppend({ vertical: false, ntAddr, data: [highCtrl, mapped & 0xff] });
+  }
+
+  /**
+   * $AC6D/$AC71 nibble→tile：nibble + $33；≥ $3D 再 +$44。
+   * 0-9 → $33-$3C；A-F → $81-$86。
+   */
+  nibbleToTile(value: number, highNibble: boolean): number {
+    const nib = highNibble ? ((value >> 4) & 0x0f) : (value & 0x0f);
+    let t = nib + 0x33;
+    if (t >= 0x3d) t += 0x44;
+    return t & 0xff;
+  }
+
+  /**
+   * $9E7C BCD 打包（÷10 三次）：$00EC = (tens<<4)|ones；$00ED = hundreds。
+   * 返回解包后的 {tens, ones, hundreds} 供调用方使用。
+   */
+  bcdConvert(value: number): { tens: number; ones: number; hundreds: number } {
+    const store = this.store;
+    let v = value & 0xff;
+    const ones = v % 10;
+    v = Math.floor(v / 10);
+    const tens = v % 10;
+    v = Math.floor(v / 10);
+    const hundreds = v % 10;
+    store.writeByte(0x00ec, ((tens << 4) | ones) & 0xff);
+    store.writeByte(0x00ed, hundreds & 0xff);
+    return { tens, ones, hundreds };
   }
 }

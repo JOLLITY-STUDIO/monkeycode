@@ -1,63 +1,64 @@
 /**
- * Scene15Controller — 场景 15 NT 缓冲写入长场景
+ * Scene15Controller — 场景 15 NT 缓冲逐记录零填充
  *
- * 行为：消费 NT 缓冲流（$05E8 起的 RLE 项）→ 写完返回 2 (hub)
+ * @bank 02 ($A650 入口，CPU $A651-$A69B)
  *
- * RLE 项之间"等 1 帧"用基类 scheduleAfter(1, cb) 替代 this.waitFrames-- 模式。
+ * 行为（已对照 ROM 字节级验证，表 CPU $AA97，24 条 3 字节记录）：
+ *   遍历 SCENE15_AA97_TABLE：
+ *     ntAddr = (((($007B & 1) << 2) | (flag & $7F)) << 8 | addrLo) & $3FFF
+ *     向 NT 缓冲追加 count & $3F 个 $00（$9B28 强制 count&$3F）
+ *     追加后判定：flag bit7 → 返回 2 (hub)；flag bit6 → 等 2 帧再下一条；
+ *     否则（bit6 清）→ 立即处理下一条
+ * 等帧用基类 scheduleAfter 替代 PRG $9FA8 pushState 模式。
  */
 import { SceneController } from './SceneController';
 import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
+import { SCENE15_AA97_TABLE } from '../../data/tables/scene-bank02-tables';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 
 const NEXT = 0x02;
+/** NT 缓冲单条容量上限（appendNtBuffer 0x40 字节含 3 字节头） */
+const CHUNK = 0x3d;
 
 export class Scene15Controller extends SceneController {
   readonly sceneId = 15;
   private readonly prim: RenderingPrimitivesService;
   private cursor = 0;
-  /** RLE 项之间等 1 帧 — scheduler 派发回调后置 true */
-  private waitDone = true;
+  /** 等 2 帧（flag bit6）调度态 */
+  private waiting = false;
   constructor(store: DataStore, input: InputService) {
     super(store, input);
     this.prim = new RenderingPrimitivesService(store);
   }
   onEnter(): void {
     this.cursor = 0;
-    this.waitDone = true;
+    this.waiting = false;
   }
   onUpdate(_frame: number): number | undefined {
-    if (!this.waitDone) return undefined;
+    if (this.waiting) return undefined;
+    const table = SCENE15_AA97_TABLE;
+    if (this.cursor >= table.length) return NEXT;
+    const rec = table[this.cursor];
     const store = this.store;
-    const bufAddr = 0x05e8;
-    const count = store.readByte(bufAddr);
-    if (count === 0) return NEXT; // 流结束 → hub
-    if ((count & 0x80) !== 0) {
-      // RLE 项：count & 0x7F = 重复次数
-      const rep = count & 0x7f;
-      const addrHi = store.readByte(bufAddr + 1);
-      const addrLo = store.readByte(bufAddr + 2);
-      const tile = store.readByte(bufAddr + 3);
-      const ntAddr = ((addrHi & 0x3f) << 8) | addrLo;
-      const data: number[] = [];
-      for (let i = 0; i < rep; i++) data.push(tile);
-      this.prim.ntBufferAppend({ vertical: false, ntAddr, data });
-      store.writeByte(bufAddr, 0);
-      // PRG $9FA8 pushState 翻译：RLE 项后等 1 帧
-      this.waitDone = false;
-      this.scheduleAfter(1, () => { this.waitDone = true; });
-      return undefined;
-    } else {
-      // 直接项：count = 字节数
-      const len = count;
-      const addrHi = store.readByte(bufAddr + 1);
-      const addrLo = store.readByte(bufAddr + 2);
-      const ntAddr = ((addrHi & 0x3f) << 8) | addrLo;
-      const data: number[] = [];
-      for (let i = 0; i < len; i++) data.push(store.readByte(bufAddr + 3 + i));
-      this.prim.ntBufferAppend({ vertical: false, ntAddr, data });
-      store.writeByte(bufAddr, 0);
-      return undefined;
+    // ntAddr 高位 = (($007B&1)<<2) | (flag&$7F)，整表 & $3FFF
+    const addrHi = (((store.readByte(0x007b) & 1) << 2) | (rec.flag & 0x7f)) & 0xff;
+    const ntAddr = ((addrHi << 8) | (rec.addrLo & 0xff)) & 0x3fff;
+    const len = rec.count & 0x3f; // $9B28 强制 count&$3F
+    // 追加零填充（按 CHUNK 分片，防 NT 缓冲 0x40 容量溢出）
+    let written = 0;
+    while (written < len) {
+      const n = Math.min(CHUNK, len - written);
+      this.prim.ntBufferAppend({ vertical: false, ntAddr: (ntAddr + written) & 0x3fff, data: new Array(n).fill(0) });
+      written += n;
     }
+    this.cursor++;
+    if ((rec.flag & 0x80) !== 0) return NEXT; // bit7 → 结束
+    if ((rec.flag & 0x40) !== 0) {
+      // bit6 → 等 2 帧后处理下一条
+      this.waiting = true;
+      this.scheduleAfter(2, () => { this.waiting = false; });
+    }
+    return undefined;
   }
 }
