@@ -61,7 +61,7 @@ export { OpeningSceneController, OPENING_SCENE_ID } from './scene/OpeningSceneCo
 // story
 export { ScriptEngine } from './story/ScriptEngine';
 export type { ScriptContext } from './story/ScriptEngine';
-export { ScriptOpcode, initScriptOpcodes } from './story/ScriptOpcodes';
+export { ScriptOpcode, initScriptOpcodes, setScriptRuntime } from './story/ScriptOpcodes';
 export { ScriptLoader } from './story/ScriptLoader';
 export type { ScriptSegment } from './story/ScriptLoader';
 export { CharMap } from './story/CharMap';
