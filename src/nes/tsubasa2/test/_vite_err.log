@@ -1,0 +1,8 @@
+file:///C:/Users/yangyp/AppData/Local/npm-cache/_npx/9ed06546b0653f96/node_modules/rolldown/dist/shared/create-bundler-option-Cj0juyCQ.mjs:8
+import { formatWithOptions, styleText } from "node:util";
+                            ^^^^^^^^^
+SyntaxError: The requested module 'node:util' does not provide an export named 'styleText'
+    at ModuleJob._instantiate (node:internal/modules/esm/module_job:124:21)
+    at async ModuleJob.run (node:internal/modules/esm/module_job:190:5)
+
+Node.js v18.17.0

@@ -1,0 +1,5 @@
+WARNING: JAVA_HOME environment variable is set to an invalid directory: D:\dev\jdk-17.0.20+8
+
+ERROR: The 'java' command could not be found in your PATH or with JAVA_HOME.
+Please refer to the Getting Started document's Troubleshooting section.
+请按任意键继续. . . 

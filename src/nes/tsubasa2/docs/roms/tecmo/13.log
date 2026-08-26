@@ -1,0 +1,1070 @@
+f6      c154585      i582750      A:7D X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c154588      i582751      A:7D X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c154590      i582752      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0483 = #$00
+f6      c154596      i582753      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$83
+f6      c154601      i582754      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c154604      i582755      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c154608      i582756      A:7D X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c154610      i582757      A:7D X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c154612      i582758      A:7C X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c154615      i582759      A:7C X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c154618      i582760      A:7C X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c154620      i582761      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0484 = #$00
+f6      c154626      i582762      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$84
+f6      c154631      i582763      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c154634      i582764      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c154638      i582765      A:7C X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c154640      i582766      A:7C X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c154642      i582767      A:7B X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c154645      i582768      A:7B X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c154648      i582769      A:7B X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c154650      i582770      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0485 = #$00
+f6      c154656      i582771      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$85
+f6      c154661      i582772      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c154664      i582773      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c154668      i582774      A:7B X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c154670      i582775      A:7B X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c154672      i582776      A:7A X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c154675      i582777      A:7A X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c154678      i582778      A:7A X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c154680      i582779      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0486 = #$00
+f6      c154686      i582780      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$86
+f6      c154691      i582781      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c154694      i582782      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c154698      i582783      A:7A X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c154700      i582784      A:7A X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c154702      i582785      A:79 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c154705      i582786      A:79 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c154708      i582787      A:79 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c154710      i582788      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0487 = #$00
+f6      c154716      i582789      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$87
+f6      c154721      i582790      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c154724      i582791      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c154728      i582792      A:79 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c155455      i583011      A:60 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c155458      i583012      A:60 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c155460      i583013      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04A0 = #$00
+f6      c155466      i583014      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$A0
+f6      c155471      i583015      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c155474      i583016      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c155478      i583017      A:60 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c155480      i583018      A:60 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c155482      i583019      A:5F X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c155485      i583020      A:5F X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c155488      i583021      A:5F X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c155490      i583022      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04A1 = #$00
+f6      c155496      i583023      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$A1
+f6      c155501      i583024      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c155504      i583025      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c155508      i583026      A:5F X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c155510      i583027      A:5F X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c155512      i583028      A:5E X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c155515      i583029      A:5E X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c155518      i583030      A:5E X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c155520      i583031      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04A2 = #$00
+f6      c155526      i583032      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$A2
+f6      c155531      i583033      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c155534      i583034      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c155538      i583035      A:5E X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c155540      i583036      A:5E X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c155542      i583037      A:5D X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c155545      i583038      A:5D X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c155548      i583039      A:5D X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c155550      i583040      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04A3 = #$00
+f6      c155556      i583041      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$A3
+f6      c155561      i583042      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c155564      i583043      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c155568      i583044      A:5D X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c155570      i583045      A:5D X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c155572      i583046      A:5C X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c155575      i583047      A:5C X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c155578      i583048      A:5C X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c155580      i583049      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04A4 = #$00
+f6      c155586      i583050      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$A4
+f6      c155591      i583051      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c155594      i583052      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c155598      i583053      A:5C X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c156325      i583272      A:43 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c156328      i583273      A:43 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c156330      i583274      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04BD = #$00
+f6      c156336      i583275      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$BD
+f6      c156341      i583276      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c156344      i583277      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c156348      i583278      A:43 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c156350      i583279      A:43 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c156352      i583280      A:42 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c156355      i583281      A:42 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c156358      i583282      A:42 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c156360      i583283      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04BE = #$00
+f6      c156366      i583284      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$BE
+f6      c156371      i583285      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c156374      i583286      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c156378      i583287      A:42 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c156380      i583288      A:42 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c156382      i583289      A:41 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c156385      i583290      A:41 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c156388      i583291      A:41 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c156390      i583292      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04BF = #$00
+f6      c156396      i583293      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$BF
+f6      c156401      i583294      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c156404      i583295      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c156408      i583296      A:41 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c156410      i583297      A:41 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c156412      i583298      A:40 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c156415      i583299      A:40 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c156418      i583300      A:40 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c156420      i583301      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04C0 = #$00
+f6      c156426      i583302      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$C0
+f6      c156431      i583303      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c156434      i583304      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c156438      i583305      A:40 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c156440      i583306      A:40 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c156442      i583307      A:3F X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c156445      i583308      A:3F X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c156448      i583309      A:3F X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c156450      i583310      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04C1 = #$00
+f6      c156456      i583311      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$C1
+f6      c156461      i583312      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c156464      i583313      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c156468      i583314      A:3F X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c157195      i583533      A:26 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c157198      i583534      A:26 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c157200      i583535      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04DA = #$00
+f6      c157206      i583536      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$DA
+f6      c157211      i583537      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c157214      i583538      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c157218      i583539      A:26 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c157220      i583540      A:26 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c157222      i583541      A:25 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c157225      i583542      A:25 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c157228      i583543      A:25 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c157230      i583544      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04DB = #$00
+f6      c157236      i583545      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$DB
+f6      c157241      i583546      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c157244      i583547      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c157248      i583548      A:25 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c157250      i583549      A:25 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c157252      i583550      A:24 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c157255      i583551      A:24 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c157258      i583552      A:24 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c157260      i583553      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04DC = #$00
+f6      c157266      i583554      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$DC
+f6      c157271      i583555      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c157274      i583556      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c157278      i583557      A:24 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c157280      i583558      A:24 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c157282      i583559      A:23 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c157285      i583560      A:23 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c157288      i583561      A:23 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c157290      i583562      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04DD = #$00
+f6      c157296      i583563      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$DD
+f6      c157301      i583564      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c157304      i583565      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c157308      i583566      A:23 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c157310      i583567      A:23 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c157312      i583568      A:22 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c157315      i583569      A:22 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c157318      i583570      A:22 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c157320      i583571      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04DE = #$00
+f6      c157326      i583572      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$DE
+f6      c157331      i583573      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c157334      i583574      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c157338      i583575      A:22 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c158065      i583794      A:09 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c158068      i583795      A:09 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c158070      i583796      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04F7 = #$00
+f6      c158076      i583797      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$F7
+f6      c158081      i583798      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c158084      i583799      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c158088      i583800      A:09 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c158090      i583801      A:09 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c158092      i583802      A:08 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c158095      i583803      A:08 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c158098      i583804      A:08 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c158100      i583805      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04F8 = #$00
+f6      c158106      i583806      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$F8
+f6      c158111      i583807      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c158114      i583808      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c158118      i583809      A:08 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c158120      i583810      A:08 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c158122      i583811      A:07 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c158125      i583812      A:07 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c158128      i583813      A:07 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c158130      i583814      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04F9 = #$00
+f6      c158136      i583815      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$F9
+f6      c158141      i583816      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c158144      i583817      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c158148      i583818      A:07 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c158150      i583819      A:07 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c158152      i583820      A:06 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c158155      i583821      A:06 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c158158      i583822      A:06 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c158160      i583823      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04FA = #$00
+f6      c158166      i583824      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$FA
+f6      c158171      i583825      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c158174      i583826      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c158178      i583827      A:06 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c158180      i583828      A:06 X:03 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c158182      i583829      A:05 X:03 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c158185      i583830      A:05 X:03 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c158188      i583831      A:05 X:03 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c158190      i583832      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $04FB = #$00
+f6      c158196      i583833      A:00 X:03 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$FB
+f6      c158201      i583834      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c158204      i583835      A:00 X:03 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c158208      i583836      A:05 X:03 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c158643      i583968      A:F6 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c158646      i583969      A:F6 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c158648      i583970      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $050A = #$00
+f6      c158654      i583971      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$0A
+f6      c158659      i583972      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c158662      i583973      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c158666      i583974      A:F6 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c158668      i583975      A:F6 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c158670      i583976      A:F5 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c158673      i583977      A:F5 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c158676      i583978      A:F5 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c158678      i583979      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $050B = #$00
+f6      c158684      i583980      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$0B
+f6      c158689      i583981      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c158692      i583982      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c158696      i583983      A:F5 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c158698      i583984      A:F5 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c158700      i583985      A:F4 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c158703      i583986      A:F4 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c158706      i583987      A:F4 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c158708      i583988      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $050C = #$00
+f6      c158714      i583989      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$0C
+f6      c158719      i583990      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c158722      i583991      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c158726      i583992      A:F4 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c158728      i583993      A:F4 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c158730      i583994      A:F3 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c158733      i583995      A:F3 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c158736      i583996      A:F3 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c158738      i583997      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $050D = #$00
+f6      c158744      i583998      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$0D
+f6      c158749      i583999      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c158752      i584000      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c158756      i584001      A:F3 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c158758      i584002      A:F3 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c158760      i584003      A:F2 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c158763      i584004      A:F2 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c158766      i584005      A:F2 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c158768      i584006      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $050E = #$00
+f6      c158774      i584007      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$0E
+f6      c158779      i584008      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c158782      i584009      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c158786      i584010      A:F2 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c159513      i584229      A:D9 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c159516      i584230      A:D9 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c159518      i584231      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0527 = #$00
+f6      c159524      i584232      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$27
+f6      c159529      i584233      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c159532      i584234      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c159536      i584235      A:D9 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c159538      i584236      A:D9 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c159540      i584237      A:D8 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c159543      i584238      A:D8 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c159546      i584239      A:D8 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c159548      i584240      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0528 = #$00
+f6      c159554      i584241      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$28
+f6      c159559      i584242      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c159562      i584243      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c159566      i584244      A:D8 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c159568      i584245      A:D8 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c159570      i584246      A:D7 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c159573      i584247      A:D7 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c159576      i584248      A:D7 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c159578      i584249      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0529 = #$00
+f6      c159584      i584250      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$29
+f6      c159589      i584251      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c159592      i584252      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c159596      i584253      A:D7 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c159598      i584254      A:D7 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c159600      i584255      A:D6 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c159603      i584256      A:D6 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c159606      i584257      A:D6 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c159608      i584258      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $052A = #$00
+f6      c159614      i584259      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$2A
+f6      c159619      i584260      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c159622      i584261      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c159626      i584262      A:D6 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c159628      i584263      A:D6 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c159630      i584264      A:D5 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c159633      i584265      A:D5 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c159636      i584266      A:D5 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c159638      i584267      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $052B = #$00
+f6      c159644      i584268      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$2B
+f6      c159649      i584269      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c159652      i584270      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c159656      i584271      A:D5 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c160383      i584490      A:BC X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c160386      i584491      A:BC X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c160388      i584492      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0544 = #$00
+f6      c160394      i584493      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$44
+f6      c160399      i584494      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c160402      i584495      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c160406      i584496      A:BC X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c160408      i584497      A:BC X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c160410      i584498      A:BB X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c160413      i584499      A:BB X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c160416      i584500      A:BB X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c160418      i584501      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0545 = #$00
+f6      c160424      i584502      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$45
+f6      c160429      i584503      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c160432      i584504      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c160436      i584505      A:BB X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c160438      i584506      A:BB X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c160440      i584507      A:BA X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c160443      i584508      A:BA X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c160446      i584509      A:BA X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c160448      i584510      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0546 = #$00
+f6      c160454      i584511      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$46
+f6      c160459      i584512      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c160462      i584513      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c160466      i584514      A:BA X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c160468      i584515      A:BA X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c160470      i584516      A:B9 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c160473      i584517      A:B9 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c160476      i584518      A:B9 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c160478      i584519      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0547 = #$00
+f6      c160484      i584520      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$47
+f6      c160489      i584521      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c160492      i584522      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c160496      i584523      A:B9 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c160498      i584524      A:B9 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c160500      i584525      A:B8 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c160503      i584526      A:B8 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c160506      i584527      A:B8 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c160508      i584528      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0548 = #$00
+f6      c160514      i584529      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$48
+f6      c160519      i584530      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c160522      i584531      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c160526      i584532      A:B8 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c161253      i584751      A:9F X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c161256      i584752      A:9F X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c161258      i584753      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0561 = #$00
+f6      c161264      i584754      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$61
+f6      c161269      i584755      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c161272      i584756      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c161276      i584757      A:9F X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c161278      i584758      A:9F X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c161280      i584759      A:9E X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c161283      i584760      A:9E X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c161286      i584761      A:9E X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c161288      i584762      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0562 = #$00
+f6      c161294      i584763      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$62
+f6      c161299      i584764      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c161302      i584765      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c161306      i584766      A:9E X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c161308      i584767      A:9E X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c161310      i584768      A:9D X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c161313      i584769      A:9D X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c161316      i584770      A:9D X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c161318      i584771      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0563 = #$00
+f6      c161324      i584772      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$63
+f6      c161329      i584773      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c161332      i584774      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c161336      i584775      A:9D X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c161338      i584776      A:9D X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c161340      i584777      A:9C X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c161343      i584778      A:9C X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c161346      i584779      A:9C X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c161348      i584780      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0564 = #$00
+f6      c161354      i584781      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$64
+f6      c161359      i584782      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c161362      i584783      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c161366      i584784      A:9C X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c161368      i584785      A:9C X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c161370      i584786      A:9B X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c161373      i584787      A:9B X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c161376      i584788      A:9B X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c161378      i584789      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0565 = #$00
+f6      c161384      i584790      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$65
+f6      c161389      i584791      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c161392      i584792      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c161396      i584793      A:9B X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c162123      i585012      A:82 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c162126      i585013      A:82 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c162128      i585014      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $057E = #$00
+f6      c162134      i585015      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$7E
+f6      c162139      i585016      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c162142      i585017      A:00 X:02 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c162146      i585018      A:82 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c162148      i585019      A:82 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c162150      i585020      A:81 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c162153      i585021      A:81 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c162156      i585022      A:81 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c162158      i585023      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $057F = #$00
+f6      c162164      i585024      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$7F
+f6      c162169      i585025      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c162172      i585026      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c162176      i585027      A:81 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c162178      i585028      A:81 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c162180      i585029      A:80 X:02 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c162183      i585030      A:80 X:02 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c162186      i585031      A:80 X:02 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c162188      i585032      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0580 = #$00
+f6      c162194      i585033      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$80
+f6      c162199      i585034      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c162202      i585035      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c162206      i585036      A:80 X:02 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c162208      i585037      A:80 X:02 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c162210      i585038      A:7F X:02 Y:00 S:FC P:nVubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c162213      i585039      A:7F X:02 Y:00 S:FC P:nVubdizC  $01:AA0B: 48       PHA
+f6      c162216      i585040      A:7F X:02 Y:00 S:FB P:nVubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c162218      i585041      A:00 X:02 Y:00 S:FB P:nVubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0581 = #$00
+f6      c162224      i585042      A:00 X:02 Y:00 S:FB P:nVubdiZC  $01:AA10: E6 EC    INC $EC = #$81
+f6      c162229      i585043      A:00 X:02 Y:00 S:FB P:NVubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c162232      i585044      A:00 X:02 Y:00 S:FB P:NVubdizC  $01:AA16: 68       PLA
+f6      c162236      i585045      A:7F X:02 Y:00 S:FC P:nVubdizC  $01:AA17: 38       SEC
+f6      c162238      i585046      A:7F X:02 Y:00 S:FC P:nVubdizC  $01:AA18: E9 01    SBC #$01
+f6      c162240      i585047      A:7E X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c162243      i585048      A:7E X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c162246      i585049      A:7E X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c162248      i585050      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0582 = #$00
+f6      c162254      i585051      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$82
+f6      c162259      i585052      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c162262      i585053      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c162266      i585054      A:7E X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c162993      i585273      A:65 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c162996      i585274      A:65 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c162998      i585275      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $059B = #$00
+f6      c163004      i585276      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$9B
+f6      c163009      i585277      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c163012      i585278      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c163016      i585279      A:65 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c163018      i585280      A:65 X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c163020      i585281      A:64 X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c163023      i585282      A:64 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c163026      i585283      A:64 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c163028      i585284      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $059C = #$00
+f6      c163034      i585285      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$9C
+f6      c163039      i585286      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c163042      i585287      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c163046      i585288      A:64 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c163048      i585289      A:64 X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c163050      i585290      A:63 X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c163053      i585291      A:63 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c163056      i585292      A:63 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c163058      i585293      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $059D = #$00
+f6      c163064      i585294      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$9D
+f6      c163069      i585295      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c163072      i585296      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c163076      i585297      A:63 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c163078      i585298      A:63 X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c163080      i585299      A:62 X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c163083      i585300      A:62 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c163086      i585301      A:62 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c163088      i585302      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $059E = #$00
+f6      c163094      i585303      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$9E
+f6      c163099      i585304      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c163102      i585305      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c163106      i585306      A:62 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c163108      i585307      A:62 X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c163110      i585308      A:61 X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c163113      i585309      A:61 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c163116      i585310      A:61 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c163118      i585311      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $059F = #$00
+f6      c163124      i585312      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$9F
+f6      c163129      i585313      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c163132      i585314      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c163136      i585315      A:61 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c163863      i585534      A:48 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c163866      i585535      A:48 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c163868      i585536      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05B8 = #$00
+f6      c163874      i585537      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$B8
+f6      c163879      i585538      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c163882      i585539      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c163886      i585540      A:48 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c163888      i585541      A:48 X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c163890      i585542      A:47 X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c163893      i585543      A:47 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c163896      i585544      A:47 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c163898      i585545      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05B9 = #$00
+f6      c163904      i585546      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$B9
+f6      c163909      i585547      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c163912      i585548      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c163916      i585549      A:47 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c163918      i585550      A:47 X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c163920      i585551      A:46 X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c163923      i585552      A:46 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c163926      i585553      A:46 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c163928      i585554      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05BA = #$00
+f6      c163934      i585555      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$BA
+f6      c163939      i585556      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c163942      i585557      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c163946      i585558      A:46 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c163948      i585559      A:46 X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c163950      i585560      A:45 X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c163953      i585561      A:45 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c163956      i585562      A:45 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c163958      i585563      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05BB = #$00
+f6      c163964      i585564      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$BB
+f6      c163969      i585565      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c163972      i585566      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c163976      i585567      A:45 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c163978      i585568      A:45 X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c163980      i585569      A:44 X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c163983      i585570      A:44 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c163986      i585571      A:44 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c163988      i585572      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05BC = #$00
+f6      c163994      i585573      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$BC
+f6      c163999      i585574      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c164002      i585575      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c164006      i585576      A:44 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c164733      i585795      A:2B X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c164736      i585796      A:2B X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c164738      i585797      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05D5 = #$00
+f6      c164744      i585798      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$D5
+f6      c164749      i585799      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c164752      i585800      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c164756      i585801      A:2B X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c164758      i585802      A:2B X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c164760      i585803      A:2A X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c164763      i585804      A:2A X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c164766      i585805      A:2A X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c164768      i585806      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05D6 = #$00
+f6      c164774      i585807      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$D6
+f6      c164779      i585808      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c164782      i585809      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c164786      i585810      A:2A X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c164788      i585811      A:2A X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c164790      i585812      A:29 X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c164793      i585813      A:29 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c164796      i585814      A:29 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c164798      i585815      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05D7 = #$00
+f6      c164804      i585816      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$D7
+f6      c164809      i585817      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c164812      i585818      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c164816      i585819      A:29 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c164818      i585820      A:29 X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c164820      i585821      A:28 X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c164823      i585822      A:28 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c164826      i585823      A:28 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c164828      i585824      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05D8 = #$00
+f6      c164834      i585825      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$D8
+f6      c164839      i585826      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c164842      i585827      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c164846      i585828      A:28 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c164848      i585829      A:28 X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c164850      i585830      A:27 X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c164853      i585831      A:27 X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c164856      i585832      A:27 X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c164858      i585833      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05D9 = #$00
+f6      c164864      i585834      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$D9
+f6      c164869      i585835      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c164872      i585836      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c164876      i585837      A:27 X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c165603      i586056      A:0E X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c165606      i586057      A:0E X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c165608      i586058      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05F2 = #$00
+f6      c165614      i586059      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$F2
+f6      c165619      i586060      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c165622      i586061      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c165626      i586062      A:0E X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c165628      i586063      A:0E X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c165630      i586064      A:0D X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c165633      i586065      A:0D X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c165636      i586066      A:0D X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c165638      i586067      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05F3 = #$00
+f6      c165644      i586068      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$F3
+f6      c165649      i586069      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c165652      i586070      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c165656      i586071      A:0D X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c165658      i586072      A:0D X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c165660      i586073      A:0C X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c165663      i586074      A:0C X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c165666      i586075      A:0C X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c165668      i586076      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05F4 = #$00
+f6      c165674      i586077      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$F4
+f6      c165679      i586078      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c165682      i586079      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c165686      i586080      A:0C X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c165688      i586081      A:0C X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c165690      i586082      A:0B X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c165693      i586083      A:0B X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c165696      i586084      A:0B X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c165698      i586085      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05F5 = #$00
+f6      c165704      i586086      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$F5
+f6      c165709      i586087      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c165712      i586088      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c165716      i586089      A:0B X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c165718      i586090      A:0B X:02 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c165720      i586091      A:0A X:02 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c165723      i586092      A:0A X:02 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c165726      i586093      A:0A X:02 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c165728      i586094      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $05F6 = #$00
+f6      c165734      i586095      A:00 X:02 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$F6
+f6      c165739      i586096      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c165742      i586097      A:00 X:02 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c165746      i586098      A:0A X:02 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c166901      i586446      A:E3 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c166904      i586447      A:E3 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c166906      i586448      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $061D = #$00
+f6      c166912      i586449      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$1D
+f6      c166917      i586450      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c166920      i586451      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c166924      i586452      A:E3 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c166926      i586453      A:E3 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c166928      i586454      A:E2 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c166931      i586455      A:E2 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c166934      i586456      A:E2 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c166936      i586457      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $061E = #$00
+f6      c166942      i586458      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$1E
+f6      c166947      i586459      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c166950      i586460      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c166954      i586461      A:E2 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c166956      i586462      A:E2 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c166958      i586463      A:E1 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c166961      i586464      A:E1 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c166964      i586465      A:E1 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c166966      i586466      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $061F = #$00
+f6      c166972      i586467      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$1F
+f6      c166977      i586468      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c166980      i586469      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c166984      i586470      A:E1 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c166986      i586471      A:E1 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c166988      i586472      A:E0 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c166991      i586473      A:E0 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c166994      i586474      A:E0 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c166996      i586475      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0620 = #$00
+f6      c167002      i586476      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$20
+f6      c167007      i586477      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c167010      i586478      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c167014      i586479      A:E0 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c167016      i586480      A:E0 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c167018      i586481      A:DF X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c167021      i586482      A:DF X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c167024      i586483      A:DF X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c167026      i586484      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0621 = #$00
+f6      c167032      i586485      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$21
+f6      c167037      i586486      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c167040      i586487      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c167044      i586488      A:DF X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c167771      i586707      A:C6 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c167774      i586708      A:C6 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c167776      i586709      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $063A = #$00
+f6      c167782      i586710      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$3A
+f6      c167787      i586711      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c167790      i586712      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c167794      i586713      A:C6 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c167796      i586714      A:C6 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c167798      i586715      A:C5 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c167801      i586716      A:C5 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c167804      i586717      A:C5 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c167806      i586718      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $063B = #$00
+f6      c167812      i586719      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$3B
+f6      c167817      i586720      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c167820      i586721      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c167824      i586722      A:C5 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c167826      i586723      A:C5 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c167828      i586724      A:C4 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c167831      i586725      A:C4 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c167834      i586726      A:C4 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c167836      i586727      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $063C = #$00
+f6      c167842      i586728      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$3C
+f6      c167847      i586729      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c167850      i586730      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c167854      i586731      A:C4 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c167856      i586732      A:C4 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c167858      i586733      A:C3 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c167861      i586734      A:C3 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c167864      i586735      A:C3 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c167866      i586736      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $063D = #$00
+f6      c167872      i586737      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$3D
+f6      c167877      i586738      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c167880      i586739      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c167884      i586740      A:C3 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c167886      i586741      A:C3 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c167888      i586742      A:C2 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c167891      i586743      A:C2 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c167894      i586744      A:C2 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c167896      i586745      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $063E = #$00
+f6      c167902      i586746      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$3E
+f6      c167907      i586747      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c167910      i586748      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c167914      i586749      A:C2 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c168641      i586968      A:A9 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c168644      i586969      A:A9 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c168646      i586970      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0657 = #$00
+f6      c168652      i586971      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$57
+f6      c168657      i586972      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c168660      i586973      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c168664      i586974      A:A9 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c168666      i586975      A:A9 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c168668      i586976      A:A8 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c168671      i586977      A:A8 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c168674      i586978      A:A8 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c168676      i586979      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0658 = #$00
+f6      c168682      i586980      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$58
+f6      c168687      i586981      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c168690      i586982      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c168694      i586983      A:A8 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c168696      i586984      A:A8 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c168698      i586985      A:A7 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c168701      i586986      A:A7 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c168704      i586987      A:A7 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c168706      i586988      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0659 = #$00
+f6      c168712      i586989      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$59
+f6      c168717      i586990      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c168720      i586991      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c168724      i586992      A:A7 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c168726      i586993      A:A7 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c168728      i586994      A:A6 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c168731      i586995      A:A6 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c168734      i586996      A:A6 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c168736      i586997      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $065A = #$00
+f6      c168742      i586998      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$5A
+f6      c168747      i586999      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c168750      i587000      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c168754      i587001      A:A6 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c168756      i587002      A:A6 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c168758      i587003      A:A5 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c168761      i587004      A:A5 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c168764      i587005      A:A5 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c168766      i587006      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $065B = #$00
+f6      c168772      i587007      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$5B
+f6      c168777      i587008      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c168780      i587009      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c168784      i587010      A:A5 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c169511      i587229      A:8C X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c169514      i587230      A:8C X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c169516      i587231      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0674 = #$00
+f6      c169522      i587232      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$74
+f6      c169527      i587233      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c169530      i587234      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c169534      i587235      A:8C X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c169536      i587236      A:8C X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c169538      i587237      A:8B X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c169541      i587238      A:8B X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c169544      i587239      A:8B X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c169546      i587240      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0675 = #$00
+f6      c169552      i587241      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$75
+f6      c169557      i587242      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c169560      i587243      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c169564      i587244      A:8B X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c169566      i587245      A:8B X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c169568      i587246      A:8A X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c169571      i587247      A:8A X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c169574      i587248      A:8A X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c169576      i587249      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0676 = #$00
+f6      c169582      i587250      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$76
+f6      c169587      i587251      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c169590      i587252      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c169594      i587253      A:8A X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c169596      i587254      A:8A X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c169598      i587255      A:89 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c169601      i587256      A:89 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c169604      i587257      A:89 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c169606      i587258      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0677 = #$00
+f6      c169612      i587259      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$77
+f6      c169617      i587260      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c169620      i587261      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c169624      i587262      A:89 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c169626      i587263      A:89 X:01 Y:00 S:FC P:NvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c169628      i587264      A:88 X:01 Y:00 S:FC P:NvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c169631      i587265      A:88 X:01 Y:00 S:FC P:NvubdizC  $01:AA0B: 48       PHA
+f6      c169634      i587266      A:88 X:01 Y:00 S:FB P:NvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c169636      i587267      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0678 = #$00
+f6      c169642      i587268      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$78
+f6      c169647      i587269      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c169650      i587270      A:00 X:01 Y:00 S:FB P:nvubdizC  $01:AA16: 68       PLA
+f6      c169654      i587271      A:88 X:01 Y:00 S:FC P:NvubdizC  $01:AA17: 38       SEC
+f6      c170381      i587490      A:6F X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c170384      i587491      A:6F X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c170386      i587492      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0691 = #$00
+f6      c170392      i587493      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$91
+f6      c170397      i587494      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c170400      i587495      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c170404      i587496      A:6F X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c170406      i587497      A:6F X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c170408      i587498      A:6E X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c170411      i587499      A:6E X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c170414      i587500      A:6E X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c170416      i587501      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0692 = #$00
+f6      c170422      i587502      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$92
+f6      c170427      i587503      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c170430      i587504      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c170434      i587505      A:6E X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c170436      i587506      A:6E X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c170438      i587507      A:6D X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c170441      i587508      A:6D X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c170444      i587509      A:6D X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c170446      i587510      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0693 = #$00
+f6      c170452      i587511      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$93
+f6      c170457      i587512      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c170460      i587513      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c170464      i587514      A:6D X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c170466      i587515      A:6D X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c170468      i587516      A:6C X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c170471      i587517      A:6C X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c170474      i587518      A:6C X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c170476      i587519      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0694 = #$00
+f6      c170482      i587520      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$94
+f6      c170487      i587521      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c170490      i587522      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c170494      i587523      A:6C X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c170496      i587524      A:6C X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c170498      i587525      A:6B X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c170501      i587526      A:6B X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c170504      i587527      A:6B X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c170506      i587528      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $0695 = #$00
+f6      c170512      i587529      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$95
+f6      c170517      i587530      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c170520      i587531      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c170524      i587532      A:6B X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c171251      i587751      A:52 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c171254      i587752      A:52 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c171256      i587753      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06AE = #$00
+f6      c171262      i587754      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$AE
+f6      c171267      i587755      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c171270      i587756      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c171274      i587757      A:52 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c171276      i587758      A:52 X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c171278      i587759      A:51 X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c171281      i587760      A:51 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c171284      i587761      A:51 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c171286      i587762      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06AF = #$00
+f6      c171292      i587763      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$AF
+f6      c171297      i587764      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c171300      i587765      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c171304      i587766      A:51 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c171306      i587767      A:51 X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c171308      i587768      A:50 X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c171311      i587769      A:50 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c171314      i587770      A:50 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c171316      i587771      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06B0 = #$00
+f6      c171322      i587772      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$B0
+f6      c171327      i587773      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c171330      i587774      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c171334      i587775      A:50 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c171336      i587776      A:50 X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c171338      i587777      A:4F X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c171341      i587778      A:4F X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c171344      i587779      A:4F X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c171346      i587780      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06B1 = #$00
+f6      c171352      i587781      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$B1
+f6      c171357      i587782      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c171360      i587783      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c171364      i587784      A:4F X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c171366      i587785      A:4F X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c171368      i587786      A:4E X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c171371      i587787      A:4E X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c171374      i587788      A:4E X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c171376      i587789      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06B2 = #$00
+f6      c171382      i587790      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$B2
+f6      c171387      i587791      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c171390      i587792      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c171394      i587793      A:4E X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c172121      i588012      A:35 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c172124      i588013      A:35 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c172126      i588014      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06CB = #$00
+f6      c172132      i588015      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$CB
+f6      c172137      i588016      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c172140      i588017      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c172144      i588018      A:35 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c172146      i588019      A:35 X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c172148      i588020      A:34 X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c172151      i588021      A:34 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c172154      i588022      A:34 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c172156      i588023      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06CC = #$00
+f6      c172162      i588024      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$CC
+f6      c172167      i588025      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c172170      i588026      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c172174      i588027      A:34 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c172176      i588028      A:34 X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c172178      i588029      A:33 X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c172181      i588030      A:33 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c172184      i588031      A:33 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c172186      i588032      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06CD = #$00
+f6      c172192      i588033      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$CD
+f6      c172197      i588034      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c172200      i588035      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c172204      i588036      A:33 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c172206      i588037      A:33 X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c172208      i588038      A:32 X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c172211      i588039      A:32 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c172214      i588040      A:32 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c172216      i588041      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06CE = #$00
+f6      c172222      i588042      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$CE
+f6      c172227      i588043      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c172230      i588044      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c172234      i588045      A:32 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c172236      i588046      A:32 X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c172238      i588047      A:31 X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c172241      i588048      A:31 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c172244      i588049      A:31 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c172246      i588050      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06CF = #$00
+f6      c172252      i588051      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$CF
+f6      c172257      i588052      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c172260      i588053      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c172264      i588054      A:31 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c172991      i588273      A:18 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c172994      i588274      A:18 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c172996      i588275      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06E8 = #$00
+f6      c173002      i588276      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$E8
+f6      c173007      i588277      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c173010      i588278      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c173014      i588279      A:18 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c173016      i588280      A:18 X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c173018      i588281      A:17 X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c173021      i588282      A:17 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c173024      i588283      A:17 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c173026      i588284      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06E9 = #$00
+f6      c173032      i588285      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$E9
+f6      c173037      i588286      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c173040      i588287      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c173044      i588288      A:17 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c173046      i588289      A:17 X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c173048      i588290      A:16 X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c173051      i588291      A:16 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c173054      i588292      A:16 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c173056      i588293      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06EA = #$00
+f6      c173062      i588294      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$EA
+f6      c173067      i588295      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c173070      i588296      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c173074      i588297      A:16 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c173076      i588298      A:16 X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c173078      i588299      A:15 X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c173081      i588300      A:15 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c173084      i588301      A:15 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c173086      i588302      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06EB = #$00
+f6      c173092      i588303      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$EB
+f6      c173097      i588304      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c173100      i588305      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c173104      i588306      A:15 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f6      c173106      i588307      A:15 X:01 Y:00 S:FC P:nvubdizC  $01:AA18: E9 01    SBC #$01
+f6      c173108      i588308      A:14 X:01 Y:00 S:FC P:nvubdizC  $01:AA1A: D0 EF    BNE $AA0B
+f6      c173111      i588309      A:14 X:01 Y:00 S:FC P:nvubdizC  $01:AA0B: 48       PHA
+f6      c173114      i588310      A:14 X:01 Y:00 S:FB P:nvubdizC  $01:AA0C: A9 00    LDA #$00
+f6      c173116      i588311      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA0E: 91 EC    STA ($EC),Y @ $06EC = #$00
+f6      c173122      i588312      A:00 X:01 Y:00 S:FB P:nvubdiZC  $01:AA10: E6 EC    INC $EC = #$EC
+f6      c173127      i588313      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA12: D0 02    BNE $AA16
+f6      c173130      i588314      A:00 X:01 Y:00 S:FB P:NvubdizC  $01:AA16: 68       PLA
+f6      c173134      i588315      A:14 X:01 Y:00 S:FC P:nvubdizC  $01:AA17: 38       SEC
+f9      c244866      i611483      A:E0 X:E0 Y:F0 S:3B P:NvUbdizc  $00:9F34: 9A       TXS
+f9      c244868      i611484      A:E0 X:E0 Y:F0 S:E0 P:NvUbdizc  $00:9F35: 68       PLA
+f9      c244872      i611485      A:00 X:E0 Y:F0 S:E1 P:nvUbdiZc  $00:9F36: 85 E6    STA $E6 = #$0C
+f9      c244875      i611486      A:00 X:E0 Y:F0 S:E1 P:nvUbdiZc  $00:9F38: 68       PLA
+f9      c244879      i611487      A:22 X:E0 Y:F0 S:E2 P:nvUbdizc  $00:9F39: 85 E7    STA $E7 = #$00
+f9      c244882      i611488      A:22 X:E0 Y:F0 S:E2 P:nvUbdizc  $00:9F3B: 68       PLA
+f9      c244886      i611489      A:00 X:E0 Y:F0 S:E3 P:nvUbdiZc  $00:9F3C: 85 E8    STA $E8 = #$01
+f9      c244889      i611490      A:00 X:E0 Y:F0 S:E3 P:nvUbdiZc  $00:9F3E: 68       PLA
+f9      c244893      i611491      A:20 X:E0 Y:F0 S:E4 P:nvUbdizc  $00:9F3F: 85 E9    STA $E9 = #$20
+f9      c244896      i611492      A:20 X:E0 Y:F0 S:E4 P:nvUbdizc  $00:9F41: 68       PLA
+f9      c244900      i611493      A:03 X:E0 Y:F0 S:E5 P:nvUbdizc  $00:9F42: 85 EA    STA $EA = #$60
+f9      c244903      i611494      A:03 X:E0 Y:F0 S:E5 P:nvUbdizc  $00:9F44: 68       PLA
+f9      c244907      i611495      A:00 X:E0 Y:F0 S:E6 P:nvUbdiZc  $00:9F45: 85 EB    STA $EB = #$B3
+f9      c244910      i611496      A:00 X:E0 Y:F0 S:E6 P:nvUbdiZc  $00:9F47: 68       PLA
+f9      c244914      i611497      A:13 X:E0 Y:F0 S:E7 P:nvUbdizc  $00:9F48: 85 EC    STA $EC = #$03
+f9      c244917      i611498      A:13 X:E0 Y:F0 S:E7 P:nvUbdizc  $00:9F4A: 68       PLA
+f9      c244921      i611499      A:00 X:E0 Y:F0 S:E8 P:nvUbdiZc  $00:9F4B: 85 ED    STA $ED = #$02
+f9      c244924      i611500      A:00 X:E0 Y:F0 S:E8 P:nvUbdiZc  $00:9F4D: 68       PLA
+f9      c244928      i611501      A:00 X:E0 Y:F0 S:E9 P:nvUbdiZc  $00:9F4E: A8       TAY
+f9      c244930      i611502      A:00 X:E0 Y:00 S:E9 P:nvUbdiZc  $00:9F4F: 68       PLA
+f9      c244934      i611503      A:02 X:E0 Y:00 S:EA P:nvUbdizc  $00:9F50: AA       TAX
+f9      c244936      i611504      A:02 X:02 Y:00 S:EA P:nvUbdizc  $00:9F51: 60       RTS (from $9FA8)
+f9      c244942      i611505      A:02 X:02 Y:00 S:EC P:nvUbdizc  $01:A8D3: A0 00    LDY #$00
+f9      c244944      i611506      A:02 X:02 Y:00 S:EC P:nvUbdiZc  $01:A8D5: BE 68 04 LDX $0468,Y @ $0468 = #$F8
+f9      c244948      i611507      A:02 X:F8 Y:00 S:EC P:NvUbdizc  $01:A8D8: B9 6A 04 LDA $046A,Y @ $046A = #$F8
+f9      c244952      i611508      A:F8 X:F8 Y:00 S:EC P:NvUbdizc  $01:A8DB: 29 0C    AND #$0C
+f9      c244954      i611509      A:08 X:F8 Y:00 S:EC P:nvUbdizc  $01:A8DD: F0 02    BEQ $A8E1
+f9      c244956      i611510      A:08 X:F8 Y:00 S:EC P:nvUbdizc  $01:A8DF: A2 F8    LDX #$F8
+f9      c244958      i611511      A:08 X:F8 Y:00 S:EC P:NvUbdizc  $01:A8E1: 8A       TXA
+f9      c244960      i611512      A:F8 X:F8 Y:00 S:EC P:NvUbdizc  $01:A8E2: 99 00 02 STA $0200,Y @ $0200 = #$F8
+f9      c244965      i611513      A:F8 X:F8 Y:00 S:EC P:NvUbdizc  $01:A8E5: B9 69 04 LDA $0469,Y @ $0469 = #$F8
+f9      c244969      i611514      A:F8 X:F8 Y:00 S:EC P:NvUbdizc  $01:A8E8: 99 01 02 STA $0201,Y @ $0201 = #$F8
+f9      c244974      i611515      A:F8 X:F8 Y:00 S:EC P:NvUbdizc  $01:A8EB: B9 6A 04 LDA $046A,Y @ $046A = #$F8
+f9      c244978      i611516      A:F8 X:F8 Y:00 S:EC P:NvUbdizc  $01:A8EE: 99 02 02 STA $0202,Y @ $0202 = #$F8
+f9      c244983      i611517      A:F8 X:F8 Y:00 S:EC P:NvUbdizc  $01:A8F1: B9 6B 04 LDA $046B,Y @ $046B = #$F8
+f9      c244987      i611518      A:F8 X:F8 Y:00 S:EC P:NvUbdizc  $01:A8F4: 99 03 02 STA $0203,Y @ $0203 = #$F8
+f9      c244992      i611519      A:F8 X:F8 Y:00 S:EC P:NvUbdizc  $01:A8F7: C8       INY
+f9      c244994      i611520      A:F8 X:F8 Y:01 S:EC P:nvUbdizc  $01:A8F8: C8       INY
+f9      c244996      i611521      A:F8 X:F8 Y:02 S:EC P:nvUbdizc  $01:A8F9: C8       INY
+f9      c244998      i611522      A:F8 X:F8 Y:03 S:EC P:nvUbdizc  $01:A8FA: C8       INY
+f9      c245000      i611523      A:F8 X:F8 Y:04 S:EC P:nvUbdizc  $01:A8FB: D0 D8    BNE $A8D5
+f9      c245003      i611524      A:F8 X:F8 Y:04 S:EC P:nvUbdizc  $01:A8D5: BE 68 04 LDX $0468,Y @ $046C = #$F8
+f12     c331606      i639166      A:31 X:31 Y:03 S:4A P:nvUbdizc  $00:9AA3: BD A2 9E LDA $9EA2,X @ $9ED3 = #$00
+f12     c331610      i639167      A:00 X:31 Y:03 S:4A P:nvUbdiZc  $00:9AA6: 85 E6    STA $E6 = #$00
+f12     c331613      i639168      A:00 X:31 Y:03 S:4A P:nvUbdiZc  $00:9AA8: B9 2A 06 LDA $062A,Y @ $062D = #$30
+f12     c331617      i639169      A:30 X:31 Y:03 S:4A P:nvUbdizc  $00:9AAB: 29 0F    AND #$0F
+f12     c331619      i639170      A:00 X:31 Y:03 S:4A P:nvUbdiZc  $00:9AAD: 05 E6    ORA $E6 = #$00
+f12     c331622      i639171      A:00 X:31 Y:03 S:4A P:nvUbdiZc  $00:9AAF: A6 E7    LDX $E7 = #$06
+f12     c331625      i639172      A:00 X:06 Y:03 S:4A P:nvUbdizc  $00:9AB1: 9D E8 05 STA $05E8,X @ $05EE = #$07
+f12     c331630      i639173      A:00 X:06 Y:03 S:4A P:nvUbdizc  $00:9AB4: E6 E7    INC $E7 = #$06
+f12     c331635      i639174      A:00 X:06 Y:03 S:4A P:nvUbdizc  $00:9AB6: C8       INY
+f12     c331637      i639175      A:00 X:06 Y:04 S:4A P:nvUbdizc  $00:9AB7: 60       RTS (from $9AA2)
+f12     c331643      i639176      A:00 X:06 Y:04 S:4C P:nvUbdizc  $00:9A89: C0 10    CPY #$10
+f12     c331645      i639177      A:00 X:06 Y:04 S:4C P:NvUbdizc  $00:9A8B: D0 F1    BNE $9A7E
+f12     c331648      i639178      A:00 X:06 Y:04 S:4C P:NvUbdizc  $00:9A7E: B9 2A 06 LDA $062A,Y @ $062E = #$0F
+f12     c331652      i639179      A:0F X:06 Y:04 S:4C P:nvUbdizc  $00:9A81: 29 30    AND #$30
+f12     c331654      i639180      A:00 X:06 Y:04 S:4C P:nvUbdiZc  $00:9A83: 18       CLC
+f12     c331656      i639181      A:00 X:06 Y:04 S:4C P:nvUbdiZc  $00:9A84: 65 4A    ADC $4A = #$01
+f12     c331659      i639182      A:01 X:06 Y:04 S:4C P:nvUbdizc  $00:9A86: 20 A2 9A JSR $9AA2
+f12     c331665      i639183      A:01 X:06 Y:04 S:4A P:nvUbdizc  $00:9AA2: AA       TAX
+f12     c331667      i639184      A:01 X:01 Y:04 S:4A P:nvUbdizc  $00:9AA3: BD A2 9E LDA $9EA2,X @ $9EA3 = #$00
+f12     c331671      i639185      A:00 X:01 Y:04 S:4A P:nvUbdiZc  $00:9AA6: 85 E6    STA $E6 = #$00
+f12     c331674      i639186      A:00 X:01 Y:04 S:4A P:nvUbdiZc  $00:9AA8: B9 2A 06 LDA $062A,Y @ $062E = #$0F
+f12     c331678      i639187      A:0F X:01 Y:04 S:4A P:nvUbdizc  $00:9AAB: 29 0F    AND #$0F
+f12     c331680      i639188      A:0F X:01 Y:04 S:4A P:nvUbdizc  $00:9AAD: 05 E6    ORA $E6 = #$00
+f12     c331683      i639189      A:0F X:01 Y:04 S:4A P:nvUbdizc  $00:9AAF: A6 E7    LDX $E7 = #$07
+f12     c331686      i639190      A:0F X:07 Y:04 S:4A P:nvUbdizc  $00:9AB1: 9D E8 05 STA $05E8,X @ $05EF = #$01
+f12     c331691      i639191      A:0F X:07 Y:04 S:4A P:nvUbdizc  $00:9AB4: E6 E7    INC $E7 = #$07
+f12     c331696      i639192      A:0F X:07 Y:04 S:4A P:nvUbdizc  $00:9AB6: C8       INY
+f12     c331698      i639193      A:0F X:07 Y:05 S:4A P:nvUbdizc  $00:9AB7: 60       RTS (from $9AA2)
+f12     c331704      i639194      A:0F X:07 Y:05 S:4C P:nvUbdizc  $00:9A89: C0 10    CPY #$10
+f12     c331706      i639195      A:0F X:07 Y:05 S:4C P:NvUbdizc  $00:9A8B: D0 F1    BNE $9A7E
+f12     c331709      i639196      A:0F X:07 Y:05 S:4C P:NvUbdizc  $00:9A7E: B9 2A 06 LDA $062A,Y @ $062F = #$0F
+f12     c331713      i639197      A:0F X:07 Y:05 S:4C P:nvUbdizc  $00:9A81: 29 30    AND #$30
+f12     c331715      i639198      A:00 X:07 Y:05 S:4C P:nvUbdiZc  $00:9A83: 18       CLC
+f12     c331717      i639199      A:00 X:07 Y:05 S:4C P:nvUbdiZc  $00:9A84: 65 4A    ADC $4A = #$01
+f12     c331720      i639200      A:01 X:07 Y:05 S:4C P:nvUbdizc  $00:9A86: 20 A2 9A JSR $9AA2
+f12     c331726      i639201      A:01 X:07 Y:05 S:4A P:nvUbdizc  $00:9AA2: AA       TAX
+f12     c331728      i639202      A:01 X:01 Y:05 S:4A P:nvUbdizc  $00:9AA3: BD A2 9E LDA $9EA2,X @ $9EA3 = #$00
+f12     c331732      i639203      A:00 X:01 Y:05 S:4A P:nvUbdiZc  $00:9AA6: 85 E6    STA $E6 = #$00
+f12     c331735      i639204      A:00 X:01 Y:05 S:4A P:nvUbdiZc  $00:9AA8: B9 2A 06 LDA $062A,Y @ $062F = #$0F
+f12     c331739      i639205      A:0F X:01 Y:05 S:4A P:nvUbdizc  $00:9AAB: 29 0F    AND #$0F
+f12     c331741      i639206      A:0F X:01 Y:05 S:4A P:nvUbdizc  $00:9AAD: 05 E6    ORA $E6 = #$00
+f13     c361054      i648491      A:00 X:02 Y:02 S:4A P:nvUbdiZc  $00:9AA8: B9 2A 06 LDA $062A,Y @ $062C = #$00
+f13     c361058      i648492      A:00 X:02 Y:02 S:4A P:nvUbdiZc  $00:9AAB: 29 0F    AND #$0F
+f13     c361060      i648493      A:00 X:02 Y:02 S:4A P:nvUbdiZc  $00:9AAD: 05 E6    ORA $E6 = #$00
+f13     c361063      i648494      A:00 X:02 Y:02 S:4A P:nvUbdiZc  $00:9AAF: A6 E7    LDX $E7 = #$05
+f13     c361066      i648495      A:00 X:05 Y:02 S:4A P:nvUbdizc  $00:9AB1: 9D E8 05 STA $05E8,X @ $05ED = #$00
+f13     c361071      i648496      A:00 X:05 Y:02 S:4A P:nvUbdizc  $00:9AB4: E6 E7    INC $E7 = #$05
+f13     c361076      i648497      A:00 X:05 Y:02 S:4A P:nvUbdizc  $00:9AB6: C8       INY
+f13     c361078      i648498      A:00 X:05 Y:03 S:4A P:nvUbdizc  $00:9AB7: 60       RTS (from $9AA2)
+f13     c361084      i648499      A:00 X:05 Y:03 S:4C P:nvUbdizc  $00:9A89: C0 10    CPY #$10
+f13     c361086      i648500      A:00 X:05 Y:03 S:4C P:NvUbdizc  $00:9A8B: D0 F1    BNE $9A7E
+f13     c361089      i648501      A:00 X:05 Y:03 S:4C P:NvUbdizc  $00:9A7E: B9 2A 06 LDA $062A,Y @ $062D = #$30
+f13     c361093      i648502      A:30 X:05 Y:03 S:4C P:nvUbdizc  $00:9A81: 29 30    AND #$30
+f13     c361095      i648503      A:30 X:05 Y:03 S:4C P:nvUbdizc  $00:9A83: 18       CLC
+f13     c361097      i648504      A:30 X:05 Y:03 S:4C P:nvUbdizc  $00:9A84: 65 4A    ADC $4A = #$02
+f13     c361100      i648505      A:32 X:05 Y:03 S:4C P:nvUbdizc  $00:9A86: 20 A2 9A JSR $9AA2
+f13     c361106      i648506      A:32 X:05 Y:03 S:4A P:nvUbdizc  $00:9AA2: AA       TAX
+f13     c361108      i648507      A:32 X:32 Y:03 S:4A P:nvUbdizc  $00:9AA3: BD A2 9E LDA $9EA2,X @ $9ED4 = #$10
+f13     c361112      i648508      A:10 X:32 Y:03 S:4A P:nvUbdizc  $00:9AA6: 85 E6    STA $E6 = #$00
+f13     c361115      i648509      A:10 X:32 Y:03 S:4A P:nvUbdizc  $00:9AA8: B9 2A 06 LDA $062A,Y @ $062D = #$30
+f13     c361119      i648510      A:30 X:32 Y:03 S:4A P:nvUbdizc  $00:9AAB: 29 0F    AND #$0F
+f13     c361121      i648511      A:00 X:32 Y:03 S:4A P:nvUbdiZc  $00:9AAD: 05 E6    ORA $E6 = #$10
+f13     c361124      i648512      A:10 X:32 Y:03 S:4A P:nvUbdizc  $00:9AAF: A6 E7    LDX $E7 = #$06
+f13     c361127      i648513      A:10 X:06 Y:03 S:4A P:nvUbdizc  $00:9AB1: 9D E8 05 STA $05E8,X @ $05EE = #$00
+f13     c361132      i648514      A:10 X:06 Y:03 S:4A P:nvUbdizc  $00:9AB4: E6 E7    INC $E7 = #$06
+f13     c361137      i648515      A:10 X:06 Y:03 S:4A P:nvUbdizc  $00:9AB6: C8       INY
+f13     c361139      i648516      A:10 X:06 Y:04 S:4A P:nvUbdizc  $00:9AB7: 60       RTS (from $9AA2)
+f13     c361145      i648517      A:10 X:06 Y:04 S:4C P:nvUbdizc  $00:9A89: C0 10    CPY #$10
+f13     c361147      i648518      A:10 X:06 Y:04 S:4C P:NvUbdizc  $00:9A8B: D0 F1    BNE $9A7E
+f13     c361150      i648519      A:10 X:06 Y:04 S:4C P:NvUbdizc  $00:9A7E: B9 2A 06 LDA $062A,Y @ $062E = #$0F
+f13     c361154      i648520      A:0F X:06 Y:04 S:4C P:nvUbdizc  $00:9A81: 29 30    AND #$30
+f13     c361156      i648521      A:00 X:06 Y:04 S:4C P:nvUbdiZc  $00:9A83: 18       CLC
+f13     c361158      i648522      A:00 X:06 Y:04 S:4C P:nvUbdiZc  $00:9A84: 65 4A    ADC $4A = #$02
+f13     c361161      i648523      A:02 X:06 Y:04 S:4C P:nvUbdizc  $00:9A86: 20 A2 9A JSR $9AA2
+f13     c361167      i648524      A:02 X:06 Y:04 S:4A P:nvUbdizc  $00:9AA2: AA       TAX
+f13     c361169      i648525      A:02 X:02 Y:04 S:4A P:nvUbdizc  $00:9AA3: BD A2 9E LDA $9EA2,X @ $9EA4 = #$00
+f13     c361173      i648526      A:00 X:02 Y:04 S:4A P:nvUbdiZc  $00:9AA6: 85 E6    STA $E6 = #$10
+f13     c361176      i648527      A:00 X:02 Y:04 S:4A P:nvUbdiZc  $00:9AA8: B9 2A 06 LDA $062A,Y @ $062E = #$0F
+f13     c361180      i648528      A:0F X:02 Y:04 S:4A P:nvUbdizc  $00:9AAB: 29 0F    AND #$0F
+f13     c361182      i648529      A:0F X:02 Y:04 S:4A P:nvUbdizc  $00:9AAD: 05 E6    ORA $E6 = #$00
+f13     c361185      i648530      A:0F X:02 Y:04 S:4A P:nvUbdizc  $00:9AAF: A6 E7    LDX $E7 = #$07
+f13     c361188      i648531      A:0F X:07 Y:04 S:4A P:nvUbdizc  $00:9AB1: 9D E8 05 STA $05E8,X @ $05EF = #$0F

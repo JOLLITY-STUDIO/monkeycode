@@ -1,0 +1,24 @@
+== brute_lz2 start 14:33:35 ==
+comp_size=0x7cda8 dest_off=0xa decomp_size=0x5a2b0 src=[0x2004000,0x2080da8) dst_end=0x20db058
+... 8/64 done (8.4s)
+... 16/64 done (18.1s)
+... 24/64 done (25.1s)
+... 32/64 done (33.4s)
+... 40/64 done (43.3s)
+... 48/64 done (55.6s)
+... 56/64 done (62.9s)
+... 64/64 done (71.5s)
+== 共 0 个命中 ==
+无命中；输出大小分布：
+  size=0xc9531 n=2 例=(False, True, False, False, False, True)
+  size=0xc95b0 n=2 例=(False, True, False, False, False, False)
+  size=0xd7058 n=2 例=(False, True, True, False, False, True)
+  size=0xd70cb n=2 例=(False, True, True, False, False, False)
+  size=0x127212 n=2 例=(True, True, False, False, False, True)
+  size=0x127249 n=2 例=(True, True, False, False, False, False)
+  size=0x1273a8 n=2 例=(True, True, False, False, True, True)
+  size=0x1273e6 n=2 例=(True, True, False, False, True, False)
+  size=0x12de9e n=2 例=(True, True, True, False, True, True)
+  size=0x12ded9 n=2 例=(True, True, True, False, True, False)
+  size=0x12e68c n=2 例=(True, True, True, False, False, True)
+  size=0x12e6c8 n=2 例=(True, True, True, False, False, False)

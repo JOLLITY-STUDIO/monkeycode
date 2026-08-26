@@ -1,0 +1,61 @@
+src/core/mappers/mapper0.ts(392,33): error TS2580: Cannot find name 'require'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+src/game/prg/code/audio/AudioService.ts(210,15): error TS2339: Property 'headerFlag' does not exist on type 'SongRecord'.
+src/game/prg/code/match/MatchActionService.ts(71,40): error TS2339: Property 'lo' does not exist on type 'MatchActionPointer'.
+src/game/prg/code/match/MatchActionService.ts(72,40): error TS2339: Property 'hi' does not exist on type 'MatchActionPointer'.
+src/game/prg/code/match/MatchActionService.ts(73,19): error TS2339: Property 'hi' does not exist on type 'MatchActionPointer'.
+src/game/prg/code/match/MatchActionService.ts(73,36): error TS2339: Property 'lo' does not exist on type 'MatchActionPointer'.
+src/game/prg/code/match/MatchRoundService.ts(75,21): error TS2339: Property 'segmentCursor' does not exist on type 'MatchRoundView'.
+src/game/prg/code/system/GameSystemService.ts(121,25): error TS2339: Property 'ntBufferEntry' does not exist on type 'RenderingPrimitivesService'.
+src/game/prg/code/system/GameSystemService.ts(122,41): error TS2554: Expected 1 arguments, but got 2.
+src/game/prg/code/system/GameSystemService.ts(123,15): error TS2551: Property 'ntBufferEnd' does not exist on type 'RenderingPrimitivesService'. Did you mean 'ntBufferAppend'?
+src/game/prg/code/system/InterruptService.ts(484,5): error TS2542: Index signature in type 'ChrSlotIndex' only permits reading.
+src/game/prg/data/store/RenderQueues.ts(52,49): error TS2739: Type 'Uint8Array<ArrayBufferLike>' is missing the following properties from type 'readonly number[]': concat, flatMap, flat, [Symbol.unscopables]
+src/game/prg/data/tables/match-event-table.ts(410,17): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(411,17): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(412,17): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(413,17): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(414,17): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(415,17): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(416,17): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(417,17): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(418,17): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(419,17): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(420,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(421,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(422,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(423,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(424,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(425,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(426,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(427,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(428,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(429,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(430,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(431,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(432,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/match-event-table.ts(433,18): error TS2353: Object literal may only specify known properties, and 'lo' does not exist in type 'MatchEventPointer'.
+src/game/prg/data/tables/player-stats.ts(33,27): error TS2353: Object literal may only specify known properties, and 'catching' does not exist in type 'PlayerProfile'.
+src/game/prg/data/tables/player-stats.ts(87,28): error TS2353: Object literal may only specify known properties, and 'catching' does not exist in type 'PlayerProfile'.
+src/game/prg/data/tables/player-stats.ts(161,28): error TS2353: Object literal may only specify known properties, and 'catching' does not exist in type 'PlayerProfile'.
+src/game/prg/data/tables/player-stats.ts(167,27): error TS2353: Object literal may only specify known properties, and 'catching' does not exist in type 'PlayerProfile'.
+src/game/prg/data/tables/player-stats.ts(185,27): error TS2353: Object literal may only specify known properties, and 'catching' does not exist in type 'PlayerProfile'.
+src/game/runtime/HeadlessRuntime.ts(186,33): error TS2580: Cannot find name 'require'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test-teams.ts(125,12): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test-teams.ts(125,39): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test-text.ts(326,35): error TS2531: Object is possibly 'null'.
+test/api-test-text.ts(326,56): error TS2339: Property 'length' does not exist on type 'TeamRosterEntry'.
+test/api-test-text.ts(329,38): error TS2339: Property 'level' does not exist on type 'number'.
+test/api-test-text.ts(367,12): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test-text.ts(367,39): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test.ts(229,36): error TS18047: 'roster' is possibly 'null'.
+test/api-test.ts(229,43): error TS2339: Property 'length' does not exist on type 'TeamRosterEntry'.
+test/api-test.ts(230,17): error TS18047: 'roster' is possibly 'null'.
+test/api-test.ts(230,17): error TS7053: Element implicitly has an 'any' type because expression of type 'number' can't be used to index type 'TeamRosterEntry'.
+  No index signature with a parameter of type 'number' was found on type 'TeamRosterEntry'.
+test/api-test.ts(244,27): error TS18047: 'roster' is possibly 'null'.
+test/api-test.ts(244,34): error TS2339: Property 'length' does not exist on type 'TeamRosterEntry'.
+test/api-test.ts(430,12): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test.ts(430,39): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test.ts(431,3): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/api-test.ts(432,3): error TS2580: Cannot find name 'process'. Do you need to install type definitions for node? Try `npm i --save-dev @types/node`.
+test/audio-test.ts(16,20): error TS2305: Module '"../src/game/prg/data/audio/audio-rom"' has no exported member 'SONG_REQUEST_IDS'.

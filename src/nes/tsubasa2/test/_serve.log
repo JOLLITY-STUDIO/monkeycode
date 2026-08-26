@@ -1,0 +1,2 @@
+[serve] http://127.0.0.1:5180/
+[serve] player-tile: http://127.0.0.1:5180/test/player-tile.html
