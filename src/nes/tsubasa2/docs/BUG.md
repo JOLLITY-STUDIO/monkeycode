@@ -173,3 +173,27 @@
   涓嶆槸 `LDA #$XX + JSR $9FA8 timer`锛坰cheduler 绛夊抚锛夈€備袱鑰?ROM 璇箟涓嶅悓:
   - Y loop: 姣忓抚鑷 + 鎵ц shift锛坧er-frame-action 妯″紡锛?  - timer: 绛?N 甯у悗璋?callback锛坰cheduler-driven 妯″紡锛?**绛変环鏂规**: 鐢ㄤ笓闂?`driftRemaining: number` field 琛ㄨ揪 Y 瀵勫瓨鍣ㄥ惊鐜紱
   鍏朵粬 phase (Wait16/Wait4/Wait240/Wait60) 鍏ㄩ儴鐢?`waitDone + scheduler` 妯″紡銆?  涓ょ妯″紡骞跺瓨锛岀鍚?ROM 璇箟銆?**淇璺緞**: 涓嶉渶淇?鈥?drift counter 涓?waitDone 鏄笉鍚?ROM 璇箟鐨勫悎娉曠炕璇戙€?**鐘舵€?*: 鈿狅笍 KNOWN (璁捐姝ｇ‘鑰岄潪 bug)
+---
+
+## BUG #013  [涓ラ噸鎬? 馃敶 鍏抽敭]  **Scene0 Drift30 phase 姘歌繙鍗℃涓嶅垏 LoadChr17**
+
+**鐜扮姸**: 鉁?FIXED
+**鍙戠幇**: Scene0 鐢ㄦ埛鍙嶉"绗竴涓敾闈㈡病鐪嬪埌 Drift" 鈥?鍥?Drift30 phase 姘歌繙涓嶅垏锛屽悗缁?phase 鍏ㄩ儴涓嶈窇
+**浣嶇疆**: `src/game/prg/code/scene/Scene0Controller.ts` Phase.Drift30 handler
+**鏍瑰洜**:
+  - BgFadeOut 瀹屾垚鏃?`scheduleNextPhase(Drift30, 0x10, onArrival=set driftRemaining=0x30)`:
+    - 绔嬪埢 `phase = Drift30; waitDone = false`
+    - pushState(0x10, cb) 鈥?绛?16 甯?  - **BUG**: Drift30 handler 缂?`if (!waitDone) return undefined` 妫€鏌?  - **鍓?0x10 甯?onUpdate Drift30** 绔嬪嵆璺?`shift + driftRemaining--`
+    - 鍒濆€?`driftRemaining = 0`, 16 娆?`--` + `& 0xff` 涔嬪悗 鈫?`0xf0`
+  - 16 甯у悗 cb 鎶佃揪锛歚waitDone = true; driftRemaining = 0x30` (閲嶆柊璧嬪€?
+  - 0x30 娆?shift 鍚?`driftRemaining = 0`锛屼絾涓嬩竴甯?`--` + `& 0xff` 鈫?`0xff`
+    - 妫€鏌?`=== 0` 姘歌繙涓嶅啀瑙﹀彂 鈫?姘歌繙涓嶅垏 LoadChr17
+  - 鏃?wrap 妫€娴?`=== 0xff` 瀹屽叏閿欒锛歝b 璁剧殑 `0x30` 涓嶄細 wrap 鍒?`0xff`
+**淇** (commit 8c79ea73 + BUG #013 fix):
+  1. Drift30 handler 鍔?`if (!this.waitDone) return undefined;` 妫€鏌?鈥?绛?16 甯?cb 鎶佃揪
+  2. 鏀圭敤 `driftRemaining-- + if (<=0)` 鐩存帴鍒ゆ柇锛堜笉 wrap & 0xff锛?  3. 瀛楁娉ㄩ噴鏄庣‘璇箟锛歞riftRemaining 鏄?CPU Y 瀵勫瓨鍣ㄥ惊鐜?index锛圥RG LDY #$30锛夛紝
+     涓?waitDone锛坰cheduler 绛夊抚锛変笉鍚?ROM 婧?  4. enum Phase 澶撮儴鍔犲抚鏃跺簭鍙傝€冭〃锛岃鏄?Drift30 鍑虹幇鍦?frame 66-113锛?     涓嶅湪 boot logo (frame 9-25)
+**楠岃瘉**:
+  - tsc --noEmit 闆堕敊璇?  - Drift30 phase 鏃跺簭锛氳繘鍏?phase 鈫?waitDone=false 绛?16 甯?鈫?cb 璁?driftRemaining=0x30
+    鈫?0x30 娆?per-frame shift 鈫?driftRemaining=0 鈫?鍒?LoadChr17
+**鐘舵€?*: 鉁?FIXED

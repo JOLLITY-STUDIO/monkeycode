@@ -42,7 +42,15 @@ import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
 
-/** 状态机阶段 */
+/**
+ * 状态机阶段 — 帧时序参考（boot logo frame 9-25 不在本 enum，属 onEnter 装载）：
+ *   frame 26+:    Phase.FadeIn (boot 渐显)
+ *   ~30+:        Phase.BgFadeOut (BG 渐隐)
+ *   ~50-65:      PRG $84C4 等 16 帧 (scheduler pushState)
+ *   ~66-113:     Phase.Drift30 — LDY #$30 循环 48 次精灵下漂
+ *   ~114+:       Phase.LoadChr17 ($8AF7 装载)
+ *   ...          → Scroll51 → StopScroll → ResetScroll → Done (return 2)
+ */
 const enum Phase {
   Init = 0,
   FadeIn = 1,
@@ -81,9 +89,23 @@ export class Scene0Controller extends SceneController {
    */
   private waitDone = true;
   /**
-   * Drift30 phase per-frame loop counter（PRG LDY #$30 翻译）。
-   * 与 waitDone 不同语义：Drift30 是 CPU Y 寄存器循环 index（per-frame action），
-   * 而非 scheduler timer（等 N 帧）。
+   * Drift30 phase per-frame loop counter — PRG LDY #$30 翻译。
+   *
+   * 准确语义：
+   *   - ROM $84C9 LDY #$30（Y=48）
+   *   - ROM $84D2 DEY / $84D5 BNE 循环（Y 自减到 0 退出）
+   *   - ROM 内每次循环：$84CD JSR $9FA8（等 1 帧） + $84D0 JSR $890C（精灵 Y+=1）
+   *
+   * 与 waitDone 的关键差异：
+   *   - waitDone = scheduler 等 N 帧（PRG LDA #$XX + JSR $9FA8）一次性
+   *   - driftRemaining = CPU Y 寄存器循环 index，每帧自减 + 执行 per-frame action
+   *
+   * 数量级不同：
+   *   - 16 帧 delay（PRG $84C4 LDA #$10）由 scheduler pushState 等帧
+   *   - 48 次漂移（PRG $84C9 LDY #$30）由 driftRemaining 计数，每次 shift
+   *
+   * 初始化时机：Drift30 phase 进入前的 onArrival callback 内 set 为 0x30
+   * 终止时机：0x30 次循环后 driftRemaining = 0，切到 Phase.LoadChr17
    */
   private driftRemaining = 0;
 
@@ -175,10 +197,19 @@ export class Scene0Controller extends SceneController {
         return undefined;
       }
       case Phase.Drift30: {
-        // LDY #$30 循环：每帧 所有精灵 Y += 1（PRG $890C 翻译），共 0x30 帧
+        // 前 0x10 帧 delay（PRG $84C4 LDA #$10 + JSR $9FA8 由 scheduleNextPhase 处理）。
+        // 在 cb 抵达前不跑 loop — 避免提前 shift + 让 driftRemaining 从 0
+        // 错误递减到负数（之前 BUG: phase 永远卡死）。
+        if (!this.waitDone) return undefined;
+        // PRG $84C9-$84D5 LDY #$30 + LDA #$01 + JSR $9FA8 + JSR $890C + DEY + BNE 翻译：
+        //   每帧 sprite Y += 1（PRG $890C 翻译），共 0x30 次循环。
+        //   ROM 中"等 1 帧"由 LDA #$01 + JSR $9FA8 实现；H5 简化为每帧直接 shift
+        //   （NMI 节奏由 frame loop 自然保证，与 ROM 等效）。
         this.tileBuilder.shiftAllSpriteY(1);
-        this.driftRemaining = (this.driftRemaining - 1) & 0xff;
-        if (this.driftRemaining === 0) {
+        this.driftRemaining--;
+        // cb 抵达时已被 onArrival 设为 0x30；0x30 次后到 0 → 切 LoadChr17
+        if (this.driftRemaining <= 0) {
+          this.driftRemaining = 0;
           this.scheduleNextPhase(Phase.LoadChr17, 0);
         }
         return undefined;
