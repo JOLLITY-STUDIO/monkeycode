@@ -96,27 +96,51 @@ opening-all.log F2510 PC $01:A17F STA $2000 = #$89
 
 ---
 
-## 4. H5 翻译骨架（最终）
+## 4. H5 翻译骨架（最终 — 校正：标题屏幕不是 sceneId=2）
 
-### 4.1 Service 拆分（不照搬 PRG bank）
+### 4.1 ⚠️ 标题屏幕走 **dispatch 路径**，不是 changeScene
+- `SceneTable.ts` 第 33 行：Scene2 = "清精灵扩展表；返回 2"（**hub 占位 do-nothing**，所有 scene 都返回 2）
+- Scene14/15/16/18/19/20/22/23 等都是子场景，**结束都返回 Scene2**
+- **标题屏幕实际机制** = `MainRouterService.dispatchByMode(mode=N)`:
+  - PRG `$8000-$8014` dispatcher table: `LDA $0027 / ASL TAX / LDA $800E,X / PHA / LDA $800D,X / PHA / RTS`
+  - 5-mode dispatch (mode 0..4) 经 `dispatchTable[mode]` 回调
+  - 标题屏幕 = mode 调用 → `dispatchByMode(2)` 或 `dispatchByMode(N)` 触发 (具体 mode 待定)
+- `BootRouter.changeScene()` 不适用于开屏/标题屏幕，仅用于 scene 切换
+
+### 4.2 Service 拆分（不照搬 PRG bank）
 ```
-BootRouter
-  ├─ JoypadInputService.pollStart()  ← 翻译自 bank06 $06:80EA 间接读
-  ├─ Bank00MainLoopService.tick()    ← 翻译自 bank00 $801F-$8AB2 主循环
-  ├─ Bank00SchedulerService.tick(m)  ← 翻译自 $9FA8 ($9EEF-$9F06 wait)
-  ├─ SceneModule.bootScene0()        ← bank00 $9A7E-$9AB7 unpack
-  ├─ SceneModule.bootTitleScreen()   ← bank02 $A01B-$A17F PPU bulk-write
-  └─ ModuleLoader.switch(id)         ← 翻译自 $C4B9 PRG switch
+Bank00MainLoopService                   ← PRG $8000 主循环 + 5-mode dispatch (v2)
+  ├─ MainRouterService                  ← $8000-$8014 dispatcher table (status mode 0..4)
+  │   ├─ mode 0: 帧步进/装载
+  │   ├─ mode 1: 计时比较
+  │   ├─ mode 2: 步进场景            ← 标题屏幕可能在这 (待 trace 确认)
+  │   ├─ mode 3: 计时比较
+  │   └─ mode 4: 计时 + 装载 + 渐隐
+  ├─ Bank00SchedulerService             ← $9FA8 6-slot recurring dispatcher
+  │   └─ pushState/tickDispatch
+  ├─ JoypadInputService.pollStart()     ← 翻译自 bank06 $06:80EA 间接按钮读
+  └─ ModuleLoader.switch(id)            ← 翻译自 $C4B9 PRG switch
+
+BootRouter                              ← bank02 Scene 路由
+  ├─ changeScene(sceneId)               ← 仅用于 scene 切换 (非开屏)
+  ├─ SceneController[0..23] 各 controller
+  │   └─ Scene2 = hub 占位 (所有 scene 返回 2)
+  └─ PpuTransferService.loadCfgBlock(sceneId) ← PRG $8464 cfg 装载
+
+PpuTransferService                      ← 翻译 $8464 + bank02 $A01B-$A17F PPU bulk-write
+  └─ streamTileToVram / setPpuCtrl(0x89)
 ```
 
-### 4.2 行为禁止清单（**绝对不允许**）
+### 4.3 行为禁止清单（**绝对不允许**）
 - ❌ `if (frame > 3644) ...` 硬编码帧数
+- ❌ `BootRouter.changeScene(sceneId=2)` 触发标题屏幕（**sceneId=2 是 hub 不是 title**）
 - ❌ `Scene0.onEnter → loadCfgBlock(sceneId=0)` 替代主循环
 - ❌ `scheduleAfter(N, cb)` 倒计时等帧
 - ❌ `bankSwitch/mmc3Map/readMem/setPrgBank` 任何硬件窗口模拟
-- ❌ `STA $0026`/`STA $0027` 模仿 ROM 写场景 ID（ROM 也不写这些）
+- ❌ 假设 `STA $0026` 是 sceneId 切换（trace 实证 `$0026`/`$0027`/`$0028` 全 0 hits）
+- ❌ `sceneId=2 = 标题屏幕`（**这是我的错误** —— Scene2 = hub)
 
-### 4.3 允许保留 stub
+### 4.4 允许保留 stub
 - `Bank00MainLoopService` 类骨架（tick 函数空实现）
 - `Scene0Controller` 现有 18 phases 保留不删
 - `BootRouter.bootHook()` 注释掉（per BUG #014 调查未完）

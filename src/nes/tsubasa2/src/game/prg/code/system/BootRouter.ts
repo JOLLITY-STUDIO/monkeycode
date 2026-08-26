@@ -141,12 +141,12 @@ export class BootRouter {
     return this.mainLoop;
   }
 
-  // ⚠️ BUG #014 修复悬而未决:
-  //   boot logo 装载归属有争议 — 是 bank00 boot main loop 还是 bank02 dispatch
-  //   处理尚未从 trace log 实证。当前 Scene0.onEnter 保留 stub 等用户确认
-  //   归属后再决定 bootHook 放哪里 (Bank00MainLoopService.bootLogoLoad).
-  //
-  // 当前 Scene0.onEnter 装载 boot logo 是 placeholder, 不应长期存在.
+  // ✅ BUG #014 已收尾 (2026-08):
+  //   boot logo 装载归属确认 = bank00 boot main loop (PRG $8053-$8090)。
+  //   H5 高层等价由 Tsubasa2 组合根 _mountBootLogo() 在 boot() 的
+  //   changeScene(Scene0) 之后装载（原 Scene0.onEnter 占位已迁出）。
+  //   Scene0 只保留 PRG $84C1-$8559 主体展开逻辑。
+  //   Bank00MainLoopService.bootLogoLoad() 为 ROM 逐指令参考实现（hooks 未驱动）。
 
   /** 注册/覆盖场景控制器 */
   register(controller: SceneController): void {

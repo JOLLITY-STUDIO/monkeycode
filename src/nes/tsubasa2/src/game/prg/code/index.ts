@@ -25,6 +25,7 @@ export type { NtStreamEntry, ByteCodeOp } from './system/NtStreamLoaderService';
 export { SceneStateMachine } from './system/SceneStateMachine';
 export type { SceneState, SceneEntryParse } from './system/SceneStateMachine';
 export { TileBuilderService } from './system/TileBuilderService';
+export { RenderingPrimitivesService } from './system/RenderingPrimitivesService';
 
 // scene（按场景 ID 组织：场景表 + 控制器）
 export { SceneController } from './scene/SceneController';

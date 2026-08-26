@@ -1,11 +1,12 @@
 /**
  * Scene0Controller — 场景 0 主循环翻译（opening screen / title menu）
  *
- * ⚠️ 职责归类（注意）：
+ * ⚠️ 职责归类（BUG #014 已收尾）：
  *   - **boot logo（frame 9-25, Tecmo + NTV）不属于 Scene0**
  *     boot logo handler 在 bank00 $8053-$8090（boot main loop），
- *     应该是 `Bank00MainLoopService.bootLogoLoad()` 的工作，而非 Scene0.onEnter
- *   - 当前 Scene0.onEnter 内的 boot logo 装载代码属 placeholder / 兼容
+ *     H5 高层等价由 Tsubasa2 组合根 `_mountBootLogo()` 在 boot() 阶段装载
+ *     （原 Scene0.onEnter 占位已迁出，行为对齐模拟器 f9-f25 dump）
+ *   - Scene0 主体 = PRG $84C1-$8559 主菜单展开序列（FadeIn 起）
  *   - **Drift30 phase 也不在 first frame**，而是 opening 主菜单展开动画（在 BgFadeOut 后）
  *
  * @bank 02 ($A000-$BFFF 在 R7=2) / ROM $A4C1-$A558（Scene0 handler 入口）
@@ -163,25 +164,12 @@ export class Scene0Controller extends SceneController {
   }
 
   onEnter(): void {
-    // ⚠️ boot logo 装载归属争议（BUG #014）：
-    //   当前实现让 Scene0.onEnter 装载 boot logo，但实际
-    //   ROM 实证：frame 6-29 boot logo 装载由 bank00 boot main loop
-    //   (PRG $8053-$8090) 完成；Scene0.onUpdate 主体（$84C1-$8559）从
-    //   frame 3644+ 才触发（Drift 第一次跑 frame）。
-    //   - 因此 onEnter 内"boot logo 装载"代码实际归属应是
-    //     **Bank00MainLoopService.bootLogoLoad()** (PRG $8053-$8090 翻译)，
-    //     **不是** Scene0 职责
-    //   - 当前保留实现作为 stub，避免行为回归
-    //   - TODO: 重构时让 Bank00MainLoopService.bootLogoLoad 装载，
-    //           Scene0.onEnter 仅保留 PRG $84C1 序列的主体展开逻辑
-    this.prim.loadChrConfig(0x17);
-    this.prim.loadScene0Palettes();
-    this.prim.hideOam();
-    this.store.writeByte(0x005b, 1);
-    this.prim.queueScene0LogoNt(0);
-    this.prim.queueScene0LogoNt(1);
-    this.prim.loadScene0Oam();
-    this.audio?.playBgm(0x01);
+    // ⚠️ BUG #014 已收尾：boot logo 装载（loadChrConfig/loadScene0Palettes/
+    //   hideOam/queueScene0LogoNt/loadScene0Oam/BGM 0x01）已迁出 Scene0，
+    // 由 Tsubasa2 组合根 `_mountBootLogo()` 在 boot() 的 changeScene(Scene0) 之后执行
+    // （对应 bank00 PRG $8053-$8090 bootLogoLoad 的 H5 高层等价，
+    //   行为对齐模拟器 f9-f25 dump：f9 黑屏 → f11 40 sprite + NT → f13 fade=3 → f25 满亮）。
+    // Scene0 职责 = PRG $84C1-$8559 主菜单展开序列（从 FadeIn 起）。
     this.phase = Phase.FadeIn;
     this.waitDone = true;
   }
