@@ -101,7 +101,6 @@
 **/.byebug_history
 
 # Logs
-*.log
 **/logs/
 
 # Environment and secrets
