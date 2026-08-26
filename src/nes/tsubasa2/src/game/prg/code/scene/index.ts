@@ -37,3 +37,6 @@ export { Scene23Controller } from './Scene23Controller';
 export { SceneController } from './SceneController';
 export { SCENE_TABLE, getSceneEntry } from './SceneTable';
 export type { SceneEntry } from './SceneTable';
+
+// 片头序列（附加场景 sceneId=100，boot 后进、播完切 Scene0）
+export { OpeningSceneController, OPENING_SCENE_ID } from './OpeningSceneController';

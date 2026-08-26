@@ -109,5 +109,11 @@ export {
   BANK7_CHR_POINTERS, BANK7_CHR_CONFIGS, BANK7_TILE_STREAMS, OPENING_TILE_STREAMS,
 } from './scene/bank7/index';
 
+// 片头序列 Ground Truth 数据表（emu-full 4332 帧 dump 提取）
+export {
+  OPENING_SCREENS, getOpeningScreen,
+} from './scene/OpeningScreenTable';
+export type { OpeningScreenEntry, OpeningPalette, OpeningFrameState } from './scene/OpeningScreenTable';
+
 // 多语言球员名表 (日文/中文/英文, 来自原版 ROM 修改参考文档)
 

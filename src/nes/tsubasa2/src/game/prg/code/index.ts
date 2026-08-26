@@ -55,6 +55,8 @@ export { Scene20Controller } from './scene/Scene20Controller';
 export { Scene21Controller } from './scene/Scene21Controller';
 export { Scene22Controller } from './scene/Scene22Controller';
 export { Scene23Controller } from './scene/Scene23Controller';
+// 片头序列（附加场景 sceneId=100，boot 后进、播完切 Scene0）
+export { OpeningSceneController, OPENING_SCENE_ID } from './scene/OpeningSceneController';
 
 // story
 export { ScriptEngine } from './story/ScriptEngine';

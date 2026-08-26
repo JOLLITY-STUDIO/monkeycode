@@ -42,7 +42,7 @@ import {
   SpriteService,
   SpriteAnimationService,
   AudioService,
-  RenderingPrimitivesService,
+  OpeningSceneController,
 } from './prg/index';
 import type { FrameTarget } from './runtime/GameRuntime';
 
@@ -166,6 +166,8 @@ export class Tsubasa2 {
 
     // 音频注入 (场景 0 BGM/SE 播放 — BootRouter 默认已注册 Scene0Controller 实例)
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachAudio(this.audio);
+    // 片头序列（OpeningScene）音频注入（首屏 tecmo_logo 播 BGM 0x01）
+    (this.router.getController(SceneId.Opening) as OpeningSceneController).attachAudio(this.audio);
 
     // bank00 scene state machine + NT stream loader 注入 Scene0
     // (PRG $8AF7 scene handler loader + $82ED NT stream loader)
@@ -253,16 +255,12 @@ export class Tsubasa2 {
   boot(target?: FrameTarget): void {
     this._frame = 0;
     this.hardware.reset();
-    // 场景调度：场景号 0（原版 Reset 末尾 LDA #$00; JMP $CEFE）
-    this.router.changeScene(SceneId.Scene0);
-
-    // BUG #014 收尾：boot logo 装载迁出 Scene0Controller（原 onEnter 占位），
-    // 组合根在 changeScene(Scene0) 之后装载（对应 bank00 PRG $8053-$8090
-    // bootLogoLoad 的 H5 高层等价，行为对齐模拟器 f9-f25 dump：
-    //   f9 黑屏 → f11 40 sprite + NT → f13 fade=3 → f25 满亮）。
-    // 必须在 changeScene 之后执行——changeScene 内部会 clearNametable/hideOam，
-    // 先装载会被清掉。
-    this._mountBootLogo();
+    // 场景调度：先进入 OpeningScene（片头序列 NES f10-f3599：Tecmo logo → NTV
+    // → 10 屏字幕动画 → story_cup），播完内部 changeScene(Scene0)——
+    // Scene0 从真实窗口 f3600 起（BgFadeOut 渐隐 story_cup → Drift30 → 标题菜单）。
+    // 原 boot logo 装载（PRG $8053-$8090 的 H5 等价）由 OpeningSceneController 首屏
+    // （tecmo_logo，NES f10-280）按 GT 数据表驱动，不再单独 _mountBootLogo。
+    this.router.changeScene(SceneId.Opening);
 
     // WBS_FRAME13 F4+F5+F6: 若有 target, 立即把 boot 状态 prime 到 PPU
     if (target) {
@@ -274,30 +272,6 @@ export class Tsubasa2 {
       // F4+F5: 调色板 + shadow OAM 推到 PPU
       this.interrupts.primeBootState(target.ppu);
     }
-  }
-
-  /**
-   * boot logo 装载（bank00 PRG $8053-$8090 bootLogoLoad 的 H5 高层等价）。
-   *
-   * BUG #014 收尾：原实现在 Scene0Controller.onEnter（兼容占位）——已迁出，
-   * 职责归属 bank00 boot main loop（非 Scene0）。调用点在 boot() 的
-   * changeScene(Scene0) 之后（changeScene 内部清 NT/hideOam，先装载会被清掉）。
-   *
-   * 顺序与模拟器逐帧 dump 对齐（f9 黑屏 → f11 40 sprite + NT → f13 fade=3 → f25 满亮）：
-   *   loadChrConfig(0x17) → loadScene0Palettes(fade=0 黑屏) → hideOam
-   *   → $005B=1 → queueScene0LogoNt(0/1) → loadScene0Oam() → BGM 0x01
-   * 之后由 Scene0.onUpdate 的 FadeIn phase 逐帧渐显（$998C-$99AD 翻译）。
-   */
-  private _mountBootLogo(): void {
-    const prim = new RenderingPrimitivesService(this.store);
-    prim.loadChrConfig(0x17);
-    prim.loadScene0Palettes();
-    prim.hideOam();
-    this.store.writeByte(0x005b, 1);
-    prim.queueScene0LogoNt(0);
-    prim.queueScene0LogoNt(1);
-    prim.loadScene0Oam();
-    this.audio.playBgm(0x01);
   }
 
   /**

@@ -537,11 +537,13 @@ export class InterruptService {
     if (!ppu.loadChrBank) return;
     const store = this.store;
     const sceneId = store.scene.currentSceneId & 0xff;
+    // OpeningScene（片头序列，sceneId=100）：CHR 由 OpeningSceneController 按 GT 表
+    // 写 $0075/$0076 每帧装载，禁止 end-bank 表强制覆盖（否则各屏精灵层 bank 错乱）
+    if (sceneId === 100) return;
     const entry = SCENE_END_BANK_TABLE.find((e) => frame >= e.fromFrame);
     if (!entry) return;
     // 注意：bank1k 0-255, H5 loadChrSlot 自动 mod 128；EMU 是 256 bank 索引。
     // 跨场景转换安全：每帧 frame>=fromFrame 都有效, 直到新 entry 出现。
-    void sceneId;
     for (let i = 0; i < 8; i++) {
       const b = entry.banks[i] & 0xff;
       this.loadChrSlot(ppu, i, b);

@@ -1,13 +1,12 @@
 /**
  * Scene0Controller — 场景 0 主循环翻译（opening screen / title menu）
  *
- * ⚠️ 职责归类（BUG #014 已收尾）：
- *   - **boot logo（frame 9-25, Tecmo + NTV）不属于 Scene0**
- *     boot logo handler 在 bank00 $8053-$8090（boot main loop），
- *     H5 高层等价由 Tsubasa2 组合根 `_mountBootLogo()` 在 boot() 阶段装载
- *     （原 Scene0.onEnter 占位已迁出，行为对齐模拟器 f9-f25 dump）
- *   - Scene0 主体 = PRG $84C1-$8559 主菜单展开序列（FadeIn 起）
- *   - **Drift30 phase 也不在 first frame**，而是 opening 主菜单展开动画（在 BgFadeOut 后）
+ * ⚠️ 职责归类（BUG #014 + OpeningScene 接管）：
+ *   - **boot logo + 完整片头（NES f10-f3599：Tecmo logo / NTV / 10 屏字幕 / story_cup）
+ *     不属于 Scene0** —— 由 OpeningSceneController（sceneId=100，GT 表驱动）播放
+ *   - Scene0 真实窗口 = **NES f3600-f4096**（emu-full GT 实证）：
+ *     BgFadeOut 渐隐 story_cup → Drift30 → 标题装载 → 显示/滚动 → FadeOutAll
+ *   - Scene0 主体 = PRG $84C1-$8559 主菜单展开序列（从 BgFadeOut 起，无 boot FadeIn）
  *
  * @bank 02 ($A000-$BFFF 在 R7=2) / ROM $A4C1-$A558（Scene0 handler 入口）
  *
@@ -43,6 +42,7 @@
  *     共 300 帧（与原 ROM 一致）
  */
 import { SceneController } from './SceneController';
+import { OpeningSceneController } from './OpeningSceneController';
 import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
 import { TileBuilderService } from '../system/TileBuilderService';
 import type { NtStreamLoaderService } from '../system/NtStreamLoaderService';
@@ -164,14 +164,20 @@ export class Scene0Controller extends SceneController {
   }
 
   onEnter(): void {
-    // ⚠️ BUG #014 已收尾：boot logo 装载（loadChrConfig/loadScene0Palettes/
-    //   hideOam/queueScene0LogoNt/loadScene0Oam/BGM 0x01）已迁出 Scene0，
-    // 由 Tsubasa2 组合根 `_mountBootLogo()` 在 boot() 的 changeScene(Scene0) 之后执行
-    // （对应 bank00 PRG $8053-$8090 bootLogoLoad 的 H5 高层等价，
-    //   行为对齐模拟器 f9-f25 dump：f9 黑屏 → f11 40 sprite + NT → f13 fade=3 → f25 满亮）。
-    // Scene0 职责 = PRG $84C1-$8559 主菜单展开序列（从 FadeIn 起）。
-    this.phase = Phase.FadeIn;
+    // ⚠️ Scene0 真实窗口 = NES f3600-f4096（emu-full GT 实证）：
+    //   f3600-3620 BgFadeOut（渐隐 story_cup 背景）
+    //   f3620-3685 Drift30（story_cup 精灵下漂 48 步）+ 装载前等待
+    //   f3685-3727 黑屏 + loadChrConfig(0x17) + 标题 NT 逐行装载
+    //   f3727-4083 标题显示（fade in + FlipAttr + 滚动 + 等 240+60 帧）
+    //   f4083-4096 FadeOutAll → f4097 切场景
+    //
+    // 前置片头（boot logo / 10 屏字幕 / story_cup）由 OpeningSceneController
+    // （sceneId=100）播放，切回 Scene0 时 story_cup 满亮画面在 PPU 侧保留，
+    // 但 BootRouter.changeScene() 已清 store 侧 shadowOam —— 这里恢复 story_cup
+    // 精灵，Drift30 phase 才能按 GT 让 64 sprite 下漂（oamY0 44→92）。
+    this.phase = Phase.BgFadeOut;
     this.waitDone = true;
+    OpeningSceneController.loadStoryCupOam(this.store);
   }
 
   onUpdate(_frame: number): number | undefined {
