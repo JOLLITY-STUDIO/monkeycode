@@ -23,7 +23,15 @@ import {
 import { OPENING_TILE_STREAMS } from '../../data/scene/bank7-streams';
 import { BOOT_TECMO_OAM_TABLE } from '../../data/tables/opening-sprites';
 import { PALETTE_TABLE, loadPalette } from '../../data/tables/palette-table';
-import { SCENE16_A677_BLOB, SCENE16_A67B_BLOB, TILE_MAP_HIGH } from '../../data/tables/scene-bank02-tables';
+import {
+  SCENE16_A677_BLOB,
+  SCENE16_A67B_BLOB,
+  TILE_MAP_HIGH,
+  SCENE14_ROW_TEMPLATE,
+  SCENE14_ROW_PTR_TABLE_B9,
+  SCENE14_ROW_PTR_TABLE_B10,
+  SCENE14_ROW_BLOCKS,
+} from '../../data/tables/scene-bank02-tables';
 
 export class RenderingPrimitivesService {
   constructor(private readonly store: DataStore) {}
@@ -410,19 +418,55 @@ export class RenderingPrimitivesService {
   // ──────────────────────────── 场景14+ 原语（bank02 实证） ────────────────────────────
 
   /**
-   * NT 纹理装载（对应 bank00 $8976 + $9085 流装载器，X=$BD/Y=$23 参数）。
+   * $9085 行构建器（对应 bank00 $8976 + $9085 流装载器主体）。
    *
-   * ROM 行为：从 $E500 流（PRG 末 bank）逐行装载 NT 图案并追加 NT 缓冲。
-   * H5 注：$E500 流为银行切换型 tile 指针流，跨 bank 数据未完全还原；
-   *       以 NT0/NT1 下屏区填充 $55 近似（与既有 Scene14 表现一致），
-   *        后续若还原流数据可替换为声明式表驱动。
+   * ROM 行为（逐指令对照 code_render.s $9085-$9131）：
+   *   1. 清 $0468-$04FF（精灵表）
+   *   2. $0097 = 0；$00EC = 行数（ROM 读流头 byte@ptr+1）
+   *   3. 每行：读流索引 byte →
+   *        - < $6D：查 bank9 $A000 表（SCENE14_ROW_PTR_TABLE_B9）
+   *        - ≥ $6D：减 $6D 后查 bank10 $A000 表（SCENE14_ROW_PTR_TABLE_B10）
+   *   4. 复制 32 字节模板到目标行（$0568 起，行距 $20）
+   *   5. dest[0] |= ($0025 - 9)；$0049 = 数据块 byte0；dest[2..3] = 块指针 + 1
+   *
+   * H5 调用方：Scene14（indices=[$BD,$23]），X/Y 参数经 $00E7/$00E8 已并入 indices。
+   * 消费方：$9147 精灵场景处理器（bank00 流子系统，尚未翻译，见 SceneStateMachine）。
    */
-  loadNtTexture(addrLo: number, addrHi: number): void {
-    void addrLo;
-    void addrHi;
+  buildSceneRows(indices: ReadonlyArray<number>): void {
     const store = this.store;
-    for (let addr = 0x2400; addr <= 0x2bff; addr++) {
-      store.writeByte(addr, 0x55);
+    // $9085: 清 $0468-$04FF
+    for (let a = 0x0468; a <= 0x04ff; a++) store.writeByte(a, 0);
+    store.writeByte(0x0097, 0);
+    const count = indices.length & 0xff;
+    store.writeByte(0x00ec, count);
+    let dest = 0x0568;
+    for (const rawIdx of indices) {
+      const idx = rawIdx & 0xff;
+      // 流索引 → 表选择（ROM: CMP #$6D / BCC → bank9，否则 bank10）
+      let table: readonly number[];
+      let rel: number;
+      if (idx >= 0x6d) {
+        table = SCENE14_ROW_PTR_TABLE_B10;
+        rel = idx - 0x6d;
+      } else {
+        table = SCENE14_ROW_PTR_TABLE_B9;
+        rel = idx;
+      }
+      const ptr = table[rel] ?? 0xa000;
+      // 复制 32 字节模板到行（ROM $90E6: LDA $978B,Y / STA ($0094),Y）
+      for (let y = 0; y < 32; y++) {
+        store.writeByte(dest + y, SCENE14_ROW_TEMPLATE[y]);
+      }
+      // dest[0] |= ($0025 - 9)（ROM $90F0: LDA $0025 / SEC / SBC #$09 / ORA ($94),Y）
+      const b0 = store.readByte(dest) | ((store.readByte(0x0025) - 9) & 0xff);
+      store.writeByte(dest, b0 & 0xff);
+      // $0049 = 数据块 byte0；dest[2..3] = 块指针 + 1（ROM $90FD-$9110）
+      const block = SCENE14_ROW_BLOCKS[ptr.toString(16)] ?? null;
+      store.writeByte(0x0049, block ? block[0] : 0);
+      const ptr1 = (ptr + 1) & 0xffff;
+      store.writeByte(dest + 2, ptr1 & 0xff);
+      store.writeByte(dest + 3, (ptr1 >> 8) & 0xff);
+      dest += 0x20;
     }
   }
 
