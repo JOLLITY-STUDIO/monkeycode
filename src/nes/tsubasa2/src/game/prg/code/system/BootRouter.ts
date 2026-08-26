@@ -1,19 +1,32 @@
 /**
- * BootRouter — 场景路由（用具名视图）
+ * BootRouter — bank02 主循环路由 (PRG $A000-$BFFF 在 R7=2 时的 Scene0/Scene1+ 路由翻译)
  *
- * 翻译原则（v2）：
- *   - scene.currentSceneId 具名视图（替代 readByte(0x00ed) / writeByte(0x00ed, ...)）
- *   - ppuState.ctrl / ppuState.mask 具名视图（替代寄存器字面量）
- *   - 集成 MainRouterService dispatch（PRG $8000 翻译）：按 $0027 mode 派发 5 entry action
+ * 翻译原则 (v3, 去 bank00 化):
+ *   - **本类只承接 bank02 翻译**: scene 注册表 + changeScene + 当前 scene 调度
+ *   - **不再**持有 MainRouterService / Bank00SchedulerService / 5-mode dispatcher
+ *   - bank00 主循环 (5-mode dispatch + scheduler tail + boot logo) 翻译 = Bank00MainLoopService
+ *   - 调度依赖 (PRG $9FA8 pushState) = SceneController base class 通过 attachScheduler() 注入
  *
- * BootRouter 在构造后会自动调用 `autoRegisterDispatchActions()` 注册
- * 5 entry dispatcher table（mode 0..4）→ action callbacks，把旧的硬编码 if-else
- * mode dispatch 替换成可配置 table-driven 派发。
+ * 职责清晰切分:
+ *   ┌─ Tsubasa2 组合根
+ *   ├─ Bank00MainLoopService  (PRG $8000 主循环: 5-mode dispatch + wait/spin + audio req)
+ *   ├─ BootRouter              (PRG $A000 bank02 Scene0 handler 入口路由, 当前文件)
+ *   ├─ PpuTransferService     (PRG $8464 cfg 装载, 多 bank cfg 表)
+ *   └─ SceneController[0..23] (各 scene handler 翻译)
+ *
+ * 对应 PRG 段 (docs/BANK02_ANALYSIS.md):
+ *   $A203 (bank2 main loop body): scene dispatch → 切到当前 scene controller
+ *   changeScene(sceneId):
+ *     - 关 IRQ 计数器 (PRG $00E0 等)
+ *     - 隐藏 OAM (hideOam)
+ *     - 清 NT (clearNametable)
+ *     - 初始化 PPU CTRL/MASK
+ *     - 装载 $8464 cfg (PRG $8464 多 bank cfg 表 → PpuTransferService)
+ *     - 切到目标 scene controller 调 onEnter
  */
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from './InputService';
-import { MainRouterService, StatusMode } from './MainRouterService';
-import { PpuTransferService } from './PpuTransferService';
+import type { PpuTransferService } from './PpuTransferService';
 import type { Bank00SchedulerService } from './Bank00SchedulerService';
 import {
   SceneController,
@@ -27,7 +40,7 @@ import {
   Scene22Controller, Scene23Controller,
 } from '../scene/index';
 
-/** 场景号枚举（0-23） */
+/** 场景号枚举 (0-23) */
 export const enum SceneId {
   Scene0 = 0, Scene1 = 1, Scene2 = 2, Scene3 = 3, Scene4 = 4, Scene5 = 5,
   Scene6 = 6, Scene7 = 7, Scene8 = 8, Scene9 = 9, Scene10 = 10, Scene11 = 11,
@@ -36,7 +49,7 @@ export const enum SceneId {
   Scene22 = 22, Scene23 = 23,
 }
 
-/** Scene0-23 控制器类列表（顺序对应 sceneId），用于自动统一 register */
+/** Scene0-23 控制器类列表 (顺序对应 sceneId), 用于自动统一 register */
 const SCENE_CONTROLLERS: ReadonlyArray<new (store: DataStore, input: InputService) => SceneController> = [
   Scene0Controller,
   Scene1Controller, Scene2Controller, Scene3Controller, Scene4Controller,
@@ -48,14 +61,18 @@ const SCENE_CONTROLLERS: ReadonlyArray<new (store: DataStore, input: InputServic
   Scene22Controller, Scene23Controller,
 ];
 
+/**
+ * BootRouter — bank02 主循环路由 (PRG $A000-$BFFF).
+ *
+ * ⚠ 与 bank00 职责严格分离:
+ *   - bank00 (PRG $8000-$9FFF) 主循环 / 5-mode dispatch / boot logo → Bank00MainLoopService
+ *   - bank02 (PRG $A000-$BFFF) Scene0+ handler 路由 → 当前类
+ */
 export class BootRouter {
-  /** 场景控制器注册表（sceneId → controller） */
+  /** 场景控制器注册表 (sceneId → controller) */
   private readonly scenes: Map<number, SceneController> = new Map();
 
-  /** bank00 $8000 主 dispatcher 翻译器（5 entry action table） */
-  readonly mainRouter: MainRouterService;
-
-  /** bank00 $8464 cfg 装载器（多 bank 装载入口，由 Tsubasa2 注入） */
+  /** PPU transfer cfg loader (PRG $8464 多 bank 装载) — 由 Tsubasa2 构造时注入 */
   private ppuTransfer: PpuTransferService | null = null;
 
   private currentSceneId = SceneId.Scene0;
@@ -65,123 +82,47 @@ export class BootRouter {
     readonly store: DataStore,
     readonly input: InputService,
   ) {
-    this.mainRouter = new MainRouterService(store);
     for (const Ctor of SCENE_CONTROLLERS) {
       this.register(new Ctor(store, input));
     }
-    this.autoRegisterDispatchActions();
   }
 
   /**
-   * 注入 PpuTransferService（PRG $8464 cfg loader 翻译）。
-   * 由 Tsubasa2 boot() 在构造 BootRouter 之后调用，
-   * 让 BootRouter.changeScene() 自动调 loadCfgBlock(sceneId) 装 cfg。
+   * 注入 PpuTransferService (PRG $8464 cfg loader 翻译)。
+   * 由 Tsubasa2 boot() 在构造 BootRouter 之后调用, 让 BootRouter.changeScene()
+   * 自动调 loadCfgBlock(sceneId) 装 cfg.
    *
-   * 如不注入：changeScene() 跳过 cfg 装载（向后兼容 stub 模式）。
+   * 如不注入: changeScene() 跳过 cfg 装载 (向后兼容 stub 模式).
    */
   attachPpuTransfer(ppu: PpuTransferService): void {
     this.ppuTransfer = ppu;
   }
 
   /**
-   * 注入 bank00 scheduler（PRG $9FA8 pushState 翻译）。
-   * 由 Tsubasa2 boot() 调用，让内部 MainRouterService 也能用 scheduler
-   * 推进 boot intro 等帧。
+   * 注入 bank00 scheduler (PRG $9FA8 pushState 翻译)。
+   * 由 Tsubasa2 boot() 调用, 让 SceneController.scheduleAfter() 能 pushState.
+   * bank00 scheduler 本身由 Bank00MainLoopService 持有 (push 入队),
+   * 这里只是把同一引用透传到所有 scene controller base class.
    */
-  attachBank00Scheduler(scheduler: Bank00SchedulerService): void {
-    // 同时把 scheduler 注入 MainRouterService，让 MainRouterService.waitIntroFrames()
-    // 能 pushState（PRG $9FA8 完整接通）
-    (this.mainRouter as unknown as { scheduler: Bank00SchedulerService }).scheduler = scheduler;
+  attachScheduler(scheduler: Bank00SchedulerService): void {
+    for (const c of this.scenes.values()) {
+      c.attachScheduler(scheduler);
+    }
   }
 
-  private scheduler: Bank00SchedulerService | null = null;
-
-  // ⚠️ BUG #014 修复悬而未决：
+  // ⚠️ BUG #014 修复悬而未决:
   //   boot logo 装载归属有争议 — 是 bank00 boot main loop 还是 bank02 dispatch
   //   处理尚未从 trace log 实证。当前 Scene0.onEnter 保留 stub 等用户确认
-  //   归属后再决定 bootHook 放哪里。
-
-  /**
-   * 自动注册 5 entry dispatcher actions（PRG $800D-$8014 翻译）。
-   *
-   * 每条 action 调对应的 PRG 段语义抽象方法（替代原 GameSystemService.update() 中
-   * 硬编码 if-else mode 0/1/2/3/4 dispatch 的 stub）：
-   *
-   *   mode 0: 步进场景 — $0026 += 1（不对 Scene 做自动切换；让 Scene controller 自己决定 next）
-   *   mode 1: 计时比较 — $0028 > $0029 → mainLoopStep
-   *   mode 2: 立即 mainLoopStep（无条件推进）
-   *   mode 3: 计时比较 — $0028 > $0029 → mainLoopStep（与 mode 1 同形）
-   *   mode 4: 计时比较 + fade 装载 cfg 0x60 + 清 $0027 mode=0
-   *
-   * 在 update() 末尾按当前 $0027 派发。
-   * PRG $0027 字节语义：mode 0=standby, 1/3=timer-wait, 2=advance, 4=fade
-   */
-  private autoRegisterDispatchActions(): void {
-    const store = this.store;
-    // mode 0 — 步进 frame counter；不自动切场景，让 Scene controller 自管
-    this.mainRouter.registerDispatchAction(0 as StatusMode, () => {
-      // $0026 step counter +1；不动 $0027（保持 mode 0 standby）
-      const step = (store.readByte(0x0026) + 1) & 0xff;
-      store.writeByte(0x0026, step);
-      // 错位自检：若 $0026 跨越 $00E4 cap，则需要 scene 切换；
-      // 当前 stub 模式：仅写 $0026 让 Scene controller 据此推进
-
-      // Boot intro 等帧 path（PRG $9FA8 pushState 翻译）：
-      // 进入 boot intro 时 MainRouterService.waitIntroFrames(timer) 入队；
-      // mode 0 派发时不主动清 counter，让 scheduler tickDispatch 自动推进
-    });
-    // mode 1 — 计时比较 ($0028 > $0029) → mainLoopStep
-    this.mainRouter.registerDispatchAction(1 as StatusMode, () => {
-      if (store.readByte(0x0028) > store.readByte(0x0029)) {
-        this.mainLoopStep();
-      }
-    });
-    // mode 2 — 立即 mainLoopStep
-    this.mainRouter.registerDispatchAction(2 as StatusMode, () => {
-      this.mainLoopStep();
-    });
-    // mode 3 — 计时比较 + mainLoopStep（与 mode 1 等价）
-    this.mainRouter.registerDispatchAction(3 as StatusMode, () => {
-      if (store.readByte(0x0028) > store.readByte(0x0029)) {
-        this.mainLoopStep();
-      }
-    });
-    // mode 4 — 计时比较 + 装载 fade cfg 0x60 + 清 $0027
-    this.mainRouter.registerDispatchAction(4 as StatusMode, () => {
-      const a = store.readByte(0x0028);
-      const b = store.readByte(0x0029);
-      if (a !== b) {
-        // 装载 fade out cfg 0x60（PRG $8464 多 bank cfg 装载）
-        // cfg=0x60 → 解析不命中（超出已声明 cfg 表），fallback 不写
-        // ROM 实际 = fade out 路径触发；H5 暂用 PpuTransferService 占位
-        this.ppuTransfer?.loadCfgBlock(0x60);
-      }
-      // 清 mode → 让下一帧从 mode 0 重新开始
-      store.writeByte(0x0027, 0);
-    });
-  }
-
-  /**
-   * 主循环步进（PRG $8267 JMP $C57B = $0026++ / $0027=0 翻译）。
-   * 由 mode 1/2/3 action 调用；外部亦可主动调。
-   *
-   * 副作用：
-   *   - $0026 (step counter) += 1
-   *   - $0027 (status mode) = 0  → 下一帧从 mode 0 重新派发
-   */
-  mainLoopStep(): void {
-    const store = this.store;
-    const step = (store.readByte(0x0026) + 1) & 0xff;
-    store.writeByte(0x0026, step);
-    store.writeByte(0x0027, 0);
-  }
+  //   归属后再决定 bootHook 放哪里 (Bank00MainLoopService.bootLogoLoad).
+  //
+  // 当前 Scene0.onEnter 装载 boot logo 是 placeholder, 不应长期存在.
 
   /** 注册/覆盖场景控制器 */
   register(controller: SceneController): void {
     this.scenes.set(controller.sceneId, controller);
   }
 
-  /** 获取场景控制器（断言已注册 — Scene0-23 全部从 scene/index.ts 导入） */
+  /** 获取场景控制器 (断言已注册 — Scene0-23 全部从 scene/index.ts 导入) */
   getController(sceneId: number): SceneController {
     const c = this.scenes.get(sceneId);
     if (!c) throw new Error(`BootRouter.getController: sceneId=${sceneId} 未注册`);
@@ -189,10 +130,11 @@ export class BootRouter {
   }
 
   /**
-   * 切换场景：
-   * - 前序：关 IRQ 计数器 / 隐藏 OAM / 清 NT
+   * 切换场景 (PRG $A203 bank2 main loop body 翻译).
+   *
+   * - 前序: 关 IRQ 计数器 / 隐藏 OAM / 清 NT
    * - PPU CTRL/MASK 初始化
-   * - PRG $8464 cfg 装载（写 $004D/$004E/$0056/$00ED + NT fill 0x20=$55）
+   * - PRG $8464 cfg 装载 (写 $004D/$004E/$0056/$00ED + NT fill 0x20=$55)
    *   → PpuTransferService.loadCfgBlock(sceneId)
    * - scene.currentSceneId 具名写回并分发到对应 controller
    */
@@ -204,7 +146,7 @@ export class BootRouter {
     store.ppuState.ctrl = 0x08; // PPU CTRL: NMI on / 精灵 8x8 / BG 表 0
     store.ppuState.mask = 0x1e; // PPU MASK: BG+SPR 可见
     store.ppuState.chrSelBase = 0x00;
-    // PRG $8464 cfg 装载（multi-bank）— 由 PpuTransferService 承接
+    // PRG $8464 cfg 装载 (multi-bank) — 由 PpuTransferService 承接
     // 写 $004D/$004E (装载段 ptr) / $0056 (param) / $00ED (current row) + NT fill
     this.ppuTransfer?.loadCfgBlock(sceneId);
     this.currentSceneId = sceneId;
@@ -215,13 +157,12 @@ export class BootRouter {
   }
 
   /**
-   * 每帧更新；处理场景返回的下一个场景号 + PRG $8000 mode dispatch。
+   * 每帧更新 (bank02 Scene0 主循环 dispatch).
    *
-   * ROM 行为：
-   *   1. 调 scene controller.onUpdate(frame) → 返回 next sceneId
-   *   2. 若 next != current → changeScene(next)
-   *   3. 末尾读 $0027 (= scene status mode 0..4) → MainRouterService.dispatchByMode(mode)
-   *      由 5-entry dispatcher table 派发对应 action（PRG $8000 翻译）
+   * 1. 调当前 scene controller.onUpdate(frame) → 返回 next sceneId
+   * 2. 若 next != current → changeScene(next)
+   * 3. 注: bank00 5-mode dispatch 由 Bank00MainLoopService.tickFrame() 触发,
+   *    此方法不重复 dispatch.
    */
   update(frame: number): void {
     const next = this.current?.onUpdate(frame);
@@ -230,14 +171,9 @@ export class BootRouter {
     }
     // 同一 scene 重复进入 (scene 2 等"占位 do-nothing"场景) 不触发 onEnter
     // 否则每帧 clearNametable + hideOam → 黑屏
-    // PRG $8000 dispatch — 按 $0027 mode 派发 5 entry action
-    const mode = this.store.readByte(0x0027) & 0x07;
-    if (mode >= 0 && mode <= 4) {
-      this.mainRouter.dispatchByMode(mode as StatusMode);
-    }
   }
 
-  /** 每帧渲染（主渲染路径） */
+  /** 每帧渲染 (主渲染路径) */
   render(): void {
     this.current?.onRender();
   }

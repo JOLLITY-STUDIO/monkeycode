@@ -4,11 +4,11 @@
  * ⚠️ 职责归类（注意）：
  *   - **boot logo（frame 9-25, Tecmo + NTV）不属于 Scene0**
  *     boot logo handler 在 bank00 $8053-$8090（boot main loop），
- *     应该是 BootRouter boot hook 的工作，而非 Scene0.onEnter
+ *     应该是 `Bank00MainLoopService.bootLogoLoad()` 的工作，而非 Scene0.onEnter
  *   - 当前 Scene0.onEnter 内的 boot logo 装载代码属 placeholder / 兼容
  *   - **Drift30 phase 也不在 first frame**，而是 opening 主菜单展开动画（在 BgFadeOut 后）
  *
- * @bank 02 ($8000-$9FFF) / ROM $A4C1-$A558（Scene0 handler 入口）
+ * @bank 02 ($A000-$BFFF 在 R7=2) / ROM $A4C1-$A558（Scene0 handler 入口）
  *
  * ROM 序列（code_sub.s $84C1-$8559，Scene0 主展开序列，**不是 first frame**）：
  *   JSR $9A0D        → BG 渐隐（fade.bg→0，每帧 fadeWrite）
@@ -168,11 +168,12 @@ export class Scene0Controller extends SceneController {
     //   ROM 实证：frame 6-29 boot logo 装载由 bank00 boot main loop
     //   (PRG $8053-$8090) 完成；Scene0.onUpdate 主体（$84C1-$8559）从
     //   frame 3644+ 才触发（Drift 第一次跑 frame）。
-    //   - 因此 onEnter 内"boot logo 装载"代码实际归属应是 boot hook
-    //     (BootRouter.bootHook())，**不是** Scene0 职责
+    //   - 因此 onEnter 内"boot logo 装载"代码实际归属应是
+    //     **Bank00MainLoopService.bootLogoLoad()** (PRG $8053-$8090 翻译)，
+    //     **不是** Scene0 职责
     //   - 当前保留实现作为 stub，避免行为回归
-    //   - TODO: 重构时让 BootRouter.bootHook 装载，Scene0 仅保留
-    //     PRG $84C1 序列的主体展开逻辑
+    //   - TODO: 重构时让 Bank00MainLoopService.bootLogoLoad 装载，
+    //           Scene0.onEnter 仅保留 PRG $84C1 序列的主体展开逻辑
     this.prim.loadChrConfig(0x17);
     this.prim.loadScene0Palettes();
     this.prim.hideOam();

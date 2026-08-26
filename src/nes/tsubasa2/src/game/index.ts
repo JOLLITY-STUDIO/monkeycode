@@ -23,6 +23,7 @@ import {
   InterruptService,
   InputService,
   Bank00SchedulerService,
+  Bank00MainLoopService,
   PpuTransferService,
   NtStreamLoaderService,
   SceneStateMachine,
@@ -69,9 +70,13 @@ export class Tsubasa2 {
   readonly skill: SkillService;
   readonly audio: AudioService;
   readonly sprite: SpriteService;
-  // bank00 6 个新 Service（组合根实例化）
-  // 注: MainRouterService 由 BootRouter 内部持有（Tsubasa2 不暴露，避免外部滥用）
+  // bank00 Service (组合根实例化)
+  // 注: MainRouterService 由 Bank00MainLoopService 内部持有 (Tsubasa2 不暴露, 避免外部滥用)
+  // bank00 vs bank02 职责清晰切分:
+  //   - bank00MainLoop (PRG $8000) = Bank00MainLoopService (新)
+  //   - bank02 路由  (PRG $A000)  = BootRouter
   readonly bank00Scheduler: Bank00SchedulerService;
+  readonly bank00MainLoop: Bank00MainLoopService;
   readonly ppuTransfer: PpuTransferService;
   readonly ntStreamLoader: NtStreamLoaderService;
   readonly sceneStateMachine: SceneStateMachine;
@@ -141,39 +146,37 @@ export class Tsubasa2 {
     // 音频输出：创建 PAPU + WebAudio（小程序 wx.createWebAudioContext）
     this._initAudio();
 
-    // 路由：场景表驱动注册 Scene0-23（构造器循环 register）
+    // ── 路由组件: bank00 vs bank02 职责清晰切分 ──
+    //   1) Bank00MainLoopService = bank00 翻译 (PRG $8000 入口: 5-mode dispatch + scheduler tail + boot + audio req)
+    //   2) BootRouter            = bank02 翻译 (PRG $A000 入口: scene0+ 路由 + changeScene + 当前 scene 调度)
+    //   3) PpuTransferService   = PRG $8464 cfg loader (bank00 + bank02 共享)
+    this.bank00MainLoop = new Bank00MainLoopService(this.store, this.bank00Scheduler, this.ppuTransfer);
+
+    // 路由: 场景表驱动注册 Scene0-23 (构造器循环 register)
     this.router = new BootRouter(this.store, this.input);
 
-    // 注入 bank00 PRG $8464 cfg loader 到 BootRouter，
-    // changeScene() 自动装 cfg（替代 GameSystemService.sceneLoad 硬编码 stub 表）
+    // 注入 bank00 PRG $8464 cfg loader 到 BootRouter,
+    // changeScene() 自动装 cfg (替代 GameSystemService.sceneLoad 硬编码 stub 表)
     this.router.attachPpuTransfer(this.ppuTransfer);
 
-    // 注入 bank00 scheduler 到 BootRouter（PRG $9FA8 pushState 翻译）
-    // BootRouter 转发到 MainRouterService.waitIntroFrames() 派发 boot intro 等帧
-    this.router.attachBank00Scheduler(this.bank00Scheduler);
+    // 注入 bank00 scheduler 到所有 Scene0-23 (PRG $9FA8 pushState 翻译)
+    // 替代各 Scene 自己写的 this.wait/counter 自减模式
+    this.router.attachScheduler(this.bank00Scheduler);
 
-    // 音频注入（场景 0 BGM/SE 播放 — BootRouter 默认已注册 Scene0Controller 实例）
+    // 音频注入 (场景 0 BGM/SE 播放 — BootRouter 默认已注册 Scene0Controller 实例)
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachAudio(this.audio);
 
     // bank00 scene state machine + NT stream loader 注入 Scene0
-    // （PRG $8AF7 scene handler loader + $82ED NT stream loader）
+    // (PRG $8AF7 scene handler loader + $82ED NT stream loader)
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachNtStreamLoader(this.ntStreamLoader);
     (this.router.getController(SceneId.Scene0) as Scene0Controller).attachSceneStateMachine(this.sceneStateMachine);
-
-    // 注入 bank00 scheduler 到所有 Scene0-23（PRG $9FA8 pushState 翻译）
-    // 替代各 Scene 自己写的 this.wait/counter 自减模式
-    for (let id = 0; id <= 23; id++) {
-      const ctrl = this.router.getController(id);
-      ctrl.attachScheduler(this.bank00Scheduler);
-    }
 
     // 硬件初始化 + 中断管线
     this.hardware = new HardwareInitService(this.store);
     this.interrupts = new InterruptService(this.store, this.input);
     this.interrupts.attachRouter(this.router);
-    // 注入 bank00 scheduler 到 InterruptService，nmi() 末尾自动调 tickDispatch()
-    // （PRG $9085 scheduler tick entry 翻译入口）
     this.interrupts.attachScheduler(this.bank00Scheduler);
+    this.interrupts.attachBank00MainLoop(this.bank00MainLoop);
     void matchEngine;
   }
 

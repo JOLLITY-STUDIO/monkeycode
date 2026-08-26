@@ -14,6 +14,7 @@ import type { InputService } from './InputService';
 import type { BootRouter } from './BootRouter';
 import type { AudioService } from '../audio/AudioService';
 import type { Bank00SchedulerService } from './Bank00SchedulerService';
+import type { Bank00MainLoopService } from './Bank00MainLoopService';
 import { consumeNtBuffer } from '../../data/store/RenderQueues';
 import { SCENE_END_BANK_TABLE } from '../../data/tables/scene-end-bank-table';
 import { OPENING_FADE_TABLE } from '../../data/scene/opening-data';
@@ -42,6 +43,7 @@ export class InterruptService {
   private router: BootRouter | null = null;
   private audio: AudioService | null = null;
   private scheduler: Bank00SchedulerService | null = null;
+  private bank00MainLoop: Bank00MainLoopService | null = null;
   /** CHR 8 slot 已装载 bank1k 缓存（变更检测） */
   private readonly chrSlots: ChrSlotIndex = new Array(8).fill(-1);
 
@@ -70,6 +72,15 @@ export class InterruptService {
   }
 
   /**
+   * 注入 bank00 主循环（PRG $8000 5-mode dispatch 翻译）。
+   * 在 nmi() 末尾 router.update() 之后调 bank00MainLoop.tickFrame(),
+   * 按 $0027 mode 派发对应 callback.
+   */
+  attachBank00MainLoop(loop: Bank00MainLoopService): void {
+    this.bank00MainLoop = loop;
+  }
+
+  /**
    * 每帧 NMI：
    * 1. 手柄读取
    * 2. 音频引擎帧推进
@@ -83,6 +94,9 @@ export class InterruptService {
     this.input.readControllers();
     this.audio?.update();
     this.router?.update(frame);
+    // bank00 主循环 tick (PRG $8000 LDA $0027 / JMP ($800E,X) 翻译)
+    //   5-mode dispatch 派发 + Bank00MainLoopService.router 内部 action
+    this.bank00MainLoop?.tickFrame();
     // bank00 dispatcher tick — 自动派发所有 timer→0 的 slot callback
     // （替代 ROM 每帧 NMI handler 期间调 bank0 $9085 scheduler dispatch 的副作用）
     this.scheduler?.tickDispatch();
