@@ -19,6 +19,7 @@
 import { SceneController } from './SceneController';
 import {
   getOpeningFrame,
+  OPENING_FRAMES,
   type OpeningFrameEntry,
   type OpeningFrameChr,
   type OpeningFrameNtRow,
@@ -107,17 +108,36 @@ export class OpeningSceneController extends SceneController {
     return frame + H5_FRAME_OFFSET;
   }
 
+  /**
+   * START 跳过标志 — 用户按下 START 后,ROM 不走 Scene0 phase 序列过渡,
+   * 而是直接装载并显示 title 屏。H5 翻译:在 OpeningScene 内部冻结,
+   * apply 最后一帧 GT,然后 onUpdate 不再 advance (保留 PPU 上的 title GT 数据)。
+   *
+   * 不通过 BootRouter.changeScene(0/2) 切换 controller,因为:
+   *   - changeScene 会 clear NT/OAM/shadowOam,把刚 apply 的 title GT 数据擦除
+   *   - ROM 真实行为(emu press-start-to-title.log 实证):NMI dispatcher 直接调
+   *     title handler,没有任何"渐隐→漂移→装载→滚动→显示"过渡 phase
+   *
+   * 注意:store.scene.currentSceneId 保持 OpeningSceneId (= 100),
+   * 让 Tsubasa2.frame() 的 OpeningScene 分支继续调 applyNtToPpu + getChrPlan,
+   * 确保最后一帧 GT 数据被写到 PPU;之后 ntQueue 由 applyFrameData 不再被写入,
+   * getChrPlan 返回被冻结的 title CHR plan,画面稳定。
+   */
+  private skipped = false;
+
   onUpdate(frame: number): number | undefined {
+    if (this.skipped) return undefined;
+
     const nesFrame = this.nesFrameOf(frame);
 
-    // === START 按下:跳过开场到标题画面 ===
-    // 行为语义:用户按 START 后,ROM 跳过片头直接进入 Scene0(title 展开序列)。
-    //   BootRouter.changeScene(0) 会清 NT/OAM → Scene0.onEnter → BgFadeOut → Drift30 →
-    //   LoadChr17 (装载 title NT) → Scroll51 → FadeOutAll → Done → return 2 (hub).
-    // NOTE: 不能在这里 return 2 — 因为 changeScene(2) 会清 NT/OAM,刚铺的最后一帧 GT
-    //       数据会被擦除。交给 Scene0 跑完整 title 展开才是真正的"标题画面"。
+    // === START 按下:跳过开场,直接显示 title 屏(贴 ROM 行为) ===
     if (this.input.isPressed(1, Button.Start)) {
-      return 0;
+      const lastFr = OPENING_FRAMES[OPENING_FRAMES.length - 1];
+      if (lastFr) this.applyFrameData(lastFr);
+      this.skipped = true;
+      // 不切场景(return undefined);不通过 BootRouter.changeScene,
+      // 避免 changeScene 内部 hideOam / clearNametable 把刚铺的 title GT 擦掉。
+      return undefined;
     }
 
     if (nesFrame >= OPENING_END_NES_FRAME) {

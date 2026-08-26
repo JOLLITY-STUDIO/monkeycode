@@ -49,7 +49,7 @@ const START = parseInt(process.argv[3] || nesFrame, 10);
 const END = parseInt(process.argv[4] || nesFrame, 10);
 for (const blk of out) {
   const f = parseInt(blk.match(/f:(\d+)/)?.[1] || '0');
-  if (f === nesFrame) {
+  if (f >= START && f <= END) {
     console.log('=== NES FRAME', f, '===');
     const palObj = gobj(blk, 'p');
     if (palObj === '{}') console.log('palette: null');
@@ -92,4 +92,8 @@ for (const blk of out) {
       const row = r.match(/r:(\d+)/)?.[1];
       const dd = r.match(/d:\[([^\]]+)\]/)?.[1] || '';
       const vals = dd.split(',').map(v => parseInt(v.trim()));
-    
+      console.log(`ATTR ni=${ni} r=${row} vals=${vals.map(v=>v.toString(16)).join(' ')}`);
+    });
+    break;
+  }
+}
