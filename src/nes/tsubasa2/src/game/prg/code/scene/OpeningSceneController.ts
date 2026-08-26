@@ -27,12 +27,12 @@ import {
 import {
   OPENING_SCREENS,
   getOpeningScreen,
-  OpeningFrameState,
 } from '../../data/scene/OpeningScreenTable';
 import { Button } from '../system/InputService';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
+import { TITLE_MENU_SCENE_ID } from './TitleMenuSceneController';
 
 /** OpeningScene 特殊场景号(BootRouter 注册表外附加) */
 export const OPENING_SCENE_ID = 100;
@@ -43,8 +43,6 @@ const OPENING_END_NES_FRAME = 4201;
 const H5_FRAME_OFFSET = 10;
 /** story_cup 屏(Scene0 Drift30 下漂的精灵来源) */
 const STORY_CUP_SCREEN_INDEX = 11;
-/** title_menu 屏(START 跳过开场后落点)— emu f3727-f4096 title 显示 */
-const TITLE_MENU_SCREEN_INDEX = 12;
 
 export class OpeningSceneController extends SceneController {
   readonly sceneId = OPENING_SCENE_ID;
@@ -114,19 +112,8 @@ export class OpeningSceneController extends SceneController {
   }
 
   /**
-   * START 跳过标志 — 用户按下 START 后,ROM 不走 Scene0 phase 序列过渡,
-   * 而是直接装载并显示 title 屏。H5 翻译:在 OpeningScene 内部冻结,
-   * apply 最后一帧 GT,然后 onUpdate 不再 advance (保留 PPU 上的 title GT 数据)。
-   *
-   * 不通过 BootRouter.changeScene(0/2) 切换 controller,因为:
-   *   - changeScene 会 clear NT/OAM/shadowOam,把刚 apply 的 title GT 数据擦除
-   *   - ROM 真实行为(emu press-start-to-title.log 实证):NMI dispatcher 直接调
-   *     title handler,没有任何"渐隐→漂移→装载→滚动→显示"过渡 phase
-   *
-   * 注意:store.scene.currentSceneId 保持 OpeningSceneId (= 100),
-   * 让 Tsubasa2.frame() 的 OpeningScene 分支继续调 applyNtToPpu + getChrPlan,
-   * 确保最后一帧 GT 数据被写到 PPU;之后 ntQueue 由 applyFrameData 不再被写入,
-   * getChrPlan 返回被冻结的 title CHR plan,画面稳定。
+   * START 跳过标志(进 TitleMenuScene 后此 flag 不再生效,跳走由 BootRouter 控制)。
+   * 保留仅供 OpeningScene 内连续双帧 START 防御性 short-circuit。
    */
   private skipped = false;
 
@@ -135,19 +122,16 @@ export class OpeningSceneController extends SceneController {
 
     const nesFrame = this.nesFrameOf(frame);
 
-    // === START 按下:跳过开场,直接装载 title_menu 屏(贴 ROM 行为) ===
+    // === START 按下:跳过开场,跳到 TitleMenuScene(贴 ROM 行为) ===
     // ROM asm 行为(emu press-start-to-title.log 实证):NMI dispatcher 检测 START →
-    // 立刻装载 title NT/OAM/palette/CHR,无 Scene0 phase 序列过渡。
-    // H5 翻译:OpeningScreenTable[12] = title_menu 包含完整 title 显示 GT。
-    //   - 装 NT 4 nametables tile + attrib → store.writeByte 写到 PPU $2000-
-    //   - 装 64 sprite OAM (4-tuple [y,tile,attr,x]) → store.oam.shadowOam
-    //   - 装 BG/SPR palette → store.palette.loadBg/loadSpr
-    //   - 装 CHR plan → this.currentChrPlan (HeadlessRuntime per-scanline)
-    // 然后 set skipped=true 冻结 controller,后续帧不再 applyFrameData。
+    // 立刻装载 title 屏(由独立 TitleMenuSceneController 承接,非 OpeningScene)。
+    // H5 翻译:OpeningSceneController 不再持有 title 装载逻辑,
+    //   return TITLE_MENU_SCENE_ID → BootRouter.changeScene(200) →
+    //   clearNametable/hideOam 自动洗 → TitleMenuSceneController.onEnter
+    //   一次性装载完整 title 屏 GT(palette/NT/OAM/CHR plan)。
     if (this.input.isPressed(1, Button.Start)) {
-      this.applyTitleMenuScreen();
       this.skipped = true;
-      return undefined;
+      return TITLE_MENU_SCENE_ID;
     }
 
     if (nesFrame >= OPENING_END_NES_FRAME) {
@@ -250,89 +234,6 @@ export class OpeningSceneController extends SceneController {
           }
         }
       }
-    }
-  }
-
-  /**
-   * START 跳过开场 → 直接装载 title_menu 屏(EMU f3727-f4096 title 显示 GT)。
-   *
-   * 与 BootRouter.changeScene(0) 不同(后者会触发 Scene0 phase 序列过渡):
-   *   - 这里一次性把 4 个 nametables tile + attrib + 64 sprite + palette + CHR plan
-   *     全部写入 store,由 InterruptService.renderCommit 下一帧统一刷到 PPU。
-   *   - 不清 OAM/shadowOam(直接覆盖)
-   *   - 不走 Scene0 phase 序列(BgFadeOut/Drift30/LoadChr17/Scroll51/Wait240 etc.)
-   *
-   * 数据源:`OpeningScreenTable.TITLE_MENU_SCREEN_INDEX` (id=12)
-   * - mid.pal:  BG/SPR palette (16 byte each)
-   * - mid.oam:  64 sprite [Y, tile, attr, X] 4-tuple
-   * - mid.nt:   4 个 nametable (tile[32x32] + attrib[32x32])
-   * - screen.chr: 8 个 1KB CHR bank 编号 (per-scanline 单 plan)
-   */
-  private applyTitleMenuScreen(): void {
-    const screen = OPENING_SCREENS[TITLE_MENU_SCREEN_INDEX];
-    if (!screen) return;
-    const store = this.store;
-    const mid: OpeningFrameState = screen.mid;
-
-    // 1. Palette: BG + SPR (满亮 — mid.pal 已是 fade 后的真实色)
-    store.palette.loadBg(mid.pal.bg);
-    store.palette.loadSpr(mid.pal.spr);
-
-    // 2. OAM: 64 sprite (4-tuple [Y, tile, attr, X] → shadowOam)
-    this.applyOamFull(mid.oam);
-
-    // 3. NT: 4 个 nametables 完整 tile + attrib (写到 store,$2000+$3C0-$23FF)
-    //    store.writeByte 缓存 → renderCommit step 1 flushVram 推到 PPU VRAM
-    for (let ni = 0; ni < mid.nt.length && ni < 4; ni++) {
-      const n = mid.nt[ni];
-      const nametableBase = 0x2000 + ni * 0x400;
-      // tile[0..1023] → $2000+$1FFF
-      for (let i = 0; i < 1024 && i < n.tile.length; i++) {
-        store.writeByte(nametableBase + i, n.tile[i] & 0xff);
-      }
-      // attrib[0..1023] → $23C0-$23FF (NES 属性表区域,起 nametableBase+$3C0)
-      const attribBase = nametableBase + 0x3C0;
-      for (let i = 0; i < 1024 && i < n.attrib.length; i++) {
-        store.writeByte(attribBase + i, n.attrib[i] & 0xff);
-      }
-    }
-
-    // 4. CHR plan: 全屏使用 title_menu 装载的 bank set
-    //    (per-scanline plan 一段 [s=0, b=chr[]],HeadlessRuntime 在 scanline 0 切)
-    this.currentChrPlan = [{ s: 0, b: screen.chr.slice() }];
-
-    // 5. PPU 显示状态:保留 onEnter 的 BG $0000 + SPR $1000 + NMI on,
-    //    确保 fade 满亮,picture 立即可见
-    store.ppuState.ctrl = 0x88;
-    store.ppuState.mask = 0x1e;
-    store.fade.bg = 0x0f;
-    store.fade.spr = 0x0f;
-
-    // 6. scroll: 重置为 (0,0) (title 是静态画面)
-    this.currentScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0 };
-    store.scene.scrollX = 0;
-    store.scene.scrollY = 0;
-    store.scene.scrollFlag = 0x80; // 保留:跳过 renderCommit.applyScrollBank02 覆盖
-  }
-
-  /** 应用 OAM 全量 (4-tuple [Y, tile, attr, X])到 shadowOam — 64 sprite 完整覆盖 */
-  private applyOamFull(oam: ReadonlyArray<ReadonlyArray<number>>): void {
-    const shadow = this.store.oam.shadowOam;
-    for (let i = 0; i < 64 && i < oam.length; i++) {
-      const o = oam[i];
-      const base = i * 4;
-      shadow[base + 0] = (o[0] ?? 0xf8) & 0xff; // Y
-      shadow[base + 1] = (o[1] ?? 0) & 0xff;    // tile
-      shadow[base + 2] = (o[2] ?? 0) & 0xff;    // attr
-      shadow[base + 3] = (o[3] ?? 0) & 0xff;    // X
-    }
-    // 剩余 sprite 隐藏
-    for (let i = oam.length; i < 64; i++) {
-      const base = i * 4;
-      shadow[base + 0] = 0xf8;
-      shadow[base + 1] = 0xf8;
-      shadow[base + 2] = 0xf8;
-      shadow[base + 3] = 0xf8;
     }
   }
 

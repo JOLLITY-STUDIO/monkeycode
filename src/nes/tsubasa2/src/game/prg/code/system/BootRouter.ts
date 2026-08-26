@@ -40,20 +40,23 @@ import {
   Scene18Controller, Scene19Controller, Scene20Controller, Scene21Controller,
   Scene22Controller, Scene23Controller,
   OpeningSceneController, OPENING_SCENE_ID,
+  TitleMenuSceneController, TITLE_MENU_SCENE_ID,
 } from '../scene/index';
 
-/** 场景号枚举 (0-23 + Opening=100) */
+/** 场景号枚举 (0-23 + Opening=100 + TitleMenu=200) */
 export const enum SceneId {
   Scene0 = 0, Scene1 = 1, Scene2 = 2, Scene3 = 3, Scene4 = 4, Scene5 = 5,
   Scene6 = 6, Scene7 = 7, Scene8 = 8, Scene9 = 9, Scene10 = 10, Scene11 = 11,
   Scene12 = 12, Scene13 = 13, Scene14 = 14, Scene15 = 15, Scene16 = 16,
   Scene17 = 17, Scene18 = 18, Scene19 = 19, Scene20 = 20, Scene21 = 21,
   Scene22 = 22, Scene23 = 23,
-  /** OpeningScene（片头序列，附加场景；播完自动切 Scene0） */
+  /** OpeningScene（片头序列，附加场景；播完自动切 Scene0；START 触发跳到 TitleMenu） */
   Opening = OPENING_SCENE_ID,
+  /** TitleMenuScene（ROM 主菜单，附加场景；由 OpeningScene START 触发进入；静态显示） */
+  TitleMenu = TITLE_MENU_SCENE_ID,
 }
 
-/** Scene0-23 + Opening 控制器类列表 (顺序对应 sceneId), 用于自动统一 register */
+/** Scene0-23 + Opening + TitleMenu 控制器类列表 (顺序对应 sceneId), 用于自动统一 register */
 const SCENE_CONTROLLERS: ReadonlyArray<new (store: DataStore, input: InputService) => SceneController> = [
   Scene0Controller,
   Scene1Controller, Scene2Controller, Scene3Controller, Scene4Controller,
@@ -64,6 +67,7 @@ const SCENE_CONTROLLERS: ReadonlyArray<new (store: DataStore, input: InputServic
   Scene18Controller, Scene19Controller, Scene20Controller, Scene21Controller,
   Scene22Controller, Scene23Controller,
   OpeningSceneController,
+  TitleMenuSceneController,
 ];
 
 /**

@@ -40,3 +40,6 @@ export type { SceneEntry } from './SceneTable';
 
 // 片头序列（附加场景 sceneId=100，boot 后进、播完切 Scene0）
 export { OpeningSceneController, OPENING_SCENE_ID } from './OpeningSceneController';
+
+// 主菜单 title（附加场景 sceneId=200，ROM 主菜单；由 OpeningScene START 触发）
+export { TitleMenuSceneController, TITLE_MENU_SCENE_ID } from './TitleMenuSceneController';
