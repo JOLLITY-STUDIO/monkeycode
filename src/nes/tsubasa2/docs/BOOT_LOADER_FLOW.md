@@ -59,9 +59,142 @@
 
 ---
 
-## 2. **START 按下 → 标题画面**链路（已 trace 实证）
+## 3. **标题画面**完整链路（`title-kick-off-to-meeting.log` F51316-F62431 实证）
 
-### 2.1 入口 / 兜底处理 — bank06 (asm audio)
+### 3.1 trace 元信息
+- **TOTAL**: 201078 lines (~9.6MB)
+- **range**: F51316..F62431 = 4065 帧 ≈ 67 秒
+- **覆盖**: 用户在标题画面按 START → 比赛开球（meeting kickoff）
+- 关键 PC 涉及 bank00 / bank02 / bank06 / bank12
+- 整段 trace 中 `$2000` / `$2001` / `$0026` / `$0027` 写入 0 次（PPU 模式 + scene status 已在更早 trace 完成）
+
+### 3.2 logo replay 段 — bank00 sprite 复用
+```
+F51316 PC $00:9AA3: BD A2 9E LDA $9EA2,X @ $9EB0 = #$00
+F51316 PC $00:9AA6: 85 E6    STA $E6 = #$30            ← sprite 索引基数
+F51316 PC $00:9AA8: B9 2A 06 LDA $062A,Y @ $062E = #$0F ← 读 packed sprite byte
+F51316 PC $00:9AAB: 29 0F    AND #$0F                  ← 拆 nibble（低 4 位）
+F51316 PC $00:9AB1: 9D E8 05 STA $05E8,X @ $05EF = #$0F ← 写拆出字节到 $05E8,X
+F51316 PC $00:9AB7: 60       RTS (from $9AA2)
+```
+- 与 boot F13 logo OAM unpack **使用同一个 routine**
+- 数据源 `$062A` (packed sprite data)、`$9EA2` (index table)、`$05E8` (slot)
+- 每次 unpack 16 cycles (CPY #$10 outer loop)
+- **H5 翻译**: `Bank00MainLoopService.unpackSpriteTable(slot=$05E8, src=$9EA2, len=16)`
+
+### 3.3 标题 tile bulk write 段 — bank02 PPU stream
+```
+F51334 PC $01:A01B: A0 80    LDY #$80                  ← 字数 = 0x80 = 128 字节
+F51334 PC $01:A01D: BD E8 05 LDA $05E8,X @ $05F3 = #$04
+F51334 PC $01:A020: 10 04    BPL $A026                  ← 检测 0x04 含义（end-of-block）
+F51334 PC $01:A026: 8C 00 20 STY $2000 = #$80           ← PPU CTRL = $80 (display off, NMI off)
+F51334 PC $01:A029: A8       TAY
+F51334 PC $01:A02A: BD EA 05 LDA $05EA,X @ $0611 = #$20  ← row low byte
+F51334 PC $01:A02D: 8D 06 20 STA $2006 = #$D4             ← PPU VRAM address high ($20 | row)
+F51334 PC $01:A030: BD E9 05 LDA $05E9,X @ $0610 = #$F0  ← col byte
+F51334 PC $01:A033: 8D 06 20 STA $2006 = #$F0             ← PPU VRAM address low
+F51334 PC $01:A036: BD EB 05 LDA $05EB,X @ $05F3 = #$01  ← 读 sprite data
+F51334 PC $01:A039: 8D 07 20 STA $2007                    ← 写 PPU VRAM 数据端口
+F51334 PC $01:A03C: E8       INX
+F51334 PC $01:A03D: 88       DEY
+F51334 PC $01:A03E: D0 F6    BNE $A036                  ← 循环到 0
+```
+- **PPU VRAM address** = `$20D4` high + `$F0` low → NT cell (row=$14, col=$F0)
+- **数据源** = `$05EB..` sprite packed data，由 dispatcher 写入 `$05E8..$05EF` (5 字节 header: x_offset, y_offset, count, attr, tile_id)
+- **stream 控制**: 行首写 `$2006` (地址)，数据循环 `STA $2007`
+- **整 trace 共 280 次** `$2007` 写入，全部在 bank02
+
+### 3.4 标题 idle 段 — bank00 + bank06 主循环
+```
+F51342 PC $00:9F04 LDA $1B = #$40          ← bank00 vsync flag poll (同 boot)
+F51350 PC $06:8002 BC 00 07 LDY $0700,X     ← bank12 audio sample-load
+F51354 PC $01:A8EE STA $0202,Y @ $02FA = #$00 ← bank02 OAM copy → 0x0200-0x02FF
+F51365 PC $01:A0ED LDA $4015,X @ $4017 = #$01 ← bank02 audio poll
+... (1076 frames of repeating cycle)
+```
+- **每帧** ~3 banks 轮流执行：bank00 vsync → bank06 audio stream → bank02 OAM refetch → bank02 audio poll
+- 整段 1076 帧 ≈ 18 秒，标题画面持续可见
+- **没有触发任何 mode / dispatch / tile change**
+
+### 3.5 meeting 切换点 — bank12 audio + bank00 scheduler
+```
+F52410 PC $06:8241 LDY #$06                ← bank12 audio: 第一帧 LDY #$06
+...
+F52419 PC $00:9F3C STA $E8 = #$00          ← bank00 scheduler tick first call
+F52419 PC $00:9F51 60 RTS (from $9FA8)     ← bank00 RTS from scheduler
+F52420 PC $01:A0ED LDA $4015,X             ← 切回 audio poll
+F52421 PC $06:8241 LDY #$06                ← bank12 audio tick (meeting 启动)
+```
+- **F52419** 是 bank00 第一次正式入 dispatcher (`$9F3C`) — 之前 1000+ 帧都是 idle poll
+- **F52419 scheduler tick** 后立刻 RTS，下一帧 (F52420) 回 audio poll
+- **F52421** bank12 `$06:8241 LDY #$06` 持续 → meeting kickoff 持续触发
+
+**结论: meeting 切换是渐进过程**，由 3 个并行信号驱动：
+- bank12 audio timer 触发 (`$06:8241 LDY #$06`)
+- bank00 scheduler mode dispatch (`$9F3C-$9FA8`)
+- bank02 audio poll 持续
+
+**没有单一的"开门 event"**，是 3 个 bank 协调推进。
+
+### 3.6 比赛开场动画段 — bank06 audio 主控
+```
+F53500-F53600 PC $06:8241 LDY #$06         ← audio timer 每 5-6 frame 触发
+F53500-F53600 PC $06:84BA LDA #$00         ← audio stream read
+F53500-F53600 PC $06:8119 DEC $F3 = #$07   ← audio duration counter
+F53500-F53600 PC $01:A8EE STA $0202,Y      ← OAM sprite update (球员动作)
+```
+
+### 3.7 ⚠️ 实证校正：用户问"标题屏幕是 sceneId=2 吗"
+
+答案明确：**不是**。
+- `SceneTable.ts:33-36`: Scene2 = "清精灵扩展表；返回 2"（**hub 占位**）
+- 所有 scene 14/15/16/18/19/20/22/23 都"返回 2"（回 hub）
+- 标题屏幕实际触发 = `MainRouterService.dispatchByMode(N)`（PRG `$0027`），具体 mode 待定
+
+### 3.8 ❌ 禁止清单
+- ❌ `BootRouter.changeScene(sceneId=2)` 用于标题屏幕 —— 错（sceneId=2 = hub）
+- ❌ 假设 `STA $0026`/`$0027` 触发 scene 切换 —— 错（全 trace 0 hits）
+- ❌ `Scene0.onEnter → 装载 boot logo` 替代主循环 —— 错
+- ❌ 硬编码 "等 N 帧" —— 错（bank00 用 vsync flag `$1B` 自然 poll）
+
+### 3.9 ✅ H5 实现路径（最终）
+```typescript
+// 行为翻译而非指令抄搬
+joypadInput.pollStart()
+  → ButtonBus.emit('start')
+
+bank00MainLoop.tick()
+  ├─ pollButton()       // bank06 ($06:80EA) 间接读
+  ├─ scheduler.tick()    // $9F3C-$9FA8 dispatcher
+  └─ if (start) {
+       dispatchByMode(N)    // PRG $0027, MainRouterService
+     }
+
+titleScreenModule.run()   // 翻译自 $01:A01B-$A17F PPU bulk write
+  ├─ ppu.disable()                 // $2000 = #$80
+  ├─ ppu.streamTileToVram(addr)    // $2006/$2007 × 280
+  └─ ppu.enable(0x89)              // $2000 = #$89 (NMI+BG+Spr)
+
+meetingKickoffModule.run()
+  ├─ audio.startKickoffSample()    // bank12 $06:8241
+  ├─ oam.copyPlayers()             // bank02 $A8EE
+  └─ scheduler.startMatchTick()    // bank00 $9F3C
+```
+
+### 3.10 现有 bug & 待办
+
+| BUG | 描述 | 状态 |
+|---|---|---|
+| **#013** | Drift30 phase 计数器 wrap 死循环 | 已修 (commit `b2112253`) |
+| **#014** | 36xx 帧硬编码跳转 Scene0 | 修正用 trace 实证替代 (commit `297d181f`) |
+| **#015 (新)** | Bank06 audio 持续 poll 按钮 → title→meeting 是渐进 3-bank 协同 | 已记录 |
+| **#016 (新)** | Capcom logo OAM 装载 routine 在 F51316 重现 → 该 routine 是复用的 sprite loader (被多种 sprite 场景共享) | 已记录 |
+
+---
+
+## 4. **START 按下 → 标题画面**链路（press-start-to-title F3302-F3375 实证，73 帧）
+
+### 4.1 入口 / 兜底处理 — bank06 (asm audio)
 ```
 F3342 PC $06:80EA  LDA ($F0),Y @ $0789 = #$BE
                    ▲ 音频引擎通过间接寻址读零页字节 $0789 = 按钮 OR 状态
