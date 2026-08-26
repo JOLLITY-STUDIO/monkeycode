@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getCommandHandler = exports.getTickDuration = exports.getApePeriod = exports.AudioRom = exports.SONG_COUNT = exports.SE_SONGS = exports.BGM_SONGS = void 0;
+var index_1 = require("./bgm/index");
+Object.defineProperty(exports, "BGM_SONGS", { enumerable: true, get: function () { return index_1.BGM_SONGS; } });
+var index_2 = require("./se/index");
+Object.defineProperty(exports, "SE_SONGS", { enumerable: true, get: function () { return index_2.SE_SONGS; } });
+var SongCatalog_1 = require("./SongCatalog");
+Object.defineProperty(exports, "SONG_COUNT", { enumerable: true, get: function () { return SongCatalog_1.SONG_COUNT; } });
+var audio_rom_1 = require("./audio-rom");
+Object.defineProperty(exports, "AudioRom", { enumerable: true, get: function () { return audio_rom_1.AudioRom; } });
+var audio_rom_2 = require("./audio-rom");
+Object.defineProperty(exports, "getApePeriod", { enumerable: true, get: function () { return audio_rom_2.getApePeriod; } });
+Object.defineProperty(exports, "getTickDuration", { enumerable: true, get: function () { return audio_rom_2.getTickDuration; } });
+Object.defineProperty(exports, "getCommandHandler", { enumerable: true, get: function () { return audio_rom_2.getCommandHandler; } });

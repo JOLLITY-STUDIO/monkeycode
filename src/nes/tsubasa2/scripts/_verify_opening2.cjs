@@ -4,12 +4,13 @@
  *   - NT tile / attrib 匹配率
  *   - palette 匹配
  *   - OAM 匹配
- *   - scroll 对比（emu state.json scroll vs OpeningSceneController.currentScroll）
+ *   - scroll 对比（emu state.json scroll vs H5 currentScroll）
+ * 运行: node_modules/.bin/ts-node -T -P tsconfig.cjs.json scripts/_verify_opening2.cjs
  */
 const fs = require('fs');
 const path = require('path');
-const { HeadlessRuntime } = require('../dist/src/game/runtime/HeadlessRuntime');
-const { Tsubasa2 } = require('../dist/src/game/index');
+const { HeadlessRuntime } = require('../dist-cjs2/game/runtime/HeadlessRuntime');
+const { Tsubasa2 } = require('../dist-cjs2/game/index');
 
 const EMU = path.join(__dirname, '..', 'output', 'emu-full');
 
@@ -19,7 +20,7 @@ game.boot(runtime);
 
 let OPENING_FADE_TABLE = null;
 try {
-  ({ OPENING_FADE_TABLE } = require('../src/game/prg/data/scene/opening-data'));
+  ({ OPENING_FADE_TABLE } = require('../dist-cjs2/game/prg/data/scene/opening-data'));
 } catch { /* 忽略 */ }
 function fadeLookup(pal, fade) {
   if ((fade & 0xff) === 0) return 0x0f;
@@ -30,7 +31,6 @@ function fadeLookup(pal, fade) {
 function loadJson(p) { try { return JSON.parse(fs.readFileSync(p, 'utf8')); } catch { return null; } }
 const pct = (a, b) => (b ? ((a / b) * 100).toFixed(1) + '%' : '-');
 
-// 采样帧：常规 300 步长 + 标题滚屏区间密集采样
 const samples = new Set();
 for (let f = 0; f <= 4250; f += 300) samples.add(f);
 for (let f = 3720; f <= 3800; f += 5) samples.add(f);
@@ -102,17 +102,19 @@ for (let f = 0; f <= 4250; f++) {
     }
   }
 
-  // scroll 对比：emu state.json scroll vs H5 currentScroll
   let sc = '';
   if (emuState && emuState.scroll) {
     const es = emuState.scroll;
-    const hs = game.openingScene ? game.openingScene.currentScroll : null;
+    let hs = null;
+    try {
+      const oc = game.router.getController(100);
+      hs = oc.currentScroll;
+    } catch { /* opening 未注册时忽略 */ }
     if (hs) {
-      const eq = (a, b) => (a & 0x1f) === (b & 0x1f);
       const okCv = (es.cntV ?? es.regV ?? 0) === hs.cv;
       const okCvt = ((es.cntVT ?? es.regVT ?? 0) & 0x1f) === (hs.cvt & 0x1f);
       const okFv = ((es.cntFV ?? es.regFV ?? 0) & 7) === (hs.fv & 7);
-      sc = `cntV=${es.cntV ?? '-'}/${hs.cv}${okCv ? '' : '✗'} cvt=${es.cntVT ?? '-'}/${hs.cvt}${okCvt ? '' : '✗'} fv=${es.cntFV ?? '-'}/${hs.fv}${okFv ? '' : '✗'}`;
+      sc = `cntV=${es.cntV ?? '-'}/${hs.cv}${okCv ? '' : 'X'} cvt=${es.cntVT ?? '-'}/${hs.cvt}${okCvt ? '' : 'X'} fv=${es.cntFV ?? '-'}/${hs.fv}${okFv ? '' : 'X'}`;
     }
   }
 

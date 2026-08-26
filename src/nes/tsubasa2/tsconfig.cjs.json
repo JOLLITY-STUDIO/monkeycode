@@ -8,9 +8,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "declaration": false,
-    "outDir": "./dist-cjs",
+    "outDir": "./dist-cjs2",
     "lib": ["ES2020", "DOM"]
   },
   "include": ["src/game/**/*.ts", "src/core/**/*.ts", "src/index.ts", "typings/**/*.d.ts"],
-  "exclude": ["node_modules", "dist", "dist-cjs"]
+  "exclude": ["node_modules", "dist", "dist-cjs", "dist-cjs2"]
 }
