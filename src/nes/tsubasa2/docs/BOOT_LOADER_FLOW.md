@@ -12,6 +12,7 @@
 | `docs/roms/tecmo/Captain...frame13.cdl` | 6-13 | CDL | Code/Data Log |
 | `docs/roms/tecmo/strippeddataframe13.nes` | 6-13 | NES ROM | f13 状态 ROM |
 | `docs/roms/opening-all/opening-all.log` | 6-4355 | 00,01,06,0F | 全 boot+开场 |
+| `docs/roms/openging-skip-to-title/press-start-to-title.log` | 3302-3375 | 00,01,06 | **NEW**: 按下 START 后跳转（73 帧截取，停在 PPU bulk 写中途） |
 | `docs/roms/aftertecmo/tsubasa-when-show380-逐帧.log` | 6-380 | 00,01,06,0F | f1-380 全帧 |
 | `docs/roms/aftertecmo/tsubasa-when-show274-275.log` | 6-380 | 00,01,06,0F | 近似 |
 | `docs/roms/aftertecmo/tsubasa-when-showfirsttextscript-820-1047-...` | 6-816 | 00,01,06,0F | 大空翼结束 |

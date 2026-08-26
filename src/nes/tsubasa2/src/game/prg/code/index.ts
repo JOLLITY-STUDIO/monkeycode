@@ -19,6 +19,7 @@ export { MainRouterService } from './system/MainRouterService';
 export type { StatusMode, DispatchAction } from './system/MainRouterService';
 // bank00 PRG $8000 主循环 (5-mode dispatch + scheduler tail + boot + audio req) 翻译
 export { Bank00MainLoopService } from './system/Bank00MainLoopService';
+export type { MainLoopHooks } from './system/Bank00MainLoopService';
 export { NtStreamLoaderService } from './system/NtStreamLoaderService';
 export type { NtStreamEntry, ByteCodeOp } from './system/NtStreamLoaderService';
 export { SceneStateMachine } from './system/SceneStateMachine';

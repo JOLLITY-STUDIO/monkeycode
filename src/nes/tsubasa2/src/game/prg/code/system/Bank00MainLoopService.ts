@@ -1,154 +1,634 @@
 /**
- * Bank00MainLoopService — PRG $C500 6-slot recurring timer dispatcher 翻译
+ * Bank00MainLoopService — bank00 $8000 主循环 5-mode dispatcher 翻译
  *
- * ⚠️ 与 Bank00SchedulerService 严格区别 (避免混淆):
- *   - Bank00SchedulerService → bank0 $9EEF-$9FA8 one-shot 倒数 (callback 触发后消费)
- *     用于 Scene0 phase 内 "LDA #$10 / JSR $9FA8" 等 N 帧后调一次的等待
- *   - **Bank00MainLoopService (本类) → bank14 $C500 6-slot recurring 周期触发**
- *     用于 dispatcher 每 NMI frame tick 全部 slot，到 0 → 调 callback + counter=period 重置
+ * 翻译原则（v3，去 CPU 化）：
+ *   - 不模拟 6502 `LDA $0027 / ASL TAX / LDA $800E,X / PHA / RTS` 间接跳转
+ *   - bank 切换（JSR $C4B9 / STA $8000 / LDX #$XX）行为语义 = 直接调本域 service
+ *   - `$0027` status mode（0..4）由 tickFrame() 每帧读取并派发到 5 个 handler
+ *   - scene handler（A00C/A015/A012/A018/A20C/A006/A009/A203）通过 MainLoopHooks
+ *     委托给 BootRouter/SceneController（Tsubasa2 组合根注入，默认 no-op）
+ *   - 数据表（$8398/$83BA/$83DC/$83FE/$8420/$8442）全部从 asm 声明式提取
  *
- * ROM 行为 (docs/BANK02_ANALYSIS.md §1.2 §6):
- *   - 6 slot × (period, counter, callback)
- *   - 每 NMI frame 调 tickDispatch() 一次
- *   - 每个 slot counter 自减 → 0 → 调 callback + 计数器重置为 period
- *   - **首触发延迟 initialDelay**: slot 注册时 counter=initialDelay, 之后按 period 循环
+ * 对应 PRG 段（docs/BANK00_ANALYSIS.md §2.1 + C.5，逐指令对照 code_main.s $8000-$8282）：
+ *   $8000: LDA $0027; ASL; TAX; LDA $800E,X; PHA; LDA $800D,X; PHA; RTS
+ *   $800D dispatcher table: $8165 / $818A / $81AD / $81B4 / $81DA（5 handler）
+ *   mode 0 ($8165): $0027=1 → $C56C → $8285（等1帧+scene A00C）→
+ *                   $0026 > $00E4 → $00E4=$0026 + $83FE[$0026] cfg load + 清输入
+ *   mode 1 ($818A): $0028 vs $0029 比较（相等 → 查 $83BA[$0026]：0=advance / 1=mode4 / else mode2）
+ *   mode 2 ($81AD): $0027 = 3
+ *   mode 3 ($81B4): $0028 vs $0029（相等 → 查 $83BA[$0026]==3 → mode4；$0026==$20 → INC → tail）
+ *   mode 4 ($81DA): $0028 vs $0029（相等/小于 → scene advance；大于 → $8206）
+ *   $8206 (timer greater): 查 $8420/$8442 cfg + $0026 < $20 → INC + tail；≥ $20 → mode5 halt
+ *   $81E6 (scene advance): A015 → cfg $60 → 清输入 → fade → $0026 = $8398[$0026] → tail
+ *   $80FD (tail): 清零 $0028/$0029/$0027 → scene handlers → $0700 = 0x55/0x4C → 主循环
  *
- * Bank02_ANALYSIS.md v4 trace 实证:
- *   - slot 0 period=12: Scene0 main handler `JSR $A000`, 138 次触发 (f270 起)
- *   - slot 1 不规则 period:  `JSR $A160` slot handler 2, 71 次触发 (f285 起)
- *   - 其他 slot: scene1-23 各 handler
+ * boot 链（$801F-$80D3，供 Tsubasa2 接入）：
+ *   pollBootStartButton() — $801F-$804A Start 键等待
+ *   bootLogoLoad() — $8053-$8090 Tecmo/NTV logo 装载
+ *   enterGame() — $80A2-$80D4 标题按键解码 + 进入游戏
  *
- * H5 用法 (stub v1):
- *   mainLoop.registerSlot(0, 270, 12, () => scene0.onSlotTick());
- *   // slot 0 首次触发 frame 270, 之后每 12 帧
- *
- *   mainLoop.start();                          // boot init 完调
- *   // 每 NMI frame 末尾: mainLoop.tickDispatch();
- *
- * @对应 PRG 段: bank14 $C500-$C5xx 6-slot dispatcher + bank02 Scene0/$A160 handler
- * @v1 stub: 保留 6 slot 框架, registerSlot/registerSlotOnce/start/tickDispatch API,
- *           不绑定具体 slot 配置 (调用方负责 register)
+ * @bank 00 ($8000-$9FFF)
  */
 import type { DataStore } from '../../data/store/DataStore';
+import type { Bank00SchedulerService } from './Bank00SchedulerService';
+import type { PpuTransferService } from './PpuTransferService';
+import { MainRouterService } from './MainRouterService';
+import type { StatusMode } from './MainRouterService';
+
+// ──────────────────────────── 数据表（PRG bank00 声明式提取） ────────────────────────────
 
 /**
- * slot 触发回调签名 — H5 替代 ROM 的 `JSR $A000` / `JSR $A160` 入口
- * @param slotIdx 触发的 slot 编号 (0..5)
- * @param tickCount 触发序号 (0=首触发, 1+=周期内触发), 用于观察触发频率
+ * PRG $8398：scene advance 目标表（$81FB `LDA $8398,X / STA $0026`）
+ * 32 项，索引 = 当前 scene id（$0026）→ 下一 scene id
  */
-export type SlotCallback = (slotIdx: number, tickCount: number) => void;
+const TABLE_8398: ReadonlyArray<number> = [
+  0x00, 0x00, 0x02, 0x02, 0x04, 0x04, 0x06, 0x06, 0x08, 0x08, 0x0a, 0x0a, 0x0c, 0x0c, 0x0e, 0x0e,
+  0x10, 0x10, 0x12, 0x12, 0x14, 0x14, 0x16, 0x17, 0x17, 0x19, 0x19, 0x1b, 0x1b, 0x1d, 0x1d, 0x1f,
+];
 
-interface SlotConfig {
-  idx: number;
-  initialDelay: number;
-  period: number;
-  counter: number;
-  callback: SlotCallback | null;
-  tickCount: number;
-  state: 'IDLE' | 'WAIT' | 'READY';
+/**
+ * PRG $83BA：scene display cmd 表（mode1 $8198 / mode3 $81C2 判定）
+ * 0 = scene advance；1 = mode4；3 = mode4（mode3 分支）；其他 = mode2
+ */
+const TABLE_83BA: ReadonlyArray<number> = [
+  0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x01, 0x01, 0x01, 0x01, 0x01, 0x03, 0x03, 0x03, 0x03, 0x03,
+  0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x00, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03, 0x03,
+];
+
+/**
+ * PRG $83DC：tail cfg 表（$814F `LDA $83DC,X`，非 0 → loadCfg）
+ */
+const TABLE_83DC: ReadonlyArray<number> = [
+  0x02, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x00, 0x0c, 0x0e, 0x00, 0x00, 0x10, 0x12,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x1e,
+  0x20, 0x00, 0x00, 0x00,
+];
+
+/**
+ * PRG $83FE：mode0 cfg 表（$817D `LDA $83FE,X`，非 0 → loadCfg）
+ */
+const TABLE_83FE: ReadonlyArray<number> = [
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x21, 0x00,
+  0x03, 0x04, 0x05, 0x00,
+];
+
+/**
+ * PRG $8420：$8206 首段 cfg 表（$821E `LDA $8420,X`，非 0 → loadCfg + 清输入）
+ */
+const TABLE_8420: ReadonlyArray<number> = [
+  0x05, 0x00, 0x06, 0x00, 0x00, 0x00, 0x00, 0x0b, 0x0d, 0x00, 0x00, 0x00, 0x11, 0x00, 0x00, 0x14,
+  0x00, 0x00, 0x00, 0x00, 0x16, 0x00, 0x17, 0x00, 0x00, 0x1a, 0x1b, 0x1c, 0x1d, 0x1f, 0x00, 0x00,
+  0x00, 0x00, 0x00, 0x00,
+];
+
+/**
+ * PRG $8442：$8206 二段 cfg 表（$8232 `LDA $8442,X`，非 0 → loadCfg + $82A9 等指针清）
+ */
+const TABLE_8442: ReadonlyArray<number> = [
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00, 0x13,
+  0x00, 0x00, 0x00, 0x00, 0x00, 0x15, 0x00, 0x00, 0x00, 0x00, 0x19, 0x00, 0x00, 0x00, 0x00, 0x00,
+  0x22, 0x22,
+];
+
+/**
+ * 主循环外部委托（bank02 scene handler / 渲染原语）。
+ * 由 Tsubasa2 组合根通过 attachHooks() 注入；未注入时默认 no-op（帧循环仍推进状态机）。
+ */
+export interface MainLoopHooks {
+  /** PRG $A203 主循环体（bank02 scene dispatch）→ 通常映射 BootRouter.update() */
+  sceneMainLoopStep?: () => void;
+  /** PRG $8285 JMP $A00C — mode0 每帧 scene handler */
+  sceneHandlerA00C?: () => void;
+  /** PRG $81EB JSR $A015 — scene advance handler */
+  sceneHandlerA015?: () => void;
+  /** PRG $820B JSR $A012 — timer greater handler */
+  sceneHandlerA012?: () => void;
+  /** PRG $8252 JSR $A018 — $8206 INC 后 handler */
+  sceneHandlerA018?: () => void;
+  /** PRG $80FD JSR $A20C — tail scene handler */
+  sceneHandlerA20C?: () => void;
+  /** PRG $811C JSR $A006 — tail scene handler */
+  sceneHandlerA006?: () => void;
+  /** PRG $8142 JSR $A009 — tail scene handler */
+  sceneHandlerA009?: () => void;
+  /** PRG $99F0 BG+SPR 渐隐 */
+  fadeOutAll?: () => void;
+  /** PRG $8920 loadSceneData（scrollFlag/$007B.. 装载） */
+  loadSceneData?: (sceneId: number) => void;
+  /** PRG $9B11 清 sprite/tile */
+  clearSprites?: () => void;
+  /** PRG $9B7F 隐藏 OAM */
+  hideOam?: () => void;
+  /** PRG $98A0 清 NT */
+  clearNt?: () => void;
+  /** PRG $8AF7 CHR cfg 装载 */
+  loadChrConfig?: (cfgId: number) => void;
+  /** PRG $890C 所有精灵 Y += delta */
+  shiftSpriteY?: (delta: number) => void;
+  /** PRG $88FB 所有精灵 attr ^= $20 */
+  flipSpriteAttrs?: () => void;
+  /** PRG $9A35 BG palette + fade 满亮 */
+  loadBgPaletteFull?: () => void;
+  /** PRG $98EA NT bulk fill（127 bytes @ $0A22） */
+  writeTitleRow?: () => void;
+  /** 音频初始化/请求（boot 期 BGM 装载） */
+  prepareAudio?: () => void;
 }
 
 /**
- * Bank00MainLoopService — 6-slot recurring timer dispatcher (PRG $C500 翻译)
+ * Bank00MainLoopService — bank00 $8000 主循环 5-mode dispatcher（PRG $8000 翻译）
+ *
+ * 每帧调用链（InterruptService.nmi() 末尾）：
+ *   tickFrame() → 读 $0027 → MainRouterService.dispatchByMode(mode) → 对应 handler
  */
 export class Bank00MainLoopService {
-  /** 6 个 slot (PRG $0000-$0019 slot 区语义布局翻译) */
-  private readonly slots: SlotConfig[] = [
-    { idx: 0, initialDelay: 0, period: 0, counter: 0, callback: null, tickCount: 0, state: 'IDLE' },
-    { idx: 1, initialDelay: 0, period: 0, counter: 0, callback: null, tickCount: 0, state: 'IDLE' },
-    { idx: 2, initialDelay: 0, period: 0, counter: 0, callback: null, tickCount: 0, state: 'IDLE' },
-    { idx: 3, initialDelay: 0, period: 0, counter: 0, callback: null, tickCount: 0, state: 'IDLE' },
-    { idx: 4, initialDelay: 0, period: 0, counter: 0, callback: null, tickCount: 0, state: 'IDLE' },
-    { idx: 5, initialDelay: 0, period: 0, counter: 0, callback: null, tickCount: 0, state: 'IDLE' },
-  ];
+  /** 5-mode dispatch table（MainRouterService 内部持有，Tsubasa2 不暴露） */
+  private readonly router: MainRouterService;
 
-  /** boot 完成标志 — start() 之前 tickDispatch() 不触发任何 callback */
+  /** 外部委托（bank02 scene / 渲染原语），默认空实现 */
+  private hooks: MainLoopHooks = {};
+
+  /** boot 完成标志 — start() 之前 tickFrame() 不派发（ROM $801F Start 等待前不跑主循环） */
   private booted = false;
 
-  constructor(readonly store: DataStore) {}
-
-  /**
-   * 注册 slot 配置 (PRG $C5xx slot init 翻译)
-   *
-   * @param slotIdx  slot 编号 (0..5)
-   * @param initialDelay  首次触发前的等待帧数 (0 = 下一帧就触发)
-   * @param period  周期帧数 (再次触发的间隔)
-   * @param callback  触发回调
-   *
-   * @example
-   *   mainLoop.registerSlot(0, 270, 12, (slot, tick) => scene0.onSlotTick());
-   *   // slot 0: 首次触发 frame 270 (counter=270 自减到 0), 之后每 12 帧
-   */
-  registerSlot(slotIdx: number, initialDelay: number, period: number, callback: SlotCallback): void {
-    if (slotIdx < 0 || slotIdx >= 6) return;
-    const slot = this.slots[slotIdx];
-    slot.initialDelay = initialDelay & 0xff;
-    slot.period = period & 0xff;
-    slot.counter = initialDelay & 0xff;
-    slot.callback = callback;
-    slot.tickCount = 0;
-    slot.state = slot.counter === 0 ? 'READY' : 'WAIT';
+  constructor(
+    readonly store: DataStore,
+    private readonly scheduler: Bank00SchedulerService,
+    private readonly ppuTransfer: PpuTransferService,
+  ) {
+    this.router = new MainRouterService(store);
+    this.autoRegisterDispatchActions();
   }
 
-  /**
-   * 启动 main loop (boot init 完成后调用)
-   */
+  // ──────────────────────── 生命周期 ────────────────────────
+
+  /** 注入外部委托（bank02 scene handler / 渲染原语） */
+  attachHooks(hooks: MainLoopHooks): void {
+    this.hooks = { ...this.hooks, ...hooks };
+  }
+
+  /** 启动主循环（boot init 完成后调用） */
   start(): void {
     this.booted = true;
   }
 
-  /**
-   * 暂停 main loop (boot init 未完成或 debug pause 时调)
-   */
+  /** 暂停主循环 */
   pause(): void {
     this.booted = false;
   }
 
-  /**
-   * 是否已启动
-   */
+  /** 是否已启动 */
   isRunning(): boolean {
     return this.booted;
   }
 
   /**
-   * 每 NMI frame 调一次 (在 InterruptService.nmi() 末尾, 或 gameLoop.update() 末尾)
+   * 每帧 NMI 调用（InterruptService.nmi() 末尾）。
    *
-   * 行为:
-   *   - 若!booted → 跳过 (boot init 期间不触发)
-   *   - 6 slot 全 tick: counter-- → 到 0 调 callback + counter 重置为 period
-   *   - callback 异常不影响其它 slot 推进
+   * ROM 行为（$8000）：
+   *   LDA $0027; ASL; TAX; LDA $800E,X; PHA; LDA $800D,X; PHA; RTS
+   *   → 读 $0027 status mode（0..4），间接跳转到 5 个 handler。
+   *
+   * H5 语义：$0027 & 0x07 → MainRouterService.dispatchByMode（mode ≥ 5 按 0 处理）
    */
-  tickDispatch(): void {
+  tickFrame(): void {
     if (!this.booted) return;
-    for (const slot of this.slots) {
-      if (slot.state === 'IDLE' || !slot.callback) continue;
-      if (slot.counter === 0) {
-        // 触发
-        slot.state = 'READY';
-        slot.tickCount++;
-        try {
-          slot.callback(slot.idx, slot.tickCount - 1);
-        } catch (e) {
-          // swallow, 不影响其它 slot
-          // eslint-disable-next-line no-console
-          console.error(`[Bank00MainLoop] slot ${slot.idx} callback error:`, e);
-        }
-        // 重置 counter
-        slot.counter = slot.period === 0 ? 1 : slot.period;
-      } else {
-        slot.counter = (slot.counter - 1) & 0xff;
+    const mode = this.store.readByte(0x0027) & 0x07;
+    this.router.dispatchByMode((mode <= 4 ? mode : 0) as StatusMode);
+  }
+
+  // ──────────────────────── dispatcher 表注册（$800D 5-entry） ────────────────────────
+
+  /**
+   * 注册 5 个 mode handler（PRG $800D dispatcher table 翻译）。
+   * 构造时自动调用；外部无需手动触发。
+   */
+  autoRegisterDispatchActions(): void {
+    this.router.registerDispatchAction(0, () => this.mode0());
+    this.router.registerDispatchAction(1, () => this.mode1());
+    this.router.registerDispatchAction(2, () => this.mode2());
+    this.router.registerDispatchAction(3, () => this.mode3());
+    this.router.registerDispatchAction(4, () => this.mode4());
+  }
+
+  // ──────────────────────── 5-mode handlers（$8165/$818A/$81AD/$81B4/$81DA） ────────────────────────
+
+  /**
+   * mode 0（$8165）：
+   *   $0027 = 1 → $C56C → $8285（$0700=1 + 等1帧 + scene A00C）
+   *   → $0026 > $00E4：$00E4 = $0026；$83FE[$0026] 非 0 → loadCfg + 清输入
+   *   → 主循环
+   */
+  private mode0(): void {
+    const store = this.store;
+    store.writeByte(0x0027, 0x01);
+    // $C56C（IRQ helper）— H5 无 CPU 中断，省略
+    this.jump8285();
+    const s26 = store.readByte(0x0026);
+    if (s26 > store.readByte(0x00e4)) {
+      store.writeByte(0x00e4, s26);
+      const cfg = this.tbl(TABLE_83FE, s26);
+      if (cfg !== 0) {
+        this.loadCfg(cfg);
+        this.clearInput82B5();
       }
+    }
+    this.mainLoopStep();
+  }
+
+  /**
+   * mode 1（$818A）：
+   *   $0028 vs $0029 比较：
+   *     - 相等 → 查 $83BA[$0026]：0 → scene advance；1 → mode4；其他 → mode2 + $C56C + $8285
+   *     - 大于 → $8206（timer greater）
+   *     - 小于 → scene advance
+   *   → 主循环
+   */
+  private mode1(): void {
+    const store = this.store;
+    const cmp = this.cmp0028vs0029();
+    if (cmp === 0) {
+      const v = this.tbl(TABLE_83BA, store.readByte(0x0026));
+      if (v === 0) {
+        this.sceneAdvance81E6();
+      } else if (v === 1) {
+        this.setMode4AndLoop();
+      } else {
+        store.writeByte(0x0027, 0x02);
+        // $C56C — 省略
+        this.jump8285();
+        this.mainLoopStep();
+      }
+    } else if (cmp > 0) {
+      this.timerGreater8206();
+    } else {
+      this.sceneAdvance81E6();
     }
   }
 
-  /** 调试快照 */
-  snapshot(): ReadonlyArray<SlotConfig> {
-    return this.slots.map(s => ({ ...s }));
+  /** mode 2（$81AD）：$0027 = 3 → 主循环 */
+  private mode2(): void {
+    this.store.writeByte(0x0027, 0x03);
+    this.mainLoopStep();
   }
 
-  /** 当前已激活 slot 数 (state != IDLE) */
-  activeCount(): number {
-    return this.slots.filter(s => s.state !== 'IDLE').length;
+  /**
+   * mode 3（$81B4）：
+   *   $0028 vs $0029 比较：
+   *     - 相等 → 查 $83BA[$0026] == 3 → mode4；
+   *       $0026 == $20 → INC $0026；→ tail
+   *     - 大于 → $8206；小于 → scene advance
+   */
+  private mode3(): void {
+    const store = this.store;
+    const cmp = this.cmp0028vs0029();
+    if (cmp === 0) {
+      const v = this.tbl(TABLE_83BA, store.readByte(0x0026));
+      if (v === 3) {
+        this.setMode4AndLoop();
+      } else {
+        if (store.readByte(0x0026) === 0x20) {
+          store.writeByte(0x0026, (store.readByte(0x0026) + 1) & 0xff);
+        }
+        this.tail80FD();
+      }
+    } else if (cmp > 0) {
+      this.timerGreater8206();
+    } else {
+      this.sceneAdvance81E6();
+    }
   }
+
+  /**
+   * mode 4（$81DA）：
+   *   $0028 vs $0029：相等/小于 → scene advance；大于 → $8206
+   */
+  private mode4(): void {
+    const cmp = this.cmp0028vs0029();
+    if (cmp > 0) {
+      this.timerGreater8206();
+    } else {
+      this.sceneAdvance81E6();
+    }
+  }
+
+  // ──────────────────────── 子流程（$81E6 advance / $8206 / $80FD tail / $8285 / $82B5） ────────────────────────
+
+  /**
+   * $81D4 共享出口：$0027 = 4 → 主循环（mode1/3 表值 1/3 命中时）
+   */
+  private setMode4AndLoop(): void {
+    this.store.writeByte(0x0027, 0x04);
+    this.mainLoopStep();
+  }
+
+  /**
+   * scene advance（$81E6）：
+   *   A015 handler → loadCfg($60) → 清输入($82B5) → fade($99F0)
+   *   → $0026 = $8398[$0026] → $C578 → tail($80FD)
+   */
+  private sceneAdvance81E6(): void {
+    const store = this.store;
+    this.hooks.sceneHandlerA015?.();
+    this.loadCfg(0x60);
+    this.clearInput82B5();
+    this.hooks.fadeOutAll?.();
+    store.writeByte(0x0026, this.tbl(TABLE_8398, store.readByte(0x0026)) & 0xff);
+    // $C578（IRQ helper）— H5 省略
+    this.tail80FD();
+  }
+
+  /**
+   * timer greater（$8206）：
+   *   A012 handler → $00E0 bit6 未置位时：
+   *     $0026 > $00E5 → $00E5 = $0026；$8420[$0026] 非 0 → loadCfg + 清输入 + $00E0 &= ~$40
+   *   → $8442[$0026] 非 0 → loadCfg + 等指针清($82A9)
+   *   → $0026 < $20：$0700=1 → $C578 → INC $0026 → A018 handler
+   *     → $0026 ≥ 3 → $0446 = 5 → tail
+   *   → $0026 ≥ $20：mode5 halt（$0027 = 5）
+   */
+  private timerGreater8206(): void {
+    const store = this.store;
+    this.hooks.sceneHandlerA012?.();
+    if ((store.readByte(0x00e0) & 0x40) === 0) {
+      const s26 = store.readByte(0x0026);
+      if (s26 > store.readByte(0x00e5)) {
+        store.writeByte(0x00e5, s26);
+        const cfg = this.tbl(TABLE_8420, s26);
+        if (cfg !== 0) {
+          this.loadCfg(cfg);
+          this.clearInput82B5();
+          store.writeByte(0x00e0, store.readByte(0x00e0) & 0xbf);
+        }
+      }
+    }
+    const cfg2 = this.tbl(TABLE_8442, store.readByte(0x0026));
+    if (cfg2 !== 0) {
+      this.loadCfg(cfg2);
+      this.waitPtrClear82A9();
+    }
+    if (store.readByte(0x0026) < 0x20) {
+      store.writeByte(0x0700, 0x01);
+      // $C578 — 省略
+      store.writeByte(0x0026, (store.readByte(0x0026) + 1) & 0xff);
+      this.hooks.sceneHandlerA018?.();
+      if (store.readByte(0x0026) >= 0x03) {
+        store.writeByte(0x0446, 0x05);
+      }
+      this.tail80FD();
+    } else {
+      // $8263: LDA #$05; STA $0027; JMP $C57B（mode5 halt — 等待外部 reset）
+      store.writeByte(0x0027, 0x05);
+    }
+  }
+
+  /**
+   * tail（$80FD）：
+   *   清零 $0028/$0029/$0027 → $0700=1 → A20C handler → loadSceneData(0)
+   *   → A006 handler → $C572 → $0700 = ($0026 ≥ $20 ? $4C : $55)
+   *   → $0450-$0453 = 0 → A009 handler → $00E0 bit7 未置位且 $0026 > $00E4：
+   *     $83DC[$0026] 非 0 → loadCfg + 清输入 + $00E0 &= ~$80 → 主循环
+   */
+  private tail80FD(): void {
+    const store = this.store;
+    store.writeByte(0x0028, 0x00);
+    store.writeByte(0x0029, 0x00);
+    store.writeByte(0x0027, 0x00);
+    store.writeByte(0x0700, 0x01);
+    this.hooks.sceneHandlerA20C?.();
+    this.hooks.loadSceneData?.(0);
+    this.hooks.sceneHandlerA006?.();
+    // $C572 — 省略
+    const s26 = store.readByte(0x0026);
+    store.writeByte(0x0700, s26 >= 0x20 ? 0x4c : 0x55);
+    store.writeByte(0x0450, 0x00);
+    store.writeByte(0x0451, 0x00);
+    store.writeByte(0x0452, 0x00);
+    store.writeByte(0x0453, 0x00);
+    this.hooks.sceneHandlerA009?.();
+    if ((store.readByte(0x00e0) & 0x80) === 0) {
+      const cfg = this.tbl(TABLE_83DC, s26);
+      if (cfg !== 0) {
+        this.loadCfg(cfg);
+        this.clearInput82B5();
+        store.writeByte(0x00e0, store.readByte(0x00e0) & 0x7f);
+      }
+    }
+    this.mainLoopStep();
+  }
+
+  /**
+   * $8285（mode0/timer 路径公共）：
+   *   $0700 = 1 → 等 1 帧（$9FA8）→ scene A00C handler
+   *
+   * H5：等 1 帧由帧循环自然保证；$0700 写 + A00C 委托
+   */
+  private jump8285(): void {
+    this.store.writeByte(0x0700, 0x01);
+    this.hooks.sceneHandlerA00C?.();
+  }
+
+  /**
+   * $82B5 清输入：
+   *   ROM：$4D/$4E 非 0 时等 B 键（$001E bit5）→ 清零 $0005/$0006/$0009/$000A/$0011/$0012/$000D/$000E/$004C
+   *   → $0700=1 → $9BA0（scheduler reset）→ 清零 $0044/$0045/$007A/$007B
+   *
+   * H5：不做阻塞等键（帧循环提供节奏），立即执行清零副作用；B 键门控由 hooks 层决定。
+   */
+  private clearInput82B5(): void {
+    const store = this.store;
+    store.writeByte(0x0005, 0x00);
+    store.writeByte(0x0006, 0x00);
+    store.writeByte(0x0009, 0x00);
+    store.writeByte(0x000a, 0x00);
+    store.writeByte(0x0011, 0x00);
+    store.writeByte(0x0012, 0x00);
+    store.writeByte(0x000d, 0x00);
+    store.writeByte(0x000e, 0x00);
+    store.writeByte(0x004c, 0x00);
+    store.writeByte(0x0700, 0x01);
+    this.scheduler.clearAll();
+    store.writeByte(0x0044, 0x00);
+    store.writeByte(0x0045, 0x00);
+    store.writeByte(0x007a, 0x00);
+    store.writeByte(0x007b, 0x00);
+  }
+
+  /**
+   * $82A9 等指针清：ROM 等 $4D/$4E 归零。
+   * H5：立即返回（cfg 装载由 loadCfgBlock 同步完成，$4D/$4E 由消费方管理）。
+   */
+  private waitPtrClear82A9(): void {
+    // $4D/$4E 指针由 cfg 消费方（PpuTransferService.loadCfgBlock）同步管理，无需阻塞
+  }
+
+  /** 主循环步进（$8019 JSR $C4B9 + JMP $A203 → bank02 scene dispatch） */
+  private mainLoopStep(): void {
+    this.hooks.sceneMainLoopStep?.();
+  }
+
+  // ──────────────────────── boot 链（$801F-$80D3，供 Tsubasa2 接入） ────────────────────────
+
+  /**
+   * boot Start 键等待（$801F-$804A）：
+   *   $9BA0（scheduler reset）→ loadCfg(0) → 每帧等 1 帧 → $001E & $10（Start）按下前循环
+   *   → 清零 $0005/$0006/$0009/$000A/$0011/$0012/$000D/$000E/$004C/$005B
+   *   → $0700 = 1 → $001B bit0 置位则跳过 logo（$807A）
+   *
+   * @returns true = Start 已按下（可继续 logo/进入游戏）；false = 仍在等待
+   */
+  pollBootStartButton(): boolean {
+    const store = this.store;
+    if (!this.bootPendingStart) {
+      this.scheduler.clearAll();
+      this.loadCfg(0);
+      this.bootPendingStart = true;
+    }
+    if ((store.readByte(0x001e) & 0x10) === 0) return false;
+    this.bootPendingStart = false;
+    store.writeByte(0x0005, 0x00);
+    store.writeByte(0x0006, 0x00);
+    store.writeByte(0x0009, 0x00);
+    store.writeByte(0x000a, 0x00);
+    store.writeByte(0x0011, 0x00);
+    store.writeByte(0x0012, 0x00);
+    store.writeByte(0x000d, 0x00);
+    store.writeByte(0x000e, 0x00);
+    store.writeByte(0x004c, 0x00);
+    store.writeByte(0x005b, 0x00);
+    store.writeByte(0x0700, 0x01);
+    this.bootPendingLogo = (store.readByte(0x001b) & 0x01) === 0;
+    return true;
+  }
+
+  /**
+   * boot logo 装载（$8053-$8090）：
+   *   clearSprites($9B11) → 等 2 帧 → hideOam($9B7F) → clearNt($98A0) → 等 13 帧
+   *   → $007B = 0 → loadChrConfig($17)($8AF7) → shiftSpriteY($30)($890C)
+   *   → flipSpriteAttrs($88FB) → loadBgPaletteFull($9A35) → loadSceneData(0)($8920)
+   *   → $0090=0 / $0091=2 → $001B &= ~1 → $00ED=$0A / $00E6=$0A / $00E7=$22
+   *   → writeTitleRow($98EA: 127 bytes @ $0A22)
+   *
+   * @returns true = logo 装载完成（可进标题按键等待）
+   */
+  bootLogoLoad(): boolean {
+    const store = this.store;
+    if (!this.bootPendingLogo) return true;
+    if (!this.bootLogoStep0) {
+      this.bootLogoStep0 = true;
+      this.hooks.clearSprites?.();
+      this.hooks.hideOam?.();
+      this.hooks.clearNt?.();
+      this.hooks.loadChrConfig?.(0x17);
+      this.hooks.shiftSpriteY?.(0x30);
+      this.hooks.flipSpriteAttrs?.();
+      this.hooks.loadBgPaletteFull?.();
+    }
+    this.hooks.loadSceneData?.(0);
+    store.writeByte(0x0090, 0x00);
+    store.writeByte(0x0091, 0x02);
+    store.writeByte(0x001b, store.readByte(0x001b) & 0xfe);
+    store.writeByte(0x00ed, 0x0a);
+    store.writeByte(0x00e6, 0x0a);
+    store.writeByte(0x00e7, 0x22);
+    this.hooks.writeTitleRow?.();
+    this.bootPendingLogo = false;
+    return true;
+  }
+
+  /**
+   * 标题按键解码 + 进入游戏（$80A2-$80D4 + $826A）：
+   *   每帧等 1 帧 → $001E & $3C（A/B/Select/Start）任意按下：
+   *     - B（bit5 反转两次后 bit7）→ $00ED ^= $40
+   *     - A（bit6）→ $001C & $C0 == $C0 → 进入游戏（A209，boot 完成）
+   *     - 其他 → $00E6=$00ED / $00E7=$22 / NT 3 行填充 → 回标题循环
+   *
+   * @returns true = 进入游戏（可 start() 主循环）；false = 标题等待中
+   */
+  enterGame(): boolean {
+    const store = this.store;
+    const buttons = store.readByte(0x001e) & 0x3c;
+    if (buttons === 0) return false;
+    let decoded = buttons;
+    decoded = (decoded << 2) & 0xff;
+    if ((decoded & 0x80) !== 0) {
+      // B 按下 → 标题翻转（$00ED ^= $40）+ 3 行 NT 填充 → 回标题
+      store.writeByte(0x00ed, store.readByte(0x00ed) ^ 0x40);
+      store.writeByte(0x00e6, store.readByte(0x00ed));
+      store.writeByte(0x00e7, 0x22);
+      // $98E8 NT fill（3 行 @ $0A22）— 委托渲染原语
+      this.hooks.writeTitleRow?.();
+      return false;
+    }
+    decoded = (decoded << 1) & 0xff;
+    if ((decoded & 0x80) !== 0) {
+      // A 按下 → 检查 $001C & $C0 == $C0 → 进入游戏（$A209）
+      if ((store.readByte(0x001c) & 0xc0) === 0xc0) {
+        this.bootPendingEnter = true;
+        return true;
+      }
+    }
+    store.writeByte(0x00e6, store.readByte(0x00ed));
+    store.writeByte(0x00e7, 0x22);
+    this.hooks.writeTitleRow?.();
+    return false;
+  }
+
+  /**
+   * 进入游戏衔接（$826A → $80FD tail）：
+   *   A003 → A20F → A01B scene handlers → tail（进入 5-mode 主循环）
+   */
+  enterGameFinalize(): void {
+    this.hooks.sceneHandlerA006?.();
+    this.hooks.sceneHandlerA20C?.();
+    this.hooks.sceneHandlerA009?.();
+    this.tail80FD();
+  }
+
+  /** 音频/APU 准备（boot 期 BGM 装载委托，默认 no-op） */
+  prepareAudio(): void {
+    this.hooks.prepareAudio?.();
+  }
+
+  /** 等 N 帧（PRG `LDA #$XX; JSR $9FA8` 翻译）— 返回当前是否已到点 */
+  waitIntroFrames(n: number): boolean {
+    if (this.introWaitRemaining < 0) {
+      this.introWaitRemaining = n & 0xff;
+      return false;
+    }
+    if (this.introWaitRemaining > 0) {
+      this.introWaitRemaining = (this.introWaitRemaining - 1) & 0xff;
+      return this.introWaitRemaining === 0;
+    }
+    return true;
+  }
+
+  // ──────────────────────── 内部工具 ────────────────────────
+
+  /** 表取值（越界返回 0，与 ROM 越界读 $00 语义一致） */
+  private tbl(table: ReadonlyArray<number>, idx: number): number {
+    return (table[idx & 0xff] ?? 0) & 0xff;
+  }
+
+  /** $0028 vs $0029 比较（-1 小于 / 0 相等 / 1 大于） */
+  private cmp0028vs0029(): number {
+    const a = this.store.readByte(0x0028);
+    const b = this.store.readByte(0x0029);
+    if (a === b) return 0;
+    return a > b ? 1 : -1;
+  }
+
+  /** loadCfg（PRG $8464 翻译）— 委托 PpuTransferService */
+  private loadCfg(cfgId: number): void {
+    this.ppuTransfer.loadCfgBlock(cfgId & 0xff);
+  }
+
+  // ──────────────────────── boot 状态（内部） ────────────────────────
+
+  private bootPendingStart = false;
+  private bootPendingLogo = false;
+  private bootLogoStep0 = false;
+  private bootPendingEnter = false;
+  private introWaitRemaining = -1;
 }
