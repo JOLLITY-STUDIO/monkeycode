@@ -28,6 +28,7 @@ import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from './InputService';
 import type { PpuTransferService } from './PpuTransferService';
 import type { Bank00SchedulerService } from './Bank00SchedulerService';
+import type { Bank00MainLoopService } from './Bank00MainLoopService';
 import {
   SceneController,
   Scene0Controller,
@@ -75,6 +76,9 @@ export class BootRouter {
   /** PPU transfer cfg loader (PRG $8464 多 bank 装载) — 由 Tsubasa2 构造时注入 */
   private ppuTransfer: PpuTransferService | null = null;
 
+  /** ⚠️ bank14 $C500 6-slot recurring timer dispatcher (v2 stub 接入点, 不绑死 slot) */
+  private mainLoop: Bank00MainLoopService | null = null;
+
   private currentSceneId = SceneId.Scene0;
   private current: SceneController | null = null;
 
@@ -108,6 +112,33 @@ export class BootRouter {
     for (const c of this.scenes.values()) {
       c.attachScheduler(scheduler);
     }
+  }
+
+  /**
+   * ⚠️ v2 stub — 注入 Bank00MainLoopService (PRG $C500 6-slot recurring dispatcher 翻译)
+   *
+   * 与 attachScheduler 的区别:
+   *   - attachScheduler: 一次性 pushState, 等 N 帧 callback 触发一次后消费 (one-shot)
+   *   - **attachMainLoop: 周期触发 slot handler (recurring)** — 每 N 帧持续触发现场 controller.onSlotTick()
+   *
+   * 当前 stub 仅持有引用, 不注册任何 slot. 待 Bank00MainLoopService 在 Tsubasa2.boot() 末尾接入后,
+   * 再由调用方决定:
+   *   - slot 0 → scene0.onSlotTick() (period=12, initialDelay=270 — 按 BANK02_ANALYSIS.md 实证)
+   *   - slot 1 → scene2.onSlotTick() (period=不规则, 71 次)
+   *   - ... 其他 slot 各自 scene
+   *
+   * 注意: 当前 BootRouter.update() 仍按每帧调 current.onUpdate() 旧路径工作,
+   *       mainLoop 接入后才是 slot 驱动. **未启用, 行为不退化**.
+   */
+  attachMainLoop(mainLoop: Bank00MainLoopService): void {
+    this.mainLoop = mainLoop;
+    // TODO: 等 trace 完全定位各 scene slot 配置后, 在此处注册 slot
+    // (目前不绑死任何场景, 留空 stub)
+  }
+
+  /** Debug: 拿到 mainLoop 引用 */
+  getMainLoop(): Bank00MainLoopService | null {
+    return this.mainLoop;
   }
 
   // ⚠️ BUG #014 修复悬而未决:

@@ -82,4 +82,27 @@ export abstract class SceneController {
   onRender(): void {
     // 默认空实现；场景无渲染需求时无需覆盖
   }
+
+  /**
+   * ⚠️ slot 触发钩子 (PRG $C5xx slot handler entry 翻译) — v2 stub
+   *
+   * 与 onUpdate 的区别:
+   *   - onUpdate 每帧调 (BootRouter.update() 在 game loop 末尾)
+   *   - **onSlotTick 仅在 Bank00MainLoopService slot 触发时调** (典型: 每 12 帧 1 次)
+   *
+   * ROM 模型 (BANK02_ANALYSIS.md §6):
+   *   - 6-slot dispatcher 每 NMI frame 调所有 slot counter
+   *   - slot counter→0 → 调对应 handler entry (`JSR $A000` / `JSR $A160`)
+   *   - handler 跑 RTS → 自动回到 dispatcher
+   *   - 不是每帧都跑 — 是周期触发
+   *
+   * H5 默认空实现, scene 不需要 slot 驱动时可忽略.
+   * 真正需要 slot 触发的 scene (Scene0 当前思考可能需要的) 覆盖此方法.
+   *
+   * @param tickCount slot 触发序号 (0=首触发, 1+=周期内第 N 次)
+   */
+  onSlotTick(_slotIdx: number, _tickCount: number): void {
+    // stub v1: 默认什么都不做, 维持按 onUpdate 每帧推进的旧行为
+    // 不改既有 scene 行为, 等 Bank00MainLoopService 接入 boot loop 后再让对应 scene 覆盖
+  }
 }

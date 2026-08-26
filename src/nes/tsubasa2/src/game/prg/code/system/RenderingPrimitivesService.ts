@@ -394,27 +394,6 @@ export class RenderingPrimitivesService {
     }
   }
 
-  // ──────────────────────────── Boot NT3 loader（WBS L3, PRG $85EB 翻译）────
-
-  /**
-   * PRG $85EB 翻译：boot 时向 NT3 ($2C00) 装载 NT 缓冲条目（专用 tile）。
-   *
-   * 调用时机：scene0.onEnter() + HardwareInitService.reset()。
-   * 通过 NT 缓冲队列声明式追加，而非直接写 $2C00。
-   *
-   * count = 0 则不操作。索引自 OPENING_SCENE3_TILES 之外的扩展 boot tile，
-   * 不属于 OPENING_TILE_PATTERNS 时走 fallback (透明 tile)。
-   */
-  queueBootNt3(count: number): void {
-    const c = count & 0xff;
-    for (let k = 0; k < c; k++) {
-      const row = k & 0x1f;
-      const line: number[] = new Array(32).fill(0x55);
-      const addr = 0x2c00 + row * 32;
-      this.ntBufferAppend({ vertical: false, ntAddr: addr, data: line });
-    }
-  }
-
   // ──────────────────────────── 场景14+ 原语（bank02 实证） ────────────────────────────
 
   /**
