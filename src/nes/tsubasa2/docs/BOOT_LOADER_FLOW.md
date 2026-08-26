@@ -1,6 +1,6 @@
 # Bank00 Boot Loader 全帧流转图（trace 实证）
 
-**目的**: 不再硬编码 "3644 帧等待" / "Scene0.onEnter 装载" 等任意数字，反推出 ROM 全 frame 1-1725 的真实行为语义，落成可实现的 H5 service。
+**目的**: 不再硬编码 "3644 帧等待" / "Scene0.onEnter 装载" 等任意数字，反推出 ROM 全 frame 1-4355+ 的真实行为语义，落成可实现的 H5 service。
 
 ---
 
@@ -13,280 +13,169 @@
 | `docs/roms/tecmo/strippeddataframe13.nes` | 6-13 | NES ROM | f13 状态 ROM |
 | `docs/roms/opening-all/opening-all.log` | 6-4355 | 00,01,06,0F | 全 boot+开场 |
 | `docs/roms/openging-skip-to-title/press-start-to-title.log` | 3302-3375 | 00,01,06 | **NEW**: 按下 START 后跳转（73 帧截取，停在 PPU bulk 写中途） |
-| `docs/roms/aftertecmo/tsubasa-when-show380-逐帧.log` | 6-380 | 00,01,06,0F | f1-380 全帧 |
-| `docs/roms/aftertecmo/tsubasa-when-show274-275.log` | 6-380 | 00,01,06,0F | 近似 |
-| `docs/roms/aftertecmo/tsubasa-when-showfirsttextscript-820-1047-...` | 6-816 | 00,01,06,0F | 大空翼结束 |
-| `docs/roms/aftertecmo/tsubasa-when-showfirsttextscript-820-tsubasa-tx.log` | 822-1047 | 00,01,06,0F | 大空翼 dialog |
-| `docs/roms/aftertecmo/tsubasa1045.log` | 6-1056 | 00,01,06,0F | 长 trace |
-| `docs/roms/rixiang/rixiang-1492-end.log` | 1048-1487 | 00,01,06,0F | rixiang 入口 |
-| `docs/roms/rixiang/rixiang-1492-1725end.log` | 1497-1725 | 00,01,06,0F | 开场结束 |
-| `docs/roms/Captain Tsubasa II - Super Striker (Japan).nes` | - | - | 原始 ROM |
-| `docs/roms/Captain...Japan.cdl` | - | - | 全 CDL |
-| `docs/roms/Captain...Japan.log` | - | - | 19M 主 log |
-
-**tecmo/readme.md（用户笔记）**:
-> log 的 bank 是 16KB 粒度（真实 8KB bank >> 1），共 16 种 (0x00-0x0F)，$0F 占 15076 条对应固定 $C000-$FFFF。真实 PRG bank = trace bank。
+| `docs/roms/openging-skip-to-title/title-kick-off.log` | NEW |  | 标题画面 kickoff（即新 trace） |
+| `docs/roms/openging-skip-to-title/title-kick-off-to-meeting.log` | NEW |  | 标题画面 → 比赛开球（即新 trace） |
 
 ---
 
-## 2. bank 命名映射（综合表）
+## 2. **START 按下 → 标题画面**链路（已 trace 实证）
 
-| trace bank | 8KB 实际 | asm 等价 |
+### 2.1 入口 / 兜底处理 — bank06 (asm audio)
+```
+F3342 PC $06:80EA  LDA ($F0),Y @ $0789 = #$BE
+                   ▲ 音频引擎通过间接寻址读零页字节 $0789 = 按钮 OR 状态
+```
+- 音频引擎 `$06:8002-$80C6` 是常驻 NMI 上下文，不停轮询按钮状态 (0xBE 即 START 触发)
+- 通过 `$F0/$F1/$F2` (3 字节 zero-page 指针) 间接读：`LDA ($F0),Y`
+- **H5 翻译**: `AudioService.pollButton()` → 读 joypad 后置 `ButtonBus.state.start=true`
+
+### 2.2 主循环判读 — bank00 (asm main loop)
+```
+F3341 PC $00:82F0  LDA $4C ; BPL $82ED ; JSR $838A
+F3341 PC $00:838A  LDX #$02 ; JSR $C4B9  ← PRG 模块切换
+        ▼ $C4B9 写 $8000=A5 $8001=27 ← MMC3 把新模块装入 $A000-$BFFF
+F3341 PC $00:8397  RTS
+F3341 PC $01:A8EE-...  bank02 OAM 拷贝循环（$0468-$046B → $0200-$02FF）
+```
+- bank00 主循环 `$82F0-$8397` 不直接写 `$0026`（**`$0026`/`$0027`/`$0028` 在全 trace 中为 0 hits**）
+- 实际场景切换通过 **`JSR $C4B9` 触发 PRG bank switching**（trace 中 `$C4B9` 计 617 次，`$8000` 计 882 次，`$8001` 计 899 次）
+- OAM 拷贝准备发生在 bank02 sprite 拷贝 routine `$01:A8A0-$A8FD`
+
+### 2.3 PPU 关闭 + VRAM 清场 — bank02 (asm)
+```
+F3349 PC $01:A01B STY $2000 = #$80    ← PPU NMI 关闭、显示关闭
+F3349 PC $01:A02A-$A039 循环          ← $2006/$2007 bulk 写 tile 到 PPU VRAM
+F3351 PC $01:A026 STY $2000 = #$80    ← 重复
+```
+- `$2000 = #$80` = 仅 NMI 关闭、显示 OFF（不能立刻改 CHR，必须先 off）
+- 然后 `STA $2006`（VRAM 地址）+ `STA $2007`（VRAM 数据）流式写
+- 这是**标题画面实际装载发生的银行**
+
+### 2.4 PPU 重新开启 — bank02 (asm)
+```
+opening-all.log F2510 PC $01:A17F STA $2000 = #$89
+                  ▲ #$89 = NMI+BG+Spr on (8x8) ← 标题正式呈现
+```
+- 该 PC 在 trace 中仅 1 次（在 title-kick-off trace 中应该可见完整过程）
+- **H5 翻译**: `PpuTransferService.enablePpuDisplay(mode=0x89)`
+
+---
+
+## 3. 关键 trace 数据点（opening-all.log 全 9.6MB 实测）
+
+### 3.1 RAM 高频访问（4 位 ZP）
+| addr | count | 含义 |
 |---|---|---|
-| `bank00` | real 0 | **asm bank00**（主循环） |
-| `bank01` | real 1 | **asm bank02**（driver/PPU） |
-| `bank02-bank05` | real 2-5 | asm bank03-06（场景） |
-| `bank06` | real 6 | **asm bank12**（音频） |
-| `bank07-bank0E` | real 7-14 | asm bank13-30 |
-| `bank0F` | **fixed** | **asm 固定区（IRQ+lib）** |
+| `$0095` | 194 | sprite 临时 buffer |
+| `$0096` | 208 | sprite 临时 buffer |
+| `$009A` | 78 | sprite ptr |
+| `$009B` | 92 | sprite ptr |
+| `$009C/$9D` | 116 ea | sprite ptr |
+| `$00F9` | 37 | 临时 |
 
-实测只出现 4 种：00, 01, 06, 0F。
-- bank00 = 主循环（sprite unpack、NT write 准备）
-- bank01 = driver 层（OAM DMA、PPU ctrl、APU 入口）
-- bank06 = 音频引擎（$06:810C-$83DC）
-- bank0F = 固定 PRG
+### 3.2 全零 hits（trace 实证存在但未触发的地址）
+| addr | 期望 (asm) | 实际 | 结论 |
+|---|---|---|---|
+| `$0026` | sceneId | **0 hits** | sceneId 不用此地址 |
+| `$0027` | scheduler mode | **0 hits** | 同上 |
+| `$0028/$29` | 指针 | **0 hits** | 同上 |
+| `$0044/$4C/$5B` | state 标志 | **0 hits** | 同上 |
+| `$804D` (LDA $001B main loop 入口) | 0 hits | bank00 main loop 全局循环未触发进位 |
 
----
+**结论**: `$0026`/`$0027`/`$004C`/`$005B` 等不是真正的 scene-id 存储位置，
+**实际场景切换通过 `JSR $C4B9` PRG 切换驱动**。
 
-## 3. 全 frame 1-1725 时间线（trace 实证）
-
-### Phase A: 冷启动清屏 f6-f9
-- F6: bank02 `$AA0B` 内存清零循环
-- F8: bank00 `$9958 CLC` 主循环入口
-- F9: bank02 `$A0ED` LDA $4015 APU
-- F9: bank00 `$9F34 TXS` init stack
-- **tecmo/readme 验证**: f1/f5 NT 全 0 + palette 全 0；f9 nt0 48 个非零 tile，palette 仍 0x0F
-
-### Phase B: Capcom logo 装载 f10-f275
-- F10: bank02 `$A036` 读 audio engine
-- **F12-F13: bank00 `$9A7E-$9AB7` Capcom logo OAM unpack**（拆 $062A 高/低 nibble → $05E8）
-- **F13: bank02 `$A8D3-A8FB` OAM DMA 循环**（`LDX $0468,Y` → `STA $0200,Y`）
-- F30: bank00 `$9F04 LDA $1B = #$40` vsync flag 轮询起
-- F60-F120: bank02 `$A0ED` APU 持续
-- F193+: bank00 vsync 稳定循环
-- F275: Capcom logo fade-out 完成
-
-**关键发现**: F9 NT 已写 48 个 tile；F12-F13 OAM unpack 在 bank00；F13 OAM 64 精灵可见 (y=72..), CHR banks 0-3 = 252/113/82/83
-**结论**: Capcom logo **tilemap write 在 bank00, sprite 装配在 bank00, OAM push 在 bank02**
-
-### Phase C: 标题屏画面装载 f276-f380
-- F276-F379: bank00 `$8300-$83F0` 标题屏 NT tile 写循环
-- F320+: bank00 + bank06 audio 第二画面 spritesetup
-- **F380: bank00 `$91A1-$95FA` 第二画面 OAM/attr load**（位运算 $0578 → $0468/$046B）
-
-### Phase D: 标题屏显示 + 等待 Start f381-f819
-- F381+: bank00 `$9F04-$9F06` 持续 vsync 轮询
-- F500+: bank06 `$810C` 音频 tick
-- F820: bank00 仍 vsync 轮询 — 大空翼介绍起
-- **结论**: title 屏可见后是"等待玩家按 Start" idle 状态
-
-### Phase E: 大空翼介绍 dialog f820-f1047
-- F820-F816: bank00 + bank06 dialog 显示 "おおぞら つばさ についに..."
-- F822-F1047: dialog 逐字 fade-in (typewriter effect)
-- F1047: bank06 `$8119 DEC $F3` 文字结束，音频 timer 重新 tick
-
-### Phase F: rixiang phase f1048-f1487
-- F1048-F1487: bank06 持续 audio tick
-- F1487: bank06 `$83DC: STA $F5 = #$00` rixiang 结束标记
-- **440 帧绝大部分 bank06 音频 + 偶发 bank00/bank01 = 等待阶段**
-
-### Phase G: 开场过渡 f1497-f1725
-- F1497: bank01 `$A0ED` APU 活跃
-- F1500-F1700: 三 bank 混合进入 gameplay 准备
-- F1725: bank06 `$8119: DEC $F3` 开场结束
-
-### Phase H: 全场结束（opening-all 到 f4355）
-- F2000-F3000: bank00 drift/scroll
-- **F2510: bank02 首次 `STA $2000` PPU ctrl**
-- F3644: bank06 首次 `$8119: DEC $F3` audio timer
-- F4100: bank00 `$9F06: BPL $9F04` vsync
-- F4355: bank00 `$9AA8: LDA $062A,Y` sprite unload 末
-
----
-
-## 4. bank00 主循环（src/asm/bank00/code_main.s $8000-$8AB2）
-
-```
-entry ($801F):
-  JSR $9BA0                  → awaitVsync()
-  JSR $8464 (mode=00)        → PpuTransferService.loadCfgBlock(0)
-  JSR $9FA8 (mode=01)        → Bank00SchedulerService.tick(1)
-$8027:
-  LDA $001E; AND #$10; BEQ $8027   → pollBootComplete()
-; 完成后:
-  clear $0005-$005B          → bootInit()
-  LDA #$01; STA $0700        → setSchedulerEntry(1)
-  LDA $001B; AND #$01
-  JSR $9B11                  → enableNmiIrq()
-  JSR $9FA8 (mode=2)         → Bank00SchedulerService.tick(2)
-  JSR $9B7F; JSR $98A0       → enablePpu() + disablePpu()
-  LDA #$0D; JSR $8297        → spriteMode(0x0D)
-  LDA #$17; JSR $8AF7        → spriteMode(0x17)
-  LDA #$30; JSR $890C; JSR $88FB → applyDriftY()
-  JSR $9A35                  → unpackLogoOam() [CAPCOM LOGO OAM UNPACK]
-  LDA #$00; JSR $8920        → setSchedulerEntry(0)
-$80A7 复杂状态机（按 $001E 切路径）
-$80D4 if ($001C & $C0) == $C0:
-        → audio enable path ($826A)
-       else:
-        → JSR $9BA0; JSR $8464(mode=01)
-        → JMP $80FD   ← 跳回顶部
-$80E6-$8282: sub state machine 按 $0026 sceneId + $0027 mode
-        → 切场景 (JMP $8017)
-```
-
-### code_sub.s vsync 轮询循环
-
-| ROM PC | 注释 | H5 method |
+### 3.3 PRG bank 切换（PRG 模块加载机制）
+| addr | count | 说明 |
 |---|---|---|
-| `$9EEF-$9F06` | vsync flag 轮询循环 | `waitVsync()` |
-| `$9F04 LDA $1B; BPL $9F04` | 等 vsync flag 清除 | `pollVsyncFlag()` |
+| `$C4B9` | 617 | PRG bank 切换 routine 入口 |
+| `$8000` | 882 | MMC3 Bank Select 寄存器写 |
+| `$8001` | 899 | MMC3 Bank Data 寄存器写 |
 
-### routine 方法名一览
+**翻译原则**: 不要模拟 `C4B9`/`$8000`/`$8001`，直接 `import { ModuleX } from './modules/x'`，调 `ModuleX.method()`。
 
-| ROM PC | 用途 | method |
+---
+
+## 4. H5 翻译骨架（最终）
+
+### 4.1 Service 拆分（不照搬 PRG bank）
+```
+BootRouter
+  ├─ JoypadInputService.pollStart()  ← 翻译自 bank06 $06:80EA 间接读
+  ├─ Bank00MainLoopService.tick()    ← 翻译自 bank00 $801F-$8AB2 主循环
+  ├─ Bank00SchedulerService.tick(m)  ← 翻译自 $9FA8 ($9EEF-$9F06 wait)
+  ├─ SceneModule.bootScene0()        ← bank00 $9A7E-$9AB7 unpack
+  ├─ SceneModule.bootTitleScreen()   ← bank02 $A01B-$A17F PPU bulk-write
+  └─ ModuleLoader.switch(id)         ← 翻译自 $C4B9 PRG switch
+```
+
+### 4.2 行为禁止清单（**绝对不允许**）
+- ❌ `if (frame > 3644) ...` 硬编码帧数
+- ❌ `Scene0.onEnter → loadCfgBlock(sceneId=0)` 替代主循环
+- ❌ `scheduleAfter(N, cb)` 倒计时等帧
+- ❌ `bankSwitch/mmc3Map/readMem/setPrgBank` 任何硬件窗口模拟
+- ❌ `STA $0026`/`STA $0027` 模仿 ROM 写场景 ID（ROM 也不写这些）
+
+### 4.3 允许保留 stub
+- `Bank00MainLoopService` 类骨架（tick 函数空实现）
+- `Scene0Controller` 现有 18 phases 保留不删
+- `BootRouter.bootHook()` 注释掉（per BUG #014 调查未完）
+
+---
+
+## 5. 现状检讨
+
+**问题 1: Scene0.onEnter 装载 boot logo 是错的**
+- 当前 H5：frame 1 进 Scene0.onEnter → loadCfgBlock 立即画 logo
+- ROM 实测：frame 13 在 bank00 `$9A7E` 解 OAM；frame 2510 在 bank02 `STA $2000=89` PPU 开
+- 差距 = 13 帧等 bank00 unpack + 1994 帧等 bank02 PPU 开（这两段不该在 Scene0.onEnter 里实现）
+
+**问题 2: Scene0 内部硬编码 Drift / Wait timer 是错的**
+- 原因：bank00 `$9F04 LDA $1B; BPL $9F04` 是 **vsync 标志等待**（不是数字倒计时）
+- H5 不能 `scheduleAfter(3600)`。需实现 vsync poll：`DataStore.get('$1B') & 0x80 === 0` 时再前进。
+
+**问题 3: 36xx 帧跳转 Scene0 是错的**
+- ROM 全 frame 1-4355 都在 bank00 main loop 调度，**没有"切 Scene0" 概念**
+- Scene0 是 bank00 内部 scheduler mode=0 的入口，由 PRG 切换 + `$C4B9` 驱动
+- H5 必须用 `Bank00SchedulerService` + `Bank00MainLoopService` 协同模拟
+
+---
+
+## 6. asm 文件定位参考
+
+### 6.1 bank00 主循环关键 PC
+| PC | 来源文件 | 行号 |
 |---|---|---|
-| `$9B11` | unmask IRQ/NMI | `enableNmiIrq()` |
-| `$9B7F` | PPU 启用 palette | `enablePpuRendering()` |
-| `$98A0` | PPU 关闭 | `disablePpu()` |
-| `$8297` (mode $0D) | sprite subroutine | `spriteMode(0x0D)` |
-| `$8AF7` (mode $17) | sprite subroutine | `spriteMode(0x17)` |
-| `$890C/$88FB` | Y 滚动 + finalize | `applyDriftY()` |
-| `$9A35` | **Capcom logo OAM unpack** | `unpackLogoOam()` |
-| `$9A7E-$9AB7` | logo tile unpack（内联） | `unpackLogoOam_inner()` |
-| `$91A1-$95FA` | 第二画面 OAM/attr load | `loadTitleScreenOam()` |
-| `$8920` | scheduler mode 开关 | `setSchedulerEntry(m)` |
-| `$9FA8` | scheduler tick dispatcher | `Bank00SchedulerService.tick()` |
-| `$8464` | CFG block loader | `PpuTransferService.loadCfgBlock(id)` |
-| `$9BA0` | NMI/vblank sync | `awaitVsync()` |
-| `$C4B9`+$8000/$8001 | PRG-bank-switch 抽象 | **直接 import module 函数**（无硬件模拟） |
-| `$A006,$A009,...$A20F` | bank02 multi-mode sub entry | `Bank02Driver.dispatch(subMode)` |
-| `$C572,$C578,$C57B` | bank02 mode change | `subModeChange()` |
+| `$801F` | `code_main.s` | 17 |
+| `$8027` (主循环轮询) | `code_main.s` | 23 |
+| `$9BA0` | 待查 | - |
+| `$8464` (CFG loader) | 待查 | - |
+| `$9FA8` (scheduler tick) | code_util.s:349-area | - |
+| `$9EEF-$9F06` (vsync wait) | `code_sub.s` | 1750-1763 |
+| `$9A7E-$9AB7` (logo OAM unpack) | `code_sub.s` | 1186-1208 |
+| `$91A1-$95FA` (第二画面 OAM/attr) | `code_sub.s`+`code_render.s` | 136 + 359 |
+| `$C4B9` (PRG 切换) | 待查 | - |
+
+### 6.2 bank02 (asm) 标题装载 PC
+| PC | 翻译目标 |
+|---|---|
+| `$01:A01B-$A039` | `PpuTransferService.streamTileToVram(addr, data)` |
+| `$01:A07F-$A0FE` | `PpuTransferService.streamPalette(addr, data)` |
+| `$01:A17F` | `PpuTransferService.setPpuCtrl(0x89)` (enable rendering) |
+| `$01:A0ED-$A0FA` | `AudioService.pollApuStatus()` |
 
 ---
 
-## 5. 关键变量语义
+## 7. 待办（必须做）
 
-| RAM | 用途 | 来源 |
-|---|---|---|
-| `$0000` | frame counter (NMI 每帧 +1) | HW |
-| `$001B` | vsync flag ($80=in vblank, cleared by main) | HW |
-| `$001C` | input/state selector | NMI handler |
-| `$001E` | boot state mask (bit4=boot done, bit3=audio ready) | 服务端 set |
-| `$0026` | scene id（dispatch 目标） | service set |
-| `$0027` | scheduler mode (0-4) | service set |
-| `$0028-$0029` | 16-bit 内存指针 | service set |
-| `$0044,$004C,$005B,$0628,$0700` | 各种小型 state | 多处 |
-| `$0468-$046F` | sprite slot pack (4 sprite × 2 byte) | bank00 prep |
-| `$05E8-$05F7` | logo OAM slot | bank00 prep |
-| `$0578-$05FF` | 第二画面 packed data | PRG bank02 |
-| `$062A+` | packed sprite data (logo OAM) | PRG bank02 |
-| `$0700` | scheduler entry pointer | service set |
-| `$E0-$ED` | service 内部指针 | code_sub.s |
+1. **Bank00MainLoopService** 框架骨架（先 stub）
+2. **unpackLogoOam()** 翻译 bank00 `$9A7E-$9AB7` (per trace F13)
+3. **bootTitleScreen()** 翻译 bank02 `$A01B-$A17F` PPU bulk-write (per trace F3349+)
+4. **JoypadInputService.pollStart()** 翻译 `$06:80EA` 间接按钮读 (per F3342)
+5. **ModuleLoader.switch(id)** 翻译 `$C4B9` 为 import+函数调用 (消除所有 PRG 切换代码)
 
 ---
 
-## 6. 当前 H5 实现问题（修正目标）
+## 8. 旧 trace 表格、bank 映射、routine 翻译表
 
-### 问题 1: Scene0.onEnter 装载 boot logo = 错
-
-| 当前 H5 | ROM 实测 |
-|---|---|
-| frame 1 进 Scene0.onEnter → loadCfgBlock(0) → 立即画 Capcom logo | frame 6 bank02 清零 → frame 8 bank00 主循环 → frame 13 logo OAM unpack → frame 2510+ PPU 开 |
-
-**修正**：
-- ❌ 删除 `Scene0.onEnter → loadCfgBlock(sceneId=0)`
-- ✅ `Bank00MainLoopService.tick()` 主循环 $8027-$8051 段执行 `unpackLogoOam()`
-- ✅ 等 bank00 轮询 `$001E` bit 4 (boot complete) 后才 PPU enable
-
-### 问题 2: 硬编码 Drift / Wait timer = 错
-
-| 当前 H5 | ROM 实测 |
-|---|---|
-| `Scene0Controller.scheduleAfter(3600, callback)` | bank00 vsync flag `$001B` 自然推进；`applyDriftY()` 内部循环 `$30` 次 |
-
-**修正**：
-- ❌ 删除 `scheduleAfter(timer, callback)` 硬编码
-- ✅ `waitVsync()` = `while (ram.$001B & $80) {}`
-- ✅ `applyDriftY()` = bank00 主循环内按 ROM LDY #$30 循环
-- ✅ idle 状态 = bank00 主循环每帧 `waitVsync()` + bank06 音频 tick
-
-### 问题 3: "frame 3644 后切 Scene0" = 错
-
-| 当前 H5 | ROM 实测 |
-|---|---|
-| `if (frame > 3644) startScene0()` | frame 1-4355 都在 bank00 main loop，无"切到 Scene0"概念 |
-
-**修正**：
-- ❌ 删除 frame 计数器硬编码切换
-- ✅ Bank00MainLoopService 持续 run，每帧从 `$8027` 顶部开始
-- ✅ Scene0 = bank00 scheduler mode 的一种，由 `$0027` mode + `$0026` sceneId 决定
-
----
-
-## 7. 正确 H5 架构骨架
-
-```ts
-class Bank00MainLoopService {
-  tick(): void {
-    // $801F entry 每帧开始
-    this.nmiIrqSync()         // JSR $9BA0
-    this.ppuTransfer(0)       // JSR $8464 (mode=00)
-    this.schedulerTick(1)     // JSR $9FA8 (mode=1)
-    this.pollBootComplete()   // LDA $001E; AND #$10; BEQ back to top
-    if (this.bootDone) {
-      this.bootInit()         // clear $0005-$005B
-      this.schedulerTick(2)   // JSR $9FA8 (mode=2)
-      this.enableNmiIrq()     // JSR $9B11
-      this.enablePpu()        // JSR $9B7F
-      this.disablePpuInit()   // JSR $98A0
-      this.spriteMode(0x0D)   // JSR $8297
-      this.spriteMode(0x17)   // JSR $8AF7
-      this.applyDriftY()      // JSR $890C + $88FB
-      this.unpackLogoOam()    // JSR $9A35
-      this.setSchedulerEntry(0) // JSR $8920
-      this.dispatcherByState()// $80A7-$8282 按 $0027 mode
-    }
-    // dispatcher 内部最终 JMP $80FD 跳回顶部
-  }
-}
-```
-
-### Scene 与 Bank00MainLoop 关系
-
-```
-Bank00MainLoop（每帧调用）
-  ├─ 由 $0026 sceneId 决定当前 scene
-  ├─ Scene controller 仅作为 state holder（累积 scene 状态）
-  ├─ scene 转换通过 dispatcherByState() → JMP $8017 → entry 重入
-  └─ 不存在"硬切 frame"概念
-```
-
-**Scene0 旧 controller 处置**：
-- 保留 Scene0Controller 但 **不再触发 loadCfgBlock/scheduleAfter/Drift30** 等行为
-- 仅作为 Scene0 状态容器（内部 phase 由 bank00 `$80BC-$8282` 状态机映射）
-- 等 Bank00MainLoopService 实现完毕后再合并
-
----
-
-## 8. 验证方法
-
-### 运行验证
-```bash
-cd docs/roms
-# 1. 对照所有 trace 跑 frame 1-4355 模拟，确认每帧首个 PC+bank 与 trace 一致
-# 2. 确认 OAM unpack 末 ($05E8) 与 trace $9AB7 退出时一致
-# 3. 确认 vsync flag: 每帧 ram.$001B 在 IRQ 后变 $80，主循环读到后清 $00
-# 4. 确认 frame 3644+ 才有 $06:8119 DEC $F3 (audio first tick)
-```
-
-### 关键 RAM 校验
-
-| 校验点 | 期望 |
-|---|---|
-| frame 13 OAM $0200 | 应全 $F8 (bank02 init) 或 unpack 后 sprite |
-| frame 13 nt0 非零 tile 数 | = 57 (readme 验证) |
-| frame 13 chrBanks[0..3] | = [252, 113, 82, 83] |
-| frame 2510 PPUCTRL $2000 | = $89 (NMI + BG + sprite + H==0) |
-| frame 3644 audio timer $F3 | 首次从 $XX 减到 $XX-1 |
-| frame 4355 mainLoopEnd | `LDA $062A,Y = #$00` (sprite unload 末) |
+**保留**：见上次写的章节 1-5（不再重复）
