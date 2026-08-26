@@ -17,7 +17,7 @@ import { SCENE15_AA97_TABLE } from '../../data/tables/scene-bank02-tables';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 
-const NEXT = 0x02;
+const NEXT = 0x10; // → Scene16 (主游戏 prep 链)
 /** NT 缓冲单条容量上限（appendNtBuffer 0x40 字节含 3 字节头） */
 const CHUNK = 0x3d;
 

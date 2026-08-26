@@ -18,7 +18,7 @@ exports.Scene23Controller = void 0;
  */
 const SceneController_1 = require("./SceneController");
 const RenderingPrimitivesService_1 = require("../system/RenderingPrimitivesService");
-const NEXT = 0x02;
+const NEXT = 0x300; // → MeetingScene (链路终点, 主游戏 prep 链跑完)
 class Scene23Controller extends SceneController_1.SceneController {
     constructor(store, input) {
         super(store, input);

@@ -12,7 +12,7 @@ import { TileBuilderService } from '../system/TileBuilderService';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 
-const NEXT = 0x02;
+const NEXT = 0x14; // → Scene20 (跳过 Scene19 loop, 主游戏 prep 链直进 Scene20)
 
 export class Scene18Controller extends SceneController {
   readonly sceneId = 18;

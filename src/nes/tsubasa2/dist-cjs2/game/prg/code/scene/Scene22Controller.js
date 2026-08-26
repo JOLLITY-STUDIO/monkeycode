@@ -14,7 +14,7 @@ exports.Scene22Controller = void 0;
  * 等 1 帧用基类 scheduleAfter(1) 替代 PRG $9FA8 pushState 模式。
  */
 const SceneController_1 = require("./SceneController");
-const NEXT = 0x02;
+const NEXT = 0x17; // → Scene23 (主游戏 prep 链)
 const OUTER = 0x80;
 const INNER_START = 0x20;
 const INNER_END = 0xc4;

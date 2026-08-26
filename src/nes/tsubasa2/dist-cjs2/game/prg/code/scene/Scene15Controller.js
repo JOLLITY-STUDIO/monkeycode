@@ -17,7 +17,7 @@ exports.Scene15Controller = void 0;
 const SceneController_1 = require("./SceneController");
 const RenderingPrimitivesService_1 = require("../system/RenderingPrimitivesService");
 const scene_bank02_tables_1 = require("../../data/tables/scene-bank02-tables");
-const NEXT = 0x02;
+const NEXT = 0x10; // → Scene16 (主游戏 prep 链)
 /** NT 缓冲单条容量上限（appendNtBuffer 0x40 字节含 3 字节头） */
 const CHUNK = 0x3d;
 class Scene15Controller extends SceneController_1.SceneController {

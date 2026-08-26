@@ -130,6 +130,20 @@ class Tsubasa2 {
         this.interrupts.attachRouter(this.router);
         this.interrupts.attachScheduler(this.bank00Scheduler);
         this.interrupts.attachBank00MainLoop(this.bank00MainLoop);
+        // ���� bank00 5-mode dispatcher ���루$8000 ��ѭ�����룩����
+        // sceneMainLoopStep ��Ϊ no-op����Ҫ�������ٵ� router.update():
+        //   InterruptService.nmi() line 96 �Ѿ������� router.update() һ�Σ�
+        //   dispatcher �ڲ��ٵ�һ�λ��� SceneController.onUpdate() �����飬counter �ӱ���
+        // sceneHandlerA20C/A006/A009/A015/A012/A018/A00C �ݲ��� �� no-op��
+        //   ���� dispatcher ������ $0026 �� router.changeScene ���
+        //   ���� Scene0-23 ����Ϊ store �������ٽӣ�
+        // ���� dispatcher ��ʵ�����壺�� mode0/1/2/3/4 5-mode state machine ��������
+        //   д $0027/$0026/$0700/$0028/$0029 �� store �ֽڣ����� ROM ��ʵ��Ϊ��
+        //   Scene0-23 ��ǰ������Щ�ֽڣ����Ը�������ʱ��Ӱ����Ϸ���̡�
+        this.bank00MainLoop.attachHooks({
+            sceneMainLoopStep: () => { },
+        });
+        this.bank00MainLoop.start();
         void matchEngine;
     }
     /**
@@ -244,6 +258,7 @@ class Tsubasa2 {
             throw e;
         }
         // 4.5 OpeningScene ��֡ GT ������per-scanline CHR �ƻ� + ֱ��д NT �� PPU
+        const ppu = target.ppu;
         if ((store.scene.currentSceneId & 0xff) === 100 /* SceneId.Opening */) {
             const opening = this.router.getController(100 /* SceneId.Opening */);
             const plan = opening.getChrPlan();
@@ -253,7 +268,6 @@ class Tsubasa2 {
             opening.applyNtToPpu(target.ppu);
         }
         // 5. PPU ɨ������Ⱦ��H5 ���� CPU��ֱ���ƽ�һ֡��
-        const ppu = target.ppu;
         try {
             ppu.startFrame();
             ppu.advanceDots(262 * 341);

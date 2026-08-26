@@ -321,6 +321,7 @@ export class Tsubasa2 {
       throw e;
     }
     // 4.5 OpeningScene 逐帧 GT 驱动：per-scanline CHR 计划 + 直接写 NT 到 PPU
+    const ppu: any = target.ppu;
     if ((store.scene.currentSceneId & 0xff) === SceneId.Opening) {
       const opening = this.router.getController(SceneId.Opening) as OpeningSceneController;
       const plan = opening.getChrPlan();
@@ -330,7 +331,6 @@ export class Tsubasa2 {
       opening.applyNtToPpu(target.ppu);
     }
     // 5. PPU 扫描线渲染（H5 不跑 CPU，直接推进一帧）
-    const ppu: any = target.ppu;
     try {
       ppu.startFrame();
       ppu.advanceDots(262 * 341);

@@ -12,7 +12,7 @@
  */
 import { SceneController } from './SceneController';
 
-const NEXT = 0x02;
+const NEXT = 0x17; // → Scene23 (主游戏 prep 链)
 const OUTER = 0x80;
 const INNER_START = 0x20;
 const INNER_END = 0xc4;

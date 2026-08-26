@@ -136,6 +136,9 @@ export class OpeningSceneController extends SceneController {
     }
 
     // 片头推进(逐帧走 GT 数据)
+    // ⚠ 时序：先取当前 h5Frame 对应 NES 帧，再自增，确保 H5 第 0 帧渲染 GT f10。
+    // 旧实现先自增导致第 0 帧渲染 f11，首帧 120 行 NT 数据被跳过。
+    const nesFrame = this.nesFrameOf();
     this.h5Frame++;
 
     if (this.h5Frame >= OPENING_END_NES_FRAME - H5_FRAME_OFFSET) {
@@ -147,7 +150,6 @@ export class OpeningSceneController extends SceneController {
       return undefined;
     }
 
-    const nesFrame = this.nesFrameOf();
     const fr = getOpeningFrame(nesFrame);
     if (!fr) return undefined;
     this.applyFrameData(fr);
@@ -227,11 +229,11 @@ export class OpeningSceneController extends SceneController {
       cntHT: s.cht & 0x1f,
     };
 
-    // GT 数据的 ni 是逻辑 nametable 号（0-3），必须经 PPU ntable1 映射表转换
-    // 为物理 nameTable 索引。水平镜像时 NT1($2400) 与 NT0($2000) 共享物理表 0，
-    // 若直接 ppu.nameTable[row.ni] 会把数据写到孤立的 nameTable[1]，导致渲染时读不到。
+    // GT 数据的 ni 来自 emu nt.json 的物理 nameTable 索引(0-3),直接写到
+    // ppu.nameTable[ni] 即可。不要经 ntable1 再做逻辑→物理映射,否则水平镜像
+    // 下 NT1/NT3 的零行会覆盖到 NT0/NT2 的同名物理表,把真实数据洗成 0。
     for (const row of this.ntQueue) {
-      const nt = ppu.nameTable[ppu.ntable1[row.ni]];
+      const nt = ppu.nameTable[row.ni];
       if (!nt || !nt.tile) continue;
       const base = row.r * 32;
       for (let c = 0; c < 32; c++) {
@@ -239,7 +241,7 @@ export class OpeningSceneController extends SceneController {
       }
     }
     for (const row of this.attrQueue) {
-      const nt = ppu.nameTable[ppu.ntable1[row.ni]];
+      const nt = ppu.nameTable[row.ni];
       if (!nt || !nt.attrib) continue;
       this.applyAttrRow(nt, row.r, row.d);
     }

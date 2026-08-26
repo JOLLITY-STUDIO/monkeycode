@@ -12,7 +12,7 @@ exports.Scene18Controller = void 0;
  */
 const SceneController_1 = require("./SceneController");
 const TileBuilderService_1 = require("../system/TileBuilderService");
-const NEXT = 0x02;
+const NEXT = 0x14; // → Scene20 (跳过 Scene19 loop, 主游戏 prep 链直进 Scene20)
 class Scene18Controller extends SceneController_1.SceneController {
     constructor(store, input) {
         super(store, input);

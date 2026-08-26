@@ -24,7 +24,7 @@ import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 
-const NEXT = 0x02;
+const NEXT = 0x11; // → Scene17 (主游戏 prep 链)
 
 /** 单段 $A72C 压印任务（spriteIdx=-1 表示沿用上一段末索引） */
 interface StampTask {

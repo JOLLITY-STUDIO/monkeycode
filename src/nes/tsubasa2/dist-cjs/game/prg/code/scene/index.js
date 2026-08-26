@@ -6,7 +6,7 @@
  * 避免硬编码 ../scene/SceneXController 路径。
  */
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.TITLE_MENU_SCENE_ID = exports.TitleMenuSceneController = exports.OPENING_SCENE_ID = exports.OpeningSceneController = exports.getSceneEntry = exports.SCENE_TABLE = exports.SceneController = exports.Scene23Controller = exports.Scene22Controller = exports.Scene21Controller = exports.Scene20Controller = exports.Scene19Controller = exports.Scene18Controller = exports.Scene17Controller = exports.Scene16Controller = exports.Scene15Controller = exports.Scene14Controller = exports.Scene13Controller = exports.Scene12Controller = exports.Scene11Controller = exports.Scene10Controller = exports.Scene9Controller = exports.Scene8Controller = exports.Scene7Controller = exports.Scene6Controller = exports.Scene5Controller = exports.Scene4Controller = exports.Scene3Controller = exports.Scene2Controller = exports.Scene1Controller = exports.Scene0Controller = void 0;
+exports.MEETING_SCENE_ID = exports.MeetingSceneController = exports.TITLE_MENU_SCENE_ID = exports.TitleMenuSceneController = exports.OPENING_SCENE_ID = exports.OpeningSceneController = exports.getSceneEntry = exports.SCENE_TABLE = exports.SceneController = exports.Scene23Controller = exports.Scene22Controller = exports.Scene21Controller = exports.Scene20Controller = exports.Scene19Controller = exports.Scene18Controller = exports.Scene17Controller = exports.Scene16Controller = exports.Scene15Controller = exports.Scene14Controller = exports.Scene13Controller = exports.Scene12Controller = exports.Scene11Controller = exports.Scene10Controller = exports.Scene9Controller = exports.Scene8Controller = exports.Scene7Controller = exports.Scene6Controller = exports.Scene5Controller = exports.Scene4Controller = exports.Scene3Controller = exports.Scene2Controller = exports.Scene1Controller = exports.Scene0Controller = void 0;
 // Scene 0 (Tecmo logo 开场)
 var Scene0Controller_1 = require("./Scene0Controller");
 Object.defineProperty(exports, "Scene0Controller", { enumerable: true, get: function () { return Scene0Controller_1.Scene0Controller; } });
@@ -72,3 +72,7 @@ Object.defineProperty(exports, "OPENING_SCENE_ID", { enumerable: true, get: func
 var TitleMenuSceneController_1 = require("./TitleMenuSceneController");
 Object.defineProperty(exports, "TitleMenuSceneController", { enumerable: true, get: function () { return TitleMenuSceneController_1.TitleMenuSceneController; } });
 Object.defineProperty(exports, "TITLE_MENU_SCENE_ID", { enumerable: true, get: function () { return TitleMenuSceneController_1.TITLE_MENU_SCENE_ID; } });
+// 第一关 meeting 页面（附加场景 sceneId=300，Scene14-23 chain 链路终点）
+var MeetingSceneController_1 = require("./MeetingSceneController");
+Object.defineProperty(exports, "MeetingSceneController", { enumerable: true, get: function () { return MeetingSceneController_1.MeetingSceneController; } });
+Object.defineProperty(exports, "MEETING_SCENE_ID", { enumerable: true, get: function () { return MeetingSceneController_1.MEETING_SCENE_ID; } });

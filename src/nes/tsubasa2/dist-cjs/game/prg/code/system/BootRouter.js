@@ -14,6 +14,7 @@ const SCENE_CONTROLLERS = [
     index_1.Scene22Controller, index_1.Scene23Controller,
     index_1.OpeningSceneController,
     index_1.TitleMenuSceneController,
+    index_1.MeetingSceneController,
 ];
 /**
  * BootRouter — bank02 主循环路由 (PRG $A000-$BFFF).

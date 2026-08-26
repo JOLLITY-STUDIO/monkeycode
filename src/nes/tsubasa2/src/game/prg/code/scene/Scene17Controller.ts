@@ -9,7 +9,7 @@ import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 
-const NEXT = 0x02;
+const NEXT = 0x12; // → Scene18 (主游戏 prep 链)
 
 export class Scene17Controller extends SceneController {
   readonly sceneId = 17;

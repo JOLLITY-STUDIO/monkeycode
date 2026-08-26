@@ -95,11 +95,25 @@ class TitleMenuSceneController extends SceneController_1.SceneController {
         store.scene.scrollFlag = 0x80;
     }
     /**
-     * 每帧: 调 asm-翻译的 cursor service。每帧检测 Up/Down 沿 → 改 idx →
-     * paint cursor sprite 进 shadowOam。Service 内部消费 changed flag ($9B66 协议)。
+     * 每帧:
+     * 1. cursor service tick (Up/Down 沿检测 + sprite paint 进 shadowOam)
+     * 2. A 键按下 → 按当前 cursorIdx 切到目标 sceneId。
+     *
+     * 目标 sceneId 选择（最小可验证）：
+     *   idx=0 KICKOFF  → SceneId.Scene14 (loadSceneRows + 调色板 + 精灵装载, 主游戏 prep)
+     *   idx=1 CONTINUE → SceneId.Scene14 (TODO: 与 KICKOFF 区分)
+     *
+     * ⚠️ 当前不启动 bank00 5-mode dispatcher（booted=false）— Scene14 跑完 return 2 →
+     *    Scene2 hub (do-nothing) → 卡住。这证明 Scene14 controller 路径可跑通, 后续完整流程
+     *    需要修 dispatcher boot。
      */
     onUpdate(_frame) {
         this.cursorSvc.tickPerFrame(TITLE_MENU_ITEMS_Y);
+        if (this.input.isPressed(1, 1 /* Button.A */)) {
+            const idx = this.cursorSvc.getIdx();
+            // KICKOFF / CONTINUE 都先跳 Scene14,后续区分
+            return 14 /* SceneId.Scene14 */;
+        }
         return undefined;
     }
     /** 供 Tsubasa2.frame 取本场景 CHR per-scanline plan */

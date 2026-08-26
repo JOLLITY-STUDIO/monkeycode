@@ -34,6 +34,7 @@ import type { Bank00SchedulerService } from './Bank00SchedulerService';
 import type { PpuTransferService } from './PpuTransferService';
 import { MainRouterService } from './MainRouterService';
 import type { StatusMode } from './MainRouterService';
+import { OPENING_SCENE_ID } from '../scene/OpeningSceneController';
 
 // ──────────────────────────── 数据表（PRG bank00 声明式提取） ────────────────────────────
 
@@ -191,9 +192,16 @@ export class Bank00MainLoopService {
    *   → 读 $0027 status mode（0..4），间接跳转到 5 个 handler。
    *
    * H5 语义：$0027 & 0x07 → MainRouterService.dispatchByMode（mode ≥ 5 按 0 处理）
+   *
+   * ⚠ OpeningScene（sceneId=100）期间不派发：真实 ROM 的片头序列（Tecmo/NTV logo）
+   *   在主循环之前独立驱动（$801F Start 等待 → $8053 bootLogoLoad → 片头帧循环），
+   *   5-mode dispatcher 在片头结束后才启动。若此处照常派发，mode 机 5 帧内走到
+   *   mode4 → sceneAdvance81E6 → loadCfg，会把 $00ED（currentSceneId）从 100 改写为
+   *   2，导致 OpeningSceneController 失去 GT 驱动（实测 h5Frame=5 时被改写）。
    */
   tickFrame(): void {
     if (!this.booted) return;
+    if (this.store.scene.currentSceneId === OPENING_SCENE_ID) return;
     const mode = this.store.readByte(0x0027) & 0x07;
     this.router.dispatchByMode((mode <= 4 ? mode : 0) as StatusMode);
   }

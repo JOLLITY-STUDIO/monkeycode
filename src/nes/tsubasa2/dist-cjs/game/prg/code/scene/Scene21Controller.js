@@ -9,7 +9,7 @@ exports.Scene21Controller = void 0;
  */
 const SceneController_1 = require("./SceneController");
 const RenderingPrimitivesService_1 = require("../system/RenderingPrimitivesService");
-const NEXT = 0x02;
+const NEXT = 0x16; // → Scene22 (主游戏 prep 链)
 class Scene21Controller extends SceneController_1.SceneController {
     constructor(store, input) {
         super(store, input);

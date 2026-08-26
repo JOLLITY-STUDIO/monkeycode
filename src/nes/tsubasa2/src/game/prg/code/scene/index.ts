@@ -43,3 +43,6 @@ export { OpeningSceneController, OPENING_SCENE_ID } from './OpeningSceneControll
 
 // 主菜单 title（附加场景 sceneId=200，ROM 主菜单；由 OpeningScene START 触发）
 export { TitleMenuSceneController, TITLE_MENU_SCENE_ID } from './TitleMenuSceneController';
+
+// 第一关 meeting 页面（附加场景 sceneId=300，Scene14-23 chain 链路终点）
+export { MeetingSceneController, MEETING_SCENE_ID } from './MeetingSceneController';

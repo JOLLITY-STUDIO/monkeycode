@@ -24,7 +24,7 @@ exports.Scene16Controller = void 0;
  */
 const SceneController_1 = require("./SceneController");
 const RenderingPrimitivesService_1 = require("../system/RenderingPrimitivesService");
-const NEXT = 0x02;
+const NEXT = 0x11; // → Scene17 (主游戏 prep 链)
 /** 分支 1（$04E5 != $FF）压印序列 */
 const BRANCH1_TASKS = [
     { tile: 0xf7, spriteIdx: 0x80, attr: 0x00, dx: 0xfe, dy: 0xff, mask: 0x07, count: 0x2f },

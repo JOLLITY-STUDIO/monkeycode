@@ -18,7 +18,7 @@ import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 
-const NEXT = 0x02;
+const NEXT = 0x0f; // → Scene15 (主游戏 prep 链)
 const OUTER = 0x28; // Y=$28
 
 export class Scene14Controller extends SceneController {

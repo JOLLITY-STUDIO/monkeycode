@@ -18,7 +18,7 @@ import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 
-const NEXT = 0x02;
+const NEXT = 0x300; // → MeetingScene (链路终点, 主游戏 prep 链跑完)
 
 export class Scene23Controller extends SceneController {
   readonly sceneId = 23;
