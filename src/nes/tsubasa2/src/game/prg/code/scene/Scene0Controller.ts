@@ -1,12 +1,19 @@
 /**
- * Scene0Controller — 场景 0 完整 ROM 序列（bank02 $A4C1-$A558 逐指令翻译）
+ * Scene0Controller — 场景 0 主循环翻译（opening screen / title menu）
  *
- * @bank 02 ($8000-$9FFF) / ROM $A4C1-$A558
+ * ⚠️ 职责归类（注意）：
+ *   - **boot logo（frame 9-25, Tecmo + NTV）不属于 Scene0**
+ *     boot logo handler 在 bank00 $8053-$8090（boot main loop），
+ *     应该是 BootRouter boot hook 的工作，而非 Scene0.onEnter
+ *   - 当前 Scene0.onEnter 内的 boot logo 装载代码属 placeholder / 兼容
+ *   - **Drift30 phase 也不在 first frame**，而是 opening 主菜单展开动画（在 BgFadeOut 后）
  *
- * ROM 序列（code_sub.s $84C1-$8559）：
+ * @bank 02 ($8000-$9FFF) / ROM $A4C1-$A558（Scene0 handler 入口）
+ *
+ * ROM 序列（code_sub.s $84C1-$8559，Scene0 主展开序列，**不是 first frame**）：
  *   JSR $9A0D        → BG 渐隐（fade.bg→0，每帧 fadeWrite）
  *   LDA #$10/$9FA8   → 等 16 帧
- *   LDY #$30 循环    → 0x30 帧：每帧 [所有精灵 Y+=1]
+ *   LDY #$30 循环    → 0x30 次：每帧 [等 1 帧 + 所有精灵 Y+=1]
  *   $005B=0 $007B=0
  *   LDA #$17/$8AF7   → loadChrConfig(0x17)
  *   $0044=$68        → scrollY = 0x68
@@ -18,8 +25,7 @@
  *   滚动循环         → 每帧 [$0079++ + $007C-=2 + $0044-=2]
  *   LDA #$00/$8920   → loadSceneData(0)
  *   $001B|=1
- *   LDA #$F0/$9FA8   → 等 240 帧
- *   LDA #$3C/$9FA8   → 等 60 帧
+ *   LDA #$F0/$9FA8   → 等 240 帧 → 再等 60 帧
  *   $001B&=~1        → 滚动复位
  *   JSR $99F0        → BG+SPR 渐隐
  *   JSR $9B7F        → hideOam
@@ -32,6 +38,8 @@
  *   - 全部"等 N 帧"由 Bank00SchedulerService 派发（PRG $9FA8 pushState 翻译）
  *   - phase 推进通过 waitDone flag + scheduleAfter() 统一接口
  *   - 不再用 this.counter 手写自减
+ *   - Wait240 + Wait60 是两段独立调度（240 帧 → 60 帧 → ResetScroll），
+ *     共 300 帧（与原 ROM 一致）
  */
 import { SceneController } from './SceneController';
 import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
@@ -155,7 +163,16 @@ export class Scene0Controller extends SceneController {
   }
 
   onEnter(): void {
-    // 首帧 boot: CHR + palette + OAM 全清 + Tecmo logo NT/sprite + bgm
+    // ⚠️ boot logo 装载归属争议（BUG #014）：
+    //   当前实现让 Scene0.onEnter 装载 boot logo，但实际
+    //   ROM 实证：frame 6-29 boot logo 装载由 bank00 boot main loop
+    //   (PRG $8053-$8090) 完成；Scene0.onUpdate 主体（$84C1-$8559）从
+    //   frame 3644+ 才触发（Drift 第一次跑 frame）。
+    //   - 因此 onEnter 内"boot logo 装载"代码实际归属应是 boot hook
+    //     (BootRouter.bootHook())，**不是** Scene0 职责
+    //   - 当前保留实现作为 stub，避免行为回归
+    //   - TODO: 重构时让 BootRouter.bootHook 装载，Scene0 仅保留
+    //     PRG $84C1 序列的主体展开逻辑
     this.prim.loadChrConfig(0x17);
     this.prim.loadScene0Palettes();
     this.prim.hideOam();

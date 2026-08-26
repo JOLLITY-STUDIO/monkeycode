@@ -197,3 +197,48 @@
   - tsc --noEmit 闆堕敊璇?  - Drift30 phase 鏃跺簭锛氳繘鍏?phase 鈫?waitDone=false 绛?16 甯?鈫?cb 璁?driftRemaining=0x30
     鈫?0x30 娆?per-frame shift 鈫?driftRemaining=0 鈫?鍒?LoadChr17
 **鐘舵€?*: 鉁?FIXED
+---
+---
+
+## BUG #014  [涓ラ噸鎬? 馃敶 鍏抽敭]  **bank 缂栧彿缈昏瘧閿欎綅 + Scene0 boot 瑁呰浇閿欎綅**
+
+**鐜扮姸**: 鉁?DOCUMENTED
+
+**鏍稿績鐪熺浉**锛?026-08-26 trace log 瀹炶瘉锛?
+- trace log 涓樉绀虹殑 `$01:xxxx` bank 缂栧彿锛?*涓嶆槸** CPU PRG bank 1銆?  鑰屾槸 R7 鍒囨崲杩囩殑鐪熷疄 PRG bank锛屽嵆鎴戜滑 `src/asm/bank02/` 鐨?bank02銆?- 鍚岀悊 trace log `$06:xxxx` = R7=6 鐨勭湡瀹?PRG bank = 鎴戜滑 asm 涓?*鏈炕璇戠殑 bank12 (audio engine)**銆?
+**bank 鏄犲皠瀵圭収** (trace log 鈫?鎴戜滑 asm):
+| trace log bank | 鎴戜滑 asm 鍛藉悕 | 宸茬炕璇?| 瀹為檯鑱岃矗 |
+|---|---|---|---|
+| `$00:xxxx` | bank00 | 鉁?(鏈鎻愪氦) | 涓?dispatcher + scheduler tail + loadChrConfig |
+| `$01:xxxx` | **bank02** | 鉁?(Bank02 docs) | Scene0 handler銆?84C1-$8559 搴忓垪 |
+| `$06:xxxx` | **bank12 (audio)** | 鉂?| MaxMod 闊抽寮曟搸锛圱race frame 30-2509 鏈熼棿璺戯級 |
+| `$0E:xxxx` | bank14 | 鉂?| NMI handler + 6-slot timer dispatcher |
+| `$0F:xxxx` | bank15 | 鉂?| reset vector + RST handler |
+
+**frame 30-3643 ROM 鐪熷疄琛屼负** (杩欎簺**涓嶅睘浜?Scene0**):
+- bank06 (bank12/audio engine) NMI handler 鍦ㄨ窇 audio engine
+- bank00 $9F04 scheduler tail 寰幆绛?NMI tick (`LDA $1B / BPL $9F04`)
+- bank01 (bank02) boot handler 鍦ㄨ窇 dispatch
+- bank01 $0F:C432 姣?6 甯у垏 MMC3 R7=0x27
+
+**Scene0 鐪熸鑱岃矗**:
+- `Scene0.onEnter` 涓嶅簲瑁?boot logo 鈥?閭ｆ槸 boot handler 宸ヤ綔 (frame 6-29 鍦?bank00 宸插畬鎴?
+- `Scene0.onUpdate` 搴旇浠?frame **3644+** 鎵嶅惎鍔紙Drift 绗竴娆¤窇 frame锛?- `Scene0.onUpdate` 鍐呭锛?84C1-$8559 鏁存搴忓垪锛夌炕璇戝凡缁忓仛浜嗭紙drift 鍗℃ fix 涔熶慨浜嗭級
+
+**TODO锛堜笅涓€姝ワ級**:
+1. 鎶?Scene0.onEnter 鍐呯殑 boot logo 瑁呰浇浠ｇ爜鍔?TODO 娉ㄩ噴锛堜笉鍔ㄨ涓猴級
+2. 鐪熸 boot handler 瑁呰浇 鈥?搴旇鍒嗙鍒?`BootRouter.bootHook()` (鏂? 璋?audio engine + boot main loop
+3. 閲嶅啓 BootRouter 瑙﹀彂 Scene0 active 鐨勬椂鏈猴紙frame 3644 trigger锛?4. 鍐?`BANK12_AUDIO_ANALYSIS.md` 鍒嗘瀽 bank06锛坱race 涓?audio锛?
+**褰撳墠 Scene0 鐪熷疄琛屼负锛圚5锛?vs ROM 鐪熷疄琛屼负**:
+- H5: frame 1 璧风洿鎺ヨ窇 phase FadeIn 鈫?BgFadeOut 鈫?Drift锛堝彈 fadeInStep 閫熺巼褰卞搷锛?- ROM: frame 3644 鎵?Drift锛坆oot handler 璺戝畬鍚庯級
+- 鍗?H5 鎻愬墠浜?3644 甯ц繘鍏?Drift 搴忓垪 鈫?琛屼负鍋忓樊宸ㄥぇ
+
+**褰卞搷**:
+- 鐢ㄦ埛瑙傚療鍒?鍓?300 甯ф病 y 杞存粴鍔?瀹為檯鏄?ROM 琛屼负锛坒2510 涔嬪墠娌?scroll锛宖3644 涔嬪墠娌?drift锛?- H5 frame 1-25 灏辫窇 Drift 搴忓垪 鈫?涓ラ噸鍋忓樊
+
+**淇绛栫暐**锛堝緟鐢ㄦ埛纭浼樺厛绾э級:
+- **A**: 鍒嗙 boot handler 鍒?BootRouter锛孲cene0 trigger 寤跺悗
+- **B**: 鍐?BANK12_AUDIO_ANALYSIS.md锛岀炕璇?audio engine
+- **C**: 鍏堢畝鍗?鈥?Scene0.onEnter 绉婚櫎 boot logo 瑁呰浇 + 娉ㄩ噴 TODO
+
+**鐘舵€?*: 鉁?DOCUMENTED 鈥?寰呭疄鏂?
