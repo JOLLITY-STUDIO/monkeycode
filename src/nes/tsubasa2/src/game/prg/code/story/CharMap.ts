@@ -42,6 +42,12 @@ export class CharMap {
     for (let i = 0x5b; i <= 0x60; i++) this.map.set(i, 59 + (i - 0x5b));
     // 'a'..'z'  (ASCII 97..122) → tile 65..90
     for (let i = 0x61; i <= 0x7a; i++) this.map.set(i, 65 + (i - 0x61));
+    // 日文浊音/半浊音符号：ROM $88CA 文本系统把字节 < $A0 原样作为 tile 写入 NT，
+    // 即文本流中的 0x94/0x95 直接对应 CHR 中的浊音(゛)/半浊音(゜) 字形 tile。
+    // （emu-full pt.json 实证：tile 0x94 = ゛ 两短斜线，tile 0x95 = ゜ 小圆圈）
+    // 之前误映射 0xb0/0xb1（那是 bank19 网格数据的无关 tile），必须恒等映射。
+    this.map.set(0x94, 0x94); // ゛ dakuten
+    this.map.set(0x95, 0x95); // ゜ handakuten
     // 全角字符 / 日文保留映射槽位（V0.4 后续从 BANK19 字符表填充）
   }
 

@@ -24,6 +24,7 @@
  */
 import type { DataStore } from '../../data/store/DataStore';
 import { PpuTransferService } from './PpuTransferService';
+import { TILE_MAP_HIGH } from '../../data/tables/scene-bank02-tables';
 
 /**
  * ASCII → tile 查表（PRG $8A14 翻译占位）
@@ -87,11 +88,10 @@ export class TileBuilderService {
       // NT lo byte path: 4-byte entry = [tile][0x00][x_lo][x_hi]
       this.ppu.commitSprite4([t, 0x00, 0x00, 0x00]);
     } else {
-      // ASCII char path: 查 $8A14 表
-      const sub = (t - 0xc8) & 0xff;
-      const hi = ((0x94 + (sub >> 0)) & 0xff); // 简化: hi 直接是 0x94 或 0x95
-      const idxInTable = sub & 0x0f;
-      const lo = ASCII_TO_TILE_TABLE[idxInTable] ?? 0;
+      // ASCII char path: 查 $8A14 表（对照 ROM $88D6/$88D8/$88DA：
+      //   CMP #$C8 → LDA #$94 → ADC #$00，A = $94 + carry）
+      const hi = t >= 0xc8 ? 0x95 : 0x94; // 浊音标记(゛)/半浊音标记(゜) 前缀 tile
+      const lo = TILE_MAP_HIGH[(t - 0xa0) & 0xff] ?? 0x00; // $8A14 高 tile 映射
       this.ppu.commitSprite4([hi, lo, 0x00, 0x00]);
     }
     this.ppu.finalizeBufferWrite();

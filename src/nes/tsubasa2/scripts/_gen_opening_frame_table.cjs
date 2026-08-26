@@ -9,6 +9,7 @@
  *   o : OAM diff(仅变化 sprite): [[idx, y, tile, attr, x], ...]
  *   n : NT 变化行 [{ni, r, d[32]}, ...]
  *   a : 属性表变化行 [{ni, r, d[8]}, ...]
+ *   s : 渲染用 scroll 寄存器 {v,h,vt,ht,fv,fh}（H5 直接写入 PPU，驱动 nametable 选择）
  *
  * 压缩原则:
  *   - OAM/NT/属性表只存与上一帧的差异
@@ -20,7 +21,9 @@ const path = require('path');
 const IN_DIR = path.join(__dirname, '..', 'output', 'emu-full');
 const OUT_DIR = path.join(__dirname, '..', 'src', 'game', 'prg', 'data', 'scene');
 const F0 = 10;
-const F1 = 3599;
+// 片头序列包含 Tecmo logo / NTV / 10 屏字幕 / story_cup / title 装载与显示，
+// emu-full 实测到 f4200 切黑屏，因此 GT 表覆盖 f10-f4200。
+const F1 = 4200;
 
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 
@@ -132,6 +135,17 @@ for (let f = F0; f <= F1; f++) {
   // 本帧终态 CHR 供下一帧顶部使用
   prevChr = (st && Array.isArray(st.chrBanks)) ? st.chrBanks.slice() : chrPlan[chrPlan.length - 1].b.slice();
 
+  // scroll: 取渲染前状态（state.json.scroll 已是 before-frame 语义）
+  const sc = (st && st.scroll) ? st.scroll : {};
+  const s = {
+    v: sc.regV ?? 0,
+    h: sc.regH ?? 0,
+    vt: sc.regVT ?? 0,
+    ht: sc.regHT ?? 0,
+    fv: sc.regFV ?? 0,
+    fh: sc.regFH ?? 0,
+  };
+
   frames.push({
     f,
     c: chrPlan,
@@ -139,15 +153,17 @@ for (let f = F0; f <= F1; f++) {
     o: oamDiff,
     n: ntDiff,
     a: attrDiff,
+    s,
   });
 }
 
 // 生成 TypeScript
 const chunks = [];
-chunks.push(`/**\n * OpeningFrameTable — 片头逐帧 Ground Truth\n * 来源:emu-full f${F0}-f${F1}\n * 字段含义:\n *   f: NES 帧号\n *   c: CHR scanline 计划 [{s:scanline, b:[8 bank1k]}]\n *   p: palette {bg,sp} 或 null(与上帧相同)\n *   o: OAM diff [[idx,y,tile,attr,x],...]\n *   n: NT tile 变化行 [{ni,r,d[32]}]\n *   a: 属性表变化行 [{ni,r,d[8]}]\n */\n`);
+chunks.push(`/**\n * OpeningFrameTable — 片头逐帧 Ground Truth\n * 来源:emu-full f${F0}-f${F1}\n * 字段含义:\n *   f: NES 帧号\n *   c: CHR scanline 计划 [{s:scanline, b:[8 bank1k]}]\n *   p: palette {bg,sp} 或 null(与上帧相同)\n *   o: OAM diff [[idx,y,tile,attr,x],...]\n *   n: NT tile 变化行 [{ni,r,d[32]}]\n *   a: 属性表变化行 [{ni,r,d[8]}]\n *   s: 渲染用 scroll 寄存器 {v,h,vt,ht,fv,fh}\n */\n`);
 chunks.push(`export interface OpeningFrameChr { s: number; b: ReadonlyArray<number>; }\n`);
 chunks.push(`export interface OpeningFrameNtRow { ni: number; r: number; d: ReadonlyArray<number>; }\n`);
-chunks.push(`export interface OpeningFrameEntry {\n  readonly f: number;\n  readonly c: ReadonlyArray<OpeningFrameChr>;\n  readonly p: { readonly bg: ReadonlyArray<number>; readonly spr: ReadonlyArray<number> } | null;\n  readonly o: ReadonlyArray<ReadonlyArray<number>>;\n  readonly n: ReadonlyArray<OpeningFrameNtRow>;\n  readonly a: ReadonlyArray<OpeningFrameNtRow>;\n}\n`);
+chunks.push(`export interface OpeningFrameScroll { readonly v: number; readonly h: number; readonly vt: number; readonly ht: number; readonly fv: number; readonly fh: number; }\n`);
+chunks.push(`export interface OpeningFrameEntry {\n  readonly f: number;\n  readonly c: ReadonlyArray<OpeningFrameChr>;\n  readonly p: { readonly bg: ReadonlyArray<number>; readonly spr: ReadonlyArray<number> } | null;\n  readonly o: ReadonlyArray<ReadonlyArray<number>>;\n  readonly n: ReadonlyArray<OpeningFrameNtRow>;\n  readonly a: ReadonlyArray<OpeningFrameNtRow>;\n  readonly s: OpeningFrameScroll;\n}\n`);
 chunks.push(`export const OPENING_FRAMES: ReadonlyArray<OpeningFrameEntry> = [`);
 
 const lines = [];
@@ -157,7 +173,8 @@ for (const fr of frames) {
   const ostr = fr.o.map(a => `[${a.join(',')}]`).join(',');
   const nstr = fr.n.map(r => `{ni:${r.ni},r:${r.r},d:[${r.d.join(',')}]}`).join(',');
   const astr = fr.a.map(r => `{ni:${r.ni},r:${r.r},d:[${r.d.join(',')}]}`).join(',');
-  lines.push(`  {f:${fr.f},c:[${cs}],p:${pstr},o:[${ostr}],n:[${nstr}],a:[${astr}]}`);
+  const sstr = `{v:${fr.s.v},h:${fr.s.h},vt:${fr.s.vt},ht:${fr.s.ht},fv:${fr.s.fv},fh:${fr.s.fh}}`;
+  lines.push(`  {f:${fr.f},c:[${cs}],p:${pstr},o:[${ostr}],n:[${nstr}],a:[${astr}],s:${sstr}}`);
 }
 chunks.push(lines.join(',\n'));
 chunks.push(`];\n`);

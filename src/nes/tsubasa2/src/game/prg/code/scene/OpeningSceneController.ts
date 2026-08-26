@@ -1,15 +1,17 @@
 /**
  * OpeningSceneController — 片头序列场景(sceneId=100,附加场景)
  *
- * 数据源:OpeningFrameTable.ts(emu-full f10-f3599 逐帧 Ground Truth)
- *   - 每帧完整驱动:CHR per-scanline 计划 / palette / OAM diff / NT tile diff / 属性表 diff
- *   - 完全逐帧还原片头动画(NTV logo / 10 屏字幕 / story_cup)
+ * 数据源:OpeningFrameTable.ts(emu-full f10-f4200 逐帧 Ground Truth)
+ *   - 每帧完整驱动:CHR per-scanline 计划 / palette / OAM diff / NT tile diff / 属性表 diff / scroll 寄存器
+ *   - 完全逐帧还原片头动画(Tecmo logo / NTV logo / 10 屏字幕 / story_cup / title 装载与显示)
  *
  * 渲染协作:
  *   - CHR:本类只记录当前帧的 per-scanline plan,由 Tsubasa2.frame 在 PPU 渲染前
  *     通过 HeadlessRuntime.setPerScanlineChrPlan 交给 PPU mmap hook 按 scanline 切换
  *   - NT:本类把 diff 行暂存在队列,Tsubasa2.frame 在 renderCommit 后、PPU 渲染前
  *     调用 applyNtToPpu(ppu) 直接写入 ppu.nameTable
+ *   - scroll:applyNtToPpu 在 PPU 渲染前把 GT 的 {v,h,vt,ht,fv,fh} 写入 PPU 寄存器,
+ *     驱动 renderBgScanline 的 nametable 选择(cntV/cntH)
  *   - palette/OAM:通过 store 标准视图写入,由 InterruptService.renderCommit 正常提交
  *
  * 翻译原则(v2):无 CPU、无 bank 切换;行为数据直接查表。
@@ -21,6 +23,7 @@ import {
   type OpeningFrameEntry,
   type OpeningFrameChr,
   type OpeningFrameNtRow,
+  type OpeningFrameScroll,
 } from '../../data/scene/OpeningFrameTable';
 import { OPENING_SCREENS, getOpeningScreen } from '../../data/scene/OpeningScreenTable';
 import type { DataStore } from '../../data/store/DataStore';
@@ -30,8 +33,8 @@ import type { AudioService } from '../audio/AudioService';
 /** OpeningScene 特殊场景号(BootRouter 注册表外附加) */
 export const OPENING_SCENE_ID = 100;
 
-/** NES f3600 起 Scene0 接管(BgFadeOut/Drift30/标题装载) */
-const OPENING_END_NES_FRAME = 3600;
+/** 片头序列终点:emu-full 实测 f4200 切黑屏,GT 驱动含 f4200 后转 Scene2(hub) */
+const OPENING_END_NES_FRAME = 4201;
 /** H5 frame 0 = NES f10(tecmo_logo 起始) */
 const H5_FRAME_OFFSET = 10;
 /** story_cup 屏(Scene0 Drift30 下漂的精灵来源) */
@@ -48,6 +51,8 @@ export class OpeningSceneController extends SceneController {
   private ntQueue: OpeningFrameNtRow[] = [];
   /** 待写入 ppu.nameTable 的属性表变化行 */
   private attrQueue: OpeningFrameNtRow[] = [];
+  /** 当前帧 GT scroll 寄存器(供 applyNtToPpu 写入 PPU) */
+  private currentScroll: OpeningFrameScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0 };
 
   constructor(store: DataStore, input: InputService) {
     super(store, input);
@@ -62,6 +67,7 @@ export class OpeningSceneController extends SceneController {
     this.currentChrPlan = [];
     this.ntQueue = [];
     this.attrQueue = [];
+    this.currentScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0 };
 
     // PPU 状态:GT 数据表已经包含真实 fade 后的 palette,这里把 fade 固定为满亮,
     // 让 InterruptService.flushPalette 直接输出 palette 原值。
@@ -71,12 +77,11 @@ export class OpeningSceneController extends SceneController {
     this.store.ppuState.ctrl = 0x88;
     // 显示 BG + SPR,不禁用左 8 列(与 emu 一致)
     this.store.ppuState.mask = 0x1e;
-    // 注:scrollTempX/Y 是 PpuStateView 只读 getter(0x004a 与 FadeView.bg 同址,
-    //   不可写)。最终滚动由 renderCommit step7 applyScrollBank02 以
-    //   scene.scrollX/scrollY 覆盖,这里只设置 scrollX/scrollY。
+    // scrollFlag bit7=1:跳过 InterruptService.applyScrollBank02 以 scene.scrollX/scrollY
+    // 覆盖 scroll 的路径;GT 直接通过 applyNtToPpu 写 PPU scroll 寄存器。
     this.store.scene.scrollX = 0;
     this.store.scene.scrollY = 1;
-    this.store.scene.scrollFlag = 0;
+    this.store.scene.scrollFlag = 0x80;
 
     // 禁用 InterruptService 的 applyChrRequest / midFrameChrSwitch / applyChrFrom009e 路径,
     // 这些会覆盖本类的 per-scanline CHR 计划。
@@ -105,7 +110,9 @@ export class OpeningSceneController extends SceneController {
   onUpdate(frame: number): number | undefined {
     const nesFrame = this.nesFrameOf(frame);
     if (nesFrame >= OPENING_END_NES_FRAME) {
-      return 0; // 切 Scene0
+      // 片头完整播完(含 title 装载/显示),转 Scene2(hub idle)保持最后画面,
+      // 不再走 Scene0 的 BgFadeOut/Drift30 近似逻辑。
+      return 2;
     }
     const fr = getOpeningFrame(nesFrame);
     if (!fr) return undefined;
@@ -127,6 +134,9 @@ export class OpeningSceneController extends SceneController {
     this.ntQueue = fr.n.slice();
     this.attrQueue = fr.a.slice();
 
+    // scroll 寄存器:供 applyNtToPpu 在 PPU 渲染前写入
+    this.currentScroll = fr.s;
+
     return undefined;
   }
 
@@ -137,10 +147,21 @@ export class OpeningSceneController extends SceneController {
 
   /**
    * 在 InterruptService.renderCommit 之后、PPU 渲染之前调用。
-   * 直接把本帧 NT/属性表 diff 写入 ppu.nameTable(跳过容量受限的 ntBuffer)。
+   * 直接把本帧 NT/属性表 diff 写入 ppu.nameTable,并写入 GT scroll 寄存器,
+   * 让 PPU renderBgScanline 按 cntV/cntH 选择正确的 nametable。
    */
   applyNtToPpu(ppu: any): void {
     if (!ppu || !ppu.nameTable) return;
+
+    // GT 驱动 scroll 寄存器:决定 nametable 选择(v/h)与细/粗滚动(vt/ht/fv/fh)
+    const s = this.currentScroll;
+    ppu.regV = s.v & 1;
+    ppu.regH = s.h & 1;
+    ppu.regVT = s.vt & 0x1f;
+    ppu.regHT = s.ht & 0x1f;
+    ppu.regFV = s.fv & 7;
+    ppu.regFH = s.fh & 7;
+
     for (const row of this.ntQueue) {
       const nt = ppu.nameTable[row.ni];
       if (!nt || !nt.tile) continue;

@@ -803,9 +803,9 @@ var CPU = class _CPU {
     if (this.nes.tracer && this.nes.tracer.active) {
       const opbytes = [opcode];
       for (let bi = 1; bi < opinfo.size; bi++) {
-        opbytes.push(this.loadFromCartridge(this._instrPC + bi));
+        opbytes.push(this.loadFromCartridge(this._instrPC + 1 + bi));
       }
-      this.nes.tracer.trace(this._instrPC, opcode, opinfo, opbytes);
+      this.nes.tracer.trace(this._instrPC + 1 & 65535, opcode, opinfo, opbytes);
     }
     let opaddr = this.REG_PC;
     this.REG_PC = this.REG_PC + opinfo.size & 65535;
@@ -3070,6 +3070,9 @@ var PPU = class {
       this.renderSpritesPartially(startScan, scanCount, 0);
     }
     this.nes.mmap.onBgRender();
+    if (this.nes.mmap.onBgRenderScanline) {
+      this.nes.mmap.onBgRenderScanline(startScan + scanCount);
+    }
     this._inRendering = false;
     this.validTileData = false;
   }
@@ -3094,6 +3097,9 @@ var PPU = class {
       let t, tpix, att, col;
       this._inRendering = true;
       this.nes.mmap.onBgRender();
+      if (this.nes.mmap.onBgRenderScanline) {
+        this.nes.mmap.onBgRenderScanline(scan);
+      }
       if (this.f_spriteSize === 1) {
         mmap2.latchAccess(8168);
       }
@@ -7666,6 +7672,21 @@ var rom_default = ROM;
 
 // src/core/debug/tracer.ts
 var fs = __toESM(require("fs"));
+
+// src/core/debug/disasm.ts
+var ADDR_ZP2 = 0;
+var ADDR_REL2 = 1;
+var ADDR_IMP2 = 2;
+var ADDR_ABS2 = 3;
+var ADDR_ACC2 = 4;
+var ADDR_IMM2 = 5;
+var ADDR_ZPX2 = 6;
+var ADDR_ZPY2 = 7;
+var ADDR_ABSX2 = 8;
+var ADDR_ABSY2 = 9;
+var ADDR_PREIDXIND2 = 10;
+var ADDR_POSTIDXIND2 = 11;
+var ADDR_INDABS2 = 12;
 var INS_NAMES = [
   "ADC",
   "AND",
@@ -7737,7 +7758,8 @@ var INS_NAMES = [
   "SRE",
   "SKB",
   "IGN",
-  "??",
+  null,
+  // 70 (unused)
   "SHA",
   "SHS",
   "SHY",
@@ -7746,6 +7768,342 @@ var INS_NAMES = [
   "ANE",
   "LXA"
 ];
+var OPCODE_TABLE2 = {
+  105: { ins: 0, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  101: { ins: 0, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  117: { ins: 0, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  109: { ins: 0, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  125: { ins: 0, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  121: { ins: 0, mode: ADDR_ABSY2, size: 3, cycles: 4 },
+  97: { ins: 0, mode: ADDR_PREIDXIND2, size: 2, cycles: 6 },
+  113: { ins: 0, mode: ADDR_POSTIDXIND2, size: 2, cycles: 5 },
+  41: { ins: 1, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  37: { ins: 1, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  53: { ins: 1, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  45: { ins: 1, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  61: { ins: 1, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  57: { ins: 1, mode: ADDR_ABSY2, size: 3, cycles: 4 },
+  33: { ins: 1, mode: ADDR_PREIDXIND2, size: 2, cycles: 6 },
+  49: { ins: 1, mode: ADDR_POSTIDXIND2, size: 2, cycles: 5 },
+  10: { ins: 2, mode: ADDR_ACC2, size: 1, cycles: 2 },
+  6: { ins: 2, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  22: { ins: 2, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  14: { ins: 2, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  30: { ins: 2, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  144: { ins: 3, mode: ADDR_REL2, size: 2, cycles: 2 },
+  176: { ins: 4, mode: ADDR_REL2, size: 2, cycles: 2 },
+  240: { ins: 5, mode: ADDR_REL2, size: 2, cycles: 2 },
+  48: { ins: 7, mode: ADDR_REL2, size: 2, cycles: 2 },
+  208: { ins: 8, mode: ADDR_REL2, size: 2, cycles: 2 },
+  16: { ins: 9, mode: ADDR_REL2, size: 2, cycles: 2 },
+  80: { ins: 11, mode: ADDR_REL2, size: 2, cycles: 2 },
+  112: { ins: 12, mode: ADDR_REL2, size: 2, cycles: 2 },
+  36: { ins: 6, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  44: { ins: 6, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  0: { ins: 10, mode: ADDR_IMP2, size: 1, cycles: 7 },
+  24: { ins: 13, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  216: { ins: 14, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  88: { ins: 15, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  184: { ins: 16, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  201: { ins: 17, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  197: { ins: 17, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  213: { ins: 17, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  205: { ins: 17, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  221: { ins: 17, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  217: { ins: 17, mode: ADDR_ABSY2, size: 3, cycles: 4 },
+  193: { ins: 17, mode: ADDR_PREIDXIND2, size: 2, cycles: 6 },
+  209: { ins: 17, mode: ADDR_POSTIDXIND2, size: 2, cycles: 5 },
+  224: { ins: 18, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  228: { ins: 18, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  236: { ins: 18, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  192: { ins: 19, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  196: { ins: 19, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  204: { ins: 19, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  198: { ins: 20, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  214: { ins: 20, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  206: { ins: 20, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  222: { ins: 20, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  202: { ins: 21, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  136: { ins: 22, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  73: { ins: 23, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  69: { ins: 23, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  85: { ins: 23, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  77: { ins: 23, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  93: { ins: 23, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  89: { ins: 23, mode: ADDR_ABSY2, size: 3, cycles: 4 },
+  65: { ins: 23, mode: ADDR_PREIDXIND2, size: 2, cycles: 6 },
+  81: { ins: 23, mode: ADDR_POSTIDXIND2, size: 2, cycles: 5 },
+  230: { ins: 24, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  246: { ins: 24, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  238: { ins: 24, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  254: { ins: 24, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  232: { ins: 25, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  200: { ins: 26, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  76: { ins: 27, mode: ADDR_ABS2, size: 3, cycles: 3 },
+  108: { ins: 27, mode: ADDR_INDABS2, size: 3, cycles: 5 },
+  32: { ins: 28, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  169: { ins: 29, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  165: { ins: 29, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  181: { ins: 29, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  173: { ins: 29, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  189: { ins: 29, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  185: { ins: 29, mode: ADDR_ABSY2, size: 3, cycles: 4 },
+  161: { ins: 29, mode: ADDR_PREIDXIND2, size: 2, cycles: 6 },
+  177: { ins: 29, mode: ADDR_POSTIDXIND2, size: 2, cycles: 5 },
+  162: { ins: 30, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  166: { ins: 30, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  182: { ins: 30, mode: ADDR_ZPY2, size: 2, cycles: 4 },
+  174: { ins: 30, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  190: { ins: 30, mode: ADDR_ABSY2, size: 3, cycles: 4 },
+  160: { ins: 31, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  164: { ins: 31, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  180: { ins: 31, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  172: { ins: 31, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  188: { ins: 31, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  74: { ins: 32, mode: ADDR_ACC2, size: 1, cycles: 2 },
+  70: { ins: 32, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  86: { ins: 32, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  78: { ins: 32, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  94: { ins: 32, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  26: { ins: 33, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  58: { ins: 33, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  90: { ins: 33, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  122: { ins: 33, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  218: { ins: 33, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  234: { ins: 33, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  250: { ins: 33, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  9: { ins: 34, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  5: { ins: 34, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  21: { ins: 34, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  13: { ins: 34, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  29: { ins: 34, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  25: { ins: 34, mode: ADDR_ABSY2, size: 3, cycles: 4 },
+  1: { ins: 34, mode: ADDR_PREIDXIND2, size: 2, cycles: 6 },
+  17: { ins: 34, mode: ADDR_POSTIDXIND2, size: 2, cycles: 5 },
+  72: { ins: 35, mode: ADDR_IMP2, size: 1, cycles: 3 },
+  8: { ins: 36, mode: ADDR_IMP2, size: 1, cycles: 3 },
+  104: { ins: 37, mode: ADDR_IMP2, size: 1, cycles: 4 },
+  40: { ins: 38, mode: ADDR_IMP2, size: 1, cycles: 4 },
+  42: { ins: 39, mode: ADDR_ACC2, size: 1, cycles: 2 },
+  38: { ins: 39, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  54: { ins: 39, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  46: { ins: 39, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  62: { ins: 39, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  106: { ins: 40, mode: ADDR_ACC2, size: 1, cycles: 2 },
+  102: { ins: 40, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  118: { ins: 40, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  110: { ins: 40, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  126: { ins: 40, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  64: { ins: 41, mode: ADDR_IMP2, size: 1, cycles: 6 },
+  96: { ins: 42, mode: ADDR_IMP2, size: 1, cycles: 6 },
+  233: { ins: 43, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  235: { ins: 43, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  229: { ins: 43, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  245: { ins: 43, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  237: { ins: 43, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  253: { ins: 43, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  249: { ins: 43, mode: ADDR_ABSY2, size: 3, cycles: 4 },
+  225: { ins: 43, mode: ADDR_PREIDXIND2, size: 2, cycles: 6 },
+  241: { ins: 43, mode: ADDR_POSTIDXIND2, size: 2, cycles: 5 },
+  56: { ins: 44, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  248: { ins: 45, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  120: { ins: 46, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  133: { ins: 47, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  149: { ins: 47, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  141: { ins: 47, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  157: { ins: 47, mode: ADDR_ABSX2, size: 3, cycles: 5 },
+  153: { ins: 47, mode: ADDR_ABSY2, size: 3, cycles: 5 },
+  129: { ins: 47, mode: ADDR_PREIDXIND2, size: 2, cycles: 6 },
+  145: { ins: 47, mode: ADDR_POSTIDXIND2, size: 2, cycles: 6 },
+  134: { ins: 48, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  150: { ins: 48, mode: ADDR_ZPY2, size: 2, cycles: 4 },
+  142: { ins: 48, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  132: { ins: 49, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  148: { ins: 49, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  140: { ins: 49, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  170: { ins: 50, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  168: { ins: 51, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  186: { ins: 52, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  138: { ins: 53, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  154: { ins: 54, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  152: { ins: 55, mode: ADDR_IMP2, size: 1, cycles: 2 },
+  75: { ins: 56, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  11: { ins: 57, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  43: { ins: 57, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  107: { ins: 58, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  203: { ins: 59, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  163: { ins: 60, mode: ADDR_PREIDXIND2, size: 2, cycles: 6 },
+  167: { ins: 60, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  175: { ins: 60, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  179: { ins: 60, mode: ADDR_POSTIDXIND2, size: 2, cycles: 5 },
+  183: { ins: 60, mode: ADDR_ZPY2, size: 2, cycles: 4 },
+  191: { ins: 60, mode: ADDR_ABSY2, size: 3, cycles: 4 },
+  131: { ins: 61, mode: ADDR_PREIDXIND2, size: 2, cycles: 6 },
+  135: { ins: 61, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  143: { ins: 61, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  151: { ins: 61, mode: ADDR_ZPY2, size: 2, cycles: 4 },
+  195: { ins: 62, mode: ADDR_PREIDXIND2, size: 2, cycles: 8 },
+  199: { ins: 62, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  207: { ins: 62, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  211: { ins: 62, mode: ADDR_POSTIDXIND2, size: 2, cycles: 8 },
+  215: { ins: 62, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  219: { ins: 62, mode: ADDR_ABSY2, size: 3, cycles: 7 },
+  223: { ins: 62, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  227: { ins: 63, mode: ADDR_PREIDXIND2, size: 2, cycles: 8 },
+  231: { ins: 63, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  239: { ins: 63, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  243: { ins: 63, mode: ADDR_POSTIDXIND2, size: 2, cycles: 8 },
+  247: { ins: 63, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  251: { ins: 63, mode: ADDR_ABSY2, size: 3, cycles: 7 },
+  255: { ins: 63, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  35: { ins: 64, mode: ADDR_PREIDXIND2, size: 2, cycles: 8 },
+  39: { ins: 64, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  47: { ins: 64, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  51: { ins: 64, mode: ADDR_POSTIDXIND2, size: 2, cycles: 8 },
+  55: { ins: 64, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  59: { ins: 64, mode: ADDR_ABSY2, size: 3, cycles: 7 },
+  63: { ins: 64, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  99: { ins: 65, mode: ADDR_PREIDXIND2, size: 2, cycles: 8 },
+  103: { ins: 65, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  111: { ins: 65, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  115: { ins: 65, mode: ADDR_POSTIDXIND2, size: 2, cycles: 8 },
+  119: { ins: 65, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  123: { ins: 65, mode: ADDR_ABSY2, size: 3, cycles: 7 },
+  127: { ins: 65, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  3: { ins: 66, mode: ADDR_PREIDXIND2, size: 2, cycles: 8 },
+  7: { ins: 66, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  15: { ins: 66, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  19: { ins: 66, mode: ADDR_POSTIDXIND2, size: 2, cycles: 8 },
+  23: { ins: 66, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  27: { ins: 66, mode: ADDR_ABSY2, size: 3, cycles: 7 },
+  31: { ins: 66, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  67: { ins: 67, mode: ADDR_PREIDXIND2, size: 2, cycles: 8 },
+  71: { ins: 67, mode: ADDR_ZP2, size: 2, cycles: 5 },
+  79: { ins: 67, mode: ADDR_ABS2, size: 3, cycles: 6 },
+  83: { ins: 67, mode: ADDR_POSTIDXIND2, size: 2, cycles: 8 },
+  87: { ins: 67, mode: ADDR_ZPX2, size: 2, cycles: 6 },
+  91: { ins: 67, mode: ADDR_ABSY2, size: 3, cycles: 7 },
+  95: { ins: 67, mode: ADDR_ABSX2, size: 3, cycles: 7 },
+  128: { ins: 68, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  130: { ins: 68, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  137: { ins: 68, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  194: { ins: 68, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  226: { ins: 68, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  12: { ins: 69, mode: ADDR_ABS2, size: 3, cycles: 4 },
+  28: { ins: 69, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  60: { ins: 69, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  92: { ins: 69, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  124: { ins: 69, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  220: { ins: 69, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  252: { ins: 69, mode: ADDR_ABSX2, size: 3, cycles: 4 },
+  4: { ins: 69, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  68: { ins: 69, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  100: { ins: 69, mode: ADDR_ZP2, size: 2, cycles: 3 },
+  20: { ins: 69, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  52: { ins: 69, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  84: { ins: 69, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  116: { ins: 69, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  212: { ins: 69, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  244: { ins: 69, mode: ADDR_ZPX2, size: 2, cycles: 4 },
+  147: { ins: 71, mode: ADDR_POSTIDXIND2, size: 2, cycles: 6 },
+  159: { ins: 71, mode: ADDR_ABSY2, size: 3, cycles: 5 },
+  155: { ins: 72, mode: ADDR_ABSY2, size: 3, cycles: 5 },
+  156: { ins: 73, mode: ADDR_ABSX2, size: 3, cycles: 5 },
+  158: { ins: 74, mode: ADDR_ABSY2, size: 3, cycles: 5 },
+  187: { ins: 75, mode: ADDR_ABSY2, size: 3, cycles: 4 },
+  139: { ins: 76, mode: ADDR_IMM2, size: 2, cycles: 2 },
+  171: { ins: 77, mode: ADDR_IMM2, size: 2, cycles: 2 }
+};
+function disassemble(addr, memRead) {
+  const opcode = memRead(addr) & 255;
+  const info = OPCODE_TABLE2[opcode];
+  if (!info) {
+    return {
+      text: `??? $${opcode.toString(16).padStart(2, "0")}`,
+      size: 1,
+      bytes: [opcode]
+    };
+  }
+  const insName = INS_NAMES[info.ins] ?? "???";
+  const bytes = [opcode];
+  for (let i = 1; i < info.size; i++) {
+    bytes.push(memRead(addr + i & 65535) & 255);
+  }
+  const h2 = (b) => (b & 255).toString(16).toUpperCase().padStart(2, "0");
+  const h4 = (v) => (v & 65535).toString(16).toUpperCase().padStart(4, "0");
+  let operand = "";
+  switch (info.mode) {
+    case ADDR_IMP2:
+      break;
+    case ADDR_ACC2:
+      operand = "A";
+      break;
+    case ADDR_IMM2:
+      operand = `#$${h2(bytes[1])}`;
+      break;
+    case ADDR_ZP2:
+      operand = `$${h2(bytes[1])}`;
+      break;
+    case ADDR_ZPX2:
+      operand = `$${h2(bytes[1])},X`;
+      break;
+    case ADDR_ZPY2:
+      operand = `$${h2(bytes[1])},Y`;
+      break;
+    case ADDR_ABS2: {
+      const absAddr = bytes[1] | bytes[2] << 8;
+      operand = `$${h4(absAddr)}`;
+      break;
+    }
+    case ADDR_ABSX2: {
+      const absAddr = bytes[1] | bytes[2] << 8;
+      operand = `$${h4(absAddr)},X`;
+      break;
+    }
+    case ADDR_ABSY2: {
+      const absAddr = bytes[1] | bytes[2] << 8;
+      operand = `$${h4(absAddr)},Y`;
+      break;
+    }
+    case ADDR_INDABS2: {
+      const absAddr = bytes[1] | bytes[2] << 8;
+      operand = `($${h4(absAddr)})`;
+      break;
+    }
+    case ADDR_PREIDXIND2:
+      operand = `($${h2(bytes[1])},X)`;
+      break;
+    case ADDR_POSTIDXIND2:
+      operand = `($${h2(bytes[1])}),Y`;
+      break;
+    case ADDR_REL2: {
+      const relOffset = bytes[1] < 128 ? bytes[1] : bytes[1] - 256;
+      const target = addr + info.size + relOffset & 65535;
+      operand = `$${h4(target)}`;
+      break;
+    }
+    default:
+      operand = `$???`;
+      break;
+  }
+  const text = operand ? `${insName} ${operand}` : insName;
+  return { text, size: info.size, bytes };
+}
+
+// src/core/debug/tracer.ts
+var LOG_REGISTERS = 1;
+var LOG_PROCESSOR_STATUS = 2;
+var LOG_NEW_INSTRUCTIONS = 4;
+var LOG_NEW_DATA = 8;
+var LOG_TO_THE_LEFT = 16;
+var LOG_FRAMES_COUNT = 32;
+var LOG_CODE_TABBING = 512;
+var LOG_CYCLES_COUNT = 1024;
+var LOG_INSTRUCTIONS_COUNT = 2048;
+var LOG_BANK_NUMBER = 4096;
+var LOG_MEM_DETAIL = 8192;
+var LOG_RTS_DECORATION = 16384;
+var FCEUX_DEFAULT_OPTIONS = LOG_REGISTERS | LOG_PROCESSOR_STATUS | LOG_TO_THE_LEFT | LOG_CODE_TABBING;
 function formatFlags(status) {
   const n = status >> 7 & 1 ? "N" : "n";
   const v = status >> 6 & 1 ? "V" : "v";
@@ -7773,6 +8131,86 @@ function getMesenBank(cpu2, nes2, addr) {
   }
   return Math.floor(block8k / 2);
 }
+function readMemRaw(cpu2, addr) {
+  const a = addr & 65535;
+  if (a < 8192) return cpu2.mem[a & 2047];
+  if (a < 16416) return readRegisterPeek(cpu2, a);
+  if (cpu2.nes && cpu2.nes.mmap) return cpu2.nes.mmap.load(a) & 255;
+  return cpu2.mem[a & 65535];
+}
+function readRegisterPeek(cpu2, a) {
+  if (a === 8194) return cpu2.mem[8194];
+  const ppu2 = cpu2.nes && cpu2.nes.ppu;
+  if (ppu2 && typeof ppu2.openBusLatch === "number") return ppu2.openBusLatch;
+  return 0;
+}
+function resolveEA(cpu2, mode, opbytes) {
+  const b1 = opbytes[1] ?? 0;
+  const b2 = opbytes[2] ?? 0;
+  const x = cpu2.REG_X & 255;
+  const y = cpu2.REG_Y & 255;
+  switch (mode) {
+    case 0:
+      return b1;
+    // ZP
+    case 3:
+      return (b1 | b2 << 8) & 65535;
+    // ABS
+    case 6:
+      return b1 + x & 255;
+    // ZP,X
+    case 7:
+      return b1 + y & 255;
+    // ZP,Y
+    case 8:
+      return (b1 | b2 << 8) + x & 65535;
+    // ABS,X
+    case 9:
+      return (b1 | b2 << 8) + y & 65535;
+    // ABS,Y
+    case 10: {
+      const ptr = b1 + x & 255;
+      return (readMemRaw(cpu2, ptr) | readMemRaw(cpu2, ptr + 1 & 255) << 8) & 65535;
+    }
+    case 11: {
+      const base = readMemRaw(cpu2, b1) | readMemRaw(cpu2, b1 + 1 & 255) << 8;
+      return base + y & 65535;
+    }
+    case 12: {
+      const ptr = b1 | b2 << 8;
+      const hi = ptr & 65280 | (ptr & 255) + 1 & 255;
+      return (readMemRaw(cpu2, ptr) | readMemRaw(cpu2, hi) << 8) & 65535;
+    }
+    default:
+      return null;
+  }
+}
+function cdlKey(cpu2, addr) {
+  if (addr < 32768) return 2147483648 | addr & 65535;
+  const mmap2 = cpu2.nes && cpu2.nes.mmap;
+  let block8k;
+  if (mmap2 && mmap2.prgBankMap) {
+    if (addr < 40960) block8k = mmap2.prgBankMap["8000"] ?? 0;
+    else if (addr < 49152) block8k = mmap2.prgBankMap["A000"] ?? 0;
+    else if (addr < 57344) block8k = mmap2.prgBankMap["C000"] ?? 30;
+    else block8k = mmap2.prgBankMap["E000"] ?? 31;
+  } else {
+    block8k = 0;
+  }
+  return block8k << 13 | addr & 8191;
+}
+function rtsDecoration(ctx, opcode) {
+  if (opcode !== 96) return "";
+  const cpu2 = ctx.cpu;
+  const sp = cpu2.REG_SP & 255;
+  const ret = readMemRaw(cpu2, 256 | sp + 1 & 255) | readMemRaw(cpu2, 256 | sp + 2 & 255) << 8;
+  const caller = ret - 2 & 65535;
+  if (readMemRaw(cpu2, caller) === 32) {
+    const target = readMemRaw(cpu2, caller + 1 & 65535) | readMemRaw(cpu2, caller + 2 & 65535) << 8;
+    return ` (from $${target.toString(16).toUpperCase().padStart(4, "0")})`;
+  }
+  return "";
+}
 function formatInstruction(ctx, instrPC, opcode, opinfo, opbytes) {
   const cpu2 = ctx.cpu;
   const a = cpu2.REG_ACC & 255;
@@ -7782,27 +8220,75 @@ function formatInstruction(ctx, instrPC, opcode, opinfo, opbytes) {
   const status = cpu2.getStatus();
   const mesenBank = getMesenBank(cpu2, ctx.nes, instrPC);
   const bytesStr = opbytes.map((b) => b.toString(16).toUpperCase().padStart(2, "0")).join(" ");
-  const insName = INS_NAMES[opinfo.ins] ?? "???";
-  let operandStr = "";
-  if (opinfo.size > 1) {
-    const operandBytes = opbytes.slice(1);
-    if (operandBytes.length === 1) {
-      operandStr = "#$" + operandBytes[0].toString(16).toUpperCase().padStart(2, "0");
-    } else if (operandBytes.length === 2) {
-      const val = operandBytes[0] | operandBytes[1] << 8;
-      operandStr = "$" + val.toString(16).toUpperCase().padStart(4, "0");
-    }
-  }
+  const disasmBase = disassemble(instrPC, (a2) => readMemRaw(cpu2, a2));
+  const mode = opinfo.mode;
   if (ctx.opts.format === "fceux") {
+    const opt = ctx.fceuxOptions;
     const frame = (cpu2.nes && cpu2.nes.fpsFrameCount) | 0;
-    const cycle = (cpu2._cpuCycleBase ?? 0) + (opinfo.cycles ?? 0) >>> 0;
-    return `f${frame}`.padEnd(8) + `c${cycle}`.padEnd(13) + `i${ctx.count}`.padEnd(12) + " A:" + a.toString(16).toUpperCase().padStart(2, "0") + " X:" + x.toString(16).toUpperCase().padStart(2, "0") + " Y:" + y.toString(16).toUpperCase().padStart(2, "0") + " S:" + s.toString(16).toUpperCase().padStart(2, "0") + " P:" + formatFlags(status) + `  $${mesenBank.toString(16).toUpperCase().padStart(2, "0")}:` + instrPC.toString(16).toUpperCase().padStart(4, "0") + ": " + bytesStr.padEnd(8, " ") + " " + insName + " " + operandStr;
+    const cycle = (cpu2._cpuCycleBase ?? 0) - ctx.startCycleBase >>> 0;
+    let regCol = "";
+    if (opt & LOG_REGISTERS) {
+      regCol += " A:" + a.toString(16).toUpperCase().padStart(2, "0") + " X:" + x.toString(16).toUpperCase().padStart(2, "0") + " Y:" + y.toString(16).toUpperCase().padStart(2, "0") + " S:" + s.toString(16).toUpperCase().padStart(2, "0");
+    }
+    if (opt & LOG_PROCESSOR_STATUS) {
+      regCol += " P:" + formatFlags(status);
+    }
+    if (regCol) regCol += " ";
+    let disasm = disasmBase.text;
+    const wantDetail = (opt & LOG_MEM_DETAIL) !== 0;
+    const isJmpInd = opcode === 108;
+    const isJmp = opinfo.ins === 27;
+    const isJsr = opinfo.ins === 28;
+    if (wantDetail && mode !== 2 && mode !== 4 && mode !== 5 && mode !== 1) {
+      const ea = resolveEA(cpu2, mode, opbytes);
+      if (ea !== null) {
+        const valStr = "#$" + readMemRaw(cpu2, ea).toString(16).toUpperCase().padStart(2, "0");
+        if (isJmpInd) {
+          const target = readMemRaw(cpu2, ea) | readMemRaw(cpu2, ea & 65280 | (ea & 255) + 1 & 255) << 8;
+          disasm += ` = $${target.toString(16).toUpperCase().padStart(4, "0")}`;
+        } else if (!isJmp && !isJsr && (mode === 0 || mode === 3)) {
+          disasm += ` = ${valStr}`;
+        } else if (!isJmp && !isJsr) {
+          disasm += ` @ $${ea.toString(16).toUpperCase().padStart(4, "0")} = ${valStr}`;
+        }
+      }
+    }
+    if (opt & LOG_RTS_DECORATION && opcode === 96) {
+      disasm += rtsDecoration(ctx, opcode);
+      disasm += " -------------------------------------------------------------------------------------------------------------------------";
+    }
+    let line = "";
+    if (opt & LOG_FRAMES_COUNT) line += `f${frame}`.padEnd(8);
+    if (opt & LOG_CYCLES_COUNT) line += `c${cycle}`.padEnd(13);
+    if (opt & LOG_INSTRUCTIONS_COUNT) line += `i${ctx.count}`.padEnd(13);
+    if (opt & LOG_TO_THE_LEFT) {
+      line += regCol;
+    }
+    if (opt & LOG_CODE_TABBING) {
+      line += " ".repeat(255 - s & 31);
+    } else if (opt & LOG_TO_THE_LEFT) {
+      line += " ";
+    }
+    if (opt & LOG_BANK_NUMBER) {
+      if (instrPC >= 32768) {
+        line += `$${mesenBank.toString(16).toUpperCase().padStart(2, "0")}:` + instrPC.toString(16).toUpperCase().padStart(4, "0") + ": ";
+      } else {
+        line += "  $" + instrPC.toString(16).toUpperCase().padStart(4, "0") + ": ";
+      }
+    } else {
+      line += "$" + instrPC.toString(16).toUpperCase().padStart(4, "0") + ": ";
+    }
+    line += bytesStr.padEnd(9, " ") + disasm;
+    if (!(opt & LOG_TO_THE_LEFT)) {
+      line += regCol;
+    }
+    return line;
   }
-  return `i${ctx.count}  $${mesenBank.toString(16).toUpperCase().padStart(2, "0")}:` + instrPC.toString(16).toUpperCase().padStart(4, "0") + ": " + bytesStr.padEnd(8, " ") + " " + insName + " " + operandStr + " A:" + a.toString(16).toUpperCase().padStart(2, "0") + " X:" + x.toString(16).toUpperCase().padStart(2, "0") + " Y:" + y.toString(16).toUpperCase().padStart(2, "0") + " S:" + s.toString(16).toUpperCase().padStart(2, "0") + " P:" + formatFlags(status);
+  return `i${ctx.count}  $${mesenBank.toString(16).toUpperCase().padStart(2, "0")}:` + instrPC.toString(16).toUpperCase().padStart(4, "0") + ": " + bytesStr.padEnd(8, " ") + " " + disasmBase.text + " A:" + a.toString(16).toUpperCase().padStart(2, "0") + " X:" + x.toString(16).toUpperCase().padStart(2, "0") + " Y:" + y.toString(16).toUpperCase().padStart(2, "0") + " S:" + s.toString(16).toUpperCase().padStart(2, "0") + " P:" + formatFlags(status);
 }
 function formatHwWrite(ctx, category, addr, val, extra) {
   const cpu2 = ctx.cpu;
-  const instrPC = cpu2._instrPC ?? 0;
+  const instrPC = (cpu2._instrPC ?? 0) + 1 & 65535;
   const mesenBank = getMesenBank(cpu2, ctx.nes, instrPC);
   const pcStr = `$${mesenBank.toString(16).toUpperCase().padStart(2, "0")}:` + instrPC.toString(16).toUpperCase().padStart(4, "0");
   const addrStr = "$" + addr.toString(16).toUpperCase().padStart(4, "0");
@@ -7843,6 +8329,7 @@ var Tracer = class {
     }
     const initialCount = opts.initialCount ?? 0;
     this._persistentCount = initialCount;
+    const fceuxOptions = opts.fceuxLogOptions ?? (opts.format === "fceux" ? LOG_FRAMES_COUNT | LOG_CYCLES_COUNT | LOG_INSTRUCTIONS_COUNT | LOG_REGISTERS | LOG_PROCESSOR_STATUS | LOG_BANK_NUMBER | LOG_TO_THE_LEFT | LOG_MEM_DETAIL | LOG_RTS_DECORATION : 0);
     this.ctx = {
       cpu: cpu2,
       nes: nes2,
@@ -7857,7 +8344,12 @@ var Tracer = class {
       stopped: false,
       ppuAddrLatch: 0,
       ppuAddr: 0,
-      _mmc3Reg: 0
+      _mmc3Reg: 0,
+      fceuxOptions,
+      cdlCode: /* @__PURE__ */ new Set(),
+      cdlData: /* @__PURE__ */ new Set(),
+      unloggedLines: 0,
+      startCycleBase: cpu2._cpuCycleBase ?? 0
     };
   }
   /** 停止 trace, 关闭文件流 */
@@ -7906,6 +8398,31 @@ var Tracer = class {
     if (ctx.opts.bankFilter !== void 0) {
       const bank = getMesenBank(ctx.cpu, ctx.nes, instrPC);
       if (bank !== ctx.opts.bankFilter) return;
+    }
+    const cdlOpt = ctx.fceuxOptions & (LOG_NEW_INSTRUCTIONS | LOG_NEW_DATA);
+    if (cdlOpt) {
+      const codeKey = cdlKey(ctx.cpu, instrPC);
+      const isNewCode = !ctx.cdlCode.has(codeKey);
+      let isNewData = false;
+      let dataKey = -1;
+      if (ctx.fceuxOptions & LOG_NEW_DATA) {
+        const ea = resolveEA(ctx.cpu, opinfo.mode, opbytes);
+        if (ea !== null) {
+          dataKey = cdlKey(ctx.cpu, ea);
+          isNewData = !ctx.cdlData.has(dataKey);
+        }
+      }
+      const newSomething = ctx.fceuxOptions & LOG_NEW_INSTRUCTIONS && isNewCode || ctx.fceuxOptions & LOG_NEW_DATA && isNewData;
+      if (!newSomething) {
+        ctx.unloggedLines++;
+        return;
+      }
+      if (ctx.fceuxOptions & LOG_NEW_INSTRUCTIONS) ctx.cdlCode.add(codeKey);
+      if (dataKey >= 0 && ctx.fceuxOptions & LOG_NEW_DATA) ctx.cdlData.add(dataKey);
+      if (ctx.unloggedLines > 0) {
+        this.emit(`(${ctx.unloggedLines} lines skipped)`);
+        ctx.unloggedLines = 0;
+      }
     }
     if (this.checkMaxLines()) return;
     ctx.count++;
@@ -8057,7 +8574,7 @@ var Tracer = class {
       ctx.count++;
       ctx.lines++;
       const cpu2 = ctx.cpu;
-      const instrPC = cpu2._instrPC ?? 0;
+      const instrPC = (cpu2._instrPC ?? 0) + 1 & 65535;
       const mesenBank = getMesenBank(cpu2, ctx.nes, instrPC);
       const pcStr = "$" + mesenBank.toString(16).toUpperCase().padStart(2, "0") + ":" + instrPC.toString(16).toUpperCase().padStart(4, "0");
       if (addr === 32768) {
@@ -8371,8 +8888,8 @@ var TOTAL_FRAMES = (() => {
   const v = Number(process.env.EMU_FULL_FRAMES);
   return Number.isFinite(v) && v > 0 ? v : 4332;
 })();
+var SKIP_PNG = process.env.EMU_FULL_SKIP_PNG === "1";
 var SAMPLE_RATE = 44100;
-var TRACE_ENABLED = process.env.EMU_FULL_TRACE !== "0";
 var CRC_TABLE = (() => {
   const t = new Array(256);
   for (let n = 0; n < 256; n++) {
@@ -8477,38 +8994,6 @@ var audioSamplesL = [];
 var audioSamplesR = [];
 var samplesPerFrame = [];
 var apuWritesPerFrame = [];
-var frameTraceLines = null;
-var frameTracePath = "";
-var instrCountThisFrame = 0;
-var totalInstrCount = 0;
-var tracedFrames = 0;
-function beginFrameTrace() {
-  frameTraceLines = [];
-  instrCountThisFrame = 0;
-}
-function setFrameTracePath(p) {
-  frameTracePath = p;
-}
-function flushFrameTrace() {
-  if (frameTraceLines && frameTraceLines.length > 0) {
-    fs2.writeFileSync(frameTracePath, frameTraceLines.join("\n") + "\n");
-  }
-  frameTraceLines = null;
-}
-function startTrace() {
-  nes.enableTrace({
-    format: "fceux",
-    callback: (line) => {
-      instrCountThisFrame++;
-      if (frameTraceLines) frameTraceLines.push(line);
-    }
-  });
-}
-function stopTrace() {
-  flushFrameTrace();
-  nes.disableTrace();
-  console.log(`[emu-full] cpu trace done: frames=${tracedFrames} instructions=${totalInstrCount}`);
-}
 var romBytes = fs2.readFileSync(ROM_PATH);
 var nes = new nes_default({
   emulateSound: true,
@@ -8537,13 +9022,22 @@ proto.writeReg = function(addr, value) {
 };
 fs2.mkdirSync(OUT_DIR, { recursive: true });
 var t0 = Date.now();
-if (TRACE_ENABLED) startTrace();
-console.log(`[emu-full] cpu trace=${TRACE_ENABLED ? "ON" : "OFF"} (emu-full.log + frame-NNNN/trace.log)`);
 for (let f = 1; f <= TOTAL_FRAMES; f++) {
   currentFrameForHook = f;
   samplesPerFrame.push(0);
   apuWritesPerFrame.push(0);
-  if (TRACE_ENABLED) beginFrameTrace();
+  const scrollRender = {
+    regV: ppu.regV ?? 0,
+    regH: ppu.regH ?? 0,
+    regVT: ppu.regVT ?? 0,
+    regHT: ppu.regHT ?? 0,
+    regFV: ppu.regFV ?? 0,
+    regFH: ppu.regFH ?? 0,
+    cntV: ppu.cntV ?? 0,
+    cntH: ppu.cntH ?? 0,
+    cntVT: ppu.cntVT ?? 0,
+    cntHT: ppu.cntHT ?? 0
+  };
   nes.frame();
   if (mmap && Array.isArray(mmap.chrBanks) && typeof mmap.load1kVromBank === "function") {
     for (let slot = 0; slot < 8; slot++) mmap.load1kVromBank(mmap.chrBanks[slot], slot * 1024);
@@ -8552,7 +9046,6 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
   const chrMapByScan = buildChrBankMapByScanline(switches, mmap.chrBanks);
   const frameDir = path.join(OUT_DIR, "frame-" + String(f).padStart(4, "0"));
   fs2.mkdirSync(frameDir, { recursive: true });
-  if (TRACE_ENABLED) setFrameTracePath(path.join(frameDir, "trace.log"));
   fs2.writeFileSync(
     path.join(frameDir, "chr-switches.json"),
     JSON.stringify({
@@ -8564,24 +9057,28 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
       rawLog: switches
     })
   );
-  for (const [scan, slotBanks] of chrMapByScan) {
-    const pt2 = renderBothPatternTablesAtScanline(nes, slotBanks, 0);
-    const ptRgba2 = rgbaFromData(
-      new Uint32Array([...pt2.table0.data, ...pt2.table1.data]),
-      pt2.table0.width * 2,
-      pt2.table0.height
-    );
-    fs2.writeFileSync(
-      path.join(frameDir, `pt-sheet-scan${String(scan).padStart(3, "0")}.png`),
-      encodePng(pt2.table0.width * 2, pt2.table0.height, ptRgba2)
-    );
+  if (!SKIP_PNG) {
+    for (const [scan, slotBanks] of chrMapByScan) {
+      const pt2 = renderBothPatternTablesAtScanline(nes, slotBanks, 0);
+      const ptRgba = rgbaFromData(
+        new Uint32Array([...pt2.table0.data, ...pt2.table1.data]),
+        pt2.table0.width * 2,
+        pt2.table0.height
+      );
+      fs2.writeFileSync(
+        path.join(frameDir, `pt-sheet-scan${String(scan).padStart(3, "0")}.png`),
+        encodePng(pt2.table0.width * 2, pt2.table0.height, ptRgba)
+      );
+    }
   }
-  fs2.writeFileSync(path.join(frameDir, "screen.png"), encodePng(256, 240, bufToRgba(ppu.buffer)));
+  if (!SKIP_PNG) fs2.writeFileSync(path.join(frameDir, "screen.png"), encodePng(256, 240, bufToRgba(ppu.buffer)));
   const pt = renderBothPatternTables(nes, 0);
   const ptW = pt.table0.width;
   const ptH = pt.table0.height;
-  const ptRgba = rgbaFromData(new Uint32Array([...pt.table0.data, ...pt.table1.data]), ptW * 2, ptH);
-  fs2.writeFileSync(path.join(frameDir, "pt-sheet.png"), encodePng(ptW * 2, ptH, ptRgba));
+  if (!SKIP_PNG) {
+    const ptRgba = rgbaFromData(new Uint32Array([...pt.table0.data, ...pt.table1.data]), ptW * 2, ptH);
+    fs2.writeFileSync(path.join(frameDir, "pt-sheet.png"), encodePng(ptW * 2, ptH, ptRgba));
+  }
   const ptJson = [];
   for (let i = 0; i < 512; i++) {
     const t = ppu.ptTile[i];
@@ -8598,9 +9095,11 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
     ptJson.push({ idx: i, plane0, plane1 });
   }
   fs2.writeFileSync(path.join(frameDir, "pt.json"), JSON.stringify(ptJson));
-  const ntRgba = renderAllNameTablesNoBg(ppu, rom, switches);
-  for (let i = 0; i < 4; i++) {
-    fs2.writeFileSync(path.join(frameDir, `nt${i}.png`), encodePng(256, 240, rgbaFromData(ntRgba[i], 256, 240)));
+  const ntRgba = SKIP_PNG ? null : renderAllNameTablesNoBg(ppu, rom, switches);
+  if (ntRgba) {
+    for (let i = 0; i < 4; i++) {
+      fs2.writeFileSync(path.join(frameDir, `nt${i}.png`), encodePng(256, 240, rgbaFromData(ntRgba[i], 256, 240)));
+    }
   }
   const ntJson = [];
   for (let i = 0; i < 4; i++) {
@@ -8614,19 +9113,23 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
     oamJson.push({ idx: i, y: oamArr[i * 4], tile: oamArr[i * 4 + 1], attr: oamArr[i * 4 + 2], x: oamArr[i * 4 + 3] });
   }
   fs2.writeFileSync(path.join(frameDir, "oam.json"), JSON.stringify(oamJson));
-  const oamImg = renderOamSheet(oamJson, ppu);
-  fs2.writeFileSync(path.join(frameDir, "oam.png"), encodePng(oamImg.w, oamImg.h, oamImg.rgba));
-  const oamComp = renderOamComposite(oamJson, ppu);
-  fs2.writeFileSync(path.join(frameDir, "oam-composite.png"), encodePng(256, 240, oamComp));
-  const oamStripped = renderOamStripped(oamJson, ppu);
-  if (oamStripped) {
-    fs2.writeFileSync(path.join(frameDir, "oam-stripped.png"), encodePng(oamStripped.w, oamStripped.h, oamStripped.rgba));
+  if (!SKIP_PNG) {
+    const oamImg = renderOamSheet(oamJson, ppu);
+    fs2.writeFileSync(path.join(frameDir, "oam.png"), encodePng(oamImg.w, oamImg.h, oamImg.rgba));
+    const oamComp = renderOamComposite(oamJson, ppu);
+    fs2.writeFileSync(path.join(frameDir, "oam-composite.png"), encodePng(256, 240, oamComp));
+    const oamStripped = renderOamStripped(oamJson, ppu);
+    if (oamStripped) {
+      fs2.writeFileSync(path.join(frameDir, "oam-stripped.png"), encodePng(oamStripped.w, oamStripped.h, oamStripped.rgba));
+    }
   }
   const palBg = Array.from(ppu.vramMem.slice(16128, 16144));
   const palSp = Array.from(ppu.vramMem.slice(16144, 16160));
   fs2.writeFileSync(path.join(frameDir, "palette.json"), JSON.stringify({ bg: palBg, spr: palSp }));
-  const palImg = renderPaletteSheet(palBg, palSp, ppu);
-  fs2.writeFileSync(path.join(frameDir, "palette.png"), encodePng(palImg.w, palImg.h, palImg.rgba));
+  if (!SKIP_PNG) {
+    const palImg = renderPaletteSheet(palBg, palSp, ppu);
+    fs2.writeFileSync(path.join(frameDir, "palette.png"), encodePng(palImg.w, palImg.h, palImg.rgba));
+  }
   const chrMap = mmap.chrBanks ? Array.from(mmap.chrBanks) : [];
   const prgMap = mmap.prgBankMap || {};
   fs2.writeFileSync(path.join(frameDir, "state.json"), JSON.stringify({
@@ -8637,52 +9140,31 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
     spTable: ppu.f_spPatternTable,
     chrBanks: chrMap,
     prgBankMap: prgMap,
+    // scroll = 渲染前状态（本帧 PPU 实际使用的 scroll / nametable 选择）
+    scroll: scrollRender,
+    // scrollEnd = 帧末状态（下一帧渲染将使用的 scroll）
+    scrollEnd: {
+      regV: ppu.regV ?? 0,
+      regH: ppu.regH ?? 0,
+      regVT: ppu.regVT ?? 0,
+      regHT: ppu.regHT ?? 0,
+      regFV: ppu.regFV ?? 0,
+      regFH: ppu.regFH ?? 0,
+      cntV: ppu.cntV ?? 0,
+      cntH: ppu.cntH ?? 0,
+      cntVT: ppu.cntVT ?? 0,
+      cntHT: ppu.cntHT ?? 0
+    },
     apuWritesThisFrame: apuWritesPerFrame[f - 1],
     audioSamplesThisFrame: samplesPerFrame[f - 1],
-    instrCountThisFrame,
     cycleBaseAfterFrame: cpu._cpuCycleBase ?? 0
   }, null, 2));
-  if (TRACE_ENABLED) {
-    flushFrameTrace();
-    totalInstrCount += instrCountThisFrame;
-    tracedFrames++;
-  }
   if (f % 200 === 0 || f === 1 || f === TOTAL_FRAMES) {
     const elapsed2 = (Date.now() - t0) / 1e3;
     const fps = f / elapsed2;
     const eta = (TOTAL_FRAMES - f) / fps;
-    console.log(`  f${f}/${TOTAL_FRAMES}  fps=${fps.toFixed(1)}  eta=${eta.toFixed(0)}s  audio=${audioSamplesL.length}  apuWrites=${apuWrites.length}  instr=${totalInstrCount}`);
+    console.log(`  f${f}/${TOTAL_FRAMES}  fps=${fps.toFixed(1)}  eta=${eta.toFixed(0)}s  audio=${audioSamplesL.length}  apuWrites=${apuWrites.length}`);
   }
-}
-if (TRACE_ENABLED) stopTrace();
-if (TRACE_ENABLED) {
-  const ALL_PATH = path.join(OUT_DIR, "emu-full-all.log");
-  const frameDirs = fs2.readdirSync(OUT_DIR).filter((d) => /^frame-\d+$/.test(d)).sort();
-  const ws = fs2.createWriteStream(ALL_PATH, { flags: "w" });
-  let allBytes = 0;
-  let allLines = 0;
-  (async () => {
-    let copied = 0;
-    for (const d of frameDirs) {
-      const p = path.join(OUT_DIR, d, "trace.log");
-      if (!fs2.existsSync(p)) continue;
-      await new Promise((resolve, reject) => {
-        const rs = fs2.createReadStream(p);
-        rs.on("data", (c) => {
-          allBytes += c.length;
-          for (let i = 0; i < c.length; i++) if (c[i] === 10) allLines++;
-        });
-        rs.pipe(ws, { end: false });
-        rs.on("end", resolve);
-        rs.on("error", reject);
-      });
-      copied++;
-    }
-    ws.end();
-    ws.on("finish", () => {
-      console.log(`[emu-full] merged ${copied} frame trace logs -> ${ALL_PATH} (${(allBytes / 1048576).toFixed(1)} MB, ${allLines} lines, per-frame logs kept)`);
-    });
-  })().catch((e) => console.error("[emu-full] merge failed:", e));
 }
 var apuDir = path.join(OUT_DIR, "apu");
 fs2.mkdirSync(apuDir, { recursive: true });

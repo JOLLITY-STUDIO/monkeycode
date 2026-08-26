@@ -28,6 +28,8 @@ const TOTAL_FRAMES = (() => {
   const v = Number(process.env.EMU_FULL_FRAMES);
   return Number.isFinite(v) && v > 0 ? v : 4332;
 })();
+// EMU_FULL_SKIP_PNG=1 时跳过全部 PNG dump（仅 json/state，用于重跑加速）
+const SKIP_PNG = process.env.EMU_FULL_SKIP_PNG === '1';
 const SAMPLE_RATE = 44100;
 
 // ── PNG 编码器 ──
@@ -129,6 +131,19 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
   currentFrameForHook = f;
   samplesPerFrame.push(0);
   apuWritesPerFrame.push(0);
+  // 渲染前 scroll = 本帧实际用于 PPU 渲染的 scroll（NES 在上一帧 NMI 末尾写入）
+  const scrollRender = {
+    regV: ppu.regV ?? 0,
+    regH: ppu.regH ?? 0,
+    regVT: ppu.regVT ?? 0,
+    regHT: ppu.regHT ?? 0,
+    regFV: ppu.regFV ?? 0,
+    regFH: ppu.regFH ?? 0,
+    cntV: ppu.cntV ?? 0,
+    cntH: ppu.cntH ?? 0,
+    cntVT: ppu.cntVT ?? 0,
+    cntHT: ppu.cntHT ?? 0,
+  };
   nes.frame();
 
   // 与 _emu_reference.ts 一致: reload 全部 8 个 1KB CHR slot 到 ptTile
@@ -156,27 +171,31 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
   );
 
   // (0.5) 每个 scanline 的 pt-sheet-scanXXX.png
-  for (const [scan, slotBanks] of chrMapByScan) {
-    const pt = renderBothPatternTablesAtScanline(nes, slotBanks, 0);
-    const ptRgba = rgbaFromData(
-      new Uint32Array([...pt.table0.data, ...pt.table1.data]),
-      pt.table0.width * 2, pt.table0.height,
-    );
-    fs.writeFileSync(
-      path.join(frameDir, `pt-sheet-scan${String(scan).padStart(3, '0')}.png`),
-      encodePng(pt.table0.width * 2, pt.table0.height, ptRgba),
-    );
+  if (!SKIP_PNG) {
+    for (const [scan, slotBanks] of chrMapByScan) {
+      const pt = renderBothPatternTablesAtScanline(nes, slotBanks, 0);
+      const ptRgba = rgbaFromData(
+        new Uint32Array([...pt.table0.data, ...pt.table1.data]),
+        pt.table0.width * 2, pt.table0.height,
+      );
+      fs.writeFileSync(
+        path.join(frameDir, `pt-sheet-scan${String(scan).padStart(3, '0')}.png`),
+        encodePng(pt.table0.width * 2, pt.table0.height, ptRgba),
+      );
+    }
   }
 
   // (1) screen.png
-  fs.writeFileSync(path.join(frameDir, 'screen.png'), encodePng(256, 240, bufToRgba(ppu.buffer)));
+  if (!SKIP_PNG) fs.writeFileSync(path.join(frameDir, 'screen.png'), encodePng(256, 240, bufToRgba(ppu.buffer)));
 
   // (2) pt-sheet.png (最终 PT 缓存 = 最后一次 load1kVromBank 状态)
   const pt = renderBothPatternTables(nes, 0);
   const ptW = pt.table0.width;
   const ptH = pt.table0.height;
-  const ptRgba = rgbaFromData(new Uint32Array([...pt.table0.data, ...pt.table1.data]), ptW * 2, ptH);
-  fs.writeFileSync(path.join(frameDir, 'pt-sheet.png'), encodePng(ptW * 2, ptH, ptRgba));
+  if (!SKIP_PNG) {
+    const ptRgba = rgbaFromData(new Uint32Array([...pt.table0.data, ...pt.table1.data]), ptW * 2, ptH);
+    fs.writeFileSync(path.join(frameDir, 'pt-sheet.png'), encodePng(ptW * 2, ptH, ptRgba));
+  }
 
   // (3) pt.json (512 tile plane0 + plane1)
   const ptJson: any[] = [];
@@ -197,9 +216,11 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
   fs.writeFileSync(path.join(frameDir, 'pt.json'), JSON.stringify(ptJson));
 
   // (4) nt0/1/2/3.png + nt.json
-  const ntRgba = renderAllNameTablesNoBg(ppu, rom, switches);
-  for (let i = 0; i < 4; i++) {
-    fs.writeFileSync(path.join(frameDir, `nt${i}.png`), encodePng(256, 240, rgbaFromData(ntRgba[i], 256, 240)));
+  const ntRgba = SKIP_PNG ? null : renderAllNameTablesNoBg(ppu, rom, switches);
+  if (ntRgba) {
+    for (let i = 0; i < 4; i++) {
+      fs.writeFileSync(path.join(frameDir, `nt${i}.png`), encodePng(256, 240, rgbaFromData(ntRgba[i], 256, 240)));
+    }
   }
   const ntJson: any[] = [];
   for (let i = 0; i < 4; i++) {
@@ -215,22 +236,26 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
     oamJson.push({ idx: i, y: oamArr[i * 4], tile: oamArr[i * 4 + 1], attr: oamArr[i * 4 + 2], x: oamArr[i * 4 + 3] });
   }
   fs.writeFileSync(path.join(frameDir, 'oam.json'), JSON.stringify(oamJson));
-  const oamImg = renderOamSheet(oamJson, ppu);
-  fs.writeFileSync(path.join(frameDir, 'oam.png'), encodePng(oamImg.w, oamImg.h, oamImg.rgba));
-  const oamComp = renderOamComposite(oamJson, ppu);
-  fs.writeFileSync(path.join(frameDir, 'oam-composite.png'), encodePng(256, 240, oamComp));
-  // oam-stripped.png: 紧凑 sprite 摆放图 (按真实 y/x 位置 crop 到包围盒, alpha=0 透明 bg, 不带完整 256x240 大图)
-  const oamStripped = renderOamStripped(oamJson, ppu);
-  if (oamStripped) {
-    fs.writeFileSync(path.join(frameDir, 'oam-stripped.png'), encodePng(oamStripped.w, oamStripped.h, oamStripped.rgba));
+  if (!SKIP_PNG) {
+    const oamImg = renderOamSheet(oamJson, ppu);
+    fs.writeFileSync(path.join(frameDir, 'oam.png'), encodePng(oamImg.w, oamImg.h, oamImg.rgba));
+    const oamComp = renderOamComposite(oamJson, ppu);
+    fs.writeFileSync(path.join(frameDir, 'oam-composite.png'), encodePng(256, 240, oamComp));
+    // oam-stripped.png: 紧凑 sprite 摆放图 (按真实 y/x 位置 crop 到包围盒, alpha=0 透明 bg, 不带完整 256x240 大图)
+    const oamStripped = renderOamStripped(oamJson, ppu);
+    if (oamStripped) {
+      fs.writeFileSync(path.join(frameDir, 'oam-stripped.png'), encodePng(oamStripped.w, oamStripped.h, oamStripped.rgba));
+    }
   }
 
   // (6) palette.json + palette.png
   const palBg = Array.from(ppu.vramMem.slice(0x3F00, 0x3F10));
   const palSp = Array.from(ppu.vramMem.slice(0x3F10, 0x3F20));
   fs.writeFileSync(path.join(frameDir, 'palette.json'), JSON.stringify({ bg: palBg, spr: palSp }));
-  const palImg = renderPaletteSheet(palBg, palSp, ppu);
-  fs.writeFileSync(path.join(frameDir, 'palette.png'), encodePng(palImg.w, palImg.h, palImg.rgba));
+  if (!SKIP_PNG) {
+    const palImg = renderPaletteSheet(palBg, palSp, ppu);
+    fs.writeFileSync(path.join(frameDir, 'palette.png'), encodePng(palImg.w, palImg.h, palImg.rgba));
+  }
 
   // (7) state.json
   const chrMap = mmap.chrBanks ? Array.from(mmap.chrBanks) : [];
@@ -243,6 +268,21 @@ for (let f = 1; f <= TOTAL_FRAMES; f++) {
     spTable: ppu.f_spPatternTable,
     chrBanks: chrMap,
     prgBankMap: prgMap,
+    // scroll = 渲染前状态（本帧 PPU 实际使用的 scroll / nametable 选择）
+    scroll: scrollRender,
+    // scrollEnd = 帧末状态（下一帧渲染将使用的 scroll）
+    scrollEnd: {
+      regV: ppu.regV ?? 0,
+      regH: ppu.regH ?? 0,
+      regVT: ppu.regVT ?? 0,
+      regHT: ppu.regHT ?? 0,
+      regFV: ppu.regFV ?? 0,
+      regFH: ppu.regFH ?? 0,
+      cntV: ppu.cntV ?? 0,
+      cntH: ppu.cntH ?? 0,
+      cntVT: ppu.cntVT ?? 0,
+      cntHT: ppu.cntHT ?? 0,
+    },
     apuWritesThisFrame: apuWritesPerFrame[f - 1],
     audioSamplesThisFrame: samplesPerFrame[f - 1],
     cycleBaseAfterFrame: cpu._cpuCycleBase ?? 0,

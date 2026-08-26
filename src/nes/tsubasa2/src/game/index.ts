@@ -31,6 +31,7 @@ import {
   ScriptEngine,
   ScriptLoader,
   CharMap,
+  setScriptRuntime,
   PlayerQueryService,
   TeamRosterService,
   MatchEngineService,
@@ -116,7 +117,12 @@ export class Tsubasa2 {
     const scriptEngine = new ScriptEngine(this.store, scriptLoader);
     const charMap = new CharMap();
     void scriptEngine;
-    void charMap;
+    // CharMap 注入脚本运行时：0x94/0x95 浊音符等映射供 ScriptOpcode.TextChar 使用
+    setScriptRuntime({
+      charMap,
+      readRam: (addr: number) => this.store.readByte(addr),
+      writeRam: (addr: number, value: number) => this.store.writeByte(addr, value),
+    });
 
     // 比赛（V0.5 接入）
     const matchEngine = new MatchEngineService(this.store);
