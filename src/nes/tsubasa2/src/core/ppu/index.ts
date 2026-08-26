@@ -92,6 +92,12 @@ class PPU {
     // TODO: the use of this is a bit weird, investigate
     this.curNt = null;
 
+    // 渲染起始计数器 override（H5 GT 驱动用）：
+    // 真实 ROM 可经 $2006 直写 VRAM 地址在渲染期设置 cnt*（reg* 保持 0），
+    // 片头/标题滚动依赖此。pre-render scanline 初始化计数器时优先消费，
+    // 用后即清；未设置时走常规 cnt* = reg* 路径。
+    this.renderStartOverride = null;
+
     // Variables used when rendering:
     this.attrib = new Uint8Array(32);
     this.buffer = new Uint32Array(256 * 240);
@@ -438,11 +444,22 @@ class PPU {
 
         if (this.f_bgVisibility === 1 || this.f_spVisibility === 1) {
           // Update counters:
-          this.cntFV = this.regFV;
-          this.cntV = this.regV;
-          this.cntH = this.regH;
-          this.cntVT = this.regVT;
-          this.cntHT = this.regHT;
+          if (this.renderStartOverride) {
+            // H5 GT 驱动：优先使用外部提供的渲染起始位置（ROM 经 $2006
+            // 直写 VRAM 地址设置 cnt* 的行为语义），用后即清。
+            this.cntFV = this.renderStartOverride.cntFV;
+            this.cntV = this.renderStartOverride.cntV;
+            this.cntH = this.renderStartOverride.cntH;
+            this.cntVT = this.renderStartOverride.cntVT;
+            this.cntHT = this.renderStartOverride.cntHT;
+            this.renderStartOverride = null;
+          } else {
+            this.cntFV = this.regFV;
+            this.cntV = this.regV;
+            this.cntH = this.regH;
+            this.cntVT = this.regVT;
+            this.cntHT = this.regHT;
+          }
 
           // On real hardware, the PPU runs a unified rendering pipeline
           // whenever either BG or sprites is enabled. BG tile fetches and
