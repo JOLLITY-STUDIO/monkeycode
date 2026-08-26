@@ -1,49 +1,45 @@
-// 诊断: applyScrollBank02 实现 / Tsubasa2.frame 主循环调用点 / bank19 字符数据文件
+/** 诊断 H5 opening 运行：跑 3800 帧，捕获每帧异常并记录 scroll/override 状态 */
 const fs = require('fs');
-const walk = (d, re) => {
-  let r = [];
-  for (const e of fs.readdirSync(d, { withFileTypes: true })) {
-    const p = d + '/' + e.name;
-    if (e.isDirectory()) r = r.concat(walk(p, re));
-    else if (re.test(e.name)) r.push(p);
+const { HeadlessRuntime } = require('../dist-cjs/game/runtime/HeadlessRuntime');
+const { Tsubasa2 } = require('../dist-cjs/game/index');
+
+const runtime = new HeadlessRuntime();
+const game = new Tsubasa2();
+game.boot(runtime);
+
+const out = [];
+const TOTAL = 3800;
+let crashAt = -1;
+for (let f = 0; f < TOTAL; f++) {
+  try {
+    runtime.frame(game);
+  } catch (e) {
+    crashAt = f;
+    out.push(`CRASH at h5 f=${f}: ${e && e.stack ? e.stack.split('\n').slice(0, 6).join(' | ') : String(e)}`);
+    break;
   }
-  return r;
-};
-
-console.log('=== applyScrollBank02 实现 ===');
-for (const f of walk('src', /\.ts$/)) {
-  const c = fs.readFileSync(f, 'utf8');
-  const ls = c.split('\n');
-  ls.forEach((l, i) => {
-    if (/applyScrollBank02\s*\(/.test(l) && /private|public|function/.test(l)) {
-      console.log(f + ':' + (i + 1) + ': ' + l.trim().slice(0, 120));
-    }
-  });
-}
-
-console.log('\n=== Tsubasa2.frame 中 Opening/applyNtToPpu/render 调用 ===');
-for (const f of walk('src', /\.ts$/)) {
-  const c = fs.readFileSync(f, 'utf8');
-  if (/applyNtToPpu|getChrPlan|renderCommit|ppu\.render|\.render\(/.test(c)) {
-    const ls = c.split('\n');
-    ls.forEach((l, i) => {
-      if (/applyNtToPpu|getChrPlan|renderCommit|ppu\.render|openingScene|OpeningScene/.test(l)) {
-        console.log(f + ':' + (i + 1) + ': ' + l.trim().slice(0, 130));
+  const ppu = runtime.ppu;
+  const sc = runtime.store && runtime.store.scene;
+  const h5f = f + 10;
+  // 关键帧采样（字幕 282+ / 标题 3728+）
+  if (f < 30 || (f >= 270 && f <= 360) || (f >= 3715 && f <= 3790)) {
+    if (f % 5 === 0 || f < 20) {
+      let nz = 0;
+      for (let i = 0; i < ppu.buffer.length; i++) if (ppu.buffer[i] !== 0) nz++;
+      let nt0nz = 0, nt1nz = 0, nt2nz = 0, nt3nz = 0;
+      for (let i = 0; i < 960; i++) {
+        if (ppu.nameTable[0].tile[i] !== 0) nt0nz++;
+        if (ppu.nameTable[1].tile[i] !== 0) nt1nz++;
+        if (ppu.nameTable[2].tile[i] !== 0) nt2nz++;
+        if (ppu.nameTable[3].tile[i] !== 0) nt3nz++;
       }
-    });
+      out.push(
+        `h5f=${h5f} scene=${sc ? sc.currentSceneId : '?'} bufNz=${nz} nt0=${nt0nz} nt1=${nt1nz} nt2=${nt2nz} nt3=${nt3nz} ` +
+        `reg=(${ppu.regV},${ppu.regH},${ppu.regVT},${ppu.regHT},${ppu.regFV},${ppu.regFH}) ` +
+        `override=${ppu.renderStartOverride ? JSON.stringify(ppu.renderStartOverride) : 'null'}`,
+      );
+    }
   }
 }
-
-console.log('\n=== bank19 相关数据文件 ===');
-for (const f of walk('src/game', /bank19|char|Char|kana|jis/i)) console.log(f);
-
-console.log('\n=== CharMap 实例化点 ===');
-for (const f of walk('src/game', /\.ts$/)) {
-  const c = fs.readFileSync(f, 'utf8');
-  if (/new CharMap|charMap\s*=|CharMap\b/.test(c)) {
-    const ls = c.split('\n');
-    ls.forEach((l, i) => {
-      if (/new CharMap|charMap\s*=/.test(l)) console.log(f + ':' + (i + 1) + ': ' + l.trim().slice(0, 130));
-    });
-  }
-}
+fs.writeFileSync('output/_diag_scroll.log', out.join('\n') + (crashAt >= 0 ? `\nCRASHED at f=${crashAt}` : `\nDONE ${TOTAL} frames`));
+console.log('written output/_diag_scroll.log, crashAt=' + crashAt);

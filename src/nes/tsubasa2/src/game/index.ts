@@ -186,6 +186,22 @@ export class Tsubasa2 {
     this.interrupts.attachRouter(this.router);
     this.interrupts.attachScheduler(this.bank00Scheduler);
     this.interrupts.attachBank00MainLoop(this.bank00MainLoop);
+
+    // ── bank00 5-mode dispatcher 接入（$8000 主循环翻译）──
+    // sceneMainLoopStep 设为 no-op（不要在这里再调 router.update():
+    //   InterruptService.nmi() line 96 已经独立调 router.update() 一次，
+    //   dispatcher 内部再调一次会让 SceneController.onUpdate() 跑两遍，counter 加倍）
+    // sceneHandlerA20C/A006/A009/A015/A012/A018/A00C 暂不接 → no-op，
+    //   避免 dispatcher 主动改 $0026 跟 router.changeScene 打架
+    //   （待 Scene0-23 改造为 store 驱动后再接）
+    // 启用 dispatcher 的实际意义：让 mode0/1/2/3/4 5-mode state machine 跑起来，
+    //   写 $0027/$0026/$0700/$0028/$0029 等 store 字节，仿真 ROM 真实行为；
+    //   Scene0-23 当前不读这些字节，所以副作用暂时不影响游戏流程。
+    this.bank00MainLoop.attachHooks({
+      sceneMainLoopStep: () => {},
+    });
+    this.bank00MainLoop.start();
+
     void matchEngine;
   }
 
