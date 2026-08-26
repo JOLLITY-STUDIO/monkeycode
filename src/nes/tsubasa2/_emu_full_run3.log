@@ -1,10 +1,27 @@
 [emu-full] mapper=4 PRG=16 CHR=32 frames=4332
-[emu-full] cpu trace=ON (emu-full.log + frame-NNNN/trace.log)
-  f1/4332  fps=5.6  eta=775s  audio=733  apuWrites=0  instr=8511
-  f200/4332  fps=9.5  eta=434s  audio=146770  apuWrites=2  instr=1900774
-  f400/4332  fps=8.7  eta=452s  audio=293543  apuWrites=1451  instr=3801047
-  f600/4332  fps=7.8  eta=479s  audio=440333  apuWrites=3762  instr=5696317
-  f800/4332  fps=7.3  eta=485s  audio=587123  apuWrites=6074  instr=7591740
-  f1000/4332  fps=7.3  eta=457s  audio=733896  apuWrites=8387  instr=9484505
-  f1200/4332  fps=5.8  eta=536s  audio=880666  apuWrites=10750  instr=11380993
-  f1400/4332  fps=4.4  eta=669s  audio=1027437  apuWrites=13034  instr=13289158
+  f1/4332  fps=8.1  eta=533s  audio=733  apuWrites=0
+  f200/4332  fps=22.8  eta=181s  audio=146770  apuWrites=2
+  f400/4332  fps=22.5  eta=175s  audio=293543  apuWrites=1451
+  f600/4332  fps=22.7  eta=164s  audio=440333  apuWrites=3762
+  f800/4332  fps=23.1  eta=153s  audio=587123  apuWrites=6074
+  f1000/4332  fps=22.6  eta=147s  audio=733896  apuWrites=8387
+  f1200/4332  fps=21.7  eta=144s  audio=880666  apuWrites=10750
+  f1400/4332  fps=21.6  eta=136s  audio=1027437  apuWrites=13034
+  f1600/4332  fps=22.1  eta=124s  audio=1174207  apuWrites=15321
+  f1800/4332  fps=22.3  eta=114s  audio=1320978  apuWrites=17674
+  f2000/4332  fps=22.5  eta=104s  audio=1467748  apuWrites=20068
+  f2200/4332  fps=22.7  eta=94s  audio=1614519  apuWrites=22390
+  f2400/4332  fps=22.4  eta=86s  audio=1761289  apuWrites=24720
+  f2600/4332  fps=22.4  eta=77s  audio=1908060  apuWrites=27081
+  f2800/4332  fps=22.4  eta=68s  audio=2054831  apuWrites=29451
+  f3000/4332  fps=22.5  eta=59s  audio=2201601  apuWrites=31763
+  f3200/4332  fps=22.4  eta=51s  audio=2348372  apuWrites=34084
+  f3400/4332  fps=22.2  eta=42s  audio=2495142  apuWrites=36396
+  f3600/4332  fps=22.1  eta=33s  audio=2641913  apuWrites=38715
+  f3800/4332  fps=22.2  eta=24s  audio=2788685  apuWrites=41107
+  f4000/4332  fps=22.4  eta=15s  audio=2935446  apuWrites=43245
+  f4200/4332  fps=22.6  eta=6s  audio=3082211  apuWrites=43245
+  f4332/4332  fps=22.8  eta=0s  audio=3179080  apuWrites=43245
+[emu-full] done in 190.6s
+  audio samples=3179080 (72.09s)
+  apu writes=43245 (3705 frames with writes)
