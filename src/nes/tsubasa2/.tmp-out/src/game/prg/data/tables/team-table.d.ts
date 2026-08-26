@@ -1,0 +1,28 @@
+/**
+ * 队伍数据表 — 具象化契约（v2 重构完成）
+ *
+ * 数据源（从真 ROM 提取）：
+ *   - 玩家队 (Sao Paulo/Nankatsu/Asian/Exhibition/WC)  ROM 0xAA47 / 0xAA53 / 0xAA5F / 0xAA6A
+ *   - Brazil League (5 队)                              ROM 0x03BB1A+
+ *   - Japan High School (6 队)                          ROM 0x03BB62+
+ *   - Japan Cup (4 队)                                  ROM 0x03BBB4+
+ *   - World Cup (16 队)                                 ROM 0x03BC0A+
+ *   - 阵型/战术 1 byte                                   ROM 0x3bac2
+ *
+ * 翻译原则：
+ *   - TEAM_TABLE / TEAM_ROSTER_TABLE 声明式具象化条目（已从真 ROM 提取填充）
+ *   - 禁止 lo/hi 拆字节，禁止暴露 CPU 地址
+ *   - 业务查找走 findTeamById / findTeamNameById / findRosterById
+ */
+import { type TeamRosterEntry } from './team-roster';
+export type { TeamRosterEntry };
+/** 兼容 TeamEntry 形状的 TEAM_TABLE（已从 ROM 提取） */
+export declare const TEAM_TABLE: readonly TeamRosterEntry[];
+/** 完整阵容表（含 type/subs/formation/tactic） */
+export declare const TEAMS_FULL: readonly TeamRosterEntry[];
+/** 按 ID 查询队伍 */
+export declare function findTeamById(id: number): typeof TEAM_TABLE[number] | null;
+/** 按 ID 查询队名（兜底空字符串） */
+export declare function findTeamNameById(id: number): string;
+/** 按 ID 查询完整阵容（含 formation/players/subs） */
+export declare function findRosterById(id: number): TeamRosterEntry | null;

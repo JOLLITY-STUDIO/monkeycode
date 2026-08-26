@@ -1,0 +1,292 @@
+/**
+ * Scene0Controller — 场景 0 主循环翻译（opening screen / title menu）
+ *
+ * ⚠️ 职责归类（BUG #014 + OpeningScene 接管）：
+ *   - **boot logo + 完整片头（NES f10-f3599：Tecmo logo / NTV / 10 屏字幕 / story_cup）
+ *     不属于 Scene0** —— 由 OpeningSceneController（sceneId=100，GT 表驱动）播放
+ *   - Scene0 真实窗口 = **NES f3600-f4096**（emu-full GT 实证）：
+ *     BgFadeOut 渐隐 story_cup → Drift30 → 标题装载 → 显示/滚动 → FadeOutAll
+ *   - Scene0 主体 = PRG $84C1-$8559 主菜单展开序列（从 BgFadeOut 起，无 boot FadeIn）
+ *
+ * @bank 02 ($A000-$BFFF 在 R7=2) / ROM $A4C1-$A558（Scene0 handler 入口）
+ *
+ * ROM 序列（code_sub.s $84C1-$8559，Scene0 主展开序列，**不是 first frame**）：
+ *   JSR $9A0D        → BG 渐隐（fade.bg→0，每帧 fadeWrite）
+ *   LDA #$10/$9FA8   → 等 16 帧
+ *   LDY #$30 循环    → 0x30 次：每帧 [等 1 帧 + 所有精灵 Y+=1]
+ *   $005B=0 $007B=0
+ *   LDA #$17/$8AF7   → loadChrConfig(0x17)
+ *   $0044=$68        → scrollY = 0x68
+ *   LDA #$03/$8920   → loadSceneData(3)
+ *   $0090=$008E $0091=$008F → 滚动指针复制
+ *   LDA #$04/$9FA8   → 等 4 帧
+ *   JSR $9A35        → BG 调色板组 0 + fade 满亮
+ *   JSR $88FB        → 所有精灵 attr ^= $20
+ *   滚动循环         → 每帧 [$0079++ + $007C-=2 + $0044-=2]
+ *   LDA #$00/$8920   → loadSceneData(0)
+ *   $001B|=1
+ *   LDA #$F0/$9FA8   → 等 240 帧 → 再等 60 帧
+ *   $001B&=~1        → 滚动复位
+ *   JSR $99F0        → BG+SPR 渐隐
+ *   JSR $9B7F        → hideOam
+ *   JSR $98A0        → 清 NT
+ *   $23C0 填充       → 2 行 × 0x20 字节 = 0x55
+ *   LDA #$01/$8920   → loadSceneData(1)
+ *   LDA #$02 / RTS   → 返回 2（hub idle）
+ *
+ * H5 落地（去 CPU 化）：
+ *   - 全部"等 N 帧"由 Bank00SchedulerService 派发（PRG $9FA8 pushState 翻译）
+ *   - phase 推进通过 waitDone flag + scheduleAfter() 统一接口
+ *   - 不再用 this.counter 手写自减
+ *   - Wait240 + Wait60 是两段独立调度（240 帧 → 60 帧 → ResetScroll），
+ *     共 300 帧（与原 ROM 一致）
+ */
+import { SceneController } from './SceneController';
+import { OpeningSceneController } from './OpeningSceneController';
+import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
+import { TileBuilderService } from '../system/TileBuilderService';
+export class Scene0Controller extends SceneController {
+    constructor(store, input) {
+        super(store, input);
+        this.sceneId = 0;
+        this.ntStreamLoader = null;
+        this.sceneStateMachine = null;
+        this.audio = null;
+        this.phase = 0 /* Phase.Init */;
+        /**
+         * scheduler callback 抵达标志（PRG $9FA8 pushState 翻译）：
+         *   false → 等 timer 帧
+         *   true  → 可以推进下一 phase / 执行阶段转换
+         *
+         * 由 Bank00SchedulerService 派发，替代手写 this.counter 自减。
+         */
+        this.waitDone = true;
+        /**
+         * Drift30 phase per-frame loop counter — PRG LDY #$30 翻译。
+         *
+         * 准确语义：
+         *   - ROM $84C9 LDY #$30（Y=48）
+         *   - ROM $84D2 DEY / $84D5 BNE 循环（Y 自减到 0 退出）
+         *   - ROM 内每次循环：$84CD JSR $9FA8（等 1 帧） + $84D0 JSR $890C（精灵 Y+=1）
+         *
+         * 与 waitDone 的关键差异：
+         *   - waitDone = scheduler 等 N 帧（PRG LDA #$XX + JSR $9FA8）一次性
+         *   - driftRemaining = CPU Y 寄存器循环 index，每帧自减 + 执行 per-frame action
+         *
+         * 数量级不同：
+         *   - 16 帧 delay（PRG $84C4 LDA #$10）由 scheduler pushState 等帧
+         *   - 48 次漂移（PRG $84C9 LDY #$30）由 driftRemaining 计数，每次 shift
+         *
+         * 初始化时机：Drift30 phase 进入前的 onArrival callback 内 set 为 0x30
+         * 终止时机：0x30 次循环后 driftRemaining = 0，切到 Phase.LoadChr17
+         */
+        this.driftRemaining = 0;
+        this.prim = new RenderingPrimitivesService(store);
+        this.tileBuilder = new TileBuilderService(store, null /* ppu wired at boot */);
+    }
+    attachAudio(audio) {
+        this.audio = audio;
+    }
+    attachNtStreamLoader(nt) {
+        this.ntStreamLoader = nt;
+    }
+    attachSceneStateMachine(sm) {
+        this.sceneStateMachine = sm;
+    }
+    /**
+     * 调度下一 phase（PRG $9FA8 pushState 翻译）。
+     *
+     * 行为：
+     *   1. 立即 phase = target
+     *   2. waitDone = false（scheduler 抵达前不前进）
+     *   3. pushState(timer) 入队 Bank00SchedulerService
+     *   4. callback → waitDone = true → 调 onArrival
+     *
+     * @param target 目标 phase
+     * @param timer 等待帧数（0 = 立即推进）
+     * @param onArrival callback 抵达后执行（可选）
+     */
+    scheduleNextPhase(target, timer, onArrival) {
+        this.phase = target;
+        this.waitDone = false;
+        if (timer <= 0) {
+            this.waitDone = true;
+            if (onArrival)
+                onArrival();
+            return;
+        }
+        this.scheduleAfter(timer, () => {
+            this.waitDone = true;
+            if (onArrival)
+                onArrival();
+        });
+    }
+    onEnter() {
+        // ⚠️ Scene0 真实窗口 = NES f3600-f4096（emu-full GT 实证）：
+        //   f3600-3620 BgFadeOut（渐隐 story_cup 背景）
+        //   f3620-3685 Drift30（story_cup 精灵下漂 48 步）+ 装载前等待
+        //   f3685-3727 黑屏 + loadChrConfig(0x17) + 标题 NT 逐行装载
+        //   f3727-4083 标题显示（fade in + FlipAttr + 滚动 + 等 240+60 帧）
+        //   f4083-4096 FadeOutAll → f4097 切场景
+        //
+        // 前置片头（boot logo / 10 屏字幕 / story_cup）由 OpeningSceneController
+        // （sceneId=100）播放，切回 Scene0 时 story_cup 满亮画面在 PPU 侧保留，
+        // 但 BootRouter.changeScene() 已清 store 侧 shadowOam —— 这里恢复 story_cup
+        // 精灵，Drift30 phase 才能按 GT 让 64 sprite 下漂（oamY0 44→92）。
+        this.phase = 2 /* Phase.BgFadeOut */;
+        this.waitDone = true;
+        OpeningSceneController.loadStoryCupOam(this.store);
+    }
+    onUpdate(_frame) {
+        const store = this.store;
+        const prim = this.prim;
+        switch (this.phase) {
+            case 1 /* Phase.FadeIn */: {
+                if (prim.fadeInStep()) {
+                    this.scheduleNextPhase(2 /* Phase.BgFadeOut */, 0);
+                }
+                return undefined;
+            }
+            case 2 /* Phase.BgFadeOut */: {
+                if (prim.fadeBgOutStep()) {
+                    // LDA #$10 / JSR $9FA8：等 16 帧后启动 Drift30 循环
+                    this.scheduleNextPhase(4 /* Phase.Drift30 */, 0x10, () => {
+                        // Drift30 phase entry: 启动 0x30 帧循环 (PRG LDY #$30)
+                        this.driftRemaining = 0x30;
+                    });
+                }
+                return undefined;
+            }
+            case 3 /* Phase.Wait16 */: {
+                // 兼容路径：若外部强行 phase = Wait16 → 等 16 帧后启动 Drift30
+                if (!this.waitDone)
+                    return undefined;
+                this.scheduleNextPhase(4 /* Phase.Drift30 */, 0x10, () => {
+                    this.driftRemaining = 0x30;
+                });
+                return undefined;
+            }
+            case 4 /* Phase.Drift30 */: {
+                // 前 0x10 帧 delay（PRG $84C4 LDA #$10 + JSR $9FA8 由 scheduleNextPhase 处理）。
+                // 在 cb 抵达前不跑 loop — 避免提前 shift + 让 driftRemaining 从 0
+                // 错误递减到负数（之前 BUG: phase 永远卡死）。
+                if (!this.waitDone)
+                    return undefined;
+                // PRG $84C9-$84D5 LDY #$30 + LDA #$01 + JSR $9FA8 + JSR $890C + DEY + BNE 翻译：
+                //   每帧 sprite Y += 1（PRG $890C 翻译），共 0x30 次循环。
+                //   ROM 中"等 1 帧"由 LDA #$01 + JSR $9FA8 实现；H5 简化为每帧直接 shift
+                //   （NMI 节奏由 frame loop 自然保证，与 ROM 等效）。
+                this.tileBuilder.shiftAllSpriteY(1);
+                this.driftRemaining--;
+                // cb 抵达时已被 onArrival 设为 0x30；0x30 次后到 0 → 切 LoadChr17
+                if (this.driftRemaining <= 0) {
+                    this.driftRemaining = 0;
+                    this.scheduleNextPhase(5 /* Phase.LoadChr17 */, 0);
+                }
+                return undefined;
+            }
+            case 5 /* Phase.LoadChr17 */: {
+                store.writeByte(0x005b, 0);
+                store.writeByte(0x007b, 0);
+                prim.loadChrConfig(0x17);
+                if (this.sceneStateMachine) {
+                    this.sceneStateMachine.loadHandler(0x17);
+                }
+                if (this.ntStreamLoader) {
+                    const entries = this.ntStreamLoader.parseSceneStream(0x17);
+                    this.ntStreamLoader.applyEntries(entries);
+                }
+                store.writeByte(0x0049, 0x09);
+                store.scene.scrollY = 0x68;
+                prim.loadSceneData(3);
+                store.writeByte(0x0090, store.readByte(0x008e));
+                store.writeByte(0x0091, store.readByte(0x008f));
+                // LDA #$04 / JSR $9FA8：等 4 帧后切 FullBright
+                this.scheduleNextPhase(7 /* Phase.FullBright */, 0x04);
+                return undefined;
+            }
+            case 6 /* Phase.Wait4 */: {
+                if (!this.waitDone)
+                    return undefined;
+                this.scheduleNextPhase(7 /* Phase.FullBright */, 0x04);
+                return undefined;
+            }
+            case 7 /* Phase.FullBright */: {
+                prim.loadBgPalette(store.readByte(0x0048) & 0x3f);
+                prim.loadSprPalette(store.readByte(0x0049) & 0x3f);
+                store.fade.bg = 0x0f;
+                store.fade.spr = 0x0f;
+                prim.fadeWrite();
+                this.scheduleNextPhase(8 /* Phase.FlipAttr */, 0);
+                return undefined;
+            }
+            case 8 /* Phase.FlipAttr */: {
+                // PRG $88FB 翻译：所有精灵 attr ^= $20（水平翻转）
+                this.tileBuilder.flipAllSpritePalettes();
+                this.scheduleNextPhase(9 /* Phase.Scroll51 */, 0);
+                return undefined;
+            }
+            case 9 /* Phase.Scroll51 */: {
+                // 滚动循环：每帧 [$0079++ + $007C-=2 + $0044-=2]，直到 $0044<3
+                store.scene.scrollFlag = (store.scene.scrollFlag + 1) & 0xff;
+                store.writeByte(0x007c, (store.readByte(0x007c) - 2) & 0xff);
+                const y = (store.scene.scrollY - 2) & 0xff;
+                store.scene.scrollY = y;
+                if ((y & 0xff) < 0x03) {
+                    this.scheduleNextPhase(10 /* Phase.StopScroll */, 0);
+                }
+                return undefined;
+            }
+            case 10 /* Phase.StopScroll */: {
+                // LDA #$00 / JSR $8920 → loadSceneData(0) + $001B |= 1
+                prim.loadSceneData(0);
+                store.scene.flags = store.scene.flags | 0x01;
+                // LDA #$F0 / JSR $9FA8：等 240 帧后切 ResetScroll
+                this.scheduleNextPhase(13 /* Phase.ResetScroll */, 0xf0);
+                return undefined;
+            }
+            case 11 /* Phase.Wait240 */: {
+                if (!this.waitDone)
+                    return undefined;
+                this.scheduleNextPhase(13 /* Phase.ResetScroll */, 0xf0);
+                return undefined;
+            }
+            case 12 /* Phase.Wait60 */: {
+                if (!this.waitDone)
+                    return undefined;
+                this.scheduleNextPhase(13 /* Phase.ResetScroll */, 0x3c);
+                return undefined;
+            }
+            case 13 /* Phase.ResetScroll */: {
+                store.scene.flags = store.scene.flags & 0xfe;
+                store.writeByte(0x0090, 0);
+                store.writeByte(0x0091, 2);
+                this.scheduleNextPhase(14 /* Phase.FadeOutAll */, 0);
+                return undefined;
+            }
+            case 14 /* Phase.FadeOutAll */: {
+                if (prim.fadeOutStep()) {
+                    this.scheduleNextPhase(15 /* Phase.Cleanup */, 0);
+                }
+                return undefined;
+            }
+            case 15 /* Phase.Cleanup */: {
+                prim.hideOam();
+                prim.clearNametable();
+                prim.fillNametableRows(0xc0, 0x23, 0x02, 0x20, 0x55);
+                this.scheduleNextPhase(16 /* Phase.LoadBlock1 */, 0);
+                return undefined;
+            }
+            case 16 /* Phase.LoadBlock1 */: {
+                prim.loadSceneData(1);
+                this.phase = 17 /* Phase.Done */;
+                return 0x02; // hub idle（Scene2）
+            }
+            default:
+                return 0x02;
+        }
+    }
+    onRender() {
+        // 渲染全部由缓冲（NT 渲染/OAM/调色板）驱动，无需额外绘制
+    }
+}

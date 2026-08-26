@@ -1,0 +1,30 @@
+declare class PAPU {
+    constructor(nes: any);
+    readReg(address: any): number;
+    writeReg(address: any, value: any): void;
+    updateChannelEnable(value: any): void;
+    clockFrameCounter(nCycles: any, frameCounterAlreadyAdvanced: any): void;
+    processFrameIrqClear(nCycles: any): void;
+    advanceFrameCounter(nCycles: any): void;
+    _advanceFrameSteps(frameCounterCycles: any): void;
+    accSample(cycles: any): void;
+    fireFrameStep(step: any): void;
+    clockQuarterFrame(): void;
+    clockHalfFrame(): void;
+    sample(): void;
+    getLengthMax(value: any): any;
+    getDmcFrequency(value: any): any;
+    getNoiseWaveLength(value: any): any;
+    setFrameRate(rate: any): void;
+    setPanning(pos: any): void;
+    setMasterVolume(value: any): void;
+    updateStereoPos(): void;
+    initLengthLookup(): void;
+    initDmcFrequencyLookup(): void;
+    initNoiseWavelengthLookup(): void;
+    initDACtables(): void;
+    toJSON(): any;
+    fromJSON(s: any): void;
+    static JSON_PROPERTIES: string[];
+}
+export default PAPU;

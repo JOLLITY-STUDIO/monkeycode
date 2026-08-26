@@ -19,13 +19,13 @@
 import { SceneController } from './SceneController';
 import {
   getOpeningFrame,
-  OPENING_FRAMES,
   type OpeningFrameEntry,
   type OpeningFrameChr,
   type OpeningFrameNtRow,
   type OpeningFrameScroll,
 } from '../../data/scene/OpeningFrameTable';
 import { OPENING_SCREENS, getOpeningScreen } from '../../data/scene/OpeningScreenTable';
+import { Button } from '../system/InputService';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
@@ -109,6 +109,17 @@ export class OpeningSceneController extends SceneController {
 
   onUpdate(frame: number): number | undefined {
     const nesFrame = this.nesFrameOf(frame);
+
+    // === START 按下:跳过开场到标题画面 ===
+    // 行为语义:用户按 START 后,ROM 跳过片头直接进入 Scene0(title 展开序列)。
+    //   BootRouter.changeScene(0) 会清 NT/OAM → Scene0.onEnter → BgFadeOut → Drift30 →
+    //   LoadChr17 (装载 title NT) → Scroll51 → FadeOutAll → Done → return 2 (hub).
+    // NOTE: 不能在这里 return 2 — 因为 changeScene(2) 会清 NT/OAM,刚铺的最后一帧 GT
+    //       数据会被擦除。交给 Scene0 跑完整 title 展开才是真正的"标题画面"。
+    if (this.input.isPressed(1, Button.Start)) {
+      return 0;
+    }
+
     if (nesFrame >= OPENING_END_NES_FRAME) {
       // 片头完整播完(含 title 装载/显示),转 Scene2(hub idle)保持最后画面,
       // 不再走 Scene0 的 BgFadeOut/Drift30 近似逻辑。
@@ -116,6 +127,12 @@ export class OpeningSceneController extends SceneController {
     }
     const fr = getOpeningFrame(nesFrame);
     if (!fr) return undefined;
+    this.applyFrameData(fr);
+    return undefined;
+  }
+
+  /** 把单帧 GT 数据(palette/OAM/CHR plan/NT/attr/scroll)应用到 store + 控制器内部缓冲 */
+  private applyFrameData(fr: OpeningFrameEntry): void {
     this.currentFrame = fr;
 
     // 调色板:仅在有变化时写入(节省写入)
@@ -136,8 +153,6 @@ export class OpeningSceneController extends SceneController {
 
     // scroll 寄存器:供 applyNtToPpu 在 PPU 渲染前写入
     this.currentScroll = fr.s;
-
-    return undefined;
   }
 
   /** 供 Tsubasa2.frame 取本帧 CHR per-scanline 计划 */

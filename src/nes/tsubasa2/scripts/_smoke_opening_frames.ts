@@ -47,15 +47,17 @@ function readPngRgba(file: string): Buffer | null {
   } catch { return null; }
 }
 
+fs.writeFileSync(path.join(H5_DIR, 'smoke-start.log'), 'start ' + Date.now());
 const runtime = new HeadlessRuntime();
 const game = new Tsubasa2();
 game.boot(runtime as any);
 
 const total = 3650;
 const step = 150;
+const diagFrames = [900, 1950];
 for (let f = 0; f < total; f++) {
   runtime.frame(game);
-  if (f % step === 0 || f === total - 1) {
+  if (f % step === 0 || f === total - 1 || diagFrames.includes(f)) {
     const ppu: any = runtime.ppu;
     const rgba = bufToRgba(ppu.buffer as Uint32Array);
     const png = encodePng(256, 240, rgba);
@@ -65,6 +67,32 @@ for (let f = 0; f < total; f++) {
     const emuFile = path.join(EMU_DIR, 'frame-' + String(f + 10).padStart(4, '0'), 'screen.png');
     const exists = fs.existsSync(emuFile);
     console.log(`h5 f${f}(nes f${f + 10}) saved, emu ref exists=${exists}`);
+  }
+  if (diagFrames.includes(f)) {
+    const ppu: any = runtime.ppu;
+    const store = game.store;
+    const lines: string[] = [];
+    lines.push(`=== H5 frame ${f} (NES ${f + 10}) ===`);
+    lines.push('palette.bg ' + Array.from(store.palette.bg).join(','));
+    lines.push('palette.spr ' + Array.from(store.palette.spr).join(','));
+    lines.push('fade.bg ' + store.fade.bg + ' fade.spr ' + store.fade.spr);
+    lines.push('--- NT0 rows 0-23 ---');
+    for (let r = 0; r < 24; r++) {
+      const tiles: string[] = [];
+      const attrs: string[] = [];
+      for (let c = 0; c < 32; c++) {
+        tiles.push(ppu.nameTable[0].tile[r * 32 + c].toString(16).padStart(2, '0'));
+        attrs.push(ppu.nameTable[0].attrib[r * 32 + c].toString(16));
+      }
+      lines.push('r' + String(r).padStart(2, '0') + ' tiles:' + tiles.join(' '));
+      lines.push('r' + String(r).padStart(2, '0') + ' attrs:' + attrs.join(' '));
+    }
+    lines.push('--- CHR slots ---');
+    lines.push((runtime as any).chrSlots.join(','));
+    const opening = (game.router as any).getController(100);
+    lines.push('--- CHR plan ---');
+    lines.push(JSON.stringify(opening ? opening.getChrPlan() : null));
+    fs.writeFileSync(path.join(H5_DIR, 'frame-' + String(f).padStart(4, '0'), 'state.txt'), lines.join('\n'));
   }
 }
 console.log('smoke done');
