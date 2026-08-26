@@ -1,0 +1,132 @@
+---
+
+## 1.bis 完整 boot 阶段划分（F6-F4355，无 START 按下 = 4350 帧 ≈ 73s）
+
+### 1.bis.1 阶段表
+
+| 阶段 | 帧范围 | 时长 | 视觉状态 | 关键 PC |
+|---|---|---|---|---|
+| **内存清零** | F6-F7 | 0.02s | 黑屏 | bank01 `$01:AA0B-$AA1A` 循环清零 `$047B-$05EF` |
+| **主循环启动** | F8 | < 0.02s | 黑屏 | bank00 `$00:9958 CLC` |
+| **Capcom logo 准备** | F13-F29 | 0.27s | 黑屏（PPU off） | bank00 `$00:9A7E-$9AB7` logo OAM unpack |
+| **早期 vsync wait** | F30-F120 | 1.5s | 黑屏 | bank00 `$9F04 LDA $1B` + bank02 `$A0ED` |
+| **第二画面 OAM dump** | F380 | 6s | 黑屏 | bank00 `$00:91A1 STA $E8 = #$F1` |
+| **字幕/tile 推送 + sprite 持续更新** | F1047-F2510 | 24s | 黑屏 → PPU buffer 累加 | bank02 `$01:A039 STA $2007` |
+| **首次 PPU enable** | **F2510** | **41s** | **画面呈现** | bank02 `$01:A17F STA $2000 = #$89` |
+| **大空翼开场动画** | F2510-F4355 | 31s | 持续可见动画 | bank02 `$A8EE` OAM refetch 每 ~28 帧 |
+
+### 1.bis.2 全 4350 帧 PC 直方图（top 20）
+
+| PC | hits | 说明 |
+|---|---|---|
+| `$01:A0ED` | **373x** | bank02 audio 主轮询 (8.6% CPU 时间) |
+| `$00:9F04` | **217x** | bank00 vsync wait |
+| `$06:8002` | **158x** | bank06 audio stream |
+| `$06:8119` | **109x** | bank06 audio timer DEC $F3 |
+| `$01:A8EE` | **90x** | bank02 OAM refetch (动画 sprite 持续更新) |
+| `$06:84BA` | **40x** | bank06 audio stream read |
+| `$00:9AA3` | **39x** | bank00 sprite OAM unpack ($062A packed) |
+| `$00:9F06` | **68x** | bank00 vsync BPL |
+| `$00:9AA8` | **31x** | bank00 sprite OAM unpack (variant entrypoint) |
+| `$00:91A1` | **37x** | bank00 sprite OAM dump (F380 routine 复用) |
+| `$06:810C` | **36x** | bank06 audio timer init |
+| `$01:A039` | **24x** | bank02 PPU bulk write (字幕/tile 数据) |
+| `$01:A036` | **20x** | bank02 PPU stream read |
+| `$00:91B4` | **20x** | bank00 sprite OAM 子 routine |
+| `$00:975A` | **16x** | bank00 sprite attr 处理子例程 |
+| `$00:9F2E` | **16x** | bank00 PRG bank switch write |
+| `$00:91C8` | **12x** | bank00 sprite Y-drift 处理 |
+| `$06:8241` | **11x** | bank06 audio sequence init |
+| `$06:824B` | **8x** | bank06 audio sequence 2 |
+| `$01:A17F` | **1x** | bank02 PPU enable (F2510 唯一一次) |
+
+### 1.bis.3 关键 transition timeline（按 frame）
+
+```
+F6     bank01 $01:AA0B 内存清零循环       (黑屏)
+F8     bank00 $00:9958 CLC 主循环启动    (黑屏)
+F13    bank00 $00:9A7E logo OAM unpack  (黑屏)
+F30    bank00 $00:9F04 vsync wait       (黑屏)
+F32    bank02 $01:A0ED APU polling      (黑屏)
+F60    bank02 audio poll 持续           (黑屏)
+F120   bank02 $00:9F04/F06 vsync poll   (黑屏)
+F298   bank00 $00:9F31 额外 entrypoint  (黑屏)
+F300   bank00 $00:9FC6 TSX stack 操作   (黑屏)
+F350   bank02 $01:A039 PPU bulk write    (黑屏, 但数据预填)
+F379   bank00 $00:9AA8 sprite OAM unpack (黑屏)
+F380   bank00 $00:91A1 第二画面 OAM dump (黑屏)
+F407   bank00 $00:9F2E 首次 PRG bank switch (黑屏)
+F461   bank00 $00:9F2E 第二次 PRG bank switch (黑屏)
+F488   bank00 $00:9AA8 首次 sprite OAM unpack $9AA8 (黑屏)
+F1047  bank02 $01:A039 第 N 次 PPU bulk write (黑屏, tile 累加中)
+F1397  bank02 audio poll 含 $4016/$4017 间接读 (黑屏)
+F1406  bank00 $00:9FC6 stack 操作       (黑屏)
+F1521  bank00 $00:9F3C dispatcher JSR  (黑屏)
+F2416  bank00 $00:920B 第二次 PRG bank switch $C4B9 (黑屏)
+F2504  bank00 $00:91C8 第二 sprite Y-drift 处理 (黑屏)
+F2510  bank02 $01:A17F STA $2000 = #$89 ← **首次 PPU enable** (画面开始显示)
+F2510+ 画面显示，所有变化可见
+F2796  bank00 $00:91C8 sprite Y 处理开始 (画面上看到的)
+F3644  bank06 $06:8119 音频 timer 触发新 phase
+F4355  trace 中止于 bank00 $00:9AA8 (下次 sprite OAM unpack 开始)
+```
+
+### 1.bis.4 F6-F2510 PPU 黑屏期（4167 帧 ≈ 70s）行为特点
+
+1. **CPU 全速运行但屏幕黑** — bank02 audio 主例程每帧跑，A8EE 等 PPU buffer 在 RAM 中持续组装
+2. **PPU bulk write 持续** — bank02 `$01:A039 STA $2007` 在 PPU off 状态下写 tile 数据到 RAM（实际 VRAM 不显示，但 ROM 持续写）
+3. **OAM 持续 refetch** — bank02 `$01:A8EE STA $0202,Y` 把 sprite 数据写到 RAM `$0200-$02FF`，等 PPU enable 时一起呈现
+4. **PRG bank switch 12+ 次** — bank00 动态切换模块，加载不同的代码片段
+5. **完整开场动画的"画外音"在 RAM 中累加** — 等 PPU enable 那一刻画面 + 字幕同时呈现
+
+### 1.bis.5 F6-F4355 综合 H5 翻译骨架
+
+```typescript
+class BootSequence {
+  // F6: clear RAM
+  clearRam() { for (a = $047B; a <= $05EF; a++) ram[a] = 0; }
+  
+  // F8: main loop entry, F2510 is end
+  mainLoop() {
+    while (!ppuEnabled) {
+      // F30+: poll vsync flag
+      while (ram.$1B & 0x80) {}
+      
+      // F32+: audio poll
+      audio.poll();  // $A0ED (bank02)
+      
+      // F380: sprite OAM dump
+      if (frameN % 70 === 0) sprite.dumpOam();  // $91A1
+      
+      // F1047+: PPU bulk write (subtitle/tile build up)
+      if (frameN % 140 === 0) ppu.writeTile();  // $A039
+      
+      // F407/F461/F2416: PRG bank switch
+      if (someCondition) moduleLoader.switch(id);
+    }
+    
+    // F2510: PPU enable
+    ppu.enable(0x89);  // $A17F STA $2000 = #$89
+    
+    // F2510+: visible animation
+    showOpeningAnimation();
+  }
+}
+```
+
+### 1.bis.6 核心事实：boot 期间的"画面"
+
+| "画面" 编号 | Frame | 内容 | 来源 bank |
+|---|---|---|---|
+| **画面 0** (黑屏 1) | F6-F12 | 完全黑屏 + 内存清零 | bank01 |
+| **画面 1** (Capcom logo) | F13-F29 | Capcom logo（但 PPU off, 不可见） | bank00 `$9A7E` |
+| **画面 2** (黑屏 2) | F30-F379 | 黑屏持续, vsync + audio 循环 | bank00+bank02+bank06 |
+| **画面 3** (开场动画准备) | F380-F2509 | 第二画面 OAM dump + PRG switch + PPU bulk write（**PPU 仍 off**） | bank00+bank02 |
+| **画面 4** (大空翼开场) | **F2510-F4355** | **可视画面**：PPU enable + sprite 持续更新 + 字幕推送 + audio 主循环 | bank02 主 + bank00 协 + bank12 audio |
+
+### 1.bis.7 关键事实
+
+**F2510 之前所有"画面"在 CPU 中准备，F2510 才一次性 PPU enable 一次性呈现。** 所以"boot 期间有 4 个画面"是误解 — 其实只有一个持续的画面在 F2510 才开始。
+
+ROM 用了 4167 帧（70s）的 CPU 时间准备一个画面，然后一次性呈现 — 这是 90 年代 NES 游戏优化的典型手法。
+
