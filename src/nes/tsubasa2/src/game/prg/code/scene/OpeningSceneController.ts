@@ -1,62 +1,56 @@
 /**
- * OpeningSceneController — 片头序列场景（sceneId=100，附加场景）
+ * OpeningSceneController — 片头序列场景(sceneId=100,附加场景)
  *
- * ⚠️ 职责：boot 之后的完整片头动画（NES f10-f3599）：
- *   tecmo_logo (f10-280) → black_gap/NTV (f282-377) → 10 屏字幕动画 (f378-3040)
- *   → story_cup (f3046-3599) → NES f3600 起切 Scene0（Scene0 从 BgFadeOut 接管，
- *   标题菜单 f3727-4096 由 Scene0Controller 的既有 phase 序列覆盖）。
+ * 数据源:OpeningFrameTable.ts(emu-full f10-f3599 逐帧 Ground Truth)
+ *   - 每帧完整驱动:CHR per-scanline 计划 / palette / OAM diff / NT tile diff / 属性表 diff
+ *   - 完全逐帧还原片头动画(NTV logo / 10 屏字幕 / story_cup)
  *
- * 数据源：OpeningScreenTable.OPENING_SCREENS（emu-full 4332 帧 dump 提取的 Ground Truth）：
- *   - 每屏保留稳定帧(mid)完整数据: palette / oam / nt / chr + fade 时序
- *   - 播放 = 按表驱动：装载 NT（逐帧 1 行，对齐 ROM 逐行写 NT）→ 装载 OAM/palette/chr
- *     → fade 渐显/停留/渐隐（GT 提取的 fadeInFrames/stableFrames/fadeOutFrames）
+ * 渲染协作:
+ *   - CHR:本类只记录当前帧的 per-scanline plan,由 Tsubasa2.frame 在 PPU 渲染前
+ *     通过 HeadlessRuntime.setPerScanlineChrPlan 交给 PPU mmap hook 按 scanline 切换
+ *   - NT:本类把 diff 行暂存在队列,Tsubasa2.frame 在 renderCommit 后、PPU 渲染前
+ *     调用 applyNtToPpu(ppu) 直接写入 ppu.nameTable
+ *   - palette/OAM:通过 store 标准视图写入,由 InterruptService.renderCommit 正常提交
  *
- * 翻译原则（v2）：
- *   - 无 CPU、无 bank 切换；行为数据直接查表（高级语言消费 Ground Truth）
- *   - 渲染通过 RenderingPrimitivesService 原语 + DataStore 具名视图（禁止裸地址接口）
- *   - CHR 每帧由 InterruptService.applyChrRequest 从 $0075/$0076 装载（本类只写配置字节）
- *   - fade 只设 store.fade，由 renderCommit.flushPalette 按 fadeLookup 落地（不占 ntBuffer）
- *
- * 时序衔接（对齐 emu-full GT）：
- *   - H5 frame N ↔ NES frame N+10（H5 frame 0 = NES f10 = tecmo_logo 起始）
- *   - NES f3600 → return SceneId.Scene0（story_cup 满亮 → Scene0 BgFadeOut 渐隐）
+ * 翻译原则(v2):无 CPU、无 bank 切换;行为数据直接查表。
  */
 import { SceneController } from './SceneController';
-import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
-import { OPENING_SCREENS } from '../../data/scene/OpeningScreenTable';
-import type { OpeningScreenEntry, OpeningFrameState } from '../../data/scene/OpeningScreenTable';
+import {
+  getOpeningFrame,
+  OPENING_FRAMES,
+  type OpeningFrameEntry,
+  type OpeningFrameChr,
+  type OpeningFrameNtRow,
+} from '../../data/scene/OpeningFrameTable';
+import { OPENING_SCREENS, getOpeningScreen } from '../../data/scene/OpeningScreenTable';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
 
-/** NT 装载条目（ntBuffer 0x40 容量 → 每帧最多 1 条） */
-interface NtLoadEntry {
-  readonly ntAddr: number;
-  readonly data: ReadonlyArray<number>;
-}
-
-/** OpeningScene 特殊场景号（BootRouter 注册表外附加，InterruptService 据此跳过 end-bank 覆盖） */
+/** OpeningScene 特殊场景号(BootRouter 注册表外附加) */
 export const OPENING_SCENE_ID = 100;
 
-/** NES f3600 起 Scene0 接管（BgFadeOut/Drift30/标题装载） */
+/** NES f3600 起 Scene0 接管(BgFadeOut/Drift30/标题装载) */
 const OPENING_END_NES_FRAME = 3600;
-/** H5 frame 0 = NES f10（tecmo_logo 起始） */
+/** H5 frame 0 = NES f10(tecmo_logo 起始) */
 const H5_FRAME_OFFSET = 10;
-/** story_cup 屏（Scene0 Drift30 下漂的精灵来源） */
+/** story_cup 屏(Scene0 Drift30 下漂的精灵来源) */
 const STORY_CUP_SCREEN_INDEX = 11;
 
 export class OpeningSceneController extends SceneController {
   readonly sceneId = OPENING_SCENE_ID;
-  private readonly prim: RenderingPrimitivesService;
   private audio: AudioService | null = null;
-  /** 当前屏索引（-1 = 未装载） */
-  private screenIndex = -1;
-  /** 待装载 NT 条目队列（每帧消费 1 条） */
-  private loadQueue: NtLoadEntry[] = [];
+  /** 当前帧 GT 数据 */
+  private currentFrame: OpeningFrameEntry | null = null;
+  /** 当前帧 CHR per-scanline 计划 */
+  private currentChrPlan: ReadonlyArray<OpeningFrameChr> = [];
+  /** 待写入 ppu.nameTable 的 NT tile 变化行 */
+  private ntQueue: OpeningFrameNtRow[] = [];
+  /** 待写入 ppu.nameTable 的属性表变化行 */
+  private attrQueue: OpeningFrameNtRow[] = [];
 
   constructor(store: DataStore, input: InputService) {
     super(store, input);
-    this.prim = new RenderingPrimitivesService(store);
   }
 
   attachAudio(audio: AudioService): void {
@@ -64,172 +58,152 @@ export class OpeningSceneController extends SceneController {
   }
 
   onEnter(): void {
-    this.screenIndex = -1;
-    this.loadQueue = [];
+    this.currentFrame = null;
+    this.currentChrPlan = [];
+    this.ntQueue = [];
+    this.attrQueue = [];
+
+    // PPU 状态:GT 数据表已经包含真实 fade 后的 palette,这里把 fade 固定为满亮,
+    // 让 InterruptService.flushPalette 直接输出 palette 原值。
+    this.store.fade.bg = 0x0f;
+    this.store.fade.spr = 0x0f;
+    // BG 从 $0000,SPR 从 $1000;NMI 由 renderCommit 第 8 步统一置位
+    this.store.ppuState.ctrl = 0x88;
+    // 显示 BG + SPR,不禁用左 8 列(与 emu 一致)
+    this.store.ppuState.mask = 0x1e;
+    // 注:scrollTempX/Y 是 PpuStateView 只读 getter(0x004a 与 FadeView.bg 同址,
+    //   不可写)。最终滚动由 renderCommit step7 applyScrollBank02 以
+    //   scene.scrollX/scrollY 覆盖,这里只设置 scrollX/scrollY。
+    this.store.scene.scrollX = 0;
+    this.store.scene.scrollY = 1;
+    this.store.scene.scrollFlag = 0;
+
+    // 禁用 InterruptService 的 applyChrRequest / midFrameChrSwitch / applyChrFrom009e 路径,
+    // 这些会覆盖本类的 per-scanline CHR 计划。
+    this.store.writeByte(0x0075, 0);
+    this.store.writeByte(0x0076, 0);
+    this.store.writeByte(0x005e, 0);
+    this.store.writeByte(0x005f, 0);
+    this.store.writeByte(0x009c, 0);
+    this.store.writeByte(0x009d, 0);
+    this.store.writeByte(0x009e, 0);
+    this.store.writeByte(0x009f, 0);
+    this.store.writeByte(0x00a0, 0);
+    this.store.writeByte(0x00a1, 0);
+
+    // tecmo_logo 首屏播 BGM 0x01(与 boot logo 音乐一致)
+    if (this.audio) {
+      this.audio.playBgm(0x01);
+    }
   }
 
-  /** H5 帧 → NES 绝对帧（GT 时间线基准） */
+  /** H5 帧 -> NES 绝对帧(GT 时间线基准) */
   private nesFrameOf(frame: number): number {
     return frame + H5_FRAME_OFFSET;
   }
 
   onUpdate(frame: number): number | undefined {
     const nesFrame = this.nesFrameOf(frame);
-    // NES f3600：切 Scene0（Scene0Controller 从 BgFadeOut 起，story_cup 满亮画面由
-    // PPU 侧保留——changeScene 只清 store 侧 nametable，不清已落 PPU 的渲染结果）
-    if (nesFrame >= OPENING_END_NES_FRAME) return 0;
+    if (nesFrame >= OPENING_END_NES_FRAME) {
+      return 0; // 切 Scene0
+    }
+    const fr = getOpeningFrame(nesFrame);
+    if (!fr) return undefined;
+    this.currentFrame = fr;
 
-    // 定位当前屏（屏间间隙帧保持上一屏 fade 状态）
-    const idx = OPENING_SCREENS.findIndex((s) => nesFrame >= s.startFrame && nesFrame <= s.endFrame);
-    if (idx < 0) return undefined;
-    const screen = OPENING_SCREENS[idx];
-
-    // 换屏：装载 chr/palette/oam + 构建 NT 装载队列
-    if (idx !== this.screenIndex) this.enterScreen(screen);
-
-    // 每帧装载 1 条 NT（renderCommit.flushNtBuffer 同帧消费落 PPU）
-    if (this.loadQueue.length > 0) {
-      const e = this.loadQueue.shift()!;
-      this.prim.ntBufferAppend({ vertical: false, ntAddr: e.ntAddr, data: e.data });
+    // 调色板:仅在有变化时写入(节省写入)
+    if (fr.p) {
+      this.store.palette.loadBg(fr.p.bg);
+      this.store.palette.loadSpr(fr.p.spr);
     }
 
-    // fade 驱动（仅写 store.fade，flushPalette 统一落地）
-    this.applyFade(screen, nesFrame);
+    // OAM:应用与上帧的差异
+    this.applyOamDiff(fr.o);
+
+    // CHR 计划:由 Tsubasa2.frame 渲染前交给 HeadlessRuntime
+    this.currentChrPlan = fr.c;
+
+    // NT 与属性表变化行:供 applyNtToPpu 在 renderCommit 后写入 ppu
+    this.ntQueue = fr.n.slice();
+    this.attrQueue = fr.a.slice();
+
     return undefined;
   }
 
-  // ──────────────────────── 屏装载 ────────────────────────
-
-  private enterScreen(screen: OpeningScreenEntry): void {
-    const store = this.store;
-    this.screenIndex = screen.id;
-
-    // CHR：写 $0075/$0076（applyChrRequest 每帧装载 8 slot）+
-    // 清 $005E/$005F（禁 mid-frame stream）+ 清 $009C-$00A1（禁 applyChrFrom009e 干扰）
-    const chr = screen.chr;
-    store.writeByte(0x0075, (chr[0] ?? 0) & 0xff);
-    store.writeByte(0x0076, (chr[4] ?? 0) & 0xff);
-    store.writeByte(0x005e, 0);
-    store.writeByte(0x005f, 0);
-    store.writeByte(0x009c, 0);
-    store.writeByte(0x009d, 0);
-    store.writeByte(0x009e, 0);
-    store.writeByte(0x009f, 0);
-    store.writeByte(0x00a0, 0);
-    store.writeByte(0x00a1, 0);
-    store.writeByte(0x005d, store.readByte(0x005d) & 0xfb); // chrSel bit2 = 0
-
-    // 滚动静止（stub：GT 未提取滚动；标题滚动由 Scene0Controller 处理）
-    store.scene.scrollFlag = 0;
-    store.scene.scrollX = 0;
-    store.scene.scrollY = 1;
-
-    // 调色板（mid 稳定帧 palette；fade 由 applyFade 驱动）
-    store.palette.loadBg(screen.mid.pal.bg);
-    store.palette.loadSpr(screen.mid.pal.spr);
-    store.fade.bg = 0;
-    store.fade.spr = 0;
-
-    // OAM（GT mid 稳定帧 64 sprite）
-    this.applyOam(screen.mid.oam);
-
-    // NT 装载队列（diff 行 + 非零属性表行）
-    this.loadQueue = this.buildNtQueue(screen.mid.nt);
-
-    // BGM：首屏（tecmo_logo）播 BGM 0x01（boot logo 音乐）
-    if (this.audio && this.screenIndex === 0) {
-      this.audio.playBgm(0x01);
-    }
-  }
-
-  /** 写 shadowOam：GT oam 数组（[y,tile,attr,x] 按 sprite 索引有序） */
-  private applyOam(oam: ReadonlyArray<ReadonlyArray<number>>): void {
-    const shadow = this.store.oam.shadowOam;
-    for (let i = 0; i < 64 && i < oam.length; i++) {
-      const o = oam[i];
-      const base = i * 4;
-      shadow[base + 0] = (o[0] ?? 0xf8) & 0xff;
-      shadow[base + 1] = (o[1] ?? 0) & 0xff;
-      shadow[base + 2] = (o[2] ?? 0) & 0xff;
-      shadow[base + 3] = (o[3] ?? 0) & 0xff;
-    }
-    for (let i = oam.length; i < 64; i++) {
-      const base = i * 4;
-      shadow[base + 0] = 0xf8;
-      shadow[base + 1] = 0xf8;
-      shadow[base + 2] = 0xf8;
-      shadow[base + 3] = 0xf8;
-    }
+  /** 供 Tsubasa2.frame 取本帧 CHR per-scanline 计划 */
+  getChrPlan(): ReadonlyArray<OpeningFrameChr> {
+    return this.currentChrPlan;
   }
 
   /**
-   * 构建 NT 装载队列：每个 nametable（0-3）的非空 tile 行（r<30）+ 非零属性表行。
-   * - tile 行: ntAddr = base + r*32（32 字节/行）
-   * - 属性表: 从逐 tile attrib[1024] 反推 64 字节标准属性表，按 8 字节行写 base+$3C0
+   * 在 InterruptService.renderCommit 之后、PPU 渲染之前调用。
+   * 直接把本帧 NT/属性表 diff 写入 ppu.nameTable(跳过容量受限的 ntBuffer)。
    */
-  private buildNtQueue(nts: ReadonlyArray<{ tile: ReadonlyArray<number>; attrib: ReadonlyArray<number> }>): NtLoadEntry[] {
-    const queue: NtLoadEntry[] = [];
-    for (let n = 0; n < nts.length; n++) {
-      const nt = nts[n];
+  applyNtToPpu(ppu: any): void {
+    if (!ppu || !ppu.nameTable) return;
+    for (const row of this.ntQueue) {
+      const nt = ppu.nameTable[row.ni];
       if (!nt || !nt.tile) continue;
-      const base = 0x2000 + n * 0x400;
-      // tile 行（仅写可见 30 行；行 30/31 属属性区避免覆盖）
-      for (let r = 0; r < 30; r++) {
-        const row: number[] = [];
-        let nz = false;
-        for (let c = 0; c < 32; c++) {
-          const v = nt.tile[r * 32 + c] ?? 0;
-          row.push(v);
-          if (v !== 0) nz = true;
-        }
-        if (nz) queue.push({ ntAddr: base + r * 32, data: row });
-      }
-      // 属性表 64 字节（attrib[1024] 逐 tile 组 → 4x4 块编码）
-      if (!nt.attrib || nt.attrib.length < 1024) continue;
-      const attrTable = new Array<number>(64).fill(0);
-      for (let ar = 0; ar < 8; ar++) {
-        for (let ac = 0; ac < 8; ac++) {
-          const tl = (nt.attrib[ar * 4 * 32 + ac * 4] ?? 0) & 3;
-          const tr = (nt.attrib[ar * 4 * 32 + ac * 4 + 1] ?? 0) & 3;
-          const bl = (nt.attrib[(ar * 4 + 2) * 32 + ac * 4] ?? 0) & 3;
-          const br = (nt.attrib[(ar * 4 + 2) * 32 + ac * 4 + 1] ?? 0) & 3;
-          attrTable[ar * 8 + ac] = tl | (tr << 2) | (bl << 4) | (br << 6);
-        }
-      }
-      for (let ar = 0; ar < 8; ar++) {
-        const row = attrTable.slice(ar * 8, ar * 8 + 8);
-        if (row.some((v) => v !== 0)) {
-          queue.push({ ntAddr: (base + 0x3c0 + ar * 8) & 0x3fff, data: row });
-        }
+      const base = row.r * 32;
+      for (let c = 0; c < 32; c++) {
+        nt.tile[base + c] = row.d[c] & 0xff;
       }
     }
-    return queue;
+    for (const row of this.attrQueue) {
+      const nt = ppu.nameTable[row.ni];
+      if (!nt || !nt.attrib) continue;
+      this.applyAttrRow(nt, row.r, row.d);
+    }
+    this.ntQueue = [];
+    this.attrQueue = [];
   }
 
-  /** fade 驱动（GT 时序：fadeIn → stable 满亮 → fadeOut 渐隐） */
-  private applyFade(screen: OpeningScreenEntry, nesFrame: number): void {
-    const store = this.store;
-    const local = nesFrame - screen.startFrame;
-    let fade: number;
-    if (local < screen.fadeInFrames) {
-      fade = screen.fadeInFrames <= 0 ? 0x0f : Math.floor((local * 0x0f) / screen.fadeInFrames);
-    } else if (local < screen.fadeInFrames + screen.stableFrames) {
-      fade = 0x0f;
-    } else {
-      const fo = local - screen.fadeInFrames - screen.stableFrames;
-      fade = screen.fadeOutFrames <= 0 ? 0x0f : 0x0f - Math.floor((fo * 0x0f) / screen.fadeOutFrames);
+  /** 标准 64 字节属性表行 -> 960 项逐 tile attrib(PPU 期望 palette group 偏移 0/4/8/12) */
+  private applyAttrRow(nt: any, ar: number, row8: ReadonlyArray<number>): void {
+    for (let ac = 0; ac < 8; ac++) {
+      const v = row8[ac] & 0xff;
+      const baseY = ar * 4;
+      const baseX = ac * 4;
+      // NES quirk:属性表字节同时写入 tile[0x3C0+addr]("attributes as tiles",
+      // 滚动进入属性表区域时按 tile 取;emu nt.json 的 tile[960..1023] 含此)
+      if (nt.tile) nt.tile[0x3c0 + ar * 8 + ac] = v;
+      for (let dy = 0; dy < 4; dy++) {
+        for (let dx = 0; dx < 4; dx++) {
+          // group = 2x2 子块索引:dy>=2 -> bit2, dx>=2 -> bit0(勿再 <<1,
+          // 否则 dy=2 得 4,超出 8 位导致下半块永远读到 0)
+          const group = (dy & 2) | ((dx & 2) >> 1); // 0,1,2,3
+          const pal = (v >> (group * 2)) & 3;
+          const ty = baseY + dy;
+          const tx = baseX + dx;
+          // 写满 32x32(含 30-31 行),与硬件 writeAttrib 一致(emu attrib 数组含 960-1023)
+          if (ty < 32 && tx < 32) {
+            nt.attrib[ty * 32 + tx] = pal << 2;
+          }
+        }
+      }
     }
-    const v = Math.max(0, Math.min(0x0f, fade)) & 0x0f;
-    store.fade.bg = v;
-    store.fade.spr = v;
+  }
+
+  /** 应用 OAM diff 到 shadowOam */
+  private applyOamDiff(diff: ReadonlyArray<ReadonlyArray<number>>): void {
+    const shadow = this.store.oam.shadowOam;
+    for (const entry of diff) {
+      const idx = entry[0] ?? 0;
+      if (idx < 0 || idx >= 64) continue;
+      const base = idx * 4;
+      shadow[base + 0] = (entry[1] ?? 0xf8) & 0xff;
+      shadow[base + 1] = (entry[2] ?? 0) & 0xff;
+      shadow[base + 2] = (entry[3] ?? 0) & 0xff;
+      shadow[base + 3] = (entry[4] ?? 0) & 0xff;
+    }
   }
 
   /**
-   * 供 Scene0Controller 承接 story_cup 精灵（f3600 切场景时 changeScene 清 OAM，
-   * Scene0 Drift30 需要 story_cup 的 64 sprite 下漂）。
+   * 供 Scene0Controller 承接 story_cup 精灵(f3600 切场景时 changeScene 清 OAM,
+   * Scene0 Drift30 需要 story_cup 的 64 sprite 下漂)。
    */
   static loadStoryCupOam(store: DataStore): void {
-    const screen: OpeningScreenEntry | undefined = OPENING_SCREENS[STORY_CUP_SCREEN_INDEX];
+    const screen = OPENING_SCREENS[STORY_CUP_SCREEN_INDEX];
     if (!screen) return;
     const oam = screen.mid.oam;
     const shadow = store.oam.shadowOam;
@@ -243,11 +217,11 @@ export class OpeningSceneController extends SceneController {
     }
   }
 
-  /** 供 Scene0Controller 读取 story_cup 的 mid palette（BG 渐隐底色） */
+  /** 供 Scene0Controller 读取 story_cup 的 mid palette(BG 渐隐底色) */
   static storyCupPalette(): { bg: ReadonlyArray<number>; spr: ReadonlyArray<number> } | null {
-    const screen: OpeningScreenEntry | undefined = OPENING_SCREENS[STORY_CUP_SCREEN_INDEX];
+    const screen = OPENING_SCREENS[STORY_CUP_SCREEN_INDEX];
     return screen ? screen.mid.pal : null;
   }
 }
 
-export type { OpeningScreenEntry, OpeningFrameState };
+export type { OpeningFrameEntry };

@@ -1330,6 +1330,9 @@ class PPU {
 
     // Restore BG CHR banks for subsequent background scanline rendering.
     this.nes.mmap.onBgRender();
+    if (this.nes.mmap.onBgRenderScanline) {
+      this.nes.mmap.onBgRenderScanline(startScan + scanCount);
+    }
 
     this._inRendering = false;
     this.validTileData = false;
@@ -1367,6 +1370,9 @@ class PPU {
       // Let the mapper swap CHR banks for background rendering.
       // MMC5 uses separate CHR bank sets for sprites vs backgrounds.
       this.nes.mmap.onBgRender();
+      if (this.nes.mmap.onBgRenderScanline) {
+        this.nes.mmap.onBgRenderScanline(scan);
+      }
 
       // Simulate unused sprite slot dummy fetches from the previous scanline.
       // On real hardware, the PPU fetches patterns for 8 sprites per scanline

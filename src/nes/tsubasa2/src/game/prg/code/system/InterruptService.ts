@@ -136,17 +136,24 @@ export class InterruptService {
 
     // 6. MASK + CHR + 帧计数器
     ppu.updateControlReg2(store.ppuState.mask);
-    this.applyChrRequest(ppu);
-    // WBS L4+L5: mid-frame CHR switch — 按 $005E/$005F stream 解析 cmd 序列,
-    //   在 VBlank 后期 (scanline 0..16) 一次性推进, 模拟 ROM 多次切 bank 行为
-    this.midFrameChrSwitch(ppu, 0);
+    const sceneId = store.scene.currentSceneId & 0xff;
+    // OpeningScene(sceneId=100): CHR 由 GT 数据表 per-scanline 驱动,跳过原 $0075/$0076
+    // 与 $005E/$005F stream 解析,避免覆盖 HeadlessRuntime 的 mid-frame 切换计划。
+    if (sceneId !== 100) {
+      this.applyChrRequest(ppu);
+      // WBS L4+L5: mid-frame CHR switch — 按 $005E/$005F stream 解析 cmd 序列,
+      //   在 VBlank 后期 (scanline 0..16) 一次性推进, 模拟 ROM 多次切 bank 行为
+      this.midFrameChrSwitch(ppu, 0);
+    }
     this.frameCounters();
 
     // 7. 续段
     this.oamDma(ppu);
     this.flushNtBuffer(ppu);
     this.applyScrollBank02(ppu);
-    this.applyChrFrom009e(ppu);
+    if (sceneId !== 100) {
+      this.applyChrFrom009e(ppu);
+    }
     // WBS L4 V2: per-scene end-of-frame CHR bank 强制覆盖（查表, 替代不稳定 stream parser）
     this.applySceneEndBankOverride(ppu, frame);
 

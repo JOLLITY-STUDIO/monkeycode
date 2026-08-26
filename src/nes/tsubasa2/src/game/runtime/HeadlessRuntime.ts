@@ -26,6 +26,12 @@ declare const require: (id: string) => any;
 /** PPU 8 个 1KB slot 的 CHR 装载声明（无 MMC3 切换语义） */
 type ChrSlotMap = ReadonlyArray<{ slot: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7; bank1k: number }>;
 
+/** 单帧内按 scanline 切换的 CHR bank 计划（来源：emu GT） */
+export interface ChrScanlinePlan {
+  readonly s: number; // scanline 切换点
+  readonly b: ReadonlyArray<number>; // 8 个 1KB bank 索引
+}
+
 /**
  * 初始 CHR 装载（替代原 INIT_CHR_BANKS 表）
  * 按 PPU 地址直接分配（每个 1KB slot = 64 tile）：
@@ -104,6 +110,8 @@ export class HeadlessRuntime implements GameRuntime {
   private readonly vromTilesByBank1k: Tile[][] = [];
   /** 当前装载到 PPU 8 slot 的 bank1k（用于变更检测） */
   private readonly chrSlots: number[] = new Array(8).fill(-1);
+  /** 本帧 per-scanline CHR 切换计划（sceneId=100 Opening 逐帧 GT 驱动） */
+  private perScanlineChrPlan: ReadonlyArray<ChrScanlinePlan> = [];
 
   constructor() {
     this.controllers = { 1: new Controller(), 2: new Controller() };
@@ -155,8 +163,13 @@ export class HeadlessRuntime implements GameRuntime {
       clockIrqCounter: () => {},
       latchAccess: (_addr: number) => {},
       canWriteChr: (_addr: number) => false,
-      onSpriteRender: () => {},
+      onSpriteRender: () => {
+        this.applyChrPlanAt(this.perScanlineChrPlan.length > 0 ? this.perScanlineChrPlan[0].s : 0);
+      },
       onBgRender: () => {},
+      onBgRenderScanline: (scan: number) => {
+        this.applyChrPlanAt(scan);
+      },
       // PPU checkSprite0 调用签名：(index) — 8x8/8x16 都只传 1 个最终 tile index
       getSpritePatternTile: (_isSprite8x8OrIndex: any, _table?: number, _tile?: number) => {
         const index = typeof _isSprite8x8OrIndex === 'number' ? _isSprite8x8OrIndex : (_tile ?? 0);
@@ -232,6 +245,24 @@ export class HeadlessRuntime implements GameRuntime {
     const bootSlots = [0, 1, 2, 3, 252, 113, 82, 83];
     for (let s = 0; s < 8; s++) {
       this.loadChrSlot(s, bootSlots[s]);
+    }
+  }
+
+  /** 设置本帧 per-scanline CHR 切换计划（Opening GT 逐帧驱动） */
+  setPerScanlineChrPlan(plan: ReadonlyArray<ChrScanlinePlan>): void {
+    this.perScanlineChrPlan = plan;
+  }
+
+  /** 按 scanline 应用 CHR 计划（找到 s <= scanline 的最后一组 bank） */
+  private applyChrPlanAt(scanline: number): void {
+    if (this.perScanlineChrPlan.length === 0) return;
+    let banks: ReadonlyArray<number> = this.perScanlineChrPlan[0].b;
+    for (const e of this.perScanlineChrPlan) {
+      if (e.s <= scanline) banks = e.b;
+      else break;
+    }
+    for (let s = 0; s < 8; s++) {
+      this.loadChrSlot(s, banks[s] & 0xff);
     }
   }
 
