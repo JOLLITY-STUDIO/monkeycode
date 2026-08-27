@@ -35,6 +35,9 @@ export class MeetingSceneController extends SceneController {
 
   onEnter(): void {
     this.store.writeByte(0x0001, MEETING_SCENE_ID & 0xff);
+    // Meeting/Story 使用 8x16 精灵（大立绘由多个 8x16 sprite 拼接），
+    // sprite pattern table = $1000(bit3)，BG pattern table = $0000(bit4=0)。
+    this.store.ppuState.ctrl = 0x28;
     // NT cursor 重置: $05E7 = 0 (PRG $9AA2 NT cell writer 起点)
     this.store.writeByte(0x05e7, 0x00);
     if (this.scriptEngine) {

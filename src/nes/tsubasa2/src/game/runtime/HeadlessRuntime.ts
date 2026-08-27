@@ -152,6 +152,7 @@ export class HeadlessRuntime implements GameRuntime {
       ppu: null,
     };
     const ppu = new PPU(nes);
+    // 天使之翼2 ROM 头 bit0=0 → 水平镜像（NT0/NT1 共享上屏物理表，NT2/NT3 共享下屏）
     ppu.setMirroring(nes.rom.HORIZONTAL_MIRRORING);
     this.ppu = ppu as unknown as PpuRenderTarget;
     nes.ppu = ppu;

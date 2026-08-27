@@ -185,7 +185,11 @@ export class BootRouter {
     console.log(`[BootRouter] changeScene(${sceneId}) from=${this.currentSceneId}`);
     store.writeByte(0x0469, 0x00);
     for (let i = 0x200; i < 0x300; i++) store.writeByte(i, 0xf8);
+    // 真正清空 shadowOAM（独立缓冲区，不是 $0200 RAM），避免切换场景后残留精灵
+    store.oam.shadowOam.fill(0xf8);
+    // 清两个物理 nametable（水平镜像：NT0/NT1 = 物理表0，NT2/NT3 = 物理表1）
     for (let addr = 0x2000; addr <= 0x23ff; addr++) store.writeByte(addr, 0);
+    for (let addr = 0x2800; addr <= 0x2bff; addr++) store.writeByte(addr, 0);
     store.ppuState.ctrl = 0x08; // PPU CTRL: NMI on / 精灵 8x8 / BG 表 0
     store.ppuState.mask = 0x1e; // PPU MASK: BG+SPR 可见
     store.ppuState.chrSelBase = 0x00;
