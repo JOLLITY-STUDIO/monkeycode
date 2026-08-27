@@ -210,6 +210,10 @@ export class BootRouter {
    *    此方法不重复 dispatch.
    */
   update(frame: number): void {
+    // 推进当前 scene 的 pending callbacks（frame-counter 模式，替代 scheduler.pushState）
+    //   V0.6: scheduler IDLE:t=0 残留问题 — SceneController._tickPending 兜底
+    const c = this.current as unknown as { _tickPending?: () => void } | null;
+    c?._tickPending?.();
     const next = this.current?.onUpdate(frame);
     if (next !== undefined && next !== this.currentSceneId) {
       this.changeScene(next);

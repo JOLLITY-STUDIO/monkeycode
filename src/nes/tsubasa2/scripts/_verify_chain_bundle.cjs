@@ -134324,6 +134324,26 @@ function ntBasePattern(idx) {
   return NT_BASE_PATTERN_TABLE[idx & 15];
 }
 
+// src/game/prg/data/scene/title-screen-gt.ts
+var TITLE_SCREEN_CHR_BANKS = [
+  124,
+  // slot 0 — $0000-$03FF BG pattern table 0/lower
+  125,
+  // slot 1 — $0400-$07FF BG pattern table 0/upper
+  126,
+  // slot 2 — $0800-$0BFF BG pattern table 1/lower
+  127,
+  // slot 3 — $0C00-$0FFF BG pattern table 1/upper
+  252,
+  // slot 4 — $1000-$13FF SPR pattern table 0/lower (奖杯)
+  125,
+  // slot 5 — $1400-$17FF SPR pattern table 0/upper
+  126,
+  // slot 6 — $1800-$1BFF SPR pattern table 1/lower
+  127
+  // slot 7 — $1C00-$1FFF SPR pattern table 1/upper
+];
+
 // src/game/prg/data/tables/player-stats.ts
 var PLAYER_TABLE = [
   {
@@ -158451,6 +158471,38 @@ var SceneController = class {
     this.input = input2;
     /** bank00 6-slot timer dispatcher（PRG $9EEF/$9FA8 翻译）；由 Tsubasa2 boot() 注入 */
     this.scheduler = null;
+    /**
+     * 帧级 pending callbacks（scheduler 残留 IDLE 兜底）— scheduleAfter 推入此 list,
+     * BootRouter.update 每帧调 _tickPending 推进 timer 到 0 时 invoke cb.
+     * V0.6 修 scheduler 不稳定时 Scene14.Scene15 永远 not ready.
+     */
+    this._pendingCallbacks = [];
+  }
+  /** BootRouter.update 每帧调一次 — 推进 pending callbacks 并 invoke 到期的 */
+  _tickPending() {
+    if (this._pendingCallbacks.length === 0) return;
+    const remain = [];
+    for (const p of this._pendingCallbacks) {
+      if (p.framesLeft <= 0) {
+        try {
+          p.cb();
+        } catch (e) {
+        }
+      } else {
+        p.framesLeft--;
+        if (p.framesLeft <= 0) {
+          try {
+            p.cb();
+          } catch (e) {
+            void e;
+          }
+        } else {
+          remain.push(p);
+        }
+      }
+    }
+    this._pendingCallbacks.length = 0;
+    for (const p of remain) this._pendingCallbacks.push(p);
   }
   /**
    * 注入 bank00 scheduler（PRG $9FA8 pushState 翻译）。
@@ -158476,21 +158528,18 @@ var SceneController = class {
    * @returns slot id（0-5，失败 -1）
    */
   scheduleAfter(timer, callback) {
-    if (!this.scheduler) {
-      callback();
+    const t = timer & 255;
+    if (t === 0) {
+      try {
+        callback();
+      } catch (e) {
+        void e;
+      }
       return -1;
     }
-    return this.scheduler.pushState({
-      aReg: 0,
-      xReg: 0,
-      yReg: callback.length & 255,
-      timer: timer & 255,
-      priority: 0,
-      callback: (slot) => {
-        void slot;
-        callback();
-      }
-    });
+    this._pendingCallbacks.push({ framesLeft: t, cb: callback });
+    void this.scheduler;
+    return this._pendingCallbacks.length - 1;
   }
   /** 每帧渲染（写入渲染缓冲/调色板） */
   onRender() {
@@ -158717,6 +158766,8 @@ var TitleMenuSceneController = class extends SceneController {
     this.sceneId = TITLE_MENU_SCENE_ID;
     /** 当前 CHR per-scanline plan (整屏 title CHR banks) */
     this.currentChrPlan = [];
+    /** 缓存 title screen 数据让 applyNtToPpu 引用 */
+    this.cachedScreen = null;
     this.paletteInitSvc = new TitleMenuPaletteInitService(store2);
     this.cursorSvc = new TitleMenuCursorService(store2, input2, TITLE_MENU_ITEMS_Y.length - 1);
   }
@@ -158743,7 +158794,7 @@ var TitleMenuSceneController = class extends SceneController {
         store2.writeByte(attribBase + i, n.attrib[i] & 255);
       }
     }
-    this.currentChrPlan = [{ s: 0, b: screen.chr.slice() }];
+    this.currentChrPlan = [{ s: 0, b: TITLE_SCREEN_CHR_BANKS.slice() }];
     store2.ppuState.ctrl = 136;
     store2.ppuState.mask = 30;
     store2.fade.bg = 15;
@@ -158751,6 +158802,7 @@ var TitleMenuSceneController = class extends SceneController {
     store2.scene.scrollX = 0;
     store2.scene.scrollY = 0;
     store2.scene.scrollFlag = 128;
+    this.cachedScreen = screen;
   }
   /**
    * 每帧:
@@ -158776,6 +158828,43 @@ var TitleMenuSceneController = class extends SceneController {
   /** 供 Tsubasa2.frame 取本场景 CHR per-scanline plan */
   getChrPlan() {
     return this.currentChrPlan;
+  }
+  /**
+   * 强制推 NT 字节到 PPU（每帧 frame() 调）
+   * 真实 ROM 行为：title 是稳定画面,每帧 VBlank 不重写 NT,这里 NT 已经在 onEnter
+   *   写到 store (writeByte 0x2000+0x3C0),由 store.setVramTarget(target.ppu) 自动 flush。
+   *   但 page Tsubasa2.frame() 中 setVramTarget 时机在 nmi 之前 — 当 TitleMenu 进入时
+   *   可能 vramTarget 还是 null。本方法直接 push 到 PPU (覆盖任何残留)。
+   */
+  applyNtToPpu(ppu) {
+    if (!ppu || !this.cachedScreen) return;
+    if (Array.isArray(ppu.nameTable) && ppu.nameTable.length >= 1) {
+      const nt0Tiles = this.cachedScreen.mid.nt[0]?.tile;
+      const nt0Att = this.cachedScreen.mid.nt[0]?.attrib;
+      if (nt0Tiles && nt0Tiles.length >= 32 * 30) {
+        const writeOne = (target, tiles, attrs) => {
+          for (let i = 0; i < 32 * 30 && i < tiles.length; i++) {
+            target[i] = tiles[i] & 255;
+          }
+          for (let i = 0; i < 64 && i < attrs.length; i++) {
+            const addr = 960 + i;
+            target[addr] = attrs[i] & 255;
+          }
+        };
+        writeOne(ppu.nameTable[0], nt0Tiles, nt0Att);
+        if (ppu.nameTable[1]) writeOne(ppu.nameTable[1], this.cachedScreen.mid.nt[1]?.tile ?? [], this.cachedScreen.mid.nt[1]?.attrib ?? []);
+        if (ppu.nameTable[2]) writeOne(ppu.nameTable[2], this.cachedScreen.mid.nt[2]?.tile ?? [], this.cachedScreen.mid.nt[2]?.attrib ?? []);
+        if (ppu.nameTable[3]) writeOne(ppu.nameTable[3], this.cachedScreen.mid.nt[3]?.tile ?? [], this.cachedScreen.mid.nt[3]?.attrib ?? []);
+      }
+    }
+    if ("regV" in ppu) ppu.regV = 0;
+    if ("regH" in ppu) ppu.regH = 0;
+    if ("regVT" in ppu) ppu.regVT = 0;
+    if ("regHT" in ppu) ppu.regHT = 0;
+    if ("regFV" in ppu) ppu.regFV = 0;
+    if ("regFH" in ppu) ppu.regFH = 0;
+    if ("mask" in ppu) ppu.mask = 30;
+    if ("ctrl" in ppu) ppu.ctrl = 136;
   }
   /** 应用 OAM 全量 (4-tuple [Y, tile, attr, X])到 shadowOam */
   applyOamFull(oam) {
@@ -161202,13 +161291,16 @@ var Scene13Controller = class extends SceneController {
 // src/game/prg/code/scene/Scene14Controller.ts
 var NEXT8 = 15;
 var OUTER = 40;
+var WAIT_FRAMES = 1;
 var Scene14Controller = class extends SceneController {
   constructor(store2, input2) {
     super(store2, input2);
     this.sceneId = 14;
     this.outer = 0;
-    /** 等 1 帧（$9FA8）后置 true — 驱动外迭代节奏 */
-    this.ready = false;
+    /** 已等够的帧数 — 进入已 "ready" 即开始外迭代 */
+    this.waitCounter = 0;
+    /** 已完成外迭代次数（用于判断 chain advance 条件） */
+    this.outerDone = 0;
     this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
@@ -161218,31 +161310,19 @@ var Scene14Controller = class extends SceneController {
     store2.writeByte(1423, store2.readByte(1423) & 127);
     store2.writeByte(76, 130);
     this.outer = 0;
-    this.ready = false;
-    console.log(`[Sc14.onEnter] start, hasScheduler=${!!this.scheduler}`);
-    this.scheduleAfter(1, () => {
-      console.log(`[Sc14.scheduleAfter cb] firing, this.ready before = ${this.ready}`);
-      this.ready = true;
-      console.log(`[Sc14.scheduleAfter cb] this.ready after = ${this.ready}`);
-    });
-    console.log(`[Sc14.onEnter] done, this.ready = ${this.ready}`);
+    this.outerDone = 0;
+    this.waitCounter = 0;
   }
   onUpdate(_frame) {
-    if (!this.ready) {
-      console.log(`[Sc14.onUpdate f${_frame}] not ready, hasScheduler=${!!this.scheduler}`);
+    if (this.outerDone >= OUTER) return NEXT8;
+    if (this.waitCounter < WAIT_FRAMES) {
+      this.waitCounter++;
       return void 0;
     }
-    if (this.outer >= OUTER) {
-      console.log(`[Sc14.onUpdate f${_frame}] outer=${this.outer} >= OUTER -> return NEXT=${NEXT8}`);
-      return NEXT8;
-    }
-    console.log(`[Sc14.onUpdate f${_frame}] outer=${this.outer} iterating`);
     this.prim.a82fClearSpriteAttrIter(200, 32);
     this.outer++;
-    this.ready = false;
-    this.scheduleAfter(1, () => {
-      this.ready = true;
-    });
+    this.outerDone++;
+    this.waitCounter = 0;
     return void 0;
   }
 };
@@ -161255,16 +161335,19 @@ var Scene15Controller = class extends SceneController {
     super(store2, input2);
     this.sceneId = 15;
     this.cursor = 0;
-    /** 等 2 帧（flag bit6）调度态 */
-    this.waiting = false;
+    /** 等 2 帧（flag bit6）调度态 — V0.6 用 frame counter */
+    this.waitingFramesLeft = 0;
     this.prim = new RenderingPrimitivesService(store2);
   }
   onEnter() {
     this.cursor = 0;
-    this.waiting = false;
+    this.waitingFramesLeft = 0;
   }
   onUpdate(_frame) {
-    if (this.waiting) return void 0;
+    if (this.waitingFramesLeft > 0) {
+      this.waitingFramesLeft--;
+      return void 0;
+    }
     const table = SCENE15_AA97_TABLE;
     if (this.cursor >= table.length) return NEXT9;
     const rec = table[this.cursor];
@@ -161281,10 +161364,7 @@ var Scene15Controller = class extends SceneController {
     this.cursor++;
     if ((rec.flag & 128) !== 0) return NEXT9;
     if ((rec.flag & 64) !== 0) {
-      this.waiting = true;
-      this.scheduleAfter(2, () => {
-        this.waiting = false;
-      });
+      this.waitingFramesLeft = 2;
     }
     return void 0;
   }
@@ -161831,6 +161911,8 @@ var BootRouter = class {
    *    此方法不重复 dispatch.
    */
   update(frame) {
+    const c = this.current;
+    c?._tickPending?.();
     const next = this.current?.onUpdate(frame);
     if (next !== void 0 && next !== this.currentSceneId) {
       this.changeScene(next);
@@ -162540,10 +162622,15 @@ var InterruptService = class {
   }
   /**
    * 渐显表查色（与 RenderingPrimitivesService.fadeLookup 同语义，emu dump 反推）：
-   *   fade = 0 → 全黑 $0F；fade >= 1 → OPENING_FADE_TABLE[(pal & $30) + (fade - 1)] | (pal & $0F)
+   *   fade = 0 → 全黑 $0F
+   *   fade >= PALETTE_FADE_MAX(15) → 满亮 sentinel，直接返回 pal 原值
+   *     （GT palette 流已含 fade 后真实色，无需再查表 — 避免对 0x0F (backdrop) 等
+   *      OPENING_FADE_TABLE 缺数据项返回错的灰/黑）
+   *   1 <= fade <= 14 → OPENING_FADE_TABLE[(pal & $30) + (fade - 1)] | (pal & $0F)
    */
   fadeLookup(pal, fade) {
     if ((fade & 255) === 0) return 15;
+    if ((fade & 255) >= 15) return pal & 63;
     const idx = (pal & 48) + (fade - 1 & 15) & 63;
     return (OPENING_FADE_TABLE[idx] | pal & 15) & 63;
   }
@@ -167229,19 +167316,19 @@ var Tsubasa2 = class {
       throw e;
     }
     const ppu = target.ppu;
-    if ((store2.scene.currentSceneId & 255) === SceneId.Opening) {
-      const opening = this.router.getController(SceneId.Opening);
-      const plan = opening.getChrPlan();
-      if (plan.length > 0 && typeof target.setPerScanlineChrPlan === "function") {
+    const current = this.router.current;
+    if (current && typeof current.getChrPlan === "function") {
+      const plan = current.getChrPlan();
+      if (Array.isArray(plan) && plan.length > 0 && typeof target.setPerScanlineChrPlan === "function") {
         target.setPerScanlineChrPlan(plan);
       }
-      opening.applyNtToPpu(target.ppu);
+    }
+    if (current && typeof current.applyNtToPpu === "function") {
+      current.applyNtToPpu(target.ppu);
     }
     try {
       ppu.startFrame();
       ppu.advanceDots(262 * 341);
-      ppu.renderFramePartially(0, 240);
-      ppu.endFrame();
     } catch (e) {
       console.error("PPU render error at frame " + this._frame + ": " + e.message);
       throw e;

@@ -11,7 +11,11 @@
  *   5. 等 1 帧（$9FA8）
  *   6. $A82F 精灵属性清位：A=$C8(endIdx) / X=$20(startIdx) / Y=$28(外迭代 0x28 次)，
  *      每次外迭代 = { 内层 $0468+X 循环清 $046A bit2/3；等 1 帧 }
- *   7. 完成 → 返回 2 (hub)
+ *   7. 完成 → 返回 Scene15 (主游戏 prep 链)
+ *
+ * V0.6 fix: 改用 frame counter 不再依赖 scheduler.pushState 路径
+ *   (Bank00SchedulerService 测试时发现 IDLE:t=0 残留 — tickDispatch 不被
+ *    这里稳定调起; 用 frame 计数做"等 N 帧"语义最简单且 ROM 等价)
  */
 import { SceneController } from './SceneController';
 import { RenderingPrimitivesService } from '../system/RenderingPrimitivesService';
@@ -20,17 +24,22 @@ import type { InputService } from '../system/InputService';
 
 const NEXT = 0x0f; // → Scene15 (主游戏 prep 链)
 const OUTER = 0x28; // Y=$28
+const WAIT_FRAMES = 1;
 
 export class Scene14Controller extends SceneController {
   readonly sceneId = 14;
   private readonly prim: RenderingPrimitivesService;
   private outer = 0;
-  /** 等 1 帧（$9FA8）后置 true — 驱动外迭代节奏 */
-  private ready = false;
+  /** 已等够的帧数 — 进入已 "ready" 即开始外迭代 */
+  private waitCounter = 0;
+  /** 已完成外迭代次数（用于判断 chain advance 条件） */
+  private outerDone = 0;
+
   constructor(store: DataStore, input: InputService) {
     super(store, input);
     this.prim = new RenderingPrimitivesService(store);
   }
+
   onEnter(): void {
     const store = this.store;
     // $8976 行构建装载（X=$BD / Y=$23 → $00E7/$00E8 → 流头）
@@ -41,26 +50,22 @@ export class Scene14Controller extends SceneController {
     store.writeByte(0x058f, store.readByte(0x058f) & 0x7f);
     store.writeByte(0x004c, 0x82);
     this.outer = 0;
-    this.ready = false;
-    console.log(`[Sc14.onEnter] start, hasScheduler=${!!this.scheduler}`);
-    // $A82F 入口：先等 1 帧
-    this.scheduleAfter(1, () => {
-      console.log(`[Sc14.scheduleAfter cb] firing, this.ready before = ${this.ready}`);
-      this.ready = true;
-      console.log(`[Sc14.scheduleAfter cb] this.ready after = ${this.ready}`);
-    });
-    console.log(`[Sc14.onEnter] done, this.ready = ${this.ready}`);
+    this.outerDone = 0;
+    this.waitCounter = 0;
   }
+
   onUpdate(_frame: number): number | undefined {
-    if (!this.ready) { console.log(`[Sc14.onUpdate f${_frame}] not ready, hasScheduler=${!!this.scheduler}`); return undefined; }
-    if (this.outer >= OUTER) { console.log(`[Sc14.onUpdate f${_frame}] outer=${this.outer} >= OUTER -> return NEXT=${NEXT}`); return NEXT; }
-    console.log(`[Sc14.onUpdate f${_frame}] outer=${this.outer} iterating`);
+    if (this.outerDone >= OUTER) return NEXT;
+    if (this.waitCounter < WAIT_FRAMES) {
+      this.waitCounter++;
+      return undefined;
+    }
     // $A82F 内层：X=$20..$C8 步长 4，$0468,X(y)<$82 → $046A,X &= ~$0C
     this.prim.a82fClearSpriteAttrIter(0xc8, 0x20);
     this.outer++;
+    this.outerDone++;
     // 每次外迭代后等 1 帧
-    this.ready = false;
-    this.scheduleAfter(1, () => { this.ready = true; });
+    this.waitCounter = 0;
     return undefined;
   }
 }

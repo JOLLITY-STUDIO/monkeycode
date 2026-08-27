@@ -1,0 +1,39 @@
+=== emu y8-y25, x0-63 (每4px采样) ===
+E y8: k k k k k k k k k k k k k k k k
+E y9: k k k k k k k k k k k k k k k k
+E y10: k k k k k k k k k k k k k k k k
+E y11: k k k k k k k k k k k k k k k k
+E y12: k k k k k k k k k k k k k k k k
+E y13: k k k k k k k k k k k k k k k k
+E y14: k k k k k k k k k k k k k k k k
+E y15: k k k k k k k k k k k k k k k k
+E y16: k k k k k k k k k k k k k k k k
+E y17: k k #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c
+E y18: k k #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c
+E y19: k k #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c
+E y20: k k #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c
+E y21: k k #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c
+E y22: k k #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c
+E y23: k k #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c
+E y24: k k #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c
+E y25: k k #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c #ffab3c
+
+=== H5 y8-y25, x0-63 ===
+H y8: k k k k k k k k k k k k k k k k
+H y9: k k k k k k k k k k k k k k k k
+H y10: k k k k k k k k k k k k k k k k
+H y11: k k k k k k k k k k k k k k k k
+H y12: k k k k k k k k k k k k k k k k
+H y13: k k k k k k k k k k k k k k k k
+H y14: k k k k k k k k k k k k k k k k
+H y15: k k #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4
+H y16: k k #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4
+H y17: k k #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4
+H y18: k k #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4
+H y19: k k #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4
+H y20: k k #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4
+H y21: k k #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4
+H y22: k k #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4
+H y23: k k #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4
+H y24: k k #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4
+H y25: k k #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4 #0-40c4
