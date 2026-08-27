@@ -64,8 +64,10 @@ class OpeningSceneController extends SceneController_1.SceneController {
         this.ntQueue = [];
         this.attrQueue = [];
         this.currentScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0, cv: 0, ch: 0, cvt: 0, cht: 0 };
-        // PPU 状态:GT 数据表已经包含真实 fade 后的 palette,这里把 fade 固定为满亮,
-        // 让 InterruptService.flushPalette 直接输出 palette 原值。
+        // PPU 状态:GT 数据表已经包含真实 fade 后的 palette,这里把 fade 固定为满亮
+        // 原样输出 palette 索引。注意 FadeView 读写 $004A/$004B 带 & 0x0F 掩码,
+        // 写 0x10 会被截断成 0 → flushPalette 全写 0x0F 黑屏;满亮必须写 0x0F(=15,
+        // fade 表 block 1-3 第 14/15 项均为原色回显,0x0F 是正确 sentinel)。
         this.store.fade.bg = 0x0f;
         this.store.fade.spr = 0x0f;
         // BG 从 $0000,SPR 从 $1000;NMI 由 renderCommit 第 8 步统一置位
@@ -183,16 +185,17 @@ class OpeningSceneController extends SceneController_1.SceneController {
         ppu.regHT = s.ht & 0x1f;
         ppu.regFV = s.fv & 7;
         ppu.regFH = s.fh & 7;
-        // 渲染起始计数器(标题上下滚屏/字幕垂直滚动):
-        // ROM 通过 $2006 直写 VRAM 地址在渲染期设置 cnt*,reg* 可能保持 0。
-        // PPU pre-render scanline 每帧会把 cnt*=reg*,因此这里提供 override,
-        // 由 PPU case20 在初始化计数器时优先消费,保证每帧从 GT 的渲染起始位置开画。
+        // 渲染起始计数器:
+        // 取 GT 的 reg* 值(v,h,vt,ht,fv,fh)作为本帧渲染起始。因为 PPU pre-render
+        // scanline 会把 cnt* 从 reg* 初始化,所以 reg* 才是可靠的帧起始位置。
+        // GT 的 cv/ch/cvt/cht 是 emu 帧末计数器残留(多为 cntV=1 等)或帧中
+        // $2006 直写留下的瞬时值,不能直接作为渲染起始使用。
         ppu.renderStartOverride = {
             cntFV: s.fv & 7,
-            cntV: s.cv & 1,
-            cntH: s.ch & 1,
-            cntVT: s.cvt & 0x1f,
-            cntHT: s.cht & 0x1f,
+            cntV: s.v & 1,
+            cntH: s.h & 1,
+            cntVT: s.vt & 0x1f,
+            cntHT: s.ht & 0x1f,
         };
         // GT 数据的 ni 来自 emu nt.json 的物理 nameTable 索引(0-3),直接写到
         // ppu.nameTable[ni] 即可。不要经 ntable1 再做逻辑→物理映射,否则水平镜像

@@ -67,11 +67,11 @@ class Tsubasa2 {
         this.sceneStateMachine = new index_2.SceneStateMachine(this.store, this.ppuTransfer);
         // ע: TileBuilderService �� Scene0/Scene18 �ڲ��Խ���Tsubasa2 ����¶��
         // ������������BootRouter �Զ�ͳһ register Scene0-23��BootRouter �ڲ����� MainRouterService��
-        // ����ű���V0.4 ���룩
+        // ����ű���V0.4 ���룩�� meeting ��һ�ξ���
         const scriptLoader = new index_2.ScriptLoader(this.store);
         const scriptEngine = new index_2.ScriptEngine(this.store, scriptLoader);
         const charMap = new index_2.CharMap();
-        void scriptEngine;
+        this.scriptEngine = scriptEngine;
         // CharMap ע��ű�����ʱ��0x94/0x95 ��������ӳ�乩 ScriptOpcode.TextChar ʹ��
         (0, index_2.setScriptRuntime)({
             charMap,
@@ -120,6 +120,8 @@ class Tsubasa2 {
         this.router.getController(0 /* SceneId.Scene0 */).attachAudio(this.audio);
         // Ƭͷ���У�OpeningScene����Ƶע�루���� tecmo_logo �� BGM 0x01��
         this.router.getController(100 /* SceneId.Opening */).attachAudio(this.audio);
+        // ��һ�� meeting ҳ�棨Scene14-23 chain ��·�յ㣩ע�� ScriptEngine �ܾ����һ��
+        this.router.getController(index_2.MEETING_SCENE_ID).attachScriptEngine(this.scriptEngine);
         // bank00 scene state machine + NT stream loader ע�� Scene0
         // (PRG $8AF7 scene handler loader + $82ED NT stream loader)
         this.router.getController(0 /* SceneId.Scene0 */).attachNtStreamLoader(this.ntStreamLoader);

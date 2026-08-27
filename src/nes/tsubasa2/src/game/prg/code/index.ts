@@ -110,5 +110,7 @@ export { LevelUpUiService } from './ui/LevelUpUiService';
 export type { LevelUpInput, LevelUpView } from './ui/LevelUpUiService';
 // 第一关 meeting 页面 (sceneId=300, Scene14-23 chain 链路终点)
 export { MeetingSceneController, MEETING_SCENE_ID } from './scene/MeetingSceneController';
+// Meeting 完后进入主比赛 (sceneId=400, 链路 continue 终点)
+export { MatchStartSceneController, MATCH_START_SCENE_ID } from './scene/MatchStartSceneController';
 export { MatchResultUiService } from './ui/MatchResultUiService';
 export type { MatchResultInput, MatchResultView } from './ui/MatchResultUiService';

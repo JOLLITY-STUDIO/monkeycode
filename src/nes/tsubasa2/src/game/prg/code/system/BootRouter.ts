@@ -42,6 +42,7 @@ import {
   OpeningSceneController, OPENING_SCENE_ID,
   TitleMenuSceneController, TITLE_MENU_SCENE_ID,
   MeetingSceneController, MEETING_SCENE_ID,
+  MatchStartSceneController, MATCH_START_SCENE_ID,
 } from '../scene/index';
 
 /** 场景号枚举 (0-23 + Opening=100 + TitleMenu=200) */
@@ -70,6 +71,7 @@ const SCENE_CONTROLLERS: ReadonlyArray<new (store: DataStore, input: InputServic
   OpeningSceneController,
   TitleMenuSceneController,
   MeetingSceneController,
+  MatchStartSceneController,
 ];
 
 /**

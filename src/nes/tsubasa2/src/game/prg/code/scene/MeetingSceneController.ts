@@ -51,10 +51,10 @@ export class MeetingSceneController extends SceneController {
     }
     // 推进 VM 一帧（PRG $90E4-$94D2 dispatch loop 翻译）
     const stillRunning = this.scriptEngine.step(this.scriptCtx);
-    if (!stillRunning) {
-      // VM 完成：meeting 第一段结束 → stay 在 meeting 等用户输入
-      // 真实 ROM 后续 advance 到 team select / difficulty 等，
-      // H5 stub 暂 stay，等后续链路添加
+    if (!stillRunning && !this.scriptCtx.waitingInput) {
+      // VM 第一段结束（EndSegment / EndScript / ctx.finished）
+      // chain advance 到 MatchStart (主比赛入口)
+      return 0x400;
     }
     return undefined;
   }

@@ -1,0 +1,1039 @@
+E f=3725 endcnt=1/0/1 regrv=0/0/0
+W2006 f=3725 scan=005 dot=193 addr=$0023 cnt=1/0/1 rv=0/0 -> cnt=1/0/1 rv=0/24
+W2006 f=3725 scan=005 dot=217 addr=$00f5 cnt=1/0/1 rv=0/24 -> cnt=0/31/2 rv=0/31
+W2006 f=3725 scan=006 dot=026 addr=$0023 cnt=0/31/2 rv=0/31 -> cnt=0/31/2 rv=0/31
+W2006 f=3725 scan=006 dot=050 addr=$0014 cnt=0/31/2 rv=0/31 -> cnt=0/24/2 rv=0/24
+W2006 f=3725 scan=006 dot=335 addr=$0023 cnt=0/24/2 rv=0/24 -> cnt=0/24/2 rv=0/24
+W2006 f=3725 scan=007 dot=018 addr=$0034 cnt=0/24/2 rv=0/24 -> cnt=0/25/2 rv=0/25
+W2006 f=3725 scan=007 dot=303 addr=$0023 cnt=0/25/2 rv=0/25 -> cnt=0/25/2 rv=0/25
+W2006 f=3725 scan=007 dot=327 addr=$0054 cnt=0/25/2 rv=0/25 -> cnt=0/26/2 rv=0/26
+W2006 f=3725 scan=008 dot=283 addr=$0023 cnt=0/26/2 rv=0/26 -> cnt=0/26/2 rv=0/26
+W2006 f=3725 scan=008 dot=310 addr=$0074 cnt=0/26/2 rv=0/26 -> cnt=0/27/2 rv=0/27
+W2006 f=3725 scan=009 dot=275 addr=$0023 cnt=0/27/2 rv=0/27 -> cnt=0/27/2 rv=0/27
+W2006 f=3725 scan=009 dot=302 addr=$00f6 cnt=0/27/2 rv=0/27 -> cnt=0/31/2 rv=0/31
+W2006 f=3725 scan=010 dot=123 addr=$0023 cnt=0/31/2 rv=0/31 -> cnt=0/31/2 rv=0/31
+W2006 f=3725 scan=010 dot=150 addr=$0018 cnt=0/31/2 rv=0/31 -> cnt=0/24/2 rv=0/24
+W2006 f=3725 scan=011 dot=115 addr=$0023 cnt=0/24/2 rv=0/24 -> cnt=0/24/2 rv=0/24
+W2006 f=3725 scan=011 dot=142 addr=$0038 cnt=0/24/2 rv=0/24 -> cnt=0/25/2 rv=0/25
+W2006 f=3725 scan=012 dot=107 addr=$0023 cnt=0/25/2 rv=0/25 -> cnt=0/25/2 rv=0/25
+W2006 f=3725 scan=012 dot=134 addr=$0058 cnt=0/25/2 rv=0/25 -> cnt=0/26/2 rv=0/26
+W2006 f=3725 scan=013 dot=057 addr=$003f cnt=0/26/2 rv=0/26 -> cnt=0/26/2 rv=1/26
+W2006 f=3725 scan=013 dot=075 addr=$0000 cnt=0/26/2 rv=1/26 -> cnt=1/24/3 rv=1/24
+W2006 f=3725 scan=013 dot=087 addr=$0000 cnt=1/24/3 rv=1/24 -> cnt=1/24/3 rv=0/0
+W2006 f=3725 scan=013 dot=099 addr=$0000 cnt=1/24/3 rv=0/0 -> cnt=0/0/0 rv=0/0
+W2005 f=3725 scan=013 dot=270 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3725 scan=013 dot=297 val=$ff 0/0/0/0 -> 0/0/7/31 first=1
+PRE f=3725 AFTER  pre-render init rv=0/31/7 cnt=0/0/0 override=no
+PRE f=3725 BEFORE pre-render init rv=0/31/7 cnt=0/0/0
+R f=3725 scan=000 cnt=0/31/7 rv=0/31 curNt=0
+R f=3725 scan=040 cnt=0/4/7 rv=0/31 curNt=1
+R f=3725 scan=080 cnt=0/9/7 rv=0/31 curNt=1
+R f=3725 scan=120 cnt=0/14/7 rv=0/31 curNt=1
+W2006 f=3725 scan=150 dot=014 addr=$0022 cnt=0/16/1 rv=0/31 -> cnt=0/16/1 rv=0/23
+W2006 f=3725 scan=150 dot=026 addr=$0000 cnt=0/16/1 rv=0/23 -> cnt=0/16/2 rv=0/16
+W2005 f=3725 scan=150 dot=071 val=$00 0/0/2/16 -> 0/0/2/16 first=0
+W2005 f=3725 scan=150 dot=083 val=$00 0/0/2/16 -> 0/0/0/0 first=1
+R f=3725 scan=160 cnt=0/20/0 rv=0/0 curNt=1
+R f=3725 scan=200 cnt=0/25/0 rv=0/0 curNt=1
+E f=3726 endcnt=1/0/1 regrv=0/0/0
+W2006 f=3726 scan=005 dot=185 addr=$0023 cnt=1/0/1 rv=0/0 -> cnt=1/0/1 rv=0/24
+W2006 f=3726 scan=005 dot=209 addr=$0078 cnt=1/0/1 rv=0/24 -> cnt=0/27/2 rv=0/27
+W2006 f=3726 scan=006 dot=153 addr=$0023 cnt=0/27/2 rv=0/27 -> cnt=0/27/2 rv=0/27
+W2006 f=3726 scan=006 dot=177 addr=$00f7 cnt=0/27/2 rv=0/27 -> cnt=0/31/2 rv=0/31
+W2006 f=3726 scan=006 dot=327 addr=$0023 cnt=0/31/2 rv=0/31 -> cnt=0/31/2 rv=0/31
+W2006 f=3726 scan=007 dot=010 addr=$001c cnt=0/31/2 rv=0/31 -> cnt=0/24/2 rv=0/24
+W2006 f=3726 scan=007 dot=295 addr=$0023 cnt=0/25/2 rv=0/24 -> cnt=0/25/2 rv=0/24
+W2006 f=3726 scan=007 dot=319 addr=$003c cnt=0/25/2 rv=0/24 -> cnt=0/25/2 rv=0/25
+W2006 f=3726 scan=008 dot=275 addr=$0023 cnt=0/26/2 rv=0/25 -> cnt=0/26/2 rv=0/25
+W2006 f=3726 scan=008 dot=302 addr=$005c cnt=0/26/2 rv=0/25 -> cnt=0/26/2 rv=0/26
+W2006 f=3726 scan=009 dot=267 addr=$0023 cnt=0/27/2 rv=0/26 -> cnt=0/27/2 rv=0/26
+W2006 f=3726 scan=009 dot=294 addr=$007c cnt=0/27/2 rv=0/26 -> cnt=0/27/2 rv=0/27
+W2006 f=3726 scan=010 dot=217 addr=$003f cnt=0/28/2 rv=0/27 -> cnt=0/28/2 rv=1/27
+W2006 f=3726 scan=010 dot=235 addr=$0000 cnt=0/28/2 rv=1/27 -> cnt=1/24/3 rv=1/24
+W2006 f=3726 scan=010 dot=247 addr=$0000 cnt=1/24/3 rv=1/24 -> cnt=1/24/3 rv=0/0
+W2006 f=3726 scan=010 dot=259 addr=$0000 cnt=1/24/3 rv=0/0 -> cnt=0/0/0 rv=0/0
+W2005 f=3726 scan=011 dot=089 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3726 scan=011 dot=116 val=$67 0/0/0/0 -> 0/0/7/12 first=1
+PRE f=3726 AFTER  pre-render init rv=0/12/7 cnt=0/0/0 override=no
+PRE f=3726 BEFORE pre-render init rv=0/12/7 cnt=0/0/0
+R f=3726 scan=000 cnt=0/12/7 rv=0/12 curNt=0
+W2005 f=3726 scan=039 dot=018 val=$00 0/0/7/12 -> 0/0/7/12 first=0
+W2005 f=3726 scan=039 dot=036 val=$00 0/0/7/12 -> 0/0/0/0 first=1
+R f=3726 scan=040 cnt=0/17/7 rv=0/0 curNt=0
+R f=3726 scan=080 cnt=0/22/7 rv=0/0 curNt=0
+R f=3726 scan=120 cnt=0/27/7 rv=0/0 curNt=0
+R f=3726 scan=160 cnt=1/2/7 rv=0/0 curNt=0
+R f=3726 scan=200 cnt=1/7/7 rv=0/0 curNt=0
+W2006 f=3726 scan=249 dot=015 addr=$0021 cnt=1/11/4 rv=0/0 -> cnt=1/11/4 rv=0/8
+W2006 f=3726 scan=249 dot=027 addr=$00c0 cnt=1/11/4 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3726 scan=249 dot=072 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3726 scan=249 dot=084 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3727 endcnt=0/15/6 regrv=0/0/0
+W2005 f=3727 scan=005 dot=246 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3727 scan=005 dot=273 val=$67 0/0/0/0 -> 0/0/7/12 first=1
+PRE f=3727 AFTER  pre-render init rv=0/12/7 cnt=0/15/6 override=no
+PRE f=3727 BEFORE pre-render init rv=0/12/7 cnt=0/15/6
+R f=3727 scan=000 cnt=0/12/7 rv=0/12 curNt=0
+W2005 f=3727 scan=039 dot=013 val=$00 0/0/7/12 -> 0/0/7/12 first=0
+W2005 f=3727 scan=039 dot=031 val=$00 0/0/7/12 -> 0/0/0/0 first=1
+R f=3727 scan=040 cnt=0/17/7 rv=0/0 curNt=0
+R f=3727 scan=080 cnt=0/22/7 rv=0/0 curNt=0
+R f=3727 scan=120 cnt=0/27/7 rv=0/0 curNt=0
+R f=3727 scan=160 cnt=1/2/7 rv=0/0 curNt=0
+R f=3727 scan=200 cnt=1/7/7 rv=0/0 curNt=0
+W2006 f=3727 scan=249 dot=016 addr=$0021 cnt=1/11/4 rv=0/0 -> cnt=1/11/4 rv=0/8
+W2006 f=3727 scan=249 dot=028 addr=$00c0 cnt=1/11/4 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3727 scan=249 dot=073 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3727 scan=249 dot=085 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3728 endcnt=0/15/6 regrv=0/0/0
+W2005 f=3728 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3728 scan=005 dot=277 val=$67 0/0/0/0 -> 0/0/7/12 first=1
+PRE f=3728 AFTER  pre-render init rv=0/12/7 cnt=0/15/6 override=no
+PRE f=3728 BEFORE pre-render init rv=0/12/7 cnt=0/15/6
+R f=3728 scan=000 cnt=0/12/7 rv=0/12 curNt=0
+W2005 f=3728 scan=039 dot=011 val=$00 0/0/7/12 -> 0/0/7/12 first=0
+W2005 f=3728 scan=039 dot=029 val=$00 0/0/7/12 -> 0/0/0/0 first=1
+R f=3728 scan=040 cnt=0/17/7 rv=0/0 curNt=0
+R f=3728 scan=080 cnt=0/22/7 rv=0/0 curNt=0
+R f=3728 scan=120 cnt=0/27/7 rv=0/0 curNt=0
+R f=3728 scan=160 cnt=1/2/7 rv=0/0 curNt=0
+R f=3728 scan=200 cnt=1/7/7 rv=0/0 curNt=0
+W2006 f=3728 scan=249 dot=011 addr=$0021 cnt=1/11/4 rv=0/0 -> cnt=1/11/4 rv=0/8
+W2006 f=3728 scan=249 dot=023 addr=$00c0 cnt=1/11/4 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3728 scan=249 dot=068 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3728 scan=249 dot=080 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3729 endcnt=0/15/6 regrv=0/0/0
+W2005 f=3729 scan=005 dot=254 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3729 scan=005 dot=281 val=$67 0/0/0/0 -> 0/0/7/12 first=1
+PRE f=3729 AFTER  pre-render init rv=0/12/7 cnt=0/15/6 override=no
+PRE f=3729 BEFORE pre-render init rv=0/12/7 cnt=0/15/6
+R f=3729 scan=000 cnt=0/12/7 rv=0/12 curNt=0
+W2005 f=3729 scan=039 dot=012 val=$00 0/0/7/12 -> 0/0/7/12 first=0
+W2005 f=3729 scan=039 dot=030 val=$00 0/0/7/12 -> 0/0/0/0 first=1
+R f=3729 scan=040 cnt=0/17/7 rv=0/0 curNt=0
+R f=3729 scan=080 cnt=0/22/7 rv=0/0 curNt=0
+R f=3729 scan=120 cnt=0/27/7 rv=0/0 curNt=0
+R f=3729 scan=160 cnt=1/2/7 rv=0/0 curNt=0
+R f=3729 scan=200 cnt=1/7/7 rv=0/0 curNt=0
+W2006 f=3729 scan=249 dot=015 addr=$0021 cnt=1/11/4 rv=0/0 -> cnt=1/11/4 rv=0/8
+W2006 f=3729 scan=249 dot=027 addr=$00c0 cnt=1/11/4 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3729 scan=249 dot=072 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3729 scan=249 dot=084 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3730 endcnt=0/15/6 regrv=0/0/0
+W2006 f=3730 scan=005 dot=183 addr=$003f cnt=0/15/6 rv=0/0 -> cnt=0/15/6 rv=1/24
+W2006 f=3730 scan=005 dot=207 addr=$0000 cnt=0/15/6 rv=1/24 -> cnt=1/24/3 rv=1/24
+W2006 f=3730 scan=010 dot=047 addr=$003f cnt=1/25/3 rv=1/24 -> cnt=1/25/3 rv=1/24
+W2006 f=3730 scan=010 dot=065 addr=$0000 cnt=1/25/3 rv=1/24 -> cnt=1/24/3 rv=1/24
+W2006 f=3730 scan=010 dot=077 addr=$0000 cnt=1/24/3 rv=1/24 -> cnt=1/24/3 rv=0/0
+W2006 f=3730 scan=010 dot=089 addr=$0000 cnt=1/24/3 rv=0/0 -> cnt=0/0/0 rv=0/0
+W2005 f=3730 scan=010 dot=260 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3730 scan=010 dot=287 val=$67 0/0/0/0 -> 0/0/7/12 first=1
+PRE f=3730 AFTER  pre-render init rv=0/12/7 cnt=0/0/0 override=no
+PRE f=3730 BEFORE pre-render init rv=0/12/7 cnt=0/0/0
+R f=3730 scan=000 cnt=0/12/7 rv=0/12 curNt=0
+W2005 f=3730 scan=039 dot=013 val=$00 0/0/7/12 -> 0/0/7/12 first=0
+W2005 f=3730 scan=039 dot=031 val=$00 0/0/7/12 -> 0/0/0/0 first=1
+R f=3730 scan=040 cnt=0/17/7 rv=0/0 curNt=0
+R f=3730 scan=080 cnt=0/22/7 rv=0/0 curNt=0
+R f=3730 scan=120 cnt=0/27/7 rv=0/0 curNt=0
+R f=3730 scan=160 cnt=1/2/7 rv=0/0 curNt=0
+R f=3730 scan=200 cnt=1/7/7 rv=0/0 curNt=0
+W2006 f=3730 scan=249 dot=013 addr=$0021 cnt=1/11/4 rv=0/0 -> cnt=1/11/4 rv=0/8
+W2006 f=3730 scan=249 dot=025 addr=$00c0 cnt=1/11/4 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3730 scan=249 dot=070 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3730 scan=249 dot=082 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3731 endcnt=0/15/6 regrv=0/0/0
+W2005 f=3731 scan=005 dot=256 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3731 scan=005 dot=283 val=$65 0/0/0/0 -> 0/0/5/12 first=1
+PRE f=3731 AFTER  pre-render init rv=0/12/5 cnt=0/15/6 override=no
+PRE f=3731 BEFORE pre-render init rv=0/12/5 cnt=0/15/6
+R f=3731 scan=000 cnt=0/12/5 rv=0/12 curNt=0
+W2005 f=3731 scan=032 dot=022 val=$00 0/0/5/12 -> 0/0/5/12 first=0
+W2005 f=3731 scan=032 dot=040 val=$00 0/0/5/12 -> 0/0/0/0 first=1
+R f=3731 scan=040 cnt=0/17/5 rv=0/0 curNt=0
+R f=3731 scan=080 cnt=0/22/5 rv=0/0 curNt=0
+R f=3731 scan=120 cnt=0/27/5 rv=0/0 curNt=0
+R f=3731 scan=160 cnt=1/2/5 rv=0/0 curNt=0
+R f=3731 scan=200 cnt=1/7/5 rv=0/0 curNt=0
+W2006 f=3731 scan=238 dot=012 addr=$0021 cnt=1/9/7 rv=0/0 -> cnt=1/9/7 rv=0/8
+W2006 f=3731 scan=238 dot=024 addr=$00c0 cnt=1/9/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3731 scan=238 dot=069 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3731 scan=238 dot=081 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3732 endcnt=0/17/1 regrv=0/0/0
+W2005 f=3732 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3732 scan=005 dot=275 val=$63 0/0/0/0 -> 0/0/3/12 first=1
+PRE f=3732 AFTER  pre-render init rv=0/12/3 cnt=0/17/1 override=no
+PRE f=3732 BEFORE pre-render init rv=0/12/3 cnt=0/17/1
+R f=3732 scan=000 cnt=0/12/3 rv=0/12 curNt=0
+W2005 f=3732 scan=047 dot=020 val=$00 0/0/3/12 -> 0/0/3/12 first=0
+W2005 f=3732 scan=047 dot=038 val=$00 0/0/3/12 -> 0/0/0/0 first=1
+R f=3732 scan=040 cnt=0/17/3 rv=0/0 curNt=0
+R f=3732 scan=080 cnt=0/22/3 rv=0/0 curNt=0
+R f=3732 scan=120 cnt=0/27/3 rv=0/0 curNt=0
+R f=3732 scan=160 cnt=1/2/3 rv=0/0 curNt=0
+R f=3732 scan=200 cnt=1/7/3 rv=0/0 curNt=0
+W2006 f=3732 scan=245 dot=011 addr=$0021 cnt=1/10/4 rv=0/0 -> cnt=1/10/4 rv=0/8
+W2006 f=3732 scan=245 dot=023 addr=$00c0 cnt=1/10/4 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3732 scan=245 dot=068 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3732 scan=245 dot=080 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3733 endcnt=0/16/2 regrv=0/0/0
+W2005 f=3733 scan=005 dot=246 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3733 scan=005 dot=273 val=$61 0/0/0/0 -> 0/0/1/12 first=1
+PRE f=3733 AFTER  pre-render init rv=0/12/1 cnt=0/16/2 override=no
+PRE f=3733 BEFORE pre-render init rv=0/12/1 cnt=0/16/2
+R f=3733 scan=000 cnt=0/12/1 rv=0/12 curNt=0
+W2005 f=3733 scan=036 dot=016 val=$00 0/0/1/12 -> 0/0/1/12 first=0
+W2005 f=3733 scan=036 dot=034 val=$00 0/0/1/12 -> 0/0/0/0 first=1
+R f=3733 scan=040 cnt=0/17/1 rv=0/0 curNt=0
+R f=3733 scan=080 cnt=0/22/1 rv=0/0 curNt=0
+R f=3733 scan=120 cnt=0/27/1 rv=0/0 curNt=0
+R f=3733 scan=160 cnt=1/2/1 rv=0/0 curNt=0
+R f=3733 scan=200 cnt=1/7/1 rv=0/0 curNt=0
+W2006 f=3733 scan=230 dot=018 addr=$0021 cnt=1/8/3 rv=0/0 -> cnt=1/8/3 rv=0/8
+W2006 f=3733 scan=230 dot=030 addr=$00c0 cnt=1/8/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3733 scan=230 dot=075 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3733 scan=230 dot=087 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3734 endcnt=0/18/1 regrv=0/0/0
+W2005 f=3734 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3734 scan=005 dot=277 val=$5f 0/0/0/0 -> 0/0/7/11 first=1
+PRE f=3734 AFTER  pre-render init rv=0/11/7 cnt=0/18/1 override=no
+PRE f=3734 BEFORE pre-render init rv=0/11/7 cnt=0/18/1
+R f=3734 scan=000 cnt=0/11/7 rv=0/11 curNt=0
+W2005 f=3734 scan=038 dot=016 val=$00 0/0/7/11 -> 0/0/7/11 first=0
+W2005 f=3734 scan=038 dot=034 val=$00 0/0/7/11 -> 0/0/0/0 first=1
+R f=3734 scan=040 cnt=0/16/7 rv=0/0 curNt=0
+R f=3734 scan=080 cnt=0/21/7 rv=0/0 curNt=0
+R f=3734 scan=120 cnt=0/26/7 rv=0/0 curNt=0
+R f=3734 scan=160 cnt=1/1/7 rv=0/0 curNt=0
+R f=3734 scan=200 cnt=1/6/7 rv=0/0 curNt=0
+W2006 f=3734 scan=228 dot=011 addr=$0021 cnt=1/7/7 rv=0/0 -> cnt=1/7/7 rv=0/8
+W2006 f=3734 scan=228 dot=023 addr=$00c0 cnt=1/7/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3734 scan=228 dot=068 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3734 scan=228 dot=080 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3735 endcnt=0/18/3 regrv=0/0/0
+W2005 f=3735 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3735 scan=005 dot=275 val=$5d 0/0/0/0 -> 0/0/5/11 first=1
+PRE f=3735 AFTER  pre-render init rv=0/11/5 cnt=0/18/3 override=no
+PRE f=3735 BEFORE pre-render init rv=0/11/5 cnt=0/18/3
+R f=3735 scan=000 cnt=0/11/5 rv=0/11 curNt=0
+W2005 f=3735 scan=040 dot=013 val=$00 0/0/5/11 -> 0/0/5/11 first=0
+W2005 f=3735 scan=040 dot=031 val=$00 0/0/5/11 -> 0/0/0/0 first=1
+R f=3735 scan=040 cnt=0/16/5 rv=0/0 curNt=0
+R f=3735 scan=080 cnt=0/21/5 rv=0/0 curNt=0
+R f=3735 scan=120 cnt=0/26/5 rv=0/0 curNt=0
+R f=3735 scan=160 cnt=1/1/5 rv=0/0 curNt=0
+R f=3735 scan=200 cnt=1/6/5 rv=0/0 curNt=0
+W2006 f=3735 scan=226 dot=016 addr=$0021 cnt=1/7/3 rv=0/0 -> cnt=1/7/3 rv=0/8
+W2006 f=3735 scan=226 dot=028 addr=$00c0 cnt=1/7/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3735 scan=226 dot=073 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3735 scan=226 dot=085 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3736 endcnt=0/18/5 regrv=0/0/0
+W2005 f=3736 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3736 scan=005 dot=279 val=$5b 0/0/0/0 -> 0/0/3/11 first=1
+PRE f=3736 AFTER  pre-render init rv=0/11/3 cnt=0/18/5 override=no
+PRE f=3736 BEFORE pre-render init rv=0/11/3 cnt=0/18/5
+R f=3736 scan=000 cnt=0/11/3 rv=0/11 curNt=0
+W2005 f=3736 scan=042 dot=016 val=$00 0/0/3/11 -> 0/0/3/11 first=0
+W2005 f=3736 scan=042 dot=034 val=$00 0/0/3/11 -> 0/0/0/0 first=1
+R f=3736 scan=040 cnt=0/16/3 rv=0/0 curNt=0
+R f=3736 scan=080 cnt=0/21/3 rv=0/0 curNt=0
+R f=3736 scan=120 cnt=0/26/3 rv=0/0 curNt=0
+R f=3736 scan=160 cnt=1/1/3 rv=0/0 curNt=0
+R f=3736 scan=200 cnt=1/6/3 rv=0/0 curNt=0
+W2006 f=3736 scan=224 dot=018 addr=$0021 cnt=1/6/7 rv=0/0 -> cnt=1/6/7 rv=0/8
+W2006 f=3736 scan=224 dot=030 addr=$00c0 cnt=1/6/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3736 scan=224 dot=075 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3736 scan=224 dot=087 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3737 endcnt=0/18/7 regrv=0/0/0
+W2005 f=3737 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3737 scan=005 dot=277 val=$59 0/0/0/0 -> 0/0/1/11 first=1
+PRE f=3737 AFTER  pre-render init rv=0/11/1 cnt=0/18/7 override=no
+PRE f=3737 BEFORE pre-render init rv=0/11/1 cnt=0/18/7
+R f=3737 scan=000 cnt=0/11/1 rv=0/11 curNt=0
+W2005 f=3737 scan=044 dot=013 val=$00 0/0/1/11 -> 0/0/1/11 first=0
+W2005 f=3737 scan=044 dot=031 val=$00 0/0/1/11 -> 0/0/0/0 first=1
+R f=3737 scan=040 cnt=0/16/1 rv=0/0 curNt=0
+R f=3737 scan=080 cnt=0/21/1 rv=0/0 curNt=0
+R f=3737 scan=120 cnt=0/26/1 rv=0/0 curNt=0
+R f=3737 scan=160 cnt=1/1/1 rv=0/0 curNt=0
+R f=3737 scan=200 cnt=1/6/1 rv=0/0 curNt=0
+W2006 f=3737 scan=222 dot=017 addr=$0021 cnt=1/6/3 rv=0/0 -> cnt=1/6/3 rv=0/8
+W2006 f=3737 scan=222 dot=029 addr=$00c0 cnt=1/6/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3737 scan=222 dot=074 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3737 scan=222 dot=086 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+E f=3738 endcnt=0/19/1 regrv=0/0/0
+W2005 f=3738 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3738 scan=005 dot=275 val=$57 0/0/0/0 -> 0/0/7/10 first=1
+PRE f=3738 AFTER  pre-render init rv=0/10/7 cnt=0/19/1 override=no
+PRE f=3738 BEFORE pre-render init rv=0/10/7 cnt=0/19/1
+R f=3738 scan=000 cnt=0/10/7 rv=0/10 curNt=0
+W2005 f=3738 scan=046 dot=016 val=$00 0/0/7/10 -> 0/0/7/10 first=0
+W2005 f=3738 scan=046 dot=034 val=$00 0/0/7/10 -> 0/0/0/0 first=1
+R f=3738 scan=040 cnt=0/15/7 rv=0/0 curNt=0
+R f=3738 scan=080 cnt=0/20/7 rv=0/0 curNt=0
+R f=3738 scan=120 cnt=0/25/7 rv=0/0 curNt=0
+R f=3738 scan=160 cnt=1/0/7 rv=0/0 curNt=0
+W2006 f=3738 scan=220 dot=013 addr=$0021 cnt=1/5/7 rv=0/0 -> cnt=1/5/7 rv=0/8
+W2006 f=3738 scan=220 dot=025 addr=$00c0 cnt=1/5/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3738 scan=220 dot=070 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3738 scan=220 dot=082 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3738 scan=200 cnt=0/14/2 rv=0/0 curNt=0
+E f=3739 endcnt=0/19/3 regrv=0/0/0
+W2005 f=3739 scan=005 dot=246 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3739 scan=005 dot=273 val=$55 0/0/0/0 -> 0/0/5/10 first=1
+PRE f=3739 AFTER  pre-render init rv=0/10/5 cnt=0/19/3 override=no
+PRE f=3739 BEFORE pre-render init rv=0/10/5 cnt=0/19/3
+R f=3739 scan=000 cnt=0/10/5 rv=0/10 curNt=0
+W2005 f=3739 scan=048 dot=010 val=$00 0/0/5/10 -> 0/0/5/10 first=0
+W2005 f=3739 scan=048 dot=028 val=$00 0/0/5/10 -> 0/0/0/0 first=1
+R f=3739 scan=040 cnt=0/15/5 rv=0/0 curNt=0
+R f=3739 scan=080 cnt=0/20/5 rv=0/0 curNt=0
+R f=3739 scan=120 cnt=0/25/5 rv=0/0 curNt=0
+R f=3739 scan=160 cnt=1/0/5 rv=0/0 curNt=0
+W2006 f=3739 scan=218 dot=018 addr=$0021 cnt=1/5/3 rv=0/0 -> cnt=1/5/3 rv=0/8
+W2006 f=3739 scan=218 dot=030 addr=$00c0 cnt=1/5/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3739 scan=218 dot=075 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3739 scan=218 dot=087 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3739 scan=200 cnt=0/14/4 rv=0/0 curNt=1
+E f=3740 endcnt=0/19/5 regrv=0/0/0
+W2005 f=3740 scan=005 dot=256 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3740 scan=005 dot=283 val=$53 0/0/0/0 -> 0/0/3/10 first=1
+PRE f=3740 AFTER  pre-render init rv=0/10/3 cnt=0/19/5 override=no
+PRE f=3740 BEFORE pre-render init rv=0/10/3 cnt=0/19/5
+R f=3740 scan=000 cnt=0/10/3 rv=0/10 curNt=0
+W2005 f=3740 scan=050 dot=022 val=$00 0/0/3/10 -> 0/0/3/10 first=0
+W2005 f=3740 scan=050 dot=040 val=$00 0/0/3/10 -> 0/0/0/0 first=1
+R f=3740 scan=040 cnt=0/15/3 rv=0/0 curNt=0
+R f=3740 scan=080 cnt=0/20/3 rv=0/0 curNt=0
+R f=3740 scan=120 cnt=0/25/3 rv=0/0 curNt=0
+R f=3740 scan=160 cnt=1/0/3 rv=0/0 curNt=0
+W2006 f=3740 scan=216 dot=014 addr=$0021 cnt=1/4/7 rv=0/0 -> cnt=1/4/7 rv=0/8
+W2006 f=3740 scan=216 dot=026 addr=$00c0 cnt=1/4/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3740 scan=216 dot=071 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3740 scan=216 dot=083 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3740 scan=200 cnt=0/14/6 rv=0/0 curNt=1
+E f=3741 endcnt=0/19/7 regrv=0/0/0
+W2005 f=3741 scan=005 dot=254 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3741 scan=005 dot=281 val=$51 0/0/0/0 -> 0/0/1/10 first=1
+PRE f=3741 AFTER  pre-render init rv=0/10/1 cnt=0/19/7 override=no
+PRE f=3741 BEFORE pre-render init rv=0/10/1 cnt=0/19/7
+R f=3741 scan=000 cnt=0/10/1 rv=0/10 curNt=0
+W2005 f=3741 scan=052 dot=013 val=$00 0/0/1/10 -> 0/0/1/10 first=0
+W2005 f=3741 scan=052 dot=031 val=$00 0/0/1/10 -> 0/0/0/0 first=1
+R f=3741 scan=040 cnt=0/15/1 rv=0/0 curNt=0
+R f=3741 scan=080 cnt=0/20/1 rv=0/0 curNt=0
+R f=3741 scan=120 cnt=0/25/1 rv=0/0 curNt=0
+R f=3741 scan=160 cnt=1/0/1 rv=0/0 curNt=0
+W2006 f=3741 scan=214 dot=010 addr=$0021 cnt=1/4/3 rv=0/0 -> cnt=1/4/3 rv=0/8
+W2006 f=3741 scan=214 dot=022 addr=$00c0 cnt=1/4/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3741 scan=214 dot=067 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3741 scan=214 dot=079 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3741 scan=200 cnt=0/15/0 rv=0/0 curNt=1
+E f=3742 endcnt=0/20/1 regrv=0/0/0
+W2005 f=3742 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3742 scan=005 dot=279 val=$4f 0/0/0/0 -> 0/0/7/9 first=1
+PRE f=3742 AFTER  pre-render init rv=0/9/7 cnt=0/20/1 override=no
+PRE f=3742 BEFORE pre-render init rv=0/9/7 cnt=0/20/1
+R f=3742 scan=000 cnt=0/9/7 rv=0/9 curNt=0
+W2005 f=3742 scan=054 dot=010 val=$00 0/0/7/9 -> 0/0/7/9 first=0
+W2005 f=3742 scan=054 dot=028 val=$00 0/0/7/9 -> 0/0/0/0 first=1
+R f=3742 scan=040 cnt=0/14/7 rv=0/0 curNt=0
+R f=3742 scan=080 cnt=0/19/7 rv=0/0 curNt=0
+R f=3742 scan=120 cnt=0/24/7 rv=0/0 curNt=0
+R f=3742 scan=160 cnt=0/29/7 rv=0/0 curNt=0
+W2006 f=3742 scan=212 dot=015 addr=$0021 cnt=1/3/7 rv=0/0 -> cnt=1/3/7 rv=0/8
+W2006 f=3742 scan=212 dot=027 addr=$00c0 cnt=1/3/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3742 scan=212 dot=072 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3742 scan=212 dot=084 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3742 scan=200 cnt=0/15/2 rv=0/0 curNt=1
+E f=3743 endcnt=0/20/3 regrv=0/0/0
+W2005 f=3743 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3743 scan=005 dot=277 val=$4d 0/0/0/0 -> 0/0/5/9 first=1
+PRE f=3743 AFTER  pre-render init rv=0/9/5 cnt=0/20/3 override=no
+PRE f=3743 BEFORE pre-render init rv=0/9/5 cnt=0/20/3
+R f=3743 scan=000 cnt=0/9/5 rv=0/9 curNt=0
+W2005 f=3743 scan=056 dot=010 val=$00 0/0/5/9 -> 0/0/5/9 first=0
+W2005 f=3743 scan=056 dot=028 val=$00 0/0/5/9 -> 0/0/0/0 first=1
+R f=3743 scan=040 cnt=0/14/5 rv=0/0 curNt=0
+R f=3743 scan=080 cnt=0/19/5 rv=0/0 curNt=0
+R f=3743 scan=120 cnt=0/24/5 rv=0/0 curNt=0
+R f=3743 scan=160 cnt=0/29/5 rv=0/0 curNt=0
+W2006 f=3743 scan=210 dot=011 addr=$0021 cnt=1/3/3 rv=0/0 -> cnt=1/3/3 rv=0/8
+W2006 f=3743 scan=210 dot=023 addr=$00c0 cnt=1/3/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3743 scan=210 dot=068 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3743 scan=210 dot=080 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3743 scan=200 cnt=0/15/4 rv=0/0 curNt=1
+E f=3744 endcnt=0/20/5 regrv=0/0/0
+W2005 f=3744 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3744 scan=005 dot=275 val=$4b 0/0/0/0 -> 0/0/3/9 first=1
+PRE f=3744 AFTER  pre-render init rv=0/9/3 cnt=0/20/5 override=no
+PRE f=3744 BEFORE pre-render init rv=0/9/3 cnt=0/20/5
+R f=3744 scan=000 cnt=0/9/3 rv=0/9 curNt=0
+W2005 f=3744 scan=058 dot=010 val=$00 0/0/3/9 -> 0/0/3/9 first=0
+W2005 f=3744 scan=058 dot=028 val=$00 0/0/3/9 -> 0/0/0/0 first=1
+R f=3744 scan=040 cnt=0/14/3 rv=0/0 curNt=0
+R f=3744 scan=080 cnt=0/19/3 rv=0/0 curNt=0
+R f=3744 scan=120 cnt=0/24/3 rv=0/0 curNt=0
+R f=3744 scan=160 cnt=0/29/3 rv=0/0 curNt=0
+W2006 f=3744 scan=208 dot=010 addr=$0021 cnt=1/2/7 rv=0/0 -> cnt=1/2/7 rv=0/8
+W2006 f=3744 scan=208 dot=022 addr=$00c0 cnt=1/2/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3744 scan=208 dot=067 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3744 scan=208 dot=079 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3744 scan=200 cnt=0/15/6 rv=0/0 curNt=1
+E f=3745 endcnt=0/20/7 regrv=0/0/0
+W2005 f=3745 scan=005 dot=246 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3745 scan=005 dot=273 val=$49 0/0/0/0 -> 0/0/1/9 first=1
+PRE f=3745 AFTER  pre-render init rv=0/9/1 cnt=0/20/7 override=no
+PRE f=3745 BEFORE pre-render init rv=0/9/1 cnt=0/20/7
+R f=3745 scan=000 cnt=0/9/1 rv=0/9 curNt=0
+W2005 f=3745 scan=060 dot=010 val=$00 0/0/1/9 -> 0/0/1/9 first=0
+W2005 f=3745 scan=060 dot=028 val=$00 0/0/1/9 -> 0/0/0/0 first=1
+R f=3745 scan=040 cnt=0/14/1 rv=0/0 curNt=0
+R f=3745 scan=080 cnt=0/19/1 rv=0/0 curNt=0
+R f=3745 scan=120 cnt=0/24/1 rv=0/0 curNt=0
+R f=3745 scan=160 cnt=0/29/1 rv=0/0 curNt=0
+W2006 f=3745 scan=206 dot=015 addr=$0021 cnt=1/2/3 rv=0/0 -> cnt=1/2/3 rv=0/8
+W2006 f=3745 scan=206 dot=027 addr=$00c0 cnt=1/2/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3745 scan=206 dot=072 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3745 scan=206 dot=084 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3745 scan=200 cnt=0/16/0 rv=0/0 curNt=1
+E f=3746 endcnt=0/21/1 regrv=0/0/0
+W2005 f=3746 scan=005 dot=256 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3746 scan=005 dot=283 val=$47 0/0/0/0 -> 0/0/7/8 first=1
+PRE f=3746 AFTER  pre-render init rv=0/8/7 cnt=0/21/1 override=no
+PRE f=3746 BEFORE pre-render init rv=0/8/7 cnt=0/21/1
+R f=3746 scan=000 cnt=0/8/7 rv=0/8 curNt=0
+R f=3746 scan=040 cnt=0/13/7 rv=0/8 curNt=1
+W2005 f=3746 scan=062 dot=013 val=$00 0/0/7/8 -> 0/0/7/8 first=0
+W2005 f=3746 scan=062 dot=031 val=$00 0/0/7/8 -> 0/0/0/0 first=1
+R f=3746 scan=080 cnt=0/18/7 rv=0/0 curNt=0
+R f=3746 scan=120 cnt=0/23/7 rv=0/0 curNt=0
+R f=3746 scan=160 cnt=0/28/7 rv=0/0 curNt=0
+W2006 f=3746 scan=204 dot=011 addr=$0021 cnt=1/1/7 rv=0/0 -> cnt=1/1/7 rv=0/8
+W2006 f=3746 scan=204 dot=023 addr=$00c0 cnt=1/1/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3746 scan=204 dot=068 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3746 scan=204 dot=080 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3746 scan=200 cnt=0/16/2 rv=0/0 curNt=1
+E f=3747 endcnt=0/21/3 regrv=0/0/0
+W2005 f=3747 scan=005 dot=254 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3747 scan=005 dot=281 val=$45 0/0/0/0 -> 0/0/5/8 first=1
+PRE f=3747 AFTER  pre-render init rv=0/8/5 cnt=0/21/3 override=no
+PRE f=3747 BEFORE pre-render init rv=0/8/5 cnt=0/21/3
+R f=3747 scan=000 cnt=0/8/5 rv=0/8 curNt=0
+R f=3747 scan=040 cnt=0/13/5 rv=0/8 curNt=1
+W2005 f=3747 scan=064 dot=010 val=$00 0/0/5/8 -> 0/0/5/8 first=0
+W2005 f=3747 scan=064 dot=028 val=$00 0/0/5/8 -> 0/0/0/0 first=1
+R f=3747 scan=080 cnt=0/18/5 rv=0/0 curNt=0
+R f=3747 scan=120 cnt=0/23/5 rv=0/0 curNt=0
+R f=3747 scan=160 cnt=0/28/5 rv=0/0 curNt=0
+W2006 f=3747 scan=202 dot=010 addr=$0021 cnt=1/1/3 rv=0/0 -> cnt=1/1/3 rv=0/8
+W2006 f=3747 scan=202 dot=022 addr=$00c0 cnt=1/1/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3747 scan=202 dot=067 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3747 scan=202 dot=079 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3747 scan=200 cnt=0/16/4 rv=0/0 curNt=1
+E f=3748 endcnt=0/21/5 regrv=0/0/0
+W2005 f=3748 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3748 scan=005 dot=279 val=$43 0/0/0/0 -> 0/0/3/8 first=1
+PRE f=3748 AFTER  pre-render init rv=0/8/3 cnt=0/21/5 override=no
+PRE f=3748 BEFORE pre-render init rv=0/8/3 cnt=0/21/5
+R f=3748 scan=000 cnt=0/8/3 rv=0/8 curNt=0
+R f=3748 scan=040 cnt=0/13/3 rv=0/8 curNt=1
+W2005 f=3748 scan=066 dot=013 val=$00 0/0/3/8 -> 0/0/3/8 first=0
+W2005 f=3748 scan=066 dot=031 val=$00 0/0/3/8 -> 0/0/0/0 first=1
+R f=3748 scan=080 cnt=0/18/3 rv=0/0 curNt=0
+R f=3748 scan=120 cnt=0/23/3 rv=0/0 curNt=0
+R f=3748 scan=160 cnt=0/28/3 rv=0/0 curNt=0
+W2006 f=3748 scan=200 dot=012 addr=$0021 cnt=1/0/7 rv=0/0 -> cnt=1/0/7 rv=0/8
+W2006 f=3748 scan=200 dot=024 addr=$00c0 cnt=1/0/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3748 scan=200 dot=069 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3748 scan=200 dot=081 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3748 scan=200 cnt=0/16/6 rv=0/0 curNt=1
+E f=3749 endcnt=0/21/7 regrv=0/0/0
+W2005 f=3749 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3749 scan=005 dot=277 val=$41 0/0/0/0 -> 0/0/1/8 first=1
+PRE f=3749 AFTER  pre-render init rv=0/8/1 cnt=0/21/7 override=no
+PRE f=3749 BEFORE pre-render init rv=0/8/1 cnt=0/21/7
+R f=3749 scan=000 cnt=0/8/1 rv=0/8 curNt=0
+R f=3749 scan=040 cnt=0/13/1 rv=0/8 curNt=1
+W2005 f=3749 scan=068 dot=016 val=$00 0/0/1/8 -> 0/0/1/8 first=0
+W2005 f=3749 scan=068 dot=034 val=$00 0/0/1/8 -> 0/0/0/0 first=1
+R f=3749 scan=080 cnt=0/18/1 rv=0/0 curNt=0
+R f=3749 scan=120 cnt=0/23/1 rv=0/0 curNt=0
+R f=3749 scan=160 cnt=0/28/1 rv=0/0 curNt=0
+W2006 f=3749 scan=198 dot=017 addr=$0021 cnt=1/0/3 rv=0/0 -> cnt=1/0/3 rv=0/8
+W2006 f=3749 scan=198 dot=029 addr=$00c0 cnt=1/0/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3749 scan=198 dot=074 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3749 scan=198 dot=086 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3749 scan=200 cnt=0/17/0 rv=0/0 curNt=1
+E f=3750 endcnt=0/22/1 regrv=0/0/0
+W2005 f=3750 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3750 scan=005 dot=275 val=$3f 0/0/0/0 -> 0/0/7/7 first=1
+PRE f=3750 AFTER  pre-render init rv=0/7/7 cnt=0/22/1 override=no
+PRE f=3750 BEFORE pre-render init rv=0/7/7 cnt=0/22/1
+R f=3750 scan=000 cnt=0/7/7 rv=0/7 curNt=0
+R f=3750 scan=040 cnt=0/12/7 rv=0/7 curNt=1
+W2005 f=3750 scan=070 dot=013 val=$00 0/0/7/7 -> 0/0/7/7 first=0
+W2005 f=3750 scan=070 dot=031 val=$00 0/0/7/7 -> 0/0/0/0 first=1
+R f=3750 scan=080 cnt=0/17/7 rv=0/0 curNt=0
+R f=3750 scan=120 cnt=0/22/7 rv=0/0 curNt=0
+R f=3750 scan=160 cnt=0/27/7 rv=0/0 curNt=0
+W2006 f=3750 scan=196 dot=013 addr=$0021 cnt=0/29/7 rv=0/0 -> cnt=0/29/7 rv=0/8
+W2006 f=3750 scan=196 dot=025 addr=$00c0 cnt=0/29/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3750 scan=196 dot=070 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3750 scan=196 dot=082 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3750 scan=200 cnt=0/17/2 rv=0/0 curNt=1
+E f=3751 endcnt=0/22/3 regrv=0/0/0
+W2005 f=3751 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3751 scan=005 dot=279 val=$3d 0/0/0/0 -> 0/0/5/7 first=1
+PRE f=3751 AFTER  pre-render init rv=0/7/5 cnt=0/22/3 override=no
+PRE f=3751 BEFORE pre-render init rv=0/7/5 cnt=0/22/3
+R f=3751 scan=000 cnt=0/7/5 rv=0/7 curNt=0
+R f=3751 scan=040 cnt=0/12/5 rv=0/7 curNt=1
+W2005 f=3751 scan=072 dot=010 val=$00 0/0/5/7 -> 0/0/5/7 first=0
+W2005 f=3751 scan=072 dot=028 val=$00 0/0/5/7 -> 0/0/0/0 first=1
+R f=3751 scan=080 cnt=0/17/5 rv=0/0 curNt=0
+R f=3751 scan=120 cnt=0/22/5 rv=0/0 curNt=0
+R f=3751 scan=160 cnt=0/27/5 rv=0/0 curNt=0
+W2006 f=3751 scan=194 dot=018 addr=$0021 cnt=0/29/3 rv=0/0 -> cnt=0/29/3 rv=0/8
+W2006 f=3751 scan=194 dot=030 addr=$00c0 cnt=0/29/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3751 scan=194 dot=075 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3751 scan=194 dot=087 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3751 scan=200 cnt=0/17/4 rv=0/0 curNt=1
+E f=3752 endcnt=0/22/5 regrv=0/0/0
+W2005 f=3752 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3752 scan=005 dot=277 val=$3b 0/0/0/0 -> 0/0/3/7 first=1
+PRE f=3752 AFTER  pre-render init rv=0/7/3 cnt=0/22/5 override=no
+PRE f=3752 BEFORE pre-render init rv=0/7/3 cnt=0/22/5
+R f=3752 scan=000 cnt=0/7/3 rv=0/7 curNt=0
+R f=3752 scan=040 cnt=0/12/3 rv=0/7 curNt=1
+W2005 f=3752 scan=074 dot=013 val=$00 0/0/3/7 -> 0/0/3/7 first=0
+W2005 f=3752 scan=074 dot=031 val=$00 0/0/3/7 -> 0/0/0/0 first=1
+R f=3752 scan=080 cnt=0/17/3 rv=0/0 curNt=0
+R f=3752 scan=120 cnt=0/22/3 rv=0/0 curNt=0
+R f=3752 scan=160 cnt=0/27/3 rv=0/0 curNt=0
+W2006 f=3752 scan=192 dot=014 addr=$0021 cnt=0/28/7 rv=0/0 -> cnt=0/28/7 rv=0/8
+W2006 f=3752 scan=192 dot=026 addr=$00c0 cnt=0/28/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3752 scan=192 dot=071 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3752 scan=192 dot=083 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3752 scan=200 cnt=0/17/6 rv=0/0 curNt=1
+E f=3753 endcnt=0/22/7 regrv=0/0/0
+W2005 f=3753 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3753 scan=005 dot=275 val=$39 0/0/0/0 -> 0/0/1/7 first=1
+PRE f=3753 AFTER  pre-render init rv=0/7/1 cnt=0/22/7 override=no
+PRE f=3753 BEFORE pre-render init rv=0/7/1 cnt=0/22/7
+R f=3753 scan=000 cnt=0/7/1 rv=0/7 curNt=0
+R f=3753 scan=040 cnt=0/12/1 rv=0/7 curNt=1
+W2005 f=3753 scan=076 dot=013 val=$00 0/0/1/7 -> 0/0/1/7 first=0
+W2005 f=3753 scan=076 dot=031 val=$00 0/0/1/7 -> 0/0/0/0 first=1
+R f=3753 scan=080 cnt=0/17/1 rv=0/0 curNt=0
+R f=3753 scan=120 cnt=0/22/1 rv=0/0 curNt=0
+R f=3753 scan=160 cnt=0/27/1 rv=0/0 curNt=0
+W2006 f=3753 scan=190 dot=016 addr=$0021 cnt=0/28/3 rv=0/0 -> cnt=0/28/3 rv=0/8
+W2006 f=3753 scan=190 dot=028 addr=$00c0 cnt=0/28/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3753 scan=190 dot=073 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3753 scan=190 dot=085 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3753 scan=200 cnt=0/18/0 rv=0/0 curNt=1
+E f=3754 endcnt=0/23/1 regrv=0/0/0
+W2005 f=3754 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3754 scan=005 dot=279 val=$37 0/0/0/0 -> 0/0/7/6 first=1
+PRE f=3754 AFTER  pre-render init rv=0/6/7 cnt=0/23/1 override=no
+PRE f=3754 BEFORE pre-render init rv=0/6/7 cnt=0/23/1
+R f=3754 scan=000 cnt=0/6/7 rv=0/6 curNt=0
+R f=3754 scan=040 cnt=0/11/7 rv=0/6 curNt=1
+W2005 f=3754 scan=078 dot=016 val=$00 0/0/7/6 -> 0/0/7/6 first=0
+W2005 f=3754 scan=078 dot=034 val=$00 0/0/7/6 -> 0/0/0/0 first=1
+R f=3754 scan=080 cnt=0/16/7 rv=0/0 curNt=0
+R f=3754 scan=120 cnt=0/21/7 rv=0/0 curNt=0
+R f=3754 scan=160 cnt=0/26/7 rv=0/0 curNt=0
+W2006 f=3754 scan=188 dot=015 addr=$0021 cnt=0/27/7 rv=0/0 -> cnt=0/27/7 rv=0/8
+W2006 f=3754 scan=188 dot=027 addr=$00c0 cnt=0/27/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3754 scan=188 dot=072 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3754 scan=188 dot=084 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3754 scan=200 cnt=0/18/2 rv=0/0 curNt=1
+E f=3755 endcnt=0/23/3 regrv=0/0/0
+W2005 f=3755 scan=005 dot=256 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3755 scan=005 dot=283 val=$35 0/0/0/0 -> 0/0/5/6 first=1
+PRE f=3755 AFTER  pre-render init rv=0/6/5 cnt=0/23/3 override=no
+PRE f=3755 BEFORE pre-render init rv=0/6/5 cnt=0/23/3
+R f=3755 scan=000 cnt=0/6/5 rv=0/6 curNt=0
+R f=3755 scan=040 cnt=0/11/5 rv=0/6 curNt=1
+W2005 f=3755 scan=080 dot=016 val=$00 0/0/5/6 -> 0/0/5/6 first=0
+W2005 f=3755 scan=080 dot=034 val=$00 0/0/5/6 -> 0/0/0/0 first=1
+R f=3755 scan=080 cnt=0/16/5 rv=0/0 curNt=0
+R f=3755 scan=120 cnt=0/21/5 rv=0/0 curNt=0
+R f=3755 scan=160 cnt=0/26/5 rv=0/0 curNt=0
+W2006 f=3755 scan=186 dot=011 addr=$0021 cnt=0/27/3 rv=0/0 -> cnt=0/27/3 rv=0/8
+W2006 f=3755 scan=186 dot=023 addr=$00c0 cnt=0/27/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3755 scan=186 dot=068 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3755 scan=186 dot=080 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3755 scan=200 cnt=0/18/4 rv=0/0 curNt=1
+E f=3756 endcnt=0/23/5 regrv=0/0/0
+W2005 f=3756 scan=005 dot=254 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3756 scan=005 dot=281 val=$33 0/0/0/0 -> 0/0/3/6 first=1
+PRE f=3756 AFTER  pre-render init rv=0/6/3 cnt=0/23/5 override=no
+PRE f=3756 BEFORE pre-render init rv=0/6/3 cnt=0/23/5
+R f=3756 scan=000 cnt=0/6/3 rv=0/6 curNt=0
+R f=3756 scan=040 cnt=0/11/3 rv=0/6 curNt=1
+W2005 f=3756 scan=082 dot=013 val=$00 0/0/3/6 -> 0/0/3/6 first=0
+W2005 f=3756 scan=082 dot=031 val=$00 0/0/3/6 -> 0/0/0/0 first=1
+R f=3756 scan=080 cnt=0/16/3 rv=0/0 curNt=0
+R f=3756 scan=120 cnt=0/21/3 rv=0/0 curNt=0
+R f=3756 scan=160 cnt=0/26/3 rv=0/0 curNt=0
+W2006 f=3756 scan=184 dot=016 addr=$0021 cnt=0/26/7 rv=0/0 -> cnt=0/26/7 rv=0/8
+W2006 f=3756 scan=184 dot=028 addr=$00c0 cnt=0/26/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3756 scan=184 dot=073 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3756 scan=184 dot=085 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3756 scan=200 cnt=0/18/6 rv=0/0 curNt=1
+E f=3757 endcnt=0/23/7 regrv=0/0/0
+W2005 f=3757 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3757 scan=005 dot=279 val=$31 0/0/0/0 -> 0/0/1/6 first=1
+PRE f=3757 AFTER  pre-render init rv=0/6/1 cnt=0/23/7 override=no
+PRE f=3757 BEFORE pre-render init rv=0/6/1 cnt=0/23/7
+R f=3757 scan=000 cnt=0/6/1 rv=0/6 curNt=0
+R f=3757 scan=040 cnt=0/11/1 rv=0/6 curNt=1
+W2005 f=3757 scan=084 dot=013 val=$00 0/0/1/6 -> 0/0/1/6 first=0
+W2005 f=3757 scan=084 dot=031 val=$00 0/0/1/6 -> 0/0/0/0 first=1
+R f=3757 scan=080 cnt=0/16/1 rv=0/0 curNt=0
+R f=3757 scan=120 cnt=0/21/1 rv=0/0 curNt=0
+R f=3757 scan=160 cnt=0/26/1 rv=0/0 curNt=0
+W2006 f=3757 scan=182 dot=012 addr=$0021 cnt=0/26/3 rv=0/0 -> cnt=0/26/3 rv=0/8
+W2006 f=3757 scan=182 dot=024 addr=$00c0 cnt=0/26/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3757 scan=182 dot=069 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3757 scan=182 dot=081 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3757 scan=200 cnt=0/19/0 rv=0/0 curNt=1
+E f=3758 endcnt=0/24/1 regrv=0/0/0
+W2005 f=3758 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3758 scan=005 dot=277 val=$2f 0/0/0/0 -> 0/0/7/5 first=1
+PRE f=3758 AFTER  pre-render init rv=0/5/7 cnt=0/24/1 override=no
+PRE f=3758 BEFORE pre-render init rv=0/5/7 cnt=0/24/1
+R f=3758 scan=000 cnt=0/5/7 rv=0/5 curNt=0
+R f=3758 scan=040 cnt=0/10/7 rv=0/5 curNt=1
+W2005 f=3758 scan=086 dot=016 val=$00 0/0/7/5 -> 0/0/7/5 first=0
+W2005 f=3758 scan=086 dot=034 val=$00 0/0/7/5 -> 0/0/0/0 first=1
+R f=3758 scan=080 cnt=0/15/7 rv=0/0 curNt=0
+R f=3758 scan=120 cnt=0/20/7 rv=0/0 curNt=0
+W2006 f=3758 scan=180 dot=011 addr=$0021 cnt=0/25/7 rv=0/0 -> cnt=0/25/7 rv=0/8
+W2006 f=3758 scan=180 dot=023 addr=$00c0 cnt=0/25/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3758 scan=180 dot=068 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3758 scan=180 dot=080 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3758 scan=160 cnt=0/14/2 rv=0/0 curNt=0
+R f=3758 scan=200 cnt=0/19/2 rv=0/0 curNt=1
+E f=3759 endcnt=0/24/3 regrv=0/0/0
+W2005 f=3759 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3759 scan=005 dot=275 val=$2d 0/0/0/0 -> 0/0/5/5 first=1
+PRE f=3759 AFTER  pre-render init rv=0/5/5 cnt=0/24/3 override=no
+PRE f=3759 BEFORE pre-render init rv=0/5/5 cnt=0/24/3
+R f=3759 scan=000 cnt=0/5/5 rv=0/5 curNt=0
+R f=3759 scan=040 cnt=0/10/5 rv=0/5 curNt=1
+W2005 f=3759 scan=088 dot=010 val=$00 0/0/5/5 -> 0/0/5/5 first=0
+W2005 f=3759 scan=088 dot=028 val=$00 0/0/5/5 -> 0/0/0/0 first=1
+R f=3759 scan=080 cnt=0/15/5 rv=0/0 curNt=0
+R f=3759 scan=120 cnt=0/20/5 rv=0/0 curNt=0
+W2006 f=3759 scan=178 dot=010 addr=$0021 cnt=0/25/3 rv=0/0 -> cnt=0/25/3 rv=0/8
+W2006 f=3759 scan=178 dot=022 addr=$00c0 cnt=0/25/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3759 scan=178 dot=067 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3759 scan=178 dot=079 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3759 scan=160 cnt=0/14/4 rv=0/0 curNt=1
+R f=3759 scan=200 cnt=0/19/4 rv=0/0 curNt=1
+E f=3760 endcnt=0/24/5 regrv=0/0/0
+W2005 f=3760 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3760 scan=005 dot=279 val=$2b 0/0/0/0 -> 0/0/3/5 first=1
+PRE f=3760 AFTER  pre-render init rv=0/5/3 cnt=0/24/5 override=no
+PRE f=3760 BEFORE pre-render init rv=0/5/3 cnt=0/24/5
+R f=3760 scan=000 cnt=0/5/3 rv=0/5 curNt=0
+R f=3760 scan=040 cnt=0/10/3 rv=0/5 curNt=1
+W2005 f=3760 scan=090 dot=016 val=$00 0/0/3/5 -> 0/0/3/5 first=0
+W2005 f=3760 scan=090 dot=034 val=$00 0/0/3/5 -> 0/0/0/0 first=1
+R f=3760 scan=080 cnt=0/15/3 rv=0/0 curNt=0
+R f=3760 scan=120 cnt=0/20/3 rv=0/0 curNt=0
+W2006 f=3760 scan=176 dot=012 addr=$0021 cnt=0/24/7 rv=0/0 -> cnt=0/24/7 rv=0/8
+W2006 f=3760 scan=176 dot=024 addr=$00c0 cnt=0/24/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3760 scan=176 dot=069 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3760 scan=176 dot=081 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3760 scan=160 cnt=0/14/6 rv=0/0 curNt=1
+R f=3760 scan=200 cnt=0/19/6 rv=0/0 curNt=1
+E f=3761 endcnt=0/24/7 regrv=0/0/0
+W2005 f=3761 scan=005 dot=256 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3761 scan=005 dot=283 val=$29 0/0/0/0 -> 0/0/1/5 first=1
+PRE f=3761 AFTER  pre-render init rv=0/5/1 cnt=0/24/7 override=no
+PRE f=3761 BEFORE pre-render init rv=0/5/1 cnt=0/24/7
+R f=3761 scan=000 cnt=0/5/1 rv=0/5 curNt=0
+R f=3761 scan=040 cnt=0/10/1 rv=0/5 curNt=1
+W2005 f=3761 scan=092 dot=013 val=$00 0/0/1/5 -> 0/0/1/5 first=0
+W2005 f=3761 scan=092 dot=031 val=$00 0/0/1/5 -> 0/0/0/0 first=1
+R f=3761 scan=080 cnt=0/15/1 rv=0/0 curNt=0
+R f=3761 scan=120 cnt=0/20/1 rv=0/0 curNt=0
+W2006 f=3761 scan=174 dot=014 addr=$0021 cnt=0/24/3 rv=0/0 -> cnt=0/24/3 rv=0/8
+W2006 f=3761 scan=174 dot=026 addr=$00c0 cnt=0/24/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3761 scan=174 dot=071 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3761 scan=174 dot=083 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3761 scan=160 cnt=0/15/0 rv=0/0 curNt=1
+R f=3761 scan=200 cnt=0/20/0 rv=0/0 curNt=1
+E f=3762 endcnt=0/25/1 regrv=0/0/0
+W2005 f=3762 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3762 scan=005 dot=275 val=$27 0/0/0/0 -> 0/0/7/4 first=1
+PRE f=3762 AFTER  pre-render init rv=0/4/7 cnt=0/25/1 override=no
+PRE f=3762 BEFORE pre-render init rv=0/4/7 cnt=0/25/1
+R f=3762 scan=000 cnt=0/4/7 rv=0/4 curNt=0
+R f=3762 scan=040 cnt=0/9/7 rv=0/4 curNt=1
+W2005 f=3762 scan=094 dot=010 val=$00 0/0/7/4 -> 0/0/7/4 first=0
+W2005 f=3762 scan=094 dot=028 val=$00 0/0/7/4 -> 0/0/0/0 first=1
+R f=3762 scan=080 cnt=0/14/7 rv=0/0 curNt=0
+R f=3762 scan=120 cnt=0/19/7 rv=0/0 curNt=0
+W2006 f=3762 scan=172 dot=016 addr=$0021 cnt=0/23/7 rv=0/0 -> cnt=0/23/7 rv=0/8
+W2006 f=3762 scan=172 dot=028 addr=$00c0 cnt=0/23/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3762 scan=172 dot=073 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3762 scan=172 dot=085 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3762 scan=160 cnt=0/15/2 rv=0/0 curNt=1
+R f=3762 scan=200 cnt=0/20/2 rv=0/0 curNt=1
+E f=3763 endcnt=0/25/3 regrv=0/0/0
+W2005 f=3763 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3763 scan=005 dot=279 val=$25 0/0/0/0 -> 0/0/5/4 first=1
+PRE f=3763 AFTER  pre-render init rv=0/4/5 cnt=0/25/3 override=no
+PRE f=3763 BEFORE pre-render init rv=0/4/5 cnt=0/25/3
+R f=3763 scan=000 cnt=0/4/5 rv=0/4 curNt=0
+R f=3763 scan=040 cnt=0/9/5 rv=0/4 curNt=1
+W2005 f=3763 scan=096 dot=016 val=$00 0/0/5/4 -> 0/0/5/4 first=0
+W2005 f=3763 scan=096 dot=034 val=$00 0/0/5/4 -> 0/0/0/0 first=1
+R f=3763 scan=080 cnt=0/14/5 rv=0/0 curNt=0
+R f=3763 scan=120 cnt=0/19/5 rv=0/0 curNt=0
+W2006 f=3763 scan=170 dot=018 addr=$0021 cnt=0/23/3 rv=0/0 -> cnt=0/23/3 rv=0/8
+W2006 f=3763 scan=170 dot=030 addr=$00c0 cnt=0/23/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3763 scan=170 dot=075 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3763 scan=170 dot=087 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3763 scan=160 cnt=0/15/4 rv=0/0 curNt=1
+R f=3763 scan=200 cnt=0/20/4 rv=0/0 curNt=1
+E f=3764 endcnt=0/25/5 regrv=0/0/0
+W2005 f=3764 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3764 scan=005 dot=277 val=$23 0/0/0/0 -> 0/0/3/4 first=1
+PRE f=3764 AFTER  pre-render init rv=0/4/3 cnt=0/25/5 override=no
+PRE f=3764 BEFORE pre-render init rv=0/4/3 cnt=0/25/5
+R f=3764 scan=000 cnt=0/4/3 rv=0/4 curNt=0
+R f=3764 scan=040 cnt=0/9/3 rv=0/4 curNt=1
+W2005 f=3764 scan=098 dot=016 val=$00 0/0/3/4 -> 0/0/3/4 first=0
+W2005 f=3764 scan=098 dot=034 val=$00 0/0/3/4 -> 0/0/0/0 first=1
+R f=3764 scan=080 cnt=0/14/3 rv=0/0 curNt=0
+R f=3764 scan=120 cnt=0/19/3 rv=0/0 curNt=0
+W2006 f=3764 scan=168 dot=014 addr=$0021 cnt=0/22/7 rv=0/0 -> cnt=0/22/7 rv=0/8
+W2006 f=3764 scan=168 dot=026 addr=$00c0 cnt=0/22/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3764 scan=168 dot=071 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3764 scan=168 dot=083 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3764 scan=160 cnt=0/15/6 rv=0/0 curNt=1
+R f=3764 scan=200 cnt=0/20/6 rv=0/0 curNt=1
+E f=3765 endcnt=0/25/7 regrv=0/0/0
+W2005 f=3765 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3765 scan=005 dot=275 val=$21 0/0/0/0 -> 0/0/1/4 first=1
+PRE f=3765 AFTER  pre-render init rv=0/4/1 cnt=0/25/7 override=no
+PRE f=3765 BEFORE pre-render init rv=0/4/1 cnt=0/25/7
+R f=3765 scan=000 cnt=0/4/1 rv=0/4 curNt=0
+R f=3765 scan=040 cnt=0/9/1 rv=0/4 curNt=1
+W2005 f=3765 scan=100 dot=010 val=$00 0/0/1/4 -> 0/0/1/4 first=0
+W2005 f=3765 scan=100 dot=028 val=$00 0/0/1/4 -> 0/0/0/0 first=1
+R f=3765 scan=080 cnt=0/14/1 rv=0/0 curNt=0
+R f=3765 scan=120 cnt=0/19/1 rv=0/0 curNt=0
+W2006 f=3765 scan=166 dot=013 addr=$0021 cnt=0/22/3 rv=0/0 -> cnt=0/22/3 rv=0/8
+W2006 f=3765 scan=166 dot=025 addr=$00c0 cnt=0/22/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3765 scan=166 dot=070 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3765 scan=166 dot=082 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3765 scan=160 cnt=0/16/0 rv=0/0 curNt=1
+R f=3765 scan=200 cnt=0/21/0 rv=0/0 curNt=1
+E f=3766 endcnt=0/26/1 regrv=0/0/0
+W2005 f=3766 scan=005 dot=246 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3766 scan=005 dot=273 val=$1f 0/0/0/0 -> 0/0/7/3 first=1
+PRE f=3766 AFTER  pre-render init rv=0/3/7 cnt=0/26/1 override=no
+PRE f=3766 BEFORE pre-render init rv=0/3/7 cnt=0/26/1
+R f=3766 scan=000 cnt=0/3/7 rv=0/3 curNt=0
+R f=3766 scan=040 cnt=0/8/7 rv=0/3 curNt=1
+R f=3766 scan=080 cnt=0/13/7 rv=0/3 curNt=1
+W2005 f=3766 scan=102 dot=013 val=$00 0/0/7/3 -> 0/0/7/3 first=0
+W2005 f=3766 scan=102 dot=031 val=$00 0/0/7/3 -> 0/0/0/0 first=1
+R f=3766 scan=120 cnt=0/18/7 rv=0/0 curNt=0
+W2006 f=3766 scan=164 dot=012 addr=$0021 cnt=0/21/7 rv=0/0 -> cnt=0/21/7 rv=0/8
+W2006 f=3766 scan=164 dot=024 addr=$00c0 cnt=0/21/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3766 scan=164 dot=069 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3766 scan=164 dot=081 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3766 scan=160 cnt=0/16/2 rv=0/0 curNt=1
+R f=3766 scan=200 cnt=0/21/2 rv=0/0 curNt=1
+E f=3767 endcnt=0/26/3 regrv=0/0/0
+W2005 f=3767 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3767 scan=005 dot=277 val=$1d 0/0/0/0 -> 0/0/5/3 first=1
+PRE f=3767 AFTER  pre-render init rv=0/3/5 cnt=0/26/3 override=no
+PRE f=3767 BEFORE pre-render init rv=0/3/5 cnt=0/26/3
+R f=3767 scan=000 cnt=0/3/5 rv=0/3 curNt=0
+R f=3767 scan=040 cnt=0/8/5 rv=0/3 curNt=1
+R f=3767 scan=080 cnt=0/13/5 rv=0/3 curNt=1
+W2005 f=3767 scan=104 dot=013 val=$00 0/0/5/3 -> 0/0/5/3 first=0
+W2005 f=3767 scan=104 dot=031 val=$00 0/0/5/3 -> 0/0/0/0 first=1
+R f=3767 scan=120 cnt=0/18/5 rv=0/0 curNt=0
+W2006 f=3767 scan=162 dot=017 addr=$0021 cnt=0/21/3 rv=0/0 -> cnt=0/21/3 rv=0/8
+W2006 f=3767 scan=162 dot=029 addr=$00c0 cnt=0/21/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3767 scan=162 dot=074 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3767 scan=162 dot=086 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3767 scan=160 cnt=0/16/4 rv=0/0 curNt=1
+R f=3767 scan=200 cnt=0/21/4 rv=0/0 curNt=1
+E f=3768 endcnt=0/26/5 regrv=0/0/0
+W2005 f=3768 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3768 scan=005 dot=275 val=$1b 0/0/0/0 -> 0/0/3/3 first=1
+PRE f=3768 AFTER  pre-render init rv=0/3/3 cnt=0/26/5 override=no
+PRE f=3768 BEFORE pre-render init rv=0/3/3 cnt=0/26/5
+R f=3768 scan=000 cnt=0/3/3 rv=0/3 curNt=0
+R f=3768 scan=040 cnt=0/8/3 rv=0/3 curNt=1
+R f=3768 scan=080 cnt=0/13/3 rv=0/3 curNt=1
+W2005 f=3768 scan=106 dot=013 val=$00 0/0/3/3 -> 0/0/3/3 first=0
+W2005 f=3768 scan=106 dot=031 val=$00 0/0/3/3 -> 0/0/0/0 first=1
+R f=3768 scan=120 cnt=0/18/3 rv=0/0 curNt=0
+W2006 f=3768 scan=160 dot=013 addr=$0021 cnt=0/20/7 rv=0/0 -> cnt=0/20/7 rv=0/8
+W2006 f=3768 scan=160 dot=025 addr=$00c0 cnt=0/20/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3768 scan=160 dot=070 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3768 scan=160 dot=082 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3768 scan=160 cnt=0/16/6 rv=0/0 curNt=1
+R f=3768 scan=200 cnt=0/21/6 rv=0/0 curNt=1
+E f=3769 endcnt=0/26/7 regrv=0/0/0
+W2005 f=3769 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3769 scan=005 dot=279 val=$19 0/0/0/0 -> 0/0/1/3 first=1
+PRE f=3769 AFTER  pre-render init rv=0/3/1 cnt=0/26/7 override=no
+PRE f=3769 BEFORE pre-render init rv=0/3/1 cnt=0/26/7
+R f=3769 scan=000 cnt=0/3/1 rv=0/3 curNt=0
+R f=3769 scan=040 cnt=0/8/1 rv=0/3 curNt=1
+R f=3769 scan=080 cnt=0/13/1 rv=0/3 curNt=1
+W2005 f=3769 scan=108 dot=013 val=$00 0/0/1/3 -> 0/0/1/3 first=0
+W2005 f=3769 scan=108 dot=031 val=$00 0/0/1/3 -> 0/0/0/0 first=1
+R f=3769 scan=120 cnt=0/18/1 rv=0/0 curNt=0
+W2006 f=3769 scan=158 dot=018 addr=$0021 cnt=0/20/3 rv=0/0 -> cnt=0/20/3 rv=0/8
+W2006 f=3769 scan=158 dot=030 addr=$00c0 cnt=0/20/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3769 scan=158 dot=075 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3769 scan=158 dot=087 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3769 scan=160 cnt=0/17/0 rv=0/0 curNt=1
+R f=3769 scan=200 cnt=0/22/0 rv=0/0 curNt=1
+E f=3770 endcnt=0/27/1 regrv=0/0/0
+W2005 f=3770 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3770 scan=005 dot=277 val=$17 0/0/0/0 -> 0/0/7/2 first=1
+PRE f=3770 AFTER  pre-render init rv=0/2/7 cnt=0/27/1 override=no
+PRE f=3770 BEFORE pre-render init rv=0/2/7 cnt=0/27/1
+R f=3770 scan=000 cnt=0/2/7 rv=0/2 curNt=0
+R f=3770 scan=040 cnt=0/7/7 rv=0/2 curNt=1
+R f=3770 scan=080 cnt=0/12/7 rv=0/2 curNt=1
+W2005 f=3770 scan=110 dot=010 val=$00 0/0/7/2 -> 0/0/7/2 first=0
+W2005 f=3770 scan=110 dot=028 val=$00 0/0/7/2 -> 0/0/0/0 first=1
+R f=3770 scan=120 cnt=0/17/7 rv=0/0 curNt=0
+W2006 f=3770 scan=156 dot=011 addr=$0021 cnt=0/19/7 rv=0/0 -> cnt=0/19/7 rv=0/8
+W2006 f=3770 scan=156 dot=023 addr=$00c0 cnt=0/19/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3770 scan=156 dot=068 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3770 scan=156 dot=080 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3770 scan=160 cnt=0/17/2 rv=0/0 curNt=1
+R f=3770 scan=200 cnt=0/22/2 rv=0/0 curNt=1
+E f=3771 endcnt=0/27/3 regrv=0/0/0
+W2005 f=3771 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3771 scan=005 dot=275 val=$15 0/0/0/0 -> 0/0/5/2 first=1
+PRE f=3771 AFTER  pre-render init rv=0/2/5 cnt=0/27/3 override=no
+PRE f=3771 BEFORE pre-render init rv=0/2/5 cnt=0/27/3
+R f=3771 scan=000 cnt=0/2/5 rv=0/2 curNt=0
+R f=3771 scan=040 cnt=0/7/5 rv=0/2 curNt=1
+R f=3771 scan=080 cnt=0/12/5 rv=0/2 curNt=1
+W2005 f=3771 scan=112 dot=010 val=$00 0/0/5/2 -> 0/0/5/2 first=0
+W2005 f=3771 scan=112 dot=028 val=$00 0/0/5/2 -> 0/0/0/0 first=1
+R f=3771 scan=120 cnt=0/17/5 rv=0/0 curNt=0
+W2006 f=3771 scan=154 dot=016 addr=$0021 cnt=0/19/3 rv=0/0 -> cnt=0/19/3 rv=0/8
+W2006 f=3771 scan=154 dot=028 addr=$00c0 cnt=0/19/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3771 scan=154 dot=073 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3771 scan=154 dot=085 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3771 scan=160 cnt=0/17/4 rv=0/0 curNt=1
+R f=3771 scan=200 cnt=0/22/4 rv=0/0 curNt=1
+E f=3772 endcnt=0/27/5 regrv=0/0/0
+W2005 f=3772 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3772 scan=005 dot=279 val=$13 0/0/0/0 -> 0/0/3/2 first=1
+PRE f=3772 AFTER  pre-render init rv=0/2/3 cnt=0/27/5 override=no
+PRE f=3772 BEFORE pre-render init rv=0/2/3 cnt=0/27/5
+R f=3772 scan=000 cnt=0/2/3 rv=0/2 curNt=0
+R f=3772 scan=040 cnt=0/7/3 rv=0/2 curNt=1
+R f=3772 scan=080 cnt=0/12/3 rv=0/2 curNt=1
+W2005 f=3772 scan=114 dot=010 val=$00 0/0/3/2 -> 0/0/3/2 first=0
+W2005 f=3772 scan=114 dot=028 val=$00 0/0/3/2 -> 0/0/0/0 first=1
+R f=3772 scan=120 cnt=0/17/3 rv=0/0 curNt=0
+W2006 f=3772 scan=152 dot=012 addr=$0021 cnt=0/18/7 rv=0/0 -> cnt=0/18/7 rv=0/8
+W2006 f=3772 scan=152 dot=024 addr=$00c0 cnt=0/18/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3772 scan=152 dot=069 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3772 scan=152 dot=081 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3772 scan=160 cnt=0/17/6 rv=0/0 curNt=1
+R f=3772 scan=200 cnt=0/22/6 rv=0/0 curNt=1
+E f=3773 endcnt=0/27/7 regrv=0/0/0
+W2005 f=3773 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3773 scan=005 dot=277 val=$11 0/0/0/0 -> 0/0/1/2 first=1
+PRE f=3773 AFTER  pre-render init rv=0/2/1 cnt=0/27/7 override=no
+PRE f=3773 BEFORE pre-render init rv=0/2/1 cnt=0/27/7
+R f=3773 scan=000 cnt=0/2/1 rv=0/2 curNt=0
+R f=3773 scan=040 cnt=0/7/1 rv=0/2 curNt=1
+R f=3773 scan=080 cnt=0/12/1 rv=0/2 curNt=1
+W2005 f=3773 scan=116 dot=013 val=$00 0/0/1/2 -> 0/0/1/2 first=0
+W2005 f=3773 scan=116 dot=031 val=$00 0/0/1/2 -> 0/0/0/0 first=1
+R f=3773 scan=120 cnt=0/17/1 rv=0/0 curNt=0
+W2006 f=3773 scan=150 dot=011 addr=$0021 cnt=0/18/3 rv=0/0 -> cnt=0/18/3 rv=0/8
+W2006 f=3773 scan=150 dot=023 addr=$00c0 cnt=0/18/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3773 scan=150 dot=068 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3773 scan=150 dot=080 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3773 scan=160 cnt=0/18/0 rv=0/0 curNt=1
+R f=3773 scan=200 cnt=0/23/0 rv=0/0 curNt=1
+E f=3774 endcnt=0/28/1 regrv=0/0/0
+W2005 f=3774 scan=005 dot=254 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3774 scan=005 dot=281 val=$0f 0/0/0/0 -> 0/0/7/1 first=1
+PRE f=3774 AFTER  pre-render init rv=0/1/7 cnt=0/28/1 override=no
+PRE f=3774 BEFORE pre-render init rv=0/1/7 cnt=0/28/1
+R f=3774 scan=000 cnt=0/1/7 rv=0/1 curNt=0
+R f=3774 scan=040 cnt=0/6/7 rv=0/1 curNt=1
+R f=3774 scan=080 cnt=0/11/7 rv=0/1 curNt=1
+W2005 f=3774 scan=118 dot=013 val=$00 0/0/7/1 -> 0/0/7/1 first=0
+W2005 f=3774 scan=118 dot=031 val=$00 0/0/7/1 -> 0/0/0/0 first=1
+R f=3774 scan=120 cnt=0/16/7 rv=0/0 curNt=0
+W2006 f=3774 scan=148 dot=016 addr=$0021 cnt=0/17/7 rv=0/0 -> cnt=0/17/7 rv=0/8
+W2006 f=3774 scan=148 dot=028 addr=$00c0 cnt=0/17/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3774 scan=148 dot=073 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3774 scan=148 dot=085 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3774 scan=160 cnt=0/18/2 rv=0/0 curNt=1
+R f=3774 scan=200 cnt=0/23/2 rv=0/0 curNt=1
+E f=3775 endcnt=0/28/3 regrv=0/0/0
+W2005 f=3775 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3775 scan=005 dot=279 val=$0d 0/0/0/0 -> 0/0/5/1 first=1
+PRE f=3775 AFTER  pre-render init rv=0/1/5 cnt=0/28/3 override=no
+PRE f=3775 BEFORE pre-render init rv=0/1/5 cnt=0/28/3
+R f=3775 scan=000 cnt=0/1/5 rv=0/1 curNt=0
+R f=3775 scan=040 cnt=0/6/5 rv=0/1 curNt=1
+R f=3775 scan=080 cnt=0/11/5 rv=0/1 curNt=1
+W2005 f=3775 scan=120 dot=013 val=$00 0/0/5/1 -> 0/0/5/1 first=0
+W2005 f=3775 scan=120 dot=031 val=$00 0/0/5/1 -> 0/0/0/0 first=1
+R f=3775 scan=120 cnt=0/16/5 rv=0/0 curNt=0
+W2006 f=3775 scan=146 dot=012 addr=$0021 cnt=0/17/3 rv=0/0 -> cnt=0/17/3 rv=0/8
+W2006 f=3775 scan=146 dot=024 addr=$00c0 cnt=0/17/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3775 scan=146 dot=069 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3775 scan=146 dot=081 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3775 scan=160 cnt=0/18/4 rv=0/0 curNt=1
+R f=3775 scan=200 cnt=0/23/4 rv=0/0 curNt=1
+E f=3776 endcnt=0/28/5 regrv=0/0/0
+W2005 f=3776 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3776 scan=005 dot=277 val=$0b 0/0/0/0 -> 0/0/3/1 first=1
+PRE f=3776 AFTER  pre-render init rv=0/1/3 cnt=0/28/5 override=no
+PRE f=3776 BEFORE pre-render init rv=0/1/3 cnt=0/28/5
+R f=3776 scan=000 cnt=0/1/3 rv=0/1 curNt=0
+R f=3776 scan=040 cnt=0/6/3 rv=0/1 curNt=1
+R f=3776 scan=080 cnt=0/11/3 rv=0/1 curNt=1
+W2005 f=3776 scan=122 dot=013 val=$00 0/0/3/1 -> 0/0/3/1 first=0
+W2005 f=3776 scan=122 dot=031 val=$00 0/0/3/1 -> 0/0/0/0 first=1
+R f=3776 scan=120 cnt=0/16/3 rv=0/0 curNt=0
+W2006 f=3776 scan=144 dot=017 addr=$0021 cnt=0/16/7 rv=0/0 -> cnt=0/16/7 rv=0/8
+W2006 f=3776 scan=144 dot=029 addr=$00c0 cnt=0/16/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3776 scan=144 dot=074 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3776 scan=144 dot=086 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3776 scan=160 cnt=0/18/6 rv=0/0 curNt=1
+R f=3776 scan=200 cnt=0/23/6 rv=0/0 curNt=1
+E f=3777 endcnt=0/28/7 regrv=0/0/0
+W2005 f=3777 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3777 scan=005 dot=275 val=$09 0/0/0/0 -> 0/0/1/1 first=1
+PRE f=3777 AFTER  pre-render init rv=0/1/1 cnt=0/28/7 override=no
+PRE f=3777 BEFORE pre-render init rv=0/1/1 cnt=0/28/7
+R f=3777 scan=000 cnt=0/1/1 rv=0/1 curNt=0
+R f=3777 scan=040 cnt=0/6/1 rv=0/1 curNt=1
+R f=3777 scan=080 cnt=0/11/1 rv=0/1 curNt=1
+W2005 f=3777 scan=124 dot=016 val=$00 0/0/1/1 -> 0/0/1/1 first=0
+W2005 f=3777 scan=124 dot=034 val=$00 0/0/1/1 -> 0/0/0/0 first=1
+R f=3777 scan=120 cnt=0/16/1 rv=0/0 curNt=0
+W2006 f=3777 scan=142 dot=016 addr=$0021 cnt=0/16/3 rv=0/0 -> cnt=0/16/3 rv=0/8
+W2006 f=3777 scan=142 dot=028 addr=$00c0 cnt=0/16/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3777 scan=142 dot=073 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3777 scan=142 dot=085 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3777 scan=160 cnt=0/19/0 rv=0/0 curNt=1
+R f=3777 scan=200 cnt=0/24/0 rv=0/0 curNt=1
+E f=3778 endcnt=0/29/1 regrv=0/0/0
+W2005 f=3778 scan=005 dot=246 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3778 scan=005 dot=273 val=$07 0/0/0/0 -> 0/0/7/0 first=1
+PRE f=3778 AFTER  pre-render init rv=0/0/7 cnt=0/29/1 override=no
+PRE f=3778 BEFORE pre-render init rv=0/0/7 cnt=0/29/1
+R f=3778 scan=000 cnt=0/0/7 rv=0/0 curNt=0
+R f=3778 scan=040 cnt=0/5/7 rv=0/0 curNt=1
+R f=3778 scan=080 cnt=0/10/7 rv=0/0 curNt=1
+W2005 f=3778 scan=126 dot=013 val=$00 0/0/7/0 -> 0/0/7/0 first=0
+W2005 f=3778 scan=126 dot=031 val=$00 0/0/7/0 -> 0/0/0/0 first=1
+W2006 f=3778 scan=140 dot=018 addr=$0021 cnt=0/15/7 rv=0/0 -> cnt=0/15/7 rv=0/8
+W2006 f=3778 scan=140 dot=030 addr=$00c0 cnt=0/15/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3778 scan=140 dot=075 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3778 scan=140 dot=087 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3778 scan=120 cnt=0/14/2 rv=0/0 curNt=0
+R f=3778 scan=160 cnt=0/19/2 rv=0/0 curNt=1
+R f=3778 scan=200 cnt=0/24/2 rv=0/0 curNt=1
+E f=3779 endcnt=0/29/3 regrv=0/0/0
+W2005 f=3779 scan=005 dot=250 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3779 scan=005 dot=277 val=$05 0/0/0/0 -> 0/0/5/0 first=1
+PRE f=3779 AFTER  pre-render init rv=0/0/5 cnt=0/29/3 override=no
+PRE f=3779 BEFORE pre-render init rv=0/0/5 cnt=0/29/3
+R f=3779 scan=000 cnt=0/0/5 rv=0/0 curNt=0
+R f=3779 scan=040 cnt=0/5/5 rv=0/0 curNt=1
+R f=3779 scan=080 cnt=0/10/5 rv=0/0 curNt=1
+W2005 f=3779 scan=128 dot=013 val=$00 0/0/5/0 -> 0/0/5/0 first=0
+W2005 f=3779 scan=128 dot=031 val=$00 0/0/5/0 -> 0/0/0/0 first=1
+W2006 f=3779 scan=138 dot=014 addr=$0021 cnt=0/15/3 rv=0/0 -> cnt=0/15/3 rv=0/8
+W2006 f=3779 scan=138 dot=026 addr=$00c0 cnt=0/15/3 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3779 scan=138 dot=071 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3779 scan=138 dot=083 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3779 scan=120 cnt=0/14/4 rv=0/0 curNt=1
+R f=3779 scan=160 cnt=0/19/4 rv=0/0 curNt=1
+R f=3779 scan=200 cnt=0/24/4 rv=0/0 curNt=1
+E f=3780 endcnt=0/29/5 regrv=0/0/0
+W2005 f=3780 scan=005 dot=248 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3780 scan=005 dot=275 val=$03 0/0/0/0 -> 0/0/3/0 first=1
+PRE f=3780 AFTER  pre-render init rv=0/0/3 cnt=0/29/5 override=no
+PRE f=3780 BEFORE pre-render init rv=0/0/3 cnt=0/29/5
+R f=3780 scan=000 cnt=0/0/3 rv=0/0 curNt=0
+R f=3780 scan=040 cnt=0/5/3 rv=0/0 curNt=1
+R f=3780 scan=080 cnt=0/10/3 rv=0/0 curNt=1
+W2005 f=3780 scan=130 dot=016 val=$00 0/0/3/0 -> 0/0/3/0 first=0
+W2005 f=3780 scan=130 dot=034 val=$00 0/0/3/0 -> 0/0/0/0 first=1
+W2006 f=3780 scan=136 dot=013 addr=$0021 cnt=0/14/7 rv=0/0 -> cnt=0/14/7 rv=0/8
+W2006 f=3780 scan=136 dot=025 addr=$00c0 cnt=0/14/7 rv=0/8 -> cnt=0/14/2 rv=0/14
+W2005 f=3780 scan=136 dot=070 val=$00 0/0/2/14 -> 0/0/2/14 first=0
+W2005 f=3780 scan=136 dot=082 val=$00 0/0/2/14 -> 0/0/0/0 first=1
+R f=3780 scan=120 cnt=0/14/6 rv=0/0 curNt=1
+R f=3780 scan=160 cnt=0/19/6 rv=0/0 curNt=1
+R f=3780 scan=200 cnt=0/24/6 rv=0/0 curNt=1
+E f=3781 endcnt=0/29/7 regrv=0/0/0
+W2005 f=3781 scan=005 dot=252 val=$00 0/0/0/0 -> 0/0/0/0 first=0
+W2005 f=3781 scan=005 dot=279 val=$01 0/0/0/0 -> 0/0/1/0 first=1
+PRE f=3781 AFTER  pre-render init rv=0/0/1 cnt=0/29/7 override=no
+PRE f=3781 BEFORE pre-render init rv=0/0/1 cnt=0/29/7
+R f=3781 scan=000 cnt=0/0/1 rv=0/0 curNt=0
+R f=3781 scan=040 cnt=0/5/1 rv=0/0 curNt=1
+R f=3781 scan=080 cnt=0/10/1 rv=0/0 curNt=1
+R f=3781 scan=120 cnt=0/15/1 rv=0/0 curNt=1
+R f=3781 scan=160 cnt=0/20/1 rv=0/0 curNt=1
+R f=3781 scan=200 cnt=0/25/1 rv=0/0 curNt=1
+E f=3782 endcnt=1/0/2 regrv=0/0/1
+W2005 f=3782 scan=005 dot=250 val=$00 0/0/1/0 -> 0/0/1/0 first=0
+W2005 f=3782 scan=005 dot=277 val=$01 0/0/1/0 -> 0/0/1/0 first=1
+PRE f=3782 AFTER  pre-render init rv=0/0/1 cnt=1/0/2 override=no
+PRE f=3782 BEFORE pre-render init rv=0/0/1 cnt=1/0/2
+R f=3782 scan=000 cnt=0/0/1 rv=0/0 curNt=0
+R f=3782 scan=040 cnt=0/5/1 rv=0/0 curNt=1
+R f=3782 scan=080 cnt=0/10/1 rv=0/0 curNt=1
+R f=3782 scan=120 cnt=0/15/1 rv=0/0 curNt=1
+R f=3782 scan=160 cnt=0/20/1 rv=0/0 curNt=1
+R f=3782 scan=200 cnt=0/25/1 rv=0/0 curNt=1
+E f=3783 endcnt=1/0/2 regrv=0/0/1
+W2005 f=3783 scan=005 dot=254 val=$00 0/0/1/0 -> 0/0/1/0 first=0
+W2005 f=3783 scan=005 dot=281 val=$01 0/0/1/0 -> 0/0/1/0 first=1
+PRE f=3783 AFTER  pre-render init rv=0/0/1 cnt=1/0/2 override=no
+PRE f=3783 BEFORE pre-render init rv=0/0/1 cnt=1/0/2
+R f=3783 scan=000 cnt=0/0/1 rv=0/0 curNt=0
+R f=3783 scan=040 cnt=0/5/1 rv=0/0 curNt=1
+R f=3783 scan=080 cnt=0/10/1 rv=0/0 curNt=1
+R f=3783 scan=120 cnt=0/15/1 rv=0/0 curNt=1
+R f=3783 scan=160 cnt=0/20/1 rv=0/0 curNt=1
+R f=3783 scan=200 cnt=0/25/1 rv=0/0 curNt=1
+E f=3784 endcnt=1/0/2 regrv=0/0/1
+W2005 f=3784 scan=005 dot=252 val=$00 0/0/1/0 -> 0/0/1/0 first=0
+W2005 f=3784 scan=005 dot=279 val=$01 0/0/1/0 -> 0/0/1/0 first=1
+PRE f=3784 AFTER  pre-render init rv=0/0/1 cnt=1/0/2 override=no
+PRE f=3784 BEFORE pre-render init rv=0/0/1 cnt=1/0/2
+R f=3784 scan=000 cnt=0/0/1 rv=0/0 curNt=0
+R f=3784 scan=040 cnt=0/5/1 rv=0/0 curNt=1
+R f=3784 scan=080 cnt=0/10/1 rv=0/0 curNt=1
+R f=3784 scan=120 cnt=0/15/1 rv=0/0 curNt=1
+R f=3784 scan=160 cnt=0/20/1 rv=0/0 curNt=1
+R f=3784 scan=200 cnt=0/25/1 rv=0/0 curNt=1
+E f=3785 endcnt=1/0/2 regrv=0/0/1

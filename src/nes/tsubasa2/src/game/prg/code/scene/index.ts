@@ -46,3 +46,6 @@ export { TitleMenuSceneController, TITLE_MENU_SCENE_ID } from './TitleMenuSceneC
 
 // 第一关 meeting 页面（附加场景 sceneId=300，Scene14-23 chain 链路终点）
 export { MeetingSceneController, MEETING_SCENE_ID } from './MeetingSceneController';
+
+// Meeting 完后进入主比赛（附加场景 sceneId=400，链路 continue 终点）
+export { MatchStartSceneController, MATCH_START_SCENE_ID } from './MatchStartSceneController';
