@@ -29,6 +29,7 @@ const SceneController_1 = require("./SceneController");
 const OpeningScreenTable_1 = require("../../data/scene/OpeningScreenTable");
 const TitleMenuCursorService_1 = require("../ui/TitleMenuCursorService");
 const TitleMenuPaletteInitService_1 = require("../ui/TitleMenuPaletteInitService");
+const title_screen_gt_1 = require("../../data/scene/title-screen-gt");
 /** TitleMenu 附加场景号 */
 exports.TITLE_MENU_SCENE_ID = 200;
 /** OpeningScreenTable 里 title_menu 的 index */
@@ -84,8 +85,10 @@ class TitleMenuSceneController extends SceneController_1.SceneController {
                 store.writeByte(attribBase + i, n.attrib[i] & 0xff);
             }
         }
-        // 4. CHR plan
-        this.currentChrPlan = [{ s: 0, b: screen.chr.slice() }];
+        // 4. CHR plan — 使用 title_screen GT 抽出的 chrBanks[8] (来源 opening-data id=12)
+        //   见 data/scene/title-screen-gt.ts: TITLE_SCREEN_CHR_BANKS = [124,125,126,127,252,125,126,127]
+        //   title 稳定画面, 8 个 1KB slot 映射固定; V0.6 待 emu trace 验证时序
+        this.currentChrPlan = [{ s: 0, b: title_screen_gt_1.TITLE_SCREEN_CHR_BANKS.slice() }];
         // 5. PPU 显示状态
         store.ppuState.ctrl = 0x88;
         store.ppuState.mask = 0x1e;

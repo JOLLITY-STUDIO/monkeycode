@@ -27,6 +27,25 @@ const F1 = 4200;
 
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 
+// pre-render 时刻 scroll 真值（_gen_scroll_prerender.cjs 产出）：
+// state.json.scroll 是帧循环开始前捕获（vblank $2005/$2006 写入之前），
+// 而 PPU 实际渲染用的是 pre-render scanline 时的 reg*/cnt*（vblank 写入之后）。
+// 只有 pre-render 值才是 renderStartOverride / cnt* 初始化的准确来源。
+const scrollPre = (() => {
+  const f = path.join(IN_DIR, 'scroll-prerender.json');
+  if (!fs.existsSync(f)) return null;
+  const arr = readJson(f);
+  const m = new Map();
+  for (const e of arr) m.set(e.f, e);
+  return m;
+})();
+
+// emu 内部 PPU scanline (0-261) → H5 buffer row (1-240) 坐标转换：
+//   - 内部 scanline <= 20（vblank/pre-render 期切换）→ 0（首可见行前生效）
+//   - 内部 scanline 21-260（可见行）→ scanline - 20（该行渲染前生效）
+// H5 的 applyChrPlanAt(scan) 用 buffer row 消费计划，必须做此换算。
+const chrScanToBufferRow = (scan) => (scan <= 20 ? 0 : scan - 20);
+
 function attrsFromTile960(attrib960, baseAddr) {
   // 把 960 项逐 tile 属性(与 tile 一一对应)反推成 64 字节标准属性表,
   // 再切分成 8 行(每行 8 字节)
@@ -81,10 +100,11 @@ for (let f = F0; f <= F1; f++) {
   const chrSw = readJson(path.join(dir, 'chr-switches.json'));
 
   // CHR 计划: 帧顶状态 = 上一帧终态, followed by bankMapByScanline 切换点
+  // 切换点 scanline 是 emu 内部 PPU scanline,必须换算成 H5 的 buffer row。
   const chrPlan = [{ s: 0, b: prevChr.slice() }];
   if (chrSw && Array.isArray(chrSw.bankMapByScanline)) {
     for (const e of chrSw.bankMapByScanline) {
-      chrPlan.push({ s: e.scanline, b: e.banks.slice() });
+      chrPlan.push({ s: chrScanToBufferRow(e.scanline), b: e.banks.slice() });
     }
   }
 
@@ -135,11 +155,15 @@ for (let f = F0; f <= F1; f++) {
   // 本帧终态 CHR 供下一帧顶部使用
   prevChr = (st && Array.isArray(st.chrBanks)) ? st.chrBanks.slice() : chrPlan[chrPlan.length - 1].b.slice();
 
-  // scroll: 取渲染前状态（state.json.scroll 是帧开始/渲染起始语义）。
-  // 重要：除了 reg*（$2000/$2005 写入的寄存器），必须保留 cnt*（渲染计数器）。
-  // ROM 通过 $2006 直写 VRAM 地址在渲染期设置 cnt*（reg* 可能保持 0），
-  // 标题上下滚屏/字幕垂直滚动全靠 cnt* 还原；只存 reg* 会导致滚动丢失。
-  const sc = (st && st.scroll) ? st.scroll : {};
+  // scroll: 取 pre-render 时刻真值（vblank $2005/$2006 写入之后、cnt* 初始化时）。
+  // 这就是 H5 renderStartOverride 的准确来源；state.json.scroll（帧循环开始前）
+  // 是 vblank 写入之前的旧值，用它会导致滚动错位（典型:渲染实际 Y=$FF，记录为 0）。
+  // 无 pre-render 记录的帧（首帧渲染未开启等）退回 state.json.scroll。
+  const pre = scrollPre ? scrollPre.get(f) : null;
+  const sc = (pre && typeof pre.regVT === 'number')
+    ? { regV: pre.regV, regH: pre.regH, regVT: pre.regVT, regHT: pre.regHT, regFV: pre.regFV, regFH: pre.regFH,
+        cntV: pre.cntV, cntH: pre.cntH, cntVT: pre.cntVT, cntHT: pre.cntHT }
+    : ((st && st.scroll) ? st.scroll : {});
   const s = {
     v: sc.regV ?? 0,
     h: sc.regH ?? 0,

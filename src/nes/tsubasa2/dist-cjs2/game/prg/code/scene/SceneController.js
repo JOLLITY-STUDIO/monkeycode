@@ -2,11 +2,48 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SceneController = void 0;
 class SceneController {
+    /** BootRouter.update 每帧调一次 — 推进 pending callbacks 并 invoke 到期的 */
+    _tickPending() {
+        if (this._pendingCallbacks.length === 0)
+            return;
+        const remain = [];
+        for (const p of this._pendingCallbacks) {
+            if (p.framesLeft <= 0) {
+                try {
+                    p.cb();
+                }
+                catch (e) { /* swallow; onUpdate 不会被 cb error 阻塞 */ }
+            }
+            else {
+                p.framesLeft--;
+                if (p.framesLeft <= 0) {
+                    try {
+                        p.cb();
+                    }
+                    catch (e) { /* same */
+                        void e;
+                    }
+                }
+                else {
+                    remain.push(p);
+                }
+            }
+        }
+        this._pendingCallbacks.length = 0;
+        for (const p of remain)
+            this._pendingCallbacks.push(p);
+    }
     constructor(store, input) {
         this.store = store;
         this.input = input;
         /** bank00 6-slot timer dispatcher（PRG $9EEF/$9FA8 翻译）；由 Tsubasa2 boot() 注入 */
         this.scheduler = null;
+        /**
+         * 帧级 pending callbacks（scheduler 残留 IDLE 兜底）— scheduleAfter 推入此 list,
+         * BootRouter.update 每帧调 _tickPending 推进 timer 到 0 时 invoke cb.
+         * V0.6 修 scheduler 不稳定时 Scene14.Scene15 永远 not ready.
+         */
+        this._pendingCallbacks = [];
     }
     /**
      * 注入 bank00 scheduler（PRG $9FA8 pushState 翻译）。
@@ -32,22 +69,24 @@ class SceneController {
      * @returns slot id（0-5，失败 -1）
      */
     scheduleAfter(timer, callback) {
-        if (!this.scheduler) {
-            // fallback: scheduler 未注入时同步调用，子类自管计数推进
-            callback();
+        // V0.6: 优先用 frame-counter pending list（scheduler IDLE:t=0 残留时也能稳定推进）
+        const t = timer & 0xff;
+        if (t === 0) {
+            try {
+                callback();
+            }
+            catch (e) {
+                void e;
+            }
             return -1;
         }
-        return this.scheduler.pushState({
-            aReg: 0,
-            xReg: 0,
-            yReg: callback.length & 0xff,
-            timer: timer & 0xff,
-            priority: 0,
-            callback: (slot) => {
-                void slot;
-                callback();
-            },
-        });
+        this._pendingCallbacks.push({ framesLeft: t, cb: callback });
+        // 如果 scheduler 仍注入, 也推一份 (idempotent — cb 会跑两次用 ref guard, 实际
+        //   pending list 已经处理; scheduler slot 0 push 仅当 scheduler 已 attach 且
+        //   SceneController 当前实例是 onEnter 时). 为避免双调, **只走 pending list**.
+        //   scheduler 路径在 Scene14/15 已用 frame-counter 替代, 此处不再 push.
+        void this.scheduler;
+        return this._pendingCallbacks.length - 1;
     }
     /** 每帧渲染（写入渲染缓冲/调色板） */
     onRender() {

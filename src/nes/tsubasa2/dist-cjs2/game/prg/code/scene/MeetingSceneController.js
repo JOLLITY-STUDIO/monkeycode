@@ -37,6 +37,19 @@ class MeetingSceneController extends SceneController_1.SceneController {
         if (this.scriptEngine) {
             // 启动 meeting 第一段剧情（bank18 段 0 — TitleOpener/Meeting 入口）
             this.scriptCtx = this.scriptEngine.start(FIRST_MEETING_SCRIPT_ID);
+            // V0.6 验证：dump 前 32 字节 — 当前 BANK18_DATA_TABLES[0..0x1000] 含 12×0x01 byte 后跟 0x0D EndSegment，
+            //   实际是 NT 字节流非真正的 op 字节流 — 但偶发让 VM 跑 6 个 TextChar 后提前终止
+            //   （真实 meeting 剧本 id 待 V0.7 反汇编 bank06-bank10 段指针表确认）
+            const seg = this.scriptCtx;
+            if (seg && seg.bytes.length > 0) {
+                const head = Array.from(seg.bytes.subarray(0, 32))
+                    .map(b => b.toString(16).padStart(2, '0')).join(' ');
+                const scriptsTotalBytes = seg.bytes.length;
+                const opCount0x01 = Array.from(seg.bytes).filter(b => b === 0x01).length;
+                const opCount0x0d = Array.from(seg.bytes).filter(b => b === 0x0d).length;
+                console.log(`[Meeting] scriptId=0x${FIRST_MEETING_SCRIPT_ID.toString(16)} bytes=${scriptsTotalBytes} ` +
+                    `0x01=${opCount0x01} 0x0d=${opCount0x0d} head=[${head}]`);
+            }
         }
         else {
             // ScriptEngine 未注入（链路走通 stub 模式）

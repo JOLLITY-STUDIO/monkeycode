@@ -447,7 +447,10 @@ export class Tsubasa2 {
     // 由 startVBlank -> renderFramePartially -> endFrame 完成单帧输出。
     try {
       ppu.startFrame();
-      ppu.advanceDots(262 * 341);
+      // 一帧 = 262 条 scanline × 341 dot；VBlank 在 scanline 0 (下帧起点) 的
+      // dot 1 触发 startVBlank → renderFramePartially(bgbuffer→buffer 合成)+endFrame。
+      // 因此必须推进到 scanline 0 curX=1（比 262*341 多 1 dot），否则 buffer 永黑。
+      ppu.advanceDots(262 * 341 + 1);
       // 不再手动调用 renderFramePartially/endFrame，避免与 startVBlank 内嵌的
       // 渲染路径产生双重合成/裁剪差异。
     } catch (e) {

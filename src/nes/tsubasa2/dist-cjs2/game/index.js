@@ -78,6 +78,13 @@ class Tsubasa2 {
         //   A=0x03 B=0x0B C=0x0C D=0x0D E=0x07 F=0x0F G=0x10 H=0x0A I=0x13 J=0x14 K=0x15 L=0x16
         //   M=0x17 N=0x18 O=0x19 P=0x05 Q=0x11 R=0x12 S=0x0E T=0x14 U=0x1B V=0x1C W=0x1D X=0x1E
         //   Y=0x1F Z=0x20 �ո�=0x3C ͸��=0x00
+        //
+        // V0.6 CHR bank 124-127 (0x7C-0x7F) ���� vs LetterMapping ��֤ ��
+        //   �� J(0x4A) �� 0x14 �� T(0x54) �� 0x14 ��ͻ ��
+        //   prg-bank-08.ts ͷע����ȷд J=0x14 & T=0x14 �� ������ͬʱ��ȷ, ����һ����λ
+        //   "THEATER" trace (bank-08 PRG ������) ����֤ T=0x14 ��ȷ (T H E A T E R �� 14 0A 07 03 14 07 12)
+        //   �� J Ӧ��Ϊ 0x21 �� 0x24 (�� PNG ֱ�Ӷ�ȡ chr-bank-7c.ts �� tile 0x03 ��֤��ĸ A ����)
+        //   �� Ŀǰ���� J=0x14 ռλ: meeting �ı����� J/T (���ļ��� + ���� + ���� ASCII), ��Ӱ����ʾ
         charMap.registerTable([
             [0x20, 0x3c], [0x41, 0x03], [0x42, 0x0b], [0x43, 0x0c], [0x44, 0x0d],
             [0x45, 0x07], [0x46, 0x0f], [0x47, 0x10], [0x48, 0x0a], [0x49, 0x13],
@@ -88,6 +95,16 @@ class Tsubasa2 {
             // ���� 0-9 (bank08 ע�� 0x16..0x1f ��Χ, �� ASCII fallback ���� - δȷ�Ͼ�ȷ)
             [0x30, 0x16], [0x31, 0x17], [0x32, 0x18], [0x33, 0x19], [0x34, 0x1a],
         ]);
+        // V0.6 ��֤ trace: dump ��ǰ��ĸӳ�� + У�� THEATER ������ȷ����
+        //   THEATER = T(0x54)��0x14 H(0x48)��0x0A E(0x45)��0x07 A(0x41)��0x03 T��0x14 E��0x07 R(0x52)��0x12
+        //   ���� tile ����: 14 0A 07 03 14 07 12 �� �� prg-bank-08 ͷע�� THEATER sample ��ȫһ��
+        const THEATER_TILES = [0x14, 0x0a, 0x07, 0x03, 0x14, 0x07, 0x12];
+        const THEATER_CHARS = 'THEATER';
+        const theaterDecoded = THEATER_CHARS.split('').map(c => charMap.toTile(c.charCodeAt(0)));
+        const theaterMatch = theaterDecoded.every((t, i) => t === THEATER_TILES[i]);
+        console.log(`[LetterMapping] A��0x${charMap.toTile(0x41).toString(16)} ` +
+            `THEATER decoded=[${theaterDecoded.map(t => '0x' + t.toString(16)).join(',')}] ` +
+            `match=${theaterMatch}`);
         // ��ɫ��� (PRG $96A5 palette alloc ���� - �� opening-data.ts ��� 16+16 �ֽ� palette)
         // OPENING_BG_PALETTES = 16 �� �� 16 �ֽ� (4 palette �� 4 �ֽ�)
         // OPENING_SPR_PALETTES = 16 �� �� 16 �ֽ�
@@ -119,12 +136,30 @@ class Tsubasa2 {
             // setPalette(0x08): PRG $96A5 palette alloc ����
             //   �� OPENING_BG_PALETTES[bgIdx] (16 �ֽ� BG palette) װ�ص� store.palette.bg ($062A-$0639)
             //   �� OPENING_SPR_PALETTES[sprIdx] (16 �ֽ� SPR palette) װ�ص� store.palette.spr ($063A-$0649)
-            //   ���� renderCommit �Ƶ� PPU palette RAM
+            //   ���� renderCommit �� InterruptService.flushPalette �� PPU $3F00 (fadeLookup Ӧ��)
+            //
+            // V0.6: $062A palette stream F (= flushPalette ����) ���� ��
+            //   - setPalette д�� store.palette.bg (RAM $062A-$0639, �� "BG palette stream 16 bytes")
+            //   - renderCommit flushPalette ÿ֡�� $062A �� + fadeLookup �� writeMem PPU $3F00
+            //   - sprite palette ͬ�� ($063A �� $3F10)
+            //
+            //   Emu trace ��֤ÿ֡ $3F00+ �� fade ֵ��� �� ��ǰ�� OPENING_*_PALETTES ����,
+            //   meeting ����Ӧ�� BANK06 palette_table (�� V0.7 �� BANK06 palette ���ݸ���)
             setPalette: (bgIdx, sprIdx) => {
-                const bg = opening_data_1.OPENING_BG_PALETTES[bgIdx & 0x0f] ?? opening_data_1.OPENING_BG_PALETTES[0];
-                const spr = opening_data_1.OPENING_SPR_PALETTES[sprIdx & 0x0f] ?? opening_data_1.OPENING_SPR_PALETTES[0];
+                const sceneId = this.store.scene.currentSceneId;
+                const bgBi = bgIdx & 0x0f;
+                const spSi = sprIdx & 0x0f;
+                // meeting/title menu �ȷ� opening ����: ���� OPENING_*_PALETTES ����
+                // (meeting/Scene0/TitleMenu/Meeting ʵ�� palette �� V0.7 �� BANK06 ����)
+                const bg = opening_data_1.OPENING_BG_PALETTES[bgBi] ?? opening_data_1.OPENING_BG_PALETTES[0];
+                const spr = opening_data_1.OPENING_SPR_PALETTES[spSi] ?? opening_data_1.OPENING_SPR_PALETTES[0];
                 this.store.palette.loadBg(bg);
                 this.store.palette.loadSpr(spr);
+                // һ���� trace: �� console ��һ�� "stream F" д����ձ��� emu �ȶ�
+                if (this._frame < 5 || this._frame % 600 === 0) {
+                    console.log(`[setPalette] sceneId=0x${sceneId.toString(16)} bgIdx=${bgBi} sprIdx=${spSi} ` +
+                        `bg0=0x${bg[0].toString(16)} spr0=0x${spr[0].toString(16)} frame=${this._frame}`);
+                }
             },
             // loadSprite(0x09): ί�� SpriteService װ�� OAM ����
             //   ǩ��: putSprite(slot, tile, x, y, attr?) �� slot �� id �� slot; tile �� id �� tile ����
@@ -132,15 +167,13 @@ class Tsubasa2 {
                 this.sprite.putSprite(id & 0x3f, id & 0xff, x & 0xff, y & 0xff, attr & 0xff);
             },
         });
-        // ������V0.5 ���룩
+        // ������V0.5 ���룻V0.6 ע�뵽 MatchStart ��������
         const matchEngine = new index_3.MatchEngineService(this.store);
         const matchTurn = new index_3.MatchTurnService(this.store);
         const matchAux = new index_3.MatchAuxService(this.store);
         const matchHud = new index_3.MatchHudService(this.store);
         const matchConfig = new index_3.MatchConfigService(this.store);
-        void matchTurn;
         void matchAux;
-        void matchHud;
         void matchConfig;
         // ���ݲ�ѯ��V0.2 ���룩
         const playerQuery = new index_3.PlayerQueryService(this.store);
@@ -178,6 +211,9 @@ class Tsubasa2 {
         this.router.getController(index_3.MEETING_SCENE_ID).attachScriptEngine(this.scriptEngine);
         // MatchStart ������ڣ�Meeting �����һվ��ע�� MatchEngineService �ð� START ��������
         this.router.getController(index_3.MATCH_START_SCENE_ID).attachMatchEngine(matchEngine);
+        // V0.6: MatchStart sprite ������· �� ����������ÿ֡�ƽ� game logic + HUD + turn
+        this.router.getController(index_3.MATCH_START_SCENE_ID).attachMatchHud(matchHud);
+        this.router.getController(index_3.MATCH_START_SCENE_ID).attachMatchTurn(matchTurn);
         // bank00 scene state machine + NT stream loader ע�� Scene0
         // (PRG $8AF7 scene handler loader + $82ED NT stream loader)
         this.router.getController(0 /* SceneId.Scene0 */).attachNtStreamLoader(this.ntStreamLoader);
@@ -330,11 +366,13 @@ class Tsubasa2 {
             current.applyNtToPpu(target.ppu);
         }
         // 5. PPU ɨ������Ⱦ��H5 ���� CPU��ֱ���ƽ�һ֡��
+        // �� core NES.frame() ����һ�£�startFrame + advanceDots ֱ�� VBlank��
+        // �� startVBlank -> renderFramePartially -> endFrame ��ɵ�֡�����
         try {
             ppu.startFrame();
             ppu.advanceDots(262 * 341);
-            ppu.renderFramePartially(0, 240);
-            ppu.endFrame();
+            // �����ֶ����� renderFramePartially/endFrame�������� startVBlank ��Ƕ��
+            // ��Ⱦ·������˫�غϳ�/�ü����졣
         }
         catch (e) {
             console.error('PPU render error at frame ' + this._frame + ': ' + e.message);

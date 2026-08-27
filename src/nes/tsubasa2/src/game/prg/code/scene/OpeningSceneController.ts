@@ -220,43 +220,19 @@ export class OpeningSceneController extends SceneController {
     ppu.regFH = s.fh & 7;
 
     // 渲染起始计数器:
-    // 取 GT 的 reg* 值(v,h,vt,ht,fv,fh)作为本帧渲染起始。因为 PPU pre-render
-    // scanline 会把 cnt* 从 reg* 初始化,所以 reg* 才是可靠的帧起始位置。
-    // GT 的 cv/ch/cvt/cht 是 emu 帧末计数器残留(多为 cntV=1 等)或帧中
-    // $2006 直写留下的瞬时值,不能直接作为渲染起始使用。
-    //
-    // ⚠ 标题帘幕滚动(f3725-f3782):GT 表 s 字段来自 emu state.json 的
-    // scroll(帧前/帧末 reg,均为 0),**不反映** vblank NMI 每帧写 $2005
-    // Y scroll 后的真实渲染起始状态。emu-full trace 实测每帧 NMI 写:
-    //   f3725   Y=$FF -> vt=31, fv=7 (世界切换到标题的过渡帧)
-    //   f3726-30 Y=$67 -> vt=12, fv=7 (帘幕顶部起始,固定 5 帧)
-    //   f3731 起  Y 每帧 -2 (fv 7→5→3→1 后 vt-1),f3781 到 $01 (vt=0, fv=1)
-    //   f3782+   固定 $01 (标题完全合入)
-    // 这正是"从上下把标题界面合出来"的帘幕:每帧视口上滚 2px。
-    // 算法还原:Y(f) = max(0x01, 0x67 - 2*(f-3730)),f3726-3730 固定 0x67。
-    const nesFrame = this.currentFrame ? this.currentFrame.f : 0;
-    if (nesFrame >= 3725 && nesFrame <= 3782) {
-      const y = nesFrame === 3725
-        ? 0xff
-        : nesFrame <= 3730
-          ? 0x67
-          : Math.max(0x01, 0x67 - 2 * (nesFrame - 3730));
-      ppu.renderStartOverride = {
-        cntFV: y & 7,
-        cntV: 0,
-        cntH: 0,
-        cntVT: (y >> 3) & 0x1f,
-        cntHT: 0,
-      };
-    } else {
-      ppu.renderStartOverride = {
-        cntFV: s.fv & 7,
-        cntV: s.v & 1,
-        cntH: s.h & 1,
-        cntVT: s.vt & 0x1f,
-        cntHT: s.ht & 0x1f,
-      };
-    }
+    // 取 GT 的 pre-render 时刻 reg* 值(v,h,vt,ht,fv,fh)作为本帧渲染起始。
+    // PPU pre-render scanline 会把 cnt* 从 reg*(或本 override)初始化,dummy
+    // 渲染推进后进入可见行。GT 的 cv/ch/cvt/cht 是同刻计数器(与 reg* 相等),
+    // 仅作参考;override 统一用 reg*。
+    // 说明:GT s 字段来自 emu pre-render 真值(vblank $2005/$2006 写入之后),
+    // 已覆盖标题帘幕滚动(f3725-3782 的 vt/fv 逐帧变化),无需再特判。
+    ppu.renderStartOverride = {
+      cntFV: s.fv & 7,
+      cntV: s.v & 1,
+      cntH: s.h & 1,
+      cntVT: s.vt & 0x1f,
+      cntHT: s.ht & 0x1f,
+    };
 
     // GT 数据的 ni 来自 emu nt.json 的物理 nameTable 索引(0-3),直接写到
     // ppu.nameTable[ni] 即可。不要经 ntable1 再做逻辑→物理映射,否则水平镜像

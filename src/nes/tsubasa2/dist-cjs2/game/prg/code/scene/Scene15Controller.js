@@ -25,17 +25,19 @@ class Scene15Controller extends SceneController_1.SceneController {
         super(store, input);
         this.sceneId = 15;
         this.cursor = 0;
-        /** 等 2 帧（flag bit6）调度态 */
-        this.waiting = false;
+        /** 等 2 帧（flag bit6）调度态 — V0.6 用 frame counter */
+        this.waitingFramesLeft = 0;
         this.prim = new RenderingPrimitivesService_1.RenderingPrimitivesService(store);
     }
     onEnter() {
         this.cursor = 0;
-        this.waiting = false;
+        this.waitingFramesLeft = 0;
     }
     onUpdate(_frame) {
-        if (this.waiting)
+        if (this.waitingFramesLeft > 0) {
+            this.waitingFramesLeft--;
             return undefined;
+        }
         const table = scene_bank02_tables_1.SCENE15_AA97_TABLE;
         if (this.cursor >= table.length)
             return NEXT;
@@ -56,9 +58,8 @@ class Scene15Controller extends SceneController_1.SceneController {
         if ((rec.flag & 0x80) !== 0)
             return NEXT; // bit7 → 结束
         if ((rec.flag & 0x40) !== 0) {
-            // bit6 → 等 2 帧后处理下一条
-            this.waiting = true;
-            this.scheduleAfter(2, () => { this.waiting = false; });
+            // bit6 → 等 2 帧后处理下一条 (V0.6 frame-counter 替代 scheduler)
+            this.waitingFramesLeft = 2;
         }
         return undefined;
     }

@@ -7,15 +7,20 @@ exports.MatchStartSceneController = exports.MATCH_START_SCENE_ID = void 0;
  * 链路位置：...→Scene23→Meeting(300)→MatchStart(400)
  *
  * 行为：
- *   - onEnter(): 标记 sceneId + 等用户按 START 触发 MatchEngineService 启动
- *   - onUpdate(): 检查 START input, 按下后调 matchEngine.startMatch() + stay
+ *   - onEnter(): 标记 sceneId + 等用户按 A 键触发 MatchEngineService 启动
+ *   - onUpdate():
+ *       - 等用户按 A 键 (Button.A = 0x01) 触发比赛启动 (NES 天使之翼开始比赛键)
+ *       - 比赛启动后每帧推进:
+ *           1. matchEngine.update(frame): 球员遍历 + 帧尾例程 + 控球方分发
+ *           2. matchHud.refresh(): 比分/时间显示
+ *           3. matchTurn.advanceTurn(): 回合决策 (V0.5 stub 接契约)
  *
- * V0.5 (本次): 接 MatchEngineService.startMatch() — 真实比赛入口。
- *   - 启动比赛 (home/away 队初始化)
- *   - 比赛页面化由 MatchHudService/MatchTurnService 等驱动 (V0.6 接入)
- *   - onUpdate 改为 stay（不再 chain advance — 比赛是多帧循环）
- *
- * 附加 (原 stub 行为保留): chain 到 MatchStartScene 的入口已经存在, 没有下一站
+ * V0.6 (本次): MatchStart 真启动 MatchEngineService 后比赛的 sprite 处理链路
+ *   - 补 matchEngine.update() per frame
+ *   - 接 MatchHudService.refresh() per frame
+ *   - 接 MatchTurnService.advanceTurn() per frame
+ *   - ★ 修正启动键: 之前 isPressed(0x10)=Up, 现改 Button.A=0x01 (KICKOFF A→Scene14→...→MatchStart A=开始比赛)
+ *   - 后续 V0.7: 接 MatchEventService.startEvent() per frame for sprite animation chain
  */
 const SceneController_1 = require("./SceneController");
 /** MatchStart scene id — meeting 后的下一站 */
@@ -25,6 +30,8 @@ class MatchStartSceneController extends SceneController_1.SceneController {
         super(...arguments);
         this.sceneId = exports.MATCH_START_SCENE_ID;
         this.matchEngine = null;
+        this.matchHud = null;
+        this.matchTurn = null;
         /** false = 等 START; true = 比赛已启动（stay 在比赛页面） */
         this.matchStarted = false;
     }
@@ -32,18 +39,34 @@ class MatchStartSceneController extends SceneController_1.SceneController {
     attachMatchEngine(engine) {
         this.matchEngine = engine;
     }
+    /** Tsubasa2 入口注入 MatchHudService（HUD 时间/比分渲染） */
+    attachMatchHud(hud) {
+        this.matchHud = hud;
+    }
+    /** Tsubasa2 入口注入 MatchTurnService（回合决策） */
+    attachMatchTurn(turn) {
+        this.matchTurn = turn;
+    }
     onEnter() {
         this.store.writeByte(0x0001, exports.MATCH_START_SCENE_ID & 0xff);
         this.matchStarted = false;
     }
     onUpdate(_frame) {
-        if (this.matchStarted || !this.matchEngine) {
-            // 比赛已启动：stay 在 MatchStart 控制器（后续由 MatchEngine/MatchTurnService 驱动）
+        // ── 比赛已启动：stay 在 MatchStart 控制器，每帧推进游戏逻辑 + 渲染 ──
+        if (this.matchStarted) {
+            // 1. 比赛主循环（球员遍历 + 时间推进 + 控球方分发）
+            this.matchEngine?.update(_frame);
+            // 2. 回合推进（持球方决策 / 死球 / 越位等）
+            this.matchTurn?.advanceTurn();
+            // 3. HUD 刷新（比分/时间显示，触发 sprite chain 写 OAM + queue2）
+            this.matchHud?.refresh();
             return undefined;
         }
-        // 等用户按 START (Button.Start = 0x10) 触发比赛启动
+        // 等用户按 A 键触发比赛启动
+        //   KICKOFF A→Scene14→...→MatchStart A=开始比赛 (NES 天使之翼关键约定)
+        //   注: 之前 isPressed(0x10)=Up=误, 现改 Button.A=0x01
         //   默认对手: $0628 (场景选择) -> fallback SaoPaulo (0x02) 第一节 vs Nankatsu (0x01)
-        if (this.input.isPressed(0x10)) {
+        if (this.matchEngine && this.input.isPressed(1, 1 /* Button.A */)) {
             const home = this.store.readByte(0x0628) || 0x02; // SaoPaulo
             const away = 0x01; // Nankatsu 第一关固定
             this.matchEngine.startMatch(home, away);
