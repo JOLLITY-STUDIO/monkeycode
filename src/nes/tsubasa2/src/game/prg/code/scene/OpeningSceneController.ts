@@ -69,13 +69,37 @@ export class OpeningSceneController extends SceneController {
   }
 
   onEnter(): void {
+    this.resetSceneState();
+    this.applyEnterRenderState();
+
+    // tecmo_logo 首屏播 BGM 0x01(与 boot logo 音乐一致)
+    if (this.audio) {
+      this.audio.playBgm(0x01);
+    }
+  }
+
+  /**
+   * 重置片头逐帧状态(h5Frame 归零 + 帧缓冲清空)。
+   * onEnter 与 resetForLoop(循环重播)共用。
+   */
+  private resetSceneState(): void {
     this.h5Frame = 0;
     this.currentFrame = null;
     this.currentChrPlan = [];
     this.ntQueue = [];
     this.attrQueue = [];
     this.currentScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0, cv: 0, ch: 0, cvt: 0, cht: 0 };
+  }
 
+  /**
+   * 一次性渲染状态:PPU CTRL/MASK / fade 满亮 / scrollFlag / 禁用中间 CHR 切换 /
+   * 清 nametable + 隐藏 OAM。
+   *
+   * 第一遍由 BootRouter.changeScene 清 nametable/OAM 后调 onEnter;
+   * **循环重播不经过 changeScene**,必须在这里重铺,否则上一轮 title 屏残留的
+   * fade=0(黑屏)/ctrl 被改/nametable 残留 title 内容/精灵残留 会让 tecmo logo 消失。
+   */
+  private applyEnterRenderState(): void {
     // PPU 状态:GT 数据表已经包含真实 fade 后的 palette,这里把 fade 固定为满亮
     // 原样输出 palette 索引。注意 FadeView 读写 $004A/$004B 带 & 0x0F 掩码,
     // 写 0x10 会被截断成 0 → flushPalette 全写 0x0F 黑屏;满亮必须写 0x0F(=15,
@@ -105,10 +129,12 @@ export class OpeningSceneController extends SceneController {
     this.store.writeByte(0x00a0, 0);
     this.store.writeByte(0x00a1, 0);
 
-    // tecmo_logo 首屏播 BGM 0x01(与 boot logo 音乐一致)
-    if (this.audio) {
-      this.audio.playBgm(0x01);
-    }
+    // 清 4 个 nametable 区域 + 隐藏全部精灵(循环重播必须重做:
+    // 第一遍由 changeScene 执行,这里保持幂等,保证 f10-f12 的 NT diff
+    // 从"干净画布"起铺,不被上一轮 title 屏内容覆盖)。
+    for (let addr = 0x2000; addr <= 0x2fff; addr++) this.store.writeByte(addr, 0);
+    for (let i = 0x200; i < 0x300; i++) this.store.writeByte(i, 0xf8);
+    this.store.oam.shadowOam.fill(0xf8);
   }
 
   /** H5 帧 -> NES 绝对帧(GT 时间线基准) */
@@ -160,17 +186,17 @@ export class OpeningSceneController extends SceneController {
 
   /**
    * 重置 opening 内部状态以便从 f10 重新播(用户未按 START 走 loop)。
+   * 循环重播 = 重新进入 OpeningScene:除 skipped 标志(用户 START 后永远不进
+   * opening)之外,逐帧状态 + 一次性渲染状态 + BGM 必须完整重铺。
    * 不重置 skipped 标志 — 用户 START 后永远不进 opening。
-   * 不重置 audio / ppuState.ctrl / mask / scrollFlag 等 onEnter 级别一次性设置 — 这些在 onEnter 已经设过,
-   * 不需要每帧重置。
    */
   private resetForLoop(): void {
-    this.h5Frame = 0;
-    this.currentFrame = null;
-    this.currentChrPlan = [];
-    this.ntQueue = [];
-    this.attrQueue = [];
-    this.currentScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0, cv: 0, ch: 0, cvt: 0, cht: 0 };
+    this.resetSceneState();
+    this.applyEnterRenderState();
+    // opening 播完后 BGM 已被 title 屏切换,循环重播重新放 0x01(与 onEnter 一致)
+    if (this.audio) {
+      this.audio.playBgm(0x01);
+    }
   }
 
   /** 把单帧 GT 数据(palette/OAM/CHR plan/NT/attr/scroll)应用到 store + 控制器内部缓冲 */
