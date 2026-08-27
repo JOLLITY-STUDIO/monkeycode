@@ -4,9 +4,9 @@
  * 链路位置：...→Scene23→Meeting(300)→MatchStart(400)
  *
  * 行为：
- *   - onEnter(): 标记 sceneId + 等用户按 START 触发 MatchEngineService 启动
+ *   - onEnter(): 标记 sceneId + 等用户按 A 键触发 MatchEngineService 启动
  *   - onUpdate():
- *       - 等用户按 START (Button.Start = 0x10) 触发比赛启动
+ *       - 等用户按 A 键 (Button.A = 0x01) 触发比赛启动 (NES 天使之翼开始比赛键)
  *       - 比赛启动后每帧推进:
  *           1. matchEngine.update(frame): 球员遍历 + 帧尾例程 + 控球方分发
  *           2. matchHud.refresh(): 比分/时间显示
@@ -16,9 +16,11 @@
  *   - 补 matchEngine.update() per frame
  *   - 接 MatchHudService.refresh() per frame
  *   - 接 MatchTurnService.advanceTurn() per frame
+ *   - ★ 修正启动键: 之前 isPressed(0x10)=Up, 现改 Button.A=0x01 (KICKOFF A→Scene14→...→MatchStart A=开始比赛)
  *   - 后续 V0.7: 接 MatchEventService.startEvent() per frame for sprite animation chain
  */
 import { SceneController } from './SceneController';
+import { Button } from '../system/InputService';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { MatchEngineService } from '../match/MatchEngineService';
@@ -68,9 +70,11 @@ export class MatchStartSceneController extends SceneController {
       return undefined;
     }
 
-    // 等用户按 START (Button.Start = 0x10) 触发比赛启动
+    // 等用户按 A 键触发比赛启动
+    //   KICKOFF A→Scene14→...→MatchStart A=开始比赛 (NES 天使之翼关键约定)
+    //   注: 之前 isPressed(0x10)=Up=误, 现改 Button.A=0x01
     //   默认对手: $0628 (场景选择) -> fallback SaoPaulo (0x02) 第一节 vs Nankatsu (0x01)
-    if (this.matchEngine && this.input.isPressed(0x10)) {
+    if (this.matchEngine && this.input.isPressed(1, Button.A)) {
       const home = this.store.readByte(0x0628) || 0x02;  // SaoPaulo
       const away = 0x01;  // Nankatsu 第一关固定
       this.matchEngine.startMatch(home, away);
