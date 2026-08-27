@@ -15,6 +15,7 @@
  */
 import { HEADER, CONFIG, Mirroring } from './header';
 import { NES_CHR_ROM, CHR_BANKS, CHR_BANK_SIZE, CHR_BANK_COUNT } from './chr/index';
+import { OPENING_BG_PALETTES, OPENING_SPR_PALETTES } from './prg/data/scene/opening-data';
 import {
   DataStore,
   BootRouter,
@@ -121,6 +122,11 @@ export class Tsubasa2 {
     const scriptEngine = new ScriptEngine(this.store, scriptLoader);
     const charMap = new CharMap();
     this.scriptEngine = scriptEngine;
+    // 调色板表 (PRG $96A5 palette alloc 翻译 - 从 opening-data.ts 抽的 16+16 字节 palette)
+    // OPENING_BG_PALETTES = 16 项 × 16 字节 (4 palette × 4 字节)
+    // OPENING_SPR_PALETTES = 16 项 × 16 字节
+    // PRG $9AB8: BG = $B000 + $0048*16 → ram_062A (16 bytes)
+    // PRG $9AD8: SPR = $B000 + $0049*16 → ram_063A (16 bytes)
     // CharMap 注入脚本运行时：0x94/0x95 浊音符等映射供 ScriptOpcode.TextChar 使用
     // NT cursor: $05E7 单字节 (mod 0x40 = 64 cells wrap), NT 起点 $2000 (32x30 NT)
     // writeTextChar: PRG $9AA2 NT cell writer 翻译 - 查 CharMap tile 后写 NT 当前 cursor 位置
@@ -142,11 +148,14 @@ export class Tsubasa2 {
       // playSe(0x0B): 委托 AudioService 播放 SE
       playSe: (id: number) => this.audio.playSe(id & 0xff),
       // setPalette(0x08): PRG $96A5 palette alloc 翻译
-      //   调 store.palette.bg/spr index 装载, 后续 renderCommit 推 PPU
+      //   查 OPENING_BG_PALETTES[bgIdx] (16 字节 BG palette) 装载到 store.palette.bg ($062A-$0639)
+      //   查 OPENING_SPR_PALETTES[sprIdx] (16 字节 SPR palette) 装载到 store.palette.spr ($063A-$0649)
+      //   后续 renderCommit 推到 PPU palette RAM
       setPalette: (bgIdx: number, sprIdx: number) => {
-        // 简化: 写 palette index 到 store.scene.flags 给后续 render 用
-        this.store.writeByte(0x0090, bgIdx & 0xff);
-        this.store.writeByte(0x0091, sprIdx & 0xff);
+        const bg = OPENING_BG_PALETTES[bgIdx & 0x0f] ?? OPENING_BG_PALETTES[0];
+        const spr = OPENING_SPR_PALETTES[sprIdx & 0x0f] ?? OPENING_SPR_PALETTES[0];
+        this.store.palette.loadBg(bg);
+        this.store.palette.loadSpr(spr);
       },
       // loadSprite(0x09): 委托 SpriteService 装载 OAM 精灵
       //   签名: putSprite(slot, tile, x, y, attr?) — slot 用 id 当 slot; tile 用 id 当 tile 索引
