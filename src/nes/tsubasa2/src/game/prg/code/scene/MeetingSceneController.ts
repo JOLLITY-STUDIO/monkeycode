@@ -45,7 +45,7 @@ export class MeetingSceneController extends SceneController {
       //   （真实 meeting 剧本 id 待 V0.7 反汇编 bank06-bank10 段指针表确认）
       const seg = this.scriptCtx;
       if (seg && seg.bytes.length > 0) {
-        const head = Array.from(seg.bytes.subarray(0, 32))
+        const head = Array.from(seg.bytes.slice(0, 32))
           .map(b => b.toString(16).padStart(2, '0')).join(' ');
         const scriptsTotalBytes = seg.bytes.length;
         const opCount0x01 = Array.from(seg.bytes).filter(b => b === 0x01).length;

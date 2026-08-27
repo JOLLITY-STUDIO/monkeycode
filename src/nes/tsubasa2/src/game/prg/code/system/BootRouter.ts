@@ -231,4 +231,9 @@ export class BootRouter {
   get sceneId(): number {
     return this.currentSceneId;
   }
+
+  /** 当前场景控制器（外部只读访问，替代直接字段访问） */
+  get currentScene(): SceneController | null {
+    return this.current;
+  }
 }

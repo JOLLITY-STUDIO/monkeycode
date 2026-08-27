@@ -23,7 +23,7 @@
  *     → BootRouter.changeScene(200) → 本类 onEnter() → 持续显示 + service 驱动 cursor
  */
 import { SceneController } from './SceneController';
-import { OPENING_SCREENS, OpeningFrameState } from '../../data/scene/OpeningScreenTable';
+import { OPENING_SCREENS, OpeningFrameState, OpeningScreenEntry } from '../../data/scene/OpeningScreenTable';
 import type { OpeningFrameChr } from '../../data/scene/OpeningFrameTable';
 import { Button } from '../system/InputService';
 import type { DataStore } from '../../data/store/DataStore';

@@ -432,7 +432,7 @@ export class Tsubasa2 {
     //   通用 duck typing: 任何 controller 有 getChrPlan()/applyNtToPpu() 就走该路径
     //   (Opening/TitleMenu 都实现, 后续 Scene14..Meeting 可复用)
     const ppu: any = target.ppu;
-    const current = this.router.current;
+    const current = this.router.currentScene;
     if (current && typeof (current as any).getChrPlan === 'function') {
       const plan = (current as any).getChrPlan();
       if (Array.isArray(plan) && plan.length > 0 && typeof (target as any).setPerScanlineChrPlan === 'function') {

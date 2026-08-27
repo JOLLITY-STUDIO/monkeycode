@@ -154,7 +154,8 @@ export class Bank00SchedulerService {
           dispatched.push(slot);
         }
       } else {
-        if (slot.state !== 'IDLE' && slot.state !== 'DONE') console.log(`[Sch.tickDispatch] slot=${slot.id} state=${prevState}->${slot.state} timer=${prevT}->${slot.timer} (no cb yet)`);
+        const st: SchedulerSlot['state'] = slot.state;
+        if (st !== 'IDLE' && st !== 'DONE') console.log(`[Sch.tickDispatch] slot=${slot.id} state=${prevState}->${slot.state} timer=${prevT}->${slot.timer} (no cb yet)`);
       }
     }
     // 一帧结束清 $001B bit 7（ROM 中 $9F06 LDA $001B / BPL $9F04 → AND $7F STA $001B / JMP $9EED）

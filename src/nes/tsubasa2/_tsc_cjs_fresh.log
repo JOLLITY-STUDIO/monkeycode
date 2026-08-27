@@ -1,0 +1,5 @@
+EXIT=2
+src/game/prg/code/system/Bank00SchedulerService.ts(158,13): error TS2367: This comparison appears to be unintentional because the types '"WAIT" | "READY" | "RUNNING"' and '"IDLE"' have no overlap.
+src/game/prg/code/system/Bank00SchedulerService.ts(158,30): error TS2367: This comparison appears to be unintentional because the types '"WAIT" | "READY" | "RUNNING"' and '"DONE"' have no overlap.
+
+STDERR:
