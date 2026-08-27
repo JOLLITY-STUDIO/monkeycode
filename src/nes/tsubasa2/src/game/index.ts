@@ -122,10 +122,21 @@ export class Tsubasa2 {
     const charMap = new CharMap();
     this.scriptEngine = scriptEngine;
     // CharMap 注入脚本运行时：0x94/0x95 浊音符等映射供 ScriptOpcode.TextChar 使用
+    // NT cursor: $05E7 单字节 (mod 0x40 = 64 cells wrap), NT 起点 $2000 (32x30 NT)
+    // writeTextChar: PRG $9AA2 NT cell writer 翻译 - 查 CharMap tile 后写 NT 当前 cursor 位置
+    const NT_BASE = 0x2000;
+    const NT_CURSOR_KEY = 0x05e7;
     setScriptRuntime({
       charMap,
       readRam: (addr: number) => this.store.readByte(addr),
       writeRam: (addr: number, value: number) => this.store.writeByte(addr, value),
+      writeTextChar: (tile: number) => {
+        const cursor = this.store.readByte(NT_CURSOR_KEY) & 0x3f;
+        // 写 tile 到 NT (VRAM 写透由 setVramTarget 触发, 直接落到 PPU)
+        this.store.writeByte(NT_BASE + cursor, tile & 0xff);
+        // 推进 cursor (mod 64 wrap)
+        this.store.writeByte(NT_CURSOR_KEY, (cursor + 1) & 0x3f);
+      },
     });
 
     // 比赛（V0.5 接入）

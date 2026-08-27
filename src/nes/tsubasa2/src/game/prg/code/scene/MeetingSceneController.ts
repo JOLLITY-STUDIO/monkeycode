@@ -35,6 +35,8 @@ export class MeetingSceneController extends SceneController {
 
   onEnter(): void {
     this.store.writeByte(0x0001, MEETING_SCENE_ID & 0xff);
+    // NT cursor 重置: $05E7 = 0 (PRG $9AA2 NT cell writer 起点)
+    this.store.writeByte(0x05e7, 0x00);
     if (this.scriptEngine) {
       // 启动 meeting 第一段剧情（bank18 段 0 — TitleOpener/Meeting 入口）
       this.scriptCtx = this.scriptEngine.start(FIRST_MEETING_SCRIPT_ID);

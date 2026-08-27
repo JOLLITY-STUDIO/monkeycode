@@ -83,6 +83,8 @@ export interface ScriptRuntime {
   loadSprite?(id: number, x: number, y: number, attr: number): void;
   /** 设置 BG/SPR 调色板 */
   setPalette?(bgIdx: number, sprIdx: number): void;
+  /** 写一个 tile 到 NT 当前位置（PRG $9AA2 NT cell writer 翻译）—— 推进内部 cursor */
+  writeTextChar?(tile: number): void;
 }
 
 /** 全局运行时（注入式） */
@@ -97,15 +99,19 @@ export function setScriptRuntime(rt: ScriptRuntime | null): void {
 export const OPCODE_HANDLERS: Partial<Record<ScriptOpcode, OpcodeHandler>> = {
   [ScriptOpcode.Nop]: () => { /* nop */ },
 
-  /** [0x01] 显示一个文本字符（1 字节 char → tile） */
+  /** [0x01] 显示一个文本字符（1 字节 char → tile → NT cell writer） */
   [ScriptOpcode.TextChar]: (ctx, read) => {
     const ch = read();
     if (!ch) return;
-    // 占位实现：把字符写入 NT 缓冲当前位置（简化）
-    // 真实实现需配合 CharMap 查 tile 并写入 NT 缓冲队列
+    // char → tile (CharMap 映射, 默认 fallback = ch)
     const tile = RUNTIME?.charMap?.toTile(ch) ?? ch;
-    // 把 tile 写到 ram_046C（文本 tile 输出区，由 NMI 渲染刷出）
-    ctx.stack.push(tile);
+    // 写 NT 当前位置 + 推进 cursor（PRG $9AA2 NT cell writer 翻译）
+    if (RUNTIME?.writeTextChar) {
+      RUNTIME.writeTextChar(tile);
+    } else {
+      // 无 RUNTIME 注入（链路走通 stub）：push 到 stack 作为调试可见性
+      ctx.stack.push(tile);
+    }
   },
 
   /** [0x02] 等待 N 帧（1 字节参数） */
