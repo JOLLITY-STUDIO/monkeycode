@@ -88,6 +88,10 @@ class PPU {
         // 片头/标题滚动依赖此。pre-render scanline 初始化计数器时优先消费，
         // 用后即清；未设置时走常规 cnt* = reg* 路径。
         this.renderStartOverride = null;
+        // 帧中逐扫描线 scroll 覆盖（H5 GT 驱动用）：
+        // 真实 ROM 会在 $2005 写入触发 mid-frame 横向滚动切换（status bar / 分屏效果）。
+        // 数组元素按 s 升序排列，renderBgScanline 每行消费一次，用后即清。
+        this.scrollScanOverrides = null;
         // Variables used when rendering:
         this.attrib = new Uint8Array(32);
         this.buffer = new Uint32Array(256 * 240);
@@ -1191,6 +1195,17 @@ class PPU {
         this.validTileData = false;
     }
     renderBgScanline(bgbuffer, scan) {
+        // H5 GT 驱动：应用 mid-frame 横向滚动切换。
+        // 真实 PPU 在可见扫描线期间响应 $2005 写入，改变 regH/regHT/regFH；
+        // GT 数据把变化点按 buffer row 记录，本行渲染前生效。
+        if (this.scrollScanOverrides &&
+            this.scrollScanOverrides.length > 0 &&
+            this.scrollScanOverrides[0].s === scan) {
+            const ov = this.scrollScanOverrides.shift();
+            this.regH = ov.h & 1;
+            this.regHT = ov.ht & 0x1f;
+            this.regFH = ov.fh & 7;
+        }
         let baseTile = this.regS === 0 ? 0 : 256;
         // Base address for pattern table fetches (used for mapper latch triggers).
         // On real hardware, the PPU puts this address on its bus when fetching tile
