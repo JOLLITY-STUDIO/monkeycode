@@ -369,6 +369,41 @@ export class Tsubasa2 {
       processor.connect(wac.destination);
 
       console.log('[tsubasa] 音频初始化完成: PAPU + WebAudio');
+
+      // V0.6.5 自动 resume 音频上下文
+      // Chrome/WebView 策略: AudioContext 创建后默认 suspended, 必须用户手势调用 .resume()
+      // 1) 立即尝试一次 (某些浏览器在同步初始化时即允许)
+      // 2) 注册一次性 user gesture handler, 任何 input/click/touch 触发后立即 resume
+      if (typeof wac.resume === 'function') {
+        try {
+          const r = wac.resume();
+          if (r && typeof r.then === 'function') r.then(() => {
+            console.log('[tsubasa] AudioContext resumed immediately');
+          }).catch(() => { /* ignore */ });
+        } catch (_e) { /* ignore */ }
+        const tryResume = () => {
+          if (this._webAudio && typeof this._webAudio.resume === 'function') {
+            const state = this._webAudio.state;
+            if (state === 'suspended' || state === 'interrupted') {
+              try {
+                const p = this._webAudio.resume();
+                if (p && typeof p.then === 'function') {
+                  p.then(() => console.log('[tsubasa] AudioContext resumed via user gesture'))
+                   .catch(() => {});
+                }
+              } catch (_e) { /* ignore */ }
+            }
+          }
+        };
+        if (typeof window !== 'undefined') {
+          window.addEventListener('pointerdown', tryResume, { once: false, capture: true });
+          window.addEventListener('keydown', tryResume, { once: false, capture: true });
+          window.addEventListener('touchstart', tryResume, { once: false, capture: true });
+        }
+        if (typeof document !== 'undefined') {
+          document.addEventListener('visibilitychange', tryResume, { once: false, capture: true });
+        }
+      }
     } catch (e) {
       console.log('[tsubasa] 音频初始化失败:', (e as Error).message);
     }
