@@ -1,14 +1,14 @@
 const fs = require('fs');
 function fmtRow(arr, r) {
   const base = r * 32;
-  const tiles = arr.slice(base, base + 32);
+  const tiles = Array.from(arr.slice(base, base + 32));
   const hex = tiles.map((x) => x.toString(16).padStart(2, '0')).join(' ');
   return `${r}: ${hex}`;
 }
 function fmtAttr(arr, r) {
   const base = r * 32;
   if (!arr) return `${r}: <no attr>`;
-  const attrs = arr.slice(base, base + 32);
+  const attrs = Array.from(arr.slice(base, base + 32));
   return `${r}: ` + attrs.map((x) => (x & 0xff).toString(16).padStart(2, '0')).join(' ');
 }
 

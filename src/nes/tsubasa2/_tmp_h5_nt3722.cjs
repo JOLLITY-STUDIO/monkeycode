@@ -12,7 +12,7 @@ const nt = r.ppu.nameTable[0];
 const out = [];
 for (const row of [16, 18, 20, 21, 23, 25]) {
   const base = row * 32;
-  out.push('r' + row + ': ' + nt.tile.slice(base, base + 32).map(x => x.toString(16).padStart(2, '0')).join(' '));
+  out.push('r' + row + ': ' + Array.from(nt.tile.slice(base, base + 32)).map(x => x.toString(16).padStart(2, '0')).join(' '));
 }
 fs.writeFileSync('_h5_nt3722.txt', out.join('\n'), 'utf8');
 console.log('done');
