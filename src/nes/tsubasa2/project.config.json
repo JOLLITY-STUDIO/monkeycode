@@ -38,9 +38,21 @@
     "packOptions":  {
                         "ignore":  [
                                        {
-                                           "value":  "dist",
-                                           "type":  "folder"
-                                       },
+                            "value":  "dist-cjs",
+                            "type":  "folder"
+                        },
+                                       {
+                            "value":  "dist-cjs2",
+                            "type":  "folder"
+                        },
+                                       {
+                            "value":  "mini-audio",
+                            "type":  "folder"
+                        },
+                                       {
+                            "value":  "dist",
+                            "type":  "folder"
+                        },
                                        {
                                            "value":  "_test_out",
                                            "type":  "folder"
