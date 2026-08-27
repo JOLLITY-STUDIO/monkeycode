@@ -34,6 +34,8 @@ import {
   ScriptLoader,
   MeetingSceneController,
   MEETING_SCENE_ID,
+  MatchStartSceneController,
+  MATCH_START_SCENE_ID,
   CharMap,
   setScriptRuntime,
   PlayerQueryService,
@@ -237,6 +239,9 @@ export class Tsubasa2 {
 
     // 第一关 meeting 页面（Scene14-23 chain 链路终点）注入 ScriptEngine 跑剧情第一段
     (this.router.getController(MEETING_SCENE_ID) as MeetingSceneController).attachScriptEngine(this.scriptEngine);
+
+    // MatchStart 比赛入口（Meeting 完后下一站）注入 MatchEngineService 让按 START 启动比赛
+    (this.router.getController(MATCH_START_SCENE_ID) as MatchStartSceneController).attachMatchEngine(matchEngine);
 
     // bank00 scene state machine + NT stream loader 注入 Scene0
     // (PRG $8AF7 scene handler loader + $82ED NT stream loader)
