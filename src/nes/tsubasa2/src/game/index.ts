@@ -253,8 +253,20 @@ export class Tsubasa2 {
     //   - 内部 PAPU 实例 (mini-audio 自带 H5 src/core/papu 子模块)
     //   - onSample 回调推送 samples 到 _audioSamples (ScriptProcessorNode 消费输出到 WebAudio)
     //   - AudioService (F1-F7) 保留代码但不实例化 (V0.7+ 接 PRG bank 12-15 SID 后可再用)
+    //
+    // V0.7 音频调试 trace: 统计每秒 _audioSamples 增长速度 + onAudioSample call 数。
+    // 若 _audioSamples 一直空 → bridge 没有 sample 推到 consumer → 链路有断。
+    let _audioSampleCount = 0;
+    let _audioLastLog = 0;
     this.audio = new MiniAudioBridge(44100, (l: number, r: number) => {
       this._audioSamples.push((l + r) / 2);
+      _audioSampleCount++;
+      if (_audioSampleCount - _audioLastLog >= 4410) {
+        _audioLastLog = _audioSampleCount;
+        console.log(
+          `[tsubasa-audio] ${_audioSampleCount} samples @ frame=${this._frame} l=${l.toFixed(3)} r=${r.toFixed(3)}`,
+        );
+      }
     });
 
     // 音频输出：创建 WebAudio + ScriptProcessorNode (mini-audio PAPU sample → destination)
@@ -346,11 +358,13 @@ export class Tsubasa2 {
       this._webAudio = wac;
 
       // 创建 ScriptProcessorNode 用于实时播放
-      // 缓冲区 4096 采样，单声道
+      // V0.7 修复: bufferSize 从 4096 改 512 (mini-audio 每帧 ~735 samples @ 44.1kHz,
+      //   consumer 跟 producer 速率匹配, 避免 4096 大缓冲下 consumer 跑得比 producer 快 8 倍
+      //   导致永远取静音)
       // samples 由 MiniAudioBridge 构造时 wire 的 onSample 回调推入
       const sampleRate = 44100;
-      const processor = wac.createScriptProcessor(4096, 0, 1);
-      const buffer = new Float32Array(4096);
+      const processor = wac.createScriptProcessor(512, 0, 1);
+      const buffer = new Float32Array(512);
       processor.onaudioprocess = (e: any) => {
         const out = e.outputBuffer.getChannelData(0);
         const available = this._audioSamples.length - this._sampleOffset;
@@ -361,8 +375,8 @@ export class Tsubasa2 {
         // 填充剩余为静音
         for (let i = n; i < out.length; i++) out[i] = 0;
         this._sampleOffset += n;
-        // 清理已消费的采样
-        if (this._sampleOffset > 44100) {
+        // 清理已消费的采样 (每 0.5 秒一次, 避免无限增长)
+        if (this._sampleOffset > 22050) {
           this._audioSamples = this._audioSamples.slice(this._sampleOffset);
           this._sampleOffset = 0;
         }

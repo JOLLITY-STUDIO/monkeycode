@@ -5,20 +5,27 @@
  *   - BGM: bgm-sid/BGM_0x30..0x5B.ts — 共 43 个 SID 完整轨道 (trackSQ1/SQ2/TRI/NOISE + raw + nesBase + headerOffset)
  *   - SE : SEData.ts — Bank 12 $8BDA header 表 + 6 通道 (CH2-7) 聚合轨道
  *
+ * 关键修复 (V0.7.1)：
+ *   - player.load() 用 sharedRaw + nesBase + headerOffset 三参数时，
+ *     player 内部 `_nesAddrToOffset(nesAddr) = nesAddr - 0x8000` 假设 sharedRaw
+ *     是完整 Bank 12 (8KB)。但 BGM_SID_LIST.raw 只给出从 nesBase 起的 partial 区段
+ *     (含 initPtr + E8/E9 共享乐句)，off = 0x1C13 远超 34 字节，channel track 指针越界读 garbage。
+ *   - V0.7.1 修正：传完整 PRG_BANK_12 (8KB) 作 sharedRaw + nesBase=0x8000 + headerOffset=initPtr-0x8000
+ *     这样 player 内部所有 off 都在 sharedData (8192 byte) 范围内，且能解析 E8/E9 jump。
+ *
  * 跟 H5 AudioService 的差异：
  *   - 不依赖 H5 FREQUENCY_TABLE / DURATION_TABLE / COMMAND_TABLE (mini-audio 自带)
  *   - 不依赖 H5 DataStore (mini-audio 自带 PAPU + 命令流)
  *   - 不解析 AudioToken；直接消费 NES 字节流 (跟真 NES 行为同)
  *
  * H5 适配：
- *   - playBgm(id): 0x30-0x5B 查 BGM_SID_LIST → player.load(...)；不在范围静默（V0.7+ 接 PRG bank 12 抽 0x01-0x2F 后再支持）
- *   - playSe(id) : 直接 player.setSeRequest(id) (mini-audio 内部有 $8BDA header 表)
+ *   - playBgm(id): 0x30-0x5B 查 BGM_SID_LIST → player.load(track* + full PRG_BANK_12)
+ *     不在范围静默（V0.7+ 接 PRG bank 12 抽 0x01-0x2F 后再支持）
+ *   - playSe(id) : 直接 player.setSeRequest(id) (mini-audio 内部已自带完整 PRG_BANK_12)
  *   - stopAll()  : player.stop() + 清请求槽位
  *   - update()   : player.tick() (一帧 60Hz 推进)
  *
- * 已知限制 (V0.7 follow-up)：
- *   - 0x01-0x2F BGM 不在 mini-audio (用户原话：原 commit 4b6db6d2 fake 占位)；后续从 PRG bank 12 抽 48 个 SID 注入
- *   - SE 内部混响 (PAPU 寄存器写入顺序) 已对齐 mini-audio 测试版；H5 WebAudio 输出仅 PCM stream，无混合
+ * 诊断 trace：onSample 每收 1024 个 sample trace 一次 (确认 PCM 流是否真到达 WebAudio)
  */
 import type { AudioBridge } from './AudioBridge';
 import { Tsubasa2AudioPlayer } from '../../../../../mini-audio/mini-audio/bgm-data/Tsubasa2AudioPlayer';
@@ -26,6 +33,11 @@ import {
   BGM_SID_LIST,
   type BgmSidEntry,
 } from '../../../../../mini-audio/mini-audio/bgm-data/bgm-sid/index';
+// 完整 Bank 12 (8KB) — player 内部用 nesAddr-0x8000 计算 off，必须用 8192 byte full bank
+import PRG_BANK_12 from '../../../../../mini-audio/mini-audio/rom-data/prg-bank-12';
+
+/** NES Bank 12 起始 CPU 地址 */
+const NES_BANK_BASE = 0x8000;
 
 /**
  * Mini-audio BGM 接收 range (id 0x30-0x5B 共 43 个，
@@ -93,14 +105,18 @@ export class MiniAudioBridge implements AudioBridge {
     }
 
     // 加载 + 启动
+    // 关键：用完整 PRG_BANK_12 (8KB) 作 sharedRaw + nesBase=NES_BANK_BASE ($8000)
+    //       + headerOffset = initPtr - 0x8000 (initPtr = entry.nesBase)
+    // 这样 player 内部 `_nesAddrToOffset(nesAddr) = nesAddr - 0x8000` 计算 off 落在
+    // 0..8191 范围 (full bank 容量)，不会越界读 garbage。
     const ok = this.player.load(
       entry.trackSQ1,
       entry.trackSQ2,
       entry.trackTRI,
       entry.trackNOISE,
-      entry.raw,
-      entry.nesBase,
-      entry.headerOffset,
+      PRG_BANK_12 as unknown as readonly number[],
+      NES_BANK_BASE,
+      (entry.nesBase | 0) - NES_BANK_BASE,
     );
     if (!ok) {
       console.log(`[MiniAudioBridge] BGM 0x${reqId.toString(16).padStart(2, '0')} load() 返回 false`);
@@ -109,7 +125,7 @@ export class MiniAudioBridge implements AudioBridge {
     this.player.start();
     this.currentBgmId = reqId;
     console.log(
-      `[MiniAudioBridge] BGM 0x${reqId.toString(16).padStart(2, '0')} 启动 — bank=${entry.bank} type=${entry.type} bytes=${entry.bytes} notes=${entry.notes} nesBase=0x${entry.nesBase.toString(16)}`,
+      `[MiniAudioBridge] BGM 0x${reqId.toString(16).padStart(2, '0')} 启动 — bank=${entry.bank} type=${entry.type} bytes=${entry.bytes} notes=${entry.notes} initPtr=0x${entry.nesBase.toString(16)}`,
     );
   }
 
