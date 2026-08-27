@@ -32,6 +32,9 @@ class MeetingSceneController extends SceneController_1.SceneController {
     }
     onEnter() {
         this.store.writeByte(0x0001, exports.MEETING_SCENE_ID & 0xff);
+        // Meeting/Story 使用 8x16 精灵（大立绘由多个 8x16 sprite 拼接），
+        // sprite pattern table = $1000(bit3)，BG pattern table = $0000(bit4=0)。
+        this.store.ppuState.ctrl = 0x28;
         // NT cursor 重置: $05E7 = 0 (PRG $9AA2 NT cell writer 起点)
         this.store.writeByte(0x05e7, 0x00);
         if (this.scriptEngine) {
@@ -42,7 +45,7 @@ class MeetingSceneController extends SceneController_1.SceneController {
             //   （真实 meeting 剧本 id 待 V0.7 反汇编 bank06-bank10 段指针表确认）
             const seg = this.scriptCtx;
             if (seg && seg.bytes.length > 0) {
-                const head = Array.from(seg.bytes.subarray(0, 32))
+                const head = Array.from(seg.bytes.slice(0, 32))
                     .map(b => b.toString(16).padStart(2, '0')).join(' ');
                 const scriptsTotalBytes = seg.bytes.length;
                 const opCount0x01 = Array.from(seg.bytes).filter(b => b === 0x01).length;

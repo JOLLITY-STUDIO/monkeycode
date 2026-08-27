@@ -1,7 +1,7 @@
 {
-  "status": 2,
+  "status": 0,
   "signal": null,
   "error": null,
-  "stdout": "src/game/index.ts(435,33): error TS2341: Property 'current' is private and only accessible within class 'BootRouter'.\r\nsrc/game/prg/code/scene/MeetingSceneController.ts(48,43): error TS2339: Property 'subarray' does not exist on type 'readonly number[]'.\r\nsrc/game/prg/code/scene/MeetingSceneController.ts(49,21): error TS18046: 'b' is of type 'unknown'.\r\nsrc/game/prg/code/scene/TitleMenuSceneController.ts(195,25): error TS2304: Cannot find name 'OpeningScreenEntry'.\r\nsrc/game/prg/code/system/Bank00SchedulerService.ts(157,13): error TS2367: This comparison appears to be unintentional because the types '\"WAIT\" | \"READY\" | \"RUNNING\"' and '\"IDLE\"' have no overlap.\r\nsrc/game/prg/code/system/Bank00SchedulerService.ts(157,38): error TS2367: This comparison appears to be unintentional because the types '\"WAIT\" | \"READY\" | \"RUNNING\"' and '\"DONE\"' have no overlap.\r\n",
+  "stdout": "",
   "stderr": ""
 }

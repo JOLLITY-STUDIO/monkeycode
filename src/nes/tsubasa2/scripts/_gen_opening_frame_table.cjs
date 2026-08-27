@@ -155,15 +155,10 @@ for (let f = F0; f <= F1; f++) {
   // 本帧终态 CHR 供下一帧顶部使用
   prevChr = (st && Array.isArray(st.chrBanks)) ? st.chrBanks.slice() : chrPlan[chrPlan.length - 1].b.slice();
 
-  // scroll: 取 pre-render 时刻真值（vblank $2005/$2006 写入之后、cnt* 初始化时）。
-  // 这就是 H5 renderStartOverride 的准确来源；state.json.scroll（帧循环开始前）
-  // 是 vblank 写入之前的旧值，用它会导致滚动错位（典型:渲染实际 Y=$FF，记录为 0）。
-  // 无 pre-render 记录的帧（首帧渲染未开启等）退回 state.json.scroll。
-  const pre = scrollPre ? scrollPre.get(f) : null;
-  const sc = (pre && typeof pre.regVT === 'number')
-    ? { regV: pre.regV, regH: pre.regH, regVT: pre.regVT, regHT: pre.regHT, regFV: pre.regFV, regFH: pre.regFH,
-        cntV: pre.cntV, cntH: pre.cntH, cntVT: pre.cntVT, cntHT: pre.cntHT }
-    : ((st && st.scroll) ? st.scroll : {});
+  // scroll: 取 state.json.scroll（_emu_full.ts 在每帧 render 前捕获，即本帧 PPU 实际使用的寄存器）。
+  // 这与 emu screen.png 一致。注意：含 mid-frame 滚动切换的帧（如 title curtain / split-screen
+  // status bar）state.json 只记录帧起始寄存器，H5 单帧单 scroll 无法还原，需另行处理。
+  const sc = (st && st.scroll) ? st.scroll : {};
   const s = {
     v: sc.regV ?? 0,
     h: sc.regH ?? 0,
@@ -171,7 +166,6 @@ for (let f = F0; f <= F1; f++) {
     ht: sc.regHT ?? 0,
     fv: sc.regFV ?? 0,
     fh: sc.regFH ?? 0,
-    // 渲染计数器（渲染起始位置）；emu state.json 无 cntFV，fineY 由 regFV 承担
     cv: sc.cntV ?? sc.regV ?? 0,
     ch: sc.cntH ?? sc.regH ?? 0,
     cvt: sc.cntVT ?? sc.regVT ?? 0,

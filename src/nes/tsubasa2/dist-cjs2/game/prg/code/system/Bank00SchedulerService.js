@@ -98,8 +98,10 @@ class Bank00SchedulerService {
                 }
             }
             else {
-                if (slot.state !== 'IDLE' && slot.state !== 'DONE')
+                // 正向枚举判断（避免 TS 对 !== IDLE/DONE 的窄化误报；语义与原判断等价）
+                if (slot.state === 'WAIT' || slot.state === 'READY' || slot.state === 'RUNNING') {
                     console.log(`[Sch.tickDispatch] slot=${slot.id} state=${prevState}->${slot.state} timer=${prevT}->${slot.timer} (no cb yet)`);
+                }
             }
         }
         // 一帧结束清 $001B bit 7（ROM 中 $9F06 LDA $001B / BPL $9F04 → AND $7F STA $001B / JMP $9EED）

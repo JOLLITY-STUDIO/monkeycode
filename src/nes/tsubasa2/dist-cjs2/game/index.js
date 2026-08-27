@@ -293,6 +293,43 @@ class Tsubasa2 {
             };
             processor.connect(wac.destination);
             console.log('[tsubasa] ��Ƶ��ʼ�����: PAPU + WebAudio');
+            // V0.6.5 �Զ� resume ��Ƶ������
+            // Chrome/WebView ����: AudioContext ������Ĭ�� suspended, �����û����Ƶ��� .resume()
+            // 1) ��������һ�� (ĳЩ�������ͬ����ʼ��ʱ������)
+            // 2) ע��һ���� user gesture handler, �κ� input/click/touch ���������� resume
+            if (typeof wac.resume === 'function') {
+                try {
+                    const r = wac.resume();
+                    if (r && typeof r.then === 'function')
+                        r.then(() => {
+                            console.log('[tsubasa] AudioContext resumed immediately');
+                        }).catch(() => { });
+                }
+                catch (_e) { /* ignore */ }
+                const tryResume = () => {
+                    if (this._webAudio && typeof this._webAudio.resume === 'function') {
+                        const state = this._webAudio.state;
+                        if (state === 'suspended' || state === 'interrupted') {
+                            try {
+                                const p = this._webAudio.resume();
+                                if (p && typeof p.then === 'function') {
+                                    p.then(() => console.log('[tsubasa] AudioContext resumed via user gesture'))
+                                        .catch(() => { });
+                                }
+                            }
+                            catch (_e) { /* ignore */ }
+                        }
+                    }
+                };
+                if (typeof window !== 'undefined') {
+                    window.addEventListener('pointerdown', tryResume, { once: false, capture: true });
+                    window.addEventListener('keydown', tryResume, { once: false, capture: true });
+                    window.addEventListener('touchstart', tryResume, { once: false, capture: true });
+                }
+                if (typeof document !== 'undefined') {
+                    document.addEventListener('visibilitychange', tryResume, { once: false, capture: true });
+                }
+            }
         }
         catch (e) {
             console.log('[tsubasa] ��Ƶ��ʼ��ʧ��:', e.message);
@@ -355,7 +392,7 @@ class Tsubasa2 {
         //   ͨ�� duck typing: �κ� controller �� getChrPlan()/applyNtToPpu() ���߸�·��
         //   (Opening/TitleMenu ��ʵ��, ���� Scene14..Meeting �ɸ���)
         const ppu = target.ppu;
-        const current = this.router.current;
+        const current = this.router.currentScene;
         if (current && typeof current.getChrPlan === 'function') {
             const plan = current.getChrPlan();
             if (Array.isArray(plan) && plan.length > 0 && typeof target.setPerScanlineChrPlan === 'function') {
@@ -370,7 +407,10 @@ class Tsubasa2 {
         // �� startVBlank -> renderFramePartially -> endFrame ��ɵ�֡�����
         try {
             ppu.startFrame();
-            ppu.advanceDots(262 * 341);
+            // һ֡ = 262 �� scanline �� 341 dot��VBlank �� scanline 0 (��֡���) ��
+            // dot 1 ���� startVBlank �� renderFramePartially(bgbuffer��buffer �ϳ�)+endFrame��
+            // ��˱����ƽ��� scanline 0 curX=1���� 262*341 �� 1 dot�������� buffer ���ڡ�
+            ppu.advanceDots(262 * 341 + 1);
             // �����ֶ����� renderFramePartially/endFrame�������� startVBlank ��Ƕ��
             // ��Ⱦ·������˫�غϳ�/�ü����졣
         }
