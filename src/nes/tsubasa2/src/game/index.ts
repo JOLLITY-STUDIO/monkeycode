@@ -130,6 +130,13 @@ export class Tsubasa2 {
     //   A=0x03 B=0x0B C=0x0C D=0x0D E=0x07 F=0x0F G=0x10 H=0x0A I=0x13 J=0x14 K=0x15 L=0x16
     //   M=0x17 N=0x18 O=0x19 P=0x05 Q=0x11 R=0x12 S=0x0E T=0x14 U=0x1B V=0x1C W=0x1D X=0x1E
     //   Y=0x1F Z=0x20 空格=0x3C 透明=0x00
+    //
+    // V0.6 CHR bank 124-127 (0x7C-0x7F) 字形 vs LetterMapping 验证 —
+    //   ★ J(0x4A) → 0x14 与 T(0x54) → 0x14 冲突 ★
+    //   prg-bank-08.ts 头注释明确写 J=0x14 & T=0x14 — 不可能同时正确, 必有一个错位
+    //   "THEATER" trace (bank-08 PRG 数据流) 已验证 T=0x14 正确 (T H E A T E R → 14 0A 07 03 14 07 12)
+    //   → J 应改为 0x21 或 0x24 (待 PNG 直接读取 chr-bank-7c.ts 的 tile 0x03 验证字母 A 字形)
+    //   → 目前保留 J=0x14 占位: meeting 文本不用 J/T (日文假名 + 数字 + 少量 ASCII), 不影响显示
     charMap.registerTable([
       [0x20, 0x3c], [0x41, 0x03], [0x42, 0x0b], [0x43, 0x0c], [0x44, 0x0d],
       [0x45, 0x07], [0x46, 0x0f], [0x47, 0x10], [0x48, 0x0a], [0x49, 0x13],
@@ -140,6 +147,18 @@ export class Tsubasa2 {
       // 数字 0-9 (bank08 注释 0x16..0x1f 范围, 用 ASCII fallback 兜底 - 未确认精确)
       [0x30, 0x16], [0x31, 0x17], [0x32, 0x18], [0x33, 0x19], [0x34, 0x1a],
     ]);
+    // V0.6 验证 trace: dump 当前字母映射 + 校验 THEATER 串可正确解码
+    //   THEATER = T(0x54)→0x14 H(0x48)→0x0A E(0x45)→0x07 A(0x41)→0x03 T→0x14 E→0x07 R(0x52)→0x12
+    //   期望 tile 序列: 14 0A 07 03 14 07 12 — 与 prg-bank-08 头注释 THEATER sample 完全一致
+    const THEATER_TILES = [0x14, 0x0a, 0x07, 0x03, 0x14, 0x07, 0x12];
+    const THEATER_CHARS = 'THEATER';
+    const theaterDecoded = THEATER_CHARS.split('').map(c => charMap.toTile(c.charCodeAt(0)));
+    const theaterMatch = theaterDecoded.every((t, i) => t === THEATER_TILES[i]);
+    console.log(
+      `[LetterMapping] A→0x${charMap.toTile(0x41).toString(16)} ` +
+      `THEATER decoded=[${theaterDecoded.map(t => '0x' + t.toString(16)).join(',')}] ` +
+      `match=${theaterMatch}`
+    );
 
     // 调色板表 (PRG $96A5 palette alloc 翻译 - 从 opening-data.ts 抽的 16+16 字节 palette)
     // OPENING_BG_PALETTES = 16 项 × 16 字节 (4 palette × 4 字节)
@@ -172,12 +191,32 @@ export class Tsubasa2 {
       // setPalette(0x08): PRG $96A5 palette alloc 翻译
       //   查 OPENING_BG_PALETTES[bgIdx] (16 字节 BG palette) 装载到 store.palette.bg ($062A-$0639)
       //   查 OPENING_SPR_PALETTES[sprIdx] (16 字节 SPR palette) 装载到 store.palette.spr ($063A-$0649)
-      //   后续 renderCommit 推到 PPU palette RAM
+      //   后续 renderCommit → InterruptService.flushPalette → PPU $3F00 (fadeLookup 应用)
+      //
+      // V0.6: $062A palette stream F (= flushPalette 函数) 重做 —
+      //   - setPalette 写入 store.palette.bg (RAM $062A-$0639, 即 "BG palette stream 16 bytes")
+      //   - renderCommit flushPalette 每帧从 $062A 读 + fadeLookup → writeMem PPU $3F00
+      //   - sprite palette 同理 ($063A → $3F10)
+      //
+      //   Emu trace 验证每帧 $3F00+ 与 fade 值相符 — 当前用 OPENING_*_PALETTES 兜底,
+      //   meeting 场景应换 BANK06 palette_table (待 V0.7 抽 BANK06 palette 数据覆盖)
       setPalette: (bgIdx: number, sprIdx: number) => {
-        const bg = OPENING_BG_PALETTES[bgIdx & 0x0f] ?? OPENING_BG_PALETTES[0];
-        const spr = OPENING_SPR_PALETTES[sprIdx & 0x0f] ?? OPENING_SPR_PALETTES[0];
+        const sceneId = this.store.scene.currentSceneId;
+        const bgBi = bgIdx & 0x0f;
+        const spSi = sprIdx & 0x0f;
+        // meeting/title menu 等非 opening 场景: 仍走 OPENING_*_PALETTES 兜底
+        // (meeting/Scene0/TitleMenu/Meeting 实际 palette 待 V0.7 抽 BANK06 覆盖)
+        const bg = OPENING_BG_PALETTES[bgBi] ?? OPENING_BG_PALETTES[0];
+        const spr = OPENING_SPR_PALETTES[spSi] ?? OPENING_SPR_PALETTES[0];
         this.store.palette.loadBg(bg);
         this.store.palette.loadSpr(spr);
+        // 一次性 trace: 在 console 留一份 "stream F" 写入快照便于 emu 比对
+        if (this._frame < 5 || this._frame % 600 === 0) {
+          console.log(
+            `[setPalette] sceneId=0x${sceneId.toString(16)} bgIdx=${bgBi} sprIdx=${spSi} ` +
+            `bg0=0x${bg[0].toString(16)} spr0=0x${spr[0].toString(16)} frame=${this._frame}`,
+          );
+        }
       },
       // loadSprite(0x09): 委托 SpriteService 装载 OAM 精灵
       //   签名: putSprite(slot, tile, x, y, attr?) — slot 用 id 当 slot; tile 用 id 当 tile 索引
@@ -186,15 +225,13 @@ export class Tsubasa2 {
       },
     });
 
-    // 比赛（V0.5 接入）
+    // 比赛（V0.5 接入；V0.6 注入到 MatchStart 控制器）
     const matchEngine = new MatchEngineService(this.store);
     const matchTurn = new MatchTurnService(this.store);
     const matchAux = new MatchAuxService(this.store);
     const matchHud = new MatchHudService(this.store);
     const matchConfig = new MatchConfigService(this.store);
-    void matchTurn;
     void matchAux;
-    void matchHud;
     void matchConfig;
 
     // 数据查询（V0.2 接入）
@@ -242,6 +279,9 @@ export class Tsubasa2 {
 
     // MatchStart 比赛入口（Meeting 完后下一站）注入 MatchEngineService 让按 START 启动比赛
     (this.router.getController(MATCH_START_SCENE_ID) as MatchStartSceneController).attachMatchEngine(matchEngine);
+    // V0.6: MatchStart sprite 处理链路 — 比赛启动后每帧推进 game logic + HUD + turn
+    (this.router.getController(MATCH_START_SCENE_ID) as MatchStartSceneController).attachMatchHud(matchHud);
+    (this.router.getController(MATCH_START_SCENE_ID) as MatchStartSceneController).attachMatchTurn(matchTurn);
 
     // bank00 scene state machine + NT stream loader 注入 Scene0
     // (PRG $8AF7 scene handler loader + $82ED NT stream loader)
