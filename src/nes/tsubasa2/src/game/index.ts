@@ -137,6 +137,22 @@ export class Tsubasa2 {
         // 推进 cursor (mod 64 wrap)
         this.store.writeByte(NT_CURSOR_KEY, (cursor + 1) & 0x3f);
       },
+      // playBgm(0x0A): 委托 AudioService 播放 BGM
+      playBgm: (id: number) => this.audio.playBgm(id & 0xff),
+      // playSe(0x0B): 委托 AudioService 播放 SE
+      playSe: (id: number) => this.audio.playSe(id & 0xff),
+      // setPalette(0x08): PRG $96A5 palette alloc 翻译
+      //   调 store.palette.bg/spr index 装载, 后续 renderCommit 推 PPU
+      setPalette: (bgIdx: number, sprIdx: number) => {
+        // 简化: 写 palette index 到 store.scene.flags 给后续 render 用
+        this.store.writeByte(0x0090, bgIdx & 0xff);
+        this.store.writeByte(0x0091, sprIdx & 0xff);
+      },
+      // loadSprite(0x09): 委托 SpriteService 装载 OAM 精灵
+      //   签名: putSprite(slot, tile, x, y, attr?) — slot 用 id 当 slot; tile 用 id 当 tile 索引
+      loadSprite: (id: number, x: number, y: number, attr: number) => {
+        this.sprite.putSprite(id & 0x3f, id & 0xff, x & 0xff, y & 0xff, attr & 0xff);
+      },
     });
 
     // 比赛（V0.5 接入）
