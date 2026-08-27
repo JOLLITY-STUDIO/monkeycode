@@ -30,11 +30,11 @@ import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import { TitleMenuCursorService } from '../ui/TitleMenuCursorService';
 import { TitleMenuPaletteInitService } from '../ui/TitleMenuPaletteInitService';
-import { SceneId } from '../system/BootRouter';
 import { TITLE_SCREEN_CHR_BANKS } from '../../data/scene/title-screen-gt';
+import { TITLE_MENU_SCENE_ID, SCENE_14_ID } from './SceneIds';
 
-/** TitleMenu 附加场景号 */
-export const TITLE_MENU_SCENE_ID = 200;
+/** TitleMenu 附加场景号（定义见 SceneIds.ts） */
+export { TITLE_MENU_SCENE_ID } from './SceneIds';
 
 /** OpeningScreenTable 里 title_menu 的 index */
 const TITLE_MENU_SCREEN_INDEX = 12;
@@ -129,8 +129,8 @@ export class TitleMenuSceneController extends SceneController {
    * 2. A 键按下 → 按当前 cursorIdx 切到目标 sceneId。
    *
    * 目标 sceneId 选择（最小可验证）：
-   *   idx=0 KICKOFF  → SceneId.Scene14 (loadSceneRows + 调色板 + 精灵装载, 主游戏 prep)
-   *   idx=1 CONTINUE → SceneId.Scene14 (TODO: 与 KICKOFF 区分)
+   *   idx=0 KICKOFF  → SCENE_14_ID (loadSceneRows + 调色板 + 精灵装载, 主游戏 prep)
+   *   idx=1 CONTINUE → SCENE_14_ID (TODO: 与 KICKOFF 区分)
    *
    * ⚠️ 当前不启动 bank00 5-mode dispatcher（booted=false）— Scene14 跑完 return 2 →
    *    Scene2 hub (do-nothing) → 卡住。这证明 Scene14 controller 路径可跑通, 后续完整流程
@@ -141,7 +141,7 @@ export class TitleMenuSceneController extends SceneController {
     if (this.input.isPressed(1, Button.A)) {
       const idx = this.cursorSvc.getIdx();
       // KICKOFF / CONTINUE 都先跳 Scene14,后续区分
-      return SceneId.Scene14;
+      return SCENE_14_ID;
     }
     return undefined;
   }

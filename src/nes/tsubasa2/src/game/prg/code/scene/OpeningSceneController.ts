@@ -32,10 +32,10 @@ import { Button } from '../system/InputService';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
 import type { AudioService } from '../audio/AudioService';
-import { TITLE_MENU_SCENE_ID } from './TitleMenuSceneController';
+import { OPENING_SCENE_ID, TITLE_MENU_SCENE_ID } from './SceneIds';
 
-/** OpeningScene 特殊场景号(BootRouter 注册表外附加) */
-export const OPENING_SCENE_ID = 100;
+/** OpeningScene 特殊场景号（定义见 SceneIds.ts，避免跨控制器成环） */
+export { OPENING_SCENE_ID } from './SceneIds';
 
 /** 片头序列终点:emu-full 实测 f4200 切黑屏,GT 驱动含 f4200 后转 Scene2(hub) */
 const OPENING_END_NES_FRAME = 4201;

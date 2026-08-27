@@ -26,9 +26,10 @@ import type { InputService } from '../system/InputService';
 import type { MatchEngineService } from '../match/MatchEngineService';
 import type { MatchHudService } from '../match/MatchHudService';
 import type { MatchTurnService } from '../match/MatchTurnService';
+import { MATCH_START_SCENE_ID } from './SceneIds';
 
-/** MatchStart scene id — meeting 后的下一站 */
-export const MATCH_START_SCENE_ID = 0x400;
+/** MatchStart scene id — meeting 后的下一站（定义见 SceneIds.ts） */
+export { MATCH_START_SCENE_ID } from './SceneIds';
 
 export class MatchStartSceneController extends SceneController {
   readonly sceneId = MATCH_START_SCENE_ID;

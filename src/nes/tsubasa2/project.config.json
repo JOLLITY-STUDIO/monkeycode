@@ -35,8 +35,12 @@
     "simulatorPluginLibVersion":  {
 
                                   },
-    "packOptions":  {
+                    "packOptions":  {
                         "ignore":  [
+                                       {
+                            "value":  "dist-cjs2-test",
+                            "type":  "folder"
+                        },
                                        {
                             "value":  "dist-cjs",
                             "type":  "folder"

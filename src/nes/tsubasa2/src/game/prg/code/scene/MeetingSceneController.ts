@@ -16,9 +16,10 @@ import { ScriptEngine } from '../story/ScriptEngine';
 import type { ScriptContext } from '../story/ScriptEngine';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
+import { MEETING_SCENE_ID } from './SceneIds';
 
-/** Meeting scene id（链路终点 — Scene23 完成后跳到这里） */
-export const MEETING_SCENE_ID = 0x300;
+/** Meeting scene id（链路终点 — Scene23 完成后跳到这里；定义见 SceneIds.ts） */
+export { MEETING_SCENE_ID } from './SceneIds';
 
 /** meeting 第一段剧情 script id (BANK18 段 0 - BANK18_DATA_TABLES[0x0000-0x0FFF]) */
 const FIRST_MEETING_SCRIPT_ID = 0x00;
