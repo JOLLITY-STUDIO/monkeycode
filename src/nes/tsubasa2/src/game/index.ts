@@ -16,6 +16,7 @@
 import { HEADER, CONFIG, Mirroring } from './header';
 import { NES_CHR_ROM, CHR_BANKS, CHR_BANK_SIZE, CHR_BANK_COUNT } from './chr/index';
 import { OPENING_BG_PALETTES, OPENING_SPR_PALETTES } from './prg/data/scene/opening-data';
+import { NT_BASE_PATTERN_TABLE, ntBasePattern } from './prg/data/index';
 import {
   DataStore,
   BootRouter,
@@ -154,8 +155,11 @@ export class Tsubasa2 {
       writeRam: (addr: number, value: number) => this.store.writeByte(addr, value),
       writeTextChar: (tile: number) => {
         const cursor = this.store.readByte(NT_CURSOR_KEY) & 0x3f;
+        // PRG $9AA2 NT cell writer 翻译: tile | base_pattern[cursor] 作为最终 tile id
+        // base_pattern[0] = 0x0F, 其余 = 0x00
+        const finalTile = (tile & 0xff) | ntBasePattern(cursor);
         // 写 tile 到 NT (VRAM 写透由 setVramTarget 触发, 直接落到 PPU)
-        this.store.writeByte(NT_BASE + cursor, tile & 0xff);
+        this.store.writeByte(NT_BASE + cursor, finalTile & 0xff);
         // 推进 cursor (mod 64 wrap)
         this.store.writeByte(NT_CURSOR_KEY, (cursor + 1) & 0x3f);
       },

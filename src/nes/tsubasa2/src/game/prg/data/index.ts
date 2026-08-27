@@ -33,6 +33,7 @@ export {
 } from './tables/ram-init-table';
 export { PALETTE_FADE_MAX, fadePalette } from './tables/palette-fade-table';
 export { PALETTE_TABLE, loadPalette } from './tables/palette-table';
+export { NT_BASE_PATTERN_TABLE, ntBasePattern } from './tables/nt-base-pattern';
 export {
   PLAYER_TABLE, findPlayerById, findPlayersByTeam, findPlayerNameById,
   PLAYER_COLOR, GK_STATS, PLAYER_HAIR, NAMED_PLAYER_COLOR,
