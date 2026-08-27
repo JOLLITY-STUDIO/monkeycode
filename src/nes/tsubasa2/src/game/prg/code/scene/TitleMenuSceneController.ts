@@ -31,6 +31,7 @@ import type { InputService } from '../system/InputService';
 import { TitleMenuCursorService } from '../ui/TitleMenuCursorService';
 import { TitleMenuPaletteInitService } from '../ui/TitleMenuPaletteInitService';
 import { SceneId } from '../system/BootRouter';
+import { TITLE_SCREEN_CHR_BANKS } from '../../data/scene/title-screen-gt';
 
 /** TitleMenu 附加场景号 */
 export const TITLE_MENU_SCENE_ID = 200;
@@ -102,8 +103,10 @@ export class TitleMenuSceneController extends SceneController {
       }
     }
 
-    // 4. CHR plan
-    this.currentChrPlan = [{ s: 0, b: screen.chr.slice() }];
+    // 4. CHR plan — 使用 title_screen GT 抽出的 chrBanks[8] (来源 opening-data id=12)
+    //   见 data/scene/title-screen-gt.ts: TITLE_SCREEN_CHR_BANKS = [124,125,126,127,252,125,126,127]
+    //   title 稳定画面, 8 个 1KB slot 映射固定; V0.6 待 emu trace 验证时序
+    this.currentChrPlan = [{ s: 0, b: TITLE_SCREEN_CHR_BANKS.slice() }];
 
     // 5. PPU 显示状态
     store.ppuState.ctrl = 0x88;

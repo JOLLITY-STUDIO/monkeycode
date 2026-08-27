@@ -32,6 +32,8 @@ class MeetingSceneController extends SceneController_1.SceneController {
     }
     onEnter() {
         this.store.writeByte(0x0001, exports.MEETING_SCENE_ID & 0xff);
+        // NT cursor 重置: $05E7 = 0 (PRG $9AA2 NT cell writer 起点)
+        this.store.writeByte(0x05e7, 0x00);
         if (this.scriptEngine) {
             // 启动 meeting 第一段剧情（bank18 段 0 — TitleOpener/Meeting 入口）
             this.scriptCtx = this.scriptEngine.start(FIRST_MEETING_SCRIPT_ID);
@@ -48,10 +50,10 @@ class MeetingSceneController extends SceneController_1.SceneController {
         }
         // 推进 VM 一帧（PRG $90E4-$94D2 dispatch loop 翻译）
         const stillRunning = this.scriptEngine.step(this.scriptCtx);
-        if (!stillRunning) {
-            // VM 完成：meeting 第一段结束 → stay 在 meeting 等用户输入
-            // 真实 ROM 后续 advance 到 team select / difficulty 等，
-            // H5 stub 暂 stay，等后续链路添加
+        if (!stillRunning && !this.scriptCtx.waitingInput) {
+            // VM 第一段结束（EndSegment / EndScript / ctx.finished）
+            // chain advance 到 MatchStart (主比赛入口)
+            return 0x400;
         }
         return undefined;
     }

@@ -382,10 +382,15 @@ export class InterruptService {
 
   /**
    * 渐显表查色（与 RenderingPrimitivesService.fadeLookup 同语义，emu dump 反推）：
-   *   fade = 0 → 全黑 $0F；fade >= 1 → OPENING_FADE_TABLE[(pal & $30) + (fade - 1)] | (pal & $0F)
+   *   fade = 0 → 全黑 $0F
+   *   fade >= PALETTE_FADE_MAX(15) → 满亮 sentinel，直接返回 pal 原值
+   *     （GT palette 流已含 fade 后真实色，无需再查表 — 避免对 0x0F (backdrop) 等
+   *      OPENING_FADE_TABLE 缺数据项返回错的灰/黑）
+   *   1 <= fade <= 14 → OPENING_FADE_TABLE[(pal & $30) + (fade - 1)] | (pal & $0F)
    */
   private fadeLookup(pal: number, fade: number): number {
     if ((fade & 0xff) === 0) return 0x0f;
+    if ((fade & 0xff) >= 15) return pal & 0x3f;
     const idx = ((pal & 0x30) + ((fade - 1) & 0x0f)) & 0x3f;
     return (OPENING_FADE_TABLE[idx] | (pal & 0x0f)) & 0x3f;
   }

@@ -40,14 +40,25 @@ class Scene14Controller extends SceneController_1.SceneController {
         store.writeByte(0x004c, 0x82);
         this.outer = 0;
         this.ready = false;
+        console.log(`[Sc14.onEnter] start, hasScheduler=${!!this.scheduler}`);
         // $A82F 入口：先等 1 帧
-        this.scheduleAfter(1, () => { this.ready = true; });
+        this.scheduleAfter(1, () => {
+            console.log(`[Sc14.scheduleAfter cb] firing, this.ready before = ${this.ready}`);
+            this.ready = true;
+            console.log(`[Sc14.scheduleAfter cb] this.ready after = ${this.ready}`);
+        });
+        console.log(`[Sc14.onEnter] done, this.ready = ${this.ready}`);
     }
     onUpdate(_frame) {
-        if (!this.ready)
+        if (!this.ready) {
+            console.log(`[Sc14.onUpdate f${_frame}] not ready, hasScheduler=${!!this.scheduler}`);
             return undefined;
-        if (this.outer >= OUTER)
+        }
+        if (this.outer >= OUTER) {
+            console.log(`[Sc14.onUpdate f${_frame}] outer=${this.outer} >= OUTER -> return NEXT=${NEXT}`);
             return NEXT;
+        }
+        console.log(`[Sc14.onUpdate f${_frame}] outer=${this.outer} iterating`);
         // $A82F 内层：X=$20..$C8 步长 4，$0468,X(y)<$82 → $046A,X &= ~$0C
         this.prim.a82fClearSpriteAttrIter(0xc8, 0x20);
         this.outer++;

@@ -35,6 +35,10 @@ export { PALETTE_FADE_MAX, fadePalette } from './tables/palette-fade-table';
 export { PALETTE_TABLE, loadPalette } from './tables/palette-table';
 export { NT_BASE_PATTERN_TABLE, ntBasePattern } from './tables/nt-base-pattern';
 export {
+  TITLE_SCREEN_CHR_BANKS, TITLE_SCREEN_STABLE,
+  TITLE_SCREEN_FIRST_FRAME, TITLE_SCREEN_LAST_FRAME,
+} from './scene/title-screen-gt';
+export {
   PLAYER_TABLE, findPlayerById, findPlayersByTeam, findPlayerNameById,
   PLAYER_COLOR, GK_STATS, PLAYER_HAIR, NAMED_PLAYER_COLOR,
 } from './tables/player-table';

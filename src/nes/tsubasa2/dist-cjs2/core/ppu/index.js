@@ -91,8 +91,9 @@ class PPU {
         // Variables used when rendering:
         this.attrib = new Uint8Array(32);
         this.buffer = new Uint32Array(256 * 240);
-        this.bgbuffer = new Uint32Array(256 * 240);
-        this.pixrendered = new Uint32Array(256 * 240);
+        // Buffer row 0 is the pre-render dummy row; rows 1-240 map to NES scanlines 0-239.
+        this.bgbuffer = new Uint32Array(256 * 241);
+        this.pixrendered = new Uint32Array(256 * 241);
         this.validTileData = null;
         this.scantile = new Array(32);
         // Initialize misc vars:
@@ -592,6 +593,9 @@ class PPU {
             }
         }
         this.buffer.fill(bgColor);
+        // Pre-render dummy row and all visible rows must be initialized so that
+        // compositing with a +1 row offset never reads stale data.
+        this.bgbuffer.fill(bgColor);
         this.pixrendered.fill(65);
     }
     endFrame() {
@@ -1173,9 +1177,12 @@ class PPU {
             let buffer = this.buffer;
             let bgbuffer = this.bgbuffer;
             let pixrendered = this.pixrendered;
+            // bgbuffer row 0 is the pre-render dummy; NES scanline N lives in row N+1.
+            // Read with a +256 offset so screen row N shows the correct background row.
             for (let destIndex = si; destIndex < ei; destIndex++) {
-                if (pixrendered[destIndex] > 0xff) {
-                    buffer[destIndex] = bgbuffer[destIndex];
+                let bgIndex = destIndex + 256;
+                if (pixrendered[bgIndex] > 0xff) {
+                    buffer[destIndex] = bgbuffer[bgIndex];
                 }
             }
         }
@@ -1506,8 +1513,10 @@ class PPU {
         for (let scan = startscan; scan < startscan + scancount; scan++) {
             if (scan < 0 || scan >= 240)
                 continue;
-            let count = this.scanlineSpriteCount[scan];
-            let oamBase = scan * 32;
+            // Sprite data for NES scanline N is stored at index N+1 (buffer coordinates).
+            let spriteScan = scan + 1;
+            let count = this.scanlineSpriteCount[spriteScan];
+            let oamBase = spriteScan * 32;
             for (let i = 0; i < count; i++) {
                 let sprY = this.scanlineSecondaryOAM[oamBase + i * 4 + 0];
                 let sprTile = this.scanlineSecondaryOAM[oamBase + i * 4 + 1];

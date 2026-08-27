@@ -403,11 +403,13 @@ export class Tsubasa2 {
       (current as any).applyNtToPpu(target.ppu);
     }
     // 5. PPU 扫描线渲染（H5 不跑 CPU，直接推进一帧）
+    // 与 core NES.frame() 保持一致：startFrame + advanceDots 直到 VBlank，
+    // 由 startVBlank -> renderFramePartially -> endFrame 完成单帧输出。
     try {
       ppu.startFrame();
       ppu.advanceDots(262 * 341);
-      ppu.renderFramePartially(0, 240);
-      ppu.endFrame();
+      // 不再手动调用 renderFramePartially/endFrame，避免与 startVBlank 内嵌的
+      // 渲染路径产生双重合成/裁剪差异。
     } catch (e) {
       console.error('PPU render error at frame ' + this._frame + ': ' + (e as Error).message);
       throw e;
