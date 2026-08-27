@@ -51,12 +51,11 @@ import {
   AudioService,
   OpeningSceneController,
 } from './prg/index';
-import type { AudioBridge } from './prg/code/audio/AudioBridge';
-import { MiniAudioBridge } from './prg/code/audio/MiniAudioBridge';
 import type { FrameTarget } from './runtime/GameRuntime';
 
-// 注：mini-audio 内部已自带 PAPU 实例（H5 core/papu/index 同源 tsnes 移植）
-// 不再在 _initAudio 单独 new — 由 MiniAudioBridge 持有一份 PAPU 并推 samples 到 onSample 回调
+// PAPU（完整 NES APU 模拟器）
+// @ts-ignore — tsnes 移植代码，松散类型
+import PAPU from '../core/papu/index';
 
 export { HEADER, CONFIG, Mirroring };
 export { NES_CHR_ROM, CHR_BANKS, CHR_BANK_SIZE, CHR_BANK_COUNT };
@@ -77,7 +76,7 @@ export class Tsubasa2 {
   readonly input: InputService;
   readonly hardware: HardwareInitService;
   readonly skill: SkillService;
-  readonly audio: AudioBridge;
+  readonly audio: AudioService;
   readonly sprite: SpriteService;
   // bank00 Service (组合根实例化)
   // 注: MainRouterService 由 Bank00MainLoopService 内部持有 (Tsubasa2 不暴露, 避免外部滥用)
@@ -98,7 +97,7 @@ export class Tsubasa2 {
   protected _papu: any = null;
   /** WebAudio 上下文（小程序 wx.createWebAudioContext） */
   protected _webAudio: any = null;
-  /** 音频采样缓冲 (mini-audio PAPU 推送到此, ScriptProcessorNode 消费输出到 WebAudio destination) */
+  /** 音频采样缓冲 */
   protected _audioSamples: number[] = [];
   /** 采样写入位置 */
   protected _sampleOffset = 0;
@@ -248,28 +247,9 @@ export class Tsubasa2 {
     const spriteAnim = new SpriteAnimationService(this.store);
     void sprite;
     void spriteAnim;
+    this.audio = new AudioService(this.store);
 
-    // 音频桥接 (V0.7 用 mini-audio 已测试的 Tsubasa2AudioPlayer 替代 stub)
-    //   - 内部 PAPU 实例 (mini-audio 自带 H5 src/core/papu 子模块)
-    //   - onSample 回调推送 samples 到 _audioSamples (ScriptProcessorNode 消费输出到 WebAudio)
-    //   - AudioService (F1-F7) 保留代码但不实例化 (V0.7+ 接 PRG bank 12-15 SID 后可再用)
-    //
-    // V0.7 音频调试 trace: 统计每秒 _audioSamples 增长速度 + onAudioSample call 数。
-    // 若 _audioSamples 一直空 → bridge 没有 sample 推到 consumer → 链路有断。
-    let _audioSampleCount = 0;
-    let _audioLastLog = 0;
-    this.audio = new MiniAudioBridge(44100, (l: number, r: number) => {
-      this._audioSamples.push((l + r) / 2);
-      _audioSampleCount++;
-      if (_audioSampleCount - _audioLastLog >= 4410) {
-        _audioLastLog = _audioSampleCount;
-        console.log(
-          `[tsubasa-audio] ${_audioSampleCount} samples @ frame=${this._frame} l=${l.toFixed(3)} r=${r.toFixed(3)}`,
-        );
-      }
-    });
-
-    // 音频输出：创建 WebAudio + ScriptProcessorNode (mini-audio PAPU sample → destination)
+    // 音频输出：创建 PAPU + WebAudio（小程序 wx.createWebAudioContext）
     this._initAudio();
 
     // ── 路由组件: bank00 vs bank02 职责清晰切分 ──
@@ -334,23 +314,11 @@ export class Tsubasa2 {
   }
 
   /**
-   * 初始化音频输出：创建 WebAudio 上下文 + AudioBufferSourceNode (loop=true)
+   * 初始化音频：创建 PAPU + WebAudio 输出
    *
-   * V0.7.2 路由切换：从 ScriptProcessorNode 异步 producer/consumer 链，改为
-   * AudioBufferSourceNode 单次 loop 播放预渲染 PCM。
-   *
-   * 路径：
-   *   1) 创建 WebAudio context
-   *   2) 创建一个静音 placeholder AudioBufferSourceNode (loop=true) 接到 destination
-   *      → 保证 destination 立刻有 source，BGM PCM 准备好时再替换
-   *   3) MiniAudioBridge.onPcmReady(cb) 订阅 → cb(pcm, sr) 调时:
-   *      - 创建新 AudioBuffer 把 pcm 复制进去
-   *      - 停掉旧 source，建新 source, loop=true start
-   *      - Log 状态
-   *
-   * ScriptProcessor 路径保留为 fallback (V0.7.1 累积 samples 走 onaudioprocess)。
-   *
-   * AudioContext resume: 跟以前一样，user gesture 触发。
+   * 小程序用 wx.createWebAudioContext() 创建 WebAudio API。
+   * PAPU 的 onAudioSample 回调把采样推入缓冲，
+   * 每帧用 ScriptProcessorNode 或 AudioWorklet 播放。
    */
   protected _initAudio(): void {
     try {
@@ -364,66 +332,43 @@ export class Tsubasa2 {
       }
       this._webAudio = wac;
 
-      // 创建 destination master gain (音量控制)
-      const masterGain: any = wac.createGain ? wac.createGain() : null;
-      if (masterGain) {
-        masterGain.gain.value = 0.7;
-        masterGain.connect(wac.destination);
-      }
-
-      // V0.7.2 路径: AudioBufferSourceNode + loop, 由 MiniAudioBridge.onPcmReady 触发替换
-      let _loopSrc: AudioBufferSourceNode | null = null;
-      const installLoopBuffer = (pcm: Float32Array, sr: number) => {
-        if (!pcm || pcm.length === 0) {
-          console.log('[tsubasa-audio] installLoopBuffer: pcm 为空，跳过');
-          return;
-        }
-        try {
-          // 停旧 source
-          if (_loopSrc) {
-            try { _loopSrc.stop(); } catch { /* ignore */ }
-            try { _loopSrc.disconnect(); } catch { /* ignore */ }
-          }
-          // 建新 buffer + source
-          const buf = wac.createBuffer(1, pcm.length, sr);
-          buf.copyToChannel(pcm, 0);
-          _loopSrc = wac.createBufferSource();
-          _loopSrc.buffer = buf;
-          _loopSrc.loop = true;
-          _loopSrc.connect(masterGain || wac.destination);
-          _loopSrc.start();
-          console.log(
-            `[tsubasa-audio] installLoopBuffer: ${pcm.length} samples @ ${sr}Hz, source.state=${_loopSrc.playbackState || '?'}, ctx.state=${wac.state}`,
-          );
-        } catch (e) {
-          console.log('[tsubasa-audio] installLoopBuffer 失败:', (e as Error).message);
-        }
+      // 创建 PAPU（nes 适配对象）
+      const nes = {
+        opts: {
+          sampleRate: 44100,
+          onAudioSample: (l: number, r: number) => {
+            this._audioSamples.push((l + r) / 2);
+          },
+        },
       };
+      this._papu = new PAPU(nes);
 
-      // 订阅 MiniAudioBridge 的 pre-rendered PCM
-      (this.audio as MiniAudioBridge).onPcmReady((pcm, sr) => installLoopBuffer(pcm, sr));
+      // 注入到 AudioService
+      this.audio.attachPapu(this._papu);
 
-      // V0.7.1 保留的 ScriptProcessor fallback (同时挂上 destination)
-      // 若 AudioBufferSourceNode 路径没声音，此路径仍提供 PCM 流
+      // 创建 ScriptProcessorNode 用于实时播放
+      // 缓冲区 4096 采样，单声道
       const sampleRate = 44100;
-      const processor = wac.createScriptProcessor(512, 0, 1);
+      const processor = wac.createScriptProcessor(4096, 0, 1);
+      const buffer = new Float32Array(4096);
       processor.onaudioprocess = (e: any) => {
         const out = e.outputBuffer.getChannelData(0);
-        const available = this._audioSamples.length - this._sampleOffset;
-        const n = Math.min(Math.max(0, available), out.length);
+        const n = Math.min(this._audioSamples.length - this._sampleOffset, out.length);
         for (let i = 0; i < n; i++) {
           out[i] = this._audioSamples[this._sampleOffset + i];
         }
+        // 填充剩余为静音
         for (let i = n; i < out.length; i++) out[i] = 0;
         this._sampleOffset += n;
-        if (this._sampleOffset > 22050) {
+        // 清理已消费的采样
+        if (this._sampleOffset > 44100) {
           this._audioSamples = this._audioSamples.slice(this._sampleOffset);
           this._sampleOffset = 0;
         }
       };
-      processor.connect(masterGain || wac.destination);
+      processor.connect(wac.destination);
 
-      console.log('[tsubasa] 音频初始化完成: WebAudio + AudioBufferSourceNode (loop) + ScriptProcessor fallback (mini-audio PAPU bridge)');
+      console.log('[tsubasa] 音频初始化完成: PAPU + WebAudio');
 
       // V0.6.5 自动 resume 音频上下文
       // Chrome/WebView 策略: AudioContext 创建后默认 suspended, 必须用户手势调用 .resume()
@@ -433,7 +378,7 @@ export class Tsubasa2 {
         try {
           const r = wac.resume();
           if (r && typeof r.then === 'function') r.then(() => {
-            console.log('[tsubasa] AudioContext resumed immediately, state=' + wac.state);
+            console.log('[tsubasa] AudioContext resumed immediately');
           }).catch(() => { /* ignore */ });
         } catch (_e) { /* ignore */ }
         const tryResume = () => {
@@ -443,7 +388,7 @@ export class Tsubasa2 {
               try {
                 const p = this._webAudio.resume();
                 if (p && typeof p.then === 'function') {
-                  p.then(() => console.log('[tsubasa] AudioContext resumed via user gesture, state=' + this._webAudio.state))
+                  p.then(() => console.log('[tsubasa] AudioContext resumed via user gesture'))
                    .catch(() => {});
                 }
               } catch (_e) { /* ignore */ }
