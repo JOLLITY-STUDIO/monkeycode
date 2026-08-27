@@ -55,7 +55,18 @@ export class MiniAudioBridge implements AudioBridge {
   /** 当前已加载的 BGM ID（player.isPlaying 时） */
   private currentBgmId = 0;
 
+  /** BGM 预渲染 PCM 缓存（_initAudio 通过 onPcmReady 订阅此 buffer, 用 AudioBufferSourceNode.loop 播放） */
+  private _currentPcm: Float32Array | null = null;
+  /** Sample rate 桥接到 index.ts 的 _initAudio（同 MiniAudioBridge 构造时的传入值） */
+  readonly sampleRate: number;
+  /** onPcmReady 监听器列表 (cb 接受 Float32Array mono PCM) */
+  private readonly _pcmListeners: Array<(pcm: Float32Array, sampleRate: number) => void> = [];
+  /** onSample callback (ScriptProcessorNode 路径 fallback 用；新 AudioBufferSourceNode 路径用 _currentPcm) */
+  private readonly onSample: (l: number, r: number) => void;
+
   constructor(sampleRate: number, onSample: (l: number, r: number) => void) {
+    this.sampleRate = sampleRate;
+    this.onSample = onSample;
     this.player = new Tsubasa2AudioPlayer(sampleRate, onSample);
 
     // id '0x30' → 48 parseInt → 0x30; entries 43 个
@@ -78,6 +89,22 @@ export class MiniAudioBridge implements AudioBridge {
   getPlayer(): Tsubasa2AudioPlayer {
     return this.player;
   }
+
+  /**
+   * 订阅 pre-rendered PCM (V0.7.2 路径)：
+   *   1) playBgm(id) 完成加载+启动+预渲染 ~25 秒 PCM (loop 长度) 后自动触发 cb
+   *   2) 已存在的 _currentPcm 会立即触发 (避免初始化 race)
+   *   3) index.ts 的 _initAudio 用此 cb 替换 AudioBufferSourceNode.buffer
+   *
+   * 注意：预渲染是 sync 阻塞 (~1.5s @ 1500 frames × NES CPU 1ms/frame)，发生一次在 playBgm 调用栈内
+   */
+  onPcmReady(cb: (pcm: Float32Array, sampleRate: number) => void): void {
+    this._pcmListeners.push(cb);
+    if (this._currentPcm) cb(this._currentPcm, this.sampleRate);
+  }
+
+  /** 预渲染帧数 (~25 sec @ 60Hz; loop 长度, 决定 AudioBufferSourceNode loop buffer 大小) */
+  private static readonly RENDER_FRAMES = 1800;
 
   playBgm(id: number): void {
     const reqId = id & 0xFF;
@@ -127,6 +154,25 @@ export class MiniAudioBridge implements AudioBridge {
     console.log(
       `[MiniAudioBridge] BGM 0x${reqId.toString(16).padStart(2, '0')} 启动 — bank=${entry.bank} type=${entry.type} bytes=${entry.bytes} notes=${entry.notes} initPtr=0x${entry.nesBase.toString(16)}`,
     );
+
+    // V0.7.2: 预渲染 ~25 秒 PCM + 通知订阅者
+    // 用 player.renderAll(N) 同步生成 Float32Array mono PCM, 一次性循环播放
+    // 替代 ScriptProcessorNode 异步 producer/consumer 链 (避免悬挂/buffer 错配)
+    try {
+      const renderFrames = MiniAudioBridge.RENDER_FRAMES;
+      const t0 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+      const pcm = this.player.renderAll(renderFrames);
+      const t1 = (typeof performance !== 'undefined' ? performance.now() : Date.now());
+      this._currentPcm = pcm;
+      console.log(
+        `[MiniAudioBridge] BGM 0x${reqId.toString(16).padStart(2, '0')} 预渲染 ${pcm.length} PCM samples in ${(t1 - t0).toFixed(0)}ms (${renderFrames} frames, ~${renderFrames / 60}s loop)`,
+      );
+      for (const cb of this._pcmListeners) {
+        try { cb(pcm, this.sampleRate); } catch (e) { console.log('[MiniAudioBridge] onPcmReady listener err:', e); }
+      }
+    } catch (e) {
+      console.log('[MiniAudioBridge] 预渲染失败，回落到 ScriptProcessorNode 路径:', (e as Error).message);
+    }
   }
 
   playSe(id: number): void {

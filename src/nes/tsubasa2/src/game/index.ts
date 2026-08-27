@@ -334,16 +334,23 @@ export class Tsubasa2 {
   }
 
   /**
-   * 初始化音频输出：创建 WebAudio 上下文 + ScriptProcessorNode
+   * 初始化音频输出：创建 WebAudio 上下文 + AudioBufferSourceNode (loop=true)
    *
-   * 与 V0.6.5 之前不同：mini-audio PAPU 实例由 MiniAudioBridge 内部持有。
-   * onSample 回调已经写到 _audioSamples（MiniAudioBridge 构造时 wire），
-   * 这里只需要 ScriptProcessorNode 把 _audioSamples 写到 WebAudio destination。
+   * V0.7.2 路由切换：从 ScriptProcessorNode 异步 producer/consumer 链，改为
+   * AudioBufferSourceNode 单次 loop 播放预渲染 PCM。
    *
-   * 小程序用 wx.createWebAudioContext() 创建 WebAudio API。
-   * 浏览器 (Chrome/Edge/WebView) 默认 AudioContext 是 suspended, 必须用户手势触发 resume。
-   * 1) 立即尝试一次 (某些浏览器在同步初始化时即允许)
-   * 2) 注册 user gesture handler, 任何 input/click/touch 触发后立即 resume
+   * 路径：
+   *   1) 创建 WebAudio context
+   *   2) 创建一个静音 placeholder AudioBufferSourceNode (loop=true) 接到 destination
+   *      → 保证 destination 立刻有 source，BGM PCM 准备好时再替换
+   *   3) MiniAudioBridge.onPcmReady(cb) 订阅 → cb(pcm, sr) 调时:
+   *      - 创建新 AudioBuffer 把 pcm 复制进去
+   *      - 停掉旧 source，建新 source, loop=true start
+   *      - Log 状态
+   *
+   * ScriptProcessor 路径保留为 fallback (V0.7.1 累积 samples 走 onaudioprocess)。
+   *
+   * AudioContext resume: 跟以前一样，user gesture 触发。
    */
   protected _initAudio(): void {
     try {
@@ -357,14 +364,49 @@ export class Tsubasa2 {
       }
       this._webAudio = wac;
 
-      // 创建 ScriptProcessorNode 用于实时播放
-      // V0.7 修复: bufferSize 从 4096 改 512 (mini-audio 每帧 ~735 samples @ 44.1kHz,
-      //   consumer 跟 producer 速率匹配, 避免 4096 大缓冲下 consumer 跑得比 producer 快 8 倍
-      //   导致永远取静音)
-      // samples 由 MiniAudioBridge 构造时 wire 的 onSample 回调推入
+      // 创建 destination master gain (音量控制)
+      const masterGain: any = wac.createGain ? wac.createGain() : null;
+      if (masterGain) {
+        masterGain.gain.value = 0.7;
+        masterGain.connect(wac.destination);
+      }
+
+      // V0.7.2 路径: AudioBufferSourceNode + loop, 由 MiniAudioBridge.onPcmReady 触发替换
+      let _loopSrc: AudioBufferSourceNode | null = null;
+      const installLoopBuffer = (pcm: Float32Array, sr: number) => {
+        if (!pcm || pcm.length === 0) {
+          console.log('[tsubasa-audio] installLoopBuffer: pcm 为空，跳过');
+          return;
+        }
+        try {
+          // 停旧 source
+          if (_loopSrc) {
+            try { _loopSrc.stop(); } catch { /* ignore */ }
+            try { _loopSrc.disconnect(); } catch { /* ignore */ }
+          }
+          // 建新 buffer + source
+          const buf = wac.createBuffer(1, pcm.length, sr);
+          buf.copyToChannel(pcm, 0);
+          _loopSrc = wac.createBufferSource();
+          _loopSrc.buffer = buf;
+          _loopSrc.loop = true;
+          _loopSrc.connect(masterGain || wac.destination);
+          _loopSrc.start();
+          console.log(
+            `[tsubasa-audio] installLoopBuffer: ${pcm.length} samples @ ${sr}Hz, source.state=${_loopSrc.playbackState || '?'}, ctx.state=${wac.state}`,
+          );
+        } catch (e) {
+          console.log('[tsubasa-audio] installLoopBuffer 失败:', (e as Error).message);
+        }
+      };
+
+      // 订阅 MiniAudioBridge 的 pre-rendered PCM
+      (this.audio as MiniAudioBridge).onPcmReady((pcm, sr) => installLoopBuffer(pcm, sr));
+
+      // V0.7.1 保留的 ScriptProcessor fallback (同时挂上 destination)
+      // 若 AudioBufferSourceNode 路径没声音，此路径仍提供 PCM 流
       const sampleRate = 44100;
       const processor = wac.createScriptProcessor(512, 0, 1);
-      const buffer = new Float32Array(512);
       processor.onaudioprocess = (e: any) => {
         const out = e.outputBuffer.getChannelData(0);
         const available = this._audioSamples.length - this._sampleOffset;
@@ -372,18 +414,16 @@ export class Tsubasa2 {
         for (let i = 0; i < n; i++) {
           out[i] = this._audioSamples[this._sampleOffset + i];
         }
-        // 填充剩余为静音
         for (let i = n; i < out.length; i++) out[i] = 0;
         this._sampleOffset += n;
-        // 清理已消费的采样 (每 0.5 秒一次, 避免无限增长)
         if (this._sampleOffset > 22050) {
           this._audioSamples = this._audioSamples.slice(this._sampleOffset);
           this._sampleOffset = 0;
         }
       };
-      processor.connect(wac.destination);
+      processor.connect(masterGain || wac.destination);
 
-      console.log('[tsubasa] 音频初始化完成: WebAudio + ScriptProcessorNode (mini-audio PAPU bridge)');
+      console.log('[tsubasa] 音频初始化完成: WebAudio + AudioBufferSourceNode (loop) + ScriptProcessor fallback (mini-audio PAPU bridge)');
 
       // V0.6.5 自动 resume 音频上下文
       // Chrome/WebView 策略: AudioContext 创建后默认 suspended, 必须用户手势调用 .resume()
@@ -393,7 +433,7 @@ export class Tsubasa2 {
         try {
           const r = wac.resume();
           if (r && typeof r.then === 'function') r.then(() => {
-            console.log('[tsubasa] AudioContext resumed immediately');
+            console.log('[tsubasa] AudioContext resumed immediately, state=' + wac.state);
           }).catch(() => { /* ignore */ });
         } catch (_e) { /* ignore */ }
         const tryResume = () => {
@@ -403,7 +443,7 @@ export class Tsubasa2 {
               try {
                 const p = this._webAudio.resume();
                 if (p && typeof p.then === 'function') {
-                  p.then(() => console.log('[tsubasa] AudioContext resumed via user gesture'))
+                  p.then(() => console.log('[tsubasa] AudioContext resumed via user gesture, state=' + this._webAudio.state))
                    .catch(() => {});
                 }
               } catch (_e) { /* ignore */ }
