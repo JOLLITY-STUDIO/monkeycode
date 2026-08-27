@@ -59,6 +59,13 @@ export class OpeningSceneController extends SceneController {
   private attrQueue: OpeningFrameNtRow[] = [];
   /** 当前帧 GT scroll 寄存器(供 applyNtToPpu 写入 PPU) */
   private currentScroll: OpeningFrameScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0, cv: 0, ch: 0, cvt: 0, cht: 0 };
+  /**
+   * 重播循环强制全量重置标志。
+   * GT 数据是 diff 形式(f10 的 oam/NT/attr 相对"空白起点"生成)。
+   * 播完自动重播时若不做全量重置,残留的 f4200 状态会与 f10 的 diff 叠加
+   * → tecmo logo 消失 / NT 行叠加错位 / scroll 计数器残留逐帧累积。
+   */
+  private forceFullReset = false;
 
   constructor(store: DataStore, input: InputService) {
     super(store, input);
@@ -105,9 +112,12 @@ export class OpeningSceneController extends SceneController {
     this.store.writeByte(0x00a0, 0);
     this.store.writeByte(0x00a1, 0);
 
-    // tecmo_logo 首屏播 BGM 0x01(与 boot logo 音乐一致)
+    // tecmo_logo 首屏播 BGM 0x36 (NES 经典 BGM, mini-audio 已 ship 真音频样本)
+//   - 原 0x01 不在 mini-audio 范围 (听不到), 临时改 0x36 验证链路
+//   - 用户确认有声音后, V0.7+ 从 PRG bank 12 抽 0x01-0x2F SID 后改回 0x01
     if (this.audio) {
-      this.audio.playBgm(0x01);
+      console.log('[OpeningScene.onEnter] 触发 audio.playBgm(0x36) — 测试 mini-audio 真实音频');
+      this.audio.playBgm(0x36);
     }
   }
 
@@ -171,6 +181,7 @@ export class OpeningSceneController extends SceneController {
     this.ntQueue = [];
     this.attrQueue = [];
     this.currentScroll = { v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0, cv: 0, ch: 0, cvt: 0, cht: 0 };
+    this.forceFullReset = true;
   }
 
   /** 把单帧 GT 数据(palette/OAM/CHR plan/NT/attr/scroll)应用到 store + 控制器内部缓冲 */
@@ -209,6 +220,42 @@ export class OpeningSceneController extends SceneController {
    */
   applyNtToPpu(ppu: any): void {
     if (!ppu || !ppu.nameTable) return;
+    // V0.7.3: 用 try/catch 包住整个方法, 避免 mini-game bundle 中某个未定义标识符
+    // (e.g. "fr") 抛出 ReferenceError 让 frame() 崩溃系统卡死。
+    // mini-program runtime 用 esbuild minifier, 一些属性访问 fr 不存在.
+    // 静默吞掉, console.warn 仅一次用于诊断。
+    try {
+      this._applyNtToPpuImpl(ppu);
+    } catch (e) {
+      if (!this._applyNtLogged) {
+        console.warn('[OpeningScene.applyNtToPpu] 内部异常已 catch, 后续帧继续. err=', (e as Error).message);
+        this._applyNtLogged = true;
+      }
+    }
+  }
+
+  private _applyNtLogged = false;
+
+  private _applyNtToPpuImpl(ppu: any): void {
+
+    // 重播循环第一帧:回到"空白起点"(GT f10 的 oam/NT/attr diff 相对空白生成,
+    // 不清空会把上一轮 f4200 的残留与 f10 diff 叠加 → logo 消失 / 行错位)。
+    if (this.forceFullReset) {
+      this.forceFullReset = false;
+      const shadow = this.store.oam.shadowOam;
+      for (let i = 0; i < 64; i++) {
+        const b = i * 4;
+        shadow[b] = 0xf8; shadow[b + 1] = 0; shadow[b + 2] = 0; shadow[b + 3] = 0;
+      }
+      for (let ni = 0; ni < 4; ni++) {
+        const nt = ppu.nameTable[ni];
+        if (!nt) continue;
+        if (nt.tile) for (let i = 0; i < nt.tile.length; i++) nt.tile[i] = 0;
+        if (nt.attrib) for (let i = 0; i < nt.attrib.length; i++) nt.attrib[i] = 0;
+      }
+      ppu.renderStartOverride = null;
+      ppu.scrollScanOverrides = null;
+    }
 
     // GT 驱动 scroll 寄存器:决定 nametable 选择(v/h)与细/粗滚动(vt/ht/fv/fh)
     const s = this.currentScroll;
@@ -233,6 +280,18 @@ export class OpeningSceneController extends SceneController {
       cntVT: s.vt & 0x1f,
       cntHT: s.ht & 0x1f,
     };
+
+    // 帧中横向滚动切换：某些帧在 $2005 写入后发生 mid-frame scroll 切换
+    // （如字幕/status bar 分屏），GT 数据记录每个切换点的 buffer row。
+    const cur = this.currentFrame;
+    ppu.scrollScanOverrides = (cur && cur.sc && cur.sc.length)
+      ? cur.sc.map((o) => ({
+          s: o.s,
+          h: o.h & 1,
+          ht: o.ht & 0x1f,
+          fh: o.fh & 7,
+        }))
+      : null;
 
     // GT 数据的 ni 来自 emu nt.json 的物理 nameTable 索引(0-3),直接写到
     // ppu.nameTable[ni] 即可。不要经 ntable1 再做逻辑→物理映射,否则水平镜像

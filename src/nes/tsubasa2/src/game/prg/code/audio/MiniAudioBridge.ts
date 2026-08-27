@@ -33,11 +33,27 @@ import {
   BGM_SID_LIST,
   type BgmSidEntry,
 } from '../../../../../mini-audio/mini-audio/bgm-data/bgm-sid/index';
-// 完整 Bank 12 (8KB) — player 内部用 nesAddr-0x8000 计算 off，必须用 8192 byte full bank
+// 完整 PRG Bank 数据 (8KB each) — player 内部 _nesAddrToOffset = nesAddr - bgmNesBase
+// 必须按 entry.bank 选对应 bank 的 raw + 正确的 nesBase (CPU 起始地址)
 import PRG_BANK_12 from '../../../../../mini-audio/mini-audio/rom-data/prg-bank-12';
+import PRG_BANK_13 from '../../../../../mini-audio/mini-audio/rom-data/prg-bank-13';
+import PRG_BANK_14 from '../../../../../mini-audio/mini-audio/rom-data/prg-bank-14';
+import PRG_BANK_15 from '../../../../../mini-audio/mini-audio/rom-data/prg-bank-15';
 
-/** NES Bank 12 起始 CPU 地址 */
-const NES_BANK_BASE = 0x8000;
+/** 各 PRG bank 的 NES CPU 基地址 */
+const BANK_NES_BASE: Readonly<Record<number, number>> = {
+  12: 0x8000,
+  13: 0xa000,
+  14: 0xa000,
+  15: 0xa000,
+};
+/** 按 bankId (12/13/14/15) 取 PRG_BANK_XX 数据 */
+const BANK_DATA: Readonly<Record<number, readonly number[]>> = {
+  12: PRG_BANK_12,
+  13: PRG_BANK_13,
+  14: PRG_BANK_14,
+  15: PRG_BANK_15,
+};
 
 /**
  * Mini-audio BGM 接收 range (id 0x30-0x5B 共 43 个，
@@ -132,27 +148,48 @@ export class MiniAudioBridge implements AudioBridge {
     }
 
     // 加载 + 启动
-    // 关键：用完整 PRG_BANK_12 (8KB) 作 sharedRaw + nesBase=NES_BANK_BASE ($8000)
-    //       + headerOffset = initPtr - 0x8000 (initPtr = entry.nesBase)
-    // 这样 player 内部 `_nesAddrToOffset(nesAddr) = nesAddr - 0x8000` 计算 off 落在
-    // 0..8191 范围 (full bank 容量)，不会越界读 garbage。
+    // 关键 (V0.7.2 → V0.7.3 修正):
+    //   V0.7.2 错用 NES_BANK_BASE=0x8000 给所有 bank。Bank 13/14/15 在 NES $A000-$BFFF,
+    //   chPtr-0x8000 越界 8192 → player 找不到 channel → chMask=0 → renderAll 返 0 samples。
+    //   V0.7.3 修正: 按 entry.bank 选对应 PRG_BANK_XX + 正确 nesBase (12→$8000, 13/14/15→$A000)
+    //   player 内部 _nesAddrToOffset = chPtr - bgmNesBase，落在 0..8191 范围
+    const bankData = BANK_DATA[entry.bank] ?? BANK_DATA[12];
+    const bankBase = BANK_NES_BASE[entry.bank] ?? 0x8000;
     const ok = this.player.load(
       entry.trackSQ1,
       entry.trackSQ2,
       entry.trackTRI,
       entry.trackNOISE,
-      PRG_BANK_12 as unknown as readonly number[],
-      NES_BANK_BASE,
-      (entry.nesBase | 0) - NES_BANK_BASE,
+      bankData as unknown as readonly number[],
+      bankBase,
+      (entry.nesBase | 0) - bankBase,
     );
     if (!ok) {
       console.log(`[MiniAudioBridge] BGM 0x${reqId.toString(16).padStart(2, '0')} load() 返回 false`);
       return;
     }
-    this.player.start();
+    // 验证 chMask 已设 (load() 返回 true 不代表 _initChannel 跑了 — 若 headerOffset
+    // 越界 sharedData.length, for 循环 0 迭代 → chMask=0 → start() 返 false 静默)
+    const bridge = this as unknown as { player: { w?: { chMask?: number }; isPlaying?: boolean } };
+    const chMaskAfterLoad = bridge.player.w?.chMask ?? 0;
+    if (chMaskAfterLoad === 0) {
+      console.log(
+        `[MiniAudioBridge] BGM 0x${reqId.toString(16).padStart(2, '0')} chMask=0 after load ` +
+          `(headerOffset=${((entry.nesBase | 0) - bankBase).toString(16)} may be out of sharedData range ${bankData.length}) — channels 不启动, 准备 silent`,
+      );
+      // 显式同步 chMask=0 防止 start() 设了 isPlaying=true 但实际无 channel
+      this.currentBgmId = 0;
+      return;
+    }
+    const started = this.player.start();
+    if (started === false) {
+      console.log(`[MiniAudioBridge] BGM 0x${reqId.toString(16).padStart(2, '0')} start() 返回 false (chMask=0)`);
+      this.currentBgmId = 0;
+      return;
+    }
     this.currentBgmId = reqId;
     console.log(
-      `[MiniAudioBridge] BGM 0x${reqId.toString(16).padStart(2, '0')} 启动 — bank=${entry.bank} type=${entry.type} bytes=${entry.bytes} notes=${entry.notes} initPtr=0x${entry.nesBase.toString(16)}`,
+      `[MiniAudioBridge] BGM 0x${reqId.toString(16).padStart(2, '0')} 启动 — bank=${entry.bank} type=${entry.type} bytes=${entry.bytes} notes=${entry.notes} initPtr=0x${entry.nesBase.toString(16)} chMask=0x${chMaskAfterLoad.toString(16)}`,
     );
 
     // V0.7.2: 预渲染 ~25 秒 PCM + 通知订阅者
