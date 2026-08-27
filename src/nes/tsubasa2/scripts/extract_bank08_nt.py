@@ -9,13 +9,11 @@ bank-08 总 4889 byte ≈ 9 屏.
 """
 import re
 import os
-import json
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 SRC = REPO / "rom-data" / "rom-data" / "prg-bank-08.ts"
 OUT_TS = REPO / "rom-data" / "rom-data" / "bank08-nt-screens.ts"
-OUT_JSON = REPO / "tools" / "_bank08_nt_screens.json"
 
 
 def load_prg_bank08():
@@ -103,13 +101,6 @@ def main():
         is_partial = (s["screen_id"] == full) and rem > 0
         flag = " (PARTIAL)" if is_partial else ""
         print(f"  screen #{s['screen_id']:02d} off=0x{s['offset']:04x} markers={dict(c)}{flag}")
-    # write JSON (for inspection)
-    OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
-    with OUT_JSON.open("w", encoding="utf-8") as f:
-        json.dump(
-            [{"screen_id": s["screen_id"], "offset": s["offset"],
-              "markers": s["markers"], "cells": s["cells"]} for s in screens],
-            f, ensure_ascii=False, indent=2)
     # build TS file
     lines = []
     lines.append("/**")
