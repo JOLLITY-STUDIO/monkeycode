@@ -89,9 +89,69 @@ export const COMMAND_TABLE: ReadonlyArray<number> = [
   0x8707, 0x8699, 0x86B8, 0x86D7, 0x8707, 0x8707, 0x86F6, 0x8655,
 ];
 
-/* 占位通道轨：H5 当前不解析 NES 字节流做实时播放，用元数据即可路由到 PAPU */
-function pseudoChannels(): ReadonlyArray<ChannelTrack> {
-  return [
+/* 真实通道字节数据源（按 requestId 索引）——
+   早期版本返回空 track（pseudoChannels 占位），导致所有 BGM/SE
+   实际静音。当前改为抽 BGM_0x01 + BGM_0x02 的最小可发声 token 流
+   让链路真正工作（不准确占位，与真 PRG 流会有出入但能出声）。
+   V0.7 须从 mini-audio/mini-audio/bgm-data/* + se-data/* 抽字节 + 翻译 token。 */
+const FAKE_SONG_CHANNELS: Record<number, ReadonlyArray<ChannelTrack>> = {
+  // BGM 0x01 (tecmo logo) — 4 channel 各 4 note, 允许相位错位但能出声
+  0x01: [
+    { channel: 'pulse1', track: [
+      { kind: 'note', semitone: 0, octave: 0 },
+      { kind: 'duration', ticks: 16 },
+      { kind: 'note', semitone: 2, octave: 0 },
+      { kind: 'duration', ticks: 16 },
+      { kind: 'note', semitone: 4, octave: 0 },
+      { kind: 'duration', ticks: 16 },
+      { kind: 'note', semitone: 5, octave: 0 },
+      { kind: 'duration', ticks: 16 },
+    ]},
+    { channel: 'pulse2', track: [
+      { kind: 'note', semitone: 7, octave: 0 },
+      { kind: 'duration', ticks: 16 },
+      { kind: 'note', semitone: 5, octave: 0 },
+      { kind: 'duration', ticks: 16 },
+      { kind: 'rest' },
+      { kind: 'duration', ticks: 32 },
+    ]},
+    { channel: 'triangle', track: [
+      { kind: 'note', semitone: 0, octave: 1 },
+      { kind: 'duration', ticks: 32 },
+      { kind: 'note', semitone: 4, octave: 1 },
+      { kind: 'duration', ticks: 32 },
+    ]},
+    { channel: 'noise', track: [
+      { kind: 'noise', freqByte: 0x04 },
+      { kind: 'duration', ticks: 64 },
+    ]},
+  ],
+  // BGM 0x02 (story_cup / drift30) — 极简 placeholder
+  0x02: [
+    { channel: 'pulse1', track: [
+      { kind: 'note', semitone: 4, octave: 1 },
+      { kind: 'duration', ticks: 12 },
+      { kind: 'note', semitone: 2, octave: 1 },
+      { kind: 'duration', ticks: 12 },
+      { kind: 'note', semitone: 0, octave: 1 },
+      { kind: 'duration', ticks: 12 },
+    ]},
+    { channel: 'pulse2', track: [
+      { kind: 'note', semitone: 5, octave: 1 },
+      { kind: 'duration', ticks: 12 },
+      { kind: 'rest' },
+      { kind: 'duration', ticks: 24 },
+    ]},
+    { channel: 'triangle', track: [
+      { kind: 'note', semitone: 0, octave: 2 },
+      { kind: 'duration', ticks: 36 },
+    ]},
+    { channel: 'noise', track: [] },
+  ],
+};
+
+function pseudoChannels(requestId: number): ReadonlyArray<ChannelTrack> {
+  return FAKE_SONG_CHANNELS[requestId] ?? [
     { channel: 'pulse1', track: [] },
     { channel: 'pulse2', track: [] },
     { channel: 'triangle', track: [] },
@@ -109,7 +169,7 @@ function buildSongs(): ReadonlyMap<number, SongRecord> {
       name: s.name ?? '',
       bank: s.bank as unknown as number,
       cpuAddr: s.cpuAddr,
-      channels: pseudoChannels(),
+      channels: pseudoChannels(s.requestId),
       kind: s.type === 'BGM' ? 'bgm' : 'se',
     });
   };
