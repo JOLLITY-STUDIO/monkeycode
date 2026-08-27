@@ -51,11 +51,12 @@ import {
   AudioService,
   OpeningSceneController,
 } from './prg/index';
+import type { AudioBridge } from './prg/code/audio/AudioBridge';
+import { MiniAudioBridge } from './prg/code/audio/MiniAudioBridge';
 import type { FrameTarget } from './runtime/GameRuntime';
 
-// PAPU（完整 NES APU 模拟器）
-// @ts-ignore — tsnes 移植代码，松散类型
-import PAPU from '../core/papu/index';
+// 注：mini-audio 内部已自带 PAPU 实例（H5 core/papu/index 同源 tsnes 移植）
+// 不再在 _initAudio 单独 new — 由 MiniAudioBridge 持有一份 PAPU 并推 samples 到 onSample 回调
 
 export { HEADER, CONFIG, Mirroring };
 export { NES_CHR_ROM, CHR_BANKS, CHR_BANK_SIZE, CHR_BANK_COUNT };
@@ -76,7 +77,7 @@ export class Tsubasa2 {
   readonly input: InputService;
   readonly hardware: HardwareInitService;
   readonly skill: SkillService;
-  readonly audio: AudioService;
+  readonly audio: AudioBridge;
   readonly sprite: SpriteService;
   // bank00 Service (组合根实例化)
   // 注: MainRouterService 由 Bank00MainLoopService 内部持有 (Tsubasa2 不暴露, 避免外部滥用)
@@ -97,7 +98,7 @@ export class Tsubasa2 {
   protected _papu: any = null;
   /** WebAudio 上下文（小程序 wx.createWebAudioContext） */
   protected _webAudio: any = null;
-  /** 音频采样缓冲 */
+  /** 音频采样缓冲 (mini-audio PAPU 推送到此, ScriptProcessorNode 消费输出到 WebAudio destination) */
   protected _audioSamples: number[] = [];
   /** 采样写入位置 */
   protected _sampleOffset = 0;
@@ -247,9 +248,16 @@ export class Tsubasa2 {
     const spriteAnim = new SpriteAnimationService(this.store);
     void sprite;
     void spriteAnim;
-    this.audio = new AudioService(this.store);
 
-    // 音频输出：创建 PAPU + WebAudio（小程序 wx.createWebAudioContext）
+    // 音频桥接 (V0.7 用 mini-audio 已测试的 Tsubasa2AudioPlayer 替代 stub)
+    //   - 内部 PAPU 实例 (mini-audio 自带 H5 src/core/papu 子模块)
+    //   - onSample 回调推送 samples 到 _audioSamples (ScriptProcessorNode 消费输出到 WebAudio)
+    //   - AudioService (F1-F7) 保留代码但不实例化 (V0.7+ 接 PRG bank 12-15 SID 后可再用)
+    this.audio = new MiniAudioBridge(44100, (l: number, r: number) => {
+      this._audioSamples.push((l + r) / 2);
+    });
+
+    // 音频输出：创建 WebAudio + ScriptProcessorNode (mini-audio PAPU sample → destination)
     this._initAudio();
 
     // ── 路由组件: bank00 vs bank02 职责清晰切分 ──
@@ -314,11 +322,16 @@ export class Tsubasa2 {
   }
 
   /**
-   * 初始化音频：创建 PAPU + WebAudio 输出
+   * 初始化音频输出：创建 WebAudio 上下文 + ScriptProcessorNode
+   *
+   * 与 V0.6.5 之前不同：mini-audio PAPU 实例由 MiniAudioBridge 内部持有。
+   * onSample 回调已经写到 _audioSamples（MiniAudioBridge 构造时 wire），
+   * 这里只需要 ScriptProcessorNode 把 _audioSamples 写到 WebAudio destination。
    *
    * 小程序用 wx.createWebAudioContext() 创建 WebAudio API。
-   * PAPU 的 onAudioSample 回调把采样推入缓冲，
-   * 每帧用 ScriptProcessorNode 或 AudioWorklet 播放。
+   * 浏览器 (Chrome/Edge/WebView) 默认 AudioContext 是 suspended, 必须用户手势触发 resume。
+   * 1) 立即尝试一次 (某些浏览器在同步初始化时即允许)
+   * 2) 注册 user gesture handler, 任何 input/click/touch 触发后立即 resume
    */
   protected _initAudio(): void {
     try {
@@ -332,28 +345,16 @@ export class Tsubasa2 {
       }
       this._webAudio = wac;
 
-      // 创建 PAPU（nes 适配对象）
-      const nes = {
-        opts: {
-          sampleRate: 44100,
-          onAudioSample: (l: number, r: number) => {
-            this._audioSamples.push((l + r) / 2);
-          },
-        },
-      };
-      this._papu = new PAPU(nes);
-
-      // 注入到 AudioService
-      this.audio.attachPapu(this._papu);
-
       // 创建 ScriptProcessorNode 用于实时播放
       // 缓冲区 4096 采样，单声道
+      // samples 由 MiniAudioBridge 构造时 wire 的 onSample 回调推入
       const sampleRate = 44100;
       const processor = wac.createScriptProcessor(4096, 0, 1);
       const buffer = new Float32Array(4096);
       processor.onaudioprocess = (e: any) => {
         const out = e.outputBuffer.getChannelData(0);
-        const n = Math.min(this._audioSamples.length - this._sampleOffset, out.length);
+        const available = this._audioSamples.length - this._sampleOffset;
+        const n = Math.min(Math.max(0, available), out.length);
         for (let i = 0; i < n; i++) {
           out[i] = this._audioSamples[this._sampleOffset + i];
         }
@@ -368,7 +369,7 @@ export class Tsubasa2 {
       };
       processor.connect(wac.destination);
 
-      console.log('[tsubasa] 音频初始化完成: PAPU + WebAudio');
+      console.log('[tsubasa] 音频初始化完成: WebAudio + ScriptProcessorNode (mini-audio PAPU bridge)');
 
       // V0.6.5 自动 resume 音频上下文
       // Chrome/WebView 策略: AudioContext 创建后默认 suspended, 必须用户手势调用 .resume()

@@ -49,7 +49,7 @@ import type { NtStreamLoaderService } from '../system/NtStreamLoaderService';
 import type { SceneStateMachine } from '../system/SceneStateMachine';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
-import type { AudioService } from '../audio/AudioService';
+import type { AudioBridge } from '../audio/AudioBridge';
 
 /**
  * 状态机阶段 — 帧时序参考（boot logo frame 9-25 不在本 enum，属 onEnter 装载）：
@@ -87,7 +87,7 @@ export class Scene0Controller extends SceneController {
   private readonly tileBuilder: TileBuilderService;
   private ntStreamLoader: NtStreamLoaderService | null = null;
   private sceneStateMachine: SceneStateMachine | null = null;
-  private audio: AudioService | null = null;
+  private audio: AudioBridge | null = null;
   private phase = Phase.Init;
   /**
    * scheduler callback 抵达标志（PRG $9FA8 pushState 翻译）：
@@ -124,7 +124,7 @@ export class Scene0Controller extends SceneController {
     this.tileBuilder = new TileBuilderService(store, null /* ppu wired at boot */);
   }
 
-  attachAudio(audio: AudioService): void {
+  attachAudio(audio: AudioBridge): void {
     this.audio = audio;
   }
 

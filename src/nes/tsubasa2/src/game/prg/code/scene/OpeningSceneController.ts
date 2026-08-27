@@ -31,7 +31,7 @@ import {
 import { Button } from '../system/InputService';
 import type { DataStore } from '../../data/store/DataStore';
 import type { InputService } from '../system/InputService';
-import type { AudioService } from '../audio/AudioService';
+import type { AudioBridge } from '../audio/AudioBridge';
 import { TITLE_MENU_SCENE_ID } from './TitleMenuSceneController';
 
 /** OpeningScene 特殊场景号(BootRouter 注册表外附加) */
@@ -46,7 +46,7 @@ const STORY_CUP_SCREEN_INDEX = 11;
 
 export class OpeningSceneController extends SceneController {
   readonly sceneId = OPENING_SCENE_ID;
-  private audio: AudioService | null = null;
+  private audio: AudioBridge | null = null;
   /** H5 内部片头帧计数器（onUpdate 自增；每帧 +1）。 */
   private h5Frame = 0;
   /** 当前帧 GT 数据 */
@@ -64,7 +64,7 @@ export class OpeningSceneController extends SceneController {
     super(store, input);
   }
 
-  attachAudio(audio: AudioService): void {
+  attachAudio(audio: AudioBridge): void {
     this.audio = audio;
   }
 
