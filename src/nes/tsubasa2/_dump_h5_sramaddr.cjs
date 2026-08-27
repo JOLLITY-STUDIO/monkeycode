@@ -1,0 +1,11 @@
+const { Tsubasa2 } = require('./dist-cjs2/game/index');
+const { HeadlessRuntime } = require('./dist-cjs2/game/runtime/HeadlessRuntime');
+const runtime = new HeadlessRuntime();
+const game = new Tsubasa2();
+const origLog = console.log;
+console.log = () => {};
+game.boot(runtime);
+console.log = origLog;
+for (let i = 0; i < 700; i++) game.frame(runtime);
+console.log('H5 sramAddress:', runtime.ppu.sramAddress);
+console.log('H5 scanline:', runtime.ppu.scanline);

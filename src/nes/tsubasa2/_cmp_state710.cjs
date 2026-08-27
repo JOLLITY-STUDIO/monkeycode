@@ -1,0 +1,31 @@
+// f710: H5 chrSlots + palette vs emu state 比对
+const fs = require('fs');
+const emuState = JSON.parse(fs.readFileSync('output/emu-full/frame-0710/state.json', 'utf8'));
+const { Tsubasa2 } = require('./dist-cjs2/game/index');
+const { HeadlessRuntime } = require('./dist-cjs2/game/runtime/HeadlessRuntime');
+const runtime = new HeadlessRuntime();
+const game = new Tsubasa2();
+const origLog = console.log;
+console.log = () => {};
+game.boot(runtime);
+console.log = origLog;
+for (let h5 = 0; h5 <= 700; h5++) game.frame(runtime);
+
+const out = [];
+out.push(`emu chrBanks: [${emuState.chrBanks.join(',')}]  spTable=${emuState.spTable} bgTable=${emuState.bgTable}`);
+out.push(`emu scroll: ${JSON.stringify(emuState.scroll)}`);
+out.push(`H5 chrSlots: [${runtime.chrSlots.join(',')}]`);
+const ppu = runtime.ppu;
+out.push(`H5 spTable: ${ppu.spTable} bgTable: ${ppu.bgTable}`);
+out.push(`H5 scroll: regV=${ppu.regV} regH=${ppu.regH} regVT=${ppu.regVT} regHT=${ppu.regHT} regFV=${ppu.regFV} regFH=${ppu.regFH}`);
+out.push(`H5 imgPalette: [${Array.from(ppu.imgPalette).join(',')}]`);
+out.push(`H5 sprPalette: [${Array.from(ppu.sprPalette).join(',')}]`);
+const curTable = ppu.palTable.curTable;
+const emuPal = JSON.parse(fs.readFileSync('output/emu-full/frame-0710/palette.json', 'utf8'));
+out.push(`emu bg RGB: [${emuPal.bg.map(i => curTable[i]).join(',')}]`);
+out.push(`emu spr RGB: [${emuPal.spr.map(i => curTable[i]).join(',')}]`);
+out.push(`emu palette bg: [${JSON.parse(fs.readFileSync('output/emu-full/frame-0710/palette.json','utf8')).bg.join(',')}]`);
+out.push(`emu palette spr: [${JSON.parse(fs.readFileSync('output/emu-full/frame-0710/palette.json','utf8')).spr.join(',')}]`);
+fs.writeFileSync('_cmp_state710_out.txt', out.join('\n'), 'utf8');
+console.log(out.join('\n'));
+console.log('done');

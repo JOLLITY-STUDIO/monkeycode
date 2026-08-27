@@ -250,6 +250,15 @@ export class OpeningSceneController extends SceneController {
       cntHT: s.ht & 0x1f,
     };
 
+    // 帧中逐扫描线横向滚动覆盖(GT sc 数组,按 buffer row 升序):
+    // 真实 ROM 在可见扫描线期间 $2005 写入触发 mid-frame 滚动切换(分屏/状态条),
+    // PPU renderBgScanline 每行开头消费一次,用后即清。无 sc 数据则置 null。
+    const fr = this.currentFrame;
+    ppu.scrollScanOverrides =
+      fr && fr.sc && fr.sc.length
+        ? fr.sc.map((o) => ({ s: o.s, h: o.h & 1, ht: o.ht & 0x1f, fh: o.fh & 7 }))
+        : null;
+
     // GT 数据的 ni 来自 emu nt.json 的物理 nameTable 索引(0-3),直接写到
     // ppu.nameTable[ni] 即可。不要经 ntable1 再做逻辑→物理映射,否则水平镜像
     // 下 NT1/NT3 的零行会覆盖到 NT0/NT2 的同名物理表,把真实数据洗成 0。

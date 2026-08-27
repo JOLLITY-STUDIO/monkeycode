@@ -1,0 +1,6 @@
+src/game/prg/code/audio/MiniAudioBridge.ts(31,37): error TS2307: Cannot find module '../../../../../mini-audio/mini-audio/bgm-data/Tsubasa2AudioPlayer' or its corresponding type declarations.
+src/game/prg/code/audio/MiniAudioBridge.ts(35,8): error TS2307: Cannot find module '../../../../../mini-audio/mini-audio/bgm-data/bgm-sid/index' or its corresponding type declarations.
+src/game/prg/code/audio/MiniAudioBridge.ts(38,25): error TS2307: Cannot find module '../../../../../mini-audio/mini-audio/rom-data/prg-bank-12' or its corresponding type declarations.
+src/game/prg/code/audio/MiniAudioBridge.ts(39,25): error TS2307: Cannot find module '../../../../../mini-audio/mini-audio/rom-data/prg-bank-13' or its corresponding type declarations.
+src/game/prg/code/audio/MiniAudioBridge.ts(40,25): error TS2307: Cannot find module '../../../../../mini-audio/mini-audio/rom-data/prg-bank-14' or its corresponding type declarations.
+src/game/prg/code/audio/MiniAudioBridge.ts(41,25): error TS2307: Cannot find module '../../../../../mini-audio/mini-audio/rom-data/prg-bank-15' or its corresponding type declarations.

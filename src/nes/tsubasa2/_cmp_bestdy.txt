@@ -1,0 +1,3 @@
+f710: whole dy=-1 avg=24.5 | sprite区 dy=-1 avg=15.9 | 中下BG区 dy=-1 avg=24.9
+f760: whole dy=-1 avg=26.9 | sprite区 dy=-1 avg=17.1 | 中下BG区 dy=-1 avg=27.1
+f860: whole dy=0 avg=168.9 | sprite区 dy=0 avg=160.0 | 中下BG区 dy=0 avg=168.9

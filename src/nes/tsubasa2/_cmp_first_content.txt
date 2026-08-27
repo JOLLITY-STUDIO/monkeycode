@@ -1,0 +1,4 @@
+emu  first content row=17 last=227
+H5   first content row=16 last=223
+diff: emu first - H5 first = 1, emu last - H5 last = 4
+内容像素总数=27421 匹配同y=20351(74.2%) 匹配y-1=23245(84.8%)

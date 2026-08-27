@@ -82,6 +82,16 @@ function attrTileDiff(prevRows, curRows) {
   return diffs;
 }
 
+// 帧中逐扫描线 scroll 切换点（mid-frame $2005 写入）
+const scrollScan = (() => {
+  const f = path.join(IN_DIR, 'scroll-scan.json');
+  if (!fs.existsSync(f)) return null;
+  const arr = readJson(f);
+  const m = new Map();
+  for (const e of arr) m.set(e.f, e.sc);
+  return m;
+})();
+
 const frames = [];
 let prevChr = [0, 1, 2, 3, 252, 113, 82, 83]; // boot 期 CHR
 let prevOam = new Array(64).fill(null).map(() => ({ y: 0xf8, tile: 0, attr: 0, x: 0 }));
@@ -155,22 +165,28 @@ for (let f = F0; f <= F1; f++) {
   // 本帧终态 CHR 供下一帧顶部使用
   prevChr = (st && Array.isArray(st.chrBanks)) ? st.chrBanks.slice() : chrPlan[chrPlan.length - 1].b.slice();
 
-  // scroll: 取 state.json.scroll（_emu_full.ts 在每帧 render 前捕获，即本帧 PPU 实际使用的寄存器）。
-  // 这与 emu screen.png 一致。注意：含 mid-frame 滚动切换的帧（如 title curtain / split-screen
-  // status bar）state.json 只记录帧起始寄存器，H5 单帧单 scroll 无法还原，需另行处理。
-  const sc = (st && st.scroll) ? st.scroll : {};
-  const s = {
-    v: sc.regV ?? 0,
-    h: sc.regH ?? 0,
-    vt: sc.regVT ?? 0,
-    ht: sc.regHT ?? 0,
-    fv: sc.regFV ?? 0,
-    fh: sc.regFH ?? 0,
-    cv: sc.cntV ?? sc.regV ?? 0,
-    ch: sc.cntH ?? sc.regH ?? 0,
-    cvt: sc.cntVT ?? sc.regVT ?? 0,
-    cht: sc.cntHT ?? sc.regHT ?? 0,
+  // scroll: 取 pre-render 时刻 scroll 真值（vblank $2005/$2006 写入之后）。
+  // state.json.scroll 是帧循环开始前捕获（vblank 写入之前），不是 PPU 实际渲染值；
+  // scroll-prerender.json 在第一条可见扫描线(scan 0)捕获，与 emu screen.png 一致。
+  const pre = scrollPre ? scrollPre.get(f) : null;
+  const s = pre ? {
+    v: pre.regV ?? 0,
+    h: pre.regH ?? 0,
+    vt: pre.regVT ?? 0,
+    ht: pre.regHT ?? 0,
+    fv: pre.regFV ?? 0,
+    fh: pre.regFH ?? 0,
+    cv: pre.cntV ?? pre.regV ?? 0,
+    ch: pre.cntH ?? pre.regH ?? 0,
+    cvt: pre.cntVT ?? pre.regVT ?? 0,
+    cht: pre.cntHT ?? pre.regHT ?? 0,
+  } : {
+    v: 0, h: 0, vt: 0, ht: 0, fv: 0, fh: 0,
+    cv: 0, ch: 0, cvt: 0, cht: 0,
   };
+
+  // 帧中横向滚动切换点（mid-frame $2005 写入）
+  const sc = scrollScan ? scrollScan.get(f) : null;
 
   frames.push({
     f,
@@ -180,34 +196,49 @@ for (let f = F0; f <= F1; f++) {
     n: ntDiff,
     a: attrDiff,
     s,
+    sc,
   });
 }
 
-// 生成 TypeScript
-const chunks = [];
-chunks.push(`/**\n * OpeningFrameTable — 片头逐帧 Ground Truth\n * 来源:emu-full f${F0}-f${F1}\n * 字段含义:\n *   f: NES 帧号\n *   c: CHR scanline 计划 [{s:scanline, b:[8 bank1k]}]\n *   p: palette {bg,sp} 或 null(与上帧相同)\n *   o: OAM diff [[idx,y,tile,attr,x],...]\n *   n: NT tile 变化行 [{ni,r,d[32]}]\n *   a: 属性表变化行 [{ni,r,d[8]}]\n *   s: 渲染用 scroll 寄存器 {v,h,vt,ht,fv,fh} + 渲染计数器 {cv,ch,cvt,cht}\n */\n`);
-chunks.push(`export interface OpeningFrameChr { s: number; b: ReadonlyArray<number>; }\n`);
-chunks.push(`export interface OpeningFrameNtRow { ni: number; r: number; d: ReadonlyArray<number>; }\n`);
-chunks.push(`export interface OpeningFrameScroll { readonly v: number; readonly h: number; readonly vt: number; readonly ht: number; readonly fv: number; readonly fh: number; readonly cv: number; readonly ch: number; readonly cvt: number; readonly cht: number; }\n`);
-chunks.push(`export interface OpeningFrameEntry {\n  readonly f: number;\n  readonly c: ReadonlyArray<OpeningFrameChr>;\n  readonly p: { readonly bg: ReadonlyArray<number>; readonly spr: ReadonlyArray<number> } | null;\n  readonly o: ReadonlyArray<ReadonlyArray<number>>;\n  readonly n: ReadonlyArray<OpeningFrameNtRow>;\n  readonly a: ReadonlyArray<OpeningFrameNtRow>;\n  readonly s: OpeningFrameScroll;\n}\n`);
-chunks.push(`export const OPENING_FRAMES: ReadonlyArray<OpeningFrameEntry> = [`);
+// 输出到 12 个场景分文件（保持与现有文件结构一致）
+const scenes = [
+  { idx: 1, name: 'opening-tecmo-start', f0: 10, f1: 342, title: 'tecmo-start' },
+  { idx: 2, name: 'opening-title-1', f0: 343, f1: 818, title: 'title-1' },
+  { idx: 3, name: 'opening-title-2', f0: 819, f1: 824, title: 'title-2' },
+  { idx: 4, name: 'opening-subtitle-1', f0: 825, f1: 1039, title: 'subtitle-1' },
+  { idx: 5, name: 'opening-subtitle-2', f0: 1040, f1: 1495, title: 'subtitle-2' },
+  { idx: 6, name: 'opening-subtitle-3', f0: 1496, f1: 1720, title: 'subtitle-3' },
+  { idx: 7, name: 'opening-subtitle-4', f0: 1721, f1: 2140, title: 'subtitle-4' },
+  { idx: 8, name: 'opening-subtitle-5', f0: 2141, f1: 2363, title: 'subtitle-5' },
+  { idx: 9, name: 'opening-subtitle-6', f0: 2364, f1: 2816, title: 'subtitle-6' },
+  { idx: 10, name: 'opening-subtitle-7', f0: 2817, f1: 3040, title: 'subtitle-7' },
+  { idx: 11, name: 'opening-ending-scroll', f0: 3041, f1: 4095, title: 'ending-scroll' },
+  { idx: 12, name: 'opening-ending-end', f0: 4096, f1: 4200, title: 'ending-end' },
+];
 
-const lines = [];
-for (const fr of frames) {
+function frameToLine(fr) {
   const cs = fr.c.map(e => `{s:${e.s},b:[${e.b.join(',')}]}`).join(',');
   const pstr = fr.p ? `{bg:[${fr.p.bg.join(',')}],spr:[${fr.p.spr.join(',')}]}` : 'null';
   const ostr = fr.o.map(a => `[${a.join(',')}]`).join(',');
   const nstr = fr.n.map(r => `{ni:${r.ni},r:${r.r},d:[${r.d.join(',')}]}`).join(',');
   const astr = fr.a.map(r => `{ni:${r.ni},r:${r.r},d:[${r.d.join(',')}]}`).join(',');
   const sstr = `{v:${fr.s.v},h:${fr.s.h},vt:${fr.s.vt},ht:${fr.s.ht},fv:${fr.s.fv},fh:${fr.s.fh},cv:${fr.s.cv},ch:${fr.s.ch},cvt:${fr.s.cvt},cht:${fr.s.cht}}`;
-  lines.push(`  {f:${fr.f},c:[${cs}],p:${pstr},o:[${ostr}],n:[${nstr}],a:[${astr}],s:${sstr}}`);
+  const scstr = (fr.sc && fr.sc.length)
+    ? ',sc:[' + fr.sc.map(o => `{s:${o.s},h:${o.h},ht:${o.ht},fh:${o.fh}}`).join(',') + ']'
+    : '';
+  return `  {f:${fr.f},c:[${cs}],p:${pstr},o:[${ostr}],n:[${nstr}],a:[${astr}],s:${sstr}${scstr}}`;
 }
-chunks.push(lines.join(',\n'));
-chunks.push(`];\n`);
-chunks.push(`export function getOpeningFrame(nesFrame: number): OpeningFrameEntry | undefined {\n  const idx = nesFrame - ${F0};\n  return idx >= 0 && idx < OPENING_FRAMES.length ? OPENING_FRAMES[idx] : undefined;\n}\n`);
 
-fs.writeFileSync(path.join(OUT_DIR, 'OpeningFrameTable.ts'), chunks.join('\n'));
+for (const sc of scenes) {
+  const slice = frames.filter(fr => fr.f >= sc.f0 && fr.f <= sc.f1);
+  const chunks = [];
+  chunks.push(`/**\n * 片头画面 ${sc.idx}/12 — ${sc.title} (帧 f${sc.f0}-f${sc.f1})\n * 画面边界 = NT+ATTR 全屏重绘帧 (数据驱动), 机械拆分自 OpeningFrameTable.ts\n */\n`);
+  chunks.push(`import type { OpeningFrameEntry } from './OpeningFrameTypes';\n\n`);
+  chunks.push(`export const OPENING_FRAMES_SCENE_${sc.idx}: ReadonlyArray<OpeningFrameEntry> = [`);
+  chunks.push(slice.map(frameToLine).join(',\n'));
+  chunks.push(`];\n`);
+  fs.writeFileSync(path.join(OUT_DIR, 'opening', sc.name + '.ts'), chunks.join('\n'));
+  console.log(`scene ${sc.idx}/${sc.title}: f${sc.f0}-f${sc.f1} (${slice.length} frames) → src/game/prg/data/scene/opening/${sc.name}.ts`);
+}
 
-console.log(`generated ${frames.length} frames → src/game/prg/data/scene/OpeningFrameTable.ts`);
-console.log(`first frame f${frames[0].f} chrPlan groups=${frames[0].c.length}`);
-console.log(`last  frame f${frames[frames.length - 1].f} chrPlan groups=${frames[frames.length - 1].c.length}`);
+console.log(`generated ${frames.length} frames across ${scenes.length} scene files`);

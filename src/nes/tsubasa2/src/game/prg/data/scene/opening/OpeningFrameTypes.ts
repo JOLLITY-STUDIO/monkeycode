@@ -11,6 +11,14 @@ export interface OpeningFrameScroll {
   readonly cvt: number; readonly cht: number;
 }
 
+/** 帧中横向 scroll 切换点（buffer row），由 $2005 mid-frame 写入触发 */
+export interface OpeningFrameScrollOverride {
+  readonly s: number;
+  readonly h: number;
+  readonly ht: number;
+  readonly fh: number;
+}
+
 export interface OpeningFrameEntry {
   readonly f: number;
   readonly c: ReadonlyArray<OpeningFrameChr>;
@@ -19,4 +27,5 @@ export interface OpeningFrameEntry {
   readonly n: ReadonlyArray<OpeningFrameNtRow>;
   readonly a: ReadonlyArray<OpeningFrameNtRow>;
   readonly s: OpeningFrameScroll;
+  readonly sc?: ReadonlyArray<OpeningFrameScrollOverride>;
 }
