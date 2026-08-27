@@ -30,33 +30,50 @@ def load_prg_bank08():
 def split_screens(data: bytes):
     """Yield screen dicts.
 
-    Row stride = 17 bytes (marker + 16 col). 32 row = 544 bytes/screen.
-    Row cells = 32 cells/row = 半行 16 + 半行 16
-    这里把相邻两半拼成 32 cell row (col 0..31).
+    bank-08 NT 流结构:
+      1 subrow = 17 byte = 1 marker byte + 16 tile cell (col 0-15 的半行)
+      1 NT row = 32 cell (col 0-31) = upper subrow (16 cell) + lower subrow (16 cell)
+      1 NT screen = 30 NT row × 32 cell = 60 subrow × 16 = 60 × 17 = 1020 byte (NT cell part)
+
+    bank-08 总 4889 byte = 287 subrow = 4 full screens (240 subrow) + 47 subrow partial.
     """
+    SUBROW_PER_SCREEN = 60  # 30 NT row × 2 (upper/lower) half-row
+    SUBROW_BYTES = 17
+    screen_bytes = SUBROW_PER_SCREEN * SUBROW_BYTES  # 1020 byte
     screens = []
     total = len(data)
-    full = total // 544
-    rem = total % 544
+    full = total // screen_bytes
+    rem = total % screen_bytes
     if rem:
-        print(f"[WARN] trailing {rem} bytes ignored (not full screen)")
-    for s in range(full):
-        base = s * 544
+        print(f"[WARN] trailing {rem} byte (≈ {rem//SUBROW_BYTES} subrow) — kept as partial screen #{full}")
+    for s in range(full + (1 if rem > 0 else 0)):
+        base = s * screen_bytes
+        nt_rows = []  # 30 NT row, each = (marker, [32 cell])
         markers = []
-        cells = []
-        for r in range(32):
-            row_off = base + r * 17
-            marker = data[row_off]
-            half1 = list(data[row_off + 1 : row_off + 17])  # col 0-15
-            next_off = base + (r + 1) * 17 if r < 31 else row_off
-            half2 = list(data[next_off + 1 : next_off + 17])
-            markers.append(marker)
-            cells.append(half1 + half2)
+        for nr in range(SUBROW_PER_SCREEN // 2):  # 30 NT row
+            upper_off = base + (nr * 2) * SUBROW_BYTES
+            lower_off = base + (nr * 2 + 1) * SUBROW_BYTES
+            # upper subrow
+            if upper_off + SUBROW_BYTES <= total:
+                upper_marker = data[upper_off]
+                upper_cells = list(data[upper_off + 1 : upper_off + 17])
+            else:
+                upper_marker = 0xff
+                upper_cells = [0xff] * 16
+            # lower subrow
+            if lower_off + SUBROW_BYTES <= total:
+                lower_marker = data[lower_off]
+                lower_cells = list(data[lower_off + 1 : lower_off + 17])
+            else:
+                lower_marker = 0xff
+                lower_cells = [0xff] * 16
+            markers.extend([upper_marker, lower_marker])
+            nt_rows.append(upper_cells + lower_cells)
         screens.append({
             "screen_id": s,
             "offset": base,
-            "markers": markers,
-            "cells": cells,
+            "markers": markers,  # 60
+            "cells": nt_rows,    # 30 × 32
         })
     return screens
 
@@ -76,11 +93,16 @@ def main():
     screens = split_screens(data)
     print(f"[bank08] full screens = {len(screens)}")
     # dump summary
+    total = len(data)
+    full = total // 544
+    rem = total % 544
     for s in screens:
         labels = [marker_label(m) for m in s["markers"]]
         from collections import Counter
         c = Counter(labels)
-        print(f"  screen #{s['screen_id']:02d} off=0x{s['offset']:04x} markers={dict(c)}")
+        is_partial = (s["screen_id"] == full) and rem > 0
+        flag = " (PARTIAL)" if is_partial else ""
+        print(f"  screen #{s['screen_id']:02d} off=0x{s['offset']:04x} markers={dict(c)}{flag}")
     # write JSON (for inspection)
     OUT_JSON.parent.mkdir(parents=True, exist_ok=True)
     with OUT_JSON.open("w", encoding="utf-8") as f:
@@ -94,7 +116,7 @@ def main():
     lines.append(" * bank08-nt-screens — bank-08 raw NT 流按 32 row × 32 cell 拆屏.")
     lines.append(" *")
     lines.append(" * 行结构: marker(1) + col 0-15 半行(16) + col 16-31 半行(16) = 17 byte/row.")
-    lines.append(" * 屏结构: 32 row × 17 byte = 544 byte.  4889 / 544 = 8 full screens (末尾截断).")
+    lines.append(" * 屏结构: 32 row × 17 byte = 544 byte.  4889 byte = 8 full screens + 1 partial (537 byte).")
     lines.append(" *")
     lines.append(" * 字节语义 (commit 41f3ef04 注释已修正):")
     lines.append(" *   0x00/0x01 = 透明 tile (CHRAM 中已有定义, 跳过不绘制)")
@@ -112,10 +134,10 @@ def main():
     lines.append(" */")
     lines.append("")
     lines.append("export interface Bank08Screen {")
-    lines.append("  readonly screenId: number;     // 屏序 (0..7)")
+    lines.append("  readonly screenId: number;     // 屏序 (0..)")
     lines.append("  readonly offset: number;       // bank-08 起始字节")
-    lines.append("  readonly rowMarkers: readonly string[]; // 32 长度, marker semantic 标签")
-    lines.append("  readonly cells: readonly (readonly number[])[]; // 32×32 tile cell")
+    lines.append("  readonly rowMarkers: readonly string[]; // 60 subrow marker (1 NT row = 2 subrow)")
+    lines.append("  readonly cells: readonly (readonly number[])[]; // 30 NT row × 32 tile cell")
     lines.append("}")
     lines.append("")
     lines.append("const BANK08_NT_SCREENS: readonly Bank08Screen[] = [")
@@ -125,7 +147,7 @@ def main():
         lines.append(f"    offset: 0x{s['offset']:04x},")
         lines.append("    rowMarkers: [")
         # 8 markers per line
-        for i in range(0, 32, 8):
+        for i in range(0, 60, 8):
             chunk = ", ".join(f'"{marker_label(m)}"' for m in s["markers"][i:i+8])
             lines.append(f"      {chunk},")
         lines.append("    ],")
@@ -134,7 +156,7 @@ def main():
             parts = [f"0x{c:02x}" for c in cells_row]
             line = ", ".join(parts[:16])
             line2 = ", ".join(parts[16:])
-            lines.append(f"      [{line},  // row {r}")
+            lines.append(f"      [{line},  // nt_row {r}")
             lines.append(f"       {line2}],")
         lines.append("    ],")
         lines.append("  },")

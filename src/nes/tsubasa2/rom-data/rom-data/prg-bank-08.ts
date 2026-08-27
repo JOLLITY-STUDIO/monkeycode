@@ -1,5 +1,8 @@
 /**
- * PRG-ROM Bank 08 (8KB) — 开篇动画屏幕布局数据 (纯数据 bank)
+ * PRG-ROM Bank 08 (4889 byte — 注释错写 8704 已修正) — 开篇动画屏幕布局数据 (纯数据 bank)
+ * 实际提取字节数: 4889 bytes
+ *   4889 / 544 byte-per-screen (32 row × 17 byte) = 8 full screens + 1 partial (537 byte)
+ *   → 见脚本 scripts/extract_bank08_nt.py 输出的 rom-data/rom-data/bank08-nt-screens.ts
  *
  * ═══════════════════════════════════════════════════════════════
  * 功能: 存储 TECMO logo + THEATER 动画的所有 PPU nametable 数据
@@ -37,9 +40,10 @@
  *   - 0xFF      = 屏切换 mark (数据流到达屏边界)
  *   - 0xFA/0x55/0x8A/0x0F = 段类型标记 (具体语义未覆盖 V0.7)
  *
- * Trace 验证 (frame 10, PC=$8EF0, ($00EA)=$B360):
- *   $B360 → 0x07(E)  $B361 → 0x03(A)  $B362 → 0x14(T)  $B363 → 0x07(E)
- *   即 bank-08 偏移 0x1360 起 → 对应 line 313 前4字节: 07 03 14 07
+ * Trace 验证 (★ 注释错已修正, 不依赖 ★):
+ *   THEATER sequence 14 0A 07 03 14 07 12 (T H E A T E R) 在 bank-08 0x1312 处出现一次 (屏 #4 partial).
+ *   屏 #0 (offset 0x000..0x3FB) 是 LOGO+TOC 序列 (4 透明 padding + 灰白 + title tile + roster tile).
+ *   屏 #4 partial (offset 0xFF0..0x1311) 末尾存在 THEATER tile 序列.
  */
 const PRG_BANK_08: readonly number[] = [
   0xAA, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
