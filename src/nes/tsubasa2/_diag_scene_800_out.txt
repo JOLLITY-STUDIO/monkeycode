@@ -1,0 +1,12 @@
+=== H5 nes=800 场景状态 ===
+store keys: ram,shadowOam,vram,vramDirty,vramTarget,frame,scene,palette,oam,ppuState,fade,audioState,renderQueue,matchRound,matchEvent,playerMove,playerName
+sceneId: undefined
+scene: <err>
+ram 001B: 128
+ram 0628: 0
+ram 0044: 1
+ram 0009: 0
+ram 0079: 128
+ram 007B-008C: 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+game keys: _frame,_papu,_webAudio,_audioSamples,_sampleOffset,store,input,bank00Scheduler,ppuTransfer,ntStreamLoader,sceneStateMachine,scriptEngine,skill,sprite,audio,bank00MainLoop,router,hardware,interrupts
+router.sceneId = 100

@@ -115,6 +115,9 @@ export class TitleMenuSceneController extends SceneController {
     store.scene.scrollX = 0;
     store.scene.scrollY = 0;
     store.scene.scrollFlag = 0x80;
+
+    // 7. 缓存 screen 给 applyNtToPpu 用
+    this.cachedScreen = screen;
   }
 
   /**
@@ -144,6 +147,49 @@ export class TitleMenuSceneController extends SceneController {
   getChrPlan(): ReadonlyArray<OpeningFrameChr> {
     return this.currentChrPlan;
   }
+
+  /**
+   * 强制推 NT 字节到 PPU（每帧 frame() 调）
+   * 真实 ROM 行为：title 是稳定画面,每帧 VBlank 不重写 NT,这里 NT 已经在 onEnter
+   *   写到 store (writeByte 0x2000+0x3C0),由 store.setVramTarget(target.ppu) 自动 flush。
+   *   但 page Tsubasa2.frame() 中 setVramTarget 时机在 nmi 之前 — 当 TitleMenu 进入时
+   *   可能 vramTarget 还是 null。本方法直接 push 到 PPU (覆盖任何残留)。
+   */
+  applyNtToPpu(ppu: any): void {
+    if (!ppu || !this.cachedScreen) return;
+    if (Array.isArray(ppu.nameTable) && ppu.nameTable.length >= 1) {
+      const nt0Tiles = this.cachedScreen.mid.nt[0]?.tile;
+      const nt0Att = this.cachedScreen.mid.nt[0]?.attrib;
+      if (nt0Tiles && nt0Tiles.length >= 32 * 30) {
+        const writeOne = (target: any, tiles: number[], attrs: number[]) => {
+          for (let i = 0; i < 32 * 30 && i < tiles.length; i++) {
+            target[i] = tiles[i] & 0xff;
+          }
+          for (let i = 0; i < 64 && i < attrs.length; i++) {
+            const addr = 0x3c0 + i;
+            target[addr] = attrs[i] & 0xff;
+          }
+        };
+        writeOne(ppu.nameTable[0], nt0Tiles, nt0Att);
+        if (ppu.nameTable[1]) writeOne(ppu.nameTable[1], this.cachedScreen.mid.nt[1]?.tile ?? [], this.cachedScreen.mid.nt[1]?.attrib ?? []);
+        if (ppu.nameTable[2]) writeOne(ppu.nameTable[2], this.cachedScreen.mid.nt[2]?.tile ?? [], this.cachedScreen.mid.nt[2]?.attrib ?? []);
+        if (ppu.nameTable[3]) writeOne(ppu.nameTable[3], this.cachedScreen.mid.nt[3]?.tile ?? [], this.cachedScreen.mid.nt[3]?.attrib ?? []);
+      }
+    }
+    // title 固定 scroll=0,0
+    if ('regV' in ppu) ppu.regV = 0;
+    if ('regH' in ppu) ppu.regH = 0;
+    if ('regVT' in ppu) ppu.regVT = 0;
+    if ('regHT' in ppu) ppu.regHT = 0;
+    if ('regFV' in ppu) ppu.regFV = 0;
+    if ('regFH' in ppu) ppu.regFH = 0;
+    // mask/ctrl: BG+SP on
+    if ('mask' in ppu) ppu.mask = 0x1e;
+    if ('ctrl' in ppu) ppu.ctrl = 0x88;
+  }
+
+  /** 缓存 title screen 数据让 applyNtToPpu 引用 */
+  private cachedScreen: OpeningScreenEntry | null = null;
 
   /** 应用 OAM 全量 (4-tuple [Y, tile, attr, X])到 shadowOam */
   private applyOamFull(oam: ReadonlyArray<ReadonlyArray<number>>): void {

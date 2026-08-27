@@ -61,8 +61,8 @@ console.log = () => {};
 game.boot(runtime);
 console.log = origLog;
 
-const TARGETS = [3725, 3731, 3734, 3742, 3755, 3780]; // NES 帧
-const END = 3780 - 10 + 5;
+const TARGETS = [800]; // NES 帧
+const END = 800 - 10 + 1;
 for (let h5 = 0; h5 <= END; h5++) {
   game.frame(runtime);
   const nes = h5 + 10;

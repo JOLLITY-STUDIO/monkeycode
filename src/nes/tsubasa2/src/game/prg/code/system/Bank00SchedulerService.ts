@@ -102,6 +102,7 @@ export class Bank00SchedulerService {
     callback: SchedulerCallback;
   }): number {
     const slot = this.allocateSlot(req.priority ?? 0);
+    console.log(`[Sch.pushState] priority=${req.priority} timer=${req.timer} slot=${slot?.id}`);
     if (!slot) return -1;
     slot.aReg = req.aReg & 0xff;
     slot.xReg = req.xReg & 0xff;
@@ -117,6 +118,7 @@ export class Bank00SchedulerService {
     slot.state = slot.timer === 0 ? 'READY' : 'WAIT';
     // 同步到 store（$0019 = dispatch flag）
     this.store.writeByte(0x0019, slot.timer === 0 ? 0x00 : 0xfe);
+    console.log(`[Sch.pushState] done slot ${slot.id} state=${slot.state} timer=${slot.timer}`);
     return slot.id;
   }
 
@@ -131,14 +133,17 @@ export class Bank00SchedulerService {
    */
   tickDispatch(): SchedulerSlot[] {
     const dispatched: SchedulerSlot[] = [];
+    if (Math.random() < 0.02) console.log(`[Sch.tick] active slots:`, this.slots.map(s => `${s.id}:${s.state}:t=${s.timer}`).join(','));
     for (const slot of this.slots) {
       if (slot.state === 'IDLE' || slot.state === 'DONE') continue;
+      const prevT = slot.timer;
+      const prevState = slot.state;
       if (slot.timer > 0) {
         slot.timer = (slot.timer - 1) & 0xff;
         if (slot.timer === 0) slot.state = 'READY';
       }
-      if (slot.state === 'READY' && slot.callback) {
-        // 标记 RUNNING 防重入
+      if ((prevT > 0 || prevState === 'READY') && slot.state === 'READY' && slot.callback) {
+        console.log(`[Sch.tickDispatch] slot=${slot.id} state=${prevState}->${slot.state} timer=${prevT}->${slot.timer} invoking cb`);
         slot.state = 'RUNNING';
         const cb = slot.callback;
         slot.callback = null; // 一次性消费
@@ -148,6 +153,8 @@ export class Bank00SchedulerService {
           slot.state = 'DONE';
           dispatched.push(slot);
         }
+      } else {
+        if (slot.state !== 'IDLE' && slot.state !== 'DONE') console.log(`[Sch.tickDispatch] slot=${slot.id} state=${prevState}->${slot.state} timer=${prevT}->${slot.timer} (no cb yet)`);
       }
     }
     // 一帧结束清 $001B bit 7（ROM 中 $9F06 LDA $001B / BPL $9F04 → AND $7F STA $001B / JMP $9EED）

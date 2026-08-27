@@ -161219,13 +161219,24 @@ var Scene14Controller = class extends SceneController {
     store2.writeByte(76, 130);
     this.outer = 0;
     this.ready = false;
+    console.log(`[Sc14.onEnter] start, hasScheduler=${!!this.scheduler}`);
     this.scheduleAfter(1, () => {
+      console.log(`[Sc14.scheduleAfter cb] firing, this.ready before = ${this.ready}`);
       this.ready = true;
+      console.log(`[Sc14.scheduleAfter cb] this.ready after = ${this.ready}`);
     });
+    console.log(`[Sc14.onEnter] done, this.ready = ${this.ready}`);
   }
   onUpdate(_frame) {
-    if (!this.ready) return void 0;
-    if (this.outer >= OUTER) return NEXT8;
+    if (!this.ready) {
+      console.log(`[Sc14.onUpdate f${_frame}] not ready, hasScheduler=${!!this.scheduler}`);
+      return void 0;
+    }
+    if (this.outer >= OUTER) {
+      console.log(`[Sc14.onUpdate f${_frame}] outer=${this.outer} >= OUTER -> return NEXT=${NEXT8}`);
+      return NEXT8;
+    }
+    console.log(`[Sc14.onUpdate f${_frame}] outer=${this.outer} iterating`);
     this.prim.a82fClearSpriteAttrIter(200, 32);
     this.outer++;
     this.ready = false;
@@ -161795,6 +161806,7 @@ var BootRouter = class {
    */
   changeScene(sceneId) {
     const store2 = this.store;
+    console.log(`[BootRouter] changeScene(${sceneId}) from=${this.currentSceneId}`);
     store2.writeByte(1129, 0);
     for (let i = 512; i < 768; i++) store2.writeByte(i, 248);
     for (let addr = 8192; addr <= 9215; addr++) store2.writeByte(addr, 0);
@@ -161806,7 +161818,9 @@ var BootRouter = class {
     store2.scene.currentSceneId = sceneId;
     const controller = this.getController(sceneId);
     this.current = controller;
+    console.log(`[BootRouter] changeScene(${sceneId}) -> controller=${controller?.sceneId} 0x00ED=${store2.readByte(237)}`);
     controller?.onEnter();
+    console.log(`[BootRouter] changeScene(${sceneId}) -> after onEnter 0x00ED=${store2.readByte(237)}`);
   }
   /**
    * 每帧更新 (bank02 Scene0 主循环 dispatch).
@@ -162287,6 +162301,7 @@ var InterruptService = class {
     this.audio?.update();
     this.router?.update(frame);
     this.bank00MainLoop?.tickFrame();
+    if (frame < 80 || frame % 60 === 0) console.log(`[NMI f${frame}] scheduler=${this.scheduler ? "attached" : "null"}`);
     this.scheduler?.tickDispatch();
     store2.scene.flags |= 128;
   }
@@ -162751,6 +162766,7 @@ var Bank00SchedulerService = class {
    */
   pushState(req) {
     const slot = this.allocateSlot(req.priority ?? 0);
+    console.log(`[Sch.pushState] priority=${req.priority} timer=${req.timer} slot=${slot?.id}`);
     if (!slot) return -1;
     slot.aReg = req.aReg & 255;
     slot.xReg = req.xReg & 255;
@@ -162764,6 +162780,7 @@ var Bank00SchedulerService = class {
     slot.callback = req.callback;
     slot.state = slot.timer === 0 ? "READY" : "WAIT";
     this.store.writeByte(25, slot.timer === 0 ? 0 : 254);
+    console.log(`[Sch.pushState] done slot ${slot.id} state=${slot.state} timer=${slot.timer}`);
     return slot.id;
   }
   // ──────────────────────── $9EEF scheduler tail ────────────────────────
@@ -162776,13 +162793,17 @@ var Bank00SchedulerService = class {
    */
   tickDispatch() {
     const dispatched = [];
+    if (Math.random() < 0.02) console.log(`[Sch.tick] active slots:`, this.slots.map((s) => `${s.id}:${s.state}:t=${s.timer}`).join(","));
     for (const slot of this.slots) {
       if (slot.state === "IDLE" || slot.state === "DONE") continue;
+      const prevT = slot.timer;
+      const prevState = slot.state;
       if (slot.timer > 0) {
         slot.timer = slot.timer - 1 & 255;
         if (slot.timer === 0) slot.state = "READY";
       }
-      if (slot.state === "READY" && slot.callback) {
+      if ((prevT > 0 || prevState === "READY") && slot.state === "READY" && slot.callback) {
+        console.log(`[Sch.tickDispatch] slot=${slot.id} state=${prevState}->${slot.state} timer=${prevT}->${slot.timer} invoking cb`);
         slot.state = "RUNNING";
         const cb = slot.callback;
         slot.callback = null;
@@ -162792,6 +162813,8 @@ var Bank00SchedulerService = class {
           slot.state = "DONE";
           dispatched.push(slot);
         }
+      } else {
+        if (slot.state !== "IDLE" && slot.state !== "DONE") console.log(`[Sch.tickDispatch] slot=${slot.id} state=${prevState}->${slot.state} timer=${prevT}->${slot.timer} (no cb yet)`);
       }
     }
     const b001B = this.store.readByte(27);

@@ -182,6 +182,7 @@ export class BootRouter {
    */
   changeScene(sceneId: number): void {
     const store = this.store;
+    console.log(`[BootRouter] changeScene(${sceneId}) from=${this.currentSceneId}`);
     store.writeByte(0x0469, 0x00);
     for (let i = 0x200; i < 0x300; i++) store.writeByte(i, 0xf8);
     for (let addr = 0x2000; addr <= 0x23ff; addr++) store.writeByte(addr, 0);
@@ -195,7 +196,9 @@ export class BootRouter {
     store.scene.currentSceneId = sceneId;
     const controller = this.getController(sceneId);
     this.current = controller;
+    console.log(`[BootRouter] changeScene(${sceneId}) -> controller=${controller?.sceneId} 0x00ED=${store.readByte(0x00ed)}`);
     controller?.onEnter();
+    console.log(`[BootRouter] changeScene(${sceneId}) -> after onEnter 0x00ED=${store.readByte(0x00ed)}`);
   }
 
   /**

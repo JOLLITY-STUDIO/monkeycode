@@ -388,15 +388,19 @@ export class Tsubasa2 {
       console.error('renderCommit error at frame ' + this._frame + ': ' + (e as Error).message);
       throw e;
     }
-    // 4.5 OpeningScene 逐帧 GT 驱动：per-scanline CHR 计划 + 直接写 NT 到 PPU
+    // 4.5 OpeningScene / TitleMenuScene 逐帧 GT 驱动：per-scanline CHR 计划 + NT PPU 渲染前同步
+    //   通用 duck typing: 任何 controller 有 getChrPlan()/applyNtToPpu() 就走该路径
+    //   (Opening/TitleMenu 都实现, 后续 Scene14..Meeting 可复用)
     const ppu: any = target.ppu;
-    if ((store.scene.currentSceneId & 0xff) === SceneId.Opening) {
-      const opening = this.router.getController(SceneId.Opening) as OpeningSceneController;
-      const plan = opening.getChrPlan();
-      if (plan.length > 0 && typeof (target as any).setPerScanlineChrPlan === 'function') {
+    const current = this.router.current;
+    if (current && typeof (current as any).getChrPlan === 'function') {
+      const plan = (current as any).getChrPlan();
+      if (Array.isArray(plan) && plan.length > 0 && typeof (target as any).setPerScanlineChrPlan === 'function') {
         (target as any).setPerScanlineChrPlan(plan);
       }
-      opening.applyNtToPpu(target.ppu);
+    }
+    if (current && typeof (current as any).applyNtToPpu === 'function') {
+      (current as any).applyNtToPpu(target.ppu);
     }
     // 5. PPU 扫描线渲染（H5 不跑 CPU，直接推进一帧）
     try {

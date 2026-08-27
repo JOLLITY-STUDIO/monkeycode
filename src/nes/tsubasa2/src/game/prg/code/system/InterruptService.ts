@@ -99,6 +99,7 @@ export class InterruptService {
     this.bank00MainLoop?.tickFrame();
     // bank00 dispatcher tick — 自动派发所有 timer→0 的 slot callback
     // （替代 ROM 每帧 NMI handler 期间调 bank0 $9085 scheduler dispatch 的副作用）
+    if (frame < 80 || frame % 60 === 0) console.log(`[NMI f${frame}] scheduler=${this.scheduler ? 'attached' : 'null'}`);
     this.scheduler?.tickDispatch();
     store.scene.flags |= 0x80;
   }

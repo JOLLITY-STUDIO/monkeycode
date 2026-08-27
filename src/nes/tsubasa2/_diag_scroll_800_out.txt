@@ -1,0 +1,19 @@
+=== H5 nes=800 PPU 滚动/渲染状态 ===
+cntFV=1 cntV=1 cntH=0 cntVT=0 cntHT=0
+regFV=0 regV=0 regH=0 regVT=0 regHT=0 regS=0
+f_bgPatternTable=0 f_spPatternTable=1
+scanline=0
+renderStartOverride=null
+chrSlots(runtime)=[0,1,2,3,8,9,10,11]
+
+=== emu frame-0800 state.json ===
+scroll: {"regV":0,"regH":0,"regVT":0,"regHT":0,"regFV":0,"regFH":0,"cntV":0,"cntH":0,"cntVT":29,"cntHT":0}
+chrBanks: [0,1,2,3,136,9,10,11]
+bgTable=0 spTable=1 nTblAddress=0
+
+=== H5 palette ===
+bg: [0,43776,27227,16777215,0,13095423,14633471,16777215,0,16755516,16773822,16777215,0,12122296,43776,43776]
+spr: []
+=== emu palette.json ===
+bg: [15,26,24,48,15,54,37,48,15,33,49,48,15,58,26,26]
+spr: [15,15,15,54,15,15,22,54,15,15,48,54,15,15,48,54]
