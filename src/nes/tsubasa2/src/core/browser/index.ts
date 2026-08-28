@@ -54,6 +54,8 @@ export default class Browser {
   _videoConfigStorage!: VideoConfigStorage;
   /** unsubscribe handler for video config changes */
   _videoConfigUnsub?: () => void;
+  /** ResizeObserver 监听父容器尺寸变化 (autoScaleOnResize 用) */
+  _resizeObserver?: ResizeObserver;
   nes!: NES;
   gamepad!: GamepadController;
   keyboard!: KeyboardController;
@@ -148,14 +150,27 @@ export default class Browser {
     document.addEventListener("keyup", this.keyboard.handleKeyUp);
     document.addEventListener("keypress", this.keyboard.handleKeyPress);
 
-    // ─── 监听 video config 变化 → 实时切换 scaler ───
+    // ─── 监听 video config 变化 → 实时切换 scaler + 应用尺寸策略 ───
     this._videoConfigUnsub = this._videoConfigStorage.onChange((cfg) => {
       const scaler = getScaler(cfg.scaler);
       this._screen.setScaler(scaler);
       if (!options.skipAutoFit) {
-        this._screen.fitInParent();
+        this._screen.applyConfigSize(cfg);
       }
     });
+
+    // ─── 父容器 resize → auto-fit (autoScaleOnResize 时) ───
+    if (!options.skipAutoFit && typeof ResizeObserver !== "undefined") {
+      this._resizeObserver = new ResizeObserver(() => {
+        if (this._videoConfigStorage.current.autoScaleOnResize) {
+          this._screen.fitInParent();
+        } else {
+          // 非 auto 模式也跟随最新 config 应用 (parent 尺寸变了的话)
+          this._screen.applyConfigSize(this._videoConfigStorage.current);
+        }
+      });
+      this._resizeObserver.observe(options.container);
+    }
 
     // Load ROM and start if provided
     if (options.romData) {
@@ -205,6 +220,7 @@ export default class Browser {
   destroy(): void {
     this.stop();
     if (this._videoConfigUnsub) this._videoConfigUnsub();
+    if (this._resizeObserver) this._resizeObserver.disconnect();
     document.removeEventListener("keydown", this.keyboard.handleKeyDown);
     document.removeEventListener("keyup", this.keyboard.handleKeyUp);
     document.removeEventListener("keypress", this.keyboard.handleKeyPress);

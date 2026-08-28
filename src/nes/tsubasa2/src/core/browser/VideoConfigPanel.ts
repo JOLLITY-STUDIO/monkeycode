@@ -1,12 +1,13 @@
 // src/core/browser/VideoConfigPanel.ts
 //
-// 可注入的 video config UI panel — 把 HP3X scaler 等选项可视化.
+// 可注入的 video config UI panel — 把 HP3X scaler + auto scale + aspect ratio 等选项可视化.
 // 用法:
 //   const panel = new VideoConfigPanel(storage);
 //   document.body.appendChild(panel.element);
 //   // 自动绑事件到 storage, storage.update 时 panel UI 同步.
 import {
   SCALER_OPTIONS,
+  ASPECT_RATIO_OPTIONS,
   DEFAULT_VIDEO_CONFIG,
   type VideoConfig,
   type VideoConfigStorage,
@@ -24,14 +25,21 @@ export class VideoConfigPanel {
   readonly element: HTMLDivElement;
   private _unsub?: () => void;
   private _selScaler!: HTMLSelectElement;
-  private _chkIntegerScale!: HTMLInputElement;
-  private _chkAspectRatio!: HTMLInputElement;
+  private _chkAutoScale!: HTMLInputElement;
+  private _chkForceAspect!: HTMLInputElement;
+  private _selAspect!: HTMLSelectElement;
+  private _numScaleX!: HTMLInputElement;
+  private _numScaleY!: HTMLInputElement;
   private _chkClipSides!: HTMLInputElement;
   private _chkShowFps!: HTMLInputElement;
   private _chkShowFrameCount!: HTMLInputElement;
   private _btnReset!: HTMLButtonElement;
   private _btnToggle!: HTMLButtonElement;
   private _body!: HTMLDivElement;
+  private _labelScale!: HTMLSpanElement;
+  private _labelScaleY!: HTMLSpanElement;
+  private _rowAspect!: HTMLDivElement;
+  private _rowScaleY!: HTMLDivElement;
 
   constructor(storage: VideoConfigStorage, options: VideoConfigPanelOptions = {}) {
     this.storage = storage;
@@ -52,12 +60,42 @@ export class VideoConfigPanel {
           </select>
           <span class="vcp-hint">HP3X = 高质量 3×</span>
         </div>
+
         <div class="vcp-row">
-          <label class="vcp-lbl"><input type="checkbox" class="vcp-chk-integer"> 整数倍缩放 (无变形)</label>
+          <label class="vcp-lbl">
+            <input type="checkbox" class="vcp-chk-autoscale">
+            Auto Scale on Resize (窗口缩放时自适应)
+          </label>
         </div>
+
         <div class="vcp-row">
-          <label class="vcp-lbl"><input type="checkbox" class="vcp-chk-aspect"> 强制 8:7 NES 原生宽高</label>
+          <label class="vcp-lbl">
+            <input type="checkbox" class="vcp-chk-forceaspect">
+            Force Aspect Ratio (强制宽高比)
+          </label>
         </div>
+
+        <div class="vcp-row vcp-row-aspect">
+          <label class="vcp-lbl">Aspect:</label>
+          <select class="vcp-sel-aspect">
+            ${ASPECT_RATIO_OPTIONS.map(a => `<option value="${a.id}">${a.label}</option>`).join("")}
+          </select>
+        </div>
+
+        <div class="vcp-row">
+          <label class="vcp-lbl">
+            <span class="vcp-label-scalex">Scale:</span>
+            <input type="number" class="vcp-num-scalex" min="0.1" max="16" step="0.1">
+          </label>
+        </div>
+
+        <div class="vcp-row vcp-row-scaley">
+          <label class="vcp-lbl">
+            <span class="vcp-label-scaley">Y Scale:</span>
+            <input type="number" class="vcp-num-scaley" min="0.1" max="16" step="0.1">
+          </label>
+        </div>
+
         <div class="vcp-row">
           <label class="vcp-lbl"><input type="checkbox" class="vcp-chk-clip"> 裁剪左右 8 像素 (NTSC overscan)</label>
         </div>
@@ -82,14 +120,21 @@ export class VideoConfigPanel {
 
     // 缓存子元素引用
     this._selScaler = this.element.querySelector(".vcp-sel-scaler")!;
-    this._chkIntegerScale = this.element.querySelector(".vcp-chk-integer")!;
-    this._chkAspectRatio = this.element.querySelector(".vcp-chk-aspect")!;
+    this._chkAutoScale = this.element.querySelector(".vcp-chk-autoscale")!;
+    this._chkForceAspect = this.element.querySelector(".vcp-chk-forceaspect")!;
+    this._selAspect = this.element.querySelector(".vcp-sel-aspect")!;
+    this._numScaleX = this.element.querySelector(".vcp-num-scalex")!;
+    this._numScaleY = this.element.querySelector(".vcp-num-scaley")!;
     this._chkClipSides = this.element.querySelector(".vcp-chk-clip")!;
     this._chkShowFps = this.element.querySelector(".vcp-chk-fps")!;
     this._chkShowFrameCount = this.element.querySelector(".vcp-chk-frame")!;
     this._btnReset = this.element.querySelector(".vcp-btn-reset")!;
     this._btnToggle = this.element.querySelector(".vcp-toggle")!;
     this._body = this.element.querySelector(".vcp-body")!;
+    this._labelScale = this.element.querySelector(".vcp-label-scalex")!;
+    this._labelScaleY = this.element.querySelector(".vcp-label-scaley")!;
+    this._rowAspect = this.element.querySelector(".vcp-row-aspect")!;
+    this._rowScaleY = this.element.querySelector(".vcp-row-scaley")!;
 
     // 初始同步 UI ↔ storage
     this._applyToUI(storage.current);
@@ -98,11 +143,24 @@ export class VideoConfigPanel {
     this._selScaler.addEventListener("change", () => {
       this.storage.update({ scaler: this._selScaler.value as any });
     });
-    this._chkIntegerScale.addEventListener("change", () => {
-      this.storage.update({ fitWindow: this._chkIntegerScale.checked });
+    this._chkAutoScale.addEventListener("change", () => {
+      this.storage.update({ autoScaleOnResize: this._chkAutoScale.checked });
     });
-    this._chkAspectRatio.addEventListener("change", () => {
-      this.storage.update({ maintainAspectRatio: this._chkAspectRatio.checked });
+    this._chkForceAspect.addEventListener("change", () => {
+      this.storage.update({ forceAspectRatio: this._chkForceAspect.checked });
+      // 强制刷新 label 状态
+      this._applyToUI(this.storage.current);
+    });
+    this._selAspect.addEventListener("change", () => {
+      this.storage.update({ aspectRatio: this._selAspect.value as any });
+    });
+    this._numScaleX.addEventListener("change", () => {
+      const v = parseFloat(this._numScaleX.value);
+      if (isFinite(v)) this.storage.update({ scaleX: v });
+    });
+    this._numScaleY.addEventListener("change", () => {
+      const v = parseFloat(this._numScaleY.value);
+      if (isFinite(v)) this.storage.update({ scaleY: v });
     });
     this._chkClipSides.addEventListener("change", () => {
       this.storage.update({ clipSides: this._chkClipSides.checked });
@@ -132,11 +190,27 @@ export class VideoConfigPanel {
 
   private _applyToUI(cfg: VideoConfig): void {
     this._selScaler.value = cfg.scaler;
-    this._chkIntegerScale.checked = cfg.fitWindow;
-    this._chkAspectRatio.checked = cfg.maintainAspectRatio;
+    this._chkAutoScale.checked = cfg.autoScaleOnResize;
+    this._chkForceAspect.checked = cfg.forceAspectRatio;
+    this._selAspect.value = cfg.aspectRatio;
+    this._numScaleX.value = String(cfg.scaleX);
+    this._numScaleY.value = String(cfg.scaleY);
     this._chkClipSides.checked = cfg.clipSides;
     this._chkShowFps.checked = cfg.showFps;
     this._chkShowFrameCount.checked = cfg.showFrameCount;
+
+    // fceux 同步逻辑:
+    //   forceAspect=true  → label 改 "Scale:", yScale 隐藏, aspect 下拉显示
+    //   forceAspect=false → label 改 "X Scale:", yScale 显示, aspect 下拉隐藏
+    if (cfg.forceAspectRatio) {
+      this._labelScale.textContent = "Scale:";
+      this._rowScaleY.style.display = "none";
+      this._rowAspect.style.display = "flex";
+    } else {
+      this._labelScale.textContent = "X Scale:";
+      this._rowScaleY.style.display = "flex";
+      this._rowAspect.style.display = "none";
+    }
   }
 
   destroy(): void {
@@ -179,8 +253,21 @@ const PANEL_CSS = `
 }
 .tsubasa2-video-config-panel .vcp-lbl {
   flex: 1; cursor: pointer; user-select: none;
+  display: flex; align-items: center; gap: 6px;
 }
-.tsubasa2-video-config-panel select.vcp-sel-scaler {
+.tsubasa2-video-config-panel .vcp-lbl > input[type=number] {
+  flex: 1; max-width: 80px;
+  background: #010409; color: #c9d1d9;
+  border: 1px solid #30363d; border-radius: 4px;
+  padding: 2px 6px;
+}
+.tsubasa2-video-config-panel .vcp-label-scalex,
+.tsubasa2-video-config-panel .vcp-label-scaley {
+  display: inline-block; min-width: 60px;
+  font-weight: 600;
+}
+.tsubasa2-video-config-panel select.vcp-sel-scaler,
+.tsubasa2-video-config-panel select.vcp-sel-aspect {
   flex: 2;
   background: #010409; color: #c9d1d9;
   border: 1px solid #30363d; border-radius: 4px;

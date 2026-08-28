@@ -3,6 +3,8 @@ const SCREEN_HEIGHT = 240;
 
 import type { VideoScaler } from "./scalers/VideoScaler";
 import { getScaler } from "./scalers";
+import type { VideoConfig } from "../../option";
+import { getAspectRatio } from "../../option";
 
 interface ScreenOptions {
   onMouseDown?: (x: number, y: number) => void;
@@ -32,6 +34,7 @@ export default class Screen {
 
   private _handleMouseDown!: (e: MouseEvent) => void;
   private _handleMouseUp!: () => void;
+  private _ro?: ResizeObserver;
 
   constructor(container: HTMLElement, options: ScreenOptions = {}) {
     this.onMouseDown = options.onMouseDown;
@@ -64,6 +67,16 @@ export default class Screen {
     this.currentScaler = options.initialScaler || getScaler("none");
     this._initBuffers(this.currentScaler.scale);
     this._initCanvas();
+
+    // 监听父容器 resize (autoScaleOnResize 时需要响应)
+    if (typeof ResizeObserver !== "undefined") {
+      this._ro = new ResizeObserver(() => {
+        // 这里仅在 Browser 调用 fitInParent() 时生效.
+        // Browser 通过 _videoConfigStorage.onChange 触发 fitInParent().
+        // 单独自定义行为 (override 默认 fitInParent) 可在 caller 处理.
+      });
+      this._ro.observe(container);
+    }
   }
 
   private _initBuffers(scale: 1 | 2 | 3): void {
@@ -109,7 +122,6 @@ export default class Screen {
     this.canvas.width = SCREEN_WIDTH * newScale;
     this.canvas.height = SCREEN_HEIGHT * newScale;
     this._initCanvas();
-    this.fitInParent();
   }
 
   /**
@@ -149,13 +161,18 @@ export default class Screen {
     this.context.putImageData(this.imageData, 0, 0);
   };
 
+  /**
+   * Auto-fit: 按整数倍 fit 到父容器, 保持画布宽高比.
+   * 类似 fceux autoScaleCbx=true 行为.
+   */
   fitInParent = (): void => {
     let parent = this.canvas.parentNode as HTMLElement;
+    if (!parent) return;
     let parentWidth = parent.clientWidth;
     let parentHeight = parent.clientHeight;
-    let parentRatio = parentWidth / parentHeight;
     let desiredRatio = this.canvas.width / this.canvas.height;
-    if (desiredRatio < parentRatio) {
+    if (parentWidth === 0 || parentHeight === 0) return;
+    if (desiredRatio < parentWidth / parentHeight) {
       this.canvas.style.width = `${Math.round(parentHeight * desiredRatio)}px`;
       this.canvas.style.height = `${parentHeight}px`;
     } else {
@@ -163,6 +180,36 @@ export default class Screen {
       this.canvas.style.height = `${Math.round(parentWidth / desiredRatio)}px`;
     }
   };
+
+  /**
+   * 应用 VideoConfig 决定 CSS 尺寸 (与 RenderScaler._applyCssSize 一致逻辑).
+   * Browser 在 onChange 时调这个.
+   *
+   * 优先级:
+   *   1. autoScaleOnResize=true → fitInParent 整数倍 fit
+   *   2. forceAspectRatio=true  → scaleX + aspectRatio
+   *   3. forceAspectRatio=false → 独立 scaleX/Y
+   */
+  applyConfigSize(cfg: VideoConfig): void {
+    const baseW = this.canvas.width;
+    const baseH = this.canvas.height;
+    if (cfg.autoScaleOnResize) {
+      this.fitInParent();
+      return;
+    }
+    if (cfg.forceAspectRatio) {
+      const k = cfg.scaleX;
+      const hPerW = getAspectRatio(cfg.aspectRatio);
+      const baseHRatio = baseH / baseW;
+      const stretchY = hPerW / baseHRatio;
+      this.canvas.style.width = `${baseW * k}px`;
+      this.canvas.style.height = `${baseH * k * stretchY}px`;
+      return;
+    }
+    // 独立 X / Y
+    this.canvas.style.width = `${baseW * cfg.scaleX}px`;
+    this.canvas.style.height = `${baseH * cfg.scaleY}px`;
+  }
 
   screenshot(): HTMLImageElement {
     var img = new Image();
@@ -173,6 +220,7 @@ export default class Screen {
   destroy(): void {
     this.canvas.removeEventListener("mousedown", this._handleMouseDown);
     this.canvas.removeEventListener("mouseup", this._handleMouseUp);
+    if (this._ro) this._ro.disconnect();
     this.canvas.parentNode!.removeChild(this.canvas);
   }
 }

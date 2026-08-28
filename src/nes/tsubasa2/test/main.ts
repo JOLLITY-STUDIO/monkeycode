@@ -34,12 +34,12 @@ const shotCount = $('shotCount');
 const runtime = new HeadlessRuntime();
 const game = new Tsubasa2();
 
-// ─────────────────────────── 视频配置 (HP3X scaler 等) ───────────────────────────
+// ─────────────────────────── 视频配置 (HP3X scaler + aspect/scale) ───────────────────────────
 const videoStorage = new VideoConfigStorage(new LocalStorageAdapter());
 videoStorage.load();
-const renderScaler = new RenderScaler(canvas, ctx, videoStorage);
+const renderScaler = new RenderScaler(canvas, ctx, videoStorage, canvas.parentElement);
 const videoPanel = new VideoConfigPanel(videoStorage);
-log('info', `视频配置: scaler=${videoStorage.current.scaler} (HP3X=${videoStorage.current.scaler === 'hq3x' ? '✅ 启用' : '❌ 关闭'})`);
+log('info', `视频配置: scaler=${videoStorage.current.scaler} HP3X=${videoStorage.current.scaler === 'hq3x' ? '✅' : '❌'} aspect=${videoStorage.current.aspectRatio} scaleX=${videoStorage.current.scaleX.toFixed(2)} autoScale=${videoStorage.current.autoScaleOnResize ? '✅' : '❌'} forceAspect=${videoStorage.current.forceAspectRatio ? '✅' : '❌'}`);
 
 // ─────────────────────────── 工具 ───────────────────────────
 let shotSeq = 0;
