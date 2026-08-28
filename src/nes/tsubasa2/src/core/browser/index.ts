@@ -8,9 +8,16 @@ import GamepadController from "./gamepad";
 import {
   VideoConfigStorage,
   LocalStorageAdapter,
+  TouchConfigStorage,
+  LocalTouchStorageAdapter,
+  shouldEnableTouch,
+  DEFAULT_TOUCH_CONFIG,
   type VideoConfig,
+  type TouchConfig,
 } from "../../option";
 import { getScaler } from "./scalers";
+import { TouchController } from "./touch-controller";
+import { CanvasTouchOverlay } from "./touch-overlay";
 
 // Debug logging, enabled via localStorage.jsnes_debug = 1
 let debugEnabled = false;
@@ -22,6 +29,14 @@ try {
 function debug(...args: any[]): void {
   if (debugEnabled) console.log(...args);
 }
+
+/** NES button ID → 短 label (用于 overlay 显示) */
+const NES_BUTTON_LABEL: Record<number, string> = {
+  0: "A",
+  1: "B",
+  2: "SEL",
+  3: "START",
+};
 
 interface BrowserOptions {
   container: HTMLElement;
@@ -37,8 +52,14 @@ interface BrowserOptions {
   videoConfig?: VideoConfig | VideoConfigStorage;
   /** Skip 自动 fitInParent (caller 自己控制 canvas 尺寸) */
   skipAutoFit?: boolean;
-  /** 启用触屏控制器 (mobile/触屏设备). 默认 false */
+  /** 启用触屏控制器 (mobile/触屏设备).
+   *  - true: 强制启用
+   *  - false: 强制禁用
+   *  - undefined: 自动检测 (navigator.maxTouchPoints > 0 && !pointer:fine)
+   */
   touchEnabled?: boolean;
+  /** 触屏配置 storage (用于自定义持久化). 不传则用 localStorage */
+  touchConfig?: TouchConfig | TouchConfigStorage;
 }
 
 /**
@@ -58,6 +79,14 @@ export default class Browser {
   _videoConfigUnsub?: () => void;
   /** ResizeObserver 监听父容器尺寸变化 (autoScaleOnResize 用) */
   _resizeObserver?: ResizeObserver;
+  /** 触屏 controller (V0.8+) */
+  _touchController?: TouchController;
+  /** 触屏 overlay (canvas 浮层) */
+  _touchOverlay?: CanvasTouchOverlay;
+  /** 触屏 config storage */
+  _touchConfigStorage!: TouchConfigStorage;
+  /** 触屏 config 订阅 */
+  _touchConfigUnsub?: () => void;
   nes!: NES;
   gamepad!: GamepadController;
   keyboard!: KeyboardController;
@@ -153,9 +182,71 @@ export default class Browser {
     document.addEventListener("keypress", this.keyboard.handleKeyPress);
 
     // ─── 触屏控制器 (mobile 端) ───
-    // 默认不启用, 仅当 touchEnabled=true 时装载.
-    if (options.touchEnabled) {
-      // ... 由 Browser 子类化或 config-on 创建, 此处留接口位
+    // 自动检测: undefined 时用 shouldEnableTouch()
+    const touchOn = options.touchEnabled === undefined
+      ? shouldEnableTouch()
+      : options.touchEnabled;
+    if (touchOn) {
+      // 1. 加载 touch config (storage 持久化)
+      if (options.touchConfig instanceof TouchConfigStorage) {
+        this._touchConfigStorage = options.touchConfig;
+      } else if (options.touchConfig && typeof options.touchConfig === "object") {
+        this._touchConfigStorage = new TouchConfigStorage(
+          { getItem() { return null; }, setItem() {}, removeItem() {} },
+          options.touchConfig as TouchConfig,
+        );
+      } else {
+        this._touchConfigStorage = new TouchConfigStorage(new LocalTouchStorageAdapter());
+      }
+      if (!this._touchConfigStorage.loaded) this._touchConfigStorage.load();
+      const cfg = this._touchConfigStorage.current;
+
+      // 2. 创建 overlay canvas (叠加在 game canvas 上, 不抢事件)
+      const w = options.container.clientWidth;
+      const h = options.container.clientHeight;
+      this._touchOverlay = new CanvasTouchOverlay({ width: w, height: h });
+      options.container.appendChild(this._touchOverlay.canvas);
+
+      // 3. 创建 TouchController
+      this._touchController = new TouchController({
+        target: options.container,
+        controller: 1,
+        config: cfg,
+        overlay: this._touchOverlay,
+      }, {
+        onButtonDown: (ctrl, b) => this.nes.buttonDown(ctrl, b),
+        onButtonUp:   (ctrl, b) => this.nes.buttonUp(ctrl, b),
+        onGesture: (type, x, y, button) => {
+          if (!this._touchOverlay) return;
+          const label = NES_BUTTON_LABEL[button] || "?";
+          this._touchOverlay.paintAction({
+            x, y, label,
+            radius: 32,
+            opacity: 1,
+            state: type,
+          });
+        },
+      });
+
+      // 4. 监听 config 变化
+      this._touchConfigUnsub = this._touchConfigStorage.onChange((newCfg) => {
+        this._touchController?.applyConfig(newCfg);
+      });
+
+      // 5. Resize 时同步 overlay canvas 尺寸
+      if (typeof ResizeObserver !== "undefined") {
+        const ro = new ResizeObserver(() => {
+          if (this._touchOverlay) {
+            this._touchOverlay.resize(
+              options.container.clientWidth,
+              options.container.clientHeight,
+            );
+          }
+        });
+        ro.observe(options.container);
+      }
+
+      debug("[Browser] 触屏控制器已启用 (auto-detect=" + (options.touchEnabled === undefined) + ")");
     }
 
     // ─── 监听 video config 变化 → 实时切换 scaler + 应用尺寸策略 ───
@@ -229,6 +320,15 @@ export default class Browser {
     this.stop();
     if (this._videoConfigUnsub) this._videoConfigUnsub();
     if (this._resizeObserver) this._resizeObserver.disconnect();
+    if (this._touchController) {
+      this._touchController.destroy();
+      this._touchController = undefined;
+    }
+    if (this._touchOverlay) {
+      this._touchOverlay.destroy();
+      this._touchOverlay = undefined;
+    }
+    if (this._touchConfigUnsub) this._touchConfigUnsub();
     document.removeEventListener("keydown", this.keyboard.handleKeyDown);
     document.removeEventListener("keyup", this.keyboard.handleKeyUp);
     document.removeEventListener("keypress", this.keyboard.handleKeyPress);
