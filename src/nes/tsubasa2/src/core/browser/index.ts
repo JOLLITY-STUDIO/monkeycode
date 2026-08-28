@@ -37,6 +37,8 @@ interface BrowserOptions {
   videoConfig?: VideoConfig | VideoConfigStorage;
   /** Skip 自动 fitInParent (caller 自己控制 canvas 尺寸) */
   skipAutoFit?: boolean;
+  /** 启用触屏控制器 (mobile/触屏设备). 默认 false */
+  touchEnabled?: boolean;
 }
 
 /**
@@ -149,6 +151,12 @@ export default class Browser {
     document.addEventListener("keydown", this.keyboard.handleKeyDown);
     document.addEventListener("keyup", this.keyboard.handleKeyUp);
     document.addEventListener("keypress", this.keyboard.handleKeyPress);
+
+    // ─── 触屏控制器 (mobile 端) ───
+    // 默认不启用, 仅当 touchEnabled=true 时装载.
+    if (options.touchEnabled) {
+      // ... 由 Browser 子类化或 config-on 创建, 此处留接口位
+    }
 
     // ─── 监听 video config 变化 → 实时切换 scaler + 应用尺寸策略 ───
     this._videoConfigUnsub = this._videoConfigStorage.onChange((cfg) => {
