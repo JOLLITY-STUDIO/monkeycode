@@ -9,12 +9,17 @@
 import { Tsubasa2 } from '../src/game/index';
 import { HeadlessRuntime } from '../src/game/runtime/HeadlessRuntime';
 import Controller from '../src/core/controller';
+import {
+  VideoConfigStorage,
+  LocalStorageAdapter,
+} from '../src/option';
+import { RenderScaler } from '../src/core/browser/RenderScaler';
+import { VideoConfigPanel } from '../src/core/browser/VideoConfigPanel';
 
 // ─────────────────────────── DOM 元素 ───────────────────────────
 const $ = (id: string): HTMLElement => document.getElementById(id)!;
 const canvas = document.getElementById('gameCanvas') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d')!;
-const imageData = ctx.createImageData(256, 240);
 const engineBadge = $('engineBadge');
 const fpsVal = $('fpsVal');
 const frameVal = $('frameVal');
@@ -28,6 +33,13 @@ const shotCount = $('shotCount');
 // ─────────────────────────── 引擎实例 ───────────────────────────
 const runtime = new HeadlessRuntime();
 const game = new Tsubasa2();
+
+// ─────────────────────────── 视频配置 (HP3X scaler 等) ───────────────────────────
+const videoStorage = new VideoConfigStorage(new LocalStorageAdapter());
+videoStorage.load();
+const renderScaler = new RenderScaler(canvas, ctx, videoStorage);
+const videoPanel = new VideoConfigPanel(videoStorage);
+log('info', `视频配置: scaler=${videoStorage.current.scaler} (HP3X=${videoStorage.current.scaler === 'hq3x' ? '✅ 启用' : '❌ 关闭'})`);
 
 // ─────────────────────────── 工具 ───────────────────────────
 let shotSeq = 0;
@@ -282,18 +294,8 @@ let fpsFrames = 0;
 
 function frame(t: number): void {
   game.frame(runtime);
-  // 绘制帧缓冲
-  const buf = runtime.ppu.buffer as Uint32Array;
-  const data = imageData.data as Uint8ClampedArray;
-  for (let i = 0, n = buf.length; i < n; i++) {
-    const v = buf[i];
-    const o = i * 4;
-    data[o] = (v >>> 16) & 0xff;
-    data[o + 1] = (v >>> 8) & 0xff;
-    data[o + 2] = v & 0xff;
-    data[o + 3] = 0xff;
-  }
-  ctx.putImageData(imageData, 0, 0);
+  // 绘制帧缓冲 (经 videoConfig.scaler 升采样)
+  renderScaler.renderFrame(runtime.ppu.buffer as Uint32Array);
 
   // 统计
   if (lastTs) {

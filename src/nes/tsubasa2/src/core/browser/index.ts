@@ -5,6 +5,12 @@ import Speakers from "./speakers";
 import FrameTimer from "./frame-timer";
 import KeyboardController from "./keyboard";
 import GamepadController from "./gamepad";
+import {
+  VideoConfigStorage,
+  LocalStorageAdapter,
+  type VideoConfig,
+} from "../../option";
+import { getScaler } from "./scalers";
 
 // Debug logging, enabled via localStorage.jsnes_debug = 1
 let debugEnabled = false;
@@ -22,6 +28,15 @@ interface BrowserOptions {
   romData?: string;
   onError?: (e: Error) => void;
   onBatteryRamWrite?: (addr: number, value: number) => void;
+  /**
+   * 视频配置 (HP3X scaler 等).
+   *  - 传 VideoConfigStorage: 复用 caller 自己的 storage (用于跨实例 share config 或自定义持久化)
+   *  - 传 VideoConfig object: 一帧直接配置, 不会被持久化
+   *  - 不传: 默认 localStorage 持久化
+   */
+  videoConfig?: VideoConfig | VideoConfigStorage;
+  /** Skip 自动 fitInParent (caller 自己控制 canvas 尺寸) */
+  skipAutoFit?: boolean;
 }
 
 /**
@@ -35,6 +50,10 @@ export default class Browser {
   _frameTimer!: FrameTimer;
   _gamepadPolling!: { stop: () => void };
   _fpsInterval?: number;
+  /** 当前 video config storage */
+  _videoConfigStorage!: VideoConfigStorage;
+  /** unsubscribe handler for video config changes */
+  _videoConfigUnsub?: () => void;
   nes!: NES;
   gamepad!: GamepadController;
   keyboard!: KeyboardController;
@@ -42,8 +61,28 @@ export default class Browser {
   constructor(options: BrowserOptions = {}) {
     this._options = options;
 
-    // Create screen (creates <canvas> inside container)
+    // ─── 视频配置初始化 ───
+    if (options.videoConfig instanceof VideoConfigStorage) {
+      this._videoConfigStorage = options.videoConfig;
+    } else if (options.videoConfig && typeof options.videoConfig === "object") {
+      // 一次性 config, 用空 storage adapter
+      this._videoConfigStorage = new VideoConfigStorage(
+        { getItem() { return null; }, setItem() {}, removeItem() {} },
+        options.videoConfig,
+      );
+    } else {
+      // 默认 localStorage 持久化
+      this._videoConfigStorage = new VideoConfigStorage(new LocalStorageAdapter());
+    }
+    if (!this._videoConfigStorage.loaded) {
+      this._videoConfigStorage.load();
+    }
+    const initialConfig = this._videoConfigStorage.current;
+    const initialScaler = getScaler(initialConfig.scaler);
+
+    // ─── Screen (注入初始 scaler) ───
     this._screen = new Screen(options.container, {
+      initialScaler,
       onMouseDown: (x: number, y: number) => {
         this.nes.zapperMove(x, y);
         this.nes.zapperFireDown();
@@ -52,7 +91,9 @@ export default class Browser {
         this.nes.zapperFireUp();
       },
     });
-    this._screen.fitInParent();
+    if (!options.skipAutoFit) {
+      this._screen.fitInParent();
+    }
 
     // Create speakers
     this._speakers = new Speakers({
@@ -107,6 +148,15 @@ export default class Browser {
     document.addEventListener("keyup", this.keyboard.handleKeyUp);
     document.addEventListener("keypress", this.keyboard.handleKeyPress);
 
+    // ─── 监听 video config 变化 → 实时切换 scaler ───
+    this._videoConfigUnsub = this._videoConfigStorage.onChange((cfg) => {
+      const scaler = getScaler(cfg.scaler);
+      this._screen.setScaler(scaler);
+      if (!options.skipAutoFit) {
+        this._screen.fitInParent();
+      }
+    });
+
     // Load ROM and start if provided
     if (options.romData) {
       this.nes.loadROM(options.romData);
@@ -138,12 +188,23 @@ export default class Browser {
     this._screen.fitInParent();
   }
 
+  /** Update video config (scaler 等) — 立即应用 + 持久化 */
+  updateVideoConfig(patch: Partial<VideoConfig>): VideoConfig {
+    return this._videoConfigStorage.update(patch);
+  }
+
+  /** 当前 video config (read-only 快照) */
+  get videoConfig(): VideoConfig {
+    return this._videoConfigStorage.current;
+  }
+
   screenshot(): HTMLImageElement {
     return this._screen.screenshot();
   }
 
   destroy(): void {
     this.stop();
+    if (this._videoConfigUnsub) this._videoConfigUnsub();
     document.removeEventListener("keydown", this.keyboard.handleKeyDown);
     document.removeEventListener("keyup", this.keyboard.handleKeyUp);
     document.removeEventListener("keypress", this.keyboard.handleKeyPress);
