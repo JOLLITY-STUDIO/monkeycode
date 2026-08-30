@@ -67,6 +67,7 @@
 | G6 | B4 修正：隐藏标准 SDAT 音频全量逆向 | ✅ | 0x1924800 隐藏 SDAT（5.95MB/161 文件）边界+结构确认；SYMB 全解析（SEQ 27 BGM）；SSEQ 轨道事件流解码；161 文件全量提取（`extracted/SDAT/files/`）；SE 转 WAV（`extracted/SDAT/wav/`）——BUG-010「加密不可解」结论推翻 |
 | G7 | S101：ARM9 主程序函数级逆向（场景状态机/状态驱动/拼图数据结构） | ✅ | 主入口 0x2003000 + 主循环 0x2003388；场景状态机 0x202bea8（bc0 相位 0-4 + c42 待办位）；状态驱动 0x207d898（0x2075310 校验，0x10=全对→完成态 4、≥0x12/负→失败态 7/8）；会话结构 gCurScenePtr@0x20df650（拼图计数+0x28 / 索引@0x20df624）；TS 引擎语义对照一致（BUG-018 定案） |
 | G8 | 画布渲染素材 ROM 化（用户反馈"造旧"专项） | ✅ | 解码 file_94.bin 4bpp 8x8 tile + file_97.bin 16 色调色板；生成 `assets/nds_tiles.png`（tile 0-31）；`src/render/renderer.ts` 改用 ROM tile 绘制外框/提示区/单元格/网格线；页面预加载 `digits.png` + `nds_tiles.png`（DEVLOG 阶段 8） |
+| G9 | SSEQ→BGM 播放器（真实 NDS ROM 音乐） | ✅ | 自研 SSEQ 解码器（完整命令表：Rest/InstrumentSwitch/BeginTrack/Jump/Call/Pan/TrackVolume/ADSR/Expression/Tempo u16/BeginLoop/EndLoop/DefineTracks/EndTrack）；ndspy 解析 SDAT 关联 SEQ→BANK→WAR；SBNK 三类乐器（Regional/Range/SingleNote）+ NoteDefinition（waveID/root/ADSR/pan）；SWAV 解码（PCM8/PCM16/ADPCM IMA）；`build_bgm_assets.py` 精选 12 首 BGM → `assets/audio/bgm/waves.bin` 5.5MB + `songs.json` 516KB；`src/audio/sseq-player.ts` WebAudio 实时调度（BufferSource + playbackRate 移调 + ADSR + StereoPanner）；`bgm.ts` 包装保留旧 API；ndspy 反向对照 + test_headless ALL PASS |
 
 ## 开发日志（DEVLOG.md）与 BUG 记录（BUGS.md）随任务推进维护。
 
@@ -81,3 +82,4 @@
 | v1.1.0 | G 纵深全部收口（G1 音效 / G2 存档 / G3 文本 / G4 提示映射 / G5 失败判定 + BUG-009 空拼图过滤，223 题） | ✅ |
 | v1.2.0 | B4 修正：隐藏标准 SDAT 音频定案（27 真实 BGM + SE 全部可解码，BUG-010 加密结论推翻，BUG-016） | ✅ |
 | v1.3.0 | S101：ARM9 主程序逆向定案（主入口/主循环/场景状态机/状态驱动，BUG-018，DEVLOG 阶段 7） | ✅ |
+| v1.4.0 | G9：SSEQ→BGM 播放器（真实 NDS ROM 音乐上线，12 首 BGM 完整移植） | ✅ |

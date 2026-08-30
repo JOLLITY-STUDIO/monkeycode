@@ -226,6 +226,14 @@
 
 ### 深度逆向专项（候选，非当前主线）
 - [x] ARM9 主程序函数级逆向（S100 已产出合法解压产物 `arm9_decomp.bin`）：从 0x2011800 入口沿 BL 调用图还原场景管理器/拼图网格/触摸输入/谜题数据结构，指导 TS 核心重写（S101 已定案：主入口 0x2003000、主循环、场景状态机 0x202bea8、状态驱动 0x207d898）
-- [ ] SSEQ→BGM 播放器：将 `extracted/SDAT/files/` 的 27 首 SSEQ 事件流（轨道表 + `key vel delay` 音符）结合 SBNK 音色/WAR 波形转写为小程序可播放格式（MIDI/WebAudio），替换 `src/audio/bgm.ts` 合成 BGM（G6 定案后高优先级）
+- [x] **SSEQ→BGM 播放器（v1.4.0 重大里程碑，G9）**：
+  - 自研 SSEQ 解码器（`tools/sseq_decode3.py`）：基于 ndspy 完整命令表（0x80 Rest / 0x81 InstrumentSwitch / 0x93 BeginTrack / 0x94 Jump / 0x95 Call / 0xC0 Pan / 0xC1 TrackVolume / 0xC5..CD 端口等 / 0xD5 Expression / 0xD4 BeginLoop / 0xE1 Tempo（u16）/ 0xFC EndLoop / 0xFE DefineTracks / 0xFF EndTrack 等），修正 varint 小端 + Tempo u16 + Jump/Call u24 + DefineTracks 3B
+  - SDAT 关联解析（`tools/sdat_link.py`）：ndspy.soundArchive.SDAT → SEQ 记录（`<3H4B` = fileID/unk/bankID/vol/cpr/ppr/playerID）+ BANK 记录（`<HH4h` fileID/unk + 4×swarID）+ WAR 记录（`<HH`）；每首 BGM 精确锁定 bank + war 名称
+  - SBNK 乐器分类：`RegionalInstrument`（type 0x11，按音高区段+ADSR）、`RangeInstrument`（type 0x10，按音高+1 增量）、`SingleNoteInstrument`（type 0x01-0x0F）；每个 NoteDefinition 含 waveID/waveArchiveIDID/pitch/ADSR/pan
+  - SWAV 解码：PCM8/PCM16 直接读、ADPCM IMA 自实现解码（89 步阶表 + 16 索引表）
+  - 资源打包（`tools/build_bgm_assets.py`）：精选 12 首 BGM（title/how_to_play/6 stage music/game_clear_jingle/loop/over_jingle/complete_jingle），输出 `assets/audio/bgm/waves.bin`（5.5MB PCM16 LE 串接）+ `waves.json`（swav 索引）+ `songs.json`（精简事件流）；TS 模块化 `src/data/bgm/songs.ts` + `waves.ts`
+  - TS 实时播放器（`src/audio/sseq-player.ts`）：WebAudio BufferSource 调度 + playbackRate 移调 + ADSR 包络 + StereoPanner；tick 调度 lookahead 0.05s，整曲循环；降级到合成 BGM 不变
+  - 包装器 `src/audio/bgm.ts` 保持旧 API（`bgm.start(kind)` / `stop()` / `setMuted()`），kind 映射：title→title、game→stage_jazz、tutorial→how_to_play、clear→game_clear_jingle、over→game_over_jingle、complete→complete_jingle
+  - 验证：ndspy 反向对照 title.json m0 头 5 音完全一致（首音 t=48 k=40 E vel 127 dur 12 ✓）；test_headless ALL PASS
 - [ ] ARM9 记录解释器：解码 Msg/*.dat 记录区自定义消息脚本（G3 遗留，无用户可见增量，优先级低）
 - [ ] ARM9 拼图提示编码：确认记录区提示生成算法（G4 已定案引擎从解法推导，提示完全一致无需接入）

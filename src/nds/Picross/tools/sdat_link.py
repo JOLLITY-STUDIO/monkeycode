@@ -159,24 +159,47 @@ for name, lk in links.items():
             if inst is None:
                 insts.append(None)
                 continue
-            if hasattr(inst, 'notes'):  # 常规乐器（分速度区）
+            cname = type(inst).__name__
+            if cname == 'RegionalInstrument':  # type 0x11: 按音高区段
+                # regions: [Region(lastPitch, NoteDefinition)]
+                # 累计 lastPitch 推断起始音高
                 regs = []
-                for r in inst.notes:
+                lo = 0
+                for r in inst.regions:
+                    nd = r.noteDefinition
                     regs.append({
-                        'loV': r.lowVelocity, 'hiV': r.highVelocity,
-                        'swav': r.swavIndex, 'root': r.rootKey,
-                        'att': r.attack, 'dec': r.decay, 'sus': r.sustain, 'rel': r.release,
-                        'pan': getattr(r, 'pan', 0),
+                        'loKey': lo, 'hiKey': r.lastPitch,
+                        'swav': nd.waveID, 'root': nd.pitch,
+                        'att': nd.attack, 'dec': nd.decay, 'sus': nd.sustain, 'rel': nd.release,
+                        'pan': getattr(nd, 'pan', 0),
+                        'warID': getattr(nd, 'waveArchiveIDID', 0),
                     })
-                insts.append({'t': 'std', 'regs': regs})
-            else:  # 鼓组乐器
+                    lo = r.lastPitch + 1
+                insts.append({'t': 'regional', 'regs': regs})
+            elif cname == 'RangeInstrument':  # type 0x10: 按音高范围
+                # firstPitch 是基准音高，noteDefinitions 是后续音高定义
                 regs = []
-                for r in inst.notes2 if hasattr(inst, 'notes2') else []:
+                fp = inst.firstPitch
+                for i, nd in enumerate(inst.noteDefinitions):
                     regs.append({
-                        'key': r.key, 'swav': r.swavIndex, 'att': r.attack,
-                        'dec': r.decay, 'sus': r.sustain, 'rel': r.release,
+                        'key': fp + i,
+                        'swav': getattr(nd, 'waveID', 0),
+                        'att': nd.attack, 'dec': nd.decay, 'sus': nd.sustain, 'rel': nd.release,
+                        'pan': getattr(nd, 'pan', 0),
+                        'warID': getattr(nd, 'waveArchiveIDID', 0),
                     })
-                insts.append({'t': 'drum', 'regs': regs})
+                insts.append({'t': 'range', 'firstPitch': fp, 'regs': regs})
+            elif cname == 'SingleNoteInstrument':  # type 0x01-0x0F
+                regs = [{'swav': getattr(inst, 'waveID', 0),
+                         'root': getattr(inst, 'pitch', 60),
+                         'att': getattr(inst, 'attack', 0),
+                         'dec': getattr(inst, 'decay', 0),
+                         'sus': getattr(inst, 'sustain', 0),
+                         'rel': getattr(inst, 'release', 0),
+                         'warID': getattr(inst, 'waveArchiveIDID', 0)}]
+                insts.append({'t': 'single', 'regs': regs})
+            else:
+                insts.append(None)
     except Exception as ex:
         print(f'  bank {bname} 解析失败: {ex}')
         continue
