@@ -1,0 +1,16 @@
+feat(extract): PCE 探索脚本 + 云开发/webview 路径清理
+
+user_data.bin 探查结论:
+- IP.BIN 头位于偏移 0x820 (Hudson 标记 + ASCII 标题)
+- 24 个 CDDA 音轨 (已抽取 wav)
+- 标准图签 (PNG/JPG/GIF/RIFF) 0 命中
+- 0x78 magic 出现 926 次但 0 解压成功, 不是标准 zlib
+  -> Hudson 自己的 ARC/CISO 文件系统
+
+清理:
+- _tools/pcejs-player/ (跟 PC Engine 无关, 是 Mac Plus)
+- miniprogram/pages/pce/ + miniprogram/pce-config.js
+- _pcejs-src/ (jsdf/pcejs Mac Plus 源码)
+
+下次方向: 写 Hudson ARC/CD-ROM 文件系统解码器, 把
+user_data.bin 里的 CG/sprite/tile/ADPCM 原始数据解开。

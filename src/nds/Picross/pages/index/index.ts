@@ -7,7 +7,7 @@ import { PicrossEngine } from "../../src/core/engine";
 import { PicrossRenderer } from "../../src/render/renderer";
 import { PUZZLES } from "../../src/data/puzzles";
 import { puzzleFromData } from "../../src/core/puzzle-loader";
-import { recordPuzzle } from "../../src/core/save";
+import { recordPuzzle, unlockNextInChain } from "../../src/core/save";
 import { getLang, Lang, uiStrings, puzzleName } from "../../src/i18n/index";
 import { Sfx } from "../../src/audio/sfx";
 import { bgm } from "../../src/audio/bgm";
@@ -140,7 +140,10 @@ Page({
         const stars = this.starsFor(s);
         this.syncState(s);
         this.setData({ stars });
+        const diff = this.engine!.getState().puzzle.difficulty;
         recordPuzzle(puzzle.id, stars, s.elapsedSec);
+        // U1：通关后按难度链式解锁后续题
+        unlockNextInChain(puzzle.id, diff, PUZZLES as any);
         wx.vibrateShort && wx.vibrateShort({ type: "medium" });
         if (this.sfx) this.sfx.play("win");
       },

@@ -10,6 +10,7 @@
  *   n : NT 变化行 [{ni, r, d[32]}, ...]
  *   a : 属性表变化行 [{ni, r, d[8]}, ...]
  *   s : 渲染用 scroll 寄存器 {v,h,vt,ht,fv,fh} + 渲染计数器 {cv,ch,cvt,cht}（H5 直接写入 PPU，驱动 nametable 选择与滚动）
+ *        + pr: pre-render 推进模式 (1=推进, 0=title 屏 pre-render 不推进, emu scrollEnd 反推)
  *
  * 压缩原则:
  *   - OAM/NT/属性表只存与上一帧的差异
@@ -91,6 +92,31 @@ const scrollScan = (() => {
   for (const e of arr) m.set(e.f, e.sc);
   return m;
 })();
+
+// pre-render 推进模式: 模拟从 pre-render 状态推进 240(无 dummy) / 241(有 dummy) 次,
+// 与实际 scrollEnd (cntV/cntVT) 比对。仅 240 命中 → pr=0 (pre-render 不推进);
+// 其余(241 命中 / 两者皆中 / 皆不中) → pr=1 (保持 H5 既有 dummy 推进行为,
+// tecmo logo / 字幕 / 帘幕 f3730 / ending 均实证匹配)。
+function advanceOnce(st) {
+  let fv = st.cntFV, vt = st.cntVT, v = st.cntV;
+  fv++;
+  if (fv === 8) {
+    fv = 0; vt++;
+    if (vt === 30) { vt = 0; v++; v %= 2; }
+    else if (vt === 32) { vt = 0; }
+  }
+  return { cntFV: fv, cntVT: vt, cntV: v };
+}
+function advanceN(st, n) { let s = st; for (let i = 0; i < n; i++) s = advanceOnce(s); return s; }
+function computePr(pre, st) {
+  if (!pre || !st || !st.scrollEnd) return 1;
+  const base = { cntFV: pre.cntFV, cntVT: pre.cntVT, cntV: pre.cntV };
+  const e240 = advanceN(base, 240);
+  const e241 = advanceN(base, 241);
+  const m240 = e240.cntV === st.scrollEnd.cntV && e240.cntVT === st.scrollEnd.cntVT;
+  const m241 = e241.cntV === st.scrollEnd.cntV && e241.cntVT === st.scrollEnd.cntVT;
+  return m240 && !m241 ? 0 : 1;
+}
 
 const frames = [];
 let prevChr = [0, 1, 2, 3, 252, 113, 82, 83]; // boot 期 CHR
@@ -188,6 +214,9 @@ for (let f = F0; f <= F1; f++) {
   // 帧中横向滚动切换点（mid-frame $2005 写入）
   const sc = scrollScan ? scrollScan.get(f) : null;
 
+  // pre-render 推进模式 (见 computePr)
+  s.pr = computePr(pre, st);
+
   frames.push({
     f,
     c: chrPlan,
@@ -222,7 +251,7 @@ function frameToLine(fr) {
   const ostr = fr.o.map(a => `[${a.join(',')}]`).join(',');
   const nstr = fr.n.map(r => `{ni:${r.ni},r:${r.r},d:[${r.d.join(',')}]}`).join(',');
   const astr = fr.a.map(r => `{ni:${r.ni},r:${r.r},d:[${r.d.join(',')}]}`).join(',');
-  const sstr = `{v:${fr.s.v},h:${fr.s.h},vt:${fr.s.vt},ht:${fr.s.ht},fv:${fr.s.fv},fh:${fr.s.fh},cv:${fr.s.cv},ch:${fr.s.ch},cvt:${fr.s.cvt},cht:${fr.s.cht}}`;
+  const sstr = `{v:${fr.s.v},h:${fr.s.h},vt:${fr.s.vt},ht:${fr.s.ht},fv:${fr.s.fv},fh:${fr.s.fh},cv:${fr.s.cv},ch:${fr.s.ch},cvt:${fr.s.cvt},cht:${fr.s.cht},pr:${fr.s.pr ?? 1}}`;
   const scstr = (fr.sc && fr.sc.length)
     ? ',sc:[' + fr.sc.map(o => `{s:${o.s},h:${o.h},ht:${o.ht},fh:${o.fh}}`).join(',') + ']'
     : '';

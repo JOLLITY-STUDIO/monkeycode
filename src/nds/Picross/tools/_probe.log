@@ -1,0 +1,120 @@
+class RegionalInstrument(Instrument):
+    """
+    An instrument that partitions the range [0, 127] into sections, and
+    contains one note definition for each.
+    """
+
+    class Region:
+        """
+        A region within a regional instrument.
+        """
+        def __init__(self, lastPitch, noteDefinition):
+            self.lastPitch = lastPitch
+            self.noteDefinition = noteDefinition
+
+
+        def __str__(self):
+            return (f'<region through {_common.noteName(self.lastPitch)} '
+                    f'{self.noteDefinition}>')
+
+
+        def __repr__(self):
+            return (f'{type(self).__name__}('
+                    f'{self.lastPitch!r}, '
+                    f'{self.noteDefinition!r})')
+
+
+    def __init__(self, regions):
+        super().__init__(REGIONAL_INSTRUMENT_TYPE)
+        self.regions = regions
+
+
+    @classmethod
+    def fromData(cls, _, data, startOffset):
+        """
+        Create a regional instrument from raw file data.
+        """
+        regionEnds = struct.unpack_from('8B', data, startOffset)
+
+        regions = []
+        off = startOffset + 8
+        for e in regionEnds:
+            if e == 0 and off != startOffset + 8: break
+
+            noteData = data[off : off+0xC]
+            note = NoteDefinition.fromDataWithType(noteData)
+            off += 0xC
+
+            regions.append(cls.Region(e, note))
+
+        return cls(regions), off - startOffset
+
+
+    def save(self):
+        """
+        Generate file data representing this instrument
+---
+class Region:
+        """
+        A region within a regional instrument.
+        """
+        def __init__(self, lastPitch, noteDefinition):
+            self.lastPitch = lastPitch
+            self.noteDefinition = noteDefinition
+
+
+        def __str__(self):
+            return (f'<region through {_common.noteName(self.lastPitch)} '
+                    f'{self.noteDefinition}>')
+
+
+        def __repr__(self):
+            return (f'{type(self).__name__}('
+                    f'{self.lastPitch!r}, '
+                    f'{self.noteDefinition!r})')
+
+
+    def __init__(self, regions):
+        super().__init__(REGIONAL_INSTRUMENT_TYPE)
+        self.regions = regions
+
+
+    @classmethod
+    def fromData(cls, _, data, startOffset):
+        """
+        Create a regional instrument from raw file data.
+        """
+        regionEnds = struct.unpack_from('8B', data, startOffset)
+
+        regions = []
+        off = startOffset + 8
+        for e in regionEnds:
+            if e == 0 and off != startOffset + 8: break
+
+            noteData = data[off : off+0xC]
+            note = NoteDefinition.fromDataWithType(noteData)
+            off += 0xC
+
+            regions.append(cls.Region(e, note))
+
+        return cls(regions), off - startOffset
+
+
+    def save(self):
+        """
+        Generate file data representing this instrument, and then return
+        the instrument's type value and that data as a pair.
+        """
+        if len(self.regions) > 8:
+            raise ValueError("Can't save Regional
+---
+Region(e, note))
+
+        return cls(regions), off - startOffset
+
+
+    def save(self):
+        """
+        Generate file data representing this instrument, and then return
+        the instrument's typ
+---

@@ -61,13 +61,29 @@ console.log = () => {};
 game.boot(runtime);
 console.log = origLog;
 
-const TARGETS = [800]; // NES 帧
-const END = 800 - 10 + 1;
+const TARGETS = [710, 760, 800, 810, 860]; // NES 帧
+const END = 860 - 10 + 1;
 for (let h5 = 0; h5 <= END; h5++) {
   game.frame(runtime);
   const nes = h5 + 10;
   if (TARGETS.includes(nes)) {
     writePng(runtime.ppu.buffer, 256, 240, '_h5_frame-' + nes + '.png');
+    // dump NT/PPU state for diagnosis
+    const ppu = runtime.ppu;
+    const ntStats = [];
+    for (let i = 0; i < 4; i++) {
+      let nz = 0;
+      const t = ppu.nameTable[i].tile;
+      for (let j = 0; j < 960; j++) if (t[j] !== 0) nz++;
+      ntStats.push(nz);
+    }
+    console.log('frame', nes, 'ntNZ', ntStats, 'scroll', {
+      regV: ppu.regV, regH: ppu.regH, regVT: ppu.regVT, regHT: ppu.regHT,
+      regFV: ppu.regFV, regFH: ppu.regFH,
+      cntV: ppu.cntV, cntH: ppu.cntH, cntVT: ppu.cntVT, cntHT: ppu.cntHT,
+    }, 'palette', { bg: Array.from(ppu.vramMem.slice(0x3f00, 0x3f10)), spr: Array.from(ppu.vramMem.slice(0x3f10, 0x3f20)) },
+    'ptTile6b', ppu.ptTile[0x6b] ? Array.from(ppu.ptTile[0x6b].pix) : null,
+    'ptTileeb', ppu.ptTile[0xeb] ? Array.from(ppu.ptTile[0xeb].pix) : null);
     console.log('saved _h5_frame-' + nes + '.png');
   }
 }

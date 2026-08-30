@@ -1,11 +1,1 @@
-EXIT 2
-src/game/index.ts(391,11): error TS18047: '_loopSrc' is possibly 'null'.
-src/game/index.ts(392,11): error TS18047: '_loopSrc' is possibly 'null'.
-src/game/index.ts(393,11): error TS18047: '_loopSrc' is possibly 'null'.
-src/game/index.ts(394,11): error TS18047: '_loopSrc' is possibly 'null'.
-src/game/index.ts(396,97): error TS18047: '_loopSrc' is possibly 'null'.
-src/game/index.ts(396,106): error TS2551: Property 'playbackState' does not exist on type 'AudioBufferSourceNode'. Did you mean 'playbackRate'?
-src/game/prg/code/scene/OpeningSceneController.ts(242,32): error TS2304: Cannot find name 'fr'.
-src/game/prg/code/scene/OpeningSceneController.ts(242,41): error TS2304: Cannot find name 'fr'.
-src/game/prg/code/scene/OpeningSceneController.ts(243,9): error TS2304: Cannot find name 'fr'.
-src/game/prg/code/scene/OpeningSceneController.ts(243,20): error TS7006: Parameter 'o' implicitly has an 'any' type.
+OK (no output): 0 chars

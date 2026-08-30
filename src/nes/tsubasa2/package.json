@@ -6,9 +6,7 @@
   "scripts": {
     "dev": "echo 'Use WeChat Mini Program DevTools'",
     "build": "tsc --noEmit",
-    "build:min": "node build_min.cjs all",
-    "build:min:core": "node build_min.cjs core-only",
-    "build:min:game": "node build_min.cjs game-only"
+    "build:min": "node build_min.cjs"
   },
   "devDependencies": {
     "@types/node": "^26.3.0",

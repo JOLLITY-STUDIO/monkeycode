@@ -449,6 +449,7 @@ class PPU {
 
         if (this.f_bgVisibility === 1 || this.f_spVisibility === 1) {
           // Update counters:
+          let skipPrerenderAdvance = false;
           if (this.renderStartOverride) {
             // H5 GT 驱动：优先使用外部提供的渲染起始位置（ROM 经 $2006
             // 直写 VRAM 地址设置 cnt* 的行为语义），用后即清。
@@ -457,6 +458,7 @@ class PPU {
             this.cntH = this.renderStartOverride.cntH;
             this.cntVT = this.renderStartOverride.cntVT;
             this.cntHT = this.renderStartOverride.cntHT;
+            skipPrerenderAdvance = this.renderStartOverride.skipPrerenderAdvance === true;
             this.renderStartOverride = null;
           } else {
             this.cntFV = this.regFV;
@@ -473,8 +475,16 @@ class PPU {
           // final pixel output stage.
           // See https://www.nesdev.org/wiki/PPU_rendering
           if (this.f_bgVisibility === 1 || this.f_spVisibility === 1) {
-            // Render dummy scanline:
-            this.renderBgScanline(false, 0);
+            if (skipPrerenderAdvance) {
+              // mode0 (title 屏): emu 实证 pre-render 期间渲染被禁用 (vblank
+              // 装载 NT 时 $2001 mask=0)，垂直计数器不推进。可见行直接从
+              // override 状态起算；作废上一帧遗留的 tile 行缓存，避免
+              // 首可见行误用陈旧 scantile。
+              this.validTileData = false;
+            } else {
+              // Render dummy scanline:
+              this.renderBgScanline(false, 0);
+            }
           }
 
           // Sprite evaluation does NOT happen on the pre-render scanline, and
@@ -1388,7 +1398,7 @@ class PPU {
     this.cntH = this.regH;
     this.curNt = this.ntable1[this.cntV + this.cntV + this.cntH];
 
-    if (scan < 240 && scan - this.cntFV >= 0) {
+    if (scan < 240) {
       let tscanoffset = this.cntFV << 3;
       let scantile = this.scantile;
       let attrib = this.attrib;

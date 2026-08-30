@@ -9,6 +9,13 @@ export interface OpeningFrameScroll {
   readonly v: number; readonly h: number; readonly vt: number; readonly ht: number;
   readonly fv: number; readonly fh: number; readonly cv: number; readonly ch: number;
   readonly cvt: number; readonly cht: number;
+  /**
+   * pre-render 推进模式 (emu state.json scrollEnd 反推):
+   *   pr=1 (默认): pre-render scanline 渲染 + 推进 1 次 (tecmo logo/字幕/帘幕/ending)
+   *   pr=0:         pre-render 期间渲染被禁用 (title 屏 vblank 装载 NT), 计数器不推进,
+   *                 可见行直接从 pre-render 状态起算 (emu f378-f822 实证, 帧末 (v=0,vt=29))
+   */
+  readonly pr?: number;
 }
 
 /** 帧中横向 scroll 切换点（buffer row），由 $2005 mid-frame 写入触发 */

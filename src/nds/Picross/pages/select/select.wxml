@@ -1,4 +1,4 @@
-<!-- E1 拼图选择界面 + E4 语言切换 -->
+<!-- E1 拼图选择界面 + E4 语言切换 + U1 解锁链 -->
 <view class="page">
   <view class="header">
     <view class="top-row">
@@ -21,28 +21,37 @@
     <text class="sub">{{t.selectTitle||'Select Puzzle'}}</text>
     <view class="stats-row">
       <text class="stat-chip">★ {{clearedCount}}/{{totalCount}}</text>
+      <text class="stat-chip">🔓 {{seedCount}}</text>
       <text class="stat-bar"><view class="stat-fill" style="width: {{totalCount ? (clearedCount / totalCount * 100) : 0}}%;"></view></text>
     </view>
   </view>
   <view class="group" wx:for="{{groups}}" wx:key="label">
-    <view class="group-head">{{item.label}}</view>
+    <view class="group-head">
+      <text class="gh-label">{{item.label}}</text>
+      <text class="gh-progress">★ {{item.cleared}}/{{item.total}}</text>
+      <view class="gh-bar"><view class="gh-fill" style="width: {{item.total ? (item.cleared / item.total * 100) : 0}}%;"></view></view>
+    </view>
     <view class="grid">
       <view
-        class="puzzle-card {{p.stars > 0 ? 'cleared' : ''}}"
+        class="puzzle-card {{p.stars > 0 ? 'cleared' : ''}} {{p.unlocked ? '' : 'locked'}}"
         wx:for="{{item.items}}"
         wx:for-item="p"
         wx:key="id"
         data-id="{{p.id}}"
         bindtap="onPick"
       >
-        <image class="p-thumb" src="{{p.thumb}}" mode="aspectFit" />
-        <text class="p-name">{{p.name}}</text>
-        <text class="p-size" wx:if="{{p.stars === 0}}">{{p.w}}×{{p.h}}</text>
-        <text class="p-stars" wx:else>
+        <image class="p-thumb {{p.unlocked ? '' : 'lock-blur'}}" src="{{p.thumb}}" mode="aspectFit" />
+        <view class="lock-overlay" wx:if="{{!p.unlocked}}">
+          <text class="lock-icon">{{p.lockText}}</text>
+        </view>
+        <text class="p-name">{{p.unlocked ? p.name : (t.lockedTitle || '???')}}</text>
+        <text class="p-size" wx:if="{{p.unlocked && p.stars === 0}}">{{p.w}}×{{p.h}}</text>
+        <text class="p-stars" wx:elif="{{p.unlocked}}">
           <text class="star {{p.stars >= 1 ? 'on' : ''}}">★</text>
           <text class="star {{p.stars >= 2 ? 'on' : ''}}">★</text>
           <text class="star {{p.stars >= 3 ? 'on' : ''}}">★</text>
         </text>
+        <text class="p-locked-hint" wx:else>通关前置题解锁</text>
       </view>
     </view>
   </view>

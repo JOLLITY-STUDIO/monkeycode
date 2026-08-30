@@ -1,0 +1,132 @@
+script start
+[LetterMapping] A��0x3 THEATER decoded=[0x14,0xa,0x7,0x3,0x14,0x7,0x12] match=true
+[tsubasa] WebAudio �����ã���Ƶ����
+[NMI f0] scheduler=attached
+[NMI f1] scheduler=attached
+[NMI f2] scheduler=attached
+[NMI f3] scheduler=attached
+[NMI f4] scheduler=attached
+[NMI f5] scheduler=attached
+[NMI f6] scheduler=attached
+[NMI f7] scheduler=attached
+[NMI f8] scheduler=attached
+[NMI f9] scheduler=attached
+[NMI f10] scheduler=attached
+[NMI f11] scheduler=attached
+[NMI f12] scheduler=attached
+[NMI f13] scheduler=attached
+[NMI f14] scheduler=attached
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[NMI f15] scheduler=attached
+[NMI f16] scheduler=attached
+[NMI f17] scheduler=attached
+[NMI f18] scheduler=attached
+[NMI f19] scheduler=attached
+[NMI f20] scheduler=attached
+[NMI f21] scheduler=attached
+[NMI f22] scheduler=attached
+[NMI f23] scheduler=attached
+[NMI f24] scheduler=attached
+[NMI f25] scheduler=attached
+[NMI f26] scheduler=attached
+[NMI f27] scheduler=attached
+[NMI f28] scheduler=attached
+[NMI f29] scheduler=attached
+[NMI f30] scheduler=attached
+[NMI f31] scheduler=attached
+[NMI f32] scheduler=attached
+[NMI f33] scheduler=attached
+[NMI f34] scheduler=attached
+[NMI f35] scheduler=attached
+[NMI f36] scheduler=attached
+[NMI f37] scheduler=attached
+[NMI f38] scheduler=attached
+[NMI f39] scheduler=attached
+[NMI f40] scheduler=attached
+[NMI f41] scheduler=attached
+[NMI f42] scheduler=attached
+[NMI f43] scheduler=attached
+[NMI f44] scheduler=attached
+[NMI f45] scheduler=attached
+[NMI f46] scheduler=attached
+[NMI f47] scheduler=attached
+[NMI f48] scheduler=attached
+[NMI f49] scheduler=attached
+[NMI f50] scheduler=attached
+[NMI f51] scheduler=attached
+[NMI f52] scheduler=attached
+[NMI f53] scheduler=attached
+[NMI f54] scheduler=attached
+[NMI f55] scheduler=attached
+[NMI f56] scheduler=attached
+[NMI f57] scheduler=attached
+[NMI f58] scheduler=attached
+[NMI f59] scheduler=attached
+[Tsubasa2] frame=60 scene=100 ram_001B=80 ram_0628=0 bufNonZero=1509
+[NMI f60] scheduler=attached
+[NMI f61] scheduler=attached
+[NMI f62] scheduler=attached
+[NMI f63] scheduler=attached
+[NMI f64] scheduler=attached
+[NMI f65] scheduler=attached
+[NMI f66] scheduler=attached
+[NMI f67] scheduler=attached
+[NMI f68] scheduler=attached
+[NMI f69] scheduler=attached
+[NMI f70] scheduler=attached
+[NMI f71] scheduler=attached
+[NMI f72] scheduler=attached
+[NMI f73] scheduler=attached
+[NMI f74] scheduler=attached
+[NMI f75] scheduler=attached
+[NMI f76] scheduler=attached
+[NMI f77] scheduler=attached
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[NMI f78] scheduler=attached
+[NMI f79] scheduler=attached
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Tsubasa2] frame=120 scene=100 ram_001B=80 ram_0628=0 bufNonZero=1509
+[NMI f120] scheduler=attached
+[Tsubasa2] frame=180 scene=100 ram_001B=80 ram_0628=0 bufNonZero=1509
+[NMI f180] scheduler=attached
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Tsubasa2] frame=240 scene=100 ram_001B=80 ram_0628=0 bufNonZero=1509
+[NMI f240] scheduler=attached
+[Tsubasa2] frame=300 scene=100 ram_001B=80 ram_0628=0 bufNonZero=0
+[NMI f300] scheduler=attached
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Tsubasa2] frame=360 scene=100 ram_001B=80 ram_0628=0 bufNonZero=0
+[NMI f360] scheduler=attached
+[Tsubasa2] frame=420 scene=100 ram_001B=80 ram_0628=0 bufNonZero=26563
+[NMI f420] scheduler=attached
+[Tsubasa2] frame=480 scene=100 ram_001B=80 ram_0628=0 bufNonZero=26647
+[NMI f480] scheduler=attached
+[Tsubasa2] frame=540 scene=100 ram_001B=80 ram_0628=0 bufNonZero=26859
+[NMI f540] scheduler=attached
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Tsubasa2] frame=600 scene=100 ram_001B=80 ram_0628=0 bufNonZero=27019
+[NMI f600] scheduler=attached
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Tsubasa2] frame=660 scene=100 ram_001B=80 ram_0628=0 bufNonZero=27208
+[NMI f660] scheduler=attached
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+frame 710: diffs=8942 (14.55%)
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Tsubasa2] frame=720 scene=100 ram_001B=80 ram_0628=0 bufNonZero=27404
+[NMI f720] scheduler=attached
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Sch.tick] active slots: 0:IDLE:t=0,1:IDLE:t=0,2:IDLE:t=0,3:IDLE:t=0,4:IDLE:t=0,5:IDLE:t=0
+[Tsubasa2] frame=780 scene=100 ram_001B=80 ram_0628=0 bufNonZero=27435
+[NMI f780] scheduler=attached
+[Tsubasa2] frame=840 scene=100 ram_001B=80 ram_0628=0 bufNonZero=342
+[NMI f840] scheduler=attached
+frame 860: diffs=2374 (3.86%)
+done

@@ -1,45 +1,34 @@
-// build_min.cjs — 把 tsnes core + game 打成单个 .min.js (jquery.min.js 风格)
+// build_min.cjs — 把 tsnes 模拟器 core 打成单文件 .min.js (jquery.min.js 风格)
 //
 // 用法:
-//   node build_min.cjs              # 默认: tsnes.min.js (含 core + game)
-//   node build_min.cjs core-only    # 只打 core (NES emulator)
-//   node build_min.cjs game-only    # 只打 game (Tsubasa2 game logic)
+//   node build_min.cjs
 //
 // 产物:
-//   dist/tsnes.min.js          ~40-80 KB (gzip ~15-25 KB)
+//   dist/tsnes.min.js          218 KB raw / 45.9 KB gzip
 //   dist/tsnes.min.js.map      source map
 //
-// 微信小程序/H5/Node.js 通用 (IIFE 格式全局, 也可切换 ESM/CJS).
+// 只打包 NES 模拟器核心 (src/core/) — 不含任何游戏/ROM 数据。
+// 微信小程序/H5/浏览器通用 (IIFE 格式, 全局 tsnes.NES / tsnes.Browser)。
 
 const esbuild = require("esbuild");
 const path = require("path");
 const fs = require("fs");
 
-const mode = process.argv[2] || "all";  // all | core-only | game-only
-
-// ────────── 入口配置 ──────────
-const entries = {
-  "core-only": { entryPoints: ["src/core/index.ts"], outfile: "dist/tsnes-core.min.js" },
-  "game-only": { entryPoints: ["src/game/index.ts"], outfile: "dist/tsnes-game.min.js" },
-  "all":       { entryPoints: ["src/index.ts"], outfile: "dist/tsnes.min.js" },
-}[mode];
-
-// ────────── banner (jquery 风格头) ──────────
 const banner = `/*!
- * tsnes - TypeScript NES emulator (H5 game engine)
+ * tsnes - TypeScript NES emulator
  * Build: ${new Date().toISOString()}
- * Mode: ${mode}
  */`;
 
 const opts = {
-  ...entries,
+  entryPoints: ["src/core/index.ts"],
+  outfile: "dist/tsnes.min.js",
   bundle: true,                  // 把所有 import 打包进单文件
   minify: true,                  // minify (whitespace + identifier mangle)
   minifyWhitespace: true,
   minifyIdentifiers: true,
   minifySyntax: true,
   format: "iife",                // IIFE - jquery.min.js 风格
-  globalName: "tsnes",           // 全局变量 tsnes.NES / tsnes.Tsubasa2
+  globalName: "tsnes",           // 全局变量 tsnes.NES / tsnes.Browser / tsnes.Controller
   target: ["es2018"],            // 微信小程序/H5 通用 (es2018 兼容)
   platform: "browser",
   legalComments: "none",         // 去掉所有 /* */ 注释

@@ -1,0 +1,64 @@
+feat(browser): TouchController V0.8 — 自动启用 + 手势重映射 + trail 视觉
+
+V0.8 落地三个 V0.7.4 提出的优化:
+
+1. 自动启用 (Auto-detect)
+   - BrowserOptions.touchEnabled?: boolean
+     - true: 强制启用
+     - false: 强制禁用
+     - undefined: 自动 (navigator.maxTouchPoints > 0 && !matchMedia('(pointer:fine)').matches)
+   - shouldEnableTouch() 工具函数 (try/catch 兼容 SSR/Node)
+
+2. 手势重映射 (TouchConfig)
+   src/option/TouchConfig.ts (260 行):
+     - TouchConfig 接口: 14 个字段
+       - 布局: rightHanded (左右手模式)
+       - 手势→按钮: tapAction / doubleTapAction / longPressAction / leftCornerAction / rightCornerAction
+       - 灵敏度: joystickDeadZone / joystickMaxRadius / directionGraceMs / longPressMs / doubleTapMs
+       - 视觉: showTrail / trailLength
+     - TOUCH_ACTION_OPTIONS: 4 个 NES button (A/B/SELECT/START) 具名选项
+     - TouchConfigStorage 类 (load/update/set/reset/onChange + MemoryTouchStorageAdapter + LocalTouchStorageAdapter)
+     - normalizeTouchConfig: clamp 数值 + 校验 button 值
+
+   TouchController 重构:
+     - 接受 TouchConfig in options
+     - applyConfig(cfg) 热更新 (TouchConfigStorage.onChange → controller.applyConfig)
+     - 手势按钮从硬编码 A/B/Select/Start 改成读 cfg.tapAction 等
+     - 角点长按/短按动作可配 ('none' = 禁用)
+     - 长按期间按下, finger up 时自动 release (longPressHeldButton 跟踪)
+
+3. 触摸轨迹 (Touch Trail)
+   TouchController:
+     - FingerState 加 trail 字段 (按 cfg.trailLength 限制长度)
+     - touchmove 时 push 当前点
+     - 调 overlay.paintTrail (新接口)
+
+   TouchOverlay (paintTrail/clearTrail):
+     - 折线渲染 (lighter composite, 渐变粗细/alpha)
+     - 起点圈 + 终点圆点 (最新触摸点最显眼)
+     - 松手后 200ms fade out, 然后从 Map 中移除
+
+4. TouchConfigPanel UI (340 行)
+   - 3 个分组: 布局 / 手势 → 按钮 / 灵敏度 / 视觉
+   - 5 个 gesture dropdown + 5 个灵敏度 number input + 2 个 checkbox
+   - 与 VideoConfigPanel 风格一致 (tsubasa2-touch-config-panel class)
+   - 双向绑定 + onChange 同步 UI
+
+5. Browser 集成 (src/core/browser/index.ts)
+   - 创建 TouchConfigStorage → CanvasTouchOverlay → TouchController
+   - NES_BUTTON_LABEL map → onGesture 时显示 A/B/SEL/START
+   - ResizeObserver 同步 overlay canvas 尺寸
+   - destroy() 清理 controller + overlay
+
+验证:
+  - tsc --noEmit EXIT=0 (touch-controller + touch-overlay + TouchConfigPanel + TouchConfig + browser/index 全 0 errors)
+  - 与 KeyboardController / GamepadController 接口完全一致 (onButtonDown/Up(controller, button))
+  - touchEnabled=undefined 默认走自动检测, 桌面浏览器零侵入
+
+总代码量: 4 文件, ~1100 行新增/修改
+  - src/option/TouchConfig.ts (260 行, 新)
+  - src/core/browser/touch-controller.ts (~200 行重写)
+  - src/core/browser/touch-overlay.ts (~100 行新增)
+  - src/core/browser/TouchConfigPanel.ts (~340 行, 新)
+  - src/core/browser/index.ts (~50 行改动)
+  - src/option/index.ts (1 行 export)

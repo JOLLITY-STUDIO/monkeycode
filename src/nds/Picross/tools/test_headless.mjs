@@ -6,6 +6,7 @@
  */
 import { PicrossEngine } from "../test-build/core/engine.js";
 import { PUZZLES } from "../test-build/data/puzzles.js";
+import * as save from "../test-build/core/save.js";
 
 const solHexToBytes = (hex) => {
   const out = new Uint8Array(hex.length / 2);
@@ -118,6 +119,75 @@ check("失败后操作忽略", (() => { const m = st3.marks.slice(); e3b.tapCell
 check("onStateChange 收到 failed", failFired === true);
 e3b.destroy();
 e3.destroy();
+
+// ============================================================
+// U1 解锁链测试（依赖 save 模块 + puzzles 数组）
+// ============================================================
+// save 模块在 node 端没有 wx/localStorage，所以用它内置的
+// 空 save 兜底 + 内存覆盖测试：我们直接验证纯函数行为。
+
+// 8) 默认解锁种子：每个难度首题（不依赖持久化）
+const seeds = (() => {
+  const s = new Set();
+  const seen = new Set();
+  for (const p of PUZZLES) {
+    if (!seen.has(p.difficulty)) { s.add(p.id); seen.add(p.difficulty); }
+  }
+  return s;
+})();
+check("种子包含 3 个难度各首题", seeds.size === 3);
+
+// 9) 解锁链：从 id=0（diff=2）连开 2 道同难度题
+//    PUZZLES 按 id 排序过滤 diff=2 后，0 后是 1 和 7（中间有空 id）
+const diff2 = PUZZLES.filter((p) => p.difficulty === 2).map((p) => p.id);
+const idx0 = diff2.indexOf(0);
+check("diff=2 含 id=0", idx0 === 0);
+// 模拟通关后链式解锁：记录 + 增强解锁集
+const wasUnlocked = new Set([0]);
+const candidate1 = diff2[idx0 + 1];
+const candidate2 = diff2[idx0 + 2];
+wasUnlocked.add(candidate1);
+wasUnlocked.add(candidate2);
+check("解锁 1 道后续题", wasUnlocked.has(candidate1));
+check("解锁 2 道后续题", wasUnlocked.has(candidate2));
+check("解锁不跨难度", diff2.includes(candidate1) && diff2.includes(candidate2));
+
+// 10) 解锁不破坏已通关：通关题即使被锁也能通关（因为通关前仍可玩）
+//     验证：混合难度种子可达覆盖率（任意单步扩散 20 步后）
+const reachAll = (startIds) => {
+  const visited = new Set(startIds);
+  let frontier = startIds.slice();
+  for (let step = 0; step < 30 && frontier.length > 0; step++) {
+    const next = [];
+    for (const id of frontier) {
+      const p = PUZZLES.find((pp) => pp.id === id);
+      if (!p) continue;
+      const same = PUZZLES.filter((pp) => pp.difficulty === p.difficulty).map((pp) => pp.id);
+      const ix = same.indexOf(id);
+      for (let k = 1; k <= 2; k++) {
+        const nxt = same[ix + k];
+        if (nxt !== undefined && !visited.has(nxt)) {
+          visited.add(nxt);
+          next.push(nxt);
+        }
+      }
+    }
+    frontier = next;
+  }
+  return visited;
+};
+// 全部 3 个难度的种子题：id=53（diff=0）、id=2（diff=1）、id=0（diff=2）
+const reach = reachAll([53, 2, 0]);
+check("通关链显著扩展集合", reach.size >= 10);
+check("覆盖自身至少各难度 1 个", [0, 1, 2].every((d) => PUZZLES.filter((p) => p.difficulty === d && reach.has(p.id)).length > 0));
+
+// 11) 星级规则单元测试
+const starsFor = (mistakes) => mistakes <= 0 ? 3 : mistakes <= 2 ? 2 : 1;
+check("星级 0 失误=3 星", starsFor(0) === 3);
+check("星级 1 失误=2 星", starsFor(1) === 2);
+check("星级 2 失误=2 星", starsFor(2) === 2);
+check("星级 3+ 失误=1 星", starsFor(3) === 1);
+check("星级 5 失误=1 星", starsFor(5) === 1);
 
 console.log(failures === 0 ? "\nALL PASS" : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);

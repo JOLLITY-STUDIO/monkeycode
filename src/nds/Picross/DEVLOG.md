@@ -237,3 +237,16 @@
   - 验证：ndspy 反向对照 title.json m0 头 5 音完全一致（首音 t=48 k=40 E vel 127 dur 12 ✓）；test_headless ALL PASS
 - [ ] ARM9 记录解释器：解码 Msg/*.dat 记录区自定义消息脚本（G3 遗留，无用户可见增量，优先级低）
 - [ ] ARM9 拼图提示编码：确认记录区提示生成算法（G4 已定案引擎从解法推导，提示完全一致无需接入）
+
+### 2026-08-30 U1 unlock chain + completion linkage
+- [x] **U1 real unlock chain (v1.5.0)**: puzzle select U1 unlock mechanism
+  - save.ts added UnlockState / unlockPuzzle / isPuzzleUnlocked / getUnlockedSet / unlockNextInChain / clearSave
+  - Default: first puzzle per difficulty unlocked (id=0,2,53); chain-unlock 2 next puzzles per diff after clear
+  - index.ts onSolved callback now invokes unlockNextInChain(puzzleId, diff, PUZZLES)
+  - select.ts rebuild/refreshFromSave reads real unlocked from save; onPick shows toast for locked
+  - select.wxml added .locked card with grayscale + lock overlay + "clear previous" hint
+  - select.wxss .puzzle-card.locked with grayscale filter + .lock-overlay + .p-locked-hint
+  - i18n 4 langs got lockedTitle / lockedHint
+  - group-head added per-difficulty progress bar
+  - Tests: headless added 8 U1 cases (3 seeds / chain +2 / 5 levels star rules)
+  - TSC EXIT=0, headless ALL PASS (33 cases)

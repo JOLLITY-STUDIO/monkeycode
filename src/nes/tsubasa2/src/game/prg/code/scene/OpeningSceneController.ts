@@ -268,12 +268,15 @@ export class OpeningSceneController extends SceneController {
     // 仅作参考;override 统一用 reg*。
     // 说明:GT s 字段来自 emu pre-render 真值(vblank $2005/$2006 写入之后),
     // 已覆盖标题帘幕滚动(f3725-3782 的 vt/fv 逐帧变化),无需再特判。
+    // s.pr=0 (title 屏 f378-f822, emu 帧末实证 (v=0,vt=29)): pre-render 期间
+    // 渲染被禁用,计数器不推进,可见行直接从本 override 起算 → skipPrerenderAdvance。
     ppu.renderStartOverride = {
       cntFV: s.fv & 7,
       cntV: s.v & 1,
       cntH: s.h & 1,
       cntVT: s.vt & 0x1f,
       cntHT: s.ht & 0x1f,
+      skipPrerenderAdvance: s.pr === 0,
     };
 
     // 帧中逐扫描线横向滚动覆盖(GT sc 数组,按 buffer row 升序):
