@@ -1,0 +1,70 @@
+# Sexy Idol Mahjong - tooling .gitignore
+# 整个 _tools/ 主要是 MAME 上游资料, 只保留我们项目用得上的轻量文件:
+#   - chdman.exe
+#   - split_tracks.py
+#   - extracted/ 下的 .cue / .txt / IP.BIN (音频 .wav 和 .bin 全排除)
+#   - pcejs-player/ (浏览器运行页)
+#   - mame-scripts/dump_vram.lua
+#   - hlsl/ ini/ language/ plugins/ roms/ samples/ artwork/ bgfx/ ctrlr/ docs/ hash/ 全不 commit
+
+# ============================
+# 上游大容量二进制与发布目录
+# ============================
+_tools/artwork/
+_tools/bgfx/
+_tools/ctrlr/
+_tools/docs/
+_tools/hash/
+_tools/hlsl/
+_tools/ini/
+_tools/language/
+_tools/plugins/
+_tools/roms/
+_tools/samples/
+
+# MAME 主二进制 / 调试符号 / 文档
+_tools/mame.exe
+_tools/mame64.exe
+_tools/mamesync.exe
+_tools/nlwiggle.exe
+_tools/nltool.exe
+_tools/pngcmp.exe
+_tools/jedutil.exe
+_tools/romcmp.exe
+_tools/unidasm.exe
+_tools/mame.sym
+_tools/whatsnew.txt
+_tools/uismall.bdf
+_tools/COPYING
+
+# ============================
+# CHD 提取产物 (永远不 commit)
+# ============================
+_tools/extracted/*.bin
+_tools/extracted/audio/
+_tools/extracted/track_data/track_*/user_data.bin
+_tools/extracted/track_data/track*/user_data.bin
+_tools/extracted/track02_data/
+_tools/extracted/track26_data/
+
+# ============================
+# 中间产物
+# ============================
+__pycache__/
+*.pyc
+*.tmp
+*.bak
+.DS_Store
+Thumbs.db
+
+# 探索 / clone / 探查临时产物
+_tools/_pcejs-src/
+_tools/probe_out.txt
+_tools/extracted/mame_vram_dump/
+
+# ============================
+# 已删除/不使用的 webview 路径
+# ============================
+_tools/pcejs-player/
+miniprogram/pages/pce/
+miniprogram/pce-config.js

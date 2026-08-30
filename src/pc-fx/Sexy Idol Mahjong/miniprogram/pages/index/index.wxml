@@ -1,0 +1,44 @@
+<!--miniprogram/pages/index/index.wxml-->
+<view class="container">
+  <view class="title">Sexy Idol Mahjong</view>
+  <view class="subtitle">野球拳の歌 - PC Engine CD-ROM²</view>
+
+  <view class="section">
+    <view class="section-title">提取产物</view>
+    <view class="card" bindtap="onTapCue">
+      <view class="card-title">光盘镜像 (.bin/.cue)</view>
+      <view class="card-sub">{{stats.cueSize}}</view>
+    </view>
+    <view class="card" bindtap="onTapAudio">
+      <view class="card-title">原声音轨</view>
+      <view class="card-sub">{{stats.audio}}</view>
+    </view>
+    <view class="card" bindtap="onTapIp">
+      <view class="card-title">IP.BIN 元数据</view>
+      <view class="card-sub">{{stats.ip}}</view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">模拟器</view>
+    <view class="card primary" bindtap="onTapPce">
+      <view class="card-title">PCE.js 浏览器运行</view>
+      <view class="card-sub">需先在 pce-config.js 填 COS URL</view>
+      <view class="card-status {{pceReady ? '' : 'warn'}}">{{pceReady ? '就绪' : '待配置'}}</view>
+    </view>
+  </view>
+
+  <view class="section">
+    <view class="section-title">CG / 角色图提取</view>
+    <view class="card" bindtap="onTapMame">
+      <view class="card-title">MAME 截图脚本</view>
+      <view class="card-sub">_tools/mame-scripts/dump_vram.lua</view>
+      <view class="card-tip">需本机运行 MAME 0.289+, 不在 H5 模拟</view>
+    </view>
+  </view>
+
+  <view class="footer">
+    <view>源 ROM: D:\studio\games\roms\NEC-TurboGrafx-CD\Sexy Idol Mahjong*.chd</view>
+    <view>提取工具: chdman.exe + split_tracks.py</view>
+  </view>
+</view>

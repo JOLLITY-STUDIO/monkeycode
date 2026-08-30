@@ -1,0 +1,97 @@
+/**index.wxss**/
+page {
+  background-color: #1a1a1a;
+  color: #e0e0e0;
+  padding-bottom: 40rpx;
+}
+
+.container {
+  padding: 32rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 28rpx;
+  font-family: -apple-system, Helvetica, sans-serif;
+}
+
+.title {
+  font-size: 56rpx;
+  font-weight: 600;
+  color: #ff7eb6;
+  text-align: center;
+  margin-top: 16rpx;
+}
+
+.subtitle {
+  font-size: 26rpx;
+  color: #888;
+  text-align: center;
+  margin-bottom: 12rpx;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 14rpx;
+}
+
+.section-title {
+  font-size: 28rpx;
+  color: #aaa;
+  padding-left: 8rpx;
+  border-left: 6rpx solid #ff7eb6;
+}
+
+.card {
+  background: #2a2a2a;
+  border-radius: 12rpx;
+  padding: 20rpx 24rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+}
+
+.card.primary {
+  background: linear-gradient(135deg, #3a2050, #2a2a2a);
+  border: 2rpx solid #b070d0;
+}
+
+.card-title {
+  font-size: 32rpx;
+  color: #fff;
+  font-weight: 500;
+}
+
+.card-sub {
+  font-size: 24rpx;
+  color: #aaa;
+}
+
+.card-tip {
+  font-size: 22rpx;
+  color: #c080c0;
+  font-style: italic;
+}
+
+.card-status {
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 4rpx;
+  align-self: flex-start;
+  background: #2a5a2a;
+  color: #b0ffb0;
+}
+
+.card-status.warn {
+  background: #5a3a10;
+  color: #ffc070;
+}
+
+.footer {
+  margin-top: 24rpx;
+  padding: 16rpx;
+  font-size: 22rpx;
+  color: #555;
+  display: flex;
+  flex-direction: column;
+  gap: 4rpx;
+}
