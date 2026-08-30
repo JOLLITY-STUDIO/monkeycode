@@ -12,6 +12,10 @@ export class PicrossEngine {
         // F2: 状态缓存，仅 dirty 时重建，减少对象分配
         this.stateCache = null;
         this.dirty = true;
+        // U2: Undo/Redo 历史栈（每格操作前压栈当前 marks 快照）
+        this.undoStack = [];
+        this.redoStack = [];
+        this.historyCap = 200;
         this.puzzle = puzzle;
         this.cb = cb;
         this.marks = new Array(puzzle.width * puzzle.height).fill("empty");
@@ -19,6 +23,8 @@ export class PicrossEngine {
         this.colHints = this.buildColHints();
         this.totalFilled = this.countSolution();
         this.filledCount = 0;
+        this.undoStack = [];
+        this.redoStack = [];
     }
     start() {
         this.stopTimer();
@@ -81,6 +87,10 @@ export class PicrossEngine {
         else {
             next = cur === "empty" ? "filled" : cur === "filled" ? "crossed" : "empty";
         }
+        if (next === cur)
+            return; // 无变化不入栈（U2 撤销无意义）
+        // U2: 撤销栈压入当前快照，新动作清空 redo 栈
+        this.pushHistory();
         // 失误判定：填充了空单元格
         const isFilledNow = next === "filled";
         const wasFilled = cur === "filled";
@@ -89,7 +99,6 @@ export class PicrossEngine {
             this.filledCount++;
             if (!isCorrect) {
                 this.mistakes++;
-                // G5: 失误达上限 → 游戏结束（Picross DS 规则）
                 if (this.mistakes >= this.maxMistakes) {
                     this.failed = true;
                     this.stopTimer();
@@ -108,6 +117,9 @@ export class PicrossEngine {
     /** 清除单个单元格 */
     clearCell(x, y) {
         const idx = y * this.puzzle.width + x;
+        if (this.marks[idx] === "empty")
+            return;
+        this.pushHistory();
         if (this.marks[idx] === "filled")
             this.filledCount--;
         this.marks[idx] = "empty";
@@ -115,6 +127,90 @@ export class PicrossEngine {
         this.dirty = true;
         this.emit();
     }
+    // ============ U2: Undo / Redo ============
+    pushHistory() {
+        this.undoStack.push(this.marks.slice());
+        if (this.undoStack.length > this.historyCap)
+            this.undoStack.shift();
+        this.redoStack = [];
+    }
+    undo() {
+        if (!this.undoStack.length)
+            return false;
+        this.redoStack.push(this.marks.slice());
+        if (this.redoStack.length > this.historyCap)
+            this.redoStack.shift();
+        this.marks = this.undoStack.pop();
+        this.filledCount = this.countCurrentFilled();
+        // 撤销可恢复失误态（如果之前已 failed，撤销了触发失误的填充）
+        if (this.failed)
+            this.failed = false;
+        // 失误数不主动回滚（Picross DS：已记录的失误不能撤销）
+        // 但启动 timer
+        if (this.timer == null && !this.solved)
+            this.start();
+        this.refreshHints();
+        this.dirty = true;
+        this.emit();
+        return true;
+    }
+    redo() {
+        if (!this.redoStack.length)
+            return false;
+        this.undoStack.push(this.marks.slice());
+        if (this.undoStack.length > this.historyCap)
+            this.undoStack.shift();
+        this.marks = this.redoStack.pop();
+        this.filledCount = this.countCurrentFilled();
+        this.refreshHints();
+        this.dirty = true;
+        this.emit();
+        return true;
+    }
+    canUndo() { return this.undoStack.length > 0; }
+    canRedo() { return this.redoStack.length > 0; }
+    undoDepth() { return this.undoStack.length; }
+    redoDepth() { return this.redoStack.length; }
+    resetHistory() { this.undoStack = []; this.redoStack = []; }
+    countCurrentFilled() {
+        let n = 0;
+        for (const m of this.marks)
+            if (m === "filled")
+                n++;
+        return n;
+    }
+    // ============ U3: 中途存档 / 读档（用于退出后 resume） ============
+    /** 导出当前 marks 状态（2 bit/cell） */
+    serialize() {
+        const n = this.marks.length;
+        const out = new Uint8Array(Math.ceil(n / 4));
+        for (let i = 0; i < n; i++) {
+            const v = this.marks[i] === "filled" ? 1 : this.marks[i] === "crossed" ? 2 : 0;
+            out[i >> 2] |= (v & 0x3) << (6 - (i & 3) * 2);
+        }
+        return out;
+    }
+    /** 从存档恢复 marks */
+    loadFromSerialized(buf, elapsedSec = 0) {
+        this.elapsed = elapsedSec;
+        this.marks = new Array(this.puzzle.width * this.puzzle.height);
+        for (let i = 0; i < this.marks.length; i++) {
+            const v = (buf[i >> 2] >> (6 - (i & 3) * 2)) & 0x3;
+            this.marks[i] = v === 1 ? "filled" : v === 2 ? "crossed" : "empty";
+        }
+        this.filledCount = this.countCurrentFilled();
+        this.mistakes = 0;
+        this.solved = false;
+        this.failed = false;
+        this.undoStack = [];
+        this.redoStack = [];
+        this.refreshHints();
+        this.dirty = true;
+        this.emit();
+    }
+    /** 设置 elapsed（兼容持久化 resume） */
+    setElapsed(sec) { this.elapsed = sec; }
+    getElapsed() { return this.elapsed; }
     refreshHints() {
         for (let y = 0; y < this.puzzle.height; y++) {
             this.rowHints[y].satisfied = this.lineSatisfied(y, true);

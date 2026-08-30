@@ -61,6 +61,25 @@
   border-radius: 12rpx;
 }
 
+/* U3 继续按钮（蓝绿强调色，区别于开始游戏的黄色） */
+.resume-btn {
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 22rpx;
+  background: #2a88e0;
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 700;
+  border: 2rpx solid #111;
+  border-radius: 12rpx;
+}
+
+.resume-btn::after { border: none; }
+
+.resume-btn.hidden { display: none; }
+
+.resume-btn.pressed { opacity: 0.85; transform: scale(0.97); }
+
 .lang-row {
   display: flex;
   gap: 12rpx;

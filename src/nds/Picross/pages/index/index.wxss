@@ -256,3 +256,16 @@
 .btn-ghost::after {
   border: none;
 }
+
+
+/* U2: undo/redo disabled 状态 */
+.tool-btn.disabled {
+  background: #f0f0f0;
+  color: #bbb;
+  border-color: #ccc;
+}
+
+.tool-btn.disabled.pressed {
+  opacity: 1;
+  transform: none;
+}

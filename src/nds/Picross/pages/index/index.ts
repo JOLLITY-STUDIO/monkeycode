@@ -7,7 +7,7 @@ import { PicrossEngine } from "../../src/core/engine";
 import { PicrossRenderer } from "../../src/render/renderer";
 import { PUZZLES } from "../../src/data/puzzles";
 import { puzzleFromData } from "../../src/core/puzzle-loader";
-import { recordPuzzle, unlockNextInChain } from "../../src/core/save";
+import { recordPuzzle, unlockNextInChain, saveProgress, loadProgress, clearProgress } from "../../src/core/save";
 import { getLang, Lang, uiStrings, puzzleName } from "../../src/i18n/index";
 import { Sfx } from "../../src/audio/sfx";
 import { bgm } from "../../src/audio/bgm";
@@ -31,6 +31,8 @@ Page({
     stars: 0,
     markMode: "cycle" as "cycle" | "cross",
     flashError: false,
+    canUndo: false,
+    canRedo: false,
     t: {} as Record<string, string>,
   },
 
@@ -144,12 +146,21 @@ Page({
         recordPuzzle(puzzle.id, stars, s.elapsedSec);
         // U1：通关后按难度链式解锁后续题
         unlockNextInChain(puzzle.id, diff, PUZZLES as any);
+        // U3：通关清掉进度（同 puzzleId）
+        clearProgress(puzzle.id);
         wx.vibrateShort && wx.vibrateShort({ type: "medium" });
         if (this.sfx) this.sfx.play("win");
       },
     });
     this.renderer = this.board ? new PicrossRenderer(this.board, { digits: this.digits, tiles: this.tiles }) : null;
     this.lastCell = null;
+
+    // U3: 恢复上次进度（如果存在）
+    const prog = loadProgress(puzzle.id);
+    if (prog) {
+      this.engine.loadFromSerialized(prog.marks, prog.elapsedSec);
+    }
+
     this.engine.start();
     this.setData({
       puzzleName: this.puzzleTitle(this.puzzleIndex),
@@ -157,6 +168,11 @@ Page({
       failed: false,
       stars: 0,
       t: uiStrings(this.lang),
+    });
+    // 初始同步 undo/redo 状态
+    this.setData({
+      canUndo: this.engine.canUndo(),
+      canRedo: this.engine.canRedo(),
     });
   },
 
@@ -185,6 +201,8 @@ Page({
       solved: s.solved,
       failed: s.failed,
       flashError: flashError || this.data.flashError,
+      canUndo: this.engine ? this.engine.canUndo() : false,
+      canRedo: this.engine ? this.engine.canRedo() : false,
     });
   },
 
@@ -250,6 +268,22 @@ Page({
     this.setData({ markMode: this.data.markMode === "cross" ? "cycle" : "cross" });
   },
 
+  onUndo() {
+    if (!this.engine) return;
+    if (this.engine.undo()) {
+      wx.vibrateShort && wx.vibrateShort({ type: "light" });
+      if (this.sfx) this.sfx.play("tap");
+    }
+  },
+
+  onRedo() {
+    if (!this.engine) return;
+    if (this.engine.redo()) {
+      wx.vibrateShort && wx.vibrateShort({ type: "light" });
+      if (this.sfx) this.sfx.play("tap");
+    }
+  },
+
   onReset() {
     this.startPuzzle(this.puzzleIndex);
   },
@@ -279,10 +313,23 @@ Page({
 
   onHide() {
     bgm.stop();
+    // U3：退出时保存进度（仅当在玩且未通关）
+    this.persistCurrentProgress();
   },
 
   onUnload() {
     bgm.stop();
+    this.persistCurrentProgress();
     if (this.engine) this.engine.destroy();
+  },
+
+  /** U3：写当前 marks 到 picross_progress_v1 */
+  persistCurrentProgress() {
+    if (!this.engine) return;
+    const st = this.engine.getState();
+    if (st.solved || st.failed) return;
+    if (!st.filledCount && !this.engine.undoDepth() && !this.engine.redoDepth()) return;
+    const marksB = this.engine.serialize();
+    saveProgress(this.curPuzzleId, marksB, st.elapsedSec);
   },
 });

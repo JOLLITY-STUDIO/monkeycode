@@ -4,6 +4,7 @@
     <view class="top-row">
       <view class="btn-group">
         <button class="play-btn" bindtap="onPlay" hover-class="pressed">{{t.playBtn||'开始游戏'}}</button>
+        <button class="resume-btn {{resumeId ? '' : 'hidden'}}" wx:if="{{resumeId}}" bindtap="onResume" hover-class="pressed">{{t.resumeBtn||'继续'}} #{{resumeId}}</button>
         <button class="howto-btn" bindtap="onTutorial" hover-class="pressed">{{t.howtoTitle||'HOW TO PLAY'}}</button>
       </view>
       <view class="lang-row">

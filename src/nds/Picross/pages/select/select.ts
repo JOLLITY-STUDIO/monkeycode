@@ -10,6 +10,7 @@ import {
   PuzzleRecord,
   isPuzzleUnlocked,
   getUnlockedSet,
+  getInProgressPuzzles,
   type SaveData,
 } from "../../src/core/save";
 import { getLang, setLang, Lang, LANGS, LANG_LABELS, uiStrings, diffLabel, puzzleName } from "../../src/i18n/index";
@@ -64,6 +65,8 @@ Page({
     t: {} as Record<string, string>,
     /** 全局解锁种子（默认首题解锁），用于离线首次启动 */
     seedCount: 0,
+    /** U3: 是否有进行中的题目可恢复 */
+    resumeId: 0,
   },
 
   onLoad() {
@@ -113,6 +116,9 @@ Page({
     });
     let clearedCount = 0;
     groups.forEach((g) => g.items.forEach((it) => { if (it.stars > 0) clearedCount++; }));
+    // U3: 取出最近一个进度题 id（如果有）
+    const inProg = getInProgressPuzzles();
+    const resumeId = inProg.length > 0 ? inProg[0].puzzleId : 0;
     this.setData({
       lang,
       langIdx: LANGS.indexOf(lang),
@@ -120,6 +126,7 @@ Page({
       clearedCount,
       totalCount: PUZZLES.length,
       seedCount: seeds.length,
+      resumeId,
       t: uiStrings(lang),
     });
   },
@@ -187,6 +194,12 @@ Page({
     const next = PUZZLES.find((p) => unlocked.has(p.id) && !records[p.id]);
     const id = next ? next.id : PUZZLES.find((p) => unlocked.has(p.id))!.id;
     wx.reLaunch({ url: `/pages/index/index?puzzle=${id}` });
+  },
+
+  /** U3: 直接跳到上次未完成的题 */
+  onResume() {
+    if (!this.data.resumeId) return;
+    wx.reLaunch({ url: `/pages/index/index?puzzle=${this.data.resumeId}` });
   },
 
   onTutorial() {

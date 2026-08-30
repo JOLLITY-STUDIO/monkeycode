@@ -189,5 +189,70 @@ check("星级 2 失误=2 星", starsFor(2) === 2);
 check("星级 3+ 失误=1 星", starsFor(3) === 1);
 check("星级 5 失误=1 星", starsFor(5) === 1);
 
+// ============================================================
+// U2 Undo/Redo 测试（engine 内置历史栈）
+// ============================================================
+const eU = new PicrossEngine({ ...puzzle }, {});
+const solIdx = (x, y) => y * 16 + x;
+// 用测试 1 中找出的 wrongCell（必定非解法格）
+// 1) 误填一个空格子 → 失误计数 = 1
+eU.tapCell(wx0, wy0, "mark", "filled");
+check("U2 initial: mistakes=1", eU.getState().mistakes === 1);
+check("U2 initial: undo depth=1", eU.undoDepth() === 1);
+check("U2 initial: redo depth=0", eU.canRedo() === false);
+// 2) 撤销 → marks 复原；Picross DS 失误不回滚（已记入的失误保留）
+const okUndo = eU.undo();
+check("U2 undo 返回 true", okUndo === true);
+check("U2 undo 后 mistakes=1（Picross DS 失误不回滚）", eU.getState().mistakes === 1);
+check("U2 undo 后 marks[wrong]=empty", eU.getState().marks[solIdx(wx0, wy0)] === "empty");
+check("U2 undo 后 redo depth=1", eU.redoDepth() === 1);
+// 3) 撤销后再新动作 → 清 redo 栈
+eU.tapCell(1, 1, "mark", "crossed");
+check("U2 新动作后 redo depth=0", eU.canRedo() === false);
+// 4) redo 不存在 → 返回 false
+check("U2 redo 无可重做时返回 false", eU.redo() === false);
+// 5) 联串 undo + redo
+eU.undo(); // 撤销 crossed
+check("U2 二次撤销后 marks[1,1]=empty", eU.getState().marks[solIdx(1, 1)] === "empty");
+eU.redo();
+check("U2 redo 后 marks[1,1]=crossed", eU.getState().marks[solIdx(1, 1)] === "crossed");
+eU.destroy();
+
+// ============================================================
+// U3 In-progress save 测试（serialize / loadFromSerialized 往返）
+// ============================================================
+const eS = new PicrossEngine({ ...puzzle }, {});
+// 模拟玩家填充前 5 个解法格
+let placed = 0;
+for (let y = 0; y < 16 && placed < 5; y++) {
+  for (let x = 0; x < 16 && placed < 5; x++) {
+    if (isCell(x, y)) {
+      eS.tapCell(x, y, "mark", "filled");
+      placed++;
+    }
+  }
+}
+check("U3 序列填了 5 个", eS.getState().filledCount === 5);
+
+// serialize 导出
+const buf = eS.serialize();
+check("U3 serialize 字节数 = ceil(256/4) = 64", buf.length === 64);
+
+// 重置时间标记，验证 elapsed 也被保护
+eS.setElapsed(120);
+
+// 模拟关掉小程序再开：新 engine + 还原
+const eR = new PicrossEngine({ ...puzzle }, {});
+eR.loadFromSerialized(buf, 120);
+check("U3 还原 filledCount=5", eR.getState().filledCount === 5);
+check("U3 还原 elapsed=120", eR.getElapsed() === 120);
+const marksRoundTrip = eR.getState().marks.every((m, i) => m === eS.getState().marks[i]);
+check("U3 marks 序列化往返完全一致", marksRoundTrip);
+check("U3 还原后 solved=false", eR.getState().solved === false);
+check("U3 还原后 history 已清空（不可撤销）", eR.undoDepth() === 0);
+
+eS.destroy();
+eR.destroy();
+
 console.log(failures === 0 ? "\nALL PASS" : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);

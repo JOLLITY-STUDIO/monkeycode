@@ -57,6 +57,9 @@
       bindtap="onToggleMark"
       hover-class="pressed"
     >{{markMode === 'cross' ? '✕ ' + t.markCross : '● ' + t.markFill}}</button>
+    <!-- U2: Undo/Redo -->
+    <button class="tool-btn {{canUndo ? '' : 'disabled'}}" bindtap="onUndo" hover-class="pressed">↶ {{t.undoBtn||'撤销'}}</button>
+    <button class="tool-btn {{canRedo ? '' : 'disabled'}}" bindtap="onRedo" hover-class="pressed">↷ {{t.redoBtn||'重做'}}</button>
     <button class="tool-btn" bindtap="onReset" hover-class="pressed">{{t.resetBtn}}</button>
     <button class="tool-btn" bindtap="onNext" hover-class="pressed">{{t.nextBtn}} ›</button>
   </view>

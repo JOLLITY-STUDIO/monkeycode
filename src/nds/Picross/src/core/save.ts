@@ -135,3 +135,115 @@ export function clearSave(): void {
     /* ignore */
   }
 }
+
+// ===========================================================
+// U3: 中途进度存档（用于关掉小程序后 resume）
+// ===========================================================
+
+/** 中途进度（marks 序列化为 2bit/cell，已存在的入口：sets/resumes） */
+export interface PuzzleProgress {
+  puzzleId: number;
+  /** 序列化 marks（2 bit/cell） */
+  marks: Uint8Array;
+  /** 已消耗时间（秒） */
+  elapsedSec: number;
+  /** 最近保存时间戳 */
+  savedAt: number;
+}
+
+const PROGRESS_KEY = "picross_progress_v1";
+
+function loadAllProgress(): Record<number, PuzzleProgress> {
+  try {
+    if (hasWx()) {
+      const s = wx.getStorageSync(PROGRESS_KEY);
+      if (s && typeof s === "object") return s as Record<number, PuzzleProgress>;
+    } else {
+      const raw = localStorage.getItem(PROGRESS_KEY);
+      if (raw) {
+        const d = JSON.parse(raw);
+        if (d && typeof d === "object") return d as Record<number, PuzzleProgress>;
+      }
+    }
+  } catch (e) {}
+  return {};
+}
+
+function persistAllProgress(map: Record<number, PuzzleProgress>) {
+  try {
+    // Uint8Array 不可 JSON.stringify，需先 base64
+    const out: Record<string, any> = {};
+    for (const id in map) {
+      const p = map[id];
+      out[id] = {
+        puzzleId: p.puzzleId,
+        marksB64: bytesToB64(p.marks),
+        elapsedSec: p.elapsedSec,
+        savedAt: p.savedAt,
+      };
+    }
+    if (hasWx()) wx.setStorageSync(PROGRESS_KEY, out);
+    else localStorage.setItem(PROGRESS_KEY, JSON.stringify(out));
+  } catch (e) {}
+}
+
+function bytesToB64(arr: Uint8Array): string {
+  // 浏览器/小程序环境兼容
+  if (typeof btoa !== "undefined") {
+    let s = "";
+    for (let i = 0; i < arr.length; i++) s += String.fromCharCode(arr[i]);
+    return btoa(s);
+  }
+  // wx 环境
+  return wx.arrayBufferToBase64(arr.buffer);
+}
+
+function b64ToBytes(s: string): Uint8Array {
+  if (typeof atob !== "undefined") {
+    const bin = atob(s);
+    const out = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) out[i] = bin.charCodeAt(i);
+    return out;
+  }
+  const buf = wx.base64ToArrayBuffer(s);
+  return new Uint8Array(buf);
+}
+
+/** 保存中途进度（覆盖） */
+export function saveProgress(puzzleId: number, marks: Uint8Array, elapsedSec: number): PuzzleProgress {
+  const all = loadAllProgress();
+  const p: PuzzleProgress = { puzzleId, marks, elapsedSec, savedAt: Date.now() };
+  all[puzzleId] = p;
+  persistAllProgress(all);
+  return p;
+}
+
+/** 读取某题的进度（不存在返回 null） */
+export function loadProgress(puzzleId: number): PuzzleProgress | null {
+  const all = loadAllProgress();
+  const p = all[puzzleId];
+  if (!p) return null;
+  // 还原 marks Uint8Array
+  if (!(p.marks instanceof Uint8Array)) {
+    try { p.marks = b64ToBytes((p.marks as any).marksB64 || (p.marks as any)); }
+    catch { return null; }
+  }
+  return p;
+}
+
+/** 清掉某题进度（通关后或主动 reset） */
+export function clearProgress(puzzleId: number): void {
+  const all = loadAllProgress();
+  if (all[puzzleId]) { delete all[puzzleId]; persistAllProgress(all); }
+}
+
+/** 找出有进度的题目（按最近保存时间倒序） */
+export function getInProgressPuzzles(): PuzzleProgress[] {
+  const all = loadAllProgress();
+  return Object.values(all).sort((a, b) => b.savedAt - a.savedAt);
+}
+
+/** 是否有指定题的进度（用于 select 页 “Resume” 按钮） */
+export function hasProgress(puzzleId: number): boolean {
+  return !!loadAllProgress()[puzzleId];
+}
