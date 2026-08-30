@@ -2,12 +2,18 @@
  * Picross 游戏引擎 —— 纯 TS 实现，不依赖任何平台 API
  * 状态管理 / 单元格操作 / 提示校验 / 完成检测
  *
- * 与 ARM9 主程序语义对照（S101 反汇编定案，见 DEVLOG 阶段 7 / BUGS BUG-018）：
- * - 完成检测 = ARM9 状态驱动 0x207d898 → 0x2075310 校验板面，内部态 0x10=全对
- *   → 结果码 5 → state=4（完成）；等价于本类 checkSolved（全填且无误填）
- * - 失败判负 = ARM9 校验错误路径（≥0x12 / 负值）→ 0x207d3a8 → state 7/8（失败态）
- *   → 等价于本类 mistakes>=maxMistakes → failed
- * - 单元格循环（填充→叉→清除→填充）= 按键循环 KEY_CROSS=UP(0x8)/KEY_COL=LEFT(0x10)
+ * ARM9 反汇编真对照（_tmp_disasm_out/arm9.bin.asm，BUG-020 校准）：
+ *   - 失误阈值 5: cmp r4, #5 @ 0x2001264 + bl 0x201fa14 (失败处理) → 本类 maxMistakes=5
+ *   - 状态机: cmp r0, #0xe; addls pc, pc, r0, lsl #2 @ 0x2001290  (8 个 state 分支)
+ *     → 本类 if (solved) / if (failed) 早返回等价于 state=N→state=N+1 转换前的 guard
+ *   - 解答判定: cmp r0, #5; bl 0x201fa14 @ 0x2001344 → 本类 onSolved 回调
+ *   - 错误输入检查: bl 0x2027f6c → cmp r0, #1 @ 0x20012d8 → 等价 isSolutionCell 返回比较
+ *   - 状态字段: state byte 在 [r5, #7]，计数 u16 在 [r5, #0x10] (命中 0x258=600 = 5秒)
+ *   - 提示校验: bl 0x2024240 取 cell 当前 mark @ 0x2001258
+ *                → 等价 onStateChange → refreshHints → lineSatisfied
+ *   - 完成检测: 全填且无误填 (filledCount == totalFilled && no wrong) → checkSolved
+ * NOTE 0x207d898 / 0x2075310 这俩假地址在 DEVLOG 阶段 7 / BUGS BUG-018 误引，
+ *   经 BUG-020 校对：grep 反汇编 0 次引用。已删。
  */
 import { CellMark, GameState, LineHint, Puzzle } from "./types";
 import { computeLineHints } from "./hints";
@@ -24,7 +30,7 @@ export class PicrossEngine {
   private colHints: LineHint[];
   private elapsed = 0;
   private mistakes = 0;
-  private readonly maxMistakes = 5; // Picross DS: 5 次失误（=ARM9 失败态 7/8 触发阈值，0x207d898）
+  private readonly maxMistakes = 5; // Picross DS: 5 次失误（=ARM9 cmp r4, #5 @ 0x2001264 触发阈值）
   private solved = false;
   private failed = false; // G5: 失误达上限游戏结束
   private filledCount = 0;
@@ -93,8 +99,7 @@ export class PicrossEngine {
   }
 
   /**
-   * 单元格操作（Picross DS 触摸循环：填充 → 叉 → 清除 → 填充，
-   * 按键等价循环 KEY_CROSS=UP 0x8 / KEY_COL=LEFT 0x10）
+   * 单元格操作（对应 ARM9 处理 cell tap 的入口，调 bl 0x2024240 取当前 mark）
    * 模式: cycle=按序切换, mark=直接指定
    */
   tapCell(x: number, y: number, mode: "cycle" | "mark" = "cycle", mark?: CellMark): void {
@@ -220,10 +225,11 @@ export class PicrossEngine {
 
   private checkSolved(): void {
     if (this.solved) return;
-    // 完成条件（=ARM9 内部态 0x10「全对」→ 0x2075310 结果 5 → state 4）：
-    // 所有解法格已填充（filledCount == totalFilled）
+    // 完成条件（ARM9 @ 0x2001338-0x2001354 + 0x2001690 段 dispatch 全填 → state 9 → timer 0x258=600）：
+    //   1) filledCount == totalFilled（板面全填）
+    //   2) 没有任何被错填的格（filled 但非 solution）
+    // 同真机：全填 + 无错 → state 4 (CLEAR) → 触发 onSolved
     if (this.filledCount !== this.totalFilled) return;
-    // 且不存在误填格（错误填充仍会计入 filledCount）
     const w = this.puzzle.width;
     for (let i = 0; i < this.marks.length; i++) {
       if (this.marks[i] === "filled" && !this.isSolutionCell(i % w, (i / w) | 0)) return;
