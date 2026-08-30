@@ -399,6 +399,10 @@ Page({
    *  - 完成面板 OK → 结束语
    *  - 结束语 OK → 进选择页
    */
+  onTryReal() {
+    // E: 通关教学后跳到第一题（真实 16x16）演示完整 GameLogic
+    wx.reLaunch({ url: '/pages/index/index?puzzle=0' });
+  },
   onOk() {
     if (this.typingTimer || this.typingIdx < this.typingFull.length) {
       this.finishTyping();

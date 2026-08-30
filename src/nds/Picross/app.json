@@ -1,7 +1,9 @@
 {
   "pages": [
+    "pages/difficulty/difficulty",
     "pages/tutorial/tutorial",
     "pages/select/select",
+    "pages/progress/progress",
     "pages/index/index"
   ],
   "window": {

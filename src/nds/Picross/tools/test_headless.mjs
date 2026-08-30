@@ -254,5 +254,39 @@ check("U3 还原后 history 已清空（不可撤销）", eR.undoDepth() === 0);
 eS.destroy();
 eR.destroy();
 
+// ============================================================
+// B Stage 切分测试（puzzlesForStage 算法）
+// ============================================================
+const STAGES_PER_DIFF_TEST = { 0: 5, 1: 5, 2: 1 };
+function puzzlesForStage(diff, stage) {
+  const same = PUZZLES.filter((p) => p.difficulty === diff).map((p) => p.id);
+  const stages = STAGES_PER_DIFF_TEST[diff] || 1;
+  if (stages <= 1) return same;
+  const perStage = Math.ceil(same.length / stages);
+  const start = stage * perStage;
+  return same.slice(start, start + perStage);
+}
+const diff0 = PUZZLES.filter((p) => p.difficulty === 0).map((p) => p.id);
+const stage0_0 = puzzlesForStage(0, 0);
+const stage0_4 = puzzlesForStage(0, 4);
+check("B stage 0/diff0 大小 <= ceil(10/5)=2", stage0_0.length <= 2);
+check("B stage 4/diff0 包含后续题", stage0_4.every((id) => diff0.includes(id)));
+check("B diff=2 自由模式 = 全题", puzzlesForStage(2, 0).length === 184);
+
+// U3 save 模块测试（mock wx.storage）
+let mockStorage = {};
+const tmpWx = globalThis.wx || {};
+tmpWx.getStorageSync = (k) => mockStorage[k];
+tmpWx.setStorageSync = (k, v) => { mockStorage[k] = v; };
+tmpWx.removeStorageSync = (k) => { delete mockStorage[k]; };
+globalThis.wx = tmpWx;
+const saves = await import("../test-build/core/save.js");
+saves.saveProgress(7, new Uint8Array([0, 0, 0, 0, 0, 0]), 30);
+check("U3 saveProgress + getInProgressPuzzles roundtrip", saves.getInProgressPuzzles().length === 1);
+saves.clearProgress(7);
+check("U3 clearProgress 后无进度", saves.getInProgressPuzzles().length === 0);
+// 还原 wx（避免污染后续测试）
+delete tmpWx.getStorageSync;
+
 console.log(failures === 0 ? "\nALL PASS" : `\n${failures} FAILURE(S)`);
 process.exit(failures === 0 ? 0 : 1);

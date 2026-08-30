@@ -1,0 +1,78 @@
+/* pages/difficulty —— Picross DS 主菜单 3 个难度选择 */
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: #fffdf0;
+  padding: 64rpx 32rpx 32rpx;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  width: 100%;
+  margin-bottom: 60rpx;
+}
+
+.title-row { display: flex; flex-direction: column; }
+.title { color: #111; font-size: 72rpx; font-weight: 900; line-height: 1; letter-spacing: -4rpx; }
+.sub { color: #555; font-size: 28rpx; margin-top: 8rpx; }
+
+.lang-row { display: flex; gap: 12rpx; }
+.lang-btn { padding: 8rpx 24rpx; border-radius: 999rpx; background: #fff; color: #333; font-size: 24rpx; border: 2rpx solid #111; }
+.lang-btn.active { background: #111; color: #ffd800; }
+
+.cards {
+  display: flex;
+  flex-direction: column;
+  gap: 32rpx;
+  width: 100%;
+  max-width: 600rpx;
+  margin-bottom: 60rpx;
+}
+
+.diff-card {
+  background: #ffffff;
+  border: 6rpx solid #111;
+  border-radius: 24rpx;
+  padding: 48rpx 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 8rpx 0 #111;
+}
+
+.diff-card.pressed { transform: translate(2rpx, 2rpx); box-shadow: 0 4rpx 0 #111; }
+
+.diff-card.easy   { border-color: #ffb84d; background: linear-gradient(135deg, #fff8e8, #ffe8b0); }
+.diff-card.normal { border-color: #2a88e0; background: linear-gradient(135deg, #ecf4ff, #c8e0ff); }
+.diff-card.free   { border-color: #43c46c; background: linear-gradient(135deg, #efffec, #c8f0d4); }
+
+.diff-name { color: #111; font-size: 56rpx; font-weight: 900; letter-spacing: -2rpx; }
+.diff-meta { color: #555; font-size: 32rpx; font-weight: 700; }
+
+.bottom-row { display: flex; gap: 24rpx; }
+
+.howto-btn, .progress-btn {
+  height: 80rpx;
+  line-height: 80rpx;
+  padding: 0 32rpx;
+  background: #fff;
+  color: #111;
+  font-size: 28rpx;
+  font-weight: 700;
+  border: 4rpx solid #111;
+  border-radius: 16rpx;
+  box-shadow: 0 6rpx 0 #111;
+}
+
+.howto-btn::after, .progress-btn::after { border: none; }
+.howto-btn.pressed, .progress-btn.pressed {
+  transform: translate(2rpx, 2rpx);
+  box-shadow: 0 2rpx 0 #111;
+}
+
+.progress-btn { background: #2a88e0; color: #fff; }

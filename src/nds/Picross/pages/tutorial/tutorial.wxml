@@ -38,7 +38,8 @@
       <view class="solved-card pop-in">
         <text class="solved-title">CLEAR!</text>
         <text class="solved-msg">{{solvedText}}</text>
-        <button class="btn-primary" bindtap="onOk" hover-class="pressed">{{t.tutOk}}</button>
+        <button class="btn-primary" bindtap="onTryReal" hover-class="pressed">Try Real Puzzle →</button>
+        <button class="btn-ghost" bindtap="onOk" hover-class="pressed">{{t.tutOk}}</button>
       </view>
     </view>
   </view>

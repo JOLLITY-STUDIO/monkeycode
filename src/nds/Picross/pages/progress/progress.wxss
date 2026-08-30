@@ -1,0 +1,81 @@
+/* pages/progress —— 存档 / 进度面板 */
+.page {
+  min-height: 100vh;
+  background: #fffdf0;
+  padding: 32rpx;
+  box-sizing: border-box;
+}
+
+.header { margin-bottom: 32rpx; }
+.title { color: #111; font-size: 44rpx; font-weight: 900; }
+.sub { color: #888; font-size: 24rpx; margin-top: 8rpx; display: block; }
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 60vh;
+  color: #888;
+  font-size: 32rpx;
+}
+.empty-icon { font-size: 100rpx; margin-bottom: 16rpx; }
+
+.row {
+  background: #fff;
+  border: 2rpx solid #111;
+  border-radius: 12rpx;
+  padding: 20rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 4rpx 0 #111;
+}
+
+.row-head { display: flex; justify-content: space-between; align-items: center; }
+.row-name { color: #111; font-size: 32rpx; font-weight: 700; }
+.row-diff {
+  background: #ffd800;
+  color: #111;
+  font-size: 22rpx;
+  font-weight: 700;
+  padding: 4rpx 14rpx;
+  border-radius: 999rpx;
+}
+
+.row-meta {
+  display: flex;
+  justify-content: space-between;
+  color: #555;
+  font-size: 24rpx;
+  margin-top: 8rpx;
+}
+.row-meta .when { color: #aaa; }
+
+.row-actions { display: flex; gap: 12rpx; margin-top: 12rpx; }
+.resume-btn, .clear-btn {
+  flex: 1;
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 16rpx;
+  font-size: 26rpx;
+  font-weight: 700;
+  border: 2rpx solid #111;
+  border-radius: 8rpx;
+}
+.resume-btn::after, .clear-btn::after { border: none; }
+.resume-btn { background: #2a88e0; color: #fff; }
+.clear-btn { background: #fff; color: #c00; }
+
+.clear-all {
+  display: block;
+  margin: 32rpx auto;
+  height: 64rpx;
+  line-height: 64rpx;
+  padding: 0 32rpx;
+  background: #fff;
+  color: #c00;
+  font-size: 24rpx;
+  font-weight: 700;
+  border: 2rpx solid #c00;
+  border-radius: 999rpx;
+}
+.clear-all::after { border: none; }
