@@ -54,6 +54,23 @@ function defaultSeeds(all: { id: number; difficulty: number }[]): number[] {
   return Array.from(seeds);
 }
 
+/**
+ * B: 每个难度分几个 Stage（Picross DS 的 5 关 Stage 切分规则）
+ *   Easy / Normal 各 5 stages → total / 5 = stagePuzzles
+ *   Free 难度无 stage 分页（一页全显）
+ */
+const STAGES_PER_DIFF: Record<number, number> = { 0: 5, 1: 5, 2: 1 };
+
+/** 按难度+stage 索引算本 stage 的题 id 列表 */
+function puzzlesForStage(diff: number, stage: number): number[] {
+  const same = PUZZLES.filter((p) => p.difficulty === diff).map((p) => p.id);
+  const stages = STAGES_PER_DIFF[diff] || 1;
+  if (stages <= 1) return same;
+  const perStage = Math.ceil(same.length / stages);
+  const start = stage * perStage;
+  return same.slice(start, start + perStage);
+}
+
 Page({
   data: {
     lang: "tc" as Lang,
@@ -68,7 +85,7 @@ Page({
     /** U3: 是否有进行中的题目可恢复 */
     resumeId: 0,
     /** 当前选中 difficulty（来自 URL ?difficulty=N；不传为 null 表示全显） */
-    currentDiff: 0 as number | null,
+    currentDiff: null as number | null,
     /** Stage 总数（按 STAGES_PER_DIFF） */
     stageCount: 5,
     /** 当前 stage 索引（0..stageCount-1，-1 显示全部） */
@@ -104,21 +121,7 @@ Page({
     bgm.stop();
   },
 
-  /** B: Stages per difficulty（Picross DS 的 5 关 Stage 切分规则）
- *  Easy/Normal 各 5 stages × N puzzles/stage = total / 5 = stagePuzzles
- *  Free 难度跨越其余题库（无 stage 分页，全部一页）
- */
-const STAGES_PER_DIFF: Record<number, number> = { 0: 5, 1: 5, 2: 1 };
-function puzzlesForStage(diff: number, stage: number): number[] {
-  const same = PUZZLES.filter((p) => p.difficulty === diff).map((p) => p.id);
-  const stages = STAGES_PER_DIFF[diff] || 1;
-  if (stages <= 1) return same;
-  const perStage = Math.ceil(same.length / stages);
-  const start = stage * perStage;
-  return same.slice(start, start + perStage);
-}
-
-/** 按语言重建分组（U1：叠加解锁状态，B：按 Stage 切分） */
+  /** 按语言重建分组（U1：叠加解锁状态，B：按 Stage 切分） */
   rebuild(lang: Lang) {
     const seeds = defaultSeeds(PUZZLES);
     const unlocked = getUnlockedSet(seeds);
@@ -126,6 +129,9 @@ function puzzlesForStage(diff: number, stage: number): number[] {
     // B: Stage 切分
     const dFilter = this.data.currentDiff;
     const sFilter = this.data.currentStage;
+    // stageCount 根据当前 difficulty 取（动态）
+    const dKey = dFilter === null || dFilter === undefined ? -1 : dFilter;
+    const stageCount = STAGES_PER_DIFF[dKey] || 1;
     let displayDiff: number[] = [];
     if (dFilter !== null && dFilter !== undefined) {
       displayDiff = [dFilter];
@@ -170,6 +176,7 @@ function puzzlesForStage(diff: number, stage: number): number[] {
           seedCount: seeds.length,
           resumeId,
           stageIds: stagePuzz,
+          stageCount,
           t: uiStrings(lang),
         });
         return;
@@ -210,6 +217,7 @@ function puzzlesForStage(diff: number, stage: number): number[] {
       totalCount: PUZZLES.length,
       seedCount: seeds.length,
       resumeId,
+      stageCount,
       t: uiStrings(lang),
     });
   },

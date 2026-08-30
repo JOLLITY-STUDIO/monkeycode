@@ -1,12 +1,12 @@
 {
   "ops": {
     "tapCount": 119,
-    "tapMs": 11,
-    "tapOpsPerSec": 11168
+    "tapMs": 9,
+    "tapOpsPerSec": 13201
   },
-  "serMs": 0.12,
-  "deMs": 0.66,
-  "undoMs": 10.23,
-  "undoOpsPerSec": 9774,
-  "sampledAt": "2026-08-30T18:48:17.868Z"
+  "serMs": 0.15,
+  "deMs": 0.74,
+  "undoMs": 8.54,
+  "undoOpsPerSec": 11707,
+  "sampledAt": "2026-08-30T20:51:46.990Z"
 }

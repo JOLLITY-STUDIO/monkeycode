@@ -6,17 +6,8 @@
         <button class="play-btn" bindtap="onPlay" hover-class="pressed">{{t.playBtn||'开始游戏'}}</button>
         <button class="resume-btn {{resumeId ? '' : 'hidden'}}" wx:if="{{resumeId}}" bindtap="onResume" hover-class="pressed">{{t.resumeBtn||'继续'}} #{{resumeId}}</button>
         <button class="howto-btn" bindtap="onTutorial" hover-class="pressed">{{t.howtoTitle||'HOW TO PLAY'}}</button>
-        <button class="back-diff-btn" bindtap="onBackDifficulty" hover-class="pressed" wx:if="{{currentDiff !== null}}">‹ {{t.diffEasy||'Difficulty'}}</button>
+        <button class="back-diff-btn" bindtap="onBackDifficulty" hover-class="pressed" wx:if="{{currentDiff !== null && currentDiff !== undefined}}">‹ {{t.diffEasy||'Difficulty'}}</button>
       </view>
-
-  <!-- B: Stage 切换条（仅在有 currentDiff 时显示） -->
-  <scroll-view class="stage-tabs" scroll-x wx:if="{{currentDiff !== null && currentDiff !== undefined}}">
-    <text class="stage-tab {{currentStage === idx ? 'active' : ''}} {{currentStage === -1 && idx === 0 ? '' : ''}}"
-          wx:for="{{stageCount === 1 ? [0,1] : [0,1,2,3,4]}}"
-          wx:key="*this" wx:for-index="idx"
-          data-idx="{{idx}}"
-          bindtap="onStageTab">Stage {{idx+1}}</text>
-  </scroll-view>
       <view class="lang-row">
         <text
           class="lang-btn {{index === langIdx ? 'active' : ''}}"
@@ -28,6 +19,17 @@
         >{{item}}</text>
       </view>
     </view>
+
+  <!-- B: Stage 切换条（仅在当前 difficulty 下显示 0..stageCount-1 个 chip） -->
+  <scroll-view class="stage-tabs" scroll-x wx:if="{{currentDiff !== null && currentDiff !== undefined}}">
+    <block wx:for="{{[0,1,2,3,4]}}" wx:key="*this" wx:for-index="idx">
+      <text wx:if="{{idx < stageCount}}"
+            class="stage-tab {{currentStage === idx ? 'active' : ''}}"
+            data-idx="{{idx}}"
+            bindtap="onStageTab">Stage {{idx + 1}}</text>
+    </block>
+  </scroll-view>
+
     <text class="title">Picross</text>
     <text class="sub">{{t.selectTitle||'Select Puzzle'}}</text>
     <view class="stats-row">

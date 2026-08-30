@@ -1,12 +1,12 @@
 <view class="page">
   <view class="header">
-    <text class="title">{{t.resumeBtn||'继续'}} · Progress</text>
-    <text class="sub">{{items.length}} in-progress</text>
+    <text class="title">{{t.progressTitle || 'Progress'}}</text>
+    <text class="sub">{{items.length}}</text>
   </view>
 
   <view class="empty" wx:if="{{empty}}">
     <text class="empty-icon">📭</text>
-    <text>暂无保存的进度</text>
+    <text>{{t.progressEmpty || 'No saved progress'}}</text>
   </view>
 
   <view class="list" wx:else>
@@ -16,14 +16,14 @@
         <text class="row-diff">{{p.diffLabel}}</text>
       </view>
       <view class="row-meta">
-        <text>⏱ {{p.elapsedText}}  •  {{p.marksCount}}/{{p.totalCount}} cells</text>
+        <text>⏱ {{p.elapsedText}}  •  {{p.marksCount}}/{{p.totalCount}}</text>
         <text class="when">{{p.whenText}}</text>
       </view>
       <view class="row-actions">
-        <button class="resume-btn" data-id="{{p.puzzleId}}" bindtap="onResume" hover-class="pressed">{{t.resumeBtn||'继续'}}</button>
-        <button class="clear-btn" data-id="{{p.puzzleId}}" bindtap="onClear" hover-class="pressed">删除</button>
+        <button class="resume-btn" data-id="{{p.puzzleId}}" bindtap="onResume" hover-class="pressed">{{t.resumeBtn || 'Continue'}}</button>
+        <button class="clear-btn" data-id="{{p.puzzleId}}" bindtap="onClear" hover-class="pressed">{{t.progressDelete || 'Delete'}}</button>
       </view>
     </view>
-    <button class="clear-all" bindtap="onClearAll" hover-class="pressed">清空全部进度</button>
+    <button class="clear-all" bindtap="onClearAll" hover-class="pressed">{{t.progressClearAll || 'Clear All'}}</button>
   </view>
 </view>

@@ -43,6 +43,7 @@ Page({
 
   rebuild(lang: Lang) {
     const all = getInProgressPuzzles();
+    const t = uiStrings(lang);
     const records: ProgressItem[] = [];
     for (const p of all) {
       const puzzle = PUZZLES.find((pp) => pp.id === p.puzzleId);
@@ -61,24 +62,24 @@ Page({
         totalCount: puzzle.width * puzzle.height,
         elapsedText: `${Math.floor(p.elapsedSec / 60)}:${(p.elapsedSec % 60).toString().padStart(2, "0")}`,
         savedAt: p.savedAt,
-        whenText: this.formatWhen(p.savedAt),
+        whenText: this.formatWhen(t, p.savedAt),
       });
     }
     this.setData({
       lang,
       items: records,
       empty: records.length === 0,
-      t: uiStrings(lang),
+      t,
     });
   },
 
-  /** 简单时间格式（"x 分钟前" / "x 小时前"） */
-  formatWhen(t: number): string {
-    const dt = Math.floor((Date.now() - t) / 60000);
-    if (dt < 1) return "刚刚";
-    if (dt < 60) return `${dt}m ago`;
-    if (dt < 1440) return `${Math.floor(dt / 60)}h ago`;
-    return `${Math.floor(dt / 1440)}d ago`;
+  /** 按 i18n 时间格式（"刚刚" / "5分前" / "3小时前" / "2天前"） */
+  formatWhen(t: Record<string, any>, ts: number): string {
+    const dt = Math.floor((Date.now() - ts) / 60000);
+    if (dt < 1) return (t.progressJustNow as string) || "Just now";
+    if (dt < 60) return (t.progressMinAgo as (n: number) => string)(dt);
+    if (dt < 1440) return (t.progressHourAgo as (n: number) => string)(Math.floor(dt / 60));
+    return (t.progressDayAgo as (n: number) => string)(Math.floor(dt / 1440));
   },
 
   onResume(e: any) {
@@ -88,11 +89,12 @@ Page({
 
   onClear(e: any) {
     const id = parseInt(e.currentTarget.dataset.id, 10);
+    const t = this.data.t as Record<string, any>;
     wx.showModal({
-      title: "确认清除进度",
-      content: `题目 #${id} 当前进度会被清除。`,
-      confirmText: "清除",
-      cancelText: "取消",
+      title: (t.progressClearConfirmTitle as string) || "Delete progress?",
+      content: ((t.progressClearOneMsg as (i: number) => string)(id)),
+      confirmText: (t.progressDelete as string) || "Delete",
+      cancelText: (t.progressCancel as string) || "Cancel",
       success: (r) => {
         if (r.confirm) {
           clearProgress(id);
@@ -104,11 +106,13 @@ Page({
 
   onClearAll() {
     if (!this.data.items.length) return;
+    const t = this.data.t as Record<string, any>;
+    const n = this.data.items.length;
     wx.showModal({
-      title: "清空全部进度",
-      content: `当前 ${this.data.items.length} 个题目进度将被清除。`,
-      confirmText: "全部清空",
-      cancelText: "取消",
+      title: (t.progressClearAllTitle as string) || "Clear all progress?",
+      content: ((t.progressClearAllMsg as (i: number) => string)(n)),
+      confirmText: (t.progressClearAll as string) || "Clear All",
+      cancelText: (t.progressCancel as string) || "Cancel",
       success: (r) => {
         if (r.confirm) {
           for (const it of this.data.items) clearProgress(it.puzzleId);
