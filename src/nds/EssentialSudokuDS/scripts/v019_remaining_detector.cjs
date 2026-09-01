@@ -296,6 +296,24 @@ for (const f of cands) {
         if (writes.length >= 2) { kind = 'null_guarded_setter'; detail = 'n' + writes.length; }
       }
     }
+    // R. struct_copy: ldr rX,[r1,#N] | str rX,[r0,#N] 成对拷贝 (>=3 对, 无条件分支)
+    if (!kind && body.length >= 8 && body.length <= 80) {
+      const pairs = joined.match(/ldr r[0-9]+, \[r1, #[0-9a-fx]+\] \| str r[0-9]+, \[r0, #[0-9a-fx]+\]/g);
+      const condB = body.filter(i => /^b(eq|ne|ge|lt|gt|le|ls|hi|lo|hs|pl|mi) +/.test(i.t)).length;
+      if (pairs && pairs.length >= 3 && condB === 0 && text[text.length - 1] === 'bx lr') {
+        kind = 'struct_copy'; detail = 'n' + pairs.length;
+      }
+    }
+    // S. multi_bl_init: 4+ bl 无条件链 + 标准返回 (多阶段初始化/收尾)
+    if (!kind && body.length >= 8 && body.length <= 80) {
+      const bls = body.filter(i => /^bl +/.test(i.t));
+      const condB = body.filter(i => /^b(eq|ne|ge|lt|gt|le|ls|hi|lo|hs|pl|mi) +/.test(i.t)).length;
+      const last2ok = text[text.length - 1] === 'bx lr' || (text.length >= 2 && text[text.length - 2].startsWith('pop ') && text[text.length - 1] === 'bx lr');
+      if (bls.length >= 4 && condB === 0 && last2ok) {
+        const tgts = bls.map(b => (b.t.match(/bl +#(0x[0-9a-f]+)/) || [])[1] || '?').join('_');
+        kind = 'multi_bl_init'; detail = bls.length + 'bl_' + tgts;
+      }
+    }
     // E. gptr 复用 v018 (ldr [pc] + 解引用)
     if (!kind) {
       const pcLdrs = [];

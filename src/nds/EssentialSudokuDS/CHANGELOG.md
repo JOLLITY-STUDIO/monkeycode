@@ -20,13 +20,17 @@ All notable changes to this project are documented here.
   - `list_relink` (2): 双向链表互链 (streq/strne 交叉写)
   - `stm_fill` (2): mov #const + 连续 stm r0! 块填充 (0x1000/0 交替模式)
   - `zero_init` (1) / `sp_fields_copy` (1) / `struct_init` (1) / `null_guarded_setter` (1)
-- ✅ 命名 12 → 52 (+40), sub_ 1813 → 1761, 覆盖 32.85% → 34.78% (939/2700)
-- ✅ skip 247 → 207, 剩余全部为数据噪音或含条件分支的真实复杂函数 (需人工分析)
+- ✅ 第二轮补充 (complex-14+ 扫描): `struct_copy` (1, 16 对 ldr [r1,#N]|str [r0,#N] 成对拷贝)
+  + `multi_bl_init` (4, 4+ bl 无条件初始化链, name 带全部 callee 链;
+  0x02029e4c = dcache_clean 0x20395f4 与 memset 变体交替多区段清缓存)
+- ✅ 命名 12 → 57 (+45), sub_ 1813 → 1756, 覆盖 32.85% → 34.93% (944/2700)
+- ✅ skip 247 → 202, 剩余全部为数据噪音或含条件分支的真实复杂函数 (需人工分析)
 
 #### Verification
 - ✅ `npx tsc --noEmit` EXIT=0
-- ✅ arm9.ts +27 (wrap 13 / const_call 7 / indirect_thunk 4 / list_unlink 4 /
-  stm_fill 2 / list_relink 2 / zero_init 1 / sp_fields_copy 1 / struct_init 1 / 其他 2)
+- ✅ arm9.ts +32 (wrap 13 / const_call 7 / indirect_thunk 4 / list_unlink 4 /
+  multi_bl_init 4 / stm_fill 2 / list_relink 2 / struct_copy 1 / zero_init 1 /
+  sp_fields_copy 1 / struct_init 1 / 其他 2)
 - ✅ arm7.ts +10 (wrap 8 / indirect_thunk 2)
 
 ---

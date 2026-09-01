@@ -2871,9 +2871,10 @@ export const array_init_zero_0xc_stride_offset_8 = 0x02028dec as const;
  * ARM9 函数 @ 0x02028e20
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02028e20 = 0x02028e20 as const;
+export const auto_struct_copy_n16 = 0x02028e20 as const;
 /**
  * ARM9 函数 @ 0x02028eac
  * @category bx_lr
@@ -3088,9 +3089,10 @@ export const auto_wrap_2bl_0x20395f4_0x2037898 = 0x02029e18 as const;
  * ARM9 函数 @ 0x02029e4c
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02029e4c = 0x02029e4c as const;
+export const auto_multi_bl_init_8bl_0x20395f4_0x2037708_0x20395f4_0x2037638_0x20395f4_0x2037568_0x20395f4_0x2037498 = 0x02029e4c as const;
 /**
  * ARM9 函数 @ 0x02029ee0
  * @category bx_lr
@@ -6323,9 +6325,10 @@ export const dcache_invalidate_range = 0x02039624 as const;
  * ARM9 函数 @ 0x02039640
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02039640 = 0x02039640 as const;
+export const auto_multi_bl_init_15bl_0x2039a04_0x203bc90_0x20384b4_0x2039984_0x20381d4_0x2037f90_0x2039ce4_0x203aa44_0x2039eb4_0x203a1a4_0x2038bd8_0x203a014_0x204bacc_0x20429a0_0x203f0bc = 0x02039640 as const;
 /**
  * ARM9 函数 @ 0x02039690
  * @category prologue
@@ -13171,9 +13174,10 @@ export const sub_021053cc = 0x021053cc as const;
  * ARM9 函数 @ 0x02105474
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02105474 = 0x02105474 as const;
+export const auto_multi_bl_init_9bl_0x21055d4_0x2106e5c_0x2104628_0x210435c_0x2105d90_0x2106204_0x2104d2c_0x2106a94_0x210f9f4 = 0x02105474 as const;
 /**
  * ARM9 函数 @ 0x021054ac
  * @category bx_lr
@@ -13589,9 +13593,10 @@ export const wrapper_call_2_funcs_d = 0x021069a4 as const;
  * ARM9 函数 @ 0x021069c4
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_021069c4 = 0x021069c4 as const;
+export const auto_multi_bl_init_9bl_0x2106af0_0x2106af0_0x2106af0_0x2106af0_0x2104234_0x210418c_0x21073a4_0x2106a18_0x2110300 = 0x021069c4 as const;
 /**
  * ARM9 函数 @ 0x02106a18
  * @category prologue

@@ -78,6 +78,17 @@
    "target_global_ptr": null
   },
   {
+   "addr": "0x02028e20",
+   "name": "auto_struct_copy_n16",
+   "pattern_kind": "struct_copy",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr r2, [r1]|str r2, [r0]|ldr r2, [r1, #8]|str r2, [r0, #8]|ldr r2, [r1, #0xc]|str r2, [r0, #0xc]",
+   "target_global_ptr": null
+  },
+  {
    "addr": "0x02029de4",
    "name": "auto_wrap_2bl_0x20395f4_0x2037830",
    "pattern_kind": "wrap",
@@ -97,6 +108,17 @@
    "category": "bx_lr",
    "cpu": "arm9",
    "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|ldr r0, [pc, #0x20]|mov r1, #0x400|bl #0x20395f4|ldr r0, [pc, #0x14]",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02029e4c",
+   "name": "auto_multi_bl_init_8bl_0x20395f4_0x2037708_0x20395f4_0x2037638_0x20395f4_0x2037568_0x20395f4_0x2037498",
+   "pattern_kind": "multi_bl_init",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|ldr r0, [pc, #0x74]|mov r1, #0x800|bl #0x20395f4|ldr r0, [pc, #0x68]",
    "target_global_ptr": null
   },
   {
@@ -196,6 +218,17 @@
    "category": "bx_lr",
    "cpu": "arm9",
    "disasm_snippet": "ldr r2, [r1, #0x10]|ldr r1, [r1, #0x14]|cmp r2, #0|streq r1, [r0, #0x8c]|strne r1, [r2, #0x14]|cmp r1, #0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02039640",
+   "name": "auto_multi_bl_init_15bl_0x2039a04_0x203bc90_0x20384b4_0x2039984_0x20381d4_0x2037f90_0x2039ce4_0x203aa44_0x2039eb4_0x203a1a4_0x2038bd8_0x203a014_0x204bacc_0x20429a0_0x203f0bc",
+   "pattern_kind": "multi_bl_init",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|bl #0x2039a04|bl #0x203bc90|bl #0x20384b4|bl #0x2039984",
    "target_global_ptr": null
   },
   {
@@ -408,6 +441,17 @@
    "target_global_ptr": null
   },
   {
+   "addr": "0x02105474",
+   "name": "auto_multi_bl_init_9bl_0x21055d4_0x2106e5c_0x2104628_0x210435c_0x2105d90_0x2106204_0x2104d2c_0x2106a94_0x210f9f4",
+   "pattern_kind": "multi_bl_init",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|bl #0x21055d4|bl #0x2106e5c|bl #0x2104628|bl #0x210435c",
+   "target_global_ptr": null
+  },
+  {
    "addr": "0x0210692c",
    "name": "auto_cpsr_flip_clear",
    "pattern_kind": "cpsr_flip",
@@ -427,6 +471,17 @@
    "category": "bx_lr",
    "cpu": "arm9",
    "disasm_snippet": "mrs r0, apsr|and r0, r0, #0x1f|bx lr",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x021069c4",
+   "name": "auto_multi_bl_init_9bl_0x2106af0_0x2106af0_0x2106af0_0x2106af0_0x2104234_0x210418c_0x21073a4_0x2106a18_0x2110300",
+   "pattern_kind": "multi_bl_init",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov r0, #0|bl #0x2106af0|mov r0, #1|bl #0x2106af0",
    "target_global_ptr": null
   },
   {
@@ -574,6 +629,6 @@
   }
  ],
  "generated": "V0.19 remaining detector",
- "total": 52,
- "skipped": 207
+ "total": 57,
+ "skipped": 202
 }
