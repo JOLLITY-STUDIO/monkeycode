@@ -4,6 +4,29 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.17.22 — curated naming 大方向收尾 (bulk pattern 一次消化)
+
+### 2026-09-01
+
+#### 新增
+- ✅ 增强版 pattern detector (bulk 系列脚本) 一次性消化剩余命名候选:
+  - `v017-pattern-bulk.json` (71) + `bulk2` (16) + `bulk3` (7) + `final` (8) → 合并 153 条 unique
+  - 模式覆盖: tail_call (48) / switch_dispatch (50) / state_setter (15) / state_getter (11) /
+    const_return (8) / dcache (7) / halfword_getter (6) / byte_setter (3) / field_setter (2) /
+    byte_getter (1) / halfword_setter (1) / memcpy_word (1)
+- ✅ `generate_ts_functions.py` 新增 `PATTERN_MERGED_JSON` 加载 (v017-pattern-merged.json),
+  与 v014 合并去重, curated 优先级更高
+- ✅ 命名覆盖率: 8.3% (169) → 25.30% (683/2700), `sub_` 从 ~2033 → 2017
+- ✅ 排除 padding/data_target (44 个 `andeq` NOP 区 + 31 data_target + 155 no-disasm),
+  这些是 callers=0 prologue 数据误判区, 不参与命名
+
+#### Verification
+- ✅ 153/153 pattern 全部落地 (102 直接命名 + 51 已被 curated 覆盖, 0 丢失)
+- ✅ `npx tsc --noEmit` EXIT=0 (无错误输出)
+- ✅ commit 推送成功
+
+---
+
 ## V0.20 — 场景切换过渡动画 (双场景交叉过渡引擎)
 
 ### 2026-09-01
