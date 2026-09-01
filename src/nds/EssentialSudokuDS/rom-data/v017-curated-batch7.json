@@ -1,0 +1,282 @@
+{
+  "version": "V0.17",
+  "description": "V0.17 curated naming batch 7 (46 entries). Manual semantic naming from capstone disasm of high-frequency sub_ functions (callers>=5). ARM9: global flag OR/ANDNOT set (IRQ-safe), struct init/switch, shared-mem indexed set, switch dispatch, tail-call thunks (literal-pool target extracted). ARM7: slot-table lookup, state fixup/switch, halfword bit RMW, array lookups.",
+  "names": [
+    {
+      "addr": "0x021041fc",
+      "name": "global_flags_or_set_irq_safe",
+      "disasm": "ldr ip,[pc,#0x28]; ldrh r3,[ip]; mov r1,#0; strh r1,[ip]; ldr r2,[pc,#0x1c]; ldr r1,[r2]; orr r0,r1,r0; str r0,[r2]; ldrh r0,[ip]; strh r3,[ip]; mov r0,r1; bx lr",
+      "note": "callers=15. IRQ-safe atomic OR into global word flag (hword save/restore around critical section). Returns previous word value."
+    },
+    {
+      "addr": "0x021041c0",
+      "name": "global_flags_andnot_clear_irq_safe",
+      "disasm": "ldr ip,[pc,#0x2c]; ldrh r3,[ip]; mov r1,#0; strh r1,[ip]; ldr r2,[pc,#0x20]; ldr r1,[r2]; mvn r0,r0; and r0,r1,r0; str r0,[r2]; ldrh r0,[ip]; strh r3,[ip]; mov r0,r1; bx lr",
+      "note": "callers=14. IRQ-safe atomic AND-NOT (clear bits) into global word flag. Twin of 0x021041fc."
+    },
+    {
+      "addr": "0x02102f48",
+      "name": "global_0x300_field_range_sub",
+      "disasm": "ldr r1,[pc,#0x18]; cmp r0,r1; ldrhs r1,[pc,#0x14]; ldrhs r1,[r1]; addhs r1,r1,#0x300; ldrhhs r1,[r1,#0xde]; subhs r0,r0,r1; bx lr",
+      "note": "callers=13. If r0 >= const, subtract global[+0x300+0xde] halfword (range clamp/adjust)."
+    },
+    {
+      "addr": "0x0203d388",
+      "name": "struct_field_switch_add",
+      "disasm": "cmp r2,#0; beq...; ldr r2,[r0,#0x24]; add r1,r1,r2; ...; ldr r2,[r0,#0x2c]; ...; ldr r2,[r0,#0x28]",
+      "note": "callers=10. Switch r2 in {0,1,2} selects struct field offset 0x24/0x2c/0x28 then adds to r1."
+    },
+    {
+      "addr": "0x0203d8b8",
+      "name": "struct_init_0x1c_fields",
+      "disasm": "mov r3,#0; str r3,[r0]; ldr r2,[r0]; mov r1,#0xe; str r2,[r0,#4]; str r3,[r0,#0x1c]; ...; str r1,[r0,#0x10]",
+      "note": "callers=10. Struct field init: zero 0x00/0x04/0x08/0x0c/0x18/0x1c, set 0x10=0xe, copy chains."
+    },
+    {
+      "addr": "0x02106ad4",
+      "name": "poll_loop_3_calls",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; mov r0,#0; bl 0x210f688; bl 0x2106940; bl 0x2100adc; b 0x2106ae4",
+      "note": "callers=10. Poll loop: calls 3 funcs then branches back (infinite wait loop)."
+    },
+    {
+      "addr": "0x0202935c",
+      "name": "wrapper_call_2_funcs",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; bl 0x2026c5c; bl 0x2027364; add sp,sp,#4; ldm sp!,{lr}; bx lr",
+      "note": "callers=9. Thin wrapper calling 2 sub-functions sequentially."
+    },
+    {
+      "addr": "0x0202c538",
+      "name": "array_8slot_clear",
+      "disasm": "mov r3,#0; ldr r1,[pc,#0x68]; mov r2,r3; str r2,[r1,r3,lsl#3]; add r0,r1,r3,lsl#3; str r2,[r0,#4]; add r3,r3,#1; cmp r3,#8; blt...",
+      "note": "callers=9. Loop clearing 8 slots of a stride-8 word array."
+    },
+    {
+      "addr": "0x0200a06c",
+      "name": "global_ptr_field4_get",
+      "disasm": "ldr r0,[pc,#4]; ldr r0,[r0,#4]; bx lr",
+      "note": "callers=8. Read global pointer then load word at [ptr+4]."
+    },
+    {
+      "addr": "0x020208fc",
+      "name": "list_scan_50_for_nonzero",
+      "disasm": "ldr r1,[pc,#0x28]; mov r0,#0; ldr r2,[r1]; mov r3,r0; ldr r1,[r2,#8]; add r3,r3,#1; cmp r1,#0; movne r0,r1; cmp r3,#0x32; add r2,r2,#0x1c; blt...",
+      "note": "callers=8. Scan linked list (stride 0x1c, up to 50) returning first nonzero [8] field."
+    },
+    {
+      "addr": "0x02036274",
+      "name": "io_bitmask_byte_set",
+      "disasm": "ands r1,r0,#1; ldrne r1,[pc,#0x88]; movne r2,#0x80; strbne r2,[r1]; ands r1,r0,#2; ...; ands r1,r0,#4; ...",
+      "note": "callers=8. Bitmask arg -> write 0x80 byte to per-bit IO address (likely SPI/EEPROM chip selects)."
+    },
+    {
+      "addr": "0x02039718",
+      "name": "shared_mem_da0_indexed_set",
+      "disasm": "lsl r0,r0,#2; add r0,r0,#0x2700000; add r0,r0,#0xff000; str r1,[r0,#0xda0]; bx lr",
+      "note": "callers=8. idx*4 + 0x27ff000 + 0xda0 -> store word (shared RAM indexed write)."
+    },
+    {
+      "addr": "0x02043aa0",
+      "name": "halfword_flag_to_state",
+      "disasm": "ldr r0,[pc,#0x10]; ldrh r0,[r0]; cmp r0,#0; movne r0,#0; moveq r0,#3; bx lr",
+      "note": "callers=8. Global halfword !=0 -> 0, ==0 -> 3 (state code from flag)."
+    },
+    {
+      "addr": "0x0202c320",
+      "name": "switch_dispatch_5way",
+      "disasm": "cmp r0,#4; addls pc,pc,r0,lsl#2; b 0x202c4d4; b 0x202c404; b 0x202c3a8; b 0x202c348; b 0x202c348; b 0x202c348",
+      "note": "callers=7. Jump table dispatch on r0 in 0..4 (5 cases)."
+    },
+    {
+      "addr": "0x02038040",
+      "name": "global_flags_or_set_irq_safe_b",
+      "disasm": "ldr ip,[pc,#0x28]; mov r1,#0; ldrh r3,[ip]; ldr r2,[pc,#0x20]; strh r1,[ip]; ldr r1,[r2]; orr r0,r1,r0; str r0,[r2]; ldrh r0,[ip]; mov r0,r1; strh r3,[ip]; bx lr",
+      "note": "callers=7. Same IRQ-safe atomic OR as 0x021041fc (different global)."
+    },
+    {
+      "addr": "0x0203972c",
+      "name": "shared_mem_dc4_indexed_set",
+      "disasm": "lsl r0,r0,#2; add r0,r0,#0x2700000; add r0,r0,#0xff000; str r1,[r0,#0xdc4]; bx lr",
+      "note": "callers=7. Twin of 0x02039718 with +0xdc4 offset."
+    },
+    {
+      "addr": "0x02032714",
+      "name": "slot_array_0x84_field_0x14_set",
+      "disasm": "ldr r2,[pc,#0x10]; ldr r2,[r2]; ldr r2,[r2,#0x84]; add r0,r2,r0,lsl#4; str r1,[r0,#0x14]; bx lr",
+      "note": "callers=6. Global ptr->[0x84] array, idx*16 slot, write word at +0x14."
+    },
+    {
+      "addr": "0x02039740",
+      "name": "switch_dispatch_7way",
+      "disasm": "cmp r0,#6; addls pc,pc,r0,lsl#2; b 0x2039800; b 0x2039770; b 0x2039800; b 0x2039780; b 0x20397c0; ...",
+      "note": "callers=6. Jump table dispatch on r0 in 0..6 (7 cases)."
+    },
+    {
+      "addr": "0x0203982c",
+      "name": "switch_dispatch_7way_b",
+      "disasm": "cmp r0,#6; addls pc,pc,r0,lsl#2; b 0x203992c; b 0x203985c; b 0x203992c; b 0x203986c; b 0x20398ac; ...",
+      "note": "callers=6. Twin of 0x02039740 (different handlers)."
+    },
+    {
+      "addr": "0x02039f9c",
+      "name": "mod4_loop",
+      "disasm": "subs r0,r0,#4; bhs 0x2039f9c; bx lr",
+      "note": "callers=6. Loop subtracting 4 until r0<4 (mod-4 remainder / 4-byte alignment delay)."
+    },
+    {
+      "addr": "0x0203ca94",
+      "name": "struct_state_init_flags",
+      "disasm": "ldr r3,[r0,#0xc]; mov r2,#0; orr r3,r3,#4; str r3,[r0,#0xc]; ldr r3,[r0,#8]; ldr ip,[pc,#0x14]; str r3,[r0,#0x30]; str r2,[r0,#0x38]; strh r2,[r0,#0x36]; strh r1,[r0,#0x34]; mov r1,#2; bx ip",
+      "note": "callers=6. Struct state init: set flag bit 4 in [0xc], copy [8]->[0x30], write 0x34/0x36/0x38, tail-call."
+    },
+    {
+      "addr": "0x020426c4",
+      "name": "global_ptr_field4_get_b",
+      "disasm": "ldr r0,[pc,#8]; ldr r0,[r0]; ldr r0,[r0,#4]; bx lr",
+      "note": "callers=6. Twin of 0x0200a06c (different global)."
+    },
+    {
+      "addr": "0x02106c18",
+      "name": "memcpy_word_loop",
+      "disasm": "add ip,r1,r2; cmp r1,ip; ldmlt r0!,{r2}; stmlt r1!,{r2}; blt...; bx lr",
+      "note": "callers=6. Word-chunk memcpy loop (r0=src r1=dst r2=count)."
+    },
+    {
+      "addr": "0x02107428",
+      "name": "multiply_guard_0x18_formula",
+      "disasm": "cmp r1,#0x18; bge 0x2107458; ldr r2,[pc,#0x54]; ldr r3,[r2]; ldr r2,[pc,#0x50]; sub r2,r2,r3; add r1,r1,#0x28; mul r1,r3,r1; add r1,r1,r2,lsl#6; mul r1,r0,r1; asr r0,r1,#0x15; bx lr",
+      "note": "callers=6. Guarded multiply formula (r1<0x18) using two globals; result asr 21."
+    },
+    {
+      "addr": "0x0202bb4c",
+      "name": "tail_call_02027a40",
+      "disasm": "ldr ip,[pc,#4]; ldr r1,[pc,#4]; bx ip",
+      "note": "callers=8. Tail call thunk -> 0x02027a40 (literal-pool target)."
+    },
+    {
+      "addr": "0x0203bc90",
+      "name": "tail_call_02037f08",
+      "disasm": "ldr ip,[pc]; bx ip",
+      "note": "callers=8. Tail call thunk -> 0x02037f08."
+    },
+    {
+      "addr": "0x0203ada0",
+      "name": "tail_call_02035470",
+      "disasm": "ldr ip,[pc,#4]; ldr r0,[pc,#4]; bx ip",
+      "note": "callers=6. Tail call thunk -> 0x02035470."
+    },
+    {
+      "addr": "0x0202c51c",
+      "name": "call_indirect_const_to_020367ec",
+      "disasm": "ldr ip,[pc,#0xc]; ldr r0,[pc,#0xc]; mov r1,#0; mov r2,#0xc000; bx ip",
+      "note": "callers=8. Indirect call 0x020367ec with const args r1=0 r2=0xc000."
+    },
+    {
+      "addr": "0x02105c48",
+      "name": "global_compute_write",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#0xc; bl 0x2106940; ldr r1,[pc,#0x8c]; ldrh r1,[r1]; strh r1,[sp]; ldr r1,[pc,#0x84]; ldr ip,[r1]; ldr r3,[r1,#4]; ldr r2,[pc,#0x7c]; mvn r1,#0; and r2,r3,r2",
+      "note": "callers=6. Reads globals, computes AND of [ptr+4] with masked const, writes back."
+    },
+    {
+      "addr": "0x02384204",
+      "name": "arm7_slot_table_24b_lookup",
+      "disasm": "push {r0,r1,r2,r3}; push {r4,r5,r6,lr}; mov r5,r0; mov r4,r1; ldrh r0,[sp,#0x18]; cmp r0,#4; movhi r0,#0; bhi...; bl 0x237e140; ldr r2,[pc,#0x98]; ldr r3,[r2,#0x48c]; mov r1,#0x18; mul ip,r3,r1",
+      "note": "callers=15. ARM7: validate index<4 else 0; lookup 24-byte slot table at global[+0x48c]."
+    },
+    {
+      "addr": "0x0239145c",
+      "name": "arm7_indirect_dispatch",
+      "disasm": "add r2,r2,#1; lsr r2,r2,#1; ldr ip,[pc]; bx ip",
+      "note": "callers=9. ARM7: (r2+1)>>1 then indirect dispatch via literal pool."
+    },
+    {
+      "addr": "0x0238e668",
+      "name": "arm7_wrapper_call",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; mov ip,r0; mov r3,r1; str r2,[sp]; ldr r0,[pc,#0x14]; mov r1,ip; ldr r2,[pc,#0x10]; bl 0x33a6138; ...",
+      "note": "callers=8. ARM7 thin wrapper forwarding args to 0x33a6138 (lib entry)."
+    },
+    {
+      "addr": "0x02385b50",
+      "name": "arm7_store_pair_le_0xf",
+      "disasm": "cmp r0,#0xf; ldrle r1,[pc,#0x10]; strle r0,[r1]; movle r1,#0; ldrle r0,[pc,#8]; strle r1,[r0]; bx lr",
+      "note": "callers=7. ARM7: if r0<=15 store r0 to global A and 0 to global B."
+    },
+    {
+      "addr": "0x023941cc",
+      "name": "arm7_struct_field_2_get",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; bl 0x2394194; ldrh r0,[r0,#2]; add sp,sp,#4; ldm sp!,{lr}; bx lr",
+      "note": "callers=7. ARM7: call 0x2394194 then read halfword [ret+2]."
+    },
+    {
+      "addr": "0x02383724",
+      "name": "arm7_state_fixup",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; mov r0,#0; mov r1,#0x32; bl 0x2383768; ldr r0,[pc,#0x24]; ldr r1,[r0]; ldr r0,[r1]; cmp r0,#4; moveq r0,#6; streq r0,[r1]",
+      "note": "callers=6. ARM7: init then fixup state ==4 -> 6."
+    },
+    {
+      "addr": "0x02391210",
+      "name": "arm7_header_magic_check",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; ldr r3,[r0,#8]; sub lr,r3,#4; ldrh r2,[r3,#-4]; ldr r1,[pc,#0x6c]; cmp r2,r1; bne...; ldrh r2,[lr,#2]; ldr r1,[pc,#0x60]; cmp r2,r1; beq...",
+      "note": "callers=6. ARM7: validate two halfword magic values in data header."
+    },
+    {
+      "addr": "0x023834ac",
+      "name": "arm7_state_switch_1_2_3",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; ldr r2,[pc,#0x94]; ldr r2,[r2]; ldr r2,[r2,#0x24]; cmp r2,#1; beq...; cmp r2,#2; beq...; cmp r2,#3; beq...",
+      "note": "callers=5. ARM7: switch on global->[0x24] state 1/2/3."
+    },
+    {
+      "addr": "0x02391cc4",
+      "name": "arm7_flag_bit_test",
+      "disasm": "mov r2,#1; ldr r1,[pc,#0x10]; ldr r1,[r1]; add r1,r1,#0x300; ldrh r1,[r1,#0x2c]; and r0,r1,r2,lsl r0; bx lr",
+      "note": "callers=5. ARM7: test bit r0 of global[+0x300+0x2c] halfword."
+    },
+    {
+      "addr": "0x02391df0",
+      "name": "arm7_acc_field_0x50",
+      "disasm": "ldr r0,[pc,#0x1f0]; ldr r1,[r0]; ldr r0,[pc,#0x1ec]; add r1,r1,r0; ldr r0,[pc,#0x1e8]; ldrh r2,[r0]; ldr r3,[r1,#0x50]; and r2,r2,#0xff; add r2,r3,r2; str r2,[r1,#0x50]",
+      "note": "callers=5. ARM7: accumulate byte (AND 0xff) into global[+0x50] word."
+    },
+    {
+      "addr": "0x023924d8",
+      "name": "arm7_halfword_shift_set",
+      "disasm": "lsr r2,r0,#1; ldr r1,[pc,#0x18]; ldr r1,[r1]; add r1,r1,#0x300; strh r2,[r1,#0x54]; ldr r1,[pc,#0xc]; strh r0,[r1]; mov r0,#0; bx lr",
+      "note": "callers=5. ARM7: r0>>1 -> global[+0x354], r0 -> global B, return 0."
+    },
+    {
+      "addr": "0x02392ac0",
+      "name": "arm7_range_check_write",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; cmp r0,#0xa; blo...; cmp r0,#0x3e8; bls...; mov r0,#5; b...; ldr r2,[pc,#0x30]; ldr r1,[r2]; add r1,r1,#0x300; strh r0,[r1,#0xb2]",
+      "note": "callers=5. ARM7: validate r0 in [0xa,0x3e8] else 5; store to global[+0x3b2]."
+    },
+    {
+      "addr": "0x023943e4",
+      "name": "arm7_slot_0x31c_copy",
+      "disasm": "mov r1,#0x1c; ldr r2,[pc,#0x14]; ldr r2,[r2]; ldr r2,[r2,#0x31c]; mla r1,r0,r1,r2; ldrh r0,[r1,#0x1a]; strh r0,[r1,#0x18]; bx lr",
+      "note": "callers=5. ARM7: global->[0x31c] slot array (stride 0x1c), copy halfword [0x1a]->[0x18]."
+    },
+    {
+      "addr": "0x023944cc",
+      "name": "arm7_bits_rmw",
+      "disasm": "ldr r2,[pc,#0x4c]; ldr r3,[r2]; ldr r2,[pc,#0x48]; add ip,r3,r2; ldrh r3,[ip,#2]; mov r2,#1; mvn r2,r2,lsl r0; and r2,r3,r2; orr r0,r2,r1,lsl r0; strh r0,[ip,#2]",
+      "note": "callers=5. ARM7: read-modify-write bit field r0 (val r1) at global+2 halfword."
+    },
+    {
+      "addr": "0x02397b18",
+      "name": "arm7_node_init_copy",
+      "disasm": "ldrh r2,[r1,#0xe]; add r2,r1,r2,lsl#1; add r3,r2,#0x10; ldrh r2,[r2,#0x10]; strh r2,[r1,#0xc]; mov r2,#2; strh r2,[r3,#2]; mov r2,#0; strh r2,[r3,#4]; ldrh r2,[r1,#0x18]; strh r2,[r3,#6]",
+      "note": "callers=5. ARM7: linked-list node init/copy (halfword fields 0xc/0xe/0x10..)."
+    },
+    {
+      "addr": "0x02399988",
+      "name": "arm7_array_0x14_lookup",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; ldr r1,[pc,#0x60]; ldr r2,[r1]; ldr r1,[pc,#0x5c]; add r2,r2,r1; mov r1,#0x14; mul r1,r0,r1; add r3,r2,r1; ldrh r0,[r2,r1]; cmp r0,#0; beq...",
+      "note": "callers=5. ARM7: stride-0x14 array lookup by idx; checks first halfword nonzero."
+    },
+    {
+      "addr": "0x0239d9a8",
+      "name": "arm7_flags_bit_decode",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; add r0,sp,#0; bl 0x239e68c; ldrh r1,[sp]; ands r0,r1,#1; movne r0,#0; bne...; ands r0,r1,#2; movne r0,#1; moveq r0,#0",
+      "note": "callers=5. ARM7: read halfword, decode bit0->0 / bit1->1 / else 0."
+    }
+  ]
+}
