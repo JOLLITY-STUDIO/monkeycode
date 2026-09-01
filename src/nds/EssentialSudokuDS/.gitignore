@@ -23,6 +23,7 @@ miniprogram_npm/
 _*.txt
 _*.js
 _*.ts
+_*.cjs
 _*.bat
 _*.log
 _*.out

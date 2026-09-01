@@ -4232,9 +4232,10 @@ export const auto_io_4000138_bic0x77_orr0x74_2 = 0x0239fa48 as const;
  * ARM7 函数 @ 0x0239fad8
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0239fad8 = 0x0239fad8 as const;
+export const arm7_spi_shift_read = 0x0239fad8 as const;
 /**
  * ARM7 函数 @ 0x023a2c24
  * @category single_caller_real

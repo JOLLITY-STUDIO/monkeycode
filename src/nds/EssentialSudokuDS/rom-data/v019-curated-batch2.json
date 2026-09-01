@@ -1,0 +1,90 @@
+{
+  "version": "V0.19.4 curated batch",
+  "note": "manual curated naming from 186-candidate dump sweep (intrusive list family + softfloat conversions/comparators + unaligned byte memset/memcpy + strncasecmp + heap free-list coalesce + ARM7 SPI bit-bang read), verified via disasm-arm9/arm7-full.txt",
+  "names": [
+    {
+      "addr": "0x02038e14",
+      "name": "intrusive_list_unlink",
+      "cpu": "arm9",
+      "comment": "walk head@[r0] via next@+0x80/prev@+0x7c doubly link; if node==r1: unlink (head/tail@[r0,#4] update, link prev->next); return unlinked node or last visited"
+    },
+    {
+      "addr": "0x02038e9c",
+      "name": "intrusive_list_sorted_insert",
+      "cpu": "arm9",
+      "comment": "sorted insert node r1 by key@+0x70 (unsigned cmp, bls keeps walking); if r1 already in list -> bx lr; links prev@+0x7c/next@+0x80; append to tail or insert before ip"
+    },
+    {
+      "addr": "0x0204c0c0",
+      "name": "float64_from_uint32",
+      "cpu": "arm9",
+      "comment": "softfloat uint32->float64: zero->0.0; r3=0x41e (1054 double bias), clz normalize via lsl, pack mantissa+exponent -> r1:r0 (AAPCS 64-bit double)"
+    },
+    {
+      "addr": "0x0204ccc0",
+      "name": "float32_compare_ge",
+      "cpu": "arm9",
+      "comment": "softfloat compare: NaN gate (r0<<1 vs 0xff000000), abs both operands (sign clear+negate), unsigned cmp, return 1 if r0>=r1 else 0"
+    },
+    {
+      "addr": "0x0204cfd8",
+      "name": "float64_compare_setflags",
+      "cpu": "arm9",
+      "comment": "softfloat 64-bit compare helper: if (r0|ip<<1|r2)==0 return; cmp r3 vs r1 (hi word), cmpeq r2 vs r0 (lo word) - result conveyed via NZCV flags"
+    },
+    {
+      "addr": "0x02104f10",
+      "name": "intrusive_list_unlink_alt",
+      "cpu": "arm9",
+      "comment": "same unlink algorithm as 0x02038e14 but links prev@+0x60/next@+0x64 and saves lr (different intrusive container instance)"
+    },
+    {
+      "addr": "0x02104f74",
+      "name": "intrusive_list_pop_front",
+      "cpu": "arm9",
+      "comment": "unlink head@[r0]: new head=[head+0x64] (next); if list empties tail@[r0,#4]=0 and [head,#0x5c]=0; return popped node"
+    },
+    {
+      "addr": "0x02104fa8",
+      "name": "intrusive_list_sorted_insert_alt",
+      "cpu": "arm9",
+      "comment": "same sorted insert as 0x02038e9c but key@+0x54 and links prev@+0x60/next@+0x64"
+    },
+    {
+      "addr": "0x02106c90",
+      "name": "unaligned_byte_memset",
+      "cpu": "arm9",
+      "comment": "fill r2 bytes of value r1 at r0 with unaligned head/tail: odd dst merges via strh (ldrh+and+orr+strh), then halfword/word fast path"
+    },
+    {
+      "addr": "0x02106d24",
+      "name": "unaligned_byte_memcpy",
+      "cpu": "arm9",
+      "comment": "copy r2 bytes src r1->dst r0 with unaligned handling: odd src byte merge, align eor check, halfword loop, tail byte merge"
+    },
+    {
+      "addr": "0x0203cb6c",
+      "name": "strncasecmp_ascii",
+      "cpu": "arm9",
+      "comment": "length-limited case-insensitive ASCII compare: byte in 0x41..0x5a -> +0x20 lowercase, compare up to r2 bytes, return byte diff or 0"
+    },
+    {
+      "addr": "0x02105b34",
+      "name": "heap_freelist_coalesce_insert",
+      "cpu": "arm9",
+      "comment": "heap free-list insert with forward+backward coalesce: node {next@+0, prev@+4, size@+8}; walk by size order (bls), merge adjacent r1+size==ip and lr+size==r1"
+    },
+    {
+      "addr": "0x02105c10",
+      "name": "heap_freelist_push_front",
+      "cpu": "arm9",
+      "comment": "set free-list node r1: prev@[r1,#4]=r0, next@[r1]=0, if r0!=0 -> [r0]=r1; return r1 (head push)"
+    },
+    {
+      "addr": "0x0239fad8",
+      "name": "arm7_spi_shift_read",
+      "cpu": "arm7",
+      "comment": "bit-bang SPI read r1 bytes to r0 via AUXSPICNT IO 0x04000138 bit0 data-in: 8-bit shift accumulate (r2 = bit?0x8000:0 | r2>>1), CS+clock toggles with 9-iter delay, odd/even byte merge (strh), r0++ r1-- loop"
+    }
+  ]
+}

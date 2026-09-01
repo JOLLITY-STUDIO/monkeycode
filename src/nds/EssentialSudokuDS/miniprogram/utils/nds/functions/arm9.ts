@@ -6137,9 +6137,10 @@ export const auto_list_unlink_next_off0x10 = 0x02038de4 as const;
  * ARM9 函数 @ 0x02038e14
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02038e14 = 0x02038e14 as const;
+export const intrusive_list_unlink = 0x02038e14 as const;
 /**
  * ARM9 函数 @ 0x02038e68
  * @category bx_lr
@@ -6152,9 +6153,10 @@ export const auto_list_unlink_next_off0x80 = 0x02038e68 as const;
  * ARM9 函数 @ 0x02038e9c
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02038e9c = 0x02038e9c as const;
+export const intrusive_list_sorted_insert = 0x02038e9c as const;
 /**
  * ARM9 函数 @ 0x02038f14
  * @category bx_lr
@@ -7236,9 +7238,10 @@ export const sub_0203cac8 = 0x0203cac8 as const;
  * ARM9 函数 @ 0x0203cb6c
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0203cb6c = 0x0203cb6c as const;
+export const strncasecmp_ascii = 0x0203cb6c as const;
 /**
  * ARM9 函数 @ 0x0203cbd0
  * @category prologue
@@ -9381,10 +9384,10 @@ export const float32_compare_abs = 0x0204c074 as const;
  * ARM9 函数 @ 0x0204c0c0
  * @category bx_lr
  * @confidence medium
- * @heuristic sfloat (V0.10 ADR-010)
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sfloat_0204c0c0 = 0x0204c0c0 as const;
+export const float64_from_uint32 = 0x0204c0c0 as const;
 /**
  * ARM9 函数 @ 0x0204c13c
  * @category prologue
@@ -9443,18 +9446,18 @@ export const float32_gt = 0x0204cc84 as const;
  * ARM9 函数 @ 0x0204ccc0
  * @category bx_lr
  * @confidence medium
- * @heuristic sfloat (V0.10 ADR-010)
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sfloat_0204ccc0 = 0x0204ccc0 as const;
+export const float32_compare_ge = 0x0204ccc0 as const;
 /**
  * ARM9 函数 @ 0x0204cfd8
  * @category bx_lr
  * @confidence medium
- * @heuristic sfloat (V0.10 ADR-010)
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sfloat_0204cfd8 = 0x0204cfd8 as const;
+export const float64_compare_setflags = 0x0204cfd8 as const;
 /**
  * ARM9 函数 @ 0x0204d27e
  * @category bx_lr
@@ -13057,9 +13060,10 @@ export const auto_list_unlink_next_off0x10_2 = 0x02104ee4 as const;
  * ARM9 函数 @ 0x02104f10
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02104f10 = 0x02104f10 as const;
+export const intrusive_list_unlink_alt = 0x02104f10 as const;
 /**
  * ARM9 函数 @ 0x02104f14
  * @category bx_lr
@@ -13081,14 +13085,15 @@ export const sub_02104f18 = 0x02104f18 as const;
  * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_list_unlink_next_off0x64 = 0x02104f74 as const;
+export const intrusive_list_pop_front = 0x02104f74 as const;
 /**
  * ARM9 函数 @ 0x02104fa8
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02104fa8 = 0x02104fa8 as const;
+export const intrusive_list_sorted_insert_alt = 0x02104fa8 as const;
 /**
  * ARM9 函数 @ 0x02105020
  * @category bx_lr
@@ -13295,9 +13300,10 @@ export const sub_02105a5a = 0x02105a5a as const;
  * ARM9 函数 @ 0x02105b34
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02105b34 = 0x02105b34 as const;
+export const heap_freelist_coalesce_insert = 0x02105b34 as const;
 /**
  * ARM9 函数 @ 0x02105be8
  * @category bx_lr
@@ -13310,9 +13316,10 @@ export const dllist_node_unlink = 0x02105be8 as const;
  * ARM9 函数 @ 0x02105c10
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02105c10 = 0x02105c10 as const;
+export const heap_freelist_push_front = 0x02105c10 as const;
 /**
  * ARM9 函数 @ 0x02105c2c
  * @category bx_lr
@@ -13668,9 +13675,10 @@ export const auto_memcpy_word_02106c2c = 0x02106c2c as const;
  * ARM9 函数 @ 0x02106c90
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02106c90 = 0x02106c90 as const;
+export const unaligned_byte_memset = 0x02106c90 as const;
 /**
  * ARM9 函数 @ 0x02106d00
  * @category bx_lr
@@ -13690,9 +13698,10 @@ export const sub_02106d12 = 0x02106d12 as const;
  * ARM9 函数 @ 0x02106d24
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02106d24 = 0x02106d24 as const;
+export const unaligned_byte_memcpy = 0x02106d24 as const;
 /**
  * ARM9 函数 @ 0x02106e54
  * @category near

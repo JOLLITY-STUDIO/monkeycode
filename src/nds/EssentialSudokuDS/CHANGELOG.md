@@ -127,6 +127,43 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.19.4 — 186 候选扫描手工 curated (14 个, 覆盖 35.93%)
+
+### 2026-09-01
+
+#### 新增
+- ✅ 手工 curated 命名 14 个 (`rom-data/v019-curated-batch2.json`), 全部经
+  disasm-arm9/arm7-full.txt 完整函数体反汇编验证 (186 候选 dump 扫描后的高价值子集):
+  - **intrusive 链表家族续** (5): `intrusive_list_unlink` (0x02038e14, 双链摘除
+    next@+0x80/prev@+0x7c, head/tail 更新) / `intrusive_list_sorted_insert` (0x02038e9c,
+    key@+0x70 排序插入, 已在表内直接返回) / `intrusive_list_unlink_alt` (0x02104f10,
+    同算法 link 0x60/0x64 + 存 lr 的容器变体) / `intrusive_list_pop_front` (0x02104f74,
+    摘头, 空表尾清 0x5c) / `intrusive_list_sorted_insert_alt` (0x02104fa8, key@+0x54 变体)
+  - **softfloat 转换/比较器** (3, 从 generic sfloat_ 名升级为语义名):
+    `float64_from_uint32` (0x0204c0c0, bias 0x41e=1054 + clz 归一化, 返回 r1:r0 64-bit) /
+    `float32_compare_ge` (0x0204ccc0, NaN 门控 + abs 双方 + 无符号比较) /
+    `float64_compare_setflags` (0x0204cfd8, 64-bit 比较结果走 NZCV flags)
+  - **未对齐内存原语** (2): `unaligned_byte_memset` (0x02106c90, 奇地址首字节
+    ldrh+and+orr+strh 合并, 半字/字快路径) / `unaligned_byte_memcpy` (0x02106d24,
+    src/dst 奇偶对齐处理 + 半字循环 + 尾字节)
+  - **字符串/堆** (3): `strncasecmp_ascii` (0x0203cb6c, 0x41..0x5a +0x20 小写化后
+    r2 长度内比较, 返回字节差) / `heap_freelist_coalesce_insert` (0x02105b34,
+    free-list 按 size 序插入 + 前向/后向合并, node {next@+0,prev@+4,size@+8}) /
+    `heap_freelist_push_front` (0x02105c10, 头插入 helper)
+  - **ARM7 SPI 位拆读** (1): `arm7_spi_shift_read` (0x0239fad8, AUXSPICNT
+    0x04000138 bit0 data-in, 8-bit 移位累积 + CS/clock 翻转延迟循环, 奇偶地址半字合并,
+    读 r1 字节到 r0) — V0.19.2 io_4000138 家族漏网函数
+- ✅ `generate_ts_functions.py` 新增 `CURATED_JSON_V019C` 加载 (23→24 个 curated JSON)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+- ✅ curated 614 → 627 (+14), 命名覆盖率 35.56% → 35.93% (970/2700),
+  sub_ 1740 → 1699 (13 arm9 + 1 arm7 升级为语义名)
+- ✅ arm9.ts +13 (intrusive_list 5 + softfloat 3 + mem 2 + string 1 + heap 2)
+  / arm7.ts +1 (arm7_spi_shift_read)
+
+---
+
 ## V0.18 — global ptr 结构命名全量覆盖 (剩余 callers≥1 自动化消化)
 
 ### 2026-09-01
