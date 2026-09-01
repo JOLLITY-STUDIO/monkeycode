@@ -1,3 +1,52 @@
-<!--pages/index/index.wxml - 数独玩法页面壳 (逻辑在 sudoku-scene)-->
-<navigation-bar title="Essential Sudoku DS" back="{{false}}" color="black" background="#FFF"></navigation-bar>
-<sudoku-scene puzzle-id="{{puzzleId}}" bind:back="onBack" />
+<!--pages/index/index.wxml - 单页场景控制器-->
+<!--同一时刻仅一个场景组件渲染 (wx:if/elif), 路由由 index.ts 自建-->
+
+<view class="scene-root">
+  <!-- 启动标题 -->
+  <title-scene wx:if="{{scene === 'title'}}" bind:start="onTitleStart" />
+
+  <!-- 主菜单 -->
+  <menu-scene wx:elif="{{scene === 'menu'}}"
+    bind:open-number="onMenuOpenNumber"
+    bind:open-picture="onMenuOpenPicture"
+    bind:open-tutorial="onMenuOpenTutorial"
+    bind:open-staff="onMenuOpenStaff"
+    bind:open-options="onMenuOpenOptions"
+    bind:back-title="onMenuBackTitle" />
+
+  <!-- 数独选题 -->
+  <select-scene wx:elif="{{scene === 'select'}}"
+    bind:start="onSelectStart"
+    bind:back="onSelectBack" />
+
+  <!-- 选项 -->
+  <options-scene wx:elif="{{scene === 'options'}}"
+    bind:open-staff="onOptionsOpenStaff"
+    bind:open-about="onOptionsOpenAbout"
+    bind:back="onOptionsBack" />
+
+  <!-- 玩法说明 -->
+  <tutorial-scene wx:elif="{{scene === 'tutorial'}}" bind:back="onTutorialBack" />
+
+  <!-- 制作人员 -->
+  <staff-scene wx:elif="{{scene === 'staff'}}" bind:back="onStaffBack" />
+
+  <!-- 关于 -->
+  <about-scene wx:elif="{{scene === 'about'}}" bind:back="onAboutBack" />
+
+  <!-- 图画谜题类别列表 -->
+  <pict-list-scene wx:elif="{{scene === 'pictList'}}"
+    bind:open="onPictListOpen"
+    bind:back="onPictListBack" />
+
+  <!-- 数独对局 (puzzleId 由选题页传入) -->
+  <sudoku-scene wx:elif="{{scene === 'sudoku'}}"
+    puzzle-id="{{puzzleId}}"
+    bind:back="onSudokuBack" />
+
+  <!-- 图画对局 (fileKey + puzzleIdx 由类别列表传入) -->
+  <picture-scene wx:elif="{{scene === 'picture'}}"
+    file-key="{{fileKey}}"
+    puzzle-idx="{{puzzleIdx}}"
+    bind:back="onPictureBack" />
+</view>

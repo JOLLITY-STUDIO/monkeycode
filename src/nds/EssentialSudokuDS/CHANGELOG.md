@@ -4,6 +4,25 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.19.1 — 单页场景控制器 (唯一页面 pages/index)
+
+### 2026-09-01
+
+#### 重构
+- ✅ `pages/index` 成为唯一页面: 自建场景路由 (场景控制器模式), 不再使用 wx.navigateTo 页面跳转
+- ✅ 10 个场景组件全部由 index 按 `scene` 状态 wx:if/elif 切换:
+  title / menu / select / options / sudoku / picture / staff / about / tutorial / pictList
+- ✅ 场景间数据透传: `puzzleId` (选题页 → 数独), `fileKey + puzzleIdx` (类别列表 → 图画)
+- ✅ 删除 9 个页面壳目录 (title/menu/select/options/pict_list/picture/staff/about/tutorial)
+  及模板遗留 logs 页; `app.json` pages 仅注册 `pages/index/index`
+- ✅ index 保留 onLoad query 直达支持 (`?id=numpleX.data_NNN` / `?file=xxx&idx=N`)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0 (无错误输出)
+- ✅ `git grep` 确认无残留页面路径引用
+
+---
+
 ## V0.19 — 场景组件化重构 (10 scenes 组件) + 全项目 rpx→px
 
 ### 2026-09-01

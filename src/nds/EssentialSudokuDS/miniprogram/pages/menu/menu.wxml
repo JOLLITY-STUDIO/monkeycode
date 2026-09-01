@@ -1,9 +1,0 @@
-<!-- 主菜单场景 (menu-scene) -->
-<menu-scene
-  bind:open-number="onOpenNumber"
-  bind:open-picture="onOpenPicture"
-  bind:open-tutorial="onOpenTutorial"
-  bind:open-staff="onOpenStaff"
-  bind:back-title="onBackTitle"
-  bind:open-options="onOpenOptions"
-/>

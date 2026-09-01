@@ -1,2 +1,0 @@
-<!-- 启动标题场景 (title-scene) -->
-<title-scene bind:start="onStart" />

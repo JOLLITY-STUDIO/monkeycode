@@ -1,2 +1,0 @@
-<!-- 关于场景 (about-scene) -->
-<about-scene bind:back="onBack" />

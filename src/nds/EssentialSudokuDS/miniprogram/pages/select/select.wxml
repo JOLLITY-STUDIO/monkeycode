@@ -1,2 +1,0 @@
-<!-- 数独选题场景 (select-scene) -->
-<select-scene bind:back="onBack" bind:start="onStart" />

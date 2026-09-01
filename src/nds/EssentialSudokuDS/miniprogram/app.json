@@ -1,16 +1,6 @@
 {
   "pages": [
-    "pages/title/title",
-    "pages/menu/menu",
-    "pages/select/select",
-    "pages/index/index",
-    "pages/picture/picture",
-    "pages/pict_list/pict_list",
-    "pages/tutorial/tutorial",
-    "pages/staff/staff",
-    "pages/options/options",
-    "pages/about/about",
-    "pages/logs/logs"
+    "pages/index/index"
   ],
   "window": {
     "navigationBarTextStyle": "black",

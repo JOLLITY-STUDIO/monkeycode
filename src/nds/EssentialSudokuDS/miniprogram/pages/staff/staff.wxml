@@ -1,2 +1,0 @@
-<!-- 制作人员场景 (staff-scene) -->
-<staff-scene bind:back="onBack" />

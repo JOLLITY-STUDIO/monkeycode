@@ -1,2 +1,0 @@
-<!-- 图画谜题列表场景 (pict-list-scene) -->
-<pict-list-scene bind:back="onBack" bind:open="onOpen" />

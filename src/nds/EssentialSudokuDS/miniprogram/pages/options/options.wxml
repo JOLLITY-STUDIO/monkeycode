@@ -1,6 +1,0 @@
-<!-- 选项场景 (options-scene) -->
-<options-scene
-  bind:back="onBack"
-  bind:open-staff="onOpenStaff"
-  bind:open-about="onOpenAbout"
-/>

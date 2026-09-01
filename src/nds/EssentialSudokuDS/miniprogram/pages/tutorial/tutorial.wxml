@@ -1,2 +1,0 @@
-<!-- 玩法说明场景 (tutorial-scene) -->
-<tutorial-scene bind:back="onBack" />

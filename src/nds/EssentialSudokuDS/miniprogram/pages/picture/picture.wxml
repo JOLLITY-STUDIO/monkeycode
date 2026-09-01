@@ -1,3 +1,0 @@
-<!--pages/picture/picture.wxml - 图画谜题玩法页面壳 (逻辑在 picture-scene)-->
-<navigation-bar title="Picture Puzzle" back="{{false}}" color="black" background="#FFF"></navigation-bar>
-<picture-scene file-key="{{fileKey}}" puzzle-idx="{{puzzleIdx}}" bind:back="onBack" />

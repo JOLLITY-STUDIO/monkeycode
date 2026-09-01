@@ -1,6 +1,0 @@
-{
-  "usingComponents": {
-    "navigation-bar": "/components/navigation-bar/navigation-bar",
-    "picture-scene": "/components/scenes/picture-scene/picture-scene"
-  }
-}

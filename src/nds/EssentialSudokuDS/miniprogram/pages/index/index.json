@@ -1,6 +1,14 @@
 {
   "usingComponents": {
-    "navigation-bar": "/components/navigation-bar/navigation-bar",
-    "sudoku-scene": "/components/scenes/sudoku-scene/sudoku-scene"
+    "title-scene": "/components/scenes/title-scene/title-scene",
+    "menu-scene": "/components/scenes/menu-scene/menu-scene",
+    "select-scene": "/components/scenes/select-scene/select-scene",
+    "options-scene": "/components/scenes/options-scene/options-scene",
+    "tutorial-scene": "/components/scenes/tutorial-scene/tutorial-scene",
+    "staff-scene": "/components/scenes/staff-scene/staff-scene",
+    "about-scene": "/components/scenes/about-scene/about-scene",
+    "pict-list-scene": "/components/scenes/pict-list-scene/pict-list-scene",
+    "sudoku-scene": "/components/scenes/sudoku-scene/sudoku-scene",
+    "picture-scene": "/components/scenes/picture-scene/picture-scene"
   }
 }
