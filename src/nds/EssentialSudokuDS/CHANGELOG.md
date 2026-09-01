@@ -67,6 +67,37 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.19.2 — IO 寄存器家族 pattern + 浮点/门控手验 (7 个, 覆盖 35.56%)
+
+### 2026-09-01
+
+#### 新增
+- ✅ detector 新模式 T `io_4000138` (4 个): 检测 `mov ip,#0x4000000 + add ip,ip,#0x138`
+  + bic/orr 位操作 — ARM7 keypad/JOY 总线寄存器族控制函数
+  - `auto_io_4000138_bic0x77_orr0x72` (0x0239f964) / `auto_io_4000138_bic4_orr0` (0x0239f9a4)
+    / `auto_io_4000138_bic0x77_orr0x74` ×2 (0x0239f9d8 位扫描循环 + 0x0239fa48 未对齐半字变体)
+  - 结构: read-modify-write + `subs r3,#1; bne` 延迟循环 (2/9 周期) + 位扫描 tst/lsr
+- ✅ 手工 curated 3 个 (full-body 反汇编验证):
+  - `shift_normalize_left_binsearch` (0x0204e1b0 arm9 + 0x023876ac arm7, 同算法双 CPU 副本):
+    二分搜索移位归一化 (r2=0x1c, cmp lsr 阶梯 sub 0x10/0x8/0x4), r0>r1 → 0 (softfloat 风格)
+  - `triple_gate_check_to_0x202f3fc` (0x020274f0): 3 次调用 (args 2/3/4) 全成功 → 0,
+    任一失败 → 1 (子模块可用性门控)
+- ✅ detector curatedFiles 加入 `v019-curated-batch.json` (防已 curated 地址被重复 pattern)
+- ✅ detector `io_4000138` body 上限 20→40 (家族函数实际 28-36 insn)
+
+#### 关键修复 (scan 工具链教训)
+- function-records.json 的 addr 是数字 (33587916), function-table.json 是字符串 '0x02009a18'
+  → 跨文件比对必须归一化 (number→hex string), 否则 scan 命中率 0
+- V0.8 误判邻近条目会截断真实函数体 → 结构 scan 必须用 loose 模式 (忽略 addrSet 断点)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0 (无错误输出)
+- ✅ 61 个 detector 命名 (57 + 4 io_4000138), curated 607 → 614
+- ✅ 命名覆盖率 35.30% → 35.56% (960/2700), sub_ 1747 → 1740
+- ✅ 剩余 sub_ callers≥1 = 360, 全部 callers≤2 (高调用数候选已被 V0.13-V0.19 消化殆尽)
+
+---
+
 ## V0.18 — global ptr 结构命名全量覆盖 (剩余 callers≥1 自动化消化)
 
 ### 2026-09-01

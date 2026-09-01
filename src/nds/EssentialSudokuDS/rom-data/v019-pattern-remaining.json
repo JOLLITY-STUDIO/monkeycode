@@ -626,9 +626,53 @@
    "cpu": "arm7",
    "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov r0, #0x8000|bl #0x33a6bd0|ldrh r0, [sp]|bic r0, r0, #1",
    "target_global_ptr": null
+  },
+  {
+   "addr": "0x0239f964",
+   "name": "auto_io_4000138_bic0x77_orr0x72",
+   "pattern_kind": "io_4000138",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm7",
+   "disasm_snippet": "mov ip, #0x4000000|add ip, ip, #0x138|ldrh r0, [ip]|bic r0, r0, #0x77|orr r0, r0, #0x72|strh r0, [ip]",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0239f9a4",
+   "name": "auto_io_4000138_bic4_orr0",
+   "pattern_kind": "io_4000138",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm7",
+   "disasm_snippet": "mov ip, #0x4000000|add ip, ip, #0x138|mov r3, #2|subs r3, r3, #1|bne #0x239f9b0|ldrh r0, [ip]",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0239f9d8",
+   "name": "auto_io_4000138_bic0x77_orr0x74",
+   "pattern_kind": "io_4000138",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm7",
+   "disasm_snippet": "mov ip, #0x4000000|add ip, ip, #0x138|orr r1, r0, r1|ldrh r0, [ip]|bic r0, r0, #0x77|orr r0, r0, #0x74",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0239fa48",
+   "name": "auto_io_4000138_bic0x77_orr0x74_2",
+   "pattern_kind": "io_4000138",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm7",
+   "disasm_snippet": "mov ip, #0x4000000|add ip, ip, #0x138|push {r0, r1}|tst r0, #1|ldrheq r1, [r0]|ldrhne r1, [r0, #-1]",
+   "target_global_ptr": null
   }
  ],
  "generated": "V0.19 remaining detector",
- "total": 57,
- "skipped": 202
+ "total": 61,
+ "skipped": 186
 }

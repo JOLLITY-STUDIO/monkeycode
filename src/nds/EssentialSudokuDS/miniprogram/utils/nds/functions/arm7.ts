@@ -1088,9 +1088,10 @@ export const arm7_udiv_normalize_loop = 0x023876a4 as const;
  * ARM7 函数 @ 0x023876ac
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_023876ac = 0x023876ac as const;
+export const shift_normalize_left_binsearch_2 = 0x023876ac as const;
 /**
  * ARM7 函数 @ 0x02387c64
  * @category prologue
@@ -4199,30 +4200,34 @@ export const auto_wrap_2bl_0x33a6bd0_0x239f164 = 0x0239f924 as const;
  * ARM7 函数 @ 0x0239f964
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0239f964 = 0x0239f964 as const;
+export const auto_io_4000138_bic0x77_orr0x72 = 0x0239f964 as const;
 /**
  * ARM7 函数 @ 0x0239f9a4
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0239f9a4 = 0x0239f9a4 as const;
+export const auto_io_4000138_bic4_orr0 = 0x0239f9a4 as const;
 /**
  * ARM7 函数 @ 0x0239f9d8
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0239f9d8 = 0x0239f9d8 as const;
+export const auto_io_4000138_bic0x77_orr0x74 = 0x0239f9d8 as const;
 /**
  * ARM7 函数 @ 0x0239fa48
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0239fa48 = 0x0239fa48 as const;
+export const auto_io_4000138_bic0x77_orr0x74_2 = 0x0239fa48 as const;
 /**
  * ARM7 函数 @ 0x0239fad8
  * @category bx_lr

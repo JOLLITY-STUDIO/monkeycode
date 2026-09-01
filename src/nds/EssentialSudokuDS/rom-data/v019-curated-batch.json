@@ -85,6 +85,24 @@
       "name": "const_400_wrap_call_0x2104c1c",
       "cpu": "arm9",
       "comment": "mov r1,#0x400; stack args; 3 pc-relative globals; bl 0x2104c1c; then bl 0x21049dc (global param wrapper)"
+    },
+    {
+      "addr": "0x0204e1b0",
+      "name": "shift_normalize_left_binsearch",
+      "cpu": "arm9",
+      "comment": "binary-search shift-left normalize: r2=0x1c, sub 0x10/0x8/0x4 by cmp lsr steps, lsl r0,r0,r2; r0>r1 -> return 0 (softfloat-style fraction normalize)"
+    },
+    {
+      "addr": "0x023876ac",
+      "name": "shift_normalize_left_binsearch",
+      "cpu": "arm7",
+      "comment": "same binary-search shift-left normalize algorithm as arm9 0x0204e1b0 (shared lib duplicated on ARM7)"
+    },
+    {
+      "addr": "0x020274f0",
+      "name": "triple_gate_check_to_0x202f3fc",
+      "cpu": "arm9",
+      "comment": "3 attempts: mov r0,#2/3/4 each bl 0x202f3fc, all must return 0 -> ret 0, any non-zero -> ret 1 (submodule availability gate)"
     }
   ]
 }

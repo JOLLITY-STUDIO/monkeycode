@@ -15,6 +15,7 @@ const curatedFiles = [
   'v017-curated-batch13.json', 'v017-curated-batch14.json', 'v017-curated-batch15.json',
   'v017-curated-batch16.json', 'v017-curated-batch17.json', 'v017-curated-batch18.json',
   'v017-curated-batch19.json', 'v017-curated-batch20.json', 'v017-curated-batch21.json',
+  'v019-curated-batch.json',
 ];
 const patternFiles = [
   'v013-pattern-suggestions.json', 'v014-pattern-suggestions.json',
@@ -312,6 +313,16 @@ for (const f of cands) {
       if (bls.length >= 4 && condB === 0 && last2ok) {
         const tgts = bls.map(b => (b.t.match(/bl +#(0x[0-9a-f]+)/) || [])[1] || '?').join('_');
         kind = 'multi_bl_init'; detail = bls.length + 'bl_' + tgts;
+      }
+    }
+    // T. io_4000138: mov ip,#0x4000000 + add ip,ip,#0x138 + bic/orr 位操作 (ARM7 keypad/JOY 寄存器族)
+    if (!kind && body.length <= 40) {
+      if (/mov ip, #0x4000000/.test(joined) && /add ip, ip, #0x138/.test(joined)) {
+        const bic = body.find(i => /^bic +r[0-9]+, *r[0-9]+, *#(0x[0-9a-f]+|[0-9]+)/.test(i.t));
+        const orr = body.find(i => /^orr +r[0-9]+, *r[0-9]+, *#(0x[0-9a-f]+|[0-9]+)/.test(i.t));
+        const bv = bic ? bic.t.match(/#(0x[0-9a-f]+|[0-9]+)/)[1] : '?';
+        const ov = orr ? orr.t.match(/#(0x[0-9a-f]+|[0-9]+)/)[1] : '?';
+        kind = 'io_4000138'; detail = 'bic' + bv + '_orr' + ov;
       }
     }
     // E. gptr 复用 v018 (ldr [pc] + 解引用)

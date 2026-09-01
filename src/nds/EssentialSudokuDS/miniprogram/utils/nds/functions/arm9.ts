@@ -2388,9 +2388,10 @@ export const sub_02027410 = 0x02027410 as const;
  * ARM9 函数 @ 0x020274f0
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_020274f0 = 0x020274f0 as const;
+export const triple_gate_check_to_0x202f3fc = 0x020274f0 as const;
 /**
  * ARM9 函数 @ 0x02027548
  * @category bx_lr
@@ -9565,9 +9566,10 @@ export const udiv_normalize_loop = 0x0204e1a8 as const;
  * ARM9 函数 @ 0x0204e1b0
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0204e1b0 = 0x0204e1b0 as const;
+export const shift_normalize_left_binsearch = 0x0204e1b0 as const;
 /**
  * ARM9 函数 @ 0x0204e3a4
  * @category prologue
