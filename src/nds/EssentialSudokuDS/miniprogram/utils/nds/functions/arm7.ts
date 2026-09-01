@@ -367,10 +367,10 @@ export const sub_023829e4 = 0x023829e4 as const;
  * ARM7 函数 @ 0x02382a2c
  * @category near
  * @confidence high
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_tail_call_037feaa4 = 0x02382a2c as const;
+export const isr_call_target_0x37feaa4 = 0x02382a2c as const;
 /**
  * ARM7 函数 @ 0x02382a44
  * @category prologue
@@ -393,10 +393,10 @@ export const sub_02382f5c = 0x02382f5c as const;
  * ARM7 函数 @ 0x02382fa4
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_state_setter_03809c54 = 0x02382fa4 as const;
+export const arm7_wram_field_0x3809c54_setter = 0x02382fa4 as const;
 /**
  * ARM7 函数 @ 0x02382fb4
  * @category bx_lr
@@ -977,10 +977,10 @@ export const sub_02386dc0 = 0x02386dc0 as const;
  * ARM7 函数 @ 0x02386e6c
  * @category near
  * @confidence high
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const auto_halfword_setter_08001000 = 0x02386e6c as const;
+export const arm7_wram_halfword_setter = 0x02386e6c as const;
 /**
  * ARM7 函数 @ 0x02386e88
  * @category prologue
@@ -1363,18 +1363,18 @@ export const sub_0238a14c = 0x0238a14c as const;
  * ARM7 函数 @ 0x0238a160
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_tail_call_00000306 = 0x0238a160 as const;
+export const isr_call_target_0x306 = 0x0238a160 as const;
 /**
  * ARM7 函数 @ 0x0238a178
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_tail_call_00000305 = 0x0238a178 as const;
+export const isr_call_target_0x305 = 0x0238a178 as const;
 /**
  * ARM7 函数 @ 0x0238a190
  * @category bx_lr
@@ -1425,10 +1425,10 @@ export const sub_0238a204 = 0x0238a204 as const;
  * ARM7 函数 @ 0x0238a218
  * @category near
  * @confidence high
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_tail_call_00000281 = 0x0238a218 as const;
+export const isr_call_target_0x281 = 0x0238a218 as const;
 /**
  * ARM7 函数 @ 0x0238a230
  * @category near
@@ -3011,10 +3011,10 @@ export const sub_02394980 = 0x02394980 as const;
  * ARM7 函数 @ 0x023949f0
  * @category near
  * @confidence high
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 2
  */
-export const auto_tail_call_037fe634 = 0x023949f0 as const;
+export const isr_call_target_0x37fe634 = 0x023949f0 as const;
 /**
  * ARM7 函数 @ 0x02394a1c
  * @category prologue

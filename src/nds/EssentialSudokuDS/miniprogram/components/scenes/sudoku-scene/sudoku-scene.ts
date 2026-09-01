@@ -50,18 +50,21 @@ Component({
     notesMode: false, // V0.18 候选笔记模式
     canUndo: false,
     canRedo: false,
+    /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器句柄 */
+    _attachedDone: false,
+    _timer: 0,
   },
 
   observers: {
     // 运行中 puzzleId 变化 (页面复用) → 重新加载题目
     puzzleId(id: string) {
-      if (id && this._attachedDone) this._startFromId(String(id));
+      if (id && this.data._attachedDone) this._startFromId(String(id));
     },
   },
 
   lifetimes: {
     attached() {
-      this._attachedDone = true;
+      this.data._attachedDone = true;
       if (this.data.puzzleId) {
         this._startFromId(String(this.data.puzzleId));
       } else {
@@ -69,7 +72,7 @@ Component({
       }
     },
     detached() {
-      this._attachedDone = false;
+      this.data._attachedDone = false;
       this._stopTimer();
     },
   },
@@ -271,7 +274,7 @@ Component({
     /** 计时器 */
     _startTimer() {
       this._stopTimer();
-      this._timer = setInterval(() => {
+      this.data._timer = setInterval(() => {
         const info = service.getSessionInfo();
         if (!info) return;
         const sec = Math.floor(info.elapsedMs / 1000);
@@ -282,9 +285,9 @@ Component({
     },
 
     _stopTimer() {
-      if (this._timer) {
-        clearInterval(this._timer);
-        this._timer = 0;
+      if (this.data._timer) {
+        clearInterval(this.data._timer);
+        this.data._timer = 0;
       }
     },
   },

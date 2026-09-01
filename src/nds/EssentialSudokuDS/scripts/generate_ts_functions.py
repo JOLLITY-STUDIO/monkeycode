@@ -55,6 +55,7 @@ CURATED_JSON_BATCH2 = os.path.join(ROM_DIR, 'v0121-curated-batch2.json')
 CURATED_JSON_BATCH3 = os.path.join(ROM_DIR, 'v0122-curated-batch3.json')
 CURATED_JSON_BATCH4 = os.path.join(ROM_DIR, 'v0122-curated-batch4.json')
 CURATED_JSON_BATCH5 = os.path.join(ROM_DIR, 'v0142-curated-batch5.json')
+CURATED_JSON_BATCH6 = os.path.join(ROM_DIR, 'v016-curated-batch6.json')
 PATTERN_SUGGESTIONS_JSON = os.path.join(ROM_DIR, 'v014-pattern-suggestions.json')
 
 
@@ -231,9 +232,9 @@ def main():
     used_names = {}
     output_funcs = []
     heuristic_kinds = {'sfloat': 0, 'util': 0, 'helper': 0, 'none': 0, 'known': 0, 'excluded': 0, 'curated': 0, 'pattern': 0}
-    curated_names = load_curated_names(CURATED_JSON, CURATED_JSON_BATCH2, CURATED_JSON_BATCH3, CURATED_JSON_BATCH4, CURATED_JSON_BATCH5)
+    curated_names = load_curated_names(CURATED_JSON, CURATED_JSON_BATCH2, CURATED_JSON_BATCH3, CURATED_JSON_BATCH4, CURATED_JSON_BATCH5, CURATED_JSON_BATCH6)
     if curated_names:
-        print(f'  Loaded curated names: {len(curated_names)} (V0.12 + V0.12.1 batch 2 + V0.12.2 batch 3 + V0.12.2 batch 4 + V0.14.2 batch 5)', file=sys.stderr)
+        print(f'  Loaded curated names: {len(curated_names)} (V0.12 + V0.12.1 batch 2 + V0.12.2 batch 3 + V0.12.2 batch 4 + V0.14.2 batch 5 + V0.16 batch 6)', file=sys.stderr)
 
     # V0.13 pattern suggestions (ADR-013)
     pattern_names = {}

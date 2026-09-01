@@ -64,6 +64,8 @@ Page({
     puzzleId: '', // sudoku 场景: 选题页传入的题目 id (numpleX.data_NNN)
     fileKey: '', // picture 场景: 类别 key (numcloX.data)
     puzzleIdx: 0, // picture 场景: 类别内题号 (0-based)
+    /** TS 私有字段声明 (非渲染数据): 离场动画清理定时器 */
+    _leaveTimer: null as number | null,
   },
 
   onLoad(query?: any) {
@@ -98,7 +100,7 @@ Page({
     });
     // 离场动画结束后移除 leaving 层 (定时器兜底, animationend 在部分平台不可靠)
     this._clearLeaveTimer();
-    this._leaveTimer = setTimeout(() => {
+    this.data._leaveTimer = setTimeout(() => {
       if (this.data.leavingScene === leaving) {
         this.setData({ leavingScene: '' });
       }
@@ -106,9 +108,9 @@ Page({
   },
 
   _clearLeaveTimer() {
-    if (this._leaveTimer) {
-      clearTimeout(this._leaveTimer);
-      this._leaveTimer = null;
+    if (this.data._leaveTimer) {
+      clearTimeout(this.data._leaveTimer);
+      this.data._leaveTimer = null;
     }
   },
 

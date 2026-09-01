@@ -839,10 +839,10 @@ export const sub_02014618 = 0x02014618 as const;
  * ARM9 函数 @ 0x020147d8
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 2
  */
-export const auto_state_getter_0210656c = 0x020147d8 as const;
+export const main_ram_field_dx656c_getter = 0x020147d8 as const;
 /**
  * ARM9 函数 @ 0x020147e8
  * @category bx_lr
@@ -1567,10 +1567,10 @@ export const sub_020208fc = 0x020208fc as const;
  * ARM9 函数 @ 0x02020930
  * @category near
  * @confidence high
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 2
  */
-export const auto_state_getter_02106df8 = 0x02020930 as const;
+export const main_ram_field_dx6df8_getter = 0x02020930 as const;
 /**
  * ARM9 函数 @ 0x02020940
  * @category prologue
@@ -1631,10 +1631,10 @@ export const memcpy_32 = 0x02020d0c as const;
  * ARM9 函数 @ 0x02020d1c
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_state_getter_02106ea4 = 0x02020d1c as const;
+export const main_ram_field_dx6ea4_getter = 0x02020d1c as const;
 /**
  * ARM9 函数 @ 0x02020d2c
  * @category bx_lr
@@ -1675,10 +1675,10 @@ export const state_reset_a_dispatcher = 0x02020eb4 as const;
  * ARM9 函数 @ 0x02020f08
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 2
  */
-export const auto_halfword_getter_02106e58 = 0x02020f08 as const;
+export const main_ram_field_dx6e58_halfword_getter = 0x02020f08 as const;
 /**
  * ARM9 函数 @ 0x02020f18
  * @category bx_lr
@@ -1776,10 +1776,10 @@ export const sub_02021658 = 0x02021658 as const;
  * ARM9 函数 @ 0x020216b4
  * @category near
  * @confidence high
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_byte_getter_02106e50 = 0x020216b4 as const;
+export const main_ram_field_dx6e50_byte_getter = 0x020216b4 as const;
 /**
  * ARM9 函数 @ 0x020216c0
  * @category near
@@ -2397,10 +2397,10 @@ export const sub_02027e88 = 0x02027e88 as const;
  * ARM9 函数 @ 0x02027ea4
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_state_getter_0210aaf0 = 0x02027ea4 as const;
+export const main_ram_field_dxaaf0_getter = 0x02027ea4 as const;
 /**
  * ARM9 函数 @ 0x02027eb8
  * @category bx_lr
@@ -2855,10 +2855,10 @@ export const sub_02029a08 = 0x02029a08 as const;
  * ARM9 函数 @ 0x02029a2c
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_state_setter_0210ab38 = 0x02029a2c as const;
+export const main_ram_field_dxab38_setter = 0x02029a2c as const;
 /**
  * ARM9 函数 @ 0x02029a3c
  * @category bx_lr
@@ -2885,10 +2885,10 @@ export const sub_02029a68 = 0x02029a68 as const;
  * ARM9 函数 @ 0x02029a8c
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_state_setter_0210ab64 = 0x02029a8c as const;
+export const main_ram_field_dxab64_setter = 0x02029a8c as const;
 /**
  * ARM9 函数 @ 0x02029a9c
  * @category bx_lr
@@ -3255,10 +3255,10 @@ export const sub_0202cca4 = 0x0202cca4 as const;
  * ARM9 函数 @ 0x0202cef8
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_halfword_getter_021bb24c = 0x0202cef8 as const;
+export const main_ram_field_dxb24c_halfword_getter = 0x0202cef8 as const;
 /**
  * ARM9 函数 @ 0x0202cf08
  * @category bx_lr
@@ -3381,10 +3381,10 @@ export const sub_0202d9d0 = 0x0202d9d0 as const;
  * ARM9 函数 @ 0x0202dab0
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_state_getter_021bb25c = 0x0202dab0 as const;
+export const main_ram_field_dxb25c_getter = 0x0202dab0 as const;
 /**
  * ARM9 函数 @ 0x0202dac4
  * @category bx_lr
@@ -5984,10 +5984,10 @@ export const dcache_clean_range_v2 = 0x02039618 as const;
  * ARM9 函数 @ 0x02039624
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_dcache_helper_c7_c5_1 = 0x02039624 as const;
+export const dcache_invalidate_range = 0x02039624 as const;
 /**
  * ARM9 函数 @ 0x02039640
  * @category bx_lr
@@ -6264,10 +6264,10 @@ export const vec3_add_scaled = 0x0203a1e4 as const;
  * ARM9 函数 @ 0x0203a1f8
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_byte_setter_04000247 = 0x0203a1f8 as const;
+export const io_register_byte_setter = 0x0203a1f8 as const;
 /**
  * ARM9 函数 @ 0x0203a208
  * @category bx_lr
@@ -7554,10 +7554,10 @@ export const sub_0204205c = 0x0204205c as const;
  * ARM9 函数 @ 0x020420b8
  * @category bx_lr
  * @confidence medium
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_state_setter_021c1520 = 0x020420b8 as const;
+export const main_ram_field_dxc1520_setter = 0x020420b8 as const;
 /**
  * ARM9 函数 @ 0x020420c8
  * @category near
@@ -7569,10 +7569,10 @@ export const sub_020420c8 = 0x020420c8 as const;
  * ARM9 函数 @ 0x020420f4
  * @category near
  * @confidence high
- * @pattern V0.13 auto-detected
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const auto_state_getter_021c1520 = 0x020420f4 as const;
+export const main_ram_field_dxc1520_getter = 0x020420f4 as const;
 /**
  * ARM9 函数 @ 0x02042104
  * @category prologue

@@ -8,7 +8,6 @@
 
 import {
   CellColor,
-  NumcloPuzzle,
   NUMCLO_CATALOG,
   unpackNumcloGrid,
 } from './numclo_puzzles';

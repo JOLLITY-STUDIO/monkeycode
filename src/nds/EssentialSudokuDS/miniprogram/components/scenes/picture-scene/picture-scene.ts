@@ -116,12 +116,15 @@ Component({
     correctCount: 0,           // 已正确格数 (进度)
     rowClues: [] as ClueRun[][],
     colClues: [] as ClueRun[][],
+    /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器句柄 */
+    _attachedDone: false,
+    _timer: 0,
   },
 
   observers: {
     // 运行中 fileKey/puzzleIdx 变化 (页面复用) → 重新开题
     'fileKey, puzzleIdx'(fileKey: string, puzzleIdx: number) {
-      if (fileKey && this._attachedDone) {
+      if (fileKey && this.data._attachedDone) {
         const key = String(fileKey);
         if (CATEGORIES.some((c) => c.key === key)) {
           this._startPuzzle(key, Number(puzzleIdx || 0));
@@ -132,7 +135,7 @@ Component({
 
   lifetimes: {
     attached() {
-      this._attachedDone = true;
+      this.data._attachedDone = true;
       const key = String(this.data.fileKey || '');
       if (key && CATEGORIES.some((c) => c.key === key)) {
         this._startPuzzle(key, Number(this.data.puzzleIdx || 0));
@@ -142,7 +145,7 @@ Component({
       }
     },
     detached() {
-      this._attachedDone = false;
+      this.data._attachedDone = false;
       this._stopTimer();
     },
   },
@@ -309,7 +312,7 @@ Component({
     /** 计时器 */
     _startTimer() {
       this._stopTimer();
-      this._timer = setInterval(() => {
+      this.data._timer = setInterval(() => {
         const info = service.getSessionInfo();
         if (!info) return;
         const sec = Math.floor(info.elapsedMs / 1000);
@@ -320,9 +323,9 @@ Component({
     },
 
     _stopTimer() {
-      if (this._timer) {
-        clearInterval(this._timer);
-        this._timer = 0;
+      if (this.data._timer) {
+        clearInterval(this.data._timer);
+        this.data._timer = 0;
       }
     },
   },
