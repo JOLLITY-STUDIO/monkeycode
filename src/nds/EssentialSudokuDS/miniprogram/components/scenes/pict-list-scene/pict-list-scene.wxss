@@ -72,7 +72,7 @@
   border-bottom: 0.5px solid #f2f4f6;
 }
 
-.cat-row:active {
+.cat-row-hover {
   background: #f5f7f9;
 }
 

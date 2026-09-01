@@ -16,6 +16,8 @@
         wx:for="{{categories}}"
         wx:key="key"
         class="cat-row {{selectedKey === item.key ? 'cat-row-active' : ''}}"
+        hover-class="cat-row-hover"
+        hover-stay-time="80"
         data-key="{{item.key}}"
         bindtap="onTapCategory"
       >

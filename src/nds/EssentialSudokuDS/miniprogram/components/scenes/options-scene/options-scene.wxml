@@ -27,25 +27,25 @@
     <view class="option-divider"></view>
 
     <!-- 清除数据 -->
-    <view class="option-action" bindtap="onClearData">
+    <view class="option-action" hover-class="option-action-hover" hover-stay-time="80" bindtap="onClearData">
       <image class="option-action-icon" src="{{clearIconUrl}}" mode="heightFix" lazy-load></image>
       <text class="option-action-hint">清除进度与设置</text>
     </view>
 
     <!-- 评分 -->
-    <view class="option-action" bindtap="onRate">
+    <view class="option-action" hover-class="option-action-hover" hover-stay-time="80" bindtap="onRate">
       <image class="option-action-icon" src="{{rateIconUrl}}" mode="heightFix" lazy-load></image>
       <text class="option-action-hint">评价本应用</text>
     </view>
 
     <!-- 制作人员 -->
-    <view class="option-action" bindtap="onCredits">
+    <view class="option-action" hover-class="option-action-hover" hover-stay-time="80" bindtap="onCredits">
       <image class="option-action-icon" src="{{creditsIconUrl}}" mode="heightFix" lazy-load></image>
       <text class="option-action-hint">制作人员名单</text>
     </view>
 
     <!-- 关于 -->
-    <view class="option-action" bindtap="onAbout">
+    <view class="option-action" hover-class="option-action-hover" hover-stay-time="80" bindtap="onAbout">
       <view class="option-action-icon option-action-icon-missing">About</view>
       <text class="option-action-hint">版权与版本信息</text>
     </view>

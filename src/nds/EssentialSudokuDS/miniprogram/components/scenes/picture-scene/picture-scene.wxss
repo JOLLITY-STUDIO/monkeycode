@@ -65,7 +65,6 @@
   font-size: 15px;
   font-weight: 600;
   color: #2b3a4a;
-  font-variant-numeric: tabular-nums;
   margin-left: 6px;
   white-space: nowrap;
 }

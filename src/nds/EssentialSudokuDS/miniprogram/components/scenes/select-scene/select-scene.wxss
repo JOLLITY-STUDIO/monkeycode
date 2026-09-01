@@ -160,6 +160,6 @@
   justify-content: center;
 }
 
-.start-btn:active {
+.start-btn-hover {
   opacity: 0.85;
 }
