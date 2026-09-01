@@ -1384,9 +1384,10 @@ export const auto_gptr_mix_access_0x027f92a4_2 = 0x02389d60 as const;
  * ARM7 函数 @ 0x02389dac
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02389dac = 0x02389dac as const;
+export const arm7_alloc_init_free_wrapper = 0x02389dac as const;
 /**
  * ARM7 函数 @ 0x02389db0
  * @category prologue
@@ -1745,9 +1746,10 @@ export const sub_0238b958 = 0x0238b958 as const;
  * ARM7 函数 @ 0x0238b97c
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0238b97c = 0x0238b97c as const;
+export const arm7_byte_array_has_nonzero = 0x0238b97c as const;
 /**
  * ARM7 函数 @ 0x0238b9c8
  * @category prologue
@@ -4161,9 +4163,10 @@ export const sub_0239f774 = 0x0239f774 as const;
  * ARM7 函数 @ 0x0239f798
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0239f798 = 0x0239f798 as const;
+export const arm7_cmd_send_0x86 = 0x0239f798 as const;
 /**
  * ARM7 函数 @ 0x0239f7a0
  * @category prologue

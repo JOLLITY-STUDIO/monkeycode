@@ -1,0 +1,120 @@
+{
+  "version": "V0.19.5 curated batch",
+  "note": "manual curated naming from 65-filtered real candidates (312 sub_ callers>=1 sweep, noise-filtered via >=4 real insns; excludes 0x0205+/0x0207+/0x020f+ data zones): halfword flag/mode setters, null-guarded field writers, alternating/multiword fills, two-input classifier, 2D matrix fill, fixed-point normalize, struct range validator, intrusive-list head init/push-back/walk-clear, signed coord bounds, ARM7 byte-array scan + cmd-send wrapper. verified via disasm-arm9/arm7-full.txt",
+  "names": [
+    {
+      "addr": "0x02015578",
+      "name": "halfword_mode_bits_set",
+      "cpu": "arm9",
+      "comment": "call 0x2008630 then clear-low-2-bits + set bit0 on two halfword regs (ldrh, bic #3, orr #1, strh) — mode register pair update"
+    },
+    {
+      "addr": "0x02024c80",
+      "name": "halfword_flag_bits_check",
+      "cpu": "arm9",
+      "comment": "read halfwords [r1,#2] and [r1,#6], ands #0x20/#0x10 on each, bne to 0x2024d08 on any set — dual-field status flag gate"
+    },
+    {
+      "addr": "0x02028240",
+      "name": "list_stride44_walk",
+      "cpu": "arm9",
+      "comment": "walk list from r0 with count r3 (ble exit), stride +0x44 per element, r8=head idx, [sb,#4] null-check toggles stride — batch processing loop"
+    },
+    {
+      "addr": "0x02031ed8",
+      "name": "guarded_field_triple_halfword_write",
+      "cpu": "arm9",
+      "comment": "null-guard [r0] then write 3 halfwords: [obj,#0x34]=2, [obj,#0x38]=r1, [obj,#0x3a]=r2 (bxeq lr when obj null)"
+    },
+    {
+      "addr": "0x02031f00",
+      "name": "guarded_field_pair_halfword_write",
+      "cpu": "arm9",
+      "comment": "null-guard [r0] then write 2 halfwords: [obj,#0x34]=1, [obj,#0x38]=r1 (strhne under cmp, bx lr when null)"
+    },
+    {
+      "addr": "0x020350c0",
+      "name": "alternating_word_fill_0x1000",
+      "cpu": "arm9",
+      "comment": "stm fill alternating 0x1000/0 pairs: [r0,#0x20]=0x1000 then stm r0!,{r2,r3}/stm r0!,{r1,r3} repeat — periodic struct init"
+    },
+    {
+      "addr": "0x0203547c",
+      "name": "signed_halfword_store_signbit",
+      "cpu": "arm9",
+      "comment": "signed 16-bit store: r1==0->store 0; r1>0->orr #0x4000; r1<0->negate + orr #0x8000, strh to [r0] — sign+value packed halfword"
+    },
+    {
+      "addr": "0x020367bc",
+      "name": "multiword_zero_clear_16",
+      "cpu": "arm9",
+      "comment": "mov r1/r2/r3/ip=0 then 10x stm r0,{r1,r2,r3,ip} (40 regs but no writeback = repeat same 16 words) — 64-byte object zero clear"
+    },
+    {
+      "addr": "0x0203ecbc",
+      "name": "two_input_classifier",
+      "cpu": "arm9",
+      "comment": "dispatch on (r0,r1) pairs: (0,0)->7, (0,1)->6, (1,1)->4, others->b 0x203ed18 fallthrough — enum classification selector"
+    },
+    {
+      "addr": "0x02040bd4",
+      "name": "matrix_fill_loop_2d",
+      "cpu": "arm9",
+      "comment": "2D nested fill: str r2,[r7,r8,lsl#2] inner loop (r8 vs fp blt), outer r6 vs [sp,#4] blt with row stride add — word matrix store"
+    },
+    {
+      "addr": "0x02040e40",
+      "name": "fixed_point_normalize_store",
+      "cpu": "arm9",
+      "comment": "fixed-point normalize: halfword [r3,sb] delta -> abs (rsbmi), rsb 0x8000, asr #6 + lsr #25 rounding, asr #7, str [base,r6,lsl#2] — div-by-128 with sign fold"
+    },
+    {
+      "addr": "0x0204493c",
+      "name": "struct_field_range_validator",
+      "cpu": "arm9",
+      "comment": "validate struct: [r0,#4]<=0x70, [r0,#0x18] in [0xa,0x3e8] (blo/bls), [r0,#0x32]>=1, else return 0 — bounds-checked object validator"
+    },
+    {
+      "addr": "0x020fff5c",
+      "name": "intrusive_list_walk_clear_fields",
+      "cpu": "arm9",
+      "comment": "walk global list from [pc] ptr: for each node set [ip,#0x64]=r2, clear [ip,#0x78]/[ip,#0x7c]/[ip,#0x80], next=[ip,#0x80] until null"
+    },
+    {
+      "addr": "0x021052a8",
+      "name": "intrusive_list_head_init",
+      "cpu": "arm9",
+      "comment": "init list head at r0: [r0]=[r0,#4]=self (ldr/str loop), [r0,#8]=[r0,#0xc]=self, then store r1->[r0,#0x10], r2->[r0,#0x14], clear #0x18/#0x1c — self-referential head"
+    },
+    {
+      "addr": "0x021052fc",
+      "name": "intrusive_list_push_back",
+      "cpu": "arm9",
+      "comment": "push r1 into list at r0: tail=[r0,#0x70]; empty->head@[r0,#0x6c]=r1 else link tail next@+0x10/prev@+0x14; [r1,#0x10]=0, [r0,#0x70]=r1"
+    },
+    {
+      "addr": "0x0210633c",
+      "name": "signed_coord_delta_bounds_check",
+      "cpu": "arm9",
+      "comment": "compare r1-[r0,#0xc] and r2-(signed halfword [r0,#0x10]): negative delta or non-zero equal -> return 0; else signed add adjust and continue"
+    },
+    {
+      "addr": "0x0238b97c",
+      "name": "arm7_byte_array_has_nonzero",
+      "cpu": "arm7",
+      "comment": "scan byte array: count=[r0,#0xa] must be in (0,0x20]; walk bytes at [r0+#0xc], return 1 on first non-zero else 0"
+    },
+    {
+      "addr": "0x02389dac",
+      "name": "arm7_alloc_init_free_wrapper",
+      "cpu": "arm7",
+      "comment": "r0->alloc via 0x33a6374 (save r4), load global [r1,#0x544]/[r1,#0x548], call 0x33a53dc(hi,lo,r0), then release via 0x33a6388 — alloc/init/free trip"
+    },
+    {
+      "addr": "0x0239f798",
+      "name": "arm7_cmd_send_0x86",
+      "cpu": "arm7",
+      "comment": "write 0x8000 via 0x33a6bd0 then call 0x239f164(0x86, 0x20, r0, 4) — fixed command 0x86 + param 0x20 dispatch wrapper"
+    }
+  ]
+}

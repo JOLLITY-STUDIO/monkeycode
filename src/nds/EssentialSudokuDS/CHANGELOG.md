@@ -164,6 +164,53 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.19.5 — 312 候选池噪音过滤 + 手工 curated (19 个, 覆盖 36.63%)
+
+### 2026-09-01
+
+#### 新增
+- ✅ 候选池重构: 模拟生成器优先级链 (known/curated/pattern/heuristic 全排除) 扫出
+  312 个剩余 sub_ callers≥1 候选 (arm9 295 + arm7 17, 全部 callers≤2)
+- ✅ 噪音过滤新工具链 (`_tmp_scan5*.cjs`):
+  - `_tmp_scan5.cjs`: 候选扫描 (312 个 → `_tmp_scan5_out.txt`)
+  - `_tmp_scan5b.cjs`: 从 disasm-arm9/arm7-full.txt 提取候选函数体
+    (修复: 文件格式是空格分隔 `ADDR [8hex] MNE OP`, 不是冒号分隔)
+  - `_tmp_scan5c.cjs`: ≥4 条真实指令过滤 → 65 个真实候选 (排除 andeq/svc/cdp/mrc/mcr/stc
+    等数据噪音); 人工复核确认 0x0205+/0x0207+/0x020f+ 区域全是纯数据解码
+- ✅ 手工 curated 命名 19 个 (`rom-data/v019-curated-batch3.json`), 全部经完整函数体验证:
+  - **位标志/模式寄存器** (2): `halfword_mode_bits_set` (0x02015578, bic #3 + orr #1 双寄存器
+    模式更新) / `halfword_flag_bits_check` (0x02024c80, [r1,#2]/[r1,#6] 的 0x20/0x10 位门控)
+  - **null 守卫字段写入器** (2): `guarded_field_triple_halfword_write` (0x02031ed8,
+    0x34=2/0x38/0x3a 三半字) / `guarded_field_pair_halfword_write` (0x02031f00, 0x34=1/0x38)
+  - **块填充/清零** (2): `alternating_word_fill_0x1000` (0x020350c0, stm 交替 0x1000/0,
+    与 V0.19 stm_fill pattern 同族) / `multiword_zero_clear_16` (0x020367bc, 10× stm 4 寄存器
+    = 64-byte 对象清零)
+  - **数学/矩阵** (3): `two_input_classifier` (0x0203ecbc, (r0,r1) 组合→7/6/4 枚举) /
+    `matrix_fill_loop_2d` (0x02040bd4, 嵌套 blt 循环 + stride 字写) /
+    `fixed_point_normalize_store` (0x02040e40, 定点归一化 asr #6 + lsr #25 舍入 + asr #7 = ÷128
+    带符号折叠)
+  - **结构校验** (1): `struct_field_range_validator` (0x0204493c, [r0,#4]≤0x70,
+    [r0,#0x18]∈[0xa,0x3e8], [r0,#0x32]≥1)
+  - **intrusive 链表家族续** (3): `intrusive_list_walk_clear_fields` (0x020fff5c, 遍历全局链表
+    清 0x78/0x7c/0x80 字段) / `intrusive_list_head_init` (0x021052a8, head 自引用初始化 +
+    数据字段) / `intrusive_list_push_back` (0x021052fc, tail@0x70 尾插, next@+0x10/prev@+0x14)
+  - **列表/坐标** (2): `list_stride44_walk` (0x02028240, r3 计数 + stride 0x44 批量处理循环) /
+    `signed_coord_delta_bounds_check` (0x0210633c, 两维 signed delta 边界判定)
+  - **ARM7** (3): `arm7_byte_array_has_nonzero` (0x0238b97c, 0x20 项内扫描首个非零字节) /
+    `arm7_alloc_init_free_wrapper` (0x02389dac, alloc→init 双参→release 三段包装) /
+    `arm7_cmd_send_0x86` (0x0239f798, 0x8000 写 + cmd 0x86/param 0x20 分发)
+- ✅ `generate_ts_functions.py` 新增 `CURATED_JSON_V019D` 加载 (24→25 个 curated JSON)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+- ✅ curated 627 → 646 (+19), 命名覆盖率 35.93% → 36.63% (989/2700),
+  sub_ 1699 → 1680 (16 arm9 + 3 arm7 升级为语义名)
+- ✅ arm9.ts +16 / arm7.ts +3 全部落地 (missing=NONE 校验)
+- ✅ 剩余 sub_ 1680: callers≥1 候选已基本消化完毕 (本次 312→65 真候选→19 命名,
+  其余全为 callers=0 / 数据噪音区)
+
+---
+
 ## V0.18 — global ptr 结构命名全量覆盖 (剩余 callers≥1 自动化消化)
 
 ### 2026-09-01
