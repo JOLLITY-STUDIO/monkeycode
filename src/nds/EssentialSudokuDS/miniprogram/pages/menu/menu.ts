@@ -10,9 +10,9 @@ Page({
     wx.navigateTo({ url: '/pages/select/select' });
   },
 
-  /** 进入图画谜题玩法 (Picture Puzzle) */
+  /** 进入图画谜题玩法 (Picture Puzzle): 先选类别 */
   onOpenPicturePuzzle() {
-    wx.navigateTo({ url: '/pages/picture/picture' });
+    wx.navigateTo({ url: '/pages/pict_list/pict_list' });
   },
 
   /** 进入 Staff 制作人员页 */

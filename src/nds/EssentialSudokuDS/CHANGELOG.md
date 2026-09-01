@@ -4,6 +4,31 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.18.7 — 图画谜题列表页 (numclo_00 banner + 15 类别)
+
+### 2026-09-01
+
+#### 添加
+- ✅ `miniprogram/pages/pict_list/pict_list.ts/wxml/wxss/json` — 新建图画谜题列表页:
+  - 顶部显示原 DS `numclo_00.nbm.png` banner
+  - 15 个类别 (动物/科学/地标/家电/玩具/自然/交通/美食/生活/符号/附加1-4/教程)
+  - 每类别显示题数, 底部统计 1525 题
+  - 点击类别 → `navigateTo /pages/picture/picture?file=xxx&idx=0`
+- ✅ `miniprogram/pages/picture/picture.ts` — `onLoad` 支持 `query.file` + `query.idx`:
+  - 有 file → 校验后直接开该类指定题
+  - 无 file → 默认动物类第 1 题
+- ✅ `miniprogram/app.json` — 注册 `pages/pict_list/pict_list`
+- ✅ `miniprogram/pages/menu/menu.ts` — Picture Puzzle 按钮改为先选类别
+
+#### 启动流程 (1:1 还原)
+`title → menu → select(数独选题) → index(数独)`
+`title → menu → pict_list(图画选类) → picture(图画)`
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## V0.18.6 — 数独选题页 (select1 精灵 + 难度 + 题号 1-1000)
 
 ### 2026-09-01

@@ -1,0 +1,23 @@
+<view class="pict-list-page">
+  <!-- 原 DS numclo_00.nbm banner -->
+  <view class="list-banner">
+    <image class="list-banner-image" src="/assets/nbm/numclo_00.nbm.png" mode="aspectFit" lazy-load></image>
+  </view>
+
+  <view class="list-card">
+    <view class="list-label">谜题类别 · {{totalPuzzles}} 题</view>
+    <scroll-view class="cat-scroll" scroll-y>
+      <view
+        wx:for="{{categories}}"
+        wx:key="key"
+        class="cat-row"
+        data-key="{{item.key}}"
+        bindtap="onTapCategory"
+      >
+        <text class="cat-label">{{item.label}}</text>
+        <text class="cat-count">{{item.count}} 题</text>
+        <text class="cat-arrow">›</text>
+      </view>
+    </scroll-view>
+  </view>
+</view>

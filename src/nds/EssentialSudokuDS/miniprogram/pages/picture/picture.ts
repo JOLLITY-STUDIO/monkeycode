@@ -113,7 +113,16 @@ Page({
 
   _timer: 0 as number,
 
-  onLoad() {
+  onLoad(query?: any) {
+    // V0.18.7: 支持列表页跳入 (query.file + query.idx)
+    if (query && query.file) {
+      const key = String(query.file);
+      const idx = Number(query.idx || 0);
+      if (CATEGORIES.some((c) => c.key === key)) {
+        this._startPuzzle(key, idx);
+        return;
+      }
+    }
     // 默认打开动物类第 1 题
     this._startPuzzle('numclo0.data', 0);
   },
