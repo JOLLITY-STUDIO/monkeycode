@@ -4,20 +4,29 @@
 
 import { NBM_MENU_CSOL } from '../../../utils/sudoku/nbmAssets';
 
+const CURSOR_TOP: Record<'number' | 'picture', number> = {
+  number: 24,
+  picture: 108,
+};
+
 Component({
   data: {
     menuCursorUrl: NBM_MENU_CSOL,
+    selectedMode: 'number' as 'number' | 'picture',
+    cursorTop: CURSOR_TOP.number,
   },
 
   methods: {
-    /** 数独玩法 (先选题) */
+    /** 选中数独玩法并跳转 */
     onOpenNumberPuzzle() {
-      this.triggerEvent('open-number');
+      this.setData({ selectedMode: 'number', cursorTop: CURSOR_TOP.number });
+      setTimeout(() => this.triggerEvent('open-number'), 120);
     },
 
-    /** 图画谜题玩法 (先选类别) */
+    /** 选中图画谜题玩法并跳转 */
     onOpenPicturePuzzle() {
-      this.triggerEvent('open-picture');
+      this.setData({ selectedMode: 'picture', cursorTop: CURSOR_TOP.picture });
+      setTimeout(() => this.triggerEvent('open-picture'), 120);
     },
 
     /** 玩法说明 */

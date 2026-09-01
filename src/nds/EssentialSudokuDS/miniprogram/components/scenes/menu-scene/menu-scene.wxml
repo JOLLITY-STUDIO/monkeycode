@@ -7,16 +7,22 @@
   <!-- 主菜单模式选择 -->
   <view class="mode-select-card">
     <view class="menu-label-wrap">
-      <image class="menu-cursor" src="{{menuCursorUrl}}" mode="aspectFit" lazy-load></image>
       <view class="menu-label">SELECT MODE</view>
     </view>
     <view class="select-bg-wrap">
       <image class="select4-bg" src="/assets/nbm/select4.nbm.png" mode="aspectFill"></image>
+      <image
+        class="mode-cursor"
+        src="{{menuCursorUrl}}"
+        mode="aspectFit"
+        style="top: {{cursorTop}}px;"
+        lazy-load
+      ></image>
       <view class="mode-buttons">
-        <view class="mode-btn number-puzzle" bindtap="onOpenNumberPuzzle">
+        <view class="mode-btn number-puzzle {{selectedMode === 'number' ? 'mode-btn-active' : ''}}" bindtap="onOpenNumberPuzzle">
           <text class="mode-btn-text">Number Puzzle</text>
         </view>
-        <view class="mode-btn picture-puzzle" bindtap="onOpenPicturePuzzle">
+        <view class="mode-btn picture-puzzle {{selectedMode === 'picture' ? 'mode-btn-active' : ''}}" bindtap="onOpenPicturePuzzle">
           <text class="mode-btn-text">Picture Puzzle</text>
         </view>
       </view>
