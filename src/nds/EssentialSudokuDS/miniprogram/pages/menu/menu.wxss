@@ -1,0 +1,119 @@
+.menu-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16rpx 24rpx 48rpx;
+  box-sizing: border-box;
+  background: #e9eef3;
+}
+
+.title-banner {
+  width: 100%;
+  height: 240rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+  background: #1a4d2e;
+}
+
+.title-image {
+  width: 100%;
+  height: 100%;
+}
+
+.mode-select-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 28rpx 24rpx 36rpx;
+  box-sizing: border-box;
+  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.08);
+  margin-bottom: 24rpx;
+}
+
+.menu-label {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #3a4a5a;
+  text-align: center;
+  margin-bottom: 20rpx;
+  letter-spacing: 2rpx;
+}
+
+.select-bg-wrap {
+  position: relative;
+  width: 100%;
+  height: 360rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  background: #00ff00;
+}
+
+.select4-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.95;
+}
+
+.mode-buttons {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24rpx;
+  padding: 24rpx 40rpx;
+  box-sizing: border-box;
+}
+
+.mode-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 40rpx;
+  border-radius: 14rpx;
+  transition: background 0.15s ease;
+}
+
+.mode-btn:active {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.mode-btn-text {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #ffffff;
+  text-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.35);
+  letter-spacing: 1rpx;
+}
+
+.bottom-links {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 24rpx;
+  margin-top: auto;
+}
+
+.link-btn {
+  font-size: 26rpx;
+  color: #5a6a7a;
+  background: #ffffff;
+  padding: 14rpx 32rpx;
+  border-radius: 28rpx;
+  border: 1rpx solid #d0d8e0;
+  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+}
+
+.link-btn:active {
+  background: #f2f4f6;
+}

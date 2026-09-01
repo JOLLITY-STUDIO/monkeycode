@@ -4,6 +4,26 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.18.3 — 原 DS 主菜单模式选择页 (select4 Number/Picture Puzzle)
+
+### 2026-09-01
+
+#### 添加
+- ✅ `miniprogram/pages/menu/menu.ts/wxml/wxss/json` — 新建模式选择页:
+  - 顶部显示原 DS `title.nbm.png` 标题横幅
+  - 中间使用 `select4.nbm.png` 作为 Number Puzzle / Picture Puzzle 选择背景
+  - 两个模式按钮: 数独 (Number Puzzle) / 图画谜题 (Picture Puzzle)
+  - 底部辅助入口: 制作人员 / 选项(占位)
+- ✅ `miniprogram/app.json` — 注册 `pages/menu/menu`
+- ✅ `miniprogram/pages/index/index.wxml` — 顶部入口改为 "🎮 主菜单"
+- ✅ `miniprogram/pages/index/index.ts` — `onOpenMenu()` → navigateTo 模式选择页
+- ✅ `miniprogram/pages/index/index.wxss` — `.mode-link-menu` 紫色变体样式
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## V0.18.2 — Staff 制作人员页面 (NBM_GROUP_STAFF)
 
 ### 2026-09-01

@@ -56,6 +56,11 @@ Page({
     this._stopTimer();
   },
 
+  /** 跳转主菜单 (模式选择) */
+  onOpenMenu() {
+    wx.navigateTo({ url: '/pages/menu/menu' });
+  },
+
   /** 跳转图画谜题玩法 (Picture Logic / numclo) */
   onOpenPicture() {
     wx.navigateTo({ url: '/pages/picture/picture' });

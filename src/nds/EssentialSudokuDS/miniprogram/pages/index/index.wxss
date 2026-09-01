@@ -66,6 +66,12 @@ page {
   border-color: #90caf9;
 }
 
+.mode-link-menu {
+  color: #6a1b9a;
+  background: #f3e5f5;
+  border-color: #ce93d8;
+}
+
 .diff-label {
   font-size: 32rpx;
   font-weight: 700;

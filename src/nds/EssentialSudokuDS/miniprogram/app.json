@@ -3,6 +3,7 @@
     "pages/index/index",
     "pages/picture/picture",
     "pages/staff/staff",
+    "pages/menu/menu",
     "pages/logs/logs"
   ],
   "window": {
