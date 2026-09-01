@@ -4,6 +4,25 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.18.5 — 启动标题页 (title.nbm 全屏 + TAP TO START)
+
+### 2026-09-01
+
+#### 添加
+- ✅ `miniprogram/pages/title/title.ts/wxml/wxss/json` — 新建启动标题页:
+  - 全屏深蓝背景 + 原 DS `title.nbm.png` 标题画面 (aspectFit)
+  - 底部 "TAP TO START" 脉冲提示 (1s 后开始呼吸动画)
+  - 点击任意处 → navigateTo 主菜单页
+  - 底部版权角标 "Essential Sudoku DS · Imagineer"
+  - `navigationStyle: custom` + `disableScroll` 沉浸式全屏
+- ✅ `miniprogram/app.json` — `pages/title/title` 设为启动首页 (原 DS 启动流程: title → menu → 玩法)
+- ✅ `miniprogram/pages/menu/menu.wxml/ts` — 底部加 "返回标题" 按钮 (栈内有 title 则 navigateBack, 否则重新打开)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## V0.18.4 — 选项页 (select3 BGM/SE 音量 + Clear + Credits)
 
 ### 2026-09-01

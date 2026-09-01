@@ -20,6 +20,16 @@ Page({
     wx.navigateTo({ url: '/pages/staff/staff' });
   },
 
+  /** 返回标题页 (若在栈中则返回, 否则重新打开) */
+  onBackTitle() {
+    const pages = getCurrentPages();
+    if (pages.length > 1) {
+      wx.navigateBack();
+    } else {
+      wx.navigateTo({ url: '/pages/title/title' });
+    }
+  },
+
   /** 进入选项页 (BGM/SE 音量、Clear、Credits) */
   onOpenOptions() {
     wx.navigateTo({ url: '/pages/options/options' });

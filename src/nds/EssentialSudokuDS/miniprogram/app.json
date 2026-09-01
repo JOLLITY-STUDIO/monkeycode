@@ -1,9 +1,10 @@
 {
   "pages": [
+    "pages/title/title",
+    "pages/menu/menu",
     "pages/index/index",
     "pages/picture/picture",
     "pages/staff/staff",
-    "pages/menu/menu",
     "pages/options/options",
     "pages/logs/logs"
   ],

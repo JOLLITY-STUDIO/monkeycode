@@ -1,0 +1,14 @@
+<view class="title-page" bindtap="onTapStart">
+  <!-- 全屏标题画面: 原 DS title.nbm -->
+  <image class="title-bg" src="/assets/nbm/title.nbm.png" mode="aspectFit" lazy-load></image>
+
+  <!-- 底部开始提示 -->
+  <view class="tap-hint {{pulse ? 'pulse' : ''}}">
+    <text class="tap-hint-text">TAP TO START</text>
+  </view>
+
+  <!-- 版权角标 -->
+  <view class="copyright">
+    <text class="copyright-text">Essential Sudoku DS · Imagineer</text>
+  </view>
+</view>
