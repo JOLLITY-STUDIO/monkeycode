@@ -458,9 +458,10 @@ export const arm7_state_switch_1_2_3 = 0x023834ac as const;
  * ARM7 函数 @ 0x02383558
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_02383558 = 0x02383558 as const;
+export const arm7_wrapper_call_3_calls = 0x02383558 as const;
 /**
  * ARM7 函数 @ 0x02383694
  * @category prologue
@@ -607,16 +608,18 @@ export const sub_023842d8 = 0x023842d8 as const;
  * ARM7 函数 @ 0x0238431c
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_0238431c = 0x0238431c as const;
+export const arm7_global_pair_store = 0x0238431c as const;
 /**
  * ARM7 函数 @ 0x02384334
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_02384334 = 0x02384334 as const;
+export const arm7_global_bool_flag_get = 0x02384334 as const;
 /**
  * ARM7 函数 @ 0x02384350
  * @category prologue
@@ -759,9 +762,10 @@ export const sub_02385740 = 0x02385740 as const;
  * ARM7 函数 @ 0x023857b0
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_023857b0 = 0x023857b0 as const;
+export const arm7_halfword_shift_or_store = 0x023857b0 as const;
 /**
  * ARM7 函数 @ 0x023857cc
  * @category prologue
@@ -1024,9 +1028,10 @@ export const sub_023872e8 = 0x023872e8 as const;
  * ARM7 函数 @ 0x02387498
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_02387498 = 0x02387498 as const;
+export const arm7_signed_divmod_abs = 0x02387498 as const;
 /**
  * ARM7 函数 @ 0x023876a4
  * @category bx_lr
@@ -1091,9 +1096,10 @@ export const sub_02388094 = 0x02388094 as const;
  * ARM7 函数 @ 0x023880e4
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_023880e4 = 0x023880e4 as const;
+export const arm7_halfword_block_clear_8 = 0x023880e4 as const;
 /**
  * ARM7 函数 @ 0x02388118
  * @category prologue
@@ -1359,9 +1365,10 @@ export const sub_0238a0d8 = 0x0238a0d8 as const;
  * ARM7 函数 @ 0x0238a14c
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_0238a14c = 0x0238a14c as const;
+export const arm7_call_indirect_027e20a4 = 0x0238a14c as const;
 /**
  * ARM7 函数 @ 0x0238a160
  * @category bx_lr
@@ -2261,9 +2268,10 @@ export const arm7_indirect_dispatch = 0x0239145c as const;
  * ARM7 函数 @ 0x02391470
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_02391470 = 0x02391470 as const;
+export const arm7_arg_swap_thunk_to_037fe64c = 0x02391470 as const;
 /**
  * ARM7 函数 @ 0x0239148c
  * @category prologue
@@ -2390,9 +2398,10 @@ export const arm7_ipc_fifo_send_high = 0x02391b88 as const;
  * ARM7 函数 @ 0x02391bbc
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_02391bbc = 0x02391bbc as const;
+export const arm7_state_switch_0_1_cond = 0x02391bbc as const;
 /**
  * ARM7 函数 @ 0x02391c08
  * @category prologue
@@ -2440,9 +2449,10 @@ export const sub_02391ff4 = 0x02391ff4 as const;
  * ARM7 函数 @ 0x02392030
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_02392030 = 0x02392030 as const;
+export const arm7_halfword_copy_6 = 0x02392030 as const;
 /**
  * ARM7 函数 @ 0x023920b0
  * @category bx_lr
@@ -2655,9 +2665,10 @@ export const sub_02392ecc = 0x02392ecc as const;
  * ARM7 函数 @ 0x02392ef0
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_02392ef0 = 0x02392ef0 as const;
+export const arm7_state_flag_bic = 0x02392ef0 as const;
 /**
  * ARM7 函数 @ 0x02392fb0
  * @category near
@@ -2948,9 +2959,10 @@ export const sub_02394450 = 0x02394450 as const;
  * ARM7 函数 @ 0x02394468
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_02394468 = 0x02394468 as const;
+export const arm7_halfword_bit_set = 0x02394468 as const;
 /**
  * ARM7 函数 @ 0x0239448c
  * @category prologue

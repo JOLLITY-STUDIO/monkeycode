@@ -1,0 +1,30 @@
+{
+  "version": "V0.17 batch9",
+  "note": "callers>=4 capstone disasm curated naming",
+  "names": [
+    { "addr": "0x0204bf70", "name": "sfloat_add_align", "cpu": "arm9", "comment": "float add/sub: extract exp (lsr #0x14) + sign + align mantissa" },
+    { "addr": "0x02039fa8", "name": "wrapper_call_2_funcs_c", "cpu": "arm9", "comment": "mov r0,#1; blx 0x2004724; bl 0x2037df0" },
+    { "addr": "0x0203a208", "name": "guarded_call_opt", "cpu": "arm9", "comment": "r0==0 early ret; r3 guard; and #0xff000000 fast path" },
+    { "addr": "0x0203f1dc", "name": "spin_wait_global_zero", "cpu": "arm9", "comment": "ldr global; cmp #0; bne loop — spin until global cleared" },
+    { "addr": "0x0203f9ec", "name": "call_indirect_const_0x27_to_0203b9b8", "cpu": "arm9", "comment": "mov r0,#0x27; bx 0x0203b9b8" },
+    { "addr": "0x02041fcc", "name": "call_indirect_const_2_to_0203e204", "cpu": "arm9", "comment": "mov r1,#2; bx 0x0203e204" },
+    { "addr": "0x02041fdc", "name": "call_indirect_const_2_to_0203e2a8", "cpu": "arm9", "comment": "mov r1,#2; bx 0x0203e2a8" },
+    { "addr": "0x02043a44", "name": "wrapper_guard_global_call", "cpu": "arm9", "comment": "bl 0x2043aa0; nonzero ret; global ldr; bl 0x20395bc" },
+    { "addr": "0x02046178", "name": "service_call_halfword_0xd", "cpu": "arm9", "comment": "strh r1,[sp]; mov r1,#0xd; bl 0x20473bc" },
+    { "addr": "0x0204b028", "name": "global_bool_flag_get", "cpu": "arm9", "comment": "ldr global; cmp #0; movne r0,#1 / moveq r0,#0" },
+    { "addr": "0x0204e1a8", "name": "udiv_normalize_loop", "cpu": "arm9", "comment": "unsigned div: r2,#0x1c count; lsr #4; suble #0x10 normalize" },
+    { "addr": "0x021054ac", "name": "shared_mem_da0_indexed_set_v2", "cpu": "arm9", "comment": "lsl #2 + 0x27ff000 base + 0xda0 offset store (V0.16 0x02039718 variant)" },
+    { "addr": "0x02383558", "name": "arm7_wrapper_call_3_calls", "cpu": "arm7", "comment": "bl 0x23837ec; bl 0x2383694; bl 0x2383768" },
+    { "addr": "0x0238431c", "name": "arm7_global_pair_store", "cpu": "arm7", "comment": "mov r2,#1; str r2,[r1]; str r0,[r1,#4]" },
+    { "addr": "0x02384334", "name": "arm7_global_bool_flag_get", "cpu": "arm7", "comment": "ldr global; cmp #0; moveq r0,#1 / movne r0,#0" },
+    { "addr": "0x023857b0", "name": "arm7_halfword_shift_or_store", "cpu": "arm7", "comment": "orr r1,r1,r0,lsl#11; strh [global]" },
+    { "addr": "0x02387498", "name": "arm7_signed_divmod_abs", "cpu": "arm7", "comment": "signed idiv: eor sign; abs both; swap if r0<r1 (matches ARM9 0x0204df9c)" },
+    { "addr": "0x023880e4", "name": "arm7_halfword_block_clear_8", "cpu": "arm7", "comment": "clear 8 halfwords at +0x30..+0x3e" },
+    { "addr": "0x0238a14c", "name": "arm7_call_indirect_027e20a4", "cpu": "arm7", "comment": "mov r1,#0x308; mov r2,#2; bx 0x027e20a4" },
+    { "addr": "0x02391470", "name": "arm7_arg_swap_thunk_to_037fe64c", "cpu": "arm7", "comment": "r3=r0,r0=r1,r1=r3; lsl r2,#1; bx 0x037fe64c" },
+    { "addr": "0x02391bbc", "name": "arm7_state_switch_0_1_cond", "cpu": "arm7", "comment": "ldrh [base+0x30]; cmp 0/1; branch; ldrh [base+0xa4] ands #1" },
+    { "addr": "0x02392030", "name": "arm7_halfword_copy_6", "cpu": "arm7", "comment": "copy 6 halfwords from 2 sources (r1*3 + r2*3) to r0" },
+    { "addr": "0x02392ef0", "name": "arm7_state_flag_bic", "cpu": "arm7", "comment": "ldrh [base+0x3a]; bic #4; cmp r0,#1 -> #5; flag logic" },
+    { "addr": "0x02394468", "name": "arm7_halfword_bit_set", "cpu": "arm7", "comment": "ldrh [base+0x30]; orr r0,r3,r2 lsl r0; strh — set bit idx" }
+  ]
+}
