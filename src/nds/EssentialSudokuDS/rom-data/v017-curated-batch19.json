@@ -1,0 +1,25 @@
+{
+  "version": "V0.17 batch19",
+  "note": "ARM9 near pool (callers>=1, high conf). 19 entries: global store/copy/bit ops + table lookups + call wrappers + IO reg flag + struct ops; 1 skipped (0x02028240 complex layout calc)",
+  "names": [
+    { "addr": "0x020278d8", "name": "global_halfword_move_36_call_02928c", "cpu": "arm9", "comment": "ldrh r3,[0x0210a7a0+0x36] -> strh [0x0210a778]; mov r0,#5; bx 0x0202928c (halfword move + const-arg call)" },
+    { "addr": "0x020279f4", "name": "table_stride12_get_0210a8e0", "cpu": "arm9", "comment": "gate: [0x0210a898 + idx*4]; non-null -> r0 = 0x0210a8e0 + idx*0xc (struct array stride 12); null -> 0" },
+    { "addr": "0x0202a28c", "name": "global_4word_copy_0210ab9c", "cpu": "arm9", "comment": "copy [r0+0..0xc] 4 words -> [0x0210ab9c+0..0xc] (global 16-byte struct copy)" },
+    { "addr": "0x0202aebc", "name": "cstring_max_run_len_store", "cpu": "arm9", "comment": "scan r1 string: max consecutive non-zero byte run -> [r0]; [r0+4]=1 (run-length scan + flag)" },
+    { "addr": "0x0202bb60", "name": "const_args_call_027bfc", "cpu": "arm9", "comment": "mov r0,0x02117238; mov r1,#0xc000; bx 0x02027bfc (const-arg trampoline)" },
+    { "addr": "0x0202d1b0", "name": "global_state6_dispatch_callback_021bb258", "cpu": "arm9", "comment": "[0x021bb258]!=6 -> [0x021bb268] non-null -> blx callback(0x020fba00); ==6 -> [0x021bb278]==2/3 -> call 0x02045d70(0x021bb720); else callback(0x020fba2c); return 0/1" },
+    { "addr": "0x0202d800", "name": "call_2045ed0_const5args", "cpu": "arm9", "comment": "bl 0x02045ed0(r0=arg0, r1=#3, r2=#0x11, r3=arg1, [sp]=#0x1e) (5-arg call wrapper)" },
+    { "addr": "0x0202f160", "name": "word_table_bounded_get_27", "cpu": "arm9", "comment": "r0<0x1b -> [0x020fb930 + idx*4]; else 0x020fb56c (27-entry word table with default)" },
+    { "addr": "0x0202f17c", "name": "flag_bit_test_struct_ptr_1e", "cpu": "arm9", "comment": "test [0x021bd668+2] & (1<<r0); clear -> 0; else r0 = 0x021bd678 + (idx-1)*0x1e + 0x16 (bit flag + struct ptr)" },
+    { "addr": "0x0202f7d8", "name": "call_seq_2f420_491ec_arg6", "cpu": "arm9", "comment": "mov r0,#6; bl 0x0202f420; bl 0x020491ec (sequential double call)" },
+    { "addr": "0x0203142c", "name": "global_word_pack_store_9c_021bd8a0", "cpu": "arm9", "comment": "pack r0 | r1<<4 | r2<<6 | [sp+4] | r3<<24 | [sp]<<16 -> [0x021bd8a0+0x9c] (4-field bitfield pack store)" },
+    { "addr": "0x020315c4", "name": "io_04000600_flag_set_call_seq", "cpu": "arm9", "comment": "bl 0x02036bd0; bl 0x02031458; [0x04000600] = (old & ~0xc0000000) | 0x80000000 (display reg flag set)" },
+    { "addr": "0x02031768", "name": "global_bits_clear_021bdb28", "cpu": "arm9", "comment": "[0x021bdb28] &= ~r0 (global bitfield clear)" },
+    { "addr": "0x02031f6c", "name": "ptr_pair_reset_if_set", "cpu": "arm9", "comment": "if [r0] non-null: [r0]=0 and [[r0]]=0 (deref-null linked node reset)" },
+    { "addr": "0x02032058", "name": "array_stride24_halfword_store_021bdfa4", "cpu": "arm9", "comment": "[0x021bdfa4 + idx*0x24] = (arg1 & 0xffff) (struct array stride 0x24 halfword store)" },
+    { "addr": "0x02032324", "name": "struct_bit31_call_2032230", "cpu": "arm9", "comment": "[r0+0x24] bit31 set -> bl 0x02032230 (conditional call on struct flag)" },
+    { "addr": "0x02032758", "name": "global_pair_get_7c_80_021be554", "cpu": "arm9", "comment": "ldr r1,[0x021be554]; [r0]=[r1+0x7c]; [r0+4]=[r1+0x80] (two-word global pair get)" },
+    { "addr": "0x02032cb0", "name": "const_r1_0_call_02c0d0", "cpu": "arm9", "comment": "mov r1,#0; bx 0x0202c0d0(r0=arg0) (const-arg trampoline)" },
+    { "addr": "0x02034c90", "name": "struct_clear_ptr_14c_bits_110", "cpu": "arm9", "comment": "if [r0+0x14c] non-null: [[r0+0x14c]]=0, [r0+0x14c]=0; [r0+0x110] clear bit0/bit2/bit1 (struct teardown)" }
+  ]
+}
