@@ -1,0 +1,139 @@
+{
+ "names": [
+  {
+   "addr": "0x02026c00",
+   "name": "auto_indirect_thunk_0x02036784_n3",
+   "pattern_kind": "indirect_thunk",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr ip, [pc, #0xc]|ldr r1, [pc, #0xc]|mov r0, #0|mov r2, #0x600|bx ip|andeq r6, r3, #132, #14",
+   "target_global_ptr": "0x02036784"
+  },
+  {
+   "addr": "0x02026c5c",
+   "name": "auto_bl2_wrap_0x2030ca4_0x2030e20",
+   "pattern_kind": "bl2_wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "near",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|bl #0x2030ca4|bl #0x2030e20|add sp, sp, #4|ldm sp!, {lr}",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0202802c",
+   "name": "auto_indirect_thunk_0x0202fb7c_n4",
+   "pattern_kind": "indirect_thunk",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr ip, [pc, #0x10]|mov r3, r0|mov r2, r1|ldr r0, [pc, #8]|mov r1, r3|bx ip",
+   "target_global_ptr": "0x0202fb7c"
+  },
+  {
+   "addr": "0x020381ec",
+   "name": "auto_indirect_thunk_0x02034310_n1",
+   "pattern_kind": "indirect_thunk",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr r1, [pc]|bx r1|andeq r4, r3, #16, #6",
+   "target_global_ptr": "0x02034310"
+  },
+  {
+   "addr": "0x02039f90",
+   "name": "auto_mode_getter_apsr",
+   "pattern_kind": "mode_getter",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "mrs r0, apsr|and r0, r0, #0x1f|bx lr",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0203ace4",
+   "name": "auto_indirect_thunk_0x02036ac0_n3",
+   "pattern_kind": "indirect_thunk",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr ip, [pc, #0xc]|mov r2, r1|mov r1, #4|mov r3, #1|bx ip|andeq r6, r3, #192, #20",
+   "target_global_ptr": "0x02036ac0"
+  },
+  {
+   "addr": "0x0203ec68",
+   "name": "auto_indirect_thunk_0x0203aea4_n3",
+   "pattern_kind": "indirect_thunk",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr ip, [pc, #0xc]|mov r2, r1|mov r1, r0|mov r0, #0xe|bx ip|andeq sl, r3, #164, #28",
+   "target_global_ptr": "0x0203aea4"
+  },
+  {
+   "addr": "0x020461b8",
+   "name": "auto_minmax_cmp1",
+   "pattern_kind": "minmax",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "cmp r1, r0|movls r1, r0|mov r0, r1|bx lr",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02102f28",
+   "name": "auto_bl2_wrap_0x21029c8_0x21041fc",
+   "pattern_kind": "bl2_wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "strh r0, [r1]|bl #0x21029c8|mov r0, r4|bl #0x21041fc|pop {r4, lr}|bx lr",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x021046b0",
+   "name": "auto_field_access_setter_off0x98",
+   "pattern_kind": "field_access",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "near",
+   "cpu": "arm9",
+   "disasm_snippet": "str r1, [r0, #0x98]|bx lr",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0210692c",
+   "name": "auto_cpsr_flip_clear",
+   "pattern_kind": "cpsr_flip",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "mrs r0, apsr|bic r1, r0, #0x80|msr cpsr_c, r1|and r0, r0, #0x80|bx lr",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02106998",
+   "name": "auto_mode_getter_apsr_2",
+   "pattern_kind": "mode_getter",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "mrs r0, apsr|and r0, r0, #0x1f|bx lr",
+   "target_global_ptr": null
+  }
+ ],
+ "generated": "V0.19 remaining detector",
+ "total": 12,
+ "skipped": 247
+}
