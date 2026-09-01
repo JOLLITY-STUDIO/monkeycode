@@ -10,20 +10,11 @@
       <view class="menu-label">SELECT MODE</view>
     </view>
     <view class="select-bg-wrap">
-      <image
-        class="mode-cursor"
-        src="{{menuCursorUrl}}"
-        mode="aspectFit"
-        style="top: {{cursorTop}}px;"
-        lazy-load
-      ></image>
-      <view class="mode-buttons">
-        <view class="mode-btn number-puzzle {{selectedMode === 'number' ? 'mode-btn-active' : ''}}" bindtap="onOpenNumberPuzzle">
-          <image class="mode-btn-bg" src="{{numberBtnUrl}}" mode="aspectFit" lazy-load></image>
-        </view>
-        <view class="mode-btn picture-puzzle {{selectedMode === 'picture' ? 'mode-btn-active' : ''}}" bindtap="onOpenPicturePuzzle">
-          <image class="mode-btn-bg" src="{{pictureBtnUrl}}" mode="aspectFit" lazy-load></image>
-        </view>
+      <view class="mode-btn mode-btn-number" bindtap="onOpenNumberPuzzle">
+        <text class="mode-btn-text">NUMBER PUZZLE</text>
+      </view>
+      <view class="mode-btn mode-btn-picture" bindtap="onOpenPicturePuzzle">
+        <text class="mode-btn-text">PICTURE PUZZLE</text>
       </view>
     </view>
   </view>
