@@ -6,7 +6,10 @@
 
   <!-- 主菜单模式选择 -->
   <view class="mode-select-card">
-    <view class="menu-label">SELECT MODE</view>
+    <view class="menu-label-wrap">
+      <image class="menu-cursor" src="{{menuCursorUrl}}" mode="aspectFit" lazy-load></image>
+      <view class="menu-label">SELECT MODE</view>
+    </view>
     <view class="select-bg-wrap">
       <image class="select4-bg" src="/assets/nbm/select4.nbm.png" mode="aspectFill"></image>
       <view class="mode-buttons">

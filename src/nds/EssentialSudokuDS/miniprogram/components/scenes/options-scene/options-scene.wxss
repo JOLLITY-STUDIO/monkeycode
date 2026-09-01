@@ -25,9 +25,9 @@
   font-weight: 600;
 }
 
-.select3-banner {
+.setu-banner {
   width: 100%;
-  height: 140px;
+  height: 180px;
   border-radius: 8px;
   overflow: hidden;
   margin-bottom: 12px;
@@ -37,10 +37,10 @@
   justify-content: center;
 }
 
-.select3-image {
+.setu-image {
   width: 100%;
   height: 100%;
-  opacity: 0.9;
+  opacity: 0.95;
 }
 
 .options-card {

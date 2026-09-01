@@ -33,12 +33,26 @@
   margin-bottom: 12px;
 }
 
+.menu-label-wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.menu-cursor {
+  width: 16px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
 .menu-label {
   font-size: 16px;
   font-weight: 700;
   color: #3a4a5a;
   text-align: center;
-  margin-bottom: 10px;
   letter-spacing: 1px;
 }
 

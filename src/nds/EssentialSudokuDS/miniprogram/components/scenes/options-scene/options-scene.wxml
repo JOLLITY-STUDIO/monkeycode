@@ -4,9 +4,9 @@
     <text class="scene-bar-text">← 返回主菜单</text>
   </view>
 
-  <!-- 原 DS select3 按钮精灵背景装饰 -->
-  <view class="select3-banner">
-    <image class="select3-image" src="/assets/nbm/select3.nbm.png" mode="aspectFit" lazy-load></image>
+  <!-- 原 DS setu03.nbm 设置界面背景 -->
+  <view class="setu-banner">
+    <image class="setu-image" src="{{setu03Url}}" mode="aspectFill" lazy-load></image>
   </view>
 
   <view class="options-card">
