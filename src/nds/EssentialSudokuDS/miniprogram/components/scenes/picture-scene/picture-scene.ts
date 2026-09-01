@@ -101,7 +101,7 @@ Component({
     currentFile: 'numclo0.data',
     puzzleName: '',
     puzzleIndex: 0,      // 文件内索引 0-based
-    puzzleCount: 100,
+    puzzleCount: 0,
     palette: PALETTE_HEX.map((color, id) => ({
       id,
       color,

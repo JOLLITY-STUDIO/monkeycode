@@ -4,9 +4,9 @@
     <text class="scene-bar-text">← 返回主菜单</text>
   </view>
 
-  <!-- 原 DS numclo_00.nbm banner -->
+  <!-- 原 DS pazl_select.nbm 标题 -->
   <view class="list-banner">
-    <image class="list-banner-image" src="/assets/nbm/numclo_00.nbm.png" mode="aspectFit" lazy-load></image>
+    <image class="list-banner-image" src="{{bannerUrl}}" mode="aspectFit" lazy-load></image>
   </view>
 
   <view class="list-card">
@@ -15,10 +15,11 @@
       <view
         wx:for="{{categories}}"
         wx:key="key"
-        class="cat-row"
+        class="cat-row {{selectedKey === item.key ? 'cat-row-active' : ''}}"
         data-key="{{item.key}}"
         bindtap="onTapCategory"
       >
+        <image wx:if="{{selectedKey === item.key}}" class="cat-arrow-icon" src="{{arrowUrl}}" mode="aspectFit" lazy-load></image>
         <text class="cat-label">{{item.label}}</text>
         <text class="cat-count">{{item.count}} 题</text>
         <text class="cat-arrow">›</text>

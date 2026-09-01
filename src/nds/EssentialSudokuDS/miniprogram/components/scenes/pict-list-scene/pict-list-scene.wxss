@@ -76,6 +76,18 @@
   background: #f5f7f9;
 }
 
+.cat-row-active {
+  background: #e8f0fe;
+  border-radius: 6px;
+}
+
+.cat-arrow-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
 .cat-label {
   flex: 1;
   min-width: 0;
