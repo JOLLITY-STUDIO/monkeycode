@@ -5077,9 +5077,10 @@ export const sub_02035588 = 0x02035588 as const;
  * ARM9 函数 @ 0x020355d0
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_020355d0 = 0x020355d0 as const;
+export const io_04000004_halfword_bit3_set_clear = 0x020355d0 as const;
 /**
  * ARM9 函数 @ 0x02035600
  * @category prologue
@@ -5125,16 +5126,18 @@ export const sub_020358fc = 0x020358fc as const;
  * ARM9 函数 @ 0x02035924
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02035924 = 0x02035924 as const;
+export const tail_call_0203194c_arg_global = 0x02035924 as const;
 /**
  * ARM9 函数 @ 0x02035938
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02035938 = 0x02035938 as const;
+export const tail_call_0203194c_arg_global_b = 0x02035938 as const;
 /**
  * ARM9 函数 @ 0x0203594c
  * @category prologue
@@ -5431,9 +5434,10 @@ export const sub_02036d68 = 0x02036d68 as const;
  * ARM9 函数 @ 0x02036da4
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02036da4 = 0x02036da4 as const;
+export const io_04000468_write_seq9 = 0x02036da4 as const;
 /**
  * ARM9 函数 @ 0x02036de0
  * @category prologue
@@ -5457,9 +5461,10 @@ export const sub_02037128 = 0x02037128 as const;
  * ARM9 函数 @ 0x0203719c
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0203719c = 0x0203719c as const;
+export const call_0358fc_store_global = 0x0203719c as const;
 /**
  * ARM9 函数 @ 0x020371c0
  * @category prologue
@@ -5767,9 +5772,10 @@ export const call_indirect_3const_to_02034330 = 0x020382f0 as const;
  * ARM9 函数 @ 0x02038310
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02038310 = 0x02038310 as const;
+export const tail_call_020343c0_r3_1 = 0x02038310 as const;
 /**
  * ARM9 函数 @ 0x02038330
  * @category prologue
@@ -5780,9 +5786,10 @@ export const sub_02038330 = 0x02038330 as const;
  * ARM9 函数 @ 0x020383b0
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_020383b0 = 0x020383b0 as const;
+export const tail_call_020343c0_r3_0 = 0x020383b0 as const;
 /**
  * ARM9 函数 @ 0x020383c0
  * @category prologue
@@ -5859,9 +5866,10 @@ export const sub_02038720 = 0x02038720 as const;
  * ARM9 函数 @ 0x0203880c
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0203880c = 0x0203880c as const;
+export const list_find_node_field64_eq_1 = 0x0203880c as const;
 /**
  * ARM9 函数 @ 0x02038838
  * @category prologue
@@ -5884,9 +5892,10 @@ export const sub_020388ec = 0x020388ec as const;
  * ARM9 函数 @ 0x02038940
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02038940 = 0x02038940 as const;
+export const obj_field64_is_2 = 0x02038940 as const;
 /**
  * ARM9 函数 @ 0x02038954
  * @category prologue
@@ -5916,9 +5925,10 @@ export const sub_02038a34 = 0x02038a34 as const;
  * ARM9 函数 @ 0x02038aa4
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02038aa4 = 0x02038aa4 as const;
+export const call_08a34_global4_zero = 0x02038aa4 as const;
 /**
  * ARM9 函数 @ 0x02038ad0
  * @category prologue
@@ -6005,9 +6015,10 @@ export const sub_02038fdc = 0x02038fdc as const;
  * ARM9 函数 @ 0x02039020
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02039020 = 0x02039020 as const;
+export const two_global_halfword_state_check = 0x02039020 as const;
 /**
  * ARM9 函数 @ 0x02039054
  * @category prologue
@@ -6065,9 +6076,10 @@ export const sub_020393e0 = 0x020393e0 as const;
  * ARM9 函数 @ 0x02039404
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02039404 = 0x02039404 as const;
+export const linked_list_push_tail_8c = 0x02039404 as const;
 /**
  * ARM9 函数 @ 0x02039428
  * @category prologue
@@ -6395,9 +6407,10 @@ export const call_indirect_const_6_to_02036880 = 0x0203a0f8 as const;
  * ARM9 函数 @ 0x0203a114
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0203a114 = 0x0203a114 as const;
+export const clz_count_leading_zeros = 0x0203a114 as const;
 /**
  * ARM9 函数 @ 0x0203a11c
  * @category prologue
@@ -6551,9 +6564,10 @@ export const vec3_sub = 0x0203a880 as const;
  * ARM9 函数 @ 0x0203a9b0
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0203a9b0 = 0x0203a9b0 as const;
+export const swp_word_at_r1 = 0x0203a9b0 as const;
 /**
  * ARM9 函数 @ 0x0203a9b8
  * @category prologue
@@ -6564,9 +6578,10 @@ export const sub_0203a9b8 = 0x0203a9b8 as const;
  * ARM9 函数 @ 0x0203aa44
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0203aa44 = 0x0203aa44 as const;
+export const call_seq_a1f8_a32c = 0x0203aa44 as const;
 /**
  * ARM9 函数 @ 0x0203aa68
  * @category prologue
@@ -6621,9 +6636,10 @@ export const service_call_0x14 = 0x0203abac as const;
  * ARM9 函数 @ 0x0203abe0
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0203abe0 = 0x0203abe0 as const;
+export const call_03aa68_0x1b_constargs = 0x0203abe0 as const;
 /**
  * ARM9 函数 @ 0x0203ac0c
  * @category prologue
@@ -6818,9 +6834,10 @@ export const sub_0203b698 = 0x0203b698 as const;
  * ARM9 函数 @ 0x0203b6b8
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0203b6b8 = 0x0203b6b8 as const;
+export const array8_struct_clear_0xc_stride = 0x0203b6b8 as const;
 /**
  * ARM9 函数 @ 0x0203b6e8
  * @category prologue
@@ -6865,9 +6882,10 @@ export const sub_0203b890 = 0x0203b890 as const;
  * ARM9 函数 @ 0x0203b8c8
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0203b8c8 = 0x0203b8c8 as const;
+export const obj_field38_get = 0x0203b8c8 as const;
 /**
  * ARM9 函数 @ 0x0203b8d0
  * @category prologue
@@ -6878,9 +6896,10 @@ export const sub_0203b8d0 = 0x0203b8d0 as const;
  * ARM9 函数 @ 0x0203baa8
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0203baa8 = 0x0203baa8 as const;
+export const word_pair_clear = 0x0203baa8 as const;
 /**
  * ARM9 函数 @ 0x0203bac8
  * @category prologue
@@ -7200,9 +7219,10 @@ export const sub_0203dc34 = 0x0203dc34 as const;
  * ARM9 函数 @ 0x0203dca8
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0203dca8 = 0x0203dca8 as const;
+export const spin_wait_halfword_mask_clear = 0x0203dca8 as const;
 /**
  * ARM9 函数 @ 0x0203dcc0
  * @category prologue

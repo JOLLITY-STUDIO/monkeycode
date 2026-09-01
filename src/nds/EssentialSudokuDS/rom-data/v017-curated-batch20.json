@@ -1,0 +1,24 @@
+{
+  "names": [
+    {"addr": "0x020355d0", "name": "io_04000004_halfword_bit3_set_clear", "category": "near", "comment": "r0!=0 时置 IO 0x04000004 半字 bit3, 否则清 bit3 (读改写)"},
+    {"addr": "0x02035924", "name": "tail_call_0203194c_arg_global", "category": "near", "comment": "thunk: ldr ip->0x0203194c, r0=全局 word, bx ip"},
+    {"addr": "0x02035938", "name": "tail_call_0203194c_arg_global_b", "category": "near", "comment": "thunk: 同 0x02035924, r0=另一全局 word"},
+    {"addr": "0x02036da4", "name": "io_04000468_write_seq9", "category": "near", "comment": "向 IO 0x04000468 连续写 9 个 word: 0x1000,0,0,0,r1,r0,0,-r0,r1"},
+    {"addr": "0x0203719c", "name": "call_0358fc_store_global", "category": "near", "comment": "bl 0x020358fc 结果存全局 word"},
+    {"addr": "0x02038310", "name": "tail_call_020343c0_r3_1", "category": "near", "comment": "thunk: ldr ip->0x020343c0, r3=1, 带 r1/r2 参数 bx ip"},
+    {"addr": "0x020383b0", "name": "tail_call_020343c0_r3_0", "category": "near", "comment": "thunk: 同目标 0x020343c0, r3=0"},
+    {"addr": "0x0203880c", "name": "list_find_node_field64_eq_1", "category": "near", "comment": "从全局[+8] 链式遍历, 找 [node+0x64]==1 的节点 (next 在 +0x68)"},
+    {"addr": "0x02038940", "name": "obj_field64_is_2", "category": "near", "comment": "返回 [r0+0x64]==2 布尔 (1/0)"},
+    {"addr": "0x02038aa4", "name": "call_08a34_global4_zero", "category": "near", "comment": "bl 0x02039f38 lock; 调 0x02038a34(global+4, 0)"},
+    {"addr": "0x02039020", "name": "two_global_halfword_state_check", "category": "near", "comment": "读全局半字 g1, 0 则读 g2 否则读 g3, 判定结果==1"},
+    {"addr": "0x02039404", "name": "linked_list_push_tail_8c", "category": "near", "comment": "双向链表尾插: [obj+0x8c] 尾部挂 r1, 头存 [obj+0x88], prev/next 修正"},
+    {"addr": "0x0203a114", "name": "clz_count_leading_zeros", "category": "near", "comment": "clz r0, r0 — 前导零计数"},
+    {"addr": "0x0203a9b0", "name": "swp_word_at_r1", "category": "near", "comment": "swp r0, r0, [r1] — 原子交换 word"},
+    {"addr": "0x0203aa44", "name": "call_seq_a1f8_a32c", "category": "near", "comment": "bl 0x0203a1f8(3) + bl 0x0203a32c(0)"},
+    {"addr": "0x0203abe0", "name": "call_03aa68_0x1b_constargs", "category": "near", "comment": "调 0x0203aa68(id=0x1b, r0, r1, 0, sp+0)"},
+    {"addr": "0x0203b6b8", "name": "array8_struct_clear_0xc_stride", "category": "near", "comment": "8 个 stride 0xc 结构清零 ([r1],[r1+4],[r1+8]=0)"},
+    {"addr": "0x0203b8c8", "name": "obj_field38_get", "category": "near", "comment": "ldr r0, [r0, #0x38] getter"},
+    {"addr": "0x0203baa8", "name": "word_pair_clear", "category": "near", "comment": "[r0]=0 且 [r0+4]=0"},
+    {"addr": "0x0203dca8", "name": "spin_wait_halfword_mask_clear", "category": "near", "comment": "忙等: [g+0x36] 半字 & r0 == 0 (spin loop)"}
+  ]
+}
