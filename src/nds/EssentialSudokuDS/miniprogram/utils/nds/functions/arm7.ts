@@ -267,9 +267,10 @@ export const sub_02382044 = 0x02382044 as const;
  * ARM7 函数 @ 0x02382150
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02382150 = 0x02382150 as const;
+export const arm7_array_8stride_gate_lookup = 0x02382150 as const;
 /**
  * ARM7 函数 @ 0x02382190
  * @category prologue
@@ -298,16 +299,18 @@ export const sub_02382484 = 0x02382484 as const;
  * ARM7 函数 @ 0x02382524
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02382524 = 0x02382524 as const;
+export const arm7_global_halfword_0x260_store = 0x02382524 as const;
 /**
  * ARM7 函数 @ 0x02382540
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02382540 = 0x02382540 as const;
+export const arm7_struct_stride36_halfword_0x20_store = 0x02382540 as const;
 /**
  * ARM7 函数 @ 0x02382560
  * @category prologue

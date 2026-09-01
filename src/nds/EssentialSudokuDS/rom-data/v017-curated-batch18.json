@@ -1,0 +1,19 @@
+{
+  "version": "V0.17 batch18",
+  "note": "callers>=2 exhausted -> callers>=1 pool. ARM7 3 entries (global 0x03808a90 halfword setters + array-table gate), ARM9 10 entries (global store/counter/stubs/const-thunk/table fillers); 3 wrapper-only candidates skipped (0x02026660/0x02026c5c/0x023841dc)",
+  "names": [
+    { "addr": "0x02382524", "name": "arm7_global_halfword_0x260_store", "cpu": "arm7", "comment": "ldr r2,[pc,#0x10] -> global 0x03808a90; r0=idx: [g + idx*2 + 0x200 + 0x60] = r1 halfword; bx lr" },
+    { "addr": "0x02382540", "name": "arm7_struct_stride36_halfword_0x20_store", "cpu": "arm7", "comment": "ldr r3,[pc,#0x14] -> global 0x03808a90; mla r3,r0,#0x24,ip -> [g + r0*0x24 + r1*2 + 0x20] = r2 halfword (struct array stride 0x24)" },
+    { "addr": "0x02382150", "name": "arm7_array_8stride_gate_lookup", "cpu": "arm7", "comment": "r0=base r1=idx: ptr=[base+idx*8+0x18]; null->0; [ptr+0x38]<r2->0; else bl 0x23822b8(ptr, r2) (table gate + conditional call)" },
+    { "addr": "0x02009240", "name": "global_ptr_store_arg0_020fcc6c", "cpu": "arm9", "comment": "push r0-r3; ldr r1,[sp] (arg0); str r1, [global 0x020fcc6c]; bx lr (global pointer field store)" },
+    { "addr": "0x020113f0", "name": "global_counter_dec_then_call_011230", "cpu": "arm9", "comment": "ldr r0,[pc,#0x20] -> global 0x02104424; [g]>0 -> [g]-1; then bl 0x02011230 (counter decrement + follow-up call)" },
+    { "addr": "0x0201794c", "name": "stub_noop_d", "cpu": "arm9", "comment": "single bx lr no-op stub" },
+    { "addr": "0x02022a50", "name": "stub_noop_e", "cpu": "arm9", "comment": "single bx lr no-op stub" },
+    { "addr": "0x0202300c", "name": "stub_noop_f", "cpu": "arm9", "comment": "single bx lr no-op stub" },
+    { "addr": "0x02023010", "name": "stub_noop_g", "cpu": "arm9", "comment": "single bx lr no-op stub" },
+    { "addr": "0x0202650c", "name": "const3_thunk_bx_0398e8", "cpu": "arm9", "comment": "ldr ip,[pc,#4]; mov r0,#3; bx ip -> 0x020398e8 (const-arg trampoline)" },
+    { "addr": "0x0202651c", "name": "global_counter_mul5_add1", "cpu": "arm9", "comment": "ldr r1,[pc,#0x14] -> global 0x020f7d9c; [g]=[g]*5+1 store back; bx lr (counter/seq generator)" },
+    { "addr": "0x02027010", "name": "halfword_table_fill_neg1_200x1c", "cpu": "arm9", "comment": "ldr r1,[pc,#0x18] -> base 0x0210912c; loop 0xc8 iters: strh #-1, [r1], #0x1c (200 halfwords stride 0x1c, clear-to-FFFF)" },
+    { "addr": "0x02027364", "name": "byte_table_fill_neg1_50x10", "cpu": "arm9", "comment": "ldr r0,[pc,#0x18] -> base 0x02108e0c; loop 0x32 iters: strb #-1, [r0, r2, lsl #4] (50 bytes stride 0x10, clear-to-FF)" }
+  ]
+}
