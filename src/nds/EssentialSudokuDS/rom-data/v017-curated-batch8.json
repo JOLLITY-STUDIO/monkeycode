@@ -1,0 +1,138 @@
+{
+  "version": "V0.17",
+  "description": "V0.17 curated naming batch 8 (22 entries). ARM9 semantic names from capstone disasm (callers>=4): linked-list insert/remove, IRQ-safe global word store / AND-NOT clear, clz scan, signed halfword fixed-point convert, IO flag pair ops, init sequences.",
+  "names": [
+    {
+      "addr": "0x02008630",
+      "name": "globals_reset_and_call_twice",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; ldr r0,[pc,#0x34]; ldr r1,[pc,#0x34]; ldr r0,[r0]; mov r2,#0; str r2,[r1]; bl 0x2028840; ldr r0,[pc,#0x24]; ldr r0,[r0]; bl 0x2028840",
+      "note": "callers=5. Zero a global then call 0x2028840 twice with two global ptrs."
+    },
+    {
+      "addr": "0x02021450",
+      "name": "two_global_state_check",
+      "disasm": "ldr r2,[pc,#0x4c]; ldr r2,[r2]; cmp r2,#0; bne...; ldr r2,[pc,#0x40]; ldr r2,[r2]; cmp r2,#0; beq...; ldr r2,[pc,#0x34]; mov r3,#1",
+      "note": "callers=5. Branch on two global flags (both zero / nonzero states)."
+    },
+    {
+      "addr": "0x02021634",
+      "name": "global_dword64_store",
+      "disasm": "push {r0,r1,r2,r3}; ldr r2,[sp]; ldr r0,[pc,#0x10]; ldr r1,[sp,#4]; str r2,[r0]; str r1,[r0,#4]; add sp,sp,#0x10; bx lr",
+      "note": "callers=5. Store 64-bit value (two stack words) to global ptr [0]/[4]."
+    },
+    {
+      "addr": "0x02021bc4",
+      "name": "conditional_dual_global_store",
+      "disasm": "cmp r0,#0; ldreq r1,[pc,#0x10]; ldreq r0,[pc,#0x10]; streq r1,[r0]; ldrne r1,[pc,#8]; strne r0,[r1]; bx lr",
+      "note": "callers=5. r0==0 -> store const to global A; else store r0 to global B."
+    },
+    {
+      "addr": "0x0202fec0",
+      "name": "cond_field_read",
+      "disasm": "cmp r1,#0; ldreq r0,[r0,#4]; ldrhne r0,[r0,#0xa]; ldrne r0,[r1,r0]; bx lr",
+      "note": "callers=5. r1==0 -> word [r0+4]; else indexed halfword [r0+0xa]+r1."
+    },
+    {
+      "addr": "0x02030794",
+      "name": "node_init_with_size",
+      "disasm": "ldr r3,[r0]; mov r2,#0; strh r1,[r3]; strh r2,[r3,#2]; ldr r1,[r0,#4]; add r0,r3,#0x10; sub r0,r1,r0; str r0,[r3,#4]; str r2,[r3,#8]; mov r0,r3; str r2,[r3,#0xc]; bx lr",
+      "note": "callers=5. Init node: header halfword, size = end-0x10, zero [8]/[0xc], return node ptr."
+    },
+    {
+      "addr": "0x0203528c",
+      "name": "wrapper_call_2_funcs_b",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; bl 0x2035138; bl 0x20351d8; add sp,sp,#4; ldm sp!,{lr}; bx lr",
+      "note": "callers=5. Thin wrapper calling 2 sub-functions sequentially."
+    },
+    {
+      "addr": "0x020381f8",
+      "name": "clz_scan_first_nonzero",
+      "disasm": "ldr r3,[pc,#0x48]; ldr r1,[r3]; clz r2,r1; cmp r2,#0x20; movne r0,#0x40; bne...; add r3,r3,#4; ldr r1,[r3]; clz r2,r1; cmp r2,#0x20; ldr r0,[pc,#0x24]; bxeq lr",
+      "note": "callers=5. CLZ scan over two global words; nonzero -> 0x40, both zero -> load default."
+    },
+    {
+      "addr": "0x0203a0f8",
+      "name": "call_indirect_const_6_to_02036880",
+      "disasm": "ldr ip,[pc,#0xc]; mov r1,r0; ldr r0,[pc,#8]; mov r2,#6; bx ip",
+      "note": "callers=5. Indirect call 0x02036880 with r0=global, r1=arg, r2=6."
+    },
+    {
+      "addr": "0x0203adb4",
+      "name": "tail_call_020354e0",
+      "disasm": "ldr ip,[pc,#4]; ldr r0,[pc,#4]; bx ip",
+      "note": "callers=5. Tail call thunk -> 0x020354e0."
+    },
+    {
+      "addr": "0x0200b030",
+      "name": "io_flags_bic_orr_pair",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; ldr r3,[pc,#0x58]; ldr r2,[pc,#0x58]; ldrh r0,[r3]; bic r0,r0,#3; strh r0,[r3]; ldrh r0,[r2]; bic r0,r0,#3; orr r0,r0,#1; strh r0,[r2]",
+      "note": "callers=4. Two IO halfwords: clear bits 0-1 on A, clear bits 0-1 then set bit0 on B."
+    },
+    {
+      "addr": "0x02014618",
+      "name": "dual_state_check_eq",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; ldr r0,[pc,#0x18c]; ldr r0,[r0]; cmp r0,#0xa; bne...; ldr r0,[pc,#0x180]; ldr r0,[r0]; cmp r0,#1; bne...; mov r0,#1",
+      "note": "callers=4. Check global A == 0xa and global B == 1 then set r0=1 (state gate)."
+    },
+    {
+      "addr": "0x02021658",
+      "name": "init_sequence_calls",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; ldr r1,[pc,#0x38]; ldr r2,[pc,#0x38]; mov r0,#0x28; bl 0x2029378; ldr r0,[pc,#0x30]; mvn r1,#0; bl 0x2029250; ldr r0,[pc,#0x28]; mvn r1,#0; bl 0x2029250",
+      "note": "callers=4. Init sequence: size 0x28 alloc + two 0x2029250 calls with -1 sentinel."
+    },
+    {
+      "addr": "0x0202cf68",
+      "name": "guarded_dual_state_check",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; ldr r0,[pc,#0x148]; ldr r1,[r0]; cmp r1,#1; bne...; ldr r0,[pc,#0x13c]; ldr r1,[r0]; cmp r1,#0; addeq sp,sp,#4; ldmeq sp!,{lr}; bxeq lr",
+      "note": "callers=4. Early-return unless global A==1 and global B==0 (guard gate)."
+    },
+    {
+      "addr": "0x020307c4",
+      "name": "dllist_insert",
+      "disasm": "str r2,[r1,#8]; cmp r2,#0; ldrne r3,[r2,#0xc]; strne r1,[r2,#0xc]; ldreq r3,[r0]; streq r1,[r0]; str r3,[r1,#0xc]; cmp r3,#0; strne r1,[r3,#8]; streq r1,[r0,#4]; mov r0,r1; bx lr",
+      "note": "callers=4. Doubly-linked list insert node r1 before/after r2 (prev=8 next=0xc, head/tail ptrs r0[0]/r0[4])."
+    },
+    {
+      "addr": "0x020307f4",
+      "name": "dllist_remove",
+      "disasm": "ldr r2,[r1,#8]; ldr r1,[r1,#0xc]; cmp r2,#0; strne r1,[r2,#0xc]; streq r1,[r0]; cmp r1,#0; strne r2,[r1,#8]; streq r2,[r0,#4]; mov r0,r2; bx lr",
+      "note": "callers=4. Doubly-linked list remove node r1 (re-link prev/next, update head/tail)."
+    },
+    {
+      "addr": "0x02031f5c",
+      "name": "cond_byte_field_0x41_write",
+      "disasm": "ldr r0,[r0]; cmp r0,#0; strbne r1,[r0,#0x41]; bx lr",
+      "note": "callers=4. If global ptr nonzero write byte arg to [ptr+0x41]."
+    },
+    {
+      "addr": "0x02035480",
+      "name": "signed_halfword_fixed_convert",
+      "disasm": "cmp r1,#0; moveq r1,#0; strheq r1,[r0]; bxeq lr; cmp r1,#0; orrgt r1,r1,#0x4000; strhgt r1,[r0]; rsble r1,r1,#0; orrle r1,r1,#0x8000; strhle r1,[r0]; bx lr",
+      "note": "callers=4. Convert signed value to fixed-point halfword: 0->0, >0 |0x4000, <0 neg |0x8000."
+    },
+    {
+      "addr": "0x020354c8",
+      "name": "io_read_cond_write",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; ldr r3,[pc,#0x58]; mov lr,#0x4000000; ldrh ip,[r3]; ldr lr,[lr]; ldr r3,[pc,#0x4c]; cmp ip,#0; strh r0,[r3]; ldr r3,[pc,#0x44]; moveq r0,#0; and r3,lr,r3",
+      "note": "callers=4. Read IO reg 0x04000000 + global halfword, conditional store & mask."
+    },
+    {
+      "addr": "0x02037ff8",
+      "name": "global_flags_andnot_clear_irq_safe_c",
+      "disasm": "stmdb sp!,{lr}; sub sp,sp,#4; ldr lr,[pc,#0x30]; mov r3,#0; ldrh ip,[lr]; ldr r2,[pc,#0x28]; mvn r1,r0; strh r3,[lr]; ldr r0,[r2]; and r1,r0,r1; str r1,[r2]; ldrh r1,[lr]",
+      "note": "callers=4. IRQ-safe atomic AND-NOT (clear bits) into global word flag. Twin of 0x021041c0."
+    },
+    {
+      "addr": "0x02038078",
+      "name": "global_word_store_irq_safe",
+      "disasm": "ldr ip,[pc,#0x24]; mov r1,#0; ldrh r3,[ip]; ldr r2,[pc,#0x1c]; strh r1,[ip]; ldr r1,[r2]; str r0,[r2]; ldrh r0,[ip]; mov r0,r1; strh r3,[ip]; bx lr",
+      "note": "callers=4. IRQ-safe direct word store to global (hword save/restore); returns previous."
+    },
+    {
+      "addr": "0x0203956c",
+      "name": "struct_clear_4_fields",
+      "disasm": "mov r2,#0; str r2,[r0,#4]; ldr r1,[r0,#4]; str r1,[r0]; str r2,[r0,#8]; str r2,[r0,#0xc]; bx lr",
+      "note": "callers=4. Zero struct fields 0/4/8/0xc (chain-copy 4->0)."
+    }
+  ]
+}
