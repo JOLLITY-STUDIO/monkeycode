@@ -90,6 +90,13 @@ export const NBM_ALL = [
   NBM_WIRELESS_STRENGTH_LEVEL_3_W,
 ];
 
+/** select3.nbm 切片: 选项页按钮标签普通态. */
+export const NBM_SELECT3_CLEAR_NORMAL = '/assets/nbm/select3_clear_normal.png';
+export const NBM_SELECT3_RATE_NORMAL = '/assets/nbm/select3_rate_normal.png';
+export const NBM_SELECT3_SE_VOLUME_NORMAL = '/assets/nbm/select3_se_volume_normal.png';
+export const NBM_SELECT3_CREDITS_NORMAL = '/assets/nbm/select3_credits_normal.png';
+export const NBM_SELECT3_BGM_VOLUME_NORMAL = '/assets/nbm/select3_bgm_volume_normal.png';
+
 /**
  * 模式资源归属（重要）:
  *  - Essential Sudoku DS = 数独 number puzzle, 题目数据来自 numple0-9.data.
@@ -126,6 +133,14 @@ export const NBM_GROUP_MENU_SELECT = [
   NBM_SELECT3,
   NBM_SELECT4,
   NBM_SELECT6,
+];
+
+export const NBM_GROUP_OPTIONS_SLICE = [
+  NBM_SELECT3_CLEAR_NORMAL,
+  NBM_SELECT3_RATE_NORMAL,
+  NBM_SELECT3_SE_VOLUME_NORMAL,
+  NBM_SELECT3_CREDITS_NORMAL,
+  NBM_SELECT3_BGM_VOLUME_NORMAL,
 ];
 
 export const NBM_GROUP_STAFF = [
@@ -208,9 +223,14 @@ export function nbmUrl(name: string): string | undefined {
     'WIRELESS_STRENGTH_LEVEL_2_W': NBM_WIRELESS_STRENGTH_LEVEL_2_W,
     'WIRELESS_STRENGTH_LEVEL_3_B': NBM_WIRELESS_STRENGTH_LEVEL_3_B,
     'WIRELESS_STRENGTH_LEVEL_3_W': NBM_WIRELESS_STRENGTH_LEVEL_3_W,
+    'SELECT3_CLEAR_NORMAL': NBM_SELECT3_CLEAR_NORMAL,
+    'SELECT3_RATE_NORMAL': NBM_SELECT3_RATE_NORMAL,
+    'SELECT3_SE_VOLUME_NORMAL': NBM_SELECT3_SE_VOLUME_NORMAL,
+    'SELECT3_CREDITS_NORMAL': NBM_SELECT3_CREDITS_NORMAL,
+    'SELECT3_BGM_VOLUME_NORMAL': NBM_SELECT3_BGM_VOLUME_NORMAL,
   };
   return map[constName];
 }
 
-/** Summary (total PNG bytes ≈ 241.46 KB). */
-export const NBM_MANIFEST = { total: 42, totalBytes: 247251 };
+/** Summary (total PNG bytes ≈ 236.43 KB). */
+export const NBM_MANIFEST = { total: 42, totalBytes: 242109 };

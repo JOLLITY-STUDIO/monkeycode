@@ -7,11 +7,39 @@ import os
 import json
 import re
 
+from PIL import Image
+
 WORKSPACE = r'D:\studio\github\monkeycode\src\nds\EssentialSudokuDS'
 MANIFEST = os.path.join(WORKSPACE, 'rom-data', 'extracted', 'nbm-png-manifest.json')
 OUT_PATH = os.path.join(WORKSPACE, 'miniprogram', 'utils', 'sudoku', 'nbmAssets.ts')
 
 ROOT_PREFIX = '/assets/nbm/'
+
+# select3.nbm 是选项页 sprite sheet: 同一文件内包含多个按钮标签的普通/选中态.
+# 这里裁剪出普通态子图, 供 UI 直接引用 (避免 wxss background-position 兼容问题).
+SELECT3_SLICES = {
+    'select3_clear_normal': (6, 6, 95, 31),
+    'select3_rate_normal': (102, 6, 191, 31),
+    'select3_se_volume_normal': (6, 70, 127, 95),
+    'select3_credits_normal': (6, 134, 95, 159),
+    'select3_bgm_volume_normal': (6, 198, 127, 223),
+}
+
+
+def generate_select3_slices() -> list[tuple[str, str]]:
+    """Crop select3.nbm into per-button-label PNGs. Returns [(name, relative_path), ...]."""
+    src = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', 'select3.nbm.png')
+    if not os.path.exists(src):
+        return []
+    im = Image.open(src).convert('RGBA')
+    generated: list[tuple[str, str]] = []
+    for name, (l, t, r, b) in SELECT3_SLICES.items():
+        out_name = f'{name}.png'
+        out_path = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', out_name)
+        crop = im.crop((l, t, r, b))
+        crop.save(out_path)
+        generated.append((name, out_name))
+    return generated
 
 
 def sanitize(name: str) -> str:
@@ -41,6 +69,15 @@ def main():
         url = ROOT_PREFIX + e['png']
         lines.append(f"export const NBM_{const} = '{url}';")
 
+    # derived sprites from select3.nbm (options page button labels)
+    select3_slices = generate_select3_slices()
+    select3_const_by_name: dict[str, str] = {}
+    if select3_slices:
+        for name, png in select3_slices:
+            const = sanitize(name).upper()
+            select3_const_by_name[name] = const
+            const_by_name[name] = const
+
     lines.append('')
     lines.append('/** Full flat list of all 42 NBM assets. */')
     lines.append('export const NBM_ALL = [')
@@ -48,6 +85,14 @@ def main():
         const = const_by_name[e['name']]
         lines.append(f'  NBM_{const},')
     lines.append('];')
+
+    if select3_slices:
+        lines.append('')
+        lines.append('/** select3.nbm 切片: 选项页按钮标签普通态. */')
+        for name, _png in select3_slices:
+            const = select3_const_by_name[name]
+            url = ROOT_PREFIX + name + '.png'
+            lines.append(f"export const NBM_{const} = '{url}';")
 
     # functional groups — 按玩法模式区分 (numclo/pazl = picture puzzle, 数独界面禁用)
     groups: dict[str, list[str]] = {}
@@ -69,6 +114,11 @@ def main():
         else:
             groups.setdefault('OTHER', []).append(f'NBM_{const}')
 
+    # add derived select3 slices to their own group
+    for name in select3_const_by_name:
+        const = select3_const_by_name[name]
+        groups.setdefault('OPTIONS_SLICE', []).append(f'NBM_{const}')
+
     lines.append('')
     lines.append('/**')
     lines.append(' * 模式资源归属（重要）:')
@@ -79,7 +129,7 @@ def main():
     lines.append(' */')
     lines.append('')
     lines.append('/** 数独模式通用 UI 资源 (菜单/设置/教程/下载/许可/地区). */')
-    for gname in ('MISC', 'PICTURE_PUZZLE', 'MENU_SELECT', 'STAFF', 'TITLE', 'WIRELESS', 'OTHER'):
+    for gname in ('MISC', 'PICTURE_PUZZLE', 'MENU_SELECT', 'OPTIONS_SLICE', 'STAFF', 'TITLE', 'WIRELESS', 'OTHER'):
         consts = groups.get(gname)
         if not consts:
             continue
@@ -101,6 +151,8 @@ def main():
     lines.append('  const map: Record<string, string> = {')
     for e in entries:
         const = const_by_name[e['name']]
+        lines.append(f"    '{const}': NBM_{const},")
+    for name, const in select3_const_by_name.items():
         lines.append(f"    '{const}': NBM_{const},")
     lines.append('  };')
     lines.append('  return map[constName];')

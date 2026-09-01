@@ -1,7 +1,14 @@
 // components/scenes/options-scene/options-scene.ts — 选项场景组件
 // BGM/SE 音量持久化 + 清除数据 + 评分/制作/关于 (跳转 triggerEvent)
 
-import { NBM_SETU03 } from '../../../utils/sudoku/nbmAssets';
+import {
+  NBM_SETU03,
+  NBM_SELECT3_BGM_VOLUME_NORMAL,
+  NBM_SELECT3_SE_VOLUME_NORMAL,
+  NBM_SELECT3_CLEAR_NORMAL,
+  NBM_SELECT3_RATE_NORMAL,
+  NBM_SELECT3_CREDITS_NORMAL,
+} from '../../../utils/sudoku/nbmAssets';
 
 const BGM_VOLUME_KEY = 'esds_bgm_volume';
 const SE_VOLUME_KEY = 'esds_se_volume';
@@ -11,6 +18,11 @@ Component({
     bgmVolume: 100,
     seVolume: 100,
     setu03Url: NBM_SETU03,
+    bgmVolumeIconUrl: NBM_SELECT3_BGM_VOLUME_NORMAL,
+    seVolumeIconUrl: NBM_SELECT3_SE_VOLUME_NORMAL,
+    clearIconUrl: NBM_SELECT3_CLEAR_NORMAL,
+    rateIconUrl: NBM_SELECT3_RATE_NORMAL,
+    creditsIconUrl: NBM_SELECT3_CREDITS_NORMAL,
   },
 
   lifetimes: {
