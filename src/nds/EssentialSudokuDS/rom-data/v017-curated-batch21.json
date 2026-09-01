@@ -1,0 +1,24 @@
+{
+  "names": [
+    {"addr": "0x0203dcf8", "name": "coord_scale_interp_pair_store", "category": "near", "comment": "坐标线性插值映射: 全局 flag 为 0 时直接 strh r2/r3, 否则按 [g+0x10]/[g+0xc] 比例插值后写 [r0]/[r1] 半字"},
+    {"addr": "0x0203edf0", "name": "call_03ee2c_fallback_03f1dc", "category": "near", "comment": "先 bl 0x0203ee2c(r0,r1,[pc+0x28],sp), 失败(返回0)则 bl 0x0203f1dc 兜底, 读 [sp] 返回"},
+    {"addr": "0x0203f244", "name": "spin_wait_global_not_1", "category": "near", "comment": "忙等循环: ldr [g] == 1 时死循环, 直到全局 != 1 才 bx lr"},
+    {"addr": "0x0203f9fc", "name": "tail_call_03b9b8_const_0x12", "category": "near", "comment": "thunk: r0=0x12, bx ip->0x0203b9b8"},
+    {"addr": "0x0203fb94", "name": "global_flag_once_set_1", "category": "near", "comment": "全局 [g] != 1 时置 1 (once-only 初始化 guard)"},
+    {"addr": "0x0204078c", "name": "grid_index_rowstride_0x38_addr", "category": "near", "comment": "网格二维索引→线性地址: r0 = y*0x38 + (x+1)*4 + y*4*3 + y*8 + (x+1)*2*2 + y*2 (row stride 0x38)"},
+    {"addr": "0x02040888", "name": "tail_call_03bbb0", "category": "near", "comment": "thunk: bx ip->0x0203bbb0, 参数透传"},
+    {"addr": "0x02040934", "name": "tail_call_03c5b8", "category": "near", "comment": "thunk: bx ip->0x0203c5b8, 参数透传"},
+    {"addr": "0x02041520", "name": "grid_bufsize_calc_max_field30", "category": "near", "comment": "r0=max(r0,[r2+0x30]); 返回 4*(3*r0^2 + (r0+1)^2) — 网格 buffer 大小计算"},
+    {"addr": "0x0204231c", "name": "node_counter_inc_finalize_call_39f4c", "category": "near", "comment": "[r5+0xc] 计数++, [*r5]=0 清首节点, 然后 bl 0x02039f4c 完成回调"},
+    {"addr": "0x020434a8", "name": "call_seq_bc90_be9c_e_clear_global", "category": "near", "comment": "bl 0x0203bc90 + bl 0x0203be9c(0xe, [pc+0x1c]) + 清全局 word=0"},
+    {"addr": "0x020448bc", "name": "tail_call_0408cc_r1_1", "category": "near", "comment": "thunk: r1=1, bx ip->0x020408cc"},
+    {"addr": "0x020463dc", "name": "state_byte_1524_check_ret_0x15", "category": "near", "comment": "读 [g+0x1524] byte, 为 0 则返回 0x15; 非 0 继续读 [g+0x1525]+1 移位处理"},
+    {"addr": "0x02048b80", "name": "count_halfword_array_until_zero", "category": "near", "comment": "遍历半字数组 (post-index ldrh), 统计到 0 终止的元素个数"},
+    {"addr": "0x02049030", "name": "global_halfword_6_store", "category": "near", "comment": "strh r0, [g, #6] — 全局对象偏移 6 半字 setter"},
+    {"addr": "0x020492fc", "name": "tail_call_045320_set_global_1320_1", "category": "near", "comment": "置 [g+0x1320]=1, 然后 bx ip->0x02045320"},
+    {"addr": "0x0204ae04", "name": "tail_call_0367ec_zero_0x70", "category": "near", "comment": "thunk: r1=0, r2=0x70 (清零大小), bx ip->0x020367ec (memset 型)"},
+    {"addr": "0x0204b524", "name": "call_04df9c_const_0x1e_store_globals", "category": "near", "comment": "全局 = r0-2; bl 0x0204df9c(0x1e, r0-2); 结果存 [g+4], [g+8]=0x1e"},
+    {"addr": "0x02100798", "name": "query_flag_0x1d_0x40_cond", "category": "near", "comment": "bl 0x10feb38(0x1d, 1, &out); out==0xff 返回 0, 否则 (out & 0x40) ? 1 : 0"},
+    {"addr": "0x02100f54", "name": "tail_epilogue_after_node_init", "category": "near", "comment": "函数尾部 epilogue: add sp, pop {r4,r5,lr}, bx lr (属于节点初始化函数尾部)"}
+  ]
+}
