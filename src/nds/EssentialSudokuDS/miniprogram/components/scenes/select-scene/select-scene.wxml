@@ -43,6 +43,9 @@
     <view class="pick-preview" wx:if="{{previewText}}">{{previewText}}</view>
 
     <!-- 开始 -->
-    <view class="start-btn" bindtap="onStart">开始数独</view>
+    <view class="start-btn-wrap">
+      <image class="start-btn-bg" src="{{select6Url}}" mode="aspectFill" lazy-load></image>
+      <view class="start-btn" bindtap="onStart">开始数独</view>
+    </view>
   </view>
 </view>

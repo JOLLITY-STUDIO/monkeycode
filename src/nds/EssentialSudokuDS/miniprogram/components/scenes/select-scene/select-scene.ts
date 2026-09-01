@@ -2,6 +2,7 @@
 // 难度 chip + 题号 1-1000, 开始 → triggerEvent('start', { id, no })
 
 import { getPuzzleById } from '../../../utils/sudoku/numple_puzzles';
+import { NBM_SELECT6 } from '../../../utils/sudoku/nbmAssets';
 
 const DIFF_LABELS: Record<string, string> = {
   easy: '简单',
@@ -33,6 +34,7 @@ Component({
     diffLabels: DIFF_LABELS,
     puzzleNo: 1 as number,
     previewText: '',
+    select6Url: NBM_SELECT6,
   },
 
   lifetimes: {
