@@ -1,22 +1,38 @@
-<!--pages/index/index.wxml - 单页场景控制器 + 过渡动画-->
+<!--pages/index/index.wxml - 单页场景控制器 + 过渡动画 + 顶部广告位-->
 <!--
+  布局: 顶部广告位 (状态栏留白 + banner 占位, 预留胶囊按钮空间) + 场景舞台 (所有场景在此下方)
   双场景交叉过渡:
   - leavingScene 层 (旧场景): wx:if 存在时播放离场动画, 动画结束后由 index.ts 定时器清空
   - scene 层 (新场景): 始终渲染当前场景, 播放进场动画
   场景组件集合在 sceneRender template 中声明一次, 两处复用
 -->
 
-<view class="scene-root">
-  <!-- 离场场景层 (动画播放中) -->
-  <view wx:if="{{leavingScene}}" class="scene-stage stage-leave-{{effect}}">
-    <template is="sceneRender" data="{{s: leavingScene, puzzleId, fileKey, puzzleIdx}}" />
-  </view>
+<view class="page-root">
+  <!-- 顶部广告位 (template: 状态栏留白 + banner, 后续可直接替换为真实广告组件) -->
+  <template is="adBanner" data="{{statusBarHeight}}" />
 
-  <!-- 进场场景层 (当前 scene) -->
-  <view class="scene-stage stage-enter-{{effect}}">
-    <template is="sceneRender" data="{{s: scene, puzzleId, fileKey, puzzleIdx}}" />
+  <!-- 场景舞台 (广告位下方) -->
+  <view class="scene-area">
+    <!-- 离场场景层 (动画播放中) -->
+    <view wx:if="{{leavingScene}}" class="scene-stage stage-leave-{{effect}}">
+      <template is="sceneRender" data="{{s: leavingScene, puzzleId, fileKey, puzzleIdx}}" />
+    </view>
+
+    <!-- 进场场景层 (当前 scene) -->
+    <view class="scene-stage stage-enter-{{effect}}">
+      <template is="sceneRender" data="{{s: scene, puzzleId, fileKey, puzzleIdx}}" />
+    </view>
   </view>
 </view>
+
+<!-- 顶部广告位 template: 状态栏留白 + 默认 banner 图 (预留右侧胶囊按钮空间) -->
+<template name="adBanner">
+  <view class="top-ad" style="padding-top: {{statusBarHeight}}px">
+    <view class="ad-slot">
+      <image class="ad-slot-image" src="/assets/nbm/title.nbm.png" mode="aspectFill" lazy-load></image>
+    </view>
+  </view>
+</template>
 
 <!-- 场景组件集合 (两处 stage 共用) -->
 <template name="sceneRender">

@@ -1,6 +1,7 @@
-/* pages/index/index.wxss — 单页场景控制器过渡动画
-   双场景交叉过渡: 旧场景 (leaving) 播放离场动画, 新场景 (entering) 播放进场动画,
-   动画结束后 (index.ts 定时器) 才移除 leaving 层。
+/* pages/index/index.wxss — 单页场景控制器: 顶部广告位 + 场景过渡动画
+   布局: page-root flex column → top-ad (状态栏留白+banner) + scene-area (flex:1 场景舞台)
+   过渡: 旧场景 (leaving) 播放离场动画, 新场景 (entering) 播放进场动画,
+         动画结束后 (index.ts 定时器) 才移除 leaving 层。
    只用 transform + opacity (GPU 友好, skyline 渲染器支持)。 */
 
 /* 页面底色: fade 交叉瞬间两层半透明, 露出深色底更自然 */
@@ -8,9 +9,54 @@ page {
   background: #0d1b2a;
 }
 
-/* 场景舞台: 全屏 fixed, 两层叠加 */
+/* 根容器: 全屏 flex 纵向 */
+.page-root {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  box-sizing: border-box;
+  background: #0d1b2a;
+}
+
+/* ---------- 顶部广告位 ---------- */
+
+.top-ad {
+  flex-shrink: 0;
+  padding: 0 12px 8px;
+  box-sizing: border-box;
+  background: #0d1b2a;
+}
+
+/* banner 广告位: 复用 menu-scene title.nbm 横幅, 右侧预留胶囊按钮空间 */
+.ad-slot {
+  position: relative;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #1a4d2e;
+  /* 右侧 100px 预留右上角胶囊按钮, 防止图片主要内容被遮挡 */
+  padding-right: 100px;
+  box-sizing: border-box;
+}
+
+.ad-slot-image {
+  width: 100%;
+  height: 100%;
+  opacity: 0.95;
+}
+
+/* ---------- 场景舞台 ---------- */
+
+.scene-area {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* 场景舞台: 填满场景区域, 两层叠加 */
 .scene-stage {
-  position: fixed;
+  position: absolute;
   top: 0;
   left: 0;
   right: 0;

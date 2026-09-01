@@ -1,7 +1,7 @@
 .title-page {
   position: relative;
   width: 100vw;
-  height: 100vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -9,6 +9,7 @@
   background: #0d1b2a;
   overflow: hidden;
   box-sizing: border-box;
+  overflow-y: auto;
 }
 
 .title-bg {

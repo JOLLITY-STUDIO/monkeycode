@@ -61,12 +61,16 @@ Page({
     leavingScene: '' as SceneName | '',
     /** 当前过渡效果 (驱动 stage-enter-{{effect}} / stage-leave-{{effect}}) */
     effect: 'fade' as SceneEffect,
+    /** 状态栏高度 (顶部广告位 padding-top 留白) */
+    statusBarHeight: 20,
     puzzleId: '', // sudoku 场景: 选题页传入的题目 id (numpleX.data_NNN)
     fileKey: '', // picture 场景: 类别 key (numcloX.data)
     puzzleIdx: 0, // picture 场景: 类别内题号 (0-based)
   },
 
   onLoad(query?: any) {
+    // 状态栏留白: 获取真实状态栏高度 (iOS/Android/开发者工具各不同)
+    this.setData({ statusBarHeight: this._getStatusBarHeight() });
     // 支持外部直达: ?id=numpleX.data_NNN → 直接进数独; ?file=xxx&idx=N → 进图画
     // 首屏直达无需过渡 (title 从未显示过)
     if (query && query.id) {
@@ -82,6 +86,16 @@ Page({
 
   onUnload() {
     this._clearLeaveTimer();
+  },
+
+  /** 获取状态栏高度 (getWindowInfo 优先, 老基础库 fallback, 最低 20px) */
+  _getStatusBarHeight(): number {
+    try {
+      const win: any = wx.getWindowInfo ? wx.getWindowInfo() : wx.getSystemInfoSync();
+      return (win && win.statusBarHeight) || 20;
+    } catch (e) {
+      return 20;
+    }
   },
 
   /** 场景过渡切换引擎: 旧场景进入离场动画, 新场景进入进场动画 */
