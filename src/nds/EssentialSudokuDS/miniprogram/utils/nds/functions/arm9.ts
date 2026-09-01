@@ -7849,9 +7849,10 @@ export const sub_02043568 = 0x02043568 as const;
  * ARM9 函数 @ 0x0204359c
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_0204359c = 0x0204359c as const;
+export const halfword_bit0_clear = 0x0204359c as const;
 /**
  * ARM9 函数 @ 0x020435b8
  * @category prologue
@@ -7976,9 +7977,10 @@ export const sub_020440e4 = 0x020440e4 as const;
  * ARM9 函数 @ 0x0204418c
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_0204418c = 0x0204418c as const;
+export const wrapper_cond_read_halfword = 0x0204418c as const;
 /**
  * ARM9 函数 @ 0x020441b8
  * @category prologue
@@ -8680,9 +8682,10 @@ export const sub_0204ab94 = 0x0204ab94 as const;
  * ARM9 函数 @ 0x0204ac08
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_0204ac08 = 0x0204ac08 as const;
+export const state_0x500_0x50c_check = 0x0204ac08 as const;
 /**
  * ARM9 函数 @ 0x0204ac70
  * @category prologue
@@ -8819,9 +8822,10 @@ export const sub_0204b2f4 = 0x0204b2f4 as const;
  * ARM9 函数 @ 0x0204b430
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_0204b430 = 0x0204b430 as const;
+export const byte_dispatch_6way = 0x0204b430 as const;
 /**
  * ARM9 函数 @ 0x0204b4b8
  * @category prologue
@@ -11983,9 +11987,10 @@ export const sub_021005dc = 0x021005dc as const;
  * ARM9 函数 @ 0x02100768
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_02100768 = 0x02100768 as const;
+export const call_indirect_thumb_038042e1 = 0x02100768 as const;
 /**
  * ARM9 函数 @ 0x02100774
  * @category bx_lr
@@ -12232,9 +12237,10 @@ export const sub_02102538 = 0x02102538 as const;
  * ARM9 函数 @ 0x021029c8
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_021029c8 = 0x021029c8 as const;
+export const global_halfword_write_0x1000_check = 0x021029c8 as const;
 /**
  * ARM9 函数 @ 0x02102ad8
  * @category bx_lr
@@ -12388,9 +12394,10 @@ export const sub_021040f4 = 0x021040f4 as const;
  * ARM9 函数 @ 0x0210418c
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_0210418c = 0x0210418c as const;
+export const io_flag_guarded_global_swap_b = 0x0210418c as const;
 /**
  * ARM9 函数 @ 0x021041c0
  * @category bx_lr
@@ -12455,9 +12462,10 @@ export const sub_021045d4 = 0x021045d4 as const;
  * ARM9 函数 @ 0x0210461c
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_0210461c = 0x0210461c as const;
+export const call_indirect_thumb_03804295 = 0x0210461c as const;
 /**
  * ARM9 函数 @ 0x02104628
  * @category prologue
@@ -12731,23 +12739,26 @@ export const shared_mem_da0_indexed_set_v2 = 0x021054ac as const;
  * ARM9 函数 @ 0x021054c0
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_021054c0 = 0x021054c0 as const;
+export const shared_mem_dc4_indexed_set_v2 = 0x021054c0 as const;
 /**
  * ARM9 函数 @ 0x021054d4
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_021054d4 = 0x021054d4 as const;
+export const state_select_clamp = 0x021054d4 as const;
 /**
  * ARM9 函数 @ 0x0210552c
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_0210552c = 0x0210552c as const;
+export const state_select_const = 0x0210552c as const;
 /**
  * ARM9 函数 @ 0x021055ac
  * @category bx_lr
@@ -12759,9 +12770,10 @@ export const sub_021055ac = 0x021055ac as const;
  * ARM9 函数 @ 0x021055c0
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_021055c0 = 0x021055c0 as const;
+export const shared_mem_dc4_indexed_get = 0x021055c0 as const;
 /**
  * ARM9 函数 @ 0x021055d4
  * @category bx_lr
@@ -12929,9 +12941,10 @@ export const sub_021060b4 = 0x021060b4 as const;
  * ARM9 函数 @ 0x021061e4
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_021061e4 = 0x021061e4 as const;
+export const struct_clear_2_fields = 0x021061e4 as const;
 /**
  * ARM9 函数 @ 0x021061f4
  * @category bx_lr
@@ -13041,16 +13054,18 @@ export const sub_02106704 = 0x02106704 as const;
  * ARM9 函数 @ 0x021067b0
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_021067b0 = 0x021067b0 as const;
+export const dllist_unlink_node = 0x021067b0 as const;
 /**
  * ARM9 函数 @ 0x021067e8
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_021067e8 = 0x021067e8 as const;
+export const dllist_insert_head = 0x021067e8 as const;
 /**
  * ARM9 函数 @ 0x0210682c
  * @category bx_lr
@@ -13106,9 +13121,10 @@ export const sub_02106998 = 0x02106998 as const;
  * ARM9 函数 @ 0x021069a4
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_021069a4 = 0x021069a4 as const;
+export const wrapper_call_2_funcs_d = 0x021069a4 as const;
 /**
  * ARM9 函数 @ 0x021069c4
  * @category bx_lr
