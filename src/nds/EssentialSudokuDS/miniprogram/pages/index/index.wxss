@@ -27,9 +27,12 @@ page {
   background: #0d1b2a;
 }
 
-/* banner 广告位: 简单占位 (复用 menu-scene title.nbm 横幅) */
+/* banner 广告位: 简单占位 (复用 menu-scene title.nbm 横幅)
+   高度用 10vh 自适应 (约 80px@844 屏 / 67px@667 屏), 接近微信 banner 广告标准 */
 .ad-slot {
-  height: 120px;
+  height: 10vh;
+  min-height: 56px;
+  max-height: 96px;
   border-radius: 8px;
   overflow: hidden;
   background: #1a4d2e;
