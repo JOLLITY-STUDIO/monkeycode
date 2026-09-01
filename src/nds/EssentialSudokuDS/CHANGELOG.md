@@ -4,6 +4,42 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.18 — global ptr 结构命名全量覆盖 (剩余 callers≥1 自动化消化)
+
+### 2026-09-01
+
+#### 新增
+- ✅ 精确候选池重构: 加载全部 21 个 curated JSON + 8 个 pattern JSON 构建"最终命名集合",
+  统计出真正未命名 callers≥1 只有 661 个 (arm9 580 + arm7 81), 而非之前以为的 1251
+- ✅ 增强版 detector (`v018-pattern-global.json`, 204 条) 一次性消化:
+  - 模式覆盖: gptr (192, ldr [pc] 全局指针 + 解引用方向 getter/setter/access) /
+    gptr_array (6, 带 lsl 索引数组访问) / switch_dispatch (4) / memcpy_word (1) / memset_word (1)
+  - global ptr 从 arm9.bin/arm7.bin 二进制读真实值 (V0.14 同款 ARM pipeline: addr+8+imm)
+  - 名字格式: `auto_gptr_<size>_<dir>_<ptr>[_off]` (size=w/h/b/mix, dir=getter/setter/access)
+  - ARM7 0x0380fff4 全局对象指针家族 9 个, 0x040001c0 IO 寄存器家族 8 个
+- ✅ 排除数据误判区 (关键正确性修复):
+  - `data-zone` 138 个: body 无任何控制流 (bl/bx/b/ldr pc) 的连续解码 = 数据区 (如 0x020f6028
+    全是 svceq/strdeq 垃圾解码), 不再误命名
+  - `no-disasm` 172 个: 地址在 disasm 无对应指令 (V0.8 数据误判区)
+  - `data-push` 1 个: 单条 push 指令
+  - 剩余 complex 120 个全部 callers=1 长尾复杂函数, pattern 无法自动识别, 需人工分析
+- ✅ `generate_ts_functions.py` 新增 `PATTERN_GLOBAL_JSON` 加载 (v018-pattern-global.json),
+  与 v014/v017 合并去重, curated 优先级更高
+
+#### Verification
+- ✅ 204/204 pattern 全部落地 (203 直接命名 + 1 已被 curated 覆盖, 0 丢失)
+- ✅ `npx tsc --noEmit` EXIT=0 (无错误输出)
+- ✅ 命名覆盖率: 25.30% (683/2700) → 32.85% (887/2700)
+- ✅ sub_ 剩余: arm9 1348 + arm7 465 = 1813 (其中 callers≥1 仅 120 个, 其余全是 callers=0/数据误判区)
+
+#### 技术要点
+- CRLF 陷阱: disasm 文件是 CRLF, split('\n') 后行尾带 \r, JS 正则 `.` 不匹配 \r → `$` 锚点失效;
+  解法: 每行 trim 后再匹配
+- write 工具反斜杠转义: `\s` 写入文件变成 `\\s`, 正则全部改用空格字符类
+- 优先级链: known > curated (541) > pattern (v013+v014+v017 merged+v018 global = 357)
+
+---
+
 ## V0.17.22 — curated naming 大方向收尾 (bulk pattern 一次消化)
 
 ### 2026-09-01

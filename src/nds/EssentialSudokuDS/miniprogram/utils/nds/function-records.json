@@ -313,7 +313,7 @@
   },
   {
     "addr": 33593176,
-    "name": "sub_02009758",
+    "name": "auto_gptr_mix_access_0x020fcc6c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -469,7 +469,7 @@
   },
   {
     "addr": 33595956,
-    "name": "sub_0200a234",
+    "name": "auto_gptr_w_getter_0x020fe914",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -481,7 +481,7 @@
   },
   {
     "addr": 33596088,
-    "name": "sub_0200a2b8",
+    "name": "auto_gptr_w_access_0x020efda0_4000",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -517,7 +517,7 @@
   },
   {
     "addr": 33596988,
-    "name": "sub_0200a63c",
+    "name": "auto_gptr_array_mix_access_0x020fe82c_idx",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -553,7 +553,7 @@
   },
   {
     "addr": 33597096,
-    "name": "sub_0200a6a8",
+    "name": "auto_gptr_mix_access_0x0210ab84_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -589,7 +589,7 @@
   },
   {
     "addr": 33598520,
-    "name": "sub_0200ac38",
+    "name": "auto_gptr_array_mix_access_0x02101c04_idx",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -661,7 +661,7 @@
   },
   {
     "addr": 33600140,
-    "name": "sub_0200b28c",
+    "name": "auto_gptr_array_w_access_0x02102ec0_idx",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -721,7 +721,7 @@
   },
   {
     "addr": 33602452,
-    "name": "sub_0200bb94",
+    "name": "auto_gptr_w_access_0x02101be8",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -805,7 +805,7 @@
   },
   {
     "addr": 33603500,
-    "name": "sub_0200bfac",
+    "name": "auto_gptr_mix_getter_0x02101be8",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -937,7 +937,7 @@
   },
   {
     "addr": 33611120,
-    "name": "sub_0200dd70",
+    "name": "auto_switch_dispatch_5way",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -985,7 +985,7 @@
   },
   {
     "addr": 33614948,
-    "name": "sub_0200ec64",
+    "name": "auto_gptr_w_access_0x020f05d4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1033,7 +1033,7 @@
   },
   {
     "addr": 33615460,
-    "name": "sub_0200ee64",
+    "name": "auto_gptr_w_access_0x0210218c_50",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1129,7 +1129,7 @@
   },
   {
     "addr": 33618924,
-    "name": "sub_0200fbec",
+    "name": "auto_gptr_mix_access_0x020fcc6c_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1273,7 +1273,7 @@
   },
   {
     "addr": 33623580,
-    "name": "sub_02010e1c",
+    "name": "auto_gptr_w_access_0x02104420",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1297,7 +1297,7 @@
   },
   {
     "addr": 33623788,
-    "name": "sub_02010eec",
+    "name": "auto_gptr_w_access_0x02104458",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1429,7 +1429,7 @@
   },
   {
     "addr": 33630208,
-    "name": "sub_02012800",
+    "name": "auto_gptr_w_access_0x02104580_9",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1465,7 +1465,7 @@
   },
   {
     "addr": 33633168,
-    "name": "sub_02013390",
+    "name": "auto_switch_dispatch_5way_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1489,7 +1489,7 @@
   },
   {
     "addr": 33637200,
-    "name": "sub_02014350",
+    "name": "auto_gptr_w_access_0x02106564",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1633,7 +1633,7 @@
   },
   {
     "addr": 33641852,
-    "name": "sub_0201557c",
+    "name": "auto_gptr_mix_access_0x0400100c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1681,7 +1681,7 @@
   },
   {
     "addr": 33644548,
-    "name": "sub_02016004",
+    "name": "auto_gptr_mix_getter_0x02106f18",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1693,7 +1693,7 @@
   },
   {
     "addr": 33644672,
-    "name": "sub_02016080",
+    "name": "auto_gptr_mix_access_0x02106f18",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1717,7 +1717,7 @@
   },
   {
     "addr": 33646556,
-    "name": "sub_020167dc",
+    "name": "auto_gptr_mix_access_0x02106574",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1741,7 +1741,7 @@
   },
   {
     "addr": 33648720,
-    "name": "sub_02017050",
+    "name": "auto_gptr_w_getter_0x0210656c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1753,7 +1753,7 @@
   },
   {
     "addr": 33648800,
-    "name": "sub_020170a0",
+    "name": "auto_gptr_w_access_0x021065ac_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -2281,7 +2281,7 @@
   },
   {
     "addr": 33672156,
-    "name": "sub_0201cbdc",
+    "name": "auto_gptr_w_access_0x02106794",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -2401,7 +2401,7 @@
   },
   {
     "addr": 33674584,
-    "name": "sub_0201d558",
+    "name": "auto_gptr_mix_access_0x0210ab84_1_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3349,7 +3349,7 @@
   },
   {
     "addr": 33693324,
-    "name": "sub_02021e8c",
+    "name": "auto_gptr_w_getter_0x02106e7c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3421,7 +3421,7 @@
   },
   {
     "addr": 33693736,
-    "name": "sub_02022028",
+    "name": "auto_gptr_w_access_0x020f5558",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3445,7 +3445,7 @@
   },
   {
     "addr": 33693856,
-    "name": "sub_020220a0",
+    "name": "auto_gptr_mix_access_0x02107354",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3457,7 +3457,7 @@
   },
   {
     "addr": 33694352,
-    "name": "sub_02022290",
+    "name": "auto_gptr_mix_access_0x0210b358",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3493,7 +3493,7 @@
   },
   {
     "addr": 33695008,
-    "name": "sub_02022520",
+    "name": "auto_gptr_mix_access_0x04001008",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3565,7 +3565,7 @@
   },
   {
     "addr": 33696912,
-    "name": "sub_02022c90",
+    "name": "auto_gptr_array_mix_getter_0x02106e78_idx",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3673,7 +3673,7 @@
   },
   {
     "addr": 33698720,
-    "name": "sub_020233a0",
+    "name": "auto_gptr_w_access_0x02107368",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3697,7 +3697,7 @@
   },
   {
     "addr": 33699088,
-    "name": "sub_02023510",
+    "name": "auto_gptr_w_access_0x0210736c_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3709,7 +3709,7 @@
   },
   {
     "addr": 33699124,
-    "name": "sub_02023534",
+    "name": "auto_gptr_array_w_access_0x02107390_idx",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3745,7 +3745,7 @@
   },
   {
     "addr": 33701072,
-    "name": "sub_02023cd0",
+    "name": "auto_gptr_w_access_0x0210ab88",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3769,7 +3769,7 @@
   },
   {
     "addr": 33703444,
-    "name": "sub_02024614",
+    "name": "auto_gptr_w_access_0x0212f238",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3793,7 +3793,7 @@
   },
   {
     "addr": 33705040,
-    "name": "sub_02024c50",
+    "name": "auto_gptr_w_getter_0x021078cc",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3817,7 +3817,7 @@
   },
   {
     "addr": 33705092,
-    "name": "sub_02024c84",
+    "name": "auto_gptr_mix_getter_0x0210b358",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3829,7 +3829,7 @@
   },
   {
     "addr": 33705272,
-    "name": "sub_02024d38",
+    "name": "auto_memcpy_word_lr",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3853,7 +3853,7 @@
   },
   {
     "addr": 33705668,
-    "name": "sub_02024ec4",
+    "name": "auto_gptr_w_access_0x021078c0",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3985,7 +3985,7 @@
   },
   {
     "addr": 33712360,
-    "name": "sub_020268e8",
+    "name": "auto_gptr_mix_access_0x04000304",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4237,7 +4237,7 @@
   },
   {
     "addr": 33716696,
-    "name": "sub_020279d8",
+    "name": "auto_gptr_w_access_0x0210a860",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4285,7 +4285,7 @@
   },
   {
     "addr": 33717152,
-    "name": "sub_02027ba0",
+    "name": "auto_gptr_w_access_0x0210a9e0",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4333,7 +4333,7 @@
   },
   {
     "addr": 33717664,
-    "name": "sub_02027da0",
+    "name": "auto_gptr_mix_access_0x0210aaf0_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4381,7 +4381,7 @@
   },
   {
     "addr": 33717960,
-    "name": "sub_02027ec8",
+    "name": "auto_gptr_w_access_0x0210ab20",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4405,7 +4405,7 @@
   },
   {
     "addr": 33718000,
-    "name": "sub_02027ef0",
+    "name": "auto_gptr_w_access_0x0210ab00",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4417,7 +4417,7 @@
   },
   {
     "addr": 33718064,
-    "name": "sub_02027f30",
+    "name": "auto_gptr_w_access_0x0210ab44",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4429,7 +4429,7 @@
   },
   {
     "addr": 33718128,
-    "name": "sub_02027f70",
+    "name": "auto_gptr_w_getter_0x0210ab4c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4501,7 +4501,7 @@
   },
   {
     "addr": 33718420,
-    "name": "sub_02028094",
+    "name": "auto_gptr_w_getter_0x0210ab3c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4513,7 +4513,7 @@
   },
   {
     "addr": 33718444,
-    "name": "sub_020280ac",
+    "name": "auto_gptr_w_getter_0x0210ab3c_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4801,7 +4801,7 @@
   },
   {
     "addr": 33720952,
-    "name": "sub_02028a78",
+    "name": "auto_gptr_mix_access_0x021078dc",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4825,7 +4825,7 @@
   },
   {
     "addr": 33721072,
-    "name": "sub_02028af0",
+    "name": "auto_gptr_mix_access_0x04000130",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4861,7 +4861,7 @@
   },
   {
     "addr": 33721216,
-    "name": "sub_02028b80",
+    "name": "auto_gptr_w_access_0x0210fb78",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4897,7 +4897,7 @@
   },
   {
     "addr": 33721512,
-    "name": "sub_02028ca8",
+    "name": "auto_gptr_w_access_0x02113d18",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4909,7 +4909,7 @@
   },
   {
     "addr": 33721796,
-    "name": "sub_02028dc4",
+    "name": "auto_gptr_w_access_0x02113d18_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -5257,7 +5257,7 @@
   },
   {
     "addr": 33725816,
-    "name": "sub_02029d78",
+    "name": "auto_gptr_mix_access_0x02108e08",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -5305,7 +5305,7 @@
   },
   {
     "addr": 33726176,
-    "name": "sub_02029ee0",
+    "name": "auto_gptr_mix_getter_0x0210d378",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -5473,7 +5473,7 @@
   },
   {
     "addr": 33728472,
-    "name": "sub_0202a7d8",
+    "name": "auto_gptr_w_access_0x0210ab78",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6025,7 +6025,7 @@
   },
   {
     "addr": 33740160,
-    "name": "sub_0202d580",
+    "name": "auto_gptr_mix_getter_0x021bc760",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6193,7 +6193,7 @@
   },
   {
     "addr": 33741696,
-    "name": "sub_0202db80",
+    "name": "auto_gptr_mix_getter_0x02029b44",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6205,7 +6205,7 @@
   },
   {
     "addr": 33741820,
-    "name": "sub_0202dbfc",
+    "name": "auto_gptr_mix_getter_0x02029bc4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6229,7 +6229,7 @@
   },
   {
     "addr": 33742044,
-    "name": "sub_0202dcdc",
+    "name": "auto_gptr_w_getter_0x021bb258",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6241,7 +6241,7 @@
   },
   {
     "addr": 33742160,
-    "name": "sub_0202dd50",
+    "name": "auto_switch_dispatch_4way",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6253,7 +6253,7 @@
   },
   {
     "addr": 33742720,
-    "name": "sub_0202df80",
+    "name": "auto_gptr_w_access_0x021bb274",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6349,7 +6349,7 @@
   },
   {
     "addr": 33745084,
-    "name": "sub_0202e8bc",
+    "name": "auto_gptr_mix_getter_0x0202a884",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6373,7 +6373,7 @@
   },
   {
     "addr": 33745320,
-    "name": "sub_0202e9a8",
+    "name": "auto_gptr_w_getter_0x021bb720",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6385,7 +6385,7 @@
   },
   {
     "addr": 33745448,
-    "name": "sub_0202ea28",
+    "name": "auto_switch_dispatch_4way_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6397,7 +6397,7 @@
   },
   {
     "addr": 33745896,
-    "name": "sub_0202ebe8",
+    "name": "auto_gptr_w_access_0x021bb258",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6433,7 +6433,7 @@
   },
   {
     "addr": 33746796,
-    "name": "sub_0202ef6c",
+    "name": "auto_gptr_mix_getter_0x021bb264",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -7285,7 +7285,7 @@
   },
   {
     "addr": 33755164,
-    "name": "sub_0203101c",
+    "name": "auto_gptr_w_access_0xbfff0000",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -7369,7 +7369,7 @@
   },
   {
     "addr": 33756788,
-    "name": "sub_02031674",
+    "name": "auto_gptr_mix_access_0x021bdb0c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -7381,7 +7381,7 @@
   },
   {
     "addr": 33756956,
-    "name": "sub_0203171c",
+    "name": "auto_gptr_w_access_0x021bdb30",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -7957,7 +7957,7 @@
   },
   {
     "addr": 33761276,
-    "name": "sub_020327fc",
+    "name": "auto_gptr_w_getter_0x021be554",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -7969,7 +7969,7 @@
   },
   {
     "addr": 33761316,
-    "name": "sub_02032824",
+    "name": "auto_gptr_w_getter_0x021be554_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -7981,7 +7981,7 @@
   },
   {
     "addr": 33761356,
-    "name": "sub_0203284c",
+    "name": "auto_gptr_w_getter_0x021be554_3",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -7993,7 +7993,7 @@
   },
   {
     "addr": 33761456,
-    "name": "sub_020328b0",
+    "name": "auto_gptr_w_getter_0x021be554_4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -8005,7 +8005,7 @@
   },
   {
     "addr": 33761556,
-    "name": "sub_02032914",
+    "name": "auto_gptr_w_getter_0x021be554_5",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -8029,7 +8029,7 @@
   },
   {
     "addr": 33761756,
-    "name": "sub_020329dc",
+    "name": "auto_gptr_w_getter_0x021be554_6",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -8845,7 +8845,7 @@
   },
   {
     "addr": 33771832,
-    "name": "sub_02035138",
+    "name": "auto_gptr_mix_access_0x04000280",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -8857,7 +8857,7 @@
   },
   {
     "addr": 33771888,
-    "name": "sub_02035170",
+    "name": "auto_gptr_mix_getter_0x040002b0_200",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -8869,7 +8869,7 @@
   },
   {
     "addr": 33771932,
-    "name": "sub_0203519c",
+    "name": "auto_gptr_mix_access_0x04000280_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -8881,7 +8881,7 @@
   },
   {
     "addr": 33771992,
-    "name": "sub_020351d8",
+    "name": "auto_gptr_mix_getter_0x04000280",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -8965,7 +8965,7 @@
   },
   {
     "addr": 33772716,
-    "name": "sub_020354ac",
+    "name": "auto_gptr_w_access_0x04001000",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9001,7 +9001,7 @@
   },
   {
     "addr": 33772936,
-    "name": "sub_02035588",
+    "name": "auto_gptr_mix_access_0x020fbe94",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9037,7 +9037,7 @@
   },
   {
     "addr": 33773444,
-    "name": "sub_02035784",
+    "name": "auto_gptr_mix_access_0x021bf414",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9145,7 +9145,7 @@
   },
   {
     "addr": 33774096,
-    "name": "sub_02035a10",
+    "name": "auto_gptr_mix_access_0x021bf414_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9157,7 +9157,7 @@
   },
   {
     "addr": 33774220,
-    "name": "sub_02035a8c",
+    "name": "auto_gptr_mix_access_0x021bf414_3",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9253,7 +9253,7 @@
   },
   {
     "addr": 33776508,
-    "name": "sub_0203637c",
+    "name": "auto_gptr_mix_getter_0x0400000e_6000000",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9337,7 +9337,7 @@
   },
   {
     "addr": 33777008,
-    "name": "sub_02036570",
+    "name": "auto_gptr_mix_getter_0x0400000e_6000000_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9469,7 +9469,7 @@
   },
   {
     "addr": 33777832,
-    "name": "sub_020368a8",
+    "name": "auto_gptr_w_access_0x020fbe98_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9493,7 +9493,7 @@
   },
   {
     "addr": 33778020,
-    "name": "sub_02036964",
+    "name": "auto_gptr_mix_access_0x0400035c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9529,7 +9529,7 @@
   },
   {
     "addr": 33778452,
-    "name": "sub_02036b14",
+    "name": "auto_gptr_w_getter_0x04000400",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9541,7 +9541,7 @@
   },
   {
     "addr": 33778504,
-    "name": "sub_02036b48",
+    "name": "auto_gptr_mix_access_0x04000600",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9553,7 +9553,7 @@
   },
   {
     "addr": 33778640,
-    "name": "sub_02036bd0",
+    "name": "auto_gptr_mix_access_0x04000504",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9565,7 +9565,7 @@
   },
   {
     "addr": 33778988,
-    "name": "sub_02036d2c",
+    "name": "auto_gptr_w_access_0x04000468",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9577,7 +9577,7 @@
   },
   {
     "addr": 33779048,
-    "name": "sub_02036d68",
+    "name": "auto_gptr_w_access_0x04000468_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9613,7 +9613,7 @@
   },
   {
     "addr": 33779932,
-    "name": "sub_020370dc",
+    "name": "auto_gptr_w_access_0x020fbe98",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -10021,7 +10021,7 @@
   },
   {
     "addr": 33783696,
-    "name": "sub_02037f90",
+    "name": "auto_gptr_w_access_0x027e0000",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -10453,7 +10453,7 @@
   },
   {
     "addr": 33786352,
-    "name": "sub_020389f0",
+    "name": "auto_gptr_w_access_0x021bf4c0",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -10513,7 +10513,7 @@
   },
   {
     "addr": 33787188,
-    "name": "sub_02038d34",
+    "name": "auto_gptr_w_getter_0x021bf4c8",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -10585,7 +10585,7 @@
   },
   {
     "addr": 33787668,
-    "name": "sub_02038f14",
+    "name": "auto_gptr_w_access_0x021bf4b8_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -10981,7 +10981,7 @@
   },
   {
     "addr": 33790340,
-    "name": "sub_02039984",
+    "name": "auto_gptr_w_getter_0x021bf724",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -10993,7 +10993,7 @@
   },
   {
     "addr": 33790468,
-    "name": "sub_02039a04",
+    "name": "auto_gptr_w_access_0x021bf720",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11077,7 +11077,7 @@
   },
   {
     "addr": 33790952,
-    "name": "sub_02039be8",
+    "name": "auto_gptr_w_access_0x021bf734_14",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11089,7 +11089,7 @@
   },
   {
     "addr": 33791096,
-    "name": "sub_02039c78",
+    "name": "auto_gptr_w_getter_0x021bf728",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11101,7 +11101,7 @@
   },
   {
     "addr": 33791204,
-    "name": "sub_02039ce4",
+    "name": "auto_gptr_w_access_0x027ffd9c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11113,7 +11113,7 @@
   },
   {
     "addr": 33791348,
-    "name": "sub_02039d74",
+    "name": "auto_gptr_mix_access_0x021bf7b4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11125,7 +11125,7 @@
   },
   {
     "addr": 33791512,
-    "name": "sub_02039e18",
+    "name": "auto_gptr_mix_access_0x021bf7b8",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11137,7 +11137,7 @@
   },
   {
     "addr": 33791668,
-    "name": "sub_02039eb4",
+    "name": "auto_gptr_mix_access_0x021bf7c8",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11797,7 +11797,7 @@
   },
   {
     "addr": 33795528,
-    "name": "sub_0203adc8",
+    "name": "auto_gptr_w_access_0x021bf7fc",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -12001,7 +12001,7 @@
   },
   {
     "addr": 33797688,
-    "name": "sub_0203b638",
+    "name": "auto_gptr_mix_getter_0x021c12e0",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -12013,7 +12013,7 @@
   },
   {
     "addr": 33797784,
-    "name": "sub_0203b698",
+    "name": "auto_gptr_mix_access_0x021c12e0_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -12061,7 +12061,7 @@
   },
   {
     "addr": 33798044,
-    "name": "sub_0203b79c",
+    "name": "auto_gptr_w_getter_0x021c1340_4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -12073,7 +12073,7 @@
   },
   {
     "addr": 33798100,
-    "name": "sub_0203b7d4",
+    "name": "auto_gptr_mix_getter_0xfffffd2d",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -12697,7 +12697,7 @@
   },
   {
     "addr": 33807304,
-    "name": "sub_0203dbc8",
+    "name": "auto_gptr_mix_access_0x04000290",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -12709,7 +12709,7 @@
   },
   {
     "addr": 33807412,
-    "name": "sub_0203dc34",
+    "name": "auto_gptr_mix_access_0x04000290_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -12913,7 +12913,7 @@
   },
   {
     "addr": 33810488,
-    "name": "sub_0203e838",
+    "name": "auto_gptr_mix_getter_0x04000304",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -14065,7 +14065,7 @@
   },
   {
     "addr": 33829884,
-    "name": "sub_020433fc",
+    "name": "auto_gptr_mix_getter_0x027fffa8",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -14077,7 +14077,7 @@
   },
   {
     "addr": 33829948,
-    "name": "sub_0204343c",
+    "name": "auto_gptr_w_access_0x021c1e04",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -14269,7 +14269,7 @@
   },
   {
     "addr": 33832072,
-    "name": "sub_02043c88",
+    "name": "auto_gptr_mix_access_0x021c1e0c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -14305,7 +14305,7 @@
   },
   {
     "addr": 33832740,
-    "name": "sub_02043f24",
+    "name": "auto_gptr_w_access_0x020fbeb8_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -14317,7 +14317,7 @@
   },
   {
     "addr": 33832860,
-    "name": "sub_02043f9c",
+    "name": "auto_gptr_mix_getter_0x027ffc3c_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -14329,7 +14329,7 @@
   },
   {
     "addr": 33833024,
-    "name": "sub_02044040",
+    "name": "auto_gptr_mix_getter_0x027ffc3c_1_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -14893,7 +14893,7 @@
   },
   {
     "addr": 33841608,
-    "name": "sub_020461c8",
+    "name": "auto_gptr_mix_access_0x021c2920_1000",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15253,7 +15253,7 @@
   },
   {
     "addr": 33851096,
-    "name": "sub_020486d8",
+    "name": "auto_gptr_mix_access_0x021c2930_400",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15289,7 +15289,7 @@
   },
   {
     "addr": 33851716,
-    "name": "sub_02048944",
+    "name": "auto_gptr_mix_access_0x021c2930",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15337,7 +15337,7 @@
   },
   {
     "addr": 33852132,
-    "name": "sub_02048ae4",
+    "name": "auto_gptr_mix_access_0x021c2930_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15349,7 +15349,7 @@
   },
   {
     "addr": 33852168,
-    "name": "sub_02048b08",
+    "name": "auto_gptr_mix_access_0x021c2930_3",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15433,7 +15433,7 @@
   },
   {
     "addr": 33852980,
-    "name": "sub_02048e34",
+    "name": "auto_gptr_mix_getter_0x021c29d8",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15445,7 +15445,7 @@
   },
   {
     "addr": 33853012,
-    "name": "sub_02048e54",
+    "name": "auto_gptr_mix_getter_0x021c29d8_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15637,7 +15637,7 @@
   },
   {
     "addr": 33855792,
-    "name": "sub_02049930",
+    "name": "auto_gptr_mix_getter_0x027ffc3c_1_3",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15973,7 +15973,7 @@
   },
   {
     "addr": 33862916,
-    "name": "sub_0204b504",
+    "name": "auto_gptr_w_access_0x021c2a04",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -16069,7 +16069,7 @@
   },
   {
     "addr": 33863684,
-    "name": "sub_0204b804",
+    "name": "auto_gptr_mix_access_0x021c2a14",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -16081,7 +16081,7 @@
   },
   {
     "addr": 33863748,
-    "name": "sub_0204b844",
+    "name": "auto_gptr_w_getter_0x021c2a20",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -20725,7 +20725,7 @@
   },
   {
     "addr": 34562088,
-    "name": "sub_020f6028",
+    "name": "auto_memset_word_r3__r7__fp__pc",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -21541,7 +21541,7 @@
   },
   {
     "addr": 34602852,
-    "name": "sub_020fff64",
+    "name": "auto_gptr_mix_access_0x027e0000",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -21589,7 +21589,7 @@
   },
   {
     "addr": 34604288,
-    "name": "sub_02100500",
+    "name": "auto_gptr_w_getter_0x02380198",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -21601,7 +21601,7 @@
   },
   {
     "addr": 34604380,
-    "name": "sub_0210055c",
+    "name": "auto_gptr_mix_access_0x027ffffa_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -21997,7 +21997,7 @@
   },
   {
     "addr": 34610976,
-    "name": "sub_02101f20",
+    "name": "auto_gptr_mix_access_0x0380fff4_344",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22033,7 +22033,7 @@
   },
   {
     "addr": 34611100,
-    "name": "sub_02101f9c",
+    "name": "auto_gptr_mix_access_0x0000ffff",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22105,7 +22105,7 @@
   },
   {
     "addr": 34613976,
-    "name": "sub_02102ad8",
+    "name": "auto_gptr_mix_access_0x0380fff4_600",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22129,7 +22129,7 @@
   },
   {
     "addr": 34614644,
-    "name": "sub_02102d74",
+    "name": "auto_gptr_mix_getter_0x0480819c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22141,7 +22141,7 @@
   },
   {
     "addr": 34614660,
-    "name": "sub_02102d84",
+    "name": "auto_gptr_mix_access_0x04808244",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22309,7 +22309,7 @@
   },
   {
     "addr": 34618676,
-    "name": "sub_02103d34",
+    "name": "auto_gptr_mix_getter_0x0480819c_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22345,7 +22345,7 @@
   },
   {
     "addr": 34618724,
-    "name": "sub_02103d64",
+    "name": "auto_gptr_array_mix_access_0x000082ea_idx",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22357,7 +22357,7 @@
   },
   {
     "addr": 34619168,
-    "name": "sub_02103f20",
+    "name": "auto_gptr_mix_access_0x03808234_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22417,7 +22417,7 @@
   },
   {
     "addr": 34619956,
-    "name": "sub_02104234",
+    "name": "auto_gptr_mix_access_0x04000208",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22453,7 +22453,7 @@
   },
   {
     "addr": 34620252,
-    "name": "sub_0210435c",
+    "name": "auto_gptr_w_access_0x03808234_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22609,7 +22609,7 @@
   },
   {
     "addr": 34621872,
-    "name": "sub_021049b0",
+    "name": "auto_gptr_w_getter_0x038082c4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22669,7 +22669,7 @@
   },
   {
     "addr": 34622272,
-    "name": "sub_02104b40",
+    "name": "auto_gptr_w_access_0x038082bc",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22729,7 +22729,7 @@
   },
   {
     "addr": 34623028,
-    "name": "sub_02104e34",
+    "name": "auto_gptr_w_getter_0x038082c4_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -22825,7 +22825,7 @@
   },
   {
     "addr": 34623520,
-    "name": "sub_02105020",
+    "name": "auto_gptr_w_access_0x038082b4_1",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23065,7 +23065,7 @@
   },
   {
     "addr": 34624980,
-    "name": "sub_021055d4",
+    "name": "auto_gptr_w_access_0x0380841c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23269,7 +23269,7 @@
   },
   {
     "addr": 34626960,
-    "name": "sub_02105d90",
+    "name": "auto_gptr_mix_access_0x03808448",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23389,7 +23389,7 @@
   },
   {
     "addr": 34628100,
-    "name": "sub_02106204",
+    "name": "auto_gptr_mix_access_0x03808458",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23737,7 +23737,7 @@
   },
   {
     "addr": 34630292,
-    "name": "sub_02106a94",
+    "name": "auto_gptr_mix_access_0x03808478",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23905,7 +23905,7 @@
   },
   {
     "addr": 34631560,
-    "name": "sub_02106f88",
+    "name": "auto_gptr_mix_access_0x04000184",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23965,7 +23965,7 @@
   },
   {
     "addr": 34632216,
-    "name": "sub_02107218",
+    "name": "auto_gptr_w_access_0x03808504",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -24109,7 +24109,7 @@
   },
   {
     "addr": 34633376,
-    "name": "sub_021076a0",
+    "name": "auto_gptr_w_access_0x04000400_4000000",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -24157,7 +24157,7 @@
   },
   {
     "addr": 34633988,
-    "name": "sub_02107904",
+    "name": "auto_gptr_w_access_0x0380818c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -24361,7 +24361,7 @@
   },
   {
     "addr": 34635492,
-    "name": "sub_02107ee4",
+    "name": "auto_gptr_mix_getter_0x03807bfc",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -25141,7 +25141,7 @@
   },
   {
     "addr": 37236660,
-    "name": "sub_02382fb4",
+    "name": "auto_gptr_mix_access_0x03809c60",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25321,7 +25321,7 @@
   },
   {
     "addr": 37238888,
-    "name": "sub_02383868",
+    "name": "auto_gptr_w_access_0x03809c60",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25357,7 +25357,7 @@
   },
   {
     "addr": 37239328,
-    "name": "sub_02383a20",
+    "name": "auto_gptr_mix_access_0x040001a4",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25393,7 +25393,7 @@
   },
   {
     "addr": 37240272,
-    "name": "sub_02383dd0",
+    "name": "auto_gptr_mix_access_0x0380a4c0_a",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25405,7 +25405,7 @@
   },
   {
     "addr": 37240528,
-    "name": "sub_02383ed0",
+    "name": "auto_gptr_w_getter_0x04000214",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25417,7 +25417,7 @@
   },
   {
     "addr": 37240572,
-    "name": "sub_02383efc",
+    "name": "auto_gptr_mix_access_0x027ffc10",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25429,7 +25429,7 @@
   },
   {
     "addr": 37240676,
-    "name": "sub_02383f64",
+    "name": "auto_gptr_mix_getter_0x0380a4c8",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25573,7 +25573,7 @@
   },
   {
     "addr": 37242384,
-    "name": "sub_02384610",
+    "name": "auto_gptr_w_access_0x0380a974",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25609,7 +25609,7 @@
   },
   {
     "addr": 37243140,
-    "name": "sub_02384904",
+    "name": "auto_gptr_mix_access_0x0380a970_1",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25981,7 +25981,7 @@
   },
   {
     "addr": 37250372,
-    "name": "sub_02386544",
+    "name": "auto_gptr_mix_access_0x0380b9fc_1",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26017,7 +26017,7 @@
   },
   {
     "addr": 37251224,
-    "name": "sub_02386898",
+    "name": "auto_gptr_w_access_0x0380fffc",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26029,7 +26029,7 @@
   },
   {
     "addr": 37251300,
-    "name": "sub_023868e4",
+    "name": "auto_gptr_w_access_0x0380fffc_2",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26089,7 +26089,7 @@
   },
   {
     "addr": 37251672,
-    "name": "sub_02386a58",
+    "name": "auto_gptr_mix_access_0x04000204",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26101,7 +26101,7 @@
   },
   {
     "addr": 37251724,
-    "name": "sub_02386a8c",
+    "name": "auto_gptr_mix_access_0x04000204_2",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26125,7 +26125,7 @@
   },
   {
     "addr": 37252064,
-    "name": "sub_02386be0",
+    "name": "auto_gptr_mix_getter_0x027ffc30",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26365,7 +26365,7 @@
   },
   {
     "addr": 37257236,
-    "name": "sub_02388014",
+    "name": "auto_gptr_mix_access_0x027f92a4_100",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26485,7 +26485,7 @@
   },
   {
     "addr": 37257952,
-    "name": "sub_023882e0",
+    "name": "auto_gptr_mix_access_0x027f82a4_1000",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26545,7 +26545,7 @@
   },
   {
     "addr": 37258584,
-    "name": "sub_02388558",
+    "name": "auto_gptr_mix_getter_0x027f92a4_e0",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26785,7 +26785,7 @@
   },
   {
     "addr": 37264304,
-    "name": "sub_02389bb0",
+    "name": "auto_gptr_mix_access_0x027f92a4",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26809,7 +26809,7 @@
   },
   {
     "addr": 37264736,
-    "name": "sub_02389d60",
+    "name": "auto_gptr_mix_access_0x027f92a4_2",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -27925,7 +27925,7 @@
   },
   {
     "addr": 37282940,
-    "name": "sub_0238e47c",
+    "name": "auto_gptr_mix_access_0x027f92a4_7f",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -27937,7 +27937,7 @@
   },
   {
     "addr": 37283088,
-    "name": "sub_0238e510",
+    "name": "auto_gptr_mix_access_0x027f92a4_d0",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -27949,7 +27949,7 @@
   },
   {
     "addr": 37283344,
-    "name": "sub_0238e610",
+    "name": "auto_gptr_mix_access_0x04000006",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -28225,7 +28225,7 @@
   },
   {
     "addr": 37290176,
-    "name": "sub_023900c0",
+    "name": "auto_gptr_mix_access_0x04808124",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -28345,7 +28345,7 @@
   },
   {
     "addr": 37293092,
-    "name": "sub_02390c24",
+    "name": "auto_gptr_mix_getter_0x0380fff4_300",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -28537,7 +28537,7 @@
   },
   {
     "addr": 37294948,
-    "name": "sub_02391364",
+    "name": "auto_gptr_mix_access_0x0380fff4_5",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -28945,7 +28945,7 @@
   },
   {
     "addr": 37298380,
-    "name": "sub_023920cc",
+    "name": "auto_gptr_mix_access_0x04808094",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -29017,7 +29017,7 @@
   },
   {
     "addr": 37298896,
-    "name": "sub_023922d0",
+    "name": "auto_gptr_mix_access_0x0380fff4_300",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -29029,7 +29029,7 @@
   },
   {
     "addr": 37298944,
-    "name": "sub_02392300",
+    "name": "auto_gptr_mix_access_0x0380fff4_300_2",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -29485,7 +29485,7 @@
   },
   {
     "addr": 37304212,
-    "name": "sub_02393794",
+    "name": "auto_gptr_mix_access_0x04804000_1",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -29521,7 +29521,7 @@
   },
   {
     "addr": 37305068,
-    "name": "sub_02393aec",
+    "name": "auto_gptr_mix_access_0x037f9504",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -29713,7 +29713,7 @@
   },
   {
     "addr": 37307012,
-    "name": "sub_02394284",
+    "name": "auto_gptr_mix_getter_0x0380fff4_500",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -30889,7 +30889,7 @@
   },
   {
     "addr": 37329816,
-    "name": "sub_02399b98",
+    "name": "auto_gptr_mix_access_0x0380fff4_1",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -31261,7 +31261,7 @@
   },
   {
     "addr": 37345048,
-    "name": "sub_0239d718",
+    "name": "auto_gptr_w_access_0x0380fff4_2",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -31381,7 +31381,7 @@
   },
   {
     "addr": 37347060,
-    "name": "sub_0239def4",
+    "name": "auto_gptr_mix_access_0x040001c0",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -31393,7 +31393,7 @@
   },
   {
     "addr": 37347216,
-    "name": "sub_0239df90",
+    "name": "auto_gptr_mix_access_0x040001c0_2",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -31405,7 +31405,7 @@
   },
   {
     "addr": 37347280,
-    "name": "sub_0239dfd0",
+    "name": "auto_gptr_mix_access_0x040001c0_3",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -31417,7 +31417,7 @@
   },
   {
     "addr": 37347344,
-    "name": "sub_0239e010",
+    "name": "auto_gptr_mix_access_0x040001c0_4",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -31429,7 +31429,7 @@
   },
   {
     "addr": 37347408,
-    "name": "sub_0239e050",
+    "name": "auto_gptr_mix_access_0x040001c0_5",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -31441,7 +31441,7 @@
   },
   {
     "addr": 37347604,
-    "name": "sub_0239e114",
+    "name": "auto_gptr_mix_access_0x040001c0_6",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -31513,7 +31513,7 @@
   },
   {
     "addr": 37349120,
-    "name": "sub_0239e700",
+    "name": "auto_gptr_mix_access_0x040001c0_7",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -31525,7 +31525,7 @@
   },
   {
     "addr": 37349184,
-    "name": "sub_0239e740",
+    "name": "auto_gptr_mix_access_0x040001c0_8",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,

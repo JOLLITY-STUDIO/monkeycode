@@ -73,6 +73,7 @@ CURATED_JSON_BATCH20 = os.path.join(ROM_DIR, 'v017-curated-batch20.json')
 CURATED_JSON_BATCH21 = os.path.join(ROM_DIR, 'v017-curated-batch21.json')
 PATTERN_SUGGESTIONS_JSON = os.path.join(ROM_DIR, 'v014-pattern-suggestions.json')
 PATTERN_MERGED_JSON = os.path.join(ROM_DIR, 'v017-pattern-merged.json')
+PATTERN_GLOBAL_JSON = os.path.join(ROM_DIR, 'v018-pattern-global.json')
 
 
 def sanitize_name(name: str) -> str:
@@ -254,7 +255,7 @@ def main():
 
     # V0.13 pattern suggestions (ADR-013) + V0.17 merged bulk
     pattern_names = {}
-    for ppath, label in [(PATTERN_SUGGESTIONS_JSON, 'V0.13 ADR-013'), (PATTERN_MERGED_JSON, 'V0.17 merged bulk')]:
+    for ppath, label in [(PATTERN_SUGGESTIONS_JSON, 'V0.13 ADR-013'), (PATTERN_MERGED_JSON, 'V0.17 merged bulk'), (PATTERN_GLOBAL_JSON, 'V0.18 global ptr')]:
         if os.path.exists(ppath):
             pdata = json.load(open(ppath, encoding='utf-8'))
             for s in pdata.get('names', []):

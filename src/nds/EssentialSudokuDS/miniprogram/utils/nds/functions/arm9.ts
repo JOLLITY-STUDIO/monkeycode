@@ -188,9 +188,10 @@ export const sub_020096a8 = 0x020096a8 as const;
  * ARM9 函数 @ 0x02009758
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02009758 = 0x02009758 as const;
+export const auto_gptr_mix_access_0x020fcc6c = 0x02009758 as const;
 /**
  * ARM9 函数 @ 0x020097f4
  * @category prologue
@@ -284,16 +285,18 @@ export const sub_0200a1fc = 0x0200a1fc as const;
  * ARM9 函数 @ 0x0200a234
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200a234 = 0x0200a234 as const;
+export const auto_gptr_w_getter_0x020fe914 = 0x0200a234 as const;
 /**
  * ARM9 函数 @ 0x0200a2b8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200a2b8 = 0x0200a2b8 as const;
+export const auto_gptr_w_access_0x020efda0_4000 = 0x0200a2b8 as const;
 /**
  * ARM9 函数 @ 0x0200a40c
  * @category bx_lr
@@ -312,9 +315,10 @@ export const sub_0200a4fc = 0x0200a4fc as const;
  * ARM9 函数 @ 0x0200a63c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200a63c = 0x0200a63c as const;
+export const auto_gptr_array_mix_access_0x020fe82c_idx = 0x0200a63c as const;
 /**
  * ARM9 函数 @ 0x0200a680
  * @category bx_lr
@@ -334,9 +338,10 @@ export const sub_0200a684 = 0x0200a684 as const;
  * ARM9 函数 @ 0x0200a6a8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200a6a8 = 0x0200a6a8 as const;
+export const auto_gptr_mix_access_0x0210ab84_1 = 0x0200a6a8 as const;
 /**
  * ARM9 函数 @ 0x0200a7f0
  * @category prologue
@@ -353,9 +358,10 @@ export const sub_0200a910 = 0x0200a910 as const;
  * ARM9 函数 @ 0x0200ac38
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200ac38 = 0x0200ac38 as const;
+export const auto_gptr_array_mix_access_0x02101c04_idx = 0x0200ac38 as const;
 /**
  * ARM9 函数 @ 0x0200ad6c
  * @category prologue
@@ -394,9 +400,10 @@ export const sub_0200b0a8 = 0x0200b0a8 as const;
  * ARM9 函数 @ 0x0200b28c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200b28c = 0x0200b28c as const;
+export const auto_gptr_array_w_access_0x02102ec0_idx = 0x0200b28c as const;
 /**
  * ARM9 函数 @ 0x0200b2e8
  * @category prologue
@@ -425,9 +432,10 @@ export const sub_0200babc = 0x0200babc as const;
  * ARM9 函数 @ 0x0200bb94
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200bb94 = 0x0200bb94 as const;
+export const auto_gptr_w_access_0x02101be8 = 0x0200bb94 as const;
 /**
  * ARM9 函数 @ 0x0200bc96
  * @category prologue
@@ -470,9 +478,10 @@ export const main_ram_field_onesetter = 0x0200bf9c as const;
  * ARM9 函数 @ 0x0200bfac
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200bfac = 0x0200bfac as const;
+export const auto_gptr_mix_getter_0x02101be8 = 0x0200bfac as const;
 /**
  * ARM9 函数 @ 0x0200c05c
  * @category prologue
@@ -541,9 +550,10 @@ export const sub_0200d954 = 0x0200d954 as const;
  * ARM9 函数 @ 0x0200dd70
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200dd70 = 0x0200dd70 as const;
+export const auto_switch_dispatch_5way = 0x0200dd70 as const;
 /**
  * ARM9 函数 @ 0x0200e414
  * @category prologue
@@ -568,9 +578,10 @@ export const sub_0200e588 = 0x0200e588 as const;
  * ARM9 函数 @ 0x0200ec64
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200ec64 = 0x0200ec64 as const;
+export const auto_gptr_w_access_0x020f05d4 = 0x0200ec64 as const;
 /**
  * ARM9 函数 @ 0x0200ece4
  * @category bx_lr
@@ -596,9 +607,10 @@ export const sub_0200ede4 = 0x0200ede4 as const;
  * ARM9 函数 @ 0x0200ee64
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200ee64 = 0x0200ee64 as const;
+export const auto_gptr_w_access_0x0210218c_50 = 0x0200ee64 as const;
 /**
  * ARM9 函数 @ 0x0200f100
  * @category prologue
@@ -649,9 +661,10 @@ export const sub_0200f9dc = 0x0200f9dc as const;
  * ARM9 函数 @ 0x0200fbec
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0200fbec = 0x0200fbec as const;
+export const auto_gptr_mix_access_0x020fcc6c_1 = 0x0200fbec as const;
 /**
  * ARM9 函数 @ 0x0200fd48
  * @category prologue
@@ -725,9 +738,10 @@ export const auto_switch_2way_02010cac = 0x02010cac as const;
  * ARM9 函数 @ 0x02010e1c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02010e1c = 0x02010e1c as const;
+export const auto_gptr_w_access_0x02104420 = 0x02010e1c as const;
 /**
  * ARM9 函数 @ 0x02010e7e
  * @category prologue
@@ -738,9 +752,10 @@ export const sub_02010e7e = 0x02010e7e as const;
  * ARM9 函数 @ 0x02010eec
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02010eec = 0x02010eec as const;
+export const auto_gptr_w_access_0x02104458 = 0x02010eec as const;
 /**
  * ARM9 函数 @ 0x02010f3e
  * @category prologue
@@ -813,9 +828,10 @@ export const auto_switch_2way_02012140 = 0x02012140 as const;
  * ARM9 函数 @ 0x02012800
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02012800 = 0x02012800 as const;
+export const auto_gptr_w_access_0x02104580_9 = 0x02012800 as const;
 /**
  * ARM9 函数 @ 0x02012b50
  * @category prologue
@@ -832,9 +848,10 @@ export const sub_02012c2c = 0x02012c2c as const;
  * ARM9 函数 @ 0x02013390
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02013390 = 0x02013390 as const;
+export const auto_switch_dispatch_5way_2 = 0x02013390 as const;
 /**
  * ARM9 函数 @ 0x02013aa8
  * @category prologue
@@ -845,9 +862,10 @@ export const sub_02013aa8 = 0x02013aa8 as const;
  * ARM9 函数 @ 0x02014350
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02014350 = 0x02014350 as const;
+export const auto_gptr_w_access_0x02106564 = 0x02014350 as const;
 /**
  * ARM9 函数 @ 0x02014474
  * @category prologue
@@ -929,9 +947,10 @@ export const sub_02015578 = 0x02015578 as const;
  * ARM9 函数 @ 0x0201557c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0201557c = 0x0201557c as const;
+export const auto_gptr_mix_access_0x0400100c = 0x0201557c as const;
 /**
  * ARM9 函数 @ 0x020155c0
  * @category prologue
@@ -954,16 +973,18 @@ export const sub_02015e28 = 0x02015e28 as const;
  * ARM9 函数 @ 0x02016004
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02016004 = 0x02016004 as const;
+export const auto_gptr_mix_getter_0x02106f18 = 0x02016004 as const;
 /**
  * ARM9 函数 @ 0x02016080
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02016080 = 0x02016080 as const;
+export const auto_gptr_mix_access_0x02106f18 = 0x02016080 as const;
 /**
  * ARM9 函数 @ 0x0201622c
  * @category prologue
@@ -974,9 +995,10 @@ export const sub_0201622c = 0x0201622c as const;
  * ARM9 函数 @ 0x020167dc
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020167dc = 0x020167dc as const;
+export const auto_gptr_mix_access_0x02106574 = 0x020167dc as const;
 /**
  * ARM9 函数 @ 0x02016a40
  * @category prologue
@@ -987,16 +1009,18 @@ export const sub_02016a40 = 0x02016a40 as const;
  * ARM9 函数 @ 0x02017050
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02017050 = 0x02017050 as const;
+export const auto_gptr_w_getter_0x0210656c = 0x02017050 as const;
 /**
  * ARM9 函数 @ 0x020170a0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020170a0 = 0x020170a0 as const;
+export const auto_gptr_w_access_0x021065ac_1 = 0x020170a0 as const;
 /**
  * ARM9 函数 @ 0x02017128
  * @category prologue
@@ -1270,9 +1294,10 @@ export const sub_0201c9f4 = 0x0201c9f4 as const;
  * ARM9 函数 @ 0x0201cbdc
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0201cbdc = 0x0201cbdc as const;
+export const auto_gptr_w_access_0x02106794 = 0x0201cbdc as const;
 /**
  * ARM9 函数 @ 0x0201cc60
  * @category bx_lr
@@ -1343,9 +1368,10 @@ export const global_dword_get_f = 0x0201d548 as const;
  * ARM9 函数 @ 0x0201d558
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0201d558 = 0x0201d558 as const;
+export const auto_gptr_mix_access_0x0210ab84_1_2 = 0x0201d558 as const;
 /**
  * ARM9 函数 @ 0x0201d5a6
  * @category prologue
@@ -1884,9 +1910,10 @@ export const global_byte_set_a = 0x02021e7c as const;
  * ARM9 函数 @ 0x02021e8c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02021e8c = 0x02021e8c as const;
+export const auto_gptr_w_getter_0x02106e7c = 0x02021e8c as const;
 /**
  * ARM9 函数 @ 0x02021ec4
  * @category near
@@ -1929,9 +1956,10 @@ export const auto_switch_2way_02021fc8 = 0x02021fc8 as const;
  * ARM9 函数 @ 0x02022028
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02022028 = 0x02022028 as const;
+export const auto_gptr_w_access_0x020f5558 = 0x02022028 as const;
 /**
  * ARM9 函数 @ 0x0202209c
  * @category bx_lr
@@ -1943,16 +1971,18 @@ export const sub_0202209c = 0x0202209c as const;
  * ARM9 函数 @ 0x020220a0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020220a0 = 0x020220a0 as const;
+export const auto_gptr_mix_access_0x02107354 = 0x020220a0 as const;
 /**
  * ARM9 函数 @ 0x02022290
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02022290 = 0x02022290 as const;
+export const auto_gptr_mix_access_0x0210b358 = 0x02022290 as const;
 /**
  * ARM9 函数 @ 0x020223a4
  * @category prologue
@@ -1971,9 +2001,10 @@ export const sub_0202251c = 0x0202251c as const;
  * ARM9 函数 @ 0x02022520
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02022520 = 0x02022520 as const;
+export const auto_gptr_mix_access_0x04001008 = 0x02022520 as const;
 /**
  * ARM9 函数 @ 0x02022840
  * @category bx_lr
@@ -2016,9 +2047,10 @@ export const sub_02022a54 = 0x02022a54 as const;
  * ARM9 函数 @ 0x02022c90
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02022c90 = 0x02022c90 as const;
+export const auto_gptr_array_mix_getter_0x02106e78_idx = 0x02022c90 as const;
 /**
  * ARM9 函数 @ 0x02022d04
  * @category bx_lr
@@ -2077,9 +2109,10 @@ export const sub_020231b8 = 0x020231b8 as const;
  * ARM9 函数 @ 0x020233a0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020233a0 = 0x020233a0 as const;
+export const auto_gptr_w_access_0x02107368 = 0x020233a0 as const;
 /**
  * ARM9 函数 @ 0x02023424
  * @category prologue
@@ -2090,16 +2123,18 @@ export const sub_02023424 = 0x02023424 as const;
  * ARM9 函数 @ 0x02023510
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02023510 = 0x02023510 as const;
+export const auto_gptr_w_access_0x0210736c_1 = 0x02023510 as const;
 /**
  * ARM9 函数 @ 0x02023534
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02023534 = 0x02023534 as const;
+export const auto_gptr_array_w_access_0x02107390_idx = 0x02023534 as const;
 /**
  * ARM9 函数 @ 0x0202371c
  * @category prologue
@@ -2116,9 +2151,10 @@ export const sub_020239c4 = 0x020239c4 as const;
  * ARM9 函数 @ 0x02023cd0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02023cd0 = 0x02023cd0 as const;
+export const auto_gptr_w_access_0x0210ab88 = 0x02023cd0 as const;
 /**
  * ARM9 函数 @ 0x02023d1c
  * @category prologue
@@ -2129,9 +2165,10 @@ export const sub_02023d1c = 0x02023d1c as const;
  * ARM9 函数 @ 0x02024614
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02024614 = 0x02024614 as const;
+export const auto_gptr_w_access_0x0212f238 = 0x02024614 as const;
 /**
  * ARM9 函数 @ 0x02024660
  * @category prologue
@@ -2142,9 +2179,10 @@ export const sub_02024660 = 0x02024660 as const;
  * ARM9 函数 @ 0x02024c50
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02024c50 = 0x02024c50 as const;
+export const auto_gptr_w_getter_0x021078cc = 0x02024c50 as const;
 /**
  * ARM9 函数 @ 0x02024c80
  * @category bx_lr
@@ -2156,16 +2194,18 @@ export const sub_02024c80 = 0x02024c80 as const;
  * ARM9 函数 @ 0x02024c84
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02024c84 = 0x02024c84 as const;
+export const auto_gptr_mix_getter_0x0210b358 = 0x02024c84 as const;
 /**
  * ARM9 函数 @ 0x02024d38
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02024d38 = 0x02024d38 as const;
+export const auto_memcpy_word_lr = 0x02024d38 as const;
 /**
  * ARM9 函数 @ 0x02024ec0
  * @category bx_lr
@@ -2177,9 +2217,10 @@ export const sub_02024ec0 = 0x02024ec0 as const;
  * ARM9 函数 @ 0x02024ec4
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02024ec4 = 0x02024ec4 as const;
+export const auto_gptr_w_access_0x021078c0 = 0x02024ec4 as const;
 /**
  * ARM9 函数 @ 0x02024f58
  * @category bx_lr
@@ -2254,9 +2295,10 @@ export const sub_0202683e = 0x0202683e as const;
  * ARM9 函数 @ 0x020268e8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020268e8 = 0x020268e8 as const;
+export const auto_gptr_mix_access_0x04000304 = 0x020268e8 as const;
 /**
  * ARM9 函数 @ 0x020269d8
  * @category prologue
@@ -2399,9 +2441,10 @@ export const auto_tail_call_20279d4 = 0x020279cc as const;
  * ARM9 函数 @ 0x020279d8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020279d8 = 0x020279d8 as const;
+export const auto_gptr_w_access_0x0210a860 = 0x020279d8 as const;
 /**
  * ARM9 函数 @ 0x020279f4
  * @category near
@@ -2427,9 +2470,10 @@ export const sub_02027a7e = 0x02027a7e as const;
  * ARM9 函数 @ 0x02027ba0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02027ba0 = 0x02027ba0 as const;
+export const auto_gptr_w_access_0x0210a9e0 = 0x02027ba0 as const;
 /**
  * ARM9 函数 @ 0x02027bf8
  * @category bx_lr
@@ -2456,9 +2500,10 @@ export const sub_02027c68 = 0x02027c68 as const;
  * ARM9 函数 @ 0x02027da0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02027da0 = 0x02027da0 as const;
+export const auto_gptr_mix_access_0x0210aaf0_1 = 0x02027da0 as const;
 /**
  * ARM9 函数 @ 0x02027e88
  * @category bx_lr
@@ -2487,9 +2532,10 @@ export const global_dword_get_h = 0x02027eb8 as const;
  * ARM9 函数 @ 0x02027ec8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02027ec8 = 0x02027ec8 as const;
+export const auto_gptr_w_access_0x0210ab20 = 0x02027ec8 as const;
 /**
  * ARM9 函数 @ 0x02027ee8
  * @category bx_lr
@@ -2502,23 +2548,26 @@ export const const_true_getter = 0x02027ee8 as const;
  * ARM9 函数 @ 0x02027ef0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02027ef0 = 0x02027ef0 as const;
+export const auto_gptr_w_access_0x0210ab00 = 0x02027ef0 as const;
 /**
  * ARM9 函数 @ 0x02027f30
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02027f30 = 0x02027f30 as const;
+export const auto_gptr_w_access_0x0210ab44 = 0x02027f30 as const;
 /**
  * ARM9 函数 @ 0x02027f70
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02027f70 = 0x02027f70 as const;
+export const auto_gptr_w_getter_0x0210ab4c = 0x02027f70 as const;
 /**
  * ARM9 函数 @ 0x02027fa4
  * @category bx_lr
@@ -2562,16 +2611,18 @@ export const call_indirect_global_ptr_b = 0x0202807c as const;
  * ARM9 函数 @ 0x02028094
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02028094 = 0x02028094 as const;
+export const auto_gptr_w_getter_0x0210ab3c = 0x02028094 as const;
 /**
  * ARM9 函数 @ 0x020280ac
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020280ac = 0x020280ac as const;
+export const auto_gptr_w_getter_0x0210ab3c_2 = 0x020280ac as const;
 /**
  * ARM9 函数 @ 0x0202811c
  * @category prologue
@@ -2731,9 +2782,10 @@ export const sub_02028918 = 0x02028918 as const;
  * ARM9 函数 @ 0x02028a78
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02028a78 = 0x02028a78 as const;
+export const auto_gptr_mix_access_0x021078dc = 0x02028a78 as const;
 /**
  * ARM9 函数 @ 0x02028a7a
  * @category bx_lr
@@ -2745,9 +2797,10 @@ export const sub_02028a7a = 0x02028a7a as const;
  * ARM9 函数 @ 0x02028af0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02028af0 = 0x02028af0 as const;
+export const auto_gptr_mix_access_0x04000130 = 0x02028af0 as const;
 /**
  * ARM9 函数 @ 0x02028b34
  * @category bx_lr
@@ -2767,9 +2820,10 @@ export const sub_02028b58 = 0x02028b58 as const;
  * ARM9 函数 @ 0x02028b80
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02028b80 = 0x02028b80 as const;
+export const auto_gptr_w_access_0x0210fb78 = 0x02028b80 as const;
 /**
  * ARM9 函数 @ 0x02028bd4
  * @category prologue
@@ -2786,16 +2840,18 @@ export const sub_02028c48 = 0x02028c48 as const;
  * ARM9 函数 @ 0x02028ca8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02028ca8 = 0x02028ca8 as const;
+export const auto_gptr_w_access_0x02113d18 = 0x02028ca8 as const;
 /**
  * ARM9 函数 @ 0x02028dc4
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02028dc4 = 0x02028dc4 as const;
+export const auto_gptr_w_access_0x02113d18_1 = 0x02028dc4 as const;
 /**
  * ARM9 函数 @ 0x02028dec
  * @category bx_lr
@@ -3001,9 +3057,10 @@ export const state_switch_8way_packed = 0x02029bb0 as const;
  * ARM9 函数 @ 0x02029d78
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02029d78 = 0x02029d78 as const;
+export const auto_gptr_mix_access_0x02108e08 = 0x02029d78 as const;
 /**
  * ARM9 函数 @ 0x02029de4
  * @category bx_lr
@@ -3029,9 +3086,10 @@ export const sub_02029e4c = 0x02029e4c as const;
  * ARM9 函数 @ 0x02029ee0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02029ee0 = 0x02029ee0 as const;
+export const auto_gptr_mix_getter_0x0210d378 = 0x02029ee0 as const;
 /**
  * ARM9 函数 @ 0x02029fa4
  * @category prologue
@@ -3116,9 +3174,10 @@ export const sub_0202a5c4 = 0x0202a5c4 as const;
  * ARM9 函数 @ 0x0202a7d8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202a7d8 = 0x0202a7d8 as const;
+export const auto_gptr_w_access_0x0210ab78 = 0x0202a7d8 as const;
 /**
  * ARM9 函数 @ 0x0202a830
  * @category prologue
@@ -3429,9 +3488,10 @@ export const sub_0202d3cc = 0x0202d3cc as const;
  * ARM9 函数 @ 0x0202d580
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202d580 = 0x0202d580 as const;
+export const auto_gptr_mix_getter_0x021bc760 = 0x0202d580 as const;
 /**
  * ARM9 函数 @ 0x0202d60c
  * @category prologue
@@ -3528,16 +3588,18 @@ export const sub_0202db44 = 0x0202db44 as const;
  * ARM9 函数 @ 0x0202db80
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202db80 = 0x0202db80 as const;
+export const auto_gptr_mix_getter_0x02029b44 = 0x0202db80 as const;
 /**
  * ARM9 函数 @ 0x0202dbfc
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202dbfc = 0x0202dbfc as const;
+export const auto_gptr_mix_getter_0x02029bc4 = 0x0202dbfc as const;
 /**
  * ARM9 函数 @ 0x0202dc98
  * @category bx_lr
@@ -3550,23 +3612,26 @@ export const state_3_flow_2_check = 0x0202dc98 as const;
  * ARM9 函数 @ 0x0202dcdc
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202dcdc = 0x0202dcdc as const;
+export const auto_gptr_w_getter_0x021bb258 = 0x0202dcdc as const;
 /**
  * ARM9 函数 @ 0x0202dd50
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202dd50 = 0x0202dd50 as const;
+export const auto_switch_dispatch_4way = 0x0202dd50 as const;
 /**
  * ARM9 函数 @ 0x0202df80
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202df80 = 0x0202df80 as const;
+export const auto_gptr_w_access_0x021bb274 = 0x0202df80 as const;
 /**
  * ARM9 函数 @ 0x0202e000
  * @category prologue
@@ -3621,9 +3686,10 @@ export const sub_0202e7e0 = 0x0202e7e0 as const;
  * ARM9 函数 @ 0x0202e8bc
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202e8bc = 0x0202e8bc as const;
+export const auto_gptr_mix_getter_0x0202a884 = 0x0202e8bc as const;
 /**
  * ARM9 函数 @ 0x0202e964
  * @category bx_lr
@@ -3636,23 +3702,26 @@ export const state_3_flow_2_check_b = 0x0202e964 as const;
  * ARM9 函数 @ 0x0202e9a8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202e9a8 = 0x0202e9a8 as const;
+export const auto_gptr_w_getter_0x021bb720 = 0x0202e9a8 as const;
 /**
  * ARM9 函数 @ 0x0202ea28
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202ea28 = 0x0202ea28 as const;
+export const auto_switch_dispatch_4way_2 = 0x0202ea28 as const;
 /**
  * ARM9 函数 @ 0x0202ebe8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202ebe8 = 0x0202ebe8 as const;
+export const auto_gptr_w_access_0x021bb258 = 0x0202ebe8 as const;
 /**
  * ARM9 函数 @ 0x0202ec94
  * @category prologue
@@ -3671,9 +3740,10 @@ export const global_range_4_2_check = 0x0202ee98 as const;
  * ARM9 函数 @ 0x0202ef6c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0202ef6c = 0x0202ef6c as const;
+export const auto_gptr_mix_getter_0x021bb264 = 0x0202ef6c as const;
 /**
  * ARM9 函数 @ 0x0202f070
  * @category bx_lr
@@ -4163,9 +4233,10 @@ export const main_frame_state_setter_b = 0x0203100c as const;
  * ARM9 函数 @ 0x0203101c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203101c = 0x0203101c as const;
+export const auto_gptr_w_access_0xbfff0000 = 0x0203101c as const;
 /**
  * ARM9 函数 @ 0x02031098
  * @category prologue
@@ -4210,16 +4281,18 @@ export const sub_02031640 = 0x02031640 as const;
  * ARM9 函数 @ 0x02031674
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02031674 = 0x02031674 as const;
+export const auto_gptr_mix_access_0x021bdb0c = 0x02031674 as const;
 /**
  * ARM9 函数 @ 0x0203171c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203171c = 0x0203171c as const;
+export const auto_gptr_w_access_0x021bdb30 = 0x0203171c as const;
 /**
  * ARM9 函数 @ 0x02031748
  * @category near
@@ -4538,37 +4611,42 @@ export const sub_02032778 = 0x02032778 as const;
  * ARM9 函数 @ 0x020327fc
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020327fc = 0x020327fc as const;
+export const auto_gptr_w_getter_0x021be554 = 0x020327fc as const;
 /**
  * ARM9 函数 @ 0x02032824
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02032824 = 0x02032824 as const;
+export const auto_gptr_w_getter_0x021be554_2 = 0x02032824 as const;
 /**
  * ARM9 函数 @ 0x0203284c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203284c = 0x0203284c as const;
+export const auto_gptr_w_getter_0x021be554_3 = 0x0203284c as const;
 /**
  * ARM9 函数 @ 0x020328b0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020328b0 = 0x020328b0 as const;
+export const auto_gptr_w_getter_0x021be554_4 = 0x020328b0 as const;
 /**
  * ARM9 函数 @ 0x02032914
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02032914 = 0x02032914 as const;
+export const auto_gptr_w_getter_0x021be554_5 = 0x02032914 as const;
 /**
  * ARM9 函数 @ 0x02032978
  * @category bx_lr
@@ -4581,9 +4659,10 @@ export const list_bounds_check_field_0x14 = 0x02032978 as const;
  * ARM9 函数 @ 0x020329dc
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020329dc = 0x020329dc as const;
+export const auto_gptr_w_getter_0x021be554_6 = 0x020329dc as const;
 /**
  * ARM9 函数 @ 0x02032a40
  * @category bx_lr
@@ -5013,30 +5092,34 @@ export const sub_0203510c = 0x0203510c as const;
  * ARM9 函数 @ 0x02035138
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02035138 = 0x02035138 as const;
+export const auto_gptr_mix_access_0x04000280 = 0x02035138 as const;
 /**
  * ARM9 函数 @ 0x02035170
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02035170 = 0x02035170 as const;
+export const auto_gptr_mix_getter_0x040002b0_200 = 0x02035170 as const;
 /**
  * ARM9 函数 @ 0x0203519c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203519c = 0x0203519c as const;
+export const auto_gptr_mix_access_0x04000280_2 = 0x0203519c as const;
 /**
  * ARM9 函数 @ 0x020351d8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020351d8 = 0x020351d8 as const;
+export const auto_gptr_mix_getter_0x04000280 = 0x020351d8 as const;
 /**
  * ARM9 函数 @ 0x02035214
  * @category bx_lr
@@ -5086,9 +5169,10 @@ export const signed_halfword_fixed_convert = 0x02035480 as const;
  * ARM9 函数 @ 0x020354ac
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020354ac = 0x020354ac as const;
+export const auto_gptr_w_access_0x04001000 = 0x020354ac as const;
 /**
  * ARM9 函数 @ 0x020354c8
  * @category bx_lr
@@ -5109,9 +5193,10 @@ export const disp_layer_mode_set = 0x0203553c as const;
  * ARM9 函数 @ 0x02035588
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02035588 = 0x02035588 as const;
+export const auto_gptr_mix_access_0x020fbe94 = 0x02035588 as const;
 /**
  * ARM9 函数 @ 0x020355d0
  * @category near
@@ -5130,9 +5215,10 @@ export const sub_02035600 = 0x02035600 as const;
  * ARM9 函数 @ 0x02035784
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02035784 = 0x02035784 as const;
+export const auto_gptr_mix_access_0x021bf414 = 0x02035784 as const;
 /**
  * ARM9 函数 @ 0x02035804
  * @category near
@@ -5196,16 +5282,18 @@ export const state_field_0x16_mask_update = 0x02035984 as const;
  * ARM9 函数 @ 0x02035a10
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02035a10 = 0x02035a10 as const;
+export const auto_gptr_mix_access_0x021bf414_2 = 0x02035a10 as const;
 /**
  * ARM9 函数 @ 0x02035a8c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02035a8c = 0x02035a8c as const;
+export const auto_gptr_mix_access_0x021bf414_3 = 0x02035a8c as const;
 /**
  * ARM9 函数 @ 0x02035b38
  * @category bx_lr
@@ -5266,9 +5354,10 @@ export const bg_tile_addr_mode_range = 0x0203632c as const;
  * ARM9 函数 @ 0x0203637c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203637c = 0x0203637c as const;
+export const auto_gptr_mix_getter_0x0400000e_6000000 = 0x0203637c as const;
 /**
  * ARM9 函数 @ 0x020363dc
  * @category bx_lr
@@ -5321,9 +5410,10 @@ export const bg_attr_addr_switch_6way = 0x020364f0 as const;
  * ARM9 函数 @ 0x02036570
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02036570 = 0x02036570 as const;
+export const auto_gptr_mix_getter_0x0400000e_6000000_2 = 0x02036570 as const;
 /**
  * ARM9 函数 @ 0x020365fc
  * @category bx_lr
@@ -5407,9 +5497,10 @@ export const io_0x40000600_field_check = 0x0203687c as const;
  * ARM9 函数 @ 0x020368a8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020368a8 = 0x020368a8 as const;
+export const auto_gptr_w_access_0x020fbe98_1 = 0x020368a8 as const;
 /**
  * ARM9 函数 @ 0x02036950
  * @category bx_lr
@@ -5422,9 +5513,10 @@ export const auto_tail_call_203695c = 0x02036950 as const;
  * ARM9 函数 @ 0x02036964
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02036964 = 0x02036964 as const;
+export const auto_gptr_mix_access_0x0400035c = 0x02036964 as const;
 /**
  * ARM9 函数 @ 0x020369b8
  * @category prologue
@@ -5441,37 +5533,42 @@ export const sub_02036a64 = 0x02036a64 as const;
  * ARM9 函数 @ 0x02036b14
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02036b14 = 0x02036b14 as const;
+export const auto_gptr_w_getter_0x04000400 = 0x02036b14 as const;
 /**
  * ARM9 函数 @ 0x02036b48
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02036b48 = 0x02036b48 as const;
+export const auto_gptr_mix_access_0x04000600 = 0x02036b48 as const;
 /**
  * ARM9 函数 @ 0x02036bd0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02036bd0 = 0x02036bd0 as const;
+export const auto_gptr_mix_access_0x04000504 = 0x02036bd0 as const;
 /**
  * ARM9 函数 @ 0x02036d2c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02036d2c = 0x02036d2c as const;
+export const auto_gptr_w_access_0x04000468 = 0x02036d2c as const;
 /**
  * ARM9 函数 @ 0x02036d68
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02036d68 = 0x02036d68 as const;
+export const auto_gptr_w_access_0x04000468_2 = 0x02036d68 as const;
 /**
  * ARM9 函数 @ 0x02036da4
  * @category near
@@ -5490,9 +5587,10 @@ export const sub_02036de0 = 0x02036de0 as const;
  * ARM9 函数 @ 0x020370dc
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020370dc = 0x020370dc as const;
+export const auto_gptr_w_access_0x020fbe98 = 0x020370dc as const;
 /**
  * ARM9 函数 @ 0x02037128
  * @category prologue
@@ -5704,9 +5802,10 @@ export const sub_02037ef0 = 0x02037ef0 as const;
  * ARM9 函数 @ 0x02037f90
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02037f90 = 0x02037f90 as const;
+export const auto_gptr_w_access_0x027e0000 = 0x02037f90 as const;
 /**
  * ARM9 函数 @ 0x02037fc4
  * @category bx_lr
@@ -5957,9 +6056,10 @@ export const sub_02038990 = 0x02038990 as const;
  * ARM9 函数 @ 0x020389f0
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020389f0 = 0x020389f0 as const;
+export const auto_gptr_w_access_0x021bf4c0 = 0x020389f0 as const;
 /**
  * ARM9 函数 @ 0x02038a34
  * @category prologue
@@ -5990,9 +6090,10 @@ export const sub_02038bd8 = 0x02038bd8 as const;
  * ARM9 函数 @ 0x02038d34
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02038d34 = 0x02038d34 as const;
+export const auto_gptr_w_getter_0x021bf4c8 = 0x02038d34 as const;
 /**
  * ARM9 函数 @ 0x02038d7c
  * @category bx_lr
@@ -6033,9 +6134,10 @@ export const sub_02038e9c = 0x02038e9c as const;
  * ARM9 函数 @ 0x02038f14
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02038f14 = 0x02038f14 as const;
+export const auto_gptr_w_access_0x021bf4b8_1 = 0x02038f14 as const;
 /**
  * ARM9 函数 @ 0x02038f2c
  * @category bx_lr
@@ -6270,16 +6372,18 @@ export const table_word_get_0x27ffdc4 = 0x02039970 as const;
  * ARM9 函数 @ 0x02039984
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02039984 = 0x02039984 as const;
+export const auto_gptr_w_getter_0x021bf724 = 0x02039984 as const;
 /**
  * ARM9 函数 @ 0x02039a04
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02039a04 = 0x02039a04 as const;
+export const auto_gptr_w_access_0x021bf720 = 0x02039a04 as const;
 /**
  * ARM9 函数 @ 0x02039b1c
  * @category bx_lr
@@ -6332,44 +6436,50 @@ export const state_snapshot_2step_save = 0x02039bd4 as const;
  * ARM9 函数 @ 0x02039be8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02039be8 = 0x02039be8 as const;
+export const auto_gptr_w_access_0x021bf734_14 = 0x02039be8 as const;
 /**
  * ARM9 函数 @ 0x02039c78
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02039c78 = 0x02039c78 as const;
+export const auto_gptr_w_getter_0x021bf728 = 0x02039c78 as const;
 /**
  * ARM9 函数 @ 0x02039ce4
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02039ce4 = 0x02039ce4 as const;
+export const auto_gptr_w_access_0x027ffd9c = 0x02039ce4 as const;
 /**
  * ARM9 函数 @ 0x02039d74
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02039d74 = 0x02039d74 as const;
+export const auto_gptr_mix_access_0x021bf7b4 = 0x02039d74 as const;
 /**
  * ARM9 函数 @ 0x02039e18
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02039e18 = 0x02039e18 as const;
+export const auto_gptr_mix_access_0x021bf7b8 = 0x02039e18 as const;
 /**
  * ARM9 函数 @ 0x02039eb4
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02039eb4 = 0x02039eb4 as const;
+export const auto_gptr_mix_access_0x021bf7c8 = 0x02039eb4 as const;
 /**
  * ARM9 函数 @ 0x02039f24
  * @category bx_lr
@@ -6768,9 +6878,10 @@ export const tail_call_020354e0 = 0x0203adb4 as const;
  * ARM9 函数 @ 0x0203adc8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203adc8 = 0x0203adc8 as const;
+export const auto_gptr_w_access_0x021bf7fc = 0x0203adc8 as const;
 /**
  * ARM9 函数 @ 0x0203ae14
  * @category prologue
@@ -6871,16 +6982,18 @@ export const sub_0203b520 = 0x0203b520 as const;
  * ARM9 函数 @ 0x0203b638
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203b638 = 0x0203b638 as const;
+export const auto_gptr_mix_getter_0x021c12e0 = 0x0203b638 as const;
 /**
  * ARM9 函数 @ 0x0203b698
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203b698 = 0x0203b698 as const;
+export const auto_gptr_mix_access_0x021c12e0_1 = 0x0203b698 as const;
 /**
  * ARM9 函数 @ 0x0203b6b8
  * @category near
@@ -6907,16 +7020,18 @@ export const global_field_get_call_r1_4 = 0x0203b768 as const;
  * ARM9 函数 @ 0x0203b79c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203b79c = 0x0203b79c as const;
+export const auto_gptr_w_getter_0x021c1340_4 = 0x0203b79c as const;
 /**
  * ARM9 函数 @ 0x0203b7d4
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203b7d4 = 0x0203b7d4 as const;
+export const auto_gptr_mix_getter_0xfffffd2d = 0x0203b7d4 as const;
 /**
  * ARM9 函数 @ 0x0203b848
  * @category prologue
@@ -7256,16 +7371,18 @@ export const sub_0203d924 = 0x0203d924 as const;
  * ARM9 函数 @ 0x0203dbc8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203dbc8 = 0x0203dbc8 as const;
+export const auto_gptr_mix_access_0x04000290 = 0x0203dbc8 as const;
 /**
  * ARM9 函数 @ 0x0203dc34
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203dc34 = 0x0203dc34 as const;
+export const auto_gptr_mix_access_0x04000290_2 = 0x0203dc34 as const;
 /**
  * ARM9 函数 @ 0x0203dca8
  * @category near
@@ -7378,9 +7495,10 @@ export const sub_0203e760 = 0x0203e760 as const;
  * ARM9 函数 @ 0x0203e838
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0203e838 = 0x0203e838 as const;
+export const auto_gptr_mix_getter_0x04000304 = 0x0203e838 as const;
 /**
  * ARM9 函数 @ 0x0203e854
  * @category bx_lr
@@ -8027,16 +8145,18 @@ export const sub_0204338c = 0x0204338c as const;
  * ARM9 函数 @ 0x020433fc
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020433fc = 0x020433fc as const;
+export const auto_gptr_mix_getter_0x027fffa8 = 0x020433fc as const;
 /**
  * ARM9 函数 @ 0x0204343c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0204343c = 0x0204343c as const;
+export const auto_gptr_w_access_0x021c1e04 = 0x0204343c as const;
 /**
  * ARM9 函数 @ 0x020434a8
  * @category near
@@ -8149,9 +8269,10 @@ export const global_array_set_field_0x18 = 0x02043c70 as const;
  * ARM9 函数 @ 0x02043c88
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02043c88 = 0x02043c88 as const;
+export const auto_gptr_mix_access_0x021c1e0c = 0x02043c88 as const;
 /**
  * ARM9 函数 @ 0x02043cfc
  * @category prologue
@@ -8169,23 +8290,26 @@ export const sub_02043ef0 = 0x02043ef0 as const;
  * ARM9 函数 @ 0x02043f24
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02043f24 = 0x02043f24 as const;
+export const auto_gptr_w_access_0x020fbeb8_1 = 0x02043f24 as const;
 /**
  * ARM9 函数 @ 0x02043f9c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02043f9c = 0x02043f9c as const;
+export const auto_gptr_mix_getter_0x027ffc3c_1 = 0x02043f9c as const;
 /**
  * ARM9 函数 @ 0x02044040
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02044040 = 0x02044040 as const;
+export const auto_gptr_mix_getter_0x027ffc3c_1_2 = 0x02044040 as const;
 /**
  * ARM9 函数 @ 0x020440e4
  * @category prologue
@@ -8480,9 +8604,10 @@ export const sub_020461b8 = 0x020461b8 as const;
  * ARM9 函数 @ 0x020461c8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020461c8 = 0x020461c8 as const;
+export const auto_gptr_mix_access_0x021c2920_1000 = 0x020461c8 as const;
 /**
  * ARM9 函数 @ 0x0204624c
  * @category prologue
@@ -8676,9 +8801,10 @@ export const sub_020484f8 = 0x020484f8 as const;
  * ARM9 函数 @ 0x020486d8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020486d8 = 0x020486d8 as const;
+export const auto_gptr_mix_access_0x021c2930_400 = 0x020486d8 as const;
 /**
  * ARM9 函数 @ 0x0204879c
  * @category near
@@ -8697,9 +8823,10 @@ export const sub_020487cc = 0x020487cc as const;
  * ARM9 函数 @ 0x02048944
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02048944 = 0x02048944 as const;
+export const auto_gptr_mix_access_0x021c2930 = 0x02048944 as const;
 /**
  * ARM9 函数 @ 0x02048990
  * @category prologue
@@ -8724,16 +8851,18 @@ export const auto_switch_1way_02048a54 = 0x02048a54 as const;
  * ARM9 函数 @ 0x02048ae4
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02048ae4 = 0x02048ae4 as const;
+export const auto_gptr_mix_access_0x021c2930_2 = 0x02048ae4 as const;
 /**
  * ARM9 函数 @ 0x02048b08
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02048b08 = 0x02048b08 as const;
+export const auto_gptr_mix_access_0x021c2930_3 = 0x02048b08 as const;
 /**
  * ARM9 函数 @ 0x02048b3c
  * @category bx_lr
@@ -8780,16 +8909,18 @@ export const early_return_if_arg1_eq_2 = 0x02048ddc as const;
  * ARM9 函数 @ 0x02048e34
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02048e34 = 0x02048e34 as const;
+export const auto_gptr_mix_getter_0x021c29d8 = 0x02048e34 as const;
 /**
  * ARM9 函数 @ 0x02048e54
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02048e54 = 0x02048e54 as const;
+export const auto_gptr_mix_getter_0x021c29d8_2 = 0x02048e54 as const;
 /**
  * ARM9 函数 @ 0x02048eb4
  * @category near
@@ -8894,9 +9025,10 @@ export const sub_02049748 = 0x02049748 as const;
  * ARM9 函数 @ 0x02049930
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02049930 = 0x02049930 as const;
+export const auto_gptr_mix_getter_0x027ffc3c_1_3 = 0x02049930 as const;
 /**
  * ARM9 函数 @ 0x020499a8
  * @category prologue
@@ -9080,9 +9212,10 @@ export const sub_0204b4b8 = 0x0204b4b8 as const;
  * ARM9 函数 @ 0x0204b504
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0204b504 = 0x0204b504 as const;
+export const auto_gptr_w_access_0x021c2a04 = 0x0204b504 as const;
 /**
  * ARM9 函数 @ 0x0204b524
  * @category near
@@ -9135,16 +9268,18 @@ export const sub_0204b6e8 = 0x0204b6e8 as const;
  * ARM9 函数 @ 0x0204b804
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0204b804 = 0x0204b804 as const;
+export const auto_gptr_mix_access_0x021c2a14 = 0x0204b804 as const;
 /**
  * ARM9 函数 @ 0x0204b844
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0204b844 = 0x0204b844 as const;
+export const auto_gptr_w_getter_0x021c2a20 = 0x0204b844 as const;
 /**
  * ARM9 函数 @ 0x0204b900
  * @category prologue
@@ -11728,9 +11863,10 @@ export const sub_020f5fb8 = 0x020f5fb8 as const;
  * ARM9 函数 @ 0x020f6028
  * @category single_caller_real
  * @confidence low
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020f6028 = 0x020f6028 as const;
+export const auto_memset_word_r3__r7__fp__pc = 0x020f6028 as const;
 /**
  * ARM9 函数 @ 0x020f6032
  * @category single_caller_real
@@ -12190,9 +12326,10 @@ export const sub_020fff5c = 0x020fff5c as const;
  * ARM9 函数 @ 0x020fff64
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_020fff64 = 0x020fff64 as const;
+export const auto_gptr_mix_access_0x027e0000 = 0x020fff64 as const;
 /**
  * ARM9 函数 @ 0x021000b4
  * @category prologue
@@ -12215,16 +12352,18 @@ export const sub_021001c0 = 0x021001c0 as const;
  * ARM9 函数 @ 0x02100500
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02100500 = 0x02100500 as const;
+export const auto_gptr_w_getter_0x02380198 = 0x02100500 as const;
 /**
  * ARM9 函数 @ 0x0210055c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0210055c = 0x0210055c as const;
+export const auto_gptr_mix_access_0x027ffffa_1 = 0x0210055c as const;
 /**
  * ARM9 函数 @ 0x021005dc
  * @category prologue
@@ -12438,9 +12577,10 @@ export const sub_02101da6 = 0x02101da6 as const;
  * ARM9 函数 @ 0x02101f20
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02101f20 = 0x02101f20 as const;
+export const auto_gptr_mix_access_0x0380fff4_344 = 0x02101f20 as const;
 /**
  * ARM9 函数 @ 0x02101f3a
  * @category bx_lr
@@ -12459,9 +12599,10 @@ export const sub_02101f42 = 0x02101f42 as const;
  * ARM9 函数 @ 0x02101f9c
  * @category near
  * @confidence high
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02101f9c = 0x02101f9c as const;
+export const auto_gptr_mix_access_0x0000ffff = 0x02101f9c as const;
 /**
  * ARM9 函数 @ 0x02101fd8
  * @category prologue
@@ -12498,9 +12639,10 @@ export const global_halfword_write_0x1000_check = 0x021029c8 as const;
  * ARM9 函数 @ 0x02102ad8
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02102ad8 = 0x02102ad8 as const;
+export const auto_gptr_mix_access_0x0380fff4_600 = 0x02102ad8 as const;
 /**
  * ARM9 函数 @ 0x02102b94
  * @category prologue
@@ -12511,16 +12653,18 @@ export const sub_02102b94 = 0x02102b94 as const;
  * ARM9 函数 @ 0x02102d74
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02102d74 = 0x02102d74 as const;
+export const auto_gptr_mix_getter_0x0480819c = 0x02102d74 as const;
 /**
  * ARM9 函数 @ 0x02102d84
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02102d84 = 0x02102d84 as const;
+export const auto_gptr_mix_access_0x04808244 = 0x02102d84 as const;
 /**
  * ARM9 函数 @ 0x02102e08
  * @category prologue
@@ -12607,9 +12751,10 @@ export const sub_02103bc0 = 0x02103bc0 as const;
  * ARM9 函数 @ 0x02103d34
  * @category near
  * @confidence high
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02103d34 = 0x02103d34 as const;
+export const auto_gptr_mix_getter_0x0480819c_2 = 0x02103d34 as const;
 /**
  * ARM9 函数 @ 0x02103d54
  * @category near
@@ -12627,16 +12772,18 @@ export const sub_02103d60 = 0x02103d60 as const;
  * ARM9 函数 @ 0x02103d64
  * @category near
  * @confidence high
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02103d64 = 0x02103d64 as const;
+export const auto_gptr_array_mix_access_0x000082ea_idx = 0x02103d64 as const;
 /**
  * ARM9 函数 @ 0x02103f20
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02103f20 = 0x02103f20 as const;
+export const auto_gptr_mix_access_0x03808234_1 = 0x02103f20 as const;
 /**
  * ARM9 函数 @ 0x021040f4
  * @category prologue
@@ -12671,9 +12818,10 @@ export const global_flags_or_set_irq_safe = 0x021041fc as const;
  * ARM9 函数 @ 0x02104234
  * @category near
  * @confidence high
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02104234 = 0x02104234 as const;
+export const auto_gptr_mix_access_0x04000208 = 0x02104234 as const;
 /**
  * ARM9 函数 @ 0x02104268
  * @category prologue
@@ -12690,9 +12838,10 @@ export const sub_021042b4 = 0x021042b4 as const;
  * ARM9 函数 @ 0x0210435c
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_0210435c = 0x0210435c as const;
+export const auto_gptr_w_access_0x03808234_1 = 0x0210435c as const;
 /**
  * ARM9 函数 @ 0x021044c4
  * @category prologue
@@ -12772,9 +12921,10 @@ export const sub_021048d0 = 0x021048d0 as const;
  * ARM9 函数 @ 0x021049b0
  * @category near
  * @confidence high
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_021049b0 = 0x021049b0 as const;
+export const auto_gptr_w_getter_0x038082c4 = 0x021049b0 as const;
 /**
  * ARM9 函数 @ 0x021049dc
  * @category prologue
@@ -12803,9 +12953,10 @@ export const sub_02104ae0 = 0x02104ae0 as const;
  * ARM9 函数 @ 0x02104b40
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02104b40 = 0x02104b40 as const;
+export const auto_gptr_w_access_0x038082bc = 0x02104b40 as const;
 /**
  * ARM9 函数 @ 0x02104b88
  * @category prologue
@@ -12837,9 +12988,10 @@ export const sub_02104d42 = 0x02104d42 as const;
  * ARM9 函数 @ 0x02104e34
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02104e34 = 0x02104e34 as const;
+export const auto_gptr_w_getter_0x038082c4_2 = 0x02104e34 as const;
 /**
  * ARM9 函数 @ 0x02104e7c
  * @category bx_lr
@@ -12894,9 +13046,10 @@ export const sub_02104fa8 = 0x02104fa8 as const;
  * ARM9 函数 @ 0x02105020
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02105020 = 0x02105020 as const;
+export const auto_gptr_w_access_0x038082b4_1 = 0x02105020 as const;
 /**
  * ARM9 函数 @ 0x02105038
  * @category bx_lr
@@ -13036,9 +13189,10 @@ export const shared_mem_dc4_indexed_get = 0x021055c0 as const;
  * ARM9 函数 @ 0x021055d4
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_021055d4 = 0x021055d4 as const;
+export const auto_gptr_w_access_0x0380841c = 0x021055d4 as const;
 /**
  * ARM9 函数 @ 0x02105678
  * @category prologue
@@ -13151,9 +13305,10 @@ export const auto_halfword_getter_2105d8c = 0x02105d80 as const;
  * ARM9 函数 @ 0x02105d90
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02105d90 = 0x02105d90 as const;
+export const auto_gptr_mix_access_0x03808448 = 0x02105d90 as const;
 /**
  * ARM9 函数 @ 0x02105e34
  * @category prologue
@@ -13218,9 +13373,10 @@ export const auto_halfword_getter_2106200 = 0x021061f4 as const;
  * ARM9 函数 @ 0x02106204
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02106204 = 0x02106204 as const;
+export const auto_gptr_mix_access_0x03808458 = 0x02106204 as const;
 /**
  * ARM9 函数 @ 0x02106254
  * @category prologue
@@ -13415,9 +13571,10 @@ export const auto_halfword_getter_2106a90 = 0x02106a84 as const;
  * ARM9 函数 @ 0x02106a94
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02106a94 = 0x02106a94 as const;
+export const auto_gptr_mix_access_0x03808478 = 0x02106a94 as const;
 /**
  * ARM9 函数 @ 0x02106ad4
  * @category near
@@ -13515,9 +13672,10 @@ export const sub_02106ef6 = 0x02106ef6 as const;
  * ARM9 函数 @ 0x02106f88
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02106f88 = 0x02106f88 as const;
+export const auto_gptr_mix_access_0x04000184 = 0x02106f88 as const;
 /**
  * ARM9 函数 @ 0x02107054
  * @category prologue
@@ -13548,9 +13706,10 @@ export const sub_021071d8 = 0x021071d8 as const;
  * ARM9 函数 @ 0x02107218
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02107218 = 0x02107218 as const;
+export const auto_gptr_w_access_0x03808504 = 0x02107218 as const;
 /**
  * ARM9 函数 @ 0x021072b8
  * @category bx_lr
@@ -13635,9 +13794,10 @@ export const sub_0210761c = 0x0210761c as const;
  * ARM9 函数 @ 0x021076a0
  * @category near
  * @confidence high
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_021076a0 = 0x021076a0 as const;
+export const auto_gptr_w_access_0x04000400_4000000 = 0x021076a0 as const;
 /**
  * ARM9 函数 @ 0x021076cc
  * @category prologue
@@ -13660,9 +13820,10 @@ export const sub_02107834 = 0x02107834 as const;
  * ARM9 函数 @ 0x02107904
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02107904 = 0x02107904 as const;
+export const auto_gptr_w_access_0x0380818c = 0x02107904 as const;
 /**
  * ARM9 函数 @ 0x0210793e
  * @category prologue
@@ -13773,9 +13934,10 @@ export const sub_02107e78 = 0x02107e78 as const;
  * ARM9 函数 @ 0x02107ee4
  * @category bx_lr
  * @confidence medium
+ * @pattern V0.13 auto-detected
  * @callers 1
  */
-export const sub_02107ee4 = 0x02107ee4 as const;
+export const auto_gptr_mix_getter_0x03807bfc = 0x02107ee4 as const;
 /**
  * ARM9 函数 @ 0x02107eee
  * @category bx_lr
