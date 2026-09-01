@@ -22,21 +22,17 @@ page {
 
 .top-ad {
   flex-shrink: 0;
-  padding: 0 12px 8px;
+  padding: 8px 12px;
   box-sizing: border-box;
   background: #0d1b2a;
 }
 
-/* banner 广告位: 复用 menu-scene title.nbm 横幅, 右侧预留胶囊按钮空间 */
+/* banner 广告位: 简单占位 (复用 menu-scene title.nbm 横幅) */
 .ad-slot {
-  position: relative;
   height: 120px;
   border-radius: 8px;
   overflow: hidden;
   background: #1a4d2e;
-  /* 右侧 100px 预留右上角胶囊按钮, 防止图片主要内容被遮挡 */
-  padding-right: 100px;
-  box-sizing: border-box;
 }
 
 .ad-slot-image {

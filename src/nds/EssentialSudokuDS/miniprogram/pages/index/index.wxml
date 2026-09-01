@@ -8,8 +8,8 @@
 -->
 
 <view class="page-root">
-  <!-- 顶部广告位 (template: 状态栏留白 + banner, 后续可直接替换为真实广告组件) -->
-  <template is="adBanner" data="{{statusBarHeight}}" />
+  <!-- 顶部广告位 (template: 简单占位 banner, 后续可直接替换为真实广告组件) -->
+  <template is="adBanner" />
 
   <!-- 场景舞台 (广告位下方) -->
   <view class="scene-area">
@@ -25,9 +25,9 @@
   </view>
 </view>
 
-<!-- 顶部广告位 template: 状态栏留白 + 默认 banner 图 (预留右侧胶囊按钮空间) -->
+<!-- 顶部广告位 template: 简单占位 banner 图 (纯占位, 无状态栏计算) -->
 <template name="adBanner">
-  <view class="top-ad" style="padding-top: {{statusBarHeight}}px">
+  <view class="top-ad">
     <view class="ad-slot">
       <image class="ad-slot-image" src="/assets/nbm/title.nbm.png" mode="aspectFill" lazy-load></image>
     </view>
