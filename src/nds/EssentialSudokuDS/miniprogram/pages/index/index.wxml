@@ -14,6 +14,7 @@
     </view>
     <view class="header-right">
       <view class="mode-link" bindtap="onOpenPicture">🎨 图画谜题</view>
+      <view class="mode-link mode-link-staff" bindtap="onOpenStaff">📜 制作人员</view>
       <text class="timer">{{timerText}}</text>
     </view>
   </view>

@@ -4,6 +4,24 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.18.2 — Staff 制作人员页面 (NBM_GROUP_STAFF)
+
+### 2026-09-01
+
+#### 添加
+- ✅ `miniprogram/pages/staff/` — 新建 Staff 页面 (staff.ts/wxml/wxss/json)
+  - 复用 `NBM_GROUP_STAFF` 13 张原 DS 制作人员名单图片
+  - 纵向滚动查看, 黑底保持原图氛围
+- ✅ `miniprogram/app.json` — 注册 `pages/staff/staff`
+- ✅ `miniprogram/pages/index/index.wxml` — 顶部新增 "📜 制作人员" 入口
+- ✅ `miniprogram/pages/index/index.ts` — `onOpenStaff()` → navigateTo Staff 页
+- ✅ `miniprogram/pages/index/index.wxss` — `.mode-link-staff` 蓝色变体样式
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## V0.18.1 — NBM 资源接入首页/图画谜题界面
 
 ### 2026-09-01

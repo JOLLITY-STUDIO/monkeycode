@@ -61,6 +61,11 @@ Page({
     wx.navigateTo({ url: '/pages/picture/picture' });
   },
 
+  /** 跳转 Staff 制作人员页面 */
+  onOpenStaff() {
+    wx.navigateTo({ url: '/pages/staff/staff' });
+  },
+
   /** 开始新一局 (difficulty 或 daily) */
   _startGame(diff: Difficulty | 'daily') {
     const ok = diff === 'daily'
