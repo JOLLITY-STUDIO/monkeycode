@@ -63,6 +63,16 @@ SELECT1_SLICES = {
     'select1_return_selected': (100, 164, 190, 190),
 }
 
+# select4.nbm 是主菜单模式选择按钮 sheet (128x256).
+# 4 行: Number Puzzle(亮蓝底) / Picture Puzzle(深蓝底) × 2 帧动画.
+# 帧 A = row0/row1, 帧 B = row2/row3 (按钮内图标/文字有微动画).
+SELECT4_SLICES = {
+    'select4_number_a': (0, 12, 128, 61),
+    'select4_picture_a': (0, 72, 128, 125),
+    'select4_number_b': (0, 140, 128, 189),
+    'select4_picture_b': (0, 200, 128, 253),
+}
+
 
 def generate_select3_slices() -> list[tuple[str, str]]:
     """Crop select3.nbm into per-button-label PNGs. Returns [(name, relative_path), ...]."""
@@ -88,6 +98,22 @@ def generate_select1_slices() -> list[tuple[str, str]]:
     im = Image.open(src).convert('RGBA')
     generated: list[tuple[str, str]] = []
     for name, (l, t, r, b) in SELECT1_SLICES.items():
+        out_name = f'{name}.png'
+        out_path = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', out_name)
+        crop = im.crop((l, t, r, b))
+        crop.save(out_path)
+        generated.append((name, out_name))
+    return generated
+
+
+def generate_select4_slices() -> list[tuple[str, str]]:
+    """Crop select4.nbm into Number/Picture mode button PNGs. Returns [(name, relative_path), ...]."""
+    src = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', 'select4.nbm.png')
+    if not os.path.exists(src):
+        return []
+    im = Image.open(src).convert('RGBA')
+    generated: list[tuple[str, str]] = []
+    for name, (l, t, r, b) in SELECT4_SLICES.items():
         out_name = f'{name}.png'
         out_path = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', out_name)
         crop = im.crop((l, t, r, b))
@@ -141,6 +167,15 @@ def main():
             select1_const_by_name[name] = const
             const_by_name[name] = const
 
+    # derived sprites from select4.nbm (main menu mode buttons)
+    select4_slices = generate_select4_slices()
+    select4_const_by_name: dict[str, str] = {}
+    if select4_slices:
+        for name, png in select4_slices:
+            const = sanitize(name).upper()
+            select4_const_by_name[name] = const
+            const_by_name[name] = const
+
     lines.append('')
     lines.append('/** Full flat list of all 42 NBM assets. */')
     lines.append('export const NBM_ALL = [')
@@ -162,6 +197,14 @@ def main():
         lines.append('/** select1.nbm 切片: 数独数字键盘普通态/选中态 + 动作按钮. */')
         for name, _png in select1_slices:
             const = select1_const_by_name[name]
+            url = ROOT_PREFIX + name + '.png'
+            lines.append(f"export const NBM_{const} = '{url}';")
+
+    if select4_slices:
+        lines.append('')
+        lines.append('/** select4.nbm 切片: 主菜单模式按钮 (Number/Picture × 2 帧动画). */')
+        for name, _png in select4_slices:
+            const = select4_const_by_name[name]
             url = ROOT_PREFIX + name + '.png'
             lines.append(f"export const NBM_{const} = '{url}';")
 
@@ -193,6 +236,11 @@ def main():
     # add derived select1 slices to menu select group
     for name in select1_const_by_name:
         const = select1_const_by_name[name]
+        groups.setdefault('MENU_SELECT', []).append(f'NBM_{const}')
+
+    # add derived select4 slices to menu select group
+    for name in select4_const_by_name:
+        const = select4_const_by_name[name]
         groups.setdefault('MENU_SELECT', []).append(f'NBM_{const}')
 
     lines.append('')
@@ -232,6 +280,8 @@ def main():
         lines.append(f"    '{const}': NBM_{const},")
     for name, const in select1_const_by_name.items():
         lines.append(f"    '{const}': NBM_{const},")
+    for name, const in select4_const_by_name.items():
+        lines.append(f"    '{const}': NBM_{const},")
     lines.append('  };')
     lines.append('  return map[constName];')
     lines.append('}')
@@ -245,7 +295,7 @@ def main():
     with open(OUT_PATH, 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines))
 
-    extra = len(select3_slices) + len(select1_slices)
+    extra = len(select3_slices) + len(select1_slices) + len(select4_slices)
     print(f'Wrote {OUT_PATH} ({len(entries)} entries + {extra} derived slices)')
 
 

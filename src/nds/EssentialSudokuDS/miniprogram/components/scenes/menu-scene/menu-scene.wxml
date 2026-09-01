@@ -10,7 +10,6 @@
       <view class="menu-label">SELECT MODE</view>
     </view>
     <view class="select-bg-wrap">
-      <image class="select4-bg" src="/assets/nbm/select4.nbm.png" mode="aspectFill"></image>
       <image
         class="mode-cursor"
         src="{{menuCursorUrl}}"
@@ -20,10 +19,10 @@
       ></image>
       <view class="mode-buttons">
         <view class="mode-btn number-puzzle {{selectedMode === 'number' ? 'mode-btn-active' : ''}}" bindtap="onOpenNumberPuzzle">
-          <text class="mode-btn-text">Number Puzzle</text>
+          <image class="mode-btn-bg" src="{{numberBtnUrl}}" mode="aspectFit" lazy-load></image>
         </view>
         <view class="mode-btn picture-puzzle {{selectedMode === 'picture' ? 'mode-btn-active' : ''}}" bindtap="onOpenPicturePuzzle">
-          <text class="mode-btn-text">Picture Puzzle</text>
+          <image class="mode-btn-bg" src="{{pictureBtnUrl}}" mode="aspectFit" lazy-load></image>
         </view>
       </view>
     </view>

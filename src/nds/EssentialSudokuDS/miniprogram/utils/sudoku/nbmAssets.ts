@@ -125,6 +125,12 @@ export const NBM_SELECT1_START_SELECTED = '/assets/nbm/select1_start_selected.pn
 export const NBM_SELECT1_CLEARED_SELECTED = '/assets/nbm/select1_cleared_selected.png';
 export const NBM_SELECT1_RETURN_SELECTED = '/assets/nbm/select1_return_selected.png';
 
+/** select4.nbm 切片: 主菜单模式按钮 (Number/Picture × 2 帧动画). */
+export const NBM_SELECT4_NUMBER_A = '/assets/nbm/select4_number_a.png';
+export const NBM_SELECT4_PICTURE_A = '/assets/nbm/select4_picture_a.png';
+export const NBM_SELECT4_NUMBER_B = '/assets/nbm/select4_number_b.png';
+export const NBM_SELECT4_PICTURE_B = '/assets/nbm/select4_picture_b.png';
+
 /**
  * 模式资源归属（重要）:
  *  - Essential Sudoku DS = 数独 number puzzle, 题目数据来自 numple0-9.data.
@@ -187,6 +193,10 @@ export const NBM_GROUP_MENU_SELECT = [
   NBM_SELECT1_START_SELECTED,
   NBM_SELECT1_CLEARED_SELECTED,
   NBM_SELECT1_RETURN_SELECTED,
+  NBM_SELECT4_NUMBER_A,
+  NBM_SELECT4_PICTURE_A,
+  NBM_SELECT4_NUMBER_B,
+  NBM_SELECT4_PICTURE_B,
 ];
 
 export const NBM_GROUP_OPTIONS_SLICE = [
@@ -308,6 +318,10 @@ export function nbmUrl(name: string): string | undefined {
     'SELECT1_START_SELECTED': NBM_SELECT1_START_SELECTED,
     'SELECT1_CLEARED_SELECTED': NBM_SELECT1_CLEARED_SELECTED,
     'SELECT1_RETURN_SELECTED': NBM_SELECT1_RETURN_SELECTED,
+    'SELECT4_NUMBER_A': NBM_SELECT4_NUMBER_A,
+    'SELECT4_PICTURE_A': NBM_SELECT4_PICTURE_A,
+    'SELECT4_NUMBER_B': NBM_SELECT4_NUMBER_B,
+    'SELECT4_PICTURE_B': NBM_SELECT4_PICTURE_B,
   };
   return map[constName];
 }
