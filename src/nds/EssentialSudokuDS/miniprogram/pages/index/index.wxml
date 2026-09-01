@@ -1,12 +1,30 @@
-<!--pages/index/index.wxml - 单页场景控制器-->
-<!--同一时刻仅一个场景组件渲染 (wx:if/elif), 路由由 index.ts 自建-->
+<!--pages/index/index.wxml - 单页场景控制器 + 过渡动画-->
+<!--
+  双场景交叉过渡:
+  - leavingScene 层 (旧场景): wx:if 存在时播放离场动画, 动画结束后由 index.ts 定时器清空
+  - scene 层 (新场景): 始终渲染当前场景, 播放进场动画
+  场景组件集合在 sceneRender template 中声明一次, 两处复用
+-->
 
 <view class="scene-root">
+  <!-- 离场场景层 (动画播放中) -->
+  <view wx:if="{{leavingScene}}" class="scene-stage stage-leave-{{effect}}">
+    <template is="sceneRender" data="{{s: leavingScene, puzzleId, fileKey, puzzleIdx}}" />
+  </view>
+
+  <!-- 进场场景层 (当前 scene) -->
+  <view class="scene-stage stage-enter-{{effect}}">
+    <template is="sceneRender" data="{{s: scene, puzzleId, fileKey, puzzleIdx}}" />
+  </view>
+</view>
+
+<!-- 场景组件集合 (两处 stage 共用) -->
+<template name="sceneRender">
   <!-- 启动标题 -->
-  <title-scene wx:if="{{scene === 'title'}}" bind:start="onTitleStart" />
+  <title-scene wx:if="{{s === 'title'}}" bind:start="onTitleStart" />
 
   <!-- 主菜单 -->
-  <menu-scene wx:elif="{{scene === 'menu'}}"
+  <menu-scene wx:elif="{{s === 'menu'}}"
     bind:open-number="onMenuOpenNumber"
     bind:open-picture="onMenuOpenPicture"
     bind:open-tutorial="onMenuOpenTutorial"
@@ -15,38 +33,38 @@
     bind:back-title="onMenuBackTitle" />
 
   <!-- 数独选题 -->
-  <select-scene wx:elif="{{scene === 'select'}}"
+  <select-scene wx:elif="{{s === 'select'}}"
     bind:start="onSelectStart"
     bind:back="onSelectBack" />
 
   <!-- 选项 -->
-  <options-scene wx:elif="{{scene === 'options'}}"
+  <options-scene wx:elif="{{s === 'options'}}"
     bind:open-staff="onOptionsOpenStaff"
     bind:open-about="onOptionsOpenAbout"
     bind:back="onOptionsBack" />
 
   <!-- 玩法说明 -->
-  <tutorial-scene wx:elif="{{scene === 'tutorial'}}" bind:back="onTutorialBack" />
+  <tutorial-scene wx:elif="{{s === 'tutorial'}}" bind:back="onTutorialBack" />
 
   <!-- 制作人员 -->
-  <staff-scene wx:elif="{{scene === 'staff'}}" bind:back="onStaffBack" />
+  <staff-scene wx:elif="{{s === 'staff'}}" bind:back="onStaffBack" />
 
   <!-- 关于 -->
-  <about-scene wx:elif="{{scene === 'about'}}" bind:back="onAboutBack" />
+  <about-scene wx:elif="{{s === 'about'}}" bind:back="onAboutBack" />
 
   <!-- 图画谜题类别列表 -->
-  <pict-list-scene wx:elif="{{scene === 'pictList'}}"
+  <pict-list-scene wx:elif="{{s === 'pictList'}}"
     bind:open="onPictListOpen"
     bind:back="onPictListBack" />
 
   <!-- 数独对局 (puzzleId 由选题页传入) -->
-  <sudoku-scene wx:elif="{{scene === 'sudoku'}}"
+  <sudoku-scene wx:elif="{{s === 'sudoku'}}"
     puzzle-id="{{puzzleId}}"
     bind:back="onSudokuBack" />
 
   <!-- 图画对局 (fileKey + puzzleIdx 由类别列表传入) -->
-  <picture-scene wx:elif="{{scene === 'picture'}}"
+  <picture-scene wx:elif="{{s === 'picture'}}"
     file-key="{{fileKey}}"
     puzzle-idx="{{puzzleIdx}}"
     bind:back="onPictureBack" />
-</view>
+</template>

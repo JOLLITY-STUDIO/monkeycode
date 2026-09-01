@@ -4,6 +4,28 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.20 — 场景切换过渡动画 (双场景交叉过渡引擎)
+
+### 2026-09-01
+
+#### 新增
+- ✅ 场景过渡引擎: 切换时旧场景 (leavingScene) 播放离场动画, 新场景 (scene) 播放进场动画,
+  动画结束后定时器移除 leavingScene 层 — 不再是死死的 wx:if 跳转
+- ✅ 5 组过渡效果 (index.wxss 关键帧, 只用 transform + opacity, GPU 友好):
+  - `fade`: 交叉淡入淡出 (启动/平级切换)
+  - `forward`: 新场景整屏从右滑入, 旧场景向左 30% 淡出 (进入下级)
+  - `back`: 新场景从左 30% 滑入, 旧场景整屏向右滑出 (返回上级)
+  - `drill`: 新场景整屏从下滑入, 旧场景向上 30% 淡出 (下钻进对局)
+  - `retreat`: 新场景从上 30% 滑入, 旧场景整屏向下滑出 (退出对局)
+- ✅ 场景流向效果表 `SCENE_TRANSITIONS` (22 条 'from-to' → effect), 未配置流向默认 fade
+- ✅ index.wxml 改 template `sceneRender` 声明场景集合一次, leaving + entering 双 stage 复用
+- ✅ `_switchScene(next, extra)` 统一切换入口: 场景数据透传 (puzzleId/fileKey/puzzleIdx) 随切随带
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0 (无错误输出)
+
+---
+
 ## V0.19.1 — 单页场景控制器 (唯一页面 pages/index)
 
 ### 2026-09-01

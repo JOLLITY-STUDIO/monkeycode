@@ -1,7 +1,9 @@
-// pages/index/index.ts — 单页场景控制器
-// 唯一页面: 所有场景组件通过 wx:if/elif 切换, 路由由本页自建 (无 wx.navigateTo 页面跳转)
+// pages/index/index.ts — 单页场景控制器 + 场景过渡动画
+// 唯一页面: 所有场景组件通过双 stage 交叉过渡切换, 路由由本页自建 (无 wx.navigateTo)
 // 场景: title / menu / select / options / sudoku / picture / staff / about / tutorial / pictList
-// 场景组件通过 triggerEvent 通知本页, 本页负责 scene 状态切换 + 场景间数据透传
+// 过渡: 切换时旧场景 (leavingScene) 播放离场动画, 新场景 (scene) 播放进场动画,
+//       动画结束后定时器移除 leavingScene 层 (wx:if 卸载组件)
+// 效果按场景流向自动选择 (SCENE_TRANSITIONS), 未配置的流向默认 fade
 
 type SceneName =
   | 'title'
@@ -15,9 +17,50 @@ type SceneName =
   | 'tutorial'
   | 'pictList';
 
+/** 过渡效果类型 (对应 index.wxss 关键帧) */
+type SceneEffect = 'fade' | 'forward' | 'back' | 'drill' | 'retreat';
+
+/** 离场动画最长时长 (ms) + 80ms 缓冲 = leavingScene 清理定时器 */
+const LEAVE_ANIM_MS = 350;
+
+/** 场景流向 → 过渡效果表 (key: 'from-to') */
+const SCENE_TRANSITIONS: Record<string, SceneEffect> = {
+  // 平级切换: 淡入淡出
+  'title-menu': 'fade',
+  'menu-title': 'fade',
+  'menu-tutorial': 'fade',
+  'tutorial-menu': 'fade',
+  'menu-staff': 'fade',
+  'staff-menu': 'fade',
+  'menu-about': 'fade',
+  'about-menu': 'fade',
+  // 进入下级: 新场景从右滑入, 旧场景向左滑出
+  'menu-select': 'forward',
+  'menu-pictList': 'forward',
+  'menu-options': 'forward',
+  'options-staff': 'forward',
+  'options-about': 'forward',
+  // 返回上级: 反向
+  'select-menu': 'back',
+  'pictList-menu': 'back',
+  'options-menu': 'back',
+  'staff-options': 'back',
+  'about-options': 'back',
+  // 下钻进对局: 新场景从下滑入, 旧场景向上滑出
+  'select-sudoku': 'drill',
+  'pictList-picture': 'drill',
+  // 退出对局: 反向
+  'sudoku-select': 'retreat',
+  'picture-pictList': 'retreat',
+};
+
 Page({
   data: {
     scene: 'title' as SceneName,
+    /** 正在退场的旧场景 (动画播放中, 结束后清空) */
+    leavingScene: '' as SceneName | '',
+    /** 当前过渡效果 (驱动 stage-enter-{{effect}} / stage-leave-{{effect}}) */
+    effect: 'fade' as SceneEffect,
     puzzleId: '', // sudoku 场景: 选题页传入的题目 id (numpleX.data_NNN)
     fileKey: '', // picture 场景: 类别 key (numcloX.data)
     puzzleIdx: 0, // picture 场景: 类别内题号 (0-based)
@@ -25,6 +68,7 @@ Page({
 
   onLoad(query?: any) {
     // 支持外部直达: ?id=numpleX.data_NNN → 直接进数独; ?file=xxx&idx=N → 进图画
+    // 首屏直达无需过渡 (title 从未显示过)
     if (query && query.id) {
       this.setData({ scene: 'sudoku', puzzleId: String(query.id) });
     } else if (query && query.file) {
@@ -36,29 +80,61 @@ Page({
     }
   },
 
+  onUnload() {
+    this._clearLeaveTimer();
+  },
+
+  /** 场景过渡切换引擎: 旧场景进入离场动画, 新场景进入进场动画 */
+  _switchScene(next: SceneName, extra?: Record<string, any>) {
+    const cur = this.data.scene;
+    if (cur === next) return;
+    const effect = SCENE_TRANSITIONS[`${cur}-${next}`] || 'fade';
+    const leaving = cur;
+    this.setData({
+      scene: next,
+      leavingScene: leaving,
+      effect,
+      ...(extra || {}),
+    });
+    // 离场动画结束后移除 leaving 层 (定时器兜底, animationend 在部分平台不可靠)
+    this._clearLeaveTimer();
+    this._leaveTimer = setTimeout(() => {
+      if (this.data.leavingScene === leaving) {
+        this.setData({ leavingScene: '' });
+      }
+    }, LEAVE_ANIM_MS + 80);
+  },
+
+  _clearLeaveTimer() {
+    if (this._leaveTimer) {
+      clearTimeout(this._leaveTimer);
+      this._leaveTimer = null;
+    }
+  },
+
   // ---- title-scene: start → 主菜单 ----
   onTitleStart() {
-    this.setData({ scene: 'menu' });
+    this._switchScene('menu');
   },
 
   // ---- menu-scene 路由 ----
   onMenuOpenNumber() {
-    this.setData({ scene: 'select' });
+    this._switchScene('select');
   },
   onMenuOpenPicture() {
-    this.setData({ scene: 'pictList' });
+    this._switchScene('pictList');
   },
   onMenuOpenTutorial() {
-    this.setData({ scene: 'tutorial' });
+    this._switchScene('tutorial');
   },
   onMenuOpenStaff() {
-    this.setData({ scene: 'staff' });
+    this._switchScene('staff');
   },
   onMenuOpenOptions() {
-    this.setData({ scene: 'options' });
+    this._switchScene('options');
   },
   onMenuBackTitle() {
-    this.setData({ scene: 'title' });
+    this._switchScene('title');
   },
 
   // ---- select-scene: start({ id, no }) → 数独对局; back → 主菜单 ----
@@ -68,51 +144,51 @@ Page({
       wx.showToast({ title: '题目不存在', icon: 'none' });
       return;
     }
-    this.setData({ scene: 'sudoku', puzzleId: String(id) });
+    this._switchScene('sudoku', { puzzleId: String(id) });
   },
   onSelectBack() {
-    this.setData({ scene: 'menu' });
+    this._switchScene('menu');
   },
 
   // ---- options-scene: 制作/关于/返回 ----
   onOptionsOpenStaff() {
-    this.setData({ scene: 'staff' });
+    this._switchScene('staff');
   },
   onOptionsOpenAbout() {
-    this.setData({ scene: 'about' });
+    this._switchScene('about');
   },
   onOptionsBack() {
-    this.setData({ scene: 'menu' });
+    this._switchScene('menu');
   },
 
   // ---- tutorial / staff / about: back → 主菜单 ----
   onTutorialBack() {
-    this.setData({ scene: 'menu' });
+    this._switchScene('menu');
   },
   onStaffBack() {
-    this.setData({ scene: 'menu' });
+    this._switchScene('menu');
   },
   onAboutBack() {
-    this.setData({ scene: 'menu' });
+    this._switchScene('menu');
   },
 
   // ---- pict-list-scene: open({ key }) → 图画对局; back → 主菜单 ----
   onPictListOpen(e: any) {
     const key = e.detail && e.detail.key;
     if (!key) return;
-    this.setData({ scene: 'picture', fileKey: String(key), puzzleIdx: 0 });
+    this._switchScene('picture', { fileKey: String(key), puzzleIdx: 0 });
   },
   onPictListBack() {
-    this.setData({ scene: 'menu' });
+    this._switchScene('menu');
   },
 
   // ---- picture-scene: back → 类别列表 ----
   onPictureBack() {
-    this.setData({ scene: 'pictList' });
+    this._switchScene('pictList');
   },
 
   // ---- sudoku-scene: back → 选题页 ----
   onSudokuBack() {
-    this.setData({ scene: 'select' });
+    this._switchScene('select');
   },
 });

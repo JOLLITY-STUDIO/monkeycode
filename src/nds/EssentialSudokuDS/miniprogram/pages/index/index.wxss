@@ -1,0 +1,123 @@
+/* pages/index/index.wxss — 单页场景控制器过渡动画
+   双场景交叉过渡: 旧场景 (leaving) 播放离场动画, 新场景 (entering) 播放进场动画,
+   动画结束后 (index.ts 定时器) 才移除 leaving 层。
+   只用 transform + opacity (GPU 友好, skyline 渲染器支持)。 */
+
+/* 页面底色: fade 交叉瞬间两层半透明, 露出深色底更自然 */
+page {
+  background: #0d1b2a;
+}
+
+/* 场景舞台: 全屏 fixed, 两层叠加 */
+.scene-stage {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+}
+
+/* 离场场景浮在上层 */
+.stage-leave-fade,
+.stage-leave-forward,
+.stage-leave-back,
+.stage-leave-drill,
+.stage-leave-retreat {
+  z-index: 2;
+}
+
+/* 进场场景在下层 */
+.stage-enter-fade,
+.stage-enter-forward,
+.stage-enter-back,
+.stage-enter-drill,
+.stage-enter-retreat {
+  z-index: 1;
+}
+
+/* ---------- 关键帧 ---------- */
+
+/* fade: 平级/启动切换, 交叉淡入淡出 */
+@keyframes scene-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes scene-fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+/* forward (进入下级): 新场景整屏从右滑入, 旧场景向左 30% 淡出 */
+@keyframes scene-slide-in-right {
+  from { transform: translate3d(100%, 0, 0); opacity: 0.4; }
+  to   { transform: translate3d(0, 0, 0); opacity: 1; }
+}
+@keyframes scene-slide-out-left {
+  from { transform: translate3d(0, 0, 0); opacity: 1; }
+  to   { transform: translate3d(-30%, 0, 0); opacity: 0; }
+}
+
+/* back (返回上级): 新场景从左 30% 滑入, 旧场景整屏向右滑出 */
+@keyframes scene-slide-in-left {
+  from { transform: translate3d(-30%, 0, 0); opacity: 0; }
+  to   { transform: translate3d(0, 0, 0); opacity: 1; }
+}
+@keyframes scene-slide-out-right {
+  from { transform: translate3d(0, 0, 0); opacity: 1; }
+  to   { transform: translate3d(100%, 0, 0); opacity: 0.4; }
+}
+
+/* drill (下钻进对局): 新场景整屏从下滑入, 旧场景向上 30% 淡出 */
+@keyframes scene-slide-in-up {
+  from { transform: translate3d(0, 100%, 0); opacity: 0.4; }
+  to   { transform: translate3d(0, 0, 0); opacity: 1; }
+}
+@keyframes scene-slide-out-up {
+  from { transform: translate3d(0, 0, 0); opacity: 1; }
+  to   { transform: translate3d(0, -30%, 0); opacity: 0; }
+}
+
+/* retreat (退出对局): 新场景从上 30% 滑入, 旧场景整屏向下滑出 */
+@keyframes scene-slide-in-down {
+  from { transform: translate3d(0, -30%, 0); opacity: 0; }
+  to   { transform: translate3d(0, 0, 0); opacity: 1; }
+}
+@keyframes scene-slide-out-down {
+  from { transform: translate3d(0, 0, 0); opacity: 1; }
+  to   { transform: translate3d(0, 100%, 0); opacity: 0.4; }
+}
+
+/* ---------- 动画绑定 ---------- */
+
+.stage-enter-fade {
+  animation: scene-fade-in 0.28s ease both;
+}
+.stage-enter-forward {
+  animation: scene-slide-in-right 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.stage-enter-back {
+  animation: scene-slide-in-left 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.stage-enter-drill {
+  animation: scene-slide-in-up 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.stage-enter-retreat {
+  animation: scene-slide-in-down 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+
+.stage-leave-fade {
+  animation: scene-fade-out 0.28s ease both;
+}
+.stage-leave-forward {
+  animation: scene-slide-out-left 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.stage-leave-back {
+  animation: scene-slide-out-right 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.stage-leave-drill {
+  animation: scene-slide-out-up 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
+.stage-leave-retreat {
+  animation: scene-slide-out-down 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+}
