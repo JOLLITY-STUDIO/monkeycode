@@ -337,7 +337,7 @@
   },
   {
     "addr": 33593880,
-    "name": "sub_02009a18",
+    "name": "auto_switch_1way_02009a18",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -349,7 +349,7 @@
   },
   {
     "addr": 33594096,
-    "name": "sub_02009af0",
+    "name": "auto_switch_1way_02009af0",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -361,7 +361,7 @@
   },
   {
     "addr": 33594328,
-    "name": "sub_02009bd8",
+    "name": "auto_switch_1way_02009bd8",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -373,7 +373,7 @@
   },
   {
     "addr": 33594564,
-    "name": "sub_02009cc4",
+    "name": "auto_switch_1way_02009cc4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -829,7 +829,7 @@
   },
   {
     "addr": 33604680,
-    "name": "sub_0200c448",
+    "name": "auto_switch_1way_0200c448",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1153,7 +1153,7 @@
   },
   {
     "addr": 33619504,
-    "name": "sub_0200fe30",
+    "name": "auto_switch_2way_0200fe30",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1261,7 +1261,7 @@
   },
   {
     "addr": 33623212,
-    "name": "sub_02010cac",
+    "name": "auto_switch_2way_02010cac",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1321,7 +1321,7 @@
   },
   {
     "addr": 33623940,
-    "name": "sub_02010f84",
+    "name": "auto_switch_2way_02010f84",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -1417,7 +1417,7 @@
   },
   {
     "addr": 33628480,
-    "name": "sub_02012140",
+    "name": "auto_switch_2way_02012140",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -2113,7 +2113,7 @@
   },
   {
     "addr": 33660804,
-    "name": "sub_02019f84",
+    "name": "auto_switch_3way_02019f84",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -2233,7 +2233,7 @@
   },
   {
     "addr": 33670956,
-    "name": "sub_0201c72c",
+    "name": "auto_switch_1way_0201c72c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -2245,7 +2245,7 @@
   },
   {
     "addr": 33671016,
-    "name": "sub_0201c768",
+    "name": "auto_switch_1way_0201c768",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -2305,7 +2305,7 @@
   },
   {
     "addr": 33672304,
-    "name": "sub_0201cc70",
+    "name": "auto_state_setter_201ccb4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -2581,7 +2581,7 @@
   },
   {
     "addr": 33678764,
-    "name": "sub_0201e5ac",
+    "name": "auto_tail_call_201e5b4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3193,7 +3193,7 @@
   },
   {
     "addr": 33690872,
-    "name": "sub_020214f8",
+    "name": "auto_tail_call_2021500",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3205,7 +3205,7 @@
   },
   {
     "addr": 33690884,
-    "name": "sub_02021504",
+    "name": "auto_tail_call_202151c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3385,7 +3385,7 @@
   },
   {
     "addr": 33693632,
-    "name": "sub_02021fc0",
+    "name": "auto_switch_2way_02021fc0",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3409,7 +3409,7 @@
   },
   {
     "addr": 33693640,
-    "name": "sub_02021fc8",
+    "name": "auto_switch_2way_02021fc8",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3469,7 +3469,7 @@
   },
   {
     "addr": 33694628,
-    "name": "sub_020223a4",
+    "name": "auto_switch_3way_020223a4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3505,7 +3505,7 @@
   },
   {
     "addr": 33695808,
-    "name": "sub_02022840",
+    "name": "auto_switch_3way_02022840",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3517,7 +3517,7 @@
   },
   {
     "addr": 33695812,
-    "name": "sub_02022844",
+    "name": "auto_switch_3way_02022844",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3529,7 +3529,7 @@
   },
   {
     "addr": 33695816,
-    "name": "sub_02022848",
+    "name": "auto_switch_3way_02022848",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3865,7 +3865,7 @@
   },
   {
     "addr": 33705816,
-    "name": "sub_02024f58",
+    "name": "auto_switch_1way_02024f58",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -3877,7 +3877,7 @@
   },
   {
     "addr": 33708672,
-    "name": "sub_02025a80",
+    "name": "auto_switch_1way_02025a80",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4153,7 +4153,7 @@
   },
   {
     "addr": 33715528,
-    "name": "sub_02027548",
+    "name": "auto_switch_1way_02027548",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4177,7 +4177,7 @@
   },
   {
     "addr": 33716140,
-    "name": "sub_020277ac",
+    "name": "auto_tail_call_20277c8_a",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4189,7 +4189,7 @@
   },
   {
     "addr": 33716156,
-    "name": "sub_020277bc",
+    "name": "auto_tail_call_20277c8_b",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4225,7 +4225,7 @@
   },
   {
     "addr": 33716684,
-    "name": "sub_020279cc",
+    "name": "auto_tail_call_20279d4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -4957,7 +4957,7 @@
   },
   {
     "addr": 33722156,
-    "name": "sub_02028f2c",
+    "name": "auto_switch_2way_02028f2c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -5041,7 +5041,7 @@
   },
   {
     "addr": 33724140,
-    "name": "sub_020296ec",
+    "name": "auto_switch_1way_020296ec",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -5149,7 +5149,7 @@
   },
   {
     "addr": 33724936,
-    "name": "sub_02029a08",
+    "name": "auto_state_setter_2029a38",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -5173,7 +5173,7 @@
   },
   {
     "addr": 33724988,
-    "name": "sub_02029a3c",
+    "name": "auto_state_setter_2029a64",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -5221,7 +5221,7 @@
   },
   {
     "addr": 33725084,
-    "name": "sub_02029a9c",
+    "name": "auto_switch_1way_02029a9c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -5977,7 +5977,7 @@
   },
   {
     "addr": 33739180,
-    "name": "sub_0202d1ac",
+    "name": "auto_switch_2way_0202d1ac",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6157,7 +6157,7 @@
   },
   {
     "addr": 33741540,
-    "name": "sub_0202dae4",
+    "name": "auto_field_setter_202db04_off8_a",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -6169,7 +6169,7 @@
   },
   {
     "addr": 33741560,
-    "name": "sub_0202daf8",
+    "name": "auto_field_setter_202db04_off8_b",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -7129,7 +7129,7 @@
   },
   {
     "addr": 33753760,
-    "name": "sub_02030aa0",
+    "name": "auto_tail_call_2030acc",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -7237,7 +7237,7 @@
   },
   {
     "addr": 33755096,
-    "name": "sub_02030fd8",
+    "name": "auto_tail_call_2030fe8",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -7249,7 +7249,7 @@
   },
   {
     "addr": 33755116,
-    "name": "sub_02030fec",
+    "name": "auto_state_setter_2031018",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9085,7 +9085,7 @@
   },
   {
     "addr": 33773820,
-    "name": "sub_020358fc",
+    "name": "auto_tail_call_2035930",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9217,7 +9217,7 @@
   },
   {
     "addr": 33775548,
-    "name": "sub_02035fbc",
+    "name": "auto_switch_1way_02035fbc",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -9481,7 +9481,7 @@
   },
   {
     "addr": 33778000,
-    "name": "sub_02036950",
+    "name": "auto_tail_call_203695c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -10165,7 +10165,7 @@
   },
   {
     "addr": 33784456,
-    "name": "sub_02038288",
+    "name": "auto_tail_call_2038298",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -10177,7 +10177,7 @@
   },
   {
     "addr": 33784484,
-    "name": "sub_020382a4",
+    "name": "auto_tail_call_20382b4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -10393,7 +10393,7 @@
   },
   {
     "addr": 33785964,
-    "name": "sub_0203886c",
+    "name": "auto_switch_2way_0203886c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11005,7 +11005,7 @@
   },
   {
     "addr": 33790748,
-    "name": "sub_02039b1c",
+    "name": "auto_dcache_c1_c0_0_a",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11017,7 +11017,7 @@
   },
   {
     "addr": 33790768,
-    "name": "sub_02039b30",
+    "name": "auto_dcache_c1_c0_0_b",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11029,7 +11029,7 @@
   },
   {
     "addr": 33790784,
-    "name": "sub_02039b40",
+    "name": "auto_dcache_c1_c0_0_c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11041,7 +11041,7 @@
   },
   {
     "addr": 33790800,
-    "name": "sub_02039b50",
+    "name": "auto_dcache_c6_c1_0",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11053,7 +11053,7 @@
   },
   {
     "addr": 33790808,
-    "name": "sub_02039b58",
+    "name": "auto_dcache_c6_c2_0",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -11305,7 +11305,7 @@
   },
   {
     "addr": 33792420,
-    "name": "sub_0203a1a4",
+    "name": "auto_dcache_c7_c0_4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -12853,7 +12853,7 @@
   },
   {
     "addr": 33810176,
-    "name": "sub_0203e700",
+    "name": "auto_tail_call_203e710",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -12865,7 +12865,7 @@
   },
   {
     "addr": 33810200,
-    "name": "sub_0203e718",
+    "name": "auto_tail_call_203e728",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -13669,7 +13669,7 @@
   },
   {
     "addr": 33824780,
-    "name": "sub_0204200c",
+    "name": "auto_state_getter_204203c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -13873,7 +13873,7 @@
   },
   {
     "addr": 33827208,
-    "name": "sub_02042988",
+    "name": "auto_tail_call_204299c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -13885,7 +13885,7 @@
   },
   {
     "addr": 33827220,
-    "name": "sub_02042994",
+    "name": "auto_tail_call_204299c_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15049,7 +15049,7 @@
   },
   {
     "addr": 33846596,
-    "name": "sub_02047544",
+    "name": "auto_switch_2way_02047544",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15085,7 +15085,7 @@
   },
   {
     "addr": 33846888,
-    "name": "sub_02047668",
+    "name": "auto_switch_2way_02047668",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15097,7 +15097,7 @@
   },
   {
     "addr": 33847164,
-    "name": "sub_0204777c",
+    "name": "auto_switch_2way_0204777c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15145,7 +15145,7 @@
   },
   {
     "addr": 33847772,
-    "name": "sub_020479dc",
+    "name": "auto_switch_3way_020479dc",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15325,7 +15325,7 @@
   },
   {
     "addr": 33851988,
-    "name": "sub_02048a54",
+    "name": "auto_switch_1way_02048a54",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15361,7 +15361,7 @@
   },
   {
     "addr": 33852220,
-    "name": "sub_02048b3c",
+    "name": "auto_switch_2way_02048b3c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15781,7 +15781,7 @@
   },
   {
     "addr": 33861628,
-    "name": "sub_0204affc",
+    "name": "auto_tail_call_204b024",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -15937,7 +15937,7 @@
   },
   {
     "addr": 33862388,
-    "name": "sub_0204b2f4",
+    "name": "auto_switch_2way_0204b2f4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23257,7 +23257,7 @@
   },
   {
     "addr": 34626944,
-    "name": "sub_02105d80",
+    "name": "auto_halfword_getter_2105d8c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23377,7 +23377,7 @@
   },
   {
     "addr": 34628084,
-    "name": "sub_021061f4",
+    "name": "auto_halfword_getter_2106200",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23725,7 +23725,7 @@
   },
   {
     "addr": 34630276,
-    "name": "sub_02106a84",
+    "name": "auto_halfword_getter_2106a90",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23797,7 +23797,7 @@
   },
   {
     "addr": 34630700,
-    "name": "sub_02106c2c",
+    "name": "auto_memcpy_word_02106c2c",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23857,7 +23857,7 @@
   },
   {
     "addr": 34631252,
-    "name": "sub_02106e54",
+    "name": "auto_tail_call_2106e64",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23941,7 +23941,7 @@
   },
   {
     "addr": 34632092,
-    "name": "sub_0210719c",
+    "name": "auto_tail_call_21071b4",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23977,7 +23977,7 @@
   },
   {
     "addr": 34632376,
-    "name": "sub_021072b8",
+    "name": "auto_byte_setter_21072fc",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -23989,7 +23989,7 @@
   },
   {
     "addr": 34632432,
-    "name": "sub_021072f0",
+    "name": "auto_byte_setter_21072fc_2",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -24001,7 +24001,7 @@
   },
   {
     "addr": 34632520,
-    "name": "sub_02107348",
+    "name": "auto_tail_call_2107350",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -24013,7 +24013,7 @@
   },
   {
     "addr": 34632600,
-    "name": "sub_02107398",
+    "name": "auto_tail_call_21073a0",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -24205,7 +24205,7 @@
   },
   {
     "addr": 34634268,
-    "name": "sub_02107a1c",
+    "name": "auto_tail_call_2107a24",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -24229,7 +24229,7 @@
   },
   {
     "addr": 34634576,
-    "name": "sub_02107b50",
+    "name": "auto_tail_call_2107b58",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -24253,7 +24253,7 @@
   },
   {
     "addr": 34634780,
-    "name": "sub_02107c1c",
+    "name": "auto_tail_call_2107c58",
     "cpu": "arm9",
     "mode": "arm",
     "is_known": false,
@@ -24733,7 +24733,7 @@
   },
   {
     "addr": 37231276,
-    "name": "sub_02381aac",
+    "name": "auto_switch_2way_02381aac",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25285,7 +25285,7 @@
   },
   {
     "addr": 37238632,
-    "name": "sub_02383768",
+    "name": "auto_switch_3way_02383768",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25597,7 +25597,7 @@
   },
   {
     "addr": 37242576,
-    "name": "sub_023846d0",
+    "name": "auto_switch_3way_023846d0",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25717,7 +25717,7 @@
   },
   {
     "addr": 37246408,
-    "name": "sub_023855c8",
+    "name": "auto_tail_call_238562c",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25729,7 +25729,7 @@
   },
   {
     "addr": 37246468,
-    "name": "sub_02385604",
+    "name": "auto_tail_call_238562c_2",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25813,7 +25813,7 @@
   },
   {
     "addr": 37246924,
-    "name": "sub_023857cc",
+    "name": "auto_switch_3way_023857cc",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -25945,7 +25945,7 @@
   },
   {
     "addr": 37248880,
-    "name": "sub_02385f70",
+    "name": "auto_switch_3way_02385f70",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26137,7 +26137,7 @@
   },
   {
     "addr": 37252152,
-    "name": "sub_02386c38",
+    "name": "auto_tail_call_2386c80",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26149,7 +26149,7 @@
   },
   {
     "addr": 37252216,
-    "name": "sub_02386c78",
+    "name": "auto_tail_call_2386c80_2",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26845,7 +26845,7 @@
   },
   {
     "addr": 37264880,
-    "name": "sub_02389df0",
+    "name": "auto_switch_2way_02389df0",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -26953,7 +26953,7 @@
   },
   {
     "addr": 37265832,
-    "name": "sub_0238a1a8",
+    "name": "auto_tail_call_238a1b8",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -27001,7 +27001,7 @@
   },
   {
     "addr": 37265924,
-    "name": "sub_0238a204",
+    "name": "auto_tail_call_238a214",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -27505,7 +27505,7 @@
   },
   {
     "addr": 37272008,
-    "name": "sub_0238b9c8",
+    "name": "auto_switch_2way_0238b9c8",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -27517,7 +27517,7 @@
   },
   {
     "addr": 37273344,
-    "name": "sub_0238bf00",
+    "name": "auto_switch_3way_0238bf00",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -27673,7 +27673,7 @@
   },
   {
     "addr": 37279184,
-    "name": "sub_0238d5d0",
+    "name": "auto_switch_2way_0238d5d0",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -28957,7 +28957,7 @@
   },
   {
     "addr": 37298440,
-    "name": "sub_02392108",
+    "name": "auto_state_getter_2392128",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -30097,7 +30097,7 @@
   },
   {
     "addr": 37311232,
-    "name": "sub_02395300",
+    "name": "auto_switch_2way_02395300",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -30109,7 +30109,7 @@
   },
   {
     "addr": 37311488,
-    "name": "sub_02395400",
+    "name": "auto_switch_2way_02395400",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -30121,7 +30121,7 @@
   },
   {
     "addr": 37311752,
-    "name": "sub_02395508",
+    "name": "auto_switch_2way_02395508",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -30133,7 +30133,7 @@
   },
   {
     "addr": 37312044,
-    "name": "sub_0239562c",
+    "name": "auto_switch_2way_0239562c",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -30361,7 +30361,7 @@
   },
   {
     "addr": 37318588,
-    "name": "sub_02396fbc",
+    "name": "auto_tail_call_2397018",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -30445,7 +30445,7 @@
   },
   {
     "addr": 37321488,
-    "name": "sub_02397b10",
+    "name": "auto_tail_call_2397b4c",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -30793,7 +30793,7 @@
   },
   {
     "addr": 37328460,
-    "name": "sub_0239964c",
+    "name": "auto_switch_2way_0239964c",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -31081,7 +31081,7 @@
   },
   {
     "addr": 37336540,
-    "name": "sub_0239b5dc",
+    "name": "auto_switch_2way_0239b5dc",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,
@@ -31177,7 +31177,7 @@
   },
   {
     "addr": 37340708,
-    "name": "sub_0239c624",
+    "name": "auto_switch_2way_0239c624",
     "cpu": "arm7",
     "mode": "arm",
     "is_known": false,

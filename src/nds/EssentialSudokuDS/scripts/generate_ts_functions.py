@@ -72,6 +72,7 @@ CURATED_JSON_BATCH19 = os.path.join(ROM_DIR, 'v017-curated-batch19.json')
 CURATED_JSON_BATCH20 = os.path.join(ROM_DIR, 'v017-curated-batch20.json')
 CURATED_JSON_BATCH21 = os.path.join(ROM_DIR, 'v017-curated-batch21.json')
 PATTERN_SUGGESTIONS_JSON = os.path.join(ROM_DIR, 'v014-pattern-suggestions.json')
+PATTERN_MERGED_JSON = os.path.join(ROM_DIR, 'v017-pattern-merged.json')
 
 
 def sanitize_name(name: str) -> str:
@@ -251,13 +252,16 @@ def main():
     if curated_names:
         print(f'  Loaded curated names: {len(curated_names)} (V0.12 + V0.12.1 batch 2 + V0.12.2 batch 3 + V0.12.2 batch 4 + V0.14.2 batch 5 + V0.16 batch 6 + V0.17 batch 7-21)', file=sys.stderr)
 
-    # V0.13 pattern suggestions (ADR-013)
+    # V0.13 pattern suggestions (ADR-013) + V0.17 merged bulk
     pattern_names = {}
-    if os.path.exists(PATTERN_SUGGESTIONS_JSON):
-        pdata = json.load(open(PATTERN_SUGGESTIONS_JSON, encoding='utf-8'))
-        for s in pdata.get('names', []):
-            pattern_names[s['addr']] = s['name']
-        print(f'  Loaded pattern suggestions: {len(pattern_names)} (V0.13 ADR-013)', file=sys.stderr)
+    for ppath, label in [(PATTERN_SUGGESTIONS_JSON, 'V0.13 ADR-013'), (PATTERN_MERGED_JSON, 'V0.17 merged bulk')]:
+        if os.path.exists(ppath):
+            pdata = json.load(open(ppath, encoding='utf-8'))
+            for s in pdata.get('names', []):
+                if s['addr'] not in pattern_names:
+                    pattern_names[s['addr']] = s['name']
+            print(f'  Loaded pattern suggestions: {len(pdata.get("names", []))} ({label})', file=sys.stderr)
+    print(f'  Total unique pattern names: {len(pattern_names)}', file=sys.stderr)
     for f in funcs:
         # V0.12: Apply curated names first (highest priority after V0.4 known)
         if f.get('is_known'):

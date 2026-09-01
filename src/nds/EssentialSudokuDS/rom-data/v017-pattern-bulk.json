@@ -1,0 +1,646 @@
+{
+  "version": "V0.17-bulk",
+  "description": "auto pattern naming for all remaining sub_ candidates (near+bx_lr)",
+  "total": 71,
+  "names": [
+    {
+      "addr": "0x0200fe30",
+      "name": "auto_switch_2way_0200fe30",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02010cac",
+      "name": "auto_switch_2way_02010cac",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02010f84",
+      "name": "auto_switch_2way_02010f84",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02012140",
+      "name": "auto_switch_2way_02012140",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02019f84",
+      "name": "auto_switch_3way_02019f84",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x0201e5ac",
+      "name": "auto_tail_call_201e5b4",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x020214f8",
+      "name": "auto_tail_call_2021500",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02021504",
+      "name": "auto_tail_call_202151c",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02021fc0",
+      "name": "auto_switch_2way_02021fc0",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02021fc8",
+      "name": "auto_switch_2way_02021fc8",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x020223a4",
+      "name": "auto_switch_3way_020223a4",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02022840",
+      "name": "auto_switch_3way_02022840",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02022844",
+      "name": "auto_switch_3way_02022844",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02022848",
+      "name": "auto_switch_3way_02022848",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x020277ac",
+      "name": "auto_tail_call_20277c8_a",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x020277bc",
+      "name": "auto_tail_call_20277c8_b",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x020279cc",
+      "name": "auto_tail_call_20279d4",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02028f2c",
+      "name": "auto_switch_2way_02028f2c",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02029a08",
+      "name": "auto_state_setter_2029a38",
+      "pattern_kind": "state_setter",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02029a3c",
+      "name": "auto_state_setter_2029a64",
+      "pattern_kind": "state_setter",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0202d1ac",
+      "name": "auto_switch_2way_0202d1ac",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02030aa0",
+      "name": "auto_tail_call_2030acc",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02030fd8",
+      "name": "auto_tail_call_2030fe8",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x020358fc",
+      "name": "auto_tail_call_2035930",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02036950",
+      "name": "auto_tail_call_203695c",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02038288",
+      "name": "auto_tail_call_2038298",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x020382a4",
+      "name": "auto_tail_call_20382b4",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0203886c",
+      "name": "auto_switch_2way_0203886c",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x0203e700",
+      "name": "auto_tail_call_203e710",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0203e718",
+      "name": "auto_tail_call_203e728",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0204200c",
+      "name": "auto_state_getter_204203c",
+      "pattern_kind": "state_getter",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02042994",
+      "name": "auto_tail_call_204299c",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02047544",
+      "name": "auto_switch_2way_02047544",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02047668",
+      "name": "auto_switch_2way_02047668",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0204777c",
+      "name": "auto_switch_2way_0204777c",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x020479dc",
+      "name": "auto_switch_3way_020479dc",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02048b3c",
+      "name": "auto_switch_2way_02048b3c",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0204affc",
+      "name": "auto_tail_call_204b024",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0204b2f4",
+      "name": "auto_switch_2way_0204b2f4",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm9",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02105d80",
+      "name": "auto_halfword_getter_2105d8c",
+      "pattern_kind": "halfword_getter",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x021061f4",
+      "name": "auto_halfword_getter_2106200",
+      "pattern_kind": "halfword_getter",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02106a84",
+      "name": "auto_halfword_getter_2106a90",
+      "pattern_kind": "halfword_getter",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02106c2c",
+      "name": "auto_memcpy_word_02106c2c",
+      "pattern_kind": "memcpy_word",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02106e54",
+      "name": "auto_tail_call_2106e64",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "near"
+    },
+    {
+      "addr": "0x0210719c",
+      "name": "auto_tail_call_21071b4",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "near"
+    },
+    {
+      "addr": "0x021072f0",
+      "name": "auto_byte_setter_21072fc",
+      "pattern_kind": "byte_setter",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02107348",
+      "name": "auto_tail_call_2107350",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02107398",
+      "name": "auto_tail_call_21073a0",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "near"
+    },
+    {
+      "addr": "0x02107a1c",
+      "name": "auto_tail_call_2107a24",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "near"
+    },
+    {
+      "addr": "0x02107b50",
+      "name": "auto_tail_call_2107b58",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "near"
+    },
+    {
+      "addr": "0x02381aac",
+      "name": "auto_switch_2way_02381aac",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm7",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02383768",
+      "name": "auto_switch_3way_02383768",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x023846d0",
+      "name": "auto_switch_3way_023846d0",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02385604",
+      "name": "auto_tail_call_238562c",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm7",
+      "category": "near"
+    },
+    {
+      "addr": "0x023857cc",
+      "name": "auto_switch_3way_023857cc",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02385f70",
+      "name": "auto_switch_3way_02385f70",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02386c78",
+      "name": "auto_tail_call_2386c80",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm7",
+      "category": "near"
+    },
+    {
+      "addr": "0x02389df0",
+      "name": "auto_switch_2way_02389df0",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x0238a1a8",
+      "name": "auto_tail_call_238a1b8",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm7",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0238a204",
+      "name": "auto_tail_call_238a214",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm7",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0238b9c8",
+      "name": "auto_switch_2way_0238b9c8",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x0238bf00",
+      "name": "auto_switch_3way_0238bf00",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x0238d5d0",
+      "name": "auto_switch_2way_0238d5d0",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02392108",
+      "name": "auto_state_getter_2392128",
+      "pattern_kind": "state_getter",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm7",
+      "category": "near"
+    },
+    {
+      "addr": "0x02395300",
+      "name": "auto_switch_2way_02395300",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02395400",
+      "name": "auto_switch_2way_02395400",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x02395508",
+      "name": "auto_switch_2way_02395508",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x0239562c",
+      "name": "auto_switch_2way_0239562c",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x0239964c",
+      "name": "auto_switch_2way_0239964c",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x0239b5dc",
+      "name": "auto_switch_2way_0239b5dc",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    },
+    {
+      "addr": "0x0239c624",
+      "name": "auto_switch_2way_0239c624",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 0,
+      "cpu": "arm7",
+      "category": "prologue"
+    }
+  ]
+}

@@ -1,0 +1,70 @@
+{
+  "version": "V0.17-bulk3",
+  "description": "comprehensive auto pattern naming for remaining sub_ (callers>=1, padding excluded)",
+  "total": 7,
+  "names": [
+    {
+      "addr": "0x0200c448",
+      "name": "auto_switch_1way_0200c448",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0201cc70",
+      "name": "auto_state_setter_201ccb4",
+      "pattern_kind": "state_setter",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02035fbc",
+      "name": "auto_switch_1way_02035fbc",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0203a1a4",
+      "name": "auto_dcache_c7_c0_4",
+      "pattern_kind": "dcache_helper",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x021072b8",
+      "name": "auto_byte_setter_21072fc",
+      "pattern_kind": "byte_setter",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02386c38",
+      "name": "auto_tail_call_2386c80",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm7",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02397b10",
+      "name": "auto_tail_call_2397b4c",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm7",
+      "category": "near"
+    }
+  ]
+}

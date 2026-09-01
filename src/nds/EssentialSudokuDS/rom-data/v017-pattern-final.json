@@ -1,0 +1,79 @@
+{
+  "version": "V0.17-final",
+  "description": "final auto pattern naming for remaining sub_ (callers>=1, padding excluded)",
+  "total": 8,
+  "names": [
+    {
+      "addr": "0x02009af0",
+      "name": "auto_switch_1way_02009af0",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02009bd8",
+      "name": "auto_switch_1way_02009bd8",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0201c72c",
+      "name": "auto_switch_1way_0201c72c",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x020296ec",
+      "name": "auto_switch_1way_020296ec",
+      "pattern_kind": "switch_dispatch",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0202dae4",
+      "name": "auto_field_setter_202db04_off8_a",
+      "pattern_kind": "field_setter",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x0202daf8",
+      "name": "auto_field_setter_202db04_off8_b",
+      "pattern_kind": "field_setter",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm9",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x023855c8",
+      "name": "auto_tail_call_238562c",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm7",
+      "category": "bx_lr"
+    },
+    {
+      "addr": "0x02396fbc",
+      "name": "auto_tail_call_2397018",
+      "pattern_kind": "tail_call",
+      "confidence": "medium",
+      "callers_n": 1,
+      "cpu": "arm7",
+      "category": "bx_lr"
+    }
+  ]
+}
