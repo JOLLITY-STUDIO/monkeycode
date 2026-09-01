@@ -50,7 +50,7 @@
     </view>
   </view>
 
-  <!-- 数字键盘 1-9 -->
+  <!-- 数字键盘 1-9 (原版 select1.nbm 按钮图标) -->
   <view class="number-pad">
     <view class="pad-row">
       <view
@@ -59,13 +59,22 @@
         class="pad-key {{selectedValue === item ? 'pad-key-active' : ''}}"
         data-num="{{item}}"
         bindtap="onTapNumber"
-      >{{item}}</view>
+      >
+        <image
+          class="pad-key-image"
+          src="{{selectedValue === item ? numberIconUrls[item].selected : numberIconUrls[item].normal}}"
+          mode="aspectFit"
+          lazy-load
+        ></image>
+      </view>
     </view>
     <view class="pad-tools">
       <view class="tool-key {{canUndo ? '' : 'tool-key-disabled'}}" bindtap="onUndo">撤销</view>
       <view class="tool-key {{canRedo ? '' : 'tool-key-disabled'}}" bindtap="onRedo">重做</view>
       <view class="tool-key {{notesMode ? 'tool-key-active' : ''}}" bindtap="onToggleNotesMode">笔记</view>
-      <view class="tool-key" bindtap="onTapClear">清除</view>
+      <view class="tool-key tool-key-clear" bindtap="onTapClear">
+        <image class="tool-key-icon" src="{{clearIconUrl}}" mode="heightFix" lazy-load></image>
+      </view>
       <view class="tool-key tool-key-primary" bindtap="onTapHint">提示</view>
     </view>
   </view>

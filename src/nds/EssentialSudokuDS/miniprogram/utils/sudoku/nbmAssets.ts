@@ -97,6 +97,34 @@ export const NBM_SELECT3_SE_VOLUME_NORMAL = '/assets/nbm/select3_se_volume_norma
 export const NBM_SELECT3_CREDITS_NORMAL = '/assets/nbm/select3_credits_normal.png';
 export const NBM_SELECT3_BGM_VOLUME_NORMAL = '/assets/nbm/select3_bgm_volume_normal.png';
 
+/** select1.nbm 切片: 数独数字键盘普通态/选中态 + 动作按钮. */
+export const NBM_SELECT1_N_0_NORMAL = '/assets/nbm/select1_n_0_normal.png';
+export const NBM_SELECT1_N_1_NORMAL = '/assets/nbm/select1_n_1_normal.png';
+export const NBM_SELECT1_N_2_NORMAL = '/assets/nbm/select1_n_2_normal.png';
+export const NBM_SELECT1_N_3_NORMAL = '/assets/nbm/select1_n_3_normal.png';
+export const NBM_SELECT1_N_4_NORMAL = '/assets/nbm/select1_n_4_normal.png';
+export const NBM_SELECT1_N_5_NORMAL = '/assets/nbm/select1_n_5_normal.png';
+export const NBM_SELECT1_N_6_NORMAL = '/assets/nbm/select1_n_6_normal.png';
+export const NBM_SELECT1_N_7_NORMAL = '/assets/nbm/select1_n_7_normal.png';
+export const NBM_SELECT1_N_8_NORMAL = '/assets/nbm/select1_n_8_normal.png';
+export const NBM_SELECT1_N_9_NORMAL = '/assets/nbm/select1_n_9_normal.png';
+export const NBM_SELECT1_N_0_SELECTED = '/assets/nbm/select1_n_0_selected.png';
+export const NBM_SELECT1_N_1_SELECTED = '/assets/nbm/select1_n_1_selected.png';
+export const NBM_SELECT1_N_2_SELECTED = '/assets/nbm/select1_n_2_selected.png';
+export const NBM_SELECT1_N_3_SELECTED = '/assets/nbm/select1_n_3_selected.png';
+export const NBM_SELECT1_N_4_SELECTED = '/assets/nbm/select1_n_4_selected.png';
+export const NBM_SELECT1_N_5_SELECTED = '/assets/nbm/select1_n_5_selected.png';
+export const NBM_SELECT1_N_6_SELECTED = '/assets/nbm/select1_n_6_selected.png';
+export const NBM_SELECT1_N_7_SELECTED = '/assets/nbm/select1_n_7_selected.png';
+export const NBM_SELECT1_N_8_SELECTED = '/assets/nbm/select1_n_8_selected.png';
+export const NBM_SELECT1_N_9_SELECTED = '/assets/nbm/select1_n_9_selected.png';
+export const NBM_SELECT1_START_NORMAL = '/assets/nbm/select1_start_normal.png';
+export const NBM_SELECT1_CLEARED_NORMAL = '/assets/nbm/select1_cleared_normal.png';
+export const NBM_SELECT1_RETURN_NORMAL = '/assets/nbm/select1_return_normal.png';
+export const NBM_SELECT1_START_SELECTED = '/assets/nbm/select1_start_selected.png';
+export const NBM_SELECT1_CLEARED_SELECTED = '/assets/nbm/select1_cleared_selected.png';
+export const NBM_SELECT1_RETURN_SELECTED = '/assets/nbm/select1_return_selected.png';
+
 /**
  * 模式资源归属（重要）:
  *  - Essential Sudoku DS = 数独 number puzzle, 题目数据来自 numple0-9.data.
@@ -133,6 +161,32 @@ export const NBM_GROUP_MENU_SELECT = [
   NBM_SELECT3,
   NBM_SELECT4,
   NBM_SELECT6,
+  NBM_SELECT1_N_0_NORMAL,
+  NBM_SELECT1_N_1_NORMAL,
+  NBM_SELECT1_N_2_NORMAL,
+  NBM_SELECT1_N_3_NORMAL,
+  NBM_SELECT1_N_4_NORMAL,
+  NBM_SELECT1_N_5_NORMAL,
+  NBM_SELECT1_N_6_NORMAL,
+  NBM_SELECT1_N_7_NORMAL,
+  NBM_SELECT1_N_8_NORMAL,
+  NBM_SELECT1_N_9_NORMAL,
+  NBM_SELECT1_N_0_SELECTED,
+  NBM_SELECT1_N_1_SELECTED,
+  NBM_SELECT1_N_2_SELECTED,
+  NBM_SELECT1_N_3_SELECTED,
+  NBM_SELECT1_N_4_SELECTED,
+  NBM_SELECT1_N_5_SELECTED,
+  NBM_SELECT1_N_6_SELECTED,
+  NBM_SELECT1_N_7_SELECTED,
+  NBM_SELECT1_N_8_SELECTED,
+  NBM_SELECT1_N_9_SELECTED,
+  NBM_SELECT1_START_NORMAL,
+  NBM_SELECT1_CLEARED_NORMAL,
+  NBM_SELECT1_RETURN_NORMAL,
+  NBM_SELECT1_START_SELECTED,
+  NBM_SELECT1_CLEARED_SELECTED,
+  NBM_SELECT1_RETURN_SELECTED,
 ];
 
 export const NBM_GROUP_OPTIONS_SLICE = [
@@ -228,6 +282,32 @@ export function nbmUrl(name: string): string | undefined {
     'SELECT3_SE_VOLUME_NORMAL': NBM_SELECT3_SE_VOLUME_NORMAL,
     'SELECT3_CREDITS_NORMAL': NBM_SELECT3_CREDITS_NORMAL,
     'SELECT3_BGM_VOLUME_NORMAL': NBM_SELECT3_BGM_VOLUME_NORMAL,
+    'SELECT1_N_0_NORMAL': NBM_SELECT1_N_0_NORMAL,
+    'SELECT1_N_1_NORMAL': NBM_SELECT1_N_1_NORMAL,
+    'SELECT1_N_2_NORMAL': NBM_SELECT1_N_2_NORMAL,
+    'SELECT1_N_3_NORMAL': NBM_SELECT1_N_3_NORMAL,
+    'SELECT1_N_4_NORMAL': NBM_SELECT1_N_4_NORMAL,
+    'SELECT1_N_5_NORMAL': NBM_SELECT1_N_5_NORMAL,
+    'SELECT1_N_6_NORMAL': NBM_SELECT1_N_6_NORMAL,
+    'SELECT1_N_7_NORMAL': NBM_SELECT1_N_7_NORMAL,
+    'SELECT1_N_8_NORMAL': NBM_SELECT1_N_8_NORMAL,
+    'SELECT1_N_9_NORMAL': NBM_SELECT1_N_9_NORMAL,
+    'SELECT1_N_0_SELECTED': NBM_SELECT1_N_0_SELECTED,
+    'SELECT1_N_1_SELECTED': NBM_SELECT1_N_1_SELECTED,
+    'SELECT1_N_2_SELECTED': NBM_SELECT1_N_2_SELECTED,
+    'SELECT1_N_3_SELECTED': NBM_SELECT1_N_3_SELECTED,
+    'SELECT1_N_4_SELECTED': NBM_SELECT1_N_4_SELECTED,
+    'SELECT1_N_5_SELECTED': NBM_SELECT1_N_5_SELECTED,
+    'SELECT1_N_6_SELECTED': NBM_SELECT1_N_6_SELECTED,
+    'SELECT1_N_7_SELECTED': NBM_SELECT1_N_7_SELECTED,
+    'SELECT1_N_8_SELECTED': NBM_SELECT1_N_8_SELECTED,
+    'SELECT1_N_9_SELECTED': NBM_SELECT1_N_9_SELECTED,
+    'SELECT1_START_NORMAL': NBM_SELECT1_START_NORMAL,
+    'SELECT1_CLEARED_NORMAL': NBM_SELECT1_CLEARED_NORMAL,
+    'SELECT1_RETURN_NORMAL': NBM_SELECT1_RETURN_NORMAL,
+    'SELECT1_START_SELECTED': NBM_SELECT1_START_SELECTED,
+    'SELECT1_CLEARED_SELECTED': NBM_SELECT1_CLEARED_SELECTED,
+    'SELECT1_RETURN_SELECTED': NBM_SELECT1_RETURN_SELECTED,
   };
   return map[constName];
 }

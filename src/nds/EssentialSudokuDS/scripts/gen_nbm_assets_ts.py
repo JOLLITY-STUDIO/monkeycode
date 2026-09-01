@@ -25,6 +25,44 @@ SELECT3_SLICES = {
     'select3_bgm_volume_normal': (6, 198, 127, 223),
 }
 
+# select1.nbm 是数独/图画谜题通用按钮 sprite sheet.
+# 数字 0-9 分普通态(light blue)与选中态(dark blue pressed); 右侧还有 Start/Already/User/Cleared/Return 等.
+SELECT1_SLICES = {
+    # 数字普通态 (light blue)
+    'select1_n_0_normal': (134, 6, 158, 30),
+    'select1_n_1_normal': (166, 6, 190, 30),
+    'select1_n_2_normal': (198, 6, 222, 30),
+    'select1_n_3_normal': (230, 6, 254, 30),
+    'select1_n_4_normal': (134, 70, 158, 94),
+    'select1_n_5_normal': (166, 70, 190, 94),
+    'select1_n_6_normal': (198, 70, 222, 94),
+    'select1_n_7_normal': (230, 70, 254, 94),
+    'select1_n_8_normal': (198, 134, 222, 158),
+    'select1_n_9_normal': (230, 134, 254, 158),
+
+    # 数字选中态 (dark blue pressed)
+    'select1_n_0_selected': (132, 36, 158, 62),
+    'select1_n_1_selected': (164, 36, 190, 62),
+    'select1_n_2_selected': (196, 36, 222, 62),
+    'select1_n_3_selected': (228, 36, 254, 62),
+    'select1_n_4_selected': (132, 100, 158, 126),
+    'select1_n_5_selected': (164, 100, 190, 126),
+    'select1_n_6_selected': (196, 100, 222, 126),
+    'select1_n_7_selected': (228, 100, 254, 126),
+    'select1_n_8_selected': (196, 164, 222, 190),
+    'select1_n_9_selected': (228, 164, 254, 190),
+
+    # 动作按钮普通态
+    'select1_start_normal': (6, 6, 62, 30),
+    'select1_cleared_normal': (6, 134, 94, 158),
+    'select1_return_normal': (102, 134, 190, 158),
+
+    # 动作按钮选中态
+    'select1_start_selected': (4, 36, 62, 62),
+    'select1_cleared_selected': (4, 164, 94, 190),
+    'select1_return_selected': (100, 164, 190, 190),
+}
+
 
 def generate_select3_slices() -> list[tuple[str, str]]:
     """Crop select3.nbm into per-button-label PNGs. Returns [(name, relative_path), ...]."""
@@ -34,6 +72,22 @@ def generate_select3_slices() -> list[tuple[str, str]]:
     im = Image.open(src).convert('RGBA')
     generated: list[tuple[str, str]] = []
     for name, (l, t, r, b) in SELECT3_SLICES.items():
+        out_name = f'{name}.png'
+        out_path = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', out_name)
+        crop = im.crop((l, t, r, b))
+        crop.save(out_path)
+        generated.append((name, out_name))
+    return generated
+
+
+def generate_select1_slices() -> list[tuple[str, str]]:
+    """Crop select1.nbm into digit/action button PNGs. Returns [(name, relative_path), ...]."""
+    src = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', 'select1.nbm.png')
+    if not os.path.exists(src):
+        return []
+    im = Image.open(src).convert('RGBA')
+    generated: list[tuple[str, str]] = []
+    for name, (l, t, r, b) in SELECT1_SLICES.items():
         out_name = f'{name}.png'
         out_path = os.path.join(WORKSPACE, 'miniprogram', 'assets', 'nbm', out_name)
         crop = im.crop((l, t, r, b))
@@ -78,6 +132,15 @@ def main():
             select3_const_by_name[name] = const
             const_by_name[name] = const
 
+    # derived sprites from select1.nbm (sudoku number pad + action buttons)
+    select1_slices = generate_select1_slices()
+    select1_const_by_name: dict[str, str] = {}
+    if select1_slices:
+        for name, png in select1_slices:
+            const = sanitize(name).upper()
+            select1_const_by_name[name] = const
+            const_by_name[name] = const
+
     lines.append('')
     lines.append('/** Full flat list of all 42 NBM assets. */')
     lines.append('export const NBM_ALL = [')
@@ -91,6 +154,14 @@ def main():
         lines.append('/** select3.nbm 切片: 选项页按钮标签普通态. */')
         for name, _png in select3_slices:
             const = select3_const_by_name[name]
+            url = ROOT_PREFIX + name + '.png'
+            lines.append(f"export const NBM_{const} = '{url}';")
+
+    if select1_slices:
+        lines.append('')
+        lines.append('/** select1.nbm 切片: 数独数字键盘普通态/选中态 + 动作按钮. */')
+        for name, _png in select1_slices:
+            const = select1_const_by_name[name]
             url = ROOT_PREFIX + name + '.png'
             lines.append(f"export const NBM_{const} = '{url}';")
 
@@ -118,6 +189,11 @@ def main():
     for name in select3_const_by_name:
         const = select3_const_by_name[name]
         groups.setdefault('OPTIONS_SLICE', []).append(f'NBM_{const}')
+
+    # add derived select1 slices to menu select group
+    for name in select1_const_by_name:
+        const = select1_const_by_name[name]
+        groups.setdefault('MENU_SELECT', []).append(f'NBM_{const}')
 
     lines.append('')
     lines.append('/**')
@@ -154,6 +230,8 @@ def main():
         lines.append(f"    '{const}': NBM_{const},")
     for name, const in select3_const_by_name.items():
         lines.append(f"    '{const}': NBM_{const},")
+    for name, const in select1_const_by_name.items():
+        lines.append(f"    '{const}': NBM_{const},")
     lines.append('  };')
     lines.append('  return map[constName];')
     lines.append('}')
@@ -167,7 +245,8 @@ def main():
     with open(OUT_PATH, 'w', encoding='utf-8') as f:
         f.write('\n'.join(lines))
 
-    print(f'Wrote {OUT_PATH} ({len(entries)} entries)')
+    extra = len(select3_slices) + len(select1_slices)
+    print(f'Wrote {OUT_PATH} ({len(entries)} entries + {extra} derived slices)')
 
 
 if __name__ == '__main__':

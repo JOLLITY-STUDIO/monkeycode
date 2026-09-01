@@ -193,17 +193,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 17px;
-  font-weight: 600;
-  color: #2b3a4a;
-  background: #ffffff;
   border-radius: 7px;
-  box-shadow: 0 1px 3px rgba(43, 58, 74, 0.08);
+  overflow: hidden;
 }
 
-.pad-key-active {
-  background: #2b3a4a;
-  color: #ffffff;
+.pad-key-image {
+  width: 100%;
+  height: 100%;
+}
+
+.pad-key-active .pad-key-image {
+  filter: brightness(0.92);
 }
 
 .pad-tools {
@@ -229,6 +229,16 @@
 .tool-key-primary {
   background: #2b3a4a;
   color: #ffffff;
+}
+
+.tool-key-clear {
+  padding: 0 8px;
+}
+
+.tool-key-icon {
+  height: 18px;
+  width: auto;
+  max-width: 100%;
 }
 
 /* V0.18 候选笔记显示 */
