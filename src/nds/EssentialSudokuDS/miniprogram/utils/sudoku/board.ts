@@ -25,6 +25,7 @@ export interface Cell {
   given: boolean;
   value: Value;
   isError: boolean;
+  candidates: Value[]; // V0.18 候选笔记 (pencil marks)
 }
 
 export interface Coord {
@@ -35,12 +36,20 @@ export interface Coord {
 export const SIZE = 9;
 export const BOX_SIZE = 3;
 
+interface BoardSnapshot {
+  grid: Cell[][];
+  selected: Coord | null;
+  moves: number;
+}
+
 export class SudokuBoard {
   cells: Cell[][] = [];
   selected: Coord | null = null;
   puzzle: Value[][] = [];
   solution: Value[][] = [];
   private _moves = 0;
+  private _history: BoardSnapshot[] = []; // V0.18 undo stack
+  private _redoStack: BoardSnapshot[] = []; // V0.18 redo stack
 
   constructor(puzzle: Value[][], solution: Value[][]) {
     if (puzzle.length !== SIZE || solution.length !== SIZE) {
@@ -67,6 +76,7 @@ export class SudokuBoard {
           given,
           value: given ? pv : 0,
           isError: false,
+          candidates: [],
         });
       }
       this.cells.push(row);
@@ -89,15 +99,19 @@ export class SudokuBoard {
 
   /** Write `value` (1-9) to selected cell, or explicit (row, col). Returns true if accepted.
    *  - given cells: 拒绝, 返回 false
-   *  - value==0: 等价 clearSelectedAt(row,col)
+   *  - value==0: 等价 clearAt(row,col)
    *  - auto recompute isError after write
+   *  - 填值时自动清空该格候选笔记
    */
   setValue(row: number, col: number, value: Value): boolean {
     if (value < 0 || value > 9) return false;
     if (row < 0 || row >= SIZE || col < 0 || col >= SIZE) return false;
     const cell = this.cells[row][col];
     if (cell.given) return false;
+    if (value === 0) return this.clearAt(row, col);
+    this._pushHistory();
     cell.value = value | 0;
+    cell.candidates = [];
     this._moves += 1;
     this._validate();
     return true;
@@ -108,11 +122,59 @@ export class SudokuBoard {
     if (row < 0 || row >= SIZE || col < 0 || col >= SIZE) return false;
     const cell = this.cells[row][col];
     if (cell.given) return false;
-    if (cell.value === 0) return false;
+    if (cell.value === 0 && cell.candidates.length === 0) return false;
+    this._pushHistory();
     cell.value = 0;
+    cell.candidates = [];
     this._moves += 1;
     this._validate();
     return true;
+  }
+
+  /** Toggle a candidate note (1-9) on an empty non-given cell. Returns true if changed. */
+  toggleCandidate(row: number, col: number, value: Value): boolean {
+    if (value < 1 || value > 9) return false;
+    if (row < 0 || row >= SIZE || col < 0 || col >= SIZE) return false;
+    const cell = this.cells[row][col];
+    if (cell.given || cell.value !== 0) return false;
+    this._pushHistory();
+    const idx = cell.candidates.indexOf(value);
+    if (idx >= 0) {
+      cell.candidates.splice(idx, 1);
+    } else {
+      cell.candidates.push(value);
+      cell.candidates.sort((a, b) => a - b);
+    }
+    this._moves += 1;
+    return true;
+  }
+
+  /** Undo last mutable action (setValue/clearAt/toggleCandidate). Returns true if undone. */
+  undo(): boolean {
+    if (this._history.length === 0) return false;
+    this._redoStack.push(this._snapshot());
+    const snapshot = this._history.pop()!;
+    this._restore(snapshot);
+    return true;
+  }
+
+  /** Redo a previously undone action. Returns true if redone. */
+  redo(): boolean {
+    if (this._redoStack.length === 0) return false;
+    this._history.push(this._snapshot());
+    const snapshot = this._redoStack.pop()!;
+    this._restore(snapshot);
+    return true;
+  }
+
+  /** Whether undo is available. */
+  get canUndo(): boolean {
+    return this._history.length > 0;
+  }
+
+  /** Whether redo is available. */
+  get canRedo(): boolean {
+    return this._redoStack.length > 0;
   }
 
   /** Clear value at currently selected cell. */
@@ -158,6 +220,32 @@ export class SudokuBoard {
   /** Number of user moves so far. */
   get moveCount(): number {
     return this._moves;
+  }
+
+  /** Push current state onto undo history and clear redo stack before mutation. */
+  private _pushHistory(): void {
+    this._history.push(this._snapshot());
+    this._redoStack = [];
+  }
+
+  /** Deep snapshot of current board state (including candidates). */
+  private _snapshot(): BoardSnapshot {
+    return {
+      grid: this.cells.map((row) =>
+        row.map((cell) => ({ ...cell, candidates: cell.candidates.slice() }))
+      ),
+      selected: this.selected ? { ...this.selected } : null,
+      moves: this._moves,
+    };
+  }
+
+  /** Restore board state from a snapshot. */
+  private _restore(snapshot: BoardSnapshot): void {
+    this.cells = snapshot.grid.map((row) =>
+      row.map((cell) => ({ ...cell, candidates: cell.candidates.slice() }))
+    );
+    this.selected = snapshot.selected ? { ...snapshot.selected } : null;
+    this._moves = snapshot.moves;
   }
 
   /** Recompute isError flags based on current cell values. */

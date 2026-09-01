@@ -205,3 +205,23 @@ page {
   background: #2b3a4a;
   color: #ffffff;
 }
+
+/* V0.18 候选笔记显示 */
+.cell-candidates {
+  font-size: 16rpx;
+  line-height: 1.1;
+  color: #5a6a7a;
+  text-align: center;
+  padding: 0 2rpx;
+  word-break: break-all;
+}
+
+.tool-key-active {
+  background: #e3f2fd;
+  color: #1565c0;
+  box-shadow: inset 0 0 0 2rpx #1565c0, 0 2rpx 6rpx rgba(21, 101, 192, 0.12);
+}
+
+.tool-key-disabled {
+  opacity: 0.45;
+}

@@ -43,6 +43,48 @@ interface PictureCell {
   border: string;  // 边框色 hex
 }
 
+/** 行列提示: 一条连续同色块 (Nonogram run)。color 0 = 占位(空行/列)。 */
+interface ClueRun {
+  color: number;
+  count: number;
+  key: number; // 列内唯一 key (wx:key)
+}
+
+/**
+ * 从目标网格计算 15 行 + 15 列的颜色 runs (Nonogram-style clues)。
+ * 忽略背景色 0; 连续同色合并为一个 run; 全空行/列返回 [{color:0,count:0}] 占位。
+ */
+function computeClues(target: CellColor[]): { rows: ClueRun[][]; cols: ClueRun[][] } {
+  const rows: ClueRun[][] = [];
+  const cols: ClueRun[][] = [];
+  for (let r = 0; r < GRID; r++) {
+    rows.push(runsOf(target.slice(r * GRID, r * GRID + GRID)));
+  }
+  for (let c = 0; c < GRID; c++) {
+    const col: number[] = [];
+    for (let r = 0; r < GRID; r++) col.push(target[r * GRID + c]);
+    cols.push(runsOf(col));
+  }
+  return { rows, cols };
+}
+
+function runsOf(seq: number[]): ClueRun[] {
+  const runs: ClueRun[] = [];
+  let cur = 0;
+  let count = 0;
+  for (const v of seq) {
+    if (v === cur) {
+      if (cur !== 0) count += 1;
+      continue;
+    }
+    if (cur !== 0) runs.push({ color: cur, count, key: runs.length });
+    cur = v;
+    count = v !== 0 ? 1 : 0;
+  }
+  if (cur !== 0) runs.push({ color: cur, count, key: runs.length });
+  return runs.length ? runs : [{ color: 0, count: 0, key: 0 }];
+}
+
 const service = new PictureGameService();
 
 Page({
@@ -64,6 +106,9 @@ Page({
     moves: 0,
     complete: false,
     showingAnswer: false,
+    correctCount: 0,           // 已正确格数 (进度)
+    rowClues: [] as ClueRun[][],
+    colClues: [] as ClueRun[][],
   },
 
   _timer: 0 as number,
@@ -89,6 +134,7 @@ Page({
     const name = info?.name || answers[indexInFile] || '第 ' + (indexInFile + 1) + ' 题';
     const list = service.listFilePuzzleIds(fileKey);
     const target = service.getTarget();
+    const clues = computeClues(target);
     const cells: PictureCell[] = [];
     for (let i = 0; i < TOTAL_CELLS; i++) {
       const t = target[i];
@@ -111,6 +157,9 @@ Page({
       moves: 0,
       complete: false,
       showingAnswer: false,
+      correctCount: 0,
+      rowClues: clues.rows,
+      colClues: clues.cols,
     });
     this._startTimer();
   },
@@ -201,11 +250,16 @@ Page({
     this.setData({ cells, moves: 0 });
   },
 
+  /** 提示 run 颜色 hex (color 0 占位灰) */
+  clueColor(color: number): string {
+    return PALETTE_HEX[color] || '#9aa7b4';
+  },
+
   /** 完成检测 */
   _checkComplete() {
     const info = service.getSessionInfo();
-    this.setData({ moves: info?.moves ?? 0 });
     const res = service.checkComplete();
+    this.setData({ moves: info?.moves ?? 0, correctCount: TOTAL_CELLS - res.wrong });
     if (res.complete) {
       this._stopTimer();
       this.setData({ complete: true });

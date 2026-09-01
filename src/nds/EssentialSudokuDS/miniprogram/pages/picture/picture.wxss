@@ -114,9 +114,81 @@ page {
   border-color: #2b3a4a;
 }
 
-/* 15x15 彩色网格 */
-.paint-grid {
+/* 15x15 彩色网格 + Nonogram 行列提示 */
+.puzzle-area {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.clue-header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.clue-corner {
+  width: 120rpx;
+  height: 120rpx;
+  flex-shrink: 0;
+}
+
+.col-clue {
+  flex: 1;
+  min-width: 0;
+  height: 120rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 2rpx;
+  padding-bottom: 4rpx;
+  box-sizing: border-box;
+}
+
+.puzzle-body {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+}
+
+.row-clues {
+  width: 120rpx;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.row-clue {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 4rpx;
+  padding-right: 8rpx;
+  box-sizing: border-box;
+}
+
+.run-chip {
+  font-size: 18rpx;
+  font-weight: 600;
+  padding: 2rpx 6rpx;
+  border-radius: 6rpx;
+  border: 1rpx solid;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.run-chip-empty {
+  color: #9aa7b4;
+  border-color: transparent;
+}
+
+.paint-grid {
+  flex: 1;
   aspect-ratio: 1 / 1;
   display: flex;
   flex-direction: row;

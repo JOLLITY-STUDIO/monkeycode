@@ -6,13 +6,15 @@ import { Coord, Value } from '../../utils/sudoku/board';
 import { Difficulty } from '../../utils/sudoku/numple_puzzles';
 
 interface ViewCell {
-  r: number;      // 行
-  c: number;      // 列
-  v: number;      // 显示值 0=空
-  given: boolean; // 给定格 (不可改, 加粗)
-  err: boolean;   // 冲突错误
-  sel: boolean;   // 当前选中
-  same: boolean;  // 与选中格同值高亮
+  r: number;         // 行
+  c: number;         // 列
+  v: number;         // 显示值 0=空
+  given: boolean;    // 给定格 (不可改, 加粗)
+  err: boolean;      // 冲突错误
+  sel: boolean;      // 当前选中
+  same: boolean;     // 与选中格同值高亮
+  candidates: number[]; // V0.18 候选笔记 (v=0 时空格显示)
+  candidatesText: string; // 候选笔记文本, 便于 wxml 直接渲染
 }
 
 const DIFF_LABELS: Record<string, string> = {
@@ -39,6 +41,9 @@ Page({
     complete: false,
     diffChips: DIFF_ORDER,
     diffLabels: DIFF_LABELS,
+    notesMode: false, // V0.18 候选笔记模式
+    canUndo: false,
+    canRedo: false,
   },
 
   _timer: 0 as number,
@@ -95,6 +100,8 @@ Page({
           err: cell.isError,
           sel: isSel,
           same: false,
+          candidates: cell.candidates.slice(),
+          candidatesText: cell.value === 0 && cell.candidates.length ? cell.candidates.join(' ') : '',
         });
         if (isSel) selValue = cell.value;
       }
@@ -111,7 +118,13 @@ Page({
         }
       }
     }
-    this.setData({ grid, selected: sel, selectedValue: selValue });
+    this.setData({
+      grid,
+      selected: sel,
+      selectedValue: selValue,
+      canUndo: board.canUndo,
+      canRedo: board.canRedo,
+    });
   },
 
   /** 点击格子选中 */
@@ -121,7 +134,7 @@ Page({
     this._sync();
   },
 
-  /** 数字键盘 1-9 */
+  /** 数字键盘 1-9 (笔记模式下 toggle 候选笔记) */
   onTapNumber(e: any) {
     const num = Number(e.currentTarget.dataset.num) as Value;
     const sel = this.data.selected;
@@ -136,10 +149,14 @@ Page({
       wx.showToast({ title: '给定格不可修改', icon: 'none' });
       return;
     }
-    service.inputValue(sel.row, sel.col, num);
+    if (this.data.notesMode) {
+      service.toggleCandidate(sel.row, sel.col, num);
+    } else {
+      service.inputValue(sel.row, sel.col, num);
+      this._checkComplete();
+    }
     this.setData({ moves: service.getSessionInfo()?.moves ?? 0 });
     this._sync();
-    this._checkComplete();
   },
 
   /** 清除选中格 */
@@ -149,6 +166,27 @@ Page({
     service.clearAt(sel.row, sel.col);
     this.setData({ moves: service.getSessionInfo()?.moves ?? 0 });
     this._sync();
+  },
+
+  /** 切换笔记模式 (数字键盘变为 toggle candidate) */
+  onToggleNotesMode() {
+    this.setData({ notesMode: !this.data.notesMode });
+  },
+
+  /** 撤销 */
+  onUndo() {
+    if (service.undo()) {
+      this.setData({ moves: service.getSessionInfo()?.moves ?? 0 });
+      this._sync();
+    }
+  },
+
+  /** 重做 */
+  onRedo() {
+    if (service.redo()) {
+      this.setData({ moves: service.getSessionInfo()?.moves ?? 0 });
+      this._sync();
+    }
   },
 
   /** 提示: 自动填入下一空/错格 */

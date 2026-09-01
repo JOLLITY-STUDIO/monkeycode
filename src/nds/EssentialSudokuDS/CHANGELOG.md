@@ -4,6 +4,33 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.18 — 数独候选笔记 + undo/redo + 图画谜题 Nonogram clues
+
+### 2026-09-01
+
+#### 添加
+- ✅ `miniprogram/utils/sudoku/board.ts` — 候选笔记 + undo/redo:
+  - `Cell.candidates: Value[]` / `toggleCandidate(row, col, value)`
+  - `_history` / `_redoStack` 深快照, `undo()` / `redo()` / `canUndo` / `canRedo`
+  - `setValue` / `clearAt` 自动 pushHistory、填值时清空该格候选
+- ✅ `miniprogram/utils/sudoku/game_service.ts` — 暴露:
+  - `toggleCandidate()` / `undo()` / `redo()` / `clearAt()`
+  - `moves` 始终同步 `board.moveCount`
+- ✅ `miniprogram/pages/index/index.ts` — UI 绑定:
+  - `_sync()` 同步 `candidates` / `candidatesText` / `canUndo` / `canRedo`
+  - 数字键盘在 `notesMode` 下 toggle 候选笔记
+  - `onUndo` / `onRedo` / `onToggleNotesMode`
+- ✅ `miniprogram/pages/index/index.wxml` — 格子显示候选笔记小字 + 工具行加撤销/重做/笔记
+- ✅ `miniprogram/pages/index/index.wxss` — `.cell-candidates` / `.tool-key-active` / `.tool-key-disabled`
+- ✅ `miniprogram/pages/picture/picture.ts` — Nonogram 行列提示 `computeClues()` + `rowClues/colClues`
+- ✅ `miniprogram/pages/picture/picture.wxml` — 网格上下左右加 clue 区域
+- ✅ `miniprogram/pages/picture/picture.wxss` — clue 区域完整样式 (.clue-header/.col-clue/.row-clues/.run-chip)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## V0.17.11 — 图画谜题玩法完整版 (numclo 1525 题落地)
 
 ### 2026-09-01

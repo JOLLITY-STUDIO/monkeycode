@@ -115,18 +115,50 @@ export class SudokuGameService {
   inputValue(row: number, col: number, value: Value): boolean {
     if (!this.session) return false;
     const ok = this.session.board.setValue(row, col, value);
-    if (ok && value !== 0) {
-      this.session.moves += 1;
+    if (ok) {
+      this.session.moves = this.session.board.moveCount;
     }
     return ok;
   }
 
-  /** Clear a single cell (revert non-given to empty). */
+  /** Clear a single cell (revert non-given to empty) and its candidates. */
   clearAt(row: number, col: number): boolean {
     if (!this.session) return false;
     const ok = this.session.board.clearAt(row, col);
-    if (ok) this.session.moves += 1;
+    if (ok) this.session.moves = this.session.board.moveCount;
     return ok;
+  }
+
+  /** Toggle candidate note (pencil mark) on selected empty cell. */
+  toggleCandidate(row: number, col: number, value: Value): boolean {
+    if (!this.session) return false;
+    const ok = this.session.board.toggleCandidate(row, col, value);
+    if (ok) this.session.moves = this.session.board.moveCount;
+    return ok;
+  }
+
+  /** Undo last action. */
+  undo(): boolean {
+    if (!this.session) return false;
+    const ok = this.session.board.undo();
+    if (ok) this.session.moves = this.session.board.moveCount;
+    return ok;
+  }
+
+  /** Redo last undone action. */
+  redo(): boolean {
+    if (!this.session) return false;
+    const ok = this.session.board.redo();
+    if (ok) this.session.moves = this.session.board.moveCount;
+    return ok;
+  }
+
+  /** Undo/redo availability for UI. */
+  getUndoRedoState(): { canUndo: boolean; canRedo: boolean } {
+    return {
+      canUndo: this.session?.board.canUndo ?? false,
+      canRedo: this.session?.board.canRedo ?? false,
+    };
   }
 
   /** Check if the puzzle is complete. Returns { complete, valid } tuple. */

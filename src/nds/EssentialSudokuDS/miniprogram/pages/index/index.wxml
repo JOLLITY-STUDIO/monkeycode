@@ -41,7 +41,8 @@
         data-c="{{cell.c}}"
         bindtap="onTapCell"
       >
-        <text class="cell-text">{{cell.v || ''}}</text>
+        <text wx:if="{{cell.v}}" class="cell-text">{{cell.v}}</text>
+        <text wx:elif="{{cell.candidatesText}}" class="cell-candidates">{{cell.candidatesText}}</text>
       </view>
     </view>
   </view>
@@ -58,6 +59,9 @@
       >{{item}}</view>
     </view>
     <view class="pad-tools">
+      <view class="tool-key {{canUndo ? '' : 'tool-key-disabled'}}" bindtap="onUndo">撤销</view>
+      <view class="tool-key {{canRedo ? '' : 'tool-key-disabled'}}" bindtap="onRedo">重做</view>
+      <view class="tool-key {{notesMode ? 'tool-key-active' : ''}}" bindtap="onToggleNotesMode">笔记</view>
       <view class="tool-key" bindtap="onTapClear">清除</view>
       <view class="tool-key tool-key-primary" bindtap="onTapHint">提示</view>
     </view>
