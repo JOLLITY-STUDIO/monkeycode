@@ -1,0 +1,14 @@
+{
+  "version": "V0.17 batch17",
+  "note": "callers>=2 capstone disasm curated naming (ARM9 8 entries, softfloat family + stubs + arm7-wram thunks); 0x020f406e/0x020f407e are data false-positives skipped",
+  "names": [
+    { "addr": "0x0204df9c", "name": "s32_divmod", "cpu": "arm9", "comment": "__aeabi_idivmod signed 32-bit divmod: eor ip,r0,r1 sign; abs r0/r1; 28x long-division shift-sub; r0=quot r1=rem sign-restored (bx lr @ 0x0204e1a4)" },
+    { "addr": "0x0204cbc8", "name": "float32_lt", "cpu": "arm9", "comment": "float32 compare <: NaN/Inf guard (cmp r3,r0,lsl#1); -abs both; movlt r0,#1 / movge r0,#0" },
+    { "addr": "0x0204cc84", "name": "float32_gt", "cpu": "arm9", "comment": "float32 compare >: NaN/Inf guard; -abs both; movgt r0,#1 / movle r0,#0" },
+    { "addr": "0x0200a680", "name": "stub_noop_a", "cpu": "arm9", "comment": "single bx lr no-op stub (next real fn @ 0x0200a6a8)" },
+    { "addr": "0x0200f818", "name": "stub_noop_b", "cpu": "arm9", "comment": "single bx lr no-op stub (next real fn @ 0x0200f81c)" },
+    { "addr": "0x02021fc4", "name": "stub_noop_c", "cpu": "arm9", "comment": "single bx lr no-op stub (next real fn @ 0x02021fc8)" },
+    { "addr": "0x02100adc", "name": "thunk_bx_038042af", "cpu": "arm9", "comment": "ldr ip,[pc]; bx ip -> 0x038042af (shared WRAM Thumb entry, ARM9-executable trampoline)" },
+    { "addr": "0x02106e5c", "name": "thunk_bx_037feb10", "cpu": "arm9", "comment": "ldr ip,[pc]; bx ip -> 0x037feb10 (ARM7-side thunk target)" }
+  ]
+}

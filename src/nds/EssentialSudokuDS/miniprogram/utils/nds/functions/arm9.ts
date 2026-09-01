@@ -314,9 +314,10 @@ export const sub_0200a63c = 0x0200a63c as const;
  * ARM9 函数 @ 0x0200a680
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sub_0200a680 = 0x0200a680 as const;
+export const stub_noop_a = 0x0200a680 as const;
 /**
  * ARM9 函数 @ 0x0200a684
  * @category bx_lr
@@ -614,9 +615,10 @@ export const sub_0200f708 = 0x0200f708 as const;
  * ARM9 函数 @ 0x0200f818
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 2
  */
-export const sub_0200f818 = 0x0200f818 as const;
+export const stub_noop_b = 0x0200f818 as const;
 /**
  * ARM9 函数 @ 0x0200f81c
  * @category bx_lr
@@ -1891,9 +1893,10 @@ export const sub_02021fc0 = 0x02021fc0 as const;
  * ARM9 函数 @ 0x02021fc4
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 2
  */
-export const sub_02021fc4 = 0x02021fc4 as const;
+export const stub_noop_c = 0x02021fc4 as const;
 /**
  * ARM9 函数 @ 0x02021fc8
  * @category bx_lr
@@ -9108,10 +9111,10 @@ export const __aeabi_fdiv = 0x0204c86c as const;
  * ARM9 函数 @ 0x0204cbc8
  * @category bx_lr
  * @confidence medium
- * @heuristic sfloat (V0.10 ADR-010)
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sfloat_0204cbc8 = 0x0204cbc8 as const;
+export const float32_lt = 0x0204cbc8 as const;
 /**
  * ARM9 函数 @ 0x0204cc04
  * @category bx_lr
@@ -9124,10 +9127,10 @@ export const sfloat_compare_le = 0x0204cc04 as const;
  * ARM9 函数 @ 0x0204cc84
  * @category bx_lr
  * @confidence medium
- * @heuristic sfloat (V0.10 ADR-010)
+ * @curated V0.12 manually named
  * @callers 3
  */
-export const sfloat_0204cc84 = 0x0204cc84 as const;
+export const float32_gt = 0x0204cc84 as const;
 /**
  * ARM9 函数 @ 0x0204ccc0
  * @category bx_lr
@@ -9239,10 +9242,10 @@ export const sfloat_0204ddec = 0x0204ddec as const;
  * ARM9 函数 @ 0x0204df9c
  * @category bx_lr
  * @confidence medium
- * @heuristic sfloat (V0.10 ADR-010)
+ * @curated V0.12 manually named
  * @callers 9
  */
-export const sfloat_0204df9c = 0x0204df9c as const;
+export const s32_divmod = 0x0204df9c as const;
 /**
  * ARM9 函数 @ 0x0204e1a8
  * @category bx_lr
@@ -12142,9 +12145,10 @@ export const sub_02100a18 = 0x02100a18 as const;
  * ARM9 函数 @ 0x02100adc
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 2
  */
-export const sub_02100adc = 0x02100adc as const;
+export const thunk_bx_038042af = 0x02100adc as const;
 /**
  * ARM9 函数 @ 0x02100ae8
  * @category prologue
@@ -13352,9 +13356,10 @@ export const sub_02106e54 = 0x02106e54 as const;
  * ARM9 函数 @ 0x02106e5c
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 2
  */
-export const sub_02106e5c = 0x02106e5c as const;
+export const thunk_bx_037feb10 = 0x02106e5c as const;
 /**
  * ARM9 函数 @ 0x02106e68
  * @category prologue
