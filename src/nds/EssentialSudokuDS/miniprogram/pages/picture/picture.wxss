@@ -282,3 +282,37 @@ page {
   padding: 12rpx 28rpx;
   border-radius: 12rpx;
 }
+
+/* 原 DS numclo_00.nbm banner */
+.picture-banner {
+  width: 100%;
+  height: 180rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+  background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1rpx solid #e0e6ec;
+}
+
+.picture-banner-image {
+  width: 100%;
+  height: 100%;
+}
+
+/* 原 DS numclo_waku.nbm 网格外框背景 */
+.paint-grid {
+  position: relative;
+}
+
+.waku-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.14;
+  pointer-events: none;
+}

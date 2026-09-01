@@ -1,6 +1,11 @@
 <!--pages/index/index.wxml - V0.16 数独玩法 UI-->
 <navigation-bar title="Essential Sudoku DS" back="{{false}}" color="black" background="#FFF"></navigation-bar>
 <view class="sudoku-page">
+  <!-- 顶部标题横幅: 原 DS title.nbm -->
+  <view class="title-banner">
+    <image class="title-image" src="/assets/nbm/title.nbm.png" mode="aspectFill" lazy-load></image>
+  </view>
+
   <!-- 顶部: 难度 + 步数 + 计时 + 图画谜题入口 -->
   <view class="game-header">
     <view class="header-left">

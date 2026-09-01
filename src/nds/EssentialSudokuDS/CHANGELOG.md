@@ -4,6 +4,22 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.18.1 — NBM 资源接入首页/图画谜题界面
+
+### 2026-09-01
+
+#### 添加
+- ✅ `miniprogram/pages/index/index.wxml` — 顶部 title banner 显示原 DS `title.nbm.png`
+- ✅ `miniprogram/pages/index/index.wxss` — `.title-banner` / `.title-image` 样式 (240rpx 高, aspectFill)
+- ✅ `miniprogram/pages/picture/picture.wxml` — 顶部 banner 显示 `numclo_00.nbm.png` (四色块 + 彩色铅笔)
+- ✅ `miniprogram/pages/picture/picture.wxml` — `paint-grid` 内叠加 `numclo_waku.nbm.png` 作为网格背景
+- ✅ `miniprogram/pages/picture/picture.wxss` — `.picture-banner` / `.waku-bg` 样式 (waku 14% 透明度, 不响应点击)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## V0.18 — 数独候选笔记 + undo/redo + 图画谜题 Nonogram clues
 
 ### 2026-09-01

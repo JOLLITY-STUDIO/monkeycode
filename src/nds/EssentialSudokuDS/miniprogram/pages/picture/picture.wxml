@@ -2,6 +2,11 @@
 <navigation-bar title="图画谜题" back="{{true}}" color="black" background="#FFF"></navigation-bar>
 <view class="picture-page">
 
+  <!-- 顶部图画谜题 banner: 原 DS numclo_00.nbm -->
+  <view class="picture-banner">
+    <image class="picture-banner-image" src="/assets/nbm/numclo_00.nbm.png" mode="aspectFit" lazy-load></image>
+  </view>
+
   <!-- 顶部: 谜题名 + 序号 + 计时 -->
   <view class="game-header">
     <view class="header-left">
@@ -58,6 +63,7 @@
         </view>
       </view>
       <view class="paint-grid {{showingAnswer ? 'paint-grid-reveal' : ''}}">
+        <image class="waku-bg" src="/assets/nbm/numclo_waku.nbm.png" mode="aspectFill" lazy-load></image>
         <view
           wx:for="{{cells}}"
           wx:key="i"

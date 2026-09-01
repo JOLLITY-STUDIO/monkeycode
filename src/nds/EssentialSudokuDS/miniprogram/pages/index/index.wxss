@@ -12,6 +12,21 @@ page {
   box-sizing: border-box;
 }
 
+/* 原 DS title.nbm 标题横幅 */
+.title-banner {
+  width: 100%;
+  height: 240rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin-bottom: 16rpx;
+  background: #1a4d2e;
+}
+
+.title-image {
+  width: 100%;
+  height: 100%;
+}
+
 /* 顶部信息栏 */
 .game-header {
   width: 100%;
