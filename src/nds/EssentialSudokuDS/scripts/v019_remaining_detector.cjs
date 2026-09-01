@@ -115,10 +115,27 @@ function uniqueName(base) {
 for (const f of cands) {
   const addr = parseInt(f.addr, 16);
   const cpu = f.cpu;
-  const body = getBody(addr, cpu);
-  const text = body.map(i => i.t);
-  const joined = text.join(' | ');
+  let body = getBody(addr, cpu);
+  let text = body.map(i => i.t);
+  let joined = text.join(' | ');
   let kind = null, detail = null, targetPtr = null;
+
+  // H. return+数据尾截断: 最后一个返回指令 (bx rN/pop pc) 之后全条件后缀 = 数据池
+  {
+    let lastRet = -1;
+    for (let idx = 0; idx < body.length; idx++) {
+      if (/^bx +(r[0-9]+|ip|lr)$/.test(body[idx].t) || /^pop +\{[^}]*pc/.test(body[idx].t) || /^ldm +[^}]*\{[^}]*pc/.test(body[idx].t)) lastRet = idx;
+    }
+    if (lastRet >= 0 && lastRet < body.length - 1) {
+      const tail = body.slice(lastRet + 1);
+      const tailAllCond = tail.every(i => /^[a-z]+(eq|ne|ls|hi|lo|hs|ge|lt|gt|le|pl|mi|vc|vs) +/.test(i.t) || /^(andeq|andseq)/.test(i.t));
+      if (tailAllCond && tail.length <= 4) {
+        body = body.slice(0, lastRet + 1);
+        text = body.map(i => i.t);
+        joined = text.join(' | ');
+      }
+    }
+  }
 
   // 数据噪音: svc/mcr/pld/rfed/cdp/stc/ldc/umull/rsb 等解码垃圾占比高
   const junk = body.filter(i => /^(svc|mcr|mrc|pld|rfedb|ldcl|stcl|blo|svclo|mcrhi|andeq|teqlo|tstne|ldrsht|strd|cdp2?|stc2?l?|ldc2?l?|umull|smlal|mla|mul|rsb|orrlo|orrmi|eoreq|teqmi|ldmlo|ldmiblo|stmlo|stmhi|stmia|ldmne|bgt|bllt|blo|bne|beq|ldrshteq|strbne|strbt|ldrbt|andsvc|orrmi|adcmi|rscsmi|andne)/.test(i.t));
@@ -200,6 +217,83 @@ for (const f of cands) {
         const off = first[2];
         const isSameBase = fa.every(i => /\[r[0-9]+, *#(0x[0-9a-f]+|[0-9]+)\]/.test(i.t));
         kind = 'field_access'; detail = dir + '_off' + off + (isSameBase ? '' : '_multi');
+      }
+    }
+    // I. const_call: 恰好 1 个 bl + mov r0,#const (命令/操作码分发器)
+    if (!kind && body.length <= 16 && text[text.length - 1] === 'bx lr') {
+      const bls = body.filter(i => /^bl +/.test(i.t));
+      if (bls.length === 1) {
+        const constMov = [...body].reverse().find(i => /^mov +r0, *#(0x[0-9a-f]+|[0-9]+)/.test(i.t));
+        if (constMov) {
+          const c = constMov.t.match(/#(0x[0-9a-f]+|[0-9]+)/)[1];
+          const tgt = bls[0].t.match(/bl +#(0x[0-9a-f]+)/);
+          kind = 'const_call'; detail = c + '_to_' + (tgt ? tgt[1] : '?');
+        }
+      }
+    }
+    // J. wrap: 1-4 bl + 无条件分支 + 标准返回 (适配器/初始化器)
+    if (!kind && body.length >= 3 && body.length <= 24) {
+      const bls = body.filter(i => /^bl +/.test(i.t));
+      const condB = body.filter(i => /^b(eq|ne|ge|lt|gt|le|ls|hi|lo|hs|pl|mi) +/.test(i.t));
+      const last2ok = text[text.length - 1] === 'bx lr' || (text.length >= 2 && text[text.length - 2].startsWith('pop ') && text[text.length - 1] === 'bx lr');
+      if (bls.length >= 1 && bls.length <= 4 && condB.length === 0 && last2ok) {
+        const tgts = bls.map(b => (b.t.match(/bl +#(0x[0-9a-f]+)/) || [])[1] || '?').join('_');
+        kind = 'wrap'; detail = bls.length + 'bl_' + tgts;
+      }
+    }
+    // K. list_unlink: ldr r2,[r0] + cmp r2,#0 + beq + ldr r1,[r2,#N] + str r1,[r0] + ... + mov r0,r2
+    if (!kind && body.length >= 9 && body.length <= 18) {
+      const mN = joined.match(/ldr r1, \[r2, #(0x[0-9a-f]+|[0-9]+)\]/);
+      if (mN && /ldr r2, \[r0\]/.test(joined) && /cmp r2, #0/.test(joined) && /str r1, \[r0\]/.test(joined) && /mov r0, r2/.test(joined) && /beq /.test(joined)) {
+        kind = 'list_unlink'; detail = 'next_off' + mN[1];
+      }
+    }
+    // L. list_relink: ldr r2,[r1,#N] + ldr r1,[r1,#M] + cmp + streq/strne 互链
+    if (!kind && body.length >= 8 && body.length <= 16) {
+      const m1 = joined.match(/ldr r2, \[r1, #(0x[0-9a-f]+|[0-9]+)\]/);
+      const m2 = joined.match(/ldr r1, \[r1, #(0x[0-9a-f]+|[0-9]+)\]/);
+      if (m1 && m2 && /streq r1, \[r0/.test(joined) && /strne r1, \[r2/.test(joined)) {
+        kind = 'list_relink'; detail = 'off' + m1[1] + '_' + m2[1];
+      }
+    }
+    // M. zero_init: 首条 mov rN,#0 + 大量 str [r0] 字段清零 + bx lr
+    if (!kind && body.length >= 4 && body.length <= 16 && text[text.length - 1] === 'bx lr') {
+      if (/^mov +r[0-9]+, *#0$/.test(body[0].t)) {
+        const strs = body.filter(i => /^str +r[0-9]+, *\[r0/.test(i.t) || /^stm +r0!/.test(i.t));
+        if (strs.length >= 3) {
+          const clean = body.every(i => /^mov +r[0-9]+, *#/.test(i.t) || /^str +r[0-9]+, *\[r0/.test(i.t) || /^ldr +r[0-9]+, *\[r0/.test(i.t) || /^stm +r0!/.test(i.t) || /^bx lr$/.test(i.t));
+          if (clean) { kind = 'zero_init'; detail = 'n' + strs.length; }
+        }
+      }
+    }
+    // N. stm_fill: mov rN,#const + 连续 stm r0! (块填充)
+    if (!kind && body.length >= 5 && body.length <= 16 && text[text.length - 1] === 'bx lr') {
+      const stms = body.filter(i => /^stm +r0!/.test(i.t));
+      if (stms.length >= 3) {
+        const c0 = body[0].t.match(/#(0x[0-9a-f]+|[0-9]+)/);
+        const clean = body.every(i => /^mov +r[0-9]+, *#/.test(i.t) || /^stm +r0!/.test(i.t) || /^bx lr$/.test(i.t));
+        if (clean) { kind = 'stm_fill'; detail = 'n' + stms.length + (c0 ? '_c' + c0[1] : ''); }
+      }
+    }
+    // O. sp_fields_copy: 从 sp 栈参数拷贝 N 字段到 [r0]
+    if (!kind && body.length >= 6 && body.length <= 16 && text[text.length - 1] === 'bx lr') {
+      const strR0 = body.filter(i => /^str +r[0-9]+, *\[r0/.test(i.t));
+      const ldrSp = body.filter(i => /^ldr +r[0-9]+, *\[sp/.test(i.t));
+      if (strR0.length >= 4 && ldrSp.length >= 1) {
+        kind = 'sp_fields_copy'; detail = 'n' + strR0.length;
+      }
+    }
+    // P. struct_init: str r0,[r1,#4] + str #0,[r1] + cmp r0,#0 + strne r1,[r0] + mov r0,r1
+    if (!kind && body.length <= 8 && text[text.length - 1] === 'bx lr') {
+      if (/^str +r0, *\[r1, *#4\]/.test(joined) && /^mov +r0, *r1/.test(joined) && /str +r[0-9]+, *\[r1\]/.test(joined) && /cmp +r0, *#0/.test(joined)) {
+        kind = 'struct_init'; detail = 'self_ptr';
+      }
+    }
+    // Q. null_guarded_setter: ldr rX,[r0] + cmp rX,#0 + bxeq lr + 字段写 + bx lr
+    if (!kind && body.length <= 10 && text[text.length - 1] === 'bx lr') {
+      if (/^ldr +r[0-9]+, *\[r0\]/.test(body[0].t) && /^cmp +r[0-9]+, *#0$/.test(body[1].t) && /^bxeq +lr$/.test(body[2].t)) {
+        const writes = body.filter(i => /^strh? +r[0-9]+, *\[r[0-9]+, *#/.test(i.t));
+        if (writes.length >= 2) { kind = 'null_guarded_setter'; detail = 'n' + writes.length; }
       }
     }
     // E. gptr 复用 v018 (ldr [pc] + 解引用)

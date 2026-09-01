@@ -1,6 +1,28 @@
 {
  "names": [
   {
+   "addr": "0x0200a1fc",
+   "name": "auto_wrap_1bl_0x2039308",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|movs r1, r0|addeq sp, sp, #4|moveq r0, #0|ldmeq sp!, {lr}",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0200a684",
+   "name": "auto_indirect_thunk_0x02036694_n4",
+   "pattern_kind": "indirect_thunk",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr ip, [pc, #0x10]|ldr r1, [pc, #0x10]|ldr r2, [pc, #0x10]|mov r0, #3|mov r3, #0x18000|bx ip",
+   "target_global_ptr": "0x02036694"
+  },
+  {
    "addr": "0x02026c00",
    "name": "auto_indirect_thunk_0x02036784_n3",
    "pattern_kind": "indirect_thunk",
@@ -8,8 +30,19 @@
    "callers_n": 1,
    "category": "bx_lr",
    "cpu": "arm9",
-   "disasm_snippet": "ldr ip, [pc, #0xc]|ldr r1, [pc, #0xc]|mov r0, #0|mov r2, #0x600|bx ip|andeq r6, r3, #132, #14",
+   "disasm_snippet": "ldr ip, [pc, #0xc]|ldr r1, [pc, #0xc]|mov r0, #0|mov r2, #0x600|bx ip",
    "target_global_ptr": "0x02036784"
+  },
+  {
+   "addr": "0x02026c1c",
+   "name": "auto_wrap_3bl_0x20373c8_0x2037a2c_0x2026c00",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|ldr r0, [pc, #0x28]|mov r1, #0|mov r2, #0x2000|bl #0x20373c8",
+   "target_global_ptr": null
   },
   {
    "addr": "0x02026c5c",
@@ -34,6 +67,94 @@
    "target_global_ptr": "0x0202fb7c"
   },
   {
+   "addr": "0x02028b58",
+   "name": "auto_sp_fields_copy_n6",
+   "pattern_kind": "sp_fields_copy",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "str r1, [r0]|ldr r1, [sp]|str r3, [r0, #8]|str r1, [r0, #0xc]|ldr r3, [sp, #4]|str r2, [r0, #4]",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02029de4",
+   "name": "auto_wrap_2bl_0x20395f4_0x2037830",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|ldr r0, [pc, #0x20]|mov r1, #0x400|bl #0x20395f4|ldr r0, [pc, #0x14]",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02029e18",
+   "name": "auto_wrap_2bl_0x20395f4_0x2037898",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|ldr r0, [pc, #0x20]|mov r1, #0x400|bl #0x20395f4|ldr r0, [pc, #0x14]",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0202f070",
+   "name": "auto_wrap_4bl_0x202f0e8_0x204498c_0x202f0c4_0x202f0e8",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov r0, #3|bl #0x202f0e8|ldr r0, [pc, #0x34]|ldr r1, [pc, #0x34]",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02034b38",
+   "name": "auto_wrap_1bl_0x20323b0",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|ldr r1, [r0, #0x120]|cmp r1, #0|addeq sp, sp, #4|ldmeq sp!, {lr}",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x020350a0",
+   "name": "auto_zero_init_n4",
+   "pattern_kind": "zero_init",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "mov r2, #0|str r2, [r0, #4]|ldr r1, [r0, #4]|str r1, [r0]|str r2, [r0, #0xc]|ldr r1, [r0, #0xc]",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x020350e4",
+   "name": "auto_stm_fill_n6_c0x1000",
+   "pattern_kind": "stm_fill",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "mov r2, #0x1000|mov r3, #0|stm r0!, {r2, r3}|mov r1, #0|stm r0!, {r1, r3}|stm r0!, {r2, r3}",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0203510c",
+   "name": "auto_stm_fill_n7_c0x1000",
+   "pattern_kind": "stm_fill",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "mov r2, #0x1000|mov r3, #0|stm r0!, {r2, r3}|mov r1, #0|stm r0!, {r1, r3}|stm r0!, {r1, r2, r3}",
+   "target_global_ptr": null
+  },
+  {
    "addr": "0x020381ec",
    "name": "auto_indirect_thunk_0x02034310_n1",
    "pattern_kind": "indirect_thunk",
@@ -41,8 +162,41 @@
    "callers_n": 1,
    "category": "bx_lr",
    "cpu": "arm9",
-   "disasm_snippet": "ldr r1, [pc]|bx r1|andeq r4, r3, #16, #6",
+   "disasm_snippet": "ldr r1, [pc]|bx r1",
    "target_global_ptr": "0x02034310"
+  },
+  {
+   "addr": "0x02038de4",
+   "name": "auto_list_unlink_next_off0x10",
+   "pattern_kind": "list_unlink",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr r2, [r0]|cmp r2, #0|beq #0x2038e0c|ldr r1, [r2, #0x10]|str r1, [r0]|cmp r1, #0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02038e68",
+   "name": "auto_list_unlink_next_off0x80",
+   "pattern_kind": "list_unlink",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr r2, [r0]|cmp r2, #0|beq #0x2038e94|ldr r1, [r2, #0x80]|str r1, [r0]|cmp r1, #0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x020393e0",
+   "name": "auto_list_relink_off0x10_0x14",
+   "pattern_kind": "list_relink",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr r2, [r1, #0x10]|ldr r1, [r1, #0x14]|cmp r2, #0|streq r1, [r0, #0x8c]|strne r1, [r2, #0x14]|cmp r1, #0",
+   "target_global_ptr": null
   },
   {
    "addr": "0x02039f90",
@@ -56,6 +210,50 @@
    "target_global_ptr": null
   },
   {
+   "addr": "0x0203aaf4",
+   "name": "auto_const_call_0x19_to_0x203aa68",
+   "pattern_kind": "const_call",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov lr, r1|mov ip, r2|str r3, [sp]|mov r1, r0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0203ab54",
+   "name": "auto_const_call_0x1f_to_0x203aa68",
+   "pattern_kind": "const_call",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov r2, r1|mov r3, #0|mov r1, r0|mov r0, #0x1f",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0203ab80",
+   "name": "auto_const_call_0x1e_to_0x203aa68",
+   "pattern_kind": "const_call",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov r2, r1|mov r3, #0|mov r1, r0|mov r0, #0x1e",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0203acb0",
+   "name": "auto_const_call_9_to_0x203aa68",
+   "pattern_kind": "const_call",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov lr, r1|mov r3, r2|mov ip, #0|mov r1, r0",
+   "target_global_ptr": null
+  },
+  {
    "addr": "0x0203ace4",
    "name": "auto_indirect_thunk_0x02036ac0_n3",
    "pattern_kind": "indirect_thunk",
@@ -63,8 +261,41 @@
    "callers_n": 1,
    "category": "bx_lr",
    "cpu": "arm9",
-   "disasm_snippet": "ldr ip, [pc, #0xc]|mov r2, r1|mov r1, #4|mov r3, #1|bx ip|andeq r6, r3, #192, #20",
+   "disasm_snippet": "ldr ip, [pc, #0xc]|mov r2, r1|mov r1, #4|mov r3, #1|bx ip",
    "target_global_ptr": "0x02036ac0"
+  },
+  {
+   "addr": "0x0203ad14",
+   "name": "auto_const_call_3_to_0x203aa68",
+   "pattern_kind": "const_call",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov r2, #0|mov r1, r0|mov r3, r2|mov r0, #3",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0203ad40",
+   "name": "auto_const_call_2_to_0x203aa68",
+   "pattern_kind": "const_call",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov lr, r1|mov ip, r2|str r3, [sp]|mov r1, r0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0203ad74",
+   "name": "auto_const_call_1_to_0x203aa68",
+   "pattern_kind": "const_call",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov r2, #0|mov r1, r0|mov r3, r2|mov r0, #1",
+   "target_global_ptr": null
   },
   {
    "addr": "0x0203ec68",
@@ -74,8 +305,41 @@
    "callers_n": 1,
    "category": "bx_lr",
    "cpu": "arm9",
-   "disasm_snippet": "ldr ip, [pc, #0xc]|mov r2, r1|mov r1, r0|mov r0, #0xe|bx ip|andeq sl, r3, #164, #28",
+   "disasm_snippet": "ldr ip, [pc, #0xc]|mov r2, r1|mov r1, r0|mov r0, #0xe|bx ip",
    "target_global_ptr": "0x0203aea4"
+  },
+  {
+   "addr": "0x0203ec80",
+   "name": "auto_wrap_2bl_0x203ecbc_0x203f1dc",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|ldr r2, [pc, #0x28]|add r3, sp, #0|bl #0x203ecbc|cmp r0, #0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02040a18",
+   "name": "auto_wrap_2bl_0x20407c0_0x204078c",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #0x24|add ip, sp, #0x20|str ip, [sp]|str r0, [sp, #4]|str r1, [sp, #8]",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02043ef0",
+   "name": "auto_wrap_1bl_0x2043cfc",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov r2, #0xf00|bl #0x2043cfc|cmp r0, #0|ldreq r1, [pc, #0x14]",
+   "target_global_ptr": null
   },
   {
    "addr": "0x020461b8",
@@ -111,6 +375,39 @@
    "target_global_ptr": null
   },
   {
+   "addr": "0x02104ee4",
+   "name": "auto_list_unlink_next_off0x10_2",
+   "pattern_kind": "list_unlink",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr r2, [r0]|cmp r2, #0|beq #0x2104f0c|ldr r1, [r2, #0x10]|str r1, [r0]|cmp r1, #0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02104f74",
+   "name": "auto_list_unlink_next_off0x64",
+   "pattern_kind": "list_unlink",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr r2, [r0]|cmp r2, #0|beq #0x2104fa0|ldr r1, [r2, #0x64]|str r1, [r0]|cmp r1, #0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x021052d8",
+   "name": "auto_list_relink_off0x10_0x14_2",
+   "pattern_kind": "list_relink",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "ldr r2, [r1, #0x10]|ldr r1, [r1, #0x14]|cmp r2, #0|streq r1, [r0, #0x70]|strne r1, [r2, #0x14]|cmp r1, #0",
+   "target_global_ptr": null
+  },
+  {
    "addr": "0x0210692c",
    "name": "auto_cpsr_flip_clear",
    "pattern_kind": "cpsr_flip",
@@ -131,9 +428,152 @@
    "cpu": "arm9",
    "disasm_snippet": "mrs r0, apsr|and r0, r0, #0x1f|bx lr",
    "target_global_ptr": null
+  },
+  {
+   "addr": "0x02107c5c",
+   "name": "auto_wrap_2bl_0x2105c48_0x2105fc4",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #0xc|bl #0x2105c48|mov ip, r0|ldr r0, [pc, #0x34]|str r0, [sp, #4]",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02107cb4",
+   "name": "auto_wrap_2bl_0x21052a8_0x21061e4",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|ldr r0, [pc, #0x1c]|ldr r1, [pc, #0x1c]|mov r2, #8|bl #0x21052a8",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02107cf0",
+   "name": "auto_wrap_2bl_0x2104c1c_0x21049dc",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm9",
+   "disasm_snippet": "sub sp, sp, #0xc|mov r1, #0x400|str r1, [sp]|str r0, [sp, #4]|ldr r0, [pc, #0x20]|ldr r1, [pc, #0x20]",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x023841dc",
+   "name": "auto_wrap_1bl_0x237c8fc",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "near",
+   "cpu": "arm7",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|ldr r0, [pc, #0x14]|add r1, sp, #0|mov r2, #0|bl #0x237c8fc",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02386c84",
+   "name": "auto_wrap_4bl_0x2386e88_0x237eb54_0x2385d40_0x237e2d4",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "near",
+   "cpu": "arm7",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov r0, #0|bl #0x2386e88|bl #0x237eb54|bl #0x2385d40",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02388548",
+   "name": "auto_wrap_1bl_0x33a6758",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm7",
+   "disasm_snippet": "bic r2, r2, #1|bl #0x33a6758|pop {r4, lr}|bx lr",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02388888",
+   "name": "auto_wrap_2bl_0x33a5c18_0x33a5c18",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm7",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|ldr r0, [pc, #0x14]|bl #0x33a5c18|ldr r0, [pc, #0x10]|bl #0x33a5c18",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x023888b4",
+   "name": "auto_wrap_2bl_0x33affc4_0x33b0020",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "near",
+   "cpu": "arm7",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|bl #0x33affc4|mov r1, #0x80|strh r1, [r0]|mov r1, #0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02388d24",
+   "name": "auto_wrap_2bl_0x33affc4_0x33b0020_2",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm7",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|bl #0x33affc4|mov r1, #0x80|strh r1, [r0]|mov r1, #0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02388d58",
+   "name": "auto_wrap_2bl_0x33affc4_0x33b0020_3",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "near",
+   "cpu": "arm7",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|bl #0x33affc4|mov r1, #0x80|strh r1, [r0]|mov r1, #0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x02393ac4",
+   "name": "auto_wrap_2bl_0x33a3bf4_0x33a3ce8",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm7",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov r0, #0x1000000|bl #0x33a3bf4|mov r0, #0x1000000|mov r1, #0",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x023941e8",
+   "name": "auto_wrap_1bl_0x2394194",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm7",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|bl #0x2394194|ldrh r0, [r0, #0x10]|ands r0, r0, #2|movne r0, #0x14",
+   "target_global_ptr": null
+  },
+  {
+   "addr": "0x0239f924",
+   "name": "auto_wrap_2bl_0x33a6bd0_0x239f164",
+   "pattern_kind": "wrap",
+   "confidence": "high",
+   "callers_n": 1,
+   "category": "bx_lr",
+   "cpu": "arm7",
+   "disasm_snippet": "stmdb sp!, {lr}|sub sp, sp, #4|mov r0, #0x8000|bl #0x33a6bd0|ldrh r0, [sp]|bic r0, r0, #1",
+   "target_global_ptr": null
   }
  ],
  "generated": "V0.19 remaining detector",
- "total": 12,
- "skipped": 247
+ "total": 52,
+ "skipped": 207
 }

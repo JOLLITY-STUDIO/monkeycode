@@ -599,9 +599,10 @@ export const sub_02384170 = 0x02384170 as const;
  * ARM7 函数 @ 0x023841dc
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_023841dc = 0x023841dc as const;
+export const auto_wrap_1bl_0x237c8fc = 0x023841dc as const;
 /**
  * ARM7 函数 @ 0x02384204
  * @category near
@@ -1007,9 +1008,10 @@ export const auto_tail_call_2386c80_2 = 0x02386c78 as const;
  * ARM7 函数 @ 0x02386c84
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02386c84 = 0x02386c84 as const;
+export const auto_wrap_4bl_0x2386e88_0x237eb54_0x2385d40_0x237e2d4 = 0x02386c84 as const;
 /**
  * ARM7 函数 @ 0x02386cac
  * @category prologue
@@ -1219,9 +1221,10 @@ export const sub_023884a8 = 0x023884a8 as const;
  * ARM7 函数 @ 0x02388548
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02388548 = 0x02388548 as const;
+export const auto_wrap_1bl_0x33a6758 = 0x02388548 as const;
 /**
  * ARM7 函数 @ 0x02388558
  * @category bx_lr
@@ -1254,16 +1257,18 @@ export const sub_023886bc = 0x023886bc as const;
  * ARM7 函数 @ 0x02388888
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02388888 = 0x02388888 as const;
+export const auto_wrap_2bl_0x33a5c18_0x33a5c18 = 0x02388888 as const;
 /**
  * ARM7 函数 @ 0x023888b4
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_023888b4 = 0x023888b4 as const;
+export const auto_wrap_2bl_0x33affc4_0x33b0020 = 0x023888b4 as const;
 /**
  * ARM7 函数 @ 0x023888e8
  * @category prologue
@@ -1280,16 +1285,18 @@ export const sub_02388b9c = 0x02388b9c as const;
  * ARM7 函数 @ 0x02388d24
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02388d24 = 0x02388d24 as const;
+export const auto_wrap_2bl_0x33affc4_0x33b0020_2 = 0x02388d24 as const;
 /**
  * ARM7 函数 @ 0x02388d58
  * @category near
  * @confidence high
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02388d58 = 0x02388d58 as const;
+export const auto_wrap_2bl_0x33affc4_0x33b0020_3 = 0x02388d58 as const;
 /**
  * ARM7 函数 @ 0x02388d8c
  * @category prologue
@@ -2886,9 +2893,10 @@ export const sub_02393918 = 0x02393918 as const;
  * ARM7 函数 @ 0x02393ac4
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_02393ac4 = 0x02393ac4 as const;
+export const auto_wrap_2bl_0x33a3bf4_0x33a3ce8 = 0x02393ac4 as const;
 /**
  * ARM7 函数 @ 0x02393aec
  * @category bx_lr
@@ -2967,9 +2975,10 @@ export const arm7_struct_field_2_get = 0x023941cc as const;
  * ARM7 函数 @ 0x023941e8
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_023941e8 = 0x023941e8 as const;
+export const auto_wrap_1bl_0x2394194 = 0x023941e8 as const;
 /**
  * ARM7 函数 @ 0x02394210
  * @category bx_lr
@@ -4182,9 +4191,10 @@ export const sub_0239f824 = 0x0239f824 as const;
  * ARM7 函数 @ 0x0239f924
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 1
  */
-export const sub_0239f924 = 0x0239f924 as const;
+export const auto_wrap_2bl_0x33a6bd0_0x239f164 = 0x0239f924 as const;
 /**
  * ARM7 函数 @ 0x0239f964
  * @category bx_lr

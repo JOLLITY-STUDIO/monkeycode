@@ -4,6 +4,33 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.19 — remaining detector 扩展 (12→52 命名, 短复杂函数模式消化)
+
+### 2026-09-01
+
+#### 新增
+- ✅ return+数据尾截断: 最后一个返回指令 (bx rN/pop pc) 之后全条件后缀 = 数据池,
+  截断后重新分析 (0x0200a684 等 bx ip thunk 尾部数据不再阻塞 indirect_thunk 识别)
+- ✅ 新模式 9 个 (全部结构性命名, 无语义猜测):
+  - `const_call` (7): 恰好 1 bl + mov r0,#const 命令分发器, 如 0x0203aaf4 家族 7 个
+    全调 0x203aa68 带不同命令码 → auto_const_call_<const>_to_<target>
+  - `wrap` (22): 1-4 bl + 无条件分支 + 标准返回 (适配器/初始化器), name 带 callee 地址链
+    (可看到 0x02029de4 = dcache_clean 0x20395f4 + memset 0x2037830 组合包装)
+  - `list_unlink` (4): ldr r2,[r0]+cmp+beq+str r1,[r0]+mov r0,r2 单链表摘除
+  - `list_relink` (2): 双向链表互链 (streq/strne 交叉写)
+  - `stm_fill` (2): mov #const + 连续 stm r0! 块填充 (0x1000/0 交替模式)
+  - `zero_init` (1) / `sp_fields_copy` (1) / `struct_init` (1) / `null_guarded_setter` (1)
+- ✅ 命名 12 → 52 (+40), sub_ 1813 → 1761, 覆盖 32.85% → 34.78% (939/2700)
+- ✅ skip 247 → 207, 剩余全部为数据噪音或含条件分支的真实复杂函数 (需人工分析)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+- ✅ arm9.ts +27 (wrap 13 / const_call 7 / indirect_thunk 4 / list_unlink 4 /
+  stm_fill 2 / list_relink 2 / zero_init 1 / sp_fields_copy 1 / struct_init 1 / 其他 2)
+- ✅ arm7.ts +10 (wrap 8 / indirect_thunk 2)
+
+---
+
 ## V0.18 — global ptr 结构命名全量覆盖 (剩余 callers≥1 自动化消化)
 
 ### 2026-09-01
