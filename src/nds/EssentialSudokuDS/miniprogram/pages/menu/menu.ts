@@ -20,8 +20,8 @@ Page({
     wx.navigateTo({ url: '/pages/staff/staff' });
   },
 
-  /** 选项页占位 (后续可接入 BGM/SE 音量、难度等设置) */
+  /** 进入选项页 (BGM/SE 音量、Clear、Credits) */
   onOpenOptions() {
-    wx.showToast({ title: '选项页开发中', icon: 'none' });
+    wx.navigateTo({ url: '/pages/options/options' });
   },
 });

@@ -4,6 +4,25 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.18.4 — 选项页 (select3 BGM/SE 音量 + Clear + Credits)
+
+### 2026-09-01
+
+#### 添加
+- ✅ `miniprogram/pages/options/options.ts/wxml/wxss/json` — 新建选项页:
+  - 顶部显示原 DS `select3.nbm.png` 按钮精灵装饰 (BGM/SE Volume/Clear/Rate/Credits)
+  - BGM Volume / SE Volume 滑块, 持久化到 storage (`esds_bgm_volume` / `esds_se_volume`)
+  - Clear: 确认后清除所有 `esds_*` 前缀数据 (进度 + 设置)
+  - Rate: 评分占位 (toast)
+  - Credits: 跳转 Staff 制作人员页
+- ✅ `miniprogram/app.json` — 注册 `pages/options/options`
+- ✅ `miniprogram/pages/menu/menu.ts` — "选项"按钮从占位 toast 改为跳转 options 页
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## V0.18.3 — 原 DS 主菜单模式选择页 (select4 Number/Picture Puzzle)
 
 ### 2026-09-01
