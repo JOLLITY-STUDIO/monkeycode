@@ -1,0 +1,90 @@
+{
+  "version": "V0.19 curated batch",
+  "note": "manual curated naming for high-value remaining functions (intrusive list family + ARM exception ctx + unaligned memcpy + wrappers), verified via full-body disasm dump",
+  "names": [
+    {
+      "addr": "0x0202ffd8",
+      "name": "intrusive_list_push_front",
+      "cpu": "arm9",
+      "comment": "intrusive singly-linked list: push node r1 to head; head@[r0], tail@[r0,#4], count@[r0,#8], link offset@[r0,#0xa] (halfword); empty -> call 0x20300a4 first-node init"
+    },
+    {
+      "addr": "0x0203003c",
+      "name": "intrusive_list_append",
+      "cpu": "arm9",
+      "comment": "append node r1 to tail; empty -> call 0x20300a4; else link old tail -> new node via link offset, tail@[r0,#4]=r1, count++"
+    },
+    {
+      "addr": "0x020300a4",
+      "name": "intrusive_list_init_first_node",
+      "cpu": "arm9",
+      "comment": "empty-list first node: node next/prev=0, head@[r0]=tail@[r0,#4]=r1, count@[r0,#8]=1"
+    },
+    {
+      "addr": "0x020300d0",
+      "name": "intrusive_list_init",
+      "cpu": "arm9",
+      "comment": "zero head/tail/count, set link offset halfword [r0,#0xa]=r1"
+    },
+    {
+      "addr": "0x020308dc",
+      "name": "aligned_size_gated_call_0x2030a50",
+      "cpu": "arm9",
+      "comment": "align r0/r1 to 4 (bic #3), require r0<=r1 and size>=0x30 then bl 0x2030a50 else return 0"
+    },
+    {
+      "addr": "0x02030928",
+      "name": "intrusive_list_update_all_backref",
+      "cpu": "arm9",
+      "comment": "walk list head@[r0,#0x24] (next@+0xc) setting each node+8=[r0,#0x1c], then [r0,#0x28]=[r0,#0x1c]"
+    },
+    {
+      "addr": "0x02030958",
+      "name": "intrusive_list_rewind_head",
+      "cpu": "arm9",
+      "comment": "current@[r0,#0x24]=head@[r0,#0x18], [r0,#0x2c]=0 (rewind iterator)"
+    },
+    {
+      "addr": "0x02034fc4",
+      "name": "bounded_array_slot_get",
+      "cpu": "arm9",
+      "comment": "bounds check idx r1 vs count@[r0,#0x1c], stride 0xc from base+0x20, return slot ptr or NULL if slot==-1"
+    },
+    {
+      "addr": "0x0203fb58",
+      "name": "nullable_3field_init",
+      "cpu": "arm9",
+      "comment": "if r2==0 fill [r0..r0+8]=0; else [r0]=[r1,#8]+[r2,#0x10]<<2, [r0,#4]=[r2,#0x14]h, [r0,#8]=[r2,#0x14]h"
+    },
+    {
+      "addr": "0x02026660",
+      "name": "guarded_init_3stage",
+      "cpu": "arm9",
+      "comment": "bl 0x203e3b0; bl 0x203e304; if r0==0 -> bl 0x202669c; bl 0x203e1bc"
+    },
+    {
+      "addr": "0x0210509c",
+      "name": "arm_exception_ctx_save",
+      "cpu": "arm9",
+      "comment": "SVC mode context save: save apsr->[r1], sp->[r1,#0x40], stm all regs, pc+8->[r1,#0x3c]; returns 0"
+    },
+    {
+      "addr": "0x021050d0",
+      "name": "arm_exception_ctx_restore",
+      "cpu": "arm9",
+      "comment": "SVC mode context restore: msr spsr_fsxc, ldr sp/lr, ldm ^ all regs, subs pc, lr, #4 (return from exception)"
+    },
+    {
+      "addr": "0x02106d00",
+      "name": "unaligned_halfword_memcpy",
+      "cpu": "arm9",
+      "comment": "halfword copy r2 count with unaligned src/dst handling (ldrh/strh, tst #1, eor align check)"
+    },
+    {
+      "addr": "0x02107cec",
+      "name": "const_400_wrap_call_0x2104c1c",
+      "cpu": "arm9",
+      "comment": "mov r1,#0x400; stack args; 3 pc-relative globals; bl 0x2104c1c; then bl 0x21049dc (global param wrapper)"
+    }
+  ]
+}

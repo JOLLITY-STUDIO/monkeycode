@@ -35,6 +35,38 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.19.1 — 手工 curated 高价值函数批次 (14 个, 全覆盖 full-body 反汇编验证)
+
+### 2026-09-01
+
+#### 新增
+- ✅ 手工 curated 命名 14 个 (`rom-data/v019-curated-batch.json`), 全部经完整函数体反汇编验证:
+  - **intrusive 链表家族** (5): `intrusive_list_init` (0x020300d0) /
+    `intrusive_list_init_first_node` (0x020300a4) / `intrusive_list_push_front` (0x0202ffd8) /
+    `intrusive_list_append` (0x0203003c) / `intrusive_list_rewind_head` (0x02030958) /
+    `intrusive_list_update_all_backref` (0x02030928)
+    - 结构语义: head@[r0], tail@[r0,#4], count@[r0,#8], link offset@[r0,#0xa] (halfword)
+    - append 空表时调用 init_first_node, 非空走 tail 链尾插入 (offset 解引用)
+  - **ARM 异常上下文原语** (2): `arm_exception_ctx_save` (0x0210509c) /
+    `arm_exception_ctx_restore` (0x021050d0)
+    - SVC mode (cpsr 0xd3) 全寄存器上下文保存/恢复, restore 端 `subs pc, lr, #4` 从异常返回
+    - 典型 RTOS/任务切换原语对 (save 返回 0, restore 用 spsr_fsxc + ldm ^)
+  - **工具/包装** (7): `bounded_array_slot_get` (0x02034fc4, 边界检查+stride 0xc slot 取指针,
+    slot==-1 返回 NULL) / `nullable_3field_init` (0x0203fb58, null 守卫 3 字段初始化) /
+    `unaligned_halfword_memcpy` (0x02106d00, 未对齐 halfword 拷贝) /
+    `aligned_size_gated_call_0x2030a50` (0x020308dc, 4 对齐+size>=0x30 门控后调用) /
+    `guarded_init_3stage` (0x02026660, 3 段守卫初始化链) /
+    `const_400_wrap_call_0x2104c1c` (0x02107cec, 常量参数包装器)
+- ✅ `generate_ts_functions.py` 新增 `CURATED_JSON_V019B` 加载 (22→23 个 curated JSON)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0 (无错误输出)
+- ✅ arm9.ts 14 个新命名全部落地 (findstr 确认), curated 593 → 607
+- ✅ 命名覆盖率 34.93% → 35.30% (953/2700), sub_ 1756 → 1747
+  (9 个由 sub_ 升级为语义名, 5 个由 auto_* pattern 名升级为 curated 名)
+
+---
+
 ## V0.18 — global ptr 结构命名全量覆盖 (剩余 callers≥1 自动化消化)
 
 ### 2026-09-01
