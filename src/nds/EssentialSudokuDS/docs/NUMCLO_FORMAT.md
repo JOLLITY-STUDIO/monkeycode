@@ -2,7 +2,8 @@
 
 > Essential Sudoku DS — Picture Logic / 图画谜题模式
 > 来源: 15 个 numclo*.data 字节级分析 + numclo.srl ARM9 反汇编验证
-> 解码器: `scripts/decode_numclo_full.py`
+> 解码器: `scripts/decode_numclo_full.py` (ROM → JSON)
+> TS catalog 再生: `scripts/gen_numclo_ts_from_json.cjs` (JSON → numclo_puzzles.ts)
 
 ## 1. 概要
 
@@ -11,7 +12,7 @@
 | 文件数           | 15 (numclo0-9, numclo_00-03, numclo_tu)      |
 | 单文件 size      | 7710 B (main) / 87 B (tutorial)              |
 | 平均每文件 puzzles | 100 (main) / 1 (tutorial)                   |
-| 总 puzzles       | **1525**                                     |
+| 总 puzzles       | **1401** (14×100 main + 1 tutorial)          |
 | 网格尺寸         | **15 × 15**                                  |
 | 每 cell 颜色数   | **6** (0=empty/背景, 1..5=调色板颜色)         |
 | Format           | Custom Imagineer base-6 packed bitmap        |

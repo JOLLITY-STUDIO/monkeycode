@@ -98,6 +98,35 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.19.3 — numclo 图画谜题 catalog 完整性核查 + 文档数字修正
+
+### 2026-09-01
+
+#### 背景
+- 用户诉求 (记忆 ID 22773785): 暴力破解 numclo 图画谜题格式。V0.17.10 已完成
+  (base-6 packed 解码, 1525 系早期错误估计) — 本次对运行时代码做完整性复核
+
+#### 核查结论
+- ✅ `rom-data/extracted/numclo-puzzles.json` = 1401 puzzles (15 文件完整)
+  - numclo0-9 × 100 (各 7710 B) + numclo_00-03 × 100 (各 7710 B) + numclo_tu × 1 (87 B)
+  - fnt-mapping 实测 15 文件全对账: 14×100 + 1 = **1401** (非文档旧值 1525)
+- ✅ 运行时 TS catalog (`numclo_puzzles.ts`) 已含全部 1401 题 (git HEAD 核对,
+  此前"缺 403 题"是扫描正则误判 — 空名字段 `''` 不匹配 `'[^']+'` 模式)
+- ✅ `unpackNumcloGrid` round-trip: packed hex → grid 与 JSON 0 差异 (Crab 抽样)
+- ✅ `numclo_answers.ts` 与 HEAD 内容 100% 一致 (仅格式化差异, 已还原)
+
+#### 修复
+- ✅ `docs/NUMCLO_FORMAT.md`: 总 puzzles **1525 → 1401** (14×100 main + 1 tutorial)
+- ✅ `numclo_puzzles.ts` 头部注释: 1525 → 1401 (附文件分布说明)
+- ✅ 新工具 `scripts/gen_numclo_ts_from_json.cjs`: JSON → TS 永久再生脚本
+  (不依赖 ROM/Python, 解决 decode_numclo_full.py 需 ROM 才能重生成的痛点)
+
+#### Verification
+- ✅ 再生后 RAW 1401 行, 15 文件分布: numclo0-9×100 + numclo_00-03×100 + numclo_tu×1
+- ✅ round-trip 0 差异, tsc 待跑
+
+---
+
 ## V0.18 — global ptr 结构命名全量覆盖 (剩余 callers≥1 自动化消化)
 
 ### 2026-09-01

@@ -2,7 +2,8 @@
  * utils/sudoku/numclo_puzzles.ts — Real Numclo (Picture Logic) puzzle catalog (V0.17.10)
  *
  * Decoded from NDS ROM numclo*.data by scripts/decode_numclo_full.py.
- * 1525 puzzles, 15x15 grid, 6 colors per cell (0=empty, 1..5=palette).
+ * 1401 puzzles (numclo0-9 x100, numclo_00-03 x100, numclo_tu x1), 15x15 grid,
+ * 6 colors per cell (0=empty, 1..5=palette).
  *
  * ROM format (verified against numclo.srl ARM9 parser):
  *   magic "str_numclo" + 1 byte mode (0xAA main / 0xFF tutorial)
