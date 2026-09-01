@@ -1,0 +1,72 @@
+<view class="sudoku-page">
+  <!-- 顶部标题横幅: 原 DS title.nbm -->
+  <view class="title-banner">
+    <image class="title-image" src="/assets/nbm/title.nbm.png" mode="aspectFill" lazy-load></image>
+  </view>
+
+  <!-- 顶部: 难度 + 步数 + 计时 + 返回 -->
+  <view class="game-header">
+    <view class="header-left">
+      <text class="diff-label">{{difficultyLabel}}</text>
+      <text class="stat">步数 {{moves}}</text>
+    </view>
+    <view class="header-right">
+      <view class="mode-link mode-link-menu" bindtap="onBackMenu">← 返回</view>
+      <text class="timer">{{timerText}}</text>
+    </view>
+  </view>
+
+  <!-- 难度切换 -->
+  <view class="diff-row">
+    <view
+      wx:for="{{diffChips}}"
+      wx:key="*this"
+      class="diff-chip {{difficulty === item ? 'diff-chip-active' : ''}}"
+      data-diff="{{item}}"
+      bindtap="onTapDifficulty"
+    >{{diffLabels[item] || item}}</view>
+  </view>
+
+  <!-- 9x9 数独棋盘 -->
+  <view class="sudoku-grid">
+    <view
+      class="grid-row"
+      wx:for="{{grid}}"
+      wx:for-item="row"
+      wx:key="r"
+    >
+      <view
+        wx:for="{{row}}"
+        wx:for-item="cell"
+        wx:key="c"
+        class="cell {{cell.given ? 'cell-given' : ''}} {{cell.err ? 'cell-err' : ''}} {{cell.sel ? 'cell-sel' : ''}} {{cell.same ? 'cell-same' : ''}} {{cell.c % 3 === 2 && cell.c < 8 ? 'box-r' : ''}} {{cell.r % 3 === 2 && cell.r < 8 ? 'box-b' : ''}}"
+        data-r="{{cell.r}}"
+        data-c="{{cell.c}}"
+        bindtap="onTapCell"
+      >
+        <text wx:if="{{cell.v}}" class="cell-text">{{cell.v}}</text>
+        <text wx:elif="{{cell.candidatesText}}" class="cell-candidates">{{cell.candidatesText}}</text>
+      </view>
+    </view>
+  </view>
+
+  <!-- 数字键盘 1-9 -->
+  <view class="number-pad">
+    <view class="pad-row">
+      <view
+        wx:for="{{[1,2,3,4,5,6,7,8,9]}}"
+        wx:key="*this"
+        class="pad-key {{selectedValue === item ? 'pad-key-active' : ''}}"
+        data-num="{{item}}"
+        bindtap="onTapNumber"
+      >{{item}}</view>
+    </view>
+    <view class="pad-tools">
+      <view class="tool-key {{canUndo ? '' : 'tool-key-disabled'}}" bindtap="onUndo">撤销</view>
+      <view class="tool-key {{canRedo ? '' : 'tool-key-disabled'}}" bindtap="onRedo">重做</view>
+      <view class="tool-key {{notesMode ? 'tool-key-active' : ''}}" bindtap="onToggleNotesMode">笔记</view>
+      <view class="tool-key" bindtap="onTapClear">清除</view>
+      <view class="tool-key tool-key-primary" bindtap="onTapHint">提示</view>
+    </view>
+  </view>
+</view>

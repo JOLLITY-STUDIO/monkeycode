@@ -1,0 +1,39 @@
+<view class="about-page">
+  <!-- 返回条 -->
+  <view class="scene-bar" bindtap="onBack">
+    <text class="scene-bar-text">← 返回</text>
+  </view>
+
+  <!-- 原 DS dwlogo (DigitalWare) -->
+  <view class="logo-block">
+    <image class="logo-image" src="/assets/nbm/dwlogo.nbm.png" mode="aspectFit" lazy-load></image>
+  </view>
+
+  <!-- 原 DS license (Licensed by Nintendo) -->
+  <view class="license-block">
+    <image class="license-image" src="/assets/nbm/license.nbm.png" mode="aspectFit" lazy-load></image>
+  </view>
+
+  <view class="about-card">
+    <view class="about-row">
+      <text class="about-label">游戏</text>
+      <text class="about-value">Essential Sudoku DS</text>
+    </view>
+    <view class="about-row">
+      <text class="about-label">开发商</text>
+      <text class="about-value">DigitalWare / Imagineer</text>
+    </view>
+    <view class="about-row">
+      <text class="about-label">玩法</text>
+      <text class="about-value">数独 1000 题 + 图画谜题 1525 题</text>
+    </view>
+    <view class="about-row">
+      <text class="about-label">版本</text>
+      <text class="about-value">H5 1:1 复刻版</text>
+    </view>
+  </view>
+
+  <view class="about-footer">
+    <text class="about-footer-text">Licensed by Nintendo · © Imagineer</text>
+  </view>
+</view>

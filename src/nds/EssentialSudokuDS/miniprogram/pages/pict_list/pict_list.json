@@ -1,4 +1,5 @@
 {
-  "usingComponents": {},
-  "navigationBarTitleText": "图画谜题列表"
+  "usingComponents": {
+    "pict-list-scene": "/components/scenes/pict-list-scene/pict-list-scene"
+  }
 }

@@ -1,6 +1,5 @@
 {
   "usingComponents": {
-    "navigation-bar": "../../components/navigation-bar/navigation-bar"
-  },
-  "navigationStyle": "custom"
+    "staff-scene": "/components/scenes/staff-scene/staff-scene"
+  }
 }

@@ -3,19 +3,35 @@
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  padding: 16rpx 24rpx 48rpx;
+  padding: 8px 12px 24px;
   box-sizing: border-box;
   background: #e9eef3;
 }
 
+.scene-bar {
+  width: 100%;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 7px;
+  border: 0.5px solid #e0e6ec;
+  margin-bottom: 8px;
+}
+
+.scene-bar-text {
+  font-size: 14px;
+  color: #1565c0;
+  font-weight: 600;
+}
+
 .tut-banner {
   width: 100%;
-  height: 260rpx;
-  border-radius: 16rpx;
+  height: 130px;
+  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 24rpx;
+  margin-bottom: 12px;
   background: #ffffff;
-  border: 1rpx solid #e0e6ec;
+  border: 0.5px solid #e0e6ec;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -29,33 +45,33 @@
 .tut-card {
   width: 100%;
   background: #ffffff;
-  border-radius: 20rpx;
-  padding: 28rpx;
+  border-radius: 10px;
+  padding: 14px;
   box-sizing: border-box;
-  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.08);
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
 }
 
 .tut-section {
-  margin-bottom: 8rpx;
+  margin-bottom: 4px;
 }
 
 .tut-title {
-  font-size: 32rpx;
+  font-size: 16px;
   font-weight: 700;
   color: #2b3a4a;
-  margin-bottom: 12rpx;
+  margin-bottom: 6px;
 }
 
 .tut-text {
-  font-size: 26rpx;
+  font-size: 13px;
   line-height: 1.7;
   color: #5a6a7a;
-  margin-bottom: 10rpx;
+  margin-bottom: 5px;
   white-space: pre-line;
 }
 
 .tut-divider {
-  height: 1rpx;
+  height: 0.5px;
   background: #eef1f4;
-  margin: 20rpx 0;
+  margin: 10px 0;
 }

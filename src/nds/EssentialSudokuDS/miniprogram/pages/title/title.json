@@ -1,5 +1,5 @@
 {
-  "usingComponents": {},
-  "navigationStyle": "custom",
-  "disableScroll": true
+  "usingComponents": {
+    "title-scene": "/components/scenes/title-scene/title-scene"
+  }
 }

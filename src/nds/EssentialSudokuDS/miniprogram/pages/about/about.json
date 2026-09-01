@@ -1,0 +1,5 @@
+{
+  "usingComponents": {
+    "about-scene": "/components/scenes/about-scene/about-scene"
+  }
+}

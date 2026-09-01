@@ -1,4 +1,5 @@
 {
-  "usingComponents": {},
-  "navigationBarTitleText": "选择题目"
+  "usingComponents": {
+    "select-scene": "/components/scenes/select-scene/select-scene"
+  }
 }

@@ -1,0 +1,20 @@
+<view class="staff-page">
+  <!-- 返回条 -->
+  <view class="scene-bar scene-bar-dark" bindtap="onBack">
+    <text class="scene-bar-text">← 返回</text>
+  </view>
+
+  <scroll-view class="staff-scroll" scroll-y enhanced show-scrollbar="{{false}}">
+    <view class="staff-list">
+      <image
+        wx:for="{{staffImages}}"
+        wx:key="*this"
+        class="staff-image"
+        src="{{item}}"
+        mode="widthFix"
+        lazy-load
+      ></image>
+    </view>
+    <view class="staff-footer">— End of Staff —</view>
+  </scroll-view>
+</view>

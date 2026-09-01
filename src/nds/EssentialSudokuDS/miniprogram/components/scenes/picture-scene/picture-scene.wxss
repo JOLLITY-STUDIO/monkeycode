@@ -1,15 +1,28 @@
-/* pages/picture/picture.wxss — 图画谜题玩法样式 (Picture Logic 15x15) */
-page {
-  background: #f0f4f8;
-  height: 100%;
-}
-
+/* picture-scene.wxss — 图画谜题玩法样式 (迁移自 pages/picture/picture.wxss) */
 .picture-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 16rpx 24rpx 40rpx;
+  min-height: 100vh;
+  padding: 8px 12px 20px;
   box-sizing: border-box;
+  background: #f0f4f8;
+}
+
+.scene-bar {
+  width: 100%;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 7px;
+  border: 0.5px solid #d8e0e8;
+  margin-bottom: 8px;
+}
+
+.scene-bar-text {
+  font-size: 14px;
+  color: #3a4a5a;
+  font-weight: 600;
 }
 
 /* 顶部信息栏 */
@@ -19,7 +32,7 @@ page {
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16rpx;
+  margin-bottom: 8px;
 }
 
 .header-left {
@@ -31,7 +44,7 @@ page {
 }
 
 .puzzle-name {
-  font-size: 32rpx;
+  font-size: 16px;
   font-weight: 700;
   color: #2b3a4a;
   white-space: nowrap;
@@ -41,18 +54,18 @@ page {
 }
 
 .stat {
-  font-size: 24rpx;
+  font-size: 12px;
   color: #6b7a8a;
-  margin-left: 16rpx;
+  margin-left: 8px;
   white-space: nowrap;
 }
 
 .timer {
-  font-size: 30rpx;
+  font-size: 15px;
   font-weight: 600;
   color: #2b3a4a;
   font-variant-numeric: tabular-nums;
-  margin-left: 12rpx;
+  margin-left: 6px;
   white-space: nowrap;
 }
 
@@ -60,24 +73,24 @@ page {
 .cat-scroll {
   width: 100%;
   white-space: nowrap;
-  margin-bottom: 16rpx;
+  margin-bottom: 8px;
 }
 
 .cat-row {
   display: inline-flex;
   flex-direction: row;
-  gap: 12rpx;
-  padding: 2rpx 0;
+  gap: 6px;
+  padding: 1px 0;
 }
 
 .cat-chip {
   flex-shrink: 0;
-  font-size: 24rpx;
-  padding: 10rpx 26rpx;
-  border-radius: 24rpx;
+  font-size: 12px;
+  padding: 5px 13px;
+  border-radius: 12px;
   background: #ffffff;
   color: #6b7a8a;
-  border: 1rpx solid #d0d8e0;
+  border: 0.5px solid #d0d8e0;
 }
 
 .cat-chip-active {
@@ -91,21 +104,21 @@ page {
   width: 100%;
   display: flex;
   flex-direction: row;
-  gap: 12rpx;
-  margin-bottom: 20rpx;
+  gap: 6px;
+  margin-bottom: 10px;
 }
 
 .nav-key {
   flex: 1;
-  height: 68rpx;
+  height: 34px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 26rpx;
+  font-size: 13px;
   color: #2b3a4a;
   background: #ffffff;
-  border-radius: 12rpx;
-  border: 1rpx solid #d0d8e0;
+  border-radius: 6px;
+  border: 0.5px solid #d0d8e0;
 }
 
 .nav-key-random {
@@ -129,21 +142,21 @@ page {
 }
 
 .clue-corner {
-  width: 120rpx;
-  height: 120rpx;
+  width: 60px;
+  height: 60px;
   flex-shrink: 0;
 }
 
 .col-clue {
   flex: 1;
   min-width: 0;
-  height: 120rpx;
+  height: 60px;
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   align-items: center;
-  gap: 2rpx;
-  padding-bottom: 4rpx;
+  gap: 1px;
+  padding-bottom: 2px;
   box-sizing: border-box;
 }
 
@@ -154,7 +167,7 @@ page {
 }
 
 .row-clues {
-  width: 120rpx;
+  width: 60px;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
@@ -167,17 +180,17 @@ page {
   flex-direction: row;
   justify-content: flex-end;
   align-items: center;
-  gap: 4rpx;
-  padding-right: 8rpx;
+  gap: 2px;
+  padding-right: 4px;
   box-sizing: border-box;
 }
 
 .run-chip {
-  font-size: 18rpx;
+  font-size: 9px;
   font-weight: 600;
-  padding: 2rpx 6rpx;
-  border-radius: 6rpx;
-  border: 1rpx solid;
+  padding: 1px 3px;
+  border-radius: 3px;
+  border: 0.5px solid;
   line-height: 1;
   white-space: nowrap;
 }
@@ -194,17 +207,18 @@ page {
   flex-direction: row;
   flex-wrap: wrap;
   background: #ffffff;
-  border: 3rpx solid #2b3a4a;
+  border: 1.5px solid #2b3a4a;
   box-sizing: border-box;
-  border-radius: 8rpx;
+  border-radius: 4px;
   overflow: hidden;
+  position: relative;
 }
 
 .paint-cell {
   width: calc(100% / 15);
   height: calc(100% / 15);
   box-sizing: border-box;
-  border: 1rpx solid #e6ebf0;
+  border: 0.5px solid #e6ebf0;
 }
 
 /* 显示答案时: 去掉格子线, 纯色块拼图效果 */
@@ -212,23 +226,34 @@ page {
   border-color: transparent;
 }
 
+/* 原 DS numclo_waku.nbm 网格外框背景 */
+.waku-bg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.14;
+  pointer-events: none;
+}
+
 /* 调色板 */
 .palette {
   width: 100%;
   display: flex;
   flex-direction: row;
-  gap: 16rpx;
-  margin-top: 24rpx;
+  gap: 8px;
+  margin-top: 12px;
   justify-content: center;
 }
 
 .palette-key {
-  width: 88rpx;
-  height: 88rpx;
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   box-sizing: border-box;
-  border: 4rpx solid #ffffff;
-  box-shadow: 0 2rpx 8rpx rgba(43, 58, 74, 0.18);
+  border: 2px solid #ffffff;
+  box-shadow: 0 1px 4px rgba(43, 58, 74, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -236,11 +261,11 @@ page {
 
 .palette-key-active {
   transform: scale(1.12);
-  box-shadow: 0 0 0 4rpx #2b3a4a, 0 2rpx 8rpx rgba(43, 58, 74, 0.25);
+  box-shadow: 0 0 0 2px #2b3a4a, 0 1px 4px rgba(43, 58, 74, 0.25);
 }
 
 .erase-mark {
-  font-size: 34rpx;
+  font-size: 17px;
   color: #9aa7b4;
   font-weight: 700;
 }
@@ -250,21 +275,21 @@ page {
   width: 100%;
   display: flex;
   flex-direction: row;
-  gap: 12rpx;
-  margin-top: 20rpx;
+  gap: 6px;
+  margin-top: 10px;
 }
 
 .tool-key {
   flex: 1;
-  height: 80rpx;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28rpx;
+  font-size: 14px;
   color: #2b3a4a;
   background: #ffffff;
-  border-radius: 14rpx;
-  border: 1rpx solid #d0d8e0;
+  border-radius: 7px;
+  border: 0.5px solid #d0d8e0;
 }
 
 .tool-key-primary {
@@ -275,44 +300,29 @@ page {
 
 /* 完成提示条 */
 .complete-banner {
-  margin-top: 16rpx;
-  font-size: 26rpx;
+  margin-top: 8px;
+  font-size: 13px;
   color: #1e8e3e;
   background: #e6f4ea;
-  padding: 12rpx 28rpx;
-  border-radius: 12rpx;
+  padding: 6px 14px;
+  border-radius: 6px;
 }
 
 /* 原 DS numclo_00.nbm banner */
 .picture-banner {
   width: 100%;
-  height: 180rpx;
-  border-radius: 16rpx;
+  height: 90px;
+  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 16rpx;
+  margin-bottom: 8px;
   background: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: 1rpx solid #e0e6ec;
+  border: 0.5px solid #e0e6ec;
 }
 
 .picture-banner-image {
   width: 100%;
   height: 100%;
-}
-
-/* 原 DS numclo_waku.nbm 网格外框背景 */
-.paint-grid {
-  position: relative;
-}
-
-.waku-bg {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0.14;
-  pointer-events: none;
 }

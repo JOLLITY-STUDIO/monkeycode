@@ -9,6 +9,7 @@
     "pages/tutorial/tutorial",
     "pages/staff/staff",
     "pages/options/options",
+    "pages/about/about",
     "pages/logs/logs"
   ],
   "window": {

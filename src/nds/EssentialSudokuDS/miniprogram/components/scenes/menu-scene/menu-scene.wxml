@@ -1,0 +1,30 @@
+<view class="menu-page">
+  <!-- 顶部标题横幅 -->
+  <view class="title-banner">
+    <image class="title-image" src="/assets/nbm/title.nbm.png" mode="aspectFill" lazy-load></image>
+  </view>
+
+  <!-- 主菜单模式选择 -->
+  <view class="mode-select-card">
+    <view class="menu-label">SELECT MODE</view>
+    <view class="select-bg-wrap">
+      <image class="select4-bg" src="/assets/nbm/select4.nbm.png" mode="aspectFill"></image>
+      <view class="mode-buttons">
+        <view class="mode-btn number-puzzle" bindtap="onOpenNumberPuzzle">
+          <text class="mode-btn-text">Number Puzzle</text>
+        </view>
+        <view class="mode-btn picture-puzzle" bindtap="onOpenPicturePuzzle">
+          <text class="mode-btn-text">Picture Puzzle</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 底部辅助入口 -->
+  <view class="bottom-links">
+    <view class="link-btn" bindtap="onBackTitle">返回标题</view>
+    <view class="link-btn" bindtap="onOpenTutorial">玩法说明</view>
+    <view class="link-btn" bindtap="onOpenStaff">制作人员</view>
+    <view class="link-btn" bindtap="onOpenOptions">选项</view>
+  </view>
+</view>

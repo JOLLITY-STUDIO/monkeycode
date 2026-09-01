@@ -1,4 +1,5 @@
 {
-  "usingComponents": {},
-  "navigationBarTitleText": "选项"
+  "usingComponents": {
+    "options-scene": "/components/scenes/options-scene/options-scene"
+  }
 }

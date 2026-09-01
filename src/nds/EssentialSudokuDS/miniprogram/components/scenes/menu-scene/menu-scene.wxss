@@ -3,17 +3,17 @@
   flex-direction: column;
   align-items: center;
   min-height: 100vh;
-  padding: 16rpx 24rpx 48rpx;
+  padding: 8px 12px 24px;
   box-sizing: border-box;
   background: #e9eef3;
 }
 
 .title-banner {
   width: 100%;
-  height: 240rpx;
-  border-radius: 16rpx;
+  height: 120px;
+  border-radius: 8px;
   overflow: hidden;
-  margin-bottom: 24rpx;
+  margin-bottom: 12px;
   background: #1a4d2e;
 }
 
@@ -25,27 +25,27 @@
 .mode-select-card {
   width: 100%;
   background: #ffffff;
-  border-radius: 20rpx;
-  padding: 28rpx 24rpx 36rpx;
+  border-radius: 10px;
+  padding: 14px 12px 18px;
   box-sizing: border-box;
-  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.08);
-  margin-bottom: 24rpx;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+  margin-bottom: 12px;
 }
 
 .menu-label {
-  font-size: 32rpx;
+  font-size: 16px;
   font-weight: 700;
   color: #3a4a5a;
   text-align: center;
-  margin-bottom: 20rpx;
-  letter-spacing: 2rpx;
+  margin-bottom: 10px;
+  letter-spacing: 1px;
 }
 
 .select-bg-wrap {
   position: relative;
   width: 100%;
-  height: 360rpx;
-  border-radius: 16rpx;
+  height: 180px;
+  border-radius: 8px;
   overflow: hidden;
   background: #00ff00;
 }
@@ -68,8 +68,8 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 24rpx;
-  padding: 24rpx 40rpx;
+  gap: 12px;
+  padding: 12px 20px;
   box-sizing: border-box;
 }
 
@@ -78,8 +78,8 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  padding-right: 40rpx;
-  border-radius: 14rpx;
+  padding-right: 20px;
+  border-radius: 7px;
   transition: background 0.15s ease;
 }
 
@@ -88,11 +88,11 @@
 }
 
 .mode-btn-text {
-  font-size: 34rpx;
+  font-size: 17px;
   font-weight: 700;
   color: #ffffff;
-  text-shadow: 0 2rpx 6rpx rgba(0, 0, 0, 0.35);
-  letter-spacing: 1rpx;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.35);
+  letter-spacing: 0.5px;
 }
 
 .bottom-links {
@@ -101,18 +101,18 @@
   flex-direction: row;
   justify-content: center;
   flex-wrap: wrap;
-  gap: 14rpx;
+  gap: 7px;
   margin-top: auto;
 }
 
 .link-btn {
-  font-size: 24rpx;
+  font-size: 12px;
   color: #5a6a7a;
   background: #ffffff;
-  padding: 12rpx 22rpx;
-  border-radius: 26rpx;
-  border: 1rpx solid #d0d8e0;
-  box-shadow: 0 2rpx 8rpx rgba(0, 0, 0, 0.05);
+  padding: 6px 11px;
+  border-radius: 13px;
+  border: 0.5px solid #d0d8e0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
   white-space: nowrap;
 }
 

@@ -1,8 +1,7 @@
-// pages/staff/staff.ts — 原 DS Staff 制作人员名单 (NBM_GROUP_STAFF)
-import { NBM_GROUP_STAFF } from '../../utils/sudoku/nbmAssets';
+// pages/staff/staff.ts — 制作人员页 (组件壳, 逻辑在 staff-scene)
 
 Page({
-  data: {
-    staffImages: NBM_GROUP_STAFF,
+  onBack() {
+    wx.navigateBack();
   },
 });

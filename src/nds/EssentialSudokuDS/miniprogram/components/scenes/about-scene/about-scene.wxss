@@ -1,0 +1,105 @@
+.about-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 8px 12px 24px;
+  box-sizing: border-box;
+  background: #e9eef3;
+}
+
+.scene-bar {
+  width: 100%;
+  padding: 10px 12px;
+  box-sizing: border-box;
+  background: #ffffff;
+  border-radius: 7px;
+  border: 0.5px solid #e0e6ec;
+  margin-bottom: 8px;
+}
+
+.scene-bar-text {
+  font-size: 14px;
+  color: #1565c0;
+  font-weight: 600;
+}
+
+.logo-block {
+  width: 100%;
+  height: 130px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #0d1b2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.logo-image {
+  width: 100%;
+  height: 100%;
+}
+
+.license-block {
+  width: 100%;
+  height: 110px;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 12px;
+  background: #ffffff;
+  border: 0.5px solid #e0e6ec;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.license-image {
+  width: 100%;
+  height: 100%;
+}
+
+.about-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 10px;
+  padding: 14px;
+  box-sizing: border-box;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+}
+
+.about-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 0.5px solid #f2f4f6;
+}
+
+.about-row:last-child {
+  border-bottom: none;
+}
+
+.about-label {
+  width: 70px;
+  flex-shrink: 0;
+  font-size: 13px;
+  color: #9aa7b4;
+}
+
+.about-value {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2b3a4a;
+  text-align: right;
+}
+
+.about-footer {
+  margin-top: 16px;
+}
+
+.about-footer-text {
+  font-size: 11px;
+  color: #9aa7b4;
+}

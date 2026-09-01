@@ -1,15 +1,2 @@
-<!--pages/staff/staff.wxml - 原 DS Staff 制作人员名单 (NBM_GROUP_STAFF)-->
-<navigation-bar title="制作人员" back="{{true}}" color="black" background="#FFF"></navigation-bar>
-<scroll-view class="staff-page" scroll-y enhanced show-scrollbar="{{false}}">
-  <view class="staff-list">
-    <image
-      wx:for="{{staffImages}}"
-      wx:key="*this"
-      class="staff-image"
-      src="{{item}}"
-      mode="widthFix"
-      lazy-load
-    ></image>
-  </view>
-  <view class="staff-footer">— End of Staff —</view>
-</scroll-view>
+<!-- 制作人员场景 (staff-scene) -->
+<staff-scene bind:back="onBack" />

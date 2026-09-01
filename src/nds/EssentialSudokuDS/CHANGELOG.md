@@ -4,6 +4,51 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.19 — 场景组件化重构 (10 scenes 组件) + 全项目 rpx→px
+
+### 2026-09-01
+
+#### 添加
+- ✅ `miniprogram/components/scenes/` 10 个场景组件 (json/ts/wxml/wxss 四件套):
+  - `title-scene` 启动标题 / `menu-scene` 主菜单
+  - `staff-scene` 制作人员 / `about-scene` 关于页
+  - `tutorial-scene` 玩法说明 / `pict-list-scene` 图画类别列表
+  - `select-scene` 数独选题 / `options-scene` 选项 (音量持久化迁移)
+  - `sudoku-scene` 数独对局 (puzzleId property 支持选题页跳入)
+  - `picture-scene` 图画对局 (fileKey + puzzleIdx property 支持列表页跳入)
+
+#### 重构
+- ✅ 10 个页面全部改为组件壳: title/menu/staff/about/tutorial/pict_list/select/options/index/picture
+  - 页面 ts 只保留 onLoad query 透传 + 导航跳转 (navigateBack/navigateTo)
+  - 组件内跳转一律 triggerEvent('back' / 'start' / 'open-xxx') 交给页面壳
+  - 页面 wxss 全部删除 (样式迁移到对应组件)
+- ✅ 全项目 wxss 单位统一: rpx → px (750 设计稿 ÷2 标准换算), 12 个 wxss 文件 266 处
+- ✅ 修复 staff-scene.ts import 路径 (2 级 → 3 级 ../../../utils/sudoku/nbmAssets)
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+- ✅ 无 rpx 残留 (0 处)
+
+---
+
+## V0.18.9 — 关于页 (dwlogo + license.nbm + 版权信息)
+
+### 2026-09-01
+
+#### 添加
+- ✅ `miniprogram/pages/about/about.ts/wxml/wxss/json` — 新建关于页:
+  - 原 DS `dwlogo.nbm.png` (DigitalWare logo, 深蓝底)
+  - 原 DS `license.nbm.png` (Licensed by Nintendo)
+  - 信息卡: 游戏名/开发商/玩法规模/版本
+  - 底部版权 "Licensed by Nintendo · © Imagineer"
+- ✅ `miniprogram/app.json` — 注册 `pages/about/about`
+- ✅ `miniprogram/pages/options/options.wxml/ts` — 加 "About" 入口
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## V0.18.8 — 玩法说明页 (tutorial_00.nbm + 数独/图画规则)
 
 ### 2026-09-01

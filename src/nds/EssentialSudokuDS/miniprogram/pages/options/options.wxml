@@ -1,42 +1,6 @@
-<view class="options-page">
-  <!-- 原 DS select3 按钮精灵背景装饰 -->
-  <view class="select3-banner">
-    <image class="select3-image" src="/assets/nbm/select3.nbm.png" mode="aspectFit" lazy-load></image>
-  </view>
-
-  <view class="options-card">
-    <!-- BGM 音量 -->
-    <view class="option-row">
-      <view class="option-label">BGM Volume</view>
-      <slider class="option-slider" min="0" max="100" value="{{bgmVolume}}" bindchanging="onBgmVolumeChange" bindchange="onBgmVolumeChange" activeColor="#1565c0" block-size="20" />
-      <text class="option-value">{{bgmVolume}}</text>
-    </view>
-
-    <!-- SE 音量 -->
-    <view class="option-row">
-      <view class="option-label">SE Volume</view>
-      <slider class="option-slider" min="0" max="100" value="{{seVolume}}" bindchanging="onSeVolumeChange" bindchange="onSeVolumeChange" activeColor="#e65100" block-size="20" />
-      <text class="option-value">{{seVolume}}</text>
-    </view>
-
-    <view class="option-divider"></view>
-
-    <!-- 清除数据 -->
-    <view class="option-action" bindtap="onClearData">
-      <text class="option-action-text">Clear</text>
-      <text class="option-action-hint">清除进度与设置</text>
-    </view>
-
-    <!-- 评分 -->
-    <view class="option-action" bindtap="onRate">
-      <text class="option-action-text">Rate</text>
-      <text class="option-action-hint">评价本应用</text>
-    </view>
-
-    <!-- 制作人员 -->
-    <view class="option-action" bindtap="onCredits">
-      <text class="option-action-text">Credits</text>
-      <text class="option-action-hint">制作人员名单</text>
-    </view>
-  </view>
-</view>
+<!-- 选项场景 (options-scene) -->
+<options-scene
+  bind:back="onBack"
+  bind:open-staff="onOpenStaff"
+  bind:open-about="onOpenAbout"
+/>

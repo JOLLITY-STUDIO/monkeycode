@@ -1,4 +1,5 @@
 {
-  "usingComponents": {},
-  "navigationBarTitleText": "Essential Sudoku DS"
+  "usingComponents": {
+    "menu-scene": "/components/scenes/menu-scene/menu-scene"
+  }
 }
