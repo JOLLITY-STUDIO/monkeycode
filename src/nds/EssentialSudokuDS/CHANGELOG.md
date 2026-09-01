@@ -4,6 +4,25 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.18.8 — 玩法说明页 (tutorial_00.nbm + 数独/图画规则)
+
+### 2026-09-01
+
+#### 添加
+- ✅ `miniprogram/pages/tutorial/tutorial.ts/wxml/wxss/json` — 新建玩法说明页:
+  - 顶部显示原 DS `tutorial_00.nbm.png` 教程图
+  - 数独规则 (每行/列/宫 1-9 各一次, 给定格不可改, 候选笔记)
+  - 图画谜题规则 (行列彩色数字线索, 涂满 225 格显现图案)
+  - 操作说明 (选中/填入/笔记/撤销重做/提示)
+- ✅ `miniprogram/app.json` — 注册 `pages/tutorial/tutorial`
+- ✅ `miniprogram/pages/menu/menu.wxml/ts` — 底部加 "玩法说明" 入口
+- ✅ `miniprogram/pages/menu/menu.wxss` — `.bottom-links` 支持 4 按钮 flex-wrap 布局
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## V0.18.7 — 图画谜题列表页 (numclo_00 banner + 15 类别)
 
 ### 2026-09-01

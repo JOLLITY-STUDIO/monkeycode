@@ -6,6 +6,7 @@
     "pages/index/index",
     "pages/picture/picture",
     "pages/pict_list/pict_list",
+    "pages/tutorial/tutorial",
     "pages/staff/staff",
     "pages/options/options",
     "pages/logs/logs"

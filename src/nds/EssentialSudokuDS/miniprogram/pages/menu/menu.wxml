@@ -23,6 +23,7 @@
   <!-- 底部辅助入口 -->
   <view class="bottom-links">
     <view class="link-btn" bindtap="onBackTitle">返回标题</view>
+    <view class="link-btn" bindtap="onOpenTutorial">玩法说明</view>
     <view class="link-btn" bindtap="onOpenStaff">制作人员</view>
     <view class="link-btn" bindtap="onOpenOptions">选项</view>
   </view>

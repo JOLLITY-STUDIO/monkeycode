@@ -20,6 +20,11 @@ Page({
     wx.navigateTo({ url: '/pages/staff/staff' });
   },
 
+  /** 进入玩法说明页 */
+  onOpenTutorial() {
+    wx.navigateTo({ url: '/pages/tutorial/tutorial' });
+  },
+
   /** 返回标题页 (若在栈中则返回, 否则重新打开) */
   onBackTitle() {
     const pages = getCurrentPages();
