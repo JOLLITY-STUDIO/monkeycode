@@ -1,0 +1,30 @@
+{
+  "version": "V0.17 batch16",
+  "note": "callers>=2 capstone disasm curated naming (ARM7 24 entries, remaining index 86-109); global ptr 0x0380fff4 + IO 0x04808000 family",
+  "names": [
+    { "addr": "0x0239134c", "name": "global_halfword_0x5f4_store", "cpu": "arm7", "comment": "g 0x0380fff4 -> [g] +0x500; strh r0 [0xf4] (global+0x5f4)" },
+    { "addr": "0x02391784", "name": "call_indirect_x1000_to_027e978c", "cpu": "arm7", "comment": "r1=r0*1000; bx 0x027e978c (scale thunk)" },
+    { "addr": "0x02391a04", "name": "io_table_25_halfword_setup", "cpu": "arm7", "comment": "25 iters: table 0x027f7db8 halfword pair -> IO 0x04808000+idx*4" },
+    { "addr": "0x02391ff4", "name": "global_0x53c_memzero_0xb4", "cpu": "arm7", "comment": "bl 0x2391df0; zero global+0x53c len 0xb4 (memset 0x33a664c)" },
+    { "addr": "0x02392194", "name": "io_0x480802a_halfword_set_cond", "cpu": "arm7", "comment": "global+0x3ae=r0; IO 0x480802a=r0; if global+0x3a bit7 -> IO 0x4808028=r0" },
+    { "addr": "0x02392504", "name": "io_0x4808006_flag_0x40_cond_set", "cpu": "arm7", "comment": "global+0x352=r0; if r0!=0 && global+0x32e!=1 -> IO 0x4808006 |=0x40" },
+    { "addr": "0x023928f0", "name": "reg_read_pair_0x36_0x3c", "cpu": "arm7", "comment": "bl 0x239d85c(0x36,6,sp+2) + (0x3c,2,sp); bl 0x23933bc(sp+2); bl 0x2393388(7)" },
+    { "addr": "0x02392ca4", "name": "reg_field_0x3a_bit7_set", "cpu": "arm7", "comment": "global+0x300+0x3a: bit7 = r0&1 (0x80); r0>1 -> 5" },
+    { "addr": "0x02392d00", "name": "reg_field_0x3a_bit6_set", "cpu": "arm7", "comment": "global+0x300+0x3a: bit6 = r0&1 (0x40); r0>1 -> 5" },
+    { "addr": "0x02392e1c", "name": "reg_field_0x3a_bit3_set", "cpu": "arm7", "comment": "global+0x300+0x3a: bit3 = r0&1 (0x8); r0>1 -> 5" },
+    { "addr": "0x02392ecc", "name": "reg_field_0x32_halfword_store", "cpu": "arm7", "comment": "global+0x300+0x32 = r0; r0>1 -> 5" },
+    { "addr": "0x02392fb0", "name": "halfword_copy_16_to_0x384", "cpu": "arm7", "comment": "16 halfwords [r0] -> global+0x384" },
+    { "addr": "0x023930a0", "name": "reg_fields_0xc2_0xc4_set", "cpu": "arm7", "comment": "global+0x300: [0xc4]=0 [0xc2]=r0; r0>0xff -> 5" },
+    { "addr": "0x023930d8", "name": "reg_field_0x3a_bit1_set", "cpu": "arm7", "comment": "global+0x300+0x3a: bit1 = r0&1 (0x2); r0>1 -> 5" },
+    { "addr": "0x023931ac", "name": "reg_field_0x36_halfword_store", "cpu": "arm7", "comment": "global+0x300+0x36 = r0; r0>3 -> 5" },
+    { "addr": "0x023931d0", "name": "reg_field_0x34_set_clear_flags", "cpu": "arm7", "comment": "global+0x300+0x34=r0; if 0: clear global+0x344[0x7c]bit4 + [0x8a]bit0x4000" },
+    { "addr": "0x02393284", "name": "reg_field_0x30_set_call_0x2392578", "cpu": "arm7", "comment": "global+0x300+0x30=r0; bl 0x2392578; r0>2 -> 5" },
+    { "addr": "0x02393388", "name": "io_0x480802c_halfword_set", "cpu": "arm7", "comment": "global+0x300+0x2a=r0; IO 0x480802c=r0; r0>0xff -> 5" },
+    { "addr": "0x02394248", "name": "call_0x2394194_plus_4", "cpu": "arm7", "comment": "bl 0x2394194; return r0+4" },
+    { "addr": "0x02394964", "name": "global_halfword_0x428_clear", "cpu": "arm7", "comment": "g 0x0380fff4 -> [g]+0x400; strh 0 [0x28] (global+0x428)" },
+    { "addr": "0x0239d9e0", "name": "call_0x239e68c_bit0_not", "cpu": "arm7", "comment": "bl 0x239e68c; ret !(halfword&1)" },
+    { "addr": "0x0239deb4", "name": "io_poll_write_seq_0x1c0", "cpu": "arm7", "comment": "poll IO 0x40001c0 bit0x80; write 0x8100; 0xff to 0x40001c2; poll again" },
+    { "addr": "0x0239f1c8", "name": "switch_dispatch_36way", "cpu": "arm7", "comment": "word bits6-11 index; cmp 0x23; addls pc (36-way jump table)" },
+    { "addr": "0x0239f2e0", "name": "switch_dispatch_36way_b", "cpu": "arm7", "comment": "twin of 0x0239f1c8 (36-way jump table)" }
+  ]
+}
