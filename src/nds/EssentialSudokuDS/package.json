@@ -1,0 +1,21 @@
+{
+  "name": "miniprogram-ts-less-quickstart",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "tsc -p tsconfig.test.json && node build-test/scripts/test_sudoku.js",
+    "test:fuzz": "tsc -p tsconfig.test.json && node build-test/scripts/test_sudoku_fuzz.js",
+    "test:game": "tsc -p tsconfig.test.json && node build-test/scripts/test_sudoku_game_session.js",
+    "test:all": "npm run test && npm run test:fuzz && npm run test:game",
+    "typecheck": "tsc --noEmit",
+    "build:test": "tsc -p tsconfig.test.json"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "miniprogram-api-typings": "^2.8.3-1"
+  }
+}

@@ -1,0 +1,97 @@
+{
+  "version": "V0.12",
+  "description": "V0.12 curated function names (manual disasm reading). Applied BEFORE heuristic (V0.10) to override sub_XX names with business semantic.",
+  "names": [
+    {
+      "addr": "0x0200a098",
+      "name": "state_setter_a",
+      "category": "subsystem",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "Writes arg r0 to global state slot A. 48 callers."
+    },
+    {
+      "addr": "0x0201cca8",
+      "name": "state_setter_b",
+      "category": "subsystem",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "Same pattern as state_setter_a but writes to different global slot B. 11 callers."
+    },
+    {
+      "addr": "0x0201ccb8",
+      "name": "state_getter_b",
+      "category": "subsystem",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "Read global slot B (paired with state_setter_b at 0x0201cca8). 8 callers."
+    },
+    {
+      "addr": "0x02027ee8",
+      "name": "const_true_getter",
+      "category": "worker",
+      "disasm": "mov r0, #1; bx lr",
+      "note": "Returns 1 (true/enabled constant). 6 callers."
+    },
+    {
+      "addr": "0x020288c8",
+      "name": "is_no_key_pressed",
+      "category": "subsystem",
+      "disasm": "ldrh r0, [KEYINPUT]; and r0, r0, #0x8000; asr r0, r0, #0xf; bx lr",
+      "note": "Reads NDS KEYINPUT register bit 15 (no-key-pressed indicator). Returns 1 if no key pressed, else 0."
+    },
+    {
+      "addr": "0x020082cc",
+      "name": "array_field_0x54_get_idx",
+      "category": "frame_loop",
+      "disasm": "ldr r2, base; mov r1, #0x58; ldr r2, [r2]; mla r1, r0, r1, r2; ldr r0, [r1, #0x54]; bx lr",
+      "note": "Returns arr[idx].field_0x54 (stride 0x58 struct). 33 callers."
+    },
+    {
+      "addr": "0x020216c0",
+      "name": "global_byte_load",
+      "category": "worker",
+      "disasm": "ldr r0, [pc, #4]; ldrb r0, [r0]; bx lr",
+      "note": "Loads uint8 from a global byte. 25 callers."
+    },
+    {
+      "addr": "0x0202dac4",
+      "name": "global_dword_load_chain",
+      "category": "subsystem",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "Loads dword from global via 2-level pointer chase. 18 callers."
+    },
+    {
+      "addr": "0x02020f5c",
+      "name": "state_word_eq2_check",
+      "category": "subsystem",
+      "disasm": "ldrh r0, [r0]; cmp r0, #2",
+      "note": "Reads global 16-bit word and compares ==2. 20 callers."
+    },
+    {
+      "addr": "0x0202bbc4",
+      "name": "slot_array_set_8b",
+      "category": "subsystem",
+      "disasm": "ldr r3, base1; mov ip, #1; ldr r2, base2; str ip, [r3, r0, lsl #3]; str r1, [r2, r0, lsl #3]; bx lr",
+      "note": "Sets array[idx] entries with enabled=1 and value=r1 at stride 8. 22 callers."
+    },
+    {
+      "addr": "0x0203a784",
+      "name": "mem_fill_32b_chunked",
+      "category": "subsystem",
+      "disasm": "push r4..r8,sb; add sb, r1, r2; lsr ip, r2, #5; stmlt r1!, {r0..r8} (32-byte fill); ...",
+      "note": "Fills memory with 32-byte chunks at a time. 16 callers."
+    },
+    {
+      "addr": "0x02028eac",
+      "name": "struct_pop_field_writer",
+      "category": "worker",
+      "disasm": "str r2, [r0, #4]; str r1, [r0]; ldr r2, [sp]; str r3, [r0, #8]; ...",
+      "note": "Pops struct fields from stack and writes to struct at various offsets. 14 callers."
+    },
+    {
+      "addr": "0x02028688",
+      "name": "array_setter_4b_chain",
+      "category": "subsystem",
+      "disasm": "stmdb sp!, {lr}; sub sp, sp, #4; mov r3, #0; ...",
+      "note": "Pop args, set 4-byte field. 6 callers."
+    }
+  ]
+}

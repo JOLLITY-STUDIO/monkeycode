@@ -1,0 +1,2220 @@
+V0.11.1 — ARM9 Hot-Path BFS Tree (ADR-011, entry_zone window = 8KB)
+======================================================================
+Start: 0x02008000  Max depth: 5  Entry window: 0x2000
+Reachable fns: 573 (no_sfloat=559, sfloat=14)
+
+### Tier: entry_root (1 funcs) ###
+  0x02008000 d=0 cat=?                  conf=?       callers=   0  ?
+      | bl       #0x204d8e8
+      | mov      r1, r0
+      | ldr      r0, [r8, #0xc]
+
+### Tier: frame_loop (29 funcs) ###
+  0x020082e8 d=1 cat=prologue           conf=high    callers=   0  sub_020082e8
+      | (no disasm line found at this addr)
+  0x020084b0 d=1 cat=prologue           conf=high    callers=   0  sub_020084b0
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #4
+      | ldr      fp, [pc, #0x150]
+  0x02008630 d=1 cat=bx_lr              conf=medium  callers=   5  sub_02008630
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x34]
+  0x02008684 d=1 cat=prologue           conf=high    callers=   0  sub_02008684
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | ldr      r3, [pc, #0x120]
+  0x020087e8 d=1 cat=prologue           conf=high    callers=   0  sub_020087e8
+      | push     {r4, r5, r6, r7, r8, sb, lr}
+      | sub      sp, sp, #0x54
+      | ldr      r4, [pc, #0xe8]
+  0x020088e8 d=1 cat=prologue           conf=high    callers=   0  sub_020088e8
+      | push     {r4, r5, r6, r7, lr}
+      | ldr      ip, [pc, #0x1c4]
+      | sub      sp, sp, ip
+  0x02008ad4 d=1 cat=prologue           conf=high    callers=   0  sub_02008ad4
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #8
+      | mov      r5, r0
+  0x02008b8c d=1 cat=prologue           conf=high    callers=   0  sub_02008b8c
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #8
+      | mov      r6, r0
+  0x02008c48 d=1 cat=prologue           conf=high    callers=   0  sub_02008c48
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #8
+      | mov      r6, r0
+  0x02008d04 d=1 cat=prologue           conf=high    callers=   0  sub_02008d04
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #8
+      | mov      r6, r0
+  0x02008dc0 d=1 cat=prologue           conf=high    callers=   0  sub_02008dc0
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #0x10
+      | mov      r6, r0
+  0x02008e84 d=1 cat=prologue           conf=high    callers=   0  sub_02008e84
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #0x10
+      | mov      r5, r0
+  0x02008f48 d=1 cat=prologue           conf=high    callers=   0  sub_02008f48
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #0x10
+      | mov      r5, r0
+  0x0200900c d=1 cat=bx_lr              conf=medium  callers=   3  sub_0200900c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x48]
+  0x02009070 d=1 cat=bx_lr              conf=medium  callers=   2  sub_02009070
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x94]
+  0x0200912c d=1 cat=prologue           conf=high    callers=   0  sub_0200912c
+      | push     {r4, r5, r6, r7, fp, lr}
+      | sub      sp, sp, #0xf0
+      | mov      fp, sp
+  0x02009294 d=1 cat=prologue           conf=high    callers=   0  sub_02009294
+      | push     {r4, r5, r6, lr}
+      | ldr      r6, [pc, #0xac]
+      | ldr      r5, [pc, #0xac]
+  0x02009378 d=1 cat=prologue           conf=high    callers=   0  sub_02009378
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | ldr      r5, [pc, #0xa4]
+  0x02009458 d=1 cat=prologue           conf=high    callers=   0  sub_02009458
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | ldr      r5, [pc, #0xa4]
+  0x02009538 d=1 cat=prologue           conf=high    callers=   0  sub_02009538
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | ldr      r5, [pc, #0xa4]
+  0x02009618 d=1 cat=bx_lr              conf=medium  callers=   3  sub_02009618
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x64]
+  0x020096a8 d=1 cat=prologue           conf=high    callers=   0  sub_020096a8
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | ldr      r5, [pc, #0x80]
+  0x02009758 d=1 cat=bx_lr              conf=medium  callers=   1  sub_02009758
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x7c]
+  0x020097f4 d=1 cat=prologue           conf=high    callers=   0  sub_020097f4
+      | push     {r4, r5, r6, lr}
+      | bl       #0x20053e0
+      | bl       #0x2023010
+  0x02009a18 d=1 cat=bx_lr              conf=medium  callers=   1  sub_02009a18
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0xc0]
+  0x02009af0 d=1 cat=bx_lr              conf=medium  callers=   1  sub_02009af0
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x2029a68
+  0x02009bd8 d=1 cat=bx_lr              conf=medium  callers=   1  sub_02009bd8
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x2029a68
+  0x02009cc4 d=1 cat=bx_lr              conf=medium  callers=   1  sub_02009cc4
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x174]
+  0x02009e54 d=1 cat=prologue           conf=high    callers=   0  sub_02009e54
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0xc
+      | ldr      r0, [pc, #0x1d4]
+
+### Tier: subsystem (100 funcs) ###
+  0x02028240 d=2 cat=near               conf=high    callers=   1  sub_02028240
+      | push     {r0, r1, r2, r3}
+      | push     {r4, r5, r6, r7, r8, sb, lr}
+      | sub      sp, sp, #0x14
+  0x02029250 d=2 cat=prologue           conf=high    callers=   0  sub_02029250
+      | push     {r4, r5, r6, lr}
+      | ldr      r3, [pc, #0x68]
+      | mov      r6, #0
+  0x02028840 d=2 cat=prologue           conf=high    callers=   0  sub_02028840
+      | push     {r4, lr}
+      | mov      r4, r0
+      | bl       #0x2027ee8
+  0x020287f0 d=2 cat=prologue           conf=high    callers=   0  sub_020287f0
+      | push     {r4, lr}
+      | mov      r4, r0
+      | bl       #0x2027ee8
+  0x02027c68 d=2 cat=prologue           conf=high    callers=   0  sub_02027c68
+      | push     {r4, lr}
+      | mov      r1, #0
+      | mov      r4, r1
+  0x0203a07c d=2 cat=prologue           conf=high    callers=   0  sub_0203a07c
+      | push     {r4, lr}
+      | ldr      ip, [pc, #0x6c]
+      | mov      r4, r0
+  0x0202bbc4 d=2 cat=bx_lr              conf=medium  callers=  22  sub_0202bbc4
+      | ldr      r3, [pc, #0x10]
+      | mov      ip, #1
+      | ldr      r2, [pc, #0xc]
+  0x0202afb4 d=2 cat=prologue           conf=high    callers=   0  sub_0202afb4
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x24
+      | ldr      r5, [pc, #0xf4]
+  0x0201da30 d=2 cat=prologue           conf=high    callers=   0  sub_0201da30
+      | push     {r4, r5, r6, r7, r8, lr}
+      | sub      sp, sp, #8
+      | ldr      r7, [pc, #0x98]
+  0x0202aefc d=2 cat=prologue           conf=high    callers=   0  sub_0202aefc
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | ldr      r3, [pc, #0xa4]
+  0x0201dc1c d=2 cat=near               conf=high    callers=   9  sub_0201dc1c
+      | push     {r0, r1, r2, r3}
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+  0x0201cca8 d=2 cat=bx_lr              conf=medium  callers=  11  sub_0201cca8
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+  0x02028434 d=2 cat=near               conf=high    callers= 221 *known* vec2_set_inline
+      | sub      sp, sp, #8
+      | str      r1, [sp]
+      | str      r2, [sp, #4]
+  0x0202aebc d=2 cat=near               conf=high    callers=   1  sub_0202aebc
+      | ldrb     r2, [r1]
+      | mov      ip, #0
+      | mov      r3, ip
+  0x0203a784 d=2 cat=bx_lr              conf=medium  callers=  16  sub_0203a784
+      | (no disasm line found at this addr)
+  0x02028488 d=2 cat=prologue           conf=high    callers=   0  sub_02028488
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | ldr      r2, [pc, #0x54]
+  0x0202854c d=2 cat=prologue           conf=high    callers=   0  sub_0202854c
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r4, r2
+  0x02009240 d=2 cat=near               conf=high    callers=   1  sub_02009240
+      | push     {r0, r1, r2, r3}
+      | ldr      r1, [sp]
+      | ldr      r0, [pc, #8]
+  0x0200925c d=2 cat=prologue           conf=high    callers=   0  sub_0200925c
+      | (no disasm line found at this addr)
+  0x0201db34 d=2 cat=prologue           conf=high    callers=   0  sub_0201db34
+      | push     {r4, r5, r6, r7, r8, sb, sl, lr}
+      | ldr      r1, [pc, #0xa4]
+      | ldr      r2, [pc, #0xa4]
+  0x02028688 d=2 cat=bx_lr              conf=medium  callers=   6  sub_02028688
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | mov      r3, #0
+  0x02027c44 d=2 cat=near               conf=high    callers=   7  sub_02027c44
+      | cmp      r2, #0
+      | mov      ip, #0
+      | bxls     lr
+  0x020285f4 d=2 cat=prologue           conf=high    callers=   0  sub_020285f4
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x0202863c d=2 cat=prologue           conf=high    callers=   0  sub_0202863c
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x02027ef0 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02027ef0
+      | (no disasm line found at this addr)
+  0x02027f30 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02027f30
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | mov      r1, r0
+  0x02021e8c d=2 cat=bx_lr              conf=medium  callers=   1  sub_02021e8c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x2021568
+  0x0202c60c d=2 cat=bx_lr              conf=medium  callers=   2  sub_0202c60c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x2029a9c
+  0x02020d80 d=2 cat=prologue           conf=high    callers=   0  sub_02020d80
+      | push     {r4, lr}
+      | bl       #0x202dac4
+      | cmp      r0, #0
+  0x02021504 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02021504
+      | (no disasm line found at this addr)
+  0x0202cf08 d=2 cat=bx_lr              conf=medium  callers=   3  sub_0202cf08
+      | (no disasm line found at this addr)
+  0x02020f08 d=2 cat=bx_lr              conf=medium  callers=   2  sub_02020f08
+      | ldr      r0, [pc, #4]
+      | ldrh     r0, [r0]
+      | bx       lr
+  0x0202300c d=2 cat=near               conf=high    callers=   1  sub_0202300c
+      | bx       lr
+      | bx       lr
+      | push     {r4, fp, lr}
+  0x02023010 d=2 cat=near               conf=high    callers=   1  sub_02023010
+      | (no disasm line found at this addr)
+  0x02028918 d=2 cat=prologue           conf=high    callers=   0  sub_02028918
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | mov      lr, #0
+  0x02020d1c d=2 cat=bx_lr              conf=medium  callers=   1  sub_02020d1c
+      | (no disasm line found at this addr)
+  0x0201eeb0 d=2 cat=bx_lr              conf=medium  callers=   3  sub_0201eeb0
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0]
+      | bx       lr
+  0x02020eb4 d=2 cat=bx_lr              conf=medium  callers=   8  sub_02020eb4
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x40]
+  0x0203553c d=2 cat=bx_lr              conf=medium  callers=   2  sub_0203553c
+      | ldr      r0, [pc, #0x3c]
+      | ldr      r1, [pc, #0x3c]
+      | ldrh     r2, [r0]
+  0x02021ec4 d=2 cat=near               conf=high    callers=   1  sub_02021ec4
+      | ldr      r1, [pc, #0x10]
+      | mov      r2, #0
+      | ldr      r0, [pc, #0xc]
+  0x0202dac4 d=2 cat=bx_lr              conf=medium  callers=  18  sub_0202dac4
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0]
+      | bx       lr
+  0x0203e944 d=2 cat=prologue           conf=high    callers=   0  sub_0203e944
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x1c
+      | ldr      r3, [pc, #0x20c]
+  0x020288c8 d=2 cat=near               conf=high    callers=   1  sub_020288c8
+      | ldr      r0, [pc, #0xc]
+      | ldrh     r0, [r0]
+      | and      r0, r0, #0x8000
+  0x020216d0 d=2 cat=prologue           conf=high    callers=   0  sub_020216d0
+      | (no disasm line found at this addr)
+  0x02020f5c d=2 cat=near               conf=high    callers=  20  sub_02020f5c
+      | ldr      r0, [pc, #0x10]
+      | ldrh     r0, [r0]
+      | cmp      r0, #2
+  0x0202c664 d=2 cat=near               conf=high    callers=   2  sub_0202c664
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x2028a78
+  0x020214f8 d=2 cat=bx_lr              conf=medium  callers=   1  sub_020214f8
+      | ldr      ip, [pc]
+      | bx       ip
+      | andeq    fp, r2, #16, #8
+  0x020220a0 d=2 cat=bx_lr              conf=medium  callers=   1  sub_020220a0
+      | (no disasm line found at this addr)
+  0x02024c80 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02024c80
+      | bx       lr
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+  0x02012140 d=2 cat=prologue           conf=high    callers=   0  sub_02012140
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x44
+      | bl       #0x20207f0
+  0x020155c0 d=2 cat=prologue           conf=high    callers=   0  sub_020155c0
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #0x14
+      | ldr      r0, [pc, #0x4fc]
+  0x02021fc4 d=2 cat=bx_lr              conf=medium  callers=   2  sub_02021fc4
+      | (no disasm line found at this addr)
+  0x02022844 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02022844
+      | (no disasm line found at this addr)
+  0x02017128 d=2 cat=prologue           conf=high    callers=   0  sub_02017128
+      | push     {r4, lr}
+      | sub      sp, sp, #0x10
+      | ldr      r0, [pc, #0x5d8]
+  0x0201d3ac d=2 cat=prologue           conf=high    callers=   0  sub_0201d3ac
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x160]
+  0x02023510 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02023510
+      | ldr      r0, [pc, #0x18]
+      | ldr      r1, [r0]
+      | add      r1, r1, #1
+  0x0200cc54 d=2 cat=prologue           conf=high    callers=   0  sub_0200cc54
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x2c
+      | ldr      r0, [pc, #0x924]
+  0x02023534 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02023534
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x1c0]
+  0x02023d1c d=2 cat=prologue           conf=high    callers=   0  sub_02023d1c
+      | push     {r4, r5, r6, r7, r8, fp, lr}
+      | sub      sp, sp, #0x84
+      | mov      fp, sp
+  0x02022840 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02022840
+      | bx       lr
+      | bx       lr
+      | stmdb    sp!, {lr}
+  0x02021fc0 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02021fc0
+      | bx       lr
+      | bx       lr
+      | stmdb    sp!, {lr}
+  0x02015578 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02015578
+      | (no disasm line found at this addr)
+  0x02029a68 d=2 cat=bx_lr              conf=medium  callers=   2  sub_02029a68
+      | (no disasm line found at this addr)
+  0x0200c448 d=2 cat=bx_lr              conf=medium  callers=   1  sub_0200c448
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x2c0]
+  0x0201cdc8 d=2 cat=prologue           conf=high    callers=   0  sub_0201cdc8
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0xc
+      | ldr      r1, [pc, #0x58c]
+  0x0201794c d=2 cat=near               conf=high    callers=   1  sub_0201794c
+      | bx       lr
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0xb4
+  0x02024c50 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02024c50
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x2024c84
+  0x020113f0 d=2 cat=near               conf=high    callers=   1  sub_020113f0
+      | (no disasm line found at this addr)
+  0x0201ccb8 d=2 cat=near               conf=high    callers=   8  sub_0201ccb8
+      | (no disasm line found at this addr)
+  0x0202209c d=2 cat=bx_lr              conf=medium  callers=   1  sub_0202209c
+      | bx       lr
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #0x14
+  0x02024d38 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02024d38
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x168]
+  0x020223a4 d=2 cat=prologue           conf=high    callers=   0  sub_020223a4
+      | push     {r4, lr}
+      | ldr      r1, [pc, #0x148]
+      | ldr      r0, [r1]
+  0x02022848 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02022848
+      | (no disasm line found at this addr)
+  0x02021fc8 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02021fc8
+      | (no disasm line found at this addr)
+  0x0201d768 d=2 cat=prologue           conf=high    callers=   0  sub_0201d768
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0x14
+      | ldr      r0, [pc, #0x290]
+  0x02012c2c d=2 cat=prologue           conf=high    callers=   0  sub_02012c2c
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0xc
+      | bl       #0x201d548
+  0x0201622c d=2 cat=prologue           conf=high    callers=   0  sub_0201622c
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x8c
+      | mov      fp, sp
+  0x0201af90 d=2 cat=prologue           conf=high    callers=   0  sub_0201af90
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0xec
+      | mov      fp, sp
+  0x0200d954 d=2 cat=prologue           conf=high    callers=   0  sub_0200d954
+      | push     {r4, lr}
+      | ldr      r0, [pc, #0xa38]
+      | mov      r1, #0
+  0x020170a0 d=2 cat=bx_lr              conf=medium  callers=   1  sub_020170a0
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x2020f5c
+  0x02024ec0 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02024ec0
+      | bx       lr
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+  0x02022520 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02022520
+      | (no disasm line found at this addr)
+  0x02024660 d=2 cat=prologue           conf=high    callers=   0  sub_02024660
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #0x1c
+      | mov      r0, #0x14
+  0x0200cc24 d=2 cat=near               conf=high    callers=   3  sub_0200cc24
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x1c]
+  0x0201bea4 d=2 cat=prologue           conf=high    callers=   0  sub_0201bea4
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #0x3c
+      | ldr      r3, [pc, #0x768]
+  0x02024ec4 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02024ec4
+      | (no disasm line found at this addr)
+  0x0200e588 d=2 cat=prologue           conf=high    callers=   0  sub_0200e588
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x44
+      | mov      r0, #0x1e
+  0x02022028 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02022028
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | mov      r0, #0x5a
+  0x02013aa8 d=2 cat=prologue           conf=high    callers=   0  sub_02013aa8
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #0x24
+      | ldr      r0, [pc, #0x764]
+  0x020120ec d=2 cat=bx_lr              conf=medium  callers=   3  sub_020120ec
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x38]
+  0x02022a50 d=2 cat=near               conf=high    callers=   1  sub_02022a50
+      | bx       lr
+      | push     {r4, lr}
+      | sub      sp, sp, #0x10
+  0x02016a40 d=2 cat=prologue           conf=high    callers=   0  sub_02016a40
+      | push     {r4, r5, r6, r7, r8, lr}
+      | sub      sp, sp, #0x18
+      | mov      r0, #0x1e
+  0x02024614 d=2 cat=bx_lr              conf=medium  callers=   1  sub_02024614
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #0xc
+      | mov      r0, #0xc0
+  0x0202251c d=2 cat=bx_lr              conf=medium  callers=   1  sub_0202251c
+      | bx       lr
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #0x14
+  0x02022a54 d=2 cat=prologue           conf=high    callers=   0  sub_02022a54
+      | (no disasm line found at this addr)
+  0x0201557c d=2 cat=bx_lr              conf=medium  callers=   1  sub_0201557c
+      | (no disasm line found at this addr)
+  0x02029a8c d=2 cat=bx_lr              conf=medium  callers=   1  sub_02029a8c
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+  0x02029a2c d=2 cat=bx_lr              conf=medium  callers=   1  sub_02029a2c
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+  0x02021bb4 d=2 cat=near               conf=high    callers=   2  sub_02021bb4
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+  0x0200a098 d=2 cat=near               conf=high    callers=  48  sub_0200a098
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+
+### Tier: worker (190 funcs) ###
+  0x02027ee8 d=3 cat=bx_lr              conf=medium  callers=   6  sub_02027ee8
+      | mov      r0, #1
+      | bx       lr
+      | stmdb    sp!, {lr}
+  0x02030230 d=3 cat=prologue           conf=high    callers=   0  sub_02030230
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0xc
+      | sub      r4, r1, #0x10
+  0x0203a1e4 d=3 cat=bx_lr              conf=medium  callers=  48 *known* vec3_add_scaled
+      | (no disasm line found at this addr)
+  0x02030270 d=3 cat=bx_lr              conf=medium  callers=  10  sub_02030270
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | cmp      r1, #0
+  0x0203a73c d=3 cat=bx_lr              conf=medium  callers=  27 *known* vec3_scale
+      | mov      ip, #0
+      | cmp      ip, r2
+      | ldrhlt   r3, [r0, ip]
+  0x0202ad74 d=3 cat=prologue           conf=high    callers=   0  sub_0202ad74
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0x14
+      | ldr      r5, [pc, #0x88]
+  0x02027ff4 d=3 cat=bx_lr              conf=medium  callers=  26 *known* mem_set_32
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | mov      r1, r0
+  0x0202a9f4 d=3 cat=prologue           conf=high    callers=   0  sub_0202a9f4
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x24
+      | ldr      r4, [sp, #0x48]
+  0x0201dcc8 d=3 cat=near               conf=high    callers=   4  sub_0201dcc8
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | add      r0, sp, #0
+  0x0201dcf4 d=3 cat=prologue           conf=high    callers=   0  sub_0201dcf4
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0x14
+      | ldr      r2, [pc, #0xc4]
+  0x020284f0 d=3 cat=bx_lr              conf=medium  callers=   2  sub_020284f0
+      | ldr      r1, [r0, #8]
+      | ldr      r2, [pc, #0x44]
+      | cmp      r1, r2
+  0x0202bbe4 d=3 cat=near               conf=high    callers=   3  sub_0202bbe4
+      | ldr      ip, [pc, #0xc]
+      | mov      r2, r1
+      | mov      r1, r0
+  0x02029378 d=3 cat=prologue           conf=high    callers=   0  sub_02029378
+      | (no disasm line found at this addr)
+  0x0201ddd0 d=3 cat=prologue           conf=high    callers=   0  sub_0201ddd0
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #0x18
+      | ldr      r3, [pc, #0xd0]
+  0x0201deb8 d=3 cat=prologue           conf=high    callers=   0  sub_0201deb8
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #0x18
+      | ldr      r2, [pc, #0xc0]
+  0x02031f5c d=3 cat=bx_lr              conf=medium  callers=   4  sub_02031f5c
+      | ldr      r0, [r0]
+      | cmp      r0, #0
+      | strbne   r1, [r0, #0x41]
+  0x02021568 d=3 cat=prologue           conf=high    callers=   0  sub_02021568
+      | push     {r4, lr}
+      | bl       #0x20216c0
+      | cmp      r0, #0
+  0x02020f88 d=3 cat=prologue           conf=high    callers=   0  sub_02020f88
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x404]
+  0x02029ee0 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02029ee0
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0xa0]
+  0x02029de4 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02029de4
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x20]
+  0x02028c48 d=3 cat=prologue           conf=high    callers=   0  sub_02028c48
+      | push     {r4, r5, r6, lr}
+      | mov      r5, #0
+      | ldr      r4, [pc, #0x4c]
+  0x02029e18 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02029e18
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x20]
+  0x020296ec d=3 cat=bx_lr              conf=medium  callers=   1  sub_020296ec
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x114]
+  0x0202920c d=3 cat=prologue           conf=high    callers=   0  sub_0202920c
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | ldr      r4, [pc, #0x30]
+  0x02029e4c d=3 cat=bx_lr              conf=medium  callers=   1  sub_02029e4c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x74]
+  0x02029990 d=3 cat=prologue           conf=high    callers=   0  sub_02029990
+      | push     {r4, r5, r6, lr}
+      | bl       #0x2029a08
+      | cmp      r0, #0
+  0x02027f70 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02027f70
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x20]
+  0x02037df0 d=3 cat=prologue           conf=high    callers=   0  sub_02037df0
+      | push     {r4, r5, r6, lr}
+      | mov      r5, r0
+      | mov      r4, r1
+  0x020292d4 d=3 cat=prologue           conf=high    callers=   0  sub_020292d4
+      | push     {r4, r5, r6, r7, r8, sb, sl, lr}
+      | mov      r7, #0
+      | ldr      r6, [pc, #0x6c]
+  0x0202bb78 d=3 cat=prologue           conf=high    callers=   0  sub_0202bb78
+      | push     {r4, r5, r6, lr}
+      | mov      r6, #0
+      | ldr      r5, [pc, #0x38]
+  0x02029d78 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02029d78
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x50]
+  0x02029a9c d=3 cat=bx_lr              conf=medium  callers=   1  sub_02029a9c
+      | (no disasm line found at this addr)
+  0x02029a3c d=3 cat=bx_lr              conf=medium  callers=   1  sub_02029a3c
+      | (no disasm line found at this addr)
+  0x020216c0 d=3 cat=near               conf=high    callers=  25  sub_020216c0
+      | (no disasm line found at this addr)
+  0x02021e6c d=3 cat=bx_lr              conf=medium  callers=   2  sub_02021e6c
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+  0x0202d0d4 d=3 cat=near               conf=high    callers=  15  sub_0202d0d4
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x202db80
+  0x02020f18 d=3 cat=bx_lr              conf=medium  callers=   6  sub_02020f18
+      | (no disasm line found at this addr)
+  0x02021e7c d=3 cat=bx_lr              conf=medium  callers=   4  sub_02021e7c
+      | (no disasm line found at this addr)
+  0x0202f0e8 d=3 cat=prologue           conf=high    callers=   0  sub_0202f0e8
+      | push     {r4, lr}
+      | ldr      r1, [pc, #0x58]
+      | mov      r4, r0
+  0x02044a94 d=3 cat=prologue           conf=high    callers=   0  sub_02044a94
+      | push     {r4, lr}
+      | mov      r4, r0
+      | mov      r0, #1
+  0x02020d40 d=3 cat=near               conf=high    callers=   2  sub_02020d40
+      | (no disasm line found at this addr)
+  0x0202cf68 d=3 cat=bx_lr              conf=medium  callers=   4  sub_0202cf68
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x148]
+  0x0203e760 d=3 cat=prologue           conf=high    callers=   0  sub_0203e760
+      | push     {r4, lr}
+      | movs     r4, r0
+      | popeq    {r4, lr}
+  0x0203ec80 d=3 cat=bx_lr              conf=medium  callers=   1  sub_0203ec80
+      | (no disasm line found at this addr)
+  0x0203a1d8 d=3 cat=bx_lr              conf=medium  callers=   3  sub_0203a1d8
+      | mov      r0, #0
+      | mcr      p15, #0, r0, c7, c0, #4
+      | bx       lr
+  0x0204b6e8 d=3 cat=prologue           conf=high    callers=   0  sub_0204b6e8
+      | push     {r4, lr}
+      | sub      sp, sp, #0x10
+      | ldr      r2, [pc, #0xfc]
+  0x02039f9c d=3 cat=bx_lr              conf=medium  callers=   6  sub_02039f9c
+      | subs     r0, r0, #4
+      | bhs      #0x2039f9c
+      | bx       lr
+  0x02039f4c d=3 cat=bx_lr              conf=medium  callers= 154 *known* vec3_dot_product
+      | (no disasm line found at this addr)
+  0x0203ed4c d=3 cat=bx_lr              conf=medium  callers=   3  sub_0203ed4c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x28]
+  0x0203ec2c d=3 cat=bx_lr              conf=medium  callers=   2  sub_0203ec2c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x28]
+  0x0203ef18 d=3 cat=prologue           conf=high    callers=   0  sub_0203ef18
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x0203ebb4 d=3 cat=prologue           conf=high    callers=   0  sub_0203ebb4
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r4, r1
+  0x0203e854 d=3 cat=bx_lr              conf=medium  callers=   2  sub_0203e854
+      | (no disasm line found at this addr)
+  0x02039f38 d=3 cat=bx_lr              conf=medium  callers= 118 *known* vec3_normalize
+      | mrs      r0, apsr
+      | orr      r1, r0, #0x80
+      | msr      cpsr_c, r1
+  0x0203e838 d=3 cat=bx_lr              conf=medium  callers=   1  sub_0203e838
+      | ldr      r0, [pc, #0x10]
+      | ldrh     r0, [r0]
+      | ands     r0, r0, #1
+  0x02038078 d=3 cat=near               conf=high    callers=   4  sub_02038078
+      | ldr      ip, [pc, #0x24]
+      | mov      r1, #0
+      | ldrh     r3, [ip]
+  0x02037ff8 d=3 cat=bx_lr              conf=medium  callers=   4  sub_02037ff8
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      lr, [pc, #0x30]
+  0x02027900 d=3 cat=prologue           conf=high    callers=   0  sub_02027900
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x0203a880 d=3 cat=bx_lr              conf=medium  callers=  38 *known* vec3_sub
+      | cmp      r2, #0
+      | bxeq     lr
+      | tst      r1, #1
+  0x02027da0 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02027da0
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0xcc]
+  0x020276e4 d=3 cat=prologue           conf=high    callers=   0  sub_020276e4
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x0202d104 d=3 cat=prologue           conf=high    callers=   0  sub_0202d104
+      | push     {r4, lr}
+      | mov      r1, r0
+      | ldr      r0, [pc, #0x6c]
+  0x02021be8 d=3 cat=prologue           conf=high    callers=   0  sub_02021be8
+      | push     {r4, r5, r6, r7, r8, lr}
+      | ldr      r0, [pc, #0x238]
+      | ldr      r0, [r0]
+  0x0202d190 d=3 cat=near               conf=high    callers=   2  sub_0202d190
+      | ldr      ip, [pc, #0xc]
+      | mov      r2, r0
+      | ldr      r0, [pc, #8]
+  0x020279f4 d=3 cat=near               conf=high    callers=   1  sub_020279f4
+      | (no disasm line found at this addr)
+  0x0202dad4 d=3 cat=bx_lr              conf=medium  callers=   5  sub_0202dad4
+      | (no disasm line found at this addr)
+  0x02028a78 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02028a78
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x202653c
+  0x02027010 d=3 cat=near               conf=high    callers=   1  sub_02027010
+      | ldr      r1, [pc, #0x18]
+      | mov      r2, #0
+      | mvn      r0, #0
+  0x02028dc4 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02028dc4
+      | ldr      r1, [pc, #0x1c]
+      | mov      r2, #0
+      | mov      r0, r2
+  0x0202a7d8 d=3 cat=bx_lr              conf=medium  callers=   1  sub_0202a7d8
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      ip, [pc, #0x38]
+  0x02029bb0 d=3 cat=prologue           conf=high    callers=   0 *known* state_switch_8way_packed
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x14
+      | mov      r4, #0xa0
+  0x02029ab8 d=3 cat=bx_lr              conf=medium  callers=  60 *known* state_dispatch_8way
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | cmp      r0, #7
+  0x020113e0 d=3 cat=bx_lr              conf=medium  callers=   2  sub_020113e0
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0, #0xc]
+      | bx       lr
+  0x020207f0 d=3 cat=prologue           conf=high    callers=   0  sub_020207f0
+      | push     {r4, r5, r6, lr}
+      | ldr      r0, [pc, #0xd4]
+      | ldr      r0, [r0]
+  0x0201daf8 d=3 cat=prologue           conf=high    callers=   0  sub_0201daf8
+      | push     {r4, lr}
+      | ldr      r2, [pc, #0x2c]
+      | mov      r3, #1
+  0x0202bb4c d=3 cat=near               conf=high    callers=   8  sub_0202bb4c
+      | ldr      ip, [pc, #4]
+      | ldr      r1, [pc, #4]
+      | bx       ip
+  0x02022d04 d=3 cat=bx_lr              conf=medium  callers=   3  sub_02022d04
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #0xc
+      | ldr      r1, [pc, #0x48]
+  0x0202d784 d=3 cat=bx_lr              conf=medium  callers=   2  sub_0202d784
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x58]
+  0x02022c90 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02022c90
+      | ldr      r0, [pc, #0x64]
+      | mov      ip, #0
+      | ldr      r3, [r0]
+  0x02023098 d=3 cat=prologue           conf=high    callers=   0  sub_02023098
+      | push     {r4, r5, r6, r7, r8, lr}
+      | ldr      r1, [pc, #0x104]
+      | ldr      r0, [r1]
+  0x0201c71c d=3 cat=bx_lr              conf=medium  callers=   4  sub_0201c71c
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0]
+      | bx       lr
+  0x0202371c d=3 cat=prologue           conf=high    callers=   0  sub_0202371c
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x1c
+      | ldr      r1, [pc, #0x278]
+  0x02020d2c d=3 cat=bx_lr              conf=medium  callers=   3  sub_02020d2c
+      | ldr      r0, [pc, #8]
+      | mov      r1, #1
+      | str      r1, [r0]
+  0x02020f3c d=3 cat=bx_lr              conf=medium  callers=   3  sub_02020f3c
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+  0x02022ebc d=3 cat=prologue           conf=high    callers=   0  sub_02022ebc
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0x14
+      | mov      r1, #0xe
+  0x020239c4 d=3 cat=prologue           conf=high    callers=   0  sub_020239c4
+      | push     {fp, lr}
+      | sub      sp, sp, #8
+      | mov      fp, sp
+  0x020213c4 d=3 cat=prologue           conf=high    callers=   0  sub_020213c4
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | ldr      r3, [pc, #0x64]
+  0x0202d3cc d=3 cat=prologue           conf=high    callers=   0  sub_0202d3cc
+      | push     {r4, r5, r6, lr}
+      | ldr      r3, [pc, #0x118]
+      | mov      r6, r0
+  0x02023cd0 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02023cd0
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x34]
+  0x02021450 d=3 cat=bx_lr              conf=medium  callers=   5  sub_02021450
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r2, [pc, #0x4c]
+  0x02020f78 d=3 cat=near               conf=high    callers=   4  sub_02020f78
+      | (no disasm line found at this addr)
+  0x0202dae4 d=3 cat=bx_lr              conf=medium  callers=   1  sub_0202dae4
+      | ldr      r2, [pc, #8]
+      | str      r0, [r2]
+      | strh     r1, [r2, #4]
+  0x02022d68 d=3 cat=prologue           conf=high    callers=   0  sub_02022d68
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0x14
+      | ldr      r3, [pc, #0x134]
+  0x0202cef8 d=3 cat=bx_lr              conf=medium  callers=   1  sub_0202cef8
+      | ldr      r0, [pc, #4]
+      | ldrh     r0, [r0]
+      | bx       lr
+  0x0200babc d=3 cat=prologue           conf=high    callers=   0  sub_0200babc
+      | push     {r4, r5, r6, r7, r8, sb, sl, lr}
+      | mov      r1, #0x60
+      | mul      r3, r0, r1
+  0x0200aee4 d=3 cat=prologue           conf=high    callers=   0  sub_0200aee4
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x14
+      | ldr      r0, [pc, #0x128]
+  0x0201d548 d=3 cat=bx_lr              conf=medium  callers=   6  sub_0201d548
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0]
+      | bx       lr
+  0x02027e88 d=3 cat=bx_lr              conf=medium  callers=   2  sub_02027e88
+      | ldr      r0, [pc, #0x10]
+      | ldr      r1, [r0]
+      | cmp      r1, #2
+  0x0200c05c d=3 cat=prologue           conf=high    callers=   0  sub_0200c05c
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x34
+      | ldr      r6, [pc, #0x3a8]
+  0x0201f6d0 d=3 cat=prologue           conf=high    callers=   0  sub_0201f6d0
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x8c
+      | mov      fp, sp
+  0x0200b030 d=3 cat=bx_lr              conf=medium  callers=   4  sub_0200b030
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r3, [pc, #0x58]
+  0x0201cbdc d=3 cat=bx_lr              conf=medium  callers=   1  sub_0201cbdc
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x5c]
+  0x0204e3a4 d=3 cat=prologue           conf=high    callers=   0  sub_0204e3a4
+      | push     {r4, r5, r6, lr}
+      | ldr      lr, [pc, #0x534]
+      | eor      r4, r1, r3
+  0x0201ccc8 d=3 cat=near               conf=high    callers=   2  sub_0201ccc8
+      | ldr      r1, [pc, #0x1c]
+      | mov      r2, #0
+      | mov      r0, r2
+  0x0204bf70 d=3 cat=bx_lr              conf=medium  callers=   5  sub_0204bf70
+      | and      r2, r1, #0x80000000
+      | lsr      ip, r1, #0x14
+      | bics     ip, ip, #0x800
+  0x0204bc58 d=3 cat=prologue           conf=high    callers=   0  sub_0204bc58
+      | push     {r4, lr}
+      | eors     ip, r1, r3
+      | eormi    r3, r3, #0x80000000
+  0x02024c84 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02024c84
+      | (no disasm line found at this addr)
+  0x02011230 d=3 cat=prologue           conf=high    callers=   0  sub_02011230
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | bl       #0x201f6d0
+  0x02010f84 d=3 cat=prologue           conf=high    callers=   0  sub_02010f84
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #0x44
+      | ldr      r3, [pc, #0x1fc]
+  0x02029820 d=3 cat=near               conf=high    callers=   2  sub_02029820
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0]
+      | bx       lr
+  0x02029840 d=3 cat=near               conf=high    callers=  11  sub_02029840
+      | ldr      r2, [pc, #0x10]
+      | ldr      r1, [pc, #0x10]
+      | mov      r3, #0
+  0x02029698 d=3 cat=prologue           conf=high    callers=   0  sub_02029698
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x02029830 d=3 cat=near               conf=high    callers=  12  sub_02029830
+      | (no disasm line found at this addr)
+  0x02029860 d=3 cat=prologue           conf=high    callers=   0  sub_02029860
+      | push     {r4, r5, r6, r7, r8, sb, lr}
+      | sub      sp, sp, #4
+      | movs     sb, r0
+  0x0202804c d=3 cat=bx_lr              conf=medium  callers=   2  sub_0202804c
+      | ldr      ip, [pc, #8]
+      | mov      r1, r0
+      | ldr      r0, [pc, #4]
+  0x02022290 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02022290
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0xf4]
+  0x02029a58 d=3 cat=bx_lr              conf=medium  callers=  67 *known* simple_set_var_4byte
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+  0x0201cc60 d=3 cat=bx_lr              conf=medium  callers=   5  sub_0201cc60
+      | ldr      r1, [pc, #4]
+      | strh     r0, [r1]
+      | bx       lr
+  0x0201ccf0 d=3 cat=prologue           conf=high    callers=   0  sub_0201ccf0
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #8
+      | ldr      r1, [pc, #0xa0]
+  0x0201cc70 d=3 cat=bx_lr              conf=medium  callers=   1  sub_0201cc70
+      | (no disasm line found at this addr)
+  0x02028354 d=3 cat=near               conf=high    callers=   2  sub_02028354
+      | push     {r0, r1, r2, r3}
+      | push     {r4, r5, r6, lr}
+      | movs     r5, r0
+  0x0201d558 d=3 cat=bx_lr              conf=medium  callers=   1  sub_0201d558
+      | (no disasm line found at this addr)
+  0x0201efa0 d=3 cat=prologue           conf=high    callers=   0  sub_0201efa0
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #0x204
+      | ldr      r0, [pc, #0x204]
+  0x02011424 d=3 cat=prologue           conf=high    callers=   0  sub_02011424
+      | push     {r4, r5, r6, r7, r8, lr}
+      | sub      sp, sp, #0x20
+      | bl       #0x2020f5c
+  0x020206fc d=3 cat=prologue           conf=high    callers=   0  sub_020206fc
+      | push     {r4, lr}
+      | ldr      r2, [pc, #0xd8]
+      | mov      r1, #1
+  0x02020188 d=3 cat=prologue           conf=high    callers=   0  sub_02020188
+      | (no disasm line found at this addr)
+  0x02020d0c d=3 cat=bx_lr              conf=medium  callers=  39 *known* memcpy_32
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+  0x0200f81c d=3 cat=bx_lr              conf=medium  callers=   2  sub_0200f81c
+      | (no disasm line found at this addr)
+  0x0201e574 d=3 cat=bx_lr              conf=medium  callers=   2  sub_0201e574
+      | ldr      ip, [pc, #0x28]
+      | ldr      r3, [pc, #0x28]
+      | mov      r2, #0xc
+  0x02020374 d=3 cat=prologue           conf=high    callers=   0  sub_02020374
+      | push     {r4, lr}
+      | mov      r0, #8
+      | bl       #0x2006cfc
+  0x02027eb8 d=3 cat=bx_lr              conf=medium  callers=   4  sub_02027eb8
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0]
+      | bx       lr
+  0x020208fc d=3 cat=bx_lr              conf=medium  callers=   8  sub_020208fc
+      | ldr      r1, [pc, #0x28]
+      | mov      r0, #0
+      | ldr      r2, [r1]
+  0x02020f4c d=3 cat=near               conf=high    callers=  12  sub_02020f4c
+      | (no disasm line found at this addr)
+  0x02017720 d=3 cat=bx_lr              conf=medium  callers=   3  sub_02017720
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r2, [pc, #0x210]
+  0x0201a964 d=3 cat=prologue           conf=high    callers=   0  sub_0201a964
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x34
+      | mov      fp, sp
+  0x02018fe4 d=3 cat=prologue           conf=high    callers=   0  sub_02018fe4
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x34
+      | mov      fp, sp
+  0x0202c04c d=3 cat=prologue           conf=high    callers=   0  sub_0202c04c
+      | push     {r4, r5, r6, r7, r8, sb, lr}
+      | sub      sp, sp, #4
+      | mov      sb, r0
+  0x0201970c d=3 cat=prologue           conf=high    callers=   0  sub_0201970c
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x94
+      | mov      fp, sp
+  0x0200a06c d=3 cat=bx_lr              conf=medium  callers=   8  sub_0200a06c
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0, #4]
+      | bx       lr
+  0x0201a0b0 d=3 cat=prologue           conf=high    callers=   0  sub_0201a0b0
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x94
+      | mov      fp, sp
+  0x02018350 d=3 cat=prologue           conf=high    callers=   0  sub_02018350
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x114
+      | mov      fp, sp
+  0x02017950 d=3 cat=prologue           conf=high    callers=   0  sub_02017950
+      | (no disasm line found at this addr)
+  0x02017050 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02017050
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x38]
+  0x0200d60c d=3 cat=prologue           conf=high    callers=   0  sub_0200d60c
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #4
+      | ldr      r2, [pc, #0x318]
+  0x0200e414 d=3 cat=prologue           conf=high    callers=   0  sub_0200e414
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | ldr      r3, [pc, #0x11c]
+  0x0200b0a8 d=3 cat=prologue           conf=high    callers=   0  sub_0200b0a8
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #4
+      | bl       #0x200b28c
+  0x02020930 d=3 cat=near               conf=high    callers=   2  sub_02020930
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0]
+      | bx       lr
+  0x02020940 d=3 cat=prologue           conf=high    callers=   0  sub_02020940
+      | (no disasm line found at this addr)
+  0x0200c754 d=3 cat=prologue           conf=high    callers=   0  sub_0200c754
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | bl       #0x2020f5c
+  0x0200ae58 d=3 cat=bx_lr              conf=medium  callers=   2  sub_0200ae58
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x20208fc
+  0x0200ad6c d=3 cat=prologue           conf=high    callers=   0  sub_0200ad6c
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #4
+      | bl       #0x20216c0
+  0x02020274 d=3 cat=prologue           conf=high    callers=   0  sub_02020274
+      | push     {r4, lr}
+      | mov      r0, #8
+      | bl       #0x2006cfc
+  0x0200b3f8 d=3 cat=prologue           conf=high    callers=   0  sub_0200b3f8
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x4c
+      | ldr      r0, [pc, #0x414]
+  0x0202c320 d=3 cat=bx_lr              conf=medium  callers=   7  sub_0202c320
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | cmp      r0, #4
+  0x0202bd64 d=3 cat=prologue           conf=high    callers=   0  sub_0202bd64
+      | push     {r4, r5, r6, r7, r8, sb, sl, lr}
+      | ldr      r6, [sp, #0x20]
+      | mov      sb, r0
+  0x02028dec d=3 cat=bx_lr              conf=medium  callers=   9  sub_02028dec
+      | ldr      r0, [pc, #0x24]
+      | mov      r2, #0
+      | mov      r1, r2
+  0x0202bc10 d=3 cat=prologue           conf=high    callers=   0  sub_0202bc10
+      | push     {r4, r5, r6, r7, r8, sb, sl, lr}
+      | mov      r7, #0
+      | mov      sb, r7
+  0x02028b34 d=3 cat=bx_lr              conf=medium  callers=   9  sub_02028b34
+      | ldr      r1, [pc, #0x18]
+      | mov      r2, #0
+      | mov      r0, r2
+  0x0202c538 d=3 cat=bx_lr              conf=medium  callers=   9  sub_0202c538
+      | (no disasm line found at this addr)
+  0x0202935c d=3 cat=near               conf=high    callers=   9  sub_0202935c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x2026c5c
+  0x02021634 d=3 cat=bx_lr              conf=medium  callers=   5  sub_02021634
+      | push     {r0, r1, r2, r3}
+      | ldr      r2, [sp]
+      | ldr      r0, [pc, #0x10]
+  0x02021bc4 d=3 cat=near               conf=high    callers=   5  sub_02021bc4
+      | (no disasm line found at this addr)
+  0x02021658 d=3 cat=bx_lr              conf=medium  callers=   4  sub_02021658
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x38]
+  0x0202bbfc d=3 cat=near               conf=high    callers=  21  sub_0202bbfc
+      | (no disasm line found at this addr)
+  0x02020170 d=3 cat=near               conf=high    callers=   2  sub_02020170
+      | ldr      r0, [pc, #8]
+      | ldr      ip, [pc, #8]
+      | ldr      r0, [r0]
+  0x0201eec0 d=3 cat=near               conf=high    callers=   2  sub_0201eec0
+      | (no disasm line found at this addr)
+  0x02028b80 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02028b80
+      | mov      r2, #0x18
+      | mul      r3, r0, r2
+      | ldr      ip, [pc, #0x40]
+  0x0202c51c d=3 cat=bx_lr              conf=medium  callers=   8  sub_0202c51c
+      | ldr      ip, [pc, #0xc]
+      | ldr      r0, [pc, #0xc]
+      | mov      r1, #0
+  0x02027fa4 d=3 cat=bx_lr              conf=medium  callers=  10  sub_02027fa4
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x34]
+  0x02028eac d=3 cat=bx_lr              conf=medium  callers=  14  sub_02028eac
+      | str      r2, [r0, #4]
+      | str      r1, [r0]
+      | ldr      r2, [sp]
+  0x0202bd34 d=3 cat=prologue           conf=high    callers=   0  sub_0202bd34
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x02028b58 d=3 cat=bx_lr              conf=medium  callers=   1  sub_02028b58
+      | str      r1, [r0]
+      | ldr      r1, [sp]
+      | str      r3, [r0, #8]
+  0x0202bd04 d=3 cat=prologue           conf=high    callers=   0  sub_0202bd04
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x0202ad30 d=3 cat=prologue           conf=high    callers=   0  sub_0202ad30
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0xc
+      | ldrb     ip, [sp, #0x18]
+  0x020354c8 d=3 cat=bx_lr              conf=medium  callers=   4  sub_020354c8
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r3, [pc, #0x58]
+  0x020209cc d=3 cat=prologue           conf=high    callers=   0  sub_020209cc
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x28c]
+  0x0200b2e8 d=3 cat=prologue           conf=high    callers=   0  sub_0200b2e8
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0xc
+      | mov      r0, #0
+  0x02015568 d=3 cat=bx_lr              conf=medium  callers=   3  sub_02015568
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0]
+      | bx       lr
+  0x02010200 d=3 cat=prologue           conf=high    callers=   0  sub_02010200
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #0x10
+      | ldr      r1, [pc, #0x1e0]
+  0x0202a888 d=3 cat=prologue           conf=high    callers=   0  sub_0202a888
+      | push     {r4, r5, r6, r7, r8, sb, lr}
+      | sub      sp, sp, #4
+      | mov      r7, r0
+  0x0202a28c d=3 cat=near               conf=high    callers=   1  sub_0202a28c
+      | ldr      r2, [r0]
+      | ldr      r1, [pc, #0x1c]
+      | str      r2, [r1]
+  0x0201e018 d=3 cat=bx_lr              conf=medium  callers=   2  sub_0201e018
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+  0x0200a0a8 d=3 cat=near               conf=high    callers=   6  sub_0200a0a8
+      | (no disasm line found at this addr)
+  0x0202c5bc d=3 cat=prologue           conf=high    callers=   0  sub_0202c5bc
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | ldr      r2, [pc, #0x38]
+  0x02012b50 d=3 cat=prologue           conf=high    callers=   0  sub_02012b50
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0xc
+      | mov      r0, #0
+  0x020147d8 d=3 cat=bx_lr              conf=medium  callers=   2  sub_020147d8
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0]
+      | bx       lr
+  0x0201f1ec d=3 cat=prologue           conf=high    callers=   0  sub_0201f1ec
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x1d4]
+  0x0200a7f0 d=3 cat=prologue           conf=high    callers=   0  sub_0200a7f0
+      | push     {r4, r5, r6, lr}
+      | bl       #0x200a2b8
+      | ldr      r0, [pc, #0xdc]
+  0x0200a234 d=3 cat=bx_lr              conf=medium  callers=   1  sub_0200a234
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x5c]
+  0x0202bb60 d=3 cat=near               conf=high    callers=   1  sub_0202bb60
+      | (no disasm line found at this addr)
+
+### Tier: leaf_helper (239 funcs) ###
+  0x02030300 d=4 cat=prologue           conf=high    callers=   0  sub_02030300
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #8
+      | mov      r5, r1
+  0x0203081c d=4 cat=near               conf=high    callers=   2  sub_0203081c
+      | ldrh     r2, [r1, #2]
+      | add      r3, r1, #0x10
+      | asr      r2, r2, #8
+  0x020307f4 d=4 cat=bx_lr              conf=medium  callers=   4  sub_020307f4
+      | ldr      r2, [r1, #8]
+      | ldr      r1, [r1, #0xc]
+      | cmp      r2, #0
+  0x020303f8 d=4 cat=prologue           conf=high    callers=   0  sub_020303f8
+      | push     {r4, r5, r6, r7, r8, sb, lr}
+      | sub      sp, sp, #4
+      | add      r0, r0, #0x24
+  0x020304bc d=4 cat=prologue           conf=high    callers=   0  sub_020304bc
+      | push     {r4, r5, r6, r7, r8, sb, lr}
+      | sub      sp, sp, #4
+      | add      r0, r0, #0x24
+  0x0202b644 d=4 cat=prologue           conf=high    callers=   0  sub_0202b644
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x44
+      | ldr      r4, [sp, #0x6c]
+  0x0202802c d=4 cat=bx_lr              conf=medium  callers=   1  sub_0202802c
+      | ldr      ip, [pc, #0x10]
+      | mov      r3, r0
+      | mov      r2, r1
+  0x020426c4 d=4 cat=near               conf=high    callers=   6  sub_020426c4
+      | ldr      r0, [pc, #8]
+      | ldr      r0, [r0]
+      | ldr      r0, [r0, #4]
+  0x0204202c d=4 cat=near               conf=high    callers=   3  sub_0204202c
+      | ldr      r0, [pc, #8]
+      | ldr      r0, [r0]
+      | ldr      r0, [r0]
+  0x02041fcc d=4 cat=near               conf=high    callers=   4  sub_02041fcc
+      | ldr      ip, [pc, #4]
+      | mov      r1, #2
+      | bx       ip
+  0x020426d8 d=4 cat=prologue           conf=high    callers=   0  sub_020426d8
+      | (no disasm line found at this addr)
+  0x02041fdc d=4 cat=near               conf=high    callers=   4  sub_02041fdc
+      | (no disasm line found at this addr)
+  0x02037ae0 d=4 cat=prologue           conf=high    callers=   0  sub_02037ae0
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0xc
+      | ldr      ip, [pc, #0x5c]
+  0x02039588 d=4 cat=bx_lr              conf=medium  callers=  11  sub_02039588
+      | mov      ip, #0
+      | mov      r1, #0
+      | mov      r0, #0
+  0x02037a88 d=4 cat=bx_lr              conf=medium  callers=   2  sub_02037a88
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x3c]
+  0x02037c0c d=4 cat=prologue           conf=high    callers=   0  sub_02037c0c
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #0xc
+      | ldr      r3, [pc, #0x144]
+  0x02037d70 d=4 cat=prologue           conf=high    callers=   0  sub_02037d70
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | bl       #0x2035938
+  0x02037b54 d=4 cat=bx_lr              conf=medium  callers=   2  sub_02037b54
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x2035924
+  0x02037b9c d=4 cat=bx_lr              conf=medium  callers=   2  sub_02037b9c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x4c]
+  0x020440e4 d=4 cat=prologue           conf=high    callers=   0  sub_020440e4
+      | push     {r4, lr}
+      | bl       #0x2043abc
+      | mov      r4, r0
+  0x020376a0 d=4 cat=prologue           conf=high    callers=   0  sub_020376a0
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x02037500 d=4 cat=prologue           conf=high    callers=   0  sub_02037500
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x020395f4 d=4 cat=bx_lr              conf=medium  callers=  24  sub_020395f4
+      | mov      ip, #0
+      | add      r1, r1, r0
+      | bic      r0, r0, #0x1f
+  0x020375d0 d=4 cat=prologue           conf=high    callers=   0  sub_020375d0
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x02037830 d=4 cat=prologue           conf=high    callers=   0  sub_02037830
+      | push     {r4, lr}
+      | ldr      r3, [pc, #0x54]
+      | mov      r4, r0
+  0x02037898 d=4 cat=prologue           conf=high    callers=   0  sub_02037898
+      | push     {r4, lr}
+      | ldr      r3, [pc, #0x4c]
+      | mov      r4, r0
+  0x02028f2c d=4 cat=prologue           conf=high    callers=   0  sub_02028f2c
+      | push     {r4, r5, r6, r7, r8, sb, sl, lr}
+      | sub      sp, sp, #0x38
+      | movs     sb, r0
+  0x02037708 d=4 cat=prologue           conf=high    callers=   0  sub_02037708
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x02037568 d=4 cat=prologue           conf=high    callers=   0  sub_02037568
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x02037638 d=4 cat=prologue           conf=high    callers=   0  sub_02037638
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x02037498 d=4 cat=prologue           conf=high    callers=   0  sub_02037498
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x02029a08 d=4 cat=bx_lr              conf=medium  callers=   1  sub_02029a08
+      | ldr      r0, [pc, #0x14]
+      | ldr      r0, [r0]
+      | cmp      r0, #0
+  0x02031640 d=4 cat=prologue           conf=high    callers=   0  sub_02031640
+      | push     {r4, lr}
+      | mov      r4, #0
+      | mov      r0, r4
+  0x020388ec d=4 cat=prologue           conf=high    callers=   0  sub_020388ec
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | bl       #0x2039f38
+  0x02028ca8 d=4 cat=bx_lr              conf=medium  callers=   1  sub_02028ca8
+      | mov      r2, #0x44
+      | mul      r2, r0, r2
+      | ldr      ip, [r1]
+  0x0202ba40 d=4 cat=prologue           conf=high    callers=   0  sub_0202ba40
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r4, r1
+  0x02036b48 d=4 cat=bx_lr              conf=medium  callers=   1  sub_02036b48
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r2, [pc, #0x60]
+  0x02026c78 d=4 cat=prologue           conf=high    callers=   0  sub_02026c78
+      | (no disasm line found at this addr)
+  0x0202db80 d=4 cat=bx_lr              conf=medium  callers=   1  sub_0202db80
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | mov      r0, #3
+  0x02043c70 d=4 cat=bx_lr              conf=medium  callers=  18  sub_02043c70
+      | ldr      r2, [pc, #0xc]
+      | ldr      r2, [r2]
+      | add      r0, r2, r0, lsl #2
+  0x0204399c d=4 cat=bx_lr              conf=medium  callers=  20  sub_0204399c
+      | push     {r0, r1, r2, r3}
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+  0x02043b44 d=4 cat=near               conf=high    callers=  15  sub_02043b44
+      | push     {r0, r1, r2, r3}
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+  0x0202e964 d=4 cat=bx_lr              conf=medium  callers=   2  sub_0202e964
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | mov      r0, #3
+  0x0202e9a8 d=4 cat=bx_lr              conf=medium  callers=   1  sub_0202e9a8
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x64]
+  0x0202dc98 d=4 cat=bx_lr              conf=medium  callers=   2  sub_0202dc98
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | mov      r0, #3
+  0x0202dcdc d=4 cat=bx_lr              conf=medium  callers=   1  sub_0202dcdc
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x5c]
+  0x0203f1dc d=4 cat=bx_lr              conf=medium  callers=   4  sub_0203f1dc
+      | ldr      r1, [pc, #0xc]
+      | ldr      r0, [r1]
+      | cmp      r0, #0
+  0x0203ecbc d=4 cat=bx_lr              conf=medium  callers=   1  sub_0203ecbc
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | cmp      r0, #0
+  0x0204b6a0 d=4 cat=bx_lr              conf=medium  callers=   2  sub_0204b6a0
+      | ldr      r2, [pc, #0x3c]
+      | ldrh     r1, [r2]
+      | and      r1, r1, #0xc
+  0x0204b5c4 d=4 cat=prologue           conf=high    callers=   0  sub_0204b5c4
+      | push     {r4, lr}
+      | mov      r4, r1
+      | ldr      r1, [r4]
+  0x0204b5ec d=4 cat=prologue           conf=high    callers=   0  sub_0204b5ec
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | mov      r7, r0
+  0x0204b66c d=4 cat=bx_lr              conf=medium  callers=   2  sub_0204b66c
+      | ldr      r3, [pc, #0x28]
+      | ldr      r2, [r0]
+      | ldrh     r1, [r3]
+  0x0203ed88 d=4 cat=bx_lr              conf=medium  callers=   3  sub_0203ed88
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | cmp      r0, #1
+  0x0203ec68 d=4 cat=bx_lr              conf=medium  callers=   1  sub_0203ec68
+      | ldr      ip, [pc, #0xc]
+      | mov      r2, r1
+      | mov      r1, r0
+  0x0203f180 d=4 cat=bx_lr              conf=medium  callers=   2  sub_0203f180
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r2, [pc, #0x40]
+  0x0203eb84 d=4 cat=prologue           conf=high    callers=   0  sub_0203eb84
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, #8
+  0x0203f1f4 d=4 cat=bx_lr              conf=medium  callers=   3  sub_0203f1f4
+      | (no disasm line found at this addr)
+  0x0203edf0 d=4 cat=near               conf=high    callers=   1  sub_0203edf0
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r2, [pc, #0x28]
+  0x020278d8 d=4 cat=near               conf=high    callers=   1  sub_020278d8
+      | ldr      r1, [pc, #0x14]
+      | ldr      r2, [pc, #0x14]
+      | ldrh     r3, [r1, #0x36]
+  0x02027a1c d=4 cat=prologue           conf=high    callers=   0  sub_02027a1c
+      | push     {r4, r5, r6, r7, r8, sb, lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x150]
+  0x02027ba0 d=4 cat=bx_lr              conf=medium  callers=   1  sub_02027ba0
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x38]
+  0x02045700 d=4 cat=prologue           conf=high    callers=   0  sub_02045700
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0xc
+      | mov      sl, r0
+  0x0202f0c4 d=4 cat=near               conf=high    callers=  49  sub_0202f0c4
+      | ldr      r1, [pc, #0x14]
+      | ldr      r1, [r1]
+      | sub      r1, r1, #9
+  0x020216b4 d=4 cat=near               conf=high    callers=   1  sub_020216b4
+      | ldr      r0, [pc]
+      | bx       lr
+      | andseq   r7, r0, #64, #2
+  0x0203a758 d=4 cat=bx_lr              conf=medium  callers=  18  sub_0203a758
+      | (no disasm line found at this addr)
+  0x0202d69c d=4 cat=prologue           conf=high    callers=   0  sub_0202d69c
+      | push     {r4, lr}
+      | mov      r4, #0
+      | mov      r2, r4
+  0x02023014 d=4 cat=prologue           conf=high    callers=   0  sub_02023014
+      | (no disasm line found at this addr)
+  0x020283f0 d=4 cat=bx_lr              conf=medium  callers=  11  sub_020283f0
+      | ldr      r3, [r1]
+      | ldr      r2, [r0]
+      | cmp      r2, r3
+  0x020082cc d=4 cat=near               conf=high    callers=  33  sub_020082cc
+      | ldr      r2, [pc, #0x10]
+      | mov      r1, #0x58
+      | ldr      r2, [r2]
+  0x0202b0c0 d=4 cat=prologue           conf=high    callers=   0  sub_0202b0c0
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x24
+      | ldr      r5, [pc, #0xf4]
+  0x02020d54 d=4 cat=near               conf=high    callers=   2  sub_02020d54
+      | push     {r0, r1, r2, r3}
+      | ldrb     r2, [sp]
+      | ldr      r3, [pc, #0x14]
+  0x02044040 d=4 cat=bx_lr              conf=medium  callers=   1  sub_02044040
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #0xc
+      | add      r0, sp, #0
+  0x0202f070 d=4 cat=bx_lr              conf=medium  callers=   1  sub_0202f070
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | mov      r0, #3
+  0x020444fc d=4 cat=prologue           conf=high    callers=   0  sub_020444fc
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | bl       #0x2039f38
+  0x020274f0 d=4 cat=bx_lr              conf=medium  callers=   1  sub_020274f0
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | mov      r0, #2
+  0x0202f950 d=4 cat=prologue           conf=high    callers=   0  sub_0202f950
+      | push     {r4, r5, r6, r7, r8, lr}
+      | mov      r0, #3
+      | bl       #0x202f420
+  0x0201f48c d=4 cat=prologue           conf=high    callers=   0  sub_0201f48c
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x50]
+  0x0207a888 d=4 cat=single_caller_real conf=low     callers=   1  sub_0207a888
+      | andeq    r0, r0, r0
+      | andeq    r0, r0, r0
+      | andeq    r0, r0, r0
+  0x0205f8f4 d=4 cat=single_caller_real conf=low     callers=   1  sub_0205f8f4
+      | andeq    r0, r2, r2
+      | andeq    r0, r1, r0
+      | andeq    r0, r2, r2
+  0x02028bd4 d=4 cat=prologue           conf=high    callers=   0  sub_02028bd4
+      | push     {r4, lr}
+      | mov      r4, r0
+      | str      r1, [r4, #0x10]
+  0x02026474 d=4 cat=prologue           conf=high    callers=   0  sub_02026474
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0x4c
+      | mov      r4, r0
+  0x02027034 d=4 cat=prologue           conf=high    callers=   0  sub_02027034
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #4
+      | ldrb     r4, [r1]
+  0x020298f4 d=4 cat=prologue           conf=high    callers=   0  sub_020298f4
+      | push     {r4, lr}
+      | ldr      r1, [pc, #0x74]
+      | mov      r4, r0
+  0x0201eef8 d=4 cat=prologue           conf=high    callers=   0  sub_0201eef8
+      | push     {r4, r5, r6, r7, r8, sb, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r1
+  0x0201e8a0 d=4 cat=prologue           conf=high    callers=   0  sub_0201e8a0
+      | push     {r4, lr}
+      | mov      r4, r0
+      | bl       #0x2004f88
+  0x0200f100 d=4 cat=prologue           conf=high    callers=   0  sub_0200f100
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x44
+      | ldr      r0, [pc, #0x310]
+  0x02011384 d=4 cat=prologue           conf=high    callers=   0  sub_02011384
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | movs     r4, r1
+  0x0200f708 d=4 cat=prologue           conf=high    callers=   0  sub_0200f708
+      | push     {r4, r5, r6, r7, r8, sb, sl, lr}
+      | sub      sp, sp, #8
+      | ldr      r2, [pc, #0xc8]
+  0x0200a40c d=4 cat=bx_lr              conf=medium  callers=   2  sub_0200a40c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0xc8]
+  0x02010694 d=4 cat=prologue           conf=high    callers=   0  sub_02010694
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #4
+      | ldr      r3, [pc, #0x19c]
+  0x0200f818 d=4 cat=bx_lr              conf=medium  callers=   2  sub_0200f818
+      | bx       lr
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #0xc
+  0x02010e1c d=4 cat=bx_lr              conf=medium  callers=   1  sub_02010e1c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r2, [pc, #0xb8]
+  0x0200a6a8 d=4 cat=bx_lr              conf=medium  callers=   1  sub_0200a6a8
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x118]
+  0x02010cac d=4 cat=bx_lr              conf=medium  callers=   1  sub_02010cac
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x148]
+  0x0202a2b8 d=4 cat=prologue           conf=high    callers=   0  sub_0202a2b8
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x4c
+      | ldr      sb, [sp, #0x70]
+  0x0200f450 d=4 cat=prologue           conf=high    callers=   0  sub_0200f450
+      | push     {r4, r5, r6, r7, r8, sb, sl, lr}
+      | ldr      r1, [pc, #0x28c]
+      | ldr      r0, [pc, #0x28c]
+  0x02029fd4 d=4 cat=prologue           conf=high    callers=   0  sub_02029fd4
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x5c
+      | str      r1, [sp, #4]
+  0x02010854 d=4 cat=prologue           conf=high    callers=   0  sub_02010854
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #0xc
+      | mov      r5, r0
+  0x020111dc d=4 cat=prologue           conf=high    callers=   0  sub_020111dc
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x02010964 d=4 cat=prologue           conf=high    callers=   0  sub_02010964
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x14
+      | mov      r2, #9
+  0x0200fbec d=4 cat=bx_lr              conf=medium  callers=   1  sub_0200fbec
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0xb0]
+  0x02010eec d=4 cat=bx_lr              conf=medium  callers=   1  sub_02010eec
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r2, [pc, #0x84]
+  0x0200a4fc d=4 cat=prologue           conf=high    callers=   0  sub_0200a4fc
+      | push     {r4, r5, r6, lr}
+      | sub      sp, sp, #0x10
+      | ldr      r0, [pc, #0x108]
+  0x0200a07c d=4 cat=near               conf=high    callers=  12  sub_0200a07c
+      | (no disasm line found at this addr)
+  0x02037360 d=4 cat=prologue           conf=high    callers=   0  sub_02037360
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x020371c0 d=4 cat=prologue           conf=high    callers=   0  sub_020371c0
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x020379c4 d=4 cat=prologue           conf=high    callers=   0  sub_020379c4
+      | push     {r4, lr}
+      | ldr      r3, [pc, #0x54]
+      | mov      r4, r0
+  0x02037228 d=4 cat=prologue           conf=high    callers=   0  sub_02037228
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x020373c8 d=4 cat=prologue           conf=high    callers=   0  sub_020373c8
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x02037a2c d=4 cat=prologue           conf=high    callers=   0  sub_02037a2c
+      | push     {r4, lr}
+      | ldr      r3, [pc, #0x4c]
+      | mov      r4, r0
+  0x02037430 d=4 cat=prologue           conf=high    callers=   0  sub_02037430
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x02037290 d=4 cat=prologue           conf=high    callers=   0  sub_02037290
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x020372f8 d=4 cat=prologue           conf=high    callers=   0  sub_020372f8
+      | push     {r4, r5, r6, lr}
+      | mov      r6, r0
+      | mov      r5, r1
+  0x0200b28c d=4 cat=bx_lr              conf=medium  callers=   1  sub_0200b28c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r3, [pc, #0x44]
+  0x0200bf9c d=4 cat=bx_lr              conf=medium  callers=   2  sub_0200bf9c
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+  0x0200bfac d=4 cat=bx_lr              conf=medium  callers=   1  sub_0200bfac
+      | (no disasm line found at this addr)
+  0x0200bef0 d=4 cat=prologue           conf=high    callers=   0  sub_0200bef0
+      | push     {r4, lr}
+      | ldr      r0, [pc, #0x8c]
+      | ldr      r0, [r0]
+  0x0200a910 d=4 cat=prologue           conf=high    callers=   0  sub_0200a910
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x44
+      | str      r0, [sp, #4]
+  0x02020474 d=4 cat=prologue           conf=high    callers=   0  sub_02020474
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x24
+      | ldr      r1, [pc, #0x268]
+  0x0203667c d=4 cat=bx_lr              conf=medium  callers=   2  sub_0203667c
+      | ldr      r0, [pc, #0x80]
+      | mov      r2, #0x4000000
+      | ldr      r1, [r2]
+  0x02036424 d=4 cat=bx_lr              conf=medium  callers=   2  sub_02036424
+      | mov      r0, #0x4000000
+      | ldr      r1, [r0]
+      | ldr      r0, [pc, #0x44]
+  0x020365fc d=4 cat=bx_lr              conf=medium  callers=   2  sub_020365fc
+      | ldr      r1, [pc, #0x70]
+      | ldr      r0, [pc, #0x70]
+      | ldr      r1, [r1]
+  0x0203675c d=4 cat=bx_lr              conf=medium  callers=   2  sub_0203675c
+      | ldr      r0, [pc, #0x14]
+      | ldrh     r0, [r0]
+      | and      r0, r0, #0x1f00
+  0x02036728 d=4 cat=bx_lr              conf=medium  callers=   2  sub_02036728
+      | ldr      r1, [pc, #0x28]
+      | mov      r0, #0x4000000
+      | ldrh     r1, [r1]
+  0x02036708 d=4 cat=bx_lr              conf=medium  callers=   2  sub_02036708
+      | ldr      r0, [pc, #0x14]
+      | ldrh     r0, [r0]
+      | and      r0, r0, #0x1f00
+  0x020363dc d=4 cat=bx_lr              conf=medium  callers=   2  sub_020363dc
+      | ldr      r1, [pc, #0x38]
+      | ldr      r0, [pc, #0x38]
+      | ldr      r1, [r1]
+  0x0203a7ec d=4 cat=bx_lr              conf=medium  callers=  37 *known* vec3_length
+      | cmp      r2, #0
+      | bxeq     lr
+      | tst      r0, #1
+  0x0203632c d=4 cat=bx_lr              conf=medium  callers=   2  sub_0203632c
+      | ldr      r1, [pc, #0x40]
+      | ldr      r0, [pc, #0x40]
+      | ldr      r1, [r1]
+  0x020364d0 d=4 cat=bx_lr              conf=medium  callers=   2  sub_020364d0
+      | ldr      r0, [pc, #0x14]
+      | ldrh     r0, [r0]
+      | and      r0, r0, #0x3c
+  0x0203649c d=4 cat=bx_lr              conf=medium  callers=   2  sub_0203649c
+      | ldr      r1, [pc, #0x28]
+      | mov      r0, #0x4000000
+      | ldrh     r1, [r1]
+  0x020364f0 d=4 cat=bx_lr              conf=medium  callers=   2  sub_020364f0
+      | ldr      r1, [pc, #0x70]
+      | ldr      r0, [pc, #0x70]
+      | ldr      r1, [r1]
+  0x0203647c d=4 cat=bx_lr              conf=medium  callers=   2  sub_0203647c
+      | ldr      r0, [pc, #0x14]
+      | ldrh     r0, [r0]
+      | and      r0, r0, #0x3c
+  0x02029fa4 d=4 cat=prologue           conf=high    callers=   0  sub_02029fa4
+      | push     {r4, lr}
+      | ldr      r4, [pc, #0x20]
+      | bl       #0x202653c
+  0x02037128 d=4 cat=prologue           conf=high    callers=   0  sub_02037128
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0xc
+      | ldr      r3, [pc, #0x5c]
+  0x020370dc d=4 cat=bx_lr              conf=medium  callers=   1  sub_020370dc
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x34]
+  0x0203719c d=4 cat=near               conf=high    callers=   1  sub_0203719c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x20358fc
+  0x02027364 d=4 cat=near               conf=high    callers=   1  sub_02027364
+      | ldr      r0, [pc, #0x18]
+      | mov      r2, #0
+      | mvn      r1, #0
+  0x02026c5c d=4 cat=near               conf=high    callers=   1  sub_02026c5c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | bl       #0x2030ca4
+  0x020287a0 d=4 cat=prologue           conf=high    callers=   0  sub_020287a0
+      | (no disasm line found at this addr)
+  0x020286ec d=4 cat=prologue           conf=high    callers=   0  sub_020286ec
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0x4c
+      | mov      r4, r0
+  0x02028790 d=4 cat=near               conf=high    callers=   2  sub_02028790
+      | ldr      r0, [pc, #4]
+      | ldr      r0, [r0]
+      | bx       lr
+  0x0202887c d=4 cat=bx_lr              conf=medium  callers=   2  sub_0202887c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | cmp      r2, #0
+  0x02037770 d=4 cat=prologue           conf=high    callers=   0  sub_02037770
+      | push     {r4, lr}
+      | ldr      r3, [pc, #0x50]
+      | mov      r4, r0
+  0x020377d0 d=4 cat=prologue           conf=high    callers=   0  sub_020377d0
+      | push     {r4, lr}
+      | ldr      r3, [pc, #0x50]
+      | mov      r4, r0
+  0x020378f4 d=4 cat=prologue           conf=high    callers=   0  sub_020378f4
+      | push     {r4, lr}
+      | ldr      r3, [pc, #0x54]
+      | mov      r4, r0
+  0x0203795c d=4 cat=prologue           conf=high    callers=   0  sub_0203795c
+      | push     {r4, lr}
+      | ldr      r3, [pc, #0x54]
+      | mov      r4, r0
+  0x0202651c d=4 cat=near               conf=high    callers=   1  sub_0202651c
+      | ldr      r1, [pc, #0x14]
+      | mov      r0, #5
+      | ldr      r2, [r1]
+  0x0200a2b8 d=4 cat=bx_lr              conf=medium  callers=   1  sub_0200a2b8
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #0xc
+      | bl       #0x203fb94
+  0x02038940 d=4 cat=near               conf=high    callers=   1  sub_02038940
+      | ldr      r0, [r0, #0x64]
+      | cmp      r0, #2
+      | moveq    r0, #1
+  0x02038954 d=4 cat=prologue           conf=high    callers=   0  sub_02038954
+      | (no disasm line found at this addr)
+  0x020391a8 d=4 cat=prologue           conf=high    callers=   0  sub_020391a8
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | mov      r6, r0
+  0x02030794 d=5 cat=bx_lr              conf=medium  callers=   5  sub_02030794
+      | ldr      r3, [r0]
+      | mov      r2, #0
+      | strh     r1, [r3]
+  0x020307c4 d=5 cat=bx_lr              conf=medium  callers=   4  sub_020307c4
+      | str      r2, [r1, #8]
+      | cmp      r2, #0
+      | ldrne    r3, [r2, #0xc]
+  0x02030584 d=5 cat=prologue           conf=high    callers=   0  sub_02030584
+      | push     {r4, r5, r6, r7, r8, lr}
+      | sub      sp, sp, #0x18
+      | mov      r7, r0
+  0x02042344 d=5 cat=prologue           conf=high    callers=   0  sub_02042344
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | ldr      r4, [pc, #0x34]
+  0x020427cc d=5 cat=prologue           conf=high    callers=   0  sub_020427cc
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #4
+      | mov      sl, r0
+  0x0203a420 d=5 cat=prologue           conf=high    callers=   0  sub_0203a420
+      | push     {r4, r5, r6, r7, r8, lr}
+      | mov      r5, r3
+      | mov      r6, r2
+  0x0203a76c d=5 cat=bx_lr              conf=medium  callers=  19  sub_0203a76c
+      | add      ip, r1, r2
+      | cmp      r1, ip
+      | ldmlt    r0!, {r2}
+  0x0203a3b0 d=5 cat=prologue           conf=high    callers=   0  sub_0203a3b0
+      | push     {r4, lr}
+      | mov      r4, r0
+      | bl       #0x2039f38
+  0x02035b58 d=5 cat=bx_lr              conf=medium  callers=   2  sub_02035b58
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0xd4]
+  0x0203a618 d=5 cat=prologue           conf=high    callers=   0  sub_0203a618
+      | push     {r4, r5, r6, r7, r8, lr}
+      | mov      r5, r3
+      | mov      r6, r2
+  0x02035938 d=5 cat=near               conf=high    callers=   1  sub_02035938
+      | (no disasm line found at this addr)
+  0x02035924 d=5 cat=near               conf=high    callers=   1  sub_02035924
+      | ldr      ip, [pc, #4]
+      | ldr      r0, [pc, #4]
+      | bx       ip
+  0x02035c4c d=5 cat=bx_lr              conf=medium  callers=   2  sub_02035c4c
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x1d8]
+  0x02043aa0 d=5 cat=near               conf=high    callers=   8  sub_02043aa0
+      | ldr      r0, [pc, #0x10]
+      | ldrh     r0, [r0]
+      | cmp      r0, #0
+  0x020395bc d=5 cat=bx_lr              conf=medium  callers=  41 *known* vec3_neg
+      | add      r1, r1, r0
+      | bic      r0, r0, #0x1f
+      | mcr      p15, #0, r0, c7, c6, #1
+  0x02043abc d=5 cat=near               conf=high    callers=  16  sub_02043abc
+      | (no disasm line found at this addr)
+  0x0203a5a0 d=5 cat=prologue           conf=high    callers=   0  sub_0203a5a0
+      | push     {r4, r5, r6, r7, r8, lr}
+      | movs     r5, r3
+      | mov      r8, r0
+  0x02036570 d=5 cat=bx_lr              conf=medium  callers=   1  sub_02036570
+      | ldr      r0, [pc, #0x80]
+      | mov      r2, #0x4000000
+      | ldr      r1, [r2]
+  0x02026ee4 d=5 cat=prologue           conf=high    callers=   0  sub_02026ee4
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | cmp      r0, #0xc8
+  0x02032644 d=5 cat=prologue           conf=high    callers=   0  sub_02032644
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | ldr      r5, [pc, #0x9c]
+  0x0203b148 d=5 cat=prologue           conf=high    callers=   0  sub_0203b148
+      | push     {r4, r5, r6, r7, r8, sb, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x02031cac d=5 cat=prologue           conf=high    callers=   0  sub_02031cac
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #4
+      | bl       #0x203b79c
+  0x02034ccc d=5 cat=prologue           conf=high    callers=   0  sub_02034ccc
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | ldr      r5, [pc, #0x100]
+  0x0203b3ec d=5 cat=prologue           conf=high    callers=   0  sub_0203b3ec
+      | push     {r4, r5, r6, lr}
+      | mov      r4, r0
+      | bl       #0x2039f38
+  0x02038720 d=5 cat=prologue           conf=high    callers=   0  sub_02038720
+      | push     {r4, r5, r6, lr}
+      | ldr      r0, [pc, #0xd0]
+      | ldr      r4, [pc, #0xd0]
+  0x02038e9c d=5 cat=bx_lr              conf=medium  callers=   1  sub_02038e9c
+      | ldr      ip, [r0]
+      | b        #0x2038eb0
+      | cmp      ip, r1
+  0x020369b8 d=5 cat=prologue           conf=high    callers=   0  sub_020369b8
+      | push     {r4, lr}
+      | sub      sp, sp, #8
+      | ldr      r1, [pc, #0x8c]
+  0x02030fec d=5 cat=bx_lr              conf=medium  callers=   1  sub_02030fec
+      | (no disasm line found at this addr)
+  0x0203101c d=5 cat=bx_lr              conf=medium  callers=   1  sub_0203101c
+      | (no disasm line found at this addr)
+  0x0203100c d=5 cat=bx_lr              conf=medium  callers=   1  sub_0203100c
+      | ldr      r1, [pc, #4]
+      | str      r0, [r1]
+      | bx       lr
+  0x02030fd8 d=5 cat=bx_lr              conf=medium  callers=   1  sub_02030fd8
+      | ldr      ip, [pc, #8]
+      | mov      r1, r0
+      | mov      r2, r0
+  0x02044adc d=5 cat=prologue           conf=high    callers=   0  sub_02044adc
+      | push     {r4, lr}
+      | mov      r4, r0
+      | bl       #0x2043a44
+  0x02044b84 d=5 cat=prologue           conf=high    callers=   0  sub_02044b84
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x02045e38 d=5 cat=near               conf=high    callers=   2  sub_02045e38
+      | ldr      ip, [pc]
+      | bx       ip
+      | andeq    r1, r4, #128, #20
+  0x0203eea4 d=5 cat=prologue           conf=high    callers=   0  sub_0203eea4
+      | push     {r4, r5, r6, lr}
+      | mov      r4, r0
+      | mov      r6, r1
+  0x020381ec d=5 cat=bx_lr              conf=medium  callers=   1  sub_020381ec
+      | ldr      r1, [pc]
+      | bx       r1
+      | andeq    r4, r3, #16, #6
+  0x020382f0 d=5 cat=near               conf=high    callers=   2  sub_020382f0
+      | ldr      ip, [pc, #0xc]
+      | ldr      r1, [pc, #0xc]
+      | ldr      r2, [pc, #0xc]
+  0x02038250 d=5 cat=bx_lr              conf=medium  callers=   2  sub_02038250
+      | ldrh     r0, [r0, #4]
+      | bx       lr
+      | ldr      r1, [pc, #0xc]
+  0x0203bdc0 d=5 cat=bx_lr              conf=medium  callers=  15  sub_0203bdc0
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r3, [sp]
+  0x0203ee2c d=5 cat=prologue           conf=high    callers=   0  sub_0203ee2c
+      | push     {r4, r5, r6, r7, r8, lr}
+      | mov      r7, r0
+      | mov      r6, r1
+  0x020279d8 d=5 cat=bx_lr              conf=medium  callers=   1  sub_020279d8
+      | ldr      r3, [pc, #0xc]
+      | ldr      r2, [pc, #0xc]
+      | str      r0, [r3]
+  0x020434e0 d=5 cat=prologue           conf=high    callers=   0  sub_020434e0
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | bl       #0x2039f38
+  0x02043568 d=5 cat=prologue           conf=high    callers=   0  sub_02043568
+      | push     {r4, lr}
+      | bl       #0x2039f38
+      | ldr      r1, [pc, #0x20]
+  0x020450c8 d=5 cat=prologue           conf=high    callers=   0  sub_020450c8
+      | push     {r4, r5, r6, r7, r8, sb, sl, lr}
+      | sub      sp, sp, #0x10
+      | mov      sl, r0
+  0x02044c10 d=5 cat=prologue           conf=high    callers=   0  sub_02044c10
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x14
+      | mov      sl, r0
+  0x0204523c d=5 cat=prologue           conf=high    callers=   0  sub_0204523c
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | mov      r7, r0
+  0x0202ae18 d=5 cat=prologue           conf=high    callers=   0  sub_0202ae18
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #0x14
+      | ldr      r5, [pc, #0x88]
+  0x0203a0f8 d=5 cat=near               conf=high    callers=   5  sub_0203a0f8
+      | ldr      ip, [pc, #0xc]
+      | mov      r1, r0
+      | ldr      r0, [pc, #8]
+  0x0204498c d=5 cat=prologue           conf=high    callers=   0  sub_0204498c
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x0202f3fc d=5 cat=near               conf=high    callers=   3  sub_0202f3fc
+      | ldr      r1, [pc, #8]
+      | ldr      r0, [r1, r0, lsl #2]
+      | ldrh     r0, [r0]
+  0x0202f420 d=5 cat=near               conf=high    callers=  11  sub_0202f420
+      | ldr      r1, [pc, #4]
+      | strh     r0, [r1]
+      | bx       lr
+  0x02049040 d=5 cat=prologue           conf=high    callers=   0  sub_02049040
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x0202fa1c d=5 cat=prologue           conf=high    callers=   0  sub_0202fa1c
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | mov      r1, #2
+  0x02028e20 d=5 cat=bx_lr              conf=medium  callers=   1  sub_02028e20
+      | ldr      r2, [r1]
+      | str      r2, [r0]
+      | ldr      r2, [r1, #8]
+  0x0203d520 d=5 cat=prologue           conf=high    callers=   0  sub_0203d520
+      | push     {r4, lr}
+      | mov      r1, #8
+      | mov      r4, r0
+  0x0203d568 d=5 cat=prologue           conf=high    callers=   0  sub_0203d568
+      | push     {r4, lr}
+      | sub      sp, sp, #8
+      | mov      r4, r0
+  0x0203d3f4 d=5 cat=near               conf=high    callers=  14  sub_0203d3f4
+      | ldr      ip, [pc, #4]
+      | mov      r3, #0
+      | bx       ip
+  0x0203d8b8 d=5 cat=bx_lr              conf=medium  callers=  10  sub_0203d8b8
+      | mov      r3, #0
+      | str      r3, [r0]
+      | ldr      r2, [r0]
+  0x02035480 d=5 cat=bx_lr              conf=medium  callers=   4  sub_02035480
+      | cmp      r1, #0
+      | moveq    r1, #0
+      | strheq   r1, [r0]
+  0x0203677c d=5 cat=bx_lr              conf=medium  callers=   3  sub_0203677c
+      | cmp      r2, #0
+      | orrlt    r1, r1, #0xc0
+      | strhlt   r1, [r0]
+  0x0201e5ac d=5 cat=bx_lr              conf=medium  callers=   1  sub_0201e5ac
+      | ldr      ip, [pc]
+      | bx       ip
+      | andeq    sl, r1, #192, #28
+  0x02027ec8 d=5 cat=bx_lr              conf=medium  callers=   1  sub_02027ec8
+      | (no disasm line found at this addr)
+  0x0202b1cc d=5 cat=prologue           conf=high    callers=   0  sub_0202b1cc
+      | push     {r4, r5, r6, r7, r8, sb, sl, fp, lr}
+      | sub      sp, sp, #0x44
+      | ldr      r4, [sp, #0x6c]
+  0x0203fae4 d=5 cat=bx_lr              conf=medium  callers=   2  sub_0203fae4
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r3, [r0, #4]
+  0x0200a1fc d=5 cat=bx_lr              conf=medium  callers=   1  sub_0200a1fc
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | movs     r1, r0
+  0x0203dbc8 d=5 cat=bx_lr              conf=medium  callers=   1  sub_0203dbc8
+      | ldr      ip, [r0]
+      | ldr      r3, [r0, #4]
+      | ldr      r2, [pc, #0x48]
+  0x0203dc34 d=5 cat=bx_lr              conf=medium  callers=   1  sub_0203dc34
+      | ldr      r1, [pc, #0x58]
+      | ldr      r2, [pc, #0x58]
+      | ldr      ip, [r1]
+  0x0200a680 d=5 cat=bx_lr              conf=medium  callers=   3  sub_0200a680
+      | bx       lr
+      | ldr      ip, [pc, #0x10]
+      | ldr      r1, [pc, #0x10]
+  0x0203fb58 d=5 cat=bx_lr              conf=medium  callers=   1  sub_0203fb58
+      | cmp      r2, #0
+      | moveq    r1, #0
+      | streq    r1, [r0]
+  0x0200a684 d=5 cat=bx_lr              conf=medium  callers=   1  sub_0200a684
+      | (no disasm line found at this addr)
+  0x0200a63c d=5 cat=bx_lr              conf=medium  callers=   1  sub_0200a63c
+      | ldr      r1, [r0]
+      | cmp      r1, #0
+      | bxeq     lr
+  0x0203637c d=5 cat=bx_lr              conf=medium  callers=   1  sub_0203637c
+      | mov      r0, #0x4000000
+      | ldr      r1, [r0]
+      | ldr      r0, [pc, #0x4c]
+  0x0200bcd8 d=5 cat=prologue           conf=high    callers=   0  sub_0200bcd8
+      | push     {r4, r5, r6, r7, r8, lr}
+      | sub      sp, sp, #0x80
+      | mov      r3, #0xf
+  0x02039fa8 d=5 cat=bx_lr              conf=medium  callers=   4  sub_02039fa8
+      | (no disasm line found at this addr)
+  0x0202653c d=5 cat=prologue           conf=high    callers=   0  sub_0202653c
+      | push     {r4, r5, r6, lr}
+      | ldr      r1, [pc, #0xcc]
+      | ldr      r0, [pc, #0xcc]
+  0x02035984 d=5 cat=bx_lr              conf=medium  callers=   2  sub_02035984
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #4
+      | ldr      r1, [pc, #0x70]
+  0x020358fc d=5 cat=bx_lr              conf=medium  callers=   1  sub_020358fc
+      | ldr      r2, [pc, #0x14]
+      | ldr      ip, [pc, #0x14]
+      | ldr      r1, [r2]
+  0x02030e20 d=5 cat=near               conf=high    callers=   3  sub_02030e20
+      | ldr      r0, [pc, #0x10]
+      | mov      r2, #0
+      | ldr      r1, [r0, #8]
+  0x02030ca4 d=5 cat=prologue           conf=high    callers=   0  sub_02030ca4
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | ldr      r0, [pc, #0x68]
+  0x02040940 d=5 cat=prologue           conf=high    callers=   0  sub_02040940
+      | (no disasm line found at this addr)
+  0x02041520 d=5 cat=near               conf=high    callers=   1  sub_02041520
+      | ldr      r1, [r2, #0x30]
+      | mov      r2, #0
+      | cmp      r0, r1
+  0x020393b0 d=5 cat=bx_lr              conf=medium  callers=   2  sub_020393b0
+      | mov      ip, #0
+      | str      ip, [r0, #4]
+      | ldr      r3, [r0, #4]
+  0x02038ad0 d=5 cat=prologue           conf=high    callers=   0  sub_02038ad0
+      | push     {r4, r5, r6, r7, r8, lr}
+      | mov      r8, r0
+      | mov      r5, r1
+  0x0203fb94 d=5 cat=near               conf=high    callers=   1  sub_0203fb94
+      | ldr      r0, [pc, #0x10]
+      | ldr      r1, [r0]
+      | cmp      r1, #1
+  0x02040934 d=5 cat=near               conf=high    callers=   1  sub_02040934
+      | ldr      ip, [pc]
+      | bx       ip
+      | andeq    ip, r3, #184, #10
+  0x02040a18 d=5 cat=bx_lr              conf=medium  callers=   1  sub_02040a18
+      | stmdb    sp!, {lr}
+      | sub      sp, sp, #0x24
+      | add      ip, sp, #0x20
+  0x02038838 d=5 cat=prologue           conf=high    callers=   0  sub_02038838
+      | push     {r4, r5, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+  0x0203886c d=5 cat=prologue           conf=high    callers=   0  sub_0203886c
+      | push     {r4, r5, r6, r7, lr}
+      | sub      sp, sp, #4
+      | mov      r5, r0
+
+### Tier: sfloat (14 funcs) ###
+  0x0204d8e8 d=3 cat=bx_lr              conf=medium  callers= 136 *known* __aeabi_fabs
+  0x0204c86c d=3 cat=bx_lr              conf=medium  callers=  29 *known* __aeabi_fdiv
+  0x0204d930 d=3 cat=bx_lr              conf=medium  callers=  23 *known* __aeabi_fclassify
+  0x0204db1c d=3 cat=bx_lr              conf=medium  callers=  38 *known* __aeabi_fadd
+  0x0204d7e8 d=3 cat=bx_lr              conf=medium  callers=  23  sub_0204d7e8
+  0x0204d86c d=3 cat=bx_lr              conf=medium  callers=  23 *known* __aeabi_fcmp
+  0x0204d430 d=3 cat=bx_lr              conf=medium  callers=  33 *known* __aeabi_fsub
+  0x0204c074 d=3 cat=bx_lr              conf=medium  callers=  19  sub_0204c074
+  0x0204c13c d=3 cat=prologue           conf=high    callers=   0  sub_0204c13c
+  0x0204c4b8 d=3 cat=prologue           conf=high    callers=   0  sub_0204c4b8
+  0x0204df9c d=3 cat=bx_lr              conf=medium  callers=   9  sub_0204df9c
+  0x0204cc84 d=4 cat=bx_lr              conf=medium  callers=   3  sub_0204cc84
+  0x0204cbc8 d=4 cat=bx_lr              conf=medium  callers=   4  sub_0204cbc8
+  0x0204c0c0 d=5 cat=bx_lr              conf=medium  callers=   1  sub_0204c0c0
+
+### Top 30 hot funcs (callers >= 10) — entry_zone vs not ###
+  0x02028434 vec2_set_inline callers=221 ez=3 other=33
+      entry_zone: 0x02008dc0,0x02008e84,0x02008f48
+      non-ez:     0x0200ee64,0x02013aa8,0x02014cdc
+  0x02039f4c vec3_dot_product callers=154 ez=0 other=105
+      entry_zone: 
+      non-ez:     0x0202f31c,0x0202f430,0x0202f7f8
+  0x02039f38 vec3_normalize callers=118 ez=0 other=107
+      entry_zone: 
+      non-ez:     0x0202f31c,0x0202f430,0x0202f7f8
+  0x02029a58 simple_set_var_4byte callers=67 ez=0 other=28
+      entry_zone: 
+      non-ez:     0x0200ad6c,0x0200d954,0x0200dd70
+  0x02029ab8 state_dispatch_8way callers=60 ez=0 other=17
+      entry_zone: 
+      non-ez:     0x0200cc54,0x02017128,0x02017986
+  0x0202f0c4 sub_0202f0c4 callers=49 ez=0 other=30
+      entry_zone: 
+      non-ez:     0x0202d104,0x0202d1b0,0x0202d3cc
+  0x0200a098 sub_0200a098 callers=48 ez=1 other=15
+      entry_zone: 0x02009e54
+      non-ez:     0x0200c448,0x0200d954,0x0200dd70
+  0x0203a1e4 vec3_add_scaled callers=48 ez=0 other=39
+      entry_zone: 
+      non-ez:     0x0200a2b8,0x0201df8c,0x02027548
+  0x020395bc vec3_neg callers=41 ez=0 other=22
+      entry_zone: 
+      non-ez:     0x0202e488,0x0203b768,0x0203b79c
+  0x02020d0c memcpy_32 callers=39 ez=0 other=4
+      entry_zone: 
+      non-ez:     0x0200d954,0x0200dd70,0x02012c2c
+  0x0203a880 vec3_sub callers=38 ez=0 other=30
+      entry_zone: 
+      non-ez:     0x020216d0,0x02027a7e,0x0202d28c
+  0x0203a7ec vec3_length callers=37 ez=0 other=14
+      entry_zone: 
+      non-ez:     0x0202c320,0x020331fc,0x02033f2c
+  0x020082cc sub_020082cc callers=33 ez=0 other=12
+      entry_zone: 
+      non-ez:     0x02015e28,0x02016004,0x02017986
+  0x0203a73c vec3_scale callers=27 ez=0 other=22
+      entry_zone: 
+      non-ez:     0x02037498,0x02037500,0x02037568
+  0x02027ff4 mem_set_32 callers=26 ez=0 other=14
+      entry_zone: 
+      non-ez:     0x0200bef0,0x0200c05c,0x0200c754
+  0x020216c0 sub_020216c0 callers=25 ez=0 other=17
+      entry_zone: 
+      non-ez:     0x0200ad6c,0x0200ae58,0x0200b854
+  0x020395f4 sub_020395f4 callers=24 ez=0 other=17
+      entry_zone: 
+      non-ez:     0x0202683e,0x02027ba0,0x02029de4
+  0x0202bbc4 sub_0202bbc4 callers=22 ez=1 other=19
+      entry_zone: 0x020088e8
+      non-ez:     0x0200b030,0x0200f100,0x0200f708
+  0x0202bbfc sub_0202bbfc callers=21 ez=0 other=10
+      entry_zone: 
+      non-ez:     0x0200f9dc,0x0200fbec,0x020120ec
+  0x02020f5c sub_02020f5c callers=20 ez=1 other=14
+      entry_zone: 0x020097f4
+      non-ez:     0x0200c754,0x0200c96a,0x02011424
+  0x0204399c sub_0204399c callers=20 ez=0 other=20
+      entry_zone: 
+      non-ez:     0x02043c88,0x020442bc,0x020443a4
+  0x0203a76c sub_0203a76c callers=19 ez=0 other=17
+      entry_zone: 
+      non-ez:     0x02032b30,0x02037128,0x020371c0
+  0x0202dac4 sub_0202dac4 callers=18 ez=1 other=8
+      entry_zone: 0x020097f4
+      non-ez:     0x02020d80,0x02020eb4,0x020216d0
+  0x02043c70 sub_02043c70 callers=18 ez=0 other=18
+      entry_zone: 
+      non-ez:     0x02044548,0x02044650,0x0204472c
+  0x0203a758 sub_0203a758 callers=18 ez=0 other=13
+      entry_zone: 
+      non-ez:     0x0202a7d8,0x02030584,0x02030970
+  0x0203a784 sub_0203a784 callers=16 ez=1 other=6
+      entry_zone: 0x0200900c
+      non-ez:     0x020268e8,0x0202c69c,0x02042104
+  0x02043abc sub_02043abc callers=16 ez=0 other=16
+      entry_zone: 
+      non-ez:     0x020440e4,0x020441b8,0x020442bc
+  0x0202d0d4 sub_0202d0d4 callers=15 ez=0 other=8
+      entry_zone: 
+      non-ez:     0x02020d80,0x02027548,0x02027900
+  0x02043b44 sub_02043b44 callers=15 ez=0 other=15
+      entry_zone: 
+      non-ez:     0x02044548,0x0204472c,0x02044874
+  0x0203bdc0 sub_0203bdc0 callers=15 ez=0 other=10
+      entry_zone: 
+      non-ez:     0x0203aeb4,0x0203b148,0x0203e11c

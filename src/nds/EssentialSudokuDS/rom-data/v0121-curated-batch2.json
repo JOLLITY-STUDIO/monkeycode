@@ -1,0 +1,96 @@
+{
+  "version": "V0.12.1",
+  "description": "V0.12.1 curated naming batch 2 (15 new entries on top of V0.12.0's 13). Manual disasm reading — high confidence patterns.",
+  "names": [
+    {
+      "addr": "0x02020f4c",
+      "name": "global_dword_get",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "1-level ptr deref to global dword. 12 callers — uses a different global than global_dword_load_chain (0x0202dac4). Likely state value accessor."
+    },
+    {
+      "addr": "0x0201eeb0",
+      "name": "global_dword_get_b",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "Same pattern as global_dword_get (1-level read) but different target global. 3 callers — second global state accessor."
+    },
+    {
+      "addr": "0x02029830",
+      "name": "state_set_c",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "Writes arg r0 to third global state slot. 12 callers — write side of state_*_get/set pattern."
+    },
+    {
+      "addr": "0x02029840",
+      "name": "state_set_struct_v2",
+      "disasm": "ldr r2, [pc, #0x10]; ldr r1, [pc, #0x10]; mov r3, #0; str r0, [r2]; str r3, [r1]; bx lr",
+      "note": "Writes arg r0 to one global + clears another (r3=0). 11 callers — likely entity state init."
+    },
+    {
+      "addr": "0x02027c44",
+      "name": "mem_byte_copy_signed",
+      "disasm": "cmp r2, #0; mov ip, #0; bxls lr; ldrsb r3, [r0, ip]; strb r3, [r1, ip]; add ip, ip, #1; cmp ip, r2; blo ...",
+      "note": "Signed byte copy loop (r1 = dst, r0 = src, r2 = count). 7 callers — narrow memcpy for byte strings."
+    },
+    {
+      "addr": "0x0201dc1c",
+      "name": "state_init_with_lift",
+      "disasm": "push {r0..r3}; push {r4..r7, lr}; sub sp, sp, #4; ldr r4, [sp, #0x20]; ldr r1, [pc, #0x88]; ...",
+      "note": "Wide register save + const loading — likely state init helper. 9 callers — entity creation / scene init."
+    },
+    {
+      "addr": "0x0201dcc8",
+      "name": "is_state_valid_flag",
+      "disasm": "stmdb sp!, {lr}; add r0, sp, #0; mov r1, #4; bl 0x201dcf4; cmp r0, #0; movne r0, #1; moveq r0, #0",
+      "note": "Calls validation helper with arg+4, returns 1/0. 4 callers — boolean state validity check."
+    },
+    {
+      "addr": "0x02020eb4",
+      "name": "state_reset_a_dispatcher",
+      "disasm": "stmdb sp!, {lr}; ldrh r1, [r0]; strh r1, [r0]=0; bl 0x202d40; bl 0x202dac4; cmp r0, #0; beq ...",
+      "note": "Clears state word then calls dispatch chain. 8 callers — level/scene reset dispatcher."
+    },
+    {
+      "addr": "0x0202bbfc",
+      "name": "tail_call_set_arg1_r2_set_arg0_0",
+      "disasm": "ldr ip, [pc, #8]; mov r2, r1; mov r1, #0; bx ip",
+      "note": "Tail-calls another fn with arg forwarding: r2=r1 (kept), r1=0 (cleared). 21 callers — used as inline helper."
+    },
+    {
+      "addr": "0x0202d0d4",
+      "name": "state_validate_early_return",
+      "disasm": "stmdb sp!, {lr}; bl 0x202db80; cmp r0, #0; addne sp, sp, #4; ldmne sp!, {lr}; bxne lr; mov r0, #0xa; ...",
+      "note": "Calls validation, early-returns if non-null. 15 callers — common 'if invalid goto err' guard."
+    },
+    {
+      "addr": "0x02028b34",
+      "name": "array_init_zero_0x18_stride",
+      "disasm": "mov r2, #0; mov r0, r2; add r2, r2, #1; cmp r2, #0xc8; str r0, [r1], #0x18; blt ...",
+      "note": "Zero-fills array of 200 elements stride 0x18 (24 bytes/elem). 9 callers — entity slot init."
+    },
+    {
+      "addr": "0x02028dec",
+      "name": "array_init_zero_0xc_stride_offset_8",
+      "disasm": "mov r2, #0; mov r1, r2; add r2, r2, #1; str r1, [r0, #8]; cmp r2, #0x3e8; add r0, r0, #0xc; blt ...",
+      "note": "Zero-fills 1000 entries stride 0xc, with offset 8 zero. 9 callers — likely scene/object slot reset."
+    },
+    {
+      "addr": "0x02030270",
+      "name": "mem_alloc_aligned_4",
+      "disasm": "stmdb sp!, {lr}; cmp r1, #0; moveq r1, #1; add r1, r1, #3; cmp r2, #0; bic r1, r1, #3; blt ...",
+      "note": "Aligned-4 allocator (round size up to 4-byte boundary). 10 callers — pool allocation helper."
+    },
+    {
+      "addr": "0x0202cf08",
+      "name": "scene_state_check_op_branch",
+      "disasm": "ldr r0, [pc, #0x48]; ldr r0, [r0]; cmp r0, #1; beq ...",
+      "note": "Loads global state, branches on ==1, else runs vec3 op (BL to vec3_add_scaled). 3 callers — state-conditional scene update."
+    },
+    {
+      "addr": "0x0202c60c",
+      "name": "init_trampoline_calls",
+      "disasm": "stmdb sp!, {lr}; bl 0x2029a9c; bl 0x2029a3c; bl 0x20296ec; bl 0x20292d4; bl 0x2029990; bl 0x2028c48; bl 0x202920c; bl 0x2029d78; ...",
+      "note": "Calls 8+ worker fns in sequence — init trampoline (subsystem init chain). 2 callers — likely scene startup entry."
+    }
+  ]
+}

@@ -1,0 +1,113 @@
+{
+  "size": 2112,
+  "first_byte": "0x01",
+  "version_field_at_0x200": "0xeeee",
+  "palette_bgr555": [
+    0,
+    6814,
+    16223,
+    9983,
+    4700,
+    31,
+    31744,
+    672,
+    23254,
+    15855,
+    8456,
+    6342,
+    5285,
+    32140,
+    32305,
+    32767
+  ],
+  "palette_rgb": [
+    [
+      0,
+      0,
+      0
+    ],
+    [
+      240,
+      160,
+      48
+    ],
+    [
+      248,
+      208,
+      120
+    ],
+    [
+      248,
+      184,
+      72
+    ],
+    [
+      224,
+      144,
+      32
+    ],
+    [
+      248,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      248
+    ],
+    [
+      0,
+      168,
+      0
+    ],
+    [
+      176,
+      176,
+      176
+    ],
+    [
+      120,
+      120,
+      120
+    ],
+    [
+      64,
+      64,
+      64
+    ],
+    [
+      48,
+      48,
+      48
+    ],
+    [
+      40,
+      40,
+      40
+    ],
+    [
+      96,
+      96,
+      248
+    ],
+    [
+      136,
+      136,
+      248
+    ],
+    [
+      248,
+      248,
+      248
+    ]
+  ],
+  "titles": {
+    "Japanese": "Essential Sudoku DS\nD3 Publisher",
+    "English": "Essential Sudoku DS\nD3 Publisher",
+    "French": "Essential Sudoku DS\nD3 Publisher",
+    "German": "Essential Sudoku DS\nD3 Publisher",
+    "Italian": "Essential Sudoku DS\nD3 Publisher",
+    "Spanish": "Essential Sudoku DS\nD3 Publisher"
+  }
+}

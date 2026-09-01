@@ -1,0 +1,66 @@
+<!--pages/picture/picture.wxml - 图画谜题玩法 (Picture Logic, 15x15)-->
+<navigation-bar title="图画谜题" back="{{true}}" color="black" background="#FFF"></navigation-bar>
+<view class="picture-page">
+
+  <!-- 顶部: 谜题名 + 序号 + 计时 -->
+  <view class="game-header">
+    <view class="header-left">
+      <text class="puzzle-name">{{puzzleName}}</text>
+      <text class="stat">#{{puzzleIndex + 1}}/{{puzzleCount}}</text>
+    </view>
+    <text class="timer">{{timerText}}</text>
+  </view>
+
+  <!-- 类别 chips (横向滚动) -->
+  <scroll-view scroll-x class="cat-scroll" enhanced show-scrollbar="{{false}}">
+    <view class="cat-row">
+      <view
+        wx:for="{{categories}}"
+        wx:key="key"
+        class="cat-chip {{currentFile === item.key ? 'cat-chip-active' : ''}}"
+        data-key="{{item.key}}"
+        bindtap="onTapCategory"
+      >{{item.label}}</view>
+    </view>
+  </scroll-view>
+
+  <!-- 谜题导航: 上一题 / 随机 / 下一题 -->
+  <view class="nav-row">
+    <view class="nav-key" bindtap="onPrev">上一题</view>
+    <view class="nav-key nav-key-random" bindtap="onRandom">随机</view>
+    <view class="nav-key" bindtap="onNext">下一题</view>
+  </view>
+
+  <!-- 15x15 彩色网格 -->
+  <view class="paint-grid {{showingAnswer ? 'paint-grid-reveal' : ''}}">
+    <view
+      wx:for="{{cells}}"
+      wx:key="i"
+      class="paint-cell"
+      style="background: {{item.bg}}; border-color: {{item.border}};"
+      data-i="{{item.i}}"
+      bindtap="onTapCell"
+    ></view>
+  </view>
+
+  <!-- 调色板 (0=擦除 + 5 画笔色) -->
+  <view class="palette">
+    <view
+      wx:for="{{palette}}"
+      wx:key="id"
+      class="palette-key {{selectedColor === item.id ? 'palette-key-active' : ''}}"
+      style="background: {{item.color}}; border-color: {{item.border}};"
+      data-id="{{item.id}}"
+      bindtap="onTapPalette"
+    ><text wx:if="{{item.id === 0}}" class="erase-mark">✕</text></view>
+  </view>
+
+  <!-- 工具: 显示答案 / 清空画板 -->
+  <view class="tool-row">
+    <view class="tool-key" bindtap="onToggleAnswer">{{showingAnswer ? '隐藏答案' : '显示答案'}}</view>
+    <view class="tool-key tool-key-primary" bindtap="onClearAll">清空画板</view>
+  </view>
+
+  <!-- 完成提示条 -->
+  <view wx:if="{{complete}}" class="complete-banner">✓ 完成! 点击"下一题"继续</view>
+</view>

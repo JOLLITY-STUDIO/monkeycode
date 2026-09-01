@@ -1,0 +1,193 @@
+{
+  "version": "V0.14.2",
+  "description": "V0.14.2 curated naming batch 5 (30 entries on top of batch 1+2+3+4's 86). Cluster-aware: target_global_ptr collisions are resolved with semantic names based on cluster role (e.g. main_state_setter / wram_field_getter / isr_lookup / const_zero_return). Continuation of ADR-014 cluster dedup.",
+  "cluster_aliases": {
+    "0x021bd860": "main_frame_state",
+    "0x0380aa88": "wram_entity_slot",
+    "0x037fd984": "isr2_vblank_dispatch",
+    "0x037fe1ec": "isr3_timer_dispatch",
+    "0x027e20a4": "ARM7_audio_mixer_call"
+  },
+  "names": [
+    {
+      "addr": "0x02030ff8",
+      "name": "main_frame_state_setter_a",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "Cluster 0x021bd860 (count=2). High-callers (8) main frame state setter (1st variant). V0.14.2 dedup."
+    },
+    {
+      "addr": "0x0203100c",
+      "name": "main_frame_state_setter_b",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "Cluster 0x021bd860 (count=2). Main frame state setter (2nd variant). 1 caller (paired A+B write)."
+    },
+    {
+      "addr": "0x02385b34",
+      "name": "wram_entity_slot_getter_a",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "Cluster 0x0380aa88 (count=2). WRAM entity slot getter (1st variant). 1 caller."
+    },
+    {
+      "addr": "0x02385b40",
+      "name": "wram_entity_slot_getter_b",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "Cluster 0x0380aa88 (count=2). WRAM entity slot getter (2nd variant). 1 caller."
+    },
+    {
+      "addr": "0x020391a0",
+      "name": "const_zero_return_a",
+      "disasm": "mov r0, #0; bx lr",
+      "note": "Cluster 0x00000000 (count=5). Returns 0 (1st variant). 2 callers."
+    },
+    {
+      "addr": "0x0204619c",
+      "name": "const_zero_return_b",
+      "disasm": "mov r0, #0; bx lr",
+      "note": "Cluster 0x00000000 (count=5). Returns 0 (2nd variant). 4 callers."
+    },
+    {
+      "addr": "0x020496d8",
+      "name": "const_zero_return_c",
+      "disasm": "mov r0, #0; bx lr",
+      "note": "Cluster 0x00000000 (count=5). Returns 0 (3rd variant). 1 caller."
+    },
+    {
+      "addr": "0x023924c4",
+      "name": "const_zero_return_d",
+      "disasm": "mov r0, #0; bx lr",
+      "note": "Cluster 0x00000000 (count=5). ARM7 stub returns 0 (4th variant). 7 callers."
+    },
+    {
+      "addr": "0x023968fc",
+      "name": "const_zero_return_e",
+      "disasm": "mov r0, #0; bx lr",
+      "note": "Cluster 0x00000000 (count=5). ARM7 stub returns 0 (5th variant). 1 caller."
+    },
+    {
+      "addr": "0x02392a40",
+      "name": "const_five_return_a",
+      "disasm": "mov r0, #5; bx lr",
+      "note": "Cluster 0x00000005 (count=3). Returns 5 (1st variant). 1 caller."
+    },
+    {
+      "addr": "0x02392a74",
+      "name": "const_five_return_b",
+      "disasm": "mov r0, #5; bx lr",
+      "note": "Cluster 0x00000005 (count=3). Returns 5 (2nd variant). 3 callers."
+    },
+    {
+      "addr": "0x02392d40",
+      "name": "const_five_return_c",
+      "disasm": "mov r0, #5; bx lr",
+      "note": "Cluster 0x00000005 (count=3). Returns 5 (3rd variant). 2 callers."
+    },
+    {
+      "addr": "0x02391510",
+      "name": "isr2_vblank_dispatch_a",
+      "disasm": "ldr ip, [pc, #N]; bx ip",
+      "note": "Cluster 0x037fd984 (count=2). ARM7 ISR2 (vblank) dispatch (1st variant, high-callers=8)."
+    },
+    {
+      "addr": "0x023916bc",
+      "name": "isr2_vblank_dispatch_b",
+      "disasm": "ldr ip, [pc, #N]; bx ip",
+      "note": "Cluster 0x037fd984 (count=2). ARM7 ISR2 (vblank) dispatch (2nd variant, 1 caller)."
+    },
+    {
+      "addr": "0x0238e730",
+      "name": "isr3_timer_dispatch_a",
+      "disasm": "ldr ip, [pc, #N]; bx ip",
+      "note": "Cluster 0x037fe1ec (count=2). ARM7 ISR3 (timer) dispatch (1st variant, 5 callers)."
+    },
+    {
+      "addr": "0x0238e744",
+      "name": "isr3_timer_dispatch_b",
+      "disasm": "ldr ip, [pc, #N]; bx ip",
+      "note": "Cluster 0x037fe1ec (count=2). ARM7 ISR3 (timer) dispatch (2nd variant, 1 caller)."
+    },
+    {
+      "addr": "0x0238a190",
+      "name": "arm7_audio_mixer_call_a",
+      "disasm": "ldr ip, [pc, #N]; bx ip",
+      "note": "Cluster 0x027e20a4 (count=3). ARM7 audio mixer dispatcher (1st variant, 1 caller — even though ARM7 stub-only, this is from V0.4 known code)."
+    },
+    {
+      "addr": "0x0238a1ec",
+      "name": "arm7_audio_mixer_call_b",
+      "disasm": "ldr ip, [pc, #N]; bx ip",
+      "note": "Cluster 0x027e20a4 (count=3). ARM7 audio mixer dispatcher (2nd variant, 2 callers)."
+    },
+    {
+      "addr": "0x0238a230",
+      "name": "arm7_audio_mixer_call_c",
+      "disasm": "ldr ip, [pc, #N]; bx ip",
+      "note": "Cluster 0x027e20a4 (count=3). ARM7 audio mixer dispatcher (3rd variant, 1 caller)."
+    },
+    {
+      "addr": "0x0202f3fc",
+      "name": "main_ram_field_dx8_halfword_getter",
+      "disasm": "ldr r0, [pc, #4]; ldrh r0, [r0]; bx lr",
+      "note": "High-callers=3 (top state halfword getter in main RAM region 0x020fbdd8). Unclustered (single-func)."
+    },
+    {
+      "addr": "0x0200bf9c",
+      "name": "main_ram_field_onesetter",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "ARM9 0x02101be8 — early-game state setter (callers=2)."
+    },
+    {
+      "addr": "0x0201e018",
+      "name": "main_ram_field_init_setter",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "ARM9 0x02106b48 — init-time state setter (callers=2)."
+    },
+    {
+      "addr": "0x02021bb4",
+      "name": "main_ram_field_dx7c_setter",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "ARM9 0x02106e7c — main state field 0x7c (callers=2)."
+    },
+    {
+      "addr": "0x02021e6c",
+      "name": "main_ram_field_dx78_setter",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "ARM9 0x02106e78 — main state field 0x78 (callers=2)."
+    },
+    {
+      "addr": "0x02029820",
+      "name": "main_ram_field_dxb60_setter",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "ARM9 0x0210ab60 — frame-loop state setter (callers=2)."
+    },
+    {
+      "addr": "0x02028790",
+      "name": "main_ram_field_dx54b_getter",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "ARM9 0x0210ab54 — frame-loop state getter (callers=2)."
+    },
+    {
+      "addr": "0x0238a1d4",
+      "name": "isr_call_target_0x301",
+      "disasm": "ldr ip, [pc, #N]; bx ip",
+      "note": "ARM7 ISR tail-call at 0x00000301 (callers=7, hot-callers)."
+    },
+    {
+      "addr": "0x0238a1bc",
+      "name": "isr_call_target_0x302",
+      "disasm": "ldr ip, [pc, #N]; bx ip",
+      "note": "ARM7 ISR tail-call at 0x00000302 (callers=5)."
+    },
+    {
+      "addr": "0x02391b20",
+      "name": "isr_call_target_0x378c0",
+      "disasm": "ldr ip, [pc, #N]; bx ip",
+      "note": "ARM7 IRQ handler tail-call (callers=7, hot)."
+    },
+    {
+      "addr": "0x02391770",
+      "name": "isr_call_target_0x37b7b0",
+      "disasm": "ldr ip, [pc, #N]; bx ip",
+      "note": "ARM7 IRQ handler tail-call (callers=3)."
+    }
+  ]
+}

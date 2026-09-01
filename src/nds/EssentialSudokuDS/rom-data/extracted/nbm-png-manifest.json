@@ -1,0 +1,301 @@
+{
+  "total": 42,
+  "totalBytes": 247251,
+  "totalKb": 241.46,
+  "entries": [
+    {
+      "name": "download.nbm",
+      "srcBmp": "download.nbm.bmp",
+      "png": "download.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\download.nbm.png",
+      "size": 2338
+    },
+    {
+      "name": "dwlogo.nbm",
+      "srcBmp": "dwlogo.nbm.bmp",
+      "png": "dwlogo.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\dwlogo.nbm.png",
+      "size": 6231
+    },
+    {
+      "name": "license.nbm",
+      "srcBmp": "license.nbm.bmp",
+      "png": "license.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\license.nbm.png",
+      "size": 1994
+    },
+    {
+      "name": "menu_csol.nbm",
+      "srcBmp": "menu_csol.nbm.bmp",
+      "png": "menu_csol.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\menu_csol.nbm.png",
+      "size": 436
+    },
+    {
+      "name": "numclo_00.nbm",
+      "srcBmp": "numclo_00.nbm.bmp",
+      "png": "numclo_00.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\numclo_00.nbm.png",
+      "size": 3020
+    },
+    {
+      "name": "numclo_waku.nbm",
+      "srcBmp": "numclo_waku.nbm.bmp",
+      "png": "numclo_waku.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\numclo_waku.nbm.png",
+      "size": 1154
+    },
+    {
+      "name": "pazl_select.nbm",
+      "srcBmp": "pazl_select.nbm.bmp",
+      "png": "pazl_select.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\pazl_select.nbm.png",
+      "size": 9702
+    },
+    {
+      "name": "pazl_select2a.nbm",
+      "srcBmp": "pazl_select2a.nbm.bmp",
+      "png": "pazl_select2a.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\pazl_select2a.nbm.png",
+      "size": 11570
+    },
+    {
+      "name": "pazl_select2b.nbm",
+      "srcBmp": "pazl_select2b.nbm.bmp",
+      "png": "pazl_select2b.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\pazl_select2b.nbm.png",
+      "size": 11988
+    },
+    {
+      "name": "pazl_select2c.nbm",
+      "srcBmp": "pazl_select2c.nbm.bmp",
+      "png": "pazl_select2c.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\pazl_select2c.nbm.png",
+      "size": 16876
+    },
+    {
+      "name": "pazl_yajirusi.nbm",
+      "srcBmp": "pazl_yajirusi.nbm.bmp",
+      "png": "pazl_yajirusi.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\pazl_yajirusi.nbm.png",
+      "size": 1115
+    },
+    {
+      "name": "select1.nbm",
+      "srcBmp": "select1.nbm.bmp",
+      "png": "select1.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\select1.nbm.png",
+      "size": 14693
+    },
+    {
+      "name": "select3.nbm",
+      "srcBmp": "select3.nbm.bmp",
+      "png": "select3.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\select3.nbm.png",
+      "size": 9049
+    },
+    {
+      "name": "select4.nbm",
+      "srcBmp": "select4.nbm.bmp",
+      "png": "select4.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\select4.nbm.png",
+      "size": 5080
+    },
+    {
+      "name": "select6.nbm",
+      "srcBmp": "select6.nbm.bmp",
+      "png": "select6.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\select6.nbm.png",
+      "size": 3251
+    },
+    {
+      "name": "setu03.nbm",
+      "srcBmp": "setu03.nbm.bmp",
+      "png": "setu03.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\setu03.nbm.png",
+      "size": 7735
+    },
+    {
+      "name": "staff00.nbm",
+      "srcBmp": "staff00.nbm.bmp",
+      "png": "staff00.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff00.nbm.png",
+      "size": 2711
+    },
+    {
+      "name": "staff01.nbm",
+      "srcBmp": "staff01.nbm.bmp",
+      "png": "staff01.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff01.nbm.png",
+      "size": 6248
+    },
+    {
+      "name": "staff02.nbm",
+      "srcBmp": "staff02.nbm.bmp",
+      "png": "staff02.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff02.nbm.png",
+      "size": 6409
+    },
+    {
+      "name": "staff03.nbm",
+      "srcBmp": "staff03.nbm.bmp",
+      "png": "staff03.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff03.nbm.png",
+      "size": 6470
+    },
+    {
+      "name": "staff04.nbm",
+      "srcBmp": "staff04.nbm.bmp",
+      "png": "staff04.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff04.nbm.png",
+      "size": 7688
+    },
+    {
+      "name": "staff05.nbm",
+      "srcBmp": "staff05.nbm.bmp",
+      "png": "staff05.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff05.nbm.png",
+      "size": 7214
+    },
+    {
+      "name": "staff06.nbm",
+      "srcBmp": "staff06.nbm.bmp",
+      "png": "staff06.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff06.nbm.png",
+      "size": 8671
+    },
+    {
+      "name": "staff07.nbm",
+      "srcBmp": "staff07.nbm.bmp",
+      "png": "staff07.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff07.nbm.png",
+      "size": 3184
+    },
+    {
+      "name": "staff08.nbm",
+      "srcBmp": "staff08.nbm.bmp",
+      "png": "staff08.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff08.nbm.png",
+      "size": 3864
+    },
+    {
+      "name": "staff09.nbm",
+      "srcBmp": "staff09.nbm.bmp",
+      "png": "staff09.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff09.nbm.png",
+      "size": 6410
+    },
+    {
+      "name": "staff10.nbm",
+      "srcBmp": "staff10.nbm.bmp",
+      "png": "staff10.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff10.nbm.png",
+      "size": 6533
+    },
+    {
+      "name": "staff11.nbm",
+      "srcBmp": "staff11.nbm.bmp",
+      "png": "staff11.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff11.nbm.png",
+      "size": 5345
+    },
+    {
+      "name": "staff12.nbm",
+      "srcBmp": "staff12.nbm.bmp",
+      "png": "staff12.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\staff12.nbm.png",
+      "size": 3779
+    },
+    {
+      "name": "title.nbm",
+      "srcBmp": "title.nbm.bmp",
+      "png": "title.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\title.nbm.png",
+      "size": 54992
+    },
+    {
+      "name": "title2.nbm",
+      "srcBmp": "title2.nbm.bmp",
+      "png": "title2.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\title2.nbm.png",
+      "size": 660
+    },
+    {
+      "name": "tutorial_00.nbm",
+      "srcBmp": "tutorial_00.nbm.bmp",
+      "png": "tutorial_00.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\tutorial_00.nbm.png",
+      "size": 2182
+    },
+    {
+      "name": "usa.nbm",
+      "srcBmp": "usa.nbm.bmp",
+      "png": "usa.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\usa.nbm.png",
+      "size": 7160
+    },
+    {
+      "name": "wireless_on.nbm",
+      "srcBmp": "wireless_on.nbm.bmp",
+      "png": "wireless_on.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\wireless_on.nbm.png",
+      "size": 186
+    },
+    {
+      "name": "wireless_strength_level_0_b.nbm",
+      "srcBmp": "wireless_strength_level_0_b.nbm.bmp",
+      "png": "wireless_strength_level_0_b.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\wireless_strength_level_0_b.nbm.png",
+      "size": 155
+    },
+    {
+      "name": "wireless_strength_level_0_w.nbm",
+      "srcBmp": "wireless_strength_level_0_w.nbm.bmp",
+      "png": "wireless_strength_level_0_w.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\wireless_strength_level_0_w.nbm.png",
+      "size": 168
+    },
+    {
+      "name": "wireless_strength_level_1_b.nbm",
+      "srcBmp": "wireless_strength_level_1_b.nbm.bmp",
+      "png": "wireless_strength_level_1_b.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\wireless_strength_level_1_b.nbm.png",
+      "size": 164
+    },
+    {
+      "name": "wireless_strength_level_1_w.nbm",
+      "srcBmp": "wireless_strength_level_1_w.nbm.bmp",
+      "png": "wireless_strength_level_1_w.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\wireless_strength_level_1_w.nbm.png",
+      "size": 162
+    },
+    {
+      "name": "wireless_strength_level_2_b.nbm",
+      "srcBmp": "wireless_strength_level_2_b.nbm.bmp",
+      "png": "wireless_strength_level_2_b.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\wireless_strength_level_2_b.nbm.png",
+      "size": 161
+    },
+    {
+      "name": "wireless_strength_level_2_w.nbm",
+      "srcBmp": "wireless_strength_level_2_w.nbm.bmp",
+      "png": "wireless_strength_level_2_w.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\wireless_strength_level_2_w.nbm.png",
+      "size": 171
+    },
+    {
+      "name": "wireless_strength_level_3_b.nbm",
+      "srcBmp": "wireless_strength_level_3_b.nbm.bmp",
+      "png": "wireless_strength_level_3_b.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\wireless_strength_level_3_b.nbm.png",
+      "size": 168
+    },
+    {
+      "name": "wireless_strength_level_3_w.nbm",
+      "srcBmp": "wireless_strength_level_3_w.nbm.bmp",
+      "png": "wireless_strength_level_3_w.nbm.png",
+      "path": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\miniprogram\\assets\\nbm\\wireless_strength_level_3_w.nbm.png",
+      "size": 164
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+/* pages/picture/picture.wxss — 图画谜题玩法样式 (Picture Logic 15x15) */
+page {
+  background: #f0f4f8;
+  height: 100%;
+}
+
+.picture-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16rpx 24rpx 40rpx;
+  box-sizing: border-box;
+}
+
+/* 顶部信息栏 */
+.game-header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.puzzle-name {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2b3a4a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 60%;
+}
+
+.stat {
+  font-size: 24rpx;
+  color: #6b7a8a;
+  margin-left: 16rpx;
+  white-space: nowrap;
+}
+
+.timer {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #2b3a4a;
+  font-variant-numeric: tabular-nums;
+  margin-left: 12rpx;
+  white-space: nowrap;
+}
+
+/* 类别横向滚动 */
+.cat-scroll {
+  width: 100%;
+  white-space: nowrap;
+  margin-bottom: 16rpx;
+}
+
+.cat-row {
+  display: inline-flex;
+  flex-direction: row;
+  gap: 12rpx;
+  padding: 2rpx 0;
+}
+
+.cat-chip {
+  flex-shrink: 0;
+  font-size: 24rpx;
+  padding: 10rpx 26rpx;
+  border-radius: 24rpx;
+  background: #ffffff;
+  color: #6b7a8a;
+  border: 1rpx solid #d0d8e0;
+}
+
+.cat-chip-active {
+  background: #2b3a4a;
+  color: #ffffff;
+  border-color: #2b3a4a;
+}
+
+/* 谜题导航 */
+.nav-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.nav-key {
+  flex: 1;
+  height: 68rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  color: #2b3a4a;
+  background: #ffffff;
+  border-radius: 12rpx;
+  border: 1rpx solid #d0d8e0;
+}
+
+.nav-key-random {
+  background: #2b3a4a;
+  color: #ffffff;
+  border-color: #2b3a4a;
+}
+
+/* 15x15 彩色网格 */
+.paint-grid {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  background: #ffffff;
+  border: 3rpx solid #2b3a4a;
+  box-sizing: border-box;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.paint-cell {
+  width: calc(100% / 15);
+  height: calc(100% / 15);
+  box-sizing: border-box;
+  border: 1rpx solid #e6ebf0;
+}
+
+/* 显示答案时: 去掉格子线, 纯色块拼图效果 */
+.paint-grid-reveal .paint-cell {
+  border-color: transparent;
+}
+
+/* 调色板 */
+.palette {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 16rpx;
+  margin-top: 24rpx;
+  justify-content: center;
+}
+
+.palette-key {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 50%;
+  box-sizing: border-box;
+  border: 4rpx solid #ffffff;
+  box-shadow: 0 2rpx 8rpx rgba(43, 58, 74, 0.18);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.palette-key-active {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 4rpx #2b3a4a, 0 2rpx 8rpx rgba(43, 58, 74, 0.25);
+}
+
+.erase-mark {
+  font-size: 34rpx;
+  color: #9aa7b4;
+  font-weight: 700;
+}
+
+/* 工具行 */
+.tool-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 12rpx;
+  margin-top: 20rpx;
+}
+
+.tool-key {
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #2b3a4a;
+  background: #ffffff;
+  border-radius: 14rpx;
+  border: 1rpx solid #d0d8e0;
+}
+
+.tool-key-primary {
+  background: #2b3a4a;
+  color: #ffffff;
+  border-color: #2b3a4a;
+}
+
+/* 完成提示条 */
+.complete-banner {
+  margin-top: 16rpx;
+  font-size: 26rpx;
+  color: #1e8e3e;
+  background: #e6f4ea;
+  padding: 12rpx 28rpx;
+  border-radius: 12rpx;
+}

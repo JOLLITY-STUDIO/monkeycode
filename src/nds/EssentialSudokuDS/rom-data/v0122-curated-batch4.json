@@ -1,0 +1,162 @@
+{
+  "version": "V0.12.2",
+  "description": "V0.12.2 curated naming batch 4 (26 new entries on top of batch 1+2+3's 60). Pattern-based detection of state setters/getters and zero-init helpers.",
+  "names": [
+    {
+      "addr": "0x02020f3c",
+      "name": "global_state_set_d",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "State setter D (4th global state slot). 3 callers."
+    },
+    {
+      "addr": "0x023837ec",
+      "name": "arm7_global_state_set_a",
+      "disasm": "ldr r1, [pc, #4]; str r0, [r1]; bx lr",
+      "note": "ARM7 first global state setter. 9 callers."
+    },
+    {
+      "addr": "0x02015568",
+      "name": "global_dword_get_d",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "1-level ptr deref global dword (4th variant). 3 callers."
+    },
+    {
+      "addr": "0x0201c71c",
+      "name": "global_dword_get_e",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "1-level ptr deref global dword (5th variant). 4 callers."
+    },
+    {
+      "addr": "0x0201d548",
+      "name": "global_dword_get_f",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "1-level ptr deref global dword (6th variant). 6 callers."
+    },
+    {
+      "addr": "0x02020f78",
+      "name": "global_dword_get_g",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "1-level ptr deref global dword (7th variant). 4 callers."
+    },
+    {
+      "addr": "0x02027eb8",
+      "name": "global_dword_get_h",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "1-level ptr deref global dword (8th variant). 4 callers."
+    },
+    {
+      "addr": "0x02032b08",
+      "name": "global_dword_get_i",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "1-level ptr deref global dword (9th variant). 6 callers."
+    },
+    {
+      "addr": "0x0201cc60",
+      "name": "global_halfword_set_b",
+      "disasm": "ldr r1, [pc, #4]; strh r0, [r1]; bx lr",
+      "note": "Global halfword setter (2nd variant). 5 callers."
+    },
+    {
+      "addr": "0x02020f18",
+      "name": "global_halfword_set_c",
+      "disasm": "ldr r1, [pc, #4]; strh r0, [r1]; bx lr",
+      "note": "Global halfword setter (3rd variant). 6 callers."
+    },
+    {
+      "addr": "0x02021e7c",
+      "name": "global_byte_set_a",
+      "disasm": "ldr r1, [pc, #4]; strb r0, [r1]; bx lr",
+      "note": "Global byte setter. 4 callers."
+    },
+    {
+      "addr": "0x0202dad4",
+      "name": "global_halfword_get_a",
+      "disasm": "ldr r0, [pc, #4]; ldrh r0, [r0]; bx lr",
+      "note": "Global halfword getter. 5 callers."
+    },
+    {
+      "addr": "0x0202f410",
+      "name": "global_halfword_get_b",
+      "disasm": "ldr r0, [pc, #4]; ldrh r0, [r0]; bx lr",
+      "note": "Global halfword getter (2nd variant). 5 callers."
+    },
+    {
+      "addr": "0x02039618",
+      "name": "dcache_clean_range_v2",
+      "disasm": "bic r0, r0, #0x1f; mcr p15, ...; ... loop",
+      "note": "D-cache clean range (2nd variant). 5 callers."
+    },
+    {
+      "addr": "0x0203a1d8",
+      "name": "dcache_clean_invalidate_v2",
+      "disasm": "mcr p15, #0, ip, c7, c10, #4; mcr p15, #0, r0, c7, c14, #1; ... loop",
+      "note": "D-cache clean+invalidate (2nd variant). 3 callers."
+    },
+    {
+      "addr": "0x0200a0a8",
+      "name": "struct_zero_init_2field",
+      "disasm": "mov r1, #0; str r1, [r0]; str r1, [r0, #4]; bx lr",
+      "note": "Zero two consecutive word fields. 6 callers."
+    },
+    {
+      "addr": "0x02020d40",
+      "name": "struct_clear_3field",
+      "disasm": "mov r2, #0; str r2, [r0]; str r2, [r0, #4]; strh r2, [r0, #8]; bx lr",
+      "note": "Zero 2 words + 1 halfword. 2 callers."
+    },
+    {
+      "addr": "0x02021ec4",
+      "name": "dual_global_clear",
+      "disasm": "ldr r1, [pc, #0x10]; mov r2, #0; ldr r0, [pc, #0xc]; str r2, [r1]; str r2, [r0]; bx lr",
+      "note": "Clear two globals to 0. 1 caller."
+    },
+    {
+      "addr": "0x02030958",
+      "name": "struct_field_18_to_24_with_clear",
+      "disasm": "ldr r1, [r0, #0x18]; add r2, r0, #0x24; str r1, [r0, #0x24]; mov r0, #0; str r0, [r2, #8]; bx lr",
+      "note": "Copies offset 0x18 to offset 0x24, then clears 0x2c. 1 caller."
+    },
+    {
+      "addr": "0x02030e20",
+      "name": "cache_invalidate_struct_2field",
+      "disasm": "ldr r0, [pc, #0x10]; mov r2, #0; ldr r1, [r0, #8]; str r2, [r0]; str r1, [r0, #4]; bx lr",
+      "note": "Saves offset+8 to offset+4 then clears offset+0. 3 callers - cache invalidation pattern."
+    },
+    {
+      "addr": "0x02031f84",
+      "name": "struct_field_clear",
+      "disasm": "mov r1, #0; str r1, [r0]; bx lr",
+      "note": "Single field clear to 0. 2 callers."
+    },
+    {
+      "addr": "0x02032040",
+      "name": "global_array_set_0x24_stride",
+      "disasm": "mov r2, #0x24; mul r2, r0, r2; ldr r0, [pc, #4]; str r1, [r0, r2]; bx lr",
+      "note": "Stores r1 to global[r0 * 0x24] (36-byte stride array). 1 caller."
+    },
+    {
+      "addr": "0x020326f4",
+      "name": "dual_global_clear_v2",
+      "disasm": "ldr r1, [pc, #0x10]; mov r2, #0; ldr r0, [pc, #0xc]; str r2, [r1]; str r2, [r0]; bx lr",
+      "note": "Clear two globals to 0 (2nd variant). 1 caller."
+    },
+    {
+      "addr": "0x020381d4",
+      "name": "struct_clear_2field",
+      "disasm": "ldr r0, [pc, #0xc]; mov r1, #0; str r1, [r0, #4]; str r1, [r0]; bx lr",
+      "note": "Clear obj+0 and obj+4 to 0 (reverse order). 1 caller."
+    },
+    {
+      "addr": "0x020385a4",
+      "name": "struct_field_0xb4_set",
+      "disasm": "str r1, [r0, #0xb4]; bx lr",
+      "note": "Writes r1 to struct field 0xb4. 1 caller."
+    },
+    {
+      "addr": "0x0203ed88",
+      "name": "switch_dispatch_3way_alt",
+      "disasm": "cmp r2, #0; beq ...; cmp r2, #1; beq ...; cmp r2, #2; beq ...",
+      "note": "Switch dispatch on r2 in {0, 1, 2, ...}. 3 callers."
+    }
+  ]
+}

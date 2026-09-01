@@ -1,0 +1,198 @@
+{
+  "version": "V0.12.2",
+  "description": "V0.12.2 curated naming batch 3 (32 new entries on top of V0.12.1's 28). Manual disasm reading of top caller-count functions not yet named.",
+  "names": [
+    {
+      "addr": "0x0202f0c4",
+      "name": "state_set_gated_on_global_910",
+      "disasm": "ldr r1, [pc, #0x14]; ldr r1, [r1]; sub r1, r1, #9; cmp r1, #1; ldrhi r1, [pc, #8]; strhi r0, [r1]",
+      "note": "Gated write: only writes r0 to second global IF first global in [9, 10]. 49 callers - most-called remaining sub."
+    },
+    {
+      "addr": "0x020395d8",
+      "name": "dcache_clean_range",
+      "disasm": "add r1, r1, r0; bic r0, r0, #0x1f; mcr p15, #0, r0, c7, c10, #1; add r0, r0, #0x20; cmp r0, r1; blt ...",
+      "note": "ARM mode D-cache clean range loop (mcr c7,c10,#1 = clean D-cache MVA). 24 callers."
+    },
+    {
+      "addr": "0x020395f4",
+      "name": "dcache_clean_invalidate_range",
+      "disasm": "mov ip, #0; add r1, r1, r0; bic r0, r0, #0x1f; mcr p15, #0, ip, c7, c10, #4; mcr p15, #0, r0, c7, c14, #1; ...",
+      "note": "D-cache clean+invalidate range (mcr c7,c10,#4 = clean by Set/Way, then c7,c14,#1 = clean+inv MVA). 24 callers."
+    },
+    {
+      "addr": "0x0204d7e8",
+      "name": "float32_unpack_bits",
+      "disasm": "and r2, r0, #0x80000000; lsr ip, r0, #0x17; lsl r3, r0, #9; ands ip, ip, #0xff; beq ...",
+      "note": "Float32 bit-unpack: sign bit, exponent (bits 23-30), mantissa (bits 0-22). 23 callers - likely __aeabi_* helper."
+    },
+    {
+      "addr": "0x02391b48",
+      "name": "arm7_ipc_fifo_send_low",
+      "disasm": "stmdb sp!, {lr}; sub sp, sp, #4; ldr r2, [pc, #0x28]; strh r1, [r2]; orr r1, r0, #0x5000; ldr r0, [pc, #0x20]; ...",
+      "note": "ARM7 IPC FIFO write (ORR #0x5000 = IPCFIFOSEND signature, strh writes low halfword). 22 callers."
+    },
+    {
+      "addr": "0x02399594",
+      "name": "arm7_audio_init_chain",
+      "disasm": "stmdb sp!, {lr}; sub sp, sp, #4; bl #0x2399520; mov r0, #1; bl #0x239a574; add sp, sp, #4; ...",
+      "note": "ARM7 audio init trampoline (calls init helper + sets r0=1 then dispatches). 21 callers - audio subsystem startup."
+    },
+    {
+      "addr": "0x0204399c",
+      "name": "frame_setup_with_cache_check",
+      "disasm": "push {r0, r1, r2, r3}; stmdb sp!, {lr}; sub sp, sp, #4; bl #0x2043aa0; cmp r0, #0; addne sp, sp, #4; ...",
+      "note": "Saves 4 args + lr then calls cache check helper. 20 callers - frame setup with side-effect validation."
+    },
+    {
+      "addr": "0x0203a76c",
+      "name": "memcpy_4byte_chunks",
+      "disasm": "add ip, r1, r2; cmp r1, ip; ldmlt r0!, {r2}; stmlt r1!, {r2}; blt ...",
+      "note": "ARM-mode memcpy using 4-byte (1-word) chunks via ldmia/stmia. 19 callers."
+    },
+    {
+      "addr": "0x0204c074",
+      "name": "float32_compare_abs",
+      "disasm": "bic r3, r1, #0x80000000; ldr r2, [pc, #0x3c]; subs r2, r2, r3, lsr #20; ble ...",
+      "note": "Float32 absolute-value comparison (clear sign bit, compare exponent). 19 callers - likely __aeabi_fcmp helper."
+    },
+    {
+      "addr": "0x0203a758",
+      "name": "memset_4byte_chunks",
+      "disasm": "add ip, r1, r2; cmp r1, ip; stmlt r1!, {r0}; blt ...",
+      "note": "ARM-mode memset (4-byte chunks). 18 callers - paired with memcpy_4byte_chunks."
+    },
+    {
+      "addr": "0x02043c70",
+      "name": "global_array_set_field_0x18",
+      "disasm": "ldr r2, [pc, #0xc]; ldr r2, [r2]; add r0, r2, r0, lsl #2; str r1, [r0, #0x18]; bx lr",
+      "note": "Writes r1 to global_array[r0].field_0x18 (4-byte stride). 18 callers."
+    },
+    {
+      "addr": "0x02391b88",
+      "name": "arm7_ipc_fifo_send_high",
+      "disasm": "stmdb sp!, {lr}; sub sp, sp, #4; orr r1, r0, #0x6000; ldr r0, [pc, #0x18]; strh r1, [r0]; bl ...",
+      "note": "ARM7 IPC FIFO write (ORR #0x6000). 17 callers - high-halfword IPCFIFOSEND variant."
+    },
+    {
+      "addr": "0x02394194",
+      "name": "arm7_table_0x31c_get_ptr",
+      "disasm": "ldr r1, [pc, #0x10]; ldr r1, [r1]; ldr r2, [r1, #0x31c]; mov r1, #0x1c; mla r0, r1, r0, r2; bx lr",
+      "note": "Returns ptr to global_table.field_0x31c[idx] with 28-byte (0x1c) stride. 17 callers."
+    },
+    {
+      "addr": "0x02043abc",
+      "name": "global_dword_get_c",
+      "disasm": "ldr r0, [pc, #4]; ldr r0, [r0]; bx lr",
+      "note": "1-level ptr deref global dword (third variant). 16 callers."
+    },
+    {
+      "addr": "0x02048ddc",
+      "name": "early_return_if_arg1_eq_2",
+      "disasm": "stmdb sp!, {lr}; sub sp, sp, #4; cmp r1, #2; addeq sp, sp, #4; ldmeq sp!, {lr}; bxeq lr; ...",
+      "note": "Bail out if arg1 == 2 (manual stack unwind before return). 16 callers - common guard pattern."
+    },
+    {
+      "addr": "0x0202fed4",
+      "name": "state_field_get_branch_on_arg1",
+      "disasm": "cmp r1, #0; ldreq r0, [r0]; ldrhne r0, [r0, #0xa]; addne r0, r1, r0; ldrne r0, [r0, #4]; bx lr",
+      "note": "Conditional: if r1==0 deref word, else do offset+word load (16-bit offset + 32-bit fetch). 15 callers."
+    },
+    {
+      "addr": "0x0203bdc0",
+      "name": "dcache_build_mva_register",
+      "disasm": "stmdb sp!, {lr}; sub sp, sp, #4; ldr r3, [sp]; and r0, r0, #0x1f; bic r3, r3, #0x1f; orr ip, r3, r0; ...",
+      "note": "Builds p15 c7 MVA register value (align to 32 + combine with index bits). 15 callers - cache control helper."
+    },
+    {
+      "addr": "0x02043b44",
+      "name": "alloc_or_init_with_4args",
+      "disasm": "push {r0, r1, r2, r3}; push {r4, r5, lr}; sub sp, sp, #4; mov r4, r0; bl #0x2043bfc; movs r5, r0; ...",
+      "note": "Saves 4 args + calls alloc helper. 15 callers - likely pool alloc with init args preserved."
+    },
+    {
+      "addr": "0x0203d3f4",
+      "name": "tail_call_to_global_arg2_zero",
+      "disasm": "ldr ip, [pc, #4]; mov r3, #0; bx ip",
+      "note": "Tail-calls global fn with r3=0. 14 callers - inline helper forwarding."
+    },
+    {
+      "addr": "0x02032730",
+      "name": "clamp_idx_to_global_count",
+      "disasm": "ldr r1, [pc, #0x1c]; ldr r1, [r1]; ldr r2, [r1, #0x84]; ldr r1, [r2, #8]; cmp r0, r1; movhs r0, #0; ...",
+      "note": "If r0 >= global.field_0x84.field_0x8 (count), r0 = 0. 13 callers - array index clamp."
+    },
+    {
+      "addr": "0x0200a07c",
+      "name": "dual_state_setter",
+      "disasm": "ldr r2, [pc, #0xc]; ldr r1, [pc, #0xc]; str r0, [r2]; str r0, [r1, #4]; bx lr",
+      "note": "Writes r0 to two globals (one direct, one at offset +4). 12 callers - paired state setter."
+    },
+    {
+      "addr": "0x0202feec",
+      "name": "array_lookup_by_field_0xa_offset",
+      "disasm": "stmdb sp!, {lr}; sub sp, sp, #4; ldrh ip, [r0, #0xa]; ldr r3, [r1, ip]; add lr, r1, ip; cmp r3, #0; ...",
+      "note": "Loads 16-bit offset from obj.field_0xa, indexes arr[offset]. 12 callers."
+    },
+    {
+      "addr": "0x020283f0",
+      "name": "vec2_compare_2x4byte",
+      "disasm": "ldr r3, [r1]; ldr r2, [r0]; cmp r2, r3; bge ...",
+      "note": "Compares two 2-component (4-byte each) vectors - vec2.less_than? 11 callers."
+    },
+    {
+      "addr": "0x0202f420",
+      "name": "global_halfword_set",
+      "disasm": "ldr r1, [pc, #4]; strh r0, [r1]; bx lr",
+      "note": "Writes uint16 r0 to global ptr. 11 callers - halfword setter."
+    },
+    {
+      "addr": "0x02039588",
+      "name": "dcache_invalidate_all",
+      "disasm": "mov ip, #0; mov r1, #0; mov r0, #0; orr r2, r1, r0; mcr p15, #0, ip, c7, c10, #4; mcr p15, #0, r2, c7, c14, #2; ...",
+      "note": "Invalidate entire D-cache (mcr c7,c10,#4 then c7,c14,#2). 11 callers - full cache flush."
+    },
+    {
+      "addr": "0x0203be74",
+      "name": "bitfield_test_in_global_group",
+      "disasm": "ldr r2, [pc, #0x1c]; mov r3, #1; add r1, r2, r1, lsl #2; lsl r2, r3, r0; ldr r0, [r1, #0x388]; ands r0, r2, r0; ...",
+      "note": "Tests bit r0 in global_array[r1][0x388] bitfield. 11 callers - flag/permission check."
+    },
+    {
+      "addr": "0x02390e98",
+      "name": "arm7_struct_init_3field",
+      "disasm": "mvn r2, #0; str r2, [r0]; str r2, [r0, #4]; mov r2, #0; strh r2, [r0, #8]; strh r1, [r0, #0xa]; ...",
+      "note": "ARM7 struct init: word+0+word+4 = -1, half+8 = 0, half+0xa = r1. 11 callers."
+    },
+    {
+      "addr": "0x02027fa4",
+      "name": "early_return_if_global_eq_arg0",
+      "disasm": "stmdb sp!, {lr}; sub sp, sp, #4; ldr r1, [pc, #0x34]; ldr r2, [r1]; cmp r2, r0; addeq sp, sp, #4; ...",
+      "note": "Bail out if global value == arg0. 10 callers - state-change guard."
+    },
+    {
+      "addr": "0x0203003c",
+      "name": "null_check_deref_dispatch",
+      "disasm": "stmdb sp!, {lr}; sub sp, sp, #4; ldr r2, [r0]; cmp r2, #0; bne ...",
+      "note": "If *r0 != 0 jumps to one branch, else calls helper. 10 callers - pointer dispatch."
+    },
+    {
+      "addr": "0x020300d0",
+      "name": "struct_init_3field_with_arg1",
+      "disasm": "mov r2, #0; str r2, [r0]; str r2, [r0, #4]; strh r2, [r0, #8]; strh r1, [r0, #0xa]; bx lr",
+      "note": "Zeroes word+0, word+4, half+8 then writes r1 to half+0xa. 10 callers - struct reset pattern."
+    },
+    {
+      "addr": "0x0203a724",
+      "name": "memset_halfword_chunks",
+      "disasm": "mov r3, #0; cmp r3, r2; strhlt r0, [r1, r3]; addlt r3, r3, #2; blt ...",
+      "note": "16-bit memset loop. 10 callers - halfword fill."
+    },
+    {
+      "addr": "0x02381474",
+      "name": "arm7_clamped_lookup_field_8",
+      "disasm": "cmp r1, #0xf; movgt r0, #0; bxgt lr; add r0, r0, r1; ldrb r1, [r0, #8]; cmp r1, #0xff; ...",
+      "note": "Clamps r1 to [0, 15] then loads byte at offset 8. 10 callers - ARM7 indexed lookup."
+    }
+  ]
+}

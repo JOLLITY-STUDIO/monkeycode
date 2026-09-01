@@ -1,0 +1,207 @@
+/* pages/index/index.wxss — V0.16 数独玩法样式 */
+page {
+  background: #f0f4f8;
+  height: 100%;
+}
+
+.sudoku-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16rpx 24rpx 40rpx;
+  box-sizing: border-box;
+}
+
+/* 顶部信息栏 */
+.game-header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.header-left {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.header-right {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.mode-link {
+  font-size: 24rpx;
+  color: #8e24aa;
+  background: #f3e5f5;
+  padding: 8rpx 18rpx;
+  border-radius: 20rpx;
+  border: 1rpx solid #ce93d8;
+  white-space: nowrap;
+}
+
+.diff-label {
+  font-size: 32rpx;
+  font-weight: 700;
+  color: #2b3a4a;
+}
+
+.stat {
+  font-size: 26rpx;
+  color: #6b7a8a;
+  margin-left: 20rpx;
+}
+
+.timer {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #2b3a4a;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 难度切换 */
+.diff-row {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 12rpx;
+  margin-bottom: 20rpx;
+}
+
+.diff-chip {
+  flex: 1;
+  text-align: center;
+  font-size: 24rpx;
+  padding: 10rpx 0;
+  border-radius: 12rpx;
+  background: #ffffff;
+  color: #6b7a8a;
+  border: 1rpx solid #d0d8e0;
+}
+
+.diff-chip-active {
+  background: #2b3a4a;
+  color: #ffffff;
+  border-color: #2b3a4a;
+}
+
+/* 9x9 棋盘 — 标准数独网格: 白底 + 深色粗 3x3 分块线 */
+.sudoku-grid {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border: 3rpx solid #2b3a4a;
+  box-sizing: border-box;
+  border-radius: 8rpx;
+  overflow: hidden;
+}
+
+.grid-row {
+  flex: 1;
+  display: flex;
+  flex-direction: row;
+}
+
+.cell {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-right: 1rpx solid #d0d8e0;
+  border-bottom: 1rpx solid #d0d8e0;
+}
+
+.cell.box-r {
+  border-right: 3rpx solid #2b3a4a;
+}
+
+.cell.box-b {
+  border-bottom: 3rpx solid #2b3a4a;
+}
+
+.cell-text {
+  font-size: 34rpx;
+  color: #2b3a4a;
+}
+
+.cell-given .cell-text {
+  font-weight: 700;
+  color: #1a2733;
+}
+
+.cell-sel {
+  background: #dbeafe;
+}
+
+.cell-same {
+  background: #eef4fb;
+}
+
+.cell-err .cell-text {
+  color: #e5494d;
+  font-weight: 700;
+}
+
+/* 数字键盘 */
+.number-pad {
+  width: 100%;
+  margin-top: 24rpx;
+}
+
+.pad-row {
+  display: flex;
+  flex-direction: row;
+  gap: 12rpx;
+}
+
+.pad-key {
+  flex: 1;
+  height: 88rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 34rpx;
+  font-weight: 600;
+  color: #2b3a4a;
+  background: #ffffff;
+  border-radius: 14rpx;
+  box-shadow: 0 2rpx 6rpx rgba(43, 58, 74, 0.08);
+}
+
+.pad-key-active {
+  background: #2b3a4a;
+  color: #ffffff;
+}
+
+.pad-tools {
+  display: flex;
+  flex-direction: row;
+  gap: 12rpx;
+  margin-top: 16rpx;
+}
+
+.tool-key {
+  flex: 1;
+  height: 80rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #2b3a4a;
+  background: #ffffff;
+  border-radius: 14rpx;
+  box-shadow: 0 2rpx 6rpx rgba(43, 58, 74, 0.08);
+}
+
+.tool-key-primary {
+  background: #2b3a4a;
+  color: #ffffff;
+}

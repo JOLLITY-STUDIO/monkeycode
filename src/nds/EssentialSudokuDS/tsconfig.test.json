@@ -1,0 +1,30 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "./build-test",
+    "rootDir": "./",
+    "module": "CommonJS",
+    "target": "ES2020",
+    "moduleResolution": "node",
+    "lib": ["ES2020"],
+    "skipLibCheck": true
+  },
+  "include": [
+    "./miniprogram/utils/sudoku/board.ts",
+    "./miniprogram/utils/sudoku/real_puzzle.ts",
+    "./miniprogram/utils/sudoku/solver.ts",
+    "./miniprogram/utils/sudoku/numple_puzzles.ts",
+    "./miniprogram/utils/sudoku/game_service.ts",
+    "./scripts/test_sudoku.ts",
+    "./scripts/test_sudoku_fuzz.ts",
+    "./scripts/test_sudoku_game_session.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "miniprogram/components/**",
+    "miniprogram/pages/**",
+    "miniprogram/app.ts",
+    "miniprogram/utils/util.ts"
+  ]
+}

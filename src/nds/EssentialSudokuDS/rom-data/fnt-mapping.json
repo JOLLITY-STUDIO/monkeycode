@@ -1,0 +1,600 @@
+{
+  "rom": "Essential Sudoku DS (Europe).nds",
+  "walker": "positional_v1",
+  "fnt_offset": 1215488,
+  "fnt_size": 1328,
+  "total_fat_entries": 83,
+  "total_fnt_file_entries": 83,
+  "total_fnt_dir_entries": 1,
+  "file_id_to_path": {
+    "0": "download.nbm",
+    "1": "dwlogo.nbm",
+    "2": "icon.ANA",
+    "3": "icon.APA",
+    "4": "license.nbm",
+    "5": "menu_csol.nbm",
+    "6": "numclo.srl",
+    "7": "numclo0.data",
+    "8": "numclo1.data",
+    "9": "numclo2.data",
+    "10": "numclo3.data",
+    "11": "numclo4.data",
+    "12": "numclo5.data",
+    "13": "numclo6.data",
+    "14": "numclo7.data",
+    "15": "numclo8.data",
+    "16": "numclo9.data",
+    "17": "numclo_00.data",
+    "18": "numclo_00.nbm",
+    "19": "numclo_01.data",
+    "20": "numclo_02.data",
+    "21": "numclo_03.data",
+    "22": "numclo_seikai00.dat",
+    "23": "numclo_seikai01.dat",
+    "24": "numclo_seikai02.dat",
+    "25": "numclo_seikai03.dat",
+    "26": "numclo_seikai04.dat",
+    "27": "numclo_seikai05.dat",
+    "28": "numclo_seikai06.dat",
+    "29": "numclo_seikai07.dat",
+    "30": "numclo_seikai08.dat",
+    "31": "numclo_seikai09.dat",
+    "32": "numclo_tu.data",
+    "33": "numclo_waku.nbm",
+    "34": "numple.data",
+    "35": "numple.srl",
+    "36": "numple0.data",
+    "37": "numple1.data",
+    "38": "numple2.data",
+    "39": "numple3.data",
+    "40": "numple4.data",
+    "41": "numple5.data",
+    "42": "numple6.data",
+    "43": "numple7.data",
+    "44": "numple8.data",
+    "45": "numple9.data",
+    "46": "pazl_select.nbm",
+    "47": "pazl_select2a.nbm",
+    "48": "pazl_select2b.nbm",
+    "49": "pazl_select2c.nbm",
+    "50": "pazl_yajirusi.nbm",
+    "51": "select1.nbm",
+    "52": "select3.nbm",
+    "53": "select4.nbm",
+    "54": "select6.nbm",
+    "55": "setu03.nbm",
+    "56": "sound_data.sdat",
+    "57": "staff00.nbm",
+    "58": "staff01.nbm",
+    "59": "staff02.nbm",
+    "60": "staff03.nbm",
+    "61": "staff04.nbm",
+    "62": "staff05.nbm",
+    "63": "staff06.nbm",
+    "64": "staff07.nbm",
+    "65": "staff08.nbm",
+    "66": "staff09.nbm",
+    "67": "staff10.nbm",
+    "68": "staff11.nbm",
+    "69": "staff12.nbm",
+    "70": "title.nbm",
+    "71": "title2.nbm",
+    "72": "tutorial_00.nbm",
+    "73": "usa.nbm",
+    "74": "wireless_on.nbm",
+    "75": "wireless_strength_level_0_b.nbm",
+    "76": "wireless_strength_level_0_w.nbm",
+    "77": "wireless_strength_level_1_b.nbm",
+    "78": "wireless_strength_level_1_w.nbm",
+    "79": "wireless_strength_level_2_b.nbm",
+    "80": "wireless_strength_level_2_w.nbm",
+    "81": "wireless_strength_level_3_b.nbm",
+    "82": "wireless_strength_level_3_w.nbm"
+  },
+  "files": [
+    {
+      "file_id": 0,
+      "name": "download.nbm",
+      "size": 16424,
+      "offset": "0x12a000"
+    },
+    {
+      "file_id": 1,
+      "name": "dwlogo.nbm",
+      "size": 32808,
+      "offset": "0x12e200"
+    },
+    {
+      "file_id": 2,
+      "name": "icon.ANA",
+      "size": 512,
+      "offset": "0x136400"
+    },
+    {
+      "file_id": 3,
+      "name": "icon.APA",
+      "size": 32,
+      "offset": "0x136600"
+    },
+    {
+      "file_id": 4,
+      "name": "license.nbm",
+      "size": 32808,
+      "offset": "0x136800"
+    },
+    {
+      "file_id": 5,
+      "name": "menu_csol.nbm",
+      "size": 4136,
+      "offset": "0x13ea00"
+    },
+    {
+      "file_id": 6,
+      "name": "numclo.srl",
+      "size": 922312,
+      "offset": "0x13fc00"
+    },
+    {
+      "file_id": 7,
+      "name": "numclo0.data",
+      "size": 7710,
+      "offset": "0x221000"
+    },
+    {
+      "file_id": 8,
+      "name": "numclo1.data",
+      "size": 7710,
+      "offset": "0x223000"
+    },
+    {
+      "file_id": 9,
+      "name": "numclo2.data",
+      "size": 7710,
+      "offset": "0x225000"
+    },
+    {
+      "file_id": 10,
+      "name": "numclo3.data",
+      "size": 7710,
+      "offset": "0x227000"
+    },
+    {
+      "file_id": 11,
+      "name": "numclo4.data",
+      "size": 7710,
+      "offset": "0x229000"
+    },
+    {
+      "file_id": 12,
+      "name": "numclo5.data",
+      "size": 7710,
+      "offset": "0x22b000"
+    },
+    {
+      "file_id": 13,
+      "name": "numclo6.data",
+      "size": 7710,
+      "offset": "0x22d000"
+    },
+    {
+      "file_id": 14,
+      "name": "numclo7.data",
+      "size": 7710,
+      "offset": "0x22f000"
+    },
+    {
+      "file_id": 15,
+      "name": "numclo8.data",
+      "size": 7710,
+      "offset": "0x231000"
+    },
+    {
+      "file_id": 16,
+      "name": "numclo9.data",
+      "size": 7710,
+      "offset": "0x233000"
+    },
+    {
+      "file_id": 17,
+      "name": "numclo_00.data",
+      "size": 7710,
+      "offset": "0x235000"
+    },
+    {
+      "file_id": 18,
+      "name": "numclo_00.nbm",
+      "size": 16424,
+      "offset": "0x237000"
+    },
+    {
+      "file_id": 19,
+      "name": "numclo_01.data",
+      "size": 7710,
+      "offset": "0x23b200"
+    },
+    {
+      "file_id": 20,
+      "name": "numclo_02.data",
+      "size": 7710,
+      "offset": "0x23d200"
+    },
+    {
+      "file_id": 21,
+      "name": "numclo_03.data",
+      "size": 7710,
+      "offset": "0x23f200"
+    },
+    {
+      "file_id": 22,
+      "name": "numclo_seikai00.dat",
+      "size": 902,
+      "offset": "0x241200"
+    },
+    {
+      "file_id": 23,
+      "name": "numclo_seikai01.dat",
+      "size": 1200,
+      "offset": "0x241600"
+    },
+    {
+      "file_id": 24,
+      "name": "numclo_seikai02.dat",
+      "size": 1202,
+      "offset": "0x241c00"
+    },
+    {
+      "file_id": 25,
+      "name": "numclo_seikai03.dat",
+      "size": 1151,
+      "offset": "0x242200"
+    },
+    {
+      "file_id": 26,
+      "name": "numclo_seikai04.dat",
+      "size": 1157,
+      "offset": "0x242800"
+    },
+    {
+      "file_id": 27,
+      "name": "numclo_seikai05.dat",
+      "size": 941,
+      "offset": "0x242e00"
+    },
+    {
+      "file_id": 28,
+      "name": "numclo_seikai06.dat",
+      "size": 1088,
+      "offset": "0x243200"
+    },
+    {
+      "file_id": 29,
+      "name": "numclo_seikai07.dat",
+      "size": 1136,
+      "offset": "0x243800"
+    },
+    {
+      "file_id": 30,
+      "name": "numclo_seikai08.dat",
+      "size": 1028,
+      "offset": "0x243e00"
+    },
+    {
+      "file_id": 31,
+      "name": "numclo_seikai09.dat",
+      "size": 1041,
+      "offset": "0x244400"
+    },
+    {
+      "file_id": 32,
+      "name": "numclo_tu.data",
+      "size": 87,
+      "offset": "0x244a00"
+    },
+    {
+      "file_id": 33,
+      "name": "numclo_waku.nbm",
+      "size": 32808,
+      "offset": "0x244c00"
+    },
+    {
+      "file_id": 34,
+      "name": "numple.data",
+      "size": 454,
+      "offset": "0x24ce00"
+    },
+    {
+      "file_id": 35,
+      "name": "numple.srl",
+      "size": 979144,
+      "offset": "0x24d000"
+    },
+    {
+      "file_id": 36,
+      "name": "numple0.data",
+      "size": 3710,
+      "offset": "0x33c200"
+    },
+    {
+      "file_id": 37,
+      "name": "numple1.data",
+      "size": 3710,
+      "offset": "0x33d200"
+    },
+    {
+      "file_id": 38,
+      "name": "numple2.data",
+      "size": 3710,
+      "offset": "0x33e200"
+    },
+    {
+      "file_id": 39,
+      "name": "numple3.data",
+      "size": 3710,
+      "offset": "0x33f200"
+    },
+    {
+      "file_id": 40,
+      "name": "numple4.data",
+      "size": 3710,
+      "offset": "0x340200"
+    },
+    {
+      "file_id": 41,
+      "name": "numple5.data",
+      "size": 3710,
+      "offset": "0x341200"
+    },
+    {
+      "file_id": 42,
+      "name": "numple6.data",
+      "size": 3710,
+      "offset": "0x342200"
+    },
+    {
+      "file_id": 43,
+      "name": "numple7.data",
+      "size": 3710,
+      "offset": "0x343200"
+    },
+    {
+      "file_id": 44,
+      "name": "numple8.data",
+      "size": 3710,
+      "offset": "0x344200"
+    },
+    {
+      "file_id": 45,
+      "name": "numple9.data",
+      "size": 3710,
+      "offset": "0x345200"
+    },
+    {
+      "file_id": 46,
+      "name": "pazl_select.nbm",
+      "size": 16424,
+      "offset": "0x346200"
+    },
+    {
+      "file_id": 47,
+      "name": "pazl_select2a.nbm",
+      "size": 32808,
+      "offset": "0x34a400"
+    },
+    {
+      "file_id": 48,
+      "name": "pazl_select2b.nbm",
+      "size": 32808,
+      "offset": "0x352600"
+    },
+    {
+      "file_id": 49,
+      "name": "pazl_select2c.nbm",
+      "size": 32808,
+      "offset": "0x35a800"
+    },
+    {
+      "file_id": 50,
+      "name": "pazl_yajirusi.nbm",
+      "size": 2088,
+      "offset": "0x362a00"
+    },
+    {
+      "file_id": 51,
+      "name": "select1.nbm",
+      "size": 32808,
+      "offset": "0x363400"
+    },
+    {
+      "file_id": 52,
+      "name": "select3.nbm",
+      "size": 32808,
+      "offset": "0x36b600"
+    },
+    {
+      "file_id": 53,
+      "name": "select4.nbm",
+      "size": 16424,
+      "offset": "0x373800"
+    },
+    {
+      "file_id": 54,
+      "name": "select6.nbm",
+      "size": 8232,
+      "offset": "0x377a00"
+    },
+    {
+      "file_id": 55,
+      "name": "setu03.nbm",
+      "size": 32808,
+      "offset": "0x379c00"
+    },
+    {
+      "file_id": 56,
+      "name": "sound_data.sdat",
+      "size": 136960,
+      "offset": "0x381e00"
+    },
+    {
+      "file_id": 57,
+      "name": "staff00.nbm",
+      "size": 24616,
+      "offset": "0x3a3600"
+    },
+    {
+      "file_id": 58,
+      "name": "staff01.nbm",
+      "size": 24616,
+      "offset": "0x3a9800"
+    },
+    {
+      "file_id": 59,
+      "name": "staff02.nbm",
+      "size": 24616,
+      "offset": "0x3afa00"
+    },
+    {
+      "file_id": 60,
+      "name": "staff03.nbm",
+      "size": 24616,
+      "offset": "0x3b5c00"
+    },
+    {
+      "file_id": 61,
+      "name": "staff04.nbm",
+      "size": 24616,
+      "offset": "0x3bbe00"
+    },
+    {
+      "file_id": 62,
+      "name": "staff05.nbm",
+      "size": 24616,
+      "offset": "0x3c2000"
+    },
+    {
+      "file_id": 63,
+      "name": "staff06.nbm",
+      "size": 24616,
+      "offset": "0x3c8200"
+    },
+    {
+      "file_id": 64,
+      "name": "staff07.nbm",
+      "size": 32808,
+      "offset": "0x3ce400"
+    },
+    {
+      "file_id": 65,
+      "name": "staff08.nbm",
+      "size": 24616,
+      "offset": "0x3d6600"
+    },
+    {
+      "file_id": 66,
+      "name": "staff09.nbm",
+      "size": 24616,
+      "offset": "0x3dc800"
+    },
+    {
+      "file_id": 67,
+      "name": "staff10.nbm",
+      "size": 24616,
+      "offset": "0x3e2a00"
+    },
+    {
+      "file_id": 68,
+      "name": "staff11.nbm",
+      "size": 24616,
+      "offset": "0x3e8c00"
+    },
+    {
+      "file_id": 69,
+      "name": "staff12.nbm",
+      "size": 24616,
+      "offset": "0x3eee00"
+    },
+    {
+      "file_id": 70,
+      "name": "title.nbm",
+      "size": 66056,
+      "offset": "0x3f5000"
+    },
+    {
+      "file_id": 71,
+      "name": "title2.nbm",
+      "size": 32808,
+      "offset": "0x405400"
+    },
+    {
+      "file_id": 72,
+      "name": "tutorial_00.nbm",
+      "size": 16424,
+      "offset": "0x40d600"
+    },
+    {
+      "file_id": 73,
+      "name": "usa.nbm",
+      "size": 8232,
+      "offset": "0x411800"
+    },
+    {
+      "file_id": 74,
+      "name": "wireless_on.nbm",
+      "size": 168,
+      "offset": "0x413a00"
+    },
+    {
+      "file_id": 75,
+      "name": "wireless_strength_level_0_b.nbm",
+      "size": 168,
+      "offset": "0x413c00"
+    },
+    {
+      "file_id": 76,
+      "name": "wireless_strength_level_0_w.nbm",
+      "size": 168,
+      "offset": "0x413e00"
+    },
+    {
+      "file_id": 77,
+      "name": "wireless_strength_level_1_b.nbm",
+      "size": 168,
+      "offset": "0x414000"
+    },
+    {
+      "file_id": 78,
+      "name": "wireless_strength_level_1_w.nbm",
+      "size": 168,
+      "offset": "0x414200"
+    },
+    {
+      "file_id": 79,
+      "name": "wireless_strength_level_2_b.nbm",
+      "size": 168,
+      "offset": "0x414400"
+    },
+    {
+      "file_id": 80,
+      "name": "wireless_strength_level_2_w.nbm",
+      "size": 168,
+      "offset": "0x414600"
+    },
+    {
+      "file_id": 81,
+      "name": "wireless_strength_level_3_b.nbm",
+      "size": 168,
+      "offset": "0x414800"
+    },
+    {
+      "file_id": 82,
+      "name": "wireless_strength_level_3_w.nbm",
+      "size": 168,
+      "offset": "0x414a00"
+    }
+  ],
+  "directories": [
+    {
+      "name": "data",
+      "dir_id": 1
+    }
+  ]
+}

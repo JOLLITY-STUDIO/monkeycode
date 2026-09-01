@@ -1,0 +1,927 @@
+{
+  "version": "V0.14",
+  "description": "V0.14 pattern detector + global dedup (ADR-014) \u2014 target_global_ptr extraction",
+  "pattern_rules": [
+    {
+      "kind": "state_setter",
+      "confidence": "high",
+      "regex": "ldr\\s+r1,\\s*\\[pc,\\s*#\\d+\\][^\\n]*\\n[^\\n]*str\\s+r0,\\s*\\[r1\\][^..."
+    },
+    {
+      "kind": "state_getter",
+      "confidence": "high",
+      "regex": "ldr\\s+r0,\\s*\\[pc,\\s*#\\d+\\][^\\n]*\\n[^\\n]*ldr\\s+r0,\\s*\\[r0\\][^..."
+    },
+    {
+      "kind": "byte_getter",
+      "confidence": "high",
+      "regex": "ldr\\s+r0,\\s*\\[pc,\\s*#\\d+\\][^\\n]*\\n[^\\n]*ldrb\\s+r0,\\s*\\[r0\\][..."
+    },
+    {
+      "kind": "byte_setter",
+      "confidence": "high",
+      "regex": "ldr\\s+r1,\\s*\\[pc,\\s*#\\d+\\][^\\n]*\\n[^\\n]*strb\\s+r0,\\s*\\[r1\\][..."
+    },
+    {
+      "kind": "halfword_getter",
+      "confidence": "high",
+      "regex": "ldr\\s+r0,\\s*\\[pc,\\s*#\\d+\\][^\\n]*\\n[^\\n]*ldrh\\s+r0,\\s*\\[r0\\][..."
+    },
+    {
+      "kind": "halfword_setter",
+      "confidence": "high",
+      "regex": "ldr\\s+r1,\\s*\\[pc,\\s*#\\d+\\][^\\n]*\\n[^\\n]*strh\\s+r0,\\s*\\[r1\\][..."
+    },
+    {
+      "kind": "const_return",
+      "confidence": "high",
+      "regex": "movs?\\s+r0,\\s*#0?[xX]?[0-9a-fA-F]+[^\\n]*\\n[^\\n]*(?:bx\\s+lr|p..."
+    },
+    {
+      "kind": "struct_clear_0",
+      "confidence": "high",
+      "regex": "movs?\\s+r1,\\s*#0[^\\n]*\\n[^\\n]*str\\s+r1,\\s*\\[r0\\][^\\n]*\\n[^\\n..."
+    },
+    {
+      "kind": "memset_word",
+      "confidence": "medium",
+      "regex": "add\\s+ip,\\s*r1,\\s*r2[^\\n]*\\n[^\\n]*cmp\\s+r1,\\s*ip[^\\n]*\\n[^\\n..."
+    },
+    {
+      "kind": "memcpy_word",
+      "confidence": "medium",
+      "regex": "add\\s+ip,\\s*r1,\\s*r2[^\\n]*\\n[^\\n]*cmp\\s+r1,\\s*ip[^\\n]*\\n[^\\n..."
+    },
+    {
+      "kind": "dcache_helper",
+      "confidence": "medium",
+      "regex": "mcr\\s+p15,\\s*#0,\\s*r\\d+,\\s*c7..."
+    },
+    {
+      "kind": "tail_call",
+      "confidence": "high",
+      "regex": "ldr\\s+ip,\\s*\\[pc,\\s*#\\d+\\][^\\n]*\\n[^\\n]*bx\\s+ip..."
+    },
+    {
+      "kind": "switch_dispatch",
+      "confidence": "medium",
+      "regex": "(?:cmp\\s+r\\d+,\\s*#\\d+[^\\n]*\\n[^\\n]*beq\\s+#){2,}..."
+    },
+    {
+      "kind": "early_return",
+      "confidence": "medium",
+      "regex": "stmdb\\s+sp!,\\s*\\{lr\\}[^\\n]*\\n[^\\n]*sub\\s+sp,\\s*sp,\\s*#4[^\\n]..."
+    }
+  ],
+  "total_suggestions": 51,
+  "matches_by_kind": {
+    "state_setter": 11,
+    "state_getter": 9,
+    "halfword_getter": 3,
+    "byte_getter": 1,
+    "const_return": 8,
+    "dcache_helper": 1,
+    "byte_setter": 1,
+    "tail_call": 16,
+    "halfword_setter": 1
+  },
+  "skipped": {
+    "known": 28,
+    "curated": 86,
+    "excluded": 31,
+    "no_disasm": 477,
+    "no_match": 2027
+  },
+  "names": [
+    {
+      "addr": "0x0200bf9c",
+      "name": "auto_state_setter_02101be8",
+      "pattern_kind": "state_setter",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "ldr      r1, [pc, #4]\nstr      r0, [r1]\nbx       lr\nandseq   r1, r0, #232, #22\nstmdb    sp!, {lr}\nsub      sp, sp, #4\nldr      r0, [pc, #0x8c]\nldr      r0, [r0]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x02101be8",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x020147d8",
+      "name": "auto_state_getter_0210656c",
+      "pattern_kind": "state_getter",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "ldr      r0, [pc, #4]\nldr      r0, [r0]\nbx       lr\nandseq   r6, r0, #108, #10\nstmdb    sp!, {lr}\nsub      sp, sp, #4\nmov      r0, #3\nbl       #0x200783c",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x0210656c",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x0201e018",
+      "name": "auto_state_setter_02106b48",
+      "pattern_kind": "state_setter",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "ldr      r1, [pc, #4]\nstr      r0, [r1]\nbx       lr\nandseq   r6, r0, #72, #22\nstmdb    sp!, {lr}\nsub      sp, sp, #4\nldr      r0, [pc, #0x10]\nldr      r0, [r0]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x02106b48",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02020930",
+      "name": "auto_state_getter_02106df8",
+      "pattern_kind": "state_getter",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "ldr      r0, [pc, #4]\nldr      r0, [r0]\nbx       lr\nandseq   r6, r0, #248, #26\npush     {r4, lr}\nsub      sp, sp, #0x10\nldr      r3, [pc, #0x70]\nmov      r4, #0",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x02106df8",
+      "category": "near",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02020d1c",
+      "name": "auto_state_getter_02106ea4",
+      "pattern_kind": "state_getter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r0, [pc, #4]\nldr      r0, [r0]\nbx       lr\nandseq   r6, r0, #164, #28\nldr      r0, [pc, #8]\nmov      r1, #1\nstr      r1, [r0]\nbx       lr",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x02106ea4",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02020f08",
+      "name": "auto_halfword_getter_02106e58",
+      "pattern_kind": "halfword_getter",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "ldr      r0, [pc, #4]\nldrh     r0, [r0]\nbx       lr\nandseq   r6, r0, #88, #28\nldr      r1, [pc, #4]\nstrh     r0, [r1]\nbx       lr\nandseq   r6, r0, #88, #28",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x02106e58",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x020216b4",
+      "name": "auto_byte_getter_02106e50",
+      "pattern_kind": "byte_getter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r0, [pc]\nbx       lr\nandseq   r7, r0, #64, #2\nldr      r0, [pc, #4]\nldrb     r0, [r0]\nbx       lr\nandseq   r6, r0, #80, #28\npush     {r4, r5, r6, r7, r8, sb, sl, fp, lr}",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x02106e50",
+      "category": "near",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02021bb4",
+      "name": "auto_state_setter_02106e7c",
+      "pattern_kind": "state_setter",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "ldr      r1, [pc, #4]\nstr      r0, [r1]\nbx       lr\nandseq   r6, r0, #124, #28\ncmp      r0, #0\nldreq    r1, [pc, #0x10]\nldreq    r0, [pc, #0x10]\nstreq    r1, [r0]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x02106e7c",
+      "category": "near",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02021e6c",
+      "name": "auto_state_setter_02106e78",
+      "pattern_kind": "state_setter",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "ldr      r1, [pc, #4]\nstr      r0, [r1]\nbx       lr\nandseq   r6, r0, #120, #28\nldr      r1, [pc, #4]\nstrb     r0, [r1]\nbx       lr\nandseq   r6, r0, #80, #28",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x02106e78",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02027ea4",
+      "name": "auto_state_getter_0210aaf0",
+      "pattern_kind": "state_getter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r0, [pc, #8]\nmov      r1, #2\nstr      r1, [r0]\nbx       lr\nandseq   sl, r0, #240, #20\nldr      r0, [pc, #4]\nldr      r0, [r0]\nbx       lr",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x0210aaf0",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02028790",
+      "name": "auto_state_getter_0210ab54",
+      "pattern_kind": "state_getter",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "ldr      r0, [pc, #4]\nldr      r0, [r0]\nbx       lr\nandseq   sl, r0, #84, #22\npush     {r4, lr}\nmov      r4, r0\nbl       #0x2027ee8\nldr      r0, [pc, #0x38]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x0210ab54",
+      "category": "near",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02029820",
+      "name": "auto_state_setter_0210ab60",
+      "pattern_kind": "state_setter",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "ldr      r0, [pc, #4]\nldr      r0, [r0]\nbx       lr\nandseq   sl, r0, #96, #22\nldr      r1, [pc, #4]\nstr      r0, [r1]\nbx       lr\nandseq   sl, r0, #88, #22",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x0210ab60",
+      "category": "near",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02029a2c",
+      "name": "auto_state_setter_0210ab38",
+      "pattern_kind": "state_setter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r1, [pc, #4]\nstr      r0, [r1]\nbx       lr\nandseq   sl, r0, #56, #22\nldr      r0, [pc, #0x10]\nldr      r1, [r0]\ncmp      r1, #0\nsubgt    r1, r1, #1",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x0210ab38",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02029a8c",
+      "name": "auto_state_setter_0210ab64",
+      "pattern_kind": "state_setter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r1, [pc, #4]\nstr      r0, [r1]\nbx       lr\nandseq   sl, r0, #100, #22\nldr      r0, [pc, #0x10]\nldr      r1, [r0]\ncmp      r1, #0\nsubgt    r1, r1, #1",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x0210ab64",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x0202cef8",
+      "name": "auto_halfword_getter_021bb24c",
+      "pattern_kind": "halfword_getter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r0, [pc, #4]\nldrh     r0, [r0]\nbx       lr\nandseq   fp, fp, #76, #4\nstmdb    sp!, {lr}\nsub      sp, sp, #4\nldr      r0, [pc, #0x48]\nldr      r0, [r0]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x021bb24c",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x0202dab0",
+      "name": "auto_state_getter_021bb25c",
+      "pattern_kind": "state_getter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "bx       lr\nldr      r0, [pc, #4]\nldr      r0, [r0]\nbx       lr\nandseq   fp, fp, #92, #4\nldr      r0, [pc, #4]\nldr      r0, [r0]\nbx       lr",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x021bb25c",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x0202f3fc",
+      "name": "auto_halfword_getter_020fbdd8",
+      "pattern_kind": "halfword_getter",
+      "confidence": "high",
+      "callers_n": 3,
+      "disasm_snippet": "ldr      r1, [pc, #8]\nldr      r0, [r1, r0, lsl #2]\nldrh     r0, [r0]\nbx       lr\nandeq    fp, pc, #216, #26\nldr      r0, [pc, #4]\nldrh     r0, [r0]\nbx       lr",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x020fbdd8",
+      "category": "near",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02030ff8",
+      "name": "auto_state_setter_021bd860_a",
+      "pattern_kind": "state_setter",
+      "confidence": "high",
+      "callers_n": 8,
+      "disasm_snippet": "ldr      r1, [pc, #8]\nldr      r1, [r1]\nand      r0, r1, r0\nbx       lr\nandseq   sp, fp, #96, #16\nldr      r1, [pc, #4]\nstr      r0, [r1]\nbx       lr",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x021bd860",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x0203100c",
+      "name": "auto_state_setter_021bd860_b",
+      "pattern_kind": "state_setter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r1, [pc, #4]\nstr      r0, [r1]\nbx       lr\nandseq   sp, fp, #96, #16\nstmdb    sp!, {lr}\nsub      sp, sp, #0x14\nldr      r2, [pc, #0x5c]\nldr      r0, [pc, #0x5c]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x021bd860",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x020391a0",
+      "name": "auto_const_return_00000000_a",
+      "pattern_kind": "const_return",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "mov      r0, #0\nbx       lr\npush     {r4, r5, r6, r7, lr}\nsub      sp, sp, #4\nmov      r6, r0\nmov      r5, r1\nmov      r7, r2\nbl       #0x2039f38",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000000",
+      "category": "near",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02039624",
+      "name": "auto_dcache_helper_c7_c5_1",
+      "pattern_kind": "dcache_helper",
+      "confidence": "medium",
+      "callers_n": 1,
+      "disasm_snippet": "add      r1, r1, r0\nbic      r0, r0, #0x1f\nmcr      p15, #0, r0, c7, c5, #1\nadd      r0, r0, #0x20\ncmp      r0, r1\nblt      #0x203962c\nbx       lr\nstmdb    sp!, {lr}",
+      "disasm_mode": "arm",
+      "target_global_ptr": "c7_c5_1",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x0203a1f8",
+      "name": "auto_byte_setter_04000247",
+      "pattern_kind": "byte_setter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r1, [pc, #4]\nstrb     r0, [r1]\nbx       lr\nstreq    r0, [r0], #-0x247\nstmdb    sp!, {lr}\nsub      sp, sp, #4\ncmp      r0, #0\naddne    sp, sp, #4",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x04000247",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x020420b8",
+      "name": "auto_state_setter_021c1520",
+      "pattern_kind": "state_setter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r1, [pc, #4]\nstr      r0, [r1]\nbx       lr\nandseq   r1, ip, #32, #10\nstmdb    sp!, {lr}\nsub      sp, sp, #4\nbl       #0x20420f4\ncmp      r0, #0",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x021c1520",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x020420f4",
+      "name": "auto_state_getter_021c1520",
+      "pattern_kind": "state_getter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r0, [pc, #4]\nldr      r0, [r0]\nbx       lr\nandseq   r1, ip, #32, #10\npush     {r4, lr}\nsub      sp, sp, #8\nldr      r4, [pc, #0xd0]\nldr      r1, [pc, #0xd0]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x021c1520",
+      "category": "near",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x0204619c",
+      "name": "auto_const_return_00000000_b",
+      "pattern_kind": "const_return",
+      "confidence": "high",
+      "callers_n": 4,
+      "disasm_snippet": "cmp      r0, #1\nblo      #0x20461b0\ncmp      r0, #0xf\nmovls    r0, #1\nbxls     lr\nmov      r0, #0\nbx       lr\ncmp      r1, r0",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000000",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x020496d8",
+      "name": "auto_const_return_00000000_c",
+      "pattern_kind": "const_return",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r3, [pc, #0x5c]\ncmp      r0, r3\nbhi      #0x20496ec\ncmp      r0, #0xe4\nbhs      #0x20496f4\nmov      r0, #0\nbx       lr\ncmp      r1, #0x10",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000000",
+      "category": "bx_lr",
+      "cpu": "arm9"
+    },
+    {
+      "addr": "0x02382a2c",
+      "name": "auto_tail_call_037feaa4",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "mov      r0, #7\nldr      r1, [pc, #4]\nldr      ip, [pc, #4]\nbx       ip\norreq    r2, r0, #148, #24\ncmneq    pc, #164, #20\npush     {r4, r5, lr}\nsub      sp, sp, #4",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x037feaa4",
+      "category": "near",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x02382fa4",
+      "name": "auto_state_setter_03809c54",
+      "pattern_kind": "state_setter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r1, [pc, #4]\nstr      r0, [r1]\nbx       lr\norreq    sb, r0, #84, #24\nstmdb    sp!, {lr}\nsub      sp, sp, #0xc\nmvn      r1, #2\nldr      r0, [pc, #0x84]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x03809c54",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x02385b34",
+      "name": "auto_state_getter_0380aa88_a",
+      "pattern_kind": "state_getter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      ip, [pc]\nbx       ip\norreq    r4, r0, #0x3000000b\nldr      r0, [pc, #4]\nldr      r0, [r0]\nbx       lr\norreq    sl, r0, #136, #20\ncmp      r0, #0xf",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x0380aa88",
+      "category": "near",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x02385b40",
+      "name": "auto_state_getter_0380aa88_b",
+      "pattern_kind": "state_getter",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r0, [pc, #4]\nldr      r0, [r0]\nbx       lr\norreq    sl, r0, #136, #20\ncmp      r0, #0xf\nldrle    r1, [pc, #0x10]\nstrle    r0, [r1]\nmovle    r1, #0",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x0380aa88",
+      "category": "near",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x02386e6c",
+      "name": "auto_halfword_setter_08001000",
+      "pattern_kind": "halfword_setter",
+      "confidence": "high",
+      "callers_n": 4,
+      "disasm_snippet": "ldr      r1, [pc, #0xc]\nstr      r0, [r1]\nldr      r1, [pc, #8]\nstrh     r0, [r1]\nbx       lr\norreq    fp, r0, #80, #20\nstmdaeq  r0, {ip}\npush     {r4, r5, r6, r7, r8, sb, sl, fp, lr}",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x08001000",
+      "category": "near",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x0238a160",
+      "name": "auto_tail_call_00000306",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r1, [pc, #8]\nmov      r2, #0x5c\nldr      ip, [pc, #4]\nbx       ip\nandeq    r0, r0, r7, lsl #6\nrsbseq   r2, lr, #0xa4\nldr      r1, [pc, #8]\nmov      r2, #9",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000306",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x0238a178",
+      "name": "auto_tail_call_00000305",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r1, [pc, #8]\nmov      r2, #9\nldr      ip, [pc, #4]\nbx       ip\nandeq    r0, r0, r6, lsl #6\nrsbseq   r2, lr, #0xa4\nldr      r1, [pc, #8]\nmov      r2, #1",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000305",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x0238a190",
+      "name": "auto_tail_call_027e20a4_a",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r1, [pc, #8]\nmov      r2, #1\nldr      ip, [pc, #4]\nbx       ip\nandeq    r0, r0, r5, lsl #6\nrsbseq   r2, lr, #0xa4\nmov      r1, #0x304\nmov      r2, #1",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x027e20a4",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x0238a1bc",
+      "name": "auto_tail_call_00000302",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 5,
+      "disasm_snippet": "ldr      r1, [pc, #8]\nmov      r2, #1\nldr      ip, [pc, #4]\nbx       ip\nandeq    r0, r0, r3, lsl #6\nrsbseq   r2, lr, #0xa4\nldr      r1, [pc, #8]\nmov      r2, #1",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000302",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x0238a1d4",
+      "name": "auto_tail_call_00000301",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 7,
+      "disasm_snippet": "ldr      r1, [pc, #8]\nmov      r2, #1\nldr      ip, [pc, #4]\nbx       ip\nandeq    r0, r0, r2, lsl #6\nrsbseq   r2, lr, #0xa4\nldr      r1, [pc, #8]\nmov      r2, #1",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000301",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x0238a1ec",
+      "name": "auto_tail_call_027e20a4_b",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "ldr      r1, [pc, #8]\nmov      r2, #1\nldr      ip, [pc, #4]\nbx       ip\nandeq    r0, r0, r1, lsl #6\nrsbseq   r2, lr, #0xa4\nmov      r1, #0x284\nmov      r2, #2",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x027e20a4",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x0238a218",
+      "name": "auto_tail_call_00000281",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r1, [pc, #8]\nmov      r2, #3\nldr      ip, [pc, #4]\nbx       ip\nandeq    r0, r0, r3, lsl #5\nrsbseq   r2, lr, #0xa4\nldr      r1, [pc, #8]\nmov      r2, #4",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000281",
+      "category": "near",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x0238a230",
+      "name": "auto_tail_call_027e20a4_c",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r1, [pc, #8]\nmov      r2, #4\nldr      ip, [pc, #4]\nbx       ip\nandeq    r0, r0, r1, lsl #5\nrsbseq   r2, lr, #0xa4\npush     {r4, r5, r6, lr}\nmov      r4, r0",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x027e20a4",
+      "category": "near",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x0238e730",
+      "name": "auto_tail_call_037fe1ec_a",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 5,
+      "disasm_snippet": "ldr      r0, [pc, #4]\nldr      ip, [pc, #4]\nbx       ip\norreq    r8, r0, #0xe8\ncmneq    pc, #224, #30\nldr      r0, [pc, #4]\nldr      ip, [pc, #4]\nbx       ip",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x037fe1ec",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x0238e744",
+      "name": "auto_tail_call_037fe1ec_b",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r0, [pc, #4]\nldr      ip, [pc, #4]\nbx       ip\norreq    r8, r0, #0xe8\ncmneq    pc, #236, #2\nstmdb    sp!, {lr}\nsub      sp, sp, #4\nldr      r1, [pc, #0x28]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x037fe1ec",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x02391510",
+      "name": "auto_tail_call_037fd984_a",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 8,
+      "disasm_snippet": "ldr      r0, [pc, #0x10]\nldr      r1, [r0]\nldr      r0, [pc, #0xc]\nadd      r0, r1, r0\nldr      ip, [pc, #8]\nbx       ip\norreq    pc, r0, #244, #30\nandeq    r0, r0, r4, lsr r6",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x037fd984",
+      "category": "near",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x023916bc",
+      "name": "auto_tail_call_037fd984_b",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "ldr      r0, [pc, #0x10]\nldr      r1, [r0]\nldr      r0, [pc, #0xc]\nadd      r0, r1, r0\nldr      ip, [pc, #8]\nbx       ip\norreq    pc, r0, #244, #30\nandeq    r0, r0, r8, lsl #12",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x037fd984",
+      "category": "near",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x02391770",
+      "name": "auto_tail_call_037fb7b0",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 3,
+      "disasm_snippet": "ldr      r1, [pc, #4]\nldr      ip, [pc, #4]\nbx       ip\nrsbseq   sb, lr, #184, #14\ncmneq    pc, #176, #14\nmov      r1, #0x3e8\nmul      r1, r0, r1\nmov      r0, r1",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x037fb7b0",
+      "category": "near",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x02391b20",
+      "name": "auto_tail_call_037fb8c0",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 7,
+      "disasm_snippet": "ldr      r1, [pc, #0x14]\nstrh     r0, [r1]\nlsr      r1, r0, #0x10\nldr      r0, [pc, #0xc]\nstrh     r1, [r0]\nldr      ip, [pc, #8]\nbx       ip\nstreq    r8, [r0], #0x17e",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x037fb8c0",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x023924c4",
+      "name": "auto_const_return_00000000_d",
+      "pattern_kind": "const_return",
+      "confidence": "high",
+      "callers_n": 7,
+      "disasm_snippet": "ldr      r1, [pc, #8]\nstrh     r0, [r1]\nmov      r0, #0\nbx       lr\nstreq    r8, [r0], #0x40\nlsr      r2, r0, #1\nldr      r1, [pc, #0x18]\nldr      r1, [r1]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000000",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x02392a40",
+      "name": "auto_const_return_00000005_a",
+      "pattern_kind": "const_return",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "cmp      r0, #1\nblo      #0x2392a50\ncmp      r0, #0xff\nbls      #0x2392a58\nmov      r0, #5\nbx       lr\nldr      r1, [pc, #0x10]\nldr      r1, [r1]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000005",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x02392a74",
+      "name": "auto_const_return_00000005_b",
+      "pattern_kind": "const_return",
+      "confidence": "high",
+      "callers_n": 3,
+      "disasm_snippet": "cmp      r0, #1\nblo      #0x2392a84\ncmp      r0, #0xff\nbls      #0x2392a8c\nmov      r0, #5\nbx       lr\nldr      r1, [pc, #0x20]\nldr      r1, [r1]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000005",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x02392d40",
+      "name": "auto_const_return_00000005_c",
+      "pattern_kind": "const_return",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "cmp      r0, #1\nbhi      #0x2392d50\ncmp      r1, #1\nbls      #0x2392d58\nmov      r0, #5\nbx       lr\ncmp      r0, #0\nbeq      #0x2392d6c",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000005",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x023949f0",
+      "name": "auto_tail_call_037fe634",
+      "pattern_kind": "tail_call",
+      "confidence": "high",
+      "callers_n": 2,
+      "disasm_snippet": "mov      r0, #0\nldr      r1, [pc, #0x14]\nldr      r2, [r1]\nldr      r1, [pc, #0x10]\nadd      r1, r2, r1\nmov      r2, #0x20\nldr      ip, [pc, #8]\nbx       ip",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x037fe634",
+      "category": "near",
+      "cpu": "arm7"
+    },
+    {
+      "addr": "0x023968fc",
+      "name": "auto_const_return_00000000_e",
+      "pattern_kind": "const_return",
+      "confidence": "high",
+      "callers_n": 1,
+      "disasm_snippet": "lsr      r0, r0, #0x1f\nstrh     r0, [r1, #6]\nmov      r0, #0\nbx       lr\norreq    pc, r0, #244, #30\nmov      r0, #2\nstrh     r0, [r1, #2]\nldr      r0, [pc, #0x1c]",
+      "disasm_mode": "arm",
+      "target_global_ptr": "0x00000000",
+      "category": "bx_lr",
+      "cpu": "arm7"
+    }
+  ],
+  "clusters": [
+    {
+      "pattern_kind": "byte_getter",
+      "target_global_ptr": "0x02106e50",
+      "function_count": 1,
+      "function_addrs": [
+        "0x020216b4"
+      ]
+    },
+    {
+      "pattern_kind": "byte_setter",
+      "target_global_ptr": "0x04000247",
+      "function_count": 1,
+      "function_addrs": [
+        "0x0203a1f8"
+      ]
+    },
+    {
+      "pattern_kind": "const_return",
+      "target_global_ptr": "0x00000000",
+      "function_count": 5,
+      "function_addrs": [
+        "0x020391a0",
+        "0x0204619c",
+        "0x020496d8",
+        "0x023924c4",
+        "0x023968fc"
+      ]
+    },
+    {
+      "pattern_kind": "const_return",
+      "target_global_ptr": "0x00000005",
+      "function_count": 3,
+      "function_addrs": [
+        "0x02392a40",
+        "0x02392a74",
+        "0x02392d40"
+      ]
+    },
+    {
+      "pattern_kind": "halfword_getter",
+      "target_global_ptr": "0x020fbdd8",
+      "function_count": 1,
+      "function_addrs": [
+        "0x0202f3fc"
+      ]
+    },
+    {
+      "pattern_kind": "halfword_getter",
+      "target_global_ptr": "0x02106e58",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02020f08"
+      ]
+    },
+    {
+      "pattern_kind": "halfword_getter",
+      "target_global_ptr": "0x021bb24c",
+      "function_count": 1,
+      "function_addrs": [
+        "0x0202cef8"
+      ]
+    },
+    {
+      "pattern_kind": "halfword_setter",
+      "target_global_ptr": "0x08001000",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02386e6c"
+      ]
+    },
+    {
+      "pattern_kind": "state_getter",
+      "target_global_ptr": "0x0210656c",
+      "function_count": 1,
+      "function_addrs": [
+        "0x020147d8"
+      ]
+    },
+    {
+      "pattern_kind": "state_getter",
+      "target_global_ptr": "0x02106df8",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02020930"
+      ]
+    },
+    {
+      "pattern_kind": "state_getter",
+      "target_global_ptr": "0x02106ea4",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02020d1c"
+      ]
+    },
+    {
+      "pattern_kind": "state_getter",
+      "target_global_ptr": "0x0210aaf0",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02027ea4"
+      ]
+    },
+    {
+      "pattern_kind": "state_getter",
+      "target_global_ptr": "0x0210ab54",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02028790"
+      ]
+    },
+    {
+      "pattern_kind": "state_getter",
+      "target_global_ptr": "0x021bb25c",
+      "function_count": 1,
+      "function_addrs": [
+        "0x0202dab0"
+      ]
+    },
+    {
+      "pattern_kind": "state_getter",
+      "target_global_ptr": "0x021c1520",
+      "function_count": 1,
+      "function_addrs": [
+        "0x020420f4"
+      ]
+    },
+    {
+      "pattern_kind": "state_getter",
+      "target_global_ptr": "0x0380aa88",
+      "function_count": 2,
+      "function_addrs": [
+        "0x02385b34",
+        "0x02385b40"
+      ]
+    },
+    {
+      "pattern_kind": "state_setter",
+      "target_global_ptr": "0x02101be8",
+      "function_count": 1,
+      "function_addrs": [
+        "0x0200bf9c"
+      ]
+    },
+    {
+      "pattern_kind": "state_setter",
+      "target_global_ptr": "0x02106b48",
+      "function_count": 1,
+      "function_addrs": [
+        "0x0201e018"
+      ]
+    },
+    {
+      "pattern_kind": "state_setter",
+      "target_global_ptr": "0x02106e78",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02021e6c"
+      ]
+    },
+    {
+      "pattern_kind": "state_setter",
+      "target_global_ptr": "0x02106e7c",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02021bb4"
+      ]
+    },
+    {
+      "pattern_kind": "state_setter",
+      "target_global_ptr": "0x0210ab38",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02029a2c"
+      ]
+    },
+    {
+      "pattern_kind": "state_setter",
+      "target_global_ptr": "0x0210ab60",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02029820"
+      ]
+    },
+    {
+      "pattern_kind": "state_setter",
+      "target_global_ptr": "0x0210ab64",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02029a8c"
+      ]
+    },
+    {
+      "pattern_kind": "state_setter",
+      "target_global_ptr": "0x021bd860",
+      "function_count": 2,
+      "function_addrs": [
+        "0x02030ff8",
+        "0x0203100c"
+      ]
+    },
+    {
+      "pattern_kind": "state_setter",
+      "target_global_ptr": "0x021c1520",
+      "function_count": 1,
+      "function_addrs": [
+        "0x020420b8"
+      ]
+    },
+    {
+      "pattern_kind": "state_setter",
+      "target_global_ptr": "0x03809c54",
+      "function_count": 1,
+      "function_addrs": [
+        "0x02382fa4"
+      ]
+    }
+  ]
+}

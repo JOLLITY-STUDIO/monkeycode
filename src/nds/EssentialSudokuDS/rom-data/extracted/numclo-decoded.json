@@ -1,0 +1,412 @@
+{
+  "description": "V0.6 numclo*.data parse (low-nibble cell value, 0xAA separator)",
+  "total_files": 15,
+  "total_puzzles": 1525,
+  "note": "Pragmatic parser — high nibble carries visual state; full reverse pending V0.7+",
+  "files": [
+    {
+      "file": "numclo0.data",
+      "offset": "0x221000",
+      "size": 7710,
+      "parsed_puzzles": 118,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 17
+        },
+        {
+          "index": 1,
+          "count_filled": 27
+        },
+        {
+          "index": 2,
+          "count_filled": 32
+        },
+        {
+          "index": 3,
+          "count_filled": 31
+        },
+        {
+          "index": 4,
+          "count_filled": 32
+        }
+      ]
+    },
+    {
+      "file": "numclo1.data",
+      "offset": "0x223000",
+      "size": 7710,
+      "parsed_puzzles": 100,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 28
+        },
+        {
+          "index": 1,
+          "count_filled": 36
+        },
+        {
+          "index": 2,
+          "count_filled": 15
+        },
+        {
+          "index": 3,
+          "count_filled": 14
+        },
+        {
+          "index": 4,
+          "count_filled": 7
+        }
+      ]
+    },
+    {
+      "file": "numclo2.data",
+      "offset": "0x225000",
+      "size": 7710,
+      "parsed_puzzles": 105,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 20
+        },
+        {
+          "index": 1,
+          "count_filled": 8
+        },
+        {
+          "index": 2,
+          "count_filled": 35
+        },
+        {
+          "index": 3,
+          "count_filled": 23
+        },
+        {
+          "index": 4,
+          "count_filled": 19
+        }
+      ]
+    },
+    {
+      "file": "numclo3.data",
+      "offset": "0x227000",
+      "size": 7710,
+      "parsed_puzzles": 109,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 26
+        },
+        {
+          "index": 1,
+          "count_filled": 33
+        },
+        {
+          "index": 2,
+          "count_filled": 28
+        },
+        {
+          "index": 3,
+          "count_filled": 33
+        },
+        {
+          "index": 4,
+          "count_filled": 21
+        }
+      ]
+    },
+    {
+      "file": "numclo4.data",
+      "offset": "0x229000",
+      "size": 7710,
+      "parsed_puzzles": 107,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 36
+        },
+        {
+          "index": 1,
+          "count_filled": 15
+        },
+        {
+          "index": 2,
+          "count_filled": 14
+        },
+        {
+          "index": 3,
+          "count_filled": 22
+        },
+        {
+          "index": 4,
+          "count_filled": 14
+        }
+      ]
+    },
+    {
+      "file": "numclo5.data",
+      "offset": "0x22b000",
+      "size": 7710,
+      "parsed_puzzles": 102,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 34
+        },
+        {
+          "index": 1,
+          "count_filled": 36
+        },
+        {
+          "index": 2,
+          "count_filled": 28
+        },
+        {
+          "index": 3,
+          "count_filled": 24
+        },
+        {
+          "index": 4,
+          "count_filled": 37
+        }
+      ]
+    },
+    {
+      "file": "numclo6.data",
+      "offset": "0x22d000",
+      "size": 7710,
+      "parsed_puzzles": 102,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 53
+        },
+        {
+          "index": 1,
+          "count_filled": 31
+        },
+        {
+          "index": 2,
+          "count_filled": 22
+        },
+        {
+          "index": 3,
+          "count_filled": 27
+        },
+        {
+          "index": 4,
+          "count_filled": 22
+        }
+      ]
+    },
+    {
+      "file": "numclo7.data",
+      "offset": "0x22f000",
+      "size": 7710,
+      "parsed_puzzles": 110,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 28
+        },
+        {
+          "index": 1,
+          "count_filled": 31
+        },
+        {
+          "index": 2,
+          "count_filled": 20
+        },
+        {
+          "index": 3,
+          "count_filled": 36
+        },
+        {
+          "index": 4,
+          "count_filled": 25
+        }
+      ]
+    },
+    {
+      "file": "numclo8.data",
+      "offset": "0x231000",
+      "size": 7710,
+      "parsed_puzzles": 107,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 21
+        },
+        {
+          "index": 1,
+          "count_filled": 33
+        },
+        {
+          "index": 2,
+          "count_filled": 33
+        },
+        {
+          "index": 3,
+          "count_filled": 30
+        },
+        {
+          "index": 4,
+          "count_filled": 14
+        }
+      ]
+    },
+    {
+      "file": "numclo9.data",
+      "offset": "0x233000",
+      "size": 7710,
+      "parsed_puzzles": 109,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 12
+        },
+        {
+          "index": 1,
+          "count_filled": 6
+        },
+        {
+          "index": 2,
+          "count_filled": 13
+        },
+        {
+          "index": 3,
+          "count_filled": 21
+        },
+        {
+          "index": 4,
+          "count_filled": 12
+        }
+      ]
+    },
+    {
+      "file": "numclo_00.data",
+      "offset": "0x235000",
+      "size": 7710,
+      "parsed_puzzles": 112,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 16
+        },
+        {
+          "index": 1,
+          "count_filled": 28
+        },
+        {
+          "index": 2,
+          "count_filled": 18
+        },
+        {
+          "index": 3,
+          "count_filled": 28
+        },
+        {
+          "index": 4,
+          "count_filled": 18
+        }
+      ]
+    },
+    {
+      "file": "numclo_01.data",
+      "offset": "0x23b200",
+      "size": 7710,
+      "parsed_puzzles": 103,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 34
+        },
+        {
+          "index": 1,
+          "count_filled": 36
+        },
+        {
+          "index": 2,
+          "count_filled": 28
+        },
+        {
+          "index": 3,
+          "count_filled": 24
+        },
+        {
+          "index": 4,
+          "count_filled": 39
+        }
+      ]
+    },
+    {
+      "file": "numclo_02.data",
+      "offset": "0x23d200",
+      "size": 7710,
+      "parsed_puzzles": 107,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 22
+        },
+        {
+          "index": 1,
+          "count_filled": 17
+        },
+        {
+          "index": 2,
+          "count_filled": 7
+        },
+        {
+          "index": 3,
+          "count_filled": 35
+        },
+        {
+          "index": 4,
+          "count_filled": 25
+        }
+      ]
+    },
+    {
+      "file": "numclo_03.data",
+      "offset": "0x23f200",
+      "size": 7710,
+      "parsed_puzzles": 133,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 17
+        },
+        {
+          "index": 1,
+          "count_filled": 27
+        },
+        {
+          "index": 2,
+          "count_filled": 32
+        },
+        {
+          "index": 3,
+          "count_filled": 27
+        },
+        {
+          "index": 4,
+          "count_filled": 29
+        }
+      ]
+    },
+    {
+      "file": "numclo_tu.data",
+      "offset": "0x244a00",
+      "size": 87,
+      "parsed_puzzles": 1,
+      "sample": [
+        {
+          "index": 0,
+          "count_filled": 17
+        }
+      ]
+    }
+  ]
+}

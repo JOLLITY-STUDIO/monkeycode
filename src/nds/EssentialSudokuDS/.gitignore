@@ -1,0 +1,59 @@
+# Git ignore — minimize tracked junk, keep ROM/build artifacts out
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Node
+node_modules/
+*.log
+.npm/
+.yarn/
+
+# Build artifacts
+dist/
+.tsbuild/
+miniprogram_npm/
+
+# Debug / temp
+*.tmp
+*.bak
+_*.txt
+_*.js
+_*.ts
+_*.bat
+_*.log
+_*.out
+_*.err
+_*.py
+work/explore_*.py
+work/_*.py
+
+# Work area — ROM binary + extraction helpers + disasm/decode scratch (V0.15)
+*.nds
+*.rar
+*.whl
+work/
+# work/Essential Sudoku DS (Europe).nds (binary ROM, not tracked)
+# work/rarfile-*.whl (Python wheel)
+
+# Python
+__pycache__/
+*.pyc
+
+# Sprint scratch
+COMMIT_*.txt
+COMMIT_EDITMSG_*.txt
+
+# disasm scratch + run logs (V0.3 huge tmp output)
+_disasm_run*.log
+disasm_run*.log
+
+# TS test build output (V0.4)
+build-test/
+
+# Project scratch
+.codebuddy/scratch/
+*.swp

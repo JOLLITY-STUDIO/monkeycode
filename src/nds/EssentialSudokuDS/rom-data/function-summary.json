@@ -1,0 +1,23 @@
+{
+  "description": "V0.8.1 function boundary detection summary",
+  "arm9_prologues": 975,
+  "arm7_prologues": 448,
+  "unique_callees": 2181,
+  "classify_breakdown": {
+    "bx_lr": 754,
+    "near": 243,
+    "real": 904,
+    "pop_pc": 45,
+    "single_caller_real": 201,
+    "data_target": 31,
+    "ldm_pc": 1,
+    "multi_caller": 2
+  },
+  "cpu_breakdown": {
+    "arm9": 1664,
+    "arm7": 517
+  },
+  "overall_coverage_pct": 98.58,
+  "arm9_real_pct": 98.14,
+  "arm7_real_pct": 100.0
+}

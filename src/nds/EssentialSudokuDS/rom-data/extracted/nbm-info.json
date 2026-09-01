@@ -1,0 +1,383 @@
+{
+  "total": 42,
+  "results": [
+    {
+      "name": "download.nbm",
+      "file_id": 0,
+      "ok": true,
+      "flag": 16777216,
+      "width": 128,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\download.nbm.bmp"
+    },
+    {
+      "name": "dwlogo.nbm",
+      "file_id": 1,
+      "ok": true,
+      "flag": 16777216,
+      "width": 256,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\dwlogo.nbm.bmp"
+    },
+    {
+      "name": "license.nbm",
+      "file_id": 4,
+      "ok": true,
+      "flag": 16777216,
+      "width": 256,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\license.nbm.bmp"
+    },
+    {
+      "name": "menu_csol.nbm",
+      "file_id": 5,
+      "ok": true,
+      "flag": 8388608,
+      "width": 64,
+      "height": 128,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\menu_csol.nbm.bmp"
+    },
+    {
+      "name": "numclo_00.nbm",
+      "file_id": 18,
+      "ok": true,
+      "flag": 8388608,
+      "width": 256,
+      "height": 128,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\numclo_00.nbm.bmp"
+    },
+    {
+      "name": "numclo_waku.nbm",
+      "file_id": 33,
+      "ok": true,
+      "flag": 16777216,
+      "width": 256,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\numclo_waku.nbm.bmp"
+    },
+    {
+      "name": "pazl_select.nbm",
+      "file_id": 46,
+      "ok": true,
+      "flag": 16777216,
+      "width": 128,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\pazl_select.nbm.bmp"
+    },
+    {
+      "name": "pazl_select2a.nbm",
+      "file_id": 47,
+      "ok": true,
+      "flag": 16777216,
+      "width": 256,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\pazl_select2a.nbm.bmp"
+    },
+    {
+      "name": "pazl_select2b.nbm",
+      "file_id": 48,
+      "ok": true,
+      "flag": 16777216,
+      "width": 256,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\pazl_select2b.nbm.bmp"
+    },
+    {
+      "name": "pazl_select2c.nbm",
+      "file_id": 49,
+      "ok": true,
+      "flag": 16777216,
+      "width": 256,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\pazl_select2c.nbm.bmp"
+    },
+    {
+      "name": "pazl_yajirusi.nbm",
+      "file_id": 50,
+      "ok": true,
+      "flag": 16777216,
+      "width": 16,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\pazl_yajirusi.nbm.bmp"
+    },
+    {
+      "name": "select1.nbm",
+      "file_id": 51,
+      "ok": true,
+      "flag": 16777216,
+      "width": 256,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\select1.nbm.bmp"
+    },
+    {
+      "name": "select3.nbm",
+      "file_id": 52,
+      "ok": true,
+      "flag": 16777216,
+      "width": 256,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\select3.nbm.bmp"
+    },
+    {
+      "name": "select4.nbm",
+      "file_id": 53,
+      "ok": true,
+      "flag": 16777216,
+      "width": 128,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\select4.nbm.bmp"
+    },
+    {
+      "name": "select6.nbm",
+      "file_id": 54,
+      "ok": true,
+      "flag": 16777216,
+      "width": 64,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\select6.nbm.bmp"
+    },
+    {
+      "name": "setu03.nbm",
+      "file_id": 55,
+      "ok": true,
+      "flag": 16777216,
+      "width": 256,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\setu03.nbm.bmp"
+    },
+    {
+      "name": "staff00.nbm",
+      "file_id": 57,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff00.nbm.bmp"
+    },
+    {
+      "name": "staff01.nbm",
+      "file_id": 58,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff01.nbm.bmp"
+    },
+    {
+      "name": "staff02.nbm",
+      "file_id": 59,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff02.nbm.bmp"
+    },
+    {
+      "name": "staff03.nbm",
+      "file_id": 60,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff03.nbm.bmp"
+    },
+    {
+      "name": "staff04.nbm",
+      "file_id": 61,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff04.nbm.bmp"
+    },
+    {
+      "name": "staff05.nbm",
+      "file_id": 62,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff05.nbm.bmp"
+    },
+    {
+      "name": "staff06.nbm",
+      "file_id": 63,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff06.nbm.bmp"
+    },
+    {
+      "name": "staff07.nbm",
+      "file_id": 64,
+      "ok": true,
+      "flag": 16777216,
+      "width": 256,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff07.nbm.bmp"
+    },
+    {
+      "name": "staff08.nbm",
+      "file_id": 65,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff08.nbm.bmp"
+    },
+    {
+      "name": "staff09.nbm",
+      "file_id": 66,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff09.nbm.bmp"
+    },
+    {
+      "name": "staff10.nbm",
+      "file_id": 67,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff10.nbm.bmp"
+    },
+    {
+      "name": "staff11.nbm",
+      "file_id": 68,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff11.nbm.bmp"
+    },
+    {
+      "name": "staff12.nbm",
+      "file_id": 69,
+      "ok": true,
+      "flag": 16777216,
+      "width": 192,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\staff12.nbm.bmp"
+    },
+    {
+      "name": "title.nbm",
+      "file_id": 70,
+      "ok": true,
+      "flag": 16777217,
+      "width": 256,
+      "height": 515,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\title.nbm.bmp"
+    },
+    {
+      "name": "title2.nbm",
+      "file_id": 71,
+      "ok": true,
+      "flag": 16777216,
+      "width": 256,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\title2.nbm.bmp"
+    },
+    {
+      "name": "tutorial_00.nbm",
+      "file_id": 72,
+      "ok": true,
+      "flag": 16777216,
+      "width": 128,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\tutorial_00.nbm.bmp"
+    },
+    {
+      "name": "usa.nbm",
+      "file_id": 73,
+      "ok": true,
+      "flag": 16777216,
+      "width": 64,
+      "height": 256,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\usa.nbm.bmp"
+    },
+    {
+      "name": "wireless_on.nbm",
+      "file_id": 74,
+      "ok": true,
+      "flag": 1048576,
+      "width": 16,
+      "height": 16,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\wireless_on.nbm.bmp"
+    },
+    {
+      "name": "wireless_strength_level_0_b.nbm",
+      "file_id": 75,
+      "ok": true,
+      "flag": 1048576,
+      "width": 16,
+      "height": 16,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\wireless_strength_level_0_b.nbm.bmp"
+    },
+    {
+      "name": "wireless_strength_level_0_w.nbm",
+      "file_id": 76,
+      "ok": true,
+      "flag": 1048576,
+      "width": 16,
+      "height": 16,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\wireless_strength_level_0_w.nbm.bmp"
+    },
+    {
+      "name": "wireless_strength_level_1_b.nbm",
+      "file_id": 77,
+      "ok": true,
+      "flag": 1048576,
+      "width": 16,
+      "height": 16,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\wireless_strength_level_1_b.nbm.bmp"
+    },
+    {
+      "name": "wireless_strength_level_1_w.nbm",
+      "file_id": 78,
+      "ok": true,
+      "flag": 1048576,
+      "width": 16,
+      "height": 16,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\wireless_strength_level_1_w.nbm.bmp"
+    },
+    {
+      "name": "wireless_strength_level_2_b.nbm",
+      "file_id": 79,
+      "ok": true,
+      "flag": 1048576,
+      "width": 16,
+      "height": 16,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\wireless_strength_level_2_b.nbm.bmp"
+    },
+    {
+      "name": "wireless_strength_level_2_w.nbm",
+      "file_id": 80,
+      "ok": true,
+      "flag": 1048576,
+      "width": 16,
+      "height": 16,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\wireless_strength_level_2_w.nbm.bmp"
+    },
+    {
+      "name": "wireless_strength_level_3_b.nbm",
+      "file_id": 81,
+      "ok": true,
+      "flag": 1048576,
+      "width": 16,
+      "height": 16,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\wireless_strength_level_3_b.nbm.bmp"
+    },
+    {
+      "name": "wireless_strength_level_3_w.nbm",
+      "file_id": 82,
+      "ok": true,
+      "flag": 1048576,
+      "width": 16,
+      "height": 16,
+      "bmp": "D:\\studio\\github\\monkeycode\\src\\nds\\EssentialSudokuDS\\rom-data\\extracted\\nbm\\wireless_strength_level_3_w.nbm.bmp"
+    }
+  ]
+}
