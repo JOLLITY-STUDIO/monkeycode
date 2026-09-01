@@ -4,6 +4,31 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.18.6 — 数独选题页 (select1 精灵 + 难度 + 题号 1-1000)
+
+### 2026-09-01
+
+#### 添加
+- ✅ `miniprogram/pages/select/select.ts/wxml/wxss/json` — 新建数独选题页:
+  - 顶部显示原 DS `select1.nbm.png` 按钮精灵装饰
+  - 难度 chips (简单/中等/困难/专家, 对应 numple0-2/3-5/6-7/8-9)
+  - 题号输入 1-1000 + -1/+1 微调, 切难度自动跳到该难度范围起点
+  - 预览: 题号 + 难度 + 已给格数 (getPuzzleById 实时校验)
+  - 开始 → `redirectTo /pages/index/index?id=numpleX.data_NNN`
+- ✅ `miniprogram/pages/index/index.ts` — `onLoad` 支持 `query.id`:
+  - 有 id → `getPuzzleById` + `startFromPuzzle` 直接开指定题
+  - 无 id → 保持默认 easy
+- ✅ `miniprogram/app.json` — 注册 `pages/select/select`
+- ✅ `miniprogram/pages/menu/menu.ts` — Number Puzzle 按钮改为先进选题页
+
+#### 启动流程 (1:1 还原)
+`title → menu → select(选题) → index(数独)` / `menu → picture(图画)`
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## V0.18.5 — 启动标题页 (title.nbm 全屏 + TAP TO START)
 
 ### 2026-09-01

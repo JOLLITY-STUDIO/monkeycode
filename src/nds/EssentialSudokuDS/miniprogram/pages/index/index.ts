@@ -3,7 +3,7 @@
 
 import { SudokuGameService } from '../../utils/sudoku/game_service';
 import { Coord, Value } from '../../utils/sudoku/board';
-import { Difficulty } from '../../utils/sudoku/numple_puzzles';
+import { Difficulty, getPuzzleById } from '../../utils/sudoku/numple_puzzles';
 
 interface ViewCell {
   r: number;         // 行
@@ -48,7 +48,22 @@ Page({
 
   _timer: 0 as number,
 
-  onLoad() {
+  onLoad(query?: any) {
+    // V0.18.6: 支持选题页跳入 (query.id = numpleX.data_NNN)
+    if (query && query.id) {
+      const puzzle = getPuzzleById(String(query.id));
+      if (puzzle && service.startFromPuzzle(puzzle).ok) {
+        this.setData({
+          difficulty: puzzle.difficulty,
+          difficultyLabel: DIFF_LABELS[puzzle.difficulty],
+          moves: 0,
+          complete: false,
+        });
+        this._sync();
+        this._startTimer();
+        return;
+      }
+    }
     this._startGame('easy');
   },
 

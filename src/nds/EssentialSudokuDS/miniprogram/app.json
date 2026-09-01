@@ -2,6 +2,7 @@
   "pages": [
     "pages/title/title",
     "pages/menu/menu",
+    "pages/select/select",
     "pages/index/index",
     "pages/picture/picture",
     "pages/staff/staff",

@@ -5,9 +5,9 @@ Page({
     // 可在此预加载后续页面资源
   },
 
-  /** 进入数独玩法 (Number Puzzle) */
+  /** 进入数独玩法 (Number Puzzle): 先选题 */
   onOpenNumberPuzzle() {
-    wx.navigateTo({ url: '/pages/index/index' });
+    wx.navigateTo({ url: '/pages/select/select' });
   },
 
   /** 进入图画谜题玩法 (Picture Puzzle) */

@@ -1,0 +1,129 @@
+.select-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 16rpx 24rpx 48rpx;
+  box-sizing: border-box;
+  background: #e9eef3;
+}
+
+.select1-banner {
+  width: 100%;
+  height: 300rpx;
+  border-radius: 16rpx;
+  overflow: hidden;
+  margin-bottom: 24rpx;
+  background: #0d1b2a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.select1-image {
+  width: 100%;
+  height: 100%;
+  opacity: 0.9;
+}
+
+.select-card {
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20rpx;
+  padding: 28rpx;
+  box-sizing: border-box;
+  box-shadow: 0 6rpx 24rpx rgba(0, 0, 0, 0.08);
+}
+
+.section-label {
+  font-size: 26rpx;
+  font-weight: 600;
+  color: #5a6a7a;
+  margin-bottom: 14rpx;
+  margin-top: 20rpx;
+}
+
+.diff-chips {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 14rpx;
+}
+
+.diff-chip {
+  padding: 14rpx 28rpx;
+  border-radius: 30rpx;
+  font-size: 26rpx;
+  color: #3a4a5a;
+  background: #f2f4f6;
+  border: 1rpx solid #d0d8e0;
+}
+
+.diff-chip-active {
+  color: #ffffff;
+  background: #1565c0;
+  border-color: #1565c0;
+}
+
+.num-input-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16rpx;
+}
+
+.num-input {
+  flex: 1;
+  min-width: 0;
+  height: 88rpx;
+  background: #f7f9fb;
+  border: 2rpx solid #c8d2dc;
+  border-radius: 14rpx;
+  padding: 0 24rpx;
+  font-size: 40rpx;
+  font-weight: 700;
+  color: #2b3a4a;
+}
+
+.num-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.num-btn {
+  padding: 10rpx 26rpx;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  color: #1565c0;
+  background: #e3f2fd;
+  border: 1rpx solid #90caf9;
+  text-align: center;
+}
+
+.pick-preview {
+  margin-top: 20rpx;
+  font-size: 24rpx;
+  color: #8e24aa;
+  background: #f3e5f5;
+  border-radius: 10rpx;
+  padding: 14rpx 20rpx;
+}
+
+.start-btn {
+  margin-top: 32rpx;
+  height: 96rpx;
+  border-radius: 48rpx;
+  background: linear-gradient(135deg, #1565c0, #0d47a1);
+  color: #ffffff;
+  font-size: 32rpx;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6rpx 16rpx rgba(21, 101, 192, 0.3);
+}
+
+.start-btn:active {
+  opacity: 0.85;
+}
