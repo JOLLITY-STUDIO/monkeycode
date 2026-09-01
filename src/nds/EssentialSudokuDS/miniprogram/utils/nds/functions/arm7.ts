@@ -3831,9 +3831,10 @@ export const sub_0239e56c = 0x0239e56c as const;
  * ARM7 函数 @ 0x0239e68c
  * @category bx_lr
  * @confidence medium
+ * @curated V0.12 manually named
  * @callers 4
  */
-export const sub_0239e68c = 0x0239e68c as const;
+export const arm7_io_flag_poll_store = 0x0239e68c as const;
 /**
  * ARM7 函数 @ 0x0239e700
  * @category bx_lr

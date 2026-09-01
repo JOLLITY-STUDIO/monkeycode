@@ -1,0 +1,30 @@
+{
+  "version": "V0.17 batch10",
+  "note": "callers>=3 capstone disasm curated naming",
+  "names": [
+    { "addr": "0x0200900c", "name": "init_sequence_memclear_2x", "cpu": "arm9", "comment": "mov r0,#0; bl 0x203a784 twice (2 global regions)" },
+    { "addr": "0x02009618", "name": "init_sequence_service_2calls", "cpu": "arm9", "comment": "bl 0x2027c44 (r2=0xa); bl 0x2028688" },
+    { "addr": "0x0200cc24", "name": "init_sequence_4calls", "cpu": "arm9", "comment": "global ldr; bl 0x2028840/0x2008630/0x2020170/0x201eec0" },
+    { "addr": "0x020120ec", "name": "init_sequence_3calls_write", "cpu": "arm9", "comment": "bl 0x2028840/0x201eec0/0x200a234; mov r1,#0xc000; bl 0x202bbfc" },
+    { "addr": "0x02017720", "name": "state_dispatch_0_8_0x10", "cpu": "arm9", "comment": "ldr global; cmp 0/8/0x10 -> 3-way dispatch" },
+    { "addr": "0x02020d2c", "name": "global_set_true", "cpu": "arm9", "comment": "mov r1,#1; str r1,[r0] (pairs with 0x02020d40 set false)" },
+    { "addr": "0x02022d04", "name": "table_lookup_8b_sub_offsets", "cpu": "arm9", "comment": "ldr [r1,r3,lsl#3] pair; sub #8/#0x48; add #0x20" },
+    { "addr": "0x0202bbe4", "name": "call_indirect_const_0_to_02036784", "cpu": "arm9", "comment": "mov r0,#0; mov r1,r0; mov r2,r1; bx 0x02036784" },
+    { "addr": "0x0202e198", "name": "global_state_range_check", "cpu": "arm9", "comment": "ldr global; sub #4; cmp #2; bhi -> guard" },
+    { "addr": "0x02031be4", "name": "tail_call_0202d87c", "cpu": "arm9", "comment": "ldr ip,[pc]; bx ip -> 0x0202d87c (no args)" },
+    { "addr": "0x02035004", "name": "struct_field_8_0xc_compare", "cpu": "arm9", "comment": "ldr [r0,#8] vs [r0,#0xc]; movge/lt bool" },
+    { "addr": "0x0203501c", "name": "struct_field_8_increment_capped", "cpu": "arm9", "comment": "ldr [r0,#8]; cmp [r0,#0xc]; addlt r1,#1; strlt" },
+    { "addr": "0x02035214", "name": "spin_wait_flag_0x8000_read_pair", "cpu": "arm9", "comment": "ldrh ands #0x8000; bne loop; ldr pair [r1],[r1,#4]" },
+    { "addr": "0x0203677c", "name": "signed_halfword_pack_store", "cpu": "arm9", "comment": "r2<0: orr #0xc0 + strh neg; else orr #0x80 + strh pair" },
+    { "addr": "0x02037fc4", "name": "io_flag_guarded_global_swap", "cpu": "arm9", "comment": "io flag off (strh 0); swap global word; io flag restore (strh r3)" },
+    { "addr": "0x0203ac7c", "name": "wrapper_call_4args_0xc", "cpu": "arm9", "comment": "arg shuffle; mov r0,#0xc; bl 0x203aa68" },
+    { "addr": "0x0203b768", "name": "global_field_get_call_r1_4", "cpu": "arm9", "comment": "ldr [r0]; mov r1,#4; bl 0x20395bc; re-read global" },
+    { "addr": "0x0203ed4c", "name": "wrapper_guard_spin_wait", "cpu": "arm9", "comment": "bl 0x203ed88; nonzero ret; bl 0x203f1dc (spin wait)" },
+    { "addr": "0x0203f1f4", "name": "wrapper_guard_double_call", "cpu": "arm9", "comment": "bl 0x2039f38; global check; bl 0x2039f4c" },
+    { "addr": "0x0204202c", "name": "global_deref_deref_get", "cpu": "arm9", "comment": "ldr r0,[r0]; ldr r0,[r0] (double deref)" },
+    { "addr": "0x02042040", "name": "struct_field_0x114_flag_get", "cpu": "arm9", "comment": "ldr [r0,#0x114]; cmp #0; movne/e q bool" },
+    { "addr": "0x020429a0", "name": "struct_field_0x114_flag_set_init", "cpu": "arm9", "comment": "str 1 -> [ip,#0x114]; str 0 -> [ip,#0x24]; more init" },
+    { "addr": "0x02042ff0", "name": "io_reg_spin_wait_byte_write", "cpu": "arm9", "comment": "ldr ands #0x80000000; bne loop; strb byte seq" },
+    { "addr": "0x0239e68c", "name": "arm7_io_flag_poll_store", "cpu": "arm7", "comment": "ldrh [io]; ands #0x80; bne poll; strh 0x8900; 5-set seq" }
+  ]
+}
