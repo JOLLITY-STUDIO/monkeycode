@@ -4,6 +4,24 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.11.1 — 修复 skyline 整页黑屏 (index.json 漏注册 picture-mode-scene)
+
+### 2026-09-02
+
+#### 修复
+- index.wxml 早已引用 `<picture-mode-scene>` (图画谜题模式选择场景,
+  `s === 'pictureMode'` 分支), 但 `pages/index/index.json` usingComponents
+  **漏注册**该组件 → skyline/glass-easel 编译自定义组件失败 → 整页黑屏
+- 补注册: `"picture-mode-scene": "/components/scenes/picture-mode-scene/picture-mode-scene"`
+- 已核对: index.wxml 使用的 11 个 scene 组件 ↔ index.json 注册 11 个, 全部对齐;
+  全项目 wxml 自定义组件引用无其他漏注册 (scene 组件互不嵌套)
+
+#### Verification
+- ✅ index.json JSON 语法合法 (ConvertFrom-Json 通过)
+- ✅ 组件四件套齐全 (picture-mode-scene.json/ts/wxml/wxss)
+
+---
+
 ## PICTURE-V0.11 — picture-scene 调色板改用原 DS numclo_00.nbm 按钮切片
 
 ### 2026-09-02

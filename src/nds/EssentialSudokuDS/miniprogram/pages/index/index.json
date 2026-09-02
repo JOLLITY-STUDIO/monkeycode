@@ -2,6 +2,7 @@
   "usingComponents": {
     "title-scene": "/components/scenes/title-scene/title-scene",
     "menu-scene": "/components/scenes/menu-scene/menu-scene",
+    "picture-mode-scene": "/components/scenes/picture-mode-scene/picture-mode-scene",
     "select-scene": "/components/scenes/select-scene/select-scene",
     "options-scene": "/components/scenes/options-scene/options-scene",
     "tutorial-scene": "/components/scenes/tutorial-scene/tutorial-scene",
