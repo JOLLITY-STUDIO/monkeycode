@@ -1,0 +1,177 @@
+/* components/bg-fx/bg-fx.wxss — 全局动态背景层 (Bright Sky Loop, V0.35)
+   明亮多彩 + 视差横滚 (横版射击游戏式无限循环背景)。
+   注意: skyline 渲染器支持 transform + opacity + animation,
+   对 filter: blur 兼容性差, 全部用半透明色叠加模拟柔和边缘。
+   全项目禁用 rpx, 一律 px。
+   层级: 本组件绝对定位填满 .scene-area, z-index 0;
+         场景层 (scene-stage) z-index 1/2 浮在其上, 场景根背景须为 transparent。
+   无缝横滚: .roll width:200% 内含两个相同 .seg (各 50%),
+     roll 动画 translate3d(0,0,0) → translate3d(-50%,0,0) = 恰好平移一个 seg 宽。
+*/
+
+.bg-fx {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background: #7de8f5; /* 兜底: 与 .fx-base 顶部同色, 防加载间隙露黑 */
+}
+
+/* ===========================================================
+ * 1. 明亮天空底 (青 → 薄荷 → 暖黄 → 蜜桃, 加太阳柔光)
+ * =========================================================== */
+.fx-base {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background:
+    radial-gradient(ellipse 56% 40% at 84% 10%, rgba(255, 255, 255, 0.85) 0%, rgba(255, 248, 210, 0.35) 45%, transparent 72%),
+    radial-gradient(ellipse 62% 44% at 10% 96%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 240, 214, 0.2) 50%, transparent 75%),
+    linear-gradient(180deg, #4ecdf0 0%, #7de8f5 20%, #b5f2e0 46%, #ffe9b0 70%, #ffd6c6 100%);
+}
+
+/* ===========================================================
+ * 2. 视差横滚层骨架 (每个 band = 一个视差平面)
+ * =========================================================== */
+.band {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* 上下缓浮 (让横滚产生斜向走动感) */
+.bob {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  animation: band-bob ease-in-out infinite alternate;
+  will-change: transform;
+}
+.bob-1 { animation-duration: 9.5s; }
+.bob-2 { animation-duration: 7.2s; }
+.bob-3 { animation-duration: 5.6s; }
+@keyframes band-bob {
+  from { transform: translate3d(0, -10px, 0); }
+  to   { transform: translate3d(0, 12px, 0); }
+}
+
+/* 横滚: width:200%, 两个相同 seg 无缝循环 */
+.roll {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 200%;
+  height: 100%;
+  display: flex;
+  animation: roll-x linear infinite;
+  will-change: transform;
+}
+.roll-1 { animation-duration: 58s; }
+.roll-2 { animation-duration: 34s; }
+.roll-3 { animation-duration: 16s; }
+@keyframes roll-x {
+  from { transform: translate3d(0, 0, 0); }
+  to   { transform: translate3d(-50%, 0, 0); }
+}
+
+/* 每个 seg 占 roll 一半 = 一屏宽, 装饰物相对 seg 定位 */
+.seg {
+  flex: 0 0 50%;
+  width: 50%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ===========================================================
+ * 3. 远景装饰: 白色软云 (低透明度大团)
+ * =========================================================== */
+.cloud {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(ellipse 52% 58% at 50% 46%,
+    rgba(255, 255, 255, 0.9) 0%,
+    rgba(255, 255, 255, 0.45) 55%,
+    rgba(255, 255, 255, 0) 75%);
+}
+
+/* ===========================================================
+ * 4. 中景装饰: 彩色玻璃条 + 泡泡
+ * =========================================================== */
+.bar {
+  position: absolute;
+  border-radius: 999px;
+  box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.35),
+    inset 0 -6px 12px rgba(255, 255, 255, 0.18);
+}
+
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  border: 2px solid;
+  background: radial-gradient(circle at 34% 30%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0.08) 60%, rgba(255, 255, 255, 0) 100%);
+  box-shadow: 0 0 8px rgba(255, 255, 255, 0.25);
+}
+
+/* ===========================================================
+ * 5. 近景装饰: 倾斜流光 + 亮色小星
+ * =========================================================== */
+.streak {
+  position: absolute;
+  height: 4px;
+  border-radius: 2px;
+  transform: skewX(-24deg);
+  background: linear-gradient(90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.9) 50%,
+    rgba(255, 255, 255, 0) 100%);
+}
+
+.star {
+  position: absolute;
+  border-radius: 2px;
+  box-shadow: 0 0 7px rgba(255, 255, 255, 0.55);
+  animation: star-twinkle 2.8s ease-in-out infinite alternate;
+  will-change: opacity;
+}
+@keyframes star-twinkle {
+  from { opacity: 0.55; }
+  to   { opacity: 1; }
+}
+
+/* ===========================================================
+ * 6. 节拍柔和光呼吸 (跟场景 BGM 小节, 周期 = pulseMs)
+ *    放在顶部偏右, 像太阳余晖缓慢扩收, 幅度小而平缓 (不闪缩)。
+ * =========================================================== */
+.fx-beat {
+  position: absolute;
+  left: 50%;
+  top: -6%;
+  width: 130%;
+  height: 58%;
+  margin-left: -65%;
+  background: radial-gradient(ellipse at 50% 30%,
+    rgba(255, 255, 255, 0.5) 0%,
+    rgba(255, 247, 214, 0.28) 40%,
+    transparent 72%);
+  animation-name: beat-breath;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+  will-change: transform, opacity;
+}
+@keyframes beat-breath {
+  0%   { transform: scale(0.98); opacity: 0.6; }
+  50%  { transform: scale(1.05); opacity: 1; }
+  100% { transform: scale(0.98); opacity: 0.6; }
+}

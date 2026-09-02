@@ -1,0 +1,81 @@
+<!--components/bg-fx/bg-fx.wxml — 全局动态背景层 (Bright Sky Loop, V0.35)
+  明亮多彩 + 横版射击游戏式视差横滚背景:
+  - .fx-base       明亮天空渐变 (青→薄荷→暖黄→蜜桃) + 太阳柔光
+  - band-cloud     远景白色云朵, 最慢横滚 (~58s)
+  - band-mid       中景彩色玻璃条 + 泡泡, 中速 (~34s)
+  - band-near      近景倾斜流光 + 亮星, 最快 (~16s)
+  每层 = .bob (上下缓浮) > .roll (width:200%, translateX 0→-50% 无缝循环)
+        > 两个相同 .seg (各 50% 视口宽), seg 内放置装饰物
+  - .fx-beat       顶侧柔和光呼吸, 周期 = pulseMs (场景 BGM 一小节)
+  整个 view z-index 0, pointer-events none。全项目禁用 rpx, 一律 px。
+-->
+<view class="bg-fx">
+  <!-- 1. 明亮天空底 -->
+  <view class="fx-base"></view>
+
+  <!-- 2. 远景: 云朵 -->
+  <view class="band band-cloud">
+    <view class="bob bob-1">
+      <view class="roll roll-1">
+        <view wx:for="{{segs}}" wx:key="*this" class="seg">
+          <view
+            wx:for="{{clouds}}"
+            wx:key="i"
+            class="cloud"
+            style="left: {{item.x}}%; top: {{item.y}}%; width: {{item.w}}px; height: {{item.h}}px; opacity: {{item.o}};"
+          ></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 3. 中景: 彩色玻璃条 + 泡泡 -->
+  <view class="band band-mid">
+    <view class="bob bob-2">
+      <view class="roll roll-2">
+        <view wx:for="{{segs}}" wx:key="*this" class="seg">
+          <view
+            wx:for="{{bars}}"
+            wx:key="i"
+            class="bar"
+            style="left: {{item.x}}%; top: {{item.y}}%; width: {{item.w}}px; height: {{item.h}}px; opacity: {{item.o}}; background: {{item.c}};"
+          ></view>
+          <view
+            wx:for="{{bubbles}}"
+            wx:for-item="bb"
+            wx:key="i"
+            class="bubble"
+            style="left: {{bb.x}}%; top: {{bb.y}}%; width: {{bb.s}}px; height: {{bb.s}}px; border-color: {{bb.c}};"
+          ></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 4. 近景: 倾斜流光 + 亮星 -->
+  <view class="band band-near">
+    <view class="bob bob-3">
+      <view class="roll roll-3">
+        <view wx:for="{{segs}}" wx:key="*this" class="seg">
+          <view
+            wx:for="{{streaks}}"
+            wx:for-item="sk"
+            wx:key="i"
+            class="streak"
+            style="left: {{sk.x}}%; top: {{sk.y}}%; width: {{sk.w}}px; opacity: {{sk.o}};"
+          ></view>
+          <view
+            wx:for="{{stars}}"
+            wx:for-item="st"
+            wx:key="i"
+            class="star"
+            style="left: {{st.x}}%; top: {{st.y}}%; width: {{st.s}}px; height: {{st.s}}px; background: {{st.c}};"
+          ></view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 5. 节拍柔和光呼吸 (周期 = pulseMs = 场景 BGM 一小节, 平缓不闪) -->
+  <view class="fx-beat" style="animation-duration: {{pulseMs}}ms;"></view>
+</view>

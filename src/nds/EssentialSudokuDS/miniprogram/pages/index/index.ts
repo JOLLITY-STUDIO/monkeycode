@@ -6,6 +6,7 @@
 // 效果按场景流向自动选择 (SCENE_TRANSITIONS), 未配置的流向默认 fade
 
 import { audioService } from '../../utils/audio/audioService';
+import { barMs as sceneBarMs } from '../../utils/audio/soundManifest';
 import type { AudioScene } from '../../utils/audio/soundManifest';
 
 type SceneName =
@@ -71,11 +72,27 @@ Page({
     leavingScene: '' as SceneName | '',
     /** 当前过渡效果 (驱动 stage-enter-{{effect}} / stage-leave-{{effect}}) */
     effect: 'fade' as SceneEffect,
+    /** 全局动态背景 (bg-fx) 呼吸光周期 (ms) = 当前场景 BGM 一小节, 平缓不闪 */
+    pulseMs: 2449, // title 98 BPM → barMs ≈ 2449ms
     puzzleId: '', // sudoku 场景: 选题页传入的题目 id (numpleX.data_NNN)
     fileKey: '', // picture 场景: 类别 key (numcloX.data)
     puzzleIdx: 0, // picture 场景: 类别内题号 (0-based)
+    /** picture 场景返回去向 (从哪里进入回哪里): pictList / pictureMode */
+    pictureOrigin: 'pictList' as 'pictList' | 'pictureMode',
+    /** staff/about 场景返回去向 (菜单直达=menu / 选项页进入=options) */
+    staffOrigin: 'menu' as 'menu' | 'options',
+    aboutOrigin: 'options' as 'menu' | 'options',
     /** TS 私有字段声明 (非渲染数据): 离场动画清理定时器 */
     _leaveTimer: null as number | null,
+  },
+
+  /** 场景音频 + 背景节拍联动: 切 BGM, 并让 bg-fx 呼吸光周期跟随该 BGM 的一小节 */
+  _syncSceneAudio(next: SceneName) {
+    audioService.playBgmForScene(next as AudioScene);
+    const ms = sceneBarMs(next as AudioScene);
+    if (ms !== this.data.pulseMs) {
+      this.setData({ pulseMs: ms });
+    }
   },
 
   onLoad(query?: any) {
@@ -83,16 +100,16 @@ Page({
     // 首屏直达无需过渡 (title 从未显示过)
     if (query && query.id) {
       this.setData({ scene: 'sudoku', puzzleId: String(query.id) });
-      audioService.playBgmForScene('sudoku');
+      this._syncSceneAudio('sudoku');
     } else if (query && query.file) {
       this.setData({
         scene: 'picture',
         fileKey: String(query.file),
         puzzleIdx: Number(query.idx || 0),
       });
-      audioService.playBgmForScene('picture');
+      this._syncSceneAudio('picture');
     } else {
-      audioService.playBgmForScene('title');
+      this._syncSceneAudio('title');
     }
   },
 
@@ -113,7 +130,7 @@ Page({
       effect,
       ...(extra || {}),
     });
-    audioService.playBgmForScene(next as AudioScene);
+    this._syncSceneAudio(next);
     // 离场动画结束后移除 leaving 层 (定时器兜底, animationend 在部分平台不可靠)
     this._clearLeaveTimer();
     this.data._leaveTimer = setTimeout(() => {
@@ -147,7 +164,7 @@ Page({
     this._switchScene('tutorial');
   },
   onMenuOpenStaff() {
-    this._switchScene('staff');
+    this._switchScene('staff', { staffOrigin: 'menu' });
   },
   onMenuOpenOptions() {
     this._switchScene('options');
@@ -171,24 +188,28 @@ Page({
 
   // ---- options-scene: 制作/关于/返回 ----
   onOptionsOpenStaff() {
-    this._switchScene('staff');
+    this._switchScene('staff', { staffOrigin: 'options' });
   },
   onOptionsOpenAbout() {
-    this._switchScene('about');
+    this._switchScene('about', { aboutOrigin: 'options' });
   },
   onOptionsBack() {
     this._switchScene('menu');
   },
 
-  // ---- tutorial / staff / about: back → 主菜单 ----
+  // ---- tutorial: 仅从主菜单进入 → 回主菜单 ----
   onTutorialBack() {
     this._switchScene('menu');
   },
+
+  // ---- staff/about: 从哪来回哪去 (menu 直达 / options 进入) ----
   onStaffBack() {
-    this._switchScene('menu');
+    const origin = this.data.staffOrigin === 'options' ? 'options' : 'menu';
+    this._switchScene(origin);
   },
   onAboutBack() {
-    this._switchScene('menu');
+    const origin = this.data.aboutOrigin === 'options' ? 'options' : 'menu';
+    this._switchScene(origin);
   },
 
   // ---- picture-mode-scene: 子模式选择 ----
@@ -199,22 +220,33 @@ Page({
     this._switchScene('pictList');
   },
   onPictureModeOpenTutorial() {
-    this._switchScene('picture', { fileKey: 'numclo_tu.data', puzzleIdx: 0 });
+    // 教程直达对局; 返回时回子模式选择页
+    this._switchScene('picture', {
+      fileKey: 'numclo_tu.data',
+      puzzleIdx: 0,
+      pictureOrigin: 'pictureMode',
+    });
   },
 
   // ---- pict-list-scene: open({ key }) → 图画对局; back → 子模式选择 ----
   onPictListOpen(e: any) {
     const key = e.detail && e.detail.key;
     if (!key) return;
-    this._switchScene('picture', { fileKey: String(key), puzzleIdx: 0 });
+    this._switchScene('picture', {
+      fileKey: String(key),
+      puzzleIdx: 0,
+      pictureOrigin: 'pictList',
+    });
   },
   onPictListBack() {
     this._switchScene('pictureMode');
   },
 
-  // ---- picture-scene: back → 子模式选择 ----
+  // ---- picture-scene: back → 回到进入对局前的页面 (pictList 或 pictureMode) ----
+  // 逻辑闭环: 从类别列表进入 → 返回类别列表; 从子模式页直进教程 → 返回子模式页
   onPictureBack() {
-    this._switchScene('pictureMode');
+    const origin = this.data.pictureOrigin === 'pictureMode' ? 'pictureMode' : 'pictList';
+    this._switchScene(origin);
   },
 
   // ---- sudoku-scene: back → 选题页 ----

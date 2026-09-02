@@ -9,7 +9,7 @@
   padding: 8px 12px 20px;
   box-sizing: border-box;
   overflow-y: auto;
-  background: #0d1b2a;
+  background: transparent;
 }
 
 /* 顶部信息栏: 返回按钮图 + 难度 + 步数 + 计时 */

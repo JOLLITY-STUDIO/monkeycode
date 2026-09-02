@@ -4,9 +4,9 @@
          动画结束后 (index.ts 定时器) 才移除 leaving 层。
    只用 transform + opacity (GPU 友好, skyline 渲染器支持)。 */
 
-/* 页面底色: fade 交叉瞬间两层半透明, 露出深色底更自然 */
+/* 页面底色: fade 交叉瞬间两层半透明, 露出明亮天空色更自然 (与 bg-fx 顶色同系) */
 page {
-  background: #0d1b2a;
+  background: #7de8f5;
 }
 
 /* 根容器: 全屏 flex 纵向 */
@@ -15,35 +15,37 @@ page {
   flex-direction: column;
   height: 100vh;
   box-sizing: border-box;
-  background: #0d1b2a;
+  background: #7de8f5;
 }
 
-/* ---------- 顶部广告位 ---------- */
+/* ---------- 顶部广告位 (半透明浅玻璃, 让位给明亮背景) ---------- */
 
 .top-ad {
   flex-shrink: 0;
   padding: 8px 12px;
   box-sizing: border-box;
-  background: #0d1b2a;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.18) 100%);
 }
 
-/* banner 广告位: 纯色占位 (原引用 title.nbm.png 已移除, 避免与 title-scene 同图双加载导致 Skyline 渲染异常) */
+/* banner 广告位: 半透明白玻璃占位 (原引用 title.nbm.png 已移除, 避免与 title-scene 同图双加载导致 Skyline 渲染异常) */
 .ad-slot {
   height: 10vh;
   min-height: 56px;
   max-height: 96px;
-  border-radius: 8px;
-  background: #1a4d2e;
+  border-radius: 10px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0.78) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 3px 10px rgba(56, 130, 180, 0.18);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .ad-slot-text {
-  color: rgba(255, 255, 255, 0.7);
+  color: #0d5f96;
   font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 2px;
+  font-weight: 800;
+  letter-spacing: 3px;
 }
 
 /* ---------- 场景舞台 ---------- */

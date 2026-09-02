@@ -1,157 +1,280 @@
-@import '../../../styles/ds-buttons.wxss';
+/* menu-scene.wxss — V0.35 真游戏风: 大蓝胶囊艺术字 (仿 DS Present/VS 风格) + 亮色天空滚动背景
+   抛弃 V0.30 的"4 层信息卡堆叠"软件风
+   抛弃 V0.31 的"双宫格配色蓝橙对比"过度装饰
+   根背景 transparent, 透出 index 层 bg-fx 明亮天空循环背景;
+   底部辅助钮改深色玻璃 (亮底上保持可读)
+*/
 
+/* ---------- 页面骨架 ---------- */
 .menu-page {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
   width: 100%;
   min-height: 100vh;
-  padding: 16px 16px 20px;
+  padding: 32px 24px 24px;
   box-sizing: border-box;
-  background: #0d1b2a;
+  background: transparent;
+  overflow: hidden;
 }
 
-/* 顶部标题横幅 (缩小,不喧宾夺主) */
+/* ---------- 背景装饰 (柔和光晕) ---------- */
+.bg-glow-top {
+  position: absolute;
+  top: -120px;
+  left: -80px;
+  width: 480px;
+  height: 360px;
+  background: radial-gradient(ellipse at center, rgba(77, 184, 255, 0.18) 0%, rgba(77, 184, 255, 0) 70%);
+  pointer-events: none;
+}
+
+.bg-glow-bottom {
+  position: absolute;
+  bottom: -100px;
+  right: -80px;
+  width: 400px;
+  height: 320px;
+  background: radial-gradient(ellipse at center, rgba(0, 200, 180, 0.12) 0%, rgba(0, 200, 180, 0) 70%);
+  pointer-events: none;
+}
+
+/* ---------- 顶部 LOGO 横幅 ---------- */
 .title-banner {
   width: 100%;
-  max-width: 480px;
-  height: 88px;
-  border-radius: 10px;
-  overflow: hidden;
-  margin-bottom: 20px;
-  background: transparent;
-  box-shadow: none;
+  max-width: 420px;
+  height: 168px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 36px;
+  margin-top: 8px;
 }
 
 .title-image {
   width: 100%;
   height: 100%;
+  filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
 }
 
-/* 主视觉宫格 */
-.mode-grid {
+/* ---------- 主按钮区 (2 个大蓝胶囊) ---------- */
+.main-buttons {
   width: 100%;
-  max-width: 480px;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  margin-bottom: 24px;
-}
-
-.mode-card {
-  position: relative;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
+  gap: 18px;
+  margin-bottom: 36px;
+}
+
+/* 通用大蓝胶囊按钮 — 仿 DS Present/VS/Options 风格
+   设计:
+   - 顶部高光 (白色光斑)
+   - 中部蓝渐变
+   - 底部深蓝边 1px
+   - 内文字: 24-26px 大字 + 白字 + 蓝边描边 (4 方向) */
+.game-btn {
+  position: relative;
+  width: 100%;
+  height: 70px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  height: 168px;
-  padding: 14px 12px;
-  box-sizing: border-box;
   border-radius: 14px;
-  background: rgba(22, 42, 66, 0.85);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
-  transition: transform 0.12s ease, background 0.12s ease, border-color 0.12s ease;
+  background: linear-gradient(180deg, #5cb6f8 0%, #28a0f0 45%, #1a8ad8 100%);
+  border: 1.5px solid #0f5d9e;
+  box-shadow: 0 5px 0 #0d4477, 0 7px 14px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.55),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.1);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
   overflow: hidden;
 }
 
-.mode-card-numple {
-  background: linear-gradient(160deg, rgba(40, 160, 240, 0.25) 0%, rgba(22, 42, 66, 0.88) 100%);
-  border-color: rgba(40, 160, 240, 0.45);
+/* 顶部高光白条 */
+.game-btn::before {
+  content: '';
+  position: absolute;
+  top: 2px;
+  left: 4px;
+  right: 4px;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, rgba(255, 255, 255, 0) 100%);
+  border-radius: 12px 12px 50% 50% / 12px 12px 100% 100%;
+  pointer-events: none;
 }
 
-.mode-card-numclo {
-  background: linear-gradient(160deg, rgba(255, 152, 0, 0.22) 0%, rgba(22, 42, 66, 0.88) 100%);
-  border-color: rgba(255, 152, 0, 0.45);
+.game-btn-numple {
+  /* 数独: 蓝青渐变 */
+  background: linear-gradient(180deg, #5cb6f8 0%, #28a0f0 45%, #1a8ad8 100%);
 }
 
-.mode-card-press {
-  transform: scale(0.97);
-  background: rgba(77, 184, 255, 0.18);
-  border-color: #4db8ff;
+.game-btn-numclo {
+  /* 图画谜题: 紫蓝渐变 (用同色域偏紫突出) */
+  background: linear-gradient(180deg, #7d9cf8 0%, #4870d8 45%, #2e50b0 100%);
 }
 
-.mode-card-icon {
+/* 按下: 整体下移, 底色阴影变浅 */
+.game-btn-press {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 #0d4477, 0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+/* 大字艺术字: 白字 + 4 方向深蓝描边 */
+.game-btn-text {
+  position: relative;
   font-size: 28px;
   font-weight: 800;
-  color: #4db8ff;
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-  text-shadow: 0 0 12px rgba(77, 184, 255, 0.35);
-}
-
-.mode-card-numclo .mode-card-icon {
-  color: #ffb04d;
-  text-shadow: 0 0 12px rgba(255, 152, 0, 0.35);
-}
-
-.mode-card-title {
-  font-size: 19px;
-  font-weight: 700;
   color: #ffffff;
-  margin-bottom: 4px;
-  letter-spacing: 1px;
+  letter-spacing: 8px;
+  line-height: 1;
+  text-shadow:
+    -1px 0 #0d4477, 0 -1px #0d4477,
+    1px 0 #0d4477, 0 1px #0d4477,
+    -1px -1px #0d4477, 1px -1px #0d4477,
+    -1px 1px #0d4477, 1px 1px #0d4477,
+    0 2px 4px rgba(0, 0, 0, 0.3);
+  padding-left: 8px;  /* 补偿字距让中文视觉居中 */
 }
 
-.mode-card-desc {
-  font-size: 12px;
-  color: #c8d5e8;
-  margin-bottom: 10px;
+/* ---------- 中间分隔条 (装饰, 模拟 DS 选项档) ---------- */
+.divider {
+  width: 100%;
+  max-width: 420px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
 }
 
-.mode-card-hint {
-  font-size: 11px;
-  color: #9fb6d3;
-  padding: 3px 10px;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.35);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+.divider-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
 }
 
-/* 底部二级入口 */
+.divider-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(77, 184, 255, 0.6);
+  box-shadow: 0 0 6px rgba(77, 184, 255, 0.4);
+}
+
+/* ---------- 底部 4 个辅助小按钮 (深色玻璃胶囊, 亮底上保持可读) ---------- */
 .bottom-links {
   width: 100%;
-  max-width: 480px;
+  max-width: 420px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 8px;
-  margin-bottom: 18px;
+  gap: 10px;
+  margin-bottom: 28px;
 }
 
-.link-btn {
-  margin: 0;
-  white-space: nowrap;
-  font-size: 12px;
-  padding: 0 4px;
-}
-
-.ds-btn-ghost {
-  background: transparent;
-  border-color: rgba(255, 255, 255, 0.04);
-  color: #9fb6d3;
-}
-
-/* 版权 / 版本 (页脚) */
-.menu-footer {
-  width: 100%;
-  max-width: 480px;
-  margin-top: auto;
-  padding-top: 12px;
+.sub-btn {
   display: flex;
-  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  justify-content: center;
+  height: 38px;
+  padding: 0 8px;
+  border-radius: 18px;
+  background: rgba(22, 42, 66, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #e9eef3;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  box-shadow: 0 2px 6px rgba(13, 27, 42, 0.25);
+  transition: background 0.08s ease, border-color 0.08s ease, color 0.08s ease, transform 0.08s ease;
 }
 
-.menu-footer-text {
+.sub-btn-press {
+  background: rgba(77, 184, 255, 0.65);
+  border-color: rgba(255, 255, 255, 0.85);
+  color: #ffffff;
+  transform: scale(0.96);
+}
+
+.sub-btn-back {
+  background: rgba(13, 27, 42, 0.4);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: #d7e3f0;
+}
+
+.sub-btn-back.sub-btn-press {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.6);
+  color: #ffffff;
+}
+
+/* ---------- 页脚版权 (深色字压在亮底上, 加半透明白字影增加可读) ---------- */
+.menu-copyright {
+  margin-top: auto;
   font-size: 11px;
-  color: #6f86a3;
+  color: #0d4477;
   letter-spacing: 0.5px;
+  text-align: center;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
 }
 
-.menu-footer-build {
-  font-size: 11px;
-  color: #4f6580;
-  font-family: monospace;
+/* ===========================================================
+ * V0.34 入场 + 常流动效 (每帧挂载只播一次入场; 之后光晕/LOGO 持续浮动)
+ * 全用 backwards 填充, 动画结束后回落到类样式, 不影响 hover 按压缩放
+ * =========================================================== */
+
+/* --- 光晕呼吸漂浮 (持续, 让菜单层不是死的) --- */
+.bg-glow-top {
+  animation: glow-breathe 3.8s ease-in-out infinite alternate;
+}
+.bg-glow-bottom {
+  animation: glow-breathe 4.6s ease-in-out infinite alternate;
+}
+@keyframes glow-breathe {
+  from { transform: translate3d(0, 0, 0) scale(1); opacity: 0.8; }
+  to   { transform: translate3d(14px, 16px, 0) scale(1.18); opacity: 1; }
+}
+
+/* --- LOGO 入场下坠 + 常驻轻浮动 --- */
+.title-banner {
+  animation: menu-drop 0.5s cubic-bezier(0.22, 1.3, 0.36, 1) backwards;
+}
+.title-image {
+  animation: logo-bob 4.6s ease-in-out infinite;
+}
+@keyframes menu-drop {
+  from { opacity: 0; transform: translate3d(0, -30px, 0) scale(0.92); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+@keyframes logo-bob {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50%      { transform: translate3d(0, -6px, 0); }
+}
+
+/* --- 主按钮逐个弹出 (微弹簧) --- */
+.main-buttons .game-btn {
+  animation: menu-pop 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+.main-buttons .game-btn-numclo {
+  animation-delay: 0.1s;
+}
+@keyframes menu-pop {
+  from { opacity: 0; transform: translate3d(0, 20px, 0) scale(0.9); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); }
+}
+
+/* --- 分隔条 + 底部辅助按钮错峰上浮 --- */
+.divider {
+  animation: menu-fadeup 0.4s ease 0.16s backwards;
+}
+.bottom-links .sub-btn:nth-child(1) { animation: menu-fadeup 0.34s ease 0.22s backwards; }
+.bottom-links .sub-btn:nth-child(2) { animation: menu-fadeup 0.34s ease 0.28s backwards; }
+.bottom-links .sub-btn:nth-child(3) { animation: menu-fadeup 0.34s ease 0.34s backwards; }
+.bottom-links .sub-btn:nth-child(4) { animation: menu-fadeup 0.34s ease 0.40s backwards; }
+.menu-copyright {
+  animation: menu-fadeup 0.5s ease 0.5s backwards;
+}
+@keyframes menu-fadeup {
+  from { opacity: 0; transform: translate3d(0, 16px, 0); }
+  to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }

@@ -4,6 +4,93 @@ All notable changes to this project are documented here.
 
 ---
 
+## V0.35 — 明亮天空横滚背景 (Bright Sky Loop) + 两玩法逻辑闭环
+
+### 2026-09-03
+
+#### 用户反馈
+- "bg太暗沉了, 我要的是表达智慧鲜艳的颜色…我是说很有NDS游戏背景都是斜着走动的那种。就像横版飞机游戏一样背景一直循环动的"
+- "我先睡了。你继续按我这个思路完善, 然后把两种玩法的游戏逻辑都闭环了。逻辑链路要说得通啊。"
+
+#### bg-fx 重写: 深色 Neon-Garden → 明亮天空视差横滚
+- 背景底色改明亮天空渐变: 青 #4ecdf0 → 薄荷 #b5f2e0 → 暖黄 #ffe9b0 → 蜜桃 #ffd6c6 + 太阳柔光 (不再暗沉)
+- 3 个视差横滚层 (像横版飞机游戏无限循环背景):
+  1. 远景 band-cloud — 白色软云, 最慢横滚 58s + 上下缓浮
+  2. 中景 band-mid — 彩色玻璃条 + 泡泡, 中速 34s
+  3. 近景 band-near — 倾斜流光 + 亮色小星, 最快 16s (飞行感)
+- 无缝循环实现: 每层 .roll width:200% 内两个相同 .seg (各 50%), translateX 0 → -50% 循环;
+  .bob 外层上下缓浮叠加 → 斜向走动感 (DS 背景滚动感)
+- 删掉所有暗色粒子/极光数据; 不闪缩: 唯一呼吸层 .fx-beat 周期 = pulseMs (整小节),
+  幅度小 (opacity 0.6→1, scale 0.98→1.05), 慢而平缓
+- bg-fx property: beat-ms → pulse-ms (pulseMs); 由 index 按场景 BGM 小节 (barMs) 驱动
+- index.wxss page/page-root 底色 #0d1b2a → #7de8f5; top-ad/ad-slot 改半透明白玻璃
+
+#### 两玩法游戏逻辑闭环 (无断头路)
+- picture-mode-scene 只保留 2 个真实可玩入口: ナンクロ → 类别列表 / チュートリアル → numclo_tu 直达
+  (原 ヌクロ/カード/ポピュレーション 占位删除); 题数 desc 由 NUMCLO_CATALOG 实算 (1400/1)
+- 返回路由"从哪来回哪去":
+  - picture-scene 新增 pictureOrigin (pictList / pictureMode), onPictureBack 回真实来路
+  - staff/about 新增 staffOrigin/aboutOrigin (menu 直达 / options 进入), 回真实来路
+- 完成闭环:
+  - sudoku 通关弹窗: 再来一局 = 清档重解同题 (选题直达) 或同难度新随机; 回选题 = 回选题页
+  - picture 通关弹窗: 下一题 = 同类别下一题; 返回 = 回进入前的列表/子模式页 (不再死循环)
+- menu-scene 底部 4 个辅助钮改深色玻璃 (rgba(22,42,66,.55) + 白字), 亮底上可读; 版本号 v0.35
+
+#### 验证
+- IDE 语言服务 0 诊断 (index / bg-fx / menu-scene / picture-mode-scene)
+- 待 devtools: 任意场景见明亮天空 + 云/彩条/泡泡/流光/亮星视差横滚循环;
+  菜单→子模式→类别→对局→返回 全链路回到来路
+
+---
+
+## V0.34 — 动态背景层 bg-fx 全场景接入 + 视觉节拍联动 (摆脱"死板软件风")
+
+### 2026-09-03
+
+#### 用户反馈
+- "休闲游戏, 轻快的 BGM, 你觉得我这个游戏需要怎么配色…帮我美化一下吧"
+- "让他不是死板的软件风格, 参考原来 NDS 的动效…原 ROM 背景是滚动的, 起码跟 BGM 能配"
+- 结论: 不改布局, 而是让全场景"活"起来 — 一层滚动光带 + 漂浮粒子 + 跟 BGM 节拍呼吸的全局动态背景
+
+#### 核心新增: `components/bg-fx/` (json/ts/wxml/wxss 四件套)
+- 全局动态背景层 4 子层:
+  1. `.fx-base` — 深湖蓝渐变底 (#0a2540→#061224) + 顶部/底部柔光 (radial-gradient 模拟, 不用 filter blur)
+  2. `.fx-aurora-1/2/3` — 3 条横向滚动光带 (青/薄荷/粉), 不同速度/延迟/方向循环, 营造"背景在流动"
+  3. `.fx-particles` — 10 个漂浮粒子 (薄荷 #98FFC8 / 青 #80E0FF / 暖 #FFE89A / 粉 #FFA4C8), 慢速上浮 + 辉光
+  4. `.fx-beat` — 中心呼吸光晕, animation-duration = beatMs (随当前场景 BGM 节拍)
+- `options: virtualHost` + z-index 0 + pointer-events none; 全 px 单位 (项目禁用 rpx)
+
+#### 节拍数据: `utils/audio/soundManifest.ts`
+- 新增 `BGM_BPM` (11 场景实测 BPM: menu 79 / select 92 / sudoku 62 / tutorial 116 / picture 138…)
+- 新增 `beatMs(scene)` = 60000/BPM, `barMs(scene)` = 240000/BPM
+
+#### 接入: `pages/index/index.ts/.wxml`
+- index.ts: data 新增 `beatMs`, 新增 `_syncSceneAudio(next)` (切 BGM + setData beatMs), onLoad/_switchScene 统一走它
+- index.wxml: `.scene-area` 首子层挂 `<bg-fx beat-ms="{{beatMs}}" />` (z0 垫底, 场景层 z1/z2 透明透出)
+
+#### 场景透明化 (10 + menu)
+- 10 个场景根 `.xxx-page` 的 `background:#0d1b2a` → `transparent`
+- menu-scene 根渐变 → transparent (保留自身光晕装饰)
+- 透出后各场景都浮在滚动光带背景上; 标题页 title.nbm 自适应留边处也透出动态背景
+
+#### menu-scene 入场 + 常流动效
+- LOGO 入场下坠 + 常驻轻浮动 (logo-bob)
+- 主按钮逐个微弹簧弹出 (错峰 0.1s)
+- 分隔条/底部 4 按钮/版权 错峰上浮
+- 顶部/底部光晕持续呼吸漂浮 (glow-breathe)
+- 全部 `backwards` 填充, 动画结束回落类样式, 不影响 hover 按压缩放反馈
+
+#### 配色基调 (休闲 + 轻快)
+- 背景不再是单一 #0d1b2a: 深湖蓝渐变 + 低饱和彩色流动光, 白字/亮字可读性保留
+- 光晕色相呼应 BGM 活泼度: 青 (悠闲) / 薄荷 (清新) / 粉 (可爱) / 暖金 (轻快)
+
+#### 验证
+- IDE 语言服务 0 诊断 (index / bg-fx)
+- 待 devtools: 任意场景应见背景光带缓慢流动 + 漂浮粒子 + 中心光晕按 BGM 节拍呼吸;
+  menu 进场按钮错峰弹出; 场景卡片半透明浮在动态背景上
+
+---
+
 ## PICTURE-V0.31 — menu-scene 主菜单整页重设计 (摆脱"SELECT MODE + 小卡片"丑布局)
 
 ### 2026-09-03

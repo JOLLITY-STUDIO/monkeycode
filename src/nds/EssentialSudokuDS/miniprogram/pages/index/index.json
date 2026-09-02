@@ -1,5 +1,6 @@
 {
   "usingComponents": {
+    "bg-fx": "/components/bg-fx/bg-fx",
     "title-scene": "/components/scenes/title-scene/title-scene",
     "menu-scene": "/components/scenes/menu-scene/menu-scene",
     "picture-mode-scene": "/components/scenes/picture-mode-scene/picture-mode-scene",
@@ -13,3 +14,4 @@
     "picture-scene": "/components/scenes/picture-scene/picture-scene"
   }
 }
+

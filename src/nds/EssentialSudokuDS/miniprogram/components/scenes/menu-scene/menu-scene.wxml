@@ -1,47 +1,49 @@
 <view class="menu-page">
-  <!-- 顶部标题横幅 (DS 原版 title.nbm) -->
+  <!-- 背景装饰: 顶部光晕 (模拟 DS 主题天空) -->
+  <view class="bg-glow-top"></view>
+  <view class="bg-glow-bottom"></view>
+
+  <!-- 顶部标题 LOGO (DS 原版 title.nbm 整大图) -->
   <view class="title-banner">
     <image class="title-image" src="/assets/nbm/title.nbm.png" mode="aspectFit" lazy-load></image>
   </view>
 
-  <!-- 主视觉: 两个大模式宫格 -->
-  <view class="mode-grid">
+  <!-- 主视觉: 两行大蓝胶囊按钮 (像 DS Present / VS) -->
+  <view class="main-buttons">
     <view
-      class="mode-card mode-card-numple"
-      hover-class="mode-card-press"
-      hover-stay-time="120"
+      class="game-btn game-btn-numple"
+      hover-class="game-btn-press"
+      hover-stay-time="100"
       bindtap="onOpenNumberPuzzle"
     >
-      <view class="mode-card-icon">9×9</view>
-      <view class="mode-card-title">数独</view>
-      <view class="mode-card-desc">数字谜题</view>
-      <view class="mode-card-hint">1000 题</view>
+      <text class="game-btn-text">数  独</text>
     </view>
 
     <view
-      class="mode-card mode-card-numclo"
-      hover-class="mode-card-press"
-      hover-stay-time="120"
+      class="game-btn game-btn-numclo"
+      hover-class="game-btn-press"
+      hover-stay-time="100"
       bindtap="onOpenPicturePuzzle"
     >
-      <view class="mode-card-icon">15×15</view>
-      <view class="mode-card-title">图画谜题</view>
-      <view class="mode-card-desc">像素画填色</view>
-      <view class="mode-card-hint">1525 题</view>
+      <text class="game-btn-text">图画谜题</text>
     </view>
   </view>
 
-  <!-- 底部二级入口 (4 列等宽) -->
-  <view class="bottom-links">
-    <view class="link-btn ds-btn-sm ds-btn" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onOpenTutorial">玩法说明</view>
-    <view class="link-btn ds-btn-sm ds-btn" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onOpenOptions">选项</view>
-    <view class="link-btn ds-btn-sm ds-btn" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onOpenStaff">制作人员</view>
-    <view class="link-btn ds-btn-sm ds-btn ds-btn-ghost" hover-class="ds-btn-hover" hover-stay-time="80" bindtap="onBackTitle">返回标题</view>
+  <!-- 装饰条: 模拟 DS 选项档分隔线 -->
+  <view class="divider">
+    <view class="divider-line"></view>
+    <view class="divider-dot"></view>
+    <view class="divider-line"></view>
   </view>
 
-  <!-- 版权 / 版本信息 -->
-  <view class="menu-footer">
-    <view class="menu-footer-text">Essential Sudoku DS · H5 复刻版</view>
-    <view class="menu-footer-build">v0.30</view>
+  <!-- 底部辅助入口: 4 个胶囊 -->
+  <view class="bottom-links">
+    <view class="sub-btn" hover-class="sub-btn-press" hover-stay-time="80" bindtap="onOpenTutorial">玩 法</view>
+    <view class="sub-btn" hover-class="sub-btn-press" hover-stay-time="80" bindtap="onOpenOptions">选 项</view>
+    <view class="sub-btn" hover-class="sub-btn-press" hover-stay-time="80" bindtap="onOpenStaff">制 作</view>
+    <view class="sub-btn sub-btn-back" hover-class="sub-btn-press" hover-stay-time="80" bindtap="onBackTitle">返 回</view>
   </view>
+
+  <!-- 版权信息 -->
+  <view class="menu-copyright">Essential Sudoku DS · H5 复刻版 · {{buildVersion}}</view>
 </view>

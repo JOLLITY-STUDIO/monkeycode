@@ -1,14 +1,33 @@
-/* miniprogram/styles/ds-buttons.wxss — DS 化 双态文本按钮统一样式
+/* miniprogram/styles/ds-buttons.wxss — 全项目统一按钮规范 (V0.32)
  * 用法: 各 scene wxss 顶部 @import '../../../styles/ds-buttons.wxss';
- * 双态 = normal (半透明深色胶囊) + active (蓝边高亮, 选中/按下常驻)
- * 按下瞬态反馈用 hover-class="ds-btn-hover"
  *
- * 尺寸变体:
- *   .ds-btn       基础 (自适应 padding, 适合列表/小行)
- *   .ds-btn-lg    大按钮 (主菜单模式 / Start 类)
- *   .ds-btn-sm    小按钮 (难度 chips / 返回)
- *   .ds-btn-key   方块键 (数独数字键盘)
- *   .ds-btn-ghost 幽灵 (弱化文字链接样)
+ * 两套系列 (一个项目只用一套, 不能混):
+ *   A. .ds-btn-* 系列: 半透明深色胶囊 (适合菜单/列表/次要入口)
+ *      - .ds-btn       基础 (列表/小行)
+ *      - .ds-btn-lg    大按钮 (V0.30 menu 用过, 已废弃)
+ *      - .ds-btn-sm    小按钮 (返回/底部链接)
+ *      - .ds-btn-key   方块键 (数独数字键盘)
+ *      - .ds-btn-ghost 幽灵弱化
+ *      - 双态: normal 半透明深色 / active 蓝边高亮
+ *
+ *   B. .game-btn-* 系列 (V0.32 新加, 全项目主按钮规范):
+ *      - .game-btn          基础 (主模式按钮, 宽屏通栏)
+ *      - .game-btn-lg       大 (菜单两个主模式 / 选题"开始")
+ *      - .game-btn-md       中 (难度 chips / 题号 − ＋)
+ *      - .game-btn-sm       小 (返回 / 选项级)
+ *      - .game-btn-press    按下瞬态 (深蓝 + translateY)
+ *      - .game-btn-active   常驻选中 (难度选中态)
+ *      - .game-btn-primary  主操作常驻深蓝 (开始/确认)
+ *
+ * 双态配色 (来自 select1.nbm 采样):
+ *      normal   = 亮蓝 #28A0F0 渐变 #45B4F8 → #1E8FE8
+ *      selected = 深蓝 #2060D0 渐变 #2870E0 → #1853B8
+ *      按下     = translateY(1-2px) + 选中色 + 阴影变浅
+ *
+ * 立体感:
+ *      inset 0 2px 0 rgba(255,255,255,0.28)    ← 顶部白色高光
+ *      inset 0 -2px 0 rgba(0,0,30,0.15)        ← 底部深色描边
+ *      0 3-5px 8-10px rgba(0,0,0,0.3)          ← 外部投影
  */
 
 /* ---------- normal 基础 ---------- */
@@ -77,3 +96,68 @@
   font-size: 14px;
   color: #4db8ff;
 }
+
+/* ==========================================================
+ * .game-btn-* 系列 (V0.32+ 落地, V0.34 全项目统一)
+ * ----------------------------------------------------------
+ * 主操作按钮: 亮蓝渐变胶囊 (select1.nbm NORMAL 帧取色)
+ * 三态: normal / press (按下瞬态) / active (常驻选中)
+ * 立体感: 顶部白色高光 + 底部深描边 + 外部投影 + 文字描边
+ * ========================================================== */
+
+.game-btn {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: 0;
+  border-radius: 999px;
+  color: #ffffff;
+  font-weight: 700;
+  text-align: center;
+  background: linear-gradient(180deg, #45B4F8 0%, #28A0F0 55%, #1E8FE8 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.32),
+    inset 0 -2px 0 rgba(0, 0, 30, 0.15),
+    0 3px 8px rgba(0, 0, 0, 0.35);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.18);
+  letter-spacing: 1px;
+  transition: background 0.08s ease, box-shadow 0.08s ease, transform 0.08s ease;
+}
+
+/* 按下瞬态 (hover-class) */
+.game-btn-press {
+  background: linear-gradient(180deg, #2870E0 0%, #2060D0 55%, #1853B8 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -2px 0 rgba(0, 0, 30, 0.25),
+    0 2px 6px rgba(0, 0, 0, 0.4);
+  transform: translateY(1px);
+}
+
+/* 常驻选中 (主操作确认 / 难度选中) */
+.game-btn-active {
+  background: linear-gradient(180deg, #2870E0 0%, #2060D0 55%, #1853B8 100%);
+  box-shadow:
+    0 0 0 2px rgba(77, 184, 255, 0.55),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -2px 0 rgba(0, 0, 30, 0.25),
+    0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* primary 主操作常驻深蓝 (开始/确认) */
+.game-btn-primary {
+  background: linear-gradient(180deg, #2870E0 0%, #2060D0 55%, #1853B8 100%);
+  box-shadow:
+    0 0 0 2px rgba(77, 184, 255, 0.4),
+    inset 0 2px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -2px 0 rgba(0, 0, 30, 0.25),
+    0 3px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* 尺寸: 大/中/小 */
+.game-btn-lg { height: 64px; padding: 0 28px; font-size: 20px; border-radius: 999px; }
+.game-btn-md { height: 44px; padding: 0 18px; font-size: 15px; border-radius: 999px; }
+.game-btn-sm { height: 34px; padding: 0 14px; font-size: 13px; border-radius: 999px; }
+

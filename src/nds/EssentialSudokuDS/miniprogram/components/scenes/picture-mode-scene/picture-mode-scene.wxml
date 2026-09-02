@@ -4,7 +4,7 @@
     <text class="scene-bar-text">← 返回主菜单</text>
   </view>
 
-  <!-- 5 个子模式文本按钮 (normal + selected 两态) -->
+  <!-- 2 个真实子模式文本按钮 (normal + selected 两态) -->
   <view class="mode-list">
     <view
       wx:for="{{modes}}"
@@ -15,10 +15,13 @@
       data-id="{{item.id}}"
       bindtap="onTapMode"
     >
-      <text class="mode-button-label">{{item.label}}</text>
+      <view class="mode-main">
+        <text class="mode-button-label">{{item.label}}</text>
+        <text class="mode-button-desc">{{item.desc}}</text>
+      </view>
       <view wx:if="{{selectedId === item.id}}" class="mode-button-arrow"></view>
     </view>
   </view>
 
-  <view class="hint-text">请选择图画谜题模式</view>
+  <view class="hint-text">看行列的颜色计数提示，把隐藏图案一格一格涂出来</view>
 </view>

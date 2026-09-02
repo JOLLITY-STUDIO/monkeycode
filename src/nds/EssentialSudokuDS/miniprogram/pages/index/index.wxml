@@ -13,6 +13,9 @@
 
   <!-- 场景舞台 (广告位下方) -->
   <view class="scene-area">
+    <!-- 全局动态背景层 (z 0 垫底, 场景层 z1/z2 在上; 各场景根背景已透明化透出) -->
+    <bg-fx pulse-ms="{{pulseMs}}" />
+
     <!-- 离场场景层 (动画播放中) -->
     <view wx:if="{{leavingScene}}" class="scene-stage stage-leave-{{effect}}">
       <template is="sceneRender" data="{{s: leavingScene, puzzleId, fileKey, puzzleIdx}}" />

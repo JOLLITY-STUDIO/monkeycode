@@ -329,13 +329,32 @@ Component({
         this.setData({ complete: true });
         audioService.playSe('complete');
         const info = service.getSessionInfo();
+        const modeDesc = this.data._persistEnabled ? '回到选题页挑新题' : '回到选题页换难度';
         wx.showModal({
           title: '🎉 完成!',
-          content: `用时 ${this.data.timerText}，步数 ${info?.moves ?? 0}。再来一局?`,
+          content: `用时 ${this.data.timerText}，步数 ${info?.moves ?? 0}。`,
           confirmText: '再来一局',
-          cancelText: '关闭',
+          cancelText: '回选题',
           success: (r) => {
-            if (r.confirm) this._startGame(this.data.difficulty);
+            if (r.confirm) {
+              // 再来一局: 选题直达题 → 重解同一题 (进度已清); 随机/每日局 → 同难度新随机
+              if (this.data._persistEnabled) {
+                const id = service.getPuzzleId();
+                if (id) {
+                  clearSudokuProgress(id);
+                  const puzzle = getPuzzleById(id);
+                  if (puzzle) {
+                    this._launchPuzzle(puzzle);
+                    return;
+                  }
+                }
+              }
+              this._startGame(this.data.difficulty);
+            } else {
+              // 回选题: 落盘 (complete 状态自动清档) 后返回选题页
+              wx.showToast({ title: modeDesc, icon: 'none' });
+              this.onBackMenu();
+            }
           },
         });
       } else if (res.valid) {

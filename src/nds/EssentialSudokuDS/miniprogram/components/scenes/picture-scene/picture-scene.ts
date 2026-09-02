@@ -545,9 +545,14 @@ Component({
             title: '🎉 完成!',
             content: `${puzzleName} 用时 ${this.data.timerText}，${info?.moves ?? 0} 步。下一题?`,
             confirmText: '下一题',
-            cancelText: '关闭',
+            cancelText: '返回',
             success: (r) => {
-              if (r.confirm) this.onNext();
+              if (r.confirm) {
+                this.onNext();
+              } else {
+                // 返回进入对局前的页面 (类别列表 / 子模式选择, 由 index 按 pictureOrigin 路由)
+                this.onBack();
+              }
             },
           });
         }, CELEBRATE_MS);

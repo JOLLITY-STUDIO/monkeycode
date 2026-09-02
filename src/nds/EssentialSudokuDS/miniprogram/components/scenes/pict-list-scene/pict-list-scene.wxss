@@ -9,7 +9,7 @@
   padding: 8px 12px 20px;
   box-sizing: border-box;
   overflow-y: auto;
-  background: #0d1b2a;
+  background: transparent;
 }
 
 .pict-header {
