@@ -28,6 +28,22 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.2 — 子模式菜单精确热区 + 选中箭头反馈
+
+### 2026-09-02
+
+#### 调整
+- `picture-mode-scene` 热区从 5 等分改为按 `pazl_select.nbm` 实际文字位置覆盖:
+  - ナンクロ / ヌクロ / カード / ポピュレーション / チュートリアル 5 项独立 `top/height`
+  - 避免顶部/底部空白区域误触发
+- 选中项左侧显示蓝色右箭头，hover/active 时高亮背景，还原 DS 菜单选择感
+- 组件 `data` 增加 `selectedId`，点击后即时更新箭头位置
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## SOUND-V0.4 — 小程序播放接入: BGM/SE MP3 资产 + audioService + 场景音效
 
 ### 2026-09-02

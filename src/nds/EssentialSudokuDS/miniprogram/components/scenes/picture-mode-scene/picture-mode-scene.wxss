@@ -26,11 +26,11 @@
   font-weight: 600;
 }
 
-/* 原 DS 菜单图容器 */
+/* 原 DS 菜单图容器 (图片 128x256, 比例 1:2) */
 .menu-panel {
   position: relative;
   width: 100%;
-  max-width: 260px;
+  max-width: 200px;
   border-radius: 10px;
   overflow: hidden;
   background: #ffffff;
@@ -44,24 +44,74 @@
   height: auto;
 }
 
-/* 透明热区层: 5 等分覆盖菜单项 */
+/* 热区层: 覆盖菜单文字行, 基于 256 高菜单的目测文字位置 */
 .menu-hit {
   position: absolute;
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 .mode-hit {
-  flex: 1;
+  position: absolute;
+  left: 0;
   width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-left: 10%;
+  box-sizing: border-box;
 }
 
 .mode-hit-hover {
   background: rgba(21, 101, 192, 0.12);
+}
+
+.mode-hit-active {
+  background: rgba(21, 101, 192, 0.08);
+}
+
+.mode-hit-active .mode-arrow,
+.mode-hit-hover .mode-arrow {
+  opacity: 1;
+}
+
+/* 右侧小三角箭头 */
+.mode-arrow {
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 10px solid #1565c0;
+  opacity: 0;
+  transition: opacity 0.08s ease;
+}
+
+/* 5 项按实际文字位置定位 */
+.mode-hit-nankuro {
+  top: 8%;
+  height: 14%;
+}
+
+.mode-hit-nukuro {
+  top: 24%;
+  height: 13%;
+}
+
+.mode-hit-card {
+  top: 42%;
+  height: 13%;
+}
+
+.mode-hit-population {
+  top: 58%;
+  height: 17%;
+}
+
+.mode-hit-tutorial {
+  top: 79%;
+  height: 13%;
 }
 
 .hint-text {

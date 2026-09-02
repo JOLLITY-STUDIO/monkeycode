@@ -22,6 +22,7 @@ Component({
   data: {
     menuUrl: NBM_PAZL_SELECT,
     modes: MODES,
+    selectedId: 'nankuro',
   },
 
   methods: {
@@ -36,6 +37,8 @@ Component({
       const id = String(e.currentTarget.dataset.id || '');
       const mode = MODES.find((m) => m.id === id);
       if (!mode) return;
+
+      this.setData({ selectedId: id });
 
       if (id === 'nankuro') {
         audioService.playSe('decide');
