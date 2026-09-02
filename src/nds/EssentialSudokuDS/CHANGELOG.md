@@ -4,6 +4,26 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.12 — 调色板按钮视觉修正 + 清理死样式
+
+### 2026-09-02
+
+#### 修正
+- `picture-scene` 调色板 `.palette-key` 从 40×40 圆形 → 46×15 圆角矩形,
+  匹配 `numclo_00.nbm` 按钮切片原始 40:13 比例
+- 加 `background-size: 100% 100%` + `background-repeat: no-repeat`,
+  确保 5 色 + 擦除按钮切片完整铺满, 不再被圆形裁剪成一条
+- 去掉切片外的人工白边框, 让 DS 原按钮自带边框/高光直接呈现
+
+#### 清理
+- 删除已死样式 `.erase-mark` (wxml 已不再引用该 text 节点)
+
+#### Verification
+- IDE 语言服务 0 诊断 (picture-scene.ts)
+- wxss 全 px 单位, 无 rpx
+
+---
+
 ## PICTURE-V0.11.1 — 修复 skyline 整页黑屏 (index.json 漏注册 picture-mode-scene)
 
 ### 2026-09-02

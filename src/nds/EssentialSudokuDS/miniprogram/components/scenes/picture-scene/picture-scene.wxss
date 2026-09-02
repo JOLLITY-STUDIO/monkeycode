@@ -244,7 +244,7 @@
   border-color: transparent;
 }
 
-/* 调色板 (每项 = 圆形色块 + 下方剩余待涂计数) */
+/* 调色板 (每项 = 原 DS numclo_00.nbm 按钮切片 + 下方剩余待涂计数) */
 .palette {
   width: 100%;
   display: flex;
@@ -262,20 +262,18 @@
 }
 
 .palette-key {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 46px;
+  height: 15px;
+  border-radius: 4px;
   box-sizing: border-box;
-  border: 2px solid #ffffff;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
   box-shadow: 0 1px 4px rgba(43, 58, 74, 0.18);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   transition: transform 0.12s ease;
 }
 
 .palette-item-active .palette-key {
-  transform: scale(1.12);
+  transform: scale(1.08);
   box-shadow: 0 0 0 2px #2b3a4a, 0 1px 4px rgba(43, 58, 74, 0.25);
 }
 
@@ -295,12 +293,6 @@
 
 .palette-need-zero {
   background: #1e8e3e;
-}
-
-.erase-mark {
-  font-size: 17px;
-  color: #9aa7b4;
-  font-weight: 700;
 }
 
 /* 工具行 */
