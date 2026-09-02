@@ -1,4 +1,8 @@
-@import '../../../styles/ds-buttons.wxss';
+/* select-scene.wxss — 数独选题场景样式
+ * PICTURE-V0.29: 全部按钮改 select1.nbm 原版图片 (浅蓝 NORMAL + 深蓝 SELECTED 双态)
+ *  - Difficulty A/B/C/D: 常驻 active 用 .ds-img-btn-active (CSS 滤镜 + 描边, NBM 只切了 normal)
+ *  - 上下箭头 / Start / Return: touchstart 切 selected 图源 (pressed 状态机)
+ */
 
 .select-page {
   display: flex;
@@ -19,7 +23,7 @@
   justify-content: center;
   gap: 8px;
   padding: 14px 0;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   background: rgba(22, 42, 66, 0.85);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
@@ -36,41 +40,81 @@
   color: #9fb6d3;
 }
 
-/* 难度 按钮行 (双态文本) */
+/* ====== 图片按钮通用 (DS NBM 原版双态) ====== */
+.ds-img-btn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  /* 默认让容器自适应图片尺寸 (不写 width/height, 由子类约束) */
+}
+
+.ds-img-btn-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* 常驻 active 态: 模拟深蓝高亮 (NBM 没切 DIFF selected, 用 CSS 滤镜 + 描边) */
+.ds-img-btn-active .ds-img-btn-img {
+  filter: brightness(1.35) saturate(1.6) drop-shadow(0 0 4px rgba(77, 184, 255, 0.85));
+  transform: scale(1.06);
+  transition: filter 0.08s ease, transform 0.08s ease;
+}
+
+/* 触摸按下 → 短暂亮度脉冲 (即使 image 已切到 selected 图也再加强反馈) */
+.ds-img-btn:active .ds-img-btn-img {
+  filter: brightness(1.2);
+}
+
+/* ====== 难度 A/B/C/D (30x30 NBM, NORMAL 与 SELECTED 同图源) ====== */
 .difficulty-row {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
   justify-content: center;
-  gap: 8px;
+  align-items: center;
+  gap: 14px;
   width: 100%;
-  margin-bottom: 18px;
+  margin-bottom: 22px;
 }
 
-.difficulty-key {
-  width: 68px;
-  height: 36px;
-  padding: 0;
+.diff-btn {
+  width: 56px;
+  height: 56px;
 }
 
-/* 题号选择: − / 输入框 / + */
+.diff-btn .ds-img-btn-img {
+  width: 56px;
+  height: 56px;
+}
+
+/* ====== 题号选择: − / 输入框 / + (20x20 NBM 箭头) ====== */
 .number-row {
   display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 12px;
+  gap: 18px;
   width: 100%;
   margin-bottom: 14px;
 }
 
-.number-btn {
-  width: 42px;
-  height: 42px;
+.arrow-btn {
+  width: 40px;
+  height: 40px;
+}
+
+.arrow-btn .ds-img-btn-img {
+  width: 40px;
+  height: 40px;
 }
 
 .number-display {
-  min-width: 120px;
+  min-width: 140px;
   height: 48px;
   background: rgba(255, 255, 255, 0.92);
   border-radius: 8px;
@@ -99,28 +143,34 @@
   text-align: center;
 }
 
-/* 底部 Return + Start (双态文本) */
+/* ====== 底部 Return + Start (NBM 56x24 / 88x24 双态长条) ====== */
 .action-row {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
   width: 100%;
-  max-width: 280px;
+  max-width: 320px;
   margin-top: auto;
   padding-top: 16px;
 }
 
-.action-return {
-  width: 96px;
-  height: 44px;
+.return-btn {
+  width: 110px;
+  height: 36px;
 }
 
-.action-start {
-  width: 120px;
-  height: 48px;
-  font-size: 17px;
-  background: rgba(77, 184, 255, 0.22);
-  border-color: #4db8ff;
-  color: #ffffff;
+.return-btn .ds-img-btn-img {
+  width: 110px;
+  height: 36px;
+}
+
+.start-btn {
+  width: 132px;
+  height: 40px;
+}
+
+.start-btn .ds-img-btn-img {
+  width: 132px;
+  height: 40px;
 }

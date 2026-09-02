@@ -4,6 +4,45 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.29 — select-scene 全部按钮改 select1.nbm 原版双态图片
+
+### 2026-09-03
+
+#### 用户反馈
+- "按钮没用按这种配色方案啊" — 截图显示 DS 原版 select1.nbm 是浅蓝 NORMAL + 深蓝 SELECTED 双态
+  胶囊按钮, 当前 select-scene 全部用 ds-buttons.wxss 文本按钮 (深色半透明 + 白边), 跟原版不符
+- nbmAssets.ts 里 NBM_SELECT1_DIFF_*_NORMAL / UP/DOWN_NORMAL/SELECTED / START_NORMAL/SELECTED /
+  RETURN_NORMAL/SELECTED 等 33 张切片早就切好, 没人引用
+
+#### 修复
+- `select-scene.ts`: 重写, 加 `pressed` 状态机 (Record<string, boolean>) + ImgButton 模型
+  ({key, normalUrl, selectedUrl}); _onTouchStart/_onTouchEnd 通用方法按 dataset.btnkey 切换
+  pressed 集合; DIFF/UPDOWN/START/RETURN 全部走图片按钮 (data 上挂 normalUrl + selectedUrl);
+  detached() 清 pressed 防止切场景残留
+- `select-scene.wxml`: 8 个按钮 (4 Difficulty + Up + Down + Return + Start) 全部改 `<image>`
+  + bindtouchstart/bindtouchend/bindtouchcancel; 上下箭头/Start/Return 按 pressed 态切换图源
+- `select-scene.wxss`: 不再 @import ds-buttons.wxss; 新增 .ds-img-btn 通用图片按钮 (容器透明,
+  image 铺满); .ds-img-btn-active (常驻 active 态, 模拟 DIFF 深蓝高亮: brightness+saturate+
+  drop-shadow+scale); .diff-btn/arrow-btn/return-btn/start-btn 按 NBM 原图比例
+  (30x30/20x20/88x24/56x24) 放大到屏上可视尺寸
+
+#### 设计取舍
+- DIFF (Difficulty A/B/C/D) 只切了 normal 帧, select1.nbm 是 DS 静态贴图, 没切 selected
+  → 用 CSS filter: brightness(1.35) saturate(1.6) + drop-shadow 蓝色光晕 + scale(1.06)
+    模拟深蓝 active 高亮 (跟 UP/DOWN/START/RETURN 的 selected 视觉等效)
+- UP/DOWN/START/RETURN 切了 normal+selected 真双图 → 按下时图源直接切到深蓝 selected,
+  touch 反馈最直接
+- "Difficulty" / "−" / "+" / "开始" / "返回" 等文字标签不再显示, 直接由 NBM 图自带文字
+  (Start/Return NBM 内已烧录文字; Difficulty 由 A/B/C/D 字母表达难度; 上下箭头用 NBM ▲▼)
+- previewText 保留: "题号 N · 难度 · 已给 X 格" 提示题库信息
+
+#### 验证
+- IDE 语言服务 0 诊断 (select-scene 三件套)
+- 待开发者工具重新编译: 选题页 4 个难度按钮 (浅蓝选中时变深蓝高亮) + 上下箭头 (按下深蓝) +
+  Start/Return (按下深蓝, 长条形) 全部按 NBM 原版配色
+
+---
+
 ## PICTURE-V0.28 — title-scene 点击热区修复 (V0.27 显示恢复后点击仍无效)
 
 ### 2026-09-03
