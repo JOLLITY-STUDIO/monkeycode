@@ -52,6 +52,22 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.6 — picture-scene 增加撤销 (undo)
+
+### 2026-09-02
+
+#### 新增
+- `picture-scene` 工具行新增"撤销"按钮:
+  - 每次涂色记录历史栈 `{i, prev}`
+  - 撤销时恢复该格上一次颜色并同步 `PictureGameService`
+  - 清空画板时同时清空历史栈
+  - 无可撤销操作时 toast 提示
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## PICTURE-V0.1 — 图画谜题子模式选择菜单 (pazl_select 原版菜单还原)
 
 ### 2026-09-02

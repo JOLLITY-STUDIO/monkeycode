@@ -110,6 +110,8 @@ Component({
     correctCount: 0,           // 已正确格数 (进度)
     rowClues: [] as ColorCount[][],
     colClues: [] as ColorCount[][],
+    /** 操作历史栈, 用于撤销 (undo) */
+    history: [] as Array<{ i: number; prev: CellColor }>,
     /** TS 私有字段声明 (非渲染数据): attached 状态 + 计时器句柄 */
     _attachedDone: false,
     _timer: 0,
@@ -189,6 +191,7 @@ Component({
         correctCount: 0,
         rowClues: clues.rows,
         colClues: clues.cols,
+        history: [],
       });
       this._startTimer();
     },
@@ -263,13 +266,17 @@ Component({
       const cells = this.data.cells.slice();
       const cell = cells[i];
       if (!cell) return;
+      const prev = cell.v as CellColor;
       // 同一格再点一次当前色 = 擦除
-      const next = cell.v === color ? 0 : color;
+      const next = prev === color ? 0 : color;
+      if (prev === next) return;
       service.paint(cell.r, cell.c, next as CellColor);
       cell.v = next;
       cell.bg = PALETTE_HEX[next];
       cell.border = PALETTE_BORDERS[next];
-      this.setData({ cells });
+      const history = this.data.history.slice();
+      history.push({ i, prev });
+      this.setData({ cells, history });
       audioService.playSe(next === 0 ? 'clear' : 'paint');
       this._checkComplete();
     },
@@ -310,7 +317,28 @@ Component({
         cell.bg = PALETTE_HEX[0];
         cell.border = PALETTE_BORDERS[0];
       }
-      this.setData({ cells, moves: 0 });
+      this.setData({ cells, moves: 0, history: [] });
+    },
+
+    /** 撤销上一步涂色 */
+    onUndo() {
+      const history = this.data.history.slice();
+      const last = history.pop();
+      if (!last) {
+        wx.showToast({ title: '没有可撤销的操作', icon: 'none' });
+        return;
+      }
+      audioService.playSe('undo');
+      const cells = this.data.cells.slice();
+      const cell = cells[last.i];
+      if (cell) {
+        service.paint(cell.r, cell.c, last.prev);
+        cell.v = last.prev;
+        cell.bg = PALETTE_HEX[last.prev];
+        cell.border = PALETTE_BORDERS[last.prev];
+      }
+      this.setData({ cells, history });
+      this._checkComplete();
     },
 
     /** 提示 run 颜色 hex (color 0 占位灰) — wxml 表达式调用 */
