@@ -37,6 +37,21 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.5 — picture-scene 增加题号跳转
+
+### 2026-09-02
+
+#### 新增
+- `picture-scene` 导航行新增"跳转"按钮:
+  - 弹出可编辑 modal, 默认当前题号
+  - 输入 1..puzzleCount 后跳转到对应题目
+  - 非法输入/越界 toast 提示, 不触发加载
+
+#### Verification
+- ✅ `npx tsc --noEmit` EXIT=0
+
+---
+
 ## PICTURE-V0.1 — 图画谜题子模式选择菜单 (pazl_select 原版菜单还原)
 
 ### 2026-09-02

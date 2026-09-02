@@ -31,11 +31,12 @@
     </view>
   </scroll-view>
 
-  <!-- 谜题导航: 上一题 / 随机 / 下一题 -->
+  <!-- 谜题导航: 上一题 / 随机 / 下一题 / 跳转 -->
   <view class="nav-row">
     <view class="nav-key" bindtap="onPrev">上一题</view>
     <view class="nav-key nav-key-random" bindtap="onRandom">随机</view>
     <view class="nav-key" bindtap="onNext">下一题</view>
+    <view class="nav-key" bindtap="onJumpTo">跳转</view>
   </view>
 
   <!-- 15x15 彩色网格 + 行列提示 (ナンクロ / Number Cross 每色计数) -->

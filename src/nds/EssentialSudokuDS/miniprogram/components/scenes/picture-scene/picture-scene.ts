@@ -228,6 +228,33 @@ Component({
       this._startPuzzle(currentFile, idx);
     },
 
+    /** 跳转到指定题号 (1..puzzleCount) */
+    onJumpTo() {
+      const { puzzleCount, puzzleIndex, currentFile } = this.data;
+      if (puzzleCount <= 1) {
+        wx.showToast({ title: '当前类别只有 1 题', icon: 'none' });
+        return;
+      }
+      audioService.playSe('tap');
+      wx.showModal({
+        title: `跳转 (1-${puzzleCount})`,
+        content: String(puzzleIndex + 1),
+        editable: true,
+        placeholderText: `输入 1-${puzzleCount}`,
+        success: (r) => {
+          if (!r.confirm) return;
+          const raw = (r.content ?? '').toString().trim();
+          const n = parseInt(raw, 10);
+          if (!raw || isNaN(n) || n < 1 || n > puzzleCount) {
+            wx.showToast({ title: `请输入 1-${puzzleCount}`, icon: 'none' });
+            return;
+          }
+          if (n - 1 === this.data.puzzleIndex) return;
+          this._startPuzzle(currentFile, n - 1);
+        },
+      });
+    },
+
     /** 点格子涂色 */
     onTapCell(e: any) {
       if (this.data.showingAnswer || this.data.complete) return;
