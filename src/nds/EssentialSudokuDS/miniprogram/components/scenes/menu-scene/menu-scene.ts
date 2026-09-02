@@ -1,11 +1,15 @@
 // components/scenes/menu-scene/menu-scene.ts — 主菜单场景组件
-// V0.20: 模式按钮由 select4.nbm 双帧图片改文本标签双态 (ds-buttons.wxss 统一规范)
+// V0.30: 重写为主视觉双宫格 (数独 + 图画谜题大卡片)
+// 二级入口 (玩法/选项/人员/返回) 移到底部 4 列等宽
+// 移除"SELECT MODE"小卡片标题 + 模式 (Number Puzzle) 副标题括号
 // 不再使用任何 NBM 按键图片素材.
 
 import { audioService } from '../../../utils/audio/audioService';
 
 Component({
-  data: {},
+  data: {
+    buildVersion: 'v0.30',
+  },
 
   methods: {
     onOpenNumberPuzzle() {

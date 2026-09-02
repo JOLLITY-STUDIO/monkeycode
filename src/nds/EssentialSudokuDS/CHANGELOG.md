@@ -4,6 +4,63 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.31 — menu-scene 主菜单整页重设计 (摆脱"SELECT MODE + 小卡片"丑布局)
+
+### 2026-09-03
+
+#### 用户反馈
+- "这里也太丑了吧" (menu-scene 是 SELECT MODE 小卡片 + 2 个灰色按钮 + 大片空白 + 底部 4 链接被挤出可视区)
+- 上一轮 PICTURE-V0.30 commit 改了"SELECT MODE → 选择模式"但用户 devtools 截图仍显示英文,
+  说明 SELECT MODE 视觉根源是"小卡片标题 + 灰色短按钮 + 不平衡空白"的整体布局
+
+#### 重设计原则 (跟 picture-mode-scene / select-scene 一致)
+- 顶部 logo 不再"绿色横幅 + 黑边", 改自适应 height 88px max-width 480px (跟数独/选题/选项对齐)
+- 主视觉 = 双宫格: 左数独 (蓝渐变) / 右图画谜题 (橙渐变), 一眼区分两种玩法
+- 每个大卡片含 4 层信息: 大字 icon (9×9 / 15×15) / 主标题 / 描述 / 题数徽标
+- 底部 4 二级入口 (玩法/选项/人员/返回) 改为 4 列等宽 grid, 返回 ghost 弱化
+- 移除"数字谜题 (数独)" 双语括号, 统一中文
+
+#### 改动清单
+- `components/scenes/menu-scene/menu-scene.wxml`:
+  - 移除 `.mode-select-card` 小卡片 + `.menu-label-wrap` + .menu-label 标题节点
+  - 新增 `.mode-grid` grid 2 列 + 2 个 `.mode-card` (numple 蓝渐变 / numclo 橙渐变)
+  - 每个 mode-card 含: mode-card-icon / title / desc / hint (题数)
+  - 移除"数字谜题 (数独)"括号 + "+ (Picture Puzzle)"等英文
+  - 顶部 title-banner: height 120→88, max-width 480, 不再有绿色背景填充
+  - 底部 .bottom-links: flex-wrap 改为 grid 4 列等宽, 返回按钮加 ds-btn-ghost
+  - 新增 .menu-footer: 版权 + 版本号 (跟 options / about 风格统一)
+- `components/scenes/menu-scene/menu-scene.wxss`:
+  - 全套重写, 引用 ds-buttons 双态规范
+  - .mode-card 168px 高, numple 蓝渐变 + 蓝边; numclo 橙渐变 + 橙边
+  - .mode-card-press: scale 0.97 + 蓝边高亮 (按下反馈)
+  - .mode-card-icon: 28px 大字, 蓝/橙 + text-shadow glow
+  - .mode-card-hint: 胶囊徽标 (1000 题 / 1525 题)
+  - 响应式: max-width 480 居中, 中小屏全宽
+- `components/scenes/menu-scene/menu-scene.ts`:
+  - 新增 buildVersion 字段
+  - 注释更新到 V0.30 重设计
+
+#### 配色规范
+| 元素 | 色值 | 来源 |
+| --- | --- | --- |
+| 数独大卡背景 | linear-gradient(160deg, rgba(40,160,240,0.25) → rgba(22,42,66,0.88)) | select1.nbm NORMAL 帧采样同色域 (蓝渐变) |
+| 数独边框 | rgba(40,160,240,0.45) | select1 主蓝 80% 透明 |
+| 数独图标字 | #4db8ff + 蓝光晕 | select1 SELECTED 帧相同强调色 |
+| 图画谜题卡背景 | linear-gradient(160deg, rgba(255,152,0,0.22) → rgba(22,42,66,0.88)) | numclo 橙色域 |
+| 图画谜题边框 | rgba(255,152,0,0.45) | 橙渐变 80% 透明 |
+| 图画谜题图标字 | #ffb04d + 橙光晕 | numclo 主橙调 |
+| 按下高亮 | background rgba(77,184,255,0.18) + border #4db8ff | ds-buttons 规范 |
+
+#### 验证
+- IDE 语言服务 0 诊断 (menu-scene 全目录)
+- 待 devtools 真机/模拟器重编译后:
+  - 顶部 ESSENTIAL SUDOKU DS logo 自适应窄高
+  - 两个大宫格并排: 数独蓝 + 图画谜题橙
+  - 4 个底部链接 1 行等宽排开
+  - 没有英文 UI, 没有小标题"SELECT MODE", 没有奇大空白
+
+---
+
 ## PICTURE-V0.30 — 纯中文 UI 规范落地: select-scene 按钮改中文文本双态胶囊 + 全场景英文文案中文化
 
 ### 2026-09-03
