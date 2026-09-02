@@ -1,121 +1,92 @@
-/* picture-mode-scene.wxss — 原 DS 图画谜题子模式选择菜单 */
+/* picture-mode-scene.wxss — 图画谜题子模式选择 (5 文本按钮, 深色主题) */
 .picture-mode-page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100%;
+  min-height: 100vh;
   padding: 8px 12px 24px;
   box-sizing: border-box;
   overflow-y: auto;
-  background: #e9eef3;
+  background: #0d1b2a;
 }
 
 .scene-bar {
   width: 100%;
   padding: 10px 12px;
   box-sizing: border-box;
-  background: #ffffff;
+  background: rgba(22, 42, 66, 0.85);
   border-radius: 7px;
-  border: 0.5px solid #e0e6ec;
-  margin-bottom: 12px;
+  border: 0.5px solid rgba(255, 255, 255, 0.08);
+  margin-bottom: 16px;
 }
 
 .scene-bar-text {
   font-size: 14px;
-  color: #1565c0;
+  color: #4db8ff;
   font-weight: 600;
 }
 
-/* 原 DS 菜单图容器 (图片 128x256, 比例 1:2) */
-.menu-panel {
+/* 5 个按钮纵向列表 */
+.mode-list {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  width: 100%;
+  max-width: 240px;
+  gap: 10px;
+}
+
+/* normal 态: 半透明深色胶囊 + 白 8% 细边 */
+.mode-button {
   position: relative;
-  width: 100%;
-  max-width: 200px;
+  padding: 14px 16px;
+  box-sizing: border-box;
+  background: rgba(22, 42, 66, 0.78);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 10px;
-  overflow: hidden;
-  background: #ffffff;
-  border: 0.5px solid #e0e6ec;
-  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
-}
-
-.menu-image {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
-/* 热区层: 覆盖菜单文字行, 基于 256 高菜单的目测文字位置 */
-.menu-hit {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.mode-hit {
-  position: absolute;
-  left: 0;
-  width: 100%;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.25);
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding-left: 10%;
-  box-sizing: border-box;
+  justify-content: space-between;
+  transition: background 0.08s ease, border-color 0.08s ease;
 }
 
-.mode-hit-hover {
-  background: rgba(21, 101, 192, 0.12);
+/* hover (按下瞬态) */
+.mode-button-hover {
+  background: rgba(77, 184, 255, 0.12);
+  border-color: rgba(77, 184, 255, 0.4);
 }
 
-.mode-hit-active {
-  background: rgba(21, 101, 192, 0.08);
+/* selected 态: 蓝边 + 蓝底 + 亮起箭头 */
+.mode-button-active {
+  background: rgba(77, 184, 255, 0.22);
+  border-color: #4db8ff;
+  box-shadow: 0 0 0 1px #4db8ff, 0 3px 10px rgba(0, 0, 0, 0.3);
 }
 
-.mode-hit-active .mode-arrow,
-.mode-hit-hover .mode-arrow {
-  opacity: 1;
+.mode-button-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #c8d5e8;
+  line-height: 1.2;
 }
 
-/* 右侧小三角箭头 */
-.mode-arrow {
+.mode-button-active .mode-button-label {
+  color: #ffffff;
+}
+
+/* selected 时右侧小蓝三角箭头 */
+.mode-button-arrow {
   width: 0;
   height: 0;
-  border-top: 6px solid transparent;
-  border-bottom: 6px solid transparent;
-  border-left: 10px solid #1565c0;
-  opacity: 0;
-  transition: opacity 0.08s ease;
-}
-
-/* 5 项按实际文字位置定位 */
-.mode-hit-nankuro {
-  top: 8%;
-  height: 14%;
-}
-
-.mode-hit-nukuro {
-  top: 24%;
-  height: 13%;
-}
-
-.mode-hit-card {
-  top: 42%;
-  height: 13%;
-}
-
-.mode-hit-population {
-  top: 58%;
-  height: 17%;
-}
-
-.mode-hit-tutorial {
-  top: 79%;
-  height: 13%;
+  border-top: 7px solid transparent;
+  border-bottom: 7px solid transparent;
+  border-left: 11px solid #4db8ff;
 }
 
 .hint-text {
-  margin-top: 14px;
+  margin-top: 18px;
   font-size: 13px;
-  color: #6b7a8a;
+  color: #9fb6d3;
 }

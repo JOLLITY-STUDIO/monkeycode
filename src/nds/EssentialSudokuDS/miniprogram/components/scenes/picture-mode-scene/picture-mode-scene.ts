@@ -1,8 +1,7 @@
-// components/scenes/picture-mode-scene/picture-mode-scene.ts — 原 DS 图画谜题子模式选择菜单
-// pazl_select.nbm 为竖向菜单: ナンクロ / ヌクロ / カード / ポピュレーション / チュートリアル
+// components/scenes/picture-mode-scene/picture-mode-scene.ts — 图画谜题子模式选择菜单
+// 5 个文本按钮 (normal + selected 两态) 替代原 DS pazl_select.nbm sprite 渲染.
 // ナンクロ → 进入类别列表 (numclo0-9 + 附加); チュートリアル → 直接开始教程题.
 
-import { NBM_PAZL_SELECT } from '../../../utils/sudoku/nbmAssets';
 import { audioService } from '../../../utils/audio/audioService';
 
 interface ModeItem {
@@ -20,7 +19,6 @@ const MODES: ModeItem[] = [
 
 Component({
   data: {
-    menuUrl: NBM_PAZL_SELECT,
     modes: MODES,
     selectedId: 'nankuro',
   },

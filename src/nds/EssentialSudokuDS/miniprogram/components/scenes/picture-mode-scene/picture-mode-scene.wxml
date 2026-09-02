@@ -4,55 +4,19 @@
     <text class="scene-bar-text">← 返回主菜单</text>
   </view>
 
-  <!-- 原 DS pazl_select.nbm 子模式菜单 -->
-  <view class="menu-panel">
-    <image class="menu-image" src="{{menuUrl}}" mode="widthFix" lazy-load></image>
-    <view class="menu-hit">
-      <view
-        class="mode-hit mode-hit-nankuro {{selectedId === 'nankuro' ? 'mode-hit-active' : ''}}"
-        hover-class="mode-hit-hover"
-        hover-stay-time="80"
-        data-id="nankuro"
-        bindtap="onTapMode"
-      >
-        <view class="mode-arrow"></view>
-      </view>
-      <view
-        class="mode-hit mode-hit-nukuro {{selectedId === 'nukuro' ? 'mode-hit-active' : ''}}"
-        hover-class="mode-hit-hover"
-        hover-stay-time="80"
-        data-id="nukuro"
-        bindtap="onTapMode"
-      >
-        <view class="mode-arrow"></view>
-      </view>
-      <view
-        class="mode-hit mode-hit-card {{selectedId === 'card' ? 'mode-hit-active' : ''}}"
-        hover-class="mode-hit-hover"
-        hover-stay-time="80"
-        data-id="card"
-        bindtap="onTapMode"
-      >
-        <view class="mode-arrow"></view>
-      </view>
-      <view
-        class="mode-hit mode-hit-population {{selectedId === 'population' ? 'mode-hit-active' : ''}}"
-        hover-class="mode-hit-hover"
-        hover-stay-time="80"
-        data-id="population"
-        bindtap="onTapMode"
-      >
-        <view class="mode-arrow"></view>
-      </view>
-      <view
-        class="mode-hit mode-hit-tutorial {{selectedId === 'tutorial' ? 'mode-hit-active' : ''}}"
-        hover-class="mode-hit-hover"
-        hover-stay-time="80"
-        data-id="tutorial"
-        bindtap="onTapMode"
-      >
-        <view class="mode-arrow"></view>
-      </view>
+  <!-- 5 个子模式文本按钮 (normal + selected 两态) -->
+  <view class="mode-list">
+    <view
+      wx:for="{{modes}}"
+      wx:key="id"
+      class="mode-button {{selectedId === item.id ? 'mode-button-active' : ''}}"
+      hover-class="mode-button-hover"
+      hover-stay-time="80"
+      data-id="{{item.id}}"
+      bindtap="onTapMode"
+    >
+      <text class="mode-button-label">{{item.label}}</text>
+      <view wx:if="{{selectedId === item.id}}" class="mode-button-arrow"></view>
     </view>
   </view>
 
