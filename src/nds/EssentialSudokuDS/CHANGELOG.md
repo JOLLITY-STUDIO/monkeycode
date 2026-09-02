@@ -4,6 +4,28 @@ All notable changes to this project are documented here.
 
 ---
 
+## PICTURE-V0.26 — 图画谜题答案成品图库 (1401 题可视化)
+
+### 2026-09-03
+
+#### 新增 `scripts/gen_answer_gallery.py` (生成器)
+- 解析 `numclo_puzzles.ts` RAW 数组 (1401 题 packed 150-hex) + `numclo_answers.ts` (numclo0-9 每题答案名)
+- 输出 self-contained 静态 HTML `build-test/answer-gallery.html` (内嵌 JSON, 双击浏览器即开, 零依赖)
+- 正则 name 组用 `(?:[^'\\]|\\.)*` 支持转义撇号 — 修复 `Bees' Nest` / `Gentleman's Shoes` 2 题漏解析
+- 类别映射 15 类 (numclo0-9 中文名 + numclo_00-03 附加 + numclo_tu 教程)
+
+#### 新增 `build-test/answer-gallery.html` (产物, 232 KB)
+- 分类 chip 切换 + 15×15 canvas 缩略图网格 (含题目名 + 序号)
+- 点击放大 lightbox (32px/cell 大图 + 5×5 红色块粗线, 模拟 DS numclo_waku 视觉)
+- lightbox 支持 ◀/▶ 翻题 + 键盘左右键 + Esc 关闭 + 下载 PNG
+- 图例: 0=空白, 5 色 DS 原版 palette (`#f80000/#f8f800/#4868f8/#48b048/#181818`)
+
+#### 验证
+- `python scripts/gen_answer_gallery.py` → total puzzles = 1401 (15 类全齐, numclo9.data named=100)
+- 清理临时调试文件 `_gallery_debug.py/json` / `_gallery_diff.py`
+
+---
+
 ## PICTURE-V0.25 — 图画谜题网格 CSS 自绘 (移除 numclo_waku.nbm.png 依赖)
 
 ### 2026-09-03
